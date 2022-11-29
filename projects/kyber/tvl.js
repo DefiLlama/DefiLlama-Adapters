@@ -1,6 +1,7 @@
 const BigNumber = require('bignumber.js');
 const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
+const { getFixBalances } = require('../helper/portedTokens')
 
 async function requery(results, chain, block, abi){
   if(results.some(r=>!r.success)){
@@ -40,6 +41,8 @@ async function calcTvl(getAddress, block, chain, FACTORY, START_BLOCK, useMultic
       })),
       block
     })).output
+    await requery(pools, chain, block, abi.allPools);
+    await requery(pools, chain, block, abi.allPools);
     await requery(pools, chain, block, abi.allPools);
     poolAddresses = pools.map(result => result.output.toLowerCase())
   } else {
@@ -98,7 +101,12 @@ async function calcTvl(getAddress, block, chain, FACTORY, START_BLOCK, useMultic
   await requery(token0Addresses, chain, block, abi.token0);
   await requery(token1Addresses, chain, block, abi.token1);
   await requery(reserves, chain, block, abi.getReserves);
-
+  await requery(token0Addresses, chain, block, abi.token0);
+  await requery(token1Addresses, chain, block, abi.token1);
+  await requery(reserves, chain, block, abi.getReserves);
+  await requery(token0Addresses, chain, block, abi.token0);
+  await requery(token1Addresses, chain, block, abi.token1);
+  await requery(reserves, chain, block, abi.getReserves);
   const pools = {};
   // add token0Addresses
   token0Addresses.forEach((token0Address) => {
@@ -155,6 +163,9 @@ async function calcTvl(getAddress, block, chain, FACTORY, START_BLOCK, useMultic
 
     return accumulator
   }, {})
+
+  const fix = await getFixBalances(chain)
+  fix(balances)
 
   return balances
 };

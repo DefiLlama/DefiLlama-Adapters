@@ -4,11 +4,11 @@ const sdk = require("@defillama/sdk");
 const { request, gql } = require("graphql-request");
 
 const tokenSubgraphUrl =
-  "https://graph.bunicorn.exchange/subgraphs/name/bunicorndefi/buni-token";
+  "https://api.thegraph.com/subgraphs/name/bunicorndefi/buni-token";
 const stableSubgraphUrl =
   "https://api.thegraph.com/subgraphs/name/bunicorndefi/buni-stablecoins";
 const BUNI_CONTRACT_ADDRESS = "0x0e7beec376099429b85639eb3abe7cf22694ed49";
-const MASTERCHET_CONTRACT_ADDRESS =
+const MASTERCHEF_CONTRACT_ADDRESS =
   "0xA12c974fE40ea825E66615bA0Dc4Fd19be4D7d24";
 
 const graphTotalTokenTVLQuery = gql`
@@ -36,7 +36,7 @@ async function getTotalFarmTVL(timestamp, ethBlock, chainBlocks) {
     const balances = {};
     const stakedBuni = sdk.api.erc20.balanceOf({
       target: BUNI_CONTRACT_ADDRESS,
-      owner: MASTERCHET_CONTRACT_ADDRESS,
+      owner: MASTERCHEF_CONTRACT_ADDRESS,
       chain: "bsc",
       block: chainBlocks.bsc,
     });
@@ -94,6 +94,6 @@ module.exports = {
   misrepresentedTokens: true,
   bsc: {
     tvl: getTotalTVL,
-    staking: getTotalFarmTVL
+    staking: getTotalFarmTVL,
   },
 };

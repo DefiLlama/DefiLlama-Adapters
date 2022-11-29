@@ -1,0 +1,6 @@
+{
+  "pool_getNormalizedWeight": {"constant":true,"inputs":[{"name":"token","type":"address"}],"name":"getNormalizedWeight","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},
+  "pool_isInitialized": {"constant":true,"inputs":[],"name":"isInitialized","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},
+  "pool_isFinalized": {"constant":true,"inputs":[],"name":"isFinalized","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},
+  "pool_isPublicSwap": {"constant":true,"inputs":[],"name":"isPublicSwap","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"}
+}

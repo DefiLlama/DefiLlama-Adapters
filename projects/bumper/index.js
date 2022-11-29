@@ -19,5 +19,4 @@ module.exports={
         tvl,
         masterchef: tvl
     },
-    tvl
 }

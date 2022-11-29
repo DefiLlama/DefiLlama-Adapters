@@ -1,0 +1,29 @@
+{
+    "tokens": {
+        "DARK": "0x83b2AC8642aE46FC2823Bc959fFEB3c1742c48B5",
+        "SKY": "0x9D3BBb0e988D9Fb2d55d07Fe471Be2266AD9c81c",
+        "CRO": "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23"
+    },
+    "farms": [
+        {
+            "masterChef": "0x42B652A523367e7407Fb4BF2fA1F430781e7db8C",
+            "reward": "SKY",
+            "pools": [
+                {
+                    "id": 0,
+                    "lpToken": "0xA4AA24B8e855052071Df60E174219e6c8FEe45a3",
+                    "token0": "DARK",
+                    "token1": "CRO",
+                    "rewardToken": "SKY"
+                },
+                {
+                    "id": 1,
+                    "lpToken": "0xaa0845ee17e4f1d4f3a8c22cb1e8102bacf56a77",
+                    "token0": "SKY",
+                    "token1": "CRO",
+                    "rewardToken": "SKY"
+                }
+            ]
+        }
+    ]
+}

@@ -1,4 +1,4 @@
-const _ = require("underscore");
+
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
@@ -42,8 +42,7 @@ async function getAllUnderlying(block, tokens) {
   let allUnderlying = (
     await sdk.api.abi.multiCall({
       block,
-      calls: _.map(
-        tokens.filter((token) => token !== anETH),
+      calls: tokens.filter((token) => token !== anETH).map(
         (token) => ({
           target: token,
         })
@@ -66,7 +65,7 @@ async function getCashes(block, tokens) {
   return (
     await sdk.api.abi.multiCall({
       block,
-      calls: _.map(tokens, (token) => ({
+      calls: tokens.map((token) => ({
         target: token,
       })),
       abi: abi["getCash"],
@@ -78,7 +77,7 @@ async function getTotalSupplies(block, tokens) {
   return (
     await sdk.api.abi.multiCall({
       block,
-      calls: _.map(tokens, (token) => ({
+      calls: tokens.map((token) => ({
         target: token,
       })),
       abi: abi["totalSupply"],
@@ -98,13 +97,11 @@ async function anchorTVL(block) {
     getCashes(block, tokens),
   ]);
 
-  _.each(tokens, (token) => {
-    let cash = _.find(
-      cashes,
+  tokens.forEach((token) => {
+    let cash = cashes.find(
       (result) => result.input.target === token
     );
-    let underlying = _.find(
-      allUnderlying,
+    let underlying = allUnderlying.find(
       (result) => result.input.target === token
     );
     if (cash && underlying) {
@@ -125,13 +122,11 @@ async function vaultsTVL(block) {
     getTotalSupplies(block, vaults),
   ]);
 
-  _.each(vaults, (token) => {
-    let totalSupply = _.find(
-      totalSupplies,
+  vaults.forEach((token) => {
+    let totalSupply = totalSupplies.find(
       (result) => result.input.target === token
     );
-    let underlying = _.find(
-      allUnderlying,
+    let underlying = allUnderlying.find(
       (result) => result.input.target === token
     );
     if (totalSupply && underlying) {
@@ -176,7 +171,7 @@ async function tvl(timestamp, block) {
   ]);
 
   const lps = []
-  _.each(_.pairs(anchorBalances), ([token, value]) => {
+  Object.entries(anchorBalances).forEach(([token, value]) => {
     const balance = BigNumber(balances[token] || 0);
     if(token === '0xAA5A67c256e27A5d80712c51971408db3370927D'){
       token = "0x865377367054516e17014ccded1e7d814edc9ce4"
@@ -191,12 +186,12 @@ async function tvl(timestamp, block) {
     }
   });
 
-  _.each(_.pairs(vaultBalances), ([token, value]) => {
+  Object.entries(vaultBalances).forEach(([token, value]) => {
     const balance = BigNumber(balances[token] || 0);
     balances[token] = balance.plus(BigNumber(value)).toFixed();
   });
 
-  _.each(_.pairs(stabilizerBalances), ([token, value]) => {
+  Object.entries(stabilizerBalances).forEach(([token, value]) => {
     const balance = BigNumber(balances[token] || 0);
     balances[token] = balance.plus(BigNumber(value)).toFixed();
   });
@@ -207,6 +202,9 @@ async function tvl(timestamp, block) {
 
 module.exports = {
   methodology: "DOLA curve metapool replaced by DOLA",
+  hallmarks: [
+    [1648771200, "INV price hack"]
+],
   start: 1607731200, // Dec 12 2020 00:00:00 GMT+0000
-  tvl,
+  ethereum: { tvl }
 };

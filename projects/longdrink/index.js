@@ -40,10 +40,7 @@ async function pool2(timestamp, block, chainBlocks) {
 
 module.exports = {
   bsc: {
-    tvl: tvl,
+    tvl,
+    pool2,
   },
-  pool2:{
-    tvl: pool2
-  },
-  tvl,
 };

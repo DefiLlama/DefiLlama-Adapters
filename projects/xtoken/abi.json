@@ -1,0 +1,158 @@
+{
+    "getFundHoldings":   {
+        "inputs": [],
+        "name": "getFundHoldings",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+    "getNav": {
+        "inputs": [],
+        "name": "getNav",
+        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      "totalAllocatedNav": {
+        "inputs": [],
+        "name": "totalAllocatedNav",
+        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      "getBufferBalance": {
+        "inputs": [],
+        "name": "getBufferBalance",
+        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      "getRewardsContributionToNav": {
+        "inputs": [],
+        "name": "getRewardsContributionToNav",
+        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      "getFundKncBalanceTwei": {
+        "inputs": [],
+        "name": "getFundKncBalanceTwei",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      "debtBalanceOf": {
+        "constant": true,
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes32",
+            "name": "currencyKey",
+            "type": "bytes32"
+          }
+        ],
+        "name": "debtBalanceOf",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "signature": "0xd37c4d8b"
+      },
+      "getEthBalance": {
+        "constant": true,
+        "inputs": [],
+        "name": "getEthBalance",
+        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      "getSnxBalance": {
+        "constant": true,
+        "inputs": [],
+        "name": "getSnxBalance",
+        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      "getFundBalances": {
+        "inputs": [],
+        "name": "getFundBalances",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "marketBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "bufferBalance",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      "quoteExactInputSingle": {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "tokenIn",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "tokenOut",
+            "type": "address"
+          },
+          {
+            "internalType": "uint24",
+            "name": "fee",
+            "type": "uint24"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amountIn",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint160",
+            "name": "sqrtPriceLimitX96",
+            "type": "uint160"
+          }
+        ],
+        "name": "quoteExactInputSingle",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "amountOut",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }
+}

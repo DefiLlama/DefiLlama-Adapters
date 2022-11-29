@@ -1,8 +1,8 @@
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
+const abi = require("./abi.json")
 
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { transformHecoAddress } = require("../helper/portedTokens");
+const { unwrapLPsAuto, } = require("../helper/unwrapLPs");
+const { getChainTransform } = require("../helper/portedTokens");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 
 const BoosterStakingChef_Heco = "0x7970234cDfa8898853Eaa1e2586cE933d9054af8";
@@ -18,137 +18,78 @@ const erc20Tokens = [
   "0xff96dccf2763d512b6038dc60b7e96d1a9142507",
 ];
 
-const calcTvl = async (balances, chain, block, poolInfo, StakingChef) => {
+const calcTvl = async (balances, chain, block, poolInfo, StakingChef, transform) => {
   const lengthOfPool = (
     await sdk.api.abi.call({
       abi: abi.poolLength,
       target: StakingChef,
-      chain,
-      block,
+      chain, block,
     })
   ).output;
 
-  const lpPositions = [];
+  const calls = []
+  for (let index = 0; index < lengthOfPool; index++) calls.push({ params: index })
 
-  for (let index = 0; index < lengthOfPool; index++) {
-    const lpTokens = (
-      await sdk.api.abi.call({
-        abi: poolInfo,
-        target: StakingChef,
-        params: index,
-        chain,
-        block,
-      })
-    ).output.lpToken;
+  const { output: data } = await sdk.api.abi.multiCall({
+    target: StakingChef,
+    abi: poolInfo,
+    calls,
+    chain, block,
+  })
 
-    const lpTokens_Bal = (
-      await sdk.api.abi.call({
-        abi: poolInfo,
-        target: StakingChef,
-        params: index,
-        chain,
-        block,
-      })
-    ).output.lpBalance;
-
-    lpPositions.push({
-      token: lpTokens,
-      balance: lpTokens_Bal,
-    });
-  }
-
-  const transformAddress = await transformHecoAddress();
-
-  await unwrapUniswapLPs(
-    balances,
-    lpPositions,
-    block,
-    chain,
-    chain == "heco" ? transformAddress : (addr) => addr
-  );
+  data.forEach(({ output }) => {
+    sdk.util.sumSingleBalance(balances, transform(output.lpToken), output.lpBalance)
+  })
 };
 
 /*** Treasury ***/
 const Treasury = async (timestamp, ethBlock, chainBlocks) => {
   const balances = {};
-
-  const transformAddress = await transformHecoAddress();
-
-  for (const token of erc20Tokens) {
-    await sumTokensAndLPsSharedOwners(
-      balances,
-      [[token, false]],
-      [treasuryAddress],
-      chainBlocks["heco"],
-      "heco",
-      transformAddress
-    );
-  }
+  let transformAddress = await getChainTransform('heco')
+  await sumTokensAndLPsSharedOwners(balances, erc20Tokens.map(t => [t, false]), [treasuryAddress], chainBlocks["heco"], "heco", transformAddress);
   return balances;
 };
 
 /*** Heco TVL Portion ***/
-const hecoTvl = async (timestamp, ethBlock, chainBlocks) => {
+const hecoTvl = async (timestamp, ethBlock, { heco: block }) => {
   const balances = {};
+  const chain = 'heco'
+  let transformAddress = await getChainTransform(chain)
 
-  //  --- Staking on Booster Protcol ---
-  await calcTvl(
-    balances,
-    "heco",
-    chainBlocks["heco"],
-    abi.poolInfoA,
-    BoosterStakingChef_Heco
-  );
+  await Promise.all([
+    //  --- Staking on Booster Protcol ---
+    calcTvl(balances, chain, block, abi.poolInfoA, BoosterStakingChef_Heco, transformAddress),
+    //  --- Staking on Mdex Protcol ---
+    calcTvl(balances, chain, block, abi.poolInfoB, MdexStakingChef_Heco, transformAddress),
+    //  --- Staking on Lava Protcol ---
+    calcTvl(balances, chain, block, abi.poolInfoB, LavaStakingChef_heco, transformAddress),
+  ])
 
-  //  --- Staking on Mdex Protcol ---
-  await calcTvl(
-    balances,
-    "heco",
-    chainBlocks["heco"],
-    abi.poolInfoB,
-    MdexStakingChef_Heco
-  );
-
-  //  --- Staking on Lava Protcol ---
-  await calcTvl(
-    balances,
-    "heco",
-    chainBlocks["heco"],
-    abi.poolInfoB,
-    LavaStakingChef_heco
-  );
-
+  await unwrapLPsAuto({ balances, block, chain, transformAddress })
   return balances;
 };
 
 /*** Ethereum TVL Portion ***/
-const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
+const ethTvl = async (timestamp, ethBlock, { ethereum: block }) => {
+  const balances = {}
+  const chain = 'ethereum'
+  let transformAddress = await getChainTransform(chain)
 
   //  --- Staking on SushiSwap Protcol ---
-  await calcTvl(
-    balances,
-    "ethereum",
-    chainBlocks["ethereum"],
-    abi.poolInfoB,
-    SushiStakingChef_Ethereum
-  );
-
+  await calcTvl(balances, chain, block, abi.poolInfoB, SushiStakingChef_Ethereum, transformAddress)
+  await unwrapLPsAuto({ balances, block, chain, transformAddress })
   return balances;
 };
 
 module.exports = {
   misrepresentedTokens: true,
-  treasury: {
-    tvl: Treasury,
-  },
   ethereum: {
     tvl: ethTvl,
   },
   heco: {
     tvl: hecoTvl,
+    treasury: Treasury,
   },
-  tvl: sdk.util.sumChainTvls([ethTvl, hecoTvl]),
   methodology: `We count TVL on the pools (LP tokens), that are staking in other protocolos as Booster, Mdex and Lava on Heco Network
    and SushiSwap  on Ethereum Network,threw their correspondent MasterChef contracts; and Treasury part separated`,
 };

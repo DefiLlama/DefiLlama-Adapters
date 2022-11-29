@@ -2,14 +2,17 @@ const sdk = require("@defillama/sdk");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { staking } = require("../helper/staking");
 
-const polyKitty = "0xcD86152047e800d67BDf00A4c635A8B6C0e5C4c2";
-const polyCat = "0x948D0a28b600BDBd77AF4ea30E6F338167034181";
-const polyChef = "0xdD694F459645eb6EfAE934FE075403760eEb9aA1";
-const Bowl = "0x975fa17a8b9f103819d3fa1187f44bc9c07658f0";
+const tombTokenAddress = "0xcD86152047e800d67BDf00A4c635A8B6C0e5C4c2";
+const tshareTokenAddress = "0x948D0a28b600BDBd77AF4ea30E6F338167034181";
+const tshareRewardPoolAddress = "0xdD694F459645eb6EfAE934FE075403760eEb9aA1";
+const masonryAddress = "0x1ad667aCe03875fe48534c65BFE14191CF81fd64";
 
-const polyLPs = [
-  "0x8D25fec513309F2d329d99d6F677D46C831FDEe8", // WETH-NACHO LP
-  "0x1C84Cd20Ea6cc100E0A890464411F1365Ab1F664", //WMATIC-NSHARE LP
+const ftmLPs = [
+  "0x2bAe87900Cbd645da5CA0d7d682C5D2e172946f2", // NACHO-ETH
+  "0x2c97767BFa132E3785943cf14F31ED3f025405Ea", // NSHARE-MATIC
+  "0xcD90217f76F3d8d5490FD0434F597516767DaDe1", // ETH-MATIC
+  "0x354789e7bBAC6E3d3143A0457324cD80bD0BE050", // ETH-USDC
+  "0xfc4a30f328E946ef3E727BD294a93e84c2e43c24" // NBOND
 ];
 
 async function calcPool2(masterchef, lps, block, chain) {
@@ -27,10 +30,12 @@ async function calcPool2(masterchef, lps, block, chain) {
   ).output;
   let lpPositions = [];
   lpBalances.forEach((p) => {
-    lpPositions.push({
-      balance: p.output,
-      token: p.input.target,
-    });
+    if (p.input.target != '0xfc4a30f328E946ef3E727BD294a93e84c2e43c24') {
+      lpPositions.push({
+        balance: p.output,
+        token: p.input.target,
+      });
+    };
   });
   await unwrapUniswapLPs(
     balances,
@@ -42,14 +47,15 @@ async function calcPool2(masterchef, lps, block, chain) {
   return balances;
 }
 
-async function polyPool2(timestamp, block, chainBlocks) {
-  return await calcPool2(polyChef, polyLPs, chainBlocks.polygon, "polygon");
+async function ftmPool2(timestamp, block, chainBlocks) {
+  return await calcPool2(tshareRewardPoolAddress, ftmLPs, chainBlocks.polygon, "polygon");
 }
 
 module.exports = {
+  methodology: "Pool2 deposits consist of NACHO/ETH, NSHARE/MATIC LP, ETH/MATIC LP, ETH/USDC LP and NBOND tokens deposits while the staking TVL consists of the NSHARE tokens locked within the Bowl contract.",
   polygon: {
     tvl: async () => ({}),
-    pool2: polyPool2,
-    staking: staking(Bowl, polyCat, "polygon"),
+    pool2: ftmPool2,
+    staking: staking(masonryAddress, tshareTokenAddress, "polygon"),
   },
 };

@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const erc20 = require("../helper/abis/erc20.json");
 const { transformBscAddress } = require("../helper/portedTokens");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 
@@ -25,7 +24,7 @@ const bscTvl = async (chainBlocks) => {
 
   const farmBalance = (
     await sdk.api.abi.multiCall({
-      abi: erc20.balanceOf,
+      abi: 'erc20:balanceOf',
       calls: getAllFarms.map((f) => ({
         target: f,
         params: farmContract,
@@ -118,7 +117,6 @@ module.exports = {
   bsc: {
     tvl: bscTvl,
   },
-  tvl: sdk.util.sumChainTvls([bscTvl]),
   methodology:
     "We count liquidity on the Farms through Farm Contract",
 };

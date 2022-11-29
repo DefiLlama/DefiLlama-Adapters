@@ -77,13 +77,16 @@ function tvlKlaytn() {
 }
 
 module.exports = {
+  hallmarks: [
+    [1643241600, "tokenAddress hack"]
+],
   timetravel: true,
   doublecounted: false,
   methodology:
     "Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There are multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending",
   bsc: {
     tvl: tvl(false),
-    borrowed: tvl(true),
+    //borrowed: tvl(true), // hacked
   },
   klaytn: {
     // no borrowed: Dashboard contract of Qubit returns 'supply - borrow' value

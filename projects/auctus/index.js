@@ -3,7 +3,7 @@
   ==================================================*/
 
   const sdk = require('@defillama/sdk');
-  const _ = require('underscore');
+
   const abi = require('./abi.json');
   const { default: BigNumber } = require('bignumber.js');
 
@@ -74,7 +74,7 @@
 
     let collateralResult = await sdk.api.abi.multiCall({
       block,
-      calls: _.map(acoOptionsAddresses, (option) => ({
+      calls: acoOptionsAddresses.map((option) => ({
         target: option
       })),
       abi: abi.collateral,
@@ -82,13 +82,13 @@
 
     let collateralAddressMap = {}
 
-    _.each(collateralResult.output, (result) => {
+    collateralResult.output.forEach((result) => {
         collateralAddressMap[result.input.target] = result.output;
     });
 
     let totalCollateralResult = await sdk.api.abi.multiCall({
       block,
-      calls: _.map(acoOptionsAddresses, (option) => ({
+      calls: acoOptionsAddresses.map((option) => ({
         target: option
       })),
       abi: abi.totalCollateral,
@@ -97,7 +97,7 @@
     let balances = {}
     balances[ETHER_ADDRESS] = "0"
 
-    _.each(totalCollateralResult.output, (result) => {
+    totalCollateralResult.output.forEach((result) => {
         var colateralAddress = collateralAddressMap[result.input.target].toLowerCase()
         if (!balances[colateralAddress]) {
           balances[colateralAddress] = "0"
@@ -116,12 +116,12 @@
       acoPools[address] = {underlying: underlyingAddress, strikeAsset: strikeAssetAddress}
     });
 
-    let poolCallsMap = _.map(acoPools, (poolData, poolAddress) => ({
+    let poolCallsMap = Object.entries(acoPools).map(([poolAddress, poolData]) => ({
       target: poolData.underlying,
       params: poolAddress,
     }))
 
-    poolCallsMap = poolCallsMap.concat(_.map(acoPools, (poolData, poolAddress) => ({
+    poolCallsMap = poolCallsMap.concat(Object.entries(acoPools).map(([poolAddress, poolData]) => ({
       target: poolData.strikeAsset,
       params: poolAddress,
     })))
@@ -153,7 +153,7 @@
 
     let balancesResult = await sdk.api.abi.multiCall({
       block,
-      calls: _.map(acoVaultsAddresses, (vault) => ({
+      calls: acoVaultsAddresses.map((vault) => ({
         target: vault
       })),
       abi: abi.balance,
@@ -161,13 +161,13 @@
 
     let tokensResult = await sdk.api.abi.multiCall({
       block,
-      calls: _.map(acoVaultsAddresses, (vault) => ({
+      calls: acoVaultsAddresses.map((vault) => ({
         target: vault
       })),
       abi: abi.token,
     });
 
-    _.each(balancesResult.output, (result, index) => {
+    balancesResult.output.forEach((result, index) => {
         var token = tokensResult.output[index].output.toLowerCase()
         var balance = result.output;
         balances[token] = BigNumber(balances[token]).plus(new BigNumber(balance)).toFixed();
@@ -181,9 +181,6 @@
   ==================================================*/
 
   module.exports = {
-    name: 'Auctus',
-    token: 'AUC',
-    category: 'derivatives',
     start: 1590014400,   // 05/20/2020 @ 08:10:40pm (UTC)
-    tvl
+    ethereum: { tvl }
   }

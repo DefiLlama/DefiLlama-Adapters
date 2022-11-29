@@ -1,0 +1,33 @@
+{
+  "coins": {
+    "constant": true,
+    "name": "coins",
+    "outputs": [
+      {
+        "type": "address",
+        "name": ""
+      }
+    ],
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "arg0"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "gas": 2280
+  },
+  "get_dy": {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "get_dy",
+    "inputs": [
+      { "name": "i", "type": "int128" },
+      { "name": "j", "type": "int128" },
+      { "name": "dx", "type": "uint256" }
+    ],
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "gas": 2110507
+  }
+}

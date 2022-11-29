@@ -1,0 +1,1 @@
+{"total_deposited":{"constant":true,"inputs":[],"name":"total_deposited","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}}

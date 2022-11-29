@@ -1,0 +1,49 @@
+{
+  "tokenList": {
+    "inputs": [],
+    "name": "tokenList",
+    "outputs": [
+      { "internalType": "address[]", "name": "", "type": "address[]" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "tokenParameters": {
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "name": "tokenParameters",
+    "outputs": [
+      {
+        "internalType": "contract IRewarder",
+        "name": "rewarder",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IBoofiStrategy",
+        "name": "strategy",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "lastRewardTime",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "lastCumulativeReward",
+        "type": "uint256"
+      },
+      { "internalType": "uint256", "name": "storedPrice", "type": "uint256" },
+      {
+        "internalType": "uint256",
+        "name": "accZBOOFIPerShare",
+        "type": "uint256"
+      },
+      { "internalType": "uint256", "name": "totalShares", "type": "uint256" },
+      { "internalType": "uint256", "name": "totalTokens", "type": "uint256" },
+      { "internalType": "uint128", "name": "multiplier", "type": "uint128" },
+      { "internalType": "uint16", "name": "withdrawFeeBP", "type": "uint16" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+}

@@ -8,5 +8,6 @@ const treasuryTokens = [
     ["0x3ff63b999749ca19e254caade820ed73d580ec69", true], // JOLLY-MIM JLP
 ]
 module.exports = {
+    misrepresentedTokens: true,
     ...ohmTvl(treasury, treasuryTokens, "avax", jollyStaking, jolly, undefined, undefined, false)
 }

@@ -1,16 +1,16 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 
-const G_UNI_Factory = "0xEA1aFf9dbFfD1580F6b81A3ad3589E66652dB7D9";
-
-const ethTvl = async (timestamp, block, chainBlocks) => {
+const chainTvl = (chain, G_UNI_Factory) => async (timestamp, ethBlock, chainBlocks) => {
   const balances = {};
+  const block = chainBlocks[chain]
 
   const getAllDeplores = (
     await sdk.api.abi.call({
       abi: abi.getDeployers,
       target: G_UNI_Factory,
       block,
+      chain,
     })
   ).output;
 
@@ -22,6 +22,7 @@ const ethTvl = async (timestamp, block, chainBlocks) => {
         params: deployer,
       })),
       block,
+      chain,
     })
   ).output.map((pool) => pool.output);
 
@@ -34,6 +35,7 @@ const ethTvl = async (timestamp, block, chainBlocks) => {
         target: pool,
       })),
       block,
+      chain
     })
   ).output.map((t0) => t0.output);
 
@@ -44,6 +46,7 @@ const ethTvl = async (timestamp, block, chainBlocks) => {
         target: pool,
       })),
       block,
+      chain,
     })
   ).output.map((t1) => t1.output);
 
@@ -54,12 +57,13 @@ const ethTvl = async (timestamp, block, chainBlocks) => {
         target: pool,
       })),
       block,
+      chain
     })
   ).output.map((bal) => bal.output);
 
   for (let i = 0; i < allGelatoPools.length; i++) {
-    sdk.util.sumSingleBalance(balances, token0[i], balanceOfPools[i].amount0Current);
-    sdk.util.sumSingleBalance(balances, token1[i], balanceOfPools[i].amount1Current);
+    sdk.util.sumSingleBalance(balances, `${chain}:${token0[i]}`, balanceOfPools[i].amount0Current);
+    sdk.util.sumSingleBalance(balances, `${chain}:${token1[i]}`, balanceOfPools[i].amount1Current);
   }
 
   return balances;
@@ -67,7 +71,13 @@ const ethTvl = async (timestamp, block, chainBlocks) => {
 
 module.exports = {
   ethereum: {
-    tvl: ethTvl,
+    tvl: chainTvl("ethereum", "0xEA1aFf9dbFfD1580F6b81A3ad3589E66652dB7D9"),
+  },
+  optimism: {
+    tvl: chainTvl("optimism", "0x2845c6929d621e32B7596520C8a1E5a37e616F09"),
+  },
+  polygon: {
+    tvl: chainTvl("polygon", "0x37265A834e95D11c36527451c7844eF346dC342a")
   },
   methodology:
     "Counts TVL that's on all the Pools through G-UNI Factory Contract",

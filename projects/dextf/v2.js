@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
-const _ = require('underscore');
+
 
 const SUPPLY_SCALE = BigNumber("10").pow(18)
 const START_BLOCK = 12783638;
@@ -43,7 +43,7 @@ module.exports = async function tvl(timestamp, block) {
   let supplies = (await sdk.api.abi.multiCall({
     abi: totalSupply,
     block,
-    calls: _.map(setAddresses, (setAddress) => {
+    calls: setAddresses.map((setAddress) => {
       return {
         target: setAddress,
       }
@@ -53,7 +53,7 @@ module.exports = async function tvl(timestamp, block) {
   let positionsForSets = (await sdk.api.abi.multiCall({
     abi: getPositions,
     block,
-    calls: _.map(setAddresses, (setAddress) => {
+    calls: setAddresses.map((setAddress) => {
       return {
         target: setAddress,
       }
@@ -61,9 +61,9 @@ module.exports = async function tvl(timestamp, block) {
   })).output;
 
   let uniswapPositions = {};
-  _.each(positionsForSets, function(positionForSet, i) {
+  positionsForSets.forEach(function(positionForSet, i) {
     const setSupply = BigNumber(supplies[i].output);
-    _.each(positionForSet.output, (position) => {
+    positionForSet.output.forEach((position) => {
       const componentAddress = position[0];
       const positionUnits = BigNumber(position[2]);
 
@@ -88,14 +88,14 @@ module.exports = async function tvl(timestamp, block) {
   let reserveSupplies = (await sdk.api.abi.multiCall({
     abi: totalSupply,
     block,
-    calls: _.map(Object.keys(uniswapPositions), (pairAddress) => {
+    calls: Object.keys(uniswapPositions).map((pairAddress) => {
       return {
         target: pairAddress,
       }
     }),
   })).output;
 
-  _.each(reserves, function(reserve, i) {
+  reserves.forEach(function(reserve, i) {
     const pairAddress = reserve.input.target;
     const tokenPair = pairAddresses[pairAddress];
     const setSupplyRatio = new BigNumber(uniswapPositions[pairAddress]).div(new BigNumber(reserveSupplies[i].output)).div(SUPPLY_SCALE);

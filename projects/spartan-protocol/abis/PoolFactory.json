@@ -1,0 +1,22 @@
+{
+  "getPool": {
+    "inputs": [
+      { "internalType": "address", "name": "token", "type": "address" }
+    ],
+    "name": "getPool",
+    "outputs": [
+      { "internalType": "address", "name": "pool", "type": "address" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "getTokenAssets": {
+    "inputs": [],
+    "name": "getTokenAssets",
+    "outputs": [
+      { "internalType": "address[]", "name": "tokens", "type": "address[]" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+}

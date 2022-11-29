@@ -1,54 +1,52 @@
 const BigNumber = require("bignumber.js");
-const web3 = require('./config/web3.js');
 const curveAbis = require('./config/curve/abis.js')
-const minAbi = require('./config/abis.js').abis.minABI
-const utils = require('./helper/utils')
 const sdk = require("@defillama/sdk");
+const { sumTokens } = require('./helper/unwrapLPs');
 
 const wBTC = '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599'
-const y2DAI = {addr: "0xacd43e627e64355f1861cec6d3a6688b31a6f952", dec: 18, getPrice: false, type: 'yv', pfsDec: 18} ///y2DAI                      yv
-const y2USDC = {addr: "0x597ad1e0c13bfe8025993d9e79c69e1c0233522e", dec: 6, getPrice: false, type: 'yv', pfsDec: 18} ///y2USDC                      yv
-const y2USDT = {addr: "0x2f08119c6f07c006695e079aafc638b8789faf18", dec: 6, getPrice: false, type: 'yv', pfsDec: 18} ///y2USDT                      yv
-const Y2TUSD = {addr: "0x37d19d1c4e1fa9dc47bd1ea12f742a0887eda74a", dec: 18, getPrice: false, type: 'yv', pfsDec: 18} ///Y2TUSD                      yv
-const yyDAIT = {addr: "0x5dbcf33d8c2e976c6b560249878e6f1491bca25c", dec: 18, getPrice: false, type: 'yv', pfsDec: 18} ///yyDAI+yUSDC+yUSDT+yTUSD    hbtc
-const yyDAIB = {addr: "0x2994529c0652d127b7842094103715ec5299bbed", dec: 18, getPrice: false, type: 'yv', pfsDec: 18} ///yyDAI+yUSDC+yUSDT+yBUSD    hbtc
-const WETH = {addr: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", dec: 18, get getPrice(){return this.addr}, type: ''} ///WETH                       crvETH
-const eCRV = {addr: "0xa3d87fffce63b53e0d54faa1cc983b7eb0b74a9c", dec: 18, getPrice: WETH.getPrice, type: ''} ///eCRV                       crvETH
-const steCRV = {addr: "0x06325440d014e39736583c165c2963ba99faf14e", dec: 18, getPrice: WETH.getPrice, type: ''} ///steCRV                      crvETH
-const ankrCRV = {addr: "0xaa17a236f2badc98ddc0cf999abb47d47fc0a6cf", dec: 18, getPrice: WETH.getPrice, type: ''} ///ankrCRV                    crvETH
+const y2DAI = { addr: "0xacd43e627e64355f1861cec6d3a6688b31a6f952", dec: 18, getPrice: false, type: 'yv', pfsDec: 18 } ///y2DAI                      yv
+const y2USDC = { addr: "0x597ad1e0c13bfe8025993d9e79c69e1c0233522e", dec: 6, getPrice: false, type: 'yv', pfsDec: 18 } ///y2USDC                      yv
+const y2USDT = { addr: "0x2f08119c6f07c006695e079aafc638b8789faf18", dec: 6, getPrice: false, type: 'yv', pfsDec: 18 } ///y2USDT                      yv
+const Y2TUSD = { addr: "0x37d19d1c4e1fa9dc47bd1ea12f742a0887eda74a", dec: 18, getPrice: false, type: 'yv', pfsDec: 18 } ///Y2TUSD                      yv
+const yyDAIT = { addr: "0x5dbcf33d8c2e976c6b560249878e6f1491bca25c", dec: 18, getPrice: false, type: 'yv', pfsDec: 18 } ///yyDAI+yUSDC+yUSDT+yTUSD    hbtc
+const yyDAIB = { addr: "0x2994529c0652d127b7842094103715ec5299bbed", dec: 18, getPrice: false, type: 'yv', pfsDec: 18 } ///yyDAI+yUSDC+yUSDT+yBUSD    hbtc
+const WETH = { addr: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", dec: 18, get getPrice() { return this.addr }, type: '' } ///WETH                       crvETH
+const eCRV = { addr: "0xa3d87fffce63b53e0d54faa1cc983b7eb0b74a9c", dec: 18, getPrice: WETH.getPrice, type: '' } ///eCRV                       crvETH
+const steCRV = { addr: "0x06325440d014e39736583c165c2963ba99faf14e", dec: 18, getPrice: WETH.getPrice, type: '' } ///steCRV                      crvETH
+const ankrCRV = { addr: "0xaa17a236f2badc98ddc0cf999abb47d47fc0a6cf", dec: 18, getPrice: WETH.getPrice, type: '' } ///ankrCRV                    crvETH
 
-const usdc = {addr: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", dec: 6, getPrice: false, type: ''} ///fUSD
-const fUSDC = {addr: "0xf0358e8c3cd5fa238a29301d0bea3d63a17bedbe", dec: 6, getPrice: false, type: 'yv', pfsDec: 6} ///fUSD
-const fUSDT = {addr: "0x053c80ea73dc6941f518a68e2fc52ac45bde7c9c", dec: 6, getPrice: false, type: 'yv', pfsDec: 6} ///fUSD
-const fDAI = {addr: "0xab7fa2b2985bccfc13c6d86b1d5a17486ab1e04c", dec: 18, getPrice: false, type: 'yv', pfsDec: 18} ///fUSD
+const usdc = { addr: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", dec: 6, getPrice: false, type: '' } ///fUSD
+const fUSDC = { addr: "0xf0358e8c3cd5fa238a29301d0bea3d63a17bedbe", dec: 6, getPrice: false, type: 'yv', pfsDec: 6 } ///fUSD
+const fUSDT = { addr: "0x053c80ea73dc6941f518a68e2fc52ac45bde7c9c", dec: 6, getPrice: false, type: 'yv', pfsDec: 6 } ///fUSD
+const fDAI = { addr: "0xab7fa2b2985bccfc13c6d86b1d5a17486ab1e04c", dec: 18, getPrice: false, type: 'yv', pfsDec: 18 } ///fUSD
 
-const yvDAI = {addr: '0xda816459f1ab5631232fe5e97a05bbbb94970c95', dec: 18, getPrice: false, type: 'yv2', pfsDec: 18} ///yVault v3
-const yvUSDC = {addr: '0x5f18c75abdae578b483e5f43f12a39cf75b973a9', dec: 6, getPrice: false, type: 'yv2', pfsDec: 6} ///yVault v3
-const yvUSDT = {addr: '0x7da96a3891add058ada2e826306d812c638d87a7', dec: 6, getPrice: false, type: 'yv2', pfsDec: 6} ///yVault v3
+const yvDAI = { addr: '0xda816459f1ab5631232fe5e97a05bbbb94970c95', dec: 18, getPrice: false, type: 'yv2', pfsDec: 18 } ///yVault v3
+const yvUSDC = { addr: '0x5f18c75abdae578b483e5f43f12a39cf75b973a9', dec: 6, getPrice: false, type: 'yv2', pfsDec: 6 } ///yVault v3
+const yvUSDT = { addr: '0x7da96a3891add058ada2e826306d812c638d87a7', dec: 6, getPrice: false, type: 'yv2', pfsDec: 6 } ///yVault v3
 
 //    WETH                                                                                                      ///eth2SNOW
-const vETH2 = {addr: "0x898bad2774eb97cf6b94605677f43b41871410b1", dec: 18, getPrice: WETH.getPrice, type: ''} ///eth2SNOW
-const aETHc = {addr: "0xe95a203b1a91a908f9b9ce46459d101078c2c3cb", dec: 18, getPrice: WETH.getPrice, type: 'ankr', pfsDec: 18} ///eth2SNOW
-const CRETH2 = {addr: "0xcbc1065255cbc3ab41a6868c22d1f1c573ab89fd", dec: 18, getPrice: WETH.getPrice, type: ''} ///eth2SNOW
+const vETH2 = { addr: "0x898bad2774eb97cf6b94605677f43b41871410b1", dec: 18, getPrice: WETH.getPrice, type: '' } ///eth2SNOW
+const aETHc = { addr: "0xe95a203b1a91a908f9b9ce46459d101078c2c3cb", dec: 18, getPrice: WETH.getPrice, type: 'ankr', pfsDec: 18 } ///eth2SNOW
+const CRETH2 = { addr: "0xcbc1065255cbc3ab41a6868c22d1f1c573ab89fd", dec: 18, getPrice: WETH.getPrice, type: '' } ///eth2SNOW
 
 
-const ycrvRenWSBTC = {addr: '0x7ff566e1d69deff32a7b244ae7276b9f90e9d0f6', dec: 18, getPrice: wBTC, type: 'yv', pfsDec: 18} ///btcSnow
+const ycrvRenWSBTC = { addr: '0x7ff566e1d69deff32a7b244ae7276b9f90e9d0f6', dec: 18, getPrice: wBTC, type: 'yv', pfsDec: 18 } ///btcSnow
 // TODO: the next should be yv
-const fcrvRenWBTC = {addr: '0x5f18c75abdae578b483e5f43f12a39cf75b973a9', dec: 18, getPrice: wBTC, type: '', pfsDec: 18} ///btcSnow
+const fcrvRenWBTC = { addr: '0x5f18c75abdae578b483e5f43f12a39cf75b973a9', dec: 18, getPrice: wBTC, type: '', pfsDec: 18 } ///btcSnow
 
-const polyDai = {addr: "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063", dec: 18, getPrice: false} ///penguin
-const polyUsdc = {addr: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174", dec: 6, getPrice: false} ///penguin
-const polyUSDT = {addr: "0xc2132d05d31c914a87c6611c10748aeb04b58e8f", dec: 6, getPrice: false} ///penguin
+const polyDai = { addr: "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063", dec: 18, getPrice: false } ///penguin
+const polyUsdc = { addr: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174", dec: 6, getPrice: false } ///penguin
+const polyUSDT = { addr: "0xc2132d05d31c914a87c6611c10748aeb04b58e8f", dec: 6, getPrice: false } ///penguin
 
-const snow = {addr: '0xfe9a29ab92522d14fc65880d817214261d8479ae', dec: 18, get getPrice(){return this.addr}} ///Frosty
+const snow = { addr: '0xfe9a29ab92522d14fc65880d817214261d8479ae', dec: 18, get getPrice() { return this.addr } } ///Frosty
 
-const polySnow = {addr: "0x33c9f7c0afe2722cb9e426360c261fb755b4483d", dec: 18, getPrice: snow.getPrice}; /// Olaf's
+const polySnow = { addr: "0x33c9f7c0afe2722cb9e426360c261fb755b4483d", dec: 18, getPrice: snow.getPrice }; /// Olaf's
 
 let swaps = [
   {
     'name': 'yv',
     'addr': '0x4571753311e37ddb44faa8fb78a6df9a6e3c6c0b',
-    'coins': [ y2DAI, y2USDC, y2USDT, Y2TUSD ],
+    'coins': [y2DAI, y2USDC, y2USDT, Y2TUSD],
     'abi': curveAbis.abis.abisBTC
   },
   {
@@ -60,7 +58,7 @@ let swaps = [
   {
     'name': 'crvETH',
     'addr': '0x3820a21c6d99e57fb6a17ab3fbdbe22552af9bb0',
-    'coins': [ WETH, eCRV, steCRV, ankrCRV ],
+    'coins': [WETH, eCRV, steCRV, ankrCRV],
     // 'abi': abi
     'abi': curveAbis.abis.abiNew
   },
@@ -110,112 +108,98 @@ const pools = [
   }
 ]
 
-async function polygon(){
-  var tvl = 0;
-  const tokensForPrice = [WETH.getPrice, wBTC, snow.getPrice]
-  const prices = await utils.getPricesFromContract(tokensForPrice);
-
-  await Promise.all(
-    pools.filter(p=>p.chain==="polygon").map(async pool => {
-      await Promise.all(
-        pool.coins.map(async coin => {
-          let tokenLocked = await sdk.api.erc20.balanceOf({
-            owner: pool.addr,
-            target: coin.addr,
-            chain: pool.chain,
-          });
-          let collectorTvl = BigNumber(tokenLocked.output).div(Math.pow(10, coin.dec)).toNumber()
-          if(coin.getPrice){
-            collectorTvl = collectorTvl * prices.data[coin.getPrice].usd
-          }
-          tvl+=collectorTvl
-        }))
-    }),
-  )
-  return tvl
+async function polygon(ts, _block, { polygon: block }) {
+  const poolsPolygon = pools.filter(p => p.chain === "polygon")
+  const toa = []
+  poolsPolygon.forEach(pool => {
+    pool.coins.map(coin => toa.push([coin.addr, pool.addr]))
+  })
+  return sumTokens({}, toa, block, 'polygon')
 }
 
-async function ethereum() {
-  var tvl = 0;
+async function ethereum(ts, block) {
   const tokensForPrice = [WETH.getPrice, wBTC, snow.getPrice]
-  const prices = await utils.getPricesFromContract(tokensForPrice);
 
-  await Promise.all([
-    ...pools.filter(p=>p.chain==="ethereum").map(async pool => {
-      await Promise.all(
-        pool.coins.map(async coin => {
-          let tokenLocked = await sdk.api.erc20.balanceOf({
-            owner: pool.addr,
-            target: coin.addr,
-            chain: pool.chain,
-          });
-          let collectorTvl = BigNumber(tokenLocked.output).div(Math.pow(10, coin.dec)).toNumber()
-          if(coin.getPrice){
-            collectorTvl = collectorTvl * prices.data[coin.getPrice].usd
-          }
-          tvl+=collectorTvl
-        }))
-    }),
-    ...swaps.map(async item => {
-     await Promise.all(
-       item.coins.map(async (coin, index) => {
-         var dacontract = new web3.eth.Contract(item.abi, item.addr)
-         var balance = await dacontract.methods.balances(index).call();
-         var poolAmount = await new BigNumber(balance).div(10 ** coin.dec).toFixed(2);
+  const poolsEth = pools.filter(p => p.chain === "ethereum")
+  const toa = []
+  poolsEth.forEach(pool => {
+    pool.coins.map(coin => toa.push([coin.addr, pool.addr]))
+  })
+  const balances = await sumTokens({}, toa, block)
 
-         if (coin.type) {
-           var multiplier = 1;
-           switch (coin.type){
-             case 'yv': // getPricePerFullShare
-              var coinContract = new web3.eth.Contract(curveAbis.abis.yTokens, coin.addr);
-              var virtualPrice = await coinContract.methods
-              .getPricePerFullShare()
-              .call();
+  await Promise.all(swaps.map(async item => {
+    await Promise.all(
+      item.coins.map(async (coin, index) => {
+        let { output: balance } = await sdk.api.abi.call({
+          block,
+          params: [index],
+          target: item.addr,
+          abi: item.abi.find(i => i.name === 'balances')
+        })
+        let poolAmount = new BigNumber(balance).div(10 ** coin.dec);
+        balance = BigNumber(balance)
+
+        if (coin.type) {
+          var multiplier = 1;
+          let virtualPrice, virtualPriceObj
+          switch (coin.type) {
+            case 'yv': // getPricePerFullShare
+              virtualPriceObj = await sdk.api.abi.call({
+                block,
+                target: coin.addr,
+                abi: curveAbis.abis.yTokens.find(i => i.name === 'getPricePerFullShare')
+              })
+              virtualPrice = virtualPriceObj.output
               break;
             case 'yv2': // pricePerShare
-              var coinContract = new web3.eth.Contract(abi.yv2, coin.addr);
-              var virtualPrice = await coinContract.methods
-              .pricePerShare()
-              .call();
+              virtualPriceObj = await sdk.api.abi.call({
+                block,
+                target: coin.addr,
+                abi: abi.yv2.find(i => i.name === 'pricePerShare')
+              })
+              virtualPrice = virtualPriceObj.output
               break;
             case 'ankr': // ratio
-                var coinContract = new web3.eth.Contract(abi.ankr, coin.addr);
-                var virtualPrice = await coinContract.methods
-                .ratio()
-                .call();
-                break;
+              virtualPriceObj = await sdk.api.abi.call({
+                block,
+                target: coin.addr,
+                abi: abi.ankr.find(i => i.name === 'ratio')
+              })
+              virtualPrice = virtualPriceObj.output
+              break;
             default:
               virtualPrice = 1;
-            }
+          }
 
-             multiplier = await new BigNumber(virtualPrice)
-             .div(10 ** coin.pfsDec)
-             .toFixed(4);
+          multiplier = await new BigNumber(virtualPrice)
+            .div(10 ** coin.pfsDec)
+            .toFixed(4);
 
-           poolAmount = poolAmount * multiplier;
-         }
-         if(coin.getPrice){
-          poolAmount = poolAmount * prices.data[coin.getPrice].usd
-         }
-         tvl += parseFloat(poolAmount )
-       })
-     )
-   })
-  ])
-  return tvl;
+          poolAmount = poolAmount.multipliedBy(multiplier)
+          balance = balance.multipliedBy(multiplier)
+        }
+        if (coin.getPrice) {
+          if (coin.getPrice === wBTC) balance = poolAmount.multipliedBy(1e8)
+          sdk.util.sumSingleBalance(balances, coin.getPrice, balance.toFixed(0))
+        } else {
+          sdk.util.sumSingleBalance(balances, '0xdac17f958d2ee523a2206206994597c13d831ec7', poolAmount.multipliedBy(1e6).toFixed(0)) // add as usdt
+        }
+      })
+    )
+  }))
+  return balances
 }
 
 module.exports = {
-  ethereum:{
-    fetch:ethereum
+  ethereum: {
+    tvl: ethereum
   },
-  polygon:{
-    fetch:polygon
+  polygon: {
+    tvl: polygon
   },
-  fetch:async()=>((await polygon())+(await ethereum()))
 }
 
 const abi = {
-  yv2:[{"stateMutability":"view","type":"function","name":"pricePerShare","inputs":[],"outputs":[{"name":"","type":"uint256"}],"gas":77734}],
-  ankr: [{"inputs":[],"name":"ratio","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}]
+  yv2: [{ "stateMutability": "view", "type": "function", "name": "pricePerShare", "inputs": [], "outputs": [{ "name": "", "type": "uint256" }], "gas": 77734 }],
+  ankr: [{ "inputs": [], "name": "ratio", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }]
 }

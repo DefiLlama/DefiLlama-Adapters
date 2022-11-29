@@ -23,10 +23,27 @@ async function tvl(timestamp, block) {
   }
 }
 
+async function xdaiTvl(timestamp, ethBlock, { xdai: block }) {
+  const chain = "xdai"
+  const supply = await sdk.api.erc20.totalSupply({
+    target: '0xA4eF9Da5BA71Cc0D2e5E877a910A37eC43420445',
+    block,
+    chain
+  })
+
+  return {
+    "0x6810e776880c02933d47db1b9fc05908e5386b96": supply.output
+  }
+}
+
+
+
 module.exports = {
   methodology: 'Counts ETH staked',
   ethereum: {
     tvl,
   },
-  tvl
+  xdai:{
+    tvl: xdaiTvl
+  }
 }

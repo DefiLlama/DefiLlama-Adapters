@@ -1,0 +1,40 @@
+{
+  "getAllMarkets": {
+    "inputs": [],
+    "name": "getAllMarkets",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "bool",
+            "name": "created",
+            "type": "bool"
+          },
+          {
+            "internalType": "address",
+            "name": "market",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct IStrips.ExtendedMarketData[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "getLiquidity": {
+    "inputs": [],
+    "name": "getLiquidity",
+    "outputs": [
+      {
+        "internalType": "int256",
+        "name": "",
+        "type": "int256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+}

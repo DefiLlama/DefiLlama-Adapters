@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk');
-const _ = require('underscore');
+
 const BigNumber = require('bignumber.js');
 
 const getNumberOfOptionsContractsAbi = require('./abis/convexity/getNumberOfOptionsContracts.json');
@@ -11,7 +11,7 @@ const factoriesAddresses = [
   "0xcC5d905b9c2c8C9329Eb4e25dc086369D6C7777C"
 ]
 
-module.exports = async function tvl(timestamp, block) {  
+module.exports.tvl = async function tvl(timestamp, block) {  
   let balances = {};
 
   for(let i = 0; i < factoriesAddresses.length; i++) {
@@ -44,7 +44,7 @@ module.exports = async function tvl(timestamp, block) {
     // list of options addresses
     let optionsAddresses = []
 
-    _.each(optionsContracts, async (contracts) => {
+    optionsContracts.forEach(async (contracts) => {
       if(contracts.output != null) {
         optionsAddresses = [
           ...optionsAddresses,
@@ -56,7 +56,7 @@ module.exports = async function tvl(timestamp, block) {
     // batch getCollateralAsset calls
     let getCollateralAssetCalls = [];
 
-    _.each(optionsAddresses, (optionAddress) => {
+    optionsAddresses.forEach((optionAddress) => {
       getCollateralAssetCalls.push({
         target: optionAddress
       })
@@ -73,7 +73,7 @@ module.exports = async function tvl(timestamp, block) {
 
     let optionsCollateralAddresses = []
 
-    _.each(optionsCollateral, async (collateralAsset) => {     
+    optionsCollateral.forEach(async (collateralAsset) => {     
       // only consider supported tokens   
       if((collateralAsset.output.toLowerCase() != null) && (collateralAsset.output.toLowerCase() !== "0x0000000000000000000000000000000000000000") && (!optionsCollateralAddresses.includes(collateralAsset.output.toLowerCase())) ) {
         optionsCollateralAddresses = [
@@ -84,7 +84,7 @@ module.exports = async function tvl(timestamp, block) {
     });
 
     // get ETH balance
-    _.each(optionsAddresses, async (optionAddress) => {
+    optionsAddresses.forEach(async (optionAddress) => {
       let balance = (await sdk.api.eth.getBalance({target: optionAddress, block})).output;
       sdk.util.sumSingleBalance(balances, "0x0000000000000000000000000000000000000000", balance)
     })
@@ -92,7 +92,7 @@ module.exports = async function tvl(timestamp, block) {
     // batch balanceOf calls
     let balanceOfCalls = [];
 
-    _.each(optionsCollateralAddresses, async (optionCollateralAddress) => {
+    optionsCollateralAddresses.forEach(async (optionCollateralAddress) => {
       optionsAddresses.forEach((optionAddress) => {
         balanceOfCalls.push({
           target: optionCollateralAddress,
@@ -108,7 +108,7 @@ module.exports = async function tvl(timestamp, block) {
       abi: "erc20:balanceOf"
     });
 
-    sdk.util.sumMultiBalanceOf(balances, balanceOfResults);
+    sdk.util.sumMultiBalanceOf(balances, balanceOfResults, false);
   }
 
   return balances;

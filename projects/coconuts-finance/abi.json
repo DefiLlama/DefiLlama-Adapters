@@ -1,0 +1,16 @@
+{
+    "totalAssets" : 
+    {
+    "gas": 4633,
+    "inputs": [],
+    "name": "totalAssets",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  } 
+}

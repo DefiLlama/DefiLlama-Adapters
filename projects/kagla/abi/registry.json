@@ -1,0 +1,30 @@
+{
+  "pool_count": {
+    "inputs": [],
+    "name": "pool_count",
+    "outputs": [{"name": "", "type": "uint256"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "pool_list": {
+    "inputs": [{"name": "arg0", "type": "uint256"}],
+    "name": "pool_list",
+    "outputs": [{"name": "", "type": "address"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "get_coins": {
+    "inputs": [{"name": "_pool", "type": "address"}],
+    "name": "get_coins",
+    "outputs": [{"name": "", "type": "address[8]"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "get_balances": {
+    "inputs": [{"name": "_pool", "type": "address"}],
+    "name": "get_balances",
+    "outputs": [{"name": "", "type": "uint256[8]"}],
+    "stateMutability": "view",
+    "type": "function"
+  }
+}

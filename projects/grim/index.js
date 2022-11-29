@@ -11,11 +11,17 @@ async function fetch() {
       tvl += chain[vault];
     }
   }
+  if(tvl === 0){
+    throw new Error("TVL for grim finance cannot be 0")
+  }
 
   return tvl;
 }
 
 module.exports = {
+  hallmarks: [
+    [1639785600, "Reentrancy attack"]
+],
   timetravel: false,
   methodology: 'TVL data is pulled from the Grim Finance API "https://api.grim.finance/tvl".',
   fetch,

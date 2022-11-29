@@ -4,7 +4,7 @@ const tokenAddresses = {
   onxFarm: "0x168f8469ac17dd39cd9a2c2ead647f814a488ce9",
   onxTripleFarm: "0x30D1A19EA928cCf46634cBC2944D2D89Be636f22",
   usdWethPair: "0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852",
-  onxWethSushiPair: "0x0652687e87a4b8b5370b05bc298ff00d205d9b5f",
+  onxWethSushiPair: "0x62f22A47e5D2F8b71cC44fD85863753618312f67",
   wethAethPair: "0x6147805e1011417b93e5d693424a62a70d09d0e5",
   ankrWethPair: "0x5201883feeb05822ce25c9af8ab41fc78ca73fa9",
   pool: "0x47F3E6C1Ef0cBe69502167095b592e61de108BaA",
@@ -20,62 +20,9 @@ const tokenAddresses = {
   wethToken: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
   bondPairEth: "0xb17b1342579e4bce6b6e9a426092ea57d33843d9",
   sushiPairEth: "0xce84867c3c02b05dc570d0135103d3fb9cc19433",
-  farms: [
-    {
-      title: 'onxEthLp',
-      address: '0x62f22A47e5D2F8b71cC44fD85863753618312f67',
-      isLpToken: true,
-      tokens: [
-        '0xe0ad1806fd3e7edf6ff52fdb822432e847411033', // OnX
-        '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' // wETH
-      ]
-    },
-    {
-      title: 'onxEthSlp',
-      address: '0x0652687E87a4b8b5370b05bc298Ff00d205D9B5f',
-      isLpToken: true,
-      tokens: [
-        '0xe0ad1806fd3e7edf6ff52fdb822432e847411033', // OnX
-        '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' // wETH
-      ]
-    },
-    {
-      title: 'aEth',
-      address: '0xE95A203B1a91a908F9B9CE46459d101078c2c3cb',
-      isLpToken: false,
-      tokens: [
-        '0xE95A203B1a91a908F9B9CE46459d101078c2c3cb', // aETH
-        '0xE95A203B1a91a908F9B9CE46459d101078c2c3cb' // aETH
-      ]
-    },
-    {
-      title: 'ankr',
-      address: '0x8290333ceF9e6D528dD5618Fb97a76f268f3EDD4',
-      isLpToken: false,
-      tokens: [
-        '0xE95A203B1a91a908F9B9CE46459d101078c2c3cb', // aETH
-        '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48' // USDC
-      ]
-    },
-    {
-      title: 'xSushi',
-      address: '0x8798249c2E607446EfB7Ad49eC89dD1865Ff4272',
-      isLpToken: false,
-      tokens: [
-        '0x8798249c2E607446EfB7Ad49eC89dD1865Ff4272', // xSushi
-        '0x8798249c2E607446EfB7Ad49eC89dD1865Ff4272' // xSushi
-      ]
-    },
-    {
-      title: 'onxEthSlpMulti',
-      address: '0x0652687E87a4b8b5370b05bc298Ff00d205D9B5f',
-      isLpToken: true,
-      tokens: [
-        '0xe0ad1806fd3e7edf6ff52fdb822432e847411033', // OnX
-        '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' // wETH
-      ]
-    },
-  ],
+  fantom: {
+    usdcBooPair: '0xf8cb2980120469d79958151daa45eb937c6e1ed6',
+  },
   onePools: [
     {
       title: 'aeth',

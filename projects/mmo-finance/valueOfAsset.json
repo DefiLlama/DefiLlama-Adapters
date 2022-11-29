@@ -1,0 +1,29 @@
+{
+  "inputs": [
+    {
+      "internalType": "address",
+      "name": "asset",
+      "type": "address"
+    },
+    {
+      "internalType": "uint256",
+      "name": "amount",
+      "type": "uint256"
+    }
+  ],
+  "name": "valueOfAsset",
+  "outputs": [
+    {
+      "internalType": "uint256",
+      "name": "valueInCRO",
+      "type": "uint256"
+    },
+    {
+      "internalType": "uint256",
+      "name": "valueInUSD",
+      "type": "uint256"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+}

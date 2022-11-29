@@ -110,11 +110,8 @@ async function tvl(timestamp, block) {
 module.exports = {
     methodology: 'TVL counts tokens that have been deposited to the yield farming vaults. Pool2 TVL counts SushiSwap LP tokens (USDC-XYZ) that have been deposited to the yield farm.',
     ethereum:{
-        tvl
+        tvl,
+        pool2,
     },
-    pool2:{
-        tvl: pool2,
-    },
-    tvl,
     start: 1621939189, // May-25-2021 10:39:49 AM +UTC
 };

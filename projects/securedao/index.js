@@ -5,6 +5,7 @@ const treasury = "0xa39b5f217EdBDe068b4D3fA98256244ef74774a1";
 const stakingContract = "0x3d97040e407078823891C59BB07eadb2dDF3AE32"
 
 module.exports = {
+    misrepresentedTokens: true,
     ...ohmTvl(treasury, [
         ["0x82f0b8b456c1a451378467398982d4834b6829c1", false], // MIM
         ["0x468c174cc015d4a697586C0a99F95E045F7e6f91", true] // scrMim SPIRIT LP

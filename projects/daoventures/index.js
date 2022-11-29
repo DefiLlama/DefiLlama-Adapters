@@ -1,7 +1,5 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const moment = require("moment");
-const { unwrapYearn } = require("../helper/unwrapLPs");
 
 const DAOvault = {
   Elon: "0x2D9a136cF87D599628BCBDfB6C4fe75Acd2A0aA8",
@@ -14,7 +12,6 @@ const DAOvault = {
 
 //timestamp, ethereumBlock, chainBlocks
 async function tvl(timestamp, ethereumBlock, chainBlocks) {
-  //const timestamp = moment().unix();
   let block = await sdk.api.util.lookupBlock(timestamp);
 
   let [ElonTVL, CubanTVL, CitadelTVL, FAANGTVL, MetaverseTVL] =
@@ -72,15 +69,6 @@ async function tvl(timestamp, ethereumBlock, chainBlocks) {
   return { "usd-coin": balances };
 }
 
-/*
-async function final() {
-  console.log(moment().unix());
-  const result = await tvl(moment().unix());
-  console.log(result);
-}
-
-final();
-*/
 // node test.js projects/daoventures/index.js
 async function stakingTvl(timestamp, block) {
   let balances = {};

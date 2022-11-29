@@ -69,7 +69,11 @@ function chainTvl(chain) {
 
     let balanceCalls = []
 
+    const exclude = ["0xc064472729952ffb570217f01a701766e8bee0c0", "0xaaba8a92687bfdba363a3ccb29991599d84fed8f"]
     for (let pair of Object.keys(pairs)) {
+      if(exclude.includes(pair)){
+        continue;
+      }
       balanceCalls.push({
         target: pairs[pair].token0Address,
         params: pair,
@@ -88,6 +92,7 @@ function chainTvl(chain) {
         chain,
       })
     )
+    //console.log(tokenBalances.output.filter(t=>t.success== false))
     let transform = id=>id
     if(chain === "optimism"){
       transform = await transformOptimismAddress()

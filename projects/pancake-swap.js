@@ -1,20 +1,15 @@
 const { request, gql } = require("graphql-request");
-const sdk = require('@defillama/sdk')
 const { toUSDTBalances } = require('./helper/balances')
+const { stakings } = require('./helper/staking')
+const { getUniTVL } = require('./helper/unknownTokens')
+const { dexExport } = require('./helper/chain/aptos')
 
-async function fetch() {
-  let response = await utils.fetchURL('https://api.pancakeswap.finance/api/v1/stat')
-  return response.data.total_value_locked_all;
-}
 
 const graphEndpoint = 'https://bsc.streamingfast.io/subgraphs/name/pancakeswap/exchange-v2'
 const currentQuery = gql`
 query pancakeFactories {
   pancakeFactories(first: 1) {
-    totalTransactions
-    totalVolumeUSD
     totalLiquidityUSD
-    __typename
   }
 }
 `
@@ -46,7 +41,10 @@ query get_tvl($block: Int) {
 `;
 async function tvl(timestamp, ethBlock, chainBlocks) {
   if (Math.abs(timestamp - Date.now() / 1000) < 3600) {
-    const tvl = await request(graphEndpoint, currentQuery)
+    const tvl = await request(graphEndpoint, currentQuery, {}, {
+      "referer": "https://pancakeswap.finance/",
+      "origin": "https://pancakeswap.finance",
+    })
     return toUSDTBalances(tvl.pancakeFactories[0].totalLiquidityUSD)
   } else {
     const tvl = (await request(graphEndpoint, historicalQuery)).pancakeDayDatas
@@ -72,28 +70,21 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
   }
 }
 
-const factory = '0xBCfCcbde45cE874adCB698cC183deBcF17952812'
-const cakeToken = '0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82'
-const masterChef = '0x73feaa1eE314F8c655E354234017bE2193C9E24E'
-async function staking(timestamp, ethBlock, chainBlocks) {
-  const balances = {}
-  const stakedCake = sdk.api.erc20.balanceOf({
-    target: cakeToken,
-    owner: masterChef,
-    chain: 'bsc',
-    block: chainBlocks.bsc
-  })
-
-  sdk.util.sumSingleBalance(balances, 'bsc:' + cakeToken, (await stakedCake).output)
-  return balances
-}
-
 module.exports = {
-  timetravel: true,
+  timetravel: false,
   misrepresentedTokens: true,
   methodology: 'TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://pancakeswap.info/ as the source. Staking accounts for the CAKE locked in MasterChef (0x73feaa1eE314F8c655E354234017bE2193C9E24E)',
   bsc: {
-    staking,
+    staking: stakings(["0x73feaa1eE314F8c655E354234017bE2193C9E24E", "0x45c54210128a065de780c4b0df3d16664f7f859e"], "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82", "bsc"),
     tvl
   },
+  ethereum: {
+    tvl: getUniTVL({ chain: 'ethereum', factory: '0x1097053Fd2ea711dad45caCcc45EfF7548fCB362', useDefaultCoreAssets: true, })
+  },
+  aptos: dexExport({
+    account: '0xc7efb4076dbe143cbcd98cfaaa929ecfc8f299203dfff63b95ccb6bfe19850fa',
+    poolStr: 'swap::TokenPairReserve',
+    token0Reserve: i => i.data.reserve_x,
+    token1Reserve: i => i.data.reserve_y,
+  }).aptos,
 }

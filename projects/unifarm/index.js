@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const erc20Abi = require("./erc20.json");
 const BigNumber = require("bignumber.js");
 const _ = require("lodash");
 const {
@@ -31,7 +30,7 @@ const _tvl = async (
   let calls = createMulticalls(cohortAndProxies, tokens);
 
   const multiCallResult = await sdk.api.abi.multiCall({
-    abi: erc20Abi[0],
+    abi: 'erc20:balanceOf',
     calls,
     chain,
     block,
@@ -297,6 +296,5 @@ module.exports = {
   polygon: {
     tvl: polygon,
   },
-  tvl: sdk.util.sumChainTvls([ethereum, bsc, polygon]),
   methodology: "We count tvl from the cohort contracts.",
 };

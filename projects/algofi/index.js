@@ -1,121 +1,100 @@
-const algosdk = require("algosdk")
-const { toUSDTBalances } = require('../helper/balances')
+const sdk = require('@defillama/sdk')
+const { log } = require('../helper/utils')
+const { getAppGlobalState, } = require("../helper/chain/algorand")
+const { getPrices, appDictionary, marketStrings } = require('./utils')
 
-const marketStrings = {
-    underlying_cash : "uc",
-    underlying_borrowed : "ub",
-    underlying_reserves : "ur",
-    active_collateral : "acc",
-    oracle_price_scale_factor: "ops"
-}
 
-const orderedAssets = ["ALGO", "STBL", "USDC", "goBTC", "goETH"]
-
-const assetDictionary = {
-    "ALGO": {
-        "decimals": 6,
-        "marketAppId": 465814065,
-        "oracleAppId": 451324964,
-        "oracleFieldName": "latest_twap_price"
-    },
-    "USDC": {
-        "decimals": 6,
-        "marketAppId": 465814103,
-        "oracleAppId": 451327550,
-        "oracleFieldName": "price"
-    },
-    "goBTC": {
-        "decimals": 8,
-        "marketAppId": 465814149,
-        "oracleAppId": 451325630,
-        "oracleFieldName": "latest_twap_price"
-    },
-    "goETH": {
-        "decimals": 8,
-        "marketAppId": 465814222,
-        "oracleAppId": 451326395,
-        "oracleFieldName": "latest_twap_price"
-    },
-    "STBL": {
-        "decimals": 6,
-        "marketAppId": 465814278,
-        "oracleAppId": 451327550,
-        "oracleFieldName": "price"
-    },
-}
-
-async function getGlobalMarketState(algodClient, marketId) {
-  let response = await algodClient.getApplicationByID(marketId).do()
-  let results = {}
-  response.params["global-state"].forEach(x => {
-    let decodedKey = atob(x.key)
-    results[decodedKey] = x.value.uint
-  })
-
-  return results
-}
-
-async function getPrices(algodClient) {
-  let prices = {}
-  for (const assetName of orderedAssets) {
-    let response = await algodClient.getApplicationByID(assetDictionary[assetName]["oracleAppId"]).do()
-    for (const y of response.params["global-state"]) {
-      let decodedKey = atob(y.key)
-      if (decodedKey === assetDictionary[assetName]["oracleFieldName"]) {
-        prices[assetName] = y.value.uint / 1000000
-      }
+async function getMarketAssets(prices) {
+  const assets = []
+  for (const [assetName, config] of Object.entries(appDictionary)) {
+    if (['STBL', 'STBL2', 'BANK'].includes(assetName)) {
+      log('ignoring native stablecoin', assetName)
+      continue;
     }
+    if (!prices[assetName]) {
+      log('Asset is not yet priced, ignoring it: ', assetName)
+      continue;
+    }
+    if (prices[assetName].geckoId === 'disabled') continue;
+    assets.push([assetName, config]) 
   }
-
-  return prices
+  return assets
 }
 
-function getMarketSupply(assetName, marketGlobalState, prices) {
-    underlying_cash = assetName === "STBL" ? marketGlobalState[marketStrings.active_collateral] : marketGlobalState[marketStrings.underlying_cash]
-    supplyUnderlying = underlying_cash - marketGlobalState[marketStrings.underlying_reserves]
-    supplyUnderlying /= Math.pow(10, assetDictionary[assetName]['decimals'])
+async function borrowed() {
+  const balances = {}
+  let promises = []
+  let prices = await getPrices()
+  const assets = await getMarketAssets(prices)
+  for (const [assetName, { appIds = [] }] of assets)
+    for (const appId of appIds)
+      promises.push(addMarketAsset({assetName, appId, prices, balances}))
+    
+  await Promise.all(promises)
+  return balances
 
-    return supplyUnderlying * prices[assetName]
+  async function addMarketAsset({assetName, appId, prices, balances}) {
+    const { geckoId, decimals, price } = prices[assetName]
+    let state = await getAppGlobalState(appId)
+    let borrowed = state[marketStrings.underlying_borrowed]
+    const balance = borrowed * price / (10 ** decimals)
+    sdk.util.sumSingleBalance(balances, geckoId, balance)
+  }
 }
 
-function getMarketBorrow(assetName, marketGlobalState, prices) {
-    borrowUnderlying = marketGlobalState[marketStrings.underlying_borrowed]
-    borrowUnderlying /= Math.pow(10, assetDictionary[assetName]['decimals'])
+async function tvl() {
+  const balances = {}
+  let promises = []
+  let prices = await getPrices()
+  const assets = await getMarketAssets(prices)
+  for (const [assetName, { appIds = [] }] of assets)
+    for (const appId of appIds)
+      promises.push(addMarketAsset({assetName, appId, prices, balances}))
+    
+  await Promise.all(promises)
+  return balances
 
-    return borrowUnderlying * prices[assetName]
-}
-
-async function getTvl() {
-    let client = new algosdk.Algodv2("", "https://algoexplorerapi.io/", "")
-    let prices = await getPrices(client)
-
-    let tvl = {
-        supply: 0,
-        borrow: 0,
+  async function addMarketAsset({assetName, appId, prices, balances}) {
+    const { geckoId, decimals, price } = prices[assetName]
+    let state = await getAppGlobalState(appId)
+    let underlyingCash
+    switch(assetName) {
+      case 'vALGO2': underlyingCash = state[marketStrings.active_collateral_v2]; break;
+      case 'vALGO': underlyingCash = state[marketStrings.active_collateral]; break;
+      default: underlyingCash = state[marketStrings.underlying_cash]; break;
     }
-
-    for (const assetName of orderedAssets) {
-        marketGlobalState = await getGlobalMarketState(client, assetDictionary[assetName]["marketAppId"])
-        tvl.supply += getMarketSupply(assetName, marketGlobalState, prices)
-        tvl.borrow += getMarketBorrow(assetName, marketGlobalState, prices)
-    }
-
-    return tvl
+    let supplyUnderlying = underlyingCash
+    const balance = supplyUnderlying * price / (10 ** decimals)
+    sdk.util.sumSingleBalance(balances, geckoId, balance)
+  }
 }
 
-async function borrow() {
-    tvlDict = await getTvl();
-    return toUSDTBalances(tvlDict.borrow)
-}
+async function staking() {
+  let prices = await getPrices()
+  const { geckoId, decimals, price } = prices['BANK']
 
-async function supply() {
-    tvlDict = await getTvl();
-    return toUSDTBalances(tvlDict.supply)
+  // voting escrow
+  let votingEscrowGlobalState = await getAppGlobalState(900653165)
+  let deflyState = await getAppGlobalState(641499935)
+  let opulState = await getAppGlobalState(674526408)
+  let totalLockedBank = votingEscrowGlobalState[marketStrings.total_locked]
+  let totalDefly = deflyState[marketStrings.underlying_cash] - deflyState[marketStrings.underlying_reserves]
+  let totalOpul = opulState[marketStrings.underlying_cash] - opulState[marketStrings.underlying_reserves]
+  const balance = totalLockedBank * price / (10 ** decimals)
+
+  return  {
+    [geckoId]: balance,
+    defly: totalDefly / 1e6,
+    opulous: totalOpul / 1e10,
+  }
 }
 
 module.exports = {
-    algorand: {
-        tvl: supply,
-        borrow,
-    }
+  timetravel: false,
+  misrepresentedTokens: true,
+  algorand: {
+    tvl,
+    borrowed,
+    staking,
+  }
 }

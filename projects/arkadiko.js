@@ -1,23 +1,11 @@
-const retry = require("./helper/retry");
-const axios = require("axios");
-
+const { get } = require('./helper/http')
+// node test.js projects/arkadiko.js
 async function tvl() {
   let balances = {};
-  const dikoPrice = (
-    await retry(
-      async (bail) =>
-        await axios.get("https://arkadiko-api.herokuapp.com/api/v1/tokens/diko")
-    )
-  ).data["price_in_cents"];
+  const dikoPrice = (await get("https://arkadiko-api.herokuapp.com/api/v1/tokens/diko"))["price_in_cents"];
+  const response = (await get("https://arkadiko-api.herokuapp.com/api/v1/pools"));
 
-  const response = (
-    await retry(
-      async (bail) =>
-        await axios.get("https://arkadiko-api.herokuapp.com/api/v1/pools")
-    )
-  ).data;
-
-  for (pool of response.pools) {
+  for (let pool of response.pools) {
     balances[pool.token_y_name] =
       pool.token_y_name in balances
         ? Number(balances[pool.token_y_name]) + Number(pool.tvl_token_y)
@@ -36,6 +24,8 @@ async function tvl() {
     Number(balances["usd-coin"]) +
     Number(balances["arkadiko-token"] / 10 ** 8) * dikoPrice;
   delete balances["arkadiko-token"];
+  balances["wrapped-bitcoin"] = balances["Wrapped-Bitcoin"] / 10 ** 8;
+  delete balances["Wrapped-Bitcoin"]
 
   return balances;
 }

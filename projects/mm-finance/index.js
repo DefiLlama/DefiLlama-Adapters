@@ -1,17 +1,26 @@
-const {calculateUsdUniTvl} = require('../helper/getUsdUniTvl')
+const { staking } = require('../helper/staking')
+const { getUniTVL } = require('../helper/unknownTokens')
 
-module.exports={
-    misrepresentedTokens: true,
-    methodology: "Factory address (0xd590cC180601AEcD6eeADD9B7f2B7611519544f4) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
-    cronos: {
-        tvl:calculateUsdUniTvl("0xd590cC180601AEcD6eeADD9B7f2B7611519544f4", "cronos", "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23", 
-        [
-            "0xbA452A1c0875D33a440259B1ea4DcA8f5d86D9Ae", //mmf
-            "0xc21223249ca28397b4b6541dffaecc539bff0c59", //usdc
-            "0xe44fd7fcb2b1581822d0c862b68222998a0c299a", //weth
-            "0x66e428c3f67a68878562e79a0234c1f83c208770", //usdt
-            "0x062E66477Faf219F25D27dCED647BF57C3107d52", //wbtc
-        ]
-        , "crypto-com-chain")
-    }
+
+const factory = '0xd590cC180601AEcD6eeADD9B7f2B7611519544f4'
+const mmfToken = '0x97749c9B61F878a880DfE312d2594AE07AEd7656'
+const masterChef = '0x6bE34986Fdd1A91e4634eb6b9F8017439b7b5EDc'
+
+module.exports = {
+  timetravel: true,
+  misrepresentedTokens: true,
+  methodology: 'TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://mm.finance as the source. Staking accounts for the MMF locked in MasterChef (0x6bE34986Fdd1A91e4634eb6b9F8017439b7b5EDc)',
+  cronos: {
+    staking: staking(masterChef, mmfToken, 'cronos'),
+    tvl: getUniTVL({
+      chain: 'cronos',
+      factory,
+      useDefaultCoreAssets: true,
+      blacklist:[
+        "0xd8d40dcee0c2b486eebd1fedb3f507b011de7ff0", // 10SHARE, token went to 0 and liq collapsed
+        "0xa60943a1B19395C999ce6c21527b6B278F3f2046", // HKN
+        "0x388c07066aa6cea2be4db58e702333df92c3a074", // hakuna too
+      ]
+    }),
+  },
 }

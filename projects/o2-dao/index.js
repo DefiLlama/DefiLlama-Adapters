@@ -29,8 +29,9 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     const wmemoAddress = transform(wMEMO)
     const memo = await sdk.api.abi.call({
         target: wMEMO,
-        abi:{"inputs":[{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"wMEMOToMEMO","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},        block,
+        abi:{"inputs":[{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"wMEMOToMEMO","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
         chain,
+        block: chainBlocks.avax,
         params: [balances[wmemoAddress]]
     })
     balances[time] = memo.output
@@ -39,7 +40,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 }
 
 module.exports={
-    avalanche:{
+    avax:{
         tvl,
         staking: stakingUnknownPricedLP("0x50971d6B5a3CCd79C516f914208C67C8104977dF", stakingToken, chain, joeLP, transform)
     }

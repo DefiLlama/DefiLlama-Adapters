@@ -12,17 +12,6 @@ const UMBR = "0xa4bbe66f151b22b167127c770016b15ff97dd35c";
 const farmContract_polygon = "0x3756a26De28d6981075a2CD793F89e4Dc5A0dE04";
 const UMBR_polygon = "0x2e4b0fb46a46c90cb410fe676f24e466753b469f";
 
-function chainTvl(chain) {
-  return async () => {
-    let data = await utils.fetchURL(
-      `https://bridgeapi.umbria.network/api/pool/getTvlAll/?&network=${
-        chain === "polygon" ? "matic" : chain
-      }`
-    );
-    return Number(data.data.totalValue);
-  };
-}
-
 const ethTvl = async (chainBlocks) => {
   const balances = {};
 
@@ -64,7 +53,6 @@ const polygonTvl = async (chainBlocks) => {
 
 module.exports = {
   misrepresentedTokens: true,
-  ...fetchChainExports(chainTvl, ["ethereum", "polygon"]),
   ethereum: {
     staking: staking(farmContract, UMBR),
     pool2: pool2BalanceFromMasterChefExports(

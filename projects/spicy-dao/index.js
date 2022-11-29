@@ -7,6 +7,7 @@ const spcMimPGL = "0x910fA8fcd781AcCaa82CD544Ac235Ba921927494";
 const mim = "0x130966628846bfd36ff31a822705796e8cb8c18d";
 
 module.exports = {
+    misrepresentedTokens: true,
     ...ohmTvl(treasury, [
         [spcMimPGL, true],
         [mim, false]

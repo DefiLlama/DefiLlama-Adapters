@@ -1,0 +1,15 @@
+{
+	"totalTVL": {
+		"inputs": [],
+		"name": "totalTVL",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "tvl",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+}

@@ -1,3 +1,6 @@
 {
-    "activeMarkets":{"constant":true,"inputs":[{"internalType":"uint256","name":"index","type":"uint256"},{"internalType":"uint256","name":"pageSize","type":"uint256"}],"name":"activeMarkets","outputs":[{"internalType":"address[]","name":"","type":"address[]"}],"payable":false,"stateMutability":"view","type":"function"}
+    "activeMarkets":{"constant":true,"inputs":[{"internalType":"uint256","name":"index","type":"uint256"},{"internalType":"uint256","name":"pageSize","type":"uint256"}],"name":"activeMarkets","outputs":[{"internalType":"address[]","name":"","type":"address[]"}],"payable":false,"stateMutability":"view","type":"function"},
+    "totalDeposited": {"constant":true,"inputs":[],"name":"totalDeposited","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},
+    "getUnderlyingBalance": {"inputs":[],"name":"getUnderlyingBalances","outputs":[{"internalType":"uint256","name":"amount0Current","type":"uint256"},{"internalType":"uint256","name":"amount1Current","type":"uint256"}],"stateMutability":"view","type":"function"}    
+
 }
