@@ -34,7 +34,7 @@ function generic(ticker) {
     case "erc20/multichain/dai":
       return ["dai", 18];
     case "bnb":
-      return ["bnb", 8]
+      return ["binancecoin", 8]
   }
 }
 
