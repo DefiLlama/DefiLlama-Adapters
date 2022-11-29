@@ -251,17 +251,17 @@ const chainTVL = async (chain, timestamp, ethBlock, chainBlocks) => {
   return balance;
 };
 
-// const ethereum = async (timestamp, ethBlock, chainBlocks) => {
-//   const transform = await transformBscAddress();
-//   let balance = await chainTVL(
-//     timestamp,
-//     ethBlock,
-//     chainBlocks,
-//     "ethereum",
-//     transform
-//   );
-//   return balance;
-// };
+const ethereum = async (timestamp, ethBlock, chainBlocks) => {
+  const transform = await transformBscAddress();
+  let balance = await chainTVL(
+    timestamp,
+    ethBlock,
+    chainBlocks,
+    "ethereum",
+    transform
+  );
+  return balance;
+};
 
 const bsc = async (timestamp, ethBlock, chainBlocks) => {
   const transform = await transformBscAddress();
