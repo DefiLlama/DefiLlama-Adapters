@@ -12,7 +12,7 @@ const stakedGLPaddress = "0x1aDDD80E6039594eE970E5872D247bf0414C8903";
 const USDC = "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8";
 const FEGLP_ADDRESS = "0x4277f8F2c384827B5273592FF7CeBd9f2C1ac258";
 
-const arbitrumTvl = async (timestamp, ethBlock, { arbitrum: block }) => {
+const Tvl = async (timestamp, ethBlock, { arbitrum: block }) => {
   const balances = {};
   const transform = await transformArbitrumAddress();
   const glpvault = (await sdk.api.abi.call({
@@ -23,8 +23,36 @@ const arbitrumTvl = async (timestamp, ethBlock, { arbitrum: block }) => {
     block,
   })
  ).output;
+ const gmdStaked = (await sdk.api.abi.call({
+  abi: 'erc20:balanceOf',
+  chain: 'bsc',
+  target: GMDaddress,
+  params: [stakingAdd],
+  chain,
+  block,
+})).output;
 
   sdk.util.sumSingleBalance(balances, transform(FEGLP_ADDRESS), glpvault);
+  sdk.util.sumSingleBalance(balances, transform(GMDaddress), gmdStaked);
+
+  return balances
+}
+
+const vaultTVL= async (timestamp, ethBlock, { arbitrum: block }) => {
+  const balances = {};
+  const transform = await transformArbitrumAddress();
+  const glpvault = (await sdk.api.abi.call({
+    abi,
+    target: vault,
+    params: [],
+    chain, 
+    block,
+  })
+ ).output;
+ 
+
+  sdk.util.sumSingleBalance(balances, transform(FEGLP_ADDRESS), glpvault);
+
   return balances
 }
 
@@ -32,8 +60,10 @@ module.exports = {
     timetravel: true,
     methodology: "staked gmd + vault balance",
     arbitrum: {
+      tvl: async () => ({}),
       staking: staking(stakingAdd, GMDaddress, "arbitrum"),
-      tvl: arbitrumTvl
+      tvl: Tvl,
+      masterchef: vaultTVL
       //staking: staking(vault, stakedGLPaddress,"arbitrum"),
     },
   };
