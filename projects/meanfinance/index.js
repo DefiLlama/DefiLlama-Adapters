@@ -13,9 +13,8 @@ const LEGACY_VERSIONS = {
 }
 
 async function getTokensInChain(chain) {
-  const { data } = await fetchURL(`https://api.mean.finance/v1/dca/networks/${chain}/tokens`)
+  const { data } = await fetchURL(`https://api.mean.finance/v1/dca/networks/${chain}/tokens?includeNotAllowed`)
   return data.map(({ address }) => address)
-    .filter(address => address.toLowerCase() !== '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee')
 }
 
 function getV2TvlObject(chain) {
@@ -63,5 +62,6 @@ module.exports = {
     [1653366158, "V2 Relaunch"],
     [1654057358, "OP launch brings more users into Optimism and benefits Mean"],
     [1666364400, "Yield-While-DCA launch"],
+    [1668006000, "Deployment on Arbitrum"],
   ]
 };

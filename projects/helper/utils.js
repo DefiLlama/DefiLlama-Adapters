@@ -1,5 +1,4 @@
 const BigNumber = require("bignumber.js");
-const retry = require('async-retry')
 const axios = require("axios");
 const sdk = require('@defillama/sdk')
 const http = require('./http')
@@ -47,15 +46,11 @@ async function getPricesFromContract(object) {
 }
 
 async function fetchURL(url) {
-  return retry(async bail => await axios.get(url), {
-    retries: 3
-  })
+  return axios.get(url)
 }
 
 async function postURL(url, data) {
-  return retry(async bail => await axios.post(url, data), {
-    retries: 3
-  })
+  return axios.post(url, data)
 }
 
 function createIncrementArray(length) {
@@ -83,7 +78,7 @@ function isLP(symbol, token, chain) {
   if (!symbol) return false
   if (token && blacklisted_LPS.includes(token.toLowerCase())) return false
   if (chain === 'bsc' && ['OLP', 'DLP', 'MLP', 'LP'].includes(symbol)) return false
-  if (chain === 'bsc' && ['WLP', 'FstLP',].includes(symbol)) return true
+  if (chain === 'bsc' && ['WLP', 'FstLP', 'BLP',].includes(symbol)) return true
   if (chain === 'avax' && ['ELP', 'EPT', 'CRL', 'YSL', 'BGL', 'PLP'].includes(symbol)) return true
   if (chain === 'ethereum' && ['SSLP'].includes(symbol)) return true
   if (chain === 'moonriver' && ['HBLP'].includes(symbol)) return true
@@ -153,8 +148,6 @@ async function getBalance(chain, account) {
   switch (chain) {
     case 'bitcoin':
       return (await http.get(`https://chain.api.btc.com/v3/address/${account}`)).data.balance / 1e8
-    case 'elrond':
-      return (await http.get(`https://gateway.elrond.com/address/${account}`)).data.account.balance / 1e18
     case 'bep2':
       const balObject = (await http.get(`https://api-binance-mainnet.cosmostation.io/v1/account/${account}`)).balances.find(i => i.symbol === 'BNB')
       return +(balObject || { free: 0 }).free
@@ -318,6 +311,22 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
   console.table(logObj)
 }
 
+async function fetchItemList({ chain, block, lengthAbi, itemAbi, target }) {
+  const { output: length } = await sdk.api.abi.call({
+    target,
+    abi: lengthAbi,
+    chain, block,
+  })
+  const { output: data } = await sdk.api.abi.multiCall({
+    target,
+    abi: itemAbi,
+    calls: getParamCalls(length),
+    chain, block,
+  })
+
+  return data
+}
+
 module.exports = {
   DEBUG_MODE,
   log,
@@ -340,4 +349,5 @@ module.exports = {
   getSymbols,
   getDecimals,
   getParamCalls,
+  fetchItemList,
 }

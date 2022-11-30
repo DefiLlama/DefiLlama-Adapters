@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const retry = require("../helper/retry");
 
 const { request, gql } = require("graphql-request");
 const { getBlock } = require("../helper/getBlock");
@@ -29,7 +28,7 @@ function chainTvl(chain) {
     `;
 
     const pairs = (
-      await retry(async () => request(GRAPH_URLS[chain], query))
+      await request(GRAPH_URLS[chain], query)
     ).pairs.map((pair) => ({
       address: pair.id,
       asset: pair.asset.id,

@@ -1,16 +1,6 @@
 const { PublicKey, } = require("@solana/web3.js");
-const { getConnection, sumTokens2, } = require("../helper/solana");
+const { getConnection, sumTokens2, readBigUInt64LE, } = require("../helper/solana");
 
-function readBigUInt64LE(buffer, offset) {
-  const first = buffer[offset];
-  const last = buffer[offset + 7];
-  if (first === undefined || last === undefined) {
-    throw new Error();
-  }
-  const lo = first + buffer[++offset] * 2 ** 8 + buffer[++offset] * 2 ** 16 + buffer[++offset] * 2 ** 24;
-  const hi = buffer[++offset] + buffer[++offset] * 2 ** 8 + buffer[++offset] * 2 ** 16 + last * 2 ** 24;
-  return BigInt(lo) + (BigInt(hi) << BigInt(32));
-}
 
 async function tvl() {
   const connection = getConnection();

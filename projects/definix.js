@@ -1,23 +1,16 @@
-const retry = require("./helper/retry");
-const axios = require("axios");
+const { get } = require('./helper/http')
 
 async function klaytn() {
-  const response = await retry(
-    async (bail) =>
-      await axios.get(
-        "https://database-s3public-g8ignhbbbk6e.s3.ap-southeast-1.amazonaws.com/definix/tvl.json"
-      )
-  );
-  return response.data.caverTVL;
+  const response = await get(
+    "https://database-s3public-g8ignhbbbk6e.s3.ap-southeast-1.amazonaws.com/definix/tvl.json"
+  )
+  return response.caverTVL;
 }
 async function bsc() {
-  const response = await retry(
-    async (bail) =>
-      await axios.get(
-        "https://database-s3public-g8ignhbbbk6e.s3.ap-southeast-1.amazonaws.com/definix/tvl.json"
-      )
-  );
-  return response.data.web3TVL;
+  const response = await get(
+    "https://database-s3public-g8ignhbbbk6e.s3.ap-southeast-1.amazonaws.com/definix/tvl.json"
+  )
+  return response.web3TVL;
 }
 module.exports = {
   klaytn: {

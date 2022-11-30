@@ -76,27 +76,6 @@ async function transformCeloAddress() {
   return transformChainAddress(transformTokens.celo, "celo")
 }
 
-async function transformHarmonyAddress() {
-  const bridge = (await utils.fetchURL(
-    "https://be4.bridge.hmny.io/tokens/?page=0&size=1000"
-  )).data.content;
-
-  const mapping = transformTokens.harmony
-
-  return addr => {
-    addr = addr.toLowerCase();
-    if (mapping[addr]) return mapping[addr];
-    const srcToken = bridge.find(token =>
-      compareAddresses(addr, token.hrc20Address)
-    );
-    if (srcToken !== undefined) {
-      const prefix = srcToken.network === "BINANCE" ? "bsc:" : "";
-      return prefix + srcToken.erc20Address;
-    }
-    return `harmony:${addr}`;
-  };
-}
-
 async function transformOptimismAddress() {
   const bridge = (await utils.fetchURL(
     "https://static.optimism.io/optimism.tokenlist.json"
@@ -152,7 +131,7 @@ async function transformInjectiveAddress() {
 }
 
 function fixBalances(balances, mapping, { chain, } = {}) {
-  const removeUnmapped = unsupportedGeckoChains.includes(chain)
+  const removeUnmapped = unsupportedGeckoChains.includes(chain) // TODO: fix server-side, remove this
 
   Object.keys(balances).forEach(token => {
     let tokenKey = stripTokenHeader(token, chain)
@@ -200,7 +179,6 @@ const chainTransforms = {
   bsc: transformBscAddress,
   polygon: transformPolygonAddress,
   avax: transformAvaxAddress,
-  harmony: transformHarmonyAddress,
   optimism: transformOptimismAddress,
   arbitrum: transformArbitrumAddress,
   injective: transformInjectiveAddress,
@@ -262,7 +240,7 @@ async function transformBalances(chain, balances) {
   return balances
 }
 
-async function transformDexBalances({ chain, data, balances = {}, restrictTokenRatio = 10, withMetadata = false, blacklistedTokens = [], coreTokens}) {
+async function transformDexBalances({ chain, data, balances = {}, restrictTokenRatio = 10, withMetadata = false, blacklistedTokens = [], coreTokens }) {
 
   if (!coreTokens)
     coreTokens = new Set(getCoreAssets(chain))
@@ -366,7 +344,6 @@ module.exports = {
   transformBscAddress,
   transformPolygonAddress,
   transformAvaxAddress,
-  transformHarmonyAddress,
   transformOptimismAddress,
   transformArbitrumAddress,
   transformCeloAddress,

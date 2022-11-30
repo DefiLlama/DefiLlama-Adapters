@@ -33,6 +33,8 @@ function generic(ticker) {
       return ["tether", 6];
     case "erc20/multichain/dai":
       return ["dai", 18];
+    case "bnb":
+      return ["binancecoin", 8]
   }
 }
 
