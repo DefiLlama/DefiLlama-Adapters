@@ -245,7 +245,6 @@ const transformTokens = {
     "0x94fbffe5698db6f54d6ca524dbe673a7729014be": tokens.usdc, // USDC
   },
   kcc: {
-    [nullAddress]: tokens.kcs,
     "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c": "avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c",
   },
   metis: {
