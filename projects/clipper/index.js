@@ -1,8 +1,7 @@
 const { sumTokensAndLPsSharedOwners } = require('../helper/unwrapLPs')
 const { getChainTransform } = require('../helper/portedTokens')
 const sdk = require('@defillama/sdk')
-const retry = require('../helper/retry')
-const axios = require("axios")
+const { get } = require('../helper/http')
 const BigNumber = require('bignumber.js')
 
 const oldPools = {
@@ -22,13 +21,11 @@ async function getChainData(chain) {
 	const { chainId } = chainConfig[chain]
 
 	const {
-		data: {
 			pool: {
 				address: poolAddress
 			},
 			assets
-		}
-	} = await retry(async () => await axios.get(`https://api.clipper.exchange/rfq/pool?chain_id=${chainId}`))
+	} = await get(`https://api.clipper.exchange/rfq/pool?chain_id=${chainId}`)
 	return {
 		poolAddress,
 		assets: assets.map(({ address }) => address)

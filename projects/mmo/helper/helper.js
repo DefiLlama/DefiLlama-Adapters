@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const retry = require("../../helper/retry");
 
 const { GraphQLClient, gql } = require("graphql-request");
 const mEtherABI = require("./abis/MEtherInterfaceFull.json");
@@ -10,9 +9,7 @@ async function fetch(query) {
     "https://api.thegraph.com/subgraphs/name/ohan8/mmo-finance-active-loans";
   var graphQLClient = new GraphQLClient(endpoint);
 
-  const results = await retry(
-    async (bail) => await graphQLClient.request(query)
-  );
+  const results = await graphQLClient.request(query)
   return results;
 }
 
