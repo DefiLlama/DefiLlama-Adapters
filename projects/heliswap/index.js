@@ -3,7 +3,7 @@ const axios = require("axios");
 const urlConfigs = {
   graphQLUrl: "https://heliswap-prod-362307.oa.r.appspot.com/query",
   tokenListUrl:
-    "https://heliswap.infura-ipfs.io/ipfs/QmVckDDS58AUWDREptfvbAcg6XwbMVccy5GKUPsGQkixMC",
+    "https://heliswap.infura-ipfs.io/ipfs/QmTkk1Cmvh3D8cQHKf4P8WovwRzSABWrDjo4a8gGxXKUrT",
 };
 
 const axiosConfig = {
@@ -59,13 +59,13 @@ const tvl = async () => {
   totalTVL =
     data && data.poolsConsistingOf && data.poolsConsistingOf?.length > 0
       ? data.poolsConsistingOf.reduce((acc, pool) => {
-        acc = acc + Number(pool.tvl);
+          acc = acc + Number(pool.tvl);
 
-        return acc;
-      }, 0)
+          return acc;
+        }, 0)
       : 0;
 
-  return {tether: totalTVL};
+  return { tether: totalTVL };
 };
 
 module.exports = {
