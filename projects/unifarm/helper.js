@@ -4,6 +4,7 @@ const { sleep, log } = require('../helper/utils')
 let allV1Data
 const chainIds = { ethereum: 1, bsc: 56, polygon: 137, }
 const chains = Object.keys(chainIds)
+const waitTime = 15
 
 async function getAllV1Data() {
   if (!allV1Data) allV1Data = _getAllV1Data()
@@ -15,8 +16,10 @@ async function getAllV1Data() {
       const chainId = chainIds[chain]
       const { allPools } = await graphQuery(GRAPH_ENDPOINT, QUERY, { where: { chainId } })
       data[chain] = allPools
-      log('fetched data for', chain, allPools.total_pools, 'waiting 5 seconds before next call')
-      if (chains.indexOf(chain) !== chains.length - 1) await sleep(5000)
+      if (chains.indexOf(chain) !== chains.length - 1) {
+        log('fetched data for', chain, allPools.total_pools, '(waiting', waitTime, 'seconds before next call)')
+        await sleep(waitTime * 1e3)
+      }
     }
     return data
   }
