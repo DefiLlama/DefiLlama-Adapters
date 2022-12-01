@@ -19,12 +19,18 @@ const poolAddresses_evmos = [
   "0xbBD5a7AE45a484BD8dAbdfeeeb33E4b859D2c95C",
   //GravityBasePool
   "0xc3f87b7841aE962557d17010b285f8BC3C3d4408",
-  // DAI Base Pool
+  // Old DAI Base Pool
   "0xbB3c0ea4Df6C9cd7D0734bb4952D8F27a0361a21",
-  // USDC Base Pool
+  // Old USDC Base Pool
   "0x735cad6e573a1963AC381d86bC06a8976BF8F8a6",
-  // USDT Base Pool
+  // Old USDT Base Pool
   "0x81f47A9BEE24c48DB0D6aCC8D22446F2aBeeFF26",
+  // New DAI Base Pool
+  "0x155377C4f5489026cD8340fF350ae6aa082FBE69",
+  // New USDC Base Pool
+  "0x35bF604084FBE407996c394D3558E58c90281000",
+  // New USDT Base Pool
+  "0x89E9703309DA4aC51C739D7d674F91489830310E",
 ];
 
 // Bridged Nomad Stablecoins
