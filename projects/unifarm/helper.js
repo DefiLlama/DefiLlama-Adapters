@@ -1,12 +1,14 @@
 const { graphQuery, } = require('../helper/http')
 const { sleep, log } = require('../helper/utils')
+const v1Data = require('./v1Data.json')
 
 let allV1Data
 const chainIds = { ethereum: 1, bsc: 56, polygon: 137, }
 const chains = Object.keys(chainIds)
-const waitTime = 15
+const waitTime = 301
 
 async function getAllV1Data() {
+  return v1Data
   if (!allV1Data) allV1Data = _getAllV1Data()
   return allV1Data
 
@@ -48,12 +50,10 @@ const GRAPH_ENDPOINT = "https://graph.unifarm.co/graphql";
 const QUERY = `
 query($where: PoolsGroupWhereClause!) {
   allPools(where: $where) {
-    total_pools
     pools {
       cohort {
         cohortAddress
         proxies
-        tokensCount
         tokens
       }
     }
