@@ -132,11 +132,11 @@ async function getTokenAccountBalances(tokenAccounts, { individual = false, chun
     const data = await axios.post(endpoint, body);
     data.data.forEach(({ result: { value } }, i) => {
       if (!value || !value.data.parsed) {
-        if (tokenAccounts[i] === '11111111111111111111111111111111') {
+        if (tokenAccounts[i].toString() === '11111111111111111111111111111111') {
           log('Null account: skipping it')
           return;
         }
-        console.log(data.data.map(i => i.result.value)[i], tokenAccounts[i])
+        console.log(data.data.map(i => i.result.value)[i], tokenAccounts[i].toString())
       }
       const { data: { parsed: { info: { mint, tokenAmount: { amount } } } } } = value
       sdk.util.sumSingleBalance(balances, mint, amount)
