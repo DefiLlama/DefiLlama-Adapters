@@ -37,7 +37,7 @@ async function tvl(timestamp, block, chainBlocks) {
   return balances;
 }
 
-// Returns list of cellar addresses that are deployed based on the block their start block
+// Returns list of cellar addresses that are deployed based on their start block
 function filterActiveCellars(cellars, blockHeight) {
   return cellars
     .filter((cellar) => cellar.startBlock <= blockHeight)
