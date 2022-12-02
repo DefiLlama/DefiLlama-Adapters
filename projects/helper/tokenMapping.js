@@ -549,7 +549,8 @@ const fixBalancesTokens = {
     "0xdcecf0664c33321ceca2effce701e710a2d28a3f": { coingeckoId: "tether", decimals: 18, },
     "0x1ddcaa4ed761428ae348befc6718bcb12e63bfaa": { coingeckoId: "usd-coin", decimals: 18, },  // Debridge USDC
     "0x4268b8f0b87b6eae5d897996e6b845ddbd99adf3": { coingeckoId: "usd-coin", decimals: 6, },  // alexar USDC
-    "0xE85aFCcDaFBE7F2B096f268e31ccE3da8dA2990A": { coingeckoId: "aBnB-bad", decimals: 6, },  // HOTFIX: map aBnBc token to undefined
+    "0xE85aFCcDaFBE7F2B096f268e31ccE3da8dA2990A": { coingeckoId: "aBnBc-bad", decimals: 6, },  // HOTFIX: map aBnBc token to undefined
+    "0xbb1aa6e59e5163d8722a122cd66eba614b59df0d": { coingeckoId: "aBnBb-bad", decimals: 6, },  // HOTFIX: map aBnBb token to undefined
   },
   oasis: {
     "0x21c718c22d52d0f3a789b752d4c2fd5908a8a733": { coingeckoId: "oasis-network", decimals: 18, },
