@@ -17,11 +17,11 @@ async function sumTvl(options) {
   // Get the Cellar's postions (ERC20 addresses) as an array to construct
   // a list of balanceOf calls.
   let balanceCalls = await Promise.all(
-    cellars.map((cellar) => getCellarBalances(cellar, options))
+    cellars.map((cellar) => getCellarBalanceCalls(cellar, options))
   );
   balanceCalls = flattenOnce(balanceCalls);
 
-  // Call balanceOf for each of the Cellar's positions
+  // Call balanceOf for all positions across all Cellars using multicall
   const balanceResult = await sdk.api.abi.multiCall({
     calls: balanceCalls,
     abi: "erc20:balanceOf",
@@ -37,9 +37,10 @@ async function sumTvl(options) {
 //
 // returns a list of balanceOf(address) parameters
 // [{ target: erc20 contract address, params: [cellarAddress] }]
-async function getCellarBalances(cellarAddress, options) {
+async function getCellarBalanceCalls(cellarAddress, options) {
   const { chainBlocks } = options;
 
+  // Get a list of the Cellars positions as ERC20 contract addresses
   const positions = (
     await sdk.api.abi.call({
       chain,
@@ -49,6 +50,7 @@ async function getCellarBalances(cellarAddress, options) {
     })
   ).output;
 
+  // Construct a list of balanceOf calls
   return positions.map((position) => ({
     target: position,
     params: [cellarAddress], // Cellar holds the balance
