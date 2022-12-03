@@ -385,7 +385,7 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
     // get factory from LP
     // console.log(await sdk.api.abi.call({ target: '0x463e451d05f84da345d641fbaa3129693ce13816', abi: { "inputs": [], "name": "factory", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" }, chain, block, }))
     let pairAddresses;
-    const pairLength = (await sdk.api.abi.call({ target: factory, abi: factoryAbi.allPairsLength, chain, block })).output
+    const pairLength = (await sdk.api.abi.call({ target: factory, abi: abis.allPairsLength || factoryAbi.allPairsLength, chain, block })).output
     if (pairLength === null)
       throw new Error("allPairsLength() failed")
 
@@ -395,7 +395,7 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
     if (skipPair.length) pairNums = pairNums.filter(i => !skipPair.includes(i))
 
     if (fetchInChunks === 0) {
-      let pairs = (await sdk.api.abi.multiCall({ abi: factoryAbi.allPairs, chain, calls: pairNums.map(num => ({ target: factory, params: [num] })), block })).output
+      let pairs = (await sdk.api.abi.multiCall({ abi: abis.allPairs || factoryAbi.allPairs, chain, calls: pairNums.map(num => ({ target: factory, params: [num] })), block })).output
       await requery(pairs, chain, block, factoryAbi.allPairs);
 
       pairAddresses = pairs.map(result => result.output.toLowerCase())
