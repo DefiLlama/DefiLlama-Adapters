@@ -152,6 +152,85 @@ const ReserveLayout = BufferLayout.struct([
   BufferLayout.blob(256, "padding"),
 ]);
 
+const ReserveLayoutLarix = BufferLayout.struct(
+  [
+    BufferLayout.u8('version'),
+
+    LastUpdateLayout,
+
+    publicKey('lendingMarket'),
+
+    BufferLayout.struct(
+      [
+        publicKey('mintPubkey'),
+        BufferLayout.u8('mintDecimals'),
+        publicKey('supplyPubkey'),
+        publicKey('feeReceiver'),
+        BufferLayout.u8("usePythOracle"),
+        publicKey('params_1'),
+        publicKey("params_2"),
+        uint64('availableAmount'),
+        uint128('borrowedAmountWads'),
+        uint128('cumulativeBorrowRateWads'),
+        uint128('marketPrice'),
+        uint128('ownerUnclaimed'),
+      ],
+      'liquidity',
+    ),
+
+    BufferLayout.struct(
+      [
+        publicKey('mintPubkey'),
+        uint64('mintTotalSupply'),
+        publicKey('supplyPubkey'),
+      ],
+      'collateral'
+    ),
+
+    BufferLayout.struct(
+      [
+        BufferLayout.u8('optimalUtilizationRate'),
+        BufferLayout.u8('loanToValueRatio'),
+        BufferLayout.u8('liquidationBonus'),
+        BufferLayout.u8('liquidationThreshold'),
+        BufferLayout.u8('minBorrowRate'),
+        BufferLayout.u8('optimalBorrowRate'),
+        BufferLayout.u8('maxBorrowRate'),
+        BufferLayout.struct(
+          // TODO: fix flash loan fee wad
+          [
+            uint64('borrowFeeWad'),
+            uint64('borrowInterestFeeWad'),
+            uint64("flashLoanFeeWad"),
+            BufferLayout.u8('hostFeePercentage'),
+            BufferLayout.u8('hostFeeReceiverCount'),
+            BufferLayout.blob(32 * 5, 'hostFeeReceivers'),
+          ],
+          'fees',
+        ),
+        BufferLayout.u8("depositPaused"),
+        BufferLayout.u8("borrowPaused"),
+        BufferLayout.u8("liquidationPaused"),
+      ],
+      'config'
+    ),
+    BufferLayout.struct(
+      [
+        publicKey("unCollSupply"),
+        uint128('lTokenMiningIndex'),
+        uint128('borrowMiningIndex'),
+        uint64("totalMiningSpeed"),
+        uint64("kinkUtilRate"),
+      ],
+      'bonus'
+    ),
+    BufferLayout.u8("reentry"),
+    uint64("depositLimit"),
+    BufferLayout.u8("isLP"),
+    BufferLayout.blob(239, 'padding'),
+  ],
+);
+
 const MintLayout = BufferLayout.struct([
   BufferLayout.u32('mintAuthorityOption'),
   publicKey("mintAuthority"),
@@ -493,6 +572,7 @@ const customDecoders = {
   mint: defaultParseLayout(MintLayout),
   account: defaultParseLayout(AccountLayout),
   tokenSwap: defaultParseLayout(TokenSwapLayout),
+  larixReserve: defaultParseLayout(ReserveLayoutLarix),
 }
 
 function decodeAccount(layout, accountInfo) {
