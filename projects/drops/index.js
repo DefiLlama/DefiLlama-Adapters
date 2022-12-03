@@ -35,4 +35,7 @@ module.exports = mergeExports([{
 {
   ethereum: usdCompoundExports("0x3903E6EcD8bc610D5a01061B1Dc31affD21F81C6", undefined, '0x588C13e685e44B22DC6647937481C816E5FeE086'),
 },
+{
+  ethereum: usdCompoundExports("0x896b8019f5ea3caaAb23cDA0A09B405ed8361E8b", undefined, '0x777ECcD3fCf4FfA3b12f45a384852608DF2619a0'),
+},
 ])
