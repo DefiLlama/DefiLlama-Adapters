@@ -290,7 +290,6 @@ const transformTokens = {
     "0x8d193c6efa90bcff940a98785d1ce9d093d3dc8a": "0xc669928185dbce49d2230cc9b0979be6dc797957", // BTT
     "0x17f235fd5974318e4e2a5e37919a209f7c37a6d1": "0x0c10bf8fcb7bf5412187a595ab97a3609160b5c6", // USDD
     "0xae17940943ba9440540940db0f1877f101d39e8b": tokens.usdc, // USDC
-    "0xedf53026aea60f8f75fca25f8830b7e2d6200662": "tron:TNUC9Qb1rRpS5CbWLmNMxXBjyFoydXjWFR", // TRX
     "0x1249c65afb11d179ffb3ce7d4eedd1d9b98ad006": tokens.ethereum, // WETH
     "0xe887512ab8bc60bcc9224e1c3b5be68e26048b8b": tokens.usdc, // USDT
     "0xe467f79e9869757dd818dfb8535068120f6bcb97": "0xdefa4e8a7bcba345f687a2f1456f5edd9ce97202", // KNC
@@ -706,7 +705,7 @@ const fixBalancesTokens = {
     "0xca424b845497f7204d9301bd13ff87c0e2e86fcf": { coingeckoId: "usd-coin", decimals: 18 },
     "0x9b5f27f6ea9bbd753ce3793a07cba3c74644330d": { coingeckoId: "tether", decimals: 18 },
     "0x23181f21dea5936e24163ffaba4ea3b316b57f3c": { coingeckoId: 'bittorrent', decimals: 18, },
-    "TNUC9Qb1rRpS5CbWLmNMxXBjyFoydXjWFR": { coingeckoId: 'tron', decimals: 6, }
+    "0xedf53026aea60f8f75fca25f8830b7e2d6200662": { coingeckoId: 'tron', decimals: 6, },
   },
   bitgert: {
     [nullAddress]: { coingeckoId: "bitrise-token", decimals: 18, },
