@@ -160,7 +160,7 @@ async function tvl(timestamp, block, chainBlocks) {
             sdk.util.sumSingleBalance(balances, `arbitrum:${addresses.vaultandCollateral[i][1]}`, vaultBalances[i].output);
         }
     }
-    console.log(balances);
+
     return balances;
 }
 
