@@ -37,6 +37,11 @@ async function getV2TVL(chain, block) {
 }
 
 async function ethTvl(timestamp, block) {
+  const balances = await getV2TVL('ethereum', block)
+  return ethV1Tvl(block, balances)
+}
+
+async function ethV1Tvl(block, balances = {}) {
   const toa = []
   // Calls for tokens in pair and balances of them then adds to balance
   for (let i = 0; i < V1_POOLS.length; i++) {
@@ -44,7 +49,7 @@ async function ethTvl(timestamp, block) {
     toa.push([tokenA, pool], [tokenB, pool])
   }
 
-  return sumTokens2({ tokensAndOwners: toa, block, });
+  return sumTokens2({ balances, tokensAndOwners: toa, block, });
 }
 
 module.exports = {
