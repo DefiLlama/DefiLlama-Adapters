@@ -1,7 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { sumTokensExport, sumTokens2 } = require("../helper/unwrapLPs.js");
 const { tokensBare: tokens } = require("../helper/tokenMapping");
-const { BigNumber } = require("ethers");
 const abi = require("./abi.json");
 
 const { getV2CAs, getV1CAs } = require("./events");
@@ -38,16 +37,16 @@ const getPoolAddrs = async (block) => {
   ]);
 
   // Fetch ba;anes of tokens available to fetch
-  const { output: totalBorrowed } = await sdk.api.abi.multiCall({
-    abi: abi["availableLiquidity"],
-    calls: pools.map((pool) => ({ target: pool })),
-    block,
-  });
+  // const { output: totalBorrowed } = await sdk.api.abi.multiCall({
+  //   abi: abi["availableLiquidity"],
+  //   calls: pools.map((pool) => ({ target: pool })),
+  //   block,
+  // });
 
   const poolBalances = {};
-  totalBorrowed.forEach(({ output }, i) =>
-    sdk.util.sumSingleBalance(poolBalances, poolsUnderlying[i].output, output)
-  );
+  // totalBorrowed.forEach(({ output }, i) =>
+  //   sdk.util.sumSingleBalance(poolBalances, poolsUnderlying[i].output, output)
+  // );
 
   return { tokensAndOwners, poolBalances };
 };
@@ -119,22 +118,14 @@ const tvl = async (timestamp, block) => {
 
   // V1 CreditAccounts TVL
   const v1Balances = await getV1TVL(block);
-
-  // Merge CA Values
-  const bal = {};
-  const tokens = [];
-  [...v2Balances, ...v1Balances].map((cm) => {
-    if (!bal[cm.token]) {
-      bal[cm.token] = cm.bal;
-      tokens.push([cm.token, cm.addr]);
-    } else {
-      bal[cm.token] = BigNumber.from(bal[cm.token]).add(cm.bal).toString();
-    }
-  });
+  [...v1Balances, ...v2Balances].forEach(i => {
+    sdk.util.sumSingleBalance(poolBalances,i.token,i.bal)
+    tokensAndOwners.push([i.token, i.addr])
+  })
 
   return sumTokens2({
-    balances: { ...poolBalances, ...bal },
-    tokensAndOwners: [...tokensAndOwners, ...tokens],
+    balances: poolBalances,
+    tokensAndOwners,
     block,
   });
 };

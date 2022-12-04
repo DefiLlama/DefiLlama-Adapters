@@ -1,6 +1,6 @@
 const { api } = require("@defillama/sdk");
 const { providers } = require("@defillama/sdk/build/general");
-const { Contract, utils, BigNumber } = require("ethers");
+const { Contract, BigNumber } = require("ethers");
 
 const abi = require("./abi.json");
 
