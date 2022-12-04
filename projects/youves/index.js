@@ -1,5 +1,4 @@
 const { GraphQLClient, gql } = require("graphql-request");
-const retry = require('../helper/retry')
 const sdk = require("@defillama/sdk")
 const { addDexPosition, getTokenBalances, resolveLPPosition, getStorage, convertBalances, usdtAddressTezos, } = require('../helper/chain/tezos')
 const { getFixBalances } = require('../helper/portedTokens')
@@ -44,7 +43,7 @@ async function fetchBalance(balances, token, engineAddress, decimals = 0, shareP
 }
 `
 
-  const oracleData = await retry(async req => await graphQLClient.request(query))
+  const oracleData = await graphQLClient.request(query)
   let balance = oracleData["vault_aggregate"]["aggregate"]["sum"]["balance"] / 10 ** decimals
 
   if (token === 'tzbtc-lp') {

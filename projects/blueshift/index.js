@@ -51,12 +51,16 @@ module.exports = {
   methodology: 'Accumulates TVL of all Blueshift portfolios calculated in base tokens. Adds TVL of BLUES tokens staked in Blueshift yield pools.',
   milkomeda: {
     start: 2023331,
-    staking: (timestamp, block, chainBlocks) => staking('milkomeda',chainBlocks),
-    tvl: (timestamp, block, chainBlocks) => tvl('milkomeda',chainBlocks)
+    staking: (timestamp, block, chainBlocks) => staking('milkomeda', chainBlocks),
+    tvl: (timestamp, block, chainBlocks) => tvl('milkomeda', chainBlocks)
   },
   milkomeda_a1: {
     start: 1300,
-    staking: (timestamp, block, chainBlocks) => staking('milkomeda_a1',chainBlocks),
-    tvl: (timestamp, block, chainBlocks) => tvl('milkomeda_a1',chainBlocks)
+    staking: (timestamp, block, chainBlocks) => staking('milkomeda_a1', chainBlocks),
+    tvl: (timestamp, block, chainBlocks) => tvl('milkomeda_a1', chainBlocks)
+  },
+  kava: {
+    start: 2499737,
+    tvl: (timestamp, block, chainBlocks) => tvl('kava', chainBlocks)
   }
 };

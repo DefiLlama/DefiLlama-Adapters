@@ -197,7 +197,7 @@ module.exports = {
 module.exports.polygon.tvl = getChainTVL('polygon')
 // module.exports.bsc.tvl = getChainTVL('bsc')
 module.exports.fantom.tvl = getChainTVL('fantom')
-module.exports.harmony.tvl = getChainTVL('harmony')
+// module.exports.harmony.tvl = getChainTVL('harmony')
 
 async function kavaTridentTvl(ts, _b, cb) {
   const chain = 'kava'
