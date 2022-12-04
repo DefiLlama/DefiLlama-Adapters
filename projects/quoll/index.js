@@ -63,6 +63,7 @@ async function voterProxyBalances(block) {
   return underlyingAmounts.output
     .map((a, i) => {
       if (masterWombatVoterProxyBalances.output[i].output.amount === '0') return;
+      if (underlyingTokens.output[i].output.toLowerCase() === '0xE85aFCcDaFBE7F2B096f268e31ccE3da8dA2990A'.toLowerCase()) return; // disable aBNBc (ankr bnb)
       return ({amount: a.output.amount, token: underlyingTokens.output[i].output})
     }).filter(i => i);
 }

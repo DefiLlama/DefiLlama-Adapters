@@ -11,25 +11,34 @@ const VAULT_ABI = [{
     "stateMutability": "view",
     "type": "function"
   },{
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_nftIndex",
-        "type": "uint256"
-      }
-    ],
-    "name": "getNFTValueETH",
+    "inputs": [],
+    "name": "nftValueProvider",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "address",
         "name": "",
-        "type": "uint256"
+        "type": "address"
       }
     ],
     "stateMutability": "view",
     "type": "function"
 }];
 
+const VALUE_PROVIDER_ABI = [{
+  "inputs": [],
+  "name": "getFloorETH",
+  "outputs": [
+    {
+      "internalType": "uint256",
+      "name": "",
+      "type": "uint256"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+}]
+
 module.exports = {
-    VAULT_ABI
+    VAULT_ABI,
+    VALUE_PROVIDER_ABI
 };
