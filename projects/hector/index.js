@@ -9,7 +9,6 @@ const { getChainTransform } = require("../helper/portedTokens");
 const contracts = require("./contracts.json");
 const { default: BigNumber } = require("bignumber.js");
 const { toUSDTBalances } = require("../helper/balances");
-const retry = require("async-retry");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { unwrapCrv } = require("../helper/resolveCrvTokens");
 const abi = require("./abi.json");
@@ -186,7 +185,7 @@ async function hectorBank() {
       }
     }
   `;
-  const results = await retry(async bail => await graphQLClient.request(query));
+  const results = await graphQLClient.request(query)
   const balance = +results.protocolMetrics[0].bankSupplied - (await borrowed());
   return toUSDTBalances(balance);
 }
@@ -202,7 +201,7 @@ async function borrowed() {
       }
     }
   `;
-  const results = await retry(async bail => await graphQLClient.request(query));
+  const results = await graphQLClient.request(query)
 
   return results.protocolMetrics[0].bankBorrowed;
 }
@@ -263,7 +262,7 @@ const staking = async () => {
       }
     }
   `;
-  const results = await retry(async bail => await graphQLClient.request(query));
+  const results = await graphQLClient.request(query)
   return toUSDTBalances(+results.protocolMetrics[0].totalValueLocked);
 };
 module.exports = {

@@ -1,16 +1,10 @@
 const { staking } = require('../helper/staking')
 const { unwrapNFTs } = require('./utils')
-const { default: axios } = require("axios");
-const retry = require("async-retry");
+const { get } = require('../helper/http');
 
 async function getConfig(chainId) {
-  const data = await retry(
-      async bail =>
-        await axios.get(
-          `https://izumi.finance/api/v1/farm/compute?chainId=${chainId}`
-        )
-    );
-  return data.data.data;
+  const data = await get(`https://izumi.finance/api/v1/farm/compute?chainId=${chainId}`);
+  return data.data;
 }
 
 const chains =  {

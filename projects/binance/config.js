@@ -6,6 +6,8 @@ const assetList = [
   ["BTC", "BTC", "34xp4vRoCGJym3xR7yCVPFHoCNxv4Twseo"],
   ["BTC", "BTC", "3LYJfcfHPXYJreMsASk2jkn69LWEYKzexb"],
   ["BTC", "BTC", "3M219KR5vEneNb47ewrPfWyb5jQ2DjxRP6"],
+  ["BTC", "BTC", "3JJmF63ifcamPLiAmLgG96RA599yNtY3EQ"],
+  ["BTC", "BTC", "3HdGoUTbcztBnS7UzY4vSPYhwr424CiWAA"],
   ["BTC", "BTC", "bc1qm34lsc65zpw79lxes69zkqmk6ee3ewf0j77s3h"],
   ["ETH", "ETH", "0xbe0eb53f46cd790cd13851d5eff43d12404d33e8"],
   ["ETH", "ETH", "0xf977814e90da44bfa03b6295a0616a897441acec"],
