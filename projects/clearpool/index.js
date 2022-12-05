@@ -1,3 +1,6 @@
+//  npm i -f
+//  node test.js projects/clearpool/index.js
+
 const sdk = require("@defillama/sdk");
 const { sumTokens } = require("../helper/unwrapLPs");
 const abi = require("./abi.json");
