@@ -1,4 +1,4 @@
-const { queryV1Beta1 } = require('../helper/cosmos')
+const { queryV1Beta1 } = require('../helper/chain/cosmos')
 const { transformBalances } = require('../helper/portedTokens')
 const sdk = require('@defillama/sdk')
 

@@ -1,13 +1,8 @@
 const { sumTokens, sumTokens2 } = require("../helper/unwrapLPs");
 const { sumUnknownTokens } = require("../helper/unknownTokens");
-const utils = require("../helper/utils");
 
 const GIV = "0x900db999074d9277c5da2a43f252d74366230da0";
 const xdaiGIV = "0x4f4f9b8d5b4d0dc10506e5551b0513b61fd59e75";
-
-async function getGIVPrice() {
-  return (await utils.getPricesfromString("giveth")).data?.giveth?.usd;
-}
 
 async function mainnetStaking(ts, block) {
   const balances = {};

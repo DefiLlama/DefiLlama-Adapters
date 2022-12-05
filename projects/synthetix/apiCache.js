@@ -7,6 +7,7 @@ const { sliceIntoChunks, } = require('../helper/utils');
 const { getCache, setCache } = require('../helper/cache');
 const { request, gql } = require("graphql-request");
 const project = 'synthetix'
+const { log } = require('../helper/utils')
 
 const QUERY_NO_BLOCK = gql`
 query manyHolders($lastID: String, $block: Int) {
@@ -43,7 +44,7 @@ function chainTvl(chain) {
     let totalTopStakersSNX = new BigNumber(0);
 
     const holdersAll = sliceIntoChunks(await SNXHolders(snxGraphEndpoint, block, chain), 5000)
-    console.log('holders count: ', holdersAll.flat().length, chain)
+    log('holders count: ', holdersAll.flat().length, chain)
 
     const issuanceRatio = (await sdk.api.abi.call({
       block,
@@ -55,7 +56,7 @@ function chainTvl(chain) {
     let i = 0
 
     for (const holders of holdersAll) {
-      console.log('fetching %s of %s', ++i, holdersAll.length)
+      log('fetching %s of %s', ++i, holdersAll.length)
 
       const calls = holders.map(holder => ({ target: synthetix, params: holder }))
       const [ratio, collateral] = await Promise.all([
@@ -100,7 +101,7 @@ function chainTvl(chain) {
       abi: abi['totalSupply']
     })).output;
 
-    //console.log(unformattedSnxTotalSupply, new BigNumber(unformattedSnxTotalSupply).div(Math.pow(10, 18)))
+    //log(unformattedSnxTotalSupply, new BigNumber(unformattedSnxTotalSupply).div(Math.pow(10, 18)))
     const snxTotalSupply = parseInt(new BigNumber(unformattedSnxTotalSupply).div(Math.pow(10, 18)));
     const totalSNXLocked = percentLocked.times(snxTotalSupply);
 
@@ -125,24 +126,25 @@ function chainTvl(chain) {
 async function SNXHolders(snxGraphEndpoint, block, chain) {
   const cache = getCache(project, chain)
   if (!cache.data) cache.data = []
-  let holders = new Set()
-  cache.data.forEach(d => holders.add(d.id))
+  let holders = new Set(cache.data)
   let lastID = cache.lastID || ""
   let holdersPage;
   let i = 0
   do {
-    console.log(chain, ++i, 'current last Id', lastID)
+    log(chain, ++i, 'current last Id', lastID)
     holdersPage = (await request(snxGraphEndpoint, QUERY_NO_BLOCK, {
       block,
       lastID
     })).holders
+    holdersPage = holdersPage.map(i => i.id)
     cache.data.push(...holdersPage)
-    holdersPage.forEach(h => holders.add(h.id))
-    lastID = holdersPage[holdersPage.length - 1]?.id
-    cache.lastID = lastID
-  } while (holdersPage.length === 1e3);
+    holdersPage.forEach(h => holders.add(h))
+    lastID = holdersPage[holdersPage.length - 1]
+    if (lastID) cache.lastID = lastID
+  } while (lastID);
+  cache.data = Array.from(holders)
   setCache(project, chain, cache)
-  return Array.from(holders)
+  return cache.data
 }
 
 module.exports = {

@@ -1,5 +1,5 @@
 const { request, gql } = require("graphql-request");
-const sdk = require('@defillama/sdk');
+const { getBlock } = require('../helper/getBlock')
 
 const { toUSDTBalances } = require('../helper/balances');
 
@@ -13,7 +13,8 @@ query GET_TVL($block: Int) {
 }
 `;
 
-async function ethereum(timestamp, block) {
+async function ethereum(_, _block, cb) {
+  const block = await getBlock(_, 'ethereum', cb)
   const { platform } = await request(
     graphUrlMainnet,
     graphQuery,
@@ -28,8 +29,8 @@ async function ethereum(timestamp, block) {
   return toUSDTBalances(tvl);
 }
 
-async function polygon(timestamp, ethBlock, chainBlocks) {
-  const block = chainBlocks.polygon;
+async function polygon(_, ethBlock, chainBlocks) {
+  const block = await getBlock(_, 'polygon', chainBlocks)
   const { platform } = await request(
     graphUrlPolygon,
     graphQuery,

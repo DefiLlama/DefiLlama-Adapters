@@ -1,45 +1,44 @@
-const retry = require('async-retry')
-const axios = require("axios");
+const { get } = require('../helper/http')
 
 async function bsc() {
-    const tvl_data = await retry(async bail => axios.get("https://api.minimax.finance/tvl/56"));
-    return parseFloat(tvl_data.data.TvlTotal);
+    const tvl_data = await get("https://api.minimax.finance/tvl/56");
+    return parseFloat(tvl_data.TvlTotal);
 }
 
 async function polygon() {
-    const tvl_data = await retry(async bail => axios.get("https://api.minimax.finance/tvl/137"));
-    return parseFloat(tvl_data.data.TvlTotal);
+    const tvl_data = await get("https://api.minimax.finance/tvl/137");
+    return parseFloat(tvl_data.TvlTotal);
 }
 
 async function fantom() {
-    const tvl_data = await retry(async bail => axios.get("https://api.minimax.finance/tvl/250"));
-    return parseFloat(tvl_data.data.TvlTotal);
+    const tvl_data = await get("https://api.minimax.finance/tvl/250");
+    return parseFloat(tvl_data.TvlTotal);
 }
 
 async function avalanche() {
-    const tvl_data = await retry(async bail => axios.get("https://api.minimax.finance/tvl/43114"));
-    return parseFloat(tvl_data.data.TvlTotal);
+    const tvl_data = await get("https://api.minimax.finance/tvl/43114");
+    return parseFloat(tvl_data.TvlTotal);
 }
 
 async function arbitrum() {
-    const tvl_data = await retry(async bail => axios.get("https://api.minimax.finance/tvl/42161"));
-    return parseFloat(tvl_data.data.TvlTotal);
+    const tvl_data = await get("https://api.minimax.finance/tvl/42161");
+    return parseFloat(tvl_data.TvlTotal);
 }
 
 async function aurora() {
-    const tvl_data = await retry(async bail => axios.get("https://api.minimax.finance/tvl/1313161554"));
-    return parseFloat(tvl_data.data.TvlTotal);
+    const tvl_data = await get("https://api.minimax.finance/tvl/1313161554");
+    return parseFloat(tvl_data.TvlTotal);
 }
 
 async function moonbeam() {
-    const tvl_data = await retry(async bail => axios.get("https://api.minimax.finance/tvl/1284"));
-    return parseFloat(tvl_data.data.TvlTotal);
+    const tvl_data = await get("https://api.minimax.finance/tvl/1284");
+    return parseFloat(tvl_data.TvlTotal);
 }
 
 
 async function fetch() {
-    const tvl_data = await retry(async bail => axios.get("https://api.minimax.finance/tvl"));
-    return parseFloat(tvl_data.data.TvlTotal);
+    const tvl_data = await get("https://api.minimax.finance/tvl");
+    return parseFloat(tvl_data.TvlTotal);
 }
 
 module.exports = {

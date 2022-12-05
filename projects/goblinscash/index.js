@@ -15,7 +15,7 @@ module.exports = {
   smartbch: {
     staking: stakingPricedLP(goblinStaking, GOB, chain, GOB_flexUSD_MLP, "flex-usd", false, 18),
     tvl: async (_, _b, { [chain]: block }) => {
-      return sumUnknownTokens({ chain, block, owner:treasuryAddress, tokens: [GOB_flexUSD_MLP, GOB_BCH_MLP, flexUSD], owner: treasuryAddress, useDefaultCoreAssets: true })
+      return sumUnknownTokens({ chain, block, owner:treasuryAddress, tokens: [GOB_flexUSD_MLP, GOB_BCH_MLP, flexUSD], useDefaultCoreAssets: true })
     }
   },
   methodology:

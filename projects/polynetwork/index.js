@@ -142,6 +142,14 @@ async function astar() {
     const tvl = await utils.fetchURL('https://explorer.poly.network/api/v1/GetTVLAstar')
     return Number(tvl.data);
 }
+async function aptos() {
+    const tvl = await utils.fetchURL('https://explorer.poly.network/api/v1/GetTVLAptos')
+    return Number(tvl.data);
+}
+async function bitgert() {
+    const tvl = await utils.fetchURL('https://explorer.poly.network/api/v1/GetTVLBitgert')
+    return Number(tvl.data);
+}
 
 async function fetch() {
     const tvl = await utils.fetchURL('https://explorer.poly.network/api/v1/getTVLTotal')
@@ -238,6 +246,12 @@ module.exports = {
     },
     astar: {
         fetch: astar
+    },
+    aptos: {
+        fetch: aptos
+    },
+    bitgert: {
+        fetch: bitgert
     },
     fetch
 }

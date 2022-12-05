@@ -75,6 +75,7 @@ async function tvl() {
       const ttt = {};
       const poolAccountTokens = await api.query.tokens.accounts.entries(pool[1].toHuman()?.Trading?.pairAccount);
       const poolTokens = poolAccountTokens.filter(item => !item[0].toHuman()[1].LPToken);
+      if(!poolTokens[0])  return;
       const currentToken = formatToken(JSON.stringify(poolTokens[0][0].toHuman()[1]));
 
       ttt[currentToken] = new BigNumber(poolTokens[0][1].toJSON().free).multipliedBy(2).toString();

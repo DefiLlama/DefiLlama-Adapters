@@ -132,7 +132,7 @@ const kashiQuery = gql`
 `;
 
 const tridentSubgraphs = {
-  polygon: "https://api.thegraph.com/subgraphs/name/sushi-0m/trident-polygon",
+  polygon: "https://api.thegraph.com/subgraphs/name/sushi-qa/trident-polygon",
   optimism: "https://api.thegraph.com/subgraphs/name/sushi-qa/trident-optimism",
   //kava: "https://pvt.graph.kava.io/subgraphs/name/sushi-qa/trident-kava",
   //metis: "https://andromeda.thegraph.metis.io/subgraphs/name/sushi-qa/trident-metis",

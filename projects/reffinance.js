@@ -1,4 +1,4 @@
-const { call, sumSingleBalance, } = require('./helper/near')
+const { call, sumSingleBalance, } = require('./helper/chain/near')
 
 
 const PROJECT_CONTRACT = 'v2.ref-finance.near'
@@ -32,4 +32,7 @@ module.exports = {
   near: {
     tvl,
   },
+  hallmarks: [
+    [1666648800,"DCB withdrawn liquidity"]
+  ],
 };
