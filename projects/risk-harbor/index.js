@@ -3,7 +3,7 @@ const {
   queryV1Beta1,
   queryContract,
   getDenomBalance,
-} = require("../helper/terra");
+} = require("../helper/chain/terra");
 const { sumTokens } = require("../helper/unwrapLPs");
 
 const networks = {

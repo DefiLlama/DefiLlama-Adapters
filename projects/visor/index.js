@@ -12,6 +12,7 @@ const GRAPH_URL = {
   ethereum: "https://api.thegraph.com/subgraphs/name/gammastrategies/gamma",
   polygon: "https://api.thegraph.com/subgraphs/name/gammastrategies/polygon",
   optimism: "https://api.thegraph.com/subgraphs/name/gammastrategies/optimism",
+  arbitrum: "https://api.thegraph.com/subgraphs/name/gammastrategies/arbitrum",
   celo: "https://api.thegraph.com/subgraphs/name/gammastrategies/celo",
 };
 
@@ -68,6 +69,10 @@ async function tvlPolygon(timestamp, block, chainBlocks) {
 
 async function tvlOptimism(timestamp, block, chainBlocks) {
   return await tvlUniV3(timestamp, chainBlocks, "optimism");
+}
+
+async function tvlArbitrum(timestamp, block, chainBlocks) {
+  return await tvlUniV3(timestamp, chainBlocks, "arbitrum");
 }
 
 async function tvlCelo(timestamp, block, chainBlocks) {
@@ -193,6 +198,9 @@ module.exports = {
   },
   optimism: {
     tvl: tvlOptimism,
+  },
+  arbitrum: {
+    tvl: tvlArbitrum,
   },
   celo: {
     tvl: tvlCelo,

@@ -24,6 +24,11 @@ const polygonMarketsManager = "0x85f1B57A1D3Ac7605de3Df8AdA056b3dB9676eCE"
 const polygon_USDC = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"
 const polygonThalesAmm = "0x9b6d76B1C6140FbB0ABc9C4a348BFf4e4e8a1213"
 
+const arbitrumMarketsManager = "0x95d93c88c1b5190fA7FA4350844e0663e5a11fF0"
+const arbitrum_USDC = "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8"
+const arbitrumThalesAMM = "0x2b89275efB9509c33d9AD92A4586bdf8c4d21505"
+
+
 const L2toL1Synths = {
     //THALES
     "0x217d47011b23bb961eb6d93ca9945b7501a5bb11": ETH_THALES, 
@@ -93,6 +98,20 @@ async function polygon_tvl(_time, block, cb){
     return balances
 }
 
+async function arbitrum_tvl(_time, block, cb){
+    block = cb.arbitrum
+    const markets = await sdk.api.abi.call({
+        target: arbitrumMarketsManager,
+        abi: abi.activeMarkets,
+        block,
+        params:[0, 1000],
+        chain: "arbitrum"
+    })
+    const balances = {}
+    await sumTokensAndLPsSharedOwners(balances, [[arbitrum_USDC, false]], markets.output, block, "arbitrum")
+    return balances
+}
+
 function guniPool2(_time, chain="optimism") {
     return async (_timestamp, _ethBlock, chainBlocks) => {
         const block = chainBlocks[chain]
@@ -126,6 +145,11 @@ module.exports={
     polygon:{
         tvl: sdk.util.sumChainTvls([polygon_tvl, // USDC in all active markets
             staking(polygonThalesAmm, polygon_USDC, "polygon", ETH_USDC),
+        ])
+    },
+    arbitrum:{
+        tvl: sdk.util.sumChainTvls([arbitrum_tvl, // USDC in all active markets
+            staking(arbitrumThalesAMM, arbitrum_USDC, "arbitrum", ETH_USDC),
         ])
     }
 }

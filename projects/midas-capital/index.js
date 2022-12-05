@@ -12,7 +12,10 @@ const pools = {
       "0xd3E5AAFebBF06A071509cf894f665710dDaa800d", // Tester
       "0x35F3a59389Dc3174A98610727C2e349E275Dc909", // Ellipsis
       "0x3F239A5C45849391E7b839190597B5130780790d", // PancakeStack
-      "0x7f8B5fCA1a63C632776ffc9936D2e323c14B57f8", // tbd
+      "0x7f8B5fCA1a63C632776ffc9936D2e323c14B57f8", // Alpha Strategies
+      "0x20a0ED8c794F96C1479e2867995C99E931Ee36Ba", // Transfero Stables
+      "0x5EB884651F50abc72648447dCeabF2db091e4117", //Stader BNBx
+      "0xBc06411a6204B36ce6a5559FFBE3a56C5960F6fe", // pStake BNB
     ],
   },
   moonbeam: {
@@ -30,6 +33,11 @@ const pools = {
       "0xF1ABd146B4620D2AE67F34EA39532367F73bbbd2", // MIMO
     ],
   },
+  arbitrum: {
+    pools: [
+      "0x185Fa7d0e7d8A4FE7E09eB9df68B549c660e1116", // Risedle
+    ]
+  }
 };
 
 function getTvl(chain) {

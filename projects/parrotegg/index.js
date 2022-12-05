@@ -1,33 +1,9 @@
-const sdk = require("@defillama/sdk");
-const { transformArbitrumAddress, transformPolygonAddress, transformHarmonyAddress, getFixBalancesSync } = require("../helper/portedTokens");
+const { transformArbitrumAddress, transformPolygonAddress, getChainTransform, getFixBalancesSync, transformBalances, } = require("../helper/portedTokens");
 const { addFundsInMasterChef } = require('../helper/masterchef');
-const IOTEX_CG_MAPPING = require("./iotex_coingecko_mapping.json")
 const STAKING_CONTRACT_ARBITRUM = "0x1cCf20F4eE3EFD291267c07268BEcbFDFd192311"; //MASTERCHEF ARBITRUM
 const STAKING_CONTRACT_IOTEX = "0x83E7e97C4e92D56c0653f92d9b0c0B70288119b8";  // MASTERCHEF IOTEX
 const STAKING_CONTRACT_POLYGON = "0x34E4cd20F3a4FdC5e42FdB295e5A118D4eEB0b79";  // MASTERCHEF POLYGON
 const STAKING_CONTRACT_HARMONY = "0xFb15945E38a11450AF5E3FF20355D71Da72FfE8a";  // MASTERCHEF HARMONY
-
-function compareAddresses(a, b){
-    return a.toLowerCase() === b.toLowerCase()
-}
-
-async function transformIotexAddress() {
-    return (addr) => {
-        const dstToken = Object.keys(IOTEX_CG_MAPPING).find(token => compareAddresses(addr, token))
-        if (dstToken !== undefined) {
-            return IOTEX_CG_MAPPING[dstToken].contract || IOTEX_CG_MAPPING[dstToken].coingeckoId
-        }
-        return `iotex:${addr}`; 
-    }
-}
-
-function fixIotexBalances(balances){
-    for(const representation of ['zoomswap', 'metanyx', 'imagictoken', 'parrot-egg']){
-        if(balances[representation] !== undefined){
-            balances[representation] = Number(balances[representation])/1e18
-        }
-    }
-}
 
 const arbitrumTvl = async (timestamp, ethBlock, chainBlocks) => {
   const balances = {};
@@ -55,7 +31,7 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
 
 const harmonyTvl = async (timestamp, ethBlock, chainBlocks) => {
   const balances = {};
-  const transformAddress = await transformHarmonyAddress();
+  const transformAddress = await getChainTransform('harmony');
 
   await addFundsInMasterChef(
       balances, STAKING_CONTRACT_HARMONY, chainBlocks.harmony, 'harmony', transformAddress);
@@ -69,14 +45,11 @@ const harmonyTvl = async (timestamp, ethBlock, chainBlocks) => {
 
 const iotexTvl = async (timestamp, ethBlock, chainBlocks) => {
   const balances = {};
-  const transformAddress = await transformIotexAddress();
   
   await addFundsInMasterChef(
-      balances, STAKING_CONTRACT_IOTEX, chainBlocks.iotex, 'iotex', transformAddress);
+      balances, STAKING_CONTRACT_IOTEX, chainBlocks.iotex, 'iotex', i => i);
 
-  fixIotexBalances(balances);
-
-  return balances;
+  return transformBalances('iotex', balances);
 };
 
 module.exports={
