@@ -1,12 +1,15 @@
+//  npm i -f
+//  node test.js projects/clearpool/index.js
+
 const sdk = require("@defillama/sdk");
 const { sumTokens } = require("../helper/unwrapLPs");
 const abi = require("./abi.json");
 const { get } = require('../helper/http')
-const { staking } = require('./helper/staking')
+const { stakings } = require('../helper/staking')
 
 const PoolFactory = "0xde204e5a060ba5d3b63c7a4099712959114c2d48";
 const START_BLOCK = 14443222;
-const polygonPoolURL = 'https://api-v3.clearpool.finance/137/pools'
+const polygonPoolURL = 'https://app.clearpool.finance/api/pools'
 
 const ethereumTVL = async (timestamp, block, chainBlocks) => {
   const balances = {};
@@ -64,11 +67,13 @@ const ethereumBorrowed = async (timestamp, block, chainBlocks) => {
 const polygonTvl = async (timestamp, _,  { polygon: block }) => {
   const balances = {};
   const chain = 'polygon'
-  const poolData = await get(polygonPoolURL)
+  const poolAllData = await get(polygonPoolURL)
+  const poolData = poolAllData["137"]
+
   const tokensAndOwners = [];
   for (let i = 0; i < poolData.length; i++) {
     const pool = poolData[i].address;
-    const token = poolData[i].currency.address;
+    const token = poolData[i].currencyAddress;
     tokensAndOwners.push([token, pool]);
   }
   await sumTokens(balances, tokensAndOwners, block, chain);
@@ -77,7 +82,8 @@ const polygonTvl = async (timestamp, _,  { polygon: block }) => {
 
 const polygonBorrowed = async (timestamp, _,  { polygon: block }) => {
   const chain = 'polygon'
-  const poolData = await get(polygonPoolURL)
+  const poolAllData = await get(polygonPoolURL)
+  const poolData = poolAllData["137"]
   const totalBorrowed = {};
 
   const pools = []
@@ -85,7 +91,7 @@ const polygonBorrowed = async (timestamp, _,  { polygon: block }) => {
 
   for (let i = 0; i < poolData.length; i++) {
     const pool = poolData[i].address;
-    const token = poolData[i].currency.address;
+    const token = poolData[i].currencyAddress;
     pools.push(pool)
     tokens.push(token)
   }
@@ -107,7 +113,6 @@ const singleStakingContracts = [
 
 const CPOOL = "0x66761fa41377003622aee3c7675fc7b5c1c2fac5";
 
-//  node test.js projects/clearpool/index.js
 module.exports = {
   timetravel: false,
   ethereum: {
