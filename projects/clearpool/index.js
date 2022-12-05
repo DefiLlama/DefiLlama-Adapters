@@ -9,7 +9,7 @@ const { stakings } = require('../helper/staking')
 
 const PoolFactory = "0xde204e5a060ba5d3b63c7a4099712959114c2d48";
 const START_BLOCK = 14443222;
-const polygonPoolURL = 'https://api-v3.clearpool.finance/137/pools'
+const polygonPoolURL = 'http://app.clearpool.finance/api/pools'
 
 const ethereumTVL = async (timestamp, block, chainBlocks) => {
   const balances = {};
