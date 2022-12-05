@@ -5,7 +5,7 @@ const sdk = require("@defillama/sdk");
 const { sumTokens } = require("../helper/unwrapLPs");
 const abi = require("./abi.json");
 const { get } = require('../helper/http')
-const { staking } = require('./helper/staking')
+const { stakings } = require('../helper/staking')
 
 const PoolFactory = "0xde204e5a060ba5d3b63c7a4099712959114c2d48";
 const START_BLOCK = 14443222;
