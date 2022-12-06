@@ -1,5 +1,5 @@
 const { gql } = require("graphql-request");
-const { blockQuery } = require('../helper/graph')
+const { blockQuery } = require('../helper/http')
 const { getTokenPrices } = require('../helper/unknownTokens')
 const sdk = require('@defillama/sdk')
 const { getChainTransform } = require('../helper/portedTokens')
