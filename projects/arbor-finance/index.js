@@ -3,13 +3,14 @@ const { getLogs } = require('../helper/utils')
 
 const bondFactory = '0x1533eb8c6cc510863b496d182596ab0e9e77a00c'
 
-async function tvl(timestamp, block) {
+async function tvl(timestamp, block, chainBlocks) {
   
   const logs = await getLogs({
     fromBlock: 15785514,
-    toBlock: block,
+    timestamp, 
+    chainBlocks,
     topic: 'BondCreated(address,string,string,address,uint256,address,address,uint256,uint256,uint256)',
-    interface: 'event BondCreated (address newBond, string name, string symbol, address owner, uint256 maturity, address paymentToken, address collateralToken, uint256 collateralTokenAmount, uint256 convertibleTokenAmount, uint256 bonds)',
+    eventInterface: 'event BondCreated (address newBond, string name, string symbol, address owner, uint256 maturity, address paymentToken, address collateralToken, uint256 collateralTokenAmount, uint256 convertibleTokenAmount, uint256 bonds)',
     target: bondFactory,
   })
   const toa = logs.map(i => ([i.topics[3], i.newBond]))
