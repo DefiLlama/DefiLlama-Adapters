@@ -1,4 +1,5 @@
 const { graphFetchById, } = require('../helper/http')
+const { getNFTPrices, } = require('../helper/nft')
 
 const query = `
 query get_pairs($lastId: String, $block: Int) {
@@ -18,7 +19,11 @@ query get_pairs($lastId: String, $block: Int) {
 }`
 
 module.exports = {
-  methodology: 'Sum up all the ETH in pools',
+  methodology: 'Sum up all the ETH in pools and count whitelisted NFT values as well (price fetched from chainlink)',
+  misrepresentedTokens: true,
+  hallmarks: [
+    [Math.floor(new Date('2022-12-06')/1e3), 'TVL includes whitelisted nft value as well'],
+  ],
   ethereum: {
     tvl: async (timestamp, block, chainBlocks) => {
       const data = await graphFetchById({
@@ -28,14 +33,18 @@ module.exports = {
           timestamp, chain: 'ethereum', chainBlocks, useBlock: true,
         }
       })
+      const prices = await getNFTPrices({ block, })
 
-      let pureEthBalance = 0
-      data.forEach(({ ethBalance, }) => {
-        pureEthBalance += ethBalance/1e18
+      let total = 0
+      data.forEach(({ ethBalance, collection, numNfts}) => {
+        total += ethBalance/1e18
+        const price = prices[collection.id.toLowerCase()]
+        if (+numNfts > 0 && price)
+          total += numNfts * price/1e18
       })
 
       return {
-        ethereum: pureEthBalance
+        ethereum: total
       }
     }
   }
