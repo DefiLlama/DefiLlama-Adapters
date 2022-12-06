@@ -21,6 +21,7 @@ function tvl(network) {
 }
 
 module.exports = {
+  timetravel: false,
   misrepresentedTokens: true,
   ethereum: { tvl: tvl("mainnet") },
   polygon: { tvl: tvl("polygon") },
