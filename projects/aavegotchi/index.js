@@ -90,7 +90,7 @@ async function getGotchisCollateral(timestamp, block) {
 
 const polygonTvl = async (_, _block, chainBlocks) => {
   const balances = {};
-  const block = await getBlock(_, 'polygon', chainBlocks)
+  const block = await getBlock(_, 'polygon', chainBlocks) - 500
 
   let transformAddress = await transformPolygonAddress();
 
