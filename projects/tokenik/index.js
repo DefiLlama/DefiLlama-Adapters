@@ -23,7 +23,7 @@ module.exports = {
   timetravel: true,
   start: 1668416951, // Nov-14-2022 09:09:11 AM +UTC
   misrepresentedTokens: true,
-  methodology: `Tokenik's TVL consists of only staked RNIK on Ethereum until the official Tokenik v2 launch. At that time, the RNIK token contract will also deployed. Currently, the RNIK token is only a balance on the staking/rewards contracts with a value of $1 when used on the Tokenik platform.`,
+  methodology: `Tokenik's TVL consists of only staked RNIK on Ethereum until the official Tokenik v2 launch. At that time, the RNIK token contract will also deployed. Currently, the RNIK token is only a balance on the staking/rewards contracts with a value of $1 when used in the Tokenik ecosystem.`,
   ethereum: {
     tvl: () => ({}),
     staking: getStakedAmounts
