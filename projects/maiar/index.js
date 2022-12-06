@@ -1,4 +1,3 @@
-const { default: axios } = require("axios");
 const { request, gql } = require("graphql-request");
 const { toUSDTBalances } = require('../helper/balances')
 const { sumTokensExport } = require('../helper/sumTokens')
