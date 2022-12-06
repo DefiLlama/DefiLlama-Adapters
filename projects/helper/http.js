@@ -54,7 +54,7 @@ async function blockQuery(endpoint, query, block, blockCatchupLimit = 200) {
     const isBlockCatchupIssue = /Failed to decode.*block.number.*has only indexed up to block number \d+/.test(errorString)
     if (!isBlockCatchupIssue) throw e
     const indexedBlockNumber = +errorString.match(/indexed up to block number (\d+) /)[1]
-    log('We have indexed only upto ', indexedBlockNumber, 'requested block: ', block)
+    sdk.log('We have indexed only upto ', indexedBlockNumber, 'requested block: ', block)
     if (block - blockCatchupLimit > indexedBlockNumber)
       throw e
     return graphQLClient.request(query, { block: indexedBlockNumber })
