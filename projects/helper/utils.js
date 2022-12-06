@@ -3,6 +3,7 @@ const axios = require("axios");
 const sdk = require('@defillama/sdk')
 const http = require('./http')
 const erc20 = require('./abis/erc20.json')
+const ethers = require("ethers");
 
 async function returnBalance(token, address, block, chain) {
   const { output: decimals } = await sdk.api.erc20.decimals(token, chain)
@@ -327,6 +328,26 @@ async function fetchItemList({ chain, block, lengthAbi, itemAbi, target }) {
   return data
 }
 
+async function getLogs({ chain = 'ethereum', fromBlock, toBlock, topic, topics, keys = [], target, eventInterface, chainBlocks, timestamp }) {
+  if (!toBlock) 
+    toBlock = await http.getBlock(timestamp, chain, chainBlocks)
+
+  const { output: logs} = await sdk.api.util.getLogs({
+    chain, topics, target, topic, keys, fromBlock, toBlock, 
+  });
+
+  const getAddress = i => `0x${i.substr(-40)}`.toLowerCase()
+  if (!eventInterface) return logs.map(log => log.topics.map(getAddress))
+
+  let iface = new ethers.utils.Interface([eventInterface])
+  return logs.map((log) => {
+    const res = {...iface.parseLog(log).args}
+    if (!res.topics )
+      res.topics = log.topics.map(getAddress)
+    return res
+  })
+}
+
 module.exports = {
   DEBUG_MODE,
   log,
@@ -350,4 +371,5 @@ module.exports = {
   getDecimals,
   getParamCalls,
   fetchItemList,
+  getLogs,
 }

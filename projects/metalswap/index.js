@@ -20,6 +20,7 @@ const config = {
       '0xcbF519299A115e325d6C82b514358362A9CA6ee5', // Iron Pool 180 days
       '0xaF9101314b14D8e243e1D519c0dd4e69DFd44466', // Iron Pool 360 days
       '0x6b392C307E0Fe2a8BE3687Bc780D4157592F4aC2', // nft Pre order
+      '0x65e4FCDf4C0F6D8C5eA4842B5B7f4a9FF68bC0d6', // Smart Pool 6 months + 3 months 
     ],
   },
   bsc: {
@@ -29,7 +30,8 @@ const config = {
       '0xd38b66aACA9819623380f60814308c6594E2DC26', // Pool 30 days
       '0xd9b5b86De1F696dFe290803b92Fe5e9baCa9371A', // Pool 60 days
       '0x306825856807321671d21d4A2A9a65b02CCB51db', // Smart Pool 3 months + 3 months
-      '0x842fDf4A6e861983D3Ef9299bF26EFC1FDB1Ba7A', // Smart Pool 2
+      '0x842fDf4A6e861983D3Ef9299bF26EFC1FDB1Ba7A', // Smart Pool 2 months + 6 months
+      '0x799BfC125170ab4dF34E9dC07DB47AA0edB9bC7C', // Smart Pool 6 months + 6 months
     ],
   },
 }

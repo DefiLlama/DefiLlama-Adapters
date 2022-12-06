@@ -1,6 +1,6 @@
 const { GraphQLClient, gql } = require('graphql-request')
 const { transformPolygonAddress } = require('../helper/portedTokens');
-const { getBlock } = require('../helper/getBlock')
+const { getBlock } = require('../helper/http')
 const sdk = require('@defillama/sdk')
 
 

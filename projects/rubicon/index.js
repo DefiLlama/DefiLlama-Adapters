@@ -1,4 +1,3 @@
-const { getBlock } = require('../helper/getBlock')
 const {transformOptimismAddress} = require('../helper/portedTokens')
 const {sumTokensAndLPsSharedOwners} = require('../helper/unwrapLPs')
 
