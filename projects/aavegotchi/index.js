@@ -3,6 +3,7 @@ const { staking } = require("../helper/staking");
 const { transformPolygonAddress } = require("../helper/portedTokens");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const { request, gql } = require("graphql-request");
+const { getBlock } = require('../helper/http')
 
 const vaultContractETH = "0xFFE6280ae4E864D9aF836B562359FD828EcE8020";
 const tokensETH = [
@@ -86,8 +87,9 @@ async function getGotchisCollateral(timestamp, block) {
   return gotchisBalances;
 }
 
-const polygonTvl = async (_, _block, {polygon: block}) => {
+const polygonTvl = async (_, _block, chainBlocks) => {
   const balances = {};
+  const block = await getBlock(_, 'polygon', chainBlocks) - 500
 
   let transformAddress = await transformPolygonAddress();
 
