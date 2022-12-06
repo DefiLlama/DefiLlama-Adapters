@@ -85,4 +85,5 @@ module.exports = {
   graphQuery,
   covalentGetTokens,
   graphFetchById,
+  getBlock,
 }

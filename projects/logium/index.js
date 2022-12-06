@@ -1,6 +1,6 @@
 
 
-const { getBlock } = require('../helper/getBlock')
+const { getBlock } = require('../helper/http')
 const { providers } = require('@defillama/sdk/build/general');
 const { Contract } = require('ethers')
 const { sumTokens2 } = require('../helper/unwrapLPs')
