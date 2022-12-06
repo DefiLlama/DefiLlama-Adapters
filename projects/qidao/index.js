@@ -4,7 +4,6 @@ const abi = require("./abi.json");
 const { BigNumber } = require("bignumber.js");
 const { getFixBalancesSync, getChainTransform } = require("../helper/portedTokens");
 const { handleYearnTokens } = require("../creditum/helper.js");
-const { getBlock } = require('../helper/getBlock');
 
 async function handleMooTokens(balances, block, chain, tokens) {
   const transformAddress = await getChainTransform(chain)
@@ -653,11 +652,10 @@ async function arbitrum (timestamp, block, chainBlocks) {
   return balances;
 }
 
-async function moonbeam (timestamp, ethblock, chainBlocks) {
+async function moonbeam (timestamp, ethblock, { moonbeam: block}) {
   const balances = {};
   let chain = "moonbeam"
   const transformAddress = await getChainTransform(chain)
-  const block = await getBlock(timestamp, "moonbeam", chainBlocks)
 
   await sumTokens(
     balances,
