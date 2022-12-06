@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 
 const { request, gql } = require("graphql-request");
-const { getBlock } = require("../helper/getBlock");
+const { getBlock } = require("../helper/http");
 const { getChainTransform } = require("../helper/portedTokens");
 
 const GRAPH_URLS = {

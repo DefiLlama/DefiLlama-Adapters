@@ -1,7 +1,6 @@
 const sdk = require('@defillama/sdk')
 const {transformPolygonAddress} = require('../helper/portedTokens')
 
-const { getBlock } = require('../helper/getBlock');
 const { staking } = require('../helper/staking');
 
 const FACTORY =  '0x8C1EB1e5325049B412B7E71337116BEF88a29b3A';
@@ -13,7 +12,7 @@ const startBlocks = {
 function chainTvl(chain) {
   return async (timestamp, ethBlock, chainBlocks) => {
     const  START_BLOCK = startBlocks[chain]
-    const block = await getBlock(timestamp, chain, chainBlocks)
+    const block = chainBlocks[chain]
     const logs = (
       await sdk.api.util.getLogs({
         keys: [],

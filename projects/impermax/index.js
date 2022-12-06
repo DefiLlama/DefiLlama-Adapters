@@ -1,7 +1,7 @@
 const { staking } = require('../helper/staking')
 const { request, gql } = require("graphql-request");
 const { toUSDTBalances } = require('../helper/balances');
-const { getBlock } = require('../helper/getBlock');
+const { getBlock } = require('../helper/http');
 const xIMX = "0x363b2deac84f0100d63c7427335f8350f596bf59";
 const IMX = "0x7b35ce522cb72e4077baeb96cb923a5529764a00";
 
