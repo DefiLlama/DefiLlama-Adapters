@@ -1,33 +1,42 @@
-const sdk = require('@defillama/sdk')
-const { nullAddress, sumTokens2 } = require('../helper/unwrapLPs')
-const { sliceIntoChunks, log, } = require('../helper/utils')
+const { graphFetchById, } = require('../helper/http')
+
+const query = `
+query get_pairs($lastId: String, $block: Int) {
+  pairs(
+    first: 1000
+    block: { number: $block }
+    where: {id_gt: $lastId}
+    ) {
+    id
+    ethBalance
+    collection {
+      id
+    }
+    spotPrice
+    numNfts
+  }
+}`
 
 module.exports = {
   methodology: 'Sum up all the ETH in pools',
   ethereum: {
-    tvl: async (_, block) => {
-      const chain = 'ethereum'
-      const PairFactory = '0xb16c1342E617A5B6E4b631EB114483FDB289c0A4'
-      const logs = await sdk.api.util.getLogs({
-        keys: [],
-        toBlock: block,
-        target: PairFactory,
-        fromBlock: 14650107,
-        topic: 'NewPair(address)',
+    tvl: async (timestamp, block, chainBlocks) => {
+      const data = await graphFetchById({
+        endpoint: 'https://api.thegraph.com/subgraphs/name/zeframlou/sudoswap',
+        query,
+        options: {
+          timestamp, chain: 'ethereum', chainBlocks, useBlock: true,
+        }
       })
 
-      // TODO: improve logic here, might end up with too many pools
-      const ownersList = logs.output.map(i => `0x${i.data.substring(26, 66)}`)
-      log('List of owners: %s', ownersList.length)
+      let pureEthBalance = 0
+      data.forEach(({ ethBalance, }) => {
+        pureEthBalance += ethBalance/1e18
+      })
 
-      const ownerArrays = sliceIntoChunks(ownersList, 100)
-      const balances = {}
-      let i = 0
-      for (const owners of ownerArrays) {
-        log('fetching %s of %s', ++i, ownerArrays.length)
-        await sumTokens2({ tokens: [nullAddress], owners, chain, block, balances, })
+      return {
+        ethereum: pureEthBalance
       }
-      return balances
     }
   }
 }
