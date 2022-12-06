@@ -328,17 +328,22 @@ async function fetchItemList({ chain, block, lengthAbi, itemAbi, target }) {
   return data
 }
 
-async function getLogs({ chain = 'ethereum', fromBlock, toBlock, topic, topics, keys = [], target, interface, }) {
+async function getLogs({ chain = 'ethereum', fromBlock, toBlock, topic, topics, keys = [], target, eventInterface, chainBlocks, timestamp }) {
+  if (!toBlock) 
+    toBlock = await http.getBlock(timestamp, chain, chainBlocks)
+
   const { output: logs} = await sdk.api.util.getLogs({
     chain, topics, target, topic, keys, fromBlock, toBlock, 
   });
-  if (!interface) return logs
 
-  let iface = new ethers.utils.Interface([interface])
+  const getAddress = i => `0x${i.substr(-40)}`.toLowerCase()
+  if (!eventInterface) return logs.map(log => log.topics.map(getAddress))
+
+  let iface = new ethers.utils.Interface([eventInterface])
   return logs.map((log) => {
     const res = {...iface.parseLog(log).args}
     if (!res.topics )
-      res.topics = log.topics.map(j => `0x${j.substr(-40)}`.toLowerCase())
+      res.topics = log.topics.map(getAddress)
     return res
   })
 }
