@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk');
 const abi = require('./ABI.json');
-const { getTokens } = require('../helper/getTokens');
+const { covalentGetTokens } = require('../helper/http');
 const { getChainTransform } = require('../helper/portedTokens');
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
@@ -29,7 +29,7 @@ const CONTRACTS = {
 
 function getTVLFunc(contractAddress, chain) {
   return async function (timestamp, _, { [chain]: block }) {
-    const tokens = await getTokens(contractAddress, chain);
+    const tokens = await covalentGetTokens(contractAddress, chain);
     return sumTokens2({ owner: contractAddress, tokens, blacklistedTokens: [CONTRACTS[chain].RAIL], chain, block, })
   }
 }
