@@ -14,7 +14,7 @@ const nullAddress = '0x0000000000000000000000000000000000000000'
 
 const unsupportedGeckoChains = ['aptos', 'terra2', 'terra', 'kujira']
 const ibcChains = ['terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', ]
-const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', ]
+const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', ]
 
 const tokens = {
   null: nullAddress,
@@ -1234,6 +1234,14 @@ const fixBalancesTokens = {
     "erd1qqqqqqqqqqqqqpgq3ahw8fctzfnwgvq2g4hjsqzkkvgl9ksr2jps646dnj": { coingeckoId: "coingecko:vital-network", decimals: 0 },
     "WEGLD-bd4d79": { coingeckoId: "coingecko:wrapped-elrond", decimals: 0 },
     "MEX-455c57": { coingeckoId: "coingecko:maiar-dex", decimals: 0 },
+  },
+  ton: {
+    [nullAddress]: { coingeckoId: "coingecko:the-open-network", decimals: 9 },
+    "EQDQoc5M3Bh8eWFephi9bClhevelbZZvWhkqdo80XuY_0qXv": { coingeckoId: "coingecko:the-open-network", decimals: 9 },
+    "EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c": { coingeckoId: "coingecko:the-open-network", decimals: 9 },
+    "EQAW42HutyDem98Be1f27PoXobghh81umTQ-cGgaKVmRLS7-": { coingeckoId: "coingecko:ethereum", decimals: 18 },
+    "EQC61IQRl0_la95t27xhIpjxZt32vl1QQVF2UgTNuvD18W-4": { coingeckoId: "coingecko:usd-coin", decimals: 6 },
+    "EQC_1YoM8RBixN95lz7odcF3Vrkc_N8Ne7gQi7Abtlet_Efi": { coingeckoId: "coingecko:tether", decimals: 6 },
   }
 }
 
