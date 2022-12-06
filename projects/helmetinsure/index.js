@@ -1,4 +1,4 @@
-const { blockQuery } = require('../helper/graph')
+const { blockQuery } = require('../helper/http')
 const { getBlock } = require('../helper/getBlock')
 const sdk = require('@defillama/sdk')
 const { gql } = require('graphql-request')
