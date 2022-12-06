@@ -1,0 +1,17 @@
+{
+    "accumulated": {
+        "constant": true,
+        "inputs": [],
+        "name": "accumulated",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    }
+}
