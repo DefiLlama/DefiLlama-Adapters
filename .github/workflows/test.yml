@@ -27,7 +27,7 @@ jobs:
 
           npm remove typescript @types/async-retry @types/bn.js ts-node @solendprotocol/solend-sdk
           npm ci --omit=dev
-          npm update @defillama/sdk
+          # npm update @defillama/sdk
 
           for i in $(echo $RUN_FILES | tr  -d '"[]' | tr "," "\n")
           do 

@@ -1,10 +1,9 @@
 const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
-const { pool2s } = require("../helper/pool2");
 const { transformPolygonAddress } = require("../helper/portedTokens");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const { request, gql } = require("graphql-request");
-const { getBlock } = require('../helper/getBlock')
+const { getBlock } = require('../helper/http')
 
 const vaultContractETH = "0xFFE6280ae4E864D9aF836B562359FD828EcE8020";
 const tokensETH = [

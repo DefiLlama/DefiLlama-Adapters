@@ -1,8 +1,7 @@
 const { request, gql } = require("graphql-request");
 const { toUSDTBalances } = require('../helper/balances');
-const { getBlock } = require('../helper/getBlock')
+const { getBlock } = require('../helper/http')
 const { getUniTVL } = require("../helper/unknownTokens")
-const { sumTokens2 } = require('../helper/unwrapLPs')
 const sdk = require('@defillama/sdk');
 const { getChainTransform } = require("../helper/portedTokens");
 
@@ -197,7 +196,7 @@ module.exports = {
 module.exports.polygon.tvl = getChainTVL('polygon')
 // module.exports.bsc.tvl = getChainTVL('bsc')
 module.exports.fantom.tvl = getChainTVL('fantom')
-module.exports.harmony.tvl = getChainTVL('harmony')
+// module.exports.harmony.tvl = getChainTVL('harmony')
 
 async function kavaTridentTvl(ts, _b, cb) {
   const chain = 'kava'

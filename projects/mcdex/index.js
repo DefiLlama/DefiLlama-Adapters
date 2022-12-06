@@ -1,8 +1,8 @@
 const sdk = require('@defillama/sdk');
 const {gql} = require('graphql-request')
-const { blockQuery } = require('../helper/graph')
+const { blockQuery } = require('../helper/http')
 const {toUSDTBalances} = require('../helper/balances');
-const {getBlock} = require('../helper/getBlock');
+const {getBlock} = require('../helper/http');
 
 const axios = require('axios');
 

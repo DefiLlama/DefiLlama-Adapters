@@ -1,5 +1,5 @@
-const { blockQuery } = require('../helper/graph')
-const { getBlock } = require('../helper/getBlock')
+const { blockQuery } = require('../helper/http')
+const { getBlock } = require('../helper/http')
 const sdk = require('@defillama/sdk')
 const { gql } = require('graphql-request')
 const CHAIN_POLYGON = 'polygon'
