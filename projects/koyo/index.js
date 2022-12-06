@@ -2,7 +2,7 @@ const sdk = require("@defillama/sdk");
 const constants = require("./constants");
 const { requery } = require("../helper/requery");
 const { chainJoinExports, chainTypeExports } = require("./utils");
-const { getBlock } = require("../helper/getBlock");
+const { getBlock } = require("../helper/http");
 const { staking } = require("../helper/staking");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const {

@@ -650,6 +650,7 @@ const fixBalancesTokens = {
     "0x98aedff55dcc2e7a7d1899b325d1680527dd2742": { coingeckoId: "aave-usdt", decimals: 6 },
     "0x2ff5371dad5c6ef76d55213b7c5a519f6654ba17": { coingeckoId: "aave-dai", decimals: 18 },
     "0xe9a88c33abf71c902f7581321d05e6516cbca761": { coingeckoId: "aave-dai", decimals: 18 },
+    "0xd2137fdf10bd9e4e850c17539eb24cfe28777753": { coingeckoId: "krome-stablecoin-bad", decimals: 18 },
   },
   evmos: {
     "0x3F75ceabcdfed1aca03257dc6bdc0408e2b4b026": { coingeckoId: "diffusion", decimals: 18 },

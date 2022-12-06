@@ -1,8 +1,7 @@
 const { request, gql } = require("graphql-request");
 const { toUSDTBalances } = require('../helper/balances');
-const { getBlock } = require('../helper/getBlock')
+const { getBlock } = require('../helper/http')
 const { getUniTVL } = require("../helper/unknownTokens")
-const { sumTokens2 } = require('../helper/unwrapLPs')
 const sdk = require('@defillama/sdk');
 const { getChainTransform } = require("../helper/portedTokens");
 

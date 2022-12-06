@@ -2,9 +2,7 @@ const sdk = require('@defillama/sdk');
 const { transformPolygonAddress } = require('../helper/portedTokens');
 const abi = require("./abi.json");
 const { request, gql } = require("graphql-request");
-const { getBlock } = require('../helper/getBlock')
-
-
+const { getBlock } = require('../helper/http')
 
 const VGHST_CONTRACT = "0x51195e21BDaE8722B29919db56d95Ef51FaecA6C";
 const GHST_CONTRACT = "0x385Eeac5cB85A38A9a07A70c73e0a3271CfB54A7";
