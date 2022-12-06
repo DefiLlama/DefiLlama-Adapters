@@ -50,7 +50,7 @@ const bscTvl = async (ts, _b, { bsc: block }) => {
   ].map(i => i.toLowerCase())
 
   const chain = 'bsc'
-  const cache = getCache(project, chain) || { vaults: {} }
+  const cache = await getCache(project, chain) || { vaults: {} }
   const balances = {}
   const contracts = [
     deepLockLockerContractV1,
@@ -67,7 +67,7 @@ const bscTvl = async (ts, _b, { bsc: block }) => {
   allBalances.forEach(balance => {
     Object.entries(balance).forEach(([token, val]) => sdk.util.sumSingleBalance(balances, token, val))
   })
-  setCache(project, chain, cache)
+  await setCache(project, chain, cache)
 
   delete balances['bsc:0x60de5f9386b637fe97af1cc05f25548e9baaee19'] // remove deeplock token from tvl calculation
   delete balances['bsc:0x64f36701138f0e85cc10c34ea535fdbadcb54147'] // remove Anon INU - incorrect price

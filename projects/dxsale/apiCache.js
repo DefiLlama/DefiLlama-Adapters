@@ -34,7 +34,7 @@ function getTVLTotal(args) {
     let balances = {};
     const chain = args.chain;
     const block = chainBlocks[chain];
-    const cache = getCache(project, chain) || {}
+    const cache = await getCache(project, chain) || {}
     if (!cache.v3LPData) cache.v3LPData = []
     if (!cache.lockContracts) cache.lockContracts = {}
 
@@ -44,7 +44,7 @@ function getTVLTotal(args) {
     for (const lock of args.locks)
       await addlockLPs(lock)
 
-    setCache(project, chain, cache)
+    await setCache(project, chain, cache)
     return balances;
 
     async function addlockLPs(lockContract) {

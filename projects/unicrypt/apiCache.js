@@ -14,7 +14,7 @@ function tvl(args) {
     for (let i = 0; i < args.length; i++) {
       const chain = args[i].chain
       const contract = args[i].contract.toLowerCase()
-      const cache = getCache(project, chain)
+      const cache = await getCache(project, chain)
       if (!cache.vaults) cache.vaults = {}
       if (!cache.vaults[contract]) cache.vaults[contract] = { tokens: [] }
       const cCache = cache.vaults[contract]
@@ -61,7 +61,7 @@ function tvl(args) {
 
       for (const [token, balance] of Object.entries(balances))
         sdk.util.sumSingleBalance(totalBalances, token, balance)
-      setCache(project, chain, cache)
+      await setCache(project, chain, cache)
     }
     return totalBalances
   }

@@ -12,7 +12,7 @@ function getTvl(args) {
       const contractAddress = args[i].contract
       const abi = args[i].contractABI
       const chain = args[i].chain
-      const cache = getCache(project, chain) || { vaults: {} }
+      const cache = await getCache(project, chain) || { vaults: {} }
       if (!cache.vaults) cache.vaults = {}
       if (!cache.vaults[contractAddress]) cache.vaults[contractAddress] = { lastTotalId: 0, tokens: [], }
       const cCache = cache.vaults[contractAddress]
@@ -54,7 +54,7 @@ function getTvl(args) {
         block, chain,
         blacklist: args[i].blacklist,
       })
-      setCache(project, chain, cache)
+      await setCache(project, chain, cache)
 
       for (const [token, balance] of Object.entries(balances))
         sdk.util.sumSingleBalance(totalBalances, token, balance)
