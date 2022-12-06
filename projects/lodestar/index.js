@@ -3,7 +3,9 @@ const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
 const v1abi = require('./v1Abi.json');
 const utils = require("../helper/utils");
-const BigNumber = require('bignumber.js');
+// const BigNumber = require('bignumber.js');
+const { BigNumber } = require("ethers");
+const { ethers } = require("ethers")
 const { lendingMarket } = require('../helper/methodologies')
 
 // cache some data
@@ -82,6 +84,42 @@ const markets = [
   }
 ];
 
+const CTOKEN_WETH = '0xb4d58C1F5870eFA4B05519A72851227F05743273'.toLowerCase()
+
+// ask comptroller for all markets array
+async function getAllCTokens() {
+  return (await sdk.api.abi.call({
+    target: '0x8f2354F9464514eFDAe441314b8325E97Bf96cdc',
+    params: [],
+    abi: abi['getAllMarkets'],
+    chain: "arbitrum"
+  })).output;
+}
+
+async function getMarkets(block) {
+  if (block < 10271924) {
+    // the allMarkets getter was only added in this block.
+    return markets;
+  } else {
+    const markets = [{
+      cToken: CTOKEN_WETH,
+      underlying: '0x82af49447d8a07e3bd95bd0d56f35241523fbab1', //cETH => WETH
+    }]
+
+    const allCTokens = await getAllCTokens()
+    const calls = allCTokens.filter(i => i.toLowerCase() !== CTOKEN_WETH).map(i => ({ target: i }))
+    const { output } = await sdk.api.abi.multiCall({
+      abi: abi['underlying'], calls, chain: "arbitrum",
+    })
+    output.forEach(({ input: { target: cToken }, output: underlying}) => markets.push({ cToken, underlying, }))
+    // const { decimals } = await sdk.api.abi.multiCall({
+    //   abi: abi['underlying'], calls, chain: "arbitrum",
+    // })
+    return markets;
+  }
+}
+
+
 async function tvl(timestamp, block) {
   let balance = calculateTVLUSD();
   // await v1Tvl(balances, block, false)
@@ -92,7 +130,12 @@ async function tvl(timestamp, block) {
 async function calculateTVLUSD() {
   let finalOutput = {}
 
+  // TODO: get markets, underlying, and decimals
+  // and build into above markets shape dynamically once below calculation is working
+
+  // let markets = await getMarkets()
   // console.log(markets)
+
   // gather borrows
   let cTokenBorrows = (
     await sdk.api.abi.multiCall({
@@ -133,6 +176,10 @@ async function calculateTVLUSD() {
     finalOutput[ctoken.input.params[0]] = Object.assign({}, {'oraclePrice': ctoken.output}, finalOutput[ctoken.input.params[0]])
   })
 
+  for (const [key, value] of Object.entries(markets)) {
+    finalOutput[value['cToken']] = Object.assign({}, {'decimals': value['decimals']}, finalOutput[value['cToken']])
+  }
+
   let usdcPrice = (
     await sdk.api.abi.call({
       target: '0xcC3D0d211dF6157cb94b5AaCfD55D41acd3a9A7A',
@@ -142,23 +189,87 @@ async function calculateTVLUSD() {
     })
   ).output;
 
-  // console.log('price', usdcPrice)
-
   finalOutput.usdcPrice = usdcPrice
 
-  // iterate over final output, get decimals from market object put in final object,
-  // then add cash + borrows + convert price to eth for each market, sum up, convert total sum to usdc = tvl?
+  try {
+    for (const [key, value] of Object.entries(finalOutput)) {
+      if (value['borrowAmount']) {
+        let borrowAmount = ethers.BigNumber.from((value['borrowAmount']).toString());
+        let cashAmount = ethers.BigNumber.from((value['cashAmount']).toString());
+        let oraclePrice = ethers.BigNumber.from((value['oraclePrice']).toString());
+
+        const underlyingDecimals = value['decimals'];
+        const decimalScale = 18 - underlyingDecimals;
+        const decimalExp = (10 ** decimalScale).toString();
+        let denominator = ethers.BigNumber.from(decimalExp);
+
+        let borrowAmountInETH = borrowAmount.mul(oraclePrice).div(denominator);
+        let cashAmountInETH = cashAmount.mul(oraclePrice).div(denominator);
+        let summedAmountInETH = cashAmountInETH.add(borrowAmountInETH);
+        // console.log('cashAmountInETH', cashAmountInETH)
+        finalOutput[key] = Object.assign({}, {'cashAmountInETH': cashAmountInETH}, finalOutput[key]);
+        finalOutput[key] = Object.assign({}, {'borrowAmountInETH': borrowAmountInETH}, finalOutput[key]);
+        finalOutput[key] = Object.assign({}, {'summedAmountInETH': summedAmountInETH}, finalOutput[key]);
+      }
+    }
+  } catch(error) {
+    console.log('hit an error iterating finalOutput', error)
+  };
+
+  try {
+    let tvlInETH = ethers.BigNumber.from(0);
+    console.log('starting tvlInETH', tvlInETH)
+    for (const [key, value] of Object.entries(finalOutput)) {
+      let _summedAmountInETH = value['summedAmountInETH'];
+      // console.log('_summedAmountInETHhere', key, _summedAmountInETH)
+      // console.log('_usdcPrice here', key, _usdcPrice)
+
+      // ignore the usdcPrice entry and any others that aren't token related
+      // sum up everything else
+      if (_summedAmountInETH) {
+        tvlInETH = tvlInETH.add(_summedAmountInETH)
+        // console.log('tvlInETH', tvlInETH)
+      }
+      // let cashAmount = ethers.BigNumber.from((value['cashAmount']).toString());
+      // let oraclePrice = ethers.BigNumber.from((value['oraclePrice']).toString());
+
+      // const underlyingDecimals = value['decimals'];
+      // const decimalScale = 18 - underlyingDecimals;
+      // const decimalExp = (10 ** decimalScale).toString();
+      // let denominator = ethers.BigNumber.from(decimalExp);
+
+      // let borrowAmountInETH = borrowAmount.mul(oraclePrice).div(denominator);
+      // let cashAmountInETH = cashAmount.mul(oraclePrice).div(denominator);
+      // let summedAmountInETH = cashAmountInETH.add(borrowAmountInETH);
+      // // console.log('cashAmountInETH', cashAmountInETH)
+      // finalOutput[key] = Object.assign({}, {'cashAmountInETH': cashAmountInETH}, finalOutput[key]);
+      // finalOutput[key] = Object.assign({}, {'borrowAmountInETH': borrowAmountInETH}, finalOutput[key]);
+      // finalOutput[key] = Object.assign({}, {'summedAmountInETH': summedAmountInETH}, finalOutput[key]);
+    }
+    let tvlInETHFixed = parseFloat(tvlInETH).toFixed(2)
+    let tvlInETHString = tvlInETHFixed.toString()
+    console.log('final tvlInETH', tvlInETH)
+    console.log('final tvlInETHFixed', tvlInETHFixed)
+    console.log('final tvlInETHString', tvlInETHString)
+    console.log('final tvlInUSDC', tvlInETH.mul(finalOutput.usdcPrice))
+    console.log('final tvlInUSDC',  parseFloat((tvlInETH.mul(finalOutput.usdcPrice))).toFixed(2))
+  } catch(error) {
+    console.log('hit an error iterating finalOutput', error)
+  };
+
+  // console.log('done???')
+  // console.log('finalOutput', finalOutput)
+  // (b.underlyingBorrowBalance * (e.value / POWER(10, (18-f.underlyingTokenDecimals)))) as underlying_borrow_value_in_eth,
+
+  // add cash + borrows + convert price to eth for each market, sum up, convert total sum to usdc = tvl?
 
   // multiply two numbers together and divide by 1e18 (borrow*price)/1e18 = borrow price in eth,
   // same for supply with cash, add two together to get summed price in ether wei
-
 
     // for loop
     // extract value calculate
     // bignumber stuff
     // return = final tvl in usd in bignumber.toFixed()
-
-
 
   // console.log('top', finalOutput)
 }
