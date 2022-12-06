@@ -55,6 +55,7 @@ module.exports = {
   doublecounted: true,
   hallmarks: [
     [1651881600, "UST depeg"],
+    [1669208855, "Add more tokens to the Adapter"]
   ]
 };
 
