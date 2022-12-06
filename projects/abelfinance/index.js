@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const { default: BigNumber } = require("bignumber.js");
 const { getResources, } = require("../helper/chain/aptos");
 const { transformBalances } = require("../helper/portedTokens");
 
@@ -22,7 +21,7 @@ module.exports = {
       const data = await _getResources()
       const coinContainers = data.filter(reserveContrainerFilter)
         .map((i) => ({
-          lamports: i.data.total_supply.value,
+          lamports: i.data.total_supply - i.data.total_borrows,
           tokenAddress: extractCoinAddress(i.type),
         }));
 
@@ -37,7 +36,7 @@ module.exports = {
       const data = await _getResources()
       const coinContainers = data.filter(reserveContrainerFilter)
         .map((i) => ({
-          lamports: i.data.total_borrows.value,
+          lamports: i.data.total_borrows,
           tokenAddress: extractCoinAddress(i.type),
         }));
 
