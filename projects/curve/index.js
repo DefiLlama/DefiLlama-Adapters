@@ -8,7 +8,6 @@ const creamAbi = require("../helper/abis/cream.json");
 const contracts = require("./contracts.json");
 const { requery } = require("../helper/requery");
 const { get } = require('../helper/http')
-const { getBlock } = require("../helper/getBlock");
 const chains = [
   "ethereum", //-200M
   "polygon", //-40M
@@ -337,7 +336,7 @@ function tvl(chain) {
     let balances = {};
     const transform = await getChainTransform(chain);
     const poolList = await getPools(chainBlocks[chain], chain);
-    const block = await getBlock(_t, chain, chainBlocks, true);
+    const block = chainBlocks[chain];
 
     for (let registry of Object.keys(poolList)) {
       await unwrapPools(
@@ -370,7 +369,7 @@ const chainTypeExports = chains => {
         // harmony hack
         return {};
       }
-      const block = await getBlock(ts, "harmony", chainB, true);
+      const block = chainB.harmony
       const balances = {};
       await sumTokensSharedOwners(
         balances,
@@ -388,7 +387,7 @@ const chainTypeExports = chains => {
   };
   exports.kava = {
     tvl: async (ts, ethB, chainB) => {
-      const block = await getBlock(ts, "kava", chainB, true);
+      const block = chainB.kava;
       const balances = {};
       await sumTokensSharedOwners(
         balances,

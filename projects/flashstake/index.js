@@ -1,7 +1,7 @@
 const abi = require("./abi.json");
 const sdk = require('@defillama/sdk');
 const { GraphQLClient, gql } = require('graphql-request')
-const { getBlock } = require('../helper/getBlock');
+const { getBlock } = require('../helper/http');
 const { log } = require('../helper/utils');
 const { get } = require('../helper/http')
 

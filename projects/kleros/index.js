@@ -1,5 +1,5 @@
 const { request, gql } = require("graphql-request");
-const { getBlock } = require('../helper/getBlock')
+const { getBlock } = require('../helper/http')
 
 const graphUrls = {
   ethereum: 'https://api.thegraph.com/subgraphs/name/salgozino/klerosboard',

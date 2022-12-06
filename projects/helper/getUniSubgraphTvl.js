@@ -1,7 +1,6 @@
 const { request, gql } = require("graphql-request");
 const { toUSDTBalances } = require('../helper/balances');
-const { getBlock } = require('../helper/getBlock');
-const { blockQuery } = require('./graph')
+const { blockQuery, getBlock, } = require('./http')
 
 function getChainTvl(graphUrls, factoriesName = "uniswapFactories", tvlName = "totalLiquidityUSD", blockCatchupLimit = 500) {
   const graphQuery = gql`

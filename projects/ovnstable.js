@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const { getBlock } = require('./helper/getBlock')
 
 const m2m = {
     polygon: "0x33efB0868A6f12aEce19B451e0fcf62302Ec4A72",
@@ -34,8 +33,7 @@ module.exports = {};
 Object.keys(m2m).forEach(chain => {
   module.exports[chain] = {
     tvl: async (_, _b, cb) => {
-        const block = await getBlock(_, chain, cb)
-        //console.log(_ ,chain, block)
+        const block = cb[chain]
         const { output } = await sdk.api.abi.call({ chain, block, abi, target: m2m[chain]})
         return {
             [`${chain}:${assets[chain]}`]: output
