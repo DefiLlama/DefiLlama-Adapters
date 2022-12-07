@@ -2,34 +2,48 @@
 const uniswapAbi = require('../abis/uniswap')
 const { getCache, setCache, } = require('../cache');
 const { transformBalances, transformDexBalances, } = require('../portedTokens')
+const { getCoreAssets, } = require('../tokenMapping')
 const sdk = require('@defillama/sdk')
 
-function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitelist = [], factory, transformAddress,
-  skipPair = [],
+function getUniTVL({ chain = 'ethereum', coreAssets, blacklist = [], factory,
   useDefaultCoreAssets = false,
   abis = {},
 }) {
-  if (!coreAssets.length && useDefaultCoreAssets)
+  if (!coreAssets && useDefaultCoreAssets)
     coreAssets = getCoreAssets(chain)
-  const abi = {...uniswapAbi, ...abis}
+  const abi = { ...uniswapAbi, ...abis }
 
   return async (ts, _block, { [chain]: block }) => {
-    let pairAddresses;
-    const pairLength = (await sdk.api.abi.call({ target: factory, abi: abi.allPairsLength, chain, block })).output
+    const data = []
+    const balances = {}
+    const length = await sdk.api2.abi.call({ abi: abi.allPairsLength, target: factory, chain, block, })
+    sdk.log(chain, ' No. of pairs: ', length)
+    const pairCalls = []
+    for (let i = 0; i < length; i++)
+      pairCalls.push(i)
 
-    log(chain, ' No. of pairs: ', pairLength)
+    const calls = await sdk.api2.abi.multiCall({ block, chain, abi: abi.allPairs, calls: pairCalls, target: factory })
+    const token0s = await sdk.api2.abi.multiCall({ abi: abi.token0, chain, block, calls })
+    const token1s = await sdk.api2.abi.multiCall({ abi: abi.token1, chain, block, calls })
+    const reserves = await sdk.api2.abi.multiCall({ abi: abi.getReserves, chain, block, calls })
 
-    let pairNums = Array.from(Array(Number(pairLength)).keys())
-    if (skipPair.length) pairNums = pairNums.filter(i => !skipPair.includes(i))
 
-    let pairs = (await sdk.api.abi.multiCall({ abi: abi.allPairs, chain, calls: pairNums.map(num => ({ target: factory, params: [num] })), block })).output
-
-    pairAddresses = pairs.map(result => result.output.toLowerCase())
-    const response = await getTokenPrices({
-      block, chain, coreAssets, blacklist, lps: pairAddresses, transformAddress, whitelist, allLps: true,
-      minLPRatio, log_coreAssetPrices, log_minTokenValue, restrictTokenRatio, abis,
+    reserves.forEach(({ _reserve0, _reserve1 }, i) => {
+      sdk.util.sumSingleBalance(balances, token0s[i], _reserve0)
+      sdk.util.sumSingleBalance(balances, token1s[i], _reserve1)
+      data.push({
+        token0: token0s[i],
+        token1: token1s[i],
+        token1Bal: _reserve1,
+        token0Bal: _reserve0,
+      })
     })
-    return transformDexBalances({ chain, data: response.pairBalances2, })
+
+
+    if (coreAssets)
+      return transformDexBalances({ chain, data, coreAssets, blacklistedTokens: blacklist })
+    
+    return transformBalances(chain, balances)
   }
 }
 
