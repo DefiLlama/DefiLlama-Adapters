@@ -421,6 +421,7 @@ const fixBalancesTokens = {
   },
   arbitrum: {
     "0x93C15cd7DE26f07265f0272E0b831C5D7fAb174f": { coingeckoId: "liquid-finance", decimals: 18, },
+    "0x5326e71ff593ecc2cf7acae5fe57582d6e74cff1": { coingeckoId: "arbitrum:0x4277f8F2c384827B5273592FF7CeBd9f2C1ac258", decimals: 0, },
   },
   cardano: {
     "ADA": { coingeckoId: "cardano", decimals: 0, },
@@ -1244,7 +1245,6 @@ const fixBalancesTokens = {
   ton: {
     [nullAddress]: { coingeckoId: "coingecko:the-open-network", decimals: 9 },
     "EQDQoc5M3Bh8eWFephi9bClhevelbZZvWhkqdo80XuY_0qXv": { coingeckoId: "coingecko:the-open-network", decimals: 9 },
-    "EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c": { coingeckoId: "coingecko:the-open-network", decimals: 9 },
     "EQAW42HutyDem98Be1f27PoXobghh81umTQ-cGgaKVmRLS7-": { coingeckoId: "coingecko:ethereum", decimals: 18 },
     "EQC61IQRl0_la95t27xhIpjxZt32vl1QQVF2UgTNuvD18W-4": { coingeckoId: "coingecko:usd-coin", decimals: 6 },
     "EQC_1YoM8RBixN95lz7odcF3Vrkc_N8Ne7gQi7Abtlet_Efi": { coingeckoId: "coingecko:tether", decimals: 6 },
