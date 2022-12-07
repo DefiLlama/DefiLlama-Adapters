@@ -5,6 +5,8 @@ const { transformBalances, transformDexBalances, } = require('../portedTokens')
 const { getCoreAssets, } = require('../tokenMapping')
 const sdk = require('@defillama/sdk')
 
+const cacheFolder = 'uniswap-forks'
+
 function getUniTVL({ chain = 'ethereum', coreAssets, blacklist = [], factory,
   useDefaultCoreAssets = false,
   abis = {},
@@ -13,10 +15,10 @@ function getUniTVL({ chain = 'ethereum', coreAssets, blacklist = [], factory,
     coreAssets = getCoreAssets(chain)
   const abi = { ...uniswapAbi, ...abis }
   factory = factory.toLowerCase()
+  const key = `${factory}-${chain}`
 
   return async (ts, _block, { [chain]: block }) => {
-
-    let cache = await getCache(factory, chain)
+    let cache = await getCache(cacheFolder, key)
     if (!cache.pairs) {
       cache = {
         pairs: [],
@@ -28,6 +30,7 @@ function getUniTVL({ chain = 'ethereum', coreAssets, blacklist = [], factory,
     const _oldPairInfoLength = cache.pairs.length
     const length = await sdk.api2.abi.call({ abi: abi.allPairsLength, target: factory, chain, block, })
     sdk.log(chain, ' No. of pairs: ', length)
+    sdk.log('cached info', cache.pairs.length)
     const pairCalls = []
     for (let i = _oldPairInfoLength; i < length; i++)
       pairCalls.push(i)
@@ -57,7 +60,7 @@ function getUniTVL({ chain = 'ethereum', coreAssets, blacklist = [], factory,
     })
 
     if (cache.pairs.length > _oldPairInfoLength)
-      await setCache(factory, chain, cache)
+      await setCache(cacheFolder, key, cache)
 
     if (coreAssets)
       return transformDexBalances({ chain, data, coreAssets, blacklistedTokens: blacklist })
