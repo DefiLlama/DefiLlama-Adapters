@@ -1,7 +1,5 @@
 const { sumTokens } = require("../helper/unwrapLPs");
 const { getFixBalances } = require("../helper/portedTokens");
-const retry = require("../helper/retry");
-const axios = require("axios");
 const { GraphQLClient, gql } = require("graphql-request");
 const abi = require("./abi.json");
 const sdk = require("@defillama/sdk");
@@ -51,7 +49,7 @@ async function fetchTokenPriceFromYokaiSwap(token) {
 
   const data = await graphQLClient.request(query);
 
-  return data.tokens[0].derivedUSD;
+  return (data.tokens[0] || { derivedUSD: 0 }).derivedUSD;
 }
 
 const koi = "0xd66eb642eE33837531FdA61eb7Ab15B15658BcaB";

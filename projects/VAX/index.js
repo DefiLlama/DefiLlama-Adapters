@@ -2,7 +2,6 @@ const { getUniTVL } = require('../helper/unknownTokens')
 
 module.exports = {
   misrepresentedTokens: true,
-  methodology: "Total Value Locked comprises of the sum of net liquidity at each pair of the Value Added eXchange (VAX), calculated using DefiLlamas native 'calculateusdUniTvl' module from SDK.",
   multivac: {
     tvl: getUniTVL({
       chain: 'multivac',

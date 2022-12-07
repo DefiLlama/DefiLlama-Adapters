@@ -1,8 +1,11 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { staking } = require("../helper/staking");
-const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
-const { getChainTransform } = require('../helper/portedTokens')
+const { sumTokens2, nullAddress } = require('../helper/unwrapLPs');
+const { getChainTransform } = require('../helper/portedTokens');
+
+// Treasury
+const treasury = "0xDAEada3d210D2f45874724BeEa03C7d4BBD41674";
 
 // Ethereum Vaults
 const ethCallVault = "0x0fabaf48bbf864a3947bdd0ba9d764791a60467a";
@@ -47,6 +50,9 @@ const reth = "0xae78736Cd615f374D3085123A210448E74Fc6393";
 const steth = "0xae7ab96520de3a18e5e111b5eaab095312d7fe84";
 const spell = "0x090185f2135308BaD17527004364eBcC2D37e5F6";
 const badger = "0x3472A5A71965499acd81997a54BBA8D852C6E53d";
+const wsteth = "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0";
+const ldo = "0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32";
+const rbnWeth = "0xdb44a4a457c87225b5ba45f27b7828a4cc03c112";
 
 // Avalanche Assets
 const wavax = "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7";
@@ -85,8 +91,6 @@ async function ethTvl(_, block) {
     [spell, spellCallVault],
     [badger, badgerCallVault],
 
-    // ribbon earn
-    [usdc, rearnUSDC],
   ]
   
   await addVaults({ balances, block, vaults, })
@@ -108,6 +112,14 @@ async function avaxTvl(_, _b, { avax: block }) {
   return sumTokens2({ balances, owner: pauserAvax, tokens: [nullAddress, savax], chain, block, transformAddress, })
 }
 
+async function getTreasury(timestamp, block, chainBlocks) {
+  return sumTokens2({
+    block, owner: treasury,
+    tokens: [ weth, wsteth, wbtc, usdc, aave, ldo, reth, bal, rbnWeth, nullAddress],
+    resolveLP: true,
+  })
+}
+
 /**
  * STAKING
  */
@@ -119,6 +131,7 @@ module.exports = {
   ethereum: {
     tvl: ethTvl,
     staking: veRBNStaking,
+    treasury: getTreasury,
   },
   avax: {
     tvl: avaxTvl,

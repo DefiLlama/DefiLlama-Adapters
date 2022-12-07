@@ -77,20 +77,20 @@ async function bscTvl(_, _b, { bsc: block }) {
   const toa = [];
   ([...lpPoolsNew_bsc, ...listOfTokenNew_bsc]).forEach(token => toa.push([token, chefContractsNew_bsc]));
   ([...listOfTokenOld_bsc, ...lpPoolsOld_bsc]).forEach(token => toa.push([token, chefContractsOld_bsc]));
-  return sumTokens2({ chain, block, tokensAndOwners: toa, resolveLP: true, })
+  return sumTokens2({ chain, block, tokensAndOwners: toa,  })
 }
 
 async function ethTvl(_, block) {
   const toa = [];
   listOfToken.forEach(token => toa.push([token, chefContracts]))
-  return sumTokens2({ block, tokensAndOwners: toa, resolveLP: true, })
+  return sumTokens2({ block, tokensAndOwners: toa,  })
 }
 
 async function harmonyTvl(_, _b, { harmony: block }) {
   const chain = 'harmony'
   const toa = [];
   listOfToken_harmony.forEach(token => toa.push([token, chefHarmonyContracts]))
-  return sumTokens2({ chain, block, tokensAndOwners: toa, resolveLP: true, })
+  return sumTokens2({ chain, block, tokensAndOwners: toa, })
 }
 
 

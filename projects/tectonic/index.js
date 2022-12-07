@@ -28,6 +28,7 @@ async function tvl(ts, _, { [chain]: block }) {
 }
 
 async function borrowed(timestamp, block, chainBlocks) {
+  block = chainBlocks[chain]
   const transform = await getChainTransform(chain)
   const fixBlances = await getFixBalances(chain)
   const calls = [...markets, tcro].map(i => ({ target: i }))

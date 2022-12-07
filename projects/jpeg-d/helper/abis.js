@@ -12,7 +12,7 @@ const VAULT_ABI = [{
     "type": "function"
   },{
     "inputs": [],
-    "name": "floorOracle",
+    "name": "nftValueProvider",
     "outputs": [
       {
         "internalType": "address",
@@ -22,7 +22,9 @@ const VAULT_ABI = [{
     ],
     "stateMutability": "view",
     "type": "function"
-},{
+}];
+
+const VALUE_PROVIDER_ABI = [{
   "inputs": [],
   "name": "getFloorETH",
   "outputs": [
@@ -34,23 +36,9 @@ const VAULT_ABI = [{
   ],
   "stateMutability": "view",
   "type": "function"
-}];
-
-const PRICEORACLE_ABI = [{
-    "inputs": [],
-    "name": "latestAnswer",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-}];
+}]
 
 module.exports = {
     VAULT_ABI,
-    PRICEORACLE_ABI
+    VALUE_PROVIDER_ABI
 };

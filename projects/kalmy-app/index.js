@@ -3,6 +3,7 @@ const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
 const axios = require("axios");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs")
+const { transformBalances } = require('../helper/portedTokens')
 
 async function getProcolAddresses() {
   return (await axios.get(
@@ -151,7 +152,8 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     }
   ), block, 'bsc', (addr) => `bsc:${addr}`)
 
-  return balances
+
+  return transformBalances('bsc', balances)
 }
 
 async function ftmTvl(timestamp, ethBlock, chainBlocks) {

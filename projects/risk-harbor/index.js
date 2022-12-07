@@ -1,5 +1,9 @@
 const sdk = require("@defillama/sdk");
-const { queryV1Beta1 } = require("../helper/terra");
+const {
+  queryV1Beta1,
+  queryContract,
+  getDenomBalance,
+} = require("../helper/chain/terra");
 const { sumTokens } = require("../helper/unwrapLPs");
 
 const networks = {
@@ -76,40 +80,48 @@ const networks = {
     ],
   },
   terra2: {
-    vaults: [
+    factory: "terra1lnq5rk4gla2c537hpyxq6wjs8g0k0dedxug2p50myydaqjtm4g5ss94y8n",
+    masterPool:
       "terra1gz50vgzjssefzmld0kfkt7sfvejgel9znun9chsc82k09xfess5qqu8qyc", // Ozone v2 underwriting master pool
-    ],
   },
 };
 
 async function terra2(timestamp, ethBlock, chainBlocks) {
   const balances = { "terra-luna-2": 0 };
-  for (const vaultAddr of networks.terra2.vaults) {
-    let paginationKey;
 
-    do {
-      const data = await queryV1Beta1(
-        `bank/v1beta1/balances/${vaultAddr}`,
-        paginationKey,
-        chainBlocks.terra2,
-        { isTerra2: true }
-      );
+  const { vaults } = await queryContract({
+    contract: networks.terra2.factory,
+    isTerra2: true,
+    data: {
+      get_vaults: {},
+    },
+  });
 
-      paginationKey = data.pagination.next_key;
+  // Go through each vault and add it's underwriting balance
+  // stored in allocation_vector slot 0
+  // 09-28-22 As of now, the only asset supported for deposit
+  // is Luna2 in the form of wrapped Luna2 since RH Ozone v2 does
+  // not support native token types
+  vaults.forEach((vault) => {
+    balances["terra-luna-2"] +=
+      parseInt(vault.state.allocation_vector[0]) / 1e6;
+  });
 
-      data.balances.forEach(({ denom, amount }) => {
-        // Ozone V2 is underwritten in luna
-        if (denom === "uluna") {
-          balances["terra-luna-2"] += parseInt(amount) / 1e6;
-        }
-      });
-    } while (paginationKey);
-  }
+  // Query the Master underwriting vault
+  balances["terra-luna-2"] +=
+    (await getDenomBalance(
+      "uluna",
+      networks.terra2.masterPool,
+      chainBlocks.terra2,
+      {
+        isTerra2: true,
+      }
+    )) / 1e6;
+
   return balances;
 }
 
 async function terra(timestamp, ethBlock, chainBlocks) {
-  let block;
   const balances = { terrausd: 0 };
 
   for (const vaultAddr of networks.terra.vaults) {
@@ -187,7 +199,5 @@ module.exports = {
   aurora: {
     tvl: evm("aurora"),
   },
-  hallmarks:[
-    [1651881600, "UST depeg"],
-  ]
+  hallmarks: [[1651881600, "UST depeg"]],
 };

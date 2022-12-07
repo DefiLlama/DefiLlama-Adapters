@@ -1,7 +1,7 @@
 const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
 const abi = require('./abi.json');
-const { getBlock } = require('../helper/getBlock');
+const { getBlock } = require('../helper/http');
 const { requery } = require('../helper/requery');
 const { sliceIntoChunks, } = require('../helper/utils');
 const { request, gql } = require("graphql-request");

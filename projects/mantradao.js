@@ -32,7 +32,7 @@ Object.keys(chainConfig).forEach(chain => {
     pool2: async (ts, _block, chainBlocks) => {
       const block = chainBlocks[chain]
       const tokens = pool2.map((p) => [p.pairAddress, p.contract,])
-      return sumTokens(undefined, tokens, block, chain, undefined, { resolveLP: true })
+      return sumTokens(undefined, tokens, block, chain)
     },
     ...ethAdditional,
   }

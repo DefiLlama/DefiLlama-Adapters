@@ -1,6 +1,5 @@
-const { getProvider, getSolBalances, } = require('../helper/solana')
+const { getProvider, getSolBalances, tokens, } = require('../helper/solana')
 const { Program, } = require("@project-serum/anchor");
-const { sliceIntoChunks, } = require('../helper/utils')
 const { get, } = require('../helper/http')
 
 let data
@@ -18,12 +17,12 @@ async function getData() {
     const pbPools = await program.account.priceBasedLiquidityPool.all()
     const liquidityPools = await program.account.liquidityPool.all()
     const solOwners = [...liquidityPools.map(i => i.account.liqOwner), ...pbPools.map(i => i.account.liqOwner)].map(i => i.toString())
-    const poolsTVL = await getSolBalances(solOwners)
+    const poolsTVL = (await getSolBalances(solOwners))
     const loans = await program.account.loan.all()
 
-    const loanSum = loans.filter(i => i.account.loanStatus.activated).reduce((a, i) => a + +i.account.originalPrice, 0) / 1e9
-    const lpStaked = liquidityPools.reduce((a, i) => a + +i.account.amountOfStaked, 0) / 1e9
-    const pbLPStaked = pbPools.reduce((a, i) => a + +i.account.amountOfStaked, 0) / 1e9
+    const loanSum = loans.filter(i => i.account.loanStatus.activated).reduce((a, i) => a + +i.account.originalPrice, 0)
+    const lpStaked = liquidityPools.reduce((a, i) => a + +i.account.amountOfStaked, 0)
+    const pbLPStaked = pbPools.reduce((a, i) => a + +i.account.amountOfStaked, 0)
 
     const tvl = loanSum + poolsTVL
     const borrowed = lpStaked + pbLPStaked - poolsTVL
@@ -32,11 +31,11 @@ async function getData() {
 }
 
 const tvl = async () => {
-  return { solana: (await getData()).tvl }
+  return { [tokens.solana]: (await getData()).tvl }
 };
 
 const borrowed = async () => {
-  return { solana: (await getData()).borrowed }
+  return { [tokens.solana]: (await getData()).borrowed }
 }
 
 module.exports = {

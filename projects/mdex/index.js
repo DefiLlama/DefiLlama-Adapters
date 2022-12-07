@@ -1,10 +1,7 @@
-const retry = require('async-retry');
-const axios = require("axios");
+const { get } = require('../helper/http')
 
 async function fetch(chainId) {
-    return (await retry(async () => 
-        await axios.get(`https://info.mdex.one/pair/tvl?chain_id=${chainId}`)
-    )).data.result
+    return (await get(`https://info.mdex.one/pair/tvl?chain_id=${chainId}`)).result
     .map(p => p.tvl)
     .reduce((a, b) => a + parseFloat(b), 0);
 }; 

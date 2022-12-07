@@ -21,6 +21,9 @@ const chains = {
     xdai: 100,
     metis: 1088,
     celo: 42220,
+    kcc: 321,
+    cube: 1818,
+    astar: 592
 }
 
 module.exports = {

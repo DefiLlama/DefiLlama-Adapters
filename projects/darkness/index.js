@@ -1,6 +1,6 @@
 const { GraphQLClient, gql } = require('graphql-request')
 const { toUSDTBalances } = require('../helper/balances');
-const { getBlock } = require('../helper/getBlock');
+const { getBlock } = require('../helper/http');
 const { stakingPricedLP } = require("../helper/staking");
 const { addFundsInMasterChef } = require("../helper/masterchef");
 const { farmLPBalance } = require("./utils");
@@ -54,6 +54,7 @@ async function tvl(timestamp, block, chainBlocks) {
 }
 
 async function pool2(timestamp, block, chainBlocks) {
+  block = chainBlocks.cronos
   const cro = "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23";
 
   return farmLPBalance(

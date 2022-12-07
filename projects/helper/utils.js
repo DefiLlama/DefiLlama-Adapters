@@ -1,9 +1,9 @@
 const BigNumber = require("bignumber.js");
-const retry = require('async-retry')
 const axios = require("axios");
 const sdk = require('@defillama/sdk')
 const http = require('./http')
 const erc20 = require('./abis/erc20.json')
+const ethers = require("ethers");
 
 async function returnBalance(token, address, block, chain) {
   const { output: decimals } = await sdk.api.erc20.decimals(token, chain)
@@ -46,21 +46,12 @@ async function getPricesFromContract(object) {
   return fetchURL(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${contractFetch}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`)
 }
 
-async function getPricesfromString(stringFeed) {
-  return fetchURL(`https://api.coingecko.com/api/v3/simple/price?ids=${stringFeed}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`)
-}
-
-
 async function fetchURL(url) {
-  return retry(async bail => await axios.get(url), {
-    retries: 3
-  })
+  return axios.get(url)
 }
 
 async function postURL(url, data) {
-  return retry(async bail => await axios.post(url, data), {
-    retries: 3
-  })
+  return axios.post(url, data)
 }
 
 function createIncrementArray(length) {
@@ -75,7 +66,7 @@ function getParamCalls(length) {
   return createIncrementArray(length).map(i => ({ params: i }))
 }
 
-const LP_SYMBOLS = ['SLP', 'spLP', 'JLP', 'OLP', 'SCLP', 'DLP', 'MLP', 'MSLP', 'ULP', 'TLP', 'HMDX', 'YLP', 'SCNRLP', 'PGL', 'GREEN-V2', 'PNDA-V2', 'vTAROT', 'TETHYSLP', 'BAO-V2', 'DINO-V2', 'DFYNLP', 'LavaSwap', 'RLP', 'ZDEXLP', 'lawSWAPLP', 'ELP',]
+const LP_SYMBOLS = ['SLP', 'spLP', 'JLP', 'OLP', 'SCLP', 'DLP', 'MLP', 'MSLP', 'ULP', 'TLP', 'HMDX', 'YLP', 'SCNRLP', 'PGL', 'GREEN-V2', 'PNDA-V2', 'vTAROT', 'vEvolve', 'TETHYSLP', 'BAO-V2', 'DINO-V2', 'DFYNLP', 'LavaSwap', 'RLP', 'ZDEXLP', 'lawSWAPLP', 'ELP',]
 const blacklisted_LPS = [
   '0xb3dc4accfe37bd8b3c2744e9e687d252c9661bc7',
   '0xf146190e4d3a2b9abe8e16636118805c628b94fe',
@@ -88,12 +79,15 @@ function isLP(symbol, token, chain) {
   if (!symbol) return false
   if (token && blacklisted_LPS.includes(token.toLowerCase())) return false
   if (chain === 'bsc' && ['OLP', 'DLP', 'MLP', 'LP'].includes(symbol)) return false
-  if (chain === 'bsc' && ['WLP', 'FstLP',].includes(symbol)) return true
+  if (chain === 'bsc' && ['WLP', 'FstLP', 'BLP',].includes(symbol)) return true
   if (chain === 'avax' && ['ELP', 'EPT', 'CRL', 'YSL', 'BGL', 'PLP'].includes(symbol)) return true
   if (chain === 'ethereum' && ['SSLP'].includes(symbol)) return true
+  if (chain === 'moonriver' && ['HBLP'].includes(symbol)) return true
+  if (chain === 'ethpow' && ['LFG_LP'].includes(symbol)) return true
   if (chain === 'ethereum' && ['SUDO-LP'].includes(symbol)) return false
   if (chain === 'dogechain' && ['DST-V2'].includes(symbol)) return true
   if (chain === 'harmony' && ['HLP'].includes(symbol)) return true
+  if (chain === 'fantom' && ['HLP'].includes(symbol)) return true
   if (chain === 'songbird' && ['FLRX', 'OLP'].includes(symbol)) return true
   if (chain === 'metis' && ['NLP', 'ALP'].includes(symbol)) return true // Netswap/Agora LP Token
   if (['fantom', 'nova',].includes(chain) && ['NLT'].includes(symbol)) return true
@@ -155,13 +149,16 @@ async function getBalance(chain, account) {
   switch (chain) {
     case 'bitcoin':
       return (await http.get(`https://chain.api.btc.com/v3/address/${account}`)).data.balance / 1e8
+    case 'bep2':
+      const balObject = (await http.get(`https://api-binance-mainnet.cosmostation.io/v1/account/${account}`)).balances.find(i => i.symbol === 'BNB')
+      return +(balObject || { free: 0 }).free
     default: throw new Error('Unsupported chain')
   }
 }
 
-function getUniqueAddresses(addresses) {
+function getUniqueAddresses(addresses, isCaseSensitive = false) {
   const set = new Set()
-  addresses.forEach(i => set.add(i.toLowerCase()))
+  addresses.forEach(i => set.add(isCaseSensitive ? i : i.toLowerCase()))
   return [...set]
 }
 
@@ -206,8 +203,9 @@ async function diplayUnknownTable({ tvlResults = {}, tvlBalances = {}, storedKey
   return debugBalances({ balances, chain: storedKey, log, tableLabel, withETH: false, })
 }
 
+const nullAddress = '0x0000000000000000000000000000000000000000'
 async function getSymbols(chain, tokens) {
-  tokens = tokens.filter(i => i.includes('0x')).map(i => i.slice(i.indexOf('0x')))
+  tokens = tokens.filter(i => i.includes('0x')).map(i => i.slice(i.indexOf('0x'))).filter(i => i !== nullAddress)
   const calls = tokens.map(i => ({ target: i }))
   const { output: symbols } = await sdk.api.abi.multiCall({
     abi: 'erc20:symbol',
@@ -305,8 +303,8 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
     let symbol = token && symbolMapping[token] || '-'
     let decimal = token && decimalsMapping[token]
     if (decimal)
-      balance = (balance/(10 ** decimal)).toFixed(0)
-    
+      balance = (balance / (10 ** decimal)).toFixed(0)
+
     logObj.push({ name, symbol, balance, label, decimals: decimal })
   })
 
@@ -314,10 +312,40 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
   console.table(logObj)
 }
 
-async function getRippleBalance(account) {
-  const body = { "method": "account_info", "params": [{ account }] }
-  const res = await http.post('https://s1.ripple.com:51234', body)
-  return res.result.account_data.Balance / 1e6
+async function fetchItemList({ chain, block, lengthAbi, itemAbi, target }) {
+  const { output: length } = await sdk.api.abi.call({
+    target,
+    abi: lengthAbi,
+    chain, block,
+  })
+  const { output: data } = await sdk.api.abi.multiCall({
+    target,
+    abi: itemAbi,
+    calls: getParamCalls(length),
+    chain, block,
+  })
+
+  return data
+}
+
+async function getLogs({ chain = 'ethereum', fromBlock, toBlock, topic, topics, keys = [], target, eventInterface, chainBlocks, timestamp }) {
+  if (!toBlock) 
+    toBlock = await http.getBlock(timestamp, chain, chainBlocks)
+
+  const { output: logs} = await sdk.api.util.getLogs({
+    chain, topics, target, topic, keys, fromBlock, toBlock, 
+  });
+
+  const getAddress = i => `0x${i.substr(-40)}`.toLowerCase()
+  if (!eventInterface) return logs.map(log => log.topics.map(getAddress))
+
+  let iface = new ethers.utils.Interface([eventInterface])
+  return logs.map((log) => {
+    const res = {...iface.parseLog(log).args}
+    if (!res.topics )
+      res.topics = log.topics.map(getAddress)
+    return res
+  })
 }
 
 module.exports = {
@@ -326,7 +354,6 @@ module.exports = {
   createIncrementArray,
   fetchURL,
   postURL,
-  getPricesfromString,
   getPrices,
   returnBalance,
   returnEthBalance,
@@ -340,7 +367,9 @@ module.exports = {
   debugBalances,
   stripTokenHeader,
   diplayUnknownTable,
-  getRippleBalance,
   getSymbols,
+  getDecimals,
   getParamCalls,
+  fetchItemList,
+  getLogs,
 }

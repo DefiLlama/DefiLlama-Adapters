@@ -196,6 +196,10 @@ async function polygon(timestamp, block, chainBlocks) {
         "0x34fa22892256216a659d4f635354250b4d771458",
         "0x3A58a54C066FdC0f2D55FC9C89F0415C92eBf3C4",
       ], // stmatic
+      [
+        "0x873f4aE80867b9f97304B9Bb7Ef92c4d563fA48c",
+        "0x7d75F83f0aBe2Ece0b9Daf41CCeDdF38Cb66146b"
+      ]
 
     ],
     chainBlocks.polygon,
@@ -603,6 +607,18 @@ async function optimism (timestamp, block, chainBlocks) {
       [
         "0x4200000000000000000000000000000000000042",
         "0xbf1aea8670d2528e08334083616dd9c5f3b087ae"
+      ],
+      [
+        "0x7eE71053102d54Fc843BaEBaf07277C2b6dB64f1",
+        "0xF9CE2522027bD40D3b1aEe4abe969831FE3BeAf5"
+      ],
+      [
+        "0x8e2cDf8c6477439B7C989e86B917D80871B92339",
+        "0xAB91c51b55F7Dd7B34F2FD7217506fD5b632B2B9"
+      ],
+      [
+        "0x4D153F47F03c237F6360a6eccd185b4aE09c63D0",
+        "0xB89c1b3d9f335B9d8Bb16016F3d60160AE71041f"
       ]
       
     ],
@@ -636,6 +652,26 @@ async function arbitrum (timestamp, block, chainBlocks) {
   return balances;
 }
 
+async function moonbeam (timestamp, ethblock, { moonbeam: block}) {
+  const balances = {};
+  let chain = "moonbeam"
+  const transformAddress = await getChainTransform(chain)
+
+  await sumTokens(
+    balances,
+    [
+      [
+        "0xAcc15dC74880C9944775448304B263D191c6077F",
+        "0x3A82F4da24F93a32dc3C2A28cFA9D6E63EC28531"
+      ],
+    ],
+    block,
+    chain,
+    transformAddress
+  );
+  return balances;
+}
+
 async function metis (timestamp, block, chainBlocks) {
   const balances = {};
   const transformAddress = await getChainTransform('metis')
@@ -644,20 +680,63 @@ async function metis (timestamp, block, chainBlocks) {
     balances,
     [
       [
-        "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000", //Token Qidao
-        "0x10dcbee8afa39a847707e16aea5eb34c6b01aba9"  //Token address
+        "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000", //Token 
+        "0x10dcbee8afa39a847707e16aea5eb34c6b01aba9"  //Vault
       ],
       [
-        "0xc09c73f7b32573d178138e76c0e286ba21085c20",
         "0x420000000000000000000000000000000000000A",
+        "0xc09c73f7b32573d178138e76c0e286ba21085c20",
       ], //Eth
       [
-        "0xb89c1b3d9f335b9d8bb16016f3d60160ae71041f",
         "0xa5B55ab1dAF0F8e1EFc0eB1931a957fd89B918f4",
+        "0xb89c1b3d9f335b9d8bb16016f3d60160ae71041f",
+      ], //Btc
+      [
+        "0x433E43047B95cB83517abd7c9978Bdf7005E9938",
+        "0x5A03716bd1f338D7849f5c9581AD5015ce0020B0",
       ], //Btc
     ],
     chainBlocks.metis,
     "metis",
+    transformAddress
+  );
+  return balances;
+}
+
+async function ethereum (timestamp, block, chainBlocks) {
+  const balances = {};
+  const transformAddress = await getChainTransform('ethereum')
+
+  await sumTokens(
+    balances,
+    [
+      [
+        "0x671a912C10bba0CFA74Cfc2d6Fba9BA1ed9530B2", //
+        "0x60d133c666919B54a3254E0d3F14332cB783B733"  //
+      ],
+      [
+        "0xa258C4606Ca8206D8aA700cE2143D7db854D168c",
+        "0xEcbd32bD581e241739be1763DFE7a8fFcC844ae1",
+      ], 
+      [
+        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "0x98eb27E5F24FB83b7D129D789665b08C258b4cCF",
+      ], //weth
+      [
+        "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+        "0x8C45969aD19D297c9B85763e90D0344C6E2ac9d1",
+      ],
+      [
+        "0xbC10c4F7B9FE0B305e8639B04c536633A3dB7065",
+        "0xcc61Ee649A95F2E2f0830838681f839BDb7CB823",
+      ],
+      [
+        "0xdCD90C7f6324cfa40d7169ef80b12031770B4325",
+        "0x82E90EB7034C1DF646bD06aFb9E67281AAb5ed28",
+      ]
+    ],
+    block,
+    "ethereum",
     transformAddress
   );
   return balances;
@@ -697,4 +776,10 @@ module.exports = {
   metis: {
     tvl: metis 
   },
+  ethereum: {
+    tvl: ethereum
+  },
+  moonbeam: {
+    tvl: moonbeam
+  }
 };

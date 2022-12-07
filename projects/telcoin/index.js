@@ -29,7 +29,7 @@ async function tvl() {
 
 module.exports = {
     polygon: {
-        pool2
+        pool2, tvl,
     },
-    tvl
+    
 }

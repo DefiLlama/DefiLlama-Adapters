@@ -1,5 +1,5 @@
 const { BigNumber } = require('bignumber.js');
-const { call, addTokenBalances, sumSingleBalance } = require('../helper/near');
+const { call, addTokenBalances, sumSingleBalance } = require('../helper/chain/near');
 
 const PEMBROCK_CONTRACT = "v1.pembrock.near";
 const REF_FINANCE_CONTRACT = "v2.ref-finance.near";
@@ -13,6 +13,7 @@ async function addFarmBalances(farms, seeds, balances) {
     ]);
     const seed = seeds[`${REF_FINANCE_CONTRACT}@${farm.ref_pool_id}`];
 
+    if (!seed) return;
     const shares = BigNumber(nonStakedShares).plus(seed.free_amount).plus(seed.locked_amount);
 
     const firstTokenAmount = shares.multipliedBy(pool.amounts[0]).dividedBy(pool.shares_total_supply);
@@ -38,8 +39,18 @@ async function tvl() {
   return balances;
 }
 
+async function staking() {
+  const balances = {};
+  sumSingleBalance(balances, "token.pembrock.near", await call('staking.v1.pembrock.near', "get_total_staked", {}))
+  return balances;
+}
+
 module.exports = {
   near: {
-    tvl
+    tvl,
+    staking,
   },
+  hallmarks: [
+    [1666648800,"DCB withdrawn liquidity from Ref Finance's "]
+  ],
 }

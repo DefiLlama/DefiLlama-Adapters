@@ -519,8 +519,8 @@
           "name": "USDC Coin"
         },
         {
-          "address": "0x17fc002b466eec40dae837fc4be5c67993ddbd6f",
-          "name": "Frax"
+          "address": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+          "name": "Tether"
         }
       ]
     },
@@ -531,6 +531,24 @@
         {
           "address": "0xd74f5255d557944cf7dd0e45ff521520002d5748",
           "name": "USDs"
+        },
+        {
+          "address": "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0x17fc002b466eec40dae837fc4be5c67993ddbd6f",
+          "name": "Frax"
+        }
+      ]
+    },
+    "arbFRAXBP-USX": {
+      "address": "0xb2a2764D0DCAB445E24f4b813bE3f6ef8AE5f84D",
+      "lpToken": "0x721DaC7d5ACc8Aa62946fd583C1F999e1570b97D",
+      "poolTokens": [
+        {
+          "address": "0x641441c631e2F909700d2f41FD87F0aA6A6b4EDb",
+          "name": "dForce USD"
         },
         {
           "address": "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
@@ -777,17 +795,49 @@
           "name": "Frax"
         }
       ]
+    },
+    "FRAXBP-USX": {
+      "address": "0xe184F7E575a5Beb8f2409E8e2218Cd770ddDa2A6",
+      "lpToken": "0xf349fB2b5eD45864e1d9ad34a483Eb37aC6e0034",
+      "poolTokens": [
+        {
+          "address": "0xbfD291DA8A403DAAF7e5E9DC1ec0aCEaCd4848B9",
+          "name": "dForce USD"
+        },
+        {
+          "address": "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0x2E3D870790dC77A83DD1d18184Acc7439A53f475",
+          "name": "Frax"
+        }
+      ]
     }
   },
   "kava": {
     "3pool": {
       "address": "0xA500b0e1360462eF777804BCAe6CE2BfB524dD2e",
-      "lpToken": "0xcCf860874cbF2d615192a4C4455580B4d622D3B9",
+      "lpToken": "0x619535e015f0e46c5984a0B45FD71C0549F001Fc",
       "poolTokens": [
+        {
+          "address": "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0xB44a9B6905aF7c801311e8F4E76932ee959c663C",
+          "name": "Tether"
+        },
         {
           "address": "0x765277EebeCA2e31912C9946eAe1021199B39C61",
           "name": "Dai"
-        },
+        }
+      ]
+    },
+    "USDC-USDT": {
+      "address": "0x5847f8177221268d279Cf377D0E01aB3FD993628",
+      "lpToken": "0xcCf860874cbF2d615192a4C4455580B4d622D3B9",
+      "poolTokens": [
         {
           "address": "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f",
           "name": "USDC Coin"
