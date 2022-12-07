@@ -2,7 +2,8 @@ const sdk = require('@defillama/sdk');
 const { config, protocolPairs, tokens, stakingContracts,
   ethereumContractData, bscContractData, polygonContractData,
   avalancheContractData, gnosisContractData } = require('./config')
-const { getCache, setCache, vestingHelper } = require('../helper/cache');
+  const { getCache, setCache, } = require("../helper/cache")
+  const { vestingHelper,  } = require("../helper/unknownTokens")
 const project = 'unicrypt'
 
 const { stakings } = require("../helper/staking");

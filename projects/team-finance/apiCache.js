@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 const { ethereumContractData, polygonContractData, avaxContractData, bscContractData, kavaContractData, } = require("./config");
-const { vestingHelper, getCache, setCache, } = require("../helper/cache");
+const { getCache, setCache, } = require("../helper/cache")
+const { vestingHelper,  } = require("../helper/unknownTokens")
 
 const project = 'team-finance'
 
