@@ -7,9 +7,12 @@ const { sumTokens2, nullAddress } = require('../helper/unwrapLPs');
 const config = {
   ethereum: {
     toa: [
-      [nullAddress, '0xaAA50f60a256b74D1C71ED4AD739836b50059201','0x9494c9FfE0735832885269a10c910CDb227a7B0F'],  // ETH pool
-      ['0xdac17f958d2ee523a2206206994597c13d831ec7', '0x51bb873D5b68309cf645e84234bC290b7D991D2C','0x2535D0578562C88c1c875075A1085a4AD3117b20'],  // USDT pool
-      ['0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', '0xdCE224F9299CDd66e4D01D196d4cabce35a2F478','0x725fbd08e4c5d4b5978E48667d96D03F9B1C4d3A'],  // WBTC pool
+      [nullAddress, '0xaAA50f60a256b74D1C71ED4AD739836b50059201'],  // ETH pool legacy
+      [nullAddress,'0x9494c9FfE0735832885269a10c910CDb227a7B0F'],   // ETH pool new
+      ['0xdac17f958d2ee523a2206206994597c13d831ec7', '0x51bb873D5b68309cf645e84234bC290b7D991D2C'], //usdt pool legacy 
+      ['0xdac17f958d2ee523a2206206994597c13d831ec7', '0x2535D0578562C88c1c875075A1085a4AD3117b20'], //usdt pool new 
+      ['0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', '0xdCE224F9299CDd66e4D01D196d4cabce35a2F478'], //wbtc pool legacy 
+      ['0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', '0x725fbd08e4c5d4b5978E48667d96D03F9B1C4d3A'], //wbtc pool new 
     ],
     token: '0x3E5D9D8a63CC8a88748f229999CF59487e90721e',
     staking: [
