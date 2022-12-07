@@ -690,7 +690,13 @@ const fixBalancesTokens = {
     "0xaF86E6c5Fd9dAf53e5100ed38BaB2572609fCA27": { coingeckoId: "algorand", decimals: 18 },
     "0xBc31960A049Fe10297Ed8432Fb61DD734fEAd4ea": { coingeckoId: "usd-coin", decimals: 6 }, // USDC
     "0x32564ae38E5DBf316958CE25A6aD2A2249EbCc2D": { coingeckoId: "tether", decimals: 6 }, // USDt
+    "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f": { coingeckoId: "tether", decimals: 6 }, // multiUSDT
+    "0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D": { coingeckoId: "usd-coin", decimals: 6 }, // multiUSDC
+    "0xeFAeeE334F0Fd1712f9a8cc375f427D9Cdd40d73": { coingeckoId: "binance-usd", decimals: 18 }, // multiBUSD
     "0x522B61755b5FF8176B2931DA7bF1a5F9414Eb710": { coingeckoId: "tether", decimals: 6 }, // ceUSDT
+    "0x2421db204968A367CC2C866CD057fA754Cb84EdF": { coingeckoId: "usd-coin", decimals: 6 }, // ceUSDC
+    "0x8Dc0Dfa2AeC0d4410c8C60c5f9cD0CD37b05a06a": { coingeckoId: "binance-usd", decimals: 18 }, // ceBUSD
+    "0x150d2421E09eEa31beaa68b7a248700EEcEda87a": { coingeckoId: "dai", decimals: 6 }, // ceDAI
     "0xc9BAA8cfdDe8E328787E29b4B078abf2DaDc2055": { coingeckoId: "blueshift", decimals: 18 } // BLUES
   },
   ultron: {
