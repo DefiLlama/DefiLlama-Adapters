@@ -1,9 +1,14 @@
 const aws = require('aws-sdk')
 const sdk = require('@defillama/sdk')
 const Bucket = "tvl-adapter-cache";
+const axios = require('axios')
 
 function getKey(project, chain) {
   return `cache/${project}-${chain}.json`
+}
+
+function getLink(project, chain) {
+  return `https://tvl-adapter-cache.s3.eu-central-1.amazonaws.com/${getKey(project, chain)}`
 }
 
 async function getCache(project, chain, { } = {}) {
@@ -14,8 +19,8 @@ async function getCache(project, chain, { } = {}) {
       .getObject({
         Bucket, Key,
       }).promise();
-    const json = data.Body?.toString() ?? "{}"
-    return JSON.parse(json)
+    const { data: json} = await axios.get(getLink(project, chain))
+    return json
   } catch (e) {
     sdk.log('failed to fetch data from s3 bucket:', Key)
     sdk.log(e)
