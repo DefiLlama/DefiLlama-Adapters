@@ -1,6 +1,6 @@
 {
   "cToken": {
-    "underlying":   {
+    "underlying": {
       "constant": true,
       "inputs": [],
       "name": "underlying",
@@ -15,9 +15,8 @@
       "stateMutability": "view",
       "type": "function"
     }
-
   },
-  "morphoCompoundLens": {
+  "morphoLens": {
     "getAllMarkets": {
       "inputs": [],
       "name": "getAllMarkets",
@@ -55,7 +54,7 @@
       "stateMutability": "view",
       "type": "function"
     },
-    "getTotalMarketBorrow":   {
+    "getTotalMarketBorrow": {
       "inputs": [
         {
           "internalType": "address",

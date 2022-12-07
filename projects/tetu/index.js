@@ -4,7 +4,7 @@ const { getParamCalls } = require("../helper/utils");
 
 const EXCLUDED_PLATFORMS = {
   "12": true, // TETU_SWAP
-  "29": true // TETU_SF
+  "29": true // TETU self farm
 }
 
 module.exports = {
@@ -24,6 +24,10 @@ const config = {
   bsc: {
     bookkeeper: '0x8A571137DA0d66c2528DA3A83F097fbA10D28540',
     contract_Reader: '0xE8210A2d1a7B56115a47B8C06a72356773f6838E',
+  },
+  ethereum: {
+    bookkeeper: '0xb8bA82F19A9Be6CbF6DAF9BF4FBCC5bDfCF8bEe6',
+    contract_Reader: '0x6E4D8CAc827B52E7E67Ae8f68531fafa36eaEf0B',
   },
 }
 

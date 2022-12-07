@@ -1,7 +1,9 @@
 const { sumTokens2 } = require("../helper/solana");
 
+const ignoreBadTokens = true;
+
 async function tvl() {
-  const tokens = {
+  const collateralTokens = {
     ETH: '7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs',
     BTC: '9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E',
     SRM: 'SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt',
@@ -12,12 +14,27 @@ async function tvl() {
     stSOL: '7dHbWXmci3dT8UFYWYZweBLXgycu7Y3iL6trKn1Y7ARj',
     LDO: 'HZRCwxP2Vq9PCpPXooayhJ2bxTpo5xfpQrwB1svh332p',
   }
-  const collateralVault = 'HZYHFagpyCqXuQjrSCN2jWrMHTVHPf9VWP79UGyvo95L'
-  return sumTokens2({ owner: collateralVault, tokens: Object.values(tokens) })
+  const collateralVaultAuthority = 'HZYHFagpyCqXuQjrSCN2jWrMHTVHPf9VWP79UGyvo95L'
+  const collateralTokensAndOwners = Object.values(collateralTokens).map((mint) => [mint, collateralVaultAuthority])
+
+  const psmTokens = {
+    USDC: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
+  }
+  const psmVaultAuthority = '8WrqMitrgjzfqaPJ5PK6X3VT6B1Z8rDgQQny2aWwvJ8q'
+  const psmTokensAndOwners = Object.values(psmTokens).map((mint) => [mint, psmVaultAuthority])
+
+  const tokensAndOwners = [...collateralTokensAndOwners, ...psmTokensAndOwners]
+  return sumTokens2({ tokensAndOwners, ignoreBadTokens })
 }
 
 async function staking() {
-  return sumTokens2({ owner: 'GbjqYShCb3LeyXuxkjLBGcmrWakqePPpMoHraQJcTtJJ', tokens: ['HBB111SCo9jkCejsZfz8Ec8nH7T6THF8KEKSnvwT6XK6'] })
+  const hbbStakingPoolTokenAndOwner = [
+    'HBB111SCo9jkCejsZfz8Ec8nH7T6THF8KEKSnvwT6XK6',
+    'GbjqYShCb3LeyXuxkjLBGcmrWakqePPpMoHraQJcTtJJ'
+  ]
+
+  const tokensAndOwners = [hbbStakingPoolTokenAndOwner]
+  return sumTokens2({ tokensAndOwners, ignoreBadTokens })
 }
 
 module.exports = {

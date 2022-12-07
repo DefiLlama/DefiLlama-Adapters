@@ -1,7 +1,7 @@
 
 //Solana Helpers
 const {
-    getSolBalance,
+    sumTokens2,
 } = require("../helper/solana");
 
 //Algorand Helpers
@@ -17,9 +17,7 @@ const ALGO_VAULT = "R7VCOR74LCUIFH5WKCCMZOS7ADLSDBQJ42YURFPDT3VGYTVNBNG7AIYTCQ";
 
 //TVL Calculations:
 async function solana_tvl() {
-    return {
-        solana: await getSolBalance(SOLANA_VAULT)
-    };
+    return sumTokens2({ solOwners: [SOLANA_VAULT]})
 }
 async function algorand_tvl() {
 

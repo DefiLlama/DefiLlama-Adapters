@@ -1,28 +1,17 @@
 #!/usr/bin/env node
 const path = require("path");
 require("dotenv").config();
-//const { default: computeTVL } = require("@defillama/sdk/build/computeTVL");
-const { chainsForBlocks } = require("@defillama/sdk/build/computeTVL/blocks");
-const { getLatestBlock } = require("@defillama/sdk/build/util/index");
-const {
-  humanizeNumber,
-} = require("@defillama/sdk/build/computeTVL/humanizeNumber");
+const { util: {
+  blocks: { getCurrentBlocks },
+  humanizeNumber: { humanizeNumber },
+} } = require("@defillama/sdk");
 const { util } = require("@defillama/sdk");
 const sdk = require("@defillama/sdk");
 const whitelistedExportKeys = require('./projects/helper/whitelistedExportKeys.json')
 const chainList = require('./projects/helper/chains.json')
 const handleError = require('./utils/handleError')
-const { diplayUnknownTable } = require('./projects/helper/utils')
-
-async function getLatestBlockRetry(chain) {
-  for (let i = 0; i < 5; i++) {
-    try {
-      return await getLatestBlock(chain);
-    } catch (e) {
-      throw new Error(`Couln't get block height for chain "${chain}"`, e);
-    }
-  }
-}
+const { log, diplayUnknownTable, sliceIntoChunks } = require('./projects/helper/utils')
+const { PromisePool } = require('@supercharge/promise-pool')
 
 const locks = [];
 function getCoingeckoLock() {
@@ -126,19 +115,7 @@ sdk.api.abi.call = async (...args) => {
   const chains = Object.keys(module).filter(item => typeof module[item] === 'object' && !Array.isArray(module[item]));
   checkExportKeys(module, passedFile, chains)
   const unixTimestamp = Math.round(Date.now() / 1000) - 60;
-  const chainBlocks = {};
-
-  if (!chains.includes("ethereum")) {
-    chains.push("ethereum");
-  }
-  await Promise.all(
-    chains.map(async (chainRaw) => {
-      const chain = chainRaw === "avalanche" ? "avax" : chainRaw
-      if (chainsForBlocks.includes(chain) || chain === "ethereum") {
-        chainBlocks[chain] = (await getLatestBlockRetry(chain)).number - 10;
-      }
-    })
-  );
+  const { chainBlocks } = await getCurrentBlocks([]); // fetch only ethereum block for local test
   const ethBlock = chainBlocks.ethereum;
   const usdTvls = {};
   const tokensBalances = {};
@@ -252,10 +229,10 @@ function checkExportKeys(module, filePath, chains) {
 
   if (filePath.length > 2
     || (filePath.length === 1 && !['.js', ''].includes(path.extname(filePath[0]))) // matches .../projects/projectXYZ.js or .../projects/projectXYZ
-    || (filePath.length === 2 && !['api.js', 'index.js'].includes(filePath[1])))  // matches .../projects/projectXYZ/index.js
+    || (filePath.length === 2 && !['api.js', 'index.js', 'apiCache.js', ].includes(filePath[1])))  // matches .../projects/projectXYZ/index.js
     process.exit(0)
 
-  const blacklistedRootExportKeys = ['tvl', 'staking', 'pool2', 'borrowed', 'treasury'];
+  const blacklistedRootExportKeys = ['tvl', 'staking', 'pool2', 'borrowed', 'treasury', 'offers', 'vesting'];
   const rootexportKeys = Object.keys(module).filter(item => typeof module[item] !== 'object');
   const unknownChains = chains.filter(chain => !chainList.includes(chain));
   const blacklistedKeysFound = rootexportKeys.filter(key => blacklistedRootExportKeys.includes(key));
@@ -323,7 +300,6 @@ const axios = require("axios");
 
 const ethereumAddress = "0x0000000000000000000000000000000000000000";
 const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-const DAY = 24 * 3600;
 
 function fixBalances(balances) {
   Object.entries(balances).forEach(([token, value]) => {
@@ -337,13 +313,28 @@ function fixBalances(balances) {
   })
 }
 
+const confidenceThreshold = 0.5
 async function computeTVL(balances, timestamp) {
   fixBalances(balances)
+
+  Object.keys(balances).map(k => {
+    if (+balances[k] === 0) {
+      delete balances[k]
+      return;
+    }
+    if (k.toLowerCase() === k) return;
+    balances[k.toLowerCase()] = (k.toLowerCase() in balances) 
+      ? Number(balances[k.toLowerCase()]) 
+      + Number(balances[k]) : balances[k];
+    delete balances[k]
+  })
+
   const eth = balances[ethereumAddress];
   if (eth !== undefined) {
     balances[weth] = new BigNumber(balances[weth] ?? 0).plus(eth).toFixed(0);
     delete balances[ethereumAddress];
   }
+
   const PKsToTokens = {};
   const readKeys = Object.keys(balances)
     .map((address) => {
@@ -357,54 +348,51 @@ async function computeTVL(balances, timestamp) {
       }
     })
     .filter((item) => item !== undefined);
-  const readRequests = [];
-  for (let i = 0; i < readKeys.length; i += 100) {
-    readRequests.push(
-      axios.post("https://coins.llama.fi/prices", {
-        "coins": readKeys.slice(i, i + 100)
-      }).then(r => {
-        return Object.entries(r.data.coins).map(
-          ([PK, value]) => ({
-            ...value,
-            PK
-          })
-        )
-      })
-    );
-  }
-  let tokenData = ([]).concat(...(await Promise.all(readRequests)));
-  const pkSet = new Set(tokenData.map(i => i.PK))
+
+  const burl = "https://coins.llama.fi/prices/current/";
+  const unknownTokens = {}
+  let tokenData = []
+  readKeys.forEach(i => unknownTokens[i] = true)
+
+  const { errors } = await PromisePool.withConcurrency(5)
+    .for(sliceIntoChunks(readKeys, 40))
+    .process(async (keys) => {
+      const coins = keys.reduce((p, c) => p + `${c},`, "");
+      tokenData.push((await axios.get(`${burl}${coins}`)).data.coins)
+    })
+
+  if (errors && errors.length)
+    throw errors[0]
+
   let usdTvl = 0;
   const tokenBalances = {};
   const usdTokenBalances = {};
-  const now = timestamp === "now" ? Math.round(Date.now() / 1000) : timestamp;
-  tokenData.forEach((response) => {
-    if (Math.abs(response.timestamp - now) < DAY) {
-      PKsToTokens[response.PK].forEach((address) => {
-        const balance = balances[address];
-        const { price, decimals } = response;
-        let symbol, amount, usdAmount;
-        if (response.PK.includes(':') && !response.PK.startsWith("coingecko:")) {
-          symbol = response.symbol.toUpperCase();
-          amount = new BigNumber(balance).div(10 ** decimals).toNumber();
-          usdAmount = amount * price;
-        } else {
-          symbol = response.PK.startsWith("coingecko:") ? response.PK.split(':')[1] : response.PK.slice('asset#'.length);
-          amount = Number(balance);
-          usdAmount = amount * price;
-        }
-        tokenBalances[symbol] = (tokenBalances[symbol] ?? 0) + amount;
-        usdTokenBalances[symbol] = (usdTokenBalances[symbol] ?? 0) + usdAmount;
-        usdTvl += usdAmount;
-      });
-    } else {
-      console.error(`Data for ${response.PK} is stale`);
-    }
+
+  tokenData.forEach(response => {
+    Object.keys(response).forEach(address => {
+      delete unknownTokens[address]
+      const data = response[address];
+      const balance = balances[address];
+
+      if (data == undefined) tokenBalances[`UNKNOWN (${address})`] = balance
+      if ('confidence' in data && data.confidence < confidenceThreshold) return
+
+      let amount, usdAmount;
+      if (address.includes(":") && !address.startsWith("coingecko:")) {
+        amount = new BigNumber(balance).div(10 ** data.decimals).toNumber();
+        usdAmount = amount * data.price;
+      } else {
+        amount = Number(balance);
+        usdAmount = amount * data.price;
+      }
+      tokenBalances[data.symbol] = (tokenBalances[data.symbol] ?? 0) + amount;
+      usdTokenBalances[data.symbol] = (usdTokenBalances[data.symbol] ?? 0) + usdAmount;
+      usdTvl += usdAmount;
+    })
   });
-  readKeys.filter(key => key.includes('0x')).forEach(key => {
-    if (pkSet.has(key)) return;
-    tokenBalances[`UNKNOWN (${key})`] = balances[key]
-  })
+
+  Object.keys(unknownTokens).forEach(address => tokenBalances[`UNKNOWN (${address})`] = balances[address])
+
   return {
     usdTvl,
     tokenBalances,

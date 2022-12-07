@@ -18,6 +18,7 @@ module.exports = {
     timetravel: false,
     fetch,
     hallmarks:[
-        [1628565707, "Token+LM launch"]
+        [1628565707, "Token+LM launch"],
+        [1667865600, "FTX collapse"]
     ]
 };

@@ -6,7 +6,7 @@ const token1 = require('./abis/token1.json');
 const masterchefAbi = require('./abis/masterchef.json')
 const getReserves = require('./abis/getReserves.json');
 const kslpABI = require('./abis/kslp.js');
-const { getChainTransform, stripTokenHeader, getFixBalances, transformBalances, } = require('./portedTokens')
+const { getChainTransform, stripTokenHeader, getFixBalances, transformBalances, transformDexBalances, } = require('./portedTokens')
 const { requery, } = require('./getUsdUniTvl')
 const { getCoreAssets } = require('./tokenMapping')
 const { sumTokens, sumTokens2, nullAddress, } = require('./unwrapLPs')
@@ -36,11 +36,11 @@ async function getLPData({
   lpFilter = isLP,
 }) {
   lps = getUniqueAddresses(lps)
-  const pairAddresses = allLps ? lps : await getLPList({lps, chain, block, lpFilter, })
+  const pairAddresses = allLps ? lps : await getLPList({ lps, chain, block, lpFilter, })
   const pairCalls = pairAddresses.map((pairAddress) => ({ target: pairAddress, }))
-  let token0Addresses, token1Addresses, reserves
+  let token0Addresses, token1Addresses
 
-  [token0Addresses, token1Addresses, reserves] = await Promise.all([
+  [token0Addresses, token1Addresses] = await Promise.all([
     sdk.api.abi.multiCall({ abi: abis.token0ABI || token0, chain, calls: pairCalls, block, }).then(({ output }) => output),
     sdk.api.abi.multiCall({ abi: abis.token1ABI || token1, chain, calls: pairCalls, block, }).then(({ output }) => output),
   ]);
@@ -60,7 +60,7 @@ async function getLPData({
   return pairs
 }
 
-async function getLPList({lps, chain, block, lpFilter = isLP, }) {
+async function getLPList({ lps, chain, block, lpFilter = isLP, }) {
   lps = lps.filter(i => i !== nullAddress)
   const callArgs = lps.map(t => ({ target: t }))
   let symbols = (await sdk.api.abi.multiCall({ calls: callArgs, abi: symbol, block, chain })).output
@@ -98,7 +98,7 @@ async function getTokenPrices({
   blacklist = blacklist.map(i => i.toLowerCase())
   whitelist = whitelist.map(i => i.toLowerCase())
   lps = getUniqueAddresses(lps)
-  const pairAddresses = allLps ? lps : await getLPList({lps, chain, block, lpFilter})
+  const pairAddresses = allLps ? lps : await getLPList({ lps, chain, block, lpFilter })
   const pairCalls = pairAddresses.map((pairAddress) => ({ target: pairAddress, }))
 
   let token0Addresses, token1Addresses, reserves
@@ -136,6 +136,7 @@ async function getTokenPrices({
 
   const prices = {}
   const pairBalances = {}
+  const pairBalances2 = []
 
   for (let i = 0; i < reserves.length; i++) {
     const pairAddress = reserves[i].input.target.toLowerCase();
@@ -144,6 +145,12 @@ async function getTokenPrices({
     const token0Address = pair.token0Address.toLowerCase()
     const token1Address = pair.token1Address.toLowerCase()
     const reserveAmounts = reserves[i].output
+    pairBalances2.push({
+      token0:token0Address,
+      token1:token1Address,
+      token0Bal: reserveAmounts[0],
+      token1Bal: reserveAmounts[1],
+    })
     if (coreAssets.includes(token0Address) && coreAssets.includes(token1Address)) {
       sdk.util.sumSingleBalance(pairBalances[pairAddress], token0Address, Number(reserveAmounts[0]))
       sdk.util.sumSingleBalance(pairBalances[pairAddress], token1Address, Number(reserveAmounts[1]))
@@ -228,6 +235,7 @@ async function getTokenPrices({
     pairBalances,
     prices,
     balances,
+    pairBalances2,
   }
 
   function setPrice(prices, address, coreAmount, tokenAmount, coreAsset) {
@@ -362,16 +370,22 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
   abis = {},
   restrictTokenRatio, // while computing tvl, an unknown token value can max be x times the pool value, default 100 times pool value
   fetchInChunks = 0,  // if there are too many pairs, we might want to query in batches to avoid multicall failing and crashing
+  version = '1',
 }) {
   if (!coreAssets.length && useDefaultCoreAssets) {
     coreAssets = getCoreAssets(chain)
   }
+  const isVersion2 = version === '2'
+  if (fetchInChunks && isVersion2) {
+    throw new Error ('Not yet supported!')
+  }
+
   return async (ts, _block, { [chain]: block }) => {
-    
+
     // get factory from LP
     // console.log(await sdk.api.abi.call({ target: '0x463e451d05f84da345d641fbaa3129693ce13816', abi: { "inputs": [], "name": "factory", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" }, chain, block, }))
     let pairAddresses;
-    const pairLength = (await sdk.api.abi.call({ target: factory, abi: factoryAbi.allPairsLength, chain, block })).output
+    const pairLength = (await sdk.api.abi.call({ target: factory, abi: abis.allPairsLength || factoryAbi.allPairsLength, chain, block })).output
     if (pairLength === null)
       throw new Error("allPairsLength() failed")
 
@@ -381,14 +395,15 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
     if (skipPair.length) pairNums = pairNums.filter(i => !skipPair.includes(i))
 
     if (fetchInChunks === 0) {
-      let pairs = (await sdk.api.abi.multiCall({ abi: factoryAbi.allPairs, chain, calls: pairNums.map(num => ({ target: factory, params: [num] })), block })).output
+      let pairs = (await sdk.api.abi.multiCall({ abi: abis.allPairs || factoryAbi.allPairs, chain, calls: pairNums.map(num => ({ target: factory, params: [num] })), block })).output
       await requery(pairs, chain, block, factoryAbi.allPairs);
-  
+
       pairAddresses = pairs.map(result => result.output.toLowerCase())
       const response = await getTokenPrices({
         block, chain, coreAssets, blacklist, lps: pairAddresses, transformAddress, whitelist, allLps: true,
         minLPRatio, log_coreAssetPrices, log_minTokenValue, restrictTokenRatio, abis,
       })
+      if (isVersion2) return transformDexBalances({ chain, data: response.pairBalances2, })
       return withMetaData ? response : response.balances
     } else {
       let i = 0
@@ -410,7 +425,7 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
   }
 }
 
-function unknownTombs({ token, shares = [], rewardPool = [], masonry = [], lps, chain = "ethereum", coreAssets = [],
+function unknownTombs({ token = [], shares = [], rewardPool = [], masonry = [], lps, chain = "ethereum", coreAssets = [],
   useDefaultCoreAssets = false, }) {
   let getPrices
   if (!coreAssets.length && useDefaultCoreAssets)
@@ -422,6 +437,8 @@ function unknownTombs({ token, shares = [], rewardPool = [], masonry = [], lps, 
     masonry = [masonry]
   if (!Array.isArray(rewardPool) && typeof rewardPool === 'string')
     rewardPool = [rewardPool]
+  if (!Array.isArray(token) && typeof token === 'string')
+    token = [token]
 
   const pool2 = async (timestamp, _block, chainBlocks) => {
     let balances = {};
@@ -451,6 +468,7 @@ function unknownTombs({ token, shares = [], rewardPool = [], masonry = [], lps, 
 
     const tao = []
     shares.forEach(token => masonry.forEach(owner => tao.push([token, owner])))
+    // token.forEach(t => masonry.forEach(owner => tao.push([t, owner])))
 
     await sumTokens(balances, tao, block, chain, undefined, { skipFixBalances: true })
     const fixBalances = await getFixBalances(chain)
@@ -460,13 +478,13 @@ function unknownTombs({ token, shares = [], rewardPool = [], masonry = [], lps, 
   }
 
   return {
-    [chain === "avax" ? "avalanche" : chain]: {
+    misrepresentedTokens: true,
+    [chain]: {
       tvl: async () => ({}),
       staking,
       pool2
     }
   }
-
 }
 
 function pool2({ stakingContract, lpToken, chain = "ethereum", transformAddress, coreAssets = [], useDefaultCoreAssets = false, }) {
@@ -509,7 +527,7 @@ async function vestingHelper({
   const finalBalances = {}
   for (let i = 0; i < chunks.length; i++) {
     log('resolving for %s/%s of total tokens: %s (chain: %s)', i + 1, chunks.length, tokens.length, chain)
-    let lps = await getLPList({lps: chunks[i], chain, block})  // we count only LP tokens for vesting protocols
+    let lps = await getLPList({ lps: chunks[i], chain, block })  // we count only LP tokens for vesting protocols
     const balances = await sumTokens2({ chain, block, owner, tokens: lps })
     const lpBalances = {}
     Object.entries(balances).forEach(([token, bal]) => {
@@ -529,7 +547,7 @@ async function vestingHelper({
   return finalBalances
 }
 
-async function sumUnknownTokens({ tokensAndOwners = [],
+async function sumUnknownTokens({ tokensAndOwners = [], balances = {},
   coreAssets = [], owner, tokens, chain = 'ethereum', block, restrictTokenRatio, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
   log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [], useDefaultCoreAssets = false,
 }) {
@@ -542,7 +560,7 @@ async function sumUnknownTokens({ tokensAndOwners = [],
     else if (owner)
       tokensAndOwners = tokens.map(t => [t, owner])
   tokensAndOwners = tokensAndOwners.filter(t => !blacklist.includes(t[0]))
-  const balances = await sumTokens2({ chain, block, tokensAndOwners, skipFixBalances: true, })
+  await sumTokens2({ balances, chain, block, tokensAndOwners, skipFixBalances: true, })
   const { updateBalances, } = await getTokenPrices({ coreAssets, lps: [...tokensAndOwners.map(t => t[0]), ...lps,], chain, block, restrictTokenRatio, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio })
   await updateBalances(balances, { skipConversion, onlyLPs })
   const fixBalances = await getFixBalances(chain)
@@ -650,6 +668,7 @@ function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = 
   }
 
   return {
+    misrepresentedTokens: true,
     [chain]: {
       tvl, pool2, staking
     }
@@ -715,6 +734,13 @@ async function yieldHelper({ chain = 'ethereum', block, coreAssets = [], blackli
   return transformBalances(chain, balances)
 }
 
+function uniTvlExport(chain, factory) {
+  return {
+    misrepresentedTokens: true,
+    [chain]: { tvl: getUniTVL({ chain, factory, useDefaultCoreAssets: true })}
+  }
+}
+
 module.exports = {
   nullAddress,
   getTokenPrices,
@@ -728,4 +754,5 @@ module.exports = {
   staking,
   sumTokensExport,
   yieldHelper,
+  uniTvlExport,
 };

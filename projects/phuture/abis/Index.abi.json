@@ -1,0 +1,46 @@
+{
+  "anatomy": {
+    "inputs": [],
+    "name": "anatomy",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "_assets",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint8[]",
+        "name": "_weights",
+        "type": "uint8[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "inactiveAnatomy": {
+    "inputs": [],
+    "name": "inactiveAnatomy",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "vTokenFactory": {
+    "inputs": [],
+    "name": "vTokenFactory",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+}

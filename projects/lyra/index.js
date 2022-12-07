@@ -1,4 +1,3 @@
-const { getBlock } = require('../helper/getBlock')
 const { staking } = require('../helper/staking')
 const { sumTokens } = require('../helper/unwrapLPs')
 
@@ -16,12 +15,14 @@ const v1_1_ShortCollateral = [
 
 const v1_2_LiquidityPool = [
     '0x5Db73886c4730dBF3C562ebf8044E19E8C93843e',
-    '0x3C73CD65D708A5C951f0Cc19a4D0Bb6559ae20c5'
+    '0x3C73CD65D708A5C951f0Cc19a4D0Bb6559ae20c5',
+    '0xA33C1963d74d203DF6bFfDfDa3bFf39a1D76e1D0'
     ]
 
 const v1_2_ShortCollateral = [
     '0x3E86B53e1D7DA7eDbA225c3A218d0b5a7544fDfD',
-    '0x26cf967e466d9fd60af7d1b78a01c43e75e03b32'
+    '0x26cf967e466d9fd60af7d1b78a01c43e75e03b32',
+    '0xa5ce396616c7D14F61B5B9bbA3A57388Db885b2E'
     ]
 
 const pools = [...new Set([...v1_0_Pools, ...v1_1_LiquidityPool, ...v1_1_ShortCollateral, ...v1_2_LiquidityPool, ...v1_2_ShortCollateral].map(t=>t.toLowerCase()))]
@@ -36,9 +37,8 @@ const L2toL1Synths = {
     '0xc5db22719a06418028a40a9b5e9a7c02959d0d08': '0xbbc455cb4f1b9e4bfc4b73970d360c8f032efee6'
 }
 
-async function tvl(ttimestamp, _b, chainBlocks){
+async function tvl(ttimestamp, _b, {optimism: block}){
     const balances = {}
-    const block = await getBlock(ttimestamp, 'optimism', chainBlocks)
     const transform = (addr)=>{
         return L2toL1Synths[addr] || addr;
     }

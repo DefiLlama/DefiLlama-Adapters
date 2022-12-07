@@ -6,7 +6,7 @@ const { TOKENS, DOT_TOKEN, DOT_DECIMALS, DEFAULT_DECIMALS } = require("./constan
 const transferFromAddress = (underlying) => TOKENS[underlying]
 
 function astar(borrowed) {
-  return async (timestamp, block) => {
+  return async (timestamp, _, {star: block}) => {
     const balances = {};
     const [sTokens, reserveTokens, validProtocolDataHelpers] =
       await getReserves(block);

@@ -1,21 +1,12 @@
 const axios = require('axios')
-const { getTokenBalances, sumTokens, convertBalances } = require('../helper/tezos')
-const { getFixBalances } = require('../helper/portedTokens')
+const { sumTokens2, } = require('../helper/chain/tezos')
 
 async function tvl() {
-  let balances = await sumTokens({ owners: await getDexes(), includeTezos: true, })
-  const fixBalances = await getFixBalances('tezos')
-  balances = await convertBalances(balances)
-  fixBalances(balances)
-  return balances
+  return sumTokens2({ owners: await getDexes(), includeTezos: true, })
 }
 
 async function staking() {
-  const fixBalances = await getFixBalances('tezos')
-  const stakingAddress = 'KT1PxkrCckgh5fA5v2cZEE2bX5q2RV1rv8dj'
-  const balances = await getTokenBalances(stakingAddress, false)
-  fixBalances(balances)
-  return balances
+  return sumTokens2({ owners: ['KT1PxkrCckgh5fA5v2cZEE2bX5q2RV1rv8dj'], includeTezos: false, })
 }
 
 async function getDexes() {

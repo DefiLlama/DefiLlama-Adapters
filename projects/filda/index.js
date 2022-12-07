@@ -1,7 +1,6 @@
 
 const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
-const { getBlock } = require('../helper/getBlock')
 const { unwrapUniswapLPs } = require('../helper/unwrapLPs')
 const { compoundExportsWithDifferentBase, compoundExports, usdCompoundExports } = require('../helper/compound');
 
@@ -76,9 +75,8 @@ const replacements = {
   }
 }
 function lending(borrowed) {
-  return async (timestamp, ethBlock, chainBlocks) => {
+  return async (timestamp, ethBlock, {heco: block}) => {
     let balances = {};
-    const block = await getBlock(timestamp, 'heco', chainBlocks, true)
     let markets = await getMarkets(block);
 
     let v2Locked = await sdk.api.abi.multiCall({

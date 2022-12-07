@@ -63,7 +63,7 @@ async function calcInactiveTrancheBalances(balances, product, chain, block) {
   })).output;
 
   for (let i = 0; i < res.length; i++) {
-    await sdk.util.sumSingleBalance(balances, transform(product.currency[i]), res[i].output);
+    sdk.util.sumSingleBalance(balances, transform(product.currency[i]), res[i].output);
   }
   return balances;
 }
@@ -95,10 +95,10 @@ async function sumBalancesMulti(res, product, balances, chain) {
   for (let i = 0; i < res.length; i++) {
     for (let c = 0; c < product.currency.length; c++) {
       let currencyPrincipalShare = new BN(res[i].output.principal).multipliedBy(product.currencyRatios[c]).dividedBy('100').toFixed();
-      await sdk.util.sumSingleBalance(balances, transform(product.currency[c]), currencyPrincipalShare);
+      sdk.util.sumSingleBalance(balances, transform(product.currency[c]), currencyPrincipalShare);
       if (product.auto) {
         let currencyAutoShare = new BN(res[i].output.autoPrincipal).multipliedBy(product.currencyRatios[c]).dividedBy('100').toFixed();
-        await sdk.util.sumSingleBalance(balances, transform(product.currency[c]), currencyAutoShare);
+        sdk.util.sumSingleBalance(balances, transform(product.currency[c]), currencyAutoShare);
       }
     }
   }

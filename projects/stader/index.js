@@ -1,18 +1,10 @@
 const { fetchURL } = require("../helper/utils")
-const { addHBarBalance } = require("../helper/hbar")
-
-//const bscStakeManger = '0x7276241a669489E4BBB76f63d2A43Bfe63080F2F'
-
-async function tvl() {
-  const res = await fetchURL("https://staderverse.staderlabs.com/tvl")
-  return {
-    "terra-luna": res.data.terraClassic.native
-    //"terrausd": res.data.totalStakedLunaInUst / 1e6
-  }
-}
 
 async function hbarTvl(timestamp) {
-  return addHBarBalance({ timestamp, address: '0.0.1027588' })
+  const res = await fetchURL("https://staderverse.staderlabs.com/tvl")
+  return {
+    "hedera-hashgraph": res.data.hedera.native
+  }
 }
 
 async function maticTvl() {
@@ -52,13 +44,14 @@ async function nearTvl() {
 
 module.exports = {
   timetravel: false,
-  methodology: 'We aggregated the luna staked across Stader stake-pools & liquid token and then converted to UST',
-  terra: {
+  methodology: 'We aggregated the assets staked across Stader staking protocols',
+  /*terra: {
     tvl,
-  },
+  },*/
   hedera: {
     tvl: hbarTvl,
   },
+  // its on ethereum because funds are locked there
   ethereum: {
     tvl: maticTvl
   },
@@ -78,5 +71,4 @@ module.exports = {
     [1651881600, "UST depeg"],
   ]
 }
-
 

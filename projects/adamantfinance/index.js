@@ -59,12 +59,6 @@ const lpAddresses_cronos = [
   "0x2a008ef8ec3ef6b03eff10811054e989aad1cf71", //CADDY-WCRO Cronos
 ];
 
-async function calcPool2(uniVaults, lpAddress, chain, block) {
-  const toa = []
-  uniVaults.forEach(owner => lpAddress.forEach(lp => toa.push([lp, owner])))
-  return sumTokens({}, toa, block, chain, undefined, { resolveLP: true })
-}
-
 async function calcPool2_staking_rewards(
   balances,
   uniVaults,

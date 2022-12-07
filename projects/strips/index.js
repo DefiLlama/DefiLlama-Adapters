@@ -15,6 +15,7 @@ async function getMarkets(block) {
 };
 
 async function pool2(timestamp, block, chainBlocks) {
+  block = chainBlocks.arbitrum
   const contracts = await getMarkets(block);
   return {
     [usdc]: (await sdk.api.abi.multiCall({
@@ -29,6 +30,9 @@ async function pool2(timestamp, block, chainBlocks) {
 } // node test.js projects/strips/index.js
 
 module.exports = {
+  hallmarks: [
+    [1658102400, "Winding down of v1 announced"]
+  ],
   arbitrum: {
     tvl: () => ({}),
     pool2

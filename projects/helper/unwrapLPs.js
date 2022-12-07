@@ -626,7 +626,7 @@ tokensAndOwners [
     [token, owner] - eg ["0xaaa", "0xbbb"]
 ]
 */
-async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereum", transformAddress, { resolveCrv = false, resolveLP = false, resolveYearn = false, unwrapAll = false, blacklistedLPs = [], skipFixBalances = false, } = {}) {
+async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereum", transformAddress, { resolveCrv = false, resolveLP = false, resolveYearn = false, unwrapAll = false, blacklistedLPs = [], skipFixBalances = false, abis = {}, } = {}) {
   if (!transformAddress)
     transformAddress = await getChainTransform(chain)
 
@@ -672,7 +672,7 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
   })
 
   if (resolveLP || unwrapAll)
-    await unwrapLPsAuto({ balances, block, chain, transformAddress, blacklistedLPs })
+    await unwrapLPsAuto({ balances, block, chain, transformAddress, blacklistedLPs, abis, })
 
   if (resolveCrv || unwrapAll)
     await resolveCrvTokens(balances, block, chain, transformAddress)
@@ -829,7 +829,7 @@ async function genericUnwrapCvx(balances, holder, cvx_BaseRewardPool, block, cha
   await genericUnwrapCrv(balances, crvPoolInfo.lptoken, cvx_LP_bal, block, chain)
 }
 
-async function unwrapLPsAuto({ balances, block, chain = "ethereum", transformAddress, excludePool2 = false, onlyPool2 = false, pool2Tokens = [], blacklistedLPs = [] }) {
+async function unwrapLPsAuto({ balances, block, chain = "ethereum", transformAddress, excludePool2 = false, onlyPool2 = false, pool2Tokens = [], blacklistedLPs = [], abis = {}, }) {
   if (!transformAddress)
     transformAddress = await getChainTransform(chain)
 
@@ -873,7 +873,7 @@ async function unwrapLPsAuto({ balances, block, chain = "ethereum", transformAdd
 
   async function _unwrapUniswapLPs(balances, lpPositions) {
     const lpTokenCalls = lpPositions.map(lpPosition => ({ target: lpPosition.token }))
-    const { output: lpReserves } = await sdk.api.abi.multiCall({ block, abi: lpReservesAbi, calls: lpTokenCalls, chain, })
+    const { output: lpReserves } = await sdk.api.abi.multiCall({ block, abi: abis.getReservesABI || lpReservesAbi, calls: lpTokenCalls, chain, })
     const { output: lpSupplies } = await sdk.api.abi.multiCall({ block, abi: lpSuppliesAbi, calls: lpTokenCalls, chain, })
     const { output: tokens0 } = await sdk.api.abi.multiCall({ block, abi: token0Abi, calls: lpTokenCalls, chain, })
     const { output: tokens1 } = await sdk.api.abi.multiCall({ block, abi: token1Abi, calls: lpTokenCalls, chain, })
@@ -954,7 +954,6 @@ async function unwrapTroves({ balances = {}, chain = 'ethereum', block, troves =
   return balances
 }
 
-
 async function sumTokens2({
   balances = {},
   tokensAndOwners = [],
@@ -971,8 +970,8 @@ async function sumTokens2({
   blacklistedLPs = [],
   blacklistedTokens = [],
   skipFixBalances = false,
+  abis = {},
 }) {
-
   if (!tokensAndOwners.length) {
     tokens = getUniqueAddresses(tokens)
     owners = getUniqueAddresses(owners)
@@ -982,8 +981,10 @@ async function sumTokens2({
 
   blacklistedTokens = blacklistedTokens.map(t => t.toLowerCase())
   tokensAndOwners = tokensAndOwners.map(([t, o]) => [t.toLowerCase(), o]).filter(([token]) => !blacklistedTokens.includes(token))
+  tokensAndOwners = getUniqueToA(tokensAndOwners)
+  log(chain, 'summing tokens', tokensAndOwners.length)
 
-  await sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveCrv, resolveLP, resolveYearn, unwrapAll, blacklistedLPs, skipFixBalances: true })
+  await sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveCrv, resolveLP, resolveYearn, unwrapAll, blacklistedLPs, skipFixBalances: true, abis, })
 
   if (!skipFixBalances) {
     const fixBalances = await getFixBalances(chain)
@@ -991,6 +992,11 @@ async function sumTokens2({
   }
 
   return balances
+
+  function getUniqueToA(toa) {
+    toa = toa.map(i => i.join('-'))
+    return getUniqueAddresses(toa).map(i => i.split('-'))
+  }
 }
 
 function sumTokensExport({ balances, tokensAndOwners, tokens, owner, owners, chain = 'ethereum', transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances }) {

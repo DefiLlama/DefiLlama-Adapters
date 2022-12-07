@@ -265,7 +265,7 @@ async function eth(timestamp, block) {
       tokens.wbtc.address,
       tokens.lusd.address,
       tokens.weth.address
-    ].map(t => [t, contracts.stakingPools.address]), block, undefined, undefined, { resolveLP: true })
+    ].map(t => [t, contracts.stakingPools.address]), block)
 
 
     await sumTokens(balances, [
@@ -274,7 +274,7 @@ async function eth(timestamp, block) {
       tokens.wbtc.address,
       tokens.lusd.address,
       tokens.weth.address
-    ].map(t => [t, contracts.stakingPoolsV4.address]), block, undefined, undefined, { resolveLP: true })
+    ].map(t => [t, contracts.stakingPoolsV4.address]), block)
    
     // vaults
 

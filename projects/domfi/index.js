@@ -1,15 +1,13 @@
 const sdk = require("@defillama/sdk");
 const { sumTokens, } = require("../helper/unwrapLPs");
 const { getChainTransform } = require("../helper/portedTokens");
-const { getBlock } = require("../helper/getBlock");
 const abi = require("./abi");
 const { Chain, lsps, uniswapFactory, ZERO_ADDRESS, usdc } = require("./registry");
 
 const makeUniswapReserves = (chain, makeAddressTransform) => {
-  return async (timestamp, block, chainBlocks) => {
+  return async (timestamp, _, {[chain]: block}) => {
     const balances = {};
     const transform = await getChainTransform(chain);
-    block = await getBlock(timestamp, chain, chainBlocks);
 
     const getLongToken = abi["LongShortPair.longToken"];
     const getShortToken = abi["LongShortPair.shortToken"];
@@ -76,10 +74,9 @@ const makeUniswapReserves = (chain, makeAddressTransform) => {
 }
 
 const makeLspTvl = (chain, makeAddressTransform) => {
-  return async (timestamp, block, chainBlocks) => {
+  return async (timestamp, _, {[chain]: block}) => {
     const balances = {};
     const transform = await getChainTransform(chain);
-    block = await getBlock(timestamp, chain, chainBlocks);
 
     const getCollateralToken = abi["LongShortPair.collateralToken"];
     const collaterals = await sdk.api.abi.multiCall({

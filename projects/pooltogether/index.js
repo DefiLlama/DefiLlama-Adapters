@@ -2,8 +2,9 @@ const sdk = require("@defillama/sdk");
 const { request, gql } = require("graphql-request");
 const abi = require('./abi.json')
 const { getChainTransform } = require("../helper/portedTokens");
-const { getBlock } = require("../helper/getBlock");
+const { getBlock } = require("../helper/http");
 const { sumTokens } = require("../helper/unwrapLPs");
+const { default: BigNumber } = require("bignumber.js");
 
 const graphUrls = ['https://api.thegraph.com/subgraphs/name/pooltogether/pooltogether-v3_1_0',
   'https://api.thegraph.com/subgraphs/name/pooltogether/pooltogether-v3_3_2',
@@ -56,7 +57,7 @@ async function getChainBalances(allPrizePools, chain, block, transform) {
       pool.id === call.input.target).underlyingCollateralToken);
     const underlyingTokenBalance = ((underlyingToken.includes('0x')) ?
       call.output : call.output / 10 ** 18)
-    sdk.util.sumSingleBalance(balances, underlyingToken, underlyingTokenBalance)
+    sdk.util.sumSingleBalance(balances, underlyingToken, BigNumber(underlyingTokenBalance).toFixed(0))
   })
   if(v4pools[chain]!== undefined){
     await sumTokens(balances, v4pools[chain], block, chain, transform)
@@ -114,14 +115,13 @@ async function celo(timestamp, block, chainBlocks) {
   return getChainBalances(allPrizePools, 'celo', block, transform)
 }
 
-async function bsc(timestamp, block, chainBlocks) {
+async function bsc(timestamp, _, chainBlocks) {
   const transform = await getChainTransform('bsc')
   let allPrizePools = []
-  block = await getBlock(timestamp, 'bsc', chainBlocks) - 1000
-  const { prizePools } = await request(
-    bscGraphUrl, graphQuery, { block })
+  const blockG = await getBlock(timestamp, 'bsc', chainBlocks) - 1000
+  const { prizePools } = await request(bscGraphUrl, graphQuery, { block: blockG })
   allPrizePools = allPrizePools.concat(prizePools)
-  return getChainBalances(allPrizePools, 'bsc', block, transform)
+  return getChainBalances(allPrizePools, 'bsc', chainBlocks.bsc, transform)
 }
 
 module.exports = {
@@ -132,7 +132,7 @@ module.exports = {
   polygon: {
     tvl: polygon
   },
-  avalanche:{
+  avax:{
     tvl: avax
   },
   optimism:{
@@ -142,7 +142,7 @@ module.exports = {
     tvl: celo
   },
   bsc: {
-    tvl: bsc
+    tvl: bsc,
   },
   hallmarks:[
     [1658872800, "OP Rewards Start"],

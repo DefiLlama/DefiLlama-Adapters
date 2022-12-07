@@ -71,7 +71,7 @@ async function getBorrowed(balances, block, vaults, tokens) {
 }
 
 function getMetaStreetTVL(isBorrowed) {
-    return async (block) => {
+    return async (_, block) => {
         const balances = {}    
         // Get all vaults and tokens
         const [vaults, tokens] = await getAllVaultsAndTokens(block);

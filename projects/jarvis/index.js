@@ -93,15 +93,19 @@ function chainTvl(chain) {
     const liquidityPools = elements_obj.map(e => e.output).flat(2)
 
     if (version === 6) {
+      const blacklistedPools = [
+        '0x009fd83E664A4df9EEA1D46d3D0159e2413680F5',
+        '0x8F90eA62D0C4Ba040906BaCB4CA79b86BD18e8AD',
+      ].map(i => i.toLowerCase())
+
+      const calls = liquidityPools.filter(i => !blacklistedPools.includes(i.toLowerCase())).map(a => ({ target: a }))
       const { output: collateralTokens } = await sdk.api.abi.multiCall({
         abi: abi.collateralToken,
-        calls: liquidityPools.map(a => ({ target: a })),
-        chain, block,
+        chain, block, calls,
       })
       const { output: totalCollateralAmounts } = await sdk.api.abi.multiCall({
         abi: abi.totalCollateralAmount,
-        calls: liquidityPools.map(a => ({ target: a })),
-        chain, block,
+        chain, block, calls,
       })
 
       const balances = {};

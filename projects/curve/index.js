@@ -7,9 +7,7 @@ const abi = require("./abi.json");
 const creamAbi = require("../helper/abis/cream.json");
 const contracts = require("./contracts.json");
 const { requery } = require("../helper/requery");
-const { default: axios } = require("axios");
-const retry = require("async-retry");
-const { getBlock } = require("../helper/getBlock");
+const { get } = require('../helper/http')
 const chains = [
   "ethereum", //-200M
   "polygon", //-40M
@@ -19,7 +17,8 @@ const chains = [
   "fantom", //-80M
   "optimism", //-6M
   "xdai", //G
-  "moonbeam"
+  "moonbeam",
+  "kava"
 ]; // Object.keys(contracts);
 const registryIds = {
   stableswap: 0,
@@ -105,7 +104,7 @@ async function fixGasTokenBalances(poolBalances, block, chain) {
     if (
       poolBalances.output[i].success == false &&
       poolBalances.output[i].input.target.toLowerCase() ==
-        contracts[chain].gasTokenDummy
+      contracts[chain].gasTokenDummy
     ) {
       const ethBalance = (await sdk.api.eth.getBalance({
         target: poolBalances.output[i].input.params[0],
@@ -204,11 +203,6 @@ function mapGaugeTokenBalances(calls, chain) {
       pools: [],
       chains: []
     }, // need a pool conditional - only for (1) ['0x30dF229cefa463e991e29D42DB0bae2e122B2AC7']
-    "0xd02a30d33153877bc20e5721ee53dedee0422b2f": {
-      to: "0xd4f94d0aaa640bbb72b5eec2d85f6d114d81a88e",
-      pools: [],
-      chains: []
-    },
     "0x1337bedc9d22ecbe766df105c9623922a27963ec": {
       to: "0x5b5cfe992adac0c9d48e05854b2d91c73a003858",
       pools: [],
@@ -226,7 +220,7 @@ function mapGaugeTokenBalances(calls, chain) {
     }
   };
 
-  return calls.map(function(c) {
+  return calls.map(function (c) {
     let target = c.target;
     if (
       c.target.toLowerCase() in mapping &&
@@ -242,9 +236,8 @@ function mapGaugeTokenBalances(calls, chain) {
 }
 
 async function unwrapSdTokens(balances, sdTokens, chain) {
-  const apiData = (await retry(
-    async bail => await axios.get("https://lockers.stakedao.org/api/lockers")
-  )).data.map(t => ({
+  const apiData = (await get("https://lockers.stakedao.org/api/lockers")
+  ).map(t => ({
     address: t.tokenReceipt.address.toLowerCase(),
     usdPrice: t.tokenPriceUSD,
     decimals: t.tokenReceipt.decimals
@@ -270,13 +263,8 @@ async function handleUnlistedFxTokens(balances, chain) {
     const tokens = Object.values(contracts[chain].fxTokens);
     for (let token of tokens) {
       if (token.address in balances) {
-        const [{ data: rate }, { output: decimals }] = await Promise.all([
-          retry(
-            async bail =>
-              await axios.get(
-                `https://api.exchangerate.host/convert?from=${token.currency}&to=USD`
-              )
-          ),
+        const [rate, { output: decimals }] = await Promise.all([
+          get(`https://api.exchangerate.host/convert?from=${token.currency}&to=USD`),
           sdk.api.erc20.decimals(token.address, chain)
         ]);
 
@@ -348,7 +336,7 @@ function tvl(chain) {
     let balances = {};
     const transform = await getChainTransform(chain);
     const poolList = await getPools(chainBlocks[chain], chain);
-    const block = await getBlock(_t, chain, chainBlocks, true);
+    const block = chainBlocks[chain];
 
     for (let registry of Object.keys(poolList)) {
       await unwrapPools(
@@ -381,7 +369,7 @@ const chainTypeExports = chains => {
         // harmony hack
         return {};
       }
-      const block = await getBlock(ts, "harmony", chainB, true);
+      const block = chainB.harmony
       const balances = {};
       await sumTokensSharedOwners(
         balances,
@@ -393,6 +381,25 @@ const chainTypeExports = chains => {
         block,
         "harmony",
         addr => `harmony:${addr}`
+      );
+      return balances;
+    }
+  };
+  exports.kava = {
+    tvl: async (ts, ethB, chainB) => {
+      const block = chainB.kava;
+      const balances = {};
+      await sumTokensSharedOwners(
+        balances,
+        [
+          "0x765277EebeCA2e31912C9946eAe1021199B39C61",
+          "0xB44a9B6905aF7c801311e8F4E76932ee959c663C",
+          "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+        ],
+        ["0x7A0e3b70b1dB0D6CA63Cac240895b2D21444A7b9"],
+        block,
+        "kava",
+        addr => `kava:${addr}`
       );
       return balances;
     }

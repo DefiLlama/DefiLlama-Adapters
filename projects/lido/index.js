@@ -2,7 +2,6 @@ const axios = require('axios');
 const abis = require('./abis.json')
 const sdk = require('@defillama/sdk')
 const sol = require('./sol-helpers');
-const { getBlock } = require('../helper/getBlock');
 const { getConnection } = require('../helper/solana');
 
 const ethContract = '0xae7ab96520de3a18e5e111b5eaab095312d7fe84';
@@ -43,9 +42,8 @@ async function eth(timestamp, ethBlock, chainBlocks) {
   }
 }
 
-async function ksm(timestamp, ethBlock, chainBlocks) {
+async function ksm(timestamp, ethBlock, {moonriver: block}) {
   const chain = "moonriver"
-  const block = await getBlock(timestamp, chain, chainBlocks, true)
   const pooledCoin = await sdk.api.abi.call({
     block,
     chain,
@@ -58,9 +56,8 @@ async function ksm(timestamp, ethBlock, chainBlocks) {
   }
 }
 
-async function dot(timestamp, ethBlock, chainBlocks) {
+async function dot(timestamp, ethBlock, {moonbeam: block}) {
   const chain = "moonbeam"
-  const block = await getBlock(timestamp, chain, chainBlocks, true)
   const pooledCoin = await sdk.api.abi.call({
     block,
     chain,
@@ -88,6 +85,7 @@ module.exports = {
   hallmarks: [
     [1651881600,"UST depeg"],
     [1658145600, "News stETH on Layer 2"],
+    [1667865600, "FTX collapse"]
   ],
   methodology: 'Staked tokens are counted as TVL based on the chain that they are staked on and where the liquidity tokens are issued, stMATIC is counted as Ethereum TVL since MATIC is staked in Ethereum and the liquidity token is also issued on Ethereum',
   timetravel: false, // solana

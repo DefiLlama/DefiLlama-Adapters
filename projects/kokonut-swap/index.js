@@ -6,15 +6,13 @@ const registry_addr = "0xBd21dD5BCFE28475D26154935894d4F515A7b1C0";
 const helper_addr = "0x1A09643f4D70B9Aa9da5737568C1935ED37423aa";
 const chain = 'klaytn';
 
-async function tvl(timestamp, block, chainBlocks) {
+async function tvl(timestamp, _, { klaytn: block }) {
   const balances = {};
-  block = chainBlocks[chain]
 
   const poolList = (await sdk.api.abi.call({
     target: registry_addr,
     abi: abi.getPoolList,
-    block,
-    chain
+    block, chain
   })).output;
 
   const info = await sdk.api.abi.multiCall({
@@ -23,17 +21,16 @@ async function tvl(timestamp, block, chainBlocks) {
       params: p
     })),
     abi: abi.getPoolPriceInfo,
-    block,
-    chain
+    block, chain
   });
 
-  await requery(info, chain, chainBlocks[chain], abi.getPoolPriceInfo);
+  await requery(info, chain, block, abi.getPoolPriceInfo);
   const gasToken = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'.toLowerCase()
   const tokenSet = new Set()
 
   for (const data of info.output) {
     const { output: poolInfo, input: { params } } = data
-    if (!poolInfo)  {
+    if (!poolInfo) {
       console.log('pool info missing for ', params)
       continue;
     }
@@ -55,7 +52,7 @@ async function tvl(timestamp, block, chainBlocks) {
 
   for (const { output: poolInfo } of info.output) {
     if (!poolInfo) continue;
-    for (let j = 0; j < poolInfo.tokens.length;j++) {
+    for (let j = 0; j < poolInfo.tokens.length; j++) {
       const token = poolInfo.tokens[j].toLowerCase()
       const decimal = token === gasToken ? 18 : tokenMapping[token]
       const balance = poolInfo.prices[j] / 1e18 * poolInfo.balances[j] / 10 ** (decimal);
@@ -66,12 +63,11 @@ async function tvl(timestamp, block, chainBlocks) {
   return balances;
 };
 
-async function staking(timestamp, block, chainBlocks) {
+async function staking(timestamp, _, { klaytn: block }) {
   const info = (await sdk.api.abi.call({
     target: helper_addr,
     abi: abi.getStakedEyePriceInfo,
-    block,
-    chain
+    block, chain
   })).output;
 
   return { 'usd-coin': info.price * info.balance / 10 ** 36 };
