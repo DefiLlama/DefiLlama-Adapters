@@ -13,6 +13,7 @@ const chainConfig = {
 	polygon: { chainId: 137, },
 	moonbeam: { chainId: 1284, },
 	optimism: { chainId: 10, },
+	arbitrum: { chainId: 42161, },
 }
 const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
 const moonbeamGLMR = "moonbeam:0x0000000000000000000000000000000000000802"
