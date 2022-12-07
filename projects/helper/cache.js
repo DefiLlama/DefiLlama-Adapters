@@ -4,22 +4,18 @@ const Bucket = "tvl-adapter-cache";
 const axios = require('axios')
 
 function getKey(project, chain) {
-  return `cache/${project}-${chain}.json`
+  return `cache/${project}/${chain}.json`
 }
 
 function getLink(project, chain) {
-  return `https://tvl-adapter-cache.s3.eu-central-1.amazonaws.com/${getKey(project, chain)}`
+  return `https://${Bucket}.s3.eu-central-1.amazonaws.com/${getKey(project, chain)}`
 }
 
 async function getCache(project, chain, { } = {}) {
   const Key = getKey(project, chain)
 
   try {
-    const data = await new aws.S3()
-      .getObject({
-        Bucket, Key,
-      }).promise();
-    const { data: json} = await axios.get(getLink(project, chain))
+    const { data: json } = await axios.get(getLink(project, chain))
     return json
   } catch (e) {
     sdk.log('failed to fetch data from s3 bucket:', Key)
