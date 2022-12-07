@@ -1,19 +1,47 @@
-const path = require('path')
-const fs = require('fs')
 const aws = require('aws-sdk')
+const sdk = require('@defillama/sdk')
+const Bucket = "tvl-adapter-cache";
 
-const cacheFolder = process.env.CACHE_FOLDER || path.join(__dirname + '../../../../cache')
-
-async function getCache(project, chain) {
-  const file = path.join(cacheFolder, `${project}-${chain}.json`)
-  if (fs.existsSync(file))
-    return JSON.parse(fs.readFileSync(file))
-  return {}
+function getKey(project, chain) {
+  return `cache/${project}-${chain}.json`
 }
 
-async function setCache(project, chain, cache) {
-  const file = path.join(cacheFolder, `${project}-${chain}.json`)
-  fs.writeFileSync(file, JSON.stringify(cache))
+async function getCache(project, chain, { } = {}) {
+  const Key = getKey(project, chain)
+
+  try {
+    const data = await new aws.S3()
+      .getObject({
+        Bucket, Key,
+      }).promise();
+    const json = data.Body?.toString() ?? "{}"
+    return JSON.parse(json)
+  } catch (e) {
+    sdk.log('failed to fetch data from s3 bucket:', Key)
+    sdk.log(e)
+    return {}
+  }
+}
+
+async function setCache(project, chain, cache, {
+  ContentType = 'application/json',
+  ACL = 'public-read'
+} = {}) {
+
+  const Key = getKey(project, chain)
+
+  try {
+    await new aws.S3()
+      .upload({
+        Bucket, Key,
+        Body: JSON.stringify(cache),
+        ACL, ContentType,
+      }).promise();
+
+  } catch (e) {
+    sdk.log('failed to write data to s3 bucket: ', Key)
+    sdk.log(e)
+  }
 }
 
 module.exports = {
