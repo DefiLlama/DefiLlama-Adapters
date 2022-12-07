@@ -14,7 +14,7 @@ Please send answers to questions there https://github.com/DefiLlama/DefiLlama-Ad
 
 This is a work in progress. The goal is to eventually handle historical data. DefiLlama aims to be transparent, accurate and open source.
 
-If you have any suggestions, want to contribute or want to chat, please join [our discord](https://discord.gg/buPFYXzDDd) and drop a message.
+If you have any suggestions, want to contribute or want to chat, please join [our discord](https://discord.defillama.com/) and drop a message.
 
 ## Testing adapters
 ```
