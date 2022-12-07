@@ -2,7 +2,8 @@ const sdk = require("@defillama/sdk")
 const abi = require('./abi')
 const config = require('./config')
 const { getUniqueAddresses } = require('../helper/utils')
-const { vestingHelper, getCache, setCache, } = require("../helper/cache");
+const { getCache, setCache, } = require("../helper/cache")
+const { vestingHelper,  } = require("../helper/unknownTokens")
 
 const project = 'pinksale'
 

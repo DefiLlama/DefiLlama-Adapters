@@ -1,4 +1,3 @@
-const { fetchItemList } = require('../helper/utils');
 const { pool2 } = require('../helper/pool2')
 const { staking } = require('../helper/staking')
 const { transformBalances } = require('../helper/portedTokens')
@@ -8,7 +7,7 @@ const chain = 'bsc'
 const epsLPStaking = '0x5b74c99aa2356b4eaa7b85dc486843edff8dfdbe'
 const proxy = '0xd4d01c4367ed2d4ab5c2f734d640f7ffe558e8a8'
 async function tvl(_, _b, { bsc: block }) {
-  let addresses = (await fetchItemList({ target: epsLPStaking, chain, block, itemAbi: abis.registeredTokens, lengthAbi: abis.poolLength })).map(i => i.output)
+  let addresses = (await sdk.api2.abi.fetchList({ withMetadata: true, target: epsLPStaking, chain, block, itemAbi: abis.registeredTokens, lengthAbi: abis.poolLength })).map(i => i.output)
   const calls = addresses.map(i => ({ params: [i, proxy] }))
   const { output: bals } = await sdk.api.abi.multiCall({
     target: epsLPStaking,

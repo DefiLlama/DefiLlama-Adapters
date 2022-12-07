@@ -25,7 +25,8 @@ const {
   getLockerLPDataV3,
   getStorageLockCountV33,
 } = require("./abis");
-const { sumUnknownTokens, vestingHelper, getCache, setCache, } = require("../helper/cache");
+const { getCache, setCache, } = require("../helper/cache")
+const { vestingHelper, sumUnknownTokens, } = require("../helper/unknownTokens")
 
 const project = 'dxsale'
 

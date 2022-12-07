@@ -2,7 +2,8 @@ const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { pool2s } = require("../helper/pool2");
 const { getUniqueAddresses } = require('../helper/utils')
-const { vestingHelper, getCache, setCache, } = require("../helper/cache");
+const { getCache, setCache, } = require("../helper/cache")
+const { vestingHelper,  } = require("../helper/unknownTokens")
 
 const project = 'deeplock'
 
