@@ -1,5 +1,4 @@
 const sdk = require('@defillama/sdk');
-const { default: BigNumber } = require('bignumber.js');
 const { transformBalances } = require('../helper/portedTokens');
 
 const abi = require('./abi.json');
@@ -26,7 +25,7 @@ async function staking(chain, chainBlocks) {
   })).output;
 
   sdk.util.sumSingleBalance(balances, tokenAddress, value);
-  return transformBalances(chain, balances)
+  return transformBalances(chain, balances);
 }
 
 async function tvl(chain, chainBlocks) {
@@ -44,7 +43,7 @@ async function tvl(chain, chainBlocks) {
     const value = portfolio.totalValue;
     sdk.util.sumSingleBalance(balances, portfolio.baseTokenAddress, value);
   }
-  return transformBalances(chain, balances)
+  return transformBalances(chain, balances);
 }
 
 module.exports = {
