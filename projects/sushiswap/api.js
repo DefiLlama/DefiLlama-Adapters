@@ -144,7 +144,7 @@ module.exports = {
     tvl: getUniTVL({
       factory,
       chain: 'bsc',
-      useDefaultCoreAssets: true,
+      useDefaultCoreAssets: false,
       blacklist: [
         '0x00598f74DA03489d4fFDb7Fde54db8E3D3AA9a61', // GSHIB
         '0xE38928cd467AD7347465048b3637893124187d02', // GSHIB
