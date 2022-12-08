@@ -472,7 +472,7 @@ const fixBalancesTokens = {
     "0x3a898D596840C6B6b586d722bFAdCC8c4761BF41": { coingeckoId: "latoken", decimals: 18, },
   },
   theta: {
-    [nullAddress]: { coingeckoId: "theta-token", decimals: 18, },
+    [nullAddress]: { coingeckoId: "theta-fuel", decimals: 18, },
     "0x4dc08b15ea0e10b96c41aec22fab934ba15c983e": { coingeckoId: "theta-fuel", decimals: 18, },
     "0x1336739b05c7ab8a526d40dcc0d04a826b5f8b03": { coingeckoId: "thetadrop", decimals: 18, },
   },
