@@ -43,7 +43,7 @@ async function getLPData({
   return pairs
 }
 
-async function getLPList({ lps, chain, block, lpFilter = isLP, cache, }) {
+async function getLPList({ lps, chain, block, lpFilter = isLP, cache = {}, }) {
   if (!cache.symbol) cache.symbol = {}
   lps = lps.filter(i => i)
   const callArgs = lps.filter(i => !cache.symbol[i]).map(t => ({ target: t }));
