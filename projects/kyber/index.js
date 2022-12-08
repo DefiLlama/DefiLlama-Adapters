@@ -1,8 +1,7 @@
 const sdk = require("@defillama/sdk");
-const { GraphQLClient, gql } = require("graphql-request");
-const { getChainTransform } = require("../helper/portedTokens");
-const { calcTvl } = require("./tvl.js");
-const { getBlock } = require("../helper/getBlock");
+const { graphQuery } = require("../helper/http");
+const { getUniTVL } = require("../helper/unknownTokens");
+const { sumTokens2 } = require('../helper/unwrapLPs')
 const abi = require("./abi.json");
 
 const chains = {
@@ -49,106 +48,58 @@ async function fetchPools(chain) {
     chain == "cronos"
       ? "https://cronos-graph.kyberengineering.io/subgraphs/name/kybernetwork/kyberswap-elastic-cronos"
       : `https://api.thegraph.com/subgraphs/name/kybernetwork/kyberswap-elastic-${chain}`;
-  const graphQLClient = new GraphQLClient(url);
 
-  let addresses = [];
-  let reservereThreshold = 0;
-  for (let i = 0; i < 10; i++) {
-    const lpQuery = gql`
-      query lps {
-        pools(first: 1000, orderBy: liquidity, orderDirection: desc,
-          where: {${i == 0 ? `` : `liquidity_lt: ${reservereThreshold}`}
-        }) {
+  let length
+  let lastId = ''
+  let toa = [];
+  const poolQuery = `
+    query pools($lastId: String) {
+      pools(first: 1000, where: {id_gt: $lastId} ) {
+        id
+        token0 {
           id
-          liquidity
         }
-      }`;
-    const result = (await graphQLClient.request(lpQuery)).pools;
-    if (result.length < 1000) {
-      i = 10;
-    } else {
-      reservereThreshold = result[result.length - 1].liquidity;
-    }
-    addresses.push(...result.map(p => p.id));
-  }
-  return addresses;
+        token1 {
+          id
+        }
+      }
+    }`;
+  do {
+    const {pools} = await graphQuery(url, poolQuery, { lastId })
+    pools.forEach(({ id, token0, token1}) => {
+      toa.push([token0.id, id])
+      toa.push([token1.id, id])
+    })
+    lastId = pools[pools.length - 1].id
+  } while (length === 1000)
+  
+  return toa;
 }
+
 function elastic(chain) {
   return async (_, block, chainBlocks) => {
     if (!("graphId" in chains[chain])) return {};
 
     block = chainBlocks[chain];
     const pools = await fetchPools(chains[chain].graphId);
-    const balances = {};
-    const transform = await getChainTransform(chain);
-
-    const [{ output: token0s }, { output: token1s }] = await Promise.all([
-      sdk.api.abi.multiCall({
-        calls: pools.map(p => ({
-          target: p
-        })),
-        block,
-        chain,
-        abi: abi.token0
-      }),
-      sdk.api.abi.multiCall({
-        calls: pools.map(p => ({
-          target: p
-        })),
-        block,
-        chain,
-        abi: abi.token1
-      })
-    ]);
-    const [token0Balances, token1Balances] = await Promise.all([
-      sdk.api.abi.multiCall({
-        calls: pools.map((p, i) => ({
-          target: token0s[i].output,
-          params: [p]
-        })),
-        block,
-        chain,
-        abi: "erc20:balanceOf"
-      }),
-      sdk.api.abi.multiCall({
-        calls: pools.map((p, i) => ({
-          target: token1s[i].output,
-          params: [p]
-        })),
-        block,
-        chain,
-        abi: "erc20:balanceOf"
-      })
-    ]);
-
-    sdk.util.sumMultiBalanceOf(balances, token0Balances, true, transform);
-    sdk.util.sumMultiBalanceOf(balances, token1Balances, true, transform);
-
-    return balances;
-  };
+    return sumTokens2({ chain, block, tokensAndOwners: pools })
+  }
 }
 function classic(chain) {
-  return async (timestamp, block, chainBlocks) => {
-    if (!("factory" in chains[chain])) return {};
-    const transform = await getChainTransform(chain);
-    return calcTvl(
-      transform,
-      getBlock(timestamp, chain, chainBlocks),
-      chain,
-      chains[chain].factory,
-      0,
-      true
-    );
-  };
+  const factory = chains[chain].factory
+  if (!factory) return {}
+  return getUniTVL({ chain, factory: chains[chain].factory, abis: {
+    allPairsLength: abi.allPoolsLength,
+    allPairs: abi.allPools,
+    getReserves: abi.getReserves,
+  } })
 }
 
-const moduleExports = {};
+module.exports = {
+  timetravel: false,
+};
 Object.keys(chains).forEach(chain => {
-  moduleExports[chain] = {
+  module.exports[chain] = {
     tvl: sdk.util.sumChainTvls([elastic(chain), classic(chain)])
   };
 });
-module.exports = {
-  misrepresentedTokens: true,
-  ...moduleExports
-};

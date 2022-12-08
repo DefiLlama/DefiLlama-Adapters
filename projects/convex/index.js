@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const ABI = require('./abi.json')
-const { fetchItemList } = require('../helper/utils')
 const { sumTokensExport } = require('../helper/unwrapLPs')
 
 const boosterAddress = "0xF403C135812408BFbE8713b5A23a04b3D48AAE31";
@@ -35,8 +34,7 @@ async function tvl(chain, block) {
     abiPoolInfo = arbiPoolInfoABI
   }
 
-  let poolInfo = await fetchItemList({ chain, block, lengthAbi: ABI.poolLength, itemAbi: abiPoolInfo, target: boosterAddress })
-  poolInfo = poolInfo.map(i => i.output);
+  let poolInfo = await sdk.api2.abi.fetchList({ chain, block, lengthAbi: ABI.poolLength, itemAbi: abiPoolInfo, target: boosterAddress })
   const { output: gaugeBalances } = await sdk.api.abi.multiCall({
     abi: 'erc20:balanceOf',
     calls: poolInfo.map(i => ({ target: i.gauge, params: staker })),
@@ -54,7 +52,7 @@ const chains = [
 module.exports = {
   doublecounted: true,
   hallmarks: [
-    [1651881600, "UST depeg"],
+    [1651881600, "UST depeg"]
   ]
 };
 

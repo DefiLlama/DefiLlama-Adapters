@@ -165,5 +165,8 @@
   "mixin",
   "stride",
   "muuchain",
-  "defichain"
+  "step",
+  "sifchain",
+  "defichain",
+  "ton"
 ]

@@ -1,6 +1,7 @@
 const { polygonContractData,
   avalancheContractData, cronosContractData, kavaContractData } = require('./config')
-const { vestingHelper, getCache, setCache, } = require("../helper/cache");
+  const { getCache, setCache, } = require("../helper/cache")
+  const { vestingHelper,  } = require("../helper/unknownTokens")
 const sdk = require('@defillama/sdk')
 
 const project = 'dexpad'
@@ -12,7 +13,7 @@ function tvl(args) {
       const chain = args[i].chain
       const contract = args[i].contract
       let block = chainBlocks[chain]
-      const cache = getCache(project, chain) || {}
+      const cache = await getCache(project, chain) || {}
       if (!cache[contract]) cache[contract] = { tokens: [], lastTotalDepositId: 0 }
       const cCache = cache[contract]
       const calls = []
@@ -57,7 +58,7 @@ function tvl(args) {
         tokens,
         cache,
       })
-      setCache(project, chain, cache)
+      await setCache(project, chain, cache)
 
       for (const [token, balance] of Object.entries(balances))
         sdk.util.sumSingleBalance(totalBalances, token, balance)

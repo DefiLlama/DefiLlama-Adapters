@@ -2,7 +2,7 @@ const sdk = require("@defillama/sdk");
 const { default: BigNumber } = require("bignumber.js");
 const { request, gql } = require("graphql-request"); // GraphQLClient
 const { isStableToken } = require('./helper/streamingHelper')
-const { getBlock } = require('./helper/getBlock')
+const { getBlock } = require('./helper/http')
 
 // Superfluid Supertokens can be retrieved using GraphQl API - cannot use block number to retrieve historical data at the moment though
 // TheGraph URL before being deprecated, before 2021-12-23
@@ -93,7 +93,7 @@ const tokensNativeToSidechain = [
 
 async function retrieveSupertokensBalances(chain, block, isVesting, ts) {
 
-  block = await getBlock(ts, chain, { [chain]: block })
+  block = await getBlock(ts, chain, { [chain]: block }) - 100
   // Retrieve supertokens from graphql API
   let graphUrl;
   if (chain === 'polygon') {

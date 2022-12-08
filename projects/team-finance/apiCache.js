@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 const { ethereumContractData, polygonContractData, avaxContractData, bscContractData, kavaContractData, } = require("./config");
-const { vestingHelper, getCache, setCache, } = require("../helper/cache");
+const { getCache, setCache, } = require("../helper/cache")
+const { vestingHelper,  } = require("../helper/unknownTokens")
 
 const project = 'team-finance'
 
@@ -12,7 +13,7 @@ function getTvl(args) {
       const contractAddress = args[i].contract
       const abi = args[i].contractABI
       const chain = args[i].chain
-      const cache = getCache(project, chain) || { vaults: {} }
+      const cache = await getCache(project, chain) || { vaults: {} }
       if (!cache.vaults) cache.vaults = {}
       if (!cache.vaults[contractAddress]) cache.vaults[contractAddress] = { lastTotalId: 0, tokens: [], }
       const cCache = cache.vaults[contractAddress]
@@ -54,7 +55,7 @@ function getTvl(args) {
         block, chain,
         blacklist: args[i].blacklist,
       })
-      setCache(project, chain, cache)
+      await setCache(project, chain, cache)
 
       for (const [token, balance] of Object.entries(balances))
         sdk.util.sumSingleBalance(totalBalances, token, balance)

@@ -2,7 +2,7 @@ const sdk = require('@defillama/sdk')
 const abi = require('./abi.json')
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs")
 const { default: BigNumber } = require('bignumber.js')
-const { getBlock } = require('../helper/getBlock')
+const { getBlock } = require('../helper/http')
 
 const NEAR_TOKEN = "0x85f17cf997934a597031b2e18a9ab6ebd4b9f6a4"
 const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"

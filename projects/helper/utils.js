@@ -1,9 +1,9 @@
 const BigNumber = require("bignumber.js");
-const retry = require('async-retry')
 const axios = require("axios");
 const sdk = require('@defillama/sdk')
 const http = require('./http')
 const erc20 = require('./abis/erc20.json')
+const ethers = require("ethers");
 
 async function returnBalance(token, address, block, chain) {
   const { output: decimals } = await sdk.api.erc20.decimals(token, chain)
@@ -82,6 +82,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'bsc' && ['WLP', 'FstLP', 'BLP',].includes(symbol)) return true
   if (chain === 'avax' && ['ELP', 'EPT', 'CRL', 'YSL', 'BGL', 'PLP'].includes(symbol)) return true
   if (chain === 'ethereum' && ['SSLP'].includes(symbol)) return true
+  if (chain === 'polygon' && ['WLP', 'FLP'].includes(symbol)) return true
   if (chain === 'moonriver' && ['HBLP'].includes(symbol)) return true
   if (chain === 'ethpow' && ['LFG_LP'].includes(symbol)) return true
   if (chain === 'ethereum' && ['SUDO-LP'].includes(symbol)) return false
@@ -149,8 +150,6 @@ async function getBalance(chain, account) {
   switch (chain) {
     case 'bitcoin':
       return (await http.get(`https://chain.api.btc.com/v3/address/${account}`)).data.balance / 1e8
-    case 'elrond':
-      return (await http.get(`https://gateway.elrond.com/address/${account}`)).data.account.balance / 1e18
     case 'bep2':
       const balObject = (await http.get(`https://api-binance-mainnet.cosmostation.io/v1/account/${account}`)).balances.find(i => i.symbol === 'BNB')
       return +(balObject || { free: 0 }).free
@@ -165,12 +164,7 @@ function getUniqueAddresses(addresses, isCaseSensitive = false) {
 }
 
 const DEBUG_MODE = !!process.env.LLAMA_DEBUG_MODE
-
-function log(...args) {
-  if (DEBUG_MODE) {
-    console.log(...args);
-  }
-}
+const log = sdk.log
 
 function sliceIntoChunks(arr, chunkSize = 100) {
   const res = [];
@@ -191,8 +185,8 @@ function stripTokenHeader(token) {
   return token.indexOf(":") > -1 ? token.split(":")[1] : token;
 }
 
-async function diplayUnknownTable({ tvlResults = {}, tvlBalances = {}, storedKey = 'ethereum', log = false, tableLabel = 'Unrecognized tokens' }) {
-  if (!DEBUG_MODE && !log) return;
+async function diplayUnknownTable({ tvlResults = {}, tvlBalances = {}, storedKey = 'ethereum', tableLabel = 'Unrecognized tokens' }) {
+  if (!DEBUG_MODE) return;
   const balances = {}
   storedKey = storedKey.split('-')[0]
   Object.entries(tvlResults.tokenBalances).forEach(([label, balance]) => {
@@ -314,20 +308,24 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
   console.table(logObj)
 }
 
-async function fetchItemList({ chain, block, lengthAbi, itemAbi, target }) {
-  const { output: length } = await sdk.api.abi.call({
-    target,
-    abi: lengthAbi,
-    chain, block,
-  })
-  const { output: data } = await sdk.api.abi.multiCall({
-    target,
-    abi: itemAbi,
-    calls: getParamCalls(length),
-    chain, block,
-  })
+async function getLogs({ chain = 'ethereum', fromBlock, toBlock, topic, topics, keys = [], target, eventInterface, chainBlocks, timestamp }) {
+  if (!toBlock) 
+    toBlock = await http.getBlock(timestamp, chain, chainBlocks)
 
-  return data
+  const { output: logs} = await sdk.api.util.getLogs({
+    chain, topics, target, topic, keys, fromBlock, toBlock, 
+  });
+
+  const getAddress = i => `0x${i.substr(-40)}`.toLowerCase()
+  if (!eventInterface) return logs.map(log => log.topics.map(getAddress))
+
+  let iface = new ethers.utils.Interface([eventInterface])
+  return logs.map((log) => {
+    const res = {...iface.parseLog(log).args}
+    if (!res.topics )
+      res.topics = log.topics.map(getAddress)
+    return res
+  })
 }
 
 module.exports = {
@@ -352,5 +350,5 @@ module.exports = {
   getSymbols,
   getDecimals,
   getParamCalls,
-  fetchItemList,
+  getLogs,
 }

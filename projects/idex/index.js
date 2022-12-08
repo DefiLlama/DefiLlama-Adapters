@@ -27,7 +27,6 @@ async function tvl(_timestamp, block, chain) {
       owner = IDEX_ETHEREUM_CUSTODY_CONTRACT
       const ethAssets = await covalentGetTokens(owner)
       ethAssets
-        .map(t => t.contract_address.toLowerCase())
         .filter(t => t !== '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee' && t !== '0x7b0c06043468469967dba22d1af33d77d44056c8')
         .forEach(t => tokens.push(t))
       break;
@@ -35,9 +34,7 @@ async function tvl(_timestamp, block, chain) {
       throw new Error('Unknown chain ' + chain);
   }
 
-  tokens = getUniqueAddresses(tokens)
   const res = await sumTokens2({ chain, block, tokens, owner })
-  console.log(chain, res)
   return res
 }
 

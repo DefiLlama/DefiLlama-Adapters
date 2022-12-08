@@ -1,12 +1,22 @@
-const retry = require('async-retry')
-const axios = require("axios");
+const { getProvider, sumTokens2, } = require('./helper/solana')
+const { Program, } = require("@project-serum/anchor");
 
 async function tvl() {
-    var response = await retry(async bail => await axios.get('https://api.marinade.finance/tlv'))
-
-    return {
-        'solana': response.data.total_sol
+  const provider = getProvider()
+  const programId = 'MarBmsSgKXdrN1egZf5sqe1TMai9K1rChYNDJgjq7aD'
+  const idl = await Program.fetchIdl(programId, provider)
+  const program = new Program(idl, programId, provider)
+  const [{
+    account: {
+        validatorSystem: { totalActiveBalance }, availableReserveBalance
     }
+  }] = await program.account.state.all()
+  const balances = {
+    solana: (+totalActiveBalance + +availableReserveBalance)/1e9
+  }
+  return sumTokens2({ balances, solOwners: [
+    'UefNb6z6yvArqe4cJHTXCqStRsKmWhGxnZzuHbikP5Q', // Liq Pool Sol Leg Pda
+  ]})
 }
 
 module.exports = {
@@ -15,5 +25,5 @@ module.exports = {
     ],
     timetravel: false,
     solana: { tvl },
-    methodology: `To obtain the Marinade Finance TVL we make a dedicated API endpoint in our REST server. It is using values from the database with a separate update process. The *_sol fields of returned JSON object contains a number of SOL tokens held in our contract for us to then use Coingecko to get the price of SOL token in USD and export it. We are counting only SOL tokens because all other tokens used in our contract are mintable by us and represents a value of locked SOL tokens to our customers`,
+    methodology: `We sum the amount of SOL staked, SOL in reserve address: Du3Ysj1wKbxPKkuPPnvzQLQh8oMSVifs3jGZjJWXFmHN and SOL in the Liquidity pool: UefNb6z6yvArqe4cJHTXCqStRsKmWhGxnZzuHbikP5Q`,
 }

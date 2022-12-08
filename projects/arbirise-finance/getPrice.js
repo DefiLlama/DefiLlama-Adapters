@@ -4,7 +4,6 @@ const getReserves = require("./abis/getReserves.json");
 const token0 = require("./abis/token0.json");
 const contracts = require("./contracts.json");
 const { default: BigNumber } = require("bignumber.js");
-const { getBlock } = require("../helper/getBlock");
 
 const getETHPrice = async (block) => {
   const reserves = (

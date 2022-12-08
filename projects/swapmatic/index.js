@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk')
 const BigNumber = require('bignumber.js');
-const { getBlock } = require('../helper/getBlock')
+const { getBlock } = require('../helper/http')
 
 const START_BLOCK = 3285065 - 1;
 const FACTORY = '0x90D882B2789523403ff263D1F93Ead986c38446C';
