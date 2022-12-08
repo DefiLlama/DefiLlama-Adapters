@@ -7,14 +7,14 @@ const sdk = require('@defillama/sdk')
 
 const cacheFolder = 'uniswap-forks'
 
-function getUniTVL({ chain = 'ethereum', coreAssets, blacklist = [], factory,
+function getUniTVL({ chain = 'ethereum', coreAssets, blacklist = [], factory, blacklistedTokens,
   useDefaultCoreAssets = false,
   abis = {},
 }) {
 
   if (!coreAssets && useDefaultCoreAssets)
     coreAssets = getCoreAssets(chain)
-  blacklist = blacklist.map(i => i.toLowerCase())
+  blacklist = (blacklistedTokens || blacklist).map(i => i.toLowerCase())
 
   const abi = { ...uniswapAbi, ...abis }
   factory = factory.toLowerCase()
@@ -67,10 +67,10 @@ function getUniTVL({ chain = 'ethereum', coreAssets, blacklist = [], factory,
     }
 
     const balances = {}
-    const blacklistedTokens = new Set(blacklist)
+    const blacklistedSet = new Set(blacklist)
     reserves.forEach(({ _reserve0, _reserve1 }, i) => {
-      if (!blacklistedTokens.has(cache.token0s[i])) sdk.util.sumSingleBalance(balances, cache.token0s[i], _reserve0)
-      if (!blacklistedTokens.has(cache.token1s[i])) sdk.util.sumSingleBalance(balances, cache.token1s[i], _reserve1)
+      if (!blacklistedSet.has(cache.token0s[i].toLowerCase())) sdk.util.sumSingleBalance(balances, cache.token0s[i], _reserve0)
+      if (!blacklistedSet.has(cache.token1s[i].toLowerCase())) sdk.util.sumSingleBalance(balances, cache.token1s[i], _reserve1)
     })
 
     return transformBalances(chain, balances)
