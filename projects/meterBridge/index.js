@@ -52,5 +52,14 @@ module.exports = {
     },
     theta: {
         tvl: getTvl('theta'),
+    },
+    avax: {
+        tvl: getTvl('avax'),
+    },
+    moonbeam: {
+        tvl: getTvl('moonbeam'),
+    },
+    polygon: {
+        tvl: getTvl('polygon'),
     }
 }; 
