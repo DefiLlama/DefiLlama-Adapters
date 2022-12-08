@@ -20,16 +20,8 @@ function getUniTVL({ chain = 'ethereum', coreAssets, blacklist = [], factory, bl
   factory = factory.toLowerCase()
   const key = `${factory}-${chain}`
 
-
   return async (ts, _block, { [chain]: block }) => {
-    let cache = await getCache(cacheFolder, key)
-    if (!cache.pairs) {
-      cache = {
-        pairs: [],
-        token0s: [],
-        token1s: [],
-      }
-    }
+    let cache = await _getCache(cacheFolder, key)
 
     const _oldPairInfoLength = cache.pairs.length
     const length = await sdk.api2.abi.call({ abi: abi.allPairsLength, target: factory, chain, block, })
@@ -74,6 +66,22 @@ function getUniTVL({ chain = 'ethereum', coreAssets, blacklist = [], factory, bl
     })
 
     return transformBalances(chain, balances)
+  }
+
+  async function _getCache(cacheFolder, key) {
+    let cache = await getCache(cacheFolder, key)
+    if (cache.pairs) {
+      if (cache.pairs.includes(null) || cache.token0s.includes(null) || cache.token1s.includes(null))
+        cache.pairs = undefined
+    }
+    if (!cache.pairs) {
+      cache = {
+        pairs: [],
+        token0s: [],
+        token1s: [],
+      }
+    }
+    return cache
   }
 }
 

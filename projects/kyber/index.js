@@ -91,7 +91,7 @@ function classic(chain) {
   return getUniTVL({ chain, factory: chains[chain].factory, abis: {
     allPairsLength: abi.allPoolsLength,
     allPairs: abi.allPools,
-    getReservesABI: abi.getReserves,
+    getReserves: abi.getReserves,
   } })
 }
 

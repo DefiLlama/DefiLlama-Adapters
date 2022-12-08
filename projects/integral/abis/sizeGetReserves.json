@@ -5,12 +5,12 @@
   "outputs": [
       {
           "internalType": "uint112",
-          "name": "reserve0",
+          "name": "_reserve0",
           "type": "uint112"
       },
       {
           "internalType": "uint112",
-          "name": "reserve1",
+          "name": "_reserve1",
           "type": "uint112"
       }
   ],
