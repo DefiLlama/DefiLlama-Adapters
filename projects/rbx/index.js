@@ -45,7 +45,7 @@ function tvl(chain) {
       await sumTokensAndLPsSharedOwners(
         balances,
         tokensList,
-        [bridges[chain], stakings[chain], multisigList.rbx, multisigList.rbxs],
+        [stakings[chain]],
         block
       );
     }
@@ -68,7 +68,7 @@ function tvl(chain) {
       await sumTokensAndLPsSharedOwners(
         balances,
         tokensList,
-        [bridges[chain], stakings[chain], multisigList.rbx],
+        [stakings[chain]],
         block, 
         'bsc',
         transform
@@ -93,7 +93,7 @@ function tvl(chain) {
       await sumTokensAndLPsSharedOwners(
         balances,
         tokensList,
-        [bridges[chain], multisigList.rbx],
+        [],
         block,
         'avax',
         transform
