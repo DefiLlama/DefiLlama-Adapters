@@ -460,7 +460,9 @@ const fixBalancesTokens = {
     "0x3a898D596840C6B6b586d722bFAdCC8c4761BF41": { coingeckoId: "latoken", decimals: 18, },
   },
   theta: {
+    [nullAddress]: { coingeckoId: "theta-fuel", decimals: 18, },
     "0x4dc08b15ea0e10b96c41aec22fab934ba15c983e": { coingeckoId: "theta-fuel", decimals: 18, },
+    "0x1336739b05c7ab8a526d40dcc0d04a826b5f8b03": { coingeckoId: "thetadrop", decimals: 18, },
   },
   telos: {
     "0xD102cE6A4dB07D247fcc28F366A623Df0938CA9E": { coingeckoId: "telos", decimals: 18, },
@@ -1049,6 +1051,7 @@ const fixBalancesTokens = {
     "0x7Dc31a2FCBfbAd1ed4519111Fd33f78316BcBC81": { coingeckoId: "shark", decimals: 18 }
   },
   meter: {
+    [nullAddress]: { coingeckoId: "meter", decimals: 18 },
     "0x5729cb3716a315d0bde3b5e489163bf8b9659436": { coingeckoId: "meter", decimals: 18 },
     "0x160361ce13ec33c993b5cca8f62b6864943eb083": { coingeckoId: "meter", decimals: 18 },
     "0xd86e243fc0007e6226b07c9a50c9d70d78299eb5": { coingeckoId: "usd-coin", decimals: 6 },
