@@ -124,7 +124,7 @@ function chainTvl(chain) {
 // Uses graph protocol to run through SNX contract. Since there is a limit of 1000 results per query
 // we can use graph-results-pager library to increase the limit.
 async function SNXHolders(snxGraphEndpoint, block, chain) {
-  const cache = getCache(project, chain)
+  const cache = await getCache(project, chain)
   if (!cache.data) cache.data = []
   let holders = new Set(cache.data)
   let lastID = cache.lastID || ""
@@ -143,7 +143,7 @@ async function SNXHolders(snxGraphEndpoint, block, chain) {
     if (lastID) cache.lastID = lastID
   } while (lastID);
   cache.data = Array.from(holders)
-  setCache(project, chain, cache)
+  await setCache(project, chain, cache)
   return cache.data
 }
 

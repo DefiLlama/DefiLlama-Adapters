@@ -3,6 +3,12 @@ const { request, GraphQLClient, } = require("graphql-request")
 const COVALENT_KEY = 'ckey_72cd3b74b4a048c9bc671f7c5a6'
 const sdk = require('@defillama/sdk')
 
+const chainIds = {
+  'ethereum': 1,
+  'bsc': 56,
+  'polygon': 137
+}
+
 async function getBlock(timestamp, chain, chainBlocks, undefinedOk = false) {
   if (chainBlocks[chain] !== undefined || (process.env.HISTORICAL === undefined && undefinedOk)) {
       return chainBlocks[chain]
@@ -31,16 +37,16 @@ async function graphQuery(endpoint, graphQuery, params = {}, {timestamp, chain, 
 }
 
 async function covalentGetTokens(address, chain = 'ethereum') {
-  let chainId
-  switch(chain) {
-    case 'ethereum': chainId = 1; break;
-    case 'bsc': chainId = 56; break;
-    default: throw new Error('Missing chain to chain id mapping!!!')
-  }
+  let chainId = chainIds[chain]
+  if(!chainId)
+    throw new Error('Missing chain to chain id mapping!!!')
+
   const {
     data: { items }
   } = await get(`https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/?&key=${COVALENT_KEY}`)
   return items
+    .filter(i => +i.balance > 0)
+    .map(i => i.contract_address.toLowerCase())
 }
 
 async function blockQuery(endpoint, query, block, blockCatchupLimit = 200) {

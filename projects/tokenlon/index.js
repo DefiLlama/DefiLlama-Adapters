@@ -51,8 +51,8 @@ const ethTvl = async (timestamp, block) => {
 
   const [ tokens_amm, tokens_pmm] = await Promise.all([covalentGetTokens(amm_wrapper_addr), covalentGetTokens(pmm_addr)])
   const toa = []
-  tokens_amm.forEach(t => toa.push([t.contract_address, amm_wrapper_addr]))
-  tokens_pmm.forEach(t => toa.push([t.contract_address, pmm_addr]))
+  tokens_amm.forEach(t => toa.push([t, amm_wrapper_addr]))
+  tokens_pmm.forEach(t => toa.push([t, pmm_addr]))
 
   return sumTokens2({ tokensAndOwners: toa, block, });
 };
