@@ -14,7 +14,19 @@ async function aQuery(api) {
   return http.get(`${endpoint}${api}`)
 }
 async function getResources(account) {
-  return http.get(`${endpoint}/v1/accounts/${account}/resources`)
+  const data = []
+  let lastData
+  let cursor
+  do {
+    let url = `${endpoint}/v1/accounts/${account}/resources?limit=9999`
+    if (cursor) url += '&start='+cursor
+    const res = await http.getWithMetadata(url)
+    lastData = res.data
+    data.push(...lastData)
+    sdk.log('fetched resource length', lastData.length)
+    cursor = res.headers['x-aptos-cursor']
+  } while (lastData.length === 9999)
+  return data
 }
 async function getCoinInfo(address) {
   if (address === '0x1') return { data: { decimals: 8, name: 'Aptos' } }

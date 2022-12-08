@@ -240,7 +240,7 @@ async function transformBalances(chain, balances) {
   return balances
 }
 
-async function transformDexBalances({ chain, data, balances = {}, restrictTokenRatio = 10, withMetadata = false, blacklistedTokens = [], coreTokens }) {
+async function transformDexBalances({ chain, data, balances = {}, restrictTokenRatio = 5, withMetadata = false, blacklistedTokens = [], coreTokens }) {
 
   if (!coreTokens)
     coreTokens = new Set(getCoreAssets(chain))
@@ -320,16 +320,16 @@ async function transformDexBalances({ chain, data, balances = {}, restrictTokenR
         coreToken,
         coreTokenBal,
         tokensInCorePool: tokenBal,
-        convertableTokenAmount: coreTokenBal * restrictTokenRatio,
+        convertableTokenAmount: tokenBal * restrictTokenRatio,
         price: coreTokenBal / tokenBal
       }
       return;
     }
 
     const priceObj = prices[token]
-    priceObj.convertableTokenAmount += coreTokenBal * restrictTokenRatio
+    priceObj.convertableTokenAmount += tokenBal * restrictTokenRatio
     if (tokenBal > priceObj.tokensInCorePool) { // i.e current pool has more liquidity
-      priceObj.tokensInCorePool = coreTokenBal
+      priceObj.tokensInCorePool = tokenBal
       priceObj.coreToken = coreToken
       priceObj.coreTokenBal = coreTokenBal
       priceObj.price = coreTokenBal / tokenBal

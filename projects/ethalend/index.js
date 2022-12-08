@@ -6,7 +6,7 @@ const { pool2 } = require('../helper/pool2')
 const { fetchURL } = require('../helper/utils')
 const { gql, request } = require('graphql-request')
 const { default: BigNumber } = require('bignumber.js')
-const { getBlock } = require('../helper/getBlock')
+const { getBlock } = require('../helper/http')
 
 /*
 const vaults = [

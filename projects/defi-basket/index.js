@@ -1,7 +1,7 @@
 const sdk = require('@defillama/sdk')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getParamCalls, log } = require('../helper/utils')
-const { get } = require('../helper/http')
+const { covalentGetTokens } = require('../helper/http')
 const { PromisePool } = require('@supercharge/promise-pool')
 
 const chain = 'polygon'
@@ -10,12 +10,6 @@ const factory = '0xee13c86ee4eb1ec3a05e2cc3ab70576f31666b3b'
 const blacklistedTokens = [
   '0x0b91b07beb67333225a5ba0259d55aee10e3a578', // MNEP
 ]
-
-async function getTokens(address) {
-  return (
-    await get(`https://api.covalenthq.com/v1/137/address/${address}/balances_v2/?&key=ckey_72cd3b74b4a048c9bc671f7c5a6`))
-      .data.items.filter(i => +i.balance > 0).map((t) => t.contract_address);
-}
 
 async function tvl() {
   const { output: tokenCount } = await sdk.api.abi.call({
@@ -44,7 +38,7 @@ async function tvl() {
   return sumTokens2({ tokensAndOwners, chain, block, blacklistedTokens, });
 
   async function addWallet(wallet) {
-    (await getTokens(wallet)).forEach(i => tokensAndOwners.push([i, wallet]))
+    (await covalentGetTokens(wallet, 'polygon')).forEach(i => tokensAndOwners.push([i, wallet]))
   }
 }
 

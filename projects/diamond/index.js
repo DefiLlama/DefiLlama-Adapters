@@ -1,8 +1,7 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const retry = require("../helper/retry");
-const axios = require("axios");
+const { get } = require('../helper/http')
 
 // Ethereum
 const ETH_BULL_VAULT = "0xad48a8261b0690c71b70115035eb14afd9a43242";
@@ -46,14 +45,9 @@ async function optTvl(_, _b,{ optimism: block}) {
 }
 
 async function getOpenPositionIds() {
-  const response = (
-    await retry(
-      async () =>
-        await axios.get(
+  const response = await get(
           "https://0dtklop9zj.execute-api.ap-northeast-1.amazonaws.com/stag/open_positions?limit=500"
         )
-    )
-  ).data;
 
   const positionIds = response.records.map((position) => position.PositionId);
 

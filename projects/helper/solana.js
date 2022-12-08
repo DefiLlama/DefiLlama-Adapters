@@ -4,8 +4,9 @@ const { transformBalances: transformBalancesOrig, transformDexBalances, } = requ
 const { tokens } = require('./tokenMapping')
 const { Connection, PublicKey, Keypair } = require("@solana/web3.js")
 const { AnchorProvider: Provider, Wallet, } = require("@project-serum/anchor");
-const BufferLayout = require("@solana/buffer-layout")
 const { sleep, sliceIntoChunks, log, } = require('./utils')
+const { decodeAccount } = require('./utils/solana/layout')
+
 const sdk = require('@defillama/sdk')
 const tokenMapping = tokens
 
@@ -131,7 +132,11 @@ async function getTokenAccountBalances(tokenAccounts, { individual = false, chun
     const data = await axios.post(endpoint, body);
     data.data.forEach(({ result: { value } }, i) => {
       if (!value || !value.data.parsed) {
-        console.log(data.data.map(i => i.result.value)[i], tokenAccounts[i])
+        if (tokenAccounts[i].toString() === '11111111111111111111111111111111') {
+          log('Null account: skipping it')
+          return;
+        }
+        console.log(data.data.map(i => i.result.value)[i], tokenAccounts[i].toString())
       }
       const { data: { parsed: { info: { mint, tokenAmount: { amount } } } } } = value
       sdk.util.sumSingleBalance(balances, mint, amount)
@@ -256,42 +261,11 @@ async function sumOrcaLPs(tokensAndAccounts) {
   return totalUsdValue;
 }
 
-function exportDexTVL(DEX_PROGRAM_ID) {
+function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts) {
   return async () => {
-    const connection = getConnection()
+    if (!getTokenAccounts) getTokenAccounts = _getTokenAccounts
 
-    const TokenSwapLayout = BufferLayout.struct([
-      BufferLayout.u8("version"),
-      BufferLayout.u8("isInitialized"),
-      BufferLayout.u8("bumpSeed"),
-      BufferLayout.blob(32, "tokenProgramId"),
-      BufferLayout.blob(32, "tokenAccountA"),
-      BufferLayout.blob(32, "tokenAccountB"),
-      BufferLayout.blob(32, "tokenPool"),
-      BufferLayout.blob(32, "mintA"),
-      BufferLayout.blob(32, "mintB"),
-      BufferLayout.blob(32, "feeAccount"),
-      BufferLayout.blob(8, "tradeFeeNumerator"),
-      BufferLayout.blob(8, "tradeFeeDenominator"),
-      BufferLayout.blob(8, "ownerTradeFeeNumerator"),
-      BufferLayout.blob(8, "ownerTradeFeeDenominator"),
-      BufferLayout.blob(8, "ownerWithdrawFeeNumerator"),
-      BufferLayout.blob(8, "ownerWithdrawFeeDenominator"),
-      BufferLayout.blob(8, "hostFeeNumerator"),
-      BufferLayout.blob(8, "hostFeeDenominator"),
-      BufferLayout.u8("curveType"),
-      BufferLayout.blob(32, "curveParameters"),
-    ])
-
-    const programPublicKey = new PublicKey(DEX_PROGRAM_ID)
-    const programAccounts = await connection.getParsedProgramAccounts(programPublicKey);
-    const tokenAccounts = []
-
-    programAccounts.forEach((account) => {
-      const tokenSwap = TokenSwapLayout.decode(account.account.data);
-      tokenAccounts.push(new PublicKey(tokenSwap.tokenAccountA).toString())
-      tokenAccounts.push(new PublicKey(tokenSwap.tokenAccountB).toString())
-    });
+    const tokenAccounts = await getTokenAccounts()
 
     const chunks = sliceIntoChunks(tokenAccounts, 99)
     const results = []
@@ -305,7 +279,25 @@ function exportDexTVL(DEX_PROGRAM_ID) {
       data.push({ token0: tokenA.mint, token0Bal: tokenA.amount, token1: tokenB.mint, token1Bal: tokenB.amount, })
     }
 
-    return transformDexBalances({ chain: 'solana', data, blacklistedTokens, })
+    const coreTokens = await getGeckoSolTokens()
+    return transformDexBalances({ chain: 'solana', data, blacklistedTokens, coreTokens, })
+  }
+
+  async function _getTokenAccounts() {
+    const connection = getConnection()
+
+
+    const programPublicKey = new PublicKey(DEX_PROGRAM_ID)
+    const programAccounts = await connection.getParsedProgramAccounts(programPublicKey);
+    const tokenAccounts = []
+
+    programAccounts.forEach((account) => {
+      const tokenSwap = decodeAccount('tokenSwap', account.account);
+      tokenAccounts.push(tokenSwap.tokenAccountA.toString())
+      tokenAccounts.push(tokenSwap.tokenAccountB.toString())
+    });
+
+    return tokenAccounts
   }
 }
 
@@ -370,6 +362,17 @@ async function transformBalances({ tokenBalances, balances = {}, }) {
   return balances
 }
 
+function readBigUInt64LE(buffer, offset) {
+  const first = buffer[offset];
+  const last = buffer[offset + 7];
+  if (first === undefined || last === undefined) {
+    throw new Error();
+  }
+  const lo = first + buffer[++offset] * 2 ** 8 + buffer[++offset] * 2 ** 16 + buffer[++offset] * 2 ** 24;
+  const hi = buffer[++offset] + buffer[++offset] * 2 ** 8 + buffer[++offset] * 2 ** 16 + last * 2 ** 24;
+  return BigInt(lo) + (BigInt(hi) << BigInt(32));
+}
+
 module.exports = {
   endpoint,
   tokens,
@@ -396,4 +399,6 @@ module.exports = {
   getTokenAccountBalances,
   getTokenList,
   getSolTokenMap,
+  readBigUInt64LE,
+  decodeAccount,
 };

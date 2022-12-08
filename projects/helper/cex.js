@@ -134,7 +134,7 @@ function cexExports(config) {
     if (!tokensAndOwners && !tokens) {
       tokens = defaultTokens[chain]
       if (!tokens) {
-        log(chain, 'Missing default token list, counting only native token balance',)
+        // log(chain, 'Missing default token list, counting only native token balance',)
         tokens = [nullAddress]
       }
     }

@@ -9,7 +9,7 @@ const bentobox_chains = [
   "arbitrum",
   "optimism",
   "xdai",
-  "harmony",
+  // "harmony",
   "moonbeam",
   "moonriver",
   //"kava",

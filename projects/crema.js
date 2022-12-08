@@ -1,14 +1,7 @@
-const retry = require("./helper/retry");
-const axios = require("axios");
+const { get } = require('./helper/http')
 
 async function fetch() {
-  const response = (
-    await retry(
-      async () => await axios.get("https://api.crema.finance/v1/swap/count")
-    )
-  ).data;
-  const tvl = response.data.tvl_in_usd;
-  return tvl;
+  return (await get("https://api.crema.finance/v1/swap/count")).data.tvl_in_usd;
 }
 
 module.exports = {

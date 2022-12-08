@@ -7,9 +7,7 @@ const abi = require("./abi.json");
 const creamAbi = require("../helper/abis/cream.json");
 const contracts = require("./contracts.json");
 const { requery } = require("../helper/requery");
-const { default: axios } = require("axios");
-const retry = require("async-retry");
-const { getBlock } = require("../helper/getBlock");
+const { get } = require('../helper/http')
 const chains = [
   "ethereum", //-200M
   "polygon", //-40M
@@ -106,7 +104,7 @@ async function fixGasTokenBalances(poolBalances, block, chain) {
     if (
       poolBalances.output[i].success == false &&
       poolBalances.output[i].input.target.toLowerCase() ==
-        contracts[chain].gasTokenDummy
+      contracts[chain].gasTokenDummy
     ) {
       const ethBalance = (await sdk.api.eth.getBalance({
         target: poolBalances.output[i].input.params[0],
@@ -222,7 +220,7 @@ function mapGaugeTokenBalances(calls, chain) {
     }
   };
 
-  return calls.map(function(c) {
+  return calls.map(function (c) {
     let target = c.target;
     if (
       c.target.toLowerCase() in mapping &&
@@ -238,9 +236,8 @@ function mapGaugeTokenBalances(calls, chain) {
 }
 
 async function unwrapSdTokens(balances, sdTokens, chain) {
-  const apiData = (await retry(
-    async bail => await axios.get("https://lockers.stakedao.org/api/lockers")
-  )).data.map(t => ({
+  const apiData = (await get("https://lockers.stakedao.org/api/lockers")
+  ).map(t => ({
     address: t.tokenReceipt.address.toLowerCase(),
     usdPrice: t.tokenPriceUSD,
     decimals: t.tokenReceipt.decimals
@@ -266,13 +263,8 @@ async function handleUnlistedFxTokens(balances, chain) {
     const tokens = Object.values(contracts[chain].fxTokens);
     for (let token of tokens) {
       if (token.address in balances) {
-        const [{ data: rate }, { output: decimals }] = await Promise.all([
-          retry(
-            async bail =>
-              await axios.get(
-                `https://api.exchangerate.host/convert?from=${token.currency}&to=USD`
-              )
-          ),
+        const [rate, { output: decimals }] = await Promise.all([
+          get(`https://api.exchangerate.host/convert?from=${token.currency}&to=USD`),
           sdk.api.erc20.decimals(token.address, chain)
         ]);
 
@@ -344,7 +336,7 @@ function tvl(chain) {
     let balances = {};
     const transform = await getChainTransform(chain);
     const poolList = await getPools(chainBlocks[chain], chain);
-    const block = await getBlock(_t, chain, chainBlocks, true);
+    const block = chainBlocks[chain];
 
     for (let registry of Object.keys(poolList)) {
       await unwrapPools(
@@ -377,7 +369,7 @@ const chainTypeExports = chains => {
         // harmony hack
         return {};
       }
-      const block = await getBlock(ts, "harmony", chainB, true);
+      const block = chainB.harmony
       const balances = {};
       await sumTokensSharedOwners(
         balances,
@@ -395,7 +387,7 @@ const chainTypeExports = chains => {
   };
   exports.kava = {
     tvl: async (ts, ethB, chainB) => {
-      const block = await getBlock(ts, "kava", chainB, true);
+      const block = chainB.kava;
       const balances = {};
       await sumTokensSharedOwners(
         balances,
