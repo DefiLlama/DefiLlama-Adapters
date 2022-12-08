@@ -26,6 +26,10 @@ async function get(endpoint) {
   return (await axios.get(endpoint)).data
 }
 
+async function getWithMetadata(endpoint) {
+  return axios.get(endpoint)
+}
+
 async function post(endpoint, body) {
   return (await axios.post(endpoint, body)).data
 }
@@ -92,4 +96,5 @@ module.exports = {
   covalentGetTokens,
   graphFetchById,
   getBlock,
+  getWithMetadata,
 }
