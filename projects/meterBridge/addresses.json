@@ -14,8 +14,7 @@
             "0xabe580e7ee158da464b51ee1a83ac0289622e6be",
             "0xa58a4f5c4Bb043d2CC1E170613B74e767c94189B",
             "0x0Def8d8addE14c9eF7c2a986dF3eA4Bd65826767"
-        ],
-        "Wrapped": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+        ]
     },
     "bsc": {
         "ERC20Handler": "0x83354D47379881e167F7160A80dAC8269Fe946Fa",
@@ -27,8 +26,7 @@
             "0x27d72484f1910F5d0226aFA4E03742c9cd2B297a",
             "0xBd2949F67DcdC549c6Ebe98696449Fa79D988A9F",
             "0xe138c66982Fd5c890c60b94FDBa1747faF092c20"
-        ],
-        "Wrapped": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+        ]
     },
     "moonriver": {
         "ERC20Handler": "0xB1eFA941D6081afdE172e29D870f1Bbb91BfABf7",
@@ -49,8 +47,7 @@
             "0xff0bb979035Bc622f01062F37E2BaD4a05B31D83",
             "0xE6a991Ffa8CfE62B0bf6BF72959A3d4f11B2E0f5",
             "0x6b35140fcc6e502a7e1edAC6E740513f41c4b5ec"
-        ],
-        "Wrapped": "0x98878B06940aE243284CA214f92Bb71a2b032B8A"
+        ]
     },
     "meter": {
         "ERC20Handler": "0x139d9b458acda76457dd99db3a6a36ca9cb3bbf1",
@@ -68,8 +65,7 @@
             "0x5Fa41671c48e3C951AfC30816947126CCC8C162e",
             "0x8Df95e66Cb0eF38F91D2776DA3c921768982fBa0",
             "0xc1f6C86ABEe8e2e0B6fd5BD80F0b51fef783635C"
-        ],
-        "Wrapped": "0x160361ce13ec33C993b5cCA8f62B6864943eb083"
+        ]
     },
     "theta": {
         "ERC20Handler": "0xe1c892A6cE33cB31c100369aA6fC302d7B96254a",
@@ -82,15 +78,13 @@
             "0xE6a991Ffa8CfE62B0bf6BF72959A3d4f11B2E0f5",
             "0xae6f0539e33f624ac685cce9ba57cc1d948d909d",
             "0xf64FA5155D8cc578D473A21FB67507DDCbB80D21"
-        ],
-        "Wrapped": "0x4dc08b15ea0e10b96c41aec22fab934ba15c983e"
+        ]
     },
     "avax": {
         "ERC20Handler": "0xeB06fa7e1d400caa3D369776Da45EbB5EbDF9b5B",
         "Tokens": [
             "0x027dbcA046ca156De9622cD1e2D907d375e53aa7"
-        ],
-        "Wrapped": "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7"
+        ]
     },
     "moonbeam": {
         "ERC20Handler": "0x766E33b910Cd6329a0cBD5F72e48Ec162E38A25D",
@@ -107,15 +101,13 @@
             "0x3c751Feb00364CA9e2d0105c40F0b423abf1DEE3",
             "0xE6a991Ffa8CfE62B0bf6BF72959A3d4f11B2E0f5",
             "0xf64FA5155D8cc578D473A21FB67507DDCbB80D21"
-        ],
-        "Wrapped": "0xAcc15dC74880C9944775448304B263D191c6077F"
+        ]
     },
     "polygon": {
         "ERC20Handler": "0xeB06fa7e1d400caa3D369776Da45EbB5EbDF9b5B",
         "Tokens": [
             "0xf305012ea754252184f1071c86ae99fac5b40320",
             "0x3Ca3fEFA944753b43c751336A5dF531bDD6598B6"
-        ],
-        "Wrapped": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270"
+        ]
     }
 }
