@@ -12,5 +12,8 @@ module.exports = {
   ...getExports("sushiswap", chainKeys),
 }
 
+module.exports = indexExports
+module.exports.misrepresentedTokens = true
+
 module.exports.ethereum.staking = staking(xSUSHI, SUSHI, 'ethereum')
 // node test.js projects/sushiswap/index.js
