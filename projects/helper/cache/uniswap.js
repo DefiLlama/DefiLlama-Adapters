@@ -11,11 +11,15 @@ function getUniTVL({ chain = 'ethereum', coreAssets, blacklist = [], factory,
   useDefaultCoreAssets = false,
   abis = {},
 }) {
+
   if (!coreAssets && useDefaultCoreAssets)
     coreAssets = getCoreAssets(chain)
+  blacklist = blacklist.map(i => i.toLowerCase())
+
   const abi = { ...uniswapAbi, ...abis }
   factory = factory.toLowerCase()
   const key = `${factory}-${chain}`
+
 
   return async (ts, _block, { [chain]: block }) => {
     let cache = await getCache(cacheFolder, key)
@@ -45,26 +49,30 @@ function getUniTVL({ chain = 'ethereum', coreAssets, blacklist = [], factory,
 
     const reserves = await sdk.api2.abi.multiCall({ abi: abi.getReserves, chain, block, calls: cache.pairs })
 
-    const data = []
-    const balances = {}
-    
-    reserves.forEach(({ _reserve0, _reserve1 }, i) => {
-      sdk.util.sumSingleBalance(balances, cache.token0s[i], _reserve0)
-      sdk.util.sumSingleBalance(balances, cache.token1s[i], _reserve1)
-      data.push({
-        token0: cache.token0s[i],
-        token1: cache.token1s[i],
-        token1Bal: _reserve1,
-        token0Bal: _reserve0,
-      })
-    })
 
     if (cache.pairs.length > _oldPairInfoLength)
       await setCache(cacheFolder, key, cache)
 
-    if (coreAssets)
+    if (coreAssets) {
+      const data = []
+      reserves.forEach(({ _reserve0, _reserve1 }, i) => {
+        data.push({
+          token0: cache.token0s[i],
+          token1: cache.token1s[i],
+          token1Bal: _reserve1,
+          token0Bal: _reserve0,
+        })
+      })
       return transformDexBalances({ chain, data, coreAssets, blacklistedTokens: blacklist })
-    
+    }
+
+    const balances = {}
+    const blacklistedTokens = new Set(blacklist)
+    reserves.forEach(({ _reserve0, _reserve1 }, i) => {
+      if (!blacklistedTokens.has(cache.token0s[i])) sdk.util.sumSingleBalance(balances, cache.token0s[i], _reserve0)
+      if (!blacklistedTokens.has(cache.token1s[i])) sdk.util.sumSingleBalance(balances, cache.token1s[i], _reserve1)
+    })
+
     return transformBalances(chain, balances)
   }
 }
