@@ -2,7 +2,7 @@ const { stakings } = require("../helper/staking");
 const sdk = require('@defillama/sdk')
 const { getUniTVL } = require('../helper/unknownTokens')
 
-const getReservesABI = { "inputs": [], "name": "getReserves", "outputs": [{ "internalType": "uint256", "name": "_reserve0", "type": "uint256" }, { "internalType": "uint256", "name": "_reserve1", "type": "uint256" }], "stateMutability": "view", "type": "function" }
+const getReserves = { "inputs": [], "name": "getReserves", "outputs": [{ "internalType": "uint256", "name": "_reserve0", "type": "uint256" }, { "internalType": "uint256", "name": "_reserve1", "type": "uint256" }], "stateMutability": "view", "type": "function" }
 
 const stakingAddresses = [
   "0x1d37f1e6f0cce814f367d2765ebad5448e59b91b",
@@ -30,7 +30,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { factories = [], factoriesWithDiffABI = [] } = config[chain]
   const exports = [
-    ...factoriesWithDiffABI.map(factory => getUniTVL({ chain, factory, useDefaultCoreAssets: false, abis: { getReservesABI } })),
+    ...factoriesWithDiffABI.map(factory => getUniTVL({ chain, factory, useDefaultCoreAssets: false, abis: { getReserves } })),
     ...factories.map(factory => getUniTVL({ chain, factory, useDefaultCoreAssets: false })),
   ]
   module.exports[chain] = {
