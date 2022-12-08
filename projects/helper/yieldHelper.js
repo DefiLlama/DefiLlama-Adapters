@@ -37,6 +37,7 @@ function yieldHelper({
       const balances = {
         tvl: {},
         pool2: {},
+        staking: {},
       }
 
       const { output: poolLength } = await sdk.api.abi.call({
@@ -80,7 +81,9 @@ function yieldHelper({
       else tokens = poolInfos.map(i => i.output.want.toLowerCase())
       const pairInfos = await getLPData({ chain, block, lps: tokens, })
       tokens.forEach((token, i) => {
-        if (pairInfos[token] &&
+        if (nativeTokens.includes(token)) {
+          sdk.util.sumSingleBalance(balances.staking,transform(token),lockedTotals[i].output)
+        } else if (pairInfos[token] &&
           (nativeTokens.includes(pairInfos[token].token0Address) || nativeTokens.includes(pairInfos[token].token1Address))
         ) {
           sdk.util.sumSingleBalance(balances.pool2, transform(token), lockedTotals[i].output)
@@ -96,6 +99,7 @@ function yieldHelper({
 
       fixBalances(balances.tvl)
       fixBalances(balances.pool2)
+      fixBalances(balances.staking)
 
       return balances
     }
@@ -105,6 +109,7 @@ function yieldHelper({
     [chain]: {
       tvl: async (_, _b, { [chain]: block }) => (await getAllTVL(block)).tvl,
       pool2: async (_, _b, { [chain]: block }) => (await getAllTVL(block)).pool2,
+      staking: async (_, _b, { [chain]: block }) => (await getAllTVL(block)).staking,
     }
   }
 }

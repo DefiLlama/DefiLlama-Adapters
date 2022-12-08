@@ -82,6 +82,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'bsc' && ['WLP', 'FstLP', 'BLP',].includes(symbol)) return true
   if (chain === 'avax' && ['ELP', 'EPT', 'CRL', 'YSL', 'BGL', 'PLP'].includes(symbol)) return true
   if (chain === 'ethereum' && ['SSLP'].includes(symbol)) return true
+  if (chain === 'polygon' && ['WLP', 'FLP'].includes(symbol)) return true
   if (chain === 'moonriver' && ['HBLP'].includes(symbol)) return true
   if (chain === 'ethpow' && ['LFG_LP'].includes(symbol)) return true
   if (chain === 'ethereum' && ['SUDO-LP'].includes(symbol)) return false
