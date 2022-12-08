@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk')
-const { fetchItemList, getUniqueAddresses } = require('../helper/utils')
+const { getUniqueAddresses } = require('../helper/utils')
 const { get } = require('../helper/http')
 const archimedesAbi = require('./archimedes.json')
 
@@ -20,7 +20,7 @@ const fetchTvl = chain => {
   return async (_timestamp, _block, chainBlocks) => {
     const block = chainBlocks[chain]
     const addresses = await fetchChainAddresses(chains[chain])
-    let pools = await Promise.all(addresses.map(i => fetchItemList({ chain, block, target: i, lengthAbi: archimedesAbi['poolLength'], itemAbi: archimedesAbi['poolInfo'] })))
+    let pools = await Promise.all(addresses.map(i => sdk.api2.abi.fetchList({ withMetadata: true, chain, block, target: i, lengthAbi: archimedesAbi['poolLength'], itemAbi: archimedesAbi['poolInfo'] })))
     pools = pools.flat()
     const wantTokens = pools.map(i => i.output.want)
     const calls = pools.map(i => i.input)

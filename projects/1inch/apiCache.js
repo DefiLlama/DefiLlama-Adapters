@@ -12,7 +12,7 @@ Object.keys(config).forEach(chain => {
   const { MooniswapFactory, blacklistedTokens } = config[chain]
   module.exports[chain] = {
     tvl: async (_, _b, { [chain]: block }) => {
-      const cache = getCache(project, chain) || { pools: {} }
+      const cache = await getCache(project, chain) || { pools: {} }
       if (!cache.pools) cache.pools = {}
       const toa = []
       const pools = []
@@ -59,7 +59,7 @@ Object.keys(config).forEach(chain => {
       for (const [pool, tokens] of Object.entries(cache.pools))
         tokens.forEach(i => toa.push([i, pool]))
 
-      setCache(project, chain, cache)
+      await setCache(project, chain, cache)
       return sumTokens2({ chain, block, tokensAndOwners: toa, blacklistedTokens, })
     }
   }
