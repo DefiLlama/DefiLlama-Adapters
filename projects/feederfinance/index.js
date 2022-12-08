@@ -14,12 +14,12 @@ const getPoolIds = i => i.output.vault
 
 async function getTokens({ chain, block, poolInfos, }) {
   const poolIds = poolInfos.map(getPoolIds)
-  const { output: tokenRes } = await sdk.api.abi.multiCall({
+  const tokenRes = await sdk.api2.abi.multiCall({
     abi: abis.want,
-    calls: poolIds.map(i => ({ target: i})),
+    calls: poolIds,
     chain, block,
   })
-  return tokenRes.map(i => i.output)
+  return tokenRes
 }
 
 module.exports = yieldHelper({
