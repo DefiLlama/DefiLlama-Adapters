@@ -11,6 +11,7 @@ const nullAddress = '0x0000000000000000000000000000000000000000'
 // Alexar info: https://api.axelarscan.io/cross-chain/tvl
 // coingecko coins: https://api.coingecko.com/api/v3/coins/list?include_platform=true
 // gravity bridge for IBC: https://api.mintscan.io/v2/assets/gravity-bridge
+// carbon: https://api-insights.carbon.network/info/denom_gecko_map
 
 const unsupportedGeckoChains = ['aptos', 'terra2', 'terra', 'kujira']
 const ibcChains = ['terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', ]
