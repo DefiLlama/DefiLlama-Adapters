@@ -136,6 +136,7 @@ async function getTokenAccountBalances(tokenAccounts, { individual = false, chun
           log('Null account: skipping it')
           return;
         }
+        console.log(data.data.map(i => i.result.value)[i], tokenAccounts[i].toString())
       }
       if (!value) {
         return;
