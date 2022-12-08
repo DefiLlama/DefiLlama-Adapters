@@ -19,7 +19,7 @@ async function getCache(project, chain, { } = {}) {
     return json
   } catch (e) {
     sdk.log('failed to fetch data from s3 bucket:', Key)
-    sdk.log(e)
+    // sdk.log(e)
     return {}
   }
 }
@@ -41,7 +41,7 @@ async function setCache(project, chain, cache, {
 
   } catch (e) {
     sdk.log('failed to write data to s3 bucket: ', Key)
-    sdk.log(e)
+    // sdk.log(e)
   }
 }
 
