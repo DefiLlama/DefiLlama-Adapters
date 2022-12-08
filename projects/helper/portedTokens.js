@@ -240,7 +240,7 @@ async function transformBalances(chain, balances) {
   return balances
 }
 
-async function transformDexBalances({ chain, data, balances = {}, restrictTokenRatio = 10, withMetadata = false, blacklistedTokens = [], coreTokens }) {
+async function transformDexBalances({ chain, data, balances = {}, restrictTokenRatio = 5, withMetadata = false, blacklistedTokens = [], coreTokens }) {
 
   if (!coreTokens)
     coreTokens = new Set(getCoreAssets(chain))
