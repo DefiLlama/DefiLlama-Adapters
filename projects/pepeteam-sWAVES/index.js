@@ -7,11 +7,11 @@ const wavesStakingContract = "3PDPzZVLhN1EuzGy4xAxjjTVkawKDLEaHiV";
 
 async function wavesTVL(timestamp, ethBlock, chainBlocks) {
   const balances = {};
-  const contractTVL = await data(wavesStakingContract, "STAKING_AMOUNT");
+  const contractTVLInWAVES = await data(wavesStakingContract, "STAKING_AMOUNT");
   sumSingleBalance(
     balances,
     wavesMapping.WAVES.coingeckoId,
-    +contractTVL.value
+    +contractTVLInWAVES.value
   );
   return balances;
 }
