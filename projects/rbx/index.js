@@ -1,122 +1,19 @@
-const sdk = require('@defillama/sdk');
-const { Axios, default: axios } = require('axios');
-const { getBlock } = require('../helper/getBlock');
-const { transformBscAddress, transformAvaxAddress } = require('../helper/portedTokens')
-const { getChainTransform } = require('../helper/portedTokens')
-const { sumTokensAndLPsSharedOwners } = require('../helper/unwrapLPs');
-const { fetchURL } = require('../helper/utils');
 
+const { mergeExports } = require('../helper/utils');
+const { masterchefExports } = require('../helper/unknownTokens');
 
-// const stakings = addresses.stakings;
-// const bridges = addresses.bridges;
-// const multisig = addresses.multisigs;
-
-
-function tvl(chain) {
-  return async (timestamp, ethBlock, chainBlocks) => {
-    const resp = await fetchURL('http://live.carbon.financial/tvl');
-    const addresses = resp.data
-
-    const stakings = addresses.stakings;
-    const bridges = addresses.bridges;
-    const multisig = addresses.multisigs;
-
-    const block = await getBlock(timestamp, chain, chainBlocks, true);
-    const balances = {};
-    
-    let multisigList = multisig[chain];
-
-
-    if(chain == 'ethereum'){
-      //get addresses here
-      let tokensList = [];
-      let importedTokens = addresses.tokens.ethereum.token;
-      let importedLpTokens = addresses.tokens.ethereum.lpToken;
-
-      for (var key in importedTokens){
-        let tokenAddress = importedTokens[key]
-        tokensList.push([tokenAddress, false]);
-      }
-      for (var key in importedLpTokens){
-        let tokenAddress = importedLpTokens[key];
-        tokensList.push([tokenAddress, true]);
-      }
-
-      await sumTokensAndLPsSharedOwners(
-        balances,
-        tokensList,
-        [stakings[chain]],
-        block
-      );
-    }
-    
-    if(chain == 'bsc'){
-      const transform = await transformBscAddress();
-      let tokensList = [];
-      let importedTokens = addresses.tokens.bsc.token;
-      let importedLpTokens = addresses.tokens.bsc.lpToken;
-
-      for (var key in importedTokens){
-        let tokenAddress = importedTokens[key]
-        tokensList.push([tokenAddress, false]);
-      }
-      for (var key in importedLpTokens){
-        let tokenAddress = importedLpTokens[key];
-        tokensList.push([tokenAddress, true]);
-      }
-
-      await sumTokensAndLPsSharedOwners(
-        balances,
-        tokensList,
-        [stakings[chain]],
-        block, 
-        'bsc',
-        transform
-      );
-    }
-    
-    if(chain == 'avax'){
-      const transform = await transformAvaxAddress();
-      let tokensList = [];
-      let importedTokens = addresses.tokens.avax.token;
-      let importedLpTokens = addresses.tokens.avax.lpToken;
-
-      for (var key in importedTokens){
-        let tokenAddress = importedTokens[key]
-        tokensList.push([tokenAddress, false]);
-      }
-      for (var key in importedLpTokens){
-        let tokenAddress = importedLpTokens[key];
-        tokensList.push([tokenAddress, true]);
-      }
-
-      await sumTokensAndLPsSharedOwners(
-        balances,
-        tokensList,
-        [],
-        block,
-        'avax',
-        transform
-      );
-    }
-    
-    return balances
-  }
-  
-}
-
-module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
-  methodology: 'calculates RBX TVL on all chains.',
-  start: 1000235,
-  ethereum: {
-    tvl: tvl('ethereum'),
-  },
-  bsc: {
-    tvl: tvl('bsc'),
-  },
-  avax: {
-    tvl: tvl('avax')
-  }
-};
+module.exports = mergeExports([
+  masterchefExports({
+    chain: 'bsc',
+    masterchef: '0x864d434308997e9648838d23f3eedf5d0fd17bea',
+    blacklistedTokens: [
+      '0xa9639160481b625ba43677be753e0a70bf58c647',
+    ],
+    nativeToken: '0xace3574b8b054e074473a9bd002e5dc6dd3dff1b',
+  }),
+  masterchefExports({
+    chain: 'ethereum',
+    masterchef: '0x50b641caab809c1853be334246ac951faccc49b0',
+    nativeToken: '0x8254e26e453EB5aBd29B3c37AC9E8Da32E5d3299',
+  })
+])
