@@ -1,40 +1,31 @@
 // https://www.starknetjs.com/docs/API/contract
 
-const { validateAndParseAddress, Provider, Contract, } = require('starknet')
+const { call, multiCall, parseAddress } = require('../helper/chain/starknet')
 const abi = require('./abi')
 const { transformDexBalances } = require('../helper/portedTokens')
 
 async function tvl() {
-  const provider = new Provider({
-    sequencer: {
-      network: 'mainnet-alpha'
-    }
-  })
-  const factory = new Contract(abi.fabis, '0xdad44c139a476c7a17fc8141e6db680e9abc9f56fe249a105094c44382c2fd', provider)
-  const res = await factory.get_all_pairs()
-  const pairs = res[0].map(i => validateAndParseAddress(i))
-  const data = []
-  let promises = []
-  for (let pair of pairs) {
-    promises.push(addPair(pair))
-  }
-  await Promise.all(promises)
-  return transformDexBalances({chain:'starknet', data})
+  const factory = '0xdad44c139a476c7a17fc8141e6db680e9abc9f56fe249a105094c44382c2fd'
+  let { all_pairs } = await call({ target: factory, abi: abi.factory.get_all_pairs})
 
-  async function addPair(pairStr) {
-    pair = new Contract(abi.pabis, pairStr, provider)
-    let [ token0, token1, reserves ] = await Promise.all([
-      pair.token0(),
-      pair.token1(),
-      pair.get_reserves(),
-    ])
+  const calls = all_pairs.map(i => parseAddress(i))
+  const [ token0s, token1s, reserves ] = await Promise.all([
+    multiCall({ abi: abi.pair.token0, calls }),
+    multiCall({ abi: abi.pair.token1, calls }),
+    multiCall({ abi: abi.pair.get_reserves, calls }),
+  ])
+
+  const data = []
+  reserves.forEach((reserve, i) => {
     data.push({
-      token0: validateAndParseAddress(token0.address),
-      token1: validateAndParseAddress(token1.address),
-      token0Bal: +reserves.reserve0,
-      token1Bal: +reserves.reserve1,
+      token0: parseAddress(token0s[i]),
+      token1: parseAddress(token1s[i]),
+      token0Bal: +reserve.reserve0,
+      token1Bal: +reserve.reserve1,
     })
-  }
+  })
+
+  return transformDexBalances({chain:'starknet', data})
 }
 
 module.exports = {
