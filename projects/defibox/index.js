@@ -1,6 +1,4 @@
-const axios = require("axios");
 const utils = require("../helper/utils");
-const {get_account_tvl} = require('../helper/chain/eos')
 const {lendingMarket} = require("../helper/methodologies")
 
 const eosEndpoint = "https://eos.defibox.io/api/"
@@ -46,6 +44,16 @@ async function wax() {
   }
 }
 
+// TODO: BSC endpoint not available at the moment
+async function bsc() {
+  const swap = await utils.fetchURL(bscEndpoint + "swap/get24HInfo");
+  const bnb = Number(swap.data.data.bnbBalance) * 2; // swap TVL (dual sided 50/50 AMM pool)
+
+  return {
+    bnb,
+  }
+}
+
 module.exports = {
   methodology: `${lendingMarket}. Defibox TVL is achieved by making a call to its API: https://dapp.defibox.io/api/.`,
   timetravel: false,
@@ -56,4 +64,5 @@ module.exports = {
   wax: {
     tvl: wax
   },
+  bsc: 0 // TODO: BSC endpoint not available at the moment
 }
