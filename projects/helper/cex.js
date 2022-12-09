@@ -63,6 +63,7 @@ const defaultTokens = {
     '0x9ee91f9f426fa633d227f7a9b000e28b9dfd8599', //STmatic
     '0xc00e94cb662c3520282e6f5717214004a7f26888', //COMP
     '0x1c48f86ae57291f7686349f12601910bd8d470bb', //USDK
+    '0x4691937a7508860f876c9c0a2a617e7d9e945d4b', // WOO
   ],
   tron: [
     nullAddress,
@@ -93,6 +94,7 @@ const defaultTokens = {
     '0x14016e85a25aeb13065688cafb43044c2ef86784', // B-TUSD
     '0x2859e4544c4bb03966803b044a93563bd2d0dd4d', // SHIB
     '0x3ee2200efb3400fabb9aacf31297cbdd1d435d47', //ADA
+    '0x4691937a7508860f876c9c0a2a617e7d9e945d4b', // WOO
 
   ],
   eos: [
@@ -104,12 +106,14 @@ const defaultTokens = {
     '0xff970a61a04b1ca14834a43f5de4533ebddb5cc8', // USDC
     '0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9', // USDT
     '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1', // DAI
+    
   ],
   avax: [
     nullAddress,
     '0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7', // USDT
     '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E', // USDC
     '0xd586E7F844cEa2F87f50152665BCbc2C279D8d70', // DAI
+    '0xabc9547b534519ff73921b1fba6e672b5f58d083', // WOO
   ],
   near: [
     'usdt.tether-token.near',
