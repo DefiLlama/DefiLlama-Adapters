@@ -137,6 +137,7 @@ async function getTokenAccountBalances(tokenAccounts, { individual = false, chun
           return;
         }
         console.log(data.data.map(i => i.result.value)[i], tokenAccounts[i].toString())
+        return;
       }
       const { data: { parsed: { info: { mint, tokenAmount: { amount } } } } } = value
       sdk.util.sumSingleBalance(balances, mint, amount)
