@@ -64,5 +64,7 @@ module.exports = {
   wax: {
     tvl: wax
   },
-  bsc: 0 // TODO: BSC endpoint not available at the moment
+  bsc: {
+    tvl: 0 // TODO: BSC endpoint not available at the moment
+  }
 }
