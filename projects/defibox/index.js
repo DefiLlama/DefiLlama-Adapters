@@ -30,9 +30,9 @@ async function eos() {
 
 async function borrowed() {
   const lend = await utils.postURL(eosEndpoint + "lend/getGlobalOpenPositionStat")
-  const tvl = Number(lend.data.data.totalBorrowsVariable) // total TVL that is borrowed from lend protocol
+  const tether = Number(lend.data.data.totalBorrowsVariable) // total TVL that is borrowed from lend protocol
   
-  return tvl;
+  return {tether};
 }
 
 async function wax() {
