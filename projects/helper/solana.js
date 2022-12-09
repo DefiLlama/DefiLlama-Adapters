@@ -121,7 +121,7 @@ async function getTokenBalances(tokensAndAccounts) {
   return balances
 }
 
-async function getTokenAccountBalances(tokenAccounts, { individual = false, chunkSize = 99 } = {}) {
+async function getTokenAccountBalances(tokenAccounts, { individual = false, chunkSize = 99, allowError = false, } = {}) {
   log('total token accounts: ', tokenAccounts.length)
   const formBody = account => ({ method: "getAccountInfo", jsonrpc: "2.0", params: [account, { encoding: "jsonParsed", commitment: "confirmed" }], id: account })
   const balancesIndividual = []
@@ -137,7 +137,7 @@ async function getTokenAccountBalances(tokenAccounts, { individual = false, chun
           return;
         }
         console.log(data.data.map(i => i.result.value)[i], tokenAccounts[i].toString())
-        return;
+        if (allowError) return;
       }
       const { data: { parsed: { info: { mint, tokenAmount: { amount } } } } } = value
       sdk.util.sumSingleBalance(balances, mint, amount)
@@ -318,6 +318,7 @@ async function sumTokens2({
   tokenAccounts = [],
   solOwners = [],
   blacklistedTokens = [],
+  allowError = false,
 }) {
   if (!tokensAndOwners.length) {
     if (owner) tokensAndOwners = tokens.map(t => [t, owner])
@@ -339,8 +340,8 @@ async function sumTokens2({
   }
 
   if (tokenAccounts.length) {
-    const tokenBalances = await getTokenAccountBalances(tokenAccounts)
-    return transformBalances({ tokenBalances, balances, })
+    const tokenBalances = await getTokenAccountBalances(tokenAccounts, { allowError })
+    await transformBalances({ tokenBalances, balances, })
   }
 
   if (solOwners.length) {
