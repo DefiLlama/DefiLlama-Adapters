@@ -1,3 +1,4 @@
+const axios = require('axios')
 const API_HOST = "https://nodes.wavesnodes.com/"; // https://docs.waves.tech/en/waves-node/node-api/#api-of-pool-of-public-nodes
 
 const axiosObj = axios.create({
