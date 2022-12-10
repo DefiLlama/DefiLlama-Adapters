@@ -57,6 +57,7 @@ async function bsc() {
 module.exports = {
   methodology: `${lendingMarket}. Defibox TVL is achieved by making a call to its API: https://dapp.defibox.io/api/.`,
   timetravel: false,
+  misrepresentedTokens: true,
   eos: {
     tvl: eos,
     borrowed,
@@ -65,6 +66,6 @@ module.exports = {
     tvl: wax
   },
   bsc: {
-    tvl: 0 // TODO: BSC endpoint not available at the moment
+    tvl: () => ({}) // TODO: BSC endpoint not available at the moment
   }
 }
