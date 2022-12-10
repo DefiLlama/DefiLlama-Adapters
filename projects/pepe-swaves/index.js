@@ -1,18 +1,12 @@
 const { data } = require("../helper/chain/waves");
-const {
-  fixBalancesTokens: { waves: wavesMapping },
-} = require("../helper/tokenMapping");
+const sdk = require('@defillama/sdk')
 
 const wavesStakingContract = "3PDPzZVLhN1EuzGy4xAxjjTVkawKDLEaHiV";
 
-async function wavesTVL(timestamp, ethBlock, chainBlocks) {
+async function wavesTVL() {
   const balances = {};
   const contractTVLInWAVES = await data(wavesStakingContract, "STAKING_AMOUNT");
-  sumSingleBalance(
-    balances,
-    wavesMapping.WAVES.coingeckoId,
-    +contractTVLInWAVES.value
-  );
+  sdk.util.sumSingleBalance(balances,'waves',contractTVLInWAVES.value/1e8)
   return balances;
 }
 
