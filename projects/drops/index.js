@@ -14,6 +14,10 @@ module.exports = mergeExports([{
   ethereum: {
     staking: staking(tokensAddress.masterchef, tokensAddress.drop),
     pool2: pool2(tokensAddress.masterchef, tokensAddress.lp),
+    hallmarks: [
+      [1651702080, "Drops DAO launch"],
+      [1653086700, "DOP staking"],
+    ]
   }
 }, {
   ethereum: {
