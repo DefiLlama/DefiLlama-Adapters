@@ -3,6 +3,9 @@ const abi = require('./tricrypto-vault.json');
 
 module.exports = {
   misrepresentedTokens: true,
+  hallmarks: [
+    [1670856656,"Launch GLP Vaults"]
+  ],
   arbitrum: {
     tvl: async (_, _b, {arbitrum: block}) => {
       const vaults = [
