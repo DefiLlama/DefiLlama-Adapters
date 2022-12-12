@@ -68,12 +68,6 @@ const config = {
         'TSC2VZai39isPj5DzByYgaBtjpBHbDcTgd'
     ]
   },
-  bitcoin: {
-    owners: [
-        'bc1qh78w4qq9v2dqntjtxne97kp9u2485jdqrfsghh',
-        'bc1qm4hycszv0v0qel3swxqyp57nkpnnrda4rc55lm'
-    ]
-  },
   //lunc/luna terra143zgtv9ntwcfkslrjfp6c5nvdtl8lqmvff5wz6 // terra1t2gpws06d6yjauwhqy0cqtu2g5gwtghlw60ht4
 }
 
