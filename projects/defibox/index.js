@@ -1,16 +1,15 @@
+const axios = require("axios");
 const utils = require("../helper/utils");
 const {lendingMarket} = require("../helper/methodologies")
 
-const eosEndpoint = "https://eos.defibox.io/api/"
-const waxEndpoint = "https://wax.defibox.io/defibox/api/"
-const bscEndpoint = "https://bsc.defibox.io/api/"
+const endpoint = (chain) => `https://${chain}.defibox.io/api/`
 
 async function eos() {
-  const swap = await utils.fetchURL(eosEndpoint + "swap/get24HInfo");
-  const lend = await utils.postURL(eosEndpoint + "lend/getGlobalOpenPositionStat")
-  const usn = await utils.postURL(eosEndpoint + "st/open/getGlobalOpenStat")
-  const bal = await utils.fetchURL(eosEndpoint + "bal/get24HInfo");
-  const vault = await utils.postURL(eosEndpoint + "vault/getVaultStat");
+  const swap = await utils.fetchURL(endpoint("eos") + "swap/get24HInfo");
+  const lend = await utils.postURL(endpoint("eos") + "lend/getGlobalOpenPositionStat")
+  const usn = await utils.postURL(endpoint("eos") + "st/open/getGlobalOpenStat")
+  const bal = await utils.fetchURL(endpoint("eos") + "bal/get24HInfo");
+  const vault = await utils.postURL(endpoint("eos") + "vault/getVaultStat");
 
   // Calculate TVL (in $EOS value)
   const eos = Number(swap.data.data.eosBalance) * 2; // swap TVL (dual sided 50/50 AMM pool)
@@ -29,14 +28,14 @@ async function eos() {
 }
 
 async function borrowed() {
-  const lend = await utils.postURL(eosEndpoint + "lend/getGlobalOpenPositionStat")
+  const lend = await utils.postURL(endpoint("eos") + "lend/getGlobalOpenPositionStat")
   const tether = Number(lend.data.data.totalBorrowsVariable) // total TVL that is borrowed from lend protocol
   
   return {tether};
 }
 
 async function wax() {
-  const swap = await utils.fetchURL(waxEndpoint + "swap/get24HInfo");
+  const swap = await utils.fetchURL(endpoint("wax") + "swap/get24HInfo");
   const wax = Number(swap.data.data.waxBalance) * 2; // swap TVL (dual sided 50/50 AMM pool)
 
   return {
@@ -44,18 +43,17 @@ async function wax() {
   }
 }
 
-// TODO: BSC endpoint not available at the moment
 async function bsc() {
-  const swap = await utils.fetchURL(bscEndpoint + "swap/get24HInfo");
-  const bnb = Number(swap.data.data.bnbBalance) * 2; // swap TVL (dual sided 50/50 AMM pool)
+  const swap = await axios.post(endpoint("bsc") + "swap/get24HInfo", {}, {headers: {chainid: 56}});
+  const wbnb = Number(swap.data.data.wbnb_balance) * 2; // swap TVL (dual sided 50/50 AMM pool)
 
   return {
-    bnb,
+    wbnb,
   }
 }
 
 module.exports = {
-  methodology: `${lendingMarket}. Defibox TVL is achieved by making a call to its API: https://dapp.defibox.io/api/.`,
+  methodology: `${lendingMarket}. Defibox TVL is achieved by making a call to its API: https://<chain>.defibox.io/api/.`,
   timetravel: false,
   misrepresentedTokens: true,
   eos: {
@@ -66,6 +64,6 @@ module.exports = {
     tvl: wax
   },
   bsc: {
-    tvl: () => ({}) // TODO: BSC endpoint not available at the moment
+    tvl: bsc
   }
 }
