@@ -34,19 +34,15 @@ async function getMarkets() {
 
 async function tvlEthereum(timestamp, ethBlock) {
   const markets = await getMarkets();
-  const markets_underlyings = markets.map((market) => market.id);
+  // const markets_underlyings = markets.map((market) => market.id);
 
-  // use markets_underlyings or markets_underlyings_nographql
-  const tokensAndOwners = markets_underlyings.map((underlying) => [
-    underlying,
-    contracts.euler,
-  ]);
-  return sumTokens({}, tokensAndOwners, ethBlock);
-}
-
-async function borrowedEthereum() {
-  const borrowed = {};
-  const markets = await getMarkets();
+  // // use markets_underlyings or markets_underlyings_nographql
+  // const tokensAndOwners = markets_underlyings.map((underlying) => [
+  //   underlying,
+  //   contracts.euler,
+  // ]);
+  // return sumTokens({}, tokensAndOwners, ethBlock);
+  const tvl = {};
   const call = (
     await sdk.api.abi.multiCall({
       abi: abi.getTotalSupplyAndDebts,
@@ -54,6 +50,30 @@ async function borrowedEthereum() {
         target: contracts.eulerSimpleLens,
         params: p.id,
       })),
+      block: ethBlock
+    })
+  ).output;
+  for (const i in call) {
+    if (!call[i].success) continue;
+    tvl[call[i].input.params[0]] = call[i].output[0];
+  }
+  return tvl;
+}
+
+async function borrowedEthereum(timestamp, ethBlock) {
+  const borrowed = {};
+  const markets = await getMarkets();
+  // markets.forEach((market) => {
+  //   borrowed[market.id] = market.totalBorrows;
+  // });
+  const call = (
+    await sdk.api.abi.multiCall({
+      abi: abi.getTotalSupplyAndDebts,
+      calls: markets.map((p) => ({
+        target: contracts.eulerSimpleLens,
+        params: p.id,
+      })),
+      block: ethBlock
     })
   ).output;
   for (const i in call) {
