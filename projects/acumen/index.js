@@ -24,6 +24,9 @@ async function tvl() {
 
 module.exports = {
   timetravel: false,
-  solana: { tvl },
-  methodology: `To obtain the Acumen TVL we make on-chain calls using the function getTokenBalance() that uses the address of the token and the address of the contract where the token is located. The addresses used are the pool address where the corresponding tokens were deposited as collateral to borrow and or earn, borrowed tokens are not counted and these addresses are hard-coded. These calls return the number of tokens held in each pool contract. We then use Coingecko to get the price of each token in USD to export the sum of all tokens.`,
+  solana: { tvl: () => ({}) },
+  hallmarks: [
+    [Math.floor(new Date('2022-12-12')/1e3), 'Product is deprecated'],
+  ],
+  methodology: `Product is deprecated. More information: https://acumenofficial.medium.com/acumen-stable-dapp-update-7e96333e9318`,
 }
