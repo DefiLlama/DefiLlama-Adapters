@@ -8,8 +8,6 @@ const { getBlock } = require('./helper/http')
 // TheGraph URL before being deprecated, before 2021-12-23
 // const polygonGraphUrl = 'https://api.thegraph.com/subgraphs/name/superfluid-finance/superfluid-matic'
 // const xdaiGraphUrl = 'https://api.thegraph.com/subgraphs/name/superfluid-finance/superfluid-xdai'
-const polygonGraphUrl = 'https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-matic'
-const xdaiGraphUrl = 'https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-xdai'
 
 const supertokensQuery = gql`
 query get_supertokens($block: Int) {
@@ -58,8 +56,7 @@ async function getChainBalances(allTokens, chain, block, isVesting) {
       target: token.id,
     })
     ),
-    block,
-    chain
+    block, chain
   })
 
   supply.forEach(({ output: totalSupply }, i) => {
@@ -68,7 +65,7 @@ async function getChainBalances(allTokens, chain, block, isVesting) {
       underlyingAddress,
       underlyingToken,
       decimals,
-      name, 
+      name,
       symbol,
       isNativeAssetSuperToken,
     } = allTokens[i]
@@ -76,11 +73,10 @@ async function getChainBalances(allTokens, chain, block, isVesting) {
     // Accumulate to balances, the balance for tokens on mainnet or sidechain
     let prefixedUnderlyingAddress = chain + ':' + underlyingAddress
     // if (!underlyingToken && underlyingTokenBalance/1e24 > 1) console.log(name, symbol, chain, Math.floor(underlyingTokenBalance/1e24))
-    if (isNativeAssetSuperToken) prefixedUnderlyingAddress = chain + ':' + id
+    if (isNativeAssetSuperToken) prefixedUnderlyingAddress = chain + ':' + underlyingAddress
     else if (!underlyingToken) return;
     sdk.util.sumSingleBalance(balances, prefixedUnderlyingAddress, underlyingTokenBalance)
   })
-  //console.log(chain, lockedTokensOutput.output, allTokens)
 
   return balances
 }
@@ -91,41 +87,36 @@ const tokensNativeToSidechain = [
   '0x263026e7e53dbfdce5ae55ade22493f828922965', // polygon RIC
 ]
 
-async function retrieveSupertokensBalances(chain, block, isVesting, ts) {
-
-  block = await getBlock(ts, chain, { [chain]: block }) - 100
+async function retrieveSupertokensBalances(chain, block, isVesting, ts, graphUrl) {
+  block = await getBlock(ts, chain, { [chain]: block }) - 200
   // Retrieve supertokens from graphql API
-  let graphUrl;
-  if (chain === 'polygon') {
-    graphUrl = polygonGraphUrl
-  }
-  else if (chain === 'xdai') {
-    graphUrl = xdaiGraphUrl
-  }
-
-  const { tokens } = await request(
-    graphUrl,
-    supertokensQuery,
-    { block }
-  )
-
+  const { tokens } = await request(graphUrl, supertokensQuery, { block })
   const allTokens = tokens.filter(t => t.isSuperToken)
 
   return getChainBalances(allTokens, chain, block, isVesting)
 }
 
+const config = {
+  avax: { graph: 'https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-avalanche-c', },
+  polygon: { graph: 'https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-matic', },
+  xdai: { graph: 'https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-xdai', },
+  optimism: { graph: 'https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-optimism-mainnet', },
+  arbitrum: { graph: 'https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-arbitrum-one', },
+  bsc: { graph: 'https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-bsc-mainnet', },
+}
+
 module.exports = {
+  methodology: `TVL is the total quantity of tokens locked in Super Tokens from Superfluid, on Polygon and xDai (most important being weth, dai, usdc and wbtc, as well as QiDAO and MOCA)`,
   hallmarks: [
     [1644278400, "Fake ctx hack"],
-    [Math.floor(new Date('2022-10-03')/1e3), 'Vesting tokens are not included in tvl'],
+    [Math.floor(new Date('2022-10-03') / 1e3), 'Vesting tokens are not included in tvl'],
   ],
-  polygon: {
-    tvl: async (_, _b, { polygon: block }) => retrieveSupertokensBalances('polygon', block, false, _),
-    vesting: async (_, _b, { polygon: block }) => retrieveSupertokensBalances('polygon', block, true, _),
-  },
-  xdai: {
-    tvl: async (_, _b, { xdai: block }) => retrieveSupertokensBalances('xdai', block, false, _),
-    vesting: async (_, _b, { xdai: block }) => retrieveSupertokensBalances('xdai', block, true, _),
-  },
-  methodology: `TVL is the total quantity of tokens locked in Super Tokens from Superfluid, on Polygon and xDai (most important being weth, dai, usdc and wbtc, as well as QiDAO and MOCA)`
-}
+};
+
+Object.keys(config).forEach(chain => {
+  const { graph } = config[chain]
+  module.exports[chain] = {
+    tvl: async (_, _b, { [chain]: block }) => retrieveSupertokensBalances(chain, block, false, _, graph),
+    vesting: async (_, _b, { [chain]: block }) => retrieveSupertokensBalances(chain, block, true, _, graph),
+  }
+})
