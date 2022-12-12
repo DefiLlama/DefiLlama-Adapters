@@ -30,7 +30,8 @@ const chains = {
     celo: 42220,
     kcc: 321,
     cube: 1818,
-    astar: 592
+    astar: 592,
+    bitgert: 32520
 }
 
 module.exports = {
