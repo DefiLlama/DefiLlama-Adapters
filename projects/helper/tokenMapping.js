@@ -1260,7 +1260,11 @@ const fixBalancesTokens = {
     "EQAW42HutyDem98Be1f27PoXobghh81umTQ-cGgaKVmRLS7-": { coingeckoId: "coingecko:ethereum", decimals: 18 },
     "EQC61IQRl0_la95t27xhIpjxZt32vl1QQVF2UgTNuvD18W-4": { coingeckoId: "coingecko:usd-coin", decimals: 6 },
     "EQC_1YoM8RBixN95lz7odcF3Vrkc_N8Ne7gQi7Abtlet_Efi": { coingeckoId: "coingecko:tether", decimals: 6 },
-  }
+  },
+  dexit: {
+    [nullAddress]: { coingeckoId: "dexit-finance", decimals: 18 },
+    '0x414b8BAf9950C87804cf7E23BB43a58AE7e1E202': { coingeckoId: "dexit-finance", decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
