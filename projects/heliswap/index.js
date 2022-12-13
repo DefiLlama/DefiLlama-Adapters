@@ -11,8 +11,6 @@ const axiosConfig = {
 };
 
 const getWhitelistedTokenAddresses = async () => {
-  let tokens = [];
-
   const response = await axios(urlConfigs.tokenListUrl);
   const { data: whitelistedTokens } = response;
 
