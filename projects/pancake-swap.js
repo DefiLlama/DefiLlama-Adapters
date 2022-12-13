@@ -5,7 +5,7 @@ const { getUniTVL } = require('./helper/unknownTokens')
 const { dexExport } = require('./helper/chain/aptos')
 
 
-const graphEndpoint = 'https://bsc.streamingfast.io/subgraphs/name/pancakeswap/exchange-v2'
+const graphEndpoint = 'https://proxy-worker.pancake-swap.workers.dev/bsc-exchange'
 const currentQuery = gql`
 query pancakeFactories {
   pancakeFactories(first: 1) {
@@ -63,7 +63,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
         }
       );
       const usdTvl = Number(uniswapFactories[0].totalLiquidityUSD)
-    
+
       return toUSDTBalances(usdTvl)
     }
     return toUSDTBalances(closest.totalLiquidityUSD)
