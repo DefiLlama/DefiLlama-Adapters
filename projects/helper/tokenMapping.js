@@ -1072,6 +1072,7 @@ const fixBalancesTokens = {
     "0xc13791DA84f43525189456CfE2026C60D3B7F706": { coingeckoId: "kava", decimals: 18 },
     "0x7c598c96d02398d89fbcb9d41eab3df0c16f227d": { coingeckoId: "sushi", decimals: 18 },
     "0xa0eeda2e3075092d66384fe8c91a1da4bca21788": { coingeckoId: "ethereum:0xef53462838000184f35f7d991452e5f25110b207", decimals: 0 },
+    "0xea616011e5ac9a5b91e22cac59b4ec6f562b83f9": { coingeckoId: "bitrise-token", decimals: 18, },
   },
   sx: {
     "0xaa99bE3356a11eE92c3f099BD7a038399633566f": { coingeckoId: "sx-network", decimals: 18 },

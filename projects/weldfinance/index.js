@@ -2,11 +2,14 @@ const { masterchefExports, } = require("../helper/unknownTokens")
 const sdk = require('@defillama/sdk')
 
 async function verifyTvl() {
-  const usdkSupply = (await sdk.api2.abi.call({
-    target: '0x472402d47Da0587C1cf515DAfbAFc7bcE6223106',
-    abi: 'erc20:totalSupply',
-    chain: 'kava',
-  })) / 1e18
+  let [
+    usdkSupply,
+    briseSupply,
+  ] = await sdk.api2.abi.multiCall({
+    abi: 'erc20:totalSupply', chain: 'kava',
+    calls: ['0x472402d47Da0587C1cf515DAfbAFc7bcE6223106', '0xea616011e5ac9a5b91e22cac59b4ec6f562b83f9',]
+  })
+  usdkSupply /= 1e18
 
   const fireBlockAccount = '0x07B8F3e3D3fCf5b6D8cf1a49B92047008EE991E8'
 
@@ -27,11 +30,15 @@ async function verifyTvl() {
     ],
   })
 
+  const {output: briseBacking} = await sdk.api.eth.getBalance({ target: fireBlockAccount, chain: 'bitgert', })
+
   const backing = [...bals, ...balsPoly].reduce((a, i) => a + i/1e6, 0)
 
-  sdk.log('usdk supply: ', usdkSupply)
-  sdk.log('usdk backing: ', backing)
+  sdk.log('usdk supply: ', usdkSupply, 'usdk backing: ', backing)
+  sdk.log('BRISE supply: ', briseSupply / 1e18, 'BRISE backing: ', briseBacking / 1e18)
+
   if (usdkSupply > backing) throw new Error('USDk supply is higher than backing')
+  if ((briseSupply > briseBacking)) throw new Error('BRISE supply is higher than backing')
   return {}
 }
 
