@@ -2,11 +2,11 @@ const { masterchefExports, } = require("../helper/unknownTokens")
 const sdk = require('@defillama/sdk')
 
 async function verifyTvl() {
-  const usdkSupply = await sdk.api2.abi.call({
+  const usdkSupply = (await sdk.api2.abi.call({
     target: '0x472402d47Da0587C1cf515DAfbAFc7bcE6223106',
     abi: 'erc20:totalSupply',
     chain: 'kava',
-  })
+  })) / 1e18
 
   const fireBlockAccount = '0x07B8F3e3D3fCf5b6D8cf1a49B92047008EE991E8'
 
@@ -29,7 +29,7 @@ async function verifyTvl() {
 
   const backing = [...bals, ...balsPoly].reduce((a, i) => a + i/1e6, 0)
 
-  sdk.log('usdk supply: ', usdkSupply / 1e18)
+  sdk.log('usdk supply: ', usdkSupply)
   sdk.log('usdk backing: ', backing)
   if (usdkSupply > backing) throw new Error('USDk supply is higher than backing')
   return {}
