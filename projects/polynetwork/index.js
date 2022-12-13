@@ -258,7 +258,7 @@ module.exports = {
         fetch: bitgert
     },
     dexit: {
-        fethc: dexit
+        fetch: dexit
     },
     fetch
 }
