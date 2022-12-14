@@ -107,7 +107,7 @@
     "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     "wrapped": "0x4200000000000000000000000000000000000006",
     "metapoolBases": {
-      "3CRV": "0x061b87122ed14b9526a813209c8a59a633257bab"
+      "3CRV": "0x1337bedc9d22ecbe766df105c9623922a27963ec"
     }
   },
   "xdai": {
