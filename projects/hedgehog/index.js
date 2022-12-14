@@ -33,7 +33,7 @@ module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
   methodology:
-    "counts the number of OSQTH, USDC & WETH in the strategy-controlled pools and treasury",
+    "counts the amount of OSQTH, USDC & WETH in the strategy-controlled pools and treasury",
   start: START_BLOCK,
   ethereum: {
     tvl,
