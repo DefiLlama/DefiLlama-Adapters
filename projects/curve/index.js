@@ -1,13 +1,12 @@
-const { unwrapYearn, sumTokensSharedOwners } = require("../helper/unwrapLPs");
+const { unwrapYearn, sumTokensSharedOwners, nullAddress, sumTokens2, } = require("../helper/unwrapLPs");
 const { getChainTransform } = require("../helper/portedTokens");
+const { get } = require("../helper/http");
 const { staking } = require("../helper/staking.js");
 const BigNumber = require("bignumber.js");
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const creamAbi = require("../helper/abis/cream.json");
 const contracts = require("./contracts.json");
-const { requery } = require("../helper/requery");
-const { get } = require('../helper/http')
 const chains = [
   "ethereum", //-200M
   "polygon", //-40M
@@ -18,6 +17,7 @@ const chains = [
   "optimism", //-6M
   "xdai", //G
   "moonbeam",
+  "celo",
   "kava"
 ]; // Object.keys(contracts);
 const registryIds = {
@@ -27,96 +27,56 @@ const registryIds = {
   cryptoFactory: 6
 };
 
+const registryIdsReverse = Object.fromEntries(Object.entries(registryIds).map(i => i.reverse()))
+
+async function getPool({ chain, block, registry }) {
+  const data = await sdk.api2.abi.fetchList({ chain, block, target: registry, itemAbi: abi.pool_list, lengthAbi: abi.pool_count, withMetadata: true,  })
+  return data.filter(i => i.output)
+}
+
+function getRegistryType(registryId) {
+  if (!registryIdsReverse.hasOwnProperty(registryId)) throw new Error('Unknown registry id: ' + registryId)
+  return registryIdsReverse[registryId]
+}
+
 async function getPools(block, chain) {
-  const registries = (await sdk.api.abi.multiCall({
-    block,
-    chain,
-    calls: Object.values(registryIds).map(r => ({
-      params: r
-    })),
-    target: contracts[chain].addressProvider,
-    abi: abi.get_id_info
-  })).output.map(r => r.output.addr);
-
-  const poolCounts = (await sdk.api.abi.multiCall({
-    block,
-    chain,
-    calls: registries.map(r => ({
-      target: r
-    })),
-    abi: abi.pool_count
-  })).output;
-
-  const pools = {};
-  for (let i = 0; i < Object.values(registryIds).length; i++) {
-    pools[Object.keys(registryIds)[i]] = (await sdk.api.abi.multiCall({
-      calls: [...Array(Number(poolCounts[i].output)).keys()].map(n => ({
-        target: poolCounts[i].input.target,
-        params: [n]
-      })),
-      block,
-      chain,
-      abi: abi.pool_list
-    })).output;
+  let { registriesMapping } = contracts[chain]
+  if (!registriesMapping) {
+    registriesMapping = {};
+    (await sdk.api.abi.multiCall({
+      block, chain,
+      calls: Object.values(registryIds).map(r => ({ params: r })),
+      target: contracts[chain].addressProvider,
+      abi: abi.get_id_info
+    })).output
+      .filter(r => r.output.addr !== nullAddress)
+      .forEach(({ input: { params: [registryId] }, output: { addr } }) => registriesMapping[getRegistryType(registryId)] = addr)
   }
+  const poolList = {}
+  await Promise.all(Object.entries(registriesMapping).map(async ([registry, addr]) => {
+    poolList[registry] = await getPool({ chain, block, registry: addr })
+  }))
 
-  let allPools = {};
-  Object.entries(pools).map(([key, list]) => {
-    pools[key] = list.filter(p => {
-      if (allPools[p.output] === undefined) {
-        allPools[p.output] = true;
-        return true;
-      } else {
-        return false;
-      }
-    });
-  });
-
-  return pools;
+  return poolList
 }
 
-function aggregateBalanceCalls(coins, nCoins, poolList, registry) {
-  let calls = [];
-  if (registry == "cryptoFactory") {
-    coins.map((coin, i) =>
-      [...Array(Number(coin.output.length)).keys()].map(n =>
-        calls.push({
-          params: [poolList[i].output],
-          target: coin.output[n]
-        })
-      )
-    );
-  } else {
-    coins.map((coin, i) =>
-      [...Array(Number(nCoins[i].output[0])).keys()].map(n =>
-        calls.push({
-          params: [poolList[i].output],
-          target: coin.output[n]
-        })
-      )
-    );
-  }
-  return calls;
-}
-
-async function fixGasTokenBalances(poolBalances, block, chain) {
-  for (let i = 0; i < poolBalances.output.length; i++) {
-    if (
-      poolBalances.output[i].success == false &&
-      poolBalances.output[i].input.target.toLowerCase() ==
-      contracts[chain].gasTokenDummy
-    ) {
-      const ethBalance = (await sdk.api.eth.getBalance({
-        target: poolBalances.output[i].input.params[0],
-        block,
-        chain
-      })).output;
-
-      poolBalances.output[i].success = true;
-      poolBalances.output[i].output = ethBalance;
-      poolBalances.output[i].input.target = contracts[chain].wrapped;
+function aggregateBalanceCalls({ coins, nCoins, wrapped }) {
+  const toa = []
+  coins.map(({ input, output }, i) => {
+    const owner = input.params[0]
+    toa.push([nullAddress, owner])
+    const addToken = t => {
+      if (t.toLowerCase() === wrapped.toLowerCase())
+        toa.push([nullAddress, owner])
+      toa.push([t, owner])
     }
-  }
+    if (!Object.keys(nCoins).length)
+      output.forEach(token => addToken(token))
+    else
+      for (let index = 0; index < nCoins[i].output[0]; index++)
+        addToken(output[index])
+  })
+  return toa;
 }
 
 async function fixWrappedTokenBalances(balances, block, chain, transform) {
@@ -186,14 +146,6 @@ async function unwrapCreamTokens(
   }
 }
 
-function deleteMetapoolBaseBalances(balances, chain) {
-  for (let token of Object.values(contracts[chain].metapoolBases)) {
-    if (!(token in balances || `${chain}:${token}` in balances)) continue;
-    delete balances[token];
-    delete balances[`${chain}:${token}`];
-  }
-}
-
 function mapGaugeTokenBalances(calls, chain) {
   const mapping = {
     // token listed in coins() mapped to gauge token held in contract
@@ -221,13 +173,12 @@ function mapGaugeTokenBalances(calls, chain) {
   };
 
   return calls.map(function (c) {
-    let target = c.target;
-    if (
-      c.target.toLowerCase() in mapping &&
-      (mapping[c.target.toLowerCase()].pools.includes(
+    let target = c.target.toLowerCase();
+    if (mapping[target] &&
+      (mapping[target].pools.includes(
         c.params[0].toLowerCase()
       ) ||
-        mapping[c.target.toLowerCase()].chains.includes(chain))
+        mapping[target].chains.includes(chain))
     ) {
       target = mapping[c.target.toLowerCase()].to;
     }
@@ -256,7 +207,7 @@ async function unwrapSdTokens(balances, sdTokens, chain) {
       delete balances[`${chain}:{token}`];
     }
   }
-}
+} 
 
 async function handleUnlistedFxTokens(balances, chain) {
   if ("fxTokens" in contracts[chain]) {
@@ -281,74 +232,34 @@ async function handleUnlistedFxTokens(balances, chain) {
   return;
 }
 
-async function unwrapPools(
-  balances,
-  block,
-  chain,
-  transform,
-  poolList,
-  registry
-) {
-  const [{ output: nCoins }, { output: coins }] = await Promise.all([
-    sdk.api.abi.multiCall({
-      calls: poolList.map(p => ({
-        target: p.input.target,
-        params: [p.output]
-      })),
-      block,
-      chain,
-      abi: abi.get_n_coins[registry]
-    }),
-    sdk.api.abi.multiCall({
-      calls: poolList.map(p => ({
-        target: p.input.target,
-        params: p.output
-      })),
-      block,
-      chain,
-      abi: abi.get_coins[registry]
-    })
-  ]);
+async function unwrapPools({ balances, transform, poolList, registry, chain, block }) {
+  if (!poolList.length) return;
+  const registryAddress = poolList[0].input.target
 
-  let calls = aggregateBalanceCalls(coins, nCoins, poolList, registry);
-  calls = mapGaugeTokenBalances(calls, chain);
+  const callParams = { target: registryAddress, calls: poolList.map(i => ({ params: i.output })), chain, block, }
+  const { output: coins } = await sdk.api.abi.multiCall({ ...callParams, abi: abi.get_coins[registry] })
+  let nCoins = {}
+  if (registry !== 'cryptoFactory')
+    nCoins = (await sdk.api.abi.multiCall({ ...callParams, abi: abi.get_n_coins[registry] })).output
 
-  let poolBalances = await sdk.api.abi.multiCall({
-    calls,
-    block,
-    chain,
-    abi: "erc20:balanceOf"
-  });
-  requery(poolBalances, chain, block, "erc20:balanceOf");
-  await fixGasTokenBalances(poolBalances, block, chain);
-
-  sdk.util.sumMultiBalanceOf(balances, poolBalances, false, transform);
-
-  await fixWrappedTokenBalances(balances, block, chain, transform);
-  await handleUnlistedFxTokens(balances, chain);
-  deleteMetapoolBaseBalances(balances, chain);
-
-  return balances;
-} // node test.js projects/curve/index.js
+  let { wrapped = '', metapoolBases = {}, blacklist = [] } = contracts[chain]
+  wrapped = wrapped.toLowerCase()
+  let calls = aggregateBalanceCalls({ coins, nCoins, wrapped });
+  return sumTokens2({ balances, chain, block, tokensAndOwners: calls, transformAddress: transform, blacklistedTokens: [...blacklist, ...(Object.values(metapoolBases))] })
+}
 
 function tvl(chain) {
-  return async (_t, _e, chainBlocks) => {
+  return async (_t, _e, { [chain]: block }) => {
     let balances = {};
     const transform = await getChainTransform(chain);
-    const poolList = await getPools(chainBlocks[chain], chain);
-    const block = chainBlocks[chain];
+    const poolLists = await getPools(block, chain);
+    const promises = []
 
-    for (let registry of Object.keys(poolList)) {
-      await unwrapPools(
-        balances,
-        block,
-        chain,
-        transform,
-        poolList[registry],
-        registry
-      );
-    }
+    for (const [registry, poolList] of Object.entries(poolLists))
+      promises.push(unwrapPools({ balances, transform, poolList, registry, chain, block }))
 
+    await Promise.all(promises)
+    await handleUnlistedFxTokens(balances, chain);
     return balances;
   };
 }
