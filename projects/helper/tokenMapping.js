@@ -1062,6 +1062,7 @@ const fixBalancesTokens = {
     [nullAddress]: { coingeckoId: "kava", decimals: 18 },
     "0xc86c7C0eFbd6A49B35E8714C5f59D99De09A225b": { coingeckoId: "kava", decimals: 18 },
     "0x332730a4F6E03D9C55829435f10360E13cfA41Ff": { coingeckoId: "binance-usd", decimals: 18 },
+    "0x472402d47Da0587C1cf515DAfbAFc7bcE6223106": { coingeckoId: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", decimals: 12 },  // USD k
     "0x65e66a61D0a8F1e686C2D6083ad611a10D84D97A": { coingeckoId: "binancecoin", decimals: 18 },
     "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f": { coingeckoId: "usd-coin", decimals: 6 },
     "0xB44a9B6905aF7c801311e8F4E76932ee959c663C": { coingeckoId: "tether", decimals: 6 },
@@ -1071,6 +1072,7 @@ const fixBalancesTokens = {
     "0xc13791DA84f43525189456CfE2026C60D3B7F706": { coingeckoId: "kava", decimals: 18 },
     "0x7c598c96d02398d89fbcb9d41eab3df0c16f227d": { coingeckoId: "sushi", decimals: 18 },
     "0xa0eeda2e3075092d66384fe8c91a1da4bca21788": { coingeckoId: "ethereum:0xef53462838000184f35f7d991452e5f25110b207", decimals: 0 },
+    "0xea616011e5ac9a5b91e22cac59b4ec6f562b83f9": { coingeckoId: "bitrise-token", decimals: 18, },
   },
   sx: {
     "0xaa99bE3356a11eE92c3f099BD7a038399633566f": { coingeckoId: "sx-network", decimals: 18 },
@@ -1258,7 +1260,11 @@ const fixBalancesTokens = {
     "EQAW42HutyDem98Be1f27PoXobghh81umTQ-cGgaKVmRLS7-": { coingeckoId: "coingecko:ethereum", decimals: 18 },
     "EQC61IQRl0_la95t27xhIpjxZt32vl1QQVF2UgTNuvD18W-4": { coingeckoId: "coingecko:usd-coin", decimals: 6 },
     "EQC_1YoM8RBixN95lz7odcF3Vrkc_N8Ne7gQi7Abtlet_Efi": { coingeckoId: "coingecko:tether", decimals: 6 },
-  }
+  },
+  dexit: {
+    [nullAddress]: { coingeckoId: "dexit-finance", decimals: 18 },
+    '0x414b8BAf9950C87804cf7E23BB43a58AE7e1E202': { coingeckoId: "dexit-finance", decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
