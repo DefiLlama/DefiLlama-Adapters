@@ -110,7 +110,6 @@ module.exports = {
   methodology: `TVL is the total quantity of tokens locked in Super Tokens from Superfluid, on Polygon and xDai (most important being weth, dai, usdc and wbtc, as well as QiDAO and MOCA)`,
   hallmarks: [
     [1644278400, "Fake ctx hack"],
-    [Math.floor(new Date('2022-10-03') / 1e3), 'Vesting tokens are not included in tvl'],
   ],
 };
 
