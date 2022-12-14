@@ -3,6 +3,7 @@ const { default: BigNumber } = require("bignumber.js");
 const { request, gql } = require("graphql-request"); // GraphQLClient
 const { isStableToken } = require('./helper/streamingHelper')
 const { getBlock } = require('./helper/http')
+const { transformBalances } = require('./helper/portedTokens')
 
 // Superfluid Supertokens can be retrieved using GraphQl API - cannot use block number to retrieve historical data at the moment though
 // TheGraph URL before being deprecated, before 2021-12-23
@@ -71,14 +72,14 @@ async function getChainBalances(allTokens, chain, block, isVesting) {
     } = allTokens[i]
     let underlyingTokenBalance = BigNumber(totalSupply * (10 ** (underlyingToken || { decimals: 18 }).decimals) / (10 ** decimals)).toFixed(0)
     // Accumulate to balances, the balance for tokens on mainnet or sidechain
-    let prefixedUnderlyingAddress = chain + ':' + underlyingAddress
+    let prefixedUnderlyingAddress = underlyingAddress
     // if (!underlyingToken && underlyingTokenBalance/1e24 > 1) console.log(name, symbol, chain, Math.floor(underlyingTokenBalance/1e24))
-    if (isNativeAssetSuperToken) prefixedUnderlyingAddress = chain + ':' + underlyingAddress
-    else if (!underlyingToken) return;
+    // if (isNativeAssetSuperToken) prefixedUnderlyingAddress = chain + ':' + underlyingAddress
+    if (!underlyingToken) return;
     sdk.util.sumSingleBalance(balances, prefixedUnderlyingAddress, underlyingTokenBalance)
   })
 
-  return balances
+  return transformBalances(chain, balances)
 }
 
 const tokensNativeToSidechain = [
@@ -88,7 +89,7 @@ const tokensNativeToSidechain = [
 ]
 
 async function retrieveSupertokensBalances(chain, block, isVesting, ts, graphUrl) {
-  block = await getBlock(ts, chain, { [chain]: block }) - 200
+  block = await getBlock(ts, chain, { [chain]: block }) - 500
   // Retrieve supertokens from graphql API
   const { tokens } = await request(graphUrl, supertokensQuery, { block })
   const allTokens = tokens.filter(t => t.isSuperToken)
