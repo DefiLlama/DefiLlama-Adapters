@@ -89,7 +89,7 @@ const tokensNativeToSidechain = [
 ]
 
 async function retrieveSupertokensBalances(chain, block, isVesting, ts, graphUrl) {
-  block = await getBlock(ts, chain, { [chain]: block })
+  block = (await getBlock(ts, chain, { [chain]: block })) - 500
   // Retrieve supertokens from graphql API
   const { tokens } = await request(graphUrl, supertokensQuery, { block })
   const allTokens = tokens.filter(t => t.isSuperToken)
