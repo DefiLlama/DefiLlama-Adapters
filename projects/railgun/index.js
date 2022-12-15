@@ -26,11 +26,14 @@ const CONTRACTS = {
     PROXY: '0x19B620929f97b7b990801496c3b361CA5dEf8C71',
   },
 };
+const blackedlistedTokens = [
+  '0x2e14949ce0133ccfd4c0cbe707ba878015a7a40c',
+]
 
 function getTVLFunc(contractAddress, chain) {
   return async function (timestamp, _, { [chain]: block }) {
     const tokens = await covalentGetTokens(contractAddress, chain);
-    return sumTokens2({ owner: contractAddress, tokens, blacklistedTokens: [CONTRACTS[chain].RAIL], chain, block, })
+    return sumTokens2({ owner: contractAddress, tokens, blacklistedTokens: [CONTRACTS[chain].RAIL, ...blackedlistedTokens], chain, block, })
   }
 }
 
