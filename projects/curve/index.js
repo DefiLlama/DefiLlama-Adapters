@@ -1,11 +1,9 @@
-const { unwrapYearn, sumTokensSharedOwners, nullAddress, sumTokens2, } = require("../helper/unwrapLPs");
+const { sumTokensSharedOwners, nullAddress, sumTokens2, } = require("../helper/unwrapLPs");
 const { getChainTransform } = require("../helper/portedTokens");
 const { get } = require("../helper/http");
 const { staking } = require("../helper/staking.js");
-const BigNumber = require("bignumber.js");
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const creamAbi = require("../helper/abis/cream.json");
 const contracts = require("./contracts.json");
 const chains = [
   "ethereum", //-200M
@@ -78,126 +76,6 @@ function aggregateBalanceCalls({ coins, nCoins, wrapped }) {
   })
   return toa;
 }
-
-async function fixWrappedTokenBalances(balances, block, chain, transform) {
-  if ("yearnTokens" in contracts[chain]) {
-    for (let token of Object.values(contracts[chain].yearnTokens)) {
-      if (token in balances) {
-        await unwrapYearn(balances, token, block, chain, transform);
-      }
-    }
-  }
-
-  if ("creamTokens" in contracts[chain]) {
-    const creamTokens = Object.values(contracts[chain].creamTokens);
-    await unwrapCreamTokens(balances, block, chain, creamTokens, transform);
-  }
-
-  if ("sdTokens" in contracts[chain]) {
-    await unwrapSdTokens(balances, contracts[chain].sdTokens, chain);
-  }
-}
-
-async function unwrapCreamTokens(
-  balances,
-  block,
-  chain,
-  creamTokens,
-  transform
-) {
-  const [exchangeRates, underlyingTokens] = await Promise.all([
-    sdk.api.abi.multiCall({
-      calls: creamTokens.map(t => ({
-        target: t
-      })),
-      abi: creamAbi.exchangeRateStored,
-      block,
-      chain
-    }),
-    sdk.api.abi.multiCall({
-      calls: creamTokens.map(t => ({
-        target: t
-      })),
-      abi: creamAbi.underlying,
-      block,
-      chain
-    })
-  ]);
-  for (let i = 0; i < creamTokens.length; i++) {
-    if (!(creamTokens[i] in balances)) continue;
-    const underlying = underlyingTokens.output[i].output;
-    const balance = BigNumber(balances[creamTokens[i]])
-      .times(exchangeRates.output[i].output)
-      .div(1e18)
-      .toFixed(0);
-    sdk.util.sumSingleBalance(balances, transform(underlying), balance);
-    delete balances[creamTokens[i]];
-    delete balances[`${chain}:${creamTokens[i]}`];
-  }
-}
-
-function mapGaugeTokenBalances(calls, chain) {
-  const mapping = {
-    // token listed in coins() mapped to gauge token held in contract
-    //"0xe7a24ef0c5e95ffb0f6684b813a78f2a3ad7d171": "0x19793b454d3afc7b454f206ffe95ade26ca6912c", // maybe not? 4 0s poly
-    "0x7f90122bf0700f9e7e1f688fe926940e8839f353": {
-      to: "0xbf7e49483881c76487b0989cd7d9a8239b20ca41",
-      pools: [],
-      chains: []
-    }, // need a pool conditional - only for (1) ['0x30dF229cefa463e991e29D42DB0bae2e122B2AC7']
-    "0x1337bedc9d22ecbe766df105c9623922a27963ec": {
-      to: "0x5b5cfe992adac0c9d48e05854b2d91c73a003858",
-      pools: [],
-      chains: ["avax"]
-    },
-    "0x27e611fd27b276acbd5ffd632e5eaebec9761e40": {
-      to: "0x8866414733F22295b7563f9C5299715D2D76CAf4",
-      pools: [],
-      chains: ["fantom"]
-    },
-    "0xd02a30d33153877bc20e5721ee53dedee0422b2f": {
-      to: "0xd4f94d0aaa640bbb72b5eec2d85f6d114d81a88e",
-      pools: [],
-      chains: ["fantom"]
-    }
-  };
-
-  return calls.map(function (c) {
-    let target = c.target.toLowerCase();
-    if (mapping[target] &&
-      (mapping[target].pools.includes(
-        c.params[0].toLowerCase()
-      ) ||
-        mapping[target].chains.includes(chain))
-    ) {
-      target = mapping[c.target.toLowerCase()].to;
-    }
-    return { target, params: c.params };
-  });
-}
-
-async function unwrapSdTokens(balances, sdTokens, chain) {
-  const apiData = (await get("https://lockers.stakedao.org/api/lockers")
-  ).map(t => ({
-    address: t.tokenReceipt.address.toLowerCase(),
-    usdPrice: t.tokenPriceUSD,
-    decimals: t.tokenReceipt.decimals
-  }));
-
-  for (let token of Object.values(sdTokens)) {
-    if (token in balances) {
-      const tokenInfo = apiData.filter(t => t.address == token)[0];
-
-      sdk.util.sumSingleBalance(
-        balances,
-        "usd-coin",
-        balances[token] * tokenInfo.usdPrice / 10 ** tokenInfo.decimals
-      );
-      delete balances[token];
-      delete balances[`${chain}:{token}`];
-    }
-  }
-} 
 
 async function handleUnlistedFxTokens(balances, chain) {
   if ("fxTokens" in contracts[chain]) {
@@ -316,7 +194,3 @@ const chainTypeExports = chains => {
 };
 
 module.exports = chainTypeExports(chains);
-
-module.exports1 = {
-  aurora: module.exports.aurora
-}
