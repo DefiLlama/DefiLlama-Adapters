@@ -66,6 +66,7 @@ const defaultTokens = {
     '0x4691937a7508860f876c9c0a2a617e7d9e945d4b', // WOO
     '0x19de6b897ed14a376dda0fe53a5420d2ac828a28', // BGB bitget token
     '0x0316EB71485b0Ab14103307bf65a021042c6d380', // HBTC (Houbi BTC) https://explorer.btc.com/btc/address/12qTdZHx6f77aQ74CPCZGSY47VaRwYjVD8 / https://www.htokens.finance/en-us/assets
+    '0x6be61833fc4381990e82d7d4a9f4c9b3f67ea941', // HTB (Hotbit cex token)
   ],
   tron: [
     nullAddress,

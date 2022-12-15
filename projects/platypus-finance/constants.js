@@ -35,6 +35,10 @@ const ALT_WBTCe_LP = "0xc09c12093b037866Bf68C9474EcDb5113160fBcE";
 const ALT_USDC_MONEY_LP = "0x551C259Bf4D88edFdAbb04179342a73dAa759583";
 const ALT_MONEY_LP = "0xE08947eE864Af325D9F98743B3b905875Ae0Ec99";
 
+// Alt: USDC - axlUSDC
+const ALT_USDC_AXLUSDC_LP = "0x7ECE2e39fC384d15e7004d84687dA67218A39a74";
+const ALT_AXLUSDC_LP = "0xC97d830Cc15B35D361985a48d8d9e52A56B0f94F";
+
 // FACTORY: USDC - TSD
 const FACTORY_USDC_TSD_LP = "0x979702f708dd794A0e5E616E89C1656a2C55d681";
 const FACTORY_TSD_LP = "0x027A24Fa0168DA4fC7AF9Bf5331D42692889AFaa";
@@ -70,6 +74,7 @@ const MAI = "0x3B55E45fD6bd7d4724F5c47E0d1bCaEdd059263e";
 const USX = "0x853ea32391AaA14c112C645FD20BA389aB25C5e0";
 const YYAVAX = "0xF7D9281e8e363584973F946201b82ba72C965D27";
 const BUSD = "0x9C9e5fD8bbc25984B178FdCE6117Defa39d2db39";
+const AXLUSDC = "0xfaB550568C688d5D8A52C7d794cb93Edc26eC0eC";
 
 module.exports = {
   DAI: {
@@ -93,6 +98,7 @@ module.exports = {
           ALT_USDC_MIM_LP,
           ALT_USDC_YUSD_LP,
           ALT_USDC_MONEY_LP,
+          ALT_USDC_AXLUSDC_LP,
           FACTORY_USDC_H2O_LP,
           FACTORY_USDC_TSD_LP,
           FACTORY_USDC_MAI_LP,
@@ -255,6 +261,15 @@ module.exports = {
       {
         token: BUSD,
         lpTokens: [MAIN_BUSD_LP],
+      },
+    ],
+  },
+  AXLUSDC: {
+    id: "axlusdc",
+    addresses: [
+      {
+        token: AXLUSDC,
+        lpTokens: [ALT_AXLUSDC_LP],
       },
     ],
   },
