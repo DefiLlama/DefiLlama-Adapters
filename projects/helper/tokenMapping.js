@@ -1135,6 +1135,7 @@ const fixBalancesTokens = {
     "0x6a2d262d56735dba19dd70682b39f6be9a931d98": { coingeckoId: "usd-coin", decimals: 6 },
     "0x6959027f7850adf4916ff5fdc898d958819e5375": { coingeckoId: "ethereum", decimals: 18 },
     "0x4edf8e0778967012d46968ceadb75436d0426f88": { coingeckoId: "bepro-network", decimals: 18 },
+    "0xfa36fe1da08c89ec72ea1f0143a35bfd5daea108": { coingeckoId: "polkadot", decimals: 10 }, // Lido Staked DOT
   },
   moonriver: {
     "0xcb4a593ce512d78162c58384f0b2fd6e802c2c47": { coingeckoId: "bepro-network", decimals: 18 },

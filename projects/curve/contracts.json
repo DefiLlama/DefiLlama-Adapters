@@ -103,6 +103,11 @@
       "3CRV": "0xc5cfada84e902ad92dd40194f0883ad49639b023"
     }
   },
+  "celo": {
+    "registriesMapping": {
+      "stableFactory": "0x5277a0226d10392295e8d383e9724d6e416d6e6c"
+    }
+  },
   "optimism": {
     "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
     "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
