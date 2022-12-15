@@ -62,7 +62,6 @@ function aggregateBalanceCalls({ coins, nCoins, wrapped }) {
   const toa = []
   coins.map(({ input, output }, i) => {
     const owner = input.params[0]
-    toa.push([nullAddress, owner])
     const addToken = t => {
       if (t.toLowerCase() === wrapped.toLowerCase())
         toa.push([nullAddress, owner])
