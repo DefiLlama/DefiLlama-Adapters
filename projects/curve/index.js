@@ -96,16 +96,6 @@ async function fixWrappedTokenBalances(balances, block, chain, transform) {
   if ("sdTokens" in contracts[chain]) {
     await unwrapSdTokens(balances, contracts[chain].sdTokens, chain);
   }
-
-  const stDOT = "moonbeam:0xfa36fe1da08c89ec72ea1f0143a35bfd5daea108";
-  if (stDOT in balances) {
-    balances["bsc:0x7083609fce4d1d8dc0c979aab8c869ea2c873402"] = BigNumber(
-      balances[stDOT]
-    )
-      .times(1e8)
-      .toFixed(0);
-    delete balances[stDOT];
-  }
 }
 
 async function unwrapCreamTokens(
@@ -326,3 +316,7 @@ const chainTypeExports = chains => {
 };
 
 module.exports = chainTypeExports(chains);
+
+module.exports1 = {
+  aurora: module.exports.aurora
+}
