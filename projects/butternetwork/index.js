@@ -22,25 +22,6 @@ const config = {
   }
 }
 
-async function evmTvl(chain, timestamp, block, chainBlocks) {
-  const mosAddress = config[chain].mosAddress;
-  const tokenHoldingList = config[chain].tokenHoldingList;
-
-  const tokenBalances = await sdk.api.abi.multiCall({
-    calls: tokenHoldingList.map((tokenAddress) => ({
-      target: tokenAddress,
-      params: mosAddress
-    })),
-    abi: 'erc20:balanceOf',
-    block: chainBlocks[chain],
-    chain: chain
-  })
-
-  const balances = {};
-  sdk.util.sumMultiBalanceOf(balances, tokenBalances)
-  return balances;
-}
-
 async function bscTvl(timestamp, block, chainBlocks) {
   return await evmTvl('bsc', timestamp, block, chainBlocks)
 }
@@ -64,6 +45,25 @@ async function nearTvl(timestamp, block, chainBlocks) {
   return balances;
 }
 
+async function evmTvl(chain, timestamp, block, chainBlocks) {
+  const mosAddress = config[chain].mosAddress;
+  const tokenHoldingList = config[chain].tokenHoldingList;
+
+  const tokenBalances = await sdk.api.abi.multiCall({
+    calls: tokenHoldingList.map((tokenAddress) => ({
+      target: tokenAddress,
+      params: mosAddress
+    })),
+    abi: 'erc20:balanceOf',
+    block: chainBlocks[chain],
+    chain: chain
+  })
+
+  const balances = {};
+  sdk.util.sumMultiBalanceOf(balances, tokenBalances)
+  return balances;
+}
+
 module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
@@ -71,11 +71,9 @@ module.exports = {
   bsc: {
     tvl: bscTvl,
   },
-
   polygon: {
     tvl: polygonTvl
   },
-
   near: {
     tvl: nearTvl
   }
