@@ -1,9 +1,11 @@
 const { sumTokensSharedOwners, nullAddress, sumTokens2, } = require("../helper/unwrapLPs");
 const { getChainTransform } = require("../helper/portedTokens");
-const { get } = require("../helper/http");
+const { getCache } = require("../helper/http");
+const { getUniqueAddresses } = require("../helper/utils");
 const { staking } = require("../helper/staking.js");
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
+const erc20Abi = require("../helper/abis/erc20.json");
 const contracts = require("./contracts.json");
 const chains = [
   "ethereum", //-200M
@@ -24,6 +26,44 @@ const registryIds = {
   crypto: 5,
   cryptoFactory: 6
 };
+const decimalsCache = {}
+const nameCache = {}
+
+async function getDecimals(chain, token) {
+  token = token.toLowerCase()
+  const key = chain + '-' + token
+  if (!decimalsCache[key]) decimalsCache[key] = sdk.api.erc20.decimals(token, chain)
+  return decimalsCache[key]
+}
+
+const gasTokens = [
+  '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+  '0x0000000000000000000000000000000000000000',
+]
+
+async function getNames(chain, tokens) {
+  tokens = tokens.map(i => i.toLowerCase())
+  const mapping = {}
+  const missing = []
+  tokens.forEach(i => {
+    const key = chain + '-' + i
+    if (nameCache[key] || gasTokens.includes(i)) mapping[i] = nameCache[key]
+    else missing.push(i)
+  })
+
+  const res = await sdk.api2.abi.multiCall({
+    abi: erc20Abi.name,
+    calls: missing,
+    chain,
+  })
+  res.forEach((name, i) => {
+    const key = chain + '-' + missing[i]
+    nameCache[key] = name
+    mapping[missing[i]] = nameCache[key]
+  })
+
+  return mapping
+}
 
 const registryIdsReverse = Object.fromEntries(Object.entries(registryIds).map(i => i.reverse()))
 
@@ -82,8 +122,8 @@ async function handleUnlistedFxTokens(balances, chain) {
     for (let token of tokens) {
       if (token.address in balances) {
         const [rate, { output: decimals }] = await Promise.all([
-          get(`https://api.exchangerate.host/convert?from=${token.currency}&to=USD`),
-          sdk.api.erc20.decimals(token.address, chain)
+          getCache(`https://api.exchangerate.host/convert?from=${token.currency}&to=USD`),
+          getDecimals(chain, token.address)
         ]);
 
         sdk.util.sumSingleBalance(
@@ -112,7 +152,16 @@ async function unwrapPools({ balances, transform, poolList, registry, chain, blo
   let { wrapped = '', metapoolBases = {}, blacklist = [] } = contracts[chain]
   wrapped = wrapped.toLowerCase()
   let calls = aggregateBalanceCalls({ coins, nCoins, wrapped });
-  return sumTokens2({ balances, chain, block, tokensAndOwners: calls, transformAddress: transform, blacklistedTokens: [...blacklist, ...(Object.values(metapoolBases))] })
+  const allTokens = getUniqueAddresses(calls.map(i => i[0]))
+  const tokenNames = await getNames(chain, allTokens)
+  const blacklistedTokens = [...blacklist, ...(Object.values(metapoolBases))] 
+  Object.entries(tokenNames).forEach(([token, name]) => {
+    if ((name ?? '').startsWith('Curve.fi ')) {
+      sdk.log(chain, 'blacklisting', name)
+      blacklistedTokens.push(token)
+    }
+  })
+  return sumTokens2({ balances, chain, block, tokensAndOwners: calls, transformAddress: transform, blacklistedTokens })
 }
 
 function tvl(chain) {

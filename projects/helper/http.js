@@ -9,6 +9,13 @@ const chainIds = {
   'polygon': 137
 }
 
+const getCacheData = {}
+
+async function getCache(endpoint) {
+  if (!getCacheData[endpoint]) getCacheData[endpoint] = get(endpoint)
+  return getCacheData[endpoint]
+}
+
 async function getBlock(timestamp, chain, chainBlocks, undefinedOk = false) {
   if (chainBlocks[chain] !== undefined || (process.env.HISTORICAL === undefined && undefinedOk)) {
       return chainBlocks[chain]
@@ -90,6 +97,7 @@ async function graphFetchById({endpoint, query, params = {}, options: { timestam
 
 module.exports = {
   get,
+  getCache,
   post,
   blockQuery,
   graphQuery,
