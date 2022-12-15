@@ -15,6 +15,7 @@ const stakingContracts = [
 const lockedContracts = [
   //masterchef
   "0xAf3346DE11b838c4ea0D8E369486eB9BACeEEb02",
+  "0x65C9DaFddA01e1C81C671Dc20ec0c6341Fe3085e",
   "0x0c89c0407775dd89b12918b9c0aa42bf96518820",
   "0xa36037dC26C5C02e864eBA969A312320E6487269",
 ];

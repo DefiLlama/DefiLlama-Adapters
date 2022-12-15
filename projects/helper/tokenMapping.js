@@ -134,6 +134,7 @@ const transformTokens = {
     "0x3282d2a151ca00bfe7ed17aa16e42880248cd3cd": "0x0000000000085d4780b73119b644ae5ecd22b376", //ibTUSD
     "0xf1be8ecc990cbcb90e166b71e368299f0116d421": "bsc:0x8f0528ce5ef7b51152a59745befdd91d97091d2f", //ibALPACA
     // "0x250632378E573c6Be1AC2f97Fcdf00515d0Aa91B": tokens.ethereum, // BETH->WETH
+    "0x3F847b01d4d498a293e3197B186356039eCd737F": "ethereum:0xe76C6c83af64e4C60245D8C7dE953DF673a7A33D",  // Railgun
   },
   polygon: {
     "0x60d01ec2d5e98ac51c8b4cf84dfcce98d527c747": "0x9ad37205d608b8b219e6a2573f922094cec5c200", // IZI
@@ -154,6 +155,7 @@ const transformTokens = {
   },
   xdai: {
     "0x0000000000000000000000000000000000000000": tokens.dai,
+    "0x678df3415fc31947da4324ec63212874be5a82f8": tokens.dai,
   },
   okexchain: {
     "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c": "avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c"

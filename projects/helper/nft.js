@@ -10,7 +10,7 @@ const nftPriceFeeds = {
     },
     {   // Azuki
       token: "0xed5af388653567af2f388e6224dc7c4b3241c544",
-      oracle: "0xA9cdBbDE36803af377735233e6BD261cDA5aD11d",
+      oracle: "0xA8B9A447C73191744D5B79BcE864F343455E1150",
     },
     {   // BAKC
       token: "0xba30E5F9Bb24caa003E9f2f0497Ad287FDF95623",
@@ -18,7 +18,7 @@ const nftPriceFeeds = {
     },
     {   // BAYC
       token: "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d",
-      oracle: "0x0CA05B24795eb4f5bA5237e1D4470048cc0fE235",
+      oracle: "0x352f2Bc3039429fC2fe62004a1575aE74001CfcE",
     },
     {   // Beanz
       token: "0x306b1ea3ecdf94aB739F1910bbda052Ed4A9f949",
@@ -26,15 +26,15 @@ const nftPriceFeeds = {
     },
     {   // CloneX
       token: "0x49cf6f5d44e70224e2e23fdcdd2c053f30ada28b",
-      oracle: "0x13E6C463BEC76873E4e63ce5169e9a95b7e06801",
+      oracle: "0x021264d59DAbD26E7506Ee7278407891Bb8CDCCc",
     },
     {   // Cool Cats
       token: "0x1A92f7381B9F03921564a437210bB9396471050C",
-      oracle: "0xB9D28F5a83f00c2558f7CBd8f10252D39cF15AE4",
+      oracle: "0xF49f8F5b931B0e4B4246E4CcA7cD2083997Aa83d",
     },
     {   // Cryptoadz
       token: "0x1CB1A5e65610AEFF2551A50f76a87a7d3fB649C6",
-      oracle: "0x3c8D79D378366c9f118109B87edEdB448C6EfbbA",
+      oracle: "0xFaA8F6073845DBe5627dAA3208F78A3043F99bcA",
     },
     {   // Cryptodickbutts
       token: "0x42069ABFE407C60cf4ae4112bEDEaD391dBa1cdB",
@@ -42,7 +42,7 @@ const nftPriceFeeds = {
     },
     {   // Cryptopunks
       token: "0xb7f7f6c52f2e2fdb1963eab30438024864c313f6",
-      oracle: "0x35f08E1b5a18F1F085AA092aAed10EDd47457484",
+      oracle: "0x01B6710B01cF3dd8Ae64243097d91aFb03728Fdd",
     },
     {   // Cyberbrokers
       token: "0x892848074ddeA461A15f337250Da3ce55580CA85",
@@ -58,7 +58,7 @@ const nftPriceFeeds = {
     },
     {   // Doodles
       token: "0x8a90cab2b38dba80c64b7734e58ee1db38b8992e",
-      oracle: "0x68Ff67118F778Bd158DA8D49B156aC5Ad9d8c4Ed",
+      oracle: "0x027828052840a43Cc2D0187BcfA6e3D6AcE60336",
     },
     {   // Forgotten Rune Wizards Cult
       token: "0x521f9C7505005CFA19A8E5786a9c3c9c9F5e6f42",
@@ -74,7 +74,7 @@ const nftPriceFeeds = {
     },
     {   // MAYC
       token: "0x60e4d786628fea6478f785a6d7e704777c86a7c6",
-      oracle: "0xE6A7b525609bF47889ac9d0e964ebB640750a01C",
+      oracle: "0x1823C89715Fe3fB96A24d11c917aCA918894A090",
     },
     {   // Meebits
       token: "0x7bd29408f11d2bfc23c34f18275bbf23bb716bc7",
@@ -106,11 +106,11 @@ const nftPriceFeeds = {
     },
     {   // VeeFriends
       token: "0xa3aee8bce55beea1951ef834b99f3ac60d1abeeb",
-      oracle: "0x94360bfC0Fc7191D6195395351b1fb8e03Cd0c24",
+      oracle: "0x35bf6767577091E7f04707c0290b3f889e968307",
     },
     {   // World of Women
       token: "0xe785e82358879f061bc3dcac6f0444462d4b5330",
-      oracle: "0x9996adBA1BA04635f2567210fA42e1ff185E201F",
+      oracle: "0xDdf0B85C600DAF9e308AFed9F597ACA212354764",
     },
   ]
 }
