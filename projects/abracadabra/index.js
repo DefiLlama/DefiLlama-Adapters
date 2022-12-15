@@ -4,7 +4,6 @@ const abi = require('./abi.json');
 const { unwrapCrv, unwrapYearn } = require('../helper/unwrapLPs')
 const { transformAvaxAddress, transformArbitrumAddress, transformFantomAddress 
     } = require("../helper/portedTokens");
-const { getBlock } = require('../helper/getBlock');
 
 // --------------------------
 // cvx3pool & yvcrvIB tokens
@@ -48,11 +47,7 @@ async function tvl(timestamp, chainBlocks, chain, transformAddress=addr=>addr) {
         marketsArray.push([lockedToken, marketContract]);
     };
 
-    if (chainBlocks[chain]) {
-        block = chainBlocks[chain];
-    } else {
-        block = await getBlock(timestamp, chain, chainBlocks);
-    };
+    block = chainBlocks[chain];
 
     let tokenBalances = (await sdk.api.abi.multiCall({
         block: block,

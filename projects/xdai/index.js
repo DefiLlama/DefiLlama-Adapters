@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk');
 const axios = require('axios');
-const { getBlock } = require('../helper/getBlock');
+const { getBlock } = require('../helper/http');
 
 async function balancesInAddress(address, chain, chainId, block) {
   const allTokens = (await axios.get(`https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/?&key=ckey_72cd3b74b4a048c9bc671f7c5a6`)).data.data.items

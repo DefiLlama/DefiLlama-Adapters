@@ -4,7 +4,6 @@
   const BigNumber = require("bignumber.js");
   const axios = require("axios")
   const {unwrapUniswapLPs} = require('../helper/unwrapLPs')
-  // const {getBlock} = require('../helper/getBlock')
   const {toUSDTBalances} = require('../helper/balances')
   
   const ForTube = "0xE48BC2Ba0F2d2E140382d8B5C8f261a3d35Ed09C";
@@ -176,24 +175,6 @@
     return balances
   }
 
-  /*
-  const okexPool = "0x33d6d5f813bf78163901b1e72fb1feb90e72fd72"
-  async function okexchain(timestamp, _ethBlock, chainBlocks){
-    const markets = await axios.get("https://api.for.tube/api/v1/bank/public/chain/OEC-Inno/markets")
-    const tokenBalances = await sdk.api.abi.multiCall({
-      abi: 'erc20:balanceOf',
-      chain: 'okexchain',
-      block: await getBlock(timestamp, 'okexchain', chainBlocks),
-      calls: markets.data.data.map(token=>({
-        target: token.token_address,
-        params: [okexPool]
-      }))
-    })
-    const balances = {}
-    sdk.util.sumMultiBalanceOf(balances, tokenBalances, d=>`okexchain:${d}`)
-    return balances
-  }
-  */
   async function okexchain(_timestamp, _ethBlock, chainBlocks){
     const markets = await axios.get("https://api.for.tube/api/v1/bank/public/chain/OEC-Inno/markets")
     const usdCollateral = markets.data.data.reduce((acc, val)=> acc + val.token_price * val.global_token_reserved, 0)
