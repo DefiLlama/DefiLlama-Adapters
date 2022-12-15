@@ -132,7 +132,11 @@ async function getTokenAccountBalances(tokenAccounts, { individual = false, chun
     const data = await axios.post(endpoint, body);
     data.data.forEach(({ result: { value } }, i) => {
       if (!value || !value.data.parsed) {
-        console.log(data.data.map(i => i.result.value)[i], tokenAccounts[i])
+        if (tokenAccounts[i].toString() === '11111111111111111111111111111111') {
+          log('Null account: skipping it')
+          return;
+        }
+        console.log(data.data.map(i => i.result.value)[i], tokenAccounts[i].toString())
       }
       const { data: { parsed: { info: { mint, tokenAmount: { amount } } } } } = value
       sdk.util.sumSingleBalance(balances, mint, amount)
@@ -275,7 +279,8 @@ function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts) {
       data.push({ token0: tokenA.mint, token0Bal: tokenA.amount, token1: tokenB.mint, token1Bal: tokenB.amount, })
     }
 
-    return transformDexBalances({ chain: 'solana', data, blacklistedTokens, })
+    const coreTokens = await getGeckoSolTokens()
+    return transformDexBalances({ chain: 'solana', data, blacklistedTokens, coreTokens, })
   }
 
   async function _getTokenAccounts() {

@@ -1,5 +1,5 @@
 const { GraphQLClient, gql } = require('graphql-request')
-const { getBlock } = require('../helper/getBlock')
+const { getBlock } = require('../helper/http')
 const { staking } = require('../helper/staking')
 const sdk = require('@defillama/sdk')
 
