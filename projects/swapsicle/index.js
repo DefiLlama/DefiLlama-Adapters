@@ -22,6 +22,9 @@ const contracts = {
   },
   fantom: {
     factory: "0x98F23162E3a7FE610aC89C88E4217a599A15858F"
+  },
+  arbitrum: {
+    factory: "0x2f0c7c98462651bb2102f6cd05acdad333e031b0"
   }
 };
 
@@ -66,6 +69,9 @@ module.exports = {
   },
   fantom: {
     tvl: getUniTVL({ chain: 'fantom', useDefaultCoreAssets: false, factory: contracts.fantom.factory }),
+  },
+  arbitrum: {
+    tvl: getUniTVL({ chain: 'arbitrum', useDefaultCoreAssets: false, factory: contracts.arbitrum.factory }),
   },
   start: 15434772,
 };
