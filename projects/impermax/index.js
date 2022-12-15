@@ -61,9 +61,15 @@ const subgraphs = {
     'impermax-finance/impermax-x-uniswap-v2-polygon',
     'impermax-finance/impermax-x-uniswap-v2-polygon-v2',
   ],
-  'arbitrum': ['impermax-finance/impermax-x-uniswap-v2-arbitrum'],
+  'arbitrum': [
+    'impermax-finance/impermax-x-uniswap-v2-arbitrum',
+    'impermax-finance/impermax-arbitrum-v2',
+  ],
   'moonriver': ['impermax-finance/impermax-x-uniswap-v2-moonriver'],
-  'avax': ['impermax-finance/impermax-x-uniswap-v2-avalanche'],
+  'avax': [
+    'impermax-finance/impermax-x-uniswap-v2-avalanche',
+    'impermax-finance/impermax-avalanche-v2',
+  ],
   'fantom': ['impermax-finance/impermax-x-uniswap-v2-fantom'],
 }
 
@@ -80,7 +86,7 @@ module.exports = {
   },
   ethereum: {
     tvl: chainTvl('ethereum'),
-    staking: staking(xIMX, IMX, 'ethereum')
+    //staking: staking(xIMX, IMX, 'ethereum')
   },
   avax: {
     tvl: chainTvl('avax')
