@@ -20,6 +20,12 @@ const ADDRESS_PREFIX_REGEX = /^(41)/;
 const ADDRESS_PREFIX = "41";
 const accountData = {
 }
+
+async function getStakedTron(account) {
+  const data = await get(`https://apilist.tronscan.org/api/vote?candidate=${account}`)
+  return data.totalVotes
+}
+
 async function getAccountDetails(account) {
   if (!accountData[account])
     accountData[account] = get('https://apilist.tronscan.org/api/account?address=' + account)
@@ -107,6 +113,7 @@ async function getTokenBalance(token, account) {
 
 async function getTrxBalance(account) {
   const data = await getAccountDetails(account)
+  console.log(data.frozen.balances)
   return data.balance + (data.totalFrozen || 0)
 }
 
@@ -163,4 +170,5 @@ module.exports = {
   getTrxBalance,
   unverifiedCall,
   sumTokens,
+  getStakedTron,
 }

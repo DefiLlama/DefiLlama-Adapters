@@ -1,3 +1,4 @@
+const { getStakedTron } = require('../helper/chain/tron');
 const { staking } = require('../helper/staking')
 const { sumTokensExport } = require('../helper/sumTokens');
 const { nullAddress } = require('../helper/unwrapLPs');
@@ -15,7 +16,11 @@ module.exports = {
     staking: staking('0x306ee01a6ba3b4a8e993fa2c1adc7ea24462000c', '0xe06597d02a2c3aa7a9708de2cfa587b128bd3815', 'klaytn'),
   },
   tron: {
-    tvl: sumTokensExport({ chain: 'tron', owners: ['TTjacDH5PL8hpWirqU7HQQNZDyF723PuCg'], tokens: [nullAddress]}),
+    tvl: async () => {
+      return {
+        tron: await getStakedTron('TTjacDH5PL8hpWirqU7HQQNZDyF723PuCg')
+      }
+    },
   },
   timetravel: false,
 }
