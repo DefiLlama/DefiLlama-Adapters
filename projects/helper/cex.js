@@ -96,8 +96,13 @@ const defaultTokens = {
     '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d', // B-USDC
     '0x14016e85a25aeb13065688cafb43044c2ef86784', // B-TUSD
     '0x2859e4544c4bb03966803b044a93563bd2d0dd4d', // SHIB
-    '0x3ee2200efb3400fabb9aacf31297cbdd1d435d47', //ADA
+    '0x3ee2200efb3400fabb9aacf31297cbdd1d435d47', // ADA
     '0x4691937a7508860f876c9c0a2a617e7d9e945d4b', // WOO
+    '0xc748673057861a797275CD8A068AbB95A902e8de', // BabyDoge
+    '0xaFb64E73dEf6fAa8B6Ef9a6fb7312d5C4C15ebDB', // GVR
+    '0x3d6545b08693daE087E957cb1180ee38B9e3c25E', // Binance-Peg Ethereum Classic
+    '0xfb5B838b6cfEEdC2873aB27866079AC55363D37E', // FLOKI
+    '0x352Cb5E19b12FC216548a2677bD0fce83BaE434B', // BTT
 
   ],
   eos: [
