@@ -1,4 +1,5 @@
 const { get } = require('../helper/http')
+const { staking } = require('../helper/staking')
 const { toUSDTBalances } = require('../helper/balances');
 
 const apiUrl = 'https://api.neopin.io/napi/v1/info/neopin';
@@ -27,12 +28,6 @@ async function fetchStakingFromKlaytn() {
   return toUSDTBalances(klayInfo.stakingList.filter(i => i.poolMeta !== 'NPT').reduce((a, i) => a + +i.tvlUsd, 0));
 }
 
-async function staking() {
-  const neopinChains = await getNeopinChains();
-  const klayInfo = neopinChains.find(isKlaytn);
-  return toUSDTBalances(klayInfo.stakingList.find(i => i.poolMeta === 'NPT').tvlUsd);
-}
-
 async function fetchStakingFromTron() {
   const neopinChains = await getNeopinChains();
   const tronInfo = neopinChains.find(isTron);
@@ -45,7 +40,7 @@ module.exports = {
   methodology,
   klaytn: {
     tvl: fetchStakingFromKlaytn,
-    staking,
+    staking: staking('0x306ee01a6ba3b4a8e993fa2c1adc7ea24462000c', '0xe06597d02a2c3aa7a9708de2cfa587b128bd3815', 'klaytn'),
   },
   tron: {
     tvl: fetchStakingFromTron,
