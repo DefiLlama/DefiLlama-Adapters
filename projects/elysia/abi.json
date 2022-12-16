@@ -1,0 +1,71 @@
+{
+  "inputs": [
+    {
+      "internalType": "address",
+      "name": "asset",
+      "type": "address"
+    }
+  ],
+  "name": "getReserveData",
+  "outputs": [
+    {
+      "components": [
+        {
+          "internalType": "uint256",
+          "name": "totalLTokenSupply",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "implicitLTokenSupply",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "lTokenInterestIndex",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "principalDTokenSupply",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalDTokenSupply",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "averageRealAssetBorrowRate",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "dTokenLastUpdateTimestamp",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "borrowAPY",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "depositAPY",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "moneyPooLastUpdateTimestamp",
+          "type": "uint256"
+        }
+      ],
+      "internalType": "struct DataPipeline.ReserveDataLocalVars",
+      "name": "",
+      "type": "tuple"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+}
