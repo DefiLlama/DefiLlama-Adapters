@@ -113,7 +113,6 @@ async function getTokenBalance(token, account) {
 
 async function getTrxBalance(account) {
   const data = await getAccountDetails(account)
-  console.log(data.frozen.balances)
   return data.balance + (data.totalFrozen || 0)
 }
 

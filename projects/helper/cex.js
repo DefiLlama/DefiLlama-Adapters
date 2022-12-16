@@ -1,5 +1,4 @@
 const { tokensBare, } = require('./tokenMapping')
-const { log } = require('./utils')
 const { nullAddress } = require('./unwrapLPs')
 const { sumTokensExport } = require('../helper/sumTokens')
 const sdk = require('@defillama/sdk')
@@ -142,7 +141,7 @@ function cexExports(config) {
     timetravel: false,
   }
   chains.forEach(chain => {
-    let { tokensAndOwners, owners, tokens } = config[chain]
+    let { tokensAndOwners, owners, tokens, blacklistedTokens, } = config[chain]
 
     if (!tokensAndOwners && !tokens) {
       tokens = defaultTokens[chain]
@@ -152,7 +151,7 @@ function cexExports(config) {
       }
     }
 
-    const options = { ...config[chain], owners, tokens, chain }
+    const options = { ...config[chain], owners, tokens, chain, blacklistedTokens, }
     if (chain === 'solana')  options.solOwners = owners
     exportObj[chain] = { tvl: sumTokensExport(options) }
   })
