@@ -3,31 +3,26 @@ const { toUSDTBalances } = require('../helper/balances')
 
 const LiquidityQuery = gql`
 {
-    factory {
-      pairCount
-      totalValueLockedUSD
-    }
+    totalValueLockedUSD
   }
 `
 
 const StakeQuery = gql`
 {
-    factory {
-      totalValueStakedUSD
-    }
+    totalValueStakedUSD
   }
 `
 
 async function tvl() {
   const results = await request("https://graph.maiar.exchange/graphql", LiquidityQuery)
 
-  return toUSDTBalances(results.factory.totalValueLockedUSD)
+  return toUSDTBalances(results.totalValueLockedUSD)
 }
 
 async function tvs() {
   const results = await request("https://graph.maiar.exchange/graphql", StakeQuery)
 
-  return toUSDTBalances(results.factory.totalValueStakedUSD)
+  return toUSDTBalances(results.totalValueStakedUSD)
 }
 
 module.exports = {
