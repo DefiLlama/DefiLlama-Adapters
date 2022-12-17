@@ -80,6 +80,7 @@ async function borrowedEthereum(timestamp, ethBlock) {
     if (!call[i].success) continue;
     borrowed[call[i].input.params[0]] = call[i].output[2];
   }
+  delete borrowed["0x31c8eacbffdd875c74b94b077895bd78cf1e64a3"]
   return borrowed;
 }
 
