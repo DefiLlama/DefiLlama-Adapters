@@ -14,20 +14,20 @@ function getProvider() {
   return provider
 }
 
-async function call({ abi, target, params = [] }) {
+async function call({ abi, target, params = [], allAbi = [] }) {
   if ((params || params === 0) && !Array.isArray(params))
     params = [params]
-  const contract = pair = new Contract([abi], target, getProvider())
+  const contract = pair = new Contract([abi, ...allAbi, ], target, getProvider())
   const response = await contract[abi.name](...params)
   if (abi.outputs.length === 1) return response[0]
   return response
 }
 
-async function multiCall({ abi: rootAbi, target: rootTarget, calls = [] }) {
+async function multiCall({ abi: rootAbi, target: rootTarget, calls = [],  allAbi = [] }) {
   calls = calls.map((callArgs) => {
     if (typeof callArgs !== 'object') {
-      if (!rootTarget)  return { target: callArgs, abi: rootAbi, }
-      return { target: rootTarget, params: callArgs, abi: rootAbi, }
+      if (!rootTarget)  return { target: callArgs, abi: rootAbi, allAbi, }
+      return { target: rootTarget, params: callArgs, abi: rootAbi, allAbi, }
     }
     const { target, params, abi } = callArgs
     return { target: target || rootTarget, params, abi: abi || rootAbi }
