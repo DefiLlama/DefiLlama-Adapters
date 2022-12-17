@@ -202,10 +202,10 @@ module.exports = {
   misrepresentedTokens: true,
   timetravel: false,
   ethereum: {
-    tvl: sdk.util.sumChainTvls([ethTvl, ethTvl2]),
+    tvl: sdk.util.sumChainTvls([ethTvl2]),
     treasury: Treasury,
     staking: staking('0x4937a209d4cdbd3ecd48857277cfd4da4d82914c', '0x33349b282065b0284d756f0577fb39c158f935e6'),
-    borrowed: sdk.util.sumChainTvls([borrowed, borrowed2]),
+    borrowed: sdk.util.sumChainTvls([borrowed2]),
   },
   solana: {
     tvl: getTvl(),
