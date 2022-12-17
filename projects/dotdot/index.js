@@ -23,7 +23,7 @@ async function tvl(_, _b, { bsc: block }) {
 }
 
 async function fixVal3EPS(block, balances) {
-  const val3EPSKey = 'bsc:0x5b5bd8913d766d005859ce002533d4838b0ebbb5'
+  const val3EPSKey = '0x5b5bd8913d766d005859ce002533d4838b0ebbb5'
   const balance = balances[val3EPSKey]
   delete balances[val3EPSKey]
   const { output: supply } = await sdk.api.abi.call({
@@ -43,17 +43,17 @@ async function fixVal3EPS(block, balances) {
     chain, block,
   })
   output.forEach(i => {
-    sdk.util.sumSingleBalance(balances,i.input.target,i.output * ratio,chain)
+    sdk.util.sumSingleBalance(balances,i.input.target,i.output * ratio)
   })
 }
 
 async function resolveEpsLP({ block, balances, token, ratio, tokenBalance, totalSupply }) {
   if (token.toLowerCase() === '0xaf4de8e872131ae328ce21d909c74705d3aaf452') {
-    sdk.util.sumSingleBalance(balances,'0xe9e7cea3dedca5984780bafc599bd69add087d56',tokenBalance, 'bsc') // store 3EPS as BUSD
+    sdk.util.sumSingleBalance(balances,'0xe9e7cea3dedca5984780bafc599bd69add087d56',tokenBalance) // store 3EPS as BUSD
     return
   }
   if (token.toLowerCase() === '0x5b5bd8913d766d005859ce002533d4838b0ebbb5') {
-    sdk.util.sumSingleBalance(balances,'0x5b5bd8913d766d005859ce002533d4838b0ebbb5',tokenBalance, 'bsc')
+    sdk.util.sumSingleBalance(balances,'0x5b5bd8913d766d005859ce002533d4838b0ebbb5',tokenBalance)
     return
   }
   const blacklist = ['0xf71a0bcc3ef8a8c5a28fc1bc245e394a8ce124ec', '0xaF4dE8E872131AE328Ce21D909C74705d3Aaf452'].map(i => i.toLowerCase())
@@ -80,7 +80,7 @@ async function resolveEpsLP({ block, balances, token, ratio, tokenBalance, total
         chain, block,
         params: minter,
       })
-      bal.forEach((val, i) => sdk.util.sumSingleBalance(balances, coins[i].toLowerCase(), val * ratio, chain))
+      bal.forEach((val, i) => sdk.util.sumSingleBalance(balances, coins[i].toLowerCase(), val * ratio))
       return;
     }
     if (['0xa5d748a3234A81120Df7f23c9Ea665587dc8d871'.toLowerCase(), '0x41871A4c63d8Fae4855848cd1790ed237454A5C4'.toLowerCase(), '0xf65BEd27e96a367c61e0E06C54e14B16b84a5870'.toLowerCase()].includes(factory.toLowerCase())) {
@@ -96,7 +96,7 @@ async function resolveEpsLP({ block, balances, token, ratio, tokenBalance, total
         chain, block,
         params: minter,
       })
-      bal.forEach((val, i) => sdk.util.sumSingleBalance(balances, coins[i].toLowerCase(), val * ratio, chain))
+      bal.forEach((val, i) => sdk.util.sumSingleBalance(balances, coins[i].toLowerCase(), val * ratio))
       return;
     }
     throw new Error('Token not resolved '+token)
