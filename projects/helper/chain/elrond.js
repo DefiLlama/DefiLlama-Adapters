@@ -55,7 +55,12 @@ async function getTokens({ address, balances = {}, tokens = [], blacklistedToken
   return balances
 }
 
-async function sumTokens({ owners = [], tokens = [], balances = {}, blacklistedTokens = [], }) {
+async function sumTokens({ owners = [], tokens = [], balances = {}, blacklistedTokens = [], tokensAndOwners = []}) {
+  if (tokensAndOwners.length) {
+    await Promise.all(tokensAndOwners.map(([token, owner]) => sumTokens({ owners: [owner], tokens: [token], balances, blacklistedTokens, })))
+    return balances
+  }
+
   await Promise.all(owners.map(i => getTokens({ address: i, balances, tokens, blacklistedTokens, })))
   if (!tokens.length || tokens.includes(TOKENS.null))
     await Promise.all(owners.map(async i => {
