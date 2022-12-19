@@ -139,7 +139,7 @@ async function handleUnlistedFxTokens(balances, chain) {
   return;
 }
 
-async function unwrapPools({ balances, transform, poolList, registry, chain, block }) {
+async function unwrapPools({ poolList, registry, chain, block }) {
   if (!poolList.length) return;
   const registryAddress = poolList[0].input.target
 
@@ -161,7 +161,7 @@ async function unwrapPools({ balances, transform, poolList, registry, chain, blo
       blacklistedTokens.push(token)
     }
   })
-  return sumTokens2({ balances, chain, block, tokensAndOwners: calls, transformAddress: transform, blacklistedTokens })
+  return { tokensAndOwners: calls, blacklistedTokens }
 }
 
 function tvl(chain) {
@@ -172,9 +172,12 @@ function tvl(chain) {
     const promises = []
 
     for (const [registry, poolList] of Object.entries(poolLists))
-      promises.push(unwrapPools({ balances, transform, poolList, registry, chain, block }))
+      promises.push(unwrapPools({ poolList, registry, chain, block }))
 
-    await Promise.all(promises)
+    const res = (await Promise.all(promises)).filter(i => i)
+    const tokensAndOwners = res.map(i => i.tokensAndOwners).flat()
+    const blacklistedTokens = res.map(i => i.blacklistedTokens).flat()
+    await sumTokens2({  balances, chain, block, tokensAndOwners, transformAddress: transform, blacklistedTokens })
     await handleUnlistedFxTokens(balances, chain);
     return balances;
   };
