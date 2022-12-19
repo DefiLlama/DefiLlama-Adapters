@@ -1,6 +1,6 @@
 const { request, gql } = require("graphql-request");
 const { toUSDTBalances } = require('../helper/balances')
-const { sumTokensExport, sumTokens } = require('../helper/sumTokens')
+const { sumTokens } = require('../helper/sumTokens')
 
 const LiquidityQuery = gql`
 {
@@ -42,7 +42,6 @@ module.exports = {
   timetravel: false,
   elrond: {
     tvl,
-    // staking: sumTokensExport({ chain: 'elrond', owners: stakingContracts, token: 'MEX-455c57' })
     staking,
   },
 }
