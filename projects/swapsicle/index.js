@@ -25,6 +25,12 @@ const contracts = {
   },
   arbitrum: {
     factory: "0x2f0c7c98462651bb2102f6cd05acdad333e031b0"
+  },
+  ethereum: {
+    factory: "0x2f0c7c98462651bb2102f6cd05acdad333e031b0"
+  },
+  optimism: {
+    factory: "0x2f0c7c98462651bb2102f6cd05acdad333e031b0"
   }
 };
 
@@ -72,6 +78,12 @@ module.exports = {
   },
   arbitrum: {
     tvl: getUniTVL({ chain: 'arbitrum', useDefaultCoreAssets: false, factory: contracts.arbitrum.factory }),
+  },
+  ethereum: {
+    tvl: getUniTVL({ chain: 'ethereum', useDefaultCoreAssets: false, factory: contracts.ethereum.factory }),
+  },
+  optimism: {
+    tvl: getUniTVL({ chain: 'optimism', useDefaultCoreAssets: false, factory: contracts.optimism.factory }),
   },
   start: 15434772,
 };
