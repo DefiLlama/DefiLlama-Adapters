@@ -4,6 +4,7 @@ const {
 } = require("ethers");
 const abi = require("./abi.json");
 
+/** @type {(network: string, block: number | undefined) => Promise<MarketAccount[]>} */
 const exactly = async (network, block) =>
   (
     await sdk.api.abi.call({
@@ -16,6 +17,7 @@ const exactly = async (network, block) =>
     })
   ).output;
 
+/** @type {(network: string) => (timestamp: number, block: number) => Promise<Record<string, bigint>>} */
 const tvl = (network) => async (_, block) =>
   Object.fromEntries(
     (await exactly(network, block)).map(
@@ -37,6 +39,7 @@ const tvl = (network) => async (_, block) =>
     )
   );
 
+/** @type {(network: string) => (timestamp: number, block: number) => Promise<Record<string, bigint>>} */
 const borrowed = (network) => async (_, block) =>
   Object.fromEntries(
     (await exactly(network, block)).map(
@@ -60,3 +63,13 @@ module.exports = {
     borrowed: borrowed("ethereum"),
   },
 };
+
+/** @typedef {import("ethers").BigNumber} BigNumber */
+/** @typedef {{ borrowed: BigNumber, supplied: BigNumber }} FixedPool */
+/**
+ * @typedef MarketAccount
+ * @property {string} asset
+ * @property {FixedPool[]} fixedPools
+ * @property {BigNumber} totalFloatingBorrowAssets
+ * @property {BigNumber} totalFloatingDepositAssets
+ */
