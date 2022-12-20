@@ -109,6 +109,7 @@ module.exports = {
     owners: getOwners('ETH'),
     blacklistedTokens: [
       '0x9be89d2a4cd102d8fecc6bf9da793be995c22541', // BBTC
+      '0xB8c77482e45F1F44dE1745F52C74426C631bDD52', // WBNB
     ]
   },
   bsc: {
