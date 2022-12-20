@@ -73,7 +73,7 @@ async function pool2() {
     getTokenBalance(lpToken, lpStaking),
     getTokenBalance(sun, lpToken),
     getTrxBalance(lpToken),
-    unverifiedCall(lpToken, 'totalSupply()', [])
+    unverifiedCall({ target: lpToken, abi: 'totalSupply()', isBigNumber: true }),
   ])
   return {
     "sun-token": sunInLp * lpTokenAmount / (totalSupply / 10 ** 6),
