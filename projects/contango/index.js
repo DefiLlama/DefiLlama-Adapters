@@ -6,9 +6,11 @@ const ethers = require("ethers")
 const config = {
   arbitrum: {
     ladle: '0x93343c08e2055b7793a3336d659be348fc1b08f9',
+    fromBlock: 129978,
   },
   ethereum: {
     ladle: '0x30E7348163016B3b6E1621A3Cb40e8CF33CE97db',
+    fromBlock: 16074982,
   },
 }
 
@@ -16,7 +18,7 @@ module.exports = {
 };
 
 Object.keys(config).forEach(chain => {
-  const { ladle } = config[chain]
+  const { ladle, fromBlock } = config[chain]
   module.exports[chain] = {
     tvl: async (timestamp, _b, chainBlocks) => {
       const block = chainBlocks[chain]
@@ -27,8 +29,7 @@ Object.keys(config).forEach(chain => {
       })
 
       const logs = await getLogs({
-        chain, target: cauldron, fromBlock:
-          21990245, timestamp, chainBlocks,
+        chain, target: cauldron, fromBlock, timestamp, chainBlocks,
         topic: 'IlkAdded(bytes6,bytes6)'
       })
       let iface = new ethers.utils.Interface([abis.IlkAdded])
