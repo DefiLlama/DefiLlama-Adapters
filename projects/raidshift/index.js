@@ -27,11 +27,10 @@ async function tronTvl() {
     const balances = {}
 
     await Promise.all(contracts.map(addTVL))
-    // console.log(balances);
+    
     return balances
 
     async function addTVL([token, contractAddress]) {
-        // console.log(`token ${token.id} ${token.address} contract ${contractAddress} balance ${await getTokenBalance(token.address, contractAddress)}`);
         sdk.util.sumSingleBalance(balances, token.id, await getTokenBalance(token.address, contractAddress))
     }
 }
