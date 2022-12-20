@@ -1,42 +1,29 @@
-const sdk = require('@defillama/sdk')
-const { getTokenBalance } = require('../helper/chain/tron')
-
-const tokens = {
-    USDT: { 'address': 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t', 'id': 'USDT' },
-    BTC: { 'address': 'TN3W4H6rK2ce4vX9YnFQHwKENnHjoxb3m9', 'id': 'BTC' },
-    ETH: { 'address': 'THb4CqiFdwNHsWsQCs4JhzwjMWys4aqCbF', 'id': 'ETH' },
-    LTC: { 'address': 'TR3DLthpnDdCGabhVDbD3VMsiJoCXY3bZd', 'id': 'LTC' },
-    DOGE: { 'address': 'THbVQp8kMjStKNnf2iCY6NEzThKMK5aBHg', 'id': 'DOGE' },
-    RSF: { 'address': 'TNEjtKFHWpz8bN2ZruLVY2NW2AD39uSUAs', 'id': 'RSF' },
-}
+const { multicall, sumTokens } = require('../helper/chain/tron')
 
 const contracts = [
-    [tokens.BTC, 'TVMuhpXdRvNjjFAWqZ5urvhrQQyFvc19SN'],
-    [tokens.USDT, 'TJmx4Zg4xMjCZR5Q3aoCyDmYY3r42xU2GZ'],
-    [tokens.ETH, 'TMiHbWfnzh8cFmxNptoDgBvhuFSe2eiDFQ'],
-    [tokens.USDT, 'TVR8KWCV21nAM6Epifzh73Y9wy8GFzKdBP'],
-    [tokens.LTC, 'TWxrUkHSSHwJoNtLPJimVmgKhmwVGvhwUZ'],
-    [tokens.USDT, 'TSbbCH6nss56q1D2NtSKquuNPYZ2ZDyKZg'],
-    [tokens.DOGE, 'TPxT4UrAkbp4fK4CtjuMmvS9u85HjU7EYq'],
-    [tokens.USDT, 'TEEQvDKY9sFQ65xxwhSH4QBkLD2NtwoN4a'],
-    [tokens.RSF, 'TUHHCVD4MR7LXthbS2fBBw5bXARhBg4k5G'],
-    [tokens.USDT, 'TPfAqGJ83NbVcRcsMFx7GJ749t9VV6cZvp'],
+  'TVMuhpXdRvNjjFAWqZ5urvhrQQyFvc19SN',
+  'TJmx4Zg4xMjCZR5Q3aoCyDmYY3r42xU2GZ',
+  'TMiHbWfnzh8cFmxNptoDgBvhuFSe2eiDFQ',
+  'TVR8KWCV21nAM6Epifzh73Y9wy8GFzKdBP',
+  'TWxrUkHSSHwJoNtLPJimVmgKhmwVGvhwUZ',
+  'TSbbCH6nss56q1D2NtSKquuNPYZ2ZDyKZg',
+  'TPxT4UrAkbp4fK4CtjuMmvS9u85HjU7EYq',
+  'TEEQvDKY9sFQ65xxwhSH4QBkLD2NtwoN4a',
+  'TUHHCVD4MR7LXthbS2fBBw5bXARhBg4k5G',
+  'TPfAqGJ83NbVcRcsMFx7GJ749t9VV6cZvp',
 ]
 
-async function tronTvl() {
-    const balances = {}
-
-    await Promise.all(contracts.map(addTVL))
-    
-    return balances
-
-    async function addTVL([token, contractAddress]) {
-        sdk.util.sumSingleBalance(balances, token.id, await getTokenBalance(token.address, contractAddress))
-    }
+async function tvl() {
+  const tokenAs = await multicall({ calls: contracts, abi: 'tokenA()', isAddress: true,})
+  const tokenBs = await multicall({ calls: contracts, abi: 'tokenB()', isAddress: true,})
+  const tokensAndOwners = []
+  tokenAs.forEach((t, i) => tokensAndOwners.push([t, contracts[i]]))
+  tokenBs.forEach((t, i) => tokensAndOwners.push([t, contracts[i]]))
+  return sumTokens({ tokensAndOwners, })
 }
 
 module.exports = {
-    tron: {
-        tvl: tronTvl
-    },
+  tron: {
+    tvl,
+  },
 }
