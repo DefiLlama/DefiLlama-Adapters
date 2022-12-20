@@ -58,6 +58,7 @@ async function getLogs({ chain = 'ethereum', target,
         logs: []
       }
     }
+    
     return cache
   }
 }
