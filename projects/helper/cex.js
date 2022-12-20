@@ -68,6 +68,7 @@ const defaultTokens = {
     '0x6be61833fc4381990e82d7d4a9f4c9b3f67ea941', // HTB (Hotbit cex token)
     '0x75231f58b43240c9718dd58b4967c5114342a86c', // OKB (OKX cex token)
     '0x2af5d2ad76741191d15dfe7bf6ac92d4bd912ca3', // LEO (bitfinex cex token)
+    '0xB8c77482e45F1F44dE1745F52C74426C631bDD52', // WBNB
   ],
   tron: [
     nullAddress,
