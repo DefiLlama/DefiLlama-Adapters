@@ -58,8 +58,8 @@ async function getNames(chain, tokens) {
   })
   res.forEach((name, i) => {
     const key = chain + '-' + missing[i]
-    nameCache[key] = name
-    mapping[missing[i]] = nameCache[key]
+    nameCache[key] = name ?? ''
+    mapping[missing[i]] = nameCache[key] 
   })
 
   return mapping
