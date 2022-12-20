@@ -1,8 +1,7 @@
-const { request, gql } = require("graphql-request");
+const { request } = require("graphql-request");
 const { toUSDTBalances } = require('../helper/balances')
-const { sumTokens } = require('../helper/sumTokens')
 
-const LiquidityQuery = gql`
+const LiquidityQuery = `
 {
     factory {
       pairCount
@@ -11,13 +10,11 @@ const LiquidityQuery = gql`
   }
 `
 
-const StakingQuery = gql`
-{ 
-  stakingFarms {address
-    farmingToken {identifier}
-  }
-}
-`
+const StakingQuery2 = `{
+  totalValueLockedUSD
+  totalValueStakedUSD
+  totalLockedMexStakedUSD
+}`
 
 async function tvl() {
   const results = await request("https://graph.maiar.exchange/graphql", LiquidityQuery)
@@ -25,16 +22,9 @@ async function tvl() {
   return toUSDTBalances(results.factory.totalValueLockedUSD)
 }
 
-const stakingContracts = [
-  "erd1qqqqqqqqqqqqqpgq7qhsw8kffad85jtt79t9ym0a4ycvan9a2jps0zkpen",
-  "erd1qqqqqqqqqqqqqpgqv4ks4nzn2cw96mm06lt7s2l3xfrsznmp2jpsszdry5"
-]
-
-async function staking() {
-  const results = await request("https://graph.maiar.exchange/graphql", StakingQuery)
-  const tokensAndOwners = stakingContracts.map(o => (['MEX-455c57', o]))
-  results.stakingFarms.forEach(({ address, farmingToken: {identifier}}) => tokensAndOwners.push([identifier, address]))
-  return sumTokens({ chain: 'elrond', tokensAndOwners, })
+async function stakingAndLockedMEX() {
+  const results = await request("https://graph.maiar.exchange/graphql", StakingQuery2)
+  return toUSDTBalances(results.totalValueStakedUSD)
 }
 
 module.exports = {
@@ -42,6 +32,6 @@ module.exports = {
   timetravel: false,
   elrond: {
     tvl,
-    staking,
+    staking: stakingAndLockedMEX,
   },
 }
