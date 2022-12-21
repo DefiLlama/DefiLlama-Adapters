@@ -18,6 +18,9 @@
     "@solana/web3.js": "^1.36.0",
     "@solendprotocol/solend-sdk": "^0.6.2",
     "@supercharge/promise-pool": "^2.1.0",
+    "@uniswap/sdk": "^3.0.3",
+    "@uniswap/sdk-core": "^3.1.0",
+    "@uniswap/v3-sdk": "^3.9.0",
     "axios": "^0.27.0",
     "bignumber.js": "^9.0.1",
     "blakejs": "^1.2.1",
@@ -30,7 +33,8 @@
     "js-sha512": "^0.8.0",
     "limiter": "2.1.0",
     "tron-format-address": "^0.1.8",
-    "typescript": "^4.7.4"
+    "typescript": "^4.7.4",
+    "web3": "^1.8.1"
   },
   "overrides": {
     "ansi-regex": "5.0.1",
