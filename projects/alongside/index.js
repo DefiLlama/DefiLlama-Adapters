@@ -15,7 +15,7 @@ const getBuyPrice = async () => {
   if (result && result.data) {
     return result.data;
   } else {
-    throw "Could not fetch latest 0x buy price";
+    throw "Could not fetch latest buy price";
   }
 };
 
@@ -26,7 +26,7 @@ const getSellPrice = async () => {
   if (result && result.data) {
     return result.data;
   } else {
-    throw "Could not fetch latest 0x sell price";
+    throw "Could not fetch latest sell price";
   }
 };
 
@@ -42,7 +42,7 @@ const getTotalSupply = async () => {
   return supply;
 };
 
-async function tvl(timestamp, block, chainBlocks) {
+async function tvl(timestamp, block) {
   const balances = {};
   const [buy, sell, supply] = await Promise.all([
     getBuyPrice(),
@@ -52,10 +52,10 @@ async function tvl(timestamp, block, chainBlocks) {
 
   const buyPrice = parseFloat(buy.price);
   const sellPrice = parseFloat(sell.price);
+  const totalSupply = parseFloat(supply);
 
-  const marketCap = ((buyPrice + sellPrice) / 2) * supply;
-
-  sdk.util.sumSingleBalance(balances, INDEX, marketCap);
+  const balance = ((buyPrice + sellPrice) / 2) * totalSupply;
+  sdk.util.sumSingleBalance(balances, INDEX, balance);
   return balances;
 }
 
@@ -65,6 +65,6 @@ module.exports = {
   methodology:
     "Data is retrieved from calculation of market price and total supply",
   ethereum: {
-    tvl: () => ({}),
+    tvl,
   },
 };
