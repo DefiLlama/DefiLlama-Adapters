@@ -1,0 +1,185 @@
+{
+    "getFarmList" : {
+        "inputs": [],
+        "name": "getFarmList",
+        "outputs": [
+        {
+            "internalType": "address[]",
+            "name": "",
+            "type": "address[]"
+        }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "uniswapPool" : {
+        "inputs": [],
+        "name": "uniswapPool",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "slot0" : {
+        "inputs": [],
+        "name": "slot0",
+        "outputs": [
+          {
+            "internalType": "uint160",
+            "name": "sqrtPriceX96",
+            "type": "uint160"
+          },
+          {
+            "internalType": "int24",
+            "name": "tick",
+            "type": "int24"
+          },
+          {
+            "internalType": "uint16",
+            "name": "observationIndex",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "observationCardinality",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint16",
+            "name": "observationCardinalityNext",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint8",
+            "name": "feeProtocol",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bool",
+            "name": "unlocked",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+    "token0" : {
+        "inputs": [],
+        "name": "token0",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+    "token1" : {
+        "inputs": [],
+        "name": "token1",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+    "decimals" : {
+      "inputs": [],
+      "name": "decimals",
+      "outputs": [
+        {
+          "internalType": "uint8",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    "fee" : {
+      "inputs": [],
+      "name": "fee",
+      "outputs": [
+        {
+          "internalType": "uint24",
+          "name": "",
+          "type": "uint24"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    "getRewardFundInfo": {
+      "inputs": [
+        {
+          "internalType": "uint8",
+          "name": "_fundId",
+          "type": "uint8"
+        }
+      ],
+      "name": "getRewardFundInfo",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "totalLiquidity",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "rewardsPerSec",
+              "type": "uint256[]"
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "accRewardPerShare",
+              "type": "uint256[]"
+            }
+          ],
+          "internalType": "struct UniswapFarmV1.RewardFund",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    "tickLowerAllowed": {
+      "inputs": [],
+      "name": "tickLowerAllowed",
+      "outputs": [
+        {
+          "internalType": "int24",
+          "name": "",
+          "type": "int24"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    "tickUpperAllowed" : {
+      "inputs": [],
+      "name": "tickUpperAllowed",
+      "outputs": [
+        {
+          "internalType": "int24",
+          "name": "",
+          "type": "int24"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+}
