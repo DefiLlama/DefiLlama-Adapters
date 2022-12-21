@@ -16,7 +16,7 @@ async function tvl(_, block) {
 }
 
 module.exports = {
-  methodology: "TVL of Aztec consists of ethereum and supported assets (DAI and renBTC at the moment) locked into the rollup processor",
+  methodology: "TVL of Aztec consists of ethereum and supported assets locked into the rollup processor",
   ethereum: {
     tvl,
   }
