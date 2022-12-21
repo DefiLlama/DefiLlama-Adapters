@@ -2,12 +2,13 @@
 const { getCache, setCache, } = require('../cache');
 const { getBlock, } = require('../http')
 const sdk = require('@defillama/sdk')
+const ethers = require("ethers")
 
 const cacheFolder = 'logs'
 
 async function getLogs({ chain = 'ethereum', target,
   topic, keys = [], fromBlock, toBlock, topics,
-  timestamp, chainBlocks, }) {
+  timestamp, chainBlocks, eventAbi }) {
   if (!target) throw new Error('Missing target!')
   if (!fromBlock) throw new Error('Missing fromBlock!')
   if (!toBlock)
@@ -17,38 +18,48 @@ async function getLogs({ chain = 'ethereum', target,
   const key = `${chain}/${target}`
 
   let cache = await _getCache(key)
+  let response
 
   // if no new data nees to be fetched
   if (cache.fromBlock && cache.toBlock > toBlock)
-    return cache.logs.filter(i => i.blockNumber < toBlock && i.blockNumber >= fromBlock)
+    response = cache.logs.filter(i => i.blockNumber < toBlock && i.blockNumber >= fromBlock)
+  else 
+    response = await fetchLogs()
 
-  cache.fromBlock = fromBlock
-  fromBlock = cache.toBlock ?? fromBlock
+  if (!eventAbi)  return response
 
-  const logs = (await sdk.api.util.getLogs({
-    chain, target, topic, keys, topics, fromBlock, toBlock,
-  })).output
+  let iface = new ethers.utils.Interface([eventAbi])
+  return response.map((log) => (iface.parseLog(log)))
 
-  cache.logs.push(...logs)
-  cache.toBlock = toBlock
+  async function fetchLogs() {
+    cache.fromBlock = fromBlock
+    fromBlock = cache.toBlock ?? fromBlock
 
-  const logIndices  = new Set()
+    const logs = (await sdk.api.util.getLogs({
+      chain, target, topic, keys, topics, fromBlock, toBlock,
+    })).output
 
-  // remove possible duplicates
-  cache.logs = cache.logs.filter(i => {
-    let key = i.transactionHash + i.logIndex
-    if (!i.hasOwnProperty('logIndex') || !i.hasOwnProperty('transactionHash')) {
-      sdk.log(i)
-      throw new Error('Missing crucial field')
-    }
-    if (logIndices.has(key)) return false
-    logIndices.add(key)
-    return true
-  })
+    cache.logs.push(...logs)
+    cache.toBlock = toBlock
 
-  await setCache(cacheFolder, key, cache)
+    const logIndices = new Set()
 
-  return cache.logs
+    // remove possible duplicates
+    cache.logs = cache.logs.filter(i => {
+      let key = i.transactionHash + i.logIndex
+      if (!i.hasOwnProperty('logIndex') || !i.hasOwnProperty('transactionHash')) {
+        sdk.log(i)
+        throw new Error('Missing crucial field')
+      }
+      if (logIndices.has(key)) return false
+      logIndices.add(key)
+      return true
+    })
+
+    await setCache(cacheFolder, key, cache)
+
+    return cache.logs
+  }
 
   async function _getCache(key) {
     let cache = await getCache(cacheFolder, key)
@@ -58,7 +69,7 @@ async function getLogs({ chain = 'ethereum', target,
         logs: []
       }
     }
-    
+
     return cache
   }
 }
