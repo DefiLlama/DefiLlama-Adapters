@@ -1,7 +1,6 @@
 const { getLogs } = require("../helper/cache/getLogs")
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const sdk = require('@defillama/sdk')
-const ethers = require("ethers")
 
 const config = {
   arbitrum: {
@@ -30,10 +29,9 @@ Object.keys(config).forEach(chain => {
 
       const logs = await getLogs({
         chain, target: cauldron, fromBlock, timestamp, chainBlocks,
-        topic: 'IlkAdded(bytes6,bytes6)'
+        topic: 'IlkAdded(bytes6,bytes6)', eventAbi: abis.IlkAdded,
       })
-      let iface = new ethers.utils.Interface([abis.IlkAdded])
-      const ilkIds = logs.map((log) => (iface.parseLog(log)).args.ilkId)
+      const ilkIds = logs.map((log) => log.args.ilkId)
 
       const joins = await sdk.api2.abi.multiCall({
         target: ladle,
