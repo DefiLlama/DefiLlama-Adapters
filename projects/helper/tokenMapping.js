@@ -622,6 +622,8 @@ const fixBalancesTokens = {
   },
   multivac: {
     "0x8E321596267a4727746b2F48BC8736DB5Da26977": { coingeckoId: "multivac", decimals: 18, },
+    "0x2f9c74d3c42023c533437c9ee743d4a6329e78df": { coingeckoId: "tether", decimals: 6, },
+    "0xea1199d50ee09fa8062fd9da3d55c6f90c1babd2": { coingeckoId: "usd-coin", decimals: 6, },
   },
   tomochain: {
     "0xB1f66997A5760428D3a87D68b90BfE0aE64121cC": { coingeckoId: "tomochain", decimals: 18, },
