@@ -341,6 +341,9 @@ const transformTokens = {
   solana: {
     "9EaLkQrbjmbbuZG9Wdpo8qfNUEjHATJFSycEmw6f1rGX": tokens.solana,
   },
+  empire: {
+    "0xc61a71c75ed4742dCaE74B8CAc27A37D46FC6751": tokens.usdc
+  }
 }
 
 const ibcMappings = {
@@ -1280,6 +1283,10 @@ const fixBalancesTokens = {
   dexit: {
     [nullAddress]: { coingeckoId: "dexit-finance", decimals: 18 },
     '0x414b8BAf9950C87804cf7E23BB43a58AE7e1E202': { coingeckoId: "dexit-finance", decimals: 18 },
+  },
+  empire: {
+    //[nullAddress]: { coingeckoId: "", decimals: 18 },
+    '0xc61a71c75ed4742dcae74b8cac27a37d46fc6751': { coingeckoId: "usd-coin", decimals: 6 },
   },
 }
 
