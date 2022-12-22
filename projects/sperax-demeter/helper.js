@@ -53,7 +53,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     let pool = '';
     let farm = '';
     let liquidity = 0;
-    const balances = {};
+    const balances = [];
     for(let i = 0; i < totalFarms; i++){
         farm = activeFarms[i];
         pool = await callContract(farm, abi.uniswapPool, [], chain, block);
@@ -73,13 +73,10 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
         const [tokenA, amountA, tokenB, amountB] = await calculateTokenAmounts(tickLower, tickUpper, sqrtPriceX96, liquidity, poolData[farm]['token0'], poolData[farm]['token1'], chain, block);
         // await sdk.util.sumSingleBalance(balances, `arbitrum:${tokenA}`, toPlainString(amountA));
         // await sdk.util.sumSingleBalance(balances, `arbitrum:${tokenB}`, toPlainString(amountB));
-        await sdk.util.sumSingleBalance(balances, tokenA, toPlainString(amountA));
-        await sdk.util.sumSingleBalance(balances, tokenB, toPlainString(amountB));
+        await sdk.util.sumSingleBalance(balances, `arbitrum:${tokenA}`, BigNumber(amountA).toFixed(0));
+        await sdk.util.sumSingleBalance(balances, `arbitrum:${tokenB}`, BigNumber(amountB).toFixed(0));
     }
-
-    return {
-        balances
-    }
+    return balances
 }
 
 module.exports = {
