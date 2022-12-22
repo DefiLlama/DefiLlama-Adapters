@@ -1285,6 +1285,16 @@ const fixBalancesTokens = {
     //[nullAddress]: { coingeckoId: "", decimals: 18 },
     '0xc61a71c75ed4742dcae74b8cac27a37d46fc6751': { coingeckoId: "usd-coin", decimals: 6 },
   },
+  boba_avax: {
+    //[nullAddress]: { coingeckoId: "", decimals: 18 },
+    '0x26c319b7b2cf823365414d082698c8ac90cbba63': { coingeckoId: "0x42bbfa2e77757c645eeaad1655e0911a7553efbc", decimals: 0 }, // boba
+    '0x4200000000000000000000000000000000000023': { coingeckoId: "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", decimals: 0 }, // avax
+  },
+  boba_bnb: {
+    //[nullAddress]: { coingeckoId: "", decimals: 18 },
+    '0x4200000000000000000000000000000000000006': { coingeckoId: "0x42bbfa2e77757c645eeaad1655e0911a7553efbc", decimals: 0 }, // boba
+    '0x4200000000000000000000000000000000000023': { coingeckoId: tokens.bnb, decimals: 0 }, // bnb
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
