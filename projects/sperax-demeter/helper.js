@@ -18,15 +18,6 @@ async function callContract(address, fnAbi, param, chain, block) {
     return result;
 }
 
-function toPlainString(num) {
-    return (''+ +num).replace(/(-?)(\d*)\.?(\d*)e([+-]\d+)/,
-      function(a,b,c,d,e) {
-        return e < 0
-          ? b + '0.' + Array(1-e-c.length).join(0) + c + d
-          : b + c + d + Array(e-d.length+1).join(0);
-      });
-  }
-
 async function calculateTokenAmounts(tickLower, tickUpper, sqrtPriceX96, liquidity, tokenA, tokenB, chain, block, _checkOrder) {
     let tokenAdecimals = Number(await callContract(tokenA, abi.decimals, [], chain, block));
     let tokenBdecimals = Number(await callContract(tokenB, abi.decimals, [], chain, block));
@@ -71,8 +62,6 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
         const tickUpper = await callContract(farm, abi.tickUpperAllowed, [], chain, block);
         const sqrtPriceX96 = poolData[farm]['slot0']['sqrtPriceX96'];
         const [tokenA, amountA, tokenB, amountB] = await calculateTokenAmounts(tickLower, tickUpper, sqrtPriceX96, liquidity, poolData[farm]['token0'], poolData[farm]['token1'], chain, block);
-        // await sdk.util.sumSingleBalance(balances, `arbitrum:${tokenA}`, toPlainString(amountA));
-        // await sdk.util.sumSingleBalance(balances, `arbitrum:${tokenB}`, toPlainString(amountB));
         await sdk.util.sumSingleBalance(balances, `arbitrum:${tokenA}`, BigNumber(amountA).toFixed(0));
         await sdk.util.sumSingleBalance(balances, `arbitrum:${tokenB}`, BigNumber(amountB).toFixed(0));
     }
