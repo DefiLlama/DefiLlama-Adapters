@@ -341,9 +341,6 @@ const transformTokens = {
   solana: {
     "9EaLkQrbjmbbuZG9Wdpo8qfNUEjHATJFSycEmw6f1rGX": tokens.solana,
   },
-  empire: {
-    "0xc61a71c75ed4742dCaE74B8CAc27A37D46FC6751": tokens.usdc
-  }
 }
 
 const ibcMappings = {
