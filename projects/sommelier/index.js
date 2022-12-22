@@ -11,11 +11,15 @@ const ETH_BTC_TREND = "0x6b7f87279982d919bbf85182ddeab179b366d8f2";
 const ETH_BTC_MOM = "0x6e2dac3b9e9adc0cbbae2d0b9fd81952a8d33872";
 const STEADY_ETH = "0x3f07a84ecdf494310d397d24c1c78b041d2fa622";
 const STEADY_BTC = "0x4986fd36b6b16f49b43282ee2e24c5cf90ed166d";
+const STEADY_UNI = "0x6f069f711281618467dae7873541ecc082761b33";
+const STEADY_MATIC = "0x05641a27c82799aaf22b436f20a3110410f29652";
 const cellarsV0816 = [
   { id: ETH_BTC_TREND, startBlock: 15733768 },
   { id: ETH_BTC_MOM, startBlock: 15733768 },
   { id: STEADY_ETH, startBlock: 15991609 },
   { id: STEADY_BTC, startBlock: 15991609 },
+  { id: STEADY_UNI, startBlock: 16192732 },
+  { id: STEADY_MATIC, startBlock: 16192732 },
 ];
 
 async function tvl(timestamp, block, chainBlocks) {
