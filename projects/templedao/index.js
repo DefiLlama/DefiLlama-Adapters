@@ -1,6 +1,6 @@
 const { staking } = require("../helper/staking");
 const { pool2 } = require("../helper/pool2");
-const { sumTokens } = require("../helper/unwrapLPs")
+const { sumTokens, sumTokens2, unwrapUniswapV3NFTs } = require("../helper/unwrapLPs")
 const { createIncrementArray } = require("../helper/utils")
 const { resolveCrvTokens } = require("../helper/resolveCrvTokens")
 const sdk = require('@defillama/sdk');
@@ -44,11 +44,18 @@ async function treasuryTvl(ts, block) {
   const auraLockerDetails = await sdk.api.abi.call({target: auraLocker, params: [temepleGnosisAddress], abi: abi.balances, block, chain});
   const lockedAuraBalance = auraLockerDetails.output.locked;
   sdk.util.sumSingleBalance(balances, AURA, lockedAuraBalance);
+  await unwrapUniswapV3NFTs({ owner: temepleGnosisAddress, balances, block, })
 
-  const auraPools = await fetchAuraPoolData(temepleGnosisAddress);
-  auraPools.account.poolAccounts.forEach(account => {
-    balances[account.pool.lpToken.id] = account.balance
-  });
+  return sumTokens2({ balances, chain, owner: temepleGnosisAddress, tokens: [
+    '0x3835a58ca93cdb5f912519ad366826ac9a752510',
+    '0xfb6b1c1a1ea5618b3cfc20f81a11a97e930fa46b',
+    '0x173063a30e095313eee39411f07e95a8a806014e',
+  ]})
+
+  // const auraPools = await fetchAuraPoolData(temepleGnosisAddress);
+  // auraPools.account.poolAccounts.forEach(account => {
+  //   balances[account.pool.lpToken.id] = account.balance
+  // });
 
   return balances;
 }
