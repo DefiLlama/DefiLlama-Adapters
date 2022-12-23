@@ -45,7 +45,10 @@ async function getTvl(
   knownTokenPrices
 ) {
   if (!isFetchFunction) {
-    const tvlBalances = await tvlFunction(unixTimestamp, ethBlock, chainBlocks);
+    const chain = storedKey.split('-')[0]
+    const block = chainBlocks[chain]
+    const api = new sdk.api2.abi.ChainApi({ chain, block: chainBlocks[chain] })
+    const tvlBalances = await tvlFunction(unixTimestamp, ethBlock, chainBlocks, { api, chain, block, storedKey });
     const tvlResults = await computeTVL(
       tvlBalances,
       "now",
