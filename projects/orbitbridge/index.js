@@ -1,5 +1,6 @@
 const sdk = require('@defillama/sdk')
 const utils = require('../helper/utils')
+const { sumTokensExport } = require('../helper/sumTokens')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const ABI = {
@@ -64,9 +65,7 @@ const farms = {
 let tokenData
 
 function chainTvls(chain) {
-  return async (timestamp, ethBlock, chainBlocks) => {
-    const block = chainBlocks[chain]
-    // const block = await getBlock(timestamp, chain, chainBlocks, false)
+  return async (timestamp, ethBlock, {[chain]: block}) => {
     const vault = vaults[chain]
     let targetChain = chain
     if (chain === 'ethereum') targetChain = 'eth'
@@ -100,13 +99,6 @@ function chainTvls(chain) {
   }
 }
 
-async function rippleTvls() {
-  const rippleVault = 'rLcxBUrZESqHnruY4fX7GQthRjDCDSAWia'
-  return {
-    ripple: await utils.getRippleBalance(rippleVault)
-  }
-}
-
 module.exports = {
   methodology: 'Tokens locked in Orbit Bridge contract are counted as TVL',
   misrepresentedTokens: true,
@@ -130,6 +122,6 @@ module.exports = {
     tvl: chainTvls('polygon')
   },
   ripple: {
-    tvl: rippleTvls
+    tvl: sumTokensExport({ chain: 'ripple', owner: 'rLcxBUrZESqHnruY4fX7GQthRjDCDSAWia'})
   }
 }

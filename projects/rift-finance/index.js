@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 
-const { getBlock } = require("../helper/getBlock");
+const { getBlock } = require("../helper/http");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { getChainTransform } = require("../helper/portedTokens");
 const { request, gql } = require("graphql-request");

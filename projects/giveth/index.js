@@ -1,13 +1,8 @@
 const { sumTokens, sumTokens2 } = require("../helper/unwrapLPs");
 const { sumUnknownTokens } = require("../helper/unknownTokens");
-const utils = require("../helper/utils");
 
 const GIV = "0x900db999074d9277c5da2a43f252d74366230da0";
 const xdaiGIV = "0x4f4f9b8d5b4d0dc10506e5551b0513b61fd59e75";
-
-async function getGIVPrice() {
-  return (await utils.getPricesfromString("giveth")).data?.giveth?.usd;
-}
 
 async function mainnetStaking(ts, block) {
   const balances = {};
@@ -24,7 +19,7 @@ async function mainnetPools(_, block) {
     [GIV, "0xc3151A58d519B94E915f66B044De3E55F77c2dd9"], // Angel Vault
     [GIV, "0x7819f1532c49388106f7762328c51ee70edd134c"], // GIV / ETH Balancer
   ];
-  return sumTokens2({ tokensAndOwners: toa, block, resolveLP: true });
+  return sumTokens2({ tokensAndOwners: toa, block });
 }
 
 async function stakingXDAI() {

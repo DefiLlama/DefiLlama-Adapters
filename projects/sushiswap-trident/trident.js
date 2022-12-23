@@ -3,11 +3,11 @@ const { request, gql } = require("graphql-request");
 const { getChainTransform } = require("../helper/portedTokens");
 
 const graphUrls = {
-  polygon: "https://api.thegraph.com/subgraphs/name/sushi-0m/trident-polygon",
-  optimism: "https://api.thegraph.com/subgraphs/name/sushi-0m/trident-optimism",
-  kava: "https://pvt.graph.kava.io/subgraphs/name/sushi-0m/trident-kava",
+  polygon: "https://api.thegraph.com/subgraphs/name/sushi-qa/trident-polygon",
+  optimism: "https://api.thegraph.com/subgraphs/name/sushi-qa/trident-optimism",
+  kava: "https://pvt.graph.kava.io/subgraphs/name/sushi-qa/trident-kava",
   metis:
-    "https://andromeda.thegraph.metis.io/subgraphs/name/sushi-0m/trident-metis",
+    "https://andromeda.thegraph.metis.io/subgraphs/name/sushi-qa/trident-metis",
 };
 
 const tridentQueryWithBlock = gql`
@@ -68,5 +68,5 @@ function trident(chain) {
 
 module.exports = {
   trident,
-  methodology: `TVL of Sushiswap Trident consist of tokens deployed into swapping pairs.`,
+  methodology: `TVL of Trident consist of tokens deployed into swapping pairs.`,
 };

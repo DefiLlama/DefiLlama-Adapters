@@ -196,6 +196,10 @@ async function polygon(timestamp, block, chainBlocks) {
         "0x34fa22892256216a659d4f635354250b4d771458",
         "0x3A58a54C066FdC0f2D55FC9C89F0415C92eBf3C4",
       ], // stmatic
+      [
+        "0x873f4aE80867b9f97304B9Bb7Ef92c4d563fA48c",
+        "0x7d75F83f0aBe2Ece0b9Daf41CCeDdF38Cb66146b"
+      ]
 
     ],
     chainBlocks.polygon,
@@ -648,6 +652,26 @@ async function arbitrum (timestamp, block, chainBlocks) {
   return balances;
 }
 
+async function moonbeam (timestamp, ethblock, { moonbeam: block}) {
+  const balances = {};
+  let chain = "moonbeam"
+  const transformAddress = await getChainTransform(chain)
+
+  await sumTokens(
+    balances,
+    [
+      [
+        "0xAcc15dC74880C9944775448304B263D191c6077F",
+        "0x3A82F4da24F93a32dc3C2A28cFA9D6E63EC28531"
+      ],
+    ],
+    block,
+    chain,
+    transformAddress
+  );
+  return balances;
+}
+
 async function metis (timestamp, block, chainBlocks) {
   const balances = {};
   const transformAddress = await getChainTransform('metis')
@@ -656,16 +680,20 @@ async function metis (timestamp, block, chainBlocks) {
     balances,
     [
       [
-        "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000", //Token Qidao
-        "0x10dcbee8afa39a847707e16aea5eb34c6b01aba9"  //Token address
+        "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000", //Token 
+        "0x10dcbee8afa39a847707e16aea5eb34c6b01aba9"  //Vault
       ],
       [
-        "0xc09c73f7b32573d178138e76c0e286ba21085c20",
         "0x420000000000000000000000000000000000000A",
+        "0xc09c73f7b32573d178138e76c0e286ba21085c20",
       ], //Eth
       [
-        "0xb89c1b3d9f335b9d8bb16016f3d60160ae71041f",
         "0xa5B55ab1dAF0F8e1EFc0eB1931a957fd89B918f4",
+        "0xb89c1b3d9f335b9d8bb16016f3d60160ae71041f",
+      ], //Btc
+      [
+        "0x433E43047B95cB83517abd7c9978Bdf7005E9938",
+        "0x5A03716bd1f338D7849f5c9581AD5015ce0020B0",
       ], //Btc
     ],
     chainBlocks.metis,
@@ -750,5 +778,8 @@ module.exports = {
   },
   ethereum: {
     tvl: ethereum
+  },
+  moonbeam: {
+    tvl: moonbeam
   }
 };

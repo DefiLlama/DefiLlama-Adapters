@@ -1,5 +1,5 @@
 const { Program } = require("@project-serum/anchor");
-const { getProvider, getSolBalances, } = require("../helper/solana");
+const { getProvider, sumTokens2, } = require("../helper/solana");
 const {
   PublicKey,
 } = require("@solana/web3.js");
@@ -18,9 +18,7 @@ async function tvl() {
   const program = new Program(idl, programId, provider)
   const accounts = await program.account.pair.all()
   const poolAuthorities = accounts.map(i => getPoolAuthority(i.publicKey))
-  return {
-    solana: await getSolBalances(poolAuthorities)
-  }
+  return sumTokens2({ solOwners: poolAuthorities, })
 }
 
 module.exports = {

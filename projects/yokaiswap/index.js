@@ -6,7 +6,7 @@ const axios = require("axios");
 
 async function fetch() {
   const endpoint =
-    "https://www.yokaiswap.com/subgraphs/name/yokaiswap/exchange";
+    "https://v0.yokaiswap.com/subgraphs/name/yokaiswap/exchange";
   const graphQLClient = new GraphQLClient(endpoint);
 
   const query = gql`
@@ -57,7 +57,7 @@ const getReservesABI = {
 }
 
 // had to be disabled till we get multicall working
-const tvl_v0 = getUniTVL({ chain: 'godwoken', factory: '0x5ef0d2d41a5f3d5a083bc776f94282667c27b794', useDefaultCoreAssets: false,  abis: { getReservesABI }})
+const tvl_v0 = getUniTVL({ chain: 'godwoken', factory: '0x5ef0d2d41a5f3d5a083bc776f94282667c27b794', useDefaultCoreAssets: false,  abis: { getReserves: getReservesABI }})
 const tvl_v1 = getUniTVL({ chain: 'godwoken_v1', factory: '0x7ec2d60880d83614dd4013D39CF273107f30624c', useDefaultCoreAssets: true, })
 
 module.exports = {

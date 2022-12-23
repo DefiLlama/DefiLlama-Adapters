@@ -26,7 +26,7 @@ const fxTokens = {
 
 async function tvl(_, _b, {[chain]: block }) {
   const balances = await sumTokens2({ chain, block, tokensAndOwners: [
-    [WETH_arbitrum, perpsVault],
+    // [WETH_arbitrum, perpsVault],
     [WETH_arbitrum, treasuryContract],
   ] })
   return balances

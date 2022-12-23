@@ -2,7 +2,7 @@ const sdk = require("@defillama/sdk");
 const constants = require("./constants");
 const { requery } = require("../helper/requery");
 const { chainJoinExports, chainTypeExports } = require("./utils");
-const { getBlock } = require("../helper/getBlock");
+const { getBlock } = require("../helper/http");
 const { staking } = require("../helper/staking");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const {
@@ -34,16 +34,16 @@ const DATA = {
       },
     ];
   },
-  optimism: async () => {
-    const optimismTransform = await getChainTransform('optimism');
+  ethereum: async () => {
+    const ethereumTransform = await getChainTransform('ethereum');
 
     return [
-      optimismTransform,
+      ethereumTransform,
       {
         treasury: {
-          addresss: [constants.addresses.optimism.treasury],
+          addresss: [constants.addresses.ethereum.treasury],
           tokens: [
-            [constants.addresses.optimism.USDC, false], // USDC(Optimism)
+            [constants.addresses.ethereum.USDC, false], // USDC(Ethereum)
           ],
         },
       },
@@ -135,7 +135,7 @@ module.exports = chainJoinExports(
     (chains) => chainTypeExports("treasury", chainTreasury, chains),
     (chains) => chainTypeExports("staking", chainStaking, chains),
   ],
-  ["boba", "optimism"]
+  ["boba", "ethereum"]
 );
 
 module.exports = {
@@ -146,5 +146,6 @@ module.exports = {
     [1656419883, "Boba adds to FRAX-USDC"],
     [1658439731, "Boba removes from FRAX-USDC"],
     [1659129231, "Boba adds to USDC-DAI"],
+    [1665774187, "Boba removes from USDC-DAI"]
   ],
 };

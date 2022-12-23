@@ -1,6 +1,6 @@
-const { getTableRows, getCurrencyBalance, getAllOracleData, getTokenPriceUsd } = require("../helper/proton");
+const { getTableRows, } = require("../helper/chain/proton");
+const { get } = require('../helper/http')
 const { toUSDTBalances } = require('../helper/balances');
-const axios = require('axios');
 
 const SWAP_CONTRACT = 'proton.swaps';
 
@@ -27,12 +27,7 @@ async function getPools (lower_bound) {
 }
 
 async function getTokenPrices () {
-  try {
-    const response = await axios.get("https://api.protonchain.com/v1/chain/tokens")
-    return response.data;
-  } catch (e) {
-      throw new Error(`Could not fetch exchange rates`)
-  }  
+  return get("https://api.protonchain.com/v1/chain/tokens") 
 }
 
 async function poolsWithPrices () {  

@@ -1,8 +1,10 @@
 const { GraphQLClient, gql } = require('graphql-request')
 const { transformPolygonAddress } = require('../helper/portedTokens');
+const { getBlock } = require('../helper/http')
+const sdk = require('@defillama/sdk')
 
 
-async function fetchData(block, balances, transform, borrowed=false) {
+async function fetchData(block, balances, transform, borrowed = false) {
   const baseUrl = 'https://api.thegraph.com/subgraphs/name/atlendis';
   const urlPolygon = `${baseUrl}/atlendis-hosted-service-polygon`;
   const graphQLClient = new GraphQLClient(urlPolygon)
@@ -27,43 +29,46 @@ async function fetchData(block, balances, transform, borrowed=false) {
 
   // pull data
   const data = await graphQLClient.request(query, {
-    block: block
+    block: block - 50
   });
 
   // calculate TVL
+  const agEUR = 'polygon:0xe0b52e49357fd4daf2c15e02058dce6bc0057db4'.toLowerCase()
   if (!borrowed) {
-    for (let i=0; i < data.poolStatuses.length; i++) {
+    for (let i = 0; i < data.poolStatuses.length; i++) {
       let amount = parseInt(data.poolStatuses[i].normalizedAvailableAmount)
-                + parseInt(data.poolStatuses[i].adjustedPendingAmount);
       let assetAddress = data.poolStatuses[i].pool.parameters.underlyingToken;
 
       assetAddress = transform(assetAddress);
-      balances[assetAddress] = (balances[assetAddress] || 0) + amount / 1e12;
+      if (assetAddress === agEUR) amount *= 1e12
+      sdk.util.sumSingleBalance(balances, assetAddress, amount / 1e12)
     }
   } else {
-    for (let i=0; i < data.poolStatuses.length; i++) {
+    for (let i = 0; i < data.poolStatuses.length; i++) {
       let amount = parseInt(data.poolStatuses[i].normalizedBorrowedAmount)
+        + parseInt(data.poolStatuses[i].adjustedPendingAmount);
       let assetAddress = data.poolStatuses[i].pool.parameters.underlyingToken;
 
       assetAddress = transform(assetAddress);
-      balances[assetAddress] = (balances[assetAddress] || 0) + amount / 1e12;
+      if (assetAddress === agEUR) amount *= 1e12
+      sdk.util.sumSingleBalance(balances, assetAddress, amount / 1e12)
     }
   }
 }
 
 
-async function tvl (timestamp, block, chainBlocks) {
+async function tvl(timestamp, _, chainBlocks) {
   const balances = {};
+  const block = await getBlock(timestamp, 'polygon', chainBlocks)
   const transform = await transformPolygonAddress();
-  block = chainBlocks.polygon;
   await fetchData(block, balances, transform);
   return balances;
 }
 
-async function borrowed (timestamp, block, chainBlocks) {
+async function borrowed(timestamp, _, chainBlocks) {
   const balances = {};
   const transform = await transformPolygonAddress();
-  block = chainBlocks.polygon;
+  const block = await getBlock(timestamp, 'polygon', chainBlocks)
   await fetchData(block, balances, transform, true);
   return balances;
 }
@@ -73,7 +78,7 @@ module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
   polygon: {
-    tvl: tvl,
-    borrowed: borrowed,
+    tvl,
+    borrowed,
   }
 };

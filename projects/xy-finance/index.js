@@ -40,9 +40,6 @@ const config = {
   klaytn: {
     chainId: '8217',
   },
-  cube: {
-    chainId: '1818',
-  },
 }
 
 const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
@@ -59,7 +56,15 @@ const yPoolDepositContract = {
     "USDC": {
       "contractAddress": "0xdD8B0995Cc92c7377c7bce2A097EC70f45A192D5",
       "tokenAddress": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
-    }
+    },
+    "XY": {
+      "contractAddress": "0x7fE09D2310A647c7C5043daE2053ff86956cE952",
+      "tokenAddress": "0x77777777772cf0455fB38eE0e75f38034dFa50DE"
+    },
+    "NUM": {
+      "contractAddress": "0x64d17beaE666cC435B9d40a21f058b379b2a0194",
+      "tokenAddress": "0x3496B523e5C00a4b4150D6721320CdDb234c3079"
+    },
   },
   "25": {
     "ETH": {
@@ -209,16 +214,6 @@ const yPoolDepositContract = {
       "tokenAddress": "0x754288077D0fF82AF7a5317C7CB8c444D421d103"
     }
   },
-  "1818": {
-    "USDT": {
-      "contractAddress": "0x903a82456D27500f16C51f10115c699ca1f64951",
-      "tokenAddress": "0x79F1520268A20c879EF44d169A4E3812D223C6de"
-    },
-    "USDC": {
-      "contractAddress": "0x9fE77412aA5c6Ba67fF3095bBc534884F9a61a38",
-      "tokenAddress": "0x00f0D8595797943c12605cD59bc0D9f63D750cCf"
-    }
-  }
 }
 
 module.exports={}
