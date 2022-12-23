@@ -7,20 +7,28 @@ const sdk = require('@defillama/sdk')
 
 const cacheFolder = 'uniswap-forks'
 
-function getUniTVL({ chain = 'ethereum', coreAssets, blacklist = [], factory, blacklistedTokens,
+function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
   useDefaultCoreAssets = false,
   abis = {},
+  chain: _chain,
 }) {
 
-  if (!coreAssets && useDefaultCoreAssets)
-    coreAssets = getCoreAssets(chain)
-  blacklist = (blacklistedTokens || blacklist).map(i => i.toLowerCase())
+  return async (_, _b, cb, { chain, block } = {}) => {
 
-  const abi = { ...uniswapAbi, ...abis }
-  factory = factory.toLowerCase()
-  const key = `${factory}-${chain}`
+    if (!chain) {
+      chain = _chain
+      block = cb[chain]
+    }
 
-  return async (ts, _block, { [chain]: block }) => {
+    if (!coreAssets && useDefaultCoreAssets)
+      coreAssets = getCoreAssets(chain)
+    blacklist = (blacklistedTokens || blacklist).map(i => i.toLowerCase())
+  
+    const abi = { ...uniswapAbi, ...abis }
+    factory = factory.toLowerCase()
+    const key = `${factory}-${chain}`
+
+
     let cache = await _getCache(cacheFolder, key)
 
     const _oldPairInfoLength = cache.pairs.length
