@@ -82,6 +82,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'bsc' && ['WLP', 'FstLP', 'BLP',].includes(symbol)) return true
   if (chain === 'avax' && ['ELP', 'EPT', 'CRL', 'YSL', 'BGL', 'PLP'].includes(symbol)) return true
   if (chain === 'ethereum' && ['SSLP'].includes(symbol)) return true
+  if (chain === 'polygon' && ['WLP', 'FLP'].includes(symbol)) return true
   if (chain === 'moonriver' && ['HBLP'].includes(symbol)) return true
   if (chain === 'ethpow' && ['LFG_LP'].includes(symbol)) return true
   if (chain === 'ethereum' && ['SUDO-LP'].includes(symbol)) return false
@@ -163,12 +164,7 @@ function getUniqueAddresses(addresses, isCaseSensitive = false) {
 }
 
 const DEBUG_MODE = !!process.env.LLAMA_DEBUG_MODE
-
-function log(...args) {
-  if (DEBUG_MODE) {
-    console.log(...args);
-  }
-}
+const log = sdk.log
 
 function sliceIntoChunks(arr, chunkSize = 100) {
   const res = [];
@@ -189,8 +185,8 @@ function stripTokenHeader(token) {
   return token.indexOf(":") > -1 ? token.split(":")[1] : token;
 }
 
-async function diplayUnknownTable({ tvlResults = {}, tvlBalances = {}, storedKey = 'ethereum', log = false, tableLabel = 'Unrecognized tokens' }) {
-  if (!DEBUG_MODE && !log) return;
+async function diplayUnknownTable({ tvlResults = {}, tvlBalances = {}, storedKey = 'ethereum', tableLabel = 'Unrecognized tokens' }) {
+  if (!DEBUG_MODE) return;
   const balances = {}
   storedKey = storedKey.split('-')[0]
   Object.entries(tvlResults.tokenBalances).forEach(([label, balance]) => {
@@ -312,22 +308,6 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
   console.table(logObj)
 }
 
-async function fetchItemList({ chain, block, lengthAbi, itemAbi, target }) {
-  const { output: length } = await sdk.api.abi.call({
-    target,
-    abi: lengthAbi,
-    chain, block,
-  })
-  const { output: data } = await sdk.api.abi.multiCall({
-    target,
-    abi: itemAbi,
-    calls: getParamCalls(length),
-    chain, block,
-  })
-
-  return data
-}
-
 async function getLogs({ chain = 'ethereum', fromBlock, toBlock, topic, topics, keys = [], target, eventInterface, chainBlocks, timestamp }) {
   if (!toBlock) 
     toBlock = await http.getBlock(timestamp, chain, chainBlocks)
@@ -370,6 +350,5 @@ module.exports = {
   getSymbols,
   getDecimals,
   getParamCalls,
-  fetchItemList,
   getLogs,
 }

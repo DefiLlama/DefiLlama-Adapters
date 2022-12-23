@@ -19,6 +19,7 @@ function yieldHelper({
   poolFilter,
   getPoolIds,
   getTokens,
+  getTokenBalances,
 }) {
   blacklistedTokens = getUniqueAddresses(blacklistedTokens)
   nativeTokens = getUniqueAddresses(blacklistedTokens)
@@ -36,6 +37,7 @@ function yieldHelper({
       const balances = {
         tvl: {},
         pool2: {},
+        staking: {},
       }
 
       const { output: poolLength } = await sdk.api.abi.call({
@@ -61,19 +63,27 @@ function yieldHelper({
 
       poolInfos = poolInfos.filter(_poolFilter)
       const poolIds = poolInfos.map(_getPoolIds)
+      let lockedTotals
 
-      const { output: lockedTotals } = await sdk.api.abi.multiCall({
-        abi: abis.wantLockedTotal || abi.wantLockedTotal,
-        calls: poolIds.map(i => ({ target: i})),
-        chain, block,
-      })
+      if (getTokenBalances) {
+        lockedTotals = await getTokenBalances({ chain, block, poolInfos, poolIds, })
+      } else {
+        const res = await sdk.api.abi.multiCall({
+          abi: abis.wantLockedTotal || abi.wantLockedTotal,
+          calls: poolIds.map(i => ({ target: i})),
+          chain, block,
+        })
+        lockedTotals = res.output
+      }
 
       let tokens
       if (getTokens)  tokens = await getTokens({ poolInfos, chain, block, })
       else tokens = poolInfos.map(i => i.output.want.toLowerCase())
       const pairInfos = await getLPData({ chain, block, lps: tokens, })
       tokens.forEach((token, i) => {
-        if (pairInfos[token] &&
+        if (nativeTokens.includes(token)) {
+          sdk.util.sumSingleBalance(balances.staking,transform(token),lockedTotals[i].output)
+        } else if (pairInfos[token] &&
           (nativeTokens.includes(pairInfos[token].token0Address) || nativeTokens.includes(pairInfos[token].token1Address))
         ) {
           sdk.util.sumSingleBalance(balances.pool2, transform(token), lockedTotals[i].output)
@@ -89,6 +99,7 @@ function yieldHelper({
 
       fixBalances(balances.tvl)
       fixBalances(balances.pool2)
+      fixBalances(balances.staking)
 
       return balances
     }
@@ -98,6 +109,7 @@ function yieldHelper({
     [chain]: {
       tvl: async (_, _b, { [chain]: block }) => (await getAllTVL(block)).tvl,
       pool2: async (_, _b, { [chain]: block }) => (await getAllTVL(block)).pool2,
+      staking: async (_, _b, { [chain]: block }) => (await getAllTVL(block)).staking,
     }
   }
 }

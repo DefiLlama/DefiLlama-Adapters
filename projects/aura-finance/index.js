@@ -5,6 +5,7 @@ const BigNumber = require('bignumber.js')
 const { unwrapBalancerPool } = require('../helper/unwrapLPs')
 
 const AURA_BOOSTER = "0x7818A1DA7BD1E64c199029E86Ba244a9798eEE10"
+const AURA_BOOSTER_2 = "0xA57b8d98dAE62B26Ec3bcC4a365338157060B234"
 const BALANCER_VAULT = "0xBA12222222228d8Ba445958a75a0704d566BF2C8"
 const addresses = {
   aura: "0xc0c293ce456ff0ed870add98a0828dd4d2903dbf",
@@ -14,23 +15,17 @@ const addresses = {
   auraDelegate: "0xaF52695E1bB01A16D33D7194C28C42b10e0Dbec2",
   bal80eth20: "0x5c6Ee304399DBdB9C8Ef030aB642B10820DB8F56",
 };
+
 async function tvl(_, block) {
-    const poolLength = (await sdk.api.abi.call({
-        target: AURA_BOOSTER,
-        abi: abi.poolLength,
-        block: block,
-      })
-    ).output;
-    const pools = (await sdk.api.abi.multiCall({
-        calls: Array.from({ length: Number(poolLength) }, (_, poolId) => ({
-            target: AURA_BOOSTER,
-            params: poolId,
-          })),
-        abi: abi.poolInfo,
-        block: block,
-    })).output
+    let pools = await Promise.all([AURA_BOOSTER, AURA_BOOSTER_2].map(i => sdk.api2.abi.fetchList({
+        target: i,
+        block,
+        itemAbi:  abi.poolInfo,       
+        lengthAbi:  abi.poolLength,       
+    })))
+    pools = pools.flat()
     const poolIds = (await sdk.api.abi.multiCall({
-        calls: pools.map(pool => ({target: pool.output.lptoken})),
+        calls: pools.map(pool => ({target: pool.lptoken})),
         abi: abi.getPoolId,
         block,
     })).output;
@@ -40,12 +35,12 @@ async function tvl(_, block) {
         block
     })).output;
     const balancesinStaking = (await sdk.api.abi.multiCall({
-        calls: pools.map(pool => ({target: pool.output.token, params:pool.output.crvRewards })),
+        calls: pools.map(pool => ({target: pool.token, params:pool.crvRewards })),
         abi: 'erc20:balanceOf',
         block
     })).output;
     const totalSupplies = (await sdk.api.abi.multiCall({
-        calls: pools.map(pool => ({target: pool.output.lptoken})),
+        calls: pools.map(pool => ({target: pool.lptoken})),
         abi: 'erc20:totalSupply',
         block
     })).output;
@@ -78,6 +73,7 @@ async function tvl(_, block) {
     return balances
 
 }
+
 module.exports = {
     timetravel: true,
     methodology: "TVL of Aura Finance consists of the total deposited assets, protocol-controlled value via veBAL and vote-locked AURA (staking)",

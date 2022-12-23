@@ -3,7 +3,7 @@ const abi = require("./abi.json");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { transformBscAddress } = require("../helper/portedTokens");
 const { compoundExports } = require("../helper/compound");
-const {calculateUniTvl} = require("../helper/calculateUniTvl");
+const {uniTvlExport} = require("../helper/calculateUniTvl");
 
 // Jetswap section
 const factory = "0x0eb58E5c8aA63314ff5547289185cC4583DfCBD5";
@@ -50,9 +50,11 @@ const single_side_assets = [
   "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c",
 ];
 
+const factoryTvl = uniTvlExport(factory, 'bsc')
+
 const bscTvl = async (timestamp, block, chainBlocks) => {
   // Jetswap section
-  const balances = await calculateUniTvl(addr=>`bsc:${addr}`, chainBlocks.bsc, "bsc", factory, 0, true)
+  const balances =  {}
 
   // Vault section in their repo
   const vault_balances = (
@@ -111,9 +113,8 @@ const bscTvl = async (timestamp, block, chainBlocks) => {
 const {tvl:lendingTvl, borrowed} = compoundExports("0x67340bd16ee5649a37015138b3393eb5ad17c195", "bsc", "0xE24146585E882B6b59ca9bFaaaFfED201E4E5491", "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c")
 
 module.exports = {
-  timetravel: true,
   bsc: {
-    tvl: sdk.util.sumChainTvls([bscTvl, lendingTvl]),
+    tvl: sdk.util.sumChainTvls([factoryTvl, bscTvl, lendingTvl]),
     borrowed
   },
 };

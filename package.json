@@ -21,6 +21,7 @@
     "@uniswap/sdk": "^3.0.3",
     "@uniswap/sdk-core": "^3.1.0",
     "@uniswap/v3-sdk": "^3.9.0",
+    "aws-sdk": "^2.1268.0",
     "axios": "^0.27.0",
     "bignumber.js": "^9.0.1",
     "blakejs": "^1.2.1",

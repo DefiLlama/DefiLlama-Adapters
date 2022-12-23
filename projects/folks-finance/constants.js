@@ -123,7 +123,7 @@ const pools = [
   },
 ];
 
-const oracleAppId = 793269965;
+const oracleAppId = 956833333;
 const oracleAdapterAppId = 751277258;
 const oracleDecimals = 14;
 const tinymanValidatorAppId = 552635992;

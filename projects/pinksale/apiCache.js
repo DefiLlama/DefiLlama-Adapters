@@ -2,7 +2,8 @@ const sdk = require("@defillama/sdk")
 const abi = require('./abi')
 const config = require('./config')
 const { getUniqueAddresses } = require('../helper/utils')
-const { vestingHelper, getCache, setCache, } = require("../helper/cache");
+const { getCache, setCache, } = require("../helper/cache")
+const { vestingHelper,  } = require("../helper/unknownTokens")
 
 const project = 'pinksale'
 
@@ -11,7 +12,7 @@ module.exports = {}
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: async (timestamp, _block, { [chain]: block }) => {
-      const cache = getCache(project, chain) || { vaults: {} }
+      const cache = await getCache(project, chain) || { vaults: {} }
       const balances = {}
       const { vaults, blacklist, log_coreAssetPrices, log_minTokenValue, } = config[chain]
       for (const vault of vaults) {
@@ -51,7 +52,7 @@ Object.keys(config).forEach(chain => {
           log_coreAssetPrices,
           log_minTokenValue,
         })
-        setCache(project, chain, cache)
+        await setCache(project, chain, cache)
 
         Object.entries(balance).forEach(([token, bal]) => sdk.util.sumSingleBalance(balances, token, bal))
       }

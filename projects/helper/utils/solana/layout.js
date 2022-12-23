@@ -3,6 +3,7 @@ const { deserializeUnchecked } = require('borsh');
 const BufferLayout = require("buffer-layout");
 const { PublicKey } = require("@solana/web3.js");
 const BN = require("bn.js");
+const { parseLido, parseLidoValidatorList } = require('./lido')
 const { struct, u8, u16, seq } = BufferLayout
 
 const publicKey = (property = "publicKey") => {
@@ -327,7 +328,7 @@ const INVESTIN_FUND_DATA = struct([
   seq(
     struct([
       u8('is_active'),
-      seq(u8(),3,'index'),
+      seq(u8(), 3, 'index'),
       u8('mux'),
       u8('is_on_mango'),
       seq(u8(), 2, 'padding'),
@@ -338,34 +339,34 @@ const INVESTIN_FUND_DATA = struct([
     8, 'tokens'
   ),
   seq(publicKey(), 10, 'investors'),
-  
-  struct([
-      publicKey('mango_account'),
-      seq(u8(),3,'perp_markets'),
-      u8('padding'),
-      u8('deposit_index'),
-      u8('markets_active'),
-      u8('deposits_active'),
-      u8('xpadding'),
-      seq(u64(), 2, 'investor_debts'),
-      seq(u8('padding'), 24),
-    ],'mango_positions'),
 
-  
   struct([
-      u8('is_active'),
-      u8('is_split'),
-      u8('hop'),
-      u8('count'),
-      u8('token_in_slot'),
-      u8('token_out_slot'),
-      seq(u8('padding'), 2),
-   
-      publicKey('token_in'),
-      publicKey('token_out'),
-      u64('amount_in'),
-      u64('min_amount_out'),
-  ],'guard'),
+    publicKey('mango_account'),
+    seq(u8(), 3, 'perp_markets'),
+    u8('padding'),
+    u8('deposit_index'),
+    u8('markets_active'),
+    u8('deposits_active'),
+    u8('xpadding'),
+    seq(u64(), 2, 'investor_debts'),
+    seq(u8('padding'), 24),
+  ], 'mango_positions'),
+
+
+  struct([
+    u8('is_active'),
+    u8('is_split'),
+    u8('hop'),
+    u8('count'),
+    u8('token_in_slot'),
+    u8('token_out_slot'),
+    seq(u8('padding'), 2),
+
+    publicKey('token_in'),
+    publicKey('token_out'),
+    u64('amount_in'),
+    u64('min_amount_out'),
+  ], 'guard'),
 
   seq(
     struct([
@@ -379,11 +380,11 @@ const INVESTIN_FUND_DATA = struct([
       u8('side'),
       u8('reduce_only'),
       u8('limit'),
-      seq(u8(),3,'padding'),
+      seq(u8(), 3, 'padding'),
     ]),
     2, 'limit_orders'
   ),
-  
+
   struct([
     u64('last_updated'),
     publicKey('volt_vault_id'),
@@ -395,8 +396,8 @@ const INVESTIN_FUND_DATA = struct([
     u8('ul_token_slot'),
     u8('is_active'),
     seq(u8('padding'), 6),
-  ],'friktion_vault'),
-  
+  ], 'friktion_vault'),
+
   seq(u8(), 1864, 'migration_additonal_padding'),
 ])
 
@@ -428,270 +429,10 @@ const defaultParseLayout = Layout => info => {
   return Layout.decode(buffer);
 }
 
-class Lido {
-  constructor(data) {
-    Object.assign(this, data);
-  }
-}
-
-class SeedRange {
-  constructor(data) {
-    Object.assign(this, data);
-  }
-}
-
-class Validator {
-  constructor(data) {
-    Object.assign(this, data);
-  }
-}
-
-class PubKeyAndEntry {
-  constructor(data) {
-    Object.assign(this, data);
-  }
-}
-
-class PubKeyAndEntryMaintainer {
-  constructor(data) {
-    Object.assign(this, data);
-  }
-}
-
-class RewardDistribution {
-  constructor(data) {
-    Object.assign(this, data);
-  }
-}
-
-class FeeRecipients {
-  constructor(data) {
-    Object.assign(this, data);
-  }
-}
-
-class Validators {
-  constructor(data) {
-    Object.assign(this, data);
-  }
-}
-
-class Maintainers {
-  constructor(data) {
-    Object.assign(this, data);
-  }
-}
-
-class ExchangeRate {
-  constructor(data) {
-    Object.assign(this, data);
-  }
-}
-
-class Metrics {
-  constructor(data) {
-    Object.assign(this, data);
-  }
-}
-
-class LamportsHistogram {
-  constructor(data) {
-    Object.assign(this, data);
-  }
-}
-
-class WithdrawMetric {
-  constructor(data) {
-    Object.assign(this, data);
-  }
-}
-
-const schema = new Map([
-  [
-    ExchangeRate,
-    {
-      kind: 'struct',
-      fields: [
-        ['computed_in_epoch', 'u64'],
-        ['st_sol_supply', 'u64'],
-        ['sol_balance', 'u64'],
-      ],
-    },
-  ],
-  [
-    LamportsHistogram,
-    {
-      kind: 'struct',
-      fields: [
-        ['counts1', 'u64'],
-        ['counts2', 'u64'],
-        ['counts3', 'u64'],
-        ['counts4', 'u64'],
-        ['counts5', 'u64'],
-        ['counts6', 'u64'],
-        ['counts7', 'u64'],
-        ['counts8', 'u64'],
-        ['counts9', 'u64'],
-        ['counts10', 'u64'],
-        ['counts11', 'u64'],
-        ['counts12', 'u64'],
-        ['total', 'u64'],
-      ],
-    },
-  ],
-  [
-    WithdrawMetric,
-    {
-      kind: 'struct',
-      fields: [
-        ['total_st_sol_amount', 'u64'],
-        ['total_sol_amount', 'u64'],
-        ['count', 'u64'],
-      ],
-    },
-  ],
-  [
-    Metrics,
-    {
-      kind: 'struct',
-      fields: [
-        ['fee_treasury_sol_total', 'u64'],
-        ['fee_validation_sol_total', 'u64'],
-        ['fee_developer_sol_total', 'u64'],
-        ['st_sol_appreciation_sol_total', 'u64'],
-        ['fee_treasury_st_sol_total', 'u64'],
-        ['fee_validation_st_sol_total', 'u64'],
-        ['fee_developer_st_sol_total', 'u64'],
-        ['deposit_amount', LamportsHistogram],
-        ['withdraw_amount', WithdrawMetric],
-      ],
-    },
-  ],
-  [
-    SeedRange,
-    {
-      kind: 'struct',
-      fields: [
-        ['begin', 'u64'],
-        ['end', 'u64'],
-      ],
-    },
-  ],
-  [
-    Validator,
-    {
-      kind: 'struct',
-      fields: [
-        ['fee_credit', 'u64'],
-        ['fee_address', 'u256'],
-        ['stake_seeds', SeedRange],
-        ['unstake_seeds', SeedRange],
-        ['stake_accounts_balance', 'u64'],
-        ['unstake_accounts_balance', 'u64'],
-        ['active', 'u8'],
-      ],
-    },
-  ],
-  [
-    PubKeyAndEntry,
-    {
-      kind: 'struct',
-      fields: [
-        ['pubkey', 'u256'],
-        ['entry', Validator],
-      ],
-    },
-  ],
-  [
-    PubKeyAndEntryMaintainer,
-    {
-      kind: 'struct',
-      fields: [
-        ['pubkey', 'u256'],
-        ['entry', [0]],
-      ],
-    },
-  ],
-  [
-    RewardDistribution,
-    {
-      kind: 'struct',
-      fields: [
-        ['treasury_fee', 'u32'],
-        ['validation_fee', 'u32'],
-        ['developer_fee', 'u32'],
-        ['st_sol_appreciation', 'u32'],
-      ],
-    },
-  ],
-  [
-    FeeRecipients,
-    {
-      kind: 'struct',
-      fields: [
-        ['treasury_account', 'u256'],
-        ['developer_account', 'u256'],
-      ],
-    },
-  ],
-  [
-    Validators,
-    {
-      kind: 'struct',
-      fields: [
-        ['entries', [PubKeyAndEntry]],
-        ['maximum_entries', 'u32'],
-      ],
-    },
-  ],
-  [
-    Maintainers,
-    {
-      kind: 'struct',
-      fields: [
-        ['entries', [PubKeyAndEntryMaintainer]],
-        ['maximum_entries', 'u32'],
-      ],
-    },
-  ],
-  [
-    Lido,
-    {
-      kind: 'struct',
-      fields: [
-        ['lido_version', 'u8'],
-
-        ['manager', 'u256'],
-
-        ['st_sol_mint', 'u256'],
-
-        ['exchange_rate', ExchangeRate],
-
-        ['sol_reserve_authority_bump_seed', 'u8'],
-        ['stake_authority_bump_seed', 'u8'],
-        ['mint_authority_bump_seed', 'u8'],
-        ['rewards_withdraw_authority_bump_seed', 'u8'],
-
-        ['reward_distribution', RewardDistribution],
-
-        ['fee_recipients', FeeRecipients],
-
-        ['metrics', Metrics],
-
-        ['validators', Validators],
-
-        ['maintainers', Maintainers],
-      ],
-    },
-  ],
-]);
-
-const Layouts = {
-  lido: Lido,
-}
-
 const customDecoders = {
   reserve: parseReserve,
+  lido: parseLido,
+  lidoValidatorList: parseLidoValidatorList,
   mint: defaultParseLayout(MintLayout),
   account: defaultParseLayout(AccountLayout),
   tokenSwap: defaultParseLayout(TokenSwapLayout),
@@ -702,12 +443,9 @@ const customDecoders = {
 function decodeAccount(layout, accountInfo) {
   if (!accountInfo.data) throw new Error('Missing account data')
   if (customDecoders[layout]) return customDecoders[layout](accountInfo)
-  if (!Layouts[layout]) throw new Error('Layout not found')
-  return deserializeUnchecked(schema, Layouts[layout], accountInfo.data);
+  throw new Error('Layout not found: ' + layout)
 }
 
 module.exports = {
-  Layouts,
-  schema,
   decodeAccount,
 }
