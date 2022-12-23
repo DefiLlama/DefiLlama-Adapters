@@ -1,5 +1,3 @@
-const abi = require('./tricrypto-vault.json');
-
 module.exports = {
   misrepresentedTokens: true,
   hallmarks: [
@@ -13,7 +11,7 @@ module.exports = {
         '0x8478ab5064ebac770ddce77e7d31d969205f041e',  // dnGmxJuniorVault
       ]
       const bals = await api.multiCall({
-        abi, calls: vaults,
+        abi: 'int256:getVaultMarketValue', calls: vaults,
       })
 
       return {
