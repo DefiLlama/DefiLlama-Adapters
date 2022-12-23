@@ -35,6 +35,7 @@ module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
   methodology: 'add underlying asset balances in all the vaults and strategies together.',
+  doublecounted: true,
   start: 15308000, // The first vault YEARN_VAULT was deployed
   ethereum: {
     tvl,
