@@ -275,6 +275,12 @@ const transformTokens = {
     "0x2f28add68e59733d23d5f57d94c31fb965f835d0": tokens.usdc, // sUSDC(Boba) -> USDC(Ethereum)
     "0xf04d3a8eb17b832fbebf43610e94bdc4fd5cf2dd": tokens.busd // sBUSD(Boba) -> BUSD(BSC)
   },
+  boba_avax: {
+    "0x126969743a6d300bab08F303f104f0f7DBAfbe20": "avax:0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664", // USDC.e
+  },
+  boba_bnb: {
+    "0x9F98f9F312D23d078061962837042b8918e6aff2": "bsc:0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", // USDC
+  },
   findora: {
     "0xABc979788c7089B516B8F2f1b5cEaBd2E27Fd78b": tokens.bnb, // BNB token
     "0x008A628826E9470337e0Cd9c0C944143A83F32f3": "bsc:0x2170ed0880ac9a755fd29b2688956bd959f933f8", // ETH token
