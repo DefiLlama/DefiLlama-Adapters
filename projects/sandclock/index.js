@@ -34,7 +34,7 @@ async function tvl(timestamp, block) {
 module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
-  methodology: 'add LUSD balances in all the vaults and strategies together.',
+  methodology: 'add underlying asset balances in all the vaults and strategies together.',
   start: 15308000, // The first vault YEARN_VAULT was deployed
   ethereum: {
     tvl,
