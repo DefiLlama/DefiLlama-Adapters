@@ -6,7 +6,7 @@ const { toUSDTBalances } = require('../helper/balances');
 const AladdinConvexVaultABI = require('./abis/AladdinConvexVault.json')
 const AladdinCRVABI = require('./abis/AladdinCRV.json')
 const AladdinAFXSABI = require('./abis/AladdinAFXS.json')
-const configPools = require('./config.js');
+const { farmConfig, vaultConfig: configPools } = require('./config.js');
 const { createIncrementArray, fetchURL } = require('../helper/utils');
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
@@ -32,6 +32,12 @@ const replacements = [
   "0x73a052500105205d34Daf004eAb301916DA8190f"
 ].map(i => i.toLowerCase())
 
+const tokensReplace = [
+  ["0xFEEf77d3f69374f66429C91d732A244f074bdf74", "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0"],
+  ["0x3175Df0976dFA876431C2E9eE6Bc45b65d3473CC", "0x853d955aCEf822Db058eb8505911ED77F175b99e"],
+  ["0x836a808d4828586a69364065a1e064609f5078c7", "0x0000000000000000000000000000000000000000"],
+  ["0x5e8422345238f34275888049021821e8e08caa1f", "0x0000000000000000000000000000000000000000"],
+]
 async function getBalancerLpTvl(balances, block) {
   const ctrLpTotalSupply = (await sdk.api.abi.call({
     target: aladdinBalancerLPGauge,
@@ -42,9 +48,27 @@ async function getBalancerLpTvl(balances, block) {
   sdk.util.sumSingleBalance(balances, usdtAddress, (BigNumber(ctrLpTotalSupply).shiftedBy(-12)).toFixed(0))
 }
 
+async function getFarmLpTvl(balances, block) {
+  const farmData = farmConfig[0]
+  const ctrLpTotalSupply = (await sdk.api.abi.call({
+    target: farmData.addresses.gauge,
+    block,
+    abi: 'erc20:totalSupply',
+    params: []
+  })).output;
+
+  const { output: totalSupplies } = await sdk.api.abi.call({
+    target: farmData.addresses.lpToken,
+    block,
+    abi: 'erc20:totalSupply',
+  })
+  await getTokenTvl(balances, farmConfig[0], ctrLpTotalSupply, totalSupplies, block)
+}
+
 async function tvl(timestamp, block) {
   let balances = {}
   await getBalancerLpTvl(balances, block)
+  await getFarmLpTvl(balances, block)
   await getAFXSInfo(balances, block);
   const acrvTotalUnderlying = (await sdk.api.abi.call({
     target: concentratorAcrv,
@@ -128,19 +152,26 @@ async function getTokenTvl(balances, poolData, totalUnderlying, resolvedLPSupply
     })
   }
   let coinBalances = []
-  const tokens = coins.output.map(i => {
+  let tokens = coins.output.map(i => {
     return i.output;
   })
+
+  if (swapAddress == '0x5FAE7E604FC3e24fd43A72867ceBaC94c65b404A') {
+    tokens = ['0x0000000000000000000000000000000000000000', '0xbe9895146f7af43049ca1c1ae358b0541ea49704']
+  }
+  if (swapAddress == '0xf2f12B364F614925aB8E2C8BFc606edB9282Ba09') {
+    tokens = ['0x0000000000000000000000000000000000000000', '0xb3Ad645dB386D7F6D753B2b9C3F4B853DA6890B8']
+  }
   let tempBalances = await sumTokens2({ block, owner: swapAddress, tokens })
   Object.entries(tempBalances).forEach(([coin, balance]) => coinBalances.push({ coin, balance }))
   coinBalances.map((coinBalance) => {
     let coinAddress = coinBalance.coin.toLowerCase()
     if (replacements.includes(coinAddress)) {
       coinAddress = "0x6b175474e89094c44da98b954eedeac495271d0f" // dai
-    } else if (coinAddress === '0xFEEf77d3f69374f66429C91d732A244f074bdf74'.toLowerCase()) {
-      coinAddress = '0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0' // replace cvxFXS -> FXS
-    } else if (coinAddress === '0x3175Df0976dFA876431C2E9eE6Bc45b65d3473CC'.toLowerCase()) {
-      coinAddress = '0x853d955aCEf822Db058eb8505911ED77F175b99e' // replace crvFRAX -> FRAX
+    }
+    const fitlerToken = tokensReplace.filter((item) => item[0].toLowerCase() == coinAddress.toLowerCase())
+    if (fitlerToken.length) {
+      coinAddress = fitlerToken[0][1]
     }
     const balance = BigNumber(totalUnderlying * coinBalance.balance / resolvedLPSupply);
     if (!balance.isZero()) {

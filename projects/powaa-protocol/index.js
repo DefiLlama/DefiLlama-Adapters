@@ -10,7 +10,7 @@ async function tvl(ts, block) {
   ).data;
   const vaults = config["TokenVault"];
   const toa = vaults.map(i => [i.TokenAddress, i.VaultAddress])
-  return sumTokens2({ block, tokensAndOwners: toa, resolveLP: true, })
+  return sumTokens2({ block, tokensAndOwners: toa, })
 }
 
 async function pool2(ts, block) {

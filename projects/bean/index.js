@@ -37,7 +37,7 @@ async function pool2(time, block) {
     const balances = {};
 
     // add balance of siloed BEAN:ETH from uniswap pool
-    await sumTokens(balances, [[BEAN_ETH_ADDR, BEAN_DIA_ADDR]], block, undefined, undefined, { resolveLP: true  })
+    await sumTokens(balances, [[BEAN_ETH_ADDR, BEAN_DIA_ADDR]], block,)
 
     // add balances of all siloed curve pools
     // this is the block when SiloV2Facet with getTotalDeposited() was introduced
@@ -61,7 +61,6 @@ async function pool2(time, block) {
 }
 
 module.exports={
-    timetravel: true,
     doublecounted: true,
     methodology: "Counts all beans and current LPs in the silo.",
     start: 12974077,
@@ -71,6 +70,7 @@ module.exports={
         staking: sdk.util.sumChainTvls([staking0,staking1])
     },    
     hallmarks: [
-        [1650153600, "Governance proposal hack"]
+        [1650153600, "Governance proposal hack"],
+        [1659602715, "Replant"]
     ]
 };

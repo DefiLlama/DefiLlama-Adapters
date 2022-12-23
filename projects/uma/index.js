@@ -2,7 +2,7 @@ const sdk = require("@defillama/sdk");
 const { sumTokens } = require("../helper/unwrapLPs");
 const { requery } = require("../helper/requery");
 const { getChainTransform } = require("../helper/portedTokens");
-const { getBlock } = require("../helper/getBlock");
+const { getBlock } = require("../helper/http");
 const abi = require("./abi");
 
 const ethLspCreators = [
@@ -91,8 +91,9 @@ async function ethLsp(timestamp, block) {
 async function polygonLsp(timestamp, block, chainBlocks) {
   const balances = {};
   const transform = await getChainTransform('polygon');
+  block = await getBlock(timestamp, "polygon", chainBlocks);
+  
   for (let i = 0; i < polygonLspCreators.length; i++) {
-    block = await getBlock(timestamp, "polygon", chainBlocks);
     const logs = await sdk.api.util.getLogs({
       target: polygonLspCreators[i],
       topic: "CreatedLongShortPair(address,address,address,address)",
@@ -128,10 +129,10 @@ async function bobaLsp(timestamp, block, chainBlocks) {
   const chain = "boba";
   const balances = {};
   const transform = await getChainTransform(chain);
+  block = await getBlock(timestamp, chain, chainBlocks);
 
   for (let i = 0; i < bobaLspCreators.length; i++) {
     const lspCreatorAddress = bobaLspCreators[i];
-    block = await getBlock(timestamp, chain, chainBlocks);
     const logs = await sdk.api.util.getLogs({
       target: lspCreatorAddress,
       topic: "CreatedLongShortPair(address,address,address,address)",

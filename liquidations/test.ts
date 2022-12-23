@@ -2,7 +2,7 @@ import * as path from "path";
 import * as fs from "fs";
 import { ethers } from "ethers";
 import { providers } from "./utils/ethers";
-import { humanizeNumber } from "@defillama/sdk/build/computeTVL/humanizeNumber";
+import { util } from "@defillama/sdk";
 import { TOTAL_BINS, Bins, binResults } from "./utils/binResults";
 import { Liq } from "./utils/types";
 import { config } from "dotenv";
@@ -89,7 +89,7 @@ async function displayDebugInfo(skippedTokens: Set<string>, liqs: Liq[], bins: B
         ])
         .map((o) => ({
           ...o,
-          totalLiquidableUSD: humanizeNumber(o.totalLiquidableUSD),
+          totalLiquidableUSD: util.humanizeNumber.humanizeNumber(o.totalLiquidableUSD),
         }))
     );
     console.log("If this number is high double check your data!");

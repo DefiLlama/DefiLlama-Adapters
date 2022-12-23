@@ -1,4 +1,4 @@
-const { getAddressesUTXOs, getTxsMetadata, getTxsRedeemers } = require("../helper/cardano/blockfrost");
+const { getAddressesUTXOs, getTxsMetadata, getTxsRedeemers } = require("../helper/chain/cardano/blockfrost");
 const { PromisePool } = require('@supercharge/promise-pool')
 
 const smartContractAddress =

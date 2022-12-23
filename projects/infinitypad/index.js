@@ -1,9 +1,8 @@
 const sdk = require("@defillama/sdk");
-const { stakings } = require("../helper/staking");
+const { stakings, staking, } = require("../helper/staking");
 const { getChainTransform } = require("../helper/portedTokens");
 const contracts = require("./contracts.json");
 const axios = require("axios");
-const { pool2s } = require("../helper/pool2");
 
 async function fetchBalances(exports, contracts, transform, chainBlocks, chain) {
     if (!contracts[chain]) return 0;
@@ -61,7 +60,7 @@ chainTVLObject.bsc.staking = stakings(
     "bsc"
 );
 
-chainTVLObject.bsc.pool2 = pool2s(
+chainTVLObject.bsc.pool2 = staking(
     [ contracts.stakingContractBsc ], 
     [ contracts.stakingTokenLp ], 
     'bsc'

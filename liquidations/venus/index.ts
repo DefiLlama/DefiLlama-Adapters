@@ -18,8 +18,8 @@ const sdk = require("@defillama/sdk");
 const subgraphUrl = "https://api.thegraph.com/subgraphs/name/venusprotocol/venus-subgraph";
 
 const accountsQuery = gql`
-  query accounts($lastId: ID) {
-    accounts(first: 1000, where: { hasBorrowed: true, id_gt: $lastId }) {
+  query accounts($lastId: ID, $pageSize: Int) {
+    accounts(first: $pageSize, where: { hasBorrowed: true, id_gt: $lastId }) {
       id
       tokens {
         id

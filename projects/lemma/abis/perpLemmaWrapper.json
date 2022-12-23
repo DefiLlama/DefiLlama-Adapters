@@ -1,0 +1,15 @@
+{
+    "isUsdlCollateralTailAsset": {
+        "inputs": [],
+        "name": "isUsdlCollateralTailAsset",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+}

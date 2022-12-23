@@ -1,7 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
 const BigNumber = require("bignumber.js");
-const { getBlock } = require("../helper/getBlock");
 
 const stakingETHContract = "0x27F0408729dCC6A4672e1062f5003D2a07E4E10D";
 const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
@@ -75,8 +74,7 @@ async function pool2(time, ethBlock, chainBlocks) {
   return balances;
 }
 
-async function arbTvl(time, _ethBlock, chainBlocks) {
-  const block = await getBlock(time, "arbitrum", chainBlocks);
+async function arbTvl(time, _ethBlock, {arbitrum: block}) {
   const eth = await sdk.api.eth.getBalance({
     target: stakingETHContract,
     block,

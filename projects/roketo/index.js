@@ -1,4 +1,4 @@
-const { call, sumSingleBalance } = require('../helper/near');
+const { call, sumSingleBalance } = require('../helper/chain/near');
 
 const GET_STATS_METHOD = 'get_stats';
 const ROKETO_STRIMING_CONTRACT = 'streaming.r-v2.near';

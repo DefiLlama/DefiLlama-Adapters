@@ -1,6 +1,6 @@
 const { GraphQLClient, gql } = require('graphql-request')
 const { toUSDTBalances } = require('../helper/balances');
-const { getBlock } = require('../helper/getBlock');
+const { getBlock } = require('../helper/http');
 const { stakingPricedLP } = require("../helper/staking");
 const { addFundsInMasterChef } = require("../helper/masterchef");
 const { farmLPBalance } = require("./utils");

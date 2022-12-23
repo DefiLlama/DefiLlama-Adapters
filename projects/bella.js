@@ -39,7 +39,7 @@ async function tvl(ts, block) {
 async function pool2(ts, block) {
   const toa = []
   Object.values(uniswapV2Pools).forEach(({ address, owner }) => toa.push([address, owner]))
-  return sumTokens({}, toa, block, undefined, undefined, { resolveLP: true })
+  return sumTokens({}, toa, block,)
 }
 
 module.exports = {

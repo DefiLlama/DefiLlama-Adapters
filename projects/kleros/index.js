@@ -1,4 +1,5 @@
 const { request, gql } = require("graphql-request");
+const { getBlock } = require('../helper/http')
 
 const graphUrls = {
   ethereum: 'https://api.thegraph.com/subgraphs/name/salgozino/klerosboard',
@@ -18,7 +19,7 @@ function getStakedTvl(chain) {
     const balances = {};
 
     const graphUrl = graphUrls[chain]
-    const block = chainBlocks[chain]
+    const block = await getBlock(timestamp, chain, chainBlocks)
 
     const { klerosCounters } = await request(
       graphUrl,

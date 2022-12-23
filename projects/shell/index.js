@@ -46,5 +46,8 @@ module.exports = {
   start: 24142587,
   arbitrum: {
       tvl
-  }
+  },
+  hallmarks: [
+    [1662927378, "Shell v2 Launch"]
+  ]
 }; 

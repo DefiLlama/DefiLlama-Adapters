@@ -1,7 +1,7 @@
 const {
   getZilliqaBalance,
   getBalances,
-} = require('../helper/zilliqa')
+} = require('../helper/chain/zilliqa')
 
 // taken from https://swap.xcadnetwork.com/_next/data/E6YkkwWJMYjzQhGDTm38j/pool-overview.json
 const TOKENS = [

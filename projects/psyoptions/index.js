@@ -1,7 +1,6 @@
 const {
   PublicKey,
 } = require("@solana/web3.js");
-const { deserializeAccount } = require("./accounts");
 const { Program } = require("@project-serum/anchor");
 const PsyAmericanIdl = require("./idl.json");
 const { getProvider, sumTokens2, } = require("../helper/solana");
@@ -30,7 +29,7 @@ async function getPsyAmericanTokenAccounts(anchorProvider) {
     tokensAndOwners.push([market.underlyingAssetMint.toBase58(), market.key])
     tokensAndOwners.push([market.quoteAssetMint.toBase58(), market.key])
   });
-  return { tokensAndOwners };
+  return tokensAndOwners
 }
 
 async function getTokenizedEurosControlledAccounts(anchorProvider) {
@@ -45,25 +44,16 @@ async function getTokenizedEurosControlledAccounts(anchorProvider) {
     await anchorProvider.connection.getTokenAccountsByOwner(poolAuthority, {
       programId: TOKEN_PROGRAM_ID,
     });
-  const tokensAndOwners = []
-  tokenProgramAccounts.value.forEach((tokenProgramAccount) => {
-    // Decode the account data buffer
-    const dataBuffer = tokenProgramAccount.account.data;
-    const decoded = deserializeAccount(dataBuffer);
-    const mintAddress = decoded.mint.toBase58();
-    tokensAndOwners.push([mintAddress, decoded.owner])
-  });
-
-  return {  tokensAndOwners, };
+  return tokenProgramAccounts.value.map(i => i.pubkey.toString())
 }
 
 async function tvl() {
   const anchorProvider = getProvider();
-  const responses = await Promise.all([
+  const [ tokensAndOwners, tokenAccounts, ] = await Promise.all([
     getPsyAmericanTokenAccounts(anchorProvider),
     getTokenizedEurosControlledAccounts(anchorProvider),
   ]);
-  return sumTokens2({ tokensAndOwners: responses.map(i => i.tokensAndOwners).flat()})
+  return sumTokens2({ tokenAccounts, tokensAndOwners, })
 }
 
 module.exports = {

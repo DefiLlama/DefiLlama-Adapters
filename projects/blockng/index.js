@@ -1,4 +1,4 @@
-const { sumUnknownTokens, getUniTVL } = require('../helper/unknownTokens');
+const { sumUnknownTokens, getUniTVL, sumTokensExport } = require('../helper/unknownTokens');
 const { stakingPricedLP, staking, } = require('../helper/staking')
 const sdk = require('@defillama/sdk')
 const blockng = require('../helper/abis/blockng.json');
@@ -24,7 +24,7 @@ const masterchefTvl = async (timestamp, ethBlock, { [chain]: block }) => {
     ['0x24d8d5Cbc14FA6A740c3375733f0287188F8dF3b', '0x82112e12533A101cf442ee57899249C719dc3D4c'], // DAIQUIRI
   ]
 
-  return sumUnknownTokens({ chain, block, coreAssets, tokensAndOwners: toa, });
+  return sumUnknownTokens({ chain, block, useDefaultCoreAssets: true, tokensAndOwners: toa, });
 }
 
 const pool2 = async (timestamp, ethBlock, { [chain]: block }) => {
@@ -42,7 +42,7 @@ const pool2 = async (timestamp, ethBlock, { [chain]: block }) => {
     // ['0x54AA3B2250A0e1f9852b4a489Fe1C20e7C71fd88', '0xE55dd317e8A4DaAB35dfEA7590518811947a4ADC'], // LAW-BCH@LAWSWAP
   ]
 
-  return sumUnknownTokens({ chain, block, coreAssets, tokensAndOwners: toa, });
+  return sumUnknownTokens({ chain, block, useDefaultCoreAssets: true, tokensAndOwners: toa, });
 }
 
 
@@ -51,7 +51,7 @@ const bentoAssets = [
   [LAW, "law"],
   [WBCH, "bitcoin-cash"]
 ]
-const bentoTVLs = bentoAssets.map(asset => staking(BENTOBOX, asset[0], chain, asset[1], 18))
+const bentoTVLs = bentoAssets.map(asset => staking(BENTOBOX, asset[0], chain,))
 
 const lawswapFactory = '0x3A2643c00171b1EA6f6b6EaC77b1E0DdB02c3a62'.toLowerCase()
 const lawETP = "0x4ee06d0486ced674E75Ed9e521725580e8ffDA21"
@@ -61,13 +61,13 @@ const lawEtpPool = stakingPricedLP(lawETP_POOL, lawETP, "smartbch", LAW_LAWETP_P
 
 // staking
 const LAW_RIGHTS = "0xe24Ed1C92feab3Bb87cE7c97Df030f83E28d9667" // DAO address
-const daoStaking = staking(LAW_RIGHTS, LAW, "smartbch", "law", 18)
+const daoStaking = staking(LAW_RIGHTS, LAW, "smartbch")
 
 
 const lawSwapTVL = getUniTVL({
   chain,
   factory: lawswapFactory,
-  coreAssets,
+  useDefaultCoreAssets: true,
 })
 
 
@@ -144,6 +144,9 @@ module.exports = {
     tvl: sdk.util.sumChainTvls([lawSwapTVL, masterchefTvl, ...bentoTVLs,  ]),
     // borrowed: bentoBorrows,
     pool2: sdk.util.sumChainTvls([pool2, civilBeams, ]),
-    staking: sdk.util.sumChainTvls([lawEtpPool, daoStaking,]),
+    staking: sumTokensExport({ chain, tokensAndOwners: [
+      [lawETP, lawETP_POOL,],
+      [LAW,LAW_RIGHTS],
+    ], useDefaultCoreAssets: true, lps: [LAW_LAWETP_PAIR], }),
   }
 }

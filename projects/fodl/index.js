@@ -80,7 +80,7 @@ Object.keys(config).forEach(chain => {
   }
 
   if (pool2)
-    module.exports[chain].pool2 = sumTokensExport({ tokensAndOwners: pool2, resolveLP: true, chain, })
+    module.exports[chain].pool2 = sumTokensExport({ tokensAndOwners: pool2, chain, })
 
   if (staking)
     module.exports[chain].staking = sumTokensExport({ tokensAndOwners: staking, chain, })

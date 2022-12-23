@@ -10,7 +10,7 @@ const {
     fetchOswapAssets,
     fetchOswapExchangeRates,
     summingBaseAABalancesToTvl,
-} = require('../helper/obyte')
+} = require('../helper/chain/obyte')
 
 
 async function bridgeTvl(timestamp, assetMetadata, exchangeRates) {
