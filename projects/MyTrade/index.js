@@ -31,5 +31,3 @@ Object.keys(config).forEach(chain => {
     },
   }
 })
-
-console.log(module.exports)
