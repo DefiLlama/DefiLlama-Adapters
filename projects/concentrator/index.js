@@ -6,7 +6,7 @@ const { toUSDTBalances } = require('../helper/balances');
 const AladdinConvexVaultABI = require('./abis/AladdinConvexVault.json')
 const AladdinCRVABI = require('./abis/AladdinCRV.json')
 const AladdinAFXSABI = require('./abis/AladdinAFXS.json')
-const { farmConfig, vaultConfig: configPools } = require('./config.js');
+const { farmConfig, vaultConfig: configPools, afrxETHConfig } = require('./config.js');
 const { createIncrementArray, fetchURL } = require('../helper/utils');
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
@@ -14,9 +14,12 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 const concentratorVault = '0xc8fF37F7d057dF1BB9Ad681b53Fa4726f268E0e8';
 const concentratorAcrv = '0x2b95A1Dcc3D405535f9ed33c219ab38E8d7e0884';
 const concentratorAFXS = '0xDAF03D70Fe637b91bA6E521A32E1Fb39256d3EC9';
+const concentratorAFrxETH = "0xb15Ad6113264094Fd9BF2238729410A07EBE5ABa";
 const cvxcrvAddress = '0x62b9c7356a2dc64a1969e19c23e4f579f9810aa7';
 
 const concentratorNewVault = '0x3Cf54F3A1969be9916DAD548f3C084331C4450b5';
+const concentratorAfxsVault = '0xD6E3BB7b1D6Fa75A71d48CFB10096d59ABbf99E1';
+const concentratorAfrxETHVault = '0x50B47c4A642231dbe0B411a0B2FBC1EBD129346D';
 const usdtAddress = "0xdac17f958d2ee523a2206206994597c13d831ec7";
 const addressZero = "0x0000000000000000000000000000000000000000"
 const ethAddress = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
@@ -70,6 +73,7 @@ async function tvl(timestamp, block) {
   await getBalancerLpTvl(balances, block)
   await getFarmLpTvl(balances, block)
   await getAFXSInfo(balances, block);
+  await getAfrxETHInfo(balances, block)
   const acrvTotalUnderlying = (await sdk.api.abi.call({
     target: concentratorAcrv,
     block,
@@ -95,38 +99,81 @@ async function tvl(timestamp, block) {
     abi: abi.poolLength,
     block
   })).output;
+  const afxsPoolLength = (await sdk.api.abi.call({
+    target: concentratorAfxsVault,
+    abi: abi.poolLength,
+    block
+  })).output;
+  const afraxPoolLength = (await sdk.api.abi.call({
+    target: concentratorAfrxETHVault,
+    abi: abi.poolLength,
+    block
+  })).output;
 
   await getVaultInfo(oldPoolLength, 'old', balances, block)
   await getVaultInfo(newPoolLength, 'New', balances, block)
+  await getVaultInfo(afxsPoolLength, 'afxs', balances, block)
+  await getVaultInfo(afraxPoolLength, 'afrxETH', balances, block)
+
   sdk.util.sumSingleBalance(balances, cvxcrvAddress, BigNumber(acrvTotalUnderlying).toFixed(0))
   return balances
 }
 
 async function getVaultInfo(poolLength, type, balances, block) {
-  const _target = type == 'New' ? concentratorNewVault : concentratorVault;
+  let _target = concentratorVault;
+  let _abi = AladdinConvexVaultABI.poolInfo;
+  switch (type) {
+    case 'old':
+      _target = concentratorVault;
+      break;
+    case 'New':
+      _target = concentratorNewVault;
+      break;
+    case 'afxs':
+      _target = concentratorAfxsVault;
+      break;
+    case 'afrxETH':
+      _target = concentratorAfrxETHVault;
+      _abi = AladdinConvexVaultABI.afraxETHPoolInfo;
+      break;
+  }
   const paramsCalls = createIncrementArray(poolLength).map(i => ({ params: i }))
   const { output: poolInfos } = await sdk.api.abi.multiCall({
     target: _target,
-    abi: AladdinConvexVaultABI.poolInfo,
+    abi: _abi,
     calls: paramsCalls,
     block,
   })
+  const newPoolInfos = (() => {
+    const _poolInfo = poolInfos.map((item, i) => {
+      if (type == 'afrxETH') {
+        const _vaultConfig = configPools.find(crvPool => crvPool.id === afrxETHConfig[i])
+        const _data = {
+          lpToken: _vaultConfig.addresses.lpToken,
+          totalUnderlying: item.output.supply.totalUnderlying
+        }
+        return _data
+      } else {
+        return item.output
+      }
+    })
+    return _poolInfo
+  })()
   const { output: totalSupplies } = await sdk.api.abi.multiCall({
     abi: 'erc20:totalSupply',
-    calls: poolInfos.map(i => ({ target: i.output.lpToken })),
+    calls: newPoolInfos.map(i => ({ target: i.lpToken })),
     block,
   })
-
-  await Promise.all(poolInfos.map(async (_, i) => {
-    const poolInfo = poolInfos[i];
-    const poolData = configPools.find(crvPool => crvPool.addresses.lpToken.toLowerCase() === poolInfo.output.lpToken.toLowerCase())
-
+  await Promise.all(newPoolInfos.map(async (_, i) => {
+    const poolInfo = newPoolInfos[i];
+    let { totalUnderlying, lpToken } = poolInfo
+    const poolData = configPools.find(crvPool => crvPool.addresses.lpToken.toLowerCase() === lpToken.toLowerCase())
     if (!poolData) {
-      console.log(`lp token(${poolInfo.output.lpToken}) not found in pre-defined list, assuming it is a swap address, coin length assumed to be 2`)
+      console.log(`lp token(${lpToken}) not found in pre-defined list, assuming it is a swap address, coin length assumed to be 2`)
       return;
     }
     const resolvedLPSupply = totalSupplies[i].output;
-    await getTokenTvl(balances, poolData, poolInfo.output.totalUnderlying, resolvedLPSupply, block)
+    await getTokenTvl(balances, poolData, totalUnderlying, resolvedLPSupply, block)
   }))
 }
 
@@ -205,6 +252,33 @@ async function getAFXSInfo(balances, block) {
     block,
   })
   await getTokenTvl(balances, cvxfxsCrvInfo, aFXSTotalUnderlying, totalSupply, block)
+}
+
+async function getAfrxETHInfo(balances, block) {
+  const ethFrxETHCrvInfo = {
+    id: 'ETH-frxETH',
+    name: 'ETH-frxETH',
+    coins: [
+      'eth',
+      'frxETH',
+    ],
+    addresses: {
+      swap: '0xa1F8A6807c402E4A15ef4EBa36528A3FED24E577',
+      lpToken: '0xf43211935C781D5ca1a41d2041F397B8A7366C7A',
+    },
+  }
+  const aFrxETHTotalUnderlying = (await sdk.api.abi.call({
+    target: concentratorAFrxETH,
+    block,
+    abi: AladdinAFXSABI.totalAssets,
+  })).output;
+  const { output: totalSupply } = await sdk.api.abi.call({
+    abi: 'erc20:totalSupply',
+    target: ethFrxETHCrvInfo.addresses.lpToken,
+    params: [],
+    block,
+  })
+  await getTokenTvl(balances, ethFrxETHCrvInfo, aFrxETHTotalUnderlying, totalSupply, block)
 }
 module.exports = {
   doublecounted: true,

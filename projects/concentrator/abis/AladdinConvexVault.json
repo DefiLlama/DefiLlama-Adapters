@@ -67,5 +67,122 @@
     ],
     "stateMutability": "view",
     "type": "function"
+  },
+  "afraxETHPoolInfo": {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "poolInfo",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint128",
+            "name": "totalUnderlying",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "totalShare",
+            "type": "uint128"
+          }
+        ],
+        "internalType": "struct ConcentratorGeneralVault.PoolSupplyInfo",
+        "name": "supply",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "token",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "strategy",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "pauseDeposit",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "pauseWithdraw",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct ConcentratorGeneralVault.PoolStrategyInfo",
+        "name": "strategy",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint128",
+            "name": "rate",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint32",
+            "name": "periodLength",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint48",
+            "name": "lastUpdate",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint48",
+            "name": "finishAt",
+            "type": "uint48"
+          },
+          {
+            "internalType": "uint256",
+            "name": "accRewardPerShare",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct ConcentratorGeneralVault.PoolRewardInfo",
+        "name": "reward",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint32",
+            "name": "withdrawFeeRatio",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "platformFeeRatio",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "harvestBountyRatio",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint160",
+            "name": "reserved",
+            "type": "uint160"
+          }
+        ],
+        "internalType": "struct ConcentratorGeneralVault.PoolFeeInfo",
+        "name": "fee",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   }
 }
