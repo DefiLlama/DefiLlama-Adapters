@@ -12,8 +12,7 @@ const config = {
   },
 };
 
-Object.keys(config).forEach((chain) => {
-  const { auditor, startTimestamp } = config[chain];
+Object.entries(config).forEach(([chain, { auditor, startTimestamp }]) => {
   module.exports[chain] = {
     tvl: async (_, _b, _cb, { api }) => {
       const balances = {};
