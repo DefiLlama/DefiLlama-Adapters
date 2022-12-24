@@ -10,7 +10,7 @@ const cacheFolder = 'uniswap-forks'
 function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
   useDefaultCoreAssets = false,
   abis = {},
-  chain: _chain,
+  chain: _chain = 'ethereum',
 }) {
 
   return async (_, _b, cb, { chain, block } = {}) => {
