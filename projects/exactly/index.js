@@ -5,6 +5,7 @@ module.exports = {
     "Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There are multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending.",
 };
 
+/** @type {Record<string, { auditor: string, startTimestamp: number }>} */
 const config = {
   ethereum: {
     auditor: "0x310A2694521f75C7B2b64b5937C16CE65C3EFE01",
@@ -14,7 +15,9 @@ const config = {
 
 Object.entries(config).forEach(([chain, { auditor, startTimestamp }]) => {
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api }) => {
+    /** @type {(timestamp: number, block: number, chainBlocks: Record<string, number>, { api: ChainApi }) => Promise<Balances>} */
+    tvl: async (_, __, ___, { api }) => {
+      /** @type {Balances} */
       const balances = {};
       const data = await markets(api, auditor, startTimestamp);
 
@@ -33,7 +36,9 @@ Object.entries(config).forEach(([chain, { auditor, startTimestamp }]) => {
       });
       return balances;
     },
-    borrowed: async (_, _b, _cb, { api }) => {
+    /** @type {(timestamp: number, block: number, chainBlocks: Record<string, number>, { api: ChainApi }) => Promise<Balances>} */
+    borrowed: async (_, __, ___, { api }) => {
+      /** @type {Balances} */
       const balances = {};
       const data = await markets(api, auditor, startTimestamp);
 
@@ -54,9 +59,11 @@ Object.entries(config).forEach(([chain, { auditor, startTimestamp }]) => {
 
 const INTERVAL = 86_400 * 7 * 4;
 
+/** @type {(api: ChainApi, auditor: string, startTimestamp: number) => Promise<any[][]>} */
 async function markets(api, target, startTimestamp) {
+  /** @type {string[]} */
   const markets = await api.call({ abi: abis.allMarkets, target });
-  const timestamp = api.timestamp;
+  const timestamp = api.timestamp ?? 0;
 
   const getters = ["asset", "totalAssets", "totalFloatingBorrowAssets", "maxFuturePools"];
   const gettersData = await Promise.all(getters.map((key) => api.multiCall({ abi: abis[key], calls: markets })));
@@ -88,3 +95,6 @@ const abis = {
   totalAssets: "function totalAssets() view returns (uint256)",
   totalFloatingBorrowAssets: "function totalFloatingBorrowAssets() view returns (uint256)",
 };
+
+/** @typedef {import("@defillama/sdk").ChainApi} ChainApi */
+/** @typedef {import("@defillama/sdk/build/types").Balances} Balances */
