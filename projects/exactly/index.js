@@ -68,12 +68,12 @@ async function markets(api, target, startTimestamp) {
   const getters = ["asset", "totalAssets", "totalFloatingBorrowAssets", "maxFuturePools"];
   const gettersData = await Promise.all(getters.map((key) => api.multiCall({ abi: abis[key], calls: markets })));
   const params = [];
-  const futurePoolsMax = gettersData[3].reduce((a, i) => (a > +i ? a : +i), 0);
+  const maxFuturePools = gettersData[3].reduce((a, i) => (a > +i ? a : +i), 0);
 
   markets.forEach((_, i) => {
     params[i] = [];
     const minMaturity = startTimestamp - (startTimestamp % INTERVAL) + INTERVAL;
-    const maxMaturity = timestamp - (timestamp % INTERVAL) + INTERVAL * futurePoolsMax;
+    const maxMaturity = timestamp - (timestamp % INTERVAL) + INTERVAL * maxFuturePools;
     const fixedPoolCount = (maxMaturity - minMaturity) / INTERVAL + 1;
 
     for (let j = 0; j < fixedPoolCount; j++) params[i].push(minMaturity + INTERVAL * j);
