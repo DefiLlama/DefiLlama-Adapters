@@ -5,7 +5,7 @@ const sdk = require('@defillama/sdk')
 const { createIncrementArray } = require('../helper/utils')
 const { getCache, setCache, } = require("../helper/cache");
 
-const project = '1inch'
+const project = 'bulky/1inch'
 
 module.exports = {}
 Object.keys(config).forEach(chain => {

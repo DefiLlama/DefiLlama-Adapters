@@ -6,7 +6,7 @@ const { requery } = require('../helper/requery');
 const { sliceIntoChunks, } = require('../helper/utils');
 const { getCache, setCache } = require('../helper/cache');
 const { request, gql } = require("graphql-request");
-const project = 'synthetix'
+const project = 'bulky/synthetix'
 const { log } = require('../helper/utils')
 
 const QUERY_NO_BLOCK = gql`

@@ -28,7 +28,7 @@ const {
 const { getCache, setCache, } = require("../helper/cache")
 const { vestingHelper, sumUnknownTokens, } = require("../helper/unknownTokens")
 
-const project = 'dxsale'
+const project = 'bulky/dxsale'
 
 function getTVLTotal(args) {
   return async (timestamp, ethBlock, chainBlocks) => {
