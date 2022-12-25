@@ -1,5 +1,4 @@
 const { ibcChains, getUniqueAddresses} = require('./tokenMapping')
-const { log,  } = require('./utils')
 const { get, post, } = require('./http')
 const { sumTokens2: sumTokensEVM, } = require('./unwrapLPs')
 const sdk = require('@defillama/sdk')
@@ -41,9 +40,7 @@ async function getBalance(chain, account) {
 }
 
 function sumTokensExport(options) {
-  const {chain} = options
-  if (!chain) throw new Error('Missing chain info')
-  return async (timestamp, _b, {[chain]: block}) => sumTokens({ timestamp, block, ...options})
+  return async (_, _b, _cb, { api }) => sumTokens({ ...api, ...options})
 }
 
 async function sumTokens(options) {

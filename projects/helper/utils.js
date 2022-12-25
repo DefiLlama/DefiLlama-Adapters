@@ -2,6 +2,7 @@ const BigNumber = require("bignumber.js");
 const axios = require("axios");
 const sdk = require('@defillama/sdk')
 const http = require('./http')
+const env = require('./env')
 const erc20 = require('./abis/erc20.json')
 const ethers = require("ethers");
 
@@ -98,14 +99,14 @@ function isLP(symbol, token, chain) {
     label = 'Blackisting this LP because of unsupported abi'
 
   if (label) {
-    if (DEBUG_MODE) console.log(label, token, symbol)
+    sdk.log(label, token, symbol)
     return false
   }
 
   const isLPRes = LP_SYMBOLS.includes(symbol) || /(UNI-V2|vAMM|sAMM)/.test(symbol) || symbol.split(/\W+/).includes('LP')
 
-  if (DEBUG_MODE && isLPRes && !['UNI-V2', 'Cake-LP'].includes(symbol))
-    console.log(chain, symbol, token)
+  if (isLPRes && !['UNI-V2', 'Cake-LP'].includes(symbol))
+    sdk.log(chain, symbol, token)
 
   return isLPRes
 }
@@ -163,7 +164,7 @@ function getUniqueAddresses(addresses, isCaseSensitive = false) {
   return [...set]
 }
 
-const DEBUG_MODE = !!process.env.LLAMA_DEBUG_MODE
+const DEBUG_MODE = env.LLAMA_DEBUG_MODE
 const log = sdk.log
 
 function sliceIntoChunks(arr, chunkSize = 100) {
@@ -329,7 +330,6 @@ async function getLogs({ chain = 'ethereum', fromBlock, toBlock, topic, topics, 
 }
 
 module.exports = {
-  DEBUG_MODE,
   log,
   createIncrementArray,
   fetchURL,

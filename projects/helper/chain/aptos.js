@@ -2,13 +2,14 @@
 const sdk = require('@defillama/sdk')
 
 const http = require('../http')
+const env = require('../env')
 const { fixBalancesTokens } = require('../tokenMapping')
 const { transformBalances } = require('../portedTokens')
 const { log, getUniqueAddresses } = require('../utils')
 
 const coreTokens = Object.keys(fixBalancesTokens.aptos)
 
-const endpoint = process.env.APTOS_RPC || "https://aptos-mainnet.pontem.network"
+const endpoint = env.APTOS_RPC || "https://aptos-mainnet.pontem.network"
 
 async function aQuery(api) {
   return http.get(`${endpoint}${api}`)
