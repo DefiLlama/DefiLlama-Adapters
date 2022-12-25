@@ -5,7 +5,7 @@ const { sumTokens2, } = require('../helper/unwrapLPs')
 const { log, getUniqueAddresses } = require('../helper/utils')
 const { getCache, setCache, } = require("../helper/cache");
 
-const project = 'xdao'
+const project = 'bulky/xdao'
 
 const factoryAddress = "0x72cc6E4DE47f673062c41C67505188144a0a3D84";
 const ONE_DAY = 24 * 60 * 60 * 1000
