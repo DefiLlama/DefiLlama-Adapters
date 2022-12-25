@@ -2,6 +2,7 @@ const axios = require("axios")
 const { request, GraphQLClient, } = require("graphql-request")
 const COVALENT_KEY = 'ckey_72cd3b74b4a048c9bc671f7c5a6'
 const sdk = require('@defillama/sdk')
+const env = require('./env')
 
 const chainIds = {
   'ethereum': 1,
@@ -17,7 +18,7 @@ async function getCache(endpoint) {
 }
 
 async function getBlock(timestamp, chain, chainBlocks, undefinedOk = false) {
-  if (chainBlocks[chain] !== undefined || (process.env.HISTORICAL === undefined && undefinedOk)) {
+  if (chainBlocks[chain] || (!env.HISTORICAL && undefinedOk)) {
       return chainBlocks[chain]
   } else {
       if(chain === "celo"){
