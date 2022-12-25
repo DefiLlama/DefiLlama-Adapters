@@ -9,23 +9,35 @@ async function tvl(_, _b, _cb, { api, }) {
 
 async function tvlV1(api, balances = {}) {
   const vaults = await api.call({ abi: 'function getAllVaults() view returns (address[])', target: '0xbaa97b771260cf74b52e721ffe0d461512199cf1' })
-  const collateralTokens = await api.multiCall({
-    abi: 'address:collateralToken',
-    calls: vaults,
+  const collateralTokens = await api.multiCall({ abi: 'address:collateralToken', calls: vaults, })
+  const collateralNames = await api.multiCall({ abi: 'string:name', calls: collateralTokens, })
+  const tokensAndOwners = []
+  const sTokens = []
+  const sTokens2 = []
+  collateralNames.forEach((name, i) => {
+    if (name && name.startsWith('Super ')) {
+      if (name.includes('Benqi'))
+        sTokens.push(collateralTokens[i])
+      else
+        sTokens2.push(collateralTokens[i])
+    }
+    else
+      tokensAndOwners.push([collateralTokens[i], vaults[i]])
   })
-  return sumTokens2({ balances, tokensAndOwners: collateralTokens.map((t, i) => ([t, vaults[i]])), ...api})
+  const collateralTokens2 = await api.multiCall({ abi: 'address:underlying', calls: sTokens, })
+  const collateralTokens3 = await api.multiCall({ abi: 'address:stakeToken', calls: sTokens2, })
+  collateralTokens2.forEach((t, i) => tokensAndOwners.push([t, sTokens[i]]))
+  collateralTokens3.forEach((t, i) => tokensAndOwners.push([t, sTokens2[i]]))
+  return sumTokens2({ balances, tokensAndOwners, ...api })
 }
 
 async function tvlV2(api, balances = {}) {
-  const vaults = await api.call({ abi: 'function getAllLeveragePool() view returns (address[])', target: '0xdc8c63dfc31325aea8cb37ecec1a760bbb5b43e7' })
-  const collateralTokens = await api.multiCall({
-    abi: 'address:underlying',
-    calls: vaults,
-  })
-  return sumTokens2({ balances, tokensAndOwners: collateralTokens.map((t, i) => ([t, vaults[i]])), ...api})
+  const leveragePools = await api.call({ abi: 'function getAllLeveragePool() view returns (address[])', target: '0xdc8c63dfc31325aea8cb37ecec1a760bbb5b43e7' })
+  const collateralTokens = await api.multiCall({ abi: 'address:underlying', calls: leveragePools, })
+  return sumTokens2({ balances, tokensAndOwners: collateralTokens.map((t, i) => ([t, leveragePools[i]])), ...api })
 }
 
-async function staking(_, _b, _cb, { api, }){
+async function staking(_, _b, _cb, { api, }) {
   const stk = await api.call({
     target: "0x1e93b54AC156Ac2FC9714B91Fa10f1b65e2daFD9",
     abi: "uint256:totalStaked"
@@ -38,12 +50,12 @@ async function staking(_, _b, _cb, { api, }){
 
 module.exports = {
   doublecounted: true,
-  start: 6965653, 
-  avax:{
+  start: 6965653,
+  avax: {
     tvl,
     staking
   },
   hallmarks: [
-    [Math.floor(new Date('2022-12-24')/1e3), 'Both v1 & v2 exploited'],
+    [Math.floor(new Date('2022-12-24') / 1e3), 'Both v1 & v2 exploited'],
   ],
 };
