@@ -22,7 +22,7 @@ async function getData(ethBlock) {
     subgraphUrl,
     graphTotalTokenTVLQuery,
     {
-      block: ethBlock - 100
+      block: ethBlock - 200
     }
   )
 }

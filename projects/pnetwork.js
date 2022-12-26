@@ -1,13 +1,12 @@
-const querystring = require('querystring');
 const { toUSDTBalances } = require('./helper/balances');
-const { get } = require('./helper/http');
+const axios = require('axios')
 
 const data = {}
 
 const HOURS_12 = 12 * 60 * 60 * 1000
 
 function getTvl(timestamp) {
-  const tsStr = ''+ timestamp
+  const tsStr = '' + timestamp
   if (!data[tsStr]) data[tsStr] = _getTvl()
   return data[tsStr]
 
@@ -19,16 +18,21 @@ function getTvl(timestamp) {
       epoch: 'ms',
       db: 'pnetwork-volumes-1',
     }
-    const queryStr = querystring.encode(queryObj)
 
-    const res = await get('https://pnetwork.watch/api/datasources/proxy/1/query?' + queryStr)
-    
-    const { results: [ {series}, sumTvl ] } = res
+    const { data: res } = await axios.get('https://pnetwork.watch/api/datasources/proxy/1/query', { params: queryObj })
+
+    const { results: [{ series }, sumTvl] } = res
     const response = {}
 
-    response.tvlTotal = sumTvl.series[0].values[0][1]
-    series.forEach(({ tags: { host_blockchain }, values: [ [_, value]]}) => response[chainMapping[host_blockchain]] = value)
+    response.tvlTotal = getTvl(sumTvl.series[0].values)
+    series.forEach(({ tags: { host_blockchain }, values }) => response[chainMapping[host_blockchain]] = getTvl(values))
+    if (!response.tvlTotal) throw new Error('Incorrect tvl')
+
     return response
+  }
+
+  function getTvl(values) {
+    return values.reduce((a, i) => a ? a : i[1], 0)
   }
 }
 
