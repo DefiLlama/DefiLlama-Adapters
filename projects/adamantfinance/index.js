@@ -123,88 +123,6 @@ async function cronosTvl(timestamp, block, chainBlocks) {
   return await tvl(timestamp, "cronos", chainBlocks, lpAddresses_cronos);
 }
 
-async function valueInGauge(chain, block, GAUGE, HOLDER, transformAddress = (a) => a) {
-  // lp token
-  let lp_token = (
-    await sdk.api.abi.call({
-      chain: chain, block: block, target: GAUGE, abi: abi.lp_token,
-    })
-  ).output;
-
-  // balance of lp token
-  const gauge_lp_balance = new BigNumber(
-    (await sdk.api.abi.call({ chain: chain, block: block, target: lp_token, abi: abi.balanceOf, params: GAUGE, })
-    ).output
-  );
-
-  // total supply of lp token
-  const lp_total_supply = new BigNumber(
-    (await sdk.api.abi.call({ chain: chain, block: block, target: lp_token, abi: abi.totalSupply, })
-    ).output
-  );
-
-  // balance of gauge
-  const holder_gauge_balance = new BigNumber(
-    (await sdk.api.abi.call({ chain: chain, block: block, target: GAUGE, abi: abi.balanceOf, params: HOLDER, })
-    ).output
-  );
-
-  // total supply of gauge
-  const gauge_total_supply = new BigNumber(
-    (await sdk.api.abi.call({ chain: chain, block: block, target: GAUGE, abi: abi.totalSupply, })
-    ).output
-  );
-
-  // calc the portion of curve lp locked in the strategy
-  let poolCoins = await crvPoolTvl(chain, block, lp_token, transformAddress);
-  for (const coinQty in poolCoins) {
-    poolCoins[coinQty] = new BigNumber(poolCoins[coinQty]).times(gauge_lp_balance).dividedBy(lp_total_supply).times(holder_gauge_balance).dividedBy(gauge_total_supply).toFixed(0);
-  }
-
-  return poolCoins;
-}
-
-async function crvPoolTvl(chain, block, COIN_TARGET, transformAddress = (a) => a, SUPPLY_TARGET = COIN_TARGET) {
-  const balances = {};
-  const maincoins = [];
-
-  // find coins in curve pool
-  for (var c = 0; c < 10; c++) {
-    try {
-      var coinX = await sdk.api.abi.call({
-        chain: chain,
-        block: block,
-        target: COIN_TARGET,
-        abi: abi.coins,
-        params: c,
-      });
-      maincoins.push(coinX.output);
-    } catch (error) {
-      break;
-    }
-  }
-
-  // find balances of coins
-  const underlying_balances = (
-    await sdk.api.abi.multiCall({
-      chain: chain,
-      block: block,
-      calls: maincoins.map((coin) => ({
-        target: coin,
-        params: SUPPLY_TARGET,
-      })),
-      abi: abi.balanceOf,
-    })
-  ).output.map((val) => new BigNumber(val.output));
-
-  // add up total pool tvl
-  for (let j = 0; j < maincoins.length; j++) {
-    sdk.util.sumSingleBalance(balances, transformAddress(maincoins[j]), underlying_balances[j].toFixed(0));
-  }
-
-  return balances;
-}
-
 async function curveTvl(balances, chain, block, curveVaults, transformAddress = (a) => a) {
   let crv3Address;
 
@@ -354,8 +272,6 @@ async function uniTvl(balances, chain, block, uniVaults, lpAddressesIgnored, tra
     })
   ).output.map((val) => val.output);
 
-  const lpPositions = [];
-
   uniVaults.forEach((v, idx) => {
     if (
       lpAddressesIgnored.some(
@@ -372,6 +288,7 @@ async function uniTvl(balances, chain, block, uniVaults, lpAddressesIgnored, tra
 }
 
 const tvl = async (timestamp, chain, chainBlocks, lpAddressesIgnored) => {
+
   const block = chainBlocks[chain];
   const transformAddress = await getChainTransform(chain)
   const fixBalances = await getFixBalances(chain)
@@ -386,6 +303,7 @@ const tvl = async (timestamp, chain, chainBlocks, lpAddressesIgnored) => {
       lpAddress: vault.lpAddress,
       strategyAddress: vault.strategyAddress,
     }));
+    curveVaults = []
   balances = await curveTvl(balances, chain, block, curveVaults, transformAddress);
 
   let uniVaults = resp.data
@@ -393,8 +311,8 @@ const tvl = async (timestamp, chain, chainBlocks, lpAddressesIgnored) => {
       (vault) =>
         vault.token0 !== vault.token1 &&
         vault.vaultAddress !== "" &&
-        vault.platform !== "dodo" &&
-        vault.poolName.toLowerCase() !== 'mai-3crv'
+        vault.platform !== "dodo"
+        // vault.poolName.toLowerCase() !== 'mai-3crv'
     )
     .map((vault) => ({
       vaultAddress: vault.vaultAddress,

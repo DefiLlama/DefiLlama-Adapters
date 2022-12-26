@@ -78,7 +78,7 @@ const blacklisted_LPS = [
 function isLP(symbol, token, chain) {
   // console.log(symbol, chain, token)
   if (!symbol) return false
-  if (token && blacklisted_LPS.includes(token.toLowerCase())) return false
+  if (token && blacklisted_LPS.includes(token.toLowerCase()) || symbol.includes('HOP-LP-')) return false
   if (chain === 'bsc' && ['OLP', 'DLP', 'MLP', 'LP'].includes(symbol)) return false
   if (chain === 'bsc' && ['WLP', 'FstLP', 'BLP',].includes(symbol)) return true
   if (chain === 'avax' && ['ELP', 'EPT', 'CRL', 'YSL', 'BGL', 'PLP'].includes(symbol)) return true
@@ -91,6 +91,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'harmony' && ['HLP'].includes(symbol)) return true
   if (chain === 'fantom' && ['HLP'].includes(symbol)) return true
   if (chain === 'songbird' && ['FLRX', 'OLP'].includes(symbol)) return true
+  if (chain === 'arbitrum' && ['DXS'].includes(symbol)) return true
   if (chain === 'metis' && ['NLP', 'ALP'].includes(symbol)) return true // Netswap/Agora LP Token
   if (['fantom', 'nova',].includes(chain) && ['NLT'].includes(symbol)) return true
   let label
