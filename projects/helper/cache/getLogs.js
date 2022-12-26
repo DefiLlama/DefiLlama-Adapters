@@ -6,11 +6,12 @@ const ethers = require("ethers")
 
 const cacheFolder = 'logs'
 
-async function getLogs({ chain = 'ethereum', target,
+async function getLogs({ chain = 'ethereum', target, block,
   topic, keys = [], fromBlock, toBlock, topics,
-  timestamp, chainBlocks, eventAbi }) {
+  timestamp, chainBlocks = {}, eventAbi }) {
   if (!target) throw new Error('Missing target!')
   if (!fromBlock) throw new Error('Missing fromBlock!')
+  if (!toBlock) toBlock = block
   if (!toBlock)
     toBlock = await getBlock(timestamp, chain, chainBlocks)
 
