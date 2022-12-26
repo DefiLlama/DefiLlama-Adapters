@@ -5,13 +5,19 @@ const env = require('../env')
 const url = addr => 'https://blockstream.info/api/address/' + addr
 
 const delay = 3 * 60 * 60 // 3 hours
+const balancesNow = {
+
+}
 
 async function getBalanceNow(addr) {
+  if (balancesNow[addr]) return balancesNow[addr]
+
   const { chain_stats: {
     funded_txo_sum, spent_txo_sum,
   } } = await get(url(addr))
 
-  return (funded_txo_sum - spent_txo_sum) / 1e8
+  balancesNow[addr] =  (funded_txo_sum - spent_txo_sum) / 1e8
+  return balancesNow[addr]
 }
 
 async function sumTokens({ balances = {}, owners = [], timestamp }) {

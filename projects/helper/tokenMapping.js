@@ -14,7 +14,7 @@ const nullAddress = '0x0000000000000000000000000000000000000000'
 // carbon: https://api-insights.carbon.network/info/denom_gecko_map
 
 const unsupportedGeckoChains = ['aptos', 'terra2', 'terra', 'kujira']
-const ibcChains = ['terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', ]
+const ibcChains = ['terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', ]
 const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', ]
 
 const tokens = {
@@ -367,13 +367,16 @@ const ibcMappings = {
   // 
   "ibc/295548A78785A1007F232DE286149A6FF512F180AF5657780FC89C009E2C348F": { coingeckoId: "axlusdc", decimals: 6, },
   'ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2': { coingeckoId: 'cosmos', decimals: 6, },
+  'ibc/961FA3E54F5DCCA639F37A7C45F7BBE41815579EF1513B5AFBEFCFEB8F256352': { coingeckoId: 'cosmos', decimals: 6, },
   'ibc/799FDD409719A1122586A629AE8FCA17380351A51C1F47A80A1B8E7F2A491098': { coingeckoId: 'akash-network', decimals: 6, },
   'ibc/B8AF5D92165F35AB31F3FC7C7B444B9D240760FA5D406C49D24862BD0284E395': { coingeckoId: 'terra-luna', decimals: 6, },
   'ibc/DA59C009A0B3B95E0549E6BF7B075C8239285989FF457A8EDDBB56F10B2A6986': { coingeckoId: 'terra-luna', decimals: 6, },
   'ibc/0471F1C4E7AFD3F07702BEF6DC365268D64570F7C1FDC98EA6098DD6DE59817B': { coingeckoId: 'osmosis', decimals: 6, },
   'ibc/47BD209179859CDE4A2806763D7189B6E6FE13A17880FE2B42DE1E6C1E329E23': { coingeckoId: 'osmosis', decimals: 6, },
+  'ibc/EA7DF7F779C7F14E07172E5713E07356B55F01496CA649DDE46CF8FBF1A8466D': { coingeckoId: 'osmosis', decimals: 6, },
   'ibc/F3AA7EF362EC5E791FE78A0F4CCC69FEE1F9A7485EB1A8CAB3F6601C00522F10': { coingeckoId: 'evmos', decimals: 18, },
   'ibc/EFF323CC632EC4F747C61BCE238A758EFDB7699C3226565F7C20DA06509D59A5': { coingeckoId: 'juno-network', decimals: 6, },
+  'ibc/167E3D88D71B7D2F6308D3EF93FC3DD51932B2D9672D72B71418F61CBC5F5717': { coingeckoId: 'juno-network', decimals: 6, },
   'ibc/B448C0CA358B958301D328CCDC5D5AD642FC30A6D3AE106FF721DB315F3DDE5C': { coingeckoId: 'terrausd', decimals: 6, },
   'ibc/A358D7F19237777AF6D8AD0E0F53268F8B18AE8A53ED318095C14D6D7F3B2DB5': { coingeckoId: 'secret', decimals: 6, },
   'ibc/1B38805B1C75352B28169284F96DF56BDEBD9E8FAC005BDCC8CF0378C82AA8E7': { coingeckoId: 'ethereum', decimals: 18, },
@@ -384,6 +387,7 @@ const ibcMappings = {
   'ibc/F2331645B9683116188EF36FC04A809C28BD36B54555E8705A37146D0182F045': { coingeckoId: 'tether', decimals: 6, },
   'ibc/CBF67A2BCF6CAE343FDF251E510C8E18C361FC02B23430C121116E0811835DEF': { coingeckoId: 'tether', decimals: 6, },
   'ibc/B3504E092456BA618CC28AC671A71FB08C6CA0FD0BE7C8A5B5A3E2DD933CC9E4': { coingeckoId: 'usd-coin', decimals: 6, },
+  'ibc/E1616E7C19EA474C565737709A628D6F8A23FF9D3E9A7A6871306CF5E0A5341E': { coingeckoId: 'usd-coin', decimals: 6, },
   'ibc/903A61A498756EA560B85A85132D3AEE21B5DEDD41213725D22ABF276EA6945E': { coingeckoId: 'axelar', decimals: 6, },
   'ibc/C01154C2547F4CB10A985EA78E7CD4BA891C1504360703A37E1D7043F06B5E1F': { coingeckoId: 'axelar', decimals: 6, },
   // from injective
@@ -392,6 +396,7 @@ const ibcMappings = {
   'ibc/B786E7CBBF026F6F15A8DA248E0F18C62A0F7A70CB2DABD9239398C8B5150ABB': { coingeckoId: 'persistence', decimals: 6, },
   'ibc/624BA9DD171915A2B9EA70F69638B2CEA179959850C1A586F6C485498F29EDD4': { coingeckoId: 'polkadot', decimals: 10, },
   'ibc/3FDD002A3A4019B05A33D324B2F29748E77AF501BEA5C96D1F28B2D6755F9F25': { coingeckoId: 'stride', decimals: 6, },
+
 }
 
 const fixBalancesTokens = {
@@ -528,6 +533,11 @@ const fixBalancesTokens = {
   },
   injective: {
     "inj": { coingeckoId: "injective-protocol", decimals: 18, },
+  },
+  comdex: {
+    "ucmdx": { coingeckoId: "comdex", decimals: 6, },
+    // "uharbor": { coingeckoId: "comdex", decimals: 6, },
+    // "ucmst": { coingeckoId: "comdex", decimals: 6, },
   },
   solana: {
     "6LNeTYMqtNm1pBFN8PfhQaoLyegAH8GD32WmHU9erXKN": { coingeckoId: "aptos", decimals: 8, },
