@@ -52,7 +52,7 @@ module.exports = {
   methodology:
     "Factory address (0x84343b84EEd78228CCFB65EAdEe7659F246023bf) is used to find the LP pairs. TVL is equal to the liquidity on the AMM and the candy tokens in the staking pools / vault / vesting contract / lock contract.",
   cronos: {
-    tvl:  sdk.util.sumChainTvls([chainTvl, fetchTvl]),
+    tvl:  chainTvl,
     staking: fetchTvl,
     vesting: fetchVesting
 
