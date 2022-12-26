@@ -3,7 +3,7 @@ const abi = require("./abi.json");
 const { sumTokens } = require("../helper/unwrapLPs");
 const { stakings } = require("../helper/staking");
 const { request, gql } = require("graphql-request");
-const { getBlock } = require("../helper/getBlock");
+const { getBlock } = require("../helper/http");
 //const tvlV1 = require('./v1')
 
 
@@ -124,6 +124,7 @@ const chainToSubgraph = {
   ethereum: "https://api.thegraph.com/subgraphs/name/premiafinance/premiav2",
   arbitrum: "https://api.thegraph.com/subgraphs/name/premiafinance/premia-arbitrum",
   fantom: "https://api.thegraph.com/subgraphs/name/premiafinance/premia-fantom",
+  optimism: "https://api.thegraph.com/subgraphs/name/premiafinance/premia-optimism",
 }
 
 function chainTvl(chain){
@@ -151,5 +152,8 @@ module.exports = {
   },
   fantom:{
     tvl: chainTvl("fantom")
+  },
+  optimism: {
+    tvl: chainTvl("optimism")
   }
 };

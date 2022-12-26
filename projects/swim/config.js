@@ -106,6 +106,15 @@ module.exports = {
               "usd-coin",
             ],
           },
+          {
+            pool: '4XQz1qHMMTkFETn5PSNyLVutYPyZ4han8RB8Mmw1G48Q', // Meta Karura-USDT
+            tokens: [
+              'E942z7FnS7GpswTvF5Vggvo7cMTbvZojjLbFgsrDVff1', // Karura-USDT
+            ],
+            symbols: [
+              "tether",
+            ],
+          },
         ],
       }
     },

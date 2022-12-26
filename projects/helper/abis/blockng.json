@@ -1,0 +1,108 @@
+{
+  "getPoolInfo": {
+    "inputs": [
+      {
+        "internalType": "contract IVoter",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "type": "uint256"
+      }
+    ],
+    "name": "getPoolInfo",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "lpTokenAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "subTokenAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "subTokenSymbol",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "dexFactory",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "gaugeAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "gaugeTotalSupply",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "lpPrice",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "gaugeAPR",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "bribeAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "int256",
+            "name": "weights",
+            "type": "int256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "punkId",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct LawDaoLen.BEAM[]",
+        "name": "beams",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "numberOfPool": {
+    "inputs": [
+      {
+        "internalType": "contract IVoter",
+        "name": "voter",
+        "type": "address"
+      }
+    ],
+    "name": "numberOfPool",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "len",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+}

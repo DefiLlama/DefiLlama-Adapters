@@ -35,7 +35,7 @@ async function tvl(timestamp, ethereumBlock, chainBlocks) {
 }
 
 module.exports = {
-  avalanche: {
+  avax:{
     tvl,
     staking: staking(
       "0x5857019c749147eee22b1fe63500f237f3c1b692",

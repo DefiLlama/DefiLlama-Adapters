@@ -1,106 +1,84 @@
-const utils = require("../helper/utils");
-const SUNNY_POOLS = require("../helper/sunny-pools.json");
-
-const { getMultipleAccountBuffers, getMultipleAccountsRaw } = require("../helper/solana");
-
-const readTVL = async ({
-  tokenA,
-  tokenB,
-  tokenAReserve,
-  tokenBReserve,
-  poolMint,
-  tokenAccounts,
-}) => {
-  const accountData = await getMultipleAccountBuffers({
-    tokenAReserve,
-    tokenBReserve,
-    poolMint,
-  });
-  if (accountData.sunnyPool === null) {
-    return {};
-  }
-
-  const decimals = accountData.poolMint.readUInt8(44);
-  const divisor = 10 ** decimals;
-
-  const tokenAccountsData = (await getMultipleAccountsRaw(tokenAccounts))
-    .map((account) => {
-      if (account !== null) {
-        return Buffer.from(account.data[0], account.data[1]);
-      }
-      return null;
-    })
-    .filter((d) => !!d);
-  const totalTokens = tokenAccountsData
-    .map((tad) =>
-      // sorry, this code is a tad hacky
-      Number(tad.readBigUInt64LE(64))
-    )
-    .reduce((acc, el) => acc + el, 0);
-  const lpTokenTotalSupply = Number(accountData.poolMint.readBigUInt64LE(36));
-  const poolShare = totalTokens / lpTokenTotalSupply;
-
-  const reserveAAmount =
-    Number(accountData.tokenAReserve.readBigUInt64LE(64)) / divisor;
-  const reserveBAmount =
-    Number(accountData.tokenBReserve.readBigUInt64LE(64)) / divisor;
-
-  const poolTvlCoins = {};
-
-  if (tokenA === tokenB) {
-    poolTvlCoins[tokenA] =
-      poolShare * reserveAAmount + poolShare * reserveBAmount;
-  } else {
-    poolTvlCoins[tokenA] = poolShare * reserveAAmount;
-    poolTvlCoins[tokenB] = poolShare * reserveBAmount;
-  }
-
-  return poolTvlCoins;
-};
+const { Program, BorshAccountsCoder, } = require("@project-serum/anchor");
+const { sliceIntoChunks, } = require("../helper/utils");
+const { PublicKey } = require("@solana/web3.js");
+const arrowIDL = require("./arrowIDL.json");
+const sdk = require('@defillama/sdk')
+const { getMultipleAccountBuffers, getSaberPools, getProvider, } = require("../helper/solana");
 
 async function tvl() {
-  // a mapping of coin name to coin amount
-  const tvlResult = {};
-
-  // this is a mapping of token mint to list of token accounts
-  // more details: https://github.com/arrowprotocol/arrowdex
-  const arrowTokens = await utils.fetchURL(
-    "https://raw.githubusercontent.com/arrowprotocol/arrowdex/master/data/token-accounts.json"
-  );
-
-  // Run these serially to avoid rate limiting issues
-  for (const [poolMint, tokenAccounts] of Object.entries(arrowTokens.data)) {
-    const sunnyPool = SUNNY_POOLS.find(
-      (pool) => pool.relevantAccounts.lpTokenSPL === poolMint
-    );
-    if (!sunnyPool) {
-      continue;
+  const arrowId = new PublicKey('ARoWLTBWoWrKMvxEiaE2EH9DrWyV7mLpKywGDWxBGeq9')
+  const quarryId = new PublicKey('QMNeHCGYnLVDn1icRAfQZpjPLBNkfGbSKRB83G5d8KB')
+  const provider = getProvider()
+  const QuarryMineIDL = await Program.fetchIdl(quarryId, provider)
+  const saberPools = await getSaberPools()
+  const arrowProgram = new Program(arrowIDL, arrowId, provider)
+  const balances = {}
+  const arrows = (await arrowProgram.account.arrow.all()).filter(i => i.account.internalMiner.miner._bn > 0)
+  const miners = arrows.map(i => i.account.internalMiner.miner.toString())
+  const lpMints = arrows.map(i => i.account.vendorMiner.mint.toString())
+  const quarryProgram = new Program(QuarryMineIDL, quarryId, provider)
+  const quaryData = await quarryProgram.account.miner.fetchMultiple(miners)
+  // return  {}
+  // const coder = new BorshAccountsCoder(QuarryMineIDL);
+  // const minersRaw = await connection.getMultipleAccountsInfo(
+  //   miners.map((q) => new PublicKey(q))
+  // );
+  // const quaryData = minersRaw.map((q) =>
+  //   coder.accountLayouts.get('Miner').decode(q.data)
+  // );
+  // const quaryData = await quarryProgram.account.miner.fetchMultiple(miners)
+  const quarryDataKeyed = {}
+  quaryData.forEach((data, i) => {
+    if (!data) return;
+    quarryDataKeyed[miners[i]] = {
+      tokenAmount: data.balance,
     }
+  })
 
-    const poolTVL = await readTVL({
-      tokenA: sunnyPool.tokenA,
-      tokenB: sunnyPool.tokenB,
-      tokenAReserve: sunnyPool.relevantAccounts.tokenAReserve,
-      tokenBReserve: sunnyPool.relevantAccounts.tokenBReserve,
-      poolMint,
-      tokenAccounts,
-    });
+  const dataKeys = []
+  lpMints.forEach((lpMint, i) => {
+    const saberPool = saberPools.find((p) => p.lpMint === lpMint)
+    const miner = miners[i]
+    if (!saberPool) return;
+    if (!quarryDataKeyed[miner]) return;
+    quarryDataKeyed[miner].saberPool = saberPool
+    quarryDataKeyed[miner].stakedMint = lpMint
+    dataKeys.push(lpMint, saberPool.reserveA, saberPool.reserveB)
+  })
 
-    for (const [tokenId, amount] of Object.entries(poolTVL)) {
-      if (!tvlResult[tokenId]) {
-        tvlResult[tokenId] = amount;
-      } else {
-        tvlResult[tokenId] += amount;
-      }
-    }
+  const dataCache = {}
+  for (const keys of sliceIntoChunks(dataKeys, 99)) {
+    const res = await getMultipleAccountBuffers(keys)
+    keys.forEach((key, i) => {
+      dataCache[key] = res[i]
+    })
   }
+  Object.keys(quarryDataKeyed).forEach(key => {
+    if (!quarryDataKeyed[key].saberPool) delete quarryDataKeyed[key]
+  })
+  Object.values(quarryDataKeyed).forEach(quarry => addQuarryBalance(dataCache, balances, quarry))
 
-  return tvlResult;
+  return balances;
+}
+
+function addQuarryBalance(dataCache, balances = {}, { tokenAmount, stakedMint, saberPool: { reserveA, reserveB, tokenA, tokenB, } }) {
+  const lpTokenTotalSupply = Number(dataCache[stakedMint].readBigUInt64LE(36));
+  let poolShare = tokenAmount / lpTokenTotalSupply
+
+  const reserveAAmount = Number(dataCache[reserveA].readBigUInt64LE(64));
+  const reserveBAmount = Number(dataCache[reserveB].readBigUInt64LE(64));
+  sdk.util.sumSingleBalance(balances, 'solana:'+tokenA, poolShare * reserveAAmount)
+  sdk.util.sumSingleBalance(balances, 'solana:'+tokenB, poolShare * reserveBAmount)
+  return balances
 }
 
 module.exports = {
   timetravel: false,
+  doublecounted: true,
   methodology:
     'TVL counts LP token deposits made to Arrow Protocol. CoinGecko is used to find the price of tokens in USD, only the original "SOL" token price is used for all existing variations of the token.',
   solana: { tvl },
+  hallmarks: [
+    [1648080000, 'Cashio was hacked!'],
+  ]
 };

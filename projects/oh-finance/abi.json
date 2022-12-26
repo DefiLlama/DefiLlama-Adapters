@@ -1,7 +1,7 @@
 {
-    "investedBalance": {
+    "virtualBalance": {
         "inputs": [],
-        "name": "investedBalance",
+        "name": "virtualBalance",
         "outputs": [
             {
                 "internalType": "uint256",

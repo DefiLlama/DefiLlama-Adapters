@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const {transformXdaiAddress} = require('../helper/portedTokens');
+const { getChainTransform } = require('../helper/portedTokens');
 const { staking } = require("../helper/staking");
 
 const insuranceFund = "0x8C29F6F7fc1999aB84b476952E986F974Acb3824"
@@ -23,7 +23,7 @@ async function xdai(_timestamp, ethBlock, chainBlocks) {
         abi: "erc20:balanceOf",
         chain: 'xdai'
     });
-    const usdc = (await transformXdaiAddress())(usdcXdai);
+    const usdc = (await getChainTransform('xdai'))(usdcXdai);
     sdk.util.sumSingleBalance(balances, usdc, underlyingBalances.output[0].output)
     sdk.util.sumSingleBalance(balances, usdc, underlyingBalances.output[1].output)
 

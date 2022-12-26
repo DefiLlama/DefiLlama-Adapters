@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const BigNumber = require('bignumber.js')
-const { pool2s } = require("../helper/pool2");
+const { stakings } = require("../helper/staking");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const { transformAvaxAddress } = require("../helper/portedTokens");
 
@@ -69,7 +69,7 @@ module.exports = {
   deadFrom: 1648765747,
   avax: {
     staking: Staking,
-    pool2: pool2s(pool2Contracts, pool2Lps, "avax"),
+    pool2: stakings(pool2Contracts, pool2Lps, "avax"),
     tvl: async () => ({}),
   },
   methodology:

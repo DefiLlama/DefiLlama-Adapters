@@ -1,4 +1,4 @@
-const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
+const { getUniTVL } = require('../helper/unknownTokens')
 const { stakingPricedLP } = require('../helper/staking')
 
 const EMBER = "0x6BAbf5277849265b6738e75AEC43AEfdde0Ce88D";
@@ -13,13 +13,7 @@ module.exports = {
   methodology:
     "Factory address (0xE62983a68679834eD884B9673Fb6aF13db740fF0) is used to find the LP pairs. TVL is equal to the liquidity on the AMM. Ember tokens sent to vault are counted towards staking.",
   smartbch: {
-    tvl: calculateUsdUniTvl(
-      FACTORY,
-      "smartbch",
-      WBCH,
-      [EMBER],
-      "bitcoin-cash"
-    ),
+    tvl: getUniTVL({ factory: FACTORY, chain: 'smartbch', useDefaultCoreAssets: true }),
     staking: stakingPricedLP(VAULT, EMBER, "smartbch", EMBER_WBCH_PAIR, "bitcoin-cash", 18)
   }
 };

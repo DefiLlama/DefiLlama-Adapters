@@ -1,0 +1,95 @@
+{
+  "version": "0.1.0",
+  "name": "cega_vault",
+  "instructions": [],
+  "accounts": [
+    {
+      "name": "Product",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "productName",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "productNonce",
+            "type": "u8"
+          },
+          {
+            "name": "productUnderlyingTokenAccountNonce",
+            "type": "u8"
+          },
+          {
+            "name": "productCounter",
+            "type": "u64"
+          },
+          {
+            "name": "underlyingMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "productUnderlyingTokenAccount",
+            "type": "publicKey"
+          },
+          {
+            "name": "maxDepositLimit",
+            "type": "u64"
+          },
+          {
+            "name": "underlyingAmount",
+            "type": "u64"
+          },
+          {
+            "name": "mapleAccount",
+            "type": "publicKey"
+          },
+          {
+            "name": "depositQueueHeaderNonce",
+            "type": "u8"
+          },
+          {
+            "name": "depositQueueHeader",
+            "type": "publicKey"
+          },
+          {
+            "name": "isActive",
+            "type": "bool"
+          },
+          {
+            "name": "managementFeePercentage",
+            "type": "u64"
+          },
+          {
+            "name": "extraPubkeyOne",
+            "type": "publicKey"
+          },
+          {
+            "name": "extraPubkeyTwo",
+            "type": "publicKey"
+          },
+          {
+            "name": "extraUint64Two",
+            "type": "u64"
+          },
+          {
+            "name": "extraUint64Three",
+            "type": "u64"
+          },
+          {
+            "name": "extraBoolOne",
+            "type": "bool"
+          }
+        ]
+      }
+    }
+  ],
+  "types": [],
+  "events": [],
+  "errors": []
+}

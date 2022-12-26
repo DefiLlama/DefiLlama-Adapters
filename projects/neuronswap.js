@@ -1,19 +1,14 @@
-const retry = require("./helper/retry");
-const axios = require("axios");
 const { toUSDTBalances } = require("./helper/balances");
+const { get } = require('./helper/http')
 
 async function NRtvl() {
-    const response = await retry(
-        async (bail) => await axios.get("https://core.neuronswap.com/api/dashboard")
-    );
-    return toUSDTBalances(response.data.data.totalLp);
+    const response = await get("https://core.neuronswap.com/api/dashboard")
+    return toUSDTBalances(response.data.totalLp);
 };
 
 async function stakedNR() {
-    const response = await retry(
-        async (bail) => await axios.get("https://core.neuronswap.com/api/dashboard")
-    );
-    return toUSDTBalances(response.data.data.totalStakedNeuronPrice);
+    const response = await get("https://core.neuronswap.com/api/dashboard")
+    return toUSDTBalances(response.data.totalStakedNeuronPrice);
 };
 
 module.exports = {
