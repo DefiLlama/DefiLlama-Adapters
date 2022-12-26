@@ -5,21 +5,22 @@ module.exports = {
     "Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There are multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending.",
 };
 
-/** @type {Record<string, { auditor: string, startTimestamp: number }>} */
+/** @type {Record<string, { auditor: string, start: number }>} */
 const config = {
   ethereum: {
     auditor: "0x310A2694521f75C7B2b64b5937C16CE65C3EFE01",
-    startTimestamp: 1667223731,
+    start: 15_868_410,
   },
 };
 
-Object.entries(config).forEach(([chain, { auditor, startTimestamp }]) => {
+Object.entries(config).forEach(([chain, { auditor, start }]) => {
   module.exports[chain] = {
+    start,
     /** @type {(timestamp: number, block: number, chainBlocks: Record<string, number>, { api: ChainApi }) => Promise<Balances>} */
     tvl: async (_, __, ___, { api }) => {
       /** @type {Balances} */
       const balances = {};
-      const data = await markets(api, auditor, startTimestamp);
+      const data = await markets(api, auditor);
       data.forEach(([asset, totalAssets, totalFloatingBorrowAssets, fixedPools]) => {
         sdk.util.sumSingleBalance(balances, asset, totalAssets, chain);
         sdk.util.sumSingleBalance(balances, asset, -1 * +totalFloatingBorrowAssets, chain);
@@ -34,7 +35,7 @@ Object.entries(config).forEach(([chain, { auditor, startTimestamp }]) => {
     borrowed: async (_, __, ___, { api }) => {
       /** @type {Balances} */
       const balances = {};
-      const data = await markets(api, auditor, startTimestamp);
+      const data = await markets(api, auditor);
       data.forEach(([asset, , totalFloatingBorrowAssets, fixedPools]) => {
         sdk.util.sumSingleBalance(balances, asset, totalFloatingBorrowAssets, chain);
         fixedPools.forEach(({ borrowed }) => {
@@ -48,10 +49,10 @@ Object.entries(config).forEach(([chain, { auditor, startTimestamp }]) => {
 
 const INTERVAL = 86_400 * 7 * 4;
 
-/** @type {(api: ChainApi, auditor: string, startTimestamp: number) => Promise<[string, string, string, FixedPool[]][]>} */
-async function markets(api, target, startTimestamp) {
+/** @type {(api: ChainApi, auditor: string) => Promise<[string, string, string, FixedPool[]][]>} */
+async function markets(api, auditor) {
   /** @type {string[]} */
-  const markets = await api.call({ abi: abis.allMarkets, target });
+  const markets = await api.call({ abi: abis.allMarkets, target: auditor });
   const timestamp = api.timestamp ?? 0;
 
   /** @type {string[][]} */
@@ -60,11 +61,9 @@ async function markets(api, target, startTimestamp) {
       api.multiCall({ abi: abis[key], calls: markets })
     )
   );
-  const minMaturity = startTimestamp - (startTimestamp % INTERVAL) + INTERVAL;
-  const maxMaturity =
-    timestamp - (timestamp % INTERVAL) + INTERVAL * maxFuturePools.reduce((max, n) => Math.max(max, +n), 0);
-  const fixedPoolCount = (maxMaturity - minMaturity) / INTERVAL + 1;
-  const maturities = [...Array(fixedPoolCount)].map((_, i) => minMaturity + INTERVAL * i);
+  const maxPools = maxFuturePools.reduce((max, n) => Math.max(max, +n), 0);
+  const minMaturity = timestamp - (timestamp % INTERVAL) - INTERVAL * (maxPools - 1);
+  const maturities = [...Array(2 * maxPools)].map((_, i) => minMaturity + INTERVAL * i);
   /** @type {FixedPool[]} */
   const fixedPools = await api.multiCall({
     abi: abis.fixedPools,
@@ -74,7 +73,7 @@ async function markets(api, target, startTimestamp) {
     asset[i],
     totalAssets[i],
     totalFloatingBorrowAssets[i],
-    fixedPools.slice(i * fixedPoolCount, (i + 1) * fixedPoolCount),
+    fixedPools.slice(i * maturities.length, (i + 1) * maturities.length),
   ]);
 }
 
