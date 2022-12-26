@@ -5,10 +5,15 @@ const { sumTokens2, } = require('../helper/unwrapLPs')
 const riskPools = [
   '0xEcE9f1A3e8bb72b94c4eE072D227b9c9ba4cd750',
   '0x0b5C802ecA88161B5daed08e488C83d819a0cD02',
-  '0x2cd32dF1C436f8dE6e09d1A9851945c56bcEd32a'
+  '0x2cd32dF1C436f8dE6e09d1A9851945c56bcEd32a',
+  '0xFC9a02a13B19F65219034AB03ADcD8CAdf275f35', // Zeus V2
+  '0x456d60a7E2a2DA97BDb43759Cf63f7acbC3a700a' // Ares V2
 ]
 
-const bscTokens = ['0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d'] // BUSD
+const bscTokens = [
+  '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d', // BUSD
+  '0x474021845C4643113458ea4414bdb7fB74A01A77'  // UNO
+] 
 
 // ETHEREUM pools
 const ethTokens = [
@@ -45,6 +50,7 @@ async function eth(timestamp, block) {
   balances['ethereum'] = _ethBalance.output / 1e18
 
   return sumTokens2({ balances, block, owners: ethRiskPools, tokens: ethTokens })
+  // return 0;
 }
 
 async function bsc(timestamp, ethBlock, chainBlocks) {
@@ -62,10 +68,11 @@ async function kava(timestamp, ethBlock, chainBlocks) {
   balances['kava'] = _kavaBalance.output / 1e18
 
   return sumTokens2({ balances, chain, block, owners: kavaRiskPools, tokens: kavaTokens })
+  // return 0
 }
 
 module.exports = {
-  start: 1632122867,  // Sep-20-2021 07:27:47 AM +UTC
+  start: 1626100000,  // Sep-20-2021 07:27:47 AM +UTC
   ethereum: {
     tvl: eth
   },
