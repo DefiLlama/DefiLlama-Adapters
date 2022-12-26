@@ -1,4 +1,3 @@
-const REFERENCE_ASSETS = {};
 const coins = {};
 const vaultConfig = [
     {
@@ -560,6 +559,30 @@ const vaultConfig = [
             lpToken: '0x5b6C539b224014A09B3388e51CaAA8e354c959C8',
         },
     },
+    {
+        id: 'bLUSD​+LUSD',
+        name: 'bLUSD​+LUSD',
+        coins: [
+            coins.BLUSD,
+            coins.LUSD3CRVCRV,
+        ],
+        addresses: {
+            swap: '0x74ed5d42203806c8cdcf2f04ca5f60dc777b901c',
+            lpToken: '0x5ca0313D44551e32e0d7a298EC024321c4BC59B4',
+        },
+    },
+    {
+        id: 'WBTC_sBTC',
+        name: 'WBTC_sBTC',
+        coins: [
+            coins.wbtc,
+            coins.sBTC,
+        ],
+        addresses: {
+            swap: '0xf253f83aca21aabd2a20553ae0bf7f65c755a07f',
+            lpToken: '0x051d7e5609917Bd9b73f04BAc0DED8Dd46a74301',
+        },
+    },
 ]
 const afrxETHConfig = {
     0: 'frax',
@@ -573,7 +596,9 @@ const afrxETHConfig = {
     8: 'busdfraxbp',
     9: 'alusdfraxbp',
     10: 'tusdfraxbp',
-    11: 'lusdfraxbp'
+    11: 'lusdfraxbp',
+    12: 'bLUSD​+LUSD',
+    13: 'WBTC_sBTC'
 }
 module.exports = {
     farmConfig: [
