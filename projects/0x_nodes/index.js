@@ -1,10 +1,8 @@
-const { getChainTransform } = require("../helper/portedTokens")
 const { GraphQLClient, gql } = require('graphql-request')
-const { getBlock } = require('../helper/getBlock')
+const { getBlock } = require('../helper/http')
 const { staking } = require('../helper/staking')
-const utils = require('../helper/utils')
-const retry = require('async-retry')
 const sdk = require('@defillama/sdk')
+
 const CONFIG = {
   ethereum: {
     uri: 'https://api.thegraph.com/subgraphs/name/0xnodes/system11',
@@ -61,12 +59,13 @@ function offset(chain) {
 };
 function chainTvl(chain) {
     return async (timestamp, ethBlock, chainBlocks) => {
+      if (timestamp > 1659527340) return {}
         const { [chain]:{ uri }} = CONFIG
         const { [chain]:{ strategy_token }} = CONFIG
         var graphQLClient = new GraphQLClient(uri)
         const block = (await getBlock(timestamp, chain, chainBlocks)) - offset(chain)
         var query = gql`{strategyTokenBalances(block: {number: `+block+`}){amount}}`
-        const results = await retry(async bail => await graphQLClient.request(query))
+        const results =  await graphQLClient.request(query)
         let amount = 0
         for (let i = 0; i < results.strategyTokenBalances.length; i++) {  //loop through the array
           amount += Number(results.strategyTokenBalances[i].amount); //Do the math!
@@ -84,7 +83,7 @@ function stakingTvl(chain) {
 function chainExports(chainTvl, stakingTvl, chains){
   const chainTvls = chains.reduce((obj, chain) => ({
     ...obj,
-    [chain === 'avax' ? 'avalanche' : chain]: {
+    [chain]: {
       tvl:chainTvl(chain),
       staking: stakingTvl(chain)
     }
@@ -93,6 +92,9 @@ function chainExports(chainTvl, stakingTvl, chains){
 }
 const tvlExports = chainExports(chainTvl, stakingTvl , ['ethereum', 'bsc', 'polygon', 'fantom', 'metis', 'avax'])
 module.exports = {
+  hallmarks: [
+        [1659527340, "Protocol declared insolvent"],
+    ],
   methodology: ` Counts the number of wrapped native tokens in all yield strategies across all the chains the protocol is deployed on
   + staking counts the number of BIOS tokens staked in the kernels across all the chains (PFA: Protocol Fee Accruals by staking assets)`,
   start: 1633046400, // Friday 1. October 2021 00:00:00 GMT

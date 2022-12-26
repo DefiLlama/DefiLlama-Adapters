@@ -8,6 +8,7 @@ const MAIN_USDCe_LP = "0x909B0ce4FaC1A0dCa78F8Ca7430bBAfeEcA12871";
 const MAIN_USDT_LP = "0x776628A5C37335608DD2a9538807b9bba3869E14";
 const MAIN_USDTe_LP = "0x0D26D103c91F63052Fbca88aAF01d5304Ae40015";
 const MAIN_MIM_LP = "0x6220BaAd9D08Dee465BefAE4f82ee251cF7c8b82";
+const MAIN_BUSD_LP = "0xe23F8CCDeB4e8Ce5d9fE76782718cD85D12689C8";
 
 // Alt: FRAX - USDC
 const ALT_USDC_FRAX_LP = "0x035D7D7F209B5d18e2AB5C2072E85B32e1D43760";
@@ -22,11 +23,21 @@ const ALT_MIM_LP = "0xF01cEA00598d87Cb9792a01B040d04b0bd8Ca781";
 const ALT_USDC_YUSD_LP = "0x4b851118a4A4948799f24d0CBE17FA3dad09e2D5";
 const ALT_YUSD_LP = "0x7716307350c0819eD05C3e7f6c478b27CAED5361";
 // Alt: sAVAX - WAVAX
-const ALT_WAVAX_LP = "0xC73eeD4494382093C6a7C284426A9a00f6C79939";
+const ALT_WAVAX_SAVAX_LP = "0xC73eeD4494382093C6a7C284426A9a00f6C79939";
 const ALT_SAVAX_LP = "0xA2A7EE49750Ff12bb60b407da2531dB3c50A1789";
+// Alt: yyAVAX - WAVAX
+const ALT_WAVAX_YYAVAX_LP = "0x12141b8FD20b4bBdd5F4e911bF91575258A3eABD";
+const ALT_YYAVAX_LP = "0x3BEB0D3DB537b79D377131Ce81950B683d382Ec9";
 // Alt: BTC.b - WBTC.e
 const ALT_BTCb_LP = "0x209a0399A2905900C0d1a9a382fe23e37024dC84";
 const ALT_WBTCe_LP = "0xc09c12093b037866Bf68C9474EcDb5113160fBcE";
+// Alt: USDC - MONEY
+const ALT_USDC_MONEY_LP = "0x551C259Bf4D88edFdAbb04179342a73dAa759583";
+const ALT_MONEY_LP = "0xE08947eE864Af325D9F98743B3b905875Ae0Ec99";
+
+// Alt: USDC - axlUSDC
+const ALT_USDC_AXLUSDC_LP = "0x7ECE2e39fC384d15e7004d84687dA67218A39a74";
+const ALT_AXLUSDC_LP = "0xC97d830Cc15B35D361985a48d8d9e52A56B0f94F";
 
 // FACTORY: USDC - TSD
 const FACTORY_USDC_TSD_LP = "0x979702f708dd794A0e5E616E89C1656a2C55d681";
@@ -34,10 +45,12 @@ const FACTORY_TSD_LP = "0x027A24Fa0168DA4fC7AF9Bf5331D42692889AFaa";
 // FACTORY: USDC - H2O
 const FACTORY_USDC_H2O_LP = "0xd78d5f6A5bF62a88212203077D1A28F812307145";
 const FACTORY_H2O_LP = "0x4f734D89531b6c9A1242C196297316E928AEeFBa";
-// FACTORY: USDC - MONEY
-const FACTORY_USDC_MONEY_LP = "0x551C259Bf4D88edFdAbb04179342a73dAa759583";
-const FACTORY_MONEY_LP = "0xE08947eE864Af325D9F98743B3b905875Ae0Ec99";
-
+// FACTORY: USDC - MAI
+const FACTORY_USDC_MAI_LP = "0x4bc279727585b80A2a6a64498Ae67E2db1D9fAdF";
+const FACTORY_MAI_LP = "0xb49626bB9F93F9c6466d67dc80F2f33B4162E416";
+// FACTORY: USDC - USX
+const FACTORY_USDC_USX_LP = "0x6689C9Eb9a8A0Dd8BbD0935Ce0cD7FeD72E8667E";
+const FACTORY_USX_LP = "0x2DebC993c5f9Cac766Efa3EdCb1b6e40aDb4F6E2";
 /**
  * token addresses
  */
@@ -57,6 +70,11 @@ const TSD = "0x4fbf0429599460d327bd5f55625e30e4fc066095";
 const MONEY = "0x0f577433bf59560ef2a79c124e9ff99fca258948";
 const BTCb = "0x152b9d0FdC40C096757F570A51E494bd4b943E50";
 const WBTCe = "0x50b7545627a5162F82A992c33b87aDc75187B218";
+const MAI = "0x3B55E45fD6bd7d4724F5c47E0d1bCaEdd059263e";
+const USX = "0x853ea32391AaA14c112C645FD20BA389aB25C5e0";
+const YYAVAX = "0xF7D9281e8e363584973F946201b82ba72C965D27";
+const BUSD = "0x9C9e5fD8bbc25984B178FdCE6117Defa39d2db39";
+const AXLUSDC = "0xfaB550568C688d5D8A52C7d794cb93Edc26eC0eC";
 
 module.exports = {
   DAI: {
@@ -79,9 +97,12 @@ module.exports = {
           ALT_USDC_UST_LP,
           ALT_USDC_MIM_LP,
           ALT_USDC_YUSD_LP,
+          ALT_USDC_MONEY_LP,
+          ALT_USDC_AXLUSDC_LP,
           FACTORY_USDC_H2O_LP,
-          FACTORY_USDC_MONEY_LP,
           FACTORY_USDC_TSD_LP,
+          FACTORY_USDC_MAI_LP,
+          FACTORY_USDC_USX_LP,
         ],
       },
     ],
@@ -140,7 +161,7 @@ module.exports = {
     addresses: [
       {
         token: WAVAX,
-        lpTokens: [ALT_WAVAX_LP],
+        lpTokens: [ALT_WAVAX_SAVAX_LP, ALT_WAVAX_YYAVAX_LP],
       },
     ],
   },
@@ -153,6 +174,15 @@ module.exports = {
       },
     ],
   },
+  YYAVAX: {
+    id: "yield-yak-avax",
+    addresses: [
+      {
+        token: YYAVAX,
+        lpTokens: [ALT_YYAVAX_LP],
+      },
+    ],
+  },
   YUSD: {
     id: "yusd-stablecoin",
     addresses: [
@@ -162,21 +192,21 @@ module.exports = {
       },
     ],
   },
+  MONEY: {
+    id: "moremoney-usd",
+    addresses: [
+      {
+        token: MONEY,
+        lpTokens: [ALT_MONEY_LP],
+      },
+    ],
+  },
   TSD: {
     id: "teddy-dollar",
     addresses: [
       {
         token: TSD,
         lpTokens: [FACTORY_TSD_LP],
-      },
-    ],
-  },
-  MONEY: {
-    id: "moremoney-usd",
-    addresses: [
-      {
-        token: MONEY,
-        lpTokens: [FACTORY_MONEY_LP],
       },
     ],
   },
@@ -204,6 +234,42 @@ module.exports = {
       {
         token: WBTCe,
         lpTokens: [ALT_WBTCe_LP],
+      },
+    ],
+  },
+  MAI: {
+    id: "mimatic",
+    addresses: [
+      {
+        token: MAI,
+        lpTokens: [FACTORY_MAI_LP],
+      },
+    ],
+  },
+  USX: {
+    id: "token-dforce-usd",
+    addresses: [
+      {
+        token: USX,
+        lpTokens: [FACTORY_USX_LP],
+      },
+    ],
+  },
+  BUSD: {
+    id: "binance-usd",
+    addresses: [
+      {
+        token: BUSD,
+        lpTokens: [MAIN_BUSD_LP],
+      },
+    ],
+  },
+  AXLUSDC: {
+    id: "axlusdc",
+    addresses: [
+      {
+        token: AXLUSDC,
+        lpTokens: [ALT_AXLUSDC_LP],
       },
     ],
   },

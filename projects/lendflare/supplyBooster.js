@@ -1,6 +1,5 @@
 const sdk = require('@defillama/sdk');
 const BN = require("bignumber.js");
-const utils = require('./utils.js');
 
 const supplyPools = [
     // usdc
@@ -36,20 +35,12 @@ async function getTotalSupply(pools, timestamp, block, chainBlocks) {
 }
 
 async function tvl(timestamp, block, chainBlocks) {
-    let tvl = new BN(0);
-
+    const balances = {}
     const pools = await getTotalSupply(supplyPools, timestamp, block, chainBlocks);
-    const prices = await utils.getPricesfromString().then(result => {
-        return result.data;
-    });
+    for (let pool of pools)
+        sdk.util.sumSingleBalance(balances, pool.coinName, pool.totalSupply/(10 ** pool.decimals))
 
-    for (let pool of pools) {
-        pool.tvl = pool.totalSupply.dividedBy(10 ** pool.decimals).multipliedBy(new BN(prices[pool.coinName].usd));
-
-        tvl = tvl.plus(pool.tvl);
-    };
-
-    return tvl;
+    return balances;
 }
 
 module.exports = {

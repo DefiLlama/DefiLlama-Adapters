@@ -1,6 +1,5 @@
 const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js')
-const {getBlock} = require('../helper/getBlock')
 
 const wethAddress = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
 
@@ -24,9 +23,8 @@ async function tvl(timestamp, block) {
   }
 }
 
-async function xdaiTvl(timestamp, ethBlock, chainBlocks) {
+async function xdaiTvl(timestamp, ethBlock, { xdai: block }) {
   const chain = "xdai"
-  const block = await getBlock(timestamp, chain, chainBlocks)
   const supply = await sdk.api.erc20.totalSupply({
     target: '0xA4eF9Da5BA71Cc0D2e5E877a910A37eC43420445',
     block,

@@ -1,4 +1,4 @@
-const { sumSingleBalance, TOKEN_LIST, getBalance, } = require('../helper/terra')
+const { sumSingleBalance, TOKEN_LIST, getBalance, } = require('../helper/chain/terra')
 
 // Source: https://docs.loterra.io/resources/contract-addresses
 const contracts = {
@@ -33,4 +33,7 @@ module.exports = {
 		treasury,
 	},
 	timetravel: false,
+	hallmarks:[
+          [1651881600, "UST depeg"],
+  ]
 }

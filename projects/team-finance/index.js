@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const { ethereumContractData, polygonContractData, avaxContractData, bscContractData } = require("./config");
+const { ethereumContractData, polygonContractData, avaxContractData, bscContractData, kavaContractData } = require("./config");
 const { vestingHelper } = require("../helper/unknownTokens");
 
 function getTvl(args) {
@@ -44,7 +44,7 @@ function getTvl(args) {
       })
 
       const balances = await vestingHelper({
-        coreAssets: trackedTokens,
+        useDefaultCoreAssets: true,
         owner: contractAddress,
         tokens: lockedLPs,
         block, chain,
@@ -74,5 +74,8 @@ module.exports = {
   avax: {
     tvl: getTvl(avaxContractData),
   },
+  kava: {
+    tvl: getTvl(kavaContractData)
+  }
 };
 

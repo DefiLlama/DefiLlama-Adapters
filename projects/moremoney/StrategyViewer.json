@@ -8,16 +8,6 @@
           "type": "address"
         },
         {
-          "internalType": "address",
-          "name": "oracleRegistry",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "stable",
-          "type": "address"
-        },
-        {
           "internalType": "address[]",
           "name": "tokens",
           "type": "address[]"
@@ -28,7 +18,7 @@
           "type": "address[]"
         }
       ],
-      "name": "viewMetadataNoHarvestBalance",
+      "name": "viewMetadata",
       "outputs": [
         {
           "components": [

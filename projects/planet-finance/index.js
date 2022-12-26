@@ -1,7 +1,6 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { compoundExports } = require("../helper/compound");
 const { staking } = require("../helper/staking.js");
 const { getPoolInfo } = require("../helper/masterchef.js");
 const { transformBscAddress } = require("../helper/portedTokens");
@@ -17,6 +16,7 @@ const replacements = {
     "0x2170ed0880ac9a755fd29b2688956bd959f933f8", //beltETH->
 };
 
+// liquidity pools
 async function tvl(timestamp, ethBlock, chainBlocks) {
   let balances = {};
   const lps = [];
@@ -24,17 +24,17 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 
   const [poolInfo1, poolInfo2] = await Promise.all([
     await getPoolInfo(
-      "0x0ac58Fd25f334975b1B61732CF79564b6200A933", 
-      chainBlocks.bsc, 
-      "bsc", 
+      "0x0ac58Fd25f334975b1B61732CF79564b6200A933",
+      chainBlocks.bsc,
+      "bsc",
       abi.poolInfo
-      ), // aquaFarm
+    ), // aquaFarm
     await getPoolInfo(
-      "0xB87F7016585510505478D1d160BDf76c1f41b53d", 
-      chainBlocks.bsc, 
-      "bsc", 
+      "0xB87F7016585510505478D1d160BDf76c1f41b53d",
+      chainBlocks.bsc,
+      "bsc",
       abi.poolInfo
-      ),  // newFarm
+    ),  // newFarm
   ]);
   const allPoolInfos = poolInfo1.concat(poolInfo2);
 
@@ -56,7 +56,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
       block: chainBlocks.bsc,
     })
   ]);
-  
+
   for (let i = 0; i < poolTvl.output.length; i++) {
     if (wantSymbol.output[i].output.endsWith("LP")) {
       lps.push({
@@ -65,13 +65,13 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
       });
 
     } else {
-      const addr = replacements[allPoolInfos[i].output.want] 
+      const addr = replacements[allPoolInfos[i].output.want]
         ?? allPoolInfos[i].output.want;
       sdk.util.sumSingleBalance(
-        balances, 
-        transform(addr), 
+        balances,
+        transform(addr),
         poolTvl.output[i].output
-        );
+      );
     };
   };
 
@@ -86,25 +86,16 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
   return balances;
 };
 
+
 // node test.js projects/planet-finance/index.js
 module.exports = {
+  doublecounted: true,
   bsc: {
-    tvl: sdk.util.sumChainTvls([tvl, compoundExports(
-      '0xF54f9e7070A1584532572A6F640F09c606bb9A83',
-      'bsc',
-      '0x24664791B015659fcb71aB2c9C0d56996462082F',
-      '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'
-    ).tvl]),
+    tvl,
     staking: staking(
       "0xb7eD4A5AF620B52022fb26035C565277035d4FD7",
       "0x72B7D61E8fC8cF971960DD9cfA59B8C829D91991",
       "bsc",
-      ),
-    borrowed: compoundExports(
-      '0xF54f9e7070A1584532572A6F640F09c606bb9A83',
-      'bsc',
-      '0x24664791B015659fcb71aB2c9C0d56996462082F',
-      '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'
-    ).borrowed
+    )
   },
 };

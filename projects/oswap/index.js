@@ -7,7 +7,7 @@
  * @see https://v1.oswap.io/
  * @see https://v1-stats.oswap.io/
  */
-const {fetchBaseAABalances, fetchOswapExchangeRates, fetchOswapAssets, summingBaseAABalancesToTvl} = require('../helper/obyte')
+const {fetchBaseAABalances, fetchOswapExchangeRates, fetchOswapAssets, summingBaseAABalancesToTvl} = require('../helper/chain/obyte')
 
 // TODO support time travel for the exchange rate, currently it always returns the latest rates
 async function tvl(timestamp) {
@@ -28,6 +28,7 @@ async function tvl(timestamp) {
 module.exports = {
     timetravel: false,
     doublecounted: false,
+    misrepresentedTokens: true,
     methodology:
         "The TVL is the USD value of the all non-self issued assets locked into the autonomous agents extending the Oswap protocol.",
     obyte: {

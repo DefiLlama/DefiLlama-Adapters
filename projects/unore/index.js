@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk');
-const BigNumber = require("bignumber.js");
+const { sumTokens2, } = require('../helper/unwrapLPs')
 
 // BSC pools
 const riskPools = [
@@ -10,11 +10,12 @@ const riskPools = [
 
 const bscTokens = ['0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d'] // BUSD
 
+// ETHEREUM pools
 const ethTokens = [
   '0x474021845c4643113458ea4414bdb7fb74a01a77', // UNO
   '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC
   '0xdac17f958d2ee523a2206206994597c13d831ec7' // USDT
-] 
+]
 
 // SSRP, SSIP pools(risk pools) on ethereum
 const ethRiskPools = [
@@ -25,55 +26,42 @@ const ethRiskPools = [
 ]
 const ethSSIPEth = '0x29B4b8674D93b36Bf651d0b86A8e5bE3c378aCF4'
 
-function constructBalanceOfCalls(tokens, useAddressProp, pools) {
-  const calls = []
-  for (const router of pools) {
-    for (const token of tokens) {
-      const address = useAddressProp ? token.address : token
-      calls.push({
-        target: address,
-        params: [router]
-      })
-    }
-  }
-  return calls
-}
+// KAVA pools
+// tokens
+const kavaTokens = [
+  '0xfA9343C3897324496A05fC75abeD6bAC29f8A40f', // USDC
+]
+// risk pools
+const kavaRiskPools = [
+  '0x6cEC77829F474b56c327655f3281739De112B019'
+]
 
-async function eth(timestamp, ethBlock, chainBlocks) {
-  const block = chainBlocks.ethereum
+const kavaSSIPKava = '0x112a295B0fCd382E47E98E8271e45979EDf952b6'
+
+async function eth(timestamp, block) {
   const balances = {}
-  const routerBalances = await sdk.api.abi.multiCall({
-    abi: 'erc20:balanceOf',
-    block,
-    chain: 'ethereum',
-    calls: constructBalanceOfCalls(ethTokens, false, ethRiskPools)
-  })
 
-  routerBalances.output.forEach(result => {
-    sdk.util.sumSingleBalance(balances, `ethereum:${result.input.target}`, result.output)
-  })
+  let _ethBalance = await sdk.api.eth.getBalance({ target: ethSSIPEth, block })
+  balances['ethereum'] = _ethBalance.output / 1e18
 
-  let _ethBalance = await sdk.api.eth.getBalance({ target: ethSSIPEth })
-  _ethBalance = BigNumber(_ethBalance.output).div(10 ** 18)
-
-  balances['ethereum'] = _ethBalance
-
-  return balances
+  return sumTokens2({ balances, block, owners: ethRiskPools, tokens: ethTokens })
 }
 
 async function bsc(timestamp, ethBlock, chainBlocks) {
-  const block = chainBlocks.bsc
+  const chain = 'bsc'
+  const block = chainBlocks[chain]
+  return sumTokens2({ chain, block, owners: riskPools, tokens: bscTokens })
+}
+
+async function kava(timestamp, ethBlock, chainBlocks) {
+  const chain = 'kava'
+  const block = chainBlocks[chain]
   const balances = {}
-  const routerBalances = await sdk.api.abi.multiCall({
-    abi: 'erc20:balanceOf',
-    block,
-    chain: 'bsc',
-    calls: constructBalanceOfCalls(bscTokens, false, riskPools)
-  })
-  routerBalances.output.forEach(result => {
-    sdk.util.sumSingleBalance(balances, `bsc:${result.input.target}`, result.output)
-  })
-  return balances
+
+  let _kavaBalance = await sdk.api.eth.getBalance({ target: kavaSSIPKava, chain, block })
+  balances['kava'] = _kavaBalance.output / 1e18
+
+  return sumTokens2({ balances, chain, block, owners: kavaRiskPools, tokens: kavaTokens })
 }
 
 module.exports = {
@@ -83,5 +71,8 @@ module.exports = {
   },
   bsc: {
     tvl: bsc
+  },
+  kava: {
+    tvl: kava
   }
 };

@@ -4,12 +4,9 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 const chain = 'kava'
 
 const dexTVL = getUniTVL({
-  factory: "0x30D70fFBbfD795B147842100be5564502285E31F",
+  factory: "0xc449665520C5a40C9E88c7BaDa149f02241B1f9F",
   chain: "kava",
-  coreAssets: [
-    "0xc86c7C0eFbd6A49B35E8714C5f59D99De09A225b", // WKAVA
-    '0xfA9343C3897324496A05fC75abeD6bAC29f8A40f', // USDC
-  ],
+  useDefaultCoreAssets: true,
 })
 
 async function stablePoolTVL(_, _b, { [chain]: block }) {

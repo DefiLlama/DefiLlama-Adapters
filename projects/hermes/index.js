@@ -1,35 +1,5 @@
-const sdk = require("@defillama/sdk");
-const { gql, default: request } = require("graphql-request");
-const { toUSDTBalances } = require("../helper/balances");
-const { getChainTvl } = require("../helper/getUniSubgraphTvl");
-const graphUrls = {
-  harmony: "https://graph.hermesdefi.io/subgraphs/name/exchange",
-};
-const graphxHermesUrl = "https://graph.hermesdefi.io/subgraphs/name/bar"
-const graphsHermesUrl= "https://graph.hermesdefi.io/subgraphs/name/shermes"
+const { getUniTVL, staking, } = require('../helper/unknownTokens')
 
-const xHermesQuery = gql`
-query xHermesStaked{
-  bar(id: "0x28a4e128f823b1b3168f82f64ea768569a25a37f"){
-    hermesStaked
-    hermesStakedUSD
-  }
-}
-`
-const sHermesQuery = gql `
-query sHermesStaked{
-  stableHermes(id: "0x8812420fb6e5d971c969ccef2275210ab8d014f0"){
-    hermesStaked
-    hermesStakedUSD
-  }
-}
-`
-async function staking(){
-  const { bar } = await request(graphxHermesUrl, xHermesQuery);
-  const { stableHermes } = await request(graphsHermesUrl, sHermesQuery);
-  const usdTvl = Number(bar.hermesStakedUSD) + Number(stableHermes.hermesStakedUSD);
-  return toUSDTBalances(usdTvl);
-}
 module.exports = {
   timetravel: true,
   doublecounted: false,
@@ -37,7 +7,17 @@ module.exports = {
   methodology:
     'We calculate liquidity on all pairs with data retreived from the "hermes-defi/hermes-graph" subgraph plus the total amount in dollars of our staking pools xHermes and sHermes.',
   harmony: {
-    tvl: getChainTvl(graphUrls, "factories", "liquidityUSD")("harmony"),
-    staking: staking
+    tvl: getUniTVL({
+      factory: '0xfe5e54a8e28534fffe89b9cfddfd18d3a90b42ca',
+      chain: 'harmony',
+      useDefaultCoreAssets: true,
+    }),
+    staking: staking({
+      owners: ['0x28a4e128f823b1b3168f82f64ea768569a25a37f', '0x8812420fb6e5d971c969ccef2275210ab8d014f0'],
+      tokens: ['0xba4476a302f5bc1dc4053cf79106dc43455904a3'],
+      chain: 'harmony',
+      useDefaultCoreAssets: true,
+      lps: ['0x8604197eb7123888b551fe78a8828b895608d093'],
+    }),
   },
 };

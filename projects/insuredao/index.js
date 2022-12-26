@@ -38,7 +38,7 @@ async function tvl(_, block) {
 }
 
 // =================== GET Optimism usdc BALANCES =================== //
-async function optimismtvl(_, block) {
+async function optimismtvl(timestamp, _, { optimism: block }) {
   let balances = {};
 
   const vusdcBalances = (
@@ -55,7 +55,7 @@ async function optimismtvl(_, block) {
 }
 
 // =================== GET Arbitrum usdc BALANCES =================== //
-async function arbitrumtvl(_, block) {
+async function arbitrumtvl(_, { arbitrum: block}) {
   let balances = {}
 
   const vusdcBalances = (
@@ -72,7 +72,7 @@ async function arbitrumtvl(_, block) {
 }
 
 // =================== GET astar usdc BALANCES =================== //
-async function astartvl(_, block) {
+async function astartvl(timestamp, _, { astar: block }) {
   let balances = {};
 
   const vusdcBalances = (

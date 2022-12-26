@@ -76,6 +76,9 @@ const config = {
 
 module.exports = {
   misrepresentedTokens: false,
+  hallmarks:[
+    [1651881600, "UST depeg"],
+  ],
   methodology:
     "Biconomy TVL is the USD value of token balances in the Hyphen 2.0 contracts.",
 }

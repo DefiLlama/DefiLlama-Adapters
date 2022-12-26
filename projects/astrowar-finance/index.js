@@ -9,7 +9,7 @@ async function tvl(timestamp, _block, { harmony: block }) {
     const chain = 'harmony'
     const poolInfo = await getPoolInfo(masterChef, block, chain, standardPoolInfoAbi)
     const toa = poolInfo.map(i => [i.output[0], stakePool])
-    return sumTokens({}, toa, block, chain, undefined, { resolveLP: true })
+    return sumTokens({}, toa, block, chain)
 }
 
 module.exports = {

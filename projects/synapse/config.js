@@ -14,17 +14,21 @@ module.exports = {
       bridge: {
         address: '0x2796317b0fF8538F253012862c06787Adfb8cEb6',
         tokens: [
-          '0x98585dfc8d9e7d48f0b1ae47ce33332cf4237d96',
-          '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-          '0x0ab87046fBb341D058F17CBC4c1133F25a20a52f',
-          '0x71ab77b7dbb4fa7e017bc15090b2163221420282',
-          '0x853d955acef822db058eb8505911ed77f175b99e',
-          '0xbaac2b4491727d78d2b78815144570b9f2fe8899',
-          '0x73968b9a57c6e53d41345fd57a6e6ae27d6cdb2f',
-          '0x0f2d719407fdbeff09d87557abb7232601fd9f29',
-          '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-          '0xdac17f958d2ee523a2206206994597c13d831ec7',
-          '0xb753428af26e81097e7fd17f40c88aaa3e04902c',
+          '0x98585dfc8d9e7d48f0b1ae47ce33332cf4237d96', // NEWO
+          '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // WETH
+          '0x0ab87046fBb341D058F17CBC4c1133F25a20a52f', // gOHM
+          '0x71ab77b7dbb4fa7e017bc15090b2163221420282', // HIGH
+          '0x853d955acef822db058eb8505911ed77f175b99e', // FRAX
+          '0xbaac2b4491727d78d2b78815144570b9f2fe8899', // DOG
+          '0x73968b9a57c6e53d41345fd57a6e6ae27d6cdb2f', // SDT
+          '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC
+          '0xdac17f958d2ee523a2206206994597c13d831ec7', // USDT
+          '0xb753428af26e81097e7fd17f40c88aaa3e04902c', // SFI
+          '0x6B175474E89094C44Da98b954EedeAC495271d0F', // DAI
+          '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', // wBTC
+          '0x1a7e4e63778B4f12a199C062f3eFdD288afCBce8', // agEUR
+          '0x0642026E7f0B6cCaC5925b4E7Fa61384250e1701', // H2O
+          '0x02B5453D92B730F29a86A0D5ef6e930c4Cf8860B', // USDB 
         ]
       }
     }
@@ -33,7 +37,7 @@ module.exports = {
     tvl: {
       bridge: {
         address: '0xAf41a65F786339e7911F4acDAD6BD49426F2Dc6b',
-        tokens: [ ]
+        tokens: []
       },
       pools: [
         {
@@ -58,9 +62,12 @@ module.exports = {
       bridge: {
         address: '0xC05e61d0E7a63D27546389B7aD62FdFf5A91aACE',
         tokens: [
-          '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7',
-          '0x1f1e7c893855525b303f99bdf5c3c05be09ca251',
-          '0x321E7092a180BB43555132ec53AaA65a5bF84251',
+          '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7', // WAVAX
+          '0x1f1e7c893855525b303f99bdf5c3c05be09ca251', // SYN
+          '0x321E7092a180BB43555132ec53AaA65a5bF84251', // gOHM
+          '0x152b9d0FdC40C096757F570A51E494bd4b943E50', // BTC.b
+          '0x5aB7084CB9d270c2Cb052dd30dbecBCA42F8620c', // USDB
+          '0x62edc0692BD897D2295872a9FFCac5425011c661', // GMX
         ]
       },
       pools: [
@@ -87,7 +94,7 @@ module.exports = {
     tvl: {
       bridge: {
         address: '0xE27BFf97CE92C3e1Ff7AA9f86781FDd6D48F5eE9',
-        tokens: [        ]
+        tokens: []
       },
       pools: [
         {
@@ -105,8 +112,12 @@ module.exports = {
       bridge: {
         address: '0xd123f70AE324d34A9E76b67a27bf77593bA8749f',
         tokens: [
-          '0x5f4bde007dc06b867f86ebfe4802e34a1ffeed63',
-          '0xa4080f1778e69467e905b8d6f72f6e441f9e9484',
+          '0x5f4bde007dc06b867f86ebfe4802e34a1ffeed63', // HIGH
+          '0xaA88C603d142C371eA0eAC8756123c5805EdeE03', // DOG
+          '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56', // BUSD
+          '0x0FE9778c005a5A6115cBE12b0568a2d50b765A51', // NFD
+          '0x130025eE738A66E691E6A7a62381CB33c6d9Ae83', // JUMP
+          '0xc8699AbBba90C7479dedcCEF19eF78969a2fc608', // USDB
         ]
       },
       pools: [
@@ -127,6 +138,8 @@ module.exports = {
       bridge: {
         address: '0x8f5bbb2bb8c2ee94639e55d5f41de9b4839c1280',
         tokens: [
+            '0xd8cA34fd379d9ca3C6Ee3b3905678320F5b45195', // gOHM
+            '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270', // wMATIC
         ]
       },
       pools: [
@@ -146,7 +159,11 @@ module.exports = {
     tvl: {
       bridge: {
         address: '0xAf41a65F786339e7911F4acDAD6BD49426F2Dc6b',
-        tokens: [  ]
+        tokens: [
+          '0x91fa20244Fb509e8289CA630E5db3E9166233FDc', // gOHM
+          '0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83', // wFTM
+          '0x6Fc9383486c163fA48becdEC79d6058f984f62cA', // USDB
+        ]
       },
       pools: [
         {
@@ -289,8 +306,9 @@ module.exports = {
       bridge: {
         address: '0xAf41a65F786339e7911F4acDAD6BD49426F2Dc6b',
         tokens: [
-          '0x72cb10c6bfa5624dd07ef608027e366bd690048f',
-          '0xa9ce83507d872c5e1273e745abcfda849daa654f',
+          '0x72cb10c6bfa5624dd07ef608027e366bd690048f', // JEWEL
+          '0xa9ce83507d872c5e1273e745abcfda849daa654f', // xJEWEL
+          '0x24eA0D436d3c2602fbfEfBe6a16bBc304C963D04', // DFKTEARS
         ]
       },
       pools: [
@@ -325,7 +343,7 @@ module.exports = {
       bridge: {
         address: '0xaeD5b25BE1c3163c907a471082640450F928DDFE',
         tokens: [
-          '0x98878B06940aE243284CA214f92Bb71a2b032B8A',
+          '0x98878B06940aE243284CA214f92Bb71a2b032B8A', // wMOVR
         ]
       },
     }
@@ -335,9 +353,33 @@ module.exports = {
       bridge: {
         address: '0x84A420459cd31C3c34583F67E0f0fB191067D32f',
         tokens: [
-          '0x0db6729c03c85b0708166ca92801bcb5cac781fc',
+          '0x0db6729c03c85b0708166ca92801bcb5cac781fc', // veSOLAR
         ]
       },
+    }
+  },
+  klaytn: {
+    tvl: {
+      bridge: {
+        address: '0xaf41a65f786339e7911f4acdad6bd49426f2dc6b',
+        tokens: [
+          '0x5819b6af194a78511c79c85ea68d2377a7e9335f', // wKLAY
+          '0xcd6f29dc9ca217d0973d3d21bf58edd3ca871a86', // wETH
+          '0xdcbacf3f7a069922e677912998c8d57423c37dfa', // wBTC
+          '0xd6dab4cff47df175349e6e7ee2bf7c40bb8c05a3', // USDT
+          '0x6270b58be569a7c0b8f47594f191631ae5b2c86c', // USDC
+          '0xdcbacf3f7a069922e677912998c8d57423c37dfa', // wBTC
+        ]
+      },
+      pools: [
+        {
+          pool: '0xfdbad1699a550f933efebf652a735f2f89d3833c',
+          tokens: [
+            "0xd6dab4cff47df175349e6e7ee2bf7c40bb8c05a3", // USDT
+            "0xcee8faf64bb97a73bb51e115aa89c17ffa8dd167", // o.USDT
+          ]
+        },
+      ]
     }
   },
 }

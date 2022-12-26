@@ -93,7 +93,7 @@ async function treasury (timestamp, block, chainBlocks) {
 }
 
 module.exports = {
-  avalanche: {
+  avax:{
     methodology: "Tokens locked in as collateral is counted as TVL",
     tvl,
     borrowed,

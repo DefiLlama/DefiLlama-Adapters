@@ -19,7 +19,8 @@ const Kavalps = [rubyKavaLp, rshareKavaLp, rubyRshareLp, rubyUsdcLp];
 async function calcPool2(genesisPool, rewardPool, lps, block, chain) {
   let balances = {};
   const { updateBalances, } = await getTokenPrices({
-    block, chain, coreAssets: [wkavaAddress], allLps: true, lps,
+    block, chain, 
+    useDefaultCoreAssets: true, allLps: true, lps,
   })
 
    // calculate rewardPool
@@ -68,7 +69,7 @@ async function calcKava(rewardPool, block, chain) {
     })
   ).output;
 
-  await sdk.util.sumSingleBalance(
+  sdk.util.sumSingleBalance(
     balances,
     `kava:${wkavaAddress}`,
     wkavaRewardBalance

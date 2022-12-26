@@ -9,7 +9,7 @@ function printerTvl(token, share, rewardPool, masonry, pool2LPs, chain = "ethere
     if (transform === undefined) transform = addr => `${chain}:${addr}`;
     if (tokensOnCoingecko) {
         return {
-            [chain === "avax" ? "avalanche" : chain]: {
+            [chain]: {
                 tvl: async () => ({}),
                 staking: staking(masonry, share, chain),
                 pool2: pool2Exports(rewardPool, pool2LPs, chain, transform)
@@ -89,7 +89,7 @@ function printerTvl(token, share, rewardPool, masonry, pool2LPs, chain = "ethere
         }
 
         return {
-            [chain === "avax" ? "avalanche" : chain]: {
+            [chain]: {
                 tvl: async () => ({}),
                 staking: stakingUnknownPricedLP(masonry, share, chain, lpWithShare),
                 pool2

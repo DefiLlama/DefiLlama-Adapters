@@ -25,5 +25,8 @@ module.exports = {
   terra: {
     tvl,
     staking,
-  }
+  },
+  hallmarks:[
+    [1651881600, "UST depeg"],
+  ]
 }

@@ -7,4 +7,7 @@ module.exports = {
     tvl: zero,
     borrowed: zero,
   },
+   hallmarks:[
+    [1651881600, "UST depeg"],
+  ]
 };

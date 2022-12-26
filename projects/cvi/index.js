@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const { staking, stakings } = require("../helper/staking");
-const { pool2s, pool2 } = require("../helper/pool2");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const { transformPolygonAddress } = require("../helper/portedTokens");
 
@@ -120,12 +119,12 @@ module.exports = {
   misrepresentedTokens: true,
   ethereum: {
     staking: staking(stakingContract, GOVI),
-    pool2: pool2s(stakingPool2Contracts, lpPool2Addresses),
+    pool2: staking(stakingPool2Contracts, lpPool2Addresses),
     tvl: ethTvl,
   },
   polygon: {
     staking: stakings(stakingContracts_polygon, GOVI_polygon, "polygon", GOVI),
-    pool2: pool2(
+    pool2: staking(
       stakingPool2Contract_polygon,
       lpPool2Address_polygon,
       "polygon"
