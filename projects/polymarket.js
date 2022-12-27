@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const { request, gql } = require("graphql-request");
+const { request,  } = require("graphql-request");
 const { BigNumber } = require("bignumber.js");
 const utils = require('./helper/utils');
 
@@ -12,7 +12,7 @@ const utils = require('./helper/utils');
 
 // # block: { number: $block }
 const graphUrl = 'https://api.thegraph.com/subgraphs/name/polymarket/matic-markets-5'
-const graphQuery = gql`
+const graphQuery = `
 query GET_POLYMARKET($skip: Int, $block: Int) {
     conditions(
       first: 1000
