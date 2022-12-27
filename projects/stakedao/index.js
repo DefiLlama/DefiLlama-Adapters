@@ -111,7 +111,7 @@ const fusdt3EPS_vault_bsc = {
 const vaults = [
   crv_3crv_vault, 
   crv_eurs_vault, 
-  crv_btc_vault, 
+  // crv_btc_vault, 
   crv_frax_vault,
   crv_frax_vault2,
   crv_eth_vault,
@@ -120,7 +120,7 @@ const vaults = [
 
 const vaultsPolygon = [
   crv_3crv_vault_polygon,
-  crv_btc_vault_polygon
+  // crv_btc_vault_polygon
 ]
 
 const vaultsAvalanche = [
