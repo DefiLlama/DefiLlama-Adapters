@@ -1,27 +1,4 @@
 {
-    "totalUnderlying": {
-        "inputs": [],
-        "name": "totalUnderlying",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "total",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    "priceOracle": {
-        "stateMutability": "view",
-        "type": "function",
-        "name": "price_oracle",
-        "inputs": [],
-        "outputs": [
-            {
-                "name": "",
-                "type": "uint256"
-            }
-        ]
-    }
+  "totalUnderlying": "uint256:totalUnderlying",
+  "priceOracle": "uint256:price_oracle"
 }

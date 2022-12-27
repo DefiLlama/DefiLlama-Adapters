@@ -5,7 +5,7 @@ const jsonfile = require('jsonfile')
 const rootFolder = '../projects'
 const rootFolderTest = '../projects/yfii'
 
-https://docs.soliditylang.org/en/latest/abi-spec.html
+// https://docs.soliditylang.org/en/latest/abi-spec.html
 let knownTypes = [
   'string', 'address', 'bool',
   'int', 'int8', 'int16', 'int32', 'int64', 'int128', 'int256',
