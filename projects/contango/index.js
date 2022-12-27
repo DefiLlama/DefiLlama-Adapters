@@ -19,7 +19,7 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const { ladle, fromBlock } = config[chain]
   module.exports[chain] = {
-    tvl: async (timestamp, _b, chainBlocks) => {
+    tvl: async (timestamp, _b, chainBlocks, { api }) => {
       const block = chainBlocks[chain]
       const cauldron = await sdk.api2.abi.call({
         target: ladle,
@@ -28,7 +28,7 @@ Object.keys(config).forEach(chain => {
       })
 
       const logs = await getLogs({
-        chain, target: cauldron, fromBlock, timestamp, chainBlocks,
+        api, target: cauldron, fromBlock,
         topic: 'IlkAdded(bytes6,bytes6)', eventAbi: abis.IlkAdded,
       })
       const ilkIds = logs.map((log) => log.args.ilkId)

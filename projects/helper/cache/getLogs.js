@@ -6,14 +6,17 @@ const ethers = require("ethers")
 
 const cacheFolder = 'logs'
 
-async function getLogs({ chain = 'ethereum', target, block,
+async function getLogs({ target,
   topic, keys = [], fromBlock, toBlock, topics,
-  timestamp, chainBlocks = {}, eventAbi }) {
+  api, eventAbi }) {
+  if (!api) throw new Error('Missing sdk api object!')
   if (!target) throw new Error('Missing target!')
   if (!fromBlock) throw new Error('Missing fromBlock!')
+  await api.getBlock()
+  const block = api.block
+  const chain = api.chain ?? 'ethereum'
   if (!toBlock) toBlock = block
-  if (!toBlock)
-    toBlock = await getBlock(timestamp, chain, chainBlocks)
+  if (!toBlock) throw new Error('Missing fromBlock!')
 
   let iface
 
@@ -37,7 +40,11 @@ async function getLogs({ chain = 'ethereum', target, block,
 
   if (!eventAbi) return response
 
-  return response.map((log) => (iface.parseLog(log)))
+  return response.map((log) => {
+    const res = iface.parseLog(log)
+    res.topics = log.topics.map(i => `0x${i.slice(26)}`)
+    return res
+  })
 
   async function fetchLogs() {
     cache.fromBlock = fromBlock
