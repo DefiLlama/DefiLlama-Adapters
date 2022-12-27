@@ -10,10 +10,12 @@
         "inputs": [],
         "constant": true,
         "payable": false,
+        "stateMutability":"view",
         "type": "function"
     },
     "balances": {
         "name": "balances",
+        "stateMutability":"view",
         "outputs": [
             {
                 "type": "uint256",
@@ -32,6 +34,7 @@
     },
     "coins": {
         "name": "coins",
+        "stateMutability":"view",
         "outputs": [
             {
                 "type": "address",

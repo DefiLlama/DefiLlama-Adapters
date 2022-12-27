@@ -91,6 +91,7 @@
         "constant": true,
         "payable": false,
         "type": "function",
+        "stateMutability": "view",
         "gas": 2190
     },
     "underlying": {

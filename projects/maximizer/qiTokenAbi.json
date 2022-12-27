@@ -22,12 +22,14 @@
         "constant": true,
         "inputs": [],
         "name": "exchangeRateStored",
+        "stateMutability":"view",
         "outputs": [
             {
                 "internalType": "uint256",
                 "name": "",
                 "type":"uint256"
             }
-        ]
+        ],
+        "type":"function"
     }
 }
