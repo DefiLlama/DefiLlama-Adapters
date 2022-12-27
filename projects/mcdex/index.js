@@ -1,35 +1,35 @@
 const {gql} = require('graphql-request')
 const { blockQuery } = require('../helper/http')
 const {toUSDTBalances} = require('../helper/balances');
-const {getBlock} = require('../helper/http');
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 
 async function ethereum(timestamp, block) {
     return sumTokens2({ block, owner: '0x220a9f0DD581cbc58fcFb907De0454cBF3777f76', tokens: [nullAddress]})
 }
 
-
-async function getTVL(subgraphName, block) {
+async function getTVL(subgraphName, api) {
     const endpoint = `https://api.thegraph.com/subgraphs/name/mcdexio/${subgraphName}`
 
     const query = gql`
-        query getTvl {
-            factories {
+        query getTvl ($block: Int) {
+            factories (
+                block: { number: $block }
+              ){
                 id
                 totalValueLockedUSD
             }
         }
     `;
-    const results = await blockQuery(endpoint, query, block, 600)
+    const results = await blockQuery(endpoint, query, { api, blockCatchupLimit: 600, })
     return results.factories[0].totalValueLockedUSD;
 }
 
-async function arbitrum(timestamp, ethBlock, chainBlocks) {
-    return toUSDTBalances(await getTVL("mcdex3-arb-perpetual", await getBlock(timestamp, "arbitrum", chainBlocks)))
+async function arbitrum(_, _b, _cb, { api, }) {
+    return toUSDTBalances(await getTVL("mcdex3-arb-perpetual", api))
 }
 
-async function bsc(timestamp, ethBlock, chainBlocks) {
-    return toUSDTBalances(await getTVL("mcdex3-bsc-perpetual", await getBlock(timestamp, "bsc", chainBlocks)))
+async function bsc(_, _b, _cb, { api, }) {
+    return toUSDTBalances(await getTVL("mcdex3-bsc-perpetual", api))
 }
 
 module.exports = {

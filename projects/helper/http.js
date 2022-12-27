@@ -61,8 +61,10 @@ async function covalentGetTokens(address, chain = 'ethereum') {
     .map(i => i.contract_address.toLowerCase())
 }
 
-async function blockQuery(endpoint, query, block, blockCatchupLimit = 200) {
+async function blockQuery(endpoint, query, { api, blockCatchupLimit = 500, }) {
   const graphQLClient = new GraphQLClient(endpoint)
+  await api.getBlock()
+  const block = api.block
   try {
     const results = await graphQLClient.request(query, { block })
     return results
