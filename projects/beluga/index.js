@@ -22,7 +22,7 @@ Object.keys(config).forEach(chain => {
     tvl: async (_, _b, _cb, { api, }) => {
       const balances = {}
       const data = await getLogs({
-        ...api,
+        api,
         target: factory,
         topics: [topic],
         fromBlock,
