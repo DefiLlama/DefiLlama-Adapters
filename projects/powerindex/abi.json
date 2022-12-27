@@ -3,6 +3,7 @@
         "constant": true,
         "inputs": [],
         "name": "getCurrentTokens",
+        "stateMutability":"view",
         "outputs": [
             {
                 "internalType": "address[]",
@@ -17,6 +18,7 @@
         "constant": true,
         "inputs": [],
         "name": "underlying",
+        "stateMutability":"view",
         "outputs": [
             {
                 "internalType": "contract IERC20",

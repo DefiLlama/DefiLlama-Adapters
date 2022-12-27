@@ -11,6 +11,7 @@
             "type": "address[]"
             }
         ],
+        "stateMutability":"view",
         "payable": false,
          "type": "function"
     }
