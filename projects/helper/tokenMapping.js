@@ -484,6 +484,8 @@ const fixBalancesTokens = {
     [nullAddress]: { coingeckoId: "tron", decimals: 6, },
     "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t": { coingeckoId: "tether", decimals: 6, },
     "TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8": { coingeckoId: "usd-coin", decimals: 6, },
+    "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn": { coingeckoId: "usdd", decimals: 18, },
+    "TVHH59uHVpHzLDMFFpUgCx2dNAQqCzPhcR": { coingeckoId: "justmoney-2", decimals: 8, },
     "TN3W4H6rK2ce4vX9YnFQHwKENnHjoxb3m9": { coingeckoId: "bitcoin", decimals: 8, },
     "TR3DLthpnDdCGabhVDbD3VMsiJoCXY3bZd": { coingeckoId: "litecoin", decimals: 8, },
     "THbVQp8kMjStKNnf2iCY6NEzThKMK5aBHg": { coingeckoId: "dogecoin", decimals: 8, },
