@@ -15,6 +15,14 @@ async function getLogs({ chain = 'ethereum', target, block,
   if (!toBlock)
     toBlock = await getBlock(timestamp, chain, chainBlocks)
 
+  let iface
+
+  if (eventAbi) {
+    iface = new ethers.utils.Interface([eventAbi])
+    if (typeof eventAbi === 'object')
+      sdk.log(iface.format(ethers.utils.FormatTypes.full))
+  }
+
   target = target.toLowerCase()
   const key = `${chain}/${target}`
 
@@ -24,12 +32,11 @@ async function getLogs({ chain = 'ethereum', target, block,
   // if no new data nees to be fetched
   if (cache.fromBlock && cache.toBlock > toBlock)
     response = cache.logs.filter(i => i.blockNumber < toBlock && i.blockNumber >= fromBlock)
-  else 
+  else
     response = await fetchLogs()
 
-  if (!eventAbi)  return response
+  if (!eventAbi) return response
 
-  let iface = new ethers.utils.Interface([eventAbi])
   return response.map((log) => (iface.parseLog(log)))
 
   async function fetchLogs() {
