@@ -1,22 +1,4 @@
 {
-  "totalSupply": {
-    "inputs": [],
-    "name": "totalSupply",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "UNDERLYING_ASSET_ADDRESS": {
-    "inputs": [],
-    "name": "UNDERLYING_ASSET_ADDRESS",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
+  "totalSupply": "uint256:totalSupply",
+  "UNDERLYING_ASSET_ADDRESS": "address:UNDERLYING_ASSET_ADDRESS"
 }
