@@ -1,6 +1,5 @@
-const sdk = require('@defillama/sdk');
-const { transformBalances } = require('../helper/portedTokens')
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const { sumTokens2 } = require("../helper/unwrapLPs");
+const { pool2 } = require("../helper/pool2");
 
 const Contracts = {
     Pool: "0xA5aBFB56a78D2BD4689b25B8A77fd49Bb0675874",
@@ -16,70 +15,13 @@ const Contracts = {
     LVL_BNB_LP: "0x70f16782010fa7dDf032A6aaCdeed05ac6B0BC85"
 }
 
-const abi = {
-    getPoolAsset: {
-        "inputs": [{ "internalType": "address", "name": "_token", "type": "address" }],
-        "name": "getPoolAsset",
-        "outputs": [
-            {
-                "components": [
-                    { "internalType": "uint256", "name": "poolAmount", "type": "uint256" },
-                    { "internalType": "uint256", "name": "reservedAmount", "type": "uint256" },
-                    { "internalType": "uint256", "name": "guaranteedValue", "type": "uint256" },
-                    { "internalType": "uint256", "name": "totalShortSize", "type": "uint256" }
-                ],
-                "internalType": "struct AssetInfo",
-                "name": "",
-                "type": "tuple"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-}
-
-const calcTvl = async (_, _b, chainBlocks, { chain }) => {
-    const balances = {};
-    const { output: data } = await sdk.api.abi.multiCall({
-        target: Contracts.Pool,
-        abi: abi.getPoolAsset,
-        calls: Object.values(Contracts.Tokens).map(t => ({
-            params: [t],
-        })),
-        block: chainBlocks.bsc,
-        chain,
-    })
-    Object.values(Contracts.Tokens).forEach((token, i) => {
-        sdk.util.sumSingleBalance(balances, token, data[i].output.poolAmount || 0)
-    })
-    return transformBalances(chain, balances)
-}
-
-const calcPool2 = async (_, _b, chainBlocks, { chain }) => {
-    const balances = {}
-    const lpBalance = (await sdk.api.abi.call({
-        target: Contracts.LVL_BNB_LP,
-        abi: "erc20:balanceOf",
-        params: Contracts.Chef,
-        block: chainBlocks.bsc,
-        chain
-    })).output;
-    await unwrapUniswapLPs(
-        balances,
-        [{
-            balance: lpBalance,
-            token: Contracts.LVL_BNB_LP,
-        }],
-        chainBlocks.bsc,
-        chain,
-        (addr) => `${chain}:${addr}`
-    );
-    return balances;
+async function tvl(_, _b, _cb, { api, }) {
+  return sumTokens2({ ...api, owner: Contracts.Pool, tokens: Object.values(Contracts.Tokens)})
 }
 
 module.exports = {
     bsc: {
-        tvl: calcTvl,
-        pool2: calcPool2
+        tvl,
+        pool2: pool2(Contracts.Chef, Contracts.LVL_BNB_LP, 'bsc')
     },
 };
