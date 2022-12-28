@@ -10,7 +10,7 @@ const fantomMMY = "0x01e77288b38b416F972428d562454fb329350bAc";
 module.exports = {
   fantom: {
     staking: staking(fantomStaking, fantomMMY, "fantom", "mmy", 18),
-    tvl: gmxExports({ chain: "fantom", vault: fantomVault })
+    tvl: gmxExports({ vault: fantomVault })
   }
 
 };

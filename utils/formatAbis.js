@@ -15,19 +15,21 @@ let knownTypes = [
 ([...knownTypes]).forEach(i => knownTypes.push(i + '[]')) // support array type for all known types
 knownTypes = new Set(knownTypes)
 
-glob(rootFolder + '/**/*.json', {}, async (e, files) => {
-  if (e) throw e
-  console.log('JSON file count', files.length)
-  const objs = files.map(file => ({
-    file,
-    data: jsonfile.readFileSync(file)
-  }))
-  const isTransformables = objs.filter(i => isTransformable(i.data, i.file))
-  console.log(isTransformables.length)
-  const fileWriteOptions = { spaces: 2, finalEOL: false }
-  isTransformables.forEach(i => i.newData = transform(i.data, i.file))
-  isTransformables.forEach(i => jsonfile.writeFile(i.file, i.newData, fileWriteOptions))
-})
+function run() {
+  glob(rootFolder + '/**/*.json', {}, async (e, files) => {
+    if (e) throw e
+    console.log('JSON file count', files.length)
+    const objs = files.map(file => ({
+      file,
+      data: jsonfile.readFileSync(file)
+    }))
+    const isTransformables = objs.filter(i => isTransformable(i.data, i.file))
+    console.log(isTransformables.length)
+    const fileWriteOptions = { spaces: 2, finalEOL: false }
+    isTransformables.forEach(i => i.newData = transform(i.data, i.file))
+    isTransformables.forEach(i => jsonfile.writeFile(i.file, i.newData, fileWriteOptions))
+  })
+}
 
 function isTransformable(obj, file) {
   if (typeof obj !== 'object' || Array.isArray(obj)) return false;
@@ -62,3 +64,6 @@ function transform(obj, file) {
 
   return res
 }
+
+console.log(transform({
+}))
