@@ -9,7 +9,7 @@ const kavaKMXKAVAPool = '0xA08848E7A4dbaEeE8eeAb93a05F437ed9Efa2162'
 
 module.exports = {
   kava: {
-    staking: sumTokensExport({ chain: 'kava', owner: kmexStaking, tokens: [kavaKMX],lps: [kavaKMXKAVAPool], useDefaultCoreAssets: true, }),
-    tvl: gmxExports({ chain: 'kava', vault: kmexVault, })
+    staking: sumTokensExport({ owner: kmexStaking, tokens: [kavaKMX],lps: [kavaKMXKAVAPool], useDefaultCoreAssets: true, }),
+    tvl: gmxExports({ vault: kmexVault, })
   },
 };
