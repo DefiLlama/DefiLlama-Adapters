@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
-const { get } = require("../helper/http");
+const { getConfig } = require('../helper/cache')
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const ANGLE = "0x31429d1856ad1377a8a0079410b297e1a9e214c2";
@@ -40,7 +40,7 @@ async function getVaultManagersFromAPI(chain) {
   };
   let chainId = chainIds[chain];
   let calls = [];
-  let result = await get(
+  let result = await getConfig('angle/'+chain,
     "https://api.angle.money/v1/vaultManagers?chainId=" + chainId
   );
 

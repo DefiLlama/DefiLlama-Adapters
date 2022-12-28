@@ -115,7 +115,7 @@ function staking({ tokensAndOwners = [],
 
     const balances = await sumTokens2({ chain, block, tokensAndOwners })
     const { updateBalances, pairBalances, prices, } = await getTokenPrices({ coreAssets, lps: [...tokensAndOwners.map(t => t[0]), ...lps,], chain, block, restrictTokenRatio, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio })
-    // sdk.log(prices, pairBalances, balances)
+    sdk.log(prices, pairBalances, balances)
     await updateBalances(balances, { skipConversion, onlyLPs })
     const fixBalances = await getFixBalances(chain)
     fixBalances(balances)

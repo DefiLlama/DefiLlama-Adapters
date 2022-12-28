@@ -4,7 +4,8 @@
 const sdk = require("@defillama/sdk");
 const { sumTokens } = require("../helper/unwrapLPs");
 const abi = require("./abi.json");
-const { get } = require('../helper/http')
+const { getConfig } = require('../helper/cache')
+
 const { stakings } = require('../helper/staking')
 const { getLogs } = require('../helper/cache/getLogs')
 
@@ -66,7 +67,7 @@ const ethereumBorrowed = async (timestamp, block, _, { api }) => {
 const polygonTvl = async (timestamp, _,  { polygon: block }) => {
   const balances = {};
   const chain = 'polygon'
-  const poolAllData = await get(polygonPoolURL)
+  const poolAllData = await getConfig('clearpool-polygon',polygonPoolURL)
   const poolData = poolAllData["137"]
 
   const tokensAndOwners = [];
@@ -81,7 +82,7 @@ const polygonTvl = async (timestamp, _,  { polygon: block }) => {
 
 const polygonBorrowed = async (timestamp, _,  { polygon: block }) => {
   const chain = 'polygon'
-  const poolAllData = await get(polygonPoolURL)
+  const poolAllData = await getConfig('clearpool-polygon',polygonPoolURL)
   const poolData = poolAllData["137"]
   const totalBorrowed = {};
 

@@ -971,7 +971,13 @@ async function sumTokens2({
   blacklistedTokens = [],
   skipFixBalances = false,
   abis = {},
+  api,
 }) {
+  if (api) {
+    chain = api.chain ?? chain
+    block = api.block ?? block
+  }
+
   if (!tokensAndOwners.length) {
     tokens = getUniqueAddresses(tokens)
     owners = getUniqueAddresses(owners)
