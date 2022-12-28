@@ -1,6 +1,5 @@
 
 const { getCache, setCache, } = require('../cache');
-const { getBlock, } = require('../http')
 const sdk = require('@defillama/sdk')
 const ethers = require("ethers")
 

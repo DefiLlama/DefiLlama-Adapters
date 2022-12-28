@@ -4,6 +4,7 @@ const { sumTokensAndLPsSharedOwners, sumTokens2 } = require("../helper/unwrapLPs
 const { staking, } = require("../helper/staking")
 const { getConnection, getTokenBalance } = require('../helper/solana')
 const { PublicKey } = require('@solana/web3.js')
+const { getLogs } = require('../helper/cache/getLogs')
 
 const PoolFactory = "0x2Cd79F7f8b38B9c0D80EA6B230441841A31537eC";
 
@@ -155,28 +156,27 @@ async function getSolanaTVL() {
 
 const pInfos = {}
 
-async function getPoolInfo(block) {
+async function getPoolInfo(block, api) {
   if (!pInfos[block]) pInfos[block] = _getPoolInfo()
   return pInfos[block]
 
   async function _getPoolInfo(){
     const loanFactory = '0x1551717ae4fdcb65ed028f7fb7aba39908f6a7a6'
     
-    const logs = await sdk.api.util.getLogs({
+    const logs = await getLogs({
+      api,
       target: loanFactory,
       topic: "InstanceDeployed(uint256,address,bytes)",
-      keys: [],
       fromBlock: 16126995,
-      toBlock: block,
     });
-    const proxies = logs.output.map(s=>"0x"+s.topics[2].slice(26, 66))
+    const proxies = logs.map(s=>"0x"+s.topics[2].slice(26, 66))
     const assets = await sdk.api2.abi.multiCall({ block, abi: abis.fundsAsset, calls: proxies, })
     return { proxies, assets, }
   }
 }
 
-async function ethTvl2(_, block) {
-  const { proxies, assets, } = await getPoolInfo(block)
+async function ethTvl2(_, block, _1, { api }) {
+  const { proxies, assets, } = await getPoolInfo(block, api)
   const pools = await sdk.api2.abi.multiCall({
     abi: abis.pool,
     calls: proxies,
@@ -186,9 +186,9 @@ async function ethTvl2(_, block) {
   return sumTokens2({ block, tokensAndOwners: pools.map((o, i) => ([assets[i], o]))})
 }
 
-async function borrowed2(_, block) {
+async function borrowed2(_, block, _1, { api }) {
   const balances = {}
-  const { proxies, assets, } = await getPoolInfo(block)
+  const { proxies, assets, } = await getPoolInfo(block, api)
   const principalOut = await sdk.api2.abi.multiCall({
     abi: abis.principalOut,
     calls: proxies,

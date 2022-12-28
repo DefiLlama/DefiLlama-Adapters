@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 const { stakings } = require("../helper/staking")
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { getLogs } = require('../helper/cache/getLogs')
 
 const BaseTokenAbi = {
   inputs: [],
@@ -47,21 +48,19 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const { startBlock, factory, stakingPools, ticToken, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, { [chain]: block }) => {
+    tvl: async (_, _b, { [chain]: block }, { api }) => {
       let { pairAddresses = [] } = config[chain]
 
       if (startBlock) {
         pairAddresses = []
         const logs = (
-          await sdk.api.util.getLogs({
-            keys: [],
-            toBlock: block,
+          await getLogs({
+            api,
             target: factory,
             fromBlock: startBlock,
-            chain,
             topic: 'NewExchange(address,address)',
           })
-        ).output
+        )
 
         for (let log of logs)
           pairAddresses.push(`0x${log.topics[2].substr(-40)}`.toLowerCase())
