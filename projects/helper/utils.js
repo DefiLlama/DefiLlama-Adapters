@@ -310,26 +310,6 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
   console.table(logObj)
 }
 
-async function getLogs({ chain = 'ethereum', fromBlock, toBlock, topic, topics, keys = [], target, eventInterface, chainBlocks, timestamp }) {
-  if (!toBlock) 
-    toBlock = await http.getBlock(timestamp, chain, chainBlocks)
-
-  const { output: logs} = await sdk.api.util.getLogs({
-    chain, topics, target, topic, keys, fromBlock, toBlock, 
-  });
-
-  const getAddress = i => `0x${i.substr(-40)}`.toLowerCase()
-  if (!eventInterface) return logs.map(log => log.topics.map(getAddress))
-
-  let iface = new ethers.utils.Interface([eventInterface])
-  return logs.map((log) => {
-    const res = {...iface.parseLog(log).args}
-    if (!res.topics )
-      res.topics = log.topics.map(getAddress)
-    return res
-  })
-}
-
 module.exports = {
   log,
   createIncrementArray,
@@ -351,5 +331,4 @@ module.exports = {
   getSymbols,
   getDecimals,
   getParamCalls,
-  getLogs,
 }

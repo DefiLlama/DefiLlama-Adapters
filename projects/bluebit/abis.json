@@ -1,26 +1,3 @@
 {
-  "summary": {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      }
-    ],
-    "name": "summary",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "tvl",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "deposites",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
+  "summary": "function summary(address account) view returns (uint256 tvl, uint256 deposites)"
 }

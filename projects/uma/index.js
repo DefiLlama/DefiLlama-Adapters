@@ -3,6 +3,7 @@ const { sumTokens } = require("../helper/unwrapLPs");
 const { requery } = require("../helper/requery");
 const { getChainTransform } = require("../helper/portedTokens");
 const { getBlock } = require("../helper/http");
+const { getLogs } = require('../helper/cache/getLogs')
 const abi = require("./abi");
 
 const ethLspCreators = [
@@ -28,19 +29,18 @@ const ethEmpCreators = [
 ];
 
 // Captures TVL for EMP contracts on Ethereum
-async function ethEmp(timestamp, block) {
+async function ethEmp(timestamp, block, _1, { api }) {
   const balances = {};
   for (let i = 0; i < ethEmpCreators.length; i++) {
-    const logs = await sdk.api.util.getLogs({
+    const logs = await getLogs({
       target: ethEmpCreators[i],
       topic: "CreatedExpiringMultiParty(address,address)",
-      keys: ["topics"],
       fromBlock: 9937650,
-      toBlock: block,
+      api,
     });
     const collaterals = await sdk.api.abi.multiCall({
-      calls: logs.output.map((poolLog) => ({
-        target: `0x${poolLog[1].slice(26)}`,
+      calls: logs.map((poolLog) => ({
+        target: `0x${poolLog.topics[1].slice(26)}`,
       })),
       block,
       abi: abi.collateralCurrency,
@@ -58,19 +58,18 @@ async function ethEmp(timestamp, block) {
 }
 
 // Captures TVL for LSP contracts on Ethereum
-async function ethLsp(timestamp, block) {
+async function ethLsp(timestamp, block, _1, { api }) {
   const balances = {};
   for (let i = 0; i < ethLspCreators.length; i++) {
-    const logs = await sdk.api.util.getLogs({
+    const logs = await getLogs({
       target: ethLspCreators[i],
       topic: "CreatedLongShortPair(address,address,address,address)",
-      keys: ["topics"],
       fromBlock: 12736035,
-      toBlock: block,
+      api,
     });
     const collaterals = await sdk.api.abi.multiCall({
-      calls: logs.output.map((poolLog) => ({
-        target: `0x${poolLog[1].slice(26)}`,
+      calls: logs.map((poolLog) => ({
+        target: `0x${poolLog.topics[1].slice(26)}`,
       })),
       block,
       abi: abi.collateralToken,
@@ -88,23 +87,21 @@ async function ethLsp(timestamp, block) {
 }
 
 // Captures TVL for LSP contracts on Polygon
-async function polygonLsp(timestamp, block, chainBlocks) {
+async function polygonLsp(timestamp, block, chainBlocks, { api }) {
   const balances = {};
   const transform = await getChainTransform('polygon');
   block = await getBlock(timestamp, "polygon", chainBlocks);
   
   for (let i = 0; i < polygonLspCreators.length; i++) {
-    const logs = await sdk.api.util.getLogs({
+    const logs = await getLogs({
       target: polygonLspCreators[i],
       topic: "CreatedLongShortPair(address,address,address,address)",
-      keys: ["topics"],
       fromBlock: 16241492,
-      toBlock: block,
-      chain: "polygon",
+      api,
     });
     const collaterals = await sdk.api.abi.multiCall({
-      calls: logs.output.map((poolLog) => ({
-        target: `0x${poolLog[1].slice(26)}`,
+      calls: logs.map((poolLog) => ({
+        target: `0x${poolLog.topics[1].slice(26)}`,
       })),
       block,
       abi: abi.collateralToken,
@@ -125,7 +122,7 @@ async function polygonLsp(timestamp, block, chainBlocks) {
 }
 
 // Captures TVL for LSP contracts on Boba
-async function bobaLsp(timestamp, block, chainBlocks) {
+async function bobaLsp(timestamp, block, chainBlocks, { api }) {
   const chain = "boba";
   const balances = {};
   const transform = await getChainTransform(chain);
@@ -133,18 +130,16 @@ async function bobaLsp(timestamp, block, chainBlocks) {
 
   for (let i = 0; i < bobaLspCreators.length; i++) {
     const lspCreatorAddress = bobaLspCreators[i];
-    const logs = await sdk.api.util.getLogs({
+    const logs = await getLogs({
       target: lspCreatorAddress,
       topic: "CreatedLongShortPair(address,address,address,address)",
-      keys: ["topics"],
       fromBlock: 291475,
-      toBlock: block,
-      chain,
+      api,
     });
 
     const collaterals = await sdk.api.abi.multiCall({
-      calls: logs.output.map((poolLog) => ({
-        target: `0x${poolLog[1].slice(26)}`,
+      calls: logs.map((poolLog) => ({
+        target: `0x${poolLog.topics[1].slice(26)}`,
       })),
       block,
       abi: abi.collateralToken,
