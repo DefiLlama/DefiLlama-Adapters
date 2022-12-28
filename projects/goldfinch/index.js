@@ -2,6 +2,7 @@ const sdk = require("@defillama/sdk");
 const { sumTokens } = require("../helper/unwrapLPs");
 const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
+const { getLogs } = require('../helper/cache/getLogs')
 
 const seniorPoolAddress = "0x8481a6EbAf5c7DABc3F7e09e44A89531fd31F822";
 const gfFactoryAddress = "0xd20508E1E971b80EE172c73517905bfFfcBD87f9";
@@ -10,19 +11,18 @@ const V2_START = 13097274;
 const USDC = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
 let _trancheAddresses
 
-const getTranchedPoolAddresses = async (ethBlock) => {
+const getTranchedPoolAddresses = async (api) => {
   if (!_trancheAddresses) _trancheAddresses = _get()
   return _trancheAddresses
 
   async function _get() {
-    const logs = await sdk.api.util.getLogs({
+    const logs = await getLogs({
       target: gfFactoryAddress,
-      keys: [],
+      api,
       fromBlock: V2_START,
-      toBlock: ethBlock,
       topic: "PoolCreated(address,address)",
     });
-    return logs.output.map((l) => "0x" + l.topics[1].substr(26));
+    return logs.map((l) => "0x" + l.topics[1].substr(26));
   }
 };
 
@@ -30,10 +30,10 @@ const getTranchedPoolAddresses = async (ethBlock) => {
  * This metric represents DeFiLlama's "base" definition of Total Value Locked. It includes
  * only USDC balances in the protocol (that is, in the `SeniorPool` and in all `TranchedPool`s).
  */
-const tvl = async (timestamp, ethBlock) => {
+const tvl = async (timestamp, ethBlock, _, { api, }) => {
   const balances = {};
 
-  const tranchedPoolAddresses = await getTranchedPoolAddresses(ethBlock);
+  const tranchedPoolAddresses = await getTranchedPoolAddresses(api);
 
   await sumTokens(
     balances,
@@ -57,7 +57,7 @@ const tvl = async (timestamp, ethBlock) => {
  * Only the `SeniorPool` has a writedown mechanic -- which is reflected in this metric (via 
  * `SeniorPool.assets()`).
  */
-const borrowed = async (_, ethBlock) => {
+const borrowed = async (_, ethBlock, _1, { api }) => {
   const _seniorPoolUsdcBalances = {};
   await sumTokens(
     _seniorPoolUsdcBalances,
@@ -68,7 +68,7 @@ const borrowed = async (_, ethBlock) => {
 
   const balances = {};
 
-  const tranchedPoolAddresses = await getTranchedPoolAddresses(ethBlock);
+  const tranchedPoolAddresses = await getTranchedPoolAddresses(api);
 
   const poolStats = (
     await sdk.api.abi.multiCall({

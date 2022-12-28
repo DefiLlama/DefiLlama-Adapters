@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const ethers = require("ethers");
+const { getLogs } = require('../helper/cache/getLogs')
 
 
 const hubPoolAddress = "0xc186fA914353c44b2E33eBE05f21846F1048bEda"
@@ -15,17 +15,16 @@ let pools = [
   ["0x6B175474E89094C44Da98b954EedeAC495271d0F", "0x43f133fe6fdfa17c417695c476447dc2a449ba5b"],
 ]
 
-async function tvl(_, block) {
-  const v2Logs = await sdk.api.util.getLogs({
+async function tvl(_, block, _1, { api }) {
+  const v2Logs = await getLogs({
+    api,
     target: hubPoolAddress,
     topic: "L1TokenEnabledForLiquidityProvision(address,address)",
-    keys: [],
     fromBlock: 14819537,
-    toBlock: block,
+    eventAbi: 'event L1TokenEnabledForLiquidityProvision (address l1Token, address lpToken)',
   });
-  let iface = new ethers.utils.Interface(['event L1TokenEnabledForLiquidityProvision (address l1Token, address lpToken)'])
   pools = pools.map(i => i.map(j => j.toLowerCase()))
-  v2Logs.output.map((log) => iface.parseLog(log).args).forEach(i => {
+  v2Logs.map((log) => log.args).forEach(i => {
     const pool = i[1].toLowerCase()
     if (pools.some(i => i[1] === pool)) return;
     pools.push([i[0], pool])
