@@ -13,14 +13,15 @@ query get_tvl($block: Int) {
 }
 `;
   return (chain) => {
-    return async (timestamp, ethBlock, chainBlocks) => {
-      const block = await getBlock(timestamp, chain, chainBlocks)
+    return async (_, _b, _cb, { api }) => {
+      await api.getBlock()
+      const block = api.block
       let uniswapFactories
 
       if (!blockCatchupLimit) {
         uniswapFactories = (await request(graphUrls[chain], graphQuery, { block, }))[factoriesName];
       } else {
-        uniswapFactories = (await blockQuery(graphUrls[chain], graphQuery, block, blockCatchupLimit))[factoriesName];
+        uniswapFactories = (await blockQuery(graphUrls[chain], graphQuery, { api, blockCatchupLimit, }))[factoriesName];
       }
 
       const usdTvl = Number(uniswapFactories[0][tvlName])

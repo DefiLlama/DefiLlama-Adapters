@@ -1,6 +1,5 @@
-const {staking} = require('../helper/staking')
 const { gmxExports } = require('../helper/gmx')
-const { unknownTombs, sumTokensExport } = require("../helper/unknownTokens")
+const { sumTokensExport } = require("../helper/unknownTokens")
 
 // Kava
 const kmexVault = '0x15B29830D5bE7240c7a401fe0B0dA5086C9d84c5';

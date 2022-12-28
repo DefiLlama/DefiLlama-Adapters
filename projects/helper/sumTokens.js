@@ -1,6 +1,6 @@
 const { ibcChains, getUniqueAddresses} = require('./tokenMapping')
 const { get, post, } = require('./http')
-const { sumTokens2: sumTokensEVM, } = require('./unwrapLPs')
+const { sumTokens2: sumTokensEVM, nullAddress, } = require('./unwrapLPs')
 const sdk = require('@defillama/sdk')
 
 const helpers = {
@@ -102,6 +102,7 @@ async function getRippleBalance(account) {
 }
 
 module.exports = {
+  nullAddress,
   sumTokensExport,
   sumTokens,
 }

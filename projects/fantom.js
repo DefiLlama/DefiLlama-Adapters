@@ -1,12 +1,12 @@
 const { get } = require('./helper/http')
-const { GraphQLClient, gql } = require("graphql-request");
+const { GraphQLClient,  } = require("graphql-request");
 const BigNumber = require("bignumber.js");
 
 async function fetch() {
   const endpoint = "https://xapi3.fantom.network/api";
   const graphQLClient = new GraphQLClient(endpoint);
 
-  const query = gql`
+  const query = `
     query getToken($token: Address!) {
       erc20Token(token: $token) {
         address
