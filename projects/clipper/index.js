@@ -1,7 +1,8 @@
 const { sumTokensAndLPsSharedOwners } = require('../helper/unwrapLPs')
 const { getChainTransform } = require('../helper/portedTokens')
 const sdk = require('@defillama/sdk')
-const { get } = require('../helper/http')
+const { getConfig } = require('../helper/cache')
+
 const BigNumber = require('bignumber.js')
 
 const oldPools = {
@@ -26,7 +27,7 @@ async function getChainData(chain) {
 				address: poolAddress
 			},
 			assets
-	} = await get(`https://api.clipper.exchange/rfq/pool?chain_id=${chainId}`)
+	} = await getConfig('clipper/'+chain,`https://api.clipper.exchange/rfq/pool?chain_id=${chainId}`)
 	return {
 		poolAddress,
 		assets: assets.map(({ address }) => address)

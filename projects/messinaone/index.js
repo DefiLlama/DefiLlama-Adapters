@@ -1,4 +1,4 @@
-const { get } = require("../helper/http");
+const { getConfig } = require("../helper/cache");
 const { sumTokens } = require("../helper/sumTokens");
 
 let messinaAssets;
@@ -10,7 +10,7 @@ const tokenChain = {
 
 const fetchAssets = async () => {
   if (!messinaAssets)
-    messinaAssets = get(
+    messinaAssets = getConfig('messina-one',
       "https://messina.one/api/bridge/get-assets?cache=true"
     );
 

@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
-const { get } = require('../helper/http')
+const { getConfig } = require('../helper/cache')
 
 const syPoolAPIs = {
   'ethereum': 'https://api-v2.nz.barnbridge.com/api/smartyield/pools',
@@ -18,13 +18,13 @@ const saPoolAPIs = {
 const STK_AAVE_ADDRESS = '0x4da27a545c0c5b758a6ba100e3a049001de870f5';
 const AAVE_ADDRESS = '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9';
 
-async function fetchSyPools(apiUrl) {
-  const { data } = await get(apiUrl)
+async function fetchSyPools(apiUrl, chain) {
+  const { data } = await getConfig('barnbridge/sy-'+chain, apiUrl)
   return data
 }
 
-async function fetchSaPools(apiUrl) {
-  const { data } = await get(apiUrl)
+async function fetchSaPools(apiUrl, chain) {
+  const { data } = await getConfig('barnbridge/sa-'+chain, apiUrl)
   return data
 }
 
@@ -152,7 +152,7 @@ chains.forEach(chain => {
 
       if (syPoolAPIs[chain]) {
         // calculate TVL from SmartYield pools
-        const syPools = await fetchSyPools(syPoolAPIs[chain]);
+        const syPools = await fetchSyPools(syPoolAPIs[chain], chain);
 
         // calculate TVL from SmartYield pools
         await Promise.all(syPools.map(async syPool => {
@@ -164,7 +164,7 @@ chains.forEach(chain => {
       };
       if (chain in saPoolAPIs) {
         // calculate TVL from SmartAlpha pools
-        const saPools = await fetchSaPools(saPoolAPIs[chain]);
+        const saPools = await fetchSaPools(saPoolAPIs[chain], chain);
 
         await Promise.all(saPools.map(async saPool => {
           const { poolAddress, poolToken } = saPool;

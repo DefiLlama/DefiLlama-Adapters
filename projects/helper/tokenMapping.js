@@ -660,6 +660,7 @@ const fixBalancesTokens = {
   klaytn: {
     [nullAddress]: { coingeckoId: "klay-token", decimals: 18 }, // Wrapped KLAY
     "0xd7a4d10070a4f7bc2a015e78244ea137398c3b74": { coingeckoId: "klay-token", decimals: 18 }, // Wrapped KLAY
+    "0xfd844c2fca5e595004b17615f891620d1cb9bbb2": { coingeckoId: "klay-token", decimals: 18 }, // Wrapped KLAY
     "0xff3e7cf0c007f919807b32b30a4a9e7bd7bc4121": { coingeckoId: "klay-token", decimals: 18 }, // Wrapped KLAY
     "0xe4f05a66ec68b54a58b17c22107b02e0232cc817": { coingeckoId: "klay-token", decimals: 18 }, // Wrapped KLAY
     "0xf6f6b8bd0ac500639148f8ca5a590341a97de0de": { coingeckoId: "klay-token", decimals: 18 }, // Wrapped KLAY
