@@ -1,9 +1,9 @@
 const { staking } = require('../helper/staking')
 const { unwrapNFTs } = require('./utils')
-const { get } = require('../helper/http');
+const { getConfig: getConfigCache } = require('../helper/cache')
 
 async function getConfig(chainId) {
-  const data = await get(`https://izumi.finance/api/v1/farm/compute?chainId=${chainId}`);
+  const data = await getConfigCache('izumi-liquidbox/'+chainId, `https://izumi.finance/api/v1/farm/compute?chainId=${chainId}`);
   return data.data;
 }
 
