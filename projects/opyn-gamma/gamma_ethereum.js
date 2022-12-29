@@ -30,7 +30,7 @@ const transforms = {
 
 const transform = addr=>transforms[addr]??addr
 
-module.exports.tvl = async function tvl(timestamp, block, _1, { api }) {  
+module.exports.tvl = async function ethereumTvl(timestamp, block, _1, { api }) {  
   let balances = {};
 
   if(block >= START_BLOCK) {
