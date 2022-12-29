@@ -2,7 +2,7 @@ const sdk = require("@defillama/sdk");
 const { stakings, staking, } = require("../helper/staking");
 const { getChainTransform } = require("../helper/portedTokens");
 const contracts = require("./contracts.json");
-const axios = require("axios");
+const { getConfig } = require('../helper/cache')
 
 async function fetchBalances(exports, contracts, transform, chainBlocks, chain) {
     if (!contracts[chain]) return 0;
@@ -26,7 +26,7 @@ function tvl(chain) {
         const balances = {};
         const transform = await getChainTransform(chain);
 
-        const vestingContracts = (await axios.get("https://api.infinitypad.com/get-all-vesting-contracts")).data;
+        const vestingContracts = (await getConfig('infinitypad',"https://api.infinitypad.com/get-all-vesting-contracts"));
         const clientVesting = {};
         for (const vestingContract of vestingContracts) {
             if (!clientVesting[vestingContract.chain_name]) {
