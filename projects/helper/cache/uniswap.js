@@ -13,12 +13,12 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
   chain: _chain = 'ethereum',
 }) {
 
-  return async (_, _b, cb, { chain, block } = {}) => {
+  return async (_, _b, cb, { api, chain } = {}) => {
 
-    if (!chain) {
+    if (!chain)
       chain = _chain
-      block = cb[chain]
-    }
+
+    console.log('testing ', chain, api.block)
 
     if (!coreAssets && useDefaultCoreAssets)
       coreAssets = getCoreAssets(chain)
@@ -32,22 +32,25 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
     let cache = await _getCache(cacheFolder, key)
 
     const _oldPairInfoLength = cache.pairs.length
-    const length = await sdk.api2.abi.call({ abi: abi.allPairsLength, target: factory, chain, block, })
+    const length = await api.call({ abi: abi.allPairsLength, target: factory, })
     sdk.log(chain, ' No. of pairs: ', length)
     sdk.log('cached info', cache.pairs.length)
     const pairCalls = []
     for (let i = _oldPairInfoLength; i < length; i++)
       pairCalls.push(i)
 
-    const calls = await sdk.api2.abi.multiCall({ block, chain, abi: abi.allPairs, calls: pairCalls, target: factory })
-    const token0s = await sdk.api2.abi.multiCall({ abi: abi.token0, chain, block, calls })
-    const token1s = await sdk.api2.abi.multiCall({ abi: abi.token1, chain, block, calls })
+    const calls = await api.multiCall({ abi: abi.allPairs, calls: pairCalls, target: factory })
+    const token0s = await api.multiCall({ abi: abi.token0, calls })
+    const token1s = await api.multiCall({ abi: abi.token1, calls })
 
     cache.pairs.push(...calls)
     cache.token0s.push(...token0s)
     cache.token1s.push(...token1s)
 
-    const reserves = await sdk.api2.abi.multiCall({ abi: abi.getReserves, chain, block, calls: cache.pairs })
+    if (cache.pairs.length > length)
+      cache.pairs = cache.pairs.slice(0, length)
+
+    const reserves = await api.multiCall({ abi: abi.getReserves, calls: cache.pairs })
 
 
     if (cache.pairs.length > _oldPairInfoLength)
