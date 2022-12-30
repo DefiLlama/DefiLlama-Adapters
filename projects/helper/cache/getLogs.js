@@ -89,5 +89,6 @@ async function getLogs({ target,
 }
 
 module.exports = {
-  getLogs
+  getLogs,
+  getAddress: s=>"0x"+s.slice(26, 66),
 }
