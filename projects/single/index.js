@@ -4,8 +4,8 @@ const { getUserMasterChefBalances } = require("../helper/masterchef")
 const { getUserCraftsmanV2Balances } = require("./helpers")
 const vvsPoolInfoABI = require('./cronos/vvsPoolInfo.json')
 const spookyMasterChefV2PoolInfoABI = require('./fantom/spookyMasterChefV2PoolInfo.json')
-const { fetchURL, } = require("../helper/utils")
-const { get, } = require("../helper/http")
+const { getConfig } = require('../helper/cache')
+
 const sdk = require('@defillama/sdk')
 
 const BASE_API_URL = 'https://api.singlefinance.io'
@@ -50,7 +50,7 @@ const getHelpers = (chain) => {
       queues.push(res);
 
       if (queues.length === 1) {
-        fetchURL(`${BASE_API_URL}/api/protocol/contracts?chainid=${constants[chain].chainId}`)
+        getConfig('single/contracts/'+chain, `${BASE_API_URL}/api/protocol/contracts?chainid=${constants[chain].chainId}`)
           .then(value => {
             data = value;
 
@@ -65,7 +65,7 @@ const getHelpers = (chain) => {
 
   async function staking(timestamp, _block, chainBlocks) {
 
-    const { data: { pools, vaults, } } = await fetchDataOnce()
+    const  { pools, vaults, }  = await fetchDataOnce()
 
     let balances = {}
     const fixBalances = await getFixBalances(chain)
@@ -79,7 +79,7 @@ const getHelpers = (chain) => {
 
   async function tvl(tx, _block, chainBlocks) {
 
-    const { data: { vaults, wmasterchefs } } = await fetchDataOnce()
+    const  { wmasterchefs, vaults, }  = await fetchDataOnce()
 
     const balances = {}
     const block = chainBlocks[chain]
@@ -134,8 +134,8 @@ module.exports = {
 
 
 async function cronosTvl(_, _b, { cronos: block }) {
-  const { data } = await get('https://api.singlefinance.io/api/vaults?chainid=25')
-  const { data: strategies } = await get('https://api.singlefinance.io/api/strategies?chainid=25')
+  const { data } = await getConfig('single/vault/cronos', 'https://api.singlefinance.io/api/vaults?chainid=25')
+  const { data: strategies } = await getConfig('single/strategy/cronos','https://api.singlefinance.io/api/strategies?chainid=25')
   const tether = strategies.reduce((a, i)=> a+i.tvl/1e18, 0)
   const balances = {}
   data.forEach(({ token: { id }, totalTokens }) => sdk.util.sumSingleBalance(balances, 'cronos:' + id, totalTokens))
