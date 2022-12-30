@@ -63,7 +63,7 @@ function parseSoState(buf) {
   const numNameBytes = Number(buf.readUInt8(8));
   // Prefix is 4 bytes
   const soName = String.fromCharCode.apply(String, buf.slice(8 + 4, 8 + 4 + numNameBytes));
-  offset = 84;
+  offset = 26 + 32 + 8 + 4 + numNameBytes;
   const baseMint = new PublicKey(buf.slice(offset, offset + 32));
 
   const vault = PublicKey.findProgramAddressSync(
