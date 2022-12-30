@@ -16,5 +16,8 @@ async function fetch() {
 };
 
 module.exports = {
+  everscale: {
+    fetch
+  },
     fetch
 };
