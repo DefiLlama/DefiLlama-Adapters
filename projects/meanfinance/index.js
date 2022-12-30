@@ -1,6 +1,6 @@
-const { fetchURL } = require("../helper/utils");
 const { V1_POOLS, TOKENS_IN_LEGACY_VERSIONS } = require("./addresses");
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { getConfig } = require('../helper/cache')
 
 const YIELD_VERSION = '0xA5AdC5484f9997fBF7D405b9AA62A7d88883C345'
 const YIELDLESS_VERSION = '0x059d306A25c4cE8D7437D25743a8B94520536BD5'
@@ -13,7 +13,7 @@ const LEGACY_VERSIONS = {
 }
 
 async function getTokensInChain(chain) {
-  const { data } = await fetchURL(`https://api.mean.finance/v1/dca/networks/${chain}/tokens?includeNotAllowed`)
+  const data = await getConfig('mean-finance/'+chain, `https://api.mean.finance/v1/dca/networks/${chain}/tokens?includeNotAllowed`)
   return data.map(({ address }) => address)
 }
 
