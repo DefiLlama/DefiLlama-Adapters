@@ -1,14 +1,14 @@
-const { sumTokens2, getGeckoSolTokens, getSolTokenMap } = require("./helper/solana");
+const { sumTokens2, getSolTokenMap } = require("./helper/solana");
+const { getConfig } = require('./helper/cache')
+
 
 // The data here comes directly from
 // https://registry.saber.so/data/llama.mainnet.json
-const utils = require("./helper/utils");
 
 async function tvl() {
-  const { data: saberPools } = await utils.fetchURL(
+  const saberPools = await getConfig('saber',
     "https://registry.saber.so/data/llama.mainnet.json"
   );
-  const whitelistedTokens = await getGeckoSolTokens()
   const tokenMap = await getSolTokenMap()
 
   function isValidToken(token) {
