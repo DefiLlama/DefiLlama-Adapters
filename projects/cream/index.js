@@ -3,6 +3,7 @@ const utils = require("../helper/utils");
 const { unwrapUniswapLPs, nullAddress } = require("../helper/unwrapLPs");
 const { getCompoundV2Tvl, compoundExports } = require("../helper/compound");
 const { transformBscAddress } = require('../helper/portedTokens')
+const { getConfig } = require('../helper/cache')
 
 const abiCerc20 = require("./cerc20.json");
 const abiCereth2 = require("./creth2.json");
@@ -26,10 +27,10 @@ async function ethereumTvl(timestamp, block) {
   let balances = {};
 
   let tokens_ethereum = (
-    await utils.fetchURL(
+    await getConfig('cream/ethereum',
       "https://api.cream.finance/api/v1/crtoken?comptroller=eth"
     )
-  ).data;
+  );
 
   //  --- Grab all the getCash values of crERC20 (Lending Contract Addresses) ---
   let cashValues = (
@@ -103,10 +104,10 @@ async function lending(block, chain, borrowed) {
   let balances = {};
 
   let tokens_bsc = (
-    await utils.fetchURL(
+    await getConfig('cream/'+chain,
       `https://api.cream.finance/api/v1/crtoken?comptroller=${chain}`
     )
-  ).data;
+  );
 
   let cashValues = (
     await sdk.api.abi.multiCall({
