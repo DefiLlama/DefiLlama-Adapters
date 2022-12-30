@@ -12,6 +12,7 @@ const nullAddress = '0x0000000000000000000000000000000000000000'
 // coingecko coins: https://api.coingecko.com/api/v3/coins/list?include_platform=true
 // gravity bridge for IBC: https://api.mintscan.io/v2/assets/gravity-bridge
 // carbon: https://api-insights.carbon.network/info/denom_gecko_map
+// orbit brige: https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList
 
 const unsupportedGeckoChains = ['aptos', 'terra2', 'terra', 'kujira']
 const ibcChains = ['terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', ]
