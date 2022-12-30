@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 const { getChainTransform } = require("../helper/portedTokens");
-const axios = require("axios");
+const { getConfig } = require('../helper/cache')
+
 const apiUrl = "https://goodghosting-api.com/v1/games";
 
 const chainIdMap = {
@@ -21,7 +22,7 @@ const isV2Game = (contractVersion) =>
 
 function tvl(chain) {
   return async (timestamp, ethBlock, chainBlocks) => {
-    const gameData = await axios.get(apiUrl).then((resp) => resp.data);
+    const gameData = await getConfig('good-ghosting', apiUrl)
 
     const balances = {};
     const transform = await getChainTransform(chain);

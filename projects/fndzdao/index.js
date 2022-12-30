@@ -1,12 +1,13 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { staking } = require('../helper/staking')
 const { get } = require('../helper/http')
+const { getConfig } = require('../helper/cache')
 const sdk = require('@defillama/sdk')
 const chain = 'bsc'
-const getTrackedAssetsAbi = {"inputs":[],"name":"getTrackedAssets","outputs":[{"internalType":"address[]","name":"trackedAssets_","type":"address[]"}],"stateMutability":"view","type":"function"}
+const getTrackedAssetsAbi = "address[]:getTrackedAssets"
 
 async function tvl(_, _b, {[chain]: block }) {
-  const res = await get('https://api.fndz.io/tvl')
+  const res = await getConfig('fndzdao', 'https://api.fndz.io/tvl')
   const vaults = res.result.chains[0].vault_addresses;
   const { output: tokens } = await sdk.api.abi.multiCall({
     abi: getTrackedAssetsAbi,
