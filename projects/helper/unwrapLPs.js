@@ -11,7 +11,7 @@ const creamAbi = require('./abis/cream.json')
 const { unwrapCrv, resolveCrvTokens } = require('./resolveCrvTokens')
 const activePoolAbi = require('./ankr/abis/activePool.json')
 const wethAddressAbi = require('./ankr/abis/wethAddress.json');
-const { isLP, DEBUG_MODE, getUniqueAddresses, log, } = require('./utils')
+const { isLP, getUniqueAddresses, log, } = require('./utils')
 const wildCreditABI = require('../wildcredit/abi.json')
 
 const yearnVaults = {
@@ -237,7 +237,7 @@ async function unwrapUniswapLPs(balances, lpPositions, block, chain = 'ethereum'
         sdk.util.sumSingleBalance(balances, await transformAddress(token1), token1Balance.toFixed(0))
       }
     } catch (e) {
-      if (DEBUG_MODE) console.error(e)
+      sdk.log(e)
       console.log(`Failed to get data for LP token at ${lpPosition.token} on chain ${chain}`)
       throw e
     }
@@ -620,7 +620,7 @@ async function sumBalancerLps(balances, tokensAndOwners, block, chain, transform
 }
 
 const nullAddress = '0x0000000000000000000000000000000000000000'
-const gasTokens = [nullAddress, '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee']
+const gasTokens = [nullAddress, '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb']
 /*
 tokensAndOwners [
     [token, owner] - eg ["0xaaa", "0xbbb"]
@@ -971,7 +971,13 @@ async function sumTokens2({
   blacklistedTokens = [],
   skipFixBalances = false,
   abis = {},
+  api,
 }) {
+  if (api) {
+    chain = api.chain ?? chain
+    block = api.block ?? block
+  }
+
   if (!tokensAndOwners.length) {
     tokens = getUniqueAddresses(tokens)
     owners = getUniqueAddresses(owners)
@@ -999,8 +1005,8 @@ async function sumTokens2({
   }
 }
 
-function sumTokensExport({ balances, tokensAndOwners, tokens, owner, owners, chain = 'ethereum', transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances }) {
-  return async (_, _b, { [chain]: block }) => sumTokens2({ balances, tokensAndOwners, tokens, owner, owners, chain, block, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances })
+function sumTokensExport({ balances, tokensAndOwners, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances }) {
+  return async (_, _b, _cb, { api }) => sumTokens2({ api, balances, tokensAndOwners, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances })
 }
 
 async function unwrapBalancerToken({ chain, block, balancerToken, owner, balances = {} }) {

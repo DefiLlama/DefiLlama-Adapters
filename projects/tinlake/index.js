@@ -1,9 +1,9 @@
 const BigNumber = require("bignumber.js");
-const { request, gql } = require("graphql-request");
+const { blockQuery } = require('../helper/http')
 const data = {}
 
-const subgraphUrl = 'https://api.thegraph.com/subgraphs/name/centrifuge/tinlake';
-const graphTotalTokenTVLQuery = gql`
+const subgraphUrl = 'https://graph.cntrfg.com/subgraphs/name/allow-null-maturity-date';
+const graphTotalTokenTVLQuery = `
 query GET_TOTAL_TOKEN_TVL($block: Int) {
   pools(
     first: 1000,
@@ -17,19 +17,13 @@ query GET_TOTAL_TOKEN_TVL($block: Int) {
 `;
 const dai = "0x6b175474e89094c44da98b954eedeac495271d0f"
 
-async function getData(ethBlock) {
-  return request(
-    subgraphUrl,
-    graphTotalTokenTVLQuery,
-    {
-      block: ethBlock
-    }
-  )
+async function getData(api) {
+  return blockQuery(subgraphUrl, graphTotalTokenTVLQuery, { api, blockCatchupLimit: 1000, })
 }
 
-async function borrowed(timestamp, ethBlock) {
+async function borrowed(timestamp, ethBlock, _, {api }) {
   let total = BigNumber(0)
-  if (!data[ethBlock]) data[ethBlock] = await getData(ethBlock)
+  if (!data[ethBlock]) data[ethBlock] = await getData(api)
   const { pools } = await data[ethBlock]
   pools.forEach(pool => {
     total = total.plus(pool.assetValue)
@@ -40,9 +34,9 @@ async function borrowed(timestamp, ethBlock) {
   }
 }
 
-async function tvl(timestamp, ethBlock) {
+async function tvl(timestamp, ethBlock, _, {api }) {
   let total = BigNumber(0)
-  if (!data[ethBlock]) data[ethBlock] = await getData(ethBlock)
+  if (!data[ethBlock]) data[ethBlock] = await getData(api)
   const { pools } = await data[ethBlock]
   pools.forEach(pool => {
     total = total.plus(pool.reserve)

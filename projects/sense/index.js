@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 const { getChainTransform } = require('../helper/portedTokens')
+const { getLogs } = require('../helper/cache/getLogs')
 
 const DIVIDER = "0x86bA3E96Be68563E41c2f5769F1AF9fAf758e6E0";
 const SPACE_FACTORY = "0x5f6e8e9C888760856e22057CBc81dD9e0494aA34";
@@ -11,13 +12,12 @@ const DIVIDER_INIT_TS = 1647831440;
 // Converts a bytes32 into an address or, if there is more data, slices an address out of the first 32 byte word
 const toAddress = (data) => `0x${data.slice(64 - 40 + 2, 64 + 2)}`;
 
-async function tvl(_time, block) {
+async function tvl(_time, block, _1, { api }) {
   const transform = await getChainTransform('ethereum')
-  const { output: seriesLogs } = await sdk.api.util.getLogs({
+  const seriesLogs = await getLogs({
     target: DIVIDER,
     topic: "SeriesInitialized(address,uint256,address,address,address,address)",
-    keys: [],
-    toBlock: block,
+    api,
     fromBlock: DIVIDER_INIT_BLOCK,
   });
 

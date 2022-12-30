@@ -1,4 +1,3 @@
-const abi = require('./abi')
 const { yieldHelper, } = require("../helper/yieldHelper")
 
 const contract = '0x6a063c12aD67B7Ec793ad3E86E6a16177F01C12D'
@@ -9,10 +8,4 @@ module.exports = yieldHelper({
   chain: 'optimism',
   masterchef: contract,
   nativeToken: opt,
-  getTokens: async ({ poolInfos }) => poolInfos.map(i => i.output.lpToken.toLowerCase()),
-  getTokenBalances: async ({ poolInfos }) => poolInfos.map(i => i.output.amount0),
-  abis: {
-    poolInfo: abi.poolInfo2,
-    poolLength: abi.poolLength,
-  }
 })

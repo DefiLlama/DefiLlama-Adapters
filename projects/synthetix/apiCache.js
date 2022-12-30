@@ -6,7 +6,7 @@ const { requery } = require('../helper/requery');
 const { sliceIntoChunks, } = require('../helper/utils');
 const { getCache, setCache } = require('../helper/cache');
 const { request, gql } = require("graphql-request");
-const project = 'synthetix'
+const project = 'bulky/synthetix'
 const { log } = require('../helper/utils')
 
 const QUERY_NO_BLOCK = gql`
@@ -43,7 +43,7 @@ function chainTvl(chain) {
     let totalTopStakersSNXLocked = new BigNumber(0);
     let totalTopStakersSNX = new BigNumber(0);
 
-    const holdersAll = sliceIntoChunks(await SNXHolders(snxGraphEndpoint, block, chain), 5000)
+    const holdersAll = sliceIntoChunks(await SNXHolders(snxGraphEndpoint, block, chain), 500)
     log('holders count: ', holdersAll.flat().length, chain)
 
     const issuanceRatio = (await sdk.api.abi.call({

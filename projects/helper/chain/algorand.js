@@ -55,11 +55,13 @@ const withLimiter = (fn, tokensToRemove = 1) => async (...args) => {
   return fn(...args);
 }
 
-async function sumTokens({ owner, owners = [], tokens = [], token, balances = {}, blacklistedTokens = [], tinymanLps = [], blacklistOnLpAsWell = false, }) {
+async function sumTokens({ owner, owners = [], tokens = [], token, balances = {}, blacklistedTokens = [], tinymanLps = [], blacklistOnLpAsWell = false, tokensAndOwners = [], }) {
   if (owner) owners = [owner]
   if (token) tokens = [token]
+  if (tokensAndOwners.length) owners = tokensAndOwners.map(i => i[1])
   const accounts = await Promise.all(owners.map(getAccountInfo))
-  accounts.forEach(({ assets }) => {
+  accounts.forEach(({ assets }, i) => {
+    if (tokensAndOwners.length) tokens = [tokensAndOwners[i][0]]
     assets.forEach(i => {
       if (!tokens.length || tokens.includes(i['asset-id']))
         if (!blacklistedTokens.length || !blacklistedTokens.includes(i['asset-id']))

@@ -1,17 +1,17 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
-const axios = require("axios");
+const { getConfig } = require('../helper/cache')
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { transformAvaxAddress } = require("../helper/portedTokens");
 
 async function getProcolAddresses(chain) {
   if (chain == 'avax') {
     return (
-      await axios.get(
+      await getConfig('mole/'+chain,
         "https://raw.githubusercontent.com/Mole-Fi/mole-protocol/main/.avalanche_mainnet.json"
       )
-    ).data;
+    );
   }
 }
 

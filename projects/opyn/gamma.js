@@ -1,5 +1,6 @@
 const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
+const { getLogs } = require('../helper/cache/getLogs')
 
 const START_BLOCK = 11551118;
 const whitelist = "0xa5ea18ac6865f315ff5dd9f1a7fb1d41a30a6779";
@@ -29,7 +30,7 @@ const transforms = {
 
 const transform = addr=>transforms[addr]??addr
 
-module.exports.tvl = async function tvl(timestamp, block) {  
+module.exports.tvl = async function tvl(timestamp, block, _1, { api }) {  
   let balances = {};
 
   if(block >= START_BLOCK) {
@@ -37,17 +38,16 @@ module.exports.tvl = async function tvl(timestamp, block) {
     const balance = (await sdk.api.eth.getBalance({target: marginPool, block})).output;
     balances[ETH] = BigNumber(balances[ETH] || 0).plus(BigNumber(balance)).toFixed();
     
-    const whitelistedCollaterals = await sdk.api.util.getLogs({
+    const whitelistedCollaterals = await getLogs({
       target: whitelist,
       topic: 'CollateralWhitelisted(address)',
-      keys: [],
+      api,
       fromBlock: 11544457,
-      toBlock: block
     })
   
     const balanceCalls = []
 
-    whitelistedCollaterals.output.forEach(async (log) => {
+    whitelistedCollaterals.forEach(async (log) => {
       const collateralAsset = toAddress(log.topics[1]).toLowerCase();
       
       const ignored = [ETH, sdcrvWSBTC]

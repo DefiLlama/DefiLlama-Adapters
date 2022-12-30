@@ -1,4 +1,4 @@
-const { request, gql } = require("graphql-request");
+const { request,  } = require("graphql-request");
 
 function getCoinGeckoId(apiId) {
     return {
@@ -13,7 +13,7 @@ function getCoinGeckoId(apiId) {
 };
 
 const graphUrl = `https://mantle.terra.dev/`
-const query = gql`
+const query = `
 query ($poolQuery: String!) {
   markets: WasmContractsContractAddressStore(
     ContractAddress: "terra1pcxwtrxppj9xj7pq3k95wm2zztfr9kwfkcgq0w"

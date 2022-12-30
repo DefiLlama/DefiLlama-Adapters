@@ -1,19 +1,19 @@
 
 const sdk = require('@defillama/sdk')
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { getLogs } = require('../helper/cache/getLogs')
 
 const getCurrentTokens = require('./abis/getCurrentTokens.json')
 
-const tvl = async (_, block) => {
+const tvl = async (_, block, _1, { api }) => {
   const logs = (
-    await sdk.api.util.getLogs({
-      keys: [],
-      toBlock: block,
+    await getLogs({
+      api,
       target: '0xebc44681c125d63210a33d30c55fd3d37762675b',
       fromBlock: 10961776,
       topic: 'LOG_NEW_POOL(address,address)',
     })
-  ).output
+  )
 
   const pools = logs
     .map((log) => `0x${log.topics[2].substring(26)}`)

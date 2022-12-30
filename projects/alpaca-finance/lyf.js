@@ -1,23 +1,23 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
-const axios = require("axios");
+const { getConfig } = require('../helper/cache')
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 
 async function getProcolAddresses(chain) {
   if (chain == 'bsc') {
     return (
-      await axios.get(
+      await getConfig('alpaca-finance/lyf-bsc',
         "https://raw.githubusercontent.com/alpaca-finance/bsc-alpaca-contract/main/.mainnet.json"
       )
-    ).data;
+    )
   }
   if (chain == 'fantom') {
     return (
-      await axios.get(
+      await getConfig('alpaca-finance/lyf-fantom',
         "https://raw.githubusercontent.com/alpaca-finance/bsc-alpaca-contract/main/.fantom_mainnet.json"
       )
-    ).data;
+    )
   }
 }
 

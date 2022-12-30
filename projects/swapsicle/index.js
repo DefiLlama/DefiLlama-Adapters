@@ -15,7 +15,22 @@ const contracts = {
     stakingContract_IB: "0x6aA10ead8531504a8A3B04a9BfCFd18108F2d2c2",
   },
   polygon: {
-    factory: "0x1eb5644fAC0FB43f79dE25C0BaB94F0d56062718"
+    factory: "0x735ab9808d792B5c8B54e31196c011c26C08b4ce"
+  },
+  bsc: {
+    factory: "0xEe673452BD981966d4799c865a96e0b92A8d0E45"
+  },
+  fantom: {
+    factory: "0x98F23162E3a7FE610aC89C88E4217a599A15858F"
+  },
+  arbitrum: {
+    factory: "0x2f0c7c98462651bb2102f6cd05acdad333e031b0"
+  },
+  ethereum: {
+    factory: "0x2f0c7c98462651bb2102f6cd05acdad333e031b0"
+  },
+  optimism: {
+    factory: "0x2f0c7c98462651bb2102f6cd05acdad333e031b0"
   }
 };
 
@@ -54,6 +69,21 @@ module.exports = {
   },
   polygon: {
     tvl: getUniTVL({ chain: 'polygon', useDefaultCoreAssets: false, factory: contracts.polygon.factory }),
+  },
+  bsc: {
+    tvl: getUniTVL({ chain: 'bsc', useDefaultCoreAssets: false, factory: contracts.bsc.factory }),
+  },
+  fantom: {
+    tvl: getUniTVL({ chain: 'fantom', useDefaultCoreAssets: false, factory: contracts.fantom.factory }),
+  },
+  arbitrum: {
+    tvl: getUniTVL({ chain: 'arbitrum', useDefaultCoreAssets: false, factory: contracts.arbitrum.factory }),
+  },
+  ethereum: {
+    tvl: getUniTVL({ chain: 'ethereum', useDefaultCoreAssets: false, factory: contracts.ethereum.factory }),
+  },
+  optimism: {
+    tvl: getUniTVL({ chain: 'optimism', useDefaultCoreAssets: false, factory: contracts.optimism.factory }),
   },
   start: 15434772,
 };

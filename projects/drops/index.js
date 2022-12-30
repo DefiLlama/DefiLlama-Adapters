@@ -39,3 +39,8 @@ module.exports = mergeExports([{
   ethereum: usdCompoundExports("0x896b8019f5ea3caaAb23cDA0A09B405ed8361E8b", undefined, '0x777ECcD3fCf4FfA3b12f45a384852608DF2619a0'),
 },
 ])
+
+module.exports.hallmarks = [
+  [1651702080, "Drops DAO launch"],
+  [1653086700, "DOP staking"],
+]

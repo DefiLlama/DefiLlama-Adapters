@@ -3,13 +3,13 @@ const { PublicKey, } = require("@solana/web3.js");
 const { sliceIntoChunks, } = require('../helper/utils')
 const { transformBalances, } = require('../helper/portedTokens')
 const { sumTokens, getConnection, decodeAccount, } = require("../helper/solana");
-const { fetchURL } = require('../helper/utils')
+const { getConfig } = require('../helper/cache')
 const sdk = require('@defillama/sdk')
 
 const solendConfigEndpoint = "https://api.solend.fi/v1/markets/configs?scope=all&deployment=production";
 
 async function borrowed() {
-  const markets = (await fetchURL(solendConfigEndpoint))?.data;
+  const markets = (await getConfig('solend', solendConfigEndpoint))
   const connection = getConnection()
   const balances = {};
   const reserves = []
@@ -32,7 +32,7 @@ async function borrowed() {
 }
 
 async function tvl() {
-  const markets = (await fetchURL(solendConfigEndpoint))?.data;
+  const markets = (await getConfig('solend', solendConfigEndpoint))
   const tokensAndOwners = []
 
   for (const market of markets) {

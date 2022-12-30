@@ -5,7 +5,7 @@ const { getUniqueAddresses } = require('../helper/utils')
 const { getCache, setCache, } = require("../helper/cache")
 const { vestingHelper,  } = require("../helper/unknownTokens")
 
-const project = 'pinksale'
+const project = 'bulky/pinksale'
 
 module.exports = {}
 
