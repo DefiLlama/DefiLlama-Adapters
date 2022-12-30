@@ -904,8 +904,6 @@
     "KT1AFA2mwNUMNd4SsujE1YYp29vd8BZejyKW",
     "KT1XTxpQvo7oRCqp85LikEZgAZ22uDxhbWJv",
     "KT1A5P4ejnLix13jtadsfV9GCnXLMNnab8UT",
-    "KT1XPFjZqCULSnqfKaaYy8hJjeY63UNSGwXg",
-    "KT1BHCumksALJQJ8q8to2EPigPW6qpyTr7Ng",
     "KT1LRboPna9yQY9BrjtQYDS1DVxhKESK4VVd",
     "KT1REEb5VxWRjcHm5GzDMwErMmNFftsE5Gpf",
     "KT1AEfeckNbdEYwaMKkytBwPJPycz7jdSGea",
@@ -1157,5 +1155,8 @@
     "0xaf984e23eaa3e7967f3c5e007fbe397d8566d23d",
     "0x551a5dcac57c66aa010940c2dcff5da9c53aa53b",
     "0x92364ec610efa050d296f1eeb131f2139fb8810e"
+  ],
+  "empire": [
+    "0xc61a71c75ed4742dCaE74B8CAc27A37D46FC6751"
   ]
 }

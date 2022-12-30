@@ -1,28 +1,4 @@
 {
-    "stakingToken": {
-        "inputs": [],
-        "name": "stakingToken",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    "balance": {
-        "inputs": [],
-        "name": "balance",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    }
+  "stakingToken": "address:stakingToken",
+  "balance": "uint256:balance"
 }

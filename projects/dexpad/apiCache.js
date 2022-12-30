@@ -4,7 +4,7 @@ const { polygonContractData,
   const { vestingHelper,  } = require("../helper/unknownTokens")
 const sdk = require('@defillama/sdk')
 
-const project = 'dexpad'
+const project = 'bulky/dexpad'
 
 function tvl(args) {
   return async (timestamp, ethBlock, chainBlocks) => {

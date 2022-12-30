@@ -4,7 +4,7 @@ const { config, protocolPairs, tokens, stakingContracts,
   avalancheContractData, gnosisContractData } = require('./config')
   const { getCache, setCache, } = require("../helper/cache")
   const { vestingHelper,  } = require("../helper/unknownTokens")
-const project = 'unicrypt'
+const project = 'bulky/unicrypt'
 
 const { stakings } = require("../helper/staking");
 const { pool2s } = require("../helper/pool2");

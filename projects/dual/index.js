@@ -6,28 +6,32 @@ const { getConnection, sumTokens2, readBigUInt64LE, } = require("../helper/solan
 async function tvl() {
   const connection = getConnection();
   const dualProgramID = new PublicKey("DiPbvUUJkDhV9jFtQsDFnMEMRJyjW5iS6NMwoySiW8ki");
-  let programAccounts = await connection.getProgramAccounts(dualProgramID);
+  let programAccounts = await connection.getProgramAccounts(dualProgramID, {
+    filters: [{
+      dataSize: 260
+    }]
+  });
 
   const dipTokenAccounts = programAccounts
-    .filter(i => i.account.data.length === 260)
     .map(i => parseDipState(i.account.data))
-    .map(i => JSON.parse(JSON.stringify(i)))
     .map(i => [i.vaultSpl, i.vaultUsdc])
     .flat()
 
+
   const stakingOptionsProgramID = new PublicKey("4yx1NJ4Vqf2zT1oVLk4SySBhhDJXmXFt88ncm4gPxtL7");
-  let stakingOptionsAccounts = await connection.getProgramAccounts(stakingOptionsProgramID);
+  let stakingOptionsAccounts = await connection.getProgramAccounts(stakingOptionsProgramID, {
+    filters: [{
+      dataSize: 1150
+    }]
+  });
 
   const soTokenAccounts = stakingOptionsAccounts
-    .filter(i => i.account.data.length === 1150)
     .map(i => parseSoState(i.account.data))
-    .map(i => JSON.parse(JSON.stringify(i)))
-    .map(i => [i.vault])
-    .flat()
+    .map(i => i.vault)
 
   const tokenAccounts = dipTokenAccounts.concat(soTokenAccounts);
 
-  return sumTokens2({ tokenAccounts })
+  return sumTokens2({ tokenAccounts, allowError: true, })
 }
 
 function parseDipState(buf) {

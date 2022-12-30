@@ -70,6 +70,7 @@ module.exports={
         staking: sdk.util.sumChainTvls([staking0,staking1])
     },    
     hallmarks: [
-        [1650153600, "Governance proposal hack"]
+        [1650153600, "Governance proposal hack"],
+        [1659602715, "Replant"]
     ]
 };

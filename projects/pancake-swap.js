@@ -1,19 +1,19 @@
-const { request, gql } = require("graphql-request");
+const { request,  } = require("graphql-request");
 const { toUSDTBalances } = require('./helper/balances')
 const { stakings } = require('./helper/staking')
 const { getUniTVL } = require('./helper/unknownTokens')
 const { dexExport } = require('./helper/chain/aptos')
 
 
-const graphEndpoint = 'https://bsc.streamingfast.io/subgraphs/name/pancakeswap/exchange-v2'
-const currentQuery = gql`
+const graphEndpoint = 'https://proxy-worker.pancake-swap.workers.dev/bsc-exchange'
+const currentQuery = `
 query pancakeFactories {
   pancakeFactories(first: 1) {
     totalLiquidityUSD
   }
 }
 `
-const historicalQuery = gql`
+const historicalQuery = `
 query pancakeDayDatas {
 pancakeDayDatas(
   first: 1000
@@ -29,7 +29,7 @@ pancakeDayDatas(
 `
 
 const graphUrl = 'https://api.thegraph.com/subgraphs/name/pancakeswap/exchange'
-const graphQuery = gql`
+const graphQuery = `
 query get_tvl($block: Int) {
   uniswapFactories(
     block: { number: $block }
@@ -63,7 +63,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
         }
       );
       const usdTvl = Number(uniswapFactories[0].totalLiquidityUSD)
-    
+
       return toUSDTBalances(usdTvl)
     }
     return toUSDTBalances(closest.totalLiquidityUSD)

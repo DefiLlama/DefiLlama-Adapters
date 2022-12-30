@@ -2,6 +2,7 @@ const axios = require("axios")
 const { request, GraphQLClient, } = require("graphql-request")
 const COVALENT_KEY = 'ckey_72cd3b74b4a048c9bc671f7c5a6'
 const sdk = require('@defillama/sdk')
+const env = require('./env')
 
 const chainIds = {
   'ethereum': 1,
@@ -9,8 +10,15 @@ const chainIds = {
   'polygon': 137
 }
 
+const getCacheData = {}
+
+async function getCache(endpoint) {
+  if (!getCacheData[endpoint]) getCacheData[endpoint] = get(endpoint)
+  return getCacheData[endpoint]
+}
+
 async function getBlock(timestamp, chain, chainBlocks, undefinedOk = false) {
-  if (chainBlocks[chain] !== undefined || (process.env.HISTORICAL === undefined && undefinedOk)) {
+  if (chainBlocks[chain] || (!env.HISTORICAL && undefinedOk)) {
       return chainBlocks[chain]
   } else {
       if(chain === "celo"){
@@ -53,8 +61,10 @@ async function covalentGetTokens(address, chain = 'ethereum') {
     .map(i => i.contract_address.toLowerCase())
 }
 
-async function blockQuery(endpoint, query, block, blockCatchupLimit = 200) {
+async function blockQuery(endpoint, query, { api, blockCatchupLimit = 500, }) {
   const graphQLClient = new GraphQLClient(endpoint)
+  await api.getBlock()
+  const block = api.block
   try {
     const results = await graphQLClient.request(query, { block })
     return results
@@ -90,6 +100,7 @@ async function graphFetchById({endpoint, query, params = {}, options: { timestam
 
 module.exports = {
   get,
+  getCache,
   post,
   blockQuery,
   graphQuery,

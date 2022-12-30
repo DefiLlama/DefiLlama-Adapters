@@ -34,16 +34,22 @@ async function borrowed(_, _b, { arbitrum: block }) {
     calls: markets,
     chain, block,
   })
-  borrows.forEach((a, i) => sdk.util.sumSingleBalance(balances,tokens[i],a))
+  borrows.forEach((a, i) => sdk.util.sumSingleBalance(balances, tokens[i], a))
   return transformBalances(chain, balances)
 }
 
 module.exports = {
-  arbitrum: { tvl, borrowed, }
+  hallmarks: [
+    [1670630400, "pvlGLP collateral exploit"]
+  ],
+  arbitrum: {
+    tvl,
+    // borrowed,
+  }
 };
 
 const abis = {
   getAllMarkets: { "inputs": [], "name": "getAllMarkets", "outputs": [{ "internalType": "contract CToken[]", "name": "", "type": "address[]" }], "stateMutability": "view", "type": "function" },
-  underlying: {"inputs":[],"name":"underlying","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-  totalBorrows: {"inputs":[],"name":"totalBorrows","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  underlying: { "inputs": [], "name": "underlying", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" },
+  totalBorrows: { "inputs": [], "name": "totalBorrows", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
 }

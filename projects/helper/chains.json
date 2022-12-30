@@ -22,6 +22,8 @@
   "iotex",
   "celo",
   "boba",
+  "boba_avax",
+  "boba_bnb",
   "kcc",
   "klaytn",
   "oasis",
@@ -164,9 +166,14 @@
   "kekchain",
   "mixin",
   "stride",
+  "starknet",
   "muuchain",
   "step",
   "sifchain",
   "defichain",
-  "ton"
+  "ton",
+  "dexit",
+  "comdex",
+  "empire",
+  "nuls"
 ]
