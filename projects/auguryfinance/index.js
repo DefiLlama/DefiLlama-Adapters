@@ -1,8 +1,8 @@
 const sdk = require("@defillama/sdk");
-const utils = require("../helper/utils");
 const abi = require("./abi.json");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { transformPolygonAddress } = require("../helper/portedTokens");
+const { getConfig } = require('../helper/cache')
 
 const MasterAugur = "0x6ad70613d14c34aa69E1604af91c39e0591a132e";
 
@@ -88,10 +88,10 @@ const treasuryTvl = async (timestamp, ethBlock, chainBlocks) => {
   const QUICK = "0x831753dd7087cac61ab5644b308642cc1c33dc13";
 
   const tokens_polygon = (
-    await utils.fetchURL(
+    await getConfig('augury-fi',
       "https://raw.githubusercontent.com/augury-finance/default-token-list/master/tokens/matic.json"
     )
-  ).data.map((tokenAddress) => tokenAddress.address).filter(token => token !== "0xaaAEBE6Fe48E54f431b0C390CfaF0b017d09D42d");
+  ).map((tokenAddress) => tokenAddress.address).filter(token => token !== "0xaaAEBE6Fe48E54f431b0C390CfaF0b017d09D42d");
 
   tokens_polygon.push(amWMATIC, OMEN, QUICK);
 

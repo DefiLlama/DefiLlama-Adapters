@@ -1161,6 +1161,7 @@ const fixBalancesTokens = {
     "0x5067006f830224960fb419d7f25a3a53e9919bb0": { coingeckoId: "smartpad-2", decimals: 18 },
     "0x2e9d63788249371f1dfc918a52f8d799f4a38c94": { coingeckoId: "tokemak", decimals: 18 },
     "0x6b3595068778dd592e39a122f4f5a5cf09c90fe2": { coingeckoId: "sushi", decimals: 18 },
+    "0xcf0c122c6b73ff809c693db761e7baebe62b6a2e": { coingeckoId: "floki", decimals: 9 },
   },
   moonbeam: {
     // celer bridge
