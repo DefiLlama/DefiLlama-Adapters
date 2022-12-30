@@ -1214,6 +1214,7 @@ const fixBalancesTokens = {
     "0x14743e1c6f812154f7ecc980d890f0f5234103e7": { coingeckoId: "apyswap", decimals: 18, },
     '0x5c4b7ccbf908e64f32e12c6650ec0c96d717f03f': { coingeckoId: "binancecoin", decimals: 18 },
     '0xb4d09ff3da7f9e9a2ba029cb0a81a989fd7b8f17': { coingeckoId: "tether", decimals: 18 },
+    '0x9c9e5fd8bbc25984b178fdce6117defa39d2db39': { coingeckoId: "binance-usd", decimals: 18 },
     '0x6002410dda2fb88b4d0dc3c1d562f7761191ea80': { coingeckoId: "0x123", decimals: 0 },
   },
   heco: {

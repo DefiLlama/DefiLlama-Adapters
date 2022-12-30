@@ -31,10 +31,13 @@ function run() {
   })
 }
 
+const validStates = new Set(['view', 'pure', 'nonpayable'])
+const isValidState = i => validStates.has(i.stateMutability) || i.constant === true
+
 function isTransformable(obj, file) {
   if (typeof obj !== 'object' || Array.isArray(obj)) return false;
   const values = Object.values(obj)
-  const isAbi0 = i => (i.stateMutability === 'view' || i.stateMutability === 'pure' || i.stateMutability === 'nonpayable') || i.constant === true
+  const isAbi0 = i => isValidState(i)
   const isAbi = i => (i.stateMutability === 'view' || i.stateMutability === 'pure' || i.stateMutability === 'nonpayable') && i.type === 'function'
   const i = values[0]
   if (!isAbi0(i)) return false
@@ -65,5 +68,27 @@ function transform(obj, file) {
   return res
 }
 
-console.log(transform({
-}))
+
+const data = 
+
+print()
+
+function print() {
+  let res = data
+  if (Array.isArray(data)) {
+    res = {}
+    data.filter(i => isTransformable({ test: i}))
+    .filter(i => i.stateMutability === 'view'  || i.stateMutability === 'pure')
+    .forEach(i => res[i.name ?? 'ignore'] = i)
+  }
+  res = transform(res)
+  console.log(res)
+}
+
+async function printRes(abi, target, api) {
+  const res = {}
+  await Promise.all(Object.entries(abi).map(async ([name, abi]) => {
+    res[name] = await api.call({ abi, target})
+  }))
+  console.log(res)
+}
