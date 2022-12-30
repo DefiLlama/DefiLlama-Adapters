@@ -31,41 +31,21 @@ const getWMasterChefBalances = ({ masterChef: masterChefAddress, wMasterChef, na
   }
   return getUserMasterChefBalances({ ...commonParams, poolInfoABI: vvsPoolInfoABI, ...args })
 }
+const data = {
 
+}
 const getHelpers = (chain) => {
 
   const SINGLE_TOKEN = constants[chain].single;
 
   const fetchDataOnce = (() => {
-
-    let data;
-    let queues = [];
-
-    return () => new Promise(res => {
-
-      if (data) {
-        res(data);
-      }
-
-      queues.push(res);
-
-      if (queues.length === 1) {
-        getConfig('single/contracts/'+chain, `${BASE_API_URL}/api/protocol/contracts?chainid=${constants[chain].chainId}`)
-          .then(value => {
-            data = value;
-
-            for (const resolve of queues) {
-              resolve(value);
-            }
-          });
-      }
-
-    })
-  })();
+    if (!data[chain]) return getConfig('single/contracts/'+chain, `${BASE_API_URL}/api/protocol/contracts?chainid=${constants[chain].chainId}`)
+    return data[chain]
+  })
 
   async function staking(timestamp, _block, chainBlocks) {
 
-    const  { pools, vaults, }  = await fetchDataOnce()
+    const  { pools, }  = await fetchDataOnce()
 
     let balances = {}
     const fixBalances = await getFixBalances(chain)
@@ -97,7 +77,7 @@ const getHelpers = (chain) => {
 
   async function pool2(tx, _block, chainBlocks) {
 
-    const { data: { wmasterchefs, pools } } = await fetchDataOnce()
+    const {  wmasterchefs, pools } = await fetchDataOnce()
 
     const balances = {}
     const block = chainBlocks[chain]
