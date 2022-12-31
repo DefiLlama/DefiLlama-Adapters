@@ -18,8 +18,6 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
     if (!chain)
       chain = _chain
 
-    console.log('testing ', chain, api.block)
-
     if (!coreAssets && useDefaultCoreAssets)
       coreAssets = getCoreAssets(chain)
     blacklist = (blacklistedTokens || blacklist).map(i => i.toLowerCase())

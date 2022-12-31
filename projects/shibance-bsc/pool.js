@@ -68,7 +68,7 @@ const fetchPoolsTotalStaking = async (chain, block) => {
       })),
     ];
   } catch (e) {
-    console.log("fetchPoolsTotalStaking", e);
+    sdk.log("fetchPoolsTotalStaking", e);
   }
 };
 
