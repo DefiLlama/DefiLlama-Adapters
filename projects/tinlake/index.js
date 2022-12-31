@@ -50,7 +50,6 @@ async function tvl(timestamp, ethBlock, _, {api }) {
 
 module.exports = {
   timetravel: false,
-  doublecounted: false,
   methodology: 'TVL consist of the sum of every pool. The pool value is made up of the NAV (the value of the assets in the pool) and the Pool Reserve (undeployed capital in the pool). The Tinlake subgraph is used to pull the assetValue and reserve values of each pool.',
   ethereum: {
     tvl,
