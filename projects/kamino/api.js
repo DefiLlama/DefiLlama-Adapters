@@ -14,7 +14,7 @@ async function tvl() {
   const sBalances = []
 
   const { errors } = await PromisePool
-    .withConcurrency(5)
+    .withConcurrency(2)
     .for(strategies)
     .process(async s => {
       sBalances.push(await kamino.getStrategyBalances(s))
