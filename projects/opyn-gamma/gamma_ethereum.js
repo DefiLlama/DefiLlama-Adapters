@@ -23,14 +23,13 @@ const yvUSDC2="0xa354f35829ae975e850e23e9615b11da1b3dc4de"
 const transforms = {
   [yvUSDC]:usdc,
   [sdeCRV]:ETH,
-  // [sdcrvWSBTC]: WBTC,
   [yvUSDC2]:usdc,
   [sdcrvFrax]: frax
 }
 
 const transform = addr=>transforms[addr]??addr
 
-module.exports.tvl = async function ethereumTvl(timestamp, block, _1, { api }) {  
+module.exports = async function ethereumTvl(timestamp, block, _1, { api }) {  
   let balances = {};
 
   if(block >= START_BLOCK) {
