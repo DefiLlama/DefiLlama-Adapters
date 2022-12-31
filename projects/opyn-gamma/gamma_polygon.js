@@ -4,7 +4,7 @@ const { transformPolygonAddress } = require("../helper/portedTokens");
 const marginPool = "0x30ae5debc9edf60a23cd19494492b1ef37afa56d";
 const WETH = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619";
 
-module.exports.tvl = async function tvl(timestamp, block, chainBlocks) {
+module.exports.tvl = async function polygonTvl(timestamp, block, chainBlocks) {
   let balances = {};
 
 
