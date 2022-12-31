@@ -53,7 +53,7 @@ const chainTvl = getUniTVL({ factory, chain: 'metis', useDefaultCoreAssets: true
 
 module.exports = {
   hallmarks: [
-    [1617840000, "STARS collateral Exploit"]
+    [1649376000, "STARS collateral Exploit"]
   ],
   incentivized: true,
   misrepresentedTokens: true,
