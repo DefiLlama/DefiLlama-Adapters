@@ -1,14 +1,14 @@
-const axios = require("axios");
 const sdk = require('@defillama/sdk')
 const { post } = require('../http')
 const { getAssets } = require('./cardano/blockfrost')
 
+async function getAda(address) {
+  const amount = await getAssets(address)
+  return amount.find(i => i.unit === 'lovelace')?.quantity ?? 0
+}
+
 async function getAdaInAddress(address) {
-  return axios.post("https://api.koios.rest/api/v0/address_info", {
-    "_addresses": [
-      address
-    ]
-  }).then(r => r.data[0].balance / 1e6)
+  return (await getAda(address)) /1e6
 }
 
 async function getTokenBalance(token, owner) {
@@ -17,10 +17,8 @@ async function getTokenBalance(token, owner) {
 }
 
 async function sumTokens({ owners, balances = {} }) {
-  const { data } = await axios.post("https://api.koios.rest/api/v0/address_info", {
-    "_addresses": owners
-  })
-  for (const { balance } of data)
+  const data = await Promise.all(owners.map(getAda))
+  for (const balance of data)
     sdk.util.sumSingleBalance(balances, 'cardano', balance / 1e6)
   return balances
 }
