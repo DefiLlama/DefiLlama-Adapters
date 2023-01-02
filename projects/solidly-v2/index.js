@@ -1,4 +1,5 @@
 const { uniTvlExport } = require("../helper/calculateUniTvl.js");
+const { staking } = require('../helper/staking');
 
 module.exports = {
   ethereum: {
