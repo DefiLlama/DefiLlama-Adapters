@@ -180,7 +180,7 @@ const chainTransforms = {
   polygon: transformPolygonAddress,
   avax: transformAvaxAddress,
   optimism: transformOptimismAddress,
-  arbitrum: transformArbitrumAddress,
+ // arbitrum: transformArbitrumAddress,
   injective: transformInjectiveAddress,
 };
 
