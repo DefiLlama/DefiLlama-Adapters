@@ -1,0 +1,3 @@
+{
+  "vTokenOf": "function vTokenOf(address) view returns (address)"
+}

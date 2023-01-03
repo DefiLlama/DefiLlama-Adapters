@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk');
 const { request, gql } = require("graphql-request");
-const { getBlock } = require('../helper/getBlock');
+const { getBlock } = require('../helper/http');
 const { staking } = require('../helper/staking')
 const { pool2 } = require('../helper/pool2')
 const { unwrapUniswapLPs } = require('../helper/unwrapLPs')

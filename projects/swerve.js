@@ -1,8 +1,7 @@
 const BigNumber = require("bignumber.js");
 const abis = require('./config/curve/abis.js')
 const sdk = require("@defillama/sdk");
-const retry = require('./helper/retry')
-const axios = require("axios");
+const { get } = require('./helper/http')
 
 let swaps = [
   {
@@ -51,7 +50,7 @@ let coinDecimals = [
 ]
 
 async function tvl(ts, block) {
-  var price_feed = await retry(async bail => await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,cdai,compound-usd-coin&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true'))
+  var price_feed = await get('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,cdai,compound-usd-coin&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true')
 
   var tvl = 0;
   var btcTVL = 0;
@@ -60,7 +59,7 @@ async function tvl(ts, block) {
     swaps.map(async item => {
       await Promise.all(
         item.coins.map(async i => {
-          poolAmount = await calc(item, i, price_feed, block);
+          const poolAmount = await calc(item, i, price_feed, block);
           if (item.type == 'btc') {
             btcTVL += parseFloat(poolAmount);
           } else {
@@ -110,10 +109,10 @@ async function calc(item, i, price_feed, block) {
   if (item.type == 'compound') {
     var multiplier = 1;
     if (coins === '0x39AA39c021dfbaE8faC545936693aC917d5E7563') {
-      multiplier = price_feed.data['compound-usd-coin'].usd;
+      multiplier = price_feed['compound-usd-coin'].usd;
     }
     if (coins === '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643') {
-      multiplier = price_feed.data.cdai.usd;
+      multiplier = price_feed.cdai.usd;
     }
     poolAmount = poolAmount * multiplier;
   }
@@ -121,7 +120,7 @@ async function calc(item, i, price_feed, block) {
   if (item.type == 'yToken') {
     var multiplier = 1;
     if (coins !== '0x8E870D67F660D95d5be530380D0eC0bd388289E1') { // PAX exception
-      var multiplier = await getVirtualPrice(abis.abis.yTokens, coins, block)
+      multiplier = await getVirtualPrice(abis.abis.yTokens, coins, block)
       multiplier = new BigNumber(multiplier).div(10 ** 18).toFixed(4);
     }
     poolAmount = poolAmount * multiplier;

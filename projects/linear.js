@@ -1,4 +1,4 @@
-const { call } = require('./helper/near')
+const { call } = require('./helper/chain/near')
 
 async function tvl() {
     return { 

@@ -1,5 +1,4 @@
 const sdk = require('@defillama/sdk');
-const { getBlock } = require('../helper/getBlock');
 const { default: BigNumber } = require('bignumber.js');
 
 const CHAIN = "smartbch"
@@ -61,8 +60,7 @@ const poolInfoAbi = {
   }
 
 
-const tvl = async (timestamp, ethBlock, chainBlocks) => {
-    const block = await getBlock(timestamp, CHAIN, chainBlocks, false)
+const tvl = async (timestamp, ethBlock, {[CHAIN]: block}) => {
 
     const totals = await Promise.all(stakingPools.map(async (pool) => {
         const [poolAddress, addr, decimals] = pool;

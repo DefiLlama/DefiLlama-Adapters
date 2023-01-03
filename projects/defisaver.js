@@ -314,7 +314,7 @@ async function tvl(ts, block) {
       const asset = ilkToAsset(results[cdp.cdpId].ilk)
       const debt = assetAmountInEth(results[cdp.cdpId].debt, 'DAI')
       const collateral = assetAmountInEth(results[cdp.cdpId].collateral, `MCD-${asset}`)
-      data.push({ debt, collateralUsd: parseFloat(collateral) * parseFloat(prices[keys[0][asset]].usd), })
+      data.push({ debt, collateralUsd: parseFloat(collateral) * parseFloat(prices[keys[0][asset]]?.usd || 0), })
     });
     const activeSubs = data.filter(({ debt }) => parseFloat(debt));
     activeSubs.forEach(sub => addToBalances(sub.collateralUsd))
@@ -326,6 +326,7 @@ async function tvl(ts, block) {
 }
 
 module.exports = {
+  doublecounted: true,
   ethereum: {
     tvl
   },

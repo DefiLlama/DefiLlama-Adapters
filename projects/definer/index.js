@@ -126,26 +126,7 @@ const utility = {
     });
     return cEthToken.output;
   },
-
-  // Get Symbol
-  async getSymbol(block, markets) {
-    let callsArray = [];
-
-    markets.forEach((element) => {
-      callsArray.push({
-        target: element,
-      });
-    });
-    return (
-      await sdk.api.abi.multiCall({
-        block: block,
-        chain: chain,
-        abi: "erc20:symbol",
-        calls: callsArray,
-      })
-    ).output;
-  },
-
+  
   // Get cTokens
   async getCTokens(block, markets, chain) {
     let tokenRegistryAddress =

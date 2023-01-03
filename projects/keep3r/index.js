@@ -129,8 +129,7 @@ const getOtherTokensTVL = async ({ balances }) => {
   const othersTvl = addresses.reduce((acc, curr) => {
     const addr = curr.toLowerCase();
     const price = data[addr].usd;
-    const balance = balances[addr];
-
+    const balance = balances[addr] ?? 0;
     acc += multiplyUSDby1e18(price, balance);
     return acc;
   }, BigInt(0));

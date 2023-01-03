@@ -1,22 +1,24 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
-const axios = require("axios");
+const { getConfig } = require('../helper/cache')
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const { transformAvaxAddress } = require("../helper/portedTokens");
 
 async function getProcolAddresses(chain) {
   if (chain == 'avax') {
     return (
-      await axios.get(
+      await getConfig('mole/'+chain,
         "https://raw.githubusercontent.com/Mole-Fi/mole-protocol/main/.avalanche_mainnet.json"
       )
-    ).data;
+    );
   }
 }
 
 async function calLyfTvl(chain, block) {
   /// @dev Initialized variables
   const balances = {};
+  const transform = await transformAvaxAddress()
 
   /// @dev Getting all addresses from Github
   const addresses = await getProcolAddresses(chain);
@@ -53,7 +55,7 @@ async function calLyfTvl(chain, block) {
         }),
       block,
       chain,
-      (addr) => `${chain}:${addr}`
+      transform
     );
   }
 
@@ -73,8 +75,8 @@ async function calLyfTvl(chain, block) {
   ).output;
 
   unusedBTOKEN.forEach((u) => {
-    balances[`${chain}:${u.input.target.toLowerCase()}`] = BigNumber(
-      balances[`${chain}:${u.input.target.toLowerCase()}`] || 0
+    balances[transform(u.input.target.toLowerCase())] = BigNumber(
+      balances[transform(u.input.target.toLowerCase())] || 0
     )
       .plus(BigNumber(u.output))
       .toFixed(0);

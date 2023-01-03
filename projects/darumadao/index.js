@@ -17,11 +17,11 @@ async function tvl(ts, _block, chainBlocks) {
     { output: usdcDecimals },
     { output: drmDecimals },
   ] = await Promise.all([
-    await sdk.api.erc20.balanceOf({ owner: STAKING_ADDRESS, target: DRM_ADDRESS, block, chain }),
-    await sdk.api.erc20.balanceOf({ owner: DRM_USDC_LP_ADDRESS, target: DRM_ADDRESS, block, chain }),
-    await sdk.api.erc20.balanceOf({ owner: DRM_USDC_LP_ADDRESS, target: USDC_ADDRESS, block, chain }),
-    await sdk.api.erc20.decimals(USDC_ADDRESS, chain),
-    await sdk.api.erc20.decimals(DRM_ADDRESS, chain),
+    sdk.api.erc20.balanceOf({ owner: STAKING_ADDRESS, target: DRM_ADDRESS, block, chain }),
+    sdk.api.erc20.balanceOf({ owner: DRM_USDC_LP_ADDRESS, target: DRM_ADDRESS, block, chain }),
+    sdk.api.erc20.balanceOf({ owner: DRM_USDC_LP_ADDRESS, target: USDC_ADDRESS, block, chain }),
+    sdk.api.erc20.decimals(USDC_ADDRESS, chain),
+    sdk.api.erc20.decimals(DRM_ADDRESS, chain),
   ])
 
   const tokenPrice = BigNumber(usdcTokensLP).dividedBy(10 ** usdcDecimals).multipliedBy(10 ** drmDecimals).dividedBy(drmTokensLP)

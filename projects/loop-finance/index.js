@@ -1,7 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { fetchURL } = require('../helper/utils')
-const { getBalance, getDenomBalance } = require("../helper/terra");
-const { getBlock } = require("../helper/getBlock");
+const { getBalance, getDenomBalance } = require("../helper/chain/terra");
 
 async function getPairs() {
     const factory00 = (await fetchURL(
@@ -85,9 +84,8 @@ async function isToken(balances, pair, block, index) {
     };
 };
 
-async function tvl(timestamp, block, chainBlocks) {
+async function tvl(timestamp, _, {terra: block}) {
     const balances = {};
-    block = await getBlock(timestamp, "terra", chainBlocks, true);
     const pairs = await getPairs();
     for (let pair of pairs) {
         (await isDenom(balances, pair, block, 0)) || (await isDenom(balances, pair, block, 1)) ||
@@ -100,5 +98,8 @@ module.exports = {
     timetravel: false,
     terra: {
         tvl
-    }
+    },
+      hallmarks:[
+    [1651881600, "UST depeg"],
+  ]   
 };

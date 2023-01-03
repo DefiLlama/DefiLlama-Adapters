@@ -46,6 +46,16 @@ async function getLiquidity(data, chain, block) {
 }
 
 async function getStakedLiquidity(chain, block) {
+  if (chains[chain].WOWLP === "0x0000000000000000000000000000000000000000") {
+    const stakedLiquidity = await getLiquidity(
+        { [chains[chain].WOW]: chains[chain].xWOW },
+        chain,
+        block);
+
+    const WOWBalance = stakedLiquidity[chains[chain].WOW]
+    return {[chains[chain].WOW]: WOWBalance}
+  }
+
   const stakedLiquidity = await getLiquidity(
     { [chains[chain].WOW]: chains[chain].xWOW, [chains[chain].WOWLP]: chains[chain].xWOW },
     chain,

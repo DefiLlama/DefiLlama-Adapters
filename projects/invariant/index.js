@@ -1,12 +1,7 @@
-const retry = require("async-retry");
-const axios = require("axios");
+const { get } = require('../helper/http')
 
 async function fetch() {
-  const response = (
-    await retry(
-      async () => await axios.get("https://stats.invariant.app/short/mainnet")
-    )
-  ).data;
+  const response = await get("https://stats.invariant.app/short/mainnet");
   return response.tvl;
 }
 
