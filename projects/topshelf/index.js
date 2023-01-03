@@ -22,7 +22,7 @@ module.exports = {
   bsc:{
     tvl: getLiquityTvl("0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c", "0x15102B7579aE3b913B0cbb2edE791fC58C528195", "bsc")
   },
-  avalanche:{
+  avax:{
     tvl: getLiquityTvl("0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", "0x41c36D163DB9e58608F4B354FfB3893EF472E9fd", "avax")
   },
   fantom:{

@@ -231,7 +231,7 @@
       })
     ).output;
 
-    balances[daiEth] = daiTvl = (
+    balances[daiEth] = (
       await sdk.api.erc20.balanceOf({
         target: daiFantom,
         owner: daiFantomBAMM,
@@ -257,7 +257,7 @@
       })
     ).output;
 
-    balances[usdtEth] = daiTvl = (
+    balances[usdtEth] = (
       await sdk.api.erc20.balanceOf({
         target: usdtArbitrum,
         owner: usdtArbitrumBAMM,

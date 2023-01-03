@@ -1,14 +1,8 @@
-const { getChainTvl } = require('../helper/getUniSubgraphTvl');
-
-const graphUrls = {
-  ethereum: 'https://api.thegraph.com/subgraphs/name/gavlomas/yapeswap-t2',
-}
-const chainTvl = getChainTvl(graphUrls, "yapeswapFactories")
+const { getUniTVL } = require('../helper/unknownTokens')
 
 module.exports = {
   misrepresentedTokens: true,
-  methodology: "We count liquidity on the dexes, pulling data from subgraphs",
   ethereum: {
-    tvl: chainTvl('ethereum'),
+    tvl: getUniTVL({ factory: '0x46aDc1C052Fafd590F56C42e379d7d16622835a2', useDefaultCoreAssets: true, }), 
   },
-}
+};

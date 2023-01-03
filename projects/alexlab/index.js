@@ -1,44 +1,44 @@
-const sdk = require("@defillama/sdk");
-const BigNumber = require("bignumber.js");
-const axios = require("axios");
-const retry = require('../helper/retry');
+const { get } = require('../helper/http')
 
 // https://explorer.stacks.co/txid/SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.alex-vault?chain=mainnet
 // https://stacks-node-api.blockstack.org/extended/v1/address/SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.alex-vault/balances
-const alex_vault = 'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.alex-vault';
-const STACKS_API = 'https://stacks-node-api.mainnet.stacks.co/extended/v1/address'
+const ALEX_API = "https://api.alexlab.co/v1";
 
-const transformAddress = addr => {
-  const slug = addr.substr(addr.indexOf('::') + 2);
-  return slug
-}
-async function tvl(timestamp, ethBlock, chainBlocks) {
-  const balances = {}
+async function fetch() {
+  const url = `${ALEX_API}/pool_token_stats`;
+  const alexStatsResponse = await get(url)
 
-  // Retrieve contract balances using the blockstacks hiro REST API
-  const url = `${STACKS_API}/${alex_vault}/balances`;
-  const vault_balances_responses = await retry(async () => await axios.get(url));
-  const stx_balance = vault_balances_responses.data['stx'].balance;
-  sdk.util.sumSingleBalance(balances, 'blockstack', BigNumber(stx_balance).div(1e6).toFixed(0))
+  const valueLockedMap = {};
+  let totalValueLocked = 0;
+  for (const pool of alexStatsResponse) {
+    let poolValue = 0;
+    const poolToken = pool.pool_token;
 
-  // Extract fungible tokens list and build a tokenBalances object to call sumMultiBalanceOf
-  const tokens = vault_balances_responses.data.fungible_tokens
-  const tokenBalances = {
-    output: Object.keys(tokens).map(t => 
-    ({
-      input: {target: t}, success: true,
-      output: BigNumber(tokens[t].balance).div(1e8).toFixed(0)
-    })
-  )};
-  sdk.util.sumMultiBalanceOf(balances, tokenBalances, true, transformAddress)
+    if (poolToken == "age000-governance-token") {
+      poolValue = pool.price * pool.reserved_balance;
+    } else {
+      poolValue = pool.price * pool.total_supply;
+    }
+    totalValueLocked += poolValue;
+    valueLockedMap[poolToken] = poolValue;
+  }
 
-  return balances
+  return { tether: totalValueLocked };
 }
 
+async function staking() {
+  const url = `${ALEX_API}/stats/tvl`;
+  const alexResponse = await get(url)
+  return { tether: alexResponse.reserve_pool_value };
+}
+
+// node test.js projects/alexlab/index.js
 module.exports = {
+  misrepresentedTokens: true,
   timetravel: false,
-  'stacks': {
-    tvl
-  }, 
-  methodology: 'Alex Lab TVL is made of the vault token balances. The tokens balances are retrieved using Stacks HTTP REST API.'
-}
+  stacks: {
+    tvl: fetch,
+    staking,
+  },
+  methodology: "Alex Lab TVL is sum of tokens locked in ALEX platform.",
+};

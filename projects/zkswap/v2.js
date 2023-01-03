@@ -1,10 +1,11 @@
 const  sdk = require('@defillama/sdk');
+const { getLogs } = require('../helper/cache/getLogs')
 
 const MAIN = '0x6dE5bDC580f55Bc9dAcaFCB67b91674040A247e3';
 const GOVERNANCE = '0x86E527BC3C43E6Ba3eFf3A8CAd54A7Ed09cD8E8B';
 const START_BLOCK = 12810001 ;
 
-module.exports = async function tvl(timestamp, block) {
+module.exports = async function tvl(timestamp, block, _1, { api }) {
   // ETH
   const ETHBalance = (await sdk.api.eth.getBalance({target: MAIN, block})).output;
   const balances = {
@@ -14,15 +15,13 @@ module.exports = async function tvl(timestamp, block) {
   // ERC20
   const topic = 'NewToken(address,uint16)';
   const logs = (
-    await sdk.api.util
-      .getLogs({
-        keys: [],
-        toBlock: block,
+    await getLogs({
+      api,
         target: GOVERNANCE,
         fromBlock: START_BLOCK,
         topic,
       })
-  ).output;
+  );
 
   const tokenAddresses = logs.map(log => `0x${log.topics[1].slice(64 - 40 + 2, 64 + 2)}`.toLowerCase());
 

@@ -1,7 +1,7 @@
 const axios = require('axios')
 
 async function tvl(){
-    const data = await axios.post("https://telos.caleos.io/v1/chain/get_table_rows", {
+    const data = await axios.post("https://mainnet.telos.net/v1/chain/get_table_rows", {
         "json":true,"code":"data.tbn","scope":"data.tbn","table":"tradedata","table_key":"","lower_bound":"","upper_bound":"","index_position":1,"key_type":"","limit":100,"reverse":false,"show_payer":false
     })
     let tvlTlos = 0;
@@ -20,5 +20,5 @@ async function tvl(){
 module.exports={
     timetravel: false,
     methodology: 'TVL is the liquidity on the AMM.',
-    tvl
+    telos: { tvl }
 }

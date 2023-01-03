@@ -1,5 +1,4 @@
 const sdk = require('@defillama/sdk');
-const erc20Abi = require("../helper/abis/erc20.json");
 
 const tokenFarm = '0xBdfbeecF52bCfF5aa8cc1B8A4B737B2Af3D1BA2F';
 const tokenFarm2 = '0x8A6AE8076A1866877e006cC9b4bd0378646A9bD5';
@@ -20,14 +19,14 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 		chain: "heco",
 		target: USDTToken,
 		params: [tokenFarm2],
-		abi: erc20Abi['balanceOf'],
+		abi: 'erc20:balanceOf',
 	})).output;
 	
 	const bsc_USDTBalance = (await sdk.api.abi.call({
 		chain: "bsc",
 		target: bsc_USDTToken,
 		params: [bsc_tokenFarm2],
-		abi: erc20Abi['balanceOf'],
+		abi: 'erc20:balanceOf',
 	})).output;
 
 	balances = {};
@@ -43,7 +42,7 @@ async function staking(timestamp, ethBlock, chainBlocks) {
 		target: NTToken,
 		params: [tokenFarm2],
 		block: chainBlocks.heco,
-		abi: erc20Abi['balanceOf'],
+		abi: 'erc20:balanceOf',
 	})).output;
 
 	const bsc_NTBalance = (await sdk.api.abi.call({
@@ -51,7 +50,7 @@ async function staking(timestamp, ethBlock, chainBlocks) {
 		target: bsc_NTToken,
 		params: [bsc_tokenFarm2],
 		block: chainBlocks.bsc,
-		abi: erc20Abi['balanceOf'],
+		abi: 'erc20:balanceOf',
 	})).output;
 
 	return {

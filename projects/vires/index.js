@@ -1,4 +1,4 @@
-const { wavesAdapter } = require('../helper/wavesAdapter')
+const { wavesAdapter } = require('../helper/chain/wavesAdapter')
 
 const endpoint = "http://51.158.191.108:8002/api/v1/history/vires"
 
@@ -16,5 +16,8 @@ module.exports = {
             item.meta.forEach(market => tvl += Number(market.currentTotalDebtUsd))
             return tvl
         }),
-    }
+    },
+    hallmarks:[
+        [1659092400, "Bad debt settlement in USDN"],
+    ],
 }

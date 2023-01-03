@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
-const { requery } = require("./requery");
-const { fetchURL } = require("./utils");
+const { getConfig } = require('../helper/cache')
+
 const BigNumber = require("bignumber.js");
 const { usdtAddress, toUSDT } = require("./balances");
 
@@ -35,8 +35,8 @@ async function sumKoyoLPTokens(
   transformAddress = (addr) => addr
 ) {
   const {
-    data: { data: pools },
-  } = await fetchURL(`https://api.exchange.koyo.finance/pools/raw/${chain}`);
+     data: pools
+  } = await getConfig('koyo/'+chain, `https://api.exchange.koyo.finance/pools/raw/${chain}`);
   const lpToSwap = Object.fromEntries(
     Object.entries(pools)
       .filter(([k]) => !["generatedTime"].includes(k))
@@ -70,8 +70,6 @@ async function sumKoyoLPTokens(
     block,
     chain,
   });
-
-  await requery(balanceOfTokens, chain, block, "erc20:balanceOf");
 
   balanceOfTokens.output.forEach((result) => {
     const token = result.input.target.toLowerCase();

@@ -1,6 +1,4 @@
 const sdk = require("@defillama/sdk");
-const utils = require("../helper/utils");
-const nethabi = require("./neth.json");
 const uniswapV3abi = require("./uniswapV3.json");
 
 const BigNumber = require("bignumber.js");
@@ -12,18 +10,17 @@ async function tvl(ts, block) {
   const nethTotalSupply = await sdk.api.abi.call({
     block,
     target: nethContract,
-    abi: nethabi["totalSupply"],
+    abi: 'erc20:totalSupply',
   });
 
   let price = await getNethPrice();
   let supply = new BigNumber(nethTotalSupply.output).div(10 ** 18);
-  return supply * price;
+  return {
+    ethereum: supply * price,
+  };
 }
 
 async function getNethPrice(block) {
-  const ethPrice = (await utils.getPricesfromString("ethereum")).data.ethereum
-    .usd;
-
   const { output: slot0 } = await sdk.api.abi.call({
     block,
     target: nethPool,
@@ -32,8 +29,7 @@ async function getNethPrice(block) {
   const priceSqrt = new BigNumber(slot0[0]);
   const nethPriceInEth = (priceSqrt * priceSqrt) / 2 ** 192;
 
-  let nethPrice = Number(nethPriceInEth) * ethPrice;
-  return nethPrice;
+  return nethPriceInEth;
 }
 
 module.exports = {

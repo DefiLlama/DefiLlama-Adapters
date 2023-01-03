@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const {staking} = require("../helper/staking");
 const {sumTokensAndLPsSharedOwners} = require("../helper/unwrapLPs");
-const {fixHarmonyBalances} = require("../helper/portedTokens");
+const {getFixBalancesSync} = require("../helper/portedTokens");
 
 
 const bscTem = "0x19e6BfC1A6e4B042Fb20531244D47E252445df01";
@@ -69,8 +69,8 @@ async function harmonyTvl (timestamp, block, chainBlocks) {
             return `bsc:0x19e6BfC1A6e4B042Fb20531244D47E252445df01`;
         }
         return `harmony:${addr}`;
-    })
-    fixHarmonyBalances(balances);
+    });
+    getFixBalancesSync('harmony')(balances);
     return balances;
 }
 

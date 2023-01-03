@@ -1,64 +1,32 @@
-const sdk = require("@defillama/sdk");
-const { getChainTransform } = require("../helper/portedTokens");
 const contracts = require("./contracts.json");
-const { getBlock } = require("../helper/getBlock");
-const { sumSingleBalance } = require("@defillama/sdk/build/generalUtil");
 const { pool2 } = require("./../helper/pool2");
 const { staking } = require(".././helper/staking.js");
 const {
-  sumLPWithOnlyOneTokenOtherThanKnown,
+  sumLPWithOnlyOneTokenOtherThanKnown, sumTokens2, nullAddress
 } = require("./../helper/unwrapLPs");
 
-const iotx = "0x6fb3e0a217407efff7ca062d46c26e5d60a14d69";
-const mcn = "iotex:0x3fe04320885e6124231254c802004871be681218";
 const wiotx = "0xA00744882684C3e4747faEFD68D283eA44099D03";
 
 function tvl(chain, gasToken) {
   return async (timestamp, block, chainBlocks) => {
-    block = await getBlock(timestamp, chain, chainBlocks);
-    const transform = await getChainTransform(chain);
-    let balances = {};
+    block = chainBlocks[chain]
+    const toa = []
 
     for (let contract of Object.entries(contracts[chain])) {
       if (contract[0] == "pool2" || contract[0] == "staking") {
         continue;
       } else if (contract[1].token == "") {
-        const balance = (
-          await sdk.api.eth.getBalance({
-            target: contract[1].address,
-            block,
-            chain,
-          })
-        ).output;
-        await sumSingleBalance(balances, gasToken, balance);
+        toa.push([nullAddress, contract[1].address])
       } else {
-        const balance = (
-          await sdk.api.erc20.balanceOf({
-            target: contract[1].token,
-            owner: contract[1].address,
-            block,
-            chain,
-          })
-        ).output;
-        await sumSingleBalance(balances, transform(contract[1].token), balance);
+        toa.push([contract[1].token, contract[1].address])
       }
     }
-
-    if (iotx in balances) {
-      balances["iotex"] = balances[iotx] / 10 ** 18;
-      delete balances[iotx];
-    }
-    if (mcn in balances) {
-      balances["mcn-ventures"] = balances[mcn] / 10 ** 18;
-      delete balances[mcn];
-    }
-
-    return balances;
+    return sumTokens2({ tokensAndOwners: toa, chain, block, })
   };
 }
 
 async function iotexPool2(timestamp, block, chainBlocks) {
-  block = await getBlock(timestamp, "iotex", chainBlocks);
+  block = chainBlocks.iotex
   const balances = {};
   let a = await sumLPWithOnlyOneTokenOtherThanKnown(
     balances,
