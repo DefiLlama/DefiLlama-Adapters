@@ -1305,6 +1305,7 @@ const fixBalancesTokens = {
   },
   ton: {
     [nullAddress]: { coingeckoId: "the-open-network", decimals: 9 },
+    "Ef8zMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzM0vF": { coingeckoId: "the-open-network", decimals: 9 },
     "EQDQoc5M3Bh8eWFephi9bClhevelbZZvWhkqdo80XuY_0qXv": { coingeckoId: "the-open-network", decimals: 9 },
     "EQAW42HutyDem98Be1f27PoXobghh81umTQ-cGgaKVmRLS7-": { coingeckoId: "ethereum", decimals: 18 },
     "EQC61IQRl0_la95t27xhIpjxZt32vl1QQVF2UgTNuvD18W-4": { coingeckoId: "usd-coin", decimals: 6 },
