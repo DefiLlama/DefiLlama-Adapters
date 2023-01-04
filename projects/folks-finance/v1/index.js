@@ -1,4 +1,3 @@
-const { toUSDTBalances } = require("../../helper/balances");
 const { getAppGlobalState } = require("../../helper/chain/algorand");
 
 const { pools } = require("./constants");
@@ -38,7 +37,7 @@ async function tvl() {
     borrowed(),
   ]);
 
-  return toUSDTBalances(depositsAmountUsd - borrowsAmountUsd);
+  return depositsAmountUsd - borrowsAmountUsd;
 }
 
 /* Get total borrows */
@@ -66,11 +65,7 @@ async function borrowed() {
   }
 }
 
-async function borrowedBalances() {
-  return toUSDTBalances(await borrowed());
-}
-
 module.exports = {
-  v1TvlUsdt: tvl,
-  v1BorrowedBalancesUsdt: borrowedBalances,
+  v1TvlUsd: tvl,
+  v1BorrowedBalancesUsd: borrowed,
 };
