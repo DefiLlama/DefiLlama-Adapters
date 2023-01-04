@@ -98,6 +98,7 @@ async function getTVL(block) {
 }
 
 async function dexTVL(timestamp, ethBlock, chainBlocks) {
+  console.log(getBlock);
   return toUSDTBalances(
     await getTVL(await getBlock(timestamp, "aurora", chainBlocks))
   );
