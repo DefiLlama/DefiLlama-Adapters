@@ -66,12 +66,6 @@ module.exports = class baoBaskets {
   }
 
   pushTokenAmount(token, amount) {
-    // Prevent double counting of TVL by excluding baskets
-    /*
-    if(Object.keys(this.baskets).find(x => this.baskets[x].toLowerCase() == token.toLowerCase())) {
-        return;
-    }
-    */
 
     if (this.tokenAmounts[token] == undefined) {
 
