@@ -1053,6 +1053,9 @@ const fixBalancesTokens = {
     "0x7A86173daa4fDA903c9A4C0517735a7d34B9EC39": { coingeckoId: "energi", decimals: 18 },
     "0xa55f26319462355474a9f2c8790860776a329aa4": { coingeckoId: "energi", decimals: 18 }
   },
+  flare: {
+    "0x1D80c49BbBCd1C0911346656B529DF9E5c2F783d": { coingeckoId: "flare-networks", decimals: 18 },
+  },
   nahmii: {
     "0x4200000000000000000000000000000000000006": { coingeckoId: "ethereum", decimals: 18 },
     "0x595DBA438a1bf109953F945437c1584319515d88": { coingeckoId: "nahmii", decimals: 15 }
