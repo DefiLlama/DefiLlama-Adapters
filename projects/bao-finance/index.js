@@ -240,7 +240,6 @@ async function tvl(_timestamp, block) {
 
   await unwrapUniswapLPs(balances, lps, block)
 
-  console.log(balances)
     return balances;
 }
 
