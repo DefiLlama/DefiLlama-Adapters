@@ -72,32 +72,6 @@ function transform(obj, file) {
   return res
 }
 
-
-const data = [{
-  "inputs": [
-    {
-      "internalType": "address",
-      "name": "_asset",
-      "type": "address"
-    }
-  ],
-  "name": "getEntireSystemColl",
-  "outputs": [
-    {
-      "internalType": "uint256",
-      "name": "entireSystemColl",
-      "type": "uint256"
-    }
-  ],
-  "stateMutability": "view",
-  "type": "function"
-}
-]
-
-
-
-print()
-
 function print() {
   let res = data
   if (Array.isArray(data)) {
@@ -110,6 +84,11 @@ function print() {
   // console.log(res)
   console.log(JSON.stringify(res, null, 2))
 }
+
+
+const data =
+
+print()
 
 async function printRes(abi, target, api) {
   const res = {}
