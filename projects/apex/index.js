@@ -21,5 +21,8 @@ async function fetch() {
 }
 
 module.exports = {
+  arbitrum: {
+    fetch
+  },
   fetch
 }
