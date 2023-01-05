@@ -8,10 +8,11 @@ module.exports = {
     tvl: async () => {
       let page = 1
       let data = []
-      let morePools
+      let nextKey
       
       do {
-        const api = `https://rest.comdex.one/comdex/liquidity/v1beta1/pools/${page}`
+        const paginationKey = nextKey ? `pagination.key=${nextKey}` : ''
+        const api = `https://rest.comdex.one/comdex/liquidity/v1beta1/pools/1?${paginationKey}`
         const { pagination, pools } = await get(api)
         pools.forEach(i => {
           if (i.balances.length < 2)  return;
@@ -23,8 +24,8 @@ module.exports = {
           })
         })
         page++
-        morePools = pagination.next_key
-      } while (morePools)
+        nextKey = pagination.next_key
+      } while (nextKey)
 
       return transformDexBalances({ chain: 'comdex', data })
     }
