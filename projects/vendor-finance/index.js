@@ -10,22 +10,39 @@ async function getPools() {
 
   // make graph request to get pools
   const url = "https://api.thegraph.com/subgraphs/name/0xtaiga/vendor-finance";
-  const request = await axios.post(url,
-    {
-      query: `
-      {
-        pools (first: 300) {
-          id,
-          _colToken,
-          _lendToken
-        }
-      }
-      `
-    }
-  );
-  // extract pools
-  return(request.data.data.pools);
 
+  // list of all pools found
+  let allPools = [];
+  // done flag
+  let done = false;
+  // skip index
+  let i = 0;
+  // make post request to graph until all pools are returned
+  while (!done) {
+    const request = await axios.post(url,
+      {
+        query: `
+        {
+          pools (first: 100, skip: ${i++ * 100}, where: {_lenderCollectedLend: 0}) {
+            id,
+            _colToken,
+            _lendToken
+            _lenderCollectedLend
+          }
+        }
+        `
+      }
+    );
+    // extract pools
+    const pools = request.data.data.pools;
+    // check if done
+    if (pools.length === 0) 
+      done = true;
+    // add new pools to list
+    allPools = [...allPools, ...pools];
+  }
+  // return pools
+  return(allPools);
 }
 
 async function tvl(timestamp, block, chainBlocks) {
