@@ -15,7 +15,7 @@ const nullAddress = '0x0000000000000000000000000000000000000000'
 // orbit brige: https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList
 
 const unsupportedGeckoChains = ['aptos', 'terra2', 'terra', 'kujira']
-const ibcChains = ['terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', ]
+const ibcChains = ['terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex',]
 const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', ]
 
 const tokens = {
@@ -580,6 +580,7 @@ const fixBalancesTokens = {
     "0x4268b8f0b87b6eae5d897996e6b845ddbd99adf3": { coingeckoId: "usd-coin", decimals: 6, },  // alexar USDC
     "0xE85aFCcDaFBE7F2B096f268e31ccE3da8dA2990A": { coingeckoId: "aBnBc-bad", decimals: 6, },  // HOTFIX: map aBnBc token to undefined
     "0xbb1aa6e59e5163d8722a122cd66eba614b59df0d": { coingeckoId: "aBnBb-bad", decimals: 6, },  // HOTFIX: map aBnBb token to undefined
+    "0xfb5B838b6cfEEdC2873aB27866079AC55363D37E": { coingeckoId: "floki", decimals: 9, },
   },
   oasis: {
     "0x21c718c22d52d0f3a789b752d4c2fd5908a8a733": { coingeckoId: "oasis-network", decimals: 18, },
@@ -812,6 +813,8 @@ const fixBalancesTokens = {
     [nullAddress]: { coingeckoId: "dogecoin", decimals: 18, },
     "0xB7ddC6414bf4F5515b52D8BdD69973Ae205ff101": { coingeckoId: "dogecoin", decimals: 18, },
     "0x7b4328c127b85369d9f82ca0503b000d09cf9180": { coingeckoId: "dogechain", decimals: 18, },
+    "0xBfbb7B1d22FF521a541170cAFE0C9A7F20d09c3B": { coingeckoId: "egod-the-savior", decimals: 0, },
+    "0x1df5c9B7789BD1416d005C15A42762481C95eDC2": { coingeckoId: "dogetools", decimals: 18, },
     // all multichain bridged tokens
     "0x765277EebeCA2e31912C9946eAe1021199B39C61": { coingeckoId: "usd-coin", decimals: 6, },
     "0x639A647fbe20b6c8ac19E48E2de44ea792c62c5C": { coingeckoId: "dai", decimals: 18, },
@@ -1049,6 +1052,9 @@ const fixBalancesTokens = {
   energi: {
     "0x7A86173daa4fDA903c9A4C0517735a7d34B9EC39": { coingeckoId: "energi", decimals: 18 },
     "0xa55f26319462355474a9f2c8790860776a329aa4": { coingeckoId: "energi", decimals: 18 }
+  },
+  flare: {
+    "0x1D80c49BbBCd1C0911346656B529DF9E5c2F783d": { coingeckoId: "flare-networks", decimals: 18 },
   },
   nahmii: {
     "0x4200000000000000000000000000000000000006": { coingeckoId: "ethereum", decimals: 18 },
@@ -1299,6 +1305,7 @@ const fixBalancesTokens = {
   },
   ton: {
     [nullAddress]: { coingeckoId: "the-open-network", decimals: 9 },
+    "Ef8zMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzM0vF": { coingeckoId: "the-open-network", decimals: 9 },
     "EQDQoc5M3Bh8eWFephi9bClhevelbZZvWhkqdo80XuY_0qXv": { coingeckoId: "the-open-network", decimals: 9 },
     "EQAW42HutyDem98Be1f27PoXobghh81umTQ-cGgaKVmRLS7-": { coingeckoId: "ethereum", decimals: 18 },
     "EQC61IQRl0_la95t27xhIpjxZt32vl1QQVF2UgTNuvD18W-4": { coingeckoId: "usd-coin", decimals: 6 },
