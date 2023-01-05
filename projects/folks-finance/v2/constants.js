@@ -1,4 +1,4 @@
-pools = [
+const pools = [
   // ALGO
   {
     appId: 971368268,
