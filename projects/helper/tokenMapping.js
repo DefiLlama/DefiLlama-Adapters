@@ -1226,6 +1226,9 @@ const fixBalancesTokens = {
   heco: {
     "0x90e8896b12a92D51CD213b681C2CaD83A9a6bD49": { coingeckoId: "apyswap", decimals: 18, },
   },
+  tlchain: {
+    "0x422b6cdf97c750a0edcddc39c88f25379e59e96e": { coingeckoId: "tlchain", decimals: 18, },
+  },
   ronin: {
     '0xe514d9deb7966c8be0ca922de8a064264ea6bcd4': { coingeckoId: "ronin", decimals: 18 },
     '0x97a9107c1793bc407d6f527b77e7fff4d812bece': { coingeckoId: "axie-infinity", decimals: 18 },
