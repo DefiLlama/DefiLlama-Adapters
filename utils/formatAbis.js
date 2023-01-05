@@ -68,11 +68,6 @@ function transform(obj, file) {
   return res
 }
 
-
-const data = 
-
-print()
-
 function print() {
   let res = data
   if (Array.isArray(data)) {
@@ -84,6 +79,11 @@ function print() {
   res = transform(res)
   console.log(res)
 }
+
+
+const data =
+
+print()
 
 async function printRes(abi, target, api) {
   const res = {}
