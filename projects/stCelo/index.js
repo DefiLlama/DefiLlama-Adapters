@@ -16,7 +16,6 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     const stCelo_contract_address = '0x4aAD04D41FD7fd495503731C5a2579e19054C432';
 
     const block = chainBlocks.celo
-    console.log(chainBlocks.celo)
 
     const stCelo_pooled = await sdk.api.abi.call({
         abi: {

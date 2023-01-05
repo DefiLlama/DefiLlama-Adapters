@@ -24,7 +24,11 @@ function run() {
       data: jsonfile.readFileSync(file)
     }))
     const isTransformables = objs.filter(i => isTransformable(i.data, i.file))
-    console.log(isTransformables.length)
+    const isNotTransformables = objs.filter(i => !isTransformable(i.data, i.file)).filter(i => Object.values(i.data).some(i => typeof i !== 'string'))
+    console.log(isNotTransformables.length)
+    const files2 = isNotTransformables.map(i => i.file)
+    console.log(JSON.stringify(files2, null, 2))
+    // console.log(isTransformables.length)
     const fileWriteOptions = { spaces: 2, finalEOL: false }
     isTransformables.forEach(i => i.newData = transform(i.data, i.file))
     isTransformables.forEach(i => jsonfile.writeFile(i.file, i.newData, fileWriteOptions))
@@ -77,7 +81,8 @@ function print() {
     .forEach(i => res[i.name ?? 'ignore'] = i)
   }
   res = transform(res)
-  console.log(res)
+  // console.log(res)
+  console.log(JSON.stringify(res, null, 2))
 }
 
 

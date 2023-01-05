@@ -29,7 +29,6 @@ const ftmTvl = async (_, _b, { fantom: block }) => {
     calls: stratCalls,
     chain, block,
   })
-  console.log
   stratResponse.forEach(({ output },i) => {
     sdk.util.sumSingleBalance(balances, 'fantom:'+poolData[i].output.want, output)
   })

@@ -12,6 +12,10 @@ const contracts = {
     png: "0xb2987753D1561570f726Aa373F48E77e27aa5FF4",
     stakingContract: "0x7428A089A79B24400a620F1Cbf8bd0526cFae777",
   },
+  flare: {
+    factory: "0x9F771eB2D8eD6fC39b1f4DD2E4d784F946dcCB00",
+    png: "0xC60BcDaA9CC7Cc372E793101fDfCB1083E25A203",
+  },
 };
 
 module.exports = {
@@ -19,11 +23,11 @@ module.exports = {
   methodology:
     "The Pangolin factory contract address are used to obtain the balance held in every LP pair and the stake contract is used to get the locked PNG balance.",
   avax: {
-    tvl: getUniTVL({ chain: 'avax', useDefaultCoreAssets: true, factory: contracts.avax.factory, }),
+    tvl: getUniTVL({ useDefaultCoreAssets: true, factory: contracts.avax.factory, }),
     staking: staking(contracts.avax.stakingContract, contracts.avax.png, "avax"),
   },
   songbird: {
-    tvl: getUniTVL({ chain: 'songbird', useDefaultCoreAssets: true, factory: contracts.songbird.factory, }),
+    tvl: getUniTVL({ useDefaultCoreAssets: true, factory: contracts.songbird.factory, }),
     staking: stakingPricedLP(
       contracts.songbird.stakingContract,
       contracts.songbird.png,
@@ -32,6 +36,9 @@ module.exports = {
       "songbird",
       false
     ),
+  },
+  flare: {
+    tvl: getUniTVL({ useDefaultCoreAssets: true, factory: contracts.flare.factory, }),
   },
   start: 1612715300, // 7th-Feb-2021
 };
