@@ -90,7 +90,6 @@ function chainTvl(chain) {
         chain,
       })
     )
-    //console.log(tokenBalances.output.filter(t=>t.success== false))
     let transform = id=>id
     if(chain === "optimism"){
       transform = await transformOptimismAddress()

@@ -1,14 +1,15 @@
-const axios = require("axios");
 const sdk = require('@defillama/sdk')
 const { post } = require('../http')
 const { getAssets } = require('./cardano/blockfrost')
+const { PromisePool } = require('@supercharge/promise-pool')
+
+async function getAda(address) {
+  const amount = await getAssets(address)
+  return amount.find(i => i.unit === 'lovelace')?.quantity ?? 0
+}
 
 async function getAdaInAddress(address) {
-  return axios.post("https://api.koios.rest/api/v0/address_info", {
-    "_addresses": [
-      address
-    ]
-  }).then(r => r.data[0].balance / 1e6)
+  return (await getAda(address)) / 1e6
 }
 
 async function getTokenBalance(token, owner) {
@@ -17,17 +18,22 @@ async function getTokenBalance(token, owner) {
 }
 
 async function sumTokens({ owners, balances = {} }) {
-  const { data } = await axios.post("https://api.koios.rest/api/v0/address_info", {
-    "_addresses": owners
-  })
-  for (const { balance } of data)
+
+  const { results, errors } = await PromisePool.withConcurrency(4)
+    .for(owners)
+    .process(getAda)
+
+  if (errors && errors.length)
+    throw errors[0]
+
+  for (const balance of results)
     sdk.util.sumSingleBalance(balances, 'cardano', balance / 1e6)
   return balances
 }
 
 async function getTokenPrice(address) {
   const endpoint = 'https://monorepo-mainnet-prod.minswap.org/graphql?TopPools'
-  const { data: { topPools: [pool] }} = await post(endpoint, {
+  const { data: { topPools: [pool] } } = await post(endpoint, {
     "query": "query TopPools($asset: String, $favoriteLps: [InputAsset!], $limit: Int, $offset: Int, $sortBy: TopPoolsSortInput) {  topPools(    asset: $asset    favoriteLps: $favoriteLps    limit: $limit    offset: $offset    sortBy: $sortBy  ) {    assetA {      currencySymbol      tokenName      ...allMetadata    }    assetB {      currencySymbol      tokenName      ...allMetadata    }    reserveA    reserveB    lpAsset {      currencySymbol      tokenName    }    totalLiquidity    reserveADA }}        fragment allMetadata on Asset {  metadata {    name    ticker  decimals  }}",
     "variables": {
       "asset": address,

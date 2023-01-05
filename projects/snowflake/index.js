@@ -29,6 +29,9 @@ async function bscTvl(timestamp, ethereumBlock, chainBlocks) {
 }
 
 module.exports = {
+  hallmarks: [
+    [1672448400,"Rug Pull"]
+  ],
   polygon:{
     tvl,
     staking: staking(

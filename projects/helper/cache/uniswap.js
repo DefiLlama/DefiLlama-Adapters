@@ -3,6 +3,7 @@ const uniswapAbi = require('../abis/uniswap')
 const { getCache, setCache, } = require('../cache');
 const { transformBalances, transformDexBalances, } = require('../portedTokens')
 const { getCoreAssets, } = require('../tokenMapping')
+const { sliceIntoChunks, } = require('../utils')
 const sdk = require('@defillama/sdk')
 
 const cacheFolder = 'uniswap-forks'
@@ -11,6 +12,7 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
   useDefaultCoreAssets = false,
   abis = {},
   chain: _chain = 'ethereum',
+  queryBatched = 0,
 }) {
 
   return async (_, _b, cb, { api, chain } = {}) => {
@@ -18,12 +20,10 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
     if (!chain)
       chain = _chain
 
-    console.log('testing ', chain, api.block)
-
     if (!coreAssets && useDefaultCoreAssets)
       coreAssets = getCoreAssets(chain)
     blacklist = (blacklistedTokens || blacklist).map(i => i.toLowerCase())
-  
+
     const abi = { ...uniswapAbi, ...abis }
     factory = factory.toLowerCase()
     const key = `${factory}-${chain}`
@@ -50,7 +50,13 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
     if (cache.pairs.length > length)
       cache.pairs = cache.pairs.slice(0, length)
 
-    const reserves = await api.multiCall({ abi: abi.getReserves, calls: cache.pairs })
+    let reserves = []
+    if (queryBatched) {
+      const batchedCalls = sliceIntoChunks(cache.pairs, queryBatched)
+      for (const calls of batchedCalls)
+        reserves.push(...await api.multiCall({ abi: abi.getReserves, calls }))
+    } else
+      reserves = await api.multiCall({ abi: abi.getReserves, calls: cache.pairs })
 
 
     if (cache.pairs.length > _oldPairInfoLength)

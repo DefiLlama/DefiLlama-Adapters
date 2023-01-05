@@ -110,7 +110,7 @@ async function getBUSDLpPrice(lpTokenAddress, BUSDAddress, scUSDAddress) {
         return new BigNumber(BUSDBalance).plus(new BigNumber(scUSDBalance))
             .div(new BigNumber(totalSupply));
     } catch (e) {
-        console.log(e);
+        sdk.log(e);
     }
     return 0;
 }

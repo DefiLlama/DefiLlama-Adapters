@@ -8,7 +8,6 @@ const addressAPI = "https://analytics.back.popsicle.finance/api/v1/FragolaApy"
 
 async function tvl(timestamp, ethBlock) {
   const addresses = (await getConfig('sorbetto', addressAPI)).map(t => t.fragolaAddress)
-  console.log(addresses, addresses.length)
   const balances = {}
   const [token0, token1, token0PerShareStored, token1PerShareStored, totalSupply] = await Promise.all(
     ["token0", "token1", "token0PerShareStored", "token1PerShareStored"]
