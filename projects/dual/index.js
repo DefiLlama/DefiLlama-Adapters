@@ -17,7 +17,6 @@ async function tvl() {
     .map(i => [i.vaultSpl, i.vaultUsdc])
     .flat()
 
-
   const stakingOptionsProgramID = new PublicKey("4yx1NJ4Vqf2zT1oVLk4SySBhhDJXmXFt88ncm4gPxtL7");
   let stakingOptionsAccounts = await connection.getProgramAccounts(stakingOptionsProgramID, {
     filters: [{
@@ -29,7 +28,16 @@ async function tvl() {
     .map(i => parseSoState(i.account.data))
     .map(i => i.vault)
 
-  const tokenAccounts = dipTokenAccounts.concat(soTokenAccounts);
+  const gsoProgramID = new PublicKey("DuALd6fooWzVDkaTsQzDAxPGYCnLrnWamdNNTNxicdX8");
+  let gsoAccounts = await connection.getProgramAccounts(gsoProgramID, {
+    filters: [{
+      dataSize: 1000
+    }]
+  });
+  const gsoTokenAccounts = gsoAccounts
+    .map(i => gsoVault(i.pubkey))
+
+  const tokenAccounts = dipTokenAccounts.concat(soTokenAccounts).concat(gsoTokenAccounts);
 
   return sumTokens2({ tokenAccounts, allowError: true, })
 }
@@ -84,6 +92,17 @@ function parseSoState(buf) {
     baseMint,
     vault,
   };
+}
+
+function gsoVault(pubkey) {
+  const vault = PublicKey.findProgramAddressSync(
+    [
+      Buffer.from(anchor.utils.bytes.utf8.encode("base-vault")),
+      (new PublicKey(pubkey)).toBuffer(),
+    ],
+    new PublicKey("DuALd6fooWzVDkaTsQzDAxPGYCnLrnWamdNNTNxicdX8")
+  )[0].toBase58();
+  return vault;
 }
 
 module.exports = {
