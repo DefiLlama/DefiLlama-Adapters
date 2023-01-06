@@ -31,7 +31,7 @@ async function ethtvl(timestamp, ethBlock, chainBlocks) {
           target: ETH_NEST_token,
           params: eth_nestVault,
           chain: "ethereum",
-          block: chainBlocks["ethereum"],
+          block: ethBlock,
         })
       ).output;
 
