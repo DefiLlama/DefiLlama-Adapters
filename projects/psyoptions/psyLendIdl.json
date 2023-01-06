@@ -1,0 +1,3842 @@
+{
+    "version": "0.1.0",
+    "name": "psylend",
+    "instructions": [
+      {
+        "name": "initDiscounts",
+        "docs": [
+          "Initialize an account that tracks which/how much tokens are discounted when their",
+          "value is computed for collateral or liquidation purposes."
+        ],
+        "accounts": [
+          {
+            "name": "signer",
+            "isMut": false,
+            "isSigner": true,
+            "docs": [
+              "The authority that is responsible for updating the discounts. This",
+              "will be the first account to invoke InitializeDiscounts for this program."
+            ]
+          },
+          {
+            "name": "payer",
+            "isMut": true,
+            "isSigner": true,
+            "docs": [
+              "Payer of accounts initialization."
+            ]
+          },
+          {
+            "name": "discounts",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "Stores information about discount rates for certain tokens"
+            ]
+          },
+          {
+            "name": "systemProgram",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": [
+          {
+            "name": "mintAddresses",
+            "type": {
+              "array": [
+                "publicKey",
+                20
+              ]
+            }
+          },
+          {
+            "name": "discountRates",
+            "type": {
+              "array": [
+                "u16",
+                20
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "initMarket",
+        "docs": [
+          "Initialize a new empty market with a given owner."
+        ],
+        "accounts": [
+          {
+            "name": "market",
+            "isMut": true,
+            "isSigner": false
+          }
+        ],
+        "args": [
+          {
+            "name": "owner",
+            "type": "publicKey"
+          },
+          {
+            "name": "quoteCurrency",
+            "type": "string"
+          },
+          {
+            "name": "quoteTokenMint",
+            "type": "publicKey"
+          }
+        ]
+      },
+      {
+        "name": "initReserve",
+        "docs": [
+          "Initialize a new reserve in a market with some initial liquidity."
+        ],
+        "accounts": [
+          {
+            "name": "market",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The market the new reserve is being added to."
+            ]
+          },
+          {
+            "name": "marketAuthority",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The market's authority account, which owns the vault"
+            ]
+          },
+          {
+            "name": "reserve",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The new account to store data about the reserve"
+            ]
+          },
+          {
+            "name": "vault",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The account to hold custody of the tokens being",
+              "controlled by this reserve."
+            ]
+          },
+          {
+            "name": "dexSwapTokens",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The account for storing quote tokens during swaps",
+              "Note: Fails without box"
+            ]
+          },
+          {
+            "name": "dexOpenOrders",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The account to use for placing orders on the DEX"
+            ]
+          },
+          {
+            "name": "dexMarket",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The DEX market that can be used to trade the reserve asset"
+            ]
+          },
+          {
+            "name": "tokenMint",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The mint for the token being stored in this reserve."
+            ]
+          },
+          {
+            "name": "tokenProgram",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The program for interacting with the token."
+            ]
+          },
+          {
+            "name": "dexProgram",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The program for interacting with the DEX"
+            ]
+          },
+          {
+            "name": "oraclePrice",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The account containing the price information for the token."
+            ]
+          },
+          {
+            "name": "oracleProduct",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The account containing the metadata about the token being referenced"
+            ]
+          },
+          {
+            "name": "depositNoteMint",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The mint for notes which will represent user deposits",
+              "Note: Uses the same decimals as the token this reserve tracks."
+            ]
+          },
+          {
+            "name": "loanNoteMint",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The mint for notes which will represent user loans",
+              "Note: Uses the same decimals as the token this reserve tracks."
+            ]
+          },
+          {
+            "name": "quoteTokenMint",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The mint for the market quote tokens"
+            ]
+          },
+          {
+            "name": "feeNoteVault",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The account to hold the notes created from fees collected by the reserve"
+            ]
+          },
+          {
+            "name": "owner",
+            "isMut": false,
+            "isSigner": true,
+            "docs": [
+              "The market owner, which must sign to make this change to the market."
+            ]
+          },
+          {
+            "name": "payer",
+            "isMut": true,
+            "isSigner": true,
+            "docs": [
+              "Payer of accounts initialization."
+            ]
+          },
+          {
+            "name": "systemProgram",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "rent",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": [
+          {
+            "name": "bump",
+            "type": {
+              "defined": "InitReserveBumpSeeds"
+            }
+          },
+          {
+            "name": "config",
+            "type": {
+              "defined": "ReserveConfig"
+            }
+          }
+        ]
+      },
+      {
+        "name": "initPsyfiReserve",
+        "docs": [
+          "Initialize a new PsyFi Vault token reserve in a market with some initial liquidity."
+        ],
+        "accounts": [
+          {
+            "name": "market",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The market the new reserve is being added to."
+            ]
+          },
+          {
+            "name": "marketAuthority",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The market's authority account, which owns the vault"
+            ]
+          },
+          {
+            "name": "reserve",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The new account to store data about the reserve"
+            ]
+          },
+          {
+            "name": "vault",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The account to hold custody of the tokens being",
+              "controlled by this reserve.",
+              "Note: Fails without box"
+            ]
+          },
+          {
+            "name": "dexSwapTokens",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The account for storing quote tokens during swaps",
+              "Note: Fails without box"
+            ]
+          },
+          {
+            "name": "dexOpenOrders",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The account to use for placing orders on the DEX"
+            ]
+          },
+          {
+            "name": "dexMarket",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The DEX market that can be used to trade the reserve asset"
+            ]
+          },
+          {
+            "name": "tokenMint",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The mint for the token being stored in this reserve."
+            ]
+          },
+          {
+            "name": "tokenProgram",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The program for interacting with the token."
+            ]
+          },
+          {
+            "name": "dexProgram",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The program for interacting with the DEX"
+            ]
+          },
+          {
+            "name": "oraclePrice",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The account containing the price information for the token."
+            ]
+          },
+          {
+            "name": "oracleProduct",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The account containing the metadata about the token being referenced"
+            ]
+          },
+          {
+            "name": "depositNoteMint",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The mint for notes which will represent user deposits"
+            ]
+          },
+          {
+            "name": "loanNoteMint",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The mint for notes which will represent user loans"
+            ]
+          },
+          {
+            "name": "quoteTokenMint",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The mint for the market quote tokens"
+            ]
+          },
+          {
+            "name": "feeNoteVault",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The account to hold the notes created from fees collected by the reserve"
+            ]
+          },
+          {
+            "name": "owner",
+            "isMut": false,
+            "isSigner": true,
+            "docs": [
+              "The market owner, which must sign to make this change to the market."
+            ]
+          },
+          {
+            "name": "payer",
+            "isMut": true,
+            "isSigner": true,
+            "docs": [
+              "Payer of accounts initialization."
+            ]
+          },
+          {
+            "name": "psyfiVaultAccount",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The Psyfi vault that controls ownership tokens this reserve will track"
+            ]
+          },
+          {
+            "name": "collateralAssetMint",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The collateral asset used by the Psyfi vault"
+            ]
+          },
+          {
+            "name": "systemProgram",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "rent",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": [
+          {
+            "name": "bump",
+            "type": {
+              "defined": "InitReserveBumpSeeds"
+            }
+          },
+          {
+            "name": "config",
+            "type": {
+              "defined": "ReserveConfig"
+            }
+          }
+        ]
+      },
+      {
+        "name": "updateDiscounts",
+        "docs": [
+          "Update the account that tracks which/how much tokens are discounted when their",
+          "value is computed for collateral or liquidation purposes."
+        ],
+        "accounts": [
+          {
+            "name": "authority",
+            "isMut": false,
+            "isSigner": true,
+            "docs": [
+              "The user/authority that is responsible for updating the discounts"
+            ]
+          },
+          {
+            "name": "discounts",
+            "isMut": true,
+            "isSigner": false
+          }
+        ],
+        "args": [
+          {
+            "name": "mintAddresses",
+            "type": {
+              "array": [
+                "publicKey",
+                20
+              ]
+            }
+          },
+          {
+            "name": "discountRates",
+            "type": {
+              "array": [
+                "u16",
+                20
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "updateReserveConfig",
+        "docs": [
+          "Replace an existing reserve config"
+        ],
+        "accounts": [
+          {
+            "name": "market",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "reserve",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "owner",
+            "isMut": false,
+            "isSigner": true
+          }
+        ],
+        "args": [
+          {
+            "name": "newConfig",
+            "type": {
+              "defined": "ReserveConfig"
+            }
+          }
+        ]
+      },
+      {
+        "name": "updateReserveHalts",
+        "accounts": [
+          {
+            "name": "market",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "reserve",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "owner",
+            "isMut": false,
+            "isSigner": true
+          }
+        ],
+        "args": [
+          {
+            "name": "haltState",
+            "type": "u8"
+          }
+        ]
+      },
+      {
+        "name": "initDepositAccount",
+        "docs": [
+          "Initialize an account that can be used to store deposit notes"
+        ],
+        "accounts": [
+          {
+            "name": "market",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The relevant market this deposit is for"
+            ]
+          },
+          {
+            "name": "marketAuthority",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The market's authority account"
+            ]
+          },
+          {
+            "name": "reserve",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The reserve being deposited into"
+            ]
+          },
+          {
+            "name": "depositNoteMint",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The mint for the deposit notes"
+            ]
+          },
+          {
+            "name": "depositor",
+            "isMut": true,
+            "isSigner": true,
+            "docs": [
+              "The user/authority that will own the deposits"
+            ]
+          },
+          {
+            "name": "depositAccount",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The account that will store the deposit notes"
+            ]
+          },
+          {
+            "name": "tokenProgram",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "systemProgram",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "rent",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": [
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      },
+      {
+        "name": "initCollateralAccount",
+        "docs": [
+          "Initialize an account that can be used to store deposit notes as collateral"
+        ],
+        "accounts": [
+          {
+            "name": "market",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The relevant market this collateral is for"
+            ]
+          },
+          {
+            "name": "marketAuthority",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The market's authority account"
+            ]
+          },
+          {
+            "name": "obligation",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The obligation the collateral account is used for"
+            ]
+          },
+          {
+            "name": "reserve",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The reserve that the collateral comes from"
+            ]
+          },
+          {
+            "name": "depositNoteMint",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The mint for the deposit notes being used as collateral"
+            ]
+          },
+          {
+            "name": "owner",
+            "isMut": true,
+            "isSigner": true,
+            "docs": [
+              "The user/authority that owns the collateral"
+            ]
+          },
+          {
+            "name": "collateralAccount",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The account that will store the deposit notes"
+            ]
+          },
+          {
+            "name": "tokenProgram",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "systemProgram",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "rent",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": [
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      },
+      {
+        "name": "initLoanAccount",
+        "docs": [
+          "Initialize an account that can be used to store deposit notes as collateral"
+        ],
+        "accounts": [
+          {
+            "name": "market",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The relevant market this loan is for"
+            ]
+          },
+          {
+            "name": "marketAuthority",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The market's authority account"
+            ]
+          },
+          {
+            "name": "obligation",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The obligation the loan account is used for"
+            ]
+          },
+          {
+            "name": "reserve",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The reserve that the loan comes from"
+            ]
+          },
+          {
+            "name": "loanNoteMint",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The mint for the loan notes being used as loan"
+            ]
+          },
+          {
+            "name": "owner",
+            "isMut": true,
+            "isSigner": true,
+            "docs": [
+              "The user/authority that owns the loan"
+            ]
+          },
+          {
+            "name": "loanAccount",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The account that will store the loan notes"
+            ]
+          },
+          {
+            "name": "tokenProgram",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "systemProgram",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "rent",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": [
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      },
+      {
+        "name": "initObligation",
+        "docs": [
+          "Initialize an account that can be used to borrow from a reserve"
+        ],
+        "accounts": [
+          {
+            "name": "market",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The relevant market"
+            ]
+          },
+          {
+            "name": "marketAuthority",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The market's authority account"
+            ]
+          },
+          {
+            "name": "borrower",
+            "isMut": true,
+            "isSigner": true,
+            "docs": [
+              "The user/authority that is responsible for owning this obligation."
+            ]
+          },
+          {
+            "name": "obligation",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The new account to track information about the borrower's loan,",
+              "such as the collateral put up."
+            ]
+          },
+          {
+            "name": "tokenProgram",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "systemProgram",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": [
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      },
+      {
+        "name": "initMarketReward",
+        "docs": [
+          "Initialize an account for storing state of rewards for Market."
+        ],
+        "accounts": [
+          {
+            "name": "market",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The market the new MarketReward is being added to."
+            ]
+          },
+          {
+            "name": "owner",
+            "isMut": false,
+            "isSigner": true,
+            "docs": [
+              "The market owner, which must sign to make this change to the market."
+            ]
+          },
+          {
+            "name": "marketReward",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "systemProgram",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": [
+          {
+            "name": "initialRewardIndexTimestamp",
+            "type": "i64"
+          },
+          {
+            "name": "distributionPeriod",
+            "type": "u64"
+          },
+          {
+            "name": "rewardPointsPerPeriod",
+            "type": "u64"
+          },
+          {
+            "name": "rewardUnitDecimals",
+            "type": "u8"
+          },
+          {
+            "name": "minWithdrawalDuration",
+            "type": "u64"
+          }
+        ]
+      },
+      {
+        "name": "updateReserveReward",
+        "docs": [
+          "Update reward multipliers on a Reserve."
+        ],
+        "accounts": [
+          {
+            "name": "market",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "reserve",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "owner",
+            "isMut": false,
+            "isSigner": true
+          }
+        ],
+        "args": [
+          {
+            "name": "depositRewardMultiplier",
+            "type": "u8"
+          },
+          {
+            "name": "borrowRewardMultiplier",
+            "type": "u8"
+          }
+        ]
+      },
+      {
+        "name": "updateMarketReward",
+        "docs": [
+          "Initialize the specified RewardInfo and RewardState in MarketReward"
+        ],
+        "accounts": [
+          {
+            "name": "market",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "marketAuthority",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "marketReward",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "owner",
+            "isMut": false,
+            "isSigner": true,
+            "docs": [
+              "The market owner, which must sign to make this change to the market reward."
+            ]
+          },
+          {
+            "name": "payer",
+            "isMut": true,
+            "isSigner": true,
+            "docs": [
+              "Payer of account initialization."
+            ]
+          },
+          {
+            "name": "rewardTokenMint",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "rewardTokenAccount",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "Seeds of reward token account guarantee that there is only one account per",
+              "token mint for each state index."
+            ]
+          },
+          {
+            "name": "systemProgram",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "tokenProgram",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "rent",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": [
+          {
+            "name": "stateIndex",
+            "type": "u8"
+          },
+          {
+            "name": "infoIndex",
+            "type": "u8"
+          }
+        ]
+      },
+      {
+        "name": "updateMarketRewardConfig",
+        "docs": [
+          "Instruction for updating config stored in Market's MarketRewardState."
+        ],
+        "accounts": [
+          {
+            "name": "market",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "owner",
+            "isMut": false,
+            "isSigner": true,
+            "docs": [
+              "The market owner, which must sign to make this change to the market reward."
+            ]
+          }
+        ],
+        "args": [
+          {
+            "name": "minWithdrawalDuration",
+            "type": "u64"
+          }
+        ]
+      },
+      {
+        "name": "accruePositionReward",
+        "accounts": [
+          {
+            "name": "market",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "reserve",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "obligation",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "owner",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "positionAccount",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": [
+          {
+            "name": "side",
+            "type": "u8"
+          }
+        ]
+      },
+      {
+        "name": "claimRewards",
+        "accounts": [
+          {
+            "name": "market",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "marketAuthority",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "marketReward",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "owner",
+            "isMut": false,
+            "isSigner": true,
+            "docs": [
+              "The user/authority that owns the obligation"
+            ]
+          },
+          {
+            "name": "obligation",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "tokenProgram",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": [
+          {
+            "name": "periodToClaim",
+            "type": "u8"
+          }
+        ]
+      },
+      {
+        "name": "setMarketOwner",
+        "docs": [
+          "Change the owner on a market"
+        ],
+        "accounts": [
+          {
+            "name": "market",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "owner",
+            "isMut": false,
+            "isSigner": true
+          }
+        ],
+        "args": [
+          {
+            "name": "newOwner",
+            "type": "publicKey"
+          }
+        ]
+      },
+      {
+        "name": "setMarketFlags",
+        "docs": [
+          "Change the flags on a market"
+        ],
+        "accounts": [
+          {
+            "name": "market",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "owner",
+            "isMut": false,
+            "isSigner": true
+          }
+        ],
+        "args": [
+          {
+            "name": "flags",
+            "type": "u64"
+          }
+        ]
+      },
+      {
+        "name": "syncDiscountRates",
+        "accounts": [
+          {
+            "name": "reserve",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "discounts",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": []
+      },
+      {
+        "name": "closeDepositAccount",
+        "docs": [
+          "Close a deposit account"
+        ],
+        "accounts": [
+          {
+            "name": "market",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The relevant market this deposit is for"
+            ]
+          },
+          {
+            "name": "marketAuthority",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The market's authority account"
+            ]
+          },
+          {
+            "name": "reserve",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The reserve deposited into"
+            ]
+          },
+          {
+            "name": "vault",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The reserve's vault where any tokens to withdraw will be transferred from"
+            ]
+          },
+          {
+            "name": "depositNoteMint",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The mint for the deposit notes"
+            ]
+          },
+          {
+            "name": "depositor",
+            "isMut": true,
+            "isSigner": true,
+            "docs": [
+              "The user/authority that owns the deposits"
+            ]
+          },
+          {
+            "name": "depositAccount",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The account that stores the deposit notes, to be closed"
+            ]
+          },
+          {
+            "name": "receiverAccount",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The account to receive any remaining tokens still deposited",
+              "TODO might be helpful to validate that this is owned by the same account as the depositor."
+            ]
+          },
+          {
+            "name": "tokenProgram",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": []
+      },
+      {
+        "name": "closeCollateralAccount",
+        "accounts": [
+          {
+            "name": "market",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The relevant market this collateral is for"
+            ]
+          },
+          {
+            "name": "marketAuthority",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The market's authority account"
+            ]
+          },
+          {
+            "name": "obligation",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The obligation the collateral account is used for ??"
+            ]
+          },
+          {
+            "name": "owner",
+            "isMut": true,
+            "isSigner": true,
+            "docs": [
+              "The user/authority that owns the collateral"
+            ]
+          },
+          {
+            "name": "collateralAccount",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The account that stores the deposit notes"
+            ]
+          },
+          {
+            "name": "depositAccount",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The account that will stores the deposit notes"
+            ]
+          },
+          {
+            "name": "tokenProgram",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": []
+      },
+      {
+        "name": "closeLoanAccount",
+        "accounts": [
+          {
+            "name": "market",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The relevant market this loan is for"
+            ]
+          },
+          {
+            "name": "marketAuthority",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The market's authority account"
+            ]
+          },
+          {
+            "name": "obligation",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The obligation the loan account is used for"
+            ]
+          },
+          {
+            "name": "owner",
+            "isMut": true,
+            "isSigner": true,
+            "docs": [
+              "The user/authority that owns the loan"
+            ]
+          },
+          {
+            "name": "loanAccount",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The account that store the loan notes"
+            ]
+          },
+          {
+            "name": "tokenProgram",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": []
+      },
+      {
+        "name": "closeObligation",
+        "accounts": [
+          {
+            "name": "market",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The relevant market"
+            ]
+          },
+          {
+            "name": "marketAuthority",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The market's authority account"
+            ]
+          },
+          {
+            "name": "owner",
+            "isMut": true,
+            "isSigner": true,
+            "docs": [
+              "The user/authority that is responsible for owning this obligation."
+            ]
+          },
+          {
+            "name": "obligation",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The account that stores the obligation notes, such as loans and collaterals, to be closed.",
+              "Marks the account as being closed at the end of the instruction’s execution,",
+              "sending the rent exemption lamports to the specified. close is implicit."
+            ]
+          }
+        ],
+        "args": []
+      },
+      {
+        "name": "deposit",
+        "docs": [
+          "Deposit tokens into a reserve (balance is managed in a program account)"
+        ],
+        "accounts": [
+          {
+            "name": "market",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The relevant market this deposit is for"
+            ]
+          },
+          {
+            "name": "marketAuthority",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The market's authority account"
+            ]
+          },
+          {
+            "name": "reserve",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The reserve being deposited into"
+            ]
+          },
+          {
+            "name": "vault",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The reserve's vault where the deposited tokens will be transferred to"
+            ]
+          },
+          {
+            "name": "depositNoteMint",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The mint for the deposit notes"
+            ]
+          },
+          {
+            "name": "depositor",
+            "isMut": false,
+            "isSigner": true,
+            "docs": [
+              "The user/authority that owns the deposit"
+            ]
+          },
+          {
+            "name": "depositAccount",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The account that will store the deposit notes"
+            ]
+          },
+          {
+            "name": "depositSource",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The token account with the tokens to be deposited"
+            ]
+          },
+          {
+            "name": "tokenProgram",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": [
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "amount",
+            "type": {
+              "defined": "Amount"
+            }
+          }
+        ]
+      },
+      {
+        "name": "depositTokens",
+        "docs": [
+          "Deposit tokens into a reserve (unmanaged)"
+        ],
+        "accounts": [
+          {
+            "name": "market",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The relevant market this deposit is for"
+            ]
+          },
+          {
+            "name": "marketAuthority",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The market's authority account"
+            ]
+          },
+          {
+            "name": "reserve",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The reserve being deposited into"
+            ]
+          },
+          {
+            "name": "vault",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The reserve's vault where the deposited tokens will be transferred to"
+            ]
+          },
+          {
+            "name": "depositNoteMint",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The mint for the deposit notes"
+            ]
+          },
+          {
+            "name": "depositor",
+            "isMut": false,
+            "isSigner": true,
+            "docs": [
+              "The user/authority that owns the deposit"
+            ]
+          },
+          {
+            "name": "depositAccount",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The token account to receive the deposit notes.",
+              "Note: The only difference between this ix and `deposit` is that this ix does not perform a",
+              "check on the PDA here. This allows any token account to claim the deposit notes."
+            ]
+          },
+          {
+            "name": "depositSource",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The token account with the tokens to be deposited"
+            ]
+          },
+          {
+            "name": "tokenProgram",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": [
+          {
+            "name": "amount",
+            "type": {
+              "defined": "Amount"
+            }
+          }
+        ]
+      },
+      {
+        "name": "withdraw",
+        "docs": [
+          "Deposit tokens from a reserve (managed)"
+        ],
+        "accounts": [
+          {
+            "name": "market",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The relevant market this withdraw is for"
+            ]
+          },
+          {
+            "name": "marketAuthority",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The market's authority account"
+            ]
+          },
+          {
+            "name": "reserve",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The reserve being withdrawn from"
+            ]
+          },
+          {
+            "name": "vault",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The reserve's vault where the withdrawn tokens will be transferred from"
+            ]
+          },
+          {
+            "name": "depositNoteMint",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The mint for the deposit notes"
+            ]
+          },
+          {
+            "name": "depositor",
+            "isMut": false,
+            "isSigner": true,
+            "docs": [
+              "The user/authority that owns the deposit.",
+              "Note: The market_authority is actual owner of the deposit account, the depositor is used",
+              "only for seed derivation."
+            ]
+          },
+          {
+            "name": "depositAccount",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The account that stores the deposit notes"
+            ]
+          },
+          {
+            "name": "withdrawAccount",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The token account where to transfer withdrawn tokens to"
+            ]
+          },
+          {
+            "name": "jetProgram",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "tokenProgram",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": [
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "amount",
+            "type": {
+              "defined": "Amount"
+            }
+          }
+        ]
+      },
+      {
+        "name": "withdrawTokens",
+        "docs": [
+          "Withdraw tokens from a reserve (unmanaged)"
+        ],
+        "accounts": [
+          {
+            "name": "market",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The relevant market this withdraw is for"
+            ]
+          },
+          {
+            "name": "marketAuthority",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The market's authority account"
+            ]
+          },
+          {
+            "name": "reserve",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The reserve being withdrawn from"
+            ]
+          },
+          {
+            "name": "vault",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The reserve's vault where the withdrawn tokens will be transferred from"
+            ]
+          },
+          {
+            "name": "depositNoteMint",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The mint for the deposit notes"
+            ]
+          },
+          {
+            "name": "depositor",
+            "isMut": false,
+            "isSigner": true,
+            "docs": [
+              "The user/authority that owns the deposit account.",
+              "",
+              "Note: When the `withdraw` ix is used, pass the `market_authority` here in the CPI,",
+              "as the authority owns all deposit account PDAs"
+            ]
+          },
+          {
+            "name": "depositAccount",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The account that stores the deposit notes"
+            ]
+          },
+          {
+            "name": "withdrawAccount",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The token account where to transfer withdrawn tokens to"
+            ]
+          },
+          {
+            "name": "tokenProgram",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": [
+          {
+            "name": "amount",
+            "type": {
+              "defined": "Amount"
+            }
+          }
+        ]
+      },
+      {
+        "name": "depositCollateral",
+        "docs": [
+          "Deposit notes as collateral in an obligation"
+        ],
+        "accounts": [
+          {
+            "name": "market",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The relevant market this deposit is for"
+            ]
+          },
+          {
+            "name": "marketAuthority",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The market's authority account"
+            ]
+          },
+          {
+            "name": "reserve",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The reserve that the collateral comes from"
+            ]
+          },
+          {
+            "name": "obligation",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The obligation the collateral is being deposited toward"
+            ]
+          },
+          {
+            "name": "owner",
+            "isMut": false,
+            "isSigner": true,
+            "docs": [
+              "The user/authority that owns the deposit"
+            ]
+          },
+          {
+            "name": "depositAccount",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The account that stores the user's deposit notes"
+            ]
+          },
+          {
+            "name": "collateralAccount",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The account that will store the deposit notes as collateral"
+            ]
+          },
+          {
+            "name": "tokenProgram",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": [
+          {
+            "name": "bump",
+            "type": {
+              "defined": "DepositCollateralBumpSeeds"
+            }
+          },
+          {
+            "name": "amount",
+            "type": {
+              "defined": "Amount"
+            }
+          }
+        ]
+      },
+      {
+        "name": "withdrawCollateral",
+        "docs": [
+          "Withdraw notes previously deposited as collateral in an obligation"
+        ],
+        "accounts": [
+          {
+            "name": "market",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The relevant market the collateral is in"
+            ]
+          },
+          {
+            "name": "marketAuthority",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The market's authority account"
+            ]
+          },
+          {
+            "name": "reserve",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The reserve associated with the c-tokens that are being withdrawn"
+            ]
+          },
+          {
+            "name": "obligation",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The obligation the collateral is being withdrawn from",
+              "todo verify depositor?"
+            ]
+          },
+          {
+            "name": "owner",
+            "isMut": false,
+            "isSigner": true,
+            "docs": [
+              "The user/authority that owns the deposited collateral (depositor)"
+            ]
+          },
+          {
+            "name": "depositAccount",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The account that stores the user's deposit notes, where",
+              "the collateral will be returned to."
+            ]
+          },
+          {
+            "name": "collateralAccount",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The account that contains the collateral to be withdrawn"
+            ]
+          },
+          {
+            "name": "tokenProgram",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": [
+          {
+            "name": "bump",
+            "type": {
+              "defined": "WithdrawCollateralBumpSeeds"
+            }
+          },
+          {
+            "name": "amount",
+            "type": {
+              "defined": "Amount"
+            }
+          }
+        ]
+      },
+      {
+        "name": "borrow",
+        "docs": [
+          "Borrow tokens from a reserve"
+        ],
+        "accounts": [
+          {
+            "name": "market",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The relevant market this borrow is for"
+            ]
+          },
+          {
+            "name": "marketAuthority",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The market's authority account"
+            ]
+          },
+          {
+            "name": "obligation",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The obligation with collateral to borrow with"
+            ]
+          },
+          {
+            "name": "reserve",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The reserve being borrowed from"
+            ]
+          },
+          {
+            "name": "vault",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The reserve's vault where the borrowed tokens will be transferred from"
+            ]
+          },
+          {
+            "name": "loanNoteMint",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The mint for the debt/loan notes"
+            ]
+          },
+          {
+            "name": "borrower",
+            "isMut": false,
+            "isSigner": true,
+            "docs": [
+              "The user/authority that is borrowing"
+            ]
+          },
+          {
+            "name": "loanAccount",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The account to track the borrower's balance to repay"
+            ]
+          },
+          {
+            "name": "receiverAccount",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The token account that the borrowed funds will be transferred to"
+            ]
+          },
+          {
+            "name": "tokenProgram",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": [
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "amount",
+            "type": {
+              "defined": "Amount"
+            }
+          }
+        ]
+      },
+      {
+        "name": "repay",
+        "docs": [
+          "Repay a loan"
+        ],
+        "accounts": [
+          {
+            "name": "market",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The relevant market this repayment is for"
+            ]
+          },
+          {
+            "name": "marketAuthority",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The market's authority account"
+            ]
+          },
+          {
+            "name": "obligation",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The obligation with debt to be repaid"
+            ]
+          },
+          {
+            "name": "reserve",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The reserve that the debt is from"
+            ]
+          },
+          {
+            "name": "vault",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The reserve's vault where the payment will be transferred to"
+            ]
+          },
+          {
+            "name": "loanNoteMint",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The mint for the debt/loan notes"
+            ]
+          },
+          {
+            "name": "loanAccount",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The account that holds the borrower's debt balance"
+            ]
+          },
+          {
+            "name": "payerAccount",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The token account that the payment funds will be transferred from"
+            ]
+          },
+          {
+            "name": "payer",
+            "isMut": false,
+            "isSigner": true,
+            "docs": [
+              "The account repaying the loan"
+            ]
+          },
+          {
+            "name": "tokenProgram",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": [
+          {
+            "name": "amount",
+            "type": {
+              "defined": "Amount"
+            }
+          }
+        ]
+      },
+      {
+        "name": "liquidate",
+        "docs": [
+          "Liquidate an unhealthy loan"
+        ],
+        "accounts": [
+          {
+            "name": "market",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The relevant market this liquidation is for"
+            ]
+          },
+          {
+            "name": "marketAuthority",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The market's authority account"
+            ]
+          },
+          {
+            "name": "obligation",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The obligation with debt to be repaid"
+            ]
+          },
+          {
+            "name": "reserve",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The reserve that the debt is from"
+            ]
+          },
+          {
+            "name": "collateralReserve",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The reserve the collateral is from"
+            ]
+          },
+          {
+            "name": "vault",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The reserve's vault where the payment will be transferred to"
+            ]
+          },
+          {
+            "name": "loanNoteMint",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The mint for the debt/loan notes"
+            ]
+          },
+          {
+            "name": "loanAccount",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The account that holds the borrower's debt balance"
+            ]
+          },
+          {
+            "name": "collateralAccount",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The account that holds the borrower's collateral"
+            ]
+          },
+          {
+            "name": "payerAccount",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The token account that the payment funds will be transferred from"
+            ]
+          },
+          {
+            "name": "receiverObligation",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "receiverAccount",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The account that will receive a portion of the borrower's collateral"
+            ]
+          },
+          {
+            "name": "payer",
+            "isMut": false,
+            "isSigner": true,
+            "docs": [
+              "The account paying off the loan"
+            ]
+          },
+          {
+            "name": "tokenProgram",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": [
+          {
+            "name": "amount",
+            "type": {
+              "defined": "Amount"
+            }
+          },
+          {
+            "name": "minCollateral",
+            "type": "u64"
+          }
+        ]
+      },
+      {
+        "name": "refreshReserve",
+        "docs": [
+          "Refresh a reserve's market price"
+        ],
+        "accounts": [
+          {
+            "name": "market",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The relevant market this refresh is for"
+            ]
+          },
+          {
+            "name": "reserve",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The reserve being refreshed"
+            ]
+          },
+          {
+            "name": "pythOraclePrice",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The account containing the price information for the token."
+            ]
+          }
+        ],
+        "args": []
+      },
+      {
+        "name": "accrueInterest",
+        "docs": [
+          "Accrue interest for a reserve",
+          "",
+          "If the reserve is extremely stale, only a partial update will be",
+          "performed. It may be necessary to call refresh_reserve multiple",
+          "times to get the reserve up to date."
+        ],
+        "accounts": [
+          {
+            "name": "market",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "marketAuthority",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The market's authority account"
+            ]
+          },
+          {
+            "name": "reserve",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The reserve where interest is accruing"
+            ]
+          },
+          {
+            "name": "feeNoteVault",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The reserve's vault for storing collected fees"
+            ]
+          },
+          {
+            "name": "depositNoteMint",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The reserve's mint for deposit notes"
+            ]
+          },
+          {
+            "name": "tokenProgram",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": []
+      },
+      {
+        "name": "refreshPsyfiReserve",
+        "docs": [
+          "Refresh a PsyFi vault token reserve's market price and interest owed"
+        ],
+        "accounts": [
+          {
+            "name": "market",
+            "isMut": true,
+            "isSigner": false,
+            "docs": [
+              "The relevant market this refresh is for"
+            ]
+          },
+          {
+            "name": "reserve",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The reserve being refreshed"
+            ]
+          },
+          {
+            "name": "psyfiVaultAccount",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "pythOraclePrice",
+            "isMut": false,
+            "isSigner": false,
+            "docs": [
+              "The account containing the price information for the token."
+            ]
+          }
+        ],
+        "args": []
+      }
+    ],
+    "accounts": [
+      {
+        "name": "Discounts",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "reserved",
+              "docs": [
+                "Reserved for future use"
+              ],
+              "type": {
+                "array": [
+                  "u8",
+                  302
+                ]
+              }
+            },
+            {
+              "name": "version",
+              "docs": [
+                "Struct version number"
+              ],
+              "type": "u16"
+            },
+            {
+              "name": "lastUpdated",
+              "docs": [
+                "Timestamp of last change to this account, using chain clock."
+              ],
+              "type": "i64"
+            },
+            {
+              "name": "authority",
+              "docs": [
+                "Must sign any changes to discount rates"
+              ],
+              "type": "publicKey"
+            },
+            {
+              "name": "mintAddresses",
+              "docs": [
+                "Addresses of the mint for the tokens being discounted."
+              ],
+              "type": {
+                "array": [
+                  "publicKey",
+                  20
+                ]
+              }
+            },
+            {
+              "name": "discountRates",
+              "docs": [
+                "Discount rates. Aligns with indexes of `mint_address` above, so index 0 is for the mint at",
+                "index 0, and so forth.",
+                "",
+                "Pass rates with a common denom of 10,000. A rate of 90% (9000) means that",
+                "the token will be valued at (90%) = 90% of its face value. If the token was worth $50, it",
+                "would now be worth $45 for liquidation and collateral purposes.",
+                "",
+                "TODO should rates be limited to <1? E.g. is it desirable to allow a bonus for some tokens?"
+              ],
+              "type": {
+                "array": [
+                  "u16",
+                  20
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "MarketReward",
+        "docs": [
+          "Contains an array of 96 `RewardState`, used to determine reward payouts for a given period. The",
+          "first/oldest period is at index 0."
+        ],
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "market",
+              "type": "publicKey"
+            },
+            {
+              "name": "states",
+              "docs": [
+                "Each index corresponds to the market's reward state for that distribution period."
+              ],
+              "type": {
+                "array": [
+                  {
+                    "defined": "RewardState"
+                  },
+                  96
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "Market",
+        "docs": [
+          "Lending market account"
+        ],
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "version",
+              "type": "u32"
+            },
+            {
+              "name": "quoteExponent",
+              "docs": [
+                "UNUSED: The exponent used for quote prices"
+              ],
+              "type": "i32"
+            },
+            {
+              "name": "quoteCurrency",
+              "docs": [
+                "The currency used for quote prices"
+              ],
+              "type": {
+                "array": [
+                  "u8",
+                  15
+                ]
+              }
+            },
+            {
+              "name": "authorityBumpSeed",
+              "docs": [
+                "The bump seed value for generating the authority address."
+              ],
+              "type": {
+                "array": [
+                  "u8",
+                  1
+                ]
+              }
+            },
+            {
+              "name": "authoritySeed",
+              "docs": [
+                "The address used as the seed for generating the market authority",
+                "address. Typically this is the market account's own address."
+              ],
+              "type": "publicKey"
+            },
+            {
+              "name": "marketAuthority",
+              "docs": [
+                "The account derived by the program, which has authority over all",
+                "assets in the market."
+              ],
+              "type": "publicKey"
+            },
+            {
+              "name": "owner",
+              "docs": [
+                "The account that has authority to make changes to the market"
+              ],
+              "type": "publicKey"
+            },
+            {
+              "name": "quoteTokenMint",
+              "docs": [
+                "The mint for the token used by DEX to quote the value for reserve assets."
+              ],
+              "type": "publicKey"
+            },
+            {
+              "name": "flags",
+              "docs": [
+                "Storage for flags that can be set on the market."
+              ],
+              "type": "u64"
+            },
+            {
+              "name": "marketRewardState",
+              "docs": [
+                "State of rewards for the market."
+              ],
+              "type": {
+                "defined": "MarketRewardState"
+              }
+            },
+            {
+              "name": "reserved",
+              "docs": [
+                "Unused space before start of reserve list"
+              ],
+              "type": {
+                "array": [
+                  "u8",
+                  352
+                ]
+              }
+            },
+            {
+              "name": "reserves",
+              "docs": [
+                "The storage for information on reserves in the market"
+              ],
+              "type": {
+                "array": [
+                  "u8",
+                  15872
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "Obligation",
+        "docs": [
+          "Tracks information about a user's obligation to repay a borrowed position."
+        ],
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "version",
+              "type": "u32"
+            },
+            {
+              "name": "reserved0",
+              "type": "u32"
+            },
+            {
+              "name": "market",
+              "docs": [
+                "The market this obligation is a part of"
+              ],
+              "type": "publicKey"
+            },
+            {
+              "name": "owner",
+              "docs": [
+                "The address that owns the debt/assets as a part of this obligation"
+              ],
+              "type": "publicKey"
+            },
+            {
+              "name": "reserved1",
+              "docs": [
+                "Unused space before start of collateral info"
+              ],
+              "type": {
+                "array": [
+                  "u8",
+                  184
+                ]
+              }
+            },
+            {
+              "name": "cached",
+              "docs": [
+                "The storage for cached calculations"
+              ],
+              "type": {
+                "array": [
+                  "u8",
+                  256
+                ]
+              }
+            },
+            {
+              "name": "collateral",
+              "docs": [
+                "The storage for the information on positions owed by this obligation"
+              ],
+              "type": {
+                "array": [
+                  "u8",
+                  2560
+                ]
+              }
+            },
+            {
+              "name": "loans",
+              "docs": [
+                "The storage for the information on positions owed by this obligation"
+              ],
+              "type": {
+                "array": [
+                  "u8",
+                  2560
+                ]
+              }
+            },
+            {
+              "name": "accruedRewardUnits",
+              "docs": [
+                "Each index corresponds to amount of reward units accrued during a",
+                "sequential distribution period, that is not yet claimed.",
+                "This value is denominated in reward_unit_decimals."
+              ],
+              "type": {
+                "array": [
+                  "u128",
+                  96
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "Reserve",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "version",
+              "type": "u16"
+            },
+            {
+              "name": "index",
+              "docs": [
+                "The unique id for this reserve within the market.",
+                "Note: Should correspond to index of the `reserve_info` Vec on the market"
+              ],
+              "type": "u16"
+            },
+            {
+              "name": "exponent",
+              "docs": [
+                "The base 10 decimals used for token values",
+                "Note: Typically stored as a negative to reflect the Pyth value, but the absolute value is",
+                "used everywhere, so a positive number of equal magnitude can be used."
+              ],
+              "type": "i32"
+            },
+            {
+              "name": "market",
+              "docs": [
+                "The market this reserve is a part of."
+              ],
+              "type": "publicKey"
+            },
+            {
+              "name": "pythOraclePrice",
+              "docs": [
+                "The account where a Pyth oracle keeps the updated price of the token."
+              ],
+              "type": "publicKey"
+            },
+            {
+              "name": "pythOracleProduct",
+              "docs": [
+                "The account where a Pyth oracle keeps metadata about the token."
+              ],
+              "type": "publicKey"
+            },
+            {
+              "name": "tokenMint",
+              "docs": [
+                "The mint for the token being held in this reserve"
+              ],
+              "type": "publicKey"
+            },
+            {
+              "name": "depositNoteMint",
+              "docs": [
+                "The mint for this reserve's deposit notes. Uses `token_mint` decimals."
+              ],
+              "type": "publicKey"
+            },
+            {
+              "name": "loanNoteMint",
+              "docs": [
+                "The mint for this reserve's loan notes. Uses `token_mint` decimals."
+              ],
+              "type": "publicKey"
+            },
+            {
+              "name": "vault",
+              "docs": [
+                "The account with custody over the reserve's tokens."
+              ],
+              "type": "publicKey"
+            },
+            {
+              "name": "feeNoteVault",
+              "docs": [
+                "The account with custody of the notes generated from collected fees"
+              ],
+              "type": "publicKey"
+            },
+            {
+              "name": "dexSwapTokens",
+              "docs": [
+                "The account for storing quote tokens during a swap"
+              ],
+              "type": "publicKey"
+            },
+            {
+              "name": "dexOpenOrders",
+              "docs": [
+                "The account used for trading with the DEX"
+              ],
+              "type": "publicKey"
+            },
+            {
+              "name": "dexMarket",
+              "docs": [
+                "The DEX market account that this reserve can trade in"
+              ],
+              "type": "publicKey"
+            },
+            {
+              "name": "reserved0",
+              "type": {
+                "array": [
+                  "u8",
+                  408
+                ]
+              }
+            },
+            {
+              "name": "config",
+              "type": {
+                "defined": "ReserveConfig"
+              }
+            },
+            {
+              "name": "psyfiVaultConfig",
+              "type": {
+                "defined": "PsyFiVaultConfig"
+              }
+            },
+            {
+              "name": "discountRate",
+              "docs": [
+                "Discount rate for the token this reserve uses, updated from the common discounts account"
+              ],
+              "type": "u16"
+            },
+            {
+              "name": "discountRateVersion",
+              "docs": [
+                "Current version of the discount rate. If lower than the version in the discounts account,",
+                "should be updated."
+              ],
+              "type": "u16"
+            },
+            {
+              "name": "haltState",
+              "docs": [
+                "Indicates if the reserve has halted borrows, repays, or deposits:",
+                "",
+                "0 (0b00000000) = nothing halted,",
+                "1 (0b00000001) = deposits halted,",
+                "2 (0b00000010) = borrows halted,",
+                "4 (0b00000100) = repays halted,",
+                "8 (0b00001000) = withdraws halted",
+                "",
+                "Allows addition or bitwise AND to combine multiple states:",
+                "(e.g., 4 + 2 = 6 (0b00000110) = borrows and repays halted, others allowed)"
+              ],
+              "type": "u8"
+            },
+            {
+              "name": "reserved1",
+              "type": {
+                "array": [
+                  "u8",
+                  123
+                ]
+              }
+            },
+            {
+              "name": "reserved2",
+              "type": {
+                "array": [
+                  "u128",
+                  32
+                ]
+              }
+            },
+            {
+              "name": "state",
+              "type": {
+                "array": [
+                  "u8",
+                  3584
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "types": [
+      {
+        "name": "DepositCollateralBumpSeeds",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "collateralAccount",
+              "type": "u8"
+            },
+            {
+              "name": "depositAccount",
+              "type": "u8"
+            }
+          ]
+        }
+      },
+      {
+        "name": "InitReserveBumpSeeds",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "vault",
+              "type": "u8"
+            },
+            {
+              "name": "feeNoteVault",
+              "type": "u8"
+            },
+            {
+              "name": "dexOpenOrders",
+              "type": "u8"
+            },
+            {
+              "name": "dexSwapTokens",
+              "type": "u8"
+            },
+            {
+              "name": "depositNoteMint",
+              "type": "u8"
+            },
+            {
+              "name": "loanNoteMint",
+              "type": "u8"
+            }
+          ]
+        }
+      },
+      {
+        "name": "WithdrawCollateralBumpSeeds",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "collateralAccount",
+              "type": "u8"
+            },
+            {
+              "name": "depositAccount",
+              "type": "u8"
+            }
+          ]
+        }
+      },
+      {
+        "name": "RewardState",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "withdrawalTime",
+              "docs": [
+                "Earliest timestamp after which rewards for this distribution can be claimed.",
+                "Equivalent to the start of the period + the `min_withdrawal_duration`.",
+                "Defaults to 0 if RewardState is not initialized for period."
+              ],
+              "type": "i64"
+            },
+            {
+              "name": "unclaimedRewardUnits",
+              "docs": [
+                "Total amount of unclaimed reward points for this distribution period.",
+                "This value is denominated in reward_unit_decimals.",
+                "Defaults to 0 if RewardState is not initialized for period."
+              ],
+              "type": "u128"
+            },
+            {
+              "name": "period",
+              "docs": [
+                "Non-authoritative period of this RewardState. Matches index in MarketReward.states array.",
+                "Defaults to 0 if RewardState is not initialized for period."
+              ],
+              "type": "u8"
+            },
+            {
+              "name": "reserved0",
+              "type": {
+                "array": [
+                  "u8",
+                  7
+                ]
+              }
+            },
+            {
+              "name": "reserved1",
+              "type": {
+                "array": [
+                  "u8",
+                  32
+                ]
+              }
+            },
+            {
+              "name": "reserved2",
+              "type": {
+                "array": [
+                  "u8",
+                  32
+                ]
+              }
+            },
+            {
+              "name": "info",
+              "docs": [
+                "Info field has to be defined after N*32 bytes from start of RewardState to be",
+                "aligned correctly."
+              ],
+              "type": {
+                "array": [
+                  {
+                    "defined": "RewardInfo"
+                  },
+                  5
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "RewardInfo",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "rewardTokenMint",
+              "type": "publicKey"
+            },
+            {
+              "name": "rewardTokenAccount",
+              "type": "publicKey"
+            }
+          ]
+        }
+      },
+      {
+        "name": "MarketRewardState",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "marketReward",
+              "docs": [
+                "Pubkey of MarketReward account."
+              ],
+              "type": "publicKey"
+            },
+            {
+              "name": "initialRewardIndexTimestamp",
+              "docs": [
+                "Timestamp at which first reward distribution period index begins.",
+                "The first reward period ends at `initial_reward_index_timestamp` + `distribution_period`",
+                "This should not change after initialization."
+              ],
+              "type": "i64"
+            },
+            {
+              "name": "distributionPeriod",
+              "docs": [
+                "Length of each distribution period in seconds.",
+                "This should not change after initialization."
+              ],
+              "type": "u64"
+            },
+            {
+              "name": "rewardPointsPerPeriod",
+              "docs": [
+                "Reward points allocated across whole market for each distribution period."
+              ],
+              "type": "u64"
+            },
+            {
+              "name": "totalRewardMultiplier",
+              "docs": [
+                "Sum of reward multipliers across all Reserves in the market on each ObligationSide."
+              ],
+              "type": "u64"
+            },
+            {
+              "name": "minWithdrawalDuration",
+              "docs": [
+                "Time in seconds from start of period, after which withdrawal of rewards is allowed.",
+                "Typically this is earlier than the end of the period."
+              ],
+              "type": "u64"
+            },
+            {
+              "name": "rewardUnitDecimals",
+              "docs": [
+                "Number of decimal places for cumulative reward units."
+              ],
+              "type": "u8"
+            },
+            {
+              "name": "reserved0",
+              "docs": [
+                "Unused space"
+              ],
+              "type": {
+                "array": [
+                  "u8",
+                  23
+                ]
+              }
+            },
+            {
+              "name": "reserved1",
+              "type": {
+                "array": [
+                  "u8",
+                  64
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "PsyFiVaultConfig",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "vaultAccount",
+              "type": "publicKey"
+            },
+            {
+              "name": "collateralTokenDecimals",
+              "type": "u8"
+            },
+            {
+              "name": "reserved1",
+              "type": {
+                "array": [
+                  "u8",
+                  31
+                ]
+              }
+            },
+            {
+              "name": "reserved2",
+              "type": {
+                "array": [
+                  "u8",
+                  64
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "ReserveConfig",
+        "docs": [
+          "We have three interest rate regimes. The rate is described by a continuous,",
+          "piecewise-linear function of the utilization rate:",
+          "1. zero to [utilization_rate_1]: borrow rate increases linearly from",
+          "[borrow_rate_0] to [borrow_rate_1].",
+          "2. [utilization_rate_1] to [utilization_rate_2]: borrow rate increases linearly",
+          "from [borrow_rate_1] to [borrow_rate_2].",
+          "3. [utilization_rate_2] to one: borrow rate increases linearly from",
+          "[borrow_rate_2] to [borrow_rate_3].",
+          "",
+          "Interest rates are nominal annual amounts, compounded continuously with",
+          "a day-count convention of actual-over-365. The accrual period is determined",
+          "by counting slots, and comparing against the number of slots per year."
+        ],
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "utilizationRate1",
+              "docs": [
+                "The utilization rate at which we switch from the first to second regime."
+              ],
+              "type": "u16"
+            },
+            {
+              "name": "utilizationRate2",
+              "docs": [
+                "The utilization rate at which we switch from the second to third regime."
+              ],
+              "type": "u16"
+            },
+            {
+              "name": "borrowRate0",
+              "docs": [
+                "The lowest borrow rate in the first regime. Essentially the minimum",
+                "borrow rate possible for the reserve."
+              ],
+              "type": "u16"
+            },
+            {
+              "name": "borrowRate1",
+              "docs": [
+                "The borrow rate at the transition point from the first to second regime."
+              ],
+              "type": "u16"
+            },
+            {
+              "name": "borrowRate2",
+              "docs": [
+                "The borrow rate at the transition point from the second to thirs regime."
+              ],
+              "type": "u16"
+            },
+            {
+              "name": "borrowRate3",
+              "docs": [
+                "The highest borrow rate in the third regime. Essentially the maximum",
+                "borrow rate possible for the reserve."
+              ],
+              "type": "u16"
+            },
+            {
+              "name": "minCollateralRatio",
+              "docs": [
+                "The minimum allowable collateralization ratio for an obligation"
+              ],
+              "type": "u16"
+            },
+            {
+              "name": "liquidationPremium",
+              "docs": [
+                "The amount given as a bonus to a liquidator"
+              ],
+              "type": "u16"
+            },
+            {
+              "name": "manageFeeCollectionThreshold",
+              "docs": [
+                "The threshold at which to collect the fees accumulated from interest into",
+                "real deposit notes."
+              ],
+              "type": "u64"
+            },
+            {
+              "name": "manageFeeRate",
+              "docs": [
+                "The fee rate applied to the interest payments collected"
+              ],
+              "type": "u16"
+            },
+            {
+              "name": "loanOriginationFee",
+              "docs": [
+                "The fee rate applied as interest owed on new loans"
+              ],
+              "type": "u16"
+            },
+            {
+              "name": "reserved0",
+              "docs": [
+                "unused"
+              ],
+              "type": "u16"
+            },
+            {
+              "name": "confidenceThreshold",
+              "docs": [
+                "Represented as a percentage of the Price",
+                "confidence values above this will not be accepted"
+              ],
+              "type": "u16"
+            },
+            {
+              "name": "liquidationDexTradeMax",
+              "docs": [
+                "The maximum token amount to allow in a single DEX trade when",
+                "liquidating assetr from this reserve as collateral."
+              ],
+              "type": "u64"
+            },
+            {
+              "name": "depositRewardMultiplier",
+              "docs": [
+                "Multiplier that determines the fraction of reward points (by dividing over",
+                "sum of all multiplier for the market) allocated for deposit notes."
+              ],
+              "type": "u8"
+            },
+            {
+              "name": "borrowRewardMultiplier",
+              "docs": [
+                "Multiplier that determines the fraction of reward points (by dividing over",
+                "sum of all multiplier for the market) allocated for loan notes."
+              ],
+              "type": "u8"
+            },
+            {
+              "name": "reserved1",
+              "type": {
+                "array": [
+                  "u8",
+                  22
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "Amount",
+        "docs": [
+          "Represent an amount of some value (like tokens, or notes).",
+          "For units, possible values are TOKENS (0), DEPOSIT_NOTES (1), and LOAN_NOTES (2)"
+        ],
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "units",
+              "type": "u8"
+            },
+            {
+              "name": "value",
+              "type": "u64"
+            }
+          ]
+        }
+      },
+      {
+        "name": "CacheInvalidError",
+        "type": {
+          "kind": "enum",
+          "variants": [
+            {
+              "name": "Expired",
+              "fields": [
+                {
+                  "name": "msg",
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "TooNew",
+              "fields": [
+                {
+                  "name": "msg",
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "Invalidated"
+            }
+          ]
+        }
+      },
+      {
+        "name": "Side",
+        "type": {
+          "kind": "enum",
+          "variants": [
+            {
+              "name": "Collateral"
+            },
+            {
+              "name": "Loan"
+            }
+          ]
+        }
+      },
+      {
+        "name": "JobCompletion",
+        "type": {
+          "kind": "enum",
+          "variants": [
+            {
+              "name": "Partial"
+            },
+            {
+              "name": "Full"
+            }
+          ]
+        }
+      },
+      {
+        "name": "Rounding",
+        "docs": [
+          "Specifies rounding integers up or down"
+        ],
+        "type": {
+          "kind": "enum",
+          "variants": [
+            {
+              "name": "Up"
+            },
+            {
+              "name": "Down"
+            }
+          ]
+        }
+      }
+    ],
+    "events": [
+      {
+        "name": "BorrowEvent",
+        "fields": [
+          {
+            "name": "borrower",
+            "type": "publicKey",
+            "index": false
+          },
+          {
+            "name": "reserve",
+            "type": "publicKey",
+            "index": false
+          },
+          {
+            "name": "debt",
+            "type": "u64",
+            "index": false
+          }
+        ]
+      },
+      {
+        "name": "DepositCollateralEvent",
+        "fields": [
+          {
+            "name": "depositor",
+            "type": "publicKey",
+            "index": false
+          },
+          {
+            "name": "reserve",
+            "type": "publicKey",
+            "index": false
+          },
+          {
+            "name": "amount",
+            "type": {
+              "defined": "Amount"
+            },
+            "index": false
+          }
+        ]
+      },
+      {
+        "name": "LiquidateEvent",
+        "fields": [
+          {
+            "name": "borrower",
+            "type": "publicKey",
+            "index": false
+          },
+          {
+            "name": "debtReserve",
+            "type": "publicKey",
+            "index": false
+          },
+          {
+            "name": "collateralReserve",
+            "type": "publicKey",
+            "index": false
+          },
+          {
+            "name": "paidAmount",
+            "type": {
+              "defined": "Amount"
+            },
+            "index": false
+          },
+          {
+            "name": "collateralAmount",
+            "type": "u64",
+            "index": false
+          }
+        ]
+      },
+      {
+        "name": "RepayEvent",
+        "fields": [
+          {
+            "name": "borrower",
+            "type": "publicKey",
+            "index": false
+          },
+          {
+            "name": "reserve",
+            "type": "publicKey",
+            "index": false
+          },
+          {
+            "name": "amount",
+            "type": {
+              "defined": "Amount"
+            },
+            "index": false
+          }
+        ]
+      },
+      {
+        "name": "WithdrawCollateralEvent",
+        "fields": [
+          {
+            "name": "depositor",
+            "type": "publicKey",
+            "index": false
+          },
+          {
+            "name": "reserve",
+            "type": "publicKey",
+            "index": false
+          },
+          {
+            "name": "amount",
+            "type": {
+              "defined": "Amount"
+            },
+            "index": false
+          }
+        ]
+      }
+    ],
+    "errors": [
+      {
+        "code": 6000,
+        "name": "ArithmeticError",
+        "msg": "failed to perform some math operation safely"
+      },
+      {
+        "code": 6001,
+        "name": "InvalidOracle",
+        "msg": "oracle account provided is not valid"
+      },
+      {
+        "code": 6002,
+        "name": "NoFreeReserves",
+        "msg": "no free space left to add a new reserve in the market"
+      },
+      {
+        "code": 6003,
+        "name": "NoFreeObligation",
+        "msg": "no free space left to add the new loan or collateral in an obligation"
+      },
+      {
+        "code": 6004,
+        "name": "UnregisteredPosition",
+        "msg": "the obligation account doesn't have any record of the loan or collateral account"
+      },
+      {
+        "code": 6005,
+        "name": "InvalidOraclePrice",
+        "msg": "the oracle price is negative or does not meet confidence threshold."
+      },
+      {
+        "code": 6006,
+        "name": "InvalidOracleExpo",
+        "msg": "the oracle exponent is positive, expected a negative exponent"
+      },
+      {
+        "code": 6007,
+        "name": "OraclePriceExpired",
+        "msg": "the oracle price is outdated, expected a more recent price"
+      },
+      {
+        "code": 6008,
+        "name": "InsufficientCollateral",
+        "msg": "there is not enough collateral deposited to borrow against"
+      },
+      {
+        "code": 6009,
+        "name": "InsufficientCollateralInVault",
+        "msg": "there is not enough collateral in the vault to borrow against"
+      },
+      {
+        "code": 6010,
+        "name": "SimultaneousDepositAndBorrow",
+        "msg": "cannot both deposit collateral to and borrow from the same reserve"
+      },
+      {
+        "code": 6011,
+        "name": "ObligationHealthy",
+        "msg": "cannot liquidate a healthy position"
+      },
+      {
+        "code": 6012,
+        "name": "ObligationUnhealthy",
+        "msg": "cannot perform an action that would leave the obligation unhealthy"
+      },
+      {
+        "code": 6013,
+        "name": "ExceptionalReserveState",
+        "msg": "reserve requires special action; call refresh_reserve until up to date"
+      },
+      {
+        "code": 6014,
+        "name": "InvalidAmountUnits",
+        "msg": "the units provided in the amount are not valid for the instruction"
+      },
+      {
+        "code": 6015,
+        "name": "InvalidDexMarketMints",
+        "msg": "the tokens in the DEX market don't match the reserve and lending market quote token"
+      },
+      {
+        "code": 6016,
+        "name": "InvalidMarketAuthority",
+        "msg": "the market authority provided doesn't match the market account"
+      },
+      {
+        "code": 6017,
+        "name": "InvalidLiquidationQuoteTokenAccount",
+        "msg": "the quote token account provided cannot be used for liquidations"
+      },
+      {
+        "code": 6018,
+        "name": "ObligationAccountMismatch",
+        "msg": "the obligation account doesn't have the collateral/loan registered"
+      },
+      {
+        "code": 6019,
+        "name": "UnknownInstruction",
+        "msg": "unknown instruction"
+      },
+      {
+        "code": 6020,
+        "name": "Disallowed",
+        "msg": "current conditions prevent an action from being performed"
+      },
+      {
+        "code": 6021,
+        "name": "LiquidationSwapSlipped",
+        "msg": "the actual slipped amount on the DEX trade exceeded the threshold configured"
+      },
+      {
+        "code": 6022,
+        "name": "CollateralValueTooSmall",
+        "msg": "the collateral value is too small for a DEX trade"
+      },
+      {
+        "code": 6023,
+        "name": "LiquidationLowCollateral",
+        "msg": "the collateral returned by the liquidation is smaller than requested"
+      },
+      {
+        "code": 6024,
+        "name": "NotSupported",
+        "msg": "this action is currently not supported by this version of the program"
+      },
+      {
+        "code": 6025,
+        "name": "MarketHalted",
+        "msg": "the market has currently halted this kind of operation"
+      },
+      {
+        "code": 6026,
+        "name": "ReserveHaltedDeposits",
+        "msg": "the reserve has currently halted new deposits"
+      },
+      {
+        "code": 6027,
+        "name": "ReserveHaltedBorrows",
+        "msg": "the reserve has currently halted new borrows"
+      },
+      {
+        "code": 6028,
+        "name": "ReserveHaltedRepays",
+        "msg": "the reserve has currently halted repayments"
+      },
+      {
+        "code": 6029,
+        "name": "ReserveHaltedWithdraws",
+        "msg": "the reserve has currently halted withdraws"
+      },
+      {
+        "code": 6030,
+        "name": "InvalidParameter",
+        "msg": "a given parameter is not valid"
+      },
+      {
+        "code": 6031,
+        "name": "PositionNotEmpty",
+        "msg": "the obligation account still holds position in the loan or collateral account"
+      },
+      {
+        "code": 6032,
+        "name": "ObligationPositionNotFound",
+        "msg": "position not found in an obligation"
+      },
+      {
+        "code": 6033,
+        "name": "AccountNotEmptyError",
+        "msg": "the collateral/loan account is not empty"
+      },
+      {
+        "code": 6034,
+        "name": "PsyFiVaultMismatch",
+        "msg": "PsyFi vault account does not match"
+      },
+      {
+        "code": 6035,
+        "name": "InvalidVaultAccountState",
+        "msg": "VaultAccount in invalid state"
+      },
+      {
+        "code": 6036,
+        "name": "InvalidOptionType",
+        "msg": "Option type is not supported"
+      },
+      {
+        "code": 6037,
+        "name": "DiscountsBadSigner",
+        "msg": "This Signer is not authorized to update the discounts"
+      },
+      {
+        "code": 6038,
+        "name": "ReserveHaltBadSigner",
+        "msg": "This Signer is not authorized to update the reserves halted operations"
+      },
+      {
+        "code": 6039,
+        "name": "ReserveInfoStale",
+        "msg": "Reserve info is stale: run the refresh ix"
+      },
+      {
+        "code": 6040,
+        "name": "ReserveNoteStale",
+        "msg": "Reserve note is stale: run the accrue interest ix"
+      },
+      {
+        "code": 6041,
+        "name": "MaxAllowedPositions",
+        "msg": "Account exceeds max allowed positions: close existing collateral or borrowed position"
+      },
+      {
+        "code": 6042,
+        "name": "TimestampTooSmall",
+        "msg": "Timestamp cannot be smaller than initial reward timestamp"
+      },
+      {
+        "code": 6043,
+        "name": "PeriodTooShort",
+        "msg": "Distribution period is too short"
+      },
+      {
+        "code": 6044,
+        "name": "UnitDecimalsLimit",
+        "msg": "Reward unit decimals exeeds limit"
+      },
+      {
+        "code": 6045,
+        "name": "IndexExceedBounds",
+        "msg": "Out of bounds error in accessing index of an array"
+      },
+      {
+        "code": 6046,
+        "name": "PastPeriodUpdateError",
+        "msg": "Cannot update past periods"
+      },
+      {
+        "code": 6047,
+        "name": "RewardInfoAlreadyExists",
+        "msg": "Reward info is already initialized"
+      },
+      {
+        "code": 6048,
+        "name": "RewardInfoEmptyIndex",
+        "msg": "An empty reward info index exists before current index"
+      },
+      {
+        "code": 6049,
+        "name": "NoRecentRewardAccrual",
+        "msg": "No reward has been accrued recently. Please accrue rewards with accrue_interest ix."
+      },
+      {
+        "code": 6050,
+        "name": "PeriodInFuture",
+        "msg": "Cannot claim reward from a period that has not started"
+      },
+      {
+        "code": 6051,
+        "name": "NoPointsAvailable",
+        "msg": "No points available for claiming"
+      },
+      {
+        "code": 6052,
+        "name": "WithdrawalNotAllowed",
+        "msg": "Cannot claim points yet as withdrawal is not allowed"
+      },
+      {
+        "code": 6053,
+        "name": "TokenMintMismatch",
+        "msg": "Token account mint mismatch"
+      },
+      {
+        "code": 6054,
+        "name": "TokenOwnerMismatch",
+        "msg": "Token account owner mismatch"
+      },
+      {
+        "code": 6055,
+        "name": "TokenAccountMismatch",
+        "msg": "Token account key mismatch"
+      },
+      {
+        "code": 6056,
+        "name": "InvalidMarketReward",
+        "msg": "Invalid market reward"
+      },
+      {
+        "code": 6057,
+        "name": "MustAccrualInterest",
+        "msg": "Interest must be accrued for reserve in the same block before initializing a new position"
+      },
+      {
+        "code": 6058,
+        "name": "RewardsEnded",
+        "msg": "Rewards have ended permanently and can no longer be altered"
+      }
+    ]
+  }

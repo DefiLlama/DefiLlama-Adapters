@@ -3,6 +3,7 @@ const { Program } = require("@project-serum/anchor");
 const PsyAmericanIdl = require("./idl.json");
 const PsyFiV2Idl = require("./psyfiV2Idl.json");
 const PsyFiMmIdl = require("./psyFiMmIdl.json");
+const PsyLendIdl = require("./psyLendIdl.json");
 const { getProvider, sumTokens2 } = require("../helper/solana");
 
 const textEncoder = new TextEncoder();
@@ -82,17 +83,44 @@ async function getPsyFiMmTokenAccounts(anchorProvider) {
   return tokenAccountAddresses;
 }
 
+async function getPsyLendTokenAccounts(anchorProvider) {
+  const programId = new PublicKey(
+    "PLENDj46Y4hhqitNV2WqLqGLrWKAaH2xJHm2UyHgJLY"
+  );
+  const program = new Program(PsyLendIdl, programId, anchorProvider);
+  // Load all Reserve accounts
+  const reserves = await program.account.reserve.all();
+  // Pull all collateral and fee token accounts
+  const tokenAccountAddresses = [];
+  reserves.forEach((reserve) => {
+    tokenAccountAddresses.push(reserve.account.vault);
+    tokenAccountAddresses.push(reserve.account.fee_note_vault);
+  });
+  return tokenAccountAddresses;
+}
+
 async function tvl() {
   const anchorProvider = getProvider();
-  const [tokensAndOwners, tokenAccounts, psyFiV2TokenAccounts, psyFiMmTokenAccounts] =
-    await Promise.all([
-      getPsyAmericanTokenAccounts(anchorProvider),
-      getTokenizedEurosControlledAccounts(anchorProvider),
-      getPsyFiEurosTokenAccounts(anchorProvider),
-      getPsyFiMmTokenAccounts(anchorProvider),
-    ]);
+  const [
+    tokensAndOwners,
+    tokenAccounts,
+    psyFiV2TokenAccounts,
+    psyFiMmTokenAccounts,
+    psyLendTokenAccounts,
+  ] = await Promise.all([
+    getPsyAmericanTokenAccounts(anchorProvider),
+    getTokenizedEurosControlledAccounts(anchorProvider),
+    getPsyFiEurosTokenAccounts(anchorProvider),
+    getPsyFiMmTokenAccounts(anchorProvider),
+    getPsyLendTokenAccounts(anchorProvider),
+  ]);
   return sumTokens2({
-    tokenAccounts: [...tokenAccounts, ...psyFiV2TokenAccounts, ...psyFiMmTokenAccounts],
+    tokenAccounts: [
+      ...tokenAccounts,
+      ...psyFiV2TokenAccounts,
+      ...psyFiMmTokenAccounts,
+      ...psyLendTokenAccounts,
+    ],
     tokensAndOwners,
   });
 }
