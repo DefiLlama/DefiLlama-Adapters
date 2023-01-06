@@ -1,4 +1,7 @@
-const { lookupAccountByID, lookupApplications } = require("../helper/chain/algorand");
+const {
+  lookupAccountByID,
+  lookupApplications,
+} = require("../../helper/chain/algorand");
 const {
   oracleAppId,
   oracleAdapterAppId,
@@ -13,7 +16,7 @@ const {
   parseOracleValue,
   parseOracleAdapterValue,
   calcLPPrice,
-} = require("./utils");
+} = require("../utils");
 
 async function getTinymanLPPrice(validatorAppId, poolAddress, p0, p1) {
   const res = await lookupAccountByID(poolAddress);
