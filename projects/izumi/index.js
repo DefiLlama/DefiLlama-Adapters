@@ -6,7 +6,7 @@ const chainKeys = Object.keys(indexExports).filter(chain => typeof indexExports[
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
-  ...getExports("izumi", chainKeys),
+  ...getExports("izumi", chainKeys, ['pool2']),
 }
 
 module.exports.ethereum.staking = staking('0xb56a454d8dac2ad4cb82337887717a2a427fcd00', '0x9ad37205d608b8b219e6a2573f922094cec5c200')

@@ -25,5 +25,8 @@ async function fetch() {
 }
 // tvl in USD
 module.exports = {
+  algorand: {
+    fetch
+  },
   fetch
 }
