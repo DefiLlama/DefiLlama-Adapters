@@ -5,14 +5,14 @@ async function getData() {
   if (tvl.data.totalValueLocked <= 0) {
     throw new Error("vyfi tvl is below 0");
   }
-  return {
-    tvl: tvl.data.totalValueLocked,
-    staking: tvl.data.totalValueLocked,
-  };
+  return tvl.data.totalValueLocked;
 }
 
 module.exports = {
   misrepresentedTokens: true,
   timetravel: false,
-  cardano: getData,
+  cardano: {
+    tvl: getData,
+    staking: getData,
+  },
 };
