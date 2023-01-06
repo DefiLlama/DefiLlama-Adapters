@@ -93,8 +93,8 @@ async function getPsyLendTokenAccounts(anchorProvider) {
   // Pull all collateral and fee token accounts
   const tokenAccountAddresses = [];
   reserves.forEach((reserve) => {
-    tokenAccountAddresses.push(reserve.account.vault);
-    tokenAccountAddresses.push(reserve.account.fee_note_vault);
+    tokenAccountAddresses.push(reserve.account.vault.toString());
+    tokenAccountAddresses.push(reserve.account.feeNoteVault.toString());
   });
   return tokenAccountAddresses;
 }
