@@ -2,6 +2,7 @@ const { PublicKey } = require("@solana/web3.js");
 const { Program } = require("@project-serum/anchor");
 const PsyAmericanIdl = require("./idl.json");
 const PsyFiV2Idl = require("./psyfiV2Idl.json");
+const PsyFiMmIdl = require("./psyFiMmIdl.json");
 const { getProvider, sumTokens2 } = require("../helper/solana");
 
 const textEncoder = new TextEncoder();
@@ -52,25 +53,48 @@ async function getPsyFiEurosTokenAccounts(anchorProvider) {
   const programId = new PublicKey(
     "PSYFiYqguvMXwpDooGdYV6mju92YEbFobbvW617VNcq"
   );
-  const program = new Program(
-    PsyFiV2Idl,
-    programId,
-    anchorProvider
-  );
+  const program = new Program(PsyFiV2Idl, programId, anchorProvider);
   // Load all vaults
   const vaults = await program.account.vaultAccount.all();
   // return all vault collateral accounts
-  return vaults.map((vault) => vault.account.vaultCollateralAssetAccount.toString());
+  return vaults.map((vault) =>
+    vault.account.vaultCollateralAssetAccount.toString()
+  );
+}
+
+async function getPsyFiMmTokenAccounts(anchorProvider) {
+  const programId = new PublicKey(
+    "PSYAFJTojpfAjYcHMcFdU89s5hwKA6hgihnvD9Hitue"
+  );
+  const program = new Program(PsyFiMmIdl, programId, anchorProvider);
+  // Load all vaults
+  const vaults = await program.account.vaultAccount.all();
+  const tokenAccountAddresses = [];
+  // return all vault collateral accounts
+  vaults.forEach((vault) => {
+    tokenAccountAddresses.push(
+      vault.account.vaultCollateralAssetAccount.toString()
+    );
+    tokenAccountAddresses.push(
+      vault.account.activeCollateralAccount.toString()
+    );
+  });
+  return tokenAccountAddresses;
 }
 
 async function tvl() {
   const anchorProvider = getProvider();
-  const [tokensAndOwners, tokenAccounts, psyFiV2TokenAccounts] = await Promise.all([
-    getPsyAmericanTokenAccounts(anchorProvider),
-    getTokenizedEurosControlledAccounts(anchorProvider),
-    getPsyFiEurosTokenAccounts(anchorProvider),
-  ]);
-  return sumTokens2({ tokenAccounts: [...tokenAccounts, ...psyFiV2TokenAccounts], tokensAndOwners });
+  const [tokensAndOwners, tokenAccounts, psyFiV2TokenAccounts, psyFiMmTokenAccounts] =
+    await Promise.all([
+      getPsyAmericanTokenAccounts(anchorProvider),
+      getTokenizedEurosControlledAccounts(anchorProvider),
+      getPsyFiEurosTokenAccounts(anchorProvider),
+      getPsyFiMmTokenAccounts(anchorProvider),
+    ]);
+  return sumTokens2({
+    tokenAccounts: [...tokenAccounts, ...psyFiV2TokenAccounts, ...psyFiMmTokenAccounts],
+    tokensAndOwners,
+  });
 }
 
 module.exports = {
