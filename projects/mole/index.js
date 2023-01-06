@@ -21,10 +21,10 @@ async function aptosTvl() {
 module.exports = {
   timetravel: false,
   start: 1653840000,
-  avax: {
-    tvl: avaxTvl,
-    staking: avaxStaking,
-  },
+  // avax: {
+  //   tvl: avaxTvl,
+  //   staking: avaxStaking,
+  // },
   aptos: {
     tvl: aptosTvl
   }
