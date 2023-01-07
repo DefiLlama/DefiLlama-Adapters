@@ -1,4 +1,5 @@
 const { staking } = require("../helper/staking");
+const { ethers } = require("ethers");
 const { getUniTVL } = require('../helper/unknownTokens')
 const { stakingPricedLP } = require("../helper/staking")
 const sdk = require("@defillama/sdk")
@@ -11,8 +12,10 @@ const contracts = {
   avax: {
     factory: "0x9c60c867ce07a3c403e2598388673c10259ec768",
     pops: "0x240248628B7B6850352764C5dFa50D1592A033A8",
+    usdc: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
     stakingContract_sPOPS: "0x5108176bC1B7e72440e6B48862c51d7eB0AEd5c4",
     stakingContract_IB: "0x6aA10ead8531504a8A3B04a9BfCFd18108F2d2c2",
+    stakingContract_IV: "0x2626658BB9186B22C798Ea85A4623C2c1eBa2901",
   },
   polygon: {
     factory: "0x735ab9808d792B5c8B54e31196c011c26C08b4ce"
@@ -48,12 +51,32 @@ async function iceBox(contract, block) {
   return balances;
 };
 
+// USDC + POPS staking product
+async function stakedUSDC(timestamp, ethBlock, chainBlocks) {
+  const balances = {};
+  const tokenBalance = new BigNumber(
+    (
+      await sdk.api.abi.call({
+        abi: "erc20:balanceOf",
+        chain: "avax",
+        target: contracts.avax.usdc,
+        params: [contracts.avax.stakingContract_IV],
+        block: chainBlocks["avax"],
+      })
+    ).output
+  );
+
+  balances[getAVAXAddress(contracts.avax.usdc)] = tokenBalance;
+
+  return balances;
+}
+
 async function stakedAVAX(timestamp, ethBlock, chainBlocks) {
   const balances = {};
   const block = chainBlocks.avax;
 
-  const avaxBalance = await iceBox(stakingContract_IB, block);
-  balances[getAVAXAddress("0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7")] = avaxBalance["0x0000000000000000000000000000000000000000"];
+  const ibBalance = await iceBox(stakingContract_IB, block);
+  balances[getAVAXAddress("0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7")] = ibBalance["0x0000000000000000000000000000000000000000"];
   return balances;
 };
 
@@ -61,29 +84,34 @@ module.exports = {
   misrepresentedTokens: true,
   methodology: "",
   avax: {
-    tvl: getUniTVL({ chain: 'avax', useDefaultCoreAssets: false, factory: contracts.avax.factory }),
+    tvl: getUniTVL({ chain: 'avax', useDefaultCoreAssets: true, factory: contracts.avax.factory }),
     staking: sdk.util.sumChainTvls([
+      // Ice Cream Van
       stakingPricedLP(contracts.avax.stakingContract_sPOPS, contracts.avax.pops,'avax','0x7E454625e4bD0CFdC27e752B46bF35C6343D9A78',"wrapped-avax",true), 
-      stakedAVAX
+      // Ice Box
+      stakedAVAX,
+      // IceVault
+      stakedUSDC,
+      stakingPricedLP(contracts.avax.stakingContract_IV, contracts.avax.pops,'avax','0x7E454625e4bD0CFdC27e752B46bF35C6343D9A78',"wrapped-avax",true)
     ])
   },
   polygon: {
-    tvl: getUniTVL({ chain: 'polygon', useDefaultCoreAssets: false, factory: contracts.polygon.factory }),
+    tvl: getUniTVL({ chain: 'polygon', useDefaultCoreAssets: true, factory: contracts.polygon.factory }),
   },
   bsc: {
-    tvl: getUniTVL({ chain: 'bsc', useDefaultCoreAssets: false, factory: contracts.bsc.factory }),
+    tvl: getUniTVL({ chain: 'bsc', useDefaultCoreAssets: true, factory: contracts.bsc.factory }),
   },
   fantom: {
-    tvl: getUniTVL({ chain: 'fantom', useDefaultCoreAssets: false, factory: contracts.fantom.factory }),
+    tvl: getUniTVL({ chain: 'fantom', useDefaultCoreAssets: true, factory: contracts.fantom.factory }),
   },
   arbitrum: {
-    tvl: getUniTVL({ chain: 'arbitrum', useDefaultCoreAssets: false, factory: contracts.arbitrum.factory }),
+    tvl: getUniTVL({ chain: 'arbitrum', useDefaultCoreAssets: true, factory: contracts.arbitrum.factory }),
   },
   ethereum: {
-    tvl: getUniTVL({ chain: 'ethereum', useDefaultCoreAssets: false, factory: contracts.ethereum.factory }),
+    tvl: getUniTVL({ chain: 'ethereum', useDefaultCoreAssets: true, factory: contracts.ethereum.factory }),
   },
   optimism: {
-    tvl: getUniTVL({ chain: 'optimism', useDefaultCoreAssets: false, factory: contracts.optimism.factory }),
+    tvl: getUniTVL({ chain: 'optimism', useDefaultCoreAssets: true, factory: contracts.optimism.factory }),
   },
   start: 15434772,
 };
