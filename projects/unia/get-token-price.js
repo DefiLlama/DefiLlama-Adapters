@@ -2,7 +2,7 @@ const { fetchURL } = require("../helper/utils");
 
 const coingeckoMap = {
   WETH: "weth",
-  UNIW: "unia",
+  UNIW: "unia-farms",
 };
 
 async function getTokenPrice(token) {
