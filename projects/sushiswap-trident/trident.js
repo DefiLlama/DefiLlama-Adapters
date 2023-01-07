@@ -4,10 +4,17 @@ const { getChainTransform } = require("../helper/portedTokens");
 
 const graphUrls = {
   polygon: "https://api.thegraph.com/subgraphs/name/sushi-qa/trident-polygon",
+  polygonOldRouter:
+    "https://api.thegraph.com/subgraphs/name/sushi-0m/trident-polygon",
   optimism: "https://api.thegraph.com/subgraphs/name/sushi-qa/trident-optimism",
   kava: "https://pvt.graph.kava.io/subgraphs/name/sushi-qa/trident-kava",
   metis:
     "https://andromeda.thegraph.metis.io/subgraphs/name/sushi-qa/trident-metis",
+  bittorrent:
+    "https://subgraphs.sushi.com/subgraphs/name/sushi-qa/trident-bttc",
+  arbitrum: "https://api.thegraph.com/subgraphs/name/sushi-qa/trident-arbitrum",
+  bsc: "https://api.thegraph.com/subgraphs/name/sushi-qa/trident-bsc",
+  avax: "https://api.thegraph.com/subgraphs/name/sushi-qa/trident-avalanche",
 };
 
 const tridentQueryWithBlock = gql`
@@ -56,6 +63,13 @@ function trident(chain) {
       });
     } else {
       result = await request(graphUrl, tridentQuery);
+    }
+
+    if (chain == "polygon") {
+      //add pools that haven't been migrated to the new router
+      result.tokens.push(
+        ...(await request(graphUrls["polygonOldRouter"], tridentQuery)).tokens
+      );
     }
 
     result.tokens.forEach((token) => {
