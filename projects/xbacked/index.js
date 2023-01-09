@@ -9,9 +9,7 @@ async function tvl() {
       )
     )
   )
-cd
   const data = response.data
-  console.log(parseFloat(data));
   return parseFloat(data);
 }
 
