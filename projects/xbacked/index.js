@@ -1,7 +1,7 @@
 const axios = require('axios');
 const retry = require('../helper/retry');
 
-async function tvl() {
+async function () {
   const response = (
     await retry(
       async () => await axios.get(
@@ -18,6 +18,7 @@ module.exports = {
   misrepresentedTokens: true,
   methodology: "Sums the total locked collateral value in usd across all vaults.",
   algorand: {
-    tvl
-  }
+    fetch
+  },
+  fetch
 }
