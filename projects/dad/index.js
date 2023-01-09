@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk');
 const { unwrapDefiboxLiquidity, } = require("../defibox/utils");
-const { get_account_tvl, get_currency_balance } = require("../helper/eos");
+const { get_account_tvl, get_currency_balance } = require("../helper/chain/eos");
 const { default: BigNumber } = require("bignumber.js");
 
 async function computeTvl(balances, newBalances = {}) {

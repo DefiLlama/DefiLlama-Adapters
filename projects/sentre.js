@@ -1,13 +1,9 @@
-const retry = require("./helper/retry");
-const axios = require("axios");
+const { get } = require('./helper/http')
 
 async function fetch() {
   const response = (
-    await retry(
-      async (bail) =>
-        await axios.get("https://stat.sentre.io/public/api/v1/tvl")
+        await get("https://stat.sentre.io/public/api/v1/tvl")
     )
-  ).data;
   const tvl = response.tvl;
   return tvl;
 }

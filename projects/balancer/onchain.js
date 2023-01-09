@@ -3,6 +3,7 @@ const sdk = require('@defillama/sdk');
 const { request, gql } = require("graphql-request");
 const { transformArbitrumAddress } = require('../helper/portedTokens')
 const { requery } = require('../helper/requery')
+const { getLogs } = require('../helper/cache/getLogs')
 
 const abi = require('./abi');
 const ignored = ["0xC011A72400E58ecD99Ee497CF89E3775d4bd732F", "0x57Ab1E02fEE23774580C119740129eAC7081e9D3", // old synthetix
@@ -16,22 +17,21 @@ const subgraphs = {
   polygon: 'balancer-polygon-v2'
 }
 
-async function v1(timestamp, block) {
+async function v1(timestamp, block, _, { api, }) {
   let balances = {
     '0x0000000000000000000000000000000000000000': '0', // ETH
   };
 
-  let poolLogs = await sdk.api.util.getLogs({
+  let poolLogs = await getLogs({
     target: '0x9424B1412450D0f8Fc2255FAf6046b98213B76Bd',
     topic: 'LOG_NEW_POOL(address,address)',
-    keys: ['topics'],
     fromBlock: 9562480,
-    toBlock: block
+    api,
   });
 
   let poolCalls = [];
 
-  let pools = poolLogs.output.map((poolLog) => {
+  let pools = poolLogs.map((poolLog) => {
     if (poolLog.topics) {
       return `0x${poolLog.topics[2].slice(26)}`
     } else {

@@ -1,8 +1,7 @@
 const { request, gql } = require("graphql-request");
 const { toUSDTBalances } = require('../helper/balances');
-const { getBlock } = require('../helper/getBlock')
+const { getBlock } = require('../helper/http')
 const { getUniTVL } = require("../helper/unknownTokens")
-const { sumTokens2 } = require('../helper/unwrapLPs')
 const sdk = require('@defillama/sdk');
 const { getChainTransform } = require("../helper/portedTokens");
 
@@ -145,7 +144,7 @@ module.exports = {
     tvl: getUniTVL({
       factory,
       chain: 'bsc',
-      useDefaultCoreAssets: true,
+      useDefaultCoreAssets: false,
       blacklist: [
         '0x00598f74DA03489d4fFDb7Fde54db8E3D3AA9a61', // GSHIB
         '0xE38928cd467AD7347465048b3637893124187d02', // GSHIB
@@ -164,6 +163,20 @@ module.exports = {
     tvl: getUniTVL({
       factory,
       chain: 'boba',
+      useDefaultCoreAssets: true,
+    }),
+  },
+  boba_avax: {
+    tvl: getUniTVL({
+      factory,
+      chain: 'boba_avax',
+      useDefaultCoreAssets: true,
+    }),
+  },
+  boba_bnb: {
+    tvl: getUniTVL({
+      factory,
+      chain: 'boba_bnb',
       useDefaultCoreAssets: true,
     }),
   },
@@ -197,7 +210,7 @@ module.exports = {
 module.exports.polygon.tvl = getChainTVL('polygon')
 // module.exports.bsc.tvl = getChainTVL('bsc')
 module.exports.fantom.tvl = getChainTVL('fantom')
-module.exports.harmony.tvl = getChainTVL('harmony')
+// module.exports.harmony.tvl = getChainTVL('harmony')
 
 async function kavaTridentTvl(ts, _b, cb) {
   const chain = 'kava'

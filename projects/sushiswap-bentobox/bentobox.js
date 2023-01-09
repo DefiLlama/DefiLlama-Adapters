@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const { default: BigNumber } = require("bignumber.js");
 const { getChainTransform } = require("../helper/portedTokens");
-const { getBlock } = require("../helper/getBlock");
+const { getBlock } = require("../helper/http");
 const {
   getFuroTokens,
   getKashiTokens,

@@ -1,6 +1,6 @@
 
-const { searchAccountsAll, } = require("../helper/algorand");
-const { sumTokens, tokens, getAppGlobalState, } = require('../helper/algorand')
+const { searchAccountsAll, } = require("../helper/chain/algorand");
+const { sumTokens, tokens, getAppGlobalState, } = require('../helper/chain/algorand')
 const { transformBalances } = require('../helper/portedTokens')
 const chain = 'algorand'
 

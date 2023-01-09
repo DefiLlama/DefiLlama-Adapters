@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 const path = require("path");
 require("dotenv").config();
-const { getCurrentBlocks } = require("@defillama/sdk/build/computeTVL/blocks");
-const {
-  humanizeNumber,
-} = require("@defillama/sdk/build/computeTVL/humanizeNumber");
+const { util: {
+  blocks: { getCurrentBlocks },
+  humanizeNumber: { humanizeNumber },
+} } = require("@defillama/sdk");
 const { util } = require("@defillama/sdk");
 const sdk = require("@defillama/sdk");
 const whitelistedExportKeys = require('./projects/helper/whitelistedExportKeys.json')
@@ -45,7 +45,10 @@ async function getTvl(
   knownTokenPrices
 ) {
   if (!isFetchFunction) {
-    const tvlBalances = await tvlFunction(unixTimestamp, ethBlock, chainBlocks);
+    const chain = storedKey.split('-')[0]
+    const block = chainBlocks[chain]
+    const api = new sdk.ChainApi({ chain, block: chainBlocks[chain], timestamp: unixTimestamp, })
+    const tvlBalances = await tvlFunction(unixTimestamp, ethBlock, chainBlocks, { api, chain, block, storedKey });
     const tvlResults = await computeTVL(
       tvlBalances,
       "now",

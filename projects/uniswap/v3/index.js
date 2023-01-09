@@ -9,7 +9,7 @@ const graphUrls = {
   arbitrum: 'https://api.thegraph.com/subgraphs/name/ianlapham/arbitrum-dev',
 }
 
-const { getBlock } = require('../../helper/getBlock');
+const { getBlock } = require('../../helper/http');
 
 const FACTORY =  '0x1F98431c8aD98523631AE4a59f267346ea31F984'; // same on all chains
 const startBlocks = {
@@ -19,19 +19,17 @@ const startBlocks = {
 }
 
 function chainTvl(chain) {
-  return async (timestamp, ethBlock, chainBlocks) => {
+  return async (timestamp, ethBlock, chainBlocks, { api }) => {
     const  START_BLOCK = startBlocks[chain]
-    const block = await getBlock(timestamp, chain, chainBlocks)
     const logs = (
-      await sdk.api.util.getLogs({
-        keys: [],
-        toBlock: block,
+      await getLogs({
+        api,
         target: FACTORY,
         fromBlock: START_BLOCK,
-        chain,
         topic: 'PoolCreated(address,address,uint24,int24,address)',
       })
-    ).output
+    )
+    const block = api.block
 
     const pairAddresses = []
     const token0Addresses = []
@@ -92,7 +90,6 @@ function chainTvl(chain) {
         chain,
       })
     )
-    //console.log(tokenBalances.output.filter(t=>t.success== false))
     let transform = id=>id
     if(chain === "optimism"){
       transform = await transformOptimismAddress()

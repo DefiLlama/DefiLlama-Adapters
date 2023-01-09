@@ -32,7 +32,7 @@ const PUDGY_PENGUINS_PETH_VAULT = "0x4b94b38bec611a2c93188949f017806c22097e9f";
 const AZUKI_PETH_VAULT = "0x72695c2af4193029e0669f2c01d84b619d8c25e7";
 const CLONEX_PETH_VAULT = "0x46db8fda0be00e8912bc28357d1e28e39bb404e2";
 
-const NFT_CHAINLINKED_ARRAY = [
+const VAULT_ARRAY = [
     CRYPTO_PUNK_PUSD_VAULT,
     BAYC_PUSD_VAULT,
     MAYC_PUSD_VAULT,
@@ -51,14 +51,10 @@ const NFT_CHAINLINKED_ARRAY = [
     CLONEX_PETH_VAULT,
 ];
 
-const NFT_DAO_SET_ARRAY = [
-];
-
-
 async function getTVL(balances, chain, timestamp, chainBlocks) {
-    // Fetch positions and oracles from vaults
-    const { output: totalChainlinkedPositions } = await sdk.api.abi.multiCall({
-        calls: NFT_CHAINLINKED_ARRAY.map((address) => ({
+    // Fetch positions from vaults
+    const { output: positions } = await sdk.api.abi.multiCall({
+        calls: VAULT_ARRAY.map((address) => ({
             target: address,
         })),
         abi: abi.VAULT_ABI.find(
@@ -68,68 +64,34 @@ async function getTVL(balances, chain, timestamp, chainBlocks) {
         chain,
     })
 
-    const { output: floorPrices } = await sdk.api.abi.multiCall({
-        calls: NFT_CHAINLINKED_ARRAY.map((address, i) => ({
-            target: address, params: totalChainlinkedPositions[i].output > 0 ? totalChainlinkedPositions[i].output - 1 : 0
+    const { output: valueProviders } = await sdk.api.abi.multiCall({
+        calls: VAULT_ARRAY.map((address) => ({
+            target: address,
         })),
-        abi: {
-            "inputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "_nftIndex",
-                    "type": "uint256"
-                }
-            ],
-            "name": "getNFTValueETH",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
+        abi: abi.VAULT_ABI.find(
+            (a) => a.name === "nftValueProvider"
+        ),
         block: chainBlocks[chain],
         chain,
     })
 
+    // Fetch floor prices from price feeds set in the vaults
+    const { output: floorPrices } = await sdk.api.abi.multiCall({
+        calls: valueProviders.map((item) => ({
+            target: item.output,
+        })),
+        abi: abi.VALUE_PROVIDER_ABI.find(
+            (a) => a.name === "getFloorETH"
+        ),
+        block: chainBlocks[chain],
+        chain,
+    })
 
+    // Calculate total TVL in ETH terms
     let collateralValueETH = 0;
-    for (let i = 0; i < totalChainlinkedPositions.length; i++) {
+    for (let i = 0; i < positions.length; i++) {
         const floorPrice = floorPrices[i].output;
-        const position = totalChainlinkedPositions[i].output;
-        collateralValueETH += position * floorPrice;
-    }
-
-    // Fetch DAO-set prices
-    const [totalPositions, daoPrices] = await Promise.all([
-        sdk.api.abi.multiCall({
-            calls: NFT_DAO_SET_ARRAY.map((address) => ({
-                target: address,
-            })),
-            abi: abi.VAULT_ABI.find(
-                (a) => a.name === "totalPositions"
-            ),
-            block: chainBlocks[chain],
-            chain,
-        }),
-        sdk.api.abi.multiCall({
-            calls: NFT_DAO_SET_ARRAY.map((address) => ({
-                target: address,
-            })),
-            abi: abi.VAULT_ABI.find(
-                (a) => a.name === "getFloorETH"
-            ),
-            block: chainBlocks[chain],
-            chain,
-        })
-    ]);
-
-    for (let i = 0; i < totalPositions.output.length; i++) {
-        const floorPrice = daoPrices.output[i].output;
-        const position = totalPositions.output[i].output;
+        const position = positions[i].output;
         collateralValueETH += position * floorPrice;
     }
 

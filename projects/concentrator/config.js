@@ -1,7 +1,5 @@
-const REFERENCE_ASSETS = {};
 const coins = {};
-
-module.exports = [
+const vaultConfig = [
     {
         id: 'SUSDFRAXBP3CRV-f',
         name: 'Curve.fi Factory USD Metapool: sUSDFRAXBP',
@@ -522,4 +520,100 @@ module.exports = [
             lpToken: '0x497CE58F34605B9944E6b15EcafE6b001206fd25',
         },
     },
-];
+
+    {
+        id: 'ETH-pETH',
+        name: 'ETH-pETH',
+        coins: [
+            coins.eth,
+            coins.pETH,
+        ],
+        addresses: {
+            swap: '0x9848482da3Ee3076165ce6497eDA906E66bB85C5',
+            lpToken: '0x9848482da3Ee3076165ce6497eDA906E66bB85C5',
+        },
+    },
+
+    {
+        id: 'ETH-frxETH',
+        name: 'ETH-frxETH',
+        coins: [
+            coins.eth,
+            coins.frxETH,
+        ],
+        addresses: {
+            swap: '0xa1F8A6807c402E4A15ef4EBa36528A3FED24E577',
+            lpToken: '0xf43211935C781D5ca1a41d2041F397B8A7366C7A',
+        },
+    },
+
+    {
+        id: 'ETH-cbETH',
+        name: 'ETH-cbETH',
+        coins: [
+            coins.eth,
+            coins.cbETH,
+        ],
+        addresses: {
+            swap: '0x5FAE7E604FC3e24fd43A72867ceBaC94c65b404A',
+            lpToken: '0x5b6C539b224014A09B3388e51CaAA8e354c959C8',
+        },
+    },
+    {
+        id: 'bLUSD​+LUSD',
+        name: 'bLUSD​+LUSD',
+        coins: [
+            coins.BLUSD,
+            coins.LUSD3CRVCRV,
+        ],
+        addresses: {
+            swap: '0x74ed5d42203806c8cdcf2f04ca5f60dc777b901c',
+            lpToken: '0x5ca0313D44551e32e0d7a298EC024321c4BC59B4',
+        },
+    },
+    {
+        id: 'WBTC_sBTC',
+        name: 'WBTC_sBTC',
+        coins: [
+            coins.wbtc,
+            coins.sBTC,
+        ],
+        addresses: {
+            swap: '0xf253f83aca21aabd2a20553ae0bf7f65c755a07f',
+            lpToken: '0x051d7e5609917Bd9b73f04BAc0DED8Dd46a74301',
+        },
+    },
+]
+const afrxETHConfig = {
+    0: 'frax',
+    1: 'tricrypto2',
+    2: 'fraxusdc',
+    3: 'mim',
+    4: 'fpifrax',
+    5: '3eur-pool',
+    6: 'lusd',
+    7: 'tusd',
+    8: 'busdfraxbp',
+    9: 'alusdfraxbp',
+    10: 'tusdfraxbp',
+    11: 'lusdfraxbp',
+    12: 'bLUSD​+LUSD',
+    13: 'WBTC_sBTC'
+}
+module.exports = {
+    farmConfig: [
+        {
+            coins: [
+                coins.ctr,
+                coins.eth,
+            ],
+            addresses: {
+                gauge: '0x5BC3dD6E6b4E5DD811d558843DA6A1bfBB9c9dCa',
+                swap: '0xf2f12B364F614925aB8E2C8BFc606edB9282Ba09',
+                lpToken: '0x3f0e7916681452D23Cd36B1281457DA721F2E5dF',
+            }
+        }
+    ],
+    vaultConfig: vaultConfig,
+    afrxETHConfig: afrxETHConfig
+} 

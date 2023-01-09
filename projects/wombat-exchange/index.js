@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
 // Wombat Asset Address
 // Main Pool
@@ -23,6 +23,19 @@ const Asset_P03_HAY = "0x1fa71df4b344ffa5755726ea7a9a56fbbee0d38b";
 const Asset_P04_WOM = "0xf9bdc872d75f76b946e0770f96851b1f2f653cac";
 const Asset_P04_wmxWOM = "0x3c42e4f84573ab8c88c8e479b7dc38a7e678d688";
 
+// mWOM Pool
+const Asset_P05_WOM = "0xEABa290B154aF45DE72FDf2a40E56349e4E68AC2";
+const Asset_P05_mWOM = "0x1f502fF26dB12F8e41B373f36Dc0ABf2D7F6723E";
+
+// qWOM Pool
+const Asset_P06_WOM = "0xB5c9368545A26b91d5f7340205e5d9559f48Bcf8";
+const Asset_P06_qWOM = "0x87073ba87517E7ca981AaE3636754bCA95C120E4";
+
+// Innovation Pool
+const Asset_P07_BUSD = "0xcf434949c242c2d32514ba971947bd3700efb015";
+const Asset_P07_FRAX = "0x47ab513f97e1cc7d7d1a4db4563f1a0fa5c371eb";
+const Asset_P07_TUSD = "0x3c8e744f6c4ed2c9d82e33d69ddcc5961aa05367";
+
 // underlyingToken Address
 const BUSD = "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56";
 const DAI = "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3";
@@ -35,15 +48,11 @@ const stkBNB = "0xc2e9d07f66a89c44062459a47a0d2dc038e4fb16";
 const HAY = "0x0782b6d8c4551b9760e74c0545a9bcd90bdc41e5";
 const WOM = "0xAD6742A35fB341A9Cc6ad674738Dd8da98b94Fb1";
 const wmxWOM = "0x0415023846Ff1C6016c4d9621de12b24B2402979";
+const mWOM = "0x027a9d301fb747cd972cfb29a63f3bda551dfc5c";
+const qWOM = "0x0fE34B8aaAf3f522A6088E278936D10F934c0b19";
+const FRAX = "0x90C97F71E18723b0Cf0dfa30ee176Ab653E89F40";
+const TUSD = "0x14016E85a25aeb13065688cAFB43044C2ef86784";
 const chain = "bsc";
-
-async function balanceOf(owner, target, block) {
-  let decimals = (await sdk.api.erc20.decimals(target, chain)).output;
-  let balance = (
-    await sdk.api.erc20.balanceOf({ owner, target, block, chain, })
-  ).output;
-  return Number(balance) / 10 ** decimals;
-}
 
 async function tvl(_t, _, { bsc: block }) {
   const toa = [
@@ -57,16 +66,29 @@ async function tvl(_t, _, { bsc: block }) {
     [aBNBc, Asset_P02_aBNBc],
     [stkBNB, Asset_P02_stkBNB],
     [HAY, Asset_P03_HAY],
-  ]
-  let balances = await sumTokens2({ tokensAndOwners: toa, chain, block, })
-  balances["wombat-exchange"] = await balanceOf(Asset_P04_WOM, WOM, block);
+    [WOM, Asset_P04_WOM],
+    [wmxWOM, Asset_P04_wmxWOM],
+    [WOM, Asset_P05_WOM],
+    [mWOM, Asset_P05_mWOM],
+    [WOM, Asset_P06_WOM],
+    [qWOM, Asset_P06_qWOM],
+    [BUSD, Asset_P07_BUSD],
+    [FRAX, Asset_P07_FRAX],
+    [TUSD, Asset_P07_TUSD],
+  ];
+  let balances = await sumTokens2({ tokensAndOwners: toa, chain, block });
+
   return balances;
 }
 
 module.exports = {
   bsc: {
     tvl,
-    staking: staking("0x3DA62816dD31c56D9CdF22C6771ddb892cB5b0Cc","0xAD6742A35fB341A9Cc6ad674738Dd8da98b94Fb1","bsc"),
+    staking: staking(
+      "0x3DA62816dD31c56D9CdF22C6771ddb892cB5b0Cc",
+      "0xAD6742A35fB341A9Cc6ad674738Dd8da98b94Fb1",
+      "bsc"
+    ),
   },
   hallmarks: [
     [1662417125, "Liquidity Mining Start"],

@@ -1,5 +1,5 @@
-const axios = require('axios')
-const { sumTokens2, } = require('../helper/tezos')
+const { sumTokens2, } = require('../helper/chain/tezos')
+const { getConfig } = require('../helper/cache')
 
 async function tvl() {
   return sumTokens2({ owners: await getDexes(), includeTezos: true, })
@@ -11,7 +11,7 @@ async function staking() {
 
 async function getDexes() {
   // We take ts file and use regex to convert it to JSON and parse it (Yes, seriously)
-  const { data } = await axios.get('https://raw.githubusercontent.com/Plenty-DeFi/plenty-interface/master/src/config/config.ts')
+  const data = await getConfig('plenty-defi', 'https://raw.githubusercontent.com/Plenty-DeFi/plenty-interface/master/src/config/config.ts')
 
   const a = data.slice(data.indexOf(': IConfig')) // find start of config file
 

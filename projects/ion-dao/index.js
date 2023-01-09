@@ -1,4 +1,4 @@
-const { getDenomBalance } = require('../helper/cosmos')
+const { getDenomBalance } = require('../helper/chain/cosmos')
 const { transformBalances } = require('../helper/portedTokens')
 
 const chain = 'osmosis'
