@@ -1,8 +1,9 @@
-const { staking } = require("../helper/staking");
+const { stakings } = require("../helper/staking");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const sdk = require("@defillama/sdk");
 
 const TimeStaking = "0x4456B87Af11e87E329AB7d7C7A246ed1aC2168B9";
+const RevenueSharingFarm = "0xC172c84587bEa6d593269bFE08632bf2Da2Bc0f6";
 const TIME = "0xb54f16fB19478766A268F172C9480f8da1a7c9C3";
 const wMEMO = "0x0da67235dd5787d67955420c84ca1cecd4e5bb3b";
 
@@ -76,11 +77,11 @@ async function ethTvl(timestamp, ethBlock, chainBlocks) {
 module.exports = {
   avax: {
     tvl: avaxTvl,
-    staking: staking(TimeStaking, TIME, "avax"),
+    staking: stakings([TimeStaking, RevenueSharingFarm], [TIME, wMEMO], "avax"),
   },
   ethereum: {
     tvl: ethTvl,
   },
   methodology:
-    "Counts tokens on the treasury for TVL and Staked TIME for Staking.",
+    "Counts tokens on the treasury for TVL, Staked TIME for Staking and Revenue Sharing Farm.",
 };
