@@ -4,7 +4,7 @@ const arena = "0x2A17Dc11a1828725cdB318E0036ACF12727d27a2";
 const arenaMasterChef = "0xbEa60d145747a66CF27456ef136B3976322b7e77";
 const pyram = "0xedeCfB4801C04F3EB394b89397c6Aafa4ADDa15B";
 const pyramMasterChef = "0x3e91B21ddE13008Aa73f07BdE26970322Fe5D533";
-const poolInfo = {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"poolInfo","outputs":[{"internalType":"contract IBEP20","name":"lpToken","type":"address"},{"internalType":"uint256","name":"allocPoint","type":"uint256"},{"internalType":"uint256","name":"lastRewardBlock","type":"uint256"},{"internalType":"uint256","name":"accArenaPerShare","type":"uint256"},{"internalType":"uint16","name":"depositFeeBP","type":"uint16"},{"internalType":"uint256","name":"harvestInterval","type":"uint256"}],"stateMutability":"view","type":"function"};
+const poolInfo = 'function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accArenaPerShare, uint16 depositFeeBP, uint256 harvestInterval)'
 
 async function tvl(timestamp, block, chainBlocks) {
     let balances = {};

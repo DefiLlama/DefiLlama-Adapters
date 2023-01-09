@@ -39,24 +39,6 @@ const AssessorAbi = [
   }
 ]
 
-const reserveAbi = [
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "totalBalance",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-]
-
 // BSC address
 const BSC_NAOS_ADDRESS = "0x758d08864fb6cce3062667225ca10b8f00496cc2";
 const CAKE_BNB_NAOS_LP_ADDRESS = "0xcaa662ad41a662b81be2aea5d59ec0697628665f";

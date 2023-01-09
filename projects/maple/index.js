@@ -215,8 +215,8 @@ module.exports = {
     "We count liquidity by USDC deposited on the pools through PoolFactory contract",
 }
   
-const abis = {
-  fundsAsset: {"inputs":[],"name":"fundsAsset","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-  principalOut: {"inputs":[],"name":"principalOut","outputs":[{"internalType":"uint128","name":"","type":"uint128"}],"stateMutability":"view","type":"function"},
-  pool: {"inputs":[],"name":"pool","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+const abis ={
+  fundsAsset: "address:fundsAsset",
+  principalOut: "uint128:principalOut",
+  pool: "address:pool",
 }

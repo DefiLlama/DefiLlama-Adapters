@@ -104,19 +104,7 @@ async function tvl(timestamp, block) {
   const totalLockedGlobal = (await sdk.api.abi.call({
     target: lockCvxAddress,
     block,
-    abi: {
-      "inputs": [],
-      "name": "totalLockedGlobal",
-      "outputs": [
-        {
-          "internalType": "uint128",
-          "name": "",
-          "type": "uint128"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    }
+    abi: "uint128:totalLockedGlobal",
   })).output
   if (!BigNumber(totalLockedGlobal).isZero()) {
     sdk.util.sumSingleBalance(balances, cvxAddress, BigNumber(totalLockedGlobal).toFixed(0))
