@@ -1,3 +1,4 @@
+const { toUSDTBalances } = require("../helper/balances");
 const { fetchURL } = require("../helper/utils");
 
 async function getData() {
@@ -5,7 +6,7 @@ async function getData() {
   if (tvl.data.totalValueLocked <= 0) {
     throw new Error("vyfi tvl is below 0");
   }
-  return tvl.data.totalValueLocked;
+  return toUSDTBalances(tvl.data.totalValueLocked);
 }
 
 module.exports = {
