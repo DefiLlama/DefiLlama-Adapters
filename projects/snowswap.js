@@ -1,5 +1,4 @@
 const BigNumber = require("bignumber.js");
-const curveAbis = require('./config/curve/abis.js')
 const sdk = require("@defillama/sdk");
 const { sumTokens } = require('./helper/unwrapLPs');
 
@@ -118,8 +117,6 @@ async function polygon(ts, _block, { polygon: block }) {
 }
 
 async function ethereum(ts, block) {
-  const tokensForPrice = [WETH.getPrice, wBTC, snow.getPrice]
-
   const poolsEth = pools.filter(p => p.chain === "ethereum")
   const toa = []
   poolsEth.forEach(pool => {
@@ -134,7 +131,7 @@ async function ethereum(ts, block) {
           block,
           params: [index],
           target: item.addr,
-          abi: item.abi.find(i => i.name === 'balances')
+          abi: "function balances(uint256 arg0) view returns (uint256) @2280"
         })
         let poolAmount = new BigNumber(balance).div(10 ** coin.dec);
         balance = BigNumber(balance)
@@ -147,7 +144,7 @@ async function ethereum(ts, block) {
               virtualPriceObj = await sdk.api.abi.call({
                 block,
                 target: coin.addr,
-                abi: curveAbis.abis.yTokens.find(i => i.name === 'getPricePerFullShare')
+                abi: 'uint256:getPricePerFullShare'
               })
               virtualPrice = virtualPriceObj.output
               break;
@@ -155,7 +152,7 @@ async function ethereum(ts, block) {
               virtualPriceObj = await sdk.api.abi.call({
                 block,
                 target: coin.addr,
-                abi: abi.yv2.find(i => i.name === 'pricePerShare')
+                abi: abi.yv2
               })
               virtualPrice = virtualPriceObj.output
               break;
@@ -163,7 +160,7 @@ async function ethereum(ts, block) {
               virtualPriceObj = await sdk.api.abi.call({
                 block,
                 target: coin.addr,
-                abi: abi.ankr.find(i => i.name === 'ratio')
+                abi: abi.ankr
               })
               virtualPrice = virtualPriceObj.output
               break;
@@ -200,6 +197,6 @@ module.exports = {
 }
 
 const abi = {
-  yv2: [{ "stateMutability": "view", "type": "function", "name": "pricePerShare", "inputs": [], "outputs": [{ "name": "", "type": "uint256" }], "gas": 77734 }],
-  ankr: [{ "inputs": [], "name": "ratio", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }]
+  yv2: "uint256:pricePerShare",
+  ankr: "uint256:ratio",
 }
