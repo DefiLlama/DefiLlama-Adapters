@@ -1,13 +1,10 @@
-const axios = require("axios")
+const { getConfig } = require('./helper/cache')
 const { sumTokens2 } = require('./helper/solana')
 
 async function staking() {
-  // const { data } = await axios.get("https://us-central1-only1-staking-stats.cloudfunctions.net/tvl")
-  const { data: { data } } = await axios.get("https://api.only1.app/staking-pools?limit=100&sort=numTokensLocked%3Adesc")
-  const { data: { data: data1 } } = await axios.get("https://api.only1.app/staking-pools?limit=100&page=2&sort=numTokensLocked%3Adesc")
+  const { data } = await getConfig('only1-solana',"https://api-edge.only1.app/staking-pools")
 
-  data.push(...data1)
-  const owners = data.map(i => i.address)
+  const owners = data.map(i => i.publicKey)
   return sumTokens2({ tokens: ['3bRTivrVsitbmCTGtqwp7hxXPsybkjn4XLNtPsHqa3zR'], owners, })
 }
 

@@ -56,7 +56,15 @@ const yPoolDepositContract = {
     "USDC": {
       "contractAddress": "0xdD8B0995Cc92c7377c7bce2A097EC70f45A192D5",
       "tokenAddress": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
-    }
+    },
+    "XY": {
+      "contractAddress": "0x7fE09D2310A647c7C5043daE2053ff86956cE952",
+      "tokenAddress": "0x77777777772cf0455fB38eE0e75f38034dFa50DE"
+    },
+    "NUM": {
+      "contractAddress": "0x64d17beaE666cC435B9d40a21f058b379b2a0194",
+      "tokenAddress": "0x3496B523e5C00a4b4150D6721320CdDb234c3079"
+    },
   },
   "25": {
     "ETH": {

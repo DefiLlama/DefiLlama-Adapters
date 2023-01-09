@@ -1,6 +1,6 @@
-const sdk = require("@defillama/sdk");
+
 const { getUniTVL } = require('../helper/unknownTokens')
-const { calculateUniTvl } = require("../helper/calculateUniTvl.js");
+const { uniTvlExport } = require("../helper/calculateUniTvl.js");
 const { staking, stakingUnknownPricedLP} = require("../helper/staking");
 
 const KACMasterChefContract = {
@@ -15,31 +15,6 @@ const KAC = {
   bsc: "0xf96429A7aE52dA7d07E60BE95A3ece8B042016fB",
   shiden: "0xb12c13e66ade1f72f71834f2fc5082db8c091358",
 };
-async function bscTvl(timestamp, block, chainBlocks) {
-  return calculateUniTvl(
-    (addr) => `bsc:${addr}`,
-    chainBlocks["bsc"],
-    "bsc",
-    KACFactory["bsc"],
-    0,
-    true
-  );
-}
-async function poolsTvl(timestamp, ethBlock, chainBlocks) {
-  const balances = {};
-  const stakedKAC = sdk.api.erc20.balanceOf({
-    target: KAC["bsc"],
-    owner: KACMasterChefContract["bsc"],
-    chain: "bsc",
-    block: chainBlocks["bsc"],
-  });
-  sdk.util.sumSingleBalance(
-    balances,
-    "bsc:" + KAC["bsc"],
-    (await stakedKAC).output
-  );
-  return balances;
-}
 
 module.exports = {
   misrepresentedTokens: true,
@@ -47,7 +22,8 @@ module.exports = {
     "Fast growing Defi on BSC and Shiden! Fractionalize and farm NFTs.",
   bsc: {
     staking: stakingUnknownPricedLP("0x81b71D0bC2De38e37978E6701C342d0b7AA67D59", "0xf96429A7aE52dA7d07E60BE95A3ece8B042016fB", "bsc", "0x315F25Cea80AC6c039B86e79Ffc46aE6b2e30922", addr=>`bsc:${addr}`),
-    tvl: bscTvl,
+
+    tvl: uniTvlExport(KACFactory.bsc, 'bsc'),
   },
   shiden: {
     staking: staking(

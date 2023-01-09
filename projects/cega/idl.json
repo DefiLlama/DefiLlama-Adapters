@@ -4,7 +4,7 @@
   "instructions": [],
   "accounts": [
     {
-      "name": "Vault",
+      "name": "Product",
       "type": {
         "kind": "struct",
         "fields": [
@@ -18,126 +18,52 @@
             }
           },
           {
-            "name": "vaultNumber",
+            "name": "productNonce",
+            "type": "u8"
+          },
+          {
+            "name": "productUnderlyingTokenAccountNonce",
+            "type": "u8"
+          },
+          {
+            "name": "productCounter",
             "type": "u64"
-          },
-          {
-            "name": "status",
-            "type": {
-              "defined": "VaultStatus"
-            }
-          },
-          {
-            "name": "vaultNonce",
-            "type": "u8"
-          },
-          {
-            "name": "redeemableMintNonce",
-            "type": "u8"
-          },
-          {
-            "name": "optionMintNonce",
-            "type": "u8"
-          },
-          {
-            "name": "vaultUnderlyingTokenAccountNonce",
-            "type": "u8"
-          },
-          {
-            "name": "vaultOptionTokenAccountNonce",
-            "type": "u8"
-          },
-          {
-            "name": "vaultWithdrawQueueRedeemableTokenAccountNonce",
-            "type": "u8"
-          },
-          {
-            "name": "withdrawQueueHeaderNonce",
-            "type": "u8"
-          },
-          {
-            "name": "structuredProductInfoAccountNonce",
-            "type": "u8"
           },
           {
             "name": "underlyingMint",
             "type": "publicKey"
           },
           {
-            "name": "redeemableMint",
+            "name": "productUnderlyingTokenAccount",
             "type": "publicKey"
           },
           {
-            "name": "optionMint",
-            "type": "publicKey"
-          },
-          {
-            "name": "vaultUnderlyingTokenAccount",
-            "type": "publicKey"
-          },
-          {
-            "name": "vaultOptionTokenAccount",
-            "type": "publicKey"
-          },
-          {
-            "name": "vaultWithdrawQueueRedeemableTokenAccount",
-            "type": "publicKey"
+            "name": "maxDepositLimit",
+            "type": "u64"
           },
           {
             "name": "underlyingAmount",
             "type": "u64"
           },
           {
-            "name": "vaultTotalCouponPayoff",
-            "type": "u64"
-          },
-          {
-            "name": "knockInEvent",
-            "type": "bool"
-          },
-          {
-            "name": "knockOutEvent",
-            "type": "bool"
-          },
-          {
-            "name": "vaultFinalPayoff",
-            "type": "u64"
-          },
-          {
-            "name": "epochSequenceNumber",
-            "type": "u64"
-          },
-          {
-            "name": "startEpoch",
-            "type": "u64"
-          },
-          {
-            "name": "endEpoch",
-            "type": "u64"
-          },
-          {
-            "name": "epochCadence",
-            "type": "u32"
-          },
-          {
-            "name": "startDeposits",
-            "type": "u64"
-          },
-          {
-            "name": "endDeposits",
-            "type": "u64"
-          },
-          {
-            "name": "tradeDate",
-            "type": "u64"
-          },
-          {
-            "name": "withdrawQueueHeader",
+            "name": "mapleAccount",
             "type": "publicKey"
           },
           {
-            "name": "structuredProductInfoAccount",
+            "name": "depositQueueHeaderNonce",
+            "type": "u8"
+          },
+          {
+            "name": "depositQueueHeader",
             "type": "publicKey"
+          },
+          {
+            "name": "isActive",
+            "type": "bool"
+          },
+          {
+            "name": "managementFeePercentage",
+            "type": "u64"
           },
           {
             "name": "extraPubkeyOne",
@@ -146,14 +72,6 @@
           {
             "name": "extraPubkeyTwo",
             "type": "publicKey"
-          },
-          {
-            "name": "extraPubkeyThree",
-            "type": "publicKey"
-          },
-          {
-            "name": "extraUint64One",
-            "type": "u64"
           },
           {
             "name": "extraUint64Two",
@@ -166,50 +84,12 @@
           {
             "name": "extraBoolOne",
             "type": "bool"
-          },
-          {
-            "name": "extraBoolTwo",
-            "type": "bool"
-          },
-          {
-            "name": "extraBoolThree",
-            "type": "bool"
           }
         ]
       }
     }
   ],
-  "types": [
-    {
-      "name": "VaultStatus",
-      "type": {
-        "kind": "enum",
-        "variants": [
-          {
-            "name": "NotTraded"
-          },
-          {
-            "name": "Traded"
-          },
-          {
-            "name": "EpochEnded"
-          },
-          {
-            "name": "PayoffCalculated"
-          },
-          {
-            "name": "FeesCollected"
-          },
-          {
-            "name": "ProcessingWithdrawQueue"
-          },
-          {
-            "name": "WithdrawQueueProcessed"
-          }
-        ]
-      }
-    }
-  ],
+  "types": [],
   "events": [],
   "errors": []
 }

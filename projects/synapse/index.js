@@ -1,5 +1,5 @@
 const { sumTokens,  } = require("../helper/unwrapLPs")
-const { sumSingleBalance, TOKEN_LIST, getDenomBalance, } = require('../helper/terra')
+const { sumSingleBalance, TOKEN_LIST, getDenomBalance, } = require('../helper/chain/terra')
 const sdk = require("@defillama/sdk")
 const { getChainTransform, getFixBalances } = require("../helper/portedTokens")
 const config = require("./config")

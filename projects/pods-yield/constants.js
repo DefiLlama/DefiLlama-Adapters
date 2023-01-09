@@ -4,7 +4,10 @@ module.exports = {
   NETWORK_MAINNET: {
     id: 1,
     name: 'ethereum',
-    vaults: ['0xbab1e772d70300422312dff12daddcb60864bd41']
+    vaults: [
+      '0xbab1e772d70300422312dff12daddcb60864bd41',
+      '0x463F9ED5e11764Eb9029762011a03643603aD879'
+    ]
   },
   ABI_SHORT: {
     asset: {

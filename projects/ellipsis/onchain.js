@@ -2,6 +2,7 @@ const sdk = require("@defillama/sdk");
 const axios = require('axios');
 const { unwrapUniswapLPs } = require('../helper/unwrapLPs');
 const abi = require('./abi.json');
+const { getConfig } = require('../helper/cache')
 
 
 function getBSCAddress(address) {
@@ -27,7 +28,7 @@ async function tvl(timestamp, block, chainBlocks) {
 
   let balances = {};
 
-  let allPools = (await axios.get(endpoint)).data.data
+  let allPools = (await getConfig('ellipsis-onchain', endpoint))
   const basePools = allPools.basePools
   const metaPools = allPools.metaPools
 

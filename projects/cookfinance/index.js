@@ -125,11 +125,11 @@ async function bscTvl(timestamp, ethBlock, chainBlocks) {
   });
 
   const balances = await getTvl({ indices: bscIndexes, chain, block, })
-  const symbols = await getSymbols(chain, Object.keys(balances))
+  // const symbols = await getSymbols(chain, Object.keys(balances))
   const calls = []
-  Object.entries(symbols).forEach(([token, symbol]) => {
-    if (symbol.startsWith('ib')) calls.push({ target: token })
-  })
+  // Object.entries(symbols).forEach(([token, symbol]) => {
+  //   if (symbol.startsWith('ib')) calls.push({ target: token })
+  // })
   const [
     { output: token },
     { output: totalToken },

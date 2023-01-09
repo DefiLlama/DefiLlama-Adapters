@@ -1,10 +1,9 @@
-const retry = require('async-retry');
 const abi = require("./abi.json");
 const sdk = require('@defillama/sdk');
 const { GraphQLClient, gql } = require('graphql-request')
-const { getBlock } = require('../helper/getBlock');
+const { getBlock } = require('../helper/http');
 const { log } = require('../helper/utils');
-const axios = require("axios");
+const { get } = require('../helper/http')
 
 // This will get underlying token for a given UNI-LP pool address and amount of
 // LP tokens.
@@ -193,10 +192,9 @@ function getTVL(chainObject) {
     // strategy and reporting fake numbers. The following API is provided by
     // Flashstake DAO and serves as a master list of reviewed/approved strategies
     const whitelistedStrategiesEndpoint = "https://api.flashstake.io/helper/whitelistedStrategies";
-    let whitelistedStrategies = await retry(async bail => await axios.get(whitelistedStrategiesEndpoint));
-    whitelistedStrategies = whitelistedStrategies['data'];
+    let whitelistedStrategies = await get(whitelistedStrategiesEndpoint);
 
-    block = await getBlock(_, chain, { [chain]: block })
+    block = await getBlock(_, chain, { [chain]: block }) - 50
 
     // If null, skip
     let endpoint = chainObject['endpoint'];
@@ -216,7 +214,7 @@ function getTVL(chainObject) {
     `;
 
     // Retrieve and iterate over all strategies
-    const results = await retry(async bail => await graphQLClient.request(query, {"block": block}));
+    const results = await graphQLClient.request(query, {"block": block});
 
     for(let i = 0; i < results['strategies'].length; i++) {
       const strategyContractAddress = results['strategies'][i]['id'];

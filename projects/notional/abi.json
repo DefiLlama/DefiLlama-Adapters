@@ -1,34 +1,4 @@
 {
-  "maxCurrencyId": {
-    "inputs": [],
-    "name": "maxCurrencyId",
-    "outputs": [
-      {
-        "internalType": "uint16",
-        "name": "",
-        "type": "uint16"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "currencyIdToAddress": {
-    "inputs": [
-      {
-        "internalType": "uint16",
-        "name": "",
-        "type": "uint16"
-      }
-    ],
-    "name": "currencyIdToAddress",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
+  "maxCurrencyId": "uint16:maxCurrencyId",
+  "currencyIdToAddress": "function currencyIdToAddress(uint16) view returns (address)"
 }

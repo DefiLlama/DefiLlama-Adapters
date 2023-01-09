@@ -15,8 +15,6 @@ async function tvl_V2() {
   const quarryProgram = new Program(QuarryMineIDL, quarryId, provider)
   const sunnyProgram = new Program(sunnyIDL, sunnyProgramId, provider)
   const pools = await sunnyProgram.account.pool.all()
-  // const vaults = await sunnyProgram.account.vault.all()
-  // const quarries = Object.values(poolQuarryMap1)
   const quarries = pools.map(i => i.account.quarry)
   const quaryData = await quarryProgram.account.quarry.fetchMultiple(quarries)
   const quarryDataKeyed = {}
@@ -24,7 +22,7 @@ async function tvl_V2() {
     if (!data) return;
     quarryDataKeyed[quarries[i]] = {
       quarry: data,
-      tokenAmount: pools[i].account.totalVendorBalance / (10 ** data.tokenMintDecimals),
+      tokenAmount: pools[i].account.totalVendorBalance,
       decimals: data.tokenMintDecimals
     }
   })
@@ -75,7 +73,6 @@ async function tvl_V1() {
       tokenAmount: data.account.totalLpTokenBalance,
       lpMint: lpMint,
       stakedMint: lpMint,
-      notYetReduced: true,
     }
     dataKeys.push(lpMint, saberPool.reserveA, saberPool.reserveB)
   })
@@ -92,18 +89,14 @@ async function tvl_V1() {
   return balances
 }
 
-function addQuarryBalance(dataCache, balances = {}, { notYetReduced, tokenAmount, stakedMint, saberPool: { reserveA, reserveB, tokenACoingecko, tokenBCoingecko, } }) {
-
-  const decimals = dataCache[stakedMint].readUInt8(44);
-  const divisor = 10 ** decimals;
+function addQuarryBalance(dataCache, balances = {}, { tokenAmount, stakedMint, saberPool: { reserveA, reserveB, tokenA, tokenB, } }) {
   const lpTokenTotalSupply = Number(dataCache[stakedMint].readBigUInt64LE(36));
-  let poolShare = (tokenAmount * divisor) / lpTokenTotalSupply;
-  if (notYetReduced) poolShare /= divisor
+  let poolShare = tokenAmount / lpTokenTotalSupply;
 
-  const reserveAAmount = Number(dataCache[reserveA].readBigUInt64LE(64)) / divisor;
-  const reserveBAmount = Number(dataCache[reserveB].readBigUInt64LE(64)) / divisor;
-  sdk.util.sumSingleBalance(balances, tokenACoingecko, poolShare * reserveAAmount)
-  sdk.util.sumSingleBalance(balances, tokenBCoingecko, poolShare * reserveBAmount)
+  const reserveAAmount = Number(dataCache[reserveA].readBigUInt64LE(64));
+  const reserveBAmount = Number(dataCache[reserveB].readBigUInt64LE(64));
+  sdk.util.sumSingleBalance(balances, 'solana:'+tokenA, poolShare * reserveAAmount)
+  sdk.util.sumSingleBalance(balances, 'solana:'+tokenB, poolShare * reserveBAmount)
   return balances
 }
 

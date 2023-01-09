@@ -2,6 +2,7 @@ const sdk = require('@defillama/sdk');
 const axios = require("axios");
 const { default: BigNumber } = require('bignumber.js');
 const { stakings } = require("../helper/staking");
+const { getConfig } = require('../helper/cache')
 
 const VAULT_LIST_URL = 'https://devapi.ease.org/api/v1/vaults';
 const EASE = "0xEa5eDef1287AfDF9Eb8A46f9773AbFc10820c61c";
@@ -45,8 +46,8 @@ const ARNXM_VAULT = {
 
 async function tvl(_, block) {
   //get TVL of Uninsurance vaults
-  let resp = await axios.get(VAULT_LIST_URL);
-  let vaults = resp.data
+  let resp = await getConfig('ease', VAULT_LIST_URL);
+  let vaults = resp
   const balances = {};
   const { output: bal } = await sdk.api.abi.multiCall({
     abi: RCA_SHIELD.abis.uBalance,

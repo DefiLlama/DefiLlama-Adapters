@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk')
-const { fetchAssets } = require('../helper/terra')
+const { fetchAssets } = require('../helper/chain/terra')
 const { getChainTransform } = require('../helper/portedTokens')
 
 const data = {

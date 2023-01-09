@@ -4,7 +4,7 @@ const {
   getStorage,
   getBigMapById,
   sumTokens2,
-} = require("../helper/tezos");
+} = require("../helper/chain/tezos");
 const { default: BigNumber } = require("bignumber.js");
 const YUPANA_CORE = "KT1Rk86CX85DjBKmuyBhrCyNsHyudHVtASec";
 const wTEZ = "KT1UpeXdK6AJbX58GJ92pLZVCucn2DR8Nu4b";

@@ -1,10 +1,7 @@
-const retry = require("./helper/retry");
-const axios = require("axios");
-
+const { get } = require('./helper/http')
 async function fetch() {
   const response = (
-    await retry(async (bail) => await axios.get("https://api.raydium.io/pairs"))
-  ).data;
+    await get("https://api.raydium.io/pairs"))
 
   const liqArrPerPool = response.map((pool) => pool.liquidity);
 
@@ -12,6 +9,9 @@ async function fetch() {
 }
 
 module.exports = {
+  hallmarks:[
+    [1667865600, "FTX collapse"]
+],
   timetravel: false,
   fetch,
 };

@@ -24,6 +24,7 @@ function fetchChain(chainId, staking) {
 }
 
 const chains = {
+  ethereum: 1,
   optimism: 10,
   cronos: 25,
   bsc: 56,

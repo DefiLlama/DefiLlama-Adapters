@@ -1,21 +1,9 @@
-const retry = require("./helper/retry");
-const axios = require("axios");
+const { get } = require('./helper/http')
 // node test.js projects/arkadiko.js
 async function tvl() {
   let balances = {};
-  const dikoPrice = (
-    await retry(
-      async (bail) =>
-        await axios.get("https://arkadiko-api.herokuapp.com/api/v1/tokens/diko")
-    )
-  ).data["price_in_cents"];
-
-  const response = (
-    await retry(
-      async (bail) =>
-        await axios.get("https://arkadiko-api.herokuapp.com/api/v1/pools")
-    )
-  ).data;
+  const dikoPrice = (await get("https://arkadiko-api.herokuapp.com/api/v1/tokens/diko"))["price_in_cents"];
+  const response = (await get("https://arkadiko-api.herokuapp.com/api/v1/pools"));
 
   for (let pool of response.pools) {
     balances[pool.token_y_name] =
