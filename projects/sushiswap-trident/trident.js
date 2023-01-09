@@ -68,7 +68,7 @@ function trident(chain) {
     if (chain == "polygon") {
       //add pools that haven't been migrated to the new router
       result.tokens.push(
-        ...(block
+        ...(!block
           ? await request(graphUrls["polygonOldRouter"], tridentQuery)
           : await request(
               graphUrls["polygonOldRouter"],
