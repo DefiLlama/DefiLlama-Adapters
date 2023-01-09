@@ -1,0 +1,13 @@
+{
+  "inputs": [],
+  "name": "getVaults",
+  "outputs": [
+    {
+      "internalType": "address[]",
+      "name": "vaults",
+      "type": "address[]"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+}
