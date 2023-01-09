@@ -1,7 +1,7 @@
 const axios = require('axios');
 const retry = require('../helper/retry');
 
-async function () {
+async function fetch() {
   const response = (
     await retry(
       async () => await axios.get(
