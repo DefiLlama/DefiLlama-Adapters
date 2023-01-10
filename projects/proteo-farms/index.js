@@ -10,7 +10,7 @@ async function getPrices() {
   return prices
 
   async function _getPrices() {
-    const getApi = ({ token1, token2 }) => `https://api.elrond.com/mex/pairs/${token1}/${token2}?fields=price`
+    const getApi = ({ token1, token2 }) => `https://api.multiversx.com/mex/pairs/${token1}/${token2}?fields=price`
     const lps = [
       { lp: 'PROTEOEGLD-baf054', token1: 'PROTEO-0c7311', token2: 'WEGLD-bd4d79', },
       { lp: 'ZPAYWEGLD-34e5c1', token1: 'ZPAY-247875', token2: 'WEGLD-bd4d79', },
