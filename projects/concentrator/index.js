@@ -5,8 +5,7 @@ const { default: BigNumber } = require("bignumber.js");
 const AladdinConvexVaultABI = require('./abis/AladdinConvexVault.json')
 const AladdinCRVABI = require('./abis/AladdinCRV.json')
 const AladdinAFXSABI = require('./abis/AladdinAFXS.json')
-const { farmConfig, vaultConfig: configPools, afrxETHConfig } = require('./config.js');
-
+const { farmConfig, } = require('./config.js');
 
 const concentratorVault = '0xc8fF37F7d057dF1BB9Ad681b53Fa4726f268E0e8';
 const concentratorAcrv = '0x2b95A1Dcc3D405535f9ed33c219ab38E8d7e0884';
@@ -81,12 +80,11 @@ async function getVaultInfo(type, balances, block) {
       break;
   }
   let poolInfo = await sdk.api2.abi.fetchList({ chain, block, lengthAbi: abi.poolLength, itemAbi: _abi, target: _target })
-  poolInfo.forEach((item, i) => {
+  poolInfo.forEach((item) => {
     if (type == 'afrxETH') {
-      const _vaultConfig = configPools.find(crvPool => crvPool.id === afrxETHConfig[i])
-      sdk.util.sumSingleBalance(balances, chain + ':' + _vaultConfig.addresses.lpToken, item.supply.totalUnderlying)
+      sdk.util.sumSingleBalance(balances, item.strategy.token, item.supply.totalUnderlying, chain)
     } else {
-      sdk.util.sumSingleBalance(balances, chain + ':' + item.lpToken, item.totalUnderlying)
+      sdk.util.sumSingleBalance(balances, item.lpToken, item.totalUnderlying, chain)
     }
   })
 }
