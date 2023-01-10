@@ -76,17 +76,99 @@ function print() {
   let res = data
   if (Array.isArray(data)) {
     res = {}
-    data.filter(i => isTransformable({ test: i}))
-    .filter(i => i.stateMutability === 'view'  || i.stateMutability === 'pure')
+    data
+    .filter(i => i.type === 'function')
+    // .filter(i => isTransformable({ test: i}))
+    // .filter(i => i.stateMutability === 'view'  || i.stateMutability === 'pure')
     .forEach(i => res[i.name ?? 'ignore'] = i)
   }
+  console.log(res)
   res = transform(res)
   // console.log(res)
   console.log(JSON.stringify(res, null, 2))
 }
 
 
-const data =
+const data = {
+  "get_registry": {
+      "name": "get_registry",
+      "outputs": [
+          {
+              "type": "address",
+              "name": ""
+          }
+      ],
+      "inputs": [],
+      "stateMutability": "view",
+      "type": "function",
+      "gas": 1061
+  },
+  "pool_list": {
+      "stateMutability": "view",
+      "type": "function",
+      "name": "pool_list",
+      "inputs": [
+          {
+              "name": "arg0",
+              "type": "uint256"
+          }
+      ],
+      "outputs": [
+          {
+              "name": "",
+              "type": "address"
+          }
+      ],
+      "gas": 2217
+  },
+  "pool_count": {
+      "stateMutability": "view",
+      "type": "function",
+      "name": "pool_count",
+      "inputs": [],
+      "outputs": [
+          {
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "gas": 2138
+  },
+  "get_id_info": {
+      "name": "get_id_info",
+      "outputs": [
+          {
+              "type": "address",
+              "name": "addr"
+          },
+          {
+              "type": "bool",
+              "name": "is_active"
+          },
+          {
+              "type": "uint256",
+              "name": "version"
+          },
+          {
+              "type": "uint256",
+              "name": "last_modified"
+          },
+          {
+              "type": "string",
+              "name": "description"
+          }
+      ],
+      "inputs": [
+          {
+              "type": "uint256",
+              "name": "arg0"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "gas": 12168
+  },
+}
 
 print()
 

@@ -1,7 +1,7 @@
 const sdk = require('@defillama/sdk')
-const abi = require('./abi.json')
-const potABI = require('./pot_abi.json')
-const leverageABI = require('./leverage_abi.json')
+const abi = 'function tvlOfPool(address pool) view returns (uint256 tvl)'
+const potABI = "uint256:totalValueInUSD"
+const leverageABI = 'function getVaultState() view returns (tuple(uint256 balance, uint256 tvl, uint256 debtRatioLimit))'
 const BigNumber = require('bignumber.js')
 
 const dashboard = '0xb3C96d3C3d643c2318E4CDD0a9A48aF53131F5f4'

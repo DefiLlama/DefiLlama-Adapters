@@ -32,5 +32,5 @@ Object.keys(config).forEach(chain => {
 })
 
 const abi = {
-  getTokenAddressList: {"inputs":[{"internalType":"uint256","name":"start","type":"uint256"},{"internalType":"uint256","name":"end","type":"uint256"}],"name":"getTokenAddressList","outputs":[{"internalType":"address[]","name":"list","type":"address[]"}],"stateMutability":"view","type":"function"},
+  getTokenAddressList: "function getTokenAddressList(uint256 start, uint256 end) view returns (address[] list)",
 }

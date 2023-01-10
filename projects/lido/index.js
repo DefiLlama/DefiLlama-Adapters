@@ -7,14 +7,6 @@ const { getConnection } = require('../helper/solana');
 const ethContract = '0xae7ab96520de3a18e5e111b5eaab095312d7fe84';
 
 async function terra(timestamp, ethBlock, chainBlocks) {
-  /*
-  const { block } = await sdk.api.util.lookupBlock(timestamp, {
-    chain: 'terra'
-  })
-  const { total_bond_amount } = (
-    await axios.get(`https://lcd.terra.dev/wasm/contracts/terra1mtwph2juhj0rvjz7dy92gvl6xvukaxu8rfv8ts/store?query_msg=%7B%22state%22%3A%20%7B%7D%7D&height=${block - (block % 100)}`) // Node is semi-pruned, only every 100th block is stored
-  ).data.result;
-  */
   const { total_bond_amount } = (
     await axios.get(`https://lcd.terra.dev/wasm/contracts/terra1mtwph2juhj0rvjz7dy92gvl6xvukaxu8rfv8ts/store?query_msg=%7B%22state%22%3A%20%7B%7D%7D`)
   ).data.result;
@@ -33,7 +25,7 @@ async function eth(timestamp, ethBlock, chainBlocks) {
   const pooledMatic = await sdk.api.abi.call({
     block: ethBlock,
     target: "0x9ee91F9f426fA633d227f7a9b000E28b9dfd8599",
-    abi: {"inputs":[],"name":"getTotalPooledMatic","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+    abi: "uint256:getTotalPooledMatic",
   })
 
   return {
@@ -48,7 +40,7 @@ async function ksm(timestamp, ethBlock, {moonriver: block}) {
     block,
     chain,
     target: "0xffc7780c34b450d917d557e728f033033cb4fa8c",
-    abi: {"inputs":[],"name":"getTotalPooledKSM","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+    abi: "uint256:getTotalPooledKSM",
   })
 
   return {
@@ -62,7 +54,7 @@ async function dot(timestamp, ethBlock, {moonbeam: block}) {
     block,
     chain,
     target: "0xfa36fe1da08c89ec72ea1f0143a35bfd5daea108",
-    abi: {"inputs":[],"name":"getTotalPooledKSM","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+    abi: "uint256:getTotalPooledKSM",
   })
 
   return {

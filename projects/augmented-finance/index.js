@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk');
-const abi = require('./abi.json');
+const abi = 'function getReservesData(address user) view returns (tuple(address underlyingAsset, address pricingAsset, string name, string symbol, uint256 decimals, uint256 baseLTVasCollateral, uint256 reserveLiquidationThreshold, uint256 reserveLiquidationBonus, uint256 reserveFactor, bool usageAsCollateralEnabled, bool borrowingEnabled, bool stableBorrowRateEnabled, bool isActive, bool isFrozen, uint128 liquidityIndex, uint128 variableBorrowIndex, uint128 liquidityRate, uint128 variableBorrowRate, uint128…ddress, address strategy, bool isExternalStrategy, uint256 availableLiquidity, uint256 totalPrincipalStableDebt, uint256 averageStableRate, uint256 totalStableDebt, uint256 stableDebtLastUpdateTimestamp, uint256 totalScaledVariableDebt, uint256 priceInEth)[], tuple(address underlyingAsset, uint256 scaledDepositTokenBalance, bool usageAsCollateralEnabledOnUser, uint256 stableBorrowRate, uint256 scaledVariableDebt, uint256 principalStableDebt, uint256 stableBorrowLastUpdateTimestamp)[], uint256)';
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 const DATA_PROVIDERS = {
@@ -19,7 +19,7 @@ function _tvlByChain(chainName, dataProviderAddress) {
         const transform = address => `${chainName}:${address}`
         const {output: reservesData} = await sdk.api.abi.call({
             target: dataProviderAddress,
-            abi: abi.find(abi => abi.name === 'getReservesData'),
+            abi,
             params: [ZERO_ADDRESS],
             block,
             chain: chainName,
