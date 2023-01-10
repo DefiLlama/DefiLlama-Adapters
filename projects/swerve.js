@@ -97,7 +97,7 @@ async function calc(item, i, price_feed, block) {
     block,
     target: item.address,
     params: [i],
-    abi: "function coins(uint256 arg0) view returns (address)"
+    abi: "function coins(int128 arg0) view returns (address)"
   })
 
 
