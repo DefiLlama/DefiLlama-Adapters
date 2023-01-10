@@ -4,6 +4,7 @@ const axios = require('axios')
 const { getApplicationAddress } = require('./algorandUtils/address')
 const { RateLimiter } = require("limiter");
 const { fixBalancesTokens } = require('../tokenMapping')
+const { sleep } = require('../utils')
 const { getFixBalancesSync } = require('../portedTokens')
 const sdk = require('@defillama/sdk');
 const { default: BigNumber } = require('bignumber.js');
@@ -27,9 +28,10 @@ async function lookupAccountByID(accountId) {
   return (await axiosObj.get(`/v2/accounts/${accountId}`)).data
 }
 
-async function searchAccounts({ appId, limit = 1000, nexttoken, }) {
+async function searchAccounts({ appId, limit = 1000, nexttoken, searchParams, }) {
   const response = (await axiosObj.get('/v2/accounts', {
     params: {
+      ...searchParams,
       'application-id': appId,
       limit,
       next: nexttoken,
@@ -39,11 +41,11 @@ async function searchAccounts({ appId, limit = 1000, nexttoken, }) {
 }
 
 
-async function searchAccountsAll({ appId, limit = 1000 }) {
+async function searchAccountsAll({ appId, limit = 1000, searchParams = {} }) {
   const accounts = []
   let nexttoken
   do {
-    const res = await searchAccounts({ appId, limit, nexttoken, })
+    const res = await searchAccounts({ appId, limit, nexttoken, searchParams, })
     nexttoken = res['next-token']
     accounts.push(...res.accounts)
   } while (nexttoken)
