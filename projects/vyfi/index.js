@@ -1,7 +1,7 @@
 const { toUSDTBalances } = require("../helper/balances");
 const { fetchURL } = require("../helper/utils");
 
-async function getData() {
+async function getStakingData() {
   const tvl = await fetchURL("https://api.vyfi.io/analytics");
   if (tvl.data.totalValueLocked <= 0) {
     throw new Error("vyfi tvl is below 0");
@@ -13,7 +13,7 @@ module.exports = {
   misrepresentedTokens: true,
   timetravel: false,
   cardano: {
-    tvl: getData,
-    staking: getData,
+    tvl: () => ({}),
+    staking: getStakingData,
   },
 };
