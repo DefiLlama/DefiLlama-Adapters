@@ -50,7 +50,7 @@ function chainTvlFactory(chain) {
 module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
-  methodology: '__SHOULD_BE_FILLED__',
+  methodology: 'Counts the tokens locked in Strategy Vaults in Uniswap v3 Pools.',
   start: 1667197843, // Mon Oct 31 2022 06:30:43 GMT+0000
   ...CHAINS.reduce((tvls, chain) => {
     tvls[chain] = {
