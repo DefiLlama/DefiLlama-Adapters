@@ -6,6 +6,6 @@
         "lpToken": "address:lpToken",
         "token1": "address:token1",
         "token0": "address:token0",
-        "totalSupply": "uint256:totalSupply",
+        "totalSupply": "uint256:totalSupply"
     }
 }

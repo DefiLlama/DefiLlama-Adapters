@@ -4,6 +4,6 @@
     "getCollateralTVL": "uint256[]:getCollateralTVL",
     "getSkokoaTVL": "uint256:getSkokoaTVL",
     "getKlayswapLpFarmTVL": "function getKlayswapLpFarmTVL(address pool) view returns (uint256 tvl)",
-    "getKokonutLpFarmTVL": "function getKokonutLpFarmTVL(address pool) view returns (uint256 tvl)",
+    "getKokonutLpFarmTVL": "function getKokonutLpFarmTVL(address pool) view returns (uint256 tvl)"
   }
 }
