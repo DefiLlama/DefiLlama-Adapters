@@ -4,9 +4,9 @@ const {
   queryContract,
   getDenomBalance,
 } = require("../helper/chain/terra");
-const { sumTokens } = require("../helper/unwrapLPs");
-const vaultManagerAbi = require("./vaultManager.abi.json");
-const vaultAbi = require("./vault.abi.json");
+const { sumTokens, } = require("../helper/unwrapLPs");
+const vaultManagerAbi = "address[]:getVaults";
+const vaultAbi = 'function self() view returns (tuple(address underwritingToken, uint32 start, uint32 expiration, uint8 underwritingTokenDecimals) config, tuple(tuple(tuple(uint128 numerator, uint128 denominator)[] expectedXVector, tuple(uint128 numerator, uint128 denominator)[] varCovarMatrix, tuple(uint128 numerator, uint128 denominator) lambda) config) amm, tuple(tuple(address standard, address rollover) underwritingPositionERC20, address nextVault, uint56 poolCount, uint32 latestInteraction, bool paused, uint256 premiums, uint256 premiumsAccruedPerShare, uint256 premiumDripBasis, uint256[] allocationVector) state)'
 
 const networks = {
   ethereum: {
@@ -214,14 +214,13 @@ async function terra(timestamp, ethBlock, chainBlocks) {
 }
 
 function evm(chainName) {
-  return async (timestamp, block, chainBlocks) => {
-    const isEth = chainName === "ethereum";
+  return async (timestamp, block, chainBlocks, { api }) => {
     const network = networks[chainName];
 
     if (network.vaultManager) {
       const managedVaults = await getManagedVaults(
         network.vaultManager,
-        isEth ? block : chainBlocks[chainName],
+        api.block,
         chainName
       );
       network.vaults = [...network.vaults, ...managedVaults];
@@ -230,17 +229,14 @@ function evm(chainName) {
     return sumTokens(
       undefined,
       network.vaults,
-      isEth ? block : chainBlocks[chainName],
+      api.block,
       chainName,
-      undefined,
-      { resolveCrv: true }
     );
   };
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
+  timetravel: false,
   methodology: "Amount of underwriter capital inside the protocol",
   terra: {
     tvl: terra,
