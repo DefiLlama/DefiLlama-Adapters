@@ -13,7 +13,7 @@ const contracts = {
     stakingContract: "0x7428A089A79B24400a620F1Cbf8bd0526cFae777",
   },
   flare: {
-    factory: "0x9F771eB2D8eD6fC39b1f4DD2E4d784F946dcCB00",
+    factory: "0xbfe13753156b9c6b2818FB45ff3D2392ea43d79A",
     png: "0xC60BcDaA9CC7Cc372E793101fDfCB1083E25A203",
   },
 };
