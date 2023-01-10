@@ -1,10 +1,10 @@
-const {searchAccountsAll} = require('./helper/chain/algorand')
+const {searchAccountsAll} = require('../helper/chain/algorand')
 const sdk = require('@defillama/sdk')
-const {transformBalances} = require("./helper/portedTokens");
+const {transformBalances} = require("../helper/portedTokens");
 
 async function tvl() {
 	const balances = {}
-	let escrowAccounts = await searchAccountsAll({appId: 949209670, limit: 100})
+	let escrowAccounts = await searchAccountsAll({appId: 949209670, limit: 1000})
 	const assetInIdKey = Buffer.from((new TextEncoder()).encode('asset_in_id')).toString('base64')
 	const amountInKey = Buffer.from((new TextEncoder()).encode('amount_in')).toString('base64')
 	escrowAccounts.forEach((account) => {
