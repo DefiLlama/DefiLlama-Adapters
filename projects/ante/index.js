@@ -62,5 +62,5 @@ Object.keys(CONFIG).forEach(chain => {
 })
 
 const abis = {
-  allPools: "address:allPools"
+  allPools: "function allPools(uint256) view returns (address)",
 }
