@@ -1,5 +1,4 @@
 const sdk = require('@defillama/sdk');
-const axios = require("axios");
 const { default: BigNumber } = require('bignumber.js');
 const { stakings } = require("../helper/staking");
 const { getConfig } = require('../helper/cache')
@@ -17,29 +16,13 @@ const STAKING_CONTRACTS = [
 
 const RCA_SHIELD = {
   abis: {
-    uBalance: {
-      constant: true,
-      inputs: [],
-      name: "uBalance",
-      outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-      payable: false,
-      stateMutability: "view",
-      type: "function",
-    },
+    uBalance:  "uint256:uBalance"
   },
 };
 
 const ARNXM_VAULT = {
   abis: {
-    aum: {
-      constant: true,
-      inputs: [],
-      name: "aum",
-      outputs: [{ internalType: "uint256", name: "aumTotal", type: "uint256" }],
-      payable: false,
-      stateMutability: "view",
-      type: "function",
-    },
+    aum: "uint256:aum",
   },
   address: "0x1337DEF1FC06783D4b03CB8C1Bf3EBf7D0593FC4",
 }
