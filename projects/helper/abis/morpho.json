@@ -1,82 +1,10 @@
 {
   "cToken": {
-    "underlying": {
-      "constant": true,
-      "inputs": [],
-      "name": "underlying",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    }
+    "underlying": "address:underlying"
   },
   "morphoLens": {
-    "getAllMarkets": {
-      "inputs": [],
-      "name": "getAllMarkets",
-      "outputs": [
-        {
-          "internalType": "address[]",
-          "name": "marketsCreated",
-          "type": "address[]"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    "getTotalMarketSupply": {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_poolTokenAddress",
-          "type": "address"
-        }
-      ],
-      "name": "getTotalMarketSupply",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "p2pSupplyAmount",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "poolSupplyAmount",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    "getTotalMarketBorrow": {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_poolTokenAddress",
-          "type": "address"
-        }
-      ],
-      "name": "getTotalMarketBorrow",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "p2pBorrowAmount",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "poolBorrowAmount",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    }
+    "getAllMarkets": "address[]:getAllMarkets",
+    "getTotalMarketSupply": "function getTotalMarketSupply(address _poolTokenAddress) view returns (uint256 p2pSupplyAmount, uint256 poolSupplyAmount)",
+    "getTotalMarketBorrow": "function getTotalMarketBorrow(address _poolTokenAddress) view returns (uint256 p2pBorrowAmount, uint256 poolBorrowAmount)"
   }
 }
