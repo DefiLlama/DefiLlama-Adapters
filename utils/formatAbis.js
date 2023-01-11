@@ -74,7 +74,7 @@ function transform(obj, file) {
 
 function print() {
   let res = data
-  if (data.type) data = [data]
+  if (data.name) data = [data]
   if (Array.isArray(data)) {
     res = {}
     data
