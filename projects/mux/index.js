@@ -12,12 +12,12 @@ const readerContract = {
 async function tvl(chain, block) {
   const { output: storage } = await sdk.api.abi.call({
     target: readerContract[chain],
-    abi: abi.find(i => i.name === 'getChainStorage'),
+    abi: abi.getChainStorage,
     chain, block,
   })
   const { output: pool } = await sdk.api.abi.call({
     target: readerContract[chain],
-    abi: abi.find(i => i.name === 'pool'),
+    abi: abi.pool,
     chain, block,
   })
   
