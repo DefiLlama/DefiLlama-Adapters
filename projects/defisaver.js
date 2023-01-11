@@ -19,7 +19,7 @@ function getAddress(defisaverConfig) {
 }
 
 function getAbi(defisaverConfig, abiName) {
-  return defisaverConfig.abi.find(obj => obj.name === abiName)
+  return defisaverConfig.abi[abiName]
 }
 
 // Configs

@@ -1,5 +1,4 @@
 const axios = require('axios');
-const abis = require('./abis.json')
 const sdk = require('@defillama/sdk')
 const sol = require('./sol-helpers');
 const { getConnection } = require('../helper/solana');
@@ -19,7 +18,7 @@ async function eth(timestamp, ethBlock, chainBlocks) {
   const pooledETH = await sdk.api.abi.call({
     block: ethBlock,
     target: ethContract,
-    abi: abis.find(abi => abi.name === "getTotalPooledEther")
+    abi: "uint256:getTotalPooledEther"
   })
 
   const pooledMatic = await sdk.api.abi.call({

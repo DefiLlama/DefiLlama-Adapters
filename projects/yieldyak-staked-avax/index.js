@@ -1,47 +1,28 @@
 
-const sdk = require("@defillama/sdk");
-const BigNumber = require("bignumber.js");
-
-const gAVAX = require("../geode/abis/avax/gAVAX.json");
 const yieldYak_id = "45756385483164763772015628191198800763712771278583181747295544980036831301432";
 
-async function avax(timestamp, ethBlock, chainBlocks) {
-    const chain = "avax";
-    const block = chainBlocks[chain];
+async function avax(timestamp, ethBlock, chainBlocks, { api }) {
 
-    const supply = (
-        await sdk.api.abi.call({
-            abi: gAVAX.abi.find((abi) => abi.name === "totalSupply"),
-            params: [yieldYak_id],
-            target: gAVAX.address,
-            chain,
-            block,
-        })
-    ).output;
+    const supply = await api.call({
+        abi: "function totalSupply(uint256 id) view returns (uint256)",
+        params: yieldYak_id,
+        target: "0x6026a85e11bd895c934af02647e8c7b4ea2d9808",
+    })
 
-    const price = (
-        await sdk.api.abi.call({
-            abi: gAVAX.abi.find((abi) => abi.name === "pricePerShare"),
-            params: [yieldYak_id],
-            target: gAVAX.address,
-            chain,
-            block,
-        })
-    ).output;
-
-    const TotalBalance = BigNumber(supply).times(price).dividedBy(1e18);
+    const price = await api.call({
+        abi: "function pricePerShare(uint256 _id) view returns (uint256)",
+        params: yieldYak_id,
+        target: "0x6026a85e11bd895c934af02647e8c7b4ea2d9808",
+    })
 
     return {
-        "avax:0x0000000000000000000000000000000000000000": TotalBalance
+        "avax:0x0000000000000000000000000000000000000000": supply * price / 1e18
     };
 }
 
 module.exports = {
     start: 1658869201,
-    misrepresentedTokens: false,
-    methodology:
-        "Total Supply and Underlying Price of the derivative is multiplied, resulting in number of staked Avax tokens.",
-    timetravel: true,
+    methodology: "Total Supply and Underlying Price of the derivative is multiplied, resulting in number of staked Avax tokens.",
     doublecounted: true,
     avax: {
         tvl: avax,
