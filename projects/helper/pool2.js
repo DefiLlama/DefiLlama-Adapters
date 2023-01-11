@@ -8,14 +8,16 @@ const token0Abi = require("./abis/token0.json")
 const token1Abi = require("./abis/token1.json")
 const { isLP, getPoolInfo } = require('./masterchef')
 
-function pool2(stakingContract, lpToken, chain = "ethereum", transformAddress) {
+function pool2(stakingContract, lpToken, chain, transformAddress) {
     if (!Array.isArray(stakingContract))  stakingContract = [stakingContract]
     if (!Array.isArray(lpToken))  lpToken = [lpToken]
     return pool2s(stakingContract, lpToken, chain,transformAddress )
 }
 
 function pool2s(stakingContracts, lpTokens, chain = "ethereum", transformAddress = undefined) {
-    return async (_timestamp, _ethBlock, {[chain]: block }) => {
+    return async (_timestamp, _ethBlock, _, { api }) => {
+        chain = api.chain ?? chain
+        block = api.block
         const balances = {}
         let transform = transformAddress
         if (transform === undefined) {
