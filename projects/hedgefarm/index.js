@@ -6,13 +6,7 @@ const { getCompoundV2Tvl } = require("../helper/compound");
 const ALPHA1_CONTRACT = '0xdE4133f0CFA1a61Ba94EC64b6fEde4acC1fE929E';
 const USDC = '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E'
 
-const abi = {
-  inputs: [],
-  name: "totalBalance",
-  outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-  stateMutability: "view",
-  type: "function"
-};
+const abi = "uint256:totalBalance"
 
 async function tvl(timestamp, block, chainBlocks) {
   const balances = {};

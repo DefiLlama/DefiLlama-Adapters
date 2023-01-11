@@ -3,21 +3,9 @@ const { stakings } = require("../helper/staking")
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getLogs } = require('../helper/cache/getLogs')
 
-const BaseTokenAbi = {
-  inputs: [],
-  name: "baseToken",
-  outputs: [{ internalType: "address", name: "", type: "address" }],
-  stateMutability: "view",
-  type: "function",
-};
+const BaseTokenAbi = "address:baseToken"
 
-const QuoteTokenAbi = {
-  inputs: [],
-  name: "quoteToken",
-  outputs: [{ internalType: "address", name: "", type: "address" }],
-  stateMutability: "view",
-  type: "function",
-};
+const QuoteTokenAbi = "address:quoteToken"
 
 // addresses grabbed from https://docs.elasticswap.org/resources/deployments
 const config = {

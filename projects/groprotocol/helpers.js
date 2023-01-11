@@ -1,46 +1,10 @@
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 
-const lpReservesAbi = {
-  constant: true,
-  inputs: [],
-  name: "getReserves",
-  outputs: [
-    { internalType: "uint112", name: "_reserve0", type: "uint112" },
-    { internalType: "uint112", name: "_reserve1", type: "uint112" },
-    { internalType: "uint32", name: "_blockTimestampLast", type: "uint32" },
-  ],
-  payable: false,
-  stateMutability: "view",
-  type: "function",
-};
-const lpSuppliesAbi = {
-  constant: true,
-  inputs: [],
-  name: "totalSupply",
-  outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-  payable: false,
-  stateMutability: "view",
-  type: "function",
-};
-const token0Abi = {
-  constant: true,
-  inputs: [],
-  name: "token0",
-  outputs: [{ internalType: "address", name: "", type: "address" }],
-  payable: false,
-  stateMutability: "view",
-  type: "function",
-};
-const token1Abi = {
-  constant: true,
-  inputs: [],
-  name: "token1",
-  outputs: [{ internalType: "address", name: "", type: "address" }],
-  payable: false,
-  stateMutability: "view",
-  type: "function",
-};
+const lpReservesAbi = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)';
+const lpSuppliesAbi = "uint256:totalSupply"
+const token0Abi ="address:token0"
+const token1Abi ="address:token1"
 
 /* lpPositions:{
     balance,
