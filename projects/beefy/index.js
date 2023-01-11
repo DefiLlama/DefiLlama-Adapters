@@ -48,6 +48,9 @@ module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
   doublecounted: true,
+  hallmarks: [
+    [1662940800, "Optimism Grant Received"]
+  ],
   ...Object.fromEntries(Object.entries(chains).map(chain => [chain[0], {
     tvl: fetchChain(chain[1], false),
     staking: fetchChain(chain[1], true),
