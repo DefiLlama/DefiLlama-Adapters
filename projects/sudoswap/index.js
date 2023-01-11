@@ -1,5 +1,6 @@
 const { graphFetchById, } = require('../helper/http')
-const { getNFTPrices, } = require('../helper/nft')
+const { getWhitelistedNFTs, } = require('../helper/tokenMapping')
+const sdk = require('@defillama/sdk')
 
 const query = `
 query get_pairs($lastId: String, $block: Int) {
@@ -22,7 +23,7 @@ module.exports = {
   methodology: 'Sum up all the ETH in pools and count whitelisted NFT values as well (price fetched from chainlink)',
   misrepresentedTokens: true,
   hallmarks: [
-    [Math.floor(new Date('2022-12-06')/1e3), 'TVL includes whitelisted nft value as well'],
+    [Math.floor(new Date('2022-12-06') / 1e3), 'TVL includes whitelisted nft value as well'],
   ],
   ethereum: {
     tvl: async (timestamp, block, chainBlocks) => {
@@ -33,19 +34,15 @@ module.exports = {
           timestamp, chain: 'ethereum', chainBlocks, useBlock: true,
         }
       })
-      const prices = await getNFTPrices({ block, })
-
-      let total = 0
-      data.forEach(({ ethBalance, collection, numNfts}) => {
-        total += ethBalance/1e18
-        const price = prices[collection.id.toLowerCase()]
-        if (+numNfts > 0 && price)
-          total += numNfts * price/1e18
+      const whitelisted = new Set(getWhitelistedNFTs())
+      const balances = {}
+      data.forEach(({ ethBalance, collection, numNfts }) => {
+        sdk.util.sumSingleBalance(balances, 'ethereum', ethBalance / 1e18)
+        if (+numNfts > 0 && whitelisted.has(collection.id.toLowerCase()))
+          sdk.util.sumSingleBalance(balances, collection.id.toLowerCase(), numNfts)
       })
 
-      return {
-        ethereum: total
-      }
+      return balances
     }
   }
 }
