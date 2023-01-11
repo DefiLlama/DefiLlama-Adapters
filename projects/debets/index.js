@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const getPoolInfo = require("./getPoolInfo.json");
+const getPoolInfo = "function getPoolInfo(address token) view returns (tuple(uint256 freeAmount, uint256 frozenAmount) poolInfo)"
 
 const chain = 'polygon'
 const FACTORY_ADDRESS = "0xcE214f6a877747495106B5e55533f3e23D290DBd"
