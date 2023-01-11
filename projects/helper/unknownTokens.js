@@ -207,33 +207,8 @@ function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = 
 }
 
 const yieldApis = {
-  balance: {
-    "inputs": [],
-    "name": "balance",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  token: {
-    "type": "function",
-    "stateMutability": "view",
-    "outputs": [
-      {
-        "type": "address",
-        "name": "",
-        "internalType": "contract IERC20"
-      }
-    ],
-    "name": "token",
-    "inputs": []
-  }
+  balance: "uint256:balance",
+  token: "address:token",
 }
 
 async function yieldHelper({ chain = 'ethereum', block, coreAssets = [], blacklist = [], whitelist = [], vaults = [], transformAddress,
