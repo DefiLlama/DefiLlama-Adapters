@@ -1,21 +1,30 @@
 const sdk = require('@defillama/sdk');
 const { transformPolygonAddress } = require('../helper/portedTokens');
-const USDCToken = '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174';
-const USDCHousePool = '0x14e849B39CA7De7197763b6254EE57eDBE0F3375';
+const { tokens, pools } = require("./config");
+
+Array.prototype.forEachAsync = async function (fn) {
+  for (let t of this) { await fn(t) }
+}
 
 async function tvl(timestamp, block, chainBlocks) {
   const balances = {};
   const transform = await transformPolygonAddress();
 
-  const collateralBalance = (await sdk.api.abi.call({
-    abi: 'erc20:balanceOf',
-    chain: 'polygon',
-    target: USDCToken,
-    params: [USDCHousePool],
-    block: chainBlocks['polygon'],
-  })).output;
+  await pools.forEachAsync(async pool => {
 
-  sdk.util.sumSingleBalance(balances, transform(USDCToken), collateralBalance)
+    await tokens.forEachAsync(async token => {
+
+      const poolBalance = (await sdk.api.abi.call({
+        abi: 'erc20:balanceOf',
+        chain: 'polygon',
+        target: token,
+        params: [pool],
+        block: chainBlocks['polygon'],
+      })).output;
+
+      sdk.util.sumSingleBalance(balances, transform(token), poolBalance)
+    })
+  })
 
   return balances;
 }
@@ -24,4 +33,4 @@ module.exports = {
   polygon: {
     tvl,
   }
-}; // node test.js projects/mint-club/index.js
+};
