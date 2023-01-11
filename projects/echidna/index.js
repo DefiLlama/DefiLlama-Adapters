@@ -79,7 +79,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 
     const vePTPRate = await sdk.api.abi.call({
         target: '0x5857019c749147EEE22b1Fe63500F237F3c1B692',
-        abi: {"inputs":[],"name":"generationRate","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+        abi: 'uint256:generationRate',
         block: block,
         chain: "avax"
     })

@@ -51,6 +51,6 @@ Object.keys(config).forEach(chain => {
 })
 
 const abis = {
-  joins: {"inputs":[{"internalType":"bytes6","name":"","type":"bytes6"}],"name":"joins","outputs":[{"internalType":"contract IJoin","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-  IlkAdded: {"anonymous":false,"inputs":[{"indexed":true,"internalType":"bytes6","name":"seriesId","type":"bytes6"},{"indexed":true,"internalType":"bytes6","name":"ilkId","type":"bytes6"}],"name":"IlkAdded","type":"event"},
+  joins: "function joins(bytes6) view returns (address)",
+  IlkAdded: "event IlkAdded(bytes6 indexed seriesId, bytes6 indexed ilkId)",
 }
