@@ -1,43 +1,12 @@
 const sdk = require("@defillama/sdk");
-const abis = require("../config/abis");
 const { staking, stakings } = require("../helper/staking");
 const { pool2 } = require("../helper/pool2");
 const BigNumber = require("bignumber.js");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
-const alpacaAdapterAbi = [
-  {
-    inputs: [],
-    name: "totalValue",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-];
+const alpacaAdapterAbi = "uint256:totalValue";
 
-const AssessorAbi = [
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "seniorDebt",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  }
-]
+const AssessorAbi = "uint256:seniorDebt"
 
 // BSC address
 const BSC_NAOS_ADDRESS = "0x758d08864fb6cce3062667225ca10b8f00496cc2";
@@ -116,7 +85,7 @@ async function tvl(timestamp, block) {
     }),
     sdk.api.abi.call({
       target: YEARN_VAULT_ADDRESS,
-      abi: abis.abis.minYvV2[1], // pricePerShare
+      abi: "uint256:pricePerShare", // pricePerShare
       block,
     }),
     sdk.api.erc20.decimals(YEARN_VAULT_ADDRESS),
@@ -143,7 +112,7 @@ async function bscTvl(timestamp, ethBlock, chainBlocks) {
   // ---- Start ibBUSD (map ibBUSD value to BUSD)
   // formation
   const { output: isBUSDs } = await sdk.api.abi.multiCall({
-    abi: alpacaAdapterAbi[0],
+    abi: alpacaAdapterAbi,
     calls: BSC_ALPACA_ADAPTERS.map(i => ({ target: i })),
     chain, block,
   })
@@ -165,7 +134,7 @@ async function bscBorrowed(timestamp, ethBlock, chainBlocks) {
     const seniorDebt = (
       await sdk.api.abi.call({
         target: borrwer.Assessor,
-        abi: AssessorAbi[0],
+        abi: AssessorAbi,
         chain, block,
       })
     ).output;
