@@ -1,131 +1,103 @@
-const sdk = require('@defillama/sdk');
-const BigNumber = require('bignumber.js');
-const { getConfig } = require('../helper/cache')
+const sdk = require("@defillama/sdk");
+const BigNumber = require("bignumber.js");
+const { request, gql } = require("graphql-request");
 
-const syPoolAPIs = {
-  'ethereum': 'https://api-v2.nz.barnbridge.com/api/smartyield/pools',
-  'polygon': 'https://prod-poly-v2.api.nz.barnbridge.com/api/smartyield/pools',
-}
-const saPoolAPIs = {
-  'ethereum': 'https://api-v2.nz.barnbridge.com/api/smartalpha/pools',
-  'polygon': 'https://prod-poly-v2.api.nz.barnbridge.com/api/smartalpha/pools',
-  'avax': 'https://prod-avalanche.api.nz.barnbridge.com/api/smartalpha/pools',
-  'arbitrum': 'https://prod-arbitrum.api.nz.barnbridge.com/api/smartalpha/pools',
-  'optimism': 'https://prod-optimistic.api.nz.barnbridge.com/api/smartalpha/pools',
-  'bsc': 'https://prod-bsc.api.nz.barnbridge.com/api/smartalpha/pools',
-}
+const ERC20 = require("./abis/ERC20.js");
 
-const STK_AAVE_ADDRESS = '0x4da27a545c0c5b758a6ba100e3a049001de870f5';
-const AAVE_ADDRESS = '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9';
+const CHAINS = [
+  {
+    id: 1,
+    name: "ethereum",
+    url: "https://api.thegraph.com/subgraphs/name/barnbridge/bb-sy-mainnet",
+    address: "0x8A897a3b2dd6756fF7c17E5cc560367a127CA11F",
+    abi: require("./abis/SmartYieldaV2.js"),
+  },
+  {
+    id: 42161,
+    name: "arbitrum",
+    url: "https://api.thegraph.com/subgraphs/name/barnbridge/bb-sy-arbitrum",
+    address: "0x1ADDAbB3fAc49fC458f2D7cC24f53e53b290d09e",
+    abi: require("./abis/SmartYieldaV3.js"),
+  },
+];
 
-async function fetchSyPools(apiUrl, chain) {
-  const { data } = await getConfig('barnbridge/sy-'+chain, apiUrl)
-  return data
-}
-
-async function fetchSaPools(apiUrl, chain) {
-  const { data } = await getConfig('barnbridge/sa-'+chain, apiUrl)
-  return data
-}
-
-function syGetUnderlyingTotal(chain, smartYieldAddress, block) {
-  return sdk.api.abi.call({
-    abi: "uint256:underlyingTotal",
-    target: smartYieldAddress,
-    chain,
-    block,
-  }).then(({ output }) => new BigNumber(output));
-}
-
-function saGetEpochBalance(chain, smartAlphaAddress, block) {
-  return sdk.api.abi.call({
-    abi: "uint256:epochBalance",
-    target: smartAlphaAddress,
-    chain,
-    block,
-  }).then(({ output }) => new BigNumber(output));
-}
-
-function saGetQueuedJuniorsUnderlyingIn(chain, smartAlphaAddress, block) {
-  return sdk.api.abi.call({
-    abi: "uint256:queuedJuniorsUnderlyingIn",
-    target: smartAlphaAddress,
-    chain,
-    block,
-  }).then(({ output }) => new BigNumber(output));
-}
-
-function saGetQueuedSeniorsUnderlyingIn(chain, smartAlphaAddress, block) {
-  return sdk.api.abi.call({
-    abi: "uint256:queuedSeniorsUnderlyingIn",
-    target: smartAlphaAddress,
-    chain,
-    block,
-  }).then(({ output }) => new BigNumber(output));
-}
-
-function resolveAddress(address) {
-  switch (address) {
-    case STK_AAVE_ADDRESS:
-      return AAVE_ADDRESS;
-    default:
-      return address;
-  }
-}
+const termsQuery = (timestamp) => gql`
+    {
+      terms(where: { end_gt: ${timestamp} }) {
+        depositedAmount
+      }
+    }
+  `;
 
 module.exports = {
-  start: 1615564559, // Mar-24-2021 02:17:40 PM +UTC
-  doublecounted: true,
   timetravel: false,
-  misrepresentedTokens: true,
-  hallmarks: [
-    [1612789200, "BOND staking pool end"],
-    [1618228800, "Stablecoin pool end"],
-    [1617210000, "SMART Yield incentive program start"],
-    [1632330000, "SMART Yield incentive program end"],
-    [1664193600, "BOND/USDC rewards end"],
-  ],
+  methodology:
+    "BarnBridge TVL is an aggregated TVL (user liquidity + DAO deposits) of active Smart Yield pools across available networks.",
 };
 
-const chains = ['ethereum', 'polygon', 'arbitrum', 'optimism', 'bsc', 'avax']
+const _underlying = async (chain) =>
+  (
+    await sdk.api.abi.call({
+      abi: chain.abi.find((i) => i.name === "underlying"),
+      chain: chain.name,
+      target: chain.address,
+    })
+  ).output;
 
-chains.forEach(chain => {
-  module.exports[chain] = {
-    tvl: async (_, _t, { [chain]: block }) => {
-      const balances = {};
+const _decimals = async (chain, target) =>
+  (
+    await sdk.api.abi.call({
+      abi: ERC20.find((i) => i.name === "decimals"),
+      chain: chain.name,
+      target: target,
+    })
+  ).output;
 
-      if (syPoolAPIs[chain]) {
-        // calculate TVL from SmartYield pools
-        const syPools = await fetchSyPools(syPoolAPIs[chain], chain);
+const _symbol = async (chain, target) =>
+  (
+    await sdk.api.abi.call({
+      abi: ERC20.find((i) => i.name === "symbol"),
+      chain: chain.name,
+      target: target,
+    })
+  ).output;
 
-        // calculate TVL from SmartYield pools
-        await Promise.all(syPools.map(async syPool => {
-          const { smartYieldAddress, underlyingAddress } = syPool;
-          const underlyingTotal = await syGetUnderlyingTotal(chain, smartYieldAddress, block);
+const _liquidityProviderBalance = async (chain) => {
+  const balance = (
+    await sdk.api.abi.call({
+      abi: chain.abi.find((i) => i.name === "liquidityProviderBalance"),
+      chain: chain.name,
+      target: chain.address,
+    })
+  ).output;
 
-          sdk.util.sumSingleBalance(balances, chain + ':' + resolveAddress(underlyingAddress), underlyingTotal.toFixed(0));
-        }));
-      };
-      if (chain in saPoolAPIs) {
-        // calculate TVL from SmartAlpha pools
-        const saPools = await fetchSaPools(saPoolAPIs[chain], chain);
+  return BigNumber(balance);
+};
 
-        await Promise.all(saPools.map(async saPool => {
-          const { poolAddress, poolToken } = saPool;
-          const [epochBalance, queuedJuniorsUnderlyingIn, queuedSeniorsUnderlyingIn] = await Promise.all([
-            saGetEpochBalance(chain, poolAddress, block),
-            saGetQueuedJuniorsUnderlyingIn(chain, poolAddress, block),
-            saGetQueuedSeniorsUnderlyingIn(chain, poolAddress, block),
-          ]);
+const tvl = (chain) => {
+  return async (timestamp, _1, _2, _3) => {
+    const underlying = await _underlying(chain);
+    const decimals = await _decimals(chain, underlying);
+    const symbol = await _symbol(chain, underlying);
+    const liquidity = await _liquidityProviderBalance(chain);
 
-          const underlyingTotal = epochBalance
-            .plus(queuedJuniorsUnderlyingIn)
-            .plus(queuedSeniorsUnderlyingIn);
-          sdk.util.sumSingleBalance(balances, chain + ':' + resolveAddress(poolToken.address), underlyingTotal.toFixed(0));
-        }));
-      };
+    const { terms } = await request(chain.url, termsQuery(timestamp));
 
-      return balances;
-    }
-  }
-})
+    const deposits = terms.reduce(
+      (acc, term) => acc.plus(BigNumber(term.depositedAmount)),
+      BigNumber(0)
+    );
+
+    const total = deposits
+      .div(`1e${decimals}`)
+      .plus(liquidity.div(`1e${decimals}`));
+
+    return { [symbol]: total };
+  };
+};
+
+CHAINS.forEach((chain) => {
+  module.exports[chain.name] = {
+    tvl: tvl(chain),
+  };
+});
