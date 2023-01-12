@@ -86,6 +86,54 @@ const tokens = {
   },
 }
 
+const cappedTokens = {
+  "0x5aC39Ed42e14Cf330A864d7D1B82690B4D1B9E61": {
+    address: '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0',
+    symbol: 'MATIC',
+    decimals: 18,
+  },
+  "0xfb42f5AFb722d2b01548F77C31AC05bf80e03381": {
+    address: '0xc18360217d8f7ab5e7c516566761ea12ce7f9d72',
+    symbol: 'ENS',
+    decimals: 18,
+  },
+  "0x05498574BD0Fa99eeCB01e1241661E7eE58F8a85": {
+    address: '0xba100000625a3754423978a60c9317c58a424e3d',
+    symbol: 'BAL',
+    decimals: 18,
+  },
+  "0xd3bd7a8777c042De830965de1C1BCC9784135DD2": {
+    address: '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9',
+    symbol: 'AAVE',
+    decimals: 18,
+  },
+  "0x7C1Caa71943Ef43e9b203B02678000755a4eCdE9": {
+    address: '0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32',
+    symbol: 'LDO',
+    decimals: 18,
+  },
+  "0xDDB3BCFe0304C970E263bf1366db8ed4DE0e357a": {
+    address: '0x92d6c1e31e14520e676a687f0a93788b716beff5',
+    symbol: 'DYDX',
+    decimals: 18,
+  },
+  "0x9d878eC06F628e883D2F9F1D793adbcfd52822A8": {
+    address: '0xD533a949740bb3306d119CC777fa900bA034cd52',
+    symbol: 'CRV',
+    decimals: 18,
+  },
+  "0x64eA012919FD9e53bDcCDc0Fc89201F484731f41": {
+    address: '0xae78736cd615f374d3085123a210448e74fc6393',
+    symbol: 'rETH',
+    decimals: 18,
+  },
+  "0x99bd1f28a5A7feCbE39a53463a916794Be798FC3": {
+    address: '0xBe9895146f7AF43049ca1c1AE358B0541Ea49704',
+    symbol: 'cbETH',
+    decimals: 18,
+  },
+}
+
 const getVaultCount = async (block) => {
   return (await sdk.api.abi.call({
     block,
@@ -121,6 +169,9 @@ const collateral = async (timestamp, block)=>{
   const vaults = await getVaults()
   vaults.forEach(x=>{
     x.tokenAddresses.forEach((token, i)=>{
+      if (cappedTokens[token] != undefined){
+        token = cappedTokens[token].address
+      }
       sdk.util.sumSingleBalance(balances, token, x.tokenBalances[i])
     })
   })
@@ -157,5 +208,6 @@ module.exports = {
   For Interest Protocol, TVL is Reserve + Total Collateral Value
   Reserve is found through calling USDC.getBalances(USDI)
   Balances are found through VaultController.vaultSummaries(1,VaultController.vaultsMinted())
+  Capped tokens converted 1:1 to underlying
   `
 };
