@@ -5,4 +5,4 @@ module.exports = uniTvlExport('bsc', '0xf3b426a160686082447545e1150829ee5485a91a
 
 module.exports.hallmarks = [
   [Math.floor(new Date('2022-05-02')/1e3), 'launch new dex'],
-],
+]
