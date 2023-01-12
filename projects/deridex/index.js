@@ -25,6 +25,8 @@ async function tvl() {
 
 module.exports = {
   timetravel: false,
+  doublecounted: true,
+  misrepresentedTokens: true,
   methodology: "Gathers the total USD value of all assets supplied",
   algorand: {
     tvl
