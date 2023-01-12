@@ -6,6 +6,9 @@ const proceeds = '0x68c4b7d05fae45bcb6192bb93e246c77e98360e1';
 
 module.exports = {
   start: 1527076766,        // block 5659904
+  hallmarks: [
+    [1661257318," Metronome Relaunching"]
+  ],
   ethereum: {
     tvl: sumTokensExport({
       tokensAndOwners: [
