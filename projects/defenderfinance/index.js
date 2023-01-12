@@ -45,5 +45,5 @@ module.exports = {
     },
     tvl: async => ({}),
     methodology:
-        "Counts liquidity on the Farms through AlpacaFarm Contracts; and there are Staking and Pool2 parts only. We export the comunity amount as Treasury Part",
+        "Counts liquidity on the Farms through Defender Finance Contracts. We export the comunity amount as Treasury Part",
 };
