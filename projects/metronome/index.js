@@ -1,48 +1,19 @@
-/*==================================================
-  Modules
-  ==================================================*/
+const { sumTokensExport } = require("../helper/unwrapLPs")
 
-  const sdk = require('@defillama/sdk');
-  const BigNumber = require("bignumber.js");
-
-/*==================================================
-  TVL
-  ==================================================*/
-
-  async function tvl(timestamp, block) {
-    const acc = '0x686e5ac50D9236A9b7406791256e47feDDB26AbA';
-    const met = '0xa3d58c4E56fedCae3a7c43A725aeE9A71F0ece4e';
-    const proceeds = '0x68c4b7d05fae45bcb6192bb93e246c77e98360e1';
-
-    const [accBalance, proceedsBalance] = await Promise.all([
-      sdk.api.eth.getBalance({ target: acc, block }),
-      sdk.api.eth.getBalance({ target: proceeds, block })
-    ]);
-
-    const ethBalance = ((BigNumber(accBalance.output || 0))
-      .plus(BigNumber(proceedsBalance.output || 0)))
-      .toFixed();
-
-    let metBalance = (await sdk.api.abi.call({
-      block,
-      target: met,
-      params: acc,
-      abi: 'erc20:balanceOf'
-    })).output;
-
-    let balances = {
-      [met]: metBalance,
-      "0x0000000000000000000000000000000000000000": ethBalance,
-    };
-
-    return balances;
-  }
-
-/*==================================================
-  Exports
-  ==================================================*/
-
-  module.exports = {
-    start: 1527076766,        // block 5659904
-    ethereum: { tvl }
-  };
+module.exports = {
+  ethereum: {
+    tvl: sumTokensExport({
+      owner: '0x3691ef68ba22a854c36bc92f6b5f30473ef5fb0a',
+      tokens: [
+        "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        "0xd1C117319B3595fbc39b471AB1fd485629eb05F2",
+        "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+        "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+        "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+        "0xa8b607Aa09B6A2E306F93e74c282Fb13f6A80452",
+        "0xc14900dFB1Aa54e7674e1eCf9ce02b3b35157ba5"
+      ]
+    }),
+  },
+}
