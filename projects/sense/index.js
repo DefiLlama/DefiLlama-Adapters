@@ -174,6 +174,7 @@ async function tvl(_time, block, _1, { api }) {
 module.exports = {
   timetravel: true,
   doublecounted: true,
+  misrepresentedTokens: true,
   methodology:
     "TVL is comprised of the sum of yield-bearing assets in Sense, which includes those assets being used both 1) to issue fixed term Sense tokens (PTs/YTs) and 2) as reserves in our Space AMM Pools. Data is collected via the DeFi Llama SDK.",
   start: DIVIDER_INIT_TS,
