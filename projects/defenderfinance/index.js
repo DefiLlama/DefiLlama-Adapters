@@ -42,8 +42,8 @@ module.exports = {
     bsc: {
         treasury: bscTreasury,
         pool2: pool2s(farmContractsBSC, lpPairContractsBSC, "bsc"),
+        tvl: async => ({}),
     },
-    tvl: async => ({}),
     methodology:
         "Counts liquidity on the Farms through Defender Finance Contracts. We export the comunity amount as Treasury Part",
 };
