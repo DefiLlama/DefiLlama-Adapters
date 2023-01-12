@@ -1,163 +1,59 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
+const { getLogs } = require('../helper/cache/getLogs')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
-const { createIncrementArray } = require("../helper/utils");
-const { transformPolygonAddress } = require("../helper/portedTokens");
+const data = {}
 
-const POOL_FACTORY = "0xC2e0398232440Ce90C40acA123433Ca6c9a025B8";
-
-async function getPoolsParameters(block, chain) {
-    const poolsLength = (await sdk.api.abi.call({
-        target: POOL_FACTORY,
-        abi: abi.pid,
-        chain,
-        block,
-    })).output;
-
-    const params = createIncrementArray(poolsLength).map(i => ({ params: i }));
-
-    const { output: pools } = (await sdk.api.abi.multiCall({
-        target: POOL_FACTORY,
-        abi: abi.pidToPoolAddress,
-        calls: params,
-        chain,
-        block
-    }));
-
-    const calls = pools.map(i => ({ target: i.output }));
-
-    const { output: poolCollateralsAssets } = await sdk.api.abi.multiCall({
-        abi: abi.collateralAssets,
-        calls,
-        chain,
-        block,
-    });
-
-    const { output: poolLentAssets } = await sdk.api.abi.multiCall({
-        abi: abi.lentAsset,
-        calls,
-        chain,
-        block,
-    });
-
-    return {
-        poolsLength,
-        pools,
-        poolCollateralsAssets,
-        poolLentAssets
-    }
+async function getPoolsParameters(api) {
+  let key = '' + (api.block ?? 'latest') + api.chain
+  if (!data[key]) data[key] = _getPoolsParameters(api)
+  return data[key]
 }
 
-function chainTvl(chain) {
-    return async (_, _1, chainBlocks) => {
-        const block = chainBlocks[chain];
-
-        const {
-            poolsLength,
-            poolCollateralsAssets,
-            poolLentAssets
-        } = await getPoolsParameters(block, chain);
-
-        const balances = {};
-
-        // Iterate over each pool and get the balance of each collateral asset
-        // and its lent asset recorded value in the contract
-        for (let i = 0; i < poolsLength; i++) {
-            // Object representing the returned from the call value
-            const poolObj = poolCollateralsAssets[i];
-            // Extract the current pool address
-            const poolAddress = poolObj.input.target;
-            // Get collaterals array in from the current `poolObj`
-            const collateralAssets = poolObj.output;
-            // Get lent asset from the current `poolObj`
-            const lentAsset = poolLentAssets[i].output;
-
-            let balanceCalls = [];
-
-            for (let j = 0; j < collateralAssets.length; j++) {
-                // Collateral asset
-                const collateralAsset = collateralAssets[j];
-                balanceCalls.push({
-                    target: collateralAsset,
-                    params: poolAddress,
-                })
-            }
-
-            balanceCalls.push({
-                target: lentAsset,
-                params: poolAddress,
-            })
-
-            const tokenBalances = (
-                await sdk.api.abi.multiCall({
-                    abi: 'erc20:balanceOf',
-                    calls: balanceCalls,
-                    block,
-                    chain,
-                })
-            );
-
-            const borrowed = (await sdk.api.abi.call({
-                target: poolAddress,
-                abi: abi.borrowed,
-                chain,
-                block,
-            })).output;
-
-            if (chain === "polygon") {
-                transform = await transformPolygonAddress()
-            }
-
-            sdk.util.sumSingleBalance(balances, lentAsset, borrowed, chain);
-            sdk.util.sumMultiBalanceOf(balances, tokenBalances, true, transform);
-        }
-
-        return balances;
-    }
+async function _getPoolsParameters(api) {
+  const { factory, fromBlock, } = config[api.chain]
+  let logs = await getLogs({
+    api,
+    target: factory,
+    topic: abi.poolCreated,
+    fromBlock,
+    eventAbi: abi.poolCreated,
+  })
+  logs = logs.map(i => i.args)
+  const pools = await api.multiCall({  abi: abi.pidToPoolAddress, calls: logs.map(i => i._pid) }) 
+  const borrowed = await api.multiCall({  abi: abi.borrowed, calls: pools }) 
+  pools.forEach((pool, i) => {
+    logs[i].pool = pool
+    logs[i].borrowed = borrowed
+  })
+  return logs
 }
 
-
-function chainBorrowed(chain) {
-    return async (_, _1, chainBlocks) => {
-        const block = chainBlocks[chain];
-
-        const balances = {};
-
-        const {
-            poolsLength,
-            poolCollateralsAssets,
-            poolLentAssets
-        } = await getPoolsParameters(block, chain);
-
-        // Iterate over each pool and get the balance of each lent asset recorded value in the contract
-        for (let i = 0; i < poolsLength; i++) {
-            // Object representing the returned from the call value
-            const poolObj = poolCollateralsAssets[i];
-            // Extract the current pool address
-            const poolAddress = poolObj.input.target;
-            // Get lent asset from the current `poolObj`
-            const lentAsset = poolLentAssets[i].output;
-
-            const borrowed = (await sdk.api.abi.call({
-                target: poolAddress,
-                abi: abi.borrowed,
-                chain,
-                block,
-            })).output;
-
-            sdk.util.sumSingleBalance(balances, lentAsset, borrowed, chain);
-        }
-
-        return balances;
-    }
+const config = {
+  ethereum: { factory: '0xC2e0398232440Ce90C40acA123433Ca6c9a025B8', fromBlock: 16168459, }
 }
 
 module.exports = {
-    misrepresentedTokens: true,
-    timetravel: false,
-    methodology: "TVL = cash + borrowed",
-    ethereum: {
-        tvl: chainTvl("ethereum"),
-        borrowed: chainBorrowed("ethereum")
+};
+
+Object.keys(config).forEach(chain => {
+  const { } = config[chain]
+  module.exports[chain] = {
+    tvl: async (_, _b, _cb, { api, }) => {
+      const data = await getPoolsParameters(api)
+      const toa = []
+      data.forEach(({ pool, _lentAsset, _collateralAssets}) => {
+        _collateralAssets.forEach(token => toa.push([token, pool]))
+        toa.push([_lentAsset, pool])
+      })
+      return sumTokens2({ api, tokensAndOwners: toa})
     },
-}
+    borrowed: async (_, _b, _cb, { api, }) => {
+      const balances = {}
+      const data = await getPoolsParameters(api)
+      data.forEach(i => sdk.util.sumSingleBalance(balances,i._lentAsset,i.borrowed, chain))
+      return balances
+    },
+  }
+})
