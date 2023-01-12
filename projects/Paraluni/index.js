@@ -1,6 +1,6 @@
 const { sumTokensExport } = require("../helper/unwrapLPs");
 const paraChef = "0x77341bF31472E9c896f36F4a448fdf573A0D9B60";
-const prehackChef = '0x4770b5cb9d51ecb7ad5b14f0d4f2cee8e5563645'
+const prehackChef = '0x633fa755a83b015cccdc451f82c57ea0bd32b4b4'
 
 module.exports = {
   bsc: {
@@ -19,6 +19,6 @@ module.exports = {
     }),
   },
   hallmarks: [
-    [Math.floor(new Date('2022-03-12')/1e3), 'Masterchef was hacked'],
+    [Math.floor(new Date('2022-03-13')/1e3), 'Masterchef was hacked'],
   ],
 };
