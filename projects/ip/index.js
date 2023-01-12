@@ -208,5 +208,6 @@ module.exports = {
   For Interest Protocol, TVL is Reserve + Total Collateral Value
   Reserve is found through calling USDC.getBalances(USDI)
   Balances are found through VaultController.vaultSummaries(1,VaultController.vaultsMinted())
+  Capped tokens converted 1:1 to underlying
   `
 };
