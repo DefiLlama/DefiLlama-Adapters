@@ -29,12 +29,6 @@ const termsQuery = (timestamp) => gql`
     }
   `;
 
-module.exports = {
-  timetravel: false,
-  methodology:
-    "BarnBridge TVL is an aggregated TVL (user liquidity + DAO deposits) of active Smart Yield pools across available networks.",
-};
-
 const _underlying = async (chain) =>
   (
     await sdk.api.abi.call({
@@ -94,6 +88,12 @@ const tvl = (chain) => {
 
     return { [symbol]: total };
   };
+};
+
+module.exports = {
+  timetravel: false,
+  methodology:
+    "BarnBridge TVL is an aggregated TVL (user liquidity + DAO deposits) of active Smart Yield pools across available networks.",
 };
 
 CHAINS.forEach((chain) => {
