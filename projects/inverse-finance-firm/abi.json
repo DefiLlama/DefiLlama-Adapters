@@ -1,10 +1,6 @@
 {
   "balance": "uint:balance",
   "collateral": "address:collateral",
-  "market": [
-    "event CreateEscrow(address indexed user, address escrow)"
-  ],
-  "dbr": [
-    "event AddMarket(address indexed market)"
-  ]
+  "CreateEscrow": "event CreateEscrow(address indexed user, address escrow)",
+  "AddMarket": "event AddMarket(address indexed market)"
 }
