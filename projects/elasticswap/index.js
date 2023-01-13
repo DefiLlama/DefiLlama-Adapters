@@ -31,7 +31,7 @@ const config = {
 module.exports = {
   hallmarks: [
     [1670889600,"Price Oracle Attack"]
-  ]
+  ],
   methodology:
     "TVL of Elastic Swap consists of liquidity pools and native token staking. Data fetched from on-chain.",
 };
