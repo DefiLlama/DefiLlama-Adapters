@@ -1,78 +1,45 @@
 
 const sdk = require("@defillama/sdk");
-const BigNumber = require("bignumber.js");
-const { providers } = require('@defillama/sdk/build/general');
 const abi = require("./abi.json");
-const ethers = require("ethers");
+const { getLogs } = require('../helper/cache/getLogs')
 
 // Firm
 const firmStart = 16159015;
 const DBR = '0xAD038Eb671c44b853887A7E32528FaB35dC5D710';
 
-const getFirmMarkets = async (dbrContract) => {
-  const logs = await dbrContract.queryFilter(dbrContract.filters.AddMarket());
-  return logs.map(l => l.args.market);
-}
-
-const getFirmEscrowsWithMarket = async (markets) => {
+const getFirmEscrowsWithMarket = async (markets, api) => {
   const escrowCreations = await Promise.all(
-    markets.map(m => {
-      const market = new ethers.Contract(m, abi.market, providers.ethereum);
-      return market.queryFilter(market.filters.CreateEscrow(), firmStart);
+    markets.map(async m => {
+      const logs = await getLogs({
+        api,
+        target: m,
+        topic: "CreateEscrow(address,address)",
+        fromBlock: firmStart,
+        eventAbi: abi.CreateEscrow,
+      })
+      return logs.map(i => i.args.escrow)
     })
   );
-
-  const escrowsWithMarkets = escrowCreations.map((marketEscrows, marketIndex) => {
-    const market = markets[marketIndex];
-    return marketEscrows.map(escrowCreationEvent => {
-      return { escrow: escrowCreationEvent.args[1], market }
-    })
-  }).flat();
-
-  return escrowsWithMarkets;
+  return markets.map((m, i) => escrowCreations[i].map(e => ({ escrow: e, market: m}))).flat()
 }
 
-async function tvl(timestamp, block) {
+async function tvl(timestamp, block, _, { api }) {
+  const logs = await getLogs({
+    api,
+    target: DBR,
+    topics: ['0xc3dfb88ee5301cecf05761fb2728064e5b641524346ae69b9ba80394631bf11f'],
+    fromBlock: firmStart,
+    eventAbi: abi.AddMarket,
+  })
+  
   const balances = {};
 
-  const dbrContract = new ethers.Contract(DBR, abi.dbr, providers.ethereum);
-  const markets = await getFirmMarkets(dbrContract);
-  const escrowsWithMarkets = await getFirmEscrowsWithMarket(markets);
-
-  let allBalances = (
-    await sdk.api.abi.multiCall({
-      block,
-      calls: escrowsWithMarkets.map(
-        (em) => ({
-          target: em.escrow,
-        })
-      ),
-      abi: abi["balance"],
-    })
-  ).output;
-
-  let allUnderlying = (
-    await sdk.api.abi.multiCall({
-      block,
-      calls: markets.map(
-        (m) => ({
-          target: m,
-        })
-      ),
-      abi: abi["collateral"],
-    })
-  ).output;
-
-  allBalances.map((b,i) => {
-    const market = escrowsWithMarkets[i].market;
-    const underlying = allUnderlying.find(u => u.input.target === market).output;
-    if(!balances[underlying]){
-      balances[underlying] = BigNumber(0);
-    }
-    balances[underlying] = balances[underlying].plus(b.output);
-  })
-
-  return balances;
+  const markets = logs.map(i => i.args.market);
+  const escrowsWithMarkets = await getFirmEscrowsWithMarket(markets, api);
+  const bals = await api.multiCall({  abi: abi.balance, calls: escrowsWithMarkets.map(i => i.escrow)}) 
+  const collaterals = await api.multiCall({  abi: abi.collateral, calls: escrowsWithMarkets.map(i => i.market)}) 
+  collaterals.map((c, i) => sdk.util.sumSingleBalance(balances,c,bals[i], api.chain))
+  return balances
 }
 
 module.exports = {
