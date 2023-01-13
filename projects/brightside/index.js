@@ -1,4 +1,4 @@
-const { getUniTVL } = require('./helper/unknownTokens')
+const { getUniTVL } = require('../helper/unknownTokens')
 
 module.exports = {
   misrepresentedTokens: true,
