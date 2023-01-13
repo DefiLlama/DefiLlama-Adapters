@@ -733,7 +733,7 @@ const fixBalancesTokens = {
     "0x522B61755b5FF8176B2931DA7bF1a5F9414Eb710": { coingeckoId: "tether", decimals: 6 }, // ceUSDT
     "0x2421db204968A367CC2C866CD057fA754Cb84EdF": { coingeckoId: "usd-coin", decimals: 6 }, // ceUSDC
     "0x8Dc0Dfa2AeC0d4410c8C60c5f9cD0CD37b05a06a": { coingeckoId: "binance-usd", decimals: 18 }, // ceBUSD
-    "0x150d2421E09eEa31beaa68b7a248700EEcEda87a": { coingeckoId: "dai", decimals: 6 }, // ceDAI
+    "0x150d2421E09eEa31beaa68b7a248700EEcEda87a": { coingeckoId: "dai", decimals: 18 }, // ceDAI
     "0xc9BAA8cfdDe8E328787E29b4B078abf2DaDc2055": { coingeckoId: "blueshift", decimals: 18 } // BLUES
   },
   ultron: {
