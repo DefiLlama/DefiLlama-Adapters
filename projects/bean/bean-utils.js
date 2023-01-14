@@ -2,56 +2,14 @@ const sdk = require('@defillama/sdk');
 const BigNumber = require("bignumber.js");
 
 const bean_abi = {
-    "totalDepositedBeans": {
-        "inputs": [],
-        "name": "totalDepositedBeans",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    "totalDepositedLP": {
-        "inputs": [],
-        "name": "totalDepositedLP",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    "getTotalDeposited": {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "token",
-                "type": "address"
-            }
-        ],
-        "name": "getTotalDeposited",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-};
+    totalDepositedBeans: "uint256:totalDepositedBeans",
+    totalDepositedLP: "uint256:totalDepositedLP",
+    getTotalDeposited: "function getTotalDeposited(address token) view returns (uint256)",
+  };
 
 const crv_abi = {
-	"crvLP_coins": { "stateMutability": "view", "type": "function", "name": "coins", "inputs": [{ "name": "arg0", "type": "uint256" }], "outputs": [{ "name": "", "type": "address" }], "gas": 3123 }
-}
+    crvLP_coins: "function coins(uint256 arg0) view returns (address)",
+  }
 
 // Adapted from /helper/unwrapLPs.js genericUnwrapCrv() because it seems 
 // it was written for Curve V1 and tried to calc the amount of tokens in the pool

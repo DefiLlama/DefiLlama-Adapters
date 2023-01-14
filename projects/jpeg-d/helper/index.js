@@ -57,9 +57,7 @@ async function getTVL(balances, chain, timestamp, chainBlocks) {
         calls: VAULT_ARRAY.map((address) => ({
             target: address,
         })),
-        abi: abi.VAULT_ABI.find(
-            (a) => a.name === "totalPositions"
-        ),
+        abi: abi.VAULT_ABI.totalPositions,
         block: chainBlocks[chain],
         chain,
     })
@@ -68,9 +66,7 @@ async function getTVL(balances, chain, timestamp, chainBlocks) {
         calls: VAULT_ARRAY.map((address) => ({
             target: address,
         })),
-        abi: abi.VAULT_ABI.find(
-            (a) => a.name === "nftValueProvider"
-        ),
+        abi: abi.VAULT_ABI.nftValueProvider,
         block: chainBlocks[chain],
         chain,
     })
@@ -80,9 +76,7 @@ async function getTVL(balances, chain, timestamp, chainBlocks) {
         calls: valueProviders.map((item) => ({
             target: item.output,
         })),
-        abi: abi.VALUE_PROVIDER_ABI.find(
-            (a) => a.name === "getFloorETH"
-        ),
+        abi: "uint256:getFloorETH",
         block: chainBlocks[chain],
         chain,
     })

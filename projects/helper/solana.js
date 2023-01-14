@@ -2,7 +2,7 @@ const axios = require("axios");
 const http = require('./http')
 const env = require('./env')
 const { transformBalances: transformBalancesOrig, transformDexBalances, } = require('./portedTokens.js')
-const { tokens } = require('./tokenMapping')
+const { tokens, getUniqueAddresses } = require('./tokenMapping')
 const { Connection, PublicKey, Keypair } = require("@solana/web3.js")
 const { AnchorProvider: Provider, Wallet, } = require("@project-serum/anchor");
 const { sleep, sliceIntoChunks, log, } = require('./utils')
@@ -341,6 +341,7 @@ async function sumTokens2({
   }
 
   if (tokenAccounts.length) {
+    tokenAccounts = getUniqueAddresses(tokenAccounts, 'solana')
     const tokenBalances = await getTokenAccountBalances(tokenAccounts, { allowError })
     await transformBalances({ tokenBalances, balances, })
   }

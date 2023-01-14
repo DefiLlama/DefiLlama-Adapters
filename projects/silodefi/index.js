@@ -6,7 +6,13 @@ async function tvl() {
   const call = 913906096;
   const put = 913951447;
   const usdc = 31566704;
-  let accounts = await Promise.all([call, put].map(appId => searchAccountsAll({ appId })))
+  const searchParams = {
+    'asset-id': usdc,
+    'currency-greater-than': 1000000,
+  }
+  const callAccounts = await searchAccountsAll({ appId: call, searchParams, limit: 100 })
+  const putAccounts = await searchAccountsAll({ appId: put, searchParams, limit: 100  })
+  let accounts = [...callAccounts, ...putAccounts]
   accounts = accounts.flat().filter(i => i["created-assets"] && 
   i["created-assets"].some(asset => asset.params["unit-name"] === 'SILO')
   )

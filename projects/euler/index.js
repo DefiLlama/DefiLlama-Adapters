@@ -17,7 +17,7 @@ const graphql_url =
 const markets_query = gql`
   query {
     eulerMarketStores {
-      markets {
+      markets(orderBy: totalBalancesUsd, orderDirection:desc) {
         id
         totalBorrows
       }

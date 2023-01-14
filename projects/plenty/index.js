@@ -18,6 +18,7 @@ async function getDexes() {
   let text = a.slice(a.indexOf('{'), a.lastIndexOf('}') + 1) // find first { and last } and get all data in between
   text = text.split('\n')  //remove all comment lines 
   text = text.map(i => {
+    if (/(process.env.* ||\s*)/.test(i)) i = i.replace(/(process.env.* ||\s*)/gi, '') // handle env variables
     if (i.includes('// ')) return i.slice(0, i.indexOf('// '))
     if (i.includes(' //')) return i.slice(0, i.indexOf(' //'))
     return i

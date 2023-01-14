@@ -9,13 +9,13 @@ const { toUSDTBalances } = require('../helper/balances');
     const circulatingBalance = (await sdk.api.abi.call({
       block,
       target: cgt,
-      abi: abis.cacheGold.find(i => i.name === 'totalCirculation')
+      abi: abis.cacheGold
     })).output;
 
     const chainlinkAuGramPrice = (await sdk.api.abi.call({
       block,
       target: chainLinkGoldGramConvertorPriceConsumer,
-      abi: abis.gramOz.find(i => i.name === 'getLatestPrice')
+      abi: abis.gramOz
     })).output;
 
   return toUSDTBalances(circulatingBalance*chainlinkAuGramPrice/1e16);

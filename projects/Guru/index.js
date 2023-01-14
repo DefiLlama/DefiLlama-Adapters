@@ -1,58 +1,8 @@
-const sdk = require("@defillama/sdk")
-const ITVL = [
-  {
-    "inputs": [],
-    "name": "pool2",   //POOL2 TVL : 1e18 === 1 USD
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "staking",   //STAKING TVL : 1e18 === 1 USD
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "tvl",   //GLOABL TVL : 1e18 === 1 USD
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "usd",   //On-chain USD Reference Token
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
-]
+const ITVL = {
+  pool2: "uint256:pool2",
+  staking: "uint256:staking",
+  tvl: "uint256:tvl",
+}
 
 //	TvlGuru:	On-Chain Universal TVL Finder
 const tvlGuru = { 
@@ -68,11 +18,10 @@ module.exports = {
   methodology: "USD-denominated value aggregation of most Locked assets held across Guru Network's & Kompound Protocol's smart contracts across multiple chains, powered by direct on-chain storage of quantity, pools and prices using ftm.guru's Universal TVL Finder Tool (tvlGuru.sol). More detailed documentation of TVL is available at https://ftm.guru/rawdata/tvl",
 }
 
-Object.keys(tvlGuru).forEach(chain => {
-  const callArgs = { target: tvlGuru[chain], chain, }
+Object.entries(tvlGuru).forEach(([chain, target]) => {
   module.exports[chain] = {
-    pool2: async (_, _b, { [chain]: block }) => ({ tether: ((await sdk.api.abi.call({ ...callArgs, abi: ITVL[0], block })).output) / 1e18 }),
-    staking: async (_, _b, { [chain]: block }) => ({ tether: ((await sdk.api.abi.call({ ...callArgs, abi: ITVL[1], block })).output) / 1e18 }),
-    tvl: async (_, _b, { [chain]: block }) => ({ tether: ((await sdk.api.abi.call({ ...callArgs, abi: ITVL[2], block })).output) / 1e18 }),
+    pool2: async (_, _b, _c, { api, }) => ({ tether: ((await api.call({ target, abi: ITVL.pool2 }))) / 1e18 }),
+    staking: async (_, _b, _c, { api, }) => ({ tether: ((await api.call({ target, abi: ITVL.staking}))) / 1e18 }),
+    tvl: async (_, _b, _c, { api, }) => ({ tether: ((await api.call({ target, abi: ITVL.tvl }))) / 1e18 }),
   }
 })

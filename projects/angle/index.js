@@ -7,26 +7,8 @@ const ANGLE = "0x31429d1856ad1377a8a0079410b297e1a9e214c2";
 const veANGLE = "0x0C462Dbb9EC8cD1630f1728B2CFD2769d09f0dd5";
 
 const poolManagers_abi = {
-  getTotalAsset: {
-    inputs: [],
-    name: "getTotalAsset",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  token: {
-    inputs: [],
-    name: "token",
-    outputs: [
-      {
-        internalType: "contract IERC20",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
+  getTotalAsset: "uint256:getTotalAsset",
+  token: "address:token",
 };
 
 // get Borrowing module vault managers list
