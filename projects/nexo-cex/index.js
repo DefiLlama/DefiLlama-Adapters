@@ -74,4 +74,4 @@ const config = {
 }
 
 module.exports = cexExports(config)
-module.exports.methodology = 'We are not counting money in defi Protocols. In this case around $7.8m on lido (ethereum chain), around $1.49m in AAVE (Ethereum and polygon network), around $2.4m into notional (Ethereum network), around $660k into beethoven (Fantom network), around $130k into Harvest (BSC chain). We may also not counting a few small token balances. This data was collected on 14/01/2023 '
+module.exports.methodology = 'We are not counting money in defi Protocols. In this case around $1.49m in AAVE (Ethereum and polygon network), around $2.4m into notional (Ethereum network), around $660k into beethoven (Fantom network), around $130k into Harvest (BSC chain). We may also not counting a few small token balances. This data was collected on 14/01/2023 '
