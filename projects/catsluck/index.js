@@ -29,35 +29,7 @@ const stakingPools = [
 ]
 
 // "function info(address addr) external view returns (uint, uint, uint)""
-const poolInfoAbi = {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "addr",
-        "type": "address"
-      },
-    ],
-    "name": "info",
-    "outputs": [
-      {
-        "internalType": "uint",
-        "name": "totalBalance",
-        "type": "uint"
-      },
-      {
-        "internalType": "uint",
-        "name": "totalShare",
-        "type": "uint"
-      },
-      {
-        "internalType": "uint",
-        "name": "sharesAndLockUntil",
-        "type": "uint"
-      },
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
+const poolInfoAbi = 'function info(address addr) view returns (uint256 totalBalance, uint256 totalShare, uint256 sharesAndLockUntil)'
 
 
 const tvl = async (timestamp, ethBlock, {[CHAIN]: block}) => {

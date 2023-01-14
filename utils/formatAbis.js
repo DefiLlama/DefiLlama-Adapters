@@ -59,7 +59,7 @@ function transform(obj, file) {
   for (const [key, value] of Object.entries(obj)) {
     if (!value.inputs) console.log('inputs missing', file)
     const iLen = value.inputs.length === 0
-    const oLen = value.outputs.length === 1
+    const oLen = value.outputs?.length === 1
     const oType = oLen && value.outputs[0].type
     if (iLen && oLen && knownTypes.has(oType)) {
       res[key] = `${oType}:${value.name}`
@@ -74,19 +74,24 @@ function transform(obj, file) {
 
 function print() {
   let res = data
+  if (data.name) data = [data]
   if (Array.isArray(data)) {
     res = {}
-    data.filter(i => isTransformable({ test: i}))
-    .filter(i => i.stateMutability === 'view'  || i.stateMutability === 'pure')
+    data
+    .filter(i => i.type === 'function' || i.type === 'event')
+    // .filter(i => isTransformable({ test: i}))
+    // .filter(i => i.stateMutability === 'view'  || i.stateMutability === 'pure')
     .forEach(i => res[i.name ?? 'ignore'] = i)
   }
+  console.log(res)
   res = transform(res)
   // console.log(res)
   console.log(JSON.stringify(res, null, 2))
 }
 
 
-const data =
+const data = 
+
 
 print()
 

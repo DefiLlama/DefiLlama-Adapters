@@ -13,6 +13,7 @@ async function tvl(_, _b, _cb, { api, }) {
     [tokens.DAI, '0xaee4d11a16B2bc65EDD6416Fb626EB404a6D65BD'],
     [tokens.DAI, '0xd7052EC0Fe1fe25b20B7D65F6f3d490fCE58804f'],
     [tokens.DAI, '0x91993f2101cc758D0dEB7279d41e880F7dEFe827'],
+    [tokens.DAI, '0xd85E038593d7A098614721EaE955EC2022B9B91B'],
   ]
   return sumTokens2({ ...api, tokensAndOwners, })
 }

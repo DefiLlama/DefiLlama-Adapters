@@ -30,21 +30,7 @@ async function fetchSaPools(apiUrl, chain) {
 
 function syGetUnderlyingTotal(chain, smartYieldAddress, block) {
   return sdk.api.abi.call({
-    abi: {
-      name: "underlyingTotal",
-      type: "function",
-      stateMutability: "view",
-      constant: true,
-      payable: false,
-      inputs: [],
-      outputs: [
-        {
-          name: "total",
-          type: "uint256",
-          internalType: "uint256",
-        },
-      ],
-    },
+    abi: "uint256:underlyingTotal",
     target: smartYieldAddress,
     chain,
     block,
@@ -53,21 +39,7 @@ function syGetUnderlyingTotal(chain, smartYieldAddress, block) {
 
 function saGetEpochBalance(chain, smartAlphaAddress, block) {
   return sdk.api.abi.call({
-    abi: {
-      name: "epochBalance",
-      type: "function",
-      stateMutability: "view",
-      constant: true,
-      payable: false,
-      inputs: [],
-      outputs: [
-        {
-          name: "balance",
-          type: "uint256",
-          internalType: "uint256",
-        },
-      ],
-    },
+    abi: "uint256:epochBalance",
     target: smartAlphaAddress,
     chain,
     block,
@@ -76,21 +48,7 @@ function saGetEpochBalance(chain, smartAlphaAddress, block) {
 
 function saGetQueuedJuniorsUnderlyingIn(chain, smartAlphaAddress, block) {
   return sdk.api.abi.call({
-    abi: {
-      name: "queuedJuniorsUnderlyingIn",
-      type: "function",
-      stateMutability: "view",
-      constant: true,
-      payable: false,
-      inputs: [],
-      outputs: [
-        {
-          name: "amount",
-          type: "uint256",
-          internalType: "uint256",
-        },
-      ],
-    },
+    abi: "uint256:queuedJuniorsUnderlyingIn",
     target: smartAlphaAddress,
     chain,
     block,
@@ -99,21 +57,7 @@ function saGetQueuedJuniorsUnderlyingIn(chain, smartAlphaAddress, block) {
 
 function saGetQueuedSeniorsUnderlyingIn(chain, smartAlphaAddress, block) {
   return sdk.api.abi.call({
-    abi: {
-      name: "queuedSeniorsUnderlyingIn",
-      type: "function",
-      stateMutability: "view",
-      constant: true,
-      payable: false,
-      inputs: [],
-      outputs: [
-        {
-          name: "amount",
-          type: "uint256",
-          internalType: "uint256",
-        },
-      ],
-    },
+    abi: "uint256:queuedSeniorsUnderlyingIn",
     target: smartAlphaAddress,
     chain,
     block,

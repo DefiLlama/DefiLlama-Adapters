@@ -54,17 +54,7 @@ const furoQuery = gql`
   }
 `;
 
-const toAmountAbi = {
-  inputs: [
-    { internalType: "contract IERC20", name: "token", type: "address" },
-    { internalType: "uint256", name: "share", type: "uint256" },
-    { internalType: "bool", name: "roundUp", type: "bool" },
-  ],
-  name: "toAmount",
-  outputs: [{ internalType: "uint256", name: "amount", type: "uint256" }],
-  stateMutability: "view",
-  type: "function",
-};
+const toAmountAbi = 'function toAmount(address token, uint256 share, bool roundUp) view returns (uint256 amount)'
 
 function furo(chain, isVesting) {
   return async (timestamp, ethBlock, { [chain]: block}) => {
