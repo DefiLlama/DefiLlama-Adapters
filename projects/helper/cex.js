@@ -69,6 +69,7 @@ const defaultTokens = {
     '0x75231f58b43240c9718dd58b4967c5114342a86c', // OKB (OKX cex token)
     '0x2af5d2ad76741191d15dfe7bf6ac92d4bd912ca3', // LEO (bitfinex cex token)
     '0xB8c77482e45F1F44dE1745F52C74426C631bDD52', // WBNB
+    '0xb62132e35a6c13ee1ee0f84dc5d40bad8d815206', // NEXO ,(Nexo cex token)
   ],
   tron: [
     nullAddress,
