@@ -88,8 +88,21 @@ async function tvl() {
   return totalLiquidityFormatted;
 }
 
+const ethTvl=async ()=>{
+  const { output: totalSupply } = await sdk.api.erc20.totalSupply({
+    target: '0xc3d088842dcf02c13699f936bb83dfbbc6f721ab'
+  })
+  return {
+    '0xc3d088842dcf02c13699f936bb83dfbbc6f721ab':totalSupply
+  };
+}
+
 module.exports = {
   timetravel: false,
   methodology: "Minted vTokens from other chains (only calculate the underlying asset value)",
-  bifrost: { tvl }
+  bifrost: { tvl },
+  ethereum: {
+    tvl: ethTvl(),
+    staking:ethTvl()
+  },
 };
