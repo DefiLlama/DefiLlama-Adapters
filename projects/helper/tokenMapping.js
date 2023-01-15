@@ -858,6 +858,10 @@ const fixBalancesTokens = {
   ontology_evm: {
     "0xd8bc24cfd45452ef2c8bc7618e32330b61f2691b": { coingeckoId: "ong", decimals: 18, },
   },
+  zeniq: {
+    [nullAddress]: { coingeckoId: "bsc:0x5b52bfb8062ce664d74bbcd4cd6dc7df53fd7233", decimals: 0, },
+    "0x74DC1C4ec10abE9F5C8A3EabF1A90b97cDc3Ead8": { coingeckoId: "bsc:0x5b52bfb8062ce664d74bbcd4cd6dc7df53fd7233", decimals: 0, },
+  },
   algorand: {
     1: { coingeckoId: "algorand", decimals: 6, },
     312769: { coingeckoId: "tether", decimals: 6, },
