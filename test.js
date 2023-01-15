@@ -388,6 +388,13 @@ async function computeTVL(balances, timestamp) {
         amount = Number(balance);
         usdAmount = amount * data.price;
       }
+
+      if (usdAmount > 1e8) {
+        console.log(`-------------------
+Warning: `)
+        console.log(`Token ${address} has more than 100M in value (${usdAmount/1e6} M) , price data: `, data)
+        console.log(`-------------------`)
+      }
       tokenBalances[data.symbol] = (tokenBalances[data.symbol] ?? 0) + amount;
       usdTokenBalances[data.symbol] = (usdTokenBalances[data.symbol] ?? 0) + usdAmount;
       usdTvl += usdAmount;
