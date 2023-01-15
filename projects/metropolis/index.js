@@ -1,37 +1,34 @@
-const { gql, request } = require("graphql-request");
-const { toUSDTBalances } = require("../helper/balances");
 
-function getChainTvl(graphUrls, factoriesName = "uniswapFactories", tvlName = "totalLiquidityUSD", blockCatchupLimit = 500) {
-  const graphQuery = gql`
-    query get_tvl($block: Int) {
-      lbfactories(
-        block: { number: $block } 
-        first: 1) {
-        totalLiquidityUSD: totalValueLockedUSD
-      }
-    }`;
-  return (chain) => {
-    return async (_, _b, _cb, { api }) => {
-      await api.getBlock();
-      let block = api.block;
-      let uniswapFactories;
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
-      if (!blockCatchupLimit) {
-        uniswapFactories = (await request(graphUrls[chain], graphQuery, { block }))[factoriesName];
-      } else {
-        uniswapFactories = await request(graphUrls[chain], graphQuery, { block })
-      }
-
-      const usdTvl = Number(uniswapFactories['lbfactories'][0][tvlName]);
-      return toUSDTBalances(usdTvl);
-    };
-  };
+const factories = {
+  fantom: '0xb842766eade13b3c51cbaed70aa128760859c0bf',
+}
+async function tvl(_, _b, _cb, { api, }) {
+  const pools = await api.fetchList({
+    target: factories[api.chain],
+    itemAbi: 'function allLBPairs(uint256) view returns (address)',
+    lengthAbi: 'uint256:getNumberOfLBPairs',
+  })
+  const tokenA = await api.multiCall({
+    abi: 'address:tokenX',
+    calls: pools,
+  })
+  const tokenB = await api.multiCall({
+    abi: 'address:tokenY',
+    calls: pools,
+  })
+  const toa = []
+  tokenA.map((_, i) => {
+    toa.push([tokenA[i], pools[i]])
+    toa.push([tokenB[i], pools[i]])
+  })
+  return sumTokens2({...api, tokensAndOwners: toa, })
 }
 
-module.exports={
+module.exports = {
+  methodology: 'We count the token balances in in different liquidity book contracts',
   fantom:{
-      tvl: getChainTvl({
-          fantom: 'https://api.thegraph.com/subgraphs/name/0xhans1/metropolis-v2'
-      })('fantom')
-  }
-}
+    tvl,
+  },
+};
