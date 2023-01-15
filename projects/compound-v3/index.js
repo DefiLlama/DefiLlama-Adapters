@@ -1,7 +1,6 @@
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const { lendingMarket } = require("../helper/methodologies");
-const { v3Abi } = require("./v3abi");
 
 const USDCV3 = "0xc3d688B66703497DAA19211EEdff47f25384cdc3";
 
@@ -10,13 +9,13 @@ async function v3Tvl(balances, block, borrowed) {
     await sdk.api.abi.call({
       target: USDCV3,
       block,
-      abi: v3Abi.find(({ name }) => name === "numAssets"),
+      abi:'uint8:numAssets',
     })
   ).output;
 
   const markets = (
     await sdk.api.abi.multiCall({
-      abi: v3Abi.find(({ name }) => name === "getAssetInfo"),
+      abi: "function getAssetInfo(uint8 i) view returns (tuple(uint8 offset, address asset, address priceFeed, uint64 scale, uint64 borrowCollateralFactor, uint64 liquidateCollateralFactor, uint64 liquidationFactor, uint128 supplyCap))",
       block,
       calls: Array.from({ length: numMarkets }).map((_, i) => ({
         target: USDCV3,
@@ -40,14 +39,14 @@ async function v3Tvl(balances, block, borrowed) {
     await sdk.api.abi.call({
       target: USDCV3,
       block,
-      abi: v3Abi.find(({ name }) => name === "totalBorrow"),
+      abi: 'uint256:totalBorrow',
     })
   ).output;
   const borrowedToken = (
     await sdk.api.abi.call({
       target: USDCV3,
       block,
-      abi: v3Abi.find(({ name }) => name === "baseToken"),
+      abi: 'address:baseToken',
     })
   ).output;
 

@@ -1,8 +1,6 @@
 const BigNumber = require('bignumber.js');
 const { toUSDTBalances } = require('../balances');
-const vaultABI = require('./abis/TraderJoeVault.json');
 const sdk = require("@defillama/sdk")
-const UniswapV2PairContractAbi = require('./abis/UniswapV2Pair.json');
 
 const ZERO = new BigNumber(0);
 
@@ -22,7 +20,7 @@ const getVautsTvl = async (vaults, getPrice) => {
       let { output: underlyingBalanceWithInvestment } = await sdk.api.abi.call({
         chain,
         target: vault,
-        abi: vaultABI.find(i => i.name === 'underlyingBalanceWithInvestment')
+        abi: 'uint256:underlyingBalanceWithInvestment'
       })
 
       underlyingBalanceWithInvestment = new BigNumber(underlyingBalanceWithInvestment);
@@ -50,7 +48,7 @@ const formatDecimal = (value, decimal = 18, numPoint = 4, precision = 2) => {
 const getReserves = async (pairAddress) => {
   const { output: { _reserve0, _reserve1, _blockTimestampLast } } = await sdk.api.abi.call({
     target: pairAddress,
-    abi: UniswapV2PairContractAbi.find(i => i.name === 'getReserves')
+    abi: 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
   })
   return { reserve0: _reserve0, reserve1: _reserve1, blockTimestampLast: _blockTimestampLast };
 };

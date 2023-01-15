@@ -4,6 +4,7 @@ const axios = require('axios')
 const { getApplicationAddress } = require('./algorandUtils/address')
 const { RateLimiter } = require("limiter");
 const { fixBalancesTokens } = require('../tokenMapping')
+const { sleep } = require('../utils')
 const { getFixBalancesSync } = require('../portedTokens')
 const sdk = require('@defillama/sdk');
 const { default: BigNumber } = require('bignumber.js');
@@ -27,9 +28,10 @@ async function lookupAccountByID(accountId) {
   return (await axiosObj.get(`/v2/accounts/${accountId}`)).data
 }
 
-async function searchAccounts({ appId, limit = 1000, nexttoken, }) {
+async function searchAccounts({ appId, limit = 1000, nexttoken, searchParams, }) {
   const response = (await axiosObj.get('/v2/accounts', {
     params: {
+      ...searchParams,
       'application-id': appId,
       limit,
       next: nexttoken,
@@ -39,11 +41,11 @@ async function searchAccounts({ appId, limit = 1000, nexttoken, }) {
 }
 
 
-async function searchAccountsAll({ appId, limit = 1000 }) {
+async function searchAccountsAll({ appId, limit = 1000, searchParams = {} }) {
   const accounts = []
   let nexttoken
   do {
-    const res = await searchAccounts({ appId, limit, nexttoken, })
+    const res = await searchAccounts({ appId, limit, nexttoken, searchParams, })
     nexttoken = res['next-token']
     accounts.push(...res.accounts)
   } while (nexttoken)
@@ -55,11 +57,13 @@ const withLimiter = (fn, tokensToRemove = 1) => async (...args) => {
   return fn(...args);
 }
 
-async function sumTokens({ owner, owners = [], tokens = [], token, balances = {}, blacklistedTokens = [], tinymanLps = [], blacklistOnLpAsWell = false, }) {
+async function sumTokens({ owner, owners = [], tokens = [], token, balances = {}, blacklistedTokens = [], tinymanLps = [], blacklistOnLpAsWell = false, tokensAndOwners = [], }) {
   if (owner) owners = [owner]
   if (token) tokens = [token]
+  if (tokensAndOwners.length) owners = tokensAndOwners.map(i => i[1])
   const accounts = await Promise.all(owners.map(getAccountInfo))
-  accounts.forEach(({ assets }) => {
+  accounts.forEach(({ assets }, i) => {
+    if (tokensAndOwners.length) tokens = [tokensAndOwners[i][0]]
     assets.forEach(i => {
       if (!tokens.length || tokens.includes(i['asset-id']))
         if (!blacklistedTokens.length || !blacklistedTokens.includes(i['asset-id']))

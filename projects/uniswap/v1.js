@@ -5,15 +5,13 @@ const START_BLOCK = 6627917;
 const FACTORY = '0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95';
 const ETH = '0x0000000000000000000000000000000000000000'.toLowerCase();
 
-async function tvl(timestamp, block) {
-  const logs = (await sdk.api.util
-    .getLogs({
-      keys: [],
-      toBlock: block,
+async function tvl(timestamp, block, _1, { api }) {
+  const logs = (await getLogs({
+      api,
       target: FACTORY,
       fromBlock: START_BLOCK,
       topic: 'NewExchange(address,address)',
-    })).output;
+    }));
 
   const exchanges = {};
   logs.forEach((log) => {
@@ -48,7 +46,6 @@ async function tvl(timestamp, block) {
   return tokenBalances.reduce(
     (accumulator, tokenBalance) => {
       if(tokenBalance.output === null){
-        console.log("excluded", tokenBalance.input.target)
         return accumulator
       }
         const balanceBigNumber = new BigNumber(tokenBalance.output)

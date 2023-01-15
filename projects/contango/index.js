@@ -19,7 +19,7 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const { ladle, fromBlock } = config[chain]
   module.exports[chain] = {
-    tvl: async (timestamp, _b, chainBlocks) => {
+    tvl: async (timestamp, _b, chainBlocks, { api }) => {
       const block = chainBlocks[chain]
       const cauldron = await sdk.api2.abi.call({
         target: ladle,
@@ -28,7 +28,7 @@ Object.keys(config).forEach(chain => {
       })
 
       const logs = await getLogs({
-        chain, target: cauldron, fromBlock, timestamp, chainBlocks,
+        api, target: cauldron, fromBlock,
         topic: 'IlkAdded(bytes6,bytes6)', eventAbi: abis.IlkAdded,
       })
       const ilkIds = logs.map((log) => log.args.ilkId)
@@ -51,6 +51,6 @@ Object.keys(config).forEach(chain => {
 })
 
 const abis = {
-  joins: {"inputs":[{"internalType":"bytes6","name":"","type":"bytes6"}],"name":"joins","outputs":[{"internalType":"contract IJoin","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-  IlkAdded: {"anonymous":false,"inputs":[{"indexed":true,"internalType":"bytes6","name":"seriesId","type":"bytes6"},{"indexed":true,"internalType":"bytes6","name":"ilkId","type":"bytes6"}],"name":"IlkAdded","type":"event"},
+  joins: "function joins(bytes6) view returns (address)",
+  IlkAdded: "event IlkAdded(bytes6 indexed seriesId, bytes6 indexed ilkId)",
 }

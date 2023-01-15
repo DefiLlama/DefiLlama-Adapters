@@ -8,14 +8,14 @@ async function tvl(ts, block) {
   const { output: allProtocols } = await sdk.api.abi.call({
     block,
     target: factory,
-    abi: abis.abis.protocols.find(i => i.name === 'getAllProtocolAddresses')
+    abi: abis.abis.protocols.getAllProtocolAddresses
   })
 
   const calls = allProtocols.map(p => ({ target: p }))
   const { output: protocolDetails } = await sdk.api.abi.multiCall({
     block,
     calls,
-    abi: abis.abis.cover.find(i => i.name === 'getProtocolDetails')
+    abi: abis.abis.cover.getProtocolDetails
   })
   const toa = []
 

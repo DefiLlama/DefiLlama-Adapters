@@ -1,6 +1,6 @@
-const axios = require('axios');
 const { default: BigNumber } = require('bignumber.js');
 const { getAddressesUTXOs, getAssets, } = require("../helper/chain/cardano/blockfrost");
+const { getConfig } = require("../helper/cache");
 
 async function staking() {
   const stakingContract = 'addr1wyvej5rmcrhfpcwrwmnqsjtwvf8gv3dn64vwy3xzekp95wqqhdkwa'
@@ -21,10 +21,10 @@ const scriptAdresses = [
 const tvl = async () => {
   let tvlLocked = {};
   const tokenPairsUrl = 'https://api-mainnet-prod.minswap.org/coinmarketcap/v2/pairs';
-  const res = await axios.get(tokenPairsUrl);
+  const res = await getConfig('aada', tokenPairsUrl);
   let pairs;
-  if (res.data) {
-    pairs = res.data;
+  if (res) {
+    pairs = res;
   }
 
   for (const scriptAddress of scriptAdresses) {
@@ -52,7 +52,6 @@ const tvl = async () => {
   }
 
   const totalLovelaceLocked = Object.entries(tvlLocked).map(([id, values]) => id === 'lovelace' ? values.value : values.valueLovelace).reduce((a, b) => BigNumber.sum(a, b).toNumber(), 0);
-  console.log({ totalLovelaceLocked });
   const cardano = totalLovelaceLocked / 1e6;
   return { cardano, };
 };

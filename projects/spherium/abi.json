@@ -1,34 +1,4 @@
 {
-  "getAllWhitelistedTokenNames": {
-    "inputs": [],
-    "name": "getAllWhitelistedTokenNames",
-    "outputs": [
-      {
-        "internalType": "string[]",
-        "name": "",
-        "type": "string[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "whitelistedTokenAddress": {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "name": "whitelistedTokenAddress",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
+  "getAllWhitelistedTokenNames": "string[]:getAllWhitelistedTokenNames",
+  "whitelistedTokenAddress": "function whitelistedTokenAddress(string) view returns (address)"
 }

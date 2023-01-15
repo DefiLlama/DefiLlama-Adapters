@@ -5,9 +5,6 @@ const tenVault = "0xC2fB710D39f1D116FD3A70789381a3699Ff9fce0";
 const tenfi = "0xd15c444f1199ae72795eba15e8c1db44e47abf62";
 const tenFi_PCS = '0xFBF4cf9CdD629bF102F68BFEE43A49923f869505'.toLowerCase()
 
-const replacements = {
-};
-
 const { yieldHelper, } = require("../helper/yieldHelper")
 
 module.exports = yieldHelper({

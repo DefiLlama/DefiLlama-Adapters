@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { default: BigNumber } = require("bignumber.js");
-const { request, gql } = require("graphql-request"); // GraphQLClient
+const { request, } = require("graphql-request"); // GraphQLClient
 const { isStableToken } = require('./helper/streamingHelper')
 const { getBlock } = require('./helper/http')
 const { transformBalances } = require('./helper/portedTokens')
@@ -10,7 +10,7 @@ const { transformBalances } = require('./helper/portedTokens')
 // const polygonGraphUrl = 'https://api.thegraph.com/subgraphs/name/superfluid-finance/superfluid-matic'
 // const xdaiGraphUrl = 'https://api.thegraph.com/subgraphs/name/superfluid-finance/superfluid-xdai'
 
-const supertokensQuery = gql`
+const supertokensQuery = `
 query get_supertokens($block: Int) {
   tokens(
     first: 1000, 
@@ -89,9 +89,9 @@ const tokensNativeToSidechain = [
 ]
 
 async function retrieveSupertokensBalances(chain, block, isVesting, ts, graphUrl) {
-  block = (await getBlock(ts, chain, { [chain]: block })) - 500
+  const gblock = (await getBlock(ts, chain, { [chain]: block })) - 5000
   // Retrieve supertokens from graphql API
-  const { tokens } = await request(graphUrl, supertokensQuery, { block })
+  const { tokens } = await request(graphUrl, supertokensQuery, { block: gblock })
   const allTokens = tokens.filter(t => t.isSuperToken)
 
   return getChainBalances(allTokens, chain, block, isVesting)

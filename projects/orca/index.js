@@ -9,7 +9,7 @@ async function fetch() {
         sum + pool.liquidity
     , 0);
     const wpTvl = whirlpools.reduce((sum, pool) =>
-        sum + pool.tvl
+        sum + (pool.tvl ?? 0)
     , 0);
     return poolsTvl + wpTvl;
 }

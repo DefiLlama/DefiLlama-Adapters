@@ -1,31 +1,7 @@
 
-const getNumLockedTokens = {
-  "inputs": [],
-  "name": "getNumLockedTokens",
-  "outputs": [
-    {
-      "internalType": "uint256",
-      "name": "",
-      "type": "uint256"
-    }
-  ],
-  "stateMutability": "view",
-  "type": "function"
-}
+const getNumLockedTokens = "uint256:getNumLockedTokens"
 
-const lockedTokensLength = {
-  "inputs": [],
-  "name": "lockedTokensLength",
-  "outputs": [
-    {
-      "internalType": "uint256",
-      "name": "",
-      "type": "uint256"
-    }
-  ],
-  "stateMutability": "view",
-  "type": "function"
-}
+const lockedTokensLength = "uint256:lockedTokensLength"
 
 const getLockedTokenAtIndex =  {
   "inputs": [

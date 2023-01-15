@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk')
 const { getUniqueAddresses } = require('../helper/utils')
-const { get } = require('../helper/http')
+const { getConfig } = require('../helper/cache')
 const archimedesAbi = require('./archimedes.json')
 
 const baseUrl = 'https://api.2pi.network/v1'
@@ -12,7 +12,7 @@ const chains = {
 }
 
 const fetchChainAddresses = async chain => {
-  const { data: { archimedes } } = await get(`${baseUrl}/addresses/${chain}`)
+  const { data: { archimedes } } = await getConfig(`archimedes/${chain}`, `${baseUrl}/addresses/${chain}`)
   return getUniqueAddresses(archimedes)
 }
 
