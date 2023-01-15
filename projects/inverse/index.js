@@ -204,7 +204,7 @@ module.exports = {
   methodology: "DOLA curve metapool replaced by DOLA",
   hallmarks: [
     [
-     1623844800, "Protocol Deprecated",
+     1623844800, "Inverse Finance Frontier Deprecated",
      1648771200, "INV price hack",
     ],
 ],
