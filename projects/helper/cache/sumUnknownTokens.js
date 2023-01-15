@@ -10,7 +10,7 @@ const getReserves = require('../abis/getReserves.json');
 const { getChainTransform, stripTokenHeader, getFixBalances, getFixBalancesSync, } = require('../portedTokens')
 const { getCoreAssets } = require('../tokenMapping')
 const { sumTokens2, } = require('../unwrapLPs')
-const { isLP, getUniqueAddresses, DEBUG_MODE, log } = require('../utils')
+const { isLP, getUniqueAddresses, log } = require('../utils')
 
 async function getLPData({
   block,
@@ -251,8 +251,8 @@ async function getTokenPrices({
       const tokensInLP = price[3]
       const coreTokenAmountInLP = price[0]
       const maxAllowedAmount = coreTokenAmountInLP * restrictTokenRatio
-      // if (DEBUG_MODE && tokenAmount * getAssetPrice(coreAsset) > log_minTokenValue)
-      //   log(`[converting balances] token vaule (in millions): ${(tokenAmount * getAssetPrice(coreAsset) / 1e6).toFixed(4)}, token value higher than pool: ${+amount > +tokensInLP} token: ${token} counter: ${++counter}`)
+      // if (tokenAmount * getAssetPrice(coreAsset) > log_minTokenValue)
+      //   sdk.log(`[converting balances] token vaule (in millions): ${(tokenAmount * getAssetPrice(coreAsset) / 1e6).toFixed(4)}, token value higher than pool: ${+amount > +tokensInLP} token: ${token} counter: ${++counter}`)
 
       if (tokenAmount > maxAllowedAmount) {// use token amount in pool if balances amount is higher than amount in pool
         log(`[converting balances]  Value to LP ratio: ${tokenAmount / tokensInLP} token: ${token} counter: ${++counter}`)
@@ -301,8 +301,8 @@ async function getTokenPrices({
         const tokensInLP = price[3]
         let tokenAmount = price[1] * +amount
         const maxAllowedAmount = coreTokenAmountInLP * restrictTokenRatio
-        // if (DEBUG_MODE && tokenAmount * getAssetPrice(coreAsset) * ratio > log_minTokenValue)
-        //   console.log(`[resolve LP balance] token vaule (in millions): ${(tokenAmount * getAssetPrice(coreAsset) * ratio / 1e6).toFixed(4)}, token value higher than pool: ${+amount > +tokensInLP} LP Address: ${pairAddress} token: ${address} ratio: ${ratio} counter: ${++counter}`)
+        // if (tokenAmount * getAssetPrice(coreAsset) * ratio > log_minTokenValue)
+        //   sdk.log(`[resolve LP balance] token vaule (in millions): ${(tokenAmount * getAssetPrice(coreAsset) * ratio / 1e6).toFixed(4)}, token value higher than pool: ${+amount > +tokensInLP} LP Address: ${pairAddress} token: ${address} ratio: ${ratio} counter: ${++counter}`)
 
         if (tokenAmount > maxAllowedAmount) {// use token amount in pool if balances amount is higher than amount in pool
           log(`[converting balances]  Value to LP ratio: ${tokenAmount / tokensInLP} LP Address: ${pairAddress} ratio: ${ratio} token: ${address} counter: ${++counter}`)
@@ -311,8 +311,8 @@ async function getTokenPrices({
           sdk.util.sumSingleBalance(balances, transformAddress(coreAsset), BigNumber(tokenAmount * ratio).toFixed(0))
         }
       } else {
-        if ((DEBUG_MODE && coreAssets.includes(address)) && (+amount * getAssetPrice(address) * ratio > log_minTokenValue))
-          console.log(`[resolve LP balance] token vaule (in millions): ${(+amount * getAssetPrice(address) * ratio / 1e6).toFixed(4)}, LP Address: ${pairAddress}  core token: ${address} ratio: ${ratio} counter: ${++counter}`)
+        if ((coreAssets.includes(address)) && (+amount * getAssetPrice(address) * ratio > log_minTokenValue))
+          sdk.log(`[resolve LP balance] token vaule (in millions): ${(+amount * getAssetPrice(address) * ratio / 1e6).toFixed(4)}, LP Address: ${pairAddress}  core token: ${address} ratio: ${ratio} counter: ${++counter}`)
         sdk.util.sumSingleBalance(finalBalances, transformAddress(address), BigNumber(+amount * ratio).toFixed(0))
       }
     })

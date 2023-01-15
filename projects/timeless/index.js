@@ -1,22 +1,22 @@
 const sdk = require("@defillama/sdk");
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const abi = require('./abi.json')
+const { getLogs } = require('../helper/cache/getLogs')
 
 const chain = 'ethereum'
 const factory = '0xbd16088611054fce04711aa9509d1d86e04dce2c'
 const wl_stETH_token = '0xf9a98a9452485ed55cd3ce5260c2b71c9807b11a'
 
-async function tvl(_, block) {
+async function tvl(_, block, _1, { api }) {
 
   const logs = (
-    await sdk.api.util.getLogs({
-      keys: [],
-      toBlock: block,
+    await getLogs({
+      api,
       target: factory,
       fromBlock: 14916925,
       topic: 'DeployYieldTokenPair(address,address,address,address)',
     })
-  ).output
+  )
   const toa = []
 
   logs.forEach(({ topics }) => {

@@ -6,8 +6,6 @@ const sdk = require('@defillama/sdk')
 const usdtAddress = "0xdac17f958d2ee523a2206206994597c13d831ec7"
 
 const {
-  AaveSubscriptions,
-  AaveLoanInfo,
   CompoundSubscriptions,
   CompoundLoanInfo,
   McdSubscriptions,
@@ -21,7 +19,7 @@ function getAddress(defisaverConfig) {
 }
 
 function getAbi(defisaverConfig, abiName) {
-  return defisaverConfig.abi.find(obj => obj.name === abiName)
+  return defisaverConfig.abi[abiName]
 }
 
 // Configs
@@ -314,7 +312,7 @@ async function tvl(ts, block) {
       const asset = ilkToAsset(results[cdp.cdpId].ilk)
       const debt = assetAmountInEth(results[cdp.cdpId].debt, 'DAI')
       const collateral = assetAmountInEth(results[cdp.cdpId].collateral, `MCD-${asset}`)
-      data.push({ debt, collateralUsd: parseFloat(collateral) * parseFloat(prices[keys[0][asset]].usd), })
+      data.push({ debt, collateralUsd: parseFloat(collateral) * parseFloat(prices[keys[0][asset]]?.usd || 0), })
     });
     const activeSubs = data.filter(({ debt }) => parseFloat(debt));
     activeSubs.forEach(sub => addToBalances(sub.collateralUsd))

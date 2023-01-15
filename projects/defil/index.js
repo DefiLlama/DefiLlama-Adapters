@@ -4,7 +4,7 @@ const { getChainTransform } = require('../helper/portedTokens');
 const { staking } = require("../helper/staking.js");
 const { pool2 } = require('../helper/pool2');
 const contracts = require('./contracts.json');
-const abi = require('./abi.json');
+const abi = "uint256:totalBorrows"
 
 function tvl(chain) {
     return async (timestamp, block, chainBlocks) => {

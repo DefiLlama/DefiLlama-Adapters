@@ -3,7 +3,7 @@ const { ethereumContractData, polygonContractData, avaxContractData, bscContract
 const { getCache, setCache, } = require("../helper/cache")
 const { vestingHelper,  } = require("../helper/unknownTokens")
 
-const project = 'team-finance'
+const project = 'bulky/team-finance'
 
 function getTvl(args) {
   return async (timestamp, ethBlock, chainBlocks) => {

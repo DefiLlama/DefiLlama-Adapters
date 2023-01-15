@@ -7,14 +7,20 @@ const { getChainTransform, getFixBalances, } = require('./portedTokens')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 
-function staking(stakingContract, stakingToken, chain = "ethereum", transformedTokenAddress = undefined, decimals = undefined) {
+function staking(stakingContract, stakingToken, _chain = "ethereum", transformedTokenAddress = undefined, decimals = undefined) {
     if (!Array.isArray(stakingContract))  stakingContract = [stakingContract]
     if (!Array.isArray(stakingToken))  stakingToken = [stakingToken]
-    return stakings(stakingContract, stakingToken, chain, transformedTokenAddress, decimals)
+    return stakings(stakingContract, stakingToken, _chain, transformedTokenAddress, decimals)
 }
 
-function stakings(stakingContracts, stakingToken, chain = "ethereum", transformedTokenAddress = undefined, decimals = undefined) {
-    return async (timestamp, _ethBlock, {[chain]: block}) => {
+function stakings(stakingContracts, stakingToken, _chain = "ethereum", transformedTokenAddress = undefined, decimals = undefined) {
+    return async (_, _b, cb, { chain, block } = {}) => {
+
+        if (!chain) {
+          chain = _chain
+          block = cb[chain]
+        }
+
         if (!Array.isArray(stakingToken))  stakingToken = [stakingToken]
         let transformAddress = transformedTokenAddress
         if (typeof transformedTokenAddress === 'string') transformAddress = i => transformedTokenAddress

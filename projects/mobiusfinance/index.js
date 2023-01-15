@@ -4,7 +4,11 @@ const { resolveCrvTokens, } = require('../helper/resolveCrvTokens')
 const { transformPolygonAddress } = require('../helper/portedTokens')
 const ResolverAddr = "0x1E02cdbbA6729B6470de81Ad4D2cCA4c514521b9"
 
-const ResolverJson = require('./abis/Resolver.json').abi;
+const ResolverJson = {
+  getAsset: "function getAsset(bytes32 assetType, bytes32 assetName) view returns (bool, address)",
+  getAssets: "function getAssets(bytes32 assetType) view returns (bytes32[])",
+  getAddress: "function getAddress(bytes32 name) view returns (address)",
+}
 
 const sdk = require('@defillama/sdk')
 const chain = 'polygon'
@@ -23,10 +27,10 @@ async function tvl(ts, _block, { polygon: block }) {
     Collaterals,
   ] = await Promise.all([
     sdk.api.abi.call({
-      target: ResolverAddr, abi: ResolverJson.find(i => i.name === 'getAddress'), params: [mobiusStr], block, chain,
+      target: ResolverAddr, abi: ResolverJson.getAddress, params: [mobiusStr], block, chain,
     }),
     sdk.api.abi.call({
-      target: ResolverAddr, abi: ResolverJson.find(i => i.name === 'getAssets'), params: [stakeStr], block, chain,
+      target: ResolverAddr, abi: ResolverJson.getAssets, params: [stakeStr], block, chain,
     }),
   ]).then(o => o.map(i => i.output))
 
@@ -36,7 +40,7 @@ async function tvl(ts, _block, { polygon: block }) {
       return;
 
     let { output: r } = await sdk.api.abi.call({
-      target: ResolverAddr, abi: ResolverJson.find(i => i.name === 'getAsset'), params: [stakeStr, collateral], block, chain,
+      target: ResolverAddr, abi: ResolverJson.getAsset, params: [stakeStr, collateral], block, chain,
     })
 
     if (!r[0])
@@ -63,7 +67,7 @@ async function staking(ts, _block, { polygon: block }) {
     MobiusAddr,
   ] = await Promise.all([
     sdk.api.abi.call({
-      target: ResolverAddr, abi: ResolverJson.find(i => i.name === 'getAddress'), params: [mobiusStr], block, chain,
+      target: ResolverAddr, abi: ResolverJson.getAddress, params: [mobiusStr], block, chain,
     }),
   ]).then(o => o.map(i => i.output))
 
@@ -77,7 +81,7 @@ async function pool2(ts, _block, { polygon: block }) {
     rewardAddr,
   ] = await Promise.all([
     sdk.api.abi.call({
-      target: ResolverAddr, abi: ResolverJson.find(i => i.name === 'getAddress'), params: [rewardAddrStr], block, chain,
+      target: ResolverAddr, abi: ResolverJson.getAddress, params: [rewardAddrStr], block, chain,
     }),
   ]).then(o => o.map(i => i.output))
   const toa = [

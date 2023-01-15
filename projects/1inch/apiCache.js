@@ -5,7 +5,7 @@ const sdk = require('@defillama/sdk')
 const { createIncrementArray } = require('../helper/utils')
 const { getCache, setCache, } = require("../helper/cache");
 
-const project = '1inch'
+const project = 'bulky/1inch'
 
 module.exports = {}
 Object.keys(config).forEach(chain => {
@@ -42,20 +42,7 @@ Object.keys(config).forEach(chain => {
       tokensAll.forEach(({ output: tokens, input: { target: pool } }) => {
         cache.pools[pool.toLowerCase()] = tokens
       })
-      // const deletePools = []
-
-      // let j = 0
-      // for (let [pool, tokens] of Object.entries(cache.pools)) {
-      //   tokens = tokens.map(i => i.toLowerCase())
-      //   console.log(++j, chain, deletePools.length)
-      //   const testBal = await sumTokens2({ owner: pool, tokens, chain, block, transformAddress: i => i, skipFixBalances: true })
-      //   console.log(pool, tokens, testBal)
-      //   if (!tokens.some(i => testBal[i] && !isNaN(testBal[i]) && +testBal[i] > 1e6)) deletePools.push(pool)
-      // }
-
-      // console.log(deletePools.length, 'deleting from chain', chain)
-      // deletePools.forEach(i => delete cache.pools[i])
-
+      
       for (const [pool, tokens] of Object.entries(cache.pools))
         tokens.forEach(i => toa.push([i, pool]))
 

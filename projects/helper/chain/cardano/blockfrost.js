@@ -38,7 +38,6 @@ async function assetsAddresses(address) {
     })
     response = response.data
     addresses.push(...response)
-    console.log(addresses.length, response.length)
     page++
   } while (response.length)
   return addresses
@@ -55,7 +54,6 @@ async function addressesUtxosAssetAll(address, asset) {
     })
     response = response.data
     addresses.push(...response)
-    console.log(addresses.length, response.length)
     page++
   } while (response.length)
   return addresses

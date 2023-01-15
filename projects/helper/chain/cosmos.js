@@ -12,10 +12,12 @@ const endPoints = {
   osmosis: 'https://lcd.osmosis.zone',
   cosmos: 'https://cosmoshub-lcd.stakely.io',
   kujira: 'https://lcd.kaiyo.kujira.setten.io',
+  comdex: 'https://rest.comdex.one',
 }
 
 const chainSubpaths = {
   crescent: 'crescent',
+  comdex: 'comdex',
 }
 
 function getEndpoint(chain) {

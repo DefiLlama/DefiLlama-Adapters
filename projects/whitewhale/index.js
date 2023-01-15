@@ -12,7 +12,6 @@ async function tvl() {
         pool_state = await fetchURL(vault)
         tvl = Number(pool_state.data.result.total_value_in_ust) / 1e6
     }))
-    // console.log(Number(pool_state.data.result.total_value_in_ust) / 1e6)
     return {
         terrausd: tvl
     }
@@ -22,7 +21,6 @@ async function staking() {
     const staked = await fetchURL(
         `https://lcd.terra.dev/wasm/contracts/terra12897djskt9rge8dtmm86w654g7kzckkd698608/store?query_msg=%7B%22balance%22:%7B%22address%22:%22terra1xrk6v2tfjrhjz2dsfecj40ps7ayanjx970gy0j%22%7D%7D`
     )
-    // console.log(Number(staked.data.result.balance) / 1e6)
     return {
         "white-whale": Number(staked.data.result.balance) / 1e6
     }

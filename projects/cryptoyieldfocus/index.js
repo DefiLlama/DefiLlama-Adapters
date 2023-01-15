@@ -1,5 +1,4 @@
-const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
+const abi = 'function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accCyfPerShare, uint16 depositFeeBP)';
 const { transformAvaxAddress } = require("../helper/portedTokens");
 const {addFundsInMasterChef} = require('../helper/masterchef')
 const {staking} = require('../helper/staking')

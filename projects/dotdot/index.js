@@ -130,26 +130,14 @@ async function resolveEpsLP({
   ) {
     const { output: coins } = await sdk.api.abi.call({
       target: factory,
-      abi: {
-        stateMutability: "view",
-        type: "function",
-        name: "get_coins",
-        inputs: [{ name: "_pool", type: "address" }],
-        outputs: [{ name: "", type: "address[2]" }]
-      },
+      abi: 'function get_coins(address _pool) view returns (address[2])',
       chain,
       block,
       params: minter
     });
     const { output: bal } = await sdk.api.abi.call({
       target: factory,
-      abi: {
-        stateMutability: "view",
-        type: "function",
-        name: "get_balances",
-        inputs: [{ name: "_pool", type: "address" }],
-        outputs: [{ name: "", type: "uint256[2]" }]
-      },
+      abi: 'function get_balances(address _pool) view returns (uint256[2])',
       chain,
       block,
       params: minter
@@ -168,26 +156,14 @@ async function resolveEpsLP({
   ) {
     const { output: coins } = await sdk.api.abi.call({
       target: factory,
-      abi: {
-        stateMutability: "view",
-        type: "function",
-        name: "get_coins",
-        inputs: [{ name: "_pool", type: "address" }],
-        outputs: [{ name: "", type: "address[4]" }]
-      },
+      abi: 'function get_coins(address _pool) view returns (address[4])',
       chain,
       block,
       params: minter
     });
     const { output: bal } = await sdk.api.abi.call({
       target: factory,
-      abi: {
-        stateMutability: "view",
-        type: "function",
-        name: "get_balances",
-        inputs: [{ name: "_pool", type: "address" }],
-        outputs: [{ name: "", type: "uint256[4]" }]
-      },
+      abi: 'function get_balances(address _pool) view returns (uint256[4])',
       chain,
       block,
       params: minter
@@ -215,70 +191,12 @@ module.exports = {
 };
 
 const abis = {
-  poolLength: {
-    inputs: [],
-    name: "poolLength",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-    stateMutability: "view",
-    type: "function"
-  },
-  registeredTokens: {
-    inputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-    name: "registeredTokens",
-    outputs: [{ internalType: "address", name: "", type: "address" }],
-    stateMutability: "view",
-    type: "function"
-  },
-  factory: {
-    inputs: [],
-    name: "factory",
-    outputs: [{ internalType: "address", name: "", type: "address" }],
-    stateMutability: "view",
-    type: "function"
-  },
-  factory2: {
-    inputs: [],
-    name: "factory",
-    outputs: [{ internalType: "contract IFactory", name: "", type: "address" }],
-    stateMutability: "view",
-    type: "function"
-  },
-  minter: {
-    inputs: [],
-    name: "minter",
-    outputs: [{ internalType: "address", name: "", type: "address" }],
-    stateMutability: "view",
-    type: "function"
-  },
-  getNCoins: {
-    stateMutability: "view",
-    type: "function",
-    name: "get_n_coins",
-    inputs: [{ name: "_pool", type: "address" }],
-    outputs: [{ name: "", type: "uint256" }],
-    gas: 2894
-  },
-  userInfo: {
-    inputs: [
-      { internalType: "address", name: "", type: "address" },
-      { internalType: "address", name: "", type: "address" }
-    ],
-    name: "userInfo",
-    outputs: [
-      { internalType: "uint256", name: "depositAmount", type: "uint256" },
-      { internalType: "uint256", name: "adjustedAmount", type: "uint256" },
-      { internalType: "uint256", name: "rewardDebt", type: "uint256" },
-      { internalType: "uint256", name: "claimable", type: "uint256" }
-    ],
-    stateMutability: "view",
-    type: "function"
-  },
-  getLpToken: {
-    stateMutability: "view",
-    type: "function",
-    name: "get_lp_token",
-    inputs: [{ name: "arg0", type: "address" }],
-    outputs: [{ name: "", type: "address" }],
-    gas: 4058
-  }
-};
+  poolLength: "uint256:poolLength",
+  registeredTokens: "function registeredTokens(uint256) view returns (address)",
+  factory: "address:factory",
+  factory2: "address:factory",
+  minter: "address:minter",
+  getNCoins: "function get_n_coins(address _pool) view returns (uint256) @2894",
+  userInfo: "function userInfo(address, address) view returns (uint256 depositAmount, uint256 adjustedAmount, uint256 rewardDebt, uint256 claimable)",
+  getLpToken: "function get_lp_token(address arg0) view returns (address) @4058",
+}

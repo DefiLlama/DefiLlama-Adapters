@@ -1,18 +1,29 @@
 
 const { getCache, setCache, } = require('../cache');
-const { getBlock, } = require('../http')
 const sdk = require('@defillama/sdk')
 const ethers = require("ethers")
 
 const cacheFolder = 'logs'
 
-async function getLogs({ chain = 'ethereum', target,
+async function getLogs({ target,
   topic, keys = [], fromBlock, toBlock, topics,
-  timestamp, chainBlocks, eventAbi }) {
+  api, eventAbi, onlyArgs = false, }) {
+  if (!api) throw new Error('Missing sdk api object!')
   if (!target) throw new Error('Missing target!')
   if (!fromBlock) throw new Error('Missing fromBlock!')
-  if (!toBlock)
-    toBlock = await getBlock(timestamp, chain, chainBlocks)
+  await api.getBlock()
+  const block = api.block
+  const chain = api.chain ?? 'ethereum'
+  if (!toBlock) toBlock = block
+  if (!toBlock) throw new Error('Missing fromBlock!')
+
+  let iface
+
+  if (eventAbi) {
+    iface = new ethers.utils.Interface([eventAbi])
+    if (typeof eventAbi === 'object')
+      sdk.log(iface.format(ethers.utils.FormatTypes.full))
+  }
 
   target = target.toLowerCase()
   const key = `${chain}/${target}`
@@ -23,13 +34,17 @@ async function getLogs({ chain = 'ethereum', target,
   // if no new data nees to be fetched
   if (cache.fromBlock && cache.toBlock > toBlock)
     response = cache.logs.filter(i => i.blockNumber < toBlock && i.blockNumber >= fromBlock)
-  else 
+  else
     response = await fetchLogs()
 
-  if (!eventAbi)  return response
+  if (!eventAbi) return response
 
-  let iface = new ethers.utils.Interface([eventAbi])
-  return response.map((log) => (iface.parseLog(log)))
+  return response.map((log) => {
+    const res = iface.parseLog(log)
+    if (onlyArgs) return res.args
+    res.topics = log.topics.map(i => `0x${i.slice(26)}`)
+    return res
+  })
 
   async function fetchLogs() {
     cache.fromBlock = fromBlock
@@ -75,5 +90,6 @@ async function getLogs({ chain = 'ethereum', target,
 }
 
 module.exports = {
-  getLogs
+  getLogs,
+  getAddress: s=>"0x"+s.slice(26, 66),
 }

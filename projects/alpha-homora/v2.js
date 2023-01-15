@@ -1,9 +1,9 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
-const axios = require("axios");
 const { request, gql } = require("graphql-request");
 const { unwrapCreamTokens, unwrapUniswapLPs, unwrapUniswapV3NFTs } = require('../helper/unwrapLPs')
+const { getConfig } = require('../helper/cache')
 
 
 const chainParams = {
@@ -113,8 +113,8 @@ module.exports = {
     tvlV2Onchain
 }
 
-async function getPools(poolsJsonUrl){
-    return poolsJsonUrl === "local"? require('./v2/legacy-pools.json') : (await axios.get(poolsJsonUrl)).data
+async function getPools(poolsJsonUrl, chain){
+    return poolsJsonUrl === "local"? require('./v2/legacy-pools.json') : (await getConfig('alpha-hormora/v2-pools/'+chain, poolsJsonUrl))
 }
 
 async function tvlV2Onchain(block, chain) {
@@ -127,12 +127,12 @@ async function tvlV2Onchain(block, chain) {
       return  `${chain}:${addr}`
     }
     const { safeBoxApi, poolsJsonUrl, instances, } = chainParams[chain];
-    let { data: safebox } = await axios.get(safeBoxApi);
+    let safebox = await getConfig('alpha-hormora/v2-safebox/'+chain, safeBoxApi);
     const safeBoxRewards = safebox.filter(i => i.ibStakingReward)
     safebox = safebox.filter(i => !i.ibStakingReward)
     await unwrapIBRewards({ boxes: safeBoxRewards, balances, chain, block, transform, })
     await unwrapCreamTokens(balances, safebox.map(s=>[s.cyTokenAddress, s.safeboxAddress]), block, chain, transform)
-    let pools= await getPools(poolsJsonUrl);
+    let pools= await getPools(poolsJsonUrl, chain);
     const owners = pools.filter(i => i.wTokenType === 'WUniswapV3').map(i => i.wTokenAddress).filter(i => i)
     pools = pools.filter(i => i.wTokenType !== 'WUniswapV3')
     let poolsWithPid = pools.filter(p => p.pid !== undefined)
@@ -192,8 +192,8 @@ async function unwrapIBRewards({ block, chain, boxes, balances, transform}) {
 
 async function tvlV2(block, chain) {
     const { safeBoxApi, coreOracleAddress, latestAlphaHomoraV2GraphUrl, instances } = chainParams[chain];
-    const cyTokens = await getCyTokens(block, safeBoxApi, latestAlphaHomoraV2GraphUrl);
-    const collateralGroups = await Promise.all(instances.map(params => getTotalCollateral(block, params)))
+    const cyTokens = await getCyTokens(block, safeBoxApi, latestAlphaHomoraV2GraphUrl, chain);
+    const collateralGroups = await Promise.all(instances.map(params => getTotalCollateral(block, params, chain)))
 
     const tokens = Array.from(
         new Set([
@@ -236,8 +236,8 @@ function sumCollaterals(collaterals, tokenPrices) {
     );
 }
 
-async function getCyTokens(block, safeBoxApi, AlphaHomoraV2GraphUrl) {
-    const { data: safebox } = await axios.get(
+async function getCyTokens(block, safeBoxApi, AlphaHomoraV2GraphUrl, chain) {
+    const safebox = await getConfig('alpha-hormora/v2-safebox/'+chain,
         safeBoxApi
     );
     return Promise.all(
@@ -293,9 +293,9 @@ async function getTotalCollateral(
         wStakingRewardPerp,
         poolsJsonUrl,
         graphUrl,
-    }
+    }, chain
 ) {
-    const pools = await getPools(poolsJsonUrl);
+    const pools = await getPools(poolsJsonUrl, chain);
 
     const {
         crvCollaterals,

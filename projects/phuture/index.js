@@ -16,9 +16,9 @@ const indexTvl = (chain) => async (timestamp, block, chainBlocks) => {
 
   const indexes = Object.fromEntries(
     anatomy.map(({ input, output: { _assets } }) => [
-        input.target,
-        _assets
-      ]
+      input.target,
+      _assets
+    ]
     )
   );
 
@@ -69,29 +69,22 @@ const indexTvl = (chain) => async (timestamp, block, chainBlocks) => {
   );
 };
 
-const savingsVaultTvl = (chain) => async (timestamp, block, chainBlocks) => {
-  const { output: assets } = await sdk.api.abi.multiCall({
-    chain,
-    block: chainBlocks[chain],
-    calls: networks[chain]["savingsVaults"].map((target) => ({ target })),
-    abi: savingsVaultAbi.asset
-  });
+const savingsVaultTvl = (chain) => async (_, _1, _2, { api }) => {
+  const calls = networks[chain]["savingsVaults"]
+  const assets = await api.multiCall({
+    abi: savingsVaultAbi.asset, calls,
+  })
+  const totalAssets = await api.multiCall({
+    abi: savingsVaultAbi.totalAssets, calls,
+  })
+  const balances = {}
 
-  const { output: totalAssets } = await sdk.api.abi.multiCall({
-    chain,
-    block: chainBlocks[chain],
-    calls: networks[chain]["savingsVaults"].map((target) => ({ target })),
-    abi: savingsVaultAbi.totalAssets
-  });
-
-  const chainTransform = await getChainTransform(chain);
-
-  return Object.fromEntries(
-    assets.map(({ output: asset }, i) => [
-      chainTransform(asset),
-      totalAssets[i].output
-    ])
-  );
+  totalAssets.forEach((bal, i) => {
+    const token = assets[i]
+    if (!bal && calls[i].toLowerCase() === '0x6bad6a9bcfda3fd60da6834ace5f93b8cfed9598') return;
+    sdk.util.sumSingleBalance(balances, token, bal, chain)
+  })
+  return balances
 };
 
 module.exports = {

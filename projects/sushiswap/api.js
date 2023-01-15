@@ -166,6 +166,20 @@ module.exports = {
       useDefaultCoreAssets: true,
     }),
   },
+  boba_avax: {
+    tvl: getUniTVL({
+      factory,
+      chain: 'boba_avax',
+      useDefaultCoreAssets: true,
+    }),
+  },
+  boba_bnb: {
+    tvl: getUniTVL({
+      factory,
+      chain: 'boba_bnb',
+      useDefaultCoreAssets: true,
+    }),
+  },
   avax: {
     tvl: getUniTVL({
       factory,

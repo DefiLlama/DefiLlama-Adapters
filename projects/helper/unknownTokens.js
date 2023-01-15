@@ -91,29 +91,31 @@ function pool2({ stakingContract, lpToken, chain = "ethereum", transformAddress,
 }
 
 function sumTokensExport({ tokensAndOwners = [],
-  coreAssets = [], owner, tokens, chain = 'ethereum', restrictTokenRatio, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
+  coreAssets = [], owner, tokens, restrictTokenRatio, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
   log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [], useDefaultCoreAssets = false,
 }) {
-  return (_, _b, { [chain]: block }) => sumUnknownTokens({ tokensAndOwners, coreAssets, owner, tokens, chain, block, restrictTokenRatio, blacklist, skipConversion, log_coreAssetPrices, log_minTokenValue, owners, lps, useDefaultCoreAssets, })
+  return (_, _b, _cb, { api }) => sumUnknownTokens({ ...api, tokensAndOwners, onlyLPs, minLPRatio, coreAssets, owner, tokens, restrictTokenRatio, blacklist, skipConversion, log_coreAssetPrices, log_minTokenValue, owners, lps, useDefaultCoreAssets, })
 }
 
 function staking({ tokensAndOwners = [],
-  coreAssets = [], owner, tokens, chain = 'ethereum', restrictTokenRatio, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
+  coreAssets = [], owner, tokens, restrictTokenRatio, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
   log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [], useDefaultCoreAssets = false,
 }) {
-  if (!coreAssets.length && useDefaultCoreAssets)
-    coreAssets = getCoreAssets(chain)
-  blacklist = getUniqueAddresses(blacklist)
-  if (!tokensAndOwners.length)
-    if (owners.length)
-      tokensAndOwners = owners.map(o => tokens.map(t => [t, o])).flat()
-    else if (owner)
-      tokensAndOwners = tokens.map(t => [t, owner])
-  tokensAndOwners = tokensAndOwners.filter(t => !blacklist.includes(t[0]))
 
-  return async (_, _b, { [chain]: block }) => {
+  return async (_, _b, _cb, { api, chain = 'ethereum', block, }) => {
+    if (!coreAssets.length && useDefaultCoreAssets)
+      coreAssets = getCoreAssets(chain)
+    blacklist = getUniqueAddresses(blacklist)
+    if (!tokensAndOwners.length)
+      if (owners.length)
+        tokensAndOwners = owners.map(o => tokens.map(t => [t, o])).flat()
+      else if (owner)
+        tokensAndOwners = tokens.map(t => [t, owner])
+    tokensAndOwners = tokensAndOwners.filter(t => !blacklist.includes(t[0]))
+
     const balances = await sumTokens2({ chain, block, tokensAndOwners })
     const { updateBalances, pairBalances, prices, } = await getTokenPrices({ coreAssets, lps: [...tokensAndOwners.map(t => t[0]), ...lps,], chain, block, restrictTokenRatio, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio })
+    // sdk.log(prices, pairBalances, balances)
     await updateBalances(balances, { skipConversion, onlyLPs })
     const fixBalances = await getFixBalances(chain)
     fixBalances(balances)
@@ -205,33 +207,8 @@ function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = 
 }
 
 const yieldApis = {
-  balance: {
-    "inputs": [],
-    "name": "balance",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  token: {
-    "type": "function",
-    "stateMutability": "view",
-    "outputs": [
-      {
-        "type": "address",
-        "name": "",
-        "internalType": "contract IERC20"
-      }
-    ],
-    "name": "token",
-    "inputs": []
-  }
+  balance: "uint256:balance",
+  token: "address:token",
 }
 
 async function yieldHelper({ chain = 'ethereum', block, coreAssets = [], blacklist = [], whitelist = [], vaults = [], transformAddress,
