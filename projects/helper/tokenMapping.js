@@ -371,7 +371,7 @@ const ibcMappings = {
   'ibc/961FA3E54F5DCCA639F37A7C45F7BBE41815579EF1513B5AFBEFCFEB8F256352': { coingeckoId: 'cosmos', decimals: 6, },
   'ibc/799FDD409719A1122586A629AE8FCA17380351A51C1F47A80A1B8E7F2A491098': { coingeckoId: 'akash-network', decimals: 6, },
   'ibc/B8AF5D92165F35AB31F3FC7C7B444B9D240760FA5D406C49D24862BD0284E395': { coingeckoId: 'terra-luna', decimals: 6, },
-  'ibc/DA59C009A0B3B95E0549E6BF7B075C8239285989FF457A8EDDBB56F10B2A6986': { coingeckoId: 'terra-luna', decimals: 6, },
+  'ibc/DA59C009A0B3B95E0549E6BF7B075C8239285989FF457A8EDDBB56F10B2A6986': { coingeckoId: 'terra-luna-2', decimals: 6, },
   'ibc/0471F1C4E7AFD3F07702BEF6DC365268D64570F7C1FDC98EA6098DD6DE59817B': { coingeckoId: 'osmosis', decimals: 6, },
   'ibc/47BD209179859CDE4A2806763D7189B6E6FE13A17880FE2B42DE1E6C1E329E23': { coingeckoId: 'osmosis', decimals: 6, },
   'ibc/EA7DF7F779C7F14E07172E5713E07356B55F01496CA649DDE46CF8FBF1A8466D': { coingeckoId: 'osmosis', decimals: 6, },
@@ -397,7 +397,9 @@ const ibcMappings = {
   'ibc/B786E7CBBF026F6F15A8DA248E0F18C62A0F7A70CB2DABD9239398C8B5150ABB': { coingeckoId: 'persistence', decimals: 6, },
   'ibc/624BA9DD171915A2B9EA70F69638B2CEA179959850C1A586F6C485498F29EDD4': { coingeckoId: 'polkadot', decimals: 10, },
   'ibc/3FDD002A3A4019B05A33D324B2F29748E77AF501BEA5C96D1F28B2D6755F9F25': { coingeckoId: 'stride', decimals: 6, },
-
+  // from kujira
+  "ibc/B37E4D9FB5B30F3E1E20A4B2DE2A005E584C5C822C44527546556AE2470B4539": {coinGeckoId: "polkadot", decimals: 6, },
+  "ibc/DADB399E742FCEE71853E98225D13E44E90292852CD0033DF5CABAB96F80B833": {coingeckoId: "binancecoin", decimals: 18, },
 }
 
 const fixBalancesTokens = {
@@ -533,6 +535,7 @@ const fixBalancesTokens = {
   kujira: {
     "ukuji": { coingeckoId: "kujira", decimals: 6, },
     "factory/kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7/uusk": { coingeckoId: "usk", decimals: 6, },
+    "factory/kujira1swkuyt08z74n5jl7zr6hx0ru5sa2yev5v896p6/local": {coingeckoId: "local-money", decimals: 6,},
   },
   injective: {
     "inj": { coingeckoId: "injective-protocol", decimals: 18, },
