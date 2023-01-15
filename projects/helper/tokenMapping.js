@@ -330,6 +330,7 @@ const transformTokens = {
     "0x274d83086C356E0cFc75933FBf838CA10A7E8274": tokens.ethereum,
   },
   cronos: {
+    "0x065de42e28e42d90c2052a1b49e7f83806af0e1f": "0x123", // CRK token is mispriced
     "0x87EFB3ec1576Dec8ED47e58B832bEdCd86eE186e": "0x0000000000085d4780B73119b644AE5ecd22b376",
   },
   velas: {
