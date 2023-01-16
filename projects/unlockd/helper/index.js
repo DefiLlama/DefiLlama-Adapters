@@ -63,27 +63,8 @@ async function getBorrowed(balances, chain, timestamp, chainBlocks) {
   return balances;
 }
 
-async function getAPY(apys, chain, timestamp, chainBlocks) {
-  const block = chainBlocks[chain];
-
-  const { output: simpleReservesData } = await sdk.api.abi.call({
-    target: address.UiPoolDataProvider[chain],
-    params: [address.LendPoolAddressProvider[chain]],
-    abi: abi.UiPoolDataProvider.find((a) => a.name === "getSimpleReservesData"),
-    block,
-    chain,
-  });
-
-  simpleReservesData.forEach((d) => {
-    apys[d.underlyingAsset] = new BigNumber(d.liquidityRate);
-  });
-
-  return apys;
-}
-
 module.exports = {
   getTVL,
   getNFTTVL,
   getBorrowed,
-  getAPY,
 };
