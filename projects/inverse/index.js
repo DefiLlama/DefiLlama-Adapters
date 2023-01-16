@@ -205,7 +205,7 @@ module.exports = {
   hallmarks: [
     [
      1648771200, "INV price hack",
-     1655380800, "Inverse Finance Frontier Deprecated",
+     1655380800, "Inverse Frontier Deprecated",
     ],
 ],
   start: 1607731200, // Dec 12 2020 00:00:00 GMT+0000
