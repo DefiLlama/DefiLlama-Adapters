@@ -6,7 +6,7 @@ module.exports = {
   methodology: "Sums the total locked collateral value in usd across all vaults.",
   algorand: {
     tvl: async () => {
-      return { tether: await get('http://mainnet.collector.xbacked.io/api/v1/getTVL') };
+      return { tether: await get('http://mainnet.collector.xbacked.io:4001/api/v1/getTVL') };
     }
   },
 }
