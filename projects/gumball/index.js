@@ -1,4 +1,5 @@
 const { sumTokens2 } = require("../helper/unwrapLPs");
+const sdk = require('@defillama/sdk')
 
 const abi = {
     gbtPrice: "uint256:currentPrice",
@@ -23,7 +24,10 @@ async function tvl(_, _b, _cb, { api, }) {
         })
     })
 
-    return sumTokens2({ api, tokensAndOwners: toa })
+    const bal = await sumTokens2({ api, tokensAndOwners: toa })
+    const balances = {}
+    Object.entries(bal).forEach(([token, value]) => sdk.util.sumSingleBalance(balances, token, value * 2)) // value of base token * 2 to account for NFT tvl locked in pools
+    return balances
 }
 
 module.exports = {
@@ -32,5 +36,5 @@ module.exports = {
     },
     start: 51954296,
     timetravel: true,
-    methodology: 'We pull all balances from our 3 collections contracts and convert them to ETH using current coingecko api and return them as total TVL'
+    methodology: 'Value of base token * 2 (nfts in pools are valued equal to base tokens in pool)'
 }
