@@ -1,8 +1,7 @@
-
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const factories = {
-  fantom: '0xb842766eade13b3c51cbaed70aa128760859c0bf',
+  fantom: '0xdD693b9F810D0AEE1b3B74C50D3c363cE45CEC0C',
 }
 async function tvl(_, _b, _cb, { api, }) {
   const pools = await api.fetchList({
