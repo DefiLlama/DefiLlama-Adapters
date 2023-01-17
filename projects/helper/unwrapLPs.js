@@ -1,10 +1,9 @@
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
-const token0 = require('./abis/token0.json')
-const symbol = require('./abis/symbol.json')
+const token0 = 'address:token0'
+const symbol = 'string:symbol'
 const { getPoolTokens, getPoolId, bPool, getCurrentTokens, getVault: getBalancerVault, } = require('./abis/balancer.json')
-const getPricePerShare = require('./abis/getPricePerShare.json')
-const underlyingABI = require('./abis/underlying.json')
+const underlyingABI = "address:underlying"
 const { requery } = require('./requery')
 const { getChainTransform, getFixBalances } = require('./portedTokens')
 const creamAbi = require('./abis/cream.json')
@@ -105,7 +104,7 @@ async function unwrapYearn(balances, yToken, block, chain = "ethereum", transfor
   try {
     pricePerShare = await sdk.api.abi.call({
       target: yToken,
-      abi: getPricePerShare[1],
+      abi: "uint256:pricePerShare",
       block: block,
       chain: chain
     });
@@ -116,7 +115,7 @@ async function unwrapYearn(balances, yToken, block, chain = "ethereum", transfor
   if (pricePerShare == undefined) {
     pricePerShare = await sdk.api.abi.call({
       target: yToken,
-      abi: getPricePerShare[0],
+      abi:"uint256:getPricePerFullShare",
       block: block,
       chain: chain
     });

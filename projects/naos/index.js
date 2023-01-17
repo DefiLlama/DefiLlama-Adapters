@@ -160,19 +160,7 @@ module.exports = {
         sdk.api.erc20.decimals(NUSD_3CRV_LP_ADDRESS),
         sdk.api.abi.call({
           target: NUSD_3CRV_LP_ADDRESS,
-          abi: {
-            "name": "get_virtual_price",
-            "outputs": [
-              {
-                "type": "uint256",
-                "name": ""
-              }
-            ],
-            "inputs": [],
-            "stateMutability": "view",
-            "type": "function",
-            "gas": 1011891
-          },
+          abi: "uint256:get_virtual_price",
           block,
         })
       ])).map(i => i.output)

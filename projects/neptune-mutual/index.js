@@ -1,10 +1,8 @@
-const sdk = require('@defillama/sdk')
-const { ethers } = require("ethers");
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getLogs } = require('../helper/cache/getLogs')
 
 const abi = {
-  sc: { "inputs": [], "name": "sc", "outputs": [{ "internalType": "contract IStore", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" },
+  sc: "address:sc",
 }
 
 async function tvl(_, block, _1, { api }) {
