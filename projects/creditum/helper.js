@@ -1,7 +1,6 @@
 const abi = require('./abi.json')
 const sdk = require('@defillama/sdk')
 const BigNumber = require('bignumber.js');
-const getPricePerShare = require('../helper/abis/getPricePerShare.json')
 
 async function handleYearnTokens(balances, tokens, owner, block, chain, transform) {
     let balance = (
@@ -20,7 +19,7 @@ async function handleYearnTokens(balances, tokens, owner, block, chain, transfor
         calls: tokens.map((p) => ({
           target: p,
         })),
-        abi: getPricePerShare[1],
+        abi: "uint256:pricePerShare",
         block,
         chain,
       })

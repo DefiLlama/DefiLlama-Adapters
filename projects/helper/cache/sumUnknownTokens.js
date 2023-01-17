@@ -1,11 +1,11 @@
 const sdk = require('@defillama/sdk');
 const { default: BigNumber } = require('bignumber.js')
 
-const symbol = require('../abis/symbol.json')
-const token0 = require('../abis/token0.json');
-const token1 = require('../abis/token1.json');
+const symbol = 'string:symbol'
+const token0 = 'address:token0'
+const token1 = 'address:token1'
 const kslpABI = require('../abis/kslp.js');
-const getReserves = require('../abis/getReserves.json');
+const getReserves = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
 
 const { getChainTransform, stripTokenHeader, getFixBalances, getFixBalancesSync, } = require('../portedTokens')
 const { getCoreAssets } = require('../tokenMapping')
