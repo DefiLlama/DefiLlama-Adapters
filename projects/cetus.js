@@ -1,8 +1,17 @@
-const { dexExport } = require('../helper/aptos')
+const retry = require("./helper/retry");
+const axios = require("axios");
 
-module.exports = dexExport({
-  account: '0xec42a352cc65eca17a9fa85d0fc602295897ed6b8b8af6a6c79ef490eb8f9eba',
-  poolStr: 'amm_swap::Pool<',
-  token0Reserve: i => i.data.coin_a.value,
-  token1Reserve: i => i.data.coin_b.value,
-})
+async function fetch() {
+  const response = (
+    await retry(
+      async () => await axios.get("https://api.cetus.zone/v2/swap/count")
+    )
+  ).data;
+  const tvl = response.data.tvl_in_usd_sum_v1;
+  return tvl;
+}
+
+module.exports = {
+  timetravel: false,
+  fetch,
+};
