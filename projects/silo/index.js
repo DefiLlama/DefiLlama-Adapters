@@ -1,70 +1,9 @@
 const sdk = require('@defillama/sdk')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getLogs } = require('../helper/cache/getLogs')
-const getAssetsAbi = {
-  "inputs": [],
-  "name": "getAssets",
-  "outputs": [
-    {
-      "internalType": "address[]",
-      "name": "assets",
-      "type": "address[]"
-    }
-  ],
-  "stateMutability": "view",
-  "type": "function"
-}
+const getAssetsAbi = "address[]:getAssets"
 
-const getAssetStateAbi = {
-  "inputs": [],
-  "name": "getAssetsWithState",
-  "outputs": [
-    {
-      "internalType": "address[]",
-      "name": "assets",
-      "type": "address[]"
-    },
-    {
-      "components": [
-        {
-          "internalType": "contract IShareToken",
-          "name": "collateralToken",
-          "type": "address"
-        },
-        {
-          "internalType": "contract IShareToken",
-          "name": "collateralOnlyToken",
-          "type": "address"
-        },
-        {
-          "internalType": "contract IShareToken",
-          "name": "debtToken",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "totalDeposits",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "collateralOnlyDeposits",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "totalBorrowAmount",
-          "type": "uint256"
-        }
-      ],
-      "internalType": "struct IBaseSilo.AssetStorage[]",
-      "name": "assetsStorage",
-      "type": "tuple[]"
-    }
-  ],
-  "stateMutability": "view",
-  "type": "function"
-}
+const getAssetStateAbi = 'function getAssetsWithState() view returns (address[] assets, tuple(address collateralToken, address collateralOnlyToken, address debtToken, uint256 totalDeposits, uint256 collateralOnlyDeposits, uint256 totalBorrowAmount)[] assetsStorage)'
 
 const START_BLOCK = 15307294
 const SILO_FACTORY = '0x4D919CEcfD4793c0D47866C8d0a02a0950737589'

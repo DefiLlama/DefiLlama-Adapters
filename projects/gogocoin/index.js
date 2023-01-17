@@ -23,17 +23,7 @@ async function chainTVL(timestamp, block, chainBlocks) {
 
     const USDCPool = await sdk.api.abi.call({
         target: USDC_POOL_STAKING_CONTRACT,
-        abi: {
-            "inputs": [],
-            "name": "totalSupply",
-            "outputs": [{
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }],
-            "stateMutability": "view",
-            "type": "function"
-        },
+        abi: "uint256:totalSupply",
         chain: chain,
         block: chainBlocks[chain]
     })
@@ -48,17 +38,7 @@ async function stakingX(timestamp, block, chainBlocks) {
 
     const totalGOGOLocked = await sdk.api.abi.call({
         target: GOVERNANCE_STAKING_CONTRACT,
-        abi: {
-            "inputs": [],
-            "name": "getTotalLockedGogo",
-            "outputs": [{
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }],
-            "stateMutability": "view",
-            "type": "function"
-        },
+        abi: "uint256:getTotalLockedGogo",
         chain: chain,
         block: chainBlocks[chain]
     })

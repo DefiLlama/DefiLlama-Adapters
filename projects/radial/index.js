@@ -11,10 +11,10 @@ const {
   const { transformFantomAddress } = require("../helper/portedTokens");
   const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
   
-  const tokenAbi = require("../helper/abis/token.json");
-  const token0Abi = require("../helper/abis/token0.json");
-  const token1Abi = require("../helper/abis/token1.json");
-  const getReservesAbi = require("../helper/abis/getReserves.json");
+  const tokenAbi = 'address:token'
+  const token0Abi = 'address:token0'
+  const token1Abi = 'address:token1'
+  const getReservesAbi = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
   const shareValue = "uint256:getShareValue";
   const xSCREAM = "0xe3D17C7e840ec140a7A51ACA351a482231760824";
   const xCREDIT = "0xd9e28749e80D867d5d14217416BFf0e668C10645";

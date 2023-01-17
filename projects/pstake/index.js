@@ -120,19 +120,7 @@ async function bsctvl(timestamp, block, chainBlocks) {
   const transform = await transformBscAddress();
 
   const collateralBalance = (await sdk.api.abi.call({
-    abi: {
-      "inputs": [],
-      "name": "totalSupply",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
+    abi: "uint256:totalSupply",
     chain: 'bsc',
     target: STKBNB_TOKEN_CONTRACT,
     block: chainBlocks['bsc'],
