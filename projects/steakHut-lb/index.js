@@ -1,6 +1,5 @@
 const sdk = require('@defillama/sdk');
 const abi = require('./abi.json')
-const { transformAvaxAddress } = require('../helper/portedTokens');
 
 const _vaults = {
     avax: [
@@ -16,78 +15,55 @@ const _vaults = {
         '0x9cc15d1204d768380cec8d35bc1d8e1945083397' //BTC.b/USDC
     ],
     arbitrum: [
-        '0xb41506675a0977a34e8cec7da8c061d6753b5b03', 
+        '0xb41506675a0977a34e8cec7da8c061d6753b5b03',
     ],
-  }
+}
 
-async function getVaultShares(chainBlocks, api){
-    const calls = []
-    
-    for (let i = 0;i < _vaults[api.chain].length;i++)
-    calls.push({target: _vaults[api.chain][i],})
-
-    const vaultInfo = await
-    sdk.api.abi.multiCall({
-        calls,
+async function getVaultShares(api) {
+    return api.multiCall({
+        calls: _vaults[api.chain],
         abi: abi.totalSupply,
-        chain: api.chain,
-        block: chainBlocks[api.chain],
     })
-    return(vaultInfo)
 }
 
-async function getDepositTokens(chainBlocks, api){
-    const calls = []
-    
-    for (let i = 0;i < _vaults[api.chain].length;i++)
-    calls.push({target: _vaults[api.chain][i],})
-
-    const vaultInfo = await
-    sdk.api.abi.multiCall({
-        calls,
+async function getDepositTokens(api) {
+    return api.multiCall({
+        calls: _vaults[api.chain],
         abi: abi.want,
-        chain: api.chain,
-        block: chainBlocks[api.chain],
     })
-    return(vaultInfo.output)
 }
 
 
-async function tvl(_, block, chainBlocks, { api }) {
+async function tvl(_, block, _1, { api }) {
     const balances = {};
 
-    const transformAddress = await transformAvaxAddress()
-    
     //get the total shares from all vaults
-    const vaultShares = await getVaultShares(chainBlocks, api);
-    const depositTokens = await getDepositTokens(chainBlocks, api);
+    const vaultShares = await getVaultShares(api);
+    const depositTokens = await getDepositTokens(api);
 
     //get the total underlying assets from all shares
     const calls = []
 
-    for (let i = 0;i < _vaults[api.chain].length;i++)
-        calls.push({target: _vaults[api.chain][i], params: vaultShares.output[i].output})
+    for (let i = 0; i < _vaults[api.chain].length; i++)
+        calls.push({ target: _vaults[api.chain][i], params: vaultShares[i] })
 
-    const poolInfo = await
-    sdk.api.abi.multiCall({
+    const poolInfo = await api.multiCall({
         calls,
         abi: abi.getUnderlyingAssets,
-        chain: api.chain,
-        block: chainBlocks[api.chain],
     })
 
-    for (let i = 0;i < poolInfo.output.length;i++){
-        for (let t = 0;t < poolInfo.output[i].output.length;t++){
-            sdk.util.sumSingleBalance(balances, transformAddress(depositTokens[i].output[t]), poolInfo.output[i].output[t])
+    for (let i = 0; i < poolInfo.length; i++) {
+        for (let t = 0; t < poolInfo[i].length; t++) {
+            sdk.util.sumSingleBalance(balances, depositTokens[i][t], poolInfo[i][t], api.chain)
         }
     }
-    
+
     return balances;
 }
 
 module.exports = {
     methodology: 'Counts the value of LB tokens staked into SteakHut Liquidity.',
-    avax:{
+    avax: {
         tvl,
     },
     arbitrum: {
