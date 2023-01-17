@@ -1,6 +1,5 @@
-const sdk = require("@defillama/sdk");
 const { pool2 } = require("../helper/pool2");
-const { stakings, staking } = require("../helper/staking");
+const { stakings } = require("../helper/staking");
 const { sumTokens } = require("../helper/unwrapLPs");
 
 const stakingContract = "0x7eb5af418f199ea47494023c3a8b83a210f8846f";
@@ -27,6 +26,8 @@ const TreasureTokens = [
 
 async function tvl(timestamp, _block, { bsc: block }) {
   const toa = TreasureTokens.map((t) => [t, treasureContract]);
+  toa.push([TOKEN_BSC_USD, ALPContract])
+  toa.push([TOKEN_BUSD, ALPContract])
   return sumTokens({}, toa, block, "bsc");
 }
 
@@ -34,11 +35,7 @@ module.exports = {
   start: 1640100600, // 12/21/2021 @ 15:30pm (UTC)
   bsc: {
     tvl,
-    staking: sdk.util.sumChainTvls([
-      stakings([stakingContract_APX, daoContract], TOKEN_APX, "bsc"),
-      staking(ALPContract, TOKEN_BSC_USD, "bsc"),
-      staking(ALPContract, TOKEN_BUSD, "bsc"),
-    ]),
+    staking: stakings([stakingContract_APX, daoContract], TOKEN_APX, "bsc"),
     pool2: pool2(stakingContract, poolContract, "bsc"),
   },
 };
