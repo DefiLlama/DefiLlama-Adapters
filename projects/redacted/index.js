@@ -22,7 +22,7 @@ const cvxCRVPool = '0x0392321e86F42C2F94FBb0c6853052487db521F0'
 const cvxFXSPool = '0xf27AFAD0142393e4b3E5510aBc5fe3743Ad669Cb'
 
 const rlBTRFLYAbi = {
-    lockedSupply: {"inputs":[],"name":"lockedSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+    lockedSupply: "uint256:lockedSupply",
 } 
 
 async function tvl(timestamp, block, chainBlocks){

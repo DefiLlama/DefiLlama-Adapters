@@ -14,27 +14,9 @@ const ROCI_REVENUE_MANAGER = "0x10C9F64289cc5114E8854Cc216aD75a0d19d60b5";
 
 const ROCI_COLLATERAL_MANAGER = "0x6cb3C5e73b9A6B9E5e9745545a0f40c9724e2337";
 
-const RociRevenueManagerABI = {
-    "inputs": [
-        {
-            "internalType": "address",
-            "name": "_poolAddress",
-            "type": "address"
-        }
-    ],
-    "name": "balanceAvailable",
-    "outputs": [
-        {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-        }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-}
+const RociRevenueManagerABI = 'function balanceAvailable(address _poolAddress) view returns (uint256)'
 
-const poolValueAbi = { "inputs": [], "name": "poolValue", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }
+const poolValueAbi =  "uint256:poolValue"
 
 const chain = 'polygon'
 
