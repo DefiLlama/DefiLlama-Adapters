@@ -1,15 +1,7 @@
 const sdk = require('@defillama/sdk');
 const { sumTokens } = require('../helper/unwrapLPs')
 
-const abi = { 
-  "constant": true, 
-  "inputs": [], 
-  "name": "exchangeRateStored", 
-  "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], 
-  "payable": false, 
-  "stateMutability": "view", 
-  "type": "function" 
-};
+const abi = "uint256:exchangeRateStored"
 
 const cLINK = '0xface851a4921ce59e912d19329929ce6da6eb0c7';
 

@@ -12,7 +12,7 @@ const usdcABI = 'event Transfer(address indexed from, address indexed to, uint25
 
 async function tvl(ts, block) {
   const fromBlock = await getBlock(ts - (31 * ONE_DAY), 'ethereum', {}, false) //33 days ago
-  const usdcContract = new Contract(USDC, usdcABI, providers.ethereum)
+  const usdcContract = new Contract(USDC, [usdcABI], providers.ethereum)
   const eventFilter = usdcContract.filters.Transfer(LOGIUM_CORE);
   const events = await usdcContract.queryFilter(eventFilter, fromBlock, block);
   const owners = [LOGIUM_CORE]
