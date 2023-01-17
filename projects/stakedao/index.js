@@ -1,26 +1,24 @@
 const sdk = require("@defillama/sdk");
 const abi = require('./abi.json')
-const { unwrapCrv, sumTokensExportPromise } = require('./utils')
-const { transformAvaxAddress, transformBscAddress } = require('../helper/portedTokens');
-const BigNumber = require("bignumber.js");
-const axios = require('axios');
+const { sumTokens2 } = require('../helper/unwrapLPs')
+const { getConfig } = require('../helper/cache');
 
 const STRATEGIES_ENDPOINT = 'https://lockers.stakedao.org/api/strategies/cache';
 const LOCKERS_ENDPOINT = 'https://lockers.stakedao.org/api/lockers/cache';
 
 async function strategiesCurveBalancer(timestamp, block) {
   const resp = await Promise.all([
-    axios.get(`${STRATEGIES_ENDPOINT}/curve`),
-    axios.get(`${STRATEGIES_ENDPOINT}/balancer`)
+    getConfig('stakedao/curve', `${STRATEGIES_ENDPOINT}/curve`),
+    getConfig('stakedao/balancer', `${STRATEGIES_ENDPOINT}/balancer`)
   ]);
 
-  const strats = resp[0].data.concat(resp[1].data)
+  const strats = resp[0].concat(resp[1])
   const lgv4 = strats.map((strat) => [strat.infos.protocolLiquidityGaugeV4, strat.infos.angleLocker || strat.infos.curveLocker])
 
   return lgv4
 }
 
-async function ethereum(timestamp, block) {
+async function tvl(timestamp, block, _, { api }) {
   let balances = {}
   /////////////////////////////////////////////////////////////////////
   // --- STRATEGIES V2 
@@ -58,15 +56,12 @@ async function ethereum(timestamp, block) {
     eth_vault_v2,
     steth_vault_v2
   ]
-  await Promise.all(vaults.map(async vault=>{
-    const balance = await sdk.api.abi.call({
-      target: vault.contract,
-      block,
-      abi: abi['balance']
-    })
-    await unwrapCrv(balances, vault.token, balance.output, block)
-  }))
- 
+  const vaultBals = await api.multiCall({
+    abi: abi['balance'],
+    calls: vaults.map(i => i.contract),
+  })
+  vaultBals.forEach((bal, i) => sdk.util.sumSingleBalance(balances, vaults[i].token, bal))
+
   /////////////////////////////////////////////////////////////////////
   // --- STRATEGIES ANGLE 
   /////////////////////////////////////////////////////////////////////
@@ -79,139 +74,100 @@ async function ethereum(timestamp, block) {
     locker: '0xD13F8C25CceD32cdfA79EB5eD654Ce3e484dCAF5',
     abiCM: 'collateralMap'
   }
-  const angle_sanUSDC_V2 = {
-    contract: '0x79B738e404208e9607c3B4D4B3800Ed0d4A0e05F',
-    sanUsdcEurGauge: '0x51fE22abAF4a26631b2913E417c0560D547797a7',
-    usdcToken: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
-    abi:'balanceOf',
-  } 
   const angle_sanUSDC_V3 = {
     contract: angle_protocol.locker,
     sanUsdcEurGauge: '0x51fE22abAF4a26631b2913E417c0560D547797a7',
     usdcToken: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
-    abi:'balanceOf',
+    abi: 'balanceOf',
   }
   const angle_sanDAI_V3 = {
     contract: angle_protocol.locker,
     sanDaiEurGauge: '0x8E2c0CbDa6bA7B65dbcA333798A3949B07638026',
     daiToken: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
-    abi:'balanceOf',
+    abi: 'balanceOf',
   }
   const angle_sanFRAX_V3 = {
     contract: angle_protocol.locker,
     sanFraxEurGauge: '0xb40432243E4F317cE287398e72Ab8f0312fc2FE8',
     fraxToken: '0x853d955aCEf822Db058eb8505911ED77F175b99e',
-    abi:'balanceOf',
+    abi: 'balanceOf',
   }
   const angle_sushi_agEUR_V3 = {
     contract: angle_protocol.locker,
     sushiAgEURGauge: '0xBa625B318483516F7483DD2c4706aC92d44dBB2B',
     sushiAgEURToken: '0x1f4c763BdE1D4832B3EA0640e66Da00B98831355',
-    abi:'balanceOf',
+    abi: 'balanceOf',
   }
   const angle_guni_agEUR_usdc_V3 = {
     contract: angle_protocol.locker,
     guniAgEURUsdcGauge: '0xEB7547a8a734b6fdDBB8Ce0C314a9E6485100a3C',
     guniAgEURUsdcToken: '0xEDECB43233549c51CC3268b5dE840239787AD56c',
-    abi:'balanceOf',
+    abi: 'balanceOf',
   }
 
   // ==== Calls Balance ==== //
-  const sanUsdcEurV2 = sdk.api.abi.call({
-    target: angle_sanUSDC_V2.sanUsdcEurGauge,
-    block,
-    abi: abi[angle_sanUSDC_V2.abi],
-    params: angle_sanUSDC_V2.contract
-  })
-  const sanUsdcEurV3 = sdk.api.abi.call({
-    target: angle_sanUSDC_V3.sanUsdcEurGauge,
-    block,
-    abi: abi[angle_sanUSDC_V3.abi],
-    params: angle_sanUSDC_V3.contract
-  })
-  const sanDaiEurV3 = sdk.api.abi.call({
-    target: angle_sanDAI_V3.sanDaiEurGauge,
-    block,
-    abi: abi[angle_sanDAI_V3.abi],
-    params: angle_sanDAI_V3.contract
-  })
-  const sanFraxEurV3 = sdk.api.abi.call({
-    target: angle_sanFRAX_V3.sanFraxEurGauge,
-    block,
-    abi: abi[angle_sanFRAX_V3.abi],
-    params: angle_sanFRAX_V3.contract
-  })
-  const angleSushiAgEurV3 = sdk.api.abi.call({
-    target: angle_sushi_agEUR_V3.sushiAgEURGauge,
-    block,
-    abi: abi[angle_sushi_agEUR_V3.abi],
-    params: angle_sushi_agEUR_V3.contract
-  })
-  const angleGuniAgEurUSDCV3 = sdk.api.abi.call({
-    target: angle_guni_agEUR_usdc_V3.guniAgEURUsdcGauge,
-    block,
-    abi: abi[angle_guni_agEUR_usdc_V3.abi],
-    params: angle_guni_agEUR_usdc_V3.contract
-  })
+  const [
+    sanUsdcEurV3,
+    sanDaiEurV3,
+    sanFraxEurV3,
+    angleSushiAgEurV3,
+    angleGuniAgEurUSDCV3,
+  ] = await api.multiCall({  abi: abi[angle_sanUSDC_V3.abi], calls: [
+    angle_sanUSDC_V3.sanUsdcEurGauge,
+    angle_sanDAI_V3.sanDaiEurGauge,
+    angle_sanFRAX_V3.sanFraxEurGauge,
+    angle_sushi_agEUR_V3.sushiAgEURGauge,
+    angle_guni_agEUR_usdc_V3.guniAgEURUsdcGauge,
+  ].map(i => ({ target: i, params: angle_sanUSDC_V3.contract}))})
 
   // ==== Calls Rate ==== //
-  const collateralMapUsdc = sdk.api.abi.call({
-    target: angle_protocol.stableMasteFront,
-    block,
-    abi: abi[angle_protocol.abiCM],
-    params: angle_protocol.usdcPoolManager
-  })
-  const collateralMapDai = sdk.api.abi.call({
-    target: angle_protocol.stableMasteFront,
-    block,
-    abi: abi[angle_protocol.abiCM],
-    params: angle_protocol.daiPoolManager
-  })
-  const collateralMapFrax = sdk.api.abi.call({
-    target: angle_protocol.stableMasteFront,
-    block,
-    abi: abi[angle_protocol.abiCM],
-    params: angle_protocol.fraxPoolManager
-  })
-  // ==== Use Rate ==== //
-  const sanUsdcEurRate = (await collateralMapUsdc).output.sanRate
-  const sanDaiEurRate = (await collateralMapDai).output.sanRate
-  const sanFraxEurRate = (await collateralMapFrax).output.sanRate
+  const [
+    sanUsdcEurRate,
+    sanDaiEurRate,
+    sanFraxEurRate,
+  ] = (await api.multiCall({
+    abi: abi[angle_protocol.abiCM], calls: [{
+      target: angle_protocol.stableMasteFront,
+      params: angle_protocol.usdcPoolManager
+    }, {
+      target: angle_protocol.stableMasteFront,
+      params: angle_protocol.daiPoolManager
+    }, {
+      target: angle_protocol.stableMasteFront,
+      params: angle_protocol.fraxPoolManager
+    },]
+  })).map(i => i.sanRate)
 
   // ==== Map ==== //
-  //sdk.util.sumSingleBalance(balances, angle_sanUSDC_V2.usdcToken, ((await sanUsdcEurV2).output  * sanUsdcEurRate / 10**18))
-  sdk.util.sumSingleBalance(balances, angle_sanUSDC_V3.usdcToken, ((await sanUsdcEurV3).output  * sanUsdcEurRate / 10**18))
-  sdk.util.sumSingleBalance(balances, angle_sanDAI_V3.daiToken, (((await sanDaiEurV3).output  * sanDaiEurRate / 10**18)))
-  sdk.util.sumSingleBalance(balances, angle_sanFRAX_V3.fraxToken, (((await sanFraxEurV3).output  * sanFraxEurRate / 10**18)))
-  sdk.util.sumSingleBalance(balances, angle_sushi_agEUR_V3.sushiAgEURToken, (((await angleSushiAgEurV3).output )))
-  sdk.util.sumSingleBalance(balances, angle_guni_agEUR_usdc_V3.guniAgEURUsdcToken, (((await angleGuniAgEurUSDCV3).output )))
-  
+  //sdk.util.sumSingleBalance(balances, angle_sanUSDC_V2.usdcToken, ((await sanUsdcEurV2)  * sanUsdcEurRate / 10**18))
+  sdk.util.sumSingleBalance(balances, angle_sanUSDC_V3.usdcToken, (sanUsdcEurV3 * sanUsdcEurRate / 10 ** 18))
+  sdk.util.sumSingleBalance(balances, angle_sanDAI_V3.daiToken, ((sanDaiEurV3 * sanDaiEurRate / 10 ** 18)))
+  sdk.util.sumSingleBalance(balances, angle_sanFRAX_V3.fraxToken, ((sanFraxEurV3 * sanFraxEurRate / 10 ** 18)))
+  sdk.util.sumSingleBalance(balances, angle_sushi_agEUR_V3.sushiAgEURToken, angleSushiAgEurV3)
+  sdk.util.sumSingleBalance(balances, angle_guni_agEUR_usdc_V3.guniAgEURUsdcToken, angleGuniAgEurUSDCV3)
+
+  const strategies = await strategiesCurveBalancer()
+
   /////////////////////////////////////////////////////////////////////
   // --- LIQUID LOCKERS
   /////////////////////////////////////////////////////////////////////
-  const resp = await Promise.all([
-    axios.get(`${LOCKERS_ENDPOINT}`)
-  ]);
+  const resp = await getConfig('stakedao/locker', LOCKERS_ENDPOINT)
 
   let lockersInfos = []
-  for (let i = 0; i< resp[0].data.length;++i) {
-    lockersInfos.push({contract: `${resp[0].data[i].infos.locker}`, veToken: `${resp[0].data[i].infos.ve}`, token: `${resp[0].data[i].infos.token}`})
+  for (let i = 0; i < resp.length; ++i) {
+    lockersInfos.push({ contract: `${resp[i].infos.locker}`, veToken: `${resp[i].infos.ve}`, token: `${resp[i].infos.token}` })
   }
 
-  for (let i = 0; i< lockersInfos.length; ++i) {
-    sdk.util.sumSingleBalance(
-      balances, 
-      lockersInfos[i].token, 
-      (await sdk.api.abi.call({
-        target: lockersInfos[i].veToken,
-        block,
-        abi: abi['locked'],
-        params: lockersInfos[i].contract
-      })).output.amount
-    )
-  }
+  const calls = []
+  for (let i = 0; i < lockersInfos.length; ++i)
+    calls.push({
+      target: lockersInfos[i].veToken,
+      params: lockersInfos[i].contract
+    })
+  const lockerBals = await api.multiCall({ abi: abi.locked, calls })
+  lockerBals.forEach(({ amount }, i) => sdk.util.sumSingleBalance(balances, lockersInfos[i].token, amount))
 
-  return balances
+  return sumTokens2({ api, tokensAndOwners: strategies,  balances, })
 }
 
 async function staking(timestamp, block) {
@@ -219,167 +175,75 @@ async function staking(timestamp, block) {
   const arbStrat = '0x20D1b558Ef44a6e23D9BF4bf8Db1653626e642c3'
   const veSdt = '0x0C30476f66034E11782938DF8e4384970B6c9e8a'
   const sdtToken = '0x73968b9a57c6E53d41345FD57a6E6ae27d6CDB2F'
-
-  const sdtInSactuary = await sdk.api.erc20.balanceOf({
-    target: sdtToken,
-    owner: sanctuary,
-    block
+  return sumTokens2({
+    owners: [sanctuary, arbStrat, veSdt,],
+    tokens: [sdtToken]
   })
-
-  const sdtInArbStrategy = await sdk.api.erc20.balanceOf({
-    target: sdtToken,
-    owner: arbStrat,
-    block
-  })
-
-  const sdtInLocker = await sdk.api.erc20.balanceOf({
-    target: sdtToken,
-    owner: veSdt,
-    block
-  })
-
-  const totalSDTStaked = BigNumber(sdtInSactuary.output)
-  .plus(BigNumber(sdtInArbStrategy.output))
-  .plus(BigNumber(sdtInLocker.output))
-  .toFixed()
-
-  return {
-    [sdtToken]:totalSDTStaked
-  }
 }
 
-async function polygon(timestamp, ethBlock, chainBlocks) {
+async function polygon(timestamp, ethBlock, chainBlocks, { api, }) {
   const crv_3crv_vault_polygon = {
     contract: '0x7d60F21072b585351dFd5E8b17109458D97ec120',
-    crvToken: '0xE7a24EF0C5e95Ffb0f6684b813A78F2a3AD7D171',
-    abi: 'balance'
   }
   const vaultsPolygon = [
     crv_3crv_vault_polygon,
   ]
+  return getBalances(api, vaultsPolygon)
+}
 
-  let balances = {};
-  const block = chainBlocks.polygon
-  await Promise.all(vaultsPolygon.map(async vault=>{
-    const crvBalance = await sdk.api.abi.call({
-      target: vault.contract,
-      block,
-      abi: abi[vault.abi], 
-      chain: 'polygon'
-    })  
-    await unwrapCrv(balances, vault.crvToken, crvBalance.output, block, 'polygon', addr=>`polygon:${addr}`)
-  }))
+async function getBalances(api, vaults, { balances = {} } = {}) {
+  const tokens = await api.multiCall({ abi: 'address:token', calls: vaults.map(i => i.contract) })
+  const bals = await api.multiCall({ abi: 'uint256:balance', calls: vaults.map(i => i.contract) })
+  tokens.forEach((token, i) => sdk.util.sumSingleBalance(balances, token, bals[i], api.chain))
   return balances
 }
 
-async function avax(timestamp, ethBlock, chainBlocks) {
+async function avax(timestamp, ethBlock, chainBlocks, { api }) {
   const crv_3crv_vault_avalanche = {
     contract: '0x0665eF3556520B21368754Fb644eD3ebF1993AD4',
-    crvToken: '0x1337BedC9D22ecbe766dF105c9623922A27963EC',
-    abi: 'balance'
   }
 
   const vaultsAvalanche = [
     crv_3crv_vault_avalanche
   ]
-
-  const transformAddress = await transformAvaxAddress()
-  let balances = {};
-  const block = chainBlocks.avax
-  await Promise.all(vaultsAvalanche.map(async vault=>{
-    const crvBalance = await sdk.api.abi.call({
-      target: vault.contract,
-      block,
-      abi: abi[vault.abi], 
-      chain: 'avax'
-    })  
-    await unwrapCrv(balances, vault.crvToken, crvBalance.output, block, 'avax', addr=>`avax:${addr}`)
-  }))
-
-  // map from avax to ethereum token address 
-  const dai_eth_address = transformAddress('0xbA7dEebBFC5fA1100Fb055a87773e1E99Cd3507a')
-  const usdc_eth_address = transformAddress('0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664')
-  const usdt_eth_address = transformAddress('0xde3A24028580884448a5397872046a019649b084')
-
-  // avDAI
-  const avDAI = 'avax:0x47AFa96Cdc9fAb46904A55a6ad4bf6660B53c38a'
-  balances[dai_eth_address] = balances[avDAI]
-  delete balances[avDAI]
-  // avUSDC
-  const avUSDC = 'avax:0x46A51127C3ce23fb7AB1DE06226147F446e4a857'
-  balances[usdc_eth_address] = balances[avUSDC]
-  delete balances[avUSDC]
-  // avUSDT
-  const avUSDT = 'avax:0x532E6537FEA298397212F09A61e03311686f548e'
-  balances[usdt_eth_address] = balances[avUSDT]
-  delete balances[avUSDT]
-
-  return balances
+  return getBalances(api, vaultsAvalanche)
 }
 
-async function bsc(timestamp, ethBlock, chainBlocks) {
+async function bsc(timestamp, ethBlock, chainBlocks, { api }) {
   const btcEPS_vault_bsc = {
     contract: '0xf479e1252481360f67c2b308F998395cA056a77f',
-    crvToken: '0x2a435ecb3fcc0e316492dc1cdd62d0f189be5640',
-    abi: 'balance'
   }
   const EPS3_vault_bsc = {
     contract: '0x4835BC54e87ff7722a89450dc26D9dc2d3A69F36',
-    crvToken: '0xaf4de8e872131ae328ce21d909c74705d3aaf452',
-    abi: 'balance'
   }
   const fusdt3EPS_vault_bsc = {
     contract: '0x8E724986B08F2891cD98F7F71b5F52E7CFF420de',
-    crvToken: '0x373410a99b64b089dfe16f1088526d399252dace',
-    abi: 'balance'
   }
 
   const vaultsBsc = [
     btcEPS_vault_bsc,
     EPS3_vault_bsc,
     fusdt3EPS_vault_bsc
-  ]
+  ].map(i => i.contract)
 
-  let balances = {};
-  const block = chainBlocks.bsc;
-  const transform = await transformBscAddress();
-  await Promise.all(vaultsBsc.map(async vault=>{
-
-    const crvBalance = (await sdk.api.abi.call({
-      target: vault.contract,
-      block,
-      abi: abi[vault.abi], 
-      chain: 'bsc'
-    })).output;
-
-    switch(vault.crvToken) {
-      case '0x2a435ecb3fcc0e316492dc1cdd62d0f189be5640':
-        balances['bitcoin'] = crvBalance / 10 ** 18; break;
-      case '0xaf4de8e872131ae328ce21d909c74705d3aaf452':
-        balances['usd-coin'] = crvBalance / 10 ** 18; break;
-      case '0x373410a99b64b089dfe16f1088526d399252dace':
-        balances['tether'] = crvBalance / 10 ** 18; break;
-    }
-  }))
-  return balances
+  const [bitcoin, usdc, tether] = (await api.multiCall({  abi: abi.balance, calls: vaultsBsc}) ).map(i => i/1e18)
+  return {
+    bitcoin, tether, 'usd-coin': usdc
+  }
 }
 
 // node test.js projects/stakedao/index.js
 module.exports = {
-  ethereum:{
-    tvl: sumTokensExportPromise({
-          chain: 'ethereum',
-          tokensAndOwnersPromise: strategiesCurveBalancer,
-          resolveLP: true,
-          balancesPromise: ethereum
-        }), 
-        staking 
+  misrepresentedTokens: true,
+  ethereum: {
+    tvl,
+    staking,
   },
   polygon: {
-    tvl: polygon
+    tvl: polygon,
   },
-  avax:{
-    tvl: avax
+  avax: {
+    tvl: avax,
   },
   bsc: {
     tvl: bsc,
