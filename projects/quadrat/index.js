@@ -19,7 +19,7 @@ const GRAPH_QUERY = gql`
             token1 {
                 id
             }
-            daysData (orderBy: createdAt orderDirection: desc skip:0 first: 1,where: {createdAt_lte:$timestamp}) {
+            daysData (orderBy: createdAt orderDirection: desc skip:0 first: 1,where: {createdAt_gte:$timestamp}) {
                 amount0
                 amount1
             }
