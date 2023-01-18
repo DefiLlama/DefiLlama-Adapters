@@ -10,7 +10,7 @@ function getCoinGeckoId(apiId) {
         'uluna': 'terra-luna',
         'uusd': 'terrausd'
     }[apiId]
-};
+}
 
 const graphUrl = `https://mantle.terra.dev/`
 const query = `
@@ -36,7 +36,7 @@ async function tvl() {
         balances[getCoinGeckoId(m.underlying)] = (m.total_credit - m.total_insurance) / 10 ** 6;
     });
     return balances;
-};
+}
 
 async function borrowed() {
     const balances = {};
@@ -45,7 +45,7 @@ async function borrowed() {
         balances[getCoinGeckoId(m.underlying)] = m.total_loan / 10 ** 6;
     });
     return balances;
-};
+}
 
 module.exports = {
     timetravel: false,

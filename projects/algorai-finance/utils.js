@@ -1,4 +1,4 @@
-const {lookupApplications} = require("../helper/chain/algorand");
+const { lookupApplications } = require("../helper/chain/algorand");
 
 /**
  * @desc Read global state from algorand application
@@ -28,24 +28,22 @@ const decodeString = (str) => {
  * @param keys - Asset keys to find.
  */
 const readGlobalState = async (appIndex, keys) => {
-    return new Promise(async (resolve, reject) => {
-        const states = await getAppState(appIndex)
+    const states = await getAppState(appIndex)
 
-        const foundedState = [];
+    const foundedState = [];
 
-        for (let i = 0; i < states.length; i++) {
-            const state = states[i];
-            const stateKey = decodeString(state.key);
+    for (let i = 0; i < states.length; i++) {
+        const state = states[i];
+        const stateKey = decodeString(state.key);
 
-            keys.forEach((key, index) => {
-                if (key === stateKey) {
-                    foundedState[index] = state.value.uint;
-                }
-            });
+        keys.forEach((key, index) => {
+            if (key === stateKey) {
+                foundedState[index] = state.value.uint;
+            }
+        });
 
-        }
-        resolve(foundedState);
-    });
+    }
+    return foundedState
 };
 
 module.exports = {

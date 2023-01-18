@@ -105,7 +105,7 @@ chains.forEach(chain => {
 
           sdk.util.sumSingleBalance(balances, chain + ':' + resolveAddress(underlyingAddress), underlyingTotal.toFixed(0));
         }));
-      };
+      }
       if (chain in saPoolAPIs) {
         // calculate TVL from SmartAlpha pools
         const saPools = await fetchSaPools(saPoolAPIs[chain], chain);
@@ -123,7 +123,7 @@ chains.forEach(chain => {
             .plus(queuedSeniorsUnderlyingIn);
           sdk.util.sumSingleBalance(balances, chain + ':' + resolveAddress(poolToken.address), underlyingTotal.toFixed(0));
         }));
-      };
+      }
 
       return balances;
     }
