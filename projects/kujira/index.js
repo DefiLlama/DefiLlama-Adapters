@@ -3,8 +3,6 @@ const { sumTokens, endPoints } = require('../helper/chain/cosmos')
 
 
 async function tvl() {
-  const { pairs } = await get("https://api.kujira.app/api/coingecko/pairs");
-  const pairAddresses = pairs.map((pair) => pair.pool_id);
   const uskCDPs = [
     "kujira1ecgazyd0waaj3g7l9cmy5gulhxkps2gmxu9ghducvuypjq68mq2smfdslf",
     "kujira1f2jt3f9gzajp5uupeq6xm20h90uzy6l8klvrx52ujaznc8xu8d7s6av27t", 
