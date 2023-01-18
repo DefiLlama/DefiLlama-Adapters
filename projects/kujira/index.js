@@ -5,7 +5,13 @@ const { sumTokens, endPoints } = require('../helper/chain/cosmos')
 async function tvl() {
   const { pairs } = await get("https://api.kujira.app/api/coingecko/pairs");
   const pairAddresses = pairs.map((pair) => pair.pool_id);
-  const { contracts: uskCDPs } = await get(endPoints.kujira + "/cosmwasm/wasm/v1/code/19/contracts?pagination.limit=100");
+  const uskCDPs = [
+    "kujira1ecgazyd0waaj3g7l9cmy5gulhxkps2gmxu9ghducvuypjq68mq2smfdslf",
+    "kujira1f2jt3f9gzajp5uupeq6xm20h90uzy6l8klvrx52ujaznc8xu8d7s6av27t", 
+    "kujira1eydneup86kyhew5zqt5r7tkxefr3w5qcsn3ssrpcw9hm4npt3wmqa7as3u",
+    "kujira1fjews4jcm2yx7una77ds7jjjzlx5vgsessguve8jd8v5rc4cgw9s8rlff8",
+    "kujira1r80rh4t7zrlt8d6da4k8xptwywuv39esnt4ax7p7ca7ga7646xssrcu5uf"
+  ]
   const owners = [
     ...uskCDPs,
   ]
