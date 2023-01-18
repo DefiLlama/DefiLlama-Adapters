@@ -30,6 +30,7 @@
     "hi-base32": "^0.5.1",
     "js-sha512": "^0.8.0",
     "limiter": "2.1.0",
+    "starknet": "^4.17.1",
     "tron-format-address": "^0.1.8",
     "typescript": "^4.7.4"
   },
