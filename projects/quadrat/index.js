@@ -43,7 +43,7 @@ function chainTvlFactory(chain) {
         sdk.util.sumSingleBalance(balances, strategy.token1.id, dayData.amount1, api.chain);
       }
     });
-    return balances
+    return balances 
   };
 }
 
