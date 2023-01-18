@@ -18,7 +18,7 @@ async function fetchBalances(exports, contracts, transform, chainBlocks, chain) 
     });
 
     sdk.util.sumMultiBalanceOf(exports, balances, false, transform);
-};
+}
 
 // node test.js projects/infinitypad/index.js
 function tvl(chain) {
@@ -48,7 +48,7 @@ function tvl(chain) {
 
         return balances;
     };
-};
+}
 
 const chainTVLObject = contracts.chains.reduce(
     (agg, chain) => ({ ...agg, [chain]: {tvl: tvl(chain) }}), {}

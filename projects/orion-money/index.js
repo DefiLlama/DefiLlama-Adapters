@@ -52,11 +52,11 @@ async function tvl(timestamp, block) {
             totalCoins = Number(totalCoins) +
                 Number(contractTokenBalance * pricePerShare *
                     10 ** tokenDecimals / 10 ** 18);
-        };
+        }
         balances[stable[i]] = Number(balances[stable[i]]) + Number(totalCoins);
-    };
+    }
     return balances;
-};
+}
 
 async function returnDecimals(address, block) {
     if (address.toLowerCase() === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {

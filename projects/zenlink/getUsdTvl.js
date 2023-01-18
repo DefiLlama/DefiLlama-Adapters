@@ -56,7 +56,7 @@ async function getStableSwapPool(
         });
     });
     return tokenAmountArray;
-};
+}
 
 async function requery(results, chain, block, abi) {
     if (results.some(r => !r.success)) {

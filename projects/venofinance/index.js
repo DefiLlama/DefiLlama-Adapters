@@ -8,17 +8,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     const block = chainBlocks.cronos
 
     const cro_pooled = await sdk.api.abi.call({
-        abi: {
-            "type":"function",
-            "stateMutability":"view",
-            "outputs":[{
-                "type":"uint256",
-                "name":"",
-                "internalType":"uint256"
-            }],
-            "name":"getTotalPooledCro",
-            "inputs":[]
-        },
+        abi: "uint256:getTotalPooledCro",
         target: lcro_contract_address,
         block: block,
         chain: 'cronos'

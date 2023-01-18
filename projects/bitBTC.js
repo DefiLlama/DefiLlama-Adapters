@@ -58,18 +58,18 @@ async function findBalances(contracts, block) {
                 transform(contracts[i].token), 
                 balanceOfs[i].output
             );
-        };
-    };
+        }
+    }
     return balances;
-};
+}
 
 async function tvl(timestamp, block, chainBlocks) {
     return await findBalances(tvlContracts, chainBlocks.optimism);
-};
+}
 
 async function staking(timestamp, block, chainBlocks) {
     return await findBalances(stakingContracts, chainBlocks.optimism);
-};
+}
 
 module.exports = {
     optimism: {

@@ -12,13 +12,13 @@ async function tvl(timestamp, chainBlocks) {
   const localPools = rows.filter(v => v.masterChef.includes('LiquidityMiningMaster') && !v.baseToken.includes('xms'));
   const remotePools = rows.filter(v => v.masterChef.includes('MarsFarmV2') && !v.baseToken.includes('xms'));
   return await calculate(chainBlocks, localPools, remotePools);
-};
+}
 async function staking(timstamp, chainBlocks) {
   const rows = (await getConfig('mars-ecosystem', url));
   const localPools = rows.filter(v => v.masterChef.includes('LiquidityMiningMaster') && v.baseToken.includes('xms'));
   const remotePools = rows.filter(v => v.masterChef.includes('MarsFarmV2') && v.baseToken.includes('xms'));
   return await calculate(chainBlocks, localPools, remotePools);
-};
+}
 
 async function calculate(chainBlocks, localPools, remotePools) {
   let balances = {};

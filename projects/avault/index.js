@@ -10,7 +10,7 @@ async function tvl(_, _b, chainBlocks) {
   const vaultsInfo = (await getConfig('avault', url))
   const chainArr = Object.keys(vaultsInfo);
   const chain = "astar";
-  const chainLocal = chain === "astar" ? "astar" : chainArr[i];
+  const chainLocal = chain;
   const fixBalances = await getFixBalances(chainLocal);
   const vaultAddressArr = Object.values(vaultsInfo[chainLocal]);
   const transformAddress = await getChainTransform(chainLocal);
@@ -51,6 +51,6 @@ module.exports = {
   misrepresentedTokens: true,
   methodology: "Avault - The Best Yield Aggregator on ASTR Network",
   astar: {
-    tvl: tvl,
+    tvl,
   },
 };

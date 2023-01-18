@@ -145,6 +145,6 @@ module.exports = {
 };
 
 const abis = {
-  totalForges: {"inputs":[],"name":"totalForges","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-  forgeInfo: {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"forgeInfo","outputs":[{"internalType":"bool","name":"isEth","type":"bool"},{"internalType":"address","name":"contributionToken","type":"address"},{"internalType":"uint256","name":"dynasetLp","type":"uint256"},{"internalType":"uint256","name":"totalContribution","type":"uint256"},{"internalType":"uint256","name":"minContribution","type":"uint256"},{"internalType":"uint256","name":"maxContribution","type":"uint256"},{"internalType":"uint256","name":"maxCap","type":"uint256"},{"internalType":"uint256","name":"contributionPeriod","type":"uint256"},{"internalType":"bool","name":"withdrawEnabled","type":"bool"},{"internalType":"bool","name":"depositEnabled","type":"bool"},{"internalType":"bool","name":"forging","type":"bool"},{"internalType":"uint256","name":"nextForgeContributorIndex","type":"uint256"}],"stateMutability":"view","type":"function"},
+  totalForges: "uint256:totalForges",
+  forgeInfo: "function forgeInfo(uint256) view returns (bool isEth, address contributionToken, uint256 dynasetLp, uint256 totalContribution, uint256 minContribution, uint256 maxContribution, uint256 maxCap, uint256 contributionPeriod, bool withdrawEnabled, bool depositEnabled, bool forging, uint256 nextForgeContributorIndex)",
 }
