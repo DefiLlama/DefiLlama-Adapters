@@ -91,8 +91,8 @@ function kashiLending(chain, borrowed) {
       calls, chain, block, abi: toAmountAbi, target: bentoboxes[chain],
     })
 
-    output.forEach(({ input: { params: [token]}, output: balance}) => {
-      sdk.util.sumSingleBalance(balances, transform(token), balance)
+    output.forEach(({ input: { params: [token]}, output: balance, success, }) => {
+      if(success) sdk.util.sumSingleBalance(balances, transform(token), balance)
     })
 
     return balances;
