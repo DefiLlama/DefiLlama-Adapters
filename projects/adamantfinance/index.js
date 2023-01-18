@@ -136,11 +136,10 @@ async function uniTvl(balances, chain, block, uniVaults, lpAddressesIgnored, tra
 
   uniVaults.forEach((v, idx) => {
     if (
-      lpAddressesIgnored.some(
+      !lpAddressesIgnored.some(
         (addr) => addr.toLowerCase() === v.lpAddress.toLowerCase()
       )
     ) {
-    } else {
       sdk.util.sumSingleBalance(balances, chain + ':' + v.lpAddress, vault_balances[idx])
     }
   });

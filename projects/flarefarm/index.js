@@ -25,13 +25,13 @@ async function pool2(timestamp, ethblock, { [chain]: block }) {
     ["0x48195ca4d228ce487ae2ae1335b017a95493ade6", "0xc5478a1d5914cF9D0Ee20Da21459502eCb7E1646"],
   ]
   return sumUnknownTokens({ tokensAndOwners: tokens, chain, block, useDefaultCoreAssets: true, })
-};
+}
 async function staking(timestamp, ethblock, { [chain]: block }) {
   const tokens = [
     ['0x0D94e59332732D18CF3a3D457A8886A2AE29eA1B', '0x554742076743b366504972F86609d64fd18BDC34']
   ]
   return sumUnknownTokens({ tokensAndOwners: tokens, chain, block, useDefaultCoreAssets: true, lps: ['0x48195Ca4D228ce487AE2AE1335B017a95493Ade6'] })
-};
+}
 
 module.exports = {
   methodology: `Gets token balance from the smart contract address holding the user deposits. These addresses are are labele "tokensAndOwners". SFIN staked to earn more SFIN is labeles as "staking" category`,

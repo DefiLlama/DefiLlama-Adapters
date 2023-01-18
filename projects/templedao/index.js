@@ -51,13 +51,6 @@ async function treasuryTvl(ts, block) {
     '0xfb6b1c1a1ea5618b3cfc20f81a11a97e930fa46b',
     '0x173063a30e095313eee39411f07e95a8a806014e',
   ]})
-
-  // const auraPools = await fetchAuraPoolData(temepleGnosisAddress);
-  // auraPools.account.poolAccounts.forEach(account => {
-  //   balances[account.pool.lpToken.id] = account.balance
-  // });
-
-  return balances;
 }
 
 async function getCvxPoolValue({ block, owner, pool, balances, chain }) {

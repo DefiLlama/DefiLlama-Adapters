@@ -27,11 +27,11 @@ function tvl(chain) {
       } else {
         await unwrapYearn(balances, yvToken, chainBlocks[chain], chain, transform);
       }
-    };
+    }
 
     return balances;
   };
-};
+}
 
 module.exports = {
   ethereum: {

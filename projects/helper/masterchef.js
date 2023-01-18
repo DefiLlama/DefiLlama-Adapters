@@ -272,7 +272,7 @@ function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingeck
             Object.values(balances).map(fixBalances)
         }
         return balances
-    };
+    }
 
     function getTvlPromise(key) {
         return async (ts, _block, chainBlocks) => {

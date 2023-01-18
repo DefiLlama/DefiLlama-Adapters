@@ -7,6 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "weeklyChanges": "git pull && git diff $(git log -1 --before=@{7.days.ago} --format=%H) --stat | grep -E \"projects/\" | cut -d / -f 2 | cut -d \" \" -f 1 | uniq | wc -l",
     "dev": "babel-watch curve.js",
+    "lint": "eslint .",
+    "eslint:github-action": "eslint .",
     "test-interactive": "node utils/testInteractive",
     "postinstall": "echo 'run \"npm update @defillama/sdk\" if you want lastest sdk changes' "
   },
@@ -47,6 +49,7 @@
   "devDependencies": {
     "@types/async-retry": "^1.4.5",
     "@types/bn.js": "^5.1.0",
+    "eslint": "^8.32.0",
     "ts-node": "^10.8.1"
   }
 }

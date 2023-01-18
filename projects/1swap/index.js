@@ -94,8 +94,8 @@ function getTokenId(address) {
         return ['tether', 6];
       default:
           return false;
-  };
-};
+  }
+}
 
 
 

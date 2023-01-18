@@ -60,7 +60,7 @@ async function getTokenHolderList(chain) {
       ]
     }
   }
-};
+}
 
 function tvl(chain) {
   return {
@@ -84,12 +84,12 @@ function tvl(chain) {
         balances['0x514910771af9ca656af840dff83e8264ecf986ca'] = 
           balances[cLINK] * (exchangeRate / 10 ** 28);
         delete balances[cLINK];
-      };
+      }
     
       return balances;
     }
   }
-};
+}
 
 module.exports = {
   start: 1621340071,
