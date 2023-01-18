@@ -43,7 +43,7 @@ Object.keys(config).forEach(chain => {
         target: factoryAddress,
         abi: abis.daoAt, calls, chain, block,
       })
-      if (daos.some(i => !i.success)) throw new Error('Error fetching dao address: ', JSON.stringify(i.input))
+      if (daos.some(i => !i.success)) throw new Error('Error fetching dao address: ')
 
       daos = daos.map(i => i.output)
       log(chain, numberOfDaos)

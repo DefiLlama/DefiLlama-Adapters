@@ -50,7 +50,7 @@ async function addTokens(address, balances) {
       fungible_tokens
   } = await getStacksBalances(address)
 
-  const decimals = [MIAMI_CONTRACT_V2, NYC_CONTRACT_V2] ? 6 : 0
+  const decimals = [MIAMI_CONTRACT_V2, NYC_CONTRACT_V2].includes(address) ? 6 : 0
 
   const tokenBalances = {
     output: Object.keys(fungible_tokens)

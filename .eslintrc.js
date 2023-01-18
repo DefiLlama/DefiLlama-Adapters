@@ -11,6 +11,8 @@ module.exports = {
         "ecmaVersion": "latest"
     },
     "rules": {
+        "no-case-declarations": "off",
         "no-unused-vars": "off",
+        "no-prototype-builtins": "off",
     }
 }
