@@ -1,7 +1,9 @@
 const sdk = require('@defillama/sdk')
+const { get } = require('../helper/http')
 const { getConfig } = require('../helper/cache')
 const { sumTokensExport } = require('../helper/sumTokens')
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { transformBalances } = require('../helper/portedTokens')
 
 const ABI = {
   wantLockedTotal: "uint256:wantLockedTotal",
@@ -94,5 +96,12 @@ module.exports = {
   },
   ripple: {
     tvl: sumTokensExport({ chain: 'ripple', owner: 'rLcxBUrZESqHnruY4fX7GQthRjDCDSAWia'})
-  }
+  },
+  ton: {
+    tvl: async () => {
+      let ton_vault = "0%3A8a140d51b86267680a943c55c780ac4b3a785c2ff6a62020d158c39f6512374f" // Bounceable: EQCKFA1RuGJnaAqUPFXHgKxLOnhcL_amICDRWMOfZRI3T4_h
+      const res = await get(`https://tonapi.io/v1/account/getInfo?account=${ton_vault}`)
+      return await transformBalances('ton', {"0x0000000000000000000000000000000000000000": res.balance})
+    }
+  },
 }
