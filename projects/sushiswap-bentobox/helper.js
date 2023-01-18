@@ -168,12 +168,13 @@ async function getFuroTokens(chain, block) {
 
   output.forEach(
     ({
+      success,
       output: amount,
       input: {
         params: [tokenId],
       },
     }) => {
-      sdk.util.sumSingleBalance(balances, tokenId, BigNumber(amount).toFixed(0))
+      if (success) sdk.util.sumSingleBalance(balances, tokenId, BigNumber(amount).toFixed(0))
     }
   );
 
@@ -214,12 +215,13 @@ async function getKashiTokens(chain, block) {
 
   output.forEach(
     ({
+      success,
       output: amount,
       input: {
         params: [tokenId],
       },
     }) => {
-      sdk.util.sumSingleBalance(balances, tokenId, BigNumber(amount).toFixed(0))
+      if (success) sdk.util.sumSingleBalance(balances, tokenId, amount)
     }
   );
 
