@@ -2,8 +2,8 @@
 const sdk = require('@defillama/sdk')
 const { createIncrementArray } = require('../helper/utils')
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const token0ABI = require('../helper/abis/token0.json')
-const token1ABI = require('../helper/abis/token1.json')
+const token0ABI = 'address:token0'
+const token1ABI = 'address:token1'
 
 const abis = {
   poolsCount: "uint256:poolsCount",

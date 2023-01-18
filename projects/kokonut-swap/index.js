@@ -61,7 +61,7 @@ async function tvl(timestamp, _, { klaytn: block }) {
   }
 
   return balances;
-};
+}
 
 async function staking(timestamp, _, { klaytn: block }) {
   const info = (await sdk.api.abi.call({
@@ -71,7 +71,7 @@ async function staking(timestamp, _, { klaytn: block }) {
   })).output;
 
   return { 'usd-coin': info.price * info.balance / 10 ** 36 };
-};
+}
 
 module.exports = {
   timetravel: false,

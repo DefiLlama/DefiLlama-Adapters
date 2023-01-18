@@ -76,7 +76,7 @@ async function queryGraph(graph_api, tokens, transform, balances) {
       query {
         tokenVaultInteractions (
             where: {
-              token: \"${tokens[i]}"
+              token: "${tokens[i]}"
             }
             skip: ${skipAmount}
         ) {

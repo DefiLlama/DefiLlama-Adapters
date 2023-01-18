@@ -64,13 +64,13 @@ function stakingTVL(chain) {
 }
 
 function pool2TVL(chain) {
-  return async (timestamp, ethBlock, chainBlocks) => {
+  return async (timestamp, ethBlock, chainBlocks, { api }) => {
     const stakingContract = aelin_data[chain]['AELIN_ETH_staking']
     const lpToken = aelin_data[chain]['AELIN_ETH_LP']
-    const block = await getBlock(timestamp, chain, chainBlocks, false) - 100; // graph out of sync
+    const block = api.block
 
     if (chain === 'ethereum') {
-      const staked = await pool2(stakingContract, lpToken, chain)(timestamp, ethBlock, chainBlocks)
+      const staked = await pool2(stakingContract, lpToken, chain)(timestamp, ethBlock, chainBlocks, { api })
       const aelin_addr = `ethereum:${aelin_data[chain]['AELIN']}`
       staked['AELIN'] = BigNumber(staked[aelin_addr]).div(1e18).toFixed(0)
       staked[aelin_addr] = 0

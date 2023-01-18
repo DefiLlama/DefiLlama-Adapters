@@ -37,8 +37,8 @@ const incomeStakingClassic = "0xb6B824D46B3Bd0698E5180bDb010a2C2bf012e1d"; // 61
 
 // Set Farm Addresses
 
-const yieldFarms = 0x00501ed66d67b1127809e54395f064e256b75b23; // 87, 250
-const yieldFarmsClassic = 0x9599ceBf169A1F3503996CBf90deA38C515ddd54; // 61
+const yieldFarms = "0x00501ed66d67b1127809e54395f064e256b75b23"; // 87, 250
+const yieldFarmsClassic = "0x9599ceBf169A1F3503996CBf90deA38C515ddd54"; // 61
 
 // Calculate TVL
 

@@ -18,17 +18,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     const block = chainBlocks.celo
 
     const stCelo_pooled = await sdk.api.abi.call({
-        abi: {
-            "type":"function",
-            "stateMutability":"view",
-            "outputs":[{
-                "type":"uint256",
-                "name":"",
-                "internalType":"uint256"
-            }],
-            "name":"getTotalCelo",
-            "inputs":[]
-        },
+        abi: "uint256:getTotalCelo",
         target: stCelo_contract_address,
         block: block,
         chain: 'celo'

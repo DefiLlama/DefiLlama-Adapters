@@ -44,8 +44,8 @@ function tvl(chain) {
                         token: tokens[i].address
                     }
                 );
-            };
-        };
+            }
+        }
 
         delete balances[contracts.ethereum.tokens.DFL.address];
 
@@ -59,7 +59,7 @@ function tvl(chain) {
 
         return balances;
     };
-};
+}
 function borrowed(chain) {
     return async (timestamp, block, chainBlocks) => {
         return { 
@@ -72,7 +72,7 @@ function borrowed(chain) {
                 })).output 
             };
     };
-};
+}
 module.exports = {
     bsc: {
         tvl: tvl('bsc'),

@@ -89,9 +89,9 @@ module.exports = {
 }
 
 const abis = {
-  exchangeRateStored: {"constant":true,"inputs":[],"name":"exchangeRateStored","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},
-  getVirtualPrice: {"inputs":[],"name":"getVirtualPrice","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-  principalToken: {"inputs":[],"name":"principalToken","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-  lockedLiquidityOf: { "inputs": [{ "internalType": "address", "name": "account", "type": "address" }], "name": "lockedLiquidityOf", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
-  getDebt: {"inputs":[],"name":"getDebt","outputs":[{"internalType":"uint256","name":"interestDebtAmount","type":"uint256"},{"internalType":"uint256","name":"grossDebtAmount","type":"uint256"},{"internalType":"uint256","name":"principalDebtAmount","type":"uint256"},{"internalType":"uint256","name":"interestOwed","type":"uint256"},{"internalType":"uint256","name":"applicableLateFee","type":"uint256"},{"internalType":"uint256","name":"netDebtAmount","type":"uint256"},{"internalType":"uint256","name":"daysSinceFunding","type":"uint256"},{"internalType":"uint256","name":"currentBillingCycle","type":"uint256"},{"internalType":"uint256","name":"minPaymentAmount","type":"uint256"},{"internalType":"uint256","name":"maxPaymentAmount","type":"uint256"}],"stateMutability":"view","type":"function"},
+  exchangeRateStored: "uint256:exchangeRateStored",
+  getVirtualPrice: "uint256:getVirtualPrice",
+  principalToken: "address:principalToken",
+  lockedLiquidityOf: "function lockedLiquidityOf(address account) view returns (uint256)",
+  getDebt: "function getDebt() view returns (uint256 interestDebtAmount, uint256 grossDebtAmount, uint256 principalDebtAmount, uint256 interestOwed, uint256 applicableLateFee, uint256 netDebtAmount, uint256 daysSinceFunding, uint256 currentBillingCycle, uint256 minPaymentAmount, uint256 maxPaymentAmount)",
 }

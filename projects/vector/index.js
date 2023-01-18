@@ -3,7 +3,7 @@ const { transformAvaxAddress, } = require("../helper/portedTokens");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { pool2 } = require("../helper/pool2");
 const { staking } = require("../helper/staking.js");
-const abi = require("./abi.json");
+const abi = 'function getDepositTokensForShares(uint256 amount, address token) view returns (uint256)'
 const contracts = require("./contracts.json");
 
 async function tvl(timestamp, block, chainBlocks) {

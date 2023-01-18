@@ -173,7 +173,7 @@ async function getData({ oracle, chain, block, addressesProviderRegistry, dataHe
 }
 
 const oracleAbis = {
-  BASE_CURRENCY: { "type": "function", "stateMutability": "view", "outputs": [{ "type": "address", "name": "", "internalType": "address" }], "name": "BASE_CURRENCY", "inputs": [] },
-  BASE_CURRENCY_UNIT: { "type": "function", "stateMutability": "view", "outputs": [{ "type": "uint256", "name": "", "internalType": "uint256" }], "name": "BASE_CURRENCY_UNIT", "inputs": [] },
-  getAssetsPrices: { "type": "function", "stateMutability": "view", "outputs": [{ "type": "uint256[]", "name": "", "internalType": "uint256[]" }], "name": "getAssetsPrices", "inputs": [{ "type": "address[]", "name": "assets", "internalType": "address[]" }] },
+  BASE_CURRENCY: "address:BASE_CURRENCY",
+  BASE_CURRENCY_UNIT: "uint256:BASE_CURRENCY_UNIT",
+  getAssetsPrices: "function getAssetsPrices(address[] assets) view returns (uint256[])",
 }

@@ -65,7 +65,7 @@ async function fantomTvl(timestamp, block, chainBlocks) {
   delete balances["fantom:0xddc0385169797937066bbd8ef409b5b3c0dfeb52"];
 
   return balances;
-};
+}
 
 async function fantomStaking(timestamp, block, chainBlocks) {
   return sumTokens2({
