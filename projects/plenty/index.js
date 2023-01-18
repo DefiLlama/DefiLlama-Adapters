@@ -23,9 +23,9 @@ async function getDexes() {
     if (i.includes(' //')) return i.slice(0, i.indexOf(' //'))
     return i
   }).join('\n')
-  text = text.replace(/\,(\s*[\}\]])/g, '$1')  // remove trailing commas
-  text = text.replace(/\'/g, '"')  // convert single quotation to double
-  text = text.replace(/(\s?)(\w+)\s*\:([^\/])/g, '$1"$2":$3') // cover keys with qoutes, eg. key1: "value" -> "key1":"value"
+  text = text.replace(/,(\s*[}\]])/g, '$1')  // remove trailing commas
+  text = text.replace(/'/g, '"')  // convert single quotation to double
+  text = text.replace(/(\s?)(\w+)\s*:([^/])/g, '$1"$2":$3') // cover keys with qoutes, eg. key1: "value" -> "key1":"value"
   const config = JSON.parse(text)
   const dexSet = new Set()
   Object.values(config.AMM.mainnet).forEach(t => {

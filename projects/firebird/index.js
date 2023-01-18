@@ -10,7 +10,7 @@ async function tvl(_, ethBlock, chainBlocks) {
   const block = chainBlocks['polygon']
   const chain = 'polygon'
   return sumTokens2({ chain, block, owner: stablePool, tokens: stablePoolTokens, })
-};
+}
 
 module.exports = {
   methodology: "Includes liquidity on all the pools on the uniswap fork plus the liquidity in the 3FBird stableswap pool",

@@ -64,7 +64,7 @@ async function tvl(timestamp, block) {
 
   //console.table(balances); // for debugging
   return balances;
-};
+}
 
 /*==================================================
   Exports

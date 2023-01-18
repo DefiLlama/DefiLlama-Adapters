@@ -1,5 +1,6 @@
 const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
+const { getLogs } = require('../helper/cache/getLogs')
 
 const START_BLOCK = 6627917;
 const FACTORY = '0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95';
@@ -63,7 +64,7 @@ async function tvl(timestamp, block, _1, { api }) {
       ).toFixed(),
     }
   )
-};
+}
 
 module.exports={
   tvl

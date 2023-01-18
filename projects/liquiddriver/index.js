@@ -466,7 +466,7 @@ const hundredchefTvl = async (timestamp, ethBlock, chainBlocks) => {
       transformAddress(usdcTokenAddress),
       new BigNumber(Number(strategyBalanace)).times(exchangeRateStored).div(chefAddress === husdcChefAddress ? 1e18 : 1e30).toFixed(0)
     );
-  };
+  }
 
   return balances;
 };

@@ -170,7 +170,7 @@ const keys = [
 
 // Utils
 const bytesToString = (hex) =>
-  Buffer.from(hex.replace(/^0x/, ""), "hex").toString().replace(/\x00/g, "");
+  Buffer.from(hex.replace(/^0x/, ""), "hex").toString().replace(/\x00/g, ""); // eslint-disable-line
 
 const ilkToAsset = (ilk) =>
   (ilk.substr(0, 2) === "0x" ? bytesToString(ilk) : ilk).replace(/-.*/, "");

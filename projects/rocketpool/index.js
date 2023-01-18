@@ -16,7 +16,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
   let offset = 0
   const limit = 400, statusesCount = 5
   let minipool_count_per_status = new Array(statusesCount).fill(0);
-  while (true) {
+  while (true) {  // eslint-disable-line
     const {output: activeMinipoolCount} = await sdk.api.abi.call({ 
       target: rocketMinipoolManager,
       params: [offset, limit],

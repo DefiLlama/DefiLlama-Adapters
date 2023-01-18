@@ -9,8 +9,8 @@ const waitTime = 301
 
 async function getAllV1Data() {
   return v1Data
-  if (!allV1Data) allV1Data = _getAllV1Data()
-  return allV1Data
+  // if (!allV1Data) allV1Data = _getAllV1Data()
+  // return allV1Data
 
   async function _getAllV1Data() {
     const data = {}
