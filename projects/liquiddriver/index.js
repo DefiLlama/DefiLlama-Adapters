@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { transformFantomAddress } = require("../helper/portedTokens");
+const { transformFantomAddress, transformBscAddress } = require("../helper/portedTokens");
 const { addFundsInMasterChef } = require("../helper/masterchef");
 const { staking } = require("../helper/staking");
 const BigNumber = require("bignumber.js");
@@ -9,6 +9,7 @@ const BigNumber = require("bignumber.js");
 // --- All sushitokens lp tokens are staked here for LQDR tokens ---
 const MASTERCHEF = "0x742474dae70fa2ab063ab786b1fbe5704e861a0c";
 const MINICHEF = "0x6e2ad6527901c9664f016466b8DA1357a004db0f";
+const BSCMINICHEF = "0xD46db083De31c64AF3F680f139A31fF37bac004f";
 const usdtTokenAddress = "0x049d68029688eabf473097a2fc38ef61633a3c7a";
 const usdcTokenAddress = "0x04068da6c83afcfa0e13ba15a6696662335d5b75";
 const wftmTokenAddress = "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83";
@@ -375,10 +376,8 @@ const minichefTvl = async (timestamp, ethBlock, chainBlocks) => {
     }
   });
 
-  const turns = Math.floor(lpPositions.length / 10);
   let n = 0;
-
-  for (let i = 0; i < turns; i++) {
+  while (n < lpPositions.length) {
     await unwrapUniswapLPs(
       balances,
       lpPositions.slice(n, n + 10),
@@ -578,6 +577,122 @@ const shadowchefTvl = async (timestamp, ethBlock, chainBlocks) => {
   return balances;
 };
 
+const bscminichefTvl = async (timestamp, ethBlock, chainBlocks) => {
+  let balances = {};
+
+  const transformAddress = await transformBscAddress();
+
+  // pool section tvl
+  const poolLength = (
+    await sdk.api.abi.call({
+      abi: abi.poolLength,
+      target: BSCMINICHEF,
+      chain: "bsc",
+      block: chainBlocks["bsc"],
+    })
+  ).output;
+
+  const [lpTokens, strategies] = await Promise.all([
+    sdk.api.abi.multiCall({
+      block: chainBlocks["bsc"],
+      calls: Array.from(Array(Number(poolLength)).keys()).map((i) => ({
+        target: BSCMINICHEF,
+        params: i,
+      })),
+      abi: abi.lpToken,
+      chain: "bsc",
+    }),
+    sdk.api.abi.multiCall({
+      block: chainBlocks["bsc"],
+      calls: Array.from(Array(Number(poolLength)).keys()).map((i) => ({
+        target: BSCMINICHEF,
+        params: i,
+      })),
+      abi: abi.strategies,
+      chain: "bsc",
+    }),
+  ]);
+
+  const [symbols, tokenBalances, strategyBalances] = await Promise.all([
+    sdk.api.abi.multiCall({
+      block: chainBlocks["bsc"],
+      calls: lpTokens.output.map((p) => ({
+        target: p.output,
+      })),
+      abi: "erc20:symbol",
+      chain: "bsc",
+    }),
+    sdk.api.abi.multiCall({
+      block: chainBlocks["bsc"],
+      calls: lpTokens.output.map((p) => ({
+        target: p.output,
+        params: BSCMINICHEF,
+      })),
+      abi: "erc20:balanceOf",
+      chain: "bsc",
+    }),
+    sdk.api.abi.multiCall({
+      block: chainBlocks["bsc"],
+      calls: strategies.output
+        .filter(
+          (strategy) =>
+            strategy.output !== "0x0000000000000000000000000000000000000000"
+        )
+        .map((strategy) => ({
+          target: strategy.output,
+        })),
+      abi: abi.balanceOf,
+      chain: "bsc",
+    })
+  ]);
+
+  const lpPositions = [];
+  let i = 0;
+
+  tokenBalances.output.forEach(async (balance, idx) => {
+    const strategy = strategies.output[idx].output;
+
+    let totalBalance = new BigNumber(balance.output);
+
+    if (strategy !== "0x0000000000000000000000000000000000000000") {
+      totalBalance = totalBalance.plus(
+        new BigNumber(strategyBalances.output[i].output)
+      );
+      i++;
+    }
+
+    const token = balance.input.target;
+    if (symbols.output[idx].success) {
+      if (symbols.output[idx].output.includes("AMM")) {
+        lpPositions.push({
+          balance: totalBalance.toString(10),
+          token,
+        });
+      } else {
+        sdk.util.sumSingleBalance(
+          balances,
+          transformAddress(token),
+          totalBalance.toString(10)
+        );
+      }
+    }
+  });
+
+  let n = 0;
+  while (n < lpPositions.length) {
+    await unwrapUniswapLPs(
+      balances,
+      lpPositions.slice(n, n + 10),
+      chainBlocks["bsc"],
+      "bsc",
+      transformAddress
+    );
+    n += 10;
+  }
+
+  return balances;
+};
+
 module.exports = {
   fantom: {
     staking: staking(xLQDR, LQDR, "fantom", "fantom:" + LQDR),
@@ -587,5 +702,8 @@ module.exports = {
       hundredchefTvl,
       shadowchefTvl,
     ]),
+  },
+  bsc: {
+    tvl: bscminichefTvl,
   }
 }; // node test.js projects/liquiddriver/index.js
