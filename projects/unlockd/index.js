@@ -14,13 +14,7 @@ async function tvl(_, _1, _2, { api }) {
     params: [address.LendPoolAddressProvider[chain]],
     abi: abi.getSimpleReservesData,
   });
-  const simpleNftsData = await api.call({
-    target: address.UiPoolDataProvider[chain],
-    params: [address.LendPoolAddressProvider[chain]],
-    abi: abi.getSimpleNftsData,
-  });
   simpleReservesData.map(i => sdk.util.sumSingleBalance(balances, i.underlyingAsset, i.availableLiquidity, chain))
-  simpleNftsData.map(i => sdk.util.sumSingleBalance(balances, i.underlyingAsset, i.totalCollateral, chain))
 
   return balances;
 }
