@@ -48,7 +48,9 @@ Object.keys(config).forEach(chain => {
         api.multiCall({ abi: 'function getUnderlyingBalances() view returns (uint256 amount0, uint256 amount1)', calls }),
       ])
 
-      bals.forEach(({ amount0, amount1 }, i) => {
+      bals.forEach((val, i) => {
+        if (!val) return;
+        const { amount0, amount1 }  = val
         sdk.util.sumSingleBalance(balances, token0[i], amount0, api.chain)
         sdk.util.sumSingleBalance(balances, token1[i], amount1, api.chain)
       })
