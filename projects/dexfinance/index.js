@@ -4,6 +4,7 @@ const { ETF_ABI, } = require('./abi');
 const { sumTokens2, sumTokensExport, } = require('../helper/unwrapLPs')
 
 const REGULATION_STAKING_POOL = '0xd69db827939e26511068aa2bf742e7463b292190'
+const REWARD_POOL = '0x4c7371a351a465c38dc129e4d084b9b8aef14041'
 const FARM = '0xcc180bfa5d2c3ac191758b721c9bbbb263b3fd1c'
 const TREASURY = '0xa5f3d6a33c5a5bcdff8f81c88ca00f457b699e0f'
 
@@ -97,6 +98,9 @@ module.exports = {
       TOKENS.DEXSHARE_BNB_LP,
       TOKENS.USDEX_USDC_LP,
     ], owner: TREASURY, }),
-    staking: sumTokensExport({ chain, tokensAndOwners: [[TOKENS.DEXSHARE, REGULATION_STAKING_POOL,], ], }),
+    staking: sumTokensExport({ chain, tokensAndOwners: [
+      [TOKENS.DEXSHARE, REGULATION_STAKING_POOL,], 
+      [TOKENS.DEXSHARE, REWARD_POOL,], 
+    ], }),
   }
 };
