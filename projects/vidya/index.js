@@ -1,4 +1,3 @@
-const sdk = require('@defillama/sdk');
 const {
     sumTokensExport
 } = require('../helper/unwrapLPs');
@@ -22,16 +21,16 @@ const UNISWAP_PAIR = '0xDA3706c9A099077e6BC389D1baf918565212A54D';
 const UNISWAP_PAIR_CRAMER = '0x507C7d56c69bEDC528c3AA00b018656D20605663';
 
 module.exports = {
-    timetravel: true,
-    misrepresentedTokens: false,
     methodology: 'Counts the total number of tokens locked in staking contracts, game contracts and project treasury.',
-    start: 10712645, // Aug-22-2020 09:59:56 PM +UTC
     ethereum: {
-        tvl: sumTokensExport({
-            chain: 'ethereum',
-            resolveLP: true,
-            owners: [VIDYA_TOKEN, SINGLE_SIDE_TELLER, LP_TELLER, UNISWAP_PAIR, VIDYAFLUX, GNOSIS_SAFE, VAULT, INVENTORYV2, UNISWAP_PAIR_CRAMER, LEMONADESTAND],
-            tokens: [VIDYA_TOKEN, UNISWAP_PAIR, UNISWAP_PAIR_CRAMER],
+        tvl: () => ({}),
+        staking: sumTokensExport({
+            owners: [SINGLE_SIDE_TELLER, VAULT, VIDYAFLUX, INVENTORYV2, LEMONADESTAND, ],
+            tokens: [VIDYA_TOKEN,],
+        }),
+        pool2: sumTokensExport({
+            owners: [LP_TELLER, ],
+            tokens: [UNISWAP_PAIR, UNISWAP_PAIR_CRAMER],
         }),
     }
 };
