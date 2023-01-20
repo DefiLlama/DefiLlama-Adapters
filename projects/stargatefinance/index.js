@@ -26,6 +26,9 @@ const CONFIG = {
   avax:{
     router: '0x45A01E4e04F14f7A4a6702c74187c5F6222033cd',
   },
+  metis:{
+    router: '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590',
+  },
 }
 
 module.exports = {
