@@ -535,7 +535,7 @@ const kavaTvl = async (timestamp, block, chainBlocks) => {
   let balances = {};
 
   let vaults = (await getConfig('kogefarm/kava', current_kava_vaults_url))
-  if (typeof vaults === 'string') vaults = JSON.parse(vaults.replace(/\,(\s*[\}\]])/g, '$1'))
+  if (typeof vaults === 'string') vaults = JSON.parse(vaults.replace(/,(\s*[}\]])/g, '$1'))
 
   const lp_addresses = (
     await sdk.api.abi.multiCall({

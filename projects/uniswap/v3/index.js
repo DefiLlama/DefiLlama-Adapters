@@ -8,8 +8,7 @@ const graphUrls = {
   optimism: "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-optimism-dev",
   arbitrum: 'https://api.thegraph.com/subgraphs/name/ianlapham/arbitrum-dev',
 }
-
-const { getBlock } = require('../../helper/http');
+const { getLogs } = require('../../helper/cache/getLogs')
 
 const FACTORY =  '0x1F98431c8aD98523631AE4a59f267346ea31F984'; // same on all chains
 const startBlocks = {

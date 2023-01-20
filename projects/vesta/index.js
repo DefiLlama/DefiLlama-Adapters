@@ -44,7 +44,7 @@ async function tvl(_, block, chainBlocks) {
   })
 
   return balances;
-};
+}
 
 async function pool2(_timestamp, block, chainBlocks) {  
   block = chainBlocks.arbitrum;
@@ -58,7 +58,7 @@ async function pool2(_timestamp, block, chainBlocks) {
 
   await unwrapCrv(balances, LP_VST_FRAX_ADDRESS, curveBalances, block, chain, transform);
   return balances;
-};
+}
 
 module.exports = {
   arbitrum: {

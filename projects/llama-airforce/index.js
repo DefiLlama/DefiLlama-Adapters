@@ -34,7 +34,7 @@ async function tvl(time, block){
     balances[contracts.FXS] = cvxFXS * ratio * 10**-18;
 
     return balances;
-};
+}
 
 module.exports={
     ethereum:{

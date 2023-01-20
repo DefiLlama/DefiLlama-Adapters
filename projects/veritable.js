@@ -23,7 +23,7 @@ async function tvl(timestamp, blokc, chainBlocks) {
     );
 
     return balances;
-};
+}
 module.exports = {
     polygon: {tvl}
 };

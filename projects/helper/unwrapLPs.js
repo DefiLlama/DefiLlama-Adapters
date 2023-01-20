@@ -120,13 +120,13 @@ async function unwrapYearn(balances, yToken, block, chain = "ethereum", transfor
       chain: chain
     });
     decimals = 18
-  };
+  }
 
   const newBalance = BigNumber(balances[tokenKey]).times(pricePerShare.output).div(10 ** decimals)
   const oldBalance = BigNumber(balances[transformAddress(underlying)] || 0)
   balances[transformAddress(underlying)] = oldBalance.plus(newBalance).toFixed(0)
   delete balances[tokenKey];
-};
+}
 
 const lpReservesAbi = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
 const lpSuppliesAbi = "uint256:totalSupply"
@@ -243,94 +243,7 @@ async function unwrapUniswapLPs(balances, lpPositions, block, chain = 'ethereum'
   }))
 }
 
-
-// Mostly similar to unwrapGelatoLPs with only edits being gelatoToken0ABI, same for token1 and balances of tokens which are actually held by the contract which address is given by the read pool method
-/* lpPositions:{
-    balance,
-    token
-}[]
-*/
 const gelatoPoolsAbi = 'address:pool'
-
-async function unwrapGelatoLPs(balances, lpPositions, block, chain = 'ethereum', transformAddress = (addr) => addr, excludeTokensRaw = [], retry = false) {
-  const excludeTokens = excludeTokensRaw.map(addr => addr.toLowerCase())
-  const lpTokenCalls = lpPositions.map(lpPosition => ({
-    target: lpPosition.token
-  }))
-  const lpReserves = sdk.api.abi.multiCall({
-    block,
-    abi: lpReservesAbi,
-    calls: lpTokenCalls,
-    chain
-  })
-  const lpSupplies = sdk.api.abi.multiCall({
-    block,
-    abi: lpSuppliesAbi,
-    calls: lpTokenCalls,
-    chain
-  })
-  const tokens0 = sdk.api.abi.multiCall({
-    block,
-    abi: token0Abi,
-    calls: lpTokenCalls,
-    chain
-  })
-  const tokens1 = sdk.api.abi.multiCall({
-    block,
-    abi: token1Abi,
-    calls: lpTokenCalls,
-    chain
-  })
-
-  // Different bit
-  if (retry) {
-    await Promise.all([
-      [lpReserves, lpReservesAbi],
-      [lpSupplies, lpSuppliesAbi],
-      [tokens0, token0Abi],
-      [tokens1, token1Abi]
-    ].map(async call => {
-      await requery(await call[0], chain, block, call[1])
-    }))
-  }
-  await Promise.all(lpPositions.map(async lpPosition => {
-    try {
-      const lpToken = lpPosition.token
-      const token0 = (await tokens0).output.find(call => call.input.target === lpToken).output.toLowerCase()
-      const token1 = (await tokens1).output.find(call => call.input.target === lpToken).output.toLowerCase()
-      const supply = (await lpSupplies).output.find(call => call.input.target === lpToken).output
-
-      // Different bits
-      const gelatoPool = (await gelatoPools).output.find(call => call.input.target === lpToken).output
-      const [{ output: _reserve0 }, { output: _reserve1 }] = (await Promise.all([
-        sdk.api.erc20.balanceOf({
-          target: token0,
-          owner: gelatoPool,
-          block,
-          chain
-        })
-        , sdk.api.erc20.balanceOf({
-          target: token1,
-          owner: gelatoPool,
-          block,
-          chain
-        })
-      ]))
-
-      if (!excludeTokens.includes(token0)) {
-        const token0Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve0)).div(BigNumber(supply))
-        sdk.util.sumSingleBalance(balances, await transformAddress(token0), token0Balance.toFixed(0))
-      }
-      if (!excludeTokens.includes(token1)) {
-        const token1Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve1)).div(BigNumber(supply))
-        sdk.util.sumSingleBalance(balances, await transformAddress(token1), token1Balance.toFixed(0))
-      }
-    } catch (e) {
-      console.log(`Failed to get data for LP token at ${lpPosition.token} on chain ${chain}`)
-      throw e
-    }
-  }))
-}
 
 // Unwrap the tokens that are LPs and directly add the others
 // To be used when you don't know which tokens are LPs and which are not
@@ -1058,7 +971,6 @@ module.exports = {
   sumLPWithOnlyOneToken,
   sumTokensSharedOwners,
   sumLPWithOnlyOneTokenOtherThanKnown,
-  unwrapGelatoLPs,
   genericUnwrapCrv,
   genericUnwrapCvx,
   unwrapLPsAuto,

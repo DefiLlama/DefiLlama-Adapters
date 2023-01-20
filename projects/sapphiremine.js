@@ -10,7 +10,7 @@ async function tvl(timestamp, block, chainBlocks) {
             chain: 'polygon' 
         })).output 
     };
-};
+}
 
 module.exports = {
     polygon: {

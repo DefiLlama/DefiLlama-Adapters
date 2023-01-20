@@ -52,6 +52,7 @@ const {
         const balance = tokenBalances.output[idx].output;
         const token = symbol.input.target.toLowerCase();
         if (token === stakingToken) {
+          return;
         } else if (isLP(symbol.output, token, chain)) {
           lpPositions.push({
             balance,

@@ -56,7 +56,7 @@ async function getTvl(timestamp, ethBlock, chainBlocks) {
   sdk.util.sumSingleBalance(balances.staking, 'tether', staking)
 
   return balances
-};
+}
 
 module.exports = {
   methodology: "Counts tokens on the treasury for tvl and staked RHEA for staking",

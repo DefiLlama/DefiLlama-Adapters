@@ -30,7 +30,7 @@ async function chainTVL(timestamp, block, chainBlocks) {
 
     sdk.util.sumSingleBalance(balances, transform(USDC), USDCPool.output)
     return balances
-};
+}
 
 async function stakingX(timestamp, block, chainBlocks) {
     const balances = {}
@@ -46,7 +46,7 @@ async function stakingX(timestamp, block, chainBlocks) {
     sdk.util.sumSingleBalance(balances, transform(GOGOCOIN), totalGOGOLocked.output)
 
     return balances
-};
+}
 
 async function pool2X(...args) {
     const transform = await transformPolygonAddress();
