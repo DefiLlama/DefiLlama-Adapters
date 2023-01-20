@@ -10,7 +10,8 @@ const tvlGuru = {
   "kcc": "0x426a4A4B73d4CD173C9aB78d18c0d79d1717eaA9",
   "multivac": "0xe345A50C33e5c9D0284D6fF0b891c4Fc99a9C117",
   "echelon": "0xa254bfd74c38b26145b980162fb1a49bc0a4f14b",
-  "metis": "0x50Dcc6cb1B2d6965c42d98a2b07629c57a6be895"
+  "metis": "0x50Dcc6cb1B2d6965c42d98a2b07629c57a6be895",
+  "bsc": "0xD600Ec98cf6418c50EE051ACE53219D95AeAa134"
 }
 
 module.exports = {
