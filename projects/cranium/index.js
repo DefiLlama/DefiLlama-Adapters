@@ -7,7 +7,7 @@ const arbitrumGMX = '0x9945Dd3eCB40A6b594813f2A4DF1643b10Fe3550';
 
 module.exports = {
   fantom: {
-    staking: staking(arbitrumStaking, arbitrumGMX, "fantom", "cranium", 18),
+    staking: staking(arbitrumStaking, arbitrumGMX),
     tvl: gmxExports({ vault: arbitrumVault, })
   }
-};
+}
