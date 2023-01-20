@@ -22,6 +22,7 @@ async function loftyTVL() {
 }
 
 module.exports = {
+  timetravel: false,
   algorand: {
     tvl: loftyTVL,
   }
