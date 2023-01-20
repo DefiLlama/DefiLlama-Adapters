@@ -24,6 +24,7 @@ const tvl = async (_, _1, _2, { chain}) => {
 };
 
 module.exports = {
+  timetravel: false,
   methodology: "Fetches assets currently held by Messina.one contracts.",
   ethereum: { tvl },
   algorand: { tvl },

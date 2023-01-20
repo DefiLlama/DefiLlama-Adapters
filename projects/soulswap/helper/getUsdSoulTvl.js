@@ -164,7 +164,7 @@ function calculateUsdSoulTvl(FACTORY, chain, coreAssetRaw, whitelistRaw, coreAss
             [coreAssetName]: (coreBalance) / (10 ** decimals)
         }
     }
-};
+}
 
 module.exports = {
     calculateUsdSoulTvl,

@@ -23,21 +23,21 @@ async function transformEthAddress() {
                 return '0x383518188c0c6d7730d91b2c03a03c837814a899';
             default:
                 return addr;
-        };
+        }
     };
-};
+}
 async function ethTvl(timestamp, ethBlock, chainBlocks) {
     return tvl(timestamp, chainBlocks, 'ethereum', (await transformEthAddress()));
-};
+}
 async function ftmTvl(timestamp, ethBlock, chainBlocks) {
     return tvl(timestamp, chainBlocks, 'fantom', (await transformFantomAddress()));
-};
+}
 async function arbiTvl(timestamp, ethBlock, chainBlocks) {
     return tvl(timestamp, chainBlocks, 'arbitrum', (await transformArbitrumAddress()));
-};
+}
 async function avaxTvl(timestamp, ethBlock, chainBlocks) {
     return tvl(timestamp, chainBlocks, 'avax', (await transformAvaxAddress()));
-};
+}
 async function tvl(timestamp, chainBlocks, chain, transformAddress=addr=>addr) {
     let marketsArray = [];
     let balances = {};
@@ -45,7 +45,7 @@ async function tvl(timestamp, chainBlocks, chain, transformAddress=addr=>addr) {
 
     for (const [marketContract, lockedToken] of Object.entries(marketsJSON[chain])) {
         marketsArray.push([lockedToken, marketContract]);
-    };
+    }
 
     block = chainBlocks[chain];
 
@@ -66,16 +66,16 @@ async function tvl(timestamp, chainBlocks, chain, transformAddress=addr=>addr) {
           tokenBalances[index]
         );
         await unwrapYearn(balances, marketsArray[index][0], block, chain, transformAddress);
-      };
+      }
     for (let [token, balance] of Object.entries(balances)) {
         await unwrapCrv(balances, token, balance, block, chain, transformAddress);
-    };
+    }
     if ('0x383518188c0c6d7730d91b2c03a03c837814a899' in balances) {
         balances['0x383518188c0c6d7730d91b2c03a03c837814a899'] = 
             balances['0x383518188c0c6d7730d91b2c03a03c837814a899'] / 10**9;
-    };
+    }
     return balances;
-};
+}
 module.exports = {
     ethereum: {
         tvl: ethTvl

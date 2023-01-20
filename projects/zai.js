@@ -6,7 +6,7 @@ const zaiLP = '0x675a8fa1cf8a9c3bf2c49ff14fdcaa01b11dd842';
 
 async function tvl() {
     return {};
-};
+}
 
 async function staking(timestamp, block) {
     const zaiBalance = (await sdk.api.erc20.balanceOf({
@@ -15,7 +15,7 @@ async function staking(timestamp, block) {
         owner: '0xE2612091Ec3dBE6f40BbfD0f30e3b8E4eA896e53'
     })).output;
     return { [zaiV1]: zaiBalance };
-};
+}
 
 async function pool2(timestamp, block) {
     let balances = {};
@@ -35,7 +35,7 @@ async function pool2(timestamp, block) {
     delete balances[zaiV2];
 
     return balances;
-};
+}
 module.exports = {
     ethereum: {
         tvl,
