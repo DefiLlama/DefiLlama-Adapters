@@ -531,6 +531,9 @@ const fixBalancesTokens = {
     "ubcre": { coingeckoId: "liquid-staking-crescent", decimals: 6, },
     "ucre": { coingeckoId: "crescent-network", decimals: 6, },
   },
+  juno: {
+    "ujuno": { coingeckoId: "juno-network", decimals: 6, },
+  },
   osmosis: {
     "uion": { coingeckoId: "ion", decimals: 6, },
   },
