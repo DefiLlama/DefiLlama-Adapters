@@ -1,9 +1,9 @@
 const {staking} = require('../helper/staking')
 const { gmxExports } = require('../helper/gmx')
 
-const arbitrumVault = '0x0e0B4Af82D0B549c1584D0EF5d4eEf675C5e7E9F';
-const arbitrumStaking = '0x55f8071d1373a2345bFbAaA6c2FEcc081f919AD8';
-const arbitrumGMX = '0x9945Dd3eCB40A6b594813f2A4DF1643b10Fe3550';
+const arbitrumVault = '0x76cA86C73CE0F03eac0052C4FC5eacdb10D9663f';
+const arbitrumStaking = '0x2b402AeDd4ccC193DC2A50c281Fb8945ddaD9760';
+const arbitrumGMX = '0xfa5992A8A47aF7029e04eC6a95203AD3f301460b';
 
 module.exports = {
   fantom: {
