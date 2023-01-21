@@ -10,6 +10,7 @@ module.exports = {
       chain: 'dogechain',
       factory: FACTORY,
       useDefaultCoreAssets: true,
+      fetchBalances: true,
     }),
   }
 } 
