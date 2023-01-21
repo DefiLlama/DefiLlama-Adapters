@@ -13,10 +13,10 @@ const _vaults = {
         '0x89547441489262feb5cee346fdacb9037c2574db', //JOE/AVAX_B
         '0x668530302c6ecc4ebe693ec877b79300ac72527c', //AVAX/USDC_B
         '0x9c9cea14731821f4d08889717043977e6dee766a', //WETH.e/AVAX_B
-        '0x9cc15d1204d768380cec8d35bc1d8e1945083397' //BTC.b/USDC
+        '0x9cc15d1204d768380cec8d35bc1d8e1945083397', //BTC.b/USDC_B
+        '0x536d7e7423e8fb799549caf574cfa12aae95ffcd' //BTC.b/AVAX_B
     ],
-    arbitrum: [
-        '0xb41506675a0977a34e8cec7da8c061d6753b5b03', 
+    arbitrum: [ 
     ],
   }
 
