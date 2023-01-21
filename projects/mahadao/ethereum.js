@@ -84,9 +84,7 @@ async function tvl(_, block) {
   ];
 
   // add all lending assets
-  const lending = aaveExports(chain, undefined, undefined, [
-    protocolDataHelper,
-  ]);
+  const lending = aaveExports(chain, undefined, undefined, [eth.lending]);
 
   Object.entries(lending).forEach(([k, v]) => {
     if (!balances[k]) balances[k] = 0;
