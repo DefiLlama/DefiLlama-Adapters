@@ -1,8 +1,6 @@
-const { sumTokens } = require("../helper/unwrapLPs.js");
-const { unwrapTroves } = require("../helper/unwrapLPs.js");
+const { sumTokens, sumTokensExport, nullAddress, sumTokens2 } = require("../helper/unwrapLPs.js");
 const { staking } = require("../helper/staking");
-const { aaveExports } = require("../helper/aave");
-const { mergeExports } = require("../helper/utils.js");
+const activePoolAbi = "address:activePool"
 
 const chain = "ethereum";
 
@@ -16,8 +14,6 @@ const eth = {
   treasury: "0x43c958affe41d44f0a02ae177b591e93c86adbea",
 
   mahax: "0xbdd8f4daf71c2cb16cce7e54bb81ef3cfcf5aacb",
-
-  lending: "0xCB5a1D4a394C4BA58999FbD7629d64465DdA70BC",
 
   daiMahaPoolUNIV3: "0x8cb8f052e7337573cd59d33bb67b2acbb65e9876",
   arthUsdcPoolUNIV3: "0x031a1d307C91fbDE01005Ec2Ebc5Fcb03b6f80aB",
@@ -68,34 +64,20 @@ async function pool2(_, block) {
   return sumTokens(balances, tokensAndOwners, block, chain);
 }
 
-async function tvl(_, block) {
-  const balances = {};
+async function tvl(_, block, _1,  { api }) {
   const troves = [
     "0x8b1da95724b1e376ae49fdb67afe33fe41093af5", // ETH Trove
   ];
-  await unwrapTroves({ balances, chain, block, troves });
+  const pools = await api.multiCall({  abi: activePoolAbi, calls: troves}) 
 
-  // add all treasury assets
-  const tokensAndOwners = [
-    [eth.maha, eth.mahax],
-    [eth.maha, eth.treasury],
-    [eth.weth, eth.treasury],
-    [eth.arth, eth.treasury],
-  ];
-
-  // add all lending assets
-  const lending = aaveExports(chain, undefined, undefined, [eth.lending]);
-
-  Object.entries(lending).forEach(([k, v]) => {
-    if (!balances[k]) balances[k] = 0;
-    if (v >= 0) balances[k] += v;
-  });
-
-  return sumTokens(balances, tokensAndOwners, block, chain);
+  return sumTokens2({ owners: pools, tokens: [ nullAddress ]})
 }
 
 module.exports = {
   staking: staking(eth.mahax, eth.maha),
-  pool2,
+  pool2: sumTokensExport({ tokensAndOwners: [
+    ['0xdf34bad1D3B16c8F28c9Cf95f15001949243A038', '0x9ee8110c0aacb7f9147252d7a2d95a5ff52f8496'], 
+  ]}),
   tvl,
+  treasury: sumTokensExport({ owner: eth.treasury, okens: [eth.arth, eth.weth, nullAddress] }),
 };
