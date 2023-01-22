@@ -15,7 +15,7 @@ async function tvl(timestamp, ethBlock, chainBlocks){
   await addFundsInMasterChef(balances, STAKING_CONTRACT, chainBlocks.avax, "avax", transformAddress, abi.poolInfo, [...pool2LPs, dregg])
 
   return balances;
-};
+}
 
 module.exports = {
   avax:{

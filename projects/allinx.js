@@ -10,5 +10,8 @@ async function fetch() {
 }
 
 module.exports = {
+  bsc: {
+    fetch
+  },
   fetch
 }

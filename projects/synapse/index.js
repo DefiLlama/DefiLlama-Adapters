@@ -1,5 +1,5 @@
 const { sumTokens,  } = require("../helper/unwrapLPs")
-const { sumSingleBalance, TOKEN_LIST, getDenomBalance, } = require('../helper/terra')
+const { sumSingleBalance, TOKEN_LIST, getDenomBalance, } = require('../helper/chain/terra')
 const sdk = require("@defillama/sdk")
 const { getChainTransform, getFixBalances } = require("../helper/portedTokens")
 const config = require("./config")
@@ -40,7 +40,7 @@ Object.keys(config).forEach(chain => {
 module.exports.ethereum.pool2 = async (ts, block) => {
   return sumTokens({}, [
      ['0x4a86c01d67965f8cb3d0aaa2c655705e64097c31', '0xd10ef2a513cee0db54e959ef16cac711470b62cf', ]
-  ], block, undefined, undefined, { resolveLP: true })
+  ], block)
 }
 
 module.exports.terra = {}
@@ -50,3 +50,6 @@ module.exports.terra.tvl = async (timestamp, ethBlock, { terra: block }) => {
   sumSingleBalance(balances, TOKEN_LIST.terrausd, balance)
 	return balances
 }
+module.exports.hallmarks = [
+        [1651881600, "UST depeg"],
+      ]

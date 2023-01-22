@@ -1,9 +1,10 @@
 import { gql, request } from "graphql-request";
+import { Liq } from "../utils/types";
 import { getPagedGql } from "../utils/gql";
 
 const query = gql`
-  query users($lastId: String) {
-    users(first: 1000, where: { borrowedReservesCount_gt: 0, id_gt: $lastId }) {
+  query users($lastId: String, $pageSize: Int) {
+    users(first: $pageSize, where: { id_gt: $lastId, reserves_: { currentTotalDebt_gt: "0" } }) {
       id
       reserves {
         usageAsCollateralEnabledOnUser
@@ -29,32 +30,78 @@ const query = gql`
   }
 `;
 
-const ethPriceQuery = gql`
+interface User {
+  id: string;
+  reserves: {
+    usageAsCollateralEnabledOnUser: boolean;
+    reserve: {
+      symbol: string;
+      usageAsCollateralEnabled: boolean;
+      underlyingAsset: string;
+      price: {
+        priceInEth: string;
+      };
+      decimals: string;
+      reserveLiquidationThreshold: string;
+    };
+    currentATokenBalance: string;
+    currentTotalDebt: string;
+  }[];
+}
+
+const ethPriceQuery = (usdcAddress: string) => gql`
   {
-    priceOracleAsset(id: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48") {
+    priceOracleAsset(id: "${usdcAddress}") {
       priceInEth
     }
   }
 `;
 
-const subgraphUrl = "https://api.thegraph.com/subgraphs/name/aave/protocol-v2";
+enum Chains {
+  ethereum = "ethereum",
+  // polygon = "polygon",
+}
 
-const positions = async () => {
-  const users = await getPagedGql(subgraphUrl, query, "users");
-  const ethPrice =
-    1 /
-    ((await request(subgraphUrl, ethPriceQuery)).priceOracleAsset.priceInEth /
-      1e18);
+type AaveAdapterResource = {
+  name: "aave";
+  chain: Chains;
+  usdcAddress: string;
+  subgraphUrl: string;
+  explorerBaseUrl: string;
+};
+
+const rc: { [chain in Chains]: AaveAdapterResource } = {
+  [Chains.ethereum]: {
+    name: "aave",
+    chain: Chains.ethereum,
+    usdcAddress: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    subgraphUrl: "https://api.thegraph.com/subgraphs/name/aave/protocol-v2",
+    explorerBaseUrl: "https://etherscan.io/address/",
+  },
+  // [Chains.polygon]: {
+  //   name: "aave",
+  //   chain: Chains.polygon,
+  //   usdcAddress: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+  //   subgraphUrl: "https://api.thegraph.com/subgraphs/name/aave/aave-v2-matic",
+  //   explorerBaseUrl: "https://polygonscan.com/address/",
+  // },
+};
+
+const positions = (chain: Chains) => async () => {
+  const explorerBaseUrl = rc[chain].explorerBaseUrl;
+  const subgraphUrl = rc[chain].subgraphUrl;
+  const usdcAddress = rc[chain].usdcAddress;
+  const _ethPriceQuery = ethPriceQuery(usdcAddress);
+  const users = (await getPagedGql(rc[chain].subgraphUrl, query, "users")) as User[];
+  const ethPrice = 1 / ((await request(subgraphUrl, _ethPriceQuery)).priceOracleAsset.priceInEth / 1e18);
   const positions = users
     .map((user) => {
       let totalDebt = 0,
         totalCollateral = 0;
       const debts = (user.reserves as any[]).map((reserve) => {
         const decimals = 10 ** reserve.reserve.decimals;
-        const price =
-          (Number(reserve.reserve.price.priceInEth) / 1e18) * ethPrice;
-        const liqThreshold =
-          Number(reserve.reserve.reserveLiquidationThreshold) / 1e4; // belongs to [0, 1]
+        const price = (Number(reserve.reserve.price.priceInEth) / 1e18) * ethPrice;
+        const liqThreshold = Number(reserve.reserve.reserveLiquidationThreshold) / 1e4; // belongs to [0, 1]
         let debt = Number(reserve.currentTotalDebt);
         if (reserve.usageAsCollateralEnabledOnUser === true) {
           debt -= Number(reserve.currentATokenBalance) * liqThreshold;
@@ -74,7 +121,7 @@ const positions = async () => {
         };
       });
 
-      const liquidablePositions = debts
+      const liquidablePositions: Liq[] = debts
         .filter(({ debt }) => debt < 0)
         .map((pos) => {
           const usdPosNetCollateral = -pos.debt;
@@ -85,14 +132,24 @@ const positions = async () => {
             const liqPrice = diffDebt / amountCollateral;
             // if liqPrice > pos.price -> bad debt
             return {
-              owner: user.id,
+              owner: user.id as string,
               liqPrice,
-              collateral: "ethereum:" + pos.token,
-              collateralAmount: pos.totalBal,
+              collateral: `${chain}:` + pos.token,
+              collateralAmount: pos.totalBal as string,
+              extra: {
+                url: explorerBaseUrl + user.id,
+              },
+            } as Liq;
+          } else {
+            return {
+              owner: "",
+              liqPrice: 0,
+              collateral: "",
+              collateralAmount: "",
             };
           }
         })
-        .filter((t) => t !== undefined);
+        .filter((t) => !!t.owner);
 
       return liquidablePositions;
     })
@@ -102,6 +159,9 @@ const positions = async () => {
 
 module.exports = {
   ethereum: {
-    liquidations: positions,
+    liquidations: positions(Chains.ethereum),
   },
+  // polygon: {
+  //   liquidations: positions(Chains.polygon),
+  // },
 };

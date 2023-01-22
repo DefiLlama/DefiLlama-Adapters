@@ -1,4 +1,4 @@
-const { request, gql } = require("graphql-request");
+const { request,  } = require("graphql-request");
 
 function getCoinGeckoId(apiId) {
     return {
@@ -10,10 +10,10 @@ function getCoinGeckoId(apiId) {
         'uluna': 'terra-luna',
         'uusd': 'terrausd'
     }[apiId]
-};
+}
 
 const graphUrl = `https://mantle.terra.dev/`
-const query = gql`
+const query = `
 query ($poolQuery: String!) {
   markets: WasmContractsContractAddressStore(
     ContractAddress: "terra1pcxwtrxppj9xj7pq3k95wm2zztfr9kwfkcgq0w"
@@ -36,7 +36,7 @@ async function tvl() {
         balances[getCoinGeckoId(m.underlying)] = (m.total_credit - m.total_insurance) / 10 ** 6;
     });
     return balances;
-};
+}
 
 async function borrowed() {
     const balances = {};
@@ -45,7 +45,7 @@ async function borrowed() {
         balances[getCoinGeckoId(m.underlying)] = m.total_loan / 10 ** 6;
     });
     return balances;
-};
+}
 
 module.exports = {
     timetravel: false,
@@ -54,4 +54,7 @@ module.exports = {
         tvl,
         borrowed
     },
+    hallmarks:[
+    [1651881600, "UST depeg"],
+  ]
 };

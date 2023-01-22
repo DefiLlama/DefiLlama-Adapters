@@ -1,6 +1,5 @@
-const BigNumber = require("bignumber.js");
-const { request, gql } = require("graphql-request");
 const sdk = require("@defillama/sdk");
+const { transformBscAddress } = require('../helper/portedTokens');
 
 // chains with staking component:
 
@@ -13,21 +12,7 @@ let pTokensObject = {
   pATOM: "0x446E028F972306B5a2C36E81D3d088Af260132B3",
   pXPRT: "0x8793cD84c22B94B1fDD3800f02C4B1dcCa40D50b",
 };
-
-const sushiGraphUrl =
-  "https://api.thegraph.com/subgraphs/name/sushiswap/exchange";
-
-// graphQL query to only get the Staking Contract section of the TVL (pool2)
-const sushiGraphQuery = gql`
-  query pstakePairs($stkContract: String, $block: Int) {
-    pairs(where: { token0: $stkContract }, block: { number: $block }) {
-      reserve0
-      token0 {
-        decimals
-      }
-    }
-  }
-`;
+const STKBNB_TOKEN_CONTRACT = '0xc2E9d07F66A89c44062459A47a0D2Dc038E4fb16';
 
 async function eth(timestamp, block) {
   let balances = {};
@@ -86,36 +71,28 @@ async function eth(timestamp, block) {
   return balances;
 }
 
-async function pool2(timestamp, block) {
-  let balances = {};
+async function bsctvl(timestamp, block, chainBlocks) {
+  const balances = {};
+  const transform = await transformBscAddress();
 
-  for (let index = 0; index < Object.values(stkTokensObject).length; index++) {
-    const { pairs } = await request(sushiGraphUrl, sushiGraphQuery, {
-      stkContract: Object.values(stkTokensObject)
-        [index].toString()
-        .toLocaleLowerCase(),
-      block: block,
-    });
+  const collateralBalance = (await sdk.api.abi.call({
+    abi: "uint256:totalSupply",
+    chain: 'bsc',
+    target: STKBNB_TOKEN_CONTRACT,
+    block: chainBlocks['bsc'],
+  })).output;
 
-    let reserve0BN = BigNumber(pairs[0].reserve0);
-    let decimals = Number(pairs[0].token0.decimals);
-
-    const underlyingToken = Object.values(stkTokensObject)[index];
-    const underlyingTokenBalance = reserve0BN.shiftedBy(decimals).toString();
-    sdk.util.sumSingleBalance(
-      balances,
-      underlyingToken,
-      underlyingTokenBalance
-    );
-  }
+  sdk.util.sumSingleBalance(balances, transform(STKBNB_TOKEN_CONTRACT), collateralBalance)
 
   return balances;
 }
 
 module.exports = {
-  methodology: `We get the totalSupply of the constituent token contracts (like stkATOM, pATOM, stkXPRT, pXPRT etc.) and then we multiply it with the USD market value of the constituent token`,
+  methodology: `We get the totalSupply of the constituent token contracts (like stkATOM, pATOM, stkXPRT, pXPRT, stkBNB etc.) and then we multiply it with the USD market value of the constituent token`,
   ethereum: {
     tvl: eth,
-    pool2: pool2,
   },
+  bsc: {
+    tvl: bsctvl
+  }
 };

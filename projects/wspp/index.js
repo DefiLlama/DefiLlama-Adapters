@@ -1,7 +1,7 @@
 const { masterchefExports, sumUnknownTokens } = require("../helper/unknownTokens")
 const sdk = require('@defillama/sdk');
 
-const poolAddressesABI = { "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "name": "poolAddresses", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" }
+const poolAddressesABI = 'function poolAddresses(uint256) view returns (address)'
 
 const config = {
   bsc: {
@@ -11,12 +11,6 @@ const config = {
       '0x46d502fac9aea7c5bc7b13c8ec9d02378c33d36f',  // WSPP
       '0xf83849122f769a0a7386df183e633607c890f6c0',  // ABS
       '0xcccbf2248ef3bd8d475ea5de8cb06e19f4591a8e',  // GWSPP
-    ],
-    coreAssets: [
-      '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // wbnb
-      '0xe9e7cea3dedca5984780bafc599bd69add087d56', // busd
-      '0x46d502fac9aea7c5bc7b13c8ec9d02378c33d36f',  // WSPP
-      '0xf83849122f769a0a7386df183e633607c890f6c0',  // ABS
     ],
     staking: [
       ['0x46d502fac9aea7c5bc7b13c8ec9d02378c33d36f', '0x87B4a0B47704c281F6ef2705dC5D57D47FfdD9Bf',], // WSPP staking
@@ -34,15 +28,11 @@ const config = {
     nativeTokens: [
       '0x46D502Fac9aEA7c5bC7B13C8Ec9D02378C33D36F',  // WSPP
     ],
-    coreAssets: [
-    ],
     staking: [
       ['0x46D502Fac9aEA7c5bC7B13C8Ec9D02378C33D36F', '0x1476322919a861e4E2215d87a721B93bD9c9919D',], // WSPP staking
     ]
   },
   avax: {
-    coreAssets: [
-    ],
     staking: [
       ['0xe668f8030bf17f3931a3069f31f4fa56efe9dd54', '0x7f20f17660a5b9565dc7c98efc360e3c7092c72e',], // WSPP staking
     ]
@@ -54,10 +44,6 @@ const config = {
     nativeTokens: [
       '0xccB32737C6dFfddFFB24CA8A96b588ac7b1822e7',  // WSPP
     ],
-    coreAssets: [
-      '0xAF984E23EAA3E7967F3C5E007fbe397D8566D23d', // WKAI
-      '0x92364Ec610eFa050D296f1EEB131f2139FB8810e', // KUSDT
-    ],
     staking: [
       ['0xccB32737C6dFfddFFB24CA8A96b588ac7b1822e7', '0x18Ee117A92509047EBC34EFcc0CcDC8692cDc37c',], // WSPP staking
     ]
@@ -67,11 +53,11 @@ const config = {
 module.exports = {};
 
 Object.keys(config).forEach(chain => {
-  const { masterchef, nativeTokens, coreAssets, staking, poolInfoABI, getToken, } = config[chain]
+  const { masterchef, nativeTokens, staking, poolInfoABI, getToken, } = config[chain]
   if (masterchef)
-    module.exports[chain] = masterchefExports({ masterchef, nativeTokens, coreAssets, chain, poolInfoABI, getToken, })[chain]
+    module.exports[chain] = masterchefExports({ masterchef, nativeTokens, useDefaultCoreAssets: true, chain, poolInfoABI, getToken, })[chain]
   if (staking) {
-    const stakingFn = (_, _b, { [chain]: block }) => sumUnknownTokens({ chain, block, tokensAndOwners: staking, coreAssets, })
+    const stakingFn = (_, _b, { [chain]: block }) => sumUnknownTokens({ chain, block, tokensAndOwners: staking, useDefaultCoreAssets: true, })
     if (module.exports[chain])
       module.exports[chain].staking = sdk.util.sumChainTvls([module.exports[chain].staking, stakingFn])
     else

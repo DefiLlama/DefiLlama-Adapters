@@ -5,6 +5,7 @@ const sdk = require('@defillama/sdk')
 const { getChainTransform } = require('../helper/portedTokens')
 const { getUniqueAddresses } = require('../helper/utils')
 const BigNumber = require("bignumber.js");
+const { getConfig } = require('../helper/cache')
 
 const tokenAddress = 'https://defi-llama-feed.vercel.app/api/address'
 const config = {
@@ -20,7 +21,7 @@ const config = {
   },
   fantom: {
     holder: '0x3923E7EdBcb3D0cE78087ac58273E732ffFb82cf',
-    graph: 'https://api.thegraph.com/subgraphs/name/revest-finance/revestfantomtvl',
+    // graph: 'https://api.thegraph.com/subgraphs/name/revest-finance/revestfantomtvl',
     chainId: 250,
   },
   avax: {
@@ -28,32 +29,6 @@ const config = {
     chainId: 43114,
   },
 }
-
-const tokenTrackersABI = {
-  "inputs": [
-    {
-      "internalType": "address",
-      "name": "",
-      "type": "address"
-    }
-  ],
-  "name": "tokenTrackers",
-  "outputs": [
-    {
-      "internalType": "uint256",
-      "name": "lastBalance",
-      "type": "uint256"
-    },
-    {
-      "internalType": "uint256",
-      "name": "lastMul",
-      "type": "uint256"
-    }
-  ],
-  "stateMutability": "view",
-  "type": "function"
-}
-
 
 module.exports = {
   hallmarks: [
@@ -71,7 +46,7 @@ Object.keys(config).forEach(chain => {
       if (revest) blacklist.push(revest.toLowerCase())
       const transform = await getChainTransform(chain)
       const tokenURL = `${tokenAddress}?chainId=${chainId}`
-      let { body: tokens } = await get(tokenURL)
+      let { body: tokens } = await getConfig('revest', tokenURL)
       tokens = getUniqueAddresses(tokens).filter(t => !blacklist.includes(t)) // filter out staking and LP tokens
       const balances = await sumTokens2({ chain, block, owner: holder, tokens, resolveLP: true })
       if (!graph) return balances
@@ -101,7 +76,7 @@ async function queryGraph(graph_api, tokens, transform, balances) {
       query {
         tokenVaultInteractions (
             where: {
-              token: \"${tokens[i]}"
+              token: "${tokens[i]}"
             }
             skip: ${skipAmount}
         ) {

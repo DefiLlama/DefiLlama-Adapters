@@ -73,5 +73,8 @@ module.exports = {
   },
   avax:{
     tvl: avalancheTVL
-  }
+  },
+    hallmarks:[
+    [1651881600, "UST depeg"],
+  ]
 }

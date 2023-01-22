@@ -1,10 +1,12 @@
 
 const sdk = require('@defillama/sdk')
 const solana = require('../helper/solana')
-const terra = require('../helper/terra')
+const terra = require('../helper/chain/terra')
 const { staking } = require('../helper/staking');
-const near = require('../helper/near');
-const NATIVE_ADDRESS = "NATIVE";
+const near = require('../helper/chain/near');
+const { default: BigNumber } = require('bignumber.js');
+const { sumTokens2, nullAddress } = require('../helper/unwrapLPs');
+const NATIVE_ADDRESS = nullAddress;
 
 const data = {
     celo: {
@@ -118,7 +120,7 @@ const data = {
             {name: "hapi", address: "0xD9c2D319Cd7e6177336b0a9c93c21cb48d84Fb54", decimals: 18},
             {name: "hedget", address: "0x7968bc6a03017eA2de509AAA816F163Db0f35148", decimals: 6},
             {name: "1million-nfts", address: "0xa4eF4b0B23C1fc81d3f9ecF93510e64f58A4A016", decimals: 18},
-            {name: "allbridge", address: "0xa11bD36801d8fa4448F0ac4ea7A62e3634cE8C7C", decimals: 18},
+            // {name: "allbridge", address: "0xa11bD36801d8fa4448F0ac4ea7A62e3634cE8C7C", decimals: 18},
             {name: "ariadne", address: "0xb1c9bc94aCd2fAE6aABf4ffae4429B93512a81D2", decimals: 18},
             {name: "cyberfi", address: "0x63b4f3e3fa4e438698CE330e365E831F7cCD1eF4", decimals: 18},
             {name: "ethereum", address: NATIVE_ADDRESS, decimals: 18},
@@ -199,23 +201,14 @@ const nearData = {
     ]
 }
 
-const toNumber = (decimals, n) => Number(n)/Math.pow(10, decimals)
+const toNumber = (decimals, n) => BigNumber(n/(10 ** decimals)).toFixed(0)
 
-function getTVLFunction(chain)
-{
-    return async function tvl(timestamp, ethBlock, chainBlocks) {
+function getTVLFunction(chain) {
+    return async function tvl(timestamp, ethBlock, {[chain]: block }) {
         const balances = {}
         const chainData = data[chain];
-        const block = chainBlocks[chain];
-        for (const token of chainData.tokens) {
-            const balance = token.address === NATIVE_ADDRESS ? await sdk.api.eth.getBalance({
-                block, chain, target: chainData.contractAddress
-            }) : await sdk.api.erc20.balanceOf({
-                block, chain, target: token.address, owner: chainData.contractAddress
-            });
-            sdk.util.sumSingleBalance(balances, token.name, toNumber(token.decimals, balance.output));
-        }
-        return balances
+        const tokens = chainData.tokens.map(i => i.address)
+        return sumTokens2({ chain, block, tokens, owner: chainData.contractAddress })
     }
 }
 
@@ -228,17 +221,12 @@ function getStakingFunction(chain) {
 }
 
 async function solanaTvl() {
-    const balances = {}
-    for (const token of solanaData.tokens) {
-        const balance = await solana.getTokenAccountBalance(token.tokenAccount);
-        sdk.util.sumSingleBalance(balances, token.name, balance);
-    }
-    return balances
+    return solana.sumTokens2({ tokenAccounts: solanaData.tokens.map(i => i.tokenAccount)})
 }
 
 async function solanaStaking() {
     const balance = await solana.getTokenAccountBalance(solanaData.staking.tokenAccount);
-    return {allbridge: balance}
+    return {allbridge: toNumber(0, balance)}
 }
 
 async function terraTvl() {
@@ -272,50 +260,9 @@ async function nearStaking() {
     return { allbridge: toNumber(nearData.staking.decimals, balance) }
 }
 
-
-
 module.exports={
     methodology: "All tokens locked in Allbridge contracts.",
-    ethereum: {
-        tvl: getTVLFunction('ethereum'),
-        staking: getStakingFunction('ethereum')
-    },
-    polygon: {
-        tvl: getTVLFunction('polygon'),
-        staking: getStakingFunction('polygon')
-    },
-    bsc: {
-        tvl: getTVLFunction('bsc'),
-        staking: getStakingFunction('bsc')
-    },
-    fantom: {
-        tvl: getTVLFunction('fantom'),
-        staking: getStakingFunction('fantom')
-    },
-    avax: {
-        tvl: getTVLFunction('avax'),
-        staking: getStakingFunction('avax')
-    },
-    heco: {
-        tvl: getTVLFunction('heco'),
-        staking: getStakingFunction('heco')
-    },
-    celo: {
-        tvl: getTVLFunction('celo'),
-        staking: getStakingFunction('celo')
-    },
-    aurora: {
-        tvl: getTVLFunction('aurora'),
-        staking: getStakingFunction('aurora'),
-    },
-    harmony: {
-        tvl: getTVLFunction('harmony'),
-        staking: getStakingFunction('harmony'),
-    },
-    fuse: {
-        tvl: getTVLFunction('fuse'),
-        staking: getStakingFunction('fuse'),
-    },
+    timetravel: false,
     solana: {
         tvl: solanaTvl,
         staking: solanaStaking
@@ -332,3 +279,10 @@ module.exports={
         [1651881600, "UST depeg"],
       ],
 }
+
+Object.keys(data).forEach(chain => {
+    module.exports[chain] = {
+        tvl: getTVLFunction(chain),
+        staking: getStakingFunction(chain),
+    }
+})

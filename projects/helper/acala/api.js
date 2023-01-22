@@ -44,6 +44,12 @@ const providers = {
     "wss://rpc.parallel.fi",
     "wss://parallel.api.onfinality.io/public-ws",
   ],
+  kintsugi: [
+    "wss://api-kusama.interlay.io/parachain"
+  ],
+  interlay: [
+    "wss://api.interlay.io:443/parachain"
+  ],
 }
 
 async function getAPI(chain) {
@@ -87,10 +93,11 @@ const fixMapping = {
 }
 
 async function getTokenPrices({ api, chain = '' }) {
+  if (!['heiko', 'parallel'].includes(chain)) throw new Error('Chain not supported')
 
+  const geckoMapping = fixMapping[chain]
   const metadatas = await api.query.assets.metadata.entries();
   const assets = await api.query.assets.asset.entries();
-  const relayAssetId = (await api.consts.crowdloans.relayCurrency).toNumber();
   const nativeAssetId = (await api.consts.currencyAdapter.getNativeCurrencyId).toNumber();
   const allAssets = metadatas.map(([{ args }, metadata]) => {
     const [assetId] = args;
@@ -117,62 +124,57 @@ async function getTokenPrices({ api, chain = '' }) {
   const lpTokenMappings = lpTokens
     .map(token => {
       const symbols = token.symbol.replace('LP-', '').split(/\/(.*)/s);
-      const assets = symbols.map(symbol => allAssets.find(asset => asset.symbol === symbol));
-      const relayAsset = assets.find(asset => asset?.assetId === relayAssetId);
-      const otherAsset = assets.find(asset => asset?.assetId !== relayAssetId);
-      return (
-        relayAsset &&
-        otherAsset && {
-          token,
-          relayAsset,
-          otherAsset
-        }
-      );
+      const assets = symbols.map(symbol => allAssets.find(asset => asset.symbol === symbol)).slice(0, 2)
+      return { token, assets }
     })
-    .filter(i => i);
-
-
 
   const lpTokenPools = (await api.query.amm.pools.multi(
-    lpTokenMappings.map(mapping => [mapping.relayAsset.assetId, mapping.otherAsset.assetId])
+    lpTokenMappings.map(mapping => mapping.assets.map(i => i.assetId))
   )).map(i => i.toJSON())
 
   const lpTokenPoolsReverse = (await api.query.amm.pools.multi(
-    lpTokenMappings.map(mapping => [mapping.otherAsset.assetId, mapping.relayAsset.assetId])
+    lpTokenMappings.map(mapping => mapping.assets.map(i => i.assetId).reverse())
   )).map(i => i.toJSON())
 
-  let total = 0
   const prices = {}
+  const balances = {}
+  const coreAssets = Object.keys(geckoMapping)
   lpTokenPools.forEach((data, i) => {
+    let mapping = lpTokenMappings[i]
+    let lpAssetId = mapping.token.assetId
+    let baseAsset = mapping.assets[0].assetId
+    let quoteAsset = mapping.assets[1].assetId
+    let baseAmount, quoteAmount
+    
     if (data) {
-      total += +data.baseAmount * 2
-      prices[lpTokenMappings[i].otherAsset.assetId] = data.baseAmount / data.quoteAmount
-      prices[lpTokenMappings[i].relayAsset.assetId] = 1
-      prices[lpTokenMappings[i].token.assetId] = data.baseAmount * 2 / totalSupplies[lpTokenMappings[i].token.assetId]
+      baseAmount = +data.baseAmount
+      quoteAmount = +data.quoteAmount
+    } else {
+      quoteAmount = +lpTokenPoolsReverse[i].baseAmount
+      baseAmount = +lpTokenPoolsReverse[i].quoteAmount
     }
-    else {
-      total += +lpTokenPoolsReverse[i].quoteAmount * 2
-      prices[lpTokenMappings[i].relayAsset.assetId] = 1
-      prices[lpTokenMappings[i].otherAsset.assetId] = lpTokenPoolsReverse[i].quoteAmount / lpTokenPoolsReverse[i].baseAmount
-      prices[lpTokenMappings[i].token.assetId] = lpTokenPoolsReverse[i].quoteAmount * 2 / totalSupplies[lpTokenMappings[i].token.assetId]
+
+    const coreToken1 = coreAssets.includes(''+baseAsset)
+    const coreToken2 = coreAssets.includes(''+quoteAsset)
+    if (coreToken1 && coreToken2) {
+      prices[lpAssetId] = { ...geckoMapping[baseAsset], price: baseAmount * 2 /totalSupplies[lpAssetId] }
+      sdk.util.sumSingleBalance(balances, baseAsset, baseAmount)
+      sdk.util.sumSingleBalance(balances, quoteAsset, quoteAmount)
+    } else if (coreToken1) {
+      prices[lpAssetId] = { ...geckoMapping[baseAsset], price: baseAmount * 2 /totalSupplies[lpAssetId] }
+      prices[quoteAsset] = { ...geckoMapping[baseAsset], price: baseAmount  / quoteAmount }
+      sdk.util.sumSingleBalance(balances, baseAsset, baseAmount * 2)
+    } else if (coreToken2) {
+      prices[lpAssetId] = { ...geckoMapping[quoteAsset], price: quoteAmount * 2 /totalSupplies[lpAssetId] }
+      prices[baseAsset] = { ...geckoMapping[quoteAsset], price: quoteAmount  / baseAmount }
+      sdk.util.sumSingleBalance(balances, quoteAsset, quoteAmount * 2)
+    } else {
+      sdk.util.sumSingleBalance(balances, baseAsset, baseAmount)
+      sdk.util.sumSingleBalance(balances, quoteAsset, quoteAmount)
     }
   })
 
-  const baseToken = nativeAssetId === 0 ? 'kusama' : 'polkadot'
-  const baseDecimals = nativeAssetId === 0 ? 12 : 10
-
   function updateBalances(balances) {
-    const polkadotPrice = nativeAssetId === 0 ? 62 : 9.48
-    allAssets.forEach(a => {
-      a.price = prices[a.assetId] || 0
-      // a.totalSupply = (totalSupplies[a.assetId] || 0) / ( 10 ** a.decimals)
-      a.balance = (balances[a.assetId] || 0) / (10 ** a.decimals)
-      a.balanceDOT = polkadotPrice * (balances[a.assetId] || 0) * a.price / ((10 ** baseDecimals) * 1e6)
-      // a.allUSD= polkadotPrice * (totalSupplies[a.assetId] || 0)  * a.price / ((10 **baseDecimals) * 1e6)
-    })
-    // console.table(allAssets)
-    const geckoMapping = fixMapping[chain]
-
     Object.keys(balances).forEach(token => {
       if (geckoMapping && geckoMapping[token]) {
         const { decimals, geckoId, } = geckoMapping[token]
@@ -182,18 +184,17 @@ async function getTokenPrices({ api, chain = '' }) {
       }
 
       if (!prices[token]) return;
-      // console.log(token, baseToken, prices[token] * balances[token] / (10 ** baseDecimals) /1e6, (balances[baseToken] || 0) /1e6)
-      sdk.util.sumSingleBalance(balances, baseToken, prices[token] * balances[token] / (10 ** baseDecimals))
-      // console.log(balances[baseToken])
+      const { geckoId, decimals, price } = prices[token]
+      sdk.util.sumSingleBalance(balances, geckoId, price * balances[token] / (10 ** decimals))
       delete balances[token]
     })
     return balances
   }
 
+  updateBalances(balances)
+
   return {
-    updateBalances, balances: {
-      [baseToken]: total / (10 ** baseDecimals)
-    }, prices,
+    updateBalances, balances, prices,
   }
 }
 
@@ -228,8 +229,6 @@ async function addTokenBalance({ balances, amount, chain, tokenArg, api, wallet,
   if (!wallet) wallet = await getWallet(chain)
   const geckoMapping = geckoMappings[chain]
   const tokenJson = tokenArg.toJSON()
-  const tokenStr = tokenArg.toString()
-  // console.log(tokenJson, tokenStr)
   const token = await wallet.getToken(forceToCurrencyName(tokenArg));
   amount = FixedPointNumber.fromInner(amount.toString(), token.decimals)
 

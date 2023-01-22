@@ -1,16 +1,6 @@
 const { getAPI } = require('../helper/acala/api')
 const { forceToCurrencyId } = require("@acala-network/sdk-core");
 const sdk = require('@defillama/sdk')
-const ethers = require("ethers")
-const { config } = require('@defillama/sdk/build/api');
-
-config.setProvider("karura_evm", new ethers.providers.StaticJsonRpcProvider(
-  "https://eth-rpc-karura.aca-api.network",
-  {
-    name: "karura_evm",
-    chainId: 686,
-  }
-))
 
 module.exports = {
   karura: {
@@ -42,6 +32,5 @@ module.exports = {
 async function balanceOf(api, account, token) {
   const currencyId = await forceToCurrencyId(api, token)
   const tokenRes = await api.query.tokens.accounts(account, currencyId)
-  // console.log(token, Math.floor(+tokenRes.toHuman().free.replaceAll(',', '')))
   return +tokenRes.toHuman().free.replace(/,/g, '')
 }

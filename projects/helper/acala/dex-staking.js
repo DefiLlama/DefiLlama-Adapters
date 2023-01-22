@@ -1,4 +1,5 @@
 const { FixedPointNumber, forceToCurrencyName } = require("@acala-network/sdk-core");
+const { getAPI, getWallet } = require('./api')
 
 async function dexStaking(chain){
   const api = await getAPI(chain)
@@ -6,7 +7,7 @@ async function dexStaking(chain){
   const data = await api.query.rewards.poolInfos.entries();
   let total = FixedPointNumber.ZERO;
   const filterData = data.filter(([token]) => {
-    return token.toHuman()[0].hasOwnProperty('Dex');
+    return token.toHuman()[0].Dex
   });
 
   for (let i = 0; i < filterData.length; i++) {

@@ -21,76 +21,20 @@ module.exports = {
     tvl: getUniTVL({
       factory: FACTORIES,
       chain,
-      coreAssets:
-        [
-          NATIVE_TOKEN_WASTAR,
-          "0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98",
-          "0x3795C36e7D12A8c252A20C5a7B455f7c57b60283",
-          "0x6De33698e9e9b787e09d3Bd7771ef63557E148bb",
-          "0xad543f18cFf85c77E140E3E5E3c3392f6Ba9d5CA",
-          "0x81ECac0D6Be0550A00FF064a4f9dd2400585FE9c",
-          "0x75364D4F779d0Bd0facD9a218c67f87dD9Aff3b4"
-        ],
+      useDefaultCoreAssets: true,
     }),
     staking:  async (_, _b, { [chain]: block }) => {
       const { output: { totalStakedTokens } } = await sdk.api.abi.call({
         target: STAKING_CONTRACT,
         params: 0,
-        abi: {
-          "type": "function",
-          "stateMutability": "view",
-          "outputs": [
-            {
-              "type": "address",
-              "name": "lpToken",
-              "internalType": "contract IERC20"
-            },
-            {
-              "type": "uint256",
-              "name": "allocPoint",
-              "internalType": "uint256"
-            },
-            {
-              "type": "uint256",
-              "name": "lastRewardBlock",
-              "internalType": "uint256"
-            },
-            {
-              "type": "uint256",
-              "name": "accStarPerShare",
-              "internalType": "uint256"
-            },
-            {
-              "type": "uint16",
-              "name": "depositFeeBP",
-              "internalType": "uint16"
-            },
-            {
-              "type": "uint256",
-              "name": "harvestInterval",
-              "internalType": "uint256"
-            },
-            {
-              "type": "uint256",
-              "name": "totalStakedTokens",
-              "internalType": "uint256"
-            }
-          ],
-          "name": "poolInfo",
-          "inputs": [
-            {
-              "type": "uint256",
-              "name": "",
-              "internalType": "uint256"
-            }
-          ]
-        },
+        abi: 'function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accStarPerShare, uint16 depositFeeBP, uint256 harvestInterval, uint256 totalStakedTokens)',
         chain, block,
       })
 
       const balances = { [chain + ':' + TOKENS.STAR] : totalStakedTokens }
       const transform = await getFixBalances(chain)
-      const { updateBalances } = await getTokenPrices({ chain, block, coreAssets: [NATIVE_TOKEN_WASTAR], lps: [ ASTAR_LP ], allLps: true })
+      const { updateBalances } = await getTokenPrices({ chain, block, 
+        useDefaultCoreAssets: true, lps: [ ASTAR_LP ], allLps: true })
       await updateBalances(balances)
       transform(balances)
       return balances

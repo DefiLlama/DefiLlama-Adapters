@@ -1,4 +1,4 @@
-const { call } = require('./helper/near')
+const { call } = require('./helper/chain/near')
 
 async function tvl() {
     return { 
@@ -8,7 +8,7 @@ async function tvl() {
         {}
       ) / 1e24 )
     };
-};
+}
 
 module.exports = {
   near: {

@@ -41,11 +41,7 @@ module.exports = {
    tvl: getUniTVL({
      chain: 'bsc',
      factory: bscFactory,
-     coreAssets: [
-       '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c', // wbnb
-       bscBMochi,
-       bscMochi,
-     ]
+     useDefaultCoreAssets: true,
    }),
    staking: bscStaking
  },
@@ -53,11 +49,7 @@ module.exports = {
     tvl: getUniTVL({
       chain: 'harmony',
       factory: harmonyFactory,
-      coreAssets: [
-        '0xE176EBE47d621b984a73036B9DA5d834411ef734', // BUSD
-        '0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a', // wone
-        harmonyStakingToken, // hMOCHI
-      ]
+      useDefaultCoreAssets: true,
     }),
     staking: harmonyStaking,
     hallmarks:[

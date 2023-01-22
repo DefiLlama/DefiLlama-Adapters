@@ -1,10 +1,8 @@
-const { blockQuery } = require('../helper/graph')
+const { blockQuery } = require('../helper/http')
+const sdk = require('@defillama/sdk')
 const { gql } = require('graphql-request')
-const BigNumber = require("bignumber.js");
 const CHAIN_POLYGON = 'polygon'
 const CHAIN_BSC = 'bsc'
-
-BigNumber.config({ EXPONENTIAL_AT: 50 })
 
 const THEGARPH_API = {
   [CHAIN_POLYGON]: "https://api.thegraph.com/subgraphs/name/app-helmet-insure/guard",
@@ -25,7 +23,7 @@ function transform(str) {
 }
 
 function fetch(chain) {
-  return async (_timestamp, _ethBlock, chainBlocks) => {
+  return async (ts, _, chainBlocks, { api }) => {
     var endpoint = THEGARPH_API[chain]
     var query = gql`
     query tvl($block: Int){
@@ -41,7 +39,7 @@ function fetch(chain) {
       }
     }
     `;
-    const results = await blockQuery(endpoint, query, chainBlocks[chain], 1000)
+    const results = await blockQuery(endpoint, query, { api, blockCatchupLimit: 2000, })
     const { options } = results
 
     const data = options.flatMap(o => {
@@ -52,11 +50,7 @@ function fetch(chain) {
       })
     }).reduce((_data, ask) => {
       const key = transform(`${chain}:${ask.collateral}`)
-      if (typeof _data[key] === 'undefined') {
-        _data[key] = ask.volume
-      } else {
-        _data[key] = new BigNumber(_data[key]).plus(new BigNumber(ask.volume)).toFixed()
-      }
+      sdk.util.sumSingleBalance(_data, key, ask.volume)
       return _data
     }, {})
     return data

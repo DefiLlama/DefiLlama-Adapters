@@ -1,4 +1,3 @@
-const { getBlock } = require("../helper/getBlock");
 const { chainExports } = require("../helper/exports");
 const { sumTokens } = require("../helper/unwrapLPs");
 const { getFixBalances } = require('../helper/portedTokens')
@@ -532,8 +531,7 @@ const liquidityBridgeTokens = [
 ];
 
 function chainTvl(chain) {
-  return async (time, _, chainBlocks) => {
-    const block = await getBlock(time, chain, chainBlocks, true);
+  return async (time, _, {[chain]: block}) => {
     const toa = []
     liquidityBridgeTokens.forEach(token => {
       if (!token[chain])

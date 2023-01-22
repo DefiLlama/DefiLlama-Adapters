@@ -1,5 +1,4 @@
-const retry = require('../helper/retry')
-const axios = require("axios");
+const { get } = require('../helper/http')
 
 function diff(interval, timestamp){
   const time = (Number(interval.endTime) + Number(interval.startTime))/2
@@ -7,9 +6,9 @@ function diff(interval, timestamp){
 }
 
 async function fetch(timestamp) {
-  var res = await retry(async bail => await axios.get('https://midgard.thorchain.info/v2/history/tvl?interval=day&count=400'))
-  let interval = res.data.intervals[0]
-  res.data.intervals.forEach(newInter=>{
+  var res = await get('https://midgard.ninerealms.com/v2/history/tvl?interval=day&count=400')
+  let interval = res.intervals[0]
+  res.intervals.forEach(newInter=>{
     if(diff(newInter, timestamp)<diff(interval, timestamp)){
       interval = newInter
     }
@@ -22,8 +21,8 @@ async function fetch(timestamp) {
 }
 
 async function staking(timestamp) {
-  var res = await retry(async bail => await axios.get('https://midgard.thorchain.info/v2/network'))
-  const {totalActiveBond, totalStandbyBond} = res.data.bondMetrics
+  var res = await get('https://midgard.ninerealms.com/v2/network')
+  const {totalActiveBond, totalStandbyBond} = res.bondMetrics
   return {
     "thorchain": (Number(totalActiveBond) + Number(totalStandbyBond))/1e8
   }
@@ -31,6 +30,9 @@ async function staking(timestamp) {
 
 
 module.exports = {
+  hallmarks: [
+    [1652659213,"Kill Switch"]
+  ],
   thorchain:{
     fetch,
     staking

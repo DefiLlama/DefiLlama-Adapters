@@ -1,10 +1,8 @@
-const { getChainTransform } = require("../helper/portedTokens")
 const { GraphQLClient, gql } = require('graphql-request')
-const { getBlock } = require('../helper/getBlock')
+const { getBlock } = require('../helper/http')
 const { staking } = require('../helper/staking')
-const utils = require('../helper/utils')
-const retry = require('async-retry')
 const sdk = require('@defillama/sdk')
+
 const CONFIG = {
   ethereum: {
     uri: 'https://api.thegraph.com/subgraphs/name/0xnodes/system11',
@@ -57,8 +55,8 @@ function offset(chain) {
       return 500
     case 'avax':
       return 750
-  };
-};
+  }
+}
 function chainTvl(chain) {
     return async (timestamp, ethBlock, chainBlocks) => {
       if (timestamp > 1659527340) return {}
@@ -67,7 +65,7 @@ function chainTvl(chain) {
         var graphQLClient = new GraphQLClient(uri)
         const block = (await getBlock(timestamp, chain, chainBlocks)) - offset(chain)
         var query = gql`{strategyTokenBalances(block: {number: `+block+`}){amount}}`
-        const results = await retry(async bail => await graphQLClient.request(query))
+        const results =  await graphQLClient.request(query)
         let amount = 0
         for (let i = 0; i < results.strategyTokenBalances.length; i++) {  //loop through the array
           amount += Number(results.strategyTokenBalances[i].amount); //Do the math!
@@ -85,7 +83,7 @@ function stakingTvl(chain) {
 function chainExports(chainTvl, stakingTvl, chains){
   const chainTvls = chains.reduce((obj, chain) => ({
     ...obj,
-    [chain === 'avax' ? 'avalanche' : chain]: {
+    [chain]: {
       tvl:chainTvl(chain),
       staking: stakingTvl(chain)
     }

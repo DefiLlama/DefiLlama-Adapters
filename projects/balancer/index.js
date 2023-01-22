@@ -2,10 +2,10 @@ const sdk = require('@defillama/sdk');
 const BigNumber = require("bignumber.js");
 const { GraphQLClient, gql } = require('graphql-request')
 const { toUSDTBalances } = require('../helper/balances');
-const { getBlock } = require('../helper/getBlock');
+const { getBlock } = require('../helper/http');
 async function getTVL(subgraphName, block) {
   // delayed by around 5 mins to allow subgraph to update
-  block -= 25;
+  block -= 100;
   var endpoint = `https://api.thegraph.com/subgraphs/name/balancer-labs/${subgraphName}`
   var graphQLClient = new GraphQLClient(endpoint)
 
@@ -39,7 +39,7 @@ async function getTVL(subgraphName, block) {
 
 async function getTVLFromPools(subgraphName, block) {
   // delayed by around 5 mins to allow subgraph to update
-  block -= 25;
+  block -= 100;
   var endpoint = `https://api.thegraph.com/subgraphs/name/balancer-labs/${subgraphName}`
   var graphQLClient = new GraphQLClient(endpoint)
 
