@@ -8,7 +8,7 @@ async function tvl (timestamp, ethBlock, chainBlocks) {
   const transformAddress = await getChainTransform(chain);
   await addFundsInMasterChef(balances, MASTERCHEF, chainBlocks[chain], chain, transformAddress);
   return balances;
-};
+}
 
 module.exports = {
   polygon: {  tvl,  },

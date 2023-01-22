@@ -82,10 +82,10 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
         } else {
             balances[tokenId[0]] =
                 reserves[n].output[side] * 2 / 10**tokenId[1];
-        };
-    };
+        }
+    }
     return balances;
-};
+}
 
 function getTokenId(address) {
     switch(address) {
@@ -101,8 +101,8 @@ function getTokenId(address) {
             return ['binance-usd', 18]
         default:
             return false;
-    };
-};
+    }
+}
 // node test.js projects/moonswap/index.js
 module.exports = {
     misrepresentedTokens: true,

@@ -38,7 +38,7 @@ function tvl(chain) {
 
     return balances;
   };
-};
+}
 
 module.exports = {
   ethereum: {

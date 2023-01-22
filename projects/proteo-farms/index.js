@@ -12,7 +12,7 @@ async function getPrices() {
   async function _getPrices() {
     const getApi = ({ token1, token2 }) => `https://api.multiversx.com/mex/pairs/${token1}/${token2}?fields=price`
     const lps = [
-      { lp: 'PROTEOEGLD-baf054', token1: 'PROTEO-0c7311', token2: 'WEGLD-bd4d79', },
+      // { lp: 'PROTEOEGLD-baf054', token1: 'PROTEO-0c7311', token2: 'WEGLD-bd4d79', },
       { lp: 'ZPAYWEGLD-34e5c1', token1: 'ZPAY-247875', token2: 'WEGLD-bd4d79', },
       { lp: 'AEROWEGLD-81cc37', token1: 'AERO-458bbf', token2: 'WEGLD-bd4d79', },
       { lp: 'KROUSDC-7787ab', token1: 'USDC-c76f1f', token2: 'KRO-df97ec', },

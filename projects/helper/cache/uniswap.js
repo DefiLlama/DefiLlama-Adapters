@@ -4,12 +4,14 @@ const { getCache, setCache, } = require('../cache');
 const { transformBalances, transformDexBalances, } = require('../portedTokens')
 const { getCoreAssets, } = require('../tokenMapping')
 const { sliceIntoChunks, } = require('../utils')
+const { sumTokens2, } = require('../unwrapLPs')
 const sdk = require('@defillama/sdk')
 
 const cacheFolder = 'uniswap-forks'
 
 function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
   useDefaultCoreAssets = false,
+  fetchBalances = false,
   abis = {},
   chain: _chain = 'ethereum',
   queryBatched = 0,
@@ -49,6 +51,15 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
 
     if (cache.pairs.length > length)
       cache.pairs = cache.pairs.slice(0, length)
+
+    if (fetchBalances) {
+      const toa = []
+      cache.pairs.forEach((owner, i) => {
+        toa.push([cache.token0s[i], owner])
+        toa.push([cache.token1s[i], owner])
+      })
+      return sumTokens2({ api, tokensAndOwners: toa, })
+    }
 
     let reserves = []
     if (queryBatched) {
