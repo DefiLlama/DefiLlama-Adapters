@@ -1,5 +1,5 @@
-const { get } = require("./helper/http");
-const sdk = require("@defillama/sdk");
+const { get } = require('./helper/http')
+const sdk = require('@defillama/sdk')
 
 async function fetch() {
   const response = await get("https://api.raydium.io/pairs");
