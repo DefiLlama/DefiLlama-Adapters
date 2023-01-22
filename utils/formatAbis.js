@@ -90,7 +90,7 @@ function print() {
 }
 
 
-const data = 
+let data = 
 
 
 print()

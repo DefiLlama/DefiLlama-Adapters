@@ -72,8 +72,8 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
         transform(addr),
         poolTvl.output[i].output
       );
-    };
-  };
+    }
+  }
 
   await unwrapUniswapLPs(
     balances,
@@ -84,7 +84,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
   );
 
   return balances;
-};
+}
 
 
 // node test.js projects/planet-finance/index.js

@@ -96,7 +96,7 @@ async function tvl(timestamp, block, chainBlocks) {
     delete balances['cronos:0x654bac3ec77d6db497892478f854cf6e8245dca9'];
 
     return balances;
-};
+}
 module.exports = {
     cronos : {
         tvl,

@@ -82,10 +82,10 @@ function getVaultsTvlApi(vaults) {
 }
 
 const usdc = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
-async function tvl_api(timestamp, block, chainBlocks, chain) {
+/* async function tvl_api(timestamp, block, chainBlocks, chain) {
   const { vaults, openedVaultsCount } = await retrieveVaultsAPI()
   return { [usdc]: getVaultsTvlApi(vaults).times(1e6) }
-}
+} */
 
 module.exports = {
   ethereum: { tvl },
