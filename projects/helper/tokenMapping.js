@@ -453,6 +453,10 @@ const fixBalancesTokens = {
   cardano: {
     "ADA": { coingeckoId: "cardano", decimals: 0, },
   },
+  omax: {
+    [nullAddress]: { coingeckoId: "omax-token", decimals: 18, },
+    "0xfeBaBc6a9B2Ec46d6357879B8bf39B593F11A5B9": { coingeckoId: "omax-token", decimals: 18, },
+  },
   defichain: {
     "DFI": { coingeckoId: "defichain", decimals: 0, },
     "DUSD": { coingeckoId: "decentralized-usd", decimals: 0, },
