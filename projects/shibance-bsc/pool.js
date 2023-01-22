@@ -4,18 +4,18 @@ const multiCall = sdk.api.abi.multiCall;
 const BigNumber = require("bignumber.js");
 
 const fetchPoolsTotalStaking = async (chain, block) => {
+  const chainId = chains[chain];
+  const tokens = require("./constants/" + chain + "/tokens");
+  const poolsConfig = require("./constants/" + chain + "/pools");
+
+  function getAddress(addrs) {
+    return addrs[chainId];
+  }
+
+  const getWbnbAddress = () => {
+    return getAddress(tokens.wbnb.address);
+  };
   try {
-    const chainId = chains[chain];
-    const tokens = require("./constants/" + chain + "/tokens");
-    const poolsConfig = require("./constants/" + chain + "/pools");
-
-    function getAddress(addrs) {
-      return addrs[chainId];
-    }
-
-    const getWbnbAddress = () => {
-      return getAddress(tokens.wbnb.address);
-    };
 
     const nonBnbPools = poolsConfig.filter(
       (p) => p.stakingToken.symbol !== "BNB"
@@ -68,7 +68,7 @@ const fetchPoolsTotalStaking = async (chain, block) => {
       })),
     ];
   } catch (e) {
-    console.log("fetchPoolsTotalStaking", e);
+    sdk.log("fetchPoolsTotalStaking", e);
   }
 };
 

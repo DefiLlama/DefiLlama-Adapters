@@ -14,7 +14,7 @@ async function bullbearTVL(block, chain, usdToken) {
   const balances = {};
   const contractsLength = await sdk.api.abi.call({
     target: factory,
-    abi: abi.bullbear.length,
+    abi: abi.length,
     block,
     chain,
   })
@@ -29,13 +29,13 @@ async function bullbearTVL(block, chain, usdToken) {
     sdk.api.abi.multiCall({
       calls,
       block,
-      abi: abi.bullbear.allCalls,
+      abi: abi.allCalls,
       chain,
     }),
     sdk.api.abi.multiCall({
       calls,
       block,
-      abi: abi.bullbear.allPuts,
+      abi: abi.allPuts,
       chain,
     })
   ])
@@ -45,7 +45,7 @@ async function bullbearTVL(block, chain, usdToken) {
       target: contract
     })),
     block,
-    abi: abi.bullbear.underlying,
+    abi: abi.underlying,
     chain,
   });
   const underlyingBalances = await sdk.api.abi.multiCall({
@@ -145,7 +145,7 @@ const stakingTVL = async (timestamp, ethBlock) => {
   const balances = {}
   const { output: staked } = await sdk.api.abi.call({
     target: antimatterStakingContract,
-    abi: abi.staking.TVL,
+    abi: abi.TVL,
     block: ethBlock,
     chain: "ethereum"
   });

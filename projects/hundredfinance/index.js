@@ -1,7 +1,4 @@
 const {compoundExports, compoundExportsWithAsyncTransform} = require('../helper/compound')
-const {transformArbitrumAddress, transformFantomAddress, transformHarmonyAddress, 
-    transformMoonriverAddress, transformXdaiAddress, transformPolygonAddress,
-    transformOptimismAddress } = require('../helper/portedTokens')
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const comptroller = "0x0f390559f258eb8591c8e31cf0905e97cf36ace2"
@@ -49,7 +46,7 @@ async function bammTvlFunc(chain, retTvl, unixTimestamp, ethBlock, chainBlocks) 
           ).output;
         
         const ethToken = bamm["underlyingEth"]
-        balances[ethToken] = (new BigNumber(balances[ethToken]).plus(new BigNumber(bammBalance))).toString(10)        
+        sdk.util.sumSingleBalance(balances, ethToken, bammBalance)
     }
 
     return balances
@@ -66,11 +63,11 @@ module.exports={
         [1647302400, "Reentrancy attack"]
     ],
     ethereum:compoundExports(comptroller, "ethereum", "0xfCD8570AD81e6c77b8D252bEbEBA62ed980BD64D", "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"),
-    arbitrum:tvlWithBamm(comptroller, "arbitrum", "0x8e15a22853A0A60a0FBB0d875055A8E66cff0235", "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1", transformArbitrumAddress),
-    fantom:tvlWithBamm(comptroller, "fantom", "0xfCD8570AD81e6c77b8D252bEbEBA62ed980BD64D", "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83", transformFantomAddress),
-    harmony:compoundExportsWithAsyncTransform(comptroller, "harmony", "0xbb93C7F378B9b531216f9aD7b5748be189A55807", "0xcf664087a5bb0237a0bad6742852ec6c8d69a27a", transformHarmonyAddress),
-    moonriver:compoundExportsWithAsyncTransform("0x7d166777bd19a916c2edf5f1fc1ec138b37e7391", "moonriver", "0xd6fcBCcfC375c2C61d7eE2952B329DcEbA2D4e10", "0x98878b06940ae243284ca214f92bb71a2b032b8a", transformMoonriverAddress),
-    xdai:compoundExportsWithAsyncTransform(comptroller, "xdai", "0x090a00A2De0EA83DEf700B5e216f87a5D4F394FE", "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d", transformXdaiAddress),
-    polygon:compoundExportsWithAsyncTransform("0xedba32185baf7fef9a26ca567bc4a6cbe426e499", "polygon", "0xEbd7f3349AbA8bB15b897e03D6c1a4Ba95B55e31", "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270", transformPolygonAddress),
-    optimism:compoundExportsWithAsyncTransform(comptroller, "optimism", "0xE8F12f5492Ec28609D2932519456b7436d6c93bD", "0x4200000000000000000000000000000000000006", transformOptimismAddress),
+    arbitrum:tvlWithBamm(comptroller, "arbitrum", "0x8e15a22853A0A60a0FBB0d875055A8E66cff0235", "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1"),
+    fantom:tvlWithBamm(comptroller, "fantom", "0xfCD8570AD81e6c77b8D252bEbEBA62ed980BD64D", "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83"),
+    harmony:compoundExportsWithAsyncTransform(comptroller, "harmony", "0xbb93C7F378B9b531216f9aD7b5748be189A55807", "0xcf664087a5bb0237a0bad6742852ec6c8d69a27a"),
+    moonriver:compoundExportsWithAsyncTransform("0x7d166777bd19a916c2edf5f1fc1ec138b37e7391", "moonriver", "0xd6fcBCcfC375c2C61d7eE2952B329DcEbA2D4e10", "0x98878b06940ae243284ca214f92bb71a2b032b8a"),
+    xdai:compoundExportsWithAsyncTransform("0x6bb6ebCf3aC808E26545d59EA60F27A202cE8586", "xdai", "0x6eDCB931168C9F7C20144f201537c0243b19dCA4", "0xe91d153e0b41518a2ce8dd3d7944fa863463a97d"),
+    polygon:compoundExportsWithAsyncTransform("0xedba32185baf7fef9a26ca567bc4a6cbe426e499", "polygon", "0xEbd7f3349AbA8bB15b897e03D6c1a4Ba95B55e31", "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"),
+    optimism:compoundExportsWithAsyncTransform(comptroller, "optimism", "0xE8F12f5492Ec28609D2932519456b7436d6c93bD", "0x4200000000000000000000000000000000000006"),
 }

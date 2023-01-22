@@ -22,4 +22,7 @@ const moonbeamStaking = staking(moonbeamConfig.stakingContract, moonbeamConfig.s
 
 module.exports = {
   moonbeam: { ...moonbeamTVL, staking: moonbeamStaking, },
+  hallmarks: [
+    [1659312000,"Nomad Bridge Exploit"],
+  ],
 }

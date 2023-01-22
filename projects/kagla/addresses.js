@@ -13,6 +13,8 @@ const TOKEN_INFO = {
 const TOKENS = {
   // KGL
   [KGL_ADDRESS]: "kagla-finance",
+  // muKGL: staked KGL by Muuu Finance
+  "0x5eaAe8435B178d4677904430BAc5079e73aFa56e": "kagla-finance",
   // USDC
   "0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
   // Starlay lUSDC -> USDC
@@ -30,7 +32,15 @@ const TOKENS = {
   // BAI
   "0x733ebcC6DF85f8266349DEFD0980f8Ced9B45f35": "bai-stablecoin",
   // aUSD
-  "0xfFFFFfFF00000000000000010000000000000001": TOKEN_INFO.ausd.key
+  "0xfFFFFfFF00000000000000010000000000000001": TOKEN_INFO.ausd.key,
+  // ASTR
+  "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" : "astar",
+  // nASTR: staked ASTR by Algem
+  "0xE511ED88575C57767BAfb72BfD10775413E3F2b0": "astar",
+  // LAY
+  "0xc4335B1b76fA6d52877b3046ECA68F6E708a27dd": "starlay-finance",
+  // muLAY: staked LAY by Muuu Finance
+  "0xDDF2ad1d9bFA208228166311FC22e76Ea7a4C44D": "starlay-finance",
 };
 
 

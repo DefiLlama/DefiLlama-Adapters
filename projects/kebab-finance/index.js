@@ -4,18 +4,7 @@ const { addFundsInMasterChef } = require("../helper/masterchef");
 
 const masterchef = "0x76FCeffFcf5325c6156cA89639b17464ea833ECd";
 const kebab = "0x7979F6C54ebA05E18Ded44C4F986F49a5De551c2";
-const poolInfoAbi = {
-  inputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-  name: "poolInfo",
-  outputs: [
-    { internalType: "contract IBEP20", name: "lpToken", type: "address" },
-    { internalType: "uint256", name: "allocPoint", type: "uint256" },
-    { internalType: "uint256", name: "lastRewardBlock", type: "uint256" },
-    { internalType: "uint256", name: "accCakePerShare", type: "uint256" },
-  ],
-  stateMutability: "view",
-  type: "function",
-};
+const poolInfoAbi = 'function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accCakePerShare)';
 
 async function tvl(timestamp, block, chainBlocks) {
   let balances = {};

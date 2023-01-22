@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const { getChainTransform } = require('../helper/portedTokens')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const banks = {
   bsc: [
@@ -14,206 +14,23 @@ const banks = {
 };
 
 function treasury(chain) {
-  return async (_timestamp, _block, chainBlocks) => {
-    const transform = await getChainTransform(chain)
-    const block = chainBlocks[chain];
-
+  return async (_timestamp, _block, {[chain]: block}) => {
     // Get the Bank for the input block
     const [, bankAddressOfBlock] = banks[chain].find(
-      ([bankLastBlock]) => block < bankLastBlock
+      ([bankLastBlock]) => (block || 999999999999) < bankLastBlock
     );
 
     // Retrieves all tokens from the Bank contract
     const { output: tokens } = await sdk.api.abi.call({
       target: bankAddressOfBlock,
-      abi: {
-        inputs: [],
-        name: "getTokens",
-        outputs: [
-          {
-            components: [
-              {
-                internalType: "uint8",
-                name: "decimals",
-                type: "uint8",
-              },
-              {
-                internalType: "address",
-                name: "tokenAddress",
-                type: "address",
-              },
-              {
-                internalType: "string",
-                name: "name",
-                type: "string",
-              },
-              {
-                internalType: "string",
-                name: "symbol",
-                type: "string",
-              },
-              {
-                components: [
-                  {
-                    internalType: "bool",
-                    name: "allowed",
-                    type: "bool",
-                  },
-                  {
-                    internalType: "uint16",
-                    name: "balanceRisk",
-                    type: "uint16",
-                  },
-                  {
-                    internalType: "address",
-                    name: "partner",
-                    type: "address",
-                  },
-                  {
-                    components: [
-                      {
-                        internalType: "uint16",
-                        name: "dividend",
-                        type: "uint16",
-                      },
-                      {
-                        internalType: "uint16",
-                        name: "referral",
-                        type: "uint16",
-                      },
-                      {
-                        internalType: "uint16",
-                        name: "partner",
-                        type: "uint16",
-                      },
-                      {
-                        internalType: "uint16",
-                        name: "treasury",
-                        type: "uint16",
-                      },
-                      {
-                        internalType: "uint16",
-                        name: "team",
-                        type: "uint16",
-                      },
-                      {
-                        internalType: "uint256",
-                        name: "dividendAmount",
-                        type: "uint256",
-                      },
-                      {
-                        internalType: "uint256",
-                        name: "partnerAmount",
-                        type: "uint256",
-                      },
-                      {
-                        internalType: "uint256",
-                        name: "treasuryAmount",
-                        type: "uint256",
-                      },
-                      {
-                        internalType: "uint256",
-                        name: "teamAmount",
-                        type: "uint256",
-                      },
-                      {
-                        internalType: "uint256",
-                        name: "referralAmount",
-                        type: "uint256",
-                      },
-                      {
-                        internalType: "uint256",
-                        name: "minPartnerTransferAmount",
-                        type: "uint256",
-                      },
-                    ],
-                    internalType: "struct Bank.HouseEdgeSplit",
-                    name: "houseEdgeSplit",
-                    type: "tuple",
-                  },
-                  {
-                    internalType: "uint256",
-                    name: "balanceReference",
-                    type: "uint256",
-                  },
-                  {
-                    components: [
-                      {
-                        internalType: "uint16",
-                        name: "thresholdRate",
-                        type: "uint16",
-                      },
-                      {
-                        internalType: "uint16",
-                        name: "toTreasury",
-                        type: "uint16",
-                      },
-                      {
-                        internalType: "uint16",
-                        name: "toTeam",
-                        type: "uint16",
-                      },
-                    ],
-                    internalType: "struct Bank.BalanceOverflow",
-                    name: "balanceOverflow",
-                    type: "tuple",
-                  },
-                ],
-                internalType: "struct Bank.Token",
-                name: "token",
-                type: "tuple",
-              },
-            ],
-            internalType: "struct Bank.TokenMetadata[]",
-            name: "",
-            type: "tuple[]",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
+      abi: 'function getTokens() view returns (tuple(uint8 decimals, address tokenAddress, string name, string symbol, tuple(bool allowed, uint16 balanceRisk, address partner, tuple(uint16 dividend, uint16 referral, uint16 partner, uint16 treasury, uint16 team, uint256 dividendAmount, uint256 partnerAmount, uint256 treasuryAmount, uint256 teamAmount, uint256 referralAmount, uint256 minPartnerTransferAmount) houseEdgeSplit, uint256 balanceReference, tuple(uint16 thresholdRate, uint16 toTreasury, uint16 toTeam) balanceOverflow) token)[])',
       block,
       chain,
     });
 
     // Filter BetSwirl's governance token
-    const tokensWithoutBETS = tokens.filter((token) => token.symbol !== "BETS");
-
-    // Retrieves tokens balance from the Bank contract
-    const { output: bankBalances } = await sdk.api.abi.multiCall({
-      calls: tokensWithoutBETS.map((token) => ({
-        target: bankAddressOfBlock,
-        params: token.tokenAddress,
-      })),
-      abi: {
-        inputs: [
-          {
-            internalType: "address",
-            name: "token",
-            type: "address",
-          },
-        ],
-        name: "getBalance",
-        outputs: [
-          {
-            internalType: "uint256",
-            name: "",
-            type: "uint256",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      block,
-      chain,
-    });
-
-    // Returns the token and balance mapping
-    return bankBalances.reduce((balances, bankBalance, i) => {
-      let address = transform(tokensWithoutBETS[i].tokenAddress)
-      sdk.util.sumSingleBalance(balances, address, bankBalance.output)
-      return balances;
-    }, {});
+    const tokensWithoutBETS = tokens.filter((token) => token.symbol !== "BETS").map(i => i.tokenAddress)
+    return sumTokens2({ owner: bankAddressOfBlock, tokens: tokensWithoutBETS, chain, block, })
   };
 }
 

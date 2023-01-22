@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const contracts = require("./contracts.json");
-const { pool2s } = require("../helper/pool2");
+const { staking } = require("../helper/staking");
 
 async function vaultTvl(balances, block, abi, target, coin) {
   const ftmStaked = ((await sdk.api.abi.call({
@@ -12,7 +12,7 @@ async function vaultTvl(balances, block, abi, target, coin) {
   })).output);
 
   sdk.util.sumSingleBalance(balances, coin, ftmStaked);
-};
+}
 async function tvl(timestamp, block, chainBlocks) {
   const balances = {};
 
@@ -65,13 +65,13 @@ async function tvl(timestamp, block, chainBlocks) {
   sdk.util.sumSingleBalance(balances, contracts.DAI, daiBalances);
 
   return balances;
-};
+}
 
 module.exports = {
   fantom: {
     tvl,
     // hitting pool2 staking contract twice while stake1 isnt on coingecko
-    pool2: pool2s(
+    pool2: staking(
       [contracts.pool2, contracts.pool2], 
       [contracts.daiPool2, contracts.ftmPool2], 
       'fantom'

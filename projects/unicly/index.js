@@ -1,33 +1,11 @@
-const { request, gql } = require("graphql-request");
-const { toUSDTBalances } = require('../helper/balances');
-
-const graphUrl = 'https://api.thegraph.com/subgraphs/name/0xleia/unic-exchange'
-const graphQuery = gql`
-query get_tvl($block: Int) {
-  factories(
-    block: { number: $block }
-  ) {
-    liquidityUSD
-  }
-}
-`;
-
-async function tvl(timestamp, block) {
-  const {factories} = await request(
-    graphUrl,
-    graphQuery,
-    {
-      block,
-    }
-  );
-  const usdTvl = Number(factories[0].liquidityUSD)
-
-  return toUSDTBalances(usdTvl)
-}
+const { getUniTVL } = require("../helper/unknownTokens");
 
 module.exports = {
   misrepresentedTokens: true,
   ethereum:{
-    tvl,
+    tvl: getUniTVL({
+      useDefaultCoreAssets: true,
+      factory: '0xbacc776b231c571a7e6ab7bc2c8a099e07153377',
+    }),
   },
 }

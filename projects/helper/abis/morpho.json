@@ -1,0 +1,10 @@
+{
+  "cToken": {
+    "underlying": "address:underlying"
+  },
+  "morphoLens": {
+    "getAllMarkets": "address[]:getAllMarkets",
+    "getTotalMarketSupply": "function getTotalMarketSupply(address _poolTokenAddress) view returns (uint256 p2pSupplyAmount, uint256 poolSupplyAmount)",
+    "getTotalMarketBorrow": "function getTotalMarketBorrow(address _poolTokenAddress) view returns (uint256 p2pBorrowAmount, uint256 poolBorrowAmount)"
+  }
+}

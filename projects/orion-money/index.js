@@ -2,7 +2,6 @@ const { sumTokensAndLPsSharedOwners } = require('../helper/unwrapLPs')
 const utils = require('../helper/utils');
 const sdk = require("@defillama/sdk")
 
-const exchangeRateFeederABI = require('./abi.json');
 const exchangeRateFeederAddress = '0xB12B8247bD1749CC271c55Bb93f6BD2B485C94A7';
 
 const fundedContracts = [
@@ -42,7 +41,7 @@ async function tvl(timestamp, block) {
             block,
             params: [stable[i], true],
             target: exchangeRateFeederAddress,
-            abi: exchangeRateFeederABI.find(i => i.name === 'exchangeRateOf')
+            abi: 'function exchangeRateOf(address _token, bool _simulate) view returns (uint256)'
         })
 
         // sum contract token balances
@@ -53,11 +52,11 @@ async function tvl(timestamp, block) {
             totalCoins = Number(totalCoins) +
                 Number(contractTokenBalance * pricePerShare *
                     10 ** tokenDecimals / 10 ** 18);
-        };
+        }
         balances[stable[i]] = Number(balances[stable[i]]) + Number(totalCoins);
-    };
+    }
     return balances;
-};
+}
 
 async function returnDecimals(address, block) {
     if (address.toLowerCase() === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {

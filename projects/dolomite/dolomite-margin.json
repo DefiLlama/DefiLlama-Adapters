@@ -1,0 +1,5 @@
+{
+  "getNumMarkets": "uint256:getNumMarkets",
+  "getMarketTokenAddress": "function getMarketTokenAddress(uint256 marketId) view returns (address)",
+  "getMarketPrice": "function getMarketPrice(uint256 marketId) view returns (tuple(uint256 value))"
+}

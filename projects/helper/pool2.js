@@ -1,31 +1,31 @@
 const { _BASE_TOKEN_, _QUOTE_TOKEN_ } = require('./abis/dodo.json')
 const sdk = require('@defillama/sdk')
 const { default: BigNumber } = require('bignumber.js')
-const { unwrapUniswapLPs, sumTokensAndLPsSharedOwners, sumTokensAndLPs, unwrapUniswapV3NFTs } = require('./unwrapLPs');
+const { unwrapUniswapLPs, sumTokensAndLPsSharedOwners, sumTokensAndLPs, unwrapUniswapV3NFTs, sumTokensExport, } = require('./unwrapLPs');
+const { getFixBalancesSync } = require('../helper/portedTokens')
 const masterchefAbi = require("./abis/masterchef.json")
-const token0Abi = require("./abis/token0.json")
-const token1Abi = require("./abis/token1.json")
+const token0Abi = 'address:token0'
+const token1Abi = 'address:token1'
 const { isLP, getPoolInfo } = require('./masterchef')
 
-function pool2(stakingContract, lpToken, chain = "ethereum", transformAddress) {
-    return async (_timestamp, _ethBlock, chainBlocks) => {
-        const balances = {}
-        if (transformAddress === undefined) {
-            transformAddress = addr => `${chain}:${addr}`
-        }
-        await sumTokensAndLPs(balances, [[lpToken, stakingContract, true]], chainBlocks[chain], chain, transformAddress)
-        return balances
-    }
+function pool2(stakingContract, lpToken, chain, transformAddress) {
+    if (!Array.isArray(stakingContract))  stakingContract = [stakingContract]
+    if (!Array.isArray(lpToken))  lpToken = [lpToken]
+    return pool2s(stakingContract, lpToken, chain,transformAddress )
 }
 
 function pool2s(stakingContracts, lpTokens, chain = "ethereum", transformAddress = undefined) {
-    return async (_timestamp, _ethBlock, chainBlocks) => {
+    return async (_timestamp, _ethBlock, _, { api }) => {
+        chain = api.chain ?? chain
+        const block = api.block
         const balances = {}
         let transform = transformAddress
         if (transform === undefined) {
             transform = addr => `${chain}:${addr}`
         }
-        await sumTokensAndLPsSharedOwners(balances, lpTokens.map(token => [token, true]), stakingContracts, chainBlocks[chain], chain, transform)
+        await sumTokensAndLPsSharedOwners(balances, lpTokens.map(token => [token, true]), stakingContracts, block, chain, transform)
+        const fixBalances = getFixBalancesSync(chain)
+        fixBalances(balances)
         return balances
     }
 }

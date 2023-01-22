@@ -1,4 +1,4 @@
-const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
+const { getUniTVL } = require('../helper/unknownTokens')
 
 const tokens = [
   "0x885f8CF6E45bdd3fdcDc644efdcd0AC93880c781",
@@ -19,13 +19,7 @@ const tokens = [
 module.exports = {
   misrepresentedTokens: true,
   aurora: {
-    tvl: calculateUsdUniTvl(
-      "0x34484b4E416f5d4B45D4Add0B6eF6Ca08FcED8f1", // factory
-      "aurora", // chain
-      "0xC9BdeEd33CD01541e1eeD10f90519d2C06Fe3feB", // coreAssetRaw
-      tokens, // whitelistRaw
-      "weth" // coreAssetName
-    ),
+    tvl: getUniTVL({ factory: '0x34484b4E416f5d4B45D4Add0B6eF6Ca08FcED8f1', chain: 'aurora', useDefaultCoreAssets: true }),
   },
 };
 // node test.js projects/nearpad/index.js

@@ -1,8 +1,7 @@
 const CONST = require("./constants");
-const {getChainTransform} = require("../helper/portedTokens");
 const axios = require("axios");
 const sdk = require('@defillama/sdk');
-const BigNumber = require("bignumber.js");
+const { unwrapUniswapV3NFTs, sumTokens2, } = require('../helper/unwrapLPs')
 
 
 const getPoolsQuery = `
@@ -72,21 +71,15 @@ async function getPoolData(network){
 
 }
 
-exports.getData = async (network) => {
+exports.getData = async (network, block, balances) => {
     let pools = await getPoolData(network);
     let chain = network
     if (network === 'mainnet') chain = 'ethereum'
-    const transform = await getChainTransform(chain)
-    const balances = {}
-    for(const pool of pools) {
-      if (pool.id === '0x6148a1bd2be586e981115f9c0b16a09bbc271e2c') //skip the pool returning bad values
-        continue;
-      const buffer = pool.bufferTokenBalance || [0, 0]
-      const staked = pool.stakedTokenBalance || [0, 0]
-      // sdk.util.sumSingleBalance(balances, transform(pool.token0.id), BigNumber(+buffer[0] + +staked[0]).toFixed(0))
-      sdk.util.sumSingleBalance(balances, transform(pool.token1.id), BigNumber((+buffer[1] + +staked[1]) * 2).toFixed(0))
-    }
-
-    return balances
-
+    const tokensAndOwners = []
+    pools.forEach(({ id, token0, token1}) => {
+      tokensAndOwners.push([token0.id, id])
+      tokensAndOwners.push([token1.id, id])
+    })
+    await sumTokens2({ balances, tokensAndOwners, chain, block, })
+    return unwrapUniswapV3NFTs({ balances, owners: pools.map(i => i.id), block, chain, })
 }

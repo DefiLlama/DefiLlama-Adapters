@@ -18,7 +18,7 @@ async function tvl(ts, _block, { fantom: block }) {
 
   const tokensAndOwners = []
   treasuryTokens.forEach(t => owners.forEach(o => tokensAndOwners.push([t, o])))
-  await sumTokens(balances, tokensAndOwners, block, chain, transform, { resolveLP: true })
+  await sumTokens(balances, tokensAndOwners, block, chain, transform)
   delete balances[transform(kngfuu_token)]
   const  { output: results } = await sdk.api.eth.getBalances({ targets: owners, chain, block})
   for (const res of results) sdk.util.sumSingleBalance(balances, transform(wFTM), res.balance)

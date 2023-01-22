@@ -68,7 +68,6 @@ async function tvl(timestamp, block) {
     .dividedBy(crvTotalSupply)
     .toFixed(0);
 
-  await convertALETHtoETH(block, balances)
   return balances;
 }
 
@@ -151,23 +150,7 @@ async function staking(time, block) {
 
   return balances
 }
-async function convertALETHtoETH(block, balances) {
-  const alETH = '0x0100546F2cD4C9D97f798fFC9755E47865FF7Ee6'
-  const yvWETH = '0xa258C4606Ca8206D8aA700cE2143D7db854D168c'
-  const [{ output: alETHSupply }, { output: alETHLocked }] = await Promise.all([
-    sdk.api.erc20.totalSupply({
-      target: alETH,
-      block,
-    }),
-    sdk.api.erc20.balanceOf({
-      target: yvWETH,
-      owner: '0x546E6711032Ec744A7708D4b7b283A210a85B3BC'
-    })
-  ])
-  sdk.util.sumSingleBalance(balances, yvWETH, balances[alETH] * alETHLocked / alETHSupply)
-  delete balances[alETH]
-  unwrapYearn(balances, yvWETH, block)
-}
+
 module.exports = {
   doublecounted: true,
   ethereum: {
