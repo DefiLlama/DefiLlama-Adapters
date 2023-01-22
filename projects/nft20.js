@@ -8,8 +8,8 @@ const MUSE_ETH_univ2 = '0x20d2c17d1928ef4290bf17f922a10eaa2770bf43'
 const MUSE_ETH_univ2_staking = '0x193b775af4bf9e11656ca48724a710359446bf52'
 
 const abi = {
-  'uni_v2_getPair': {"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"}],"name":"getPair","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"}, 
-  'uni_v3_getPool': {"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"},{"internalType":"uint24","name":"","type":"uint24"}],"name":"getPool","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}
+  uni_v2_getPair: "function getPair(address, address) view returns (address)",
+  uni_v3_getPool: "function getPool(address, address, uint24) view returns (address)",
 }
 const nft20_rest_api_base = 'https://api.nft20.io/pools?perPage=2000&page=1'
 

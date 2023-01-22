@@ -34,7 +34,7 @@ async function atvl(timestamp, block, chainBlocks) {
     
 
     return balances;
-};
+}
 
 const pool2LPs = [
     graveAvaxLp,

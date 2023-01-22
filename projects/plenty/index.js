@@ -18,13 +18,14 @@ async function getDexes() {
   let text = a.slice(a.indexOf('{'), a.lastIndexOf('}') + 1) // find first { and last } and get all data in between
   text = text.split('\n')  //remove all comment lines 
   text = text.map(i => {
+    if (/(process.env.* ||\s*)/.test(i)) i = i.replace(/(process.env.* ||\s*)/gi, '') // handle env variables
     if (i.includes('// ')) return i.slice(0, i.indexOf('// '))
     if (i.includes(' //')) return i.slice(0, i.indexOf(' //'))
     return i
   }).join('\n')
-  text = text.replace(/\,(\s*[\}\]])/g, '$1')  // remove trailing commas
-  text = text.replace(/\'/g, '"')  // convert single quotation to double
-  text = text.replace(/(\s?)(\w+)\s*\:([^\/])/g, '$1"$2":$3') // cover keys with qoutes, eg. key1: "value" -> "key1":"value"
+  text = text.replace(/,(\s*[}\]])/g, '$1')  // remove trailing commas
+  text = text.replace(/'/g, '"')  // convert single quotation to double
+  text = text.replace(/(\s?)(\w+)\s*:([^/])/g, '$1"$2":$3') // cover keys with qoutes, eg. key1: "value" -> "key1":"value"
   const config = JSON.parse(text)
   const dexSet = new Set()
   Object.values(config.AMM.mainnet).forEach(t => {

@@ -19,8 +19,8 @@ function offset(chain) {
       return 800
     case 'fantom':
       return 1500
-  };
-};
+  }
+}
 
 function getChainTvl(graphUrls, factoriesName = "uniswapFactories", tvlName = "totalLiquidityUSD") {
   const graphQuery = gql`
@@ -52,7 +52,7 @@ function getChainTvl(graphUrls, factoriesName = "uniswapFactories", tvlName = "t
       return toUSDTBalances(tvl);
     };
   };
-};
+}
 
 
 const subgraphs = {

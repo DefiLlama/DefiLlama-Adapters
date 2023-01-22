@@ -7,8 +7,7 @@ const stakingPools = [
     "0x8a8389D174081E585983DAB7189ea1Cf18F11896",
     "0xE051C61baBa59Fd9d184a26F15BE4361027c9916"
 ]
-const poolInfo = {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"poolInfo","outputs":[{"internalType":"contract IBEP20","name":"lpToken","type":"address"},{"internalType":"uint256","name":"lpSupply","type":"uint256"},{"internalType":"uint256","name":"allocPoint","type":"uint256"},{"internalType":"uint256","name":"lastRewardBlock","type":"uint256"},{"internalType":"uint256","name":"accBPPerShare","type":"uint256"}],"stateMutability":"view","type":"function"};
-
+const poolInfo = 'function poolInfo(uint256) view returns (address lpToken, uint256 lpSupply, uint256 allocPoint, uint256 lastRewardBlock, uint256 accBPPerShare)'
 async function tvl(timestamp, block, chainBlocks) {
     let balances = {};
     await addFundsInMasterChef(balances, masterchef, chainBlocks.bsc, "bsc", addr=>`bsc:${addr}`, poolInfo);

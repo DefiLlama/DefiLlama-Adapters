@@ -69,6 +69,7 @@ const defaultTokens = {
     '0x75231f58b43240c9718dd58b4967c5114342a86c', // OKB (OKX cex token)
     '0x2af5d2ad76741191d15dfe7bf6ac92d4bd912ca3', // LEO (bitfinex cex token)
     '0xB8c77482e45F1F44dE1745F52C74426C631bDD52', // WBNB
+    '0xb62132e35a6c13ee1ee0f84dc5d40bad8d815206', // NEXO ,(Nexo cex token)
   ],
   tron: [
     nullAddress,
@@ -101,7 +102,6 @@ const defaultTokens = {
     '0x3ee2200efb3400fabb9aacf31297cbdd1d435d47', // ADA
     '0x4691937a7508860f876c9c0a2a617e7d9e945d4b', // WOO
     '0xc748673057861a797275CD8A068AbB95A902e8de', // BabyDoge
-    '0xaFb64E73dEf6fAa8B6Ef9a6fb7312d5C4C15ebDB', // GVR
     '0xAC51066d7bEC65Dc4589368da368b212745d63E8', // ALICE
     '0xfb5B838b6cfEEdC2873aB27866079AC55363D37E', // FLOKI
     '0x352Cb5E19b12FC216548a2677bD0fce83BaE434B', // BTT

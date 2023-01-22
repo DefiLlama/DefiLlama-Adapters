@@ -32,19 +32,7 @@ const CHAIN_DATA = {
   },
 };
 
-const wantLockedTotalABI = {
-  "inputs": [],
-  "name": "wantLockedTotal",
-  "outputs": [
-    {
-      "internalType": "uint256",
-      "name": "",
-      "type": "uint256"
-    }
-  ],
-  "stateMutability": "view",
-  "type": "function"
-}
+const wantLockedTotalABI = "uint256:wantLockedTotal"
 
 let _pools
 

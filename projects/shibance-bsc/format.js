@@ -35,7 +35,6 @@ const formatNumber = (number, minPrecision = 2, maxPrecision = 2) => {
 module.exports = {
   BIG_ZERO,
   BIG_TEN,
-  getBalanceAmount,
   formatNumber,
   getFullDisplayBalance,
   getBalanceNumber,

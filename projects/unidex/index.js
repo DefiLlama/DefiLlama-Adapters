@@ -12,7 +12,7 @@ async function FantomTvl(_time, _ethBlock, { fantom: block }) {
   const tokens = [usdc, dai, nullAddress]
   const owners = Object.values(contracts)
   return sumTokens2({ chain, block, tokens, owners, })
-};
+}
 
 async function BobaTvl(_time, _ethBlock, { boba: block }) {
   const contracts = {
@@ -22,7 +22,7 @@ async function BobaTvl(_time, _ethBlock, { boba: block }) {
   const tokens = [nullAddress]
   const owners = Object.values(contracts)
   return sumTokens2({ chain, block, tokens, owners, })
-};
+}
 
 async function MetisTvl(_time, _ethBlock, { metis: block }) {
   const contracts = {
@@ -34,7 +34,7 @@ async function MetisTvl(_time, _ethBlock, { metis: block }) {
   const tokens = [weth, nullAddress]
   const owners = Object.values(contracts)
   return sumTokens2({ chain, block, tokens, owners, })
-};
+}
 
 async function OpTvl(_time, _ethBlock, { optimism: block }) {
   const contracts = {
@@ -45,7 +45,7 @@ async function OpTvl(_time, _ethBlock, { optimism: block }) {
   const tokens = [dai]
   const owners = Object.values(contracts)
   return sumTokens2({ chain, block, tokens, owners, })
-};
+}
 
 async function BscTvl(_time, _ethBlock, { bsc: block }) {
   const contracts = {
@@ -56,7 +56,7 @@ async function BscTvl(_time, _ethBlock, { bsc: block }) {
   const tokens = [busd]
   const owners = Object.values(contracts)
   return sumTokens2({ chain, block, tokens, owners, })
-};
+}
 
 module.exports = {
   methodology: "Assets staked in the pool and trading contracts",

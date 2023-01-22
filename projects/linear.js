@@ -8,7 +8,7 @@ async function tvl() {
         {}
       ) / 1e24 )
     };
-};
+}
 
 module.exports = {
   near: {

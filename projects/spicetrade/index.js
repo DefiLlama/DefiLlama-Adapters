@@ -17,15 +17,15 @@ function getTokens(chain, type) {
 
         case 'pool2':
             return Object.values(contracts[chain].tokens.pool2)
-    };
-};
+    }
+}
 
 const tvl = (chain, type) => {
     return async (_t, _e, { [chain]: block}) => {
         let holders = []
         for (let key in contracts[chain].tokenHolders) {
             holders.push(...Object.values(contracts[chain].tokenHolders[key]));
-        };
+        }
 
         const tokens = getTokens(chain, type)
         const toa = tokens.map(t => holders.map(o => [t, o])).flat()

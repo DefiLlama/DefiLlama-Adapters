@@ -1,6 +1,5 @@
 const tokenAddresses = require('../constant');
 const BigNumber = require('bignumber.js');
-const UniswapV2PairContractAbi = require('../../../helper/ankr/abis/UniswapV2Pair.json');
 const { ZERO, fromWei, getVautsTvl, } = require('../../../helper/ankr/utils');
 const { vaults } = require('./vaults');
 const { EXCHANGE_TYPE } = require('../vault');
@@ -30,7 +29,7 @@ const getReserves = async (pairAddress) => {
   const { output: { _reserve0, _reserve1, _blockTimestampLast } } = await sdk.api.abi.call({
     chain: 'fantom',
     target: pairAddress,
-    abi: UniswapV2PairContractAbi.find(i => i.name === 'getReserves')
+    abi: 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
   })
   return { reserve0: _reserve0, reserve1: _reserve1, blockTimestampLast: _blockTimestampLast };
 };

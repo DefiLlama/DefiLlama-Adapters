@@ -67,7 +67,7 @@ async function addMasterchefFunds(balances, masterChef, block, transform){
             transform(underlyingToken[i].output),
             BigNumber(userInfo[i].output.amount).times(underlyingBalance[i].output).div(totalSupply[i].output).toFixed(0)
         );
-    };
+    }
 }
 
 async function tvl(timestamp, ethBlock, chainBlocks) {
@@ -79,7 +79,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 
     const vePTPRate = await sdk.api.abi.call({
         target: '0x5857019c749147EEE22b1Fe63500F237F3c1B692',
-        abi: {"inputs":[],"name":"generationRate","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+        abi: 'uint256:generationRate',
         block: block,
         chain: "avax"
     })
@@ -93,7 +93,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     })).output).div(vePTPRate.output).times(1e12).toFixed(0);
 
     return balances;
-};
+}
 
 const pool2LPs = ["0x218e6A0AD170460F93eA784FbcC92B57DF13316E","0xc8898e2eEE8a1d08742bb3173311697966451F61"]
 
