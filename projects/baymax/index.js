@@ -9,7 +9,7 @@ const avalancheBAY = '0x18706c65b12595EDB43643214EacDb4F618DD166'
 
 module.exports = {
   avax:{
-    staking: staking(avalancheStaking, avalancheBAY, "avax", "bay", 18),
+    staking: staking(avalancheStaking, avalancheBAY),
     tvl: gmxExports({ vault: avalancheVault, })
   }
 };

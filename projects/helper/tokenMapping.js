@@ -20,6 +20,7 @@ const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand',
 
 const tokens = {
   null: nullAddress,
+  aave: 'ethereum:0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9',
   matic: 'ethereum:0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0',
   bat: 'ethereum:0x0d8775f648430679a709e98d2b0cb6250d2887ef',
   reth: 'ethereum:0xae78736cd615f374d3085123a210448e74fc6393',
@@ -262,6 +263,7 @@ const transformTokens = {
   metis: {
     "0x0000000000000000000000000000000000000000": "0x9e32b13ce7f2e80a01932b42553652e053d6ed8e", // METIS
     "0x75cb093e4d61d2a2e65d8e0bbb01de8d89b53481": "0x9e32b13ce7f2e80a01932b42553652e053d6ed8e", // METIS
+    "0x71802e8f394bb9d05a1b8e9d0562917609fd7325": "0x9e32b13ce7f2e80a01932b42553652e053d6ed8e", // METIS
     "0x5801d0e1c7d977d78e4890880b8e579eb4943276": "bsc:0x5801d0e1c7d977d78e4890880b8e579eb4943276",
     "0x2692be44a6e38b698731fddf417d060f0d20a0cb": tokens.bnb,
     "0x12d84f1cfe870ca9c9df9785f8954341d7fbb249": tokens.busd, // bUSD
@@ -271,6 +273,8 @@ const transformTokens = {
     "0x4b9D2923D875edF43980BF5dddDEde3Fb20fC742": "bsc:0xcc42724c6683b7e57334c4e856f4c9965ed682bd",
     "0x67c10c397dd0ba417329543c1a40eb48aaa7cd00": "0x0f2d719407fdbeff09d87557abb7232601fd9f29", //SYN
     "0x226d8bfb4da78ddc5bd8fd6c1532c58e88f9fd34": "0xbc19712feb3a26080ebf6f2f7849b417fdd792ca", // BoringDAO
+    "0x433e43047b95cb83517abd7c9978bdf7005e9938": tokens.wbtc, // WBTC
+    "0xd1f0a4e5444eed0fbcd6624dcef7ef33043e6168": tokens.aave, // AAVE
   },
   boba: {
     "0x0000000000000000000000000000000000000000": tokens.ethereum, // WETH
