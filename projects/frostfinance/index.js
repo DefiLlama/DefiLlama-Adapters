@@ -3,7 +3,6 @@ const abi = require("./abi.json");
 const { staking } = require("../helper/staking");
 const { pool2BalanceFromMasterChefExports } = require("../helper/pool2");
 const { addFundsInMasterChef } = require("../helper/masterchef");
-const { transformAvaxAddress } = require("../helper/portedTokens");
 
 const masterChefTUNDRA = "0x87f1b38D0C158abe2F390E5E3482FDb97bC8D0C5";
 const TUNDRA = "0x21c5402C3B7d40C89Cc472C9dF5dD7E51BbAb1b1";
@@ -17,7 +16,7 @@ const DUNE = "0x314f3bee25e49ea4bcea9a3d1321c74c95f10eab";
 async function avaxTvl(timestamp, block, chainBlocks) {
   const balances = {};
 
-  const transformAddress = await transformAvaxAddress();
+  const transformAddress = addr => 'avax:'+addr
 
   await addFundsInMasterChef(
     balances,

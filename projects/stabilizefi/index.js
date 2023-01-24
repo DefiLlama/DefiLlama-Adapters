@@ -1,7 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { getLiquityTvl } = require("../helper/liquity");
 const { pool2 } = require('../helper/pool2');
-const { transformAvaxAddress } = require("../helper/portedTokens");
 
 // staking
 const TOKEN_STAKING_ADDRESS = "0x4A2B73ebAc93D9233BAB10a795F04efb9C00D466";
@@ -43,7 +42,7 @@ async function stakingTvl(_, _ethBlock, chainBlocks) {
 module.exports = {
   avax:{
     tvl: sdk.util.sumChainTvls([
-      getLiquityTvl(ETH_ADDRESS,ETH_TROVE_MANAGER_ADDRESS,"avax",transformAvaxAddress),
+      getLiquityTvl(ETH_ADDRESS,ETH_TROVE_MANAGER_ADDRESS,"avax",addr => 'avax:'+addr),
       getLiquityTvl(BTC_ADDRESS,BTC_TROVE_MANAGER_ADDRESS,"avax"),
       getLiquityTvl(AVAX_ADDRESS,AVAX_TROVE_MANAGER_ADDRESS,"avax"),
       getLiquityTvl(DAI_ADDRESS,DAI_TROVE_MANAGER_ADDRESS,"avax"),

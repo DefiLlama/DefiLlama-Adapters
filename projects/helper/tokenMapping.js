@@ -409,7 +409,7 @@ const ibcMappings = {
   'ibc/624BA9DD171915A2B9EA70F69638B2CEA179959850C1A586F6C485498F29EDD4': { coingeckoId: 'polkadot', decimals: 10, },
   'ibc/3FDD002A3A4019B05A33D324B2F29748E77AF501BEA5C96D1F28B2D6755F9F25': { coingeckoId: 'stride', decimals: 6, },
   // from kujira
-  "ibc/B37E4D9FB5B30F3E1E20A4B2DE2A005E584C5C822C44527546556AE2470B4539": {coinGeckoId: "polkadot", decimals: 6, },
+  "ibc/B37E4D9FB5B30F3E1E20A4B2DE2A005E584C5C822C44527546556AE2470B4539": {coingeckoId: "polkadot", decimals: 6, },
   "ibc/DADB399E742FCEE71853E98225D13E44E90292852CD0033DF5CABAB96F80B833": {coingeckoId: "binancecoin", decimals: 18, },
 }
 
@@ -1182,7 +1182,7 @@ const fixBalancesTokens = {
     "0x14b2d3bc65e74dae1030eafd8ac30c533c976a9b": { coingeckoId: "conflux-token", decimals: 18 },
     "0x1f545487c62e5acfea45dcadd9c627361d1616d8": { coingeckoId: "wrapped-bitcoin", decimals: 18 },
     "0xa47f43de2f9623acb395ca4905746496d2014d57": { coingeckoId: "ethereum", decimals: 18 },
-    "0x6963efed0ab40f6c3d7bda44a05dcf1437c44372 ": { coingeckoId: "usd-coin", decimals: 18, },
+    "0x6963efed0ab40f6c3d7bda44a05dcf1437c44372": { coingeckoId: "usd-coin", decimals: 18, },
     "0xfe97e85d13abd9c1c33384e796f10b73905637ce": { coingeckoId: "tether", decimals: 18, },
   },
   ethereum: {
