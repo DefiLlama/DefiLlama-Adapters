@@ -2,7 +2,6 @@
 
 const sdk = require("@defillama/sdk");
 const { sumTokens2, } = require("../helper/unwrapLPs");
-const { transformAvaxAddress } = require("../helper/portedTokens");
 
 const groTokenAbi = require("./abi.json");
 const { stakings } = require("../helper/staking");
@@ -86,7 +85,7 @@ const labs = [
 
 async function avaxTvl(timestamp, _, { avax: block }) {
   let balances = {};
-  const transform = await transformAvaxAddress();
+  const transform = addr => 'avax:'+addr
   const totalAssets = (
     await sdk.api.abi.multiCall({
       calls: labs.map((l) => ({ target: l.vault })),

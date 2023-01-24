@@ -19,51 +19,6 @@ function compareAddresses(a, b) {
   return a.toLowerCase() === b.toLowerCase();
 }
 
-async function transformAvaxAddress() {
-  const [
-    bridgeTokensOld,
-    bridgeTokensNew,
-    bridgeTokenDetails
-  ] = await Promise.all([
-    utils.fetchURL(
-      "https://raw.githubusercontent.com/0xngmi/bridge-tokens/main/data/penultimate.json"
-    ),
-    utils
-      .fetchURL(
-        "https://raw.githubusercontent.com/ava-labs/avalanche-bridge-resources/main/avalanche_contract_address.json"
-      )
-      .then(r => Object.entries(r.data)),
-    utils.fetchURL(
-      "https://raw.githubusercontent.com/ava-labs/avalanche-bridge-resources/main/token_list.json"
-    )
-  ]);
-  return addr => {
-    const map = transformTokens.avax;
-    if (map[addr.toLowerCase()]) return map[addr.toLowerCase()]
-    const srcToken = bridgeTokensOld.data.find(token =>
-      compareAddresses(token["Avalanche Token Address"], addr)
-    );
-    if (
-      srcToken !== undefined &&
-      srcToken["Ethereum Token Decimals"] ===
-      srcToken["Avalanche Token Decimals"]
-    ) {
-      return srcToken["Ethereum Token Address"];
-    }
-    const newBridgeToken = bridgeTokensNew.find(token =>
-      compareAddresses(addr, token[1])
-    );
-    if (newBridgeToken !== undefined) {
-      const tokenName = newBridgeToken[0].split(".")[0];
-      const tokenData = bridgeTokenDetails.data[tokenName];
-      if (tokenData !== undefined) {
-        return tokenData.nativeContractAddress;
-      }
-    }
-    return `avax:${addr}`;
-  };
-}
-
 async function transformBscAddress() {
   return transformChainAddress(transformTokens.bsc, "bsc")
 }
@@ -178,9 +133,7 @@ const chainTransforms = {
   fantom: transformFantomAddress,
   bsc: transformBscAddress,
   polygon: transformPolygonAddress,
-  avax: transformAvaxAddress,
   optimism: transformOptimismAddress,
- // arbitrum: transformArbitrumAddress,
   injective: transformInjectiveAddress,
 };
 
@@ -343,7 +296,6 @@ module.exports = {
   transformFantomAddress,
   transformBscAddress,
   transformPolygonAddress,
-  transformAvaxAddress,
   transformOptimismAddress,
   transformArbitrumAddress,
   transformCeloAddress,
