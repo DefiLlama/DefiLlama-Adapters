@@ -174,7 +174,7 @@ async function getChainTransform(chain) {
     const chainStr = `${chain}:${addr}`
     if (chain === 'near' && addr.endsWith('.near')) return chainStr
     if (chain === 'tezos' && addr.startsWith('KT1')) return chainStr
-    if (ibcChains.includes(chain) && addr.startsWith('ibc/')) return chainStr
+    if (ibcChains.includes(chain) && addr.startsWith('ibc/')) return addr.replace('ibc/', 'ibc:')
     if (chain === 'terra2' && addr.startsWith('terra1')) return chainStr
     if (chain === 'algorand' && /^\d+$/.test(addr)) return chainStr
     if (addr.startsWith('0x') || ['solana'].includes(chain)) return chainStr
