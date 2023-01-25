@@ -1,4 +1,3 @@
-const utils = require("../helper/utils");
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const {
@@ -15,10 +14,6 @@ async function transformFantomAddress() {
   return transformChainAddress(transformTokens.fantom, "fantom")
 }
 
-function compareAddresses(a, b) {
-  return a.toLowerCase() === b.toLowerCase();
-}
-
 async function transformBscAddress() {
   return transformChainAddress(transformTokens.bsc, "bsc")
 }
@@ -32,49 +27,11 @@ async function transformCeloAddress() {
 }
 
 async function transformOptimismAddress() {
-  const bridge = (await utils.fetchURL(
-    "https://static.optimism.io/optimism.tokenlist.json"
-  )).data.tokens;
-
-  const mapping = transformTokens.optimism
-
-  return addr => {
-    addr = addr.toLowerCase();
-
-    if (mapping[addr]) return mapping[addr];
-
-    const dstToken = bridge.find(
-      token => compareAddresses(addr, token.address) && token.chainId === 10
-    );
-    if (dstToken !== undefined) {
-      const srcToken = bridge.find(
-        token => dstToken.logoURI === token.logoURI && token.chainId === 1
-      );
-      if (srcToken !== undefined) {
-        return srcToken.address;
-      }
-    }
-    return `optimism:${addr}`;
-  };
+  return transformChainAddress(transformTokens.optimism, "optimism")
 }
 
 async function transformArbitrumAddress() {
-  const bridge = (await utils.fetchURL(
-    "https://bridge.arbitrum.io/token-list-42161.json"
-  )).data.tokens;
-  const mapping = transformTokens.arbitrum
-
-  return addr => {
-    addr = addr.toLowerCase();
-    if (mapping[addr]) return mapping[addr];
-    const dstToken = bridge.find(token =>
-      compareAddresses(addr, token.address)
-    );
-    if (dstToken && dstToken.extensions) {
-      return dstToken.extensions.bridgeInfo[1].tokenAddress;
-    }
-    return `arbitrum:${addr}`;
-  };
+  return transformChainAddress(transformTokens.arbitrum, "arbitrum")
 }
 
 async function transformInjectiveAddress() {
