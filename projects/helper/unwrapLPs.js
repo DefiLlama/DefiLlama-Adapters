@@ -840,6 +840,7 @@ function stripTokenHeader(token) {
 async function sumTokens2({
   balances = {},
   tokensAndOwners = [],
+  ownerTokens = [],
   tokens = [],
   owners = [],
   owner,
@@ -866,6 +867,13 @@ async function sumTokens2({
     owners = getUniqueAddresses(owners)
     if (owner) tokensAndOwners = tokens.map(t => [t, owner])
     if (owners.length) tokensAndOwners = tokens.map(t => owners.map(o => [t, o])).flat()
+    if (ownerTokens.length) {
+      ownerTokens.map(([tokens, owner ]) => {
+        if (typeof owner !== 'string') throw new Error('invalid config', owner)
+        if (!Array.isArray(tokens)) throw new Error('invalid config', tokens)
+        tokens.forEach(t => tokensAndOwners.push([t, owner]))
+      })
+    }
   }
 
   blacklistedTokens = blacklistedTokens.map(t => t.toLowerCase())
@@ -888,8 +896,8 @@ async function sumTokens2({
   }
 }
 
-function sumTokensExport({ balances, tokensAndOwners, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances }) {
-  return async (_, _b, _cb, { api }) => sumTokens2({ api, balances, tokensAndOwners, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances })
+function sumTokensExport({ balances, tokensAndOwners, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, }) {
+  return async (_, _b, _cb, { api }) => sumTokens2({ api, balances, tokensAndOwners, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, })
 }
 
 async function unwrapBalancerToken({ chain, block, balancerToken, owner, balances = {} }) {
