@@ -1,4 +1,3 @@
-const utils = require("../helper/utils");
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const {
@@ -15,55 +14,6 @@ async function transformFantomAddress() {
   return transformChainAddress(transformTokens.fantom, "fantom")
 }
 
-function compareAddresses(a, b) {
-  return a.toLowerCase() === b.toLowerCase();
-}
-
-async function transformAvaxAddress() {
-  const [
-    bridgeTokensOld,
-    bridgeTokensNew,
-    bridgeTokenDetails
-  ] = await Promise.all([
-    utils.fetchURL(
-      "https://raw.githubusercontent.com/0xngmi/bridge-tokens/main/data/penultimate.json"
-    ),
-    utils
-      .fetchURL(
-        "https://raw.githubusercontent.com/ava-labs/avalanche-bridge-resources/main/avalanche_contract_address.json"
-      )
-      .then(r => Object.entries(r.data)),
-    utils.fetchURL(
-      "https://raw.githubusercontent.com/ava-labs/avalanche-bridge-resources/main/token_list.json"
-    )
-  ]);
-  return addr => {
-    const map = transformTokens.avax;
-    if (map[addr.toLowerCase()]) return map[addr.toLowerCase()]
-    const srcToken = bridgeTokensOld.data.find(token =>
-      compareAddresses(token["Avalanche Token Address"], addr)
-    );
-    if (
-      srcToken !== undefined &&
-      srcToken["Ethereum Token Decimals"] ===
-      srcToken["Avalanche Token Decimals"]
-    ) {
-      return srcToken["Ethereum Token Address"];
-    }
-    const newBridgeToken = bridgeTokensNew.find(token =>
-      compareAddresses(addr, token[1])
-    );
-    if (newBridgeToken !== undefined) {
-      const tokenName = newBridgeToken[0].split(".")[0];
-      const tokenData = bridgeTokenDetails.data[tokenName];
-      if (tokenData !== undefined) {
-        return tokenData.nativeContractAddress;
-      }
-    }
-    return `avax:${addr}`;
-  };
-}
-
 async function transformBscAddress() {
   return transformChainAddress(transformTokens.bsc, "bsc")
 }
@@ -77,49 +27,11 @@ async function transformCeloAddress() {
 }
 
 async function transformOptimismAddress() {
-  const bridge = (await utils.fetchURL(
-    "https://static.optimism.io/optimism.tokenlist.json"
-  )).data.tokens;
-
-  const mapping = transformTokens.optimism
-
-  return addr => {
-    addr = addr.toLowerCase();
-
-    if (mapping[addr]) return mapping[addr];
-
-    const dstToken = bridge.find(
-      token => compareAddresses(addr, token.address) && token.chainId === 10
-    );
-    if (dstToken !== undefined) {
-      const srcToken = bridge.find(
-        token => dstToken.logoURI === token.logoURI && token.chainId === 1
-      );
-      if (srcToken !== undefined) {
-        return srcToken.address;
-      }
-    }
-    return `optimism:${addr}`;
-  };
+  return transformChainAddress(transformTokens.optimism, "optimism")
 }
 
 async function transformArbitrumAddress() {
-  const bridge = (await utils.fetchURL(
-    "https://bridge.arbitrum.io/token-list-42161.json"
-  )).data.tokens;
-  const mapping = transformTokens.arbitrum
-
-  return addr => {
-    addr = addr.toLowerCase();
-    if (mapping[addr]) return mapping[addr];
-    const dstToken = bridge.find(token =>
-      compareAddresses(addr, token.address)
-    );
-    if (dstToken && dstToken.extensions) {
-      return dstToken.extensions.bridgeInfo[1].tokenAddress;
-    }
-    return `arbitrum:${addr}`;
-  };
+  return transformChainAddress(transformTokens.arbitrum, "arbitrum")
 }
 
 async function transformInjectiveAddress() {
@@ -178,9 +90,7 @@ const chainTransforms = {
   fantom: transformFantomAddress,
   bsc: transformBscAddress,
   polygon: transformPolygonAddress,
-  avax: transformAvaxAddress,
   optimism: transformOptimismAddress,
- // arbitrum: transformArbitrumAddress,
   injective: transformInjectiveAddress,
 };
 
@@ -343,7 +253,6 @@ module.exports = {
   transformFantomAddress,
   transformBscAddress,
   transformPolygonAddress,
-  transformAvaxAddress,
   transformOptimismAddress,
   transformArbitrumAddress,
   transformCeloAddress,

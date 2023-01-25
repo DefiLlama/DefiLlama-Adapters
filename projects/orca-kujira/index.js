@@ -11,6 +11,9 @@ async function tvl() {
 }
 
 module.exports = {
+  hallmarks: [
+    [1673740800, "TVL separated into products"]
+  ],
   kujira: {
     tvl,
   },

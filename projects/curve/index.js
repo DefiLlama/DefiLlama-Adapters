@@ -73,7 +73,7 @@ async function getPool({ chain, block, registry }) {
 }
 
 function getRegistryType(registryId) {
-  if (!registryIdsReverse.hasOwnProperty(registryId)) throw new Error('Unknown registry id: ' + registryId)
+  if (!registryIdsReverse[registryId]) throw new Error('Unknown registry id: ' + registryId)
   return registryIdsReverse[registryId]
 }
 

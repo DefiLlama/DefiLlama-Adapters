@@ -14,21 +14,19 @@ const fromWei = (v) => {
 };
 
 const getVautsTvl = async (vaults, getPrice) => {
-  const vaultsMap = await Promise.all(vaults.map((item) => {
-    return new Promise(async (resolve) => {
-      const { vault, chain } = item
-      let { output: underlyingBalanceWithInvestment } = await sdk.api.abi.call({
-        chain,
-        target: vault,
-        abi: 'uint256:underlyingBalanceWithInvestment'
-      })
-
-      underlyingBalanceWithInvestment = new BigNumber(underlyingBalanceWithInvestment);
-
-      const usd = await getPrice(item);
-
-      resolve(usd.multipliedBy(underlyingBalanceWithInvestment));
+  const vaultsMap = await Promise.all(vaults.map(async (item) => {
+    const { vault, chain } = item
+    let { output: underlyingBalanceWithInvestment } = await sdk.api.abi.call({
+      chain,
+      target: vault,
+      abi: 'uint256:underlyingBalanceWithInvestment'
     })
+
+    underlyingBalanceWithInvestment = new BigNumber(underlyingBalanceWithInvestment);
+
+    const usd = await getPrice(item);
+
+    return usd.multipliedBy(underlyingBalanceWithInvestment)
   }));
   return toUSDTBalances(vaultsMap.reduce((acc, item) => acc.plus(item), new BigNumber(ZERO)));
 }
@@ -61,7 +59,7 @@ const getTotalSupplyOf = async (contract, chain) => {
 
 const getBalanceOf = async (account, contract) => {
   const { output } = await sdk.api.erc20.balanceOf({ target: contract, owner: account, })
-    return new BigNumber(output);
+  return new BigNumber(output);
 };
 
 module.exports = {

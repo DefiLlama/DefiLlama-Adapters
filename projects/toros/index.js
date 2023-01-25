@@ -23,7 +23,7 @@ async function tvl(_, _b, _cb, { api, chain }) {
   return {
     tether: totalValue/1e18
   };
-};
+}
 
 module.exports = {
   timetravel: true,

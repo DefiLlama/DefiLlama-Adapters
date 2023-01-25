@@ -34,7 +34,7 @@ function sumMultiPoolVersionTvl(poolTvls) {
         }); 
     });
     return total;
-};
+}
 
 async function calcuteMoonriverTvl(timestamp, ethBlock, chainBlocks) {
     const v1Tvl = await calculateUsdTvl(
@@ -79,7 +79,7 @@ async function calcuteMoonriverTvl(timestamp, ethBlock, chainBlocks) {
         v2Tvl
     ]);
     return tvlTotal;
-};
+}
 
 
 async function calcuteMoonbeamTvl(timestamp, ethBlock, chainBlocks) {
@@ -131,7 +131,7 @@ async function calcuteMoonbeamTvl(timestamp, ethBlock, chainBlocks) {
         v2Tvl
     ]);
     return tvlTotal;
-};
+}
 
 module.exports = {
     methodology: "Get all pairs from the Factory Contract then get the reserve0 token amount and reserve1 token amount in one pair. Update the total balance of each token by reserve0 and reserve1. Repeat 2 ~ 3 for each pairs.",
