@@ -1,7 +1,5 @@
 const { get } = require("../helper/http");
-const { sumTokens, endPoints } = require('../helper/chain/cosmos');
-const { hexValue } = require("@ethersproject/bytes");
-
+const { sumTokens, } = require('../helper/chain/cosmos');
 
 async function tvl() {
   const { pairs } = await get("https://api.kujira.app/api/coingecko/pairs");
@@ -21,6 +19,7 @@ async function tvl() {
 }
 
 module.exports = {
+  timetravel: false,
   kujira: {
     tvl,
   },

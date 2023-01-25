@@ -11,7 +11,7 @@ async function tvl(timestamp, block) {
         target: reserve, 
         block
     })).output)};
-};
+}
 
 module.exports = {
     ethereum: {

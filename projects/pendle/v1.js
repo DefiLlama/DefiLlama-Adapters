@@ -2,7 +2,6 @@ const {
   sumTokensAndLPsSharedOwners,
   unwrapUniswapLPs
 } = require("../helper/unwrapLPs");
-const { transformAvaxAddress } = require("../helper/portedTokens");
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const contracts = require("./contracts");
@@ -97,7 +96,7 @@ async function ethPool2(timestamp, block) {
   return pool2;
 }
 async function avaxTvl(timestamp, _, { avax: block }) {
-  const transform = await transformAvaxAddress();
+  const transform = addr => 'avax:'+addr
   const balances = {};
 
   const masterChefContract = "0xd6a4F121CA35509aF06A0Be99093d08462f53052";
@@ -160,7 +159,7 @@ async function avaxTvl(timestamp, _, { avax: block }) {
   return balances;
 }
 async function avaxPool2(timestamp, _, { avax: block }) {
-  const transform = await transformAvaxAddress();
+  const transform = addr => 'avax:'+addr
   const pool2 = {};
 
   await sumTokensAndLPsSharedOwners(

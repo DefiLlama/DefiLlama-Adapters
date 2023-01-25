@@ -87,6 +87,9 @@ async function bsc(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
+  hallmarks: [
+    [1656590400,"Protocol End"] // https://crystlfinance.medium.com/wrapping-up-crystl-finance-4743287a6bf
+  ],
   polygon: {
     tvl: polygon,
   },

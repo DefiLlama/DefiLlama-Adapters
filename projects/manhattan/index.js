@@ -23,7 +23,7 @@ Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: async (_, _b, {[chain]: block}) => {
       const collaterals = await sdk.api2.abi.multiCall({
-        abi: abis.collateral,
+        abi: "address:collateral",
         calls: pools,
         chain, block,
       })
@@ -31,7 +31,3 @@ Object.keys(config).forEach(chain => {
     }
   }
 })
-
-const abis = {
-  collateral: {"inputs":[],"name":"collateral","outputs":[{"internalType":"contract ERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-}

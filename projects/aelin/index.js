@@ -1,5 +1,4 @@
 const sdk = require('@defillama/sdk');
-const { getBlock } = require('../helper/http');
 const { staking } = require('../helper/staking')
 const { pool2 } = require('../helper/pool2')
 const { unwrapUniswapLPs, sumTokens2, } = require('../helper/unwrapLPs')

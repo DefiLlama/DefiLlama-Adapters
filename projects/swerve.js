@@ -103,9 +103,9 @@ async function calc(item, i, price_feed, block) {
 
   var poolAmount = new BigNumber(balances).div(10 ** coinDecimals[0][coins]).toFixed(2);
 
-
+  let multiplier
   if (item.type == 'compound') {
-    var multiplier = 1;
+    multiplier = 1;
     if (coins === '0x39AA39c021dfbaE8faC545936693aC917d5E7563') {
       multiplier = price_feed['compound-usd-coin'].usd;
     }
@@ -116,7 +116,7 @@ async function calc(item, i, price_feed, block) {
   }
 
   if (item.type == 'yToken') {
-    var multiplier = 1;
+    multiplier = 1;
     if (coins !== '0x8E870D67F660D95d5be530380D0eC0bd388289E1') { // PAX exception
       multiplier = await getVirtualPrice(coins, block)
       multiplier = new BigNumber(multiplier).div(10 ** 18).toFixed(4);

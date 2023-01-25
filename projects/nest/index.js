@@ -19,7 +19,7 @@ function staking(chain) {
                 .reduce((a, b) => Number(a) + Number(b), 0)
         };
     };
-};
+}
 
 function tvl(chain) {
     return async (timestamp, block, chainBlocks) => {
@@ -28,7 +28,7 @@ function tvl(chain) {
 
         if (!contracts.tvlContracts.hasOwnProperty([chain])) {
             return balances;
-        };
+        }
 
         await sumTokensSharedOwners(
             balances,
@@ -41,7 +41,7 @@ function tvl(chain) {
 
         return balances;
     };
-};
+}
 
 const chainExports = Object.keys(contracts.stakingContracts).reduce((a, chain) => ({
     ...a, [chain]: {
