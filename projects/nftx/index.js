@@ -7,7 +7,7 @@ const { getChainTransform } = require('../helper/portedTokens')
 const config = {
   ethereum: {
     weth: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-    graphUrl: 'https://graph-proxy.nftx.xyz/c/gateway/api/690cf8d6987a151008c2536454bd3d7a/subgraphs/id/4gZf3atMXjYDh4g48Zr83NFX3rkvZED86VqMNhgEXgLc'
+    graphUrl: 'https://graph-proxy.nftx.xyz/c/shared/subgraphs/name/nftx-project/nftx-v2-1-mainnet'
   },
   arbitrum: {
     weth: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
