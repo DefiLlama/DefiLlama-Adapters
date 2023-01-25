@@ -86,7 +86,7 @@ export const mapOven = async (
     liqPrice: parseFloat(
       ConversionUtils.shardToHumanReadableNumber(liquidatablePriceValue)
     ),
-    collateral: `tezos:${ovenAddress}`,
+    collateral: `coingecko:tezos`,
     collateralAmount: ovenBalance.toString(),
     extra: {
       url: `https://tzkt.io/${ovenAddress}/operations/`,
