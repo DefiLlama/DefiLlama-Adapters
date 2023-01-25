@@ -7,7 +7,7 @@ module.exports = {
   timetravel: false,
   ton: {
     tvl: async () => {
-      const pools = await get('https://api.tegro.finance/pairs')
+      const pools = await get('https://api.tegro.finance/v1/pair')
       sdk.log(pools.length)
 
       return transformDexBalances({
