@@ -49,5 +49,5 @@ module.exports = {
       return sumTokens2({ tokensAndOwners: toa, chain, block })
     }
   },
-  ownTokens: ['ARC'],
+  // ownTokens: ['ARC'],
 }

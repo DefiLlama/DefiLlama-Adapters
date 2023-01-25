@@ -19,11 +19,6 @@ const usdc = "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8";
 module.exports = {
     methodology: "ETH locked on trading contracts",
     arbitrum: {
-        treasury: sumTokensExport({ tokensAndOwners: [
-            [usdc, contracts.treasury], 
-            [nullAddress, contracts.treasury], 
-            [nullAddress, contracts.treasuryV2], 
-        ]}),
         staking: sumTokensExport({ owner: contracts.staking, tokens: [ cap ]}),
         tvl: sumTokensExport({ tokensAndOwners: [
             [usdc, contracts.treasury], 

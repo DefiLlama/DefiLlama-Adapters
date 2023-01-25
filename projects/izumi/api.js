@@ -16,7 +16,7 @@ const chains =  {
 };
 
 module.exports = {
-  ownTokens: ['IZI', 'IUSD'],
+  // ownTokens: ['IZI', 'IUSD'],
 }
 
 Object.keys(chains).forEach(chain => {

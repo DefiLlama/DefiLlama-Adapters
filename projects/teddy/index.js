@@ -18,7 +18,6 @@ const TROVE_MANAGER_ADDRESS = "0xd22b04395705144Fd12AfFD854248427A2776194";
 
 module.exports = {
   avax: {
-    treasury: staking(treasuryContract, TEDDY, "avax"),
     staking: sdk.util.sumChainTvls([
       staking(stakingContract, TEDDY, "avax"),
       //staking(STABILITY_POOL_ADDRESS, TSD, "avax"),

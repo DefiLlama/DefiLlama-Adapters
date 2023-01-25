@@ -1,5 +1,4 @@
 const { pool2s } = require("../helper/pool2");
-const { sumTokensExport } = require("../helper/unwrapLPs");
 
 const SWDB_TOKEN = "0xc91324601B20ea0e238B63c9fAfca18d32600722";
 
@@ -15,13 +14,8 @@ const lpPairContractsBSC = [
     "0x3f344fcA3EB75a745878355E065b58B4EfDE2575"
 ]
 
-const treasuryContractsBSC = [
-    "0x3068405d5A640028463856D0dbDAE13B41AccE1f",
-];
-
 module.exports = {
     bsc: {
-        treasury: sumTokensExport({ owners: treasuryContractsBSC, tokens: ['0x2170ed0880ac9a755fd29b2688956bd959f933f8']}),
         pool2: pool2s(farmContractsBSC, lpPairContractsBSC),
         tvl: () => 0,
     },

@@ -85,6 +85,6 @@ module.exports = {
       tvl, 
       treasury, 
       staking,
-      ownTokens: ['CORE', 'CoreDAO', 'Delta', 'FANNY', 'Delta rLP', 'cBTC', 'cDAI']
+      // ownTokens: ['CORE', 'CoreDAO', 'Delta', 'FANNY', 'Delta rLP', 'cBTC', 'cDAI']
   }
 };
