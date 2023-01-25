@@ -19,6 +19,6 @@ const positions = async (): Promise<Liq[]> => {
 
 module.exports = {
   tezos: {
-    liquidations: positions(),
+    liquidations: positions,
   },
 };
