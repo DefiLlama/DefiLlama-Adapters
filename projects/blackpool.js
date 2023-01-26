@@ -28,7 +28,7 @@ async function mainnetStaking(timestamp, ethBlock, chainBlocks) {
     block: ethBlock,
     chain: 'ethereum'
   })
-  console.log(`BPT staked in xBPT on mainnet: ${xBPT_BPT_bal / 1e18}`)
+  sdk.log(`BPT staked in xBPT on mainnet: ${xBPT_BPT_bal / 1e18}`)
   sdk.util.sumSingleBalance(
     balances,
     BPT_mainnet,
@@ -46,7 +46,7 @@ async function mainnetStaking(timestamp, ethBlock, chainBlocks) {
       'token': BPT_WETH_LP_mainnet_sushi, 
       'balance': BPT_WETH_LP_tokens
   }]
-  console.log('Sushiswap BPT/WETH LP staked in masterchef', BPT_WETH_LP_tokens / 1e18)
+  sdk.log('Sushiswap BPT/WETH LP staked in masterchef', BPT_WETH_LP_tokens / 1e18)
   balances = {}
   await unwrapUniswapLPs(balances, lpBalances, ethBlock);
 

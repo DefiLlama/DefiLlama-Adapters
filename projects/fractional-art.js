@@ -31,7 +31,7 @@ async function getVaults() {
     sdk.log('fetched', i, 'of', totalPages)
   }
 
-  console.log(vaults.length)
+  sdk.log(vaults.length)
   return vaults
 }
 

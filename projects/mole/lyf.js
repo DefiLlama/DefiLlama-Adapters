@@ -5,7 +5,7 @@ const { coreTokens } = require("../helper/chain/aptos");
 const { getResources } = require("../helper/chain/aptos");
 const { getConfig } = require('../helper/cache')
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { transformAvaxAddress,transformBalances } = require("../helper/portedTokens");
+const { transformBalances } = require("../helper/portedTokens");
 
 async function getProcolAddresses(chain) {
   if (chain === 'avax') {
@@ -26,7 +26,7 @@ async function getProcolAddresses(chain) {
 async function calLyfTvl(chain, block) {
   /// @dev Initialized variables
   const balances = {};
-  const transform = await transformAvaxAddress()
+  const transform = addr => 'avax:'+addr
 
   /// @dev Getting all addresses from Github
   const addresses = await getProcolAddresses(chain);

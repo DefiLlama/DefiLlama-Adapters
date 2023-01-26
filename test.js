@@ -232,7 +232,10 @@ function checkExportKeys(module, filePath, chains) {
 
   if (filePath.length > 2
     || (filePath.length === 1 && !['.js', ''].includes(path.extname(filePath[0]))) // matches .../projects/projectXYZ.js or .../projects/projectXYZ
-    || (filePath.length === 2 && !['api.js', 'index.js', 'apiCache.js', ].includes(filePath[1])))  // matches .../projects/projectXYZ/index.js
+    || (filePath.length === 2 &&
+      !(['api.js', 'index.js', 'apiCache.js',].includes(filePath[1])  // matches .../projects/projectXYZ/index.js
+        || ['treasury',].includes(filePath[0])  // matches .../projects/treasury/project.js
+      )))
     process.exit(0)
 
   const blacklistedRootExportKeys = ['tvl', 'staking', 'pool2', 'borrowed', 'treasury', 'offers', 'vesting'];
@@ -326,8 +329,8 @@ async function computeTVL(balances, timestamp) {
       return;
     }
     if (k.toLowerCase() === k) return;
-    balances[k.toLowerCase()] = (k.toLowerCase() in balances) 
-      ? Number(balances[k.toLowerCase()]) 
+    balances[k.toLowerCase()] = (k.toLowerCase() in balances)
+      ? Number(balances[k.toLowerCase()])
       + Number(balances[k]) : balances[k];
     delete balances[k]
   })
@@ -392,7 +395,7 @@ async function computeTVL(balances, timestamp) {
       if (usdAmount > 1e8) {
         console.log(`-------------------
 Warning: `)
-        console.log(`Token ${address} has more than 100M in value (${usdAmount/1e6} M) , price data: `, data)
+        console.log(`Token ${address} has more than 100M in value (${usdAmount / 1e6} M) , price data: `, data)
         console.log(`-------------------`)
       }
       tokenBalances[data.symbol] = (tokenBalances[data.symbol] ?? 0) + amount;
