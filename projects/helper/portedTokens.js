@@ -104,7 +104,7 @@ function transformChainAddress(
 ) {
 
   return addr => {
-    if (distressedAssts.has(addr.toLowerCase()))  return 'ethereum:0xbad'
+    if (distressedAssts.has(addr.toLowerCase())) return 'ethereum:0xbad'
     if (['solana'].includes(chain)) {
       return mapping[addr] ? mapping[addr] : `${chain}:${addr}`
     }
@@ -131,17 +131,22 @@ async function getChainTransform(chain) {
     return transformChainAddress(transformTokens[chain], chain)
 
   return addr => {
-    if (distressedAssts.has(addr.toLowerCase()))  return 'ethereum:0xbad'
-    if (ibcChains.includes(chain) && addr.startsWith('ibc/')) return addr.replace('ibc/', 'ibc:')
+    if (distressedAssts.has(addr.toLowerCase())) return 'ethereum:0xbad'
+    if (ibcChains.includes(chain))
+      if (addr.startsWith('ibc/')) return addr.replace('ibc/', 'ibc:')
+
+
     addr = normalizeAddress(addr, chain).replaceAll('/', ':')
     const chainStr = `${chain}:${addr}`
-    return chainStr
-    // if (chain === 'near' && addr.endsWith('.near')) return chainStr
-    // if (chain === 'tezos' && addr.startsWith('KT1')) return chainStr
-    // if (chain === 'terra2' && addr.startsWith('terra1')) return chainStr
-    // if (chain === 'algorand' && /^\d+$/.test(addr)) return chainStr
-    // if (addr.startsWith('0x') || ['solana'].includes(chain)) return chainStr
-    // return addr
+    if (ibcChains.includes(chain))
+      return chainStr
+
+    if (chain === 'near' && addr.endsWith('.near')) return chainStr
+    if (chain === 'tezos' && addr.startsWith('KT1')) return chainStr
+    if (chain === 'terra2' && addr.startsWith('terra1')) return chainStr
+    if (chain === 'algorand' && /^\d+$/.test(addr)) return chainStr
+    if (addr.startsWith('0x') || ['solana'].includes(chain)) return chainStr
+    return addr
   };
 }
 
