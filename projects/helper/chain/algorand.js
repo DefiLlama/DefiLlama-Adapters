@@ -4,16 +4,14 @@ const axios = require('axios')
 const https = require('https')
 const { getApplicationAddress } = require('./algorandUtils/address')
 const { RateLimiter } = require("limiter");
-const { fixBalancesTokens } = require('../tokenMapping')
-const { sleep } = require('../utils')
-const { getFixBalancesSync } = require('../portedTokens')
+const coreAssets = require('../coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { default: BigNumber } = require('bignumber.js');
 const stateCache = {}
 const accountCache = {}
 const assetCache = {}
 
-const geckoMapping = fixBalancesTokens.algorand
+const geckoMapping = coreAssets.algorand ?? {}
 const axiosObj = axios.create({
   httpsAgent: new https.Agent({
     rejectUnauthorized: false
@@ -71,14 +69,13 @@ async function sumTokens({ owner, owners = [], tokens = [], token, balances = {}
     assets.forEach(i => {
       if (!tokens.length || tokens.includes(i['asset-id']))
         if (!blacklistedTokens.length || !blacklistedTokens.includes(i['asset-id']))
-          sdk.util.sumSingleBalance(balances, i['asset-id'], BigNumber(i.amount).toFixed(0))
+          sdk.util.sumSingleBalance(balances, i['asset-id'], BigNumber(i.amount).toFixed(0), 'algorand')
     })
   })
   if (tinymanLps.length) {
     await Promise.all(tinymanLps.map(([lp, unknown]) => resolveTinymanLp({ balances, lpId: lp, unknownAsset: unknown, blacklistedTokens: blacklistOnLpAsWell ? blacklistedTokens : [] })))
   }
-  const fixBalances = getFixBalancesSync('algorand')
-  return fixBalances(balances)
+  return balances
 }
 
 async function getAssetInfo(assetId) {
@@ -97,7 +94,7 @@ async function getAssetInfo(assetId) {
 }
 
 async function resolveTinymanLp({ balances, lpId, unknownAsset, blacklistedTokens, }) {
-  const lpBalance = balances[lpId]
+  const lpBalance = balances['algorand:'+lpId]
   if (lpBalance && lpBalance !== '0') {
     const lpInfo = await getAssetInfo(lpId)
     let ratio = lpBalance / lpInfo.circulatingSupply
@@ -106,12 +103,12 @@ async function resolveTinymanLp({ balances, lpId, unknownAsset, blacklistedToken
       Object.keys(lpInfo.assets).forEach((token) => {
         if (!blacklistedTokens.length || !blacklistedTokens.includes(token))
           if (token !== unknownAsset)
-            sdk.util.sumSingleBalance(balances, token, BigNumber(lpInfo.assets[token].amount * ratio).toFixed(0))
+            sdk.util.sumSingleBalance(balances, token, BigNumber(lpInfo.assets[token].amount * ratio).toFixed(0), 'algorand')
       })
     } else {
       Object.keys(lpInfo.assets).forEach((token) => {
         if (!blacklistedTokens.length || !blacklistedTokens.includes(token))
-          sdk.util.sumSingleBalance(balances, token, BigNumber(lpInfo.assets[token].amount * ratio).toFixed(0))
+          sdk.util.sumSingleBalance(balances, token, BigNumber(lpInfo.assets[token].amount * ratio).toFixed(0), 'algorand')
       })
     }
   }
@@ -170,11 +167,10 @@ async function getPriceFromAlgoFiLP(lpAssetId, unknownAssetId) {
   for (const i of lpInfo.reserveInfo.assets) {
     const id = i['asset-id']
     if (geckoMapping[id]) {
-      const { coingeckoId, decimals } = geckoMapping[id]
       return {
         price: i.amount / unknownAssetQuantity,
-        geckoId: coingeckoId,
-        decimals,
+        geckoId: geckoMapping[id],
+        decimals: 0,
       }
     }
   }
