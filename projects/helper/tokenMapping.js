@@ -15,7 +15,7 @@ const nullAddress = '0x0000000000000000000000000000000000000000'
 // orbit brige: https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList
 
 const unsupportedGeckoChains = ['aptos', 'terra2', 'terra', 'kujira']
-const ibcChains = ['terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex',]
+const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex',]
 const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano',]
 
 const tokens = {
@@ -91,13 +91,15 @@ for (const [chain, mapping] of Object.entries(fixBalancesTokens))
 for (const [chain, mapping] of Object.entries(coreAssets))
   coreAssets[chain] = mapping.map(i => stripTokenHeader(i, chain))
 
-function getCoreAssets(chain) {
+function getCoreAssets(chain = 'ethereum') {
   const tokens = [
     coreAssets[chain] || [],
     Object.keys(transformTokens[chain] || {}),
     Object.keys(fixBalancesTokens[chain] || {}),
   ].flat()
-  return getUniqueAddresses(tokens, chain)
+  const addresses = getUniqueAddresses(tokens, chain)
+  if (ibcChains.includes(chain)) addresses.push(...coreAssets.ibc)
+  return addresses
 }
 
 function normalizeAddress(address, chain) {
