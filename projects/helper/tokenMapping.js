@@ -46,6 +46,7 @@ const distressedAssts = new Set(Object.values({
   CRK: '0x065de42e28e42d90c2052a1b49e7f83806af0e1f',
   aBNBc: '0xe85afccdafbe7f2b096f268e31cce3da8da2990a',
   aBNBb: '0xbb1aa6e59e5163d8722a122cd66eba614b59df0d',
+  XRPC: '0xd4ca5c2aff1eefb0bea9e9eab16f88db2990c183',
 }).map(i => i.toLowerCase()))
 
 const transformTokens = {
