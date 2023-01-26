@@ -11,8 +11,6 @@ module.exports = treasuryExports({
         '0xbA6B0dbb2bA8dAA8F5D6817946393Aef8D3A4487',//HSF
         '0xBf9e72eEb5adB8B558334c8672950B7a379D4266',//CUBT
      ],
-    owners: [pleasrDaoTreasury],
-    ownTokenOwners: [],
-    ownTokens: [],
+    owners: [pleasrDaoTreasury]
   },
 })
