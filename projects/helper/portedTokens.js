@@ -131,9 +131,9 @@ async function getChainTransform(chain) {
     return transformChainAddress(transformTokens[chain], chain)
 
   return addr => {
+    if (addr.includes('ibc/')) return addr.replace(/.*ibc\//, 'ibc/').replaceAll('/', ':')
+    if (addr.startsWith(chain+':') || addr.startsWith('ibc:')) return addr
     if (distressedAssts.has(addr.toLowerCase())) return 'ethereum:0xbad'
-    if (ibcChains.includes(chain))
-      if (addr.startsWith('ibc/')) return addr.replace('ibc/', 'ibc:')
 
 
     addr = normalizeAddress(addr, chain).replaceAll('/', ':')
