@@ -70,8 +70,6 @@ function fixBalances(balances, mapping, { chain, } = {}) {
     );
   });
 
-  console.log(balances)
-
   return balances;
 }
 
