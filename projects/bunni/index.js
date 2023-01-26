@@ -25,6 +25,9 @@ const config = {
 }
 
 module.exports = {
+  hallmarks: [
+    [1674475200,"$oLIT Rewards Start"]
+  ],
 };
 
 const abi = 'function getReserves(tuple(address pool, int24 tickLower, int24 tickUpper) key) view returns (uint112 reserve0, uint112 reserve1)'

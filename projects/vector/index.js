@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const { transformAvaxAddress, } = require("../helper/portedTokens");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { pool2 } = require("../helper/pool2");
 const { staking } = require("../helper/staking.js");
@@ -8,7 +7,7 @@ const contracts = require("./contracts.json");
 
 async function tvl(timestamp, block, chainBlocks) {
   const balances = {};
-  const transform = await transformAvaxAddress();
+  const transform = addr => 'avax:'+addr
 
   const masterChefBalances = (
     await sdk.api.abi.multiCall({

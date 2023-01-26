@@ -203,12 +203,5 @@ module.exports = {
       meowFtm,
       (addr) => `fantom:${addr}`
     ),
-    treasury: stakingUnknownPricedLP(
-      treasuryContract,
-      meow,
-      "fantom",
-      meowFtm,
-      (addr) => `fantom:${addr}`
-    ),
   },
 };
