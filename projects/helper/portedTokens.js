@@ -37,7 +37,7 @@ async function transformArbitrumAddress() {
 
 async function transformInjectiveAddress() {
   return addr => {
-    addr = addr.replace('/', ':')
+    addr = addr.replaceAll('/', ':')
     if (addr.startsWith('peggy0x'))
       return `ethereum:${addr.replace('peggy', '')}`
     return `injective:${addr}`;
@@ -45,7 +45,8 @@ async function transformInjectiveAddress() {
 }
 
 function fixBalances(balances, mapping, { chain, } = {}) {
-  const removeUnmapped = unsupportedGeckoChains.includes(chain) // TODO: fix server-side, remove this
+  // const removeUnmapped = unsupportedGeckoChains.includes(chain) // TODO: fix server-side, remove this
+  const removeUnmapped = false
 
   Object.keys(balances).forEach(token => {
     let tokenKey = stripTokenHeader(token, chain)
@@ -68,6 +69,8 @@ function fixBalances(balances, mapping, { chain, } = {}) {
       +BigNumber(currentBalance).shiftedBy(-1 * decimals)
     );
   });
+
+  console.log(balances)
 
   return balances;
 }
@@ -132,7 +135,7 @@ async function getChainTransform(chain) {
   return addr => {
     if (distressedAssts.has(addr.toLowerCase()))  return 'ethereum:0xbad'
     if (ibcChains.includes(chain) && addr.startsWith('ibc/')) return addr.replace('ibc/', 'ibc:')
-    addr = normalizeAddress(addr, chain).replace('/', ':')
+    addr = normalizeAddress(addr, chain).replaceAll('/', ':')
     const chainStr = `${chain}:${addr}`
     return chainStr
     // if (chain === 'near' && addr.endsWith('.near')) return chainStr
