@@ -1,82 +1,42 @@
 const sdk = require("@defillama/sdk");
-const BigNumber = require("bignumber.js");
 const { lendingMarket } = require("../helper/methodologies");
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
-const USDCV3 = "0xc3d688B66703497DAA19211EEdff47f25384cdc3";
+const markets = [
+  "0xc3d688B66703497DAA19211EEdff47f25384cdc3", // USDC Market
+  '0xa17581a9e3356d9a858b789d68b4d866e593ae94', // ETH Market
+]
 
-async function v3Tvl(balances, block, borrowed) {
-  const numMarkets = +(
-    await sdk.api.abi.call({
-      target: USDCV3,
-      block,
-      abi:'uint8:numAssets',
-    })
-  ).output;
+const collaterals = [
+  '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+  "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+]
 
-  const markets = (
-    await sdk.api.abi.multiCall({
-      abi: "function getAssetInfo(uint8 i) view returns (tuple(uint8 offset, address asset, address priceFeed, uint64 scale, uint64 borrowCollateralFactor, uint64 liquidateCollateralFactor, uint64 liquidationFactor, uint128 supplyCap))",
-      block,
-      calls: Array.from({ length: numMarkets }).map((_, i) => ({
-        target: USDCV3,
-        params: i,
-      })),
-    })
-  ).output.map(({ output }) => output.asset);
-
-  const collateral = (
-    await sdk.api.abi.multiCall({
-      abi: "erc20:balanceOf",
-      block,
-      calls: [...markets, "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"].map((market) => ({
-        target: market,
-        params: USDCV3,
-      })),
-    })
-  )
-
-  const borrows = (
-    await sdk.api.abi.call({
-      target: USDCV3,
-      block,
-      abi: 'uint256:totalBorrow',
-    })
-  ).output;
-  const borrowedToken = (
-    await sdk.api.abi.call({
-      target: USDCV3,
-      block,
-      abi: 'address:baseToken',
-    })
-  ).output;
-
-  if (borrowed) {
-    balances[borrowedToken] = BigNumber(balances[borrowedToken] || 0)
-      .plus(borrows)
-      .toFixed();
-  } else {
-    sdk.util.sumMultiBalanceOf(balances, collateral)
-  }
-
-  return balances;
+const abi = {
+  numAssets: 'uint8:numAssets',
+  getAssetInfo: "function getAssetInfo(uint8 i) view returns (tuple(uint8 offset, address asset, address priceFeed, uint64 scale, uint64 borrowCollateralFactor, uint64 liquidateCollateralFactor, uint64 liquidationFactor, uint128 supplyCap))",
 }
 
-async function borrowed(timestamp, block) {
-  const balances = {};
-  await v3Tvl(balances, block, true);
-  return balances;
+async function borrowed(timestamp, block,_, { api }) {
+  const balances = {}
+  const tokens = await api.multiCall({ abi: 'address:baseToken', calls: markets })
+  const bals = await api.multiCall({ abi: 'uint256:totalBorrow', calls: markets })
+  bals.forEach((v, i) => sdk.util.sumSingleBalance(balances, tokens[i], v, api.chain))
+  return balances
 }
 
-async function tvl(timestamp, block) {
-  let balances = {};
-
-  await v3Tvl(balances, block, false);
-
-  return balances;
+async function tvl(timestamp, block, _, { api }) {
+  const toa = []
+  await Promise.all(markets.map(async (m, i) => {
+    const items = await api.fetchList({ lengthAbi: abi.numAssets, itemAbi: abi.getAssetInfo, target: m })
+    const tokens = items.map(i => i.asset)
+    tokens.push(collaterals[i])
+    toa.push([tokens, m])
+  }))
+  return sumTokens2({ api, ownerTokens: toa })
 }
 
 module.exports = {
-  timetravel: true,
   ethereum: {
     tvl,
     borrowed,
