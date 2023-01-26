@@ -1,4 +1,4 @@
-const {  treasuryExports } = require("../helper/treasury");
+const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 const perpProtocolTreasury = "0xD374225abB84DCA94e121F0B8A06B93E39aD7a99";
 const PERP = "0xbC396689893D065F41bc2C6EcbeE5e0085233447";
@@ -7,6 +7,7 @@ const PERP = "0xbC396689893D065F41bc2C6EcbeE5e0085233447";
 module.exports = treasuryExports({
   ethereum: {
     tokens: [ 
+        nullAddress,
         '0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0',//FXS
         '0xca1207647Ff814039530D7d35df0e1Dd2e91Fa84',//DHT
         '0x73968b9a57c6E53d41345FD57a6E6ae27d6CDB2F',//SDT
