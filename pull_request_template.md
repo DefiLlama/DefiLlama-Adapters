@@ -1,6 +1,7 @@
 **NOTE**
 
-> If you would like to add a `volume` adapter please submit the PR [here](https://github.com/DefiLlama/adapters).
+> - If you would like to add a `volume` adapter please submit the PR [here](https://github.com/DefiLlama/adapters).
+> - If you would like to add a `liquidations` adapter, please refer to [this readme document](https://github.com/DefiLlama/DefiLlama-Adapters/tree/main/liquidations) for details.
 
 1. Once your adapter has been merged, it takes time to show on the UI. If more than 24 hours have passed, please let us know in Discord.
 2. Sorry, We no longer accept fetch adapter for new projects, we prefer the tvl to computed from blockchain data, if you have trouble with creating a the adapter, please hop onto our discord, we are happy to assist you.
