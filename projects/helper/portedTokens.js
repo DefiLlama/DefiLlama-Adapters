@@ -8,6 +8,7 @@ const {
   fixBalancesTokens,
   unsupportedGeckoChains,
   ibcChains,
+  distressedAssts,
 } = require('./tokenMapping')
 
 async function transformFantomAddress() {
@@ -36,6 +37,7 @@ async function transformArbitrumAddress() {
 
 async function transformInjectiveAddress() {
   return addr => {
+    addr = addr.replace('/', ':')
     if (addr.startsWith('peggy0x'))
       return `ethereum:${addr.replace('peggy', '')}`
     return `injective:${addr}`;
@@ -101,6 +103,7 @@ function transformChainAddress(
 ) {
 
   return addr => {
+    if (distressedAssts.has(addr.toLowerCase()))  return 'ethereum:0xbad'
     if (['solana'].includes(chain)) {
       return mapping[addr] ? mapping[addr] : `${chain}:${addr}`
     }
@@ -127,6 +130,7 @@ async function getChainTransform(chain) {
     return transformChainAddress(transformTokens[chain], chain)
 
   return addr => {
+    if (distressedAssts.has(addr.toLowerCase()))  return 'ethereum:0xbad'
     if (ibcChains.includes(chain) && addr.startsWith('ibc/')) return addr.replace('ibc/', 'ibc:')
     addr = normalizeAddress(addr, chain).replace('/', ':')
     const chainStr = `${chain}:${addr}`

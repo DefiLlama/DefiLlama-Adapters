@@ -42,13 +42,19 @@ const tokensBare = {}
 for (const [label, value] of Object.entries(tokens))
   tokensBare[label] = value.split(':')[1]
 
+const distressedAssts = new Set(Object.values({
+  CRK: '0x065de42e28e42d90c2052a1b49e7f83806af0e1f',
+  aBNBc: '0xe85afccdafbe7f2b096f268e31cce3da8da2990a',
+  aBNBb: '0xbb1aa6e59e5163d8722a122cd66eba614b59df0d',
+}).map(i => i.toLowerCase()))
+
 const transformTokens = {
   // Sample Code
   // cronos: {
   //   "0x065de42e28e42d90c2052a1b49e7f83806af0e1f": "0x123", // CRK token is mispriced
   //   "0x87EFB3ec1576Dec8ED47e58B832bEdCd86eE186e": "0x0000000000085d4780B73119b644AE5ecd22b376",
   // },
-  
+
 }
 const ibcMappings = {
   // Sample Code
@@ -135,4 +141,5 @@ module.exports = {
   stripTokenHeader,
   getUniqueAddresses,
   getWhitelistedNFTs,
+  distressedAssts,
 }
