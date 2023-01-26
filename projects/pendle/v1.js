@@ -5,6 +5,7 @@ const {
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const contracts = require("./contracts");
+const { staking } = require("../helper/staking");
 
 const ethTokens = contracts.v1.eth.tokens;
 const ethFundedContracts = Object.keys(contracts.v1.eth.funded);
@@ -40,17 +41,17 @@ async function ethTvl(timestamp, block) {
       [ethTokens.USDC, false],
       [ethTokens.aUSDC, false],
       [ethTokens.cDAI, false],
-      [ethTokens.SLP_ETHUSDC, true],
-      [ethTokens.SLP_PENDLEETH, true],
+      [ethTokens.SLP_ETHUSDC, false],
+      [ethTokens.SLP_PENDLEETH, false],
       [ethTokens.SUSHI, false],
       [ethTokens.COMP, false],
       [ethTokens.wxBTRFLY, false],
-      [ethTokens.SLP_OT_aUSDC_21, true],
-      [ethTokens.SLP_OT_aUSDC_22, true],
-      [ethTokens.SLP_OT_cDAI_21, true],
-      [ethTokens.SLP_OT_cDAI_22, true],
-      [ethTokens.SLP_OT_ETHUSDC_22, true],
-      [ethTokens.SLP_OT_wxBTRFLY_22, true]
+      [ethTokens.SLP_OT_aUSDC_21, false],
+      [ethTokens.SLP_OT_aUSDC_22, false],
+      [ethTokens.SLP_OT_cDAI_21, false],
+      [ethTokens.SLP_OT_cDAI_22, false],
+      [ethTokens.SLP_OT_ETHUSDC_22, false],
+      [ethTokens.SLP_OT_wxBTRFLY_22, false]
     ],
     ethFundedContracts,
     block
@@ -60,41 +61,9 @@ async function ethTvl(timestamp, block) {
   }
   delete balances[ethTokens.PENDLE];
 
-  balances[ethTokens.BTRFLY] = (await sdk.api.abi.call({
-    target: ethTokens.wxBTRFLY,
-    abi: abi.xBTRFLYValue,
-    params: [balances[ethTokens.wxBTRFLY]],
-    block: block
-  })).output;
-  delete balances[ethTokens.wxBTRFLY];
-
   return balances;
 }
-async function staking(timestamp, block) {
-  const staking = {};
-  await sumTokensAndLPsSharedOwners(
-    staking,
-    [[ethTokens.PENDLE, false]],
-    ethStakingContracts,
-    block
-  );
-  return staking;
-}
-async function ethPool2(timestamp, block) {
-  const pool2 = {};
-  await sumTokensAndLPsSharedOwners(
-    pool2,
-    [
-      [ethTokens.SLP_PENDLEETH, true],
-      [ethTokens.PENDLE, false],
-      [ethTokens.SUSHI, false]
-    ],
-    ethPool2Contracts,
-    block
-  );
 
-  return pool2;
-}
 async function avaxTvl(timestamp, _, { avax: block }) {
   const transform = addr => 'avax:'+addr
   const balances = {};
@@ -117,17 +86,17 @@ async function avaxTvl(timestamp, _, { avax: block }) {
       [avaxTokens.qiAVAX, false],
       [avaxTokens.qiUSDC, false],
       [avaxTokens.xJOE, false],
-      [avaxTokens.JLP_PENDLEAVAX, true],
+      [avaxTokens.JLP_PENDLEAVAX, false],
       [avaxTokens.WAVAX, false],
       [avaxTokens.JOE, false],
       [avaxTokens.QI, false],
       [avaxTokens.MIM, false],
       [avaxTokens.wMEMO, false],
-      [avaxTokens.JLP_OT_PAP, true],
-      [avaxTokens.JLP_OT_qiUSDC, true],
-      [avaxTokens.JLP_OT_qiAVAX, true],
-      [avaxTokens.JLP_OT_xJOE, true],
-      [avaxTokens.JLP_OT_wMEMO, true]
+      [avaxTokens.JLP_OT_PAP, false],
+      [avaxTokens.JLP_OT_qiUSDC, false],
+      [avaxTokens.JLP_OT_qiAVAX, false],
+      [avaxTokens.JLP_OT_xJOE, false],
+      [avaxTokens.JLP_OT_wMEMO, false]
     ],
     avaxFundedContracts,
     block,
@@ -148,14 +117,6 @@ async function avaxTvl(timestamp, _, { avax: block }) {
     delete balances[`avax:${token.toLowerCase()}`];
   }
 
-  if (`avax:${avaxTokens.qiUSDC}` in balances) {
-    balances[ethTokens.USDC] =
-      Number(balances[ethTokens.USDC]) +
-      Number(balances[`avax:${avaxTokens.qiUSDC}`]) / 10 ** 12;
-    delete balances[`avax:${avaxTokens.qiUSDC}`];
-  }
-  delete balances[avaxTokens.PENDLE];
-
   return balances;
 }
 async function avaxPool2(timestamp, _, { avax: block }) {
@@ -165,7 +126,7 @@ async function avaxPool2(timestamp, _, { avax: block }) {
   await sumTokensAndLPsSharedOwners(
     pool2,
     [
-      [avaxTokens.JLP_PENDLEAVAX, true],
+      [avaxTokens.JLP_PENDLEAVAX, false],
       [avaxTokens.PENDLE, false],
       [avaxTokens.JOE, false]
     ],
@@ -180,9 +141,9 @@ async function avaxPool2(timestamp, _, { avax: block }) {
 
 module.exports = {
   ethereum: {
-    pool2: ethPool2,
+    pool2: staking(ethPool2Contracts, [ethTokens.SLP_PENDLEETH, ethTokens.PENDLE, ethTokens.SUSHI,]),
     tvl: ethTvl,
-    staking
+    staking: staking(ethStakingContracts, [ethTokens.PENDLE])
   },
   avax: {
     pool2: avaxPool2,

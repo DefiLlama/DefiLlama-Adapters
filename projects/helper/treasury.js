@@ -4,12 +4,12 @@ function treasuryExports(config) {
   const chains = Object.keys(config)
   const exportObj = {  }
   chains.forEach(chain => {
-    let { ownTokenOwners, ownTokens  } = config[chain]
+    let { ownTokenOwners = [], ownTokens, owners = [],  } = config[chain]
     if (chain === 'solana')  options.solOwners = owners
     exportObj[chain] = { tvl: sumTokensExport(config[chain]) }
 
-    if (ownTokenOwners && ownTokens) {
-      const options = { ...config[chain], owners: ownTokenOwners, tokens: ownTokens, chain, }
+    if (ownTokens) {
+      const options = { ...config[chain], owners: [...owners, ...ownTokenOwners], tokens: ownTokens, chain, }
       exportObj[chain].ownTokens = sumTokensExport(options)
     }
   })
