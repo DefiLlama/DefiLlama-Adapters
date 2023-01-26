@@ -132,15 +132,12 @@ async function getChainTransform(chain) {
 
   return addr => {
     if (addr.includes('ibc/')) return addr.replace(/.*ibc\//, 'ibc/').replaceAll('/', ':')
-    if (addr.startsWith(chain+':') || addr.startsWith('ibc:')) return addr
+    if (addr.startsWith(chain + ':') || addr.startsWith('ibc:')) return addr
     if (distressedAssts.has(addr.toLowerCase())) return 'ethereum:0xbad'
-
 
     addr = normalizeAddress(addr, chain).replaceAll('/', ':')
     const chainStr = `${chain}:${addr}`
-    if (ibcChains.includes(chain))
-      return chainStr
-
+    if (ibcChains.includes(chain)) return chainStr
     if (chain === 'near' && addr.endsWith('.near')) return chainStr
     if (chain === 'tezos' && addr.startsWith('KT1')) return chainStr
     if (chain === 'terra2' && addr.startsWith('terra1')) return chainStr
