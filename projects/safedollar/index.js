@@ -2,7 +2,7 @@ const sdk = require('@defillama/sdk');
 const farmUtils = require('./farm-utils');
 const BigNumber = require('bignumber.js');
 const url = "https://api.safedollar.fi/api/public/getAllCollateral";
-const utils = require('../helper/utils');;
+const utils = require('../helper/utils');
 /**
  * calculate collateral locked in safedollar 
  */

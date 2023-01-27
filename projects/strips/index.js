@@ -12,7 +12,7 @@ async function getMarkets(block) {
     block,
   });
   return allMarkets.filter(c => c.created).map(c => c.market);
-};
+}
 
 async function pool2(timestamp, block, chainBlocks) {
   block = chainBlocks.arbitrum
@@ -30,6 +30,9 @@ async function pool2(timestamp, block, chainBlocks) {
 } // node test.js projects/strips/index.js
 
 module.exports = {
+  hallmarks: [
+    [1658102400, "Winding down of v1 announced"]
+  ],
   arbitrum: {
     tvl: () => ({}),
     pool2

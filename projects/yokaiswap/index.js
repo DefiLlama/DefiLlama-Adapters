@@ -6,7 +6,7 @@ const axios = require("axios");
 
 async function fetch() {
   const endpoint =
-    "https://www.yokaiswap.com/subgraphs/name/yokaiswap/exchange";
+    "https://v0.yokaiswap.com/subgraphs/name/yokaiswap/exchange";
   const graphQLClient = new GraphQLClient(endpoint);
 
   const query = gql`
@@ -21,43 +21,11 @@ async function fetch() {
 
   return toUSDTBalances(data.yokaiFactories[0].totalLiquidityUSD);
 }
-/*
-async function staking() {
-  const response = await axios.get(
-    "https://www.yokaiswap.com/api/pool_total_staked"
-  );
 
-  return toUSDTBalances(response.data/1e18);
-}
-*/
-const getReservesABI = {
-  "constant": true,
-  "inputs": [],
-  "name": "getReserves",
-  "outputs": [
-    {
-      "internalType": "uint112",
-      "name": "reserve0",
-      "type": "uint112"
-    },
-    {
-      "internalType": "uint112",
-      "name": "reserve1",
-      "type": "uint112"
-    },
-    {
-      "internalType": "uint32",
-      "name": "blockTimestampLast",
-      "type": "uint32"
-    }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
-}
+const getReservesABI = 'function getReserves() view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)'
 
 // had to be disabled till we get multicall working
-const tvl_v0 = getUniTVL({ chain: 'godwoken', factory: '0x5ef0d2d41a5f3d5a083bc776f94282667c27b794', useDefaultCoreAssets: false,  abis: { getReservesABI }})
+const tvl_v0 = getUniTVL({ chain: 'godwoken', factory: '0x5ef0d2d41a5f3d5a083bc776f94282667c27b794', useDefaultCoreAssets: false,  abis: { getReserves: getReservesABI }})
 const tvl_v1 = getUniTVL({ chain: 'godwoken_v1', factory: '0x7ec2d60880d83614dd4013D39CF273107f30624c', useDefaultCoreAssets: true, })
 
 module.exports = {

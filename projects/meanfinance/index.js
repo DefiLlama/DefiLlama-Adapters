@@ -1,6 +1,6 @@
-const { fetchURL } = require("../helper/utils");
 const { V1_POOLS, TOKENS_IN_LEGACY_VERSIONS } = require("./addresses");
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { getConfig } = require('../helper/cache')
 
 const YIELD_VERSION = '0xA5AdC5484f9997fBF7D405b9AA62A7d88883C345'
 const YIELDLESS_VERSION = '0x059d306A25c4cE8D7437D25743a8B94520536BD5'
@@ -13,9 +13,8 @@ const LEGACY_VERSIONS = {
 }
 
 async function getTokensInChain(chain) {
-  const { data } = await fetchURL(`https://api.mean.finance/v1/dca/networks/${chain}/tokens`)
+  const data = await getConfig('mean-finance/'+chain, `https://api.mean.finance/v1/dca/networks/${chain}/tokens?includeNotAllowed`)
   return data.map(({ address }) => address)
-    .filter(address => address.toLowerCase() !== '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee')
 }
 
 function getV2TvlObject(chain) {
@@ -25,8 +24,6 @@ function getV2TvlObject(chain) {
 }
 
 async function getV2TVL(chain, block) {
-  const balances = {};
-
   const legacyVersions = LEGACY_VERSIONS[chain] ?? []
   const legacyTokens = TOKENS_IN_LEGACY_VERSIONS[chain] ?? []
   const tokens = await getTokensInChain(chain)
@@ -35,16 +32,16 @@ async function getV2TVL(chain, block) {
     { contract: YIELD_VERSION, tokens }
   ]
 
-  await Promise.all(versions.map(({ contract, tokens }) => getV2TVLForContract(balances, chain, contract, tokens, block)))
-
-  return balances
-}
-
-async function getV2TVLForContract(balances, chain, contract, tokens, block) {
-  return sumTokens2({ balances, chain, block, tokens, owner: contract })
+  const toa = versions.map(({ contract, tokens }) => tokens.map(t => ([t, contract]))).flat()
+  return sumTokens2({ chain, block, tokensAndOwners: toa})
 }
 
 async function ethTvl(timestamp, block) {
+  const balances = await getV2TVL('ethereum', block)
+  return ethV1Tvl(block, balances)
+}
+
+async function ethV1Tvl(block, balances = {}) {
   const toa = []
   // Calls for tokens in pair and balances of them then adds to balance
   for (let i = 0; i < V1_POOLS.length; i++) {
@@ -52,7 +49,7 @@ async function ethTvl(timestamp, block) {
     toa.push([tokenA, pool], [tokenB, pool])
   }
 
-  return sumTokens2({ tokensAndOwners: toa, block, });
+  return sumTokens2({ balances, tokensAndOwners: toa, block, });
 }
 
 module.exports = {
@@ -61,6 +58,7 @@ module.exports = {
   },
   optimism: getV2TvlObject('optimism'),
   polygon: getV2TvlObject('polygon'),
+  arbitrum: getV2TvlObject('arbitrum'),
    hallmarks: [
     [1638850958, "V2 Beta launch on Optimism"],
     [1643602958, "V2 full launch"],
@@ -69,5 +67,7 @@ module.exports = {
     [1653366158, "V2 Relaunch"],
     [1654057358, "OP launch brings more users into Optimism and benefits Mean"],
     [1666364400, "Yield-While-DCA launch"],
+    [1668006000, "Deployment on Arbitrum"],
+    [1672099200, "Deployment on Ethereum"],
   ]
 };

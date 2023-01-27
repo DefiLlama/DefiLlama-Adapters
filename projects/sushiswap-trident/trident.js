@@ -3,11 +3,18 @@ const { request, gql } = require("graphql-request");
 const { getChainTransform } = require("../helper/portedTokens");
 
 const graphUrls = {
-  polygon: "https://api.thegraph.com/subgraphs/name/sushi-0m/trident-polygon",
+  polygon: "https://api.thegraph.com/subgraphs/name/sushi-qa/trident-polygon",
+  polygonOldRouter:
+    "https://api.thegraph.com/subgraphs/name/sushi-0m/trident-polygon",
   optimism: "https://api.thegraph.com/subgraphs/name/sushi-qa/trident-optimism",
   kava: "https://pvt.graph.kava.io/subgraphs/name/sushi-qa/trident-kava",
   metis:
     "https://andromeda.thegraph.metis.io/subgraphs/name/sushi-qa/trident-metis",
+  bittorrent:
+    "https://subgraphs.sushi.com/subgraphs/name/sushi-qa/trident-bttc",
+  arbitrum: "https://api.thegraph.com/subgraphs/name/sushi-qa/trident-arbitrum",
+  bsc: "https://api.thegraph.com/subgraphs/name/sushi-qa/trident-bsc",
+  avax: "https://api.thegraph.com/subgraphs/name/sushi-qa/trident-avalanche",
 };
 
 const tridentQueryWithBlock = gql`
@@ -56,6 +63,22 @@ function trident(chain) {
       });
     } else {
       result = await request(graphUrl, tridentQuery);
+    }
+
+    if (chain == "polygon") {
+      //add pools that haven't been migrated to the new router
+      result.tokens.push(
+        ...(!block
+          ? await request(graphUrls["polygonOldRouter"], tridentQuery)
+          : await request(
+              graphUrls["polygonOldRouter"],
+              tridentQueryWithBlock,
+              {
+                block: block - 50, //subgraphs can be late by few seconds/minutes
+              }
+            )
+        ).tokens
+      );
     }
 
     result.tokens.forEach((token) => {

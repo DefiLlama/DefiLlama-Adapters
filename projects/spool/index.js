@@ -31,7 +31,6 @@ async function tvl (timestamp, block, chainBlocks) {
         chain,
       })
     const underlyings = [... new Set(underlyings_nonunique.map(u => u.output))]; 
-    // console.log('strategies', strategies, 'underlyings', underlyings)
 
     // Balances of tokens pending to be deployed in strategies
     const tokensAndOwners = underlyings.map(t => [t, masterSpool])
@@ -46,13 +45,11 @@ async function tvl (timestamp, block, chainBlocks) {
       block,
       chain,
     })
-    // console.log('underlyingBalances', underlyingBalances)
     // Since tvl is deployed to aave, yearn, compound, use masterSpool_getStratUnderlying method
     // For simplicity, trick sumMultiBalanceOf into thinking the calls were erc20 balanceOf 
     underlyingBalances.output.forEach((c, i) => c.input.target = underlyings_nonunique[i].output)
     await sumMultiBalanceOf(balances, underlyingBalances)
 
-    // console.log(`balances `, balances) 
     return balances
 }
 

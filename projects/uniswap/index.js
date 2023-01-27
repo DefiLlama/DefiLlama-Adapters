@@ -1,19 +1,7 @@
 const { request, gql } = require('graphql-request');
-const { getBlock } = require('../helper/getBlock');
+const { getBlock } = require('../helper/http');
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { log } = require('../helper/utils')
-/* 
-const ethers = require("ethers")
-const { config } = require('@defillama/sdk/build/api');
-
-config.setProvider("celo", new ethers.providers.StaticJsonRpcProvider(
-  "wss://forno.celo.org/ws,https://rpc.ankr.com/celo,https://forno.celo.org",
-  {
-    name: "celo",
-    chainId: 42220,
-  }
-))
- */
 
 const graphs = {
   ethereum: "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3",
@@ -37,7 +25,7 @@ function v3TvlPaged(chain) {
     const size = 1000
     let lastId = ''
     let pools
-    const graphQueryPaged = gql`
+    let graphQueryPaged = gql`
     query poolQuery($lastId: String, $block: Int) {
       pools(block: { number: $block } first:${size} where: {id_gt: $lastId totalValueLockedUSD_gt: 100}) {
         id
@@ -45,11 +33,24 @@ function v3TvlPaged(chain) {
         token1 { id }
       }
     }
-  `// remove the bad pools
+  `
+
+  if (chain === 'celo') // we dont care about block
+    graphQueryPaged = gql`
+    query poolQuery($lastId: String) {
+      pools(first:${size} where: {id_gt: $lastId totalValueLockedUSD_gt: 100}) {
+        id
+        token0 { id }
+        token1 { id }
+      }
+    }
+  `
+  
+  // remove the bad pools
     const blacklisted = blacklists[chain] || []
 
     do {
-      const res = await request(graphs[chain], graphQueryPaged, { lastId, block: block - 500 });
+      const res = await request(graphs[chain], graphQueryPaged, { lastId, block: block - 5000 });
       pools = res.pools
       const tokensAndOwners = pools.map(i => ([[i.token0.id, i.id], [i.token1.id, i.id]])).flat()
       log(chain, block, lastId, pools.length)
@@ -63,6 +64,8 @@ function v3TvlPaged(chain) {
 
 module.exports = {
   methodology: `Counts the tokens locked on AMM pools, pulling the data from the 'ianlapham/uniswapv2' subgraph`,
+  misrepresentedTokens: true,
+  timetravel: false,
   hallmarks: [
     [1598412107, "SushiSwap launch"],
     [1599535307, "SushiSwap migration"],

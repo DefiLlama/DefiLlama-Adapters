@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk")
-const retry = require('async-retry')
-const axios = require("axios")
+const { getConfig } = require('../helper/cache')
 
 const { userInfos } = require('./FairLaunch')
 
@@ -13,8 +12,7 @@ const chain = 'klaytn'
 const WORKERS_QUERY_URL = "https://kleva.io/static/data.json"
 
 async function getWorkers() {
-  const { data } = await retry(async bail => await axios.get(WORKERS_QUERY_URL))
-  return data
+  return getConfig('kleva', WORKERS_QUERY_URL)
 }
 
 const klayPool = '0xa691c5891d8a98109663d07bcf3ed8d3edef820a'

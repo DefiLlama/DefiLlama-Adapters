@@ -1,6 +1,6 @@
 const {
   getBalances,
-} = require('../helper/zilliqa')
+} = require('../helper/chain/zilliqa')
 
 async function tvl() {
   const balances = {}

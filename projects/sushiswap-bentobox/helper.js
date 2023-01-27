@@ -19,17 +19,7 @@ const bentoboxes = {
   //kava: "0xc35DADB65012eC5796536bD9864eD8773aBc74C4",
 };
 
-const toAmountAbi = {
-  inputs: [
-    { internalType: "contract IERC20", name: "token", type: "address" },
-    { internalType: "uint256", name: "share", type: "uint256" },
-    { internalType: "bool", name: "roundUp", type: "bool" },
-  ],
-  name: "toAmount",
-  outputs: [{ internalType: "uint256", name: "amount", type: "uint256" }],
-  stateMutability: "view",
-  type: "function",
-};
+const toAmountAbi = 'function toAmount(address token, uint256 share, bool roundUp) view returns (uint256 amount)';
 
 const bentoSubgraphs = {
   ethereum:
@@ -132,7 +122,7 @@ const kashiQuery = gql`
 `;
 
 const tridentSubgraphs = {
-  polygon: "https://api.thegraph.com/subgraphs/name/sushi-0m/trident-polygon",
+  polygon: "https://api.thegraph.com/subgraphs/name/sushi-qa/trident-polygon",
   optimism: "https://api.thegraph.com/subgraphs/name/sushi-qa/trident-optimism",
   //kava: "https://pvt.graph.kava.io/subgraphs/name/sushi-qa/trident-kava",
   //metis: "https://andromeda.thegraph.metis.io/subgraphs/name/sushi-qa/trident-metis",
@@ -178,12 +168,13 @@ async function getFuroTokens(chain, block) {
 
   output.forEach(
     ({
+      success,
       output: amount,
       input: {
         params: [tokenId],
       },
     }) => {
-      sdk.util.sumSingleBalance(balances, tokenId, BigNumber(amount).toFixed(0))
+      if (success) sdk.util.sumSingleBalance(balances, tokenId, BigNumber(amount).toFixed(0))
     }
   );
 
@@ -224,12 +215,13 @@ async function getKashiTokens(chain, block) {
 
   output.forEach(
     ({
+      success,
       output: amount,
       input: {
         params: [tokenId],
       },
     }) => {
-      sdk.util.sumSingleBalance(balances, tokenId, BigNumber(amount).toFixed(0))
+      if (success) sdk.util.sumSingleBalance(balances, tokenId, amount)
     }
   );
 
@@ -266,7 +258,7 @@ async function fetchAllTokens(subgraph, query, block, type) {
 
   //query all tokens even if > 1000 as we can't order efficiently by $ liquidity
   let id = 0;
-  while (true) {
+  while (true) {    // eslint-disable-line
     let result = await request(subgraph, query, {
       id, block,
     });

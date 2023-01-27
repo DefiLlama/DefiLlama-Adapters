@@ -4,50 +4,38 @@ const { usdtAddress} = require("../helper/balances")
 const sdk = require('@defillama/sdk')
 const BigNumber = require("bignumber.js");
 
-const getTotalDepositABI = {
-  'inputs': [],
-  'name': 'getTotalDeposit',
-  'outputs': [
-    {
-      'internalType': 'uint256',
-      'name': '',
-      'type': 'uint256'
-    }
-  ],
-  'stateMutability': 'view',
-  'type': 'function'
+const VAULTS = {
+  STABLECOINS: '0xf1f25A26499B023200B3f9A30a8eCEE87b031Ee1',
+  ETH: '0x941ef9AaF3277052e2e6c737ae9a75b229A20988',
+  BTC: '0xed18f1CE58fED758C7937cC0b8BE66CB02Dc45c6',
+  ALTCOINS: '0x5d735e9ffE9664B80c405D16921912E5B989688C',
 }
 
+const getTotalDepositABI = 'uint256:getTotalDeposit'
+
 async function tvl(ts, _block, chainBlocks) {
-  const lrsStrategyValue = (await sdk.api.abi.call({
-    target: '0xf1f25A26499B023200B3f9A30a8eCEE87b031Ee1',
-    abi: getTotalDepositABI,
-    block: chainBlocks.bsc,
-    chain: 'bsc'
-  })).output
+  let totalUsdt = new BigNumber(0);
+  
+  
+  for (const item of Object.values(VAULTS)) {
+    const result = await sdk.api.abi.call({
+      target: item,
+      abi: getTotalDepositABI,
+      block: chainBlocks.bsc,
+      chain: 'bsc'
+    });
+    
+    if (result && result.output) {
+      const usdt = new BigNumber(result.output)
+        .times(1e-12)
+        .toFixed(0);
 
-  const ethStrategyValue = (await sdk.api.abi.call({
-    target: '0x941ef9AaF3277052e2e6c737ae9a75b229A20988',
-    abi: getTotalDepositABI,
-    block: chainBlocks.bsc,
-    chain: 'bsc'
-  })).output
-
-  const btcStrategyValue = (await sdk.api.abi.call({
-    target: '0xed18f1CE58fED758C7937cC0b8BE66CB02Dc45c6',
-    abi: getTotalDepositABI,
-    block: chainBlocks.bsc,
-    chain: 'bsc'
-  })).output
-
-  const valueUsdt = new BigNumber(lrsStrategyValue)
-      .plus(ethStrategyValue)
-      .plus(btcStrategyValue)
-      .times(1e-12)
-      .toFixed(0);
-
+      totalUsdt = totalUsdt.plus(usdt);
+    }
+  }
+  
   return {
-    [usdtAddress]: valueUsdt,
+    [usdtAddress]: totalUsdt,
   };
 }
 

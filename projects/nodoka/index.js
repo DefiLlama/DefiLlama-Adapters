@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const uniswapV3abi = require("./uniswapV3.json");
 
 const BigNumber = require("bignumber.js");
 
@@ -24,7 +23,7 @@ async function getNethPrice(block) {
   const { output: slot0 } = await sdk.api.abi.call({
     block,
     target: nethPool,
-    abi: uniswapV3abi.find(i => i.name === 'slot0')
+    abi: 'function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 feeProtocol, bool unlocked)'
   })
   const priceSqrt = new BigNumber(slot0[0]);
   const nethPriceInEth = (priceSqrt * priceSqrt) / 2 ** 192;

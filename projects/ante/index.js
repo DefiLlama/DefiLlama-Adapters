@@ -62,23 +62,5 @@ Object.keys(CONFIG).forEach(chain => {
 })
 
 const abis = {
-  allPools: {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "allPools",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
+  allPools: "function allPools(uint256) view returns (address)",
 }
