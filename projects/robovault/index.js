@@ -10,6 +10,9 @@ function fetch(endpoint) {
 }
 
 module.exports = {
+  hallmarks: [
+    [1674820800,"Vaults Pause"]
+  ],
   methodology: 'TVL counts deposits made to the Robo-Vault vaults. Data is pulled from the Robo-Vault API:"https://api.robo-vault.com/vault".',
   polygon: {
     fetch: fetch('vaults/polygon')
