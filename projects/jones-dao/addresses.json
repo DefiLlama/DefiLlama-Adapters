@@ -53,5 +53,8 @@
             "holder": "0xEB23C7e19DB72F9a728fD64E1CAA459E457cfaca", 
             "token": "0xa485a0bc44988B95245D5F20497CCaFF58a73E99" 
             }
-        }
+        },
+    "strategy":"0x8e53d1B71bf7c6487cFF5156257a687c8704cd31",
+    "glpCompound": "0x7241bC8035b65865156DDb5EdEf3eB32874a3AF6",
+    "glp": "0x1aDDD80E6039594eE970E5872D247bf0414C8903"
 }

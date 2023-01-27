@@ -167,6 +167,17 @@ async function tvl(timestamp, block, chainBlocks) {
     Object.values(addresses.trackers).map((tracker, i) => 
         sdk.util.sumSingleBalance(balances, `${chain}:${tracker.token}`, trackerBalances[i])
     )
+    
+    const glpBal = (await sdk.api.abi.call({
+        target: addresses.glp,
+        abi: 'erc20:balanceOf',
+        params: addresses.strategy,
+        block,
+        chain
+    })).output;
+    console.log(glpBal);
+    await sdk.util.sumSingleBalance(balances, `${chain}:${addresses.glp}`, glpBal);
+
     return balances;
 }
 
