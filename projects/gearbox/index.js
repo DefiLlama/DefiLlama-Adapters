@@ -36,18 +36,20 @@ const getPoolAddrs = async (block) => {
     t.input.target,
   ]);
 
-  // Fetch ba;anes of tokens available to fetch
-  // const { output: totalBorrowed } = await sdk.api.abi.multiCall({
-  //   abi: abi["availableLiquidity"],
-  //   calls: pools.map((pool) => ({ target: pool })),
-  //   block,
+  // Fetch balanes of tokens available to fetch
+  const { output: totalAvailable } = await sdk.api.abi.multiCall({
+    abi: abi["availableLiquidity"],
+    calls: pools.map((pool) => ({ target: pool })),
+    block,
+  });
+
+  // sumTokens2 reads balances of the pools
+  let poolBalances = {};
+  // Init poolBalances with the availableLiquidity
+  // totalAvailable.map((i) => {
+  //   const pool = tokensAndOwners.find((arr) => arr[1] === i.input.target);
+  //   poolBalances[pool[0]] = i.output;
   // });
-
-  const poolBalances = {};
-  // totalBorrowed.forEach(({ output }, i) =>
-  //   sdk.util.sumSingleBalance(poolBalances, poolsUnderlying[i].output, output)
-  // );
-
   return { tokensAndOwners, poolBalances };
 };
 
@@ -112,16 +114,17 @@ const getV1TVL = async (block) => {
 const tvl = async (timestamp, block) => {
   // Pool TVL (Current token balances)
   const { poolBalances, tokensAndOwners } = await getPoolAddrs(block);
+  // V1 CreditAccounts TVL
+  const v1Balances = await getV1TVL(block);
 
   // V2 CreditAccounts TVL in USD
   const v2Balances = await getV2TVL(block);
 
-  // V1 CreditAccounts TVL
-  const v1Balances = await getV1TVL(block);
-  [...v1Balances, ...v2Balances].forEach(i => {
-    sdk.util.sumSingleBalance(poolBalances,i.token,i.bal)
-    tokensAndOwners.push([i.token, i.addr])
-  })
+  // Merge all balances for each token
+  [...v1Balances, ...v2Balances].forEach((i) => {
+    sdk.util.sumSingleBalance(poolBalances, i.token, i.bal);
+    tokensAndOwners.push([i.token, i.addr]);
+  });
 
   return sumTokens2({
     balances: poolBalances,
