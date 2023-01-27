@@ -13,8 +13,11 @@ async function fetch() {
       (a, c) => new BigNumber(a).plus(c));
 
   return tvl;
-};
+}
 
 module.exports = {
+  everscale: {
+    fetch
+  },
     fetch
 };

@@ -20,6 +20,9 @@ async function fetch() {
 }
 
 module.exports = {
+  mixin: {
+    fetch
+  },
   fetch
 }
 

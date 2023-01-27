@@ -1,8 +1,7 @@
-const BigNumber = require('bignumber.js');
 const sdk = require('@defillama/sdk');
-const token0 = require('../abis/token0.json');
-const token1 = require('../abis/token1.json');
-const getReserves = require('../abis/getReserves.json');
+const token0 = 'address:token0'
+const token1 = 'address:token1'
+const getReserves = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
 const factoryAbi = require('../abis/factory.json');
 
 async function requery(results, chain, block, abi) {
@@ -165,7 +164,7 @@ function calculateUsdSoulTvl(FACTORY, chain, coreAssetRaw, whitelistRaw, coreAss
             [coreAssetName]: (coreBalance) / (10 ** decimals)
         }
     }
-};
+}
 
 module.exports = {
     calculateUsdSoulTvl,

@@ -1,5 +1,5 @@
 const { GraphQLClient, gql } = require('graphql-request')
-const { getBlock } = require('../helper/getBlock')
+const { getBlock } = require('../helper/http')
 const { staking } = require('../helper/staking')
 const sdk = require('@defillama/sdk')
 
@@ -55,8 +55,8 @@ function offset(chain) {
       return 500
     case 'avax':
       return 750
-  };
-};
+  }
+}
 function chainTvl(chain) {
     return async (timestamp, ethBlock, chainBlocks) => {
       if (timestamp > 1659527340) return {}

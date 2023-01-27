@@ -1,9 +1,10 @@
 const { GraphQLClient, gql } = require('graphql-request')
 const { toUSDTBalances } = require('../helper/balances');
-const { getBlock } = require('../helper/getBlock');
+const { getBlock } = require('../helper/http');
 const { stakingPricedLP } = require("../helper/staking");
 const { addFundsInMasterChef } = require("../helper/masterchef");
 const { farmLPBalance } = require("./utils");
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const masterChef = "0x63Df75d039f7d7A8eE4A9276d6A9fE7990D7A6C5";
 const d3usd = "0x36B17c6719e09d98bB020608E9F79a0647d50A70";
@@ -11,31 +12,38 @@ const ness = "0xe727240728c1a5f95437b8b50afdd0ea4ae5f0c8";
 const nessroom = "0xA93248C548Ac26152F3b4F201C9101f4e032074e";
 const ness_cro = "0xbfAAB211C3ea99A2Db682fbc1D9a999861dCba2D";
 
-async function getLiquidity(block) {
-  // delayed by around 5 mins to allow subgraph to update
-  block -= 25;
+async function getTokens() {
   var endpoint = `https://subgraph.darkness.finance/subgraphs/name/cronos/swapprod`
   var graphQLClient = new GraphQLClient(endpoint)
   var query = gql`
-  query get_tvl($block: Int) {
+  query get_tvl {
     balancers(
-      first: 5,
-      block: { number: $block }
+      first: 1
     ) {
       totalLiquidity,
-      totalSwapVolume
+      totalSwapVolume,
+      pools {
+        tokens {
+          address
+        }
+      }
     }
   }
   `;
-  const results = await graphQLClient.request(query, {
-    block
-  })
-  return results.balancers[0].totalLiquidity;
+  const results = await graphQLClient.request(query)
+  return results.balancers[0].pools.map(i => i.tokens.map(i => i.address)).flat();
 }
 
-async function tvl(timestamp, block, chainBlocks) {
-  let balances = toUSDTBalances(await getLiquidity(await getBlock(timestamp, "cronos", chainBlocks)));
+async function tvl(timestamp, block, chainBlocks, { api }) {
+  return sumTokens2({
+    api,
+    owner: '0x92631e0e84ff01853ef1bb88fc9c9f7d1e1af1ca',
+    tokens: await getTokens(),
+  })
+}
 
+async function pool2(timestamp, block, chainBlocks) {
+  const balances = {}
   //Farm MEERKAT-LP on mm.finance
   await addFundsInMasterChef(
     balances,
@@ -49,22 +57,7 @@ async function tvl(timestamp, block, chainBlocks) {
     true,
     ness,
   );
-
   return balances;
-}
-
-async function pool2(timestamp, block, chainBlocks) {
-  block = chainBlocks.cronos
-  const cro = "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23";
-
-  return farmLPBalance(
-    'cronos',
-    block,
-    masterChef,
-    ness_cro,
-    cro,
-    ness,
-  );
 }
 
 module.exports = {

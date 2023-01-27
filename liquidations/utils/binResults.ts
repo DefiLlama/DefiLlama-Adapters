@@ -20,6 +20,10 @@ export async function binResults(liqs: Liq[]) {
     .coins as {
     [address: string]: { decimals: number; price: number; symbol: string; timestamp: number };
   };
+  // coins api doesn't support decimals for coingecko keys
+  if (prices["coingecko:tezos"]) {
+    prices["coingecko:tezos"].decimals = 6;
+  }
   console.log(prices);
   const bins = Object.values(prices).reduce(
     (all, token) => ({

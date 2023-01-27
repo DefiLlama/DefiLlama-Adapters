@@ -32,19 +32,7 @@ const CHAIN_DATA = {
   },
 };
 
-const wantLockedTotalABI = {
-  "inputs": [],
-  "name": "wantLockedTotal",
-  "outputs": [
-    {
-      "internalType": "uint256",
-      "name": "",
-      "type": "uint256"
-    }
-  ],
-  "stateMutability": "view",
-  "type": "function"
-}
+const wantLockedTotalABI = "uint256:wantLockedTotal"
 
 let _pools
 
@@ -99,6 +87,9 @@ async function bsc(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
+  hallmarks: [
+    [1656590400,"Protocol End"] // https://crystlfinance.medium.com/wrapping-up-crystl-finance-4743287a6bf
+  ],
   polygon: {
     tvl: polygon,
   },

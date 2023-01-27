@@ -31,6 +31,15 @@ const Asset_P05_mWOM = "0x1f502fF26dB12F8e41B373f36Dc0ABf2D7F6723E";
 const Asset_P06_WOM = "0xB5c9368545A26b91d5f7340205e5d9559f48Bcf8";
 const Asset_P06_qWOM = "0x87073ba87517E7ca981AaE3636754bCA95C120E4";
 
+// Innovation Pool
+const Asset_P07_BUSD = "0xcf434949c242c2d32514ba971947bd3700efb015";
+const Asset_P07_FRAX = "0x47ab513f97e1cc7d7d1a4db4563f1a0fa5c371eb";
+const Asset_P07_TUSD = "0x3c8e744f6c4ed2c9d82e33d69ddcc5961aa05367";
+
+// // BNBx Pool
+const Asset_P08_WBNB = '0x0321d1d769cc1e81ba21a157992b635363740f86'
+const Asset_P08_BNBx = '0x16b37225889a038fad42efded462821224a509a7'
+
 // underlyingToken Address
 const BUSD = "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56";
 const DAI = "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3";
@@ -45,6 +54,8 @@ const WOM = "0xAD6742A35fB341A9Cc6ad674738Dd8da98b94Fb1";
 const wmxWOM = "0x0415023846Ff1C6016c4d9621de12b24B2402979";
 const mWOM = "0x027a9d301fb747cd972cfb29a63f3bda551dfc5c";
 const qWOM = "0x0fE34B8aaAf3f522A6088E278936D10F934c0b19";
+const FRAX = "0x90C97F71E18723b0Cf0dfa30ee176Ab653E89F40";
+const TUSD = "0x14016E85a25aeb13065688cAFB43044C2ef86784";
 const chain = "bsc";
 
 async function tvl(_t, _, { bsc: block }) {
@@ -65,6 +76,11 @@ async function tvl(_t, _, { bsc: block }) {
     [mWOM, Asset_P05_mWOM],
     [WOM, Asset_P06_WOM],
     [qWOM, Asset_P06_qWOM],
+    [BUSD, Asset_P07_BUSD],
+    [FRAX, Asset_P07_FRAX],
+    [TUSD, Asset_P07_TUSD],
+    [WBNB, Asset_P08_WBNB],
+    [BNBx, Asset_P08_BNBx]
   ];
   let balances = await sumTokens2({ tokensAndOwners: toa, chain, block });
 

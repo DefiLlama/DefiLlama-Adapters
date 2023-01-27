@@ -5,5 +5,8 @@ async function fetch() {
 }
 
 module.exports = {
+  secret: {
+    fetch
+  },
   fetch
 }

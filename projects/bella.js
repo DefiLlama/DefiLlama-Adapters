@@ -22,11 +22,11 @@ async function tvl(ts, block) {
   const tokenCalls = Object.values(bVaults).map(a => ({ target: a.address }))
 
   const { output: tokenResponse } = await sdk.api.abi.multiCall({
-    block, calls: tokenCalls, abi: bVaultAbi.find(i => i.name === 'token')
+    block, calls: tokenCalls, abi: bVaultAbi.token
   })
 
   const { output: underlyingBalances } = await sdk.api.abi.multiCall({
-    block, calls: tokenCalls, abi: bVaultAbi.find(i => i.name === 'underlyingBalance')
+    block, calls: tokenCalls, abi: bVaultAbi.underlyingBalance
   })
 
   const balances = {}

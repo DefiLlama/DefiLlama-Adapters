@@ -75,8 +75,9 @@ Object.keys(config).forEach(chain => {
         '0x8706dc2067d64651620d66052bc065da1c81327f', // disabled Error: Returned error: execution reverted: VaultToken: INSUFFICIENT_RESERVES
         '0x1c669f6caaf59dbfe86e9d8b9fb694d4d06611d5', // disabled Error: Returned error: execution reverted: VaultToken: INSUFFICIENT_RESERVES
         '0x6cce00972bff06ec4fed6602bd22f65214e14d1f', // Not a smart contract
-        '0x9bf544e9e96033d1c8b667824844a40aa6c2132a', //
+        // '0x9bf544e9e96033d1c8b667824844a40aa6c2132a', //
         '0x7eac79383c42bc16e33cd100008ee6d5e491680f', //
+        '0x05b2bcb2295a6f07c5d490128b6b4787c8c4464e', //
       ]
     })
     return { balances, borrowedBalances }

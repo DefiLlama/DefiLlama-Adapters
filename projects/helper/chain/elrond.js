@@ -4,8 +4,8 @@ const { transformBalances } = require('../portedTokens')
 const sdk = require('@defillama/sdk')
 const chain = 'elrond'
 
-const API_HOST = 'https://api.elrond.com'
-const MAIAR_GRAPH = 'https://graph.maiar.exchange/graphql'
+const API_HOST = 'https://api.multiversx.com'
+const MAIAR_GRAPH = 'http://graph.xexchange.com/graphql'
 const unknownTokenList = ["CYBER-489c1c", "CPA-97530a"]
 let prices
 
@@ -55,7 +55,12 @@ async function getTokens({ address, balances = {}, tokens = [], blacklistedToken
   return balances
 }
 
-async function sumTokens({ owners = [], tokens = [], balances = {}, blacklistedTokens = [], }) {
+async function sumTokens({ owners = [], tokens = [], balances = {}, blacklistedTokens = [], tokensAndOwners = []}) {
+  if (tokensAndOwners.length) {
+    await Promise.all(tokensAndOwners.map(([token, owner]) => sumTokens({ owners: [owner], tokens: [token], balances, blacklistedTokens, })))
+    return balances
+  }
+
   await Promise.all(owners.map(i => getTokens({ address: i, balances, tokens, blacklistedTokens, })))
   if (!tokens.length || tokens.includes(TOKENS.null))
     await Promise.all(owners.map(async i => {

@@ -30,6 +30,9 @@ async function staking(timestamp) {
 
 
 module.exports = {
+  hallmarks: [
+    [1652659213,"Kill Switch"]
+  ],
   thorchain:{
     fetch,
     staking

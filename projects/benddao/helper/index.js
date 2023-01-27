@@ -12,16 +12,14 @@ async function getTVL(balances, chain, timestamp, chainBlocks) {
       sdk.api.abi.call({
         target: address.UiPoolDataProvider[chain],
         params: [address.LendPoolAddressProvider[chain]],
-        abi: abi.UiPoolDataProvider.find(
-          (a) => a.name === "getSimpleReservesData"
-        ),
+        abi: abi.UiPoolDataProvider.getSimpleReservesData,
         block,
         chain,
       }),
       sdk.api.abi.call({
         target: address.UiPoolDataProvider[chain],
         params: [address.LendPoolAddressProvider[chain]],
-        abi: abi.UiPoolDataProvider.find((a) => a.name === "getSimpleNftsData"),
+        abi: abi.UiPoolDataProvider.getSimpleNftsData,
         block,
         chain,
       }),
@@ -49,9 +47,7 @@ async function getBorrowed(balances, chain, timestamp, chainBlocks) {
     sdk.api.abi.call({
       target: address.UiPoolDataProvider[chain],
       params: [address.LendPoolAddressProvider[chain]],
-      abi: abi.UiPoolDataProvider.find(
-        (a) => a.name === "getSimpleReservesData"
-      ),
+      abi: abi.UiPoolDataProvider.getSimpleReservesData,
       block,
       chain,
     }),

@@ -1,7 +1,6 @@
 const sdk = require("@defillama/sdk");
 const BigNumber = require('bignumber.js')
 const { transformBalances } = require('../helper/portedTokens.js')
-const getEntireSystemCollAbi = require("./getEntireSystemColl.abi.json")
 const { staking } = require('../helper/staking')
 
 const {getLiquityTvl} = require('../helper/liquity')
@@ -39,7 +38,7 @@ const iotexTvl = async (timestamp, ethBlock, chainBlocks) => {
     let getCollResults = await sdk.api.abi.multiCall({
         block: chainBlocks.iotex,
         calls: calls,
-        abi: getEntireSystemCollAbi,
+        abi: "uint256:getEntireSystemColl",
         chain: 'iotex'
     });
 
