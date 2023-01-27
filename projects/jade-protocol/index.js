@@ -42,6 +42,6 @@ const { sumTokensExport, nullAddress, } = require('../helper/unwrapLPs')
      const { owners, tokens } = config[chain]
      module.exports[chain] = {
        treasury: sumTokensExport({owners, tokens }),
-       tvl: () => 0
+       tvl: () => ({})
      }
    })

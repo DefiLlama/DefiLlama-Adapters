@@ -8,6 +8,7 @@ const {
   fixBalancesTokens,
   unsupportedGeckoChains,
   ibcChains,
+  distressedAssts,
 } = require('./tokenMapping')
 
 async function transformFantomAddress() {
@@ -36,6 +37,7 @@ async function transformArbitrumAddress() {
 
 async function transformInjectiveAddress() {
   return addr => {
+    addr = addr.replaceAll('/', ':')
     if (addr.startsWith('peggy0x'))
       return `ethereum:${addr.replace('peggy', '')}`
     return `injective:${addr}`;
@@ -43,7 +45,8 @@ async function transformInjectiveAddress() {
 }
 
 function fixBalances(balances, mapping, { chain, } = {}) {
-  const removeUnmapped = unsupportedGeckoChains.includes(chain) // TODO: fix server-side, remove this
+  // const removeUnmapped = unsupportedGeckoChains.includes(chain) // TODO: fix server-side, remove this
+  const removeUnmapped = false
 
   Object.keys(balances).forEach(token => {
     let tokenKey = stripTokenHeader(token, chain)
@@ -101,6 +104,7 @@ function transformChainAddress(
 ) {
 
   return addr => {
+    if (distressedAssts.has(addr.toLowerCase())) return 'ethereum:0xbad'
     if (['solana'].includes(chain)) {
       return mapping[addr] ? mapping[addr] : `${chain}:${addr}`
     }
@@ -127,11 +131,17 @@ async function getChainTransform(chain) {
     return transformChainAddress(transformTokens[chain], chain)
 
   return addr => {
-    addr = normalizeAddress(addr, chain)
+    if (addr.includes('ibc/')) return addr.replace(/.*ibc\//, 'ibc/').replaceAll('/', ':')
+    if (addr.startsWith('coingecko:')) return addr
+    if (addr.startsWith(chain + ':') || addr.startsWith('ibc:')) return addr
+    if (distressedAssts.has(addr.toLowerCase())) return 'ethereum:0xbad'
+
+    addr = normalizeAddress(addr, chain).replaceAll('/', ':')
     const chainStr = `${chain}:${addr}`
+    if ([...ibcChains, 'ton'].includes(chain)) return chainStr
+    if (chain === 'cardano' && addr === 'ADA') return 'coingecko:cardano'
     if (chain === 'near' && addr.endsWith('.near')) return chainStr
     if (chain === 'tezos' && addr.startsWith('KT1')) return chainStr
-    if (ibcChains.includes(chain) && addr.startsWith('ibc/')) return chainStr
     if (chain === 'terra2' && addr.startsWith('terra1')) return chainStr
     if (chain === 'algorand' && /^\d+$/.test(addr)) return chainStr
     if (addr.startsWith('0x') || ['solana'].includes(chain)) return chainStr
