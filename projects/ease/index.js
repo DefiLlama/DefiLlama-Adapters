@@ -1,7 +1,7 @@
 const sdk = require('@defillama/sdk');
-const axios = require("axios");
 const { default: BigNumber } = require('bignumber.js');
 const { stakings } = require("../helper/staking");
+const { getConfig } = require('../helper/cache')
 
 const VAULT_LIST_URL = 'https://devapi.ease.org/api/v1/vaults';
 const EASE = "0xEa5eDef1287AfDF9Eb8A46f9773AbFc10820c61c";
@@ -16,37 +16,21 @@ const STAKING_CONTRACTS = [
 
 const RCA_SHIELD = {
   abis: {
-    uBalance: {
-      constant: true,
-      inputs: [],
-      name: "uBalance",
-      outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-      payable: false,
-      stateMutability: "view",
-      type: "function",
-    },
+    uBalance:  "uint256:uBalance"
   },
 };
 
 const ARNXM_VAULT = {
   abis: {
-    aum: {
-      constant: true,
-      inputs: [],
-      name: "aum",
-      outputs: [{ internalType: "uint256", name: "aumTotal", type: "uint256" }],
-      payable: false,
-      stateMutability: "view",
-      type: "function",
-    },
+    aum: "uint256:aum",
   },
   address: "0x1337DEF1FC06783D4b03CB8C1Bf3EBf7D0593FC4",
 }
 
 async function tvl(_, block) {
   //get TVL of Uninsurance vaults
-  let resp = await axios.get(VAULT_LIST_URL);
-  let vaults = resp.data
+  let resp = await getConfig('ease', VAULT_LIST_URL);
+  let vaults = resp
   const balances = {};
   const { output: bal } = await sdk.api.abi.multiCall({
     abi: RCA_SHIELD.abis.uBalance,

@@ -1,11 +1,9 @@
 const sdk = require('@defillama/sdk');
-const token0 = require('./abis/token0.json');
-const token1 = require('./abis/token1.json');
-const getReserves = require('./abis/getReserves.json');
+const token0 = "address:token0";
+const token1 = "address:token1";
+const getReserves ='function getReserves() view returns (uint112 _reserve0, uint112 _reserve1)';
 const factoryAbi = require('./abis/factory.json');
 const stableSwapAbi = require('./abis/StableSwap.json');
-
-const { getBlock } = require('../helper/getBlock');
 
 
 async function getStableSwapPool(
@@ -58,7 +56,7 @@ async function getStableSwapPool(
         });
     });
     return tokenAmountArray;
-};
+}
 
 async function requery(results, chain, block, abi) {
     if (results.some(r => !r.success)) {
@@ -101,7 +99,7 @@ function calculateMoonriverTvl (
     stableSwapContractAddress = []
 ) {
     return async (timestamp, ethBlock, chainBlocks) => {
-        const block = await getBlock(timestamp, chain, chainBlocks, allowUndefinedBlock)
+        const block = chainBlocks[chain]
 
         let pairAddresses;
         const pairLength = (await sdk.api.abi.call({
@@ -227,7 +225,7 @@ function calculateUsdTvl(
     const whitelist = whitelistRaw.map(t => t.toLowerCase())
     const coreAsset = coreAssetRaw.toLowerCase()
     return async (timestamp, ethBlock, chainBlocks) => {
-        const block = await getBlock(timestamp, chain, chainBlocks, allowUndefinedBlock)
+        const block = chainBlocks[chain]
 
         let pairAddresses;
         const pairLength = (await sdk.api.abi.call({

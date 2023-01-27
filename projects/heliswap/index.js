@@ -2,8 +2,7 @@ const axios = require("axios");
 
 const urlConfigs = {
   graphQLUrl: "https://heliswap-prod-362307.oa.r.appspot.com/query",
-  tokenListUrl:
-    "https://heliswap.infura-ipfs.io/ipfs/QmTkk1Cmvh3D8cQHKf4P8WovwRzSABWrDjo4a8gGxXKUrT",
+  tokenListUrl: "https://heliswap-api.ey.r.appspot.com/tokens/whitelisted/",
 };
 
 const axiosConfig = {
@@ -12,19 +11,10 @@ const axiosConfig = {
 };
 
 const getWhitelistedTokenAddresses = async () => {
-  let tokens = [];
-
   const response = await axios(urlConfigs.tokenListUrl);
-  const {
-    data: { tokens: whitelistedTokens },
-  } = response;
+  const { data: whitelistedTokens } = response;
 
-  tokens =
-    whitelistedTokens.length > 0
-      ? whitelistedTokens.map((token) => token.address)
-      : [];
-
-  return tokens;
+  return whitelistedTokens;
 };
 
 const tvl = async () => {
@@ -50,20 +40,11 @@ const tvl = async () => {
     data: requestData,
   };
 
-  const response = await axios(requestObject);
-
   const {
-    data: { data },
-  } = response;
+    data: { data: { poolsConsistingOf }}
+  } = await axios(requestObject);
 
-  totalTVL =
-    data && data.poolsConsistingOf && data.poolsConsistingOf?.length > 0
-      ? data.poolsConsistingOf.reduce((acc, pool) => {
-          acc = acc + Number(pool.tvl);
-
-          return acc;
-        }, 0)
-      : 0;
+  totalTVL = poolsConsistingOf.reduce((acc, pool) => (isNaN(+pool.tvl)) ? acc : acc + +pool.tvl, 0)
 
   return { tether: totalTVL };
 };

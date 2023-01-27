@@ -76,7 +76,7 @@ async function uniswapV1Market(balances, uniswapLendingPoolCore, block, borrowed
     const uniswapv1Calls = Object.keys(uniswapMarketTvlBalances).map(t => ({ target: t }));
     const [uniswapV1Tokens, uniswapV1EthBalance, uniswapV1Supplies] = await Promise.all([
         sdk.api.abi.multiCall({
-            abi: { "name": "tokenAddress", "outputs": [{ "type": "address", "name": "out" }], "inputs": [], "constant": true, "payable": false, "type": "function", "gas": 1413 },
+            abi: "address:tokenAddress",
             calls: uniswapv1Calls,
             block
         }),

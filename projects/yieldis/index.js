@@ -1,22 +1,6 @@
-const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
 const { GraphQLClient, gql } = require('graphql-request')
 const { transformArbitrumAddress } = require("../helper/portedTokens");
-const { getBlock } = require('../helper/getBlock')
-
-const wrappedAssetHandlers = {
-  // yvUSDC
-  '0xa354f35829ae975e850e23e9615b11da1b3dc4de': async (amount, block) => {
-    const pricePerShare = await sdk.api.abi.call({
-      target: '0xa354f35829ae975e850e23e9615b11da1b3dc4de',
-      abi: abi.pricePerShare,
-      block,
-    })
-
-    const usdcAmount = amount / (pricePerShare.output / 1e6)
-    return { amount: usdcAmount, asset: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48' }
-  },
-}
+const { getBlock } = require('../helper/http')
 
 const getTVL = async (subgraph, block, transformAddress = a => a) => {
   const endpoint = `https://api.thegraph.com/subgraphs/name/${subgraph}`
@@ -55,10 +39,7 @@ const getTVL = async (subgraph, block, transformAddress = a => a) => {
   for (const asset of data.assets) {
     let amount = (parseFloat(asset.totalCollateral) + parseFloat(asset.totalInPools)) * (10 ** asset.decimals)
     let assetAddress = asset.id
-    if (wrappedAssetHandlers[assetAddress]) {
-      ({ amount, asset: assetAddress } = await wrappedAssetHandlers[assetAddress](amount, block))
-    }
-    const transformedAddr = await transformAddress(assetAddress)
+    const transformedAddr = transformAddress(assetAddress)
     output[transformedAddr] = (output[transformedAddr] || 0) + amount
   }
 
@@ -70,11 +51,7 @@ const getTVL = async (subgraph, block, transformAddress = a => a) => {
     let amount = pool.fyTokenReserves * pool.currentFYTokenPriceInBase * (10 ** pool.fyToken.underlyingAsset.decimals)
     let assetAddress = pool.fyToken.underlyingAddress
 
-    if (wrappedAssetHandlers[assetAddress]) {
-      ({ amount, asset: assetAddress } = await wrappedAssetHandlers[assetAddress](amount, block))
-    }
-
-    const transformedAddr = await transformAddress(assetAddress)
+    const transformedAddr = transformAddress(assetAddress)
     output[transformedAddr] = (output[transformedAddr] || 0) + amount
   }
 
@@ -82,7 +59,6 @@ const getTVL = async (subgraph, block, transformAddress = a => a) => {
 }
 
 const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
-  const block = await getBlock(timestamp, 'ethereum', chainBlocks)
   return getTVL('yieldprotocol/v2-mainnet', ethBlock)
 };
 

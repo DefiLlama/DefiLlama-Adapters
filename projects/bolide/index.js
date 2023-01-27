@@ -11,19 +11,7 @@ const VAULTS = {
   ALTCOINS: '0x5d735e9ffE9664B80c405D16921912E5B989688C',
 }
 
-const getTotalDepositABI = {
-  'inputs': [],
-  'name': 'getTotalDeposit',
-  'outputs': [
-    {
-      'internalType': 'uint256',
-      'name': '',
-      'type': 'uint256'
-    }
-  ],
-  'stateMutability': 'view',
-  'type': 'function'
-}
+const getTotalDepositABI = 'uint256:getTotalDeposit'
 
 async function tvl(ts, _block, chainBlocks) {
   let totalUsdt = new BigNumber(0);

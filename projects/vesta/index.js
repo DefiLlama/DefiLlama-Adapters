@@ -1,6 +1,4 @@
 const sdk = require("@defillama/sdk");
-const getEntireSystemCollAbi = require("./getEntireSystemColl.abi.json");
-const vestaFarmingAbi = require("./vestaFarming.abi.json");
 const { sumBalancerLps, unwrapCrv } = require("../helper/unwrapLPs.js");
 const { transformArbitrumAddress } = require("../helper/portedTokens");
 
@@ -33,7 +31,8 @@ async function tvl(_, block, chainBlocks) {
   const balances = {}
   const calls = Object.values(VaultTokens).map(token => ({ params: [token] }))
   const { output } = await sdk.api.abi.multiCall({
-    calls, block, chain: 'arbitrum', target: TROVE_MANAGER_ADDRESS, abi: getEntireSystemCollAbi,
+    calls, block, chain: 'arbitrum', target: TROVE_MANAGER_ADDRESS, abi: "function getEntireSystemColl(address _asset) view returns (uint256 entireSystemColl)"
+    ,
   })
 
   output.forEach(({ input: { params: [token] }, output }) => {
@@ -45,7 +44,7 @@ async function tvl(_, block, chainBlocks) {
   })
 
   return balances;
-};
+}
 
 async function pool2(_timestamp, block, chainBlocks) {  
   block = chainBlocks.arbitrum;
@@ -54,12 +53,12 @@ async function pool2(_timestamp, block, chainBlocks) {
   await sumBalancerLps(balances, [[LP_VSTA_ETH_ADDRESS, VSTA_FARMING_ADDRESS]], chainBlocks.arbitrum, chain, transform);
 
   const curveBalances = (
-    await sdk.api.abi.call({ target: VST_FARMING_ADDRESS, abi: vestaFarmingAbi, block, params: [], chain, })
+    await sdk.api.abi.call({ target: VST_FARMING_ADDRESS, abi: "uint256:totalStaked", block, params: [], chain, })
   ).output;
 
   await unwrapCrv(balances, LP_VST_FRAX_ADDRESS, curveBalances, block, chain, transform);
   return balances;
-};
+}
 
 module.exports = {
   arbitrum: {

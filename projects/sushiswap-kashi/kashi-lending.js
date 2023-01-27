@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { request, gql } = require("graphql-request");
-const { getBlock } = require("../helper/getBlock");
+const { getBlock } = require("../helper/http");
 const { getChainTransform } = require("../helper/portedTokens");
 const { BigNumber } = require("ethers");
 
@@ -20,17 +20,7 @@ const bentoboxes = {
   avax: "0x0711b6026068f736bae6b213031fce978d48e026",
 };
 
-const toAmountAbi = {
-  inputs: [
-    { internalType: "contract IERC20", name: "token", type: "address" },
-    { internalType: "uint256", name: "share", type: "uint256" },
-    { internalType: "bool", name: "roundUp", type: "bool" },
-  ],
-  name: "toAmount",
-  outputs: [{ internalType: "uint256", name: "amount", type: "uint256" }],
-  stateMutability: "view",
-  type: "function",
-};
+const toAmountAbi ='function toAmount(address token, uint256 share, bool roundUp) view returns (uint256 amount)'
 
 const kashiQuery = gql`
   query get_pairs($block: Int) {
@@ -101,8 +91,8 @@ function kashiLending(chain, borrowed) {
       calls, chain, block, abi: toAmountAbi, target: bentoboxes[chain],
     })
 
-    output.forEach(({ input: { params: [token]}, output: balance}) => {
-      sdk.util.sumSingleBalance(balances, transform(token), balance)
+    output.forEach(({ input: { params: [token]}, output: balance, success, }) => {
+      if(success) sdk.util.sumSingleBalance(balances, transform(token), balance)
     })
 
     return balances;

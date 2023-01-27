@@ -1,5 +1,5 @@
 const { request, gql } = require('graphql-request');
-const { getBlock } = require('../helper/getBlock');
+const { getBlock } = require('../helper/http');
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { log } = require('../helper/utils')
 
@@ -50,7 +50,7 @@ function v3TvlPaged(chain) {
     const blacklisted = blacklists[chain] || []
 
     do {
-      const res = await request(graphs[chain], graphQueryPaged, { lastId, block: block - 500 });
+      const res = await request(graphs[chain], graphQueryPaged, { lastId, block: block - 5000 });
       pools = res.pools
       const tokensAndOwners = pools.map(i => ([[i.token0.id, i.id], [i.token1.id, i.id]])).flat()
       log(chain, block, lastId, pools.length)

@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk')
-const { fetchItemList, getUniqueAddresses } = require('../helper/utils')
-const { get } = require('../helper/http')
+const { getUniqueAddresses } = require('../helper/utils')
+const { getConfig } = require('../helper/cache')
 const archimedesAbi = require('./archimedes.json')
 
 const baseUrl = 'https://api.2pi.network/v1'
@@ -12,7 +12,7 @@ const chains = {
 }
 
 const fetchChainAddresses = async chain => {
-  const { data: { archimedes } } = await get(`${baseUrl}/addresses/${chain}`)
+  const { data: { archimedes } } = await getConfig(`archimedes/${chain}`, `${baseUrl}/addresses/${chain}`)
   return getUniqueAddresses(archimedes)
 }
 
@@ -20,7 +20,7 @@ const fetchTvl = chain => {
   return async (_timestamp, _block, chainBlocks) => {
     const block = chainBlocks[chain]
     const addresses = await fetchChainAddresses(chains[chain])
-    let pools = await Promise.all(addresses.map(i => fetchItemList({ chain, block, target: i, lengthAbi: archimedesAbi['poolLength'], itemAbi: archimedesAbi['poolInfo'] })))
+    let pools = await Promise.all(addresses.map(i => sdk.api2.abi.fetchList({ withMetadata: true, chain, block, target: i, lengthAbi: archimedesAbi['poolLength'], itemAbi: archimedesAbi['poolInfo'] })))
     pools = pools.flat()
     const wantTokens = pools.map(i => i.output.want)
     const calls = pools.map(i => i.input)

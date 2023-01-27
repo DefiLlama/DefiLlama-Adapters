@@ -8,8 +8,6 @@ const graphUrls = {
 };
 
 module.exports = {
-  timetravel: true,
-  doublecounted: false,
   misrepresentedTokens: true,
   methodology: 'We count liquidity on the pairs and we get that information from the "traderjoe-xyz/exchange" subgraph. The staking portion of TVL includes the JoeTokens within the JoeBar contract.',
   avax:{

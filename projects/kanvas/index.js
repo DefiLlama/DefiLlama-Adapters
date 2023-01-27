@@ -1,10 +1,9 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const token0Abi = require("../helper/abis/token0.json");
-const token1Abi = require("../helper/abis/token1.json");
+const token0Abi = 'address:token0'
+const token1Abi = 'address:token1'
 const {unwrapUniswapLPs} = require("../helper/unwrapLPs");
 const {staking} = require("../helper/staking");
-const BigNumber = require("bignumber.js");
 
 const kanvas = "0xe005097ad7eea379ce404011eef68359b052cd0a";
 const stakingAddress = "0x34d2Cfb257cCf7EFDC41DB9a824ac314da80Bae8";

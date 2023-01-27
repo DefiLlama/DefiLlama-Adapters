@@ -36,6 +36,13 @@ const lionStakingSecondRound = {
   }
 }
 
+const lionStakingThirdRound = {
+  kava: {
+    staking: sumTokensExport({ chain: 'kava', owner: '0x83E315fC68F97EaFf04468D05eb084C9eD36f649', tokens: ['0x990e157fC8a492c28F5B50022F000183131b9026'],lps: ["0x59e38a5799B64fE17c5fAb7E0E5396C15E2acb7b"], useDefaultCoreAssets: true, })
+  }
+}
+
+
 
 //address tiger stake: 0x2d4F96b3cdAEB79165459199B93baD49A8533C23
 const tigerStaking = {
@@ -44,4 +51,4 @@ const tigerStaking = {
   }
 }
 
-module.exports = mergeExports([module.exports, lionStaking,lionStakingSecondRound, tigerStaking])
+module.exports = mergeExports([module.exports, lionStaking,lionStakingSecondRound, tigerStaking, lionStakingThirdRound])
