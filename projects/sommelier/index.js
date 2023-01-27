@@ -26,7 +26,7 @@ const cellarsV0816 = [
 const REAL_YIELD_USD = "0x97e6e0a40a3d02f12d1cec30ebfbae04e37c119e";
 const cellarsV2 = [{ id: REAL_YIELD_USD, startBlock: 16431804 }];
 
-async function tvl(timestamp, block, chainBlocks) {
+async function tvl(timestamp, block, chainBlocks, { api }) {
   const balances = {};
   const baseOptions = { balances, chainBlocks };
 
@@ -44,6 +44,7 @@ async function tvl(timestamp, block, chainBlocks) {
 
   await v2.sumTvl({
     ...baseOptions,
+    api,
     cellars: filterActiveCellars(cellarsV2, block),
   });
 
