@@ -153,14 +153,20 @@ async function tvl(timestamp, block, chainBlocks) {
 
     for (let i = 0; i < addresses.vaultandCollateral.length; i++) {
         if (vaultManagementWindows[i].output === true) {
-            sdk.util.sumSingleBalance(balances, `arbitrum:${addresses.vaultandCollateral[i][1]}`, vaultSnapshots[i].output);
+            sdk.util.sumSingleBalance(balances, `${chain}:${addresses.vaultandCollateral[i][1]}`, vaultSnapshots[i].output);
         } else if (vaultAssetBalances[i].success === true) {
-            sdk.util.sumSingleBalance(balances, `arbitrum:${addresses.vaultandCollateral[i][1]}`, vaultAssetBalances[i].output);
+            sdk.util.sumSingleBalance(balances, `${chain}:${addresses.vaultandCollateral[i][1]}`, vaultAssetBalances[i].output);
         } else {
-            sdk.util.sumSingleBalance(balances, `arbitrum:${addresses.vaultandCollateral[i][1]}`, vaultBalances[i].output);
+            sdk.util.sumSingleBalance(balances, `${chain}:${addresses.vaultandCollateral[i][1]}`, vaultBalances[i].output);
         }
     }
 
+    const trackerBalances = await Promise.all(Object.values(addresses.trackers).map(tracker => 
+        sdk.api2.abi.call({ target: tracker.token, params: tracker.holder, chain, block, abi: 'erc20:balanceOf' })
+    ))
+    Object.values(addresses.trackers).map((tracker, i) => 
+        sdk.util.sumSingleBalance(balances, `${chain}:${tracker.token}`, trackerBalances[i])
+    )
     return balances;
 }
 
@@ -178,3 +184,4 @@ module.exports = {
         staking: stakings(addresses.jonesStaking, addresses.jones, "arbitrum")
     }
 }
+// node test.js projects/jones-dao/index.js
