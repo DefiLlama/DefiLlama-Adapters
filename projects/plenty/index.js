@@ -1,12 +1,12 @@
 const { sumTokens2, } = require('../helper/chain/tezos')
-const { get } = require("../helper/http")
+const { getConfig } = require("../helper/cache")
 
 async function tvl() {
   return sumTokens2({ owners: await getDexes(), includeTezos: true, })
 }
 
 async function getDexes() {
-  const data = await get("https://config.mainnet.plenty.network/pools")
+  const data = await getConfig('tezos/plenty', "https://config.mainnet.plenty.network/pools")
   return Object.keys(data)
 }
 
