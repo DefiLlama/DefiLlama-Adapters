@@ -67,7 +67,7 @@ module.exports = {
   misrepresentedTokens: true,
   timetravel: false,
   hallmarks: [
-    [1588610042, "UNI V2 Launch"]
+    [1588610042, "UNI V2 Launch"],
     [1598412107, "SushiSwap launch"],
     [1599535307, "SushiSwap migration"],
     [1600226507, "LM starts"],
