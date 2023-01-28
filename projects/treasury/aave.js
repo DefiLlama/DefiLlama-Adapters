@@ -10,7 +10,6 @@ module.exports = treasuryExports({
     tokens: [ 
         nullAddress,
         '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',//USDC
-        '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9',//AAVE
         '0x028171bca77440897b824ca71d1c56cac55b68a3',// aDAI
         '0x3ed3b47dd13ec9a98b44e6204a523e766b225811',// aUSDT
         '0xBcca60bB61934080951369a648Fb03DF4F96263C', // aUSDC
