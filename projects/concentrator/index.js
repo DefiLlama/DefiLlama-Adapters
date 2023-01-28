@@ -42,7 +42,7 @@ async function getFarmLpTvl(balances, block) {
     abi: 'erc20:totalSupply',
     params: []
   })).output;
-  sdk.util.sumSingleBalance(balances, chain + ':' + farmData.addresses.lpToken, ctrLpTotalSupply)
+  sdk.util.sumSingleBalance(balances, farmData.addresses.lpToken, ctrLpTotalSupply, chain)
 }
 
 async function tvl(timestamp, block) {
@@ -105,7 +105,7 @@ async function getAFXSInfo(balances, block) {
     abi: AladdinAFXSABI.totalAssets,
   })).output;
 
-  sdk.util.sumSingleBalance(balances, chain + ':' + cvxfxsCrvInfo.lpToken, aFXSTotalUnderlying)
+  sdk.util.sumSingleBalance(balances, cvxfxsCrvInfo.lpToken, aFXSTotalUnderlying, chain)
 }
 
 async function getAfrxETHInfo(balances, block) {
@@ -117,7 +117,7 @@ async function getAfrxETHInfo(balances, block) {
     block,
     abi: AladdinAFXSABI.totalAssets,
   })).output;
-  sdk.util.sumSingleBalance(balances, chain + ':' + ethFrxETHCrvInfo.lpToken, aFrxETHTotalUnderlying)
+  sdk.util.sumSingleBalance(balances, ethFrxETHCrvInfo.lpToken, aFrxETHTotalUnderlying, chain)
 }
 
 async function getAbcCVXInfo(balances, block) {
