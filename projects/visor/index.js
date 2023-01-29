@@ -146,7 +146,7 @@ async function tvlUniV3(timestamp, chainBlocks, chain) {
 
   if (chain.includes("_")) {
     chain = chain.split("_")[1];
-  };
+  }
 
   const hypervisorAddresses = [];
   const token0Addresses = [];
@@ -216,7 +216,7 @@ async function tvlUniV3_onchain(timestamp, chainBlocks, chain) {
 
   if (chain.includes("_")) {
     chain = chain.split("_")[1];
-  };
+  }
 
   const totalHypervisors_count = await sdk.api.abi.call({
     chain: chain,
@@ -231,7 +231,7 @@ async function tvlUniV3_onchain(timestamp, chainBlocks, chain) {
 
   for (let i = 0; i < totalHypervisors_count.output; i++) {
     // get hypervisor address
-    hype_id = await sdk.api.abi.call({
+    let hype_id = await sdk.api.abi.call({
       chain: chain,
       target: target,
       abi: hypeRegistry.hypeByIndex,
@@ -241,10 +241,10 @@ async function tvlUniV3_onchain(timestamp, chainBlocks, chain) {
     if (HYPERVISORS_RO[chain].includes(hype_id.output[0].toLowerCase())) {
       // loop
       continue
-    };
+    }
     hypervisorAddresses.push(hype_id.output[0].toLowerCase());
 
-    token0Address = await sdk.api.abi.call({
+    let token0Address = await sdk.api.abi.call({
       chain: chain,
       target: hype_id.output[0].toLowerCase(),
       abi: tokens["token0"],
@@ -252,7 +252,7 @@ async function tvlUniV3_onchain(timestamp, chainBlocks, chain) {
     });
     token0Addresses.push(token0Address.output.toLowerCase());
 
-    token1Address = await sdk.api.abi.call({
+    let token1Address = await sdk.api.abi.call({
       chain: chain,
       target: hype_id.output[0].toLowerCase(),
       abi: tokens["token1"],
@@ -260,7 +260,7 @@ async function tvlUniV3_onchain(timestamp, chainBlocks, chain) {
     });
     token1Addresses.push(token1Address.output.toLowerCase());
 
-  };
+  }
 
   const hypervisors = {};
   // add token0Addresses
