@@ -46,5 +46,12 @@
         "0x292d1587a6bb37e34574c9ad5993f221d8a5616c", 
         "0xeeb24360c8c7a87933d16b0075e10e1a30ad65b7", 
         "0x110a0f39b15D04f2F348B61Bd741429C7d188d3F"
-        ]
+        ],
+    
+    "trackers": { 
+        "uvert": { 
+            "holder": "0xEB23C7e19DB72F9a728fD64E1CAA459E457cfaca", 
+            "token": "0xa485a0bc44988B95245D5F20497CCaFF58a73E99" 
+            }
+        }
 }
