@@ -45,26 +45,30 @@ async function getFarmLpTvl(balances, block) {
   sdk.util.sumSingleBalance(balances, farmData.addresses.lpToken, ctrLpTotalSupply, chain)
 }
 
-async function tvl(timestamp, block) {
+async function tvl(timestamp, block, _, { api }) {
   let balances = {}
-  await getBalancerLpTvl(balances, block)
-  await getFarmLpTvl(balances, block)
-  await getAFXSInfo(balances, block)
-  await getAfrxETHInfo(balances, block)
-  await getAbcCVXInfo(balances, block)
-  const acrvTotalUnderlying = (await sdk.api.abi.call({
-    target: concentratorAcrv,
-    block,
-    abi: AladdinCRVABI.totalUnderlying,
-  })).output;
-  sdk.util.sumSingleBalance(balances, chain + ':' + cvxcrvAddress, acrvTotalUnderlying)
-
-  await getVaultInfo('old', balances, block)
-  await getVaultInfo('New', balances, block)
-  await getVaultInfo('afxs', balances, block)
-  await getVaultInfo('afrxETH', balances, block)
-  sdk.util.sumSingleBalance(balances, chain + ':' + cvxcrvAddress, acrvTotalUnderlying)
+  await Promise.all([
+    getBalancerLpTvl(balances, block),
+    getFarmLpTvl(balances, block),
+    getAFXSInfo(balances, block),
+    getAfrxETHInfo(balances, block),
+    getAbcCVXInfo(balances, block),
+    getVaultInfo('old', balances, block),
+    getVaultInfo('New', balances, block),
+    getVaultInfo('afxs', balances, block),
+    getVaultInfo('afrxETH', balances, block),
+    addACRVbalance(balances, api),
+  ])
   return balances
+}
+
+async function addACRVbalance(balances, api) {
+  const acrvTotalUnderlying = await api.call({
+    target: concentratorAcrv,
+    abi: AladdinCRVABI.totalUnderlying,
+  })
+  sdk.util.sumSingleBalance(balances, cvxcrvAddress, acrvTotalUnderlying, api.chain)
+
 }
 
 async function getVaultInfo(type, balances, block) {
