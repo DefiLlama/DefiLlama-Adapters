@@ -17,10 +17,14 @@ const treasuryContractsAvax = [
   "0x5ba7fd868c40c16f7aDfAe6CF87121E13FC2F7a0" //Aave V3 Treasury
 ];
 
-const aaveTreasuryOptimism = "0xB2289E329D2F85F1eD31Adbb30eA345278F21bcf";
-const aaveTreasuryArbitrum = "0x053D55f9B5AF8694c503EB288a1B7E552f590710";
+const aaveTreasuryOptimism = ["0xB2289E329D2F85F1eD31Adbb30eA345278F21bcf"]
+const aaveTreasuryArbitrum = ["0x053D55f9B5AF8694c503EB288a1B7E552f590710"]
 
-//const AAVE = "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9";
+const AAVE = "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9";
+const AAVEPOLYGON = '0xD6DF932A45C0f255f85145f286eA0b292B21C90B';
+const AAVEAVAX = '0x63a72806098bd3d9520cc43356dd78afe5d386d9';
+const AAVEARBITRUM = '0xba5ddd1f9d7f570dc94a51479a000e3bce967196';
+const AAVEOPTIMISM = '0x76fb31fb4af56892a25e32cfc43de717950c9278';
 
 
 module.exports = treasuryExports({
@@ -38,7 +42,6 @@ module.exports = treasuryExports({
         '0xdac17f958d2ee523a2206206994597c13d831ec7', // USDT
         '0x3ed3b47dd13ec9a98b44e6204a523e766b225811', // aUSDT
         '0x17a79792Fe6fE5C95dFE95Fe3fCEE3CAf4fE4Cb7', // ammUSDT
-        '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9', // AAVE
         '0xFFC97d72E13E01096502Cb8Eb52dEe56f74DAD7B', // aAAVE
         '0xA700b4eB416Be35b2911fd5Dee80678ff64fF6C9', // aEthAAVE
         '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', // WBTC
@@ -117,8 +120,7 @@ module.exports = treasuryExports({
         '0xF256CC7847E919FAc9B808cC216cAc87CCF2f47a', // aXSUSHI
      ],
     owners: treasuryContractsETH,
-    ownTokenOwners: treasuryContractsETH,
-    ownTokens: ["0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9"],
+    ownTokens: [AAVE],
   },
   polygon: {
     tokens: [
@@ -132,7 +134,6 @@ module.exports = treasuryExports({
       '0xc2132D05D31c914a87C6611C10748AEb04B58e8F', // USDT
       '0x60D55F02A771d515e077c9C2403a1ef324885CeC', // amUSDT
       '0x6ab707Aca953eDAeFBc4fD23bA73294241490620', // aPolUSDT
-      '0xD6DF932A45C0f255f85145f286eA0b292B21C90B', // AAVE
       '0x1d2a0E5EC8E5bBDCA5CB219e649B565d8e5c3360', // amAAVE
       '0xf329e36C7bF6E5E86ce2150875a84Ce77f477375', // aPolAAVE
       '0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6', // WBTC
@@ -176,8 +177,7 @@ module.exports = treasuryExports({
       '0x8437d7C167dFB82ED4Cb79CD44B7a32A1dd95c77', //aPolAGEUR
     ],
     owners: treasuryContractsMATIC,
-    ownTokenOwners: treasuryContractsMATIC,
-    ownTokens: [0xD6DF932A45C0f255f85145f286eA0b292B21C90B],
+    ownTokens: [AAVEPOLYGON],
   },
   avax: {
     tokens: [
@@ -190,7 +190,6 @@ module.exports = treasuryExports({
       '0xc7198437980c041c805a1edcba50c1ce5db95118', // USDT
       '0x532E6537FEA298397212F09A61e03311686f548e', // avUSDT
       '0x6ab707Aca953eDAeFBc4fD23bA73294241490620', // aAvaUSDT
-      '0x63a72806098bd3d9520cc43356dd78afe5d386d9', // AAVE
       '0xD45B7c061016102f9FA220502908f2c0f1add1D7', // avAAVE
       '0xf329e36C7bF6E5E86ce2150875a84Ce77f477375', // aAvaAAVE
       '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7', // WAVAX
@@ -214,8 +213,7 @@ module.exports = treasuryExports({
       '0x8ffDf2DE812095b1D19CB146E4c004587C0A0692', // aAvaBTC.b
     ],
     owners: treasuryContractsAvax,
-    ownTokenOwners: treasuryContractsAvax,
-    ownTokens: [0x63a72806098bd3d9520cc43356dd78afe5d386d9],
+    ownTokens: [AAVEAVAX],
   },
   arbitrum: {
     tokens: [
@@ -227,7 +225,6 @@ module.exports = treasuryExports({
       '0x625E7708f30cA75bfd92586e17077590C60eb4cD', // aArbUSDC
       '0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9', // USDT
       '0x6ab707Aca953eDAeFBc4fD23bA73294241490620', // aArbUSDT
-      '0xba5ddd1f9d7f570dc94a51479a000e3bce967196', // AAVE
       '0xf329e36C7bF6E5E86ce2150875a84Ce77f477375', // aArbAAVE
       '0xf97f4df75117a78c1a5a0dbb814af92458539fb4', // LINK
       '0x191c10Aa4AF7C30e871E70C95dB0E4eb77237530', // aArbLINK
@@ -237,8 +234,7 @@ module.exports = treasuryExports({
       '0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8', // aArbWETH
     ],
     owners: aaveTreasuryArbitrum,
-    ownTokenOwners: aaveTreasuryArbitrum,
-    ownTokens: ['0xba5ddd1f9d7f570dc94a51479a000e3bce967196'],
+    ownTokens: [AAVEARBITRUM],
   },
   optimism: {
     tokens: [
@@ -256,15 +252,11 @@ module.exports = treasuryExports({
       '0x625E7708f30cA75bfd92586e17077590C60eb4cD', // aOptUSDC
       '0x94b008aa00579c1307b0ef2c499ad98a8ce58e58', // USDT
       '0x6ab707Aca953eDAeFBc4fD23bA73294241490620', // aOptUSDT
-      '0x76fb31fb4af56892a25e32cfc43de717950c9278', // AAVE
       '0xf329e36C7bF6E5E86ce2150875a84Ce77f477375', // aOptAAVE
       '0x350a791bfc2c21f9ed5d10980dad2e2638ffa7f6', // LINK
       '0x191c10Aa4AF7C30e871E70C95dB0E4eb77237530', // aOptLINK
     ],
     owners: aaveTreasuryOptimism,
-    ownTokenOwners: aaveTreasuryOptimism,
-    ownTokens: ['0x76fb31fb4af56892a25e32cfc43de717950c9278'],
+    ownTokens: [AAVEOPTIMISM],
   },
 })
-
-//https://dune.com/queries/27231
