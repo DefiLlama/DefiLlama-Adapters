@@ -22,7 +22,7 @@ module.exports = {
     tvl: gmxExports({ vault: avalancheVault, })
   },
   hallmarks:[
-      [1639738285, "Avalanche GMX Launch"]
+      [1641556800, "Avalanche GMX Launch"]
   ],
   
 };
