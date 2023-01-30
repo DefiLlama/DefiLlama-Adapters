@@ -5,8 +5,6 @@ const abi = require("./abi.json");
 const addresses = require("./addresses.json");
 const { nullAddress, sumTokens2 } = require("../helper/unwrapLPs");
 
-const weth = '0x82af49447d8a07e3bd95bd0d56f35241523fbab1'
-
 const jTokenToToken = {
     "0x662d0f9ff837a51cf89a1fe7e0882a906dac08a3": "arbitrum:0x82af49447d8a07e3bd95bd0d56f35241523fbab1", // jETH
     "0x5375616bb6c52a90439ff96882a986d8fcdce421": "arbitrum:0x8d9ba570d6cb60c7e3e0f31343efe75ab8e65fb1", // jgOHM,
