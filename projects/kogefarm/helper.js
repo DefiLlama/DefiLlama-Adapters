@@ -178,21 +178,12 @@ async function unwrapCrvLPs(
   lpPositions,
   block,
   chain = 'ethereum',
-  transformAddress = (addr) => addr,
-  excludeTokensRaw=[]
 ) {
   await Promise.all(
     lpPositions.map(async (lp) => {
       const underlyingToken = lp.token
       const underlyingTokenBalance = lp.balance
-      try {
-        await unwrapCrv(balances, underlyingToken, underlyingTokenBalance, block, chain, transformAddress, excludeTokensRaw)
-      } catch (e) {
-        console.log(
-          `Failed to get data for Curve LP token at ${lp.token} on chain ${chain}`,
-        )
-        throw e
-      }
+      sdk.util.sumSingleBalance(balances,underlyingToken,underlyingTokenBalance, chain)
     }),
   )
 }
