@@ -1,10 +1,10 @@
 const sdk = require('@defillama/sdk');
 const { ethers } = require("ethers");
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { getLogs } = require('../helper/cache/getLogs')
 
 const VFDepositTokenBalanceAbi = "function depositTokenBalance(address owner) view returns (uint256)"
 const getAllOwnedAssetsAbi = require('./abis/getAllOwnedAssetsAbi.json');
-const getAllLoansAbi = "address[]:getAllLoans"
 const getPoolHelperAbi = "function getPoolInfo(address _address) view returns (tuple(uint256 pid, bool isActive, address token, address lp, uint256 sizeLp, address receipt, uint256 size, address rewards_addr, address helper))"
 
 const assetToAddressMapping = require('./mappings/assetToAddressMapping.json')
@@ -21,12 +21,20 @@ const vectorTokens = [
 ]
 
 async function tvl(timestamp, block, chainBlocks, { api }) {
+  const logs = await getLogs({
+    api,
+    target: SMART_LOANS_FACTORY_TUP,
+    topics: ['0x3c5330cb261eae74426865a348927ace59eae441485c71a110df598f825b6369'],
+    fromBlock: 23431194,
+  })
+  sdk.log('#accounts', logs.length)
+
   const tokensAndOwners = [
     [assetToAddressMapping.USDC, USDC_POOL_TUP_CONTRACT],
     [assetToAddressMapping.AVAX, WAVAX_POOL_TUP_CONTRACT],
   ]
 
-  const accounts = await api.call({ abi: getAllLoansAbi, target: SMART_LOANS_FACTORY_TUP })
+  const accounts = logs.map(i => `0x${i.topics[1].slice(26)}`)
   const ownedAssets = await api.multiCall({ abi: getAllOwnedAssetsAbi, calls: accounts })
   accounts.forEach((o, i) => {
     ownedAssets[i].forEach(tokenStr => {
