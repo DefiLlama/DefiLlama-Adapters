@@ -23,7 +23,7 @@ async function tvl(_, _1, _2, { api }) {
 }
 
 module.exports = {
-  methodology: "",
+  methodology: "We are computing the tvl from algoblocks staking pools.",
   bsc: {
     tvl,
   },
