@@ -10,7 +10,6 @@ module.exports = treasuryExports({
     tokens: [ 
         nullAddress,
         '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',//BUSD
-        '0x8ac9dc3358a2db19fdd57f433ff45d1fc357afb3',//NMS
      ],
     owners: [nemeTreasury1],
     ownTokenOwners: [nemeTreasury1],
