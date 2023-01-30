@@ -1,7 +1,6 @@
 const BigNumber = require('bignumber.js')
 const sdk = require('@defillama/sdk')
 const abi = require('./abi.json')
-const { unwrapCrv } = require('../helper/unwrapLPs')
 
 function transformAddressKF(chain = 'polygon') {
   return (addr) => {

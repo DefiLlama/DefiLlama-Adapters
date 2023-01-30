@@ -1,6 +1,5 @@
 const formatBytes32String = require('ethers').utils.formatBytes32String;
 const { sumTokens, } = require('../helper/unwrapLPs')
-const { resolveCrvTokens, } = require('../helper/resolveCrvTokens')
 const { transformPolygonAddress } = require('../helper/portedTokens')
 const ResolverAddr = "0x1E02cdbbA6729B6470de81Ad4D2cCA4c514521b9"
 
@@ -56,7 +55,6 @@ async function tvl(ts, _block, { polygon: block }) {
     }
   }))
 
-  await resolveCrvTokens(balances, block, chain, transform)
   return balances
 }
 
@@ -90,7 +88,7 @@ async function pool2(ts, _block, { polygon: block }) {
     '0x49d8136336e3feb7128c12172ae5ff78238a88be',
   ].map(t => [t, rewardAddr])
 
-  return sumTokens({}, toa, block, chain, undefined, { resolveLP: true, resolveCrv: true, })
+  return sumTokens({}, toa, block, chain, undefined, { resolveLP: true,})
 }
 
 module.exports = {
