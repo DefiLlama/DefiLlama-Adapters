@@ -10,7 +10,6 @@ module.exports = treasuryExports({
   ethereum: {
     tokens: [ 
         nullAddress,
-        '0xc770EEfAd204B5180dF6a14Ee197D99d808ee52d',//FOX
         '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',//USDC
         '0x6B175474E89094C44Da98b954EedeAC495271d0F',//DAI
         '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0',//LUSD
