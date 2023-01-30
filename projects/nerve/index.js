@@ -2,7 +2,7 @@ const sdk = require('@defillama/sdk')
 const BigNumber = require('bignumber.js')
 
 const { staking } = require('../helper/staking')
-const {unwrapCrv} = require('../helper/unwrapLPs')
+const {tokens} = require('../helper/tokenMapping')
 
 /*==================================================
   Addresses
@@ -80,14 +80,17 @@ async function tvl(timestamp, block, chainBlocks) {
         .plus(balanceOf.output)
         .toFixed()
   })
-  await unwrapCrv(balances, nrv3, balances['bsc:'+nrv3], chainBlocks['bsc'], 'bsc', (addr)=>`bsc:${addr}`)
-  delete balances['bsc:'+nrv3];
+  const nrvBal = balances['bsc:'+nrv3]
+  if (nrvBal)  {
+    delete balances['bsc:'+nrv3]
+    sdk.util.sumSingleBalance(balances,tokens.dai,nrvBal)
+  }
 
   return balances
 }
 
 module.exports = {
-  timetravel: true,
+  misrepresentedTokens: true,
   start: 1614556800, // March 1, 2021 00:00 AM (UTC)
   bsc:{
     tvl,
