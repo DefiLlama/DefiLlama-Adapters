@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk')
-const { sumTokens, sumTokens2, unwrapCrv, } = require('../helper/unwrapLPs')
+const { sumTokens, sumTokens2, } = require('../helper/unwrapLPs')
 const abi = require("../pendle/abi.json");
 const BigNumber = require('bignumber.js')
 const positions = require('./positions.json');

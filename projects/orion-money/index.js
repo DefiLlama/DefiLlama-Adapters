@@ -22,7 +22,7 @@ const anchor = [
 
 module.exports = {
     ethereum: {
-        tvl: sumTokensExport({ api, tokens: [...stable, ...anchor], owners: fundedContracts}),
+        tvl: sumTokensExport({ tokens: [...stable, ...anchor], owners: fundedContracts}),
     },
     methodology: "counts the value of each stablecoin, and interest-bearing anchor-stable, in the TransparentUpgradeableProxy contracts.",
 };
