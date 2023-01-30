@@ -29,7 +29,7 @@ const tvl = (chain, type) => {
 
         const tokens = getTokens(chain, type)
         const toa = tokens.map(t => holders.map(o => [t, o])).flat()
-        return sumTokens({}, toa, block, chain, undefined, { resolveCrv: true, resolveLP: true })
+        return sumTokens({}, toa, block, chain, undefined, { resolveLP: true })
     };
 };
 
