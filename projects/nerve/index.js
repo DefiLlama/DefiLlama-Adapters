@@ -2,7 +2,7 @@ const sdk = require('@defillama/sdk')
 const BigNumber = require('bignumber.js')
 
 const { staking } = require('../helper/staking')
-const {tokens} = require('../helper/tokenMapping')
+const {tokens: tokenMapping} = require('../helper/tokenMapping')
 
 /*==================================================
   Addresses
@@ -83,7 +83,7 @@ async function tvl(timestamp, block, chainBlocks) {
   const nrvBal = balances['bsc:'+nrv3]
   if (nrvBal)  {
     delete balances['bsc:'+nrv3]
-    sdk.util.sumSingleBalance(balances,tokens.dai,nrvBal)
+    sdk.util.sumSingleBalance(balances,tokenMapping.dai,nrvBal)
   }
 
   return balances
