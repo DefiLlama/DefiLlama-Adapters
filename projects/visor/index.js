@@ -29,7 +29,7 @@ const HYPE_REGISTRY = {
 };
 
 const HYPERVISORS_RO = {
-  ethereum: [],
+  ethereum: ["0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"],
   polygon: ["0xa9782a2c9c3fb83937f14cdfac9a6d23946c9255"],
   optimism: [],
   arbitrum: [],
@@ -65,6 +65,26 @@ const uniV3HypervisorQuery = gql`
   }
 `;
 
+const mergeDicts = (data1, data2) => {
+  const result = {};
+
+  Object.entries(data1).forEach(([key, value]) => {
+    if (result[key]) {
+      result[key] = (Number(result[key]) + Number(value)).toString();
+    } else {
+      result[key] = value;
+    }
+  });
+  Object.entries(data2).forEach(([key, value]) => {
+    if (result[key]) {
+      result[key] = (Number(result[key]) + Number(value)).toString();
+    } else {
+      result[key] = value;
+    }
+  });
+  return result;
+};
+
 async function tvlEthereum(timestamp, block, chainBlocks) {
   const balances = {};
 
@@ -86,7 +106,7 @@ async function tvlEthereum(timestamp, block, chainBlocks) {
 async function tvlPolygon(timestamp, block, chainBlocks) {
   let quickswap = await tvlUniV3_onchain(timestamp, chainBlocks, "algebra_polygon");
   let uniswap = await tvlUniV3_onchain(timestamp, chainBlocks, "polygon");
-  return Object.assign({}, quickswap, uniswap);
+  return mergeDicts(quickswap, uniswap);
 }
 
 async function tvlOptimism(timestamp, block, chainBlocks) {
