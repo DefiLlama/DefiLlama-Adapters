@@ -138,7 +138,7 @@ async function getChainTransform(chain) {
 
     addr = normalizeAddress(addr, chain).replaceAll('/', ':')
     const chainStr = `${chain}:${addr}`
-    if ([...ibcChains, 'ton', 'defichain'].includes(chain)) return chainStr
+    if ([...ibcChains, 'ton', 'defichain', 'waves'].includes(chain)) return chainStr
     if (chain === 'cardano' && addr === 'ADA') return 'coingecko:cardano'
     if (chain === 'near' && addr.endsWith('.near')) return chainStr
     if (chain === 'tezos' && addr.startsWith('KT1')) return chainStr
