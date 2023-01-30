@@ -9,7 +9,7 @@ const getReserves = 'function getReserves() view returns (uint112 _reserve0, uin
 
 const { getChainTransform, stripTokenHeader, getFixBalances, getFixBalancesSync, } = require('../portedTokens')
 const { getCoreAssets } = require('../tokenMapping')
-const { sumTokens2, } = require('../unwrapLPs')
+const { sumTokens2, nullAddress, } = require('../unwrapLPs')
 const { isLP, getUniqueAddresses, log } = require('../utils')
 
 async function getLPData({
@@ -44,6 +44,7 @@ async function getLPData({
 }
 
 async function getLPList({ lps, chain, block, lpFilter = isLP, cache = {}, }) {
+  lps = lps.filter(i => i !== nullAddress)
   if (!cache.symbol) cache.symbol = {}
   lps = lps.filter(i => i)
   const callArgs = lps.filter(i => !cache.symbol[i]).map(t => ({ target: t }));
