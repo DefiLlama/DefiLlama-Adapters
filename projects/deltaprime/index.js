@@ -6,6 +6,7 @@ const { getLogs } = require('../helper/cache/getLogs')
 const VFDepositTokenBalanceAbi = "function depositTokenBalance(address owner) view returns (uint256)"
 const getAllOwnedAssetsAbi = require('./abis/getAllOwnedAssetsAbi.json');
 const getPoolHelperAbi = "function getPoolInfo(address _address) view returns (tuple(uint256 pid, bool isActive, address token, address lp, uint256 sizeLp, address receipt, uint256 size, address rewards_addr, address helper))"
+const getStakingPositionsAbi = "function getStakedPositions() view returns (tuple(address asset, bytes32 symbol, bytes32 identifier, bytes4 balanceSelector, bytes4 unstakeSelector)[])"
 
 const assetToAddressMapping = require('./mappings/assetToAddressMapping.json')
 
@@ -13,12 +14,6 @@ const USDC_POOL_TUP_CONTRACT = '0x2323dAC85C6Ab9bd6a8B5Fb75B0581E31232d12b';
 const WAVAX_POOL_TUP_CONTRACT = '0xD26E504fc642B96751fD55D3E68AF295806542f5';
 const SMART_LOANS_FACTORY_TUP = '0x3Ea9D480295A73fd2aF95b4D96c2afF88b21B03D';
 const VF_MAINSTAKING_CONTRACT = "0x8B3d9F0017FA369cD8C164D0Cc078bf4cA588aE5";
-
-const vectorTokens = [
-  assetToAddressMapping.USDC,
-  assetToAddressMapping.AVAX,
-  assetToAddressMapping.sAVAX,
-]
 
 async function tvl(timestamp, block, chainBlocks, { api }) {
   const logs = await getLogs({
@@ -35,7 +30,9 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
   ]
 
   const accounts = logs.map(i => `0x${i.topics[1].slice(26)}`)
+  const positions = await api.multiCall({ abi: getStakingPositionsAbi, calls: accounts })
   const ownedAssets = await api.multiCall({ abi: getAllOwnedAssetsAbi, calls: accounts })
+  const vectorTokens = {}
   accounts.forEach((o, i) => {
     ownedAssets[i].forEach(tokenStr => {
       tokenStr = ethers.utils.parseBytes32String(tokenStr)
@@ -43,10 +40,15 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
       if (!token) throw new Error('Missing asset mapping for: ' + tokenStr)
       tokensAndOwners.push([token, o])
     })
+    positions[i].forEach(({ asset }) => {
+      asset = asset.toLowerCase()
+      if (!vectorTokens[asset]) vectorTokens[asset] = []
+      vectorTokens[asset].push(o)
+    })
   })
 
   const balances = await sumTokens2({ api, tokensAndOwners: tokensAndOwners })
-  await Promise.all(vectorTokens.map(i => addVectorVaultBalances({ api, balances, accounts, token: i })))
+  await Promise.all(Object.entries(vectorTokens).map(([token, accounts]) => addVectorVaultBalances({ api, balances, accounts, token })))
   return balances;
 }
 
