@@ -3,8 +3,9 @@ const { pool2s } = require("../helper/pool2");
 const { stakings } = require("../helper/staking");
 const abi = require("./abi.json");
 const addresses = require("./addresses.json");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { getChainTransform } = require('../helper/portedTokens')
+const { nullAddress, sumTokens2 } = require("../helper/unwrapLPs");
+
+const weth = '0x82af49447d8a07e3bd95bd0d56f35241523fbab1'
 
 const jTokenToToken = {
     "0x662d0f9ff837a51cf89a1fe7e0882a906dac08a3": "arbitrum:0x82af49447d8a07e3bd95bd0d56f35241523fbab1", // jETH
@@ -13,9 +14,8 @@ const jTokenToToken = {
     "0x1f6fa7a58701b3773b08a1a16d06b656b0eccb23": "arbitrum:0x32eb7902d4134bf98a28b963d26de779af92a212" // jrdpx
 }
 
-async function tvl(timestamp, block, chainBlocks) {
+async function tvl(timestamp, block, chainBlocks, { api }) {
     let balances = {};
-    let slps = [addresses.dpxEthSlp, addresses.dpxEthSlp, addresses.rdpxEthSlp, addresses.rdpxEthSlp];
     let dopexFarms = [addresses.ethDpxFarm, addresses.ethDpxFarm, addresses.rdpxEthFarm, addresses.rdpxEthFarm];
     let metaVaultsAddresses = [addresses.DpxEthBullVault, addresses.DpxEthBearVault, addresses.RdpxEthBullVault, addresses.RdpxEthBearVault];
     let strategyStorageContractsDpxEth = [addresses.JonesDpxEthBullStrategy, addresses.DpxEthStorage, addresses.JonesDpxEthBearStrategy, addresses.DpxEthStorageBear];
@@ -23,149 +23,81 @@ async function tvl(timestamp, block, chainBlocks) {
     
     block = chainBlocks.arbitrum;
     const chain = "arbitrum";
-    const transformAddress = await getChainTransform(chain)
+    const toa = []
 
-    const ethManagementWindow = (await sdk.api.abi.call({
+    const ethManagementWindow = await api.call({
         target: addresses.ethVaultV3,
         abi: abi.state,
-        block,
-        chain
-    })).output; // node test.js projects/jones-dao/index.js
+    });
 
     if (ethManagementWindow === true) {
-        const ethSnapshot = (await sdk.api.abi.call({
+        const ethSnapshot = await api.call({
             target: addresses.ethVaultV3,
             abi: abi.totalAssets,
-            block,
-            chain
-        })).output;
+        })
         sdk.util.sumSingleBalance(balances, "arbitrum:0x82af49447d8a07e3bd95bd0d56f35241523fbab1", ethSnapshot);
     } else {
-        const ethBalance = (await sdk.api.eth.getBalance({
-            target: addresses.ethVaultV3,
-            block,
-            chain
-        })).output;
-        sdk.util.sumSingleBalance(balances, "arbitrum:0x82af49447d8a07e3bd95bd0d56f35241523fbab1", ethBalance);
+        toa.push([nullAddress, addresses.ethVaultV3])
     }
+
+    const balanceCalls = []
+    const stCalls = []
+
+    dopexFarms.forEach((farm, i) => {
+        balanceCalls.push({ target: farm, params: metaVaultsAddresses[i] })
+        stCalls.push(farm)
+        toa.push([addresses.dpxEthSlp, strategyStorageContractsDpxEth[i]])
+        toa.push([addresses.rdpxEthSlp, strategyStorageContractsRdpxEth[i]])
+    })
+    const bals = await api.multiCall({  abi: 'erc20:balanceOf', calls: balanceCalls }) 
+    const sTokens = await api.multiCall({  abi: 'address:stakingToken', calls: stCalls })
+    bals.forEach((bal, i) => sdk.util.sumSingleBalance(balances,sTokens[i],bal, api.chain)) 
     
-    for (let i = 0; i < 3; i++) {
-        let temp = (await sdk.api.abi.call({
-            target: dopexFarms[i],
-            abi: abi.balanceOf,
-            params: metaVaultsAddresses[i],
-            block,
-            chain
-        })).output;
-
-        await unwrapUniswapLPs(
-            balances, 
-            [
-                {
-                    balance: temp,
-                    token: slps[i]
-                }
-            ],
-            block,
-            chain,
-            transformAddress
-        );
-
-        let dpxEthBalance = (await sdk.api.abi.call({
-            target: addresses.dpxEthSlp,
-            abi: abi.balanceOf,
-            params: strategyStorageContractsDpxEth[i],
-            block,
-            chain
-        })).output;
-
-        await unwrapUniswapLPs(
-            balances,
-            [
-                {
-                    balance: dpxEthBalance,
-                    token: addresses.dpxEthSlp
-                }
-            ],
-            block,
-            chain,
-            transformAddress
-        );
-
-        let rdpxEthBalance = (await sdk.api.abi.call({
-            target: addresses.rdpxEthSlp,
-            abi: abi.balanceOf,
-            params: strategyStorageContractsRdpxEth[i],
-            block,
-            chain
-        })).output;
-
-        await unwrapUniswapLPs(
-            balances,
-            [
-                {
-                    balance: rdpxEthBalance,
-                    token: addresses.rdpxEthSlp
-                }
-            ],
-            block,
-            chain,
-            transformAddress
-        );
-    }
-    
-    const vaultManagementWindows = (await sdk.api.abi.multiCall({
+    const vaultManagementWindows = await api.multiCall({
         calls: addresses.vaultandCollateral.map(p => ({
             target: p[0]
         })),
         abi: abi.state,
-        block,
-        chain
-    })).output;
+    })
 
-    const vaultSnapshots = (await sdk.api.abi.multiCall({
+    const vaultSnapshots = await api.multiCall({
         calls: addresses.vaultandCollateral.map(p => ({
             target: p[0]
         })),
         abi: abi.snapshotAssetBalance,
-        block,
-        chain
-    })).output;
+    })
     
-    const vaultBalances = (await sdk.api.abi.multiCall({
+    const vaultBalances = await api.multiCall({
         calls: addresses.vaultandCollateral.map(p => ({
             target: p[1],
             params: p[0]
         })),
         abi: "erc20:balanceOf",
-        block,
-        chain
-    })).output;
+    })
 
-    const vaultAssetBalances = (await sdk.api.abi.multiCall({
+    const vaultAssetBalances = await api.multiCall({
         calls: addresses.vaultandCollateral.map(p => ({
             target: p[0]
         })),
         abi: abi.snapshotAssetBalance,
-        block,
-        chain
-    })).output;
+    })
 
     for (let i = 0; i < addresses.vaultandCollateral.length; i++) {
-        if (vaultManagementWindows[i].output === true) {
-            sdk.util.sumSingleBalance(balances, `arbitrum:${addresses.vaultandCollateral[i][1]}`, vaultSnapshots[i].output);
+        if (vaultManagementWindows[i] === true) {
+            sdk.util.sumSingleBalance(balances, `${chain}:${addresses.vaultandCollateral[i][1]}`, vaultSnapshots[i]);
         } else if (vaultAssetBalances[i].success === true) {
-            sdk.util.sumSingleBalance(balances, `arbitrum:${addresses.vaultandCollateral[i][1]}`, vaultAssetBalances[i].output);
+            sdk.util.sumSingleBalance(balances, `${chain}:${addresses.vaultandCollateral[i][1]}`, vaultAssetBalances[i]);
         } else {
-            sdk.util.sumSingleBalance(balances, `arbitrum:${addresses.vaultandCollateral[i][1]}`, vaultBalances[i].output);
+            sdk.util.sumSingleBalance(balances, `${chain}:${addresses.vaultandCollateral[i][1]}`, vaultBalances[i]);
         }
     }
 
-    return balances;
+    Object.values(addresses.trackers).map(tracker =>  toa.push([tracker.token, tracker.holder ]))
+    toa.push([addresses.glp, addresses.strategy,])
+    return sumTokens2({ api, tokensAndOwners: toa, balances});
 }
 
 module.exports = {
-    misrepresentedTokens: true,
     arbitrum: {
         tvl,
         pool2: pool2s(addresses.lpStaking, addresses.lps, "arbitrum", addr=>{
@@ -178,3 +110,4 @@ module.exports = {
         staking: stakings(addresses.jonesStaking, addresses.jones, "arbitrum")
     }
 }
+// node test.js projects/jones-dao/index.js
