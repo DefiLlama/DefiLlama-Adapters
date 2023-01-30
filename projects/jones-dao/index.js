@@ -3,8 +3,7 @@ const { pool2s } = require("../helper/pool2");
 const { stakings } = require("../helper/staking");
 const abi = require("./abi.json");
 const addresses = require("./addresses.json");
-const { unwrapUniswapLPs, nullAddress, sumTokens2 } = require("../helper/unwrapLPs");
-const { getChainTransform } = require('../helper/portedTokens')
+const { nullAddress, sumTokens2 } = require("../helper/unwrapLPs");
 
 const weth = '0x82af49447d8a07e3bd95bd0d56f35241523fbab1'
 
@@ -29,7 +28,7 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
     const ethManagementWindow = await api.call({
         target: addresses.ethVaultV3,
         abi: abi.state,
-    }); // node test.js projects/jones-dao/index.js
+    });
 
     if (ethManagementWindow === true) {
         const ethSnapshot = await api.call({
@@ -99,7 +98,6 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
 }
 
 module.exports = {
-    misrepresentedTokens: true,
     arbitrum: {
         tvl,
         pool2: pool2s(addresses.lpStaking, addresses.lps, "arbitrum", addr=>{
