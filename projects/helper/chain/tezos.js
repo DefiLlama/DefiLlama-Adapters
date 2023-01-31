@@ -19,7 +19,8 @@ const tokenBlacklist = [
   'KT1JXxK3bd39ayLiiBdKm2cdReYnVSG3bkzK',
   'KT1FR9ij18K3dDExgFMBs7ppxfdGYzHiPo7c',
   'KT1GhX6MzTHKcjkMTg1mwCPzam12HRjsp6Sf',
-  'KT1C9X9s5rpVJGxwVuHEVBLYEdAQ1Qw8QDjH'
+  'KT1C9X9s5rpVJGxwVuHEVBLYEdAQ1Qw8QDjH',
+  'KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-16',
 ]
 
 async function getTokenBalances(account, includeTezosBalance = true, { balances = {}, transformAddress = transformAddressDefault } = {}) {
