@@ -34,6 +34,6 @@ function denomFix(ticker) {
 
 module.exports = {
   timetravel: false,
-  methodology: 'Queries the chain API for the current bonded tokens.',
-  stars: { tvl, }
+  methodology: 'Queries the chain API for the how many STARS are locked in bids.',
+  stars: { tvl }
 };
