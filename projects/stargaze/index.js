@@ -11,7 +11,7 @@ async function tvl() {
   const bidsResponse = await utils.fetchURL(bidsURL);
   const denomResponse = await utils.fetchURL(denomURL);
 
-  const tokenInfo = generic(denomResponse.data.params.bond_denom);
+  const tokenInfo = denomFix(denomResponse.data.params.bond_denom);
   console.log(bidsResponse.data.data.rows[0]);
   console.log(tokenInfo);
 
@@ -24,7 +24,7 @@ async function tvl() {
 }
 
 
-function generic(ticker) {
+function denomFix(ticker) {
   switch (ticker) {
     case "ustars":
       return ["stars", 6];
