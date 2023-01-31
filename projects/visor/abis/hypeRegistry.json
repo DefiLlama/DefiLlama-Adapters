@@ -1,39 +1,4 @@
 {
-    "counter": {
-        "inputs": [],
-        "name": "counter",
-        "outputs": [
-            {
-                "internalType": "int256",
-                "name": "",
-                "type": "int256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    "hypeByIndex": {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "index",
-                "type": "uint256"
-            }
-        ],
-        "name": "hypeByIndex",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    }
+    "counter": "int256:counter",
+    "hypeByIndex": "function hypeByIndex(uint256 index) view returns (address, uint256)"
 }
