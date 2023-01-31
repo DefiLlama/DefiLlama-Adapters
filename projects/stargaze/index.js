@@ -1,22 +1,39 @@
-const retry = require('async-retry')
-const axios = require("axios");
-const BigNumber = require("bignumber.js");
-  /*
-  Currently bids are considered liquid because they can be canceled at anytime
-  Pool bonds that are locked/bonded are not to be considered with TVL
-  */
-async function fetch() {
-  var price_feed = await retry(async bail => await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=stargaze&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true'))
+const utils = require("../helper/utils");
+const sdk = require("@defillama/sdk");
 
-  // Fetch staked quantities from the respective api's
-  var stars = await retry(async bail => await axios.get('https://rest.stargaze-apis.com/cosmos/staking/v1beta1/pool'))
-  
-  // Sum all bonded quantities
-  var tvl = await new BigNumber(parseFloat(stars.data.bonded_tokens / (10 ** 6)));
-  tvl = tvl * price_feed.data.stargaze.usd;
-  return tvl;
+async function tvl() {
+  const bondedTokens = {};
+  // const bondedURL = `https://rest.stargaze-apis.com/cosmos/staking/v1beta1/pool`;
+  const denomURL = `https://rest.stargaze-apis.com/cosmos/staking/v1beta1/params`;
+  const bidsURL = `https://metabase.constellations.zone/api/public/card/4bd16e60-7e77-4206-8ad2-8b04f362afed/query`
+
+  //const bondedResponse = await utils.fetchURL(bondedURL);
+  const bidsResponse = await utils.fetchURL(bidsURL);
+  const denomResponse = await utils.fetchURL(denomURL);
+
+  const tokenInfo = generic(denomResponse.data.params.bond_denom);
+  console.log(bidsResponse.data.data.rows[0]);
+  console.log(tokenInfo);
+
+  sdk.util.sumSingleBalance(bondedTokens, tokenInfo[0], parseFloat(bidsResponse.data.data.rows[0]))
+
+  //bondedTokens[tokenInfo[0]] = bidsResponse.data.data.rows[0];
+  console.log(bondedTokens);
+
+  return bondedTokens;
 }
+
+
+function generic(ticker) {
+  switch (ticker) {
+    case "ustars":
+      return ["stars", 6];
+  }
+}
+
 
 module.exports = {
-  fetch
-}
+  timetravel: false,
+  methodology: 'Queries the chain API for the current bonded tokens.',
+  stars: { tvl, }
+};
