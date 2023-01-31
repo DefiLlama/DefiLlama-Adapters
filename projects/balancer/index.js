@@ -87,6 +87,11 @@ module.exports = {
   timetravel: true,
   misrepresentedTokens: true,
   methodology: `Balancer TVL is pulled from the Balancer subgraph and includes deposits made to Balancer v1 and v2 liquidity pools.`,
+  hallmarks:[
+      [1618857407, "Balancer V2 Launched"],
+      [1648232593, "veBAL Launched"],
+      [1655380615, "Aura Launched]
+  ],
   ethereum:{
     tvl: ethereum
   },
