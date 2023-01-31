@@ -90,7 +90,7 @@ module.exports = {
   hallmarks:[
       [1618857407, "Balancer V2 Launched"],
       [1648232593, "veBAL Launched"],
-      [1655380615, "Aura Launched]
+      [1655380615, "Aura Launched"]
   ],
   ethereum:{
     tvl: ethereum
