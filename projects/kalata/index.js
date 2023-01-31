@@ -54,7 +54,7 @@ module.exports={
     methodology: 'kUSD replaced by TUSD',
     bsc:{
         tvl: sdk.util.sumChainTvls([tvl, masterchefTvl]),
-        masterchef: masterchefTvl,
+        // masterchef: masterchefTvl,
         staking: staking(masterchef, kala, 'bsc'),
         pool2: pool2s([masterchef], pool2Lps, 'bsc', trans)
     }
