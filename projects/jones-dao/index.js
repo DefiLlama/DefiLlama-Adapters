@@ -19,8 +19,6 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
     let strategyStorageContractsDpxEth = [addresses.JonesDpxEthBullStrategy, addresses.DpxEthStorage, addresses.JonesDpxEthBearStrategy, addresses.DpxEthStorageBear];
     let strategyStorageContractsRdpxEth = [addresses.JonesRdpxEthBullStrategy, addresses.RdpxEthStorage, addresses.JonesRdpxEthBearStrategy, addresses.RdpxEthStorageBear];
     
-    block = chainBlocks.arbitrum;
-    const chain = "arbitrum";
     const toa = []
 
     const ethManagementWindow = await api.call({
@@ -49,47 +47,10 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
     })
     const bals = await api.multiCall({  abi: 'erc20:balanceOf', calls: balanceCalls }) 
     const sTokens = await api.multiCall({  abi: 'address:stakingToken', calls: stCalls })
+    const vAssets = await api.multiCall({  abi: 'address:asset', calls: addresses.vaults })
+    const vBals = await api.multiCall({  abi: 'uint256:totalAssets', calls: addresses.vaults })
     bals.forEach((bal, i) => sdk.util.sumSingleBalance(balances,sTokens[i],bal, api.chain)) 
-    
-    const vaultManagementWindows = await api.multiCall({
-        calls: addresses.vaultandCollateral.map(p => ({
-            target: p[0]
-        })),
-        abi: abi.state,
-    })
-
-    const vaultSnapshots = await api.multiCall({
-        calls: addresses.vaultandCollateral.map(p => ({
-            target: p[0]
-        })),
-        abi: abi.snapshotAssetBalance,
-    })
-    
-    const vaultBalances = await api.multiCall({
-        calls: addresses.vaultandCollateral.map(p => ({
-            target: p[1],
-            params: p[0]
-        })),
-        abi: "erc20:balanceOf",
-    })
-
-    const vaultAssetBalances = await api.multiCall({
-        calls: addresses.vaultandCollateral.map(p => ({
-            target: p[0]
-        })),
-        abi: abi.snapshotAssetBalance,
-    })
-
-    for (let i = 0; i < addresses.vaultandCollateral.length; i++) {
-        if (vaultManagementWindows[i] === true) {
-            sdk.util.sumSingleBalance(balances, `${chain}:${addresses.vaultandCollateral[i][1]}`, vaultSnapshots[i]);
-        } else if (vaultAssetBalances[i].success === true) {
-            sdk.util.sumSingleBalance(balances, `${chain}:${addresses.vaultandCollateral[i][1]}`, vaultAssetBalances[i]);
-        } else {
-            sdk.util.sumSingleBalance(balances, `${chain}:${addresses.vaultandCollateral[i][1]}`, vaultBalances[i]);
-        }
-    }
-
+    vBals.forEach((bal, i) => sdk.util.sumSingleBalance(balances,vAssets[i],bal, api.chain)) 
     Object.values(addresses.trackers).map(tracker =>  toa.push([tracker.token, tracker.holder ]))
     toa.push([addresses.glp, addresses.strategy,])
     return sumTokens2({ api, tokensAndOwners: toa, balances});
