@@ -10,6 +10,7 @@ const dataAddress = "0x33d63Ba1E57E54779F7dDAeaA7109349344cf5F1";
 const gmiAddress = "0x47110d43175f7f2c2425e7d15792acc5817eb44f";
 const icethAddress = "0x7c07f7abe10ce8e33dc6c5ad68fe033085256a84";
 const dsETH = "0x341c05c0E9b33C0E38d64de76516b2Ce970bB3BE";
+const aaveDebtToken = "0xf63b34710400cad3e044cffdcab00a0f32e33ecf";
 const sets = [
   dpiAddress,
   ethFliAddress,
@@ -24,10 +25,11 @@ const sets = [
 ];
 
 async function tvl(timestamp, block, _, { api }) {
-  const tokens = await api.multiCall({  abi: 'address[]:getComponents', calls: sets})
+  const tokens = await api.multiCall({ abi: 'address[]:getComponents', calls: sets })
   const toa = []
   sets.forEach((o, i) => toa.push([tokens[i], o]))
-  return sumTokens2({ api, ownerTokens: toa, blacklistedTokens: sets})
+  toa.push([[aaveDebtToken], icethAddress])
+  return sumTokens2({ api, ownerTokens: toa, blacklistedTokens: sets })
 }
 
 module.exports = {
