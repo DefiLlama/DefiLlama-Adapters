@@ -55,7 +55,9 @@ const transformTokens = {
   //   "0x065de42e28e42d90c2052a1b49e7f83806af0e1f": "0x123", // CRK token is mispriced
   //   "0x87EFB3ec1576Dec8ED47e58B832bEdCd86eE186e": "0x0000000000085d4780B73119b644AE5ecd22b376",
   // },
-
+  telos: {
+    "0xd102ce6a4db07d247fcc28f366a623df0938ca9e": "telos:0x0000000000000000000000000000000000000000",
+  },
 }
 const ibcMappings = {
   // Sample Code
