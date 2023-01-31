@@ -1,9 +1,14 @@
-const { brewlabs } = require("./brewlabs.js");
+const { fetchChain } = require("./brewlabs.js");
 
-const brewlabs_chains = ["ethereum", "polygon", "bsc"];
+const chains = ["ethereum", "bsc", "polygon"];
 
-brewlabs_chains.forEach((chain) => {
-  module.exports[chain] = {
-    tvl: brewlabs(chain),
-  };
-});
+module.exports = {
+  url: "https://brewlabs.info",
+  methodology: `Brewlabs is a Multi-Chain utility project responsible for a number of community tools and platforms within the cryptocurrency space.`,
+  ...chains.map((chain) => [
+    chain,
+    {
+      tvl: fetchChain(chain),
+    },
+  ]),
+};

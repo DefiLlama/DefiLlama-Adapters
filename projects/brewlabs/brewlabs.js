@@ -56,13 +56,13 @@ async function calcTvl(network) {
   return toUSDTBalances(totalValueLocked);
 }
 
-function brewlabs(chain) {
-  return async (timestamp, ethBlock, { [chain]: block }) => {
-    const tvl = calcTvl(chains[chain]);
+function fetchChain(chain) {
+  return async () => {
+    const tvl = await calcTvl(chains[chain]);
     return tvl;
   };
 }
+
 module.exports = {
-  brewlabs,
-  methodology: `TVL of BrewLabs Platform`,
+  fetchChain,
 };
