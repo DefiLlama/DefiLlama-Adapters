@@ -10,7 +10,7 @@ function chainTvl(chain) {
   return async () => {
     let data = await utils.fetchURL(`https://api.badger.com/v2/vaults?chain=${chain}&currency=usd`)
     return data.data.filter(i => {
-      if (i.value > 1e8) { 
+      if (i.value > 1e9) { 
         sdk.log('error', i)
         return false
       }
