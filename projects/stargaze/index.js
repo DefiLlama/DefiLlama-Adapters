@@ -3,22 +3,37 @@ const sdk = require("@defillama/sdk");
 
 async function tvl() {
   const bondedTokens = {};
-  // const bondedURL = `https://rest.stargaze-apis.com/cosmos/staking/v1beta1/pool`;
+
+  /**
+   * The denom is the official API.  bids was custom made for this use.  @pen.so on #Stargaze
+   */
+
   const denomURL = `https://rest.stargaze-apis.com/cosmos/staking/v1beta1/params`;
   const bidsURL = `https://metabase.constellations.zone/api/public/card/4bd16e60-7e77-4206-8ad2-8b04f362afed/query`
 
-  //const bondedResponse = await utils.fetchURL(bondedURL);
+  /* 
+   * Fetach and store the JSON data 
+  */
   const bidsResponse = await utils.fetchURL(bidsURL);
   const denomResponse = await utils.fetchURL(denomURL);
 
   const tokenInfo = denomFix(denomResponse.data.params.bond_denom);
-  console.log(bidsResponse.data.data.rows[0]);
-  console.log(tokenInfo);
+  
+  /**
+   * Debugging
+   */
+  // console.log(bidsResponse.data.data.rows[0]);
+  // console.log(tokenInfo);
 
-  sdk.util.sumSingleBalance(bondedTokens, tokenInfo[0], parseFloat(bidsResponse.data.data.rows[0]))
+  /**
+   * This stores the tvl in bids into bondedTokens and sets coingecko id to stargaze
+   */
+  sdk.util.sumSingleBalance(bondedTokens, tokenInfo[1], parseFloat(bidsResponse.data.data.rows[0]))
 
-  //bondedTokens[tokenInfo[0]] = bidsResponse.data.data.rows[0];
-  console.log(bondedTokens);
+  /**
+   * Debugging
+   */
+  // console.log(bondedTokens);
 
   return bondedTokens;
 }
@@ -27,7 +42,10 @@ async function tvl() {
 function denomFix(ticker) {
   switch (ticker) {
     case "ustars":
-      return ["stars", 6];
+      /**
+       * denome, coingecko, decimal
+       */
+      return ["stars", "stargaze", 6];
   }
 }
 
