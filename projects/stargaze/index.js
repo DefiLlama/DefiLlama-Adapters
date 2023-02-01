@@ -6,6 +6,7 @@ async function tvl() {
 
   /**
    * The denom is the official API.  bids was custom made for this use.  @pen.so on #Stargaze
+   * Bids has already been converted from ustars to stars.
    */
 
   const denomURL = `https://rest.stargaze-apis.com/cosmos/staking/v1beta1/params`;
