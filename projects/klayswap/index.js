@@ -4,7 +4,7 @@ const BigNumber = require("bignumber.js");
 const { toUSDTBalances } = require('../helper/balances');
 
 async function fetchLiquidity() {
-  const klayswapInfo = await retry(async bail => await axios.get('https://s.klayswap.com/stat/klayswapInfo.json'))
+  const klayswapInfo = await retry(async bail => await axios.get('https://ss.klayswap.com/stat/klayswapInfo.json'))
   const recentPoolInfo = klayswapInfo.data.recentPoolInfo;
   var totalLiquidity = new BigNumber('0');
 
@@ -25,7 +25,7 @@ async function fetchLiquidity() {
 
 
 async function fetchStakedToken() {
-  const klayswapInfo = await retry(async bail => await axios.get('https://s.klayswap.com/stat/klayswapInfo.json'))
+  const klayswapInfo = await retry(async bail => await axios.get('https://ss.klayswap.com/stat/klayswapInfo.json'))
   var totalStaking = new BigNumber(klayswapInfo.data.common.stakingVol);
   return toUSDTBalances(totalStaking.toFixed(2));
 }
