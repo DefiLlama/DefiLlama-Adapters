@@ -3,7 +3,7 @@ const BigNumber = require("bignumber.js");
 const { toUSDTBalances } = require('../helper/balances');
 
 async function tvl() {
-  const meshswapInfo = await get('https://s.meshswap.fi/stat/meshswapInfo.json')
+  const meshswapInfo = await get('https://ss.meshswap.fi/stat/meshswapInfo.json')
   const recentPoolInfo = meshswapInfo.recentPoolInfo;
   const tokenInfoObj = meshswapInfo.tokenInfo;
   const SinglePoolInfo = meshswapInfo.leveragePoolInfo.single;
@@ -33,7 +33,7 @@ async function tvl() {
 }
 
 async function staking() {
-  const meshswapInfo = await get('https://s.meshswap.fi/stat/meshswapInfo.json')
+  const meshswapInfo = await get('https://ss.meshswap.fi/stat/meshswapInfo.json')
   var totalStaking = new BigNumber(meshswapInfo.common.stakingVol);
   return toUSDTBalances(totalStaking);
 }
