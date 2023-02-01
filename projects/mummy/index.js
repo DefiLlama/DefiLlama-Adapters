@@ -9,7 +9,7 @@ const fantomMMY = "0x01e77288b38b416F972428d562454fb329350bAc";
 
 module.exports = {
   hallmarks: [
-    [1675242000,"sifu 2M deposited"]
+    [1675242000,"sifu 2M deposit"]
   ],
   fantom: {
     staking: staking(fantomStaking, fantomMMY, "fantom", "mmy", 18),
