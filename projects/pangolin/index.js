@@ -21,8 +21,8 @@ const contracts = {
 };
 
 module.exports = {
-  timetravel: false,
   misrepresentedTokens: true,
+  timetravel: false, // hedera rug
   methodology:
     "The Pangolin factory contract address are used to obtain the balance held in every LP pair and the stake contract is used to get the locked PNG balance.",
   avax: {
