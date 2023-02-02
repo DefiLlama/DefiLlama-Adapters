@@ -43,7 +43,7 @@ async function arbitrum() {
 
 module.exports = {
   timetravel: true,
-  methodology: "TVL = Total CVX locked in Pirex",
+  methodology: "TVL = Total value of tokens locked in Pirex Vaults",
   ethereum: {
     tvl: ethereum,
   },
