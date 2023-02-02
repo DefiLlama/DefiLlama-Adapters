@@ -39,7 +39,6 @@ async function getTableRows({
   }
 }
 
-
 async function getFullTable ({
   code,
   scope,
