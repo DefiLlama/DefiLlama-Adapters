@@ -10,6 +10,11 @@ async function getHBARBalance(address, timestamp) {
   return response.balances[0].balance
 }
 
+async function getCurrentBlock() {
+  const { blocks: [{ number }]} = await http.get(HBAR_API_V1+'/blocks?limit=1&order=desc')
+  return number
+}
+
 async function addHBarBalance({ balances = {}, address, timestamp }) {
   let balance = await getHBARBalance(address, timestamp)
   balance = BigNumber(balance).shiftedBy(-1 * 8).toFixed(0)
@@ -25,5 +30,6 @@ async function sumTokens({ balances = {}, owners = [], timestamp }) {
 
 module.exports = {
   addHBarBalance,
-  sumTokens
+  sumTokens,
+  getCurrentBlock,
 }
