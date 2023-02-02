@@ -1,3 +1,4 @@
+const sdk = require('@defillama/sdk');
 const { toUSDTBalances } = require("../helper/balances");
 const utils = require("../helper/utils");
 
@@ -22,7 +23,7 @@ const chains = {
 const getpricesMapId = (chain, type, address) =>
   `c${chain}_${type}${address.toLowerCase()}`;
 
-async function calcTvl(network) {
+async function calcTvl(network, staking) {
   const data = { chainId: network };
 
   const poolsResult = await utils.postURL(`${api_endpoint}/pools`, data);
@@ -33,6 +34,7 @@ async function calcTvl(network) {
   for (const pool of poolsResult.data) {
     if (blacklist.includes(pool.stakingToken.address.toLowerCase())) continue;
     if (pool.chainId !== network) continue;
+    if (staking && pool.stakingToken.symbol !== "BREWLABS") continue;
 
     const chainId = pool.chainId;
     const totalStaked = pool.totalStaked;
@@ -45,6 +47,7 @@ async function calcTvl(network) {
   for (const farm of farmsResult.data) {
     if (blacklist.includes(farm.lpAddress.toLowerCase())) continue;
     if (farm.chainId !== network) continue;
+    if (staking && !farm.lpSymbol.includes("BREWLABS")) continue;
 
     const chainId = farm.chainId;
     const totalStaked = farm.totalStaked;
@@ -56,9 +59,9 @@ async function calcTvl(network) {
   return toUSDTBalances(totalValueLocked);
 }
 
-function fetchChain(chain) {
+function fetchChain(chain, staking) {
   return async () => {
-    const tvl = await calcTvl(chains[chain]);
+    const tvl = await calcTvl(chains[chain], staking);
     return tvl;
   };
 }
