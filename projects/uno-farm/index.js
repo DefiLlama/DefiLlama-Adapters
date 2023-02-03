@@ -7,14 +7,14 @@ const {
 } = require("./uno-helplers");
 const { getUserMasterChefBalances } = require("../helper/masterchef");
 const apps = require("./apps.json");
-const { getChainTransform } = require("../helper/portedTokens");
 
 async function defaultTVL({ balances, chain, block, app }) {
   const farms = await getUnoFarms({ chain, block, factory: app.factory });
+  const promises = []
 
   for (let k = 0; k < app.masterChefs.length; k++) {
     for (let i = 0; i < farms.length; i++) {
-      await getUserMasterChefBalances({
+      promises.push(getUserMasterChefBalances({
         balances,
         masterChefAddress: app.masterChefs[k],
         userAddres: farms[i],
@@ -22,9 +22,10 @@ async function defaultTVL({ balances, chain, block, app }) {
         chain,
         poolInfoABI: app.poolInfoABI[k],
         getLPAddress: app.getLPAddress[k] ? eval(app.getLPAddress[k]) : null,
-      });
+      }))
     }
   }
+  await Promise.all(promises)
 }
 
 async function balancerTVL({ balances, chain, block, app }) {
@@ -39,7 +40,7 @@ async function balancerTVL({ balances, chain, block, app }) {
 }
 
 async function quickswapTVL({ balances, chain, block, app }) {
-  const transform = await getChainTransform(chain);
+  const transform = addr => chain + ':'+addr;
   const farms = await getFullInfoQuickswapUnoFarm({
     chain,
     block,
@@ -70,17 +71,19 @@ async function tvl(_, _1, chainBlocks, { api }) {
   const chain = api.chain;
   const block = chainBlocks[chain];
   let balances = {};
+  const promises = []
   const arrayOfApps = apps[chain];
   for (let j = 0; j < arrayOfApps.length; j++) {
     const app = arrayOfApps[j];
     if (app.name == "balancer") {
-      await balancerTVL({ balances, chain, block, app });
+      promises.push(balancerTVL({ balances, chain, block, app }))
     } else if (app.name == "quickswap") {
-      await quickswapTVL({ balances, chain, block, app });
+      promises.push(quickswapTVL({ balances, chain, block, app }))
     } else {
-      await defaultTVL({ balances, chain, block, app });
+      promises.push(defaultTVL({ balances, chain, block, app }))
     }
   }
+  await Promise.all(promises)
   return balances;
 }
 
