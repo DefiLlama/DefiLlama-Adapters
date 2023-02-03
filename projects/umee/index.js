@@ -21,9 +21,7 @@ async function tvl(timestamp) {
 }
 
 module.exports = {
-  misrepresentedTokens: true,
-  methodology:
-    "Subtracts the total borrowed from the total supplied to get the TVL.",
+  methodology: "Total supplied assets.",
   umee: {
     tvl,
   },
