@@ -1,7 +1,6 @@
 // documentation: https://developer.algorand.org/docs/get-details/indexer/?from_query=curl#sdk-client-instantiations
 
 const axios = require('axios')
-const https = require('https')
 const { getApplicationAddress } = require('./algorandUtils/address')
 const { RateLimiter } = require("limiter");
 const coreAssets = require('../coreAssets.json')
@@ -13,9 +12,6 @@ const assetCache = {}
 
 const geckoMapping = coreAssets.algorand ?? {}
 const axiosObj = axios.create({
-  httpsAgent: new https.Agent({
-    rejectUnauthorized: false
-  }),
   baseURL: 'https://algoindexer.algoexplorerapi.io',
   timeout: 300000,
 })
