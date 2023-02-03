@@ -2,6 +2,7 @@ const { staking, stakingPricedLP } = require("../helper/staking");
 const { graphQuery } = require("../helper/http");
 const { getCurrentBlock } = require("../helper/chain/hbar");
 const { getUniTVL } = require('../helper/unknownTokens')
+const { toUSDTBalances } = require('../helper/balances')
 
 const contracts = {
   avax: {
@@ -51,9 +52,7 @@ module.exports = {
           totalLiquidityUSD
           }
       }`)
-      return {
-        tether: data.pangolinFactory.totalLiquidityUSD
-      }
+      return toUSDTBalances(data.pangolinFactory.totalLiquidityUSD)
     }
   },
   start: 1612715300, // 7th-Feb-2021
