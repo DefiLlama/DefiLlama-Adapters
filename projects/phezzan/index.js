@@ -5,7 +5,7 @@ const { get } = require('../helper/http')
 async function offers() {
   const markets = await get('https://api.phezzan.xyz/api/v1/markets')
   const marketInfos = await get('https://api.phezzan.xyz/api/v1/marketinfos?chain_id=280&market=' + Object.keys(markets).join(','))
-  let total = 100
+  let total = 1000
   Object.keys(markets).forEach(market => {
     const info = marketInfos[market]
     const { baseVolume, quoteVolume } = markets[market]
