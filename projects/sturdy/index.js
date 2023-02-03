@@ -1,49 +1,12 @@
-const { request, gql } = require("graphql-request");
 const { toUSDTBalances } = require("../helper/balances");
-
-const graphUrl_ftm =
-    'https://api.thegraph.com/subgraphs/name/sturdyfi/sturdy-fantom';
-const graphUrl_eth =
-    'https://api.thegraph.com/subgraphs/name/sturdyfi/sturdy-ethereum';
-
-const graphQuery = gql`
-    query get_tvl {
-        reserves {
-            name
-            symbol
-            decimals
-            price {
-                priceInEth
-            }
-            totalDeposits
-            totalLiquidity
-            availableLiquidity
-            totalCurrentVariableDebt
-        }
-        usdPriceEth: priceOracle(id: "1") {
-            usdPriceEth
-        }
-    }
-`;
-
-const priceInUSD = (value, decimals, price) => {
-    return (value / Math.pow(10, decimals) * price / Math.pow(10, 8)).toFixed(2);
-}
+const { fetchURL } = require("../helper/utils");
 
 async function fetch(borrow, chain) {
-    const graphUrl = chain == 'fantom' ? graphUrl_ftm : graphUrl_eth;
-    const { reserves, usdPriceEth } = await request(graphUrl, graphQuery);
-    let tvl = reserves.reduce((sum, reserve) => {
-        const value = borrow ? reserve.totalCurrentVariableDebt : reserve.availableLiquidity;
-        return sum + +priceInUSD(value, reserve.decimals, reserve.price.priceInEth);        
-    }, 0);
-
-    if (chain != 'ethereum')
-        return toUSDTBalances(tvl);
-
-    const ethPrice = Math.pow(10, 18) / usdPriceEth.usdPriceEth;
-    tvl = tvl / Math.pow(10, 10) * ethPrice;
-    return toUSDTBalances(tvl);
+    const url = "https://us-central1-stu-dashboard-a0ba2.cloudfunctions.net/getVaultMonitoring?tvl=true&chain=" + chain
+    const {data} = await fetchURL(url)
+    console.log({data, borrow, chain})
+    const val = borrow? data.borrowed : data.tvl;
+    return toUSDTBalances(val);
 }
 
 const borrowed = (chain) => async (_timestamp, _ethBlock, chainBlocks) => {
@@ -56,8 +19,8 @@ const tvl = (chain) => async (_timestamp, _ethBlock, chainBlocks) => {
 
 module.exports = {
     fantom: {
-        tvl: tvl('fantom'),
-        borrowed: borrowed('fantom'),
+        tvl: tvl('ftm'),
+        borrowed: borrowed('ftm'),
     },
     ethereum: {
         tvl: tvl('ethereum'),
