@@ -287,7 +287,7 @@ function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingeck
         [chain]: {
             staking: getTvlPromise("staking"),
             pool2: getTvlPromise("pool2"),
-            masterchef: getTvlPromise("tvl"),
+            // masterchef: getTvlPromise("tvl"),
             tvl: getTvlPromise("tvl"),
         }
     };
