@@ -1,5 +1,6 @@
 const { sumTokensExport, nullAddress, } = require('../helper/unknownTokens')
 const { toUSDTBalances } = require('../helper/balances')
+const { get } = require('../helper/http')
 
 async function offers() {
   const markets = await get('https://api.phezzan.xyz/api/v1/markets')
