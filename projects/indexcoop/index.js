@@ -1,4 +1,5 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const sdk = require("@defillama/sdk")
 
 const dpiAddress = "0x1494ca1f11d487c2bbe4543e90080aeba4ba3c2b";
 const ethFliAddress = "0xaa6e8127831c9de45ae56bb1b0d4d4da6e5665bd";
@@ -29,7 +30,10 @@ async function tvl(timestamp, block, _, { api }) {
   const toa = []
   sets.forEach((o, i) => toa.push([tokens[i], o]))
   toa.push([[aaveDebtToken], icethAddress])
-  return sumTokens2({ api, ownerTokens: toa, blacklistedTokens: sets })
+  const balances = await sumTokens2({ api, ownerTokens: toa, blacklistedTokens: sets })
+  const usdcDebt = await api.call({abi:"function borrowBalanceStored(address account) view returns (uint256)", target: "0x39aa39c021dfbae8fac545936693ac917d5e7563", params:[ethFliAddress]})
+  sdk.util.sumSingleBalance(balances, "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", -usdcDebt)
+  return balances
 }
 
 module.exports = {
