@@ -28,7 +28,9 @@ const getPoolAddrs = async (block) => {
 
   const { output: poolsUnderlying } = await sdk.api.abi.multiCall({
     abi: abi["underlyingToken"],
-    calls: pools.map((pool) => ({ target: pool })),
+    calls: pools
+      .filter((p) => p != "0xB8cf3Ed326bB0E51454361Fb37E9E8df6DC5C286") // RM wstETH pool
+      .map((pool) => ({ target: pool })),
     block,
   });
   const tokensAndOwners = poolsUnderlying.map((t) => [
@@ -36,7 +38,6 @@ const getPoolAddrs = async (block) => {
     t.input.target,
   ]);
 
-  // Fetch balanes of tokens available to fetch
   let poolBalances = {};
   return { tokensAndOwners, poolBalances };
 };
