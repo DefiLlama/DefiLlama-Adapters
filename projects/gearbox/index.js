@@ -37,19 +37,7 @@ const getPoolAddrs = async (block) => {
   ]);
 
   // Fetch balanes of tokens available to fetch
-  const { output: totalAvailable } = await sdk.api.abi.multiCall({
-    abi: abi["availableLiquidity"],
-    calls: pools.map((pool) => ({ target: pool })),
-    block,
-  });
-
-  // sumTokens2 reads balances of the pools
   let poolBalances = {};
-  // Init poolBalances with the availableLiquidity
-  // totalAvailable.map((i) => {
-  //   const pool = tokensAndOwners.find((arr) => arr[1] === i.input.target);
-  //   poolBalances[pool[0]] = i.output;
-  // });
   return { tokensAndOwners, poolBalances };
 };
 
