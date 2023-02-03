@@ -15,27 +15,23 @@ async function getTableRows({
   reverse = false,
   show_payer = false,
 }) {
-  try {
-    const data = await post(
-      `${CHAIN_RPC}/v1/chain/get_table_rows`,
-      {
-        json,
-        code,
-        scope,
-        table,
-        lower_bound,
-        upper_bound,
-        index_position,
-        key_type,
-        limit,
-        reverse,
-        show_payer,
-      }
-    );
-    return data;
-  } catch (e) {
-    console.error(e);
-  }
+  const data = await post(
+    `${CHAIN_RPC}/v1/chain/get_table_rows`,
+    {
+      json,
+      code,
+      scope,
+      table,
+      lower_bound,
+      upper_bound,
+      index_position,
+      key_type,
+      limit,
+      reverse,
+      show_payer,
+    }
+  );
+  return data;
 }
 
 async function getFullTable({
@@ -68,19 +64,15 @@ async function getFullTable({
 }
 
 async function getCurrencyBalance(code, account, symbol) {
-  try {
-    const data = await post(
-      CHAIN_RPC + '/v1/chain/get_currency_balance',
-      JSON.stringify({
-        code,
-        account,
-        symbol
-      })
-    );
-    return data;
-  } catch (e) {
-    console.error(e);
-  }
+  const data = await post(
+    CHAIN_RPC + '/v1/chain/get_currency_balance',
+    JSON.stringify({
+      code,
+      account,
+      symbol
+    })
+  );
+  return data;
 }
 
 async function getExchangeRates() {
