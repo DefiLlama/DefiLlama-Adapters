@@ -47,7 +47,7 @@ module.exports = {
     "We query Mars protocol smart contracts to get the amount of assets deposited and borrowed, then use CoinGecko to price the assets in USD.",
   mars: {
     tvl: queryBondedTokens,
-    staked: queryBondedTokens,
+    staking: queryBondedTokens,
   },
   terra: {
     tvl: zero,
