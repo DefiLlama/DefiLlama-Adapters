@@ -29,6 +29,9 @@ async function arbiTvl(_, _b, cb) {
 }
 // node test.js projects/gainsNetwork.js
 module.exports = {
+  hallmarks: [
+    [1674475200,"Launch on Arbitrum"]
+  ],
   polygon: {
     tvl: polyTvl,
     pool2: pool2(
