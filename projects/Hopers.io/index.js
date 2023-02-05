@@ -11,10 +11,10 @@ module.exports = {
       return transformDexBalances({
         chain: 'juno',
         data: Object.values(data).map(i => ({
-          tokenA0: i[0].token ?? i[0].native,
-          tokenA0Bal: i[0].amount ?? 0,
-          tokenA1: i[1].token ?? i[1].native,
-          tokenA1Bal: i[1].amount ?? 0,
+          token0: i[0].token ?? i[0].native,
+          token0Bal: i[0].amount ?? 0,
+          token1: i[1].token ?? i[1].native,
+          token1Bal: i[1].amount ?? 0,
         }))
       })
     }
