@@ -88,7 +88,7 @@ async function tvl(_, _1, chainBlocks, { api }) {
 }
 
 module.exports = {
-  start: 1655206,
+  start: 1656018000,
   polygon: {
     tvl,
   },
@@ -98,4 +98,7 @@ module.exports = {
   aurora: {
     tvl,
   },
+  avax:{
+    tvl,
+  }
 };
