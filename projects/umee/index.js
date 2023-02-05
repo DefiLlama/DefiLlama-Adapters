@@ -1,28 +1,32 @@
-const axios = require("axios");
-const { getApiTvl } = require("../helper/historicalApi");
+const { get } = require('../helper/http')
+const sdk = require('@defillama/sdk')
+const { transformBalances } = require('../helper/portedTokens')
+let data
 
-async function tvl(timestamp) {
-  return getApiTvl(
-    timestamp,
-    async () => {
-      const data = await axios.get(
-        "https://testnet-client-bff-ocstrhuppq-uc.a.run.app/tvl"
-      );
-      return data.data;
-    },
-    async () => {
-      const data = await axios.get(
-        "https://testnet-client-bff-ocstrhuppq-uc.a.run.app/tvl/" + timestamp
-      );
-      console.log(data.data);
-      return data.data;
-    }
-  );
+async function getData() {
+  if (!data) data = get('https://testnet-client-bff-ocstrhuppq-uc.a.run.app/convexity/assets/all')
+  return data
+}
+
+async function tvl() {
+  const balances = {}
+  const data = await getData()
+  data.forEach(i => sdk.util.sumSingleBalance(balances, i.base_denom, i.available_liquidity_tokens * (10 ** i.exponent)))
+  return transformBalances('umee', balances)
+}
+
+async function borrowed() {
+  const balances = {}
+  const data = await getData()
+  data.forEach(i => sdk.util.sumSingleBalance(balances, i.base_denom, i.total_borrow * (10 ** i.exponent)))
+  return transformBalances('umee', balances)
 }
 
 module.exports = {
-  methodology: "Total supplied assets.",
+  timetravel: false,
+  methodology: "Total supplied assets - total borrowed assets",
   umee: {
     tvl,
+    borrowed,
   },
 };
