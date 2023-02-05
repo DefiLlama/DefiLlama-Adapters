@@ -12,6 +12,7 @@ const gmiAddress = "0x47110d43175f7f2c2425e7d15792acc5817eb44f";
 const icethAddress = "0x7c07f7abe10ce8e33dc6c5ad68fe033085256a84";
 const dsETH = "0x341c05c0E9b33C0E38d64de76516b2Ce970bB3BE";
 const aaveDebtToken = "0xf63b34710400cad3e044cffdcab00a0f32e33ecf";
+const USDC = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
 const sets = [
   dpiAddress,
   ethFliAddress,
@@ -31,10 +32,11 @@ async function tvl(timestamp, block, _, { api }) {
   sets.forEach((o, i) => toa.push([tokens[i], o]))
   toa.push([[aaveDebtToken], icethAddress])
   const balances = await sumTokens2({ api, ownerTokens: toa, blacklistedTokens: sets })
-  const usdcDebt = await api.call({abi:"function borrowBalanceStored(address account) view returns (uint256)", target: "0x39aa39c021dfbae8fac545936693ac917d5e7563", params:[ethFliAddress]})
-  sdk.util.sumSingleBalance(balances, "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", -usdcDebt)
+  const usdcDebt = await api. multiCall({abi:"function borrowBalanceStored(address account) view returns (uint256)", target: "0x39aa39c021dfbae8fac545936693ac917d5e7563", calls:[ethFliAddress, btcFliAddress]})
+  usdcDebt.forEach(i => sdk.util.sumSingleBalance(balances,USDC,i * -1, api.chain))
   return balances
 }
+
 
 module.exports = {
   ethereum: {
