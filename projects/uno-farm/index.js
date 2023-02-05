@@ -98,5 +98,4 @@ module.exports = {
   aurora: {
     tvl,
   },
-  methodology: "count the number of lp Tokens deposited to our farms",
 };
