@@ -6,7 +6,7 @@ module.exports = {
   misrepresentedTokens: true,
   juno: {
     tvl: async () => {
-      const data = await get('https://api.xxxxxxxxxxxxxxxxxxx')
+      const data = await get('https://api.hopers.io')
       return transformDexBalances({
         chain: 'juno',
         data: Object.values(data).map(i => ({
