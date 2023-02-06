@@ -13,6 +13,7 @@ const endPoints = {
   cosmos: 'https://cosmoshub-lcd.stakely.io',
   kujira: 'https://lcd.kaiyo.kujira.setten.io',
   comdex: 'https://rest.comdex.one',
+  umee: 'https://api.mainnet.network.umee.cc',
 }
 
 const chainSubpaths = {
