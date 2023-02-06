@@ -68,5 +68,17 @@
         "name": "Trisolaris Standard"
       }
       
+  ],
+  "avax":[
+    {
+      "poolInfoABI": [
+        "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accWeVEPerShare)",
+        "function poolInfo(uint256) view returns (address lpToken, uint96 allocPoint, uint256 accJoePerShare, uint256 accJoePerFactorPerShare, uint64 lastRewardTimestamp, address rewarder, uint32 veJoeShareBp,  uint256 totalFactor,  uint256 totalLpSupply)"
+      ],
+      "masterChefs": ["0x188bED1968b795d5c9022F6a0bb5931Ac4c18F00","0x4483f0b6e2F5486D06958C20f8C39A7aBe87bf8F"],
+      "factory": "0x6Eae93D177BFDDAF5ee238F55C36A847A35E62A0",
+      "getLPAddress": ["((a) => a[0])","((a) => a[0])"],
+      "name": "Traderjoe"
+    }
   ]
 }
