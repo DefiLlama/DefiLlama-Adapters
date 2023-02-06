@@ -140,6 +140,7 @@ module.exports = {
     pool2: _polygonPool2,
     tvl: sumChainTvls([_polygonStaking, _polygonPool2]),
   },
-  methodology: `Staking: we include locked tokens on the rewards contracts as staking. \n
-   TVL: we calculate the TVL in our system using total locked tokens on the cities system and additionally we include the LPs value on the stake-to-earn NFTs pool. We include all tokens on the distribution system (A percentage of the tokens are locked to buy and burn FTB or lock more tokens in our partnership platforms).`,
+  methodology: `Staking: we include locked tokens on the rewards contracts as staking.\n
+   Pool2: Relation between liquidity, token value and total tokens on the liquidity pools.\n
+   TVL: Based on the staking and pool2 summation including rewards storage and market liquidity tokens.`,
 };
