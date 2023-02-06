@@ -15,6 +15,7 @@ async function stablePoolTVL(_, _b, { [chain]: block }) {
     '0x422b5b7a15fb12c518aa29f9def640b4773427f8', //  4 pool
     '0xb86271571c90ad4e0c9776228437340b42623402', // ETH
     '0x7FbE3126C03444D43fC403626ec81E3e809E6b46', // MAI B4P
+    '0xB1BC9f56103175193519Ae1540A0A4572b1566F6', // 4pool WH
   ]
 
   let { output: lpTokens } = await sdk.api.abi.multiCall({
@@ -52,30 +53,6 @@ module.exports = {
 
 
 const abi = {
-  getTokens: {
-    "inputs": [],
-    "name": "getTokens",
-    "outputs": [
-      {
-        "internalType": "contract IERC20[]",
-        "name": "",
-        "type": "address[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  getLpToken: {
-    "inputs": [],
-    "name": "getLpToken",
-    "outputs": [
-      {
-        "internalType": "contract LPToken",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
+  getTokens: "address[]:getTokens",
+  getLpToken: "address:getLpToken",
 }

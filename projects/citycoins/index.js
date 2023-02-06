@@ -1,5 +1,4 @@
-const retry = require('../helper/retry')
-const axios = require('axios')
+const { get } = require('../helper/http')
 const BigNumber = require('bignumber.js')
 const sdk = require('@defillama/sdk')
 
@@ -24,15 +23,6 @@ async function tvl() {
   return balances
 }
 
-async function treasury() {
-  const balances = {}
-  await Promise.all([
-    addStacks(MIAMI_CITY_WALLET, balances),
-    addStacks(NYC_CITY_WALLET, balances)
-  ])
-  return balances
-}
-
 async function staking() {
   const balances = {}
 
@@ -47,22 +37,20 @@ async function staking() {
 
 async function getStacksBalances(address) {
   const url = `${STACKS_API}/${address}/balances`
-  return retry(async () => await axios.get(url))
+  return get(url)
 }
 
 async function addStacks(address, balances) {
-  const stx_balance = (await getStacksBalances(address)).data.stx.balance
+  const stx_balance = (await getStacksBalances(address)).stx.balance
   sdk.util.sumSingleBalance(balances, 'blockstack', BigNumber(stx_balance).div(1e6).toFixed(0))
 }
 
 async function addTokens(address, balances) {
   const {
-    data: {
       fungible_tokens
-    }
   } = await getStacksBalances(address)
 
-  const decimals = [MIAMI_CONTRACT_V2, NYC_CONTRACT_V2] ? 6 : 0
+  const decimals = [MIAMI_CONTRACT_V2, NYC_CONTRACT_V2].includes(address) ? 6 : 0
 
   const tokenBalances = {
     output: Object.keys(fungible_tokens)

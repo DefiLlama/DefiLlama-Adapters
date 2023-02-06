@@ -1,10 +1,10 @@
 const sdk = require("@defillama/sdk");
-const utils = require("../helper/utils");
+const { getConfig } = require('../helper/cache')
 
 const vaultsUrl = "https://raw.githubusercontent.com/UniverseFinance/UniverseFinanceProtocol/main/doc/vaultAddress.json";
 
-const token0Abi = require("../helper/abis/token0.json");
-const token1Abi = require("../helper/abis/token1.json");
+const token0Abi = 'address:token0'
+const token1Abi = 'address:token1'
 
 function eth(timestamp, ethBlock, chainBlocks) {
     return chainTvl(timestamp, ethBlock, chainBlocks, "ethereum");
@@ -18,9 +18,9 @@ function matic(timestamp, ethBlock, chainBlocks) {
 async function chainTvl(timestamp, ethBlock, chainBlocks, chain) {
   const block = chain == "ethereum" ? ethBlock : chainBlocks[chain];
   let balances = {};
-  let resp = await utils.fetchURL(vaultsUrl);
+  let resp = await getConfig('Universe', vaultsUrl);
 
-  let allVaults = resp.data.filter(vault => vault.type > 0).map((vault) => ({
+  let allVaults = resp.filter(vault => vault.type > 0).map((vault) => ({
         address: vault.address,
         name: vault.name,
         getTotalAmounts: vault.getTotalAmounts,

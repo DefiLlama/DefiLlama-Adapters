@@ -10,4 +10,4 @@ module.exports = {
       factory: '0xf66cef53c518659bFA0A9a4Aa07445AF08bf9B3a',
     })
   }
-};
+}

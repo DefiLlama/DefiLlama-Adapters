@@ -1,15 +1,10 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const {
-  transformOptimismAddress,
-  transformArbitrumAddress,
-} = require("../helper/portedTokens");
-const retry = require("../helper/retry");
-const axios = require("axios");
+const { sumTokens2 } = require('../helper/unwrapLPs')
+const { get } = require('../helper/http')
 
 // Ethereum
 const ETH_BULL_VAULT = "0xad48a8261b0690c71b70115035eb14afd9a43242";
-const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 
 // Optimism
 const BASIS_TRADING_VAULT = "0xD576bE0d3CC1c0184d1ea3F1778A4A9Dec523859";
@@ -37,9 +32,8 @@ async function ethTvl(_, block) {
 }
 
 async function optTvl(_, _b,{ optimism: block}) {
-  const transform = await transformOptimismAddress();
   return {
-    [transform(OPT_USDC)]: (
+    ['optimism:'+OPT_USDC]: (
       await sdk.api.abi.call({
         target: BASIS_TRADING_VAULT,
         block,
@@ -51,14 +45,9 @@ async function optTvl(_, _b,{ optimism: block}) {
 }
 
 async function getOpenPositionIds() {
-  const response = (
-    await retry(
-      async () =>
-        await axios.get(
+  const response = await get(
           "https://0dtklop9zj.execute-api.ap-northeast-1.amazonaws.com/stag/open_positions?limit=500"
         )
-    )
-  ).data;
 
   const positionIds = response.records.map((position) => position.PositionId);
 
@@ -72,6 +61,8 @@ async function getTotalPositionValue(block) {
 
   await Promise.all(
     openPositionIds.map(async (id) => {
+      try {
+
       const { positionValue } = (
         await sdk.api.abi.call({
           target: DMO_FACTORY,
@@ -83,6 +74,10 @@ async function getTotalPositionValue(block) {
       ).output;
 
       positionValues += +positionValue;
+      } catch (e) {
+        console.log('trouble fetchng info for ', id)
+        console.error(e)
+      }
     })
   );
 
@@ -90,8 +85,6 @@ async function getTotalPositionValue(block) {
 }
 
 async function arbTvl(_, _b,{ arbitrum: block}) {
-  const transform = await transformArbitrumAddress();
-
   const balanceOfPool = +(
     await sdk.api.abi.call({
       target: DMO_LENDING_POOL,
@@ -100,19 +93,6 @@ async function arbTvl(_, _b,{ arbitrum: block}) {
       chain: "arbitrum",
     })
   ).output;
-
-  const balanceOfFactory = +(
-    await sdk.api.abi.call({
-      target: ARB_USDC,
-      block,
-      abi: abi.balanceOf,
-      chain: "arbitrum",
-      params: DMO_FACTORY,
-    })
-  ).output;
-
-  const positionValue = await getTotalPositionValue(block);
-
   const balanceOfFarm = +(
     await sdk.api.abi.call({
       target: DMO_FARM,
@@ -122,24 +102,24 @@ async function arbTvl(_, _b,{ arbitrum: block}) {
     })
   ).output;
 
-  const balanceOfFarmAction = +(
-    await sdk.api.abi.call({
-      target: ARB_USDC,
-      block,
-      abi: abi.balanceOf,
-      chain: "arbitrum",
-      params: DMO_FARM_ACTION,
-    })
-  ).output;
+  const positionValue = await getTotalPositionValue(block);
 
-  return {
-    [transform(ARB_WETH)]: balanceOfPool,
-    ['ethereum:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48']:
-      balanceOfFactory + positionValue + balanceOfFarm + balanceOfFarmAction,
-  };
+  const balances = {
+    ['arbitrum:'+ARB_WETH]: balanceOfPool,
+    ['arbitrum:'+ARB_USDC]: positionValue + balanceOfFarm,
+  }
+
+  return sumTokens2({
+    balances,
+    owners: [DMO_FACTORY, DMO_FARM_ACTION, ],
+    tokens: [ARB_USDC],
+    chain: 'arbitrum',
+    block,
+  })
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   ethereum: {
     tvl: ethTvl,
   },

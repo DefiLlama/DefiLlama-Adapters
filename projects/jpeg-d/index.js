@@ -26,5 +26,11 @@ module.exports = {
     treasury,
     staking: staking(staking_contract, JPEG, "ethereum"),
     pool2: pool2(staking_contract, JPEG_WETH_SLP, "ethereum"),
-  }
+  },
+  hallmarks: [
+    [1666003500, "pETH borrows"],
+    [1669551000, "JPEG LTV boost"],
+    [1670518800, "APE staking"],
+    [1674669600, "Autoglyphs & Fidenza support"],
+  ]
 }

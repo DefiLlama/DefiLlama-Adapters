@@ -8,7 +8,7 @@ const {
     fetchOswapExchangeRates,
     fetchOswapAssets,
     summingBaseAABalancesToTvl,
-} = require('../helper/obyte')
+} = require('../helper/chain/obyte')
 
 async function totalTvl(timestamp) {
     const [assetMetadata, exchangeRates, ...baseAABalances] = await Promise.all([

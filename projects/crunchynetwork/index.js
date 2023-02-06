@@ -1,6 +1,6 @@
 const BigNumber = require("bignumber.js");
 const { get } = require('../helper/http')
-const { RPC_ENDPOINT } = require('../helper/tezos')
+const { RPC_ENDPOINT } = require('../helper/chain/tezos')
 const { PromisePool } = require('@supercharge/promise-pool')
 
 // crunchy farm address KT1KnuE87q1EKjPozJ5sRAjQA24FPsP57CE3

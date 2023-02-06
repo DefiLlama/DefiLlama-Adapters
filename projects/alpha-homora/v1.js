@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const axios = require("axios");
+const { getConfig } = require('../helper/cache')
 const BigNumber = require("bignumber.js");
 
 module.exports = {
@@ -27,7 +27,7 @@ async function tvlV1Bsc(timestamp, block, chainBlocks) {
 }
 
 async function tvlV1(chain, block, contractsUrl, wrappedBaseName, totalEthMethodName) {
-    const { data } = await axios.get(
+    const data = await getConfig('alpha-hormora/v1/'+chain,
       contractsUrl
     );
   
@@ -49,10 +49,7 @@ async function tvlV1(chain, block, contractsUrl, wrappedBaseName, totalEthMethod
       target: bankAddress,
       block,
       chain,
-      abi: {
-          ...abi["totalETH"],
-          name: totalEthMethodName
-        },
+      abi: 'uint256:'+totalEthMethodName,
     });
   
     const totalETH = BigNumber(_totalETH);

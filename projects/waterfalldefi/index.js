@@ -1,22 +1,21 @@
 const sdk = require('@defillama/sdk')
 const BN = require('bignumber.js');
 const abi = require("./abi.json");
-const { transformBscAddress, transformAvaxAddress, getChainTransform } = require('../helper/portedTokens');
-const axios = require("axios");
 const url = "https://raw.githubusercontent.com/WaterfallDefi/product-addresses/master/main.json";
 let _response
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const { sumTokens2 } = require('../helper/unwrapLPs');
+const { getConfig } = require('../helper/cache');
 
 
 async function getAddresses(url) {
-  if (!_response) _response = axios.get(url)
+  if (!_response) _response = getConfig('waterfalldefi', url)
   let res = await _response;
-  return res.data;
+  return res;
 }
 
 const addressTransform = {
-  bsc: transformBscAddress,
-  avax: transformAvaxAddress
+  bsc: addr => 'bsc:'+addr,
+  avax: addr => 'avax:'+addr
 }
 
 async function bscStaking(timestamp, block, chainBlocks) {
@@ -47,7 +46,7 @@ async function avaxTVL(timestamp, block, chainBlocks) {
 }
 
 async function calcInactiveTrancheBalances(balances, product, chain, block) {
-  const transform = await addressTransform[chain]();
+  const transform = addressTransform[chain];
   let calls = [];
   for (const currency of product.currency) {
     calls.push({

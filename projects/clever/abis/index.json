@@ -1,109 +1,13 @@
 {
     "curve": {
-        "coinsUint": {
-            "name": "coins",
-            "outputs": [
-                {
-                    "type": "address",
-                    "name": ""
-                }
-            ],
-            "inputs": [
-                {
-                    "type": "uint256",
-                    "name": "arg0"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function",
-            "gas": 2280
-        },
-        "coinsInt": {
-            "name": "coins",
-            "outputs": [
-                {
-                    "type": "address",
-                    "name": "out"
-                }
-            ],
-            "inputs": [
-                {
-                    "type": "int128",
-                    "name": "arg0"
-                }
-            ],
-            "constant": true,
-            "payable": false,
-            "type": "function",
-            "gas": 2190
-        },
-        "balances": {
-            "stateMutability": "view",
-            "type": "function",
-            "name": "balances",
-            "inputs": [
-                {
-                    "name": "arg0",
-                    "type": "uint256"
-                }
-            ],
-            "outputs": [
-                {
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "gas": 3123
-        },
-        "balancesOther": {
-            "name": "balances",
-            "outputs": [
-                {
-                    "type": "uint256",
-                    "name": ""
-                }
-            ],
-            "inputs": [
-                {
-                    "type": "int128",
-                    "name": "arg0"
-                }
-            ],
-            "constant": true,
-            "payable": false,
-            "type": "function",
-            "gas": 2340
-        }
+        "coinsUint": "function coins(uint256 arg0) view returns (address) @2280",
+        "coinsInt": "function coins(int128 arg0) view returns (address out) @2190",
+        "balances": "function balances(uint256 arg0) view returns (uint256) @3123",
+        "balancesOther": "function balances(int128 arg0) view returns (uint256) @2340"
     },
     "balancer": {
-        "getPoolTokens": {
-            "inputs": [
-                {
-                    "internalType": "bytes32",
-                    "name": "poolId",
-                    "type": "bytes32"
-                }
-            ],
-            "name": "getPoolTokens",
-            "outputs": [
-                {
-                    "internalType": "contract IERC20[]",
-                    "name": "tokens",
-                    "type": "address[]"
-                },
-                {
-                    "internalType": "uint256[]",
-                    "name": "balances",
-                    "type": "uint256[]"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "lastChangeBlock",
-                    "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        }
-    }
+        "getPoolTokens": "function getPoolTokens(bytes32 poolId) view returns (address[] tokens, uint256[] balances, uint256 lastChangeBlock)"
+    },
+    "getActiveYieldStrategies": "function getActiveYieldStrategies() view returns (uint256[] _indices, address[] _strategies, address[] _underlyingTokens, address[] _yieldTokens)",
+    "yieldStrategies": "function yieldStrategies(uint256) view returns (bool isActive, address strategy, address underlyingToken, address yieldToken, uint256 totalShare, uint256 activeYieldTokenAmount, uint256 harvestableYieldTokenAmount, uint256 expectedUnderlyingTokenAmount)"
 }

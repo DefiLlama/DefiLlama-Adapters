@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const { ethereumContractData, polygonContractData, avaxContractData, bscContractData } = require("./config");
+const { ethereumContractData, polygonContractData, avaxContractData, bscContractData, kavaContractData } = require("./config");
 const { vestingHelper } = require("../helper/unknownTokens");
 
 function getTvl(args) {
@@ -56,7 +56,7 @@ function getTvl(args) {
     }
     return totalBalances
   }
-};
+}
 
 module.exports = {
   methodology: `Counts each LP pair's native token and 
@@ -74,5 +74,8 @@ module.exports = {
   avax: {
     tvl: getTvl(avaxContractData),
   },
+  kava: {
+    tvl: getTvl(kavaContractData)
+  }
 };
 

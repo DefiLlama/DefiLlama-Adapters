@@ -1,12 +1,7 @@
-const axios = require('axios');
-const retry = require('async-retry')
+const { get } = require('../helper/http')
 
 async function fetch() {
-  const response = (
-    await retry(
-      async () => await axios.get('https://api.everlend.finance/api/v1/info')
-    )
-  ).data;
+  const response = await get('https://api.everlend.finance/api/v1/info')
 
   return response.tvl;
 }

@@ -1,28 +1,26 @@
-const {lendingMarket} = require("../helper/methodologies")
-const axios = require("axios");
+const { get_account_tvl } = require("../helper/chain/eos")
+const sdk = require('@defillama/sdk')
+const account1 = 'vigorlending'
+const tokens1 = [
+  ["eosio.token", "EOS", "eos"],
+  ["tethertether", "USDT", "tether"],
+  ["everipediaiq", "IQ", "everipedia"],
+  ["btc.ptokens", "PBTC", "bitcoin"],
+  ["eth.ptokens", "PETH", "ethereum"],
+];
 
-const EOSFLARE_ENDPOINT = "https://api.eosflare.io";
-
-async function get_account_tvl(account) {
-  const response = await axios.default.post(EOSFLARE_ENDPOINT + "/v1/eosflare/get_account", {account});
-  const { token_value, balance_total, eos_price } = response.data.account;
-  return token_value + // sum of all alt tokens
-         balance_total * eos_price; // sum of EOS balance * price
-}
-
-// https://app.vigor.ai/health
-async function eos() {
-  return await get_account_tvl("vigorlending");
-}
-
-async function fetch() {
-  return await eos();
-}
+const account2 = 'vigorstaking'
+const tokens2 = [
+  ["eosio.token", "EOS", "eos"],
+  ["tethertether", "USDT", "tether"],
+];
 
 module.exports = {
-  methodology: `${lendingMarket}. Vigor TVL is achieved by querying token balances from Vigor's lending smart contract via https://eosflare.io/api.`,
+  timetravel: false,
   eos: {
-    fetch: eos
+    tvl: sdk.util.sumChainTvls([
+      () => get_account_tvl(account1, tokens1),
+      () => get_account_tvl(account2, tokens2),
+    ])
   },
-  fetch
 }

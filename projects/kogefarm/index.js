@@ -1,8 +1,10 @@
 const sdk = require('@defillama/sdk')
 const abi = require('./abi.json')
 const utils = require('../helper/utils')
-const { unwrapUniswapLPs, unwrapCrv } = require('../helper/unwrapLPs')
-const { transformPolygonAddress, getFixBalances } = require('../helper/portedTokens')
+const { unwrapUniswapLPs, } = require('../helper/unwrapLPs')
+const { getFixBalances } = require('../helper/portedTokens')
+const { getConfig } = require('../helper/cache')
+
 const {
   transformAddressKF,
   getSinglePositions,
@@ -129,7 +131,7 @@ const polygonTvl = ({ include, exclude }) => async (
 
 /*  const vaults_full = (await utils.fetchURL(current_polygon_vaults_url)).data
   let vaults = vaults_full.map( v => v['vault']) */
-  let vaults = (await utils.fetchURL(current_polygon_vaults_url)).data
+  let vaults = (await getConfig('kogefarm/polygon',current_polygon_vaults_url))
 
   if (include) {
     vaults = include
@@ -242,7 +244,7 @@ const polygonTvl = ({ include, exclude }) => async (
 const fantomTvl = async (timestamp, block, chainBlocks) => {
   let balances = {}
 
-  let vaults = (await utils.fetchURL(current_fantom_vaults_url)).data
+  let vaults = (await getConfig('kogefarm/fantom', current_fantom_vaults_url))
 
   const lp_addresses = (
     await sdk.api.abi.multiCall({
@@ -438,7 +440,7 @@ const fantomTvl = async (timestamp, block, chainBlocks) => {
 const moonriverTvl = async (timestamp, block, chainBlocks) => {
   const balances = {}
 
-  let vaults = (await utils.fetchURL(current_moonriver_vaults_url)).data
+  let vaults = (await getConfig('kogefarm/moonriver', current_moonriver_vaults_url))
 
   const lp_addresses = (
     await sdk.api.abi.multiCall({
@@ -532,8 +534,8 @@ const kavaTvl = async (timestamp, block, chainBlocks) => {
 
   let balances = {};
 
-  let vaults = (await utils.fetchURL(current_kava_vaults_url)).data
-  if (typeof vaults === 'string') vaults = JSON.parse(vaults.replace(/\,(\s*[\}\]])/g, '$1'))
+  let vaults = (await getConfig('kogefarm/kava', current_kava_vaults_url))
+  if (typeof vaults === 'string') vaults = JSON.parse(vaults.replace(/,(\s*[}\]])/g, '$1'))
 
   const lp_addresses = (
     await sdk.api.abi.multiCall({
@@ -621,19 +623,6 @@ const kavaTvl = async (timestamp, block, chainBlocks) => {
     transformAddress,
   )
 
-
-/*  const { updateBalances,
-    pairBalances,
-    prices,
-    balances } = await getTokenPrices({
-    block: kavablock,
-    chain: kavachain,
-    useDefaultCoreAssets: true,
-    lps: uniV2Positions.map(val => val.token),
-    transformAddress: transformAddress,
-    allLps: true
-  })
-*/
   await getSinglePositions(
     balances,
     singlePositions,

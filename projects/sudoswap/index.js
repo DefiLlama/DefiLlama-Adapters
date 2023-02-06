@@ -1,32 +1,47 @@
+const { graphFetchById, } = require('../helper/http')
+const { getWhitelistedNFTs, } = require('../helper/tokenMapping')
 const sdk = require('@defillama/sdk')
-const { nullAddress, sumTokens2 } = require('../helper/unwrapLPs')
-const { sliceIntoChunks, log, } = require('../helper/utils')
+
+const query = `
+query get_pairs($lastId: String, $block: Int) {
+  pairs(
+    first: 1000
+    block: { number: $block }
+    where: {id_gt: $lastId}
+    ) {
+    id
+    ethBalance
+    collection {
+      id
+    }
+    spotPrice
+    numNfts
+  }
+}`
 
 module.exports = {
-  methodology: 'Sum up all the ETH in pools',
+  methodology: 'Sum up all the ETH in pools and count whitelisted NFT values as well (price fetched from chainlink)',
+  misrepresentedTokens: true,
+  hallmarks: [
+    [Math.floor(new Date('2022-12-06') / 1e3), 'TVL includes whitelisted nft value as well'],
+  ],
   ethereum: {
-    tvl: async (_, block) => {
-      const chain = 'ethereum'
-      const PairFactory = '0xb16c1342E617A5B6E4b631EB114483FDB289c0A4'
-      const logs = await sdk.api.util.getLogs({
-        keys: [],
-        toBlock: block,
-        target: PairFactory,
-        fromBlock: 14650107,
-        topic: 'NewPair(address)',
+    tvl: async (timestamp, block, chainBlocks) => {
+      const data = await graphFetchById({
+        endpoint: 'https://api.thegraph.com/subgraphs/name/zeframlou/sudoswap',
+        query,
+        options: {
+          timestamp, chain: 'ethereum', chainBlocks, useBlock: true,
+        }
+      })
+      const whitelisted = new Set(getWhitelistedNFTs())
+      const balances = {}
+      data.forEach(({ ethBalance, collection, numNfts }) => {
+        sdk.util.sumSingleBalance(balances, 'ethereum', ethBalance / 1e18)
+        if (+numNfts > 0 && whitelisted.has(collection.id.toLowerCase()))
+          sdk.util.sumSingleBalance(balances, collection.id.toLowerCase(), numNfts)
       })
 
-      // TODO: improve logic here, might end up with too many pools
-      const ownersList = logs.output.map(i => `0x${i.data.substring(26, 66)}`)
-      log('List of owners: %s', ownersList.length)
-
-      const ownerArrays = sliceIntoChunks(ownersList, 100)
-      const balances = {}
-      let i = 0
-      for (const owners of ownerArrays) {
-        log('fetching %s of %s', ++i, ownerArrays.length)
-        await sumTokens2({ tokens: [nullAddress], owners, chain, block, balances, })
-      }
       return balances
     }
   }
