@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const { unwrapUniswapLPs, unwrapLPsAuto } = require("../helper/unwrapLPs");
 const { pool2 } = require("../helper/pool2");
 const { staking, stakings } = require("../helper/staking.js");
 const abi =
@@ -28,75 +28,67 @@ const VectorLPPools = [
   VectorPoolsInfo.PTP_XPTP,
   VectorPoolsInfo.JOE_ZJOE,
 ];
-async function tvl(timestamp, block, chainBlocks) {
+async function tvl(timestamp, block, chainBlocks, { api }) {
   const balances = {};
   const transform = (addr) => "avax:" + addr;
   //GET PLATYPUS BALANCES
   const platypusPIDs = (
-    await sdk.api.abi.multiCall({
+    await api.multiCall({
       calls: Object.values(platypusPoolsInfo).map((pool) => ({
         target: MasterPlatypusAddress,
         params: [pool.lp],
       })),
       abi: "function getPoolId(address) view returns (uint256)",
-      chain: "avax",
-      block: chainBlocks.avax,
     })
-  ).output;
+  );
   //console.log("platypusPIDS:", platypusPIDs);
   const platypusBalancesOutputs = (
-    await sdk.api.abi.multiCall({
+    await api.multiCall({
       calls: platypusPIDs.map((pool) => ({
         target: MasterPlatypusAddress,
-        params: [pool.output, PtpMainStakingAddress],
+        params: [pool, PtpMainStakingAddress],
       })),
       abi: "function userInfo(uint256,address) view returns (uint256,uint256,uint256,uint256)",
-      chain: "avax",
-      block: chainBlocks.avax,
     })
-  ).output;
+  );
   //console.log("platypusBalancesOutputs:", platypusBalancesOutputs);
   const platypusBalances = Object.values(platypusPoolsInfo).map((pool, i) => ({
-    balance: platypusBalancesOutputs[i].output[0],
+    balance: platypusBalancesOutputs[i][0],
     token: pool.token.address,
     isLP: false,
   }));
   //console.log("platypusBalances:", platypusBalances);
   //GET JOE BALANCES
   const joeBalancesOutputs = (
-    await sdk.api.abi.multiCall({
+    await api.multiCall({
       calls: Object.values(JoePoolsInfo).map((pool) => ({
         target: masterchefAddress,
         params: [pool.receipt.address],
       })),
       abi: "function getPoolInfo(address) view returns (uint256,uint256,uint256,uint256)",
-      chain: "avax",
-      block: chainBlocks.avax,
     })
-  ).output;
+  );
   //console.log("joeBalancesOutputs:", joeBalancesOutputs);
   const joeBalances = Object.values(JoePoolsInfo).map((pool, i) => ({
-    balance: joeBalancesOutputs[i].output[2], //balance
+    balance: joeBalancesOutputs[i][2], //balance
     token: pool.token.address, //underlying lp token
     isLP: true,
   }));
   //console.log("joeBalances:", joeBalances);
   //GET VECTOR CORE BALANCES
   const masterChefBalancesOutput = (
-    await sdk.api.abi.multiCall({
+    await api.multiCall({
       calls: [...VectorStakingPools, ...VectorLPPools].map((pool) => ({
         target: pool.token.address,
         params: [masterchefAddress],
       })),
       abi: "erc20:balanceOf",
-      chain: "avax",
-      block: chainBlocks.avax,
     })
-  ).output;
+  );
   //console.log("masterChefBalancesOutput:", masterChefBalancesOutput);
   const masterChefBalances = [...VectorStakingPools, ...VectorLPPools].map(
     (pool, i) => ({
-      balance: masterChefBalancesOutput[i].output,
+      balance: masterChefBalancesOutput[i],
       token: pool.token.address,
       isLP: pool.token.contract === "IJoePair",
     })
@@ -104,7 +96,7 @@ async function tvl(timestamp, block, chainBlocks) {
   //console.log("masterChefBalances:", masterChefBalances);
   //GET OLD LOCKER BALANCES
   const oldLockerBalancesOutput = (
-    await sdk.api.abi.multiCall({
+    await api.multiCall({
       calls: [
         {
           target: "0x601B89a43EBBE26FA48d91F43eD63D08831d17CD",
@@ -112,14 +104,12 @@ async function tvl(timestamp, block, chainBlocks) {
         },
       ],
       abi: "function totalSupply() view returns (uint256)",
-      chain: "avax",
-      block: chainBlocks.avax,
     })
-  ).output;
+  );
   //console.log("oldLockerBalancesOutput:", oldLockerBalancesOutput);
   //GET NEW LOCKER BALANCES
   const newLockerBalancesOutput = (
-    await sdk.api.abi.multiCall({
+    await api.multiCall({
       calls: [
         {
           target: LockerAddress,
@@ -127,19 +117,17 @@ async function tvl(timestamp, block, chainBlocks) {
         },
       ],
       abi: "function totalLocked() view returns (uint256)",
-      chain: "avax",
-      block: chainBlocks.avax,
     })
-  ).output;
+  );
   //console.log("newLockerBalancesOutput:", newLockerBalancesOutput);
   const lockerBalances = [
     {
-      balance: oldLockerBalancesOutput[0].output,
+      balance: oldLockerBalancesOutput[0],
       token: vectorContracts.tokens.VTX.address,
       isLP: false,
     },
     {
-      balance: newLockerBalancesOutput[0].output,
+      balance: newLockerBalancesOutput[0],
       token: vectorContracts.tokens.VTX.address,
       isLP: false,
     },
@@ -154,24 +142,9 @@ async function tvl(timestamp, block, chainBlocks) {
 
   for (let i = 0; i < AllBalances.length; i++) {
     const info = AllBalances[i];
-    if (info.isLP) {
-      await unwrapUniswapLPs(
-        balances,
-        [
-          {
-            balance: info.balance,
-            token: info.token,
-          },
-        ],
-        chainBlocks.avax,
-        "avax",
-        transform
-      );
-    } else {
-      sdk.util.sumSingleBalance(balances, transform(info.token), info.balance);
-    }
+    sdk.util.sumSingleBalance(balances, transform(info.token), info.balance);
   }
-  return balances;
+  return unwrapLPsAuto({ ...api, balances});
 }
 
 module.exports = {
@@ -184,11 +157,9 @@ module.exports = {
       "avax",
       "avax:0x5817D4F0b62A59b17f75207DA1848C2cE75e7AF4"
     ), */ //No More Staking of VTX
-    pool2: pool2(
+    pool2: staking(
       contracts.contracts.masterchef,
       contracts.contracts.pool2,
-      "avax",
-      (a) => `avax:${a}`
     ),
   },
 };
