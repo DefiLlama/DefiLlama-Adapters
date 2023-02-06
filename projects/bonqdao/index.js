@@ -63,6 +63,9 @@ async function tvl(_, _1, _2, { api }) {
 }
 
 module.exports = {
+  hallmarks: [
+    [1675252800,"Oracle Hack"]
+  ],
   methodology: 'Summation of the collateral deposited in BonqDAO Troves (personal lending vaults)',
   start: 36884903,
   polygon: {
