@@ -55,7 +55,7 @@ function calculateLyfPoolTokens(lyfPools) {
             if (nonNeglibleReserves) {
                 sdk.util.sumSingleBalance(balances, tokenY, balanceY);
             }
-        };
+        }
     })
 
     return balances;
