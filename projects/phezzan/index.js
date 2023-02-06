@@ -19,7 +19,7 @@ async function offers() {
 const Contracts = {
   kava: {
     wkava: "0xc86c7C0eFbd6A49B35E8714C5f59D99De09A225b",
-    usdc: "0x07218A117724e015E442BF81C66Cc331141A4A85",
+    usdc: "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f",
     perpV1Result: "0x46bC4858F5BEE5AeB09bEB5906D7eFE92Ba50851",
     fundingResult: "0xDe7570E5835B6045C6AB360222887bAED21Be5EA", // Funding
     P1P1TradeResult: "0x49Ef8ca9A80B701E470EB70C835b361a99091278", // Staking
