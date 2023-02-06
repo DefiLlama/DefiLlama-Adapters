@@ -1,9 +1,8 @@
-const retry = require('async-retry')
-const axios = require("axios");
+const { get } = require('../helper/http')
 const {toUSDTBalances} = require('../helper/balances')
 
 async function fetch(chainName) {
-    const {data: {tvlMap}} = await retry(async () => await axios.get('https://app.earnmos.fi/defi-llama/tvl-map'));
+    const {tvlMap} = await get('https://app.earnmos.fi/defi-llama/tvl-map');
 
     return toUSDTBalances(tvlMap[chainName]);
 }

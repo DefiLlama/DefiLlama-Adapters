@@ -1,4 +1,4 @@
-const { sumTokens, unwrapCrv, } = require('../helper/unwrapLPs')
+const { sumTokens, } = require('../helper/unwrapLPs')
 
 const chain = 'polygon'
 const DAI = '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063'
@@ -48,7 +48,7 @@ async function polygon_treasury(timestamp, ethBlock, { polygon: block }) {
 
   const balances = {}
   const transformPolygonAddress = addr => `${chain}:${addr}`
-  await sumTokens(
+  return sumTokens(
     balances,
     treasuryTokens,
     block,
@@ -56,18 +56,6 @@ async function polygon_treasury(timestamp, ethBlock, { polygon: block }) {
     transformPolygonAddress
   )
 
-  // Handle wrapped pools in balances - like curvePools, etc
-  for (let i = 0; i < 2; i++) { // since crvTriCrypto contains am3crv, unwrap twice
-    for (const token of Object.keys(balances)) {
-      if (Object.keys(UnwrapTokenMapping).includes(token) && balances[token] > 0) {
-        if (UnwrapTokenMapping[token].type === 'crv') {
-          await unwrapCrv(balances, UnwrapTokenMapping[token].unwrapTo, balances[token], block, chain, transformPolygonAddress)
-        }
-        delete balances[token]// Once unwrapped, remove from balance
-      }
-    }
-  }
-  return balances
 }
 
 module.exports = {

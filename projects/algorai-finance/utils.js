@@ -1,4 +1,4 @@
-const {lookupApplications} = require("../helper/algorand");
+const { lookupApplications } = require("../helper/chain/algorand");
 
 /**
  * @desc Read global state from algorand application
@@ -28,56 +28,24 @@ const decodeString = (str) => {
  * @param keys - Asset keys to find.
  */
 const readGlobalState = async (appIndex, keys) => {
-    return new Promise(async (resolve, reject) => {
-        const states = await getAppState(appIndex)
+    const states = await getAppState(appIndex)
 
-        const foundedState = [];
+    const foundedState = [];
 
-        for (let i = 0; i < states.length; i++) {
-            const state = states[i];
-            const stateKey = decodeString(state.key);
+    for (let i = 0; i < states.length; i++) {
+        const state = states[i];
+        const stateKey = decodeString(state.key);
 
-            keys.forEach((key, index) => {
-                if (key === stateKey) {
-                    if (key === "rss") {
-                        foundedState[index] = decodeString(state.value.bytes);
-                    } else {
-                        foundedState[index] = state.value.uint;
-                    }
-                }
-            });
-
-        }
-        resolve(foundedState);
-    });
-};
-
-
-/**
- * @desc The median of a sorted array of size N is defined as the middle element when N is odd and average of middle two elements when N is even
- *
- * @param arr1
- * @returns {number|*}
- */
-const medianFromArray = (arr1) => {
-    let concat = arr1;
-    concat = concat.sort(
-        function (a, b) {
-            return a - b
+        keys.forEach((key, index) => {
+            if (key === stateKey) {
+                foundedState[index] = state.value.uint;
+            }
         });
 
-    let length = concat.length;
-
-    if (length % 2 === 1) {
-        return concat[(length / 2) - .5]
-    } else {
-        return (concat[length / 2]
-            + concat[(length / 2) - 1]) / 2;
     }
-}
-
+    return foundedState
+};
 
 module.exports = {
     readGlobalState,
-    medianFromArray
 };

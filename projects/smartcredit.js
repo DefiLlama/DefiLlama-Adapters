@@ -1,5 +1,4 @@
-const retry = require('async-retry')
-const { GraphQLClient, gql } = require('graphql-request')
+const { GraphQLClient, } = require('graphql-request')
 const sdk = require('@defillama/sdk')
 const { default: BigNumber } = require('bignumber.js')
 
@@ -10,7 +9,7 @@ const SMART_CREDIT = '0x72e9D9038cE484EE986FEa183f8d8Df93f9aDA13'.toLowerCase()
 var graphQLClient = new GraphQLClient(endPoint)
 
 async function getStats() {
-  return await retry(async bail => await graphQLClient.request(queryBody))
+  return await graphQLClient.request(queryBody)
 }
 
 function replaceEth(addr) {

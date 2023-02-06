@@ -2,6 +2,7 @@ const sdk = require("@defillama/sdk");
 const { default: BigNumber } = require("bignumber.js");
 const abi = require("./abi.json");
 const { unwrapUniswapV3NFTs } = require('../helper/unwrapLPs')
+const { getLogs } = require('../helper/cache/getLogs')
 
 BigNumber.config({ EXPONENTIAL_AT: 100 })
 
@@ -28,39 +29,31 @@ const calculateTokenTotal = async (balances, block, pairs, abi) => {
   }
 }
 
-const getPairsMapping = {}
+const getPairs = async (api) => {
+  const logs = (await getLogs({
+    target: PAIR_FACTORY,
+    topic: 'PairCreated(address,address,address)',
+    fromBlock: START_BLOCK,
+    api,
+  }))
 
-const getPairs = async (toBlock) => {
-  if (!getPairsMapping[toBlock]) getPairsMapping[toBlock] = _getPairs()
-  return getPairsMapping[toBlock]
-
-  async function _getPairs() {
-    const logs = (await sdk.api.util.getLogs({
-      target: PAIR_FACTORY,
-      topic: 'PairCreated(address,address,address)',
-      keys: [],
-      fromBlock: START_BLOCK,
-      toBlock,
-    })).output
-
-    return logs.map(log => {
-      return {
-        pair: `0x${log.topics[1].substr(-40).toLowerCase()}`,
-        tokenA: `0x${log.topics[2].substr(-40).toLowerCase()}`,
-        tokenB: `0x${log.topics[3].substr(-40).toLowerCase()}`
-      }
-    })
-  }
+  return logs.map(log => {
+    return {
+      pair: `0x${log.topics[1].substr(-40).toLowerCase()}`,
+      tokenA: `0x${log.topics[2].substr(-40).toLowerCase()}`,
+      tokenB: `0x${log.topics[3].substr(-40).toLowerCase()}`
+    }
+  })
 }
 
-const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
+const ethTvl = async (timestamp, ethBlock, chainBlocks, { api }) => {
   const balances = {};
 
-  const pairs = await getPairs(ethBlock)
+  const pairs = await getPairs(api)
   await calculateTokenTotal(balances, ethBlock, getTokenPairs(pairs, 'tokenA'), abi.totalSupplyAmount)
   await calculateTokenTotal(balances, ethBlock, getTokenPairs(pairs, 'tokenB'), abi.totalSupplyAmount)
 
-  await unwrapUniswapV3NFTs({ balances, nftsAndOwners: pairs.map(pair => [UNI_V3_POSITION_MANAGER, pair.pair, ]), block: ethBlock, })
+  await unwrapUniswapV3NFTs({ balances, nftsAndOwners: pairs.map(pair => [UNI_V3_POSITION_MANAGER, pair.pair,]), block: ethBlock, })
 
   return balances;
 };
@@ -69,10 +62,10 @@ function getTokenPairs(pairs, key) {
   return pairs.map(p => ({ pair: p.pair, token: p[key] }))
 }
 
-const borrowed = async (timestamp, ethBlock, chainBlocks) => {
+const borrowed = async (timestamp, ethBlock, chainBlocks, { api }) => {
   const balances = {};
 
-  const pairs = await getPairs(ethBlock)
+  const pairs = await getPairs(api)
   await calculateTokenTotal(balances, ethBlock, getTokenPairs(pairs, 'tokenA'), abi.totalDebtAmount)
   await calculateTokenTotal(balances, ethBlock, getTokenPairs(pairs, 'tokenB'), abi.totalDebtAmount)
 

@@ -34,21 +34,8 @@ const ethIndexes = [
   "0x43633bDb2675aDaB99CE3059D734b92a1deDAb2b", // EDI
 ];
 
-const getComponentsABI = {
-  inputs: [],
-  name: "getComponents",
-  outputs: [{ internalType: "address[]", name: "", type: "address[]" }],
-  stateMutability: "view",
-  type: "function",
-}
-
-const getCKsABI = {
-  inputs: [],
-  name: "getCKs",
-  outputs: [{ internalType: "address[]", name: "", type: "address[]" }],
-  stateMutability: "view",
-  type: "function",
-}
+const getComponentsABI = "address[]:getComponents"
+const getCKsABI = "address[]:getCKs"
 
 async function getTvl({ chain, block, indices }) {
   const indexCalls = indices.map(i => ({ target: i }))
@@ -125,11 +112,11 @@ async function bscTvl(timestamp, ethBlock, chainBlocks) {
   });
 
   const balances = await getTvl({ indices: bscIndexes, chain, block, })
-  const symbols = await getSymbols(chain, Object.keys(balances))
+  // const symbols = await getSymbols(chain, Object.keys(balances))
   const calls = []
-  Object.entries(symbols).forEach(([token, symbol]) => {
-    if (symbol.startsWith('ib')) calls.push({ target: token })
-  })
+  // Object.entries(symbols).forEach(([token, symbol]) => {
+  //   if (symbol.startsWith('ib')) calls.push({ target: token })
+  // })
   const [
     { output: token },
     { output: totalToken },

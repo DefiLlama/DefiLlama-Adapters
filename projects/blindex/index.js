@@ -12,7 +12,6 @@ const { getFixBalances } = require('../helper/portedTokens')
 //-------------------------------------------------------------------------------------------------------------
 
 // Test on the RSK network:
-// Go to @defilama/sdk/build/computetvl/blocks.js and add 'rsk' to the chainsForBlocks array
 const blindexBTCLP = '0x15f2f01159a73a56a7149096942ae4e2c019cbef'
 const wbtc = '0x542fda317318ebf1d3deaf76e0b632741a7e677d'
 const chains = {

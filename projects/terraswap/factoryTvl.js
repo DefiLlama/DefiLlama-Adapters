@@ -1,5 +1,6 @@
-const { query, queryContract } = require('../helper/terra')
+const { query, queryContract } = require('../helper/chain/terra')
 const { PromisePool } = require('@supercharge/promise-pool')
+const { transformDexBalances } = require('../helper/portedTokens')
 
 function getAssetInfo(asset) {
   return [asset.info.native_token?.denom ?? asset.info.token?.contract_addr, Number(asset.amount)]
@@ -96,42 +97,13 @@ function getFactoryTvl(factory, isTerra2 = false) {
   return async () => {
     const pairs = (await getAllPairs(factory, isTerra2)).filter(pair => (pair.assets[0].balance && pair.assets[1].balance))
 
-    const routes = new Map()
-    pairs.forEach(pair => {
-      const fromSet = routes.get(pair.assets[0].addr) ?? new Set()
-      fromSet.add(pair)
-      const toSet = routes.get(pair.assets[1].addr) ?? new Set()
-      toSet.add(pair)
-      routes.set(pair.assets[0].addr, fromSet)
-      routes.set(pair.assets[1].addr, toSet)
-    })
-
-    const tokenQueue = ["uluna"]
-    const pricePerLuna = { "uluna": 1 }
-    const visited = {}
-    let totalLunaCount = 0
-    while (tokenQueue.length) {
-      const from = tokenQueue.shift()
-      const currentSet = routes.get(from)
-      currentSet.forEach(pair => {
-        if (visited[pair.addr]) {
-          return
-        }
-        visited[pair.addr] = true
-        if (!pair.assets[0].balance || !pair.assets[1].balance) {
-          return
-        }
-        const fromAsset = pair.assets[0].addr === from ? pair.assets[0] : pair.assets[1]
-        const toAsset = pair.assets[0].addr === from ? pair.assets[1] : pair.assets[0]
-        pricePerLuna[toAsset.addr] = toAsset.balance / fromAsset.balance * pricePerLuna[from]
-
-        totalLunaCount += (fromAsset.balance / pricePerLuna[fromAsset.addr] + toAsset.balance / pricePerLuna[toAsset.addr])
-        tokenQueue.push(toAsset.addr)
-      })
-    }
-    return {
-      "terra-luna-2": totalLunaCount / 1e6
-    }
+    const data = pairs.map(({ assets }) => ({
+      token0: assets[0].addr,
+      token0Bal: assets[0].balance,
+      token1: assets[1].addr,
+      token1Bal: assets[1].balance,
+    }))
+    return transformDexBalances({ chain: 'terra2', data })
   }
 }
 

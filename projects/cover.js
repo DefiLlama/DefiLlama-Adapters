@@ -8,14 +8,14 @@ async function tvl(ts, block) {
   const { output: allProtocols } = await sdk.api.abi.call({
     block,
     target: factory,
-    abi: abis.abis.protocols.find(i => i.name === 'getAllProtocolAddresses')
+    abi: abis.abis.protocols.getAllProtocolAddresses
   })
 
   const calls = allProtocols.map(p => ({ target: p }))
   const { output: protocolDetails } = await sdk.api.abi.multiCall({
     block,
     calls,
-    abi: abis.abis.cover.find(i => i.name === 'getProtocolDetails')
+    abi: abis.abis.cover.getProtocolDetails
   })
   const toa = []
 
@@ -25,7 +25,7 @@ async function tvl(ts, block) {
       ['0x16de59092dAE5CcF4A1E6439D611fd0653f0Bd01', cover],  // yearn DAI
     ))
   })
-  return sumTokens({}, toa, block, undefined, undefined, { resolveYearn: true })
+  return sumTokens({}, toa, block)
 }
 
 

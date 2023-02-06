@@ -3,10 +3,9 @@ const { sliceIntoChunks, } = require("../helper/utils");
 const { PublicKey } = require("@solana/web3.js");
 const arrowIDL = require("./arrowIDL.json");
 const sdk = require('@defillama/sdk')
-const { getMultipleAccountBuffers, getSaberPools, getProvider, getConnection } = require("../helper/solana");
+const { getMultipleAccountBuffers, getSaberPools, getProvider, } = require("../helper/solana");
 
 async function tvl() {
-  // const connection = getConnection()
   const arrowId = new PublicKey('ARoWLTBWoWrKMvxEiaE2EH9DrWyV7mLpKywGDWxBGeq9')
   const quarryId = new PublicKey('QMNeHCGYnLVDn1icRAfQZpjPLBNkfGbSKRB83G5d8KB')
   const provider = getProvider()
@@ -33,7 +32,6 @@ async function tvl() {
     if (!data) return;
     quarryDataKeyed[miners[i]] = {
       tokenAmount: data.balance,
-      notYetReduced: true,
     }
   })
 
@@ -63,18 +61,14 @@ async function tvl() {
   return balances;
 }
 
-function addQuarryBalance(dataCache, balances = {}, { notYetReduced, tokenAmount, stakedMint, saberPool: { reserveA, reserveB, tokenACoingecko, tokenBCoingecko, } }) {
-
-  const decimals = dataCache[stakedMint].readUInt8(44);
-  const divisor = 10 ** decimals;
+function addQuarryBalance(dataCache, balances = {}, { tokenAmount, stakedMint, saberPool: { reserveA, reserveB, tokenA, tokenB, } }) {
   const lpTokenTotalSupply = Number(dataCache[stakedMint].readBigUInt64LE(36));
-  let poolShare = (tokenAmount * divisor) / lpTokenTotalSupply;
-  if (notYetReduced) poolShare /= divisor
+  let poolShare = tokenAmount / lpTokenTotalSupply
 
-  const reserveAAmount = Number(dataCache[reserveA].readBigUInt64LE(64)) / divisor;
-  const reserveBAmount = Number(dataCache[reserveB].readBigUInt64LE(64)) / divisor;
-  sdk.util.sumSingleBalance(balances, tokenACoingecko, poolShare * reserveAAmount)
-  sdk.util.sumSingleBalance(balances, tokenBCoingecko, poolShare * reserveBAmount)
+  const reserveAAmount = Number(dataCache[reserveA].readBigUInt64LE(64));
+  const reserveBAmount = Number(dataCache[reserveB].readBigUInt64LE(64));
+  sdk.util.sumSingleBalance(balances, 'solana:'+tokenA, poolShare * reserveAAmount)
+  sdk.util.sumSingleBalance(balances, 'solana:'+tokenB, poolShare * reserveBAmount)
   return balances
 }
 

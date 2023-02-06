@@ -1,5 +1,4 @@
 const sdk = require('@defillama/sdk');
-const abi = require('./abi/primaryRouter.json')
 const ROUTER_ADDRESS = "0x96418df8b474e90e49183cc23fa41e4ad8b0ddbe"
 
 const bonds = [
@@ -16,7 +15,7 @@ async function tvl(_, block) {
   ] = await Promise.all([
     sdk.api.abi.multiCall({ 
       block, 
-      abi: abi.find(i => i.name === 'tokenData'), 
+      abi: 'function tokenData(address) view returns (address issuer, uint256 issuancePrice, uint256 expiryPrice, address issuanceTokenAddress)', 
       target: ROUTER_ADDRESS,
       calls: bonds.map(i => ({ params: i}))
     }),

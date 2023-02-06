@@ -89,7 +89,7 @@ async function unwrapPuffTokens(balances, lpPositions, block) {
   const newLpPositions = [];
   for (let i = 0; i < lpPositions.length; i++) {
     newLpPositions.push({ balance: lpPositions[i].balance * pricePerShare[i].output / 10 ** 18, token: underlying[i].output })
-  };
+  }
 
   await unwrapUniswapLPs(
     balances,
@@ -97,7 +97,7 @@ async function unwrapPuffTokens(balances, lpPositions, block) {
     block,
     'metis'
   );
-};
+}
 
 let marketsCache = {}
 
@@ -150,7 +150,7 @@ function getCompoundV2Tvl(comptroller, chain = "ethereum", transformAdress,
         sdk.util.sumSingleBalance(balances, transformAdress(underlying), getCash.output)
       }
     });
-    if (["harmony", 'oasis', 'bsc', 'findora', 'dogechain', 'godwoken_v1'].includes(chain)) {
+    if (["harmony", 'oasis', 'bsc', 'findora', 'dogechain', 'godwoken_v1', 'ethpow', 'cronos', 'kcc'].includes(chain)) {
       const fixBalances = await getFixBalances(chain)
       fixBalances(balances);
     }

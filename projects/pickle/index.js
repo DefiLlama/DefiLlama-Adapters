@@ -15,7 +15,11 @@ function fetch(chain, type) {
 
     Object.keys(response.assets).forEach((assetsType) => {
       response.assets[assetsType].forEach((asset) => {
-        if (asset.chain === chain && asset.details && asset.details.harvestStats) {
+        if (
+          asset.chain === chain &&
+          asset.details &&
+          asset.details.harvestStats
+        ) {
           if (asset.tags && asset.tags.includes("pool2")) {
             pool2 += asset.details.harvestStats.balanceUSD;
           } else {
@@ -84,5 +88,8 @@ module.exports = {
   },
   optimism: {
     tvl: fetch("optimism", "tvl"),
+  },
+  kava: {
+    tvl: fetch("kava", "tvl"),
   },
 };

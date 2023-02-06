@@ -3,9 +3,11 @@ const abi = require('./abi.json')
 const { unwrapUniswapLPs } = require('../helper/unwrapLPs')
 const { staking } = require('../helper/staking')
 const { pool2 } = require('../helper/pool2')
-const { fetchURL } = require('../helper/utils')
+const { getConfig } = require('../helper/cache')
+
 const { gql, request } = require('graphql-request')
 const { default: BigNumber } = require('bignumber.js')
+const { getBlock } = require('../helper/http')
 
 /*
 const vaults = [
@@ -33,11 +35,13 @@ const globalDataQuery = gql`
   }
 `;
 
-async function polygonTvl(_, _b, { polygon: block }) {
+async function polygonTvl(_, _block, cb) {
+  const block = await getBlock(_, 'polygon', cb)
   return tvl('polygon', block, '137')
 }
 
-async function avaxTvl(_, _b, { polygon: block }) {
+async function avaxTvl(_, _block, cb) {
+  const block = await getBlock(_, 'avax', cb)
   return tvl('avax', block, '43114')
 }
 
@@ -53,7 +57,7 @@ async function tvl(chain, block, chainId) {
       sdk.util.sumSingleBalance(balances, chain + ':' + v.address, BigNumber(v.totalUnderlying).times(10 ** decimals.output).toFixed(0))
     }))
   }
-  let vaults = (await fetchURL("https://ethalend.com/vaults/vaultInfo")).data.data.filter(i => i.chainId === chainId).map(v => v.strategyAddress).filter(i => i)
+  let vaults = (await getConfig('ethalend', "https://ethalend.com/vaults/vaultInfo")).data.filter(i => i.chainId === chainId).map(v => v.strategyAddress).filter(i => i)
   vaults = Array.from(new Set(vaults)) // remove duplicates
   const [underlyings, totals] = await Promise.all([abi.underlying, abi.calcTotalValue].map(abi => sdk.api.abi.multiCall({
     abi,

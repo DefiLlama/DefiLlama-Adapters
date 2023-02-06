@@ -2,19 +2,18 @@ const abi = require("./abi.json");
 const { getUniTVL } = require('../helper/unknownTokens')
 const { addFundsInMasterChef } = require("../helper/masterchef");
 const { stakings } = require("../helper/staking");
-const sdk = require('@defillama/sdk')
 
 const chef = "0xc7dad2e953Dc7b11474151134737A007049f576E"
 const morph = "0x0789ff5ba37f72abc4d561d00648acadc897b32d"
 
-async function tvl(timestamp, block, chainBlocks) {
+async function tvl(timestamp, block, chainBlocks, api) {
   const balances = {}
   const transformAddress = addr=>`fantom:${addr}` //await transformFantomAddress();
   if(chainBlocks.fantom<21182441){ // Factory deployment block
     await addFundsInMasterChef(balances, chef, chainBlocks.fantom, "fantom", transformAddress, abi.poolInfo, [morph])
   } else {
     const dexTvl = getUniTVL({ factory: '0x9C454510848906FDDc846607E4baa27Ca999FBB6', chain: 'fantom', useDefaultCoreAssets: true })
-    return dexTvl(timestamp, block, chainBlocks);
+    return dexTvl(timestamp, block, chainBlocks, api);
   }
   return balances;
 }

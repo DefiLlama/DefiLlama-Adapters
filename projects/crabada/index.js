@@ -1,6 +1,5 @@
 const { staking } = require("../helper/staking");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
-const { transformAvaxAddress } = require("../helper/portedTokens");
 
 const stakingContract = "0xD2cd7a59Aa8f8FDc68d01b1e8A95747730b927d3";
 const CRA = "0xa32608e873f9ddef944b24798db69d80bbb4d1ed";
@@ -19,17 +18,17 @@ const treasuryContracts = [
 const lpTokens = [
   [CRA, false],
   ["0xf693248F96Fe03422FEa95aC0aFbBBc4a8FdD172", false], //TUS
-  ["0x140CAc5f0e05cBEc857e65353839FddD0D8482C1", true], // WAVAX-CRA JLP
-  ["0x565d20BD591b00EAD0C927e4b6D7DD8A33b0B319", true], // WAVAX-TUS JLP
-  ["0x21889033414f652f0fD0e0f60a3fc0221d870eE4", true], // CRA-TUS JLP
-  ["0x134905461773eF228b66CEBd5E1FF06D7CC79B12", true], // TUS-CRAM JLP
+  ["0x140CAc5f0e05cBEc857e65353839FddD0D8482C1", false], // WAVAX-CRA JLP
+  ["0x565d20BD591b00EAD0C927e4b6D7DD8A33b0B319", false], // WAVAX-TUS JLP
+  ["0x21889033414f652f0fD0e0f60a3fc0221d870eE4", false], // CRA-TUS JLP
+  ["0x134905461773eF228b66CEBd5E1FF06D7CC79B12", false], // TUS-CRAM JLP
   ["0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664", false] // USDC
 ];
 
 async function Treasury(timestamp, chainBlocks) {
   const balances = {};
 
-  const transformAddress = await transformAvaxAddress();
+  const transformAddress = addr => 'avax:'+addr;
   await sumTokensAndLPsSharedOwners(
     balances,
     lpTokens,

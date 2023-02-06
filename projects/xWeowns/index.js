@@ -17,7 +17,7 @@ async function tvl(timestamp, block, chainBlocks) {
             chain: 'lachain'
         })).output
     };
-};
+}
 
 module.exports = {
     doublecounted: false,
