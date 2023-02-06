@@ -1,0 +1,331 @@
+{
+  "getReservesData": {
+    "inputs": [
+      {
+        "internalType": "contract IPoolAddressesProvider",
+        "name": "provider",
+        "type": "address"
+      }
+    ],
+    "name": "getReservesData",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "underlyingAsset",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "symbol",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "decimals",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "baseLTVasCollateral",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "reserveLiquidationThreshold",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "reserveLiquidationBonus",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "reserveFactor",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "usageAsCollateralEnabled",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "borrowingEnabled",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "auctionEnabled",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isActive",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isFrozen",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isPaused",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isAtomicPricing",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint128",
+            "name": "liquidityIndex",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "variableBorrowIndex",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "liquidityRate",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "variableBorrowRate",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint40",
+            "name": "lastUpdateTimestamp",
+            "type": "uint40"
+          },
+          {
+            "internalType": "address",
+            "name": "xTokenAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "variableDebtTokenAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "interestRateStrategyAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "auctionStrategyAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "availableLiquidity",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalScaledVariableDebt",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "priceInMarketReferenceCurrency",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "priceOracle",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "variableRateSlope1",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "variableRateSlope2",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "baseVariableBorrowRate",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "optimalUsageRatio",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint128",
+            "name": "accruedToTreasury",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint256",
+            "name": "borrowCap",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "supplyCap",
+            "type": "uint256"
+          },
+          {
+            "internalType": "enum DataTypes.AssetType",
+            "name": "assetType",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct IUiPoolDataProvider.AggregatedReserveData[]",
+        "name": "",
+        "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "marketReferenceCurrencyUnit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "int256",
+            "name": "marketReferenceCurrencyPriceInUsd",
+            "type": "int256"
+          },
+          {
+            "internalType": "int256",
+            "name": "networkBaseTokenPriceInUsd",
+            "type": "int256"
+          },
+          {
+            "internalType": "uint8",
+            "name": "networkBaseTokenPriceDecimals",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct IUiPoolDataProvider.BaseCurrencyInfo",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "getUniswapV3LpTokenData": {
+    "inputs": [
+      {
+        "internalType": "contract IPoolAddressesProvider",
+        "name": "provider",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "lpTokenAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getUniswapV3LpTokenData",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "token0",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "token1",
+            "type": "address"
+          },
+          {
+            "internalType": "uint24",
+            "name": "feeRate",
+            "type": "uint24"
+          },
+          {
+            "internalType": "int24",
+            "name": "positionTickLower",
+            "type": "int24"
+          },
+          {
+            "internalType": "int24",
+            "name": "positionTickUpper",
+            "type": "int24"
+          },
+          {
+            "internalType": "int24",
+            "name": "currentTick",
+            "type": "int24"
+          },
+          {
+            "internalType": "uint128",
+            "name": "liquidity",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint256",
+            "name": "liquidityToken0Amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "liquidityToken1Amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "lpFeeToken0Amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "lpFeeToken1Amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "tokenPrice",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "baseLTVasCollateral",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "reserveLiquidationThreshold",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IUiPoolDataProvider.UniswapV3LpTokenInfo",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+}
