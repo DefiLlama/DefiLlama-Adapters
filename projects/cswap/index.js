@@ -15,12 +15,12 @@ module.exports = {
         const api = `https://rest.comdex.one/comdex/liquidity/v1beta1/pools/1?${paginationKey}`
         const { pagination, pools } = await get(api)
         pools.forEach(i => {
-          if (i.balances.length < 2)  return;
+          if (!i.balances.base_coin || !i.balances.quote_coin)  return;
           data.push({
-            token0: i.balances[0].denom, 
-            token1: i.balances[1].denom, 
-            token0Bal: i.balances[0].amount, 
-            token1Bal: i.balances[1].amount, 
+            token0: i.balances.base_coin.denom, 
+            token1: i.balances.quote_coin.denom, 
+            token0Bal: i.balances.base_coin.amount, 
+            token1Bal: i.balances.quote_coin.amount, 
           })
         })
         page++
