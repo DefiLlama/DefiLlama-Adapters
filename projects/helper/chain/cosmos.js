@@ -13,6 +13,8 @@ const endPoints = {
   cosmos: 'https://cosmoshub-lcd.stakely.io',
   kujira: 'https://lcd.kaiyo.kujira.setten.io',
   comdex: 'https://rest.comdex.one',
+  umee: 'https://api.mainnet.network.umee.cc',
+  orai: 'https://lcd.orai.io',
 }
 
 const chainSubpaths = {
@@ -127,6 +129,7 @@ async function sumTokens({ balances = {}, owners = [], chain, }) {
 
   if (errors && errors.length)
     throw errors[0]
+  console.log(owners, chain, balances)
   return transformBalances(chain, balances)
 }
 

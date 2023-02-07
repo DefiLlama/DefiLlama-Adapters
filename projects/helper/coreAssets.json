@@ -303,6 +303,7 @@
   "arbitrum": [
     "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
     "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+    "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1",
     "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
     "0xf97f4df75117a78c1a5a0dbb814af92458539fb4",
     "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
@@ -1115,6 +1116,7 @@
   ],
   "meter": [
     "0x5729cb3716a315d0bde3b5e489163bf8b9659436",
+    "0x228ebbee999c6a7ad74a6130e81b12f9fe237ba3",
     "0x160361ce13ec33c993b5cca8f62b6864943eb083",
     "0xd86e243fc0007e6226b07c9a50c9d70d78299eb5",
     "0x6abaedab0ba368f1df52d857f24154cc76c8c972",
@@ -1234,6 +1236,13 @@
   ],
   "omax": [
     "0xfebabc6a9b2ec46d6357879b8bf39b593f11a5b9"
+  ],
+  "wemix": [
+    "0x7d72b22a74a216af4a002a1095c8c707d6ec1c5f",
+    "0x8e81fcc2d4a3baa0ee9044e0d7e36f59c9bba9c1",
+    "0x9b377bd7db130e8bd2f3641e0e161cb613da93de",
+    "0x461d52769884ca6235b685ef2040f47d30c94eb5",
+    "0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d"
   ],
   "tlchain": [
     "0x422b6cdf97c750a0edcddc39c88f25379e59e96e"

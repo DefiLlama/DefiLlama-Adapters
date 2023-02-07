@@ -3,6 +3,7 @@ const { get } = require('../helper/http');
 const { log } = require('../helper/utils');
 
 const coinGeckoIds = {
+  uluna: "terra-luna-2",
   uatom: "cosmos",
   ustars: "stargaze",
   ujuno: "juno-network",
