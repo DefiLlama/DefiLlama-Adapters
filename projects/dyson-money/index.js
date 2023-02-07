@@ -2,7 +2,7 @@ const utils = require('../helper/utils');
 const { toUSDTBalances } = require('../helper/balances');
 let _response
 
-function fetchChain(chainId, staking) {
+function fetchChain(chainId) {
   return async () => {
     if (!_response) _response = utils.fetchURL('https://api.dyson.money/tvl')
     const response = await _response;
@@ -10,12 +10,9 @@ function fetchChain(chainId, staking) {
     let tvl = 0;
     const chain = response.data[chainId];
     for (const vault in chain) {
-      const isSPHERE = vault.includes("SPHERE")
-      if ((isSPHERE && staking) || (!isSPHERE && !staking)) {
-        tvl += Number(chain[vault]);
-      }
+      tvl += Number(chain[vault]);
     }
-    if (tvl === 0 && !staking) {
+    if (tvl === 0) {
       throw new Error(`chain ${chainId} tvl is 0`)
     }
 
