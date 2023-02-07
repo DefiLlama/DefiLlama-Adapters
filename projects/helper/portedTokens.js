@@ -6,7 +6,6 @@ const {
   stripTokenHeader,
   transformTokens,
   fixBalancesTokens,
-  unsupportedGeckoChains,
   ibcChains,
   distressedAssts,
 } = require('./tokenMapping')
@@ -45,7 +44,6 @@ async function transformInjectiveAddress() {
 }
 
 function fixBalances(balances, mapping, { chain, } = {}) {
-  // const removeUnmapped = unsupportedGeckoChains.includes(chain) // TODO: fix server-side, remove this
   const removeUnmapped = false
 
   Object.keys(balances).forEach(token => {
