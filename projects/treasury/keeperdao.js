@@ -1,4 +1,4 @@
-const {  treasuryExports } = require("../helper/treasury");
+const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 const keeperDaoTreasury = "0x9a67F1940164d0318612b497E8e6038f902a00a4";
 const ROOK = "0xfA5047c9c78B8877af97BDcb85Db743fD7313d4a";
@@ -7,6 +7,7 @@ const ROOK = "0xfA5047c9c78B8877af97BDcb85Db743fD7313d4a";
 module.exports = treasuryExports({
   ethereum: {
     tokens: [ 
+        nullAddress,
         '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',//USDC
         '0xFe2e637202056d30016725477c5da089Ab0A043A',//sETH2
         '0x6B175474E89094C44Da98b954EedeAC495271d0F',//DAI
