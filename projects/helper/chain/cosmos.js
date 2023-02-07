@@ -132,7 +132,6 @@ async function sumTokens({ balances = {}, owners = [], chain, }) {
 
   if (errors && errors.length)
     throw errors[0]
-  console.log(owners, chain, balances)
   return transformBalances(chain, balances)
 }
 
