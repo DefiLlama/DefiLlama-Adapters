@@ -11,11 +11,6 @@ const treasuryOP = "0x489f866c0698C8D6879f5C0F527bc8281046042D";
 const treasuryARB = "0x02944e3fb72aa13095d7cebd8389fc74bec8e48e";
 const treasuryARB2 = "0xd012A9C8159b0E7325448eD30B1499FddDAc0F40";
 
-
-
-const ROOK = "0xfA5047c9c78B8877af97BDcb85Db743fD7313d4a";
-
-
 module.exports = treasuryExports({
   ethereum: {
     tokens: [ 
