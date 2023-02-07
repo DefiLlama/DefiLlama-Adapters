@@ -15,7 +15,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
         for (let coin of pool.coins) {
             let tokenInfo = generic(coin.denom);
             if(!tokenInfo) {
-                console.log('unknown token', coin.denom)
+                sdk.log('unknown token', coin.denom)
                 continue;
             }
             if (balances[tokenInfo[0]]) {

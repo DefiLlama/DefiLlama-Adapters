@@ -20,5 +20,9 @@ module.exports = {
   avax:{
     staking: staking(avalancheStaking, avalancheGMX, "avax", "gmx", 18),
     tvl: gmxExports({ vault: avalancheVault, })
-  }
+  },
+  hallmarks:[
+      [1641556800, "Avalanche GMX Launch"]
+  ],
+  
 };
