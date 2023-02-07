@@ -84,6 +84,6 @@ module.exports = {
   },
   hallmarks: [
     [1651881600, "UST depeg"],
-    [1675177200, "Relaunch"],
+    [1675774800, "Relaunch on Osmosis"],
   ],
 };
