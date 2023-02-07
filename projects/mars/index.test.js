@@ -1,4 +1,4 @@
-const { mars, osmosis } = require("./index.js");
+const { osmosis } = require("./index.js");
 
 (async function () {
   console.log("querying osmosis tvl...");
