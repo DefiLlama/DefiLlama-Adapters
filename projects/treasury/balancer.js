@@ -6,12 +6,12 @@ const arbitrum = "0x6207ed574152496c9B072C24FD87cE9cd9E17320";
 const optimism = "0x043f9687842771b3dF8852c1E9801DCAeED3f6bc";
 
 const bal = "0xba100000625a3754423978a60c9317c58a424e3D";
+const abal = "0x272F97b7a56a387aE942350bBC7Df5700f8a4576";
 
 module.exports = treasuryExports({
   ethereum: {
     tokens: [
       nullAddress,
-      "0x272F97b7a56a387aE942350bBC7Df5700f8a4576", // aBAL
       "0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32", // LDO
       "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // USDC
       "0xDe30da39c46104798bB5aA3fe8B9e0e1F348163F", // GTC
@@ -25,6 +25,6 @@ module.exports = treasuryExports({
     ],
     owners: [eth],
     ownTokenOwners: [eth],
-    ownTokens: [bal],
+    ownTokens: [bal, abal],
   },
 });

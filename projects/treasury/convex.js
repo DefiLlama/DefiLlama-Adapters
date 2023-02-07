@@ -1,12 +1,12 @@
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 const convexTreasuryVault = "0x1389388d01708118b497f59521f6943Be2541bb7";
 const cvx = "0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B";
+const cvxCrv = "0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7";
 
 module.exports = treasuryExports({
   ethereum: {
     tokens: [
       nullAddress,
-      "0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7", // cvxCRV
       "0xD533a949740bb3306d119CC777fa900bA034cd52", // CRV
       "0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F", // SNX
       "0x31429d1856aD1377A8A0079410B297e1a9e214c2", // ANGLE
@@ -21,6 +21,6 @@ module.exports = treasuryExports({
     ],
     owners: [convexTreasuryVault],
     ownTokenOwners: [convexTreasuryVault],
-    ownTokens: [cvx],
+    ownTokens: [cvx, cvxCrv],
   },
 });
