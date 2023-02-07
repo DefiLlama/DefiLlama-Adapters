@@ -10,7 +10,7 @@ async function tvl(){
     var balances = {};
     var updatedBalance = {}
     for(let i=0;i<responseData.indexes.length;i++){
-        
+
         var underlyingTokens = []
         var index = responseData.indexes[i]
 
@@ -75,5 +75,6 @@ async function tvl(){
 module.exports = {
     timetravel: true,
     misrepresentedTokens: false,
+    methodology: 'calculates overall value deposited across different protocol portfolios',
     bsc: {tvl}
 }
