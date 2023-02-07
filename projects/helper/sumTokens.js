@@ -49,7 +49,7 @@ async function sumTokens(options) {
   if (token) tokens = [token]
   if (owner) owners = [owner]
 
-  if (!helpers[chain] && !specialChains.includes(chain))
+  if (!ibcChains.includes(chain) && !helpers[chain] && !specialChains.includes(chain))
     return sumTokensEVM(options)
 
   owners = getUniqueAddresses(owners, chain)
