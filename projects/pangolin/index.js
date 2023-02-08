@@ -1,5 +1,8 @@
-const { staking, stakingPricedLP} = require("../helper/staking");
+const { staking, stakingPricedLP } = require("../helper/staking");
+const { graphQuery } = require("../helper/http");
+const { getCurrentBlock } = require("../helper/chain/hbar");
 const { getUniTVL } = require('../helper/unknownTokens')
+const { toUSDTBalances } = require('../helper/balances')
 
 const contracts = {
   avax: {
@@ -13,13 +16,14 @@ const contracts = {
     stakingContract: "0x7428A089A79B24400a620F1Cbf8bd0526cFae777",
   },
   flare: {
-    factory: "0x9F771eB2D8eD6fC39b1f4DD2E4d784F946dcCB00",
+    factory: "0xbfe13753156b9c6b2818FB45ff3D2392ea43d79A",
     png: "0xC60BcDaA9CC7Cc372E793101fDfCB1083E25A203",
   },
 };
 
 module.exports = {
   misrepresentedTokens: true,
+  timetravel: false, // hedera rug
   methodology:
     "The Pangolin factory contract address are used to obtain the balance held in every LP pair and the stake contract is used to get the locked PNG balance.",
   avax: {
@@ -39,6 +43,17 @@ module.exports = {
   },
   flare: {
     tvl: getUniTVL({ useDefaultCoreAssets: true, factory: contracts.flare.factory, }),
+  },
+  hedera: {
+    tvl: async () => {
+      const block = await getCurrentBlock()
+      const data = await graphQuery('https://hedera-graph.pangolin.network/subgraphs/name/pangolin', `{
+          pangolinFactory(id: "1" block: { number: ${block - 1000} }) {
+          totalLiquidityUSD
+          }
+      }`)
+      return toUSDTBalances(data.pangolinFactory.totalLiquidityUSD)
+    }
   },
   start: 1612715300, // 7th-Feb-2021
 };

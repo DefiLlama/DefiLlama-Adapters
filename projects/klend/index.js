@@ -14,8 +14,7 @@ const okexPools = [
     "0x2404c9F6Ba2d4D5c73d86b3E3b9D7F6c70ba3448",
     "0x5A74de8e3D0c46c106AB769d50bf9CAF8681D30d"
 ];
-const lpAbi = {"constant":true,"inputs":[],"name":"lp","outputs":[{"internalType":"contract IERC20","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"};
-
+const lpAbi = 'address:lp'
 // OKEX
 const okexUnitroller = "0x9589c9c9b7A484F57d69aC09c14EcE4b6d785710";
 const kOkt = "0x4923abEe988f7bB7A9ae136BEBE4A8455e8dE229";

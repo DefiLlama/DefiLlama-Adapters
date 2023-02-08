@@ -1,7 +1,6 @@
 const factory = require("./factory.json");
-const getPoolTokensAndBalances = require("./getPoolTokensAndBalances.json");
 
 module.exports = {
-  getPoolTokensAndBalances,
+  getPoolTokensAndBalances: "function getPoolTokensAndBalances() view returns (address[] tokens, uint256[] balances)",
   ...factory,
 };

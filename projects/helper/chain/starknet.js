@@ -17,7 +17,7 @@ function getProvider() {
 async function call({ abi, target, params = [], allAbi = [] }) {
   if ((params || params === 0) && !Array.isArray(params))
     params = [params]
-  const contract = pair = new Contract([abi, ...allAbi, ], target, getProvider())
+  const contract = new Contract([abi, ...allAbi, ], target, getProvider())
   const response = await contract[abi.name](...params)
   if (abi.outputs.length === 1) return response[0]
   return response

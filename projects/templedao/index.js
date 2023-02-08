@@ -2,10 +2,8 @@ const { staking } = require("../helper/staking");
 const { pool2 } = require("../helper/pool2");
 const { sumTokens, sumTokens2, unwrapUniswapV3NFTs } = require("../helper/unwrapLPs")
 const { createIncrementArray } = require("../helper/utils")
-const { resolveCrvTokens } = require("../helper/resolveCrvTokens")
 const sdk = require('@defillama/sdk');
 const abi = require("./abi.json");
-const { GraphQLClient, gql } = require("graphql-request");
 const poolInfos = {}
 
 const templeStakingContract = "0xEc3C1aBDAb15EbC069ec5e320EaACf716eDfC011";
@@ -51,13 +49,6 @@ async function treasuryTvl(ts, block) {
     '0xfb6b1c1a1ea5618b3cfc20f81a11a97e930fa46b',
     '0x173063a30e095313eee39411f07e95a8a806014e',
   ]})
-
-  // const auraPools = await fetchAuraPoolData(temepleGnosisAddress);
-  // auraPools.account.poolAccounts.forEach(account => {
-  //   balances[account.pool.lpToken.id] = account.balance
-  // });
-
-  return balances;
 }
 
 async function getCvxPoolValue({ block, owner, pool, balances, chain }) {
@@ -68,7 +59,6 @@ async function getCvxPoolValue({ block, owner, pool, balances, chain }) {
   const ourPoolInfo = poolInfos[operator].find(i => JSON.stringify(i).indexOf(stakingToken) > -1)
   const crvToken = ourPoolInfo.lptoken
   balances[crvToken] = poolBalance
-  await resolveCrvTokens(balances, block, chain)
   async function setPoolInfo(operator) {
     if (poolInfos[operator])  return;
     const poolLength = +(await sdk.api.abi.call({ target: operator, block, chain, abi: abi.poolLength })).output
@@ -82,32 +72,7 @@ async function getCvxProxyVaultValue({block, balances, pool, vault}) {
   const unwrappedToken = (await sdk.api.abi.call({ target: stakingToken, block, chain, abi: abi.curveToken })).output
   const lpTokenBalance = (await sdk.api.abi.call({ target: stakingToken, params: [vault], block, chain, abi: abi.totalBalanceOf })).output
   sdk.util.sumSingleBalance(balances, unwrappedToken, lpTokenBalance);
-  await resolveCrvTokens(balances, block, chain)
 }
-
-async function fetchAuraPoolData(account) {
-  const endpoint = "https://api.thegraph.com/subgraphs/name/aurafinance/aura";
-  const graphQLClient = new GraphQLClient(endpoint);
-
-  const query = gql`
-  {
-    account(id: "${account}") {
-      poolAccounts {
-        pool {
-          lpToken {
-            id
-          }
-        }
-        balance
-      }
-    }
-  }
-  `;
-
-  return graphQLClient.request(query)
-}
-
-
 
 module.exports = {
   doublecounted: true,

@@ -1,14 +1,15 @@
 
 const { toUSDTBalances } = require('../helper/balances');
+const { LOFTY_API } = require('../helper/env');
 const axios = require("axios");
 
-const LoftyTVLApi = "https://api.lofty.ai/prod/properties/v2/valuations";
+const LoftyTVLApi = "https://partners.lofty.ai/properties/v2/valuations";
 
 async function loftyTVL() {
   const response = (
         await axios.get(LoftyTVLApi, {
           headers: {
-            'X-API-Client': 'DEFILLAMA'
+            'X-API-Key': LOFTY_API
           }
         })
   ).data.data;
@@ -22,6 +23,8 @@ async function loftyTVL() {
 }
 
 module.exports = {
+  timetravel: false,
+  misrepresentedTokens: true,
   algorand: {
     tvl: loftyTVL,
   }

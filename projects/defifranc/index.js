@@ -26,7 +26,7 @@ async function tvl(_, block, chainBlocks) {
   })
 
   return balances;
-};
+}
 
 module.exports = {
   ethereum: {

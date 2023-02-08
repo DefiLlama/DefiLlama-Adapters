@@ -49,7 +49,7 @@ async function iceBox(contract, block) {
     ).output,
   };
   return balances;
-};
+}
 
 // USDC + POPS staking product
 async function stakedUSDC(timestamp, ethBlock, chainBlocks) {
@@ -78,7 +78,7 @@ async function stakedAVAX(timestamp, ethBlock, chainBlocks) {
   const ibBalance = await iceBox(stakingContract_IB, block);
   balances[getAVAXAddress("0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7")] = ibBalance["0x0000000000000000000000000000000000000000"];
   return balances;
-};
+}
 
 module.exports = {
   misrepresentedTokens: true,

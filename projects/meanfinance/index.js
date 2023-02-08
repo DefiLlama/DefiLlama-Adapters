@@ -68,5 +68,6 @@ module.exports = {
     [1654057358, "OP launch brings more users into Optimism and benefits Mean"],
     [1666364400, "Yield-While-DCA launch"],
     [1668006000, "Deployment on Arbitrum"],
+    [1672099200, "Deployment on Ethereum"],
   ]
 };
