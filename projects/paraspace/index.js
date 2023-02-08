@@ -12,7 +12,7 @@ async function borrowed(timestamp, block, chainBlocks) {
 
 module.exports = {
   timetravel: true,
-  methodology: `TVL includes ERC-20 and ERC-721 tokens that have been supplied as collateral as well as ERC-20 tokens that are supplied for lending`,
+  methodology: `TVL includes ERC-20 and ERC-721 tokens that have been supplied as well as ERC-20 tokens that are supplied for lending.`,
   ethereum: {
     tvl,
     borrowed,
