@@ -1,86 +1,30 @@
-const axios = require("axios");
-const BigNumber = require("bignumber.js");
+const sdk = require('@defillama/sdk')
 
-const zero = (timestamp, block) => ({});
+const { queryContract } = require('../helper/chain/cosmos')
+const { transformBalances } = require('../helper/portedTokens')
+const { sumTokensExport } = require('../helper/sumTokens')
+const chain = 'osmosis'
+const contract = 'osmo1c3ljch9dfw5kf52nfwpxd2zmj2ese7agnx0p9tenkrryasrle5sqf3ftpg'
 
-const SCALING_FACTOR = 6;
-
-/**
- * Encode a javascript object into a base64 string.
- */
-function encodeBase64(msg) {
-  return Buffer.from(JSON.stringify(msg), "utf8").toString("base64");
-}
-
-/**
- * Query the TVL of a Red Bank deployment.
- */
-async function queryRedBankTvl(restUrl, contractAddr, assets) {
-  const query = encodeBase64({ markets: {} });
-  const res = await axios.get(`${restUrl}/cosmwasm/wasm/v1/contract/${contractAddr}/smart/${query}`);
+async function queryRedBankTvl() {
+  const res = await queryContract({ contract, chain: 'osmosis', data: { markets: {} } })
 
   const tvl = {};
   const borrowed = {};
+  res.forEach(i => {
+    sdk.util.sumSingleBalance(tvl, i.denom, i.collateral_total_scaled / 1e6 - i.debt_total_scaled / 1e6)
+    sdk.util.sumSingleBalance(borrowed, i.denom, i.debt_total_scaled * i.borrow_index / 1e6)
+  })
 
-  for (const asset of assets) {
-    const market = res
-      .data
-      .data
-      .find((market) => market.denom === asset.denom);
-
-    tvl[asset.coingeckoId] = BigNumber(market.collateral_total_scaled)
-      .times(Number(market.liquidity_index))
-      .div(BigNumber(10).pow(SCALING_FACTOR))
-      .div(BigNumber(10).pow(asset.decimals))
-      .toNumber();
-
-    borrowed[asset.coingeckoId] = BigNumber(market.debt_total_scaled)
-      .times(Number(market.borrow_index))
-      .div(BigNumber(10).pow(SCALING_FACTOR))
-      .div(BigNumber(10).pow(asset.decimals))
-      .toNumber();
-  }
-
-  return { tvl, borrowed };
-}
-
-/**
- * Query the TVL of the Osmosis Red Bank deployment.
- */
-async function queryOsmosis(timestamp, block) {
-  return queryRedBankTvl(
-    "https://lcd.osmosis.zone",
-    "osmo1c3ljch9dfw5kf52nfwpxd2zmj2ese7agnx0p9tenkrryasrle5sqf3ftpg",
-    [
-      {
-        denom: "uosmo",
-        decimals: 6,
-        coingeckoId: "osmosis",
-      },
-      {
-        denom: "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
-        decimals: 6,
-        coingeckoId: "cosmos",
-      },
-      {
-        denom: "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
-        decimals: 6,
-        coingeckoId: "usd-coin",
-      },
-    ],
-  );
+  return { tvl: transformBalances(chain, tvl), borrowed: transformBalances(chain, borrowed) };
 }
 
 module.exports = {
   timetravel: false,
   methodology: "We query Mars protocol smart contracts to get the amount of assets deposited and borrowed, then use CoinGecko to price the assets in USD.",
   osmosis: {
-    tvl: () => queryOsmosis().then((result) => result.tvl),
-    borrowed: () => queryOsmosis().then((result) => result.borrowed),
-  },
-  terra: {
-    tvl: zero,
-    borrowed: zero,
+    tvl: sumTokensExport({ owner: contract }),
+    borrowed: async () => (await queryRedBankTvl()).borrowed,
   },
   hallmarks: [
     [1651881600, "UST depeg"],
