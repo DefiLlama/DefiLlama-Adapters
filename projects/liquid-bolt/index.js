@@ -11,16 +11,16 @@ const factory = {
 module.exports = {
   methodology: `Uses factory addresses to find and price Liquidity Pools TVL`,
   bsc: {
-    tvl: getUniTVL({ factory: factory.bsc, chain: 'bsc' }),
+    tvl: getUniTVL({ factory: factory.bsc, chain: 'bsc', fetchBalances: true, }),
   },
   fantom: {
-    tvl: getUniTVL({ factory: factory.fantom, chain: 'fantom' }),
+    tvl: getUniTVL({ factory: factory.fantom, chain: 'fantom', fetchBalances: true, }),
   },
   polygon: {
-    tvl: getUniTVL({ factory: factory.polygon, chain: 'polygon' }),
+    tvl: getUniTVL({ factory: factory.polygon, chain: 'polygon', fetchBalances: true, }),
   },
   arbitrum: {
-    tvl: getUniTVL({ factory: factory.arbitrum, chain: 'arbitrum' }),
+    tvl: getUniTVL({ factory: factory.arbitrum, chain: 'arbitrum', fetchBalances: true, }),
   },
 };
 
