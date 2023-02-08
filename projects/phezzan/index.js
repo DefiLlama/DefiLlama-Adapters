@@ -28,9 +28,9 @@ const Contracts = {
 };
 
 module.exports = {
+  misrepresentedTokens: true,
     kava: {
-        tvl: sumTokensExport({ owner: Contracts.kava.perpV1Result, tokens: [Contracts.kava.wkava, Contracts.kava.usdc, nullAddress] }),
-        staking: sumTokensExport({ owner: Contracts.kava.fundingResult, tokens: [Contracts.kava.wkava]}),
+        tvl: sumTokensExport({ owners: [Contracts.kava.perpV1Result, Contracts.kava.fundingResult, ], tokens: [Contracts.kava.wkava, Contracts.kava.usdc, nullAddress] }),
     },
     zksync: {
         offers,
