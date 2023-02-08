@@ -6,7 +6,7 @@ async function fetch() {
 }
 
 module.exports = {
-  rsk: {
+  rootstock: {
     fetch
   },
   fetch

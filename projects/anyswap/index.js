@@ -5,7 +5,7 @@ const chains = {
   '10': 'optimism',
   '24': 'kardia',
   '25': 'cronos',
-  '30': 'rsk',
+  '30': 'rootstock',
   '40': 'telos',
   '56': 'bsc',
   '57': 'syscoin',

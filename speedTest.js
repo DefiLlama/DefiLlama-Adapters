@@ -24,7 +24,7 @@ function createProvider(name, url, chainId) {
     polygon: createProvider("polygon", "https://rpc-mainnet.maticvigil.com/", 137),
     heco: createProvider("heco", "https://http-mainnet.hecochain.com", 128),
     fantom: createProvider("fantom", "https://rpc.ftm.tools", 250),
-    rsk: createProvider("rsk", "https://public-node.rsk.co", 30),
+    rootstock: createProvider("rootstock", "https://public-node.rsk.co", 30),
     tomochain: createProvider("tomochain", "https://rpc.tomochain.com", 88),
     xdai: createProvider("xdai", "https://xdai.poanetwork.dev", 100),
     avax: createProvider("avax", "https://api.avax.network/ext/bc/C/rpc", 43114),

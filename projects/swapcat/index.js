@@ -16,7 +16,7 @@ const chainIds = {
     harmony: 1666600000,
     ethereumclassic: 61,
     heco: 128,
-    rsk: 30,
+    rootstock: 30,
     okexchain: 66,
     hpb: 269,
     energyweb: 246,
