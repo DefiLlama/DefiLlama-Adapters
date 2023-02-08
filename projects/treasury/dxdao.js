@@ -1,3 +1,8 @@
+const { nullAddress, treasuryExports } = require("../helper/treasury");
+
+const treasury = "0x519b70055af55a007110b4ff99b0ea33071c720a";
+const DXD = "0xa1d65e8fb6e87b60feccbc582f7f97804b725521";
+
 module.exports = treasuryExports({
     ethereum: {
       tokens: [ 
