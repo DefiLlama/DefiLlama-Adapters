@@ -48,7 +48,9 @@ async function getTVL(chain, chainBlocks) {
             block,
             chain,
           });
-          return price;
+          return new BigNumber(price).gt(data.priceInMarketReferenceCurrency)
+            ? price
+            : data.priceInMarketReferenceCurrency;
         } else {
           return data.priceInMarketReferenceCurrency;
         }
