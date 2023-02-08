@@ -66,29 +66,46 @@ const getAssetStateAbi = {
   "type": "function"
 }
 
-const START_BLOCK = 15307294
-const SILO_FACTORY = '0x4D919CEcfD4793c0D47866C8d0a02a0950737589'
+const Networks = {
+  ETHEREUM: 'ethereum',
+  ARBITRUM: 'arbitrum',
+}
 
-async function tvl(_, block, _1, { api }) {
+const StartBlocks = {
+  [Networks.ETHEREUM]: 15307294,
+  [Networks.ARBITRUM]: 51894508,
+}
 
-  const siloArray = await getSilos(api)
+const FactoryAddresses = {
+  [Networks.ETHEREUM]: '0x4D919CEcfD4793c0D47866C8d0a02a0950737589',
+  [Networks.ARBITRUM]: '0x4166487056A922D784b073d4d928a516B074b719',
+}
+
+const Silos = {
+  [Networks.ETHEREUM]: null,
+  [Networks.ARBITRUM]: null,
+}
+
+async function tvl(_, ethBlock, chainBlocks, { api }) {
+
+  const siloArray = await getSilos(api, Networks.ETHEREUM)
   const { output: assets } = await sdk.api.abi.multiCall({
     abi: getAssetsAbi,
     calls: siloArray.map(i => ({ target: i})),
-    block,
+    block: ethBlock,
   })
 
   const toa = assets.map(i => i.output.map(j => [j, i.input.target])).flat()
-  return sumTokens2({ block, tokensAndOwners: toa, })
+  return sumTokens2({ block: ethBlock, tokensAndOwners: toa, })
 }
 
-async function borrowed(_, block, _1, { api }) {
+async function borrowed(_, ethBlock, chainBlocks, { api }) {
   const balances = {}
-  const siloArray = await getSilos(api)
+  const siloArray = await getSilos(api, Networks.ETHEREUM)
   const { output: assetStates } = await sdk.api.abi.multiCall({
     abi: getAssetStateAbi,
     calls: siloArray.map(i => ({ target: i})),
-    block,
+    block: ethBlock,
   });
   assetStates.forEach(({ output: { assets, assetsStorage}}) => {
     assetsStorage.forEach((i, j) => sdk.util.sumSingleBalance(balances, assets[j], i.totalBorrowAmount))
@@ -97,18 +114,51 @@ async function borrowed(_, block, _1, { api }) {
   return balances
 }
 
-let silos
+async function tvlArbitrum(_, ethBlock, chainBlocks, { api }) {
 
-async function getSilos(api) {
-  if (!silos) silos = _getSilos()
-  return silos
+  const siloArray = await getSilos(api, Networks.ARBITRUM);
+  const { output: assets } = await sdk.api.abi.multiCall({
+    abi: getAssetsAbi,
+    calls: siloArray.map(i => ({ target: i})),
+    block: chainBlocks[Networks.ARBITRUM],
+    chain: Networks.ARBITRUM,
+  })
 
-  async function _getSilos() {
+  const toa = assets.map(i => i.output.map(j => [j, i.input.target])).flat()
+  return sumTokens2({ block: chainBlocks[Networks.ARBITRUM], tokensAndOwners: toa, chain: Networks.ARBITRUM })
+}
+
+async function borrowedArbitrum(_, ethBlock, chainBlocks, { api }) {
+  const balances = {}
+  const siloArray = await getSilos(api, Networks.ARBITRUM)
+  const { output: assetStates } = await sdk.api.abi.multiCall({
+    abi: getAssetStateAbi,
+    calls: siloArray.map(i => ({ target: i})),
+    block: chainBlocks[Networks.ARBITRUM],
+    chain: Networks.ARBITRUM,
+  });
+
+  assetStates.forEach(({ output: { assets, assetsStorage}}) => {
+    assetsStorage.forEach((i, j) => sdk.util.sumSingleBalance(balances, assets[j], i.totalBorrowAmount, Networks.ARBITRUM))
+  })
+
+  return balances
+}
+
+async function getSilos(api, network) {
+  if (!Silos[network]) Silos[network] = _getSilos(network)
+  return Silos[network]
+
+  async function _getSilos(network) {
+
+    let useFactoryAddress = FactoryAddresses[network];
+    let useStartBlock = StartBlocks[network];
+
     const logs = (
       await getLogs({
         api,
-        target: SILO_FACTORY,
-        fromBlock: START_BLOCK,
+        target: useFactoryAddress,
+        fromBlock: useStartBlock,
         topic: 'NewSiloCreated(address,address,uint128)',
       })
     )
@@ -119,7 +169,14 @@ async function getSilos(api) {
 
 
 module.exports = {
-  ethereum: { tvl, borrowed, },
+  ethereum: { 
+    tvl,
+    borrowed,
+  },
+  arbitrum: {
+    tvl: tvlArbitrum,
+    borrowed: borrowedArbitrum,
+  },
   hallmarks: [
     [1668816000, "XAI Genesis"]
   ]
