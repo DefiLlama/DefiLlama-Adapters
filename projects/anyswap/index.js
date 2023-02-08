@@ -64,7 +64,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 let coingeckoMcapsPromise
 
 async function getCgMcaps() {
-    if (!coingeckoMcapsPromise) coingeckoMcapsPromise = _getData
+    if (!coingeckoMcapsPromise) coingeckoMcapsPromise = _getData()
   return coingeckoMcapsPromise
 
   async function _getData() {
@@ -94,7 +94,7 @@ async function getChainData() {
 function fetchChain(chain) {
   return async () => {
     const data = await getChainData()
-    const protocolsInChain = chain === null ? data : data.filter(p => p.chainId.toString() === chain.toString())
+    const protocolsInChain = chain === null ? data : data.filter(p => p.srcChainId.toString() === chain.toString())
 
     const coingeckoMcaps = await getCgMcaps();
     const counted = {}
