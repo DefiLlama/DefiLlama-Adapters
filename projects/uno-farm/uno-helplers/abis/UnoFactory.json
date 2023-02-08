@@ -1,0 +1,5 @@
+{
+    "Farms": "function Farms(address) view returns (address lpToken)",
+    "pools": "function pools(uint256) view returns (address lpToken)",
+    "poolLength": "uint256:poolLength"
+}

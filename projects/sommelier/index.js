@@ -1,5 +1,6 @@
 const v0815 = require("./v0-8-15");
 const v0816 = require("./v0-8-16");
+const v2 = require("./v2");
 const chain = "ethereum";
 
 // v0.8.15 Cellars (Cellar 1.0)
@@ -22,7 +23,10 @@ const cellarsV0816 = [
   { id: STEADY_MATIC, startBlock: 16192732 },
 ];
 
-async function tvl(timestamp, block, chainBlocks) {
+const REAL_YIELD_USD = "0x97e6e0a40a3d02f12d1cec30ebfbae04e37c119e";
+const cellarsV2 = [{ id: REAL_YIELD_USD, startBlock: 16431804 }];
+
+async function tvl(timestamp, block, chainBlocks, { api }) {
   const balances = {};
   const baseOptions = { balances, chainBlocks };
 
@@ -36,6 +40,12 @@ async function tvl(timestamp, block, chainBlocks) {
   await v0816.sumTvl({
     ...baseOptions,
     cellars: filterActiveCellars(cellarsV0816, block),
+  });
+
+  await v2.sumTvl({
+    ...baseOptions,
+    api,
+    cellars: filterActiveCellars(cellarsV2, block),
   });
 
   return balances;
@@ -59,5 +69,6 @@ module.exports = {
     [1658419200, "aave2 Cellar Launch"],
     [1666886400, "ETH-BTC Trend & Momentum Cellars Launch"],
     [1669741200, "Steady ETH & BTC Cellars Launch"],
+    [1674671068, "Real Yield USD Cellar Launch"],
   ],
 };

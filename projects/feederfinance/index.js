@@ -1,7 +1,6 @@
 const { yieldHelper } = require('../helper/yieldHelper')
 const { pool2 } = require('../helper/pool2')
 const { staking } = require('../helper/staking')
-const sdk = require('@defillama/sdk')
 
 const abis = {
   poolLength: "uint256:vaultsLength",

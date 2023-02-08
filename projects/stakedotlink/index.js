@@ -9,13 +9,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
   const stakedLINK = await sdk.api.abi.call({
     block: ethBlock,
     target: linkStakingPool,
-    abi: {
-      inputs: [],
-      name: "totalStaked",
-      outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-      stateMutability: "view",
-      type: "function",
-    },
+    abi: "uint256:totalStaked",
   });
 
   return {
@@ -27,13 +21,7 @@ async function staking(timestamp, ethBlock, chainBlocks) {
   const stakedSDL = await sdk.api.abi.call({
     block: ethBlock,
     target: sdlStakingPool,
-    abi: {
-      inputs: [],
-      name: "totalStaked",
-      outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-      stateMutability: "view",
-      type: "function",
-    },
+    abi: "uint256:totalStaked",
   });
 
   return {

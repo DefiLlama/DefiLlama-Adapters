@@ -1,11 +1,9 @@
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 
-const PORTAL = require("./abis/avax/Portal.json");
-const gAVAX = require("./abis/avax/gAVAX.json");
-const DWP = require("./abis/avax/DWP.json");
-
-const transformAddress = (addr) => `avax:${addr}`;
+const PORTAL = {
+  address: "0x4fe8C658f268842445Ae8f95D4D6D8Cfd356a8C8"
+};
 
 async function avax(timestamp, ethBlock, chainBlocks) {
   const chain = "avax";
@@ -18,7 +16,7 @@ async function avax(timestamp, ethBlock, chainBlocks) {
       block: block,
       target: PORTAL.address,
       params: planetType,
-      abi: PORTAL.abi.find((abi) => abi.name === "getIdsByType"),
+      abi: 'function getIdsByType(uint256 _type) view returns (uint256[])',
       chain,
     })
   ).output;
@@ -30,8 +28,8 @@ async function avax(timestamp, ethBlock, chainBlocks) {
       calls: planetIds.map((id) => ({
         params: id,
       })),
-      target: gAVAX.address,
-      abi: gAVAX.abi.find((abi) => abi.name === "totalSupply"),
+      target: "0x6026a85e11bd895c934af02647e8c7b4ea2d9808",
+      abi: "function totalSupply(uint256 id) view returns (uint256)",
       chain,
     })
   ).output;
@@ -42,8 +40,8 @@ async function avax(timestamp, ethBlock, chainBlocks) {
       calls: planetIds.map((id) => ({
         params: id,
       })),
-      target: gAVAX.address,
-      abi: gAVAX.abi.find((abi) => abi.name === "pricePerShare"),
+      target: "0x6026a85e11bd895c934af02647e8c7b4ea2d9808",
+      abi: "function pricePerShare(uint256 _id) view returns (uint256)",
       chain,
     })
   ).output;
@@ -56,7 +54,7 @@ async function avax(timestamp, ethBlock, chainBlocks) {
         params: id,
       })),
       target: PORTAL.address,
-      abi: PORTAL.abi.find((abi) => abi.name === "planetWithdrawalPool"),
+      abi: 'function planetWithdrawalPool(uint256 _id) view returns (address)',
       chain,
     })
   ).output;
@@ -68,7 +66,7 @@ async function avax(timestamp, ethBlock, chainBlocks) {
         target: dwpOfId.output,
         params: 0,
       })),
-      abi: DWP.abi.find((abi) => abi.name === "getTokenBalance"),
+      abi: 'function getTokenBalance(uint8 index) view returns (uint256)',
       chain,
     })
   ).output;

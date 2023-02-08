@@ -1,7 +1,7 @@
 const sdk = require('@defillama/sdk');
-const getReserves = require('./abis/getReserves.json');
-const token0Abi = require('./abis/token0.json');
-const token1Abi = require('./abis/token1.json');
+const getReserves = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
+const token0Abi = 'address:token0'
+const token1Abi = 'address:token1'
 const { default: BigNumber } = require('bignumber.js');
 const { getChainTransform, getFixBalances, } = require('./portedTokens')
 const { sumTokens2 } = require('../helper/unwrapLPs')

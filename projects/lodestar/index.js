@@ -49,7 +49,7 @@ module.exports = {
 };
 
 const abis = {
-  getAllMarkets: { "inputs": [], "name": "getAllMarkets", "outputs": [{ "internalType": "contract CToken[]", "name": "", "type": "address[]" }], "stateMutability": "view", "type": "function" },
-  underlying: { "inputs": [], "name": "underlying", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" },
-  totalBorrows: { "inputs": [], "name": "totalBorrows", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+  getAllMarkets: "address[]:getAllMarkets",
+  underlying: "address:underlying",
+  totalBorrows: "uint256:totalBorrows",
 }

@@ -1,10 +1,5 @@
 const sdk = require('@defillama/sdk');
 const { getConfig } = require('../helper/cache')
-const {
-    transformAvaxAddress,
-    transformPolygonAddress,
-    transformOptimismAddress,
-} = require("../helper/portedTokens");
 const abi = require('./abi.json');
 
 const yoloAddress = {
@@ -60,7 +55,7 @@ const calcTvl = async (balances, id, chain, block, transformAddress) => {
 
 const avaxTVL = async (chainBlocks) => {
     const balances = {};
-    const transformAddress = await transformAvaxAddress();
+    const transformAddress = addr => 'avax:'+addr
     await calcTvl(
         balances,
         43114,
@@ -73,7 +68,7 @@ const avaxTVL = async (chainBlocks) => {
 
 const polygonTvl = async (chainBlocks) => {
     const balances = {};
-    const transformAddress = await transformPolygonAddress();
+    const transformAddress = addr => 'polygon:'+addr
     await calcTvl(
         balances,
         137,
@@ -86,7 +81,7 @@ const polygonTvl = async (chainBlocks) => {
 
 const optimismTvl = async (chainBlocks) => {
     const balances = {};
-    const transformAddress = await transformOptimismAddress();
+    const transformAddress = addr => 'optimism:'+addr
     await calcTvl(
         balances,
         10,

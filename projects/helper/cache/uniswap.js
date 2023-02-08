@@ -4,12 +4,14 @@ const { getCache, setCache, } = require('../cache');
 const { transformBalances, transformDexBalances, } = require('../portedTokens')
 const { getCoreAssets, } = require('../tokenMapping')
 const { sliceIntoChunks, } = require('../utils')
+const { sumTokens2, } = require('../unwrapLPs')
 const sdk = require('@defillama/sdk')
 
 const cacheFolder = 'uniswap-forks'
 
 function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
   useDefaultCoreAssets = false,
+  fetchBalances = false,
   abis = {},
   chain: _chain = 'ethereum',
   queryBatched = 0,
@@ -55,6 +57,17 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
       const batchedCalls = sliceIntoChunks(cache.pairs, queryBatched)
       for (const calls of batchedCalls)
         reserves.push(...await api.multiCall({ abi: abi.getReserves, calls }))
+    } else if (fetchBalances) {
+      const calls = []
+      cache.pairs.forEach((owner, i) => {
+        calls.push({ target: cache.token0s[i], params: owner })
+        calls.push({ target: cache.token1s[i], params: owner })
+      })
+      const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls, })
+      for (let i = 0; i < bals.length; i++) {
+        reserves.push({ _reserve0: bals[i], _reserve1: bals[i + 1] })
+        i++
+      }
     } else
       reserves = await api.multiCall({ abi: abi.getReserves, calls: cache.pairs })
 

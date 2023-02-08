@@ -12,6 +12,7 @@ module.exports = {
       chain,
       factory: '0xAaA04462e35f3e40D798331657cA015169e005d7',
       useDefaultCoreAssets: true,
+      queryBatched: 500,
     }),
     staking: staking({
       chain,

@@ -7,9 +7,12 @@ function fetch(endpoint) {
       .filter((p) => p.status.toLowerCase() === 'active')
       .map(e => e.tvlUsd).filter(e => e != undefined).reduce((a, b) => a + b, 0);
   };
-};
+}
 
 module.exports = {
+  hallmarks: [
+    [1674820800,"Vaults Pause"]
+  ],
   methodology: 'TVL counts deposits made to the Robo-Vault vaults. Data is pulled from the Robo-Vault API:"https://api.robo-vault.com/vault".',
   polygon: {
     fetch: fetch('vaults/polygon')

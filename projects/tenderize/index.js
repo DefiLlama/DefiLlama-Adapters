@@ -1,4 +1,3 @@
-const tenderSwapABI = require('./tenderSwapABI.json');
 const sdk = require('@defillama/sdk');
 const { GraphQLClient, gql } = require('graphql-request');
 const BigNumber = require('bignumber.js');
@@ -46,7 +45,7 @@ async function fetchArbitrum(timestamp, ethBlock, chainBlocks) {
     const token1Balance = await sdk.api.abi.call({
       block: chainBlocks['arbitrum'],
       target: config.tenderSwap,
-      abi: tenderSwapABI.find((abi) => abi.name === 'getToken1Balance'),
+      abi: "uint256:getToken1Balance",
       chain: 'arbitrum'
     });
 
@@ -74,7 +73,7 @@ async function fetchEthereum(timestamp, ethBlock, chainBlocks) {
     const token1Balance = await sdk.api.abi.call({
       block: ethBlock,
       target: config.tenderSwap,
-      abi: tenderSwapABI.find((abi) => abi.name === 'getToken1Balance'),
+      abi: "uint256:getToken1Balance",
     });
 
     tvlData[config.steak] = addBNstr(

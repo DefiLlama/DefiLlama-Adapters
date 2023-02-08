@@ -47,7 +47,8 @@ async function getNames(chain, tokens) {
   const missing = []
   tokens.forEach(i => {
     const key = chain + '-' + i
-    if (nameCache[key] || gasTokens.includes(i)) mapping[i] = nameCache[key]
+    if (key === 'ethereum-0x6b8734ad31d42f5c05a86594314837c416ada984') mapping[i] = ''
+    else if (nameCache[key] || gasTokens.includes(i)) mapping[i] = nameCache[key]
     else missing.push(i)
   })
 
@@ -73,7 +74,7 @@ async function getPool({ chain, block, registry }) {
 }
 
 function getRegistryType(registryId) {
-  if (!registryIdsReverse.hasOwnProperty(registryId)) throw new Error('Unknown registry id: ' + registryId)
+  if (!registryIdsReverse[registryId]) throw new Error('Unknown registry id: ' + registryId)
   return registryIdsReverse[registryId]
 }
 
@@ -164,6 +165,10 @@ async function unwrapPools({ poolList, registry, chain, block }) {
   return { tokensAndOwners: calls, blacklistedTokens }
 }
 
+const blacklists = {
+  ethereum: [ '0x6b8734ad31d42f5c05a86594314837c416ada984', ],
+}
+
 function tvl(chain) {
   return async (_t, _e, { [chain]: block }) => {
     let balances = {};
@@ -177,6 +182,8 @@ function tvl(chain) {
     const res = (await Promise.all(promises)).filter(i => i)
     const tokensAndOwners = res.map(i => i.tokensAndOwners).flat()
     const blacklistedTokens = res.map(i => i.blacklistedTokens).flat()
+    if (blacklists[chain])
+      blacklistedTokens.push(...blacklists[chain])
     await sumTokens2({  balances, chain, block, tokensAndOwners, transformAddress: transform, blacklistedTokens })
     await handleUnlistedFxTokens(balances, chain);
     return balances;
@@ -188,42 +195,45 @@ const chainTypeExports = chains => {
     (obj, chain) => ({ ...obj, [chain]: { tvl: tvl(chain) } }),
     {}
   );
-  exports.ethereum["staking"] = staking(
-    contracts.ethereum.veCRV,
-    contracts.ethereum.CRV
-  );
-
-  exports.harmony = {
-    tvl: async (ts, ethB, chainB) => {
-      if (ts > 1655989200) {
-        // harmony hack
-        return {};
-      }
-      const block = chainB.harmony
-      const balances = {};
-      await sumTokensSharedOwners(
-        balances,
-        [
-          "0xef977d2f931c1978db5f6747666fa1eacb0d0339",
-          "0x3c2b8be99c50593081eaa2a724f0b8285f5aba8f"
-        ],
-        ["0xC5cfaDA84E902aD92DD40194f0883ad49639b023"],
-        block,
-        "harmony",
-        addr => `harmony:${addr}`
-      );
-      return balances;
-    }
-  };
-  exports.hallmarks = [
-    [1597446675, "CRV Launch"],
-    [1621213201, "Convex Launch"],
-    [1642374675, "MIM depeg"],
-    [1651881600, "UST depeg"],
-    [1654822801, "stETH depeg"],
-    [1667692800, "FTX collapse"]
-  ];
   return exports;
 };
 
 module.exports = chainTypeExports(chains);
+
+
+module.exports.ethereum["staking"] = staking(
+  contracts.ethereum.veCRV,
+  contracts.ethereum.CRV
+);
+
+module.exports.harmony = {
+  tvl: async (ts, ethB, chainB) => {
+    if (ts > 1655989200) {
+      // harmony hack
+      return {};
+    }
+    const block = chainB.harmony
+    const balances = {};
+    await sumTokensSharedOwners(
+      balances,
+      [
+        "0xef977d2f931c1978db5f6747666fa1eacb0d0339",
+        "0x3c2b8be99c50593081eaa2a724f0b8285f5aba8f"
+      ],
+      ["0xC5cfaDA84E902aD92DD40194f0883ad49639b023"],
+      block,
+      "harmony",
+      addr => `harmony:${addr}`
+    );
+    return balances;
+  }
+};
+
+module.exports.hallmarks = [
+  [1597446675, "CRV Launch"],
+  [1621213201, "Convex Launch"],
+  [1642374675, "MIM depeg"],
+  [1651881600, "UST depeg"],
+  [1654822801, "stETH depeg"],
+  [1667692800, "FTX collapse"]
+];

@@ -36,6 +36,14 @@ const Asset_P07_BUSD = "0xcf434949c242c2d32514ba971947bd3700efb015";
 const Asset_P07_FRAX = "0x47ab513f97e1cc7d7d1a4db4563f1a0fa5c371eb";
 const Asset_P07_TUSD = "0x3c8e744f6c4ed2c9d82e33d69ddcc5961aa05367";
 
+// BNBx Pool
+const Asset_P08_WBNB = '0x0321d1d769cc1e81ba21a157992b635363740f86'
+const Asset_P08_BNBx = '0x16b37225889a038fad42efded462821224a509a7'
+
+// stkBNB Pool
+const Asset_P09_WBNB = '0x6C7B407411b3DB90DfA25DA4aA66605438D378CE'
+const Asset_P09_stkBNB = '0x0E202A0bCad2712d1fdeEB94Ec98C58bEeD0679f'
+
 // underlyingToken Address
 const BUSD = "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56";
 const DAI = "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3";
@@ -75,6 +83,10 @@ async function tvl(_t, _, { bsc: block }) {
     [BUSD, Asset_P07_BUSD],
     [FRAX, Asset_P07_FRAX],
     [TUSD, Asset_P07_TUSD],
+    [WBNB, Asset_P08_WBNB],
+    [BNBx, Asset_P08_BNBx],
+    [WBNB, Asset_P09_WBNB],
+    [stkBNB, Asset_P09_stkBNB]
   ];
   let balances = await sumTokens2({ tokensAndOwners: toa, chain, block });
 

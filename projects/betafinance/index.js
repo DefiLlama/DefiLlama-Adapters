@@ -26,19 +26,7 @@ const config = {
   }
 }
 
-const underlyingABI = {
-  "inputs": [],
-  "name": "underlying",
-  "outputs": [
-    {
-      "internalType": "address",
-      "name": "",
-      "type": "address"
-    }
-  ],
-  "stateMutability": "view",
-  "type": "function"
-}
+const underlyingABI = "address:underlying"
 
 async function getPools(chain) {
   const url = config[chain].poolURL

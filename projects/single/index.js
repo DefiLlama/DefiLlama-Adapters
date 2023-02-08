@@ -2,8 +2,8 @@ const { sumTokens2 } = require("../helper/unwrapLPs")
 const { getFixBalances } = require("../helper/portedTokens")
 const { getUserMasterChefBalances } = require("../helper/masterchef")
 const { getUserCraftsmanV2Balances } = require("./helpers")
-const vvsPoolInfoABI = require('./cronos/vvsPoolInfo.json')
-const spookyMasterChefV2PoolInfoABI = require('./fantom/spookyMasterChefV2PoolInfo.json')
+const vvsPoolInfoABI = 'function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accVVSPerShare)'
+const spookyMasterChefV2PoolInfoABI = 'function lpToken(uint256) view returns (address)'
 const { getConfig } = require('../helper/cache')
 
 const sdk = require('@defillama/sdk')

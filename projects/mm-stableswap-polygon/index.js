@@ -17,7 +17,7 @@ async function tvl(ts, _, { [chain]: block }) {
     i.tokens.forEach(j => toa.push([j, i.owner]))
   })
   return sumTokens2({ tokensAndOwners: toa, chain, block, })
-};
+}
 
 module.exports = {
   doublecounted: true,

@@ -3,8 +3,6 @@ const sdk = require('@defillama/sdk')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getLogs } = require('../helper/cache/getLogs')
 
-const getCurrentTokens = require('./abis/getCurrentTokens.json')
-
 const tvl = async (_, block, _1, { api }) => {
   const logs = (
     await getLogs({
@@ -19,7 +17,7 @@ const tvl = async (_, block, _1, { api }) => {
     .map((log) => `0x${log.topics[2].substring(26)}`)
   const calls = pools.map(i => ({ target: i }))
   const { output: tokens } = await sdk.api.abi.multiCall({
-    abi: getCurrentTokens,
+    abi: "address[]:getCurrentTokens",
     calls,
     block,
   })
