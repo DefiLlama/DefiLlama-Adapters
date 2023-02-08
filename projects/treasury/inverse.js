@@ -23,22 +23,20 @@ module.exports = treasuryExports({
       nullAddress,
       "0x7F5c764cBc14f9669B88837ca1490cCa17c31607", // USDC
       "0x139283255069Ea5deeF6170699AAEF7139526f1f", // OPTIDOGE
+      "0x8aE125E8653821E851F12A49F7765db9a9ce7384", // DOLA
     ],
     owners: [op],
     ownTokenOwners: [op],
-    ownTokens: [
-      "0x8aE125E8653821E851F12A49F7765db9a9ce7384", // DOLA
-    ],
+    ownTokens: [],
   },
   bsc: {
     tokens: [
       nullAddress,
       "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", // WBNB
+      "0x2F29Bc0FFAF9bff337b31CBe6CB5Fb3bf12e5840", // DOLA
     ],
     owners: [bsc],
     ownTokenOwners: [bsc],
-    ownTokens: [
-      "0x2F29Bc0FFAF9bff337b31CBe6CB5Fb3bf12e5840", // DOLA
-    ],
+    ownTokens: [],
   },
 });
