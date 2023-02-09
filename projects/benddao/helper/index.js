@@ -7,8 +7,6 @@ const address = require("./address");
 async function tvl(chain, timestamp, chainBlocks, { api }) {
   const { UiPoolDataProvider, LendPoolAddressProvider, } = address[api.chain]
   
-  const balances = {}
-
   const [simpleReservesData, simpleNftsData] =
     await Promise.all([
       api.call({
