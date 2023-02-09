@@ -8,7 +8,7 @@ const treasury3 = "0xbecc659bfc6edca552fa1a67451cc6b38a0108e4";
 const treasury4 = "0x076ff8e6402b02855ff82119b53e59bbdd67f0ee";
 const treasury5 = "0xFb3bD022D5DAcF95eE28a6B07825D4Ff9C5b3814"
 
-const IDLE = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
+const IDLE = "0x875773784af8135ea0ef43b5a374aad105c5d39e";
 
 // polygon
 
