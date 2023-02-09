@@ -49,11 +49,10 @@ module.exports = {
         "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f", //WBTC
       ],
       owner: "0xA6efac6a6715CcCE780f8D9E7ea174C4d85dbE02",
-      chain: "arbitrum",
     }),
   },
   //binance TVL consists of investments/tokens in gnosis safe
-  binance: {
+  bsc: {
     tvl: sumTokensExport({
       tokens: [
         "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", //BUSD
