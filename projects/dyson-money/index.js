@@ -35,8 +35,15 @@ module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
   doublecounted: true,
-  staking: staking(stakingAddress, sphere_token, 'polygon'),
-  ...Object.fromEntries(Object.entries(chains).map(chain => [chain[0], {
-    tvl: fetchChain(chain[1], false),
-  }]))
+  methodology: "Calculate TVL by summing up all vaults' TVLs.",
+  polygon: {
+    tvl: fetchChain(137),
+    staking: staking(stakingAddress, sphere_token, 'polygon'),
+  },
+  arbitrum: {
+    tvl: fetchChain(42161),
+  },
+  optimism: {
+    tvl: fetchChain(10),
+  },
 }
