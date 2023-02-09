@@ -37,7 +37,6 @@ module.exports = {
                 "0x7F5c764cBc14f9669B88837ca1490cCa17c31607", //USDC
             ],
             owner: "0x93B0a33911de79b897eb0439f223935aF5a60c24",
-            chain: "optimism",
         }),
     },
     //Arbitrum TVL consists of investments/tokens in gnosis safe
@@ -52,8 +51,10 @@ module.exports = {
             ],
             owner: "0xA6efac6a6715CcCE780f8D9E7ea174C4d85dbE02",
             chain: "arbitrum",
-        },
-            binance: {
-            tvl: binanceTvl,
-        },
+        }),
+    },
+    //binance TVL consists of investments/tokens in gnosis safe
+    binance: {
+        tvl: binanceTvl,
+    },
 };
