@@ -42,4 +42,4 @@ const config = {
 }
 
 module.exports = cexExports(config)
-module.exports.methodology = 'We have collect this wallets from Hotbit Team on the 14/12/22'
+module.exports.methodology = 'We have collect this wallets from Hotbit Team on the 14/12/22 and added more on the 09/02/2023'
