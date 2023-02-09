@@ -34,9 +34,9 @@ async function arbitrumTvl(timestamp, block, chainBlocks) {
 
     await Promise.all([
         balanceOf(ArbitrumGnosisContract, "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1", "arb1:0x82aF49447D8a07e3bd95BD0d56f35241523fBab1", balances, block, "arbitrum"), // Arbitrum WETH
-        //balanceOf(ArbitrumGnosisContract, "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a", "arb1:0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a", balances, block, "arbitrum"), // Arbitrum GMX
+        balanceOf(ArbitrumGnosisContract, "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a", "arb1:0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a", balances, block, "arbitrum"), // Arbitrum GMX
         balanceOf(ArbitrumGnosisContract, "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8", "arb1:0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8", balances, block, "arbitrum"), // Arbitrum USDC
-        //balanceOf(ArbitrumGnosisContract, "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9", "arb1:0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9", balances, block, "arbitrum"), // Arbitrum USDT
+        balanceOf(ArbitrumGnosisContract, "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9", "arb1:0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9", balances, block, "arbitrum"), // Arbitrum USDT
         balanceOf(ArbitrumGnosisContract, "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f", "arb1:0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f", balances, block, "arbitrum"), // Arbitrum WBTC
     ]);
 }
