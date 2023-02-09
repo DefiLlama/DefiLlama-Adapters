@@ -19,10 +19,10 @@ async function optimismTvl(timestamp, block, chainBlocks) {
     let balances = {}
 
     await Promise.all([
-        balanceOf(OptimismGnosisContract, "0x4200000000000000000000000000000000000006", "optimism:0x4200000000000000000000000000000000000006", balances, block, "optimism"), // Optimism ETH
-        balanceOf(OptimismGnosisContract, "0x4200000000000000000000000000000000000042", "optimism:0x4200000000000000000000000000000000000042", balances, block, "optimism"), // Optimism OP
-        balanceOf(OptimismGnosisContract, "0x73cb180bf0521828d8849bc8CF2B920918e23032", "optimism:0x73cb180bf0521828d8849bc8CF2B920918e23032", balances, block, "optimism"), // Optimism USD+
-        balanceOf(OptimismGnosisContract, "0x7F5c764cBc14f9669B88837ca1490cCa17c31607", "optimism:0x7F5c764cBc14f9669B88837ca1490cCa17c31607", balances, block, "optimism"), // Optimism USDC
+        balanceOf(OptimismGnosisContract, "0x4200000000000000000000000000000000000006", balances, block, "optimism"), // Optimism ETH
+        balanceOf(OptimismGnosisContract, "0x4200000000000000000000000000000000000042", balances, block, "optimism"), // Optimism OP
+        balanceOf(OptimismGnosisContract, "0x73cb180bf0521828d8849bc8CF2B920918e23032", balances, block, "optimism"), // Optimism USD+
+        balanceOf(OptimismGnosisContract, "0x7F5c764cBc14f9669B88837ca1490cCa17c31607", balances, block, "optimism"), // Optimism USDC
     ]);
 
     return balances;
@@ -33,15 +33,17 @@ async function arbitrumTvl(timestamp, block, chainBlocks) {
     let balances = {}
 
     await Promise.all([
-        balanceOf(ArbitrumGnosisContract, "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1", "arbitrum:0x82aF49447D8a07e3bd95BD0d56f35241523fBab1", balances, block, "arbitrum"), // Arbitrum WETH
-        balanceOf(ArbitrumGnosisContract, "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a", "arbitrum:0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a", balances, block, "arbitrum"), // Arbitrum GMX
-        balanceOf(ArbitrumGnosisContract, "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8", "arbitrum:0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8", balances, block, "arbitrum"), // Arbitrum USDC
-        balanceOf(ArbitrumGnosisContract, "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9", "arbitrum:0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9", balances, block, "arbitrum"), // Arbitrum USDT
-        balanceOf(ArbitrumGnosisContract, "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f", "arbitrum:0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f", balances, block, "arbitrum"), // Arbitrum WBTC
+        balanceOf(ArbitrumGnosisContract, "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1", balances, block, "arbitrum"), // Arbitrum WETH
+        balanceOf(ArbitrumGnosisContract, "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a", balances, block, "arbitrum"), // Arbitrum GMX
+        balanceOf(ArbitrumGnosisContract, "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8", balances, block, "arbitrum"), // Arbitrum USDC
+        balanceOf(ArbitrumGnosisContract, "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9", balances, block, "arbitrum"), // Arbitrum USDT
+        balanceOf(ArbitrumGnosisContract, "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f", balances, block, "arbitrum"), // Arbitrum WBTC
     ]);
-}
 
-async function balanceOf(owner, target, countAsCa, balances, block, chain) {
+    return balances;
+}ß
+
+async function balanceOf(owner, target, balances, block, chain) {
     const balance = (await sdk.api.erc20.balanceOf({
         chain: chain,
         block: block,
@@ -49,7 +51,7 @@ async function balanceOf(owner, target, countAsCa, balances, block, chain) {
         owner: owner,
     })).output;
 
-    sdk.util.sumSingleBalance(balances, countAsCa, balance);
+    sdk.util.sumSingleBalance(balances, target, balance);
 }
 
 module.exports = {
