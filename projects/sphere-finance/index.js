@@ -41,7 +41,7 @@ async function arbitrumTvl(timestamp, block, chainBlocks) {
     ]);
 }
 
-async function balanceOf(owner, target, block, chain, balances) {
+async function balanceOf(owner, target, balances, block, chain) {
     const balance = (await sdk.api.erc20.balanceOf({
         chain: chain,
         block: block,
@@ -51,7 +51,6 @@ async function balanceOf(owner, target, block, chain, balances) {
 
     sdk.util.sumSingleBalance(balances, target, balance);
 }
-
 
 module.exports = {
     optimism: {
