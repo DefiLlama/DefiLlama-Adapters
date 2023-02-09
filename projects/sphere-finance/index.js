@@ -40,7 +40,7 @@ async function polygonTVL(timestamp, block, chainBlocks) {
     chain: 'polygon',
     block,
     balancerPool: wmatic20sphere80,
-    owner: sphereToken,    
+    owner: "0x1a2Ce410A034424B784D4b228f167A061B94CFf4",    
   })
   Object.entries(bal).forEach(([token, balance]) => {
     balances[token] = balance
