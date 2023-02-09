@@ -11,8 +11,7 @@ const PolygonGnosisContracts = [
 
 //Binance TVL consists of investments/tokens in gnosis safe
 async function binanceTvl(timestamp, block) {
-  let balance = 0;
-  const sum = await sumTokensExport({
+  return sumTokensExport({
     tokens: [
       "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", //BUSD
       "0xAD6742A35fB341A9Cc6ad674738Dd8da98b94Fb1", //WOM
@@ -24,8 +23,6 @@ async function binanceTvl(timestamp, block) {
     ],
     owner: "0x124E8498a25EB6407c616188632D40d80F8e50b0",
   });
-  balance += sum;
-  return balance;
 }
 
 module.exports = {
@@ -56,6 +53,17 @@ module.exports = {
   },
   //binance TVL consists of investments/tokens in gnosis safe
   bsc: {
-    tvl: binanceTvl,
+    tvl: sumTokensExport({
+      tokens: [
+        "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", //BUSD
+        "0xAD6742A35fB341A9Cc6ad674738Dd8da98b94Fb1", //WOM
+        "0x14016E85a25aeb13065688cAFB43044C2ef86784", //TUSD
+        "0x52F24a5e03aee338Da5fd9Df68D2b6FAe1178827", //ankrBNB
+        "0xA60205802E1B5C6EC1CAFA3cAcd49dFeECe05AC9", //CONE
+        "0x9f8BB16f49393eeA4331A39B69071759e54e16ea", //MDB+
+        "0xD7FbBf5CB43b4A902A8c994D94e821f3149441c7", //UNKWN
+      ],
+      owner: "0x124E8498a25EB6407c616188632D40d80F8e50b0",
+    }),
   },
 };
