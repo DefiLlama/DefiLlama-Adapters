@@ -5,6 +5,7 @@ const sphereToken = "0x62F594339830b90AE4C084aE7D223fFAFd9658A7"
 const wmatic20sphere80 = "0xf3312968c7D768C19107731100Ece7d4780b47B2" //20WMATIC-80SPHERE LP
 
 const GnosisMultisigTreasuries = ["0x20D61737f972EEcB0aF5f0a85ab358Cd083Dd56a", "0x1a2Ce410A034424B784D4b228f167A061B94CFf4", "0x826b8d2d523E7af40888754E3De64348C00B99f4"]
+const LPTreasury = "0x1a2Ce410A034424B784D4b228f167A061B94CFf4"
 
 const PEN = "0x9008D70A5282a936552593f410AbcBcE2F891A97"
 const DYST = "0x39ab6574c289c3ae4d88500eec792ab5b947a5eb"
@@ -40,11 +41,10 @@ async function polygonTVL(timestamp, block, chainBlocks) {
     chain: 'polygon',
     block,
     balancerPool: wmatic20sphere80,
-    owner: "0x1a2Ce410A034424B784D4b228f167A061B94CFf4",    
+    owner: LPTreasury,
   })
-  Object.entries(bal).forEach(([token, balance]) => {
-    balances[token] = balance
-  }
+  sdk.util.sumSingleBalance(balances, sphereToken, bal)
+
 
 )};
 
