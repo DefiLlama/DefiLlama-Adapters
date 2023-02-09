@@ -61,7 +61,7 @@ module.exports = {
         "0x80487b4f8f70e793A81a42367c225ee0B94315DF", //CASH
         "",
       ],
-      owner: [
+      owners: [
         "0x20D61737f972EEcB0aF5f0a85ab358Cd083Dd56a",
         "0x1a2ce410a034424b784d4b228f167a061b94cff4",
         "0x826b8d2d523e7af40888754e3de64348c00b99f4",
