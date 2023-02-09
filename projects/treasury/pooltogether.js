@@ -2,7 +2,8 @@ const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 const pullTreasury = "0x42cd8312D2BCe04277dD5161832460e95b24262E";
 const vesting = "0x21950E281bDE1714ffd1062ed17c56D4D8de2359";
-
+const optreasury = "0x8d352083F7094dc51Cd7dA8c5C0985AD6e149629";
+const polytreasury = "0x3feE50d2888F2F7106fcdC0120295EBA3ae59245";
 const POOL = "0x0cEC1A9154Ff802e7934Fc916Ed7Ca50bDE6844e";
 
 module.exports = treasuryExports({
@@ -17,8 +18,27 @@ module.exports = treasuryExports({
       "0xDe30da39c46104798bB5aA3fe8B9e0e1F348163F", //GTC
       "0x4da27a545c0c5B758a6BA100e3a049001de870f5", //stkAAVE
       "0xdd4d117723C257CEe402285D3aCF218E9A8236E1", // ptausdc
+      "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84", // stETH
+      "0xD5f60154BEf3564EbFBe9bB236595f0da548a742", // spethwin
     ],
     owners: [pullTreasury, vesting],
-    ownTokens: [POOL],
+    ownTokens: [
+      POOL,
+      "0xC36442b4a4522E871399CD717aBDD847Ab11FE88", // UNI V3
+    ],
+  },
+  optimism: {
+    tokens: [
+      nullAddress,
+      "0x4200000000000000000000000000000000000042", // OP
+    ],
+    owners: [optreasury],
+  },
+  polygon: {
+    tokens: [
+      nullAddress,
+      "0x3A58a54C066FdC0f2D55FC9C89F0415C92eBf3C4", // StMATIC
+    ],
+    owners: [polytreasury],
   },
 });
