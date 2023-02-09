@@ -1,6 +1,7 @@
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 const pullTreasury = "0x42cd8312D2BCe04277dD5161832460e95b24262E";
+const vesting = "0x21950E281bDE1714ffd1062ed17c56D4D8de2359";
 
 const POOL = "0x0cEC1A9154Ff802e7934Fc916Ed7Ca50bDE6844e";
 
@@ -17,8 +18,7 @@ module.exports = treasuryExports({
       "0x4da27a545c0c5B758a6BA100e3a049001de870f5", //stkAAVE
       "0xdd4d117723C257CEe402285D3aCF218E9A8236E1", // ptausdc
     ],
-    owners: [pullTreasury],
-    ownTokenOwners: [pullTreasury],
+    owners: [pullTreasury, vesting],
     ownTokens: [POOL],
   },
 });
