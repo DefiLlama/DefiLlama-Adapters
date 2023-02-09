@@ -26,7 +26,16 @@ const erc4626Vaults = [
   },
 ];
 
-const l1OnlyVaults = ["0xB3dA8d6Da3eDe239ccbF576cA0Eaa74D86f0e9D3"];
+const l1OnlyVaults = [
+  {
+    address: "",
+    isYieldGenerating: false,
+  },
+  {
+    address: "0x4FE66bff98eFc030BdC86c733F481B089fb9DCFd",
+    isYieldGenerating: true,
+  },
+];
 
 const getTVLData = async (block) => {
   const vaultCalls = vaults.map((v) => ({ target: v.address }));
@@ -84,27 +93,61 @@ const getVaultL1Funds = async (vault, wantToken, block) => {
 };
 
 const getL1VaultOnlyFunds = async (block) => {
-  const vaultCalls = l1OnlyVaults.map((v) => ({ target: v }));
+  const nonYieldVaultCalls = l1OnlyVaults
+    .filter(({ isYieldGenerating }) => !isYieldGenerating)
+    .map(({ address }) => ({ target: address }));
+
+  const yieldVaultCalls = l1OnlyVaults
+    .filter(({ isYieldGenerating }) => isYieldGenerating)
+    .map(({ address }) => ({ target: address }));
+
   const balances = {};
 
-  const [_wantTokenAddresses, _totalVaultFunds] = await Promise.all([
-    sdk.api.abi.multiCall({
-      block,
-      calls: vaultCalls,
-      abi: vaultAbi.wantToken,
-    }),
-    sdk.api.abi.multiCall({
-      block,
-      calls: vaultCalls,
-      abi: vaultAbi.totalVaultFunds,
-    }),
-  ]).then((o) => o.map((it) => it.output));
+  const [_nonYieldWantTokenAddresses, _nonYieldTotalVaultFunds] =
+    await Promise.all([
+      sdk.api.abi.multiCall({
+        block,
+        calls: nonYieldVaultCalls,
+        abi: vaultAbi.wantToken,
+      }),
+      sdk.api.abi.multiCall({
+        block,
+        calls: nonYieldVaultCalls,
+        abi: vaultAbi.totalVaultFunds,
+      }),
+    ]).then((o) => o.map((it) => it.output));
 
-  _totalVaultFunds.forEach((it, idx) => {
+  const [_yieldWantTokenAddresses, _yieldTotalVaultFunds, _lastEpochYields] =
+    await Promise.all([
+      sdk.api.abi.multiCall({
+        block,
+        calls: yieldVaultCalls,
+        abi: vaultAbi.wantToken,
+      }),
+      sdk.api.abi.multiCall({
+        block,
+        calls: yieldVaultCalls,
+        abi: vaultAbi.totalVaultFunds,
+      }),
+      sdk.api.abi.multiCall({
+        block,
+        calls: yieldVaultCalls,
+        abi: vaultAbi.lastEpochYield,
+      }),
+    ]).then((o) => o.map((it) => it.output));
+
+  _nonYieldTotalVaultFunds.forEach((it, idx) => {
     sdk.util.sumSingleBalance(
       balances,
-      _wantTokenAddresses[idx].output,
+      _nonYieldWantTokenAddresses[idx].output,
       it.output
+    );
+  });
+  _yieldTotalVaultFunds.forEach((it, idx) => {
+    sdk.util.sumSingleBalance(
+      balances,
+      _nonYieldWantTokenAddresses[idx].output,
+      it.output + _lastEpochYields[idx].output
     );
   });
 
