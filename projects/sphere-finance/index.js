@@ -43,9 +43,7 @@ async function polygonTVL(timestamp, block, chainBlocks) {
     balancerPool: wmatic20sphere80,
     owner: LPTreasury,
   })
-  sdk.util.sumSingleBalance(balances, sphereToken, bal)
-
-
+  return sdk.util.sumSingleBalance(balances, sphereToken, bal)
 )};
 
 module.exports = {
