@@ -3,7 +3,8 @@ const { nullAddress, treasuryExports } = require("../helper/treasury");
 const treasury = "0x4971DD016127F390a3EF6b956Ff944d0E2e1e462";
 const treasury1 = "0x0DA0C3e52C977Ed3cBc641fF02DD271c3ED55aFe";
 const treasury2 = "0x849D52316331967b6fF1198e5E32A0eB168D039d";
-const treasury3= "0xBc79855178842FDBA0c353494895DEEf509E26bB"
+const treasury3= "0xBc79855178842FDBA0c353494895DEEf509E26bB";
+const vestingAddress = "0x849d52316331967b6ff1198e5e32a0eb168d039d";
 const GNO= "0x6810e776880C02933D47DB1b9fc05908e5386b96";
 
 
@@ -31,7 +32,7 @@ module.exports = treasuryExports({
         '0x6243d8CEA23066d098a15582d81a598b4e8391F4',//FLX
         '0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32',//LDO
      ],
-    owners: [treasury, treasury1, treasury2, treasury3],
+    owners: [treasury, treasury1, treasury2, treasury3, vestingAddress],
     ownTokens: [GNO],
   },
 })
