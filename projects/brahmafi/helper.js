@@ -28,12 +28,14 @@ const erc4626Vaults = [
 
 const l1OnlyVaults = [
   {
-    address: "",
+    address: "0xB3dA8d6Da3eDe239ccbF576cA0Eaa74D86f0e9D3",
     isYieldGenerating: false,
+    chain: "ethereum",
   },
   {
     address: "0x4FE66bff98eFc030BdC86c733F481B089fb9DCFd",
     isYieldGenerating: true,
+    chain: "polygon",
   },
 ];
 
@@ -92,12 +94,14 @@ const getVaultL1Funds = async (vault, wantToken, block) => {
   return totalExecutorFunds + +vaultBalance.output;
 };
 
-const getL1VaultOnlyFunds = async (block) => {
-  const nonYieldVaultCalls = l1OnlyVaults
+const getL1VaultOnlyFundsByChain = async (chain, block) => {
+  const vaults = l1OnlyVaults.filter(({ chain: _chain }) => chain === _chain);
+
+  const nonYieldVaultCalls = vaults
     .filter(({ isYieldGenerating }) => !isYieldGenerating)
     .map(({ address }) => ({ target: address }));
 
-  const yieldVaultCalls = l1OnlyVaults
+  const yieldVaultCalls = vaults
     .filter(({ isYieldGenerating }) => isYieldGenerating)
     .map(({ address }) => ({ target: address }));
 
@@ -109,11 +113,13 @@ const getL1VaultOnlyFunds = async (block) => {
         block,
         calls: nonYieldVaultCalls,
         abi: vaultAbi.wantToken,
+        chain,
       }),
       sdk.api.abi.multiCall({
         block,
         calls: nonYieldVaultCalls,
         abi: vaultAbi.totalVaultFunds,
+        chain,
       }),
     ]).then((o) => o.map((it) => it.output));
 
@@ -123,19 +129,23 @@ const getL1VaultOnlyFunds = async (block) => {
         block,
         calls: yieldVaultCalls,
         abi: vaultAbi.wantToken,
+        chain,
       }),
       sdk.api.abi.multiCall({
         block,
         calls: yieldVaultCalls,
         abi: vaultAbi.totalVaultFunds,
+        chain,
       }),
       sdk.api.abi.multiCall({
         block,
         calls: yieldVaultCalls,
         abi: vaultAbi.lastEpochYield,
+        chain,
       }),
     ]).then((o) => o.map((it) => it.output));
 
+  /// non yield vault balances
   _nonYieldTotalVaultFunds.forEach((it, idx) => {
     sdk.util.sumSingleBalance(
       balances,
@@ -143,11 +153,20 @@ const getL1VaultOnlyFunds = async (block) => {
       it.output
     );
   });
+  /// yield vault balances
   _yieldTotalVaultFunds.forEach((it, idx) => {
     sdk.util.sumSingleBalance(
       balances,
-      _nonYieldWantTokenAddresses[idx].output,
-      it.output + _lastEpochYields[idx].output
+      _yieldWantTokenAddresses[idx].output,
+      it.output
+    );
+  });
+  /// last epoch yield balances
+  _lastEpochYields.forEach((it, idx) => {
+    sdk.util.sumSingleBalance(
+      balances,
+      _yieldWantTokenAddresses[idx].output,
+      it.output
     );
   });
 
@@ -210,5 +229,5 @@ module.exports = {
   getTVLData,
   getVaultL1Funds,
   getERC4626VaultFundsByChain,
-  getL1VaultOnlyFunds,
+  getL1VaultOnlyFundsByChain,
 };
