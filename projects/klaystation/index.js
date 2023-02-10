@@ -10,7 +10,10 @@ async function fetch() {
 	const priceKlay = klaystationInfo.priceUsd;
 	var totalLiquidity = new BigNumber('0');
 
-	const cnAddresses = ["0xe33337cb6fbb68954fe1c3fde2b21f56586632cd"];
+	const cnAddresses = ["0xe33337cb6fbb68954fe1c3fde2b21f56586632cd",
+	"0xeffa404dac6ba720002974c54d57b20e89b22862",
+	"0x962cdb28e662b026df276e5ee7fdf13a06341d68",
+	"0x0795aea6948fc1d31809383edc4183b220abd71f"]
 
 	for (const cn of cnAddresses) {
 		totalLiquidity = totalLiquidity.plus(stakingAmount[cn]);
