@@ -10,7 +10,7 @@ module.exports = {
     tvl: async () => {
       const data = await get('https://spheretvl.simsalacrypto.workers.dev/')
       return {
-        tether: data.portfolio.net_worth
+        tether: data.portfolio.net_worth_pools
       }
     },
   }
