@@ -34,7 +34,7 @@ const chains = {
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
-  doublecounted: false,
+  doublecounted: true,
   methodology: "Calculate TVL by summing up all vaults' TVLs.",
   polygon: {
     tvl: fetchChain(137),
