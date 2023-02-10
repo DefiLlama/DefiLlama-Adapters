@@ -1,4 +1,3 @@
-const retry = require('async-retry')
 const axios = require("axios");
 
 async function fetch() {
