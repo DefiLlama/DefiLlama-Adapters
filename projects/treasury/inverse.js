@@ -30,6 +30,7 @@ module.exports = treasuryExports({
       "0xb204BF10bc3a5435017D3db247f56dA601dFe08A", // 50DOLA-50WETH
       "0xC36442b4a4522E871399CD717aBDD847Ab11FE88", // UNI V3 DOLA + DBR
       "0x7e05540A61b531793742fde0514e6c136b5fbAfE", // xFODL
+      "0xAD038Eb671c44b853887A7E32528FaB35dC5D710", // DBR
     ],
     owners: [anchorTreasury, multisig],
     ownTokenOwners: [anchorTreasury, multisig],
@@ -37,7 +38,7 @@ module.exports = treasuryExports({
       inv,
       "0x73E02EAAb68a41Ea63bdae9Dbd4b7678827B2352", // Uniswap INV/ETH LP
       "0xA5D7A7690B72a89B7b720E43fC9cBda5419d0C71", // 50INV-50DOLA Aura Deposit Vault
-      "0x9c7305eb78a432ced5C4D14Cac27E8Ed569A2e26", // veNFT
+      // "0x9c7305eb78a432ced5C4D14Cac27E8Ed569A2e26", // veNFT
     ],
   },
   optimism: {
@@ -55,7 +56,7 @@ module.exports = treasuryExports({
       nullAddress,
       "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", // WBNB
       "0x2F29Bc0FFAF9bff337b31CBe6CB5Fb3bf12e5840", // DOLA
-      "0xfBBF371C9B0B994EebFcC977CEf603F7f31c070D", // veTHE
+      // "0xfBBF371C9B0B994EebFcC977CEf603F7f31c070D", // veTHE
     ],
     owners: [bnbmultisig],
     ownTokenOwners: [bnbmultisig],
