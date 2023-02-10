@@ -13,9 +13,7 @@ function fetchChain(chainId) {
     let tvl = 0;
     const chain = response.data[chainId];
     for (const vault in chain) {
-      if (vault !== 'totalTVL') {
-        tvl += Number(chain[vault]);
-      }
+      tvl += Number(chain[vault]);
     }
     if (tvl === 0) {
       throw new Error(`chain ${chainId} tvl is 0`)
