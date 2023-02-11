@@ -1,7 +1,9 @@
-
-
+const { staking } = require('../helper/staking')
 const { unwrapUniswapV3NFTs, sumTokens2 } = require('../helper/unwrapLPs');
 
+const polygonGNS = "0x035001DdC2f6DcF2006565Af31709f8613a7D70C"
+const sphere_token = "0x62F594339830b90AE4C084aE7D223fFAFd9658A7"
+const ylSPHEREvault = "0x4Af613f297ab00361D516454E5E46bc895889653"
 
 const arbitrumPools = [
   "0x04D9C66B4922A4BAe4aba29D2f2548a578853164", // WETH-USDC UniV3 5Bps
@@ -31,6 +33,7 @@ const polygonPools = [
 async function polygonTvl(timestamp, block, chainBlocks) {
   let balances = {};
   await unwrapUniswapV3NFTs({balances, owners: polygonPools, block: chainBlocks.polygon, chain: 'polygon'})
+  await sumTokens2(balances, polygonGNS, block, 'polygon')
   return balances;
 }
 
@@ -48,8 +51,11 @@ async function optimismTvl(timestamp, block, chainBlocks) {
 
 
 module.exports = {
+  misrepresentedTokens: false,
+  methodology: "TVL is calculated by summing the liquidity in the Uniswap V3 pools.",
   polygon: {
     tvl: polygonTvl,
+    staking: staking(ylSPHEREvault, sphere_token, "polygon")
   },
   optimism: {
     tvl: optimismTvl,
