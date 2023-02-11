@@ -34,6 +34,7 @@ async function polygonTvl(timestamp, block, chainBlocks) {
   let balances = {};
   await unwrapUniswapV3NFTs({balances, owners: polygonPools, block: chainBlocks.polygon, chain: 'polygon'})
   await sumTokens2(balances, polygonGNS, block, 'polygon')
+  await sumTokens2(balances, ylSPHEREvault, block, 'polygon', [sphere_token])
   return balances;
 }
 
