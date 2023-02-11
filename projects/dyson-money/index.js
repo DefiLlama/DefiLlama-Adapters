@@ -28,22 +28,33 @@ const polygonPools = [
   "0x5020BD495f17f5626F4Fa31970bf99763140dB7b", // USDC/WETH   UniV3 30Bps
 ]
 
-async function polygonTvl(timestamp, block) {
-  // Unwrap Uniswap V3 NFTs and sum balances
-  const balances = {}
-  await unwrapUniswapV3NFTs(balances, polygonPools, block, 'polygon')
-  return balances
-};
+async function polygonTvl(timestamp, block, chainBlocks) {
+  let balances = {};
+  await unwrapUniswapV3NFTs({balances, owners: polygonPools, block: chainBlocks.polygon, chain: 'polygon'})
+  return balances;
+}
+
+async function arbitrumTvl(timestamp, block, chainBlocks) {
+  let balances = {};
+  await unwrapUniswapV3NFTs({balances, owners: arbitrumPools, block: chainBlocks.arbitrum, chain: 'arbitrum'})
+  return balances;
+}
+
+async function optimismTvl(timestamp, block, chainBlocks) {
+  let balances = {};
+  await unwrapUniswapV3NFTs({balances, owners: optimismPools, block: chainBlocks.optimism, chain: 'optimism'})
+  return balances;
+}
 
 
 module.exports = {
   polygon: {
     tvl: polygonTvl,
   },
-  // optimism: {
-  //   tvl: optimismTvl,
-  // },
-  // arbitrum: {
-  //   tvl: arbitrumTvl,
-  // },
+  optimism: {
+    tvl: optimismTvl,
+  },
+  arbitrum: {
+    tvl: arbitrumTvl,
+  },
 };
