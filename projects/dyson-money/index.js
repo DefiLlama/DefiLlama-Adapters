@@ -57,7 +57,6 @@ async function polygonTvl(timestamp, block, chainBlocks) {
     chain: 'polygon',
     block: chainBlocks.polygon
   })).output / 1e18  * ((await getGNSPrice()) * 1e18) / 6.24 //Don't even ask why 6.24 is needed, it just is the only way to get the correct TVL
-  console.log(gnsDysonVaultSupply)
   balances["polygon:0xE5417Af564e4bFDA1c483642db72007871397896"] = gnsDysonVaultSupply
   return balances;
 } 
