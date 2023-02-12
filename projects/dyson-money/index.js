@@ -1,5 +1,16 @@
 const { staking } = require('../helper/staking')
 const { unwrapUniswapV3NFTs, sumTokens2 } = require('../helper/unwrapLPs');
+const sdk = require('@defillama/sdk');
+const { get } = require('../helper/http')
+
+//contract the deposits into official GNS Staking Contract
+const gnsDysonVault = "0x035001DdC2f6DcF2006565Af31709f8613a7D70C"
+
+//grab GNS price from DefiLlama Price API
+const getGNSPrice = async () => {
+  const response = await get('https://coins.llama.fi/prices/current/polygon:0xE5417Af564e4bFDA1c483642db72007871397896')
+  return response.coins['polygon:0xE5417Af564e4bFDA1c483642db72007871397896'].price
+}
 
 const sphere_token = "0x62F594339830b90AE4C084aE7D223fFAFd9658A7"
 const ylSPHEREvault = "0x4Af613f297ab00361D516454E5E46bc895889653"
@@ -25,8 +36,9 @@ const polygonPools = [
   "0x43807Cbb138597f80D37d5F85359332f08dfEfA3", // WMATIC-USDT UniV3 5Bps
   "0x02359e119E241Af5A982295998A486d9B35842e5", // WMATIC-USDC UniV3 5Bps
   "0x06aF8069F69DF2717267AE8e57058de5DaC97771", // WMATIC/USDC UniV3 30Bps
-  "0x6656cDfBc514AC02d3D9A4869ee511B51c92510F", // USDC/WETH   UniV3 5Bps
+  "0x6656cDfBc514AC02d3D9A4869ee511B51c92510F", // USDC/WETH   UniV3 5Bps 
   "0x5020BD495f17f5626F4Fa31970bf99763140dB7b", // USDC/WETH   UniV3 30Bps
+  "0x5843Bf571ff204963618686C2d46Ca374B00c1fE", // USDC/USDT   UniV3 1Bps
 ]
 
 async function polygonTvl(timestamp, block, chainBlocks) {
@@ -40,8 +52,15 @@ async function polygonTvl(timestamp, block, chainBlocks) {
     chain: 'polygon',
     block: chainBlocks.polygon
   })
+  const gnsDysonVaultSupply = (await sdk.api.erc20.totalSupply({
+    target: gnsDysonVault,
+    chain: 'polygon',
+    block: chainBlocks.polygon
+  })).output / 1e18  * ((await getGNSPrice()) * 1e18) / 6.24 //Don't even ask why 6.24 is needed, it just is the only way to get the correct TVL
+  console.log(gnsDysonVaultSupply)
+  balances["polygon:0xE5417Af564e4bFDA1c483642db72007871397896"] = gnsDysonVaultSupply
   return balances;
-}
+} 
 
 async function arbitrumTvl(timestamp, block, chainBlocks) {
   let balances = {};
