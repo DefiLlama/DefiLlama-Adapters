@@ -48,9 +48,12 @@ async function tvl(chain, timestamp, chainBlocks, { api }) {
   ]);
 
   apeStakingStakedTotal.forEach((d) => {
-    balances[addressMap.ApeCoin] = new BigNumber(
-      balances[addressMap.ApeCoin] || 0
-    ).plus(d.output);
+    sdk.util.sumSingleBalance(
+      balances,
+      addressMap.ApeCoin,
+      d.output,
+      api.chain
+    );
   });
 
   return balances;
