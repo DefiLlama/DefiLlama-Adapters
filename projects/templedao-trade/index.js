@@ -30,13 +30,13 @@ async function findBalances(contracts, block) {
                 balanceOfs[i].output
             );
         
-    };
+    }
     return balances;
-};
+}
 
 async function tvl(timestamp, ethBlock, chainBlocks) {
     return await findBalances(tvlContracts, ethBlock);
-};
+}
 
 
 module.exports = {

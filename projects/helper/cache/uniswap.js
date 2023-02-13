@@ -3,43 +3,73 @@ const uniswapAbi = require('../abis/uniswap')
 const { getCache, setCache, } = require('../cache');
 const { transformBalances, transformDexBalances, } = require('../portedTokens')
 const { getCoreAssets, } = require('../tokenMapping')
+const { sliceIntoChunks, } = require('../utils')
+const { sumTokens2, } = require('../unwrapLPs')
 const sdk = require('@defillama/sdk')
 
 const cacheFolder = 'uniswap-forks'
 
-function getUniTVL({ chain = 'ethereum', coreAssets, blacklist = [], factory, blacklistedTokens,
+function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
   useDefaultCoreAssets = false,
+  fetchBalances = false,
   abis = {},
+  chain: _chain = 'ethereum',
+  queryBatched = 0,
 }) {
 
-  if (!coreAssets && useDefaultCoreAssets)
-    coreAssets = getCoreAssets(chain)
-  blacklist = (blacklistedTokens || blacklist).map(i => i.toLowerCase())
+  return async (_, _b, cb, { api, chain } = {}) => {
 
-  const abi = { ...uniswapAbi, ...abis }
-  factory = factory.toLowerCase()
-  const key = `${factory}-${chain}`
+    if (!chain)
+      chain = _chain
 
-  return async (ts, _block, { [chain]: block }) => {
+    if (!coreAssets && useDefaultCoreAssets)
+      coreAssets = getCoreAssets(chain)
+    blacklist = (blacklistedTokens || blacklist).map(i => i.toLowerCase())
+
+    const abi = { ...uniswapAbi, ...abis }
+    factory = factory.toLowerCase()
+    const key = `${factory}-${chain}`
+
+
     let cache = await _getCache(cacheFolder, key)
 
     const _oldPairInfoLength = cache.pairs.length
-    const length = await sdk.api2.abi.call({ abi: abi.allPairsLength, target: factory, chain, block, })
+    const length = await api.call({ abi: abi.allPairsLength, target: factory, })
     sdk.log(chain, ' No. of pairs: ', length)
     sdk.log('cached info', cache.pairs.length)
     const pairCalls = []
     for (let i = _oldPairInfoLength; i < length; i++)
       pairCalls.push(i)
 
-    const calls = await sdk.api2.abi.multiCall({ block, chain, abi: abi.allPairs, calls: pairCalls, target: factory })
-    const token0s = await sdk.api2.abi.multiCall({ abi: abi.token0, chain, block, calls })
-    const token1s = await sdk.api2.abi.multiCall({ abi: abi.token1, chain, block, calls })
+    const calls = await api.multiCall({ abi: abi.allPairs, calls: pairCalls, target: factory })
+    const token0s = await api.multiCall({ abi: abi.token0, calls })
+    const token1s = await api.multiCall({ abi: abi.token1, calls })
 
     cache.pairs.push(...calls)
     cache.token0s.push(...token0s)
     cache.token1s.push(...token1s)
 
-    const reserves = await sdk.api2.abi.multiCall({ abi: abi.getReserves, chain, block, calls: cache.pairs })
+    if (cache.pairs.length > length)
+      cache.pairs = cache.pairs.slice(0, length)
+
+    let reserves = []
+    if (queryBatched) {
+      const batchedCalls = sliceIntoChunks(cache.pairs, queryBatched)
+      for (const calls of batchedCalls)
+        reserves.push(...await api.multiCall({ abi: abi.getReserves, calls }))
+    } else if (fetchBalances) {
+      const calls = []
+      cache.pairs.forEach((owner, i) => {
+        calls.push({ target: cache.token0s[i], params: owner })
+        calls.push({ target: cache.token1s[i], params: owner })
+      })
+      const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls, })
+      for (let i = 0; i < bals.length; i++) {
+        reserves.push({ _reserve0: bals[i], _reserve1: bals[i + 1] })
+        i++
+      }
+    } else
+      reserves = await api.multiCall({ abi: abi.getReserves, calls: cache.pairs })
 
 
     if (cache.pairs.length > _oldPairInfoLength)

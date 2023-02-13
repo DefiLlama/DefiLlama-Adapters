@@ -11,7 +11,7 @@ function getLink(project, chain) {
   return `https://${Bucket}.s3.eu-central-1.amazonaws.com/${getKey(project, chain)}`
 }
 
-async function getCache(project, chain, { } = {}) {
+async function getCache(project, chain, { _ } = {}) {
   const Key = getKey(project, chain)
 
   try {
@@ -45,6 +45,20 @@ async function setCache(project, chain, cache, {
   }
 }
 
+async function getConfig(project, endpoint) {
+  if (!project || !endpoint) throw new Error('Missing parameters')
+  const key = 'config-cache'
+  try {
+    const { data: json } = await axios.get(endpoint)
+    await setCache(key, project, json)
+    return json
+  } catch (e) {
+    // sdk.log(e)
+    sdk.log(project, 'tryng to fetch from cache, failed to fetch data from endpoint:', endpoint)
+    return getCache(key, project)
+  }
+}
+
 module.exports = {
-  getCache, setCache,
+  getCache, setCache, getConfig,
 }

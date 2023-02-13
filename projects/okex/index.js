@@ -91,6 +91,11 @@ const config = {
     owners:[
       "0x06959153b974d0d5fdfd87d561db6d8d4fa0bb0b",
     ]
+  },
+  optimism:{
+    owners:[
+      "0xebe80f029b1c02862b9e8a70a7e5317c06f62cae",
+    ]
   }
 }
 

@@ -5,7 +5,7 @@ const { sumTokens2, } = require('../helper/unwrapLPs')
 const { log, getUniqueAddresses } = require('../helper/utils')
 const { getCache, setCache, } = require("../helper/cache");
 
-const project = 'xdao'
+const project = 'bulky/xdao'
 
 const factoryAddress = "0x72cc6E4DE47f673062c41C67505188144a0a3D84";
 const ONE_DAY = 24 * 60 * 60 * 1000
@@ -57,7 +57,7 @@ Object.keys(config).forEach(chain => {
         target: factoryAddress,
         abi: abis.daoAt, calls, chain, block,
       })
-      if (daos.some(i => !i.success)) throw new Error('Error fetching dao address: ', JSON.stringify(i.input))
+      if (daos.some(i => !i.success)) throw new Error('Error fetching dao address: ')
 
       daos = daos.map(i => i.output)
       daos = [daos, Object.keys(cache.daos)].flat()
@@ -89,6 +89,6 @@ Object.keys(config).forEach(chain => {
 })
 
 const abis = {
-  daoAt: { "inputs": [{ "internalType": "uint256", "name": "_i", "type": "uint256" }], "name": "daoAt", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" },
-  numberOfDaos: { "inputs": [], "name": "numberOfDaos", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+  daoAt: "function daoAt(uint256 _i) view returns (address)",
+  numberOfDaos: "uint256:numberOfDaos",
 }

@@ -1,8 +1,7 @@
 const sdk = require('@defillama/sdk');
 const abi = require('../helper/abis/masterchef.json');
 const { unwrapLPsAuto } = require('../helper/unwrapLPs');
-const userInfoAbi = require("../helper/abis/userInfo.json");
-const { default: BigNumber } = require('bignumber.js');
+const userInfoAbi = 'function userInfo(uint256, address) view returns (uint256 amount, uint256 rewardDebt)'
 const { getChainTransform } = require('../helper/portedTokens');
 
 /** this is adapted from `projects/helpers/masterchef/getUserMasterChefBalances`

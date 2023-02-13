@@ -5,7 +5,7 @@ const { getUniqueAddresses } = require('../helper/utils')
 const { getCache, setCache, } = require("../helper/cache")
 const { vestingHelper,  } = require("../helper/unknownTokens")
 
-const project = 'deeplock'
+const project = 'bulky/deeplock'
 
 const deepLockLockerContractV1 = "0x10dD7FD1Bf3753235068ea757f2018dFef94B257";
 const deepLockLockerContractV2 = "0x3f4D6bf08CB7A003488Ef082102C2e6418a4551e";

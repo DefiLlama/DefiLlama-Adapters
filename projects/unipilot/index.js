@@ -1,9 +1,10 @@
 const sdk = require("@defillama/sdk");
 const { request, gql } = require("graphql-request");
+const { getLogs } = require('../helper/cache/getLogs')
 
 const { getChainTransform } = require("../helper/portedTokens");
 const { staking } = require("../helper/staking");
-const getPositionDetails = require("./abis/getPositionDetails.json");
+const getPositionDetails = 'function getPositionDetails() returns (uint256 amount0, uint256 amount1, uint256 fees0, uint256 fees1, uint128 baseLiquidity, uint128 rangeLiquidity)'
 
 const FACTORY_ADDRESSES = {
   ethereum: {
@@ -54,19 +55,17 @@ const vaultQuery = gql`
   }
 `;
 
-async function getVaultLogs(chain, block, factoryType) {
+async function getVaultLogs(chain, block, factoryType, api) {
   const vaults = {};
 
   const vaultLogs = (
-    await sdk.api.util.getLogs({
+    await getLogs({
       target: FACTORY_ADDRESSES[chain][factoryType],
       topic: VAULT_CREATION_TOPIC[chain],
-      keys: [],
       fromBlock: START_BLOCKS[chain][factoryType],
-      toBlock: block,
-      chain,
+      api,
     })
-  ).output;
+  );
 
   for (let log of vaultLogs) {
     vaults[`0x${log.topics[3].substr(-40)}`] = {
@@ -79,19 +78,21 @@ async function getVaultLogs(chain, block, factoryType) {
 }
 
 function protocolTvl(chain) {
-  return async (timestamp, block, chainBlocks) => {
+  return async (timestamp, block, chainBlocks, { api }) => {
     const balances = {};
     let vaults = {};
     if (chain === "ethereum") {
       const activeVaultLogs = await getVaultLogs(
         chain,
         chainBlocks[chain],
-        "activeFactory"
+        "activeFactory",
+        api,
       );
       const passiveVaultLogs = await getVaultLogs(
         chain,
         chainBlocks[chain],
-        "passiveFactory"
+        "passiveFactory",
+        api,
       );
       vaults = { ...activeVaultLogs, ...passiveVaultLogs };
     } else {

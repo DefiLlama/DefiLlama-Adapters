@@ -1,7 +1,6 @@
 const sdk = require('@defillama/sdk');
 const { gmxExports } = require("../helper/gmx");
 
-const chain = "bsc";
 module.exports = {
   bsc: {
     tvl: sdk.util.sumChainTvls([

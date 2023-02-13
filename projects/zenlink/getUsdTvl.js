@@ -1,7 +1,7 @@
 const sdk = require('@defillama/sdk');
-const token0 = require('./abis/token0.json');
-const token1 = require('./abis/token1.json');
-const getReserves = require('./abis/getReserves.json');
+const token0 = "address:token0";
+const token1 = "address:token1";
+const getReserves ='function getReserves() view returns (uint112 _reserve0, uint112 _reserve1)';
 const factoryAbi = require('./abis/factory.json');
 const stableSwapAbi = require('./abis/StableSwap.json');
 
@@ -56,7 +56,7 @@ async function getStableSwapPool(
         });
     });
     return tokenAmountArray;
-};
+}
 
 async function requery(results, chain, block, abi) {
     if (results.some(r => !r.success)) {

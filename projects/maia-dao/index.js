@@ -71,12 +71,12 @@ async function tvl(timestamp, _, { metis: block }) {
       excludedTokens.includes(pairAddresses[i].output.toLowerCase())
     ) {
       continue;
-    };
+    }
     lpPositions.push({
       balance: pairBalances[i].output,
       token: pairAddresses[i].output
     });
-  };
+  }
 
   await unwrapUniswapLPs(
     balances,
@@ -86,7 +86,7 @@ async function tvl(timestamp, _, { metis: block }) {
     transform
   );
   return sumTokens2({ balances, owner: multisig, tokens, chain, block, resolveLP: 'true', })
-};
+}
 
 module.exports = {
   metis: {

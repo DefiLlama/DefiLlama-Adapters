@@ -64,15 +64,15 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 let coingeckoMcapsPromise
 
 async function getCgMcaps() {
-  if (coingeckoMcapsPromise) {
-    return coingeckoMcapsPromise
-  }
-  coingeckoMcapsPromise = new Promise(async (resolve) => {
+    if (!coingeckoMcapsPromise) coingeckoMcapsPromise = _getData()
+  return coingeckoMcapsPromise
+
+  async function _getData() {
     const protocolsInChain = await getChainData()
     const protocolsWithRouters = Array.from(new Set(protocolsInChain.filter(p => p.type === "router" && p.label !== null).map(p => p.label.toLowerCase())));
 
     const coingeckoMcaps = {}
-    const step = 200;;
+    const step = 200;
     for (let i = 0; i < protocolsWithRouters.length; i += step) {
       console.log(i / step)
       const cgUrl = `https://api.coingecko.com/api/v3/simple/price?vs_currencies=usd&include_market_cap=true&ids=${protocolsWithRouters.slice(i, i + step).join(',')
@@ -81,9 +81,8 @@ async function getCgMcaps() {
       const partMcaps = await get(cgUrl)
       Object.assign(coingeckoMcaps, partMcaps)
     }
-    resolve(coingeckoMcaps)
-  })
-  return coingeckoMcapsPromise
+    return coingeckoMcaps
+  }
 }
 
 let chainData
@@ -95,7 +94,7 @@ async function getChainData() {
 function fetchChain(chain) {
   return async () => {
     const data = await getChainData()
-    const protocolsInChain = chain === null ? data : data.filter(p => p.chainId.toString() === chain.toString())
+    const protocolsInChain = chain === null ? data : data.filter(p => p.srcChainId.toString() === chain.toString())
 
     const coingeckoMcaps = await getCgMcaps();
     const counted = {}

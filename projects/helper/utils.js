@@ -2,6 +2,7 @@ const BigNumber = require("bignumber.js");
 const axios = require("axios");
 const sdk = require('@defillama/sdk')
 const http = require('./http')
+const env = require('./env')
 const erc20 = require('./abis/erc20.json')
 const ethers = require("ethers");
 
@@ -16,34 +17,6 @@ async function returnEthBalance(address) {
   const output = await sdk.api.eth.getBalance({ target: address })
   let ethAmount = await new BigNumber(output.output).div(10 ** 18).toFixed(2);
   return parseFloat(ethAmount);
-}
-
-async function getPrices(object) {
-  var stringFetch = '';
-  for (var key in object[0]) {
-    if (object[0][key] != 'stable') {
-      if (stringFetch.length > 0) {
-        stringFetch = stringFetch + ',' + object[0][key];
-      } else {
-        stringFetch = object[0][key];
-      }
-    }
-  }
-  return fetchURL(`https://api.coingecko.com/api/v3/simple/price?ids=${stringFetch}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`)
-}
-
-async function getPricesFromContract(object) {
-  var contractFetch = ''
-  for (var key in object) {
-    if (object[key]) {
-      if (contractFetch.length > 0) {
-        contractFetch = contractFetch + ',' + object[key];
-      } else {
-        contractFetch = object[key];
-      }
-    }
-  }
-  return fetchURL(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${contractFetch}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`)
 }
 
 async function fetchURL(url) {
@@ -77,7 +50,7 @@ const blacklisted_LPS = [
 function isLP(symbol, token, chain) {
   // console.log(symbol, chain, token)
   if (!symbol) return false
-  if (token && blacklisted_LPS.includes(token.toLowerCase())) return false
+  if (token && blacklisted_LPS.includes(token.toLowerCase()) || symbol.includes('HOP-LP-')) return false
   if (chain === 'bsc' && ['OLP', 'DLP', 'MLP', 'LP'].includes(symbol)) return false
   if (chain === 'bsc' && ['WLP', 'FstLP', 'BLP',].includes(symbol)) return true
   if (chain === 'avax' && ['ELP', 'EPT', 'CRL', 'YSL', 'BGL', 'PLP'].includes(symbol)) return true
@@ -88,8 +61,10 @@ function isLP(symbol, token, chain) {
   if (chain === 'ethereum' && ['SUDO-LP'].includes(symbol)) return false
   if (chain === 'dogechain' && ['DST-V2'].includes(symbol)) return true
   if (chain === 'harmony' && ['HLP'].includes(symbol)) return true
+  if (chain === 'klaytn' && ['NLP'].includes(symbol)) return true
   if (chain === 'fantom' && ['HLP'].includes(symbol)) return true
   if (chain === 'songbird' && ['FLRX', 'OLP'].includes(symbol)) return true
+  if (chain === 'arbitrum' && ['DXS', 'ZLP', ].includes(symbol)) return true
   if (chain === 'metis' && ['NLP', 'ALP'].includes(symbol)) return true // Netswap/Agora LP Token
   if (['fantom', 'nova',].includes(chain) && ['NLT'].includes(symbol)) return true
   let label
@@ -98,14 +73,14 @@ function isLP(symbol, token, chain) {
     label = 'Blackisting this LP because of unsupported abi'
 
   if (label) {
-    if (DEBUG_MODE) console.log(label, token, symbol)
+    sdk.log(label, token, symbol)
     return false
   }
 
   const isLPRes = LP_SYMBOLS.includes(symbol) || /(UNI-V2|vAMM|sAMM)/.test(symbol) || symbol.split(/\W+/).includes('LP')
 
-  if (DEBUG_MODE && isLPRes && !['UNI-V2', 'Cake-LP'].includes(symbol))
-    console.log(chain, symbol, token)
+  if (isLPRes && !['UNI-V2', 'Cake-LP'].includes(symbol))
+    sdk.log(chain, symbol, token)
 
   return isLPRes
 }
@@ -163,7 +138,7 @@ function getUniqueAddresses(addresses, isCaseSensitive = false) {
   return [...set]
 }
 
-const DEBUG_MODE = !!process.env.LLAMA_DEBUG_MODE
+const DEBUG_MODE = env.LLAMA_DEBUG_MODE
 const log = sdk.log
 
 function sliceIntoChunks(arr, chunkSize = 100) {
@@ -308,36 +283,13 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
   console.table(logObj)
 }
 
-async function getLogs({ chain = 'ethereum', fromBlock, toBlock, topic, topics, keys = [], target, eventInterface, chainBlocks, timestamp }) {
-  if (!toBlock) 
-    toBlock = await http.getBlock(timestamp, chain, chainBlocks)
-
-  const { output: logs} = await sdk.api.util.getLogs({
-    chain, topics, target, topic, keys, fromBlock, toBlock, 
-  });
-
-  const getAddress = i => `0x${i.substr(-40)}`.toLowerCase()
-  if (!eventInterface) return logs.map(log => log.topics.map(getAddress))
-
-  let iface = new ethers.utils.Interface([eventInterface])
-  return logs.map((log) => {
-    const res = {...iface.parseLog(log).args}
-    if (!res.topics )
-      res.topics = log.topics.map(getAddress)
-    return res
-  })
-}
-
 module.exports = {
-  DEBUG_MODE,
   log,
   createIncrementArray,
   fetchURL,
   postURL,
-  getPrices,
   returnBalance,
   returnEthBalance,
-  getPricesFromContract,
   isLP,
   mergeExports,
   getBalance,
@@ -350,5 +302,4 @@ module.exports = {
   getSymbols,
   getDecimals,
   getParamCalls,
-  getLogs,
 }

@@ -1,4 +1,3 @@
-const utils = require("../helper/utils");
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const {
@@ -7,61 +6,12 @@ const {
   stripTokenHeader,
   transformTokens,
   fixBalancesTokens,
-  unsupportedGeckoChains,
   ibcChains,
+  distressedAssts,
 } = require('./tokenMapping')
 
 async function transformFantomAddress() {
   return transformChainAddress(transformTokens.fantom, "fantom")
-}
-
-function compareAddresses(a, b) {
-  return a.toLowerCase() === b.toLowerCase();
-}
-
-async function transformAvaxAddress() {
-  const [
-    bridgeTokensOld,
-    bridgeTokensNew,
-    bridgeTokenDetails
-  ] = await Promise.all([
-    utils.fetchURL(
-      "https://raw.githubusercontent.com/0xngmi/bridge-tokens/main/data/penultimate.json"
-    ),
-    utils
-      .fetchURL(
-        "https://raw.githubusercontent.com/ava-labs/avalanche-bridge-resources/main/avalanche_contract_address.json"
-      )
-      .then(r => Object.entries(r.data)),
-    utils.fetchURL(
-      "https://raw.githubusercontent.com/ava-labs/avalanche-bridge-resources/main/token_list.json"
-    )
-  ]);
-  return addr => {
-    const map = transformTokens.avax;
-    if (map[addr.toLowerCase()]) return map[addr.toLowerCase()]
-    const srcToken = bridgeTokensOld.data.find(token =>
-      compareAddresses(token["Avalanche Token Address"], addr)
-    );
-    if (
-      srcToken !== undefined &&
-      srcToken["Ethereum Token Decimals"] ===
-      srcToken["Avalanche Token Decimals"]
-    ) {
-      return srcToken["Ethereum Token Address"];
-    }
-    const newBridgeToken = bridgeTokensNew.find(token =>
-      compareAddresses(addr, token[1])
-    );
-    if (newBridgeToken !== undefined) {
-      const tokenName = newBridgeToken[0].split(".")[0];
-      const tokenData = bridgeTokenDetails.data[tokenName];
-      if (tokenData !== undefined) {
-        return tokenData.nativeContractAddress;
-      }
-    }
-    return `avax:${addr}`;
-  };
 }
 
 async function transformBscAddress() {
@@ -77,53 +27,16 @@ async function transformCeloAddress() {
 }
 
 async function transformOptimismAddress() {
-  const bridge = (await utils.fetchURL(
-    "https://static.optimism.io/optimism.tokenlist.json"
-  )).data.tokens;
-
-  const mapping = transformTokens.optimism
-
-  return addr => {
-    addr = addr.toLowerCase();
-
-    if (mapping[addr]) return mapping[addr];
-
-    const dstToken = bridge.find(
-      token => compareAddresses(addr, token.address) && token.chainId === 10
-    );
-    if (dstToken !== undefined) {
-      const srcToken = bridge.find(
-        token => dstToken.logoURI === token.logoURI && token.chainId === 1
-      );
-      if (srcToken !== undefined) {
-        return srcToken.address;
-      }
-    }
-    return `optimism:${addr}`;
-  };
+  return transformChainAddress(transformTokens.optimism, "optimism")
 }
 
 async function transformArbitrumAddress() {
-  const bridge = (await utils.fetchURL(
-    "https://bridge.arbitrum.io/token-list-42161.json"
-  )).data.tokens;
-  const mapping = transformTokens.arbitrum
-
-  return addr => {
-    addr = addr.toLowerCase();
-    if (mapping[addr]) return mapping[addr];
-    const dstToken = bridge.find(token =>
-      compareAddresses(addr, token.address)
-    );
-    if (dstToken && dstToken.extensions) {
-      return dstToken.extensions.bridgeInfo[1].tokenAddress;
-    }
-    return `arbitrum:${addr}`;
-  };
+  return transformChainAddress(transformTokens.arbitrum, "arbitrum")
 }
 
 async function transformInjectiveAddress() {
   return addr => {
+    addr = addr.replace(/\//g, ':')
     if (addr.startsWith('peggy0x'))
       return `ethereum:${addr.replace('peggy', '')}`
     return `injective:${addr}`;
@@ -131,7 +44,7 @@ async function transformInjectiveAddress() {
 }
 
 function fixBalances(balances, mapping, { chain, } = {}) {
-  const removeUnmapped = unsupportedGeckoChains.includes(chain) // TODO: fix server-side, remove this
+  const removeUnmapped = false
 
   Object.keys(balances).forEach(token => {
     let tokenKey = stripTokenHeader(token, chain)
@@ -178,9 +91,7 @@ const chainTransforms = {
   fantom: transformFantomAddress,
   bsc: transformBscAddress,
   polygon: transformPolygonAddress,
-  avax: transformAvaxAddress,
   optimism: transformOptimismAddress,
-  arbitrum: transformArbitrumAddress,
   injective: transformInjectiveAddress,
 };
 
@@ -191,6 +102,7 @@ function transformChainAddress(
 ) {
 
   return addr => {
+    if (distressedAssts.has(addr.toLowerCase())) return 'ethereum:0xbad'
     if (['solana'].includes(chain)) {
       return mapping[addr] ? mapping[addr] : `${chain}:${addr}`
     }
@@ -217,11 +129,17 @@ async function getChainTransform(chain) {
     return transformChainAddress(transformTokens[chain], chain)
 
   return addr => {
-    addr = normalizeAddress(addr, chain)
+    if (addr.includes('ibc/')) return addr.replace(/.*ibc\//, 'ibc/').replace(/\//g, ':')
+    if (addr.startsWith('coingecko:')) return addr
+    if (addr.startsWith(chain + ':') || addr.startsWith('ibc:')) return addr
+    if (distressedAssts.has(addr.toLowerCase())) return 'ethereum:0xbad'
+
+    addr = normalizeAddress(addr, chain).replace(/\//g, ':')
     const chainStr = `${chain}:${addr}`
+    if ([...ibcChains, 'ton', 'defichain', 'waves'].includes(chain)) return chainStr
+    if (chain === 'cardano' && addr === 'ADA') return 'coingecko:cardano'
     if (chain === 'near' && addr.endsWith('.near')) return chainStr
     if (chain === 'tezos' && addr.startsWith('KT1')) return chainStr
-    if (ibcChains.includes(chain) && addr.startsWith('ibc/')) return chainStr
     if (chain === 'terra2' && addr.startsWith('terra1')) return chainStr
     if (chain === 'algorand' && /^\d+$/.test(addr)) return chainStr
     if (addr.startsWith('0x') || ['solana'].includes(chain)) return chainStr
@@ -343,7 +261,6 @@ module.exports = {
   transformFantomAddress,
   transformBscAddress,
   transformPolygonAddress,
-  transformAvaxAddress,
   transformOptimismAddress,
   transformArbitrumAddress,
   transformCeloAddress,

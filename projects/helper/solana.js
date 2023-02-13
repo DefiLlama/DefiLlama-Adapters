@@ -1,7 +1,8 @@
 const axios = require("axios");
 const http = require('./http')
+const env = require('./env')
 const { transformBalances: transformBalancesOrig, transformDexBalances, } = require('./portedTokens.js')
-const { tokens } = require('./tokenMapping')
+const { tokens, getUniqueAddresses } = require('./tokenMapping')
 const { Connection, PublicKey, Keypair } = require("@solana/web3.js")
 const { AnchorProvider: Provider, Wallet, } = require("@project-serum/anchor");
 const { sleep, sliceIntoChunks, log, } = require('./utils')
@@ -16,7 +17,7 @@ const blacklistedTokens = [
 
 let connection, provider
 
-const endpoint = process.env.SOLANA_RPC || "https://rpc.ankr.com/solana" // or "https://solana-api.projectserum.com/"
+const endpoint = env.SOLANA_RPC || "https://rpc.ankr.com/solana" // or "https://solana-api.projectserum.com/"
 
 function getConnection() {
   if (!connection) connection = new Connection(endpoint)
@@ -340,6 +341,7 @@ async function sumTokens2({
   }
 
   if (tokenAccounts.length) {
+    tokenAccounts = getUniqueAddresses(tokenAccounts, 'solana')
     const tokenBalances = await getTokenAccountBalances(tokenAccounts, { allowError })
     await transformBalances({ tokenBalances, balances, })
   }
