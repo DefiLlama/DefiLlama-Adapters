@@ -13,15 +13,6 @@ const lps = [
 
 module.exports = {
   misrepresentedTokens: true,
-  ...tombTvl(
-    lit,
-    gds,
-    rewardPool,
-    boardroom,
-    lps,
-    "bsc",
-    undefined,
-    true,
-    lps[1]
+  ...tombTvl(lit, gds, rewardPool, boardroom,lps,"bsc",undefined,false , "0xa1E137dED898058af3a09caC599D50D1D3ac0ABc"
   ),
 };
