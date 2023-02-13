@@ -28,7 +28,7 @@ async function tvl(chain, timestamp, chainBlocks, { api }) {
     ...simpleReservesData.map((i) => [i.underlyingAsset, i.bTokenAddress]),
   ];
 
-  const balances = sumTokens2({ api, tokensAndOwners: toa });
+  const balances = await sumTokens2({ api, tokensAndOwners: toa });
 
   const stakedNftForApeStaking = simpleNftsData.filter((d) => {
     return ["BAYC", "MAYC"].includes(d.symbol);
@@ -48,8 +48,8 @@ async function tvl(chain, timestamp, chainBlocks, { api }) {
   ]);
 
   apeStakingStakedTotal.forEach((d) => {
-    balances[addressMap.apeCoin] = new BigNumber(
-      balances[addressMap.apeCoin] || 0
+    balances[addressMap.ApeCoin] = new BigNumber(
+      balances[addressMap.ApeCoin] || 0
     ).plus(d.output);
   });
 
