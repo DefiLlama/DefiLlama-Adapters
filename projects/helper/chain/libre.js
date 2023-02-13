@@ -65,12 +65,11 @@ async function getFullTable({
 
 async function getCurrencyBalance(code, account, symbol) {
   const data = await post(
-    CHAIN_RPC + '/v1/chain/get_currency_balance',
-    JSON.stringify({
+    CHAIN_RPC + '/v1/chain/get_currency_balance',{
       code,
       account,
       symbol
-    })
+    }
   );
   return data;
 }
