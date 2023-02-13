@@ -3,11 +3,17 @@ const { cexExports } = require('../helper/cex')
 const config = {
   bsc: {
     owners: [
-        '0xC7029E939075F48fa2D5953381660c7d01570171'
+        '0xC7029E939075F48fa2D5953381660c7d01570171',
+        '0xb18fbfe3d34fdc227eb4508cde437412b6233121',
+        '0x768f2a7ccdfde9ebdfd5cea8b635dd590cb3a3f1',
     ],
   },
   ethereum: {
-    owners: ['0x562680a4dc50ed2f14d75bf31f494cfe0b8d10a1']
+    owners: [
+               '0x562680a4dc50ed2f14d75bf31f494cfe0b8d10a1',
+               '0xb18fbfe3d34fdc227eb4508cde437412b6233121',
+               '0x768f2a7ccdfde9ebdfd5cea8b635dd590cb3a3f1'
+  ]
   },
   tron: {
     owners: [
@@ -22,22 +28,37 @@ const config = {
     owners: ['rJKBidE4Av6ZaFTBcAucZXCpU7QvNXyfpT']
   },
   arbitrum: {
-    owners: ['0xd690a9DfD7e4B02898Cdd1a9E50eD1fd7D3d3442']
+    owners: [
+               '0xd690a9DfD7e4B02898Cdd1a9E50eD1fd7D3d3442',
+               '0x768f2a7ccdfde9ebdfd5cea8b635dd590cb3a3f1' 
+              ]
   },
   avax: {
-    owners: ['0x6C2e8d4F73f6A129843d1b3D2ACAFF1DB22E3366']
+    owners: [
+              '0x6C2e8d4F73f6A129843d1b3D2ACAFF1DB22E3366',
+              '0x768f2a7ccdfde9ebdfd5cea8b635dd590cb3a3f1' 
+            ]
   },
   polygon: {
-    owners: ['0xb34ed85bc0b9da2fa3c5e5d2f4b24f8ee96ce4e9']
+    owners: [
+              '0xb34ed85bc0b9da2fa3c5e5d2f4b24f8ee96ce4e9',
+              '0x768f2a7ccdfde9ebdfd5cea8b635dd590cb3a3f1'
+            ]
   },
   optimism: {
     owners: ['0xfa6cf22527d88270eea37f45af1808adbf3c1b17']
   },
   fantom: {
-    owners: ['0xc62A0781934744E05927ceABB94a3043CdCfEA89']
+    owners: [
+              '0xc62A0781934744E05927ceABB94a3043CdCfEA89',
+              '0x768f2a7ccdfde9ebdfd5cea8b635dd590cb3a3f1'
+             ]
   },
   eos:{
     owners: ['hotbitioeoss']
+  },
+  cronos: {
+    owners: ['0x768f2a7ccdfde9ebdfd5cea8b635dd590cb3a3f1']
   }
 }
 
