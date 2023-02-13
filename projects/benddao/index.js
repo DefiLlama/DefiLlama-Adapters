@@ -1,24 +1,8 @@
 const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
 const { pool2 } = require("../helper/pool2");
-const { getTVL, getBorrowed } = require("./helper/index");
+const { tvl, borrowed } = require("./helper/index");
 const address = require("./helper/address");
-
-async function tvl(timestamp, block, chainBlocks) {
-  const balances = {};
-
-  await getTVL(balances, "ethereum", timestamp, chainBlocks);
-
-  return balances;
-}
-
-async function borrowed(timestamp, block, chainBlocks) {
-  const balances = {};
-
-  await getBorrowed(balances, "ethereum", timestamp, chainBlocks);
-
-  return balances;
-}
 
 module.exports = {
   timetravel: true,
@@ -27,18 +11,18 @@ module.exports = {
     tvl,
     borrowed,
     staking: staking(
-      address.VeBend.ethereum,
-      address.Bend.ethereum,
+      address.ethereum.VeBend,
+      address.ethereum.Bend,
       "ethereum"
     ),
     pool2: pool2(
-      address.stkBUNI.ethereum,
-      address.UniswapV2PairWETH.ethereum,
+      address.ethereum.StkBUNI,
+      address.ethereum.UniswapV2PairWETH,
       "ethereum"
     ),
     treasury: staking(
-      address.Treasury.ethereum,
-      [address.USDC.ethereum, address.ApeCoin.ethereum],
+      address.ethereum.Treasury,
+      [address.ethereum.USDC, address.ethereum.ApeCoin],
       "ethereum"
     ),
   },
