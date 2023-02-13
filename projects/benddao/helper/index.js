@@ -9,7 +9,7 @@ async function tvl(chain, timestamp, chainBlocks, { api }) {
   const block = chainBlocks[api.chain];
   const addressMap = address[api.chain];
 
-  const [{ output: simpleReservesData }, { output: simpleNftsData }] =
+  const [{ output: simpleReservesData }, { output: bnftAssetList }] =
     await Promise.all([
       sdk.api.abi.call({
         target: addressMap.UiPoolDataProvider,
@@ -17,33 +17,36 @@ async function tvl(chain, timestamp, chainBlocks, { api }) {
         abi: abi.UiPoolDataProvider.getSimpleReservesData,
       }),
       sdk.api.abi.call({
-        target: addressMap.UiPoolDataProvider,
-        params: [addressMap.LendPoolAddressProvider],
-        abi: abi.UiPoolDataProvider.getSimpleNftsData,
+        target: addressMap.BNFTRegistry,
+        params: [],
+        abi: abi.BNFTRegistry.getBNFTAssetList,
       }),
     ]);
 
+  const { output: bnftProxyList } = await sdk.api.abi.multiCall({
+    calls: bnftAssetList.map((d) => ({
+      target: addressMap.BNFTRegistry,
+      params: [d],
+    })),
+    abi: abi.BNFTRegistry.bNftProxys,
+  });
+
   const toa = [
-    ...simpleNftsData.map((i) => [i.underlyingAsset, i.bNftAddress]),
+    ...bnftAssetList.map((i, idx) => [i, bnftProxyList[idx].output]),
     ...simpleReservesData.map((i) => [i.underlyingAsset, i.bTokenAddress]),
   ];
 
   const balances = await sumTokens2({ api, tokensAndOwners: toa });
 
-  const stakedNftForApeStaking = simpleNftsData.filter((d) => {
-    return ["BAYC", "MAYC"].includes(d.symbol);
-  });
-
   const [{ output: apeStakingStakedTotal }] = await Promise.all([
     sdk.api.abi.multiCall({
-      calls: stakedNftForApeStaking.map((d) => {
+      calls: bnftProxyList.map((d) => {
         return {
           target: addressMap.ApeCoinStaking,
-          params: [d.bNftAddress],
+          params: [d.output],
         };
       }),
       abi: abi.ApeCoinStaking.stakedTotal,
-      requery: true,
     }),
   ]);
 
