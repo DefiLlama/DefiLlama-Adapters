@@ -15,19 +15,30 @@ const TOKEN_BUSD = "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56";
 const TOKEN_CAKE = "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82";
 const TOKEN_BABY = "0x53e562b9b7e5e94b81f10e96ee70ad06df3d2657";
 const TOKEN_LEOS = "0x2c8368f8f474ed9af49b87eac77061beb986c2f1";
+const TOKEN_USDC = "0x8ac76a51cc950d982268b83fe1ad97b32cd580d";
+const TOKEN_VUSDT = "0xfD5840Cd36d94D7229439859C0112a4185BC0255";
+const TOKEN_BANANA = "0x603c7f932ED1fc6575303D8Fb018fDCBb0f39a95";
+const TOKEN_MDX = "0x9c65ab58d8d978db963e63f2bfb7121627e3a73g";
+const TOKEN_HAY = "0x0782b6d8c4551B9760e74c0545a9bCD90bdc41E5";
 
 const TreasureTokens = [
+  TOKEN_APX,
   TOKEN_BSC_USD,
   TOKEN_BUSD,
   TOKEN_CAKE,
   TOKEN_BABY,
   TOKEN_LEOS,
+  TOKEN_USDC,
+  TOKEN_VUSDT,
+  TOKEN_BANANA,
+  TOKEN_MDX,
+  TOKEN_HAY,
 ];
 
 async function tvl(timestamp, _block, { bsc: block }) {
   const toa = TreasureTokens.map((t) => [t, treasureContract]);
-  toa.push([TOKEN_BSC_USD, ALPContract])
-  toa.push([TOKEN_BUSD, ALPContract])
+  toa.push([TOKEN_BSC_USD, ALPContract]);
+  toa.push([TOKEN_BUSD, ALPContract]);
   return sumTokens({}, toa, block, "bsc");
 }
 
