@@ -16,7 +16,7 @@ module.exports = {
       "ethereum"
     ),
     pool2: pool2(
-      address.ethereum.StkBUNI,
+      address.ethereum.StakedBUNI,
       address.ethereum.UniswapV2PairWETH,
       "ethereum"
     ),
