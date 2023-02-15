@@ -22,7 +22,7 @@ module.exports = {
     [1659312000, "Protocol Launch"],
     [1666641600, "Optimism Launch"],
     [1674604800, "Flash Capacitor Launch"],
-    [1676307600, "stETH Strategy Launch"]
+    [1676484000, "Flido Launch"]
   ]
 };
 
