@@ -13,7 +13,7 @@ async function tvl() {
   const balances = await Promise.all(
     collateralVaults.map((vault) => getTokenAccountBalance(vault))
   );
-  return balances.reduce((sum, balance) => sum + balance, 0);
+  return { "usd-coin": balances.reduce((sum, balance) => sum + balance, 0) };
 }
 
 module.exports = {
