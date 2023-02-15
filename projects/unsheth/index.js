@@ -2,9 +2,6 @@ const sdk = require("@defillama/sdk");
 const MINT_TOKEN_CONTRACT = "0x1f3Af095CDa17d63cad238358837321e95FC5915";
 const LSDVAULT_CONTRACT = "0xE76Ffee8722c21b390eebe71b67D95602f58237F";
 const LSD_REGISTRY_CONTRACT = "0xA857904691bbdEca2e768B318B5f6b9bfA698b7C";
-const SUSHI_USHWETH = "0xAAF448d30F01b429FB6e7F9AF6A8FF66e694F312";
-const SUSHISWAP_LP = "0xaaf448d30f01b429fb6e7f9af6a8ff66e694f312";
-const WETH_CONTRACT = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
 
 const abi = {
   regLsdAddress: "function lsdAddresses() returns (address[])",
