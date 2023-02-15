@@ -44,17 +44,6 @@ async function tvl(timestamp, block, chainBlocks) {
     sdk.util.sumSingleBalance(balances, lsdAddresses[i], v.output)
   );
 
-  // fetch ETH locked in Sushi swap pool
-  const weth_locked_bal = (
-    await sdk.api.abi.call({
-      abi: "erc20:balanceOf",
-      target: WETH_CONTRACT,
-      params: [SUSHISWAP_LP],
-    })
-  ).output;
-
-  sdk.util.sumSingleBalance(balances, WETH_CONTRACT, weth_locked_bal);
-
   return balances;
 }
 
