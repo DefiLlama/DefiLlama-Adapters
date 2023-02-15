@@ -3,5 +3,8 @@
   "totalAssets": "uint256:totalAssets",
   "getCash": "uint256:getCash",
   "balanceOf": "function balanceOf(address account) view returns (uint256)",
-  "getPositionInfo": "function getPositionInfo(uint256 _positionId) view returns (tuple(uint256 positionId, uint256 borrowId, uint256 amount0, uint256 amount1, uint256 fee, uint256 positionValue, uint256 debtValue, int24 upperTick, int24 lowerTick, uint256 wantAmount, uint256 reserveAmount, uint256 stopLossUpperPrice, uint256 stopLossLowerPrice, uint256 positionCreateTimestamp) info)"
+  "getPositionInfo": "function getPositionInfo(uint256 _positionId) view returns (tuple(uint256 positionId, uint256 borrowId, uint256 amount0, uint256 amount1, uint256 fee, uint256 positionValue, uint256 debtValue, int24 upperTick, int24 lowerTick, uint256 wantAmount, uint256 reserveAmount, uint256 stopLossUpperPrice, uint256 stopLossLowerPrice, uint256 positionCreateTimestamp) info)",
+  "getPositionValueMeasuredInWantToken": "function getPositionValueMeasuredInWantToken(address _wantToken, address _borrowToken, address _uniswapPool, uint256 _positionId, bool _wantTokenIsToken0, uint32 _oracleTimeWeightedSec) view returns (uint256)",
+  "oracleTimeWeightedSec": "uint32:oracleTimeWeightedSec"
 }
+
