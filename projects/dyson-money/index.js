@@ -14,6 +14,8 @@ const getGNSPrice = async () => {
 
 const sphere_token = "0x62F594339830b90AE4C084aE7D223fFAFd9658A7"
 const ylSPHEREvault = "0x4Af613f297ab00361D516454E5E46bc895889653"
+const ArbiGnosis = "0xA6efac6a6715CcCE780f8D9E7ea174C4d85dbE02"
+const OptiGnosis = "0x93B0a33911de79b897eb0439f223935aF5a60c24"
 
 const arbitrumPools = [
   "0x04D9C66B4922A4BAe4aba29D2f2548a578853164", // WETH-USDC UniV3 5Bps
@@ -64,12 +66,28 @@ async function polygonTvl(timestamp, block, chainBlocks) {
 async function arbitrumTvl(timestamp, block, chainBlocks) {
   let balances = {};
   await unwrapUniswapV3NFTs({balances, owners: arbitrumPools, block: chainBlocks.arbitrum, chain: 'arbitrum'})
+  // add tokens in arbitrum Gnosis multisig
+  await sumTokens2({
+    balances,
+    owners: [ArbiGnosis],
+    tokens: ["0x82aF49447D8a07e3bd95BD0d56f35241523fBab1","0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a", "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8", "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9", "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f"],
+    chain: 'arbitrum',
+    block: chainBlocks.arbitrum
+  })
   return balances;
 }
 
 async function optimismTvl(timestamp, block, chainBlocks) {
   let balances = {};
   await unwrapUniswapV3NFTs({balances, owners: optimismPools, block: chainBlocks.optimism, chain: 'optimism'})
+  // add tokens in optimism Gnosis multisig
+  await sumTokens2({
+    balances,
+    owners: [OptiGnosis],
+    tokens: ["0x4200000000000000000000000000000000000042", "0x4200000000000000000000000000000000000006", "0x73cb180bf0521828d8849bc8CF2B920918e23032", "0x7F5c764cBc14f9669B88837ca1490cCa17c31607"],
+    chain: 'optimism',
+    block: chainBlocks.optimism
+  })
   return balances;
 }
 
