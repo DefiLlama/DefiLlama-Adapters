@@ -13,7 +13,7 @@ const fetchAssets = async () => {
   if (!messinaAssets)
     messinaAssets = getConfig(
       "messina-one",
-      "http://localhost:3000/api/bridge/get-assets?cache=true"
+      "https://messina.one/api/bridge/get-assets?cache=true"
     );
 
   return messinaAssets;
