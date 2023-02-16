@@ -11,3 +11,4 @@ const config = {
 }
 
 module.exports = cexExports(config)
+module.exports.methodology = 'This wallets where collect from etherscan labelling.'

@@ -1,4 +1,5 @@
 const { pool2 } = require("./helper/pool2");
+const { staking } = require("./helper/staking");
 const { sumTokens2 } = require("./helper/unwrapLPs");
 
 const tokens = {
@@ -29,6 +30,9 @@ async function arbiTvl(_, _b, cb) {
 }
 // node test.js projects/gainsNetwork.js
 module.exports = {
+  hallmarks: [
+    [1674475200,"Launch on Arbitrum"]
+  ],
   polygon: {
     tvl: polyTvl,
     pool2: pool2(
@@ -36,8 +40,10 @@ module.exports = {
       "0x6e53cb6942e518376e9e763554db1a45ddcd25c4",
       "polygon",
     ),
+    staking: staking('0xfb06a737f549eb2512eb6082a808fc7f16c0819d', '0xE5417Af564e4bFDA1c483642db72007871397896'),
   },
   arbitrum: {
     tvl: arbiTvl,
+    staking: staking('0x6b8d3c08072a020ac065c467ce922e3a36d3f9d6', '0x18c11fd286c5ec11c3b683caa813b77f5163a122'),
   },
 };

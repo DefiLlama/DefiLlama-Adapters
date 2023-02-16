@@ -1,68 +1,51 @@
 const sdk = require("@defillama/sdk");
-const { default: BigNumber } = require("bignumber.js");
+const { sumTokens2, } = require('../../helper/unwrapLPs')
 
 const abi = require("./abis");
 const address = require("./address");
 
-async function getTVL(balances, chain, timestamp, chainBlocks) {
-  const block = chainBlocks[chain];
-
-  const [{ output: simpleReservesData }, { output: simpleNftsData }] =
+async function tvl(chain, timestamp, chainBlocks, { api }) {
+  const { UiPoolDataProvider, LendPoolAddressProvider, } = address[api.chain]
+  
+  const [simpleReservesData, simpleNftsData] =
     await Promise.all([
-      sdk.api.abi.call({
-        target: address.UiPoolDataProvider[chain],
-        params: [address.LendPoolAddressProvider[chain]],
+      api.call({
+        target: UiPoolDataProvider,
+        params: LendPoolAddressProvider,
         abi: abi.UiPoolDataProvider.getSimpleReservesData,
-        block,
-        chain,
       }),
-      sdk.api.abi.call({
-        target: address.UiPoolDataProvider[chain],
-        params: [address.LendPoolAddressProvider[chain]],
+      api.call({
+        target: UiPoolDataProvider,
+        params: LendPoolAddressProvider,
         abi: abi.UiPoolDataProvider.getSimpleNftsData,
-        block,
-        chain,
       }),
     ]);
 
-  simpleReservesData.forEach((d) => {
-    balances[d.underlyingAsset] = new BigNumber(
-      balances[d.underlyingAsset] || 0
-    ).plus(d.availableLiquidity);
-  });
-
-  simpleNftsData.forEach((d) => {
-    balances["ETHEREUM"] = new BigNumber(balances["ETHEREUM"] || 0).plus(
-      new BigNumber(d.totalCollateral).multipliedBy(d.priceInEth).shiftedBy(-18)
-    );
-  });
-
-  return balances;
+  const toa = simpleNftsData.map(i => ([i.underlyingAsset, i.bNftAddress]))
+  simpleReservesData.forEach(i => toa.push([i.underlyingAsset, i.bTokenAddress]))
+  return sumTokens2({ api, tokensAndOwners: toa })
 }
 
-async function getBorrowed(balances, chain, timestamp, chainBlocks) {
-  const block = chainBlocks[chain];
+async function borrowed(chain, timestamp, chainBlocks, { api }) {
+  const balances = {}
+  const { UiPoolDataProvider, LendPoolAddressProvider, } = address[api.chain]
 
-  const [{ output: simpleReservesData }] = await Promise.all([
-    sdk.api.abi.call({
-      target: address.UiPoolDataProvider[chain],
-      params: [address.LendPoolAddressProvider[chain]],
+  const [simpleReservesData] = await Promise.all([
+    api.call({
+      target: UiPoolDataProvider,
+      params: LendPoolAddressProvider,
       abi: abi.UiPoolDataProvider.getSimpleReservesData,
-      block,
-      chain,
     }),
   ]);
 
   simpleReservesData.forEach((d) => {
-    balances[d.underlyingAsset] = new BigNumber(
-      balances[d.underlyingAsset] || 0
-    ).plus(d.totalVariableDebt);
+    sdk.util.sumSingleBalance(balances,d.underlyingAsset,d.totalVariableDebt, api.chain)
   });
 
   return balances;
 }
 
 module.exports = {
-  getTVL,
-  getBorrowed,
+  tvl,
+  borrowed,
 };

@@ -48,6 +48,6 @@ module.exports = {
     tvl,
     pool2: stakings([chef, sapphireWarChef], [sapphireFtmLP, sapphireWarFtmLP], "fantom"),
     staking,
-    masterchef: tvl,
+    // masterchef: tvl,
   }
 }
