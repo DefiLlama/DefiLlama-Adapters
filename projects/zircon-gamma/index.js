@@ -7,7 +7,7 @@ async function fetch() {
 
   const tokensQuery = gql`
       query {
-          tokens(first: 100, where: {totalLiquidity_gt: "0.01"}) {
+          tokens(first: 100, where: {totalLiquidity_gt: "1"}) {
               id
               symbol
               totalLiquidity
@@ -21,14 +21,23 @@ async function fetch() {
     tokensQuery
   )
 
-  const allBalances = {}
-  tokens.forEach(token => {sdk.util.sumSingleBalance(allBalances,
+  const getSymbol = (token) =>
     token.symbol === 'LDO' ? '0x5a98fcbea516cf06857215779fd812ca3bef1b32' :
       token.symbol === 'xcKSM' ? 'kusama' :
         token.symbol === 'ZRG' ? 'zircon-gamma-token' :
-          `moonriver:${token.id}`,
+          `moonriver:${token.id}`
+
+  const getLiquidity = (token) =>
     token.symbol === 'xcKSM' || token.symbol === 'ZRG' ? parseInt(token.totalLiquidity) :
-      BigInt(parseFloat(token.totalLiquidity).toFixed(0)*(10**token.decimals)))})
+      parseFloat(token.totalLiquidity).toFixed(0)*(10**token.decimals)
+
+
+  const allBalances = {}
+  console.log("tokens", tokens)
+  tokens.forEach(token => {
+    sdk.util.sumSingleBalance(allBalances,
+      getSymbol(token),
+      getLiquidity(token))})
   return allBalances;
 }
 
