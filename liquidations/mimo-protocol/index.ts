@@ -8,18 +8,18 @@ const sdk = require("@defillama/sdk");
 const RATE_ACCURACY = BigNumber("1000000000000000000000000000"); // 1e27
 
 const latestRoundDataABI = {
-    inputs: [],
-    name: "latestRoundData",
-    outputs: [
-      { internalType: "uint80", name: "roundId", type: "uint80" },
-      { internalType: "int256", name: "answer", type: "int256" },
-      { internalType: "uint256", name: "startedAt", type: "uint256" },
-      { internalType: "uint256", name: "updatedAt", type: "uint256" },
-      { internalType: "uint80", name: "answeredInRound", type: "uint80" },
-    ],
-    stateMutability: "view",
-    type: "function",
-  };
+  inputs: [],
+  name: "latestRoundData",
+  outputs: [
+    { internalType: "uint80", name: "roundId", type: "uint80" },
+    { internalType: "int256", name: "answer", type: "int256" },
+    { internalType: "uint256", name: "startedAt", type: "uint256" },
+    { internalType: "uint256", name: "updatedAt", type: "uint256" },
+    { internalType: "uint80", name: "answeredInRound", type: "uint80" },
+  ],
+  stateMutability: "view",
+  type: "function",
+};
 
 enum Chain {
   ethereum = "ethereum",
@@ -32,7 +32,7 @@ const getEURUSD = async (chain: Chain) => {
     [Chain.ethereum]: "0xb49f677943bc038e9857d61e7d053caa2c1734c1",
     [Chain.polygon]: "0x73366fe0aa0ded304479862808e02506fe556a98",
     [Chain.fantom]: "0x3e68e68ea2c3698400465e3104843597690ae0f7",
-  }
+  };
 
   const eurUSDRoundData = await sdk.api.abi.call({
     chain: chain,
@@ -41,8 +41,8 @@ const getEURUSD = async (chain: Chain) => {
     abi: latestRoundDataABI,
   });
 
-  return eurUSDRoundData.output.answer / 10**8;
-}
+  return eurUSDRoundData.output.answer / 10 ** 8;
+};
 
 const getSubgraphUrl = (chain: Chain) => {
   let subgraphUrl: string;
@@ -57,7 +57,8 @@ const getSubgraphUrl = (chain: Chain) => {
       break;
     }
     case Chain.fantom: {
-      subgraphUrl = "https://api.thegraph.com/subgraphs/name/rayxpub/titanfantom";
+      subgraphUrl =
+        "https://api.thegraph.com/subgraphs/name/rayxpub/titanfantom";
       break;
     }
   }
@@ -87,7 +88,7 @@ const collateralQuery = gql`
       liquidationRatio
     }
   }
-`
+`;
 
 type VaultData = {
   id: string;
@@ -103,16 +104,22 @@ type CollateralConfig = {
   id: string;
   currentCumulativeRate: string;
   liquidationRatio: string;
-}
+};
 
 const getVaultData = async (chain: Chain) => {
   const subgraphUrl = getSubgraphUrl(chain);
-  const vaultData = (await getPagedGql(subgraphUrl, vaultsQuery, "vaults")) as VaultData[];
+  const vaultData = (await getPagedGql(
+    subgraphUrl,
+    vaultsQuery,
+    "vaults"
+  )) as VaultData[];
   return vaultData;
 };
 
 const getTokenInfo = async (tokenId: string) => {
-  const info = (await axios.get("https://coins.llama.fi/prices/current/" + tokenId)).data.coins as {
+  const info = (
+    await axios.get("https://coins.llama.fi/prices/current/" + tokenId)
+  ).data.coins as {
     [tokenId: string]: {
       decimals: number;
       price: number;
@@ -127,10 +134,16 @@ const getTokenInfo = async (tokenId: string) => {
 
 const getCollateralConfigs = async (chain: Chain) => {
   const subgraphUrl = getSubgraphUrl(chain);
-  const collateralConfigsData = (await getPagedGql(subgraphUrl, collateralQuery, "collateralConfigs")) as CollateralConfig[];
+  const collateralConfigsData = (await getPagedGql(
+    subgraphUrl,
+    collateralQuery,
+    "collateralConfigs"
+  )) as CollateralConfig[];
 
   return collateralConfigsData
-    .filter(value => value.id !== "0x0000000000000000000000000000000000000001") // get rid of some faulty configs
+    .filter(
+      (value) => value.id !== "0x0000000000000000000000000000000000000001"
+    ) // get rid of some faulty configs
     .reduce(async (previous, item, index, array) => {
       const result = await previous;
       result[item.id] = {
@@ -138,8 +151,8 @@ const getCollateralConfigs = async (chain: Chain) => {
         tokenInfo: await getTokenInfo(`${chain}:${item.id}`),
       };
       return result;
-  }, Promise.resolve({}));
-}
+    }, Promise.resolve({}));
+};
 
 const positions = (chain: Chain) => async (): Promise<Liq[]> => {
   const vaultData = await getVaultData(chain);
@@ -150,10 +163,17 @@ const positions = (chain: Chain) => async (): Promise<Liq[]> => {
   const positions: Liq[] = vaultData.map((data) => {
     const collateralConfig = collateralConfigs[data.collateralType];
     const currentCumulativeRate = collateralConfig.currentCumulativeRate;
-    const vaultDebt = BigNumber(currentCumulativeRate).times(BigNumber(data.baseDebt)).div(RATE_ACCURACY).div(10 ** 18); // debt is always in PAR, and PAR is 18 decimals
+    const vaultDebt = BigNumber(currentCumulativeRate)
+      .times(BigNumber(data.baseDebt))
+      .div(RATE_ACCURACY)
+      .div(10 ** 18); // debt is always in PAR, and PAR is 18 decimals
 
     const accuracy = BigNumber(10 ** collateralConfig.tokenInfo.decimals);
-    const liqPriceInPAR = vaultDebt.times(accuracy).times(BigNumber(collateralConfig.liquidationRatio)).div(BigNumber(data.collateralBalance)).div(BigNumber(10**18))
+    const liqPriceInPAR = vaultDebt
+      .times(accuracy)
+      .times(BigNumber(collateralConfig.liquidationRatio))
+      .div(BigNumber(data.collateralBalance))
+      .div(BigNumber(10 ** 18));
     const liqPrice = liqPriceInPAR.times(eurUSD);
 
     return {
@@ -161,11 +181,11 @@ const positions = (chain: Chain) => async (): Promise<Liq[]> => {
       liqPrice: liqPrice.toNumber(),
       collateral: `${chain}:${data.collateralType}`,
       collateralAmount: data.collateralBalance,
-    }
+    };
   });
 
   return positions.filter((position) => position.liqPrice > 0);
-}
+};
 
 module.exports = {
   ethereum: {
