@@ -2,7 +2,7 @@ const { getChainTvl } = require("../helper/getUniSubgraphTvl");
 
 const stableGraph = getChainTvl(
   {
-    bsc: "https://api.thegraph.com/subgraphs/name/pancakeswap/exchange-stableswap",
+    bsc: "https://api.thegraph.com/subgraphs/name/chef-jojo/exchange-stableswap",
   },
   "factories"
 );

@@ -24,7 +24,9 @@ query get_tvl($block: Int) {
         uniswapFactories = (await blockQuery(graphUrls[chain], graphQuery, { api, blockCatchupLimit, }))[factoriesName];
       }
 
-      const usdTvl = Number(uniswapFactories[0][tvlName])
+      const usdTvl = uniswapFactories.reduce((acc, cur) => {
+        return acc + Number(cur[tvlName])
+      }, 0)
       return toUSDTBalances(usdTvl)
     }
   }
