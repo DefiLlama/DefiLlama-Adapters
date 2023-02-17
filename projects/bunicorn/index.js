@@ -12,11 +12,25 @@ const MASTERCHEF_CONTRACT_ADDRESS =
   "0xA12c974fE40ea825E66615bA0Dc4Fd19be4D7d24";
 
 const graphTotalTokenTVLQuery = gql`
-{\n  bunis(where: {id: \"1\"}) {\n    totalLiquidity\n  }\n}
+query ($block: Int) {
+  bunis(
+    where: { id: 1 } 
+    block: { number: $block }) {
+    totalLiquidity
+  }
+}
 `;
 
 const graphTotalStableTVLQuery = gql`
-{\n  buniCornFactories( where: {id: \"0x86873f85bc12ce40321340392c0ff39c3bdb8d68\"}) {\n    id\n    totalLiquidityUSD\n  }\n\n}
+query($block: Int) {
+  buniCornFactories(
+    where: { id: "0x86873f85bc12ce40321340392c0ff39c3bdb8d68" }
+    block: { number: $block }
+  ) {
+    id
+    totalLiquidityUSD
+  }
+}
 `;
 
 async function getTotalFarmTVL(timestamp, ethBlock, chainBlocks) {
