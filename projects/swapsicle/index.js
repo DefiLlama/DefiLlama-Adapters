@@ -45,7 +45,7 @@ const contracts = {
     pops: "0x173fd7434b8b50df08e3298f173487ebdb35fd14",
     stlos: "0xB4B01216a5Bc8F1C8A33CD990A1239030E60C905"
   }
-};
+}
 
 function getAVAXAddress(address) {
   return `avax:${address}`;
@@ -63,7 +63,7 @@ async function iceBox(contract, block, chain) {
     ).output,
   };
   return balances;
-};
+}
 
 // Avalanche - IceVault Staking (USDC)
 async function stakedUSDC(timestamp, ethBlock, chainBlocks) {
@@ -93,7 +93,7 @@ async function stakedAVAXIceBox(timestamp, ethBlock, chainBlocks) {
   balances[getAVAXAddress(WAVAX)] = ibBalance["0x0000000000000000000000000000000000000000"];
 
   return balances;
-};
+}
 
 async function stakedAVAXIceBox2(timestamp, ethBlock, chainBlocks) {
   const balances = {};
@@ -103,7 +103,7 @@ async function stakedAVAXIceBox2(timestamp, ethBlock, chainBlocks) {
   balances[getAVAXAddress(WAVAX)] = ibBalance2["0x0000000000000000000000000000000000000000"]
 
   return balances;
-};
+}
 
 module.exports = {
   misrepresentedTokens: true,
@@ -148,4 +148,4 @@ module.exports = {
    ])
   },
   //start: 15434772,
-};
+}
