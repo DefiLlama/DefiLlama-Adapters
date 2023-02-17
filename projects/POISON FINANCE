@@ -94,6 +94,21 @@ async function tvl(api) {
   token4Balance18Decimals = new BigNumber(token4Balance18Decimals.toString());
   await sdk.util.sumSingleBalance(balances, MIM_TOKEN_CONTRACT, collateralBalance4.output,  api.chain);
    
+  const collateralBalance5 = await sdk.api.abi.call({
+    target: POISON_TOKEN_CONTRACT,
+    params: [POISON_STAKED_CONTRACT],
+    abi: 'erc20:balanceOf',
+    chain: api.chain
+  });
+  let token5Decimal = await sdk.api.abi.call({
+    target: POISON_TOKEN_CONTRACT,
+    abi: "erc20:decimals",
+    chain: api.chain
+  });
+  let token5Balance18Decimals = await convertTo18DecimalWei(collateralBalance5.output, token5Decimal.output);
+  token5Balance18Decimals = new BigNumber(token5Balance18Decimals.toString());
+
+  await sdk.util.sumSingleBalance(balances, POISON_STAKED_CONTRACT, collateralBalance5.output,  api.chain);
 
   let totalBalance0 = token0Balance18Decimals.plus(token1Balance18Decimals);
   totalBalance0 = new BigNumber(totalBalance0.integerValue().toFixed());
@@ -105,17 +120,13 @@ async function tvl(api) {
   totalBalance2 = new BigNumber(totalBalance2.integerValue().toFixed());
 
   let totalBalance3 = totalBalance2.plus(token4Balance18Decimals);
+  totalBalance3 = new BigNumber(totalBalance3.integerValue().toFixed());
 
-  await sdk.util.sumSingleBalance(balances, POTION_VAULT_CONTRACT, totalBalance3.integerValue().toFixed(),  api.chain);
+  let totalBalance4 = totalBalance3.plus(token5Balance18Decimals);
 
-  const collateralBalance5 = await sdk.api.abi.call({
-    target: POISON_TOKEN_CONTRACT,
-    params: [POISON_STAKED_CONTRACT],
-    abi: 'erc20:balanceOf',
-    chain: api.chain
-  });
+  await sdk.util.sumSingleBalance(balances, POTION_VAULT_CONTRACT, totalBalance4.integerValue().toFixed(),  api.chain);
 
-  await sdk.util.sumSingleBalance(balances, POISON_STAKED_CONTRACT, collateralBalance5.output,  api.chain);
+
 
   
   return balances;
