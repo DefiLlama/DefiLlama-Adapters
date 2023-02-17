@@ -32,39 +32,28 @@ async function tvl(_, _block, chainBlocks) {
     })
   ).output;
 
-  // const usdctreasuryTvl = (
-  //   await sdk.api.abi.call({
-  //     target: USDC_ADDRESS,
-  //     abi: "function balanceOf(address account) view returns (uint256)",
-  //     params: [BOC_TREASURY_ADDRESS] ,
-  //     block: block,
-  //     chain: "cronos"
-  //   })
-  // ).output;
-  //
-  // const cusdstabilityPoolTvl = (
-  //   await sdk.api.abi.call({
-  //     target: CUSD_ADDRESS,
-  //     abi: "function balanceOf(address account) view returns (uint256)",
-  //     params: [STABILITY_POOL_ADDRESS] ,
-  //     block: block,
-  //     chain: "cronos"
-  //   })
-  // ).output;
+  const usdctreasuryTvl = (
+    await sdk.api.abi.call({
+      target: USDC_ADDRESS,
+      abi: "function balanceOf(address account) view returns (uint256)",
+      params: [BOC_TREASURY_ADDRESS] ,
+      block: block,
+      chain: "cronos"
+    })
+  ).output;
 
-  const totalcusd =  (+loancollateralTvl)
-  //const totalusdc = usdctreasuryTvl
+  const totalcusd =  (+cusdtreasuryTvl + +loancollateralTvl)
+  const totalusdc = usdctreasuryTvl
 
   return  {
-    // In USDC, USDC has decimal of 6
     ["cronos:0xF2001B145b43032AAF5Ee2884e456CCd805F677D"]: totalcusd,
-   // ["cronos:0xc21223249CA28397B4B6541dfFaEcC539BfF0c59"]: totalusdc
+    ["cronos:0xc21223249CA28397B4B6541dfFaEcC539BfF0c59"]: totalusdc
   }
 }
 
 module.exports = {
-  timetravel: false,
-  start: 6984087,
+  timetravel: true,
+  start: 6949784,
   cronos: {
     tvl,
   }
