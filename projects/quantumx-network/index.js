@@ -1,3 +1,4 @@
+const { toUSDTBalances } = require("../helper/balances")
 var abiFile = require("./farms.abi.json");
 var {
   AbiRegistry,
@@ -73,6 +74,7 @@ const formatBalanceDolar = (token, price) => {
   return 0;
 };
 
+
 // fetch info from sc
 const scQuery = async (funcName, args) => {
   try {
@@ -99,6 +101,7 @@ const scQuery = async (funcName, args) => {
     console.log(`query error for ${funcName}  : `, error);
   }
 };
+
 
 // get Tvl
 const tvl = async () => {
@@ -220,13 +223,14 @@ const tvl = async () => {
         );
       }
 
-      return tvlDollar;
+      return toUSDTBalances(tvlDollar);
     }
   } catch (err) {
     console.log("Exeption error : ", err);
   }
-  return tvlDollar;
+  return toUSDTBalances(tvlDollar);
 };
+
 
 tvl()
   .then((res) => {
@@ -236,8 +240,12 @@ tvl()
     console.log("err", err);
   });
 
+
 module.exports = {
-    elrond: {
-        tvl,
-    }
+  methodology: 'It counts the TVL from the Staking Farms/Pools of QuantumX.',
+  elrond: {
+      tvl,
+  }
 }
+
+
