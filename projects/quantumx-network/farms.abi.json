@@ -60,11 +60,7 @@
                     "type": "BigUint"
                 }
             ],
-            "outputs": [
-                {
-                    "type": "BigUint"
-                }
-            ]
+            "outputs": []
         },
         {
             "name": "becomeCreator",
@@ -87,8 +83,9 @@
                     "type": "EgldOrEsdtTokenIdentifier"
                 },
                 {
-                    "name": "reward_token",
-                    "type": "EgldOrEsdtTokenIdentifier"
+                    "name": "opt_reward_token",
+                    "type": "optional<EgldOrEsdtTokenIdentifier>",
+                    "multi_arg": true
                 },
                 {
                     "name": "unbonding_period",
@@ -103,11 +100,7 @@
                     "type": "u64"
                 }
             ],
-            "outputs": [
-                {
-                    "type": "BigUint"
-                }
-            ]
+            "outputs": []
         },
         {
             "name": "depositRewards",
@@ -123,6 +116,11 @@
                 {
                     "name": "duration",
                     "type": "u64"
+                },
+                {
+                    "name": "opt_use_now",
+                    "type": "optional<bool>",
+                    "multi_arg": true
                 }
             ],
             "outputs": []
@@ -186,6 +184,12 @@
                     "type": "bool"
                 }
             ]
+        },
+        {
+            "name": "claimLeftovers",
+            "mutability": "mutable",
+            "inputs": [],
+            "outputs": []
         },
         {
             "name": "setFee",
@@ -291,13 +295,62 @@
             "outputs": []
         },
         {
+            "name": "addFarmsForSrbStakers",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "farms",
+                    "type": "variadic<BigUint>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "removeFarmsForSrbStakers",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "farms",
+                    "type": "variadic<BigUint>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "addSrbBoostedFarms",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "farms",
+                    "type": "variadic<BigUint>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "removeSrbBoostedFarms",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "farms",
+                    "type": "variadic<BigUint>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": []
+        },
+        {
             "name": "forceAddCreator",
             "onlyOwner": true,
             "mutability": "mutable",
             "inputs": [
                 {
-                    "name": "address",
-                    "type": "Address"
+                    "name": "addresses",
+                    "type": "variadic<Address>",
+                    "multi_arg": true
                 }
             ],
             "outputs": []
@@ -308,8 +361,9 @@
             "mutability": "mutable",
             "inputs": [
                 {
-                    "name": "address",
-                    "type": "Address"
+                    "name": "addresses",
+                    "type": "variadic<Address>",
+                    "multi_arg": true
                 }
             ],
             "outputs": []
@@ -324,8 +378,9 @@
                     "type": "EgldOrEsdtTokenIdentifier"
                 },
                 {
-                    "name": "reward_token",
-                    "type": "EgldOrEsdtTokenIdentifier"
+                    "name": "opt_reward_token",
+                    "type": "optional<EgldOrEsdtTokenIdentifier>",
+                    "multi_arg": true
                 },
                 {
                     "name": "unbonding_period",
@@ -347,6 +402,22 @@
             "outputs": []
         },
         {
+            "name": "fixLre",
+            "onlyOwner": true,
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "farm",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "val",
+                    "type": "u64"
+                }
+            ],
+            "outputs": []
+        },
+        {
             "name": "calcHarvestableRewards",
             "mutability": "readonly",
             "inputs": [
@@ -361,7 +432,8 @@
             ],
             "outputs": [
                 {
-                    "type": "BigUint"
+                    "type": "variadic<tuple<EgldOrEsdtTokenIdentifier,BigUint>>",
+                    "multi_result": true
                 }
             ]
         },
@@ -377,7 +449,29 @@
             ]
         },
         {
-            "name": "getUserInfo",
+            "name": "getMultifarmsRewardsLeft",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "variadic<tuple<BigUint,List<EsdtTokenPayment>>>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "name": "getFarmFees",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "variadic<List<BigUint>>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "name": "getUserFarmInfo",
             "mutability": "readonly",
             "inputs": [
                 {
@@ -388,6 +482,22 @@
             "outputs": [
                 {
                     "type": "variadic<List<BigUint>>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "name": "getUserRewardsInfo",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "address",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "variadic<tuple<EgldOrEsdtTokenIdentifier,List<BigUint>>>",
                     "multi_result": true
                 }
             ]
@@ -458,6 +568,22 @@
             "outputs": [
                 {
                     "type": "variadic<Address>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "name": "getStakersReport",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "id",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "variadic<tuple<Address,List<BigUint>>>",
                     "multi_result": true
                 }
             ]
@@ -551,6 +677,47 @@
             "outputs": [
                 {
                     "type": "variadic<Address>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "name": "claimableLeftovers",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "creator",
+                    "type": "Address"
+                },
+                {
+                    "name": "token",
+                    "type": "EgldOrEsdtTokenIdentifier"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "farmsForSrbStakers",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "variadic<BigUint>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "name": "srbBoostedFarms",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "variadic<BigUint>",
                     "multi_result": true
                 }
             ]
@@ -708,6 +875,60 @@
             ]
         },
         {
+            "name": "multifarmRewardTokens",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "farm_id",
+                    "type": "BigUint"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "variadic<EgldOrEsdtTokenIdentifier>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "name": "multifarmDailyRewards",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "farm_id",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "token",
+                    "type": "EgldOrEsdtTokenIdentifier"
+                },
+                {
+                    "name": "epoch",
+                    "type": "u64"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "tempRewards",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "token",
+                    "type": "EgldOrEsdtTokenIdentifier"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
             "name": "userStakingRecords",
             "mutability": "readonly",
             "inputs": [
@@ -829,6 +1050,48 @@
                 {
                     "name": "farm_id",
                     "type": "BigUint"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "userMultifarmRewardsHarvested",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "address",
+                    "type": "Address"
+                },
+                {
+                    "name": "farm_id",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "token",
+                    "type": "EgldOrEsdtTokenIdentifier"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "totalMultifarmRewardsHarvested",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "farm_id",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "token",
+                    "type": "EgldOrEsdtTokenIdentifier"
                 }
             ],
             "outputs": [
@@ -991,6 +1254,23 @@
     "events": [],
     "hasCallback": false,
     "types": {
+        "EsdtTokenPayment": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "token_identifier",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "token_nonce",
+                    "type": "u64"
+                },
+                {
+                    "name": "amount",
+                    "type": "BigUint"
+                }
+            ]
+        },
         "Farm": {
             "type": "struct",
             "fields": [
