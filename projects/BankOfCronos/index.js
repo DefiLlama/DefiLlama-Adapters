@@ -13,14 +13,7 @@ const USDC_ADDRESS = "0xc21223249CA28397B4B6541dfFaEcC539BfF0c59";
 async function tvl(_, _block, chainBlocks) {
     const block = chainBlocks["cronos"];
     const balances = {};
-  const loancollateralTvl  = (
-    await sdk.api.abi.call({
-      target: ACTIVE_POOL_ADDRESS,
-      abi: "uint256:getVCSystem",
-      block: block,
-      chain: "cronos"
-    })
-  ).output;
+  
 
   const cusdtreasuryTvl = (
     await sdk.api.abi.call({
@@ -42,7 +35,7 @@ async function tvl(_, _block, chainBlocks) {
     })
   ).output;
 
-  const totalcusd =  (+cusdtreasuryTvl + +loancollateralTvl)
+  const totalcusd =  (+cusdtreasuryTvl)
   const totalusdc = usdctreasuryTvl
 
   return  {
