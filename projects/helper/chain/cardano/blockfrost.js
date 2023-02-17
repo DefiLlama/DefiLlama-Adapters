@@ -26,6 +26,40 @@ async function getAssets(address) {
   return (await axiosObj.get(`addresses/${address}`)).data.amount
 }
 
+
+async function assetsAddresses(address) {
+  const addresses = []
+  let page = 1
+  let response
+  
+  do {
+    response = await axiosObj.get(`assets/${address}/addresses`, {
+      params: { count: 100, page, }
+    })
+    response = response.data
+    addresses.push(...response)
+    page++
+  } while (response.length)
+  return addresses
+}
+
+async function addressesUtxosAssetAll(address, asset) {
+
+  const addresses = []
+  let page = 1
+  let response
+  do {
+    response = await axiosObj.get(`/addresses/${address}/utxos/${asset}`, {
+      params: { count: 100, page, }
+    })
+    response = response.data
+    addresses.push(...response)
+    page++
+  } while (response.length)
+  return addresses
+}
+
+
 async function getTxsRedeemers(utxo) {
   const { data } = await axiosObj.get(`txs/${utxo}/redeemers`)
   return data
@@ -41,4 +75,6 @@ module.exports = {
   getAddressesUTXOs,
   getTxsRedeemers,
   getTxsMetadata,
+  assetsAddresses,
+  addressesUtxosAssetAll,
 }

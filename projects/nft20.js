@@ -8,8 +8,8 @@ const MUSE_ETH_univ2 = '0x20d2c17d1928ef4290bf17f922a10eaa2770bf43'
 const MUSE_ETH_univ2_staking = '0x193b775af4bf9e11656ca48724a710359446bf52'
 
 const abi = {
-  'uni_v2_getPair': {"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"}],"name":"getPair","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"}, 
-  'uni_v3_getPool': {"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"},{"internalType":"uint24","name":"","type":"uint24"}],"name":"getPool","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}
+  uni_v2_getPair: "function getPair(address, address) view returns (address)",
+  uni_v3_getPool: "function getPool(address, address, uint24) view returns (address)",
 }
 const nft20_rest_api_base = 'https://api.nft20.io/pools?perPage=2000&page=1'
 
@@ -42,7 +42,7 @@ function chainTvl(chain) {
   // Retrieve pools using REST API
   let nft20_pools = (await axios.get(nft20_rest_api)).data.data // ?perPage=20&page=1&sortBy=pool_users
   const nft20_lp_usd_balance = nft20_pools.reduce((acc, p) => parseFloat(p['lp_usd_balance']) + acc, 0)
-  console.log(`${chain}: nft20 pools count: ${nft20_pools.length}\n${chain}: nft20 usd balance of LP returned by API: ${(nft20_lp_usd_balance/1e6).toFixed(2)}M`)
+  sdk.log(`${chain}: nft20 pools count: ${nft20_pools.length}\n${chain}: nft20 usd balance of LP returned by API: ${(nft20_lp_usd_balance/1e6).toFixed(2)}M`)
 
   // Get LPs addresses of UNI_v2 and SUSHI_v1 pools
   const calls_v2 = nft20_pools

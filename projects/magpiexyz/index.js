@@ -2,6 +2,7 @@ const sdk = require('@defillama/sdk');
 const { POOL_LIST } = require("./pool")
 const MasterMagpieAddress =  "0xa3B615667CBd33cfc69843Bf11Fbb2A1D926BD46";
 const WOMAddress = "0xAD6742A35fB341A9Cc6ad674738Dd8da98b94Fb1"
+const { transformBalances } = require('../helper/portedTokens')
 async function tvl(timestamp, block, chainBlocks) {
   const balances = {};
   for(let i = 0, l = POOL_LIST.length; i < l; i++) {
@@ -21,14 +22,11 @@ async function tvl(timestamp, block, chainBlocks) {
       }
       
   }
-  return balances;
+  return transformBalances('bsc', balances);
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
   methodology: 'counts the number of MINT tokens in the Club Bonding contract.',
-
   bsc: {
     tvl,
   }

@@ -57,23 +57,6 @@ const USDC_XYZ_SUSHI_LP_TOKEN = {
     decimals: 18,
 };
 
-// Unused but will leave it because they added it to the PR
-function createAbiViewItemFor(name, inputs, outputs) {
-    return {
-        name,
-        type: 'function',
-        stateMutability: 'view',
-        inputs: inputs.map(input => ({
-            name: '',
-            type: input,
-        })),
-        outputs: outputs.map(output => ({
-            name: '',
-            type: output,
-        })),
-    };
-}
-
 async function pool2(_timestamp, block) {
     const balance = await sdk.api.abi.call({
         abi: 'erc20:balanceOf',

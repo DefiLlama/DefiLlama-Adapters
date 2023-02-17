@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const { default: BigNumber } = require("bignumber.js");
 const { getChainTransform } = require("../helper/portedTokens");
-const { getBlock } = require("../helper/getBlock");
+const { getBlock } = require("../helper/http");
 const {
   getFuroTokens,
   getKashiTokens,
@@ -14,7 +14,7 @@ function bentobox(chain) {
     const balances = {};
     const transform = await getChainTransform(chain);
     let block = await getBlock(timestamp, chain, chainBlocks)
-    block = block - 100;
+    block = block - 1000;
 
     const bentoTokens = await getBentoboxTokensArray(chain, block); //array with shares and amount
     const tridentTokens = await getTridentTokens(chain, block); //mapping with amount

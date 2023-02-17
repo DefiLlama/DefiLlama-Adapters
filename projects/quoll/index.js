@@ -3,7 +3,7 @@ const { ethers: {BigNumber} } = require("ethers")
 const { staking } = require("../helper/staking");
 const abi = require('./abi.json');
 const voterProxy = '0xe96c48C5FddC0DC1Df5Cf21d68A3D8b3aba68046';
-const masterWombat = '0xE2C07d20AF0Fb50CAE6cDD615CA44AbaAA31F9c8';
+const masterWombat = '0x489833311676B566f888119c29bd997Dc6C95830';
 const quoLocker = "0xe76eEA460d02663275962a99529700E132EF526c";
 const quo = '0x08b450e4a48C04CDF6DB2bD4cf24057f7B9563fF';
 const wom = '0xAD6742A35fB341A9Cc6ad674738Dd8da98b94Fb1';
@@ -63,6 +63,7 @@ async function voterProxyBalances(block) {
   return underlyingAmounts.output
     .map((a, i) => {
       if (masterWombatVoterProxyBalances.output[i].output.amount === '0') return;
+      if (underlyingTokens.output[i].output.toLowerCase() === '0xE85aFCcDaFBE7F2B096f268e31ccE3da8dA2990A'.toLowerCase()) return; // disable aBNBc (ankr bnb)
       return ({amount: a.output.amount, token: underlyingTokens.output[i].output})
     }).filter(i => i);
 }

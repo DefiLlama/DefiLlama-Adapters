@@ -1,9 +1,10 @@
 const BigNumber = require("bignumber.js");
-const retry = require('async-retry')
 const axios = require("axios");
 const sdk = require('@defillama/sdk')
 const http = require('./http')
+const env = require('./env')
 const erc20 = require('./abis/erc20.json')
+const ethers = require("ethers");
 
 async function returnBalance(token, address, block, chain) {
   const { output: decimals } = await sdk.api.erc20.decimals(token, chain)
@@ -16,34 +17,6 @@ async function returnEthBalance(address) {
   const output = await sdk.api.eth.getBalance({ target: address })
   let ethAmount = await new BigNumber(output.output).div(10 ** 18).toFixed(2);
   return parseFloat(ethAmount);
-}
-
-async function getPrices(object) {
-  var stringFetch = '';
-  for (var key in object[0]) {
-    if (object[0][key] != 'stable') {
-      if (stringFetch.length > 0) {
-        stringFetch = stringFetch + ',' + object[0][key];
-      } else {
-        stringFetch = object[0][key];
-      }
-    }
-  }
-  return fetchURL(`https://api.coingecko.com/api/v3/simple/price?ids=${stringFetch}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`)
-}
-
-async function getPricesFromContract(object) {
-  var contractFetch = ''
-  for (var key in object) {
-    if (object[key]) {
-      if (contractFetch.length > 0) {
-        contractFetch = contractFetch + ',' + object[key];
-      } else {
-        contractFetch = object[key];
-      }
-    }
-  }
-  return fetchURL(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${contractFetch}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`)
 }
 
 async function fetchURL(url) {
@@ -77,18 +50,21 @@ const blacklisted_LPS = [
 function isLP(symbol, token, chain) {
   // console.log(symbol, chain, token)
   if (!symbol) return false
-  if (token && blacklisted_LPS.includes(token.toLowerCase())) return false
+  if (token && blacklisted_LPS.includes(token.toLowerCase()) || symbol.includes('HOP-LP-')) return false
   if (chain === 'bsc' && ['OLP', 'DLP', 'MLP', 'LP'].includes(symbol)) return false
   if (chain === 'bsc' && ['WLP', 'FstLP', 'BLP',].includes(symbol)) return true
   if (chain === 'avax' && ['ELP', 'EPT', 'CRL', 'YSL', 'BGL', 'PLP'].includes(symbol)) return true
   if (chain === 'ethereum' && ['SSLP'].includes(symbol)) return true
+  if (chain === 'polygon' && ['WLP', 'FLP'].includes(symbol)) return true
   if (chain === 'moonriver' && ['HBLP'].includes(symbol)) return true
   if (chain === 'ethpow' && ['LFG_LP'].includes(symbol)) return true
   if (chain === 'ethereum' && ['SUDO-LP'].includes(symbol)) return false
   if (chain === 'dogechain' && ['DST-V2'].includes(symbol)) return true
   if (chain === 'harmony' && ['HLP'].includes(symbol)) return true
+  if (chain === 'klaytn' && ['NLP'].includes(symbol)) return true
   if (chain === 'fantom' && ['HLP'].includes(symbol)) return true
   if (chain === 'songbird' && ['FLRX', 'OLP'].includes(symbol)) return true
+  if (chain === 'arbitrum' && ['DXS', 'ZLP', ].includes(symbol)) return true
   if (chain === 'metis' && ['NLP', 'ALP'].includes(symbol)) return true // Netswap/Agora LP Token
   if (['fantom', 'nova',].includes(chain) && ['NLT'].includes(symbol)) return true
   let label
@@ -97,14 +73,14 @@ function isLP(symbol, token, chain) {
     label = 'Blackisting this LP because of unsupported abi'
 
   if (label) {
-    if (DEBUG_MODE) console.log(label, token, symbol)
+    sdk.log(label, token, symbol)
     return false
   }
 
   const isLPRes = LP_SYMBOLS.includes(symbol) || /(UNI-V2|vAMM|sAMM)/.test(symbol) || symbol.split(/\W+/).includes('LP')
 
-  if (DEBUG_MODE && isLPRes && !['UNI-V2', 'Cake-LP'].includes(symbol))
-    console.log(chain, symbol, token)
+  if (isLPRes && !['UNI-V2', 'Cake-LP'].includes(symbol))
+    sdk.log(chain, symbol, token)
 
   return isLPRes
 }
@@ -149,8 +125,6 @@ async function getBalance(chain, account) {
   switch (chain) {
     case 'bitcoin':
       return (await http.get(`https://chain.api.btc.com/v3/address/${account}`)).data.balance / 1e8
-    case 'elrond':
-      return (await http.get(`https://gateway.elrond.com/address/${account}`)).data.account.balance / 1e18
     case 'bep2':
       const balObject = (await http.get(`https://api-binance-mainnet.cosmostation.io/v1/account/${account}`)).balances.find(i => i.symbol === 'BNB')
       return +(balObject || { free: 0 }).free
@@ -164,13 +138,8 @@ function getUniqueAddresses(addresses, isCaseSensitive = false) {
   return [...set]
 }
 
-const DEBUG_MODE = !!process.env.LLAMA_DEBUG_MODE
-
-function log(...args) {
-  if (DEBUG_MODE) {
-    console.log(...args);
-  }
-}
+const DEBUG_MODE = env.LLAMA_DEBUG_MODE
+const log = sdk.log
 
 function sliceIntoChunks(arr, chunkSize = 100) {
   const res = [];
@@ -191,8 +160,8 @@ function stripTokenHeader(token) {
   return token.indexOf(":") > -1 ? token.split(":")[1] : token;
 }
 
-async function diplayUnknownTable({ tvlResults = {}, tvlBalances = {}, storedKey = 'ethereum', log = false, tableLabel = 'Unrecognized tokens' }) {
-  if (!DEBUG_MODE && !log) return;
+async function diplayUnknownTable({ tvlResults = {}, tvlBalances = {}, storedKey = 'ethereum', tableLabel = 'Unrecognized tokens' }) {
+  if (!DEBUG_MODE) return;
   const balances = {}
   storedKey = storedKey.split('-')[0]
   Object.entries(tvlResults.tokenBalances).forEach(([label, balance]) => {
@@ -314,32 +283,13 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
   console.table(logObj)
 }
 
-async function fetchItemList({ chain, block, lengthAbi, itemAbi, target }) {
-  const { output: length } = await sdk.api.abi.call({
-    target,
-    abi: lengthAbi,
-    chain, block,
-  })
-  const { output: data } = await sdk.api.abi.multiCall({
-    target,
-    abi: itemAbi,
-    calls: getParamCalls(length),
-    chain, block,
-  })
-
-  return data
-}
-
 module.exports = {
-  DEBUG_MODE,
   log,
   createIncrementArray,
   fetchURL,
   postURL,
-  getPrices,
   returnBalance,
   returnEthBalance,
-  getPricesFromContract,
   isLP,
   mergeExports,
   getBalance,
@@ -352,5 +302,4 @@ module.exports = {
   getSymbols,
   getDecimals,
   getParamCalls,
-  fetchItemList,
 }

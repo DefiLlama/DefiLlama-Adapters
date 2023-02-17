@@ -1,30 +1,45 @@
-const { PublicKey, } = require("@solana/web3.js");
-const { getConnection, sumTokens2, } = require("../helper/solana");
+const { PublicKey } = require("@solana/web3.js");
+const anchor = require("@project-serum/anchor");
+const { getConnection, sumTokens2, readBigUInt64LE, } = require("../helper/solana");
 
-function readBigUInt64LE(buffer, offset) {
-  const first = buffer[offset];
-  const last = buffer[offset + 7];
-  if (first === undefined || last === undefined) {
-    throw new Error();
-  }
-  const lo = first + buffer[++offset] * 2 ** 8 + buffer[++offset] * 2 ** 16 + buffer[++offset] * 2 ** 24;
-  const hi = buffer[++offset] + buffer[++offset] * 2 ** 8 + buffer[++offset] * 2 ** 16 + last * 2 ** 24;
-  return BigInt(lo) + (BigInt(hi) << BigInt(32));
-}
 
 async function tvl() {
   const connection = getConnection();
   const dualProgramID = new PublicKey("DiPbvUUJkDhV9jFtQsDFnMEMRJyjW5iS6NMwoySiW8ki");
-  let programAccounts = await connection.getProgramAccounts(dualProgramID);
+  let programAccounts = await connection.getProgramAccounts(dualProgramID, {
+    filters: [{
+      dataSize: 260
+    }]
+  });
 
-  const tokenAccounts = programAccounts
-    .filter(i => i.account.data.length === 260)
+  const dipTokenAccounts = programAccounts
     .map(i => parseDipState(i.account.data))
-    .map(i => JSON.parse(JSON.stringify(i)))
     .map(i => [i.vaultSpl, i.vaultUsdc])
     .flat()
 
-  return sumTokens2({ tokenAccounts })
+  const stakingOptionsProgramID = new PublicKey("4yx1NJ4Vqf2zT1oVLk4SySBhhDJXmXFt88ncm4gPxtL7");
+  let stakingOptionsAccounts = await connection.getProgramAccounts(stakingOptionsProgramID, {
+    filters: [{
+      dataSize: 1150
+    }]
+  });
+
+  const soTokenAccounts = stakingOptionsAccounts
+    .map(i => parseSoState(i.account.data))
+    .map(i => i.vault)
+
+  const gsoProgramID = new PublicKey("DuALd6fooWzVDkaTsQzDAxPGYCnLrnWamdNNTNxicdX8");
+  let gsoAccounts = await connection.getProgramAccounts(gsoProgramID, {
+    filters: [{
+      dataSize: 1000
+    }]
+  });
+  const gsoTokenAccounts = gsoAccounts
+    .map(i => gsoVault(i.pubkey))
+
+  const tokenAccounts = dipTokenAccounts.concat(soTokenAccounts).concat(gsoTokenAccounts);
+
+  return sumTokens2({ tokenAccounts, allowError: true, })
 }
 
 function parseDipState(buf) {
@@ -54,6 +69,40 @@ function parseDipState(buf) {
     vaultUsdcBump,
     usdcMint,
   };
+}
+
+function parseSoState(buf) {
+  const numNameBytes = Number(buf.readUInt8(8));
+  // Prefix is 4 bytes
+  const soName = String.fromCharCode.apply(String, buf.slice(8 + 4, 8 + 4 + numNameBytes));
+  const offset = 26 + 32 + 8 + 4 + numNameBytes;
+  const baseMint = new PublicKey(buf.slice(offset, offset + 32));
+
+  const vault = PublicKey.findProgramAddressSync(
+    [
+      Buffer.from(anchor.utils.bytes.utf8.encode("so-vault")),
+      Buffer.from(anchor.utils.bytes.utf8.encode(soName)),
+      baseMint.toBuffer(),
+    ],
+    new PublicKey("4yx1NJ4Vqf2zT1oVLk4SySBhhDJXmXFt88ncm4gPxtL7")
+  )[0].toBase58();
+
+  return {
+    soName,
+    baseMint,
+    vault,
+  };
+}
+
+function gsoVault(pubkey) {
+  const vault = PublicKey.findProgramAddressSync(
+    [
+      Buffer.from(anchor.utils.bytes.utf8.encode("base-vault")),
+      (new PublicKey(pubkey)).toBuffer(),
+    ],
+    new PublicKey("DuALd6fooWzVDkaTsQzDAxPGYCnLrnWamdNNTNxicdX8")
+  )[0].toBase58();
+  return vault;
 }
 
 module.exports = {

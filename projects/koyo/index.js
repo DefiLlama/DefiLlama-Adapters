@@ -2,7 +2,7 @@ const sdk = require("@defillama/sdk");
 const constants = require("./constants");
 const { requery } = require("../helper/requery");
 const { chainJoinExports, chainTypeExports } = require("./utils");
-const { getBlock } = require("../helper/getBlock");
+const { getBlock } = require("../helper/http");
 const { staking } = require("../helper/staking");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const {
@@ -94,27 +94,6 @@ const chainTVL = (chain) => {
     return balances;
   };
 };
-const chainTreasury = (chain) => {
-  return async (timestamp, _ethBlock, chainBlocks) => {
-    if (!DATA[chain] || constants.treasuryExclusion.includes(chain)) return {};
-
-    const balances = {};
-    const block = await getBlock(timestamp, chain, chainBlocks);
-
-    const [transform, data] = await DATA[chain]();
-
-    await sumTokensAndLPsSharedOwners(
-      balances,
-      data.treasury.tokens,
-      data.treasury.addresss,
-      block,
-      chain,
-      transform
-    );
-
-    return balances;
-  };
-};
 const chainStaking = (chain) => {
   return async (timestamp, ethBlock, chainBlocks) => {
     if (!DATA[chain] || constants.stakingExclusion.includes(chain)) return {};
@@ -132,7 +111,6 @@ const chainStaking = (chain) => {
 module.exports = chainJoinExports(
   [
     (chains) => chainTypeExports("tvl", chainTVL, chains),
-    (chains) => chainTypeExports("treasury", chainTreasury, chains),
     (chains) => chainTypeExports("staking", chainStaking, chains),
   ],
   ["boba", "ethereum"]

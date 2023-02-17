@@ -1,8 +1,6 @@
 const BigNumber = require("bignumber.js");
-const abis = require('./config/curve/abis.js')
 const sdk = require("@defillama/sdk");
-const retry = require('./helper/retry')
-const axios = require("axios");
+const { get } = require('./helper/http')
 
 let swaps = [
   {
@@ -10,7 +8,6 @@ let swaps = [
     'address': '0x329239599afB305DA0A2eC69c58F8a6697F9F88d',
     'coins': [0,1,2,3],
     'type': 1,
-    'abi': abis.abis.abisBTC
   }
 ]
 
@@ -51,7 +48,7 @@ let coinDecimals = [
 ]
 
 async function tvl(ts, block) {
-  var price_feed = await retry(async bail => await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,cdai,compound-usd-coin&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true'))
+  var price_feed = await get('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,cdai,compound-usd-coin&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true')
 
   var tvl = 0;
   var btcTVL = 0;
@@ -78,11 +75,11 @@ async function tvl(ts, block) {
   return balances;
 }
 
-async function getVirtualPrice(abi, contract, block) {
+async function getVirtualPrice(contract, block) {
   const { output: virtualPrice } = await sdk.api.abi.call({
     block,
     target: contract,
-    abi: abi.find(i => i.name === 'getPricePerFullShare')
+    abi: "uint256:getPricePerFullShare",
   })
   return virtualPrice;
 }
@@ -94,34 +91,34 @@ async function calc(item, i, price_feed, block) {
     block,
     target: item.address,
     params: [i],
-    abi: item.abi.find(i => i.name === 'balances')
+    abi: "function balances(int128 arg0) view returns (uint256)"
   })
   const { output: coins } = await sdk.api.abi.call({
     block,
     target: item.address,
     params: [i],
-    abi: item.abi.find(i => i.name === 'coins')
+    abi: "function coins(int128 arg0) view returns (address)"
   })
 
 
   var poolAmount = new BigNumber(balances).div(10 ** coinDecimals[0][coins]).toFixed(2);
 
-
+  let multiplier
   if (item.type == 'compound') {
-    var multiplier = 1;
+    multiplier = 1;
     if (coins === '0x39AA39c021dfbaE8faC545936693aC917d5E7563') {
-      multiplier = price_feed.data['compound-usd-coin'].usd;
+      multiplier = price_feed['compound-usd-coin'].usd;
     }
     if (coins === '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643') {
-      multiplier = price_feed.data.cdai.usd;
+      multiplier = price_feed.cdai.usd;
     }
     poolAmount = poolAmount * multiplier;
   }
 
   if (item.type == 'yToken') {
-    var multiplier = 1;
+    multiplier = 1;
     if (coins !== '0x8E870D67F660D95d5be530380D0eC0bd388289E1') { // PAX exception
-      multiplier = await getVirtualPrice(abis.abis.yTokens, coins, block)
+      multiplier = await getVirtualPrice(coins, block)
       multiplier = new BigNumber(multiplier).div(10 ** 18).toFixed(4);
     }
     poolAmount = poolAmount * multiplier;

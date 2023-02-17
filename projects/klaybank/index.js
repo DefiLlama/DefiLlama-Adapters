@@ -1,5 +1,8 @@
 const sdk = require("@defillama/sdk")
-const IDefiLlamaViewerAbi = require("./abi/IDefiLlamaViewer.json");
+const IDefiLlamaViewerAbi = {
+  getAllReserveData: "function getAllReserveData() view returns (tuple(string symbol, address underlyingAssetAddress, uint256 marketTvl, uint256 marketTvlInUsd)[])",
+  getAllStakedData: "uint256:getAllStakedData",
+}
 const BigNumber = require("bignumber.js");
 const { toUSDTBalances } = require("../helper/balances");
 // addresses
@@ -11,7 +14,7 @@ async function fetchLiquidity(ts, _block, chainBlocks) {
   const { output: reserves} = await sdk.api.abi.call({
     chain, block,
     target: IDefiLlamaViewerContractAddress,
-    abi: IDefiLlamaViewerAbi.find(i => i.name === 'getAllReserveData')
+    abi: IDefiLlamaViewerAbi.getAllReserveData
   })
 
   let marketTvl = new BigNumber(0);
@@ -27,7 +30,7 @@ async function fetchStaked(ts, _block, chainBlocks) {
   const { output: staked} = await sdk.api.abi.call({
     chain, block,
     target: IDefiLlamaViewerContractAddress,
-    abi: IDefiLlamaViewerAbi.find(i => i.name === 'getAllStakedData')
+    abi: IDefiLlamaViewerAbi.getAllStakedData
   })
 
   let stakedTvl = new BigNumber(staked);

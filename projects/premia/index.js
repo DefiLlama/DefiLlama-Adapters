@@ -3,7 +3,7 @@ const abi = require("./abi.json");
 const { sumTokens } = require("../helper/unwrapLPs");
 const { stakings } = require("../helper/staking");
 const { request, gql } = require("graphql-request");
-const { getBlock } = require("../helper/getBlock");
+const { getBlock } = require("../helper/http");
 //const tvlV1 = require('./v1')
 
 

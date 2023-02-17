@@ -1,6 +1,6 @@
-const { fetchURL } = require("../helper/utils");
 const { V1_POOLS, TOKENS_IN_LEGACY_VERSIONS } = require("./addresses");
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { getConfig } = require('../helper/cache')
 
 const YIELD_VERSION = '0xA5AdC5484f9997fBF7D405b9AA62A7d88883C345'
 const YIELDLESS_VERSION = '0x059d306A25c4cE8D7437D25743a8B94520536BD5'
@@ -13,7 +13,7 @@ const LEGACY_VERSIONS = {
 }
 
 async function getTokensInChain(chain) {
-  const { data } = await fetchURL(`https://api.mean.finance/v1/dca/networks/${chain}/tokens?includeNotAllowed`)
+  const data = await getConfig('mean-finance/'+chain, `https://api.mean.finance/v1/dca/networks/${chain}/tokens?includeNotAllowed`)
   return data.map(({ address }) => address)
 }
 
@@ -37,6 +37,11 @@ async function getV2TVL(chain, block) {
 }
 
 async function ethTvl(timestamp, block) {
+  const balances = await getV2TVL('ethereum', block)
+  return ethV1Tvl(block, balances)
+}
+
+async function ethV1Tvl(block, balances = {}) {
   const toa = []
   // Calls for tokens in pair and balances of them then adds to balance
   for (let i = 0; i < V1_POOLS.length; i++) {
@@ -44,7 +49,7 @@ async function ethTvl(timestamp, block) {
     toa.push([tokenA, pool], [tokenB, pool])
   }
 
-  return sumTokens2({ tokensAndOwners: toa, block, });
+  return sumTokens2({ balances, tokensAndOwners: toa, block, });
 }
 
 module.exports = {
@@ -63,5 +68,6 @@ module.exports = {
     [1654057358, "OP launch brings more users into Optimism and benefits Mean"],
     [1666364400, "Yield-While-DCA launch"],
     [1668006000, "Deployment on Arbitrum"],
+    [1672099200, "Deployment on Ethereum"],
   ]
 };

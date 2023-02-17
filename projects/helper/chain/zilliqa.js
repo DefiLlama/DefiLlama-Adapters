@@ -1,11 +1,10 @@
-const retry = require('../retry')
-const axios = require('axios')
+const { post } = require('../http')
 const BigNumber = require('bignumber.js')
 
 const ZILLIQA_API = 'https://api.zilliqa.com/' // Mainnet API
 
 async function call(query) {
-  return retry(async () => await axios.post(ZILLIQA_API, query))
+  return post(ZILLIQA_API, query)
 }
 
 function formQuery(args) {
@@ -33,11 +32,9 @@ async function getContractState(contract, method, args = []) {
 async function getBalance(token, address) {
   if (token.startsWith('0x')) token = token.slice(2)
   const {
-    data: {
       result: {
         balances
       }
-    }
   } = await call(formQuery({
     params: [
       token,
@@ -51,11 +48,9 @@ async function getBalance(token, address) {
 async function getZilliqaBalance(address) {
   if (address.startsWith('0x')) address = address.slice(2)
   const {
-    data: {
       result: {
         balance
       }
-    }
   } = await call(formQuery({ method: 'GetBalance', params: [address] }))
   return BigNumber(balance).shiftedBy(-1 * 12)
 }
@@ -76,9 +71,7 @@ async function getBalances(tokens, addresses, balances = {}) {
       })
       )).flat()
 
-  const {
-    data
-  } = await call(query)
+  const data = await call(query)
 
   data.forEach((response) => {
     const { id, result } = response

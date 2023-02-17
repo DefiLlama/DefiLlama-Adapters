@@ -1,16 +1,15 @@
 const BigNumber = require("bignumber.js");
 const { PublicKey, } = require("@solana/web3.js");
-const { parseReserve } = require("./utils");
 const { sliceIntoChunks, } = require('../helper/utils')
 const { transformBalances, } = require('../helper/portedTokens')
-const { sumTokens, getConnection, } = require("../helper/solana");
-const { fetchURL } = require('../helper/utils')
+const { sumTokens, getConnection, decodeAccount, } = require("../helper/solana");
+const { getConfig } = require('../helper/cache')
 const sdk = require('@defillama/sdk')
 
 const solendConfigEndpoint = "https://api.solend.fi/v1/markets/configs?scope=all&deployment=production";
 
 async function borrowed() {
-  const markets = (await fetchURL(solendConfigEndpoint))?.data;
+  const markets = (await getConfig('solend', solendConfigEndpoint))
   const connection = getConnection()
   const balances = {};
   const reserves = []
@@ -23,7 +22,7 @@ async function borrowed() {
   for (const chunk of chunks) {
     const infos = await connection.getMultipleAccountsInfo(chunk)
     infos.forEach(i => {
-      const { info: { liquidity } } = parseReserve(i)
+      const { info: { liquidity } } = decodeAccount('reserve', i)
       const amount = new BigNumber(liquidity.borrowedAmountWads.toString() / 1e18).toFixed(0);
       sdk.util.sumSingleBalance(balances, liquidity.mintPubkey.toString(), amount)
     })
@@ -33,7 +32,7 @@ async function borrowed() {
 }
 
 async function tvl() {
-  const markets = (await fetchURL(solendConfigEndpoint))?.data;
+  const markets = (await getConfig('solend', solendConfigEndpoint))
   const tokensAndOwners = []
 
   for (const market of markets) {

@@ -1,5 +1,4 @@
 const abi = require("./abi.json");
-const { transformAvaxAddress } = require("../helper/portedTokens");
 const { addFundsInMasterChef } = require("../helper/masterchef");
 const { staking } = require("../helper/staking");
 const { pool2s } = require("../helper/pool2");
@@ -11,11 +10,11 @@ const pool2LPs = ["0xB52a2b91Bf89BcB9435ad94D23555EaD26954CA9", "0x6c4339A47AA98
 async function tvl(timestamp, ethBlock, chainBlocks){
   const balances = {};
 
-  const transformAddress = await transformAvaxAddress();
+  const transformAddress = addr => 'avax:'+addr
   await addFundsInMasterChef(balances, STAKING_CONTRACT, chainBlocks.avax, "avax", transformAddress, abi.poolInfo, [...pool2LPs, dregg])
 
   return balances;
-};
+}
 
 module.exports = {
   avax:{

@@ -1,4 +1,7 @@
-const abis = require('./config/flamincome/abis.js');
+const abis = {
+  balance: "uint256:balance",
+  token: "address:token",
+}
 const sdk = require("@defillama/sdk")
 
 
@@ -13,12 +16,12 @@ async function tvl(ts, block) {
   const { output: token } = await sdk.api.abi.multiCall({
     block,
     calls,
-    abi: abis['VaultBaseline'].find(i => i.name === 'token')
+    abi: abis.token
   })
   const { output: balance } = await sdk.api.abi.multiCall({
     block,
     calls,
-    abi: abis['VaultBaseline'].find(i => i.name === 'balance')
+    abi: abis.balance
   })
 
   const balances = {}

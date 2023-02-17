@@ -59,7 +59,15 @@ async function adaTvl(){
     // then accumulate over the orderbooks
     const orderbooksv2 = (await fetchURL("https://onchain.muesliswap.com/all-orderbooks")).data
     await Promise.all(orderbooksv2.map(async ob=>{
-        if(ob.fromToken !== "."){
+        if(ob.fromToken === "."){
+            let totalLovelace = 0;
+            ob.orders.forEach(o=>{
+                totalLovelace += parseInt(o.fromAmount)
+            })
+            const totalBuy = totalLovelace
+            totalAda += totalBuy / 1e6
+        }
+        else {
             const price = adapricev2.get(ob.fromToken)
             let totalAmountOtherToken = 0
             ob.orders.forEach(o=>{
@@ -68,14 +76,6 @@ async function adaTvl(){
             const totalSell = totalAmountOtherToken * price
             if(isNaN(totalSell) || !isFinite(totalSell)) return;
             totalAda += totalSell / 1e6
-        }
-        else if(ob.fromToken === "."){
-            let totalLovelace = 0;
-            ob.orders.forEach(o=>{
-                totalLovelace += parseInt(o.fromAmount)
-            })
-            const totalBuy = totalLovelace
-            totalAda += totalBuy / 1e6
         }
     }))
     return {
