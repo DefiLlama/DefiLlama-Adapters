@@ -29,16 +29,10 @@ async function convertWeiAmountToDecimal(amountInWei, tokenDecimal){
   let decimal = new BigNumber(10).pow(tokenDecimalBignumber);
   decimal = new BigNumber(decimal.toString());
   let amount = amountInWeiBignumber.div( decimal );
-
-
-
-
   return amount.toString();
-
-
  }
 
-async function tvl(api) {
+ async function tvl(_, _1, _2, { api }) {
   const balances = {};
   const collateralBalance0 = await sdk.api.abi.call({
     target: USDC_TOKEN_CONTRACT,
@@ -171,24 +165,12 @@ async function tvl(api) {
 module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
-  methodology: 'Counts the number of tokens in the POTION_VAULT contract, TVL in POTION_VAULT and POISON amount in staked contract.',
+  methodology: 'total',
   arbitrum: {
     tvl,
   }
 };
 
-// const api = {
-//   url: 'https://arb-mainnet.g.alchemy.com/v2/EFFdawMR7uH4sUOgA3RLW3BJV_eo8-a5',
-//   chain: 'arbitrum',
-//   blockExplorer: 'https://arbiscan.io/',
-//   addresses: {
-//     start: '0xd5e31fc5f4a009A49312C20742DF187b35975528',
-//   },
-// };
-
-// tvl(api)
-//   .then(balances => console.log(balances))
-//   .catch(console.error);
 
 
 
