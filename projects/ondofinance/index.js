@@ -1,5 +1,6 @@
 const sdk = require("@defillama/sdk");
 
+
 const funds = [
   { address: "0x1B19C19393e2d034D8Ff31ff34c81252FcBbee92", decimals: 18 }, // OUSG
 ];
