@@ -16,6 +16,7 @@ const tvlForAllFunds = funds.map((fund) => async (timestamp, block) => ({
 
 module.exports = {
   methodology: "Sums Ondo's fund supplies.",
+  misrepresentedTokens: true,
   ethereum: {
     tvl: sdk.util.sumChainTvls(tvlForAllFunds),
   },
