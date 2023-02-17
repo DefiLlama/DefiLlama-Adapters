@@ -1,4 +1,5 @@
 const { default: axios } = require('axios');
+
 async function fetch(){
 
     const response = await axios.get('https://api.bubbleswap.io/analytics/api/v1/analytics/aggregate/liquidity/year', {
@@ -28,7 +29,10 @@ async function fetch(){
 }
 
 module.exports = {
-    methodology: "Data is retrieved from the api at https://analytics.bubbleswap.io/",
-    timetravel: false,
-    fetch
+  fetch,
+  timetravel: false,
+  methodology: "Data is retrieved from the api at https://api.bubbleswap.io",
+  hallmarks: [
+    [1666569600, "Start V1 Rewards"],
+  ]
 }
