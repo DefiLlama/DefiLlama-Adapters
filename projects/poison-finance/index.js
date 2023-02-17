@@ -119,7 +119,7 @@ async function convertWeiAmountToDecimal(amountInWei, tokenDecimal){
     abi: "erc20:decimals",
     chain: "arbitrum"
   });
-
+  611546831086000000000000
   let poisonAmountInNumber = await convertWeiAmountToDecimal(collateralBalance5.output, token5Decimal.output);
 
   const response = await axios.get(url);
@@ -135,7 +135,7 @@ async function convertWeiAmountToDecimal(amountInWei, tokenDecimal){
   let token5Balance18Decimals = await convertTo18DecimalWei(totalStakedValueAmount.toString(), token0Decimal.output);
   token5Balance18Decimals = new BigNumber(token5Balance18Decimals.toString());
 
-  await sdk.util.sumSingleBalance(balances, POISON_STAKED_CONTRACT, totalStakedValueAmount.toString(), "arbitrum");
+  await sdk.util.sumSingleBalance(balances, USDC_TOKEN_CONTRACT, totalStakedValueAmount.toString(), "arbitrum");
 
   let totalBalance0 = token0Balance18Decimals.plus(token1Balance18Decimals);
   totalBalance0 = new BigNumber(totalBalance0.integerValue().toFixed());
@@ -169,6 +169,7 @@ module.exports = {
     tvl,
   }
 };
+
 
 
 
