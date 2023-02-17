@@ -1,4 +1,3 @@
-const sdk = require("@defillama/sdk");
 const { default: BigNumber } = require("bignumber.js");
 const { toUSDTBalances } = require("../helper/balances");
 const { get } = require("../helper/http");
