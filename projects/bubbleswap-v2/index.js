@@ -47,12 +47,6 @@ async function fetchV2(){
 
 }
 
-module.exports = {
-    methodology: "Data is retrieved from the api at https://api.testnet.bubbleswap.io/",
-    timetravel: false,
-    fetch
-}
-
 const adapter = {
   breakdown: {
     v1: {
