@@ -6,7 +6,7 @@ const OHM = "0xe5786DDFc4D6DcA0973D1c5b02987cBbac66ed87";
 
 
 module.exports = treasuryExports({
-  ethereum: {
+  cronos: {
     tokens: [
         nullAddress,
         '0xc21223249CA28397B4B6541dfFaEcC539BfF0c59',//USDC
