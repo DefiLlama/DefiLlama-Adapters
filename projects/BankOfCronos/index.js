@@ -56,7 +56,8 @@ module.exports = {
   start: 6949784,
   cronos: {
     tvl,
-  }
-
+  },
+  methodology:
+    "CDP collateral value + treasury mv",
 };
 
