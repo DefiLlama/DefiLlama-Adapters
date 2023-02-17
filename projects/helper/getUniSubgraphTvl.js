@@ -12,7 +12,7 @@ query get_tvl($block: Int) {
   }
 }
 `;
-  return (chain) => {
+  return (chain, supportMultipleFactories = false) => {
     return async (_, _b, _cb, { api }) => {
       await api.getBlock()
       const block = api.block
@@ -24,9 +24,9 @@ query get_tvl($block: Int) {
         uniswapFactories = (await blockQuery(graphUrls[chain], graphQuery, { api, blockCatchupLimit, }))[factoriesName];
       }
 
-      const usdTvl = uniswapFactories.reduce((acc, cur) => {
+      const usdTvl = supportMultipleFactories ? uniswapFactories.reduce((acc, cur) => {
         return acc + Number(cur[tvlName])
-      }, 0)
+      }, 0) : Number(uniswapFactories[0][tvlName])
       return toUSDTBalances(usdTvl)
     }
   }

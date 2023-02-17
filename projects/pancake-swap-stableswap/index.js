@@ -13,6 +13,6 @@ module.exports = {
   methodology:
     "TVL accounts for the liquidity on all StableSwap pools, using the TVL chart on https://pancakeswap.finance/info?type=stableSwap as the source.",
   bsc: {
-    tvl: stableGraph("bsc"),
+    tvl: stableGraph("bsc", true),
   },
 };
