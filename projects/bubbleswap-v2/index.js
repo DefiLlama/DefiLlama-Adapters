@@ -1,6 +1,6 @@
 const { default: axios } = require('axios');
 
-async function fetchV2(){
+async function fetch(){
 
     const response = await axios.get(' https://api.testnet.bubbleswap.io/v2/backend/api/v1/tvl', {
         headers: {
