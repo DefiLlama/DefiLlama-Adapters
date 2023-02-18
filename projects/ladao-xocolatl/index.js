@@ -6,7 +6,7 @@ const { polygonReservesAddr } = require('./polygon');
 
 /**
  * LaDAO (https://ladao.club/) is the organization that created and 
- * mantains the Xocolatl protocol.
+ * maintains the Xocolatl protocol.
  * $XOC is the first decentralized stablecoin with close peg to the mexican (MXN) peso.
  * The Xocolatl-protocol (https://github.com/La-DAO/xocolatl-contracts) is the system that 
  * allows $XOC to be minted or burned
