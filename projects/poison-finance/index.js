@@ -107,35 +107,7 @@ async function convertWeiAmountToDecimal(amountInWei, tokenDecimal){
   let token4Balance18Decimals = await convertTo18DecimalWei(collateralBalance4.output, token4Decimal.output);
   token4Balance18Decimals = new BigNumber(token4Balance18Decimals.toString());
   await sdk.util.sumSingleBalance(balances, MIM_TOKEN_CONTRACT, collateralBalance4.output,  "arbitrum");
-   
-  const collateralBalance5 = await sdk.api.abi.call({
-    target: POISON_TOKEN_CONTRACT,
-    params: [POISON_STAKED_CONTRACT],
-    abi: 'erc20:balanceOf',
-    chain: "arbitrum"
-  });
-  let token5Decimal = await sdk.api.abi.call({
-    target: POISON_TOKEN_CONTRACT,
-    abi: "erc20:decimals",
-    chain: "arbitrum"
-  });
-  611546831086000000000000
-  let poisonAmountInNumber = await convertWeiAmountToDecimal(collateralBalance5.output, token5Decimal.output);
 
-  const response = await axios.get(url);
-  let price = response.data.coins['arbitrum:'+POISON_TOKEN_CONTRACT].price;
-  // console.log(poisonAmountInNumber.toString());
-  let poisonAmountInNumberB = new BigNumber(poisonAmountInNumber.toString());
-  let priceB = new BigNumber(price.toString());
-  // console.log(priceB.toString());
-  let totalStakedValueAmount = poisonAmountInNumberB.multipliedBy(priceB).toFixed(parseInt(token0Decimal.output));
-  // console.log(totalStakedValueAmount)
-  totalStakedValueAmount = await ethers.utils.parseUnits(totalStakedValueAmount.toString(), token0Decimal.output);
-  // console.log(totalStakedValueAmount.toString())
-  let token5Balance18Decimals = await convertTo18DecimalWei(totalStakedValueAmount.toString(), token0Decimal.output);
-  token5Balance18Decimals = new BigNumber(token5Balance18Decimals.toString());
-
-  await sdk.util.sumSingleBalance(balances, USDC_TOKEN_CONTRACT, totalStakedValueAmount.toString(), "arbitrum");
 
   let totalBalance0 = token0Balance18Decimals.plus(token1Balance18Decimals);
   totalBalance0 = new BigNumber(totalBalance0.integerValue().toFixed());
@@ -147,19 +119,54 @@ async function convertWeiAmountToDecimal(amountInWei, tokenDecimal){
   totalBalance2 = new BigNumber(totalBalance2.integerValue().toFixed());
 
   let totalBalance3 = totalBalance2.plus(token4Balance18Decimals);
-  totalBalance3 = new BigNumber(totalBalance3.integerValue().toFixed());
 
-  let totalBalance4 = totalBalance3.plus(token5Balance18Decimals);
-
-  await sdk.util.sumSingleBalance(balances, POTION_VAULT_CONTRACT, totalBalance4.integerValue().toFixed(),  "arbitrum");
-
-
-
+  await sdk.util.sumSingleBalance(balances, POTION_VAULT_CONTRACT, totalBalance3.integerValue().toFixed(),  "arbitrum");
   
   return balances;
 }
 
+async function stakingTvl(_, _1, _2, { api }) {
+  const balances = {};
 
+  let token0Decimal = await sdk.api.abi.call({
+    target: USDC_TOKEN_CONTRACT,
+    abi: "erc20:decimals",
+    chain: "arbitrum"
+  });
+
+
+  const collateralBalance5 = await sdk.api.abi.call({
+    target: POISON_TOKEN_CONTRACT,
+    params: [POISON_STAKED_CONTRACT],
+    abi: 'erc20:balanceOf',
+    chain: "arbitrum"
+  });
+  let token5Decimal = await sdk.api.abi.call({
+    target: POISON_TOKEN_CONTRACT,
+    abi: "erc20:decimals",
+    chain: "arbitrum"
+  });
+
+  let poisonAmountInNumber = await convertWeiAmountToDecimal(collateralBalance5.output, token5Decimal.output);
+
+  const response = await axios.get(url);
+  let price = response.data.coins['arbitrum:'+POISON_TOKEN_CONTRACT].price;
+  // console.log(poisonAmountInNumber.toString());
+  let poisonAmountInNumberB = new BigNumber(poisonAmountInNumber.toString());
+  let priceB = new BigNumber(price.toString());
+  // console.log(priceB.toString());
+  let totalStakedValueAmount = poisonAmountInNumberB.multipliedBy(priceB).toFixed( parseInt(token0Decimal.output) );
+  // console.log(totalStakedValueAmount)
+  totalStakedValueAmount = await ethers.utils.parseUnits(totalStakedValueAmount.toString(), token0Decimal.output);
+  // console.log(totalStakedValueAmount.toString())
+  let token5Balance18Decimals = await convertTo18DecimalWei(totalStakedValueAmount.toString(), token0Decimal.output);
+  token5Balance18Decimals = new BigNumber(token5Balance18Decimals.toString());
+
+  await sdk.util.sumSingleBalance(balances, USDC_TOKEN_CONTRACT, totalStakedValueAmount.toString(), "arbitrum");
+
+
+  return balances;
+}
 
 module.exports = {
   timetravel: true,
@@ -167,8 +174,13 @@ module.exports = {
   methodology: 'total',
   arbitrum: {
     tvl,
+    staking: stakingTvl
   }
 };
+
+
+
+
 
 
 
