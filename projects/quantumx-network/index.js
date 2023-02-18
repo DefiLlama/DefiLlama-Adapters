@@ -141,10 +141,8 @@ const tvl = async () => {
       const isEgldonTokens = tokensIdentifiers.includes("EGLD");
       if (isEgldonTokens) {
         // fetch egld data
-        console.log("getting egld data");
 
         const { data: egldData } = await getEconomics();
-        console.log("egldData", egldData);
 
         tokensInfo.unshift({
           type: "FungibleESDT",
@@ -190,14 +188,15 @@ const tvl = async () => {
           lptokensInfo.find(
             (lpToken) => lpToken.token === farm.farm.stakingToken
           )?.tokenvalue || 0;
-
-        tvlDollar += formatBalanceDolar(
-          {
-            balance: farm.stakedBalance,
-            decimals: stakingToken.decimals,
-          },
-          Number(lpPrice)
-        );
+        if (lpPrice) {
+          tvlDollar += formatBalanceDolar(
+            {
+              balance: farm.stakedBalance,
+              decimals: stakingToken.decimals,
+            },
+            Number(lpPrice)
+          );
+        }
       }
       //   // get tvl in dollar for pools
       for (let i = 0; i < pools.length; i++) {
