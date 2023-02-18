@@ -1,4 +1,4 @@
-const { toUSDTBalances } = require("../helper/balances")
+const { toUSDTBalances } = require("../helper/balances");
 var abiFile = require("./farms.abi.json");
 var {
   AbiRegistry,
@@ -74,7 +74,6 @@ const formatBalanceDolar = (token, price) => {
   return 0;
 };
 
-
 // fetch info from sc
 const scQuery = async (funcName, args) => {
   try {
@@ -102,14 +101,12 @@ const scQuery = async (funcName, args) => {
   }
 };
 
-
 // get Tvl
 const tvl = async () => {
   // tvl
   let tvlDollar = 0;
 
   try {
-    console.log("getting all farms");
     const scFarmsRes = await scQuery("getAllFarms", []);
     const allFarmsFirstValue = scFarmsRes?.firstValue?.valueOf();
     if (allFarmsFirstValue) {
@@ -134,7 +131,6 @@ const tvl = async () => {
       let tokensInfo = [];
 
       // get the info of tokens in array from multiversx api
-      console.log("\n\ngetting all tokens info");
       const { data: tokensData } = await getFromAllTokens({
         identifiers: tokensIdentifiers.join(","),
       });
@@ -163,9 +159,7 @@ const tvl = async () => {
         });
       }
 
-      console.log("\n\ngetting lp prices");
       const lptokensInfo = await fetchLpPrices();
-      console.log("\n\ngetting mex pairs");
       const { data: mexPairs } = await getMexPairs();
       const pools = mexPairs
         ? allFarms.filter(
@@ -205,7 +199,6 @@ const tvl = async () => {
           Number(lpPrice)
         );
       }
-
       //   // get tvl in dollar for pools
       for (let i = 0; i < pools.length; i++) {
         const farm = pools[i];
@@ -213,14 +206,15 @@ const tvl = async () => {
         const stakingToken = tokensInfo.find(
           (token) => token.identifier === farm.farm.stakingToken
         );
-
-        tvlDollar += formatBalanceDolar(
-          {
-            balance: farm.stakedBalance,
-            decimals: stakingToken.decimals,
-          },
-          stakingToken?.price
-        );
+        if (stakingToken?.price) {
+          tvlDollar += formatBalanceDolar(
+            {
+              balance: farm.stakedBalance,
+              decimals: stakingToken.decimals,
+            },
+            stakingToken?.price
+          );
+        }
       }
 
       return toUSDTBalances(tvlDollar);
@@ -231,21 +225,9 @@ const tvl = async () => {
   return toUSDTBalances(tvlDollar);
 };
 
-
-tvl()
-  .then((res) => {
-    console.log("\n\nTVL : ", res);
-  })
-  .catch((err) => {
-    console.log("err", err);
-  });
-
-
 module.exports = {
-  methodology: 'It counts the TVL from the Staking Farms/Pools of QuantumX.',
+  methodology: "It counts the TVL from the Staking Farms/Pools of QuantumX.",
   elrond: {
-      tvl,
-  }
-}
-
-
+    tvl,
+  },
+};
