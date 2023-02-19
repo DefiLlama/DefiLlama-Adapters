@@ -17,7 +17,7 @@ const { polygonReservesAddr } = require('./polygon');
 // Mainnet Addresses
 const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 
-/**
+/*
  * 
  * @param {*} collateral erc20 contract address
  * @param {*} reserves array of HouseOfReserve contracts that hold the `collateral` type
