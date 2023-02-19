@@ -1,6 +1,6 @@
-const { getChainTvl } = require("../helper/getUniSubgraphTvl");
+const { getChainTvlByMultipleFactories } = require("../helper/getUniSubgraphTvl");
 
-const stableGraph = getChainTvl(
+const stableGraph = getChainTvlByMultipleFactories(
   {
     bsc: "https://api.thegraph.com/subgraphs/name/pancakeswap/exchange-stableswap",
   },
@@ -13,6 +13,6 @@ module.exports = {
   methodology:
     "TVL accounts for the liquidity on all StableSwap pools, using the TVL chart on https://pancakeswap.finance/info?type=stableSwap as the source.",
   bsc: {
-    tvl: stableGraph("bsc", true),
+    tvl: stableGraph("bsc"),
   },
 };

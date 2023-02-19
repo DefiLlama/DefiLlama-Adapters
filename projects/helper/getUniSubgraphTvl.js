@@ -12,6 +12,34 @@ query get_tvl($block: Int) {
   }
 }
 `;
+  return (chain) => {
+    return async (_, _b, _cb, { api }) => {
+      await api.getBlock()
+      const block = api.block
+      let uniswapFactories
+
+      if (!blockCatchupLimit) {
+        uniswapFactories = (await request(graphUrls[chain], graphQuery, { block, }))[factoriesName];
+      } else {
+        uniswapFactories = (await blockQuery(graphUrls[chain], graphQuery, { api, blockCatchupLimit, }))[factoriesName];
+      }
+
+      const usdTvl = Number(uniswapFactories[0][tvlName])
+      return toUSDTBalances(usdTvl)
+    }
+  }
+}
+
+function getChainTvlByMultipleFactories(graphUrls, factoriesName = "uniswapFactories", tvlName = "totalLiquidityUSD", blockCatchupLimit = 500) {
+  const graphQuery = gql`
+query get_tvl($block: Int) {
+  ${factoriesName}(
+    block: { number: $block }
+  ) {
+    ${tvlName}
+  }
+}
+`;
   return (chain, supportMultipleFactories = false) => {
     return async (_, _b, _cb, { api }) => {
       await api.getBlock()
@@ -24,9 +52,9 @@ query get_tvl($block: Int) {
         uniswapFactories = (await blockQuery(graphUrls[chain], graphQuery, { api, blockCatchupLimit, }))[factoriesName];
       }
 
-      const usdTvl = supportMultipleFactories ? uniswapFactories.reduce((acc, cur) => {
+      const usdTvl = uniswapFactories.reduce((acc, cur) => {
         return acc + Number(cur[tvlName])
-      }, 0) : Number(uniswapFactories[0][tvlName])
+      }, 0)
       return toUSDTBalances(usdTvl)
     }
   }
@@ -34,4 +62,5 @@ query get_tvl($block: Int) {
 
 module.exports = {
   getChainTvl,
+  getChainTvlByMultipleFactories,
 }
