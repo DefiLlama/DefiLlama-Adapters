@@ -2,7 +2,7 @@ const sdk = require("@defillama/sdk");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { stakingUnknownPricedLP, staking } = require("../helper/staking");
 
-const avaxZShare = "0x094BFaC9894d2A2A35771D0BD6d2447689190F32";
+const avaxZShare = "0xF5b1A0d66856CBF5627b0105714a7E8a89977349";
 
 const avaxChef = "0xDAccfd92e37be54Ca1A8ff37A7922446614b4759"; // ZShare reward pool
 const avaxBoardroom = "0xa252FfDB3A73Bd0F88Eea39658c7C00a281B3bB6"; 
