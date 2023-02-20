@@ -1,5 +1,4 @@
 const { fetchURL } = require('../helper/utils')
-const { toUSDTBalances } = require('../helper/balances');
 
 const vaults = [
     "https://lcd.terra.dev/wasm/contracts/terra1ec3r2esp9cqekqqvn0wd6nwrjslnwxm7fh8egy/store?query_msg=%7B%22pool_state%22:%7B%7D%7D"
