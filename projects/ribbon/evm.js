@@ -112,14 +112,6 @@ async function avaxTvl(_, _b, { avax: block }) {
   return sumTokens2({ balances, owner: pauserAvax, tokens: [nullAddress, savax], chain, block, transformAddress, })
 }
 
-async function getTreasury(timestamp, block, chainBlocks) {
-  return sumTokens2({
-    block, owner: treasury,
-    tokens: [ weth, wsteth, wbtc, usdc, aave, ldo, reth, bal, rbnWeth, nullAddress],
-    resolveLP: true,
-  })
-}
-
 /**
  * STAKING
  */
@@ -131,7 +123,6 @@ module.exports = {
   ethereum: {
     tvl: ethTvl,
     staking: veRBNStaking,
-    treasury: getTreasury,
   },
   avax: {
     tvl: avaxTvl,

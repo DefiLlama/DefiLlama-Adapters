@@ -53,22 +53,5 @@ module.exports = {
       Boba_SHIBUI,
       CHAINS[0]
     ),
-    treasury: async (timestamp, _ethBlock, chainBlocks) => {
-      const chain = CHAINS[0];
-      const [data, koyoAssets] = CHAIN_ORGANISED_DATA[chain]();
-
-      const balances = {};
-      const block = chainBlocks[chain];
-
-      await sumTokensAndLPsSharedOwners(
-        balances,
-        data.treasuryTokens,
-        data.treasuryAddresses,
-        block,
-        chain
-      );
-
-      return balances;
-    },
   },
 }
