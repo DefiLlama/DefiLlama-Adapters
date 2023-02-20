@@ -37,12 +37,28 @@ const Asset_P07_FRAX = "0x47ab513f97e1cc7d7d1a4db4563f1a0fa5c371eb";
 const Asset_P07_TUSD = "0x3c8e744f6c4ed2c9d82e33d69ddcc5961aa05367";
 
 // BNBx Pool
-const Asset_P08_WBNB = '0x0321d1d769cc1e81ba21a157992b635363740f86'
-const Asset_P08_BNBx = '0x16b37225889a038fad42efded462821224a509a7'
+const Asset_P08_WBNB = "0x0321d1d769cc1e81ba21a157992b635363740f86";
+const Asset_P08_BNBx = "0x16b37225889a038fad42efded462821224a509a7";
 
 // stkBNB Pool
-const Asset_P09_WBNB = '0x6C7B407411b3DB90DfA25DA4aA66605438D378CE'
-const Asset_P09_stkBNB = '0x0E202A0bCad2712d1fdeEB94Ec98C58bEeD0679f'
+const Asset_P09_WBNB = "0x6C7B407411b3DB90DfA25DA4aA66605438D378CE";
+const Asset_P09_stkBNB = "0x0E202A0bCad2712d1fdeEB94Ec98C58bEeD0679f";
+
+// iUSD Pool
+const Asset_P10_BUSD = "0x7Ff1AEc17ea060BBcB7dF6b8723F6Ea7fc905E8F";
+const Asset_P10_iUSD = "0x3A29dF144bB54A8bF3d20357c116befa7adE962d";
+
+// CUSD Pool
+const Asset_P11_CUSD = "0x3ac762C607ed6Dba156cBcF11efF96340e86b490";
+const Asset_P11_HAY = "0xa6eF6C45EbFDBc13f6D032fbDFeC9b389C1603E5";
+
+// axlUSDC Pool
+const Asset_P12_axlUSDC = "0x77F645Ee0c6d47380A942B04B8151fD542927391";
+const Asset_P12_BUSD = "0x791b2424df9865994Ad570425278902E2B5D7946";
+
+// USDD Pool
+const Asset_P13_USDD = "0x24a70c1489d521F5e2D2612474630eFe7C2ba073";
+const Asset_P13_USDC = "0x9F9CeA30d242d7f5527Fa900f9fb0F77A98FdA82";
 
 // underlyingToken Address
 const BUSD = "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56";
@@ -60,6 +76,10 @@ const mWOM = "0x027a9d301fb747cd972cfb29a63f3bda551dfc5c";
 const qWOM = "0x0fE34B8aaAf3f522A6088E278936D10F934c0b19";
 const FRAX = "0x90C97F71E18723b0Cf0dfa30ee176Ab653E89F40";
 const TUSD = "0x14016E85a25aeb13065688cAFB43044C2ef86784";
+const CUSD = "0xfa4ba88cf97e282c505bea095297786c16070129";
+const iUSD = "0x0A3BB08b3a15A19b4De82F8AcFc862606FB69A2D";
+const axlUSDC = "0x4268B8F0B87b6Eae5d897996E6b845ddbD99Adf3";
+const USDD = "0xd17479997F34dd9156Deef8F95A52D81D265be9c";
 const chain = "bsc";
 
 async function tvl(_t, _, { bsc: block }) {
@@ -86,7 +106,15 @@ async function tvl(_t, _, { bsc: block }) {
     [WBNB, Asset_P08_WBNB],
     [BNBx, Asset_P08_BNBx],
     [WBNB, Asset_P09_WBNB],
-    [stkBNB, Asset_P09_stkBNB]
+    [stkBNB, Asset_P09_stkBNB],
+    [BUSD, Asset_P10_BUSD],
+    [iUSD, Asset_P10_iUSD],
+    [CUSD, Asset_P11_CUSD],
+    [HAY, Asset_P11_HAY],
+    [axlUSDC, Asset_P12_axlUSDC],
+    [BUSD, Asset_P12_BUSD],
+    [USDD, Asset_P13_USDD],
+    [USDC, Asset_P13_USDC],
   ];
   let balances = await sumTokens2({ tokensAndOwners: toa, chain, block });
 

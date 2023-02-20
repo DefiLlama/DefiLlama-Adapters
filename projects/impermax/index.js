@@ -10,7 +10,7 @@ function offset(chain) {
     case 'ethereum':
       return 100
     case 'polygon':
-      return 500
+      return 1000
     case 'arbitrum':
       return 2000
     case 'moonriver':
