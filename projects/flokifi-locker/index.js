@@ -1,7 +1,7 @@
 const { getCoreAssets, } = require('../helper/tokenMapping');
 const { getConfig, getCache, setCache, } = require('../helper/cache');
 const { sumUnknownTokens, getLPList, } = require("../helper/cache/sumUnknownTokens");
-const { unwrapUniswapV3NFTs } = require("../helper/unwrapLPs");
+// const { unwrapUniswapV3NFTs } = require("../helper/unwrapLPs");
 
 const project = 'flokifi-locker'
 
@@ -38,20 +38,18 @@ function splitPairs(pairs) {
 }
 
 function tvlByChain(chain) {
-  return async (_, _b, { [chain]: block }, { api }) => {
+  return async (_, _b, _2, { api }) => {
     const pairs = await fetch(chains[chain]);
     let cache = getCache(project, chain) || {}
     const { tokensAndOwners, uniV3NFTHolders } = splitPairs(pairs);
     let lpList = await getLPList({ lps: tokensAndOwners.map(i => i[0]), ...api, cache, api, })
-    lpList = new Set([...lpList, ...getCoreAssets(chain)])
     const balances = {}
     // if (uniV3NFTHolders.length)
       // await unwrapUniswapV3NFTs({ balances, owners: uniV3NFTHolders, chain, block });
     await sumUnknownTokens({
       balances,
-      tokensAndOwners: tokensAndOwners.filter(i => lpList.has(i[0])),
-      lps: lpList,
-      api, ...api, useDefaultCoreAssets: true, onlyLPs: true,
+      tokensAndOwners: tokensAndOwners.filter(i => lpList.includes(i[0])),
+      api, ...api, useDefaultCoreAssets: true,
     });
     await setCache(project, chain, cache)
 
