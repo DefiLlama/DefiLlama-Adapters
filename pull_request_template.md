@@ -12,43 +12,43 @@
 7. No need to go to our discord and announce that you've created a PR, we monitor all PRs and will review it asap
 
 ---
-##### Name (to be shown on DefiLlama): NerveNetwork
+##### Name (to be shown on DefiLlama):
 
 
-##### Twitter Link: https://twitter.com/nerve_network
+##### Twitter Link:
 
 
-##### List of audit links if any: https://drive.google.com/drive/folders/13gk5XzfJmCUyRCmoleWH47REUOyGc4yo
+##### List of audit links if any:
 
 
-##### Website Link: https://nerve.network/
+##### Website Link:
 
 
-##### Logo (High resolution, preferably in .svg and .png, for application on both white and black backgrounds. Will be shown with rounded borders): https://drive.google.com/drive/folders/13JiEO4Ku8bqOrgjNBwCmZlW-ohvYtLOR
+##### Logo (High resolution, preferably in .svg and .png, for application on both white and black backgrounds. Will be shown with rounded borders):
 
 
-##### Current TVL: $1.38M
+##### Current TVL:
 
 
 ##### Treasury Addresses (if the protocol has treasury)
 
 
-##### Chain: NerveNetwork
+##### Chain:
 
 
-##### Coingecko ID (so your TVL can appear on Coingecko): https://www.coingecko.com/en/coins/nervenetwork
+##### Coingecko ID (so your TVL can appear on Coingecko): (https://api.coingecko.com/api/v3/coins/list)
 
 
-##### Coinmarketcap ID (so your TVL can appear on Coinmarketcap): https://coinmarketcap.com/currencies/nervenetwork/
+##### Coinmarketcap ID (so your TVL can appear on Coinmarketcap): (https://api.coinmarketcap.com/data-api/v3/map/all?listing_status=active,inactive,untracked&start=1&limit=10000)
 
 
-##### Short Description (to be shown on DefiLlama): NerveNetwork is a Decentralized Digital Asset Service Network.It is an asset relay network connecting multiple blockchains，a completely gas-free blockchain.
+##### Short Description (to be shown on DefiLlama):
 
 
 ##### Token address and ticker if any:
 
 
-##### Category (full list at https://defillama.com/categories) *Please choose only one: Bridge
+##### Category (full list at https://defillama.com/categories) *Please choose only one:
 
 
 ##### Oracle used (Chainlink/Band/API3/TWAP or any other that you are using):
@@ -57,5 +57,5 @@
 ##### forkedFrom (Does your project originate from another project):
 
 
-##### methodology (what is being counted as tvl, how is tvl being calculated): Assets staked in the pool and trading contracts
+##### methodology (what is being counted as tvl, how is tvl being calculated):
 
