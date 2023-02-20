@@ -1,28 +1,33 @@
-const { sumTokens2, nullAddress } = require('../helper/unwrapLPs');
+const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 // Treasury
 const treasury = "0xDAEada3d210D2f45874724BeEa03C7d4BBD41674";
+const RBN = "0x6123B0049F904d730dB3C36a31167D9d4121fA6B";
 
-// Ethereum Assets
-const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-const wbtc = "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599";
-const usdc = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
-const aave = "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9";
-const bal = "0xba100000625a3754423978a60c9317c58a424e3D";
-const reth = "0xae78736Cd615f374D3085123A210448E74Fc6393";
-const wsteth = "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0";
-const ldo = "0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32";
-const rbnWeth = "0xdb44a4a457c87225b5ba45f27b7828a4cc03c112";
-
-async function getTreasury(timestamp, block, chainBlocks) {
-  return sumTokens2({
-    block, owner: treasury,
-    tokens: [ weth, wsteth, wbtc, usdc, aave, ldo, reth, bal, rbnWeth, nullAddress],
-  })
-}
-
-module.exports = {
+module.exports = treasuryExports({
   ethereum: {
-    tvl: getTreasury,
+    tokens: [
+      // Ethereum Assets
+      nullAddress,
+      "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0", // wstETH
+      "0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32", // LDO
+      "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", // WETH
+      "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", // WBTC
+      "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // USDC
+      "0xae78736Cd615f374D3085123A210448E74Fc6393", // rETH
+      "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84", // stETH
+      "0xba100000625a3754423978a60c9317c58a424e3D", // BAL
+      "0x4d224452801ACEd8B2F0aebE155379bb5D594381", // APE
+      "0x090185f2135308BaD17527004364eBcC2D37e5F6", // SPELL
+      "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984", // UNI
+      "0x5aFE3855358E112B5647B952709E6165e1c1eEEe", // SAFE
+      "0xa354F35829Ae975e850e23e9615b11Da1B3dC4DE", // yvUSDC
+      "0x25751853Eab4D0eB3652B5eB6ecB102A2789644B", // rETH-THETA
+    ],
+    owners: [treasury],
+    ownTokens: [
+      RBN,
+      "0xd590931466cdD6d488A25da1E89dD0539723800c", // 50RBN-50USDC
+    ],
   },
-};
+});

@@ -5,6 +5,8 @@ const { transformBalances } = require('../portedTokens')
 const { PromisePool } = require('@supercharge/promise-pool')
 const { log } = require('../utils')
 
+// where to find chain info
+// https://proxy.atomscan.com/chains.json
 // https://cosmos-chain.directory/chains/cosmoshub
 // https://cosmos-chain.directory/chains
 const endPoints = {
@@ -15,7 +17,9 @@ const endPoints = {
   comdex: 'https://rest.comdex.one',
   terra: 'https://columbus-lcd.terra.dev',
   terra2: 'https://phoenix-lcd.terra.dev',
-  juno: 'https://api-juno-ia.cosmosia.notional.ventures/',
+  umee: 'https://api.mainnet.network.umee.cc',
+  orai: 'https://lcd.orai.io',
+  juno: 'https://lcd-juno.cosmostation.io',
 }
 
 const chainSubpaths = {
