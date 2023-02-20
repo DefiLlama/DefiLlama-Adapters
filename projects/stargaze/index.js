@@ -7,7 +7,6 @@ async function tvl() {
   /**
    * Bids has already been converted from ustars to stars in the constellations api.  Must be converted back for tvl.
    */
-
   const bidsURL = `https://metabase.constellations.zone/api/public/card/4bd16e60-7e77-4206-8ad2-8b04f362afed/query`;
 
   const bidsResponse = await get(bidsURL);
@@ -22,6 +21,9 @@ async function staking() {
   const url = `https://rest.stargaze-apis.com/cosmos/staking/v1beta1/pool`;
   const response = await get(url);
 
+  /**
+   * Stargaze API reports bonded_tokens as ustars, so we do not need to do any conversion.
+   */
   sdk.util.sumSingleBalance(balances, 'ustars', response.pool.bonded_tokens, 'stargaze');
   
   return balances;
