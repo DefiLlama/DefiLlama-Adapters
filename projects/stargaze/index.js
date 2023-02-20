@@ -1,7 +1,5 @@
 const sdk = require("@defillama/sdk");
-const { get } = require('../helper/http')
-//const { staking, stakings } = require("../helper/staking");
-//const { pool2 } = require("../helper/pool2");
+const { get } = require("../helper/http");
 
 async function tvl() {
   const balances = {};
