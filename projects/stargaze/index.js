@@ -11,10 +11,15 @@ async function tvl() {
 
   const bidsResponse = await get(bidsURL);
   // const denomResponse = await utils.fetchURL(denomURL);
-  sdk.util.sumSingleBalance(balances, 'ustars', bidsResponse.data.rows[0] * 1e6, 'stargaze');
+  sdk.util.sumSingleBalance(
+    balances,
+    "ustars",
+    bidsResponse.data.rows[0] * 1e6,
+    "stargaze"
+  );
 
   return balances;
-};
+}
 
 async function staking() {
   const balances = {};
@@ -24,10 +29,15 @@ async function staking() {
   /**
    * Stargaze API reports bonded_tokens as ustars, so we do not need to do any conversion.
    */
-  sdk.util.sumSingleBalance(balances, 'ustars', response.pool.bonded_tokens, 'stargaze');
-  
+  sdk.util.sumSingleBalance(
+    balances,
+    "ustars",
+    response.pool.bonded_tokens,
+    "stargaze"
+  );
+
   return balances;
-};
+}
 
 module.exports = {
   timetravel: false,
