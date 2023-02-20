@@ -1,7 +1,7 @@
 const { sumTokens2} = require('../helper/unwrapLPs')
-const { get } = require('../helper/http')
 const { getTokenBalance, getTrxBalance } = require('../helper/chain/tron');
 const sdk = require("@defillama/sdk");
+const { getConfig } = require('../helper/cache')
 
 const getBridgeContract = {
     'ethereum':'0xC707E0854DA2d72c90A7453F8dc224Dd937d7E82',
@@ -20,7 +20,7 @@ const getBridgeContract = {
     'optimism':'0x3758AA66caD9F2606F1F501c9CB31b94b713A6d5',
     'klaytn':'0x3758aa66cad9f2606f1f501c9cb31b94b713a6d5',
     'smartbch':'0x3758AA66caD9F2606F1F501c9CB31b94b713A6d5',
-    // 'enuls':'0x3758AA66caD9F2606F1F501c9CB31b94b713A6d5',
+    'enuls':'0x3758AA66caD9F2606F1F501c9CB31b94b713A6d5',
     'kava':'0x3758AA66caD9F2606F1F501c9CB31b94b713A6d5',
     'ethpow':'0x67b3757f20DBFa114b593dfdAc2b3097Aa42133E'
 }
@@ -29,19 +29,18 @@ const tronBridgeContract = 'TXeFBRKUW2x8ZYKPD13RuZDTd9qHbaPGEN';
 let tokensConfTest;
 async function getTokensConf() {
   if (!tokensConfTest) {
-    tokensConfTest = await get('https://assets.nabox.io/api/tvltokens');
+    tokensConfTest = getConfig('nerve-network-bridge', 'https://assets.nabox.io/api/tvltokens');
   }
   return tokensConfTest
 }
 
-const createTvlFunction = (chain) => async (timestamp, block, chainBlocks) => {
+async function tvl(_, _b, _cb, { api, }) {
   let conf = await getTokensConf();
-  const bridgeContract = getBridgeContract[chain];
-  const tokens = Object.values(conf[chain])
+  const bridgeContract = getBridgeContract[api.chain];
+  const tokens = Object.values(conf[api.chain])
   const owners = [bridgeContract]
-  let balances = await sumTokens2({ chain, block:chainBlocks[chain], tokens, owners, })
-  return balances;
-};
+  return sumTokens2({ api, tokens, owners, })
+}
 
 async function tronTvl() {
   let conf = await getTokensConf();
@@ -69,9 +68,7 @@ module.exports = {
   }
 }
 for (const network of Object.keys(getBridgeContract)) {
-  module.exports[network] = {
-    tvl: createTvlFunction(network),
-  };
+  module.exports[network] = { tvl };
 }
 
 
