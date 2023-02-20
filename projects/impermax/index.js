@@ -64,6 +64,7 @@ const subgraphs = {
   'arbitrum': [
     'impermax-finance/impermax-x-uniswap-v2-arbitrum',
     'impermax-finance/impermax-arbitrum-v2',
+    'impermax-finance/impermax-arbitrum-solv2',
   ],
   'moonriver': ['impermax-finance/impermax-x-uniswap-v2-moonriver'],
   'avax': [
