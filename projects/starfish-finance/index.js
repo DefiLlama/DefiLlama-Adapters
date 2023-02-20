@@ -3,7 +3,7 @@ const { getLiquidityTvl, addresses } = require("./helper.js");
 
 async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
   return getLiquidityTvl(api)
-};
+}
 
 module.exports = {
   astar: {
