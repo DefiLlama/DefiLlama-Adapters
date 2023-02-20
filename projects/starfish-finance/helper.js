@@ -1,8 +1,6 @@
-const sdk = require("@defillama/sdk");
 const { request, gql } = require("graphql-request");
-const { get } = require("../helper/http");
-const { requery } = require("../helper/requery");
-const BigNumber = require("bignumber.js");
+const { getUniqueAddresses } = require('../helper/utils')
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const addresses = {
   astar: {
@@ -37,41 +35,6 @@ const liquidityAddressQuery = gql`
   }
 `;
 
-const farmAddressQuery = gql`
-  {
-    stakingPools(first: 1000) {
-      nodes {
-        pool {
-          address
-        }
-      }
-    }
-  }
-`;
-
-const getLlamaPrices = async (coins) => {
-  const response = await get(
-    `https://coins.llama.fi/prices/current/${coins.join(",")}?searchWidth=4h`
-  );
-  const formatPrices = {};
-  coins.map((key) => {
-    const coin = response?.coins?.[key] ?? {};
-    formatPrices[key] = coin?.price ?? "";
-  });
-  return formatPrices;
-};
-
-const calcTotalValue = (tokenAmounts, tokenDecimals, tokenPrices) => {
-  return Object.entries(tokenAmounts)
-    .map((item) => {
-      const amount = new BigNumber(item[1]);
-      const decimal = 10 ** tokenDecimals[item[0]];
-      const price = tokenPrices[item[0]];
-      return amount.div(decimal).times(price);
-    })
-    .reduce((a, c) => a.plus(c), new BigNumber(0));
-};
-
 const getLiquidityTokenAddresses = async (chain) => {
   const response = await request(
     urls[chain].liquidityGraph,
@@ -84,141 +47,12 @@ const getLiquidityTokenAddresses = async (chain) => {
       tokenAddresses.push(address.address);
     }
   }
-  return [...new Set(tokenAddresses)];
+  return getUniqueAddresses(tokenAddresses)
 };
 
-const getFarmLPTokenAddresses = async (chain) => {
-  const response = await request(urls[chain].framGraph, farmAddressQuery);
-
-  let tokenAddresses = [];
-  for (let i = 0; i < response.stakingPools.nodes.length; i++) {
-    const item = response.stakingPools.nodes[i];
-    tokenAddresses.push(item.pool.address);
-  }
-  return [...new Set(tokenAddresses)];
+const getLiquidityTvl = async (api) => {
+  const tokenAddresses = await getLiquidityTokenAddresses(api.chain);
+  return sumTokens2({ api, tokens: tokenAddresses, owner: addresses[api.chain].liquidity})
 };
 
-const getTokenBalances = async (
-  tokenAddresses,
-  contractAddress,
-  chain,
-  block
-) => {
-  let tokenBalances = await sdk.api.abi.multiCall({
-    block,
-    calls: tokenAddresses.map((address) => ({
-      target: address,
-      params: contractAddress,
-    })),
-    abi: "erc20:balanceOf",
-  });
-
-  await requery(tokenBalances, chain, block, "erc20:balanceOf");
-
-  let formatTokenBalances = {};
-  let transform = (addr) => `${chain}:${addr}`;
-  sdk.util.sumMultiBalanceOf(
-    formatTokenBalances,
-    tokenBalances,
-    true,
-    transform
-  );
-  return formatTokenBalances;
-};
-
-const getTokenDecimals = async (tokenAddresses, chain, block) => {
-  let tokenDecimals = await sdk.api.abi.multiCall({
-    block,
-    calls: tokenAddresses.map((target) => ({
-      target,
-    })),
-    abi: "erc20:decimals",
-  });
-
-  await requery(tokenDecimals, chain, block, "erc20:decimals");
-
-  const formatTokenDecimals = {};
-  tokenAddresses.map(
-    (address, i) =>
-      (formatTokenDecimals[`${chain}:${address}`] =
-        tokenDecimals.output[i].output)
-  );
-  return formatTokenDecimals;
-};
-
-const getTokenPrices = async (tokenAddresses, chain, type) => {
-  const coinsArray = tokenAddresses.map((address) => `${chain}:${address}`);
-
-  let formatTokenPrices = await getLlamaPrices(coinsArray);
-  const invalidTokenAddresses = Object.keys(formatTokenPrices).map(
-    (key) => formatTokenPrices[key] == "" && key.split(":")[1]
-  );
-
-  const url = new URL(urls[chain].api + "/v1/platformPrices");
-  url.searchParams.append("tokenAddresses", invalidTokenAddresses.join(","));
-  url.searchParams.append("type", type);
-  const platformPrices = await get(url.toString());
-
-  Object.keys(platformPrices).map((address) => {
-    const key = `${chain}:${address}`;
-    if (formatTokenPrices.hasOwnProperty(key))
-      formatTokenPrices[key] = platformPrices[address];
-  });
-
-  return formatTokenPrices;
-};
-
-const getLiquidityTvl = async (chain, block) => {
-  const tokenAddresses = await getLiquidityTokenAddresses(chain);
-
-  const [formatTokenBalances, formatTokenDecimals, formatTokenPrices] =
-    await Promise.all([
-      getTokenBalances(
-        tokenAddresses,
-        addresses[chain].liquidity,
-        chain,
-        block
-      ),
-      getTokenDecimals(tokenAddresses, chain, block),
-      getTokenPrices(tokenAddresses, chain, "token"),
-    ]);
-
-  // console.log(
-  //   formatTokenBalances,
-  //   formatTokenDecimals,
-  //   formatTokenPrices,
-  //   "liquidity"
-  // );
-
-  return calcTotalValue(
-    formatTokenBalances,
-    formatTokenDecimals,
-    formatTokenPrices
-  );
-};
-
-const getFarmTvl = async (chain, block) => {
-  const tokenAddresses = await getFarmLPTokenAddresses(chain);
-
-  const [formatTokenBalances, formatTokenDecimals, formatTokenPrices] =
-    await Promise.all([
-      getTokenBalances(tokenAddresses, addresses[chain].farm, chain, block),
-      getTokenDecimals(tokenAddresses, chain, block),
-      getTokenPrices(tokenAddresses, chain, "lp"),
-    ]);
-
-  // console.log(
-  //   formatTokenBalances,
-  //   formatTokenDecimals,
-  //   formatTokenPrices,
-  //   "farm"
-  // );
-
-  return calcTotalValue(
-    formatTokenBalances,
-    formatTokenDecimals,
-    formatTokenPrices
-  );
-};
-
-module.exports = { getLiquidityTvl, getFarmTvl, addresses };
+module.exports = { getLiquidityTvl, addresses };
