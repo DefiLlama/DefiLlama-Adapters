@@ -29,7 +29,7 @@ module.exports = {
     conflux: {
     tvl: lending(false),
     borrowed: lending(true),
-    staking: stakingPricedLP(stakingContract, stakedToken, "conflux", stakedToken_WrappedCurrency_spLP, "goledo", false),
+    staking: stakingPricedLP(stakingContract, stakedToken, "conflux", stakedToken_WrappedCurrency_spLP, "wrapped-conflux", false),
     pool2: pool2(stakingContractPool2, stakedToken_WrappedCurrency_spLP, "conflux"),
   },
   hallmarks:[
