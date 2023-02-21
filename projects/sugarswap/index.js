@@ -15,7 +15,6 @@ module.exports = {
     staking: staking({
       owners: [masterchef],
       tokens: [sugar],
-      onlyLPs: true,
       lps: ['0xD184aAbFc9De6B56994D1283ed4C132B70A73a14'],
       useDefaultCoreAssets: true,
     })
