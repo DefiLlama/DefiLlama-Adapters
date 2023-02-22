@@ -17,7 +17,6 @@ module.exports = treasuryExports({
   arbitrum: {
     tokens,
     owners: [treasury],
-    ownTokenOwners: [treasury],
     ownTokens: [jones],
   },
 });
