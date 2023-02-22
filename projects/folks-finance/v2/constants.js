@@ -29,6 +29,11 @@ const pools = [
     appId: 971373611,
     assetId: 386195940,
   },
+  // Opul
+  {
+    appId: 1044267181,
+    assetId: 287867876,
+  },
 ];
 
 const oracleAppId = 1040271396;
