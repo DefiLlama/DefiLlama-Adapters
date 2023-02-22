@@ -1,5 +1,5 @@
 const { sumTokensExport, nullAddress, } = require('../helper/unknownTokens')
-const { POOL2S } = require("../helper/pool2")
+const POOL2S  = require("../helper/pool2")
 const chain = 'bsc'
 const TREASURY1 = '0xc569C21b0862B112Ed69bA9d2C6e9Ed86A036f9C'
 const TREASURY2 = '0xA017862ADba59aA030b8aA0433eD91D9d909B8B1'
