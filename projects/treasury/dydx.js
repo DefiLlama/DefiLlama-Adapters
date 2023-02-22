@@ -12,7 +12,6 @@ module.exports = treasuryExports({
         '0xdAC17F958D2ee523a2206206994597C13D831ec7',//TETHER
      ],
     owners: [dydxTreasury],
-    ownTokenOwners: [dydxTreasury],
     ownTokens: [DYDX],
   },
 })

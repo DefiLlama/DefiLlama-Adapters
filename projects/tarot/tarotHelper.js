@@ -78,6 +78,7 @@ Object.keys(config).forEach(chain => {
         // '0x9bf544e9e96033d1c8b667824844a40aa6c2132a', //
         '0x7eac79383c42bc16e33cd100008ee6d5e491680f', //
         '0x05b2bcb2295a6f07c5d490128b6b4787c8c4464e', //
+        '0xd8d4a4738e285c33a2890fb2e225c692b84c55ca', //
       ]
     })
     return { balances, borrowedBalances }
