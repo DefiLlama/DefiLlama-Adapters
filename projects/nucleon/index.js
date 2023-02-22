@@ -17,7 +17,7 @@ function xcfxSupply(target) {
 }
 
 module.exports = {
-  methodology: 'TVL accounts for XCFX Supply. Staking gets the amount of CFX-XCFX LPs Staked. Pool2 refers to the CFX-NUT LPs staked in the Masterchef Contract',
+  methodology: 'TVL accounts for XCFX Supply, which represents the amount of CFX staked on the Protocol.',
   conflux: {
     tvl: xcfxSupply(token, "conflux", () => "wrapped-conflux"),
   },
