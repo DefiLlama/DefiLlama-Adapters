@@ -5,7 +5,7 @@ const { get } = require("../helper/http");
 //////////////////////////////////////////////////
 // Define a few constants and functions
 //////////////////////////////////////////////////
-// Return 1000 markers (i.e. assets on Provenance) per call to limit stress on node
+// Return 1000 markers (i.e. collateralized tokens minted on Provenance) per call to limit stress on node
 const paginationLimit = 1000;
 
 /** Marker API call to Provenance Blockchain.
@@ -176,6 +176,6 @@ const tvl = async () => {
 module.exports = {
   timetravel: false,
   methodology:
-    "Provenance TVL is calculated as the sum of the value of hash plus the value of real world assets on chain.",
+    "Provenance TVL is calculated as the sum of the value of hash plus the value of collateralized tokens on chain.",
   provenance: { tvl },
 };
