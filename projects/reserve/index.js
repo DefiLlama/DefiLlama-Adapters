@@ -7,8 +7,7 @@ const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const abi = require("./abi.json");
 
 const vault = "0xaedcfcdd80573c2a312d15d6bb9d921a01e4fb0f";
-// const deployerAddress = "0xFd6CC4F251eaE6d02f9F7B41D1e80464D3d2F377";
-const deployerAddress = "0x9cAc8ED3297040626D8aA6317F5e29813A6A8fc6"; // old deployer
+const deployerAddress = "0xFd6CC4F251eaE6d02f9F7B41D1e80464D3d2F377";
 
 async function tvl(_time, block) {
   // First section is for RSV which will soon be deprecated

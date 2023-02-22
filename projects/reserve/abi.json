@@ -1,6 +1,6 @@
 {
   "deployer": [
-    "event RTokenCreated(address indexed main, address indexed rToken, address stRSR, address indexed owner)"
+    "event RTokenCreated(address indexed main, address indexed rToken, address stRSR, address indexed owner, string version)"
   ],
   "main": [
     "function backingManager() view returns (address)",
