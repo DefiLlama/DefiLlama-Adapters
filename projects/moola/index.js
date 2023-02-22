@@ -12,7 +12,6 @@ function lending(borrowed) {
         await singleAssetV1Market(v1Balances, v1PoolCore, block, borrowed, chain, gasAsset);
 
         const balances = await aaveChainTvl(chain, "0xF03982910d17d11670Dc3734DD73292cC4Ab7491", addr => `celo:${addr}`, ["0x43d067ed784D9DD2ffEda73775e2CC4c560103A1"], borrowed)(timestamp, ethBlock, {
-            ...chainBlocks,
             celo: block
         })
         Object.entries(v1Balances).map(entry => sdk.util.sumSingleBalance(balances, "celo:" + entry[0], entry[1]))

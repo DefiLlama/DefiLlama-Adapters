@@ -453,8 +453,6 @@ async function polygon(timestamp, block, chainBlocks) {
     // sdk.util.sumSingleBalance(balances, _.find(vaultCalls, {target: poolAddr}).token, totalDeposited); 
   }
 
-  // console.log('vaultTvl', vaultTvl)
-
   //collectors
 
   for(let collector of collectorsPolygon) {

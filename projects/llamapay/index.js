@@ -10,6 +10,8 @@ const llamaPayVesting = "0xB93427b83573C8F27a08A909045c3e809610411a";
 const llamaPayMeter = "0xc666badd040d5e471d2b77296fef46165ffe5132"
 const llamaPayMeterVesting = "0x6B24Fe659D1E91f8800E86600DE577A4cA8814a6";
 const llamaPayMetis = "0x43634d1C608f16Fb0f4926c12b54124C93030600";
+const llamaPayKava = "0xCA052D073591C0C059675B6F7F95cE75a4Ab8fc8";
+const llamaPayKavaVesting = "0xB93427b83573C8F27a08A909045c3e809610411a"
 
 async function calculateTvl(llamapay, vesting, block, chain, isVesting) {
   let tokensAndOwners = await getTokensAndOwners(llamapay, chain, block)
@@ -72,6 +74,7 @@ chains.forEach(chain => {
     case 'avax': contract = llamaPayAvax; break;
     case 'meter': contract = llamaPayMeter; vestingContract = llamaPayMeterVesting; break;
     case 'metis': contract = llamaPayMetis; break;
+    case 'kava': contract = llamaPayKava ; vestingContract = llamaPayKavaVesting; break;
   }
 
   module.exports[chain] = {

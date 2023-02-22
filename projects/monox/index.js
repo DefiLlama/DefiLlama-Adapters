@@ -28,6 +28,9 @@ async function polygon(timestamp, ethBlock, chainBlocks){
 }
 
 module.exports = {
+    hallmarks: [
+        [1669766400, "swap contract exploit"]
+    ],
     ethereum:{
         tvl:eth
     },

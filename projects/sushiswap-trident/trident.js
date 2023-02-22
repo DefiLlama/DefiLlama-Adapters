@@ -3,11 +3,18 @@ const { request, gql } = require("graphql-request");
 const { getChainTransform } = require("../helper/portedTokens");
 
 const graphUrls = {
-  polygon: "https://api.thegraph.com/subgraphs/name/sushi-0m/trident-polygon",
-  optimism: "https://api.thegraph.com/subgraphs/name/sushi-0m/trident-optimism",
-  kava: "https://pvt.graph.kava.io/subgraphs/name/sushi-0m/trident-kava",
+  polygon: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-polygon",
+  polygonOldRouter:
+    "https://api.thegraph.com/subgraphs/name/sushi-0m/trident-polygon",
+  optimism: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-optimism",
+  kava: "https://pvt.graph.kava.io/subgraphs/name/sushi-v2/trident-kava",
   metis:
-    "https://andromeda.thegraph.metis.io/subgraphs/name/sushi-0m/trident-metis",
+    "https://andromeda.thegraph.metis.io/subgraphs/name/sushi-v2/trident-metis",
+  bittorrent:
+    "https://subgraphs.sushi.com/subgraphs/name/sushi-v2/trident-bttc",
+  arbitrum: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-arbitrum",
+  bsc: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-bsc",
+  avax: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-avalanche",
 };
 
 const tridentQueryWithBlock = gql`
@@ -58,6 +65,22 @@ function trident(chain) {
       result = await request(graphUrl, tridentQuery);
     }
 
+    if (chain == "polygon") {
+      //add pools that haven't been migrated to the new router
+      result.tokens.push(
+        ...(!block
+          ? await request(graphUrls["polygonOldRouter"], tridentQuery)
+          : await request(
+              graphUrls["polygonOldRouter"],
+              tridentQueryWithBlock,
+              {
+                block: block - 50, //subgraphs can be late by few seconds/minutes
+              }
+            )
+        ).tokens
+      );
+    }
+
     result.tokens.forEach((token) => {
       sdk.util.sumSingleBalance(balances, transform(token.id), token.liquidity);
     });
@@ -68,5 +91,5 @@ function trident(chain) {
 
 module.exports = {
   trident,
-  methodology: `TVL of Sushiswap Trident consist of tokens deployed into swapping pairs.`,
+  methodology: `TVL of Trident consist of tokens deployed into swapping pairs.`,
 };

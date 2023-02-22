@@ -4,7 +4,7 @@ const abi = require("./abi");
 const { default: BigNumber } = require("bignumber.js");
 const { getCompoundV2Tvl } = require('../helper/compound')
 const { pool2 } = require('../helper/pool2');
-const { getBlock } = require("../helper/getBlock");
+const { getBlock } = require("../helper/http");
 
 const earnETHPoolFundControllerAddressesIncludingLegacy = [
   '0xD9F223A36C2e398B0886F945a7e556B41EF91A3C',
@@ -92,6 +92,9 @@ async function getFusePools(timestamp, block, balances, borrowed) {
 }
 
 async function borrowed(timestamp, block) {
+  if(block > 14684686){
+    return {} // after fei hack
+  }
   const balances = {}
   await getFusePools(timestamp, block, balances, true)
   return balances

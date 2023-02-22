@@ -26,6 +26,19 @@ const erc4626Vaults = [
   },
 ];
 
+const l1OnlyVaults = [
+  {
+    address: "0xB3dA8d6Da3eDe239ccbF576cA0Eaa74D86f0e9D3",
+    isYieldGenerating: false,
+    chain: "ethereum",
+  },
+  {
+    address: "0x4FE66bff98eFc030BdC86c733F481B089fb9DCFd",
+    isYieldGenerating: true,
+    chain: "polygon",
+  },
+];
+
 const getTVLData = async (block) => {
   const vaultCalls = vaults.map((v) => ({ target: v.address }));
   const batcherCalls = vaults.map((v) => ({ target: v.batcher }));
@@ -54,14 +67,8 @@ const getTVLData = async (block) => {
 const getVaultL1Funds = async (vault, wantToken, block) => {
   const executors = await getExecutorsForVault(vault, block);
   const positionCalls = executors.map((e) => ({ target: e }));
-  const balanceCalls = executors.map((e) => ({ target: wantToken, params: e }));
 
-  const [_wantTokenBalances, _positionValues] = await Promise.all([
-    sdk.api.abi.multiCall({
-      block,
-      calls: balanceCalls,
-      abi: "erc20:balanceOf",
-    }),
+  const [_positionValues] = await Promise.all([
     sdk.api.abi.multiCall({
       block,
       calls: positionCalls,
@@ -69,13 +76,12 @@ const getVaultL1Funds = async (vault, wantToken, block) => {
     }),
   ]).then((o) => o.map((it) => it.output));
 
-  const wantTokenBalances = _wantTokenBalances.map((it) => +it.output);
   const positionValues = _positionValues.map((it) => +it.output.posValue);
 
   let totalExecutorFunds = 0;
 
   for (const [index] of executors.entries()) {
-    totalExecutorFunds += wantTokenBalances[index] + positionValues[index];
+    totalExecutorFunds += positionValues[index];
   }
 
   const vaultBalance = await sdk.api.abi.call({
@@ -86,6 +92,67 @@ const getVaultL1Funds = async (vault, wantToken, block) => {
   });
 
   return totalExecutorFunds + +vaultBalance.output;
+};
+
+const getL1VaultOnlyFundsByChain = async (chain, block) => {
+  const vaults = l1OnlyVaults.filter(({ chain: _chain }) => chain === _chain);
+
+  const vaultCalls = vaults.map(({ address }) => ({ target: address }));
+
+  const yieldCalls = vaults
+    .filter(({ isYieldGenerating }) => isYieldGenerating)
+    .map(({ address }) => ({ target: address }));
+
+  const balances = {};
+
+  const [_vaultWantTokenAddresses, _totalVaultFunds] = await Promise.all([
+    sdk.api.abi.multiCall({
+      block,
+      calls: vaultCalls,
+      abi: vaultAbi.wantToken,
+      chain,
+    }),
+    sdk.api.abi.multiCall({
+      block,
+      calls: vaultCalls,
+      abi: vaultAbi.totalVaultFunds,
+      chain,
+    }),
+  ]).then((o) => o.map((it) => it.output));
+
+  const [_yieldWantTokenAddresses, _lastEpochYields] = await Promise.all([
+    sdk.api.abi.multiCall({
+      block,
+      calls: yieldCalls,
+      abi: vaultAbi.wantToken,
+      chain,
+    }),
+    sdk.api.abi.multiCall({
+      block,
+      calls: yieldCalls,
+      abi: vaultAbi.lastEpochYield,
+      chain,
+    }),
+  ]).then((o) => o.map((it) => it.output));
+
+  /// vault balances
+  _totalVaultFunds.forEach((it, idx) => {
+    sdk.util.sumSingleBalance(
+      balances,
+      _vaultWantTokenAddresses[idx].output,
+      it.output
+    );
+  });
+  /// last epoch yields
+  _lastEpochYields.forEach((it, idx) => {
+    sdk.util.sumSingleBalance(
+      balances,
+      _yieldWantTokenAddresses[idx].output,
+      it.output
+    );
+  });
+
+  return balances;
 };
 
 const getERC4626VaultFundsByChain = async (chain, block) => {
@@ -144,4 +211,5 @@ module.exports = {
   getTVLData,
   getVaultL1Funds,
   getERC4626VaultFundsByChain,
+  getL1VaultOnlyFundsByChain,
 };

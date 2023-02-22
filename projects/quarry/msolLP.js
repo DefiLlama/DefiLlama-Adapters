@@ -26,8 +26,8 @@ const getMSolLPTokens = async (lpAmount) => {
     Number(accountData.poolMint.readBigUInt64LE(4 + 32)) / 10 ** 9;
 
   return {
-    msol: (msolAmount * lpAmount) / lpSupply,
-    solana: (solAmount * lpAmount) / lpSupply,
+    'solana:mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So': (msolAmount * lpAmount) / lpSupply,
+    'solana:So11111111111111111111111111111111111111112': (solAmount * lpAmount) / lpSupply,
   };
 };
 

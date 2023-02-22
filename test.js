@@ -1,12 +1,10 @@
 #!/usr/bin/env node
 const path = require("path");
 require("dotenv").config();
-//const { default: computeTVL } = require("@defillama/sdk/build/computeTVL");
-const { chainsForBlocks } = require("@defillama/sdk/build/computeTVL/blocks");
-const { getLatestBlock } = require("@defillama/sdk/build/util/index");
-const {
-  humanizeNumber,
-} = require("@defillama/sdk/build/computeTVL/humanizeNumber");
+const { util: {
+  blocks: { getCurrentBlocks },
+  humanizeNumber: { humanizeNumber },
+} } = require("@defillama/sdk");
 const { util } = require("@defillama/sdk");
 const sdk = require("@defillama/sdk");
 const whitelistedExportKeys = require('./projects/helper/whitelistedExportKeys.json')
@@ -14,16 +12,6 @@ const chainList = require('./projects/helper/chains.json')
 const handleError = require('./utils/handleError')
 const { log, diplayUnknownTable, sliceIntoChunks } = require('./projects/helper/utils')
 const { PromisePool } = require('@supercharge/promise-pool')
-
-async function getLatestBlockRetry(chain) {
-  for (let i = 0; i < 5; i++) {
-    try {
-      return await getLatestBlock(chain);
-    } catch (e) {
-      throw new Error(`Couln't get block height for chain "${chain}"`, e);
-    }
-  }
-}
 
 const locks = [];
 function getCoingeckoLock() {
@@ -57,7 +45,10 @@ async function getTvl(
   knownTokenPrices
 ) {
   if (!isFetchFunction) {
-    const tvlBalances = await tvlFunction(unixTimestamp, ethBlock, chainBlocks);
+    const chain = storedKey.split('-')[0]
+    const block = chainBlocks[chain]
+    const api = new sdk.ChainApi({ chain, block: chainBlocks[chain], timestamp: unixTimestamp, })
+    const tvlBalances = await tvlFunction(unixTimestamp, ethBlock, chainBlocks, { api, chain, block, storedKey });
     const tvlResults = await computeTVL(
       tvlBalances,
       "now",
@@ -127,19 +118,7 @@ sdk.api.abi.call = async (...args) => {
   const chains = Object.keys(module).filter(item => typeof module[item] === 'object' && !Array.isArray(module[item]));
   checkExportKeys(module, passedFile, chains)
   const unixTimestamp = Math.round(Date.now() / 1000) - 60;
-  const chainBlocks = {};
-
-  if (!chains.includes("ethereum")) {
-    chains.push("ethereum");
-  }
-  await Promise.all(
-    chains.map(async (chainRaw) => {
-      const chain = chainRaw
-      if (chainsForBlocks.includes(chain) || chain === "ethereum") {
-        chainBlocks[chain] = (await getLatestBlockRetry(chain)).number - 10;
-      }
-    })
-  );
+  const { chainBlocks } = await getCurrentBlocks([]); // fetch only ethereum block for local test
   const ethBlock = chainBlocks.ethereum;
   const usdTvls = {};
   const tokensBalances = {};
@@ -253,7 +232,10 @@ function checkExportKeys(module, filePath, chains) {
 
   if (filePath.length > 2
     || (filePath.length === 1 && !['.js', ''].includes(path.extname(filePath[0]))) // matches .../projects/projectXYZ.js or .../projects/projectXYZ
-    || (filePath.length === 2 && !['api.js', 'index.js', 'apiCache.js', ].includes(filePath[1])))  // matches .../projects/projectXYZ/index.js
+    || (filePath.length === 2 &&
+      !(['api.js', 'index.js', 'apiCache.js',].includes(filePath[1])  // matches .../projects/projectXYZ/index.js
+        || ['treasury',].includes(filePath[0])  // matches .../projects/treasury/project.js
+      )))
     process.exit(0)
 
   const blacklistedRootExportKeys = ['tvl', 'staking', 'pool2', 'borrowed', 'treasury', 'offers', 'vesting'];
@@ -347,7 +329,9 @@ async function computeTVL(balances, timestamp) {
       return;
     }
     if (k.toLowerCase() === k) return;
-    balances[k.toLowerCase()] = balances[k];
+    balances[k.toLowerCase()] = (k.toLowerCase() in balances)
+      ? Number(balances[k.toLowerCase()])
+      + Number(balances[k]) : balances[k];
     delete balances[k]
   })
 
@@ -377,7 +361,7 @@ async function computeTVL(balances, timestamp) {
   readKeys.forEach(i => unknownTokens[i] = true)
 
   const { errors } = await PromisePool.withConcurrency(5)
-    .for(sliceIntoChunks(readKeys, 50))
+    .for(sliceIntoChunks(readKeys, 40))
     .process(async (keys) => {
       const coins = keys.reduce((p, c) => p + `${c},`, "");
       tokenData.push((await axios.get(`${burl}${coins}`)).data.coins)
@@ -408,6 +392,12 @@ async function computeTVL(balances, timestamp) {
         usdAmount = amount * data.price;
       }
 
+      if (usdAmount > 1e8) {
+        console.log(`-------------------
+Warning: `)
+        console.log(`Token ${address} has more than 100M in value (${usdAmount / 1e6} M) , price data: `, data)
+        console.log(`-------------------`)
+      }
       tokenBalances[data.symbol] = (tokenBalances[data.symbol] ?? 0) + amount;
       usdTokenBalances[data.symbol] = (usdTokenBalances[data.symbol] ?? 0) + usdAmount;
       usdTvl += usdAmount;

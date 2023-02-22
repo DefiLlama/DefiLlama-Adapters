@@ -1,5 +1,5 @@
-const { lookupApplications } = require("../helper/algorand");
-const { encodeAddress } = require("../helper/algorandUtils/address");
+const { lookupApplications } = require("../helper/chain/algorand");
+const { encodeAddress } = require("../helper/chain/algorandUtils/address");
 
 function fromIntToBytes8Hex(num) {
   return num.toString(16).padStart(16, "0");

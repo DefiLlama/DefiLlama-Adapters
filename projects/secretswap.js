@@ -1,12 +1,14 @@
-const retry = require('./helper/retry')
-const axios = require("axios");
+const { get } = require('./helper/http')
 
 async function fetch() {
-  var response = await retry(async bail => await axios.get('https://api.secretanalytics.xyz/secretswap/tvl'))
+  var response = await get('https://api.secretanalytics.xyz/secretswap/tvl')
 
-  return response.data;
+  return response;
 }
 
 module.exports = {
+  secret: {
+    fetch
+  },
   fetch
 }

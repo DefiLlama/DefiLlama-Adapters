@@ -1,11 +1,13 @@
-const retry = require('async-retry')
-const axios = require("axios");
+const { get } = require('../helper/http')
 
 async function fetch() {
-  let results = await retry(async bail => await axios.get('https://farming-api.cerestoken.io/get-supply-data'));
-  return results.data.tvl;
+  let results = await get('https://farming-api.cerestoken.io/get-supply-data');
+  return results.tvl;
 }
 
 module.exports = {
+  sora: {
+    fetch
+  },
   fetch
 }

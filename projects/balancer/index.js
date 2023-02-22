@@ -2,10 +2,10 @@ const sdk = require('@defillama/sdk');
 const BigNumber = require("bignumber.js");
 const { GraphQLClient, gql } = require('graphql-request')
 const { toUSDTBalances } = require('../helper/balances');
-const { getBlock } = require('../helper/getBlock');
+const { getBlock } = require('../helper/http');
 async function getTVL(subgraphName, block) {
   // delayed by around 5 mins to allow subgraph to update
-  block -= 25;
+  block -= 100;
   var endpoint = `https://api.thegraph.com/subgraphs/name/balancer-labs/${subgraphName}`
   var graphQLClient = new GraphQLClient(endpoint)
 
@@ -39,7 +39,7 @@ async function getTVL(subgraphName, block) {
 
 async function getTVLFromPools(subgraphName, block) {
   // delayed by around 5 mins to allow subgraph to update
-  block -= 25;
+  block -= 100;
   var endpoint = `https://api.thegraph.com/subgraphs/name/balancer-labs/${subgraphName}`
   var graphQLClient = new GraphQLClient(endpoint)
 
@@ -87,6 +87,11 @@ module.exports = {
   timetravel: true,
   misrepresentedTokens: true,
   methodology: `Balancer TVL is pulled from the Balancer subgraph and includes deposits made to Balancer v1 and v2 liquidity pools.`,
+  hallmarks:[
+      [1618857407, "Balancer V2 Launched"],
+      [1648232593, "veBAL Launched"],
+      [1655380615, "Aura Launched"]
+  ],
   ethereum:{
     tvl: ethereum
   },

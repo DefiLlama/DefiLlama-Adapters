@@ -11,5 +11,8 @@
   "devDependencies": {
     "inquirer": "^8.2.4",
     "inquirer-fuzzy-path": "^2.3.0"
+  },
+  "dependencies": {
+    "glob": "^8.0.3"
   }
 }

@@ -4,6 +4,7 @@ const BigNumber = require('bignumber.js')
 const abi = require('./abi.json')
 const abi2 = require('./abi2.json')
 const chain = 'optimism'
+const { getConfig } = require('../helper/cache')
 const transform = t => `${chain}:${t}`
 
 // Polynomial contract addresses
@@ -36,6 +37,8 @@ const contractL1Synths = {
   '0x2D46292cbB3C601c6e2c74C32df3A4FCe99b59C7': MAINNET_SETH,
   // GAMMA
   '0x965e460bF5cb38BadA79fB2293c6304C799D0b1c': MAINNET_SUSD,
+  //ETH CALL SELLING QUOTE
+  '0xB7b4270cFD938F4F1C111ac819e7365E8Ce0300a': MAINNET_SUSD
 }
 
 
@@ -130,9 +133,9 @@ function tvlSumUp(contract) {
 }
 async function getV2Balance(block) {
   const ENDPOINT = 'https://earn-api.polynomial.fi/vaults'
-  const response = await axios.get(ENDPOINT)
+  const response = await getConfig('polynomial-vaults', ENDPOINT)
   // Only allow contracts which sets underlying and COLLATERAL
-  const v2Contracts = response.data.filter(contract => contractL1Synths[contract.vaultAddress])
+  const v2Contracts = response.filter(contract => contractL1Synths[contract.vaultAddress])
   const multiCalls = v2Contracts.map(contract => ({ target: contract.vaultAddress}))
 
   const [{output: pendingDeposits}, {output: totalFunds}, {output: totalWithdrawals}] = await Promise.all( [

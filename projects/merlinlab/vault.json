@@ -1,16 +1,4 @@
 {
-  "stakingToken": {
-    "inputs": [],
-    "name": "stakingToken",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "pid": {
-    "inputs": [],
-    "name": "pid",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  }
+  "stakingToken": "address:stakingToken",
+  "pid": "uint256:pid"
 }

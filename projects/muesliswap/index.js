@@ -4,14 +4,24 @@ const { fetchURL } = require('../helper/utils')
 
 
 async function staking(){
-    const tvl = await fetchURL("https://staking.muesliswap.com/milk-locked")
-    if(tvl.data<=0){
+    let totalAda = 0
+    // Milk locked
+    const tvlMilk = (await fetchURL("https://staking.muesliswap.com/milk-locked")).data
+    if(tvlMilk.data<=0){
         throw new Error("muesliswap tvl is below 0")
     }
-    const info = (await fetchURL(`https://api.muesliswap.com/price/?base-policy-id=&base-tokenname=&quote-tokenname=4d494c4b&quote-policy-id=8a1cfae21368b8bebbbed9800fec304e95cce39a2a57dc35e2e3ebaa`)).data
-    const price = parseFloat(info.price) / 1e6
+    const infoMilk = (await fetchURL(`https://api.muesliswap.com/price/?base-policy-id=&base-tokenname=&quote-tokenname=4d494c4b&quote-policy-id=8a1cfae21368b8bebbbed9800fec304e95cce39a2a57dc35e2e3ebaa`)).data
+    const priceMilk = parseFloat(infoMilk.price) / 1e6
+    totalAda += priceMilk * tvlMilk
+
+    // Myield locked
+    const tvlMyield = parseFloat((await fetchURL("http://staking.muesliswap.com/myield-info")).data[0]["amountStaked"]) / 1e6
+    const infoMyield = (await fetchURL(`https://api.muesliswap.com/price/?base-policy-id=&base-tokenname=&quote-tokenname=4d5949454c44&quote-policy-id=8f9c32977d2bacb87836b64f7811e99734c6368373958da20172afba`)).data
+    const priceMyield = parseFloat(infoMyield.price)
+    totalAda += priceMyield * tvlMyield
+
     return {
-        cardano: tvl.data * price
+        cardano: totalAda
     }
 }
 
@@ -49,7 +59,15 @@ async function adaTvl(){
     // then accumulate over the orderbooks
     const orderbooksv2 = (await fetchURL("https://onchain.muesliswap.com/all-orderbooks")).data
     await Promise.all(orderbooksv2.map(async ob=>{
-        if(ob.fromToken !== "."){
+        if(ob.fromToken === "."){
+            let totalLovelace = 0;
+            ob.orders.forEach(o=>{
+                totalLovelace += parseInt(o.fromAmount)
+            })
+            const totalBuy = totalLovelace
+            totalAda += totalBuy / 1e6
+        }
+        else {
             const price = adapricev2.get(ob.fromToken)
             let totalAmountOtherToken = 0
             ob.orders.forEach(o=>{
@@ -58,14 +76,6 @@ async function adaTvl(){
             const totalSell = totalAmountOtherToken * price
             if(isNaN(totalSell) || !isFinite(totalSell)) return;
             totalAda += totalSell / 1e6
-        }
-        else if(ob.fromToken === "."){
-            let totalLovelace = 0;
-            ob.orders.forEach(o=>{
-                totalLovelace += parseInt(o.fromAmount)
-            })
-            const totalBuy = totalLovelace
-            totalAda += totalBuy / 1e6
         }
     }))
     return {
