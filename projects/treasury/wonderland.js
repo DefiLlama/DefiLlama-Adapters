@@ -41,7 +41,6 @@ module.exports = treasuryExports({
        "0x63682bdc5f875e9bf69e201550658492c9763f89",//bsgg
     ],
     owners: [TreasuryAVAX],
-    ownTokenOwners: [TreasuryAVAX],
     ownTokens: [TIME],
   },
  arbitrum: {
