@@ -70,7 +70,7 @@ Object.keys(CONFIG).forEach((chain) => {
       const length = 4;
 
       for (const factory of factories) {
-        if (factory.version.split('.').slice(0,2).join('.') === '0.6') {
+        if (factory.version >= '0.6') {
           const controller = await sdk.api.abi.call({
             target: factory.factory,
             abi: abis.getController,
