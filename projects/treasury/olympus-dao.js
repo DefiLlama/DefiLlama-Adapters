@@ -25,7 +25,6 @@ module.exports = treasuryExports({
 
      ],
     owners: [ohmTreasury, ohmTreasury1],
-    ownTokenOwners: [ohmTreasury, ohmTreasury1],
     ownTokens: [OHM],
   },
 })

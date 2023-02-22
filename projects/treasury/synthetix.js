@@ -19,7 +19,6 @@ module.exports = treasuryExports({
         '0x31c8EAcBFFdD875c74b94b077895Bd78CF1E64A3',//RAD
      ],
     owners: [synthetixTreasury],
-    ownTokenOwners: [synthetixTreasury],
     ownTokens: [SNX],
   },
 })

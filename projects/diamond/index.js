@@ -2,6 +2,7 @@ const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { get } = require('../helper/http')
+const { getConfig } = require('../helper/cache')
 
 // Ethereum
 const ETH_BULL_VAULT = "0xad48a8261b0690c71b70115035eb14afd9a43242";
@@ -45,7 +46,7 @@ async function optTvl(_, _b,{ optimism: block}) {
 }
 
 async function getOpenPositionIds() {
-  const response = await get(
+  const response = await getConfig('diamond/arbi-open-positions',
           "https://0dtklop9zj.execute-api.ap-northeast-1.amazonaws.com/stag/open_positions?limit=500"
         )
 

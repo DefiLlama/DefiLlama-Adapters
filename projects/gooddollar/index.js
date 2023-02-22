@@ -57,30 +57,6 @@ async function fuseStaking(timestamp, ethBlock, chainBlocks) {
     return balances;
 }
 
-async function fuseTreasury(timestamp, ethBlock, chainBlocks) {
-    const gdInCommunitySafe = (await sdk.api.erc20.balanceOf({
-        target: tokens.Gfuse,
-        chain: 'fuse',
-        owner: COMMUNITY_SAFE,
-        block: chainBlocks['fuse']
-    })).output;
-
-    const gdInFuseStaking = (await sdk.api.erc20.balanceOf({
-        target: tokens.Gfuse,
-        chain: 'fuse',
-        owner: FUSE_STAKING,
-        block: chainBlocks['fuse']
-    })).output;
-
-    const gdTotal = BigNumber(gdInCommunitySafe).plus(gdInFuseStaking);
-    let gdInDAI = await convertGoodDollarsToDai(gdTotal, ethBlock);
-
-    const balances = {};
-    sdk.util.sumSingleBalance(balances, tokens.DAI, Number(gdInDAI));
-
-    return balances;
-}
-
 // Required until GoodDollar lists on CoinGecko
 async function convertGoodDollarsToDai(gdAmount, ethBlock) {
     const gdPriceInDAI = (await sdk.api.abi.call({
@@ -116,6 +92,5 @@ module.exports = {
     fuse: {
         staking: fuseStaking,
         tvl: () => ({}),
-        treasury: fuseTreasury
     },
 }
