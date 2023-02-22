@@ -62,14 +62,14 @@ module.exports = {
         '0x7F1245B61Ba0b7D4C41f28cAc9F8637fc6Bec9E4', // v1 pool with Polygon
       ]
     },
-    {
-      id: 2001,
-      name: 'milkomeda',
-      stable: '0x42110A5133F91B49E32B671Db86E2C44Edc13832', // sUSDC
-      holders: [
-        '0x3Cd5343546837B958a70B82E3F9a0E857d0b5fea', // portal v1
-      ]
-    },
+    // {
+    //   id: 2001,
+    //   name: 'milkomeda',
+    //   stable: '0x42110A5133F91B49E32B671Db86E2C44Edc13832', // sUSDC
+    //   holders: [
+    //     '0x3Cd5343546837B958a70B82E3F9a0E857d0b5fea', // portal v1
+    //   ]
+    // },
     {
       id: 288,
       name: 'boba',
@@ -95,6 +95,14 @@ module.exports = {
       stable: '0x9F98f9F312D23d078061962837042b8918e6aff2', // USDC
       holders: [
         '0x6148FD6C649866596C3d8a971fC313E5eCE84882', // pool v2
+      ]
+    },
+    {
+      id: 2222,
+      name: 'kava',
+      stable: '0xfA9343C3897324496A05fC75abeD6bAC29f8A40f', // USDC
+      holders: [
+        '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
       ]
     },
   ]

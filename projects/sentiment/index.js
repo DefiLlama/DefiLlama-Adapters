@@ -115,5 +115,5 @@ async function borrowed(timestamp, ethBlock, { arbitrum: block }) {
 
 module.exports = {
   misrepresentedTokens: true,
-  arbitrum: { tvl, borrowed },
+  arbitrum: { tvl },
 };

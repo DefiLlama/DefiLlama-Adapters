@@ -37,13 +37,11 @@
     "0x0f83287ff768d1c1e17a42f44d644d7f22e8ee1d",
     "0x9fcf418b971134625cdf38448b949c8640971671",
     "0x8751d4196027d4e6da63716fa7786b5174f04c15",
-    "0xf56b164efd3cfc02ba739b719b6526a6fa1ca32a",
     "0xb1c9bc94acd2fae6aabf4ffae4429b93512a81d2",
     "0x5067006f830224960fb419d7f25a3a53e9919bb0",
     "0x2e9d63788249371f1dfc918a52f8d799f4a38c94",
     "0x6b3595068778dd592e39a122f4f5a5cf09c90fe2",
-    "0x36f8d0d0573ae92326827c4a82fe4ce4c244cab6",
-    "0xcf0c122c6b73ff809c693db761e7baebe62b6a2e"
+    "0x36f8d0d0573ae92326827c4a82fe4ce4c244cab6"
   ],
   "fantom": [
     "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
@@ -158,8 +156,7 @@
     "0x772f317ec695ce20290b56466b3f48501ba81352",
     "0x3f847b01d4d498a293e3197b186356039ecd737f",
     "0xe85afccdafbe7f2b096f268e31cce3da8da2990a",
-    "0xbb1aa6e59e5163d8722a122cd66eba614b59df0d",
-    "0xfb5b838b6cfeedc2873ab27866079ac55363d37e"
+    "0xbb1aa6e59e5163d8722a122cd66eba614b59df0d"
   ],
   "polygon": [
     "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
@@ -183,7 +180,6 @@
     "0x6d3cc56dfc016151ee2613bdde0e03af9ba885cc",
     "0xe4f7761b541668f88d04fe9f2e9df10ca613aef7",
     "0x81a123f10c78216d32f8655eb1a88b5e9a3e9f2f",
-    "0xaf12f8ec3f8c711d15434b63f9d346224c1c4666",
     "0xc5b57e9a1e7914fda753a88f24e5703e617ee50c",
     "0xf826a91e8de52bc1baf40d88203e572dc2551aa3",
     "0x28cead9e4ff96806c79f4189ef28fc61418e2216",
@@ -303,6 +299,7 @@
   "arbitrum": [
     "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
     "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+    "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1",
     "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
     "0xf97f4df75117a78c1a5a0dbb814af92458539fb4",
     "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
@@ -692,9 +689,16 @@
     "uluna",
     "terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26"
   ],
+  "terra": [
+    "uluna",
+    "uusd"
+  ],
   "crescent": [
     "ubcre",
     "ucre"
+  ],
+  "orai": [
+    "orai"
   ],
   "juno": [
     "ujuno"
@@ -1085,6 +1089,9 @@
   ],
   "vision": [
     "0x1db6cdc620388a0b6046b20cd59503a0839adcff",
+    "0x4dE4B92C12dD4584873e72447573382C41da5597",
+    "0x9261Bb697FE632dd4746c78406E955123085Bf4C",
+    "0xf6515Ce2ab3482C84Daaef961793bdFa3266b8ad",
     "0x79ffbc4fff98b821d59dbd7b33f91a2783006b6f"
   ],
   "kava": [
@@ -1115,6 +1122,7 @@
   ],
   "meter": [
     "0x5729cb3716a315d0bde3b5e489163bf8b9659436",
+    "0x228ebbee999c6a7ad74a6130e81b12f9fe237ba3",
     "0x160361ce13ec33c993b5cca8f62b6864943eb083",
     "0xd86e243fc0007e6226b07c9a50c9d70d78299eb5",
     "0x6abaedab0ba368f1df52d857f24154cc76c8c972",
@@ -1235,6 +1243,13 @@
   "omax": [
     "0xfebabc6a9b2ec46d6357879b8bf39b593f11a5b9"
   ],
+  "wemix": [
+    "0x7d72b22a74a216af4a002a1095c8c707d6ec1c5f",
+    "0x8e81fcc2d4a3baa0ee9044e0d7e36f59c9bba9c1",
+    "0x9b377bd7db130e8bd2f3641e0e161cb613da93de",
+    "0x461d52769884ca6235b685ef2040f47d30c94eb5",
+    "0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d"
+  ],
   "tlchain": [
     "0x422b6cdf97c750a0edcddc39c88f25379e59e96e"
   ],
@@ -1310,6 +1325,7 @@
   ],
   "ton": [
     "0x0000000000000000000000000000000000000000",
+    "EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c",
     "Ef8zMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzM0vF",
     "EQDQoc5M3Bh8eWFephi9bClhevelbZZvWhkqdo80XuY_0qXv",
     "EQAW42HutyDem98Be1f27PoXobghh81umTQ-cGgaKVmRLS7-",

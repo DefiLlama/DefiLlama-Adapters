@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
-const { sumTokensExport, sumTokens2 } = require("../helper/unwrapLPs.js");
-const { tokensBare: tokens } = require("../helper/tokenMapping");
+const { sumTokens2 } = require("../helper/unwrapLPs.js");
 const abi = require("./abi.json");
 
 const { getV2CAs, getV1CAs } = require("./events");
@@ -28,7 +27,9 @@ const getPoolAddrs = async (block) => {
 
   const { output: poolsUnderlying } = await sdk.api.abi.multiCall({
     abi: abi["underlyingToken"],
-    calls: pools.map((pool) => ({ target: pool })),
+    calls: pools
+      .filter((p) => p != "0xB8cf3Ed326bB0E51454361Fb37E9E8df6DC5C286") // RM wstETH pool
+      .map((pool) => ({ target: pool })),
     block,
   });
   const tokensAndOwners = poolsUnderlying.map((t) => [
@@ -36,20 +37,7 @@ const getPoolAddrs = async (block) => {
     t.input.target,
   ]);
 
-  // Fetch balanes of tokens available to fetch
-  const { output: totalAvailable } = await sdk.api.abi.multiCall({
-    abi: abi["availableLiquidity"],
-    calls: pools.map((pool) => ({ target: pool })),
-    block,
-  });
-
-  // sumTokens2 reads balances of the pools
   let poolBalances = {};
-  // Init poolBalances with the availableLiquidity
-  // totalAvailable.map((i) => {
-  //   const pool = tokensAndOwners.find((arr) => arr[1] === i.input.target);
-  //   poolBalances[pool[0]] = i.output;
-  // });
   return { tokensAndOwners, poolBalances };
 };
 
@@ -136,16 +124,6 @@ const tvl = async (timestamp, block) => {
 module.exports = {
   ethereum: {
     tvl,
-    treasury: sumTokensExport({
-      owner: "0x7b065Fcb0760dF0CEA8CFd144e08554F3CeA73D1",
-      tokens: [
-        tokens.weth,
-        tokens.wbtc,
-        tokens.usdc,
-        tokens.dai,
-        "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0", // wseth
-      ],
-    }),
   },
   methodology: `Retrieves the tokens in each Gearbox pool (WETH/DAI/WBTC/USDC/wstETH) & value of all Credit Accounts (V1 & V2) denominated in the underlying token.`,
   misrepresentedTokens: true,

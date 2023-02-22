@@ -1,18 +1,44 @@
 const { GraphQLClient, } = require('graphql-request')
+const { sumTokensExport, nullAddress } = require("../helper/sumTokens");
 
-async function tvl() {
+async function _tvl() {
     var endpoint = 'https://api.liqwiddev.net/graphql'
     var graphQLClient = new GraphQLClient(endpoint)
 
-    var query = ` query GetMarkets {\n  markets {\n    ...MarketFragment\n    __typename\n  }\n}\n\nfragment MarketFragment on Market {\n  asset {\n    icon\n    marketId\n    name\n    __typename\n  }\n  market {\n    ...MarketInfoFragment\n    __typename\n  }\n  marketParams {\n    ...MarketParamsDatumFragment\n    __typename\n  }\n  marketId\n  maxLoanToValue\n  borrowApy\n  supplyApy\n  totalSupply\n  supplyLqDistributionApy\n  borrowLqDistributionApy\n  exchangeRate\n  qTokenId\n  qTokenPolicyId\n  minValue\n  compoundsInAYear\n  __typename\n}\n\nfragment MarketInfoFragment on MarketInfo {\n  params {\n    multiSigStSymbol\n    marketId\n    oracleTokenClass {\n      ...AssetClassFragment\n      __typename\n    }\n    underlyingClass {\n      ...FixedTokenFragment\n      __typename\n    }\n    uniqRef {\n      ...UniqueRefFragment\n      __typename\n    }\n    __typename\n  }\n  scripts {\n    action {\n      ...ScriptPlutusV2Fragment\n      __typename\n    }\n    actionToken {\n      ...ScriptMintingPolicyFragment\n      __typename\n    }\n    batch {\n      ...ScriptPlutusV2Fragment\n      __typename\n    }\n    batchFinal {\n      ...ScriptPlutusV2Fragment\n      __typename\n    }\n    batchToken {\n      ...ScriptMintingPolicyFragment\n      __typename\n    }\n    borrowToken {\n      ...ScriptMintingPolicyFragment\n      __typename\n    }\n    collateralParamsToken {\n      ...ScriptMintingPolicyFragment\n      __typename\n    }\n    liquidation {\n      ...ScriptMintingPolicyFragment\n      __typename\n    }\n    loan {\n      ...ScriptPlutusV2Fragment\n      __typename\n    }\n    marketParamsToken {\n      ...ScriptMintingPolicyFragment\n      __typename\n    }\n    marketState {\n      ...ScriptPlutusV2Fragment\n      __typename\n    }\n    marketStateToken {\n      ...ScriptMintingPolicyFragment\n      __typename\n    }\n    qToken {\n      ...ScriptMintingPolicyFragment\n      __typename\n    }\n    __typename\n  }\n  __typename\n}\n\nfragment AssetClassFragment on AssetClass {\n  name\n  symbol\n  __typename\n}\n\nfragment FixedTokenFragment on FixedToken {\n  value0 {\n    ...AssetClassFragment\n    __typename\n  }\n  __typename\n}\n\nfragment UniqueRefFragment on UniqueRef {\n  index\n  transactionId\n  __typename\n}\n\nfragment ScriptPlutusV2Fragment on ScriptPlutusV2 {\n  script {\n    value0\n    value1 {\n      _empty\n      __typename\n    }\n    __typename\n  }\n  hash {\n    ptr\n    __typename\n  }\n  __typename\n}\n\nfragment ScriptMintingPolicyFragment on ScriptMintingPolicy {\n  script {\n    value0 {\n      value0\n      value1 {\n        _empty\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n  assetClass {\n    ...AssetClassFragment\n    __typename\n  }\n  __typename\n}\n\nfragment MarketParamsDatumFragment on MarketParamsDatum {\n  actionDistribution\n  actionHash {\n    ...ScriptHashFragment\n    __typename\n  }\n  actionStakeCredentials {\n    value0 {\n      ptr\n      __typename\n    }\n    __typename\n  }\n  batchHash {\n    ...ScriptHashFragment\n    __typename\n  }\n  closeFactor0\n  closeFactor1\n  compoundRate\n  dividendsDatum {\n    value0 {\n      value0\n      __typename\n    }\n    __typename\n  }\n  dividendsValidatorHash {\n    ptr\n    __typename\n  }\n  incomeRatio {\n    treasury\n    suppliers\n    reserve\n    dividends\n    __typename\n  }\n  initialQTokenRate\n  interestModel {\n    baseRate\n    utilMultiplier\n    utilMultiplierJump\n    kink\n    __typename\n  }\n  liquidationThreshold0\n  liquidationThreshold1\n  loanValidatorHash {\n    ...ScriptHashFragment\n    __typename\n  }\n  maxBatchTime\n  maxCollateralAssets\n  maxLTV\n  maxLoan\n  maxTimeWidth\n  minBatchSize\n  minBatchTime\n  minValue\n  numActions\n  treasuryDatum {\n    value0 {\n      value0\n      __typename\n    }\n    __typename\n  }\n  treasuryValidatorHash {\n    ptr\n    __typename\n  }\n  __typename\n}\n\nfragment ScriptHashFragment on ScriptHash {\n  ptr\n  __typename\n}    `;
+    var query = ` {
+      markets {
+        totalSupply
+        marketId
+    }
+   } `;
     var results = await graphQLClient.request(query)
-    const adaLocked = parseFloat(results.markets[0].totalSupply) / 10**6
-    return {cardano:adaLocked}
+    return {cardano:results.markets.find(i => i.marketId === 'Ada').totalSupply / 1e6}
 }
 
 module.exports = {
   cardano: {
-    tvl
-  },
-  
-}
+    tvl: sumTokensExport({
+      tokens: [nullAddress],
+      owners: [
+        "addr1x97atw4jlfulpp73agh4hav2nfwlcwcfqcgr9mpucde9vmj3z228hznt0rz2enxfzhtk2270gels0ht9uvf9wmyxs99qsgwdnc",
+        "addr1x97atw4jlfulpp73agh4hav2nfwlcwcfqcgr9mpucde9vmhccartl0f44hvc4vq8n3042epqvqq8cd4g9znpl5kdeypsx0m4jt",
+        "addr1x97atw4jlfulpp73agh4hav2nfwlcwcfqcgr9mpucde9vmh0sfgalgyvgedlnhfl7u2059dkyhp453hm86797rm5qhasum9d4l",
+        "addr1x97atw4jlfulpp73agh4hav2nfwlcwcfqcgr9mpucde9vm43q9zvxe5ehfytyye9m3dq3knvuz2fdnax7lhhjm4vvjgq8wmp5z",
+        "addr1x97atw4jlfulpp73agh4hav2nfwlcwcfqcgr9mpucde9vmjypq27sagqxt4jwt57mdsef3zu65ng4zmzxaa246s97nxsk5pksg",
+        "addr1x97atw4jlfulpp73agh4hav2nfwlcwcfqcgr9mpucde9vmsfpkhcpsthxpprf49lvfy2jhga5mygpfcj4qaypfzkmhnskrm6uv",
+        "addr1x97atw4jlfulpp73agh4hav2nfwlcwcfqcgr9mpucde9vmja0x7l0scsd0wvfm3ljugdpsu4kctwfjyud65xfeht5uyqmfjy8x",
+        "addr1x97atw4jlfulpp73agh4hav2nfwlcwcfqcgr9mpucde9vmk0l2wkhq0pr72jsdrv2kn8v3pqnrt0qykpq9fwr2wn0czsklm7ad",
+        "addr1x97atw4jlfulpp73agh4hav2nfwlcwcfqcgr9mpucde9vmhnschmu7dwefmhkd078735ucq2yh90ylkzxrenz9cy8udsfw6k4m",
+        "addr1x97atw4jlfulpp73agh4hav2nfwlcwcfqcgr9mpucde9vmnupshega3f5ym0freunp0p46rchpthvsyty398fh0msywsxgwa75",
+        "addr1x97atw4jlfulpp73agh4hav2nfwlcwcfqcgr9mpucde9vm3lzwuv27k9keyjpag32pmx9mf63tn77feppvm7d0s5ndnsqdv78z",
+        "addr1x97atw4jlfulpp73agh4hav2nfwlcwcfqcgr9mpucde9vmhwdw2g8sat0hr2pdt2ct27n33z0w6dzsfy684ut24gjfsq2qynek",
+        "addr1x97atw4jlfulpp73agh4hav2nfwlcwcfqcgr9mpucde9vmnys5sq3xea3866499dczkshygljanhepcqjfwyhe3fpads9jkkqh",
+        "addr1x97atw4jlfulpp73agh4hav2nfwlcwcfqcgr9mpucde9vmjs80extwffmz4yagvdxvr6cpd8nm3qne020739j706h3jqgthhnc",
+        "addr1x97atw4jlfulpp73agh4hav2nfwlcwcfqcgr9mpucde9vmk8jkqyfeeuz5m6sfv27g9vav8w83lsaqewjqxnpnpjd9wsr4swv0",
+        "addr1x97atw4jlfulpp73agh4hav2nfwlcwcfqcgr9mpucde9vm3saw6lwmnlk6z0aehzea9nwfvdvang9v42yylt83ym8zqqm5074y",
+        "addr1vxcl9us2s7q68w5k0kx8k5rg6gwhn85qnhxwytm9zeuavcgte4yd6",
+      ]
+    }),
+    methodology: 'Adds up the Ada in the 16 action tokens and batch final token.'
+  }
+};
