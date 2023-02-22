@@ -58,13 +58,6 @@ module.exports = {
       sumTokensExport({ chain, tokens: [TOKENS.USDEX_USDC_LP, TOKENS.DEXSHARE_BNB_LP,], owner: FARM, }),
       farmWDEX_DEXSHARE
     ]),
-    treasury: sumTokensExport({
-      chain, tokens: [
-        TOKENS.DEXIRA_BNB_LP,
-        TOKENS.DEXSHARE_BNB_LP,
-        TOKENS.USDEX_USDC_LP,
-      ], owner: TREASURY,
-    }),
     staking: sumTokensExport({
       chain, tokensAndOwners: [
         [TOKENS.DEXSHARE, REGULATION_STAKING_POOL,],

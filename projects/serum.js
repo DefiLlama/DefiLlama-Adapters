@@ -35,4 +35,7 @@ module.exports = {
   solana: {
     tvl
   },
+  hallmarks: [
+    [1667826000, "FTX/Alameda collapse"],
+  ],
 };
