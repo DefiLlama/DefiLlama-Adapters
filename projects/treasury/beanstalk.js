@@ -12,6 +12,5 @@ module.exports = treasuryExports({
     tokens,
     owners: [sprout, farms],
     ownTokens: [bean],
-    ownTokenOwners: [sprout, farms],
   },
 });

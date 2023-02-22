@@ -19,7 +19,6 @@ module.exports = treasuryExports({
         '0x2e9d63788249371f1DFC918a52f8d799F4a38C94',//TOKE
      ],
     owners: [shaTreasury],
-    ownTokenOwners: [shaTreasury],
     ownTokens: [FOX],
   },
 })

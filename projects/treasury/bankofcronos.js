@@ -16,7 +16,6 @@ module.exports = treasuryExports({
         '0x062E66477Faf219F25D27dCED647BF57C3107d52',//WBTC
      ],
     owners: [teamTreasury],
-    ownTokenOwners: [teamTreasury],
     ownTokens: [BOC, pBOC],
   },
 })
