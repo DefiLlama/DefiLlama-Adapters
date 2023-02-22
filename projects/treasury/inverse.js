@@ -33,7 +33,6 @@ module.exports = treasuryExports({
       "0xAD038Eb671c44b853887A7E32528FaB35dC5D710", // DBR
     ],
     owners: [anchorTreasury, multisig],
-    ownTokenOwners: [anchorTreasury, multisig],
     ownTokens: [
       inv,
       "0x73E02EAAb68a41Ea63bdae9Dbd4b7678827B2352", // Uniswap INV/ETH LP
@@ -48,7 +47,6 @@ module.exports = treasuryExports({
       "0x8aE125E8653821E851F12A49F7765db9a9ce7384", // DOLA
     ],
     owners: [opmultisig],
-    ownTokenOwners: [opmultisig],
     ownTokens: [],
   },
   bsc: {
@@ -59,7 +57,6 @@ module.exports = treasuryExports({
       // "0xfBBF371C9B0B994EebFcC977CEf603F7f31c070D", // veTHE
     ],
     owners: [bnbmultisig],
-    ownTokenOwners: [bnbmultisig],
     ownTokens: [],
   },
 });
