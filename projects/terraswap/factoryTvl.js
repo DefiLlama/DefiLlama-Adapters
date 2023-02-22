@@ -46,7 +46,24 @@ function getFactoryTvl(factory) {
     return transformDexBalances({ chain, data })
   }
 }
+function getMultiFactoryTvl(factories) {
+  return async (_, _1, _2, { chain }) => {
+    let data = [];
+    const promises = factories.map(async factory => {
+      const pairs = (await getAllPairs(factory, chain)).filter(pair => (pair.assets[0].balance && pair.assets[1].balance))
+      data = [...data, ...pairs.map(({ assets }) => ({
+        token0: assets[0].addr,
+        token0Bal: assets[0].balance,
+        token1: assets[1].addr,
+        token1Bal: assets[1].balance,
+      }))];
+    });
+    await Promise.all(promises)
+    return transformDexBalances({ chain, data })
+  }
+}
 
 module.exports = {
-  getFactoryTvl
+  getFactoryTvl,
+  getMultiFactoryTvl
 }

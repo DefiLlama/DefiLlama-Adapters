@@ -14,7 +14,7 @@ const nullAddress = '0x0000000000000000000000000000000000000000'
 // carbon: https://api-insights.carbon.network/info/denom_gecko_map
 // orbit brige: https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList
 
-const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'stargaze', 'umee', 'orai', 'persistence', ]
+const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'stargaze', 'umee', 'orai', 'persistence',]
 const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano',]
 
 const tokens = {
@@ -59,6 +59,8 @@ const ibcMappings = {
   // Sample Code
   // 'ibc/CA1261224952DF089EFD363D8DBB30A8AB6D8CD181E60EE9E68E432F8DE14FE3': { coingeckoId: 'inter-stable-token', decimals: 6, },
   // 'ibc/5A76568E079A31FA12165E4559BA9F1E9D4C97F9C2060B538C84DCD503815E30': { coingeckoId: 'injective-protocol', decimals: 18, },
+  'ibc/9C4DCD21B48231D0BC2AC3D1B74A864746B37E4292694C93C617324250D002FC': { coingeckoId: 'osmosis', decimals: 6 },
+  'ibc/A2E2EEC9057A4A1C2C0A6A4C78B0239118DF5F278830F50B4A6BDD7A66506B78': { coingeckoId: 'cosmos', decimals: 6 },
 }
 
 const fixBalancesTokens = {
@@ -69,6 +71,17 @@ const fixBalancesTokens = {
   //   '0x52484e1ab2e2b22420a25c20fa49e173a26202cd': { coingeckoId: "tether", decimals: 6 },
   //   '0x750ba8b76187092b0d1e87e28daaf484d1b5273b': { coingeckoId: "usd-coin", decimals: 6 },
   // },
+  orai: {
+    'orai': { coingeckoId: "oraichain-token", decimals: 6 },
+    'orai1gzvndtzceqwfymu2kqhta2jn6gmzxvzqwdgvjw': { coingeckoId: "milky-token", decimals: 6 },
+    'orai1nd4r053e3kgedgld2ymen8l9yrw8xpjyaal7j5': { coingeckoId: "kawaii-islands", decimals: 6 },
+    'orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh': { coingeckoId: "tether", decimals: 6 },
+    'orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg': { coingeckoId: "airight", decimals: 6 },
+    'orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge': { coingeckoId: "oraidex", decimals: 6 },
+    'ibc:9C4DCD21B48231D0BC2AC3D1B74A864746B37E4292694C93C617324250D002FC': { coingeckoId: "osmosis", decimals: 6 },
+    'ibc:A2E2EEC9057A4A1C2C0A6A4C78B0239118DF5F278830F50B4A6BDD7A66506B78': { coingeckoId: "cosmos", decimals: 6 },
+    'orai1065qe48g7aemju045aeyprflytemx7kecxkf5m7u5h5mphd0qlcs47pclp': { coingeckoId: "scorai", decimals: 6 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
