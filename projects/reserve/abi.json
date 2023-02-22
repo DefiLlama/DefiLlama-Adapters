@@ -1,0 +1,12 @@
+{
+  "deployer": [
+    "event RTokenCreated(address indexed main, address indexed rToken, address stRSR, address indexed owner)"
+  ],
+  "main": [
+    "function backingManager() view returns (address)",
+    "function basketHandler() view returns (address)"
+  ],
+  "basketHandler": [
+    "function quote(uint192, uint8) view returns (address[], uint256[])"
+  ]
+}
