@@ -1,27 +1,25 @@
-const sdk = require('@defillama/sdk');
-const { get } = require('../helper/http')
+const { sumTokens2 } = require('../helper/solana')
+const sdk = require('@defillama/sdk')
 
-const MINT_TOKEN_CONTRACT = '0x4bD70556ae3F8a6eC6C4080A0C327B24325438f3'
-const endpoint = "https://api.hxro.com/stats";
+async function staking() {
+  const esHRXOKey = 'solana:CPwspzHc4bKtBQGNRhpRG9v3qRiPLWP28GrfZepwmBSz'
+  const balances = await sumTokens2({
+    tokenAccounts: [
+      '6kU9EA8ApkD3eCYjoR3e8MkJzvjcVb8nTFUQhGKMjA7r',
+      'DB8v2eyqQXueoSLYNFoxoBv1DFr7XuhMLtwPUEcrM5KP',
+    ]
+  })
 
-async function tvl(_, _1, _2, { api }) {
-    const [stats] = await Promise.all([get(endpoint)]);
+  if (balances[esHRXOKey]) {
+      sdk.util.sumSingleBalance(balances, 'HxhWkVpk5NS4Ltg5nij2G671CKXFRKPK8vy271Ub4uEK', balances[esHRXOKey], 'solana')
+      delete balances[esHRXOKey]
+  }
 
-    let balances = { }
-
-    await sdk.util.sumSingleBalance(balances, MINT_TOKEN_CONTRACT, stats['total_hxro_staked'] * Math.pow(10, 18))
-
-  return balances;
-
+  return balances
 }
 
 module.exports = {
-    timetravel: false,
-    solana: {
-        tvl: () => ({}),
-        staking: tvl,
-    },
-    hallmarks:[
-        [1667865600, "FTX collapse"]
-    ]
-};
+  solana: {
+    tvl: () => 0, staking,
+  }
+}
