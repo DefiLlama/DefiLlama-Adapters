@@ -8,6 +8,7 @@ const abi = require("./abi.json");
 
 const vault = "0xaedcfcdd80573c2a312d15d6bb9d921a01e4fb0f";
 const deployerAddress = "0xFd6CC4F251eaE6d02f9F7B41D1e80464D3d2F377";
+const rsr = "0x320623b8E4fF03373931769A31Fc52A4E78B5d70";
 
 async function tvl(_time, block) {
   // First section is for RSV which will soon be deprecated
@@ -62,9 +63,14 @@ async function tvl(_time, block) {
         abi["basketHandler"],
         providers["ethereum"]
       );
+
+      // stRSR contract holds staked RSR
+      const stRSR = await main.stRSR();
+
+      // basketTokens[0] is the tokens
       const basketTokens = await basketHandler.quote(0, 0);
       return {
-        owners: [rToken.rToken, backingManagerAddr],
+        owners: [rToken.rToken, backingManagerAddr, stRSR],
         tokens: basketTokens[0],
       };
     })
@@ -77,7 +83,7 @@ async function tvl(_time, block) {
         tokens: acc.tokens.concat(cur.tokens),
       };
     },
-    { owners: [], tokens: [] }
+    { owners: [], tokens: [rsr] }
   );
 
   const rTokenSums = await sumTokens2({
