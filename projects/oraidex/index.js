@@ -6,7 +6,7 @@ module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
   methodology: "Liquidity on the DEX",
-  orai: {
+  oraichain: {
     tvl: sdk.util.sumChainTvls(factories.map(getFactoryTvl))
   },
 }

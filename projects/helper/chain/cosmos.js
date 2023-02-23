@@ -18,7 +18,7 @@ const endPoints = {
   terra: 'https://columbus-lcd.terra.dev',
   terra2: 'https://phoenix-lcd.terra.dev',
   umee: 'https://api.mainnet.network.umee.cc',
-  orai: 'https://lcd.orai.io',
+  oraichain: 'https://lcd.orai.io',
   juno: 'https://lcd-juno.cosmostation.io',
 }
 
