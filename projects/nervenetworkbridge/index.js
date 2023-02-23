@@ -2,6 +2,9 @@ const { sumTokens2} = require('../helper/unwrapLPs')
 const { getTokenBalance, getTrxBalance } = require('../helper/chain/tron');
 const sdk = require("@defillama/sdk");
 const { getConfig } = require('../helper/cache')
+const { get } = require('../helper/http')
+const { BigNumber } = require("bignumber.js");
+
 
 const getBridgeContract = {
     'ethereum':'0xC707E0854DA2d72c90A7453F8dc224Dd937d7E82',
@@ -65,7 +68,51 @@ module.exports = {
   methodology: "Assets staked in the pool and trading contracts",
   tron: {
     tvl: tronTvl
-  }
+  },
+  nuls: {
+    tvl: async () => {
+      const api = 'https://public.nerve.network/asset/nuls'
+      const nulsOnNerve = (await get(api)).total;
+      const nulsOnEth = (
+        await sdk.api.abi.call({
+          target: '0xa2791BdF2D5055Cda4d46EC17f9F429568275047',
+          abi: 'erc20:totalSupply',
+          block: 'latest',
+          chain: 'ethereum'
+        })
+      ).output;
+      const nulsOnBSC = (
+        await sdk.api.abi.call({
+          target: '0x8CD6e29d3686d24d3C2018CEe54621eA0f89313B',
+          abi: 'erc20:totalSupply',
+          block: 'latest',
+          chain: 'bsc'
+        })
+      ).output;
+      const nulsOnOKC = (
+        await sdk.api.abi.call({
+          target: '0x8cd6e29d3686d24d3c2018cee54621ea0f89313b',
+          abi: 'erc20:totalSupply',
+          block: 'latest',
+          chain: 'okexchain'
+        })
+      ).output;
+      const nulsOnHeco = (
+        await sdk.api.abi.call({
+          target: '0xd938e45680da19ad36646ae8d4c671b2b1270f39',
+          abi: 'erc20:totalSupply',
+          block: 'latest',
+          chain: 'heco'
+        })
+      ).output;
+      const all = new BigNumber(nulsOnNerve)
+        .plus(nulsOnEth).plus(nulsOnBSC)
+        .plus(nulsOnOKC).plus(nulsOnHeco);
+      return {
+        'nuls': all.shiftedBy(-8).toFixed()
+      }
+    }
+  },
 }
 for (const network of Object.keys(getBridgeContract)) {
   module.exports[network] = { tvl };
