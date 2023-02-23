@@ -19,7 +19,7 @@ async function getVaultManagersFromAPI(chain) {
     optimism: 10,
     arbitrum: 42161,
     fantom: 250,
-    avalanche: 43114,
+    avax: 43114,
   };
   let chainId = chainIds[chain];
   let calls = [];
@@ -103,7 +103,7 @@ module.exports = {
   methodology: `TVL is retrieved on-chain by querying the total assets managed by the Core module, and the balances of the vaultManagers of the Borrowing module.`,
 };
 
-["ethereum", "polygon", "optimism", "arbitrum", "avalanche"].forEach(
+["ethereum", "polygon", "optimism", "arbitrum", "avax"].forEach(
   (chain) => {
     if (!module.exports[chain]) module.exports[chain] = {};
     module.exports[chain].tvl = async (_, _b, { [chain]: block }) =>
