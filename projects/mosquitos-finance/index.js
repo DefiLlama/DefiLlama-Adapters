@@ -16,7 +16,7 @@ async function getLiquidSwapPools() {
     if (resource.type.includes(poolStr)) {
       const index = resource.type.indexOf(poolStr) + poolStr.length + 1
       const key = resource.type.substring(index, resource.type.length - 1)
-      const [coinX, coinY, ] = key.split(', ')
+      const [coinX, coinY,] = key.split(', ')
       if (pools[key]) {
         pools[key].reserveX = resource.data.coin_x_reserve.value
         pools[key].reserveY = resource.data.coin_y_reserve.value
@@ -30,7 +30,7 @@ async function getLiquidSwapPools() {
       }
     } else if (resource.type.includes(poolCoinInfoStr)) {
       const key = resource.type.substring(poolCoinInfoStr.length + 1, resource.type.length - 2)
-      const [coinX, coinY, ] = key.split(', ')
+      const [coinX, coinY,] = key.split(', ')
       if (pools[key]) {
         pools[key].lpSupply = resource.data.supply.vec[0].integer.vec[0].value
       } else {
@@ -83,11 +83,13 @@ function calculateFarmTokens(farms) {
     const balanceX = share.multipliedBy(reserveX).toFixed(0)
     const balanceY = share.multipliedBy(reserveY).toFixed(0)
 
-    if (coreTokens.includes(coinX)) {
+    if (coreTokens.includes(coinX) && coreTokens.includes(coinY)) {
       sdk.util.sumSingleBalance(balances, coinX, balanceX)
-    }
-    if (coreTokens.includes(coinY)) {
       sdk.util.sumSingleBalance(balances, coinY, balanceY)
+    } if (coreTokens.includes(coinX)) {
+      sdk.util.sumSingleBalance(balances, coinX, balanceX * 2)
+    } else if (coreTokens.includes(coinY)) {
+      sdk.util.sumSingleBalance(balances, coinY, balanceY * 2)
     }
   })
 
@@ -106,6 +108,6 @@ async function tvl() {
 module.exports = {
   timetravel: false,
   aptos: {
-      tvl,
+    tvl,
   }
 }
