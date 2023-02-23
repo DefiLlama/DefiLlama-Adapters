@@ -11,10 +11,9 @@ async function staking() {
   })
 
   if (balances[esHRXOKey]) {
-      sdk.util.sumSingleBalance(balances, 'HxhWkVpk5NS4Ltg5nij2G671CKXFRKPK8vy271Ub4uEK', balances[esHRXOKey], 'solana')
-      delete balances[esHRXOKey]
+    sdk.util.sumSingleBalance(balances, 'HxhWkVpk5NS4Ltg5nij2G671CKXFRKPK8vy271Ub4uEK', balances[esHRXOKey], 'solana')
+    delete balances[esHRXOKey]
   }
-
   return balances
 }
 
