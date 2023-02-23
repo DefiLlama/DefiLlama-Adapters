@@ -22,6 +22,10 @@ const CONTRACTS = {
     RAIL: '0x92A9C92C215092720C731c96D4Ff508c831a714f',
     PROXY: '0x19B620929f97b7b990801496c3b361CA5dEf8C71',
   },
+  
+  arbitrum: {
+    PROXY: '0xFA7093CDD9EE6932B4eb2c9e1cde7CE00B1FA4b9',
+  },
 };
 const blackedlistedTokens = [
   '0x2e14949ce0133ccfd4c0cbe707ba878015a7a40c',
