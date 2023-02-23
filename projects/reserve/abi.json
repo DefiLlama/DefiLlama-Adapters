@@ -4,7 +4,8 @@
   ],
   "main": [
     "function backingManager() view returns (address)",
-    "function basketHandler() view returns (address)"
+    "function basketHandler() view returns (address)",
+    "function stRSR() view returns (address)"
   ],
   "basketHandler": [
     "function quote(uint192, uint8) view returns (address[], uint256[])"
