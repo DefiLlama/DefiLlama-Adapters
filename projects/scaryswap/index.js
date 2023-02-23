@@ -9,7 +9,7 @@ const chain = "fantom";
 async function staking(timestamp, block, chainBlocks) {
   let balances = {};
 
-  pools.forEach(async (pool) => {
+  for(let pool of pools) {
     const rewardToken = await sdk.api.abi.call({
       abi: poolAbi.rewardsToken,
       target: pool,
@@ -24,9 +24,9 @@ async function staking(timestamp, block, chainBlocks) {
     })
 
     sdk.util.sumSingleBalance(balances,`${chain}:${rewardToken.output}`, balance.output);
-  });
+  }
 
-  farms.forEach(async farm => {
+  for(let farm of farms) {
     const token = farm.token;
     const balance = await sdk.api.abi.call({
         abi: tokenAbi.balanceOf,
@@ -36,7 +36,7 @@ async function staking(timestamp, block, chainBlocks) {
     })
 
     sdk.util.sumSingleBalance(balances,`${chain}:${token}`, balance.output);
-  })
+  }
 
   return balances;
 }
