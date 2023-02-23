@@ -12,6 +12,9 @@ const assetToAddressMapping = require('./mappings/assetToAddressMapping.json')
 
 const USDC_POOL_TUP_CONTRACT = '0x2323dAC85C6Ab9bd6a8B5Fb75B0581E31232d12b';
 const WAVAX_POOL_TUP_CONTRACT = '0xD26E504fc642B96751fD55D3E68AF295806542f5';
+const BTC_POOL_TUP_CONTRACT = '0x475589b0Ed87591A893Df42EC6076d2499bB63d0';
+const ETH_POOL_TUP_CONTRACT = '0xD7fEB276ba254cD9b34804A986CE9a8C3E359148';
+
 const SMART_LOANS_FACTORY_TUP = '0x3Ea9D480295A73fd2aF95b4D96c2afF88b21B03D';
 const VF_MAINSTAKING_CONTRACT = "0x8B3d9F0017FA369cD8C164D0Cc078bf4cA588aE5";
 
@@ -27,6 +30,8 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
   const tokensAndOwners = [
     [assetToAddressMapping.USDC, USDC_POOL_TUP_CONTRACT],
     [assetToAddressMapping.AVAX, WAVAX_POOL_TUP_CONTRACT],
+    [assetToAddressMapping.BTC, BTC_POOL_TUP_CONTRACT],
+    [assetToAddressMapping.ETH, ETH_POOL_TUP_CONTRACT],
   ]
 
   const accounts = logs.map(i => `0x${i.topics[1].slice(26)}`)
