@@ -17,7 +17,10 @@ async function tvl(_, _1, _2, { api }) {
 
 module.exports = {
     timetravel: false,
-    solana: {tvl, },
+    solana: {
+        tvl: () => ({}),
+        staking: tvl,
+    },
     hallmarks:[
         [1667865600, "FTX collapse"]
     ]
