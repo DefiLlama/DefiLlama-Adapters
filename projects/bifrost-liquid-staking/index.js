@@ -3,7 +3,7 @@ const { nullAddress } = require('../helper/unwrapLPs')
 
 module.exports = {
 	timetravel: false,
-	...getExports("bifrost-staking", ['bifrost']),
+	...getExports("bifrost-liquid-staking", ['bifrost']),
 	ethereum: {
 		tvl: async (_, _1, _2, { api }) => {
 			return  {

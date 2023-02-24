@@ -2,7 +2,7 @@ const { ApiPromise, WsProvider } = require("@polkadot/api");
 const BigNumber = require("bignumber.js");
 const sdk = require("@defillama/sdk")
 
-// node test.js projects/bifrost-staking/api.js
+// node test.js projects/bifrost-liquid-staking/api.js
 
 function formatTokenAmount(amount, tokenSymbol) {
   let decimals = 12;
