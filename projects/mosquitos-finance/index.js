@@ -8,6 +8,9 @@ const poolStr = 'liquidity_pool::LiquidityPool'
 const farmStr = 'MasterChefV1::PoolInfo'
 const coinInfoStr = '0x1::coin::CoinInfo'
 const poolCoinInfoStr = `${coinInfoStr}<0x5a97986a9d031c4567e15b797be516910cfcb4156312482efc6a19c0a30c948::lp_coin::LP`
+const suckrAndAPTPairKey = '0x4db735a9d57f0ed393e44638540efc8e2ef2dccca3bd30c29bd09353b6285832::MosquitoCoin::SUCKR, 0x1::aptos_coin::AptosCoin, 0x190d44266241744264b964a37b8f09863167a12d3e70cda39376cfb4e3561e12::curves::Uncorrelated'
+
+let stakedSUCKR, suckrAddr
 
 async function getLiquidSwapPools() {
   const pools = {}
@@ -68,6 +71,9 @@ async function getMasterChefPools(pools) {
             lpAmount: new BigNumber(resource.data.total_share)
           })
         }
+      } else {
+        suckrAddr = lpKey
+        stakedSUCKR = new BigNumber(resource.data.total_share)
       }
     }
   })
@@ -75,7 +81,7 @@ async function getMasterChefPools(pools) {
   return farms
 }
 
-function calculateFarmTokens(farms) {
+function calculateFarmTokens(pools, farms) {
   const balances = {}
   farms.forEach((farm) => {
     const { coinX, coinY, reserveX, reserveY, lpAmount, lpSupply } = farm
@@ -93,13 +99,27 @@ function calculateFarmTokens(farms) {
     }
   })
 
+  // SUCKR staking pool tvl
+  if (suckrAddr && pools[suckrAndAPTPairKey]) {
+    const { coinX, coinY, reserveX, reserveY } = pools[suckrAndAPTPairKey]
+    if (coinX == suckrAddr) {
+      const share = stakedSUCKR.div(reserveX)
+      const stakedSUCKRBalanceInAPT = share.multipliedBy(reserveY)
+      sdk.util.sumSingleBalance(balances, coinY, stakedSUCKRBalanceInAPT)
+    } else {
+      const share = stakedSUCKR.div(reserveY)
+      const stakedSUCKRBalanceInAPT = share.multipliedBy(reserveX)
+      sdk.util.sumSingleBalance(balances, coinX, stakedSUCKRBalanceInAPT)
+    }
+  }
+
   return balances
 }
 
 async function tvl() {
   const pools = await getLiquidSwapPools()
   const farms = await getMasterChefPools(pools)
-  const balances = calculateFarmTokens(farms)
+  const balances = calculateFarmTokens(pools, farms)
   const tvl = await transformBalances('aptos', balances)
 
   return tvl
