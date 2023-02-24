@@ -1,44 +1,15 @@
 const { getUniTVL } = require("../helper/unknownTokens");
-const sdk = require("@defillama/sdk");
 const { pools, farms } = require("./contracts.json");
-const tokenAbi  = require("../helper/abis/erc20.json");
 const poolAbi = require("./pool.json");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const chain = "fantom";
 
-async function staking(timestamp, block, chainBlocks) {
-  let balances = {};
-
-  for(let pool of pools) {
-    const rewardToken = await sdk.api.abi.call({
-      abi: poolAbi.rewardsToken,
-      target: pool,
-      chain,
-    });
-
-    const balance = await sdk.api.abi.call({
-        abi: tokenAbi.balanceOf,
-        target: rewardToken.output,
-        params: pool,
-        chain
-    })
-
-    sdk.util.sumSingleBalance(balances,`${chain}:${rewardToken.output}`, balance.output);
-  }
-
-  for(let farm of farms) {
-    const token = farm.token;
-    const balance = await sdk.api.abi.call({
-        abi: tokenAbi.balanceOf,
-        target: token,
-        params: farm.contract,
-        chain
-    })
-
-    sdk.util.sumSingleBalance(balances,`${chain}:${token}`, balance.output);
-  }
-
-  return balances;
+async function staking(timestamp, block, chainBlocks, { api }) {
+  const tokens = await api.multiCall({  abi: poolAbi.rewardsToken, calls: pools }) 
+  const tokensAndOwners = tokens.map((v, i) => [v, pools[i]])
+  farms.forEach(({ token, contract}) => tokensAndOwners.push([token, contract]))
+  return sumTokens2({ api, tokensAndOwners})
 }
 
 module.exports = {
