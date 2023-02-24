@@ -9,5 +9,6 @@
   ],
   "basketHandler": [
     "function quote(uint192, uint8) view returns (address[], uint256[])"
-  ]
+  ],
+  "staticToken": ["function ATOKEN() view returns (address)"]
 }
