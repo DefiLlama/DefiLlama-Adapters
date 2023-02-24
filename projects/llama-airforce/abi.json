@@ -1,0 +1,4 @@
+{
+  "totalUnderlying": "uint256:totalUnderlying",
+  "priceOracle": "uint256:price_oracle"
+}

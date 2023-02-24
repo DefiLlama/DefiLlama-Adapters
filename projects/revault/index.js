@@ -10,9 +10,9 @@ const lpAddresses = [
   '0x0ed7e52944161450477ee417de9cd3a859b14fd0',
   '0x58f876857a02d6762e0101bb5c46a8c1ed44dc16',
   '0x804678fa97d91b974ec2af3c843270886528a9e6'
-];
+]
 
-async function tvl(timestamp, block) {
+async function tvl(timestamp, _, { bsc: block }) {
   const tokenAddresses = Array.from(
     new Set(config.tokens.map((token) => token.address)));
 
@@ -47,8 +47,8 @@ async function tvl(timestamp, block) {
         transform(tokenInfos[i].input.params[0]), 
         tokenInfos[i].output.totalPrincipal
         );
-    };
-  };
+    }
+  }
 
   await unwrapUniswapLPs(
     balances, 
@@ -58,13 +58,10 @@ async function tvl(timestamp, block) {
     transform);
 
 	return balances;
-};
+}
 
 module.exports = {
   misrepresentedTokens: true,
-  name: 'Revault Network',
-  website: 'https://app.revault.network',
-  token: 'REVA',
   start: 1634150000,        // 13th of October, 2021
 	bsc: {
 		tvl,

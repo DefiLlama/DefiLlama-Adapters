@@ -1,4 +1,3 @@
-const sdk = require("@defillama/sdk");
 const evm = require("./evm");
 const solana = require("./solana");
 

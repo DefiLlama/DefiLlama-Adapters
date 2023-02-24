@@ -1,7 +1,6 @@
 const sdk = require("@defillama/sdk");
-const getReserves = require("./helper/abis/getReserves.json");
+const getReserves = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
 const BigNumber = require("bignumber.js");
-const { getBlock } = require("./helper/getBlock");
 
 const CollateralSystemAddress = "0x78D4664408c06F2BeDc4f108f3Fc8f0AB017a0AE";
 
@@ -14,11 +13,11 @@ const tokens = {
 
 async function tvl(timestamp, block, chainBlocks) {
   const balances = {};
-  const moonriverBlock = await getBlock(timestamp, "moonriver", chainBlocks);
+  const moonriverBlock = chainBlocks.moonriver;
 
   const stakedChaos = await sdk.api.abi.call({
     chain: "moonriver",
-    moonriverBlock,
+    block: moonriverBlock,
     target: tokens["CHAOS"],
     params: CollateralSystemAddress,
     abi: "erc20:balanceOf",
@@ -27,7 +26,7 @@ async function tvl(timestamp, block, chainBlocks) {
   // token0: WMOVR. token1: CHAOS
   const movrChaosPoolReserves = await sdk.api.abi.call({
     chain: "moonriver",
-    moonriverBlock,
+    block: moonriverBlock,
     target: MovrChaosPoolAddress,
     params: [],
     abi: getReserves,
@@ -36,7 +35,7 @@ async function tvl(timestamp, block, chainBlocks) {
   // token0: WMOVR. token1: USDC
   const movrUsdcPoolReserves = await sdk.api.abi.call({
     chain: "moonriver",
-    moonriverBlock,
+    block: moonriverBlock,
     target: MovrUsdcPoolAddress,
     params: [],
     abi: getReserves,

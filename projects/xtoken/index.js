@@ -1,5 +1,6 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
+const terminal = require("./terminal");
 const {
   kncAddr,
   xaaveaAddr,
@@ -31,7 +32,10 @@ const {
   inchAddr,
   usdcAddr,
   aaveAddr,
+  usdtAddress,
+  xtkAddress
 } = require("./constants");
+const BigNumber = require('bignumber.js');
 const xu3lps = [
   xu3lpaAddr,
   xu3lpbAddr,
@@ -52,7 +56,7 @@ async function tvl(timestamp, block) {
     })
   ).output
     .map((r) => r.output)
-    .reduce((a, b) => a + parseFloat(b), 0);
+    .reduce((a, b) => a + +b, 0);
   sdk.util.sumSingleBalance(balances, aaveAddr, xaaveTvlRaw);
 
   const xu3lpTvlRaw = (
@@ -63,7 +67,7 @@ async function tvl(timestamp, block) {
     })
   ).output
     .map((r) => r.output)
-    .reduce((a, b) => a + parseFloat(b), 0);
+    .reduce((a, b) => a + +b, 0);
   sdk.util.sumSingleBalance(balances, usdcAddr, xu3lpTvlRaw / 10 ** 12);
 
   const xu3lpdTvlRaw = (
@@ -92,7 +96,7 @@ async function tvl(timestamp, block) {
     })
   ).output
     .map((r) => r.output)
-    .reduce((a, b) => a + parseFloat(b), 0);
+    .reduce((a, b) => a + +b, 0);
   sdk.util.sumSingleBalance(balances, inchAddr, xinchTvlRaw);
 
   const xbntaStakedRaw = (
@@ -128,7 +132,7 @@ async function tvl(timestamp, block) {
     })
   ).output
     .map((r) => r.output)
-    .reduce((a, b) => a + parseFloat(b), 0);
+    .reduce((a, b) => a + +b, 0);
   sdk.util.sumSingleBalance(balances, kncAddr, xkncTvlRaw);
 
   const xalphaaTvlRaw = (
@@ -177,12 +181,37 @@ async function tvl(timestamp, block) {
       xsnxaSusdRaw
   );
 
-  return balances;
-};
+  Object.keys(balances).forEach(key => balances[key] = BigNumber(balances[key]).toFixed(0))
+
+  return terminal.getData("mainnet", block, balances);
+}
+
+async function fetchOptimism() {
+  return terminal.getData("optimism");
+}
+
+async function fetchArbitrum() {
+  return terminal.getData("arbitrum");
+}
+
+async function fetchPolygon() {
+  return terminal.getData("polygon");
+}
 
 module.exports = {
+  doublecounted: true,
+  timetravel: false,
   ethereum:{
-    tvl
+    tvl,
   },
-  methodology: `TVL includes deposits made to the available strategies at xToken Markets.`,
+  arbitrum: {
+    tvl: fetchArbitrum,
+  },
+  optimism: {
+    tvl: fetchOptimism,
+  },
+  polygon: {
+    tvl: fetchPolygon,
+  },
+  methodology: `TVL includes deposits made to xToken Terminal and xToken Market.`,
 };

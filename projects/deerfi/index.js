@@ -49,6 +49,7 @@ const ethTvl = async (timestamp, block) => {
 };
 
 module.exports = {
+  deadFrom: 1648765747,
   misrepresentedTokens: true,
   ethereum: {
     tvl: ethTvl,

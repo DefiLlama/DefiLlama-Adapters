@@ -1,0 +1,4 @@
+{
+  "l1Token": "address:l1Token",
+  "pooledTokens": "function pooledTokens(address) view returns (address lpToken, bool isEnabled, uint32 lastLpFeeUpdate, int256 utilizedReserves, uint256 liquidReserves, uint256 undistributedLpFees)"
+}

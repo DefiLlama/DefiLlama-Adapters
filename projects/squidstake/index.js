@@ -14,19 +14,7 @@ const solWbnbLP = {
   token1: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
 };
 
-const getReserves = {
-  constant: true,
-  inputs: [],
-  name: "getReserves",
-  outputs: [
-    { internalType: "uint112", name: "_reserve0", type: "uint112" },
-    { internalType: "uint112", name: "_reserve1", type: "uint112" },
-    { internalType: "uint32", name: "_blockTimestampLast", type: "uint32" },
-  ],
-  payable: false,
-  stateMutability: "view",
-  type: "function",
-};
+const getReserves = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)';
 
 async function tvl(timestamp, chain, chainBlocks) {
   let balances = {};
@@ -90,5 +78,4 @@ module.exports = {
     tvl,
     pool2: stakingPricedLP(masterchef, squidToken, "bsc", squidBnbLP, "wbnb", true),
   },
-  tvl,
 };

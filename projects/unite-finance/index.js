@@ -1,51 +1,49 @@
-const sdk = require("@defillama/sdk");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 const { staking } = require("../helper/staking");
-const { fixHarmonyBalances } = require("../helper/portedTokens");
+const sdk = require('@defillama/sdk')
 
 const uniteTokenAddress = "0xB4441013EA8aA3a9E35c5ACa2B037e577948C59e";
 const ushareTokenAddress = "0xd0105cff72a89f6ff0bd47e1209bf4bdfb9dea8a";
 const ushareRewardPoolAddress = "0xe3F4E2936F0Ac4104Bd6a58bEbd29e49437710Fe";
 const boardroomAddress = "0x68BeEc29183464e2C80Aa9B362db8b0c0eB826bd";
+const chain = 'harmony'
 
 const OneLPs = [
   "0xa0377f9fd3de5dfefec34ae4807e9f2b9c56d534", // uniteOneLpAddress
   "0x6372d14d29f07173f4e51bb664a4342b4a4da9e8", //ushareOneLpAddress
 ];
 
-async function calcPool2(masterchef, lps, block, chain) {
-  let balances = {};
-  const lpBalances = (
-    await sdk.api.abi.multiCall({
-      calls: lps.map((p) => ({
-        target: p,
-        params: masterchef,
-      })),
-      abi: "erc20:balanceOf",
-      block,
-      chain,
-    })
-  ).output;
-  let lpPositions = [];
-  lpBalances.forEach((p) => {
-    lpPositions.push({
-      balance: p.output,
-      token: p.input.target,
-    });
-  });
-  await unwrapUniswapLPs(
-    balances,
-    lpPositions,
-    block,
-    chain,
-    (addr) => `${chain}:${addr}`
-  );
-  fixHarmonyBalances(balances);
-  return balances;
-}
+const uDexLPs = [
+  "0xeE2208256800398424a45Fe9F135AD0b60DeAE0C", // uniteOneLpAddress
+  "0xe302A970E80094a3abB820Eda275FAC5848b5bdA", //ushareOneLpAddress
+]
+const getReservesABI ='function getReserves() view returns (uint256 _reserve0, uint256 _reserve1)'
 
-async function OnePool2(timestamp, block, chainBlocks) {
-  return await calcPool2(ushareRewardPoolAddress, OneLPs, chainBlocks.harmony, "harmony");
+async function OnePool2(timestamp, _block, { [chain]: block }) {
+  const balances = await sumTokens2({
+    chain, block,
+    owner: ushareRewardPoolAddress,
+    transformAddress: a => `${chain}:${a}`,
+    tokens: OneLPs,
+    resolveLP: true,
+  })
+
+  if (!block || block > 30170257) {
+    const uDexBalances = await sumTokens2({
+      chain, block,
+      owner: ushareRewardPoolAddress,
+      tokens: uDexLPs,
+      resolveLP: true,
+      transformAddress: a => `${chain}:${a}`,
+      abis: {
+        getReservesABI,
+      }
+    })
+
+    Object.entries(uDexBalances).forEach(([key, value]) => sdk.util.sumSingleBalance(balances, key, value))
+  }
+
+  return balances
 }
 
 module.exports = {
@@ -53,6 +51,6 @@ module.exports = {
   harmony: {
     tvl: async () => ({}),
     pool2: OnePool2,
-    staking: staking(boardroomAddress, ushareTokenAddress, "harmony"),
+    staking: staking(boardroomAddress, ushareTokenAddress, chain),
   },
 };

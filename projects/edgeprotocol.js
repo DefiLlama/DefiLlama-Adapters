@@ -1,4 +1,4 @@
-const { request, gql } = require("graphql-request");
+const { queryContract, } = require('./helper/chain/terra')
 
 function getCoinGeckoId(apiId) {
     return {
@@ -10,42 +10,29 @@ function getCoinGeckoId(apiId) {
         'uluna': 'terra-luna',
         'uusd': 'terrausd'
     }[apiId]
-};
-
-const graphUrl = `https://mantle.terra.dev/`
-const query = gql`
-query ($poolQuery: String!) {
-  markets: WasmContractsContractAddressStore(
-    ContractAddress: "terra1pcxwtrxppj9xj7pq3k95wm2zztfr9kwfkcgq0w"
-    QueryMsg: $poolQuery
-  ) {
-    Result
-  },
 }
-`
 
 async function getMarkets() {
-    const { markets: { Result } } = await request(graphUrl, query, { poolQuery: JSON.stringify({ market_lists: {} }) })
-    return Result
+    const res = await queryContract({ contract: 'terra1pcxwtrxppj9xj7pq3k95wm2zztfr9kwfkcgq0w', data:{ market_lists: {} } })
+    return res
 }
-
 async function tvl() {
     const balances = {};
     const markets = await getMarkets()
-    JSON.parse(markets).forEach(m => {
+    markets.forEach(m => {
         balances[getCoinGeckoId(m.underlying)] = (m.total_credit - m.total_insurance) / 10 ** 6;
     });
     return balances;
-};
+}
 
 async function borrowed() {
     const balances = {};
     const markets = await getMarkets()
-    JSON.parse(markets).forEach(m => {
+    markets.forEach(m => {
         balances[getCoinGeckoId(m.underlying)] = m.total_loan / 10 ** 6;
     });
     return balances;
-};
+}
 
 module.exports = {
     timetravel: false,
@@ -54,4 +41,7 @@ module.exports = {
         tvl,
         borrowed
     },
+    hallmarks:[
+    [1651881600, "UST depeg"],
+  ]
 };

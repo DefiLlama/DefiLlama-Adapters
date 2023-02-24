@@ -1,20 +1,13 @@
-const retry = require('async-retry')
-const axios = require("axios");
-const BigNumber = require("bignumber.js");
-
-async function fetch() {
-  let response = await retry(async bail => await axios.get('https://izumi.finance/api/v1/farm/stat/tvl'))
-  let tvl = new BigNumber(response.data.data.tvl).toFixed(2);
-  return tvl;
-}
-
-async function pool2() {
-  let response = await retry(async bail => await axios.get('https://izumi.finance/api/v1/farm/stat/pool2tvl'))
-  let tvl = new BigNumber(response.data.data.tvl).toFixed(2);
-  return tvl;
-}
+const { staking } = require('../helper/staking')
+const { getExports } = require('../helper/heroku-api')
+const indexExports = require('./api')
+const chainKeys = Object.keys(indexExports).filter(chain => typeof indexExports[chain] === 'object' && indexExports[chain].tvl)
 
 module.exports = {
-  fetch,
-  pool2
+  timetravel: false,
+  misrepresentedTokens: true,
+  ...getExports("izumi", chainKeys, ['pool2']),
 }
+
+module.exports.ethereum.staking = staking('0xb56a454d8dac2ad4cb82337887717a2a427fcd00', '0x9ad37205d608b8b219e6a2573f922094cec5c200')
+

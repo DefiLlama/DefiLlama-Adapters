@@ -1,203 +1,18 @@
 const sdk = require("@defillama/sdk");
-const { default: BigNumber } = require("bignumber.js");
-const { staking } = require("../helper/staking");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const { stakings } = require("../helper/staking");
+const { transformBalances } = require('../helper/portedTokens')
 const abi = require("./abi.json");
+const { createIncrementArray } = require('../helper/utils');
+const { sumTokens2, unwrapUniswapV3NFTs } = require('../helper/unwrapLPs');
+const { GraphQLClient, gql } = require('graphql-request');
 
-const ichi = "0x903bEF1736CDdf2A537176cf3C64579C3867A881";
+
+const ichiLegacy = "0x903bEF1736CDdf2A537176cf3C64579C3867A881";
+const ichi = "0x111111517e4929D3dcbdfa7CCe55d30d4B6BC4d6";
 const xIchi = "0x70605a6457B0A8fBf1EEE896911895296eAB467E";
 const tokenFactory = "0xD0092632B9Ac5A7856664eeC1abb6E3403a6A36a";
 const farmContract = "0x275dFE03bc036257Cd0a713EE819Dbd4529739c8";
-
-const angelVaults = [
-  "0xfaeCcee632912c42a7c88c3544885A8D455408FA",
-  "0x779F9BAd1f4B1Ef5198AD9361DBf3791F9e0D596",
-  "0x3A4411a33CfeF8BC01f23ED7518208aA38cca824",
-  "0x98bAd5Ce592DcfE706CC95a1B9dB7008B6D418F8",
-  "0x2a8E09552782563f7A076ccec0Ff39473B91Cd8F"
-]
-
-const hodlVaults = [
-  "0xd3FeD75d934Ab824Ff7FEcd0f8A70f204e61769b",
-  "0xA380EA6BE1C084851aE7846a8F39def17eCf6ED8",
-  "0x82FF3E2eC3bDCa84CF0637402907e26C51d1d676"
-]
-
-const oneTokens = [
-  "0xbb9e5db6f357bb4df35e8b90b37b8a3f33031d86",
-  "0x5047fc5c9d7c49ab22e390d13646a6a3a2476eff",
-  "0xdb0f18081b505a7de20b18ac41856bcb4ba86a1a",
-  "0xca37530e7c5968627be470081d1c993eb1deaf90",
-  "0x78a3b2f1e7eec1073088ea4a193618743f81cef8"
-]
-
-async function getVaultTvl(balances, vaults, block) {
-
-  const tokenCount = (await sdk.api.abi.call({
-    target: tokenFactory,
-    abi: abi["oneTokenCount"],
-    block
-  })).output;
-
-  const tokenAtIndex = (await sdk.api.abi.multiCall({
-    calls: Array.from({ length: Number(tokenCount) }, (_, k) => ({
-      target: tokenFactory,
-      params: k
-    })),
-    abi: abi["oneTokenAtIndex"],
-    block
-  })).output;
-
-  let allOneTokens = []
-  tokenAtIndex.map(p => {
-    allOneTokens.push(p.output.toLowerCase());
-  })
-
-  const token0s = (await sdk.api.abi.multiCall({
-    calls: vaults.map(p => ({
-      target: p
-    })),
-    abi: abi["token0"],
-    block
-  })).output;
-
-  const token1s = (await sdk.api.abi.multiCall({
-    calls: vaults.map(p => ({
-      target: p
-    })),
-    abi: abi["token1"],
-    block
-  })).output;
-
-  const totalAmounts = (await sdk.api.abi.multiCall({
-    calls: vaults.map(p => ({
-      target: p
-    })),
-    abi: abi["getTotalAmounts"],
-    block
-  })).output;
-
-  for (let i = 0; i < vaults.length; i++) {
-    const tokens = [
-      token0s[i].output.toLowerCase(),
-      token1s[i].output.toLowerCase()
-    ]
-
-    const bals = [
-      totalAmounts[i].output[0],
-      totalAmounts[i].output[1]
-    ]
-
-    for (let j = 0; j < 2; j++) {
-      if (allOneTokens.includes(tokens[j])) {
-        break;
-      }
-      sdk.util.sumSingleBalance(balances, tokens[j], bals[j]);
-    }
-  }
-}
-
-async function getTreasuryTvl(balances, tokenFactory, block) {
-  const tokenCount = (await sdk.api.abi.call({
-    target: tokenFactory,
-    abi: abi["oneTokenCount"],
-    block
-  })).output;
-
-  const tokenAtIndex = (await sdk.api.abi.multiCall({
-    calls: Array.from({ length: Number(tokenCount) }, (_, k) => ({
-      target: tokenFactory,
-      params: k
-    })),
-    abi: abi["oneTokenAtIndex"],
-    block
-  })).output;
-
-  for (let i = 0; i < tokenAtIndex.length; i++) {
-    const asset = tokenAtIndex[i];
-    const assetCount = (await sdk.api.abi.call({
-      target: asset.output,
-      abi: abi["assetCount"],
-      block
-    })).output;
-
-    const assetAtIndex = (await sdk.api.abi.multiCall({
-      calls: Array.from({ length: Number(assetCount) }, (_, k) => ({
-        target: asset.output,
-        params: k
-      })),
-      abi: abi["assetAtIndex"],
-      block
-    })).output;
-
-    const assetBalances = (await sdk.api.abi.multiCall({
-      calls: assetAtIndex.map(p => ({
-        target: p.output,
-        params: p.input.target
-      })),
-      abi: "erc20:balanceOf",
-      block
-    })).output;
-
-    assetBalances.forEach(p => {
-      const token = p.input.target.toLowerCase();
-      const balance = p.output;
-
-      if (token === "0xdb0f18081b505a7de20b18ac41856bcb4ba86a1a") {
-        sdk.util.sumSingleBalance(balances, ["wing-finance"], BigNumber(balance).div(1e9).toFixed(0));
-        return;
-      }
-
-      sdk.util.sumSingleBalance(balances, token, balance);
-    })
-  }
-}
-
-async function getDepositTvl(balances, tokenFactory, farmContract, block) {
-  const tokenCount = (await sdk.api.abi.call({
-    target: tokenFactory,
-    abi: abi["oneTokenCount"],
-    block
-  })).output;
-
-  const tokenAtIndex = (await sdk.api.abi.multiCall({
-    calls: Array.from({ length: Number(tokenCount) }, (_, k) => ({
-      target: tokenFactory,
-      params: k
-    })),
-    abi: abi["oneTokenAtIndex"],
-    block
-  })).output;
-
-  const tokenBalances = (await sdk.api.abi.multiCall({
-    calls: tokenAtIndex.map(p => ({
-      target: p.output,
-      params: farmContract
-    })),
-    abi: "erc20:balanceOf",
-    block
-  })).output;
-
-  tokenBalances.forEach(p => {
-    if (unknownOneTokens.includes(p.input.target.toLowerCase())) {
-      sdk.util.sumSingleBalance(balances, "0xdac17f958d2ee523a2206206994597c13d831ec7", BigNumber(p.output).div(1e12).toFixed(0));
-    }
-    else {
-      sdk.util.sumSingleBalance(balances, p.input.target, p.output);
-    }
-  });
-}
-
-async function tvl(timestamp, block) {
-  let balances = {};
-
-  await getTreasuryTvl(balances, tokenFactory, block);
-  await getVaultTvl(balances, angelVaults, block);
-  await getVaultTvl(balances, hodlVaults, block);
-  //await getDepositTvl(balances, tokenFactory, farmContract, block);
-
-  return balances;
-}
+const ichiLending = "0xaFf95ac1b0A78Bd8E4f1a2933E373c66CC89C0Ce";
 
 const unilps = [
   // SLP
@@ -205,7 +20,6 @@ const unilps = [
   // UNI-V2 lP
   "0xd07D430Db20d2D7E0c4C11759256adBCC355B20C"
 ]
-
 const poolWithTokens = [
   // BANCOR
   ["0x4a2F0Ca5E03B2cF81AebD936328CF2085037b63B", ["0x903bEF1736CDdf2A537176cf3C64579C3867A881", "0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C"]],
@@ -215,54 +29,205 @@ const poolWithTokens = [
   ["0x58378f5F8Ca85144ebD8e1E5e2ad95B02D29d2BB", ["0x903bEF1736CDdf2A537176cf3C64579C3867A881", "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"]]
 ]
 
-async function getPoolTvl(balances, poolWithTokens, block) {
-  for (let i = 0; i < poolWithTokens.length; i++) {
-    const pool = poolWithTokens[i][0];
-    const tokens = poolWithTokens[i][1];
-    const poolBalances = (await sdk.api.abi.multiCall({
-      calls: tokens.map(p => ({
-        target: p,
-        params: pool
-      })),
-      abi: "erc20:balanceOf",
-      block
-    })).output;
-    poolBalances.forEach(p => {
-      sdk.util.sumSingleBalance(balances, p.input.target, p.output);
-    })
+const graphUrl = {
+   'ethereum': 'https://api.thegraph.com/subgraphs/name/ichi-org/v1',
+   'polygon': 'https://api.thegraph.com/subgraphs/name/ichi-org/polygon-v1'
+}
+
+const graphQuery = gql`
+query { 
+  ichiVaults {
+    id
+    tokenA
+    tokenB
+  }
+}
+`;
+
+async function getVaultsByGraph(chain = 'ethereum') {
+  const graphQLClient = new GraphQLClient(graphUrl[chain]);
+
+  const data = await graphQLClient.request(graphQuery);
+
+  const vaults = [];
+  data.ichiVaults.forEach( v => vaults.push({address: v.id, tokenA: v.tokenA, tokenB: v.tokenB}));
+  
+  return vaults;
+}
+
+async function vaultBalances(block, chain = 'ethereum', oneTokenList){
+  const vaults = await getVaultsByGraph(chain)
+  
+  const poolsCalls = vaults.map(i => ({ target: i.address }))
+  
+  const { output: vaultBalances } = await sdk.api.abi.multiCall({
+    abi: abi.getTotalAmounts,
+    calls: poolsCalls,
+    chain, block,
+  })
+
+  const balances = {}
+  vaultBalances.forEach((data, i) => {
+    addBalance(vaults[i].tokenA, data.output.total0)
+    addBalance(vaults[i].tokenB, data.output.total1)
+  })
+
+  return balances;
+
+  function addBalance(token, balance) {
+    if (oneTokenList.includes(token.toLowerCase()))
+      return;
+    sdk.util.sumSingleBalance(balances, token, balance)
   }
 }
 
-async function pool2(timestamp, block) {
-  let balances = {};
+const oneFactory = {
+  'ethereum': '0xD0092632B9Ac5A7856664eeC1abb6E3403a6A36a',
+  'polygon': '0x101eB16BdbA37979a771c86e1CAAfbaDbABfc879'
+}
 
-  const unilpBalance = (await sdk.api.abi.multiCall({
-    calls: unilps.map(p => ({
-      target: p,
-      params: farmContract
-    })),
-    abi: "erc20:balanceOf",
-    block
-  })).output;
-
-  let lpPositions = [];
-  unilpBalance.forEach(p => {
-    lpPositions.push({ token: p.input.target, balance: p.output });
+async function oneTokenBalances(block, chain='ethereum') {
+  
+  // get list of all oneTokens in system
+  const { output: oneTokenCount } = await sdk.api.abi.call({
+    target: oneFactory[chain],
+    abi: abi.oneTokenCount,
+    chain, block,
   })
 
-  await unwrapUniswapLPs(balances, lpPositions, block);
-  await getPoolTvl(balances, poolWithTokens, block);
+  const oneTokenParams = createIncrementArray(oneTokenCount).map(i => ({ params: i }))
+  const { output: oneTokens } = await sdk.api.abi.multiCall({
+    target: oneFactory[chain],
+    abi: abi.oneTokenAtIndex,
+    calls: oneTokenParams,
+    chain, block,
+  })
+
+  const oneTokenList = oneTokens.map(i => ( i.output.toLowerCase() ))
+
+  // get list of all tokens in the system
+  const { output: foreignTokenCount } = await sdk.api.abi.call({
+    target: oneFactory[chain],
+    abi: abi.foreignTokenCount,
+    chain, block,
+  })
+
+  const foreignTokenParams = createIncrementArray(foreignTokenCount).map(i => ({ params: i}))
+  const { output: foreignTokens } = await sdk.api.abi.multiCall({
+    target: oneFactory[chain],
+    abi: abi.foreignTokenAtIndex,
+    calls: foreignTokenParams,
+    chain, block,
+  })
+
+  const foreignTokenList = foreignTokens.map(i => (i.output))
+
+  // ICHI is not admited as foreign token to polygon oneToken Factory but it is used to back oneToken treasury 
+  if (chain == 'polygon') {
+    foreignTokenList.push(ichi)
+  }
+
+  // get list of all strategies in the system
+  const { output: moduleCount } = await sdk.api.abi.call({
+    target: oneFactory[chain],
+    abi: abi.moduleCount,
+    chain, block,
+  })
+
+  const strategyParams = createIncrementArray(moduleCount).map(i => ({ params: i}))
+  const { output: moduleAtIndex } = await sdk.api.abi.multiCall({
+    target: oneFactory[chain],
+    abi: abi.moduleAtIndex,
+    calls: strategyParams,
+    chain, block,
+  })
+
+  const modulesList = moduleAtIndex.map(i => ( {params: i.output }))
+
+  const { output: moduleDetails } = await sdk.api.abi.multiCall({
+    target: oneFactory[chain],
+    abi: abi.modules,
+    calls: modulesList,
+    chain, block,
+  })
+  
+  const strategiesList = []
+  moduleDetails.forEach((data, i) => {
+    if (data.output.moduleType == 2) { //modeuleType 2 are strategies
+      strategiesList.push(modulesList[i].params)
+    }
+  })
+
+  // get list of all owners of oneTokens 
+  const ownerCalls =  oneTokens.map(i => ( { target: i.output }))
+  const { output: oneTokenOwners } = await sdk.api.abi.multiCall({
+    abi: abi.owner,
+    calls: ownerCalls,
+    chain, block,
+  })
+
+  const oneTokenOwnersList = oneTokenOwners.map(i => (i.output))
+
+  // create large list of tokens and owners list; 
+  // owners are all onetokens, strategies, and owners of onetokens 
+  // tokens are all tokens in the system but will exclude onetokens in the strategies
+
+  const toa = []
+
+  oneTokenList.forEach( oneToken => foreignTokenList.forEach( foreignToken => toa.push([foreignToken, oneToken])))
+  strategiesList.forEach( strategy => foreignTokenList.forEach( foreignToken => toa.push([foreignToken, strategy])))
+  oneTokenOwnersList.forEach( owner => foreignTokenList.forEach( foreignToken => toa.push([foreignToken, owner])))
+    
+  const balances = await sumTokens2({ tokensAndOwners: toa, block, chain, blacklistedTokens: oneTokenList })
+  
+  const uniV3NFTHolders = [...strategiesList, ...oneTokenOwnersList]
+
+  await unwrapUniswapV3NFTs({ balances, owners: uniV3NFTHolders, chain, block })
+
+  return { balances, oneTokenList };
+}
+
+async function tvl(timestamp, block) {
+
+  const { balances, oneTokenList } = await oneTokenBalances(block)
+
+  const vBalances = await vaultBalances(block, undefined, oneTokenList)
+  
+  for(var token in vBalances)
+    sdk.util.sumSingleBalance(balances, token, vBalances[token])
+
+  return balances
+}
+
+async function polygonTvl(_, _b, { polygon: block }){
+  const chain = 'polygon'
+
+  const { balances, oneTokenList } = await oneTokenBalances(block, chain)
+
+  const vBalances = await vaultBalances(block, chain, oneTokenList)
+  const vBalancesTransformed = await transformBalances(chain,vBalances)
+  for(var token in vBalancesTransformed)
+    sdk.util.sumSingleBalance(balances, token, vBalancesTransformed[token])
 
   return balances;
 }
 
 module.exports = {
-  methodology: "Tokens deposited to mint oneTokens, Angel and HODL vaults excluding oneTokens",
+  methodology: "Tokens deposited to mint oneTokens excluding oneTokens , Vault deposits",
   misrepresentedTokens: true,
-  startBlock: 11260000,
   ethereum: {
     tvl,
-    pool2,
-    staking: staking(xIchi, ichi)
+    pool2: async (_, block) => {
+      const toa = [
+        ['0x9cd028b1287803250b1e226f0180eb725428d069', farmContract],
+        ['0xd07d430db20d2d7e0c4c11759256adbcc355b20c', farmContract],
+      ]
+      poolWithTokens.forEach(([o, tokens]) => tokens.forEach(t => toa.push([t, o])))
+      return sumTokens2({ tokensAndOwners: toa, block, resolveLP: true, })
+    },
+    staking: stakings([xIchi, ichiLending] , ichiLegacy)
+  },
+  polygon: {
+    tvl: polygonTvl
   }
-}
+} // node test.js projects/ichifarm/index.js

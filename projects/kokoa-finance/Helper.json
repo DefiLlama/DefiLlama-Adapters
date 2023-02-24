@@ -1,0 +1,9 @@
+{
+  "address": "0x2b170005ADA0e616E78A7fa93ea4473c03A98aa0",
+  "abi":{
+    "getCollateralTVL": "uint256[]:getCollateralTVL",
+    "getSkokoaTVL": "uint256:getSkokoaTVL",
+    "getKlayswapLpFarmTVL": "function getKlayswapLpFarmTVL(address pool) view returns (uint256 tvl)",
+    "getKokonutLpFarmTVL": "function getKokonutLpFarmTVL(address pool) view returns (uint256 tvl)"
+  }
+}

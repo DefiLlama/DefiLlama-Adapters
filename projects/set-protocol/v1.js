@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
-const _ = require('underscore');
+
 
 /*==================================================
 Settings
@@ -34,7 +34,7 @@ module.exports = async function tvl(timestamp, block) {
   // Vault Asset Balances
   let balanceOfResults = await sdk.api.abi.multiCall({
     block,
-    calls: _.map(tokens, (token) => {
+    calls: tokens.map((token) => {
       return {
         target: token,
         params: '0x5B67871C3a857dE81A1ca0f9F7945e5670D986Dc'
@@ -46,30 +46,19 @@ module.exports = async function tvl(timestamp, block) {
   // cToken Exchange Rates
   let cTokenConversionRatesMap = (await sdk.api.abi.multiCall({
     block,
-    calls: _.map(Object.keys(cTokensMap), (cToken) => {
+    calls: Object.keys(cTokensMap).map((cToken) => {
       return {
         target: cToken
       }
     }),
-    abi: {
-      "constant": true,
-      "inputs": [],
-      "name": "exchangeRateStored",
-      "type": "function",
-      "outputs": [
-        {
-          "name":"",
-          "type":"uint256"
-        }
-      ]
-    }
+    abi: "uint256:exchangeRateStored"
   })).output.reduce(function(map, object) {
     map[object.input.target] = object.output;
     return map;
   }, {});
 
   // Compute Balances
-  _.each(balanceOfResults.output, (balanceOf) => {
+  balanceOfResults.output.forEach((balanceOf) => {
       let address = balanceOf.input.target
 
       if (address in cTokensMap) {

@@ -2,6 +2,7 @@ const sdk = require("@defillama/sdk");
 const listTokens = require("./listTokens.json");
 const abi = require("./abi.json");
 const { staking } = require("../helper/staking");
+const { getChainTransform } = require('../helper/portedTokens')
 
 const L1LiquidityPool = "0x1A26ef6575B7BBB864d984D9255C069F6c361a14";
 const L1StakingTokens = [
@@ -19,9 +20,10 @@ const calcTvl = async (
   balances,
   liquidityPool,
   excludedTokens,
-  chain = "ethereum"
+  chain = "ethereum",
+  block,
 ) => {
-  let chainBlocks = {};
+  const transform = await getChainTransform(chain)
 
   const values = listTokens.tokenList.map(Object.values);
   const names = listTokens.tokenList.map(Object.keys);
@@ -35,40 +37,30 @@ const calcTvl = async (
       tokensL2.push(values[i][0]);
     }
   }
+  const calls = (chain == "ethereum" ? tokensL1 : tokensL2)
+    .filter(t  => !excludedTokens.some((addr) => addr.toLowerCase() === t.toLowerCase()))
+    .map(t => ({ params: t}))
+  const { output } = await sdk.api.abi.multiCall({
+    target: liquidityPool,
+    abi: abi.poolInfo,
+    calls,
+    chain, block: block,
+  })
 
-  for (const token of chain == "ethereum" ? tokensL1 : tokensL2) {
-    const amountTokenDeposited = (
-      await sdk.api.abi.call({
-        abi: abi.poolInfo,
-        target: liquidityPool,
-        params: token,
-        chain: chain,
-        block: chainBlocks[chain],
-      })
-    ).output.userDepositAmount;
-
-    if (
-      excludedTokens.some((addr) => addr.toLowerCase() === token.toLowerCase())
-    ) {
-    } else {
-      sdk.util.sumSingleBalance(
-        balances,
-        `${chain}:${token}`,
-        amountTokenDeposited
-      );
-    }
-  }
+  output.forEach(({ input, output: { userDepositAmount }}) => {
+    sdk.util.sumSingleBalance(balances, transform(input.params[0]), userDepositAmount)
+  })
 };
 
-const ethTvl_L1 = async () => {
+const ethTvl_L1 = async (_, _b, { ethereum: block }) => {
   const balances = {};
-  await calcTvl(balances, L1LiquidityPool, L1StakingTokens);
+  await calcTvl(balances, L1LiquidityPool, L1StakingTokens, 'ethereum', block);
   return balances;
 };
 
-const bobaTvl_L2 = async () => {
+const bobaTvl_L2 = async (_, _b, { boba: block }) => {
   const balances = {};
-  await calcTvl(balances, L2LiquidityPool, L2StakingTokens, "boba");
+  await calcTvl(balances, L2LiquidityPool, L2StakingTokens, "boba", block);
   return balances;
 };
 

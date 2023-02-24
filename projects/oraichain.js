@@ -65,36 +65,36 @@ async function tvl(chainBlocks, chain, transform=a=>a) {
         chain
     })).output.map((c) => c.output);
 
-    for (balance of tokenBalances) {
+    for (let balance of tokenBalances) {
         await sumSingleBalance(balances, transform(oraichainToken[chain]), balance);
     }
 
     return balances;
-};
+}
 
 async function ethTvl(timestamp, ethBlock, chainBlocks) {
     let balances = await tvl(chainBlocks, 'ethereum');
 
     // AI USDT Vault
     const usdtBalance = (await sdk.api.erc20.balanceOf({
-        ethBlock,
+        block: ethBlock,
         target: usdtAddress,
         owner: stakingAddresses['tether']
     })).output;
     sdk.util.sumSingleBalance(balances, usdtAddress, usdtBalance);
     return balances;
-};
+}
 
 async function bscTvl(timestamp, ethBlock, chainBlocks) {
     return await tvl(chainBlocks, 'bsc', await transformBscAddress());
-};
+}
 
 module.exports = {
     ethereum: {
       staking: ethTvl,
+      tvl: async ()=>({}),
     },
     bsc: {
       staking: bscTvl,
     },
-    tvl: async ()=>({})
 }

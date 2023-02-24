@@ -1,0 +1,185 @@
+{
+  "version": "2.0.1",
+  "name": "credix",
+  "instructions": [],
+  "accounts": [
+    {
+      "name": "Deal",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "borrower",
+            "type": "publicKey"
+          },
+          {
+            "name": "amountWithdrawn",
+            "type": "u64"
+          },
+          {
+            "name": "lateFeePercentage",
+            "type": {
+              "defined": "Fraction"
+            }
+          },
+          {
+            "name": "earlyRedemptionFees",
+            "type": "u64"
+          },
+          {
+            "name": "earlyRedemptionFeesRepaid",
+            "type": "u64"
+          },
+          {
+            "name": "unusedField1",
+            "type": "u16"
+          },
+          {
+            "name": "goLiveAt",
+            "type": "i64"
+          },
+          {
+            "name": "createdAt",
+            "type": "i64"
+          },
+          {
+            "name": "maxFundingDuration",
+            "type": "u8"
+          },
+          {
+            "name": "slashInterestToPrincipal",
+            "type": "bool"
+          },
+          {
+            "name": "slashPrincipalToInterest",
+            "type": "bool"
+          },
+          {
+            "name": "unusedField2",
+            "type": {
+              "array": ["u8", 6]
+            }
+          },
+          {
+            "name": "dealNumber",
+            "type": "u16"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "lateFees",
+            "type": "u64"
+          },
+          {
+            "name": "lateFeesRepaid",
+            "type": "u64"
+          },
+          {
+            "name": "defaulted",
+            "type": "bool"
+          },
+          {
+            "name": "trueWaterfall",
+            "type": "bool"
+          },
+          {
+            "name": "openedAt",
+            "type": "i64"
+          },
+          {
+            "name": "interestFee",
+            "type": {
+              "defined": "Fraction"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "RepaymentSchedule",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "periodDuration",
+            "type": "u8"
+          },
+          {
+            "name": "daysInYear",
+            "type": "u16"
+          },
+          {
+            "name": "totalPeriods",
+            "type": "u16"
+          },
+          {
+            "name": "periods",
+            "type": {
+              "vec": {
+                "defined": "RepaymentPeriod"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "Fraction",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "numerator",
+            "type": "u32"
+          },
+          {
+            "name": "denominator",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RepaymentPeriod",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "principal",
+            "type": "u64"
+          },
+          {
+            "name": "interest",
+            "type": "u64"
+          },
+          {
+            "name": "totalInterestExpected",
+            "type": "u64"
+          },
+          {
+            "name": "totalPrincipalExpected",
+            "type": "u64"
+          },
+          {
+            "name": "principalRepaid",
+            "type": "u64"
+          },
+          {
+            "name": "interestRepaid",
+            "type": "u64"
+          }
+        ]
+      }
+    }
+  ],
+  "events": [],
+  "errors": []
+}

@@ -2,7 +2,7 @@ const {addFundsInMasterChef} = require('../helper/masterchef')
 const sdk = require('@defillama/sdk')
 const {staking} = require('../helper/staking')
 const {transformFantomAddress} = require('../helper/portedTokens')
-const poolInfoAbi = require('./abi.json')
+const poolInfoAbi = 'function getPoolInfo(uint256 _pid) view returns (tuple(address stakingToken, uint256 stakingTokenTotalAmount, uint32 lastRewardTime, uint256[] AccRewardsPerShare, uint256[] AllocPoints))'
 
 const tusd = "0x0000000000085d4780b73119b644ae5ecd22b376"
 const ifusd = "0x9fC071cE771c7B27b7d9A57C32c0a84c18200F8a"
@@ -19,7 +19,7 @@ async function tvl(_t, _b, chainBlocks){
         [tusd]: fusd.output
     }
     const transform = await transformFantomAddress()
-    await addFundsInMasterChef(balances, '0x5bC37CAAA3b490b65F5A50E2553f4312126A8b7e', block, 'fantom', transform, poolInfoAbi, [ifusd])
+    await addFundsInMasterChef(balances, '0x5bC37CAAA3b490b65F5A50E2553f4312126A8b7e', block, 'fantom', transform, poolInfoAbi, [ifusd,"0xa0828eE559110b041DEdbf10Ae0cf42274251de1"])
     return balances
 }
 

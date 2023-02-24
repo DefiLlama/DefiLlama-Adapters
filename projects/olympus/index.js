@@ -1,8 +1,6 @@
 const sdk = require("@defillama/sdk");
-const { default: BigNumber } = require("bignumber.js");
-const erc20 = require("../helper/abis/erc20.json");
-const { sumTokensAndLPsSharedOwners, sumTokens, unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const abi = require('./abi.json')
+const {gql, request} = require('graphql-request');
+const { toUSDTBalances } = require("../helper/balances");
 
 const OlympusStakings = [
   // Old Staking Contract
@@ -13,23 +11,6 @@ const OlympusStakings = [
 
 const OHM = "0x383518188c0c6d7730d91b2c03a03c837814a899";
 
-const treasuryAddresses = [
-  // V1
-  "0x886CE997aa9ee4F8c2282E182aB72A705762399D",
-  // V2
-  "0x31F8Cc382c9898b273eff4e0b7626a6987C846E8",
-  // V3
-  "0x9A315BdF513367C0377FB36545857d12e85813Ef",
-];
-
-const DAI = "0x6b175474e89094c44da98b954eedeac495271d0f";
-const OHM_DAI_SLP = "0x34d7d7aaf50ad4944b70b320acb24c95fa2def7c";
-const FRAX = "0x853d955acef822db058eb8505911ed77f175b99e";
-const OHM_FRAX_UNIV2 = "0x2dce0dda1c2f98e0f171de8333c3c6fe1bbf4877";
-const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-const LUSD = "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0"
-const lusd_lp = "0xfdf12d1f85b5082877a6e070524f50f6c84faa6b"
-const OHM_ETH_SLP="0xfffae4a0f4ac251f4705717cd24cadccc9f33e06"
 
 /*** Staking of native token (OHM) TVL Portion ***/
 const staking = async (timestamp, ethBlock, chainBlocks) => {
@@ -37,7 +18,7 @@ const staking = async (timestamp, ethBlock, chainBlocks) => {
 
   for (const stakings of OlympusStakings) {
     const stakingBalance = await sdk.api.abi.call({
-      abi: erc20.balanceOf,
+      abi: 'erc20:balanceOf',
       target: OHM,
       params: stakings,
       block: ethBlock,
@@ -49,62 +30,33 @@ const staking = async (timestamp, ethBlock, chainBlocks) => {
   return balances;
 };
 
-const onsenAllocator = '0x0316508a1b5abf1CAe42912Dc2C8B9774b682fFC'
-const sushiMasterchef = "0xc2EdaD668740f1aA35E4D8f227fB8E17dcA888Cd"
-const convexAllocator = "0x408a9A09d97103022F53300A3A14Ca6c3FF867E8"
+const protocolQuery = gql`
+query get_tvl($block: Int) {
+  protocolMetrics(
+    first: 1, orderBy: timestamp, orderDirection: desc
+  ) {
+    treasuryMarketValue
+    timestamp
+  }
+}
+`
 
 /*** Bonds TVL Portion (Treasury) ***
  * Treasury TVL consists of DAI, FRAX and WETH balances + Sushi SLP and UNI-V2 balances
  ***/
 async function ethTvl(timestamp, block) {
-  const balances = {};
-
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [
-      [DAI, false],
-      [FRAX, false],
-      [WETH, false],
-      [OHM_DAI_SLP, true],
-      [OHM_FRAX_UNIV2, true],
-      [LUSD, false],
-      [lusd_lp, true],
-      [OHM_ETH_SLP, true],
-    ],
-    treasuryAddresses,
-    block
-  );
-  await sumTokens(balances, [
-    ["0x028171bca77440897b824ca71d1c56cac55b68a3", "0x0e1177e47151be72e5992e0975000e73ab5fd9d4"]
-  ], block)
-  const fraxAllocated = await sdk.api.abi.call({
-    target: convexAllocator,
-    abi: abi.totalValueDeployed,
-    block
-  })
-  sdk.util.sumSingleBalance(balances, FRAX, BigNumber(fraxAllocated.output).times(1e9).toFixed(0))
-  const onsenLps = await sdk.api.abi.multiCall({
-    calls: [185, 323].map(onsenId=>({
-      target: sushiMasterchef,
-      params: [onsenId, onsenAllocator]
-    })),
-    block,
-    abi: abi.userInfo,
-  })
-  await unwrapUniswapLPs(balances, [{
-    balance: onsenLps.output[0].output.amount,
-    token: OHM_DAI_SLP
-  },
-  {
-    balance: onsenLps.output[1].output.amount,
-    token: lusd_lp
-  }], block)
-
-  return balances;
+  const queriedData = await request("https://api.thegraph.com/subgraphs/name/drondin/olympus-protocol-metrics", protocolQuery, {block})
+  const metric= queriedData.protocolMetrics[0]
+  if(Date.now()/1000 - metric.timestamp > 3600*24){
+    throw new Error("outdated")
+  }
+  return toUSDTBalances(metric.treasuryMarketValue)
 }
 
 module.exports = {
   start: 1616569200, // March 24th, 2021
+  timetravel: false,
+  misrepresentedTokens: true,
   ethereum: {
     tvl: ethTvl,
     staking

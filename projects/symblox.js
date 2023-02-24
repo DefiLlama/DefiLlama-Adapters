@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const { getBlock } = require("./helper/getBlock");
 
 const symblox = "0xD0CB9244844F3E11061fb3Ea136Aab3a6ACAC017";
 const pools = {
@@ -27,7 +26,7 @@ const pools = {
 
 async function tvl(timestamp, block, chainBlocks) {
   let balances = {};
-  block = await getBlock(timestamp, "velas", chainBlocks);
+  block = chainBlocks.velas;
 
   const pairBalances = (
     await sdk.api.abi.multiCall({
@@ -67,10 +66,10 @@ async function tvl(timestamp, block, chainBlocks) {
         syxBalances[i].output / 10 ** 18
       ),
     ]);
-  };
+  }
 
   return balances;
-};
+}
 
 module.exports = {
   velas: {

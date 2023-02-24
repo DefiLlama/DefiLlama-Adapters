@@ -1,65 +1,27 @@
-const sdk = require("@defillama/sdk");
-const axios = require("axios");
-const retry = require("./helper/retry");
-const { transformFantomAddress } = require("./helper/portedTokens");
+const { sumTokensExport, nullAddress } = require("./helper/unwrapLPs");
+const { staking } = require('./helper/staking')
 
-const gton = "0xC1Be9a4D5D45BeeACAE296a7BD5fADBfc14602C4";
+const gton = "0xC1Be9a4D5D45BeeACAE296a7BD5fADBfc14602C4".toLowerCase();
 const stakingContract = "0xB0dAAb4eb0C23aFFaA5c9943d6f361b51479ac48";
 const treasury = "0xB3D22267E7260ec6c3931d50D215ABa5Fd54506a";
-
-
-async function tvl(timestamp, block, chainBlocks) {
-    const balances = {};
-    const transform = await transformFantomAddress();
-
-    const treasuryTokens = (
-        await retry(
-          async (bail) =>
-            await axios.get(
-              `https://api.covalenthq.com/v1/${250}/address/${treasury}/balances_v2/?&key=ckey_72cd3b74b4a048c9bc671f7c5a6`
-            )
-        )
-      ).data.data.items.map((t) => t.contract_address);
-
-    const underlyingBalances = await sdk.api.abi.multiCall({
-        calls: treasuryTokens.map((token) => ({
-            target: token,
-            params: [ treasury ],
-        })),
-        abi: "erc20:balanceOf",
-        block: chainBlocks.fantom,
-        chain: "fantom",
-    });
-
-    sdk.util.sumMultiBalanceOf(balances, underlyingBalances, true, transform);
-
-    delete balances['0x01e0e2e61f554ecaaec0cc933e739ad90f24a86d'];
-
-    return balances;
-};
-
-async function staking(timestamp, block, chainBlocks) {
-    const balances = {};
-    const transform = await transformFantomAddress();
-
-    const underlyingBalances = await sdk.api.abi.multiCall({
-        target: gton,
-        calls: [ stakingContract, treasury ].map(c => ({
-            params: c
-        })),
-        abi: "erc20:balanceOf",
-        block: chainBlocks.fantom,
-        chain: "fantom",
-    });
-
-    sdk.util.sumMultiBalanceOf(balances, underlyingBalances, true, transform);
-
-    return balances;
-};
+const chain = 'fantom'
 
 module.exports = {
     fantom: {
-        tvl,
-        staking
+        tvl: sumTokensExport({ chain, owner: treasury, tokens: [
+            nullAddress,
+            '0xddcb3ffd12750b45d32e084887fdf1aabab34239',
+            '0x841fad6eae12c286d1fd18d1d525dffa75c7effe',
+            '0x5cc61a78f164885776aa610fb0fe1257df78e59b',
+            '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83',
+            '0xb688e18f34e6e424c44b247318f22367ed7df3e2',
+            '0xdbf31df14b66535af65aac99c32e9ea844e14501',
+            '0x1E4F97b9f9F913c46F1632781732927B9019C68b',
+            '0x657A1861c15A3deD9AF0B6799a195a249ebdCbc6',
+            '0xc3f069d7439baf6d4d6e9478d9cc77778e62d147',
+            '0x049d68029688eabf473097a2fc38ef61633a3c7a',
+            '0xf16e81dce15b08f326220742020379b855b87df9',
+        ]}),
+        staking: staking([stakingContract, treasury,], gton, chain),
     }
 };

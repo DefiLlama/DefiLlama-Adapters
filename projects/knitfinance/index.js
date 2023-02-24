@@ -1,63 +1,77 @@
-const axios = require("axios");
+const { get } = require("../helper/http");
+const { toUSDTBalances } = require("../helper/balances");
+const { transformBalances } = require('../helper/portedTokens')
+const sdk = require('@defillama/sdk')
+const url = "https://knit-admin.herokuapp.com/api/public/tvl/";
 
-let url = "https://adminv1.knit.finance/api/tvl";
+const chainConfig = {
+  bsc: "bsc",
+  polygon: "matic",
+  ethereum: "eth",
+  heco: "heco",
+  fantom: "fantom",
+  avax: "avalanche",
+  kcc: "kcc",
+  harmony: "harmony",
+  okexchain: "okexchain",
+  syscoin: "syscoin",
+  telos: "telos",
+  moonriver: "moonriver",
+  milkomeda: "milkomeda",
+  moonbeam: "moonbeam",
+  bitgert: "bitgert",
+  xdai: "gnosis",
+  reef: "reef",
+  kava: "kava"
+};
 
-async function fetchBsc() {
-  let bsc = await axios.get(`${url}/bsc`);
-  return bsc.data.data.data.tvl.bsc;
-}
-
-async function fetchPoly() {
-  let poly = await axios.get(`${url}/matic`);
-  return poly.data.data.data.tvl.matic;
-}
-
-async function fetchEth() {
-  let eth = await axios.get(`${url}/eth`);
-  return eth.data.data.data.tvl.eth;
-}
-
-async function fetchFantom() {
-  let fantom = await axios.get(`${url}/fantom`);
-  return fantom.data.data.data.tvl.fantom;
-}
-
-async function fetchHeco() {
-  let heco = await axios.get(`${url}/heco`);
-  return heco.data.data.data.tvl.heco;
-}
-
-async function fetch() {
-  let poly = await axios.get(`${url}/matic`),
-    bsc = await axios.get(`${url}/bsc`),
-    eth = await axios.get(`${url}/eth`),
-    fantom = await axios.get(`${url}/fantom`),
-    heco = await axios.get(`${url}/heco`);
-  const tvl =
-    bsc.data.data.data.tvl.bsc +
-    poly.data.data.data.tvl.matic +
-    eth.data.data.data.tvl.eth +
-    fantom.data.data.data.tvl.fantom +
-    heco.data.data.data.tvl.heco;
-  return tvl;
-}
-
-module.exports = {
-  polygon: {
-    fetch: fetchPoly,
-  },
+const tokenMapping = {
   bsc: {
-    fetch: fetchBsc,
+    '0xb2a04c839b9f91889f333e661c9c51deaa6e642d': { geckoId: 'dash'},
+    '0x28cf5786dbc2e9ecc1e5b8fd8a2fce005f095c06': { geckoId: 'ripple'},
+    '0xf3e94c72889afba13ba53898d22717821883e1a5': { geckoId: 'stellar'},
   },
-  ethereum: {
-    fetch: fetchEth,
-  },
-  heco: {
-    fetch: fetchHeco,
+  polygon: {
+    '0x9485adfdcd26f56f9b55ce189905b27845558850': { geckoId: 'matic-network'},
+    '0x96729c6de16693d9c9b2013e22842e3eadcffe31': { geckoId: 'ripple'},
+    '0x03c8fb4716ab826041e6d447c0b3916feeefadfe': { geckoId: 'stellar'},
   },
   fantom: {
-    fetch: fetchFantom,
+    '0xaafc50ac5c03555085f555a2b7c139b6ee058ca2': { geckoId: 'ripple'},
+    '0xe401744b34f44ceefcfa2ba66eae9f1e448f0bd6': { geckoId: 'stellar'},
   },
+}
 
-  fetch,
+const blacklist = [
+  '0xef53462838000184f35f7d991452e5f25110b207',
+]
+
+module.exports = {
+  timetravel: false,
 };
+
+function addChain(chain) {
+  module.exports[chain] = {
+    tvl: async () => {
+      const balances = {}
+      const key = chainConfig[chain];
+      const mapping = tokenMapping[chain] || {}
+      let response = await get(url + key);
+      for (const info of response.data.data.info) {
+        let token = info.address
+        let bal = info.balance
+        if (+info.balance > 0 && !blacklist.includes(token)) {
+          token = token.toLowerCase()
+          if (mapping[token]) {
+            bal /= 10 ** (mapping[token].decimals || 18)
+            token = mapping[token].geckoId
+          }
+          sdk.util.sumSingleBalance(balances, token, bal)
+        }
+      }
+      return transformBalances(chain, balances)
+    },
+  };
+}
+
+Object.keys(chainConfig).map(addChain);

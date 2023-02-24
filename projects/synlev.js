@@ -1,23 +1,18 @@
-const BigNumber = require("bignumber.js");
-const web3 = require('./config/web3.js');
-const utils = require('./helper/utils');
+const sdk = require("@defillama/sdk")
 
-
-async function fetch() {
-  let getethBalanceRes = await web3.eth.getBalance('0xFf40827Ee1c4Eb6052044101E1C6E28DBe1440e3');
-  let getethBalanceRes2 = await web3.eth.getBalance('0xA81f8460dE4008577e7e6a17708102392f9aD92D');
-
-  let ethAmount = await new BigNumber(getethBalanceRes).div(10 ** 18).toFixed(2);
-  let ethAmount2 = await new BigNumber(getethBalanceRes2).div(10 ** 18).toFixed(2);
-
-  let totaleth = parseFloat(ethAmount) + parseFloat(ethAmount2);
-  let price_feed = await utils.getPricesfromString('ethereum');
-  var tvl = (totaleth * price_feed.data.ethereum.usd)
-  return tvl;
+const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+async function tvl(ts, block) {
+  const balances = {}
+  const { output: balance1 } = await sdk.api.eth.getBalance({ target: '0xFf40827Ee1c4Eb6052044101E1C6E28DBe1440e3', block })
+  const { output: balance2 } = await sdk.api.eth.getBalance({ target: '0xA81f8460dE4008577e7e6a17708102392f9aD92D', block })
+  sdk.util.sumSingleBalance(balances, WETH, balance1)
+  sdk.util.sumSingleBalance(balances, WETH, balance2)
+  return balances
 }
 
-
-
 module.exports = {
-  fetch
+  deadFrom: 1648765747,
+  ethereum: {
+    tvl
+  }
 }

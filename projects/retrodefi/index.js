@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const erc20 = require("../helper/abis/erc20.json");
 const { staking } = require("../helper/staking");
 const { pool2s } = require("../helper/pool2");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
@@ -104,7 +103,7 @@ const calcTvl = async (
 
     const strat_bal = (
       await sdk.api.abi.call({
-        abi: erc20.balanceOf,
+        abi: 'erc20:balanceOf',
         target: want,
         params: strat,
         chain,
@@ -127,6 +126,7 @@ const calcTvl = async (
       symbol.includes("QBERT") ||
       symbol.includes("pQBERT")
     ) {
+      continue
     } else if (symbol.includes("LP")) {
       lpPositions.push({
         token: want,

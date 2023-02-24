@@ -1,147 +1,79 @@
-const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
+const { GraphQLClient, gql } = require('graphql-request')
+const { transformArbitrumAddress } = require("../helper/portedTokens");
+const { getBlock } = require('../helper/http')
 
-const pool_factory = "0xe4D5A6128308b4D5c5d1A107Be136AB75c9944Be";
-const join_factory = "0x7297644611Af0dBb1bE1C2B4885DE9288eDD81e8";
+const getTVL = async (subgraph, block, transformAddress = a => a) => {
+  const endpoint = `https://api.thegraph.com/subgraphs/name/${subgraph}`
+  const graphQLClient = new GraphQLClient(endpoint)
 
-const toAddr = (d) => "0x" + d.substr(26);
-
-const calcTvl = async (
-  balances,
-  block,
-  factory,
-  creation,
-  address = "address"
-) => {
-  const START_BLOCK = 13452556;
-  const END_BLOCK = block;
-  const events = (
-    await sdk.api.util.getLogs({
-      target: factory,
-      topic: `${creation}(address,${address})`,
-      keys: [],
-      fromBlock: START_BLOCK,
-      toBlock: END_BLOCK,
-    })
-  ).output.map((event) => toAddr(event.data));
-
-  if (factory == pool_factory) {
-    /*** Pools TVL Portion includes Bases and FyTokens ***/
-    const bases = (
-      await sdk.api.abi.multiCall({
-        abi: abi.base,
-        calls: events.map((pool) => ({
-          target: pool,
-        })),
-        block,
-      })
-    ).output.map((b) => b.output);
-
-    const fyTokens = (
-      await sdk.api.abi.multiCall({
-        abi: abi.fyToken,
-        calls: events.map((pool) => ({
-          target: pool,
-        })),
-        block,
-      })
-    ).output.map((ft) => ft.output);
-
-    const fyTokensUnderlying = (
-      await sdk.api.abi.multiCall({
-        abi: abi.underlying,
-        calls: fyTokens.map((fyToken) => ({
-          target: fyToken,
-        })),
-        block,
-      })
-    ).output.map((underlying) => underlying.output);
-
-    const basesBalance = (
-      await sdk.api.abi.multiCall({
-        abi: abi.getBaseBalance,
-        calls: events.map((pool) => ({
-          target: pool,
-        })),
-        block,
-      })
-    ).output.map((bbal) => bbal.output);
-
-    const fyTskensBalance = (
-      await sdk.api.abi.multiCall({
-        abi: abi.getFYTokenBalance,
-        calls: events.map((pool) => ({
-          target: pool,
-        })),
-        block,
-      })
-    ).output.map((ftbal) => ftbal.output);
-
-    for (let i = 0; i < events.length; i++) {
-      if (basesBalance[i] == null) {
-      } else {
-        sdk.util.sumSingleBalance(balances, bases[i], basesBalance[i]);
-      }
-      sdk.util.sumSingleBalance(
-        balances,
-        fyTokensUnderlying[i],
-        fyTskensBalance[i]
-      );
+  var query = gql`
+  query($block: Int!){
+    assets(block: { number: $block }) {
+      id
+      totalCollateral
+      totalInPools
+      decimals
     }
-  } else {
 
-    /*** Joins TVL Portion ***/
-    const joinsAsset = (
-      await sdk.api.abi.multiCall({
-        abi: abi.asset,
-        calls: events.map((join) => ({
-          target: join,
-        })),
-        block,
-      })
-    ).output.map((a) => a.output);
-
-    const assetsBalance = (
-      await sdk.api.abi.multiCall({
-        abi: abi.storedBalance,
-        calls: events.map((join) => ({
-          target: join,
-        })),
-        block,
-      })
-    ).output.map((a) => a.output);
-
-    for (let i = 0; i < events.length; i++) {
-      sdk.util.sumSingleBalance(balances, joinsAsset[i], assetsBalance[i]);
+    pools(block: { number: $block }) {
+      fyTokenReserves
+      fyToken {
+        underlyingAddress
+        underlyingAsset {
+          decimals
+        }
+      }
+      currentFYTokenPriceInBase
+    }
+    _meta {
+      block {
+        number
+      }
     }
   }
+  `;
+
+  const data = await graphQLClient.request(query, { block });
+
+  const output = {}
+  for (const asset of data.assets) {
+    let amount = (parseFloat(asset.totalCollateral) + parseFloat(asset.totalInPools)) * (10 ** asset.decimals)
+    let assetAddress = asset.id
+    const transformedAddr = transformAddress(assetAddress)
+    output[transformedAddr] = (output[transformedAddr] || 0) + amount
+  }
+
+  for (const pool of data.pools) {
+    if (!pool.fyToken.underlyingAsset) {
+      continue
+    }
+
+    let amount = pool.fyTokenReserves * pool.currentFYTokenPriceInBase * (10 ** pool.fyToken.underlyingAsset.decimals)
+    let assetAddress = pool.fyToken.underlyingAddress
+
+    const transformedAddr = transformAddress(assetAddress)
+    output[transformedAddr] = (output[transformedAddr] || 0) + amount
+  }
+
+  return output
+}
+
+const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
+  return getTVL('yieldprotocol/v2-mainnet', ethBlock)
 };
 
-const ethTvl = async (timestamp, ethBlock) => {
-  const balances = {};
-
-  await calcTvl(
-    balances,
-    ethBlock,
-    pool_factory,
-    "PoolCreated",
-    "address,address"
-  );
-
-  await calcTvl(
-    balances,
-    ethBlock,
-    join_factory,
-    "JoinCreated"
-  );
-
-  return balances;
+const arbTvl = async (timestamp, ethBlock, chainBlocks) => {
+  const block = await getBlock(timestamp, 'arbitrum', chainBlocks)
+  return getTVL('yieldprotocol/v2-arbitrum', block, (await transformArbitrumAddress()))
 };
 
 module.exports = {
   misrepresentedTokens: true,
   ethereum: {
     tvl: ethTvl,
+  },
+  arbitrum: {
+    tvl: arbTvl,
   },
   methodology:
     "Counts tvl on the Pools and Joins through PoolFactory and Joinfactory Contracts",

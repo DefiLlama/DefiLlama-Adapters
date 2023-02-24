@@ -31,8 +31,8 @@ async function tvl(timestamp, block, chainBlocks) {
     const memo = (await sdk.api.abi.call({
         target: wMEMO,
         params: [balances["fantom:0xddc0385169797937066bbd8ef409b5b3c0dfeb52"]],
-        abi:{"inputs":[{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"wMEMOToMEMO","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},        block,
-        chainBlocks: chainBlocks.avax,
+        abi:'function wMEMOToMEMO(uint256 _amount) view returns (uint256)',
+        block: chainBlocks.avax,
         chain: "avax",
     })).output;
     balances[time] = memo
@@ -40,8 +40,8 @@ async function tvl(timestamp, block, chainBlocks) {
     const sSPA = (await sdk.api.abi.call({
         target: wsSPA,
         params:[balances["fantom:0x89346b51a54263cf2e92da79b1863759efa68692"]],
-        abi: {"inputs":[{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"wOHMTosOHM","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-        chain: chainBlocks.fantom,
+        abi: 'function wOHMTosOHM(uint256 _amount) view returns (uint256)',
+        block: chainBlocks.fantom,
         chain: "fantom"
     })).output;
     balances[spa] = sSPA;

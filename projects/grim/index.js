@@ -19,6 +19,9 @@ async function fetch() {
 }
 
 module.exports = {
+  hallmarks: [
+    [1639785600, "Reentrancy attack"]
+],
   timetravel: false,
   methodology: 'TVL data is pulled from the Grim Finance API "https://api.grim.finance/tvl".',
   fetch,

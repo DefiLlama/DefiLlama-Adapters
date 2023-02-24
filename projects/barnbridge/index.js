@@ -1,199 +1,65 @@
-const sdk = require('@defillama/sdk');
-const BigNumber = require('bignumber.js');
-const { fetchURL } = require('../helper/utils');
+const sdk = require("@defillama/sdk");
+const { request, gql } = require("graphql-request");
 
-const syPoolAPIs = {
-    'ethereum': 'https://api-v2.barnbridge.com/api/smartyield/pools',
-    'polygon': 'https://prod-poly-v2.api.barnbridge.com/api/smartyield/pools',
-}
-const saPoolAPIs = {
-    'ethereum': 'https://api-v2.barnbridge.com/api/smartalpha/pools',
-    'polygon': 'https://prod-poly-v2.api.barnbridge.com/api/smartalpha/pools',
-    'avax': 'https://prod-avalanche.api.barnbridge.com/api/smartalpha/pools'
-}
+const CHAINS = [
+  {
+    id: 1,
+    name: "ethereum",
+    url: "https://api.thegraph.com/subgraphs/name/barnbridge/bb-sy-mainnet",
+    address: "0x8A897a3b2dd6756fF7c17E5cc560367a127CA11F",
+  },
+  {
+    id: 42161,
+    name: "arbitrum",
+    url: "https://api.thegraph.com/subgraphs/name/barnbridge/bb-sy-arbitrum",
+    address: "0x1ADDAbB3fAc49fC458f2D7cC24f53e53b290d09e",
+  },
+];
 
-const STK_AAVE_ADDRESS = '0x4da27a545c0c5b758a6ba100e3a049001de870f5';
-const AAVE_ADDRESS = '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9';
-
-async function fetchSyPools(apiUrl) {
-    return fetchURL(apiUrl)
-        .then(res => res.data)
-        .then(({status, data}) => status === 200 ? data : []);
-}
-
-async function fetchSaPools(apiUrl) {
-    return fetchURL(apiUrl)
-        .then(res => res.data)
-        .then(({status, data}) => status === 200 ? data : []);
-}
-
-function syGetUnderlyingTotal(chain, smartYieldAddress, block) {
-    return sdk.api.abi.call({
-        abi: {
-            name: "underlyingTotal",
-            type: "function",
-            stateMutability: "view",
-            constant: true,
-            payable: false,
-            inputs: [],
-            outputs: [
-                {
-                    name: "total",
-                    type: "uint256",
-                    internalType: "uint256",
-                },
-            ],
-        },
-        target: smartYieldAddress,
-        chain,
-        block,
-    }).then(({output}) => new BigNumber(output));
-}
-
-function saGetEpochBalance(chain, smartAlphaAddress, block) {
-    return sdk.api.abi.call({
-        abi: {
-            name: "epochBalance",
-            type: "function",
-            stateMutability: "view",
-            constant: true,
-            payable: false,
-            inputs: [],
-            outputs: [
-                {
-                    name: "balance",
-                    type: "uint256",
-                    internalType: "uint256",
-                },
-            ],
-        },
-        target: smartAlphaAddress,
-        chain,
-        block,
-    }).then(({output}) => new BigNumber(output));
-}
-
-function saGetQueuedJuniorsUnderlyingIn(chain, smartAlphaAddress, block) {
-    return sdk.api.abi.call({
-        abi: {
-            name: "queuedJuniorsUnderlyingIn",
-            type: "function",
-            stateMutability: "view",
-            constant: true,
-            payable: false,
-            inputs: [],
-            outputs: [
-                {
-                    name: "amount",
-                    type: "uint256",
-                    internalType: "uint256",
-                },
-            ],
-        },
-        target: smartAlphaAddress,
-        chain,
-        block,
-    }).then(({output}) => new BigNumber(output));
-}
-
-function saGetQueuedSeniorsUnderlyingIn(chain, smartAlphaAddress, block) {
-    return sdk.api.abi.call({
-        abi: {
-            name: "queuedSeniorsUnderlyingIn",
-            type: "function",
-            stateMutability: "view",
-            constant: true,
-            payable: false,
-            inputs: [],
-            outputs: [
-                {
-                    name: "amount",
-                    type: "uint256",
-                    internalType: "uint256",
-                },
-            ],
-        },
-        target: smartAlphaAddress,
-        chain,
-        block,
-    }).then(({output}) => new BigNumber(output));
-}
-
-function resolveAddress(address) {
-    switch (address) {
-        case STK_AAVE_ADDRESS:
-            return AAVE_ADDRESS;
-        default:
-            return address;
+const termsQuery = (timestamp) => gql`
+    {
+      terms(where: { end_gt: ${timestamp} }) {
+        depositedAmount
+      }
     }
-}
+  `;
 
-function sumTvl(tvlList = []) {
-    return async (...args) => {
-        const results = await Promise.all(tvlList.map(fn => fn(...args)));
-        return results.reduce((a, c) => Object.assign(a, c), {});
-    };
-}
+const _underlying = async (chain, api) =>
+  api.call({
+    abi: "address:underlying",
+    target: chain.address,
+  })
 
-async function tvl(chain, block) {
-    const balances = {};
+const _liquidityProviderBalance = async (chain, api) =>
+  api.call({
+    abi: "uint256:liquidityProviderBalance",
+    target: chain.address,
+  })
 
-    if (chain in syPoolAPIs) {
-        // calculate TVL from SmartYield pools
-        const syPools = await fetchSyPools(syPoolAPIs[chain]);
+const tvl = (chain) => {
+  return async (timestamp, _1, _2, { api, }) => {
+    const balances = {}
+    const underlying = await _underlying(chain, api);
+    const liquidity = await _liquidityProviderBalance(chain, api);
 
-        await Promise.all(syPools.map(async syPool => {
-            const {smartYieldAddress, underlyingAddress} = syPool;
-            const underlyingTotal = await syGetUnderlyingTotal(chain, smartYieldAddress, block);
+    const { terms } = await request(chain.url, termsQuery(timestamp));
 
-            sdk.util.sumSingleBalance(balances, chain+':'+resolveAddress(underlyingAddress), underlyingTotal.toFixed(0));
-        }));
-    };
-    if (chain in saPoolAPIs) {
-        // calculate TVL from SmartAlpha pools
-        const saPools = await fetchSaPools(saPoolAPIs[chain]);
+    const deposits = terms.reduce((acc, term) => acc + +term.depositedAmount, 0);
+    sdk.util.sumSingleBalance(balances, underlying, liquidity, api.chain)
+    sdk.util.sumSingleBalance(balances, underlying, deposits, api.chain)
 
-        await Promise.all(saPools.map(async saPool => {
-            const {poolAddress, poolToken} = saPool;
-            const [epochBalance, queuedJuniorsUnderlyingIn, queuedSeniorsUnderlyingIn] = await Promise.all([
-                saGetEpochBalance(chain, poolAddress, block),
-                saGetQueuedJuniorsUnderlyingIn(chain, poolAddress, block),
-                saGetQueuedSeniorsUnderlyingIn(chain, poolAddress, block),
-            ]);
-
-            const underlyingTotal = epochBalance
-                .plus(queuedJuniorsUnderlyingIn)
-                .plus(queuedSeniorsUnderlyingIn);
-            sdk.util.sumSingleBalance(balances, chain+':'+resolveAddress(poolToken.address), underlyingTotal.toFixed(0));
-        }));
-    };
-
-    return balances;
-}
-
-async function mainnetTvl(timestamp, block, chainBlocks) {
-    return tvl('ethereum', block)
-}
-
-async function polygonTvl(timestamp, block, chainBlocks) {
-    return tvl('polygon', chainBlocks['polygon'])
-}
-
-async function avaxTvl(timestamp, block, chainBlocks) {
-    return tvl('avax', chainBlocks['avax'])
-}
-module.exports = {
-    start: 1615564559, // Mar-24-2021 02:17:40 PM +UTC
-    doublecounted: true,
-    timetravel: false,
-    misrepresentedTokens: true,
-    ethereum: {
-        tvl: mainnetTvl,
-    },
-    polygon: {
-        tvl: polygonTvl
-    },
-    avalanche: {
-        tvl: avaxTvl
-    },
+    return balances
+  };
 };
+
+module.exports = {
+  timetravel: false,
+  methodology:
+    "BarnBridge TVL is an aggregated TVL (user liquidity + DAO deposits) of active Smart Yield pools across available networks.",
+};
+
+CHAINS.forEach((chain) => {
+  module.exports[chain.name] = {
+    tvl: tvl(chain),
+  };
+});

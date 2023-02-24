@@ -2,8 +2,9 @@ const sdk = require("@defillama/sdk");
 const { unwrapUniswapLPs } = require('../helper/unwrapLPs');
 const { getChainTransform } = require('../helper/portedTokens');
 const { staking } = require("../helper/staking.js");
+const { pool2 } = require('../helper/pool2');
 const contracts = require('./contracts.json');
-const abi = require('./abi.json');
+const abi = "uint256:totalBorrows"
 
 function tvl(chain) {
     return async (timestamp, block, chainBlocks) => {
@@ -43,8 +44,8 @@ function tvl(chain) {
                         token: tokens[i].address
                     }
                 );
-            };
-        };
+            }
+        }
 
         delete balances[contracts.ethereum.tokens.DFL.address];
 
@@ -58,7 +59,7 @@ function tvl(chain) {
 
         return balances;
     };
-};
+}
 function borrowed(chain) {
     return async (timestamp, block, chainBlocks) => {
         return { 
@@ -71,7 +72,7 @@ function borrowed(chain) {
                 })).output 
             };
     };
-};
+}
 module.exports = {
     bsc: {
         tvl: tvl('bsc'),
@@ -81,13 +82,22 @@ module.exports = {
             'bsc',
             contracts.ethereum.tokens.DFL.address
         ),
-        //borrowed: borrowed('bsc')
+        pool2: pool2(
+            contracts.bsc.pool2, 
+            contracts.bsc.tokens['DFL-USDT'].address, 
+            'bsc'
+        ),
     },
     ethereum: {
         tvl: tvl('ethereum'),
         staking: staking(
             contracts.ethereum.holders.DFL,
             contracts.ethereum.tokens.DFL.address
+        ),
+        pool2: pool2(
+            contracts.ethereum.pool2, 
+            contracts.ethereum.tokens['DFL-USDT'].address, 
+            'ethereum'
         ),
         borrowed: borrowed('ethereum')
     }

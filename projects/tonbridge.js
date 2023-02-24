@@ -1,3 +1,4 @@
+const sdk = require("@defillama/sdk");
 const axios = require('axios');
 const BigNumber = require("bignumber.js");
 const burl = 'https://token-indexer.broxus.com/v1/root_contract/root_address/0:';
@@ -29,13 +30,45 @@ async function tvl() {
     for (let i = 0; i < tokenAddresses.length; i++) {
         const supply = (await axios.get(burl + tokenAddresses[i])).data.totalSupply;
         balances[tokenMap[tokenAddresses[i]]] = new BigNumber(supply);
-    };
+    }
     return balances;
-};
+}
+
+function evm(chain, target) {
+    return async (timestamp, block, chainBlocks) => {
+        return { everscale: (await sdk.api.abi.call({
+            target,
+            abi: 'erc20:totalSupply',
+            block: chainBlocks[chain],
+            chain
+        })).output / 10 ** 9 };
+    };
+}
 
 module.exports = {
     timetravel: false,
     everscale: {
         tvl
-    }
+    },
+    bsc: {
+        tvl: evm('bsc', '0x0A7e7D210C45c4abBA183C1D0551B53AD1756ecA')
+    },
+    ethereum: {
+        tvl: evm('ethereum', '0x29d578CEc46B50Fa5C88a99C6A4B70184C062953')
+    },
+    avax:{
+        tvl: evm('avax', '0x1ffefd8036409cb6d652bd610de465933b226917')
+    },
+    milkomeda: {
+        tvl: evm('milkomeda', '0x1ffEFD8036409Cb6d652bd610DE465933b226917')
+    },
+    polygon: {
+        tvl: evm('polygon', '0x1ffEFD8036409Cb6d652bd610DE465933b226917')
+    },
+    fantom: {
+        tvl: evm('fantom', '0x1ffEFD8036409Cb6d652bd610DE465933b226917')
+    },
+    hallmarks:[
+        [1651881600, "UST depeg"],
+      ],
 };

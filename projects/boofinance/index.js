@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const token0Abi = require("../helper/abis/token0.json");
-const token1Abi = require("../helper/abis/token1.json");
+const token0Abi = 'address:token0'
+const token1Abi = 'address:token1'
 const {unwrapUniswapLPs} = require("../helper/unwrapLPs");
 const {staking} = require("../helper/staking");
 const BigNumber = require("bignumber.js");
@@ -125,7 +125,7 @@ async function pool2(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
-    avalanche: {
+    avax:{
         tvl,
         pool2,
         staking: staking(stakingAddress, boofi, "avax")

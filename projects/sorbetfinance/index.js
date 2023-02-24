@@ -76,6 +76,13 @@ module.exports = {
   optimism: {
     tvl: chainTvl("optimism", "0x2845c6929d621e32B7596520C8a1E5a37e616F09"),
   },
+  polygon: {
+    tvl: chainTvl("polygon", "0x37265A834e95D11c36527451c7844eF346dC342a")
+  },
   methodology:
     "Counts TVL that's on all the Pools through G-UNI Factory Contract",
+  hallmarks:[
+      [1632253540, "GUNI-DAIUSDC Added to Maker"],
+      [1643056020, "Maker GUNI Cap to 500M"],
+  ],
 };

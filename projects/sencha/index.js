@@ -1,10 +1,11 @@
-const utils = require('../helper/utils')
-const {getTokenAccountBalance} = require('../helper/solana')
+const { getConfig } = require('../helper/cache')
+
+const {getTokenAccountBalance} = require('../helper/solana');
 
 async function tvl() {
   // this is a list of token accounts that are reserves of a swap
   // more details: https://github.com/senchahq/sencha-registry
-  const { data: senchaTokenAccounts } = await utils.fetchURL(
+  const senchaTokenAccounts= await getConfig('sencha',
     "https://raw.githubusercontent.com/SenchaHQ/sencha-registry/master/data/known-accounts.json"
   );
 
@@ -26,5 +27,8 @@ module.exports = {
   timetravel: false,
   methodology:
     "Sencha TVL is computed by iterating each known Sencha pool, then taking the value of each of the underlying tokens. Assets not listed on Coingecko are not counted.",
-  tvl,
+  solana: {
+    tvl,
+  }
+  
 };

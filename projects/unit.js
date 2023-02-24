@@ -1,17 +1,9 @@
-const web3 = require('./config/web3.js');
 
-const BigNumber = require("bignumber.js");
-const retry = require('./helper/retry')
-const axios = require("axios");
-const abis = require('./config/abis.js')
-const geckoKeys = require('./config/keys.js').keys
-
-const utils = require('./helper/utils');
+const { sumTokens } = require('./helper/unwrapLPs');
 
 
-async function fetch() {
+async function tvl(ts, block) {
   var pool = '0xb1cff81b9305166ff1efc49a129ad2afcd7bcf19'
-
 
   let tokens = [
     '0x92e187a03b6cd19cb6af293ba17f2745fd2357d5',
@@ -38,43 +30,12 @@ async function fetch() {
     '0xd291e7a03283640fdc51b121ac401383a46cc623',
     '0x6b175474e89094c44da98b954eedeac495271d0f', //dai
   ];
-  let keys = '';
-  await Promise.all(
-    tokens.map(async (token) => {
-      if (geckoKeys[token.toLowerCase()]) {
-        if (geckoKeys[token.toLowerCase()] !== 'stable') {
-          keys += geckoKeys[token.toLowerCase()]+','
-        }
-      } else {
-        console.log(token.toLowerCase());
-      }
-    })
-  )
-  keys = keys.slice(0, -1)
-  let price_feed = await utils.getPricesfromString(keys)
-  let tvl = 0;
-  await Promise.all(
-    tokens.map(async (token) => {
-      if (geckoKeys[token.toLowerCase()]) {
-        let balance = await utils.returnBalance(token, pool);
-        let price = 0;
-        if (geckoKeys[token.toLowerCase()] == 'stable') {
-          price = 1
-        } else {
-          //console.log(token.toLowerCase(), 'token.toLowerCase()');
-          price = price_feed.data[geckoKeys[token.toLowerCase()]].usd
-        }
-        tvl += price * balance
-      }
-    })
-  )
-
-
-
-  return tvl;
-  //return totalTvl.data.totalTvl.tvlInUsd;
+  const toa = tokens.map(t => [t, pool])
+  return sumTokens({}, toa, block)
 }
 
 module.exports = {
-  fetch
+  ethereum: {
+    tvl,
+  }
 }
