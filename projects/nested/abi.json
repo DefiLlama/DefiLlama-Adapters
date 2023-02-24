@@ -1,0 +1,3 @@
+{
+  "nestedRecords_getAssetTokens": "function getAssetTokens(uint256 _nftId) view returns (address[])"
+}

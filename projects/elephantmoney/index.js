@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const { pool2s } = require("../helper/pool2");
 const { stakings } = require("../helper/staking");
 
 const contracts = {
@@ -22,14 +21,11 @@ async function tvl(timestamp, block, chainBlocks) {
     block: chainBlocks.bsc,
     chain: 'bsc'
   })).output };
-};
+}
 
 module.exports = {
-  name: 'Elephant Money',
-  token: 'ELEPHANT',
-  website: 'https://elephant.money/',
   bsc: {
-    pool2: pool2s([contracts.TRUNK, contracts.ELEPHANT], LPs, "bsc"),
+    pool2: stakings([contracts.TRUNK, contracts.ELEPHANT], LPs, "bsc"),
     tvl: tvl,
     staking: stakings([contracts.staking], contracts.ELEPHANT, 'bsc')
   }

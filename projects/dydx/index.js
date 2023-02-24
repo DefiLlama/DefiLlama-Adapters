@@ -1,5 +1,5 @@
   const sdk = require('@defillama/sdk');
-  const _ = require('underscore');
+
   const BigNumber = require("bignumber.js");
 
   const contracts = [
@@ -19,10 +19,10 @@
     const balances = {};
 
     let balanceOfCalls = [];
-    _.forEach(contracts, (contract) => {
+    contracts.forEach((contract) => {
       balanceOfCalls = [
         ...balanceOfCalls,
-        ..._.map(tokens, (token) => ({
+        ...tokens.map((token) => ({
           target: token,
           params: contract
         }))
@@ -42,7 +42,7 @@
 
   module.exports = {
     start: 1538179200,  // 09/29/2018 @ 12:00am (UTC)
-    tvl,
+    ethereum: { tvl },
    hallmarks:[
     [1611630974, "Series B $10M"],
     [1623726974, "Series C $65M"],

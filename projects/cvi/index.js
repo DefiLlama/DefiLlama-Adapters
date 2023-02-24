@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const { staking, stakings } = require("../helper/staking");
-const { pool2s, pool2 } = require("../helper/pool2");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const { transformPolygonAddress } = require("../helper/portedTokens");
 
@@ -69,12 +68,13 @@ const CVOL_USDC_QLP = "0x1dd0095a169e8398448A8e72f15A1868d99D9348";
 const stakingContract_arbitrum = "0xDb3e7deAb380B43189A7Bc291fa2AFeAA938dCc3";
 const GOVI_arbitrum = "0x07e49d5de43dda6162fa28d24d5935c151875283";
 
-async function ethTvl() {
+async function ethTvl(timestamp, block) {
   const balances = {};
 
   const ethBalance = (
     await sdk.api.eth.getBalance({
       target: ETHPlatform,
+      block
     })
   ).output;
 
@@ -88,13 +88,14 @@ async function ethTvl() {
       [ETHVOL_USDC_UNIV2, true],
       [WETH_COTI_UNIV2, true],
     ],
-    platformLiquidityContracts
+    platformLiquidityContracts,
+    block
   );
 
   return balances;
 }
 
-async function polygonTvl(chainBlocks) {
+async function polygonTvl(timestamp, block, chainBlocks) {
   const balances = {};
 
   const transformAddress = await transformPolygonAddress();
@@ -113,17 +114,33 @@ async function polygonTvl(chainBlocks) {
 
   return balances;
 }
+async function arbiTvl(_, _b, _cb, { api, }) {
+  const balances = {}
+  const vaults = [
+    '0xfdeb59a2b4891ea17610ee38665249acc9fcc506',
+  ]
+  const tokens = await api.multiCall({
+    abi: 'address:token',
+    calls: vaults,
+  })
+  const totalBalance = await api.multiCall({
+    abi: 'function totalBalance() view returns (uint256 balance, uint256 usdcPlatformLiquidity, uint256 intrinsicDEXVolTokenBalance, uint256 volTokenPositionBalance, uint256 dexUSDCAmount, uint256 dexVolTokensAmount)',
+    calls: vaults,
+  })
+  tokens.forEach((t, i) => sdk.util.sumSingleBalance(balances, t, totalBalance[i].balance, api.chain))
+  return balances
+}
 
 module.exports = {
   misrepresentedTokens: true,
   ethereum: {
     staking: staking(stakingContract, GOVI),
-    pool2: pool2s(stakingPool2Contracts, lpPool2Addresses),
+    pool2: staking(stakingPool2Contracts, lpPool2Addresses),
     tvl: ethTvl,
   },
   polygon: {
     staking: stakings(stakingContracts_polygon, GOVI_polygon, "polygon", GOVI),
-    pool2: pool2(
+    pool2: staking(
       stakingPool2Contract_polygon,
       lpPool2Address_polygon,
       "polygon"
@@ -132,6 +149,7 @@ module.exports = {
   },
   arbitrum: {
     staking: staking(stakingContract_arbitrum, GOVI_arbitrum, "arbitrum", GOVI),
+    tvl: arbiTvl,
   },
   methodology:
     "Counts liquidity on the Platforms and Staking seccions through Platfrom and Staking Contracts",

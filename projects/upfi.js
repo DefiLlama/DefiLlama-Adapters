@@ -1,11 +1,7 @@
-const { getTokenAccountBalance } = require("./helper/solana");
-const axios = require("axios");
-const retry = require("./helper/retry");
+const { get } = require('./helper/http')
 
 async function pool2() {
-  const response = (
-    await retry(async (bail) => await axios.get("https://api.upfi.network/tvl"))
-  ).data;
+  const response = await get("https://api.upfi.network/tvl")
   return { 
     'upfi-network': response.UPS_USDC,
     'usd-coin': response.USDC_UPFI + response.UPFI_3Pool,
@@ -16,7 +12,7 @@ module.exports = {
   timetravel: false,
   methodology: 'TVL data is pulled from the UPFI API "https://api.upfi.network/tvl".',
   solana: {
-    tvl: (async) => {},
+    tvl: async ()=> ({}),
     pool2,
   }
 };

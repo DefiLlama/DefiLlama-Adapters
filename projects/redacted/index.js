@@ -1,30 +1,134 @@
-const { sumTokensAndLPsSharedOwners } = require('../helper/unwrapLPs')
-const { staking } = require('../helper/staking')
+const { sumTokensAndLPsSharedOwners, unwrapUniswapV3NFTs, genericUnwrapCvx } = require('../helper/unwrapLPs')
+const sdk = require('@defillama/sdk')
+const { BigNumber } = require('ethers')
 
 const treasuries = ["0xa52fd396891e7a74b641a2cb1a6999fcf56b077e", "0x086c98855df3c78c6b481b6e1d47bef42e9ac36b"]
 
-async function tvl(time, block){
+const CVXLocker = '0x72a19342e8f1838460ebfccef09f6585e32db86e'
+const cvxCRVStaking = '0x3Fe65692bfCD0e6CF84cB1E7d24108E434A7587e'
+const CVX = '0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b'
+const cvxCRV = '0x62b9c7356a2dc64a1969e19c23e4f579f9810aa7'
+const FXS = '0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0'
+const veFXS = '0xc8418aF6358FFddA74e09Ca9CC3Fe03Ca6aDC5b0'
+const CRV = '0xD533a949740bb3306d119CC777fa900bA034cd52'
+const veCRV = '0x5f3b5DfEb7B28CDbD7FAba78963EE202a494e2A2'
+const sOHM = '0x04906695D6D12CF5459975d7C3C03356E4Ccd460'
+const OHM = '0x64aa3364f17a4d01c6f1751fd97c2bd3d7e7f1d5'
+const AURA = '0xC0c293ce456fF0ED870ADd98a0828Dd4d2903DBF'
+const AURALocker = '0x3Fa73f1E5d8A792C80F426fc8F84FBF7Ce9bBCAC'
+const rlBTRFLY = '0x742B70151cd3Bc7ab598aAFF1d54B90c3ebC6027'
+const BTRFLYV2 = '0xc55126051B22eBb829D00368f4B12Bde432de5Da'
+const cvxCRVPool = '0x0392321e86F42C2F94FBb0c6853052487db521F0'
+const cvxFXSPool = '0xf27AFAD0142393e4b3E5510aBc5fe3743Ad669Cb'
+
+const rlBTRFLYAbi = {
+    lockedSupply: "uint256:lockedSupply",
+} 
+
+async function tvl(timestamp, block, chainBlocks){
     const balances = {}
+    
+    //Add tokens/curve LPs in wallet
     await sumTokensAndLPsSharedOwners(balances, [
-        //(1) CVX
-        ["0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b", false],
-        //(1) CRV
-        ["0xD533a949740bb3306d119CC777fa900bA034cd52", false],
-        //(1) Sushi LP
-        ["0xe9ab8038ee6dd4fcc7612997fe28d4e22019c4b4", true],
-        //(2) OHM 
-        ["0x383518188c0c6d7730d91b2c03a03c837814a899", false],
-        //(2) CVX * 0.001 cvx balance
-        ["0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b", false],
+        [CVX, false],
+        [cvxCRV, false],
+        [FXS, false],
+        [CRV, false],
+        [AURA, false],
+        // BTRFLY/ETH Curve LP
+        ['0x7483Dd57f6488b0e194A151C57Df6Ec85C00aCE9', false],
+        // USDC
+        ['0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', false],
+        // FRAX
+        ['0x853d955aCEf822Db058eb8505911ED77F175b99e', false],
     ], treasuries, block)
+    
+    //Add UniswapV3 LPs
+    await unwrapUniswapV3NFTs({ balances, owners: treasuries, block})
+
+    //Add convex deposited curve LPs
+    await genericUnwrapCvx(balances, treasuries[0], cvxCRVPool, block, 'ethereum')
+    
+    //This causes an error and not sure why
+    //await genericUnwrapCvx(balances, treasuries[0], cvxFXSPool, block, 'ethereum')
+    
+    //Add vlCVX as CVX
+    const vlCVXBalance = await sdk.api.erc20.balanceOf({
+        target: CVXLocker,
+        owner: treasuries[0],
+        chain: 'ethereum',
+        block: chainBlocks['ethereum']
+    }).then(result => result.output)
+    sdk.util.sumSingleBalance(balances, CVX, vlCVXBalance)
+
+    //Add vlAURA as AURA
+    const vlAURABalance = await sdk.api.erc20.balanceOf({
+        target: AURALocker,
+        owner: treasuries[0],
+        chain: 'ethereum',
+        block: chainBlocks['ethereum']
+    }).then(result => result.output)
+    sdk.util.sumSingleBalance(balances, AURA, vlAURABalance)
+
+    //Add staked cvxCRV as cvxCRV
+    const cvxCRVStakedBalance = await sdk.api.erc20.balanceOf({
+        target: cvxCRVStaking,
+        owner: treasuries[0],
+        chain: 'ethereum',
+        block: chainBlocks['ethereum']
+    }).then(result => result.output)
+    sdk.util.sumSingleBalance(balances, cvxCRV, cvxCRVStakedBalance)
+
+    //Add veFXS as  1/4 FXS since locked for 4 years
+    const veFXSBalance = await sdk.api.erc20.balanceOf({
+        target: veFXS,
+        owner: treasuries[0],
+        chain: 'ethereum',
+        block: chainBlocks['ethereum']
+    }).then(result => result.output)
+    sdk.util.sumSingleBalance(balances, FXS, BigNumber.from(veFXSBalance).div(4).toString())
+
+    //Add veCRV as 1 CRV since locked for 4 years
+    const veCRVBalance = await sdk.api.erc20.balanceOf({
+        target: veCRV,
+        owner: treasuries[0],
+        chain: 'ethereum',
+        block: chainBlocks['ethereum']
+    }).then(result => result.output)
+    sdk.util.sumSingleBalance(balances, CRV, veCRVBalance)
+
+    //Add sOHM as OHM since 1:1
+    const sOHMBalance = await sdk.api.erc20.balanceOf({
+        target: sOHM,
+        owner: treasuries[1],
+        chain: 'ethereum',
+        block: chainBlocks['ethereum']
+    }).then(result => result.output)
+    sdk.util.sumSingleBalance(balances, OHM, sOHMBalance)
+
+    return balances
+}
+
+async function staking(timestamp, block, chainBlocks) {
+    const balances = {}
+    
+    //Adding locked BTRFLY
+    const lockedBTRFLY = await sdk.api.abi.call({
+        abi: rlBTRFLYAbi.lockedSupply,
+        target: rlBTRFLY,
+        chain: 'ethereum',
+        block: chainBlocks['ethereum'],
+    }).then(result => result.output)
+    sdk.util.sumSingleBalance(balances, BTRFLYV2, lockedBTRFLY)
+    
     return balances
 }
 
 module.exports = {
     timetravel: true,
-    methodology: "tvl = treasury",
+    methodology: "tvl = Treasury assets (bonding). staking = rlBTRFLY (locked tokens)",
     ethereum:{
-        staking: staking("0xbde4dfb0dbb0dd8833efb6c5bd0ce048c852c487", "0xc0d4ceb216b3ba9c3701b291766fdcba977cec3a"),
-        tvl
+        tvl,
+        staking
     },
 }

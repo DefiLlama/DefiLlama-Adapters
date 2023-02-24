@@ -1,5 +1,5 @@
-const { getMultipleAccountBuffers } = require("../helper/solana");
-const { Connection, PublicKey } = require("@solana/web3.js");
+const { getMultipleAccountBuffers, getConnection, } = require("../helper/solana");
+const { PublicKey } = require("@solana/web3.js");
 
 const MSOL_LP_SOL = new PublicKey(
   "UefNb6z6yvArqe4cJHTXCqStRsKmWhGxnZzuHbikP5Q"
@@ -12,7 +12,7 @@ const MSOL_LP_MINT = new PublicKey(
 );
 
 const getMSolLPTokens = async (lpAmount) => {
-  const connection = new Connection("https://api.mainnet-beta.solana.com");
+  const connection = getConnection();
   const accountData = await getMultipleAccountBuffers({
     msolTokens: MSOL_LP_MSOL.toString(),
     poolMint: MSOL_LP_MINT.toString(),
@@ -26,8 +26,8 @@ const getMSolLPTokens = async (lpAmount) => {
     Number(accountData.poolMint.readBigUInt64LE(4 + 32)) / 10 ** 9;
 
   return {
-    msol: (msolAmount * lpAmount) / lpSupply,
-    solana: (solAmount * lpAmount) / lpSupply,
+    'solana:mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So': (msolAmount * lpAmount) / lpSupply,
+    'solana:So11111111111111111111111111111111111111112': (solAmount * lpAmount) / lpSupply,
   };
 };
 

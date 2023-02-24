@@ -154,5 +154,4 @@ module.exports = {
   bsc: {
     tvl: bsc,
   },
-  tvl,
 };

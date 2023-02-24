@@ -2,9 +2,9 @@
   Modules
   ==================================================*/
 
-  const _ = require('underscore');
+
   const sdk = require('@defillama/sdk');
-  const abi = require('./abi');
+  const abi = require('./abi.json');
   const BigNumber = require("bignumber.js");
 
 /*==================================================
@@ -31,11 +31,27 @@
   
   const usdtEth = "0xdac17f958d2ee523a2206206994597c13d831ec7"
   const usdtArbitrum = "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9"
+
+  const fraxEth = "0x853d955aCEf822Db058eb8505911ED77F175b99e"
   
   const usdcFantomBAMM = "0xEDC7905a491fF335685e2F2F1552541705138A3D"
   const daiFantomBAMM = "0x6d62d6Af9b82CDfA3A7d16601DDbCF8970634d22"
   const usdcArbitrumBAMM = "0x04208f296039f482810B550ae0d68c3E1A5EB719"
   const usdtArbitrumBAMM = "0x24099000AE45558Ce4D049ad46DDaaf71429b168"
+
+  const hDAIPolygon = "0xE4e43864ea18d5E5211352a4B810383460aB7fcC"
+  const hUSDCPolygon = "0x607312a5C671D0C511998171e634DE32156e69d0"
+  const hUSDTPolygon = "0x103f2CA2148B863942397dbc50a425cc4f4E9A27"
+  const hFRAXPolygon = "0x2c7a9d9919f042C4C120199c69e126124d09BE7c"   
+  
+  const bammDAIPolygon = "0x998Bf304Ce9Cb215F484aA39d1177b8210078f49"
+  const bammUSDCPolygon = "0x0F0dD66D2d6c1f3b140037018958164c6AB80d56"
+  const bammUSDTPolygon = "0x1EcF1b0DE9b4c2D01554062eA2faB84b1917B41d"
+  const bammFRAXPolygon = "0x2DA13538056aFf0bFC81d3A4c6364B0a7e0f9feb"
+
+  const polygonHTokens = [hDAIPolygon, hUSDCPolygon, hUSDTPolygon, hFRAXPolygon]
+  const polygonBamms = [bammDAIPolygon, bammUSDCPolygon, bammUSDTPolygon, bammFRAXPolygon]
+  const polygonEthUnderlying = [daiEth, usdcEth, usdtEth, fraxEth]
 
 /*==================================================
   TVL
@@ -193,7 +209,8 @@
     // combine balances for Maker and Compound B.Protocol's TVL
     const allLendingPlatformBalances = {}
     // all assets in B.Protocol
-    _.uniq(Object.keys(cTvl).concat(Object.keys(mTvl)).concat(Object.keys(lTvl))).forEach(asset => {
+    const uniq = arry => [... new Set(arry)]
+    uniq(Object.keys(cTvl).concat(Object.keys(mTvl)).concat(Object.keys(lTvl))).forEach(asset => {
       allLendingPlatformBalances[asset] = new BigNumber(cTvl[asset] || "0").plus(new BigNumber(mTvl[asset] || "0")).plus(new BigNumber(lTvl[asset] || "0")).toString(10)
     })
 
@@ -214,7 +231,7 @@
       })
     ).output;
 
-    balances[daiEth] = daiTvl = (
+    balances[daiEth] = (
       await sdk.api.erc20.balanceOf({
         target: daiFantom,
         owner: daiFantomBAMM,
@@ -240,7 +257,7 @@
       })
     ).output;
 
-    balances[usdtEth] = daiTvl = (
+    balances[usdtEth] = (
       await sdk.api.erc20.balanceOf({
         target: usdtArbitrum,
         owner: usdtArbitrumBAMM,
@@ -252,6 +269,26 @@
     return balances
   }  
 
+  async function tvlPolygon(unixTimestamp, ethBlock, chainBlocks) {
+    const block = chainBlocks["polygon"]
+
+    const balances = {}
+
+    for(let i = 0 ; i < polygonBamms.length ; i++) {
+      const balance = await sdk.api.abi.call(
+        {
+          block,
+          target: polygonHTokens[i],
+          params: [polygonBamms[i]],
+          abi: abi["balanceOfUnderlying"],
+          chain: "polygon"
+        });
+        
+      balances[polygonEthUnderlying[i]] = balance.output
+    }
+
+    return balances
+  }
 
 /*==================================================
   Exports
@@ -260,5 +297,6 @@
   module.exports = {
     ethereum: {"tvl": tvlEth},
     fantom: {"tvl" : tvlFantom},
-    arbitrum: {"tvl" : tvlArbitrum}
+    arbitrum: {"tvl" : tvlArbitrum},
+    polygon: {"tvl": tvlPolygon}
   };

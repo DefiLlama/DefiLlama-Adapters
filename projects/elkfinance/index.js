@@ -1,67 +1,5 @@
-const sdk = require('@defillama/sdk');
-const {calculateUsdUniTvl} = require('../helper/getUsdUniTvl');
-const { getBlock } = require('../helper/getBlock');
 const { chainExports: getChainExports } = require('../helper/exports');
-
-function elkAddress(chain) {
-  switch(chain) {
-    case 'iotex': 
-    return '0xa00744882684c3e4747faefd68d283ea44099d03';
-    default:
-      return '0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c';
-  }
-} 
-
-function geckoId(chain) {
-  switch(chain) {
-    case 'iotex': 
-    return 'iotex';
-    default:
-      return 'elk-finance';
-  }
-}
-
-function whitelist(chain) {
-  switch(chain) {
-    case 'iotex': 
-    return ["0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c", "0x3b2bf2b523f54c4e454f08aa286d03115aff326c"];
-    default:
-      return [];
-  }
-}
-const stakingContracts = {
-  "heco": "0xdE16c49fA4a4B78071ae0eF04B2E496dF584B2CE",
-  "polygon": "0xB8CBce256a713228F690AC36B6A0953EEd58b957",
-  "bsc": "0xD5B9b0DB5f766B1c934B5d890A2A5a4516A97Bc5",
-  "avax": "0xB105D4D17a09397960f2678526A4063A64FAd9bd",
-  "fantom": "0x6B7E64854e4591f8F8E552b56F612E1Ab11486C3",
-  "xdai": "0xAd3379b0EcC186ddb842A7895350c4657f151e6e",
-  "okexchain": "0x1e0C4867253698355d0689567D2F7968542e6e9f",
-  "elastos": "0x59d39bC9b0B36306b36895017A56B40eCC98D1d9",
-  "hoo": "0x3A68B0dB21135E089AEaa13C5f5cd5E6cA158199",
-  "moonriver": "0x64aA42D30428Cd53fD9F2fe01da161d90d878260",
-  "kcc": "0x719a11f32340983E8D764C143d964CB3F4e5b49b",
-  "harmony": "0xf4f3495a35c0a73268eEa08b258C7968E976F5D4",
-  "cronos": "0x7D4fB4BFf1EE561a97394e29B7Fa5FdE96f6d44E",
-  "telos": "0xB61b4ee3A00A8D01039625c13bd93A066c85EF2C",
-  "fuse": "0xA83FF3b61c7b5812d6f0B39d5C7dDD920B2bDa61",
-};
-// node test.js projects/elkfinance/index.js
-function chainStaking(chain, contract){
- return async (timestamp, ethBlock, chainBlocks) => {
-  balance = 0;
-    const block = await getBlock(timestamp, chain, chainBlocks, true);
-
-    balance += Number((await sdk.api.erc20.balanceOf({
-      target: elkAddress(chain),
-      owner: contract,
-      block: block,
-      chain
-    })).output);
-
-  return { 'avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c': balance };
- }
-};
+const { getUniTVL } = require('../helper/unknownTokens')
 
 const factories = {
   xdai: "0xCB018587dA9590A18f49fFE2b85314c33aF3Ad3B",
@@ -75,32 +13,24 @@ const factories = {
   okexchain: "0x1116f8B82028324f2065078b4ff6b47F1Cc22B97",
   moonriver: "0xd45145f10fD4071dfC9fC3b1aefCd9c83A685e77",
   cronos: "0xEEa0e2830D09D8786Cb9F484cA20898b61819ef1",
-  //telos: "0x47c3163e691966f8c1b93B308A236DDB3C1C592d",
+  telos: "0x47c3163e691966f8c1b93B308A236DDB3C1C592d",
   hoo: "0x9c03E724455306491BfD2CE0805fb872727313eA",
   elastos: "0x440a1B8b8e968D6765D41E6b92DF3cBb0e9D2b1e",
   fuse: "0x779407e40Dad9D70Ba5ADc30E45cC3494ec71ad2",
-  iotex: "0xF96bE66DA0b9bC9DFD849827b4acfA7e8a6F3C42"
+  iotex: "0xF96bE66DA0b9bC9DFD849827b4acfA7e8a6F3C42",
+  ethereum: "0x6511eBA915fC1b94b2364289CCa2b27AE5898d80",
+  optimism: "0xedfad3a0F42A8920B011bb0332aDe632e552d846",
+  arbitrum: "0xA59B2044EAFD15ee4deF138D410d764c9023E1F0",
+  kava: "0xC012C4b3d253A8F22d5e4ADA67ea2236FF9778fc",
+  bittorrent: "0xc06348AEE3f3E92eE452816E0D3F25C919F6fB04"
 }
 
-function chainTvl(chain){
-  return calculateUsdUniTvl(
-    factories[chain], 
-    chain, 
-    elkAddress(chain), 
-    whitelist(chain),
-    geckoId(chain),
-    18,
-    true
-  )
+function chainTvl(chain) {
+  return getUniTVL({ chain, factory: factories[chain], useDefaultCoreAssets: true, blacklistedTokens: ['0xa9536b9c75a9e0fae3b56a96ac8edf76abc91978'] })
 }
 
 const chainExports = getChainExports(chainTvl, Object.keys(factories))
-chainExports.misrepresentedTokens= true;
-chainExports.timetravel= true,
-/*
-Object.entries(stakingContracts).forEach(contract=>{
-  chainExports[contract[0] === "avax"?"avalanche":contract[0]].staking = chainStaking(contract[0], contract[1])
-})
-*/
+chainExports.misrepresentedTokens = true;
+chainExports.timetravel = true
 
 module.exports = chainExports

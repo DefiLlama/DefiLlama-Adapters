@@ -1,40 +1,20 @@
-const sdk = require('@defillama/sdk')
-const { getBlock } = require('../helper/getBlock')
-const { sumTokensSharedOwners } = require('../helper/unwrapLPs')
-const getPoolTokensAbi = require('./abi.json')
+const { sumTokensExport } = require('../helper/unwrapLPs')
 
-const vault = "0xad68ea482860cd7077a5D0684313dD3a9BC70fbB"
-const event = "Swap(bytes32,address,address,uint256,uint256)"//"PoolRegistered(bytes32,address,uint8)"
-
-async function tvl(timestamp, ethBlock, chainBlocks){
-    const chain = "avax"
-    const block = await getBlock(timestamp, chain, chainBlocks)
-    const pools = await sdk.api.util.getLogs({
-        target: vault,
-        topic: event,
-        keys: [],
-        fromBlock: 8169253-1, // Change if different project/deployment
-        toBlock: block,
-        chain
+module.exports = {
+  avax:{
+    tvl: sumTokensExport({
+      chain: 'avax',
+      owner: '0xad68ea482860cd7077a5d0684313dd3a9bc70fbb',
+      tokens: [
+        '0xc7198437980c041c805a1edcba50c1ce5db95118',
+        '0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664',
+        '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7',
+        '0x130966628846bfd36ff31a822705796e8cb8c18d',
+        '0x78ea17559b3d2cf85a7f9c2c704eda119db5e6de',
+        '0xd586e7f844cea2f87f50152665bcbc2c279d8d70',
+        '0xc38f41a296a4493ff429f1238e030924a1542e50',
+        '0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e',
+      ]
     })
-    const poolIds = pools.output.map(o=>o.topics[1])
-    const poolTokens = await sdk.api.abi.multiCall({
-        abi: getPoolTokensAbi,
-        block, chain,
-        calls: poolIds.map(id=>({
-            target: vault,
-            params: [id]
-        }))
-    })
-    const tokens = new Set()
-    poolTokens.output.forEach(call=>call.output.tokens.forEach(t=>tokens.add(t)))
-    const balances = {}
-    await sumTokensSharedOwners(balances, Array.from(tokens), [vault], block, chain, addr=>`${chain}:${addr}`)
-    return balances
-}
-
-module.exports={
-    avalanche:{
-        tvl
-    }
+  },
 }

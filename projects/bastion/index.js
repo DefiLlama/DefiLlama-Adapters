@@ -1,5 +1,5 @@
 const { compoundExports } = require("../helper/compound");
-const { bigNumberify } = require("../mobiusfinance/utilities/utilities");
+const sdk = require('@defillama/sdk')
 
 const mainHubExport = compoundExports(
   "0x6De54724e128274520606f038591A00C5E94a1F6",
@@ -18,37 +18,35 @@ const multiChainRealmExport = compoundExports(
   "aurora"
 );
 
-const bastion = [mainHubExport, auroraRealmExport, multiChainRealmExport];
+const stakedNearRealmExport = compoundExports(
+  "0xE550A886716241AFB7ee276e647207D7667e1E79",
+  "aurora"
+);
+
+const bastion = [
+  mainHubExport,
+  auroraRealmExport,
+  multiChainRealmExport,
+  stakedNearRealmExport,
+];
 
 module.exports = {
   timetravel: true,
   aurora: {
     tvl: async (...args) => {
-      let balances = {}
-      for (const realm of bastion) {
-        const realmBalances = await realm.tvl(...args)
-        for (const underlyingAddress of Object.keys(realmBalances)) {
-          if (underlyingAddress in balances) {
-            balances[underlyingAddress] = bigNumberify(balances[underlyingAddress]).add(bigNumberify(realmBalances[underlyingAddress])).toString()
-          } else {
-            balances[underlyingAddress] = realmBalances[underlyingAddress]
-          }
-        }
-      }
-      return balances
+      let balances = {};
+      const tvls = await Promise.all(bastion.map(realm => realm.tvl(...args)))
+      tvls.forEach(tvl => {
+        Object.keys(tvl).forEach(key => sdk.util.sumSingleBalance(balances, key, tvl[key]))
+      })
+      return balances;
     },
     borrowed: async (...args) => {
-      let balances = {}
-      for (const realm of bastion) {
-        const realmBalances = await realm.borrowed(...args)
-        for (const underlyingAddress of Object.keys(realmBalances)) {
-          if (underlyingAddress in balances) {
-            balances[underlyingAddress] = bigNumberify(balances[underlyingAddress]).add(bigNumberify(realmBalances[underlyingAddress])).toString()
-          } else {
-            balances[underlyingAddress] = realmBalances[underlyingAddress]
-          }
-        }
-      }
+      let balances = {};
+      const tvls = await Promise.all(bastion.map(realm => realm.borrowed(...args)))
+      tvls.forEach(tvl => {
+        Object.keys(tvl).forEach(key => sdk.util.sumSingleBalance(balances, key, tvl[key]))
+      })
       return balances;
     },
   },

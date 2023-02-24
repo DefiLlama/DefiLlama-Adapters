@@ -9,6 +9,5 @@ async function fetch() {
 
 module.exports = {
   methodology: `eCurve TVL is achieved by making a call to its eCurve API.`,
-  name: 'eCurve',
   fetch
 }

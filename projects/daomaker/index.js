@@ -1,63 +1,77 @@
+const sdk = require("@defillama/sdk");
 const { stakings } = require("../helper/staking");
-const { pool2s } = require("../helper/pool2");
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
+const { sumTokens2 } = require('../helper/unwrapLPs')
+const { getConfig } = require('../helper/cache')
 
-const DAO = "0x0f51bb10119727a7e5ea3538074fb341f56b09ad";
+const contracts = require("./contracts.json");
 
-const vaultsFarmsPool2Addresses = [
-    //convergence-finance
-    "0x218023631d37715Adf7C2f6CA3C40360E266ABdD",
-    //dao maker
-    "0xf91c7c211dB969aaFcB1cfC6CbBdCa048074EE07",
-    //evolution
-    "0x17d2974960005Ba5176A872cE63e53bB214D4856",
-    //openocean
-    "0x329420649604a57c616692c51106196a4712ea24",
-    //yield protocol
-    "0x2909122ea182368A4ba7bC5Eed2D2D536B3e25Ae",
-    //yield protocol v1
-    "0xe33b15629739770a27c4726a22be61128aa1c781",
-    //dao maker v3
-    "0xd07e86f68C7B9f9B215A3ca3E79E74Bf94D6A847",
-];
-
-const DAO_USDC_UNIV2 = "0x4cd36d6F32586177e36179a810595a33163a20BF";
-
-const vaultFarmsAddresses = [
-    //derace
-    "0x7C27bC15dee9BfFF50AA8C9FFd75e52367d1a9fF",
-    //dinox
-    "0x141Ba88B17442F4Fe305871c9642E3c1C6307346",
-    //gamestarter
-    "0x30E8dEf41D8c70De900Dd673c08238f77C2747bd",
-];
-
-const vaultlp = [
-    //DERC-USDC UNISWAP
-    "0xc88aC988A655B91b70DEF427c8778B4D43f2048D",
-    //DNXC-USDC UNISWAP
-    "0xa39d7a85553a46faeb3ba5e0c49d6a5db67df30f",
-    //GAME-USDT UNISWAP
-    "0x0cFB06414C6d9790Bc661230DbA0b24060808bF4",
-]
-
-async function ethTvl(block) {
-  const balances = {};
-
-    await sumTokensAndLPsSharedOwners(
-      balances,
-      vaultlp.map(v=>[v, true]),
-      vaultFarmsAddresses
-    );
-
-  return balances;
+const chainIds = {
+  "ethereum": "1",
+  "bsc": "56",
+  "polygon": "137",
+  "fantom": "250",
+  "step": "1234",
+  "celo": "42220"
 }
 
+let vestingData, stakingData
+
+async function getVestingData() {
+  if (!vestingData)
+    vestingData = getConfig('daomaker/vesting', 'https://api.daomaker.com/get-all-vesting-contracts')
+  return vestingData
+}
+
+function filterDuplicates(toa) {
+  const data = toa.map(i => i.map(i => i.toLowerCase()).join('-'))
+  return [... new Set(data)].map(i => i.split('-'))
+}
+
+async function getStakingData() {
+  if (!stakingData)
+    stakingData = getConfig('daomaker/staking', 'https://api.daomaker.com/get-all-farms')
+  return stakingData
+}
+
+function vesting(chain) {
+  return async (timestamp, _, { [chain]: block }) => {
+    const toa = []
+    const vestingContracts = await getVestingData();
+    vestingContracts.filter(i => i.chain_id.toString() === chainIds[chain])
+      .forEach(i => toa.push([i.token_address, i.vesting_smart_contract_address]))
+    return sumTokens2({ chain, block, tokensAndOwners: filterDuplicates(toa) })
+  };
+}
+function staking(chain) {
+  return async (timestamp, _, { [chain]: block }) => {
+    const toa = []
+    const contracts = await getStakingData();
+    contracts.forEach(({ farms }) => {
+      farms.filter(i => i.chain_id.toString() === chainIds[chain])
+        .forEach(i => toa.push([i.staking_address, i.farm_address]))
+    })
+    return sumTokens2({ chain, block, tokensAndOwners: filterDuplicates(toa) })
+  };
+}
+
+const chainTVLObject = contracts.chains.reduce(
+  (agg, chain) => ({
+    ...agg, [chain]: {
+      tvl: () => ({}),
+      vesting: vesting(chain),
+      staking: staking(chain),
+    }
+  }), {}
+);
+
+chainTVLObject.ethereum.staking = sdk.util.sumChainTvls([
+  chainTVLObject.ethereum.staking,
+  stakings(
+    [contracts.stakingContractEth],
+    contracts.stakingTokenEth
+  )
+]);
+
 module.exports = {
-  ethereum: {
-    staking: stakings(vaultsFarmsPool2Addresses, DAO),
-    pool2: pool2s(vaultsFarmsPool2Addresses, [DAO_USDC_UNIV2]),
-    tvl: ethTvl,
-  },
-  methodology: "Counts liquidity on the vaults through their Contracts",
+  ...chainTVLObject
 };

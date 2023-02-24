@@ -1,0 +1,3 @@
+{
+  "getAmountsOut": "function getAmountsOut(uint256 amountIn, address[] path) view returns (uint256[] amounts)"
+}

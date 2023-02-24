@@ -18,6 +18,7 @@ async function tvl(timestamp, block, chainBlocks) {
 
 
 module.exports = {
+    deadFrom: 1648765747,
     cronos: {
         tvl,
         staking: stakingUnknownPricedLP(masterchef, token, "cronos", "0x0A833865703639cf1f9125FEDCA5F2094Fc56d90"),

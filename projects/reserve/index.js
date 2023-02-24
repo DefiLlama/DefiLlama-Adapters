@@ -8,11 +8,12 @@ async function tvl(time, block){
         "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", //usdc
         "0x8e870d67f660d95d5be530380d0ec0bd388289e1", //pax
         "0x0000000000085d4780B73119b644AE5ecd22b376", //tusd
+        "0x4Fabb145d64652a948d72533023f6E7A623C7C53", //busd
     ].map(t=>[t, false]), [vault], block)
     return balances
 }
 
 module.exports={
-    tvl,
+    ethereum: { tvl },
     methodology: `Gets the tokens on ${vault}`
 }

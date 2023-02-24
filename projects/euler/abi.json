@@ -1,4 +1,5 @@
 {
-  "underlyingToAssetConfig": {"inputs":[{"internalType":"address","name":"underlying","type":"address"}],"name":"underlyingToAssetConfig","outputs":[{"components":[{"internalType":"address","name":"eTokenAddress","type":"address"},{"internalType":"bool","name":"borrowIsolated","type":"bool"},{"internalType":"uint32","name":"collateralFactor","type":"uint32"},{"internalType":"uint32","name":"borrowFactor","type":"uint32"},{"internalType":"uint24","name":"twapWindow","type":"uint24"}],"internalType":"struct Storage.AssetConfig","name":"","type":"tuple"}],"stateMutability":"view","type":"function"}, 
-  "getEnteredMarkets": {"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"getEnteredMarkets","outputs":[{"internalType":"address[]","name":"","type":"address[]"}],"stateMutability":"view","type":"function"}
+  "underlyingToAssetConfig": "function underlyingToAssetConfig(address underlying) view returns (tuple(address eTokenAddress, bool borrowIsolated, uint32 collateralFactor, uint32 borrowFactor, uint24 twapWindow))",
+  "getEnteredMarkets": "function getEnteredMarkets(address account) view returns (address[])",
+  "getTotalSupplyAndDebts": "function getTotalSupplyAndDebts(address underlying) view returns (uint256 poolSize, uint256 totalBalances, uint256 totalBorrows, uint256 reserveBalance)"
 }

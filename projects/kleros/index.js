@@ -1,4 +1,5 @@
 const { request, gql } = require("graphql-request");
+const { getBlock } = require('../helper/http')
 
 const graphUrls = {
   ethereum: 'https://api.thegraph.com/subgraphs/name/salgozino/klerosboard',
@@ -18,12 +19,12 @@ function getStakedTvl(chain) {
     const balances = {};
 
     const graphUrl = graphUrls[chain]
-    const block = chainBlocks[chain]
+    const block = await getBlock(timestamp, chain, chainBlocks)
 
-    const {klerosCounters} = await request(
-      graphUrl, 
+    const { klerosCounters } = await request(
+      graphUrl,
       totalStakedQuery,
-      {block}
+      { block: block - 500 }
     )
 
     balances.kleros = klerosCounters[0].tokenStaked / (10 ** 18);
@@ -35,13 +36,13 @@ function getStakedTvl(chain) {
 
 module.exports = {
   methodology: "Counts PNK staked in courts",
-  timeTravel: true,
+  timetravel: true,
   ethereum: {
-    tvl: ()=>([]),
+    tvl: () => ({}),
     staking: getStakedTvl('ethereum')
   },
   xdai: {
-    tvl: ()=>([]),
+    tvl: () => ({}),
     staking: getStakedTvl('xdai')
   },
 }

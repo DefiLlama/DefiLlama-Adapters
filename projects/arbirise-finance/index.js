@@ -1,12 +1,10 @@
 const sdk = require("@defillama/sdk");
-const { getBlock } = require("../helper/getBlock");
 const arbiStakerERC20 = require("./abis/arbiStakerERC20.json");
 const contracts = require("./contracts.json");
 const { default: BigNumber } = require("bignumber.js");
 const { getPrice } = require("./getPrice");
 
-async function tvl(time, _ethBlock, chainBlocks) {
-  const block = await getBlock(time, "arbitrum", chainBlocks);
+async function tvl(time, _ethBlock, {arbitrum: block}) {
 
   const nbOfPrograms = (
     await sdk.api.abi.call({

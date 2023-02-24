@@ -11,6 +11,7 @@ const pool2LPs = [
 ];
 
 module.exports = {
+    deadFrom: 1648765747,
     misrepresentedTokens: true,
     ...tombTvl(token, share, rewardPool, masonry, pool2LPs, "fantom", undefined, false, "0x7CB0158531efdeD51CA662564F14b4d28CDDe6eB")
 }

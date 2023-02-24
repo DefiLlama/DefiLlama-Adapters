@@ -1,39 +1,23 @@
-const WebSocket = require('ws')
+const { get } = require('../helper/http')
+const { toUSDTBalances } = require('../helper/balances')
 
-function offers() {
-    return new Promise(resolve => {
-        const ws = new WebSocket('wss://zigzag-rinkeby.herokuapp.com/');
-
-        ws.on('open', function open() {
-            ws.send(JSON.stringify({"op":"subscribemarket","args":[1,"ETH-USDT"]}));
-          });
-          
-        const orders = {}
-
-        ws.on('message', function message(data) {
-            const parsedData = JSON.parse(data)
-            orders[parsedData.op]=parsedData.args
-
-            if(orders.openorders && orders.liquidity){
-                let totalETH = 0;
-                orders.openorders[0].forEach(order=>{
-                    totalETH += order[5]
-                })
-                orders.liquidity[2].forEach(order=>{
-                    totalETH += order[0]*2
-                })
-                resolve({
-                    "ethereum": totalETH
-                })
-            }
-        });
-    })
+async function offers() {
+  const markets = await get('https://zigzag-exchange.herokuapp.com/api/v1/markets')
+  const marketInfos = await get('https://zigzag-exchange.herokuapp.com/api/v1/marketinfos?chain_id=1&market=' + Object.keys(markets).join(','))
+  let total = 0
+  Object.keys(markets).forEach(market => {
+    const info = marketInfos[market]
+    const { baseVolume, quoteVolume } = markets[market]
+    if (!info)  return;
+    total += baseVolume * info.baseAsset.usdPrice + quoteVolume * info.quoteAsset.usdPrice
+  })
+  return toUSDTBalances(total)
 }
 
 module.exports = {
-    timetravel: false,
-    zksync:{
-        offers,
-        tvl: async()=>({})
-    }
+  timetravel: false,
+  zksync: {
+    offers,
+    tvl: async () => ({})
+  }
 }

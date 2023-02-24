@@ -1,18 +1,4 @@
 {
-  "abiXdaiBridge": {
-    "type": "function",
-    "stateMutability": "view",
-    "payable": false,
-    "outputs": [{
-      "type": "address",
-      "name": ""
-    }],
-    "name": "foreignTokenAddress",
-    "inputs": [{
-      "internalType": "address",
-      "type": "address",
-      "name": "_homeToken"
-    }],
-    "constant": true
-  }
+  "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accBaoPerShare)",
+  "poolLength": "uint256:poolLength"
 }

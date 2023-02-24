@@ -1,7 +1,6 @@
-const { getBlock } = require('../helper/getBlock')
 const sdk = require('@defillama/sdk')
-const { fetchAssets } = require('../helper/terra')
-const { transformHarmonyAddress, transformBscAddress } = require('../helper/portedTokens')
+const { fetchAssets } = require('../helper/chain/terra')
+const { getChainTransform } = require('../helper/portedTokens')
 
 const data = {
     ethereum: {
@@ -9,28 +8,23 @@ const data = {
     },
     bsc: {
         path: '/shuttle/bsc.json',
-        transform: transformBscAddress()
     },
     harmony: {
         path: '/shuttle/hmy.json',
-        transform: transformHarmonyAddress()
     },
 }
 
 function getTVLFunction(chain) {
-   return async function tvl(timestamp, ethBlock, chainBlocks) {
+    return async function tvl(timestamp, ethBlock, {[chain]: block}) {
         const balances = {}
         const chainData = data[chain];
-        const block = await getBlock(timestamp, chain, chainBlocks);
         const chainTokens = await fetchAssets(chainData.path);
 
-        const transform = 'transform' in chainData ? await chainData.transform : null;
-        for (const [tokenAddress, chainAddress] of Object.entries(chainTokens.data.mainnet)) {
-            const bridgedSupply = await sdk.api.erc20.totalSupply({ 
-                block, chain, target: chainAddress
-            });
-            sdk.util.sumSingleBalance(balances, (transform ?? (id => id))(chainAddress), bridgedSupply.output)
-        }
+        const transform = await getChainTransform(chain)
+        const calls = Object.values(chainTokens.data.mainnet).map(t => ({ target: t }))
+        const { output: results } = await sdk.api.abi.multiCall({ abi: 'erc20:totalSupply', calls, block, chain })
+        results.forEach(({ input, output }) => sdk.util.sumSingleBalance(balances, transform(input.target), output))
+
         return balances
     }
 }
@@ -46,4 +40,7 @@ module.exports = {
     harmony: {
         tvl: getTVLFunction('harmony'),
     },
+    hallmarks:[
+        [1651881600, "UST depeg"],
+      ],
 };

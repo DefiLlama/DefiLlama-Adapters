@@ -6,17 +6,24 @@ async function main() {
     const [, , log, author, repo, pr, path ] = process.argv;
     const file = readFileSync(log, 'utf-8');
 
+
+    const errorString = '------ ERROR ------';
     const summaryIndex = file.indexOf('------ TVL ------');
-    if (summaryIndex == -1) {
+    const errorIndex = file.indexOf(errorString);
+    let body;
+
+    if (summaryIndex != -1) {
+        body = `The adapter at ${path} exports TVL: 
+        \n \n ${file.substring(summaryIndex + 17).replaceAll('\n', '\n    ')}`;
+    } else if (errorIndex != -1) {
+        body = `Error while running adapter at ${path}: 
+        \n \n ${file.split(errorString)[1].replaceAll('\n', '\n    ')}`;
+    } else
         return;
-    };
 
     await axios.post(
         `https://api.github.com/repos/${author}/${repo}/issues/${pr}/comments`,
-        {
-            body: `The adapter at ${path} exports TVL: 
-                \n \n ${file.substring(summaryIndex + 17)}`
-        }, {
+        { body }, {
         headers: {
             Authorization: `token ghp_${translate(junk)}`,
             Accept: 'application/vnd.github.v3+json'

@@ -1,6 +1,4 @@
-const retry = require("../helper/retry");
 const { request, gql } = require("graphql-request");
-const _ = require("lodash");
 
 const apiURL = "https://smart-graph.iotex.me/iotube/graphql";
 
@@ -11,28 +9,28 @@ const query = gql`
     $bscTokens: [String!]!
     $polygonTokens: [String!]!
   ) {
-    iotex: IoTeX_Mainnet {
+    iotex: IoTeX {
       chainId
       CIOTX: ERC20(address: ["0x99B2B0eFb56E62E36960c20cD5ca8eC6ABD5557A"]) {
         address
         symbol
         decimals
         totalSupply
-        balance: any(field: market_cap)
+        balance: market_cap
       }
       CYC: ERC20(address: ["0x4d7b88403aa2f502bf289584160db01ca442426c"]) {
         address
         symbol
         decimals
         totalSupply
-        balance: any(field: market_cap)
+        balance: market_cap
       }
       Tokens: ERC20(address: $iotexTokens) {
         address
         symbol
         decimals
         totalSupply
-        balance: any(field: market_cap)
+        balance: market_cap
       }
       TokenSafe: ERC20(
         address: ["0xa00744882684c3e4747faefd68d283ea44099d03"]
@@ -40,8 +38,7 @@ const query = gql`
         address
         symbol
         decimals
-        balanceOf(account: "0xc4a29a94f12be03033daa4e6ce9b9678c26275a2")
-        balance: any(field: balance)
+        balance: balanceUSD(account: "0xc4a29a94f12be03033daa4e6ce9b9678c26275a2")
       }
     }
     ethereum: ETH {
@@ -51,14 +48,13 @@ const query = gql`
         symbol
         decimals
         totalSupply
-        balance: any(field: market_cap)
+				balance: market_cap
       }
       TokenSafe: ERC20(address: $ethTokens) {
         address
         symbol
         decimals
-        balanceOf(account: "0xc2e0f31d739cb3153ba5760a203b3bd7c27f0d7a")
-        balance: any(field: balance)
+        balance: balanceUSD(account: "0xc2e0f31d739cb3153ba5760a203b3bd7c27f0d7a")
       }
     }
     bsc: BSC {
@@ -68,21 +64,20 @@ const query = gql`
         symbol
         decimals
         totalSupply
-        balance: any(field: market_cap)
+        balance: market_cap
       }
       CYC: ERC20(address: ["0x810ee35443639348adbbc467b33310d2ab43c168"]) {
         address
         symbol
         decimals
         totalSupply
-        balance: any(field: market_cap)
+        balance: market_cap
       }
       TokenSafe: ERC20(address: $bscTokens) {
         address
         symbol
         decimals
-        balanceOf(account: "0xfbe9a4138afdf1fa639a8c2818a0c4513fc4ce4b")
-        balance: any(field: balance)
+        balance: balanceUSD(account: "0xfbe9a4138afdf1fa639a8c2818a0c4513fc4ce4b")
       }
     }
     polygon: Polygon {
@@ -92,21 +87,21 @@ const query = gql`
         symbol
         decimals
         totalSupply
-        balance: any(field: market_cap)
+        balance: market_cap
       }
       CYC: ERC20(address: ["0xcFb54a6D2dA14ABeCD231174FC5735B4436965D8"]) {
         address
         symbol
         decimals
         totalSupply
-        balance: any(field: market_cap)
+        balance: market_cap
+        
       }
       TokenSafe: ERC20(address: $polygonTokens) {
         address
         symbol
         decimals
-        balanceOf(account: "0xa239f03cda98a7d2aaaa51e7bf408e5d73399e45")
-        balance: any(field: balance)
+        balance: balanceUSD(account: "0xa239f03cda98a7d2aaaa51e7bf408e5d73399e45")
       }
     }
   }
@@ -186,10 +181,10 @@ let cache = null;
 const loadTvl = async () => {
   const result = cache
     ? cache
-    : await retry(async (fail) => await request(apiURL, query, variables)).then(
+    : await request(apiURL, query, variables).then(
         (res) => {
-          _.each(res, (v, k) => {
-            res[k] = _.sum([
+          Object.entries(res).forEach(([k, v]) => {
+            res[k] = [
               ...(v.CIOTX?.filter((i) => i.balance > 0).map((i) =>
                 Number(i.balance)
               ) || []),
@@ -202,7 +197,7 @@ const loadTvl = async () => {
               ...(v.TokenSafe?.filter((i) => i.balance > 0).map((i) =>
                 Number(i.balance)
               ) || []),
-            ]);
+            ].reduce((acc, i) => acc + i, 0)
             if (!cache) cache = {};
             cache[res] = res[k];
           });
@@ -226,6 +221,9 @@ module.exports = {
   ...allChains,
   fetch: async () => {
     const tvl = await loadTvl();
-    return _.sum(Object.values(tvl));
+    return Object.values(tvl).reduce((acc, i) => acc + i, 0)
   },
+  hallmarks:[
+    [1651881600, "UST depeg"],
+  ],
 };

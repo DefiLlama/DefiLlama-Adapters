@@ -3,11 +3,9 @@ const MFF = "0x78b65477bba78fc11735801d559c386611d07529";
 const contract = "0xDE707357D10D86aE21373b290eAbBA07360896F6";
 const sdk = require("@defillama/sdk");
 const abi = require("../vexchange/abi.json");
-const { getBlock } = require("../helper/getBlock");
 
-async function staking(timestamp, block, chainBlocks) {
+async function staking(timestamp, _, {aurora: block}) {
   const balances = {};
-  block = getBlock(timestamp, "aurora", chainBlocks);
   const MFFPrice = await getMFFPrice(block);
 
   await sumTokensAndLPsSharedOwners(

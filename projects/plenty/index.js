@@ -1,22 +1,20 @@
-const axios = require('axios')
+const { sumTokens2, } = require('../helper/chain/tezos')
+const { getConfig } = require("../helper/cache")
 
-async function fetch(){
-    const tvl = await axios.get("https://w0sujgfj39.execute-api.us-east-2.amazonaws.com/v1/tvl")
-    const staking = await axios.get("https://w0sujgfj39.execute-api.us-east-2.amazonaws.com/v1/stakedplenty")
-    return tvl.data.body - staking.data.body
+async function tvl() {
+  return sumTokens2({ owners: await getDexes(), includeTezos: true, })
 }
 
-async function staking(){
-    const staking = await axios.get("https://w0sujgfj39.execute-api.us-east-2.amazonaws.com/v1/stakedplenty")
-    return staking.data.body
+async function getDexes() {
+  const data = await getConfig('tezos/plenty', "https://config.mainnet.plenty.network/pools")
+  return Object.keys(data)
 }
 
 module.exports = {
-    timetravel: false,
-    misrepresentedTokens: true,
-    tezos:{
-        staking,
-        fetch
-    },
-    fetch
+  timetravel: false,
+  misrepresentedTokens: true,
+  start: 1672531200,
+  tezos: {
+    tvl,
+  },
 }

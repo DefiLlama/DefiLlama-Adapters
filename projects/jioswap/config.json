@@ -1,0 +1,228 @@
+{
+  "meter": {
+    "jioMeterUSD": {
+      "address": "0x559Ec9D7D0a80220C8167d6B413d8AA1B26f596D",
+      "lpToken": "0x4CD99606b98230b039a82bE45165663f6A931A96",
+      "poolTokens": [
+        {
+          "address": "0x24aa189dfaa76c671c279262f94434770f557c35",
+          "name": "BUSD"
+        },
+        {
+          "address": "0xD86e243FC0007e6226B07c9A50C9d70D78299EB5",
+          "name": "USDC"
+        },
+        {
+          "address": "0x5fa41671c48e3c951afc30816947126ccc8c162e",
+          "name": "USDT"
+        }
+      ]
+    }
+  },
+  "godwoken_v1": {
+    "jioETH": {
+      "address": "0x0f25e206DAfE6F5bbCE2037b67497D5F017062cd",
+      "lpToken": "0x3D57dF23702c761f28FEC15B358B4E2F543f343E",
+      "poolTokens": [
+        {
+          "address": "0x9E858A7aAEDf9FDB1026Ab1f77f627be2791e98A",
+          "name": "ETH (via Forcebridge from ETH)"
+        },
+        {
+          "address": "0xB66954619363145a05eF835547449EB9050d82f6",
+          "name": "WETH (Via Celer CBridge From ETH)"
+        }
+      ]
+    },
+    "jio2USD": {
+      "address": "0x55f676d9a014a83e58D6A9b73265709e071aAE88",
+      "lpToken": "0xb3D6913CF2D6A8fD9b472ff7526ec11620957C8b",
+      "poolTokens": [
+        {
+          "address": "0x186181e225dc1Ad85a4A94164232bD261e351C33",
+          "name": "USDC (via Forcebridge from ETH"
+        },
+        {
+          "address": "0x53bB26dc8C5EFC6c95C37155aCa487d1D043436a",
+          "name": "USDC (Via Celer CBridge From ETH)"
+        }
+      ]
+    },
+    "jio3fUSD": {
+      "address": "0xCF60f11627f2fb412EDe8E674a97c893E8dD73d8",
+      "lpToken": "0xbe6FB8874C6E5800092E7e85bDD8c165ADcD0592",
+      "poolTokens": [
+        {
+          "address": "0x2c9Fc6087875646112f66a3C92fEF2d158FAa76e",
+          "name": "DAI (via Forcebridge from ETH)"
+        },
+        {
+          "address": "0x186181e225dc1Ad85a4A94164232bD261e351C33",
+          "name": "USDC (via Forcebridge from ETH)"
+        },
+        {
+          "address": "0x8E019acb11C7d17c26D334901fA2ac41C1f44d50",
+          "name": "USDT (via Forcebridge from ETH)"
+        }
+      ]
+    },
+    "jio4celUSD": {
+      "address": "0x5abff8841a016631ecB90250D65F53996dda10b0",
+      "lpToken": "0x83f3CfF88102F498b7170fbd237935152E6909c7",
+      "poolTokens": [
+        {
+          "address": "0xcD7bC9fC617a4F82eC1c8359D1C8610B90e3B44C",
+          "name": "BUSD (Via Celer CBridge From BSC)"
+        },
+        {
+          "address": "0x317F8d18FB16E49a958Becd0EA72f8E153d25654",
+          "name": "Dai (Via Celer CBridge From ETH)"
+        },
+        {
+          "address": "0x53bB26dc8C5EFC6c95C37155aCa487d1D043436a",
+          "name": "USDC (Via Celer CBridge From ETH)"
+        },
+        {
+          "address": "0x3c790b38f466514ffCB4230e7B2334e52B64c942",
+          "name": "USDT (Via Celer CBridge From ETH)"
+        }
+      ]
+    },
+    "jio3BTC": {
+      "address": "0x9cFc3396801bbBe1Afb79226f3dD303Ea45018Ce",
+      "lpToken": "0xdaed14ddca3d1c45fc2be91c148468cbb3880247",
+      "poolTokens": [
+        {
+          "address": "0x1C428a6539A40eC5Bb481631266a51cd19b233B1",
+          "name": "WBTC (Via Celer CBridge From ETH)"
+        },
+        {
+          "address": "0xB44a9B6905aF7c801311e8F4E76932ee959c663C",
+          "name": "WBTC (Via MultiChain From ETH)"
+        },
+        {
+          "address": "0x82455018f2c32943b3f12f4e59d0da2faf2257ef",
+          "name": "WBTC (Via Force Bridge From ETH)"
+        }
+      ]
+    },
+    "jio3multiChainUSD": {
+      "address": "0xB99dA175BfEe98B2cF7B27eF4245C1d19Eeff29a",
+      "lpToken": "0xb5782C8B400Bf63827053B6e435B678033cbEc3F",
+      "poolTokens": [
+        {
+          "address": "0x765277EebeCA2e31912C9946eAe1021199B39C61",
+          "name": "DAI (via Multichain from ETH)"
+        },
+        {
+          "address": "0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D",
+          "name": "USDC (via Multichain from ETH)"
+        },
+        {
+          "address": "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f",
+          "name": "USDT (via Multichain from ETH)"
+        }
+      ]
+    }
+  },
+   "ethereum": {
+    "jioWRenSBTC": {
+      "address": "0xc117B388e5951FD7484F4FCbc3a803ACC4632459",
+      "lpToken": "0xABb76b01FE5Ce41Ec4cE98B8437e17BE6B349211",
+      "poolTokens": [
+        {
+          "address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+          "name": "WBTC"
+        },
+        {
+          "address": "0xeb4c2781e4eba804ce9a9803c67d0893436bb27d",
+          "name": "renBTC"
+        },
+        {
+          "address": "0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6",
+          "name": "sBTC"
+        }
+      ]
+    },
+    "JioUSDPoolV2": {
+      "address": "0xB53617cEEA4c2e65c5e40bcA74ca418C2F4C341c",
+      "lpToken": "0xfd7bE7d03A178908B2dB90b2eFDE0914844AEa5e",
+      "poolTokens": [
+        {
+          "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+          "name": "Dai"
+        },
+        {
+          "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+          "name": "Tether"
+        }
+      ]
+    },
+    "JioALETHPool": {
+      "address": "0x0a644a073Bc75E38985784AE8bebc8EB11B09e75",
+      "lpToken": "0x437e52e69C30238B54edE1Ba65019322F873BD36",
+      "poolTokens": [
+        {
+          "address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+          "name": "WETH"
+        },
+        {
+          "address": "0x0100546F2cD4C9D97f798fFC9755E47865FF7Ee6",
+          "name": "Alchemix ETH"
+        },
+        {
+          "address": "0x5e74C9036fb86BD7eCdcb084a0673EFc32eA31cb",
+          "name": "Synth sETH"
+        }
+      ]
+    },
+    "jioD4": {
+      "address": "0x7fFd58B8DeEF68B1C0A98f2d06D7D35AB45CB407",
+      "lpToken": "0x7739EEF68C9828Cc8CCD062E94eF4E67746C7Cc7",
+      "poolTokens": [
+        {
+          "address": "0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9",
+          "name": "Alchemix USD"
+        },
+        {
+          "address": "0x956F47F50A910163D8BF957Cf5846D573E7f87CA",
+          "name": "Fei Protocol"
+        },
+        {
+          "address": "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+          "name": "Frax"
+        },
+        {
+          "address": "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0",
+          "name": "Liquity USD"
+        }
+      ]
+    },
+    "jioSUSDMetaPool": {
+      "address": "0x2c7B39F034888aEb4Bc6A5c0E0695D93835d40E4",
+      "lpToken": "0xa6692adc7898Eea5a06BC56678cA2795B850CC78",
+      "poolTokens": [
+        {
+          "address": "0x57Ab1ec28D129707052df4dF418D58a2D46d5f51",
+          "name": "sUSD"
+        },
+        {
+          "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+          "name": "Dai"
+        },
+        {
+          "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+          "name": "Tether"
+        }
+      ]
+    }
+  }
+}

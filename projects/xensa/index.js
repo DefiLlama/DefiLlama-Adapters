@@ -1,12 +1,10 @@
 const sdk = require("@defillama/sdk");
-const _us = require('underscore');
 const abi = require('./abi.json');
-const { getBlock } = require("../helper/getBlock");
 
 const _xensaCoreAddress = '0xd1242313461dd533279f0cac0dbc06ecdb878a79';
 
 async function tvl(timestamp, _ethBlock, chainBlocks) {
-  const block = await getBlock(timestamp, "okexchain", chainBlocks, true)
+  const block = chainBlocks.okexchain
   const reserves_xensa = (
     await sdk.api.abi.call({
       target: _xensaCoreAddress,
@@ -28,7 +26,7 @@ async function tvl(timestamp, _ethBlock, chainBlocks) {
   const balanceOfResults = await sdk.api.abi.multiCall({
     block,
     chain: 'okexchain',
-    calls: _us.map(reserves_xensa, (reserve) => ({
+    calls: reserves_xensa.map((reserve) => ({
       target: reserve,
       params: _xensaCoreAddress,
     })),
