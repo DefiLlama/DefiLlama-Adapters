@@ -21,7 +21,6 @@ async function tvl(_, _b, _cb, { api, }) {
 
 
 async function bscTvl(_, _b, _cb, { api, }) {
-  console.log('bscTvl', api.providerConfigs)
   const logs = await getLogs({
     api,
     target: '0x05d5E46F9d17591f7eaCdfE43E3d6a8F789Df698',
@@ -41,6 +40,6 @@ module.exports = {
     tvl: sdk.util.sumChainTvls([tvl, movrUniTvl]),
   },
   bsc: {
-    tvl: sdk.util.sumChainTvls([bscUniTvl]),
+    tvl: sdk.util.sumChainTvls([bscTvl, bscUniTvl]),
   }
 };
