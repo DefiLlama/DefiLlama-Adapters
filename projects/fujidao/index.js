@@ -44,11 +44,13 @@ const allMarketSupplies = async (contracts, block, chain) => {
             let response = await marketsupply(contracts[index], block, chain);
             response = response.output;
             allMarkets.output = temp.concat(response);
+            console.log(allMarketSupplies);
+            console.log(allMarketSupplies());
         } 
     }
     return allMarkets.output.reduce((t,v) => t.plus(v.output), BigNumber(0)).toFixed(0);
 }
-
+console.log(allMarketSupplies);
 async function eth(_timestamp, block){
     const supplies = await allMarketSupplies(ethContracts, block, "ethereum");
 
@@ -88,3 +90,4 @@ module.exports = {
     },
     methodology: "Counts balance of receipt tokens in F1155 Contract on all vaults."
 }
+
