@@ -1,4 +1,4 @@
-const { Contract, BigNumber } = require("ethers");
+const { Contract, BigNumber, ethers } = require("ethers");
 const { providers } = require("@defillama/sdk/build/general");
 
 const { sumTokens2 } = require("../helper/unwrapLPs.js");
@@ -42,6 +42,8 @@ async function tvl(_time, block) {
     block
   );
 
+  // staticWrapperMappings is used to map wrapped tokens to their underlying
+  const staticWrapperMappings = {};
   const rTokenAddresses = creationLogs.map((log, i) => {
     return { rToken: log.args.rToken, main: log.args.main };
   });
@@ -67,11 +69,33 @@ async function tvl(_time, block) {
       // stRSR contract holds staked RSR
       const stRSR = await main.stRSR();
 
-      // basketTokens[0] is the tokens
-      const basketTokens = await basketHandler.quote(0, 0);
+      const basket = await basketHandler.quote(0, 0);
+
+      // basket[0] is the tokens
+      const basketTokens = basket[0];
+
+      // check if token bytecode contains ATOKEN
+      // indicating it's a wrapped token
+      await Promise.all(
+        basketTokens.map(async (token) => {
+          const bytecode = await providers["ethereum"].getCode(token);
+          const tokenInterface = new ethers.utils.Interface(abi["staticToken"]);
+          const selector = tokenInterface.getSighash("ATOKEN()");
+          if (bytecode.includes(selector.slice(2, 10))) {
+            const staticToken = new Contract(
+              token,
+              abi["staticToken"],
+              providers["ethereum"]
+            );
+            const underlying = await staticToken.ATOKEN();
+            staticWrapperMappings[token] = underlying;
+          }
+        })
+      );
+
       return {
         owners: [rToken.rToken, backingManagerAddr, stRSR],
-        tokens: basketTokens[0],
+        tokens: basketTokens,
       };
     })
   );
@@ -83,7 +107,10 @@ async function tvl(_time, block) {
         tokens: acc.tokens.concat(cur.tokens),
       };
     },
-    { owners: [], tokens: [rsr] }
+    {
+      owners: [...Object.keys(staticWrapperMappings)],
+      tokens: [...Object.values(staticWrapperMappings), rsr],
+    }
   );
 
   const rTokenSums = await sumTokens2({
