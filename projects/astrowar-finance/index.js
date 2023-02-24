@@ -1,6 +1,5 @@
 const { sumTokens } = require('../helper/unwrapLPs')
 const { getPoolInfo, } = require('../helper/masterchef')
-// Enso finance TVL lies for now in the index tokens held by the liquidityMigration contracts
 
 async function tvl(timestamp, _block, { harmony: block }) {
     const stakePool = '0x1B7084DD5A3874C7DE8ff3e7AA668290f0613Afb';
