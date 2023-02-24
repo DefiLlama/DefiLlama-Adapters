@@ -21,7 +21,7 @@ async function tvl(timestamp, block, chainBlocks) {
     block: chainBlocks.bsc,
     chain: 'bsc'
   })).output };
-};
+}
 
 module.exports = {
   bsc: {

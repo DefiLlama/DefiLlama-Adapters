@@ -6,21 +6,9 @@ const SUPPLY_SCALE = BigNumber("10").pow(18)
 const START_BLOCK = 10830496;
 const EXTERNAL_POSITION = '1';
 
-const getSets = require('./abis/getSets.json');
-const getPositions = require('./abis/getPositions.json');
-const totalSupply = require('./abis/totalSupply.json');
-const getReserves = require('./abis/getReserves.json');
-
-const pairAddresses = {
-  '0xBb2b8038a1640196FbE3e38816F3e67Cba72D940': [
-    '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
-    '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
-  ],
-  '0xA478c2975Ab1Ea89e8196811F51A7B7Ade33eB11': [
-    '0x6B175474E89094C44Da98b954EedeAC495271d0F',
-    '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
-  ],
-};
+const getSets = "address[]:getSets"
+const getPositions = 'function getPositions() view returns (tuple(address component, address module, int256 unit, uint8 positionState, bytes data)[])';
+const totalSupply = "uint256:totalSupply";
 
 /*==================================================
   TVL

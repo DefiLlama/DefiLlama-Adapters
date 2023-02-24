@@ -19,34 +19,6 @@ async function returnEthBalance(address) {
   return parseFloat(ethAmount);
 }
 
-async function getPrices(object) {
-  var stringFetch = '';
-  for (var key in object[0]) {
-    if (object[0][key] != 'stable') {
-      if (stringFetch.length > 0) {
-        stringFetch = stringFetch + ',' + object[0][key];
-      } else {
-        stringFetch = object[0][key];
-      }
-    }
-  }
-  return fetchURL(`https://api.coingecko.com/api/v3/simple/price?ids=${stringFetch}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`)
-}
-
-async function getPricesFromContract(object) {
-  var contractFetch = ''
-  for (var key in object) {
-    if (object[key]) {
-      if (contractFetch.length > 0) {
-        contractFetch = contractFetch + ',' + object[key];
-      } else {
-        contractFetch = object[key];
-      }
-    }
-  }
-  return fetchURL(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${contractFetch}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`)
-}
-
 async function fetchURL(url) {
   return axios.get(url)
 }
@@ -92,8 +64,10 @@ function isLP(symbol, token, chain) {
   if (chain === 'klaytn' && ['NLP'].includes(symbol)) return true
   if (chain === 'fantom' && ['HLP'].includes(symbol)) return true
   if (chain === 'songbird' && ['FLRX', 'OLP'].includes(symbol)) return true
-  if (chain === 'arbitrum' && ['DXS'].includes(symbol)) return true
+  if (chain === 'arbitrum' && ['DXS', 'ZLP', ].includes(symbol)) return true
   if (chain === 'metis' && ['NLP', 'ALP'].includes(symbol)) return true // Netswap/Agora LP Token
+  if (chain === 'optimism' && /(-ZS)/.test(symbol)) return true
+  if (chain === 'bsc' && /(-APE-LP-S)/.test(symbol)) return false
   if (['fantom', 'nova',].includes(chain) && ['NLT'].includes(symbol)) return true
   let label
 
@@ -316,10 +290,8 @@ module.exports = {
   createIncrementArray,
   fetchURL,
   postURL,
-  getPrices,
   returnBalance,
   returnEthBalance,
-  getPricesFromContract,
   isLP,
   mergeExports,
   getBalance,

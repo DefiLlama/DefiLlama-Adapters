@@ -13,7 +13,7 @@ async function tvl(chain, block) {
   tokensAndOwners.push(...await getV2Calls(chain))
   tokensAndOwners.push(...await createCallForSetu(chain))
   return sumTokens2({ balances, tokensAndOwners, chain, block, resolveLP: true, })
-};
+}
 
 module.exports = {
   timetravel: false,

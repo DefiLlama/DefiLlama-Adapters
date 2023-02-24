@@ -1,17 +1,4 @@
-const sdk = require('@defillama/sdk')
 const { sumTokensExport, nullAddress, } = require('../helper/sumTokens')
-
-async function tvl() {
-
-  const balances = {}
-
-  sdk.util.sumSingleBalance(balances, 'tether', await getTokenBalance('', ''))
-  sdk.util.sumSingleBalance(balances, 'tron', await getTrxBalance('') / (10 ** 6))
-  sdk.util.sumSingleBalance(balances, 'usdd', await getTokenBalance('', ''))
-  sdk.util.sumSingleBalance(balances, 'justmoney-2', await getTokenBalance('', ''))
-
-  return balances
-}
 
 module.exports = {
   tron: {

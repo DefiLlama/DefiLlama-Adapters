@@ -79,7 +79,7 @@ async function tvl(time, ethBlock, chainBlocks) {
         target: oxLensAddress,
         abi: oxLensAbi.oxPoolsAddresses
     })
-    const pageSize = 50;
+    const pageSize = 200;
     const poolsMap = {};
     let currentPage = 0;
 
@@ -110,10 +110,11 @@ async function tvl(time, ethBlock, chainBlocks) {
             poolsMap[pool.id] = newPool;
         });
     };
-    while (true) {
+    let addresses = []
+    while (addresses) {
         const start = currentPage * pageSize;
         const end = start + pageSize;
-        const addresses = oxPoolsAddresses.slice(start, end);
+        addresses = oxPoolsAddresses.slice(start, end);
         if (addresses.length === 0) {
             break;
         }

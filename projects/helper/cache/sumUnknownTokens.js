@@ -1,15 +1,15 @@
 const sdk = require('@defillama/sdk');
 const { default: BigNumber } = require('bignumber.js')
 
-const symbol = require('../abis/symbol.json')
-const token0 = require('../abis/token0.json');
-const token1 = require('../abis/token1.json');
+const symbol = 'string:symbol'
+const token0 = 'address:token0'
+const token1 = 'address:token1'
 const kslpABI = require('../abis/kslp.js');
-const getReserves = require('../abis/getReserves.json');
+const getReserves = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
 
 const { getChainTransform, stripTokenHeader, getFixBalances, getFixBalancesSync, } = require('../portedTokens')
 const { getCoreAssets } = require('../tokenMapping')
-const { sumTokens2, } = require('../unwrapLPs')
+const { sumTokens2, nullAddress, } = require('../unwrapLPs')
 const { isLP, getUniqueAddresses, log } = require('../utils')
 
 async function getLPData({
@@ -44,6 +44,7 @@ async function getLPData({
 }
 
 async function getLPList({ lps, chain, block, lpFilter = isLP, cache = {}, }) {
+  lps = lps.filter(i => i !== nullAddress)
   if (!cache.symbol) cache.symbol = {}
   lps = lps.filter(i => i)
   const callArgs = lps.filter(i => !cache.symbol[i]).map(t => ({ target: t }));
@@ -68,8 +69,12 @@ async function getTokenPrices({
   log_coreAssetPrices = [],
   log_minTokenValue = 1e6, // log only if token value is higer than this value, now minimum is set as 1 million
   lpFilter,   // override the default logic for checking if an address is LP based on it's symbol
+  token0CallFn,
+  token1CallFn,
+  reservesCallFn,
   cache = {},
 }) {
+  const api = new sdk.ChainApi({ block, chain, })
   if (!cache.pairData) cache.pairData = {}
   let counter = 0
   if (!transformAddress)
@@ -92,11 +97,25 @@ async function getTokenPrices({
 
   let token0Addresses, token1Addresses, reserves
 
-  [token0Addresses, token1Addresses, reserves] = await Promise.all([
-    sdk.api.abi.multiCall({ abi: abis.token0ABI || token0, chain, calls: token0Calls, block, }).then(({ output }) => output),
-    sdk.api.abi.multiCall({ abi: abis.token1ABI || token1, chain, calls: token1Calls, block, }).then(({ output }) => output),
-    sdk.api.abi.multiCall({ abi: abis.getReservesABI || getReserves, chain, calls: pairCalls, block, }).then(({ output }) => output),
-  ]);
+  if (token0CallFn) {
+    token0Addresses = token0CallFn({ chain, block, calls: token0Calls, api, })
+  } else {
+    token0Addresses = api.multiCall({ abi: abis.token0ABI || token0, chain, calls: token0Calls, block, withMetadata: true, })
+  }
+
+  if (token1CallFn) {
+    token1Addresses = token1CallFn({ chain, block, calls: token1Calls, api })
+  } else {
+    token1Addresses = api.multiCall({ abi: abis.token1ABI || token1, chain, calls: token1Calls, block, withMetadata: true, })
+  }
+
+  if (reservesCallFn) {
+    reserves = reservesCallFn({ chain, block, calls: pairCalls, api, })
+  } else {
+    reserves = api.multiCall({ abi: abis.getReservesABI || getReserves, chain, calls: pairCalls, block, withMetadata: true, })
+  }
+
+  [token0Addresses, token1Addresses, reserves] = await Promise.all([token0Addresses, token1Addresses, reserves]);
 
   // add token0Addresses
   token0Addresses.forEach((token0Address) => {

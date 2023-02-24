@@ -168,12 +168,13 @@ async function getFuroTokens(chain, block) {
 
   output.forEach(
     ({
+      success,
       output: amount,
       input: {
         params: [tokenId],
       },
     }) => {
-      sdk.util.sumSingleBalance(balances, tokenId, BigNumber(amount).toFixed(0))
+      if (success) sdk.util.sumSingleBalance(balances, tokenId, BigNumber(amount).toFixed(0))
     }
   );
 
@@ -214,12 +215,13 @@ async function getKashiTokens(chain, block) {
 
   output.forEach(
     ({
+      success,
       output: amount,
       input: {
         params: [tokenId],
       },
     }) => {
-      sdk.util.sumSingleBalance(balances, tokenId, BigNumber(amount).toFixed(0))
+      if (success) sdk.util.sumSingleBalance(balances, tokenId, amount)
     }
   );
 
@@ -256,7 +258,7 @@ async function fetchAllTokens(subgraph, query, block, type) {
 
   //query all tokens even if > 1000 as we can't order efficiently by $ liquidity
   let id = 0;
-  while (true) {
+  while (true) {    // eslint-disable-line
     let result = await request(subgraph, query, {
       id, block,
     });

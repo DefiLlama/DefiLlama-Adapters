@@ -4,7 +4,7 @@ const { getLogs } = require('../helper/cache/getLogs')
 
 const { getChainTransform } = require("../helper/portedTokens");
 const { staking } = require("../helper/staking");
-const getPositionDetails = require("./abis/getPositionDetails.json");
+const getPositionDetails = 'function getPositionDetails() returns (uint256 amount0, uint256 amount1, uint256 fees0, uint256 fees1, uint128 baseLiquidity, uint128 rangeLiquidity)'
 
 const FACTORY_ADDRESSES = {
   ethereum: {

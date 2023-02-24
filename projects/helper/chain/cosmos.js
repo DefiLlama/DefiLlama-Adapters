@@ -5,6 +5,8 @@ const { transformBalances } = require('../portedTokens')
 const { PromisePool } = require('@supercharge/promise-pool')
 const { log } = require('../utils')
 
+// where to find chain info
+// https://proxy.atomscan.com/chains.json
 // https://cosmos-chain.directory/chains/cosmoshub
 // https://cosmos-chain.directory/chains
 const endPoints = {
@@ -13,6 +15,11 @@ const endPoints = {
   cosmos: 'https://cosmoshub-lcd.stakely.io',
   kujira: 'https://lcd.kaiyo.kujira.setten.io',
   comdex: 'https://rest.comdex.one',
+  terra: 'https://columbus-lcd.terra.dev',
+  terra2: 'https://phoenix-lcd.terra.dev',
+  umee: 'https://api.mainnet.network.umee.cc',
+  orai: 'https://lcd.orai.io',
+  juno: 'https://lcd-juno.cosmostation.io',
 }
 
 const chainSubpaths = {
@@ -95,6 +102,10 @@ async function lpMinter({ token, block, chain } = {}) {
 async function queryContract({ contract, chain, data }) {
   if (typeof data !== 'string') data = JSON.stringify(data)
   data = Buffer.from(data).toString('base64')
+  if (chain === 'terra') {
+    let path = `${getEndpoint(chain)}/terra/wasm/v1beta1/contracts/${contract}/store?query_msg=${data}`
+    return (await axios.get(path)).data.query_result
+  }
   return (await axios.get(`${getEndpoint(chain)}/cosmwasm/wasm/v1/contract/${contract}/smart/${data}`)).data.data
 }
 
@@ -115,31 +126,6 @@ async function queryContractStore({ contract, queryParam, block, chain = false, 
   if (typeof queryParam !== 'string') queryParam = JSON.stringify(queryParam)
   const url = `contracts/${contract}/store?query_msg=${queryParam}`
   return query(url, block, chain)
-}
-
-function sumSingleBalance(balances, token, balance, price) {
-  const { coingeckoId, label, decimals = 0, } = tokenMapping[token] || {}
-
-  if (coingeckoId || (label && price)) {
-    token = coingeckoId || 'terrausd'
-
-    if (decimals)
-      balance = BigNumber(balance).shiftedBy(-1 * decimals)
-
-    if (!coingeckoId)
-      balance = balance.multipliedBy(BigNumber(price))   // convert the value to UST
-
-    if (!balances[token])
-      balances[token] = BigNumber(0)
-    else if (typeof balances[token] === 'string')
-      balances[token] = BigNumber(balances[token]).shiftedBy(-1 * decimals)
-
-    balances[token] = balances[token].plus(balance)
-    return
-  }
-
-  sdk.util.sumSingleBalance(balances, token, balance)
-  return balances
 }
 
 async function sumTokens({ balances = {}, owners = [], chain, }) {
@@ -164,7 +150,6 @@ module.exports = {
   query,
   queryV1Beta1,
   queryContractStore,
-  sumSingleBalance,
   queryContract,
   sumTokens,
 }

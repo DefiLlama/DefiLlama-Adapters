@@ -2,6 +2,7 @@ const sdk = require('@defillama/sdk');
 const { default: BigNumber } = require('bignumber.js');
 const abi = require('./abis/aave.json');
 const { getChainTransform, getFixBalancesSync, } = require('../helper/portedTokens')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 async function getV2Reserves(block, addressesProviderRegistry, chain, dataHelperAddress, abis = {}) {
   let validProtocolDataHelpers
@@ -127,6 +128,7 @@ module.exports = {
   getTvl,
   aaveExports,
   getBorrowed,
+  aaveV2Export,
 }
 
 const cachedData = {}
@@ -173,7 +175,48 @@ async function getData({ oracle, chain, block, addressesProviderRegistry, dataHe
 }
 
 const oracleAbis = {
-  BASE_CURRENCY: { "type": "function", "stateMutability": "view", "outputs": [{ "type": "address", "name": "", "internalType": "address" }], "name": "BASE_CURRENCY", "inputs": [] },
-  BASE_CURRENCY_UNIT: { "type": "function", "stateMutability": "view", "outputs": [{ "type": "uint256", "name": "", "internalType": "uint256" }], "name": "BASE_CURRENCY_UNIT", "inputs": [] },
-  getAssetsPrices: { "type": "function", "stateMutability": "view", "outputs": [{ "type": "uint256[]", "name": "", "internalType": "uint256[]" }], "name": "getAssetsPrices", "inputs": [{ "type": "address[]", "name": "assets", "internalType": "address[]" }] },
+  BASE_CURRENCY: "address:BASE_CURRENCY",
+  BASE_CURRENCY_UNIT: "uint256:BASE_CURRENCY_UNIT",
+  getAssetsPrices: "function getAssetsPrices(address[] assets) view returns (uint256[])",
+}
+
+function aaveV2Export(registry) {
+
+  async function tvl(_, _b, _c, { api }) {
+    const data = await getReservesData(api)
+    const tokensAndOwners = data.map(i => ([i.underlying, i.aTokenAddress]))
+    return sumTokens2({ tokensAndOwners, api })
+  }
+
+  async function borrowed(_, _b, _c, { api }) {
+    const balances = {}
+    const data = await getReservesData(api)
+    const supplyVariable = await api.multiCall({
+      abi: 'erc20:totalSupply',
+      calls: data.map(i => i.variableDebtTokenAddress),
+    })
+    const supplyStable = await api.multiCall({
+      abi: 'erc20:totalSupply',
+      calls: data.map(i => i.stableDebtTokenAddress),
+    })
+    data.forEach((i, idx) => {
+      sdk.util.sumSingleBalance(balances, i.underlying, supplyVariable[idx], api.chain)
+      sdk.util.sumSingleBalance(balances, i.underlying, supplyStable[idx], api.chain)
+    })
+    return balances
+  }
+
+  async function getReservesData(api) {
+    const tokens = await api.call({ abi: abiv2.getReservesList, target: registry })
+    const data = await api.multiCall({ abi: abiv2.getReserveData, calls: tokens, target: registry, })
+    data.forEach((v, i) => v.underlying = tokens[i])
+    return data
+  }
+
+  const abiv2 = {
+    getReservesList: "address[]:getReservesList",
+    getReserveData: "function getReserveData(address asset) view returns (tuple(tuple(uint256 data) configuration, uint128 liquidityIndex, uint128 variableBorrowIndex, uint128 currentLiquidityRate, uint128 currentVariableBorrowRate, uint128 currentStableBorrowRate, uint40 lastUpdateTimestamp, address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress, address interestRateStrategyAddress, uint8 id))",
+  }
+
+  return { tvl, borrowed, }
 }

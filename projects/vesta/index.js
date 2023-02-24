@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const { sumBalancerLps, unwrapCrv } = require("../helper/unwrapLPs.js");
+const { sumBalancerLps, } = require("../helper/unwrapLPs.js");
 const { transformArbitrumAddress } = require("../helper/portedTokens");
 
 const VaultTokens = {
@@ -44,9 +44,9 @@ async function tvl(_, block, chainBlocks) {
   })
 
   return balances;
-};
+}
 
-async function pool2(_timestamp, block, chainBlocks) {  
+async function pool2(_timestamp, block, chainBlocks, { api }) {  
   block = chainBlocks.arbitrum;
   const balances = {};
   const transform = await transformArbitrumAddress();
@@ -55,10 +55,9 @@ async function pool2(_timestamp, block, chainBlocks) {
   const curveBalances = (
     await sdk.api.abi.call({ target: VST_FARMING_ADDRESS, abi: "uint256:totalStaked", block, params: [], chain, })
   ).output;
-
-  await unwrapCrv(balances, LP_VST_FRAX_ADDRESS, curveBalances, block, chain, transform);
+  sdk.util.sumSingleBalance(balances,LP_VST_FRAX_ADDRESS,curveBalances, api.chain)
   return balances;
-};
+}
 
 module.exports = {
   arbitrum: {
