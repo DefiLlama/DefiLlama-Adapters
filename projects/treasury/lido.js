@@ -18,7 +18,6 @@ module.exports = treasuryExports({
         '0x0d02755a5700414B26FF040e1dE35D337DF56218' //BEND
      ],
     owners: [LidoTreasury],
-    ownTokenOwners: [LidoTreasury],
     ownTokens: [LDO],
   },
 })

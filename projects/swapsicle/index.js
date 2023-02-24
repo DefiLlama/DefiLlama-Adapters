@@ -5,8 +5,9 @@ const { stakingPricedLP } = require("../helper/staking")
 const sdk = require("@defillama/sdk")
 const BigNumber = require("bignumber.js");
 
-const stakingContract_IB = "0x6aA10ead8531504a8A3B04a9BfCFd18108F2d2c2";
+//const stakingContract_IB = "0x6aA10ead8531504a8A3B04a9BfCFd18108F2d2c2";
 const WAVAX = '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7'
+const WTLOS = '0xd102ce6a4db07d247fcc28f366a623df0938ca9e'
 
 const contracts = {
   avax: {
@@ -15,6 +16,7 @@ const contracts = {
     usdc: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
     stakingContract_sPOPS: "0x5108176bC1B7e72440e6B48862c51d7eB0AEd5c4",
     stakingContract_IB: "0x6aA10ead8531504a8A3B04a9BfCFd18108F2d2c2",
+    stakingContract_IB2: "0x737CAE995aCec229a6958B49f6d3eB9F383480Ab",
     stakingContract_IV: "0x2626658BB9186B22C798Ea85A4623C2c1eBa2901",
   },
   polygon: {
@@ -34,24 +36,36 @@ const contracts = {
   },
   optimism: {
     factory: "0x2f0c7c98462651bb2102f6cd05acdad333e031b0"
+  },
+  telos: {
+    factory: "0xB630F53DF13645BFF0Ef55eB44a8a490a7DD4514",
+    stakingContract_sPOPS: "0x14e374cef17d800109710aa2c2d73e50db76d367",
+    stakingContract_IB: '0xac448d75e945923b176ebca4ff2b5a82de73f812',
+    stakingContract_IB2: '0x08010b76d4b03cabcfb0f6ba9db7de8336c715fe',
+    pops: "0x173fd7434b8b50df08e3298f173487ebdb35fd14",
+    stlos: "0xB4B01216a5Bc8F1C8A33CD990A1239030E60C905"
   }
-};
+}
 
 function getAVAXAddress(address) {
   return `avax:${address}`;
 }
 
+function getTLOSAddress(address) {
+  return `telos:${address}`;
+}
+
 // AVAX (ETH) staking product
-async function iceBox(contract, block) {
+async function iceBox(contract, block, chain) {
   let balances = {
     "0x0000000000000000000000000000000000000000": (
-      await sdk.api.eth.getBalance({ target: contract, block, chain: "avax" })
+      await sdk.api.eth.getBalance({ target: contract, block, chain: chain })
     ).output,
   };
   return balances;
 }
 
-// USDC + POPS staking product
+// Avalanche - IceVault Staking (USDC)
 async function stakedUSDC(timestamp, ethBlock, chainBlocks) {
   const balances = {};
   const tokenBalance = new BigNumber(
@@ -71,12 +85,23 @@ async function stakedUSDC(timestamp, ethBlock, chainBlocks) {
   return balances;
 }
 
-async function stakedAVAX(timestamp, ethBlock, chainBlocks) {
+async function stakedAVAXIceBox(timestamp, ethBlock, chainBlocks) {
   const balances = {};
   const block = chainBlocks.avax;
 
-  const ibBalance = await iceBox(stakingContract_IB, block);
-  balances[getAVAXAddress("0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7")] = ibBalance["0x0000000000000000000000000000000000000000"];
+  const ibBalance = await iceBox(contracts.avax.stakingContract_IB, block, 'avax');
+  balances[getAVAXAddress(WAVAX)] = ibBalance["0x0000000000000000000000000000000000000000"];
+
+  return balances;
+}
+
+async function stakedAVAXIceBox2(timestamp, ethBlock, chainBlocks) {
+  const balances = {};
+  const block = chainBlocks.avax;
+
+  const ibBalance2 = await iceBox(contracts.avax.stakingContract_IB2, block, 'avax');
+  balances[getAVAXAddress(WAVAX)] = ibBalance2["0x0000000000000000000000000000000000000000"]
+
   return balances;
 }
 
@@ -87,9 +112,10 @@ module.exports = {
     tvl: getUniTVL({ chain: 'avax', useDefaultCoreAssets: true, factory: contracts.avax.factory }),
     staking: sdk.util.sumChainTvls([
       // Ice Cream Van
-      stakingPricedLP(contracts.avax.stakingContract_sPOPS, contracts.avax.pops,'avax','0x7E454625e4bD0CFdC27e752B46bF35C6343D9A78',"wrapped-avax",true), 
+      stakingPricedLP(contracts.telos.stakingContract_sPOPS, contracts.avax.pops,'avax','0x7E454625e4bD0CFdC27e752B46bF35C6343D9A78',"wrapped-avax",true), 
       // Ice Box
-      stakedAVAX,
+      stakedAVAXIceBox,
+      stakedAVAXIceBox2,
       // IceVault
       stakedUSDC,
       stakingPricedLP(contracts.avax.stakingContract_IV, contracts.avax.pops,'avax','0x7E454625e4bD0CFdC27e752B46bF35C6343D9A78',"wrapped-avax",true)
@@ -113,5 +139,13 @@ module.exports = {
   optimism: {
     tvl: getUniTVL({ chain: 'optimism', useDefaultCoreAssets: true, factory: contracts.optimism.factory }),
   },
-  start: 15434772,
-};
+  telos: {
+    tvl: getUniTVL({ chain: 'telos', useDefaultCoreAssets: true, factory: contracts.telos.factory }),
+    staking: sdk.util.sumChainTvls([
+      // Ice Cream Van
+      stakingPricedLP(contracts.telos.stakingContract_sPOPS, contracts.telos.pops,'telos','0x6dee26f527adb0c24fef704228d8e458b46f9f5f',"wrapped-telos",true), 
+      // Ice Box
+   ])
+  },
+  //start: 15434772,
+}

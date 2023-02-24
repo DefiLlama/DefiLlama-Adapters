@@ -16,9 +16,6 @@ module.exports = {
     staking: staking({
       owners: [masterchefOld, masterchef],
       tokens: [oreo],
-      onlyLPs: true,
-      lps: ['0xBf6a0418e31f90b60ae3d19c56a659ad8b2f4D18'],
-      useDefaultCoreAssets: true,
     })
   }
 };
