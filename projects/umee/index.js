@@ -6,22 +6,44 @@ const { sumTokens2 } = require("../helper/unwrapLPs");
 let data;
 
 async function getData() {
-  if (!data)
-    data = get(
-      "https://testnet-client-bff-ocstrhuppq-uc.a.run.app/convexity/assets/all"
+  let data;
+  try {
+    data = await get(
+      "https://umee-api.polkachu.com/umee/leverage/v1/registered_tokens"
     );
-  return data;
+  } catch (error) {
+    console.error("Failed to fetch data", error);
+    return [];
+  }
+
+  const assets = [];
+
+  for (const i of data.registry) {
+    try {
+      const market_summary = await get(
+        "https://umee-api.polkachu.com/umee/leverage/v1/market_summary?denom=" +
+          i.base_denom
+      );
+
+      assets.push({
+        base_denom: i.base_denom,
+        borrowed: parseInt(market_summary.borrowed),
+        supplied: parseInt(market_summary.supplied),
+        exponent: parseInt(i.exponent),
+      });
+    } catch (error) {
+      console.error("Failed to fetch market summary for", i.base_denom, error);
+    }
+  }
+
+  return assets;
 }
 
 async function tvl() {
   const balances = {};
   const data = await getData();
   data.forEach((i) =>
-    sdk.util.sumSingleBalance(
-      balances,
-      i.base_denom,
-      i.market_size * 10 ** i.exponent
-    )
+    sdk.util.sumSingleBalance(balances, i.base_denom, i.supplied)
   );
   return transformBalances("umee", balances);
 }
@@ -30,11 +52,7 @@ async function borrowed() {
   const balances = {};
   const data = await getData();
   data.forEach((i) =>
-    sdk.util.sumSingleBalance(
-      balances,
-      i.base_denom,
-      i.total_borrow * 10 ** i.exponent
-    )
+    sdk.util.sumSingleBalance(balances, i.base_denom, i.borrowed)
   );
   return transformBalances("umee", balances);
 }
