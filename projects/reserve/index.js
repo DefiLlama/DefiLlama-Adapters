@@ -1,138 +1,49 @@
-const { Contract, BigNumber, ethers } = require("ethers");
-const { providers } = require("@defillama/sdk/build/general");
-
+const { getLogs } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require("../helper/unwrapLPs.js");
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
-
-const abi = require("./abi.json");
 
 const vault = "0xaedcfcdd80573c2a312d15d6bb9d921a01e4fb0f";
 const deployerAddress = "0xFd6CC4F251eaE6d02f9F7B41D1e80464D3d2F377";
 const rsr = "0x320623b8E4fF03373931769A31Fc52A4E78B5d70";
 
-async function tvl(_time, block) {
+async function tvl(_time, block, _, { api }) {
   // First section is for RSV which will soon be deprecated
-  const balances = {};
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [
-      "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", //usdc
-      "0x8e870d67f660d95d5be530380d0ec0bd388289e1", //pax
-      "0x0000000000085d4780B73119b644AE5ecd22b376", //tusd
-      "0x4Fabb145d64652a948d72533023f6E7A623C7C53", //busd
-    ].map((t) => [t, false]),
-    [vault],
-    block
-  );
+  const ownerTokens = [[[
+    "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", //usdc
+    "0x8e870d67f660d95d5be530380d0ec0bd388289e1", //pax
+    "0x0000000000085d4780B73119b644AE5ecd22b376", //tusd
+    "0x4Fabb145d64652a948d72533023f6E7A623C7C53", //busd
+  ], vault]]
+  const creationLogs = await getLogs({
+    api,
+    target: deployerAddress,
+    topic: 'RTokenCreated(address,address,address,address,string)',
+    fromBlock: 16680995,
+    eventAbi: 'event RTokenCreated(address indexed main, address indexed rToken, address stRSR, address indexed owner, string version)',
+    onlyArgs: true,
+  })
 
-  const deployer = new Contract(
-    deployerAddress,
-    abi["deployer"],
-    providers["ethereum"]
-  );
+  const mains = creationLogs.map(i => i.main)
+  const rTokens = creationLogs.map(i => i.rToken)
+  const stRsrs = creationLogs.map(i => i.stRsrs)
 
-  const deploymentTopic = deployer.interface.getEventTopic("RTokenCreated");
+  const backingManagers = await api.multiCall({ abi: 'address:backingManager', calls: mains })
+  const basketHandlers = await api.multiCall({ abi: 'address:basketHandler', calls: mains })
+  const basketRes = await api.multiCall({ abi: "function quote(uint192, uint8) view returns (address[], uint256[])", calls: basketHandlers.map(i => ({ target: i, params: [0, 0] })) })
+  const basketTokens = await Promise.all(basketRes.map(async ([tokens]) => {
+    const aTokens = await api.multiCall({ abi: 'address:ATOKEN', calls: tokens })
+    aTokens.forEach((v, i) => v && ownerTokens.push([[v], tokens[i]]))
+    return tokens.filter((_, i) => !aTokens[i])
+  }))
+  basketTokens.forEach((tokens, i) => {
+    ownerTokens.push([tokens, rTokens[i]])
+    // ownerTokens.push([tokens, stRsrs[i]])
+    ownerTokens.push([tokens, backingManagers[i]])
+  })
 
-  const creationLogs = await deployer.queryFilter(
-    {
-      address: deployerAddress,
-      topics: [deploymentTopic],
-    },
-    undefined,
-    block
-  );
-
-  // staticWrapperMappings is used to map wrapped tokens to their underlying
-  const staticWrapperMappings = {};
-  const rTokenAddresses = creationLogs.map((log, i) => {
-    return { rToken: log.args.rToken, main: log.args.main };
-  });
-
-  // rToken + backingManager contracts can hold funds
-  // so we push them to the owners array
-  const rTokenInfo = await Promise.all(
-    rTokenAddresses.map(async (rToken, i) => {
-      const main = new Contract(
-        rToken.main,
-        abi["main"],
-        providers["ethereum"]
-      );
-      const backingManagerAddr = await main.backingManager();
-      const basketHandlerAddr = await main.basketHandler();
-
-      const basketHandler = new Contract(
-        basketHandlerAddr,
-        abi["basketHandler"],
-        providers["ethereum"]
-      );
-
-      // stRSR contract holds staked RSR
-      const stRSR = await main.stRSR();
-
-      const basket = await basketHandler.quote(0, 0);
-
-      // basket[0] is the tokens
-      const basketTokens = basket[0];
-
-      // check if token bytecode contains ATOKEN
-      // indicating it's a wrapped token
-      await Promise.all(
-        basketTokens.map(async (token) => {
-          const bytecode = await providers["ethereum"].getCode(token);
-          const tokenInterface = new ethers.utils.Interface(abi["staticToken"]);
-          const selector = tokenInterface.getSighash("ATOKEN()");
-          if (bytecode.includes(selector.slice(2, 10))) {
-            const staticToken = new Contract(
-              token,
-              abi["staticToken"],
-              providers["ethereum"]
-            );
-            const underlying = await staticToken.ATOKEN();
-            staticWrapperMappings[token] = underlying;
-          }
-        })
-      );
-
-      return {
-        owners: [rToken.rToken, backingManagerAddr, stRSR],
-        tokens: basketTokens,
-      };
-    })
-  );
-
-  const { owners, tokens } = rTokenInfo.reduce(
-    (acc, cur) => {
-      return {
-        owners: acc.owners.concat(cur.owners),
-        tokens: acc.tokens.concat(cur.tokens),
-      };
-    },
-    {
-      owners: [...Object.keys(staticWrapperMappings)],
-      tokens: [...Object.values(staticWrapperMappings), rsr],
-    }
-  );
-
-  const rTokenSums = await sumTokens2({
-    tokens,
-    owners,
-    block,
-  });
-
-  const ret = sumObjectsByKey(balances, rTokenSums);
-  return ret;
+  return sumTokens2({ api, ownerTokens, blacklistedTokens: [rsr] })
 }
 
 module.exports = {
   ethereum: { tvl },
   methodology: `Gets the tokens on ${vault}`,
-};
-
-const sumObjectsByKey = (...objs) => {
-  return objs.reduce((a, b) => {
-    for (let k in b) {
-      if (b.hasOwnProperty(k)) a[k] = ((+a[k] || 0) + +b[k]).toString();
-    }
-    return a;
-  }, {});
 };
