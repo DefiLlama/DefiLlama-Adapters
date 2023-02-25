@@ -1,4 +1,3 @@
-const { staking } = require('../helper/staking')
 const { get } = require('../helper/http')
 
 const sphere_token = "0x62f594339830b90ae4c084ae7d223ffafd9658a7"
@@ -11,9 +10,8 @@ module.exports = {
     tvl: async () => {
       const data = await get('https://spheretvl.simsalacrypto.workers.dev/')
       return {
-        tether: data.portfolio.net_worth
+        tether: data.portfolio.net_worth_pools
       }
     },
-    staking: staking(stakingAddress, sphere_token, 'polygon')
   }
 }

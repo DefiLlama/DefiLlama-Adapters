@@ -25,13 +25,12 @@ module.exports = treasuryExports({
         '0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32',//LDO
 
      ],
-    owners: [treasury, treasury1, treasurypolygon],
-    ownTokenOwners: [treasury, treasury1, ],
+    owners: [treasury, treasury1, ],
     ownTokens: [PAL],
   },
-  polygon: {
-    tokens: [
-        nullAddress,
-    ]
-  }
+  // polygon: {
+  //   tokens: [
+  //       nullAddress,
+  //   ]
+  // }
 })

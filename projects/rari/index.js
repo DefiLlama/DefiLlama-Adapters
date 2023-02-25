@@ -92,6 +92,9 @@ async function getFusePools(timestamp, block, balances, borrowed) {
 }
 
 async function borrowed(timestamp, block) {
+  if(block > 14684686){
+    return {} // after fei hack
+  }
   const balances = {}
   await getFusePools(timestamp, block, balances, true)
   return balances
