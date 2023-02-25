@@ -5,7 +5,7 @@ const { nullAddress, treasuryExports } = require("../helper/treasury");
 const ethTreasury = "0xE8A8B458BcD1Ececc6b6b58F80929b29cCecFF40";
 const bscTreasury = "0xdca05161eE5b5FA6DF170191c88857E70FFB4094";
 const polygonTreasury = "0xdca05161eE5b5FA6DF170191c88857E70FFB4094";
-const arbitrumTreasury = ""
+const arbitrumTreasury = "0x3B374464a714525498e445ba050B91571937bFc8"
 //ownTokens
 const ethRAIL = "0xe76c6c83af64e4c60245d8c7de953df673a7a33d";
 const polygonRAIL = "0x92A9C92C215092720C731c96D4Ff508c831a714f";// not on coingecko
