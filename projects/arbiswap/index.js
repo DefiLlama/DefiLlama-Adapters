@@ -1,5 +1,5 @@
 const { getUniTVL, sumTokensExport } = require('../helper/unknownTokens')
-const ARBI = "0x224800804f217d98defa2aac245f25f82df6f7f7";
+const ARBI = "0x9dB8a10C7FE60d84397860b3aF2E686D4F90C2b7";
 
 
 const dexTVL = getUniTVL({ factory: '0x88F1E030eb4C6C4320Da3992070bAF6c648ce37f', fetchBalances: true, useDefaultCoreAssets: true })
@@ -11,8 +11,10 @@ module.exports = {
     arbitrum: {
         tvl: dexTVL,
         staking: sumTokensExport({
-            owners: ['0x21e185462FEafCd807330B11A46D1F934D5392B4'],
+            owner: '0x21e185462FEafCd807330B11A46D1F934D5392B4',
             tokens: [ARBI],
+            lps: ['0x224800804F217d98dEFA2AAC245F25F82df6f7F7'],
+            useDefaultCoreAssets: true,
         })
     }
 };
