@@ -7,8 +7,11 @@ const dualInvestManagerAddress = "0x32275702f5A47Dcd89705c1ea4d47E99517b0e1a";
 const bscBTCContract = "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c";
 const bscUSDTContract = "0x55d398326f99059fF775485246999027B3197955";
 const bscETHContract = "0x2170Ed0880ac9A755fd29B2688956BD959F933F8";
+const kavaUSDTContract = "0xB44a9B6905aF7c801311e8F4E76932ee959c663C";
+const kavaBTCContract = "0xB44a9B6905aF7c801311e8F4E76932ee959c663C";
+const kavaDualinvertContract = "0x626B5c394542960faa9495e64E812d17D5B605F9";
 
-const factory = "0x90183C741CC13195884B6E332Aa0ac1F7c1E67Fa"
+const factory = "0x90183C741CC13195884B6E332Aa0ac1F7c1E67Fa";
 
 async function bullbearTVL(block, chain, usdToken) {
   const balances = {};
@@ -135,9 +138,34 @@ const dualInvestTVL = async (bscBlock) => {
     chain: "bsc"
   });
 
+  const kavaUSDTValue = await sdk.api.abi.multiCall({
+    target: kavaUSDTContract,
+    calls: [{
+      target: kavaUSDTContract,
+      params: kavaDualinvertContract
+    }],
+    params: kavaDualinvertContract,
+    abi: "erc20:balanceOf",
+    block: bscBlock,
+    chain: "kava"
+  })
+  const kavaBTCValue = await sdk.api.abi.multiCall({
+    target: kavaBTCContract,
+    calls: [{
+      target: kavaBTCContract,
+      params: kavaDualinvertContract
+    }],
+    params: kavaDualinvertContract,
+    abi: "erc20:balanceOf",
+    block: bscBlock,
+    chain: "kava"
+  })
+
   sdk.util.sumMultiBalanceOf(balances, usdtValue, true);
   sdk.util.sumMultiBalanceOf(balances, btcValue, true);
   sdk.util.sumMultiBalanceOf(balances, ethValue, true)
+  sdk.util.sumMultiBalanceOf(balances, kavaUSDTValue, true)
+  sdk.util.sumMultiBalanceOf(balances, kavaBTCValue, true)
   return balances;
 };
 
@@ -162,6 +190,14 @@ async function bscTVL(timestamp, ethBlock, chainBlocks) {
   return chainBalances
 }
 
+async function kavaTVL(timestamp, ethBlock, chainBlocks) {
+  const dualinvestTVL = await dualInvestTVL(chainBlocks['kava'])
+  const tvl = Object.assign(dualinvestTVL)
+  const chainBalances = {}
+  Object.keys(tvl).forEach(key => chainBalances['kava:' + key] = tvl[key])
+  return chainBalances
+}
+
 module.exports = {
   methodology: "Antimatter application is consist of four parts: 1) Antimatter structured product 2) Antimatter Bull and Bear 3) Antimatter Governance staking and 4) antimatter Nonfungible finance . There are assets locked in each part of the application on multiple chains. TVL is counted as the value of the underlying assets in each part of the application’s contract. Our TVL is calling contract from our smart contracts",
   ethereum: {
@@ -176,6 +212,9 @@ module.exports = {
   },
   avax:{
     tvl: avaxBullbearTVL
+  },
+  kava: {
+    tvl: kavaTVL
   },
   timetravel: true,
 };
