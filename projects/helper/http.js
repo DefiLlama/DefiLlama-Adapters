@@ -7,7 +7,8 @@ const env = require('./env')
 const chainIds = {
   'ethereum': 1,
   'bsc': 56,
-  'polygon': 137
+  'polygon': 137,
+  'arbitrum': 42161,
 }
 
 const getCacheData = {}
