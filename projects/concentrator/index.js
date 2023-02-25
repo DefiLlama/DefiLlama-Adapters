@@ -6,6 +6,7 @@ const AladdinConvexVaultABI = require('./abis/AladdinConvexVault.json')
 const AladdinCRVABI = require('./abis/AladdinCRV.json')
 const AladdinAFXSABI = require('./abis/AladdinAFXS.json')
 const AladdinCVXABI = require('./abis/AladdinCVX.json')
+const AladdinSdCRVABI = require('./abis/AladdinSdCRV.json')
 const { farmConfig, vaultConfig: configPools, afrxETHConfig } = require('./config.js');
 
 
@@ -14,7 +15,8 @@ const concentratorAcrv = '0x2b95A1Dcc3D405535f9ed33c219ab38E8d7e0884';
 const concentratorAFXS = '0xDAF03D70Fe637b91bA6E521A32E1Fb39256d3EC9';
 const concentratorAFrxETH = "0xb15Ad6113264094Fd9BF2238729410A07EBE5ABa";
 const cvxcrvAddress = '0x62b9c7356a2dc64a1969e19c23e4f579f9810aa7';
-const abcCVXAddress = '0xDEC800C2b17c9673570FDF54450dc1bd79c8E359';
+const concentratorAbcCVXAddress = '0xDEC800C2b17c9673570FDF54450dc1bd79c8E359';
+const concentratorAsdCRVAddress = "0x43E54C2E7b3e294De3A155785F52AB49d87B9922"
 
 const concentratorNewVault = '0x3Cf54F3A1969be9916DAD548f3C084331C4450b5';
 const concentratorAfxsVault = '0xD6E3BB7b1D6Fa75A71d48CFB10096d59ABbf99E1';
@@ -23,6 +25,8 @@ const usdtAddress = "0xdac17f958d2ee523a2206206994597c13d831ec7";
 const aladdinBalancerLPGauge = '0x33e411ebE366D72d058F3eF22F1D0Cf8077fDaB0';
 const clevCVXAddress = "0xf05e58fCeA29ab4dA01A495140B349F8410Ba904"
 const clevCVXCVXAddress = "0xF9078Fb962A7D13F55d40d49C8AA6472aBD1A5a6"
+const sdCRVAddress = '0xD1b5651E55D4CeeD36251c61c50C889B36F6abB5'
+
 const chain = 'ethereum';
 async function getBalancerLpTvl(balances, block) {
   const ctrLpTotalSupply = (await sdk.api.abi.call({
@@ -53,6 +57,7 @@ async function tvl(timestamp, block, _, { api }) {
     getAFXSInfo(balances, block),
     getAfrxETHInfo(balances, block),
     getAbcCVXInfo(balances, block),
+    getAsdCRVInfo(balances, block),
     getVaultInfo('old', balances, block),
     getVaultInfo('New', balances, block),
     getVaultInfo('afxs', balances, block),
@@ -126,18 +131,28 @@ async function getAfrxETHInfo(balances, block) {
 
 async function getAbcCVXInfo(balances, block) {
   const totalClevCVXAmount = (await sdk.api.abi.call({
-    target: abcCVXAddress,
+    target: concentratorAbcCVXAddress,
     block,
     abi: AladdinCVXABI.totalDebtToken,
   })).output;
   const totalCurveLpTokenAmount = (await sdk.api.abi.call({
-    target: abcCVXAddress,
+    target: concentratorAbcCVXAddress,
     block,
     abi: AladdinCVXABI.totalCurveLpToken,
   })).output;
   sdk.util.sumSingleBalance(balances, clevCVXAddress, totalClevCVXAmount, chain)
   sdk.util.sumSingleBalance(balances, clevCVXCVXAddress, totalCurveLpTokenAmount, chain)
 }
+
+async function getAsdCRVInfo(balances, block) {
+  const asdCRVTotalUnderlying = (await sdk.api.abi.call({
+    target: concentratorAsdCRVAddress,
+    block,
+    abi: AladdinSdCRVABI.totalAssets,
+  })).output;
+  sdk.util.sumSingleBalance(balances, sdCRVAddress, asdCRVTotalUnderlying, chain)
+}
+
 module.exports = {
   doublecounted: true,
   ethereum: {

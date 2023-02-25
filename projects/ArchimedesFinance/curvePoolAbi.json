@@ -1,0 +1,4 @@
+{
+    "balances": "function balances(uint256 arg0) view returns (uint256)"
+}
+  

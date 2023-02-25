@@ -19,7 +19,6 @@ module.exports = treasuryExports({
         '0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D'//renBTC
      ],
     owners: [keeperDaoTreasury],
-    ownTokenOwners: [keeperDaoTreasury],
     ownTokens: [ROOK],
   },
 })

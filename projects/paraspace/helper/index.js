@@ -5,7 +5,7 @@ const abi = require("./abis");
 const address = require("./address");
 
 async function tvl(_, _1, _cb, { api, }) {
-  const { UiPoolDataProvider, PoolAddressProvider, UniV3Pos, } = address[api.chain]
+  const { UiPoolDataProvider, PoolAddressProvider, UniV3Pos, P2PPairStaking, Bayc, Bakc, Mayc } = address[api.chain]
   let [reservesData] = await api.call({
     target: UiPoolDataProvider,
     params: PoolAddressProvider,
@@ -20,7 +20,8 @@ async function tvl(_, _1, _cb, { api, }) {
     reservesData = reservesData.filter(i => !isUniV3XToken(i))
     await unwrapUniswapV3NFTs({ ...api, balances, owners: uniswapOwners })
   }
-  const toa = reservesData.map(i => ([i.underlyingAsset, i.xTokenAddress]))
+  let toa = reservesData.map(i => ([i.underlyingAsset, i.xTokenAddress]))
+  toa.push(...[[Bayc, P2PPairStaking], [Mayc, P2PPairStaking], [Bakc, P2PPairStaking]])
   return sumTokens2({ balances, tokensAndOwners: toa, blacklistedTokens: ['0x0000000000000000000000000000000000000001'] })
 }
 

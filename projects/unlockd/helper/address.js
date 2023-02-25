@@ -1,5 +1,5 @@
 const UiPoolDataProvider = {
-  ethereum: "0x2CF74101dF653E166Cbf699EeED6FaB599293BcD",
+  ethereum: "0xA7Cb07CD8BC197Fb3623A121FFF854f300a4195c",
 };
 
 const LendPoolAddressProvider = {
