@@ -7,7 +7,6 @@ const punkVault = "0x94925030F48aDfc3e4A65a2E0A7444733406c144";
 const LP_CORE = "0xe3c959bc97b92973d5367dbf4ce1b7b9660ee271";
 
 module.exports = {
-  misrepresentedTokens: true,
   methodology: `Counts the floor value of all deposited NFTs with Chainlink price feeds. Borrowed coins are not counted towards the TVL`,
   ethereum: {
     tvl: sumTokensExport({ ownerTokens: [
