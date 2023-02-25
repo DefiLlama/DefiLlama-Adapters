@@ -16,8 +16,8 @@ async function tvl(_, _1, _2, { polygon: block }) {
 module.exports = {
     timetravel: true,
     misrepresentedTokens: false,
-    methodology: 'counts the number of MINT tokens in the Club Bonding contract.',
-    start: 1677225600,
+    methodology: 'counts all USDC/WBTC/WETH balances of market contracts.',
+    start: 1677225600, // 24 Feb 2023 08:00:00 UTC
     polygon: {
         tvl,
     }
