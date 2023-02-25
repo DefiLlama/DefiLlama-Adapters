@@ -42,11 +42,18 @@ const dlobPricingApi =
  * the key will be empty. Once the key value is empty again, all markers will
  * have been retrieved from the blockchain.
  */
+
 const getMarkers = async (acc, key) => {
   // Get the next list of markers as a MarkerList type
   const nextMarkers = await get(provenanceMarkerApi(key));
-  // Set the next indexing key
-  const nextKey = nextMarkers.pagination["next_key"];
+  // Set the next indexing key. Keys in the response are encoded in
+  // Base64 while the expectation is Base64 URL encoding.
+  // First, declare nextKey
+  let nextKey = nextMarkers.pagination["next_key"];
+  // If there is a key, convert it from base64 to base64url
+  if (nextKey) {
+    nextKey = Buffer.from(nextKey, "base64").toString("base64url");
+  }
   // Update the accumulator
   acc = acc.concat(nextMarkers.markers.map((marker) => marker.denom));
   // Base case occurs when no next key is provided
@@ -137,40 +144,7 @@ const tvl = async () => {
     0
   );
 
-  // Calculate total value locked of hash
-  // Get nhash info from the chain
-  const nhashInfo = await get(
-    "https://api.provenance.io/provenance/marker/v1/detail/nhash"
-  );
-
-  // Define nhash max supply
-  const nhashMaxSupply = Number(nhashInfo.marker.supply);
-
-  // Define the nhash marker address
-  const nhashMarkerAddress = nhashInfo.marker.base_account.address;
-
-  // Get the amount of nhash burned
-  const nhashBurnedAmount = (
-    await get(
-      `https://api.provenance.io/cosmos/bank/v1beta1/balances/${nhashMarkerAddress}/by_denom?denom=nhash`
-    )
-  ).balance.amount;
-
-  // Calculate total hash supply as max supply - burned amount. Hash is simply nhash / 1e09
-  const hashTotalSupply = new BigNumber(nhashMaxSupply)
-    .minus(Number(nhashBurnedAmount))
-    .dividedBy(1e9);
-
-  // Get current hash price
-  const currentHashPrice = (await get(dlobPricingApi))[0].last_price;
-
-  // Calculate total value of hash supply
-  const totalHashValue = hashTotalSupply.multipliedBy(currentHashPrice);
-
-  // Calculate total value locked on Provenance in assets and hash
-  const totalValueLocked = totalHashValue.plus(totalMarkerValue);
-
-  return toUSDTBalances(totalValueLocked.toNumber());
+  return toUSDTBalances(totalMarkerValue);
 };
 
 module.exports = {

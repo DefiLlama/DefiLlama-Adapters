@@ -13,40 +13,8 @@ const nullAddress = "0x0000000000000000000000000000000000000000";
 // carbon: https://api-insights.carbon.network/info/denom_gecko_map
 // orbit brige: https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList
 
-const ibcChains = [
-  "ibc",
-  "terra",
-  "terra2",
-  "crescent",
-  "osmosis",
-  "kujira",
-  "stargaze",
-  "juno",
-  "injective",
-  "cosmos",
-  "provenance",
-  "comdex",
-  "stargaze",
-  "umee",
-  "orai",
-];
-const caseSensitiveChains = [
-  ...ibcChains,
-  "solana",
-  "tezos",
-  "ton",
-  "algorand",
-  "aptos",
-  "near",
-  "bitcoin",
-  "waves",
-  "tron",
-  "litecoin",
-  "polkadot",
-  "ripple",
-  "elrond",
-  "cardano",
-];
+const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'provenance', 'comdex', 'stargaze', 'umee', 'orai', 'persistence', ]
+const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano',]
 
 const tokens = {
   null: nullAddress,
