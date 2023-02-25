@@ -2,5 +2,6 @@ const {getExports} = require('../helper/heroku-api')
 
 module.exports = {
     timetravel: false,
-    ...getExports("karura-staking", ['karura'])
+    misrepresentedTokens: true,
+    ...getExports("karura-staking", ['karura', 'acala'])
 }
