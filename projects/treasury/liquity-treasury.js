@@ -21,7 +21,6 @@ module.exports = treasuryExports({
         '0x41545f8b9472D758bB669ed8EaEEEcD7a9C4Ec29',//fort
      ],
     owners: [treasury, treasury2],
-    ownTokenOwners: [treasury, treasury2],
     ownTokens: [LQTY],
   },
   optimism: {

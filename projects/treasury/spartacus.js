@@ -13,7 +13,6 @@ module.exports = treasuryExports({
         '0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83',//WFTM
      ],
     owners: [sparTreasury1],
-    ownTokenOwners: [sparTreasury1],
     ownTokens: [SPA],
   },
 })
