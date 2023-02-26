@@ -11,6 +11,7 @@ const whitelistedExportKeys = require('./projects/helper/whitelistedExportKeys.j
 const chainList = require('./projects/helper/chains.json')
 const handleError = require('./utils/handleError')
 const { log, diplayUnknownTable, sliceIntoChunks } = require('./projects/helper/utils')
+const { normalizeAddress } = require('./projects/helper/tokenMapping')
 const { PromisePool } = require('@supercharge/promise-pool')
 
 const locks = [];
@@ -324,15 +325,12 @@ async function computeTVL(balances, timestamp) {
   fixBalances(balances)
 
   Object.keys(balances).map(k => {
-    if (+balances[k] === 0) {
-      delete balances[k]
-      return;
-    }
-    if (k.toLowerCase() === k || k.startsWith("solana:")) return;
-    balances[k.toLowerCase()] = (k.toLowerCase() in balances)
-      ? Number(balances[k.toLowerCase()])
-      + Number(balances[k]) : balances[k];
+    const balance = balances[k]
     delete balances[k]
+    if (+balance === 0)
+      return;
+    const normalizedAddress = normalizeAddress(k, undefined, true)
+    sdk.util.sumSingleBalance(balances, normalizedAddress, balance)
   })
 
   const eth = balances[ethereumAddress];
