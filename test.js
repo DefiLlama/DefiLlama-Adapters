@@ -328,7 +328,7 @@ async function computeTVL(balances, timestamp) {
       delete balances[k]
       return;
     }
-    if (k.toLowerCase() === k) return;
+    if (k.toLowerCase() === k || k.startsWith("solana:")) return;
     balances[k.toLowerCase()] = (k.toLowerCase() in balances)
       ? Number(balances[k.toLowerCase()])
       + Number(balances[k]) : balances[k];
@@ -344,7 +344,7 @@ async function computeTVL(balances, timestamp) {
   const PKsToTokens = {};
   const readKeys = Object.keys(balances)
     .map((address) => {
-      const PK = `${timestamp === "now" ? "" : "asset#"}${address.toLowerCase()}`;
+      const PK = address;
       if (PKsToTokens[PK] === undefined) {
         PKsToTokens[PK] = [address];
         return PK;
@@ -363,7 +363,7 @@ async function computeTVL(balances, timestamp) {
   const { errors } = await PromisePool.withConcurrency(5)
     .for(sliceIntoChunks(readKeys, 40))
     .process(async (keys) => {
-      const coins = keys.reduce((p, c) => p + `${c},`, "");
+      const coins = keys.join(',');
       tokenData.push((await axios.get(`${burl}${coins}`)).data.coins)
     })
 
