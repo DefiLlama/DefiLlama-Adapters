@@ -22,6 +22,10 @@ const GENIUS_CONTRACT = "0x444444444444C1a66F394025Ac839A535246FCc8";
 const STABILITY_POOL = "0xDCA692d433Fe291ef72c84652Af2fe04DA4B4444";
 
 async function tvl(_, _1, _2, { api }) {
+  return {}
+}
+
+async function staking(_, _1, _2, { api }) {
   const balances = {}
   /* Collect Basic miner locked */
   const basicLockedMinersSupply = await api.call({
@@ -41,23 +45,6 @@ async function tvl(_, _1, _2, { api }) {
   sdk.util.sumSingleBalance(balances,GENIUS_CONTRACT,basicLockedMinersSupply)
   sdk.util.sumSingleBalance(balances,GENIUS_CONTRACT,advLockedMinersSupply)
   sdk.util.sumSingleBalance(balances,GENIUS_CONTRACT,totalSettledGenitos)
-  return balances
-}
-
-async function staking(_, _1, _2, { api }) {
-  const balances = {}
-  /* Collect Basic miner locked */
-  const basicLockedMinersSupply = await api.call({
-    target: GENIUS_CONTRACT,
-    abi: geniusAbi.basicLockedSupply
-  });
-  /* Collect Advanced miner locked */
-  const advLockedMinersSupply = await api.call({
-    target: GENIUS_CONTRACT,
-    abi: geniusAbi.advLockedSupply
-  });
-  sdk.util.sumSingleBalance(balances,GENIUS_CONTRACT,basicLockedMinersSupply)
-  sdk.util.sumSingleBalance(balances,GENIUS_CONTRACT,advLockedMinersSupply)
   return balances
 }
 
