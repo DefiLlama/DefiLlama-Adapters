@@ -11,6 +11,7 @@ const whitelistedExportKeys = require('./projects/helper/whitelistedExportKeys.j
 const chainList = require('./projects/helper/chains.json')
 const handleError = require('./utils/handleError')
 const { log, diplayUnknownTable, sliceIntoChunks } = require('./projects/helper/utils')
+const { normalizeAddress } = require('./projects/helper/tokenMapping')
 const { PromisePool } = require('@supercharge/promise-pool')
 
 const locks = [];
@@ -324,15 +325,12 @@ async function computeTVL(balances, timestamp) {
   fixBalances(balances)
 
   Object.keys(balances).map(k => {
-    if (+balances[k] === 0) {
-      delete balances[k]
-      return;
-    }
-    if (k.toLowerCase() === k) return;
-    balances[k.toLowerCase()] = (k.toLowerCase() in balances)
-      ? Number(balances[k.toLowerCase()])
-      + Number(balances[k]) : balances[k];
+    const balance = balances[k]
     delete balances[k]
+    if (+balance === 0)
+      return;
+    const normalizedAddress = normalizeAddress(k, undefined, true)
+    sdk.util.sumSingleBalance(balances, normalizedAddress, balance)
   })
 
   const eth = balances[ethereumAddress];
@@ -344,7 +342,7 @@ async function computeTVL(balances, timestamp) {
   const PKsToTokens = {};
   const readKeys = Object.keys(balances)
     .map((address) => {
-      const PK = `${timestamp === "now" ? "" : "asset#"}${address.toLowerCase()}`;
+      const PK = address;
       if (PKsToTokens[PK] === undefined) {
         PKsToTokens[PK] = [address];
         return PK;
@@ -363,7 +361,7 @@ async function computeTVL(balances, timestamp) {
   const { errors } = await PromisePool.withConcurrency(5)
     .for(sliceIntoChunks(readKeys, 40))
     .process(async (keys) => {
-      const coins = keys.reduce((p, c) => p + `${c},`, "");
+      const coins = keys.join(',');
       tokenData.push((await axios.get(`${burl}${coins}`)).data.coins)
     })
 
