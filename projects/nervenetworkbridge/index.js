@@ -51,8 +51,7 @@ async function tronTvl() {
   const tokens1 = []
   for (let label of tokenKeys) {
     let token = tokens[label];
-    if (token === 'T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb') {
-    } else {
+    if (token === 'T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb') { /* empty */ } else {
       tokens1.push(token)
     }
   }
