@@ -21,22 +21,8 @@ const GENIUS_CONTRACT = "0x444444444444C1a66F394025Ac839A535246FCc8";
 /* Genius stability pool / debt contract*/
 const STABILITY_POOL = "0xDCA692d433Fe291ef72c84652Af2fe04DA4B4444";
 
-/* Staking: Advanced and Basic mining */
-const miningBalances = {
-  "ethereum": {},
-  "bsc": {},
-  "polygon": {},
-  "avax": {}
-};
-/* TVL: Staking plus Stability pool */
-const tvlBalances = {
-  "ethereum": {},
-  "bsc": {},
-  "polygon": {},
-  "avax": {}
-};
-
 async function tvl(_, _1, _2, { api }) {
+  const balances = {}
   /* Collect Basic miner locked */
   const basicLockedMinersSupply = await api.call({
     target: GENIUS_CONTRACT,
@@ -52,14 +38,14 @@ async function tvl(_, _1, _2, { api }) {
     target: STABILITY_POOL,
     abi: stabilityAbi.totalSettledGenitos
   });
-  /* TVL is all miners + GENI locked in the stability pool */
-  const totalLockedMinersSupply = (basicLockedMinersSupply + advLockedMinersSupply);
-  const totalLockedSupply = (totalLockedMinersSupply + totalSettledGenitos);
-  await sdk.util.sumSingleBalance(tvlBalances[api.chain], GENIUS_CONTRACT, totalLockedSupply, api.chain);
-  return tvlBalances[api.chain];
+  sdk.util.sumSingleBalance(balances,GENIUS_CONTRACT,basicLockedMinersSupply)
+  sdk.util.sumSingleBalance(balances,GENIUS_CONTRACT,advLockedMinersSupply)
+  sdk.util.sumSingleBalance(balances,GENIUS_CONTRACT,totalSettledGenitos)
+  return balances
 }
 
 async function staking(_, _1, _2, { api }) {
+  const balances = {}
   /* Collect Basic miner locked */
   const basicLockedMinersSupply = await api.call({
     target: GENIUS_CONTRACT,
@@ -70,15 +56,12 @@ async function staking(_, _1, _2, { api }) {
     target: GENIUS_CONTRACT,
     abi: geniusAbi.advLockedSupply
   });
-  /* Total Staked across both Basic and Advanced mining */
-  const totalLockedMinersSupply = (basicLockedMinersSupply + advLockedMinersSupply);
-  await sdk.util.sumSingleBalance(miningBalances[api.chain], GENIUS_CONTRACT, totalLockedMinersSupply, api.chain);
-  return miningBalances[api.chain];
+  sdk.util.sumSingleBalance(balances,GENIUS_CONTRACT,basicLockedMinersSupply)
+  sdk.util.sumSingleBalance(balances,GENIUS_CONTRACT,advLockedMinersSupply)
+  return balances
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
   methodology:
     `Staking: counts the number of GENI tokens locked in Basic and Advanced miners per chain.
    TVL: counts the number of staked plus locked in the stability pool as settled.
