@@ -2,7 +2,6 @@ const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 const pleasrDaoTreasury = "0xF5c27c6fE782cbB5c85989ea3e75754748153459";
 
-
 module.exports = treasuryExports({
   ethereum: {
     tokens: [ 

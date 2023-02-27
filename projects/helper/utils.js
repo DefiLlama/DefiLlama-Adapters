@@ -66,6 +66,8 @@ function isLP(symbol, token, chain) {
   if (chain === 'songbird' && ['FLRX', 'OLP'].includes(symbol)) return true
   if (chain === 'arbitrum' && ['DXS', 'ZLP', ].includes(symbol)) return true
   if (chain === 'metis' && ['NLP', 'ALP'].includes(symbol)) return true // Netswap/Agora LP Token
+  if (chain === 'optimism' && /(-ZS)/.test(symbol)) return true
+  if (chain === 'bsc' && /(-APE-LP-S)/.test(symbol)) return false
   if (['fantom', 'nova',].includes(chain) && ['NLT'].includes(symbol)) return true
   let label
 
