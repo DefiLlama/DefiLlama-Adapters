@@ -25,6 +25,7 @@ const endPoints = {
 const chainSubpaths = {
   crescent: 'crescent',
   comdex: 'comdex',
+  umee: 'umee',
 }
 
 function getEndpoint(chain) {
