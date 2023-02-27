@@ -107,7 +107,8 @@ function getCoreAssets(chain = 'ethereum') {
   return addresses
 }
 
-function normalizeAddress(address, chain) {
+function normalizeAddress(address, chain, extractChain = false) {
+  if (!chain && extractChain && address.includes(':')) chain = address.split(':')[0]
   if (caseSensitiveChains.includes(chain)) return address
   return address.toLowerCase()
 }
