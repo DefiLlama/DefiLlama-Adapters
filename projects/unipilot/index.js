@@ -1,10 +1,11 @@
 const sdk = require("@defillama/sdk");
 const { request, gql } = require("graphql-request");
-const { getLogs } = require('../helper/cache/getLogs')
+const { getLogs } = require("../helper/cache/getLogs");
 
 const { getChainTransform } = require("../helper/portedTokens");
 const { staking } = require("../helper/staking");
-const getPositionDetails = 'function getPositionDetails() returns (uint256 amount0, uint256 amount1, uint256 fees0, uint256 fees1, uint128 baseLiquidity, uint128 rangeLiquidity)'
+const getPositionDetails =
+  "function getPositionDetails() returns (uint256 amount0, uint256 amount1, uint256 fees0, uint256 fees1, uint128 baseLiquidity, uint128 rangeLiquidity)";
 
 const FACTORY_ADDRESSES = {
   ethereum: {
@@ -15,16 +16,23 @@ const FACTORY_ADDRESSES = {
     activeFactory: "0x95b77505b38f8a261ada04f54b8d0cda08904708",
     passiveFactory: "0x2536527121fc1048ae5d45327a34241a355a6a95",
   },
+  arbitrum: {
+    activeFactory: "0xca69c359e3297aa855e77f83e071feab17f0ede6",
+    passiveFactory: "0x6900c436cf15d6d0016dc71a5ce5ade843031efd",
+  },
 };
 
 const GRAPH_URLS = {
   polygon:
     "https://api.thegraph.com/subgraphs/name/unipilotvoirstudio/stats-v2-polygon",
+  arbitrum:
+    "https://api.thegraph.com/subgraphs/name/hamzabhatti125/unipilot-stats-arbitrum",
 };
 
 const VAULT_CREATION_TOPIC = {
   ethereum: "VaultCreated(address,address,uint24,address)",
   polygon: "VaultCreated(address,address,uint16,uint24,address)",
+  arbitrum: "VaultCreated(address,address,uint16,uint24,address)",
 };
 
 const PILOT_STAKING_CONTRACT = "0xc9256e6e85ad7ac18cd9bd665327fc2062703628";
@@ -38,6 +46,10 @@ const START_BLOCKS = {
   polygon: {
     activeFactory: 34288237,
     passiveFactory: 34371363,
+  },
+  arbitrum: {
+    activeFactory: 59667444,
+    passiveFactory: 58774134,
   },
 };
 
@@ -58,14 +70,12 @@ const vaultQuery = gql`
 async function getVaultLogs(chain, block, factoryType, api) {
   const vaults = {};
 
-  const vaultLogs = (
-    await getLogs({
-      target: FACTORY_ADDRESSES[chain][factoryType],
-      topic: VAULT_CREATION_TOPIC[chain],
-      fromBlock: START_BLOCKS[chain][factoryType],
-      api,
-    })
-  );
+  const vaultLogs = await getLogs({
+    target: FACTORY_ADDRESSES[chain][factoryType],
+    topic: VAULT_CREATION_TOPIC[chain],
+    fromBlock: START_BLOCKS[chain][factoryType],
+    api,
+  });
 
   for (let log of vaultLogs) {
     vaults[`0x${log.topics[3].substr(-40)}`] = {
@@ -86,13 +96,13 @@ function protocolTvl(chain) {
         chain,
         chainBlocks[chain],
         "activeFactory",
-        api,
+        api
       );
       const passiveVaultLogs = await getVaultLogs(
         chain,
         chainBlocks[chain],
         "passiveFactory",
-        api,
+        api
       );
       vaults = { ...activeVaultLogs, ...passiveVaultLogs };
     } else {
@@ -187,5 +197,8 @@ module.exports = {
   },
   polygon: {
     tvl: protocolTvl("polygon"),
+  },
+  arbitrum: {
+    tvl: protocolTvl("arbitrum"),
   },
 };
