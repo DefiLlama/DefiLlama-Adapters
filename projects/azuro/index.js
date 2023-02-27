@@ -20,23 +20,12 @@ const config = {
   },
 }
 
-const createTvlGetter = (chain) => (timestamp, ethBlock, chainBlocks) => {
-  const { owners, tokens } = config[chain]
-
-  return sumTokens2({
-    chain,
-    block: chainBlocks[chain],
-    owners,
-    tokens,
-  })
+async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
+  return sumTokens2({ api, ...config[api.chain] })
 }
 
 module.exports = {
-  xdai: {
-    tvl: createTvlGetter('xdai'),
-  },
-  polygon: {
-    tvl: createTvlGetter('polygon'),
-  },
+  xdai: { tvl },
+  polygon: { tvl },
   methodology: `TVL is the total amount of WXDAI and USDC held on Liquidity pools’ smart-contracts.`
 }
