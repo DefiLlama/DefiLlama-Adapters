@@ -10,13 +10,17 @@
 *     Locked GENI are waiting for collateral to be settled for it.
 *     While it's waiting it is generating yield.
 *
-*  Staking and `mining` are used interchangeably in Genius
+*  `Staking` and `mining` are used interchangeably in Genius
+*
+* Genius TVL is the sum of all locked supported collateral in the debt pool
+* The list of supported collateral is provided.
+*
 * */
 const sdk = require("@defillama/sdk");
-const geniusAbi = require("./genius-abi.json");
-
-const stabilityAbi = require("./genius-stability-abi.json");
 const BigNumber = require("bignumber.js");
+
+const geniusAbi = require("./genius-abi.json");
+const stabilityAbi = require("./genius-stability-abi.json");
 
 /* Genius staking contract*/
 const GENIUS_CONTRACT = "0x444444444444C1a66F394025Ac839A535246FCc8";
@@ -56,15 +60,15 @@ async function tvl(_, _1, _2, { api }) {
         owner: STABILITY_POOL,
         chain
       });
-    balance = await new BigNumber(balance).div(10 ** decimals).toFixed(2);
-    // Debug: console.log(`[${chain}]: Adding token balance for: ${collateral} of: ${balance}`)
+    balance = await new BigNumber(balance).div(10 ** decimals).toFixed(4);
+    // console.log(`[${chain}]: Adding token balance for: ${collateral} of: ${balance}`)
     sdk.util.sumSingleBalance(balances, GENIUS_CONTRACT, parseFloat(balance));
   }
 
   /* collect locked collateral for a native currency */
   const output = await sdk.api.eth.getBalance({ target: STABILITY_POOL, chain: chain });
-  let nativeAmount = await new BigNumber(output.output).div(10 ** 18).toFixed(2);
-  // Debug: console.log(`[${chain}]: Adding native currency balance: ${nativeAmount}`)
+  let nativeAmount = await new BigNumber(output.output).div(10 ** 18).toFixed(4);
+  // console.log(`[${chain}]: Adding native currency balance: ${nativeAmount}`)
   sdk.util.sumSingleBalance(balances, GENIUS_CONTRACT, parseFloat(nativeAmount));
 
   return balances;
@@ -95,9 +99,9 @@ async function staking(_, _1, _2, { api }) {
 
 module.exports = {
   methodology:
-    `Staking: counts the number of GENI tokens locked in Basic and Advanced miners per chain.
-   TVL: counts the number of staked plus locked in the stability pool as settled.
-  `,
+`Staking: counts the number of GENI tokens locked in Basic and Advanced miners per chain.
+TVL: counts total number of value locked of all collateral tokens and native in the debt pool per chain.
+`,
   ethereum: {
     staking,
     tvl
