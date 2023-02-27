@@ -109,9 +109,9 @@ module.exports = {
   polygon: {
     staking,
     tvl
+  },
+  avax: {
+    staking,
+    tvl
   }
-  // avax: {
-  //   staking,
-  //   tvl
-  // }
 };
