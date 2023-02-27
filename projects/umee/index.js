@@ -1,49 +1,33 @@
-const { get } = require("../helper/http");
 const sdk = require("@defillama/sdk");
 const { transformBalances } = require("../helper/portedTokens");
-const { getLogs, getAddress } = require("../helper/cache/getLogs");
+const { getLogs, } = require("../helper/cache/getLogs");
+
 const { sumTokens2 } = require("../helper/unwrapLPs");
+const { queryV1Beta1 } = require("../helper/chain/cosmos");
 let data;
 
 async function getData() {
-  let data;
-  try {
-    data = await get(
-      "https://umee-api.polkachu.com/umee/leverage/v1/registered_tokens"
-    );
-  } catch (error) {
-    console.error("Failed to fetch data", error);
-    return [];
-  }
-
-  const assets = [];
-
-  for (const i of data.registry) {
-    try {
-      const market_summary = await get(
-        "https://umee-api.polkachu.com/umee/leverage/v1/market_summary?denom=" +
-          i.base_denom
-      );
-
-      assets.push({
+  if (!data) data = _getData()
+  return data
+  async function _getData() {
+    const { registry } = await queryV1Beta1({ url: '/leverage/v1/registered_tokens', chain: 'umee'})
+    return Promise.all(registry.map(async i => {
+      const res = await queryV1Beta1({ url: '/leverage/v1/market_summary?denom='+i.base_denom, chain: 'umee'})
+      return {
         base_denom: i.base_denom,
-        borrowed: parseInt(market_summary.borrowed),
-        supplied: parseInt(market_summary.supplied),
+        borrowed: parseInt(res.borrowed),
+        supplied: parseInt(res.supplied),
         exponent: parseInt(i.exponent),
-      });
-    } catch (error) {
-      console.error("Failed to fetch market summary for", i.base_denom, error);
-    }
+      }
+    }))
   }
-
-  return assets;
 }
 
 async function tvl() {
   const balances = {};
   const data = await getData();
   data.forEach((i) =>
-    sdk.util.sumSingleBalance(balances, i.base_denom, i.supplied)
+    sdk.util.sumSingleBalance(balances, i.base_denom, i.supplied - i.borrowed)
   );
   return transformBalances("umee", balances);
 }
