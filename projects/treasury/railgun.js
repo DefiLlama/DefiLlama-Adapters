@@ -1,9 +1,11 @@
+const { tokens } = require("../helper/chain/algorand");
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 // Treasury
 const ethTreasury = "0xE8A8B458BcD1Ececc6b6b58F80929b29cCecFF40";
-const bscTreasury = "0x590162bf4b50F6576a459B75309eE21D92178A10";
-const polygonTreasury = "0x19B620929f97b7b990801496c3b361CA5dEf8C71";
+const bscTreasury = "0xdca05161eE5b5FA6DF170191c88857E70FFB4094";
+const polygonTreasury = "0xdca05161eE5b5FA6DF170191c88857E70FFB4094";
+const arbitrumTreasury = "0x3B374464a714525498e445ba050B91571937bFc8"
 //ownTokens
 const ethRAIL = "0xe76c6c83af64e4c60245d8c7de953df673a7a33d";
 const polygonRAIL = "0x92A9C92C215092720C731c96D4Ff508c831a714f";// not on coingecko
@@ -109,6 +111,18 @@ module.exports = treasuryExports({
      ],
     owners: [polygonTreasury],
     ownTokens: [polygonRAIL]
+  },
+  arbitrum: {
+    tokens: [ 
+        // arbitrum assets
+        nullAddress,
+        "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",//weth
+        "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f",
+        "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
+        "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8"
+     ],
+    owners: [arbitrumTreasury],
+    ownTokens: []
   },
 })
 
