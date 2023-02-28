@@ -4,38 +4,22 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 const START_BLOCK = 16555738; // grappa deployment block
 const grappa = '0xe5fc332620c8ba031d697bd45f377589f633a255';
 
-// engines
-const crossMargin = '0x9c742Aef14CC875C49f52bBD4473B35beBAD26Ae'
-
-// tokens
-const usdc = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
-const weth = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
-
-// Converts a bytes32 into an address or, if there is more data, slices an address out of the first 32 byte word
-const toAddress = (data) => `0x${data.slice(64 - 40 + 2, 64 + 2)}`.toLowerCase();
-
 module.exports = async function ethereumTvl(timestamp, block, _1, { api }) {  
   let balances = {};
 
   if(block >= START_BLOCK) {
-
-    // all registered assets
-    // const tokens = (await getLogs({
-    //   api,
-    //   target: grappa,
-    //   topic: 'AssetRegistered(address,uint8)',
-    //   fromBlock: START_BLOCK,
-    // })).map(log => toAddress(log.topics[0]))
-    const tokens = [usdc, weth]
-    
-    // all registered engines (will hold assets)
-    // const owners = (await getLogs({
-    //   target: grappa,
-    //   api,
-    //   topic: 'MarginEngineRegistered(address,uint8)',
-    //   fromBlock: START_BLOCK,
-    // })).map(log => toAddress(log.topics[0]))
-    const owners = [crossMargin]
+    // get all tokens
+    const numTokens = await api.call({  abi: 'function lastAssetId() view returns (uint8)' , target: grappa }) 
+    const tokens = []
+    for (let id = 1; id <= numTokens; id++) {
+      tokens.push(await api.call({  abi: 'function assets(uint8) view returns (address)' , target: grappa, params: [id] }))
+    }
+    // get all owners
+    const numEngines = await api.call({  abi: 'function lastEngineId() view returns (uint8)' , target: grappa })
+    const owners = []
+    for (let id = 1; id <= numEngines; id++) {
+      owners.push(await api.call({  abi: 'function engines(uint8) view returns (address)' , target: grappa, params: [id] }))
+    }
   
     return sumTokens2({ tokens: tokens, owners, api })
   }
