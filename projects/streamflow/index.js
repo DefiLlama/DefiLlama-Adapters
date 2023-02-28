@@ -7,7 +7,7 @@ const api =
 
 const flatten = (arr) => {
   return arr.reduce((acc, next) => [...acc, ...next], []);
-};
+}
 
 const getValueForKey = (arr, key) => {
   for (let i = 0; i < arr.length; i++) {
@@ -17,7 +17,7 @@ const getValueForKey = (arr, key) => {
     }
   }
   return null;
-};
+}
 
 async function getCachedApiRespnse() {
   let apiResponse = (await getCache(api)).data;
@@ -29,13 +29,13 @@ async function getCachedApiRespnse() {
 async function tvl() {
   return {
     tether: getValueForKey(await getCachedApiRespnse(), TVL_KEY),
-  };
-};
+  }
+}
 async function vesting() {
   return {
     tether: getValueForKey(await getCachedApiRespnse(), VESTING_KEY),
-  };
-};
+  }
+}
 
 module.exports = {
   timetravel: false,
@@ -43,4 +43,4 @@ module.exports = {
   solana: {
     tvl, vesting,
   },
-};
+}
