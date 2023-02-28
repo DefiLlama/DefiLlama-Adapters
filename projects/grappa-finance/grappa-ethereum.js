@@ -13,12 +13,12 @@ module.exports = async function ethereumTvl(timestamp, block, _1, { api }) {
   if(block >= START_BLOCK) {
 
     // all registered assets
-    const tokens = await getLogs({
+    const tokens = (await getLogs({
       api,
       target: grappa,
       topic: 'AssetRegistered(address,uint8)',
       fromBlock: START_BLOCK,
-    }).map(log => toAddress(log.topics[0]))
+    })).map(log => toAddress(log.topics[0]))
     
     // all registered engines (will hold assets)
     const owners = (await getLogs({
