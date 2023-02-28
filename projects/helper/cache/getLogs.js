@@ -29,7 +29,6 @@ async function getLogs({ target,
   const key = extraKey ?  `${chain}/${target}-${extraKey}` : `${chain}/${target}`
 
   let cache = await _getCache(key)
-  console.log('cache', cache)
   let response
 
   // if no new data nees to be fetched
@@ -51,13 +50,9 @@ async function getLogs({ target,
     cache.fromBlock = fromBlock
     fromBlock = cache.toBlock ?? fromBlock
 
-    console.log('fetching new logs')
-    console.log('fromBlock', fromBlock)
     const logs = (await sdk.api.util.getLogs({
       chain, target, topic, keys, topics, fromBlock, toBlock,
     })).output
-
-    console.log('logs', logs)
 
     cache.logs.push(...logs)
     cache.toBlock = toBlock
