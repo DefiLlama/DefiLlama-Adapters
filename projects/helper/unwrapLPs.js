@@ -547,7 +547,7 @@ async function genericUnwrapCvx(balances, holder, cvx_BaseRewardPool, block, cha
     chain,
     block: block,
   })
-  sdk.util.sumSingleBalance(balances,crvPoolInfo.lptoken,cvx_LP_bal, chain)
+  sdk.util.sumSingleBalance(balances, crvPoolInfo.lptoken, cvx_LP_bal, chain)
   return balances
 }
 
@@ -676,7 +676,7 @@ async function sumTokens2({
     if (owner) tokensAndOwners = tokens.map(t => [t, owner])
     if (owners.length) tokensAndOwners = tokens.map(t => owners.map(o => [t, o])).flat()
     if (ownerTokens.length) {
-      ownerTokens.map(([tokens, owner ]) => {
+      ownerTokens.map(([tokens, owner]) => {
         if (typeof owner !== 'string') throw new Error('invalid config', owner)
         if (!Array.isArray(tokens)) throw new Error('invalid config', tokens)
         tokens.forEach(t => tokensAndOwners.push([t, owner]))
@@ -708,10 +708,12 @@ function sumTokensExport({ balances, tokensAndOwners, tokens, owner, owners, tra
   return async (_, _b, _cb, { api }) => sumTokens2({ api, balances, tokensAndOwners, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, })
 }
 
-async function unwrapBalancerToken({ chain, block, balancerToken, owner, balances = {} }) {
+async function unwrapBalancerToken({ chain, block, balancerToken, owner, balances = {}, isBPool = false, }) {
   const { output: lpTokens } = await sdk.api.erc20.balanceOf({ target: balancerToken, owner, chain, block, })
   const { output: lpSupply } = await sdk.api.erc20.totalSupply({ target: balancerToken, chain, block, })
-  const { output: underlyingPool } = await sdk.api.abi.call({ target: balancerToken, abi: bPool, chain, block, })
+  let underlyingPool = balancerToken
+  if (!isBPool)
+    underlyingPool = await sdk.api2.abi.call({ target: balancerToken, abi: bPool, chain, block, })
   const { output: underlyingTokens } = await sdk.api.abi.call({ target: underlyingPool, abi: getCurrentTokens, chain, block, })
 
   const ratio = lpTokens / lpSupply
