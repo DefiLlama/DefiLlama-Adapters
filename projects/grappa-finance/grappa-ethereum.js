@@ -9,7 +9,7 @@ const crossMargin = '0x9c742Aef14CC875C49f52bBD4473B35beBAD26Ae'
 
 // tokens
 const usdc = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
-const weth = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
+const weth = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
 
 // Converts a bytes32 into an address or, if there is more data, slices an address out of the first 32 byte word
 const toAddress = (data) => `0x${data.slice(64 - 40 + 2, 64 + 2)}`.toLowerCase();
