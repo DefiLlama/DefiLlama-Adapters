@@ -1,4 +1,4 @@
-const { default: axios } = require("axios");
+const { getCache } = require('../helper/http')
 
 const TVL_KEY = "TVL (unlocked) (L1+stables)";
 const VESTING_KEY = "TVL (locked) (vesting)";
@@ -19,42 +19,28 @@ const getValueForKey = (arr, key) => {
   return null;
 };
 
-let apiResponse;
-
 async function getCachedApiRespnse() {
-  if (apiResponse) {
-    return apiResponse;
-  }
-
-  apiResponse = (await axios.get(api)).data.data;
+  let apiResponse = (await getCache(api)).data;
   apiResponse = flatten(Object.values(apiResponse));
 
   return apiResponse;
 }
 
-function data() {
-  const _tvl = async () => {
-    return {
-      usd: getValueForKey(await getCachedApiRespnse(), TVL_KEY),
-    };
-  };
-  const _vesting = async () => {
-    return {
-      usd: getValueForKey(await getCachedApiRespnse(), VESTING_KEY),
-    };
-  };
-
+async function tvl() {
   return {
-    tvl: _tvl,
-    vesting: _vesting,
+    tether: getValueForKey(await getCachedApiRespnse(), TVL_KEY),
   };
-}
-
-console.log(data());
+};
+async function vesting() {
+  return {
+    tether: getValueForKey(await getCachedApiRespnse(), VESTING_KEY),
+  };
+};
 
 module.exports = {
   timetravel: false,
+  misrepresentedTokens: true,
   solana: {
-    ...data(),
+    tvl, vesting,
   },
 };
