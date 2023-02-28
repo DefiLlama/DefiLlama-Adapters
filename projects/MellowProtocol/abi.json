@@ -1,4 +1,0 @@
-{
-    "tvl": "function tvl() external view returns (uint256[] memory, uint256[] memory)",
-    "vaultTokens": "function vaultTokens() external view returns (address[] memory)"
-}
