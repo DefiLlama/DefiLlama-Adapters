@@ -1,3 +1,4 @@
+const { sumTokensExport } = require("../helper/unwrapLPs");
 const tokens = {
   "WBNB": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
   "ETH": "0x2170Ed0880ac9A755fd29B2688956BD959F933F8",
@@ -9,8 +10,14 @@ const tokens = {
 };
 const POOL_DIAMOND_CONTRACT = "0xeA6d51c82a551ea66Bd5D0DE71C19356179DdaaE";
 
+async function calAlperpTvl(chain, block) {
+  return sumTokensExport({
+    owner: POOL_DIAMOND_CONTRACT,
+    tokens: Object.values(tokens),
+    chain: chain,
+  })
+}
 
 module.exports = {
-  tokens,
-  POOL_DIAMOND_CONTRACT
+  calAlperpTvl,
 };
