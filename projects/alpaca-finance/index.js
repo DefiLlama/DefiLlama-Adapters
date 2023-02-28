@@ -1,6 +1,8 @@
 const { calLyfTvl } = require("./lyf");
 const { calAusdTvl } = require('./ausd');
 const { calxALPACAtvl } = require('./xalpaca');
+const { sumTokensExport } = require('../helper/unwrapLPs');
+const Alperp = require('./alperp');
 
 async function bscTvl(timestamp, ethBlock, chainBlocks) {
   const lyfTvl = await calLyfTvl('bsc', chainBlocks.bsc);
@@ -25,7 +27,14 @@ async function ftmStaking(timestamp, ethBlock, chainBlocks) {
 module.exports = {
   start: 1602054167,
   bsc: {
-    tvl: bscTvl,
+    tvl: {
+      ...bscTvl,
+      ...sumTokensExport({
+        owner: Alperp.POOL_DIAMOND_CONTRACT,
+        tokens: Object.values(Alperp.tokens),
+        chain: 'bsc',
+      })
+    },
     staking: bscStaking,
   },
   fantom: {
