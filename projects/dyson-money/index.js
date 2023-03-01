@@ -66,8 +66,7 @@ module.exports = {
   misrepresentedTokens: false,
   methodology: "TVL is calculated by summing the liquidity in the Uniswap V3 pools.",
   polygon: {
-    tvl: polygonTvl,
-    tvl: fetchChain(137),
+    tvl: polygonTvl && fetchChain(137),
     staking: staking(ylSPHEREvault, sphere_token, "polygon")
   },
   optimism: {
