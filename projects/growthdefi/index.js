@@ -1,14 +1,6 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const clqdr = require("./abis/clqdr.json");
-const psm = require("./abis/psm.json");
-const { staking } = require("../helper/staking");
-
-const {
-  transformBscAddress,
-  transformAvaxAddress,
-  transformFantomAddress,
-} = require("../helper/portedTokens");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 
 const GRO_BSC = "0x336ed56d8615271b38ecee6f4786b55d0ee91b96";
@@ -63,11 +55,11 @@ const morChainsNonStk = {
 
 const transformFrom = async (chain) => {
   if (chain === "bsc") {
-    return transformBscAddress();
+    return addr => 'bsc:'+addr
   } else if (chain === "avax") {
-    return transformAvaxAddress();
+    return addr => 'avax:'+addr
   } else {
-    return transformFantomAddress();
+    return addr => 'fantom:'+addr
   }
 };
 

@@ -31,5 +31,6 @@ module.exports = {
     [1666003500, "pETH borrows"],
     [1669551000, "JPEG LTV boost"],
     [1670518800, "APE staking"],
+    [1674669600, "Autoglyphs & Fidenza support"],
   ]
 }

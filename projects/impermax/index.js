@@ -10,7 +10,7 @@ function offset(chain) {
     case 'ethereum':
       return 100
     case 'polygon':
-      return 500
+      return 1000
     case 'arbitrum':
       return 2000
     case 'moonriver':
@@ -64,6 +64,7 @@ const subgraphs = {
   'arbitrum': [
     'impermax-finance/impermax-x-uniswap-v2-arbitrum',
     'impermax-finance/impermax-arbitrum-v2',
+    'impermax-finance/impermax-arbitrum-solv2',
   ],
   'moonriver': ['impermax-finance/impermax-x-uniswap-v2-moonriver'],
   'avax': [
