@@ -1,10 +1,19 @@
-const { compoundExports } = require('../helper/compound')
+const { compoundExports } = require("../helper/compound");
+const { staking } = require("../helper/staking");
 
-const soWETH = "0xf7B5965f5C117Eb1B5450187c9DcFccc3C317e8E"
-const unitroller = "0x60CF091cD3f50420d50fD7f707414d0DF4751C58"
-const opWETH = "0x4200000000000000000000000000000000000006"
+const unitroller = "0x60CF091cD3f50420d50fD7f707414d0DF4751C58";
 
 module.exports = {
-  methodology: "Same as Compound Finance, we just count all the tokens supplied (not borrowed money) on the lending markets",
-  optimism: compoundExports(unitroller, "optimism", soWETH, opWETH),
-}
+  methodology:
+    "Same as Compound Finance, we just count all the tokens supplied (not borrowed money) on the lending markets",
+  optimism: {
+    ...compoundExports(unitroller, "optimism"),
+    staking: staking(
+      [
+        "0xdc05d85069dc4aba65954008ff99f2d73ff12618",
+        "0x41279e29586eb20f9a4f65e031af09fced171166",
+      ],
+      "0x1DB2466d9F5e10D7090E7152B68d62703a2245F0"
+    ),
+  },
+};
