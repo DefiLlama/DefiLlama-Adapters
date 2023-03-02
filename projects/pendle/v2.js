@@ -61,7 +61,7 @@ function tvl(chain) {
     underlyings.map((u, i) => {
       sumSingleBalance(
         balances,
-        u.address,
+        `${chain == "ethereum" ? "" : `${chain}:`}${u.address}`,
         supplies[i] * rates[i] / 10 ** u.decimals,
       );
     });
