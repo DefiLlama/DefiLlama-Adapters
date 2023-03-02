@@ -1,4 +1,4 @@
-const { call } = require('./helper/chain/near')
+const { call } = require('../helper/chain/near')
 
 async function tvl() {
   const linear_price = await call(
