@@ -19,6 +19,7 @@ const ylSPHEREvault = "0x4Af613f297ab00361D516454E5E46bc895889653"
 
 async function polygonTvl(timestamp, block, chainBlocks) {
   let balances = {};
+
   // add tokens in ylSPHERE vault
   await sumTokens2({
     balances,
@@ -27,12 +28,19 @@ async function polygonTvl(timestamp, block, chainBlocks) {
     chain: 'polygon',
     block: chainBlocks.polygon
   })
+
   const gnsDysonVaultSupply = (await sdk.api.erc20.totalSupply({
     target: gnsDysonVault,
     chain: 'polygon',
     block: chainBlocks.polygon
   })).output / 1e18  * ((await getGNSPrice()) * 1e18) / 6.24 //Don't even ask why 6.24 is needed, it just is the only way to get the correct TVL
   balances["polygon:0xE5417Af564e4bFDA1c483642db72007871397896"] = gnsDysonVaultSupply
+
+  // calculate TVL for polygon from API
+  const dysonTvl = await fetchChain(137)()
+  for (const [token, balance] of Object.entries(dysonTvl)) {
+    balances[token] = (balances[token] || 0) + balance
+  }
   return balances;
 } 
 
@@ -48,6 +56,7 @@ function fetchChain(chainId) {
     for (const vault in chain) {
       tvl += Number(chain[vault]);
     }
+    
     if (tvl === 0) {
       throw new Error(`chain ${chainId} tvl is 0`)
     }
@@ -66,7 +75,7 @@ module.exports = {
   misrepresentedTokens: false,
   methodology: "TVL is calculated by summing the liquidity in the Uniswap V3 pools.",
   polygon: {
-    tvl: polygonTvl && fetchChain(137),
+    tvl: polygonTvl,
     staking: staking(ylSPHEREvault, sphere_token, "polygon")
   },
   optimism: {
