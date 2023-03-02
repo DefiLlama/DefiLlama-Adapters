@@ -84,12 +84,92 @@ async function tvl(chain, block) {
     assets.forEach(({ output }, i) =>
       sdk.util.sumSingleBalance(balances, tokens[i].output, output)
     );
+
+    // AMOs
+    const EUROC = "0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c";
+    const curvePool = "0xBa3436Fd341F2C8A928452Db3C5A3670d1d5Cc73";
+    const sdagEUREUROC = "0x63f222079608EEc2DDC7a9acdCD9344a21428Ce7";
+    const cvxagEUREUROCstaker = "0xA91fccC1ec9d4A2271B7A86a7509Ca05057C1A98";
+    const AngleagEUREUROCStaker = "0xC1e8Dba1cbF29f1CaA8343CAe96d5AdFD9bca736";
+    // pool TVL
+    let agEURTVL = await sdk.api.erc20.balanceOf({
+      owner: curvePool,
+      target: agEUR.contract,
+      block: block,
+    });
+    let EUROCTVL = await sdk.api.erc20.balanceOf({
+      owner: curvePool,
+      target: EUROC,
+      block: block,
+    });
+    const totPoolTVL = agEURTVL.output / 10 ** 18 + EUROCTVL.output / 10 ** 6;
+    // Angle holdings of Curve agEUREUROC LP tokens (staked on Stake DAO and Convex)
+    let sdagEUREUROCTVL = await sdk.api.erc20.balanceOf({
+      owner: AngleagEUREUROCStaker,
+      target: sdagEUREUROC,
+      block: block,
+    });
+    let cvxagEUREUROCstakerTVL = await sdk.api.erc20.balanceOf({
+      owner: AngleagEUREUROCStaker,
+      target: cvxagEUREUROCstaker,
+      block: block,
+    });
+    const AnglePoolTVL =
+      (Number(sdagEUREUROCTVL.output) + Number(cvxagEUREUROCstakerTVL.output)) /
+      10 ** 18;
+    let AngleagEURTVL = (AnglePoolTVL / totPoolTVL) * agEURTVL.output;
+    let AngleEUROCTVL = (AnglePoolTVL / totPoolTVL) * EUROCTVL.output;
+
+    sdk.util.sumSingleBalance(balances, agEUR.contract, AngleagEURTVL);
+    sdk.util.sumSingleBalance(balances, EUROC, AngleEUROCTVL);
   }
 
   // Borrowing module
   tokensAndOwners.push(...(await getVaultManagersFromAPI(chain)));
   return sumTokens2({ balances, chain, block, tokensAndOwners });
 }
+
+/*
+async function amos(chain, block) {
+  const balances = {};
+  const agEUR = "0x1a7e4e63778B4f12a199C062f3eFdD288afCBce8";
+  const EUROC = "0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c";
+  const curvePool = "0xBa3436Fd341F2C8A928452Db3C5A3670d1d5Cc73";
+  const sdagEUREUROC = "0x63f222079608EEc2DDC7a9acdCD9344a21428Ce7";
+  const cvxagEUREUROCstaker = "0xA91fccC1ec9d4A2271B7A86a7509Ca05057C1A98";
+  const AngleagEUREUROCStaker = "0xC1e8Dba1cbF29f1CaA8343CAe96d5AdFD9bca736";
+  // pool TVL
+  let agEURTVL = await sdk.api.erc20.balanceOf({
+    owner: curvePool,
+    target: agEUR,
+    block: block,
+  });
+  let EUROCTVL = await sdk.api.erc20.balanceOf({
+    owner: curvePool,
+    target: EUROC,
+    block: block,
+  });
+  const totPoolTVL = agEURTVL.output / 10 ** 18 + EUROCTVL.output / 10 ** 6;
+  // our TVL
+  let sdagEUREUROCTVL = await sdk.api.erc20.balanceOf({
+    owner: AngleagEUREUROCStaker,
+    target: sdagEUREUROC,
+    block: block,
+  });
+  let cvxagEUREUROCstakerTVL = await sdk.api.erc20.balanceOf({
+    owner: AngleagEUREUROCStaker,
+    target: cvxagEUREUROCstaker,
+    block: block,
+  });
+  const AnglePoolTVL =
+    (Number(sdagEUREUROCTVL.output) + Number(cvxagEUREUROCstakerTVL.output)) /
+    10 ** 18;
+  let AngleagEURTVL = (AnglePoolTVL / totPoolTVL) * agEURTVL.output;
+  let AngleEUROCTVL = (AnglePoolTVL / totPoolTVL) * EUROCTVL.output;
+  console.log(AngleagEURTVL, AngleEUROCTVL);
+  return AnglePoolTVL;
+}
+*/
 
 /*
 New networks will need to be added progressively. 
@@ -103,10 +183,14 @@ module.exports = {
   methodology: `TVL is retrieved on-chain by querying the total assets managed by the Core module, and the balances of the vaultManagers of the Borrowing module.`,
 };
 
-["ethereum", "polygon", "optimism", "arbitrum", "avax"].forEach(
-  (chain) => {
-    if (!module.exports[chain]) module.exports[chain] = {};
-    module.exports[chain].tvl = async (_, _b, { [chain]: block }) =>
-      tvl(chain, block);
-  }
-);
+["ethereum", "polygon", "optimism", "arbitrum", "avax"].forEach((chain) => {
+  if (!module.exports[chain]) module.exports[chain] = {};
+  module.exports[chain].tvl = async (_, _b, { [chain]: block }) =>
+    tvl(chain, block);
+});
+
+/*
+amos().then((data) => {
+  console.log(data);
+});
+*/
