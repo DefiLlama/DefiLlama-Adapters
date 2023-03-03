@@ -22,7 +22,7 @@ const isV2Game = (contractVersion) =>
 
 function tvl(chain) {
   return async (timestamp, ethBlock, chainBlocks) => {
-    const gameData = await getConfig('good-ghosting', apiUrl)
+    const gameData = await getConfig('halofi', apiUrl)
 
     const balances = {};
     const transform = await getChainTransform(chain);
