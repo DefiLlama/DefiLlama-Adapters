@@ -3,7 +3,7 @@ const abi = require("./abi.json");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { transformBscAddress } = require("../helper/portedTokens");
 const { compoundExports } = require("../helper/compound");
-const {uniTvlExport} = require("../helper/calculateUniTvl");
+const { getUniTVL } = require("../helper/unknownTokens");
 
 // Jetswap section
 const factory = "0x0eb58E5c8aA63314ff5547289185cC4583DfCBD5";
@@ -50,7 +50,7 @@ const single_side_assets = [
   "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c",
 ];
 
-const factoryTvl = uniTvlExport(factory, 'bsc')
+const factoryTvl = getUniTVL({factory, fetchBalances: true, useDefaultCoreAssets: true})
 
 const bscTvl = async (timestamp, block, chainBlocks) => {
   // Jetswap section
