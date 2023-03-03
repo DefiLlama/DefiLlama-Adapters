@@ -60,6 +60,10 @@ const Asset_P12_BUSD = "0x791b2424df9865994Ad570425278902E2B5D7946";
 const Asset_P13_USDD = "0x24a70c1489d521F5e2D2612474630eFe7C2ba073";
 const Asset_P13_USDC = "0x9F9CeA30d242d7f5527Fa900f9fb0F77A98FdA82";
 
+// BOB Pool
+const Asset_P14_BOB = "0x4968E21be7Bb0ced1bd3859d3dB993ad3a05d2E6";
+const Asset_P14_USDC = "0x6b98d2B6ed0131338C7945Db8588DA43323d1b8C";
+
 // underlyingToken Address
 const BUSD = "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56";
 const DAI = "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3";
@@ -80,6 +84,7 @@ const CUSD = "0xfa4ba88cf97e282c505bea095297786c16070129";
 const iUSD = "0x0A3BB08b3a15A19b4De82F8AcFc862606FB69A2D";
 const axlUSDC = "0x4268B8F0B87b6Eae5d897996E6b845ddbD99Adf3";
 const USDD = "0xd17479997F34dd9156Deef8F95A52D81D265be9c";
+const BOB = "0xB0B195aEFA3650A6908f15CdaC7D92F8a5791B0B";
 const chain = "bsc";
 
 async function tvl(_t, _, { bsc: block }) {
@@ -115,6 +120,8 @@ async function tvl(_t, _, { bsc: block }) {
     [BUSD, Asset_P12_BUSD],
     [USDD, Asset_P13_USDD],
     [USDC, Asset_P13_USDC],
+    [BOB, Asset_P14_BOB],
+    [USDC, Asset_P14_USDC],
   ];
   let balances = await sumTokens2({ tokensAndOwners: toa, chain, block });
 
