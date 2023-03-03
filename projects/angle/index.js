@@ -123,7 +123,6 @@ async function tvl(chain, block) {
       (AnglePoolTokenSupply / totPoolTokenSupply.output) * agEURTVL.output;
     let AngleEUROCTVL =
       (AnglePoolTokenSupply / totPoolTokenSupply.output) * EUROCTVL.output;
-    console.log(AngleagEURTVL, AngleEUROCTVL);
 
     sdk.util.sumSingleBalance(balances, agEUR.contract, AngleagEURTVL);
     sdk.util.sumSingleBalance(balances, EUROC, AngleEUROCTVL);
