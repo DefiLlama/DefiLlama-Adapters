@@ -10,7 +10,6 @@ module.exports = treasuryExports({
   polygon: {
     tokens: [ nullAddress, amWMATIC, QUICK, '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174', '0x8a953cfe442c5e8855cc6c61b1293fa648bae472', '0xc2132d05d31c914a87c6611c10748aeb04b58e8f', ],
     owners: [DeveloperTeamWallet],
-    ownTokenOwners: [DeveloperTeamWallet],
     ownTokens: [ OMEN],
   },
 })

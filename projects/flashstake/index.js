@@ -20,7 +20,9 @@ module.exports = {
   start: 1659312000,
   hallmarks: [
     [1659312000, "Protocol Launch"],
-    [1666641600, "Optimism Deployment"]
+    [1666641600, "Optimism Launch"],
+    [1674604800, "Flash Capacitor Launch"],
+    [1676484000, "Flido Launch"]
   ]
 };
 
