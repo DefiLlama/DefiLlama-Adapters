@@ -1,5 +1,6 @@
 const axios = require("axios");
 
+
 const dayHistory = {};
 
 async function GetDailyHistory() {
@@ -26,9 +27,11 @@ async function tvl(timestamp) {
   // if none of our scrape targets worked then throw an error
   if (tvlAnyHedge == null)
     throw "Unable to determine AnyHedge TVL."
+  
+  const bchTvl = Number(tvlAnyHedge).toFixed();
 
   return {
-    'bitcoin-cash': tvlAnyHedge
+    'bitcoin-cash': bchTvl
   }
 }
 
