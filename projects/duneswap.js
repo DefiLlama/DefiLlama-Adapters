@@ -1,6 +1,11 @@
-const { getUniTVL } = require('./helper/unknownTokens')
+const {getUniTVL} = require('./helper/unknownTokens')
+
 module.exports = {
     oasis: {
-        tvl: getUniTVL({ factory: '0x9dd422B52618f4eDD13E08c840f2b6835F3C0585', chain: 'oasis', useDefaultCoreAssets: true }),
+        tvl: getUniTVL({
+            factory: '0x9dd422B52618f4eDD13E08c840f2b6835F3C0585',
+            fetchBalances: true,
+            useDefaultCoreAssets: true,
+        })
     }
 }
