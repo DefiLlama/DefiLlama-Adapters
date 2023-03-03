@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
-const { gql, request } = require("graphql-request");
 const { toUSDTBalances } = require("../helper/balances");
+const { blockQuery } = require("../helper/http");
 
 const OlympusStakings = [
   // Old Staking Contract
@@ -29,7 +29,7 @@ const staking = async (timestamp, ethBlock, chainBlocks) => {
   return balances;
 };
 
-const protocolQuery = gql`
+const protocolQuery = `
   query get_tvl($block: Int) {
     protocolMetrics(first: 1, orderBy: timestamp, orderDirection: desc) {
       treasuryMarketValue
@@ -41,14 +41,13 @@ const protocolQuery = gql`
 /*** Bonds TVL Portion (Treasury) ***
  * Treasury TVL consists of DAI, FRAX and WETH balances + Sushi SLP and UNI-V2 balances
  ***/
-async function ethTvl(timestamp, block) {
-  const queriedData = await request(
-    "https://api.thegraph.com/subgraphs/name/olympusdao/olympus-protocol-metrics",
-    protocolQuery,
-    { block }
-  );
+async function ethTvl(timestamp, block, _, { api }) {
+  const endpoint = "https://api.thegraph.com/subgraphs/name/olympusdao/olympus-protocol-metrics"
+  const queriedData = await blockQuery(endpoint, protocolQuery, { api, })
   const metric = queriedData.protocolMetrics[0];
-  if (Date.now() / 1000 - metric.timestamp > 3600 * 24) {
+  const aDay = 24 * 3600
+  const now = Date.now() / 1e3
+  if (now - metric.timestamp > 3 * aDay) {
     throw new Error("outdated");
   }
   return toUSDTBalances(metric.treasuryMarketValue);
@@ -62,6 +61,4 @@ module.exports = {
     tvl: ethTvl,
     staking,
   },
-  methodology:
-    "Counts DAI, DAI SLP (OHM-DAI), FRAX, FRAX ULP (OHM-FRAX), WETH on the treasury",
 };
