@@ -1,9 +1,5 @@
 const sdk = require("@defillama/sdk");
-const { uniTvlExport } = require("../helper/calculateUniTvl");
-
-const bscFactory = "0x0eb58E5c8aA63314ff5547289185cC4583DfCBD5";
-const polygonFactory = "0x668ad0ed2622C62E24f0d5ab6B6Ac1b9D2cD4AC7";
-const fantomFactory = "0xf6488205957f0b4497053d6422F49e27944eE3Dd";
+const { getUniTVL } = require("../helper/unknownTokens");
 
 const WINGS_TOKEN_BSC = "0x0487b824c8261462f88940f97053e65bdb498446";
 const WINGS_TOKEN_POLYGON = "0x845E76A8691423fbc4ECb8Dd77556Cb61c09eE25";
@@ -31,15 +27,27 @@ function staking(masterchef, token, chain) {
 
 module.exports = {
   bsc: {
-    tvl: uniTvlExport(bscFactory, 'bsc'),
+    tvl: getUniTVL({
+      factory: '0x0eb58E5c8aA63314ff5547289185cC4583DfCBD5',
+      fetchBalances: true,
+      useDefaultCoreAssets: true,
+    }),
     staking: staking(MASTER_BSC, WINGS_TOKEN_BSC, "bsc"),
   },
   polygon: {
-    tvl: uniTvlExport(polygonFactory, 'polygon'),
+    tvl: getUniTVL({
+      factory: '0x668ad0ed2622C62E24f0d5ab6B6Ac1b9D2cD4AC7',
+      fetchBalances: true,
+      useDefaultCoreAssets: true,
+    }),
     staking: staking(MASTER_POLYGON, WINGS_TOKEN_POLYGON, "polygon"),
   },
   fantom: {
-    tvl: uniTvlExport(fantomFactory, 'fantom'),
+    tvl: getUniTVL({
+      factory: '0xf6488205957f0b4497053d6422F49e27944eE3Dd',
+      fetchBalances: true,
+      useDefaultCoreAssets: true,
+    }),
     staking: staking(MASTER_FANTOM, WINGS_TOKEN_FANTOM, "fantom"),
   },
 };
