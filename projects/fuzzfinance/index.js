@@ -1,8 +1,7 @@
 const sdk = require("@defillama/sdk");
-const { uniTvlExport } = require("../helper/calculateUniTvl");
+const { getUniTVL } = require("../helper/unknownTokens");
 
 const fuzz = "0x984b969a8e82f5ce1121ceb03f96ff5bb3f71fee";
-const factory = "0x5245d2136dc79Df222f00695C0c29d0c4d0E98A6";
 const masterchef = "0x847b46ed6c3df75e34a0496ef148b89bf5eb41b1";
 
 async function staking(timestamp, block, chainBlocks) {
@@ -22,7 +21,13 @@ async function staking(timestamp, block, chainBlocks) {
 module.exports = {
   methodology: `Counts the tokens locked on AMM pools from the factory contract.`,
   harmony: {
-    tvl: uniTvlExport(factory, 'harmony'),
+    tvl: getUniTVL({
+      factory: '0x5245d2136dc79Df222f00695C0c29d0c4d0E98A6',
+      fetchBalances: true,
+      useDefaultCoreAssets: true,
+    }),
     staking,
   },
 };
+
+
