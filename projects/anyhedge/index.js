@@ -28,7 +28,7 @@ async function tvl(timestamp) {
     throw "Unable to determine AnyHedge TVL."
 
   return {
-    bitcoincash: tvlAnyHedge
+    'bitcoin-cash': tvlAnyHedge
   }
 }
 
