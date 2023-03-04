@@ -44,6 +44,7 @@ async function tvl(timestamp) {
 }
 
 module.exports = {
+  methodology: "The TVL data lags by contract duration since contracts are secret until settled. So, TVL at the current time will always be 0 and can only be calculated in retrospect and stats back-filled when contracts are revealed. For this reason, the code cuts-off the data at 31 days ago",
   start: 1654787405,
   bitcoincash: { tvl },
 };
