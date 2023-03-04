@@ -14,8 +14,7 @@ const {
 } = require('./constants');
 const { flattenOnce } = require('./utils');
 
-// VaultFactory Interface
-// used to parse logs
+// VaultFactory Interface, used to parse logs
 const vaultFactoryIface = new ethers.utils.Interface(VAULT_FACTORY_ABI);
 
 // Returns a list of all vanilla and staking vaults by finding all VaultCreated
@@ -35,7 +34,7 @@ async function getVaultAddresses(api, vaultFactoryAddresses, startBlocks) {
   });
   const logs = await Promise.all(logPromises);
 
-  // parse each log and extract vault address
+  // Parse each log and extract vault address
   return flattenOnce(logs).map((log) => vaultFactoryIface.parseLog(log).args.vault);
 }
 
@@ -46,7 +45,9 @@ async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
   // Get list of all vaults
   const vaultAddresses = await getVaultAddresses(api, Array.from(VAULT_FACTORIES), START_BLOCKS);
 
-  // tokens.map(contract.balanceOf * chainlink.floorPrice)
+  // sum of the value of all owned tokens is:
+  // token.balanceOf(owner) * chainlinkOracle.floorPrice(token)
+  // summed up for each owner
   const tvl = await sumTokens2({
     owners: [...vaultAddresses, LOAN_CORE],
     tokens: getWhitelistedNFTs(),
