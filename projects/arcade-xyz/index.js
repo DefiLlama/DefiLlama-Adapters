@@ -1,8 +1,8 @@
 const ethers = require('ethers');
 
 const { getLogs } = require('../helper/cache/getLogs')
-const { getWhitelistedNFTs, } = require('../helper/tokenMapping');
-const { sumTokensExport, } = require('../helper/unwrapLPs');
+const { getWhitelistedNFTs } = require('../helper/tokenMapping');
+const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const { VAULT_FACTORY_ABI } = require('./abi');
 const {
@@ -42,14 +42,17 @@ async function getVaultAddresses(api, vaultFactoryAddresses, startBlocks) {
 // Uses chainlink oracle floor price for all whitelisted NFTS owned by every vault and the Loan Core contract.
 // Tokens owned by vaults have been wrapped into an Arcade.xyz vault. Tokens owned by the Loan Core contract
 // are currently in escrow.
-async function tvl(timestamp, ethBlock, chainBlocks, left) {
+async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
   // Get list of all vaults
-  const vaultAddresses = await getVaultAddresses(left.api, Array.from(VAULT_FACTORIES), START_BLOCKS);
+  const vaultAddresses = await getVaultAddresses(api, Array.from(VAULT_FACTORIES), START_BLOCKS);
 
-  const tvl = await sumTokensExport({
+  // tokens.map(contract.balanceOf * chainlink.floorPrice)
+  const tvl = await sumTokens2({
     owners: [...vaultAddresses, LOAN_CORE],
     tokens: getWhitelistedNFTs(),
-  })(timestamp, ethBlock, chainBlocks, left);
+    chain: CHAIN,
+    api,
+  });
 
   return tvl;
 }
