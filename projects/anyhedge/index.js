@@ -14,12 +14,20 @@ async function GetDailyHistory() {
 }
 
 async function getTVLAnyHedge(timestamp) {
-  const day = new Date((timestamp - 30*24*3600) * 1000).toISOString().slice(0,10) // tvl data lags by contract duration since contracts are secret until settled
+  const day = new Date(timestamp * 1000).toISOString().slice(0,10)
   return dayHistory[day]
 }
 
 async function tvl(timestamp) {
   let tvlAnyHedge
+
+  // tvl data lags by contract duration since contracts are secret until settled
+  // so tvl at current time will always be 0, and only later when contracts are revealed
+  // can it be calculated in retrospect and stats back-filled
+  // for this reason, we cut-off the data at (today-31d)
+  const lastTimestamp = Math.floor(new Date().getTime() / 1000 - 31*86400);
+  if (timestamp >= lastTimestamp)
+    throw "Data for the date is incomplete, awaiting contract reveals."
 
   await GetDailyHistory();
   tvlAnyHedge = await getTVLAnyHedge(timestamp)
