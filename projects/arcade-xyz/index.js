@@ -1,21 +1,14 @@
-const ethers = require('ethers');
-
 const { getLogs } = require('../helper/cache/getLogs')
 const { getWhitelistedNFTs } = require('../helper/tokenMapping');
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const { VAULT_FACTORY_ABI } = require('./abi');
 const {
-  CHAIN,
   LOAN_CORE,
   START_BLOCKS,
   VAULT_FACTORIES,
   VAULT_FACTORY_A,
 } = require('./constants');
-const { flattenOnce } = require('./utils');
-
-// VaultFactory Interface, used to parse logs
-const vaultFactoryIface = new ethers.utils.Interface(VAULT_FACTORY_ABI);
 
 // Returns a list of all vanilla and staking vaults by finding all VaultCreated
 // logs and getting the vault address.
@@ -30,12 +23,14 @@ async function getVaultAddresses(api, vaultFactoryAddresses, startBlocks) {
       target,
       fromBlock,
       topic: 'VaultCreated(address,address)',
+      eventAbi: VAULT_FACTORY_ABI,
+      onlyArgs: true,
     });
   });
   const logs = await Promise.all(logPromises);
 
   // Parse each log and extract vault address
-  return flattenOnce(logs).map((log) => vaultFactoryIface.parseLog(log).args.vault);
+  return logs.flat().map(log => log.vault);
 }
 
 // Uses chainlink oracle floor price for all whitelisted NFTS owned by every vault and the Loan Core contract.
@@ -48,19 +43,15 @@ async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
   // sum of the value of all owned tokens is:
   // token.balanceOf(owner) * chainlinkOracle.floorPrice(token)
   // summed up for each owner
-  const tvl = await sumTokens2({
+  return sumTokens2({
     owners: [...vaultAddresses, LOAN_CORE],
     tokens: getWhitelistedNFTs(),
-    chain: CHAIN,
     api,
   });
-
-  return tvl;
 }
 
 module.exports = {
-  misrepresentedTokens: true, 
   methodology: `Counts the floor value of all vaulted and escrowed NFTs with Chainlink price feeds. Borrowed coins are not counted towards the TVL`,
   start: START_BLOCKS[VAULT_FACTORY_A],
-  [CHAIN]: { tvl },
+  ethereum: { tvl },
 }
