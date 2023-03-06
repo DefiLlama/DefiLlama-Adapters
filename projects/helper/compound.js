@@ -113,7 +113,10 @@ function getCompoundV2Tvl(comptroller, chain = "ethereum", transformAdress,
     }
   } = {}) {
   blacklistedTokens = blacklistedTokens.map(i => i.toLowerCase())
-  return async (timestamp, ethBlock, {[chain]: block}, { api }) => {
+  return async (timestamp, ethBlock, {[chain]: block}, { api = undefined } = {}) => {
+    if (!api) {
+      api = new sdk.ChainApi({ block, chain, })
+    }
     if (!transformAdress) transformAdress = await getChainTransform(chain)
     let balances = {};
     let markets = await getMarkets(comptroller, block, chain, cether, cetheEquivalent, blacklistedTokens, abis);
