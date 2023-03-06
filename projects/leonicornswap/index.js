@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const { uniTvlExport } = require("../helper/calculateUniTvl");
+const { getUniTVL } = require("../helper/unknownTokens");
 
 const leos = "0x2c8368f8F474Ed9aF49b87eAc77061BEb986c2f1";
 const leon = "0x27E873bee690C8E161813DE3566E9E18a64b0381";
@@ -30,8 +30,9 @@ async function staking(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
+    misrepresentedTokens: true,
     bsc: {
-        tvl: uniTvlExport(factory, 'bsc'),
+        tvl: getUniTVL({ factory, useDefaultCoreAssets: true, }),
         staking
     },
 }
