@@ -1,6 +1,9 @@
+const BN = require('bignumber.js');
+const sdk = require("@defillama/sdk");
+
 const { getWhitelistedNFTs } = require('../helper/tokenMapping');
 const { sumTokens2 } = require('../helper/unwrapLPs');
-const { fetchVaults } = require('./queries');
+const { fetchVaults, fetchLoans } = require('./queries');
 
 const {
   LOAN_CORE,
@@ -26,8 +29,41 @@ async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
   });
 }
 
+// Fetches all active loans, their payable curency and amount borrowed then sums it up.
+async function borrowed() {
+  const loans = await fetchLoans();
+
+  // Map of erc20 -> total principal
+  const totals = new Map();
+
+  // Iterate over each loan to sum up principal by currency
+  for (const loan of loans) {
+    const { payableCurrency, principal } = loan;
+
+    let total = totals.get(payableCurrency);
+    if (total == null) {
+      // initialize to 0
+      total = new BN(0);
+    }
+
+    total = total.plus(principal);
+    totals.set(payableCurrency, total);
+  }
+
+  const balances = {};
+
+  // Aggregate into balances object
+  const currencies = totals.keys();
+  for (const currency of currencies) {
+    const total = totals.get(currency);
+    sdk.util.sumSingleBalance(balances, currency, total.toFixed(0));
+  }
+
+  return balances;
+}
+
 module.exports = {
-  methodology: `Counts the floor value of all vaulted and escrowed NFTs with Chainlink price feeds. Borrowed coins are not counted towards the TVL`,
+  methodology: `Sums up the floor value of all vaulted and escrowed NFTs with Chainlink price feeds. Borrowed coins are not counted towards the TVL`,
   start: START_BLOCKS[VAULT_FACTORY_A],
-  ethereum: { tvl },
+  ethereum: { tvl, borrowed },
 }
