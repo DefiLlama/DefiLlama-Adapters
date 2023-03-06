@@ -233,12 +233,13 @@ function getCompoundUsdTvl(comptroller, chain, cether, borrowed, abis = {
   underlyingPrice: abi['getUnderlyingPrice'],
   getAllMarkets: abi['getAllMarkets']
 }, {
-  blacklist = []
+  blacklist = [],
+  cetheEquivalent = undefined,
 } = {}) {
   return async (timestamp, ethBlock, {[chain]: block}) => {
     let tvl = new BigNumber('0');
     blacklist = blacklist.map(i => i.toLowerCase())
-    const marketData = await getMarkets(comptroller, block, chain, cether, undefined, blacklist, abis)
+    const marketData = await getMarkets(comptroller, block, chain, cether, cetheEquivalent, blacklist, abis)
     let allMarkets = marketData.map(i => i.cToken);
     // allMarkets = allMarkets.filter(token => !blacklist.includes(token.toLowerCase())) // taken care of by getMarkets
     let oracle = await getOracle(block, chain, comptroller, abis.oracle);
