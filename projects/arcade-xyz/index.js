@@ -1,9 +1,9 @@
 const BN = require('bignumber.js');
 const sdk = require("@defillama/sdk");
 
-const { getWhitelistedNFTs } = require('../helper/tokenMapping');
-const { sumTokens2 } = require('../helper/unwrapLPs');
 const { fetchVaults, fetchLoans } = require('./queries');
+const { sumTokens2 } = require('../helper/unwrapLPs');
+const whitelistedNfts = require('../helper/whitelistedNfts');
 
 const {
   LOAN_CORE,
@@ -17,16 +17,40 @@ const {
 async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
   // Get list of all vaults
   const vaults = await fetchVaults();
-  const vaultAddresses = vaults.map(v => v.address);
 
-  // sum of the value of all owned tokens is:
-  // token.balanceOf(owner) * chainlinkOracle.floorPrice(token)
-  // summed up for each owner
-  return sumTokens2({
-    owners: [...vaultAddresses, LOAN_CORE],
-    tokens: getWhitelistedNFTs(),
-    api,
+  // Sum up total count of each token
+  const totals = new Map();
+  for (const vault of vaults) {
+    const collateral = vault.collateral ?? [];
+
+    for (const token of collateral) {
+      const { collectionAddress, amount } = token;
+      let total = totals.get(collectionAddress);
+      if (total == null) {
+        total = new BN(0);
+      }
+
+      total = total.plus(amount);
+      totals.set(collectionAddress, total);
+    }
+  }
+
+  // Initialize balances with tokens held by the escrow contract, Loan Core
+  const balances = await sumTokens2({
+    owners: [LOAN_CORE],
+    tokens: whitelistedNfts.ethereum,
   });
+
+
+  // Aggregate count of whitelisted tokens into balances object
+  for (const collection of whitelistedNfts.ethereum) {
+    const total = totals.get(collection);
+    if (total == null) continue;
+
+    sdk.util.sumSingleBalance(balances, collection, total.toFixed(0));
+  }
+
+  return balances;
 }
 
 // Fetches all active loans, their payable curency and amount borrowed then sums it up.
