@@ -19,7 +19,6 @@ const config = {
   ethereum: { fromBlock: 12272146, },
   polygon: { fromBlock: 15832990, },
   arbitrum: { fromBlock: 222832, },
-  optimism: { fromBlock: 7003431, },
   xdai: { fromBlock: 24821598, },
 }
 
