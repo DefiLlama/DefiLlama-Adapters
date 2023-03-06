@@ -39,6 +39,10 @@ const fetchVaultQuery = gql`
   query {
     arcadeVaults(first: <FIRST>, where:{hasCollateral:true, withdrawEnabled:false, cursor_gte: <CURSOR>}) {
       address
+      collateral {
+        collectionAddress
+        amount
+      }
     }
   }
 `;
