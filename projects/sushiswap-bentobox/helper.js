@@ -284,8 +284,7 @@ async function fetchAllTokens(subgraph, query, block, type) {
 
   //query all tokens even if > 1000 as we can't order efficiently by $ liquidity
   let id = 0;
-  while (true) {
-    // eslint-disable-line
+  while (true) {  // eslint-disable-line
     let result = await request(subgraph, query, {
       id,
       block,
