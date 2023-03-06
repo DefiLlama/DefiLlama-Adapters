@@ -24,7 +24,7 @@ async function polygonTvl(timestamp, block, chainBlocks) {
   await sumTokens2({
     balances,
     owners: [ylSPHEREvault],
-    tokens: ["0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270", "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174", "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619", "0xc2132D05D31c914a87C6611C10748AEb04B58e8F", "0x4Af613f297ab00361D516454E5E46bc895889653", "0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6", "0x172370d5Cd63279eFa6d502DAB29171933a610AF"],
+    tokens: ["0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270", "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174", "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619", "0xc2132D05D31c914a87C6611C10748AEb04B58e8F", "0x4Af613f297ab00361D516454E5E46bc895889653", "0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6"],
     chain: 'polygon',
     block: chainBlocks.polygon
   })
@@ -43,29 +43,6 @@ async function polygonTvl(timestamp, block, chainBlocks) {
   }
   return balances;
 } 
-
-async function optimismTvl(timestamp, block, chainBlocks) {
-  let balances = {};
-
-  // calculate TVL for optimism from API
-  const dysonTvl = await fetchChain(10)()
-  for (const [token, balance] of Object.entries(dysonTvl)) {
-    balances[token] = (balances[token] || 0) + balance
-  }
-  return balances;
-}
-
-async function arbitrumTvl(timestamp, block, chainBlocks) {
-  let balances = {};
-  
-  // calculate TVL for arbitrum from API
-  const dysonTvl = await fetchChain(42161)()
-  for (const [token, balance] of Object.entries(dysonTvl)) {
-    balances[token] = (balances[token] || 0) + balance
-  }
-
-  return balances;
-}
 
 let _response
 
@@ -88,6 +65,12 @@ function fetchChain(chainId) {
   }
 }
 
+const chains = {
+  optimism: 10,
+  polygon: 137,
+  arbitrum: 42161,
+}
+
 module.exports = {
   misrepresentedTokens: false,
   methodology: "TVL is calculated by summing the liquidity in the Uniswap V3 pools.",
@@ -96,9 +79,9 @@ module.exports = {
     staking: staking(ylSPHEREvault, sphere_token, "polygon")
   },
   optimism: {
-    tvl: optimismTvl,
+    tvl: fetchChain(10),
   },
   arbitrum: {
-    tvl: arbitrumTvl,
+    tvl: fetchChain(42161),
   },
 };
