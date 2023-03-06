@@ -57,10 +57,14 @@ module.exports = {
   start: 1654787405,
   bitcoincash: { tvl },
   hallmarks: [
-    [1654787405, "First AnyHedge v0.11 Contract (https://blockchair.com/bitcoin-cash/address/pqxtgtp65d9tv7f5xa5kzawgjawhzzxv2yuywpk0zg)"],
-    [1663106400, "GeneralProtocols Alpha product live: \"AnyHedge Alpha is now live and available to check out!\" (https://twitter.com/GeneralProtocol/status/1569838511641231362)"],
-    [1666585080, "GeneralProtocols Beta product live: \"The BCH Bull (Beta) is out! A new frontier of decentralised finance awaits!\" (https://twitter.com/BCH_BULL/status/1584429041204895744)"],
-    [1666785960, "Paytaca wallet's product live: \"We have released v0.11.0 of Paytaca app with the integration with @AnyHedge\" (https://twitter.com/_paytaca_/status/1585271547081551872"],
+    // First AnyHedge v0.11 Contract: https://blockchair.com/bitcoin-cash/address/pqxtgtp65d9tv7f5xa5kzawgjawhzzxv2yuywpk0zg
+    [1654787405, "First AnyHedge v0.11 Contract"],
+    // GeneralProtocols Alpha product live: "AnyHedge Alpha is now live and available to check out!" (https://twitter.com/GeneralProtocol/status/1569838511641231362)
+    [1663106400, "GeneralProtocols Alpha product live"],
+    // GeneralProtocols Beta product live: "The BCH Bull (Beta) is out! A new frontier of decentralised finance awaits!" (https://twitter.com/BCH_BULL/status/1584429041204895744)
+    [1666585080, "GeneralProtocols Beta product live"],
+    // Paytaca wallet's product live: "We have released v0.11.0 of Paytaca app with the integration with @AnyHedge" (https://twitter.com/_paytaca_/status/1585271547081551872
+    [1666785960, "Paytaca wallet's product live"]
   ]
 };
 
