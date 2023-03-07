@@ -14,9 +14,9 @@ const {
 // Uses chainlink oracle floor price for all whitelisted NFTS owned by every vault and the Loan Core contract.
 // Tokens owned by vaults have been wrapped into an Arcade.xyz vault. Tokens owned by the Loan Core contract
 // are currently in escrow.
-async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
+async function tvl(timestamp, block, chainBlocks, { api }) {
   // Get list of all vaults
-  const vaults = await fetchVaults();
+  const vaults = await fetchVaults(block+'');
 
   // Sum up total count of each token
   const totals = new Map();
@@ -54,8 +54,8 @@ async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
 }
 
 // Fetches all active loans, their payable curency and amount borrowed then sums it up.
-async function borrowed() {
-  const loans = await fetchLoans();
+async function borrowed(_, block) {
+  const loans = await fetchLoans(block);
 
   // Map of erc20 -> total principal
   const totals = new Map();
