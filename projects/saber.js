@@ -27,9 +27,7 @@ const blacklistedTokens = new Set([
 ])
 
 async function tvl() {
-  const saberPools = await getConfig('saber',
-    "https://registry.saber.so/data/llama.mainnet.json"
-  );
+  const saberPools = await getConfig('saber', "https://registry.saber.so/data/llama.mainnet.json");
 
   function isValidToken(token) {
     return !blacklistedTokens.has(token)
@@ -48,9 +46,9 @@ async function tvl() {
 }
 
 module.exports = {
-  hallmarks:[
+  hallmarks: [
     [1667865600, "FTX collapse"]
-],
+  ],
   timetravel: false,
   solana: { tvl },
   methodology:
