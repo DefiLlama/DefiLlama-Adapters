@@ -39,7 +39,7 @@ const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
 };
 
 
-const graphUrl = 'https://api.thegraph.com/subgraphs/name/aavegotchi/aavegotchi-core-matic'
+const graphUrl = 'https://subgraph.satsuma-prod.com/tWYl5n5y04oz/aavegotchi/aavegotchi-core-matic/api'
 const graphQuery = gql`
 query GET_SUMMONED_GOTCHIS ($minGotchiId: Int, $block: Int) {
   aavegotchis(
