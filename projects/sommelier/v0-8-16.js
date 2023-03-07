@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const abiCellarV0816 = require("./cellar-v0-8-16.json");
-const { flattenOnce } = require("./utils");
 
 const chain = "ethereum";
 
@@ -19,7 +18,7 @@ async function sumTvl(options) {
   let balanceCalls = await Promise.all(
     cellars.map((cellar) => getCellarBalanceCalls(cellar, options))
   );
-  balanceCalls = flattenOnce(balanceCalls);
+  balanceCalls = balanceCalls.flat();
 
   // Call balanceOf for all positions across all Cellars using multicall
   const balanceResult = await sdk.api.abi.multiCall({
