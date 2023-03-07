@@ -24,6 +24,7 @@ const config = {
     vaults: [
       "0xC76a3cBefE490Ae4450B2fCC2c38666aA99f7aa0",
       "0xB237f4264938f0903F5EC120BB1Aa4beE3562FfF",
+      "0xd371281896f2F5f7A2C65F49d23A2B6ecfd594f3"
     ]
   },
   fantom: {
@@ -142,7 +143,8 @@ const config = {
       "0x57cbf36788113237d64e46f25a88855c3dff1691",
       "0x1f0aa72b980d65518e88841ba1da075bd43fa933",
       "0x9A05b116b56304F5f4B3F1D5DA4641bFfFfae6Ab",
-      "0xF1104493eC315aF2cb52f0c19605443334928D38"
+      "0xF1104493eC315aF2cb52f0c19605443334928D38",
+      "0xb1f28350539b06d5a35d016908eef0424bd13c4b"
     ],
     toa: [
       [nullAddress, '0xa3fa99a148fa48d14ed51d610c367c61876997f1'],

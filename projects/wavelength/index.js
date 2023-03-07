@@ -1,19 +1,9 @@
 
-const { graphQuery } = require('../helper/http')
+const { onChainTvl } = require('../helper/balancer')
 
-const endpoint = 'https://teste.testeborabora.cyou/graphql'
-const query = '{ embrGetProtocolData { totalLiquidity } }'
-let _response
-
-async function fetch() {
-  if (!_response) _response = graphQuery(endpoint, query)
-  const response = await _response
-  return +response.embrGetProtocolData.totalLiquidity
-}
 
 module.exports = {
   velas:{
-    fetch
+    tvl: onChainTvl('0xa4a48dfcae6490afe9c779bf0f324b48683e488c', 56062385)
   },
-  fetch
 }
