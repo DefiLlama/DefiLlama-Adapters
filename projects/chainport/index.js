@@ -28,6 +28,15 @@ module.exports = {
   fantom: {
     tvl: fetchByNetwork('FANTOM')
   },
+  arbitrum: {
+    tvl: fetchByNetwork('ARBITRUM')
+  },
+  optimism: {
+    tvl: fetchByNetwork('OPTIMISM')
+  },
+  avax: {
+    tvl: fetchByNetwork('AVALANCHE')
+  },
   hallmarks:[
     [1651881600, "UST depeg"],
   ],
