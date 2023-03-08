@@ -15,6 +15,5 @@ module.exports = treasuryExports({
     ],
     ownTokens: [nxm, wNxm],
     owners: [communityFund],
-    ownTokenOwners: [communityFund],
   },
 });

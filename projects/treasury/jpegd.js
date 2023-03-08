@@ -23,7 +23,6 @@ module.exports = treasuryExports({
       "0x5aFE3855358E112B5647B952709E6165e1c1eEEe", // SAFE
     ],
     owners: [multisig, donationEvent, usdcVault, usdtVault, pethVault],
-    // ownTokenOwners: [multisig, donationEvent, usdcVault, usdtVault, pethVault],
     ownTokens: [jpegd],
   },
 });

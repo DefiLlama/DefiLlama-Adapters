@@ -15,14 +15,18 @@ const endPoints = {
   cosmos: 'https://cosmoshub-lcd.stakely.io',
   kujira: 'https://lcd.kaiyo.kujira.setten.io',
   comdex: 'https://rest.comdex.one',
+  terra: 'https://columbus-lcd.terra.dev',
+  terra2: 'https://phoenix-lcd.terra.dev',
   umee: 'https://api.mainnet.network.umee.cc',
   orai: 'https://lcd.orai.io',
   juno: 'https://lcd-juno.cosmostation.io',
+  cronos: 'https://lcd-crypto-org.cosmostation.io',
 }
 
 const chainSubpaths = {
   crescent: 'crescent',
   comdex: 'comdex',
+  umee: 'umee',
 }
 
 function getEndpoint(chain) {
@@ -100,6 +104,10 @@ async function lpMinter({ token, block, chain } = {}) {
 async function queryContract({ contract, chain, data }) {
   if (typeof data !== 'string') data = JSON.stringify(data)
   data = Buffer.from(data).toString('base64')
+  if (chain === 'terra') {
+    let path = `${getEndpoint(chain)}/terra/wasm/v1beta1/contracts/${contract}/store?query_msg=${data}`
+    return (await axios.get(path)).data.query_result
+  }
   return (await axios.get(`${getEndpoint(chain)}/cosmwasm/wasm/v1/contract/${contract}/smart/${data}`)).data.data
 }
 
