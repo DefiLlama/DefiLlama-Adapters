@@ -2,7 +2,7 @@ const sdk = require("@defillama/sdk");
 
 const { fetchVaults, fetchLoans } = require('./queries');
 const { sumTokens2 } = require('../helper/unwrapLPs');
-const whitelistedNfts = require('../helper/whitelistedNfts');
+const { sumArtBlocks, isArtBlocks, } = require('../helper/nft');
 
 const {
   LOAN_CORE,
@@ -17,6 +17,7 @@ async function tvl(_, block, _cb, { api }) {
   // Get list of all vaults
   const vaults = await fetchVaults(block+'')
   const balances = {}
+  const artBlockOwners = []
 
   // Sum up total count of each token
   for (const vault of vaults) {
@@ -24,15 +25,21 @@ async function tvl(_, block, _cb, { api }) {
 
     for (const token of collateral) {
       const { collectionAddress, amount } = token;
+      if (isArtBlocks(collectionAddress)) {
+        artBlockOwners.push(vault.address)
+        continue;
+      }
       sdk.util.sumSingleBalance(balances,collectionAddress,amount, api.chain)
     }
   }
 
+  await sumArtBlocks({ balances, api, owners: artBlockOwners, })
   // Initialize balances with tokens held by the escrow contract, Loan Core
   return sumTokens2({
     balances,
     owners: [LOAN_CORE],
-    tokens: whitelistedNfts.ethereum,
+    resolveNFTs: true,
+    api,
   });
 }
 
