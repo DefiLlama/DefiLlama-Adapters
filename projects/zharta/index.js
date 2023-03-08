@@ -1,4 +1,4 @@
-const { getWhitelistedNFTs, tokensBare} = require('../helper/tokenMapping');
+const { tokensBare } = require('../helper/tokenMapping');
 const { sumTokensExport, } = require('../helper/unwrapLPs')
 
 // Vaults
@@ -10,11 +10,10 @@ const appraisalVault = "0xA79da8c90Aa480B3716C23145154CA6eF5Fc29C1";
 module.exports = {
   methodology: `Counts the floor value of all deposited NFTs with Chainlink price feeds. Borrowed coins are not counted towards the TVL`,
   ethereum: {
-    tvl: sumTokensExport({ ownerTokens: [
-      [getWhitelistedNFTs(), collateralVault], 
-      [getWhitelistedNFTs(), punkVault], 
-      [getWhitelistedNFTs(), appraisalVault], 
-      [[tokensBare.weth], LP_CORE],      
-    ]}),
+    tvl: sumTokensExport({
+      owners: [collateralVault, punkVault, appraisalVault, LP_CORE],
+      tokens: [tokensBare.weth],
+      resolveNFTs: true,
+    }),
   }
 }
