@@ -6,6 +6,7 @@ const config = {
     tokens: [
       nullAddress,
       '0xff970a61a04b1ca14834a43f5de4533ebddb5cc8',
+      '0xda10009cbd5d07dd0cecc66161fc93d7c9000da1',
     ]
   },
   optimism: {
@@ -13,6 +14,7 @@ const config = {
     tokens: [
       nullAddress,
       '0x7f5c764cbc14f9669b88837ca1490cca17c31607',
+      '0xda10009cbd5d07dd0cecc66161fc93d7c9000da1',
     ]
   }
 }
