@@ -58,9 +58,12 @@ module.exports = {
   avax: v2("avax", "0x4235E22d9C3f28DCDA82b58276cb6370B01265C2"),
   polygon: v2("polygon", "0x3ac4e9aa29940770aeC38fe853a4bbabb2dA9C19"),
   hallmarks:[
-      [1618419730, "Start MATIC V2 Rewards"],
+      //[1618419730, "Start MATIC V2 Rewards"],
       [1619470313, "Start Ethereum V2 Rewards"],
       [1633377983, "Start AVAX V2 Rewards"],
+      [1635339600, "Potential xSUSHI attack found"],
+      [1651881600, "UST depeg"],
+      [1654822801, "stETH depeg"],
     ],
 };
 // node test.js projects/aave/index.js

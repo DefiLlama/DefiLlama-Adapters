@@ -126,13 +126,13 @@ function staking({ tokensAndOwners = [],
 function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = [], lps = [], nativeToken, poolInfoABI = masterchefAbi.poolInfo, poolLengthAbi = masterchefAbi.poolLength, getToken = output => output.lpToken, blacklistedTokens = [], useDefaultCoreAssets = false, }) {
   if (!coreAssets.length && useDefaultCoreAssets)
     coreAssets = getCoreAssets(chain)
-  let allTvl
+  let allTvl = {}
   if (nativeToken) nativeTokens.push(nativeToken)
   nativeTokens = getUniqueAddresses(nativeTokens)
 
   async function getAllTVL(block) {
-    if (!allTvl) allTvl = getTVL()
-    return allTvl
+    if (!allTvl[block]) allTvl[block] = getTVL()
+    return allTvl[block]
 
     async function getTVL() {
       const transform = await getChainTransform(chain)
