@@ -71,7 +71,7 @@ module.exports={
             owner: ARCHLY_VE_TOKEN_OTHER,
             tokens: [ARCHLY_ARC_TOKEN_OTHER],
             lps: ['0xc492BCa6777818256C2e2e5FC8e180BC8697DfF5'],
-            coreAssets: ['0x4200000000000000000000000000000000000042'],
+            coreAssets: ['0x4200000000000000000000000000000000000006'],
             restrictTokenRatio: 100,
         })
     },
