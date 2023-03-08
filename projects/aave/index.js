@@ -62,7 +62,6 @@ module.exports = {
       [1619470313, "Start Ethereum V2 Rewards"],
       [1633377983, "Start AVAX V2 Rewards"],
       [1635339600, "Potential xSUSHI attack found"],
-      [1635339600, "Potential xSUSHI attack found"],
       [1651881600, "UST depeg"],
       [1654822801, "stETH depeg"],
     ],
