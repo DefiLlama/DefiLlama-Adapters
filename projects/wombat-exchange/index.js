@@ -16,6 +16,7 @@ let pools = {
   axlUSDC: '0x8ad47d7ab304272322513eE63665906b64a49dA2',
   USDD: '0x05f727876d7C123B9Bb41507251E2Afd81EAD09A',
   BOB: '0xeA6cDd9e8819BbF7f8791E7D084d9F0a6Afa7892',
+  frxETH: '0x2Ea772346486972E7690219c190dAdDa40Ac5dA4'
 }
 
 async function tvl(_t, _, { bsc: block }, { api }) {
