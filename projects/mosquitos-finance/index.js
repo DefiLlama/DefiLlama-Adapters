@@ -101,12 +101,14 @@ function calculateFarmTokens(pools, farms) {
 }
 
 async function tvl() {
+  /*
   const pools = await getLiquidSwapPools()
   const farms = await getMasterChefPools(pools)
   const balances = calculateFarmTokens(pools, farms)
   const tvl = await transformBalances('aptos', balances)
+  */
 
-  return tvl
+  return {}
 }
 
 async function staking() {
