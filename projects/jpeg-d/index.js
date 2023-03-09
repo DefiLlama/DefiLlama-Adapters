@@ -7,7 +7,6 @@ const JPEG_WETH_SLP = "0xdb06a76733528761eda47d356647297bc35a98bd"
 const staking_contract = "0x3eed641562ac83526d7941e4326559e7b607556b"
 
 module.exports = {
-  misrepresentedTokens: true,
   methodology: `Counts the floor value of all NFTs supplied in the protocol vaults`,
   ethereum: {
     tvl,

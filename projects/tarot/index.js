@@ -34,6 +34,12 @@ const config = {
       '0x4B6daE049A35196A773028B2E835CCcCe9DD4723', // Tarot Equinox
     ]
   },
+  kava: {
+    factories: [
+      '0x82B3413D575Aa93806308A04b53c78ae2037dA11', // Tarot Avignon
+      '0x54950cae3d8513EA041066F31697903de5909F57', // Tarot Orleans
+    ]
+  },
 }
 
 module.exports = {}

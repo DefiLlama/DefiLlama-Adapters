@@ -3,7 +3,7 @@
 // by an EOA can be counted.
 const ethereum = [
   // Chromie Squiggle
-  '0x059edd72cd353df5106d2b9cc5ab83a52287ac3a',
+  // '0x059edd72cd353df5106d2b9cc5ab83a52287ac3a',
 
   // Bored Ape Kennel Club
   '0xba30e5f9bb24caa003e9f2f0497ad287fdf95623',
@@ -82,7 +82,10 @@ const ethereum = [
 
   // BEANZ
   '0x306b1ea3ecdf94ab739f1910bbda052ed4a9f949',
-];
+
+  // Wrapped Ether rock
+  '0xa3f5998047579334607c47a6a2889bf87a17fc02',
+].map(i => i.toLowerCase())
 
 module.exports = {
   ethereum,
