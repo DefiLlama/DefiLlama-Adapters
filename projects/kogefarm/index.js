@@ -623,19 +623,6 @@ const kavaTvl = async (timestamp, block, chainBlocks) => {
     transformAddress,
   )
 
-
-/*  const { updateBalances,
-    pairBalances,
-    prices,
-    balances } = await getTokenPrices({
-    block: kavablock,
-    chain: kavachain,
-    useDefaultCoreAssets: true,
-    lps: uniV2Positions.map(val => val.token),
-    transformAddress: transformAddress,
-    allLps: true
-  })
-*/
   await getSinglePositions(
     balances,
     singlePositions,

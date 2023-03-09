@@ -25,7 +25,9 @@ const contracts = {
     '0x3391bc034f2935ef0e1e41619445f998b2680d35', // idleUSDCSafe
     '0xcDdB1Bceb7a1979C6caa0229820707429dd3Ec6C', // idleUSDCSafeV3
     '0x28fAc5334C9f7262b3A3Fe707e250E01053e07b5', // idleUSDTSafe
-    '0x42740698959761baf1b06baa51efbd88cb1d862b' // idleUSDTSafeV3
+    '0x42740698959761baf1b06baa51efbd88cb1d862b', // idleUSDTSafeV3
+    '0xDc7777C771a6e4B3A82830781bDDe4DBC78f320e', // idleUSDCBB
+    '0xfa3AfC9a194BaBD56e743fA3b7aA2CcbED3eAaad' // idleUSDTBB
   ],
   polygon:[
     "0x8a999F5A3546F8243205b2c0eCb0627cC10003ab", // idleDAIYield
@@ -58,6 +60,10 @@ const trancheContracts = [
   "0xf6B692CC9A5421E4C66D32511d65F94c64fbD043", // IdleCDO_ribbon_wintermute_USDC
   "0xc8c64CC8c15D9aa1F4dD40933f3eF742A7c62478", // IdleCDO_ribbon_DAI
   "0x1f5A97fB665e295303D2F7215bA2160cc5313c8E", // IdleCDO_truefi_USDC
+  "0xf615a552c000B114DdAa09636BBF4205De49333c", // IdleCDO_Euler_USDCStaking
+  "0x860B1d25903DbDFFEC579d30012dA268aEB0d621", // IdleCDO_Euler_USDTStaking
+  "0xec964d06cD71a68531fC9D083a142C48441F391C", // IdleCDO_euler_WETHStaking
+  "0x264E1552Ee99f57a7D9E1bD1130a478266870C39", // IdleCDO_euler_DAIStaking
 ];
 
 const trancheTokenUnderlying = {
@@ -75,6 +81,8 @@ const trancheTokenUnderlying = {
   "0x1a7e4e63778b4f12a199c062f3efdd288afcbce8":"0x1a7e4e63778b4f12a199c062f3efdd288afcbce8", // AGEUR
   "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0":"0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0", // MATIC
   "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48":"0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC
+  "0xdac17f958d2ee523a2206206994597c13d831ec7":"0xdac17f958d2ee523a2206206994597c13d831ec7", // USDT
+  "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH
 };
 
 function chainTvl(chain){

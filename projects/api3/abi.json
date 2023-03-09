@@ -1,7 +1,0 @@
-{
-  "getLockedByGovernance": "uint256:getLockedByGovernance",
-  "getLockedRewards": "uint256:getLockedRewards",
-  "getLockedVestings": "uint256:getLockedVestings",
-  "getTimelocked": "uint256:getTimelocked",
-  "getTotalLocked": "uint256:getTotalLocked"
-}

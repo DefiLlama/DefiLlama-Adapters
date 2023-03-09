@@ -559,6 +559,28 @@
           "name": "Frax"
         }
       ]
+    },
+    "L2-D4": {
+      "address": "0xF2839E0b30B5e96083085F498b14bbc12530b734",
+      "lpToken": "0x147D0Af556C6D89640BFa915D2b9619d7b55947a",
+      "poolTokens": [
+        {
+          "address": "0x17fc002b466eec40dae837fc4be5c67993ddbd6f",
+          "name": "Frax"
+        },
+        {
+          "address": "0xCB8FA9a76b8e203D8C3797bF438d8FB81Ea3326A",
+          "name": "alUSD"
+        },
+        {
+          "address": "0x641441c631e2F909700d2f41FD87F0aA6A6b4EDb",
+          "name": "dForce USD"
+        },
+        {
+          "address": "0xd74f5255d557944cf7dd0e45ff521520002d5748",
+          "name": "USDs"
+        }
+      ]
     }
   },
   "fantom": {

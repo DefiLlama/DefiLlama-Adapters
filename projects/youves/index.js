@@ -1,10 +1,8 @@
 const { GraphQLClient, gql } = require("graphql-request");
 const sdk = require("@defillama/sdk")
-const { addDexPosition, getTokenBalances, resolveLPPosition, getStorage, convertBalances, usdtAddressTezos, } = require('../helper/chain/tezos')
-const { getFixBalances } = require('../helper/portedTokens')
+const { addDexPosition, resolveLPPosition, getStorage, usdtAddressTezos, } = require('../helper/chain/tezos')
 const { dexes, farms } = require('./data')
 const { PromisePool } = require('@supercharge/promise-pool');
-const { default: BigNumber } = require("bignumber.js");
 let graphQLClient
 
 const indexer = "https://youves-mainnet-indexer.prod.gke.papers.tech/v1/graphql"
@@ -49,12 +47,12 @@ async function fetchBalance(balances, token, engineAddress, decimals = 0, shareP
   if (token === 'tzbtc-lp') {
     const balancetZ = balance * sharePrice.xtzPool / sharePrice.lqtTotal
     const balanceBTC = balance * sharePrice.tokenPool / sharePrice.lqtTotal
-    sdk.util.sumSingleBalance(balances, 'tezos', balancetZ / 1e6)
-    sdk.util.sumSingleBalance(balances, sharePrice.tokenAddress, balanceBTC)
+    sdk.util.sumSingleBalance(balances, 'tezos', balancetZ / 1e6, 'tezos')
+    sdk.util.sumSingleBalance(balances, sharePrice.tokenAddress, balanceBTC, 'tezos')
     return;
   }
 
-  sdk.util.sumSingleBalance(balances, token, balance)
+  sdk.util.sumSingleBalance(balances, token, balance, 'tezos')
 }
 
 
@@ -83,12 +81,11 @@ async function tvl() {
     fetchBalance(balances, 'tzbtc-lp', engines.uDefitzBTCLPV2, 0, sharePrice),
   ])
 
-  return convertBalances(balances)
+  return balances
 }
 
 async function pool2() {
   const balances = {}
-  const fixBalances = await getFixBalances('tezos')
 
   const youvesLPs = dexes.map(i => i.contractAddress).filter(i => i)
   let eligibleFarms = farms.filter(i => !youvesLPs.includes(i.lpToken)).map(({ farmContract, lpToken: { contractAddress } }) => ({ farmContract, contractAddress }))
@@ -103,19 +100,7 @@ async function pool2() {
     promises.push(resolveLPPosition({ balances, lpToken: contractAddress, owner: farmContract, ignoreList: youvesLPs }))
   await Promise.all(promises)
 
-  fixBalances(balances)
-  if (balances[`tezos:${uDEFI_TOKEN}`]) {
-    const uDefiPrice = await getUDefiPriceTEZ()
-
-    sdk.util.sumSingleBalance(balances, 'tezos', +BigNumber(balances[`tezos:${uDEFI_TOKEN}`]).multipliedBy(uDefiPrice).toFixed(0))
-    delete balances[`tezos:${uDEFI_TOKEN}`]
-  }
   return balances
-}
-
-async function getUDefiPriceTEZ() {
-  const poolTokens = await getTokenBalances(uDEFI_LP)
-  return BigNumber(poolTokens.tezos).dividedBy(poolTokens[uDEFI_TOKEN])
 }
 
 module.exports = {

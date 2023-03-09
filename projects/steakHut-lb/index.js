@@ -13,9 +13,14 @@ const _vaults = {
         '0x668530302c6ecc4ebe693ec877b79300ac72527c', //AVAX/USDC_B
         '0x9c9cea14731821f4d08889717043977e6dee766a', //WETH.e/AVAX_B
         '0x9cc15d1204d768380cec8d35bc1d8e1945083397', //BTC.b/USDC_B
-        '0x536d7e7423e8fb799549caf574cfa12aae95ffcd' //BTC.b/AVAX_B
+        '0x536d7e7423e8fb799549caf574cfa12aae95ffcd', //BTC.b/AVAX_B
+        '0x9bdda0c0cd56d98a8165fddabdeb7f9aee2d993e', //GMX/AVAX
     ],
     arbitrum: [ 
+        '0x862f459c3c1f8949b3f5b624d39134d61697946e', //GMX/ETH
+        '0xec9fba07ca8b3429950b2e01aec4e2b08dbd7897', //ETH/USDC
+        '0xfb6421346d7e96f573414be757b502c0bb15cb62', //USDT/USDC_B
+        '0xf8d6eb0e55a83e8a27af3c5f48cab883da3c716d' //USDT/USDC_C
     ],
 }
 

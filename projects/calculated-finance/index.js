@@ -3,9 +3,8 @@ const { sumTokens, endPoints } = require('../helper/chain/cosmos')
 
 
 async function tvl() {
-  const { contracts: calcVaults } = await get(endPoints.kujira + "/cosmwasm/wasm/v1/code/68/contracts?pagination.limit=100");
   const owners = [
-    ...calcVaults,
+    "kujira1e6fjnq7q20sh9cca76wdkfg69esha5zn53jjewrtjgm4nktk824stzyysu",
   ]
   return sumTokens({ owners, chain: 'kujira' })
 }

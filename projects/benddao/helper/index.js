@@ -1,68 +1,64 @@
 const sdk = require("@defillama/sdk");
-const { default: BigNumber } = require("bignumber.js");
+const { sumTokens2 } = require("../../helper/unwrapLPs");
 
 const abi = require("./abis");
 const address = require("./address");
 
-async function getTVL(balances, chain, timestamp, chainBlocks) {
-  const block = chainBlocks[chain];
+async function tvl(chain, timestamp, chainBlocks, { api }) {
+  const addressMap = address[api.chain];
 
-  const [{ output: simpleReservesData }, { output: simpleNftsData }] =
+  const [simpleReservesData, bnftAssetList] =
     await Promise.all([
-      sdk.api.abi.call({
-        target: address.UiPoolDataProvider[chain],
-        params: [address.LendPoolAddressProvider[chain]],
+      api.call({
+        target: addressMap.UiPoolDataProvider,
+        params: [addressMap.LendPoolAddressProvider],
         abi: abi.UiPoolDataProvider.getSimpleReservesData,
-        block,
-        chain,
       }),
-      sdk.api.abi.call({
-        target: address.UiPoolDataProvider[chain],
-        params: [address.LendPoolAddressProvider[chain]],
-        abi: abi.UiPoolDataProvider.getSimpleNftsData,
-        block,
-        chain,
+      api.call({
+        target: addressMap.BNFTRegistry,
+        abi: abi.BNFTRegistry.getBNFTAssetList,
       }),
     ]);
 
-  simpleReservesData.forEach((d) => {
-    balances[d.underlyingAsset] = new BigNumber(
-      balances[d.underlyingAsset] || 0
-    ).plus(d.availableLiquidity);
+  const bnftProxyList = await api.multiCall({
+    calls: bnftAssetList,
+    target: addressMap.BNFTRegistry,
+    abi: abi.BNFTRegistry.bNftProxys,
   });
 
-  simpleNftsData.forEach((d) => {
-    balances["ETHEREUM"] = new BigNumber(balances["ETHEREUM"] || 0).plus(
-      new BigNumber(d.totalCollateral).multipliedBy(d.priceInEth).shiftedBy(-18)
+  const toa = [
+    ...bnftAssetList.map((i, idx) => [i, bnftProxyList[idx]]),
+    ...simpleReservesData.map((i) => [i.underlyingAsset, i.bTokenAddress]),
+  ];
+
+  return sumTokens2({ api, tokensAndOwners: toa });
+}
+
+async function borrowed(chain, timestamp, chainBlocks, { api }) {
+  const balances = {};
+  const addressMap = address[api.chain];
+
+  const [simpleReservesData] = await Promise.all([
+    api.call({
+      target: addressMap.UiPoolDataProvider,
+      params: addressMap.LendPoolAddressProvider,
+      abi: abi.UiPoolDataProvider.getSimpleReservesData,
+    }),
+  ]);
+
+  simpleReservesData.forEach((d) => {
+    sdk.util.sumSingleBalance(
+      balances,
+      d.underlyingAsset,
+      d.totalVariableDebt,
+      api.chain
     );
   });
 
   return balances;
 }
 
-async function getBorrowed(balances, chain, timestamp, chainBlocks) {
-  const block = chainBlocks[chain];
-
-  const [{ output: simpleReservesData }] = await Promise.all([
-    sdk.api.abi.call({
-      target: address.UiPoolDataProvider[chain],
-      params: [address.LendPoolAddressProvider[chain]],
-      abi: abi.UiPoolDataProvider.getSimpleReservesData,
-      block,
-      chain,
-    }),
-  ]);
-
-  simpleReservesData.forEach((d) => {
-    balances[d.underlyingAsset] = new BigNumber(
-      balances[d.underlyingAsset] || 0
-    ).plus(d.totalVariableDebt);
-  });
-
-  return balances;
-}
-
 module.exports = {
-  getTVL,
-  getBorrowed,
+  tvl,
+  borrowed,
 };

@@ -25,7 +25,7 @@ jobs:
             exit 0
           fi
 
-          npm remove typescript @types/async-retry @types/bn.js ts-node @solendprotocol/solend-sdk
+          npm remove typescript @types/async-retry @types/bn.js ts-node @solendprotocol/solend-sdk @hover-labs/kolibri-js
           # npm ci --omit=dev
           npm ci
           # npm update @defillama/sdk

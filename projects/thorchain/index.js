@@ -31,7 +31,7 @@ async function staking(timestamp) {
 
 module.exports = {
   hallmarks: [
-    [1652659213,"Kill Switch"]
+    [1658145600,"Kill Switch"] //https://twitter.com/THORChain/status/1549078524253847553?ref_src=twsrc%5Etfw%7Ctwcamp%5Etweetembed%7Ctwterm%5E1549078524253847553%7Ctwgr%5Edf22fb0a2751e6182143d32b477f2b7f759b8a9f%7Ctwcon%5Es1_&ref_url=https%3A%2F%2Ffinance.yahoo.com%2Fnews%2Fthorchain-phases-support-rune-tokens-123034231.html
   ],
   thorchain:{
     fetch,

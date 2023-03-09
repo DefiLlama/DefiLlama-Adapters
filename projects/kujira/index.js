@@ -13,7 +13,9 @@ async function tvl() {
     "kujira1pep6vkkjexjlsw3y5h4tj27g7s58vkypy8zg7f9qdvlh2992pncqduz84n",
     "kujira1hjyjafrt09p4hwsnwch29nrrs40lprfgesqdy44wnp27td872hsse2rree",
     "kujira1m4ves3ymz5hyrj3war3t7uxu9ewt8rwpunja87960n0gre3a5pzspgry4g",
-    "kujira1722g2rudg0rlw45nuuvjhg4a365xztfrdfjgyyfuzlmqmtu2plas34y6x3"
+    "kujira1722g2rudg0rlw45nuuvjhg4a365xztfrdfjgyyfuzlmqmtu2plas34y6x3",
+    "kujira1twc28l5njc07xuxrs85yahy44y9lw5euwa7kpajc2zdh98w6uyksvjvruq",
+    "kujira1mjdmut3vq7n7zv6p9kdkdng0zpk2286qww0yy0ay4e8cvxd5p2zqvh9aqs"
   ]
   const owners = [
     ...uskCDPs,
