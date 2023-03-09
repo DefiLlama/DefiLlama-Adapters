@@ -1,4 +1,3 @@
-const whitelistedNFTs = require('./whitelistedNfts');
 const coreAssets = require('./coreAssets.json')
 const nullAddress = '0x0000000000000000000000000000000000000000'
 
@@ -120,10 +119,6 @@ function stripTokenHeader(token, chain) {
   return token.indexOf(":") > -1 ? token.split(":")[1] : token;
 }
 
-function getWhitelistedNFTs(chain = 'ethereum') {
-  return whitelistedNFTs[chain].map(i => i.toLowerCase())
-}
-
 module.exports = {
   nullAddress,
   tokens,
@@ -136,6 +131,5 @@ module.exports = {
   ibcChains,
   stripTokenHeader,
   getUniqueAddresses,
-  getWhitelistedNFTs,
   distressedAssts,
 }

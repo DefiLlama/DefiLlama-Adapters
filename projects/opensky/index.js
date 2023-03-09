@@ -1,5 +1,4 @@
 const { getLogs } = require('../helper/cache/getLogs')
-const { getWhitelistedNFTs } = require('../helper/tokenMapping')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const sdk = require('@defillama/sdk')
 
@@ -21,7 +20,7 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
   })
   const deposits = await api.multiCall({  abi: abi.getAvailableLiquidity, calls: logs.map(i => i.args.reserveId.toString()), target: factory }) 
   deposits.map((val, i) => sdk.util.sumSingleBalance(balances,logs[i].args.underlyingAsset,val, api.chain))
-  return sumTokens2({ owner: '0x87d6dec027e167136b081f888960fe48bb10328a', tokens: getWhitelistedNFTs(), balances, })
+  return sumTokens2({ api, owner: '0x87d6dec027e167136b081f888960fe48bb10328a', resolveNFTs: true, balances, })
 }
 
 async function borrowed(timestamp, block, chainBlocks, { api }) {

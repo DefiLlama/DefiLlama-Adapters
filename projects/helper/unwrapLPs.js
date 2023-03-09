@@ -7,6 +7,7 @@ const { requery } = require('./requery')
 const { getChainTransform, getFixBalances } = require('./portedTokens')
 const creamAbi = require('./abis/cream.json')
 const { isLP, getUniqueAddresses, log, } = require('./utils')
+const { sumArtBlocks, whitelistedNFTs, } = require('./nft')
 const wildCreditABI = require('../wildcredit/abi.json')
 
 const lpReservesAbi = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
@@ -665,6 +666,8 @@ async function sumTokens2({
   abis = {},
   api,
   resolveUniV3 = false,
+  resolveArtBlocks = false,
+  resolveNFTs = false,
 }) {
   if (api) {
     chain = api.chain ?? chain
@@ -700,6 +703,16 @@ async function sumTokens2({
     fixBalances(balances)
   }
 
+  if (resolveArtBlocks || resolveNFTs) {
+    if (!api) throw new Error('Missing arg: api')
+    await sumArtBlocks({ balances, api, owner, owners, })
+  }
+
+  if (resolveNFTs) {
+    if (!api) throw new Error('Missing arg: api')
+    await sumTokens2({ balances, api, owner, owners, tokens: whitelistedNFTs[api.chain], })
+  }
+
   return balances
 
   function getUniqueToA(toa) {
@@ -708,8 +721,8 @@ async function sumTokens2({
   }
 }
 
-function sumTokensExport({ balances, tokensAndOwners, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, resolveUniV3, }) {
-  return async (_, _b, _cb, { api }) => sumTokens2({ api, balances, tokensAndOwners, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, resolveUniV3, })
+function sumTokensExport({ balances, tokensAndOwners, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, resolveUniV3, resolveArtBlocks, resolveNFTs, }) {
+  return async (_, _b, _cb, { api }) => sumTokens2({ api, balances, tokensAndOwners, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, resolveUniV3, resolveArtBlocks, resolveNFTs, })
 }
 
 async function unwrapBalancerToken({ chain, block, balancerToken, owner, balances = {}, isBPool = false, }) {
