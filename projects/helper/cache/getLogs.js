@@ -7,7 +7,7 @@ const cacheFolder = 'logs'
 
 async function getLogs({ target,
   topic, keys = [], fromBlock, toBlock, topics,
-  api, eventAbi, onlyArgs = false, }) {
+  api, eventAbi, onlyArgs = false, extraKey, }) {
   if (!api) throw new Error('Missing sdk api object!')
   if (!target) throw new Error('Missing target!')
   if (!fromBlock) throw new Error('Missing fromBlock!')
@@ -26,7 +26,7 @@ async function getLogs({ target,
   }
 
   target = target.toLowerCase()
-  const key = `${chain}/${target}`
+  const key = extraKey ?  `${chain}/${target}-${extraKey}` : `${chain}/${target}`
 
   let cache = await _getCache(key)
   let response

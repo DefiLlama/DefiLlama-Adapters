@@ -1,0 +1,3 @@
+{
+  "totalSettledGenitos": "function totalSettledGenitos() view returns (uint256)"
+}

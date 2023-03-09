@@ -64,5 +64,8 @@ async function fetch() {
 }
 
 module.exports = {
+    hallmarks: [
+        [1674388800,"Smart Contract Exploit"]
+      ],
    fetch
 }

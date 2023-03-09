@@ -25,7 +25,7 @@ async function tvl(ts, block) {
       ['0x16de59092dAE5CcF4A1E6439D611fd0653f0Bd01', cover],  // yearn DAI
     ))
   })
-  return sumTokens({}, toa, block, undefined, undefined, { resolveYearn: true })
+  return sumTokens({}, toa, block)
 }
 
 
