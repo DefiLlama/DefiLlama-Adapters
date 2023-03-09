@@ -1383,6 +1383,10 @@
   "bitindi": [
     "0x15E162205421dc3A47b15A1A740FbF5EAbB77921"
   ],
+  "core": [
+    "0x191E94fa59739e188dcE837F7f6978d84727AD01",
+    "0x40375c92d9faf44d2f9db9bd9ba41a3317a2404f"
+  ],
   "map": [
     "0x13cb04d4a5dfb6398fc5ab005a6c84337256ee23"
   ]
