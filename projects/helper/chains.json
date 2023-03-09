@@ -30,6 +30,7 @@
   "clv",
   "comdex",
   "conflux",
+  "core",
   "cosmos",
   "coti",
   "crab",
@@ -191,6 +192,5 @@
   "zeniq",
   "zilliqa",
   "zksync",
-  "zyx",
-  "core"
+  "zyx"
 ]
