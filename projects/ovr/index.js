@@ -81,7 +81,7 @@ const ethTVL = async () => {
   };
 };
 
-bscTVL = async () => {
+const bscTVL = async () => {
   const bscPoolOVR = (
     await sdk.api.abi.multiCall({
       abi: "erc20:balanceOf",
