@@ -59,7 +59,7 @@ chains.forEach(chain => {
         })
       return sumTokens2({ balances, api, ownerTokens, })
     },
-    staking: async (_, _b, _cb, { api, }) => {
+    ownTokens: async (_, _b, _cb, { api, }) => {
       let BIFI
       let data = (await _getConfig())[getKey(chain)] || {}
       const owners = []
