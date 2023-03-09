@@ -11,7 +11,7 @@
   ==================================================*/
 
   const pools = [
-    '0xcafea35cE5a2fc4CED4464DA4349f81A122fd12b'   // current pool
+    '0xcafea112Db32436c2390F5EC988f3aDB96870627'   // current pool
   ];
 
   const tokensAddresses = [
