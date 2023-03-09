@@ -37,6 +37,9 @@ module.exports = {
   avax: {
     tvl: fetchByNetwork('AVALANCHE')
   },
+  milkomeda: {
+    tvl: fetchByNetwork('MILKOMEDA')
+  }, 
   hallmarks:[
     [1651881600, "UST depeg"],
   ],

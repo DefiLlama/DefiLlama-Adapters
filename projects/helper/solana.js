@@ -297,13 +297,6 @@ function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts) {
   }
 }
 
-async function getSaberPools() {
-  return cache.getConfig('solana/saber-pools', 'https://registry.saber.so/data/llama.mainnet.json')
-}
-async function getQuarryData() {
-  return cache.getConfig('solana/quarry', 'https://raw.githubusercontent.com/QuarryProtocol/rewarder-list-build/master/mainnet-beta/tvl.json')
-}
-
 async function sumTokens2({
   balances = {},
   tokensAndOwners = [],
@@ -388,8 +381,6 @@ module.exports = {
   exportDexTVL,
   getProvider,
   getConnection,
-  getSaberPools,
-  getQuarryData,
   sumTokens2,
   getTokenBalances,
   transformBalances,

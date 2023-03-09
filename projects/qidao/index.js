@@ -117,6 +117,7 @@ const config = {
       "0xc09c73f7b32573d178138e76c0e286ba21085c20",
       "0xb89c1b3d9f335b9d8bb16016f3d60160ae71041f",
       "0x5A03716bd1f338D7849f5c9581AD5015ce0020B0",
+      "0x19Cb63CCbfAC2f28B1fd79923f6aDfC096e6EBB4"
     ]
   },
   polygon: {
