@@ -75,5 +75,5 @@ module.exports = {
   },
 
   methodology:
-    "We count the tokens locked in the staking contract, the tokens in the pools and the tokens in the IBCO reserve.",
+    "We count the tokens locked in the staking contract, the tokens in the IBCO reserve, and the tokens locked in vesting.",
 };
