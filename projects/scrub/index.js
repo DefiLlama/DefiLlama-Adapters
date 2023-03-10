@@ -42,6 +42,12 @@ const lionStakingThirdRound = {
   }
 }
 
+const lionCave = {
+  kava: {
+    staking: sumTokensExport({ chain: 'kava', owner: '0x199A0CD96065f50F9f7978c7BB47869503a9eD1E', tokens: ['0x990e157fC8a492c28F5B50022F000183131b9026'],lps: ["0x59e38a5799B64fE17c5fAb7E0E5396C15E2acb7b"], useDefaultCoreAssets: true, })
+  }
+}
+
 
 
 //address tiger stake: 0x2d4F96b3cdAEB79165459199B93baD49A8533C23
