@@ -13,16 +13,7 @@ const lps = Object.values({
   "BEAR-WBTC-LP": "0x3d9e539fa44b970605658e25d18f816ce78c4007",
 });
 
-module.exports = unknownTombs({
-  lps,
-  shares: [
-    "0xD6597AA36DD90d7fCcBd7B8A228F2d5CdC88eAd0", //Tiger
-  ],
-  rewardPool,
-  masonry: ["0x05CaB739FDc0A4CE0642604c78F307C6c543cD6d"],
-  chain: "cronos",
-  useDefaultCoreAssets: true,
-});
+
 module.exports.misrepresentedTokens = true;
 module.exports.kava = require("../scrubKava/index.js").kava;
 
@@ -89,8 +80,5 @@ const tigerStaking = {
 module.exports = mergeExports([
   module.exports,
   lionCave,
-  lionStaking,
-  lionStakingSecondRound,
-  lionStakingThirdRound,
   tigerStaking,
 ]);
