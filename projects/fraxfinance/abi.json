@@ -1,5 +1,0 @@
-{
-  "usdValueInVault": "uint256:usdValueInVault",
-  "collatDollarBalance": "uint256:collatDollarBalance",
-  "borrowed_frax": "uint256:borrowed_frax"
-}
