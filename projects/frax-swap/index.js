@@ -5,16 +5,13 @@ const fx = (chain, factory1, factory2) => ({
   [chain]: {
     tvl: factory2 === undefined ?
       getUniTVL({
-        chain,
         factory: factory1,
       })
       : sdk.util.sumChainTvls([
         getUniTVL({
-          chain,
           factory: factory1,
         }),
         getUniTVL({
-          chain,
           factory: factory2,
         }),
       ])
@@ -28,7 +25,6 @@ https://facts.frax.finance/pools/0x247b71D57Ac80883364599ad5c9D74ea5EDc8660 (2k 
 */
 
 module.exports = {
-  misrepresentedTokens: true,
   ...fx("ethereum", "0xb076b06f669e682609fb4a8c6646d2619717be4b", "0x43ec799eadd63848443e2347c49f5f52e8fe0f6f"),
   ...fx("arbitrum", "0x5Ca135cB8527d76e932f34B5145575F9d8cbE08E"),
   ...fx("avax", "0x5Ca135cB8527d76e932f34B5145575F9d8cbE08E"),
