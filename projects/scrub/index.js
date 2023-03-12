@@ -88,6 +88,7 @@ const tigerStaking = {
 
 module.exports = mergeExports([
   module.exports,
+  lionCave,
   lionStaking,
   lionStakingSecondRound,
   lionStakingThirdRound,
