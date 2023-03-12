@@ -26,6 +26,7 @@ module.exports = unknownTombs({
 module.exports.misrepresentedTokens = true;
 
 const lionStaking = {
+  cronos: { tvl: () => 0},
   kava: {
     staking: sumTokensExport({
       chain: "kava",
