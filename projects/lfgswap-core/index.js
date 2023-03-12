@@ -1,6 +1,5 @@
 const { getUniTVL } = require('../helper/unknownTokens');
 const { stakings } = require("../helper/staking");
-const { BigNumber } = require("bignumber.js");
 
 const stakingContracts = [
   "0x00801Df22566E6F1b7Eb2DCaa2c794ca6daD3D0A",
@@ -8,7 +7,6 @@ const stakingContracts = [
 ];
 
 const lfgToken = "0xf7a0b80681ec935d6dd9f3af9826e68b99897d6d";
-
 
 
 module.exports = {
