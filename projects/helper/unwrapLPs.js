@@ -253,7 +253,7 @@ async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], block, c
         default: throw new Error('missing default uniswap nft address')
       }
 
-    if (!owners && owner)
+    if ((!owners || !owners.length) && owner)
       owners = [owner]
     owners = getUniqueAddresses(owners)
     nftsAndOwners = owners.map(o => [nftAddress, o])
