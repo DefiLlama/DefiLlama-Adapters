@@ -3,7 +3,7 @@ const { sumTokensExport, sumTokens } = require('../helper/unwrapLPs')
 
 const YESOD_TOKEN_CONTRACT = '0x31a6971292504ccf8310b5F9242BA7751c2a8A74'
 const YESOD = [
-  'YSDT',
+  '0x31a6971292504ccf8310b5F9242BA7751c2a8A74',
 ]
 
 module.exports = {
