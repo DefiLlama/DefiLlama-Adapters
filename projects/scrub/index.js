@@ -1,7 +1,6 @@
 const { stakingPricedLP } = require("../helper/staking");
 const { unknownTombs, sumTokensExport } = require("../helper/unknownTokens");
 const { mergeExports } = require("../helper/utils");
-const { unknownTombs } = require("../helper/unknownTokens");
 
 const token = [
   "0x990e157fC8a492c28F5B50022F000183131b9026",
@@ -86,4 +85,4 @@ const tigerStaking = {
   },
 };
 
-module.exports = mergeExports([module.exports, lionCave, tigerStaking]);
+module.exports = mergeExports([module.exports, lionCave, tigerStaking, lionStakingThirdRound, lionStakingSecondRound, lionStaking]);
