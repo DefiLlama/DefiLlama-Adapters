@@ -9,7 +9,7 @@ module.exports = {
   methodology: `TVL is supply balance minus borrows the euler contract. Borrows are pulled from the subgraph.`,
   ethereum: {
     tvl, 
-    // borrowed,
+    borrowed: () => 0,
   },
 };
 
