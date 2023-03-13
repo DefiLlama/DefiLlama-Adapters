@@ -14,7 +14,7 @@ const nullAddress = '0x0000000000000000000000000000000000000000'
 // orbit brige: https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList
 
 const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'stargaze', 'umee', 'orai', 'persistence', ]
-const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano',]
+const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks']
 
 const tokens = {
   null: nullAddress,
@@ -119,6 +119,19 @@ function stripTokenHeader(token, chain) {
   return token.indexOf(":") > -1 ? token.split(":")[1] : token;
 }
 
+const eulerTokens = [
+  "0x1b808f49add4b8c6b5117d9681cf7312fcf0dc1d",
+  "0xe025e3ca2be02316033184551d4d3aa22024d9dc",
+  "0xeb91861f8a4e1c12333f42dce8fb0ecdc28da716",
+  "0x4d19f33948b99800b6113ff3e83bec9b537c85d2",
+  "0x5484451a88a35cd0878a1be177435ca8a0e4054e",
+  // 4626 wrapped eTokens
+  "0x60897720aa966452e8706e74296b018990aec527",
+  "0x3c66B18F67CA6C1A71F829E2F6a0c987f97462d0",
+  "0x4169Df1B7820702f566cc10938DA51F6F597d264",
+  "0xbd1bd5c956684f7eb79da40f582cbe1373a1d593",
+]
+
 module.exports = {
   nullAddress,
   tokens,
@@ -132,4 +145,5 @@ module.exports = {
   stripTokenHeader,
   getUniqueAddresses,
   distressedAssts,
+  eulerTokens,
 }

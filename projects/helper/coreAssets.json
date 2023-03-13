@@ -169,6 +169,7 @@
   ],
   "polygon": [
     "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+    "0xfd28c7cea3c50a060cb4c0059e453c6d4dd9829d",
     "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
     "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
     "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
@@ -1389,6 +1390,13 @@
   ],
   "crab": [
     "0x2d2b97ea380b0185e9fdf8271d1afb5d2bf18329"
+  ],
+  "lung": [
+    "0xf51666bcb4b787df919395258fb1d9556f4e357b"
+  ],
+  "rpg": [
+    "0x8bb3887ab4fec66eb9aadd7836b6944215008355",
+    "0x71d9cfd1b7adb1e8eb4c193ce6ffbe19b4aee0db"
   ],
   "map": [
     "0x13cb04d4a5dfb6398fc5ab005a6c84337256ee23"

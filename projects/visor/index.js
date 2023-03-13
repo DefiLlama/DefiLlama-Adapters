@@ -72,7 +72,8 @@ async function tvlUniV3_onchain(api, key) {
 
   const target = HYPE_REGISTRY[key]
   let hypervisors = await api.fetchList({ lengthAbi: hypeRegistry.counter, itemAbi: hypeRegistry.hypeByIndex, target })
-  hypervisors = hypervisors.map(i => i[0])
+  // Valid hypervisors have hypeIndex > 0
+  hypervisors = hypervisors.filter(hypervisor => hypervisor[1] > 0).map(i => i[0])
 
   return getHypervisorBalances({ hypervisors, api, })
 }

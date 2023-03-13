@@ -8,7 +8,8 @@ const { getChainTransform, getFixBalances } = require('./portedTokens')
 const creamAbi = require('./abis/cream.json')
 const { isLP, getUniqueAddresses, log, } = require('./utils')
 const { sumArtBlocks, whitelistedNFTs, } = require('./nft')
-const wildCreditABI = require('../wildcredit/abi.json')
+const wildCreditABI = require('../wildcredit/abi.json');
+const { covalentGetTokens } = require("./http");
 
 const lpReservesAbi = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
 const lpSuppliesAbi = "uint256:totalSupply"
@@ -252,7 +253,7 @@ async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], block, c
         default: throw new Error('missing default uniswap nft address')
       }
 
-    if (!owners && owner)
+    if ((!owners || !owners.length) && owner)
       owners = [owner]
     owners = getUniqueAddresses(owners)
     nftsAndOwners = owners.map(o => [nftAddress, o])
@@ -649,7 +650,7 @@ function stripTokenHeader(token) {
 }
 
 async function sumTokens2({
-  balances = {},
+  balances,
   tokensAndOwners = [],
   ownerTokens = [],
   tokens = [],
@@ -672,6 +673,21 @@ async function sumTokens2({
   if (api) {
     chain = api.chain ?? chain
     block = api.block ?? block
+    if (!balances) balances = api.balances
+  } else if (!balances) {
+    balances = {}
+  }
+
+  if (resolveArtBlocks || resolveNFTs) {
+    if (!api) throw new Error('Missing arg: api')
+    await sumArtBlocks({ balances, api, owner, owners, })
+  }
+
+  if (resolveNFTs) {
+    if (!api) throw new Error('Missing arg: api')
+    if (!owners || !owners.length) owners = [owner]
+    const nftTokens = (await Promise.all(owners.map(i => covalentGetTokens(i, api.chain)))).flat()
+    return sumTokens2({ balances, api, owners, tokens: [...nftTokens, ...tokens, ...(whitelistedNFTs[api.chain] || [])], })
   }
 
   if (!tokensAndOwners.length) {
@@ -701,16 +717,6 @@ async function sumTokens2({
   if (!skipFixBalances) {
     const fixBalances = await getFixBalances(chain)
     fixBalances(balances)
-  }
-
-  if (resolveArtBlocks || resolveNFTs) {
-    if (!api) throw new Error('Missing arg: api')
-    await sumArtBlocks({ balances, api, owner, owners, })
-  }
-
-  if (resolveNFTs) {
-    if (!api) throw new Error('Missing arg: api')
-    await sumTokens2({ balances, api, owner, owners, tokens: whitelistedNFTs[api.chain], })
   }
 
   return balances
