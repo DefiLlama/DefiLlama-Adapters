@@ -90,7 +90,7 @@ function print() {
 }
 
 
-let data = 
+let data = require('../projects/test/abi.js')
 
 
 print()
