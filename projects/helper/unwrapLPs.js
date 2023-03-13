@@ -674,7 +674,7 @@ async function sumTokens2({
     chain = api.chain ?? chain
     block = api.block ?? block
     if (!balances) balances = api.balances
-  } else {
+  } else if (!balances) {
     balances = {}
   }
 
