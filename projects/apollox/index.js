@@ -1,10 +1,12 @@
-const { pool2 } = require("../helper/pool2");
+const { pool2s } = require("../helper/pool2");
 const { stakings } = require("../helper/staking");
 const { sumTokens, sumTokensExport, nullAddress } = require("../helper/unwrapLPs");
 
 const stakingContract = "0x7eb5af418f199ea47494023c3a8b83a210f8846f";
 const stakingContract_APX = "0x6bE863e01E17A226c945e3629D0D9Cb6E52Ce90E";
 const poolContract = "0xa0ee789a8f581cb92dd9742ed0b5d54a0916976c";
+const stakingContractV2 = "0x60d910f9dE5c6Fd2171716042AF2Fd3D2Aa9D942";
+const poolContractV2 = "0xAf839f4D3620a1EED00cCc21dDC01119C26a75E1";
 const treasureContract = "0xe2e912f0b1b5961be7cb0d6dbb4a920ace06cd99";
 const daoContract = "0x7f878994507F5B0588cF0EBEE07128d9A742ad9d";
 const ALPContract = "0x1b6F2d3844C6ae7D56ceb3C3643b9060ba28FEb0";
@@ -23,6 +25,7 @@ const TOKEN_HAY = "0x0782b6d8c4551B9760e74c0545a9bCD90bdc41E5";
 
 const TreasureTokens = [
   // TOKEN_APX,
+  nullAddress,
   TOKEN_BSC_USD,
   TOKEN_BUSD,
   TOKEN_CAKE,
@@ -48,7 +51,7 @@ module.exports = {
   bsc: {
     tvl,
     staking: stakings([stakingContract_APX, daoContract], TOKEN_APX, "bsc"),
-    pool2: pool2(stakingContract, poolContract, "bsc"),
+    pool2: pool2s([stakingContract, stakingContractV2], [poolContract, poolContractV2], "bsc"),
   },
   ethereum: {
     tvl: sumTokensExport({ owner: '0xb40EEd68d7d6B3b6d6f4E93DE6239B7C53EFc786', tokens: [
