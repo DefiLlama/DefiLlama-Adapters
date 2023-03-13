@@ -1,16 +1,12 @@
-const { getUniTVL } = require('../helper/unknownTokens')
+const { uniTvlExport } = require('../helper/calculateUniTvl.js')
 const { staking } = require('../helper/staking')
 
 module.exports = {
   canto: {
-    tvl: getUniTVL({
-      factory: '0xb12aF64E128A1D4489D13314eB4Df81cBCE126aC',
-      useDefaultCoreAssets: true,
-      fetchBalances: true,
-    }),
+    tvl: uniTvlExport('0xF80909DF0A01ff18e4D37BF682E40519B21Def46', 'canto'),
     staking: staking(
-      '0x990efF367C6c4aece43c1E98099061c897730F27',
-      '0x2Baec546a92cA3469f71b7A091f7dF61e5569889',
+      '0x8E003242406FBa53619769F31606ef2Ed8A65C00',
+      '0xB5b060055F0d1eF5174329913ef861bC3aDdF029',
       'canto'
     )
   }
