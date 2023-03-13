@@ -37,6 +37,9 @@ module.exports = {
   xdai: {
     tvl: fetchallchain(100),
   },
+  polygon: {
+    tvl: fetchallchain(137),
+  },
   fantom: {
     tvl: fetchallchain(250),
   },
