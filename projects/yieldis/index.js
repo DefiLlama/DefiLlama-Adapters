@@ -1,5 +1,6 @@
 const { getLogs } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { eulerTokens } = require('../helper/tokenMapping')
 
 const config = {
   arbitrum: {
@@ -34,12 +35,7 @@ const config = {
     ].map(i => i.toLowerCase())),
     blacklistedTokens: [
       '0x1344A36A1B56144C3Bc62E7757377D288fDE0369',
-
-      // euler tokens
-      "0x1b808f49add4b8c6b5117d9681cf7312fcf0dc1d",
-      "0xe025e3ca2be02316033184551d4d3aa22024d9dc",
-      "0xeb91861f8a4e1c12333f42dce8fb0ecdc28da716",
-      "0x4d19f33948b99800b6113ff3e83bec9b537c85d2",
+      ...eulerTokens
     ],
   },
 }
