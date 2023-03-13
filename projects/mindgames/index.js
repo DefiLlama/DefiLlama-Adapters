@@ -6,6 +6,7 @@ const factory = "0x7C7F1c8E2b38d4C06218565BC4C9D8231b0628c0";
 const tvl = getUniTVL({ factory, chain: 'arbitrum', useDefaultCoreAssets: true, fetchBalances: true })
 
 module.exports = {
+  misrepresentedTokens: true,
   methodology:
     "Factory address (0x7C7F1c8E2b38d4C06218565BC4C9D8231b0628c0) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
   arbitrum: {

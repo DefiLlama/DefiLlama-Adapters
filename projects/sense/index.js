@@ -33,7 +33,7 @@ async function tvl(_time, block, _1, { api }) {
       return { ...acc, [adapter]: [maturity] };
     }
   }, {});
-  const adapters = Object.keys(series);
+  const adapters = Object.keys(series).filter(i => i.toLowerCase() !== '0x0ed600eecf445b71ae3f8170cd368439e2739289');
 
   const { output: targets } = await sdk.api.abi.multiCall({
     abi: abi.target,
@@ -110,7 +110,7 @@ async function tvl(_time, block, _1, { api }) {
     );
   });
 
-  const poolCalls = Object.entries(series)
+  const poolCalls = Object.entries(series).filter(([i]) => i.toLowerCase() !== '0x0ed600eecf445b71ae3f8170cd368439e2739289')
     .map(([addr, maturities]) => maturities.map((m) => ({ params: [addr, m] })))
     .flat();
 

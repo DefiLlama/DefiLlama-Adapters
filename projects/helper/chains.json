@@ -30,6 +30,7 @@
   "clv",
   "comdex",
   "conflux",
+  "core",
   "cosmos",
   "coti",
   "crab",
@@ -99,6 +100,7 @@
   "libre",
   "liquidchain",
   "litecoin",
+  "lung",
   "map",
   "meter",
   "metis",
@@ -142,6 +144,7 @@
   "ronin",
   "rsk",
   "rvn",
+  "rpg",
   "secret",
   "shiden",
   "sifchain",
@@ -190,6 +193,5 @@
   "zeniq",
   "zilliqa",
   "zksync",
-  "zyx",
-  "core"
+  "zyx"
 ]
