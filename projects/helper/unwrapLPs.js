@@ -650,7 +650,7 @@ function stripTokenHeader(token) {
 }
 
 async function sumTokens2({
-  balances = {},
+  balances,
   tokensAndOwners = [],
   ownerTokens = [],
   tokens = [],
@@ -673,6 +673,9 @@ async function sumTokens2({
   if (api) {
     chain = api.chain ?? chain
     block = api.block ?? block
+    if (!balances) balances = api.balances
+  } else {
+    balances = {}
   }
 
   if (resolveArtBlocks || resolveNFTs) {
