@@ -46,7 +46,7 @@ const config = {
 
 module.exports = {
   hallmarks: [
-    [Math.floor(new Date('2023-03-13') / 1e3), 'Protocol was hacked'],
+    [Math.floor(new Date('2023-03-13') / 1e3), 'Euler was hacked'],
   ],
 };
 
