@@ -193,7 +193,7 @@ const ethereumTvl = async (timestamp, block, _, { api }) => {
     addyFrax3CRV(api, balances),
     addUSDCPools(api, balances),
     addInvestorAMO(api, balances),
-    addCvxFRAX_BP(api, balances),
+    // addCvxFRAX_BP(api, balances),
     addCvxFXSFRAX_BP(api, balances),
   ])
   return balances
