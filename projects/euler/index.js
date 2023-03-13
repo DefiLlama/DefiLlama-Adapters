@@ -85,11 +85,12 @@ async function borrowedEthereum(timestamp, ethBlock) {
 }
 
 module.exports = {
-  hallmarks: [[1654387200, "Whale Deposit"]],
+  hallmarks: [[1654387200, "Whale Deposit"],
+  [Math.floor(new Date('2023-03-13') / 1e3), 'Protocol was hacked'],],
   methodology: `TVL is supply balance minus borrows the euler contract. Borrows are pulled from the subgraph.`,
   ethereum: {
     tvl: tvlEthereum,
-    borrowed: borrowedEthereum,
+    // borrowed: borrowedEthereum,
     // staking: staking(EULstaking, EUL),
   },
 };
