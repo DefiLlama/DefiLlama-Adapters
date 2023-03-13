@@ -6,6 +6,7 @@ const funds = [
 module.exports = {
   methodology: "Sums Ondo's fund supplies.",
   misrepresentedTokens: true,
+  doublecounted: true,
   ethereum: {
     tvl: async (_, __, ___, { api }) => {
       const supplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: funds })

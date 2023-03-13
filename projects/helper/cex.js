@@ -70,7 +70,8 @@ const defaultTokens = {
     '0x2af5d2ad76741191d15dfe7bf6ac92d4bd912ca3', // LEO (bitfinex cex token)
     '0xB8c77482e45F1F44dE1745F52C74426C631bDD52', // WBNB
     '0xb62132e35a6c13ee1ee0f84dc5d40bad8d815206', // NEXO ,(Nexo cex token)
-    '0x1ceb5cb57c4d4e2b2433641b95dd330a33185a44',//kp3r
+    '0x1ceb5cb57c4d4e2b2433641b95dd330a33185a44', //kp3r
+    '0xcf0c122c6b73ff809c693db761e7baebe62b6a2e', //FLOKI ETH CHAIN
   ],
   tron: [
     nullAddress,
