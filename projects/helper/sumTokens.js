@@ -19,6 +19,7 @@ const helpers = {
   "litecoin":require("./chain/litecoin"),
   "polkadot":require("./chain/polkadot"),
   "hedera":require("./chain/hbar"),
+  "stacks":require("./chain/stacks"),
 }
 
 const geckoMapping = {
