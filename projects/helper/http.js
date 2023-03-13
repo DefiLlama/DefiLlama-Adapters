@@ -7,7 +7,8 @@ const env = require('./env')
 const chainIds = {
   'ethereum': 1,
   'bsc': 56,
-  'polygon': 137
+  'polygon': 137,
+  'arbitrum': 42161,
 }
 
 const getCacheData = {}
@@ -19,14 +20,14 @@ async function getCache(endpoint) {
 
 async function getBlock(timestamp, chain, chainBlocks, undefinedOk = false) {
   if (chainBlocks[chain] || (!env.HISTORICAL && undefinedOk)) {
-      return chainBlocks[chain]
+    return chainBlocks[chain]
   } else {
-      if(chain === "celo"){
-          return Number((await get("https://explorer.celo.org/api?module=block&action=getblocknobytime&timestamp=" + timestamp + "&closest=before")).result.blockNumber);
-      } else if(chain === "moonriver") {
-          return Number((await get(`https://blockscout.moonriver.moonbeam.network/api?module=block&action=getblocknobytime&timestamp=${timestamp}&closest=before`)).result.blockNumber);
-      }
-      return sdk.api.util.lookupBlock(timestamp, { chain }).then(blockData => blockData.block)
+    if (chain === "celo") {
+      return Number((await get("https://explorer.celo.org/api?module=block&action=getblocknobytime&timestamp=" + timestamp + "&closest=before")).result.blockNumber);
+    } else if (chain === "moonriver") {
+      return Number((await get(`https://blockscout.moonriver.moonbeam.network/api?module=block&action=getblocknobytime&timestamp=${timestamp}&closest=before`)).result.blockNumber);
+    }
+    return sdk.api.util.lookupBlock(timestamp, { chain }).then(blockData => blockData.block)
   }
 }
 
@@ -42,7 +43,7 @@ async function post(endpoint, body) {
   return (await axios.post(endpoint, body)).data
 }
 
-async function graphQuery(endpoint, graphQuery, params = {}, {timestamp, chain, chainBlocks, useBlock = false} = {}) {
+async function graphQuery(endpoint, graphQuery, params = {}, { timestamp, chain, chainBlocks, useBlock = false } = {}) {
   if (useBlock && !params.block)
     params.block = await getBlock(timestamp, chain, chainBlocks)
   return request(endpoint, graphQuery, params)
@@ -50,12 +51,17 @@ async function graphQuery(endpoint, graphQuery, params = {}, {timestamp, chain, 
 
 async function covalentGetTokens(address, chain = 'ethereum') {
   let chainId = chainIds[chain]
-  if(!chainId)
+  if (!chainId)
     throw new Error('Missing chain to chain id mapping!!!')
 
   const {
     data: { items }
   } = await get(`https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/?&key=${COVALENT_KEY}`)
+  let table = {}
+  items
+    .filter(i => +i.balance > 0)
+    .forEach(i => table[i.contract_name || 'null'] = i.contract_address)
+  sdk.log(table)
   return items
     .filter(i => +i.balance > 0)
     .map(i => i.contract_address.toLowerCase())
@@ -81,7 +87,7 @@ async function blockQuery(endpoint, query, { api, blockCatchupLimit = 500, }) {
   }
 }
 
-async function graphFetchById({endpoint, query, params = {}, options: { timestamp, chain, chainBlocks, useBlock = false} = {}}) {
+async function graphFetchById({ endpoint, query, params = {}, options: { timestamp, chain, chainBlocks, useBlock = false } = {} }) {
   if (useBlock && !params.block)
     params.block = await getBlock(timestamp, chain, chainBlocks) - 100
 
@@ -89,7 +95,7 @@ async function graphFetchById({endpoint, query, params = {}, options: { timestam
   let lastId = ""
   let response;
   do {
-    const res = await request( endpoint, query, {...params, lastId })
+    const res = await request(endpoint, query, { ...params, lastId })
     Object.keys(res).forEach(key => response = res[key])
     data.push(...response)
     lastId = response[response.length - 1]?.id

@@ -13,6 +13,7 @@ const icethAddress = "0x7c07f7abe10ce8e33dc6c5ad68fe033085256a84";
 const dsETH = "0x341c05c0E9b33C0E38d64de76516b2Ce970bB3BE";
 const aaveDebtToken = "0xf63b34710400cad3e044cffdcab00a0f32e33ecf";
 const USDC = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
+const gtcETH = '0x36c833Eed0D376f75D1ff9dFDeE260191336065e'
 const sets = [
   dpiAddress,
   ethFliAddress,
@@ -24,6 +25,7 @@ const sets = [
   gmiAddress,
   icethAddress,
   dsETH,
+  gtcETH,
 ];
 
 async function tvl(timestamp, block, _, { api }) {

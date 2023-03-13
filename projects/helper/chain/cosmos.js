@@ -20,11 +20,13 @@ const endPoints = {
   umee: 'https://api.mainnet.network.umee.cc',
   orai: 'https://lcd.orai.io',
   juno: 'https://lcd-juno.cosmostation.io',
+  cronos: 'https://lcd-crypto-org.cosmostation.io',
 }
 
 const chainSubpaths = {
   crescent: 'crescent',
   comdex: 'comdex',
+  umee: 'umee',
 }
 
 function getEndpoint(chain) {

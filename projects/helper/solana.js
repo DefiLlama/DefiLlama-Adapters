@@ -1,5 +1,6 @@
 const axios = require("axios");
 const http = require('./http')
+const cache = require('./cache')
 const env = require('./env')
 const { transformBalances: transformBalancesOrig, transformDexBalances, } = require('./portedTokens.js')
 const { tokens, getUniqueAddresses } = require('./tokenMapping')
@@ -69,13 +70,6 @@ async function getGeckoSolTokens() {
   const tokenSet = new Set()
   tokens.filter(i => i.extensions?.coingeckoId).forEach(i => tokenSet.add(i.address))
   return tokenSet
-}
-
-async function getSolTokenMap() {
-  const tokenList = await getTokenList()
-  let map = {}
-  tokenList.forEach(i => map[i.address] = i)
-  return map
 }
 
 async function getTokenDecimals(tokens) {
@@ -303,13 +297,6 @@ function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts) {
   }
 }
 
-async function getSaberPools() {
-  return http.get('https://registry.saber.so/data/llama.mainnet.json')
-}
-async function getQuarryData() {
-  return http.get('https://raw.githubusercontent.com/QuarryProtocol/rewarder-list-build/master/mainnet-beta/tvl.json')
-}
-
 async function sumTokens2({
   balances = {},
   tokensAndOwners = [],
@@ -350,6 +337,8 @@ async function sumTokens2({
     const solBalance = await getSolBalances(solOwners)
     sdk.util.sumSingleBalance(balances, tokenMapping.solana, solBalance)
   }
+
+  blacklistedTokens.forEach(i => delete balances['solana:'+i])
 
   return balances
 
@@ -392,8 +381,6 @@ module.exports = {
   exportDexTVL,
   getProvider,
   getConnection,
-  getSaberPools,
-  getQuarryData,
   sumTokens2,
   getTokenBalances,
   transformBalances,
@@ -402,7 +389,6 @@ module.exports = {
   getGeckoSolTokens,
   getTokenAccountBalances,
   getTokenList,
-  getSolTokenMap,
   readBigUInt64LE,
   decodeAccount,
 };

@@ -49,6 +49,9 @@ module.exports = {
   moonriver: {
     tvl: fetchallchain(1285),
   },
+  kava: {
+    tvl: fetchallchain(2222),
+  },
   arbitrum:{
     tvl: fetchallchain(42161),
   },
