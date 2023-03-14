@@ -86,8 +86,8 @@ function yieldHelper({
       })
 
       await Promise.all([
-        unwrapLPsAuto({ balances: balances.tvl, ...api, transformAddress: transform, }),
-        unwrapLPsAuto({ balances: balances.pool2, ...api, transformAddress: transform, }),
+        unwrapLPsAuto({  ...api, balances: balances.tvl, transformAddress: transform, }),
+        unwrapLPsAuto({  ...api, balances: balances.pool2, transformAddress: transform, }),
       ])
 
       fixBalances(balances.tvl)

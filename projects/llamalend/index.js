@@ -27,7 +27,7 @@ async function getTVL(api, borrowed) {
     }
     return balances
   }
-  await sumTokens2({ ...api, tokens: [nullAddress], owners, balances, })
+  await sumTokens2({ api, tokens: [nullAddress], owners, balances, })
   return balances
 }
 async function borrowed(_, block, _1, { api }) {
