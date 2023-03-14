@@ -1,6 +1,7 @@
 const { staking } = require("../helper/staking")
 const { pool2 } = require("../helper/pool2")
 const { usdtAddress} = require("../helper/balances")
+const { fetchURL } = require("../helper/utils")
 const sdk = require('@defillama/sdk')
 const BigNumber = require("bignumber.js");
 
@@ -25,20 +26,51 @@ const getTotalDepositABI = {
   'type': 'function'
 }
 
+const totalSupplyBlidABI = {
+  'inputs': [],
+  'name': 'totalSupplyBLID',
+  'outputs': [
+    {
+      'internalType': 'uint256',
+      'name': '',
+      'type': 'uint256'
+    }
+  ],
+  'stateMutability': 'view',
+  'type': 'function'
+}
+
 async function tvl(ts, _block, chainBlocks) {
   let totalUsdt = new BigNumber(0);
   
+  const blidPriceUsd = (await fetchURL('https://bolide.fi/api/v1/price/blid')).data?.rateBLIDtoUSDT;
   
   for (const item of Object.values(VAULTS)) {
-    const result = await sdk.api.abi.call({
+    const totalDeposit = await sdk.api.abi.call({
       target: item,
       abi: getTotalDepositABI,
       block: chainBlocks.bsc,
       chain: 'bsc'
     });
     
-    if (result && result.output) {
-      const usdt = new BigNumber(result.output)
+    if (totalDeposit && totalDeposit.output) {
+      const usdt = new BigNumber(totalDeposit.output)
+        .times(1e-12)
+        .toFixed(0);
+
+      totalUsdt = totalUsdt.plus(usdt);
+    }
+
+    const totalSupplyBLID = await sdk.api.abi.call({
+      target: item,
+      abi: totalSupplyBlidABI,
+      block: chainBlocks.bsc,
+      chain: 'bsc'
+    });
+    
+    if (totalSupplyBLID && totalSupplyBLID.output) {
+      const usdt = new BigNumber(totalSupplyBLID.output)
+        .times(blidPriceUsd)
         .times(1e-12)
         .toFixed(0);
 
