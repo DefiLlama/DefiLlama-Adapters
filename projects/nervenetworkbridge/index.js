@@ -99,7 +99,7 @@ module.exports = {
         .plus(nulsOnEth).plus(nulsOnBSC)
         .plus(nulsOnOKC).plus(nulsOnHeco);
       return {
-        'nuls': all.shiftedBy(-8).toFixed()
+        'nuls': all.shiftedBy(-8).toFixed(0)
       }
     }
   },

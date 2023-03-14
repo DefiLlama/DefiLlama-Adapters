@@ -57,6 +57,40 @@ const CONFIG = {
     startBlock: 46604874,
     gasToken: '0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83',
   },
+  optimism: {
+    factories: [
+      {
+        factory: '0xb4FD0Ce108e196d0C9844c48174d4C32Cd42F7bC',
+        version: '0.5.2',
+      },
+      {
+        factory: '0x4f2be0244146b4408154504a481c799ba1a9a355',
+        version: '0.6.0',
+      },
+    ],
+    startBlock: 39240199,
+    gasToken: '0x4200000000000000000000000000000000000006',
+  },
+  arbitrum: {
+    factories: [
+      {
+        factory: '0xb4FD0Ce108e196d0C9844c48174d4C32Cd42F7bC',
+        version: '0.5.2',
+      },
+    ],
+    startBlock: 33495774,
+    gasToken: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
+  },
+  aurora: {
+    factories: [
+      {
+        factory: '0xb4FD0Ce108e196d0C9844c48174d4C32Cd42F7bC',
+        version: '0.5.2',
+      },
+    ],
+    startBlock: 80670441,
+    gasToken: '0xc9bdeed33cd01541e1eed10f90519d2c06fe3feb',
+  },
 };
 
 Object.keys(CONFIG).forEach((chain) => {
