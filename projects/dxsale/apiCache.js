@@ -16,6 +16,10 @@ const {
   moonriverArchives,
   milkomedaArchives,
   smartbchArchives,
+  dogeArchives,
+  dexitArchives,
+  coreDaoArchives,
+  bitgertArchives,
 } = require("./config");
 const {
   getStorageLPLockDataV33,
@@ -200,4 +204,16 @@ module.exports = {
   smartbch: {
     tvl: getTVLTotal(smartbchArchives),
   },
+  dogechain: {
+    tvl: getTVLTotal(dogeArchives),
+  },
+  dexit: {
+    tvl: getTVLTotal(dexitArchives),
+  },
+  core: {
+    tvl: getTVLTotal(coreDaoArchives),
+  },
+  bitgert: {
+    tvl: getTVLTotal(bitgertArchives),
+  }
 };
