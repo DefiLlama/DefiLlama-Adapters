@@ -1,3 +1,24 @@
-const { uniTvlExport } = require('../helper/unknownTokens')
+const { get } = require('../helper/http')
+const BigNumber = require("bignumber.js");
+const { toUSDTBalances } = require('../helper/balances');
 
-module.exports = uniTvlExport('wemix', '0xe1F36C7B919c9f893E2Cd30b471434Aa2494664A')
+async function fetchLiquidity() {
+  const wemixfiPoolInfo = await get('https://openapi.wemix.fi/pool/info_list?pool=all');
+  const recentPoolInfo = wemixfiPoolInfo.data;
+  var totalLiquidity = new BigNumber('0');
+
+  for (const pool of recentPoolInfo) {
+    totalLiquidity = totalLiquidity.plus(pool.liquidity);
+  }
+
+  return toUSDTBalances(totalLiquidity.toFixed(2));
+}
+
+module.exports = {
+  methodology: 'TVL counts the liquidity of WemixFi DEX. Data is pulled from:"https://openapi.wemix.fi/pool/info_list',
+  wemix: {
+    tvl: fetchLiquidity
+  },
+  misrepresentedTokens: true,
+  timetravel: false,
+}
