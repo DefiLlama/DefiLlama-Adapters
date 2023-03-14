@@ -7,7 +7,7 @@ const chain = 'osmosis'
 const contract = 'osmo1c3ljch9dfw5kf52nfwpxd2zmj2ese7agnx0p9tenkrryasrle5sqf3ftpg'
 
 async function borrowed() {
-  const res = await queryContract({ contract, chain: 'osmosis', data: { markets: {} } })
+  const res = await queryContract({ contract, chain: 'osmosis', data: { markets: { limit: 10 } } })
   const borrowed = {};
   res.forEach(i => {
     sdk.util.sumSingleBalance(borrowed, i.denom, i.debt_total_scaled * i.borrow_index / 1e6)
