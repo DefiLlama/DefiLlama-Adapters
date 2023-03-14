@@ -1,5 +1,8 @@
 const utils = require('../utils')
 
+const OBYTE_HUB_ENDPOINT = "https://obyte.org/api";
+const TOKEN_REGISTRY_AA_ADDRESS = "O6H6ZIFI57X3PLTYHOCVYPP5A553CYFQ";
+
 /**
  * @param {number} timestamp - unix timestamp in seconds from epoch of the moment in time for which the balances are requested
  * @param {string} address - the Obyte address of the base AA for which the balances are fetched
@@ -240,11 +243,35 @@ async function fetchOstableExchangeRatesInUSD() {
   }
 }
 
+function getAaStateVars(address, var_prefix) {
+  return utils.postURL(`${OBYTE_HUB_ENDPOINT}/get_aa_state_vars`, { address, var_prefix })?.then(({ data }) => data?.data);
+}
+
+function executeGetter(address, getter, args) {
+  return utils.postURL(`${OBYTE_HUB_ENDPOINT}/execute_getter`, { address, getter, args })?.then(({ data }) => data?.data?.result);
+}
+
+async function getDecimalsByAsset(asset) {
+  if (asset === 'base' || asset === 'GBYTE') return 9;
+  
+  const descHash = await getAaStateVars(TOKEN_REGISTRY_AA_ADDRESS, `current_desc_${asset}`).then(vars => vars?.[`current_desc_${asset}`]);
+
+  if (descHash) {
+    return getAaStateVars(TOKEN_REGISTRY_AA_ADDRESS, `decimals_${descHash}`).then(vars => vars?.[`decimals_${descHash}`] ?? 0);
+  } else {
+    return 0;
+  }
+}
+
 module.exports = {
   fetchBaseAABalances,
   fetchOswapExchangeRates,
   fetchOswapAssets,
   fetchOstableAssets,
   fetchOstableExchangeRatesInUSD,
-  summingBaseAABalancesToTvl
+  summingBaseAABalancesToTvl,
+  getAaStateVars,
+  executeGetter,
+  fetchOswapV2Assets,
+  getDecimalsByAsset
 }

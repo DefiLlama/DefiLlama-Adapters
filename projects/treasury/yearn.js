@@ -22,7 +22,6 @@ module.exports = treasuryExports({
         '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',//WBTC
      ],
     owners: [yearnTreasury,yearnTreasury1],
-    ownTokenOwners: [yearnTreasury,yearnTreasury1],
     ownTokens: [YEARN],
   },
 })
