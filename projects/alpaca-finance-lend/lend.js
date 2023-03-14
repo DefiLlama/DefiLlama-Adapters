@@ -25,32 +25,31 @@ async function calLendingTvl(chain, block) {
   /// @dev Getting all addresses from Github
   const addresses = await getProtocolAddresses(chain);
 
-  const vaultsTotalToken = (
+  const vaultsUnutilizedBalance = (
     await sdk.api.abi.multiCall({
       block,
-      abi: abi.totalToken,
+      abi: abi.balanceOf,
       calls: addresses["Vaults"].map((v) => {
-        return { target: v.address };
+        return {
+          target: v["baseToken"],
+          params: [v["address"]],
+        };
       }),
       chain,
     })
   ).output;
 
-  const vaultsPendingInterest = await pendingInterest(addresses, block, chain)
-
   for (let i = 0; i < addresses["Vaults"].length; i++) {
     const vault = addresses["Vaults"][i];
-
-    const vaultPendingInterest = new BigNumber(vaultsPendingInterest[i].output)
-    const vaultTotalToken = new BigNumber(vaultsTotalToken[i].output).plus(vaultPendingInterest)
 
     await sdk.util.sumSingleBalance(
       balances,
       vault.baseToken,
-      vaultTotalToken.toFixed(0),
+      vaultsUnutilizedBalance[i].output,
       chain
     );
   }
+
   return balances;
 }
 
@@ -72,14 +71,15 @@ async function calBorrowingTvl(chain, block) {
     })
   ).output;
 
-  const vaultsPendingInterest = await pendingInterest(addresses, block, chain)
-
+  const vaultsPendingInterest = await pendingInterest(addresses, block, chain);
 
   for (let i = 0; i < addresses["Vaults"].length; i++) {
     const vault = addresses["Vaults"][i];
 
-    const vaultPendingInterest = new BigNumber(vaultsPendingInterest[i].output)
-    const vaultDebtValue = new BigNumber(vaultsDebtVal[i].output).plus(vaultPendingInterest)
+    const vaultPendingInterest = new BigNumber(vaultsPendingInterest[i].output);
+    const vaultDebtValue = new BigNumber(vaultsDebtVal[i].output).plus(
+      vaultPendingInterest
+    );
 
     await sdk.util.sumSingleBalance(
       balances,
@@ -91,20 +91,17 @@ async function calBorrowingTvl(chain, block) {
   return balances;
 }
 
-async function pendingInterest(addresses,block,chain) {
+async function pendingInterest(addresses, block, chain) {
   return (
     await sdk.api.abi.multiCall({
       block,
       abi: abi.pendingInterest,
       calls: addresses["Vaults"].map((v) => {
-        return { target: v.address, 
-          params : [0]
-        };
+        return { target: v.address, params: [0] };
       }),
       chain,
     })
   ).output;
-
 }
 
 module.exports = {

@@ -25,7 +25,7 @@ module.exports = {
   start: 1602054167,
   timetravel: true,
   doublecounted: false,
-  methodology: "Sum total token and vaultDebt value in each vault",
+  methodology: "Sum floating balance and vaultDebtValue in each vault",
   bsc: {
     tvl: bscLendingTvl,
     borrowed: bscCalBorrowingTvl,
