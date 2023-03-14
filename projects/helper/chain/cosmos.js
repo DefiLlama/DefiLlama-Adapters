@@ -10,6 +10,7 @@ const { log } = require("../utils");
 // https://cosmos-chain.directory/chains/cosmoshub
 // https://cosmos-chain.directory/chains
 const endPoints = {
+
   crescent: "https://mainnet.crescent.network:1317",
   osmosis: "https://lcd.osmosis.zone",
   cosmos: "https://cosmoshub-lcd.stakely.io",
@@ -20,7 +21,8 @@ const endPoints = {
   umee: "https://umee-api.polkachu.com",
   orai: "https://lcd.orai.io",
   juno: "https://lcd-juno.cosmostation.io",
-};
+  cronos: 'https://lcd-crypto-org.cosmostation.io',
+}
 
 const chainSubpaths = {
   crescent: "crescent",

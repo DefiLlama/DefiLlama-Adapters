@@ -43,11 +43,9 @@ function tvlByChain(chain) {
     let cache = getCache(project, chain) || {}
     const { tokensAndOwners, uniV3NFTHolders } = splitPairs(pairs);
     let lpList = await getLPList({ lps: tokensAndOwners.map(i => i[0]), ...api, cache, api, })
-    const balances = {}
     // if (uniV3NFTHolders.length)
       // await unwrapUniswapV3NFTs({ balances, owners: uniV3NFTHolders, chain, block });
-    await sumUnknownTokens({
-      balances,
+      const balances = await sumUnknownTokens({
       tokensAndOwners: tokensAndOwners.filter(i => lpList.includes(i[0])),
       api, ...api, useDefaultCoreAssets: true,
     });

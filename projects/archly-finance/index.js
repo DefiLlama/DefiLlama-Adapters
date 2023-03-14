@@ -15,6 +15,16 @@ module.exports={
             restrictTokenRatio: 100,
         })
     },
+    arbitrum:{
+        tvl: getUniTVL({ factory: '0xeafBFeb64F8e3793D7d1767774efd33b203200C9', chain: 'arbitrum', useDefaultCoreAssets: true }),
+        staking: sumTokensExport({
+            owner: '0x4c01dF6B9be381BA2a687D0ED5c40039dEEaf0a9',
+            tokens: ['0x9435Ffb33Ce0180F55E08490C606eC3BD07da929'],
+            lps: ['0x6083E6F4c0f9826e60D0180A00203F7A70C1aC25'],
+            coreAssets: ['0x82af49447d8a07e3bd95bd0d56f35241523fbab1'],
+            restrictTokenRatio: 100,
+        })
+    },
     arbitrum_nova:{
         tvl: getUniTVL({ factory: ARCHLY_FACTORY_OTHER, chain: 'arbitrum_nova', useDefaultCoreAssets: true }),
         staking: sumTokensExport({
@@ -61,7 +71,7 @@ module.exports={
             owner: ARCHLY_VE_TOKEN_OTHER,
             tokens: [ARCHLY_ARC_TOKEN_OTHER],
             lps: ['0xc492BCa6777818256C2e2e5FC8e180BC8697DfF5'],
-            coreAssets: ['0x4200000000000000000000000000000000000042'],
+            coreAssets: ['0x4200000000000000000000000000000000000006'],
             restrictTokenRatio: 100,
         })
     },
