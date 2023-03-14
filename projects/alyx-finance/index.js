@@ -139,7 +139,6 @@ module.exports = {
   misrepresentedTokens: true,
   bsc: {
     tvl: tvl,
-    
     staking: staking(masterchefAddress, alyxToken, 'bsc'),
   },
   methodology: `Total amount of tokens in treasury and masterchef contract`,
