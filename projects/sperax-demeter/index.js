@@ -15,7 +15,7 @@ async function tvl(_, _b, _cb, { api, }) {
     rewardTokens[i].forEach(t => toa.push([t, o]))
   });
   const balances = await unwrapUniswapV3NFTs({  ...api, owners: farms, })
-  return sumTokens2({ ...api, balances, tokensAndOwners: toa, })
+  return sumTokens2({ api, balances, tokensAndOwners: toa, })
 }
 
 module.exports = {
