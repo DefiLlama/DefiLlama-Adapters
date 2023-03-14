@@ -1,7 +1,6 @@
 const { BN } = require("bn.js");
 const { request, gql } = require("graphql-request");
-const { staking } = require("../helper/unknownTokens");
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
+const { sumTokensExport } = require("../helper/unknownTokens");
 
 const masterchefAddress = "0x7Bd2f7641b875872c7c04ee3B426F753C7093aD5";
 const alyxToken = "0x2701C7cBf3220FFF6e6CEaabbCD9B932Eb11E3Ff";
@@ -106,40 +105,12 @@ async function totalVolume(timestamp, block) {
   }
 }
 
-async function tvl(timestamp, block, chainBlocks) {
-  const balances = {};
-
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [
-      [alyxToken, false],
-      [alyx_bsc_lp, true],
-    ],
-    [treasury],
-    chainBlocks.bsc,
-    'bsc',
-    addr => `bsc:${addr}`
-  );
-
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [
-      [alyx_bsc_lp, true],
-    ],
-    [masterchefAddress],
-    chainBlocks.bsc,
-    'bsc',
-    addr => `bsc:${addr}`
-  );
-
-  return balances;
-}
-
 module.exports = {
   misrepresentedTokens: true,
   bsc: {
-    tvl: tvl,
-    staking: staking(masterchefAddress, alyxToken, 'bsc'),
+    tvl: sumTokensExport({ tokens: [alyx_bsc_lp], owner: treasury, useDefaultCoreAssets: true }),
+    pool2: sumTokensExport({ tokens: [alyx_bsc_lp], owner: masterchefAddress, useDefaultCoreAssets: true }),
+    staking: sumTokensExport({ tokens: [alyxToken], owner: masterchefAddress, useDefaultCoreAssets: true, lps: [alyx_bsc_lp] }),
   },
   methodology: `Total amount of tokens in treasury and masterchef contract`,
 };
