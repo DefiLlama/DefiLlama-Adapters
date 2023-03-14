@@ -1,9 +1,6 @@
 const { BN } = require("bn.js");
 const { request, gql } = require("graphql-request");
-const { getEmitHelpers } = require("typescript");
-const { toUSDTBalances } = require("../helper/balances");
-const { masterChefExports } = require("../helper/masterchef");
-const { staking, sumTokensExport, masterchefExports } = require("../helper/unknownTokens");
+const { staking } = require("../helper/unknownTokens");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 
 const masterchefAddress = "0x7Bd2f7641b875872c7c04ee3B426F753C7093aD5";
@@ -142,6 +139,8 @@ module.exports = {
   misrepresentedTokens: true,
   bsc: {
     tvl: tvl,
+    
     staking: staking(masterchefAddress, alyxToken, 'bsc'),
   },
+  methodology: `Total amount of tokens in treasury and masterchef contract`,
 };
