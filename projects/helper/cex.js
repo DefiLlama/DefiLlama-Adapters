@@ -70,7 +70,8 @@ const defaultTokens = {
     '0x2af5d2ad76741191d15dfe7bf6ac92d4bd912ca3', // LEO (bitfinex cex token)
     '0xB8c77482e45F1F44dE1745F52C74426C631bDD52', // WBNB
     '0xb62132e35a6c13ee1ee0f84dc5d40bad8d815206', // NEXO ,(Nexo cex token)
-    '0x1ceb5cb57c4d4e2b2433641b95dd330a33185a44',//kp3r
+    '0x1ceb5cb57c4d4e2b2433641b95dd330a33185a44', //kp3r
+    '0xcf0c122c6b73ff809c693db761e7baebe62b6a2e', //FLOKI ETH CHAIN
   ],
   tron: [
     nullAddress,
@@ -109,7 +110,6 @@ const defaultTokens = {
     '0xfb5B838b6cfEEdC2873aB27866079AC55363D37E', // FLOKI
     '0x352Cb5E19b12FC216548a2677bD0fce83BaE434B', // BTT
     '0xAD29AbB318791D579433D831ed122aFeAf29dcfe', // FTM
-    '0xcdf7028ceab81fa0c6971208e83fa7872994bee5', // T
     '0x02ff5065692783374947393723dba9599e59f591',// yoshi
   ],
   eos: [

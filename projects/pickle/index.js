@@ -1,7 +1,7 @@
 const { toUSDT, usdtAddress } = require("../helper/balances");
 const axios = require("axios");
 
-const pfcore = "https://api.pickle.finance/prod/protocol/pfcore/";
+const pfcore = "https://f8wgg18t1h.execute-api.us-west-1.amazonaws.com/prod/protocol/pfcore/";
 const pickleAddress = "0x429881672B9AE42b8EbA0E26cD9C73711b891Ca5";
 // node test.js projects/pickle/index.js
 function fetch(chain, type) {
