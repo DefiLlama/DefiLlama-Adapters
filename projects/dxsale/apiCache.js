@@ -144,7 +144,7 @@ function getTVLTotal(args) {
         lpData.forEach(({ output: { lockedLPTokens, lpLockContract } }) => cache.v3LPData.push([lockedLPTokens, lpLockContract]))
       }
 
-      const tempBalances = await sumUnknownTokens({ chain, block, tokensAndOwners: cache.v3LPData, useDefaultCoreAssets: true, balances, cache, })
+      const tempBalances = await sumUnknownTokens({ chain, block, tokensAndOwners: cache.v3LPData, useDefaultCoreAssets: true, cache, })
 
       Object.entries(tempBalances).forEach(([token, bal]) => sdk.util.sumSingleBalance(balances, token, bal))
     }
