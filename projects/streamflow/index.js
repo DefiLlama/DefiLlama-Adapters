@@ -15,20 +15,14 @@ const getValueForKey = (arr, key) => {
   return null;
 };
 
-async function getData() {
-  let apiResponse = await get(api);
-
-  return apiResponse;
-}
-
 async function tvl() {
   return {
-    tether: getValueForKey(await getData(), TVL_KEY),
+    tether: getValueForKey(await get(api), TVL_KEY),
   };
 }
 async function vesting() {
   return {
-    tether: getValueForKey(await getData(), VESTING_KEY),
+    tether: getValueForKey(await get(api), VESTING_KEY),
   };
 }
 
