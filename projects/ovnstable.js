@@ -14,19 +14,7 @@ const assets = {
     avax: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E", //USDC
 }
 
-const abi = {
-    "inputs": [],
-    "name": "totalNetAssets",
-    "outputs": [
-        {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-        }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-}
+const abi = "uint256:totalNetAssets"
 
 module.exports = {};
 

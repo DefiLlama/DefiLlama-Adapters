@@ -29,7 +29,7 @@ module.exports = {
 }; 
 
 const abis = {
-  strategy: {"inputs":[],"name":"strategy","outputs":[{"internalType":"contract IStrategy","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-  stable: {"inputs":[],"name":"stable","outputs":[{"internalType":"contract IStrategy","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-  aStable: {"inputs":[],"name":"aStable","outputs":[{"internalType":"contract IStrategy","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+  strategy: "address:strategy",
+  stable: "address:stable",
+  aStable: "address:aStable",
 }

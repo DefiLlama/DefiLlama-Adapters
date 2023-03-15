@@ -44,18 +44,6 @@ const XSUTER_COIN = '0x822d04d22f962d6132f53b0fa6b9409097d12550';
 const BSC_SUTER_XSUTER_V1 = '0x4de5cB2EB81A37DD768fc58fe0ca7b811C997c35';
 const BSC_SUTER_XSUTER_V2 = '0x41690D4E1E20B0cBB1fb6004CA80e67bdFa6BA02';
 
-// POLYGON
-const MATIC_COIN = '0x0000000000000000000000000000000000000000';
-const POLYGON_SUTER_MATIC_V1 = '0x934cc5704165711296207b5AFc87933AE0685a4C';
-
-// SMART BCH
-const BCH_COIN = '0x0000000000000000000000000000000000000000';
-const SUTER_BCH_V2 = '0x5B5bC8624F595136CdC4593606883c60A2150aF2';
-
-const FLEXUSD_COIN = '0x7b2B3C5308ab5b2a1d9a94d20D35CCDf61e05b72';
-const SUTER_FLEXUSD_V2 = '0xe253BAA5C5b5615727Cf2C55Aa806090D891Cd54';
-
-
 async function eth_tvl(timestamp, block) {
   let balances = {};
   let total_eth_tvl = 0;
@@ -80,7 +68,6 @@ async function eth_tvl(timestamp, block) {
         block,
         chain: 'ethereum'
       });
-      // console.log("eth:", eth_tvl.output, typeof(eth_tvl.output))
       total_eth_tvl = new BigNumber(eth_tvl.output).plus(new BigNumber(total_eth_tvl));
     }
   }
@@ -108,7 +95,6 @@ async function bsc_tvl(timestamp, ethBlock, chainBlocks) {
         }else{
           balances[`bsc:${coin}`] = new BigNumber(balances[`bsc:${coin}`]).plus(new BigNumber(erc20_tvl.output));
         }
-        // console.log(erc20_tvl.output, typeof(erc20_tvl.output))
       }
       let bnb_tvl = await sdk.api.eth.getBalance({
          target: pool,
@@ -124,39 +110,6 @@ async function bsc_tvl(timestamp, ethBlock, chainBlocks) {
 }
 
 
-// async function polygon_tvl(timestamp, block) {
-//   let balances = {};
-//   let total_matic_tvl = 0;
-//   let pools = {[MATIC_COIN]: [POLYGON_SUTER_MATIC_V1]};
-//   for(var coin in pools){
-//     for(var pool of pools[coin]) {
-//       if(coin !== MATIC_COIN){
-//         let erc20_tvl = await sdk.api.erc20.balanceOf({
-//           target: coin,
-//           owner: pool,
-//           block: block,
-//           chain: 'polygon'
-//         });
-//         if(balances[`polygon:${coin}`] === undefined){
-//           balances[`polygon:${coin}`] = erc20_tvl.output;
-//         }else{
-//           balances[`polygon:${coin}`] = new BigNumber(balances[`polygon:${coin}`]).plus(new BigNumber(erc20_tvl.output)).toString();
-//         }
-//       }
-//       let matic_tvl = await sdk.api.eth.getBalance({
-//         target: pool,
-//         block,
-//         chain: 'polygon'
-//       });
-//       total_matic_tvl = new BigNumber(matic_tvl.output).plus(new BigNumber(total_matic_tvl));
-//     }
-//   }
-
-//   balances[`polygon:${MATIC_COIN}`] = total_matic_tvl.toString();
-//   return balances;
-// }
-
-
 module.exports = {
   timetravel: false,
   ethereum:{
@@ -165,10 +118,4 @@ module.exports = {
   bsc: {
     tvl: bsc_tvl,
   },
-  // polygon: {
-  //   tvl: polygon_tvl
-  // },
-  // smartbch: {
-  //   tvl: bch_tvl,
-  // }
 };

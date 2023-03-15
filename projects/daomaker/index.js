@@ -41,7 +41,7 @@ function vesting(chain) {
       .forEach(i => toa.push([i.token_address, i.vesting_smart_contract_address]))
     return sumTokens2({ chain, block, tokensAndOwners: filterDuplicates(toa) })
   };
-};
+}
 function staking(chain) {
   return async (timestamp, _, { [chain]: block }) => {
     const toa = []
@@ -52,7 +52,7 @@ function staking(chain) {
     })
     return sumTokens2({ chain, block, tokensAndOwners: filterDuplicates(toa) })
   };
-};
+}
 
 const chainTVLObject = contracts.chains.reduce(
   (agg, chain) => ({

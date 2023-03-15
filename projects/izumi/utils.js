@@ -216,7 +216,7 @@ async function unwrapNFTs({ balances = {}, nftsAndOwners = [], block, chain = 'b
   if (iZiContracts) await unwrapiZiswapV3NFTs({ balances, chain, block, nftAddress, owners: iZiContracts, })
   if (uniContracts) await unwrapUniswapV3NFTs({ balances, chain, block, owners: uniContracts, })
   // to fix balances of token addresses which are not on CoinGecko
-  await checkAndFixToken(balances, chain, fixTokens)
+  // await checkAndFixToken(balances, chain, fixTokens)
   return balances
 }
 

@@ -1,13 +1,13 @@
 const sdk = require('@defillama/sdk')
 const BigNumber = require('bignumber.js')
-const getCacheBalances = require('./abis/getCacheBalances.json')
-const getUnderlyingTokenAddress = require('./abis/getUnderlyingTokenAddress.json')
-const getStrikeTokenAddress = require('./abis/getStrikeTokenAddress.json')
-const redeemToken = require('./abis/redeemToken.json')
-const getPair = require('./abis/getPair.json')
-const token0 = require('./abis/token0.json')
-const token1 = require('./abis/token1.json')
-const getReserves = require('./abis/getReserves.json')
+const getCacheBalances = 'function getCacheBalances() view returns (uint256, uint256)'
+const getUnderlyingTokenAddress = "address:getUnderlyingTokenAddress"
+const getStrikeTokenAddress = "address:getStrikeTokenAddress"
+const redeemToken = "address:redeemToken"
+const getPair = 'function getPair(address, address) view returns (address)'
+const token0 = 'address:token0'
+const token1 = 'address:token1'
+const getReserves = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
 const { getLogs } = require('../helper/cache/getLogs')
 
 const START_BLOCK = 11142900

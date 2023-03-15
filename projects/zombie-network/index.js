@@ -36,7 +36,7 @@ async function getTvl(timestamp, ethBlock, chainBlocks) {
   sdk.util.sumSingleBalance(balances.staking, 'klay-token', staking )
 
   return balances
-};
+}
 
 module.exports = {
   klaytn:

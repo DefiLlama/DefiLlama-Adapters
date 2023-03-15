@@ -1,18 +1,18 @@
 const sdk = require('@defillama/sdk')
-const { sumTokens, sumTokens2, unwrapCrv, unwrapUniswapLPs, genericUnwrapCvx, } = require('../helper/unwrapLPs')
+const { sumTokens, sumTokens2, } = require('../helper/unwrapLPs')
 const abi = require("../pendle/abi.json");
 const BigNumber = require('bignumber.js')
 const positions = require('./positions.json');
 
 const cvx_abi = {
-  "cvxBRP_pid": { "inputs": [], "name": "pid", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
-  "cvxBRP_balanceOf": { "inputs": [{ "internalType": "address", "name": "account", "type": "address" }], "name": "balanceOf", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
-  "cvxBRP_earned": { "inputs": [{ "internalType": "address", "name": "account", "type": "address" }], "name": "earned", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
-  "cvxBRP_rewards": { "inputs": [{ "internalType": "address", "name": "", "type": "address" }], "name": "rewards", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
-  "cvxBRP_userRewardPerTokenPaid": { "inputs": [{ "internalType": "address", "name": "", "type": "address" }], "name": "userRewardPerTokenPaid", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
-  "cvxBRP_stakingToken": { "inputs": [], "name": "stakingToken", "outputs": [{ "internalType": "address", "name": "stakingToken", "type": "address" }], "stateMutability": "view", "type": "function" },
-  "cvxBooster_poolInfo": { "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "name": "poolInfo", "outputs": [{ "internalType": "address", "name": "lptoken", "type": "address" }, { "internalType": "address", "name": "token", "type": "address" }, { "internalType": "address", "name": "gauge", "type": "address" }, { "internalType": "address", "name": "crvRewards", "type": "address" }, { "internalType": "address", "name": "stash", "type": "address" }, { "internalType": "bool", "name": "shutdown", "type": "bool" }], "stateMutability": "view", "type": "function" },
-  "stkcvxFRAXBP_lockedStakesOf": {"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"lockedStakesOf","outputs":[{"components":[{"internalType":"bytes32","name":"kek_id","type":"bytes32"},{"internalType":"uint256","name":"start_timestamp","type":"uint256"},{"internalType":"uint256","name":"liquidity","type":"uint256"},{"internalType":"uint256","name":"ending_timestamp","type":"uint256"},{"internalType":"uint256","name":"lock_multiplier","type":"uint256"}],"internalType":"struct FraxUnifiedFarm_ERC20.LockedStake[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"}
+  cvxBRP_pid: "uint256:pid",
+  cvxBRP_balanceOf: "function balanceOf(address account) view returns (uint256)",
+  cvxBRP_earned: "function earned(address account) view returns (uint256)",
+  cvxBRP_rewards: "function rewards(address) view returns (uint256)",
+  cvxBRP_userRewardPerTokenPaid: "function userRewardPerTokenPaid(address) view returns (uint256)",
+  cvxBRP_stakingToken: "address:stakingToken",
+  cvxBooster_poolInfo: "function poolInfo(uint256) view returns (address lptoken, address token, address gauge, address crvRewards, address stash, bool shutdown)",
+  stkcvxFRAXBP_lockedStakesOf: "function lockedStakesOf(address account) view returns (tuple(bytes32 kek_id, uint256 start_timestamp, uint256 liquidity, uint256 ending_timestamp, uint256 lock_multiplier)[])",
 }
 
 const cvxBoosterAddress = "0xF403C135812408BFbE8713b5A23a04b3D48AAE31";
@@ -70,7 +70,7 @@ const mycPool = "0x061aee9ab655e73719577EA1df116D7139b2A7E7";
 const visr = "0xF938424F7210f31dF2Aee3011291b658f872e91e";
 const visrPool = "0x2d3eADE781c4E203c6028DAC11ABB5711C022029";
 
-async function tvl(timestamp, block) {
+async function tvl(timestamp, block, _, { api }) {
   const cvxUSTWPool = "0x7e2b9b5244bcfa5108a76d5e7b507cfd5581ad4a";
   const cvxFRAXPool = "0xB900EF131301B307dB5eFcbed9DBb50A3e209B2e";
   const cvxalUSDPool = "0x02E2151D4F351881017ABdF2DD2b51150841d5B3";
@@ -105,110 +105,56 @@ async function tvl(timestamp, block) {
     [alusd, alusdPool],
     [myc, mycPool],
     [visr, visrPool],
-    [steth, tokeTreasury]
+    [steth, tokeTreasury],
+    [cvxstethPool, tokeManager],
+    [cvxUSTWPool, tokeManager],
+    [cvxFRAXPool, tokeManager],
+    [cvxalUSDPool, tokeManager],
   ]
-  const balances = await sumTokens2({ block, tokensAndOwners: toa })
-  await Promise.all([
-    unwrapCvxSteth(balances, tokeManager, cvxstethPool, block, "ethereum"),
-    genericUnwrapCvx(balances, tokeManager, cvxUSTWPool, block, "ethereum"),
-    genericUnwrapCvx(balances, tokeManager, cvxFRAXPool, block, "ethereum"),
-    genericUnwrapCvx(balances, tokeManager, cvxalUSDPool, block, "ethereum"),
-  ])
+  const balances = {}
 
   // cvxcrvFRAX
   const cvxFraxUsdcPool = "0x7e880867363A7e321f5d260Cade2B0Bb2F717B02";
-  const { output: cvxcrvFraxBal } = await sdk.api.abi.call({
+  const cvxcrvFraxBal = await api.call({
     abi: cvx_abi['cvxBRP_balanceOf'],
     target: cvxFraxUsdcPool,
     params: [tokeManager],
-    chain: "ethereum",
-    block
   });
   const fraxFraxUsdcPool = "0x963f487796d54d2f27bA6F3Fbe91154cA103b199";
-  const { output: treasuryFraxBal } = await sdk.api.abi.call({
+  const treasuryFraxBal = await api.call({
     abi: cvx_abi['stkcvxFRAXBP_lockedStakesOf'],
     target: fraxFraxUsdcPool,
     params: [tokeTreasuryFraxConvexVault],
-    chain: "ethereum",
-    block
   });
-  const fraxUsdcBal = BigNumber(cvxcrvFraxBal).plus(BigNumber(treasuryFraxBal[0]['liquidity']));
-  balances[cvxcrvFrax] = fraxUsdcBal.toFixed();
 
   /// cvxcvxFXS
   const cvxcvxFxsPool = "0xf27AFAD0142393e4b3E5510aBc5fe3743Ad669Cb";
-  const { output: cvxcvxFxsBal } = await sdk.api.abi.call({
+  const cvxcvxFxsBal = await api.call({
     abi: cvx_abi['cvxBRP_balanceOf'],
     target: cvxcvxFxsPool,
     params: [tokeTreasury],
-    chain: "ethereum",
-    block
   });
-  balances[cvxcvxFxs] = cvxcvxFxsBal;
+  sdk.util.sumSingleBalance(balances,cvxcrvFrax,cvxcrvFraxBal)
+  sdk.util.sumSingleBalance(balances,cvxcrvFrax,treasuryFraxBal[0]['liquidity'])
+  sdk.util.sumSingleBalance(balances,cvxcvxFxs,cvxcvxFxsBal)
 
   let curveHoldings = positions.exchanges.filter(
     pool => pool.type == 'Curve')
   let uniHoldings = positions.exchanges.filter(
     pool => pool.type != 'Curve')
 
-  await lpBalances(block, balances, curveHoldings)
-  await lpBalances(block, balances, uniHoldings)
+  const tokens = []
+  const calls = []
+  lpBalances(curveHoldings, toa, tokens, calls,)
+  lpBalances(uniHoldings, toa, tokens, calls)
+  const amountRes = await api.multiCall({  abi: abi.userInfo, calls})
+  tokens.forEach((val, i) => sdk.util.sumSingleBalance(balances,val,amountRes[i].amount, api.chain))
 
-  return balances
+
+  return sumTokens2({ balances, api, tokensAndOwners: toa, })
 }
 
-async function unwrapCvxSteth(balances, holder, cvx_BaseRewardPool, block, chain) {
-  const [{ output: cvx_LP_bal }, { output: pool_id }] = await Promise.all([
-    sdk.api.abi.call({
-      abi: cvx_abi['cvxBRP_balanceOf'],
-      target: cvx_BaseRewardPool,
-      params: [holder],
-      block
-    }),
-    sdk.api.abi.call({
-      abi: cvx_abi['cvxBRP_pid'],
-      target: cvx_BaseRewardPool,
-      block
-    })
-  ])
-
-  const { output: crvPoolInfo } = await sdk.api.abi.call({
-    abi: cvx_abi['cvxBooster_poolInfo'],
-    target: cvxBoosterAddress,
-    params: [pool_id],
-    block: block,
-  })
-  const { output: resolvedCrvTotalSupply } = await sdk.api.erc20.totalSupply({
-    target: crvPoolInfo.lptoken,
-    block
-  })
-
-  const crvLP_steth_balance = await sdk.api.abi.call({
-    abi: 'erc20:balanceOf',
-    target: steth,
-    params: crvSteth,
-    block
-  })
-  sdk.util.sumSingleBalance(
-    balances,
-    steth,
-    BigNumber(crvLP_steth_balance.output)
-      .times(cvx_LP_bal).div(resolvedCrvTotalSupply).toFixed(0)
-  )
-
-  const crvLP_eth_balance = await sdk.api.eth.getBalance({
-    target: crvSteth,
-    block
-  })
-  sdk.util.sumSingleBalance(
-    balances,
-    weth,
-    BigNumber(crvLP_eth_balance.output)
-      .times(cvx_LP_bal).div(resolvedCrvTotalSupply).toFixed(0)
-  )
-}
-
-async function lpBalances(block, balances, holdings) {
+function lpBalances(holdings, toa, tokens, calls) {
   const manager = "0xA86e412109f77c45a3BC1c5870b880492Fb86A14"
   let masterChef
   switch (holdings[0].type) {
@@ -218,39 +164,15 @@ async function lpBalances(block, balances, holdings) {
       masterChef = "0xc2EdaD668740f1aA35E4D8f227fB8E17dcA888Cd"; break;
   }
 
-  let lpPositions = []
   for (let pool of holdings) {
-    const wallet = (await sdk.api.abi.call({
-      block,
-      target: pool.pool_address,
-      abi: 'erc20:balanceOf',
-      params: [manager]
-    })).output;
-
-    if (wallet > 0) {
-      holdings[0].type == 'Curve' ?
-        await unwrapCrv(balances, pool.pool_address, wallet, block) :
-        lpPositions.push({ balance: wallet, token: pool.pool_address })
-    }
-
-    if (!pool.hasOwnProperty('staking')) {
+    const { pool_address: token } = pool
+    toa.push([token, manager])
+    if (!pool.hasOwnProperty('staking'))
       continue
-    }
-
-    const staked = (await sdk.api.abi.call({
-      block,
-      target: masterChef,
-      abi: abi.userInfo,
-      params: [pool.staking.pool_id, manager]
-    })).output.amount;
-
-    if (staked > 0) {
-      holdings[0].type == 'Curve' ?
-        await unwrapCrv(balances, pool.pool_address, staked, block) :
-        lpPositions.push({ balance: staked, token: pool.pool_address })
-    }
+    
+    tokens.push(token)
+    calls.push({ target: masterChef, params: [pool.staking.pool_id, manager]})
   }
-  await unwrapUniswapLPs(balances, lpPositions, block)
 }
 
 async function staking(timestamp, block) {
@@ -259,7 +181,7 @@ async function staking(timestamp, block) {
     [toke, rtoke1], [toke, rtoke2], [toke, rtoke3]
   ], block)
   let vestedToke = '57238445'
-  let balance = balances[toke]/1e18 - vestedToke
+  let balance = balances['ethereum:'+toke]/1e18 - vestedToke
   if (balance < 0) balance = 0
   return {
     tokemak: BigNumber(balance).toFixed(0)

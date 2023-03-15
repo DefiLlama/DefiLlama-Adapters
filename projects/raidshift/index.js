@@ -1,6 +1,8 @@
 const { multicall, sumTokens } = require('../helper/chain/tron')
 
 const contracts = [
+  'TC3TuowSyMxJSLaqiWJuCkZ2i3q7JCFR4x',
+  'TGxDz3kgbxwEAESNtfWk4JFXXEgZAoWqeG',
   'TVMuhpXdRvNjjFAWqZ5urvhrQQyFvc19SN',
   'TJmx4Zg4xMjCZR5Q3aoCyDmYY3r42xU2GZ',
   'TMiHbWfnzh8cFmxNptoDgBvhuFSe2eiDFQ',

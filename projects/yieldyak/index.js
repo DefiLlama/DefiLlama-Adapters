@@ -1,12 +1,6 @@
 const sdk = require('@defillama/sdk');
-const { unwrapUniswapLPs, unwrapCrv, unwrapLPsAuto } = require('../helper/unwrapLPs')
-const abi = require('./abi.json')
 const { request, gql } = require("graphql-request");
-const { transformAvaxAddress } = require('../helper/portedTokens');
-const { default: BigNumber } = require('bignumber.js');
 const { staking } = require('../helper/staking');
-const { addFundsInMasterChef } = require('../helper/masterchef');
-const { requery } = require('../helper/requery');
 
 const graphUrl = 'https://api.thegraph.com/subgraphs/name/yieldyak/reinvest-tracker'
 const graphQuery = gql`
@@ -22,29 +16,28 @@ query get_tvl($block: Int) {
 }
 `;
 
-async function tvl(timestamp, ethBlock, chainBlocks) {
-    const chain = 'avax'
+async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
     const block = chainBlocks.avax;
     const farms = (await request(graphUrl, graphQuery, { block })).farms
-    const transformAddress = await transformAvaxAddress()
     const balances = {}
-    farms.forEach(i => sdk.util.sumSingleBalance(balances, transformAddress(i.depositToken.id), i.depositTokenBalance))
-    await unwrapLPsAuto({ balances, chain, block, blacklistedLPs: ['0xca87bf3ec55372d9540437d7a86a7750b42c02f4']})
+    farms.forEach(i => sdk.util.sumSingleBalance(balances, i.depositToken.id, i.depositTokenBalance, 'avax'))
+    delete balances['avax:0x59414b3089ce2af0010e7523dea7e2b35d776ec7']
+
+    // TODO: remove this code, it is no longer necessary
+    const stakedGLP = 'avax:0x5643f4b25e36478ee1e90418d5343cb6591bcb9d'
+    if (balances[stakedGLP]) {
+        balances['avax:0x01234181085565ed162a948b6a5e88758cd7c7b8'] = balances[stakedGLP]
+        delete balances[stakedGLP]
+    }
     return balances
 }
 
 const masterYak = "0x0cf605484A512d3F3435fed77AB5ddC0525Daf5f"
 const yakToken = "0x59414b3089ce2af0010e7523dea7e2b35d776ec7"
-async function pool2(time, ethBlock, chainBlocks) {
-    const balances = {}
-    await addFundsInMasterChef(balances, masterYak, chainBlocks.avax, "avax", addr => `avax:${addr}`, undefined, [yakToken])
-    return balances
-}
 
 module.exports = {
     avax:{
         tvl,
-        staking: staking(masterYak, yakToken, "avax"),
-        pool2
+        staking: staking(masterYak, yakToken),
     }
 }

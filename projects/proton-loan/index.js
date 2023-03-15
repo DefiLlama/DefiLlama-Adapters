@@ -63,7 +63,7 @@ function getLendingTvl(returnBorrowed = false) {
       return toUSDTBalances(tvl - borrowed)
     }
   }
-};
+}
 
 async function getTotalStaking() {
   const loanPrice = await getTokenPriceUsd('LOAN', LOAN_TOKEN_CONTRACT)
@@ -71,7 +71,7 @@ async function getTotalStaking() {
   const [stakedAmount] = staked.split(' ');
   let stakingTvl = toUSDTBalances(stakedAmount * loanPrice)
   return stakingTvl
-};
+}
 
 module.exports = {
   misrepresentedTokens: true,

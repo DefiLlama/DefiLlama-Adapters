@@ -16,7 +16,7 @@ async function tvl() {
     const res = await get(endpoint)
     next = res.page?.next
 
-    res.data.forEach(({ collateralAmounts, loanAmounts, }) => {
+    res.data.forEach(({ collateralAmounts = [], loanAmounts = [], }) => {
       collateralAmounts.forEach(({ amount, symbol }) => {
         sdk.util.sumSingleBalance(balances, symbol, +amount)
       })

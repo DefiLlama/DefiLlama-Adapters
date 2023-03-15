@@ -3,33 +3,36 @@ const uniswapAbi = require('../abis/uniswap')
 const { getCache, setCache, } = require('../cache');
 const { transformBalances, transformDexBalances, } = require('../portedTokens')
 const { getCoreAssets, } = require('../tokenMapping')
+const { sliceIntoChunks, sleep } = require('../utils')
 const sdk = require('@defillama/sdk')
 
 const cacheFolder = 'uniswap-forks'
 
 function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
   useDefaultCoreAssets = false,
+  fetchBalances = false,
   abis = {},
   chain: _chain = 'ethereum',
+  queryBatched = 0,
+  waitBetweenCalls,
 }) {
+
+  let updateCache = false
+
+  const abi = { ...uniswapAbi, ...abis }
+  factory = factory.toLowerCase()
+  blacklist = (blacklistedTokens || blacklist).map(i => i.toLowerCase())
 
   return async (_, _b, cb, { api, chain } = {}) => {
 
     if (!chain)
       chain = _chain
-
-    console.log('testing ', chain, api.block)
+    const key = `${factory}-${chain}`
 
     if (!coreAssets && useDefaultCoreAssets)
       coreAssets = getCoreAssets(chain)
-    blacklist = (blacklistedTokens || blacklist).map(i => i.toLowerCase())
-  
-    const abi = { ...uniswapAbi, ...abis }
-    factory = factory.toLowerCase()
-    const key = `${factory}-${chain}`
 
-
-    let cache = await _getCache(cacheFolder, key)
+    let cache = await _getCache(cacheFolder, key, api)
 
     const _oldPairInfoLength = cache.pairs.length
     const length = await api.call({ abi: abi.allPairsLength, target: factory, })
@@ -47,14 +50,36 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
     cache.token0s.push(...token0s)
     cache.token1s.push(...token1s)
 
+    updateCache = updateCache || cache.pairs.length > _oldPairInfoLength
+
+    if (updateCache)
+      await setCache(cacheFolder, key, cache)
+
     if (cache.pairs.length > length)
       cache.pairs = cache.pairs.slice(0, length)
 
-    const reserves = await api.multiCall({ abi: abi.getReserves, calls: cache.pairs })
+    let reserves = []
+    if (queryBatched) {
+      const batchedCalls = sliceIntoChunks(cache.pairs, queryBatched)
+      for (const calls of batchedCalls) {
+        reserves.push(...await api.multiCall({ abi: abi.getReserves, calls }))
+        if (waitBetweenCalls) await sleep(waitBetweenCalls)
+      }
+    } else if (fetchBalances) {
+      const calls = []
+      cache.pairs.forEach((owner, i) => {
+        calls.push({ target: cache.token0s[i], params: owner })
+        calls.push({ target: cache.token1s[i], params: owner })
+      })
+      const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls, })
+      for (let i = 0; i < bals.length; i++) {
+        reserves.push({ _reserve0: bals[i], _reserve1: bals[i + 1] })
+        i++
+      }
+    } else
+      reserves = await api.multiCall({ abi: abi.getReserves, calls: cache.pairs })
 
 
-    if (cache.pairs.length > _oldPairInfoLength)
-      await setCache(cacheFolder, key, cache)
 
     if (coreAssets) {
       const data = []
@@ -79,11 +104,26 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
     return transformBalances(chain, balances)
   }
 
-  async function _getCache(cacheFolder, key) {
+  async function _getCache(cacheFolder, key, api) {
     let cache = await getCache(cacheFolder, key)
     if (cache.pairs) {
-      if (cache.pairs.includes(null) || cache.token0s.includes(null) || cache.token1s.includes(null))
-        cache.pairs = undefined
+      for (let i = 0; i < cache.pairs.length; i++) {
+        if (!cache.pairs[i]) {
+          cache.pairs[i] = await api.call({ abi: abi.allPairsLength, target: factory, params: i })
+          updateCache = true
+        }
+        let pair = cache.pairs[i]
+        if (!cache.token0s[i]) {
+          cache.token0s[i] = await api.call({ abi: abi.token0, target: pair })
+          updateCache = true
+        }
+        if (!cache.token1s[i]) {
+          cache.token1s[i] = await api.call({ abi: abi.token1, target: pair })
+          updateCache = true
+        }
+      }
+      // if (cache.pairs.includes(null) || cache.token0s.includes(null) || cache.token1s.includes(null))
+      //   cache.pairs = undefined
     }
     if (!cache.pairs) {
       cache = {

@@ -12,7 +12,7 @@ async function ethTvl(timestamp, block) {
     let balances = await vaultTvl(oldRegistry, block, {});
     await vaultTvl(newRegistry, block, balances)
     return balances//await newVaultTvl(block, newVaults, balances);
-};
+}
 async function vaultTvl(registry, block, balances, pool2 = false) {
     const count = Number((await sdk.api.abi.call({
         target: registry,
@@ -64,7 +64,7 @@ async function vaultTvl(registry, block, balances, pool2 = false) {
     }
 
     return balances;
-};
+}
 
 module.exports={
     ethereum:{

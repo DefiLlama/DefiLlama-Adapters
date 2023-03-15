@@ -17,11 +17,11 @@ async function getJoins(block, api) {
   // get list of auths
   const auths = (
     await getLogs({
-        api,
-        target: MakerMCDConstants.VAT,
-        fromBlock: MakerMCDConstants.STARTBLOCK,
-        topics: [relyTopic],
-      })
+      api,
+      target: MakerMCDConstants.VAT,
+      fromBlock: MakerMCDConstants.STARTBLOCK,
+      topics: [relyTopic],
+    })
   ).map(i => `0x${i.topics[1].substr(26)}`).filter(i => !failedSet.has(i))
 
   const ilks = await api.multiCall({
@@ -41,7 +41,7 @@ async function getJoins(block, api) {
 }
 
 async function tvl(timestamp, block, _, { api }) {
-  const toa = [
+  let toa = [
     [MakerSCDConstants.WETH_ADDRESS, MakerSCDConstants.TUB_ADDRESS,],
   ]
 
@@ -58,8 +58,8 @@ async function tvl(timestamp, block, _, { api }) {
       abi: MakerMCDConstants.gem,
       block, calls: joins.map(i => ({ target: i })),
     })
-    const dogCalls =  dogs.map(i => ({ target: i}))
-    
+    const dogCalls = dogs.map(i => ({ target: i }))
+
     gems.forEach(({ success, output, input: { target } }) => {
       target = target.toLowerCase()
       if (!success) {
@@ -82,7 +82,37 @@ async function tvl(timestamp, block, _, { api }) {
     }
   }
 
-  return sumTokens2({ block, tokensAndOwners: toa })
+  toa = toa.filter(i => i[0].toLowerCase() !== '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359')
+  const symbols = await api.multiCall({ abi: 'erc20:symbol', calls: toa.map(t => t[0]) })
+  const gUNIToa = toa.filter((_, i) => symbols[i] === 'G-UNI')
+  toa = toa.filter((_, i) => symbols[i] !== 'G-UNI')
+
+  const balances = await sumTokens2({ api, tokensAndOwners: toa, })
+  return unwrapGunis({ api, toa: gUNIToa, balances, })
+}
+
+async function unwrapGunis({ api, toa, balances = {} }) {
+  const lps = toa.map(i => i[0])
+  const balanceOfCalls = toa.map(t => ({ params: t[1], target: t[0] }))
+  const [
+    token0s, token1s, supplies, uBalances, tokenBalances
+  ] = await Promise.all([
+    api.multiCall({ abi: 'address:token0', calls: lps }),
+    api.multiCall({ abi: 'address:token1', calls: lps }),
+    api.multiCall({ abi: 'uint256:totalSupply', calls: lps }),
+    api.multiCall({ abi: 'function getUnderlyingBalances() view returns (uint256 token0Bal, uint256 token1Bal)', calls: lps }),
+    api.multiCall({ abi: 'erc20:balanceOf', calls: balanceOfCalls }),
+  ])
+
+  tokenBalances.forEach((bal, i) => {
+    const ratio = bal / supplies[i]
+    const token0Bal = uBalances[i][0] * ratio
+    const token1Bal = uBalances[i][1] * ratio
+    sdk.util.sumSingleBalance(balances, token0s[i], token0Bal)
+    sdk.util.sumSingleBalance(balances, token1s[i], token1Bal)
+  })
+  sdk.util.removeTokenBalance(balances, '0x6b175474e89094c44da98b954eedeac495271d0f') // remove dai balances
+  return balances
 }
 
 module.exports = {

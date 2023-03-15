@@ -137,4 +137,6 @@ module.exports = {
   polygon: compoundExports("0xfBE0f3A3d1405257Bd69691406Eafa73f5095723", "polygon"),
   arbitrum: compoundExports("0xF67EF5E77B350A81DcbA5430Bc8bE876eDa8D591", "arbitrum"),
   elastos: compoundExportsWithDifferentBase("0xE52792E024697A6be770e5d6F1C455550265B2CD", "elastos", "elastos"),
+  kava: compoundExportsWithDifferentBase("0xD2CBE89a36df2546eebc71766264e0F306d38196", "kava", "kava"),
+  bittorrent: compoundExportsWithDifferentBase("0xE52792E024697A6be770e5d6F1C455550265B2CD", "bittorrent", "bittorrent"),
 };

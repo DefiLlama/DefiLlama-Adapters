@@ -2,10 +2,10 @@ const { sumTokens2 } = require("../helper/unwrapLPs")
 const { getFixBalances } = require("../helper/portedTokens")
 const { getUserMasterChefBalances } = require("../helper/masterchef")
 const { getUserCraftsmanV2Balances } = require("./helpers")
-const vvsPoolInfoABI = require('./cronos/vvsPoolInfo.json')
-const spookyMasterChefV2PoolInfoABI = require('./fantom/spookyMasterChefV2PoolInfo.json')
-const { fetchURL, } = require("../helper/utils")
-const { get, } = require("../helper/http")
+const vvsPoolInfoABI = 'function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accVVSPerShare)'
+const spookyMasterChefV2PoolInfoABI = 'function lpToken(uint256) view returns (address)'
+const { getConfig } = require('../helper/cache')
+
 const sdk = require('@defillama/sdk')
 
 const BASE_API_URL = 'https://api.singlefinance.io'
@@ -31,41 +31,21 @@ const getWMasterChefBalances = ({ masterChef: masterChefAddress, wMasterChef, na
   }
   return getUserMasterChefBalances({ ...commonParams, poolInfoABI: vvsPoolInfoABI, ...args })
 }
+const data = {
 
+}
 const getHelpers = (chain) => {
 
   const SINGLE_TOKEN = constants[chain].single;
 
   const fetchDataOnce = (() => {
-
-    let data;
-    let queues = [];
-
-    return () => new Promise(res => {
-
-      if (data) {
-        res(data);
-      }
-
-      queues.push(res);
-
-      if (queues.length === 1) {
-        fetchURL(`${BASE_API_URL}/api/protocol/contracts?chainid=${constants[chain].chainId}`)
-          .then(value => {
-            data = value;
-
-            for (const resolve of queues) {
-              resolve(value);
-            }
-          });
-      }
-
-    })
-  })();
+    if (!data[chain]) return getConfig('single/contracts/'+chain, `${BASE_API_URL}/api/protocol/contracts?chainid=${constants[chain].chainId}`)
+    return data[chain]
+  })
 
   async function staking(timestamp, _block, chainBlocks) {
 
-    const { data: { pools, vaults, } } = await fetchDataOnce()
+    const  { pools, }  = await fetchDataOnce()
 
     let balances = {}
     const fixBalances = await getFixBalances(chain)
@@ -79,7 +59,7 @@ const getHelpers = (chain) => {
 
   async function tvl(tx, _block, chainBlocks) {
 
-    const { data: { vaults, wmasterchefs } } = await fetchDataOnce()
+    const  { wmasterchefs, vaults, }  = await fetchDataOnce()
 
     const balances = {}
     const block = chainBlocks[chain]
@@ -97,7 +77,7 @@ const getHelpers = (chain) => {
 
   async function pool2(tx, _block, chainBlocks) {
 
-    const { data: { wmasterchefs, pools } } = await fetchDataOnce()
+    const {  wmasterchefs, pools } = await fetchDataOnce()
 
     const balances = {}
     const block = chainBlocks[chain]
@@ -134,8 +114,8 @@ module.exports = {
 
 
 async function cronosTvl(_, _b, { cronos: block }) {
-  const { data } = await get('https://api.singlefinance.io/api/vaults?chainid=25')
-  const { data: strategies } = await get('https://api.singlefinance.io/api/strategies?chainid=25')
+  const { data } = await getConfig('single/vault/cronos', 'https://api.singlefinance.io/api/vaults?chainid=25')
+  const { data: strategies } = await getConfig('single/strategy/cronos','https://api.singlefinance.io/api/strategies?chainid=25')
   const tether = strategies.reduce((a, i)=> a+i.tvl/1e18, 0)
   const balances = {}
   data.forEach(({ token: { id }, totalTokens }) => sdk.util.sumSingleBalance(balances, 'cronos:' + id, totalTokens))

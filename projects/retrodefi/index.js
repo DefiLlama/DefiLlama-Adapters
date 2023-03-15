@@ -126,6 +126,7 @@ const calcTvl = async (
       symbol.includes("QBERT") ||
       symbol.includes("pQBERT")
     ) {
+      continue
     } else if (symbol.includes("LP")) {
       lpPositions.push({
         token: want,

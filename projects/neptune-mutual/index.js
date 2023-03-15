@@ -1,18 +1,26 @@
-const sdk = require('@defillama/sdk')
-const { ethers } = require("ethers");
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getLogs } = require('../helper/cache/getLogs')
 
 const abi = {
-  sc: { "inputs": [], "name": "sc", "outputs": [{ "internalType": "contract IStore", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" },
+  sc: "address:sc",
 }
 
-async function tvl(_, block, _1, { api }) {
+const vaultFactories = {
+  ethereum: "0x0150b57aa8cc6fcbc110f07eef0c85731d8aacf4",
+  arbitrum: "0x0150b57aa8cc6fcbc110f07eef0c85731d8aacf4",
+};
+
+const fromBlocks = {
+  ethereum: 15912005,
+  arbitrum: 54210090,
+};
+
+async function tvl(_, block, _1, { api, chain }) {
   const logs = await getLogs({
     api,
-    target: "0x0150b57aa8cc6fcbc110f07eef0c85731d8aacf4", // vault factory
+    target: vaultFactories[chain], // vault factory
     topic: "VaultDeployed(address,bytes32,string,string)",
-    fromBlock: 15912005,
+    fromBlock: fromBlocks[chain],
     eventAbi: 'event VaultDeployed (address vault, bytes32 coverKey, string name, string symbol)',
   });
 
@@ -23,11 +31,12 @@ async function tvl(_, block, _1, { api }) {
   })
   const toa = tokens.map((token, i) => ([token, vaults[i]]))
 
-  return sumTokens2({ tokensAndOwners: toa, block, })
+  return sumTokens2({ api, tokensAndOwners: toa, chain })
 }
 
 module.exports = {
   methodology: "TVL consists of the total liquidity available in the cover pools",
   start: 1667260800, // Nov 01 2022 @ 12:00am (UTC)
   ethereum: { tvl },
+  arbitrum: { tvl },
 };

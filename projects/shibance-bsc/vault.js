@@ -1,4 +1,9 @@
-const cakeVaultAbi = require("./abi.json");
+const cakeVaultAbi = {
+  getPricePerFullShare: "uint256:getPricePerFullShare",
+  totalShares: "uint256:totalShares",
+  calculateHarvestCakeRewards: "uint256:calculateHarvestCakeRewards",
+  calculateTotalPendingCakeRewards: "uint256:calculateTotalPendingCakeRewards",
+}
 const BigNumber = require("bignumber.js");
 const {
   getBalanceNumber,
@@ -44,22 +49,22 @@ const fetchPublicVaultData = async (chain, block) => {
       sdk.api.abi.call({
         block, chain,
         target: woofVaultAddress,
-        abi: cakeVaultAbi.find(i => i.name === 'getPricePerFullShare')
+        abi: cakeVaultAbi.getPricePerFullShare
       }),
       sdk.api.abi.call({
         block, chain,
         target: woofVaultAddress,
-        abi: cakeVaultAbi.find(i => i.name === 'totalShares')
+        abi: cakeVaultAbi.totalShares
       }),
       sdk.api.abi.call({
         block, chain,
         target: woofVaultAddress,
-        abi: cakeVaultAbi.find(i => i.name === 'calculateHarvestCakeRewards')
+        abi: cakeVaultAbi.calculateHarvestCakeRewards
       }),
       sdk.api.abi.call({
         block, chain,
         target: woofVaultAddress,
-        abi: cakeVaultAbi.find(i => i.name === 'calculateTotalPendingCakeRewards')
+        abi: cakeVaultAbi.calculateTotalPendingCakeRewards
       }),
     ]).then(response => response.map(a => a.output));
     

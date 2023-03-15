@@ -64,6 +64,8 @@ Object.keys(graphEndpoints).forEach(chain => {
         '0x738076a6cb6c30d906bcb2e9ba0e0d9a58b3292e', // SRSB is absuredly priced 
         '0x95e7c70b58790a1cbd377bc403cd7e9be7e0afb1', // YSL is absuredly priced 
         '0x2b1e9ded77ff8ecd81f71ffc5751622e6f1291c3', // error querying balance
+        '0x272c2CF847A49215A3A1D4bFf8760E503A06f880', // abnb LP mispriced
+        '0xd4ca5c2aff1eefb0bea9e9eab16f88db2990c183', // XRPC
       ].map(i => i.toLowerCase())
 
       allPairs.forEach(pair => {

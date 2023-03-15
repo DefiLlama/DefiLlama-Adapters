@@ -10,18 +10,6 @@ module.exports = {
     ]
   },
   ABI_SHORT: {
-    asset: {
-      inputs: [],
-      name: 'asset',
-      outputs: [
-        {
-          internalType: 'contract IERC20Metadata',
-          name: '',
-          type: 'address'
-        }
-      ],
-      stateMutability: 'view',
-      type: 'function'
-    }
+    asset: 'address:asset'
   }
 }

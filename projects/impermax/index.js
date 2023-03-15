@@ -10,7 +10,7 @@ function offset(chain) {
     case 'ethereum':
       return 100
     case 'polygon':
-      return 500
+      return 1000
     case 'arbitrum':
       return 2000
     case 'moonriver':
@@ -19,8 +19,8 @@ function offset(chain) {
       return 800
     case 'fantom':
       return 1500
-  };
-};
+  }
+}
 
 function getChainTvl(graphUrls, factoriesName = "uniswapFactories", tvlName = "totalLiquidityUSD") {
   const graphQuery = gql`
@@ -52,7 +52,7 @@ function getChainTvl(graphUrls, factoriesName = "uniswapFactories", tvlName = "t
       return toUSDTBalances(tvl);
     };
   };
-};
+}
 
 
 const subgraphs = {
@@ -64,6 +64,7 @@ const subgraphs = {
   'arbitrum': [
     'impermax-finance/impermax-x-uniswap-v2-arbitrum',
     'impermax-finance/impermax-arbitrum-v2',
+    'impermax-finance/impermax-arbitrum-solv2',
   ],
   'moonriver': ['impermax-finance/impermax-x-uniswap-v2-moonriver'],
   'avax': [

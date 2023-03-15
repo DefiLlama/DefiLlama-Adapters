@@ -32,7 +32,7 @@ module.exports = {
     methodology: "Factory address (" + FACTORY + ") is used to find the LP pairs on smartBCH. TVL is equal to AMMs liquidity plus the extra staking balance and masterchef pools.",
     smartbch: {
         tvl: sdk.util.sumChainTvls([bchDexTvl, bchMasterChef]),
-        masterchef: bchMasterChef,
+        // masterchef: bchMasterChef,
         staking: stakingPricedLP(MASTERBREEDER, rBCH, "smartbch", rBCH_WBCH_LP, COREASSETNAME),
     },
 }

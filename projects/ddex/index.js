@@ -29,67 +29,6 @@ module.exports = {
 }
 
 const abis = {
-  getMarket: {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "marketID",
-        "type": "uint16"
-      }
-    ],
-    "name": "getMarket",
-    "outputs": [
-      {
-        "components": [
-          {
-            "name": "baseAsset",
-            "type": "address"
-          },
-          {
-            "name": "quoteAsset",
-            "type": "address"
-          },
-          {
-            "name": "liquidateRate",
-            "type": "uint256"
-          },
-          {
-            "name": "withdrawRate",
-            "type": "uint256"
-          },
-          {
-            "name": "auctionRatioStart",
-            "type": "uint256"
-          },
-          {
-            "name": "auctionRatioPerBlock",
-            "type": "uint256"
-          },
-          {
-            "name": "borrowEnable",
-            "type": "bool"
-          }
-        ],
-        "name": "market",
-        "type": "tuple"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  getAllMarketsCount: {
-    "constant": true,
-    "inputs": [],
-    "name": "getAllMarketsCount",
-    "outputs": [
-      {
-        "name": "count",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
+  getMarket: "function getMarket(uint16 marketID) view returns (tuple(address baseAsset, address quoteAsset, uint256 liquidateRate, uint256 withdrawRate, uint256 auctionRatioStart, uint256 auctionRatioPerBlock, bool borrowEnable) market)",
+  getAllMarketsCount: "uint256:getAllMarketsCount",
 }

@@ -6,7 +6,7 @@ function fetch(chain) {
         let response = await get('https://api.tokensfarm.com/totals')
         return toUSDTBalances(response.totals.tvl[chain]);
     };
-};
+}
 
 module.exports = {
     timetravel: false,

@@ -7,7 +7,7 @@ async function tvl(timestamp, ethBlock, {kcc: block}) {
     block,
     chain,
     target: "0x3CEF6d63C299938083D0c89C812d9C6985e3Af1c",
-    abi:{ "inputs": [], "name": "getLatestLockedKCS", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }
+    abi: "uint256:getLatestLockedKCS"
   })
 
   return {'kucoin-shares':Number(totalLockedKCS.output / 1e18)}

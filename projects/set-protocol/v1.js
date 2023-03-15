@@ -51,18 +51,7 @@ module.exports = async function tvl(timestamp, block) {
         target: cToken
       }
     }),
-    abi: {
-      "constant": true,
-      "inputs": [],
-      "name": "exchangeRateStored",
-      "type": "function",
-      "outputs": [
-        {
-          "name":"",
-          "type":"uint256"
-        }
-      ]
-    }
+    abi: "uint256:exchangeRateStored"
   })).output.reduce(function(map, object) {
     map[object.input.target] = object.output;
     return map;

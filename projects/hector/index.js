@@ -10,7 +10,6 @@ const contracts = require("./contracts.json");
 const { default: BigNumber } = require("bignumber.js");
 const { toUSDTBalances } = require("../helper/balances");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { unwrapCrv } = require("../helper/resolveCrvTokens");
 const abi = require("./abi.json");
 const { genericUnwrapCvx } = require("../helper/unwrapLPs");
 
@@ -217,19 +216,6 @@ async function unwrap(balances, chain, block, transform) {
       chain,
       transform
     );
-  }
-
-  if (chain in contracts.curveLPs) {
-    for (let token of contracts.curveLPs[chain]) {
-      await unwrapCrv(
-        balances,
-        token,
-        balances[`${chain}:${token}`],
-        block,
-        chain,
-        transform
-      );
-    }
   }
 }
 function tvl(chain) {

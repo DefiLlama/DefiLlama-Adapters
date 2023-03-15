@@ -1,100 +1,44 @@
-const { default: BigNumber } = require("bignumber.js");
-const { parseEther } = require("ethers/lib/utils");
-const { request, gql } = require("graphql-request");
-const axios = require("axios");
+const { getLogs } = require('../helper/cache/getLogs')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 const sdk = require('@defillama/sdk')
 
-const graphUrl = 'https://api.studio.thegraph.com/query/30874/openskyfinancefallback/v0.0.2'
-
-const graphReservesQuery = gql`
-query GET_RESERVES {
-  reserves {
-    id name symbol underlyingAsset oTokenAddress totalDeposits totalAmountOfBespokeLoans totalAmountOfInstantLoans interestPerSecondOfInstantLoans
-  }
+const abi = {
+  create: 'event Create(uint256 indexed reserveId, address indexed underlyingAsset, address indexed oTokenAddress, string name, string symbol, uint8 decimals)',
+  getAvailableLiquidity: "function getAvailableLiquidity(uint256 reserveId) view returns (uint256)",
+  getTotalBorrowBalance: "function getTotalBorrowBalance(uint256 reserveId) view returns (uint256)",
 }
-`;
 
-const graphCollectionsQuery = gql`
-query GET_COLLECTION_LOANS ($limit: Int) {
-  collections(first: $limit) {
-    id
-		numberOfBespokeLoans
-    numberOfInstantLoans
-  }
-}
-`;
-
-async function tvl(timestamp, block, chainBlocks) {
+async function tvl(timestamp, block, chainBlocks, { api }) {
   const balances = {};
-
-  const { reserves } = await request(graphUrl, graphReservesQuery);
-
-  reserves.forEach(i => {
-    sdk.util.sumSingleBalance(balances, i.underlyingAsset, BigNumber(i.totalDeposits).minus(i.totalAmountOfInstantLoans).minus(i.totalAmountOfBespokeLoans).toFixed(0))
-  });
-
-  sdk.util.sumSingleBalance(balances, 'ethereum', (await collateral()) / 1e18)
-  return balances;
+  const factory = '0xdae29a91f663faf7657594f908e183e3b826d437'
+  const logs = await getLogs({
+    api,
+    target: factory,
+    topics: ['0xa974e5e75ec9215fd423fc8e00fbfed574e4e36bfa650d4c54ffc9b12224d105'],
+    fromBlock: 15223160,
+    eventAbi: abi.create
+  })
+  const deposits = await api.multiCall({  abi: abi.getAvailableLiquidity, calls: logs.map(i => i.args.reserveId.toString()), target: factory }) 
+  deposits.map((val, i) => sdk.util.sumSingleBalance(balances,logs[i].args.underlyingAsset,val, api.chain))
+  return sumTokens2({ api, owner: '0x87d6dec027e167136b081f888960fe48bb10328a', resolveNFTs: true, balances, })
 }
 
-async function borrowed(timestamp, block, chainBlocks) {
+async function borrowed(timestamp, block, chainBlocks, { api }) {
   const balances = {};
-  const { reserves } = await request(graphUrl, graphReservesQuery);
-
-  reserves.forEach(i => {
-    sdk.util.sumSingleBalance(balances, i.underlyingAsset, BigNumber(i.totalAmountOfInstantLoans).plus(i.totalAmountOfBespokeLoans).toFixed(0))
-  });
-
-  return balances;
-}
-
-async function getFloorPrice(address) {
-  const url = `https://api.nftbank.ai/estimates-v2/floor_price/${address}?chain_id=ETHEREUM`
-  const { data } = await axios.get(url,
-    {
-      headers: {
-        'x-api-key': '70c3d2af9df9a83f2b64b055484347ee'
-      },
-      retries: 3
-    }
-  )
-  return data.data[0].floor_price.filter(item => item.currency_symbol == 'ETH')[0].floor_price
-}
-
-async function collateral() {
-  let { collections } = await request(
-    graphUrl,
-    graphCollectionsQuery,
-    { limit: 100 }
-  );
-
-  collections = collections.filter(collection => 
-    collection.numberOfBespokeLoans > 0 || collection.numberOfInstantLoans > 0
-  );
-
-  const floorPrices = await Promise.all(
-    collections.map(collection =>
-      getFloorPrice(collection.id)
-    )
-  );
-
-  let collateralValue = new BigNumber(0);
-
-  collections.forEach((collection, index) => {
-    collateralValue = collateralValue.plus(
-      new BigNumber(
-        parseEther(
-          floorPrices[index] * (parseInt(collection.numberOfBespokeLoans) + parseInt(collection.numberOfInstantLoans)) + ''
-        ).toString()
-      )
-    )
-  });
-
-  return collateralValue.toString();
+  const factory = '0xdae29a91f663faf7657594f908e183e3b826d437'
+  const logs = await getLogs({
+    api,
+    target: factory,
+    topics: ['0xa974e5e75ec9215fd423fc8e00fbfed574e4e36bfa650d4c54ffc9b12224d105'],
+    fromBlock: 15223160,
+    eventAbi: abi.create
+  })
+  const borrowed = await api.multiCall({  abi: abi.getTotalBorrowBalance, calls: logs.map(i => i.args.reserveId.toString()), target: factory }) 
+  borrowed.map((val, i) => sdk.util.sumSingleBalance(balances,logs[i].args.underlyingAsset,val, api.chain))
+  return balances
 }
 
 module.exports = {
-  timetravel: false,
   methodology: `Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending`,
   ethereum: {
     tvl,

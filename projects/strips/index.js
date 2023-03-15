@@ -12,7 +12,7 @@ async function getMarkets(block) {
     block,
   });
   return allMarkets.filter(c => c.created).map(c => c.market);
-};
+}
 
 async function pool2(timestamp, block, chainBlocks) {
   block = chainBlocks.arbitrum

@@ -6,5 +6,8 @@ async function fetch() {
 }
 
 module.exports = {
+  sora: {
+    fetch
+  },
   fetch
 }

@@ -1,6 +1,16 @@
 const sdk = require('@defillama/sdk')
-const { get } = require('../helper/http')
 const {chainExports} = require('../helper/exports')
+const { getConfig } = require('../helper/cache')
+
+let data
+
+async function getData() {
+  if (!data) data = _internal()
+  return data
+  async function _internal() {
+    return getConfig('nested', tokens_url)
+  }
+}
 
 const tokens_url = 'https://api.nested.finance/tvl-tokens'
 const nested = {
@@ -38,7 +48,7 @@ function chainTvl_onchain(chain) {
     const transformAddress = (addr) => `${chain}:${addr}`
 
     
-    const tokens_response = await get(tokens_url);
+    const tokens_response = await getData();
     const recordsTokens = tokens_response
       .filter(t => t.startsWith(nested[chain]['prefix']))
       .map(t => t.substring(t.indexOf(':') + 1))

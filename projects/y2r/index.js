@@ -47,7 +47,7 @@ module.exports = {
   },
 };
 
-const abis = {
-  balanceOfUnderlying: { "type": "function", "stateMutability": "nonpayable", "outputs": [{ "type": "uint256", "name": "", "internalType": "uint256" }], "name": "balanceOfUnderlying", "inputs": [{ "type": "address", "name": "owner", "internalType": "address" }] },
-  underlying: { "type": "function", "stateMutability": "view", "outputs": [{ "type": "address", "name": "", "internalType": "address" }], "name": "underlying", "inputs": [] },
+const abis ={
+  balanceOfUnderlying: "function balanceOfUnderlying(address owner) returns (uint256)",
+  underlying: "address:underlying",
 }

@@ -11,7 +11,7 @@ async function tvl(timestamp, _, { theta: block }) {
       })
     ).output,
   };
-};
+}
 
 module.exports = {
   theta: {

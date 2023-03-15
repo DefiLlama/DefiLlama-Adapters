@@ -66,7 +66,7 @@ async function tvl(timestamp, block, chainBlocks) {
     delete balances[`cronos:${PES}`];
     await unwrapLPsAuto({ balances, block: chainBlocks.cronos, chain: 'cronos',  })
     return balances; 
-};
+}
 
 addToExports('cronos', 'tvl', tvl)
 
