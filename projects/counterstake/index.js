@@ -13,6 +13,8 @@ const {
 } = require('../helper/chain/obyte');
 const utils = require('../helper/utils');
 const sdk = require('@defillama/sdk')
+const { sumTokens2 } = require('../helper/unwrapLPs')
+const { getConfig } = require('../helper/cache')
 
 async function bridgeTvl(timestamp, assetMetadata, exchangeRates) {
     const baseAABalances = await Promise.all([
@@ -72,70 +74,35 @@ async function totalObyteTvl(timestamp) {
     }
 }
 
-const toUpperCaseFirstLetter = (str) => {
-    if (!str) return "";
-
-    const firstLetterCap = str.charAt(0).toUpperCase();
-    const remainingLetters = str.slice(1);
-
-    return firstLetterCap + remainingLetters;
-}
-
-const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
-
 const totalTVLByEVMNetwork = async (_, _1, _2, { api }) => {
-    const bridges = await utils.fetchURL('https://counterstake.org/api/bridges').then((data) => data.data.data);
-    const pooledAssistants = await utils.fetchURL('https://counterstake.org/api/pooled_assistants').then((data) => data.data.data);
+    const bridges = await getConfig('counterstake/bridges', 'https://counterstake.org/api/bridges').then((data) => data.data);
+    const pooledAssistants = await getConfig('counterstake/poolStakes', 'https://counterstake.org/api/pooled_assistants').then((data) => data.data);
 
-    const chain = toUpperCaseFirstLetter(api.chain === 'bsc' ? "BSC" : api.chain);
-
-    const erc20Contracts = [];
-    const nativeContracts = [];
     const bridgeAasByChain = [];
+    const tokensAndOwners = []
 
     bridges.forEach(({ home_network, foreign_network, export_aa, import_aa, stake_asset, home_asset }) => {
-        if (home_network === chain) { // export
-            if (home_asset !== ZERO_ADDRESS) {
-                erc20Contracts.push({ contract: export_aa, tokenContract: home_asset });
-            } else {
-                nativeContracts.push({ contract: export_aa, tokenContract: home_asset });
-            }
+        if (home_network.toLowerCase() === api.chain) { // export
+            tokensAndOwners.push([home_asset, export_aa])
             bridgeAasByChain.push(export_aa);
-        } else if (foreign_network === chain) { // import
-            if (stake_asset !== ZERO_ADDRESS) {
-                erc20Contracts.push({ contract: import_aa, tokenContract: stake_asset });
-            } else {
-                nativeContracts.push({ contract: import_aa, tokenContract: stake_asset });
-            }
+        } else if (foreign_network.toLowerCase() === api.chain) { // import
+            tokensAndOwners.push([stake_asset, import_aa])
             bridgeAasByChain.push(import_aa);
         }
     });
 
-    pooledAssistants.filter(({ network }) => network === chain).forEach(({ assistant_aa, side, bridge_id }) => {
+    pooledAssistants.filter(({ network }) => network.toLowerCase() === api.chain).forEach(({ assistant_aa, side, bridge_id }) => {
         const bridge = bridges.find((bridge) => bridge.bridge_id === bridge_id);
 
         if (bridge) {
             if (side === 'import') {
                 // stake asset
-                if (bridge.stake_asset !== ZERO_ADDRESS) {
-                    erc20Contracts.push({ contract: assistant_aa, tokenContract: bridge.stake_asset });
-                } else {
-                    nativeContracts.push({ contract: assistant_aa, tokenContract: bridge.stake_asset });
-                }
-
+                tokensAndOwners.push([bridge.stake_asset, assistant_aa])
                 // imported asset
-                if (bridge.foreign_asset !== ZERO_ADDRESS) {
-                    erc20Contracts.push({ contract: assistant_aa, tokenContract: bridge.foreign_asset });
-                } else {
-                    nativeContracts.push({ contract: assistant_aa, tokenContract: bridge.foreign_asset });
-                }
+                // tokensAndOwners.push([bridge.foreign_asset, assistant_aa])
 
             } else { // export 
-                if (bridge.home_asset !== ZERO_ADDRESS) {
-                    erc20Contracts.push({ contract: assistant_aa, tokenContract: bridge.home_asset });
-                } else {
-                    nativeContracts.push({ contract: assistant_aa, tokenContract: bridge.home_asset });
-                }
+                tokensAndOwners.push([bridge.home_asset, assistant_aa])
             }
         }
 
@@ -143,7 +110,7 @@ const totalTVLByEVMNetwork = async (_, _1, _2, { api }) => {
 
     const governanceAddresses = await api.multiCall({
         abi: 'address:governance',
-        calls: bridgeAasByChain.map((address) => ({ target: address })),
+        calls: bridgeAasByChain,
     });
 
     const voteTokenAddresses = await api.multiCall({
@@ -154,41 +121,10 @@ const totalTVLByEVMNetwork = async (_, _1, _2, { api }) => {
     bridgeAasByChain.forEach((_, index) => {
         const voteTokenAddress = voteTokenAddresses[index];
         const governanceAddress = governanceAddresses[index];
-
-        if (voteTokenAddress === ZERO_ADDRESS) {
-            nativeContracts.push({ contract: governanceAddress, tokenContract: voteTokenAddress });
-        } else {
-            erc20Contracts.push({ contract: governanceAddress, tokenContract: voteTokenAddress });
-        }
+        tokensAndOwners.push([voteTokenAddress, governanceAddress ])
     });
 
-    const erc20Balance = await api.multiCall({
-        abi: 'erc20:balanceOf',
-        calls: erc20Contracts.map(({ contract, tokenContract }) => ({
-            target: tokenContract,
-            params: [contract],
-        }))
-    }).then((data) => {
-        const balanceByToken = {};
-
-        data.forEach((balance, index) => {
-            const { tokenContract } = erc20Contracts[index];
-            const tokenContractWithNetwork = `${api.chain}:${tokenContract}`;
-
-            if (tokenContractWithNetwork in balanceByToken) {
-                balanceByToken[tokenContractWithNetwork] += +balance;
-            } else {
-                balanceByToken[tokenContractWithNetwork] = +balance;
-            }
-        });
-
-        return balanceByToken;
-    });
-
-    const res = await sdk.api.eth.getBalances({ targets: nativeContracts.map(({ contract }) => contract), chain: api.chain, });
-    const native = res.output.reduce((a, i) => (a + +i.balance), 0);
-
-    return { [`${api.chain}:${ZERO_ADDRESS}`]: native, ...erc20Balance };
+    return sumTokens2({ api, tokensAndOwners})
 }
 
 module.exports = {
