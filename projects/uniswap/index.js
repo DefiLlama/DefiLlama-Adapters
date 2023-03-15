@@ -8,6 +8,7 @@ const graphs = {
   arbitrum: 'https://api.thegraph.com/subgraphs/name/ianlapham/arbitrum-dev',
   polygon: "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v3-polygon",
   celo: "https://api.thegraph.com/subgraphs/name/jesse-sawa/uniswap-celo",
+  bsc: "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v3-bsc",
 }
 
 const blacklists = {
@@ -73,7 +74,7 @@ module.exports = {
   ]
 }
 
-const chains = ['ethereum', 'arbitrum', 'optimism', 'polygon', 'celo']
+const chains = ['ethereum', 'arbitrum', 'optimism', 'polygon', 'celo', 'bsc']
 
 chains.forEach(chain => {
   module.exports[chain] = {
