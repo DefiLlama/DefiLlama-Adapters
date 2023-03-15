@@ -22,6 +22,6 @@ module.exports = {
 }
 
 const abis = {
-  totalAssets: {"inputs":[],"name":"totalAssets","outputs":[{"internalType":"uint256","name":"totalManagedAssets","type":"uint256"}],"stateMutability":"view","type":"function"},
-  asset: {"inputs":[],"name":"asset","outputs":[{"internalType":"address","name":"assetTokenAddress","type":"address"}],"stateMutability":"view","type":"function"},
+  totalAssets: "uint256:totalAssets",
+  asset: "address:asset",
 }

@@ -1,14 +1,14 @@
-const axios = require("axios");
 const BigNumber = require("bignumber.js");
 const sdk = require("@defillama/sdk");
 const collateralReaderContractABI = require("./abis/collateral-reader.json");
+const { getConfig } = require('../helper/cache')
 
 const COLLATERAL_READER_CONTRACT = "0xFfB8FD0E5eA13bb71401B19e00f9F934746f0b7A";
 const TOKEN_LIST_URL = "https://app.duet.finance/tokens-v0.json";
 
 async function fetch() {
-  const ret = await axios.get(TOKEN_LIST_URL);
-  const tokens = ret.data;
+  const ret = await getConfig('duet-fi', TOKEN_LIST_URL);
+  const tokens = ret;
   const vaultList = [];
   for (const token of tokens) {
     if (!token.vaults || token.vaults.length < 1) {

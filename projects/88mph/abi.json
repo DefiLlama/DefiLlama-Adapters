@@ -1,6 +1,0 @@
-{
-  "totalDeposit": "uint256:totalDeposit",
-  "stablecoin": "address:stablecoin",
-  "calculateInterestAmount": "function calculateInterestAmount(uint256 depositAmount, uint256 depositPeriodInSeconds) view returns (uint256 interestAmount)",
-  "symbol": "string:symbol"
-}

@@ -19,6 +19,7 @@ const helpers = {
   "litecoin":require("./chain/litecoin"),
   "polkadot":require("./chain/polkadot"),
   "hedera":require("./chain/hbar"),
+  "stacks":require("./chain/stacks"),
 }
 
 const geckoMapping = {
@@ -49,7 +50,7 @@ async function sumTokens(options) {
   if (token) tokens = [token]
   if (owner) owners = [owner]
 
-  if (!helpers[chain] && !specialChains.includes(chain))
+  if (!ibcChains.includes(chain) && !helpers[chain] && !specialChains.includes(chain))
     return sumTokensEVM(options)
 
   owners = getUniqueAddresses(owners, chain)

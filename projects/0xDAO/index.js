@@ -15,10 +15,10 @@ const { masterChefExports, standardPoolInfoAbi, addFundsInMasterChef } = require
 const sdk = require('@defillama/sdk')
 const { default: BigNumber } = require('bignumber.js')
 
-const shareValue = { "inputs": [], "name": "getShareValue", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }
+const shareValue = "uint256:getShareValue"
 const xSCREAM = "0xe3D17C7e840ec140a7A51ACA351a482231760824"
 const xCREDIT = "0xd9e28749e80D867d5d14217416BFf0e668C10645"
-const shareTarot = { "inputs": [{ "internalType": "uint256", "name": "_share", "type": "uint256" }], "name": "shareValuedAsUnderlying", "outputs": [{ "internalType": "uint256", "name": "underlyingAmount_", "type": "uint256" }], "stateMutability": "nonpayable", "type": "function" }
+const shareTarot = "function shareValuedAsUnderlying(uint256 _share) returns (uint256 underlyingAmount_)"
 const xTAROT = "0x74D1D2A851e339B8cB953716445Be7E8aBdf92F4"
 
 const fBEET = "0xfcef8a994209d6916EB2C86cDD2AFD60Aa6F54b1"
@@ -77,9 +77,9 @@ async function tvl(time, ethBlock, chainBlocks) {
         block,
         chain: 'fantom',
         target: oxLensAddress,
-        abi: oxLensAbi.find(i => i.name === 'oxPoolsAddresses')
+        abi: oxLensAbi.oxPoolsAddresses
     })
-    const pageSize = 50;
+    const pageSize = 200;
     const poolsMap = {};
     let currentPage = 0;
 
@@ -110,10 +110,11 @@ async function tvl(time, ethBlock, chainBlocks) {
             poolsMap[pool.id] = newPool;
         });
     };
-    while (true) {
+    let addresses = []
+    while (addresses) {
         const start = currentPage * pageSize;
         const end = start + pageSize;
-        const addresses = oxPoolsAddresses.slice(start, end);
+        addresses = oxPoolsAddresses.slice(start, end);
         if (addresses.length === 0) {
             break;
         }
@@ -124,7 +125,7 @@ async function tvl(time, ethBlock, chainBlocks) {
             chain: 'fantom',
             params: [addresses],
             target: oxLensAddress,
-            abi: oxLensAbi.find(i => i.name === 'oxPoolsData')
+            abi: oxLensAbi.oxPoolsData
         })
         const solidlyPoolsAddresses = poolsData.map((pool) => pool.poolData.id);
         const { output: reservesData } = await sdk.api.abi.call({
@@ -132,7 +133,7 @@ async function tvl(time, ethBlock, chainBlocks) {
             chain: 'fantom',
             target: solidlyLensAddress,
             params: [solidlyPoolsAddresses],
-            abi: solidlyLensAbi.find(i => i.name === 'poolsReservesInfo')
+            abi: solidlyLensAbi.poolsReservesInfo
         })
         addPools(
             sanitize(poolsData),
@@ -166,7 +167,7 @@ async function tvl(time, ethBlock, chainBlocks) {
         chain: 'fantom',
         target: veAddress,
         params: 2,
-        abi: veAbi.find(i => i.name === 'locked')
+        abi: veAbi.locked
     })
     addBalance(solidAddress, lockedSolidAmount);
 

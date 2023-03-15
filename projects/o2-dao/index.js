@@ -29,7 +29,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     const wmemoAddress = transform(wMEMO)
     const memo = await sdk.api.abi.call({
         target: wMEMO,
-        abi:{"inputs":[{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"wMEMOToMEMO","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+        abi: 'function wMEMOToMEMO(uint256 _amount) view returns (uint256)',
         chain,
         block: chainBlocks.avax,
         params: [balances[wmemoAddress]]

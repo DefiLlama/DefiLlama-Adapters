@@ -97,4 +97,8 @@ module.exports = {
     optimism: {
         tvl: optimism
     },
+    hallmarks:[
+      [1594944000, "YFI token Launch"],
+   ]
 };
+

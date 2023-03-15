@@ -17,13 +17,13 @@ const StakingQuery2 = `{
 }`
 
 async function tvl() {
-  const results = await request("https://graph.maiar.exchange/graphql", LiquidityQuery)
+  const results = await request("http://graph.xexchange.com/graphql", LiquidityQuery)
 
   return toUSDTBalances(results.factory.totalValueLockedUSD)
 }
 
 async function stakingAndLockedMEX() {
-  const results = await request("https://graph.maiar.exchange/graphql", StakingQuery2)
+  const results = await request("http://graph.xexchange.com/graphql", StakingQuery2)
   return toUSDTBalances(results.totalValueStakedUSD)
 }
 

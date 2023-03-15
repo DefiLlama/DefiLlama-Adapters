@@ -1,10 +1,4 @@
-const { sumTokensAndLPsSharedOwners } = require('../helper/unwrapLPs')
-const utils = require('../helper/utils');
-const sdk = require("@defillama/sdk")
-
-const exchangeRateFeederABI = require('./abi.json');
-const exchangeRateFeederAddress = '0xB12B8247bD1749CC271c55Bb93f6BD2B485C94A7';
-
+const { sumTokensExport, } = require('../helper/unwrapLPs')
 const fundedContracts = [
     '0xefe0fed2b728b9711030e7643e98477957df9809', //TransparentUpgradeableProxy
     '0xd9184981bbab68e05eafd631dd2f8cbaf47e3e13'  //TransparentUpgradeableProxy
@@ -25,51 +19,10 @@ const anchor = [
     '0x5a6a33117ecbc6ea38b3a140f3e20245052cc647', //'aBUSD':
     '0x0660ae7b180e584d05890e56be3a372f0b746515', //'aFRAX':
 ];
-async function tvl(timestamp, block) {
-    // SUM STABLES BALANCES
-    const balances = {};
-    const stableTokens = stable.map(t => [t, false]);
-    await sumTokensAndLPsSharedOwners(
-        balances, stableTokens, fundedContracts, block);
-
-    // SUM INTEREST BEARING BALANCES
-    for (let i = 0; i < anchor.length; i++) {
-        let totalCoins = 0;
-
-        // find exchangeRateOf
-
-        const { output: pricePerShare } = await sdk.api.abi.call({
-            block,
-            params: [stable[i], true],
-            target: exchangeRateFeederAddress,
-            abi: exchangeRateFeederABI.find(i => i.name === 'exchangeRateOf')
-        })
-
-        // sum contract token balances
-        const tokenDecimals = await returnDecimals(stable[i], block);
-        for (const contract of fundedContracts) {
-            const contractTokenBalance =
-                await utils.returnBalance(anchor[i], contract);
-            totalCoins = Number(totalCoins) +
-                Number(contractTokenBalance * pricePerShare *
-                    10 ** tokenDecimals / 10 ** 18);
-        };
-        balances[stable[i]] = Number(balances[stable[i]]) + Number(totalCoins);
-    };
-    return balances;
-};
-
-async function returnDecimals(address, block) {
-    if (address.toLowerCase() === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
-      return 18;
-    }
-    const { output: decimals } = await sdk.api.erc20.decimals(address)
-    return decimals;
-  }
 
 module.exports = {
     ethereum: {
-        tvl,
+        tvl: sumTokensExport({ tokens: [...stable, ...anchor], owners: fundedContracts}),
     },
     methodology: "counts the value of each stablecoin, and interest-bearing anchor-stable, in the TransparentUpgradeableProxy contracts.",
 };

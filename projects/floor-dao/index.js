@@ -36,6 +36,6 @@ module.exports = {
 }
 
 const abis = {
-  vaultStakingInfo: {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"vaultStakingInfo","outputs":[{"internalType":"address","name":"stakingToken","type":"address"},{"internalType":"address","name":"rewardToken","type":"address"}],"stateMutability":"view","type":"function"},
-  balanceOf: {"inputs":[{"internalType":"uint256","name":"vaultId","type":"uint256"},{"internalType":"address","name":"addr","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  vaultStakingInfo: "function vaultStakingInfo(uint256) view returns (address stakingToken, address rewardToken)",
+  balanceOf: "function balanceOf(uint256 vaultId, address addr) view returns (uint256)",
 }

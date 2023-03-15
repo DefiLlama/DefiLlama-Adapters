@@ -1,7 +1,5 @@
-const sdk = require('@defillama/sdk')
 const { getLogs } = require('../helper/cache/getLogs')
-const {transformPolygonAddress} = require('../helper/portedTokens')
-
+const { sumTokens2 } = require('../helper/unwrapLPs')
 const { staking } = require('../helper/staking');
 
 const FACTORY =  '0x8C1EB1e5325049B412B7E71337116BEF88a29b3A';
@@ -18,70 +16,14 @@ function chainTvl(chain) {
         target: FACTORY,
         fromBlock: START_BLOCK,
         topic: 'PoolCreated(address,address,address)',
+        eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, address pool)',
+        onlyArgs: true,
       })
-    const block = api.block
-
-    const pairAddresses = []
-    const token0Addresses = []
-    const token1Addresses = []
-
-    for (let log of logs) {
-      token0Addresses.push(`0x${log.topics[1].substr(-40)}`.toLowerCase())
-      token1Addresses.push(`0x${log.topics[2].substr(-40)}`.toLowerCase())
-      pairAddresses.push(`0x${log.data.substr(-40)}`.toLowerCase())
-    }
-
-    const pairs = {}
-
-    token0Addresses.forEach((token0Address, i) => {
-      const pairAddress = pairAddresses[i]
-      pairs[pairAddress] = {
-        token0Address: token0Address,
-      }
-    })
-
-    token1Addresses.forEach((token1Address, i) => {
-      const pairAddress = pairAddresses[i]
-      pairs[pairAddress] = {
-        ...(pairs[pairAddress] || {}),
-        token1Address: token1Address,
-      }
-    })
-
-    let balanceCalls = []
-
-    for (let pair of Object.keys(pairs)) {
-      balanceCalls.push({
-        target: pairs[pair].token0Address,
-        params: pair,
-      })
-      balanceCalls.push({
-        target: pairs[pair].token1Address,
-        params: pair,
-      })
-    }
-
-    const tokenBalances = (
-      await sdk.api.abi.multiCall({
-        abi: 'erc20:balanceOf',
-        calls: balanceCalls,
-        block,
-        chain,
-      })
-    )
-    let transform = id=>id
-    if(chain === "polygon"){
-      transform = await transformPolygonAddress()
-    }
-
-    let balances = {};
-
-    sdk.util.sumMultiBalanceOf(balances, tokenBalances, true, transform)
-
-    return balances;
+    const toa = []
+    logs.forEach(({ token0, token1, pool}) => toa.push([token0, pool], [token1, pool]))
+    return sumTokens2({ api, tokensAndOwners: toa })
   }
 }
-
 
 module.exports = {
   polygon: {

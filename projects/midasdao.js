@@ -42,7 +42,7 @@ async function tvl(timestamp, block, chainBlocks) {
     );
 
     return balances;
-};
+}
 
 module.exports = {
     avax:{

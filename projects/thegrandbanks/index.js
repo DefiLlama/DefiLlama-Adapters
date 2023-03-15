@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { staking } = require("../helper/staking");
-const { unwrapUniswapLPs, unwrapCrv } = require("../helper/unwrapLPs");
+const { unwrapUniswapLPs, } = require("../helper/unwrapLPs");
 const { getChainTransform } = require('../helper/portedTokens')
 
 const GRAND = {
@@ -128,14 +128,7 @@ const calcTvl = async (balances, banksContract, chain) => {
 
   await Promise.all(
     crvPositions.map(async (crv) => {
-      await unwrapCrv(
-        balances,
-        crv.token,
-        crv.balance,
-        chainBlocks[chain],
-        chain,
-        transform,
-      );
+      sdk.util.sumSingleBalance(balances,crv.token,crv.balance, chain)
     })
   );
 };

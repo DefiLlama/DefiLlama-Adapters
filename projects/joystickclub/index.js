@@ -8,19 +8,7 @@ const JOYBOT_STAKING_CONTRACT = "0x498B8524c7C309471b65aEAC4f16551776B80e0F"
 const staking = async (timestamp, ethBlock, {[chain]: block}) => {
     const total = (await sdk.api.abi.call({
         target: JOYBOT_STAKING_CONTRACT,
-        abi: {
-            "inputs": [],
-            "name": "_totalSupply",
-            "outputs": [
-              {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-              }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-          },
+        abi: "uint256:_totalSupply",
         chain,
         block
     })).output

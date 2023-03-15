@@ -8,19 +8,7 @@ const assets = {
     polygon: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174", //USDC
 }
 
-const abi = {
-    "inputs": [],
-    "name": "checkBalance",
-    "outputs": [
-        {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-        }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-}
+const abi = "uint256:checkBalance"
 
 module.exports = {
   misrepresentedTokens: true,

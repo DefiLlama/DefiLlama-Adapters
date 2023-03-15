@@ -3,11 +3,11 @@ const sdk = require('@defillama/sdk')
 
 const http = require('../http')
 const env = require('../env')
-const { fixBalancesTokens } = require('../tokenMapping')
+const coreTokensAll = require('../coreAssets.json')
 const { transformBalances } = require('../portedTokens')
 const { log, getUniqueAddresses } = require('../utils')
 
-const coreTokens = Object.keys(fixBalancesTokens.aptos)
+const coreTokens = coreTokensAll.aptos
 
 const endpoint = env.APTOS_RPC || "https://aptos-mainnet.pontem.network"
 

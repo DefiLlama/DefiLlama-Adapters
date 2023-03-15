@@ -173,7 +173,7 @@ async function ethTvl(timestamp, ethBlock) {
   sdk.util.sumSingleBalance(balances, "ethereum:" + "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", tokenBalance)
 
   return sumTokens(balances, toa, ethBlock)
-};
+}
 
 
 async function bscTvl(timestamp, ethBlock, chainBlocks) {
@@ -187,7 +187,7 @@ async function bscTvl(timestamp, ethBlock, chainBlocks) {
 
 
   return sumTokens(balances, toa, chainBlocks[chain], chain)
-};
+}
 
 async function avaxTvl(timestamp, ethBlock, chainBlocks) {
   const chain = 'avax'
@@ -199,7 +199,7 @@ async function avaxTvl(timestamp, ethBlock, chainBlocks) {
   })
 
   return sumTokens(balances, toa, chainBlocks[chain], chain)
-};
+}
 
 async function hecoTvl(timestamp, ethBlock, chainBlocks) {
   const chain = 'heco'
@@ -211,7 +211,7 @@ async function hecoTvl(timestamp, ethBlock, chainBlocks) {
   })
 
   return sumTokens(balances, toa, chainBlocks[chain], chain)
-};
+}
 
 async function polygonTvl(timestamp, ethBlock, chainBlocks) {
   const chain = 'polygon'
@@ -223,7 +223,7 @@ async function polygonTvl(timestamp, ethBlock, chainBlocks) {
   })
 
   return sumTokens(balances, toa, chainBlocks[chain], chain)
-};
+}
 
 async function fantomTvl(unixTimestamp, ethBlock, chainBlocks) {
   const chain = 'fantom'

@@ -1,7 +1,16 @@
 const { trident } = require("./trident.js");
 
 const modulesToExport = {};
-const trident_chains = ["polygon", "optimism", "kava", "metis"];
+const trident_chains = [
+  "polygon",
+  "optimism",
+  "kava",
+  "metis",
+  "bittorrent",
+  "arbitrum",
+  "bsc",
+  "avax",
+];
 
 trident_chains.forEach((chain) => {
   modulesToExport[chain] = {

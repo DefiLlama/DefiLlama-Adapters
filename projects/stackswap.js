@@ -8,7 +8,7 @@ async function fetch() {
             .map(p => p.liquidity_locked);
     poolValues = poolValues.map(v => v.substring(0, v.indexOf('USD')));
     return poolValues.reduce((a, b) => a + parseFloat(b), 0);
-};
+}
 
 module.exports = {
     timetravel: false,

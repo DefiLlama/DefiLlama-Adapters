@@ -4,8 +4,8 @@ const { transformBalances } = require('../portedTokens')
 const sdk = require('@defillama/sdk')
 const chain = 'elrond'
 
-const API_HOST = 'https://api.elrond.com'
-const MAIAR_GRAPH = 'https://graph.maiar.exchange/graphql'
+const API_HOST = 'https://api.multiversx.com'
+const MAIAR_GRAPH = 'http://graph.xexchange.com/graphql'
 const unknownTokenList = ["CYBER-489c1c", "CPA-97530a"]
 let prices
 

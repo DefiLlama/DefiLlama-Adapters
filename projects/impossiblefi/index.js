@@ -2,8 +2,7 @@ const { stakings } = require("../helper/staking");
 const sdk = require('@defillama/sdk')
 const { getUniTVL } = require('../helper/unknownTokens')
 
-const getReserves = { "inputs": [], "name": "getReserves", "outputs": [{ "internalType": "uint256", "name": "_reserve0", "type": "uint256" }, { "internalType": "uint256", "name": "_reserve1", "type": "uint256" }], "stateMutability": "view", "type": "function" }
-
+const getReserves = 'function getReserves() view returns (uint256 _reserve0, uint256 _reserve1)'
 const stakingAddresses = [
   "0x1d37f1e6f0cce814f367d2765ebad5448e59b91b",
   "0x1aBd0067f60513F152ff14E9cD26a62c820d022C",

@@ -60,7 +60,7 @@ async function tvl(timestamp, block) {
   })
 
   return sumTokens(balances, tokensAndOwners, block)
-};
+}
 
 module.exports = {
   ethereum: {

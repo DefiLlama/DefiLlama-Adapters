@@ -53,30 +53,6 @@ module.exports = {
 
 
 const abi = {
-  getTokens: {
-    "inputs": [],
-    "name": "getTokens",
-    "outputs": [
-      {
-        "internalType": "contract IERC20[]",
-        "name": "",
-        "type": "address[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  getLpToken: {
-    "inputs": [],
-    "name": "getLpToken",
-    "outputs": [
-      {
-        "internalType": "contract LPToken",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
+  getTokens: "address[]:getTokens",
+  getLpToken: "address:getLpToken",
 }

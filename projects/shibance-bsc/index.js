@@ -20,7 +20,6 @@ async function getTvl(chain, timestamp, _ethBlock, chainBlocks) {
   };
 
   const chainId = chains[chain];
-  // console.log("block", block);
   const [vData, pools, farmsLP] = await Promise.all([
     fetchPublicVaultData(chain, block),
     fetchPoolsTotalStaking(chain, block),
@@ -80,21 +79,9 @@ async function getTvl(chain, timestamp, _ethBlock, chainBlocks) {
   const baseToken = usdMappings[chain];
   balances[`${chain}:${baseToken}`] = tvl.toNumber();
 
-  // if (chainBlocks) return balances;
   return tvl.toNumber();
 }
 
-// (async () => {
-//   try {
-//     console.log(
-//       await getTvl("bsc", null, null, {
-//         bsc: 10700328,
-//       })
-//     );
-//   } catch(e) {
-//     console.log(e.stack)
-//   }
-// })();
 
 module.exports = {
   misrepresentedTokens: true,
@@ -102,11 +89,4 @@ module.exports = {
   bsc: {
     tvl: getChainTvl("bsc"),
   }
-  // kcc: {
-  //   tvl: getChainTvl("kcc"),
-  // },
-  // bsc: {
-  //   tvl: getChainTvl("bsc"),
-  // },
-  // tvl: getChainTvl("bsc"),
 };

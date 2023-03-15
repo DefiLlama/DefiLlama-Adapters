@@ -115,7 +115,7 @@ function staking({ tokensAndOwners = [],
 
     const balances = await sumTokens2({ chain, block, tokensAndOwners })
     const { updateBalances, pairBalances, prices, } = await getTokenPrices({ coreAssets, lps: [...tokensAndOwners.map(t => t[0]), ...lps,], chain, block, restrictTokenRatio, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio })
-    sdk.log(prices, pairBalances, balances)
+    // sdk.log(prices, pairBalances, balances)
     await updateBalances(balances, { skipConversion, onlyLPs })
     const fixBalances = await getFixBalances(chain)
     fixBalances(balances)
@@ -126,13 +126,13 @@ function staking({ tokensAndOwners = [],
 function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = [], lps = [], nativeToken, poolInfoABI = masterchefAbi.poolInfo, poolLengthAbi = masterchefAbi.poolLength, getToken = output => output.lpToken, blacklistedTokens = [], useDefaultCoreAssets = false, }) {
   if (!coreAssets.length && useDefaultCoreAssets)
     coreAssets = getCoreAssets(chain)
-  let allTvl
+  let allTvl = {}
   if (nativeToken) nativeTokens.push(nativeToken)
   nativeTokens = getUniqueAddresses(nativeTokens)
 
   async function getAllTVL(block) {
-    if (!allTvl) allTvl = getTVL()
-    return allTvl
+    if (!allTvl[block]) allTvl[block] = getTVL()
+    return allTvl[block]
 
     async function getTVL() {
       const transform = await getChainTransform(chain)
@@ -207,33 +207,8 @@ function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = 
 }
 
 const yieldApis = {
-  balance: {
-    "inputs": [],
-    "name": "balance",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  token: {
-    "type": "function",
-    "stateMutability": "view",
-    "outputs": [
-      {
-        "type": "address",
-        "name": "",
-        "internalType": "contract IERC20"
-      }
-    ],
-    "name": "token",
-    "inputs": []
-  }
+  balance: "uint256:balance",
+  token: "address:token",
 }
 
 async function yieldHelper({ chain = 'ethereum', block, coreAssets = [], blacklist = [], whitelist = [], vaults = [], transformAddress,

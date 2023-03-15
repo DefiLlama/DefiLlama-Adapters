@@ -36,7 +36,7 @@ async function fetchTvl(timestamp, ethBlock, chainBlocks) {
   const candyBalances = Object.values(balances)[0]
 
   return toUSDTBalances(BigNumber(candyBalances).times(BigNumber(candyPrice)).div(1e18));
-};
+}
 
 async function fetchVesting(timestamp, ethBlock, chainBlocks) {
   let cmc_response = await get(CMC_API_URL)
@@ -45,7 +45,7 @@ async function fetchVesting(timestamp, ethBlock, chainBlocks) {
   const candyBalances = Object.values(balances)[0]
 
   return toUSDTBalances(BigNumber(candyBalances).times(BigNumber(candyPrice)).div(1e18));
-};
+}
 
 module.exports = {
   misrepresentedTokens: true,

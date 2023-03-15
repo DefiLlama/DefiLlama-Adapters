@@ -4,13 +4,10 @@ Modules
 ==================================================*/
 const BigNumber = require('bignumber.js');
 const sdk = require("@defillama/sdk");
-const { sumTokens } = require('../helper/unwrapLPs');
 const { stakings } = require("../helper/staking");
 
 const abi = require('./abi');
 const registry = require('./registry');
-const itoken = require('./itoken');
-const masterchef = require('./masterchef');
 
 let iTokens = [];
 
@@ -196,20 +193,10 @@ let TreasureTokens = [
 let ookistaking = stakings(stakingContracts, ooki, 'ethereum')
 let bzrxstaking = stakings(stakingContracts, bzrx, 'ethereum')
 
-async function ethTreasury(timestamp, _block, { ethereum: block }) {
-    const toa = TreasureTokens.map(t => [t, treasuryContract])
-    return sumTokens({}, toa, block, 'ethereum')
-  }
-
-/*==================================================
-Exports
-==================================================*/
-
 module.exports = {
     ethereum:{
         tvl: eth,
         staking: sdk.util.sumChainTvls([ookistaking,bzrxstaking]),
-        treasury: ethTreasury
     },
     polygon:{
         tvl: polygon

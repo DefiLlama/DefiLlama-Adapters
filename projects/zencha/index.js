@@ -21,11 +21,11 @@ function transform(address) {
     for (let token of Object.keys(tokens)) {
         if (tokens[token].boba == address) {
             return tokens[token].eth;
-        };
-    };
+        }
+    }
     
     return address;
-};
+}
 
 async function tvl(timestamp, block, chainBlocks) {
     block = chainBlocks.boba;
@@ -44,7 +44,7 @@ async function tvl(timestamp, block, chainBlocks) {
     );
 
     return balances;
-};
+}
 
 module.exports = {
     boba: {

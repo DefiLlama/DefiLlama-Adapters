@@ -3,19 +3,7 @@ const { sumTokens } = require('../helper/unwrapLPs');
 
 const archEthereumWeb3AddressETH = "0xe8e8486228753E01Dbc222dA262Aa706Bd67e601";
 
-const abi = {
-  "inputs": [],
-  "name": "getComponents",
-  "outputs": [
-    {
-      "internalType": "address[]",
-      "name": "",
-      "type": "address[]"
-    }
-  ],
-  "stateMutability": "view",
-  "type": "function"
-}
+const abi = 'address[]:getComponents'
 
 async function tvl(ts, block) {
   const { output: tokens } = await sdk.api.abi.call({ target: archEthereumWeb3AddressETH, abi, block })

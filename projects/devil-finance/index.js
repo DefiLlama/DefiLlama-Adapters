@@ -6,7 +6,7 @@ function tvl(type) {
 
     return { tether: response[type] };
   };
-};
+}
 
 module.exports = {
   misrepresentedTokens: true,

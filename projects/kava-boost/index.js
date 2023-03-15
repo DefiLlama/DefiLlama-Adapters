@@ -10,7 +10,7 @@ async function tvl() {
   for (let coin of response.data.result) {
     const tokenInfo = generic(coin.denom);
     if (!tokenInfo) {
-      console.log("unknown token", coin.denom);
+      sdk.log("unknown token", coin.denom);
       continue;
     }
     const tokenName = tokenInfo[0];

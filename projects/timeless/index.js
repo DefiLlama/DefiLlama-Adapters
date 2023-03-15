@@ -24,20 +24,18 @@ async function tvl(_, block, _1, { api }) {
     const vault = `0x${topics[2].substring(26)}`
     toa.push([vault, gate])
   })
-  const balances = await sumTokens2({ block, tokensAndOwners: toa, })
-
-  const wl_stETH_balance = balances[wl_stETH_token]
-  delete balances[wl_stETH_token]
-  const { output: unwrappedAsset } = await sdk.api.abi.call({
+  const balances = await sumTokens2({ api, tokensAndOwners: toa, })
+  const wl_stETH = 'ethereum:'+wl_stETH_token
+  const wl_stETH_balance = balances[wl_stETH]
+  delete balances[wl_stETH]
+  const unwrappedAsset = await api.call({
     target: wl_stETH_token,
     abi: abi.asset,
-    chain, block,
   })
-  const { output: balance } = await sdk.api.abi.call({
+  const balance = await api.call({
     target: wl_stETH_token,
     abi: abi.convertToAssets,
     params: wl_stETH_balance,
-    chain, block,
   })
 
   sdk.util.sumSingleBalance(balances, unwrappedAsset, balance)

@@ -1,9 +1,12 @@
 const { queryContractStore } = require("../helper/chain/terra");
-const { log } = require("../helper/utils");
+const { log, sleep } = require("../helper/utils");
+// const fs = require('fs')
+
 
 const TERRA_MANAGER = "terra1ajkmy2c0g84seh66apv9x6xt6kd3ag80jmcvtz";
 const APERTURE_CONTRACT = "terra1jvehz6d9gk3gl4tldrzd8qzj8zfkurfvtcg99x";
 let openPositions = require("./openPositions.json");
+// let data = require("./data.json");
 
 const currentQueriedCount = 11190;
 
@@ -38,11 +41,16 @@ async function terra_tvl() {
           queryParam: getQuery(position),
         });
 
+        // if (position_close_info)  console.log('closed:', position)
+        // data[position.position_id] = { position_close_info, detailed_info }
+
         if (!position_close_info)
           // position is closed no need to add it to tvl
           sumTvl += +detailed_info.uusd_value;
       })
     );
+    // fs.writeFileSync(__dirname+'/data.json', JSON.stringify(data, null, 2))
+    // if (i < positions.length) sleep(7000)
   }
 
   log("Final UST sum: %s", sumTvl);

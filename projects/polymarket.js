@@ -76,19 +76,6 @@ async function getMarketsLiquidity_graphql(timestamp, block, chainBlocks) {
 
 const conditionalTokensContract = '0x4D97DCd97eC945f40cF65F87097ACe5EA0476045'
 const polygonUsdcContract = '0x2791bca1f2de4661ed88a30c99a7a9449aa84174'
-const polymarket_api_url = 'https://strapi-matic.poly.market/markets?_limit=-1&_sort=volume:desc' // &active=true
-async function getMarketsLiquidity_api() {
-  let markets = await utils.fetchURL(polymarket_api_url)
-  // Filter out unwanted fields
-  markets = markets.data.map(({ id, slug, volume, liquidity, created_at, closed }) => ({id, slug, volume, liquidity, created_at, closed})); 
-  markets.forEach(market => {
-    market.volume = Number(market.volume) || 0
-    market.liquidity = Number(market.liquidity) || 0
-    if (market.liquidity < 0) market.liquidity = 0
-  }); 
-  const marketsLiquidity = markets.reduce((acc, market) => acc.plus(BigNumber(market.liquidity)), BigNumber(0)); 
-  return marketsLiquidity
-}
 
 async function polygon(timestamp, block, chainBlocks) {
   // Get markets liquidity using API

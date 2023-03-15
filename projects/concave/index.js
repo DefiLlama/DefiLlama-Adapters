@@ -30,7 +30,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
   await genericUnwrapCvx(balances, treasury, cvxDOLA_3CRV_BaseRewardPool, ethBlock, 'ethereum')
 
   return balances
-};
+}
 
 
 module.exports = ohmTvl(treasury, treasuryTokens, 'ethereum', stakingAddress, cnv_token, undefined, undefined, true)

@@ -40,7 +40,7 @@ async function tvl(_, _block, cb, { api }) {
       new BigNumber('0')
     ).times(2).toFixed(0),
   }
-};
+}
 
 module.exports = {
   misrepresentedTokens: true,

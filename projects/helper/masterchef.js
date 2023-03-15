@@ -1,11 +1,11 @@
 const sdk = require('@defillama/sdk');
 const abi = require('./abis/masterchef.json')
 const { unwrapUniswapLPs, unwrapLPsAuto, isLP } = require('./unwrapLPs')
-const tokenAbi = require("./abis/token.json");
-const token0Abi = require("./abis/token0.json");
-const token1Abi = require("./abis/token1.json");
-const getReservesAbi = require("./abis/getReserves.json");
-const userInfoAbi = require("./abis/userInfo.json");
+const tokenAbi = 'address:token'
+const token0Abi = 'address:token0'
+const token1Abi = 'address:token1'
+const getReservesAbi = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
+const userInfoAbi = 'function userInfo(uint256, address) view returns (uint256 amount, uint256 rewardDebt)'
 const { default: BigNumber } = require('bignumber.js');
 const { getChainTransform, getFixBalances } = require('../helper/portedTokens');
 
@@ -272,7 +272,7 @@ function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingeck
             Object.values(balances).map(fixBalances)
         }
         return balances
-    };
+    }
 
     function getTvlPromise(key) {
         return async (ts, _block, chainBlocks) => {
@@ -287,13 +287,13 @@ function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingeck
         [chain]: {
             staking: getTvlPromise("staking"),
             pool2: getTvlPromise("pool2"),
-            masterchef: getTvlPromise("tvl"),
+            // masterchef: getTvlPromise("tvl"),
             tvl: getTvlPromise("tvl"),
         }
     };
 }
 
-const standardPoolInfoAbi = { "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "name": "poolInfo", "outputs": [{ "internalType": "contract IERC20", "name": "lpToken", "type": "address" }, { "internalType": "uint256", "name": "allocPoint", "type": "uint256" }, { "internalType": "uint256", "name": "lastRewardBlock", "type": "uint256" }, { "internalType": "uint256", "name": "accWeVEPerShare", "type": "uint256" }], "stateMutability": "view", "type": "function" }
+const standardPoolInfoAbi = 'function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accWeVEPerShare)'
 
 async function getUserMasterChefBalances({ balances = {}, masterChefAddress, userAddres, block, chain = 'ethereum', transformAddress, excludePool2 = false, onlyPool2 = false, pool2Tokens= [], poolInfoABI = abi.poolInfo, getLPAddress = null }) {
     if (!transformAddress)

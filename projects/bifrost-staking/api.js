@@ -71,12 +71,6 @@ async function tvl() {
     totalLiquidity[token]=new BigNumber(totalLiquidity[token]||0).plus(pool[1].toString()).toString()
   }));
 
-  // Get vETH tvl
-  const { output: totalSupply } = await sdk.api.erc20.totalSupply({
-    target: '0xc3d088842dcf02c13699f936bb83dfbbc6f721ab'
-  })
-  totalLiquidity["ETH"] = totalSupply;
-
   const totalLiquidityFormatted = {};
   for (const key in totalLiquidity) {
     totalLiquidityFormatted[tokenToCoingecko[key]] = formatTokenAmount(

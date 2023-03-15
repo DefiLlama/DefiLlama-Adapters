@@ -7,7 +7,7 @@ const cacheFolder = 'logs'
 
 async function getLogs({ target,
   topic, keys = [], fromBlock, toBlock, topics,
-  api, eventAbi }) {
+  api, eventAbi, onlyArgs = false, extraKey, }) {
   if (!api) throw new Error('Missing sdk api object!')
   if (!target) throw new Error('Missing target!')
   if (!fromBlock) throw new Error('Missing fromBlock!')
@@ -26,7 +26,7 @@ async function getLogs({ target,
   }
 
   target = target.toLowerCase()
-  const key = `${chain}/${target}`
+  const key = extraKey ?  `${chain}/${target}-${extraKey}` : `${chain}/${target}`
 
   let cache = await _getCache(key)
   let response
@@ -41,6 +41,7 @@ async function getLogs({ target,
 
   return response.map((log) => {
     const res = iface.parseLog(log)
+    if (onlyArgs) return res.args
     res.topics = log.topics.map(i => `0x${i.slice(26)}`)
     return res
   })
@@ -89,5 +90,6 @@ async function getLogs({ target,
 }
 
 module.exports = {
-  getLogs
+  getLogs,
+  getAddress: s=>"0x"+s.slice(26, 66),
 }

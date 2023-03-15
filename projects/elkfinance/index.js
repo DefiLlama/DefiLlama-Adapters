@@ -26,7 +26,7 @@ const factories = {
 }
 
 function chainTvl(chain) {
-  return getUniTVL({ chain, factory: factories[chain], useDefaultCoreAssets: true, })
+  return getUniTVL({ chain, factory: factories[chain], useDefaultCoreAssets: true, blacklistedTokens: ['0xa9536b9c75a9e0fae3b56a96ac8edf76abc91978'] })
 }
 
 const chainExports = getChainExports(chainTvl, Object.keys(factories))

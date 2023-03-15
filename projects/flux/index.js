@@ -11,29 +11,7 @@ const config = {
   conflux: { reportContract: '0x6233CbDf22dAC3f9aa74f7aCb88E9F286782f46B' }
 }
 
-const getFluxTVLDetail = {
-  "inputs": [],
-  "name": "getFluxTVLDetail",
-  "outputs": [
-    {
-      "internalType": "uint256",
-      "name": "totalSupply",
-      "type": "uint256"
-    },
-    {
-      "internalType": "uint256",
-      "name": "totalBorrow",
-      "type": "uint256"
-    },
-    {
-      "internalType": "uint256",
-      "name": "totalStaked",
-      "type": "uint256"
-    }
-  ],
-  "stateMutability": "view",
-  "type": "function"
-}
+const getFluxTVLDetail = 'function getFluxTVLDetail() view returns (uint256 totalSupply, uint256 totalBorrow, uint256 totalStaked)'
 
 module.exports = {
   misrepresentedTokens: true,

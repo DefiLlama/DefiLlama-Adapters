@@ -1,3 +1,0 @@
-{
-  "getBalance": "function getBalance(address principalToken) view returns (uint256)"
-}

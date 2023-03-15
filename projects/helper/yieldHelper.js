@@ -70,7 +70,8 @@ function yieldHelper({
         tokens = await getTokens({ poolInfos, api })
       }
       else tokens = poolInfos.map(i => i.want.toLowerCase())
-      const pairInfos = await getLPData({ lps: tokens, api })
+      const pairInfos = await getLPData({ lps: tokens, ...api })
+      const blacklistedSet = new Set(...(blacklistedTokens.map(i => i.toLowerCase())))
       tokens.forEach((token, i) => {
         if (nativeTokens.includes(token)) {
           sdk.util.sumSingleBalance(balances.staking, transform(token), lockedTotals[i])
@@ -79,13 +80,14 @@ function yieldHelper({
         ) {
           sdk.util.sumSingleBalance(balances.pool2, transform(token), lockedTotals[i])
         } else {
-          sdk.util.sumSingleBalance(balances.tvl, transform(token), lockedTotals[i])
+          if (!blacklistedSet.has(token.toLowerCase()))
+            sdk.util.sumSingleBalance(balances.tvl, transform(token), lockedTotals[i])
         }
       })
 
       await Promise.all([
-        unwrapLPsAuto({ balances: balances.tvl, ...api, transformAddress: transform, }),
-        unwrapLPsAuto({ balances: balances.pool2, ...api, transformAddress: transform, }),
+        unwrapLPsAuto({  ...api, balances: balances.tvl, transformAddress: transform, }),
+        unwrapLPsAuto({  ...api, balances: balances.pool2, transformAddress: transform, }),
       ])
 
       fixBalances(balances.tvl)

@@ -1,7 +1,6 @@
 const { request, gql } = require('graphql-request');
 const { getBlock } = require('../helper/http');
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { log } = require('../helper/utils')
 
 const graphs = {
   ethereum: "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3",
@@ -20,7 +19,6 @@ const blacklists = {
 function v3TvlPaged(chain) {
   return async (_, _b, { [chain]: block }) => {
     block = await getBlock(_, chain, { [chain]: block })
-    log('Fetching data for block: ',chain, block)
     const balances = {}
     const size = 1000
     let lastId = ''
@@ -50,10 +48,9 @@ function v3TvlPaged(chain) {
     const blacklisted = blacklists[chain] || []
 
     do {
-      const res = await request(graphs[chain], graphQueryPaged, { lastId, block: block - 500 });
+      const res = await request(graphs[chain], graphQueryPaged, { lastId, block: block - 5000 });
       pools = res.pools
       const tokensAndOwners = pools.map(i => ([[i.token0.id, i.id], [i.token1.id, i.id]])).flat()
-      log(chain, block, lastId, pools.length)
       await sumTokens2({ balances, tokensAndOwners, chain, block, blacklistedTokens: blacklisted })
       lastId = pools[pools.length - 1].id
     } while (pools.length === size)
@@ -64,19 +61,19 @@ function v3TvlPaged(chain) {
 
 module.exports = {
   methodology: `Counts the tokens locked on AMM pools, pulling the data from the 'ianlapham/uniswapv2' subgraph`,
-  misrepresentedTokens: true,
   timetravel: false,
   hallmarks: [
+    [1588610042, "UNI V2 Launch"],
     [1598412107, "SushiSwap launch"],
     [1599535307, "SushiSwap migration"],
     [1600226507, "LM starts"],
     [1605583307, "LM ends"],
-    [1617333707, "FEI launch"]
+    [1617333707, "FEI launch"],
+    [1620156420, "UNI V3 Launch"]
   ]
 }
 
 const chains = ['ethereum', 'arbitrum', 'optimism', 'polygon', 'celo']
-// const chains = ['celo']
 
 chains.forEach(chain => {
   module.exports[chain] = {

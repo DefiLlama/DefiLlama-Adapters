@@ -5,15 +5,6 @@ const axios = require("axios");
 const BigNumber = require('bignumber.js');
 const sdk = require("@defillama/sdk")
 
-const scientistAbi = require('./abi/Scientist.json');
-const transmuteAbi = require('./abi/Transmuter.json');
-const transmuteAdapterAbi = require('./abi/YearnVaultAdapterWithIndirection.json');
-const stakingPoolsAbi = require('./abi/StakingPools.json');
-const scTokenAbi = require('./abi/ScToken.json');
-const votingEscrowAbi = require('./abi/VotingEscrow.json');
-const alpacaVaultAbi = require('./abi/AlpacaVault.json');
-
-
 /*==================================================
   Address
 ==================================================*/
@@ -45,7 +36,7 @@ async function getTokenBalance(token, account) {
         chain: 'bsc',
         target: token,
         params: [account],
-        abi: scTokenAbi.find(i => i.name === 'balanceOf')
+        abi: 'function balanceOf(address account) view returns (uint256)'
     })
     return output
 }
@@ -54,7 +45,7 @@ async function getTokenTotalSupply(token) {
     const { output } = await sdk.api.abi.call({
         chain: 'bsc',
         target: token,
-        abi: scTokenAbi.find(i => i.name === 'totalSupply')
+        abi: "uint256:totalSupply"
     })
     return output
 }
@@ -64,7 +55,7 @@ async function totalDepositBUSD(vault) {
     const { output } = await sdk.api.abi.call({
         chain: 'bsc',
         target: vault,
-        abi: scientistAbi.find(i => i.name === 'totalDeposited')
+        abi: "uint256:totalDeposited"
     })
     return output
 }
@@ -74,7 +65,7 @@ async function getTotalStakedScTokens(transmute) {
     const { output } = await sdk.api.abi.call({
         chain: 'bsc',
         target: transmute,
-        abi: transmuteAbi.find(i => i.name === 'totalSupplyScTokens')
+        abi: "uint256:totalSupplyScTokens"
     })
     return output
 }
@@ -83,7 +74,7 @@ async function getAdapterTotalValue(transmuteAdapter) {
     const { output } = await sdk.api.abi.call({
         chain: 'bsc',
         target: transmuteAdapter,
-        abi: transmuteAdapterAbi.find(i => i.name === 'totalValue')
+        abi: "uint256:totalValue"
     })
     return output
 }
@@ -94,7 +85,7 @@ async function getPoolTotalDeposited(contract, poolID) {
         chain: 'bsc',
         params: [poolID],
         target: contract,
-        abi: stakingPoolsAbi.find(i => i.name === 'getPoolTotalDeposited')
+        abi: 'function getPoolTotalDeposited(uint256 _poolId) view returns (uint256)'
     })
     return output
 }
@@ -110,7 +101,7 @@ async function getBUSDLpPrice(lpTokenAddress, BUSDAddress, scUSDAddress) {
         return new BigNumber(BUSDBalance).plus(new BigNumber(scUSDBalance))
             .div(new BigNumber(totalSupply));
     } catch (e) {
-        console.log(e);
+        sdk.log(e);
     }
     return 0;
 }
@@ -119,7 +110,7 @@ async function getAalpacaTotal(vault) {
     const { output } = await sdk.api.abi.call({
         chain: 'bsc',
         target: vault,
-        abi: alpacaVaultAbi.find(i => i.name === 'totalToken')
+        abi: "uint256:totalToken"
     })
     return output
 }
@@ -128,7 +119,7 @@ async function getAalpacaTotalSupply(vault) {
     const { output } = await sdk.api.abi.call({
         chain: 'bsc',
         target: vault,
-        abi: alpacaVaultAbi.find(i => i.name === 'totalSupply')
+        abi: "uint256:totalSupply"
     })
     return output
 }
@@ -175,7 +166,7 @@ async function getSCIXTotalLocked(ve) {
     const { output } = await sdk.api.abi.call({
         chain: 'bsc',
         target: ve,
-        abi: votingEscrowAbi.find(i => i.name === '_totalLockedSCIX')
+        abi: "uint256:_totalLockedSCIX"
     })
     return output
 }

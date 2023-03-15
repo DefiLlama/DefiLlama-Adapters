@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { default: BigNumber } = require("bignumber.js");
-const { request, gql } = require("graphql-request"); // GraphQLClient
+const { request, } = require("graphql-request"); // GraphQLClient
 const { isStableToken } = require('./helper/streamingHelper')
 const { getBlock } = require('./helper/http')
 const { transformBalances } = require('./helper/portedTokens')
@@ -10,7 +10,7 @@ const { transformBalances } = require('./helper/portedTokens')
 // const polygonGraphUrl = 'https://api.thegraph.com/subgraphs/name/superfluid-finance/superfluid-matic'
 // const xdaiGraphUrl = 'https://api.thegraph.com/subgraphs/name/superfluid-finance/superfluid-xdai'
 
-const supertokensQuery = gql`
+const supertokensQuery = `
 query get_supertokens($block: Int) {
   tokens(
     first: 1000, 
@@ -42,6 +42,8 @@ function isWhitelistedToken(token, address, isVesting) {
   const isStable = isStableToken(token?.symbol, address) && !tokensNativeToSidechain.includes(address.toLowerCase())
   return isVesting ? !isStable : isStable
 }
+
+const blacklist = new Set(['0x441bb79f2da0daf457bad3d401edb68535fb3faa'].map(i => i.toLowerCase()))
 
 // Main function for all chains to get balances of superfluid tokens
 async function getChainBalances(allTokens, chain, block, isVesting) {
@@ -75,7 +77,7 @@ async function getChainBalances(allTokens, chain, block, isVesting) {
     let prefixedUnderlyingAddress = underlyingAddress
     // if (!underlyingToken && underlyingTokenBalance/1e24 > 1) console.log(name, symbol, chain, Math.floor(underlyingTokenBalance/1e24))
     // if (isNativeAssetSuperToken) prefixedUnderlyingAddress = chain + ':' + underlyingAddress
-    if (!underlyingToken) return;
+    if (!underlyingToken || blacklist.has(underlyingAddress.toLowerCase())) return;
     sdk.util.sumSingleBalance(balances, prefixedUnderlyingAddress, underlyingTokenBalance)
   })
 
@@ -89,9 +91,9 @@ const tokensNativeToSidechain = [
 ]
 
 async function retrieveSupertokensBalances(chain, block, isVesting, ts, graphUrl) {
-  block = (await getBlock(ts, chain, { [chain]: block })) - 500
+  const gblock = (await getBlock(ts, chain, { [chain]: block })) - 5000
   // Retrieve supertokens from graphql API
-  const { tokens } = await request(graphUrl, supertokensQuery, { block })
+  const { tokens } = await request(graphUrl, supertokensQuery, { block: gblock })
   const allTokens = tokens.filter(t => t.isSuperToken)
 
   return getChainBalances(allTokens, chain, block, isVesting)
