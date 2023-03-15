@@ -37,6 +37,9 @@ module.exports = {
   xdai: {
     tvl: fetchallchain(100),
   },
+  polygon: {
+    tvl: fetchallchain(137),
+  },
   fantom: {
     tvl: fetchallchain(250),
   },
@@ -48,6 +51,9 @@ module.exports = {
   },
   moonriver: {
     tvl: fetchallchain(1285),
+  },
+  kava: {
+    tvl: fetchallchain(2222),
   },
   arbitrum:{
     tvl: fetchallchain(42161),

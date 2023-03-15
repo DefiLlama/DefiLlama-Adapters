@@ -12,7 +12,7 @@ function treasuryExports(config) {
 
     if (ownTokens) {
       const { solOwners, ...otherOptions } = config[chain]
-      const options = { ...otherOptions, owners: [...owners, ...ownTokenOwners], tokens: ownTokens, chain, }
+      const options = { ...otherOptions, owners: [...owners, ...ownTokenOwners], tokens: ownTokens, chain, resolveUniV3: false, }
       exportObj[chain].ownTokens = sumTokensExport(options)
     }
   })

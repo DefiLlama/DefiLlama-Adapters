@@ -22,7 +22,7 @@ async function tvl(_, _b, _cb, { api, }) {
     toa.push([tokenA[i], pools[i]])
     toa.push([tokenB[i], pools[i]])
   })
-  return sumTokens2({...api, tokensAndOwners: toa, })
+  return sumTokens2({api, tokensAndOwners: toa, })
 }
 
 module.exports = {
