@@ -7,27 +7,6 @@ const FXS = "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0";
 const FRAX_3CRV = '0xd632f22692fac7611d2aa1c0d552930d43caed3b'
 const T_3CRV = '0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490'
 
-const contractAddresses = [
-  //CURVE_AMO
-  // "0x72170Cdc48C33a6AE6B3E83CD387ca3Fb9105da2",
-  //FRAX_AMO_MINTER
-  "0xcf37B62109b537fa0Cb9A90Af4CA72f6fb85E241",
-  //LENDING_AMO
-  // "0x9507189f5B6D820cd93d970d67893006968825ef",
-  //MANUAL_AMO
-  // "0x1Be588641Fb28Eb8C2A51f1129707FB1E2683f5a",
-  //USDC_POOL_V1
-  // "0x3C2982CA260e870eee70c423818010DfeF212659",
-  //USDC_POOL_V2
-  // "0x1864Ca3d47AaB98Ee78D11fc9DCC5E7bADdA1c0d",
-  //USDC_POOL_V3
-  // "0x2fE065e6FFEf9ac95ab39E5042744d695F560729",
-  //INVESTOR_COLLATERAL_POOL
-  // "0xEE5825d5185a1D512706f9068E69146A54B6e076", -- ignored
-  //INVESTOR_AMO_V2
-  // "0xB8315Af919729c823B2d996B1A6DDE381E7444f1",
-];
-
 const veFXS_StakingContract = "0xc8418aF6358FFddA74e09Ca9CC3Fe03Ca6aDC5b0";
 const INVESTOR_AMO = '0xb1748c79709f4ba2dd82834b8c82d4a505003f27'
 
@@ -181,7 +160,6 @@ async function addInvestorAMO(api, balances) {
       'Alchemix USD': '0xbc6da0fe9ad5f3b0d58160288917aa56653660e9',
       'Staked CvxCrv': '0xaa0c3f5f7dfd688c6e646f66cd2a6b66acdbe434',
     }),
-    resolveUniV3: false, // because most of the tokens in UNI pools are frax eco tokens
   })
 }
 
@@ -193,7 +171,6 @@ const ethereumTvl = async (timestamp, block, _, { api }) => {
     addyFrax3CRV(api, balances),
     addUSDCPools(api, balances),
     addInvestorAMO(api, balances),
-    // addCvxFRAX_BP(api, balances),
     addCvxFXSFRAX_BP(api, balances),
   ])
   return balances
