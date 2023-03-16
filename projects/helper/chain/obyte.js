@@ -251,6 +251,10 @@ function executeGetter(address, getter, args) {
   return utils.postURL(`${OBYTE_HUB_ENDPOINT}/execute_getter`, { address, getter, args })?.then(({ data }) => data?.data?.result);
 }
 
+function getBalances(addresses) {
+  return utils.postURL(`${OBYTE_HUB_ENDPOINT}/get_balances`, { addresses })?.then(({ data }) => data?.data);
+}
+
 async function getDecimalsByAsset(asset) {
   if (asset === 'base' || asset === 'GBYTE') return 9;
   
@@ -273,5 +277,6 @@ module.exports = {
   getAaStateVars,
   executeGetter,
   fetchOswapV2Assets,
-  getDecimalsByAsset
+  getDecimalsByAsset,
+  getBalances
 }
