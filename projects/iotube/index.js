@@ -1,4 +1,3 @@
-const retry = require("../helper/retry");
 const { request, gql } = require("graphql-request");
 
 const apiURL = "https://smart-graph.iotex.me/iotube/graphql";
@@ -182,7 +181,7 @@ let cache = null;
 const loadTvl = async () => {
   const result = cache
     ? cache
-    : await retry(async (fail) => await request(apiURL, query, variables)).then(
+    : await request(apiURL, query, variables).then(
         (res) => {
           Object.entries(res).forEach(([k, v]) => {
             res[k] = [

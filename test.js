@@ -1,16 +1,17 @@
 #!/usr/bin/env node
 const path = require("path");
 require("dotenv").config();
-const { getCurrentBlocks } = require("@defillama/sdk/build/computeTVL/blocks");
-const {
-  humanizeNumber,
-} = require("@defillama/sdk/build/computeTVL/humanizeNumber");
+const { util: {
+  blocks: { getCurrentBlocks },
+  humanizeNumber: { humanizeNumber },
+} } = require("@defillama/sdk");
 const { util } = require("@defillama/sdk");
 const sdk = require("@defillama/sdk");
 const whitelistedExportKeys = require('./projects/helper/whitelistedExportKeys.json')
 const chainList = require('./projects/helper/chains.json')
 const handleError = require('./utils/handleError')
 const { log, diplayUnknownTable, sliceIntoChunks } = require('./projects/helper/utils')
+const { normalizeAddress } = require('./projects/helper/tokenMapping')
 const { PromisePool } = require('@supercharge/promise-pool')
 
 const locks = [];
@@ -45,7 +46,11 @@ async function getTvl(
   knownTokenPrices
 ) {
   if (!isFetchFunction) {
-    const tvlBalances = await tvlFunction(unixTimestamp, ethBlock, chainBlocks);
+    const chain = storedKey.split('-')[0]
+    const block = chainBlocks[chain]
+    const api = new sdk.ChainApi({ chain, block: chainBlocks[chain], timestamp: unixTimestamp, })
+    let tvlBalances = await tvlFunction(unixTimestamp, ethBlock, chainBlocks, { api, chain, block, storedKey });
+    if (!tvlBalances && Object.keys(api.getBalances()).length) tvlBalances = api.getBalances()
     const tvlResults = await computeTVL(
       tvlBalances,
       "now",
@@ -229,7 +234,10 @@ function checkExportKeys(module, filePath, chains) {
 
   if (filePath.length > 2
     || (filePath.length === 1 && !['.js', ''].includes(path.extname(filePath[0]))) // matches .../projects/projectXYZ.js or .../projects/projectXYZ
-    || (filePath.length === 2 && !['api.js', 'index.js', 'apiCache.js', ].includes(filePath[1])))  // matches .../projects/projectXYZ/index.js
+    || (filePath.length === 2 &&
+      !(['api.js', 'index.js', 'apiCache.js',].includes(filePath[1])  // matches .../projects/projectXYZ/index.js
+        || ['treasury',].includes(filePath[0])  // matches .../projects/treasury/project.js
+      )))
     process.exit(0)
 
   const blacklistedRootExportKeys = ['tvl', 'staking', 'pool2', 'borrowed', 'treasury', 'offers', 'vesting'];
@@ -318,15 +326,12 @@ async function computeTVL(balances, timestamp) {
   fixBalances(balances)
 
   Object.keys(balances).map(k => {
-    if (+balances[k] === 0) {
-      delete balances[k]
-      return;
-    }
-    if (k.toLowerCase() === k) return;
-    balances[k.toLowerCase()] = (k.toLowerCase() in balances) 
-      ? Number(balances[k.toLowerCase()]) 
-      + Number(balances[k]) : balances[k];
+    const balance = balances[k]
     delete balances[k]
+    if (+balance === 0)
+      return;
+    const normalizedAddress = normalizeAddress(k, undefined, true)
+    sdk.util.sumSingleBalance(balances, normalizedAddress, balance)
   })
 
   const eth = balances[ethereumAddress];
@@ -338,7 +343,7 @@ async function computeTVL(balances, timestamp) {
   const PKsToTokens = {};
   const readKeys = Object.keys(balances)
     .map((address) => {
-      const PK = `${timestamp === "now" ? "" : "asset#"}${address.toLowerCase()}`;
+      const PK = address;
       if (PKsToTokens[PK] === undefined) {
         PKsToTokens[PK] = [address];
         return PK;
@@ -357,7 +362,7 @@ async function computeTVL(balances, timestamp) {
   const { errors } = await PromisePool.withConcurrency(5)
     .for(sliceIntoChunks(readKeys, 40))
     .process(async (keys) => {
-      const coins = keys.reduce((p, c) => p + `${c},`, "");
+      const coins = keys.join(',');
       tokenData.push((await axios.get(`${burl}${coins}`)).data.coins)
     })
 
@@ -384,6 +389,13 @@ async function computeTVL(balances, timestamp) {
       } else {
         amount = Number(balance);
         usdAmount = amount * data.price;
+      }
+
+      if (usdAmount > 1e8) {
+        console.log(`-------------------
+Warning: `)
+        console.log(`Token ${address} has more than 100M in value (${usdAmount / 1e6} M) , price data: `, data)
+        console.log(`-------------------`)
       }
       tokenBalances[data.symbol] = (tokenBalances[data.symbol] ?? 0) + amount;
       usdTokenBalances[data.symbol] = (usdTokenBalances[data.symbol] ?? 0) + usdAmount;

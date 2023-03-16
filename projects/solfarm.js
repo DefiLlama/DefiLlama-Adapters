@@ -1,10 +1,9 @@
-const retry = require('./helper/retry')
-const axios = require("axios");
+const { get } = require('./helper/http')
 
 async function fetch() {
-  var response = await retry(async bail => await axios.get('https://api.solfarm.io/tvl'))
+  var response = await get('https://api.solfarm.io/tvl')
 
-  return response.data.TOTAL;
+  return response.TOTAL;
 }
 
 module.exports = {

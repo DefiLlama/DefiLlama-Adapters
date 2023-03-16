@@ -31,7 +31,35 @@ const vaults = [
         depositAssetID: 31566704,
         assetDecimals: 6,
         coingecko: 'usd-coin',
-        stable: true
+        stable: true,
+    },
+    {
+        vaultID: 1004309470,
+        depositAssetID: 386192725,
+        assetDecimals: 8,
+        coingecko: 'bitcoin',
+        stable: false,
+    },
+    {
+        vaultID: 1004325987,
+        depositAssetID: 31566704,
+        assetDecimals: 6,
+        coingecko: 'usd-coin',
+        stable: true,
+    },
+    {
+        vaultID: 1004326861,
+        depositAssetID: 386195940,
+        assetDecimals: 8,
+        coingecko: 'ethereum',
+        stable: false,
+    },
+    {
+        vaultID: 1004374058,
+        depositAssetID: 31566704,
+        assetDecimals: 6,
+        coingecko: 'usd-coin',
+        stable: true,
     },
 ];
 

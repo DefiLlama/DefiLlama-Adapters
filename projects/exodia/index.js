@@ -21,7 +21,7 @@ function compareAddresses(a, b) {
 const getPoolTokens = async (block) => {
   const poolTokens = (await sdk.api.abi.call({
     target: beetsvault,
-    abi: {"inputs":[{"internalType":"bytes32","name":"poolId","type":"bytes32"}],"name":"getPoolTokens","outputs":[{"internalType":"contract IERC20[]","name":"tokens","type":"address[]"},{"internalType":"uint256[]","name":"balances","type":"uint256[]"},{"internalType":"uint256","name":"lastChangeBlock","type":"uint256"}],"stateMutability":"view","type":"function"},
+    abi:  'function getPoolTokens(bytes32 poolId) view returns (address[] tokens, uint256[] balances, uint256 lastChangeBlock)',
     params: poolid,
     block,
     chain: 'fantom',

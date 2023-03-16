@@ -1,17 +1,12 @@
-const retry = require('async-retry');
-const axios = require("axios");
+const { get } = require('../helper/http')
 const { toUSDTBalances } = require('../helper/balances');
 
 function fetch(chain) {
     return async () => {
-        let response = await retry(
-            async bail => await axios.get(
-                'https://api.tokensfarm.com/totals'
-                )
-            );
-        return toUSDTBalances(response.data.totals.tvl[chain]);
+        let response = await get('https://api.tokensfarm.com/totals')
+        return toUSDTBalances(response.totals.tvl[chain]);
     };
-};
+}
 
 module.exports = {
     timetravel: false,

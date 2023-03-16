@@ -6,7 +6,7 @@ async function tvl(timestamp, block) {
     return { [ WETH ]: 
         (await sdk.api.eth.getBalance({ target, block })).output 
     };
-};
+}
 
 module.exports = {
     methodology: "Tracks funds locked in the ERC20Peg contract on Ethereum",

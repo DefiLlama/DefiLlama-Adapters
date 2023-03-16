@@ -15,10 +15,14 @@ const avalancheGMX = '0x62edc0692BD897D2295872a9FFCac5425011c661'
 module.exports = {
   arbitrum: {
     staking: staking(arbitrumStaking, arbitrumGMX, "arbitrum", "gmx", 18),
-    tvl: gmxExports({ chain: 'arbitrum', vault: arbitrumVault, })
+    tvl: gmxExports({ vault: arbitrumVault, })
   },
   avax:{
     staking: staking(avalancheStaking, avalancheGMX, "avax", "gmx", 18),
-    tvl: gmxExports({ chain: 'avax', vault: avalancheVault, })
-  }
+    tvl: gmxExports({ vault: avalancheVault, })
+  },
+  hallmarks:[
+      [1641556800, "Avalanche GMX Launch"]
+  ],
+  
 };

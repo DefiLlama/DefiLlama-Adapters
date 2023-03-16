@@ -1,11 +1,12 @@
 const axios = require('axios')
 const { default: BigNumber } = require("bignumber.js")
 const sdk = require('@defillama/sdk')
+const env = require('../env')
 
 function getEndpoint(isTerra2 = false) {
   if (!isTerra2)
-    return process.env["TERRA_RPC"] || 'https://lcd.terra.dev'
-  return process.env["TERRA2_RPC"] || 'https://phoenix-lcd.terra.dev'
+    return env.TERRA_RPC || 'https://columbus-lcd.terra.dev'
+  return env.TERRA2_RPC || 'https://phoenix-lcd.terra.dev'
 }
 
 async function query(url, block, isTerra2 = false) {

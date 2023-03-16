@@ -36,7 +36,7 @@ async function useStrategyMetadata(block) {
 
   const stratViewer = await sdk.api.abi.call({
     target: curAddresses.StrategyViewer,
-    abi: StrategyViewer.abi.find(i => i.name === 'viewMetadata'),
+    abi: StrategyViewer.abi,
     chain, block,
     params: [curAddresses.StableLending2, tokens, strats],
   });
@@ -88,7 +88,7 @@ async function useLegacyIsolatedStrategyMetadata(block) {
 
   const stratViewer = await sdk.api.abi.call({
     target: curAddresses.LegacyStrategyViewer,
-    abi: StrategyViewer.abi.find(i => i.name === 'viewMetadata'),
+    abi: StrategyViewer.abi,
     chain, block,
     params: [curAddresses.StableLending, legacyTokens, legacyStrats],
   });

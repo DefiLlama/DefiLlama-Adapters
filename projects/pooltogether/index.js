@@ -2,7 +2,7 @@ const sdk = require("@defillama/sdk");
 const { request, gql } = require("graphql-request");
 const abi = require('./abi.json')
 const { getChainTransform } = require("../helper/portedTokens");
-const { getBlock } = require("../helper/getBlock");
+const { getBlock } = require("../helper/http");
 const { sumTokens } = require("../helper/unwrapLPs");
 const { default: BigNumber } = require("bignumber.js");
 

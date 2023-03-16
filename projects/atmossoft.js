@@ -16,7 +16,7 @@ async function bsc(timestamp, ethBlock, chainBlocks) {
   const coreAssets = pools.map(i => i.pairToken)
 
   return sumUnknownTokens({ tokensAndOwners, coreAssets, chain: 'bsc', block: chainBlocks.bsc })
-};
+}
 async function ftm(timestamp, ethBlock, chainBlocks) {
   const pools = [{
     'pool2Address': '0x662db0c6fa77041fe4901149558cc70ca1c8e874',
@@ -27,7 +27,7 @@ async function ftm(timestamp, ethBlock, chainBlocks) {
   const coreAssets = pools.map(i => i.pairToken)
 
   return sumUnknownTokens({ tokensAndOwners, coreAssets, chain: 'fantom', block: chainBlocks.fantom })
-};
+}
 
 module.exports = {
   misrepresentedTokens: true,

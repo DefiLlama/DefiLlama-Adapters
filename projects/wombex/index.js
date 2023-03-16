@@ -1,9 +1,9 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { staking } = require("../helper/staking");
-const { ethers: {BigNumber} } = require("ethers")
+const { ethers: {BigNumber}, utils } = require("ethers")
 
-const masterWombat = "0xE2C07d20AF0Fb50CAE6cDD615CA44AbaAA31F9c8";
+const masterWombat = "0x489833311676B566f888119c29bd997Dc6C95830";
 const voterProxy = "0xE3a7FB9C6790b02Dcfa03B6ED9cda38710413569";
 const wmxLocker = "0xd4E596c0d5aD06724f4980ff9B73438FEb1504EE";
 const wmx = '0xa75d9ca2a0a1d547409d82e1b06618ec284a2ced';
@@ -57,7 +57,7 @@ async function voterProxyBalances(block) {
     calls: lpPools.output.map((pool, index) => {
       return {
         target: pool.output,
-        params: [underlyingTokens.output[index].output, masterWombatVoterProxyBalances.output[index].output.amount],
+        params: [underlyingTokens.output[index].output, utils.parseEther('1')],
       };
     }),
     chain,
@@ -65,7 +65,8 @@ async function voterProxyBalances(block) {
   return underlyingAmounts.output
     .map((a, i) => {
       if (masterWombatVoterProxyBalances.output[i].output.amount === '0') return;
-      return ({amount: a.output.amount, token: underlyingTokens.output[i].output})
+      const oneUnit = utils.parseEther('1')
+      return ({amount: BigNumber.from(a.output.amount).mul(BigNumber.from(masterWombatVoterProxyBalances.output[i].output.amount)).div(oneUnit), token: underlyingTokens.output[i].output})
     }).filter(i => i);
 }
 

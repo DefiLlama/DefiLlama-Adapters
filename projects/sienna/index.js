@@ -15,10 +15,17 @@ async function getOverviewData() {
   return overviewData
 }
 
+async function getPoolLiquidity() {
+  let pool_liquidity
+  const { data } = await get('https://ethereumbridgebackend.azurewebsites.net/sienna_token_historical_data?type=hourly&period=1+days')
+  data.filter(i => i.pool_liquidity).forEach(i => pool_liquidity = i.pool_liquidity)
+  return pool_liquidity
+}
+
 async function tvl() {
   const [ lend, overview ] = await Promise.all([getLendData(), getOverviewData()])
   return {
-    tether: lend.data.underlying_balance_usd + overview.pool_liquidity 
+    tether: lend.data.underlying_balance_usd + (await getPoolLiquidity())
   }
 }
 

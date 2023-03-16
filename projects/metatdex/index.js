@@ -10,6 +10,10 @@ const config = {
     tdex: '0x0b416e5da1f68dd780683b5daef858b0a081c364',
     owner: '0x09a28712208bf913b2e79eab446594c9fab2f37c',
   },
+  polygon: {
+    tdex: '0xa63D57042B2d462B8dcf1570F8288dba405Cc909',
+    owner: '0xd4013b79867C03d3FB5196899193efC8f29d54A4',
+  },
 }
 
 module.exports = {};
@@ -32,5 +36,5 @@ Object.keys(config).forEach(chain => {
 })
 
 const abi = {
-  getTokenAddressList: {"inputs":[{"internalType":"uint256","name":"start","type":"uint256"},{"internalType":"uint256","name":"end","type":"uint256"}],"name":"getTokenAddressList","outputs":[{"internalType":"address[]","name":"list","type":"address[]"}],"stateMutability":"view","type":"function"},
+  getTokenAddressList: "function getTokenAddressList(uint256 start, uint256 end) view returns (address[] list)",
 }

@@ -24,4 +24,7 @@ module.exports={
         tvl,
     },
     methodology: "Counts staked AVAX tokens.",
+    hallmarks:[
+      [1643199567, "Benqi SAVAX Launched"]
+    ],
 }

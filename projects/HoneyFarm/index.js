@@ -1,13 +1,9 @@
 const { addFundsInMasterChef } = require("../helper/masterchef");
-const {
-  transformAvaxAddress,
-  transformBscAddress,
-} = require("../helper/portedTokens");
 const { staking } = require("../helper/staking");
 
 async function avax(timestamp, _, {avax: block}) {
   let balances = {};
-  const transform = await transformAvaxAddress();
+  const transform = addr => 'avax:'+addr
 
   await addFundsInMasterChef(
     {},
@@ -23,7 +19,7 @@ async function avax(timestamp, _, {avax: block}) {
 
 async function bsc(timestamp, _, {bsc: block}) {
   let balances = {};
-  const transform = await transformBscAddress();
+  const transform = addr => 'bsc:'+addr
 
   await addFundsInMasterChef(
     {},

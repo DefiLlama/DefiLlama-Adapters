@@ -61,7 +61,6 @@ async function optTvl(timestamp, block, chainBlocks) {
 
 const treasuryAddress = "0xa54074b2cc0e96a43048d4a68472F7F046aC0DA8";
 const treasuryContents = [
-  "0x321C2fE4446C7c963dc41Dd58879AF648838f98D",
   "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
 ]
 const optTreasury = "0x271901c3268D0959bbc9543DE4f073D3708C88F7";

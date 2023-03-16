@@ -1,5 +1,5 @@
 const { getNetworkInfo, Network } = require('@injectivelabs/networks')
-const { protoObjectToJson, IndexerGrpcSpotApi, IndexerGrpcDerivativesApi } = require('@injectivelabs/sdk-ts')
+const { protoObjectToJson, IndexerGrpcSpotApi, IndexerGrpcDerivativesApi, } = require('@injectivelabs/sdk-ts')
 const { sliceIntoChunks } = require('../utils')
 let clients = {}
 
@@ -14,9 +14,9 @@ function getClient(type = TYPES.SPOT) {
   if (!clients[type]) {
     const network = getNetworkInfo(Network.Mainnet)
     if (type === TYPES.SPOT)
-      clients[type] = new IndexerGrpcSpotApi(network.exchangeWeb3GatewayApi);
+      clients[type] = new IndexerGrpcSpotApi(network.grpc);
     else if (type === TYPES.DERIVATIVES)
-      clients[type] = new IndexerGrpcDerivativesApi(network.exchangeWeb3GatewayApi)
+      clients[type] = new IndexerGrpcDerivativesApi(network.indexerApi)
     else
       throw new Error('Unknown type')
   }

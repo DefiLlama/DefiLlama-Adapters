@@ -2,7 +2,7 @@
 module.exports = {
   ethereum: {
     MooniswapFactory: '0xbaf9a5d4b0052359326a6cdab54babaa3a3a9643',
-    blacklistedTokens: ['0x58730ae0faa10d73b0cddb5e7b87c3594f7a20cb'],
+    blacklistedTokens: ['0x58730ae0faa10d73b0cddb5e7b87c3594f7a20cb', '0x77777feddddffc19ff86db637967013e6c6a116c',],
   },
   bsc: {
     MooniswapFactory: '0xd41b24bba51fac0e4827b6f94c0d6ddeb183cd64',

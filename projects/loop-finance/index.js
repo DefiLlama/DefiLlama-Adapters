@@ -15,10 +15,10 @@ async function getPairs() {
 
     if (factory01.length > 29 || factory10.length > 29) {
         throw new Error(`We need another query since they're capped at 30 results and pools may be missing`);
-    };
+    }
 
     return factory00.concat(factory01, factory10);
-};
+}
 
 const tokenMapping = {
     "terra17wkadg0tah554r35x6wvff0y5s7ve8npcjfuhz": "prism-yluna",
@@ -48,7 +48,7 @@ async function isDenom(balances, pair, block, index) {
     if (pair.asset_infos[index].native_token) {
         if (!tokenMapping[pair.asset_infos[index].native_token.denom]) {
             throw new Error(`no mapping for token ${pair.asset_infos[index].native_token.denom}`);
-        };
+        }
 
         sdk.util.sumSingleBalance(
             balances,
@@ -61,14 +61,14 @@ async function isDenom(balances, pair, block, index) {
         );
 
         return true;
-    };
-};
+    }
+}
 
 async function isToken(balances, pair, block, index) {
     if (tokenMapping[pair.asset_infos[index].token.contract_addr]) {
         if (!tokenMapping[pair.asset_infos[index].token.contract_addr]) {
             throw new Error(`no mapping for token ${pair.asset_infos[index].token.contract_addr}`);
-        };
+        }
 
         sdk.util.sumSingleBalance(
             balances,
@@ -81,8 +81,8 @@ async function isToken(balances, pair, block, index) {
         );
 
         return true;
-    };
-};
+    }
+}
 
 async function tvl(timestamp, _, {terra: block}) {
     const balances = {};
@@ -90,9 +90,9 @@ async function tvl(timestamp, _, {terra: block}) {
     for (let pair of pairs) {
         (await isDenom(balances, pair, block, 0)) || (await isDenom(balances, pair, block, 1)) ||
             (await isToken(balances, pair, block, 0)) || (await isToken(balances, pair, block, 1))
-    };
+    }
     return balances;
-};
+}
 
 module.exports = {
     timetravel: false,

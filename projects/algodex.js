@@ -10,7 +10,7 @@ async function fetch() {
 
   const total_liquidity_in_usd = tvlData.data.reduce((sum, asset) => {
     var assetPrice = 0
-    if (usdPriceData.data.hasOwnProperty(asset.assetId)) {
+    if (usdPriceData.data[asset.assetId]) {
       assetPrice = usdPriceData.data[asset.assetId].price
     } else {
       // price for some asset is not found on tinyman then
@@ -25,5 +25,8 @@ async function fetch() {
 }
 // tvl in USD
 module.exports = {
+  algorand: {
+    fetch
+  },
   fetch
 }

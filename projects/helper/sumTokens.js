@@ -1,12 +1,12 @@
 const { ibcChains, getUniqueAddresses} = require('./tokenMapping')
-const { log,  } = require('./utils')
 const { get, post, } = require('./http')
-const { sumTokens2: sumTokensEVM, } = require('./unwrapLPs')
+const { sumTokens2: sumTokensEVM, nullAddress, } = require('./unwrapLPs')
 const sdk = require('@defillama/sdk')
 
 const helpers = {
   "tron": require("./chain/tron"),
   "eos": require("./chain/eos"),
+  "elrond": require("./chain/elrond"),
   "cardano":require("./chain/cardano"),
   "algorand":require("./chain/algorand"),
   "cosmos":require("./chain/cosmos"),
@@ -19,11 +19,11 @@ const helpers = {
   "litecoin":require("./chain/litecoin"),
   "polkadot":require("./chain/polkadot"),
   "hedera":require("./chain/hbar"),
+  "stacks":require("./chain/stacks"),
 }
 
 const geckoMapping = {
   bep2: 'binancecoin',
-  elrond: 'elrond-erd-2',
   ripple: 'ripple',
 }
 
@@ -32,8 +32,6 @@ const specialChains = Object.keys(geckoMapping)
 async function getBalance(chain, account) {
   switch (chain) {
     case 'ripple': return getRippleBalance(account)
-    case 'elrond':
-      return (await get(`https://gateway.elrond.com/address/${account}`)).data.account.balance / 1e18
     case 'bep2':
       // info: https://docs.bnbchain.org/api-swagger/index.html
       const balObject = (await get(`https://dex.binance.org/api/v1/account/${account}`)).balances.find(i => i.symbol === 'BNB')
@@ -43,15 +41,16 @@ async function getBalance(chain, account) {
 }
 
 function sumTokensExport(options) {
-  const {chain} = options
-  if (!chain) throw new Error('Missing chain info')
-  return async (timestamp, _b, {[chain]: block}) => sumTokens({ timestamp, block, ...options})
+  return async (_, _b, _cb, { api }) => sumTokens({ ...api, api, ...options})
 }
 
 async function sumTokens(options) {
-  let { chain, owner, owners = [], tokens = [], tokensAndOwners = [], blacklistedTokens = [], balances = {}, } = options 
+  let { chain, owner, owners = [], tokens = [], tokensAndOwners = [], blacklistedTokens = [], balances = {}, token, } = options 
 
-  if (!helpers[chain] && !specialChains.includes(chain))
+  if (token) tokens = [token]
+  if (owner) owners = [owner]
+
+  if (!ibcChains.includes(chain) && !helpers[chain] && !specialChains.includes(chain))
     return sumTokensEVM(options)
 
   owners = getUniqueAddresses(owners, chain)
@@ -104,6 +103,7 @@ async function getRippleBalance(account) {
 }
 
 module.exports = {
+  nullAddress,
   sumTokensExport,
   sumTokens,
 }

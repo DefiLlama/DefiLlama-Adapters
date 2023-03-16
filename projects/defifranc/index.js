@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const getEntireSystemCollAbi = require("./getEntireSystemColl.abi.json");
 const { staking } = require('../helper/staking')
 
 const Collaterals = {
@@ -17,7 +16,7 @@ async function tvl(_, block, chainBlocks) {
   const balances = {}
   const calls = Object.values(Collaterals).map(token => ({ params: [token] }))
   const { output } = await sdk.api.abi.multiCall({
-    calls, block, chain: 'ethereum', target: TROVE_MANAGER_ADDRESS, abi: getEntireSystemCollAbi,
+    calls, block, chain: 'ethereum', target: TROVE_MANAGER_ADDRESS, abi: "function getEntireSystemColl(address _asset) view returns (uint256 entireSystemColl)",
   })
 
   output.forEach(({ input: { params: [token] }, output }) => {
@@ -27,7 +26,7 @@ async function tvl(_, block, chainBlocks) {
   })
 
   return balances;
-};
+}
 
 module.exports = {
   ethereum: {

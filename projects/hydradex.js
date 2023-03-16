@@ -9,7 +9,7 @@ async function fetch() {
     })
   )
   return { tether: +reserves.data.hydraswapFactories[0].totalLiquidityUSD }
-};
+}
 
 module.exports = {
   misrepresentedTokens: true,

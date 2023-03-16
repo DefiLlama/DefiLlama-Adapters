@@ -17,7 +17,7 @@ async function ethTvl(timestamp, block) {
   return {
     [usdt]: totalHoldings,
   };
-};
+}
 
 module.exports = {
   misrepresentedTokens: true,

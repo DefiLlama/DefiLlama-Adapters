@@ -1,12 +1,10 @@
-const BigNumber = require('bignumber.js');
-const { request, gql } = require('graphql-request');
 const axios = require('axios');
 const {getApiTvl} = require('./helper/historicalApi');
 
 /*
 const BASE_URL = 'https://api.subquery.network/sq/sora-xor/sora';
 const XOR_ASSET_ID = '0x0200000000000000000000000000000000000000000000000000000000000000';
-const POOL_XYK_ENTITIES = gql`
+const POOL_XYK_ENTITIES = `
 query PoolXYKEntities (
   $first: Int = 1)
 {

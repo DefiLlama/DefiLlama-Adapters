@@ -86,26 +86,15 @@ const config = {
         'addr1qy7f98r5ar2ayyst7lmm90tl630tsetygecz36vq33qmvevngs3w3w3mt4l3em80z5f9e64j0jj37hazql87nfmzrfqs3f7gum',
         'addr1qyu9n5wtyufnp6vuhcak38tx4lw37znzkulat7s987xtv86xx265k42gtvuvkt4vyjjxgqn9wat2zmda3f7ns2pl2y2qwtgdav',
         'addr1qyzrghamkktczv3wujrdqt243emzu49zu0z3vxw768kpy0fknd8whx6gnzwtg78yxfuxwu4z8k4zsk9rvx34sxalet5sgjcn56',
-        'addr1v8xeul4sslt5xyeaa02vzgquwagv84t9xcjekauja5cz4ws8zuwgw',
-        'addr1v90372c396d7w0cw3agseaj8vf4t8m9e3lwwc752jd30hyghzt9yh',
-        'addr1v9h690lw5hpd37r4ngmlhf0y8wms394y4dlm0wa6nmann9qavq7y7',
-        'addr1v9m8eq44qcqe40yz0jwcuc3vs9t7zr6ukz8ctvfkjma5dmqwkp0ey',
-        'addr1vx47g9mejkukkspsp6jdjdzf2lmektye8w7n0cm9ukxvewgtdhjt3',
-        'addr1vx824fl32wrgankldpnyt7txz0mel5d9cldfkus4xykl3uq3tw7d0',
-        'addr1vy5dqjx4mtegqu6kx5gu6upkk96c8haf38eksj5tr8g5dacs3mfv2',
-        'addr1vyzrghamkktczv3wujrdqt243emzu49zu0z3vxw768kpy0gyprm8q',        
     ]
   },
-  /*
   ripple: {
     owners: [
-        'rGcT3Dpz9Dk3oV7hsDT7Q1s6NRPo9a8iDt',
         'rKa1G2q15ya4Xr3U3LVdEhBpR3H1CUNnQN',
         'rLUpiBeLhUyEzVtBkYE4S9t4zhdybSSARw',
         'rMa4tVPUFTBC7Zzg1BkDwVWPLuE8bbQMX9',
     ]
-  }
-  */
+  },
  solana: {
     owners: [
         '4E73T5Zubx3kPtheJ5DB6QMEaadMQowhUcdRV6f9rvVt',
@@ -126,3 +115,4 @@ const config = {
  }
 }
 module.exports = cexExports(config)
+module.exports.methodology = 'We are not counting their binance spot account'

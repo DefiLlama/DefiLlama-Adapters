@@ -1,5 +1,4 @@
 const { tokensBare, } = require('./tokenMapping')
-const { log } = require('./utils')
 const { nullAddress } = require('./unwrapLPs')
 const { sumTokensExport } = require('../helper/sumTokens')
 const sdk = require('@defillama/sdk')
@@ -63,6 +62,16 @@ const defaultTokens = {
     '0x9ee91f9f426fa633d227f7a9b000e28b9dfd8599', //STmatic
     '0xc00e94cb662c3520282e6f5717214004a7f26888', //COMP
     '0x1c48f86ae57291f7686349f12601910bd8d470bb', //USDK
+    '0x4691937a7508860f876c9c0a2a617e7d9e945d4b', // WOO
+    '0x19de6b897ed14a376dda0fe53a5420d2ac828a28', // BGB bitget token
+    '0x0316EB71485b0Ab14103307bf65a021042c6d380', // HBTC (Houbi BTC) https://explorer.btc.com/btc/address/12qTdZHx6f77aQ74CPCZGSY47VaRwYjVD8 / https://www.htokens.finance/en-us/assets
+    '0x6be61833fc4381990e82d7d4a9f4c9b3f67ea941', // HTB (Hotbit cex token)
+    '0x75231f58b43240c9718dd58b4967c5114342a86c', // OKB (OKX cex token)
+    '0x2af5d2ad76741191d15dfe7bf6ac92d4bd912ca3', // LEO (bitfinex cex token)
+    '0xB8c77482e45F1F44dE1745F52C74426C631bDD52', // WBNB
+    '0xb62132e35a6c13ee1ee0f84dc5d40bad8d815206', // NEXO ,(Nexo cex token)
+    '0x1ceb5cb57c4d4e2b2433641b95dd330a33185a44', //kp3r
+    '0xcf0c122c6b73ff809c693db761e7baebe62b6a2e', //FLOKI ETH CHAIN
   ],
   tron: [
     nullAddress,
@@ -74,6 +83,8 @@ const defaultTokens = {
     '0xc2132d05d31c914a87c6611c10748aeb04b58e8f', // USDT
     '0x0000000000000000000000000000000000001010', // WMATIC
     '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619', // WETH
+    '0xb5c064f955d8e7f38fe0460c556a72987494ee17', // QUICK
+    '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6', //WBTC
   ],
   algorand: [],
   solana: [],
@@ -92,8 +103,14 @@ const defaultTokens = {
     '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d', // B-USDC
     '0x14016e85a25aeb13065688cafb43044c2ef86784', // B-TUSD
     '0x2859e4544c4bb03966803b044a93563bd2d0dd4d', // SHIB
-    '0x3ee2200efb3400fabb9aacf31297cbdd1d435d47', //ADA
-
+    '0x3ee2200efb3400fabb9aacf31297cbdd1d435d47', // ADA
+    '0x4691937a7508860f876c9c0a2a617e7d9e945d4b', // WOO
+    '0xc748673057861a797275CD8A068AbB95A902e8de', // BabyDoge
+    '0xAC51066d7bEC65Dc4589368da368b212745d63E8', // ALICE
+    '0xfb5B838b6cfEEdC2873aB27866079AC55363D37E', // FLOKI
+    '0x352Cb5E19b12FC216548a2677bD0fce83BaE434B', // BTT
+    '0xAD29AbB318791D579433D831ed122aFeAf29dcfe', // FTM
+    '0x02ff5065692783374947393723dba9599e59f591',// yoshi
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],
@@ -104,12 +121,15 @@ const defaultTokens = {
     '0xff970a61a04b1ca14834a43f5de4533ebddb5cc8', // USDC
     '0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9', // USDT
     '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1', // DAI
+    
   ],
   avax: [
     nullAddress,
     '0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7', // USDT
     '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E', // USDC
     '0xd586E7F844cEa2F87f50152665BCbc2C279D8d70', // DAI
+    '0xabc9547b534519ff73921b1fba6e672b5f58d083', // WOO
+    '0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664', //USDC.e
   ],
   near: [
     'usdt.tether-token.near',
@@ -129,17 +149,17 @@ function cexExports(config) {
     timetravel: false,
   }
   chains.forEach(chain => {
-    let { tokensAndOwners, owners, tokens } = config[chain]
+    let { tokensAndOwners, owners, tokens, blacklistedTokens, } = config[chain]
 
     if (!tokensAndOwners && !tokens) {
       tokens = defaultTokens[chain]
       if (!tokens) {
-        log(chain, 'Missing default token list, counting only native token balance',)
+        // log(chain, 'Missing default token list, counting only native token balance',)
         tokens = [nullAddress]
       }
     }
 
-    const options = { ...config[chain], owners, tokens, chain }
+    const options = { ...config[chain], owners, tokens, chain, blacklistedTokens, }
     if (chain === 'solana')  options.solOwners = owners
     exportObj[chain] = { tvl: sumTokensExport(options) }
   })

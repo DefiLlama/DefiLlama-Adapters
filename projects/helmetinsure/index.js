@@ -1,5 +1,4 @@
-const { blockQuery } = require('../helper/graph')
-const { getBlock } = require('../helper/getBlock')
+const { blockQuery } = require('../helper/http')
 const sdk = require('@defillama/sdk')
 const { gql } = require('graphql-request')
 const CHAIN_POLYGON = 'polygon'
@@ -24,8 +23,7 @@ function transform(str) {
 }
 
 function fetch(chain) {
-  return async (ts, _, chainBlocks) => {
-    const  block = await getBlock(ts, chain, chainBlocks)
+  return async (ts, _, chainBlocks, { api }) => {
     var endpoint = THEGARPH_API[chain]
     var query = gql`
     query tvl($block: Int){
@@ -41,7 +39,7 @@ function fetch(chain) {
       }
     }
     `;
-    const results = await blockQuery(endpoint, query, block, 1000)
+    const results = await blockQuery(endpoint, query, { api, blockCatchupLimit: 2000, })
     const { options } = results
 
     const data = options.flatMap(o => {

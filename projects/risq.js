@@ -46,7 +46,7 @@ async function tvl(_timestamp, ethBlock, chainBlocks) {
         balances[transform(tokens[i])] = ((transform(tokens[i]) in balances) ? 
             Number(balances[transform(tokens[i])]) + Number(vaultBalances[i]) :
             vaultBalances[i]);
-    };
+    }
 
     balances[transform(WBNBAddresss)] = (await sdk.api.eth.getBalance({
         target: bnbPool, 
@@ -55,7 +55,7 @@ async function tvl(_timestamp, ethBlock, chainBlocks) {
     })).output;
 
     return balances;
-};
+}
 
 module.exports = {
     start: 10340221, // Aug-25-2021 03:12:42 PM +UTC

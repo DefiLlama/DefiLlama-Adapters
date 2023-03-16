@@ -98,7 +98,7 @@ const Tokens = [
 
 function compareToIgnoreCase(a, b) {
   return a.toLowerCase() === b.toLowerCase();
-};
+}
 
 const transformAddress = (addr) => {
   let resultantAddress = addr;
@@ -198,7 +198,7 @@ async function tvl(timestamp, block, chainBlocks) {
   for (const [index, allocator] of Allocators.entries()) {
     sdk.util.sumSingleBalance(balances, config.transformAddress(allocator.stakeToken), stakedYieldTokens[index]);
     sdk.util.sumSingleBalance(balances, config.transformAddress(allocator.yieldToken), pendingYieldTokens[index]);
-  };
+  }
 
   for (const market of BenqiMarkets) {
     const [balance, exchangeRate] = await Promise.all([
@@ -219,7 +219,7 @@ async function tvl(timestamp, block, chainBlocks) {
   sdk.util.sumSingleBalance(balances, config.transformAddress(PTP), stakedPtp);
 
   return balances;
-};
+}
 
 module.exports = {
   avax:{

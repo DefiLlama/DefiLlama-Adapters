@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk')
-const { get } = require('../helper/http')
+const { getConfig } = require('../helper/cache')
 const { getAssetInfo, } = require("../helper/chain/algorand");
 const { transformBalances } = require('../helper/portedTokens')
 
@@ -11,8 +11,8 @@ const blacklistedTokens = [
 ]
 
 async function dex() {
-  let lpTokens = (await get("https://api.algofi.org/ammLPTokens?network=MAINNET")).map(i => i.asset_id);
-  // let lpTokens = (await get("https://api.algofi.org/pools?network=MAINNET")).map(i => i.lp_asset_id);
+  let lpTokens = (await getConfig('algofi-swap',"https://api.algofi.org/ammLPTokens?network=MAINNET")).map(i => i.asset_id);
+  // let lpTokens = (await getConfig('algofi-swap',"https://api.algofi.org/pools?network=MAINNET")).map(i => i.lp_asset_id);
   lpTokens = [...new Set(lpTokens)]
   const lpData = await Promise.all(lpTokens.map(getAssetInfo))
   const balances = {}

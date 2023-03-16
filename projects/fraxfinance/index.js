@@ -156,7 +156,6 @@ module.exports = {
   doublecounted: true,
   misrepresentedTokens: true,
   ethereum: {
-    treasury: stakings(treasuryContracts, FXS),
     staking: staking(veFXS_StakingContract, FXS),
     pool2: staking(POOL_STAKING_CONTRACTS, LP_ADDRESSES),
     tvl: ethereumTvl,

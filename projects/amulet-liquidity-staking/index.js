@@ -31,5 +31,8 @@ module.exports = {
     solana:{
         tvl
     },
-    methodology: `Amulet enables users to earn PoS staking rewards on Solana by staking SOL and mint amtSOL. Hence, the amount of SOL staked are counted as our TVL for Amulet Liquidity Staking which the value are calculated based on the price get from Coingecko.`
+    methodology: `Amulet enables users to earn PoS staking rewards on Solana by staking SOL and mint amtSOL. Hence, the amount of SOL staked are counted as our TVL for Amulet Liquidity Staking which the value are calculated based on the price get from Coingecko.`,
+    hallmarks: [
+        [1667692800, "FTX collapse"]
+    ],
 }

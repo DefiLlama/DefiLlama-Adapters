@@ -29,7 +29,7 @@ async function run() {
   ])
   adapterPath = response.adapterPath
 
-  while (true) {
+  while (true) {   // eslint-disable-line
     adapterPrompt.default = adapterPath
     await runAdapter(adapterPath, true)
     const answer = await inquirer.prompt([adapterPrompt])

@@ -1,25 +1,26 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
-const axios = require("axios");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs")
+const { transformBalances } = require('../helper/portedTokens');
+const { getConfig } = require("../helper/cache");
 
 async function getProcolAddresses() {
-  return (await axios.get(
+  return (await getConfig('kalmy-app/bsc',
     'https://raw.githubusercontent.com/kalmar-io/kalmar-assets/main/data/bsc-kalmar-contract.json'
-  )).data
+  ))
 }
 
 async function getFTMProcolAddresses() {
-  return (await axios.get(
+  return (await getConfig('kalmy-app/fantom',
     'https://raw.githubusercontent.com/kalmar-io/kalmar-assets/main/data/ftm-kalmar-contract.json'
-  )).data
+  ))
 }
 
 async function getAvaxProcolAddresses() {
-  return (await axios.get(
+  return (await getConfig('kalmy-app/avax',
     'https://raw.githubusercontent.com/kalmar-io/kalmar-assets/main/data/avax-kalmar-contract.json'
-  )).data
+  ))
 }
 
 function getBSCAddress(address) {
@@ -151,7 +152,8 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     }
   ), block, 'bsc', (addr) => `bsc:${addr}`)
 
-  return balances
+
+  return transformBalances('bsc', balances)
 }
 
 async function ftmTvl(timestamp, ethBlock, chainBlocks) {

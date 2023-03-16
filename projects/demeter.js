@@ -1,11 +1,6 @@
 
 const { sumTokensExport } = require('./helper/unwrapLPs')
 
-  // let liquidity = (await retry(async bail =>
-// await axios.get('https://demeter.xyz/app/api/market_global_data', {
-//   headers: { 'x-chain-id': '128' }
-// }))).data.data.marketList;
-
 const config = {
   heco: {
     markets: [

@@ -31,7 +31,7 @@ async function eth(timestamp, ethBlock) {
     ], ethBlock)
 
     return balances;
-};
+}
 
 async function fuseStaking(timestamp, ethBlock, chainBlocks) {    
     const gdStaked = (await sdk.api.erc20.balanceOf({
@@ -50,30 +50,6 @@ async function fuseStaking(timestamp, ethBlock, chainBlocks) {
 
     const sumGdStaked = BigNumber(gdStaked).plus(gdStakedV2);
     const gdInDAI = await convertGoodDollarsToDai(sumGdStaked, ethBlock);
-
-    const balances = {};
-    sdk.util.sumSingleBalance(balances, tokens.DAI, Number(gdInDAI));
-
-    return balances;
-}
-
-async function fuseTreasury(timestamp, ethBlock, chainBlocks) {
-    const gdInCommunitySafe = (await sdk.api.erc20.balanceOf({
-        target: tokens.Gfuse,
-        chain: 'fuse',
-        owner: COMMUNITY_SAFE,
-        block: chainBlocks['fuse']
-    })).output;
-
-    const gdInFuseStaking = (await sdk.api.erc20.balanceOf({
-        target: tokens.Gfuse,
-        chain: 'fuse',
-        owner: FUSE_STAKING,
-        block: chainBlocks['fuse']
-    })).output;
-
-    const gdTotal = BigNumber(gdInCommunitySafe).plus(gdInFuseStaking);
-    let gdInDAI = await convertGoodDollarsToDai(gdTotal, ethBlock);
 
     const balances = {};
     sdk.util.sumSingleBalance(balances, tokens.DAI, Number(gdInDAI));
@@ -116,6 +92,5 @@ module.exports = {
     fuse: {
         staking: fuseStaking,
         tvl: () => ({}),
-        treasury: fuseTreasury
     },
 }

@@ -5,7 +5,7 @@ const sdk = require('@defillama/sdk')
 const { getUniqueAddresses, } = require('../utils')
 const { get, } = require('../http')
 const { transformBalances, } = require('../portedTokens')
-const { toHex } = require('tron-format-address')
+const { toHex, fromHex, } = require('tron-format-address')
 const axiosObj = axios.create({
   baseURL: 'https://api.trongrid.io/',
   headers: {
@@ -20,6 +20,12 @@ const ADDRESS_PREFIX_REGEX = /^(41)/;
 const ADDRESS_PREFIX = "41";
 const accountData = {
 }
+
+async function getStakedTron(account) {
+  const data = await get(`https://apilist.tronscan.org/api/vote?candidate=${account}`)
+  return data.totalVotes
+}
+
 async function getAccountDetails(account) {
   if (!accountData[account])
     accountData[account] = get('https://apilist.tronscan.org/api/account?address=' + account)
@@ -49,13 +55,7 @@ function encodeParams(inputs) {
   return abiCoder.encode(types, values).replace(/^(0x)/, '');
 }
 
-function decodeParams(types, output, ignoreMethodHash) {
-
-  if (!output || typeof output === 'boolean') {
-    ignoreMethodHash = output;
-    output = types;
-  }
-
+function decodeParams({types, output, ignoreMethodHash}) {
   if (ignoreMethodHash && output.replace(/^0x/, '').length % 64 === 8)
     output = '0x' + output.replace(/^0x/, '').substring(8);
 
@@ -74,16 +74,29 @@ function decodeParams(types, output, ignoreMethodHash) {
 // api reference: https://developers.tron.network/reference
 const owner_address = 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t'
 
-async function unverifiedCall(contract, functionSelector, parameter) {
+async function unverifiedCall({ target, abi, parameter = [], isBigNumber, types = [], isAddress }) {
   var body = {
     owner_address: owner_address,
-    contract_address: contract,
-    function_selector: functionSelector,
+    contract_address: target,
+    function_selector: abi,
     parameter: encodeParams(parameter),
     visible: true,
   };
   const axiosResponse = await axiosObj.post('/wallet/triggerconstantcontract', body)
-  return BigNumber("0x" + axiosResponse.data['constant_result'][0])
+  if (isBigNumber)
+    return BigNumber("0x" + axiosResponse.data['constant_result'][0])
+  if (isAddress) {
+    const str = '0x' + axiosResponse.data.constant_result[0].replace(/^(0+)/, '')
+    return fromHex(str)
+  }
+  return decodeParams({ types, output: axiosResponse.data.constant_result[0], ignoreMethodHash: true })
+}
+
+async function multicall({ calls, ...options }) {
+  const res = []
+  for (const target of calls)
+    res.push(await unverifiedCall({ target, ...options }))
+  return res
 }
 
 async function getUnverifiedTokenBalance(token, account) {
@@ -157,10 +170,11 @@ async function sumTokens({
   }
 }
 
-
 module.exports = {
+  multicall,
   getTokenBalance,
   getTrxBalance,
   unverifiedCall,
   sumTokens,
+  getStakedTron,
 }

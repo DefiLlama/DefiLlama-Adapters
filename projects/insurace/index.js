@@ -5,6 +5,7 @@ const BigNumber = require('bignumber.js');
 const axios = require("axios");
 const polygonPools = require('./polygonPools.json')
 const avalanchePools = require('./avalanchePools.json')
+const { getConfig } = require('../helper/cache')
 
 
 async function eth(timestamp, ethBlock) {
@@ -15,7 +16,7 @@ async function eth(timestamp, ethBlock) {
     if (ethBlock < 12301500) {
         throw new Error("Not yet deployed")
     }
-    const { data } = await axios.get("https://files.insurace.io/public/defipulse/pools.json");
+    const data = await getConfig('insurace/ethereum', "https://files.insurace.io/public/defipulse/pools.json");
     const pools = data.pools;
 
     const { output: _tvlList } = await sdk.api.abi.multiCall({
@@ -59,7 +60,7 @@ async function bsc(timestamp, ethBlock, chainBlocks){
     if (bscBlock < 8312474) {
         throw new Error("Not yet deployed")
     }
-    const { data } = await axios.get("https://files.insurace.io/public/defipulse/bscPools.json");
+    const data = await getConfig('insurace/bsc', "https://files.insurace.io/public/defipulse/bscPools.json");
     const pools = data.pools;
 
     const { output: _tvlList } = await sdk.api.abi.multiCall({

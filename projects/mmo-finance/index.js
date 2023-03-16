@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
-const genericVaultBalance = require("./genericVaultBalance.json");
-const valueOfAsset = require("./valueOfAsset.json");
+const abi = 'function tvlOfPool(address pool) view returns (uint256 tvl)';
+const genericVaultBalance = "uint256:balance"
+const valueOfAsset = 'function valueOfAsset(address asset, uint256 amount) view returns (uint256 valueInCRO, uint256 valueInUSD)'
 const BigNumber = require("bignumber.js");
 
 const dashboardCronos = "0x55f040E3A6e0ff69f5095B3cbF458919C5e02A0B";

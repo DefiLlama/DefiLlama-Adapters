@@ -7,7 +7,7 @@ async function tvl(_, _b, { [ chain]: block }) {
   ]
   const tokens = ['0x7f5c764cbc14f9669b88837ca1490cca17c31607']
   return sumTokens2({ chain, block, owners, tokens, })
-};
+}
 
 module.exports = {
 	optimism: {

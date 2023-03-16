@@ -1,5 +1,4 @@
-const { getProvider, getConnection, sumTokens2, } = require("../helper/solana");
-const { parseReserve } = require("../solend/utils");
+const { getProvider, getConnection, sumTokens2, decodeAccount, } = require("../helper/solana");
 const { Program, } = require("@project-serum/anchor");
 const { PublicKey, } = require("@solana/web3.js");
 const sdk = require('@defillama/sdk');
@@ -17,7 +16,7 @@ async function tvl() {
   const reserveInfo = {}
   for (const reserve of Object.values(reserves)) {
     const [info] = await connection.getMultipleAccountsInfo([new PublicKey(reserve)])
-    const { info: { liquidity: { mintPubkey, marketPrice, }, collateral }} = parseReserve(info)
+    const { info: { liquidity: { mintPubkey, marketPrice, }, collateral }} = decodeAccount('reserve', info)
     reserveInfo[collateral.mintPubkey.toString()] = { price: marketPrice/1e18, key: mintPubkey.toString(), }
   }
   const idl = await Program.fetchIdl(programId, provider)

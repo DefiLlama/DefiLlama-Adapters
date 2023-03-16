@@ -114,6 +114,22 @@ async function polygonTvl(timestamp, block, chainBlocks) {
 
   return balances;
 }
+async function arbiTvl(_, _b, _cb, { api, }) {
+  const balances = {}
+  const vaults = [
+    '0xfdeb59a2b4891ea17610ee38665249acc9fcc506',
+  ]
+  const tokens = await api.multiCall({
+    abi: 'address:token',
+    calls: vaults,
+  })
+  const totalBalance = await api.multiCall({
+    abi: 'function totalBalance() view returns (uint256 balance, uint256 usdcPlatformLiquidity, uint256 intrinsicDEXVolTokenBalance, uint256 volTokenPositionBalance, uint256 dexUSDCAmount, uint256 dexVolTokensAmount)',
+    calls: vaults,
+  })
+  tokens.forEach((t, i) => sdk.util.sumSingleBalance(balances, t, totalBalance[i].balance, api.chain))
+  return balances
+}
 
 module.exports = {
   misrepresentedTokens: true,
@@ -133,6 +149,7 @@ module.exports = {
   },
   arbitrum: {
     staking: staking(stakingContract_arbitrum, GOVI_arbitrum, "arbitrum", GOVI),
+    tvl: arbiTvl,
   },
   methodology:
     "Counts liquidity on the Platforms and Staking seccions through Platfrom and Staking Contracts",

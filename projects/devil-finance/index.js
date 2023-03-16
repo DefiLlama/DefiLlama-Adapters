@@ -1,15 +1,12 @@
-const retry = require("../helper/retry");
-const axios = require("axios");
+const { get } = require('../helper/http')
 
 function tvl(type) {
   return async () => {
-    var response = await retry(
-      async (_) => await axios.get("https://devilfinance.io/api/tvls")
-    );
+    var response = await get("https://devilfinance.io/api/tvls")
 
-    return { tether: response.data[type] };
+    return { tether: response[type] };
   };
-};
+}
 
 module.exports = {
   misrepresentedTokens: true,

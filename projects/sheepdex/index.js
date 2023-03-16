@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const retry = require("../helper/retry");
 const { GraphQLClient, gql } = require("graphql-request");
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
@@ -21,7 +20,7 @@ const bscTvl = async (_, _b, { bsc: block }) => {
   `;
 
   const pools = (
-    await retry(async (bail) => await graphQLClient.request(query))
+    await graphQLClient.request(query)
   ).pools.map((pool) => pool.id);
   const { output: token0s } = await sdk.api.abi.multiCall({
     abi: abi.token0,

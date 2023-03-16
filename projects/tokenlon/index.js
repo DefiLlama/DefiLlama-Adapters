@@ -51,8 +51,8 @@ const ethTvl = async (timestamp, block) => {
 
   const [ tokens_amm, tokens_pmm] = await Promise.all([covalentGetTokens(amm_wrapper_addr), covalentGetTokens(pmm_addr)])
   const toa = []
-  tokens_amm.forEach(t => toa.push([t.contract_address, amm_wrapper_addr]))
-  tokens_pmm.forEach(t => toa.push([t.contract_address, pmm_addr]))
+  tokens_amm.forEach(t => toa.push([t, amm_wrapper_addr]))
+  tokens_pmm.forEach(t => toa.push([t, pmm_addr]))
 
   return sumTokens2({ tokensAndOwners: toa, block, });
 };
@@ -62,15 +62,6 @@ module.exports = {
     tvl: ethTvl,
     staking: staking(CONTRACT_FOR_STAKING, LON_TOKEN),
     pool2: (_, block) => sumTokens2({ tokensAndOwners: STAGES_STAKING_CONTRACTS, block, resolveLP: true }),
-    treasury: (_, block) => sumTokens2({ owner: MULTISIG_ONE, tokens: [
-      '0xdac17f958d2ee523a2206206994597c13d831ec7',
-      '0x55d31f68975e446a40a2d02ffa4b0e1bfb233c2f',
-      '0x8E870D67F660D95d5be530380D0eC0bd388289E1', //USDP
-      '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', //USDC
-      '0x0000000000085d4780B73119b644AE5ecd22b376', //TUSD
-      '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984', //UNI
-
-    ], block, }),
   },
   
 };

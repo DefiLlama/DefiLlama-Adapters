@@ -5,33 +5,7 @@ const { getParamCalls, getUniqueAddresses } = require('../helper/utils')
 const APERTURE_MANAGER_ADDRESS = "0xeD380115259FcC9088c187Be1279678e23a6E565";
 
 const abis = {
-  strategyIdToMetadata: {
-    "inputs": [
-      {
-        "name": "arg0",
-        "type": "uint64"
-      }],
-    "name": "strategyIdToMetadata",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      },
-      {
-        "internalType": "contract IERC20",
-        "name": "",
-        "type": "address"
-      },
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
+  strategyIdToMetadata: "function strategyIdToMetadata(uint64 arg0) view returns (string, string, address)",
 }
 
 async function getVaults(chain, block) {

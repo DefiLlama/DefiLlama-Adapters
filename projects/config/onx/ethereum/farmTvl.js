@@ -1,5 +1,5 @@
 const BigNumber = require('bignumber.js');
-const { ZERO, getTotalSupplyOf, } = require('../../../helper/ankr/utils');;
+const { ZERO, getTotalSupplyOf, } = require('../../../helper/ankr/utils');
 const sdk = require("@defillama/sdk")
 
 const getSymbolPrice = (

@@ -9,7 +9,7 @@ module.exports = masterchefExports({
   useDefaultCoreAssets: true,
   masterchef: "0x16a06259725e4c7dFcE648f24D3443AfB96Aa0e5",
   nativeToken: "0x3b1a7770A8c97dCB21c18a2E18D60eF1B01d6DeC",
-	poolInfoABI: {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"poolInfo","outputs":[{"internalType":"contract IERC20","name":"lpToken","type":"address"},{"internalType":"uint256","name":"allocPoint","type":"uint256"},{"internalType":"uint256","name":"lastRewardBlock","type":"uint256"},{"internalType":"uint256","name":"accBearPerShare","type":"uint256"}],"stateMutability":"view","type":"function"}
+	poolInfoABI: 'function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accBearPerShare)'
 })
 
 module.exports.deadFrom = 1648765747

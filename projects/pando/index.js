@@ -1,5 +1,4 @@
-const retry = require('async-retry');
-const axios = require("axios");
+const { get } = require('../helper/http')
 const BigNumber = require("bignumber.js");
 const { toUSDTBalances } = require('../helper/balances')
 
@@ -8,8 +7,8 @@ const APIs = {
 }
 
 async function tvl() {
-  const resp = await retry(async bail => await axios.get(APIs.lake))
-  const pairs = resp.data.data.pairs;
+  const resp = await get(APIs.lake)
+  const pairs = resp.data.pairs;
   let sum = new BigNumber(0);
   for (let ix = 0; ix < pairs.length; ix++) {
     const pair = pairs[ix];
