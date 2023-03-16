@@ -49,7 +49,7 @@ async function totalTvl() {
         }
     });
 
-    return { 'USD': tvl }
+    return { tether: tvl }
 }
 
 module.exports = {
