@@ -51,10 +51,10 @@ async function tvl(_, _b, _2, { api }) {
   await setCache(project, chain, cache)
 
   return balances;
-};
+}
 
 Object.keys(chains).forEach(chain => {
   module.exports[chain] = { tvl }
-});
+})
 
 module.exports.misrepresentedTokens = true
