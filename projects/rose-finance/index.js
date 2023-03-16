@@ -1,13 +1,12 @@
 const { sumTokensExport, unknownTombs } = require("../helper/unknownTokens");
 
-const token = "0xf989C34E5Dbf0e94a34CFf75A0fa3Abd05C23061";
-const shares = "0x0Fa11B13c8CC9AEc2EdB3512f6F079Ad148c5955";
-const shareRewardPool = "0xF70286B0FEfB0Eab29247B4DF1147505808Bc235";
-const boardroom = "0x69f2afb54cd03b687d37110a5d67feA597F49a55";
-const GenMasterchef = "0x9e387B3679cc55d993d5f001006aC94138ED462C";
+const token = "0x07D49375A3213eF25aAA47C97A2d23A754bB8f8a";
+const shares = "0xe318140bF0A31EAAf401AD62801b6c7427b36773";
+const shareRewardPool = "0x989128334442946ed6508C45C43758a4e1E14923";
+const boardroom = "0x9d7BBFA16E80A9C4ce9ecf3B706166aEf1477cE1";
+const GenMasterchef = "0x29dA4fF649d39510f633Cd804B860858C333E5aD";
 
 const pool2LPs = [
-  // token,  // ROSE
   "0xE368148b5A3771211C96F950B7d4f0C7E5427C1D", // ROSE-ETH
   "0x0DB2Efc6c9A93eA22152ef410E3099f0cd67A599" // SHARE-WETH
 ]
