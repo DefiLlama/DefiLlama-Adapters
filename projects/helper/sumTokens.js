@@ -41,7 +41,7 @@ async function getBalance(chain, account) {
 }
 
 function sumTokensExport(options) {
-  return async (_, _b, _cb, { api }) => sumTokens({ ...api, ...options})
+  return async (_, _b, _cb, { api }) => sumTokens({ ...api, api, ...options})
 }
 
 async function sumTokens(options) {

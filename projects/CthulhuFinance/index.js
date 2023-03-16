@@ -7,7 +7,7 @@ function vaultTvl(vaults) {
       api.multiCall({ abi: 'uint256:balance', calls: vaults }),
     ])
     api.addTokens(tokens, bals)
-    return sumUnknownTokens({ ...api, balances: api.balances, tokensAndOwners: [], useDefaultCoreAssets: true, lps: ['0xb220503db292a4d01fdb1725b95c0bdd734a6ce3'], resolveLP: true, })
+    return sumUnknownTokens({ api, tokensAndOwners: [], useDefaultCoreAssets: true, lps: ['0xb220503db292a4d01fdb1725b95c0bdd734a6ce3'], resolveLP: true, })
   }
 }
 

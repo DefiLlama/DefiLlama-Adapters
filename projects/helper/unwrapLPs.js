@@ -553,7 +553,13 @@ async function genericUnwrapCvx(balances, holder, cvx_BaseRewardPool, block, cha
   return balances
 }
 
-async function unwrapLPsAuto({ balances, block, chain = "ethereum", transformAddress, excludePool2 = false, onlyPool2 = false, pool2Tokens = [], blacklistedLPs = [], abis = {}, }) {
+async function unwrapLPsAuto({ api, balances, block, chain = "ethereum", transformAddress, excludePool2 = false, onlyPool2 = false, pool2Tokens = [], blacklistedLPs = [], abis = {}, }) {
+  if (api) {
+    chain = api.chain ?? chain
+    block = api.block ?? block
+    if (!balances) balances = api.getBalances()
+  }
+
   if (!transformAddress)
     transformAddress = await getChainTransform(chain)
 
@@ -673,7 +679,7 @@ async function sumTokens2({
   if (api) {
     chain = api.chain ?? chain
     block = api.block ?? block
-    if (!balances) balances = api.balances
+    if (!balances) balances = api.getBalances()
   } else if (!balances) {
     balances = {}
   }

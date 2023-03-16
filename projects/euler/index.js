@@ -39,5 +39,5 @@ async function borrowed(_, _b, _cb, { api, }) {
   })
   const bals = await api.multiCall({  abi: 'erc20:totalSupply', calls: logs.map(i => i.dToken)})
   api.addTokens(logs.map(i => i.underlying.toLowerCase()), bals)
-  delete api.balances["ethereum:0x31c8eacbffdd875c74b94b077895bd78cf1e64a3"]
+  delete api.getBalances()["ethereum:0x31c8eacbffdd875c74b94b077895bd78cf1e64a3"]
 }
