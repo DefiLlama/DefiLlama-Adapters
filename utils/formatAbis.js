@@ -2,6 +2,7 @@ const ethers = require('ethers')
 const glob = require('glob')
 const jsonfile = require('jsonfile')
 
+let data = require('../projects/test/abi.js')
 const rootFolder = '../projects'
 const rootFolderTest = '../projects/yfii'
 
@@ -90,7 +91,6 @@ function print() {
 }
 
 
-let data = require('../projects/test/abi.js')
 
 
 print()
