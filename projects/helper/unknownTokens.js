@@ -94,7 +94,7 @@ function sumTokensExport({ tokensAndOwners = [],
   coreAssets = [], owner, tokens, restrictTokenRatio, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
   log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [], useDefaultCoreAssets = false,
 }) {
-  return (_, _b, _cb, { api }) => sumUnknownTokens({ ...api, tokensAndOwners, onlyLPs, minLPRatio, coreAssets, owner, tokens, restrictTokenRatio, blacklist, skipConversion, log_coreAssetPrices, log_minTokenValue, owners, lps, useDefaultCoreAssets, })
+  return (_, _b, _cb, { api }) => sumUnknownTokens({ api, tokensAndOwners, onlyLPs, minLPRatio, coreAssets, owner, tokens, restrictTokenRatio, blacklist, skipConversion, log_coreAssetPrices, log_minTokenValue, owners, lps, useDefaultCoreAssets, })
 }
 
 function staking({ tokensAndOwners = [],
@@ -126,13 +126,13 @@ function staking({ tokensAndOwners = [],
 function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = [], lps = [], nativeToken, poolInfoABI = masterchefAbi.poolInfo, poolLengthAbi = masterchefAbi.poolLength, getToken = output => output.lpToken, blacklistedTokens = [], useDefaultCoreAssets = false, }) {
   if (!coreAssets.length && useDefaultCoreAssets)
     coreAssets = getCoreAssets(chain)
-  let allTvl
+  let allTvl = {}
   if (nativeToken) nativeTokens.push(nativeToken)
   nativeTokens = getUniqueAddresses(nativeTokens)
 
   async function getAllTVL(block) {
-    if (!allTvl) allTvl = getTVL()
-    return allTvl
+    if (!allTvl[block]) allTvl[block] = getTVL()
+    return allTvl[block]
 
     async function getTVL() {
       const transform = await getChainTransform(chain)

@@ -12,5 +12,8 @@ const collaterals = [
 module.exports = compoundV3Exports({
   ethereum: {
     markets, collaterals,
+  },
+  polygon: {
+    markets:["0xF25212E676D1F7F89Cd72fFEe66158f541246445"], collaterals:["0x2791bca1f2de4661ed88a30c99a7a9449aa84174"],
   }
 })

@@ -14,7 +14,7 @@ async function tvl(_timestamp, block, _1, { api }) {
     })
     holders.forEach(i => tokens.forEach(j => tokensAndOwners.push([j, i])))
   }
-  return sumTokens2({ ...api, tokensAndOwners, })
+  return sumTokens2({ api, tokensAndOwners, })
 }
 
 module.exports = {
