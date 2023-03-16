@@ -8,7 +8,7 @@ function gmxExports({ vault, }) {
       itemAbi: abis.allWhitelistedTokens,
     })
 
-    return sumTokens2({ ...api, owner: vault, tokens: tokenAddresses, })
+    return sumTokens2({ api, owner: vault, tokens: tokenAddresses, })
   }
 }
 

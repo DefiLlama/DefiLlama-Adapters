@@ -50,7 +50,7 @@ async function getTvl(
     const block = chainBlocks[chain]
     const api = new sdk.ChainApi({ chain, block: chainBlocks[chain], timestamp: unixTimestamp, })
     let tvlBalances = await tvlFunction(unixTimestamp, ethBlock, chainBlocks, { api, chain, block, storedKey });
-    if (!tvlBalances && Object.keys(api.balances).length) tvlBalances = api.balances
+    if (!tvlBalances && Object.keys(api.getBalances()).length) tvlBalances = api.getBalances()
     const tvlResults = await computeTVL(
       tvlBalances,
       "now",

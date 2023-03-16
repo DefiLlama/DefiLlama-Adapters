@@ -1,4 +1,3 @@
-const { getCoreAssets, } = require('../helper/tokenMapping');
 const { getConfig, getCache, setCache, } = require('../helper/cache');
 const { sumUnknownTokens, getLPList, } = require("../helper/cache/sumUnknownTokens");
 // const { unwrapUniswapV3NFTs } = require("../helper/unwrapLPs");
@@ -21,7 +20,7 @@ const chains = {
 }
 
 async function fetch(chainId) {
-  const response = await getConfig(project, 'https://api.flokifi.com/tokens/vault-pairs-tvl?chainId=' + chainId);
+  const response = await getConfig(`${project}/${chainId}`, 'https://api.flokifi.com/tokens/vault-pairs-tvl?chainId=' + chainId);
   return response.tokensAndVaults;
 }
 
@@ -37,28 +36,25 @@ function splitPairs(pairs) {
   return { tokensAndOwners, uniV3NFTHolders };
 }
 
-function tvlByChain(chain) {
-  return async (_, _b, _2, { api }) => {
-    const pairs = await fetch(chains[chain]);
-    let cache = getCache(project, chain) || {}
-    const { tokensAndOwners, uniV3NFTHolders } = splitPairs(pairs);
-    let lpList = await getLPList({ lps: tokensAndOwners.map(i => i[0]), ...api, cache, api, })
-    // if (uniV3NFTHolders.length)
-      // await unwrapUniswapV3NFTs({ balances, owners: uniV3NFTHolders, chain, block });
-      const balances = await sumUnknownTokens({
-      tokensAndOwners: tokensAndOwners.filter(i => lpList.includes(i[0])),
-      api, ...api, useDefaultCoreAssets: true,
-    });
-    await setCache(project, chain, cache)
+async function tvl(_, _b, _2, { api }) {
+  const chain = api.chain
+  const pairs = await fetch(chains[chain]);
+  let cache = getCache(project, chain) || {}
+  const { tokensAndOwners, uniV3NFTHolders } = splitPairs(pairs);
+  let lpList = await getLPList({ lps: tokensAndOwners.map(i => i[0]), ...api, cache, api, })
+  // if (uniV3NFTHolders.length)
+  // await unwrapUniswapV3NFTs({ balances, owners: uniV3NFTHolders, chain, block });
+  const balances = await sumUnknownTokens({
+    tokensAndOwners: tokensAndOwners.filter(i => lpList.includes(i[0])),
+    api, useDefaultCoreAssets: true,
+  });
+  await setCache(project, chain, cache)
 
-    return balances;
-  };
-}
+  return balances;
+};
 
 Object.keys(chains).forEach(chain => {
-  module.exports[chain] = {
-    tvl: tvlByChain(chain)
-  }
+  module.exports[chain] = { tvl }
 });
 
 module.exports.misrepresentedTokens = true

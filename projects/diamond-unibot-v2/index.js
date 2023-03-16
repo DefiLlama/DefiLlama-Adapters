@@ -1,5 +1,5 @@
 const { getLogs, getAddress } = require('../helper/cache/getLogs')
-const { sumTokens2, unwrapUniswapV3NFTs } = require('../helper/unwrapLPs')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const lendingPools = [
   ['0x82af49447d8a07e3bd95bd0d56f35241523fbab1', '0xedd1efa76fe59e9106067d824b89b59157c5223c'], // WETH
@@ -16,7 +16,7 @@ const vaults = [
 ]
 
 async function tvl(_, _b, _cb, { api, }) {
-  const balances = await sumTokens2({ api, ownerTokens: vaults })
+  await sumTokens2({ api, ownerTokens: vaults })
   const logs = await getLogs({
     api,
     target: '0x8a908ec03e2610fa8dcaec93bb010560780ec860',
@@ -27,10 +27,10 @@ async function tvl(_, _b, _cb, { api, }) {
   const pools = logs.map(i => getAddress(i.topics[1]))
   const wantTokens = logs.map(i => getAddress(i.data))
 
-  await unwrapUniswapV3NFTs({ ...api, balances, owners: pools })
+  await sumTokens2({ api, owners: pools, resolveUniV3: true, })
   const tokensAndOwners = wantTokens.map((i, idx) => [i, pools[idx]])
   tokensAndOwners.push(...lendingPools)
-  return sumTokens2({ balances, api, tokensAndOwners })
+  return sumTokens2({ api, tokensAndOwners })
 }
 
 module.exports = {
