@@ -1,110 +1,38 @@
-const { getConfig } = require("../helper/cache");
+const { getProcolAddresses } = require("../alpaca-finance/lyf");
 const abi = require("./abi.json");
-const sdk = require("@defillama/sdk");
-const BigNumber = require("bignumber.js");
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
-async function getProtocolAddresses(chain) {
-  if (chain == "bsc") {
-    return await getConfig(
-      "alpaca-finance/lyf-bsc",
-      "https://raw.githubusercontent.com/alpaca-finance/bsc-alpaca-contract/main/.mainnet.json"
-    );
-  }
-  if (chain == "fantom") {
-    return await getConfig(
-      "alpaca-finance/lyf-fantom",
-      "https://raw.githubusercontent.com/alpaca-finance/bsc-alpaca-contract/main/.fantom_mainnet.json"
-    );
-  }
-}
-
-async function calLendingTvl(chain, block) {
-  /// @dev Initialized variables
-  const balances = {};
-
+async function tvl(_, _b, _cb, { api, }) {
   /// @dev Getting all addresses from Github
-  const addresses = await getProtocolAddresses(chain);
-
-  const vaultsUnutilizedBalance = (
-    await sdk.api.abi.multiCall({
-      block,
-      abi: abi.balanceOf,
-      calls: addresses["Vaults"].map((v) => {
-        return {
-          target: v["baseToken"],
-          params: [v["address"]],
-        };
-      }),
-      chain,
-    })
-  ).output;
-
-  for (let i = 0; i < addresses["Vaults"].length; i++) {
-    const vault = addresses["Vaults"][i];
-
-    await sdk.util.sumSingleBalance(
-      balances,
-      vault.baseToken,
-      vaultsUnutilizedBalance[i].output,
-      chain
-    );
-  }
-
-  return balances;
+  const addresses = await getProcolAddresses(api.chain)
+  return sumTokens2({ api, tokensAndOwners: addresses["Vaults"].map(v => [v.baseToken, v.address]) })
 }
 
-async function calBorrowingTvl(chain, block) {
-  /// @dev Initialized variables
-  const balances = {};
-
+async function borrowed(_, _b, _cb, { api, }) {
   /// @dev Getting all addresses from Github
-  const addresses = await getProtocolAddresses(chain);
+  const addresses = await getProcolAddresses(api.chain);
 
-  const vaultsDebtVal = (
-    await sdk.api.abi.multiCall({
-      block,
-      abi: abi.vaultDebtVal,
-      calls: addresses["Vaults"].map((v) => {
-        return { target: v.address };
-      }),
-      chain,
-    })
-  ).output;
+  const vaultsDebtVal = await api.multiCall({
+    abi: abi.vaultDebtVal,
+    calls: addresses["Vaults"].map((v) => v.address),
+  })
 
-  const vaultsPendingInterest = await pendingInterest(addresses, block, chain);
-
-  for (let i = 0; i < addresses["Vaults"].length; i++) {
-    const vault = addresses["Vaults"][i];
-
-    const vaultPendingInterest = new BigNumber(vaultsPendingInterest[i].output);
-    const vaultDebtValue = new BigNumber(vaultsDebtVal[i].output).plus(
-      vaultPendingInterest
-    );
-
-    await sdk.util.sumSingleBalance(
-      balances,
-      vault.baseToken,
-      vaultDebtValue.toFixed(0),
-      chain
-    );
-  }
-  return balances;
+  const vaultsPendingInterest = await pendingInterest(addresses, api);
+  addresses["Vaults"].forEach((v, i) => {
+    api.add(v.baseToken, +vaultsPendingInterest[i] + +vaultsDebtVal[i])
+  })
 }
 
-async function pendingInterest(addresses, block, chain) {
-  return (
-    await sdk.api.abi.multiCall({
-      block,
-      abi: abi.pendingInterest,
-      calls: addresses["Vaults"].map((v) => {
-        return { target: v.address, params: [0] };
-      }),
-      chain,
-    })
-  ).output;
+async function pendingInterest(addresses, api) {
+  return api.multiCall({
+    abi: abi.pendingInterest,
+    calls: addresses["Vaults"].map((v) => {
+      return { target: v.address, params: [0] };
+    }),
+  })
 }
 
 module.exports = {
-  calLendingTvl,
-  calBorrowingTvl,
+  tvl,
+  borrowed,
 };
