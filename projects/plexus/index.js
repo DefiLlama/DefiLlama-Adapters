@@ -1,0 +1,2 @@
+//etherum
+const PLEXUS_TOKEN = "0x60b9c9C167bA57cc376b0FaafC68Df5C9882328e";
