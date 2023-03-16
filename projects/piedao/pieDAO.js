@@ -28,7 +28,7 @@ module.exports = class PieDAO {
     const pieCalls = Object.values(this.pies).map(pie => ({ target: pie }))
     const { output: supplies } = await sdk.api.abi.multiCall({
       calls: pieCalls,
-      abi: pieABI.find(i => i.name === 'totalSupply')
+      abi: pieABI.totalSupply
     })
     const calls = supplies.map(({ input, output }) => ({
       target: input.target,
@@ -36,7 +36,7 @@ module.exports = class PieDAO {
     }))
     const { output: tokensAndAmountsAll } = await sdk.api.abi.multiCall({
       calls,
-      abi: pieABI.find(i => i.name === 'calcTokensForAmount')
+      abi: pieABI.calcTokensForAmount
     })
     for (let j = 0; j < tokensAndAmountsAll.length; j++) {
       const tokensAndAmounts = tokensAndAmountsAll[j].output
@@ -70,14 +70,14 @@ module.exports = class PieDAO {
         case "all":
           const { output: poolCount } = await sdk.api.abi.call({
             target: poolAddress,
-            abi: pieStakingAll.find(i => i.name === 'poolCount')
+            abi: pieStakingAll.poolCount
           })
           const poolCalls = []
           for (let i=0;i<poolCount;i++) 
             poolCalls.push({ target: poolAddress, params: [i]})
           const { output: underlyingTokens } = await sdk.api.abi.multiCall({
             calls: poolCalls,
-            abi: pieStakingAll.find(i => i.name === 'getPoolToken')
+            abi: pieStakingAll.getPoolToken
           })
           const tokens = underlyingTokens.map(i => i.output)
           const tokenCalls = tokens.map(t => ({ target: t }))
@@ -112,7 +112,7 @@ module.exports = class PieDAO {
               case "BPT":
                 response = await sdk.api.abi.call({ 
                   target: underlyingAddress,
-                  abi: IBPT.find(i => i.name === 'getFinalTokens')
+                  abi: IBPT.getFinalTokens
                 })
                 underlyings = response.output
                 hangingPromises.push(this.calculateUnderLyings(underlyings, underlyingAddress, underlyingBalance, underlyingSupply))
@@ -121,7 +121,7 @@ module.exports = class PieDAO {
               case "BCP":
                 response = await sdk.api.abi.call({ 
                   target: underlyingAddress,
-                  abi: IBCP.find(i => i.name === 'getTokens')
+                  abi: IBCP.getTokens
                 })
                 underlyings = response.output
                 hangingPromises.push(this.calculateUnderLyings(underlyings, underlyingAddress, underlyingBalance, underlyingSupply))
@@ -133,7 +133,7 @@ module.exports = class PieDAO {
         case "balancer":
           underlyingAddress = stakingPool.lp ? stakingPool.lp : (await sdk.api.abi.call({ 
             target: poolAddress,
-            abi: IStakingBalancer.find(i => i.name === 'uni')
+            abi: IStakingBalancer.uni
           })).output;
           //console.log("calculatePools", stakingPool.type, underlyingAddress);
 
@@ -142,7 +142,7 @@ module.exports = class PieDAO {
 
           response = await sdk.api.abi.call({ 
             target: underlyingAddress,
-            abi: IStakedToken.find(i => i.name === 'getFinalTokens')
+            abi: IStakedToken.getFinalTokens
           })
           underlyings = response.output
           hangingPromises.push(this.calculateUnderLyings(underlyings, underlyingAddress, underlyingBalance, underlyingSupply))
@@ -151,7 +151,7 @@ module.exports = class PieDAO {
         case "piedao":
           response = await sdk.api.abi.call({ 
             target: poolAddress,
-            abi: IStakedPieDAO.find(i => i.name === 'uni')
+            abi: IStakedPieDAO.uni
           })
           underlyingAddress = response.output
           underlyingBalance = new BigNumber((await sdk.api.erc20.balanceOf({ target: underlyingAddress, owner: poolAddress })).output);
@@ -159,7 +159,7 @@ module.exports = class PieDAO {
 
           response = await sdk.api.abi.call({ 
             target: underlyingAddress,
-            abi: IBCP.find(i => i.name === 'getTokens')
+            abi: IBCP.getTokens
           })
           underlyings = response.output
           hangingPromises.push(this.calculateUnderLyings(underlyings, underlyingAddress, underlyingBalance, underlyingSupply))
@@ -168,7 +168,7 @@ module.exports = class PieDAO {
         case "uniswap":
           response = await sdk.api.abi.call({ 
             target: poolAddress,
-            abi: IStakingUniswap.find(i => i.name === 'uni')
+            abi: IStakingUniswap.uni
           })
           underlyingAddress = response.output
           hangingPromises.push(sumTokens(balances, [[underlyingAddress, poolAddress]], ))

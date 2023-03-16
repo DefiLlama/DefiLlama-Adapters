@@ -1,54 +1,9 @@
 let abis = {};
 
-abis.smoothy = [
-    {
-        "inputs": [],
-        "name": "_ntokens",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "bTokenIdx",
-                "type": "uint256"
-            }
-        ],
-        "name": "getTokenStats",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "softWeight",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "hardWeight",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "balance",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "decimals",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-];
+abis.smoothy = {
+    _ntokens: "uint256:_ntokens",
+    getTokenStats: "function getTokenStats(uint256 bTokenIdx) view returns (uint256 softWeight, uint256 hardWeight, uint256 balance, uint256 decimals)",
+  };
 
 
 abis.tokens = [

@@ -47,8 +47,8 @@ async function tvl(timestamp, _, { bsc: block }) {
         transform(tokenInfos[i].input.params[0]), 
         tokenInfos[i].output.totalPrincipal
         );
-    };
-  };
+    }
+  }
 
   await unwrapUniswapLPs(
     balances, 
@@ -58,7 +58,7 @@ async function tvl(timestamp, _, { bsc: block }) {
     transform);
 
 	return balances;
-};
+}
 
 module.exports = {
   misrepresentedTokens: true,

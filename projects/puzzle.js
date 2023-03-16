@@ -6,7 +6,7 @@ async function tvl() {
   const tvl = pools.reduce((acc, { statistics: { liquidity } = {} }) => acc + +(liquidity || 0), 0)
 
   return toUSDTBalances(tvl)
-};
+}
 
 module.exports = {
   timetravel: false,

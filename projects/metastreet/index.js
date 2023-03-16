@@ -45,7 +45,7 @@ async function getTVL(balances, block, vaults, tokens) {
     // Sum up token balances
     for (let i = 0; i < vaults.length; i++) {
         sdk.util.sumSingleBalance(balances, tokens[i], vaultBalances[i]);
-    };
+    }
 
     return balances;
 }
@@ -65,7 +65,7 @@ async function getBorrowed(balances, block, vaults, tokens) {
     // Sum up token balances
     for (let i = 0; i < vaults.length; i++) {
         sdk.util.sumSingleBalance(balances, tokens[i], vaultBalances[i]);
-    };
+    }
 
     return balances;
 }

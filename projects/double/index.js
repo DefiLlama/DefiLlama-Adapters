@@ -19,7 +19,7 @@ async function staking(timestamp, block, chainBlocks) {
             chain: 'bsc'
         })).output.amount
     };
-};
+}
 
 function tvl(pool2 = false) {
     return async (timestamp, block, chainBlocks) => {
@@ -80,7 +80,7 @@ function tvl(pool2 = false) {
                 excludedTokens.includes(pairAddresses[i].output.toLowerCase())
             ) {
                 continue;
-            };
+            }
             if (excludedTokens.includes(token0s.output[i].output.toLowerCase()) ||
                 excludedTokens.includes(token1s.output[i].output.toLowerCase())) {
                 pool2Positions.push({
@@ -92,8 +92,8 @@ function tvl(pool2 = false) {
                     balance: pairBalances[i].output,
                     token: pairAddresses[i].output
                 });
-            };
-        };
+            }
+        }
 
         await unwrapUniswapLPs(
             balances,
@@ -105,7 +105,7 @@ function tvl(pool2 = false) {
 
         return balances;
     };
-};
+}
 
 module.exports = {
     doublecounted: true,

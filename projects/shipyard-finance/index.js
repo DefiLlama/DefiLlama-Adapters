@@ -1,8 +1,7 @@
 const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
 const {usdtAddress} = require("../helper/balances");
-const retry = require("../helper/retry");
-const axios = require("axios");
+const { post } = require('../helper/http')
 
 const USDT_DECIMALS = 6;
 
@@ -38,11 +37,11 @@ function chainTvl(chain, config) {
       coins.push(`${chain}:${want}`.toLowerCase());
     }
 
-    const getCoins = () => axios.post("https://coins.llama.fi/prices", {
+    const getCoins = post("https://coins.llama.fi/prices", {
       "coins": coins
-    });
+    })
 
-    const coinsData = (await retry(getCoins)).data.coins;
+    const coinsData = (await getCoins).coins;
 
     for (let index = 0; index < config.vaults.length; index++) {
       const vault = config.vaults[index];

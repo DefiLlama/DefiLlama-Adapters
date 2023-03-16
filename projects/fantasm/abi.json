@@ -1,35 +1,11 @@
 {
   "bank": {
-    "usableFtmBalance": {
-      "inputs": [],
-      "name": "usableCollateralBalance",
-      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-      "stateMutability": "view",
-      "type": "function"
-    }
+    "usableFtmBalance": "uint256:usableCollateralBalance"
   },
   "bankV1": {
-    "usableFtmBalance": {
-      "inputs": [],
-      "name": "usableFtmBalance",
-      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-      "stateMutability": "view",
-      "type": "function"
-    }
+    "usableFtmBalance": "uint256:usableFtmBalance"
   },
   "multiFeeDistribution": {
-    "totalSupply": {
-      "inputs": [],
-      "name": "totalSupply",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    }
+    "totalSupply": "uint256:totalSupply"
   }
 }

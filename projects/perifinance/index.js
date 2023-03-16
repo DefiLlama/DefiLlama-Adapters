@@ -76,7 +76,7 @@ module.exports = {
   }
 
   return "0x" + hex;
-};
+}
 
 /**
  * Should be called to pad string to expected length
@@ -94,4 +94,4 @@ function rightPad(string, chars, sign) {
   var padding = (chars - string.length + 1 >= 0) ? chars - string.length + 1 : 0;
 
   return (hasPrefix ? '0x' : '') + string + (new Array(padding).join(sign ? sign : "0"));
-};
+}

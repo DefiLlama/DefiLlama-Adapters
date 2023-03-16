@@ -1,33 +1,64 @@
+const { graphFetchById, } = require('../helper/http')
+const { ART_BLOCKS, sumArtBlocks } = require('../helper/nft')
 const sdk = require('@defillama/sdk')
-const { nullAddress, sumTokens2 } = require('../helper/unwrapLPs')
-const { sliceIntoChunks, log, } = require('../helper/utils')
+
+const query = `
+query get_pairs($lastId: String, $block: Int) {
+  pairs(
+    first: 1000
+    block: { number: $block }
+    where: {
+      and: [
+        {id_gt: $lastId}
+        {
+            or: [
+            { numNfts_gt: 0 },
+            { ethBalance_gt: 0 },
+          ]
+        }
+      ]
+    }
+    ) {
+    id
+    ethBalance
+    collection {
+      id
+    }
+    spotPrice
+    numNfts
+  }
+}`
 
 module.exports = {
-  methodology: 'Sum up all the ETH in pools',
+  methodology: 'Sum up all the ETH in pools and count whitelisted NFT values as well (price fetched from chainlink)',
+  hallmarks: [
+    [Math.floor(new Date('2022-12-06') / 1e3), 'TVL includes whitelisted nft value as well'],
+  ],
   ethereum: {
-    tvl: async (_, block) => {
-      const chain = 'ethereum'
-      const PairFactory = '0xb16c1342E617A5B6E4b631EB114483FDB289c0A4'
-      const logs = await sdk.api.util.getLogs({
-        keys: [],
-        toBlock: block,
-        target: PairFactory,
-        fromBlock: 14650107,
-        topic: 'NewPair(address)',
+    tvl: async (timestamp, block, chainBlocks, { api }) => {
+      const data = await graphFetchById({
+        endpoint: 'https://api.thegraph.com/subgraphs/name/zeframlou/sudoswap',
+        query,
+        options: {
+          timestamp, chain: 'ethereum', chainBlocks, useBlock: true,
+        }
+      })
+      const balances = {}
+      const artBlockOwners = []
+      data.forEach(({ ethBalance, collection, numNfts, id }) => {
+        sdk.util.sumSingleBalance(balances, 'ethereum', ethBalance / 1e18)
+        const nft = collection.id.toLowerCase()
+
+        if (+numNfts > 0) {
+          if (nft === ART_BLOCKS) {
+            artBlockOwners.push(id)
+            return;
+          }
+          sdk.util.sumSingleBalance(balances, nft, numNfts)
+        }
       })
 
-      // TODO: improve logic here, might end up with too many pools
-      const ownersList = logs.output.map(i => `0x${i.data.substring(26, 66)}`)
-      log('List of owners: %s', ownersList.length)
-
-      const ownerArrays = sliceIntoChunks(ownersList, 100)
-      const balances = {}
-      let i = 0
-      for (const owners of ownerArrays) {
-        log('fetching %s of %s', ++i, ownerArrays.length)
-        await sumTokens2({ tokens: [nullAddress], owners, chain, block, balances, })
-      }
-      return balances
+      return sumArtBlocks({ api, owners: artBlockOwners, balances, })
     }
   }
 }

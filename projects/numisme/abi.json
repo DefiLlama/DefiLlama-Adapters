@@ -1,56 +1,6 @@
 {
-    "token": {
-        "inputs": [],
-        "name": "token",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    "vaultToken": {
-        "inputs": [],
-        "name": "vaultToken",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    "get_virtual_price": {
-        "name": "get_virtual_price",
-        "outputs": [
-            {
-                "type": "uint256",
-                "name": ""
-            }
-        ],
-        "inputs": [],
-        "stateMutability": "view",
-        "type": "function",
-        "gas": 992854
-    },
-    "getPricePerFullShare": {
-        "constant": true,
-        "inputs": [],
-        "name": "getPricePerFullShare",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    }
+  "token": "address:token",
+  "vaultToken": "address:vaultToken",
+  "get_virtual_price": "uint256:get_virtual_price",
+  "getPricePerFullShare": "uint256:getPricePerFullShare"
 }

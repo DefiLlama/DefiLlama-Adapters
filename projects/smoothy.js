@@ -10,7 +10,7 @@ module.exports = {
       const { output: poolLength } = await sdk.api.abi.call({
         block,
         target: imp,
-        abi: abis.abis.smoothy.find(i => i.name === '_ntokens')
+        abi: abis.abis.smoothy._ntokens
       })
       const calls = []
       for (let i = 0; i < poolLength; i++)
@@ -20,7 +20,7 @@ module.exports = {
         block,
         calls,
         target: imp,
-        abi: abis.abis.smoothy.find(i => i.name === 'getTokenStats')
+        abi: abis.abis.smoothy.getTokenStats
       })
       tvls.forEach(t => tvl += t.output.balance / 10 ** t.output.decimals)
       return toUSDTBalances(tvl)
@@ -34,7 +34,7 @@ module.exports = {
         block,
         target: imp,
         chain: 'bsc',
-        abi: abis.abis.smoothy.find(i => i.name === '_ntokens')
+        abi: abis.abis.smoothy._ntokens
       })
       const calls = []
       for (let i = 0; i < poolLength; i++)
@@ -45,7 +45,7 @@ module.exports = {
         calls,
         target: imp,
         chain: 'bsc',
-        abi: abis.abis.smoothy.find(i => i.name === 'getTokenStats')
+        abi: abis.abis.smoothy.getTokenStats
       })
       tvls.forEach(t => tvl += t.output.balance / 10 ** t.output.decimals)
       return toUSDTBalances(tvl)

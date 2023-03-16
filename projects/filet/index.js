@@ -1,12 +1,8 @@
-const retry = require('async-retry');
-const axios = require('axios');
+const { get } = require('../helper/http')
 
 async function fetch() {
-  const resp = await retry(
-    async () =>
-      await axios.get('https://www.filet.finance/pledge/ext/tx/pledgeTxAll')
-  );
-  return resp.data.data.tvl;
+  const resp = await get('https://api.filet.finance/pledge/ext/tx/pledgeTxAll')
+  return resp.data.tvl;
 }
 
 module.exports = {

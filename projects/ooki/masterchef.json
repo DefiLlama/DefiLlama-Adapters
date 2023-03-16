@@ -1,35 +1,4 @@
 {
-  "balanceOf": {
-    "constant": true,
-    "inputs": [
-      { "name": "pid", "type": "uint256" }
-    ],
-    "name": "balanceOf",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-
-  "userInfo": {
-    "constant": true,
-    "inputs": [
-      { "internalType": "uint256", "name": "pid", "type": "uint256" },
-      { "internalType": "uint256", "name": "owner", "type": "address" }
-    ],
-    "name": "userInfo",
-    "outputs":
-    [
-      { "name": "amount", "type": "uint256" },
-      { "name": "rewardDebt", "type": "uint256" }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  }
+  "balanceOf": "function balanceOf(uint256 pid) view returns (uint256)",
+  "userInfo": "function userInfo(uint256 pid, address owner) view returns (uint256 amount, uint256 rewardDebt)"
 }

@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const getReserves = require("./helper/abis/getReserves.json");
+const getReserves = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
 const BigNumber = require("bignumber.js");
 
 const CollateralSystemAddress = "0x78D4664408c06F2BeDc4f108f3Fc8f0AB017a0AE";

@@ -56,15 +56,7 @@ async function fantomTvl(timestamp, block, chainBlocks) {
       params: [
         balances["fantom:0xddc0385169797937066bbd8ef409b5b3c0dfeb52"],
       ],
-      abi: {
-        inputs: [
-          { internalType: "uint256", name: "_amount", type: "uint256" },
-        ],
-        name: "wMEMOToMEMO",
-        outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-        stateMutability: "view",
-        type: "function",
-      },
+      abi: 'function wMEMOToMEMO(uint256 _amount) view returns (uint256)',
       block: chainBlocks.avax,
       chain: "avax",
     })
@@ -73,7 +65,7 @@ async function fantomTvl(timestamp, block, chainBlocks) {
   delete balances["fantom:0xddc0385169797937066bbd8ef409b5b3c0dfeb52"];
 
   return balances;
-};
+}
 
 async function fantomStaking(timestamp, block, chainBlocks) {
   return sumTokens2({

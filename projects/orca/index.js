@@ -1,15 +1,15 @@
-const axios = require('axios');
+const { get } = require('../helper/http')
 
 const endpoint = "https://api.orca.so/pools";
-const wpEndpoint = "https://mainnet-zp2-v2.orca.so/pools";
+const wpEndpoint = "https://api.mainnet.orca.so/v1/whirlpool/list";
 
 async function fetch() {
-    const [pools, whirlpools] = await Promise.all([axios.get(endpoint), axios.get(wpEndpoint)]);
-    const poolsTvl = pools.data.reduce((sum, pool) =>
+    const [pools, {whirlpools}] = await Promise.all([get(endpoint), get(wpEndpoint)]);
+    const poolsTvl = pools.reduce((sum, pool) =>
         sum + pool.liquidity
     , 0);
-    const wpTvl = whirlpools.data.reduce((sum, pool) =>
-        sum + pool.tvl
+    const wpTvl = whirlpools.reduce((sum, pool) =>
+        sum + (pool.tvl ?? 0)
     , 0);
     return poolsTvl + wpTvl;
 }

@@ -1,6 +1,5 @@
 const ABI = require("./Helper.json");
 const sdk = require("@defillama/sdk");
-const { sumTokens2 } = require('../helper/unwrapLPs')
 const chain = 'klaytn'
 
 const { toUSDTBalances } = require("../helper/balances");
@@ -48,7 +47,7 @@ const fetchCollateral = async (ts, _block, chainBlocks) => {
   const { output: assetTvlLists } = await sdk.api.abi.call({
     chain, block,
     target: HELPER_ADDR,
-    abi: ABI.abi.find(i => i.name === 'getCollateralTVL')
+    abi: ABI.abi.getCollateralTVL
   })
   for (let assetTvl of assetTvlLists) {
     sum = sum.plus(assetTvl);
@@ -73,7 +72,7 @@ const fetchPool2 = async (ts, _block, chainBlocks) => {
       chain, block,
       target: HELPER_ADDR,
       params: [pool[`address`]],
-      abi: ABI.abi.find(i => i.name === 'getKlayswapLpFarmTVL')
+      abi: ABI.abi.getKlayswapLpFarmTVL
     })
     klayswapPool2Tvl = klayswapPool2Tvl.plus(value);
   }
@@ -83,7 +82,7 @@ const fetchPool2 = async (ts, _block, chainBlocks) => {
       chain, block,
       target: HELPER_ADDR,
       params: [pool[`address`]],
-      abi: ABI.abi.find(i => i.name === 'getKokonutLpFarmTVL')
+      abi: ABI.abi.getKokonutLpFarmTVL
     })
     kokonutPool2Tvl = kokonutPool2Tvl.plus(value);
   }
@@ -98,7 +97,7 @@ const fetchStakedToken = async (ts, _block, chainBlocks) => {
   let { output: skokoaTvl } = await sdk.api.abi.call({
     chain, block,
     target: HELPER_ADDR,
-    abi: ABI.abi.find(i => i.name === 'getSkokoaTVL')
+    abi: ABI.abi.getSkokoaTVL
   })
   const decimal = 18;
   skokoaTvl = BigNumber(skokoaTvl).dividedBy(BigNumber(10).pow(decimal * 2));

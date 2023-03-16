@@ -2,22 +2,23 @@ const sdk = require("@defillama/sdk");
 const utils = require('../helper/utils');
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { transformBscAddress } = require("../helper/portedTokens");
+const { getConfig } = require('../helper/cache')
 const abi = require("./abi.json");
 
 const url = 'https://api.marsecosystem.com/api/pools';
 
 async function tvl(timestamp, chainBlocks) {
-  const rows = (await utils.fetchURL(url)).data;
+  const rows = (await getConfig('mars-ecosystem', url));
   const localPools = rows.filter(v => v.masterChef.includes('LiquidityMiningMaster') && !v.baseToken.includes('xms'));
   const remotePools = rows.filter(v => v.masterChef.includes('MarsFarmV2') && !v.baseToken.includes('xms'));
   return await calculate(chainBlocks, localPools, remotePools);
-};
+}
 async function staking(timstamp, chainBlocks) {
-  const rows = (await utils.fetchURL(url)).data;
+  const rows = (await getConfig('mars-ecosystem', url));
   const localPools = rows.filter(v => v.masterChef.includes('LiquidityMiningMaster') && v.baseToken.includes('xms'));
   const remotePools = rows.filter(v => v.masterChef.includes('MarsFarmV2') && v.baseToken.includes('xms'));
   return await calculate(chainBlocks, localPools, remotePools);
-};
+}
 
 async function calculate(chainBlocks, localPools, remotePools) {
   let balances = {};
@@ -89,6 +90,5 @@ module.exports = {
   bsc: {
     tvl,
     staking,
-    masterchef: tvl,
   }
 };

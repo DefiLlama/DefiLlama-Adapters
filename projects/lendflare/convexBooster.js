@@ -87,7 +87,7 @@ async function calculateTokenAmount(pools, timestamp, block, chainBlocks) {
         await sdk.api.abi.call({
             block: chainBlocks.ethereum,
             chain: "ethereum",
-            abi: { "inputs": [{ "internalType": "uint256", "name": "_pid", "type": "uint256" }, { "internalType": "uint256", "name": "_tokens", "type": "uint256" }, { "internalType": "int128", "name": "_curveCoinId", "type": "int128" }], "name": "calculateTokenAmount", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+            abi: 'function calculateTokenAmount(uint256 _pid, uint256 _tokens, int128 _curveCoinId) view returns (uint256)',
             target: CONVEX_BOOSTER_PROXY,
             params: [pid, pools[pid].totalSupplyString, pools[pid].coinId]
         }).then(result => {

@@ -6,5 +6,8 @@ async function fetch(){
 }
 
 module.exports = {
+    nuls: {
+        fetch
+    },
     fetch
 }

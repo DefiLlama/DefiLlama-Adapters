@@ -1,51 +1,17 @@
-const { get } = require('../helper/http');
 const sdk = require('@defillama/sdk')
 const chain = 'bsc'
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 const { PromisePool } = require('@supercharge/promise-pool')
+const { getConfig } = require('../helper/cache')
 
 const abis = {
-  wrapped_coins: {
-    "stateMutability": "view",
-    "type": "function",
-    "name": "wrapped_coins",
-    "inputs": [
-      {
-        "name": "arg0",
-        "type": "uint256"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "gas": 3345
-  },
-  coins: {
-    "stateMutability": "view",
-    "type": "function",
-    "name": "coins",
-    "inputs": [
-      {
-        "name": "arg0",
-        "type": "uint256"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "gas": 3375
-  },
+  wrapped_coins: 'function wrapped_coins(uint256 arg0) view returns (address) @3345',
+  coins: 'function coins(uint256 arg0) view returns (address) @3375'
 }
 
 async function tvl(_, _b, { [chain]: block }) {
   const tokensAndOwners = []
-  const poolInfo = await get('https://api.ellipsis.finance/api/getPoolsCrypto')
+  const poolInfo = await getConfig('ellipsis', 'https://api.ellipsis.finance/api/getPoolsCrypto')
   const wrappedCoinPools = [
     '0xab499095961516f058245c1395f9c0410764b6cd',
     '0x245e8bb5427822fb8fd6ce062d8dd853fbcfabf5',
@@ -91,7 +57,6 @@ async function tvl(_, _b, { [chain]: block }) {
 
 }
 
-const lockedSupply = { "inputs": [], "name": "lockedSupply", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }
 const stakingContract = "0x4076cc26efee47825917d0fec3a79d0bb9a6bb5c"
 const eps = "0xa7f552078dcc247c2684336020c03648500c6d9f"
 async function staking(time, ethBlock, chainBlocks) {
@@ -99,7 +64,7 @@ async function staking(time, ethBlock, chainBlocks) {
     target: stakingContract,
     block: chainBlocks.bsc,
     chain: 'bsc',
-    abi: lockedSupply
+    abi: 'uint256:lockedSupply'
   })
   return {
     ["bsc:" + eps]: locked.output

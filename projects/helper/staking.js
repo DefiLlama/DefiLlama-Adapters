@@ -1,20 +1,26 @@
 const sdk = require('@defillama/sdk');
-const getReserves = require('./abis/getReserves.json');
-const token0Abi = require('./abis/token0.json');
-const token1Abi = require('./abis/token1.json');
+const getReserves = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
+const token0Abi = 'address:token0'
+const token1Abi = 'address:token1'
 const { default: BigNumber } = require('bignumber.js');
 const { getChainTransform, getFixBalances, } = require('./portedTokens')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 
-function staking(stakingContract, stakingToken, chain = "ethereum", transformedTokenAddress = undefined, decimals = undefined) {
+function staking(stakingContract, stakingToken, _chain = "ethereum", transformedTokenAddress = undefined, decimals = undefined) {
     if (!Array.isArray(stakingContract))  stakingContract = [stakingContract]
     if (!Array.isArray(stakingToken))  stakingToken = [stakingToken]
-    return stakings(stakingContract, stakingToken, chain, transformedTokenAddress, decimals)
+    return stakings(stakingContract, stakingToken, _chain, transformedTokenAddress, decimals)
 }
 
-function stakings(stakingContracts, stakingToken, chain = "ethereum", transformedTokenAddress = undefined, decimals = undefined) {
-    return async (timestamp, _ethBlock, {[chain]: block}) => {
+function stakings(stakingContracts, stakingToken, _chain = "ethereum", transformedTokenAddress = undefined, decimals = undefined) {
+    return async (_, _b, cb, { chain, block } = {}) => {
+
+        if (!chain) {
+          chain = _chain
+          block = cb[chain]
+        }
+
         if (!Array.isArray(stakingToken))  stakingToken = [stakingToken]
         let transformAddress = transformedTokenAddress
         if (typeof transformedTokenAddress === 'string') transformAddress = i => transformedTokenAddress

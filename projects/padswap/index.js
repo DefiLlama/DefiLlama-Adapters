@@ -22,7 +22,7 @@ module.exports = {
   methodology: `TVL accounts for the liquidity on all AMM pools (see https://info.padswap.exchange/ and https://movr-info.padswap.exchange/). Staking includes all TOAD staked in TOAD farms.`,
   misrepresentedTokens: true,
   bsc: {
-    tvl: getUniTVL({ chain: 'bsc', factory: PADSWAP_BSC_FACTORY_ADDRESS, useDefaultCoreAssets: true, }), 
+    tvl: getUniTVL({ chain: 'bsc', factory: PADSWAP_BSC_FACTORY_ADDRESS, useDefaultCoreAssets: true, blacklistedTokens: ['0xcdb943908de5ee37998a53f23467017d1a307e60'], }), 
     staking: stakings(
       [
         TOAD_FARM_ADDRESS,

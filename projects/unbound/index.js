@@ -1,4 +1,3 @@
-const retry = require('../helper/retry')
 const { GraphQLClient, gql } = require('graphql-request')
 const { staking } = require("../helper/staking");
 //const { transformPolygonAddress } = require('../helper/portedTokens');
@@ -27,7 +26,7 @@ async function ethTvl() {
     }
     `;
 
-    var results = await retry(async bail => await graphQLClient.request(query))
+    var results = await graphQLClient.request(query)
     let t = []
 
     for (let i=0;i<results.vaults.length-1;i++){
@@ -57,7 +56,7 @@ async function polyTvl() {
   }
   `;
 
-  var results = await retry(async bail => await graphQLClient.request(query))
+  var results = await graphQLClient.request(query)
   let t = []
 
   for (let i=0;i<results.vaults.length-1;i++){

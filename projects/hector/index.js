@@ -9,9 +9,7 @@ const { getChainTransform } = require("../helper/portedTokens");
 const contracts = require("./contracts.json");
 const { default: BigNumber } = require("bignumber.js");
 const { toUSDTBalances } = require("../helper/balances");
-const retry = require("async-retry");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { unwrapCrv } = require("../helper/resolveCrvTokens");
 const abi = require("./abi.json");
 const { genericUnwrapCvx } = require("../helper/unwrapLPs");
 
@@ -186,7 +184,7 @@ async function hectorBank() {
       }
     }
   `;
-  const results = await retry(async bail => await graphQLClient.request(query));
+  const results = await graphQLClient.request(query)
   const balance = +results.protocolMetrics[0].bankSupplied - (await borrowed());
   return toUSDTBalances(balance);
 }
@@ -202,7 +200,7 @@ async function borrowed() {
       }
     }
   `;
-  const results = await retry(async bail => await graphQLClient.request(query));
+  const results = await graphQLClient.request(query)
 
   return results.protocolMetrics[0].bankBorrowed;
 }
@@ -218,19 +216,6 @@ async function unwrap(balances, chain, block, transform) {
       chain,
       transform
     );
-  }
-
-  if (chain in contracts.curveLPs) {
-    for (let token of contracts.curveLPs[chain]) {
-      await unwrapCrv(
-        balances,
-        token,
-        balances[`${chain}:${token}`],
-        block,
-        chain,
-        transform
-      );
-    }
   }
 }
 function tvl(chain) {
@@ -263,7 +248,7 @@ const staking = async () => {
       }
     }
   `;
-  const results = await retry(async bail => await graphQLClient.request(query));
+  const results = await graphQLClient.request(query)
   return toUSDTBalances(+results.protocolMetrics[0].totalValueLocked);
 };
 module.exports = {

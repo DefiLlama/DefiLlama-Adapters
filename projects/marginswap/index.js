@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const retry = require("../helper/retry");
 const { GraphQLClient, gql } = require("graphql-request");
 
 function getChainTvl(chain) {
@@ -22,7 +21,7 @@ function getChainTvl(chain) {
     `;
 
     const data = (
-      await retry(async (bail) => await graphQLClient.request(query))
+      await graphQLClient.request(query)
     ).aggregatedBalances;
 
     data.forEach((data) => {

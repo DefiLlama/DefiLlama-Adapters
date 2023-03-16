@@ -1,8 +1,7 @@
 const anchor = require("@project-serum/anchor");
 const { PublicKey } = require("@solana/web3.js");
 const activePoolBases = require("./active-pools.json");
-const { getConnection } = require("../helper/solana");
-const { MintLayout } = require("@solana/spl-token");
+const { getConnection, decodeAccount } = require("../helper/solana");
 const sdk = require('@defillama/sdk')
 
 const SCALLOP_PROGRAM_ID = new PublicKey("SCPv1LabixHirZbX6s7Zj3oiBogadWZvGUKRvXD3Zec");
@@ -43,10 +42,10 @@ async function tvl() {
     if (curr === null)
       return;
 
-    if (curr.data.length !== MintLayout.span) // invalid mint
+    if (curr.data.length !== 82) // invalid mint
       return;
 
-    const mintInfo = MintLayout.decode(curr.data);
+    const mintInfo = decodeAccount('mint', curr);
     const geckoId = getTokenGeckoId(mintInfo.mintAuthority)
     if (!geckoId) return;
     const amount = (mintInfo.supply.toString() / Math.pow(10, mintInfo.decimals))

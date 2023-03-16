@@ -22,20 +22,7 @@ const minerContracts = {
   'doge': '0x026d814935a053D10abA9987e4D047Aa9369c97E', // bsc
   'eth': '0x212A3A41a0e58CCdc86F013b003d4afF805a958c'   // bsc
 };
-const abi = {
-  "constant": true,
-  "inputs": [],
-  "name": "getBalance",
-  "outputs": [
-    {
-      "name": "",
-      "type": "uint256"
-    }
-  ],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
-};
+const abi = "uint256:getBalance";
 
 const config = {
   bsc: {

@@ -13,7 +13,10 @@ module.exports = {
     tvl: getUniTVL({ 
       chain: chain,
       useDefaultCoreAssets: false, 
-      factory: farmFactoryContract
+      factory: farmFactoryContract,
+      blacklistedTokens: [
+        '0xe320df552e78d57e95cf1182b6960746d5016561'
+      ]
     })
   },
 }

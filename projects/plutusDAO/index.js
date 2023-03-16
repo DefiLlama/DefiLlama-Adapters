@@ -39,7 +39,13 @@ const plutusStakingContracts = [
 async function tvl(ts, _block, {[chain]: block}) {
   const balances = {}
   const { output: glpBal } = await sdk.api.erc20.balanceOf({ target: plvGlpToken, owner: plgGlpPlutusChef, chain, block, })
-  sdk.util.sumSingleBalance(balances, 'arbitrum:0x4277f8F2c384827B5273592FF7CeBd9f2C1ac258', glpBal)  // sun as GLP
+  sdk.util.sumSingleBalance(balances, 'arbitrum:0x4277f8F2c384827B5273592FF7CeBd9f2C1ac258', glpBal)  // sum as GLP
+  
+  const { output: plvGlpSupply } = await sdk.api.erc20.totalSupply({target: plvGlpToken, chain, block});
+
+  sdk.util.sumSingleBalance(balances, 'arbitrum:0x4277f8F2c384827B5273592FF7CeBd9f2C1ac258', plvGlpSupply)  // sum as GLP as well
+
+  
   const tokensAndOwners = [
      [plsDpx, plsDpxFarmV1],
      [plsDpx, plsDpxFarm],

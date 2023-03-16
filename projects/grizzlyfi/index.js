@@ -4,13 +4,8 @@ const { stakings } = require("../helper/staking");
 const { pool2 } = require("../helper/pool2");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 
-const abi = {
-  inputs: [],
-  name: "grizzlyStrategyDeposits",
-  outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-  stateMutability: "view",
-  type: "function"
-};
+const abi = "uint256:grizzlyStrategyDeposits"
+
 const hives = [
   {
     hive: "0xDa0Ae0710b080AC64e72Fa3eC44203F27750F801",

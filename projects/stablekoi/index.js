@@ -1,13 +1,11 @@
 const { sumTokens } = require("../helper/unwrapLPs");
 const { getFixBalances } = require("../helper/portedTokens");
-const retry = require("../helper/retry");
-const axios = require("axios");
 const { GraphQLClient, gql } = require("graphql-request");
 const abi = require("./abi.json");
 const sdk = require("@defillama/sdk");
 const { default: BigNumber } = require("bignumber.js");
 const { toUSDTBalances } = require("../helper/balances");
-const { get } = require('../helper/http')
+const { getConfig } = require('../helper/cache')
 
 const chain = "godwoken";
 
@@ -15,7 +13,7 @@ async function tvl(ts, _block, chainBlocks) {
   const balances = {};
   const fixBalances = await getFixBalances(chain);
   const tokensAndOwners = [];
-  const poolInfo = await get("https://app.stablekoi.com/lists/poollist.json");
+  const poolInfo = await getConfig('stable-koi-v0', "https://app.stablekoi.com/lists/poollist.json");
   poolInfo.forEach((pool) => {
     pool.tokens.forEach((token) => tokensAndOwners.push([token, pool.address]));
   });

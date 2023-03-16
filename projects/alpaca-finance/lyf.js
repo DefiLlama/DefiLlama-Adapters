@@ -1,23 +1,23 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
-const axios = require("axios");
+const { getConfig } = require('../helper/cache')
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 
 async function getProcolAddresses(chain) {
   if (chain == 'bsc') {
     return (
-      await axios.get(
+      await getConfig('alpaca-finance/lyf-bsc',
         "https://raw.githubusercontent.com/alpaca-finance/bsc-alpaca-contract/main/.mainnet.json"
       )
-    ).data;
+    )
   }
   if (chain == 'fantom') {
     return (
-      await axios.get(
+      await getConfig('alpaca-finance/lyf-fantom',
         "https://raw.githubusercontent.com/alpaca-finance/bsc-alpaca-contract/main/.fantom_mainnet.json"
       )
-    ).data;
+    )
   }
 }
 
@@ -135,33 +135,10 @@ async function calLyfTvl(chain, block) {
     });
   }
 
-  /// @dev getting all unused liquidity on each vault
-  const unusedBTOKEN = (
-    await sdk.api.abi.multiCall({
-      block,
-      abi: abi.balanceOf,
-      calls: addresses["Vaults"].map((v) => {
-        return {
-          target: v["baseToken"],
-          params: [v["address"]],
-        };
-      }),
-      chain,
-    })
-  ).output;
-
-  unusedBTOKEN.forEach((u) => {
-    balances[`${chain}:${u.input.target.toLowerCase()}`] = BigNumber(
-      balances[`${chain}:${u.input.target.toLowerCase()}`] || 0
-    )
-      .plus(BigNumber(u.output))
-      .toFixed(0);
-  });
-
   return balances;
 }
 
 module.exports = {
-  calLyfTvl
+  calLyfTvl, getProcolAddresses,
 }
   

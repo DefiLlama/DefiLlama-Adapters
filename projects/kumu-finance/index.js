@@ -1,8 +1,7 @@
 const sdk = require("@defillama/sdk")
 const abi = require('./abi')
 const chain = 'klaytn'
-const { getSymbols } = require('../helper/utils')
-const { sumUnknownTokens, getTokenPrices } = require("../helper/unknownTokens")
+const { sumUnknownTokens, } = require("../helper/unknownTokens")
 
 const contract = '0x7886eFbA097A7187f7AeC12913B54BbC9F258faC'
 const kumu = '0xe764d24563a5931fc5f716a78bd558a9a1bff55d'

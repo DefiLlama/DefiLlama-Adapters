@@ -40,8 +40,8 @@ async function Pool2() {
     getTokenBalance(LUMI, lumiLpToken),
     getTrxBalance(waterLpToken),
     getTrxBalance(lumiLpToken),
-    unverifiedCall(waterLpToken, "totalSupply()", []),
-    unverifiedCall(lumiLpToken, "totalSupply()", []),
+    unverifiedCall({ target: waterLpToken, abi: 'totalSupply()', isBigNumber: true }),
+    unverifiedCall({ target: lumiLpToken, abi: 'totalSupply()', isBigNumber: true }),
   ]);
 
   return {

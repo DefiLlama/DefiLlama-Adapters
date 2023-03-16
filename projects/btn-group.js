@@ -1,12 +1,12 @@
-const retry = require('./helper/retry')
-const axios = require("axios");
+const { get } = require('./helper/http')
 
 async function fetch() {
-  var response = await retry(async bail => await axios.get('https://btn.group/pools/tvl'))
-
-  return response.data;
+  return get('https://btn.group/pools/tvl')
 }
 
 module.exports = {
+  secret: {
+    fetch
+  },
   fetch
 }

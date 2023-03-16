@@ -32,6 +32,5 @@ module.exports = {
 async function balanceOf(api, account, token) {
   const currencyId = await forceToCurrencyId(api, token)
   const tokenRes = await api.query.tokens.accounts(account, currencyId)
-  // console.log(token, Math.floor(+tokenRes.toHuman().free.replaceAll(',', '')))
   return +tokenRes.toHuman().free.replace(/,/g, '')
 }

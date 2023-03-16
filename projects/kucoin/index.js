@@ -53,6 +53,13 @@ const config = {
   eos: {
     owners: ['qlwzviixzm1h', 'kucoinrise11'],
   },
+  optimism: {
+    owners: [
+      '0xa3f45e619cE3AAe2Fa5f8244439a66B203b78bCc',
+      '0xebb8ea128bbdff9a1780a4902a9380022371d466',
+      '0xd6216fc19db775df9774a6e33526131da7d19a2c',
+    ],
+  }
 }
 
 module.exports = cexExports(config)

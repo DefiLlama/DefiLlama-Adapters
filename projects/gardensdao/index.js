@@ -7,17 +7,7 @@ const SUBGRAPH_GARDENS_XDAI =
   "https://api.thegraph.com/subgraphs/name/1hive/gardens-xdai";
 
 
-const balanceAbi = {
-  "constant": true,
-  "inputs": [
-    { "internalType": "address", "name": "_token", "type": "address" }
-  ],
-  "name": "balance",
-  "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-  "payable": false,
-  "stateMutability": "view",
-  "type": "function"
-}
+const balanceAbi = 'function balance(address _token) view returns (uint256)'
 
 
 const ALL_ORGS_GQL = gql`

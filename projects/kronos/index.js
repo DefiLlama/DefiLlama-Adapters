@@ -97,7 +97,7 @@ async function getTvl(timestamp, ethBlock, chainBlocks) {
   fixBalances(balances.tvl)
 
   return balances
-};
+}
 
 module.exports = {
   misrepresentedTokens: true,

@@ -10,7 +10,7 @@ async function tvl() {
   for (let coin of response.data.result) {
     const tokenInfo = generic(coin.denom);
     if (!tokenInfo) {
-      console.log("unknown token", coin.denom);
+      sdk.log("unknown token", coin.denom);
       continue;
     }
     const tokenName = tokenInfo[0];
@@ -33,6 +33,8 @@ function generic(ticker) {
       return ["tether", 6];
     case "erc20/multichain/dai":
       return ["dai", 18];
+    case "bnb":
+      return ["binancecoin", 8]
   }
 }
 

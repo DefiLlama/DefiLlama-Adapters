@@ -1,7 +1,8 @@
 const sdk = require("@defillama/sdk");
 const { stakings } = require("../helper/staking");
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { get } = require('../helper/http')
+const { getConfig } = require('../helper/cache')
+
 const contracts = require("./contracts.json");
 
 const chainIds = {
@@ -9,6 +10,7 @@ const chainIds = {
   "bsc": "56",
   "polygon": "137",
   "fantom": "250",
+  "step": "1234",
   "celo": "42220"
 }
 
@@ -16,7 +18,7 @@ let vestingData, stakingData
 
 async function getVestingData() {
   if (!vestingData)
-    vestingData = get('https://api.daomaker.com/get-all-vesting-contracts')
+    vestingData = getConfig('daomaker/vesting', 'https://api.daomaker.com/get-all-vesting-contracts')
   return vestingData
 }
 
@@ -27,7 +29,7 @@ function filterDuplicates(toa) {
 
 async function getStakingData() {
   if (!stakingData)
-    stakingData = get('https://api.daomaker.com/get-all-farms')
+    stakingData = getConfig('daomaker/staking', 'https://api.daomaker.com/get-all-farms')
   return stakingData
 }
 
@@ -35,22 +37,22 @@ function vesting(chain) {
   return async (timestamp, _, { [chain]: block }) => {
     const toa = []
     const vestingContracts = await getVestingData();
-    vestingContracts.filter(i => i.chain_name === chain)
+    vestingContracts.filter(i => i.chain_id.toString() === chainIds[chain])
       .forEach(i => toa.push([i.token_address, i.vesting_smart_contract_address]))
     return sumTokens2({ chain, block, tokensAndOwners: filterDuplicates(toa) })
   };
-};
+}
 function staking(chain) {
   return async (timestamp, _, { [chain]: block }) => {
     const toa = []
     const contracts = await getStakingData();
     contracts.forEach(({ farms }) => {
-      farms.filter(i => i.chain_id === chainIds[chain])
+      farms.filter(i => i.chain_id.toString() === chainIds[chain])
         .forEach(i => toa.push([i.staking_address, i.farm_address]))
     })
     return sumTokens2({ chain, block, tokensAndOwners: filterDuplicates(toa) })
   };
-};
+}
 
 const chainTVLObject = contracts.chains.reduce(
   (agg, chain) => ({

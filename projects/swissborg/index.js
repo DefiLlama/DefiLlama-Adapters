@@ -66,4 +66,4 @@ const config = {
 }
 
 module.exports = cexExports(config)
-module.exports.methodology = 'We are not counting money in defi Protocols. In this case around $47m in AAVE v3 (Avalanche chain), and around $3.43m in Stargate. We are also not counting around $19.2m in the Alpaca Finance protocol (bsc chain). We may also not counting a few small token balances.' 
+module.exports.methodology = 'We are not counting money in defi Protocols. In this case around $47m in AAVE v3 (Avalanche chain), and around $3.43m in Stargate. We are also not counting around $19.2m in the Alpaca Finance protocol (bsc chain). We may also not counting a few small token balances. This data was collected on 20/11/22 ' 

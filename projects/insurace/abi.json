@@ -1,21 +1,3 @@
 {
-    "getStakedAmountPT": {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "_token",
-                "type": "address"
-            }
-        ],
-        "name": "getStakedAmountPT",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    }
+  "getStakedAmountPT": "function getStakedAmountPT(address _token) view returns (uint256)"
 }

@@ -39,12 +39,12 @@ async function tvl(timestamp, block, chainBlocks) {
 	for (let i = 0; i < pairTokens.length; i++) {
 		const owner = pairTokens[i].input.target;
 		(pairTokens[i].output || []).forEach(token => tokensAndOwners.push([token, owner]))
-	};
+	}
 
 	await sumTokens(balances, tokensAndOwners, chainBlocks.fantom, 'fantom',);
 
 	return balances;
-};
+}
 
 async function staking(ts, _block, chainBlocks) {
 	const balances = {};

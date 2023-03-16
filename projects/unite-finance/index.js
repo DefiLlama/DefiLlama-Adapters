@@ -17,7 +17,7 @@ const uDexLPs = [
   "0xeE2208256800398424a45Fe9F135AD0b60DeAE0C", // uniteOneLpAddress
   "0xe302A970E80094a3abB820Eda275FAC5848b5bdA", //ushareOneLpAddress
 ]
-const getReservesABI = { "inputs": [], "name": "getReserves", "outputs": [{ "internalType": "uint256", "name": "_reserve0", "type": "uint256" }, { "internalType": "uint256", "name": "_reserve1", "type": "uint256" }], "stateMutability": "view", "type": "function" }
+const getReservesABI ='function getReserves() view returns (uint256 _reserve0, uint256 _reserve1)'
 
 async function OnePool2(timestamp, _block, { [chain]: block }) {
   const balances = await sumTokens2({

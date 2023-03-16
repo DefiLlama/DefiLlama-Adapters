@@ -1,6 +1,6 @@
 const blake = require("blakejs")
 
-function prepareExecCmd(pactCode, meta = mkMeta("", "", 0, 0, 0, 0), networkId) {
+function prepareExecCmd(pactCode, meta, networkId) {
   const cmdJSON = {
     networkId,
     payload: {
