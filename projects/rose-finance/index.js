@@ -28,7 +28,7 @@ async function atvl(timestamp, block, chainBlocks) {
 }
 
 const pool2LPs = [
-    token,  // ROSE
+    "0x07D49375A3213eF25aAA47C97A2d23A754bB8f8a",  // ROSE
     "0x16084d8c82F2CEbe5CA7967d5551805424526a68", // ROSE-ETH
     "0xa299AA2f939aA0dBd9e2Ae2c7B66E6F700f50a4F" // SHARE-WETH
 ]
