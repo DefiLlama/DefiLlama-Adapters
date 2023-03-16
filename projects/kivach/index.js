@@ -40,8 +40,8 @@ async function totalTvl() {
     let tvl = 0;
 
     Object.entries(balances).forEach(async ([asset, { stable: balance = 0 }]) => {
-        const baseCurrency = (asset === "base") ? "GBYTE" : asset;
-        const usdRate = exchangeRates[`${baseCurrency}_USD`] ?? 0;
+        const assetKey = (asset === "base") ? "GBYTE" : asset;
+        const usdRate = exchangeRates[`${assetKey}_USD`] ?? 0;
         const decimals = assetDecimals[asset];
 
         if (decimals !== undefined) {
@@ -57,7 +57,7 @@ module.exports = {
     doublecounted: false,
     misrepresentedTokens: true,
     methodology:
-        "The TVL is the USD value of the assets locked into the autonomous agents that extend the Kivach protocol.",
+        "The TVL is the USD value of all undistributed donations received through Kivach.",
     obyte: {
         tvl: totalTvl
     }
