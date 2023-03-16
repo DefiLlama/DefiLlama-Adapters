@@ -52,6 +52,7 @@ const tvl = async () => {
         }
       });
   }
+  tvlLocked["f43a62fdc3965df486de8a0d32fe800963589c41b38946602a0dc53541474958"].valueLovelace /= 10**2; //normalize decimals
 
   const totalLovelaceLocked = Object.entries(tvlLocked).map(([id, values]) => id === 'lovelace' ? values.value : values.valueLovelace).reduce((a, b) => BigNumber.sum(a, b).toNumber(), 0);
   const cardano = totalLovelaceLocked / 1e6;
