@@ -14,33 +14,8 @@ const VAULTS = {
 const BLID = '0x766AFcf83Fd5eaf884B3d529b432CA27A6d84617';
 const MASTER_CHEF = '0x3782c47e62b13d579fe748946aef7142b45b2cf7';
 
-const getTotalDepositABI = {
-  'inputs': [],
-  'name': 'getTotalDeposit',
-  'outputs': [
-    {
-      'internalType': 'uint256',
-      'name': '',
-      'type': 'uint256'
-    }
-  ],
-  'stateMutability': 'view',
-  'type': 'function'
-}
-
-const totalSupplyBlidABI = {
-  'inputs': [],
-  'name': 'totalSupplyBLID',
-  'outputs': [
-    {
-      'internalType': 'uint256',
-      'name': '',
-      'type': 'uint256'
-    }
-  ],
-  'stateMutability': 'view',
-  'type': 'function'
-}
+const getTotalDepositABI = 'uint256:getTotalDeposit';
+const totalSupplyBlidABI = 'uint256:totalSupplyBLID';
 
 async function tvl(ts, _block, chainBlocks) {
   let totalUsdt = new BigNumber(0);
