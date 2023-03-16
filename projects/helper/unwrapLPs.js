@@ -250,6 +250,7 @@ async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], block, c
         case 'polygon':
         case 'optimism':
         case 'arbitrum': nftAddress = '0xC36442b4a4522E871399CD717aBDD847Ab11FE88'; break;
+        case 'bsc': nftAddress = '0x7b8a01b39d58278b5de7e48c8449c9f4f5170613'; break;
         default: throw new Error('missing default uniswap nft address')
       }
 
