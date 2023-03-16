@@ -1,8 +1,8 @@
-const { get } = require('../helper/http')
+const http = require("../helper/http");
 
 async function staking() {
   return {
-    'nuls': (await get("https://pocm.nuls.io/api/pocm/info")).data.totalStaking
+    'nuls': Number((await http.get("https://pocm.nuls.io/api/pocm/info")).data.totalStaking).toFixed(0)
   };
 }
 

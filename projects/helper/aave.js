@@ -180,7 +180,7 @@ const oracleAbis = {
   getAssetsPrices: "function getAssetsPrices(address[] assets) view returns (uint256[])",
 }
 
-function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyUnit, }) {
+function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyUnit, } = {}) {
 
   async function tvl(_, _b, _c, { api }) {
     const data = await getReservesData(api)

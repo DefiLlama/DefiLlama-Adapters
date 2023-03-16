@@ -18,7 +18,7 @@ async function tvl(_, _1, _cb, { api, }) {
 
     const uniswapOwners = reservesData.filter(isUniV3XToken).map(i => i.xTokenAddress)
     reservesData = reservesData.filter(i => !isUniV3XToken(i))
-    await unwrapUniswapV3NFTs({ ...api, balances, owners: uniswapOwners })
+    await sumTokens2({ api, balances, owners: uniswapOwners, resolveUniV3: true, })
   }
   let toa = reservesData.map(i => ([i.underlyingAsset, i.xTokenAddress]))
   toa.push(...[[Bayc, P2PPairStaking], [Mayc, P2PPairStaking], [Bakc, P2PPairStaking]])

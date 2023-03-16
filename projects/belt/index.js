@@ -56,7 +56,7 @@ async function getTvl(chain, block, address) {
         sdk.util.sumSingleBalance(balances, chain+':'+underlyingTokens.output[index].output, balance.output)
     })
 
-    const beltInfo = await get('https://s.belt.fi/info/all.json')
+    const beltInfo = await get('https://ss.belt.fi/info/all.json')
     const lockedUSDT = beltInfo.info[chain.toUpperCase()].vaultPools.find(x => x.wantToken.toLowerCase() === tetherLP.toLowerCase())
     const [ usdt, wantLocked ] = Object.entries(toUSDTBalances(lockedUSDT.wantLocked))[0]
     balances[usdt] = wantLocked
@@ -74,7 +74,7 @@ function hecoTvl(timestamp, ethBlock, chainBlocks) {
 }
 
 async function klaytnTvl() {
-    const beltInfo = await get('https://s.belt.fi/info/all.json')
+    const beltInfo = await get('https://ss.belt.fi/info/all.json')
     var tvl = new BigNumber('0');
 
     beltInfo.info.KLAYTN.vaults.forEach(vault =>{
@@ -88,7 +88,7 @@ async function klaytnTvl() {
 }
 
 async function getStaking(chain) {
-    const beltInfo = await get('https://s.belt.fi/info/all.json')
+    const beltInfo = await get('https://ss.belt.fi/info/all.json')
     const stakingInfo = beltInfo.info[chain.toUpperCase()].staking
 
     return toUSDTBalances(stakingInfo.tvl)
@@ -96,7 +96,7 @@ async function getStaking(chain) {
 
 module.exports = {
     timetravel: false,
-    methodology: 'TVL includes the liquidity of all the Vaults, 3Tether LP and staking counts the BELT that has been staked in BSC. Data is pulled from:"https://s.belt.fi/info/all.json".',
+    methodology: 'TVL includes the liquidity of all the Vaults, 3Tether LP and staking counts the BELT that has been staked in BSC. Data is pulled from:"https://ss.belt.fi/info/all.json".',
     bsc: {
         tvl: bscTvl,
         staking: () => getStaking('bsc'),

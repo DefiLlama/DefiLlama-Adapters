@@ -1,4 +1,3 @@
-const sdk = require("@defillama/sdk");
 const { pool2s } = require("../helper/pool2");
 const { stakings } = require("../helper/staking");
 const addresses = require("./addresses.json");
@@ -12,37 +11,22 @@ const jTokenToToken = {
 }
 
 async function tvl(timestamp, block, chainBlocks, { api }) {
-  let balances = {};
-  let dopexFarms = [addresses.ethDpxFarm, addresses.ethDpxFarm, addresses.rdpxEthFarm, addresses.rdpxEthFarm];
   let metaVaultsAddresses = [addresses.DpxEthBullVault, addresses.DpxEthBearVault, addresses.RdpxEthBullVault, addresses.RdpxEthBearVault];
-  let strategyStorageContractsDpxEth = [addresses.JonesDpxEthBullStrategy, addresses.DpxEthStorage, addresses.JonesDpxEthBearStrategy, addresses.DpxEthStorageBear];
-  let strategyStorageContractsRdpxEth = [addresses.JonesRdpxEthBullStrategy, addresses.RdpxEthStorage, addresses.JonesRdpxEthBearStrategy, addresses.RdpxEthStorageBear];
-
-  const toa = []
-
-  const balanceCalls = []
-  const stCalls = []
-
-  dopexFarms.forEach((farm, i) => {
-    balanceCalls.push({ target: farm, params: metaVaultsAddresses[i] })
-    stCalls.push(farm)
-    toa.push([addresses.dpxEthSlp, strategyStorageContractsDpxEth[i]])
-    toa.push([addresses.rdpxEthSlp, strategyStorageContractsRdpxEth[i]])
-  })
 
   const [
-    bals, sTokens, vAssets, vBals,
+    tokens, bals, vAssets, vBals,
   ] = await Promise.all([
-    api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCalls }),
-    api.multiCall({ abi: 'address:stakingToken', calls: stCalls }),
+    api.multiCall({  abi: 'address:depositToken', calls: metaVaultsAddresses}),
+    api.multiCall({  abi: 'uint256:workingBalance', calls: metaVaultsAddresses}),
     api.multiCall({ abi: 'address:asset', calls: addresses.vaults }),
     api.multiCall({ abi: 'uint256:totalAssets', calls: addresses.vaults }),
   ])
-  bals.forEach((bal, i) => sdk.util.sumSingleBalance(balances, sTokens[i], bal, api.chain))
-  vBals.forEach((bal, i) => sdk.util.sumSingleBalance(balances, vAssets[i], bal, api.chain))
+  const toa = []
+  api.addTokens(tokens,bals)
+  api.addTokens(vAssets,vBals)
   Object.values(addresses.trackers).map(tracker => toa.push([tracker.token, tracker.holder]))
   toa.push([addresses.glp, addresses.strategy,])
-  return sumTokens2({ api, tokensAndOwners: toa, balances });
+  return sumTokens2({ api, tokensAndOwners: toa, });
 }
 
 module.exports = {
@@ -55,7 +39,7 @@ module.exports = {
       }
       return `arbitrum:${addr}`;
     }),
-    staking: stakings(addresses.jonesStaking, addresses.jones, "arbitrum")
+    staking: stakings(addresses.jonesStaking, addresses.jones)
   }
 }
 // node test.js projects/jones-dao/index.js

@@ -1,4 +1,3 @@
-const { getWhitelistedNFTs, } = require('../helper/tokenMapping');
 const { sumTokensExport, } = require('../helper/unwrapLPs');
 
 // Vaults
@@ -9,6 +8,6 @@ module.exports = {
   misrepresentedTokens: true,
   methodology: `Counts the floor value of all deposited NFTs with Chainlink price feeds. Borrowed coins are not counted towards the TVL`,
   ethereum: {
-    tvl: sumTokensExport({ owners: [v2, v2_1], tokens: getWhitelistedNFTs(),}),
+    tvl: sumTokensExport({ owners: [v2, v2_1], resolveNFTs: true, }),
   }
 }
