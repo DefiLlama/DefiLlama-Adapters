@@ -573,8 +573,11 @@ async function unwrapLPsAuto({ api, balances, block, chain = "ethereum", transfo
       delete balances[key]
       return;
     }
-    if (chain === 'ethereum' && key.indexOf(':') > -1) return;  // token is transformed, probably not an LP
-    if (chain !== 'ethereum' && !key.startsWith(chain + ':')) return;  // token is transformed, probably not an LP
+    if (chain === 'ethereum') {
+      if (!key.startsWith(chain + ':') && !key.startsWith('0x')) return;  // token is transformed, probably not an LP
+    } else if (!key.startsWith(chain + ':')) {
+      return;// token is transformed, probably not an LP
+    }
     const token = stripTokenHeader(key)
     if (!/^0x/.test(token)) return;     // if token is not an eth address, we ignore it
     tokens.push({ output: token })
