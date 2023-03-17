@@ -1,56 +1,50 @@
-const { getLogs, getAddress, } = require('../helper/cache/getLogs')
+const { request, gql } = require('graphql-request');
+const { getBlock } = require('../helper/http');
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
-const config = {
-  arbitrum: {
-    factory: '0x1B327eFf5033922B0f88FC4D56C29d7AF5a8ecdB',
-    fromBlock: 43951762,
-  },
+const graphs = {
+  arbitrum: "https://api.thegraph.com/subgraphs/name/kyscott18/numoen-arbitrum",
+  celo: "https://api.thegraph.com/subgraphs/name/kyscott18/numoen-celo"
 }
 
-const tvlCelo = async (_, _b, _cb, { api, }) => {
-  const ownerTokens = []
-
-  const logs = await getLogs({
-    api,
-    fromBlock: 17976668,
-    target: '0x8396a792510a402681812ece6ad3ff19261928ba',
-    topics: ['0x581e7fde17a1f90a422f4ef8f75f22c3437a96787d3bf54aa93c838b740183c3'],
-  })
-  logs.forEach(i => {
-    const base = getAddress(i.topics[1])
-    const speculative = getAddress(i.topics[2])
-    const lendgine = getAddress(i.data.slice(154-26))
-    const tokens = [base, speculative]
-    ownerTokens.push([tokens, lendgine])
-  })
-  return sumTokens2({ api, ownerTokens})
-}
-
-module.exports = {};
-
-Object.keys(config).forEach(chain => {
-  const { factory, fromBlock, } = config[chain]
-  module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
-      const ownerTokens = []
-
-      const logs = await getLogs({
-        api, fromBlock, target: factory,
-        topics: ['0x1c8c5ae778c5728afc9c5b6cd391acf7cb01a6c6d4988fb2de551001ec7dc644'],
-        eventAbi: 'event LendgineCreated(address indexed base, address indexed speculative, uint256 baseScaleFactor, uint256 speculativeScaleFactor, uint256 indexed upperBound, address lendgine, address pair)',
-        onlyArgs: true,
-      })
-      logs.forEach(i => {
-        const tokens = [i.base, i.speculative]
-        ownerTokens.push([tokens, i.lendgine])
-        ownerTokens.push([tokens, i.pair])
-      })
-      return sumTokens2({ api, ownerTokens})
+function tvlPaged(chain) {
+  return async (_, _b, { [chain]: block }) => {
+    block = await getBlock(_, chain, { [chain]: block })
+    const balances = {}
+    const size = 1000
+    let lastId = ''
+    let lendgines
+    let graphQueryPaged = gql`
+    query lendgineQuery($lastId: String, $block: Int) {
+      lendgines(block: { number: $block } first:${size} where: {id_gt: $lastId}) {
+        id
+        token0 { id }
+        token1 { id }
+      }
     }
+  `
+
+    do {
+      const res = await request(graphs[chain], graphQueryPaged, { lastId, block: block - 5000 });
+      lendgines = res.lendgines
+      const tokensAndOwners = lendgines.map(i => ([[i.token0.id, i.id], [i.token1.id, i.id]])).flat()
+      await sumTokens2({ balances, tokensAndOwners, chain, block, blacklistedTokens: [] })
+      lastId = lendgines[lendgines.length - 1].id
+    } while (lendgines.length === size)
+
+    return balances
+  }
+}
+
+module.exports = {
+  methodology: `Counts the tokens locked on AMM pools plus the collateral, pulling the data from the 'kyscott/numoen' subgraph`,
+  timetravel: false,
+}
+
+const chains = ['arbitrum', 'celo']
+
+chains.forEach(chain => {
+  module.exports[chain] = {
+    tvl: tvlPaged(chain)
   }
 })
-
-module.exports.celo = {
-  tvl: tvlCelo
-}
