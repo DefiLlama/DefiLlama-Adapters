@@ -2,15 +2,13 @@ const { get } = require('../helper/http')
 const sdk = require('@defillama/sdk')
 const { nullAddress } = require('../helper/tokenMapping')
 
-async function staking(timestamp) {
+async function staking() {
   var res = await get('https://midgard.ninerealms.com/v2/network')
   const { totalActiveBond, totalStandbyBond } = res.bondMetrics
   return {
     "thorchain": (Number(totalActiveBond) + Number(totalStandbyBond)) / 1e8
   }
 }
-
-const FIVE_HOURS = 5 * 60 * 60
 
 const chainMapping = {
   ETH: 'ethereum',
@@ -34,7 +32,7 @@ const tokenGeckoMapping = {
 
 const blacklistedPools = []
 
-async function tvl(ts) {
+async function tvl() {
   const pools = await get('https://midgard.ninerealms.com/v2/pools')
 
   const balances = {}
@@ -46,7 +44,7 @@ async function tvl(ts) {
     sdk.util.sumSingleBalance(balances, 'thorchain', runeDepth/1e8)
     if (+totalDepth < 1) return;
     let [chainStr, token] = pool.split('.')
-    const chain = chainMapping[chainStr]
+    let chain = chainMapping[chainStr]
     let [baseToken, address] = token.split('-')
     if (['ethereum', 'bsc', 'avax'].includes(chain)) {
       totalDepth = totalDepth * (10 ** (+nativeDecimal - 8))
