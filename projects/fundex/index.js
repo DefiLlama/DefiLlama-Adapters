@@ -24,12 +24,12 @@ async function tvl3(_, _b, _cb, { api, }) {
 
 module.exports = {
   optimism: {
-    tvl1,
+    tvl: tvl1
   },
   arbitrum: {
-    tvl2,
+    tvl: tvl2,
   },
   kava: {
-    tvl3,
+    tvl: tvl3,
   },
 };
