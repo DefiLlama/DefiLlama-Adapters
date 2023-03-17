@@ -29,38 +29,36 @@ const tokenGeckoMapping = {
   'BNB.BTCB-1DE': 'bitcoin-bep2',
   'BNB.AVA-645': 'concierge-io',
   'BNB.ETH-1C9': 'ethereum',
-  // 'BNB.ADA-9F4': '',
 }
 
 
-const blacklistedPools = [
-  "ETH.WBTC-0X2260FAC5E5542A773AA44FBCFEDF7C193BC2C599",
-  "ETH.YFI-0X0BC529C00C6401AEF6D220BE8C6EA1667F6AD93E",
-]
+const blacklistedPools = []
 
 async function tvl(ts) {
-  const { intervals: [{ poolsDepth, endTime }] } = await get('https://midgard.ninerealms.com/v2/history/tvl')
-  if (endTime < (ts - FIVE_HOURS)) throw new Error('Stale Data!')
+  const pools = await get('https://midgard.ninerealms.com/v2/pools')
 
   const balances = {}
-  await Promise.all(poolsDepth.map(addPool))
+  await Promise.all(pools.map(addPool))
   return balances
 
-  async function addPool({ pool, totalDepth }) {
+  async function addPool({ asset: pool, assetDepth: totalDepth, nativeDecimal, runeDepth }) {
     if (blacklistedPools.includes(pool)) return;
+    sdk.util.sumSingleBalance(balances, 'thorchain', runeDepth/1e8)
     if (+totalDepth < 1) return;
     let [chainStr, token] = pool.split('.')
     const chain = chainMapping[chainStr]
     let [baseToken, address] = token.split('-')
     if (['ethereum', 'bsc', 'avax'].includes(chain)) {
+      totalDepth = totalDepth * (10 ** (+nativeDecimal - 8))
       if (address && address.length > 8) {
         address = address.toLowerCase()
-        let decimals = await sdk.api2.abi.call({ target: address, chain, abi: 'erc20:decimals' })
-        sdk.util.sumSingleBalance(balances, address, totalDepth * (10 ** (decimals - 8)), chain)
+        sdk.util.sumSingleBalance(balances, address, totalDepth, chain)
       } else if (chainStr === baseToken) {
-        sdk.util.sumSingleBalance(balances, nullAddress, totalDepth * 1e6, chain)
+        sdk.util.sumSingleBalance(balances, nullAddress, totalDepth, chain)
+      } else if (tokenGeckoMapping[pool]) {
+        sdk.util.sumSingleBalance(balances, tokenGeckoMapping[pool], totalDepth / 1e8)
       } else {
-        sdk.log('skipped', pool, Number(totalDepth / 1e8).toFixed(2))
+        sdk.log('skipped', pool, Number(totalDepth).toFixed(2))
       }
     } else {
       if (chainStr === baseToken) {
