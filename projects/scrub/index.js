@@ -35,8 +35,7 @@ const lionStaking = {
       ],
       lps,
       useDefaultCoreAssets: true,
-      minLPRatio: 1,
-      restrictTokenRatio: 500,
+      restrictTokenRatio: 100,
     }),
   },
 };
