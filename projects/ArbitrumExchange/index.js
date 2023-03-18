@@ -5,8 +5,6 @@ const dexTVL = getUniTVL({ factory: '0x1C6E968f2E6c9DEC61DB874E28589fd5CE3E1f2c'
 
 
 module.exports = {
-      hallmarks: [
-     [1677744000,"Rug Pull"]
     methodology: `Uses factory(0x1C6E968f2E6c9DEC61DB874E28589fd5CE3E1f2c) address and whitelisted tokens address to find and price Liquidity Pool pairs. We also have our native token $ARX staking.`,
     arbitrum: {
         tvl: dexTVL,
