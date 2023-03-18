@@ -1,99 +1,72 @@
 const sdk = require("@defillama/sdk");
 const hypervisorAbi = require("./abis/hypervisor.json");
 const { staking } = require("../helper/staking");
-const { request, gql } = require("graphql-request");
-
 const getTotalAmounts =
   "function getTotalAmounts() view returns (uint256 total0, uint256 total1)";
 const hypeRegistry = require("./abis/hypeRegistry.json");
 const { getUniqueAddresses } = require("../helper/utils");
 
-//get their pool addresses from the subgraph
-const GRAPH_URL = {
-  ethereum: "https://api.thegraph.com/subgraphs/name/gammastrategies/gamma",
-  polygon: "https://api.thegraph.com/subgraphs/name/gammastrategies/polygon",
-  optimism: "https://api.thegraph.com/subgraphs/name/gammastrategies/optimism",
-  arbitrum: "https://api.thegraph.com/subgraphs/name/gammastrategies/arbitrum",
-  celo: "https://api.thegraph.com/subgraphs/name/gammastrategies/celo",
-  algebra_polygon:
-    "https://api.thegraph.com/subgraphs/name/gammastrategies/algebra-polygon",
-  zyberswap_arbitrum:
-    "https://api.thegraph.com/subgraphs/name/gammastrategies/zyberswap-arbitrum",
-};
+/* Pools for initial LM program in 2021 */
+const LIQUIDITY_MINING_POOLS = [
+  "0x64fcdd0de44f4bd04c039b0664fb95ef033d4efb", // GAMMA/ETH UNI-V2
+  "0x96c105e9e9eab36eb8e2f851a5dabfbbd397c085", // USDC
+  "0xebae3cb14ce6c2f26b40b747fd92ccaf03b98659", // USDT
+  "0xf178d88d2f6f97ca32f92b465987068e1cce41c5", // DAI
+];
 
+/* List of hypervisor registries by chain
+   One chain can have multiple registries for different underlying DEXes */
 const HYPE_REGISTRY = {
-  ethereum: "0x31ccdb5bd6322483bebd0787e1dabd1bf1f14946",
-  polygon: "0x0Ac4C7b794f3D7e7bF1093A4f179bA792CF15055",
-  optimism: "0xF5BFA20F4A77933fEE0C7bB7F39E7642A070d599",
-  arbitrum: "0x66CD859053c458688044d816117D5Bdf42A56813",
-  celo: "0x0F548d7AD1A0CB30D1872b8C18894484d76e1569",
-  algebra_polygon: "0xAeC731F69Fa39aD84c7749E913e3bC227427Adfd",
-  zyberswap_arbitrum: "0x37595FCaF29E4fBAc0f7C1863E3dF2Fe6e2247e9",
+  ethereum: ["0x31ccdb5bd6322483bebd0787e1dabd1bf1f14946"],
+  polygon: [
+    "0x0Ac4C7b794f3D7e7bF1093A4f179bA792CF15055", // Uniswap
+    "0xAeC731F69Fa39aD84c7749E913e3bC227427Adfd", // Quickswap
+  ],
+  optimism: ["0xF5BFA20F4A77933fEE0C7bB7F39E7642A070d599"],
+  arbitrum: [
+    "0x66CD859053c458688044d816117D5Bdf42A56813", // Uniswap
+    "0x37595FCaF29E4fBAc0f7C1863E3dF2Fe6e2247e9", // Zyberswap
+  ],
+  celo: ["0x0F548d7AD1A0CB30D1872b8C18894484d76e1569"],
 };
 
+/* List of bad addresses added to registries that need to be excluded manually */
 const blacklist = {
+  ethereum: ["0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"],
   polygon: ["0xa9782a2c9c3fb83937f14cdfac9a6d23946c9255"],
 };
 
-const liquidityMiningQuery = gql`
-  {
-    hypervisors(first: 10) {
-      id
-      stakingToken {
-        id
-        symbol
-      }
-      totalStakedAmount
-    }
-  }
-`;
-
-const uniV3HypervisorQuery = gql`
-  {
-    uniswapV3Hypervisors(first: 1000) {
-      id
-    }
-  }
-`;
-
 /*Tokens staked in Visors*/
-async function tvlLiquidityMining(timestamp, block, _, { api }) {
+async function tvlLiquidityMining(_timestamp, _block, _, { api }) {
   const balances = {};
 
   //get the staking pool contracts, and the respective token addresses
-  const resp = await request(GRAPH_URL["ethereum"], liquidityMiningQuery);
   const bals = await api.multiCall({
     abi: hypervisorAbi.getHyperVisorData,
-    calls: resp.hypervisors.map((i) => i.id),
+    calls: LIQUIDITY_MINING_POOLS,
   });
-  bals.forEach(({ totalStake }, i) =>
-    sdk.util.sumSingleBalance(
-      balances,
-      resp.hypervisors[i].stakingToken.id,
-      totalStake,
-      api.chain
-    )
+  bals.forEach(({ stakingToken, totalStake }, i) =>
+    sdk.util.sumSingleBalance(balances, stakingToken, totalStake, api.chain)
   );
   return balances;
 }
 
-/*Tokens deposited in Uniswap V3 positions managed by Visor*/
+/*Tokens deposited in Uniswap V3-like LP positions managed by Gamma Strategies*/
 async function tvlUniV3(api) {
-  const resp = await request(GRAPH_URL[api.chain], uniV3HypervisorQuery);
-  return getHypervisorBalances({
-    api,
-    hypervisors: resp.uniswapV3Hypervisors.map((i) => i.id),
-  });
-}
+  const targets = HYPE_REGISTRY[api.chain];
 
-async function tvlUniV3_onchain(api, key) {
-  const target = HYPE_REGISTRY[key];
-  let hypervisors = await api.fetchList({
-    lengthAbi: hypeRegistry.counter,
-    itemAbi: hypeRegistry.hypeByIndex,
-    target,
-  });
-  // Valid hypervisors have hypeIndex > 0
+  // Bulk fetch lists for all registries the chain and flatten into one array
+  let hypervisors = await Promise.all(
+    targets.map((target) =>
+      api.fetchList({
+        lengthAbi: hypeRegistry.counter,
+        itemAbi: hypeRegistry.hypeByIndex,
+        target,
+      })
+    )
+  ).then((data) => data.flat());
+
+  // Filter out invalid hypervisors, valid hypervisors have hypeIndex > 0
   hypervisors = hypervisors
     .filter((hypervisor) => hypervisor[1] > 0)
     .map((i) => i[0]);
@@ -103,10 +76,6 @@ async function tvlUniV3_onchain(api, key) {
 
 async function tvlWrapper(_, _b, _cb, { api }) {
   return tvlUniV3(api);
-}
-
-function tvlOnchain(key) {
-  return async (_, _1, _2, { api }) => tvlUniV3_onchain(api, key);
 }
 
 async function getHypervisorBalances({ hypervisors, api, balances = {} }) {
@@ -147,19 +116,13 @@ module.exports = {
     ),
   },
   polygon: {
-    tvl: sdk.util.sumChainTvls([
-      tvlOnchain("algebra_polygon"),
-      tvlOnchain("polygon"),
-    ]),
+    tvl: tvlWrapper,
   },
   optimism: {
     tvl: tvlWrapper,
   },
   arbitrum: {
-    tvl: sdk.util.sumChainTvls([
-      tvlOnchain("arbitrum"),
-      tvlOnchain("zyberswap_arbitrum"),
-    ]),
+    tvl: tvlWrapper,
   },
   celo: {
     tvl: tvlWrapper,
