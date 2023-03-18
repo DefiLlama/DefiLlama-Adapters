@@ -105,15 +105,8 @@ function staking({ tokensAndOwners = [],
   return async (_, _b, _cb, { api, chain = 'ethereum', block, }) => {
     if (!coreAssets.length && useDefaultCoreAssets)
       coreAssets = getCoreAssets(chain)
-    blacklist = getUniqueAddresses(blacklist)
-    if (!tokensAndOwners.length)
-      if (owners.length)
-        tokensAndOwners = owners.map(o => tokens.map(t => [t, o])).flat()
-      else if (owner)
-        tokensAndOwners = tokens.map(t => [t, owner])
-    tokensAndOwners = tokensAndOwners.filter(t => !blacklist.includes(t[0]))
 
-    const balances = await sumTokens2({ chain, block, tokensAndOwners })
+    const balances = await sumTokens2({ api, owner, tokensAndOwners, owners, tokens, blacklistedTokens: blacklist, })
     const { updateBalances, pairBalances, prices, } = await getTokenPrices({ coreAssets, lps: [...tokensAndOwners.map(t => t[0]), ...lps,], chain, block, restrictTokenRatio, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio })
     // sdk.log(prices, pairBalances, balances)
     await updateBalances(balances, { skipConversion, onlyLPs })
