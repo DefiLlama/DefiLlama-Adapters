@@ -50,6 +50,12 @@ async function getFantomTvl() {
   }
 }
 
+async function getPolygonTvl() {
+  return {
+    polygon: await getTvls("polygon", "totalStaked"),
+  }
+}
+
 async function getGnosisTvl(timestamp, block, chainBlocks) {
   
   //Current Ankr Provider Address, there is a hard cap on how much mGNO each address can stake, other addresses might appear*/
@@ -104,6 +110,9 @@ module.exports = {
   },
   xdai: {
     tvl: getGnosisTvl,
+  },
+  polygon: {
+    tvl: getPolygonTvl,
   },
   methodology: `We get the total staked amount and total staked USD from Ankr's official API. Gnosis: Gets staked amount from the staking pool.`,
 };
