@@ -5,21 +5,22 @@ const FCTR = "0x6dD963C510c2D2f09d5eDdB48Ede45FeD063Eb36"
 const veFCTR = "0xA032082B08B2EF5A6C3Ea80DaEac58300F68FB73"
 const FCTR_RNDTX = "0x95C34a4efFc5eEF480c65E2865C63EE28F2f9C7e" // Factor Roundtable Index
 
-async function tvl(timestamp, block, chainBlocks) {
-    const balances = {};
-    await sumTokens2({
-        balances,
-        owners: [FCTR_RNDTX],
-        tokens: ["0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a", "0x3d9907F9a368ad0a51Be60f7Da3b97cf940982D8", "0x10393c20975cF177a3513071bC110f7962CD67da", "0x088cd8f5eF3652623c22D48b1605DCfE860Cd704", "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8"],
-        chain: 'arbitrum',
-        block: chainBlocks.polygon
-      })
-    return balances;
+const indices = [FCTR_RNDTX]
+
+async function tvl(timestamp, block, chainBlocks, { api }) {
+  const uBalances = await api.multiCall({ abi: 'uint256[]:underlyingAssetsBalance', calls: indices })
+  const calls = []
+  uBalances.forEach((v, i) => {
+    v.forEach((_, j) => calls.push({ target: indices[i], params: j }))
+  })
+  const uData = await api.multiCall({ abi: 'function underlyingAssets(uint256) view returns (address,uint256,uint256)', calls })
+  const tokensAndOwners = uData.map((v, i) => [v[0], calls[i].target])
+  await sumTokens2({ api, tokensAndOwners })
 }
 
 module.exports = {
-    arbitrum: {
-        tvl: tvl,
-        staking: staking(veFCTR, FCTR, "arbitrum")
-    }
+  arbitrum: {
+    tvl,
+    staking: staking(veFCTR, FCTR)
+  }
 }
