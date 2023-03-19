@@ -48,7 +48,7 @@
 ##### Token address and ticker if any:
 
 
-##### Category (full list at https://defillama.com/categories) *Please choose only one:
+##### Category (full list at https://llama.fi/categories) *Please choose only one:
 
 
 ##### Oracle used (Chainlink/Band/API3/TWAP or any other that you are using):
