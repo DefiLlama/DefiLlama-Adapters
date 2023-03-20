@@ -6,6 +6,7 @@ async function fetch() {
 }
 
 module.exports = {
+  methodology: 'TVL of the liquidity on all AMM pools, and the SDEX Staking.',
   misrepresentedTokens: true,
   timetravel: false,
   ethereum: {
