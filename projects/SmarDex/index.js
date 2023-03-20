@@ -1,16 +1,9 @@
-const { fetchURL } = require('../helper/utils');
-
-async function fetch() {
-  const metrics = await fetchURL('https://api.smardex.io/ethereum/v0.1/pairs/metrics.json');
-  return metrics.data.tvl.usd;
-}
+const { getUniTVL, } = require('../helper/unknownTokens');
+const { staking } = require('../helper/staking')
 
 module.exports = {
-  methodology: 'TVL of the liquidity on all AMM pools, and the SDEX Staking.',
-  misrepresentedTokens: true,
-  timetravel: false,
   ethereum: {
-    fetch,
+    tvl: getUniTVL({ factory: '0x7753F36E711B66a0350a753aba9F5651BAE76A1D',  fetchBalances: true, }),
+    staking: staking('0xB940D63c2deD1184BbdE059AcC7fEE93654F02bf', '0x5de8ab7e27f6e7a1fff3e5b337584aa43961beef')
   },
-  fetch,
 }
