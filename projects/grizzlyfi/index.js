@@ -204,7 +204,6 @@ async function unwrapStablePcsLPs(balances, lpPositions, api) {
       sdk.util.sumSingleBalance(balances, transformAddress(token1), token1Balance.toFixed(0))
     } catch (e) {
       sdk.log(e)
-      console.log(`Failed to get data for LP token at ${lpPosition.token} on chain ${chain}`)
       throw e
     }
   })
