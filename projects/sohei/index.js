@@ -1,9 +1,26 @@
-const {compoundExports} = require('../helper/compound');
-const { nullAddress } = require('../helper/tokenMapping');
+const { compoundExports } = require("../helper/compound");
 
-const ceth = "0x685d1f1a83ff64e75fe882e7818e4ad9173342ca";
+const comptroller = "0x9F750CF10034f3d7a18221aEc0BdDab7fC6F32bA";
 const chain = "arbitrum";
+const cether = "0x685D1F1A83fF64e75FE882e7818E4aD9173342Ca";
+const cetheEquivalent = "0x82af49447d8a07e3bd95bd0d56f35241523fbab1";
+const transformAdressRaw = null;
+const checkForLPTokens = undefined;
+const lastParam = {
+  blacklistedTokens: [],
+  fetchBalances: false,
+};
 
 module.exports = {
-  arbitrum: compoundExports('0x9f750cf10034f3d7a18221aec0bddab7fc6f32ba', chain, ceth, nullAddress, undefined, undefined, { blacklistedTokens: ['0x6e002cb9bf8c17409eeb6c593ef6548faddd2985']}),
+  methodology:
+    "Same as compound, we just get all the collateral (not borrowed money) on the lending markets.",
+  arbitrum: compoundExports(
+    comptroller,
+    chain,
+    cether,
+    cetheEquivalent,
+    transformAdressRaw,
+    checkForLPTokens,
+    lastParam
+  ),
 };
