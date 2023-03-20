@@ -16,4 +16,7 @@ async function tvl(_, _b, _cb, { api, }) {
 
 module.exports = {
   ethereum: { tvl },
+  hallmarks: [
+    [Math.floor(new Date('2023-03-20')/1e3), 'Balancing arbitrage'],
+  ],
 }
