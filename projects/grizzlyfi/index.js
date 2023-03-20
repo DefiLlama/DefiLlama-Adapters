@@ -1,8 +1,6 @@
 const sdk = require("@defillama/sdk");
-const { transformBscAddress } = require("../helper/portedTokens");
 const { stakings } = require("../helper/staking");
-const { pool2 } = require("../helper/pool2");
-const { unwrapUniswapLPs, unwrapLPsAuto } = require("../helper/unwrapLPs");
+const { unwrapLPsAuto, } = require("../helper/unwrapLPs");
 const { BigNumber } = require("bignumber.js");
 
 const abiGrizzly = "uint256:grizzlyStrategyDeposits"
@@ -14,6 +12,7 @@ const abiYearn = "uint256:totalAssets"
 const lpReservesAbi = 'function balances(uint256 index) view returns (uint256)'
 const tokenAbi = 'function coins(uint256 index) view returns (address)'
 const lpSuppliesAbi = "uint256:totalSupply"
+const transformAddress = i => 'bsc:' + i
 
 const pcsHives = [
   // PCS hives
@@ -121,83 +120,41 @@ const yearnHives = [
   }
 ]
 
-async function tvl(timestamp, block, chainBlocks) {
-  const balances = {};
+async function tvl(timestamp, block, chainBlocks, { api }) {
+  const balances = api.getBalances();
   block = chainBlocks.bsc;
 
-  const [{ output: hiveBalancesGrizzly },
-    { output: hiveBalancesStandard },
-    { output: hiveBalancesStable },
-    { output: stableHiveBalancesGrizzly },
-    { output: stableHiveBalancesStandard },
-    { output: stableHiveBalancesStable },
-    { output: farmBalances },
-    { output: yearnBalances }] = await Promise.all([
-      sdk.api.abi.multiCall({
-        calls: pcsHives.map(h => ({ target: h.hive })),
-        abi: abiGrizzly,
-        chain: "bsc",
-        block
-      }),
-      sdk.api.abi.multiCall({
-        calls: pcsHives.map(h => ({ target: h.hive })),
-        abi: abiStandard,
-        chain: "bsc",
-        block
-      }),
-      sdk.api.abi.multiCall({
-        calls: pcsHives.map(h => ({ target: h.hive })),
-        abi: abiStable,
-        chain: "bsc",
-        block
-      }),
-      sdk.api.abi.multiCall({
-        calls: stableHives.map(h => ({ target: h.hive })),
-        abi: abiGrizzly,
-        chain: "bsc",
-        block
-      }),
-      sdk.api.abi.multiCall({
-        calls: stableHives.map(h => ({ target: h.hive })),
-        abi: abiStandard,
-        chain: "bsc",
-        block
-      }),
-      sdk.api.abi.multiCall({
-        calls: stableHives.map(h => ({ target: h.hive })),
-        abi: abiStable,
-        chain: "bsc",
-        block
-      }),
-      sdk.api.abi.multiCall({
-        calls: farms.map(h => ({ target: h.hive })),
-        abi: abiFarm,
-        chain: "bsc",
-        block
-      }),
-      sdk.api.abi.multiCall({
-        calls: yearnHives.map(h => ({ target: h.hive })),
-        abi: abiYearn,
-        chain: "bsc",
-        block
-      }),
+  const getHive = i => i.hive
+
+  const [hiveBalancesGrizzly,
+    hiveBalancesStandard,
+    hiveBalancesStable,
+    stableHiveBalancesGrizzly,
+    stableHiveBalancesStandard,
+    stableHiveBalancesStable,
+    farmBalances,
+    yearnBalances] = await Promise.all([
+      api.multiCall({ calls: pcsHives.map(getHive), abi: abiGrizzly, }),
+      api.multiCall({ calls: pcsHives.map(getHive), abi: abiStandard, }),
+      api.multiCall({ calls: pcsHives.map(getHive), abi: abiStable, }),
+      api.multiCall({ calls: stableHives.map(getHive), abi: abiGrizzly, }),
+      api.multiCall({ calls: stableHives.map(getHive), abi: abiStandard, }),
+      api.multiCall({ calls: stableHives.map(getHive), abi: abiStable, }),
+      api.multiCall({ calls: farms.map(getHive), abi: abiFarm, }),
+      api.multiCall({ calls: yearnHives.map(getHive), abi: abiYearn, }),
     ]);
 
-  const lpPositions = hiveBalancesGrizzly.map((b, i) => {
-    const grizzly = new BigNumber(b.output);
-    const standard = new BigNumber(hiveBalancesStandard[i].output);
-    const stable = new BigNumber(hiveBalancesStable[i].output);
-
-    return {
-      balance: grizzly.plus(standard).plus(stable).toString(),
-      token: pcsHives[i].token
-    }
+  hiveBalancesGrizzly.map((b, i) => {
+    const token = pcsHives[i].token
+    api.add(token, b)
+    api.add(token, hiveBalancesStandard[i])
+    api.add(token, hiveBalancesStable[i])
   });
 
   const lpPositionsStable = stableHiveBalancesGrizzly.map((b, i) => {
-    const grizzly = new BigNumber(b.output);
-    const standard = new BigNumber(stableHiveBalancesStandard[i].output);
-    const stable = new BigNumber(stableHiveBalancesStable[i].output);
+    const grizzly = new BigNumber(b);
+    const standard = new BigNumber(stableHiveBalancesStandard[i]);
+    const stable = new BigNumber(stableHiveBalancesStable[i]);
 
     return {
       balance: grizzly.plus(standard).plus(stable).toString(),
@@ -206,143 +163,55 @@ async function tvl(timestamp, block, chainBlocks) {
     }
   });
 
-  const farmLpPositions = farmBalances.map((b, i) => ({
-    balance: b.output,
-    token: farms[i].token
-  }));
+  farmBalances.forEach((b, i) => api.add(farms[i].token, b));
+  yearnBalances.forEach((b, i) => api.add(yearnHives[i].token, b));
 
-  const thenaLpPositions = yearnBalances.map((b, i) => ({
-    balance: b.output,
-    token: yearnHives[i].token
-  }));
-
-  await unwrapStablePcsLPs(
-    balances,
-    lpPositionsStable,
-    block,
-    "bsc",
-    await transformBscAddress()
-  )
-
-  await unwrapUniswapLPs(
-    balances,
-    lpPositions,
-    block,
-    "bsc",
-    await transformBscAddress()
-  );
-
-  await unwrapUniswapLPs(
-    balances,
-    farmLpPositions,
-    block,
-    "bsc",
-    await transformBscAddress()
-  )
-
-  await unwrapUniswapLPs(
-    balances,
-    thenaLpPositions,
-    block,
-    "bsc",
-    await transformBscAddress()
-  );
-
+  await unwrapStablePcsLPs(balances, lpPositionsStable, api)
+  await unwrapLPsAuto({ ...api, balances, })
   return balances;
 }
 
-async function unwrapStablePcsLPs(balances, lpPositions, block, chain = 'ethereum', transformAddress = null, excludeTokensRaw = [],) {
-  if (!transformAddress)
-    transformAddress = await getChainTransform(chain)
+async function unwrapStablePcsLPs(balances, lpPositions, api) {
   lpPositions = lpPositions.filter(i => +i.balance > 0)
-  const excludeTokens = excludeTokensRaw.map(addr => addr.toLowerCase())
-  const lpTokenCalls = lpPositions.map(lpPosition => ({
-    target: lpPosition.token
-  }))
-  const lpTokenCalls0 = lpPositions.map(lpPosition => ({
-    target: lpPosition.swap,
-    params: [0]
-  }))
-  const lpTokenCalls1 = lpPositions.map(lpPosition => ({
-    target: lpPosition.swap,
-    params: [1]
-  }))
-  const lpStableSwapCalls0 = lpPositions.map(lpPosition => ({
-    target: lpPosition.swap,
-    params: [0]
-  }))
-  const lpStableSwapCalls1 = lpPositions.map(lpPosition => ({
-    target: lpPosition.swap,
-    params: [1]
-  }))
-  const lpReserves0 = sdk.api.abi.multiCall({
-    block,
-    abi: lpReservesAbi,
-    calls: lpStableSwapCalls0,
-    chain
-  })
-  const lpReserves1 = sdk.api.abi.multiCall({
-    block,
-    abi: lpReservesAbi,
-    calls: lpStableSwapCalls1,
-    chain
-  })
-  const lpSupplies = sdk.api.abi.multiCall({
-    block,
-    abi: lpSuppliesAbi,
-    calls: lpTokenCalls,
-    chain
-  })
-  const tokens0 = sdk.api.abi.multiCall({
-    block,
-    abi: tokenAbi,
-    calls: lpTokenCalls0,
-    chain
-  })
-  const tokens1 = sdk.api.abi.multiCall({
-    block,
-    abi: tokenAbi,
-    calls: lpTokenCalls1,
-    chain
-  })
-  await Promise.all(lpPositions.map(async lpPosition => {
+  const swaps = lpPositions.map(i => i.swap)
+
+  const [
+    lpReserves0,
+    lpReserves1,
+    lpSupplies,
+    tokens0,
+    tokens1,
+  ] = await Promise.all([
+    api.multiCall({ abi: lpReservesAbi, calls: swaps.map(i => ({ target: i, params: [0] })) }),
+    api.multiCall({ abi: lpReservesAbi, calls: swaps.map(i => ({ target: i, params: [1] })) }),
+    api.multiCall({ abi: lpSuppliesAbi, calls: lpPositions.map(i => i.token), }),
+    api.multiCall({ abi: tokenAbi, calls: swaps.map(i => ({ target: i, params: [0] })), }),
+    api.multiCall({ abi: tokenAbi, calls: swaps.map(i => ({ target: i, params: [1] })), }),
+  ])
+
+
+  lpPositions.map((lpPosition, i) => {
     try {
-      let token0, token1, supply
-      const lpToken = lpPosition.token
-      const swap = lpPosition.swap
-      const token0_ = (await tokens0).output.find(call => call.input.target === swap)
-      const token1_ = (await tokens1).output.find(call => call.input.target === swap)
-      const supply_ = (await lpSupplies).output.find(call => call.input.target === lpToken)
+      const token0 = tokens0[i].toLowerCase()
+      const token1 = tokens1[i].toLowerCase()
+      const supply = lpSupplies[i]
+      const _reserve0 = lpReserves0[i]
+      const _reserve1 = lpReserves1[i]
 
-      token0 = token0_.output.toLowerCase()
-      token1 = token1_.output.toLowerCase()
-      supply = supply_.output
-      //console.log(token0_, supply_, token1_, lpToken)
-      if (supply === "0") {
-        return
-      }
-
-      let _reserve0, _reserve1
-      _reserve0 = (await lpReserves0).output.find(call => call.input.target === swap).output;
-      _reserve1 = (await lpReserves1).output.find(call => call.input.target === swap).output;
-
-      if (!excludeTokens.includes(token0)) {
-        const token0Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve0)).div(BigNumber(supply))
-        sdk.util.sumSingleBalance(balances, await transformAddress(token0), token0Balance.toFixed(0))
-      }
-      if (!excludeTokens.includes(token1)) {
-        const token1Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve1)).div(BigNumber(supply))
-        sdk.util.sumSingleBalance(balances, await transformAddress(token1), token1Balance.toFixed(0))
-      }
+      const token0Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve0)).div(BigNumber(supply))
+      sdk.util.sumSingleBalance(balances, transformAddress(token0), token0Balance.toFixed(0))
+      const token1Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve1)).div(BigNumber(supply))
+      sdk.util.sumSingleBalance(balances, transformAddress(token1), token1Balance.toFixed(0))
     } catch (e) {
       sdk.log(e)
       console.log(`Failed to get data for LP token at ${lpPosition.token} on chain ${chain}`)
       throw e
     }
-  }))
+  })
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   bsc: {
     tvl,
     staking: stakings(
@@ -351,7 +220,6 @@ module.exports = {
         "0xB80287c110a76e4BbF0315337Dbc8d98d7DE25DB"
       ],
       "0xa045e37a0d1dd3a45fefb8803d22457abc0a728a",
-      "bsc"
     )
   }
 };
