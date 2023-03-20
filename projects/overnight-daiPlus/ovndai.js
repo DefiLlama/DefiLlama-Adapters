@@ -6,8 +6,8 @@ const m2m = {
 }
 
 const assets = {
-  optimism: "0x970D50d09F3a656b43E11B0D45241a84e3a6e011", //DAI
-  arbitrum: "0xeb8E93A0c7504Bffd8A8fFa56CD754c63aAeBFe8", //DAI
+  optimism: "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1", //DAI
+  arbitrum: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1", //DAI
 }
 
 const abi = "uint256:totalNetAssets"
