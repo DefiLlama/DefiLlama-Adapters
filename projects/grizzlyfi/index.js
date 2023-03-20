@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { stakings } = require("../helper/staking");
-const { unwrapLPsAuto, } = require("../helper/unwrapLPs");
+const { unwrapLPsAuto } = require("../helper/unwrapLPs");
 const { BigNumber } = require("bignumber.js");
 
 const abiGrizzly = "uint256:grizzlyStrategyDeposits"
