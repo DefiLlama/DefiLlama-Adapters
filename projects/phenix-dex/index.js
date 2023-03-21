@@ -5,15 +5,15 @@ module.exports = {
   cronos: {
     tvl: getUniTVL({
       factory: "0x6Bae09822c36a9359d563A22fc7d134eF27a5f60",
-      chain: "cronos",
       useDefaultCoreAssets: true,
+      fetchBalances: true,
     }),
   },
   polygon: {
     tvl: getUniTVL({
       factory: "0x9A3F01dfA086C2E234fC88742c692368438fBb30",
-      chain: "polygon",
       useDefaultCoreAssets: true,
+      fetchBalances: true,
     }),
   },
 };
