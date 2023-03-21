@@ -10,7 +10,7 @@ async function fetch() {
     const response = await utils.fetchURL("https://lp.sakaivault.io/tvl"); 
     const tvlData = await response.data //Check locked value : https://app.sakaivault.io/
     const lastIndex = await tvlData[tvlData.length-1]
-    return {...lastIndex}
+    return Number(lastIndex.balanceInUSDT)
   }
   
   module.exports = {
