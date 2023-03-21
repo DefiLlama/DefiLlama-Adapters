@@ -11,8 +11,9 @@ const assets = {
 }
 
 const abi = "uint256:totalNetAssets"
+const totalTvl = m2m.totalNetAssets;
 
-module.exports = {};
+module.exports = {totalTvl};
 
 Object.keys(m2m).forEach(chain => {
   module.exports[chain] = {
