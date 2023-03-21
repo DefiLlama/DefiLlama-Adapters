@@ -122,7 +122,6 @@ const yearnHives = [
 
 async function tvl(timestamp, block, chainBlocks, { api }) {
   const balances = api.getBalances();
-  block = chainBlocks.bsc;
 
   const getHive = i => i.hive
 
@@ -191,22 +190,16 @@ async function unwrapStablePcsLPs(balances, lpPositions, api) {
 
 
   lpPositions.map((lpPosition, i) => {
-    try {
-      const token0 = tokens0[i].toLowerCase()
-      const token1 = tokens1[i].toLowerCase()
-      const supply = lpSupplies[i]
-      const _reserve0 = lpReserves0[i]
-      const _reserve1 = lpReserves1[i]
+    const token0 = tokens0[i].toLowerCase()
+    const token1 = tokens1[i].toLowerCase()
+    const supply = lpSupplies[i]
+    const _reserve0 = lpReserves0[i]
+    const _reserve1 = lpReserves1[i]
 
-      const token0Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve0)).div(BigNumber(supply))
-      sdk.util.sumSingleBalance(balances, transformAddress(token0), token0Balance.toFixed(0))
-      const token1Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve1)).div(BigNumber(supply))
-      sdk.util.sumSingleBalance(balances, transformAddress(token1), token1Balance.toFixed(0))
-    } catch (e) {
-      sdk.log(e)
-      console.log(`Failed to get data for LP token at ${lpPosition.token}`)
-      throw e
-    }
+    const token0Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve0)).div(BigNumber(supply))
+    sdk.util.sumSingleBalance(balances, transformAddress(token0), token0Balance.toFixed(0))
+    const token1Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve1)).div(BigNumber(supply))
+    sdk.util.sumSingleBalance(balances, transformAddress(token1), token1Balance.toFixed(0))
   })
 }
 
