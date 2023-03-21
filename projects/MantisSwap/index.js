@@ -1,7 +1,4 @@
-const { staking } = require("../helper/staking");
 const { sumTokens2 } = require("../helper/unwrapLPs");
-
-const pools = ["0x62Ba5e1AB1fa304687f132f67E35bFC5247166aD"];
 
 const tokenDict = {
   "0x62Ba5e1AB1fa304687f132f67E35bFC5247166aD": [
@@ -23,7 +20,7 @@ async function getTotalAssets(pool, api) {
 
 async function tvl(timestamp, ethereumBlock, chainBlocks, { api }) {
   const totalAssets = (
-    await Promise.all(pools.map((i) => getTotalAssets(i, api)))
+    await Promise.all(Object.keys(tokenDict).map((i) => getTotalAssets(i, api)))
   ).flat();
   return sumTokens2({ api, tokensAndOwners: totalAssets });
 }
