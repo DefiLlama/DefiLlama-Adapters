@@ -4,7 +4,7 @@ const contracts  = {
 };
 
 
-async function getTVL() {
+async function fetch() {
     const response = await fetch("https://lp.sakaivault.io/tvl"); 
     const tvl = await response.json() //Check locked value : https://app.sakaivault.io/
     const lastIndex = await tvl[tvl.length-1]
@@ -12,6 +12,6 @@ async function getTVL() {
   }
   
   module.exports = {
-    getTVL,
+    fetch,
   };
   
