@@ -1,6 +1,6 @@
 const { wavesAdapter } = require('../helper/chain/wavesAdapter')
 
-const endpoint = "https://tvl.waves.tech/api/v1/history/vires"
+const endpoint = "/vires"
 
 module.exports = {
     timetravel: false,

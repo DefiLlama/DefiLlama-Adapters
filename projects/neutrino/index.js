@@ -1,8 +1,5 @@
-const { wavesAdapter } = require('../helper/chain/wavesAdapter')
+const { wavesExport } = require('../helper/chain/wavesAdapter')
 
-const endpoint = "https://tvl.waves.tech/api/v1/history/neutrino"
+const endpoint = "/neutrino"
 
-module.exports = {
-    timetravel: false,
-    waves: { tvl: wavesAdapter(endpoint, item => item.usdnLocked + item.defoLocked) }
-}
+module.exports = wavesExport(endpoint, item => item.usdnLocked + item.defoLocked) 
