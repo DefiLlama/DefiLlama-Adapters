@@ -34,4 +34,4 @@ XDAI_RPC="..."
 HARMONY_RPC="..."
 ```
 
-The name of each rpc is `{CHAIN-NAME}_RPC`, and the name we use for each chain can be found [here](https://github.com/DefiLlama/defillama-sdk/blob/master/src/general.ts#L33)
+The name of each rpc is `{CHAIN-NAME}_RPC`, and the name we use for each chain can be found [here](https://github.com/DefiLlama/defillama-sdk/blob/master/src/providers.json)
