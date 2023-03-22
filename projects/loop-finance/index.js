@@ -1,17 +1,17 @@
 const sdk = require("@defillama/sdk");
-const { queryContractStore, getTokenBalance, getToken, } = require("../helper/chain/cosmos");
+const { queryContract, getTokenBalance, getToken, } = require("../helper/chain/cosmos");
 const { transformDexBalances } = require('../helper/portedTokens')
 
 async function getPairs(chain, factory) {
-  let queryParam = { pairs: { limit: 30 } }
+  let data = { pairs: { limit: 30 } }
   let pairs = []
   let res
   do {
     if (pairs.length) {
       const lastItem = pairs[pairs.length - 1]
-      queryParam.pairs.start_after = lastItem.asset_infos
+      data.pairs.start_after = lastItem.asset_infos
     }
-    res = await queryContractStore({ queryParam, contract: factory, chain })
+    res = await queryContract({ data, contract: factory, chain })
     pairs.push(...res.pairs)
   } while (res.pairs.length >= 30)
   return pairs
@@ -45,6 +45,7 @@ module.exports = {
   misrepresentedTokens: true,
   timetravel: false,
   terra: { tvl: sdk.util.sumChainTvls([getFactoryTvl(queries.factory0), getFactoryTvl(queries.factory1)]) },
+  juno: { tvl: getFactoryTvl('juno1p4dmvjtdf3qw9394k7zl65eg8g5ehzvdxnvm9hd3ju7a7aslrmdqaspeak') },
   hallmarks: [
     [1651881600, "UST depeg"],
   ]
