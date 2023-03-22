@@ -76,11 +76,11 @@ function getToken(token) {
 
 
 async function getBalance({ token, owner, block, chain } = {}) {
-  const data = await query(
-    `contracts/${token}/store?query_msg={"balance":{"address":"${owner}"}}`,
-    block,
-    chain
-  );
+
+  const data = await queryContract({ contract: token, block, chain, data: {
+    balance: { address: owner }
+  }})
+  
   return Number(data.balance);
 }
 
