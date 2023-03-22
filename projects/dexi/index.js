@@ -1,4 +1,4 @@
-const { staking } = require('./helper/staking')
+const { staking } = require('../helper/staking')
 
 
 
