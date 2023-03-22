@@ -1,24 +1,10 @@
-const { sumTokens2 } = require('../helper/unwrapLPs');
-
-const tokenReflectionsAwardAddress = "0x78cCb45a43731cf989C740e9cb31f3d192Bd0f8b"
-const fantomTreasuryAddress = "0xf0a793024Ac47e421EB8c4673212dfCcE42f4a97"
-const spookySwapLPAddress = "0xfC66Ac63D414d3CF3dcdDa9e60742F6E789205e3"
-
-async function fantomTvl(timestamp, block, chainBlocks) {
-    const balances = {};
-    await sumTokens2({
-        balances,
-        owners: [fantomTreasuryAddress, tokenReflectionsAwardAddress],
-        tokens: ["0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E", "0x0e249130b3545a2a287DE9f27d805CAB95f03DB9", "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75", spookySwapLPAddress],
-        chain: 'fantom',
-        block: chainBlocks.fantom,
-    })
-    return balances;
-}
 
 module.exports = {
-    methodology: "Counting the LP tokens locked in the Fantom Treasury & counting the tokens locked in the Token Reflections Award contract",
-    fantom: {
-        tvl: fantomTvl,
-    }
+  fantom: {
+    tvl: () => 0,
+    staking: async (_, _1, _2, { api }) => {
+      const bal = await api.call({ abi: 'uint256:getTotalInvested', target: '0xe0d4ed2613f6c8737234d28d24b9c5d7f106bd28' })
+      api.add('0x80F2B8CdbC470c4DB4452Cc7e4a62F5277Db7061', bal)
+    },
+  }
 }
