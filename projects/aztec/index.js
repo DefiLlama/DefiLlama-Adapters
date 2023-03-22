@@ -19,7 +19,7 @@ async function tvl(_, block) {
 module.exports = {
   hallmarks: [
     [Math.floor(new Date('2023-03-13') / 1e3), 'Euler was hacked'],
-    [Math.floor(new Date('2023-03-13') / 1e3), 'Aztec decided to wind down'],
+    [Math.floor(new Date('2023-03-13') / 1e3), 'AztecConnect sunset announced'],
   ],
   methodology: "TVL of Aztec consists of ethereum and supported assets locked into the rollup processor",
   ethereum: {
