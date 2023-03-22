@@ -5,7 +5,7 @@ const { staking } = require('helper/staking')
 module.exports = {
   methodology: 'TVL counts staked DEXI coins on the platform itself. CoinGecko is used to find the price of tokens in USD.',
   polygon: {
-    staking: staking(["0x6e17539F792A31F39cEEc0BcaB4079032523e3c7]","0x233a2901EB51380E7Bf30fA3D31d4c326471B489","0x0C693035837C52Da8c2A4505bdf0f2aC43f9909C,"0xA17c08d8FC00481A937ecE7FDF5C94082bdFFE17"], '0x65ba64899c2c7dbfdb5130e42e2cc56de281c78b')
+    staking: staking(["0x6e17539F792A31F39cEEc0BcaB4079032523e3c7]","0x233a2901EB51380E7Bf30fA3D31d4c326471B489","0x0C693035837C52Da8c2A4505bdf0f2aC43f9909C","0xA17c08d8FC00481A937ecE7FDF5C94082bdFFE17"], '0x65ba64899c2c7dbfdb5130e42e2cc56de281c78b')
   },
   kava: {
     tvl:() => 0,
