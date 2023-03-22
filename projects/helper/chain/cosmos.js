@@ -31,7 +31,7 @@ const chainSubpaths = {
 };
 
 function getEndpoint(chain) {
-  if (!endPoints[chain]) throw new Error("Chain not found");
+  if (!endPoints[chain]) throw new Error("Chain not found: "+ chain);
   return endPoints[chain];
 }
 
@@ -61,6 +61,19 @@ async function queryV1Beta1({ chain, paginationKey, block, url } = {}) {
   }
   return (await axios.get(endpoint)).data;
 }
+
+async function getTokenBalance({ token, owner, block, chain }) {
+  let denom = token.native_token?.denom
+  if (denom) return getDenomBalance({denom, owner, block, chain,})
+  token = token.token.contract_addr
+  return getBalance({ token, owner, block, chain, })
+}
+
+function getToken(token) {
+  let denom = token.native_token?.denom
+  return denom ? denom : token.token.contract_addr
+}
+
 
 async function getBalance({ token, owner, block, chain } = {}) {
   const data = await query(
@@ -190,4 +203,6 @@ module.exports = {
   queryContractStore,
   queryContract,
   sumTokens,
+  getTokenBalance,
+  getToken,
 };
