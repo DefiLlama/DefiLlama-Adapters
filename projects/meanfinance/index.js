@@ -1,39 +1,21 @@
-const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
-const { getChainTransform } = require("../helper/portedTokens")
-const { request, gql } = require("graphql-request");
+const { V1_POOLS, TOKENS_IN_LEGACY_VERSIONS } = require("./addresses");
+const { sumTokens2 } = require('../helper/unwrapLPs')
+const { getConfig } = require('../helper/cache')
 
-const STABLE_VERSION = '0x059d306A25c4cE8D7437D25743a8B94520536BD5'
+const YIELD_VERSION = '0xA5AdC5484f9997fBF7D405b9AA62A7d88883C345'
+const YIELDLESS_VERSION = '0x059d306A25c4cE8D7437D25743a8B94520536BD5'
 const VULN_VERSION = '0x230C63702D1B5034461ab2ca889a30E343D81349'
 const BETA_VERSION = '0x24F85583FAa9F8BD0B8Aa7B1D1f4f53F0F450038'
 
-const VERSIONS = {
-  optimism: [
-    { contract: STABLE_VERSION, subgraph: 'https://api.thegraph.com/subgraphs/name/mean-finance/dca-v2-optimism' },
-    { contract: VULN_VERSION, subgraph: 'https://api.thegraph.com/subgraphs/name/mean-finance/dca-v2-vulnerable-optimism' },
-    { contract: BETA_VERSION, subgraph: 'https://api.thegraph.com/subgraphs/name/mean-finance/dca-v2-optimism-beta' },
-  ],
-  polygon: [ 
-    { contract: STABLE_VERSION, subgraph: 'https://api.thegraph.com/subgraphs/name/mean-finance/dca-v2-polygon' },
-    { contract: VULN_VERSION, subgraph: 'https://api.thegraph.com/subgraphs/name/mean-finance/dca-v2-vulnerable-polygon' },
-  ],
-  arbitrum: [
-    { contract: STABLE_VERSION, subgraph: 'https://api.thegraph.com/subgraphs/name/mean-finance/dca-v2-arbitrum' },
-  ]
+const LEGACY_VERSIONS = {
+  optimism: [BETA_VERSION, VULN_VERSION, YIELDLESS_VERSION],
+  polygon: [VULN_VERSION, YIELDLESS_VERSION]
 }
 
-const query = gql`
-  query tokens {
-    tokens (where: { id_not: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" }) {
-      id
-    }
-  }`
-;
-
-const getTokensInChain = async (subgraph) => {
-  const result = await request(subgraph, query);
-  return result.tokens.map(({ id }) => id)
-};
+async function getTokensInChain(chain) {
+  const data = await getConfig('mean-finance/'+chain, `https://api.mean.finance/v1/dca/networks/${chain}/tokens?includeNotAllowed`)
+  return data.map(({ address }) => address)
+}
 
 function getV2TvlObject(chain) {
   return {
@@ -42,61 +24,32 @@ function getV2TvlObject(chain) {
 }
 
 async function getV2TVL(chain, block) {
-  const balances = {};
-  for (const version of VERSIONS[chain]) {
-    await getV2TVLForVersion(balances, chain, version, block)
-  }
-  return balances
-}
+  const legacyVersions = LEGACY_VERSIONS[chain] ?? []
+  const legacyTokens = TOKENS_IN_LEGACY_VERSIONS[chain] ?? []
+  const tokens = await getTokensInChain(chain)
+  const versions = [
+    ...legacyVersions.map(contract => ({ contract, tokens: legacyTokens })),
+    { contract: YIELD_VERSION, tokens }
+  ]
 
-async function getV2TVLForVersion(balances, chain, version, block) {
-  const { contract, subgraph } = version
-  const tokens = await getTokensInChain(subgraph)
-  const chainTransform = await getChainTransform(chain)
-  for (const token of tokens) {
-    const balance = await sdk.api.erc20.balanceOf({
-      target: token,
-      owner: contract,
-      block,
-      chain
-    })
-    sdk.util.sumSingleBalance(balances, chainTransform(token), balance.output);
-  }
-}
-
-//DCA Factory
-const factoryAddress = "0xaC4a40a995f236E081424D966F1dFE014Fe0e98A";
-
-//Helper for ABI calls
-async function abiCall(target, abi, block) {
-  let result = await sdk.api.abi.call({
-    target: target,
-    abi: abi,
-    block: block,
-  });
-  return result;
+  const toa = versions.map(({ contract, tokens }) => tokens.map(t => ([t, contract]))).flat()
+  return sumTokens2({ chain, block, tokensAndOwners: toa})
 }
 
 async function ethTvl(timestamp, block) {
-  const balances = {};
-  //Gets all pairs
-  const pairCall = await abiCall(factoryAddress, abi["allPairs"], block);
+  const balances = await getV2TVL('ethereum', block)
+  return ethV1Tvl(block, balances)
+}
 
-  const pairs = pairCall.output;
-
-  //Calls for tokens in pair and balances of them then adds to balance
-  for (let i = 0; i < pairs.length; i++) {
-    const pool = pairs[i];
-    const token1 = (await abiCall(pool, abi["tokenA"], block)).output;
-    const token2 = (await abiCall(pool, abi["tokenB"], block)).output;
-    const poolBalances = (await abiCall(pool, abi["availableToBorrow"], block)).output;
-    const token1Balance = poolBalances[0];
-    const token2Balance = poolBalances[1];
-    sdk.util.sumSingleBalance(balances, token1, token1Balance);
-    sdk.util.sumSingleBalance(balances, token2, token2Balance);
+async function ethV1Tvl(block, balances = {}) {
+  const toa = []
+  // Calls for tokens in pair and balances of them then adds to balance
+  for (let i = 0; i < V1_POOLS.length; i++) {
+    const { pool, tokenA, tokenB } = V1_POOLS[i]
+    toa.push([tokenA, pool], [tokenB, pool])
   }
 
-  return balances;
+  return sumTokens2({ balances, tokensAndOwners: toa, block, });
 }
 
 module.exports = {
@@ -106,4 +59,15 @@ module.exports = {
   optimism: getV2TvlObject('optimism'),
   polygon: getV2TvlObject('polygon'),
   arbitrum: getV2TvlObject('arbitrum'),
+   hallmarks: [
+    [1638850958, "V2 Beta launch on Optimism"],
+    [1643602958, "V2 full launch"],
+    [1646367758, "Deployment on Polygon"],
+    [1650082958, "Protocol is paused because a non-critical vulnerability"],
+    [1653366158, "V2 Relaunch"],
+    [1654057358, "OP launch brings more users into Optimism and benefits Mean"],
+    [1666364400, "Yield-While-DCA launch"],
+    [1668006000, "Deployment on Arbitrum"],
+    [1672099200, "Deployment on Ethereum"],
+  ]
 };

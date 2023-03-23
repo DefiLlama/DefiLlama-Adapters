@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk')
-const { getTokenBalance, getTrxBalance, unverifiedCall } = require('../helper/tron');
+const { getTokenBalance, getTrxBalance, unverifiedCall } = require('../helper/chain/tron');
 
 const pools = [
   {
@@ -73,7 +73,7 @@ async function pool2() {
     getTokenBalance(lpToken, lpStaking),
     getTokenBalance(sun, lpToken),
     getTrxBalance(lpToken),
-    unverifiedCall(lpToken, 'totalSupply()', [])
+    unverifiedCall({ target: lpToken, abi: 'totalSupply()', isBigNumber: true }),
   ])
   return {
     "sun-token": sunInLp * lpTokenAmount / (totalSupply / 10 ** 6),

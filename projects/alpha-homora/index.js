@@ -24,6 +24,9 @@ async function avaxTvl(timestamp, block, chainBlocks) {
 async function fantomTvl(timestamp, block, chainBlocks) {
   return tvlV2Onchain(chainBlocks.fantom, "fantom")
 }
+async function opTvl(timestamp, block, chainBlocks) {
+  return tvlV2Onchain(chainBlocks.optimism, "optimism")
+}
 
 module.exports = {
   misrepresentedTokens: true,
@@ -40,5 +43,12 @@ module.exports = {
   fantom:{
     tvl: fantomTvl
   },
+  optimism:{
+    tvl: opTvl
+  },
   start: 1602054167, // unix timestamp (utc 0) specifying when the project began, or where live data begins
+  hallmarks: [
+    [1613178000, "37M exploit"], // Feb 13, 2021
+    [1626220800, "Upgrade to V2 on ETH"], // July 14, 2021 00:00 UTC
+  ]
 };

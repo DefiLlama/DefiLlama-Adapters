@@ -1,6 +1,7 @@
 const { getChainTvl } = require('../helper/getUniSubgraphTvl');
 
 module.exports = {
+  misrepresentedTokens: true,
   timetravel: true,
   polygon:{
     tvl: getChainTvl({

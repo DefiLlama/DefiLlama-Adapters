@@ -1,17 +1,10 @@
-const axios = require('axios');
-const retry = require('../helper/retry');
 const { toUSDTBalances } = require('../helper/balances');
+const { get } = require('../helper/http');
 
 async function tvl(){
-    const response = (
-        await retry(
-            async () => await axios.get(
-                'https://free-api.vestige.fi/providers?currency=USD'
-            )
-        )
-    )
+    const response = await get('https://free-api.vestige.fi/providers?currency=USD')
 
-    const data = response.data.find(p => p.id === 'H2')
+    const data = response.find(p => p.id === 'H2')
 
     return toUSDTBalances(data.tvl);
 }

@@ -1,28 +1,4 @@
 {
     "address": "0x64B17B166090B8F9BA19C13Bf8D5dA951b2d653D",
-    "abi": [
-      {
-        "inputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "name": "tokens",
-        "outputs": [
-          {
-            "internalType": "address",
-            "name": "tokenAddress",
-            "type": "address"
-          },
-          {
-            "internalType": "enum Gateway.ReleaseMethod",
-            "name": "releaseMethod",
-            "type": "uint8"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-      }]    
+    "abi":  "function tokens(uint256) view returns (address tokenAddress, uint8 releaseMethod)"
   }

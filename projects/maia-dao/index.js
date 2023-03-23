@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const { transformMetisAddress } = require('../helper/portedTokens');
+const { getChainTransform } = require('../helper/portedTokens');
 const { unwrapUniswapLPs, sumTokens2,  } = require('../helper/unwrapLPs');
 const abis = require("./abis.json");
 
@@ -11,7 +11,7 @@ const tokens = ['0x420000000000000000000000000000000000000A', '0xDeadDeAddeAddEA
 async function tvl(timestamp, _, { metis: block }) {
   const chain = 'metis'
   const balances = {};
-  const transform = await transformMetisAddress();
+  const transform = await getChainTransform(chain);
 
   const hermesBalance = (await sdk.api.abi.call({
     target: '0xa4C546c8F3ca15aa537D2ac3f62EE808d915B65b',
@@ -71,12 +71,12 @@ async function tvl(timestamp, _, { metis: block }) {
       excludedTokens.includes(pairAddresses[i].output.toLowerCase())
     ) {
       continue;
-    };
+    }
     lpPositions.push({
       balance: pairBalances[i].output,
       token: pairAddresses[i].output
     });
-  };
+  }
 
   await unwrapUniswapLPs(
     balances,
@@ -86,7 +86,7 @@ async function tvl(timestamp, _, { metis: block }) {
     transform
   );
   return sumTokens2({ balances, owner: multisig, tokens, chain, block, resolveLP: 'true', })
-};
+}
 
 module.exports = {
   metis: {

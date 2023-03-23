@@ -18,6 +18,6 @@ async function tvl() {
 
 module.exports = {
     timetravel: false,
-    tvl,
+    solana: { tvl },
     methodology: 'We call our API endpoint to get total SOL TVL. An alternative is to check our total supply for a lower bound on TVL, as each SOCN token is guaranteed to be backed by (at least) 1 SOL.',
 }

@@ -50,7 +50,7 @@ async function ethTvl(timestamp, ethBlock, chainBlocks) {
   }
 
 return balances
-};
+}
 
 
 module.exports = {

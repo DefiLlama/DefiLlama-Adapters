@@ -20,7 +20,7 @@ function chainTvl(chain) {
       ], block)
     }
   return exports
-};
+}
 
 const chainTVLObject = Object.keys(contracts)
   .reduce((agg, chain) => ({ ...agg, [chain]: chainTvl(chain) }), {});

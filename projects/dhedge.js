@@ -1,5 +1,5 @@
 const utils = require('./helper/utils');
-const { GraphQLClient, gql } = require('graphql-request');
+const { GraphQLClient,  } = require('graphql-request');
 
 /* * * * * * * *
  * ==> Correct adapter needs to be created.
@@ -32,7 +32,7 @@ async function staking() {
   var endpoint = 'https://api.thegraph.com/subgraphs/name/dhedge/dht-staking';
   var graphQLClient = new GraphQLClient(endpoint);
 
-  var query = gql`
+  var query = `
     {
       stakingContracts {
         id

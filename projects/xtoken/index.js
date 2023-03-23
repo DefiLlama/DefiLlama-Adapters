@@ -183,15 +183,8 @@ async function tvl(timestamp, block) {
 
   Object.keys(balances).forEach(key => balances[key] = BigNumber(balances[key]).toFixed(0))
 
-  let terminalMainnetTvl = await terminal.getData("mainnet");
-  Object.keys(terminalMainnetTvl).forEach(token => sdk.util.sumSingleBalance(
-    balances,
-    token,
-    terminalMainnetTvl[token]
-))
-
-  return balances;
-};
+  return terminal.getData("mainnet", block, balances);
+}
 
 async function fetchOptimism() {
   return terminal.getData("optimism");
@@ -206,6 +199,7 @@ async function fetchPolygon() {
 }
 
 module.exports = {
+  doublecounted: true,
   timetravel: false,
   ethereum:{
     tvl,

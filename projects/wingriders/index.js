@@ -5,33 +5,15 @@ const headers = {
 };
 
 async function tvl() {
-  const liquidityPoolLocked = (
-    await axios.post(
-      "https://explorer.mainnet.wingriders.com/api/bulk/paymentCredentials/adaBalance",
-      {
-        paymentCredentials: [
-          "e6c90a5923713af5786963dee0fdffd830ca7e0c86a041d9e5833e91",
-        ],
-      },
-      { headers }
+    const res = await axios.post(
+        'https://api.mainnet.wingriders.com/graphql',
+        {
+            query: '{tvl}'
+        },
+        { headers }
     )
-  ).data.balance;
-  const requestLocked = (
-    await axios.post(
-      "https://explorer.mainnet.wingriders.com/api/bulk/paymentCredentials/adaBalance",
-      {
-        paymentCredentials: [
-          "86ae9eebd8b97944a45201e4aec1330a72291af2d071644bba015959",
-        ],
-      },
-      { headers }
-    )
-  ).data.balance;
-  return {
-    cardano:
-      (parseInt(liquidityPoolLocked, 10) * 2) / 1e6 +
-      parseInt(requestLocked, 10) / 1e6,
-  };
+    const tvl = Number(res.data.data.tvl)
+    return {cardano: tvl}
 }
 
 module.exports = {
@@ -39,4 +21,7 @@ module.exports = {
   cardano: {
     tvl,
   },
+  hallmarks: [
+    [1659312000,"Nomad Bridge Hack"]
+  ],
 };

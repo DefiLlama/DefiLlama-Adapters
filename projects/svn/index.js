@@ -1,9 +1,8 @@
 const sdk = require("@defillama/sdk");
-const { tombTvl } = require("../helper/tomb");
 const { stakingPricedLP } = require("../helper/staking");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
-const token0Abi = require("../helper/abis/token0.json");
-const token1Abi = require("../helper/abis/token1.json");
+const token0Abi = 'address:token0'
+const token1Abi = 'address:token1'
 const { default: BigNumber } = require("bignumber.js");
 
 let token = "0x654bAc3eC77d6dB497892478f854cF6e8245DcA9";
@@ -97,7 +96,7 @@ async function tvl(timestamp, block, chainBlocks) {
     delete balances['cronos:0x654bac3ec77d6db497892478f854cf6e8245dca9'];
 
     return balances;
-};
+}
 module.exports = {
     cronos : {
         tvl,

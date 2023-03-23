@@ -1,118 +1,79 @@
 const sdk = require("@defillama/sdk");
+const { PromisePool } = require('@supercharge/promise-pool')
 const { BigNumber } = require("bignumber.js");
-const utils = require('./helper/utils');
+const { get } = require('./helper/http')
+const { sumTokens2 } = require('./helper/unwrapLPs')
 
 
 // Retrieve needed vaults attributes from REST API
-const fractional_api_url = 'https://mainnet-api.fractional.art/vaults?perPage=12' // &page=1' 
-async function retrieveVaultsAPI() {
-  // Get page count
-  const page1 = await utils.fetchURL(fractional_api_url + '&page=1')
-  let pageCount = page1.data.metadata.pagination.total_pages;
-  //pageCount = 1 // uncomment for for debug
+const fractional_api_url = 'https://mainnet-api.fractional.art/vaults?perPage=100' // &page=1' 
 
+async function getVaults() {
   const vaults = []
-  let openedVaultsCount = 0
-  for (let i = 0; i < pageCount; i++) {
-    let vaults_i = await utils.fetchURL(fractional_api_url + `&page=${i+1}`)
-    // Filter out unwanted attributes: keep analytics.tvlUsd, pools, contractAddress, symbol, slug, collectables
-    vaults_i = vaults_i.data.data.map(({ analytics, pools, contractAddress, symbol, slug, collectables, isClosed, tokenAddress }) => ({analytics, pools, contractAddress, symbol, slug, collectables, isClosed, tokenAddress}))
+  let page = 1
+  const {
+    data, metadata
+  } = await get(fractional_api_url + `&page=${page}`)
+  vaults.push(...data)
+  page++
+  const totalPages = metadata.pagination.totalPages
+  const pages = []
+  for (; page <= totalPages; page++) pages.push(page)
 
-    // Note : Could filter out closed vaults, but their tokens can still be provided to pools, so not filtering
-    openedVaultsCount += vaults_i.filter(vault => !vault.isClosed).length
+  await PromisePool
+    .withConcurrency(21)
+    .for(pages)
+    .process(addPage)
 
-    // Append to complete vaults array
-    vaults.push(...vaults_i)
+  async function addPage(i) {
+    const { data, } = await get(fractional_api_url + `&page=${i}`)
+    vaults.push(...data)
+    sdk.log('fetched', i, 'of', totalPages)
   }
-  return {vaults, openedVaultsCount}
+
+  sdk.log(vaults.length)
+  return vaults
 }
 
 // This API returns a list of vaults similar to the following exampleVaultDebug
 function exampleVaultDebug() {
   return {
-    "symbol":	"DOG",
-    "contractAddress":	"0xbaac2b4491727d78d2b78815144570b9f2fe8899",
-    "pools":	[ {
-      "pool":	"0x7731CA4d00800b6a681D031F565DeB355c5b77dA",
-      "token0":	"0xBAac2B4491727D78D2b78815144570b9f2Fe8899",
-      "token1":	"0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-      "provider":	"UNISWAP_V3"
+    "symbol": "DOG",
+    "contractAddress": "0xbaac2b4491727d78d2b78815144570b9f2fe8899",
+    "pools": [{
+      "pool": "0x7731CA4d00800b6a681D031F565DeB355c5b77dA",
+      "tokens": ["0xBAac2B4491727D78D2b78815144570b9f2Fe8899", "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"],
+      "provider": "UNISWAP_V3"
     }],
-    "tokenAddress":	"0xabEFBc9fD2F806065b4f3C237d4b59D9A97Bcac7",
+    "tokenAddress": "0xabEFBc9fD2F806065b4f3C237d4b59D9A97Bcac7",
     "analytics": {
       "tvlUsd": 21790624
     },
-    "slug":	"the-doge-nft",
-    "isClosed":	false,
+    "slug": "the-doge-nft",
+    "isClosed": false,
   }
 }
 
 // Get Fractional.art TVL
-async function tvl(timestamp, block, chainBlocks, chain) {
+async function tvl(_, block) {
   // Get vaults and Compute vaults TVL (trusting fractional rest api)
-  const {vaults, openedVaultsCount} = await retrieveVaultsAPI()
-  const vaulstTVL_api = getVaultsTvlApi(vaults)
-  // note: vault with slug fractional-dream-930 has null analytics and symbol, because it is an ERC1155 not listed on any DEXes
-  
-  // Or try to find all pools associated to vault and account for tokens locked against vault token
-  // In pool: provider, pool, token0, token1
-  const univ2_sushiv1_pools = []
-  const univ3_pools = []
+  const vaults = await getVaults()
+  const toa = []
+  let token0;
+  let token1;
   vaults.forEach(vault => {
     vault.pools.forEach(pool => {
+      token0 = pool.tokens[0];
+      token1 = pool.tokens[1];
       // Swap token0 and token1 if needed so token0 is always vault token
-      if (vault.contractAddress.toLowerCase() === pool.token1.toLowerCase()) {
-        const tmp = pool.token1
-        pool.token1 = pool.token0
-        pool.token0 = tmp
-      }
-      // Pool provider can be any of ['UNISWAP_V3', 'SUSHISWAP_V1', 'UNISWAP_V2']
-      const provider = pool.provider
-      if ((provider === 'UNISWAP_V2') || (provider === 'SUSHISWAP_V1')) {
-        univ2_sushiv1_pools.push(pool)
-      } else if (provider === 'UNISWAP_V3') {
-        univ3_pools.push(pool)
-      }
+      if (vault.contractAddress.toLowerCase() === token1.toLowerCase())
+        toa.push([token0, pool.pool])
+      else
+        toa.push([token1, pool.pool])
     })
   })
-  // Concat v2 and v3 pools
-  const v2_v3_pools = univ3_pools.concat(univ2_sushiv1_pools)
 
-  // Retrieve balances from onchain calls
-  let balances = {}
-
-  // Get UNISWAP_V3 LPs
-  // Simply get amount of token0 and token1 allocated to pool contract. And since we only need the token1 it is even more efficient
-  const calls_v3_v2_t0_t1 = v2_v3_pools.map((pool) => ({ 
-      target: pool.token1,
-      params: pool.pool
-    }))
-  /*
-  const calls_v3_t1 = univ3_pools.map((pool) => ({ // 33.67 // 20.69
-      target: pool.token1,
-      params: pool.pool
-    }))
-  const calls_v3_t0_t1 = univ3_pools.map((pool) => ({ // 69.12 // 20.69 univ2_sushiv1_pools
-    target: pool.token1,
-    params: pool.pool
-  })).concat(univ3_pools.map((pool) => ({
-      target: pool.token0,
-      params: pool.pool
-    })))
-  */
-  
-  const poolBalance = await sdk.api.abi.multiCall({ 
-    block,
-    calls: calls_v3_v2_t0_t1, // calls_v3_t0_t1
-    abi: 'erc20:balanceOf'
-  })
-  balances = {}
-  sdk.util.sumMultiBalanceOf(balances, poolBalance)
-
-  // Remove vaults tokens balances as they should not account for TVL. 
-  // TODO: Choose if we remove the vaults tokens from pooled balances or not
-
-  return balances
+  return sumTokens2({ tokensAndOwners: toa, block, })
 }
 
 // Using fractional REST API, a TVL is returned in USD, stored as USDC
@@ -121,10 +82,10 @@ function getVaultsTvlApi(vaults) {
 }
 
 const usdc = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
-async function tvl_api(timestamp, block, chainBlocks, chain) {
-  const {vaults, openedVaultsCount} = await retrieveVaultsAPI()
-  return {[usdc]: getVaultsTvlApi(vaults).times(1e6)} 
-}
+/* async function tvl_api(timestamp, block, chainBlocks, chain) {
+  const { vaults, openedVaultsCount } = await retrieveVaultsAPI()
+  return { [usdc]: getVaultsTvlApi(vaults).times(1e6) }
+} */
 
 module.exports = {
   ethereum: { tvl },

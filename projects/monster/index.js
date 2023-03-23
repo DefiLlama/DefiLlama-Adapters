@@ -22,7 +22,7 @@ async function staking(timestamp, block, chainBlocks) {
     })
   ).output;
 
-  await sdk.util.sumSingleBalance(
+  sdk.util.sumSingleBalance(
     balances,
     transform(MST_TOKEN_CONTRACT),
     collateralBalance

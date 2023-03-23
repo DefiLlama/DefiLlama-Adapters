@@ -1,7 +1,4 @@
-const abi = require('./abi')
-const { getChainTransform } = require('../helper/portedTokens')
-const { sumTokens } = require('../helper/unwrapLPs')
-const sdk = require('@defillama/sdk')
+const { tarotHelper } = require('./tarotHelper')
 
 const config = {
   fantom: {
@@ -15,90 +12,36 @@ const config = {
     factories: [
       '0x1D90fDAc4DD30c3ba38d53f52A884F6e75d0989e', // Tarot Opaline
       '0xD7cABeF2c1fD77a31c5ba97C724B82d3e25fC83C', // Tarot Velours
+      '0x49DF1fe24cAf1a7dcBB2E2b1793b93b04eDb62bF', // Tarot Jupiter
+    ]
+  },
+  arbitrum: {
+    factories: [
+      '0x2217AEC3440E8FD6d49A118B1502e539f88Dba55', // Tarot Galahad
+      '0x1bbD5637421a83b00C5Cd549B9C3721B28553F80', // Tarot Saurian
+      '0x4B6daE049A35196A773028B2E835CCcCe9DD4723', // Tarot Ulysses
+    ]
+  },
+  bsc: {
+    factories: [
+      '0x2217AEC3440E8FD6d49A118B1502e539f88Dba55', // Tarot Bermuda
+      '0xC20099a3F0728634C1136489074508be7B406d3a', // Tarot Palermo
+    ]
+  },
+  ethereum: {
+    factories: [
+      '0x1CAfcB9f3B5A152b1553bC2c688BA6a18054b653', // Tarot Eleusis
+      '0x4B6daE049A35196A773028B2E835CCcCe9DD4723', // Tarot Equinox
+    ]
+  },
+  kava: {
+    factories: [
+      '0x82B3413D575Aa93806308A04b53c78ae2037dA11', // Tarot Avignon
+      '0x54950cae3d8513EA041066F31697903de5909F57', // Tarot Orleans
     ]
   },
 }
 
 module.exports = {}
 
-Object.keys(config).forEach(chain => {
-  let tvlPromise
-  const balances = {}
-  const borrowedBalances = {}
-
-  async function _getTvl(block) {
-    const { factories } = config[chain]
-    const transform = await getChainTransform(chain)
-    const collaterals = []
-    const borrowables = []
-    for (const factory of factories) {
-      const { output: allLendingPoolsLength } = await sdk.api.abi.call({
-        target: factory,
-        abi: abi.allLendingPoolsLength,
-        chain, block,
-      })
-
-      const poolCalls = []
-      for (let i = 0; i < +allLendingPoolsLength; i++)  poolCalls.push({ params: i })
-      const { output: allLendingPools } = await sdk.api.abi.multiCall({
-        target: factory,
-        abi: abi.allLendingPools,
-        calls: poolCalls,
-        chain, block,
-      })
-
-      const calls2 = allLendingPools.map(i => ({ params: i.output }))
-
-      const { output: getLendingPool } = await sdk.api.abi.multiCall({
-        target: factory,
-        abi: abi.getLendingPool,
-        calls: calls2,
-        chain, block,
-      })
-
-      getLendingPool.forEach(i => {
-        collaterals.push(i.output.collateral)
-        borrowables.push(i.output.borrowable0, i.output.borrowable1)
-      })
-    }
-
-    const underlyingCalls = [...collaterals, ...borrowables].map(i => ({ target: i }))
-    const { output: toaInput } = await sdk.api.abi.multiCall({
-      abi: abi.underlying,
-      calls: underlyingCalls,
-      chain, block,
-    })
-
-    const underlyingMapping = {}
-
-    const toa = toaInput.map(i => [i.output, i.input.target])
-    toaInput.forEach(i => underlyingMapping[i.input.target] = i.output)
-    const { output: borrowed } = await sdk.api.abi.multiCall({
-      abi: abi.totalBorrows,
-      calls: borrowables.map(i => ({ target: i })),
-      chain, block,
-    })
-
-    borrowed.forEach(i => {
-      sdk.util.sumSingleBalance(borrowedBalances, transform(underlyingMapping[i.input.target]), i.output)
-    })
-
-    await sumTokens(balances, toa, block, chain, transform, {
-      resolveLP: true, blacklistedLPs: [
-        // '0x1f2bff0e37c592c7de6393c9dd3c0f7933408228', // disabled because _getReserves has a different abi compared to others
-        '0x357c1b507ef563d342afecd01001f1c0b525e25b', // disabled Error: Returned error: execution reverted: VaultToken: INSUFFICIENT_RESERVES
-      ]
-    })
-    return { balances, borrowedBalances }
-  }
-
-  async function getTvl(block) {
-    if (!tvlPromise) tvlPromise = _getTvl(block)
-    return tvlPromise
-  }
-
-  module.exports[chain] = {
-    tvl: async (_, _b, { [chain]: block }) => (await getTvl(block)).balances,
-    borrowed: async (_, _b, { [chain]: block }) => (await getTvl(block)).borrowedBalances,
-  }
-})
+tarotHelper(module.exports, config)

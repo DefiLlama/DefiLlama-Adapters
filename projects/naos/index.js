@@ -1,61 +1,12 @@
 const sdk = require("@defillama/sdk");
-const abis = require("../config/abis");
 const { staking, stakings } = require("../helper/staking");
 const { pool2 } = require("../helper/pool2");
 const BigNumber = require("bignumber.js");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
-const alpacaAdapterAbi = [
-  {
-    inputs: [],
-    name: "totalValue",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-];
+const alpacaAdapterAbi = "uint256:totalValue";
 
-const AssessorAbi = [
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "seniorDebt",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  }
-]
-
-const reserveAbi = [
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "totalBalance",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-]
+const AssessorAbi = "uint256:seniorDebt"
 
 // BSC address
 const BSC_NAOS_ADDRESS = "0x758d08864fb6cce3062667225ca10b8f00496cc2";
@@ -134,7 +85,7 @@ async function tvl(timestamp, block) {
     }),
     sdk.api.abi.call({
       target: YEARN_VAULT_ADDRESS,
-      abi: abis.abis.minYvV2[1], // pricePerShare
+      abi: "uint256:pricePerShare", // pricePerShare
       block,
     }),
     sdk.api.erc20.decimals(YEARN_VAULT_ADDRESS),
@@ -161,7 +112,7 @@ async function bscTvl(timestamp, ethBlock, chainBlocks) {
   // ---- Start ibBUSD (map ibBUSD value to BUSD)
   // formation
   const { output: isBUSDs } = await sdk.api.abi.multiCall({
-    abi: alpacaAdapterAbi[0],
+    abi: alpacaAdapterAbi,
     calls: BSC_ALPACA_ADAPTERS.map(i => ({ target: i })),
     chain, block,
   })
@@ -183,7 +134,7 @@ async function bscBorrowed(timestamp, ethBlock, chainBlocks) {
     const seniorDebt = (
       await sdk.api.abi.call({
         target: borrwer.Assessor,
-        abi: AssessorAbi[0],
+        abi: AssessorAbi,
         chain, block,
       })
     ).output;
@@ -199,7 +150,7 @@ module.exports = {
     tvl: tvl,
     staking: staking(STAKING_POOL_ADDRESS, NAOS_ADDRESS),
     pool2: async (_, block) => {
-      const balances = await sumTokens2({ block, owner: STAKING_POOL_ADDRESS, tokens: [UNI_ETH_NAOS_LP_ADDRESS,], resolveLP: true, })
+      const balances = await sumTokens2({ block, owner: STAKING_POOL_ADDRESS, tokens: [UNI_ETH_NAOS_LP_ADDRESS,], })
       const [crvBalance, decimals, price,] = (await Promise.all([
         sdk.api.erc20.balanceOf({
           target: NUSD_3CRV_LP_ADDRESS,
@@ -209,19 +160,7 @@ module.exports = {
         sdk.api.erc20.decimals(NUSD_3CRV_LP_ADDRESS),
         sdk.api.abi.call({
           target: NUSD_3CRV_LP_ADDRESS,
-          abi: {
-            "name": "get_virtual_price",
-            "outputs": [
-              {
-                "type": "uint256",
-                "name": ""
-              }
-            ],
-            "inputs": [],
-            "stateMutability": "view",
-            "type": "function",
-            "gas": 1011891
-          },
+          abi: "uint256:get_virtual_price",
           block,
         })
       ])).map(i => i.output)

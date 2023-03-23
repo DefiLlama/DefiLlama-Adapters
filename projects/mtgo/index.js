@@ -1,4 +1,3 @@
-const { getBlock } = require("../helper/getBlock");
 const {
     sumLPWithOnlyOneTokenOtherThanKnown,
 } = require("./../helper/unwrapLPs");
@@ -12,8 +11,7 @@ const erc20Tokens = [
   ["0x1bc8547e3716680117d7ba26dcf07f2ed9162cd0", false], // MTGO
 ];
 
-async function iotexPool2(timestamp, block, chainBlocks) {
-  block = await getBlock(timestamp, "iotex", chainBlocks);
+async function iotexPool2(timestamp, _, {iotex: block}) {
   const balances = {};
   await sumLPWithOnlyOneTokenOtherThanKnown(
     balances,
@@ -26,9 +24,7 @@ async function iotexPool2(timestamp, block, chainBlocks) {
   return { iotex: (balances[wiotx] / 10 ** 18) };
 }
 
-async function treasury(timestamp, block, chainBlocks) {
-
-  block = await getBlock(timestamp, "iotex", chainBlocks);
+async function treasury(timestamp, _, {iotex: block}) {
   const balances = {};
   await sumLPWithOnlyOneTokenOtherThanKnown(
     balances,

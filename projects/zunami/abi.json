@@ -1,15 +1,3 @@
 {
-    "totalHoldings": {
-        "inputs": [],
-        "name": "totalHoldings",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    }
+  "totalHoldings": "uint256:totalHoldings"
 }

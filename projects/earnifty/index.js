@@ -1,13 +1,13 @@
 const sdk = require('@defillama/sdk');
 const vaultContractABI = require("./abis/vault.json");
-const { transformVelasAddress } = require('../helper/portedTokens');
+const { getChainTransform } = require('../helper/portedTokens');
 const { unwrapUniswapLPs } = require('../helper/unwrapLPs');
 const vaults_info = require('./vaults_info.json');
 
 
 async function tvl(timestamp, block, chainBlocks) {
     const balances = {};
-    const transform = await transformVelasAddress();
+    const transform = await getChainTransform('velas');
     
     for (const info of vaults_info) {
         const balance = ((await sdk.api.abi.call({
@@ -29,7 +29,7 @@ async function tvl(timestamp, block, chainBlocks) {
         );
         }
     return balances;
-};
+}
 
 
 module.exports = {

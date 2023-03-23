@@ -3,11 +3,12 @@ const http = require('../helper/http');
 const BigNumber = require("bignumber.js");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { getChainTransform } = require("../helper/portedTokens");
-const getPairFactory = require('../helper/abis/getPair.json') 
+const getPairFactory = 'function getPair(address, address) view returns (address)'
 
 const zeroAddress = '0x0000000000000000000000000000000000000000'
 const BRIDGE_CONTROLLER = '0x0Dd4A86077dC53D5e4eAE6332CB3C5576Da51281';
-const RESERVES = '0x78b939518f51b6da10afb3c3238Dd04014e00057';
+const RESERVES = ['0x78b939518f51b6da10afb3c3238Dd04014e00057',
+                 '0x3776B8C349BC9Af202E4D98Af163D59cA56d2fC5'];
 const TOKEN = '0xC17c30e98541188614dF99239cABD40280810cA3';
 const STAKE_HOLDING_API = 'https://app.everrise.com/bridge/api/v1/stats'
 const EVEROWN_DAO_API = 'https://app.everrise.com/prod/api/v1/contracts/active'
@@ -120,7 +121,7 @@ Object.keys(chainConfig).forEach(chain => {
     const transformAddress = await getChainTransform(chain)
 
     const results = (await sdk.api.eth.getBalances({
-      targets: [TOKEN, BRIDGE_CONTROLLER, RESERVES],
+      targets: [TOKEN, BRIDGE_CONTROLLER, ...RESERVES],
       chain, block
     }))
 
@@ -130,10 +131,10 @@ Object.keys(chainConfig).forEach(chain => {
     // Get reserve token balances
     let migrateBalances = (
       await sdk.api.abi.multiCall({
-        calls: chainConfig[chain].reserveTokens.map((token) => ({
+        calls: RESERVES.map((reserve) => (chainConfig[chain].reserveTokens.map((token) => ({
           target: token,
-          params: RESERVES,
-        })),
+          params: reserve,
+        })))).flat(1),
         abi: "erc20:balanceOf",
         block, chain,
       })

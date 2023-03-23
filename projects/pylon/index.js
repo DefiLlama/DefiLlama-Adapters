@@ -1,4 +1,4 @@
-const { queryContractStore, getBalance, sumSingleBalance, getDenomBalance, TOKEN_LIST, } = require('../helper/terra')
+const { queryContractStore, getBalance, sumSingleBalance, getDenomBalance, TOKEN_LIST, } = require('../helper/chain/terra')
 
 // taken from https://api.pylon.money/api/gateway/v1/projects/
 const pools = [
@@ -66,5 +66,8 @@ module.exports = {
         pool2,
         staking,
         tvl
-    }
+    },
+     hallmarks:[
+    [1651881600, "UST depeg"],
+  ]
 }

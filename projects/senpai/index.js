@@ -5,7 +5,6 @@ const transforms = {
     "0x66a2a913e447d6b4bf33efbec43aaef87890fbbc": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
 }
 
-// dex tvl calculateUsdUniTvl("0x05a7c34E97A6733dc319E0d2347816e5c1f003D0", "boba", "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000", [], "ethereum")
 module.exports={
     ...ohmTvl("0xbfFC76cDC85A496404662dc7D8A270cE9567C544", [
         ["0xf74195Bb8a5cf652411867c5C2C5b8C2a402be35", false], //dai

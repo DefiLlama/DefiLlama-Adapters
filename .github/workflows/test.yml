@@ -25,7 +25,10 @@ jobs:
             exit 0
           fi
 
-          npm ci --production --only=prod
+          npm remove typescript @types/async-retry @types/bn.js ts-node @solendprotocol/solend-sdk @hover-labs/kolibri-js
+          # npm ci --omit=dev
+          npm ci
+          # npm update @defillama/sdk
 
           for i in $(echo $RUN_FILES | tr  -d '"[]' | tr "," "\n")
           do 
@@ -40,3 +43,6 @@ jobs:
               echo ' doesnt run'
             }
           done
+        
+      - name: Run ESLint
+        uses: eslint/github-action@v0

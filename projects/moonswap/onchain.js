@@ -1,9 +1,8 @@
 const sdk = require("@defillama/sdk");
-const axios = require('axios');
 const factoryAbi = require("../helper/abis/factory.json");
-const token0 = require("../helper/abis/token0.json");
-const token1 = require("../helper/abis/token1.json");
-const getReserves = require("../helper/abis/getReserves.json");
+const token0 = 'address:token0'
+const token1 = 'address:token1'
+const getReserves = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
 
 async function tvl(timestamp, ethBlock, chainBlocks) {
     let balances = {};
@@ -83,10 +82,10 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
         } else {
             balances[tokenId[0]] =
                 reserves[n].output[side] * 2 / 10**tokenId[1];
-        };
-    };
+        }
+    }
     return balances;
-};
+}
 
 function getTokenId(address) {
     switch(address) {
@@ -102,8 +101,8 @@ function getTokenId(address) {
             return ['binance-usd', 18]
         default:
             return false;
-    };
-};
+    }
+}
 // node test.js projects/moonswap/index.js
 module.exports = {
     misrepresentedTokens: true,

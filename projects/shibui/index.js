@@ -1,9 +1,6 @@
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
-const { getBlock } = require("../helper/getBlock");
 const { staking } = require("../helper/staking");
-const { transformBobaAddress } = require("../helper/portedTokens");
 const { pool2s } = require("../helper/pool2");
-const { sumKoyoLPTokens } = require("../helper/koyo");
 
 const CHAINS = ["boba"];
 
@@ -17,7 +14,6 @@ const Boba_4Koyo = "0xDAb3Fc342A242AdD09504bea790f9b026Aa1e709";
 
 const CHAIN_ORGANISED_DATA = {
   boba: () => {
-    const transform = transformBobaAddress();
 
     return [
       {
@@ -36,7 +32,6 @@ const CHAIN_ORGANISED_DATA = {
           "0x6b8f4Fa6E44e923f5A995A87e4d79B3Bb9f8aaa3", // SHIBUI-USDT<>WAGMIv3
         ],
       },
-      transform,
       true,
     ];
   },
@@ -49,43 +44,14 @@ module.exports = {
     tvl: () => ({}),
     pool2: (() => {
       const chain = CHAINS[0];
-      const [data, transform] = CHAIN_ORGANISED_DATA[chain]();
+      const [data] = CHAIN_ORGANISED_DATA[chain]();
 
-      return pool2s(data.gaugeAddresses, data.gaugeTokens, chain, transform);
+      return pool2s(data.gaugeAddresses, data.gaugeTokens, chain);
     })(),
     staking: staking(
       "0xabAF0A59Bd6E937F852aC38264fda35EC239De82",
       Boba_SHIBUI,
       CHAINS[0]
     ),
-    treasury: async (timestamp, _ethBlock, chainBlocks) => {
-      const chain = CHAINS[0];
-      const [data, transform, koyoAssets] = CHAIN_ORGANISED_DATA[chain]();
-
-      const balances = {};
-      const block = chainBlocks[chain];
-
-      await sumTokensAndLPsSharedOwners(
-        balances,
-        data.treasuryTokens,
-        data.treasuryAddresses,
-        block,
-        chain,
-        transform
-      );
-
-      // if (koyoAssets) {
-      //   await sumKoyoLPTokens(
-      //     balances,
-      //     data.treasuryKoyoTokens,
-      //     data.treasuryAddresses,
-      //     block,
-      //     chain,
-      //     transform
-      //   );
-      // }
-
-      return balances;
-    },
   },
 }

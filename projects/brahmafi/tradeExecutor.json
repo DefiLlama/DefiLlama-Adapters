@@ -1,20 +1,3 @@
 {
-  "positionInWantToken": {
-    "inputs": [],
-    "name": "positionInWantToken",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "posValue",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "lastUpdatedBlock",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
+  "positionInWantToken": "function positionInWantToken() view returns (uint256 posValue, uint256 lastUpdatedBlock)"
 }

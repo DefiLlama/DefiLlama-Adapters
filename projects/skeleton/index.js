@@ -1,87 +1,38 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { transformFantomAddress } = require("../helper/portedTokens");
+const { getParamCalls } = require('../helper/utils')
 
 const masterChefContract = "0x4fff737de45da4886f711b2d683fb6A6cf62C60C";
 const USDC = "0x04068da6c83afcfa0e13ba15a6696662335d5b75";
+const chain = 'fantom'
 
-const ftmTvl = async (chainBlocks) => {
+const ftmTvl = async (_, _b, { fantom: block }) => {
   const balances = {};
 
   const poolLength = (
     await sdk.api.abi.call({
       abi: abi.poolLength,
       target: masterChefContract,
-      chain: "fantom",
-      block: chainBlocks["fantom"],
+      chain, block,
     })
   ).output;
 
-  const lpPositions = [];
-
-  for (let index = 0; index < poolLength; index++) {
-    const strat = (
-      await sdk.api.abi.call({
-        abi: abi.poolInfo,
-        target: masterChefContract,
-        params: index,
-        chain: "fantom",
-        block: chainBlocks["fantom"],
-      })
-    ).output.strat;
-
-    const want = (
-      await sdk.api.abi.call({
-        abi: abi.poolInfo,
-        target: masterChefContract,
-        params: index,
-        chain: "fantom",
-        block: chainBlocks["fantom"],
-      })
-    ).output.want;
-
-    const strat_bal = (
-      await sdk.api.abi.call({
-        abi: abi.wantLockedTotal,
-        target: strat,
-        chain: "fantom",
-        block: chainBlocks["fantom"],
-      })
-    ).output;
-
-    const symbol = (
-      await sdk.api.abi.call({
-        abi: abi.symbol,
-        target: want,
-        chain: "fantom",
-        block: chainBlocks["fantom"],
-      })
-    ).output;
-
-    if (symbol.includes("LP")) {
-      lpPositions.push({
-        token: want,
-        balance: strat_bal,
-      });
-    } else if (symbol.includes("DAI+USDC")) {
-      sdk.util.sumSingleBalance(balances, `fantom:${USDC}`, strat_bal/10**12);
-    } else {
-      sdk.util.sumSingleBalance(balances, `fantom:${want}`, strat_bal);
-    }
-  }
-
-  const transformAddress = await transformFantomAddress();
-
-  await unwrapUniswapLPs(
-    balances,
-    lpPositions,
-    chainBlocks["fantom"],
-    "fantom",
-    transformAddress
-  );
-
-  return balances;
+  const calls = getParamCalls(poolLength)
+  const { output: poolData } = await sdk.api.abi.multiCall({
+    target: masterChefContract,
+    abi: abi.poolInfo,
+    calls, chain, block,
+  })
+  const stratCalls = poolData.map(i => ({ target: i.output.strat }))
+  const { output: stratResponse } = await sdk.api.abi.multiCall({
+    abi: abi.wantLockedTotal,
+    calls: stratCalls,
+    chain, block,
+  })
+  stratResponse.forEach(({ output },i) => {
+    sdk.util.sumSingleBalance(balances, 'fantom:'+poolData[i].output.want, output)
+  })
+  return balances
 };
 
 module.exports = {

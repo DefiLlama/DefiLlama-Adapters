@@ -35,7 +35,7 @@ async function calcPool2(masterchef, lps, block, chain) {
         balance: p.output,
         token: p.input.target,
       });
-    };
+    }
   });
   await unwrapUniswapLPs(
     balances,
