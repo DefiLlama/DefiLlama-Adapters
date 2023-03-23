@@ -1,7 +1,5 @@
 const { staking } = require('../helper/staking')
 
-
-
 module.exports = {
   methodology: 'TVL counts staked DEXI coins on the platform itself. CoinGecko is used to find the price of tokens in USD.',
   polygon: {
