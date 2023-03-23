@@ -1,5 +1,5 @@
 const { getCache } = require('../helper/http');
-
+const { sumTokens2 } = require('../helper/unwrapLPs')
 let _response;
 
 async function getVaults(chain) {
@@ -15,16 +15,16 @@ const chains = {
   arbitrum: '42161'
 }
 
-module.exports = {
-};
+module.exports = {};
 
 Object.keys(chains).forEach(chain => {
   module.exports[chain] = {
     tvl: async (_, _b, _cb, { api, }) => {
-      const vaults = await getVaults(chain)
-      const calls = vaults.map(i => i.id)
-      const bals = await api.multiCall({  abi: 'uint256:totalBalance', calls })
-      bals.forEach((vaule, i) => api.add(vaults[i].underlying_asset,vaule))
+      const vaultData = await getVaults(chain)
+      const vaults = vaultData.map(i => i.id)
+      const beefys = await api.multiCall({ abi: 'address:BEEFY_VAULT', calls: vaults })
+      const tokens = vaultData.map((v, i) => beefys[i] ? beefys[i] : v.underlying_asset)
+      return sumTokens2({ api, tokensAndOwners2: [tokens, vaults] })
     }
   }
 })
