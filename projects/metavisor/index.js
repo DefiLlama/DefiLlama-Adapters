@@ -122,7 +122,7 @@ function getTVL(chain) {
     });
 
     Object.keys(uniswapVaults).forEach((v, i) => {
-      reserves = vaultReserves[i];
+      const reserves = vaultReserves[i];
 
       sdk.util.sumSingleBalance(
         balances,
