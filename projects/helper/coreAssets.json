@@ -1122,8 +1122,7 @@
     "0x7f5373ae26c3e8ffc4c77b7255df7ec1a9af52a6",
     "0x5c7e299cf531eb66f2a1df637d37abb78e6200c7",
     "0xa0eeda2e3075092d66384fe8c91a1da4bca21788",
-    "0xea616011e5ac9a5b91e22cac59b4ec6f562b83f9",
-    "0x667Fd83E24Ca1D935d36717D305D54fA0CAC991C"
+    "0xea616011e5ac9a5b91e22cac59b4ec6f562b83f9"
   ],
   "sx": [
     "0xaa99be3356a11ee92c3f099bd7a038399633566f",
@@ -1404,5 +1403,8 @@
   ],
   "map": [
     "0x13cb04d4a5dfb6398fc5ab005a6c84337256ee23"
+  ],
+  "bone": [
+    "0xcda1fa23ff3b9b7172be82237bf662efb69437e9"
   ]
 }
