@@ -4,7 +4,6 @@ const sdk = require('@defillama/sdk')
 const http = require('./http')
 const env = require('./env')
 const erc20 = require('./abis/erc20.json')
-const ethers = require("ethers");
 
 async function returnBalance(token, address, block, chain) {
   const { output: decimals } = await sdk.api.erc20.decimals(token, chain)
