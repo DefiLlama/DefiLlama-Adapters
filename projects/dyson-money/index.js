@@ -84,4 +84,7 @@ module.exports = {
   arbitrum: {
     tvl: fetchChain(42161),
   },
+  bsc: {
+    tvl: fetchChain(56)
+  },
 };
