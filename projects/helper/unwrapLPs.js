@@ -662,6 +662,7 @@ function stripTokenHeader(token) {
 async function sumTokens2({
   balances,
   tokensAndOwners = [],
+  tokensAndOwners2 = [],
   ownerTokens = [],
   tokens = [],
   owners = [],
@@ -711,6 +712,10 @@ async function sumTokens2({
         if (!Array.isArray(tokens)) throw new Error('invalid config', tokens)
         tokens.forEach(t => tokensAndOwners.push([t, owner]))
       })
+    }
+    if (tokensAndOwners2.length) {
+      const [_tokens, _owners ] = tokensAndOwners2
+      _tokens.forEach((v, i) => tokensAndOwners.push([v, _owners[i]]))
     }
   }
 
