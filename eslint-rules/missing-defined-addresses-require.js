@@ -11,10 +11,10 @@ module.exports = {
   },
   create: (context) => {
     const cwd = context.getCwd();
-    const fileDir = path.parse(context.getPhysicalFilename()).dir;
-    const constantsPath = path.resolve(cwd, 'utils/constants.js');
-    const relativePath = path.relative(fileDir, constantsPath);
-    let isRequired = false;
+    const fileDir = path.parse(context.getPhysicalFilename()).dir; // the path to the file being linted (without filename)
+    const constantsPath = path.resolve(cwd, 'utils/constants.js'); // full path to constants.js
+    const relativePath = path.relative(fileDir, constantsPath); // relative path from file being linted to utils/constants.js
+    let isImported = false; // flag, is utils/constants.js imported already
 
     return {
       // Checks all require statements to see if utils/constants.js is required and DEFINED_ADDRESSES is imported
@@ -27,7 +27,7 @@ module.exports = {
           for (const prop of props) {
             // check each imported property for a match
             if (prop.value.name === 'DEFINED_ADDRESSES') {
-              isRequired = true;
+              isImported = true;
             }
           }
         }
@@ -37,10 +37,10 @@ module.exports = {
       MemberExpression: (node) => {
         // Get the parent object's name
         const parentObject = node.property.parent?.object?.name;
-        if (parentObject === 'DEFINED_ADDRESSES' && !isRequired) {
+        if (parentObject === 'DEFINED_ADDRESSES' && !isImported) {
           // Fix if DEFINED_ADDRESSES is the parent object and utils/constants is not required
           const fix = (fixer) => {
-            isRequired = true;
+            isImported = true;
 
             // Insert the require statement at the top of the file
             const requireStatement = `const { DEFINED_ADDRESSES } = require('${relativePath}');\n`;
