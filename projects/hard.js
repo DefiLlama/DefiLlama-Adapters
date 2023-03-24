@@ -43,7 +43,6 @@ var tvl = async () => {
         const borrowed = Number(totalBorrowed.result.find(item=>item.denom === coin.denom)?.amount || 0);
         balances[coingeckoIds[coin.denom]]=(Number(coin.amount)-borrowed)/(10**decimals[coin.denom]);
     }
-
     return balances;
 }
 
