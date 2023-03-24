@@ -1,3 +1,12 @@
+const { DEFINED_ADDRESSES } = require('../utils/constants');
+
+const addresses = new Set(Object.values(DEFINED_ADDRESSES));
+const addressToSymbol = new Map();
+
+for (const [k, v] of Object.entries(DEFINED_ADDRESSES)) {
+  addressToSymbol.set(v, k);
+}
+
 module.exports = {
   meta: {
     type: 'problem',
@@ -10,9 +19,21 @@ module.exports = {
   create: function(context) {
     return {
       Literal(node) {
-        if (node.value === '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48' || node.value === '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48') {
+        if (typeof node.value !== 'string') {
+          return
+        } 
+
+        const nodeVal = node.value.toLowerCase();
+        if (addresses.has(nodeVal)) {
+          const isObjectKey = node.parent?.type === 'Property'
+
+          const symbol = addressToSymbol.get(nodeVal);
+
           const fix = (fixer) => {
-            const constantReference = 'DEFINED_ADDRESSES.USDC';
+            let constantReference = `DEFINED_ADDRESSES.${symbol}`;
+            if (isObjectKey) {
+              constantReference = `[${constantReference}]`;
+            }
             const start = node.range[0];
             const end = node.range[1];
 
@@ -21,7 +42,7 @@ module.exports = {
 
           context.report({
             node,
-            message: 'USDC address literal defined, please require and use the defined constant.',
+            message: 'USDC address literal defined, please require utils/constants.js and import DEFINED_ADDRESSES',
             fix
           });
         }

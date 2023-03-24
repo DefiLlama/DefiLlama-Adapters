@@ -14,7 +14,7 @@ module.exports = {
     "parserOptions": {
         "ecmaVersion": "latest"
     },
-  ignorePatterns: ['projects/test/*', 'eslint-rules/*'],
+  ignorePatterns: ['projects/test/*', 'eslint-rules/*', 'utils/constants.js'],
     "rules": {
         "no-case-declarations": "off",
         "no-unused-vars": "off",
