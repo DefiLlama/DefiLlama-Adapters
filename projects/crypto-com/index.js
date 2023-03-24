@@ -18,6 +18,7 @@ const config = {
       '0xcffad3200574698b78f32232aa9d63eabd290703',
       '0x7758e507850da48cd47df1fb5f875c23e3340c50',
       '0x46340b20830761efd32832a74d7169b29feb9758',
+      '0xf3b0073e3a7f747c7a38b36b805247b222c302a3',
     ],
   },
   bsc: {
