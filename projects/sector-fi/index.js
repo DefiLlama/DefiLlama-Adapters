@@ -32,9 +32,9 @@ Object.keys(config).forEach(chain => {
         onlyArgs: true,
       })
 
-      const vaults = logs.filter(i => i.vaultType === 'AggregatorVault').map(i => i.vault)
+      const vaults = logs.filter(i => i.vaultType === 'SCYVault').map(i => i.vault)
       const bals = await api.multiCall({ abi: 'uint256:getTvl', calls: vaults })
-      const tokens = await api.multiCall({ abi: 'address:asset', calls: vaults })
+      const tokens = await api.multiCall({ abi: 'address:underlying', calls: vaults })
       tokens.forEach((v, i) => sdk.util.sumSingleBalance(balances, v, bals[i], api.chain))
       return balances
     }
