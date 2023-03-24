@@ -1,9 +1,9 @@
-const { DEFINED_ADDRESSES } = require('../utils/constants');
+const { ADDRESS_CONSTANTS } = require('../utils/constants');
 
-const addresses = new Set(Object.values(DEFINED_ADDRESSES));
+const addresses = new Set(Object.values(ADDRESS_CONSTANTS));
 const addressToSymbol = new Map();
 
-for (const [k, v] of Object.entries(DEFINED_ADDRESSES)) {
+for (const [k, v] of Object.entries(ADDRESS_CONSTANTS)) {
   addressToSymbol.set(v, k);
 }
 
@@ -33,10 +33,10 @@ module.exports = {
           const symbol = addressToSymbol.get(nodeVal);
 
           const fix = (fixer) => {
-            let constantReference = `DEFINED_ADDRESSES.${symbol}`;
+            let constantReference = `ADDRESS_CONSTANTS.${symbol}`;
             if (isObjectKey) {
               // object keys require brackets eg:
-              // { [DEFINED_ADDRESSES.USDC]: 'stable' }
+              // { [ADDRESS_CONSTANTS.USDC]: 'stable' }
               constantReference = `[${constantReference}]`;
             }
 
@@ -49,7 +49,7 @@ module.exports = {
 
           context.report({
             node,
-            message: 'USDC address literal defined, please require utils/constants.js and import DEFINED_ADDRESSES',
+            message: 'USDC address literal defined, please require utils/constants.js and import ADDRESS_CONSTANTS',
             fix
           });
         }

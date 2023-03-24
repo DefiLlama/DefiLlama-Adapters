@@ -20,6 +20,6 @@ module.exports = {
         "no-unused-vars": "off",
         "no-prototype-builtins": "off",
         "rulesdir/no-contract-address-literals": "warn",
-        "rulesdir/missing-defined-addresses-require": "warn",
+        "rulesdir/missing-address-constants-require": "error",
     }
 }
