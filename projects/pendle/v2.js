@@ -22,10 +22,14 @@ Object.keys(config).forEach(chain => {
         fromBlock,
       })
       const pt = logs.map(i => i.PT)
-      const sy = await api.multiCall({
-        abi: 'address:SY',
-        calls: pt,
-      })
+      const sy = [
+        ...new Set(
+          (await api.multiCall({
+            abi: "address:SY",
+            calls: pt,
+          })).map(s => s.toLowerCase()),
+        ),
+      ]
       const [data, supply, decimals] = await Promise.all([
         api.multiCall({ abi: 'function assetInfo() view returns (uint8 assetType , address uAsset , uint8 decimals )', calls: sy }),
         api.multiCall({ abi: 'erc20:totalSupply', calls: sy }),
