@@ -25,7 +25,7 @@ module.exports = {
 
         const nodeVal = node.value.toLowerCase();
         if (addresses.has(nodeVal)) {
-          const isObjectKey = node.parent?.type === 'Property'
+          const isObjectKey = node.parent?.type === 'Property' && node.parent.key === node;
 
           const symbol = addressToSymbol.get(nodeVal);
 
