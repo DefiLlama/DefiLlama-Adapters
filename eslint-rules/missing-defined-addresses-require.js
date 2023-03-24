@@ -11,9 +11,9 @@ module.exports = {
   },
   create: (context) => {
     const cwd = context.getCwd();
-    const filePath = context.getPhysicalFilename();
+    const fileDir = path.parse(context.getPhysicalFilename()).dir;
     const constantsPath = path.resolve(cwd, 'utils/constants.js');
-    const relativePath = path.relative(filePath, constantsPath);
+    const relativePath = path.relative(fileDir, constantsPath);
     let isRequired = false;
 
     return {
