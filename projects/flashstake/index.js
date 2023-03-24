@@ -63,7 +63,7 @@ Object.keys(config).forEach(chain => {
       "0xcb1205ac28693beda01e0b66e9b4d06231609bfd",
       "0x57d551a18aae2c9de6977425f1df34dcd5db4977",
     ], '0xb1c33de7a914f4d9ba293a055822cbc6e662a698')
-    module.exports.ethereum.staking = staking("0xb89494ab70001a2f25372b5e962046908188feea", '0xb1f1f47061a7be15c69f378cb3f69423bd58f2f8')
+    module.exports.arbitrum.staking = staking("0xb89494ab70001a2f25372b5e962046908188feea", '0xb1f1f47061a7be15c69f378cb3f69423bd58f2f8')
   }
 
   if (chain === 'arbitrum') {
