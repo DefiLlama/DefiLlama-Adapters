@@ -1,161 +1,47 @@
-const sdk = require("@defillama/sdk");
-
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { getLogs } = require("../helper/cache/getLogs");
 
-const VAULT_STATUS_ABI = {
-  inputs: [],
-  name: "getVaultStatus",
-  outputs: [
-    {
-      internalType: "uint256",
-      name: "amount0",
-      type: "uint256",
-    },
-    {
-      internalType: "uint256",
-      name: "amount1",
-      type: "uint256",
-    },
-    {
-      internalType: "uint256",
-      name: "fees0",
-      type: "uint256",
-    },
-    {
-      internalType: "uint256",
-      name: "fees1",
-      type: "uint256",
-    },
-    {
-      internalType: "uint128",
-      name: "liquidity",
-      type: "uint128",
-    },
-  ],
-  stateMutability: "nonpayable",
-  type: "function",
-};
-
+const VAULT_STATUS_ABI = "function getVaultStatus() returns (uint256 amount0, uint256 amount1, uint256 fees0, uint256 fees1, uint128 liquidity)";
+const DEFAULT_FACTORY = '0x25f47fEF4D6471a8b9Cb93197E1bdAa4a256EE23'
 const CONFIG = {
-  ethereum: {
-    uniswapRegistry: {
-      target: "0x25f47fEF4D6471a8b9Cb93197E1bdAa4a256EE23",
-      startBlock: 16864761,
-    },
-  },
-  polygon: {
-    uniswapRegistry: {
-      target: "0x25f47fEF4D6471a8b9Cb93197E1bdAa4a256EE23",
-      startBlock: 40543157,
-    },
-  },
-  bsc: {
-    uniswapRegistry: {
-      target: "0x25f47fEF4D6471a8b9Cb93197E1bdAa4a256EE23",
-      startBlock: 26612076,
-    },
-  },
-  optimism: {
-    uniswapRegistry: {
-      target: "0x25f47fEF4D6471a8b9Cb93197E1bdAa4a256EE23",
-      startBlock: 82239696,
-    },
-  },
-  arbitrum: {
-    uniswapRegistry: {
-      target: "0x25f47fEF4D6471a8b9Cb93197E1bdAa4a256EE23",
-      startBlock: 71578282,
-    },
-  },
+  ethereum: { uniswapRegistry: { startBlock: 16864761, }, },
+  polygon: { uniswapRegistry: { startBlock: 40543157, }, },
+  bsc: { uniswapRegistry: { startBlock: 26612076, }, },
+  optimism: { uniswapRegistry: { startBlock: 82239696, }, },
+  arbitrum: { uniswapRegistry: { startBlock: 71578282, }, },
 };
 
-async function getUniswapVaults(chain, api) {
-  const chainConfig = CONFIG[chain]["uniswapRegistry"];
+async function tvl(timestamp, block, chainBlocks, { api }) {
+  const chainConfig = CONFIG[api.chain]["uniswapRegistry"];
 
   const vaultLogs = await getLogs({
-    target: chainConfig.target,
+    target: chainConfig.target ?? DEFAULT_FACTORY,
     topic: "VaultCreated(address,uint8,address)",
     fromBlock: chainConfig.startBlock,
     api,
+    onlyArgs: true,
+    eventAbi: 'event VaultCreated(address indexed ,uint8 indexed ,address indexed vault)'
   });
 
-  const vaultAddresses = vaultLogs.map(
-    (log) => `0x${log.topics[3].substr(-40)}`
-  );
-  const vaults = {};
+  const vaults = vaultLogs.map(i => i.vault)
+  const [token0s, token1s, data] = await Promise.all([
+    api.multiCall({ abi: 'address:token0', calls: vaults, }),
+    api.multiCall({ abi: 'address:token1', calls: vaults, }),
+    api.multiCall({ abi: VAULT_STATUS_ABI, calls: vaults, }),
+  ])
+  const ownerTokens = vaults.map((v, i) => [[token0s[i], token1s[i]], v])
+  data.forEach((v, i) => {
+    api.add(token0s[i], v.amount0)
+    api.add(token0s[i], v.fees0)
+    api.add(token1s[i], v.amount1)
+    api.add(token1s[i], v.fees1)
+  })
 
-  for (let vault of vaultAddresses) {
-    const token0 = await api.call({
-      abi: "function token0() returns (address)",
-      target: vault,
-      params: [],
-    });
-    const token1 = await api.call({
-      abi: "function token1() returns (address)",
-      target: vault,
-      params: [],
-    });
-
-    vaults[vault] = {
-      token0,
-      token1,
-    };
-  }
-
-  return vaults;
+  return sumTokens2({ api, ownerTokens });
 }
 
-function getTVL(chain) {
-  return async (timestamp, block, chainBlocks, { api }) => {
-    const balances = {};
-    const uniswapVaults = await getUniswapVaults(chain, api);
+module.exports = {};
 
-    const expandedLP = Object.entries(uniswapVaults).map(([vault, tokens]) => [
-      [tokens.token0, tokens.token1],
-      vault,
-    ]);
-
-    const vaultReserves = await api.multiCall({
-      abi: VAULT_STATUS_ABI,
-      calls: Object.keys(uniswapVaults),
-    });
-
-    Object.keys(uniswapVaults).forEach((v, i) => {
-      const reserves = vaultReserves[i];
-
-      sdk.util.sumSingleBalance(
-        balances,
-        uniswapVaults[v].token0,
-        String(BigInt(reserves.amount0) + BigInt(reserves.fees0)),
-        api.chain
-      );
-      sdk.util.sumSingleBalance(
-        balances,
-        uniswapVaults[v].token1,
-        String(BigInt(reserves.amount1) + BigInt(reserves.fees1)),
-        api.chain
-      );
-    });
-
-    return sumTokens2({ balances, api, ownerTokens: expandedLP });
-  };
-}
-
-module.exports = {
-  ethereum: {
-    tvl: getTVL("ethereum"),
-  },
-  polygon: {
-    tvl: getTVL("polygon"),
-  },
-  arbitrum: {
-    tvl: getTVL("arbitrum"),
-  },
-  optimism: {
-    tvl: getTVL("arbitrum"),
-  },
-  bsc: {
-    tvl: getTVL("arbitrum"),
-  },
-};
+Object.keys(CONFIG).forEach(chain => {
+  module.exports[chain] = { tvl }
+})
