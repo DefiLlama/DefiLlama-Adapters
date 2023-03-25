@@ -1,21 +1,9 @@
-const { default: request, gql } = require('graphql-request');
-const { toUSDTBalances } = require('../helper/balances');
-
-async function tvl(){
-    const res = await request("https://graph.mute.io/subgraphs/name/mattt21/muteswitch_mainnet", gql`{
-        muteSwitchFactories{
-          totalLiquidityUSD
-        }
-      }`)
-    return toUSDTBalances(res["muteSwitchFactories"][0].totalLiquidityUSD)
-}
+const { getUniTVL } = require('../helper/unknownTokens');
 
 module.exports = {
-    misrepresentedTokens: true,
-    timetravel: false,
-    era: {
-      tvl
-    },
-    methodology:
-      "Counts liquidity in pools",
+  misrepresentedTokens: true,
+  era: {
+    tvl: getUniTVL({ factory: '0x40be1cba6c5b47cdf9da7f963b6f761f4c60627d', useDefaultCoreAssets: true, hasStablePools: true, stablePoolSymbol: 'sMLP' })
+  },
+  methodology: "Counts liquidity in pools",
 };
