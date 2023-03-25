@@ -53,6 +53,7 @@
   "energyweb",
   "enuls",
   "eos",
+  "era",
   "ergo",
   "ethereum",
   "ethereumclassic",
@@ -195,6 +196,5 @@
   "zeniq",
   "zilliqa",
   "zksync",
-  "zyx",
-  "era"
+  "zyx"
 ]
