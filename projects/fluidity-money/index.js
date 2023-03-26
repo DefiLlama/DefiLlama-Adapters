@@ -2,27 +2,45 @@ const sdk = require('@defillama/sdk');
 const { getTvl } = require('../helper/aave');
 const { getChainTransform } = require('../helper/portedTokens');
 const { sumTokens } = require("../helper/unwrapLPs");
-const ATOKENS = ['0x028171bCA77440897B824Ca71D1c56caC55b68A3', '0x101cc05f4A51C0319f570d5E146a8C625198e636', '0xd4937682df3C8aEF4FE912A96A74121C0829E664'];
-const APOOL = ['0xFC66c25dbDb0606e7F9cA1d2754Eb0A0f8306dA9', '0x5E88f6dc0aa126FA28A137B24d0B4d7231352a0B', '0xB7a2930e66D84Da74CdcFE4f97FaE9fC8f1114e8'];
-const COMPOUND = [
+const ATOKENS_ETHEREUM = ['0x028171bCA77440897B824Ca71D1c56caC55b68A3', '0x101cc05f4A51C0319f570d5E146a8C625198e636', '0xd4937682df3C8aEF4FE912A96A74121C0829E664'];
+const APOOL_ETHEREUM = ['0xFC66c25dbDb0606e7F9cA1d2754Eb0A0f8306dA9', '0x5E88f6dc0aa126FA28A137B24d0B4d7231352a0B', '0xB7a2930e66D84Da74CdcFE4f97FaE9fC8f1114e8'];
+const ATOKENS_ARBITRUM = ['0x6ab707Aca953eDAeFBc4fD23bA73294241490620', '0x625E7708f30cA75bfd92586e17077590C60eb4cD', '0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE'];
+const APOOL_ARBITRUM = ['0xad7e2165FEa1d29030dF806cE4d530fa7a44511B', '0x23E7f09Fae0933db01420173726d18Dae809022C', '0xB7D37C5b15CDF29265C20668c20cD78586c423A8'];
+const COMPOUND_ETHEREUM = [
     ['0xf650C3d88D12dB855b8bf7D11Be6C55A4e07dCC9', '0x372025203D25589eC3aDAd82652De78eC76fFabC'],
     ['0x39AA39c021dfbaE8faC545936693aC917d5E7563', '0xE87Adc9D382Eee54C1eDE017D6E5C1324D59F457'],            
 ];
-async function tvl(timestamp, block, chainBlocks) {
+async function tvl_eth(timestamp, block, chainBlocks) {
   const balances = {};
-  chain = 'ethereum'
-  const transformAddress = await getChainTransform(chain);
+  const transformAddress = await getChainTransform('ethereum');
     // Compound
-    await sumTokens(balances, COMPOUND, block, chain, transformAddress)
+    await sumTokens(balances, COMPOUND_ETHEREUM, block, 'ethereum', transformAddress)
 
+    // if (!skipFixBalances) {
+    //   const fixBalances = await getFixBalances(chain)
+    //   fixBalances(balances)
+    // }
     // Aave
-    await getTvl(balances, block, chain, APOOL, ATOKENS, id => id)
+    await getTvl(balances, block, 'ethereum', APOOL_ETHEREUM, ATOKENS_ETHEREUM, transformAddress)
+
+  return balances;
+}
+
+async function tvl_arb(timestamp, block, chainBlocks) {
+  const balances = {};
+  const transformAddress = await getChainTransform('arbitrum');
+
+  // aave
+  await getTvl(balances, chainBlocks['arbitrum'], 'arbitrum', APOOL_ARBITRUM, ATOKENS_ARBITRUM, transformAddress)
 
   return balances;
 }
 
 module.exports = {
   ethereum: {
-    tvl,
+    tvl: tvl_eth,
+  },
+  arbitrum: {
+    tvl: tvl_arb,
   }
 }; // node test.js projects/fluidity-money/index.js
