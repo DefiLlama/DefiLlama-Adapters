@@ -21,7 +21,7 @@ async function getStats() {
   async function fetchStats() {
     const programId = 'JCFRaPv7852ESRwJJGRy2mysUMydXZgVVhrMLmExvmVp';
     const provider = getProvider();
-    const collectionsById = await getCollections();
+    // const collectionsById = await getCollections();
     const idl = await getConfig('citrus-idl', 'https://gist.githubusercontent.com/FoxyDev42/5f23cd03eab33e0d73f6f6227912451e/raw/03e68f7543dc4dd399d7b61e15881c1a6792eb4a/citrus-account.json');
     const program = new Program(idl, programId, provider)
     const loans = await program.account.loan.all()
@@ -29,8 +29,9 @@ async function getStats() {
     const openOffers = loans.filter(loan => Object.keys(loan.account.status)[0] === 'waitingForBorrower');
     const activeLoansTotal = activeLoans.map(loan => loan.account.loanTerms.principal).reduce((a, b) => a.add(b));
     const openOffersTotal = openOffers.map(loan => loan.account.loanTerms.principal).reduce((a, b) => a.add(b));
-    const activeLoansNFTs = activeLoans.map(loan => loan.account.collectionConfig.toBase58()).reduce((a, b) => a + parseFloat(collectionsById[b]?.floor), 0);
-    const tvl = openOffersTotal.toNumber() + activeLoansNFTs * 1e9;
+    // const activeLoansNFTs = activeLoans.map(loan => loan.account.collectionConfig.toBase58()).reduce((a, b) => a + parseFloat(collectionsById[b]?.floor), 0);
+    // const tvl = openOffersTotal.toNumber() + activeLoansNFTs * 1e9;
+    const tvl = openOffersTotal.toNumber()
     const borrowed = activeLoansTotal.toNumber();
     return { tvl, borrowed }
   }
@@ -46,7 +47,7 @@ const borrowed = async () => {
 
 module.exports = {
   timetravel: false,
-  methodology: 'TVL is the sum of floor prices of locked NFTs and tokens in open offers.',
+  methodology: 'TVL is amount of SOL available to be borrowed',
   solana: {
     tvl,
     borrowed,
