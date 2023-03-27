@@ -20,7 +20,6 @@ module.exports = treasuryExports({
       "0xCdF7028ceAB81fA0C6971208e83fa7872994beE5", // T
     ],
     owners: [convexTreasuryVault],
-    ownTokenOwners: [convexTreasuryVault],
     ownTokens: [cvx, cvxCrv],
   },
 });

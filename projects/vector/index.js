@@ -144,7 +144,7 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
     const info = AllBalances[i];
     sdk.util.sumSingleBalance(balances, transform(info.token), info.balance);
   }
-  return unwrapLPsAuto({ ...api, balances});
+  return unwrapLPsAuto({ api, balances});
 }
 
 module.exports = {

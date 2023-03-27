@@ -31,15 +31,13 @@ async function fuseTreasury(timestamp, ethBlock, chainBlocks) {
     })).output;
 
     const gdTotal = BigNumber(gdInCommunitySafe).plus(gdInFuseStaking);
-    return {
-      ['fuse:'+tokens.Gfuse]: gdTotal
-    }
-    // let gdInDAI = await convertGoodDollarsToDai(gdTotal, ethBlock);
+    
+     let gdInDAI = await convertGoodDollarsToDai(gdTotal, ethBlock);
 
-    // const balances = {};
-    // sdk.util.sumSingleBalance(balances, tokens.DAI, Number(gdInDAI));
+     const balances = {};
+     sdk.util.sumSingleBalance(balances, tokens.DAI, Number(gdInDAI));
 
-    // return balances;
+     return balances;
 }
 
 // Required until GoodDollar lists on CoinGecko

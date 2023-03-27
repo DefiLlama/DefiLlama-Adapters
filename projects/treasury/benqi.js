@@ -7,7 +7,6 @@ module.exports = treasuryExports({
   avax: {
     tokens: [nullAddress],
     owners: [treasury],
-    ownTokenOwners: [treasury],
     ownTokens: [qi],
   },
 });

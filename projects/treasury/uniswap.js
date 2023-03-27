@@ -18,7 +18,6 @@ module.exports = treasuryExports({
         '0xdAC17F958D2ee523a2206206994597C13D831ec7',//USDT
      ],
     owners: [uniTreasury1, uniTreasury2, uniTreasury3],
-    ownTokenOwners: [uniTreasury1, uniTreasury2, uniTreasury3],
     ownTokens: [UNI],
   },
 })

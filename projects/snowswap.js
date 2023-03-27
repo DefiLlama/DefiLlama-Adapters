@@ -1,4 +1,5 @@
-const { sumTokens2 } = require('./helper/unwrapLPs');
+const { staking } = require('./helper/staking');
+const { sumTokens2, } = require('./helper/unwrapLPs');
 
 const wBTC = '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599'
 const y2DAI = { addr: "0xacd43e627e64355f1861cec6d3a6688b31a6f952", dec: 18, getPrice: false, type: 'yv', pfsDec: 18 } ///y2DAI                      yv
@@ -78,22 +79,10 @@ let swaps = [
 ]
 const pools = [
   {
-    'name': 'frosty',
-    'addr': '0x7d2c8B58032844F222e2c80219975805DcE1921c',
-    'coins': [snow],
-    'chain': 'ethereum'
-  },
-  {
     'name': 'penguin',
     'addr': '0x6852E7399C6cC73256Ca46A4921e1c7b2682D912',
     'coins': [polyDai, polyUsdc, polyUSDT],
     'chain': 'polygon'
-  },
-  {
-    'name': `Olaf's`,
-    'addr': "0x4f3B8FD5617287d1073cd3275c3d040265624575",
-    'coins': [polyUsdc, polySnow],
-    'chain': "polygon",
   }
 ]
 
@@ -107,11 +96,7 @@ async function polygon(ts, _block, { polygon: block }, { api }) {
 }
 
 async function ethereum(ts, block, _, { api }) {
-  const poolsEth = pools.filter(p => p.chain === "ethereum")
   const toa = []
-  poolsEth.forEach(pool => {
-    pool.coins.map(coin => toa.push([coin.addr, pool.addr]))
-  })
   swaps.map(({ addr, coins }) => {
     coins.forEach(i => toa.push([i.addr, addr]))
   })
@@ -120,7 +105,8 @@ async function ethereum(ts, block, _, { api }) {
 
 module.exports = {
   ethereum: {
-    tvl: ethereum
+    tvl: ethereum,
+    staking: staking('0x7d2c8B58032844F222e2c80219975805DcE1921c', snow.addr)
   },
   polygon: {
     tvl: polygon
