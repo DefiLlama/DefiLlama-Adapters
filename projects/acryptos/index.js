@@ -55,6 +55,9 @@ module.exports = {
   kava: {
     tvl: fetchallchain(2222),
   },
+  canto: {
+    tvl: fetchallchain(7700),
+  },
   arbitrum:{
     tvl: fetchallchain(42161),
   },

@@ -1258,7 +1258,6 @@
   "wemix": [
     "0x7d72b22a74a216af4a002a1095c8c707d6ec1c5f",
     "0x8e81fcc2d4a3baa0ee9044e0d7e36f59c9bba9c1",
-    "0x9b377bd7db130e8bd2f3641e0e161cb613da93de",
     "0x461d52769884ca6235b685ef2040f47d30c94eb5",
     "0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d"
   ],
@@ -1387,6 +1386,8 @@
   ],
   "core": [
     "0x191E94fa59739e188dcE837F7f6978d84727AD01",
+    "0x900101d06a7426441ae63e9ab3b9b0f63be145f1",
+    "0xa4151b2b3e269645181dccf2d426ce75fcbdeca9",
     "0x40375c92d9faf44d2f9db9bd9ba41a3317a2404f"
   ],
   "crab": [
@@ -1395,11 +1396,21 @@
   "lung": [
     "0xf51666bcb4b787df919395258fb1d9556f4e357b"
   ],
+  "loop": [
+    "0x3936D20a39eD4b0d44EaBfC91757B182f14A38d5"
+  ],
   "rpg": [
     "0x8bb3887ab4fec66eb9aadd7836b6944215008355",
     "0x71d9cfd1b7adb1e8eb4c193ce6ffbe19b4aee0db"
   ],
   "map": [
     "0x13cb04d4a5dfb6398fc5ab005a6c84337256ee23"
+  ],
+  "bone": [
+    "0xcda1fa23ff3b9b7172be82237bf662efb69437e9"
+  ],
+  "era": [
+    "0x5aea5775959fbc2557cc8789bc1bf90a239d9a91",
+    "0x3355df6d4c9c3035724fd0e3914de96a5a83aaf4"
   ]
 }
