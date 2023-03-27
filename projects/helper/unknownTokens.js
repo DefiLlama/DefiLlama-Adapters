@@ -233,10 +233,10 @@ async function yieldHelper({ chain = 'ethereum', block, coreAssets = [], blackli
   return transformBalances(chain, balances)
 }
 
-function uniTvlExport(chain, factory) {
+function uniTvlExport(chain, factory, options = {}) {
   return {
     misrepresentedTokens: true,
-    [chain]: { tvl: getUniTVL({ chain, factory, useDefaultCoreAssets: true }) }
+    [chain]: { tvl: getUniTVL({ chain, factory, useDefaultCoreAssets: true, ...options }) }
   }
 }
 
