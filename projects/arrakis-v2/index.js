@@ -5,6 +5,18 @@ const config = {
   ethereum: {
     factory: '0xECb8Ffcb2369EF188A082a662F496126f66c8288',
     fromBlock: 16534507,
+  },
+  arbitrum: {
+    factory: '0xECb8Ffcb2369EF188A082a662F496126f66c8288',
+    fromBlock: 57173679,
+  },
+  optimism: {
+    factory: '0xECb8Ffcb2369EF188A082a662F496126f66c8288',
+    fromBlock: 71646573,
+  },
+  polygon: {
+    factory: '0xECb8Ffcb2369EF188A082a662F496126f66c8288',
+    fromBlock: 38788368,
   }
 }
 
