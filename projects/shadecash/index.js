@@ -28,7 +28,7 @@ async function tvl(_, _ethBlock, chainBlocks) {
                 Number(b.output) + 
                 Number(balances["0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83"]);
         });
-    };
+    }
     // GET ERC20 BALANCES
     Object.entries(addresses).map(([,address]) => {
         Object.entries(tokens).map(([,token]) => {

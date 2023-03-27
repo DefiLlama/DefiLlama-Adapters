@@ -20,11 +20,13 @@ const factories = {
   iotex: "0xF96bE66DA0b9bC9DFD849827b4acfA7e8a6F3C42",
   ethereum: "0x6511eBA915fC1b94b2364289CCa2b27AE5898d80",
   optimism: "0xedfad3a0F42A8920B011bb0332aDe632e552d846",
-  arbitrum: "0xA59B2044EAFD15ee4deF138D410d764c9023E1F0"
+  arbitrum: "0xA59B2044EAFD15ee4deF138D410d764c9023E1F0",
+  kava: "0xC012C4b3d253A8F22d5e4ADA67ea2236FF9778fc",
+  bittorrent: "0xc06348AEE3f3E92eE452816E0D3F25C919F6fB04"
 }
 
 function chainTvl(chain) {
-  return getUniTVL({ chain, factory: factories[chain], useDefaultCoreAssets: true, })
+  return getUniTVL({ chain, factory: factories[chain], useDefaultCoreAssets: true, blacklistedTokens: ['0xa9536b9c75a9e0fae3b56a96ac8edf76abc91978'] })
 }
 
 const chainExports = getChainExports(chainTvl, Object.keys(factories))

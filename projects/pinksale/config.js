@@ -17,6 +17,7 @@ module.exports = {
       '0xb08f67c04bfdf069017365969ca19a0ae6e66b85',
       '0x4aee9d30893c5c73e5a5b8637a10d9537497f1c8',
       '0x9FBff386a9405b4C98329824418ec02b5C20976b',
+      '0xa0b3c4f174f4bb51039adaecf2af0e4ef5925f7d',
     ],
     log_coreAssetPrices: [
       300/ 1e18,

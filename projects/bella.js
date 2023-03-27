@@ -9,7 +9,7 @@ const bVaults = {
   bArpa: { address: '0x750d30A8259E63eD72a075f5b6630f08ce7996d0', },
   bWbtc: { address: '0x3fb6b07d77dace1BA6B5f6Ab1d8668643d15a2CC', },
   bHbtc: { address: '0x8D9A39706d3B66446a298f1ae735730257Ec6108', },
-  bBusd: { address: '0x378388aa69f3032FA46150221210C7FA70A35153', },
+  // bBusd: { address: '0x378388aa69f3032FA46150221210C7FA70A35153', },  // according to the team this is deprecated
 }
 
 const uniswapV2Pools = {
@@ -22,16 +22,16 @@ async function tvl(ts, block) {
   const tokenCalls = Object.values(bVaults).map(a => ({ target: a.address }))
 
   const { output: tokenResponse } = await sdk.api.abi.multiCall({
-    block, calls: tokenCalls, abi: bVaultAbi.find(i => i.name === 'token')
+    block, calls: tokenCalls, abi: bVaultAbi.token
   })
 
   const { output: underlyingBalances } = await sdk.api.abi.multiCall({
-    block, calls: tokenCalls, abi: bVaultAbi.find(i => i.name === 'underlyingBalance')
+    block, calls: tokenCalls, abi: bVaultAbi.underlyingBalance
   })
 
   const balances = {}
   tokenResponse.forEach(({ input, output }, i) => {
-    sdk.util.sumSingleBalance(balances, output, underlyingBalances[i].output)
+    sdk.util.sumSingleBalance(balances, output, underlyingBalances[i].output || 0)
   })
   return balances
 }
@@ -39,7 +39,7 @@ async function tvl(ts, block) {
 async function pool2(ts, block) {
   const toa = []
   Object.values(uniswapV2Pools).forEach(({ address, owner }) => toa.push([address, owner]))
-  return sumTokens({}, toa, block, undefined, undefined, { resolveLP: true })
+  return sumTokens({}, toa, block,)
 }
 
 module.exports = {

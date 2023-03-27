@@ -2,7 +2,6 @@ const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
 const { staking, stakings } = require("../helper/staking");
-const { pool2s } = require("../helper/pool2");
 const { sumTokens } = require("../helper/unwrapLPs");
 
 const USDC = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
@@ -157,9 +156,8 @@ module.exports = {
   doublecounted: true,
   misrepresentedTokens: true,
   ethereum: {
-    treasury: stakings(treasuryContracts, FXS),
     staking: staking(veFXS_StakingContract, FXS),
-    pool2: pool2s(POOL_STAKING_CONTRACTS, LP_ADDRESSES),
+    pool2: staking(POOL_STAKING_CONTRACTS, LP_ADDRESSES),
     tvl: ethereumTvl,
   },
   fantom: {

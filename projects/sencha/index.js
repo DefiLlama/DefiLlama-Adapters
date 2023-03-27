@@ -1,10 +1,11 @@
-const utils = require('../helper/utils')
+const { getConfig } = require('../helper/cache')
+
 const {getTokenAccountBalance} = require('../helper/solana');
 
 async function tvl() {
   // this is a list of token accounts that are reserves of a swap
   // more details: https://github.com/senchahq/sencha-registry
-  const { data: senchaTokenAccounts } = await utils.fetchURL(
+  const senchaTokenAccounts= await getConfig('sencha',
     "https://raw.githubusercontent.com/SenchaHQ/sencha-registry/master/data/known-accounts.json"
   );
 

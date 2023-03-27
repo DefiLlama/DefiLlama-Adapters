@@ -1,0 +1,13 @@
+{
+  "inputs": [],
+  "name": "getAllOwnedAssets",
+  "outputs": [
+    {
+      "internalType": "bytes32[]",
+      "name": "result",
+      "type": "bytes32[]"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+}

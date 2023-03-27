@@ -1,5 +1,5 @@
 const { getChainTransform } = require('../helper/portedTokens.js');
-const { unwrapYearn, sumTokensSharedOwners } = require('../helper/unwrapLPs');
+const { sumTokensSharedOwners } = require('../helper/unwrapLPs');
 const { staking } = require("../helper/staking.js");
 const contracts = require('./contracts');
 
@@ -18,13 +18,9 @@ function tvl(chain) {
         transform
       );
 
-    for (const yvToken of Object.values(contracts[chain].yvTokens)) {
-      await unwrapYearn(balances, yvToken, chainBlocks[chain], chain, transform);
-    };
-
     return balances;
   };
-};
+}
 
 module.exports = {
   ethereum: {
@@ -33,5 +29,8 @@ module.exports = {
   },
   fantom: {
     tvl: tvl('fantom')
+  },
+  optimism: {
+    tvl: tvl('optimism')
   }
 };

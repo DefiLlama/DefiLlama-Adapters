@@ -1,4 +1,3 @@
-const { getBlock } = require('../helper/getBlock');
 const { sumTokens } = require("../helper/unwrapLPs");
 
 const swapFlashLoan = '0x2D027B49B8960810F84D5fE172d07FFf62311852';
@@ -22,14 +21,14 @@ function transform(address) {
     for (let token of Object.keys(tokens)) {
         if (tokens[token].boba == address) {
             return tokens[token].eth;
-        };
-    };
+        }
+    }
     
     return address;
-};
+}
 
 async function tvl(timestamp, block, chainBlocks) {
-    block = await getBlock(timestamp, "boba", chainBlocks);
+    block = chainBlocks.boba;
     const balances = {};
 
     await sumTokens(
@@ -45,7 +44,7 @@ async function tvl(timestamp, block, chainBlocks) {
     );
 
     return balances;
-};
+}
 
 module.exports = {
     boba: {

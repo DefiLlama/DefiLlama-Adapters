@@ -1,4 +1,4 @@
-const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
+const { getUniTVL } = require('../helper/unknownTokens')
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const wGLMR = "0x5f6c5C2fB289dB2228d159C69621215e354218d7";
@@ -133,13 +133,7 @@ module.exports = {
     pool2: dmodBscLPPool
   },
   moonbeam: {
-    tvl: calculateUsdUniTvl(
-      "0x61999fAb7fdcEe1B26b82b5c2f825BCC8F8c2458",
-      "moonbeam",
-      wGLMR,
-      [],
-      "moonbeam"
-    ),
+    tvl: getUniTVL({ factory: '0x61999fAb7fdcEe1B26b82b5c2f825BCC8F8c2458', chain: 'moonbeam', useDefaultCoreAssets: true }),
   },
 };
 // node test.js projects/demodyfi/index.js

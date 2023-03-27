@@ -1,22 +1,11 @@
 const sdk = require("@defillama/sdk");
 const { stakings } = require("../helper/staking")
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { getLogs } = require('../helper/cache/getLogs')
 
-const BaseTokenAbi = {
-  inputs: [],
-  name: "baseToken",
-  outputs: [{ internalType: "address", name: "", type: "address" }],
-  stateMutability: "view",
-  type: "function",
-};
+const BaseTokenAbi = "address:baseToken"
 
-const QuoteTokenAbi = {
-  inputs: [],
-  name: "quoteToken",
-  outputs: [{ internalType: "address", name: "", type: "address" }],
-  stateMutability: "view",
-  type: "function",
-};
+const QuoteTokenAbi = "address:quoteToken"
 
 // addresses grabbed from https://docs.elasticswap.org/resources/deployments
 const config = {
@@ -40,6 +29,9 @@ const config = {
 }
 
 module.exports = {
+  hallmarks: [
+    [1670889600,"Price Oracle Attack"]
+  ],
   methodology:
     "TVL of Elastic Swap consists of liquidity pools and native token staking. Data fetched from on-chain.",
 };
@@ -47,21 +39,19 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const { startBlock, factory, stakingPools, ticToken, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, { [chain]: block }) => {
+    tvl: async (_, _b, { [chain]: block }, { api }) => {
       let { pairAddresses = [] } = config[chain]
 
       if (startBlock) {
         pairAddresses = []
         const logs = (
-          await sdk.api.util.getLogs({
-            keys: [],
-            toBlock: block,
+          await getLogs({
+            api,
             target: factory,
             fromBlock: startBlock,
-            chain,
             topic: 'NewExchange(address,address)',
           })
-        ).output
+        )
 
         for (let log of logs)
           pairAddresses.push(`0x${log.topics[2].substr(-40)}`.toLowerCase())

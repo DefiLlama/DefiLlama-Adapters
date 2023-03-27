@@ -38,7 +38,7 @@ async function tvl(timestamp, block, chainBlocks) {
       block: chainBlocks['ethereum'],
     })).output;
 
-    await sdk.util.sumSingleBalance(balances, lendingToken, balance);
+    sdk.util.sumSingleBalance(balances, lendingToken, balance);
   }
 
   const projectTokensLength = Number((await sdk.api.abi.call({
@@ -65,7 +65,7 @@ async function tvl(timestamp, block, chainBlocks) {
       block: chainBlocks['ethereum'],
     })).output;
 
-    await sdk.util.sumSingleBalance(balances, projectToken, balance);
+    sdk.util.sumSingleBalance(balances, projectToken, balance);
   }
 
   return balances;

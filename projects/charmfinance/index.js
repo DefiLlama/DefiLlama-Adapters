@@ -1,5 +1,6 @@
 const sdk = require("@defillama/sdk");
-const axios = require("axios");
+const { getConfig } = require('../helper/cache')
+
 const { sumTokens } = require('../helper/unwrapLPs')
 
 const vaultAbi = require("./vaultAbi.json");
@@ -24,10 +25,10 @@ async function tvl(timestamp, block) {
   let balances = {};
 
   const optionsContracts = (
-    await axios.get(
+    await getConfig('charm-finance',
       "https://raw.githubusercontent.com/charmfinance/options-protocol/main/markets.yaml"
     )
-  ).data;
+  );
 
   const optionsContractsWithoutComments = optionsContracts
     .split('\n')
@@ -59,7 +60,7 @@ async function tvl(timestamp, block) {
   })
 
   return sumTokens(balances, tokensAndOwners, block)
-};
+}
 
 module.exports = {
   ethereum: {

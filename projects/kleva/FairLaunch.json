@@ -1,0 +1,3 @@
+{
+  "userInfos": "function userInfos(uint256, address) view returns (uint256 amount, uint256 rewardDebt, address fundedBy)"
+}

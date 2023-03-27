@@ -1,49 +1,6 @@
 {
-  "totalPledge": {
-    "inputs": [],
-    "name": "totalPledge",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "totalStake": {
-    "inputs": [],
-    "name": "totalStake",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "totalSupply": {
-    "inputs": [],
-    "name": "totalSupply",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "balanceOf": {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      }
-    ],
-    "name": "balanceOf",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
-
+  "totalPledge": "uint256:totalPledge",
+  "totalStake": "uint256:totalStake",
+  "totalSupply": "uint256:totalSupply",
+  "balanceOf": "function balanceOf(address account) view returns (uint256)"
 }

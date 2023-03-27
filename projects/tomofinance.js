@@ -1,8 +1,6 @@
-const { getBlock } = require('./helper/getBlock')
 const sdk = require('@defillama/sdk');
 
-async function taiSupply(timestamp, ethBlock, chainBlocks) {
-    const block = await getBlock(timestamp, 'tomochain', chainBlocks);
+async function taiSupply(timestamp, ethBlock, {tomochain: block}) {
     const taiContract = '0x4d04315e6BABD038d15ea0E240A88B292d2Add41';
 
     const supply = (await sdk.api.erc20.totalSupply({
@@ -13,7 +11,7 @@ async function taiSupply(timestamp, ethBlock, chainBlocks) {
     })).output;
 
     return { 'usd-coin': supply };
-};
+}
 
 module.exports = {
     timetravel: true,

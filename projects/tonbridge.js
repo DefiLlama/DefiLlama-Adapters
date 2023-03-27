@@ -30,9 +30,9 @@ async function tvl() {
     for (let i = 0; i < tokenAddresses.length; i++) {
         const supply = (await axios.get(burl + tokenAddresses[i])).data.totalSupply;
         balances[tokenMap[tokenAddresses[i]]] = new BigNumber(supply);
-    };
+    }
     return balances;
-};
+}
 
 function evm(chain, target) {
     return async (timestamp, block, chainBlocks) => {
@@ -43,7 +43,7 @@ function evm(chain, target) {
             chain
         })).output / 10 ** 9 };
     };
-};
+}
 
 module.exports = {
     timetravel: false,

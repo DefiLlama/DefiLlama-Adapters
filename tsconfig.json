@@ -14,7 +14,8 @@
     }
   },
   "compilerOptions": {
-    // typescript options here
+    "noImplicitAny": false,
+    "strictNullChecks": false,
     "typeRoots": ["./typings/", "./node_modules/@types/"]
   }
 }

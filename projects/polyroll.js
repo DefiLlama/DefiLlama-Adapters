@@ -29,7 +29,7 @@ async function tvl(timestamp, block, chainBlocks) {
         );
 
     return balances;
-};
+}
 async function staking(timestamp, block, chainBlocks) {
     const transform = await transformPolygonAddress();
     const balances = {};
@@ -45,7 +45,7 @@ async function staking(timestamp, block, chainBlocks) {
         );
 
     return balances;
-};
+}
 // node test.js projects/polyroll.js
 module.exports={
     polygon: {

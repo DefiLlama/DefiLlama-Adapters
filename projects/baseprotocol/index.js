@@ -1,5 +1,4 @@
 const { stakings } = require("../helper/staking");
-const { pool2s } = require("../helper/pool2");
 
 const stakingContracts = [
   "0x15AE3846d7183Ba27Ad5772FeC55aeeFdd365975",
@@ -23,7 +22,7 @@ module.exports = {
   misrepresentedTokens: true,
   ethereum: {
     staking: stakings(stakingContracts, BASE),
-    pool2: pool2s(stakingLpContracts, [WETH_BASE_UNIV2]),
+    pool2: stakings(stakingLpContracts, [WETH_BASE_UNIV2]),
     tvl: async() => ({}),
   },
   methodology: "Counts liquidty on the staking and pool2s only",

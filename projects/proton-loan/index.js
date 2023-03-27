@@ -1,4 +1,4 @@
-const { getTableRows, getCurrencyBalance, getAllOracleData, getTokenPriceUsd } = require("../helper/proton");
+const { getTableRows, getCurrencyBalance, getAllOracleData, getTokenPriceUsd } = require("../helper/chain/proton");
 const { toUSDTBalances } = require('../helper/balances');
 
 const LENDING_CONTRACT = 'lending.loan';
@@ -63,7 +63,7 @@ function getLendingTvl(returnBorrowed = false) {
       return toUSDTBalances(tvl - borrowed)
     }
   }
-};
+}
 
 async function getTotalStaking() {
   const loanPrice = await getTokenPriceUsd('LOAN', LOAN_TOKEN_CONTRACT)
@@ -71,15 +71,7 @@ async function getTotalStaking() {
   const [stakedAmount] = staked.split(' ');
   let stakingTvl = toUSDTBalances(stakedAmount * loanPrice)
   return stakingTvl
-};
-
-async function fetch() {
-  const [tvl, staked] = await Promise.all([
-    getLendingTvl(false)(),
-    getTotalStaking()
-  ])
-  return tvl + staked
-};
+}
 
 module.exports = {
   misrepresentedTokens: true,

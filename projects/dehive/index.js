@@ -178,48 +178,50 @@ async function chainTvl(chain, chainBlocks, exportType) {
     const tvl = {};
     const transform = addr => `${chain}:${addr}`
     const block = chainBlocks[chain]
-    for (const staking of assetsInfo[chain]) {
-        let calculateTvlFunction = undefined;
-        switch (staking.tvl) {
-            case "stakingTvl":
-                calculateTvlFunction = stakingTvl;
-                break;
-            case "stakingDhvTvl":
-                calculateTvlFunction = stakingDhvTvl;
-                break;
-            case "lpStakingTvl":
-                calculateTvlFunction = lpStakingTvl;
-                break;
-            case "crvStakingTvl":
-                calculateTvlFunction = crvStakingTvl;
-                break;
-            case "clusterTvl":
-                calculateTvlFunction = clusterTvl;
-                break;
-            case "impulseStakingTvl":
-                calculateTvlFunction = impulseStakingTvl;
-                break;
-            default:
-                console.log('unknown tvl type', JSON.stringify(staking, null,4));
-                continue;
-        }
-        if (
-          (staking.tvl === "stakingDhvTvl" && exportType !== EXPORT_TYPE_DHV_STAKING)
-          || (staking.tvl !== "stakingDhvTvl" && exportType === EXPORT_TYPE_DHV_STAKING)
-          || (staking.tvl === "lpStakingTvl" && exportType === EXPORT_TYPE_POOL2 && (staking.isPool2 !== true))
-          || (staking.tvl === "lpStakingTvl" && exportType !== EXPORT_TYPE_POOL2 && (staking.isPool2 === true))
-        ) {
-            continue;
-        }
-        const tvls = await calculateTvlFunction(chain, staking.meta, block);
-        if (typeof tvls === 'string') {
-            sdk.util.sumSingleBalance(tvl, transform(staking.meta.tokenAddress), tvls)
-        } else {
-            for (let i = 0; i < tvls.length; i++) {
-                sdk.util.sumSingleBalance(tvl, transform(tvls[i][0]), tvls[i][1])
+    await Promise.all(assetsInfo[chain].map(async (staking) => {
+        {
+            let calculateTvlFunction = undefined;
+            switch (staking.tvl) {
+                case "stakingTvl":
+                    calculateTvlFunction = stakingTvl;
+                    break;
+                case "stakingDhvTvl":
+                    calculateTvlFunction = stakingDhvTvl;
+                    break;
+                case "lpStakingTvl":
+                    calculateTvlFunction = lpStakingTvl;
+                    break;
+                case "crvStakingTvl":
+                    calculateTvlFunction = crvStakingTvl;
+                    break;
+                case "clusterTvl":
+                    calculateTvlFunction = clusterTvl;
+                    break;
+                case "impulseStakingTvl":
+                    calculateTvlFunction = impulseStakingTvl;
+                    break;
+                default:
+                    console.log('unknown tvl type', JSON.stringify(staking, null, 4));
+                    return;
+            }
+            if (
+                (staking.tvl === "stakingDhvTvl" && exportType !== EXPORT_TYPE_DHV_STAKING)
+                || (staking.tvl !== "stakingDhvTvl" && exportType === EXPORT_TYPE_DHV_STAKING)
+                || (staking.tvl === "lpStakingTvl" && exportType === EXPORT_TYPE_POOL2 && (staking.isPool2 !== true))
+                || (staking.tvl === "lpStakingTvl" && exportType !== EXPORT_TYPE_POOL2 && (staking.isPool2 === true))
+            ) {
+                return;
+            }
+            const tvls = await calculateTvlFunction(chain, staking.meta, block);
+            if (typeof tvls === 'string') {
+                sdk.util.sumSingleBalance(tvl, transform(staking.meta.tokenAddress), tvls)
+            } else {
+                for (let i = 0; i < tvls.length; i++) {
+                    sdk.util.sumSingleBalance(tvl, transform(tvls[i][0]), tvls[i][1])
+                }
             }
         }
-    }
+    }))
     return tvl
 }
 

@@ -8,14 +8,13 @@ const { getChainTransform, } = require("../helper/portedTokens");
 module.exports = {}
 
 function setChainTVL(chain) {
-  const { masterchef, pools, vaults_json, chainId, treasury, erc20s, LPs, token, } = config[chain]
+  const { masterchef, pools, vaults_json, chainId, erc20s, LPs, token, } = config[chain]
   let getTvl
 
   async function getAllTVL(ts, _block, chainBlocks) {
     const transform = await getChainTransform(chain)
     const block = chainBlocks[chain]
     const balances = {
-      treasury: {},
       tvl: {},
       staking: {},
       pool2: {},
@@ -43,11 +42,6 @@ function setChainTVL(chain) {
     mcPools.forEach(({ output }) => {
       masterchefPools.push(output)
     })
-
-    if (treasury) {
-      let toa = erc20s.map(token => [token, treasury])
-      balances.treasury = await sumTokens({}, toa, block, chain)
-    }
 
     const toaTvl = []
     const toaSyrup = []
@@ -102,9 +96,9 @@ function setChainTVL(chain) {
       })
     })
 
-    await sumTokens(balances.tvl, toaTvl, block, chain, transform, { resolveLP: true })
-    await sumTokens(balances.pool2, toaPool2, block, chain, transform, { resolveLP: true })
-    await sumTokens(balances.staking, toaStaking, block, chain, transform, { resolveLP: false })
+    await sumTokens(balances.tvl, toaTvl, block, chain, transform)
+    await sumTokens(balances.pool2, toaPool2, block, chain, transform)
+    await sumTokens(balances.staking, toaStaking, block, chain, transform)
     await unwrapUniswapLPs(balances.tvl, lpPositions, block, chain, transform)
     return balances
   }
@@ -119,7 +113,6 @@ function setChainTVL(chain) {
   const chainExports = {
     tvl: getTvlFunction('tvl'),
     pool2: getTvlFunction('pool2'),
-    treasury: getTvlFunction('treasury'),
     staking: getTvlFunction('staking'),
   }
 

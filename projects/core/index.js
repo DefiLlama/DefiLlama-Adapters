@@ -52,7 +52,7 @@ async function treasury(_, block){
     [WETH, DELTA_MULTISIG],
     [CORE_WETH_V2, DELTA_MULTISIG],
   ]
-  return sumTokens2({ block,  tokensAndOwners, resolveLP: true, })
+  return sumTokens2({ block,  tokensAndOwners, })
 }
 
 async function tvl(_, block){ 
@@ -63,7 +63,7 @@ async function tvl(_, block){
     [DAI, COREDAI],
     [DELTA_ETH_SSLP, DELTA_RLP],
   ]
-  return sumTokens2({ block,  tokensAndOwners, resolveLP: true, })
+  return sumTokens2({ block,  tokensAndOwners, })
 }
 
 async function staking(_, block){ 
@@ -85,6 +85,6 @@ module.exports = {
       tvl, 
       treasury, 
       staking,
-      ownTokens: ['CORE', 'CoreDAO', 'Delta', 'FANNY', 'Delta rLP', 'cBTC', 'cDAI']
+      // ownTokens: ['CORE', 'CoreDAO', 'Delta', 'FANNY', 'Delta rLP', 'cBTC', 'cDAI']
   }
 };

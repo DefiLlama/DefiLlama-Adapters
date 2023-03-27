@@ -1,41 +1,16 @@
 const abi = require("./abi.json");
-const sdk = require('@defillama/sdk');
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
+const REGISTRY_ADDR = "0xD6E9D27C75Afd88ad24Cd5EdccdC76fd2fc3A751"
 
-const DEPLOYER_ADDR = "0x5d6e79bcf90140585ce88c7119b7e43caaa67044"
-
-const chain = 'ethereum'
-async function tvl(timestamp, block, chainBlocks) {    
-
-const { output: pairs } = await sdk.api.abi.call({
-    target: DEPLOYER_ADDR,
-    abi: abi['getAllPairAddresses'],
-    })      
-
-  const { output: tokens } = await sdk.api.abi.multiCall({
-    abi: abi.collateralContract,
-    calls: pairs.map(i => ({ target: i })),
-    chain, block,
-  })
-
-  const { output: camounts } = await sdk.api.abi.multiCall({
-    abi: abi.totalCollateral,
-    calls: pairs.map(i => ({ target: i })),
-    chain, block,
-  })
-
-  const balances = {}
-  tokens.forEach((res, i)=>{
-    sdk.util.sumSingleBalance(balances, res.output, camounts[i].output)
-  })
-
- return balances
+async function tvl(timestamp, block, chainBlocks, { api }) {
+  const pairs = await api.call({ target: REGISTRY_ADDR, abi: abi['getAllPairAddresses'], })
+  const tokens = await api.multiCall({ abi: abi.collateralContract, calls: pairs })
+  return sumTokens2({ api, tokensAndOwners: tokens.map((v, i) => [v, pairs[i]]) })
 }
 
 module.exports = {
-  timetravel: true,
-  methodology: 'Gets the pairs from the DEPLOYER_ADDRESS and adds the collateral amounts from each pair',
-  misrepresentedTokens: false,
+  methodology: 'Gets the pairs from the REGISTRY_ADDRESS and adds the collateral amounts from each pair',
   ethereum: {
     tvl
   },

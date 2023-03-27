@@ -17,13 +17,13 @@ const poolTvl = async (chain, poolAddress, block) => {
   const [balances, tokens] = await Promise.all([
     sdk.api.abi.call({
       target: poolAddress,
-      abi: Abis.swap.getTokenBalances,
+      abi: Abis.getTokenBalances,
       chain: chain,
       block,
     }),
     sdk.api.abi.call({
       target: poolAddress,
-      abi: Abis.swap.getTokens,
+      abi: Abis.getTokens,
       chain: chain,
       block,
     }),

@@ -1,7 +1,7 @@
 import { gql, request } from "graphql-request";
 import BigNumber from "bignumber.js";
 import { getPagedGql } from "../utils/gql";
-import { Liq } from "../utils/binResults";
+import { Liq } from "../utils/types";
 
 const subgraphUrl = "https://api.thegraph.com/subgraphs/name/liquity/liquity";
 
@@ -31,8 +31,8 @@ type SystemState = {
 };
 
 const trovesQuery = gql`
-  query troves($lastId: String) {
-    troves(first: 1000, where: { status: open, id_gt: $lastId }) {
+  query troves($lastId: String, $pageSize: Int) {
+    troves(first: $pageSize, where: { status: open, id_gt: $lastId }) {
       id
       collateral
       rawCollateral

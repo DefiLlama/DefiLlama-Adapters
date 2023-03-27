@@ -1,6 +1,5 @@
-const { getBlock } = require('../helper/getBlock')
 const sdk = require('@defillama/sdk')
-const { fetchAssets } = require('../helper/terra')
+const { fetchAssets } = require('../helper/chain/terra')
 const { getChainTransform } = require('../helper/portedTokens')
 
 const data = {
@@ -16,10 +15,9 @@ const data = {
 }
 
 function getTVLFunction(chain) {
-    return async function tvl(timestamp, ethBlock, chainBlocks) {
+    return async function tvl(timestamp, ethBlock, {[chain]: block}) {
         const balances = {}
         const chainData = data[chain];
-        const block = await getBlock(timestamp, chain, chainBlocks);
         const chainTokens = await fetchAssets(chainData.path);
 
         const transform = await getChainTransform(chain)

@@ -1,8 +1,6 @@
 const BigNumber = require('bignumber.js');
 const { toUSDTBalances } = require('../balances');
-const vaultABI = require('./abis/TraderJoeVault.json');
 const sdk = require("@defillama/sdk")
-const UniswapV2PairContractAbi = require('./abis/UniswapV2Pair.json');
 
 const ZERO = new BigNumber(0);
 
@@ -16,21 +14,19 @@ const fromWei = (v) => {
 };
 
 const getVautsTvl = async (vaults, getPrice) => {
-  const vaultsMap = await Promise.all(vaults.map((item) => {
-    return new Promise(async (resolve) => {
-      const { vault, chain } = item
-      let { output: underlyingBalanceWithInvestment } = await sdk.api.abi.call({
-        chain,
-        target: vault,
-        abi: vaultABI.find(i => i.name === 'underlyingBalanceWithInvestment')
-      })
-
-      underlyingBalanceWithInvestment = new BigNumber(underlyingBalanceWithInvestment);
-
-      const usd = await getPrice(item);
-
-      resolve(usd.multipliedBy(underlyingBalanceWithInvestment));
+  const vaultsMap = await Promise.all(vaults.map(async (item) => {
+    const { vault, chain } = item
+    let { output: underlyingBalanceWithInvestment } = await sdk.api.abi.call({
+      chain,
+      target: vault,
+      abi: 'uint256:underlyingBalanceWithInvestment'
     })
+
+    underlyingBalanceWithInvestment = new BigNumber(underlyingBalanceWithInvestment);
+
+    const usd = await getPrice(item);
+
+    return usd.multipliedBy(underlyingBalanceWithInvestment)
   }));
   return toUSDTBalances(vaultsMap.reduce((acc, item) => acc.plus(item), new BigNumber(ZERO)));
 }
@@ -50,7 +46,7 @@ const formatDecimal = (value, decimal = 18, numPoint = 4, precision = 2) => {
 const getReserves = async (pairAddress) => {
   const { output: { _reserve0, _reserve1, _blockTimestampLast } } = await sdk.api.abi.call({
     target: pairAddress,
-    abi: UniswapV2PairContractAbi.find(i => i.name === 'getReserves')
+    abi: 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
   })
   return { reserve0: _reserve0, reserve1: _reserve1, blockTimestampLast: _blockTimestampLast };
 };
@@ -63,7 +59,7 @@ const getTotalSupplyOf = async (contract, chain) => {
 
 const getBalanceOf = async (account, contract) => {
   const { output } = await sdk.api.erc20.balanceOf({ target: contract, owner: account, })
-    return new BigNumber(output);
+  return new BigNumber(output);
 };
 
 module.exports = {

@@ -5,6 +5,8 @@ async function tvl() {
     tokenAccounts: [
       '6W9yiHDCW9EpropkFV8R3rPiL8LVWUHSiys3YeW6AT6S',
       'Bzjkrm1bFwVXUaV9HTnwxFrPtNso7dnwPQamhqSxtuhZ',
+      'GXWqPpjQpdz7KZw9p7f5PX2eGxHAhvpNXiviFkAB8zXg',
+      'DfYCNezifxAEsQbAJ1b3j6PX3JVBe8fu11KBhxsbw5d2',
     ]
   })
 }

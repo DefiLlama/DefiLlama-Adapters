@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import { providers } from "../utils/ethers";
 import BigNumber from "bignumber.js";
-import { Liq } from "../utils/binResults";
+import { Liq } from "../utils/types";
 const sdk = require("@defillama/sdk");
 
 // all maker contracts: https://chainlog.makerdao.com/api/mainnet/active.json

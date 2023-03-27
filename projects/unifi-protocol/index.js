@@ -1,6 +1,6 @@
 const { getUniTVL } = require('../helper/unknownTokens')
 const { staking } = require('../helper/staking')
-const { getTokenBalance } = require('../helper/tron');
+const { getTokenBalance } = require('../helper/chain/tron');
 const { toUSDTBalances } = require('../helper/balances')
 const { get } = require('../helper/http')
 const { mergeExports } = require('../helper/utils')
@@ -63,15 +63,13 @@ const dexExports = {
       useDefaultCoreAssets: true,
     }),
   },
-  // bittorrent: {
-  //   tvl: getUniTVL({
-  //     factory: '0xCAaB36C77841647dC9955B3b1D03710E9B9F127f',
-  //     chain: 'bittorrent',
-  //     coreAssets: [
-  //       '0x8D193c6efa90BCFf940A98785d1Ce9D093d3DC8A'
-  //     ],
-  //   }),
-  // },
+  bittorrent: {
+    tvl: getUniTVL({
+      factory: '0xCAaB36C77841647dC9955B3b1D03710E9B9F127f',
+      chain: 'bittorrent',
+      useDefaultCoreAssets: true,
+    }),
+  },
   tron: {
     tvl: async () => {
       return {

@@ -1,16 +1,16 @@
 const sdk = require('@defillama/sdk');
 const { unwrapUniswapLPs, } = require('../helper/unwrapLPs')
 const abi = require('./abi.json')
-const { transformAvaxAddress } = require('../helper/portedTokens');
 const { staking } = require('../helper/staking');
 
 const steakMasterChef = '0xddBfBd5dc3BA0FeB96Cb513B689966b2176d4c09';
 
 async function tvl(timestamp, block, chainBlocks) {
+    block = chainBlocks.avax
     const balances = {};
     const lps = []
 
-    const transformAddress = await transformAvaxAddress()
+    const transformAddress = addr => 'avax:'+addr
 
     const { output: poolLength } = await sdk.api.abi.call({
         target: steakMasterChef,

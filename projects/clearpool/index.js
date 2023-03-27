@@ -1,23 +1,28 @@
+//  npm i -f
+//  node test.js projects/clearpool/index.js
+
 const sdk = require("@defillama/sdk");
 const { sumTokens } = require("../helper/unwrapLPs");
 const abi = require("./abi.json");
-const { get } = require('../helper/http')
+const { getConfig } = require('../helper/cache')
+
+const { stakings } = require('../helper/staking')
+const { getLogs } = require('../helper/cache/getLogs')
 
 const PoolFactory = "0xde204e5a060ba5d3b63c7a4099712959114c2d48";
 const START_BLOCK = 14443222;
-const polygonPoolURL = 'https://api-v3.clearpool.finance/137/pools'
+const polygonPoolURL = 'https://app.clearpool.finance/api/pools'
 
-const ethereumTVL = async (timestamp, block, chainBlocks) => {
+const ethereumTVL = async (timestamp, block, chainBlocks, { api }) => {
   const balances = {};
   const Logs = (
-    await sdk.api.util.getLogs({
+    await getLogs({
+      api,
       target: PoolFactory,
       topic: "PoolCreated(address,address,address)",
-      keys: [],
       fromBlock: START_BLOCK,
-      toBlock: block,
     })
-  ).output;
+  );
   const tokensAndOwners = [];
   for (let i = 0; i < Logs.length; i++) {
     const pool = "0x" + Logs[i].topics[1].substring(26, 66);
@@ -28,17 +33,16 @@ const ethereumTVL = async (timestamp, block, chainBlocks) => {
   return balances;
 };
 
-const ethereumBorrowed = async (timestamp, block, chainBlocks) => {
+const ethereumBorrowed = async (timestamp, block, _, { api }) => {
   const totalBorrowed = {};
   const Logs = (
-    await sdk.api.util.getLogs({
+    await getLogs({
+      api,
       target: PoolFactory,
       topic: "PoolCreated(address,address,address)",
-      keys: [],
       fromBlock: START_BLOCK,
-      toBlock: block,
     })
-  ).output;
+  );
 
   const pools = []
   const tokens = []
@@ -60,15 +64,16 @@ const ethereumBorrowed = async (timestamp, block, chainBlocks) => {
   return totalBorrowed;
 };
 
-
 const polygonTvl = async (timestamp, _,  { polygon: block }) => {
   const balances = {};
   const chain = 'polygon'
-  const poolData = await get(polygonPoolURL)
+  const poolAllData = await getConfig('clearpool-polygon',polygonPoolURL)
+  const poolData = poolAllData["137"]
+
   const tokensAndOwners = [];
   for (let i = 0; i < poolData.length; i++) {
     const pool = poolData[i].address;
-    const token = poolData[i].currency.address;
+    const token = poolData[i].currencyAddress;
     tokensAndOwners.push([token, pool]);
   }
   await sumTokens(balances, tokensAndOwners, block, chain);
@@ -77,7 +82,8 @@ const polygonTvl = async (timestamp, _,  { polygon: block }) => {
 
 const polygonBorrowed = async (timestamp, _,  { polygon: block }) => {
   const chain = 'polygon'
-  const poolData = await get(polygonPoolURL)
+  const poolAllData = await getConfig('clearpool-polygon',polygonPoolURL)
+  const poolData = poolAllData["137"]
   const totalBorrowed = {};
 
   const pools = []
@@ -85,7 +91,7 @@ const polygonBorrowed = async (timestamp, _,  { polygon: block }) => {
 
   for (let i = 0; i < poolData.length; i++) {
     const pool = poolData[i].address;
-    const token = poolData[i].currency.address;
+    const token = poolData[i].currencyAddress;
     pools.push(pool)
     tokens.push(token)
   }
@@ -100,11 +106,19 @@ const polygonBorrowed = async (timestamp, _,  { polygon: block }) => {
   return totalBorrowed;
 };
 
+
+const singleStakingContracts = [
+  "0x629E39da1Db5654fe59cAE31d48CAEBB8dC2A9c6",
+];
+
+const CPOOL = "0x66761fa41377003622aee3c7675fc7b5c1c2fac5";
+
 module.exports = {
   timetravel: false,
   ethereum: {
     tvl: ethereumTVL,
     borrowed: ethereumBorrowed,
+    staking: stakings(singleStakingContracts, CPOOL),
   },
   polygon: {
     tvl: polygonTvl,

@@ -3,7 +3,8 @@ const { default: BigNumber } = require("bignumber.js")
 const abi = require('./abi.json')
 
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs")
-const { fetchURL } = require("../helper/utils")
+const { getConfig } = require('../helper/cache')
+
 
 const STAKING_CONTRACT = "0xe98ae8cD25CDC06562c29231Db339d17D02Fd486"
 const STAKING_NFT = "0xE9F9936a639809e766685a436511eac3Fb1C85bC"
@@ -58,7 +59,7 @@ async function tvl(timestamp, block) {
   if (block && block < 14928955 ) return {};
   const balances = {};
 
-  const metadata = (await fetchURL('https://raw.githubusercontent.com/fiatdao/changelog/main/metadata/metadata-mainnet.json')).data
+  const metadata = (await getConfig('fiatdao', 'https://raw.githubusercontent.com/fiatdao/changelog/main/metadata/metadata-mainnet.json'))
   const allVaults = Object.keys(metadata)
   const { output: tokensAll } = await sdk.api.abi.multiCall({ abi: abi.token, calls: allVaults.map(i => ({ target: i })), block, })
   const tokens = []

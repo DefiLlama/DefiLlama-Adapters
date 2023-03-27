@@ -19,7 +19,7 @@ function tvl(chain) {
     toa.push(...contracts[chain].map(c => ([contracts.usdc[chain], c.address])))
     return sumTokens2({ chain, tokensAndOwners: toa, block: chainBlocks[chain], resolveLP: true, })
   };
-};
+}
 
 module.exports = {
   timetravel: true,

@@ -2,8 +2,7 @@ const BigNumber = require("bignumber.js");
 const sdk = require("@defillama/sdk");
 
 const { unwrapUniswapLPs } = require("./unwrapLPs");
-const symbol = require("./abis/symbol.json");
-const getPairFactory = require("./abis/getPair.json");
+const getPairFactory = 'function getPair(address, address) view returns (address)'
 
 const { isLP } = require("./utils");
 const { getChainTransform, getFixBalances } = require("./portedTokens");
@@ -130,7 +129,7 @@ async function getTokensAndLPsTrackedValue(
   const [tokenSymbols, tokenBalances] = await Promise.all([
     sdk.api.abi
       .multiCall({
-        abi: symbol,
+        abi: 'string:symbol',
         chain,
         calls: tokens.map(token => ({
           target: token

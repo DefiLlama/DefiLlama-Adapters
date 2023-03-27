@@ -28,7 +28,7 @@ async function tvlMainnet(timestamp, block, chainBlocks) {
     params: [COLLATERAL_RESERVE_MAINNET],
     block: chainBlocks['ethereum'],
   })).output;
-  await sdk.util.sumSingleBalance(balances, ETHIX_TOKEN, collateralBalanceMainnet);
+  sdk.util.sumSingleBalance(balances, ETHIX_TOKEN, collateralBalanceMainnet);
 
   const minimiceBalanceMainnet = (await sdk.api.abi.call({
     abi: 'erc20:balanceOf',
@@ -37,7 +37,7 @@ async function tvlMainnet(timestamp, block, chainBlocks) {
     params: [MINIMICE_ETH],
     block: chainBlocks['ethereum'],
   })).output;
-  await sdk.util.sumSingleBalance(balances, ETHIX_TOKEN, minimiceBalanceMainnet);
+  sdk.util.sumSingleBalance(balances, ETHIX_TOKEN, minimiceBalanceMainnet);
 
   return balances;
 }
@@ -53,7 +53,7 @@ async function tvlCelo(timestamp, block, chainBlocks) {
     params: [COLLATERAL_RESERVE_CELO],
     block: chainBlocks['celo'],
   })).output;
-  await sdk.util.sumSingleBalance(balances, transform(ETHIX_TOKEN_CELO), collateralBalanceCelo);
+  sdk.util.sumSingleBalance(balances, transform(ETHIX_TOKEN_CELO), collateralBalanceCelo);
 
   const minimiceBalanceCelo = (await sdk.api.abi.call({
     abi: 'erc20:balanceOf',
@@ -62,7 +62,7 @@ async function tvlCelo(timestamp, block, chainBlocks) {
     params: [MINIMICE_CELO],
     block: chainBlocks['celo'],
   })).output;
-  await sdk.util.sumSingleBalance(balances, transform(ETHIX_TOKEN_CELO), minimiceBalanceCelo);
+  sdk.util.sumSingleBalance(balances, transform(ETHIX_TOKEN_CELO), minimiceBalanceCelo);
 
   return balances;
 }

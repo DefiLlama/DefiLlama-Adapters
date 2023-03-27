@@ -2,7 +2,7 @@ const { fetchURL } = require('./helper/utils')
 const { toUSDTBalances } = require('./helper/balances')
 
 const usdPriceUrl = "https://mainnet.analytics.tinyman.org/api/v1/current-asset-prices/"
-const assetTVLURL = "https://eu-central-1.algodex.com/algodex-backend/tvl.php"
+const assetTVLURL = "https://app.algodex.com/api/v2/orders/tvl"
 
 async function fetch() {
   const tvlData = await fetchURL(assetTVLURL)
@@ -10,8 +10,8 @@ async function fetch() {
 
   const total_liquidity_in_usd = tvlData.data.reduce((sum, asset) => {
     var assetPrice = 0
-    if (usdPriceData.data.hasOwnProperty(asset.assetid)) {
-      assetPrice = usdPriceData.data[asset.assetid].price
+    if (usdPriceData.data[asset.assetId]) {
+      assetPrice = usdPriceData.data[asset.assetId].price
     } else {
       // price for some asset is not found on tinyman then
       // set its price to zero
@@ -25,5 +25,8 @@ async function fetch() {
 }
 // tvl in USD
 module.exports = {
+  algorand: {
+    fetch
+  },
   fetch
 }

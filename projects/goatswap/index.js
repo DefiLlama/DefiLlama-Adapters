@@ -1,5 +1,5 @@
 const { Program } = require("@project-serum/anchor");
-const { getProvider, getSolBalances, } = require("../helper/solana");
+const { getProvider, sumTokens2, } = require("../helper/solana");
 const {
   PublicKey,
 } = require("@solana/web3.js");
@@ -18,9 +18,7 @@ async function tvl() {
   const program = new Program(idl, programId, provider)
   const accounts = await program.account.pair.all()
   const poolAuthorities = accounts.map(i => getPoolAuthority(i.publicKey))
-  return {
-    solana: await getSolBalances(poolAuthorities)
-  }
+  return sumTokens2({ solOwners: poolAuthorities, })
 }
 
 module.exports = {
@@ -50,8 +48,10 @@ const idl = {
             type: 'publicKey'
           },
           {
-            name: 'collection',
-            type: 'publicKey'
+            name: 'collectionVerification',
+            type: {
+              defined: 'CollectionVerification'
+            }
           },
           {
             name: 'poolType',
@@ -82,6 +82,10 @@ const idl = {
             type: {
               option: 'publicKey'
             }
+          },
+          {
+            name: 'nfts',
+            type: 'u32'
           }
         ]
       }
@@ -115,6 +119,32 @@ const idl = {
           },
           {
             name: 'Trade'
+          }
+        ]
+      }
+    },
+    {
+      name: 'CollectionVerification',
+      type: {
+        kind: 'enum',
+        variants: [
+          {
+            name: 'Collection',
+            fields: [
+              {
+                name: 'collection',
+                type: 'publicKey'
+              }
+            ]
+          },
+          {
+            name: 'Goatkeeper',
+            fields: [
+              {
+                name: 'goatkeeper',
+                type: 'publicKey'
+              }
+            ]
           }
         ]
       }

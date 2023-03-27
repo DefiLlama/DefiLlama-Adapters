@@ -1,32 +1,32 @@
 const sdk = require('@defillama/sdk')
 const BigNumber = require('bignumber.js')
-const getCacheBalances = require('./abis/getCacheBalances.json')
-const getUnderlyingTokenAddress = require('./abis/getUnderlyingTokenAddress.json')
-const getStrikeTokenAddress = require('./abis/getStrikeTokenAddress.json')
-const redeemToken = require('./abis/redeemToken.json')
-const getPair = require('./abis/getPair.json')
-const token0 = require('./abis/token0.json')
-const token1 = require('./abis/token1.json')
-const getReserves = require('./abis/getReserves.json')
+const getCacheBalances = 'function getCacheBalances() view returns (uint256, uint256)'
+const getUnderlyingTokenAddress = "address:getUnderlyingTokenAddress"
+const getStrikeTokenAddress = "address:getStrikeTokenAddress"
+const redeemToken = "address:redeemToken"
+const getPair = 'function getPair(address, address) view returns (address)'
+const token0 = 'address:token0'
+const token1 = 'address:token1'
+const getReserves = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
+const { getLogs } = require('../helper/cache/getLogs')
 
 const START_BLOCK = 11142900
 const REGISTRY = '0x16274044dab9635Df2B5AeAF7CeCb5f381c71680'
 const FACTORY = '0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac'
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
-module.exports = async function tvl(_, block) {
+module.exports = async function tvl(_, block, _1, { api }) {
 
   // ===== Primitive Contracts =====
 
   const logs = (
-    await sdk.api.util.getLogs({
-      keys: [],
-      toBlock: block,
+    await getLogs({
+      api,
       target: REGISTRY,
       fromBlock: START_BLOCK,
       topic: 'DeployedOptionClone(address,address,address)',
     })
-  ).output
+  )
 
   const optionAddresses = logs
     .map((log) => `0x${log.topics[2].substring(26)}`)

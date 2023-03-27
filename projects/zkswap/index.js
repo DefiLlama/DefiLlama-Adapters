@@ -3,8 +3,8 @@ const BigNumber = require('bignumber.js')
 const v1TVL = require('./v1');
 const v2TVL = require('./v2');
 
-async function tvl(timestamp, block) {
-  const [v1, v2] = await Promise.all([v1TVL(timestamp, block), v2TVL(timestamp, block)]);
+async function tvl(timestamp, block, _1, { api }) {
+  const [v1, v2] = await Promise.all([v1TVL(timestamp, block, _1, { api }), v2TVL(timestamp, block, _1, { api })]);
 
   const tokenAddresses = new Set(Object.keys(v1).concat(Object.keys(v2)));
 
@@ -25,5 +25,5 @@ async function tvl(timestamp, block) {
 
 module.exports = {
   start: 1613135160, // 02/12/2021 @ 01:06pm UTC
-  tvl
+  ethereum: { tvl },
 };

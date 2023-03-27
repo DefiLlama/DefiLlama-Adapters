@@ -1,15 +1,3 @@
 {
-	"index": {
-		"inputs": [],
-		"name": "index",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	}
+  "index": "uint256:index"
 }

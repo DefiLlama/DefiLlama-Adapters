@@ -22,6 +22,15 @@ const ethereumContractData = [
     },
 ]
 
+const kavaContractData = [
+  {
+    chain: "kava",
+    contract: "0xa9ec655dac35d989c0c8be075b1106dcd32502d6",
+    contractABI: abi_v2,
+    factory: "0x4FD2c40c25Dd40e9Bf0CE8479bA384178b8671b5",
+  },
+];
+
 const polygonContractData = [
     {
         chain: "polygon",
@@ -77,5 +86,6 @@ module.exports = {
     ethereumContractData,
     polygonContractData,
     avaxContractData,
-    bscContractData
+    bscContractData,
+    kavaContractData
 }

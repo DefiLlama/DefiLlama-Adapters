@@ -1,4 +1,4 @@
-const { call, sumSingleBalance, } = require('../helper/near')
+const { call, sumSingleBalance, } = require('../helper/chain/near')
 
 
 const PROJECT_CONTRACT = 'v1.jumbo_exchange.near'

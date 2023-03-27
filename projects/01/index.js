@@ -15,6 +15,9 @@ async function tvl() {
   return sumTokens2({ owner, tokens })
 }
 module.exports = {
+  hallmarks:[
+    [1667865600, "FTX collapse"]
+  ],
   timetravel: false,
   solana: {
     tvl,

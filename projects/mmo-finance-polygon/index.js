@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
+const abi = 'function tvlOfPool(address pool) view returns (uint256 tvl)'
 const BigNumber = require("bignumber.js");
 
 const dashboardPolygon = "0xFAacEA541e23F0D3eC7d4E202E791923Ce273787";

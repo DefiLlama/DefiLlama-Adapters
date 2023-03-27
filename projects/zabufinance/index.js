@@ -24,7 +24,7 @@ const avaxTvl = async (timestamp, ethBlock, {[chain]: block }) => {
   })
 
   const toa = output.map(i => ([i.output[0], FARMING_CONTRACT_ADDRESS]))
-  return sumTokens2({ chain, block, tokensAndOwners: toa, resolveLP: true })
+  return sumTokens2({ chain, block, tokensAndOwners: toa,})
 };
 
 module.exports = {

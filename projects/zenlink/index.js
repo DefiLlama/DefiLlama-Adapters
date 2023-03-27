@@ -1,9 +1,4 @@
-const { calculateUsdTvl, calculateMoonriverTvl } = require('./getUsdTvl')
-
-const tokenChainMap = {
-    '0x3b25bc1dc591d24d60560d0135d6750a561d4764': '0xc3d088842dcf02c13699f936bb83dfbbc6f721ab', // vETH
-}
-
+const { calculateUsdTvl } = require('./getUsdTvl')
 
 const moonriverStablePoolTokenMap = {
     "0xffc7780c34b450d917d557e728f033033cb4fa8c": "0xffffffff1fcacbd218edc0eba20fc2308c778080", // stKSM -> xcKSM
@@ -34,7 +29,7 @@ function sumMultiPoolVersionTvl(poolTvls) {
         }); 
     });
     return total;
-};
+}
 
 async function calcuteMoonriverTvl(timestamp, ethBlock, chainBlocks) {
     const v1Tvl = await calculateUsdTvl(
@@ -79,7 +74,7 @@ async function calcuteMoonriverTvl(timestamp, ethBlock, chainBlocks) {
         v2Tvl
     ]);
     return tvlTotal;
-};
+}
 
 
 async function calcuteMoonbeamTvl(timestamp, ethBlock, chainBlocks) {
@@ -131,7 +126,7 @@ async function calcuteMoonbeamTvl(timestamp, ethBlock, chainBlocks) {
         v2Tvl
     ]);
     return tvlTotal;
-};
+}
 
 module.exports = {
     methodology: "Get all pairs from the Factory Contract then get the reserve0 token amount and reserve1 token amount in one pair. Update the total balance of each token by reserve0 and reserve1. Repeat 2 ~ 3 for each pairs.",

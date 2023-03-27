@@ -265,7 +265,7 @@ async function eth(timestamp, block) {
       tokens.wbtc.address,
       tokens.lusd.address,
       tokens.weth.address
-    ].map(t => [t, contracts.stakingPools.address]), block, undefined, undefined, { resolveLP: true })
+    ].map(t => [t, contracts.stakingPools.address]), block)
 
 
     await sumTokens(balances, [
@@ -274,7 +274,7 @@ async function eth(timestamp, block) {
       tokens.wbtc.address,
       tokens.lusd.address,
       tokens.weth.address
-    ].map(t => [t, contracts.stakingPoolsV4.address]), block, undefined, undefined, { resolveLP: true })
+    ].map(t => [t, contracts.stakingPoolsV4.address]), block)
    
     // vaults
 
@@ -452,8 +452,6 @@ async function polygon(timestamp, block, chainBlocks) {
     // let poolAddr = vault.input.target
     // sdk.util.sumSingleBalance(balances, _.find(vaultCalls, {target: poolAddr}).token, totalDeposited); 
   }
-
-  // console.log('vaultTvl', vaultTvl)
 
   //collectors
 
