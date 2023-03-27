@@ -1,5 +1,4 @@
-const sdk = require('@defillama/sdk');
-const { getChainTransform } = require('../helper/portedTokens');
+const { nullAddress, sumTokensExport, } = require('../helper/unwrapLPs');
 
 const OCEAN_CONTRACT = '0xC32eB36f886F638fffD836DF44C124074cFe3584';
 const DAI_CONTRACT = '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1';
@@ -10,46 +9,20 @@ const WSTETH_CONTRACT = '0x5979D7b546E38E414F7E9822514be443A4800529';
 const ARB_CONTRACT = '0x912ce59144191c1204e64559fe8253a0e49e6548';
 
 const TOKEN_CONTRACTS = [
-    DAI_CONTRACT,
-    USDC_CONTRACT, 
-    USDT_CONTRACT,
-    WBTC_CONTRACT,
-    WSTETH_CONTRACT,
-    ARB_CONTRACT
+  DAI_CONTRACT,
+  USDC_CONTRACT,
+  USDT_CONTRACT,
+  WBTC_CONTRACT,
+  WSTETH_CONTRACT,
+  ARB_CONTRACT,
+  nullAddress,
 ]
 
-async function tvl(timestamp, block, chainBlocks) {
-  const balances = {};
-  const transform = await getChainTransform('arbitrum');
-
-  for(let i = 0; i < TOKEN_CONTRACTS.length; i++){
-    const tokenBalance = (await sdk.api.abi.call({
-        abi: 'erc20:balanceOf',
-        chain: 'arbitrum',
-        target: TOKEN_CONTRACTS[i],
-        params: [OCEAN_CONTRACT],
-        block: chainBlocks.arbitrum,
-    })).output;
-
-    sdk.util.sumSingleBalance(balances, transform(TOKEN_CONTRACTS[i]), tokenBalance)
-  }
-
-  const ethBalance = (await sdk.api.eth.getBalance({
-    target: OCEAN_CONTRACT,
-    chain: 'arbitrum'
-  })).output
-
-  sdk.util.sumSingleBalance(balances, "0x0000000000000000000000000000000000000000", ethBalance)
-
-  return balances;
-}
-
 module.exports = {
-  timetravel: true,
   methodology: 'Sums up the value of all tokens wrapped into Shell v2',
   start: 24142587,
   arbitrum: {
-      tvl
+    tvl: sumTokensExport({ owner: OCEAN_CONTRACT, tokens: TOKEN_CONTRACTS})
   },
   hallmarks: [
     [1662927378, "Shell v2 Launch"]
