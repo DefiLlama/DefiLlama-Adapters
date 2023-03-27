@@ -137,6 +137,7 @@
   "polis",
   "polkadot",
   "polygon",
+  "polygon_zkevm",
   "pool2",
   "posi",
   "proton",
@@ -196,6 +197,5 @@
   "zeniq",
   "zilliqa",
   "zksync",
-  "zyx",
-  "polygon_zkevm"
+  "zyx"
 ]
