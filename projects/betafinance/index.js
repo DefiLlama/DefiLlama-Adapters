@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const { get } = require("../helper/http");
+const { getConfig } = require('../helper/cache')
 const { sumTokens } = require("../helper/unwrapLPs");
 
 const config = {
@@ -26,23 +26,11 @@ const config = {
   }
 }
 
-const underlyingABI = {
-  "inputs": [],
-  "name": "underlying",
-  "outputs": [
-    {
-      "internalType": "address",
-      "name": "",
-      "type": "address"
-    }
-  ],
-  "stateMutability": "view",
-  "type": "function"
-}
+const underlyingABI = "address:underlying"
 
 async function getPools(chain) {
   const url = config[chain].poolURL
-  return (await get(url)).pool_infos
+  return (await getConfig('beta-finance/'+chain, url)).pool_infos
     .filter(i => i.kind === 'BetaLendHandler')
     .map(i => i.address)
 }
@@ -61,7 +49,6 @@ function setChainTVL(chain) {
     }
   }
 }
-
 
 module.exports = {
   methodology:

@@ -1,4 +1,3 @@
-const { getBlock } = require('../helper/getBlock')
 const {transformOptimismAddress} = require('../helper/portedTokens')
 const {sumTokensAndLPsSharedOwners} = require('../helper/unwrapLPs')
 
@@ -25,8 +24,7 @@ const owners = [
     "0x574a21fE5ea9666DbCA804C9d69d8Caf21d5322b"  // bathOP
 ]
 
-async function tvl(time, ethBlock, chainBlocks){
-    const block = await getBlock(time, "optimism", chainBlocks, true)
+async function tvl(time, ethBlock, {optimism: block}){
     const balances={}
     const transform = await transformOptimismAddress()
     await sumTokensAndLPsSharedOwners(balances, tokens.map(t=>[t, false]), owners, block, "optimism", transform)

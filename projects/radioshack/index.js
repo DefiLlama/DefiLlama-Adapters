@@ -7,6 +7,9 @@ const chainConfig = {
     radio: '0x7a5d3A9Dcd33cb8D527f7b5F96EB4Fef43d55636',
     shack: '0x5f018e73C185aB23647c82bD039e762813877f0e',
     stakingContracts: ['0x3E747B459981d06F70bE99f6aeDbb4E8f26D0066', '0x37c5888e3f8ce7c98022a1640d931563598edc28'],
+    blacklist: [
+      '0x00C2999c8B2AdF4ABC835cc63209533973718eB1', // STATE - incorrectly priced by gecko
+    ]
   },
   polygon: {
     factory: '0xB581D0A3b7Ea5cDc029260e989f768Ae167Ef39B',
@@ -51,9 +54,9 @@ const chainConfig = {
   },
 }
 
-const moduleExports = Object.keys(chainConfig).reduce((agg, chain) => {
+module.exports = Object.keys(chainConfig).reduce((agg, chain) => {
   const {
-    factory, stakingContracts, radio, shack,
+    factory, stakingContracts, radio, shack, blacklist,
   } = chainConfig[chain]
 
   async function staking(ts, ethBlock, chainBlocks) {
@@ -69,11 +72,10 @@ const moduleExports = Object.keys(chainConfig).reduce((agg, chain) => {
   agg[chain] = { tvl: getUniTVL({
     chain, factory, 
     useDefaultCoreAssets: true,
+    blacklist,
   }), staking }
 
   return agg
 }, {})
 
-module.exports = {
-  ...moduleExports
-}
+module.exports.misrepresentedTokens = true

@@ -5,9 +5,9 @@ async function fetch() {
     let tvl = 0;
     for (const vault in response.data[0]) {
         tvl += response.data[0][vault];
-    };
+    }
     return tvl;
-};
+}
 
 module.exports = {
   kardia:{

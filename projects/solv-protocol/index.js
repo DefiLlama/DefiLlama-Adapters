@@ -1,7 +1,7 @@
 const { sumTokens, } = require('../helper/unwrapLPs')
-const axios = require('axios')
 const { staking } = require('../helper/staking');
 const { getChainTransform } = require("../helper/portedTokens");
+const { getConfig } = require('../helper/cache')
 
 // token list
 const tokenListsApiEndpoint = "https://token-list.solv.finance/vouchers-prod.json"
@@ -44,14 +44,14 @@ async function tvl(timestamp, block, chainBlocks, network, chainId, transform) {
         ])
     }
 
-    await sumTokens(balances, tokenPairs, block, network, transform)
+    await sumTokens(balances, tokenPairs, chainBlocks[network], network, transform)
 
     return balances;
 }
 
 async function tokenList(chainId) {
     let tokens = [];
-    const allTokens = (await axios.get(tokenListsApiEndpoint)).data.tokens;
+    const allTokens = (await getConfig('solv-protocol', tokenListsApiEndpoint)).tokens;
     for (let token of allTokens) {
         if (chainId == token.chainId) {
             if (token.extensions.voucher.underlyingToken && token.extensions.voucher.underlyingToken.symbol != "SOLV") {
@@ -81,4 +81,4 @@ module.exports = {
     arbitrum: {
         tvl: arbitrumTVL
     }
-};
+}

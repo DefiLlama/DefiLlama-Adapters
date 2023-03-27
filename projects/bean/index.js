@@ -1,7 +1,4 @@
-const sdk = require('@defillama/sdk');
-const utils = require('../helper/utils')
 const { sumTokens } = require('../helper/unwrapLPs');
-const { unwrapCrvSimple } = require ("./bean-utils.js");
 
 const BEAN_DIA_ADDR = "0xC1E088fC1323b20BCBee9bd1B9fC9546db5624C5";
 
@@ -17,18 +14,10 @@ const BEAN_CRV_POOLS = [
     { addr: "0xc9C32cd16Bf7eFB85Ff14e0c8603cc90F6F2eE49", numToken: 2 }
 ];
 
-async function staking0(time, block) {
+async function staking(time, block) {
     const balances = {};
     // add balance of siloed Beans
-    await sumTokens(balances, [[NEW_BEAN_TOKEN_ADDR,BEAN_TOKEN_ADDR, BEAN_DIA_ADDR]], block)
-
-    return balances;
-}
-
-async function staking1(time, block) {
-    const balances = {};
-    // add balance of siloed Beans
-    await sumTokens(balances, [[NEW_BEAN_TOKEN_ADDR, BEAN_DIA_ADDR]], block)
+    await sumTokens(balances, [[NEW_BEAN_TOKEN_ADDR,BEAN_TOKEN_ADDR,],[NEW_BEAN_TOKEN_ADDR, BEAN_DIA_ADDR] ], block)
 
     return balances;
 }
@@ -37,40 +26,28 @@ async function pool2(time, block) {
     const balances = {};
 
     // add balance of siloed BEAN:ETH from uniswap pool
-    await sumTokens(balances, [[BEAN_ETH_ADDR, BEAN_DIA_ADDR]], block, undefined, undefined, { resolveLP: true  })
+    const toa = [[BEAN_ETH_ADDR, BEAN_DIA_ADDR]]
 
     // add balances of all siloed curve pools
     // this is the block when SiloV2Facet with getTotalDeposited() was introduced
     if (block >= 14218934) {
-        await Promise.all(BEAN_CRV_POOLS.map(async (pool) => {
-            const lpBalance = (await sdk.api.abi.call({
-                abi: 'erc20:balanceOf',
-                chain: 'ethereum',
-                target: pool.addr,
-                params: BEAN_DIA_ADDR,
-                block: block,
-            })).output;
-            // skip if there's a balance of 0 to avoid errors when curve pool doesn't exist yet in a block number
-            if(lpBalance !== "0") {
-                await unwrapCrvSimple(balances, pool.addr, lpBalance, block, "ethereum", pool.numToken);
-            }
-        }));
+        BEAN_CRV_POOLS.forEach(i => toa.push([i.addr, BEAN_DIA_ADDR]))
     }
 
-    return balances;
+    return sumTokens(balances, toa, block,)
 }
 
 module.exports={
-    timetravel: true,
     doublecounted: true,
     methodology: "Counts all beans and current LPs in the silo.",
     start: 12974077,
     ethereum: {
         tvl: async () => ({}),
         pool2,
-        staking: sdk.util.sumChainTvls([staking0,staking1])
+        staking,
     },    
     hallmarks: [
-        [1650153600, "Governance proposal hack"]
+        [1650153600, "Governance proposal hack"],
+        [1659602715, "Replant"]
     ]
 };

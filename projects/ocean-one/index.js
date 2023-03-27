@@ -1,5 +1,4 @@
-const retry = require('async-retry');
-const axios = require("axios");
+const { get } = require('../helper/http')
 const BigNumber = require("bignumber.js");
 
 const APIs = {
@@ -7,8 +6,8 @@ const APIs = {
 }
 
 async function fetch() {
-  const resp = await retry(async bail => await axios.get(APIs.oceanone))
-  const assets = resp.data.data;
+  const resp = await get(APIs.oceanone)
+  const assets = resp.data;
   let result = new BigNumber(0);
   for (let i = 0; i < assets.length; i++) {
     const asset = assets[i];
@@ -19,5 +18,8 @@ async function fetch() {
 }
 
 module.exports = {
+  mixin: {
+    fetch
+  },
   fetch
 }

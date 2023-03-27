@@ -1,41 +1,15 @@
 const sdk = require('@defillama/sdk')
-const utils = require('../helper/utils')
+const { get } = require('../helper/http')
+const { getConfig } = require('../helper/cache')
+const { sumTokensExport } = require('../helper/sumTokens')
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { transformBalances } = require('../helper/portedTokens')
 
 const ABI = {
-  wantLockedTotal: {
-    "inputs": [],
-    "name": "wantLockedTotal",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  farms: {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "farms",
-    "outputs": [
-      {
-        "internalType": "address payable",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
+  wantLockedTotal: "uint256:wantLockedTotal",
+  farms: "function farms(address) view returns (address)"
 }
+
 const vaults = {
   bsc: '0x89c527764f03BCb7dC469707B23b79C1D7Beb780',
   celo: '0x979cD0826C2bf62703Ef62221a4feA1f23da3777',
@@ -64,19 +38,17 @@ const farms = {
 let tokenData
 
 function chainTvls(chain) {
-  return async (timestamp, ethBlock, chainBlocks) => {
-    const block = chainBlocks[chain]
-    // const block = await getBlock(timestamp, chain, chainBlocks, false)
+  return async (timestamp, ethBlock, {[chain]: block}) => {
     const vault = vaults[chain]
     let targetChain = chain
     if (chain === 'ethereum') targetChain = 'eth'
     if (chain === 'polygon') targetChain = 'matic'
 
     const tokenListURL = 'https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList'
-    tokenData = tokenData || utils.fetchURL(tokenListURL)
-    const { data } = await tokenData
+    tokenData = tokenData || getConfig('orbit-bridge', tokenListURL)
+    const data = await tokenData
 
-    let tokenList = data.origins.filter(x => x.chain === targetChain).map(x => x.address)
+    let tokenList = data.origins.filter(x => x.chain === targetChain && !x.is_nft).map(x => x.address)
     const tokensAndOwners = tokenList.map(i => ([i, vault]))
     const balances = await sumTokens2({ tokensAndOwners, chain, block, blacklistedTokens: [
       // '0x662b67d00a13faf93254714dd601f5ed49ef2f51' // ORC, blacklist project's own token
@@ -97,13 +69,6 @@ function chainTvls(chain) {
       farmBalance.forEach((data, i) => sdk.util.sumSingleBalance(balances, chain + ':' + farms[chain][i], data.output))
     }
     return balances
-  }
-}
-
-async function rippleTvls() {
-  const rippleVault = 'rLcxBUrZESqHnruY4fX7GQthRjDCDSAWia'
-  return {
-    ripple: await utils.getRippleBalance(rippleVault)
   }
 }
 
@@ -130,6 +95,13 @@ module.exports = {
     tvl: chainTvls('polygon')
   },
   ripple: {
-    tvl: rippleTvls
-  }
+    tvl: sumTokensExport({ chain: 'ripple', owner: 'rLcxBUrZESqHnruY4fX7GQthRjDCDSAWia'})
+  },
+  ton: {
+    tvl: async () => {
+      let ton_vault = "0%3A8a140d51b86267680a943c55c780ac4b3a785c2ff6a62020d158c39f6512374f" // Bounceable: EQCKFA1RuGJnaAqUPFXHgKxLOnhcL_amICDRWMOfZRI3T4_h
+      const res = await get(`https://tonapi.io/v1/account/getInfo?account=${ton_vault}`)
+      return await transformBalances('ton', {"0x0000000000000000000000000000000000000000": res.balance})
+    }
+  },
 }

@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const { sumTokensSharedOwners} = require("../helper/unwrapLPs");
-const { pool2s } = require("../helper/pool2");
 const { staking } = require("../helper/staking");
 
 const ctxToken = "0x321c2fe4446c7c963dc41dd58879af648838f98d";
@@ -62,7 +61,6 @@ async function optTvl(timestamp, block, chainBlocks) {
 
 const treasuryAddress = "0xa54074b2cc0e96a43048d4a68472F7F046aC0DA8";
 const treasuryContents = [
-  "0x321C2fE4446C7c963dc41Dd58879AF648838f98D",
   "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
 ]
 const optTreasury = "0x271901c3268D0959bbc9543DE4f073D3708C88F7";
@@ -83,7 +81,7 @@ module.exports = {
   methodology: "TVL includes collateral in vaults",
   ethereum: {
     tvl: ethTvl,
-    pool2: pool2s(ethStakingContracts, ethPool2s),
+    pool2: staking(ethStakingContracts, ethPool2s),
     staking: staking(factory, ctxToken),
     treasury
   },

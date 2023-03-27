@@ -1,7 +1,5 @@
-const BigNumber = require("bignumber.js");
-const curveAbis = require('./config/curve/abis.js')
-const sdk = require("@defillama/sdk");
-const { sumTokens } = require('./helper/unwrapLPs');
+const { staking } = require('./helper/staking');
+const { sumTokens2, } = require('./helper/unwrapLPs');
 
 const wBTC = '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599'
 const y2DAI = { addr: "0xacd43e627e64355f1861cec6d3a6688b31a6f952", dec: 18, getPrice: false, type: 'yv', pfsDec: 18 } ///y2DAI                      yv
@@ -47,159 +45,70 @@ let swaps = [
     'name': 'yv',
     'addr': '0x4571753311e37ddb44faa8fb78a6df9a6e3c6c0b',
     'coins': [y2DAI, y2USDC, y2USDT, Y2TUSD],
-    'abi': curveAbis.abis.abisBTC
   },
   {
     'name': 'hbtc',
     'addr': '0xbf7ccd6c446acfcc5df023043f2167b62e81899b',
     'coins': [yyDAIT, yyDAIB],
-    'abi': curveAbis.abis.abisBTC
   },
   {
     'name': 'crvETH',
     'addr': '0x3820a21c6d99e57fb6a17ab3fbdbe22552af9bb0',
     'coins': [WETH, eCRV, steCRV, ankrCRV],
-    // 'abi': abi
-    'abi': curveAbis.abis.abiNew
   },
   {
     'name': 'fUSD',
     'addr': '0x8470281f5149eb282ce956d8c0e4f2ebbc0c21fc',
     'coins': [usdc, fUSDC, fUSDT, fDAI],
-    'abi': curveAbis.abis.abiNew
   },
   {
     'name': 'yVault v3',
     'addr': '0x668e76F1E74e6391ed3fe947E923878109647879',
     'coins': [yvDAI, yvUSDC, yvUSDT],
-    'abi': curveAbis.abis.abiNew
   },
   {
     'name': 'eth2SNOW',
     'addr': '0x16BEa2e63aDAdE5984298D53A4d4d9c09e278192',
     'coins': [WETH, vETH2, aETHc, CRETH2],
-    'abi': curveAbis.abis.abiNew
   },
   {
     'name': 'btcSnow',
     'addr': '0xeF034645b9035C106acC04cB6460049D3c95F9eE',
     'coins': [ycrvRenWSBTC, fcrvRenWBTC],
-    'abi': curveAbis.abis.abisBTC
   }
 ]
 const pools = [
-  {
-    'name': 'frosty',
-    'addr': '0x7d2c8B58032844F222e2c80219975805DcE1921c',
-    'coins': [snow],
-    'chain': 'ethereum'
-  },
   {
     'name': 'penguin',
     'addr': '0x6852E7399C6cC73256Ca46A4921e1c7b2682D912',
     'coins': [polyDai, polyUsdc, polyUSDT],
     'chain': 'polygon'
-  },
-  {
-    'name': `Olaf's`,
-    'addr': "0x4f3B8FD5617287d1073cd3275c3d040265624575",
-    'coins': [polyUsdc, polySnow],
-    'chain': "polygon",
   }
 ]
 
-async function polygon(ts, _block, { polygon: block }) {
+async function polygon(ts, _block, { polygon: block }, { api }) {
   const poolsPolygon = pools.filter(p => p.chain === "polygon")
   const toa = []
   poolsPolygon.forEach(pool => {
     pool.coins.map(coin => toa.push([coin.addr, pool.addr]))
   })
-  return sumTokens({}, toa, block, 'polygon')
+  return sumTokens2({ api, tokensAndOwners: toa, })
 }
 
-async function ethereum(ts, block) {
-  const tokensForPrice = [WETH.getPrice, wBTC, snow.getPrice]
-
-  const poolsEth = pools.filter(p => p.chain === "ethereum")
+async function ethereum(ts, block, _, { api }) {
   const toa = []
-  poolsEth.forEach(pool => {
-    pool.coins.map(coin => toa.push([coin.addr, pool.addr]))
+  swaps.map(({ addr, coins }) => {
+    coins.forEach(i => toa.push([i.addr, addr]))
   })
-  const balances = await sumTokens({}, toa, block)
-
-  await Promise.all(swaps.map(async item => {
-    await Promise.all(
-      item.coins.map(async (coin, index) => {
-        let { output: balance } = await sdk.api.abi.call({
-          block,
-          params: [index],
-          target: item.addr,
-          abi: item.abi.find(i => i.name === 'balances')
-        })
-        let poolAmount = new BigNumber(balance).div(10 ** coin.dec);
-        balance = BigNumber(balance)
-
-        if (coin.type) {
-          var multiplier = 1;
-          let virtualPrice, virtualPriceObj
-          switch (coin.type) {
-            case 'yv': // getPricePerFullShare
-              virtualPriceObj = await sdk.api.abi.call({
-                block,
-                target: coin.addr,
-                abi: curveAbis.abis.yTokens.find(i => i.name === 'getPricePerFullShare')
-              })
-              virtualPrice = virtualPriceObj.output
-              break;
-            case 'yv2': // pricePerShare
-              virtualPriceObj = await sdk.api.abi.call({
-                block,
-                target: coin.addr,
-                abi: abi.yv2.find(i => i.name === 'pricePerShare')
-              })
-              virtualPrice = virtualPriceObj.output
-              break;
-            case 'ankr': // ratio
-              virtualPriceObj = await sdk.api.abi.call({
-                block,
-                target: coin.addr,
-                abi: abi.ankr.find(i => i.name === 'ratio')
-              })
-              virtualPrice = virtualPriceObj.output
-              break;
-            default:
-              virtualPrice = 1;
-          }
-
-          multiplier = await new BigNumber(virtualPrice)
-            .div(10 ** coin.pfsDec)
-            .toFixed(4);
-
-          poolAmount = poolAmount.multipliedBy(multiplier)
-          balance = balance.multipliedBy(multiplier)
-        }
-        if (coin.getPrice) {
-          if (coin.getPrice === wBTC) balance = poolAmount.multipliedBy(1e8)
-          sdk.util.sumSingleBalance(balances, coin.getPrice, balance.toFixed(0))
-        } else {
-          sdk.util.sumSingleBalance(balances, '0xdac17f958d2ee523a2206206994597c13d831ec7', poolAmount.multipliedBy(1e6).toFixed(0)) // add as usdt
-        }
-      })
-    )
-  }))
-  return balances
+  return sumTokens2({ api, tokensAndOwners: toa, })
 }
 
 module.exports = {
   ethereum: {
-    tvl: ethereum
+    tvl: ethereum,
+    staking: staking('0x7d2c8B58032844F222e2c80219975805DcE1921c', snow.addr)
   },
   polygon: {
     tvl: polygon
   },
-}
-
-const abi = {
-  yv2: [{ "stateMutability": "view", "type": "function", "name": "pricePerShare", "inputs": [], "outputs": [{ "name": "", "type": "uint256" }], "gas": 77734 }],
-  ankr: [{ "inputs": [], "name": "ratio", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }]
 }

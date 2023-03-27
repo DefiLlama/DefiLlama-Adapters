@@ -1,58 +1,46 @@
-const { toUSDTBalances } = require("./helper/balances");
 const { get } = require("./helper/http");
-
-let chains = {};
-
-async function getAll() {
-  let cache = {};
-  cache.minted = await get("https://wanscan.org/api/cc/minted");
-  cache.stake = await get("https://wanscan.org/api/cc/stake");
-  cache.timestamp = Date.now();
-  return cache;
+let ret;
+async function getTvl() {
+  // This is an api which could get wanchain bridge's lockAddress, balance, tvl and price;
+  // The infomation is updated every 1 hour.
+  if (!ret) {
+    ret = await get("https://api.wanpos.xyz/api/tvl");
+  }
+  return ret.data.tvl;
 }
 
 const chainsMap = {
-  wan: "wanchain",
-  ethereum: "ethereum",
+  arbitrum: "arbitrum",
+  astar: "astar",
+  avax: "avalanche",
   bsc: "bsc",
-  avax: "avax",
-  moonriver: "moonriver",
-  polygon: "polygon",
+  bitcoin: "btc",
+  doge: "doge",
+  ethereum: "ethereum",
+  fantom: "fantom",
+  litecoin: "ltc",
   moonbeam: "moonbeam",
+  moonriver: "moonriver",
   okexchain: "okexchain",
-  clv: "clover",
+  optimism: "optimism",
+  polkadot: "polkadot",
+  polygon: "polygon",
+  tron: "tron",
+  wan: "wanchain",
+  xdc: "xdc",
+  ripple: "xrp",
+  // clover: "clover",
+  // telos: "telos",
 };
 
-function getChains() {
-  const chains = [
-    "wan",
-    "ethereum",
-    "bsc",
-    "avax",
-    "moonriver",
-    "polygon",
-    "moonbeam",
-    "okexchain",
-    "clv",
-    "xdc",
-  ];
-
-  return chains;
-}
-
-getChains().map((chain) => {
+Object.keys(chainsMap).map((chain) => {
   module.exports[chain] = {
     tvl: async () => {
-      let ret = await getAll();
-      let minted = ret.minted.filter((v) => v.chain == chainsMap[chain]);
-      let total = 0;
-      minted.map((v) => (total += Number(v.quantity * v.price)));
-      if (chain === "wan") {
-        total += Number(ret.stake);
-      }
-      return toUSDTBalances(total);
+      let ret = await getTvl();
+      return { tether: ret[chainsMap[chain]] }
     },
   };
 });
 
 module.exports.timetravel = false;
+module.exports.misrepresentedTokens = true;

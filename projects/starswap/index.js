@@ -27,55 +27,7 @@ module.exports = {
       const { output: { totalStakedTokens } } = await sdk.api.abi.call({
         target: STAKING_CONTRACT,
         params: 0,
-        abi: {
-          "type": "function",
-          "stateMutability": "view",
-          "outputs": [
-            {
-              "type": "address",
-              "name": "lpToken",
-              "internalType": "contract IERC20"
-            },
-            {
-              "type": "uint256",
-              "name": "allocPoint",
-              "internalType": "uint256"
-            },
-            {
-              "type": "uint256",
-              "name": "lastRewardBlock",
-              "internalType": "uint256"
-            },
-            {
-              "type": "uint256",
-              "name": "accStarPerShare",
-              "internalType": "uint256"
-            },
-            {
-              "type": "uint16",
-              "name": "depositFeeBP",
-              "internalType": "uint16"
-            },
-            {
-              "type": "uint256",
-              "name": "harvestInterval",
-              "internalType": "uint256"
-            },
-            {
-              "type": "uint256",
-              "name": "totalStakedTokens",
-              "internalType": "uint256"
-            }
-          ],
-          "name": "poolInfo",
-          "inputs": [
-            {
-              "type": "uint256",
-              "name": "",
-              "internalType": "uint256"
-            }
-          ]
-        },
+        abi: 'function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accStarPerShare, uint16 depositFeeBP, uint256 harvestInterval, uint256 totalStakedTokens)',
         chain, block,
       })
 

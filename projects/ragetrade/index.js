@@ -1,29 +1,22 @@
-const sdk = require("@defillama/sdk");
-const { transformArbitrumAddress } = require("../helper/portedTokens");
-
-const TRICRYPTO_VAULT = "0x1d42783E7eeacae12EbC315D1D2D0E3C6230a068";
-const USDC = "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8";
-const abi = require('./tricrypto-vault.json');
-
-const arbitrumTvl = async (timestamp, ethBlock, { arbitrum: block }) => {
-  const balances = {};
-  const transform = await transformArbitrumAddress();
-
-  const collateralBalance = (
-    await sdk.api.abi.call({
-      abi,
-      chain: "arbitrum",
-      target: TRICRYPTO_VAULT,
-      params: [],
-      block,
-    })
-  ).output;
-  await sdk.util.sumSingleBalance(balances, transform(USDC), collateralBalance);
-  return balances;
-};
-
 module.exports = {
+  misrepresentedTokens: true,
+  hallmarks: [
+    [1670856656, "Launch GLP Vaults"]
+  ],
   arbitrum: {
-    tvl: arbitrumTvl,
-  },
-};
+    tvl: async (_, _b, _cb, { api }) => {
+      const vaults = [
+        '0x1d42783E7eeacae12EbC315D1D2D0E3C6230a068',  // tricrypto
+        '0xf9305009fba7e381b3337b5fa157936d73c2cf36',  // dnGmxSeniorVault
+        '0x8478ab5064ebac770ddce77e7d31d969205f041e',  // dnGmxJuniorVault
+      ]
+      const bals = await api.multiCall({
+        abi: 'int256:getVaultMarketValue', calls: vaults,
+      })
+
+      return {
+        tether: bals.reduce((a, i) => a + i / 1e6, 0),
+      }
+    }
+  }
+}

@@ -4,6 +4,7 @@ const { transformPolygonAddress } = require('../helper/portedTokens')
 
 
 const treasury = "0x7Dd4f0B986F032A44F913BF92c9e8b7c17D77aD7"
+const daoWallet = "0x65A5076C0BA74e5f3e069995dc3DAB9D197d995c"
 
 async function tvl(time, ethBlock, chainBlocks) {
   const balances = {}
@@ -18,7 +19,7 @@ async function tvl(time, ethBlock, chainBlocks) {
     ["0x9803c7ae526049210a1725f7487af26fe2c24614", true], // KLIMA-BCT
     ["0x5786b267d35F9D011c4750e0B0bA584E1fDbeAD1", true], // KLIMA-USDC
     ["0x64a3b8cA5A7e406A78e660AE10c7563D9153a739", true], // KLIMA-MOSS
-  ], [treasury], chainBlocks.polygon, "polygon", transform)
+  ], [treasury, daoWallet], chainBlocks.polygon, "polygon", transform)
   return balances
 }
 

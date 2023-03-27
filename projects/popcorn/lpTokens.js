@@ -1,15 +1,13 @@
 const sdk = require('@defillama/sdk');
-const { getBlock } = require('../helper/getBlock')
 const { ADDRESSES } = require("./constants");
 const { getChainTransform } = require('../helper/portedTokens')
 
 function getLpTokenTVL(chain = "ethereum") {
-  return async (timestamp, _ethBlock, chainBlocks) => {
+  return async (timestamp, _ethBlock, {[chain]: block}) => {
     const balances = {}
     const usdc = ADDRESSES[chain].usdc
     const pop = ADDRESSES[chain].pop
     const poolTokens = [usdc, pop]
-    const block = await getBlock(timestamp, chain, chainBlocks)
     const chainAddressTransformer = await getChainTransform(chain)
     // For Uni V3 Pool
     const univ3Pool = ADDRESSES[chain].popUsdcUniswapPool;

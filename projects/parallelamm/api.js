@@ -12,14 +12,14 @@ module.exports = {
     tvl: async () => {
       const chain = 'parallel'
       const api = await getAPI(chain)
-      return getAMMData(api)
+      return getAMMData(api, chain)
     }
   },
   heiko: {
     tvl: async () => {
       const chain = 'heiko'
       const api = await getAPI(chain)
-      return getAMMData(api)
+      return getAMMData(api, chain)
     }
   },
 };

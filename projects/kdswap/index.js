@@ -1,6 +1,5 @@
 const { GraphQLClient, gql } = require('graphql-request')
 
-const retry = require('../helper/retry')
 const { fetchLocal, mkMeta } = require("../helper/pact");
 
 const kdsExchangeContract = 'kdlaunch.kdswap-exchange';
@@ -36,7 +35,7 @@ const getPairTokens = async (url) => {
         }
       }
     `;
-  return await retry(async bail => await graphQLClient.request(reserveQuery))
+  return graphQLClient.request(reserveQuery)
 }
 
 const isBasePair = (token) => token.code === 'coin'
@@ -106,7 +105,9 @@ const getPairList = async (url, grouper) => {
             ],
           };
         }
-        throw new Error("Pair reserves fetch failed");
+        return {
+          reserves: [0, 0]
+        }
       })
     );
   } catch (err) {

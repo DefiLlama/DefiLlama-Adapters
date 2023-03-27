@@ -1,48 +1,41 @@
-const { unwrapTroves, unwrapUniswapV3NFTs } = require("../helper/unwrapLPs.js");
+const { sumTokensExport, nullAddress, sumTokens2 } = require("../helper/unwrapLPs.js");
 const { staking } = require("../helper/staking");
-
-const chain = "ethereum";
+const activePoolAbi = "address:activePool"
 
 const eth = {
-  ethMahaSLP: "0xB73160F333b563f0B8a0bcf1a25ac7578A10DE96",
-  ethMahaSLP2: "0xC0897d6Ba893E31F42F658eeAD777AA15B8f824d",
-  ethMahaSushiStaking: "0x20257283d7B8Aa42FC00bcc3567e756De1E7BF5a",
-  maha: "0xb4d930279552397bba2ee473229f89ec245bc365",
-  mahax: "0xbdd8f4daf71c2cb16cce7e54bb81ef3cfcf5aacb",
+  dai: "0x6b175474e89094c44da98b954eedeac495271d0f",
+  maha: "0x745407c86df8db893011912d3ab28e68b62e49b0",
   weth: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-  frax: "0x853d955acef822db058eb8505911ed77f175b99e",
   arth: "0x8CC0F052fff7eaD7f2EdCCcaC895502E884a8a71",
+  crv3: "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490",
+  usdc: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
 
-  arthMahaV3Gauge: "0x48165A4b84e00347C4f9a13b6D0aD8f7aE290bB8",
-  arthUsdcV3Gauge: "0x174327F7B7A624a87bd47b5d7e1899e3562646DF",
-  arthEthV3Gauge: "",
+  mahax: "0xbdd8f4daf71c2cb16cce7e54bb81ef3cfcf5aacb",
 
-  "arth.usd": "0x973F054eDBECD287209c36A2651094fA52F99a71",
+  daiMahaPoolUNIV3: "0x8cb8f052e7337573cd59d33bb67b2acbb65e9876",
+  arthUsdcPoolUNIV3: "0x031a1d307C91fbDE01005Ec2Ebc5Fcb03b6f80aB",
+  arthMahaPoolUNIV3: "0x8a039FB7503B914A9cb2a004010706ca192377Bc",
+  arthWethPoolUNIV3: "0xE7cDba5e9b0D5E044AaB795cd3D659aAc8dB869B",
+  wethMahaPoolUNIV3: "0xb28ddf1ee8ee014eafbecd8de979ac8d297931c7",
+
+  arthUsdcPoolCRV: "0xb4018cb02e264c3fcfe0f21a1f5cfbcaaba9f61f",
 };
 
 Object.keys(eth).forEach((k) => (eth[k] = eth[k].toLowerCase()));
 
-async function pool2(_, block) {
-  const balances = {};
-
-  // uniswap v3 gauge staking
-  const v3poolStakers = [eth.arthMahaV3Gauge, eth.arthUsdcV3Gauge];
-  await unwrapUniswapV3NFTs({ balances, owners: v3poolStakers, chain, block });
-
-  return balances;
-}
-
-async function tvl(_, block) {
-  const balances = {};
+async function tvl(_, block, _1,  { api }) {
   const troves = [
-    "0xd3761e54826837b8bbd6ef0a278d5b647b807583", // ETH Trove
+    "0x8b1da95724b1e376ae49fdb67afe33fe41093af5", // ETH Trove
   ];
-  await unwrapTroves({ balances, chain, block, troves });
-  return balances;
+  const pools = await api.multiCall({  abi: activePoolAbi, calls: troves}) 
+
+  return sumTokens2({ owners: pools, tokens: [ nullAddress ]})
 }
 
 module.exports = {
   staking: staking(eth.mahax, eth.maha),
-  pool2,
+  pool2: sumTokensExport({ tokensAndOwners: [
+    ['0xdf34bad1D3B16c8F28c9Cf95f15001949243A038', '0x9ee8110c0aacb7f9147252d7a2d95a5ff52f8496'], 
+  ]}),
   tvl,
 };

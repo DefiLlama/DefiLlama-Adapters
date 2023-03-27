@@ -1,16 +1,4 @@
 {
-  "wantAddress": {
-    "inputs": [],
-    "name": "wantAddress",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "wantLockedTotal": {
-    "inputs": [],
-    "name": "wantLockedTotal",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  }
+  "wantAddress": "address:wantAddress",
+  "wantLockedTotal": "uint256:wantLockedTotal"
 }

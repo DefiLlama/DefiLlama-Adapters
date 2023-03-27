@@ -35,8 +35,6 @@ module.exports = {
     tvl: getCalculationMethod("polygon")
   },
   hallmarks: [
-    [1634842800, "BCT launch"],
-    [1644330800, "NCT launch"],
-    [1660147200, "Celo launch"],
+    [1653429600, "Verra prohibits tokenization"],
   ]
 };

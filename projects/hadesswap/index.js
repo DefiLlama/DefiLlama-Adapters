@@ -1,7 +1,7 @@
 const { getUniTVL } = require('../helper/unknownTokens')
 
 module.exports = {
-    timetravel: true,
+    timetravel: false,
     misrepresentedTokens: true,
     polis: {
         tvl: getUniTVL({

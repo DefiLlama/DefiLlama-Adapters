@@ -24,6 +24,7 @@ function fetchChain(chainId, staking) {
 }
 
 const chains = {
+  ethereum: 1,
   optimism: 10,
   cronos: 25,
   bsc: 56,
@@ -34,6 +35,8 @@ const chains = {
   metis: 1088,
   moonbeam: 1284,
   moonriver: 1285,
+  kava: 2222,
+  canto: 7700,
   arbitrum: 42161,
   celo: 42220,
   oasis: 42262,

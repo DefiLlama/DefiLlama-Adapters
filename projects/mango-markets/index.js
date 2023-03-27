@@ -57,6 +57,9 @@ async function tvl(timestamp) {
 module.exports = {
     timetravel: false,
     solana: {
-        tvl,
+        tvl: () => ({}),
     },
+    hallmarks:[
+        [1665521360, "Oracle Price Manipulation"],
+      ],
 }

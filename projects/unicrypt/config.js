@@ -83,17 +83,23 @@ const config = {
     factory: '0x553990f2cba90272390f62c5bdb1681ffc899675',
     startBlock: 5281114
   },
+  babydogeswap: {
+    chain: 'bsc',
+    locker: '0xb89a15a4f3518c14c21be04b55546162b0cb39f0',
+    factory: '0x4693b62e5fc9c0a45f89d62e6300a03c85f43137',
+    startBlock: 22263319
+  },
   quickswap: {
     chain: 'polygon',
     locker: '0xadb2437e6f65682b85f814fbc12fec0508a7b1d0',
     factory: '0x5757371414417b8c6caad45baef941abc7d3ab32',
-    startingBlock: 11936505
+    startBlock: 11936505
   },
   traderjoe: {
     chain: 'avax',
     locker: '0xa9f6aefa5d56db1205f36c34e6482a6d4979b3bb',
     factory: '0x9ad6c38be94206ca50bb0d90783181662f0cfa10',
-    startingBlock: 11933326
+    startBlock: 11933326
   },
   honeyswap: {
     chain: 'xdai',
@@ -171,6 +177,14 @@ const bscContractData = [
     getLockedTokenAtIndexABI: getLockedTokenAtIndex,
     pool2: [protocolPairs.uncx_BNB],
     factory: config.biswap.factory
+  },
+  { // BabyDogeSwap  
+    chain: config.babydogeswap.chain,
+    contract: config.babydogeswap.locker,
+    getNumLockedTokensABI: getNumLockedTokens,
+    getLockedTokenAtIndexABI: getLockedTokenAtIndex,
+    pool2: [protocolPairs.uncx_BNB],
+    factory: config.babydogeswap.factory
   }
 ]
 

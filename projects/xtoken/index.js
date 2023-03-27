@@ -184,7 +184,7 @@ async function tvl(timestamp, block) {
   Object.keys(balances).forEach(key => balances[key] = BigNumber(balances[key]).toFixed(0))
 
   return terminal.getData("mainnet", block, balances);
-};
+}
 
 async function fetchOptimism() {
   return terminal.getData("optimism");

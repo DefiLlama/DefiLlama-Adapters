@@ -1,6 +1,5 @@
-const {uniTvlExport} = require("../helper/calculateUniTvl");
-const {sumTokens} = require("../helper/unwrapLPs");
-const { transformBscAddress } = require("../helper/portedTokens");
+const {getUniTVL} = require("../helper/unknownTokens");
+const { stakings } = require("../helper/staking");
 
 const factory = "0x858e3312ed3a876947ea49d572a7c42de08af7ee";
 
@@ -34,16 +33,10 @@ const stakingPools = [
   "0x109eAA8b5Ea469fb5aCe0647A93695D8DCD5e836",
 ]
 
-async function staking(time, ethBlock, chainBlocks){
-  const balances = {}
-  await sumTokens(balances, stakingPools.map(pool=>[BSW, pool]), chainBlocks.bsc, "bsc", addr=>`bsc:${addr}`)
-  return balances
-}
-
 module.exports = {
   bsc: {
-    staking,
-    tvl: uniTvlExport(factory, "bsc", transformBscAddress)
+    staking: stakings(stakingPools, BSW, 'bsc'),
+    tvl: getUniTVL({ chain: 'bsc', factory, })
   },
   hallmarks:[
     [1651881600, "UST depeg"],

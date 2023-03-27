@@ -1,10 +1,8 @@
 const sdk = require('@defillama/sdk');
-const { getBlock } = require('../helper/getBlock');
 const abi = require('./abi.json')
 
 function getBankTvl(bankAddress, chain){
-    return async (time, ethBlock, chainBlocks)=>{
-        const block = (await getBlock(time, chain, chainBlocks));
+    return async (time, ethBlock, {[chain]: block})=>{
         const invested = await sdk.api.abi.call({target: bankAddress, block, chain, abi:abi.virtualBalance})
         const underlying = await sdk.api.abi.call({target: bankAddress, block, chain, abi:abi.underlying})
         return {

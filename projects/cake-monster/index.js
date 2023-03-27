@@ -22,7 +22,7 @@ async function staking(timestamp, block, chainBlocks) {
     .minus(new BigNumber(1000000000).times(10 ** 18))
     .toFixed();
 
-  await sdk.util.sumSingleBalance(
+  sdk.util.sumSingleBalance(
     balances,
     transform(CM_TOKEN_CONTRACT),
     stakingBalanceCorrected

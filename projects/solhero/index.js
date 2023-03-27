@@ -2,6 +2,7 @@ const utils = require('../helper/utils')
 const { getConnection } = require('../helper/solana')
 const BigNumber = require('bignumber.js')
 const { PublicKey } = require('@solana/web3.js')
+const sdk = require('@defillama/sdk')
 
 const poolInfoKey = new PublicKey('CsMSJ2wJAsQBNZU9LuL3FAx2Do9ndY4Ae15JAXhFMc1p')
 
@@ -50,7 +51,6 @@ function isLp(token) {
 var priceCache = new Map()
 
 async function getTokenSupplyUI(mintPubkey) {
-  //console.log('getTokenSupplyUi(' + mintPubkey.toString() + ')')
   const connection = getConnection()
   var supply = new BigNumber(0)
 
@@ -62,7 +62,6 @@ async function getTokenSupplyUI(mintPubkey) {
 }
 
 async function getLpPrice(tokenPubkey) {
-  //console.log('getLpPrice(' + tokenPubkey.toString() + ')')
 
   if (priceCache[tokenPubkey.toString()])
     return priceCache[tokenPubkey.toString()]
@@ -91,16 +90,14 @@ async function getLpPrice(tokenPubkey) {
 
     priceCache[tokenPubkey.toString()] = price
   } else {
-    console.log(res)
+    sdk.log(res)
   }
 
-  //console.log('lp ' + tokenAddress + '\' price is ' + price.toFixed(3))
   return price
 }
 
 
 async function getTokenPrice(tokenPubkey) {
-  //console.log('getTokenPrice(' + tokenPubkey.toString() + ')')
 
   if (priceCache[tokenPubkey.toString()])
     return priceCache[tokenPubkey.toString()]
@@ -120,7 +117,6 @@ async function getTokenPrice(tokenPubkey) {
 }
 
 async function getHeroPrice() {
-  //console.log('getHeroPrice')
 
   if (priceCache['Hero6s7zJXsw9hfCXLVR5stLqgCok3E7CCkpQEoLAk2g'])
     return priceCache['Hero6s7zJXsw9hfCXLVR5stLqgCok3E7CCkpQEoLAk2g']

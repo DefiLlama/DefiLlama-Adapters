@@ -1,6 +1,6 @@
-const { get } = require("../helper/http");
 const { chainExports } = require("../helper/exports");
 const { sumTokens2 } = require("../helper/unwrapLPs");
+const { getConfig } = require('../helper/cache')
 
 // Includes some chains that are not yet live
 const chainNameToChainId = {
@@ -30,7 +30,7 @@ let getContractsPromise
 // Taken from @connext/nxtp-contracts
 async function getContracts() {
   if (!getContractsPromise)
-    getContractsPromise = get('https://raw.githubusercontent.com/connext/nxtp/v0.1.40/packages/contracts/deployments.json')
+    getContractsPromise = getConfig('connect/contracts', 'https://raw.githubusercontent.com/connext/nxtp/v0.1.40/packages/contracts/deployments.json')
   return getContractsPromise
 }
 
@@ -50,7 +50,7 @@ let getAssetsPromise
 async function getAssetIds(chainId) {
   const url = "https://raw.githubusercontent.com/connext/chaindata/main/crossChain.json"
   if (!getAssetsPromise)
-    getAssetsPromise = get(url)
+    getAssetsPromise = getConfig('connect/assets/'+chainId, url)
   const data = await getAssetsPromise
   const chainData = data.find(item => item.chainId === chainId) || {}
   return Object.keys(chainData.assetId || {}).map(id => id.toLowerCase())

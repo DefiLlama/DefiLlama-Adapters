@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { compoundExports } = require("../helper/compound");
-const {calculateUsdUniTvl} = require('../helper/getUsdUniTvl.js')
+const { getUniTVL } = require('../helper/unknownTokens')
 
 const factory = '0x3c4063B964B1b3bF229315fCc4df61a694B0aE84'
 const metis = '0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000'
@@ -49,17 +49,12 @@ const { tvl: agoraFarmTvl, borrowed: agoraFarmBorrowed } = compoundExports(
   undefined,
 );
 
-const chainTvl = calculateUsdUniTvl(
-  factory,
-  "metis",
-  metis,
-  whitelist,
-  "metis-token"
-);
-
+const chainTvl = getUniTVL({ factory, chain: 'metis', useDefaultCoreAssets: true, })
 
 module.exports = {
-  timetravel: true,
+  hallmarks: [
+    [1649376000, "STARS collateral Exploit"]
+  ],
   incentivized: true,
   misrepresentedTokens: true,
   methodology: `As in Compound Finance, TVL counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are counted as "Borrowed" TVL and can be toggled towards the regular TVL.`,

@@ -1,14 +1,14 @@
 import { gql } from "graphql-request";
 import { getPagedGql } from "../utils/gql";
 import BigNumber from "bignumber.js";
-import { Liq } from "../utils/binResults";
+import { Liq } from "../utils/types";
 
 const subgraphUrl = "https://api.thegraph.com/subgraphs/name/euler-xyz/euler-mainnet";
 
 const accountsQuery = gql`
-  query accounts($lastId: ID) {
+  query accounts($lastId: ID, $pageSize: Int) {
     # subgraph bug - balances_: {amount_not: "0"} filter doesn't work
-    accounts(first: 1000, where: { id_gt: $lastId }) {
+    accounts(first: $pageSize, where: { id_gt: $lastId }) {
       id
       # if account_id != topLevelAccount_id then it's a sub-account, needs to be remapped for "owner" in the end
       topLevelAccount {

@@ -68,7 +68,7 @@ const poolTvl = async (chain, poolAddress, block, addressTransformer) => {
 
 const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
   let block = chainBlocks['polygon'];
-  const addressTransformer = await transformAddress('polygon');
+  const addressTransformer = transformAddress('polygon');
   const tvl = {};
 
   for (let address of Object.values(Contracts.polygon.pools)) {
@@ -89,7 +89,7 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
 
 const avaxTvl = async (timestamp, ethBlock, chainBlocks) => {
   let tvl = {};
-  const addressTransformer = await transformAddress('avax');
+  const addressTransformer = transformAddress('avax');
   for (let address of Object.values(Contracts.avax.pools)) {
     const balances = await poolTvl(
       'avax',
@@ -107,7 +107,7 @@ const avaxTvl = async (timestamp, ethBlock, chainBlocks) => {
 };
 
 const fantomTvl = async (timestamp, ethBlock, chainBlocks) => {
-  const addressTransformer = await transformAddress('fantom');
+  const addressTransformer = transformAddress('fantom');
   const block = chainBlocks['fantom'];
 
   let tvl = {};
@@ -145,4 +145,7 @@ module.exports = {
     tvl:  sdk.util.sumChainTvls([fantomTvl, fantomLending]),
     borrowed: fantomBorrowed
   },
+  hallmarks: [
+    [1652270400,"Re-entrancy Exploit"]
+  ],
 };

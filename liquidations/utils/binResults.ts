@@ -1,17 +1,7 @@
 import axios from "axios";
+import { Liq } from "./types";
 
 export const TOTAL_BINS = 20;
-
-export interface Liq {
-  owner: string;
-  liqPrice: number;
-  collateral: string;
-  collateralAmount: string;
-  extra?: {
-    displayName?: string;
-    url: string;
-  };
-}
 
 export interface Bins {
   [token: string]: {
@@ -26,13 +16,14 @@ export interface Bins {
 export async function binResults(liqs: Liq[]) {
   const tokens = new Set<string>();
   liqs.map((liq) => tokens.add(liq.collateral.toLowerCase()));
-  const prices = (
-    await axios.post("https://coins.llama.fi/prices", {
-      coins: Array.from(tokens),
-    })
-  ).data.coins as {
+  const prices = (await axios.get("https://coins.llama.fi/prices/current/" + Array.from(tokens).join(","))).data
+    .coins as {
     [address: string]: { decimals: number; price: number; symbol: string; timestamp: number };
   };
+  // coins api doesn't support decimals for coingecko keys
+  if (prices["coingecko:tezos"]) {
+    prices["coingecko:tezos"].decimals = 6;
+  }
   console.log(prices);
   const bins = Object.values(prices).reduce(
     (all, token) => ({

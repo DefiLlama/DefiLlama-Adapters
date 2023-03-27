@@ -1,6 +1,5 @@
-const sdk = require('@defillama/sdk');
 const { GraphQLClient, gql } = require("graphql-request");
-
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const configV1 =  {
   polygon: {
@@ -24,7 +23,9 @@ function tvlFunctionGetterV1(chain) {
   
     var graphQLClient = new GraphQLClient(configV1[chain]['theGraph']['endpoint']);
 
-    const block = configV1[chain]['startBlock'] + configV1[chain]['blockDelay'] > configV1[chain]['startBlock'] ? 
+    let block = chainBlocks[chain]
+    if (block)
+      block = configV1[chain]['startBlock'] + configV1[chain]['blockDelay'] > chainBlocks[chain]['startBlock'] ? 
       configV1[chain]['startBlock'] : chainBlocks[chain] - configV1[chain]['blockDelay'] // delayed to allow subgraph to update
     
     const fetchAllPools = gql`query ($block: Int) { ${configV1[chain]['theGraph']['query']} }`;
@@ -32,37 +33,9 @@ function tvlFunctionGetterV1(chain) {
       block,
     });
 
-    let poolCalls = [];
-    results.pools.forEach((pool) => {
-      let poolTokens = pool.tokens;
-      let poolAddress = pool.id;
-      poolTokens.forEach((token) => {
-        poolCalls.push({
-          target: token.address,
-          params: poolAddress,
-        });
-      })
-    });
-
-    let poolBalances = await sdk.api.abi.multiCall({
-      block,
-      calls: poolCalls,
-      abi: 'erc20:balanceOf',
-      chain
-    });
-
-    const balances = {}
-    sdk.util.sumMultiBalanceOf(
-      balances, 
-      poolBalances, 
-      true, 
-      addr => `${chain}:${addr}`
-    )
-
-    return balances
-
-  }
-
+    const toa = results.pools.map(i => i.tokens.map(j => ([j.address, i.id]))).flat()
+    return sumTokens2({ chain, block, tokensAndOwners: toa, })
+    }
 }
 
 module.exports = {

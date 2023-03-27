@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const { staking } = require("../helper/staking");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 
@@ -103,7 +102,6 @@ async function cronosTvl(timestamp, chainBlocks) {
 module.exports = {
   misrepresentedTokens: true,
   cronos: {
-    treasury: staking(treasuryContract, DNA, "cronos"),
     staking: Staking,
     pool2: pool2,
     tvl: cronosTvl,

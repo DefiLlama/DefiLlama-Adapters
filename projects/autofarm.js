@@ -25,3 +25,7 @@ module.exports=fetchChainExports(chainTvl, [
   'oasis',     'wan',
   'kcc',       'evmos'
 ])
+module.exports.hallmarks=[
+  [1618966800, "Venus incident"],
+  [1634778000, "Emissions end"],
+]

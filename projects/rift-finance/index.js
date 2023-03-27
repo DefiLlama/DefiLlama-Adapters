@@ -1,17 +1,22 @@
 const sdk = require("@defillama/sdk");
 
-const { getBlock } = require("../helper/getBlock");
+const { getBlock } = require("../helper/http");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { getChainTransform } = require("../helper/portedTokens");
 const { request, gql } = require("graphql-request");
 
 const NETWORKS = require("./networks");
 
-const riftVaultAbi = require("./abis/riftVaultAbi");
-const masterChefAbi = require("./abis/masterChefAbi");
+const riftVaultAbi = {
+  rewarder: "address:rewarder",
+  pid: "uint256:pid",
+};
+const masterChefAbi = {
+  userInfo: "function userInfo(uint256 pid, address user) view returns (tuple(uint256 amount, uint256 rewardDebt))",
+}
 
 function getAbi(obj, fnName) {
-  return obj.find((x) => x.name === fnName);
+  return obj[fnName];
 }
 
 function addressToId(address) {
@@ -49,7 +54,8 @@ async function getChainBalances(timestamp, chainBlocks, chain) {
     coreAddr: addressToId(coreAddress),
   });
 
-  for (const vault of queryResult.core.vaults) {
+  await Promise.all(queryResult.core.vaults.map(async vault => {
+
     // Get balances.
     const token0Bal = (
       await sdk.api.abi.call({
@@ -135,7 +141,7 @@ async function getChainBalances(timestamp, chainBlocks, chain) {
         transform
       );
     }
-  }
+  }))
 
   return balances;
 }

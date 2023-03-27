@@ -1,4 +1,3 @@
-const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
 const { getUniTVL } = require('../helper/unknownTokens')
 
 const FLEXUSD = "0x7b2B3C5308ab5b2a1d9a94d20D35CCDf61e05b72";

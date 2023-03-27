@@ -1,7 +1,7 @@
 import { gql } from "graphql-request";
 import { getPagedGql } from "../utils/gql";
 import BigNumber from "bignumber.js";
-import { Liq } from "../utils/binResults";
+import { Liq } from "../utils/types";
 import {
   Account,
   borrowBalanceUnderlying,
@@ -15,8 +15,8 @@ import {
 const subgraphUrl = "https://api.thegraph.com/subgraphs/name/graphprotocol/compound-v2";
 
 const accountsQuery = gql`
-  query accounts($lastId: ID) {
-    accounts(first: 1000, where: { hasBorrowed: true, id_gt: $lastId }) {
+  query accounts($lastId: ID, $pageSize: Int) {
+    accounts(first: $pageSize, where: { hasBorrowed: true, id_gt: $lastId }) {
       id
       tokens {
         id

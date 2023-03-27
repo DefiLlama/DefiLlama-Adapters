@@ -3,7 +3,7 @@ const http = require('../helper/http');
 const BigNumber = require("bignumber.js");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { getChainTransform } = require("../helper/portedTokens");
-const getPairFactory = require('../helper/abis/getPair.json') 
+const getPairFactory = 'function getPair(address, address) view returns (address)'
 
 const zeroAddress = '0x0000000000000000000000000000000000000000'
 const BRIDGE_CONTROLLER = '0x0Dd4A86077dC53D5e4eAE6332CB3C5576Da51281';

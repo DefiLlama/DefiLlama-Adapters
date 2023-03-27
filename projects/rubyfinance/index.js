@@ -69,7 +69,7 @@ async function calcKava(rewardPool, block, chain) {
     })
   ).output;
 
-  await sdk.util.sumSingleBalance(
+  sdk.util.sumSingleBalance(
     balances,
     `kava:${wkavaAddress}`,
     wkavaRewardBalance

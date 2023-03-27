@@ -1,32 +1,14 @@
 const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
-const { get } = require("../helper/http");
+const { getConfig } = require("../helper/cache");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const ANGLE = "0x31429d1856ad1377a8a0079410b297e1a9e214c2";
 const veANGLE = "0x0C462Dbb9EC8cD1630f1728B2CFD2769d09f0dd5";
 
 const poolManagers_abi = {
-  getTotalAsset: {
-    inputs: [],
-    name: "getTotalAsset",
-    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  token: {
-    inputs: [],
-    name: "token",
-    outputs: [
-      {
-        internalType: "contract IERC20",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
+  getTotalAsset: "uint256:getTotalAsset",
+  token: "address:token",
 };
 
 // get Borrowing module vault managers list
@@ -37,10 +19,12 @@ async function getVaultManagersFromAPI(chain) {
     optimism: 10,
     arbitrum: 42161,
     fantom: 250,
+    avax: 43114,
   };
   let chainId = chainIds[chain];
   let calls = [];
-  let result = await get(
+  let result = await getConfig(
+    "angle/" + chain,
     "https://api.angle.money/v1/vaultManagers?chainId=" + chainId
   );
 
@@ -119,8 +103,10 @@ module.exports = {
   methodology: `TVL is retrieved on-chain by querying the total assets managed by the Core module, and the balances of the vaultManagers of the Borrowing module.`,
 };
 
-["ethereum", "polygon", "optimism", "arbitrum"].forEach((chain) => {
-  if (!module.exports[chain]) module.exports[chain] = {};
-  module.exports[chain].tvl = async (_, _b, { [chain]: block }) =>
-    tvl(chain, block);
-});
+["ethereum", "polygon", "optimism", "arbitrum", "avax"].forEach(
+  (chain) => {
+    if (!module.exports[chain]) module.exports[chain] = {};
+    module.exports[chain].tvl = async (_, _b, { [chain]: block }) =>
+      tvl(chain, block);
+  }
+);

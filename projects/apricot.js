@@ -26,7 +26,6 @@ async function tvl() {
   const balances = {
     tether: orcaPoolsTVL
   }
-  console.log(balances)
   const owner = '7Ne6h2w3LpTNTa7CNYcUs7UkjeJT3oW7jcrXWfVScTXW'
   const tokens = [
     'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
