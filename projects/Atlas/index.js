@@ -1,6 +1,4 @@
-const {
-	fetchURL
-} = require('../helper/utils')
+const {fetchURL} = require('../helper/utils')
 
 
 async function tvl() {
