@@ -30,7 +30,7 @@ async function getStats() {
     const activeLoansTotal = activeLoans.map(loan => loan.account.loanTerms.principal).reduce((a, b) => a.add(b));
     const openOffersTotal = openOffers.map(loan => loan.account.loanTerms.principal).reduce((a, b) => a.add(b));
     const activeLoansNFTs = activeLoans.map(loan => loan.account.collectionConfig.toBase58()).reduce((a, b) => a + parseFloat(collectionsById[b]?.floor), 0);
-    const tvl = activeLoansTotal.add(openOffersTotal).toNumber() + activeLoansNFTs * 1e9;
+    const tvl = openOffersTotal.toNumber() + activeLoansNFTs * 1e9;
     const borrowed = activeLoansTotal.toNumber();
     return { tvl, borrowed }
   }
@@ -46,7 +46,7 @@ const borrowed = async () => {
 
 module.exports = {
   timetravel: false,
-  methodology: 'TVL is the sum of floor prices of NFTs locked as well as tokens locked in active & open offers.',
+  methodology: 'TVL is the sum of floor prices of locked NFTs and tokens in open offers.',
   solana: {
     tvl,
     borrowed,
