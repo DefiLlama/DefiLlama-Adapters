@@ -2,6 +2,7 @@ const sdk = require('@defillama/sdk');
 const { default: BigNumber } = require('bignumber.js');
 const abi = require('./abis/aave.json');
 const { getChainTransform, getFixBalancesSync, } = require('../helper/portedTokens')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 async function getV2Reserves(block, addressesProviderRegistry, chain, dataHelperAddress, abis = {}) {
   let validProtocolDataHelpers
@@ -127,6 +128,7 @@ module.exports = {
   getTvl,
   aaveExports,
   getBorrowed,
+  aaveV2Export,
 }
 
 const cachedData = {}
@@ -176,4 +178,80 @@ const oracleAbis = {
   BASE_CURRENCY: "address:BASE_CURRENCY",
   BASE_CURRENCY_UNIT: "uint256:BASE_CURRENCY_UNIT",
   getAssetsPrices: "function getAssetsPrices(address[] assets) view returns (uint256[])",
+}
+
+function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyUnit, } = {}) {
+
+  async function tvl(_, _b, _c, { api }) {
+    const data = await getReservesData(api)
+    const tokensAndOwners = data.map(i => ([i.underlying, i.aTokenAddress]))
+    if (!useOracle)
+      return sumTokens2({ tokensAndOwners, api })
+    const balances = {}
+    const res = await api.multiCall({ abi: 'erc20:balanceOf', calls: tokensAndOwners.map(i => ({ target: i[0], params: i[1] })) })
+    res.forEach((v, i) => {
+      sdk.util.sumSingleBalance(balances, data[i].currency, v * data[i].price, api.chain)
+    })
+    return balances
+  }
+
+  async function borrowed(_, _b, _c, { api }) {
+    const balances = {}
+    const data = await getReservesData(api)
+    const supplyVariable = await api.multiCall({
+      abi: 'erc20:totalSupply',
+      calls: data.map(i => i.variableDebtTokenAddress),
+    })
+    const supplyStable = await api.multiCall({
+      abi: 'erc20:totalSupply',
+      calls: data.map(i => i.stableDebtTokenAddress),
+    })
+    data.forEach((i, idx) => {
+      let value = +supplyVariable[idx] + +supplyStable[idx]
+      if (useOracle) {
+        sdk.util.sumSingleBalance(balances, i.currency, value * i.price, api.chain)
+      } else {
+        sdk.util.sumSingleBalance(balances, i.underlying, value, api.chain)
+      }
+    })
+    return balances
+  }
+
+  async function getReservesData(api) {
+    const tokens = await api.call({ abi: abiv2.getReservesList, target: registry })
+    const data = await api.multiCall({ abi: abiv2.getReserveData, calls: tokens, target: registry, })
+    data.forEach((v, i) => v.underlying = tokens[i])
+    if (useOracle) {
+      let currency = baseCurrency
+      let unit = baseCurrencyUnit
+
+      const addressProvider = await api.call({ abi: abiv2.getAddressesProvider, target: registry })
+      const oracle = await api.call({ abi: abiv2.getPriceOracle, target: addressProvider })
+
+      if (!currency) currency = await api.call({ abi: abiv2.BASE_CURRENCY, target: oracle })
+      if (!unit) unit = await api.call({ abi: abiv2.BASE_CURRENCY_UNIT, target: oracle })
+
+      const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: tokens })
+      // const currencyDecimal = await api.call({ abi: 'erc20:decimals', target: currency })
+      const currencyDecimal = 18
+      const prices = await api.call({ abi: abiv2.getAssetsPrices, target: oracle, params: [tokens] })
+      prices.forEach((v, i) => {
+        data[i].price = (v / unit )/ (10 ** (decimals[i] - currencyDecimal))
+        data[i].currency = currency
+      })
+    }
+    return data
+  }
+
+  const abiv2 = {
+    getReservesList: "address[]:getReservesList",
+    getAddressesProvider: "address:getAddressesProvider",
+    BASE_CURRENCY: "address:BASE_CURRENCY",
+    BASE_CURRENCY_UNIT: "uint256:BASE_CURRENCY_UNIT",
+    getPriceOracle: "address:getPriceOracle",
+    getAssetsPrices: "function getAssetsPrices(address[]) view returns (uint256[])",
+    getReserveData: "function getReserveData(address asset) view returns (tuple(tuple(uint256 data) configuration, uint128 liquidityIndex, uint128 variableBorrowIndex, uint128 currentLiquidityRate, uint128 currentVariableBorrowRate, uint128 currentStableBorrowRate, uint40 lastUpdateTimestamp, address aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress, address interestRateStrategyAddress, uint8 id))",
+  }
+
+  return { tvl, borrowed, }
 }

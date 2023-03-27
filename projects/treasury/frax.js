@@ -11,8 +11,14 @@ module.exports = treasuryExports({
       nullAddress,
       "0x5aFE3855358E112B5647B952709E6165e1c1eEEe", // SAFE
     ],
-    owners: [treasury],
-    ownTokenOwners: [treasury],
+    owners: [
+      treasury, 
+      '0x63278bF9AcdFC9fA65CFa2940b89A34ADfbCb4A1',
+      '0x8D4392F55bC76A046E443eb3bab99887F4366BB0',
+      '0xa95f86fE0409030136D6b82491822B3D70F890b3',
+      '0x9AA7Db8E488eE3ffCC9CdFD4f2EaECC8ABeDCB48',
+      '0x874a873e4891fB760EdFDae0D26cA2c00922C404',
+    ],
     ownTokens: [fpis, fxs, frax],
   },
 });

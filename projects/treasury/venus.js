@@ -19,7 +19,6 @@ module.exports = treasuryExports({
 
      ],
     owners: [venusTreasury],
-    ownTokenOwners: [venusTreasury],
     ownTokens: [XVS, venusBTC, VAI],
   },
 })

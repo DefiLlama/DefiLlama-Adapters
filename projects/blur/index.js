@@ -18,6 +18,9 @@ async function ethtvl(timestamp, block) {
 }
 
 module.exports = {
+   hallmarks: [
+    [1676376000,"BLUR token launch"]
+  ],
     timetravel: true,
     misrepresentedTokens: false,
     methodology: 'TVL counts ETH tokens in the Blur Bidding address:0x0000000000A39bb272e79075ade125fd351887Ac',
