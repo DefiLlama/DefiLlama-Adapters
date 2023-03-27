@@ -75,6 +75,7 @@ async function sumTokens(options) {
 
   if(helper) {
     switch(chain) {
+      case 'cardano':
       case 'solana': return helper.sumTokens2(options)
       case 'eos': return helper.get_account_tvl(owners, tokens, 'eos')
       case 'tezos': options.includeTezos = true; break;
