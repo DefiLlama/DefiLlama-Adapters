@@ -5,6 +5,10 @@ const oMATIC = "0xE554E874c9c60E45F1Debd479389C76230ae25A8";
 const matic = "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270";
 const chain = "polygon";
 
+//const master0vixzk = "0x8849f1a0cB6b5D6076aB150546EddEe193754F1C"
+//const chain0v = "Polygon zkEVM"
+
 module.exports = {
   polygon: compoundExports(master0vix, chain, oMATIC, matic),
+  //polygon_zkevm: compoundExports(master0vixzk, chain0v)
 };
