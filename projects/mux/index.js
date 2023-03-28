@@ -3,10 +3,11 @@ const sdk = require("@defillama/sdk");
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const readerContract = {
-  arbitrum: '0x6e29c4e8095B2885B8d30b17790924F33EcD7b33',
-  bsc: '0xeAb5b06a1ea173674601dD54C612542b563beca1',
-  avax: '0x5996D4545EE59D96cb1FE8661a028Bef0f4744B0',
-  fantom: '0x29F4dC996a0219838AfeCF868362E4df28A70a7b',
+  arbitrum: '0x437CEa956B415e97517020490205c07f4a845168',
+  bsc: '0x2981Bb8F9c7f7C5b9d8CA5e41C0D9cBbd89C7489',
+  avax: '0xB33e3dDcE77b7679fA92AF77863Ae439C44c8519',
+  fantom: '0xfb0DCDC30BF892Ec981255e7133AEcb8ea642b76',
+  optimism: '0x572E9467b2585c3Ab6D9CbEEED9619Fd168254D5',
 }
 
 async function tvl(chain, block) {

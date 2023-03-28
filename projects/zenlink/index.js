@@ -1,9 +1,4 @@
-const { calculateUsdTvl, calculateMoonriverTvl } = require('./getUsdTvl')
-
-const tokenChainMap = {
-    '0x3b25bc1dc591d24d60560d0135d6750a561d4764': '0xc3d088842dcf02c13699f936bb83dfbbc6f721ab', // vETH
-}
-
+const { calculateUsdTvl } = require('./getUsdTvl')
 
 const moonriverStablePoolTokenMap = {
     "0xffc7780c34b450d917d557e728f033033cb4fa8c": "0xffffffff1fcacbd218edc0eba20fc2308c778080", // stKSM -> xcKSM
