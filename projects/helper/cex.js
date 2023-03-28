@@ -85,6 +85,8 @@ const defaultTokens = {
     '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619', // WETH
     '0xb5c064f955d8e7f38fe0460c556a72987494ee17', // QUICK
     '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6', //WBTC
+    '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174', //USDC
+    '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063', //DAI
   ],
   algorand: [],
   solana: [],
