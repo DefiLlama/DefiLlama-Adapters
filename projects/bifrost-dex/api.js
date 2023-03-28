@@ -1,5 +1,6 @@
 const { ApiPromise, WsProvider } = require("@polkadot/api");
 const BigNumber = require("bignumber.js");
+const sdk = require('@defillama/sdk')
 
 // node test.js projects/bifrost-dex/api.js
 
@@ -29,7 +30,7 @@ function formatToken(token, type) {
       return "vBNC";
     case `{"VToken":"MOVR"}`:
       return "vMOVR";
-    default :
+    default:
       return null;
   }
 }
@@ -127,6 +128,8 @@ async function tvl() {
 
       let currentToken = formatToken(JSON.stringify(poolTokens[0][0].toHuman()[1]), "polkadot");
       let ratio = 1;
+      sdk.log(currentToken, poolTokens[0][0].toHuman())
+      if (!currentToken) return;
       const isVtoken = currentToken.startsWith("v");
       currentToken = isVtoken ? currentToken.slice(1) : currentToken;
 
