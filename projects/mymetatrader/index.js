@@ -12,7 +12,6 @@ module.exports = {
     tvl: sumTokensExport({
       tokensAndOwners: [
         [usdc, vault],
-        [mmtToken, stakingPool],
       ],
     }),
     staking: staking(stakingPool, mmtToken),
