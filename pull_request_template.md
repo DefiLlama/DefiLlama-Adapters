@@ -15,47 +15,47 @@
 ##### Name (to be shown on DefiLlama):
 
 
-##### Twitter Link:
+##### Twitter Link: https://twitter.com/array_capital
 
 
-##### List of audit links if any:
+##### List of audit links if any: https://contractwolf.io/projects/array
 
 
-##### Website Link:
+##### Website Link: https://array.capital/
 
 
-##### Logo (High resolution, preferably in .svg and .png, for application on both white and black backgrounds. Will be shown with rounded borders):
+##### Logo (High resolution, preferably in .svg and .png, for application on both white and black backgrounds. Will be shown with rounded borders): https://drive.google.com/file/d/1cj628PC7N7Zy6yu8-P3egGNWdrH8908B/view?usp=share_link
 
 
-##### Current TVL:
+##### Current TVL: 0
 
 
-##### Treasury Addresses (if the protocol has treasury)
+##### Treasury Addresses (if the protocol has treasury): 0xAceA4160c00f6be4561d26FeE25e7AF29dd63f56
 
 
-##### Chain:
+##### Chain: Arbitrum One
 
 
-##### Coingecko ID (so your TVL can appear on Coingecko): (https://api.coingecko.com/api/v3/coins/list)
+##### Coingecko ID (so your TVL can appear on Coingecko): https://api.coingecko.com/api/v3/coins/list
 
 
-##### Coinmarketcap ID (so your TVL can appear on Coinmarketcap): (https://api.coinmarketcap.com/data-api/v3/map/all?listing_status=active,inactive,untracked&start=1&limit=10000)
+##### Coinmarketcap ID (so your TVL can appear on Coinmarketcap): https://api.coinmarketcap.com/data-api/v3/map/all?listing_status=active,inactive,untracked&start=1&limit=10000
 
 
-##### Short Description (to be shown on DefiLlama):
+##### Short Description (to be shown on DefiLlama): Arbitrum's #RealYield Launchpad Integrated DEX & Venture Fund
 
 
-##### Token address and ticker if any:
+##### Token address and ticker if any: 0x53fd70b568e5c8dace2ce3c38e650f5924beb1c1
 
 
-##### Category (full list at https://defillama.com/categories) *Please choose only one:
+##### Category (full list at https://defillama.com/categories) *Please choose only one: Launchpad
 
 
-##### Oracle used (Chainlink/Band/API3/TWAP or any other that you are using):
+##### Oracle used (Chainlink/Band/API3/TWAP or any other that you are using): Chainlink/thegraph
 
 
-##### forkedFrom (Does your project originate from another project):
+##### forkedFrom (Does your project originate from another project): No
 
 
-##### methodology (what is being counted as tvl, how is tvl being calculated):
+##### methodology (what is being counted as tvl, how is tvl being calculated): it's the total value staked in the pool
 
