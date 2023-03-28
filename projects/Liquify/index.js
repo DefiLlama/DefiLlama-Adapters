@@ -2,7 +2,7 @@ const { getUniTVL } = require('../helper/unknownTokens.js')
 
 module.exports = {
   misrepresentedTokens: true,
-  coredao:{
+  core:{
     tvl: getUniTVL({
       useDefaultCoreAssets: true,
       hasStablePools: true,
