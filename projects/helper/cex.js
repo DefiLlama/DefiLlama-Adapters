@@ -70,6 +70,8 @@ const defaultTokens = {
     '0x2af5d2ad76741191d15dfe7bf6ac92d4bd912ca3', // LEO (bitfinex cex token)
     '0xB8c77482e45F1F44dE1745F52C74426C631bDD52', // WBNB
     '0xb62132e35a6c13ee1ee0f84dc5d40bad8d815206', // NEXO ,(Nexo cex token)
+    '0x1ceb5cb57c4d4e2b2433641b95dd330a33185a44', //kp3r
+    '0xcf0c122c6b73ff809c693db761e7baebe62b6a2e', //FLOKI ETH CHAIN
   ],
   tron: [
     nullAddress,
@@ -81,6 +83,10 @@ const defaultTokens = {
     '0xc2132d05d31c914a87c6611c10748aeb04b58e8f', // USDT
     '0x0000000000000000000000000000000000001010', // WMATIC
     '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619', // WETH
+    '0xb5c064f955d8e7f38fe0460c556a72987494ee17', // QUICK
+    '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6', //WBTC
+    '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174', //USDC
+    '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063', //DAI
   ],
   algorand: [],
   solana: [],
@@ -106,7 +112,7 @@ const defaultTokens = {
     '0xfb5B838b6cfEEdC2873aB27866079AC55363D37E', // FLOKI
     '0x352Cb5E19b12FC216548a2677bD0fce83BaE434B', // BTT
     '0xAD29AbB318791D579433D831ed122aFeAf29dcfe', // FTM
-
+    '0x02ff5065692783374947393723dba9599e59f591',// yoshi
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],
@@ -125,6 +131,7 @@ const defaultTokens = {
     '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E', // USDC
     '0xd586E7F844cEa2F87f50152665BCbc2C279D8d70', // DAI
     '0xabc9547b534519ff73921b1fba6e672b5f58d083', // WOO
+    '0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664', //USDC.e
   ],
   near: [
     'usdt.tether-token.near',

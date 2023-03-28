@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
-const { sumTokensExport, sumTokens2 } = require("../helper/unwrapLPs.js");
-const { tokensBare: tokens } = require("../helper/tokenMapping");
+const { sumTokens2 } = require("../helper/unwrapLPs.js");
 const abi = require("./abi.json");
 
 const { getV2CAs, getV1CAs } = require("./events");
@@ -125,16 +124,6 @@ const tvl = async (timestamp, block) => {
 module.exports = {
   ethereum: {
     tvl,
-    treasury: sumTokensExport({
-      owner: "0x7b065Fcb0760dF0CEA8CFd144e08554F3CeA73D1",
-      tokens: [
-        tokens.weth,
-        tokens.wbtc,
-        tokens.usdc,
-        tokens.dai,
-        "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0", // wseth
-      ],
-    }),
   },
   methodology: `Retrieves the tokens in each Gearbox pool (WETH/DAI/WBTC/USDC/wstETH) & value of all Credit Accounts (V1 & V2) denominated in the underlying token.`,
   misrepresentedTokens: true,

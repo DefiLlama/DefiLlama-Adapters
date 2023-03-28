@@ -16,7 +16,7 @@ const Contracts = {
 }
 
 async function tvl(_, _b, _cb, { api, }) {
-  return sumTokens2({ ...api, owner: Contracts.Pool, tokens: Object.values(Contracts.Tokens) })
+  return sumTokens2({ api, owner: Contracts.Pool, tokens: Object.values(Contracts.Tokens) })
 }
 
 module.exports = {

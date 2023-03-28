@@ -18,12 +18,15 @@ const config = {
       "0x86f78d3cbca0636817ad9e27a44996c738ec4932",
       "0xa478E708A27853848C6Bc979668fe6225FEe46Fa",
       "0x7198ff382b5798dab7dc72a23c1fec9dc091893b",
+      "0xc88c8ada95d92c149377aa660837460775dcc6d9"
     ]
   },
   arbitrum: {
     vaults: [
       "0xC76a3cBefE490Ae4450B2fCC2c38666aA99f7aa0",
       "0xB237f4264938f0903F5EC120BB1Aa4beE3562FfF",
+      "0xd371281896f2F5f7A2C65F49d23A2B6ecfd594f3",
+      "0xe47ca047Cb7E6A9AdE9405Ca68077d63424F34eC"
     ]
   },
   fantom: {
@@ -116,6 +119,7 @@ const config = {
       "0xc09c73f7b32573d178138e76c0e286ba21085c20",
       "0xb89c1b3d9f335b9d8bb16016f3d60160ae71041f",
       "0x5A03716bd1f338D7849f5c9581AD5015ce0020B0",
+      "0x19Cb63CCbfAC2f28B1fd79923f6aDfC096e6EBB4"
     ]
   },
   polygon: {
@@ -141,7 +145,10 @@ const config = {
       "0x7d75F83f0aBe2Ece0b9Daf41CCeDdF38Cb66146b",
       "0x57cbf36788113237d64e46f25a88855c3dff1691",
       "0x1f0aa72b980d65518e88841ba1da075bd43fa933",
-      "0x9A05b116b56304F5f4B3F1D5DA4641bFfFfae6Ab"
+      "0x9A05b116b56304F5f4B3F1D5DA4641bFfFfae6Ab",
+      "0xF1104493eC315aF2cb52f0c19605443334928D38",
+      "0xb1f28350539b06d5a35d016908eef0424bd13c4b",
+      "0x3bcbAC61456c9C9582132D1493A00E318EA9C122"
     ],
     toa: [
       [nullAddress, '0xa3fa99a148fa48d14ed51d610c367c61876997f1'],
