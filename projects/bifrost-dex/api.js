@@ -26,6 +26,10 @@ function formatToken(token, type) {
       return type === "kusama" ? "KINT" : "GLMR";
     case `{"VToken2":"0"}`:
       return "vDOT";
+    case `{"VToken2":"4"}`:
+      return "vFIL";
+    case `{"Token2":"4"}`:
+      return "FIL";
     case `{"VToken":"BNC"}`:
       return "vBNC";
     case `{"VToken":"MOVR"}`:
@@ -62,6 +66,8 @@ function formatTokenAmount(amount, tokenSymbol) {
     case "vGLMR":
     case "MOVR":
     case "GLMR":
+    case "FIL":
+    case "vFIL":
       decimals = 18;
       break;
   }
@@ -78,6 +84,7 @@ const tokenToCoingecko = {
   KUSD: "acala-dollar",
   ZLK: "zenlink-network-token",
   USDT: "tether",
+  FIL: "filecoin",
 };
 
 async function tvl() {
