@@ -1,5 +1,4 @@
 const { getLogs } = require('../helper/cache/getLogs')
-const sdk = require('@defillama/sdk')
 
 const config = {
   ethereum: {
