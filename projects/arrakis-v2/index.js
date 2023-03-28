@@ -5,6 +5,18 @@ const config = {
   ethereum: {
     factory: '0xECb8Ffcb2369EF188A082a662F496126f66c8288',
     fromBlock: 16534507,
+  },
+  arbitrum: {
+    factory: '0xECb8Ffcb2369EF188A082a662F496126f66c8288',
+    fromBlock: 57173679,
+  },
+  optimism: {
+    factory: '0xECb8Ffcb2369EF188A082a662F496126f66c8288',
+    fromBlock: 71646573,
+  },
+  polygon: {
+    factory: '0xECb8Ffcb2369EF188A082a662F496126f66c8288',
+    fromBlock: 38788368,
   }
 }
 
@@ -15,15 +27,8 @@ Object.keys(config).forEach(chain => {
   const { factory, fromBlock, } = config[chain]
   module.exports[chain] = {
     tvl: async (_, _b, _cb, { api, }) => {
-      const logs = await getLogs({
-        api,
-        target: factory,
-        topics: ['0x5d9c31ffa0fecffd7cf379989a3c7af252f0335e0d2a1320b55245912c781f53'],
-        eventAbi: 'event VaultCreated (address indexed manager, address indexed vault)',
-        onlyArgs: true,
-        fromBlock,
-      })
-      const vaults = logs.map(i => i.vault)
+      const numVaults = await api.call({ abi: 'uint256:numVaults', target: factory })
+      const vaults = await api.call({ abi: 'function vaults(uint256 startIndex_, uint256 endIndex_) returns (address[] memory)', target: factory, params:[0, numVaults] })
       const [token0s, token1s, bals ] = await Promise.all([
         api.multiCall({  abi: 'address:token0', calls: vaults }),
         api.multiCall({  abi: 'address:token1', calls: vaults }),

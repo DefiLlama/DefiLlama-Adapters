@@ -47,6 +47,17 @@ async function OpTvl(_time, _ethBlock, { optimism: block }) {
   return sumTokens2({ chain, block, tokens, owners, })
 }
 
+async function zkSyncTvl(_time, _ethBlock, { era: block }) {
+  const contracts = {
+    "usdcPool": "0xa41A6a4A04E711B53a82E594CeB525e89206627A",
+  };
+  const usdc = "0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4";
+  const chain = 'era'
+  const tokens = [usdc]
+  const owners = Object.values(contracts)
+  return sumTokens2({ chain, block, tokens, owners, })
+}
+
 async function BscTvl(_time, _ethBlock, { bsc: block }) {
   const contracts = {
     "busdPool": "0xa8D4bd632f394CED42BD439Bc34F09198072e519",
@@ -71,6 +82,9 @@ module.exports = {
   },
   optimism: {
     tvl: OpTvl
+  },
+  era: {
+    tvl: zkSyncTvl
   },
   bsc: {
     tvl: BscTvl

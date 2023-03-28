@@ -22,6 +22,7 @@ const endPoints = {
   orai: "https://lcd.orai.io",
   juno: "https://lcd-juno.cosmostation.io",
   cronos: 'https://lcd-crypto-org.cosmostation.io',
+  injective: 'https://lcd-injective.whispernode.com:443',
 }
 
 const chainSubpaths = {

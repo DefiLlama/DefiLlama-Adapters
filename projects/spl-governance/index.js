@@ -6,7 +6,7 @@ async function tvl() {
   return tvlObject(tvl)
 }
 
-async function ownTokens() {
+async function staking() {
   const { ownTokens } = await getCache(url)
   return tvlObject(ownTokens)
 }
@@ -16,6 +16,7 @@ function tvlObject(obj) {
 }
 
 module.exports = {
+  methodology: 'SOL token and stables held in the contracts are counted under tvl, gov tokens are counted under staking', 
   timetravel: false,
-  solana: { tvl, ownTokens,  }
+  solana: { tvl, staking,  }
 }

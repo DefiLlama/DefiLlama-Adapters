@@ -9,4 +9,5 @@ module.exports = {
   TERRA_RPC: env.TERRA_RPC,
   TERRA2_RPC: env.TERRA2_RPC,
   LOFTY_API: env.LOFTY_API,
+  COVALENT_KEY: env.COVALENT_KEY,
 }
