@@ -1,54 +1,33 @@
-const sdk = require('@defillama/sdk');
+const {
+  getNumMarkets,
+  getMarketTokenAddress,
+  getMarketTotalPar,
+} = require("./dolomite-margin.json");
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { getNumMarkets, getMarketTokenAddress } = require('./dolomite-margin.json');
 
-const dolomiteMargin = '0x6bd780e7fdf01d77e4d475c821f1e7ae05409072';
+const dolomiteMargin = "0x6bd780e7fdf01d77e4d475c821f1e7ae05409072";
 
-const contracts = [dolomiteMargin];
+async function getTokensAndBalances(api, supplyOrBorrow) {
+  const tokens = await api.fetchList({ lengthAbi: getNumMarkets, itemAbi: getMarketTokenAddress, target: dolomiteMargin })
+  if (supplyOrBorrow === 'supply')
+    return sumTokens2({ owner: dolomiteMargin, api, tokens })
 
-async function getTokens(chain, block) {
-  const { output: tokenCount } = await sdk.api.abi.call({
-    target: contracts[0],
-    abi: getNumMarkets,
-    chain: chain,
-    block: block,
-    params: [],
-  });
-
-  const tokenCalls = []
-  for (let i = 0; i < Number(tokenCount); i++) {
-    tokenCalls.push({
-      target: dolomiteMargin,
-      params: [i],
-    });
-  }
-
-  const { output: tokensResult } = await sdk.api.abi.multiCall({
-    chain,
-    block,
-    abi: getMarketTokenAddress,
-    calls: tokenCalls,
-  })
-
-  return tokensResult.map(tokenResult => tokenResult.output)
+  const res = await api.fetchList({ lengthAbi: getNumMarkets, itemAbi: getMarketTotalPar, target: dolomiteMargin })
+  res.forEach((v, i) => api.addToken(tokens[i], v.borrow))
 }
 
-async function tvl (timestamp, ethereumBlock, blocksToKeys) {
-  const chain = 'arbitrum';
-  const block = blocksToKeys[chain]
+async function tvl(timestamp, ethereumBlock, blocksToKeys, { api }) {
+  return getTokensAndBalances(api, "supply");
+}
 
-  const tokens = await getTokens(chain, block);
-
-  return sumTokens2({
-    tokens,
-    chain,
-    block,
-    owner: dolomiteMargin,
-  })
+async function borrowed(timestamp, ethereumBlock, blocksToKeys, { api }) {
+  return getTokensAndBalances(api, "borrow");
 }
 
 module.exports = {
   start: 1664856000,  // 10/4/2022 @ 00:00am (UTC)
-  arbitrum: { tvl },
-  hallmarks:[]
+  arbitrum: {
+    tvl,
+    borrowed
+  },
 };
