@@ -36,7 +36,6 @@ async function borrowed(_, _1, _cb, { api, }) {
   const balances = {};
 
   reservesData.forEach((d) => {
-    if (d.underlyingAsset.toLowerCase() === address.ethereum.cAPE.toLowerCase()) return; // cAPE number inflated because of the hack?
     sdk.util.sumSingleBalance(balances, d.underlyingAsset, d.totalScaledVariableDebt * d.variableBorrowIndex * 1e-27, api.chain)
   })
 
