@@ -1,34 +1,4 @@
 {
-  "totalPooledAvax": {
-    "inputs": [],
-    "name": "totalPooledAvax",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "getSharesByPooledAvax": {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "avaxAmount",
-        "type": "uint256"
-      }
-    ],
-    "name": "getSharesByPooledAvax",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
+  "totalPooledAvax": "uint256:totalPooledAvax",
+  "getSharesByPooledAvax": "function getSharesByPooledAvax(uint256 avaxAmount) view returns (uint256)"
 }

@@ -5,7 +5,7 @@ const {
     polygonContracts,
     dexTypes
 } = require('../../config/hodltree');
-const { transformPolygonAddress, transformEthereumAddress } = require('../portedTokens');
+const { getChainTransform } = require('../portedTokens');
 const { calculateEM } = require('./calculateEM');
 const { calculateFlashloan } = require('./calculateFlashloan');
 const { calculateLendBorrow } = require('./calculateLendBorrow');
@@ -38,12 +38,12 @@ async function calculateHodltreeBalances(dexes, chain, chainBlocks, transform) {
 }
 
 async function calculateHodltreeBalancesEth(timestamp, block, chainBlocks) {
-    const transform = await transformEthereumAddress();
+    const transform = await getChainTransform('ethereum');
     return calculateHodltreeBalances(ethContracts, 'ethereum', chainBlocks, transform);
 }
 
 async function calculateHodltreeBalancesPolygon(timestamp, block, chainBlocks) {
-    const transform = await transformPolygonAddress()
+    const transform = await getChainTransform('polygon')
     return calculateHodltreeBalances(polygonContracts, 'polygon', chainBlocks, transform);
 
 }

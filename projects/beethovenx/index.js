@@ -1,32 +1,10 @@
-const { request, gql } = require("graphql-request");
-const {toUSDTBalances} = require("../helper/balances");
-
-const graphUrl =
-    'https://backend.beets-ftm-node.com/graphql';
-
-const graphQuery = gql`
-    query get_tvl {
-            data: beetsGetProtocolData {
-                totalLiquidity
-            }
-    }
-`;
-
-async function tvl(timestamp, ...params) {
-    if(Math.abs(timestamp - Date.now()/1000) < 3600/2){
-        const { data } = await request(
-            graphUrl,
-            graphQuery,
-        );
-        return toUSDTBalances(data.totalLiquidity)
-    }
-    return getBalancerSubgraphTvl('https://graph-node.beets-ftm-node.com/subgraphs/name/beethovenx', 'fantom')(timestamp, ...params)
-}
-
-const {getBalancerSubgraphTvl} = require('../helper/balancer')
+const { onChainTvl } = require("../helper/balancer");
 
 module.exports = {
-    fantom:{
-        tvl,
-    },
+  fantom: {
+    tvl: onChainTvl('0x20dd72ed959b6147912c2e529f0a0c651c33c9ce', 16896080),
+  },
+  optimism: {
+    tvl: onChainTvl('0xBA12222222228d8Ba445958a75a0704d566BF2C8', 7003431),
+  },
 };

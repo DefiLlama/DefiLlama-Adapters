@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
-const _ = require('underscore');
+
 const abi = require('./abi');
 
 const ploypool = '0x7751ff8c091b60cd51219ea244f9760d21fda041';
@@ -10,7 +10,7 @@ const wanpool = '0xBB8dA4ed33388A0eAc442eD1f28474413FC9d7a7';
 //const wanOptionFactorySc = new wanWeb3.eth.Contract(optionFactoryAbi,wanOptionFactory);
 let usd = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
 
-async function polygon(timestamp, block) {
+async function polygon(timestamp, _, {polygon: block }) {
   let totalSupply = (await sdk.api.abi.call({
     block,
     target: ploypool,
@@ -25,7 +25,7 @@ async function polygon(timestamp, block) {
 
 }
 
-async function bsc(timestamp, block) {
+async function bsc(timestamp, _, {bsc: block }) {
     let totalSupply = (await sdk.api.abi.call({
         block,
         target: bscpool,
@@ -40,7 +40,7 @@ async function bsc(timestamp, block) {
 
 }
 
-async function wan(timestamp, block) {
+async function wan(timestamp, _, {wan: block }) {
     let totalSupply = (await sdk.api.abi.call({
         block,
         target: wanpool,

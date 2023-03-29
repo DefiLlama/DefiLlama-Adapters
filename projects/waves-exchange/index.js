@@ -1,7 +1,24 @@
-const {wavesAdapter} = require('../helper/wavesAdapter')
+const { get } = require("../helper/http");
+const { toUSDTBalances } = require("../helper/balances");
 
-const endpoint = "http://51.158.191.108:8002/api/v1/history/waves-exchange"
+const endpoint =
+  "https://mainnet-dev.wvservices.exchange/api/v1/investments/tvl";
 
-module.exports={
-    tvl: wavesAdapter(endpoint, item => item.investmentsLocked + item.ordersLocked)
+function tvl(isStaking) {
+  return async () =>
+    toUSDTBalances(
+      (await get(endpoint)).products
+        .filter(p => p.product_id == "wx_staking" == isStaking)
+        .map(p => p.tvl)
+        .reduce((p, c) => Number(p) + Number(c), 0),
+    );
 }
+
+module.exports = {
+  misrepresentedTokens: true,
+  timetravel: false,
+  waves: {
+    tvl: tvl(false),
+    staking: tvl(true),
+  },
+};

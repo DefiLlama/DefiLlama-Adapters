@@ -1,13 +1,11 @@
 const { compoundExports } = require('../helper/compound')
-const { transformBobaAddress } = require('../helper/portedTokens')
 
 const WETH = "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000"
 const bETH = "0xe970c37243F3d0B2AeB041b855Ef6466CB140BcA"
 const unitroller = "0x97b491744587d05ca33e84bB18B61Df9B3986DcE"
 
 const { tvl, borrowed } = compoundExports(
-    unitroller, "boba", bETH, WETH, transformBobaAddress(),
-);
+    unitroller, "boba", bETH, WETH, );
 
 module.exports = {
     timetravel: true,

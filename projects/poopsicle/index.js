@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const { getBlock } = require("../helper/getBlock");
 const { staking } = require("../helper/staking");
 const abi = require("./abi.json");
 
@@ -55,8 +54,7 @@ const data = {
   },
 };
 
-async function poop(timestamp, ethBlock, chainBlocks) {
-  const block = await getBlock(timestamp, CHAIN, chainBlocks[CHAIN], true);
+async function poop(timestamp, ethBlock, {[CHAIN]: block}) {
 
   const result = await sdk.api.abi.call({
     target: data["poop"].tg,

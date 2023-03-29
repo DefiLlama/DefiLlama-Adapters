@@ -105,6 +105,27 @@ module.exports = [
     order: 4
   },
   {
+    id: 'USDK_3Moon',
+    tvName: 'usdk3moon',
+    name: '3Moon-USDK',
+    tokenList: [
+      'kDAI',
+      'kUSDT',
+      'kUSDC',
+      'USDK'
+    ],
+    tvlTokenList: [
+      '3Moon',
+      'USDK'
+    ],
+    lpAddress: '0x75Dc33f8247245E8E08852E68E7f275E2a41fD40',
+    lpTokenAddress: '0xc4ACf4ddd4838E9A727cCDb75ae62Af1706a7173',
+    lpTokenDecimal: 18,
+    farmAddress: '0x85338F94844673b636e632eb21575E1e21864cbc',
+    pid: 5,
+    order: 5
+  },
+  {
     id: 'd_kDAI_kUSDT_kUSDC',
     name: '3Moon',
     pid: 0,

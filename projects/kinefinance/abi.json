@@ -1,47 +1,5 @@
 {
-  "getAllMarkets": {
-    "constant": true,
-    "inputs": [],
-    "name": "getAllMarkets",
-    "outputs": [
-      {
-        "internalType": "contract KToken[]",
-        "name": "",
-        "type": "address[]"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "underlying": {
-    "constant": true,
-    "inputs": [],
-    "name": "underlying",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "totalBorrows": {
-    "constant": true,
-    "inputs": [],
-    "name": "totalBorrows",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  }
+  "getAllMarkets": "address[]:getAllMarkets",
+  "underlying": "address:underlying",
+  "totalBorrows": "uint256:totalBorrows"
 }

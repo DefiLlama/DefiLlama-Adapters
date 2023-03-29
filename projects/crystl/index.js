@@ -1,15 +1,17 @@
 const sdk = require("@defillama/sdk");
-const erc20 = require("../helper/abis/erc20.json");
-const abi = require("./abi.json");
-const vaultAbi = require("./integratedVaultAbi.json");
-const apePriceGetterAbi = require("./apePriceGetter.json");
-const { fetchURL } = require("../helper/utils");
-const { default: BigNumber } = require("bignumber.js");
-
-let p;
-let c;
+const { get } = require("../helper/http");
+const { getChainTransform } = require("../helper/portedTokens");
+const { unwrapLPsAuto, } = require("../helper/unwrapLPs");
 
 const CHAIN_DATA = {
+  bsc: {
+    name: "bsc",
+    id: 56,
+  },
+  moonbeam: {
+    name: "moonbeam",
+    id: 1284,
+  },
   polygon: {
     name: "polygon",
     id: 137,
@@ -18,7 +20,6 @@ const CHAIN_DATA = {
     vaulthealer_v1: "0xDB48731c021bdB3d73Abb771B4D7aF0F43C0aC16",
     vaulthealer_v2: "0xD4d696ad5A7779F4D3A0Fc1361adf46eC51C632d",
     apeprice_getter: "0x05D6C73D7de6E02B3f57677f849843c03320681c",
-    pools: "https://polygon.crystl.finance/data/pools.json",
   },
   cronos: {
     name: "cronos",
@@ -28,236 +29,76 @@ const CHAIN_DATA = {
     vaulthealer_v1: "0x4dF0dDc29cE92106eb8C8c17e21083D4e3862533",
     vaulthealer_v2: "",
     apeprice_getter: "0x6993fFaB6FD7c483f33A5E3EFDFEA676425C8F31",
-    pools: "https://cronos.crystl.finance/data/pools.json",
   },
 };
 
-let totalTvl = 0;
+const wantLockedTotalABI = "uint256:wantLockedTotal"
 
-async function getPools(chain) {
-  const poolJson = (await fetchURL(chain.pools)).data;
-  const pools = Array.from(poolJson)
-    .filter((pool) => pool.contractAddress[chain.id] !== chain.masterhealer)
-    .map((pool) => pool.contractAddress[chain.id]);
+let _pools
 
-  return pools;
-}
+async function getPools(chainData) {
+  if (!_pools) _pools = _getPools()
+  let p = (await _pools).filter(i => +i.chainId === chainData.id)
+  const pObject = p.reduce((acc, i) => ({ ...acc, [i.strategyAddress]: i }), {})
+  return Object.values(pObject)
 
-const getBalanceAmount = (amount, decimals = 18) => {
-  return new BigNumber(amount).dividedBy(new BigNumber(10).pow(decimals));
-};
+  async function _getPools() {
+    const poolsResponse = await Promise.all([
+      'https://raw.githubusercontent.com/polycrystal/crystl-config/main/vaults/vaults.json',
+      'https://raw.githubusercontent.com/polycrystal/crystl-config/main/vaults/vaultsV3.json',
+      'https://raw.githubusercontent.com/polycrystal/crystl-config/main/pools/boostPools.json',
+    ].map(get))
 
-const getBalanceNumber = (balance, decimals = 18) => {
-  return getBalanceAmount(balance, decimals).toNumber();
-};
+    const pools = poolsResponse.flat()
 
-async function getLPPrice(lpList, lpPrices, chain, block) {
-  let prices = (
-    await sdk.api.abi.call({
-      abi: apePriceGetterAbi.getLPPrices,
-      target: chain.apeprice_getter,
-      params: [lpList, 18],
-      chain: chain.name,
-      block
+    pools.forEach(i => {
+      if (!i.strategyAddress) i.strategyAddress = i.stratAddress
+      if (!i.wantAddress) i.wantAddress = i.wantTokenAddress
     })
-  ).output.map((price) => getBalanceNumber(Number(price)));
-
-  for (let index = 0; index < lpList.length; index++) {
-    lpPrices.push({ token: lpList[index], price: prices[index] });
+    return pools
   }
 }
 
-async function getFarmBalance(lpShares, lpList, chain, block) {
-  if (chain.masterhealer === "") {
-    return;
-  }
-
-  const farmLength = (
-    await sdk.api.abi.call({
-      abi: abi.poolLength,
-      target: chain.masterhealer,
-      chain: chain.name,
-      block
-    })
-  ).output;
-
-  for (let index = 0; index < farmLength; index++) {
-    const lpsOrTokens = (
-      await sdk.api.abi.call({
-        abi: abi.poolInfo,
-        target: chain.masterhealer,
-        params: index,
-        chain: chain.name,
-        block
-      })
-    ).output.lpToken;
-
-    const lpsOrTokens_Bal = getBalanceNumber(
-      (
-        await sdk.api.abi.call({
-          abi: erc20.balanceOf,
-          target: lpsOrTokens,
-          params: chain.masterhealer,
-          chain: chain.name,
-          block
-        })
-      ).output
-    );
-
-    lpShares.push({
-      token: lpsOrTokens,
-      balance: lpsOrTokens_Bal,
-    });
-
-    if (!lpList.includes(lpsOrTokens)) {
-      lpList.push(lpsOrTokens);
-    }
-  }
-}
-
-async function getVaultBalance(lpShares, lpList, vaultHealer, chain, block) {
-  if (vaultHealer === "") {
-    return;
-  }
-
-  const vaultV1Length = (
-    await sdk.api.abi.call({
-      abi: vaultAbi.poolLength,
-      target: vaultHealer,
-      chain: chain.name,
-      block
-    })
-  ).output;
-
-  for (let index = 0; index < vaultV1Length; index++) {
-    const vault = (
-      await sdk.api.abi.call({
-        abi: vaultAbi.poolInfo,
-        target: vaultHealer,
-        params: index,
-        chain: chain.name,
-        block
-      })
-    ).output;
-
-    const vaultShares = getBalanceNumber(
-      (
-        await sdk.api.abi.call({
-          abi: vaultAbi.vaultSharesTotal,
-          target: vault.strat,
-          chain: chain.name,
-          block
-        })
-      ).output
-    );
-
-    lpShares.push({
-      token: vault.want,
-      balance: vaultShares,
-    });
-
-    if (!lpList.includes(vault.want)) {
-      lpList.push(vault.want);
-    }
-  }
-}
-
-async function poolsTvl(chain, block) {
-  const pools = await getPools(chain);
-
-  const poolLength = pools.length;
-
-  let tokenAmount = 0;
-
-  for (let index = 0; index < poolLength; index++) {
-    const tokens = Number(
-      (
-        await sdk.api.abi.call({
-          abi: abi.totalStaked,
-          target: pools[index],
-          chain: chain.name,
-          block
-        })
-      ).output
-    );
-    tokenAmount += tokens;
-  }
-
-  let crystlPrice = getBalanceNumber(
-    (
-      await sdk.api.abi.call({
-        abi: apePriceGetterAbi.getPrice,
-        target: chain.apeprice_getter,
-        params: [chain.crystl_token, 18],
-        chain: chain.name,
-        block
-      })
-    ).output
-  );
-
-  return getBalanceNumber(tokenAmount) * crystlPrice;
-}
-
-function calculateLpBalancePrice(lpShares, balances, lpPrices) {
-  for (let index = 0; index < lpShares.length; index++) {
-    balances +=
-      lpShares[index].balance *
-      lpPrices.find((lp) => lp.token === lpShares[index].token).price;
-  }
+async function fetchChain(chainData, block) {
+  let balances = {};
+  const chain = chainData.name
+  const pools = await getPools(chainData)
+  const { output: totals } = await sdk.api.abi.multiCall({
+    abi: wantLockedTotalABI,
+    calls: pools.map(i => ({ target: i.strategyAddress })),
+    chain, block,
+  })
+  const transform = await getChainTransform(chain)
+  totals.forEach(({ output }, i) => sdk.util.sumSingleBalance(balances, transform(pools[i].wantAddress), output))
+  await unwrapLPsAuto({ balances, chain, block, transformAddress: transform, })
   return balances;
-}
-
-async function fetchChain(chain, block) {
-  let balances = 0;
-
-  let lpShares = [];
-  let lpList = [];
-  let lpPrices = [];
-
-  let [poolBalance] = await Promise.all([
-    poolsTvl(chain, block),
-    getFarmBalance(lpShares, lpList, chain, block),
-  ]);
-
-  await Promise.all([
-    getVaultBalance(lpShares, lpList, chain.vaulthealer_v1, chain, block),
-    getVaultBalance(lpShares, lpList, chain.vaulthealer_v2, chain, block),
-  ]);
-
-  balances += poolBalance;
-
-  await getLPPrice(lpList, lpPrices, chain, block);
-
-  balances = calculateLpBalancePrice(lpShares, balances, lpPrices);
-
-  totalTvl += balances;
-
-  return balances;
-}
-
-async function fetch() {
-  let [a, b] = await Promise.all([p, c])
-  return a + b
 }
 
 async function polygon(timestamp, block, chainBlocks) {
-  p = fetchChain(CHAIN_DATA.polygon, chainBlocks.polygon);
-  return p
+  return fetchChain(CHAIN_DATA.polygon, chainBlocks.polygon);
 }
 
 async function cronos(timestamp, block, chainBlocks) {
-  c = fetchChain(CHAIN_DATA.cronos, chainBlocks.cronos);
-  return c
+  return fetchChain(CHAIN_DATA.cronos, chainBlocks.cronos);
+}
+
+async function bsc(timestamp, block, chainBlocks) {
+  return fetchChain(CHAIN_DATA.bsc, chainBlocks.bsc);
 }
 
 module.exports = {
+  hallmarks: [
+    [1656590400,"Protocol End"] // https://crystlfinance.medium.com/wrapping-up-crystl-finance-4743287a6bf
+  ],
   polygon: {
-    fetch: polygon,
+    tvl: polygon,
   },
   cronos: {
-    fetch: cronos,
+    tvl: cronos,
   },
-  fetch,
+  bsc: {
+    tvl: bsc,
+  },
   methodology:
     "Our TVL is calculated from the Total Value Locked in our Vaults, Farms, and Pools.",
 };

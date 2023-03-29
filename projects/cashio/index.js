@@ -1,31 +1,22 @@
-const utils = require("../helper/utils");
-const SUNNY_POOLS = require("../helper/sunny-pools.json");
+const SUNNY_POOLS = [{
+  "poolName": "quarry_saber_usdc_usdt",
+  "relevantAccounts": {
+    "sunnyPool": "3Zk1PhVap6mwrB9jZktucoSaMBa2whYSq8jtLew3tXbp",
+    "tokenAMint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+    "tokenBMint": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+    "tokenAReserve": "CfWX7o2TswwbxusJ4hCaPobu2jLCb1hfXuXJQjVq3jQF",
+    "tokenBReserve": "EnTrdMMpdhugeH6Ban6gYZWXughWxKtVGfCwFn78ZmY3",
+    "lpTokenSPL": "2poo1w1DL6yd2WNTCnNTzDqkC6MBXq7axo77P16yrBuf"
+  },
+  "tokenA": "usd-coin",
+  "tokenB": "tether",
+  "tvlReader": "sunnyQuarrySaberPoolReader"
+}];
 
 const {
   getMultipleAccountBuffers,
   getMultipleAccountsRaw,
 } = require("../helper/solana");
-
-async function getTotalBalancesFromMultipleAccounts(tokenAccounts) {
-  const tokenAccountsData = (await getMultipleAccountsRaw(tokenAccounts))
-    .map((account) => {
-      if (account !== null) {
-        return Buffer.from(account.data[0], account.data[1]);
-      }
-      return null;
-    })
-    .filter((d) => !!d);
-  return tokenAccountsData
-    .map((tad) =>
-      // sorry, this code is a tad hacky
-      Number(tad.readBigUInt64LE(64))
-    )
-    .reduce((acc, el) => acc + el, 0);
-}
-
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 const readTVL = async ({
   tokenA,
@@ -88,22 +79,17 @@ async function tvl() {
 
   // contains a list of all token accounts + their associated sunny pool or coingecko ID
   // more details: https://github.com/cashioapp/treasury
-  const cashioTreasuryAccounts = await utils.fetchURL(
-    "https://raw.githubusercontent.com/cashioapp/treasury/master/data/token-accounts.json"
-  );
-
-  const { coingeckoTokens, sunnyPools } = cashioTreasuryAccounts.data;
-
-  // fetch all normal tokens (tokens with coingecko IDs)
-  for (const [coingeckoID, tokenAccounts] of Object.entries(coingeckoTokens)) {
-    const amount =
-      (await getTotalBalancesFromMultipleAccounts(tokenAccounts)) / 10 ** 6;
-    if (!tvlResult[coingeckoID]) {
-      tvlResult[coingeckoID] = amount;
-    } else {
-      tvlResult[coingeckoID] += amount;
+  const cashioTreasuryAccounts = {
+    "sunnyPools": {
+      "3Zk1PhVap6mwrB9jZktucoSaMBa2whYSq8jtLew3tXbp": [
+        "D67ZNjaRERdc7Ej8SjbpyGwJT4MnadgzfGnwgCmMJAa1",
+        "CJdU6oLxuzuDffqtrzv3YvQjdjQ7egCkuRshwmKXNYjM"
+      ]
     }
   }
+  
+
+  const { sunnyPools } = cashioTreasuryAccounts;
 
   // Run these serially to avoid rate limiting issues
   for (const [sunnyPoolKey, tokenAccounts] of Object.entries(sunnyPools)) {
@@ -122,8 +108,6 @@ async function tvl() {
       poolMint: sunnyPool.relevantAccounts.lpTokenSPL,
       tokenAccounts,
     });
-    console.log(sunnyPool.poolName, poolTVL);
-    await sleep(1200);
 
     for (const [tokenId, amount] of Object.entries(poolTVL)) {
       if (!tvlResult[tokenId]) {
@@ -139,7 +123,10 @@ async function tvl() {
 
 module.exports = {
   timetravel: false,
+  hallmarks: [
+    [1647993600, "Infinite mint glitch"]
+],
   methodology:
     "TVL counts LP token deposits made to Cashio and accrued reward tokens to its bank. CoinGecko is used to find the price of tokens in USD.",
-  tvl,
+  solana: { tvl },
 };

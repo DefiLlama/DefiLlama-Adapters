@@ -1,4 +1,4 @@
-const {usdCompoundExports} = require('./helper/compound');
+const {usdCompoundExports, compoundExports} = require('./helper/compound');
 
 const contracts = {
   ethereum: {
@@ -78,15 +78,24 @@ const contracts = {
       decimals:18,
     },
   },
+  moonbeam: {
+    comptroller: '0x5Ea2321aBFF78E81702cE877319cD775E0dc865B',
+    gas:{
+      pToken:"0x33A32f0ad4AA704e28C93eD8Ffa61d50d51622a7",
+      decimals:18,
+    },
+  },
 };
 
 const chainExports = {}
 Object.entries(contracts).forEach(([chain, chainData])=>{
   chainExports[chain]=usdCompoundExports(chainData.comptroller, chain, chainData.gas.pToken)
+  if (chain === 'heco') 
+    chainExports[chain]=compoundExports(chainData.comptroller, chain, chainData.gas.pToken, '0xhecozzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz')
 })
 
 module.exports={
   timetravel: true,
   ...chainExports,
   methodology: `TVL is comprised of tokens deposited to the protocol as collateral, similar to Compound Finance and other lending protocols the borrowed tokens are not counted as TVL.`
-};
+}

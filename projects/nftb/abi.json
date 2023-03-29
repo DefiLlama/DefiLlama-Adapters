@@ -1,38 +1,4 @@
 {
-  "getPrice": {
-    "constant": true,
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "asset",
-        "type": "address"
-      }
-    ],
-    "name": "getPrice",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "getTotal": {
-    "constant": true,
-    "inputs": [],
-    "name": "getTotalCollateral",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  }
+  "getPrice": "function getPrice(address asset) view returns (uint256)",
+  "getTotal": "uint256:getTotalCollateral"
 }

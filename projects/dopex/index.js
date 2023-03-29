@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const { pool2s } = require("../helper/pool2");
+const { staking } = require("../helper/staking");
+const { pool2 } = require("../helper/pool2");
 const { default: BigNumber } = require("bignumber.js");
 
 // ETH Addresses
@@ -51,34 +52,6 @@ const crvPools = [
   "0xf8Ce3cF6371bDAe43a260445E6dE61575334391c",
   "0x85e1Aa4B34e772153ECB8969d991ceb8F1bC137e"
 ];
-
-async function staking(timestamp, block, chainBlocks) {
-  let balances = {};
-  const chain = "arbitrum";
-  block = chainBlocks.arbitrum;
-
-  const stakingBalances = (await sdk.api.abi.multiCall({
-    calls: [
-      {
-        target: arbDpx,
-        params: dpxStakingRewards
-      },
-      {
-        target: arbRdpx,
-        params: rdpxStakingRewards
-      }
-    ],
-    abi: "erc20:balanceOf",
-    block,
-    chain
-  })).output;
-
-  stakingBalances.forEach(p => {
-    sdk.util.sumSingleBalance(balances, `arbitrum:${p.input.target}`, p.output);
-  });
-
-  return balances;
-}
 
 async function ssovTvl(balances, ssov, block, chain) {
 
@@ -191,17 +164,17 @@ module.exports = {
   misrepresentedTokens: true,
   ethereum: {
     tvl: async () => ({}),
-    pool2: pool2s(stakingRewards, univ2lps)
+    pool2: staking(stakingRewards, univ2lps)
   },
   arbitrum: {
     tvl: arbTvl,
-    pool2: pool2s(slpStakingRewards, slps, "arbitrum"),
-    staking
+    pool2: pool2(slpStakingRewards, slps, "arbitrum"),
+    staking: staking([dpxStakingRewards, rdpxStakingRewards], [arbRdpx, arbDpx,], 'arbitrum')
   },
   bsc: {
     tvl: bscTvl
   },
-  avalanche: {
+  avax:{
     tvl: avaxTvl
   }
 }

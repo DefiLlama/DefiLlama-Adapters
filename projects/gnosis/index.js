@@ -1,98 +1,35 @@
-/*==================================================
-  Modules
-==================================================*/
 
-const { api: { abi, util }, util: utilBase } = require('@defillama/sdk');
-const { tvl: conditionalTokenTvl } = require('./conditional-token')
-
-/*==================================================
-  Settings
-==================================================*/
-
-const START_BLOCK = 9340147;
-const PROTOCOL_ADDRESS = '0x6F400810b62df8E13fded51bE75fF5393eaa841F';
-/* 
-* Tokens on GP to ignore
-[ 
-    0x7cac16770dd5f2a59859a395a492224f05a846b6: "oETH Put $200 29/05/2020",
-    0x57ab1e02fee23774580c119740129eac7081e9d3: "broken sUSD proxy"
-]
-*/
-const TOKENS_TO_IGNORE = new Set(['0x7cac16770dd5f2a59859a395a492224f05a846b6', '0x57ab1e02fee23774580c119740129eac7081e9d3', '0xc011a72400e58ecd99ee497cf89e3775d4bd732f']);
-
-/*==================================================
-  Helper Functions
-==================================================*/
-
-const getTokenAddressFromLogData = data => '0x' + data.substring(26, 66);
-
-const getCallDataOfErc20Token = (tokenAddress, atThisBlock) => 
-  ({ 
-    target: tokenAddress, 
-    params: PROTOCOL_ADDRESS, 
-    abi: 'erc20:balanceOf', 
-    block: atThisBlock, 
-  });
-
-/*==================================================
-  Main
-==================================================*/
-
-async function tvl(_, block) {
-  // Start promised TVL of Conditional Token
-  const promisedConditionalTokenTvl = conditionalTokenTvl(_, block)
-  
-  // Snag all token addresses that have been listed on GP
-  const { output: events } = await util.getLogs({
-    keys: [],
-    toBlock: block,
-    target: PROTOCOL_ADDRESS,
-    fromBlock: START_BLOCK,
-    topic: 'TokenListing(address,uint16)',
-  });
-
-  // 1. Reduce all TokenListing logs into an array of token addresses from the log data
-  // 2. Remove any tokens we want to ignore as denoted top of file
-  // 3. Format to pipe into erc20:balanceOf multiCall
-  const tokenList =
-    events
-      .reduce((acc, { data }) => {
-        const tokenAddress = getTokenAddressFromLogData(data)
-        if (TOKENS_TO_IGNORE.has(tokenAddress)) return acc
-
-        const tokenWithCallData = getCallDataOfErc20Token(tokenAddress, block)
-        return acc.concat(tokenWithCallData)
-      }, []);
-
-  // Batch call all ERC20 balances from the G-Protocol & resolve conditionalToken balance promise
-  const [protocolErc20Balances, conditionalTokenErc20Balances] = await Promise.all([
-    abi.multiCall({
-      block,
-      abi: 'erc20:balanceOf',
-      calls: tokenList
-    }), 
-    promisedConditionalTokenTvl,
-  ])
-
-  const combinedErc20Balances = {
-    output: protocolErc20Balances.output.concat(conditionalTokenErc20Balances.output)
-  }
-
-  const balances = {
-    // GP only accepts WETH
-    '0x0000000000000000000000000000000000000000': '0',
-  };
-
-  utilBase.sumMultiBalanceOf(balances, combinedErc20Balances);
-
-  return balances;
-}
-
-/*==================================================
-  Exports
-==================================================*/
+const { sumTokensExport } = require('../helper/unwrapLPs')
+const sdk = require('@defillama/sdk')
 
 module.exports = {
   start: 1579811423, // Thu, 23 Jan 2020 20:30:23 GMT
-  tvl,
+  ethereum: { tvl: sdk.util.sumChainTvls([
+    '0xc59b0e4de5f1248c1140964e0ff287b192407e0c',
+    '0x6f400810b62df8e13fded51be75ff5393eaa841f',
+  ].map(addTvl)), }
 };
+
+function addTvl(owner) {
+  const tokens = [
+    '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+    '0x6b175474e89094c44da98b954eedeac495271d0f',
+    '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+    '0x6810e776880c02933d47db1b9fc05908e5386b96',
+    '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e',
+    '0x57ab1ec28d129707052df4df418d58a2d46d5f51',
+    '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
+    '0xa1d65E8fB6e87b60FECCBc582F7f97804B725521',
+    '0xc00e94cb662c3520282e6f5717214004a7f26888',
+    '0x514910771af9ca656af840dff83e8264ecf986ca',
+    '0x6b3595068778dd592e39a122f4f5a5cf09c90fe2',
+    '0x22eEab2f980E8ed7824f8EA548C9595564a0F0e4',
+    '0xe2f2a5c287993345a840db3b0845fbc70f5935a5',
+    '0x0000000000085d4780B73119b644AE5ecd22b376',
+    '0xdac17f958d2ee523a2206206994597c13d831ec7',
+    '0x0b38210ea11411557c13457D4dA7dC6ea731B88a',
+    '0x84cA8bc7997272c7CfB4D0Cd3D55cd942B3c9419',
+  ]
+
+  return sumTokensExport({ owner, tokens, })
+}

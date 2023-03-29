@@ -1,8 +1,9 @@
-const { wavesAdapter } = require('../helper/wavesAdapter')
+const { wavesAdapter } = require('../helper/chain/wavesAdapter')
 
-const endpoint = "http://51.158.191.108:8002/api/v1/history/vires"
+const endpoint = "/vires"
 
 module.exports = {
+    timetravel: false,
     methodology: `Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending`,
     waves: {
         tvl: wavesAdapter(endpoint, item => {
@@ -15,5 +16,8 @@ module.exports = {
             item.meta.forEach(market => tvl += Number(market.currentTotalDebtUsd))
             return tvl
         }),
-    }
+    },
+    hallmarks:[
+        [1659092400, "Bad debt settlement in USDN"],
+    ],
 }

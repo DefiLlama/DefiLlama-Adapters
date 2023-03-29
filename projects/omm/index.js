@@ -6,8 +6,7 @@ const icxApiEndpoint = 'https://ctz.solidwallet.io/api/v3'
 const ommLendingPoolDataProviderContract = 'cx5f9a6ca11b2b761a469965cedab40ada9e503cb5'
 
 async function toInt(s) {
-    result = parseInt(s, 16)
-    return result
+    return parseInt(s, 16)
 }
 
 async function icxCall(address, method, params) {
@@ -65,5 +64,8 @@ async function fetch() {
 }
 
 module.exports = {
+    hallmarks: [
+        [1674388800,"Smart Contract Exploit"]
+      ],
    fetch
 }

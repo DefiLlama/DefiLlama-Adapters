@@ -1,6 +1,6 @@
-const abi = require("./TreasuryContract.json");
-const pairPrice = require("./getPairPrice.json");
-const valueOfAsset = require("./valueOfAsset.json");
+const abi = 'function balanceOf(address token) view returns (uint256)'
+const pairPrice = 'function getPairPrice(address pair, uint256 amount) view returns (uint256 valueInMMF, uint256 valueInUSD)';
+const valueOfAsset = 'function valueOfAsset(address asset, uint256 amount) view returns (uint256 valueInCRO, uint256 valueInUSD)'
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const { pool2 } = require('../helper/pool2')
@@ -23,6 +23,7 @@ const LPs = ["0xbA452A1c0875D33a440259B1ea4DcA8f5d86D9Ae",
 
     
 async function newTVL(timestamp, block, chainBlocks) {
+    block = chainBlocks.cronos
     const balances = {}
     const prices = {}
 
@@ -91,6 +92,7 @@ async function newTVL(timestamp, block, chainBlocks) {
 }
 
 async function staking(timestamp, block, chainBlocks) {
+    block = chainBlocks.cronos
     const staked = (await sdk.api.abi.call({
         target: "0xb8df27c687c6af9afe845a2afad2d01e199f4878",
         params: "0x1A6aD4bac521a98556A4C0Da5946654c5DC7Ce0A", // masterchef
