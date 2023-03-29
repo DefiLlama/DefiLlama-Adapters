@@ -20,8 +20,11 @@ async function tvl(timestamp, block, chainBlocks) {
 }
 
 module.exports={
-    avalanche: {
+    avax:{
         tvl,
     },
     methodology: "Counts staked AVAX tokens.",
+    hallmarks:[
+      [1643199567, "Benqi SAVAX Launched"]
+    ],
 }

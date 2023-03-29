@@ -1,17 +1,37 @@
 const tokenAddresses = require('../constant');
 const BigNumber = require('bignumber.js');
-const UniswapV2PairContractAbi = require('../../../helper/ankr/abis/UniswapV2Pair.json');
-const { ZERO, fromWei, createContractObject, getVautsTvl, createWeb3, fetchPriceData } = require('../../../helper/ankr/utils');
-const { fantomRpcUrl } = require('../../../helper/ankr/networks');
+const { ZERO, fromWei, getVautsTvl, } = require('../../../helper/ankr/utils');
 const { vaults } = require('./vaults');
 const { EXCHANGE_TYPE } = require('../vault');
 const { request, gql } = require("graphql-request");
+const sdk = require("@defillama/sdk")
 
-const web3 = createWeb3(fantomRpcUrl);
 
 const getBooPrice = async () => {
-  const c = createContractObject(tokenAddresses.fantom.usdcBooPair, UniswapV2PairContractAbi, web3);
-  return fetchPriceData(c.contract, true, 1e12);
+  return fetchPriceData(tokenAddresses.fantom.usdcBooPair, true, 1e12);
+};
+
+const fetchPriceData = async (pairAddress, viceVersa = false, multiplier = 1,) => {
+  const { reserve0, reserve1 } = await getReserves(pairAddress);
+  const isValid = !new BigNumber(reserve0).eq(ZERO) && !new BigNumber(reserve1).eq(ZERO);
+
+  if (isValid) {
+    return (viceVersa
+      ? new BigNumber(reserve0).div(new BigNumber(reserve1))
+      : new BigNumber(reserve1).div(new BigNumber(reserve0))
+    ).times(multiplier);
+  } else {
+    return ZERO;
+  }
+};
+
+const getReserves = async (pairAddress) => {
+  const { output: { _reserve0, _reserve1, _blockTimestampLast } } = await sdk.api.abi.call({
+    chain: 'fantom',
+    target: pairAddress,
+    abi: 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
+  })
+  return { reserve0: _reserve0, reserve1: _reserve1, blockTimestampLast: _blockTimestampLast };
 };
 
 const getUniPairQuery = (pairAddress) => gql`
@@ -44,11 +64,11 @@ const getPairsData = async (pairAddress) => {
 };
 
 const getSpookyPoolPrice = async (vault) => {
-  if (!vault.contract.address) {
+  if (!vault.pool) {
     return ZERO;
   }
   if (vault.exchangeType == EXCHANGE_TYPE.SPOOKYSWAP) {
-    const data = await getPairsData(vault.contract.address);
+    const data = await getPairsData(vault.pool);
     const { reserveUSD, totalSupply } = data;
     const result = totalSupply ? fromWei(new BigNumber(reserveUSD).div(totalSupply)) : ZERO;
     return result;

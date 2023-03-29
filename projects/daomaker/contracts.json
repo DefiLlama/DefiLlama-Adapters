@@ -1,36 +1,12 @@
 {
-    "stableCoinFarms": {
-        "ethereum": {
-            "USDCFarm": {
-                "tokenHolder": "0xC6aa04d4e3507ec147Ffe021a0899a4727A30349",
-                "tokenAddress": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
-            },
-            "USDTFarm": {
-                "tokenHolder": "0x58fab15F6864C2b1f8A18f7b02c841ef3788295f",
-                "tokenAddress": "0xdAC17F958D2ee523a2206206994597C13D831ec7"
-            },
-            "BUSDFarm": {
-                "tokenHolder": "0x31AFD3424efDC80A0c8091a2dd9BbFe203978Cc1",
-                "tokenAddress": "0x4Fabb145d64652a948d72533023f6E7A623C7C53"
-            },
-            "FRAXFarm": {
-                "tokenHolder": "0xa7e2359C1E4425fAB244852D45506BB844D4bcfD",
-                "tokenAddress": "0x853d955aCEf822Db058eb8505911ED77F175b99e"
-            },
-            "DAIFarm": {
-                "tokenHolder": "0x4662a125B4256Be27886Aa2F9664dCeFf97A022D",
-                "tokenAddress": "0x6B175474E89094C44Da98b954EedeAC495271d0F"
-            },
-            "USTFarm": {
-                "tokenHolder": "0x7593011814de698672216A1fd83363969cC642d2",
-                "tokenAddress": "0xa47c8bf37f92aBed4A126BDA807A7b7498661acD"
-            }
-        }
-    },
     "chains": [
         "ethereum",
         "bsc",
-        "polygon"
+        "polygon",
+        "fantom",
+        "step",
+        "celo"
     ],
-    "stakingContractEth": "0xd07e86f68C7B9f9B215A3ca3E79E74Bf94D6A847"
+    "stakingContractEth": "0xd07e86f68C7B9f9B215A3ca3E79E74Bf94D6A847",
+    "stakingTokenEth": "0x0f51bb10119727a7e5eA3538074fb341F56B09Ad"
 }

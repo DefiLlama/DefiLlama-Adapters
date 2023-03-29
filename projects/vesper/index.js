@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk")
 const abi = require('./abi.json')
 const { getChainTransform } = require('../helper/portedTokens')
-const http = require('../helper/http')
+const { getConfig } = require("../helper/cache")
 
 const chainConfig = {
   ethereum: {
@@ -29,15 +29,18 @@ function getChainExports(chain) {
 
     const poolSet = new Set()
 
-    for (const url of api)
-      (await http.get(url)).forEach(pool => poolSet.add(pool.address)) // add pools from our contracts list
+    for (let i = 0;i< api.length;i++) {
+      const key = ['vesper', chain, i].join('/')
+      const data = await getConfig(key, api[i])
+      data.forEach(pool => poolSet.add(pool.address)) // add pools from our contracts list
+    }
     if (stakingPool)  poolSet.delete(stakingPool)
     const poolList = [...poolSet]
 
     if (!poolList.length) return balances
 
     // Get collateral token
-    calls = poolList.map(target => ({ target }))
+    const calls = poolList.map(target => ({ target }))
     const { output: tokens } = await sdk.api.abi.multiCall({ calls, abi: abi.token, chain, block, })
     const { output: totalValue } = await sdk.api.abi.multiCall({ calls, abi: abi.totalValue, chain, block, })
     tokens.forEach((token, index) => sdk.util.sumSingleBalance(balances, transformAddress(token.output), totalValue[index].output))

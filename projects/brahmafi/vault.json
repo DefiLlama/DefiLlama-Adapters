@@ -1,0 +1,6 @@
+{
+  "wantToken": "address:wantToken",
+  "totalVaultFunds": "uint256:totalVaultFunds",
+  "executorByIndex": "function executorByIndex(uint256 _index) view returns (address)",
+  "lastEpochYield": "uint256:lastEpochYield"
+}

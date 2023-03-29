@@ -1,11 +1,8 @@
 const utils = require('../helper/utils')
+const { getConnection } = require('../helper/solana')
 const BigNumber = require('bignumber.js')
-const { Connection, PublicKey } = require('@solana/web3.js')
-
-function getConnection()
-{
-  return new Connection('https://solana-api.projectserum.com')
-}
+const { PublicKey } = require('@solana/web3.js')
+const sdk = require('@defillama/sdk')
 
 const poolInfoKey = new PublicKey('CsMSJ2wJAsQBNZU9LuL3FAx2Do9ndY4Ae15JAXhFMc1p')
 
@@ -34,7 +31,7 @@ const poolKeys = {
     'ammId': 'FJB4xeMJ9KoZVDZb7Pf91hggwy6hLJMQFXTMKCfugwU8',
   },
   '8HoQnePLqPj4M7PUDzfw8e3Ymdwgc7NLGnaTUapubyvu': { // sol-usdc
-    'ammId': '58oQChx4yWmvKdwLLZzBi4ChoCc2fqCUWBkwMihLYQo2', 
+    'ammId': '58oQChx4yWmvKdwLLZzBi4ChoCc2fqCUWBkwMihLYQo2',
   },
   'Epm4KfTj4DMrvqn6Bwg2Tr2N8vhQuNbuK8bESFp4k33K': {  // sol-usdt
     'ammId': '7XawhbbxtsRcQA8KTkHT9f9nc6d69UwqCDh6U5EEbEmX',
@@ -44,8 +41,7 @@ const poolKeys = {
   },
 }
 
-function isLp(token)
-{
+function isLp(token) {
   const addr = token.toString()
   if (poolTypes[addr] == 0)
     return true
@@ -54,30 +50,18 @@ function isLp(token)
 
 var priceCache = new Map()
 
-function sleep(ms)
-{
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-async function getTokenSupplyUI(mintPubkey)
-{
-  //console.log('getTokenSupplyUi(' + mintPubkey.toString() + ')')
+async function getTokenSupplyUI(mintPubkey) {
   const connection = getConnection()
   var supply = new BigNumber(0)
-
-  const mintAddr = mintPubkey.toString()
 
   const ret = await connection.getTokenSupply(mintPubkey)
   if (ret && ret.value && ret.value.uiAmountString)
     supply = new BigNumber(ret.value.uiAmountString)
 
-  await sleep(200)
   return supply
 }
 
-async function getLpPrice(tokenPubkey)
-{
-  //console.log('getLpPrice(' + tokenPubkey.toString() + ')')
+async function getLpPrice(tokenPubkey) {
 
   if (priceCache[tokenPubkey.toString()])
     return priceCache[tokenPubkey.toString()]
@@ -92,106 +76,78 @@ async function getLpPrice(tokenPubkey)
 
   const ammId = keys['ammId']
 
-  try {
-    const prefix = 'https://api.solscan.io/amm/read?address='
-    const url = prefix + ammId
+  const prefix = 'https://api.solscan.io/amm/read?address='
+  const url = prefix + ammId
 
-    const res = await utils.fetchURL(url)
-    if (res && res.data && res.data.success) {
-      const tvl = new BigNumber(res.data.data.liquidity)
+  const res = await utils.fetchURL(url)
+  if (res && res.data && res.data.success) {
+    const tvl = new BigNumber(res.data.data.liquidity)
 
-      const _tokenPubkey = new PublicKey(res.data.data.lpMint)
-      const supply = await getTokenSupplyUI(_tokenPubkey)
+    const _tokenPubkey = new PublicKey(res.data.data.lpMint)
+    const supply = await getTokenSupplyUI(_tokenPubkey)
 
-      price = tvl.div(supply)
+    price = tvl.div(supply)
 
-      priceCache[tokenPubkey.toString()] = price
-    } else {
-      console.log(res)
-    }
-  } catch (e) {
-    console.log(e)
+    priceCache[tokenPubkey.toString()] = price
+  } else {
+    sdk.log(res)
   }
 
-  //console.log('lp ' + tokenAddress + '\' price is ' + price.toFixed(3))
-  await sleep(200)
   return price
 }
 
 
-async function getTokenPrice(tokenPubkey)
-{
-  //console.log('getTokenPrice(' + tokenPubkey.toString() + ')')
+async function getTokenPrice(tokenPubkey) {
 
   if (priceCache[tokenPubkey.toString()])
     return priceCache[tokenPubkey.toString()]
 
   var price = new BigNumber(1.0)
 
-  try {
-    const prefix = 'https://public-api.solscan.io/market/token/'
-    const url = prefix + tokenPubkey.toString()
+  const prefix = 'https://public-api.solscan.io/market/token/'
+  const url = prefix + tokenPubkey.toString()
 
-    const res = await utils.fetchURL(url)
-    if (res && res.data && res.data.priceUsdt) {
-      price = new BigNumber(res.data.priceUsdt)
-      priceCache[tokenPubkey.toString()] = price
-    }
-  } catch (e) {
-    console.log(e)
+  const res = await utils.fetchURL(url)
+  if (res && res.data && res.data.priceUsdt) {
+    price = new BigNumber(res.data.priceUsdt)
+    priceCache[tokenPubkey.toString()] = price
   }
 
-  await sleep(200)
   return price
 }
 
-async function getHeroPrice()
-{
-  //console.log('getHeroPrice')
+async function getHeroPrice() {
 
   if (priceCache['Hero6s7zJXsw9hfCXLVR5stLqgCok3E7CCkpQEoLAk2g'])
     return priceCache['Hero6s7zJXsw9hfCXLVR5stLqgCok3E7CCkpQEoLAk2g']
 
   var price = new BigNumber(1.0)
 
-  try {
-    url = 'https://api.solscan.io/amm/read?address=FJB4xeMJ9KoZVDZb7Pf91hggwy6hLJMQFXTMKCfugwU8'
+  const url = 'https://api.solscan.io/amm/read?address=FJB4xeMJ9KoZVDZb7Pf91hggwy6hLJMQFXTMKCfugwU8'
 
-    const res = await utils.fetchURL(url)
-    if (res && res.data && res.data.data && res.data.data.price) {
-      price = new BigNumber(res.data.data.price)
-      priceCache['Hero6s7zJXsw9hfCXLVR5stLqgCok3E7CCkpQEoLAk2g'] = price
-    }
-
-  } catch (e) {
-    console.log(e)
+  const res = await utils.fetchURL(url)
+  if (res && res.data && res.data.data && res.data.data.price) {
+    price = new BigNumber(res.data.data.price)
+    priceCache['Hero6s7zJXsw9hfCXLVR5stLqgCok3E7CCkpQEoLAk2g'] = price
   }
 
-  await sleep(200)
   return price
 }
 
-async function getHeroLp()
-{
+async function getHeroLp() {
   var lpTvl = new BigNumber(0)
 
-  try {
-    url = 'https://api.solscan.io/amm/read?address=FJB4xeMJ9KoZVDZb7Pf91hggwy6hLJMQFXTMKCfugwU8'
+  const url = 'https://api.solscan.io/amm/read?address=FJB4xeMJ9KoZVDZb7Pf91hggwy6hLJMQFXTMKCfugwU8'
 
-    const res = await utils.fetchURL(url)
-    if (res && res.data && res.data.data && res.data.data.liquidity) {
-      lpTvl = new BigNumber(res.data.data.liquidity)
-    }
-
-  } catch (e) {
-    console.log(e)
+  const res = await utils.fetchURL(url)
+  if (res && res.data && res.data.data && res.data.data.liquidity) {
+    lpTvl = new BigNumber(res.data.data.liquidity)
   }
 
-  await sleep(200)
   return lpTvl
 }
 
-async function pools(){
+async function pools() {
   const connection = getConnection()
   const poolInfoAccount = await connection.getAccountInfo(poolInfoKey)
 
@@ -200,7 +156,7 @@ async function pools(){
 
   var amounts = []
 
-  for (var i = 0; i < poolLength; i ++) {
+  for (var i = 0; i < poolLength; i++) {
     if (i == 10)
       continue
 
@@ -237,7 +193,7 @@ async function staking() {
   var amounts = []
 
   const poolLength = buffer.readBigUInt64LE(0)
-  for (var i = 0; i < poolLength; i ++) {
+  for (var i = 0; i < poolLength; i++) {
     if (i != 0)
       continue
 
@@ -286,7 +242,7 @@ async function farmPool() {
   var amounts = []
 
   const poolLength = buffer.readBigUInt64LE(0)
-  for (var i = 0; i < poolLength; i ++) {
+  for (var i = 0; i < poolLength; i++) {
 
     const offset = 8 + i * 104
 
@@ -337,8 +293,7 @@ async function lpTvl() {
   }
 }
 
-async function tvl()
-{
+async function tvl() {
   const [pool, farm] = await Promise.all([
     pools(),
     farmPool(),
@@ -350,7 +305,7 @@ async function tvl()
 }
 
 module.exports = {
-  timetravel: false, 
+  timetravel: false,
   solana: {
     tvl,
     pool2: lpTvl,

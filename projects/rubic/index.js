@@ -4,6 +4,7 @@ const { stakings } = require('../helper/staking');
 
 const stakingContractRoundOne = '0x8d9Ae5a2Ecc16A66740A53Cc9080CcE29a7fD9F5';
 const stakingContractRoundTwo =  '0xa96cdb86332b105065ca99432916e631e469cf5d';
+const stakingContractRoundThree =  '0x3333B155fa21A972D179921718792f1036370333';
 const stakingToken = '0x8e3bcc334657560253b83f08331d85267316e08a'; // BRBC token (bsc)
 
 const pools = {
@@ -17,6 +18,7 @@ const pools = {
   arbitrum: '0x5F3c8d58A01Aad4f875d55E2835D82e12f99723c',
   aurora: '0x55Be05ecC1c417B16163b000CB71DcE8526a5D06',
   solana: 'DrmQS74dx5yDPzAJdGpVMqpSkVP9RXFQnMQAdeo1P7mj',
+  kava: '0x333b8881485fB8dE9af05d0B259a7f3f032B3333'
 };
 
 const usdcByChain = {
@@ -29,7 +31,8 @@ const usdcByChain = {
   moonriver: '0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d',
   arbitrum: '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
   aurora: '0xB12BFcA5A55806AaF64E99521918A4bf0fC40802',
-  solana: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
+  solana: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+  kava: '0xfA9343C3897324496A05fC75abeD6bAC29f8A40f'
 }
 
 function chainTvl(chain) {
@@ -57,40 +60,44 @@ function solanaTvl() {
   }
 }
 
-
-
 module.exports = {
   timetravel: false, // solana :cries:
-  methodology: 'TVL for each network - USDC balance of the pool, in each network we have one pool and the total indicator is calculated as the sum of the balances of all pools.',
+  methodology: 'Staking pool balance',
   bsc: {
-    tvl: chainTvl('bsc'),
-    staking: stakings([stakingContractRoundOne, stakingContractRoundTwo], stakingToken, 'bsc'),
+    tvl: () => ({}),
+    staking: stakings([stakingContractRoundOne, stakingContractRoundTwo, stakingContractRoundThree, ], stakingToken, 'bsc'),
   },
-  ethereum: {
-    tvl: chainTvl('ethereum')
-  },
-  polygon: {
-    tvl: chainTvl('polygon')
-  },
-  fantom: {
-    tvl: chainTvl('fantom')
-  },
-  avalanche: {
-    tvl: chainTvl('avax')
-  },
-  harmony: {
-    tvl: chainTvl('harmony')
-  },
-  moonriver: {
-    tvl: chainTvl('moonriver')
-  },
-  arbitrum: {
-    tvl: chainTvl('arbitrum')
-  },
-  aurora: {
-    tvl: chainTvl('aurora')
-  },
-  solana: {
-    tvl: solanaTvl()
+  hallmarks:[
+    [1655991120, "Horizon bridge Hack $100m"],
+  ],
+  kava: {
+    tvl: chainTvl('kava')
   }
+  // ethereum: {
+  //   tvl: chainTvl('ethereum')
+  // },
+  // polygon: {
+  //   tvl: chainTvl('polygon')
+  // },
+  // fantom: {
+  //   tvl: chainTvl('fantom')
+  // },
+  // avax:{
+  //   tvl: chainTvl('avax')
+  // },
+  // harmony: {
+  //   tvl: chainTvl('harmony')
+  // },
+  // moonriver: {
+  //   tvl: chainTvl('moonriver')
+  // },
+  // arbitrum: {
+  //   tvl: chainTvl('arbitrum')
+  // },
+  // aurora: {
+  //   tvl: chainTvl('aurora')
+  // },
+  // solana: {
+  //   tvl: solanaTvl()
+  // }
 }

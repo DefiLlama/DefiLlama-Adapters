@@ -1,14 +1,29 @@
 const axios = require('axios')
 
-async function fetch(){
+async function tvl(){
     const tvl = await axios.get('https://api.spec.finance/api/stat')
-    return tvl.data.tvl
+    return {
+        'terrausd': tvl.data.tvl,
+    }
+}
+
+async function terra2(){
+    const tvl = await axios.get('https://spec-api.azurefd.net/api/data?type=tvl')
+    return {
+        'tether': tvl.data.tvl,
+    }
 }
 
 module.exports = {
+    misrepresentedTokens: true,
     timetravel: false,
     terra:{
-        fetch
+        tvl
     },
-    fetch
+    terra2:{
+        tvl: terra2
+    },
+    hallmarks:[
+    [1651881600, "UST depeg"],
+  ]
 }

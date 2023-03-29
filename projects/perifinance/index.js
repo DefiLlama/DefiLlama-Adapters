@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const { utils: w3utils } = require("web3");
 const { totalIssuedPynths } = require("./abi.json");
 
 const BigNumber = require("bignumber.js");
@@ -18,7 +17,7 @@ const pUSD = "pUSD";
 const tokenKey = "usd-coin";
 
 const totalIssuedPynthByChain = async (chain) => {
-  const currencyKey = w3utils.padRight(w3utils.asciiToHex(pUSD), 64);
+  const currencyKey = rightPad(asciiToHex(pUSD), 64);
 
   const { output: totalIssuedPynth } = await sdk.api.abi.call({
     abi: totalIssuedPynths,
@@ -57,3 +56,42 @@ module.exports = {
     tvl: tvlByChain(polygon),
   },
 };
+
+
+/**
+ * Should be called to get hex representation (prefixed by 0x) of ascii string
+ *
+ * @method asciiToHex
+ * @param {String} str
+ * @returns {String} hex representation of input string
+ */
+ function asciiToHex (str)  {
+  if(!str)
+      return "0x00";
+  var hex = "";
+  for(var i = 0; i < str.length; i++) {
+      var code = str.charCodeAt(i);
+      var n = code.toString(16);
+      hex += n.length < 2 ? '0' + n : n;
+  }
+
+  return "0x" + hex;
+}
+
+/**
+ * Should be called to pad string to expected length
+ *
+ * @method rightPad
+ * @param {String} string to be padded
+ * @param {Number} chars that result string should have
+ * @param {String} sign, by default 0
+ * @returns {String} right aligned string
+ */
+function rightPad(string, chars, sign) {
+  var hasPrefix = /^0x/i.test(string) || typeof string === 'number';
+  string = string.toString(16).replace(/^0x/i,'');
+
+  var padding = (chars - string.length + 1 >= 0) ? chars - string.length + 1 : 0;
+
+  return (hasPrefix ? '0x' : '') + string + (new Array(padding).join(sign ? sign : "0"));
+}

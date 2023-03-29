@@ -1,0 +1,484 @@
+{
+  "version": "0.1.0",
+  "name": "dual_market",
+  "instructions": [
+    {
+      "name": "initPremiumAccount",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "premiumUsdcTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "usdcMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "depositPremiums",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "premiumUsdcTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userUsdcTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "initDip",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "vaultMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "optionMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultSplTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "splMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "vaultUsdcTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "usdcMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "dipState",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "strike",
+          "type": "u64"
+        },
+        {
+          "name": "expiration",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "deposit",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "userSplTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultSplTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userVaultTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultTokenMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "premiumTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userUsdcTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "optionTokenMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mmOptionTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "pythPrice",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "dipState",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "withdraw",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "userSplTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultSplTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userVaultTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultTokenMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultUsdcTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userUsdcTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "dipState",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "exerciseOption",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "vaultUsdcTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mmUsdcTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mmOptionTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "optionMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mmSplTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultSplTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "dipState",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "DIPState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "strike",
+            "type": "u64"
+          },
+          {
+            "name": "expiration",
+            "type": "u64"
+          },
+          {
+            "name": "splMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "vaultMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "vaultMintBump",
+            "type": "u8"
+          },
+          {
+            "name": "vaultSpl",
+            "type": "publicKey"
+          },
+          {
+            "name": "vaultSplBump",
+            "type": "u8"
+          },
+          {
+            "name": "optionMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "optionBump",
+            "type": "u8"
+          },
+          {
+            "name": "vaultUsdc",
+            "type": "publicKey"
+          },
+          {
+            "name": "vaultUsdcBump",
+            "type": "u8"
+          },
+          {
+            "name": "usdcMint",
+            "type": "publicKey"
+          }
+        ]
+      }
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "TokensStillLocked",
+      "msg": "Tokens are still locked until contract expiration"
+    },
+    {
+      "code": 6001,
+      "name": "DepositExpired",
+      "msg": "The expiration for the attempted deposit has already happened"
+    },
+    {
+      "code": 6002,
+      "name": "ExerciseExpired",
+      "msg": "The expiration for the attempted exercise has already happened"
+    },
+    {
+      "code": 6003,
+      "name": "IncorrectAddressForOption",
+      "msg": "Attempted to send options to an account not owned by protocol"
+    },
+    {
+      "code": 6004,
+      "name": "WrongLSOMint",
+      "msg": "LSO Mint computed and the argument do not match"
+    },
+    {
+      "code": 6005,
+      "name": "IncorrectMM",
+      "msg": "Wrong MM when trying to deposit"
+    },
+    {
+      "code": 6006,
+      "name": "InvalidToken",
+      "msg": "Unexpected token"
+    },
+    {
+      "code": 6007,
+      "name": "InvalidCaller",
+      "msg": "Invalid Caller"
+    },
+    {
+      "code": 6008,
+      "name": "InvalidUsdc",
+      "msg": "Invalid usdc"
+    },
+    {
+      "code": 6009,
+      "name": "InvalidSpl",
+      "msg": "Invalid spl"
+    },
+    {
+      "code": 6010,
+      "name": "WrongAuthority",
+      "msg": "The signer of transaction did not match user accounts"
+    },
+    {
+      "code": 6011,
+      "name": "DIPSPLVault",
+      "msg": "Failed SPL vault check on DIP"
+    },
+    {
+      "code": 6012,
+      "name": "DIPVaultMint",
+      "msg": "Failed vault mint check on DIP"
+    },
+    {
+      "code": 6013,
+      "name": "DIPOptionMint",
+      "msg": "Failed option mint check on DIP"
+    },
+    {
+      "code": 6014,
+      "name": "PythAddress",
+      "msg": "Invalid pyth address"
+    },
+    {
+      "code": 6015,
+      "name": "DIPAddress",
+      "msg": "Invalid dip address"
+    }
+  ],
+  "metadata": {
+    "address": "DiPbvUUJkDhV9jFtQsDFnMEMRJyjW5iS6NMwoySiW8ki"
+  }
+}

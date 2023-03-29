@@ -1,5 +1,4 @@
-const retry = require('async-retry')
-const axios = require('axios')
+const { getConfig } = require('../helper/cache')
 const { sumTokens } = require('../helper/unwrapLPs')
 const cwADA_ETH = '0x64875aaa68d1d5521666c67d692ee0b926b08b2f'
 const cwADA_POLY = 'polygon:0x64875aaa68d1d5521666c67d692ee0b926b08b2f'
@@ -7,11 +6,11 @@ const cwDOGE_ETH = '0xf9e293d5d793ddc1ae4f778761e0b3e4aa7cf2dd'
 const cwDOGE_POLY = 'polygon:0x9bd9ad490dd3a52f096d229af4483b94d63be618'
 
 async function getData() {
-  return retry(async bail => await axios.get('https://app.enzyme.finance/api/v1/network-asset-balances?network=ethereum'))
+  return getConfig('enzyme', 'https://app.enzyme.finance/api/v1/network-asset-balances?network=ethereum')
 }
 
 async function tvl(ts, block) {
-  const tokens = (await getData()).data
+  const tokens = await getData()
   const tokensAndOwners = []
   const balances = {}
   const vaultsObj = {}
@@ -21,7 +20,7 @@ async function tvl(ts, block) {
       vaultsObj[vault] = true
     })
   })
-  await sumTokens(balances, tokensAndOwners, block, undefined, undefined, { resolveCrv: true, resolveLP: true, resolveYearn: true })
+  await sumTokens(balances, tokensAndOwners, block,)
   
   if (balances[cwADA_ETH]) {
     balances[cwADA_POLY] = balances[cwADA_ETH]
@@ -37,5 +36,5 @@ async function tvl(ts, block) {
 
 module.exports = {
   timetravel: false,
-  ethereum: { tvl },
+  ethereum: { tvl }
 }

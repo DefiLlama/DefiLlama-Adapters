@@ -1,10 +1,6 @@
-const Web3 = require('web3');
-const web3 = new Web3(new Web3.providers.HttpProvider("https://rpc.ankr.com/fantom"));
-
 const oxLensAbi = require("./oxLens.json");
 const solidlyLensAbi = require("./solidlyLens.json");
 const veAbi = require("./ve.json");
-const erc20Abi = require("./erc20.json");
 const partnerRewardsPoolAddress = "0xDA006E87DB89e1C5213D4bfBa771e53c91D920aC";
 const oxdV1RewardsPoolAddress = "0xDA000779663501df3C9Bc308E7cEc70cE6F04211";
 const oxSolidRewardPoolAddress = "0xDA0067ec0925eBD6D583553139587522310Bec60";
@@ -19,10 +15,10 @@ const { masterChefExports, standardPoolInfoAbi, addFundsInMasterChef } = require
 const sdk = require('@defillama/sdk')
 const { default: BigNumber } = require('bignumber.js')
 
-const shareValue= {"inputs":[],"name":"getShareValue","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+const shareValue = "uint256:getShareValue"
 const xSCREAM = "0xe3D17C7e840ec140a7A51ACA351a482231760824"
 const xCREDIT = "0xd9e28749e80D867d5d14217416BFf0e668C10645"
-const shareTarot = {"inputs":[{"internalType":"uint256","name":"_share","type":"uint256"}],"name":"shareValuedAsUnderlying","outputs":[{"internalType":"uint256","name":"underlyingAmount_","type":"uint256"}],"stateMutability":"nonpayable","type":"function"}
+const shareTarot = "function shareValuedAsUnderlying(uint256 _share) returns (uint256 underlyingAmount_)"
 const xTAROT = "0x74D1D2A851e339B8cB953716445Be7E8aBdf92F4"
 
 const fBEET = "0xfcef8a994209d6916EB2C86cDD2AFD60Aa6F54b1"
@@ -38,7 +34,7 @@ async function tvl(time, ethBlock, chainBlocks) {
     const transform = addr => `fantom:${addr}`
     await addFundsInMasterChef(balances, "0xa7821c3e9fc1bf961e280510c471031120716c3d", block, chain,
         transform, standardPoolInfoAbi, [], true, true, "0xc165d941481e68696f43ee6e99bfb2b23e0e3114")
-    
+
     const screamShare = await sdk.api.abi.call({
         ...calldata,
         target: xSCREAM,
@@ -74,20 +70,19 @@ async function tvl(time, ethBlock, chainBlocks) {
     // 0xDAO Core
     const oxLensAddress = "0xDA00137c79B30bfE06d04733349d98Cf06320e69";
     const solidlyLensAddress = "0xDA0024F99A9889E8F48930614c27Ba41DD447c45";
-    const oxLens = new web3.eth.Contract(oxLensAbi, oxLensAddress);
-    const solidlyLens = new web3.eth.Contract(solidlyLensAbi, solidlyLensAddress);
-    const ve = new web3.eth.Contract(veAbi, veAddress);
     // const oxd = new web3.eth.Contract(erc20Abi, oxdAddress);
 
     // Fetch pools addresses
-    const oxPoolsAddresses = await oxLens.methods
-        .oxPoolsAddresses()
-        .call();
-    
-    const pageSize = 50;
+    const { output: oxPoolsAddresses } = await sdk.api.abi.call({
+        block,
+        chain: 'fantom',
+        target: oxLensAddress,
+        abi: oxLensAbi.oxPoolsAddresses
+    })
+    const pageSize = 200;
     const poolsMap = {};
     let currentPage = 0;
-    
+
     // Add pools
     const addPools = (pools, reservesData) => {
         pools.forEach((pool, index) => {
@@ -115,29 +110,38 @@ async function tvl(time, ethBlock, chainBlocks) {
             poolsMap[pool.id] = newPool;
         });
     };
-    while (true) {
+    let addresses = []
+    while (addresses) {
         const start = currentPage * pageSize;
         const end = start + pageSize;
-        const addresses = oxPoolsAddresses.slice(start, end);
+        addresses = oxPoolsAddresses.slice(start, end);
         if (addresses.length === 0) {
             break;
         }
         currentPage += 1;
-        const poolsData = await oxLens.methods
-            .oxPoolsData(addresses)
-            .call()
-    
+
+        const { output: poolsData } = await sdk.api.abi.call({
+            block,
+            chain: 'fantom',
+            params: [addresses],
+            target: oxLensAddress,
+            abi: oxLensAbi.oxPoolsData
+        })
         const solidlyPoolsAddresses = poolsData.map((pool) => pool.poolData.id);
-        const reservesData = await solidlyLens.methods
-            .poolsReservesInfo(solidlyPoolsAddresses)
-            .call()
+        const { output: reservesData } = await sdk.api.abi.call({
+            block,
+            chain: 'fantom',
+            target: solidlyLensAddress,
+            params: [solidlyPoolsAddresses],
+            abi: solidlyLensAbi.poolsReservesInfo
+        })
         addPools(
             sanitize(poolsData),
             sanitize(reservesData)
         );
     }
     const pools = Object.values(poolsMap);
-        
+
     // Add TVL from pools to balances
     const addBalance = (tokenAddress, amount) => {
         const fantomTokenAddress = `fantom:${tokenAddress}`
@@ -149,49 +153,63 @@ async function tvl(time, ethBlock, chainBlocks) {
         }
     }
     pools.forEach(pool => {
-        const token0 = pool.poolData.token0Address; 
+        const token0 = pool.poolData.token0Address;
         const token1 = pool.poolData.token1Address;
         const amount0 = pool.token0Reserve;
         const amount1 = pool.token1Reserve;
         addBalance(token0, amount0);
         addBalance(token1, amount1);
     });
-    
+
     // Add locked SOLID
-    const lockedSolidAmount = (await ve.methods.locked(2).call()).amount;
+    const { output: { amount: lockedSolidAmount } } = await sdk.api.abi.call({
+        block,
+        chain: 'fantom',
+        target: veAddress,
+        params: 2,
+        abi: veAbi.locked
+    })
     addBalance(solidAddress, lockedSolidAmount);
-    
+
     // Add staking pools TVL
-    const oxdV1RewardsPool = new web3.eth.Contract(
-        erc20Abi,
-        oxdV1RewardsPoolAddress
-    );
-    const oxSolidRewardsPool = new web3.eth.Contract(
-        erc20Abi,
-        oxSolidRewardPoolAddress
-    );    
-    const partnerRewardsPool = new web3.eth.Contract(
-        erc20Abi,
-        partnerRewardsPoolAddress
-    );
-    const oxdV1RewardsPoolBalance = await oxdV1RewardsPool.methods.totalSupply().call();    
-    const oxSolidRewardsPoolBalance = await oxSolidRewardsPool.methods.totalSupply().call();    
-    const partnerRewardsPoolBalance = await partnerRewardsPool.methods.totalSupply().call();
-        
+    const { output: oxdV1RewardsPoolBalance } = await sdk.api.abi.call({
+        block,
+        chain: 'fantom',
+        target: oxdV1RewardsPoolAddress,
+        abi: 'erc20:totalSupply'
+    })
+    const { output: oxSolidRewardsPoolBalance } = await sdk.api.abi.call({
+        block,
+        chain: 'fantom',
+        target: oxSolidRewardPoolAddress,
+        abi: 'erc20:totalSupply'
+    })
+    const { output: partnerRewardsPoolBalance } = await sdk.api.abi.call({
+        block,
+        chain: 'fantom',
+        target: partnerRewardsPoolAddress,
+        abi: 'erc20:totalSupply'
+    })
+
     addBalance(oxSolidAddress, oxdV1RewardsPoolBalance);
     addBalance(oxSolidAddress, partnerRewardsPoolBalance);
     addBalance(oxSolidAddress, oxSolidRewardsPoolBalance);
-    
+
     // Add vote locked OXD
-    const oxd = new web3.eth.Contract(erc20Abi, oxdAddress);
-    const voteLockedOxdBalance = await oxd.methods.balanceOf(vlOxdAddress).call();
+    const { output: voteLockedOxdBalance } = await sdk.api.abi.call({
+        block,
+        chain: 'fantom',
+        target: oxdAddress,
+        params: vlOxdAddress,
+        abi: 'erc20:balanceOf'
+    })
     addBalance(oxdAddress, voteLockedOxdBalance);
 
     return balances
 }
 
-module.exports={
-    fantom:{
+module.exports = {
+    fantom: {
         tvl
     }
 }

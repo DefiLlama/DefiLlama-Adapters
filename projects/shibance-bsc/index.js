@@ -1,9 +1,6 @@
 const BigNumber = require("bignumber.js");
 const { getBalanceNumber } = require('./format');
-const sdk = require("@defillama/sdk");
 const chains = require('./constants/chain');
-
-require("dotenv").config();
 
 const fetchPublicVaultData = require("./vault");
 const fetchFarms = require('./farm');
@@ -23,7 +20,6 @@ async function getTvl(chain, timestamp, _ethBlock, chainBlocks) {
   };
 
   const chainId = chains[chain];
-  // console.log("block", block);
   const [vData, pools, farmsLP] = await Promise.all([
     fetchPublicVaultData(chain, block),
     fetchPoolsTotalStaking(chain, block),
@@ -83,31 +79,14 @@ async function getTvl(chain, timestamp, _ethBlock, chainBlocks) {
   const baseToken = usdMappings[chain];
   balances[`${chain}:${baseToken}`] = tvl.toNumber();
 
-  if (chainBlocks) return balances;
   return tvl.toNumber();
 }
 
-// (async () => {
-//   try {
-//     console.log(
-//       await getTvl("bsc", null, null, {
-//         bsc: 10700328,
-//       })
-//     );
-//   } catch(e) {
-//     console.log(e.stack)
-//   }
-// })();
 
 module.exports = {
   misrepresentedTokens: true,
   methodology: "We count liquidity on the dexes, pulling data from onchain",
-  fetch: getChainTvl("bsc"),
-  // kcc: {
-  //   tvl: getChainTvl("kcc"),
-  // },
-  // bsc: {
-  //   tvl: getChainTvl("bsc"),
-  // },
-  // tvl: getChainTvl("bsc"),
+  bsc: {
+    tvl: getChainTvl("bsc"),
+  }
 };

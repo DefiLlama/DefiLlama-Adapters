@@ -1,30 +1,6 @@
 {
-  "getAllVaults": {
-    "inputs": [],
-    "name": "getAllVaults",
-    "outputs": [
-      {
-        "internalType": "address[]",
-        "name": "",
-        "type": "address[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function",
-    "constant": true
-  },
-  "getVaultCollateral": {
-    "inputs":[],
-    "name":"collateralToken",
-    "outputs":[
-      {
-        "internalType":"address",
-        "name":"",
-        "type":"address"
-      }
-    ],
-    "stateMutability":"view",
-    "type":"function",
-    "constant": true
-  }
+  "getAllVaults": "address[]:getAllVaults",
+  "getVaultCollateral": "address:collateralToken",
+  "getAllPools": "address[]:getAllPools",
+  "getConfig": "function getConfig() view returns (tuple(uint256 minExitAmount, uint256 protocolFee, address feeWallet, address collateralToken, address collateralOracle, address collateralOracleIterator, address volatilityEvolution, address underlyingLiquidityValuer, address exposure, address poolShare, address traderPortfolio, uint8 collateralDecimals))"
 }

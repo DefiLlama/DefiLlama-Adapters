@@ -1,13 +1,11 @@
-const { transformFantomAddress, transformAvaxAddress, transformPolygonAddress } = require("../helper/portedTokens");
-
 const transformAddress = (chain, address) => {
   switch (chain) {
     case 'polygon': 
-      return Promise.resolve(address => `polygon:${address}`)
+      return addr => 'polygon:'+addr
     case 'fantom': 
-      return transformFantomAddress()
+      return addr => 'fantom:'+addr
     case 'avax': 
-      return transformAvaxAddress()
+      return addr => 'avax:'+addr
     default:
       throw 'Unsupported chain'
   }

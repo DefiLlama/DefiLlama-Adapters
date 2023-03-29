@@ -1,7 +1,7 @@
 const { tombTvl } = require("./helper/tomb");
 const sdk = require("@defillama/sdk");
-const { transformCronosAddress } = require("./helper/portedTokens");
-const { unwrapUniswapLPs } = require('./helper/unwrapLPs');
+const { getChainTransform } = require("./helper/portedTokens");
+const { unwrapUniswapLPs, unwrapLPsAuto } = require('./helper/unwrapLPs');
 
 const PES = "0x8efbaa6080412d7832025b03b9239d0be1e2aa3b";
 const SPES = "0xBBd4650EeA85f9DBd83d6Fb2a6E8B3d8f32FE1C5";
@@ -38,7 +38,7 @@ function addToExports(chain, key, fn) {
 
 async function tvl(timestamp, block, chainBlocks) {
     const balances = {};
-    const transform = await transformCronosAddress();
+    const transform = await getChainTransform('cronos');
     const result = await sdk.api.abi.multiCall({
         calls: genesisTokens.map((t) => ({
           target: t,
@@ -64,9 +64,9 @@ async function tvl(timestamp, block, chainBlocks) {
         );
 
     delete balances[`cronos:${PES}`];
-
+    await unwrapLPsAuto({ balances, block: chainBlocks.cronos, chain: 'cronos',  })
     return balances; 
-};
+}
 
 addToExports('cronos', 'tvl', tvl)
 

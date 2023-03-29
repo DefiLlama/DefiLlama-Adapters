@@ -11,7 +11,7 @@ const USDT_TOKEN = '0xceE8FAF64bB97a73bb51E115Aa89C17FfA8dD167'
 const POOL2_ADDRESS = '0x625ae9043e8730c4a1e30b36838502fb90e1d3c2'
 const USDT_PAIR = '0x219ee5d76593f5bd639125b6411a17d309e3ad31'
 const KLAY_PAIR = '0x5db231ac93faaad876155dc0853bb11a2f4b0fb2'
-const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
+const W_KLAY_ADDRESS = '0xd7a4d10070a4f7bc2a015e78244ea137398c3b74'
 
 const TOKENS = {
   kDAI: {
@@ -45,6 +45,10 @@ const TOKENS = {
   pUSD: {
     decimal: 18,
     address: '0x168439b5eebe8c83db9eef44a0d76c6f54767ae4'
+  },
+  USDK: {
+    decimal: 18,
+    address: '0xd2137fdf10bd9e4e850c17539eb24cfe28777753'
   }
 }
 
@@ -96,9 +100,8 @@ async function pool2(timestamp, ethBlock, chainBlocks) {
   const KLAY_LP_Tokens = (await sdk.api.erc20.balanceOf({ target: KLAY_PAIR, owner: POOL2_ADDRESS, block, chain, })).output
   const KLAY_Tokens = (await sdk.api.eth.getBalance({ target: KLAY_PAIR, block, chain, })).output
   const KLAY_LP_totalSupply = (await sdk.api.erc20.totalSupply({ target: KLAY_PAIR, block, chain, })).output
-  balances[transformAddress(NULL_ADDRESS)] = BigNumber(KLAY_Tokens).multipliedBy(2).multipliedBy(KLAY_LP_Tokens).dividedBy(KLAY_LP_totalSupply).toFixed(0)
+  balances[transformAddress(W_KLAY_ADDRESS)] = BigNumber(KLAY_Tokens).multipliedBy(2).multipliedBy(KLAY_LP_Tokens).dividedBy(KLAY_LP_totalSupply).toFixed(0)
 
-  console.log({ USDT_LP_Tokens, USDT_Tokens, USDT_LP_totalSupply, KLAY_LP_Tokens, KLAY_Tokens, KLAY_LP_totalSupply, })
   fixBalances(balances)
   return balances
 }

@@ -1,13 +1,12 @@
-const retry = require("./helper/retry");
-const axios = require("axios");
-const { GraphQLClient, gql } = require("graphql-request");
+const { get } = require('./helper/http')
+const { GraphQLClient,  } = require("graphql-request");
 const BigNumber = require("bignumber.js");
 
 async function fetch() {
   const endpoint = "https://xapi3.fantom.network/api";
   const graphQLClient = new GraphQLClient(endpoint);
 
-  const query = gql`
+  const query = `
     query getToken($token: Address!) {
       erc20Token(token: $token) {
         address
@@ -36,12 +35,9 @@ async function fetch() {
     },
   ];
 
-  let price_feed = await retry(
-    async (bail) =>
-      await axios.get(
+  let price_feed = await get(
         "https://api.coingecko.com/api/v3/simple/price?ids=fantom&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true"
       )
-  );
 
   const wData = await graphQLClient.request(query, {
     token: tokens[0].address,
@@ -58,7 +54,7 @@ async function fetch() {
     .div(10 ** 18)
     .toNumber();
   const result = (
-    tvl * price_feed.data.fantom.usd +
+    tvl * price_feed.fantom.usd +
     new BigNumber(fData.erc20Token.totalSupply).div(10 ** 18).toNumber()
   ).toFixed(2);
 

@@ -1,4 +1,4 @@
-const { get_account_tvl } = require("../helper/eos");
+const { get_account_tvl } = require("../helper/chain/eos");
 
 const accounts = [
   "eosdtcntract", // EOS collateral
@@ -13,8 +13,9 @@ const tokens = [
   ["eosio.token", "EOS", "eos"]
 ];
 
-// Chintai
-// https://chintai.io/
+// Equilibrium
+// https://eosdt.com
+// https://equilibrium.io
 async function eos() {
   return await get_account_tvl(accounts, tokens);
 }

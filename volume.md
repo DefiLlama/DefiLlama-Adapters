@@ -7,6 +7,9 @@ https://api.thegraph.com/subgraphs/name/balancer-labs/balancer
 #### Bancor
 https://thegraph.com/explorer/subgraph/blocklytics/bancor
 
+#### Carthage
+https://thegraph.cndlchain.com/subgraphs/name/ianlapham/uniswap-v3-test
+
 #### Curve
 https://www.curve.fi/raw-stats/ren-1440m.json //where ren is the pool name
 

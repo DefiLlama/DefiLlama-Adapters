@@ -202,7 +202,7 @@ module.exports = {
     tvl: polygonTvl,
     borrowed: polygonBorrowed
   },
-  avalanche: {
+  avax:{
     tvl: avaxTvl,
     borrowed: avaxBorrowed
   }

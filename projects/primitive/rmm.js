@@ -1,30 +1,29 @@
 const sdk = require('@defillama/sdk')
-const BigNumber = require('bignumber.js')
+const {sumTokens} = require("../helper/unwrapLPs");
+const abi = require("./abi.json");
 
-module.exports = async function tvl(_, block) {
-  const weth = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
-  const usdc = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
-  const engine = '0xd3541aD19C9523c268eDe8792310867C57BE39e4' // WETH-USDC Pair
+const engine_weth_usdc = '0xd3541aD19C9523c268eDe8792310867C57BE39e4' // WETH-USDC Pair
+const engines = [engine_weth_usdc]
 
-  const balances = (
-    await sdk.api.abi.multiCall({
-      abi: 'erc20:balanceOf',
-      calls: [
-        {
-          target: weth,
-          params: engine,
-        },
-        {
-          target: usdc,
-          params: engine,
-        },
-      ],
-      block,
+module.exports = async function tvl(time, ethBlock, chainBlocks) {
+  const [{output: risky}, {output: stable}] = await Promise.all([
+    sdk.api.abi.multiCall({
+      abi: abi['risky'],
+      calls: engines.map(e => ({target: e})),
+      block: ethBlock,
+    }), 
+    sdk.api.abi.multiCall({
+      abi: abi['stable'],
+      calls: engines.map(e => ({target: e})),
+      block: ethBlock,
     })
-  ).output
-
-  return {
-    [`${weth}`]: new BigNumber(balances[0].output),
-    [`${usdc}`]: new BigNumber(balances[1].output),
-  }
+  ])
+    
+  const tokensAndOwners = risky.map((call, idx) => [
+    [call.output, call.input.target],
+    [stable[idx].output, call.input.target]
+  ]).flat()
+  const balances = {}
+  await sumTokens(balances, tokensAndOwners, ethBlock, 'ethereum')
+  return balances
 }

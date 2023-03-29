@@ -1,4 +1,4 @@
-const { pool2s } = require("../helper/pool2");
+const { staking } = require("../helper/staking");
 
 // Contracts
 const StakingYieldContract = "0xDd80E21669A664Bce83E3AD9a0d74f8Dad5D9E72";
@@ -10,9 +10,9 @@ const FOX = "0xc770eefad204b5180df6a14ee197d99d808ee52d";
 
 module.exports = {
   ethereum: {
-    pool2: pool2s([StakingYieldContract, StakingYieldContractV2], [ETH_FOX_UNIV2])
+    pool2: staking([StakingYieldContract, StakingYieldContractV2], [ETH_FOX_UNIV2]),
+    tvl: async ()=>({}),
   },
-  tvl: async ()=>({}),
   methodology:
     "We count liquidity of ETH-FOX LP deposited on Uniswap V2 pool through StakingYieldContract contract; and the staking of native token",
 };

@@ -1,6 +1,4 @@
-const sdk = require("@defillama/sdk");
 const { stakingPricedLP } = require("../helper/staking");
-const { transformAvaxAddress  } = require("../helper/portedTokens");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const { pool2Exports } = require("../helper/pool2");
 
@@ -16,7 +14,7 @@ const gShareAvaxLp = "0xae427ad7a54f5490ef76b3bde3663b0e45c7a102"
 
 async function atvl(timestamp, block, chainBlocks) {
     const balances = {};
-    const transform = await transformAvaxAddress();
+    const transform = addr => 'avax:'+addr;
     await sumTokensAndLPsSharedOwners(
 		balances,
 		[
@@ -34,7 +32,7 @@ async function atvl(timestamp, block, chainBlocks) {
     
 
     return balances;
-};
+}
 
 const pool2LPs = [
     graveAvaxLp,
@@ -42,7 +40,7 @@ const pool2LPs = [
   ];
   
 module.exports = {
-    avalanche: {
+    avax:{
         tvl: atvl,
         pool2: pool2Exports(GShareRewardPool,pool2LPs,"avax"),
         staking: stakingPricedLP(ASYLUM, GSHARE, "avax", gShareAvaxLp, "wrapped-avax")

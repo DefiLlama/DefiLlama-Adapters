@@ -1,16 +1,6 @@
 const BigNumber = require('bignumber.js');
 const { toUSDTBalances } = require('./../../../helper/balances');
 const sdk = require("@defillama/sdk");
-
-const { onxTokenContract,
-  onxPoolContract,
-  onsTokenContract,
-  aethTokenContract,
-  onsPoolsContracts,
-  wethTokenContract,
-  daiTokenContract,
-  fraxTokenContract,
-  usdcTokenContract } = require('../contract');
 const tokenAddresses = require('../constant');
 const { getVautsTvl, getBalanceOf, getReserves } = require('../../../helper/ankr/utils');
 const { ZERO, vaults } = require('./vaults');
@@ -27,7 +17,7 @@ const { getWethPrice,
 const { farms } = require('./farms');
 
 const getStakeTvl = async (onxPrice) => {
-  const balance = new BigNumber(await onxTokenContract.methods.balanceOf(tokenAddresses.sOnx).call());
+  const balance = new BigNumber(await getBalanceOf(tokenAddresses.sOnx, tokenAddresses.onx));
   return toUSDTBalances(onxPrice.times(balance).div(1e18));
 }
 
@@ -39,9 +29,22 @@ const getEthereumStaking = async () => {
 
 const getEthereumBorrows = async () => {
   const wethPrice = await getWethPrice();
-  const borrowsTvl = new BigNumber(await onxPoolContract.methods.totalBorrow().call()).div(1e18);
+
+  let { output: borrowsTvl } = await sdk.api.abi.call({
+    target: tokenAddresses.pool,
+    abi: 'uint256:totalBorrow'
+  })
+  borrowsTvl = new BigNumber(borrowsTvl).div(1e18);
   return toUSDTBalances(wethPrice.times(borrowsTvl));
 }
+
+
+const onsPoolLPs = {
+  aethPairOne: tokenAddresses.aethPairOne,
+  aethPairOns: tokenAddresses.aethPairOns,
+  aethPairEth: tokenAddresses.aethPairEth,
+}
+
 
 const getOnePoolsTvl = async (price) => {
   let totalBalance = new BigNumber(0);
@@ -52,27 +55,27 @@ const getOnePoolsTvl = async (price) => {
       let tokenBalance = new BigNumber();
       switch (farm.title) {
         case 'aeth':
-          tokenBalance = new BigNumber(await aethTokenContract.methods.balanceOf(farm.address).call());
+          tokenBalance = new BigNumber(await getBalanceOf(farm.address, tokenAddresses.aethToken));
           balance = tokenBalance.times(price.aethPrice);
           break;
         case 'weth':
-          tokenBalance = new BigNumber(await wethTokenContract.methods.balanceOf(farm.address).call());
+          tokenBalance = new BigNumber(await getBalanceOf(farm.address, tokenAddresses.wethToken));
           balance = tokenBalance.times(price.wethPrice);
           break;
         case 'onx':
-          tokenBalance = new BigNumber(await onxTokenContract.methods.balanceOf(farm.address).call());
+          tokenBalance = new BigNumber(await getBalanceOf(farm.address, tokenAddresses.onx));
           balance = tokenBalance.times(price.onxPrice);
           break;
         case 'dai':
-          tokenBalance = new BigNumber(await daiTokenContract.methods.balanceOf(farm.address).call());
+          tokenBalance = new BigNumber(await getBalanceOf(farm.address, tokenAddresses.daiToken));
           balance = tokenBalance.times(1);
           break;
         case 'frax':
-          tokenBalance = new BigNumber(await fraxTokenContract.methods.balanceOf(farm.address).call());
+          tokenBalance = new BigNumber(await getBalanceOf(farm.address, tokenAddresses.fraxToken));
           balance = tokenBalance.times(1);
           break;
         case 'usdc':
-          tokenBalance = new BigNumber(await usdcTokenContract.methods.balanceOf(farm.address).call());
+          tokenBalance = new BigNumber(await getBalanceOf(farm.address, tokenAddresses.usdcToken));
           balance = tokenBalance.times(1).div(1e6);
           break;
       }
@@ -90,9 +93,9 @@ const getOnsPoolsTvl = async (price) => {
     onsPools.map(async (farm) => {
       let balance = new BigNumber(0);
       let sum = new BigNumber(0);
-      const totalSupply = new BigNumber(await onsPoolsContracts[farm.title].methods.totalSupply().call());
-      const tokenBalance = new BigNumber(await onsPoolsContracts[farm.title].methods.balanceOf(farm.address).call());
-      const { reserve0, reserve1 } = await getReserves(onsPoolsContracts[farm.title]);
+      const totalSupply = new BigNumber((await sdk.api.erc20.totalSupply({ target: onsPoolLPs[farm.title] })).output);
+      const tokenBalance = new BigNumber((await sdk.api.erc20.balanceOf({ target: onsPoolLPs[farm.title], owner: farm.address })).output);
+      const { reserve0, reserve1 } = await getReserves(onsPoolLPs[farm.title]);
 
       if (farm.title === 'aethPairOne') {
         sum = new BigNumber(reserve0).times(price.aethPrice).plus(new BigNumber(reserve1).times(price.onePrice));
@@ -109,18 +112,22 @@ const getOnsPoolsTvl = async (price) => {
 }
 
 const getOneVaultTvl = async (wethPrice, aethPrice, onsPrice) => {
-  const onsValue = new BigNumber(
-    await onsTokenContract.methods.balanceOf(tokenAddresses.oneVault).call()
+  const onsValue = new BigNumber(await getBalanceOf(tokenAddresses.oneVault, tokenAddresses.onsToken)
   ).times(onsPrice).div(1e18);
-  const aEthValue = new BigNumber(
-    await aethTokenContract.methods.balanceOf(tokenAddresses.oneVault).call()
+  const aEthValue = new BigNumber(await getBalanceOf(tokenAddresses.oneVault, tokenAddresses.aethToken)
   ).times(aethPrice).div(1e18);
   return onsValue.plus(aEthValue);
 }
 
 const getLendingTvl = async (wethPrice) => {
-  let totalStake = await onxPoolContract.methods.totalStake().call();
-  let totalBorrow = await onxPoolContract.methods.totalPledge().call();
+  let { output: totalStake } = await sdk.api.abi.call({
+    target: tokenAddresses.pool,
+    abi: 'uint256:totalStake'
+  })
+  let { output: totalBorrow } = await sdk.api.abi.call({
+    target: tokenAddresses.pool,
+    abi: 'uint256:totalPledge'
+  })
   return new BigNumber(totalBorrow).plus(totalStake).times(wethPrice).div(1e18);
 }
 
@@ -152,11 +159,10 @@ const getPairsData = async (pairAddress) => {
 };
 
 const getSushiPoolPrice = async (vault) => {
-  if (!vault.contract.address) {
+  if (!vault.pool)
     return ZERO;
-  }
 
-  const data = await await getPairsData(vault.contract.address);
+  const data = await getPairsData(vault.pool);
   const { reserveUSD, totalSupply } = data;
 
   return new BigNumber(reserveUSD).div(totalSupply).div(1e18);
@@ -173,7 +179,7 @@ const getFarmsTvl = async (price) => {
   await Promise.all(
     farms.map(async (farm) => {
       const address = !farm.isCustomFarmContract ? tokenAddresses.onxFarm : tokenAddresses.onxTripleFarm;
-      const balance = await getBalanceOf(address, farm.contract);
+      const balance = await getBalanceOf(address, farm.address);
 
       const usdBalance = await getUsdBalance(
         balance,
@@ -203,7 +209,7 @@ const getOnxEthLpTvl = async () => {
   const farm = farms.find(farm => farm.pid === 4);
 
   const address = !farm.isCustomFarmContract ? tokenAddresses.onxFarm : tokenAddresses.onxTripleFarm;
-  const balance = await getBalanceOf(address, farm.contract);
+  const balance = await getBalanceOf(address, farm.address);
 
   const tvl = await getUsdBalance(
     balance,
@@ -231,19 +237,36 @@ const getEthereumTvl = async () => {
   let netTvl = new BigNumber(0);
 
   const wethPrice = await getWethPrice();
-  const onxPrice = (await getOnxPrice()).times(wethPrice);
-  const aethPrice = (await getAethPrice()).times(wethPrice);
-  const onsPrice = (await getOnsPrice()).times(aethPrice);
-  const ankrPrice = (await getAnkrPrice()).times(wethPrice);
-  const bondPrice = (await getBondPrice()).times(wethPrice);
-  const sushiPrice = (await getSushiPrice()).times(wethPrice);
+  const aethPrice = (await getAethPrice()).times(wethPrice)
+  const [
+    onxPrice,
+    ankrPrice,
+    bondPrice,
+    sushiPrice,
+    onePrice,
+    onsPrice,
+  ] = await Promise.all([
+    (await getOnxPrice()).times(wethPrice),
+    (await getAnkrPrice()).times(wethPrice),
+    (await getBondPrice()).times(wethPrice),
+    (await getSushiPrice()).times(wethPrice),
+    (await getOnePrice()).times(aethPrice),
+    (await getOnsPrice()).times(aethPrice),
+  ])
 
-  const farmsTvl = await getFarmsTvl({ wethPrice, onxPrice, aethPrice, ankrPrice, bondPrice, sushiPrice });
-  const onePoolsTvl = await getOnePoolsTvl({ aethPrice, wethPrice, onxPrice });
-  const onePrice = (await getOnePrice()).times(aethPrice);
-  const onsPoolsTvl = await getOnsPoolsTvl({ aethPrice, onePrice, onsPrice, wethPrice });
-  const oneVaultTvl = await getOneVaultTvl(wethPrice, aethPrice, onsPrice);
-  const lendingTvl = await getLendingTvl(wethPrice);
+  const [
+    farmsTvl,
+    onePoolsTvl,
+    onsPoolsTvl,
+    oneVaultTvl,
+    lendingTvl,
+  ] = await Promise.all([
+    getFarmsTvl({ wethPrice, onxPrice, aethPrice, ankrPrice, bondPrice, sushiPrice }),
+    getOnePoolsTvl({ aethPrice, wethPrice, onxPrice }),
+    getOnsPoolsTvl({ aethPrice, onePrice, onsPrice, wethPrice }),
+    getOneVaultTvl(wethPrice, aethPrice, onsPrice),
+    getLendingTvl(wethPrice),
+  ])
 
   const tvl = netTvl
     .plus(farmsTvl)
@@ -256,7 +279,10 @@ const getEthereumTvl = async () => {
 }
 
 function getEthereumTvlEx() {
-  return sdk.util.sumChainTvls([getEthereumTvl, getEthereumVautsTvl]);
+  return sdk.util.sumChainTvls([
+    getEthereumTvl,
+     getEthereumVautsTvl
+    ]);
 }
 
 module.exports = {

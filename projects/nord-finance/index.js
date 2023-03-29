@@ -1,53 +1,21 @@
-const utils = require('../helper/utils');
+const { sumTokens } = require('../helper/unwrapLPs')
+const config = require('./config')
 
-const STATS_URL = 'https://api.nordfinance.io/tvl/statistics';
+module.exports = {}
 
-async function fetch() {
-  var totalTvl = await utils.fetchURL(STATS_URL);
-  return totalTvl.data.tvl.totalTvl - totalTvl.data.tvl.lpStaking.totalLpStaking - totalTvl.data.tvl.staking.totalStaking;
-}  
+Object.keys(config).forEach(chain => {
+  const { toa = [], staking = [], pool2 = [] } = config[chain]
+  const exportObj = {}
 
-async function ethereum() {
-  var totalTvl = await utils.fetchURL(STATS_URL);
-  return totalTvl.data.tvl.ethereum - totalTvl.data.tvl.lpStaking.ethereum - totalTvl.data.tvl.staking.ethereum;
-}
+  if (toa.length)
+    exportObj.tvl = async (_, _b, { [chain]: block }) => sumTokens({}, toa, block, chain)
 
-async function polygon() {
-  var totalTvl = await utils.fetchURL(STATS_URL);
-  return totalTvl.data.tvl.polygon - totalTvl.data.tvl.lpStaking.polygon - totalTvl.data.tvl.staking.polygon;
-}
+  if (staking.length)
+    exportObj.staking = async (_, _b, { [chain]: block }) => sumTokens({}, staking, block, chain)
 
-async function avalanche() {
-  var totalTvl = await utils.fetchURL(STATS_URL);
-  return totalTvl.data.tvl.avalanche - totalTvl.data.tvl.lpStaking.avalanche - totalTvl.data.tvl.staking.avalanche;
-}
+  if (pool2.length)
+    exportObj.pool2 = async (_, _b, { [chain]: block }) => sumTokens({}, pool2, block, chain)
 
-async function pool2() {
-  var totalTvl = await utils.fetchURL(STATS_URL);
-  return totalTvl.data.tvl.lpStaking.totalLpStaking;
-}
+  module.exports[chain] = exportObj
 
-async function staking() {
-  var totalTvl = await utils.fetchURL(STATS_URL);
-  return totalTvl.data.tvl.staking.totalStaking;
-}
-
-module.exports = {
-  methodology: `TVL is obtained by making calls to the Nord Finance API "https://api.nordfinance.io/tvl/statistics".`,
-  fetch,
-  ethereum: {
-    fetch: ethereum,
-  },
-  polygon: {
-    fetch: polygon,
-  },
-  avalanche: {
-    fetch: avalanche,
-  },
-  pool2: {
-    fetch: pool2
-  },
-  staking: {
-    fetch: staking
-  }
-}; // node test.js projects/nord-finance/index.js
+})
