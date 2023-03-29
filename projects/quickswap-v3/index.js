@@ -7,6 +7,7 @@ const graphs = {
   polygon: "https://api.thegraph.com/subgraphs/name/sameepsi/quickswap-v3",
   dogechain:
     "https://graph-node.dogechain.dog/subgraphs/name/quickswap/dogechain-info",
+  polygon_zkevm: "https://api.studio.thegraph.com/query/44554/quickswap-v3-02/0.0.7",
 };
 
 const blacklists = {
@@ -64,7 +65,7 @@ module.exports = {
   timetravel: false,
 };
 
-const chains = ["polygon", "dogechain"];
+const chains = ["polygon", "dogechain", "polygon_zkevm"];
 
 chains.forEach((chain) => {
   module.exports[chain] = {
