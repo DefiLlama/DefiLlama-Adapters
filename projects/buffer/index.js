@@ -1,5 +1,5 @@
 const { staking } = require("../helper/staking");
-const { sumTokens2, nullAddress } = require("../helper/unwrapLPs");
+const { sumTokensExport } = require("../helper/unwrapLPs");
 
 const tokens = {
   BFR: "0x1A5B0aaF478bf1FDA7b934c76E7692D722982a6D",
@@ -19,30 +19,24 @@ const contracts = {
 
 module.exports = {
   arbitrum: {
-    staking: staking(contracts.BFR_STAKING, tokens.BFR, "arbitrum"),
-    tvl: async (_, _b, { arbitrum: block }) =>
-      sumTokens2({
-        chain: "arbitrum",
-        block,
-        tokens: [tokens.USDC_ARB, tokens.ARB],
-        owners: [
-          contracts.USDC_POOL_V1,
-          contracts.USDC_POOL_V2,
-          contracts.USDC_POOL_V3,
-          contracts.ARB_POOL_V1
-        ]
-      })
-    },
+    staking: staking(contracts.BFR_STAKING, tokens.BFR),
+    tvl: sumTokensExport({
+      tokens: [tokens.USDC_ARB, tokens.ARB],
+      owners: [
+        contracts.USDC_POOL_V1,
+        contracts.USDC_POOL_V2,
+        contracts.USDC_POOL_V3,
+        contracts.ARB_POOL_V1
+      ]
+    })
+  },
   polygon: {
-    tvl: async (_, _b, { polygon: block }) =>
-      sumTokens2({
-        chain: "polygon",
-        block,
-        tokens: [tokens.USDC_POLY],
-        owners: [
-          contracts.POLY_POOL_V1
-        ]
-      })
+    tvl: sumTokensExport({
+      tokens: [tokens.USDC_POLY],
+      owners: [
+        contracts.POLY_POOL_V1
+      ]
+    })
   },
   hallmarks: [
     [Math.floor(new Date("2022-10-26") / 1e3), "Shifted to USDC POL pool"],
