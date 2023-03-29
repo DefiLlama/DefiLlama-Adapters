@@ -9,5 +9,5 @@ module.exports = treasuryExports({
     owners: ["0x1cd97ee98f3423222f7b4cddb383f2ee2907e628", "0x0e1Ddf8D61f0570Bf786594077CD431c727335A9"],
   },
 })
-
+module.exports.methodology = "mooGmxGLP in CDP Module and USDT in PSM";
 
