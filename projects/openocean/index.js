@@ -2,7 +2,7 @@ const utils = require("../helper/utils");
 
 async function tvl() {
   const totalValueLocked = {};
-  const url = `https://market-api/defillama/v1/kava/total_supply`;
+  const url = `https://market-api.openocean.finance/v1/defillama/kava/total_supply`;
 
   const { data: { result } } = await utils.fetchURL(url);
 
