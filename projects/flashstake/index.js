@@ -54,6 +54,14 @@ Object.keys(config).forEach(chain => {
       ])
       bals.forEach((bal, i) => sdk.util.sumSingleBalance(balances,principal[i],bal, api.chain))
       bals2.forEach((bal, i) => sdk.util.sumSingleBalance(balances,principal[i],bal, api.chain))
+
+      // TVL fix for GLP Strategy (GLP token is non transferable)
+      const key = "arbitrum:0x2F546AD4eDD93B956C8999Be404cdCAFde3E89AE";
+      if(Object.keys(balances).includes(key)) {
+        balances[`arbitrum:0x4277f8f2c384827b5273592ff7cebd9f2c1ac258`] = balances[key];
+        delete balances[key];
+      }
+
       return balances
     }
   }
