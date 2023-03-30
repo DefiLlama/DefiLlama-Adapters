@@ -23,4 +23,10 @@ module.exports = {
     }),
     staking: staking('0x4C431b568e8baAB20F004BB16E44570e8E0cD6D7', '0x0ebd9537a25f56713e34c45b38f421a1e7191469', 'avax')
   },
+  kava: {
+    tvl: getUniTVL({
+      factory: '0x6dd434082EAB5Cd134B33719ec1FF05fE985B97b',
+      useDefaultCoreAssets: true,
+    })
+  }
 }
