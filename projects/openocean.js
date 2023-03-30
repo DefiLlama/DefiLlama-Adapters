@@ -29,4 +29,10 @@ module.exports = {
       useDefaultCoreAssets: true,
     }),
   },
+  kava: {
+    tvl: getUniTVL({
+      factory: '0x6dd434082EAB5Cd134B33719ec1FF05fE985B97b',
+      useDefaultCoreAssets: true,
+    })
+  }
 }
