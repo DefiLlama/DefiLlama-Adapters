@@ -131,6 +131,8 @@ module.exports = {
   PETH_ETH_PAIR,
   PETH_ETH_VAULT,
   LP_STAKING,
+  PETH_ETH_F: '0x56D1b6Ac326e152C9fAad749F1F4f9737a049d46',
+  PUSD_USD_F: '0xF6Cbf5e56a8575797069c7A7FBED218aDF17e3b2',
   helperToNftMapping,
   artBlockOwners,
 };

@@ -139,10 +139,8 @@ async function getStakedApeAmount(api) {
   const apeDepositAddresses = await getApeDepositAddresses(api);
   const apeStakes = await api.multiCall({
     abi: abi.APE_STAKING.stakedTotal,
-    calls: apeDepositAddresses.map((address) => ({
-      target: APE_STAKING,
-      params: [address],
-    })),
+    target: APE_STAKING,
+    calls: apeDepositAddresses,
   });
 
   const totalApeStaked = apeStakes.reduce((total, apeStake) => {
@@ -161,18 +159,16 @@ async function getWalletStakedBakcCount(api) {
 
   const bakcBalances = await api.multiCall({
     abi: "erc20:balanceOf",
-    calls: apeDepositAddresses.map((address) => ({
-      target: BAKC,
-      params: [address],
-    })),
+    target: BAKC,
+    calls: apeDepositAddresses,
   });
 
   const bakcIdsBN = await api.multiCall({
     abi: abi.ERC721.tokenOfOwnerByIndex,
+    target: BAKC,
     calls: apeDepositAddresses
       .map((owner, i) =>
         Array.from({ length: bakcBalances[i].toString() }).map((_, j) => ({
-          target: BAKC,
           params: [owner, j],
         }))
       )
