@@ -10,6 +10,7 @@ const chainIds = {
   'bsc': 56,
   'polygon': 137,
   'arbitrum': 42161,
+  'avax': 43114,
 }
 
 const getCacheData = {}
