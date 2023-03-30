@@ -15,5 +15,8 @@ module.exports = {
   },
   polygon: {
     tvl
+  },
+  avax: {
+    tvl
   }
 }
