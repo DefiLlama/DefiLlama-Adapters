@@ -1414,5 +1414,9 @@
   "era": [
     "0x5aea5775959fbc2557cc8789bc1bf90a239d9a91",
     "0x3355df6d4c9c3035724fd0e3914de96a5a83aaf4"
+  ],
+  "polygon_zkevm": [
+    "0x4F9A0e7FD2Bf6067db6994CF12E4495Df938E6e9",
+    "0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035"
   ]
 }
