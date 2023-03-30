@@ -723,7 +723,9 @@
     "factory/kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7/uusk"
   ],
   "injective": [
-    "inj"
+    "inj",
+    "ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9",
+    "factory/inj14ejqjyq8um4p3xfqj74yld5waqljf88f9eneuk/inj1q6zlut7gtkzknkk773jecujwsdkgq882akqksk"
   ],
   "comdex": [
     "ucmdx",
@@ -1386,6 +1388,8 @@
   ],
   "core": [
     "0x191E94fa59739e188dcE837F7f6978d84727AD01",
+    "0x900101d06a7426441ae63e9ab3b9b0f63be145f1",
+    "0xa4151b2b3e269645181dccf2d426ce75fcbdeca9",
     "0x40375c92d9faf44d2f9db9bd9ba41a3317a2404f"
   ],
   "crab": [
@@ -1406,5 +1410,13 @@
   ],
   "bone": [
     "0xcda1fa23ff3b9b7172be82237bf662efb69437e9"
+  ],
+  "era": [
+    "0x5aea5775959fbc2557cc8789bc1bf90a239d9a91",
+    "0x3355df6d4c9c3035724fd0e3914de96a5a83aaf4"
+  ],
+  "polygon_zkevm": [
+    "0x4F9A0e7FD2Bf6067db6994CF12E4495Df938E6e9",
+    "0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035"
   ]
 }
