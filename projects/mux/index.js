@@ -37,10 +37,6 @@ async function tvl(chain, block) {
   return balances
 }
 
-module.exports = {
-  methodology: `This is the total value of all tokens in the MUXLP Pool. The liquidity pool consists of a token portfolio used for margin trading and third-party DEX mining.`,
-}
-
 Object.keys(readerContract).forEach(chain => {
   module.exports[chain] = {
     tvl: async (_, _b, {[chain]: block}) => {

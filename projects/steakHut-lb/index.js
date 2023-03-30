@@ -15,6 +15,7 @@ const _vaults = {
         '0x9cc15d1204d768380cec8d35bc1d8e1945083397', //BTC.b/USDC_B
         '0x536d7e7423e8fb799549caf574cfa12aae95ffcd', //BTC.b/AVAX_B
         '0x9bdda0c0cd56d98a8165fddabdeb7f9aee2d993e', //GMX/AVAX
+        '0xFFE588AC8d94c758AFaC5c50A4b4bF4BC1887fFD', //CAI/AVAX
     ],
     arbitrum: [ 
         '0x862f459c3c1f8949b3f5b624d39134d61697946e', //GMX/ETH

@@ -3,7 +3,8 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 const fidenzavault = '0xfCEed70c8E9f38A0c3A0062D40d0Ab06493063a1' 
 const rockvault = '0x185B6B13Be7cEfa99262AF1F78ae87213E4DDD3d' 
 const baycvault2 = '0x417c53C3B63a03aeb614b7b625ae84Cfc7eecD1c'
-const insrtVaults = [ fidenzavault, rockvault, baycvault2 ]
+const squigglevault = '0x5D40A087cec071cd3b8A7AF4B45b3D56D6c3f952'
+const insrtVaults = [ fidenzavault, rockvault, baycvault2, squigglevault ]
 
 async function tvl(_, _b, _cb, { api, }) {
   await vaultTvl(api, [punkvault, baycvault, ])
