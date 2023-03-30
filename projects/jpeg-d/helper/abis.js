@@ -1,9 +1,43 @@
 const VAULT_ABI = {
   totalPositions: "uint256:totalPositions",
   nftValueProvider: "address:nftValueProvider",
-  positionOwner: "address:positionOwner",
+  positionOwner: {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "positionOwner",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
   openPositionIndices:
     "function openPositionsIndexes() external view returns (uint256[] memory)",
+};
+
+const STRATEGY_ABI = {
+  depositAddress:
+    "function depositAddress(address) external view returns (address)",
+  isDeposited:
+    "function isDeposited(address, uint256) external view returns (bool)",
+};
+
+const APE_STAKING = {
+  stakedTotal: "function stakedTotal(address) external view returns (uint256)",
+};
+
+const ERC721 = {
+  tokenOfOwnerByIndex:
+    "function tokenOfOwnerByIndex(address owner, uint256 index) view returns (uint256)",
 };
 
 const PROVIDER_ABI = {
@@ -55,4 +89,7 @@ const PROVIDER_ABI = {
 module.exports = {
   VAULT_ABI,
   PROVIDER_ABI,
+  STRATEGY_ABI,
+  APE_STAKING,
+  ERC721,
 };

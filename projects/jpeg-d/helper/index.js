@@ -22,6 +22,10 @@ const {
   artBlockOwners,
 } = require("./addresses");
 
+/**
+ *
+ * @returns JPEG'd deposit addresses for APE Staking
+ */
 async function getApeDepositAddresses(api) {
   const [baycPositionIndices, maycPositionIndices] = await Promise.all([
     api.multiCall({
@@ -35,8 +39,8 @@ async function getApeDepositAddresses(api) {
   ]);
 
   const [baycOwners, maycOwners] = await Promise.all([
-    api.multicall({
-      abi: "address:positionOwner",
+    api.multiCall({
+      abi: abi.VAULT_ABI.positionOwner,
       calls: baycPositionIndices
         .map((vaultIndices, i) =>
           vaultIndices.map((nftIndex) => ({
@@ -46,8 +50,8 @@ async function getApeDepositAddresses(api) {
         )
         .flat(),
     }),
-    api.multicall({
-      abi: "address:positionOwner",
+    api.multiCall({
+      abi: abi.VAULT_ABI.positionOwner,
       calls: maycPositionIndices
         .map((vaultIndices, i) =>
           vaultIndices.map((nftIndex) => ({
@@ -60,17 +64,22 @@ async function getApeDepositAddresses(api) {
   ]);
 
   const [baycDepositAddresses, maycDepositAddresses] = await Promise.all([
-    api.call({
-      target: BAYC_APE_STAKING_STRATEGY,
-      abi: "address:depositAddress",
-      params: Array.from(new Set(baycOwners)),
+    api.multiCall({
+      abi: abi.STRATEGY_ABI.depositAddress,
+      calls: [...new Set(baycOwners)].map((owner) => ({
+        target: BAYC_APE_STAKING_STRATEGY,
+        params: [owner],
+      })),
     }),
-    api.call({
-      target: MAYC_APE_STAKING_STRATEGY,
-      abi: "address:depositAddress",
-      params: Array.from(new Set(maycOwners)),
+    api.multiCall({
+      abi: abi.STRATEGY_ABI.depositAddress,
+      calls: [...new Set(maycOwners)].map((owner) => ({
+        target: MAYC_APE_STAKING_STRATEGY,
+        params: [owner],
+      })),
     }),
   ]);
+
   return Array.from(new Set(baycDepositAddresses)).concat(
     Array.from(new Set(maycDepositAddresses))
   );
@@ -128,10 +137,12 @@ async function getCitadelPethLpAmount(api) {
  */
 async function getStakedApeAmount(api) {
   const apeDepositAddresses = await getApeDepositAddresses(api);
-  const apeStakes = await api.multicall({
-    target: APE_STAKING,
-    abi: "uint256:stakedTotal",
-    params: apeDepositAddresses,
+  const apeStakes = await api.multiCall({
+    abi: abi.APE_STAKING.stakedTotal,
+    calls: apeDepositAddresses.map((address) => ({
+      target: APE_STAKING,
+      params: [address],
+    })),
   });
 
   const totalApeStaked = apeStakes.reduce((total, apeStake) => {
@@ -142,23 +153,28 @@ async function getStakedApeAmount(api) {
   return totalApeStaked;
 }
 
+/**
+ * @returns the amount of wallet staked BAKC NFTs on JPEG'd
+ */
 async function getWalletStakedBakcCount(api) {
   const apeDepositAddresses = await getApeDepositAddresses(api);
+
   const bakcBalances = await api.multiCall({
-    target: BAKC,
-    method: "erc721:balanceOf",
-    params: apeDepositAddresses,
+    abi: "erc20:balanceOf",
+    calls: apeDepositAddresses.map((address) => ({
+      target: BAKC,
+      params: [address],
+    })),
   });
 
   const bakcIdsBN = await api.multiCall({
-    target: BAKC,
-    abi: "erc721:tokenOfOwnerByIndex",
-    params: apeDepositAddresses
+    abi: abi.ERC721.tokenOfOwnerByIndex,
+    calls: apeDepositAddresses
       .map((owner, i) =>
-        Array.from({ length: bakcBalances[i].toString() }).map((_, j) => [
-          owner,
-          j,
-        ])
+        Array.from({ length: bakcBalances[i].toString() }).map((_, j) => ({
+          target: BAKC,
+          params: [owner, j],
+        }))
       )
       .flat(),
   });
@@ -171,14 +187,18 @@ async function getWalletStakedBakcCount(api) {
 
   const [isNonLegacyBaycStaked, isNonLegacyMaycStaked] = await Promise.all([
     api.multiCall({
-      target: BAKC_BAYC_STAKING_STRATEGY,
-      abi: "address:isDeposited",
-      params: ownerBakcIndexTuples,
+      abi: abi.STRATEGY_ABI.isDeposited,
+      calls: ownerBakcIndexTuples.map((params) => ({
+        target: BAKC_BAYC_STAKING_STRATEGY,
+        params,
+      })),
     }),
     api.multiCall({
-      target: BAKC_MAYC_STAKING_STRATEGY,
-      abi: "address:isDeposited",
-      params: ownerBakcIndexTuples,
+      abi: abi.STRATEGY_ABI.isDeposited,
+      calls: ownerBakcIndexTuples.map((params) => ({
+        target: BAKC_MAYC_STAKING_STRATEGY,
+        params,
+      })),
     }),
   ]);
 
@@ -294,16 +314,12 @@ async function tvl(ts, b, cb, { api }) {
   );
   sdk.util.mergeBalances(balances, vaultsBalances);
 
-  const tvl = await sumTokens2({
+  return await sumTokens2({
     api,
     balances,
     resolveArtBlocks: true,
     owners: [...artBlockOwners],
   });
-
-  return {
-    ...tvl,
-  };
 }
 
 module.exports = {
