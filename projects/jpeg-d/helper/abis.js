@@ -1,25 +1,7 @@
 const VAULT_ABI = {
   totalPositions: "uint256:totalPositions",
   nftValueProvider: "address:nftValueProvider",
-  positionOwner: {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    name: "positionOwner",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
+  positionOwner: "function positionOwner(uint256) view returns (address)",
   openPositionIndices:
     "function openPositionsIndexes() external view returns (uint256[] memory)",
 };
@@ -41,50 +23,9 @@ const ERC721 = {
 };
 
 const PROVIDER_ABI = {
-  nftType: {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    name: "nftTypes",
-    outputs: [
-      {
-        internalType: "bytes32",
-        name: "",
-        type: "bytes32",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  nftTypeValueMultiplier: {
-    inputs: [
-      {
-        internalType: "bytes32",
-        name: "",
-        type: "bytes32",
-      },
-    ],
-    name: "nftTypeValueMultiplier",
-    outputs: [
-      {
-        internalType: "uint128",
-        name: "numerator",
-        type: "uint128",
-      },
-      {
-        internalType: "uint128",
-        name: "denominator",
-        type: "uint128",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-};
+  "nftType": "function nftTypes(uint256) view returns (bytes32)",
+  "nftTypeValueMultiplier": "function nftTypeValueMultiplier(bytes32) view returns (uint128 numerator, uint128 denominator)"
+}
 
 module.exports = {
   VAULT_ABI,
