@@ -15,7 +15,6 @@ const config = {
   },
 }
 function getTvl(chain) {
-  const { weth, graphUrl } = config[chain]
   return async (_timestamp, _, { [chain]: block }) => {
     const { vaults } = await blockQuery(graphUrl, graphQuery, block, 500)
     const LPs = new Set(vaults.map(v => v.lpStakingPool.stakingToken.id))
