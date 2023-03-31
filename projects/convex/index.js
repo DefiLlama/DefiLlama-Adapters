@@ -47,6 +47,7 @@ async function tvl(chain, block) {
 const chains = [
   'ethereum',
   'arbitrum',
+  'polygon',
 ]
 
 module.exports = {

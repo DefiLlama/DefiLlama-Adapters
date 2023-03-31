@@ -1,7 +1,5 @@
-const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { staking } = require("../helper/staking");
-const { ethers: {BigNumber} } = require("ethers")
 
 const masterWombat = "0x489833311676B566f888119c29bd997Dc6C95830";
 const voterProxy = "0xE3a7FB9C6790b02Dcfa03B6ED9cda38710413569";
@@ -10,101 +8,51 @@ const wmx = '0xa75d9ca2a0a1d547409d82e1b06618ec284a2ced';
 const wom = '0xAD6742A35fB341A9Cc6ad674738Dd8da98b94Fb1';
 const veWom = '0x3DA62816dD31c56D9CdF22C6771ddb892cB5b0Cc';
 
-const chain = "bsc";
+async function voterProxyBalances(api) {
+  const masterWombatPoolInfos = await api.fetchList({ lengthAbi: abi.poolLength, itemAbi: abi.poolInfo, target: masterWombat })
 
-async function voterProxyBalances(block) {
-  const poolLength = await sdk.api.abi.call({
-    abi: abi.poolLength,
-    target: masterWombat,
-    params: [],
-    block,
-    chain
-  }).then(l => parseInt(l.output.toString()));
-
-  const masterWombatPoolInfos = await sdk.api.abi.multiCall({
-    block,
-    abi: abi.poolInfo,
-    calls: Array.from(Array(poolLength).keys()).map((pid) => ({ target: masterWombat, params: [pid] })),
-    chain,
-  });
-
-  const masterWombatVoterProxyBalances = await sdk.api.abi.multiCall({
-    block,
+  const proxyBalanceCalls = masterWombatPoolInfos.map((_, i) => ({ target: masterWombat, params: [i, voterProxy] }))
+  const masterWombatVoterProxyBalances = await api.multiCall({
     abi: abi.userInfo,
-    calls: Array.from(Array(poolLength).keys()).map((pid) => ({ target: masterWombat, params: [pid, voterProxy] })),
-    chain,
-  });
+    calls: proxyBalanceCalls,
+  })
 
-  const lpTokenTargets = masterWombatPoolInfos.output.map((pool) => ({ target: pool.output.lpToken, params: [] }));
+  const lpTokens = masterWombatPoolInfos.map((pool) => pool.lpToken);
+  const lpPools = await api.multiCall({ abi: abi.pool, calls: lpTokens, });
+  const underlyingTokens = await api.multiCall({ abi: abi.underlyingToken, calls: lpTokens, });
 
-  const lpPools = await sdk.api.abi.multiCall({
-    block,
-    abi: abi.pool,
-    calls: lpTokenTargets,
-    chain,
-  });
-
-  const underlyingTokens = await sdk.api.abi.multiCall({
-    block,
-    abi: abi.underlyingToken,
-    calls: lpTokenTargets,
-    chain,
-  });
-
-  const underlyingAmounts = await sdk.api.abi.multiCall({
-    block,
+  const underlyingAmounts = await api.multiCall({
     abi: abi.quotePotentialWithdraw,
-    calls: lpPools.output.map((pool, index) => {
-      return {
-        target: pool.output,
-        params: [underlyingTokens.output[index].output, masterWombatVoterProxyBalances.output[index].output.amount],
-      };
-    }),
-    chain,
+    calls: lpPools.map((pool, index) => ({
+      target: pool,
+      params: [getUnderlying(pool, index), '' + 1e18],
+    })),
   });
-  return underlyingAmounts.output
+  function getUnderlying(pool, index) {
+    if (pool.toLowerCase() === '0x2Ea772346486972E7690219c190dAdDa40Ac5dA4'.toLowerCase()) return '0x2170ed0880ac9a755fd29b2688956bd959f933f8'
+    return underlyingTokens[index]
+  }
+  underlyingAmounts
     .map((a, i) => {
-      if (masterWombatVoterProxyBalances.output[i].output.amount === '0') return;
-      return ({amount: a.output.amount, token: underlyingTokens.output[i].output})
-    }).filter(i => i);
+      api.add(underlyingTokens[i], a.amount * masterWombatVoterProxyBalances[i].amount / 1e18)
+    })
 }
 
-async function veWomBalance(block) {
-  return sdk.api.erc20.balanceOf({
-    owner: voterProxy,
-    target: veWom,
-    block,
-    chain,
-  }).then(s => s.output);
+async function veWomBalance(api) {
+  const womBal = await api.call({ abi: 'erc20:balanceOf', target: veWom, params: voterProxy })
+  api.add(veWom, womBal)
 }
 
-async function tvl(timestamp, ethereumBlock, chainBlocks) {
-  const block = chainBlocks[chain];
-
-  let balances = {};
-  balances[`${chain}:${wom}`] = await veWomBalance(block);
-
-  const vpBalances = await voterProxyBalances(block);
-  vpBalances.forEach(b => {
-    if (balances[`${chain}:${b.token}`]) {
-      balances[`${chain}:${b.token}`] = BigNumber.from(balances[`${chain}:${b.token}`]).add(BigNumber.from(b.amount)).toString();
-    } else {
-      balances[`${chain}:${b.token}`] = b.amount;
-    }
-  });
-
-  return balances;
+async function tvl(timestamp, ethereumBlock, chainBlocks, { api }) {
+  await veWomBalance(api)
+  await voterProxyBalances(api)
 }
 
 module.exports = {
   methodology:
-      "TVL of Wombex Finance consists of Wombat LP tokens staked in MasterWombat, WOM tokens locked in veWOM, and WMX tokens locked in Wombex Vote Lock contract.",
+    "TVL of Wombex Finance consists of Wombat LP tokens staked in MasterWombat, WOM tokens locked in veWOM, and WMX tokens locked in Wombex Vote Lock contract.",
   bsc: {
     tvl,
-    staking: staking(
-      wmxLocker,
-      wmx,
-      chain
-    ),
+    staking: staking(wmxLocker, wmx),
   },
 };

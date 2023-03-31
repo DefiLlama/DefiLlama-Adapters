@@ -1,4 +1,0 @@
-{
-  "getAssetPrice": "function getAssetPrice(address asset) view returns (uint256)",
-  "nftPriceFeedMap": "function nftPriceFeedMap(address asset) view returns (bool)"
-}

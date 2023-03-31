@@ -20,7 +20,7 @@ async function polyTvl(_, _b, _cb, { api }) {
     [tokens.polygon.DAI, "0xd7052EC0Fe1fe25b20B7D65F6f3d490fCE58804f"],
     [tokens.polygon.DAI, "0x91993f2101cc758D0dEB7279d41e880F7dEFe827"],
   ];
-  return sumTokens2({ ...api, tokensAndOwners });
+  return sumTokens2({ api, tokensAndOwners });
 }
 async function arbiTvl(_, _b, cb) {
   const tokensAndOwners = [
