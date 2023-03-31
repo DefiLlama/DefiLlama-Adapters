@@ -1,13 +1,8 @@
-const { staking } = require("../helper/staking.js");
-const { getLiquidityTvl, addresses } = require("./helper.js");
-
-async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
-  return getLiquidityTvl(api)
-}
+const { tvl, staking } = require("./helper.js");
 
 module.exports = {
   astar: {
     tvl,
-    staking: staking(addresses.astar.seanStaking, addresses.astar.seanToken,),
+    staking,
   },
 };
