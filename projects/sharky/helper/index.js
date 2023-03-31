@@ -9,30 +9,16 @@ async function getVolumes() {
   const program = new anchor.Program(SHARKY_IDL, SHARKY_PROGRAM_ID, provider);
 
   const loans = await program.account.loan.all();
-  const offeredLoans = loans.filter((loan) => loan.account.loanState.offer);
-  const takenLoans = loans.filter((loan) => loan.account.loanState.taken);
-
-  const offeredVolume = offeredLoans.reduce(
+  const totalVolume = loans.reduce(
     (acc, l) => acc + l.account.principalLamports.toNumber(),
     0
   );
-  const borrowedVolume = takenLoans.reduce(
-    (acc, l) => acc + l.account.principalLamports.toNumber(),
-    0
-  );
-  const totalVolume = offeredVolume + borrowedVolume;
 
   return {
     totalVolume,
-    offeredVolume,
-    borrowedVolume,
   };
 }
 
 module.exports = {
   tvl: async () => ({ [tokens.solana]: (await getVolumes()).totalVolume }),
-  offers: async () => ({ [tokens.solana]: (await getVolumes()).offeredVolume }),
-  borrowed: async () => ({
-    [tokens.solana]: (await getVolumes()).borrowedVolume,
-  }),
 };
