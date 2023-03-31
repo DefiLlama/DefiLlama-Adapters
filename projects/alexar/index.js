@@ -82,4 +82,5 @@ const chainListTotal = [ 'avax', 'bsc', 'moonbeam', 'polygon', 'fantom', 'arbitr
   });
   
   module.exports = exportObj;
-
+  module.exports.misrepresentedTokens = true;
+  module.exports.timetravel = false;
