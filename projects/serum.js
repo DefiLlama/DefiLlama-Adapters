@@ -23,8 +23,6 @@ async function tvl(_, _1, _2, { api }) {
     const quoteToken = market.quoteMint.toBase58()
     const baseBal = +market.baseDepositsTotal + +market.baseFeesAccrued
     const quoteBal = +market.quoteDepositsTotal + +market.quoteFeesAccrued
-    if (baseToken === 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v' && baseBal > 1e11) console.log(market, Number(baseBal / 1e12).toFixed(3))
-    if (quoteToken === 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v' && quoteBal > 1e11) console.log(market, Number(quoteBal / 1e12).toFixed(3))
     if (!blacklistedTokens.has(baseToken)) api.add(baseToken, baseBal)
     if (!blacklistedTokens.has(quoteToken)) api.add(quoteToken, quoteBal)
   });
