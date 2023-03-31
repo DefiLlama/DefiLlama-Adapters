@@ -8,7 +8,19 @@ const coinGeckoIds = {
   uosmo: "osmosis",
   uluna: "terra-luna-2",
   aevmos: "evmos",
+  inj: "injective-protocol",
 };
+
+function getCoinDenom(denom) {
+  // inj uses 1e18 - https://docs.injective.network/learn/basic-concepts/inj_coin#base-denomination
+  const idArray = ['aevmos', 'inj'];
+
+  if (idArray.includes(denom)) {
+    return 1e18;
+  } else {
+    return 1e6;
+  }
+}
 
 async function tvl() {
   const balances = {};
@@ -26,7 +38,7 @@ async function tvl() {
       return asset.denom === `st${hostZone.host_denom}`;
     });
 
-    const coinDecimals = hostZone.host_denom === "aevmos" ? 1e18 : 1e6;
+    const coinDecimals = getCoinDenom(hostZone.host_denom);
 
     const amount = assetBalance.amount / coinDecimals;
 
