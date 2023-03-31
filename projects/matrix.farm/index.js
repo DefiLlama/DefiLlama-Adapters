@@ -26,5 +26,8 @@ module.exports = {
   arbitrum: {
     fetch: fetch('arbitrum'),
   },
+  bsc: {
+    fetch: fetch('binance'),
+  },
   fetch: fetch('tvl')
 }
