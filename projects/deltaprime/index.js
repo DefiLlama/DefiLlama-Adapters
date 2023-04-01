@@ -114,6 +114,7 @@ async function addVectorVaultBalances({ balances, accounts, api, token }) {
     target: VF_MAINSTAKING_CONTRACT,
     params: [token],
   })
+  if (helper.helper.toLowerCase() === '0x9AB2B763798124F81E95419aC9b77a4fB480742D'.toLowerCase()) return balances;
   const bals = await api.multiCall({ abi: VFDepositTokenBalanceAbi, calls: accounts, target: helper.helper })
 
   bals.forEach(i => sdk.util.sumSingleBalance(balances, token, i, api.chain))
