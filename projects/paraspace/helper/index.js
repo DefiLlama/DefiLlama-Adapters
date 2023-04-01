@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const { sumTokens2, unwrapUniswapV3NFTs, } = require('../../helper/unwrapLPs')
+const { sumTokens2, } = require('../../helper/unwrapLPs')
 
 const abi = require("./abis");
 const address = require("./address");
