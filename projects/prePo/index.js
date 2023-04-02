@@ -23,7 +23,7 @@ Object.keys(config).forEach(chain => {
       let tokens = await api.multiCall({ abi: 'address:getCollateral', calls: markets })
       let wrappedTokens = getUniqueAddresses(tokens)
       const tokenNames = await api.multiCall({ abi: 'string:name', calls: wrappedTokens })
-      wrappedTokens = tokens.filter((v, i) => tokenNames[i].startsWith('prePO'))
+      wrappedTokens = wrappedTokens.filter((v, i) => tokenNames[i].startsWith('prePO'))
       let baseTokens = await api.multiCall({ abi: 'address:getBaseToken', calls: wrappedTokens })
       const tokensAndOwners = baseTokens.map((v, i) => [v, wrappedTokens[i]])
       markets.forEach((v, i) => tokensAndOwners.push([tokens[i], v]))
