@@ -1,17 +1,17 @@
 const { sumTokensExport } = require('../helper/unwrapLPs')
 
-const markets = ['0x01885b7a81B9699684DF563206FfaE5A19F9eaaC', // ETH pool
-                '0xD8FB918669E95395a94C1f857766C124098Bb828', // BTC pool
-                '0xE851E0628A9F0D62393C7105A0eb112a6C3572fE', // ETH market pool 2
-                '0xdfA196542929Ae0C468915b9f2Ae6A713DFf8D0b' // BTC market pool 2
+const markets = ['0xE15A3a1d19a48c0b1dB46C3F69b9A2F258B56963', // ETH pool
+                '0xDf316b15B0d54C3159Be342377E73C8120e23f92', // BTC pool
+                '0xe39b7E5F04FCD8abde312E5B7a4c49Ed1C686A49' // GHST pool
             ]
 const tvlTokens = ['0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619', // WETH
                 '0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6', // WBTC
+                '0x385Eeac5cB85A38A9a07A70c73e0a3271CfB54A7', // GHST
                 '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174' // USDC
             ]
 
 module.exports = {
-    methodology: 'counts all USDC/WBTC/WETH balances of market contracts.',
+    methodology: 'counts all USDC/WBTC/WETH/GHST balances of market contracts.',
     start: 1677225600, // 24 Feb 2023 08:00:00 UTC
     polygon: {
         tvl: sumTokensExport({ owners: markets, tokens: tvlTokens, }),
