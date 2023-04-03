@@ -1,7 +1,7 @@
-const { sumTokensExport } = require("./helper/unwrapLPs");
+const { sumTokensExport } = require("../helper/unwrapLPs");
 
 module.exports = {
-    fantom: {
+    kava: {
         tvl: sumTokensExport({ 
           chain: 'kava', 
           tokensAndOwners: [
