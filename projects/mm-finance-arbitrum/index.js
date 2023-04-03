@@ -7,13 +7,11 @@ const mmfToken = '0x56b251d4b493ee3956e3f899d36b7290902d2326'
 const masterChef = '0xa73Ae666CEB460D5E884a20fb30DE2909604557A'
 
 module.exports = {
-  timetravel: true,
   misrepresentedTokens: true,
   methodology: 'TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://arbimm.finance as the source. Staking accounts for the MMF locked in MasterChef (0xa73Ae666CEB460D5E884a20fb30DE2909604557A)',
   arbitrum: {
     staking: staking(masterChef, mmfToken, 'arbitrum'),
     tvl: getUniTVL({
-      chain: 'arbitrum',
       factory,
       useDefaultCoreAssets: true,
     }),
