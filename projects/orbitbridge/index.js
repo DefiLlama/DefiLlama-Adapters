@@ -1,9 +1,11 @@
 const sdk = require('@defillama/sdk')
+const BigNumber = require("bignumber.js");
 const { get } = require('../helper/http')
 const { getConfig } = require('../helper/cache')
 const { sumTokensExport } = require('../helper/sumTokens')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { transformBalances } = require('../helper/portedTokens')
+const { toUSDTBalances } = require('../helper/balances')
 
 const ABI = {
   wantLockedTotal: "uint256:wantLockedTotal",
@@ -16,7 +18,9 @@ const vaults = {
   ethereum: '0x1bf68a9d1eaee7826b3593c20a0ca93293cb489a',
   heco: '0x38C92A7C2B358e2F2b91723e5c4Fc7aa8b4d279F',
   klaytn: '0x9abc3f6c11dbd83234d6e6b2c373dfc1893f648d',
-  polygon: '0x506DC4c6408813948470a06ef6e4a1DaF228dbd5'
+  polygon: '0x506DC4c6408813948470a06ef6e4a1DaF228dbd5',
+  meta: '0x292A00F3b99e3CB9b324EdbaA92258C3C61b55ab',
+  wemix: '0x445F863df0090f423A6D7005581e30d5841e4D6d'
 }
 
 const farms = {
@@ -43,6 +47,7 @@ function chainTvls(chain) {
     let targetChain = chain
     if (chain === 'ethereum') targetChain = 'eth'
     if (chain === 'polygon') targetChain = 'matic'
+    if (chain === 'meta') targetChain = 'metadium'
 
     const tokenListURL = 'https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList'
     tokenData = tokenData || getConfig('orbit-bridge', tokenListURL)
@@ -53,6 +58,13 @@ function chainTvls(chain) {
     const balances = await sumTokens2({ tokensAndOwners, chain, block, blacklistedTokens: [
       // '0x662b67d00a13faf93254714dd601f5ed49ef2f51' // ORC, blacklist project's own token
     ] })
+
+    if (chain === 'meta') {
+      let data = await get(`https://coins.llama.fi/prices/current/coingecko:${targetChain}`)
+      let price = data.coins[`coingecko:${targetChain}`].price
+      let tvl = new BigNumber(price).times(balances[`${chain}:0x0000000000000000000000000000000000000000`]).div(1e18)
+      return toUSDTBalances(tvl.toFixed(2))
+    }
 
     if (farms[chain]) {
       const calls = farms[chain].map(i => ({ params: i }))
@@ -94,12 +106,18 @@ module.exports = {
   polygon: {
     tvl: chainTvls('polygon')
   },
+  meta: {
+    tvl: chainTvls('meta')
+  },
+  wemix: {
+    tvl: chainTvls('wemix')
+  },
   ripple: {
     tvl: sumTokensExport({ chain: 'ripple', owner: 'rLcxBUrZESqHnruY4fX7GQthRjDCDSAWia'})
   },
   ton: {
     tvl: async () => {
-      let ton_vault = "0%3A8a140d51b86267680a943c55c780ac4b3a785c2ff6a62020d158c39f6512374f" // Bounceable: EQCKFA1RuGJnaAqUPFXHgKxLOnhcL_amICDRWMOfZRI3T4_h
+      let ton_vault = "EQAtkbV8ysI75e7faO8Ihu0mFtmsg-osj7gmrTg_mljVRccy"
       const res = await get(`https://tonapi.io/v1/account/getInfo?account=${ton_vault}`)
       return await transformBalances('ton', {"0x0000000000000000000000000000000000000000": res.balance})
     }
