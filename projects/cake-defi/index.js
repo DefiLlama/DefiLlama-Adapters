@@ -9,7 +9,7 @@ const config = {
   bitcoin: {
     owners: ['38pZuWUti3vSQuvuFYs8Lwbyje8cmaGhrT']
   },
-  litcoin: {
+  litecoin: {
     owners: ['MLYQxJfnUfVqRwfYXjDJfmLbyA77hqzSXE']
   }
 }
