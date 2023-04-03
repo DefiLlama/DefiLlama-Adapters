@@ -2,14 +2,21 @@ const { cexExports } = require('../helper/cex')
 
 const config = {
   ethereum: {
-    owners: [
-       '0x8b802fa7b71ea532187e432d9b87d24cc904243a', // https://blog.cakedefi.com/whats-new-with-our-lending-service/
-    ],
+    owners: ['0x94fa70d079d76279e1815ce403e9b985bccc82ac'],
   },
   bitcoin: {
-    owners: ['3HRPnc4SddsFjrLVTfuTZJ2kQhdyCaHT4G']
+    owners: ['38pZuWUti3vSQuvuFYs8Lwbyje8cmaGhrT']
+  },
+  litecoin: {
+    owners: ['MLYQxJfnUfVqRwfYXjDJfmLbyA77hqzSXE']
+  },
+  bitcoincash: {
+    owners: ['38wFczGqaaGLRub2U7CWeWkMuPDwhMVMRf']
+  },
+  doge: {
+    owners: ['D7jrXDgPYck8jL9eYvRrc7Ze8n2e2Loyba']
   }
 }
 
 module.exports = cexExports(config)
-module.exports.methodology = 'As Cake DeFi is a CeDeFi platform, its assets associated to the staking nodes are not included for the purposes of the TVL calculation. In this case, there are approximately $85m in DFI chain (nodes), and around $5.98m in ETH chain (nodes) as of 28 November 2022. The calculation methodology are as follows: DFI: 9511 (nodes) * 20K (collateral per node) *$0.45 = $85.6M. ETH: 170 * 32 *$1100 = $5.98M. Cake DeFi publishes information on all its nodes on its Transparency page here: https://cakedefi.com/transparency.'
+module.exports.methodology = 'As Cake DeFi is a CeDeFi platform, its assets associated to the staking nodes are not included for the purposes of the TVL calculation. In this case, there are approximately $121.4M in DFI chain (nodes), and around $24.7M in ETH chain (nodes) as of 31 March 2023. The calculation methodology are as follows: DFI: 10846 (nodes) * 20K (collateral per node) *$0.56 = $121.4M. ETH: 430 * 32 *$1800 = $24.7M. Cake DeFi publishes information on all its nodes on its Transparency page here: https://cakedefi.com/transparency.'
