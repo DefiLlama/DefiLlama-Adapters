@@ -22,6 +22,6 @@ module.exports = {
         [1634212800, "LP Program Ended"],
         [1639656000, "Uniswap V3 Listing and Staking v1 Program starts"],
         [1658318400, "Alpha Testing"],
-        [1646136000, "Uniswap V2 Listing and Liquidity Mining Program"],
+        [1677672000, "Uniswap V2 Listing and Liquidity Mining Program"],
     ]
 }
