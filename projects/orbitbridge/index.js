@@ -1,11 +1,10 @@
 const sdk = require('@defillama/sdk')
-const BigNumber = require("bignumber.js");
 const { get } = require('../helper/http')
 const { getConfig } = require('../helper/cache')
 const { sumTokensExport } = require('../helper/sumTokens')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { transformBalances } = require('../helper/portedTokens')
-const { toUSDTBalances } = require('../helper/balances')
+const { nullAddress } = require('../helper/tokenMapping');
 
 const ABI = {
   wantLockedTotal: "uint256:wantLockedTotal",
@@ -47,24 +46,18 @@ function chainTvls(chain) {
     let targetChain = chain
     if (chain === 'ethereum') targetChain = 'eth'
     if (chain === 'polygon') targetChain = 'matic'
-    if (chain === 'meta') targetChain = 'metadium'
 
     const tokenListURL = 'https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList'
     tokenData = tokenData || getConfig('orbit-bridge', tokenListURL)
     const data = await tokenData
 
     let tokenList = data.origins.filter(x => x.chain === targetChain && !x.is_nft).map(x => x.address)
-    const tokensAndOwners = tokenList.map(i => ([i, vault]))
-    const balances = await sumTokens2({ tokensAndOwners, chain, block, blacklistedTokens: [
-      // '0x662b67d00a13faf93254714dd601f5ed49ef2f51' // ORC, blacklist project's own token
+    tokenList.push(nullAddress)
+    const balances = await sumTokens2({ owner: vault, tokens: tokenList, chain, block, blacklistedTokens: [
+      '0x662b67d00a13faf93254714dd601f5ed49ef2f51' // ORC, blacklist project's own token
+      // reason for skipping, most of the tvl comes from this transaction which is about 25% of ORU supply on ETH
+      // https://etherscan.io/tx/0x0a556fcef2a867421ec3941251ad3c10ae1402a23ddd9ad4b1097b686ced89f7
     ] })
-
-    if (chain === 'meta') {
-      let data = await get(`https://coins.llama.fi/prices/current/coingecko:${targetChain}`)
-      let price = data.coins[`coingecko:${targetChain}`].price
-      let tvl = new BigNumber(price).times(balances[`${chain}:0x0000000000000000000000000000000000000000`]).div(1e18)
-      return toUSDTBalances(tvl.toFixed(2))
-    }
 
     if (farms[chain]) {
       const calls = farms[chain].map(i => ({ params: i }))
@@ -86,7 +79,6 @@ function chainTvls(chain) {
 
 module.exports = {
   methodology: 'Tokens locked in Orbit Bridge contract are counted as TVL',
-  misrepresentedTokens: true,
   timetravel: false,
   bsc: {
     tvl: chainTvls('bsc')
