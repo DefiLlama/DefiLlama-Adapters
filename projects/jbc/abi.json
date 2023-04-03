@@ -1,0 +1,4 @@
+{
+  "totalShareBal": "uint256:totalShareBal",
+  "totalSupply": "uint256:totalSupply"
+}
