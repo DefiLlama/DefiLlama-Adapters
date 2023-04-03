@@ -3,7 +3,7 @@ const { cexExports } = require('../helper/cex')
 const config = {
   ethereum: {
     owners: [
-       '0x94fa70d079d76279e1815ce403e9b985bccc82ac', // https://blog.cakedefi.com/whats-new-with-our-lending-service/
+       '0x94fa70d079d76279e1815ce403e9b985bccc82ac',
     ],
   },
   bitcoin: {
