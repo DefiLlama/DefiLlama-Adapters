@@ -1,9 +1,7 @@
-const { tvl } = require("./helper");
+const solExports = require("./helper");
 
 module.exports = {
-  timetravel: true,
+  timetravel: false,
   methodology: `TVL is the total principal of all current offers and taken loans.`,
-  solana: {
-    tvl,
-  },
+  solana: solExports,
 };

@@ -1,24 +1,27 @@
 const anchor = require("@project-serum/anchor");
-const { getProvider, tokens } = require("../../helper/solana");
+const { getProvider, } = require("../../helper/solana");
 
 const SHARKY_PROGRAM_ID = "SHARKobtfF1bHhxD2eqftjHBdVSCbKo9JtgK71FhELP";
 const SHARKY_IDL = require("./sharky.json");
 
-async function getVolumes() {
+async function borrowed(timestamp, _, _1, { api }) {
   const provider = getProvider();
   const program = new anchor.Program(SHARKY_IDL, SHARKY_PROGRAM_ID, provider);
 
-  const loans = await program.account.loan.all();
-  const totalVolume = loans.reduce(
-    (acc, l) => acc + l.account.principalLamports.toNumber(),
-    0
-  );
+  let loans = await program.account.loan.all()
+  loans = loans.map(i => i.account)
+  api.log('loan count: ',loans.length)
+  loans = loans.filter(i => {
 
-  return {
-    totalVolume,
-  };
+    const time = i.loanState?.taken?.taken?.terms?.time
+    if (!time) return false
+    return +time.start + +time.duration > timestamp
+  })
+  api.log('active count: ',loans.length)
+  loans.forEach(i => api.add(i.valueTokenMint, i.principalLamports.toString()))
 }
 
 module.exports = {
-  tvl: async () => ({ [tokens.solana]: (await getVolumes()).totalVolume }),
+  tvl: () => 0,
+  borrowed,
 };
