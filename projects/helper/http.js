@@ -5,12 +5,13 @@ const env = require('./env')
 const { getCache: cGetCache, setCache } = require('./cache')
 const COVALENT_KEY = env.COVALENT_KEY ?? 'ckey_72cd3b74b4a048c9bc671f7c5a6'
 
-const chainNames = {
-  'ethereum': 'eth-mainnet',
-  'bsc': 'bsc-mainnet',
-  'polygon': 'matic-mainnet',
-  'arbitrum': 'arbitrum-mainnet',
-  'avax': 'avalanche-mainnet',
+const chainIds = {
+  'ethereum': 1,
+  'bsc': 56,
+  'polygon': 137,
+  'arbitrum': 42161,
+  'fantom': 250,
+  'avax': 43114,
 }
 
 const getCacheData = {}
@@ -52,9 +53,9 @@ async function graphQuery(endpoint, graphQuery, params = {}, { timestamp, chain,
 }
 
 async function covalentGetTokens(address, chain = 'ethereum') {
-  let chainName = chainNames[chain]
-  if (!chainName) throw new Error('Missing chain to chain name mapping!!!')
-  if (!address) throw new Error('Missing address')
+  let chainId = chainIds[chain]
+  if (!chainId) throw new Error('Missing chain to chain id mapping:' + chain)
+  if (!address) throw new Error('Missing adddress')
 
   const timeNow = +Date.now()
   const THREE_DAYS = 3 * 24 * 3600 * 1000
@@ -72,7 +73,7 @@ async function covalentGetTokens(address, chain = 'ethereum') {
   async function _covalentGetTokens() {
     const {
       data: { items }
-    } = await get(`https://api.covalenthq.com/v1/${chainName}/address/${address}/balances_v2/?&key=${COVALENT_KEY}`)
+    } = await get(`https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/?&key=${COVALENT_KEY}`)
     let table = {}
     items
       .filter(i => +i.balance > 0)
