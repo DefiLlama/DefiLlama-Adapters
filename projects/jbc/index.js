@@ -1,6 +1,5 @@
 const BigNumber = require("bignumber.js");
-const { toUSDTBalances, toUSDT } = require("../helper/balances");
-let chain = "arbitrum";
+const { toUSDTBalances, } = require("../helper/balances");
 let stakedLpAddress = "0x85c6da933a7451bf2a6d836304B30967F3E76e11";
 let gmxVaultAddress = "0x489ee077994B6658eAfA855C308275EAd8097C4A";
 let minPriceAbi = "function getMinPrice(address _token) view returns (uint256)";
@@ -9,7 +8,6 @@ let arbEthLpAddress = "0x39511b74722afE77d532Eb70632B4B59C559019b";
 let wEthAddress = "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1";
 let arbAddress = "0x912CE59144191C1204E64559FE8253a0e49E6548";
 const Abi = require("./abi.json");
-const sdk = require("@defillama/sdk");
 const getReserves = "function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)";
 
 const lendInfos = [
@@ -22,39 +20,25 @@ const lendInfos = [
 ];
 
 function fetchTvl() {
-  return async (timestamp, block, chainBlocks) => {
-    const stakedTvl = await getStakeTvl(timestamp, block, chainBlocks);
-
-    const lendTvl = await getLendTvl(timestamp, block, chainBlocks);
-
+  return async (timestamp, block, chainBlocks, { api }) => {
+    const stakedTvl = await getStakeTvl(timestamp, block, chainBlocks, { api });
+    const lendTvl = await getLendTvl(timestamp, block, chainBlocks, { api });
     const totalTvl = stakedTvl.dividedBy(1e18).plus(lendTvl);
 
     return toUSDTBalances(totalTvl.dividedBy(1e18).toFixed(2));
   };
 }
 
-const getLendTvl = async (timestamp, block, chainBlocks) => {
+const getLendTvl = async (timestamp, block, chainBlocks, { api }) => {
   const lendTvls = await Promise.all(
     lendInfos.map(async ([vault, asset, decimals]) => {
-      const totalShareBal = (await sdk.api.abi.call({
-        abi: Abi.totalShareBal,
-        chain: chain,
-        target: vault,
-        params: [],
-        block: chainBlocks[chain]
-      })).output;
+      const totalShareBal = (await api.call({ abi: Abi.totalShareBal, target: vault, }))
 
       let price = new BigNumber(0);
       if (asset !== arbAddress) {
-        price = (await sdk.api.abi.call({
-          abi: minPriceAbi,
-          chain: chain,
-          target: gmxVaultAddress,
-          params: [asset],
-          block: chainBlocks[chain]
-        })).output;
+        price = (await api.call({ abi: minPriceAbi, target: gmxVaultAddress, params: [asset], }));
       } else {
-        price = await getArbPrice(timestamp, block, chainBlocks);
+        price = await getArbPrice(timestamp, block, chainBlocks, { api });
       }
       const totalShareBal18 = new BigNumber(totalShareBal).times(new BigNumber(Math.pow(10, 18 - Number(decimals)).toString()));
       const price18 = new BigNumber(price).dividedBy(1e12);
@@ -70,37 +54,13 @@ const getLendTvl = async (timestamp, block, chainBlocks) => {
   return tatalTvl;
 };
 
-const getStakeTvl = async (timestamp, block, chainBlocks) => {
+const getStakeTvl = async (timestamp, block, chainBlocks, { api }) => {
 
   const [totalShareBal, [balance0, balance1], supply, price] = await Promise.all([
-    (await sdk.api.abi.call({
-      abi: Abi.totalShareBal,
-      chain: chain,
-      target: stakedContractAddress,
-      params: [],
-      block: chainBlocks[chain]
-    })).output,
-    (await sdk.api.abi.call({
-      abi: getReserves,
-      chain: chain,
-      target: stakedLpAddress,
-      params: [],
-      block: chainBlocks[chain]
-    })).output,
-    (await sdk.api.abi.call({
-      abi: Abi.totalSupply,
-      chain: chain,
-      target: stakedLpAddress,
-      params: [],
-      block: chainBlocks[chain]
-    })).output,
-    (await sdk.api.abi.call({
-      abi: minPriceAbi,
-      chain: chain,
-      target: gmxVaultAddress,
-      params: [wEthAddress],
-      block: chainBlocks[chain]
-    })).output
+    api.call({ abi: Abi.totalShareBal, target: stakedContractAddress, }),
+    api.call({ abi: getReserves, target: stakedLpAddress, }),
+    api.call({ abi: Abi.totalSupply, target: stakedLpAddress, }),
+    api.call({ abi: minPriceAbi, target: gmxVaultAddress, params: [wEthAddress], })
   ]);
 
   const price18 = new BigNumber(price).dividedBy(1e12);
@@ -110,22 +70,10 @@ const getStakeTvl = async (timestamp, block, chainBlocks) => {
   return stakedTvl;
 };
 
-const getArbPrice = async (timestamp, block, chainBlocks) => {
-  const [balance0, balance1] = (await sdk.api.abi.call({
-    abi: getReserves,
-    chain: chain,
-    target: arbEthLpAddress,
-    params: [],
-    block: chainBlocks[chain]
-  })).output;
+const getArbPrice = async (timestamp, block, chainBlocks, { api }) => {
+  const [balance0, balance1] = (await api.call({ abi: getReserves, target: arbEthLpAddress, }));
 
-  const price = (await sdk.api.abi.call({
-    abi: minPriceAbi,
-    chain: chain,
-    target: gmxVaultAddress,
-    params: [wEthAddress],
-    block: chainBlocks[chain]
-  })).output;
+  const price = (await api.call({ abi: minPriceAbi, target: gmxVaultAddress, params: [wEthAddress], }));
   const price18 = new BigNumber(price).dividedBy(1e12);
 
   const arbPrice = new BigNumber(balance0).times(price18).dividedBy(new BigNumber(balance1)).times(1e12);
