@@ -1,5 +1,5 @@
 const { calculateUsdTvl } = require('./getUsdTvl')
-const { bifrost } = require('../bifrost-dex/api')
+const { getExports } = require('../helper/heroku-api')
 
 const moonriverStablePoolTokenMap = {
     "0xffc7780c34b450d917d557e728f033033cb4fa8c": "0xffffffff1fcacbd218edc0eba20fc2308c778080", // stKSM -> xcKSM
@@ -132,14 +132,12 @@ async function calcuteMoonbeamTvl(timestamp, ethBlock, chainBlocks) {
 module.exports = {
     methodology: "Get all pairs from the Factory Contract then get the reserve0 token amount and reserve1 token amount in one pair. Update the total balance of each token by reserve0 and reserve1. Repeat 2 ~ 3 for each pairs.",
     misrepresentedTokens: true,
+    ...getExports("bifrost-dex", ['bifrost']),
     moonriver: {
         tvl: calcuteMoonriverTvl
     },
     moonbeam: {
         tvl: calcuteMoonbeamTvl
-    },
-    bifrost: {
-        tvl: bifrost.tvl
     },
     astar: {
         tvl: calculateUsdTvl(
