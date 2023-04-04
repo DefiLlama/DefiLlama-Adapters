@@ -6,7 +6,7 @@ const { compoundExports } = require("../helper/compound");
 const {uniTvlExport} = require("../helper/calculateUniTvl");
 
 // Jetswap section
-const factory = "0x0eb58E5c8aA63314ff5547289185cC4583DfCBD5";
+//const factory = "0x0eb58E5c8aA63314ff5547289185cC4583DfCBD5";
 
 /*Vaults found via Jetfuel 1 deployer, some it could not be tracked
 * so there is missing a small % of tvl compare to their official site stated amount ~60m
@@ -50,7 +50,7 @@ const single_side_assets = [
   "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c",
 ];
 
-const factoryTvl = uniTvlExport(factory, 'bsc')
+//const factoryTvl = uniTvlExport(factory, 'bsc')
 
 const bscTvl = async (timestamp, block, chainBlocks) => {
   // Jetswap section
@@ -114,7 +114,7 @@ const {tvl:lendingTvl, borrowed} = compoundExports("0x67340bd16ee5649a37015138b3
 
 module.exports = {
   bsc: {
-    tvl: sdk.util.sumChainTvls([factoryTvl, bscTvl, lendingTvl]),
+    tvl: sdk.util.sumChainTvls([ bscTvl, lendingTvl]),
     borrowed
   },
 };
