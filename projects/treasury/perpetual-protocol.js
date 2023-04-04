@@ -18,7 +18,6 @@ module.exports = treasuryExports({
         '0x1337DEF16F9B486fAEd0293eb623Dc8395dFE46a' //ARMOR
      ],
     owners: [perpProtocolTreasury],
-    ownTokenOwners: [perpProtocolTreasury],
     ownTokens: [PERP],
   },
 })

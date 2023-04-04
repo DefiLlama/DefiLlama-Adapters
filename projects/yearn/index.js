@@ -98,9 +98,7 @@ module.exports = {
         tvl: optimism
     },
     hallmarks:[
-      [1630894153, "Fantom Launch"],
-      [1642730468, "Arbitrum Launch"],  //Timestamps from vault deployment not Yearn announcement
-      [1667581973, "Optimism Launch"]
+      [1594944000, "YFI token Launch"],
    ]
 };
 

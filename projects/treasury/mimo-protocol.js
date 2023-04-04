@@ -33,7 +33,6 @@ module.exports = treasuryExports({
 
      ],
     owners: [treasury, treasury1, treasurypolygon, treasurypolygon1, treasuryfantom, treasuryfantom1],
-    ownTokenOwners: [treasury, treasury1,treasurypolygon, treasurypolygon1, treasuryfantom, treasuryfantom1 ],
     ownTokens: [MIMO, MIMOfantom, MIMOpolygon],
   },
   polygon: {

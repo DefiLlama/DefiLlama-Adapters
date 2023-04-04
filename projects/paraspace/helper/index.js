@@ -1,11 +1,11 @@
 const sdk = require("@defillama/sdk");
-const { sumTokens2, unwrapUniswapV3NFTs, } = require('../../helper/unwrapLPs')
+const { sumTokens2, } = require('../../helper/unwrapLPs')
 
 const abi = require("./abis");
 const address = require("./address");
 
 async function tvl(_, _1, _cb, { api, }) {
-  const { UiPoolDataProvider, PoolAddressProvider, UniV3Pos, } = address[api.chain]
+  const { UiPoolDataProvider, PoolAddressProvider, UniV3Pos, P2PPairStaking, Bayc, Bakc, Mayc } = address[api.chain]
   let [reservesData] = await api.call({
     target: UiPoolDataProvider,
     params: PoolAddressProvider,
@@ -18,9 +18,10 @@ async function tvl(_, _1, _cb, { api, }) {
 
     const uniswapOwners = reservesData.filter(isUniV3XToken).map(i => i.xTokenAddress)
     reservesData = reservesData.filter(i => !isUniV3XToken(i))
-    await unwrapUniswapV3NFTs({ ...api, balances, owners: uniswapOwners })
+    await sumTokens2({ api, balances, owners: uniswapOwners, resolveUniV3: true, })
   }
-  const toa = reservesData.map(i => ([i.underlyingAsset, i.xTokenAddress]))
+  let toa = reservesData.map(i => ([i.underlyingAsset, i.xTokenAddress]))
+  toa.push(...[[Bayc, P2PPairStaking], [Mayc, P2PPairStaking], [Bakc, P2PPairStaking]])
   return sumTokens2({ balances, tokensAndOwners: toa, blacklistedTokens: ['0x0000000000000000000000000000000000000001'] })
 }
 
