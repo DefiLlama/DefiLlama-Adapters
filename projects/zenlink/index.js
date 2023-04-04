@@ -1,4 +1,5 @@
 const { calculateUsdTvl } = require('./getUsdTvl')
+const { bifrost } = require('../bifrost-dex/api')
 
 const moonriverStablePoolTokenMap = {
     "0xffc7780c34b450d917d557e728f033033cb4fa8c": "0xffffffff1fcacbd218edc0eba20fc2308c778080", // stKSM -> xcKSM
@@ -136,6 +137,9 @@ module.exports = {
     },
     moonbeam: {
         tvl: calcuteMoonbeamTvl
+    },
+    bifrost: {
+        tvl: bifrost.tvl
     },
     astar: {
         tvl: calculateUsdTvl(
