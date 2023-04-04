@@ -1,5 +1,6 @@
 const { sumTokensExport, nullAddress, } = require('../helper/sumTokens')
 const { covalentGetTokens } = require('./http')
+const axios = require("axios")
 
 function treasuryExports(config) {
   const chains = Object.keys(config)
@@ -29,7 +30,23 @@ function treasuryExports(config) {
   return exportObj
 }
 
+async function getComplexTreasury(owners){
+  const networks = ["ethereum", "polygon", "optimism", "gnosis", "binance-smart-chain", "fantom", "avalanche", "arbitrum",
+    "celo", "harmony", "moonriver", "bitcoin", "cronos", "aurora", "evmos"]
+  const data = await axios.get(`https://api.zapper.xyz/v2/balances/apps?${owners.map(a=>`addresses=${a}`).join("&")}&${networks.map(a=>`networks=${a}`).join("&")}`, {
+    headers:{
+      Authorization: `Basic ${btoa(process.env.ZAPPER_API_KEY)}`
+    }
+  })
+  let sum = 0
+  data.data.forEach(d=>{
+    sum+=d.balanceUSD
+  })
+  return sum
+}
+
 module.exports = {
   nullAddress,
   treasuryExports,
+  getComplexTreasury
 }
