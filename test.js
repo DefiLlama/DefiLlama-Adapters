@@ -405,6 +405,10 @@ Warning: `)
 
   Object.keys(unknownTokens).forEach(address => tokenBalances[`UNKNOWN (${address})`] = balances[address])
 
+
+  // console.log('--------token balances-------')
+  // console.table(tokenBalances)
+
   return {
     usdTvl,
     tokenBalances,
