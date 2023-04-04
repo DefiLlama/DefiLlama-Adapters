@@ -26,6 +26,5 @@ module.exports = treasuryExports({
     ],
     owners: [treasury],
     ownToken: [uwu],
-    ownTokenOwners: [treasury],
   },
 });

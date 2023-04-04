@@ -1,4 +1,4 @@
-const { api } = require("@defillama/sdk");
+const { api, api2, } = require("@defillama/sdk");
 const { providers } = require("@defillama/sdk/build/general");
 const { Contract, BigNumber } = require("ethers");
 
@@ -99,9 +99,9 @@ const getV2CAs = async (creditFacade, block) => {
 
   return totalValue[0]
     ? totalValue
-        .map((t) => t.output)
-        .reduce((a, c) => a.add(BigNumber.from(c)), BigNumber.from("0"))
-        .toString()
+      .map((t) => t.output)
+      .reduce((a, c) => a.add(BigNumber.from(c)), BigNumber.from("0"))
+      .toString()
     : "0";
 };
 
@@ -183,17 +183,14 @@ const getV1CAs = async (creditManager, block) => {
       ).args.creditAccount
   );
 
-  const { output: totalValue } = await api.abi.multiCall({
+  const totalValue= await api2.abi.multiCall({
     abi: abi["calcTotalValue"],
-    calls: openCAs.map((addr) => ({
-      target: cf,
-      params: [addr],
-    })),
+    target: cf,
+    calls: openCAs.filter(i => i !== '0xaBBd655b3791175113c1f1146D3B369494A2b815'), // filtered out address throwing error
     block,
   });
 
   return totalValue
-    .map((t) => t.output)
     .reduce((a, c) => a.add(BigNumber.from(c)), BigNumber.from("0"))
     .toString();
 };

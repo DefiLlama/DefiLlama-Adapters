@@ -12,7 +12,6 @@ module.exports = treasuryExports({
         '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',//BUSD
      ],
     owners: [nemeTreasury1],
-    ownTokenOwners: [nemeTreasury1],
     ownTokens: [NMS],
   },
 })
