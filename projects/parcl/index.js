@@ -7,13 +7,13 @@ const collateralVaults = [
   "9rUUoPJhdbZp4GqraxpjvNHJRayAX3ao2ZvBQqeNpQZ4",
   "HuxKhSY4ZjAFLS1PQMrTavrmXQHtRjtAPyEfRsuTMhgL",
   "EJ77XK6z1RhHdPgRAP3RuYDeTdKF5grb929awqM3Qo7k",
-  "5hHfPfyvgqLUy7YKNifmkRLGR3TsEtkPePcD4fK3Cf3U",
-  "7Si7o3jSvTkd5XKfLAG1j5jJsVyf9xGF41VAfZ5J2WMH",
-  "6vPhHq5dmxQ1TReVbP6KZLuZSWBTCZYD5xewgodiQtpr",
-  "FAkAaRUwGBXWcVXgKPm7tLrtKRumDKL85o2sc6GiJB2q",
-  "CAYRqwXJnfY6rvdEr5764Mzpx3PwNvh8kjidKYPkFwmq",
-  "3mE1oiFdLs8zntSk8bPLLY6Cq1vf5tbHpnyywunFysGZ",
-  "AWoQgYmaNDUERUePyo6f5LkxA9ozmjKg8MmKtfJn33Hb",
+  "2q6ijtLDWXQRWQfgc7P21LmCR3xZQrr1ffPtzcdSQFCp",
+  "4nXcKqJjCavRzmH5dGYVTSDcn1s4vLktqJCXjZZuJm5d",
+  "BE8HLwqoNxauQMqSUsqYHkUEXAgzyFEbHNgFmyAcAaz6",
+  "8WzxDyKZJd9vfd9YQ2p4PoWNzmvcXbWBZFSfa6ADCMFW",
+  "8fUhaDGk4HRatnii8jjsefFHoVSzvS7h9nHpxchjgcZ3",
+  "2EXHYHKoRXHoesAMgBWomREQxHYX94WCACiiAA2yHX1N",
+  "1ppyQqhct5626Ln42ZF6UHx4DxLDuJmepJVbBehfYfi",
 ];
 
 async function tvl() {
