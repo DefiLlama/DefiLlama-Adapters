@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk')
-const { staking } = require('../helper/staking')
-const GRABI = '0x5fd71280b6385157b291b9962f22153fc9e79000'
+const { stakings } = require('../helper/staking')
+const GARBI = '0x5fd71280b6385157b291b9962f22153fc9e79000'
 
 async function tvl(_, _b, _cb, { api, }) {
   const balances = {}
@@ -27,7 +27,7 @@ async function tvl(_, _b, _cb, { api, }) {
   const tokens = await api.multiCall({ abi: 'address:token', calls: pools })
   const tDecimals = await api.multiCall({ abi: 'erc20:decimals', calls: tokens })
   const reserves = await api.multiCall({ abi: 'function getTotalReserve() returns (uint256, uint256)', calls: pools })
-
+  
   reserves.forEach(([baseBal, tokenBal], i) => {
     if (tDecimals[i] !== bDecimals[i]) {
       baseBal = baseBal / (10 ** (18 - bDecimals[i]))
@@ -36,14 +36,39 @@ async function tvl(_, _b, _cb, { api, }) {
     sdk.util.sumSingleBalance(balances, base[i], baseBal, api.chain)
     sdk.util.sumSingleBalance(balances, tokens[i], tokenBal, api.chain)
   })
-
+  
+  const repoList = [
+      '0x08E4983dA044AA8a8D3121913Ee0d368A3ff9aE4',
+      '0x9E9C654ce87C0bB58D5df7835AC69A202A1deb9b',
+      '0xa9D63685d81D29bF8D74c122380dF98A7C0a00a2'
+  ]
+  
+  
+  const repos = await api.multiCall({ abi: 'function getCapacityByToken() returns (uint256)', calls: repoList })
+  const repoTokens = await api.multiCall({ abi: 'address:base', calls: repoList })
+  const repoTokenDecimals = await api.multiCall({ abi: 'erc20:decimals', calls: repoTokens })
+  
+  repos.forEach((repoTokenBal, i) => {
+    repoTokenBal = repoTokenBal / (10 ** (18 - repoTokenDecimals[i]));
+    sdk.util.sumSingleBalance(balances, repoTokens[i], repoTokenBal, api.chain)
+  })
+  
   return balances
 }
+
+const stakingContracts = [
+  // stakingContract1 =
+  "0xa8d4324b1fc6442fd47414c809f4b54bfc3babc6",
+  // stakingContract2
+  "0x1fb501f09a99844e9c9b4598e50010986f6b17b2",
+  // stakingContract3
+  "0xfb66e862693c0676ac44e436d11c43ecda198eca"
+];
 
 module.exports = {
   doublecounted: true,
   arbitrum: {
     tvl,
-    staking: staking('0xa8d4324b1fc6442fd47414c809f4b54bfc3babc6', GRABI)
+    staking: stakings(stakingContracts, GARBI)
   }
 }
