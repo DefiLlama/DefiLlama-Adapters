@@ -29,28 +29,71 @@ const staking = async (timestamp, ethBlock, chainBlocks) => {
   return balances;
 };
 
-const protocolQuery = `
-  query get_tvl($block: Int) {
-    protocolMetrics(first: 1, orderBy: timestamp, orderDirection: desc) {
-      treasuryMarketValue
+const protocolQuery = (block) => `
+  query {
+    tokenRecords(orderDirection: desc, orderBy: block, where: {block: ${block}}) {
+      block
       timestamp
+      value
+      category
+      source
+      id
+      tokenAddress
     }
   }
 `;
 
-/*** Bonds TVL Portion (Treasury) ***
- * Treasury TVL consists of DAI, FRAX and WETH balances + Sushi SLP and UNI-V2 balances
+const getLatestBlockIndexed = `
+query {
+  lastBlock: tokenRecords(first: 1, orderBy: block, orderDirection: desc) {
+    block
+    timestamp
+  }
+}`;
+
+/*** Query Subgraphs for latest Treasury Allocations  ***
+ * #1. Query tokenRecords for latestBlock indexed in subgraph. 
+ *     This allows us to filter protocol query to a list of results only for the latest block indexed
+ * #2. Call tokenRecords with block num from prev query
+ * #3. Sum values returned
  ***/
-async function ethTvl(timestamp, block, _, { api }) {
-  const endpoint = "https://api.thegraph.com/subgraphs/name/olympusdao/olympus-protocol-metrics"
-  const queriedData = await blockQuery(endpoint, protocolQuery, { api, })
-  const metric = queriedData.protocolMetrics[0];
-  const aDay = 24 * 3600
-  const now = Date.now() / 1e3
-  if (now - metric.timestamp > 3 * aDay) {
+async function tvl(timestamp, block, _, { api }) {
+  const subgraphUrls = {
+    ethereum:
+      "https://api.thegraph.com/subgraphs/name/olympusdao/olympus-protocol-metrics",
+    arbitrum:
+      "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-arbitrum",
+    fantom:
+      "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-fantom",
+    polygon:
+      "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-polygon",
+  };
+
+  const indexedBlockForEndpoint = await blockQuery(
+    subgraphUrls[api.chain],
+    getLatestBlockIndexed,
+    { api }
+  );
+  const blockNum = indexedBlockForEndpoint.lastBlock[0].block;
+  const { tokenRecords } = await blockQuery(
+    subgraphUrls[api.chain],
+    protocolQuery(blockNum),
+    {
+      api,
+    }
+  );
+
+  const metric = tokenRecords.reduce((acc, cur) => {
+    return acc + parseFloat(cur.value);
+  }, 0);
+
+  const aDay = 24 * 3600;
+  const now = Date.now() / 1e3;
+  if (now - blockNum[0].timestamp > 3 * aDay) {
     throw new Error("outdated");
   }
-  return toUSDTBalances(metric.treasuryMarketValue);
+
+  return toUSDTBalances(metric);
 }
 
 module.exports = {
@@ -58,7 +101,16 @@ module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
   ethereum: {
-    tvl: ethTvl,
+    tvl: tvl,
     staking,
+  },
+  arbitrum: {
+    tvl: tvl,
+  },
+  polygon: {
+    tvl: tvl,
+  },
+  fantom: {
+    tvl: tvl,
   },
 };
