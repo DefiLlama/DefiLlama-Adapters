@@ -1,41 +1,22 @@
-const sdk = require("@defillama/sdk");
+const { sumTokens2 } = require("../helper/unwrapLPs");
+const { getLogs } = require('../helper/cache/getLogs')
 
 // upgraded LSDVault V2
-const LSDVAULT_CONTRACT = "0x51A80238B5738725128d3a3e06Ab41c1d4C05C74";
+const LSDVAULT_CONTRACT_V1 = "0xE76Ffee8722c21b390eebe71b67D95602f58237F";
+const LSDVAULT_CONTRACT_V2 = "0x51A80238B5738725128d3a3e06Ab41c1d4C05C74";
 
-// list of all the supported LSDs deposited in vault
-const wstETHAddress = "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0";
-const sfrxETHAddress = "0xac3e018457b222d93114458476f3e3416abbe38f";
-const rETHAddress = "0xae78736cd615f374d3085123a210448e74fc6393";
-const cbETHAddress = "0xbe9895146f7af43049ca1c1ae358b0541ea49704";
-
-const lsdAddresses = [sfrxETHAddress, rETHAddress, wstETHAddress, cbETHAddress];
-
-const abi = {
-  lsdVault: "function supportedLSDs() public returns (address[])",
-};
-
-async function tvl(timestamp, block, chainBlocks) {
-  const balances = {};
-
-  const calls = lsdAddresses.map((i) => ({
-    target: i,
-    params: LSDVAULT_CONTRACT,
-  }));
-
-  // fetch balance of each lsd in vault contract
-  const bals = (
-    await sdk.api.abi.multiCall({
-      abi: "erc20:balanceOf",
-      calls: calls,
-    })
-  ).output;
-
-  bals.forEach((v, i) =>
-    sdk.util.sumSingleBalance(balances, lsdAddresses[i], v.output)
-  );
-
-  return balances;
+async function tvl(timestamp, block, chainBlocks, { api }) {
+  const logs = await getLogs({
+    api,
+    target: LSDVAULT_CONTRACT_V2,
+    topics: ['0xe5b3d6de4d7a3162af7ca9115e3e57964a3c605b53efa503cfcba6dd9ceb9e3c'],
+    eventAbi: 'event LSDAdded(address lsd)',
+    onlyArgs: true,
+    fromBlock: 16951456,
+  })
+  const lsdAddresses = logs.map(i => i.lsd)
+  const lsds_v1= await api.fetchList({  lengthAbi: 'uint256:tabs', itemAbi: 'function supportedLSDs(uint256) returns (address)', target: LSDVAULT_CONTRACT_V1}) 
+  return sumTokens2({ api, ownerTokens: [[lsdAddresses, LSDVAULT_CONTRACT_V2], [lsds_v1, LSDVAULT_CONTRACT_V1]]});
 }
 
 module.exports = {
