@@ -3,54 +3,6 @@ const { blockQuery, graphQuery } = require("../helper/http");
 
 const OHM = "0x64aa3364F17a4D01c6f1751Fd97C2BD3D7e7f1D5";
 const gOHM = "0x0ab87046fBb341D058F17CBC4c1133F25a20a52f";
-// const subgraphUrls = {
-//   ethereum:
-//     "https://api.thegraph.com/subgraphs/name/olympusdao/olympus-protocol-metrics",
-//   arbitrum:
-//     "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-arbitrum",
-//   fantom:
-//     "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-fantom",
-//   polygon:
-//     "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-polygon",
-// };
-
-// const getLatestBlockIndexed = `
-// query {
-//   lastBlock: tokenRecords(first: 1, orderBy: block, orderDirection: desc) {
-//     block
-//     timestamp
-//   }
-// }`;
-
-// const protocolAddressQuery = (block) => `
-// query {
-//   tokenRecords(orderDirection: desc, orderBy: block, where: {block: ${block}}) {
-//     tokenAddress
-//     sourceAddress,
-//     id
-//   }
-// }
-// `;
-
-// async function tokensForNetwork(network) {
-//   console.log("tokens");
-//   const indexedBlockForEndpoint = await graphQuery(
-//     subgraphUrls[network],
-//     getLatestBlockIndexed
-//   );
-//   const lastBlock = indexedBlockForEndpoint.lastBlock[0].block;
-//   const { tokenRecords: tokenAddresses } = await graphQuery(
-//     subgraphUrls[network],
-//     protocolAddressQuery(lastBlock)
-//   );
-
-//   console.log(tokenAddresses, "tokens");
-//   const tokenAddressArray = tokenAddresses.map((token) => token.tokenAddress);
-//   const sourceAddressArray = tokenAddresses.map((token) => token.sourceAddress);
-
-//   console.log(sourceAddressArray, "aaa");
-//   return tokenAddressArray;
-// }
 module.exports = treasuryExports({
   ethereum: {
     tokens: [
