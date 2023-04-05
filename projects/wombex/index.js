@@ -9,17 +9,19 @@ const wom = '0xAD6742A35fB341A9Cc6ad674738Dd8da98b94Fb1';
 const veWom = '0x3DA62816dD31c56D9CdF22C6771ddb892cB5b0Cc';
 
 async function voterProxyBalances(api) {
-  const masterWombatPoolInfos = await api.fetchList({ lengthAbi: abi.poolLength, itemAbi: abi.poolInfo, target: masterWombat })
+  let masterWombatPoolInfos = await api.fetchList({ lengthAbi: abi.poolLength, itemAbi: abi.poolInfo, target: masterWombat })
 
   const proxyBalanceCalls = masterWombatPoolInfos.map((_, i) => ({ target: masterWombat, params: [i, voterProxy] }))
-  const masterWombatVoterProxyBalances = await api.multiCall({
+  let masterWombatVoterProxyBalances = await api.multiCall({
     abi: abi.userInfo,
     calls: proxyBalanceCalls,
   })
-
+  
+  masterWombatPoolInfos = masterWombatPoolInfos.filter((_, i) => +masterWombatVoterProxyBalances[i].amount > 0)
+  masterWombatVoterProxyBalances = masterWombatVoterProxyBalances.filter((_, i) => +masterWombatVoterProxyBalances[i].amount > 0)
   const lpTokens = masterWombatPoolInfos.map((pool) => pool.lpToken);
   const lpPools = await api.multiCall({ abi: abi.pool, calls: lpTokens, });
-  const underlyingTokens = await api.multiCall({ abi: abi.underlyingToken, calls: lpTokens, });
+  const underlyingTokens = await api.multiCall({ abi: abi.underlyingToken, calls: lpTokens, })
 
   const underlyingAmounts = await api.multiCall({
     abi: abi.quotePotentialWithdraw,
@@ -27,7 +29,8 @@ async function voterProxyBalances(api) {
       target: pool,
       params: [getUnderlying(pool, index), '' + 1e18],
     })),
-  });
+  })
+
   function getUnderlying(pool, index) {
     if (pool.toLowerCase() === '0x2Ea772346486972E7690219c190dAdDa40Ac5dA4'.toLowerCase()) return '0x2170ed0880ac9a755fd29b2688956bd959f933f8'
     return underlyingTokens[index]
