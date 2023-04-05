@@ -2,8 +2,6 @@ const config = require("./config");
 const { staking } = require("../helper/staking");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
-module.exports = {};
-
 Object.keys(config).forEach((chain) => {
   const arg = config[chain];
   module.exports[chain] = {

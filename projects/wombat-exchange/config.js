@@ -32,5 +32,6 @@ module.exports = {
     [1663120800, "Staking Pool Start"],
     [1663725600, "Side Pool Start"],
     [1674021600, "Gauge Voting Start"],
+    [1680674400, "Arbitrum Launching"],
   ],
 };
