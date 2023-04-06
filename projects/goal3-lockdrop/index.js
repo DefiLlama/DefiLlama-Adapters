@@ -9,7 +9,7 @@ async function zkSyncTvl(_time, _ethBlock, { era: block }) {
   };
   const chain = "era";
   const tokens = [ZKSYNC_USDC];
-  owners = Object.values(contract);
+  const owners = Object.values(contract);
   return sumTokens2({ chain, block, tokens, owners });
 }
 module.exports = {
