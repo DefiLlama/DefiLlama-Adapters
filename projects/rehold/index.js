@@ -15,4 +15,6 @@ module.exports = {
   bsc: { tvl },
   polygon: { tvl },
   avax: { tvl },
+  arbitrum: { tvl },
+  fantom: { tvl },
 }
