@@ -1,10 +1,8 @@
-const chains = ["bsc", "arbitrum"];
-module.exports = {
-  // methodology: "TVL is the sum of the USD value of all tokens in the staking pool"
-};
+const bsc = require('./bsc')
+const arbitrum = require('./arbitrum')
 
-chains.forEach((chain) => {
-  module.exports[chain] = {
-    tvl: require(`./${chain}`)
-  };
-});
+module.exports = {
+  misrepresentedTokens: true,
+  bsc: { tvl: bsc },
+  // arbitrum: { tvl: arbitrum },
+};
