@@ -1,54 +1,43 @@
-const sdk = require("@defillama/sdk");
-const { request, gql } = require("graphql-request");
+const { getPastAndActiveTerms } = require("./subgraph.js");
+const { totalValueLockedForTerms } = require("./numbers.js");
 
 const CHAINS = [
   {
     id: 1,
     name: "ethereum",
-    url: "https://api.thegraph.com/subgraphs/name/barnbridge/bb-sy-mainnet",
-    address: "0x8A897a3b2dd6756fF7c17E5cc560367a127CA11F",
+    url: "https://api.thegraph.com/subgraphs/name/barnbridge/sy-mainnet",
+    address: "0xc67cb09d08521cD1dE6BAAC46824261eb1dB8800",
   },
   {
     id: 42161,
     name: "arbitrum",
-    url: "https://api.thegraph.com/subgraphs/name/barnbridge/bb-sy-arbitrum",
-    address: "0x1ADDAbB3fAc49fC458f2D7cC24f53e53b290d09e",
+    url: "https://api.thegraph.com/subgraphs/name/barnbridge/sy-arbitrum",
+    address: "0xf878a060D4d51704B14e8f68B51185bF5DbFE3A1",
+  },
+  {
+    id: 10,
+    name: "optimism",
+    url: "https://api.thegraph.com/subgraphs/name/barnbridge/sy-optimism",
+    address: "0x45c158E0ee76c76E525BaB941991268249e95331",
   },
 ];
 
-const termsQuery = (timestamp) => gql`
-    {
-      terms(where: { end_gt: ${timestamp} }) {
-        depositedAmount
-      }
-    }
-  `;
-
-const _underlying = async (chain, api) =>
-  api.call({
-    abi: "address:underlying",
-    target: chain.address,
-  })
-
-const _liquidityProviderBalance = async (chain, api) =>
-  api.call({
-    abi: "uint256:liquidityProviderBalance",
-    target: chain.address,
-  })
-
 const tvl = (chain) => {
-  return async (timestamp, _1, _2, { api, }) => {
-    const balances = {}
-    const underlying = await _underlying(chain, api);
-    const liquidity = await _liquidityProviderBalance(chain, api);
+  return async (_timestamp, _1, _2, _3) => {
+    const pastAndActiveTerms = await getPastAndActiveTerms(chain.url);
 
-    const { terms } = await request(chain.url, termsQuery(timestamp));
+    const tvls = await totalValueLockedForTerms(
+      chain,
+      pastAndActiveTerms,
+      true
+    );
 
-    const deposits = terms.reduce((acc, term) => acc + +term.depositedAmount, 0);
-    sdk.util.sumSingleBalance(balances, underlying, liquidity, api.chain)
-    sdk.util.sumSingleBalance(balances, underlying, deposits, api.chain)
-
-    return balances
+    return Object.fromEntries(
+      tvls.map(({ underlying, value }) => [
+        `${chain.name}:${underlying}`,
+        value,
+      ])
+    );
   };
 };
 
