@@ -2,6 +2,6 @@ const bsc = require('./bsc')
 const arbitrum = require('./arbitrum')
 
 module.exports = {
-  bsc: { tvl: bsc },
+  bsc,
   arbitrum: { tvl: arbitrum },
 };
