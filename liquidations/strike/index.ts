@@ -65,8 +65,8 @@ const positions = async () => {
   const positions = accounts.flatMap((account) => {
     const _totalBorrowValueInUsd = totalBorrowValueInUsd(account, prices, "ethereum:");
     const _totalCollateralValueInUsd = totalCollateralValueInUsd(account, prices, "ethereum:");
-    console.log('_totalBorrowValueInUsd', _totalBorrowValueInUsd)
-    console.log('_totalCollateralValueInUsd', _totalCollateralValueInUsd)
+    // console.log('_totalBorrowValueInUsd', _totalBorrowValueInUsd)
+    // console.log('_totalCollateralValueInUsd', _totalCollateralValueInUsd)
 
     const debts = account.tokens
       .filter((token) => {
