@@ -1,5 +1,5 @@
 const { getPastAndActiveTerms } = require("./subgraph.js");
-const { totalValueLockedForTerms } = require("./numbers.js");
+const { liquidityProviderBalancesForTerms } = require("./numbers.js");
 
 const CHAINS = [
   {
@@ -22,23 +22,13 @@ const CHAINS = [
   },
 ];
 
-const tvl = (chain) => {
-  return async (_timestamp, _1, _2, _3) => {
-    const pastAndActiveTerms = await getPastAndActiveTerms(chain.url);
+async function tvl(_timestamp, _1, _2, { api }) {
+  const chain = api.chain
+  const config = CHAINS.find(i => i.name === chain)
+  const pastAndActiveTerms = await getPastAndActiveTerms(config.url);
 
-    const tvls = await totalValueLockedForTerms(
-      chain,
-      pastAndActiveTerms,
-      true
-    );
-
-    return Object.fromEntries(
-      tvls.map(({ underlying, value }) => [
-        `${chain.name}:${underlying}`,
-        value,
-      ])
-    );
-  };
+  await liquidityProviderBalancesForTerms(api, pastAndActiveTerms)
+  return api.getBalances()
 };
 
 module.exports = {
@@ -49,6 +39,6 @@ module.exports = {
 
 CHAINS.forEach((chain) => {
   module.exports[chain.name] = {
-    tvl: tvl(chain),
+    tvl,
   };
 });
