@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 const { toUSDTBalances } = require("../helper/balances");
 const { blockQuery } = require("../helper/http");
+const BigNumber = require("bignumber.js");
 
 const OlympusStakings = [
   // Old Staking Contract
@@ -34,11 +35,9 @@ const protocolQuery = (block) => `
     tokenRecords(orderDirection: desc, orderBy: block, where: {block: ${block}}) {
       block
       timestamp
-      value
       category
-      source
-      id
       tokenAddress
+      balance
     }
   }
 `;
@@ -51,24 +50,42 @@ query {
   }
 }`;
 
+const subgraphUrls = {
+  ethereum:
+    "https://api.thegraph.com/subgraphs/name/olympusdao/olympus-protocol-metrics",
+  arbitrum:
+    "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-arbitrum",
+  fantom:
+    "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-fantom",
+  polygon:
+    "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-polygon",
+};
+
+//Subgraph returns balances in tokenAddress / allocator pairs. Need to return based on balance.
+function sumBalancesByTokenAddress(arr) {
+  return arr.reduce((acc, curr) => {
+    const found = acc.find((item) => item.tokenAddress === curr.tokenAddress);
+    if (found) {
+      found.balance = +found.balance + +curr.balance;
+    } else {
+      const newItem = {
+        tokenAddress: curr.tokenAddress,
+        balance: curr.balance,
+        category: curr.category,
+      };
+      acc.push(newItem);
+    }
+    return acc;
+  }, []);
+}
+
 /*** Query Subgraphs for latest Treasury Allocations  ***
- * #1. Query tokenRecords for latestBlock indexed in subgraph. 
+ * #1. Query tokenRecords for latestBlock indexed in subgraph.
  *     This allows us to filter protocol query to a list of results only for the latest block indexed
  * #2. Call tokenRecords with block num from prev query
  * #3. Sum values returned
  ***/
-async function tvl(timestamp, block, _, { api }) {
-  const subgraphUrls = {
-    ethereum:
-      "https://api.thegraph.com/subgraphs/name/olympusdao/olympus-protocol-metrics",
-    arbitrum:
-      "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-arbitrum",
-    fantom:
-      "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-fantom",
-    polygon:
-      "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-polygon",
-  };
-
+async function tvl(timestamp, block, _, { api }, poolsOnly = false) {
   const indexedBlockForEndpoint = await blockQuery(
     subgraphUrls[api.chain],
     getLatestBlockIndexed,
@@ -78,22 +95,41 @@ async function tvl(timestamp, block, _, { api }) {
   const { tokenRecords } = await blockQuery(
     subgraphUrls[api.chain],
     protocolQuery(blockNum),
-    {
-      api,
-    }
+    { api }
   );
-
-  const metric = tokenRecords.reduce((acc, cur) => {
-    return acc + parseFloat(cur.value);
-  }, 0);
 
   const aDay = 24 * 3600;
   const now = Date.now() / 1e3;
   if (now - blockNum[0].timestamp > 3 * aDay) {
     throw new Error("outdated");
   }
+  const filteredTokenRecords = poolsOnly
+    ? tokenRecords.filter((t) => t.category === "Protocol-Owned Liquidity")
+    : tokenRecords;
+  const tokensToBalances = sumBalancesByTokenAddress(filteredTokenRecords);
+  const balances = await Promise.all(
+    tokensToBalances.map(async (token, index) => {
+      const decimals = await sdk.api.abi.call({
+        abi: "erc20:decimals",
+        target: token.tokenAddress,
+        chain: api.chain,
+      });
+      return [
+        `${api.chain}:${token.tokenAddress}`,
+        Number(
+          BigNumber(token.balance)
+            .times(10 ** decimals.output)
+            .toFixed(0)
+        ),
+      ];
+    })
+  );
 
-  return toUSDTBalances(metric);
+  return Object.fromEntries(balances);
+}
+
+async function pool2(timestamp, block, _, { api }) {
+  return tvl(timestamp, block, _, { api }, true);
 }
 
 module.exports = {
@@ -103,14 +139,18 @@ module.exports = {
   ethereum: {
     tvl: tvl,
     staking,
+    pool2,
   },
   arbitrum: {
     tvl: tvl,
+    pool2,
   },
   polygon: {
     tvl: tvl,
+    pool2,
   },
   fantom: {
     tvl: tvl,
+    pool2,
   },
 };
