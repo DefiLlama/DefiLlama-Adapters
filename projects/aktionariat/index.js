@@ -38,7 +38,7 @@ function tvlPaged(chain) {
 }
 
 module.exports = {
-  methodology: `Counts the tokens locked on brokerbots, pulling the data from the 'aktionariat/brokerbot' subgraph`,
+  methodology: `Counts the tokens locked on brokerbots, pulling the brokerbot addresses from the 'aktionariat/brokerbot' subgraph`,
   timetravel: false,
   hallmarks: []
 }
