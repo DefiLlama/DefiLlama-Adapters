@@ -1,5 +1,6 @@
 const { pool2 } = require("../helper/unknownTokens");
-const { nullAddress, sumTokensExport, } = require("../helper/unwrapLPs")
+const { nullAddress, sumTokensExport, } = require("../helper/unwrapLPs");
+const sdk = require("@defillama/sdk");
 
 const tokensAndOwners = [
   ['0x1addd80e6039594ee970e5872d247bf0414c8903', '0xe964b6083F24dBC06e94C662b195c22C76923b22'], // GLP
