@@ -172,7 +172,11 @@ async function diplayUnknownTable({ tvlResults = {}, tvlBalances = {}, storedKey
     if (balances[token] === '0') delete balances[token]
   })
 
-  return debugBalances({ balances, chain: storedKey, log, tableLabel, withETH: false, })
+  try {
+    await debugBalances({ balances, chain: storedKey, log, tableLabel, withETH: false, })
+  } catch (e) {
+    log('failed to fetch prices for', balances)
+  }
 }
 
 const nullAddress = '0x0000000000000000000000000000000000000000'
