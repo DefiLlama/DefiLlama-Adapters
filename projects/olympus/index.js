@@ -175,6 +175,8 @@ module.exports = {
   start: 1616569200, // March 24th, 2021
   timetravel: false,
   misrepresentedTokens: true,
+  methodology:
+    "TVL is the sum of the value of all assets held by the treasury (excluding pTokens). Please visit https://app.olympusdao.finance/#/dashboard for more info.",
   ethereum: {
     tvl: tvl,
     staking,
