@@ -13,6 +13,8 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v2
       - name: Run changes files through test script
+        env:
+          LLAMA_DEBUG_MODE: "true"
         run: |
           RUN_FILES=$(
             MODIFIED=${{ steps.file_changes.outputs.files_modified}} \
