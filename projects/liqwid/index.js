@@ -24,6 +24,10 @@ const scriptAddresses = [
   "addr1w8dprfgfdxnlwu3948579jrwg0ferf5a63ln8xj0mqcdzegayxmqq",
   "addr1w9wjz8tjt87gldh2usu8t5mfe4nkmlngp30a387h8s94fyg5uup5n",
   "addr1w8f7k5z4casxhcvz3vf5hlnt7fhgt5209t5hm36pdpduv6qdwf8ny",
+  // SHEN Market
+  "addr1wyw3ap36lnepstpjadwg8cg73llvmju4y94kmfld23lkzjggq4hyj",
+  "addr1wxrxa3ucywn3lqpkzlyucak0a7aavkudh49fqt06yc05sws4l4zs2",
+  "addr1wy6e9jukn8fpx7kesrpmapsnmz0cgq6lnskuff0xc0junggv6gd8l",
 ];
 
 module.exports = {
