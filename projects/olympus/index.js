@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const { toUSDTBalances } = require("../helper/balances");
 const { blockQuery } = require("../helper/http");
 const BigNumber = require("bignumber.js");
 
