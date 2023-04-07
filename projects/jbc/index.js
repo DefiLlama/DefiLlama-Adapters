@@ -3,18 +3,32 @@ const { nullAddress, sumTokensExport, } = require("../helper/unwrapLPs")
 
 const tokensAndOwners = [
   ['0x1addd80e6039594ee970e5872d247bf0414c8903', '0xe964b6083F24dBC06e94C662b195c22C76923b22'], // GLP
-  [nullAddress, '0x1F01d43E994C5d009Bd50F7c68EdF04f8966135F'], // ETH
-  ['0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f', '0xAfC888621Ad39Ff6B54C2F6168DDCE8152de314B'], // WBTC
-  ['0xff970a61a04b1ca14834a43f5de4533ebddb5cc8', '0xE1308Ada37C64bDfC3F9547af945F524E968c549'], // USDC
-  ['0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9', '0x0411fED8A22191a3F9e94FD7a159230D9A3888AC'], // USDT
-  ['0xda10009cbd5d07dd0cecc66161fc93d7c9000da1', '0xd323d188d787CDa4c5f3D2BBC087d1149F72F322'], // DAI
-  ['0x912ce59144191c1204e64559fe8253a0e49e6548', '0x8EAF69Ea32024246d3E8F869602ce7F0fE3a214C'], // ARB
+  [nullAddress, '0x64f688cACeFe6D4809f1A829c1d0286100196bE0'], // ETH
+  ['0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f', '0xCC13E077F54577cE3Ea52916fDd70305C461A3ED'], // WBTC
+  ['0xff970a61a04b1ca14834a43f5de4533ebddb5cc8', '0xcA2F482B067D354B3cdB6926911f42F5d1f0e872'], // USDC
 ]
+
+function staking(stakingAddr, token, chain) {
+  return async (_timestamp, _block, chainBlocks) => {
+    let balances = {};
+    let balance = (
+      await sdk.api.erc20.balanceOf({
+        target: token,
+        owner: stakingAddr,
+        block: chainBlocks[chain],
+        chain,
+      })
+    ).output;
+    sdk.util.sumSingleBalance(balances, `arbitrum:${token}`, balance);
+    return balances;
+  };
+}
 
 module.exports = {
   arbitrum: {
     tvl: sumTokensExport({ tokensAndOwners }),
-    pool2: pool2({ stakingContract: '0x1939A441D006bD74a0034891972fa25789Af7A24', lpToken: '0x85c6da933a7451bf2a6d836304b30967f3e76e11', chain: 'arbitrum', useDefaultCoreAssets: true, }),
+    pool2: pool2({ stakingContract: '0x0F6f73c7ecCE4FB9861E25dabde79CBA112550b3', lpToken: '0x85c6da933a7451bf2a6d836304b30967f3e76e11', chain: 'arbitrum', useDefaultCoreAssets: true, }),
+    staking: staking("0xaF70e6DF6d34dbcd284BC4CCa047Bd232110A2CF", "0xb67c175701fD60cD670cB9D331368367BF072e47", "arbitrum")
   }
 };
 
