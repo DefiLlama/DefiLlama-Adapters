@@ -31,6 +31,10 @@ const addressMap = {
     "0x3175df0976dfa876431c2e9ee6bc45b65d3473cc", //stkcvxcrvFRAX-frax -> crvFRAX-frax
   "0xb0c22d8d350c67420f06f48936654f567c73e8c8":
     "0x4e78011ce80ee02d2c3e649fb657e45898257815", //sKLIMA -> KLIMA
+  "0x742b70151cd3bc7ab598aaff1d54b90c3ebc6027":
+    "0xc55126051B22eBb829D00368f4B12Bde432de5Da", //rlBTRFLY -> BTRFLY V2
+  "0xc0d4ceb216b3ba9c3701b291766fdcba977cec3a":
+    "0xc55126051B22eBb829D00368f4B12Bde432de5Da", //BTRFLY -> BTRFLYV2
 };
 
 /*** Staking of native token (OHM) TVL Portion ***/
