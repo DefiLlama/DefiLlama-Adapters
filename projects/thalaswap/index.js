@@ -4,7 +4,6 @@ const { transformBalances } = require("../helper/portedTokens");
 
 const thalaswapAddress = "0x48271d39d0b05bd6efca2278f22277d6fcc375504f9839fd73f74ace240861af";
 const nullCoinType = "base_pool::Null";
-const thlCoinType = "thl_coin::THL";
 
 let resourcesCache;
 
@@ -31,7 +30,7 @@ module.exports = {
         assets.forEach((asset, index) => {
           // We ignore the null coin because it signifies that we don't have either a third or fourth asset in the pool
           // We  ignore the THL coin because native tokens are exempt from TVL calculations
-          if (!asset_types[index].includes(nullCoinType) && !asset_types[index].includes(thlCoinType))
+          if (!asset_types[index].includes(nullCoinType))
             sdk.util.sumSingleBalance(balances, asset_types[index], asset.value);
         });
       });
