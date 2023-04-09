@@ -30,7 +30,7 @@ async function tvl(time, ethBlock, chainBlocks){
     const balances = {};
     const transform = await transformPolygonAddress();
     await sumTokensAndLPsSharedOwners(balances, [
-        [LUCHA_polygon, false],
+        // [LUCHA_polygon, false],
         [MATIC_polygon, false],
         [QI_polygon, false],
         [MUST_polygon, false],
