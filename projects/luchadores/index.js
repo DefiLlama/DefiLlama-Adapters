@@ -24,25 +24,22 @@ const MUST_polygon = "0x9C78EE466D6Cb57A4d01Fd887D2b5dFb2D46288f";
 const PSP_polygon = "0x42d61D766B85431666B39B89C43011f24451bFf6";
 const LINK_polygon = "0x53e0bca35ec356bd5dddfebbd1fc0fd03fabad39";
 const WETH_polygon = "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619";
-const VQI_polygon = "0xB424dfDf817FaF38FF7acF6F2eFd2f2a843d1ACA";
-const GHST_polygon = "0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7";
-const RAIDER_polygon = "0xcd7361ac3307d1c5a46b63086a90742ff44c63b3";
-const AURUM_polygon = "0x34d4ab47bee066f361fa52d792e69ac7bd05ee23";
+const WMATIC_LUCHA_Balancer_polygon = "0x924EC7ed38080E40396c46F6206A6d77D0B9f72d";
 
 async function tvl(time, ethBlock, chainBlocks){
     const balances = {};
     const transform = await transformPolygonAddress();
     await sumTokensAndLPsSharedOwners(balances, [
+        [LUCHA_polygon, false],
         [MATIC_polygon, false],
         [QI_polygon, false],
         [MUST_polygon, false],
         [PSP_polygon, false],
-        [VQI_polygon, false],
         [LINK_polygon, false],
         [WETH_polygon, false],
-        [GHST_polygon, false],
-        [RAIDER_polygon, false],
-        [AURUM_polygon, false],
+        [WMATIC_LUCHA_Balancer_polygon, false],
+        [LUCHA_MATIC_comethLp, true],
+        [LUCHA_MUST_comethLp, true]
     ], [treasury, luchaStk, rewardPool, luchaMaticStk, luchaMustStk], chainBlocks.polygon, "polygon", transform);
     return balances;
 }
