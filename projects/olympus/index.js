@@ -15,6 +15,8 @@ const OHM = "0x383518188c0c6d7730d91b2c03a03c837814a899";
  * All balances are 1: 1 to their unstaked counterpart that has the price feed.
  **/
 const addressMap = {
+  "0xb23dfc0c4502a271976f1ee65321c51be2529640":
+    "0x76fcf0e8c7ff37a47a799fa2cd4c13cde0d981c9", //aura50OHM-50DAI -> 50OHM-50DAI
   "0xc8418af6358ffdda74e09ca9cc3fe03ca6adc5b0":
     "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0", // veFXS -> FXS
   "0x3fa73f1e5d8a792c80f426fc8f84fbf7ce9bbcac":
@@ -76,8 +78,7 @@ query {
 }`;
 
 const subgraphUrls = {
-  ethereum:
-    "https://api.thegraph.com/subgraphs/name/olympusdao/olympus-protocol-metrics",
+  ethereum: `https://gateway.thegraph.com/api/${process.env.OLYMPUS_GRAPH_API_KEY}/subgraphs/id/DTcDcUSBRJjz9NeoK5VbXCVzYbRTyuBwdPUqMi8x32pY`,
   arbitrum:
     "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-arbitrum",
   fantom:
