@@ -105,5 +105,13 @@ module.exports = {
         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
       ]
     },
+    {
+      id: 324,
+      name: 'era',
+      stable: '0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4', // USDC
+      holders: [
+        '0x39dE19C9fF25693A2311AAD1dc5C790194084A39', // portal v2
+      ]
+    },
   ]
 }
