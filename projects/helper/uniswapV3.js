@@ -1,5 +1,6 @@
 const { sumTokens2 } = require('./unwrapLPs')
 const { getLogs } = require('./cache/getLogs')
+const { request, } = require('graphql-request')
 
 const uniswapConfig = {
   eventAbi: 'event PoolCreated(address indexed token0, address indexed token1, uint24 indexed fee, int24 tickSpacing, address pool)',
@@ -18,7 +19,7 @@ function uniV3Export(config) {
     let { factory: target, fromBlock, topics, eventAbi, isAlgebra } = config[chain]
     if (!topics) topics = isAlgebra ? algebraConfig.topics : uniswapConfig.topics
     if (!eventAbi) eventAbi = isAlgebra ? algebraConfig.eventAbi : uniswapConfig.eventAbi
-    
+
     exports[chain] = {
       tvl: async (_, _b, _cb, { api, }) => {
         const logs = await getLogs({
@@ -39,6 +40,45 @@ function uniV3Export(config) {
   return exports
 }
 
+function uniV3GraphExport({ blacklistedTokens = [], graphURL }) {
+  return async (_, _b, _cb, { api }) => {
+    const size = 1000
+    let lastId = ''
+    let pools
+
+    const graphQueryPagedWithBlock = `
+    query poolQuery($lastId: String, $block: Int) {
+      pools(block: { number: $block } first:${size} where: {id_gt: $lastId totalValueLockedUSD_gt: 100}) {
+        id
+        token0 { id }
+        token1 { id }
+      }
+    }
+  `
+    const graphQueryPagedWithoutBlock = `
+    query poolQuery($lastId: String) {
+      pools(first:${size} where: {id_gt: $lastId totalValueLockedUSD_gt: 100}) {
+        id
+        token0 { id }
+        token1 { id }
+      }
+    }
+  `
+    const graphQueryPaged = api.block ? graphQueryPagedWithBlock : graphQueryPagedWithoutBlock
+
+    do {
+      const params = { lastId, block: api.block }
+      const res = await request(graphURL, graphQueryPaged, params);
+      pools = res.pools
+      const tokensAndOwners = pools.map(i => ([[i.token0.id, i.id], [i.token1.id, i.id]])).flat()
+      await sumTokens2({ api, tokensAndOwners, blacklistedTokens })
+      lastId = pools[pools.length - 1]?.id
+    } while (pools.length === size)
+  }
+}
+
+
 module.exports = {
   uniV3Export,
-};
+  uniV3GraphExport,
+}
