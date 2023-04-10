@@ -12,6 +12,7 @@ async function _getResources() {
 }
 const extractVaultType = resource => resource.type.split('<')[1].replace('>', '').split(', ');
 const vaultsFilter = resource => resource.type.includes(`${moveDollarAddress}::vault::Vaults<`)
+
 module.exports = {
   timetravel: false,
   methodology:
