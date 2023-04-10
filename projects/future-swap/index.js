@@ -1,6 +1,5 @@
-const sdk = require("@defillama/sdk");
-const { sumTokensAndLPs, sumTokensExport } = require("../helper/unwrapLPs");
-const { utils } = require("ethers");
+const { sumTokensExport } = require("../helper/unwrapLPs")
+const { sumUnknownTokens } = require("../helper/unknownTokens")
 
 const FindoraStableCoins = {
   BNB_BUSD: "0xE80EB4a234f718eDc5B76Bb442653827D20Ebb2d",
@@ -16,33 +15,10 @@ const FutureSwapContracts = {
 
 const abiPools = `function getPools() view returns (tuple(address lpToken, uint256 allocPoint, uint256 lastRewardTime, uint256 accRewardPerShare)[])`;
 
-async function farmStakings(timestamp, block) {
-  const pools = await sdk.api.abi.call({
-    target: FutureSwapContracts.Farm,
-    abi: abiPools,
-    block,
-    chain: "findora",
-  });
+async function farmStakings(timestamp, block, _, { api }) {
+  const pools = await api.call({ target: FutureSwapContracts.Farm, abi: abiPools, })
 
-  const balances = {};
-
-  const stakingTokens = pools.output
-    .map((pool) => utils.getAddress(pool.lpToken))
-    .map((token) => [
-      token,
-      FutureSwapContracts.Farm,
-      token !== FutureSwapContracts.USDF,
-    ]);
-
-  await sumTokensAndLPs(
-    balances,
-    stakingTokens,
-    block,
-    "findora",
-    (id) => `findora:${id.toLowerCase()}`
-  );
-
-  return balances;
+  return sumUnknownTokens({ api, tokens: pools.map(i => i.lpToken), owner: FutureSwapContracts.Farm, blacklistedTokens: [FutureSwapContracts.USDF], resolveLP: true, useDefaultCoreAssets: true, })
 }
 
 module.exports = {
@@ -50,7 +26,6 @@ module.exports = {
     start: 1677029212, // 2023-02-22 01:26:52 UTC
     methodology: `Sum of liqudities backed USDF; and tokens values staked in the FutureSwap Farm.`,
     tvl: sumTokensExport({
-      chain: "findora",
       owner: FutureSwapContracts.USDF,
       tokens: Object.values(FindoraStableCoins),
     }),
