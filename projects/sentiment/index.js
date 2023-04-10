@@ -24,6 +24,6 @@ module.exports = {
   misrepresentedTokens: true,
   arbitrum: { tvl, },
   hallmarks: [
-    [Math.floor(new Date('2022-04-04')/1e3), 'Protocol was hacked for 1 million'],
+    [Math.floor(new Date('2023-04-04')/1e3), 'Protocol was hacked for 1 million'],
   ],
 };
