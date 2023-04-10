@@ -14,66 +14,48 @@
 ---
 ##### Name (to be shown on DefiLlama):
 
-TProtocol
 
 ##### Twitter Link:
 
-https://twitter.com/TProtocol_
 
 ##### List of audit links if any:
 
-/
 
 ##### Website Link:
 
-https://www.tprotocol.io/
 
 ##### Logo (High resolution, preferably in .svg and .png, for application on both white and black backgrounds. Will be shown with rounded borders):
 
-- Black: https://github.com/TProtocol/Public/raw/main/img/Logo/logo-tprotocol-black-200x200.png
-- White: https://github.com/TProtocol/Public/raw/main/img/Logo/logo-tprotocol-white-200x200.png
 
 ##### Current TVL:
 
-`6,782,521.31`
 
 ##### Treasury Addresses (if the protocol has treasury)
 
-https://etherscan.io/0xa01D9bc8343016C7DDD39852e49890a8361B2884
 
 ##### Chain:
 
-Ethereum
 
 ##### Coingecko ID (so your TVL can appear on Coingecko): (https://api.coingecko.com/api/v3/coins/list)
 
-/
 
 ##### Coinmarketcap ID (so your TVL can appear on Coinmarketcap): (https://api.coinmarketcap.com/data-api/v3/map/all?listing_status=active,inactive,untracked&start=1&limit=10000)
 
-/
 
 ##### Short Description (to be shown on DefiLlama):
 
-First DeFi composable LSD solution for stablecoins.
 
 ##### Token address and ticker if any:
 
-- wTBT: https://etherscan.io/token/0xD38e031f4529a07996aaB977d2B79f0e00656C56
-- TBT: https://etherscan.io/token/0x07Ac55797D4F43f57cA92a49E65ca582cC287c27
 
 ##### Category (full list at https://defillama.com/categories) *Please choose only one:
 
-DeFi
 
 ##### Oracle used (Chainlink/Band/API3/TWAP or any other that you are using):
 
-/
 
 ##### forkedFrom (Does your project originate from another project):
 
-/
 
 ##### methodology (what is being counted as tvl, how is tvl being calculated):
 
-`Protocol TVL =  WTBT asset value + TBT  asset value + TREASURY asset value`
