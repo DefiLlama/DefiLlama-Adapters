@@ -1,5 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { blockQuery } = require("../helper/http");
+const env= require("../helper/env");
 const BigNumber = require("bignumber.js");
 
 const OlympusStakings = [
@@ -78,7 +79,7 @@ query {
 }`;
 
 const subgraphUrls = {
-  ethereum: `https://gateway.thegraph.com/api/${process.env.OLYMPUS_GRAPH_API_KEY}/subgraphs/id/DTcDcUSBRJjz9NeoK5VbXCVzYbRTyuBwdPUqMi8x32pY`,
+  ethereum: `https://gateway.thegraph.com/api/${env.OLYMPUS_GRAPH_API_KEY}/subgraphs/id/DTcDcUSBRJjz9NeoK5VbXCVzYbRTyuBwdPUqMi8x32pY`,
   arbitrum:
     "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-arbitrum",
   fantom:
@@ -175,24 +176,23 @@ async function pool2(timestamp, block, _, { api }) {
 module.exports = {
   start: 1616569200, // March 24th, 2021
   timetravel: false,
-  misrepresentedTokens: true,
   methodology:
     "TVL is the sum of the value of all assets held by the treasury (excluding pTokens). Please visit https://app.olympusdao.finance/#/dashboard for more info.",
   ethereum: {
-    tvl: tvl,
     staking,
-    pool2,
+    tvl,
+    // pool2,
   },
   arbitrum: {
-    tvl: tvl,
-    pool2,
+    tvl,
+    // pool2,
   },
   polygon: {
-    tvl: tvl,
-    pool2,
+    tvl,
+    // pool2,
   },
   fantom: {
-    tvl: tvl,
-    pool2,
+    tvl,
+    // pool2,
   },
 };
