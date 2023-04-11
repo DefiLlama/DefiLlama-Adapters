@@ -39,14 +39,14 @@ async function tvl(_, _1, _2, { api }) {
   // console.log("wtbtTVL", wtbtTVL.toString());
 
   //@dev TBT TVL = TBT Supply * 1 USDC
-  const tbtSupply = await api.call({
-    abi: "erc20:totalSupply",
-    target: TBT_TOKEN_CONTRACT,
-  });
-  const tbtTVL = multiple(
-    ethers.utils.formatUnits(tbtSupply, 18),
-    ethers.utils.formatUnits("1000000", 6)
-  ).decimalPlaces(6);
+  // const tbtSupply = await api.call({
+  //   abi: "erc20:totalSupply",
+  //   target: TBT_TOKEN_CONTRACT,
+  // });
+  // const tbtTVL = multiple(
+  //   ethers.utils.formatUnits(tbtSupply, 18),
+  //   ethers.utils.formatUnits("1000000", 6)
+  // ).decimalPlaces(6);
   // console.log("tbtTVL", tbtTVL.toString());
 
   //@dev TREASURY TVL = USDC Balance of Treasury
@@ -58,9 +58,9 @@ async function tvl(_, _1, _2, { api }) {
   const treasuryTVL = ethers.utils.formatUnits(usdcInTreasury, 6);
   // console.log("treasuryTVL", treasuryTVL.toString());
 
-  //@dev Total TVL = WTBT TVL + TBT TVL + TREASURY TVL
+  //@dev Total TVL = WTBT TVL + TREASURY TVL
   const SummaryTVL = ethers.utils.parseUnits(
-    wtbtTVL.plus(tbtTVL).plus(treasuryTVL).decimalPlaces(6).toString(),
+    wtbtTVL.plus(treasuryTVL).decimalPlaces(6).toString(),
     6
   );
   // console.log("SummaryTVL", SummaryTVL.toString());
