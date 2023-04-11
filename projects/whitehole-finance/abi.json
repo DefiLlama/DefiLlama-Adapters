@@ -1,7 +1,0 @@
-{
-  "allMarkets": "address[]:allMarkets",
-  "underlying": "address:underlying",
-  "totalSupply": "uint256:totalSupply",
-  "totalBorrows": "uint256:totalBorrow",
-  "exchangeRate": "uint256:exchangeRate"
-}
