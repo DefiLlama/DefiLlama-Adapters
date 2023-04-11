@@ -74,6 +74,7 @@ async function solana(timestamp, ethBlock, chainBlocks) {
 
 module.exports = {
   hallmarks: [
+    [1610496000, "Start of incentives for curve pool"],
     [1651881600,"UST depeg"],
     [1667865600, "FTX collapse"]
   ],
