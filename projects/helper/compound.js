@@ -117,7 +117,7 @@ function getCompoundV2Tvl(comptroller, chain, transformAdress,
       api = new sdk.ChainApi({ chain, })
     }
     chain = api.chain
-    block = api.block
+    const block = api.block
     if (!transformAdress) transformAdress = await getChainTransform(chain)
     let balances = {};
     let markets = await getMarkets(comptroller, block, chain, cether, cetheEquivalent, blacklistedTokens, abis)
