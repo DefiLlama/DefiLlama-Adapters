@@ -70,6 +70,7 @@ const chainTvl = (chain, G_UNI_Factory) => async (timestamp, ethBlock, chainBloc
 };
 
 module.exports = {
+  doublecounted: true,
   ethereum: {
     tvl: chainTvl("ethereum", "0xEA1aFf9dbFfD1580F6b81A3ad3589E66652dB7D9"),
   },
