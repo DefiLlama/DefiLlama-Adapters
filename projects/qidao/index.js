@@ -78,23 +78,23 @@ const config = {
     vaults: [
       "0x3A82F4da24F93a32dc3C2A28cFA9D6E63EC28531",
     ]
-  },
+  },/*
   moonriver: {
     vaults: [
       // "0x97D811A7eb99Ef4Cb027ad59800cE27E68Ee1109",
       "0x4a0474E3262d4DB3306Cea4F207B5d66eC8E0AA9",
     ]
   },
-  xdai: {
-    vaults: [
-      "0x5c49b268c9841AFF1Cc3B0a418ff5c3442eE3F3b",
-      "0x014a177e9642d1b4e970418f894985dc1b85657f",
-    ]
-  },
   harmony: {
     vaults: [
       "0x12FcB286D664F37981a42cbAce92eAf28d1dA94f",
       "0x46469f995A5CB60708200C25EaD3cF1667Ed36d6",
+    ]
+  },*/
+  xdai: {
+    vaults: [
+      "0x5c49b268c9841AFF1Cc3B0a418ff5c3442eE3F3b",
+      "0x014a177e9642d1b4e970418f894985dc1b85657f",
     ]
   },
   ethereum: {
