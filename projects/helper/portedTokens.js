@@ -204,7 +204,7 @@ async function transformDexBalances({ chain, data, balances = {}, restrictTokenR
 
   function updateBalances(balances) {
     Object.entries(balances).forEach(([token]) => {
-      bal = +balances[token] // this is safer as token balance might change while looping when two entries for same token exist
+      let bal = +balances[token] // this is safer as token balance might change while looping when two entries for same token exist
       const tokenKey = normalizeAddress(token, chain)
       if (!prices[tokenKey]) return;
       const priceObj = prices[tokenKey]
