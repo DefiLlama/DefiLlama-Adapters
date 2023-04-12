@@ -19,6 +19,7 @@ const helpers = {
   "litecoin":require("./chain/litecoin"),
   "polkadot":require("./chain/polkadot"),
   "hedera":require("./chain/hbar"),
+  "stacks":require("./chain/stacks"),
 }
 
 const geckoMapping = {
@@ -40,7 +41,7 @@ async function getBalance(chain, account) {
 }
 
 function sumTokensExport(options) {
-  return async (_, _b, _cb, { api }) => sumTokens({ ...api, ...options})
+  return async (_, _b, _cb, { api }) => sumTokens({ ...api, api, ...options})
 }
 
 async function sumTokens(options) {
@@ -74,6 +75,7 @@ async function sumTokens(options) {
 
   if(helper) {
     switch(chain) {
+      case 'cardano':
       case 'solana': return helper.sumTokens2(options)
       case 'eos': return helper.get_account_tvl(owners, tokens, 'eos')
       case 'tezos': options.includeTezos = true; break;

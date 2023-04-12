@@ -7,3 +7,9 @@ module.exports = masterchefExports({
   useDefaultCoreAssets: true,
   poolInfoABI: "function poolInfo(uint256) view returns (address lpToken, uint256, uint256, uint256)"
 })
+
+module.exports = {
+  arbitrum: { 
+    tvl: () => 0
+  }
+}

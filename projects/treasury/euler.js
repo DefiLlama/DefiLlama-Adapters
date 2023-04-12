@@ -11,7 +11,6 @@ module.exports = treasuryExports({
       "0xc944E90C64B2c07662A292be6244BDf05Cda44a7", // GRT
     ],
     owners: [treasury],
-    ownTokenOwners: [treasury],
     ownTokens: [eul],
   },
 });

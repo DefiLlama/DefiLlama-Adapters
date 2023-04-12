@@ -16,6 +16,10 @@ const {
   moonriverArchives,
   milkomedaArchives,
   smartbchArchives,
+  dogeArchives,
+  dexitArchives,
+  coreDaoArchives,
+  bitgertArchives,
 } = require("./config");
 const {
   getStorageLPLockDataV33,
@@ -144,7 +148,7 @@ function getTVLTotal(args) {
         lpData.forEach(({ output: { lockedLPTokens, lpLockContract } }) => cache.v3LPData.push([lockedLPTokens, lpLockContract]))
       }
 
-      const tempBalances = await sumUnknownTokens({ chain, block, tokensAndOwners: cache.v3LPData, useDefaultCoreAssets: true, balances, cache, })
+      const tempBalances = await sumUnknownTokens({ chain, block, tokensAndOwners: cache.v3LPData, useDefaultCoreAssets: true, cache, })
 
       Object.entries(tempBalances).forEach(([token, bal]) => sdk.util.sumSingleBalance(balances, token, bal))
     }
@@ -200,4 +204,16 @@ module.exports = {
   smartbch: {
     tvl: getTVLTotal(smartbchArchives),
   },
+  dogechain: {
+    tvl: getTVLTotal(dogeArchives),
+  },
+  dexit: {
+    tvl: getTVLTotal(dexitArchives),
+  },
+  core: {
+    tvl: getTVLTotal(coreDaoArchives),
+  },
+  bitgert: {
+    tvl: getTVLTotal(bitgertArchives),
+  }
 };

@@ -10,6 +10,7 @@ module.exports = {
     "parserOptions": {
         "ecmaVersion": "latest"
     },
+    ignorePatterns: ['projects/test/*'],
     "rules": {
         "no-case-declarations": "off",
         "no-unused-vars": "off",

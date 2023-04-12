@@ -17,7 +17,7 @@ async function tvl(timestamp, _b, chainBlocks, { api }) {
   })
   const tokensAndOwners = tokens.map((token, i) => ([token, vaults[i]]))
 
-  return sumTokens2({ ...api, tokensAndOwners })
+  return sumTokens2({ api, tokensAndOwners })
 }
 
 
