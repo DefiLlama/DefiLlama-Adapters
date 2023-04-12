@@ -272,7 +272,7 @@ const tvl = async (timestamp, _, chainBlocks) => {
 
 
 module.exports = {
-  methodology: `Uses factory(0x1C6E968f2E6c9DEC61DB874E28589fd5CE3E1f2c) address and whitelisted tokens address to find and price Liquidity Pool pairs. We also have our native token $ARX staking.`,
+  methodology: `Reads the TVL from assets in the masterchef, boardroom, treasury, and the iron pool.`,
   arbitrum: {
     tvl
   }
