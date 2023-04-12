@@ -72,6 +72,7 @@ const chains = {
 }
 
 module.exports = {
+  doublecounted: true,
   misrepresentedTokens: false,
   methodology: "TVL is calculated by summing the liquidity in the Uniswap V3 pools.",
   polygon: {

@@ -10,6 +10,7 @@ async function tvl(timestamp, block, _, { api }) {
 }
 
 module.exports = {
+  doublecounted: true,
   methodology:
     "Counts the amount of wETH, USDC & oSQTH in the strategy-controlled pools and treasury",
   ethereum: { tvl, },
