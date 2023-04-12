@@ -1,5 +1,5 @@
 const { getLogs, } = require('../helper/cache/getLogs')
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 
 async function tvl(_, _b, _cb, { api, }) {
   const factory = '0xa964d6e8d90e5cd12592a8ef2b1735dae9ba0840'
@@ -13,11 +13,16 @@ async function tvl(_, _b, _cb, { api, }) {
   })
   const calls = logs.map(i => ([i.nft, i.baseToken, i.merkleRoot]))
   const pools = await api.multiCall({  abi: "function pairs(address, address, bytes32) view returns (address)", calls: calls.map(i => ({ params: i})), target: factory }) 
-  const toa = pools.map((o, i) => ([[calls[i][0], calls[i][1]], o]))
 
-  return sumTokens2({ api, ownerTokens: toa})
+  const balances = await sumTokens2({ api, owners: pools, tokens: [nullAddress]})
+  const ethKey = 'ethereum:'+nullAddress
+  return {
+    ...balances,
+    [ethKey]: (balances[ethKey] ?? 0) * 2
+  }
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   ethereum: { tvl }
 }

@@ -23,7 +23,6 @@ module.exports = treasuryExports({
         '0x251cA6A70cbd93Ccd7039B6b708D4cb9683c266C', // NBO/KLIMA SLP
      ],
     owners: [klimaTreasury1],
-    ownTokenOwners: [klimaTreasury1],
     ownTokens: [KLIMA],
   },
 })

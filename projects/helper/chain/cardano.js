@@ -1,6 +1,7 @@
 const sdk = require('@defillama/sdk')
 const { post } = require('../http')
-const { getAssets } = require('./cardano/blockfrost')
+const { getUniqueAddresses, nullAddress } = require('../tokenMapping')
+const { getAssets, getAddressesUTXOs, } = require('./cardano/blockfrost')
 const { PromisePool } = require('@supercharge/promise-pool')
 
 async function getAda(address) {
@@ -50,9 +51,55 @@ async function getTokenPrice(address) {
   return pool.reserveA / pool.reserveB // price in cardano
 }
 
+async function sumTokens2({ owners = [], balances = {}, owner, tokens = [], blacklistedTokens = [], scripts = [] }) {
+  if (owner) owners = [owner]
+  tokens = tokens.map(i => i === nullAddress ? 'lovelace': i)
+  owners = getUniqueAddresses(owners, 'cardano')
+  blacklistedTokens = getUniqueAddresses(blacklistedTokens, 'cardano')
+  tokens = getUniqueAddresses(tokens, 'cardano')
+  const { results, errors } = await PromisePool.withConcurrency(4)
+    .for(owners)
+    .process(getAssets)
+
+  if (errors && errors.length)
+    throw errors[0]
+
+
+  const { results: resultsUTXOs, errors: errorsUTXOs } = await PromisePool.withConcurrency(2)
+    .for(scripts)
+    .process(getAddressesUTXOs)
+
+  if (errorsUTXOs && errorsUTXOs.length)
+    throw errorsUTXOs[0]
+
+  resultsUTXOs.flat().map(addBalances)
+  results.map(addBalances)
+  return balances
+
+  function addBalances(bals) {
+    if (bals.amount) bals = bals.amount
+    bals.forEach(({ unit, quantity }) => {
+      if (+quantity < 10) {
+        // sdk.log('Ignoring: ', unit, quantity)
+        return;
+      }
+      const isWhitelisted = !tokens.length || tokens.includes(unit)
+      const isBlacklisted = blacklistedTokens.includes(unit)
+      if (!isBlacklisted && isWhitelisted) sdk.util.sumSingleBalance(balances, unit, quantity, 'cardano')
+    })
+  }
+}
+
+function sumTokensExport({ owners, balances, owner, tokens, blacklistedTokens, scripts }) {
+  return async () => sumTokens2({ owners, balances, owner, tokens, blacklistedTokens, scripts })
+}
+
+
 module.exports = {
   getAdaInAddress,
   sumTokens,
   getTokenBalance,
   getTokenPrice,
+  sumTokens2,
+  sumTokensExport,
 }

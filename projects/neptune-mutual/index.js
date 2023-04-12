@@ -31,7 +31,7 @@ async function tvl(_, block, _1, { api, chain }) {
   })
   const toa = tokens.map((token, i) => ([token, vaults[i]]))
 
-  return sumTokens2({ ...api, tokensAndOwners: toa, chain })
+  return sumTokens2({ api, tokensAndOwners: toa, chain })
 }
 
 module.exports = {

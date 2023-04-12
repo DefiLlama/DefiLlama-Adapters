@@ -1,4 +1,4 @@
-const { unwrapUniswapV3NFTs, sumTokens2 } = require('../helper/unwrapLPs')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 async function tvl(_, _b, _cb, { api, }) {
   const farms = await api.call({
@@ -14,8 +14,8 @@ async function tvl(_, _b, _cb, { api, }) {
   farms.forEach((o, i) => {
     rewardTokens[i].forEach(t => toa.push([t, o]))
   });
-  const balances = await unwrapUniswapV3NFTs({  ...api, owners: farms, })
-  return sumTokens2({ ...api, balances, tokensAndOwners: toa, })
+  await sumTokens2({  api, owners: farms, resolveUniV3: true, })
+  return sumTokens2({ api, tokensAndOwners: toa, })
 }
 
 module.exports = {

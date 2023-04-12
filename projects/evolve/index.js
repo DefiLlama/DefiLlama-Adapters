@@ -8,4 +8,4 @@ const config = {
 
 module.exports = {}
 
-tarotHelper(module.exports, config)
+tarotHelper(module.exports, config, { tarotSymbol: 'vEvolve'})

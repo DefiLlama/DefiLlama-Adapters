@@ -14,13 +14,11 @@ module.exports = treasuryExports({
   ethereum: {
     tokens: [ nullAddress, ],
     owners: treasuryContracts,
-    ownTokenOwners: treasuryContracts,
     ownTokens: ['0x7cA4408137eb639570F8E647d9bD7B7E8717514A'],
   },
   bsc: {
     tokens: [ nullAddress, ],
     owners: treasuryContractsBSC,
-    ownTokenOwners: treasuryContractsBSC,
     ownTokens: ['0xc5e6689c9c8b02be7c49912ef19e79cf24977f03'],
   },
 })
