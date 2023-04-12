@@ -46,15 +46,17 @@ const config = {
   } 
 console.log(sdk);
 
-sdk.getSupported()
-  .then((supported) => {
-    // handle the list of supported networks and assets
-    console.log(supported.assets);
-  })
-  .catch((error) => {
-    // handle any errors that may occur
-    console.error(error);
-  });
+sdk().then((sdkObj) => {
+  sdkObj.getSupported()
+    .then((supported) => {
+      // handle the list of supported networks and assets
+      console.log(supported.assets);
+    })
+    .catch((error) => {
+      // handle any errors that may occur
+      console.error(error);
+    });
+});
 
 
 const chainNameToChainId = {
