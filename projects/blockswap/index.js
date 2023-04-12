@@ -19,12 +19,10 @@ async function tvl(_, _1, _2, { api }) {
     // Get the stakehouseAccounts and calculate the total staked ETH (for lifecyclestatus = 2)/minted dETH (for lifecyclestatus = 3)
     query = gql`{
         stakehouseAccounts {
-          id
           lifecycleStatus
           totalDETHMinted
         }
     }`
-
     results = await stakehouseGraphQLClient.request(query)
 
     let totalETHStakedAndMinted = 0
@@ -40,14 +38,10 @@ async function tvl(_, _1, _2, { api }) {
         lptokens(where:{
           lifecycleStatus: "NOT_STAKED"
         }) {
-          tokenType
-          lifecycleStatus
-          blsPublicKey
           withdrawn
           minted
         }
     }`
-
     results = await lsdGraphQLClient.request(query)
 
     let totalIdleETHInPools = 0
@@ -67,7 +61,21 @@ async function tvl(_, _1, _2, { api }) {
 
     let totalIdleETHFromValidators = (results.lsdvalidators.length) * 4 * 10 ** 18
 
-    await sdk.util.sumSingleBalance(balances, ethAddress, (totalETHStakedAndMinted + totalIdleETHFromValidators + totalIdleETHInPools), api.chain)
+    // get remaining idle ETH from both giant pools
+    query = gql`{
+        giantSavETHPools {
+          availableToStake
+        }
+        giantFeesAndMevPools {
+          availableToStake
+        }
+    }`
+
+    results = await lsdGraphQLClient.request(query)
+    let totaIdleETHInGiantPools = Number(results.giantSavETHPools[0].availableToStake) + Number(results.giantFeesAndMevPools[0].availableToStake)
+    
+    await sdk.util.sumSingleBalance(balances, ethAddress, (totalETHStakedAndMinted + totalIdleETHFromValidators + totalIdleETHInPools + totaIdleETHInGiantPools), api.chain)
+    
     return balances;
 }
 
