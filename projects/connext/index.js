@@ -153,7 +153,7 @@ const chains = [
 "polygon",
 "optimism",
 "arbitrum",
-"gnosis",
+"xdai",
 ];
 
 
