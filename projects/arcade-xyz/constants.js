@@ -1,0 +1,24 @@
+const SUBGRAPH_URL = 'https://protocol-sg.arcade.xyz/subgraphs/name/arcade/protocol-v2';
+const CHAIN = 'ethereum';
+const LOAN_CORE = '0x81b2f8fc75bab64a6b144aa6d2faa127b4fa7fd9';
+const VAULT_FACTORY_A = '0x6e9b4c2f6bd57b7b924d29b5dcfca1273ecc94a2';
+const VAULT_FACTORY_APE_STAKING_A = '0x666faa632e5f7ba20a7fce36596a6736f87133be';
+
+const VAULT_FACTORIES = new Set();
+VAULT_FACTORIES.add(VAULT_FACTORY_A);
+VAULT_FACTORIES.add(VAULT_FACTORY_APE_STAKING_A);
+
+const START_BLOCKS = new Map();
+START_BLOCKS.set(VAULT_FACTORY_A, 15045028);
+START_BLOCKS.set(VAULT_FACTORY_APE_STAKING_A, 16128500);
+
+module.exports = {
+  CHAIN,
+  LOAN_CORE,
+  START_BLOCKS,
+  SUBGRAPH_URL,
+  VAULT_FACTORY_A,
+  VAULT_FACTORY_APE_STAKING_A,
+  VAULT_FACTORIES,
+}
+

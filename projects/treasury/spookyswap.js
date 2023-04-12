@@ -13,7 +13,6 @@ module.exports = treasuryExports({
       "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75", // USDC
     ],
     owners: [multisig],
-    ownTokenOwners: [multisig],
     ownTokens: ["0x841FAD6EAe12c286d1Fd18d1d525DFfA75C7EFFE"],
   },
 });

@@ -7,20 +7,27 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 const contracts = {
   polygon: { // 137
     version: 6, synthpoolRegistry: '0xA5BB18ca30fB27045ec0aA4d7039Fc37a7A03BD1',
-    fixedRateVersion: 1, fixedRateRegistry: '0xBdE9c05FeA7a7fB1173024eac529a9c46bD0307f'
+    fixedRateVersion: 1, fixedRateRegistry: '0xBdE9c05FeA7a7fB1173024eac529a9c46bD0307f',
+    creditLineVersion: 2, selfMintingRegistry: '0x1eA5022a81bd0dF1Bb85085083cDDd1e6A4cf61C'
   },
   bsc: { // 56
     version: 5, synthpoolRegistry: '0x930A54D8Af945F6D1BED5AAF63b63fAb50a8197f',
-    fixedRateVersion: 1, fixedRateRegistry: '0x80eB7668AEC208af0dA10F8BB70ca99F3604E076'
+    fixedRateVersion: 1, fixedRateRegistry: '0x80eB7668AEC208af0dA10F8BB70ca99F3604E076',
+    creditLineVersion: 2, selfMintingRegistry: '0xBD8FdDa057de7e0162b7A386BeC253844B5E07A5'
   },
   xdai: { // 100
     version: 5, synthpoolRegistry: '0x43a98e5C4A7F3B7f11080fc9D58b0B8A80cA954e',
   },
   optimism: { // 10
     version: 6, synthpoolRegistry: '0x811F78b7d6bCF1C0E94493C2eC727B50eE32B974',
+    creditLineVersion: 2, selfMintingRegistry: '0xBD8FdDa057de7e0162b7A386BeC253844B5E07A5'
   },
-  avax: {
+  avax: { // 43114
     version: 5, synthpoolRegistry: '0x8FEceC5629EED60D18Fd3438aae4a8E69723D190',
+  },
+  arbitrum: { // 42161
+    version: 6, synthpoolRegistry: '0xf844826e986a2ad77Bf24a491Fe1D8b9ef2d3B03',
+    creditLineVersion: 2, selfMintingRegistry: '0x58741E9137a8aF31955D42AEc99a1aD4771EeC23'
   }
 }
 
@@ -28,6 +35,8 @@ async function tvl(timestamp, ethBlock, chainBlocks, { api, }) {
   const chain = api.chain
   const { synthpoolRegistry, version } = contracts[chain]
   const { fixedRateRegistry, fixedRateVersion } = contracts[chain]
+  const { selfMintingRegistry, creditLineVersion } = contracts[chain]
+  const block = chainBlocks[chain]
   const balances = {}
 
   // Get liquidityPools by calling getElements(synth, collateral, version)
@@ -57,7 +66,7 @@ async function tvl(timestamp, ethBlock, chainBlocks, { api, }) {
     })
 
     // Get fixedRateWrappers by calling SynthereumFixedRateRegistry_getElements
-    const params_list_fixedRate = fixedRateCollaterals.map(fixedRateCollateral => fixedRateSynthTokens.map(fixedRateSynth => [fixedRateSynth, fixedRateCollateral, fixedRateVersion])).flat().map(i => ({ params: i}))
+    const params_list_fixedRate = fixedRateCollaterals.map(fixedRateCollateral => fixedRateSynthTokens.map(fixedRateSynth => [fixedRateSynth, fixedRateCollateral, fixedRateVersion])).flat().map(i => ({ params: i }))
     const elements_obj_fixedRate = await api.multiCall({
       abi: abi["SynthereumFixedRateRegistry_getElements"],
       target: fixedRateRegistry,
@@ -79,7 +88,7 @@ async function tvl(timestamp, ethBlock, chainBlocks, { api, }) {
   }
 
   // Get synthereumPools by calling SynthereumPoolRegistry_getElements
-  const params_list = collaterals.map(collateral => syntheticTokens.map(synth => [synth, collateral, version])).flat().map(i => ({ params: i}))
+  const params_list = collaterals.map(collateral => syntheticTokens.map(synth => [synth, collateral, version])).flat().map(i => ({ params: i }))
   const elements_obj = await api.multiCall({
     abi: abi["SynthereumPoolRegistry_getElements"],
     target: synthpoolRegistry,
@@ -105,7 +114,50 @@ async function tvl(timestamp, ethBlock, chainBlocks, { api, }) {
     })
   } else if (version === 5) {
     // Get balances of every LiquidityPool and SynthToken Contracts
-    await sumTokens2({ api, balances, owners: liquidityPools, tokens: collaterals})
+    await sumTokens2({ api, balances, owners: liquidityPools, tokens: collaterals })
+  }
+
+  if (chain === 'polygon' || chain === 'bsc' || chain === 'optimism' || chain === 'arbitrum') {
+    // Get collateral token addresses from self minting registry
+    const { output: selfMintingCollaterals } = await sdk.api.abi.call({
+      abi: abi["SynthereumSelfMintingRegistry_getCollaterals"],
+      target: selfMintingRegistry,
+      block,
+      chain
+    })
+    // Get synth token symbols - jEUR, jCHF etc
+    const { output: selfMintingSyntheticTokens } = await sdk.api.abi.call({
+      abi: abi["SynthereumSelfMintingRegistry_getSyntheticTokens"],
+      target: selfMintingRegistry,
+      block,
+      chain
+    })
+    // Get creditLineDerivatives by calling SynthereumSelfMintingRegistry_getElements
+    const params_list_creditline = selfMintingCollaterals.map(selfMintingCollateral => selfMintingSyntheticTokens.map(selfMintingSynth => [selfMintingSynth, selfMintingCollateral, creditLineVersion])).flat()
+    const { output: elements_obj_creditline } = await sdk.api.abi.multiCall({
+      abi: abi["SynthereumSelfMintingRegistry_getElements"],
+      calls: params_list_creditline.map(params => ({
+        target: selfMintingRegistry,
+        params: params
+      })),
+      block,
+      chain
+    })
+
+    const creditLineDerivatives = elements_obj_creditline.map(e => e.output).flat(2)
+
+    const creditLineCalls = creditLineDerivatives.map(f => ({ target: f }))
+    const { output: creditLineCollateralTokens } = await sdk.api.abi.multiCall({
+      abi: abi.collateralToken,
+      chain, block, calls: creditLineCalls,
+    })
+    const { output: creditLineTotalCollateralAmounts } = await sdk.api.abi.multiCall({
+      abi: abi.getGlobalPositionData,
+      chain, block, calls: creditLineCalls,
+    })
+    creditLineCollateralTokens.forEach((data, i) => {
+      sdk.util.sumSingleBalance(balances, chain + ':' + data.output, creditLineTotalCollateralAmounts[i].output.totCollateral)
+    })
   }
   return balances
 }

@@ -28,6 +28,7 @@ const Contracts = {
 };
 
 module.exports = {
+  timetravel: false,
   misrepresentedTokens: true,
     kava: {
         tvl: sumTokensExport({ owners: [Contracts.kava.perpV1Result, Contracts.kava.fundingResult, ], tokens: [Contracts.kava.wkava, Contracts.kava.usdc, nullAddress] }),

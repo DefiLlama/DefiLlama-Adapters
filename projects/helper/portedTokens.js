@@ -36,6 +36,7 @@ async function transformArbitrumAddress() {
 
 async function transformInjectiveAddress() {
   return addr => {
+    if (addr.includes('ibc/')) return addr.replace(/.*ibc\//, 'ibc/').replace(/\//g, ':')
     addr = addr.replace(/\//g, ':')
     if (addr.startsWith('peggy0x'))
       return `ethereum:${addr.replace('peggy', '')}`

@@ -13,7 +13,6 @@ module.exports = treasuryExports({
         '0x55d398326f99059fF775485246999027B3197955',//BSC-USD
      ],
     owners: [Treasury],
-    ownTokenOwners: [Treasury],
     ownTokens: [GYRO],
   },
 })
