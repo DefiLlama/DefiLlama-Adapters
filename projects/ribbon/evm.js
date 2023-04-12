@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { staking } = require("../helper/staking");
-const { sumTokens2, nullAddress } = require('../helper/unwrapLPs');
+const { sumTokens2, nullAddress, sumTokensExport } = require('../helper/unwrapLPs');
 const { getChainTransform } = require('../helper/portedTokens');
 
 // Ethereum Vaults
@@ -127,4 +127,11 @@ module.exports = {
   avax: {
     tvl: avaxTvl,
   },
+  bsc: {
+    tvl: sumTokensExport({
+      tokensAndOwners: [
+        ['0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', '0xC56d5a5BE96B5fB51C2bA5cBC59AfE77198838F7'],  // BNB Theta vault
+      ]
+    })
+  }
 };

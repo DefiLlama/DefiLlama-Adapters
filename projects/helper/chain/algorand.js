@@ -109,6 +109,7 @@ async function resolveTinymanLp({ balances, lpId, unknownAsset, blacklistedToken
     }
   }
   delete balances[lpId]
+  delete balances['algorand:'+lpId]
   return balances
 }
 

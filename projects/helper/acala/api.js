@@ -242,7 +242,7 @@ async function addTokenBalance({ balances, amount, chain, tokenArg, api, wallet,
 
   const price = await wallet.getPrice(token)
   if (price) {
-    sdk.log('Adding token value in USD: ', token,  amount.times(price).toNumber())
+    sdk.log('Adding token value in USD (in millions), amount: ', forceToCurrencyName(tokenArg), amount.times(price).toNumber() / 1e6, amount.toNumber()/1e6,)
     sdk.util.sumSingleBalance(balances, 'tether', amount.times(price).toNumber())
   }
 }

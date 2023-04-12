@@ -174,6 +174,7 @@ async function transformDexBalances({ chain, data, balances = {}, restrictTokenR
     i.token1Bal = +i.token1Bal
     priceToken(i)
   })
+  // sdk.log(prices) 
   data.forEach(addTokens)
   updateBalances(balances)
 
@@ -202,8 +203,8 @@ async function transformDexBalances({ chain, data, balances = {}, restrictTokenR
   }
 
   function updateBalances(balances) {
-    Object.entries(balances).forEach(([token, bal]) => {
-      bal = +bal
+    Object.entries(balances).forEach(([token]) => {
+      let bal = +balances[token] // this is safer as token balance might change while looping when two entries for same token exist
       const tokenKey = normalizeAddress(token, chain)
       if (!prices[tokenKey]) return;
       const priceObj = prices[tokenKey]

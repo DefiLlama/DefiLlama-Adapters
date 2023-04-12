@@ -67,6 +67,26 @@ async function getConfig(project, endpoint) {
   }
 }
 
+async function configPost(project, endpoint, data) {
+  if (!project || !endpoint) throw new Error('Missing parameters')
+  const key = 'config-cache'
+  const cacheKey = getKey(key, project)
+  if (!configCache[cacheKey]) configCache[cacheKey] = _configPost()
+  return configCache[cacheKey]
+
+  async function _configPost() {
+    try {
+      const { data: json } = await axios.post(endpoint, data)
+      await setCache(key, project, json)
+      return json
+    } catch (e) {
+      // sdk.log(e)
+      sdk.log(project, 'tryng to fetch from cache, failed to fetch data from endpoint:', endpoint)
+      return getCache(key, project)
+    }
+  }
+}
+
 module.exports = {
-  getCache, setCache, getConfig,
+  getCache, setCache, getConfig, configPost,
 }

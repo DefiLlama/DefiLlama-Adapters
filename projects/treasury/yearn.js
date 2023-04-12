@@ -23,5 +23,6 @@ module.exports = treasuryExports({
      ],
     owners: [yearnTreasury,yearnTreasury1],
     ownTokens: [YEARN],
+    fetchTokens: true,
   },
 })
