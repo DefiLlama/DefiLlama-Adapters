@@ -65,7 +65,7 @@ const chainNameToChainId = {
     polygon: 137,
     arbitrum: 42161,
     optimism: 10,
-    gnosis: 100,
+    xdai: 100,
 };
   
 let getContractsPromise
