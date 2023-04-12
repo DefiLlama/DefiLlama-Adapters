@@ -7,4 +7,5 @@ const chain = "polygon";
 
 module.exports = {
   polygon: compoundExports(master0vix, chain, oMATIC, matic),
+  polygon_zkevm: compoundExports("0x6EA32f626e3A5c41547235ebBdf861526e11f482", "polygon_zkevm", "0xee1727f5074e747716637e1776b7f7c7133f16b1", "0x4F9A0e7FD2Bf6067db6994CF12E4495Df938E6e9"),
 };

@@ -13,7 +13,7 @@ const earnETHPoolFundControllerAddressesIncludingLegacy = [
 ]
 const earnDAIPoolControllerAddressesIncludingLegacy = [
   '0x7C332FeA58056D1EF6aB2B2016ce4900773DC399',
-  '0x3F579F097F2CE8696Ae8C417582CfAFdE9Ec9966'
+  // '0x3F579F097F2CE8696Ae8C417582CfAFdE9Ec9966'
 ]
 const earnStablePoolAddressesIncludingLegacy = [
   '0x4a785fa6fcd2e0845a24847beb7bddd26f996d4d',

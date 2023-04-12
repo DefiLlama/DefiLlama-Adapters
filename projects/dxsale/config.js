@@ -131,7 +131,6 @@ const LockerV33 = {
       // "0xFEE2A3f4329e9A1828F46927bD424DB2C1624985",
     ],
   },
-
   heco: {
     tokenStorage: ["0x983b00a2C3d8925cEDfC9f3eb5Df1aE121Ff6B9F"],
     lpStorage: ["0xFEE2A3f4329e9A1828F46927bD424DB2C1624985"],
@@ -143,6 +142,22 @@ const LockerV33 = {
   milkomeda: {
     tokenStorage: ["0x983b00a2C3d8925cEDfC9f3eb5Df1aE121Ff6B9F"],
     lpStorage: ["0x6E573D464416a81A9F82207F1dFD6a42e4b21066"],
+  },
+  bitgert: {
+    tokenStorage: ["0x5AB541B972Acab91f0E5E7d30fCB4fe8e81b9Fa7"],
+    lpStorage: ["0x16AAF57c5b3170a143A6A2DDfe897e8a2bDd8FD1"],
+  },
+  dexit: {
+    tokenStorage: ["0x17e8c87d4de42fc143507B7c45Da2e6F2af7F24F"],
+    lpStorage: ["0x0dDdD88aff5b7082BEf86923cf19BAd1ffb4EC8C"],
+  },
+  coreDao: {
+    tokenStorage: ["0x17e8c87d4de42fc143507B7c45Da2e6F2af7F24F"],
+    lpStorage: ["0x0dDdD88aff5b7082BEf86923cf19BAd1ffb4EC8C"],
+  },
+  doge: {
+    tokenStorage: ["0x17e8c87d4de42fc143507B7c45Da2e6F2af7F24F"],
+    lpStorage: ["0x0dDdD88aff5b7082BEf86923cf19BAd1ffb4EC8C"],
   },
 };
 
@@ -273,6 +288,34 @@ const milkomedaArchives = {
   storageLiquidityLocks: LockerV33.milkomeda.lpStorage,
 };
 
+const bitgertArchives = {
+  chain: "bitgert",
+  locks: [],
+  storageTokenLocks: LockerV33.bitgert.tokenStorage,
+  storageLiquidityLocks: LockerV33.bitgert.lpStorage,
+};
+
+const dexitArchives = {
+  chain: "dexit",
+  locks: [],
+  storageTokenLocks: LockerV33.dexit.tokenStorage,
+  storageLiquidityLocks: LockerV33.dexit.lpStorage,
+};
+
+const coreDaoArchives = {
+  chain: "core",
+  locks: [],
+  storageTokenLocks: LockerV33.coreDao.tokenStorage,
+  storageLiquidityLocks: LockerV33.coreDao.lpStorage,
+};
+
+const dogeArchives = {
+  chain: "dogechain",
+  locks: [],
+  storageTokenLocks: LockerV33.doge.tokenStorage,
+  storageLiquidityLocks: LockerV33.doge.lpStorage,
+};
+
 module.exports = {
   milkomedaArchives,
   smartbchArchives,
@@ -290,4 +333,8 @@ module.exports = {
   avaxArchives,
   xdaiArchives,
   fantomArchives,
+  bitgertArchives,
+  dexitArchives,
+  coreDaoArchives,
+  dogeArchives,
 };

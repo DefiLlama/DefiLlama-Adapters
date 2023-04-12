@@ -17,7 +17,6 @@ module.exports = treasuryExports({
         '0xdAC17F958D2ee523a2206206994597C13D831ec7',//USDT
      ],
     owners: [rarTreasury, rarTreasury1],
-    ownTokenOwners: [rarTreasury, rarTreasury1],
     ownTokens: [RARI],
   },
 })

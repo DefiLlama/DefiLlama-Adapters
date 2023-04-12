@@ -28,13 +28,13 @@ async function tvlV1(api, balances = {}) {
   const collateralTokens3 = await api.multiCall({ abi: 'address:stakeToken', calls: sTokens2, })
   collateralTokens2.forEach((t, i) => tokensAndOwners.push([t, sTokens[i]]))
   collateralTokens3.forEach((t, i) => tokensAndOwners.push([t, sTokens2[i]]))
-  return sumTokens2({ balances, tokensAndOwners, ...api })
+  return sumTokens2({ api, balances, tokensAndOwners, })
 }
 
 async function tvlV2(api, balances = {}) {
   const leveragePools = await api.call({ abi: 'function getAllLeveragePool() view returns (address[])', target: '0xdc8c63dfc31325aea8cb37ecec1a760bbb5b43e7' })
   const collateralTokens = await api.multiCall({ abi: 'address:underlying', calls: leveragePools, })
-  return sumTokens2({ balances, tokensAndOwners: collateralTokens.map((t, i) => ([t, leveragePools[i]])), ...api })
+  return sumTokens2({ balances, tokensAndOwners: collateralTokens.map((t, i) => ([t, leveragePools[i]])), api })
 }
 
 async function staking(_, _b, _cb, { api, }) {

@@ -70,7 +70,8 @@ const defaultTokens = {
     '0x2af5d2ad76741191d15dfe7bf6ac92d4bd912ca3', // LEO (bitfinex cex token)
     '0xB8c77482e45F1F44dE1745F52C74426C631bDD52', // WBNB
     '0xb62132e35a6c13ee1ee0f84dc5d40bad8d815206', // NEXO ,(Nexo cex token)
-    '0x1ceb5cb57c4d4e2b2433641b95dd330a33185a44',//kp3r
+    '0x1ceb5cb57c4d4e2b2433641b95dd330a33185a44', //kp3r
+    '0xcf0c122c6b73ff809c693db761e7baebe62b6a2e', //FLOKI ETH CHAIN
   ],
   tron: [
     nullAddress,
@@ -84,6 +85,8 @@ const defaultTokens = {
     '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619', // WETH
     '0xb5c064f955d8e7f38fe0460c556a72987494ee17', // QUICK
     '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6', //WBTC
+    '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174', //USDC
+    '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063', //DAI
   ],
   algorand: [],
   solana: [],

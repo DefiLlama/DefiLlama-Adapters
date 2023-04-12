@@ -23,7 +23,6 @@ module.exports = treasuryExports({
         '0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84',//stETH
      ],
     owners: [mStableTreasury1],
-    ownTokenOwners: [mStableTreasury1],
     ownTokens: [META, mUSD],
   },
 })

@@ -358,6 +358,38 @@ module.exports = {
       },
     }
   },
+    canto: {
+    tvl: {
+      bridge: {
+        address: '0xDde5BEC4815E1CeCf336fb973Ca578e8D83606E0',
+        tokens: [
+        ]
+      },
+      pools: [
+        {
+          pool: '0x07379565cD8B0CaE7c60Dc78e7f601b34AF2A21c',
+          tokens: [
+            "0x4e71a2e537b7f9d9413d3991d37958c0b5e1e503", // NOTE
+            // "0xd8836af2e565d3befce7d906af63ee45a57e8f80", // nUSD
+          ]
+        },
+        {
+          pool: '0x273508478e099Fdf953349e6B3704E7c3dEE91a5',
+          tokens: [
+            "0x80b5a32e4f032b2a058b4f29ec95eefeeb87adcd", // USDC
+            // "0xd8836af2e565d3befce7d906af63ee45a57e8f80", // nusd
+          ]
+        },
+        {
+          pool: '0xF60F88bA0CB381b8D8A662744fF93486273c22F9',
+          tokens: [
+            "0x5fd55a1b9fc24967c4db09c513c3ba0dfa7ff687", // cantoETH
+            // "0x09fec30669d63a13c666d2129230dd5588e2e240", // nETH
+          ]
+        },
+      ]
+    }
+  },
   klaytn: {
     tvl: {
       bridge: {
