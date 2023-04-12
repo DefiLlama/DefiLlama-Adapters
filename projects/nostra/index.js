@@ -53,20 +53,15 @@ const ASSET_TOKENS = [
 
 async function tvl() {
   const balances = {};
-  console.log(assetTokenAbi.totalSupply)
   const data = await multiCall({
     calls: ASSET_TOKENS.reduce((acc, obj) => acc.concat(obj.tokens), []),
     abi: assetTokenAbi.totalSupply
   });
-  console.log(data);
-
 
   for (let i = 0; i < data.length; i++) {
     sdk.util.sumSingleBalance(balances, ASSET_TOKENS[parseInt(i/4)].asset, data[i])
   }
   
-  console.log(balances)
-
   return balances;
 }
 
