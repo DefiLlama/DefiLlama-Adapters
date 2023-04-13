@@ -53,6 +53,7 @@
   "energyweb",
   "enuls",
   "eos",
+  "equilibrium",
   "era",
   "ergo",
   "ethereum",
@@ -198,5 +199,6 @@
   "zeniq",
   "zilliqa",
   "zksync",
-  "zyx"
+  "zyx",
+  "filecoin"
 ]

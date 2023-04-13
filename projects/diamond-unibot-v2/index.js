@@ -72,6 +72,7 @@ async function tvl(_, _b, _cb, { api }) {
 }
 
 module.exports = {
+  doublecounted: true,
   arbitrum: { tvl },
   polygon: { tvl },
 }

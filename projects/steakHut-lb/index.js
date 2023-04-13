@@ -75,6 +75,7 @@ async function tvl(_, block, _1, { api }) {
 }
 
 module.exports = {
+    doublecounted: true,
     methodology: 'Counts the value of LB tokens staked into SteakHut Liquidity.',
     avax: {
         tvl,
