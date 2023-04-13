@@ -344,9 +344,11 @@ module.exports = {
   arbitrum: {
     owners: getOwners('ARB'),
   },
+  /*
   litecoin: {
     owners: getOwners('LTC')
   },
+  */
   polygon: {
     owners: getOwners('MATIC')
   },
