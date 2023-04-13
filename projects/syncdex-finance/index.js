@@ -23,7 +23,7 @@ module.exports = {
     hallmarks: [
       [1681340401,"Rug Pull"]
     ],
-    tvl: sumTokensExport({ owners, tokens: assets }),
-    staking: sumTokensExport({ owners, tokens: [SYNC_DEX] }),
+    tvl: () => 0,
+    staking: () => 0,
   },
 };
