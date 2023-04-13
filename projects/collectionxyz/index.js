@@ -3,6 +3,7 @@ const sdk = require("@defillama/sdk");
 
 let nextCursor = "";
 let shouldContinue = true;
+let tvlEthSum = 0;
 const balances = {};
 
 module.exports = {
@@ -20,12 +21,12 @@ module.exports = {
             shouldContinue = false;
             return;
           }
-          sdk.util.sumSingleBalance(balances, address, tvlEth);
+          tvlEthSum += tvlEth;
         });
         nextCursor = cursor;
       }
+      balances.ethereum = tvlEthSum;
 
-      console.log("xxx 2", balances);
       return balances;
     },
   },
