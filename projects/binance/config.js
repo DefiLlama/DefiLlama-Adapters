@@ -296,6 +296,14 @@ const assetList = [
   ["XRP", "XRP", "rDAE53VfMvftPB4ogpWGWvzkQxfht6JPxr"],
   ["XRP", "XRP", "rEy8TFcrAPvhpKrwyrscNYyqBGUkE9hKaJ"],
   */
+  ["USDT", "SOL", "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9"],
+  ["SOL", "SOL", "3yFwqXBfZY4jBVUafQ1YEXw189y2dN3V5KQq9uzBDy1E"],
+  ["USDC", "SOL", "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM"],
+  ["USDT", "SOL", "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM"],
+  ["SOL", "SOL", "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM"],
+  ["SOL", "SOL", "2ojv9BAiHUrvsm9gxDe7fJSzbNZSJcxZvf8dqmWGHG8S"],
+  ["USDC", "SOL", "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9"],
+  ["SOL", "SOL", "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9"],
 ]
 
 function getAddresses(chain) {
@@ -348,4 +356,7 @@ module.exports = {
     owners: getOwners('XRP')
   },
   */
+ solana: {
+  owners: getOwners('SOL')
+}
 }
