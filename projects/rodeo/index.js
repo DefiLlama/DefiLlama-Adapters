@@ -39,16 +39,11 @@ const getPoolInfos = async (chain) => {
   });
 }
 
-function calculateTvl(amount, price) {
-  const tvl = parseFloat(amount) * price;
-  return tvl;
-}
-
 const tvl = async () => {
   const balances = {}
   const poolsBalances = await getPoolInfos('arbitrum');
-  const tvl = poolsBalances.reduce((acc, { supply, price }) => {
-    acc = acc + calculateTvl(supply, price);
+  const tvl = poolsBalances.reduce((acc, { supply }) => {
+    acc = acc + supply;
     return acc
   }, 0);
   sdk.util.sumSingleBalance(balances, "arbitrum:" + USDC, tvl);
