@@ -29,7 +29,7 @@ async function tvl(_, _b, _cb, { api, }) {
     for (const chunk of token0Chunks) {
       sdk.log('fetching ', ++i, 'of ', token0Chunks.length)
       const { output } = await sdk.api.eth.getBalances({ ...api, targets: pairs, })
-      token0Res.push(output)
+      token0Res.push(...output)
     }
   }
   async function getToken1Res() {
@@ -38,7 +38,7 @@ async function tvl(_, _b, _cb, { api, }) {
     for (const calls of token1Chunks) {
       sdk.log('fetching ', ++i, 'of ', token1Chunks.length, '(token1)')
       const res = await api.multiCall({ abi: 'erc20:balanceOf', calls })
-      token1Res.push(res)
+      token1Res.push(...res)
     }
   }
   const data = []
