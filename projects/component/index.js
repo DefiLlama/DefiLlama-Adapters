@@ -165,5 +165,4 @@ module.exports = {
     // fantom: {
     //     tvl: ftmTvl
     // },
-    tvl: sdk.util.sumChainTvls([tvl, xDaiTvl, bscTvl/*, ftmTvl*/])
 }

@@ -1,0 +1,4 @@
+{
+  "getTokens": "address[]:getTokens",
+  "getTokenBalances": "uint256[]:getTokenBalances"
+}

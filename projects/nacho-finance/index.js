@@ -30,10 +30,12 @@ async function calcPool2(masterchef, lps, block, chain) {
   ).output;
   let lpPositions = [];
   lpBalances.forEach((p) => {
-    lpPositions.push({
-      balance: p.output,
-      token: p.input.target,
-    });
+    if (p.input.target != '0xfc4a30f328E946ef3E727BD294a93e84c2e43c24') {
+      lpPositions.push({
+        balance: p.output,
+        token: p.input.target,
+      });
+    }
   });
   await unwrapUniswapLPs(
     balances,

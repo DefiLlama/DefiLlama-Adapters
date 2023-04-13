@@ -8,7 +8,7 @@ async function pool2(timestamp, block, chainBlocks) {
 
   const masterChefDeposits = await sdk.api.abi.call({
     target: "0x73feaa1ee314f8c655e354234017be2193c9e24e",
-    abi,
+    abi: abi.userInfo,
     params: [405, "0x9442dad1df11c858a900f55291dc1cf645ff66df"],
     block: chainBlocks.bsc,
     chain: "bsc",

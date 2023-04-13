@@ -1,11 +1,8 @@
 const sdk = require("@defillama/sdk");
-const { staking } = require("../helper/staking");
-const Caver = require('caver-js');
-const OracleAbi = require('./abi/oracle.json');
-const TokenAbi = require('./abi/token.json');
-const { toUSDTBalances } = require("../helper/balances");
+const { stakings } = require("../helper/staking");
+const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 
-const stakingPool = '0x488933457E89656D7eF7E69C10F2f80C7acA19b5';
+const stakingPool = ['0x488933457E89656D7eF7E69C10F2f80C7acA19b5', '0x4b1791422dE4807B2999Eeb65359F3E13fa9d11d'];
 const bfcAddr = '0x0c7D5ae016f806603CB1782bEa29AC69471CAb9c';
 
 const ethPool = '0x13000c4a215efe7e414bb329b2f11c39bcf92d78';
@@ -85,16 +82,11 @@ const avaxTokenPools = {
     },
 }
 
-const klayOracleContract = '0xCD4F7C7451FFD8628b7F3D5c1b68a3A207ab1125';
 const klayPool = '0x829fCFb6A6EeA9d14eb4C14FaC5B29874BdBaD13';
 const klaytnTokenPools = {
     'keth': {
         'pool': '0x07970F9D979D8594B394fE12345211C376aDfF89',
         'token': '0x34d21b1e550d73cee41151c77f3c73359527a396'
-    },
-    'kusdt': {
-        'pool': '0xe0e67b991d6b5CF73d8A17A10c3DE74616C1ec11',
-        'token': '0xcee8faf64bb97a73bb51e115aa89c17ffa8dd167'
     },
     'kusdt': {
         'pool': '0xe0e67b991d6b5CF73d8A17A10c3DE74616C1ec11',
@@ -118,38 +110,10 @@ const klaytnTokenPools = {
     },
 }
 
-function getAVAXAddress(address) {
-    return `avax:${address}`
-}
-
-function getBSCAddress(address) {
-    return `bsc:${address}`
-}
-
-const coinAddress = '0x0000000000000000000000000000000000000000'
-
 async function eth(timestamp, block) {
-    let balances = {};
-
-    const ethBlock = block
-
-    // eth
-    balances[coinAddress] = (await sdk.api.eth.getBalance({
-        target: ethPool,
-        block: ethBlock
-    })).output
-
-    // eth tokens
-    sdk.util.sumMultiBalanceOf(balances, await sdk.api.abi.multiCall({
-        abi: 'erc20:balanceOf',
-        block: ethBlock,
-        calls: Object.values(ethTokenPools).map(tokenPool=>({
-            params: tokenPool.pool,
-            target: tokenPool.token,
-        }))
-    }), true)
-
-    return balances
+    const toa = Object.values(ethTokenPools).map(({ pool, token}) => ([ token, pool, ]))
+    toa.push([nullAddress, ethPool])
+    return sumTokens2({ block, tokensAndOwners: toa })
 }
 
 const wbtc = "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"
@@ -168,97 +132,28 @@ async function bitcoin(timestamp, ethBlock) {
     }
 }
 
-const wbnb = "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"
-async function bsc(timestamp, block, chainBlocks) {
-    let balances = {};
-
-    const bscBlock = chainBlocks.bsc
-    // bsc
-    balances[getBSCAddress(wbnb)] = ((await sdk.api.eth.getBalance({
-        target: bscPool,
-        chain: 'bsc',
-        block: bscBlock
-    })).output)
-
-    // bsc tokens
-    sdk.util.sumMultiBalanceOf(balances, await sdk.api.abi.multiCall({
-        abi: 'erc20:balanceOf',
-        block: bscBlock,
-        chain: 'bsc',
-        calls: Object.values(bscTokenPools).map(tokenPool=>({
-            params: tokenPool.pool,
-            target: tokenPool.token,
-        }))
-    }), true, getBSCAddress)
-
-    return balances
+async function bsc(_, _b, { bsc: block}) {
+    const toa = Object.values(bscTokenPools).map(({ pool, token}) => ([ token, pool, ]))
+    toa.push([nullAddress, bscPool])
+    return sumTokens2({ block, tokensAndOwners: toa, chain: 'bsc' })
 }
 
-const wavax = "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7"
-async function avax(timestamp, block, chainBlocks) {
-    let balances = {};
-
-    const avaxBlock = chainBlocks.avax
-    // avax
-    balances[getAVAXAddress(wavax)] = ((await sdk.api.eth.getBalance({
-        target: avaxPool,
-        chain: 'avax',
-        block: avaxBlock
-    })).output)
-
-    // avax tokens
-    for (const token in avaxTokenPools) {
-        const tokenPool = avaxTokenPools[token];
-        let tokenLocked = await sdk.api.erc20.balanceOf({
-            owner: tokenPool.pool,
-            target: tokenPool.token,
-            chain: 'avax',
-            block: avaxBlock
-        });
-
-          sdk.util.sumSingleBalance(balances, getAVAXAddress(tokenPool.token), tokenLocked.output);
-    }
-
-    return balances
+async function avax(_, _b, { avax: block}) {
+    const toa = Object.values(avaxTokenPools).map(({ pool, token}) => ([ token, pool, ]))
+    toa.push([nullAddress, avaxPool])
+    return sumTokens2({ block, tokensAndOwners: toa, chain: 'avax' })
 }
 
-async function klaytn() {
-    const provider = new Caver.providers.HttpProvider("https://cypress.chain.thebifrost.io/");
-    const caver = new Caver(provider);
-    let klaytnTVL = 0;
-
-    const oracleContract = new caver.klay.Contract(OracleAbi, klayOracleContract);
-
-    const klayPrice = await oracleContract.methods.getTokenPrice(0).call();
-    const klayBalance = await caver.rpc.klay.getBalance(klayPool);
-
-    klaytnTVL += klayPrice * klayBalance / (10 ** 36);
-
-    let oracleID = 0
-    for (const token in klaytnTokenPools) {
-        oracleID += 1;
-
-        const tokenAddress = klaytnTokenPools[token].token;
-        const tokenPoolAddress = klaytnTokenPools[token].pool;
-
-        const tokenPrice = await oracleContract.methods.getTokenPrice(oracleID).call();
-
-        const tokenContract = new caver.klay.Contract(TokenAbi, tokenAddress);
-        const balance = await tokenContract.methods.balanceOf(tokenPoolAddress).call();
-        const decimals = await tokenContract.methods.decimals().call();
-
-        const div = 18 + parseInt(decimals, 10);
-
-        klaytnTVL += balance * tokenPrice / 10 ** div;
-    }
-
-    return toUSDTBalances(klaytnTVL);
+async function klaytn(_, _b, { klaytn: block}) {
+    const toa = Object.values(klaytnTokenPools).map(({ pool, token}) => ([ token, pool, ]))
+    toa.push([nullAddress, klayPool])
+    return sumTokens2({ block, tokensAndOwners: toa, chain: 'klaytn' })
 }
 
 module.exports = {
     ethereum: {
         tvl: eth,
-        staking: staking(stakingPool, bfcAddr)
+        staking: stakings(stakingPool, bfcAddr)
     },
     bsc: {
         tvl: bsc

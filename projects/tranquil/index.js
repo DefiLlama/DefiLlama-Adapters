@@ -1,6 +1,8 @@
 const sdk = require("@defillama/sdk");
 const { BigNumber } = require("bignumber.js");
 const {compoundExports, getCompoundV2Tvl} = require('../helper/compound')
+const { uniTvlExport } = require('../helper/calculateUniTvl.js');
+const { getFixBalancesSync } = require("../helper/portedTokens");
 
 const tqOne = "0x34B9aa82D89AE04f0f546Ca5eC9C93eFE1288940"; // tqONE
 const wOne = "0xcf664087a5bb0237a0bad6742852ec6c8d69a27a";
@@ -91,7 +93,7 @@ async function tvl(timestamp, chain, chainBlocks) {
       abi: 'erc20:totalSupply',
       chain: 'harmony'
     })).output;
-    sdk.util.sumSingleBalance(balances, `harmony:${stONEAddr}`, stoneBalance);
+    balances[`harmony:${stONEAddr}`]= stoneBalance;
 
     return balances;
 }
@@ -124,9 +126,15 @@ async function staking(timestamp, chain, chainBlocks) {
 module.exports = {
   methodology: "TVL includes values locked into TqTokens. Pool2 are the liquidity in the TRANQ-WONE SUSHI LPs. Staking TVL are the xTRANQ tokens locked into the staking contract.",
   harmony: {
-    tvl,
-    borrowed,
-    pool2,
-    staking: staking,
+    tvl: sdk.util.sumChainTvls([
+      tvl,
+      uniTvlExport('0xF166939E9130b03f721B0aE5352CCCa690a7726a', 'harmony'),
+    ]),
+     borrowed: borrowed,
+     pool2: pool2,
+     staking: staking,
   },
+  hallmarks:[
+    [1655991120, "Horizon bridge Hack $100m"],
+  ],
 };

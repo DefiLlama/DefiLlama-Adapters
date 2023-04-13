@@ -3,7 +3,7 @@
   ==================================================*/
 
   const sdk = require("@defillama/sdk");
-  const _ = require("underscore");
+
   const BigNumber = require("bignumber.js");
 
   const abi = require('./abi.json');
@@ -35,7 +35,7 @@
     // instances count for each registry
     const instanceCounts = (
       await sdk.api.abi.multiCall({
-        calls: _.map(registryAddresses, (registryAddress) => {
+        calls: registryAddresses.map((registryAddress) => {
           return {
             target: registryAddress
           }
@@ -46,7 +46,7 @@
 
     let paginatedInstancesCalls = [];
 
-    _.each(instanceCounts, (instanceCount) => {
+    instanceCounts.forEach((instanceCount) => {
       const registryAddress = instanceCount.input.target;
       const count = Number(instanceCount.output);
 
@@ -75,19 +75,19 @@
 
     let instanceAddresses = [];
 
-    _.each(paginatedInstances, (instances) => {
+    paginatedInstances.forEach((instances) => {
       instanceAddresses = [
         ...instanceAddresses,
         ...instances.output
       ]
     });
 
-    instanceAddresses = _.uniq(instanceAddresses);
+    instanceAddresses = [... new Set(instanceAddresses)]
 
     let balanceOfCalls = [];
 
-    _.each(instanceAddresses, (instanceAddress) => {
-      _.each(tokenAddresses, (tokenAddress) => {
+    instanceAddresses.forEach((instanceAddress) => {
+      tokenAddresses.forEach((tokenAddress) => {
         balanceOfCalls.push({
           target: tokenAddress,
           params: [instanceAddress]
@@ -103,7 +103,7 @@
     });
 
     // sum token balances across contracts
-    _.each(balanceOfResults.output, balanceOf => {
+    balanceOfResults.output.forEach(balanceOf => {
         let balance = balanceOf.output;
         let address = balanceOf.input.target;
 
@@ -120,9 +120,6 @@
   ==================================================*/
 
   module.exports = {
-    name: "Erasure",
-    token: "NMR",
-    category: "derivatives",
     start: 1566518400, // 08/23/2019 @ 12:00am (UTC)
-    tvl
+    ethereum: { tvl }
   };

@@ -2,7 +2,6 @@ const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
 const { staking, stakings } = require("../helper/staking");
-const { pool2s } = require("../helper/pool2");
 const { sumTokens } = require("../helper/unwrapLPs");
 
 const USDC = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
@@ -119,51 +118,54 @@ const contractAddressesFantom = [
 ];
 
 const fantomTvl = async (timestamp, ethBlock, chainBlocks) => {
-	const balances = {};
+  const balances = {};
   const chain = "fantom"
   const block = chainBlocks[chain]
-	// --- AMO's ---
-	const usdcTvls = (
-	  await sdk.api.abi.multiCall({
-		calls: contractAddressesFantom.map((addr) => ({ target: addr })),
-		abi: abi.borrowed_frax,
-		block,
-		chain,
-	  })
-	).output.map((response) => response.output);
+  // --- AMO's ---
+  const usdcTvls = (
+    await sdk.api.abi.multiCall({
+      calls: contractAddressesFantom.map((addr) => ({ target: addr })),
+      abi: abi.borrowed_frax,
+      block,
+      chain,
+    })
+  ).output.map((response) => response.output);
 
-	usdcTvls.forEach((usdcTvl) => {
-	 	sdk.util.sumSingleBalance(
-		balances,
-		USDC,
-		BigNumber(usdcTvl)
-		  .dividedBy(10 ** 12) // // Convert to 6 decimal USDC values
-		  .toFixed(0)
-		);
-	});
+  usdcTvls.forEach((usdcTvl) => {
+    sdk.util.sumSingleBalance(
+      balances,
+      USDC,
+      BigNumber(usdcTvl)
+        .dividedBy(10 ** 12) // // Convert to 6 decimal USDC values
+        .toFixed(0)
+    );
+  });
 
-	// --- Liquidity staking ---
+  // --- Liquidity staking ---
 
-	// Curve FRAX2Pool
+  // Curve FRAX2Pool
   await sumTokens(balances, [
     ["0x8866414733f22295b7563f9c5299715d2d76caf4", "0x7a656b342e14f745e2b164890e88017e27ae7320"],
-    [ "0x04068da6c83afcfa0e13ba15a6696662335d5b75", "0xbea9f78090bdb9e662d8cb301a00ad09a5b756e9"]
-  ], block, chain, addr=>addr==="0x8866414733f22295b7563f9c5299715d2d76caf4"?"0x6b175474e89094c44da98b954eedeac495271d0f":`${chain}:${addr}`)
+    ["0x04068da6c83afcfa0e13ba15a6696662335d5b75", "0xbea9f78090bdb9e662d8cb301a00ad09a5b756e9"]
+  ], block, chain, addr => addr === "0x8866414733f22295b7563f9c5299715d2d76caf4" ? "0x6b175474e89094c44da98b954eedeac495271d0f" : `${chain}:${addr}`)
 
-	return balances;
+  return balances;
 }
 
 module.exports = {
+  doublecounted: true,
   misrepresentedTokens: true,
   ethereum: {
-    treasury: stakings(treasuryContracts, FXS),
     staking: staking(veFXS_StakingContract, FXS),
-    pool2: pool2s(POOL_STAKING_CONTRACTS, LP_ADDRESSES),
+    pool2: staking(POOL_STAKING_CONTRACTS, LP_ADDRESSES),
     tvl: ethereumTvl,
   },
-  fantom:{
+  fantom: {
     tvl: fantomTvl
   },
+  hallmarks:[
+    [1651881600, "UST depeg"],
+  ],
   methodology:
     "Counts liquidty as the Collateral USDC on all AMOs, USDC POOLs, FRAX3CRV and FEI3CRVs through their Contracts",
 };

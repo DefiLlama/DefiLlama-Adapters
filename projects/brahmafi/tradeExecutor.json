@@ -1,0 +1,3 @@
+{
+  "positionInWantToken": "function positionInWantToken() view returns (uint256 posValue, uint256 lastUpdatedBlock)"
+}

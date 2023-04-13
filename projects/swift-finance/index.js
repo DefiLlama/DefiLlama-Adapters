@@ -12,4 +12,4 @@ const masterchef = "0x242c27C5F92e20d70CA0dAA7b76d927DFC7EF20B"
 
 module.exports = {
   ...masterChefExports(masterchef, "avax", token, true, abi.poolInfo)
-}
+};

@@ -1,301 +1,253 @@
 const sdk = require('@defillama/sdk');
-const abi = require('./abi.json');
+const http = require('../helper/http');
 const BigNumber = require("bignumber.js");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const { getChainTransform } = require("../helper/portedTokens");
+const getPairFactory = 'function getPair(address, address) view returns (address)'
 
-const STATS ='0xC4DD716a29357317BdC66d9D9cF2ec02fD995742';
+const zeroAddress = '0x0000000000000000000000000000000000000000'
 const BRIDGE_CONTROLLER = '0x0Dd4A86077dC53D5e4eAE6332CB3C5576Da51281';
-const TOKEN ='0x0cD022ddE27169b20895e0e2B2B8A33B25e63579';
-const TOKEN_AVAX ='0xC3A8d300333BFfE3ddF6166F2Bc84E6d38351BED';
-const STAKING ='0x1490EaA0De0b2D4F9fE0E354A7D99d6C6532be84';
-
-const ethPool2LPs = [
-  {
-    owner: "0xA366820f4781049E0f183697252bc6cbc4fcD9e1",
-    pool: "0x9295c3289a0d924c0437436fa9fca5e34cb8acb3",
-  }, // RISE-ETH
-];
-const bscPool2LPs = [
-  {
-    owner: "0xA366820f4781049E0f183697252bc6cbc4fcD9e1",
-    pool: "0xe880A0be3513B92FFe3563D8ee9F6f7b954E4415",
-  }, // RISE-ETH
-];
-const polygonPool2LPs = [
-  {
-    owner: "0xA366820f4781049E0f183697252bc6cbc4fcD9e1",
-    pool: "0xb24A550E8E764CAE3fCe91c333B5B17CccfFf438",
-  }, // RISE-ETH
-];
-const avaxPool2LPs = [
-  {
-    owner: "0xA366820f4781049E0f183697252bc6cbc4fcD9e1",
-    pool: "0xB7395899318b2DF8EedeF9bBfe840bA99932aA13",
-  }, // RISE-ETH
-];
-const fantomPool2LPs = [
-  {
-    owner: "0xA366820f4781049E0f183697252bc6cbc4fcD9e1",
-    pool: "0x70d1894747aed5090539baDA0E9eD1A67D7e31d7",
-  }, // RISE-ETH
-];
-
-function bscTvl(timestamp, block) {
-  return tvl(timestamp, block, 'bsc');
+const RESERVES = ['0x78b939518f51b6da10afb3c3238Dd04014e00057',
+                 '0x3776B8C349BC9Af202E4D98Af163D59cA56d2fC5'];
+const TOKEN = '0xC17c30e98541188614dF99239cABD40280810cA3';
+const STAKE_HOLDING_API = 'https://app.everrise.com/bridge/api/v1/stats'
+const EVEROWN_DAO_API = 'https://app.everrise.com/prod/api/v1/contracts/active'
+const chainConfig = {
+  ethereum: {
+    chainId: '1',
+    WCoin: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+    lpFactory: '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f',
+    LPs: [
+      {
+        owner: "0x78ab99dae7302ea91e36962f4b23418a89d3a69d", // EverOwn DAO Locked LP
+        pool: "0x7250f7e97a4338d2bd72abc4b010d7a8477dc1f9",
+      }, // RISE-ETH
+    ],
+    reserveTokens: [
+      "0xdAC17F958D2ee523a2206206994597C13D831ec7", // USDT
+      "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC
+      TOKEN,
+    ],
+  },
+  bsc: {
+    chainId: '56',
+    WCoin: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
+    lpFactory: '0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73',
+    LPs: [
+      {
+        owner: "0x89dd305ffbd8e684c77758288c48cdf4f4abe0f4", // EverOwn DAO Locked LP
+        pool: "0x10dA269F5808f934326D3Dd1E04B7E7Ca78bb804",
+      }, // RISE-BNB
+    ],
+    reserveTokens: [
+      "0x55d398326f99059fF775485246999027B3197955", // USDT
+      "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d", // USDC
+      "0xe9e7cea3dedca5984780bafc599bd69add087d56", // BUSD
+      TOKEN,
+    ],
+  },
+  polygon: {
+    chainId: '137',
+    WCoin: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
+    lpFactory: '0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32',
+    LPs: [
+      {
+        owner: "0x7dd45e9be23219fd8ccfc584b652775aba62fdef", // EverOwn DAO Locked LP
+        pool: "0xf3c62dbbfec92a2e73d676d62ebec06a6bc224e2",
+      }, // RISE-MATIC
+    ],
+    reserveTokens: [
+      "0xc2132D05D31c914a87C6611C10748AEb04B58e8F", // USDT
+      "0x2791bca1f2de4661ed88a30c99a7a9449aa84174", // USDC
+      TOKEN,
+    ],
+  },
+  avax: {
+    chainId: '43114',
+    WCoin: '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7',
+    lpFactory: '0x9Ad6C38BE94206cA50bb0d90783181662f0Cfa10',
+    LPs: [
+      {
+        owner: "0x22a8e3f957fcdd4883cfcbc67c5e14cf2bb6477d", // EverOwn DAO Locked LP
+        pool: "0x5472e98d22b0fb7ec5c3e360788b8700419370b5",
+      }, // RISE-AVAX
+    ],
+    reserveTokens: [
+      "0xc2132D05D31c914a87C6611C10748AEb04B58e8F", // USDT
+      "0x2791bca1f2de4661ed88a30c99a7a9449aa84174", // USDC
+      TOKEN,
+    ],
+  },
+  fantom: {
+    chainId: '250',
+    WCoin: '0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83',
+    lpFactory: '0x152eE697f2E276fA89E96742e9bB9aB1F2E61bE3',
+    LPs: [
+      {
+        owner: "0x59503632ab8a093c266509c797c957e063f4d32b", // EverOwn DAO Locked LP
+        pool: "0xde62a6cdd8d5a3988495317cffac9f3fed299383",
+      }, // RISE-FTM
+    ],
+    reserveTokens: [
+      "0x04068da6c83afcfa0e13ba15a6696662335d5b75", // USDC
+      TOKEN,
+    ],
+  },
 }
 
-function polygonTvl(timestamp, block) {
-  return tvl(timestamp, block, 'polygon');
-}
+async function staking(timestamp, block, chainId, chain, token) {
 
-function avalancheTvl(timestamp, block) {
-  return tvl(timestamp, block, 'avax');
-}
+  const stakedAmounts = await ((await fetch(STAKE_HOLDING_API)).json());
 
-function fantomTvl(timestamp, block) {
-  return tvl(timestamp, block, 'fantom');
-}
-
-function polygonStaking(timestamp, block) {
-  return staking(timestamp, block, 'polygon', TOKEN);
-}
-
-function bscStaking(timestamp, block) {
-  return staking(timestamp, block, 'bsc', TOKEN);
-}
-
-function avalancheStaking(timestamp, block) {
-  return staking(timestamp, block, 'avax', TOKEN_AVAX);
-}
-
-function fantomStaking(timestamp, block) {
-  return staking(timestamp, block, 'fantom', TOKEN);
-}
-
-function coin(chain){
-  switch (chain){
-    case 'bsc':
-      return 'binancecoin';
-    case 'polygon':
-      return 'matic-network';
-    case 'avax':
-      return 'avalanche-2';
-    case 'fantom':
-      return 'fantom';
+  let stakedAmount = 0;
+  for (let i = 0, ul = stakedAmounts.length; i < ul; i++) {
+    if (stakedAmounts[i].id === chainId) {
+      stakedAmount = BigNumber(stakedAmounts[i].amount).multipliedBy(BigNumber(10).pow(18));
+    }
   }
+
+  return stakedAmount;
 }
 
-async function staking(timestamp, block, chain, token) {
-  let balances = {};
+const chainExports = {}
+let daoLockerClients = null
 
-  const stats = (await sdk.api.abi.call({
-    target: STATS,
-    abi: abi['getStats'],
-    block: block,
-    chain: chain
-  })).output;
+Object.keys(chainConfig).forEach(chain => {
+  const chainData = chainConfig[chain]
 
-  let staking = BigNumber(stats.staked)
-                .minus(BigNumber(stats.rewards));
-
-  const balance = (await sdk.api.erc20.balanceOf({
-    target: token,
-    owner: STAKING,
-    block: block,
-    chain: chain
-  })).output;
-
-  staking = staking.plus(BigNumber(balance));
-
-  balances[chain+':'+token] = staking;
-  
-  return balances;
-}
-
-async function ethStaking(timestamp, block) {
-  let balances = {};
-
-  const stats = (await sdk.api.abi.call({
-    target: STATS,
-    abi: abi['getStats'],
-    block: block
-  })).output;
-
-  let staking = BigNumber(stats.staked)
-                .minus(BigNumber(stats.rewards));
-
-  const balance = (await sdk.api.erc20.balanceOf({
-    target: TOKEN,
-    owner: STAKING
-  })).output;
-
-  staking = staking.plus(BigNumber(balance));
-
-  balances[TOKEN] = staking;
-  
-  return balances;
-}
-
-async function tvl(timestamp, block, chain) {
-    let balances = {};
+  async function tvl(ts, _block, chainBlocks) {
+    let balances = {}
+    const block = chainBlocks[chain]
+    const transformAddress = await getChainTransform(chain)
 
     const results = (await sdk.api.eth.getBalances({
-      targets: [TOKEN, BRIDGE_CONTROLLER],
-      chain: chain
-    }));
+      targets: [TOKEN, BRIDGE_CONTROLLER, ...RESERVES],
+      chain, block
+    }))
 
-    let total = BigNumber(0);
-    for (const c of results.output) {
-      total = total.plus(BigNumber(c.balance));
-    }
+    for (const c of results.output)
+      sdk.util.sumSingleBalance(balances, transformAddress(zeroAddress), c.balance)
 
-    balances[coin(chain)] = total.div(BigNumber(10).pow(18));
-    
-    return balances;
-}
+    // Get reserve token balances
+    let migrateBalances = (
+      await sdk.api.abi.multiCall({
+        calls: RESERVES.map((reserve) => (chainConfig[chain].reserveTokens.map((token) => ({
+          target: token,
+          params: reserve,
+        })))).flat(1),
+        abi: "erc20:balanceOf",
+        block, chain,
+      })
+    ).output;
 
-async function ethTvl(timestamp, block) {
-  let balances = {};
+    migrateBalances.forEach((i) => {
+      // Only include positive balances
+      if (i.output > 0)
+        balances[i.input.target] = i.output
+    });
 
-  const results = (await sdk.api.eth.getBalances({
-    targets: [TOKEN, BRIDGE_CONTROLLER]
-  }));
+    await everOwnClients(balances, chain, block, transformAddress)
 
-  let total = BigNumber(0);
-  for (const c of results.output) {
-    total = total.plus(BigNumber(c.balance));
+    return balances
   }
 
-  balances['ethereum'] = total.div(BigNumber(10).pow(18));
-  
-  return balances;
-}
+  async function everOwnClients(balances, chain, block, transformAddress) {
+    daoLockerClients = daoLockerClients || await http.get(EVEROWN_DAO_API)
+    
+    let clients = daoLockerClients[chainData.chainId] || []
+    // Don't include self as that's pool2
+    clients = clients.filter(t => t.contractAddress.toLowerCase() !== TOKEN.toLowerCase())
 
-function mergeBalances(balances, balancesToMerge) {
-    Object.entries(balancesToMerge).forEach(balance => {
-        sdk.util.sumSingleBalance(balances, balance[0], balance[1].toNumber())
-    })
-}
+    if (clients.length > 0) {
+      const clientMapping = {}
+      
+      clients.forEach(client => {
+        clientMapping[client.contractAddress.toLowerCase()] = client.everOwnLocker
+      })
 
-async function pool2(balances, chainBlocks, chain, pool) {
-  let lpPositions = [];
-  let lpBalances = (
-    await sdk.api.abi.multiCall({
-      calls: pool.map((p) => ({
-        target: p.pool,
-        params: p.owner,
-      })),
-      abi: "erc20:balanceOf",
-      block: chainBlocks[chain],
-      chain: chain
-    })
-  ).output;
-  lpBalances.forEach((i) => {
-    lpPositions.push({
-      balance: i.output,
-      token: i.input.target,
+      const lPTokens = (
+        await sdk.api.abi.multiCall({
+          abi: getPairFactory,
+          calls: clients.map((client) => ({
+            target: chainData.lpFactory,
+            params: [client.contractAddress, chainData.WCoin],
+          })),
+          chain: chain,
+          block: block,
+        })
+      ).output
+
+      let lpPositions = [];
+      let lpBalances = (
+        await sdk.api.abi.multiCall({
+          calls: lPTokens.map((p) => ({
+            target: p.output,
+            params: clientMapping[p.input.params[0].toLowerCase()],
+          })),
+          abi: "erc20:balanceOf",
+          block, chain,
+        })
+      ).output
+
+      lpBalances.forEach((i) => {
+        if (i.output > 0) {
+          lpPositions.push({
+            balance: i.output,
+            token: i.input.target,
+          });
+        }
+      })
+
+      await unwrapUniswapLPs(balances, lpPositions, block, chain, transformAddress)
+    }
+  }
+
+  async function pool2(ts, _block, chainBlocks) {
+    let balances = {}
+    const block = chainBlocks[chain]
+    const transformAddress = await getChainTransform(chain)
+    const { LPs } = chainConfig[chain]
+
+    let lpPositions = [];
+    let lpBalances = (
+      await sdk.api.abi.multiCall({
+        calls: LPs.map((p) => ({
+          target: p.pool,
+          params: p.owner,
+        })),
+        abi: "erc20:balanceOf",
+        block, chain,
+      })
+    ).output;
+    lpBalances.forEach((i) => {
+      lpPositions.push({
+        balance: i.output,
+        token: i.input.target,
+      });
     });
-  });
-  await unwrapUniswapLPs(balances, lpPositions, chainBlocks[chain], chain, addr=>`${chain}:${addr}`);
-  return balances;
-}
-
-async function ethPool2(timestamp, block) {
-  let balances = {};
-  await pool2(balances, block, "ethereum", ethPool2LPs);
-  return balances;
-}
-
-async function bscPool2(timestamp, block) {
-  let balances = {};
-  await pool2(balances, block, "bsc", bscPool2LPs);
-  return balances;
-}
-
-async function polygonPool2(timestamp, block) {
-  let balances = {};
-  await pool2(balances, block, "polygon", polygonPool2LPs);
-  return balances;
-}
-
-async function avaxPool2(timestamp, block) {
-  let balances = {};
-  await pool2(balances, block, "avax", avaxPool2LPs);
-  return balances;
-}
-
-async function fantomPool2(timestamp, block) {
-  let balances = {};
-  await pool2(balances, block, "fantom", fantomPool2LPs);
-  return balances;
-}
-
-async function totalTvl(timestamp, block, chainBlocks) {
-    const balances = {}
-    await Promise.all([
-        ethTvl(timestamp, block, chainBlocks),
-        bscTvl(timestamp, block, chainBlocks),
-        polygonTvl(timestamp, block, chainBlocks),
-        avalancheTvl(timestamp, block, chainBlocks),
-        fantomTvl(timestamp, block, chainBlocks),
-    ]).then(poolBalances => poolBalances.forEach(pool => mergeBalances(balances, pool)))
+    await unwrapUniswapLPs(balances, lpPositions,  block, chain, transformAddress);
     return balances
-}
+  }
 
-async function totalPool2(timestamp, block, chainBlocks) {
-    const balances = {}
-    await Promise.all([
-      ethPool2(timestamp, block, chainBlocks),
-      bscPool2(timestamp, block, chainBlocks),
-      polygonPool2(timestamp, block, chainBlocks),
-      avaxPool2(timestamp, block, chainBlocks),
-      fantomPool2(timestamp, block, chainBlocks),
-    ]).then(poolBalances => poolBalances.forEach(pool => mergeBalances(balances, pool)))
-    return balances
-}
+  async function staking() {
+    const { chainId } = chainConfig[chain]
+    const stakedAmounts = await http.get(STAKE_HOLDING_API)
+    let stakedAmount = stakedAmounts.find(({ id }) => id === chainId)
 
-async function totalStaking(timestamp, block, chainBlocks) {
-    const balances = {}
-    await Promise.all([
-      ethStaking(timestamp, block, chainBlocks),
-      bscStaking(timestamp, block, chainBlocks),
-      polygonStaking(timestamp, block, chainBlocks),
-      avalancheStaking(timestamp, block, chainBlocks),
-      fantomStaking(timestamp, block, chainBlocks),
-    ]).then(poolBalances => poolBalances.forEach(pool => mergeBalances(balances, pool)))
-    return balances
-}
+    return {
+      'everrise': stakedAmount ? stakedAmount.amount : 0
+    }
+  }
+
+  chainExports[chain] = {
+    tvl,
+    pool2,
+    staking,
+  }
+})
 
 module.exports = {
-  name: 'EverRise',
-  token: 'RISE',
-  bsc:{
-    tvl: bscTvl,
-    staking: bscStaking,
-    pool2: bscPool2,
-  },
-  ethereum:{
-    tvl: ethTvl,
-    staking: ethStaking,
-    pool2: ethPool2,
-  },
-  polygon:{
-    tvl: polygonTvl,
-    staking: polygonStaking,
-    pool2: polygonPool2,
-  },
-  fantom:{
-    tvl: fantomTvl,
-    staking: fantomStaking,
-    pool2: fantomPool2,
-  },
-  avalanche:{
-    tvl: avalancheTvl,
-    staking: avalancheStaking,
-    pool2: avaxPool2,
-  },
-  tvl: totalTvl,
-  staking: totalStaking,
-  pool2: totalPool2,
-  methodology: "TVL comes from the buyback reserves and cross-chain bridge vaults",
+  ...chainExports,
+  timetravel: false,
+  methodology: "TVL comes from the buyback reserves, other token migration vaults and cross-chain bridge vaults",
 };

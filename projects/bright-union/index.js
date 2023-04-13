@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const {pool2s} = require('../helper/pool2')
+const {staking} = require('../helper/staking')
 
 // BRI
 const BrightRiskIndex = "0xa4b032895BcB6B11ec7d21380f557919D448FD04";
@@ -23,25 +23,10 @@ async function tvl (timestamp, block) {
     }
 }
 
-async function staking (timestamp, block) {
-    const balances = {};
-    const stakingBright = (
-        await sdk.api.erc20.balanceOf({
-            target: BRIGHT,
-            owner: BrightStaking,
-            block
-        })
-    ).output;
-
-    await sdk.util.sumSingleBalance(balances, BRIGHT, stakingBright)
-
-    return balances;
-}
-
 module.exports = {
     ethereum: {
         tvl: tvl,
-        pool2: pool2s(BrightLPStaking, [ETH_BRIGHT_UNIV2]),
-        staking: staking,
+        pool2: staking(BrightLPStaking, [ETH_BRIGHT_UNIV2]),
+        staking: staking(BrightStaking, BRIGHT),
     },
 };

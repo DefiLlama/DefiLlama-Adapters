@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk');
-const _ = require('underscore');
-const axios = require('axios')
+const axios = require('axios');
+const { getBlock } = require('../helper/http');
 
 async function balancesInAddress(address, chain, chainId, block) {
   const allTokens = (await axios.get(`https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/?&key=ckey_72cd3b74b4a048c9bc671f7c5a6`)).data.data.items
@@ -9,7 +9,7 @@ async function balancesInAddress(address, chain, chainId, block) {
   const balanceOfOmniBridge = block > 10590093
     ? await sdk.api.abi.multiCall({
       block,
-      calls: _.map(allTokens, (token) => ({
+      calls: allTokens.map((token) => ({
         target: token.contract_address,
         params: omniBridge
       })),
@@ -34,13 +34,14 @@ const owlToken = '0x1a5f9352af8af974bfc03399e3767df6370d82e4';
 const owlBridge = '0xed7e6720ac8525ac1aeee710f08789d02cd87ecb'
 async function eth(timestamp, block) {
   let balances = {};
+  block = await getBlock(timestamp, 'ethereum', { ethereum: block })
 
   if (block > 10590093) {
     balances = await balancesInAddress(omniBridge, 'ethereum', 1, block)
   }
   const balanceOfXdaiBridge = await sdk.api.abi.multiCall({
     block,
-    calls: _.map(tokenAddresses, (token) => ({
+    calls: tokenAddresses.map((token) => ({
       target: token,
       params: xDaiBridge
     })),
@@ -74,5 +75,4 @@ module.exports = {
   },
   */
   start: 1539028166,
-  tvl: sdk.util.sumChainTvls([eth])
 };

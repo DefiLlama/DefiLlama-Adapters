@@ -3,7 +3,7 @@ const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const { calculateUniTvl } = require('../helper/calculateUniTvl')
 const {toUSDTBalances} = require('../helper/balances');
-const { getBlock } = require("../helper/getBlock");
+const { getBlock } = require("../helper/http");
 
 // --> bsc addresses found here:    https://github.com/mdexSwap/bscswap
 // --> heco addresses found here:   https://github.com/mdexSwap/contracts
@@ -88,5 +88,4 @@ module.exports = {
   heco: {
     tvl: hecoTvl, //  individually outputs >1B    ---   simply using graphql endpoint   (OK)
   },
-  tvl: sdk.util.sumChainTvls([hecoTvl, bscTvl]),
 };

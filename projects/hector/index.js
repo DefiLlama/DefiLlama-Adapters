@@ -1,62 +1,52 @@
-const { GraphQLClient, gql } = require("graphql-request");
-const retry = require("async-retry");
-const { getBlock } = require("../helper/getBlock");
-const sdk = require("@defillama/sdk");
-const erc20 = require("../helper/abis/erc20.json");
+const { staking } = require('../helper/staking')
+const contracts = require("./contracts.json");
+const { sumTokens2, unwrapLPsAuto } = require("../helper/unwrapLPs");
+const abi = require("./abi.json");
+const { genericUnwrapCvx } = require("../helper/unwrapLPs");
+const { covalentGetTokens } = require('../helper/http')
 
-async function fetch() {
-  var endpoint =
-    "https://api.thegraph.com/subgraphs/name/hectordao-hec/hector-dao";
-  var graphQLClient = new GraphQLClient(endpoint);
-
-  var query = gql`
-    query {
-      protocolMetrics(first: 1, orderBy: timestamp, orderDirection: desc) {
-        treasuryMarketValue
-      }
-    }
-  `;
-  const results = await retry(
-    async (bail) => await graphQLClient.request(query)
-  );
-  return results.protocolMetrics[0].treasuryMarketValue;
+async function walletBalances(api) {
+  console.log(api.chain, api.chainId)
+  const { owners = [], blacklistedTokens } = contracts.tokenHolders[api.chain]
+  const tokens = await Promise.all(owners.map(i => covalentGetTokens(i, api.chain)))
+  return sumTokens2({ api, ownerTokens: owners.map((v, i) => [tokens[i], v]), blacklistedTokens, resolveLP: false, })
 }
-const hectorStakingv1 = "0x9ae7972BA46933B3B20aaE7Acbf6C311847aCA40";
-const hectorStakingv2 = "0xD12930C8deeDafD788F437879cbA1Ad1E3908Cc5";
-const hec = "0x5C4FDfc5233f935f20D2aDbA572F770c2E377Ab0";
-
-const HectorStakings = [
-  // V1
-  hectorStakingv1,
-  // V2
-  hectorStakingv2,
-];
-const staking = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
-  const chain = "fantom";
-  let stakingBalance,
-    totalBalance = 0;
-  const block = await getBlock(timestamp, chain, chainBlocks);
-  for (const stakings of HectorStakings) {
-    stakingBalance = await sdk.api.abi.call({
-      abi: erc20.balanceOf,
-      target: hec,
-      params: stakings,
-      chain: chain,
-      block: block,
-    });
-    totalBalance += Number(stakingBalance.output);
+async function deployedBalances(api) {
+  switch (api.chain) {
+    case "bsc":
+      return getPancakeDeposits(api, "0xa5f8c5dbd5f286960b9d90548680ae5ebff07652", [2, 4, 14], "0x3cdf52cc28d21c5b7b91d7065fd6dfe6d426fcc5",);
+    case "ethereum":
+      return getConvexDeposits(api, "0xf403c135812408bfbe8713b5a23a04b3d48aae31", [61, 64], "0x4bfb33d65f4167ebe190145939479227e7bf2cb0",);
   }
-  const address = `${chain}:${hec}`;
+}
+async function getConvexDeposits(api, target, poolIds, owner,) {
+  let poolInfos = await api.multiCall({ abi: abi.poolInfo, target, calls: poolIds, })
+  return Promise.all(poolInfos.map(i => genericUnwrapCvx(api.getBalances(), owner, i.crvRewards, api.block, api.chain)))
+}
 
-  return {
-    [address]: totalBalance,
-  };
-};
+async function getPancakeDeposits(api, target, poolIds, owner,) {
+  const [balance, lpToken] = await Promise.all([
+    api.multiCall({ abi: abi.userInfo, target, calls: poolIds.map(i => ({ params: [i, owner] })), }),
+    api.multiCall({ abi: abi.lpToken, target, calls: poolIds, })
+  ]);
+  lpToken.forEach((v, i) => api.add(v, balance[i].amount))
+}
 
 module.exports = {
+  ethereum: { tvl, },
   fantom: {
-    staking,
+    tvl,
+    staking: staking('0xd12930c8deedafd788f437879cba1ad1e3908cc5', '0x5C4FDfc5233f935f20D2aDbA572F770c2E377Ab0')
   },
-  fetch,
+  bsc: { tvl, }
 };
+
+async function tvl(_, _b, _cb, { api, }) {
+  const calls = [
+    walletBalances(api),
+    deployedBalances(api),
+  ]
+  await Promise.all(calls)
+
+  await unwrapLPsAuto({ api, })
+}

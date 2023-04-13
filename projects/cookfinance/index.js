@@ -1,8 +1,11 @@
 const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking.js");
 const { pool2, pool2s } = require("../helper/pool2");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs.js");
 const yieldyakAbi = require("./yieldyakAbi.json");
+const alpacaFinanceAbi = require("../alpaca-finance/abi.json");
+const BigNumber = require("bignumber.js");
+const { sumTokens2 } = require('../helper/unwrapLPs')
+const { getSymbols } = require('../helper/utils')
 
 const stakingContractHeco = "0xF0979F9692966D110E39d82a44655c9934F5cC73";
 const COOK_heco = "0x74189862b069e2be5f7c8e6ff08ea8e1b1948519";
@@ -31,104 +34,113 @@ const ethIndexes = [
   "0x43633bDb2675aDaB99CE3059D734b92a1deDAb2b", // EDI
 ];
 
+const getComponentsABI = "address[]:getComponents"
+const getCKsABI = "address[]:getCKs"
+
+async function getTvl({ chain, block, indices }) {
+  const indexCalls = indices.map(i => ({ target: i }))
+  const { output: components } = await sdk.api.abi.multiCall({
+    abi: getComponentsABI,
+    calls: indexCalls,
+    block, chain,
+  })
+
+  const tokensAndOwners = []
+  components.forEach(({ output }, i) => {
+    output.forEach(t => tokensAndOwners.push([t, indices[i]]))
+  })
+
+  return sumTokens2({ tokensAndOwners, block, chain, })
+
+}
+
 async function ethTvl(timestamp, block) {
-  let balances = {};
-
-  for (let i = 0; i < ethIndexes.length; i++) {
-    let { output: components } = await sdk.api.abi.call({
-      target: ethIndexes[i],
-      abi: {
-        inputs: [],
-        name: "getComponents",
-        outputs: [{ internalType: "address[]", name: "", type: "address[]" }],
-        stateMutability: "view",
-        type: "function",
-      },
-      block,
-    });
-
-    for (let j = 0; j < components.length; j++) {
-      let { output: balance } = await sdk.api.erc20.balanceOf({
-        target: components[j],
-        owner: ethIndexes[i],
-        block,
-      });
-      sdk.util.sumSingleBalance(balances, components[j], balance);
-    }
-  }
-
-  return balances;
+  return getTvl({ indices: ethIndexes })
 }
 
 async function avaTvl(timestamp, ethBlock, chainBlocks) {
   const block = chainBlocks.avax;
+  const chain = 'avax'
   const CONTROLLER_ADDRESS = "0xE565711e7a59800e110c959E156121988E6F4704";
-  let balances = {};
   let { output: avaIndexes } = await sdk.api.abi.call({
     target: CONTROLLER_ADDRESS,
-    abi: {
-      inputs: [],
-      name: "getCKs",
-      outputs: [{ internalType: "address[]", name: "", type: "address[]" }],
-      stateMutability: "view",
-      type: "function",
-    },
-    chain: "avax",
+    abi: getCKsABI,
+    chain, block,
+  });
+  const balances = await getTvl({ indices: avaIndexes, chain, block, })
+  Object.entries(balances).forEach(([token, balance]) => {
+    delete balances[token]
+    balances[token.toLowerCase()] = balance
+  })
+
+  const symbols = await getSymbols(chain, Object.keys(balances))
+  const calls = []
+  const balanceCalls = []
+  Object.entries(symbols).forEach(([token, symbol]) => {
+    if (symbol && symbol.startsWith('YRT')) {
+      calls.push({ target: token })
+      balanceCalls.push({ target: token, params: [balances['avax:' + token]] })
+    }
+  })
+  const [
+    { output: token },
+    { output: newBalance },
+  ] = await Promise.all([
+    sdk.api.abi.multiCall({ abi: yieldyakAbi.depositToken, calls, chain, block, }),
+    sdk.api.abi.multiCall({ abi: yieldyakAbi.getDepositTokensForShares, calls: balanceCalls, chain, block, }),
+  ])
+
+  token.forEach(({ output, input }, i) => {
+    const origToken = `avax:${input.target}`
+    const balance = newBalance[i].output
+    delete balances[origToken]
+    sdk.util.sumSingleBalance(balances, 'avax:' + output, balance)
+  })
+
+  return balances
+}
+
+async function bscTvl(timestamp, ethBlock, chainBlocks) {
+  const block = chainBlocks.bsc;
+  const chain = 'bsc'
+  const CONTROLLER_ADDRESS = "0x822aeB433A4Ea7A97b76287cB513C3985034a2Bd";
+  let { output: bscIndexes } = await sdk.api.abi.call({
+    target: CONTROLLER_ADDRESS,
+    abi: getCKsABI,
+    chain: "bsc",
     block,
   });
-  for (let i = 0; i < avaIndexes.length; i++) {
-    let { output: components } = await sdk.api.abi.call({
-      target: avaIndexes[i],
-      abi: {
-        inputs: [],
-        name: "getComponents",
-        outputs: [{ internalType: "address[]", name: "", type: "address[]" }],
-        stateMutability: "view",
-        type: "function",
-      },
-      chain: "avax",
-      block,
-    });
-    for (let j = 0; j < components.length; j++) {
-      let { output: balance } = await sdk.api.erc20.balanceOf({
-        target: components[j],
-        owner: avaIndexes[i],
-        chain: "avax",
-        block,
-      });
-      let { output: symbol } = await sdk.api.erc20.symbol(
-        components[j],
-        "avax"
-      );
-      if (symbol === "YRT") {
-        let { output: underlyingToken } = await sdk.api.abi.call({
-          target: components[j],
-          block,
-          chain: "avax",
-          abi: yieldyakAbi.depositToken,
-        });
-        if (underlyingToken === '0x0000000000000000000000000000000000000000') {
-          // set underlyingToken to WAVAX whenever yieldYakVault.depositToken returns zero_address
-          underlyingToken = '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7'
-        }
-        let { output: underlyingTokenBalance } = await sdk.api.abi.call({
-          target: components[j],
-          block,
-          params: [balance],
-          chain: "avax",
-          abi: yieldyakAbi.getDepositTokensForShares,
-        });
-        sdk.util.sumSingleBalance(
-          balances,
-          "avax:" + underlyingToken,
-          underlyingTokenBalance
-        );
-      } else {
-        sdk.util.sumSingleBalance(balances, "avax:" + components[j], balance);
-      }
+
+  const balances = await getTvl({ indices: bscIndexes, chain, block, })
+  // const symbols = await getSymbols(chain, Object.keys(balances))
+  const calls = []
+  // Object.entries(symbols).forEach(([token, symbol]) => {
+  //   if (symbol.startsWith('ib')) calls.push({ target: token })
+  // })
+  const [
+    { output: token },
+    { output: totalToken },
+    { output: totalSupply },
+  ] = await Promise.all([
+    sdk.api.abi.multiCall({ abi: alpacaFinanceAbi.token, calls, chain, block, }),
+    sdk.api.abi.multiCall({ abi: alpacaFinanceAbi.totalToken, calls, chain, block, }),
+    sdk.api.abi.multiCall({ abi: alpacaFinanceAbi.totalSupply, calls, chain, block, }),
+  ])
+
+  token.forEach(({ output, input }, i) => {
+    const origToken = `bsc:${input.target}`
+    const origBalance = balances[origToken]
+    if (!origBalance) {
+      return;
     }
-  }
-  return balances;
+    const totalT = totalToken[i].output
+    const totalS = totalSupply[i].output
+    const balance = BigNumber(origBalance).times(totalT).idiv(totalS).toFixed(0)
+    delete balances[origToken]
+    sdk.util.sumSingleBalance(balances, 'bsc:' + output, balance)
+  })
+
+  return balances
 }
 
 module.exports = {
@@ -136,16 +148,16 @@ module.exports = {
     "TVL are the tokens locked into the index contracts. Pool2 are the tokens locked into DEX LP. Staking are the tokens locked into the active staking contract.",
   ethereum: {
     tvl: ethTvl,
-    pool2: pool2s(
+    pool2: staking(
       ["0x4b21da40dd8d9f4363e69a9a1620d7cdb49123be"],
       ethPool2LPs,
       "ethereum"
     ),
     staking: staking(stakingPool, cookToken),
   },
-  avalanche: {
+  avax: {
     tvl: avaTvl,
-    pool2: pool2s(["0x35be7982bc5e40a8c9af39a639bddce32081102e", "0x188bED1968b795d5c9022F6a0bb5931Ac4c18F00"], avaxPool2LPs, "avax"),
+    pool2: staking(["0x35be7982bc5e40a8c9af39a639bddce32081102e", "0x188bED1968b795d5c9022F6a0bb5931Ac4c18F00"], avaxPool2LPs, "avax"),
     staking: staking(
       "0x35bE7982bC5E40A8C9aF39A639bDDcE32081102e",
       "0x637afeff75ca669ff92e4570b14d6399a658902f",
@@ -154,7 +166,7 @@ module.exports = {
     ),
   },
   bsc: {
-    pool2: pool2s(
+    pool2: staking(
       ["0x47b517061841e6bFaaeB6336C939724F47e5E263"],
       bscPool2LPs,
       "bsc"
@@ -162,9 +174,9 @@ module.exports = {
     staking: staking(
       "0x1Abeaa9D633162586a4c80389160c33327C9Aff5",
       "0x965b0df5bda0e7a0649324d78f03d5f7f2de086a",
-      "bsc",
-      //"bsc:0x965b0df5bda0e7a0649324d78f03d5f7f2de086a"
+      "bsc"
     ),
+    tvl: bscTvl,
   },
   heco: {
     staking: staking(stakingContractHeco, COOK_heco, "heco"),

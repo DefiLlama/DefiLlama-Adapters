@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
-const _ = require('underscore');
+
 
 const utils = require('./helper/utils');
 const { unwrapUniswapLPs } = require('./helper/unwrapLPs');
@@ -30,8 +30,8 @@ const tvl = (url, chain) => async (timestamp, blockETH, chainBlocks) => {
 
   // Prepare multiCall structure
   const calls = []
-    _.each(tokens, (token) => {
-      _.each(contracts, (contract) => {
+    tokens.forEach((token) => {
+      contracts.forEach((contract) => {
         calls.push({
           target: token,
           params: contract
@@ -47,7 +47,7 @@ const tvl = (url, chain) => async (timestamp, blockETH, chainBlocks) => {
   });
 
   // Sum all balances
-  _.each(balanceOfResults.output, (balanceOf) => {
+  balanceOfResults.output.forEach((balanceOf) => {
       const address = balanceOf.input.target;
       const balance = balances[address] ? BigNumber(balanceOf.output).plus(BigNumber(balances[address])).toFixed().toString(): balanceOf.output;
 
@@ -112,10 +112,4 @@ module.exports = {
   [CHAINS.ARBITRUM]: {
     tvl: arbitrumTvl
   },
-  tvl: sdk.util.sumChainTvls([
-    ethTvl,
-    polygonTvl,
-    bscTvl,
-    arbitrumTvl
-  ])
 };

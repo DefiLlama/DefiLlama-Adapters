@@ -1,33 +1,6 @@
 {
-  "balanceOf": {
-    "constant": true,
-    "inputs": [
-      { "internalType": "address", "name": "account", "type": "address" }
-    ],
-    "payable": false,
-    "name": "balanceOf",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "earned": {
-    "inputs": [
-      { "internalType": "address", "name": "account", "type": "address" }
-    ],
-    "name": "earned",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "DPXtokensEarned",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "RDPXtokensEarned",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
+  "currentEpoch": "uint256:currentEpoch",
+  "totalEpochDeposits": "function totalEpochDeposits(uint256) view returns (uint256)",
+  "getLpPrice": "uint256:getLpPrice",
+  "vbnbToBnb": "function vbnbToBnb(uint256 vbnbAmount) view returns (uint256)"
 }

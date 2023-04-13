@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const { getBlock } = require('./helper/getBlock');
 const { transformOptimismAddress } = require('./helper/portedTokens');
 
 const WBTC = "0x68f180fcce6836688e9084f035309e29bf0a2095";
@@ -48,31 +47,29 @@ async function findBalances(contracts, block) {
     
     for (let i = 0; i < contracts.length; i++) {
         if (contracts[i].token == bitBTC) {
-            await sdk.util.sumSingleBalance(
+            sdk.util.sumSingleBalance(
                 balances, 
                 transform(WBTC), 
                 balanceOfs[i].output / 10 ** 16
             );
         } else {
-            await sdk.util.sumSingleBalance(
+            sdk.util.sumSingleBalance(
                 balances, 
                 transform(contracts[i].token), 
                 balanceOfs[i].output
             );
-        };
-    };
+        }
+    }
     return balances;
-};
+}
 
 async function tvl(timestamp, block, chainBlocks) {
-    block = await getBlock(timestamp, 'optimism', chainBlocks);
-    return await findBalances(tvlContracts, block);
-};
+    return await findBalances(tvlContracts, chainBlocks.optimism);
+}
 
 async function staking(timestamp, block, chainBlocks) {
-    block = await getBlock(timestamp, 'optimism', chainBlocks);
-    return await findBalances(stakingContracts, block);
-};
+    return await findBalances(stakingContracts, chainBlocks.optimism);
+}
 
 module.exports = {
     optimism: {

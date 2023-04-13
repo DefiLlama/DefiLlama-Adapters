@@ -1,0 +1,6 @@
+{
+  "markdown": "function markdown(address _pair) view returns (uint256)",
+  "valuation": "function valuation(address _pair, uint256 amount_) view returns (uint256 _value)",
+  "getCurrentPool": "function getCurrentPool() view returns (uint256, uint256)",
+  "circulatingSupply": "uint256:circulatingSupply"
+}

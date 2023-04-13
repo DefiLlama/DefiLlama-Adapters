@@ -31,7 +31,7 @@ const tokens_aurora = [
   "0xC42C30aC6Cc15faC9bD938618BcaA1a1FaE8501d",
 ];
 
-async function ethTvl() {
+async function ethTvl(timestamp, block) {
   const balances = {};
 
   for (let i = 0; i < tokens.length; i++) {
@@ -45,6 +45,7 @@ async function ethTvl() {
   const ethBal = (
     await sdk.api.eth.getBalance({
       target: contractStakingETH,
+      block
     })
   ).output;
 
@@ -53,7 +54,7 @@ async function ethTvl() {
   return balances;
 }
 
-async function auroraTvl(chainBlocks) {
+async function auroraTvl(timestamp, block, chainBlocks) {
   const balances = {};
 
   for (let i = 0; i < tokens_aurora.length; i++) {

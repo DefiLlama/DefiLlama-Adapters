@@ -1,8 +1,7 @@
 const sdk = require("@defillama/sdk");
-const { default: BigNumber } = require("bignumber.js");
-const erc20 = require("../helper/abis/erc20.json");
-const { sumTokensAndLPsSharedOwners, sumTokens, unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const abi = require('./abi.json')
+const { blockQuery } = require("../helper/http");
+const env= require("../helper/env");
+const BigNumber = require("bignumber.js");
 
 const OlympusStakings = [
   // Old Staking Contract
@@ -13,23 +12,33 @@ const OlympusStakings = [
 
 const OHM = "0x383518188c0c6d7730d91b2c03a03c837814a899";
 
-const treasuryAddresses = [
-  // V1
-  "0x886CE997aa9ee4F8c2282E182aB72A705762399D",
-  // V2
-  "0x31F8Cc382c9898b273eff4e0b7626a6987C846E8",
-  // V3
-  "0x9A315BdF513367C0377FB36545857d12e85813Ef",
-];
-
-const DAI = "0x6b175474e89094c44da98b954eedeac495271d0f";
-const OHM_DAI_SLP = "0x34d7d7aaf50ad4944b70b320acb24c95fa2def7c";
-const FRAX = "0x853d955acef822db058eb8505911ed77f175b99e";
-const OHM_FRAX_UNIV2 = "0x2dce0dda1c2f98e0f171de8333c3c6fe1bbf4877";
-const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-const LUSD = "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0"
-const lusd_lp = "0xfdf12d1f85b5082877a6e070524f50f6c84faa6b"
-const OHM_ETH_SLP="0xfffae4a0f4ac251f4705717cd24cadccc9f33e06"
+/** Map any staked assets without price feeds to those with price feeds.
+ * All balances are 1: 1 to their unstaked counterpart that has the price feed.
+ **/
+const addressMap = {
+  "0xb23dfc0c4502a271976f1ee65321c51be2529640":
+    "0x76fcf0e8c7ff37a47a799fa2cd4c13cde0d981c9", //aura50OHM-50DAI -> 50OHM-50DAI
+  "0xc8418af6358ffdda74e09ca9cc3fe03ca6adc5b0":
+    "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0", // veFXS -> FXS
+  "0x3fa73f1e5d8a792c80f426fc8f84fbf7ce9bbcac":
+    "0xc0c293ce456ff0ed870add98a0828dd4d2903dbf", //vlAURA -> AURA
+  "0x72a19342e8f1838460ebfccef09f6585e32db86e":
+    "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b", //vlCVX -> CVX
+  "0xa02d8861fbfd0ba3d8ebafa447fe7680a3fa9a93":
+    "0xd1ec5e215e8148d76f4460e4097fd3d5ae0a3558", //aura50OHM-50WETH -> 50OHM-50WETH
+  "0x0ef97ef0e20f84e82ec2d79cbd9eda923c3daf09":
+    "0xd4f79ca0ac83192693bce4699d0c10c66aa6cf0f", //auraOHM-wstETH -> OHM-wstETH
+  "0x81b0dcda53482a2ea9eb496342dc787643323e95":
+    "0x5271045f7b73c17825a7a7aee6917ee46b0b7520", //stkcvxOHMFRAXBP-f-frax -> OHMFRAXBP-f
+  "0x8a53ee42fb458d4897e15cc7dea3f75d0f1c3475":
+    "0x3175df0976dfa876431c2e9ee6bc45b65d3473cc", //stkcvxcrvFRAX-frax -> crvFRAX-frax
+  "0xb0c22d8d350c67420f06f48936654f567c73e8c8":
+    "0x4e78011ce80ee02d2c3e649fb657e45898257815", //sKLIMA -> KLIMA
+  "0x742b70151cd3bc7ab598aaff1d54b90c3ebc6027":
+    "0xc55126051B22eBb829D00368f4B12Bde432de5Da", //rlBTRFLY -> BTRFLY V2
+  "0xc0d4ceb216b3ba9c3701b291766fdcba977cec3a":
+    "0xc55126051B22eBb829D00368f4B12Bde432de5Da", //BTRFLY -> BTRFLYV2
+};
 
 /*** Staking of native token (OHM) TVL Portion ***/
 const staking = async (timestamp, ethBlock, chainBlocks) => {
@@ -37,7 +46,7 @@ const staking = async (timestamp, ethBlock, chainBlocks) => {
 
   for (const stakings of OlympusStakings) {
     const stakingBalance = await sdk.api.abi.call({
-      abi: erc20.balanceOf,
+      abi: "erc20:balanceOf",
       target: OHM,
       params: stakings,
       block: ethBlock,
@@ -49,66 +58,141 @@ const staking = async (timestamp, ethBlock, chainBlocks) => {
   return balances;
 };
 
-const onsenAllocator = '0x0316508a1b5abf1CAe42912Dc2C8B9774b682fFC'
-const sushiMasterchef = "0xc2EdaD668740f1aA35E4D8f227fB8E17dcA888Cd"
-const convexAllocator = "0x408a9A09d97103022F53300A3A14Ca6c3FF867E8"
+const protocolQuery = (block) => `
+  query {
+    tokenRecords(orderDirection: desc, orderBy: block, where: {block: ${block}}) {
+      block
+      timestamp
+      category
+      tokenAddress
+      balance
+    }
+  }
+`;
 
-/*** Bonds TVL Portion (Treasury) ***
- * Treasury TVL consists of DAI, FRAX and WETH balances + Sushi SLP and UNI-V2 balances
+const getLatestBlockIndexed = `
+query {
+  lastBlock: tokenRecords(first: 1, orderBy: block, orderDirection: desc) {
+    block
+    timestamp
+  }
+}`;
+
+const subgraphUrls = {
+  ethereum: `https://gateway.thegraph.com/api/${env.OLYMPUS_GRAPH_API_KEY}/subgraphs/id/DTcDcUSBRJjz9NeoK5VbXCVzYbRTyuBwdPUqMi8x32pY`,
+  arbitrum:
+    "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-arbitrum",
+  fantom:
+    "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-fantom",
+  polygon:
+    "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-polygon",
+};
+
+//Subgraph returns balances in tokenAddress / allocator pairs. Need to return based on balance.
+function sumBalancesByTokenAddress(arr) {
+  return arr.reduce((acc, curr) => {
+    const found = acc.find((item) => item.tokenAddress === curr.tokenAddress);
+    if (found) {
+      found.balance = +found.balance + +curr.balance;
+    } else {
+      const newItem = {
+        tokenAddress: curr.tokenAddress,
+        balance: curr.balance,
+        category: curr.category,
+      };
+      acc.push(newItem);
+    }
+    return acc;
+  }, []);
+}
+
+/*** Query Subgraphs for latest Treasury Allocations  ***
+ * #1. Query tokenRecords for latestBlock indexed in subgraph.
+ *     This allows us to filter protocol query to a list of results only for the latest block indexed
+ * #2. Call tokenRecords with block num from prev query
+ * #3. Sum values returned
  ***/
-async function ethTvl(timestamp, block) {
-  const balances = {};
-
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [
-      [DAI, false],
-      [FRAX, false],
-      [WETH, false],
-      [OHM_DAI_SLP, true],
-      [OHM_FRAX_UNIV2, true],
-      [LUSD, false],
-      [lusd_lp, true],
-      [OHM_ETH_SLP, true],
-    ],
-    treasuryAddresses,
-    block
+async function tvl(timestamp, block, _, { api }, poolsOnly = false) {
+  const indexedBlockForEndpoint = await blockQuery(
+    subgraphUrls[api.chain],
+    getLatestBlockIndexed,
+    { api }
   );
-  await sumTokens(balances, [
-    ["0x028171bca77440897b824ca71d1c56cac55b68a3", "0x0e1177e47151be72e5992e0975000e73ab5fd9d4"]
-  ], block)
-  const fraxAllocated = await sdk.api.abi.call({
-    target: convexAllocator,
-    abi: abi.totalValueDeployed,
-    block
-  })
-  sdk.util.sumSingleBalance(balances, FRAX, BigNumber(fraxAllocated.output).times(1e9).toFixed(0))
-  const onsenLps = await sdk.api.abi.multiCall({
-    calls: [185, 323].map(onsenId=>({
-      target: sushiMasterchef,
-      params: [onsenId, onsenAllocator]
-    })),
-    block,
-    abi: abi.userInfo,
-  })
-  await unwrapUniswapLPs(balances, [{
-    balance: onsenLps.output[0].output.amount,
-    token: OHM_DAI_SLP
-  },
-  {
-    balance: onsenLps.output[1].output.amount,
-    token: lusd_lp
-  }], block)
+  const blockNum = indexedBlockForEndpoint.lastBlock[0].block;
+  const { tokenRecords } = await blockQuery(
+    subgraphUrls[api.chain],
+    protocolQuery(blockNum),
+    { api }
+  );
 
-  return balances;
+  const aDay = 24 * 3600;
+  const now = Date.now() / 1e3;
+  if (now - blockNum[0].timestamp > 3 * aDay) {
+    throw new Error("outdated");
+  }
+  const filteredTokenRecords = poolsOnly
+    ? tokenRecords.filter((t) => t.category === "Protocol-Owned Liquidity")
+    : tokenRecords;
+
+  /**
+   * iterates over filtered list from subgraph and returns any addresses
+   * that need to be normalized for pricing .
+   * See addressMap above
+   **/
+  const normalizedFilteredTokenRecords = filteredTokenRecords.map((token) => {
+    const normalizedAddress = addressMap[token.tokenAddress]
+      ? addressMap[token.tokenAddress]
+      : token.tokenAddress;
+    return { ...token, tokenAddress: normalizedAddress };
+  });
+
+  const tokensToBalances = sumBalancesByTokenAddress(
+    normalizedFilteredTokenRecords
+  );
+  const balances = await Promise.all(
+    tokensToBalances.map(async (token, index) => {
+      const decimals = await sdk.api.abi.call({
+        abi: "erc20:decimals",
+        target: token.tokenAddress,
+        chain: api.chain,
+      });
+      return [
+        `${api.chain}:${token.tokenAddress}`,
+        Number(
+          BigNumber(token.balance)
+            .times(10 ** decimals.output)
+            .toFixed(0)
+        ),
+      ];
+    })
+  );
+  return Object.fromEntries(balances);
+}
+
+async function pool2(timestamp, block, _, { api }) {
+  return tvl(timestamp, block, _, { api }, true);
 }
 
 module.exports = {
   start: 1616569200, // March 24th, 2021
-  ethereum: {
-    tvl: ethTvl,
-    staking
-  },
+  timetravel: false,
   methodology:
-    "Counts DAI, DAI SLP (OHM-DAI), FRAX, FRAX ULP (OHM-FRAX), WETH on the treasury",
+    "TVL is the sum of the value of all assets held by the treasury (excluding pTokens). Please visit https://app.olympusdao.finance/#/dashboard for more info.",
+  ethereum: {
+    staking,
+    tvl,
+    // pool2,
+  },
+  arbitrum: {
+    tvl,
+    // pool2,
+  },
+  polygon: {
+    tvl,
+    // pool2,
+  },
+  fantom: {
+    tvl,
+    // pool2,
+  },
 };

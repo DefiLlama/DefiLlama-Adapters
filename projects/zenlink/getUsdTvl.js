@@ -1,10 +1,62 @@
 const sdk = require('@defillama/sdk');
-const token0 = require('./abis/token0.json');
-const token1 = require('./abis/token1.json');
-const getReserves = require('./abis/getReserves.json');
+const token0 = "address:token0";
+const token1 = "address:token1";
+const getReserves ='function getReserves() view returns (uint112 _reserve0, uint112 _reserve1)';
 const factoryAbi = require('./abis/factory.json');
+const stableSwapAbi = require('./abis/StableSwap.json');
 
-const { getBlock } = require('../helper/getBlock');
+
+async function getStableSwapPool(
+    chain, 
+    block,
+    address = [],
+    stablePoolTokenMap
+    ) {
+    const contractAddress = address;
+    const [tokensOutput, balancesOutput] = await Promise.all([
+        sdk.api.abi
+            .multiCall({
+                abi: stableSwapAbi.getTokens,
+                chain,
+                calls: contractAddress.map((contract) => ({
+                    target: contract,
+                })),
+                block,
+            })
+            .then(({ output }) => output),
+        sdk.api.abi
+            .multiCall({
+                abi: stableSwapAbi.getTokenBalances,
+                chain,
+                calls: contractAddress.map((contract) => ({
+                    target: contract,
+                })),
+            })
+            .then(({ output }) => output)
+    ]);
+
+    const tokensList = tokensOutput.map((item) => item.output);
+    const balancesList = balancesOutput.map((item) => item.output);
+
+    const tokenAmountArray = tokensList.flatMap((item, index) => {
+        const tokens = Object.values(item);
+        const balances = Object.values(balancesList[index]);
+
+        return tokens.map((r, i) => {
+            let token = r.toLowerCase();
+            if(stablePoolTokenMap[token]) {
+                token = stablePoolTokenMap[token]
+            }
+    
+            const amount = balances[i];
+            return {
+                token,
+                amount,
+            }
+        });
+    });
+    return tokenAmountArray;
+}
 
 async function requery(results, chain, block, abi) {
     if (results.some(r => !r.success)) {
@@ -43,10 +95,11 @@ function calculateMoonriverTvl (
     FACTORY,
     chain,
     tokenChainMap = {},
-    allowUndefinedBlock = true
+    allowUndefinedBlock = true,
+    stableSwapContractAddress = []
 ) {
     return async (timestamp, ethBlock, chainBlocks) => {
-        const block = await getBlock(timestamp, chain, chainBlocks, allowUndefinedBlock)
+        const block = chainBlocks[chain]
 
         let pairAddresses;
         const pairLength = (await sdk.api.abi.call({
@@ -148,6 +201,12 @@ function calculateMoonriverTvl (
             sum(balances, token1ChainAddress, reserveAmounts[1])
         }
 
+        const result = await getStableSwapPool(chain, block, stableSwapContractAddress);
+
+        result.map((item) => {
+            sum(balances, `${chain}:${item.token}`, Number(item.amount))
+        })
+
         return balances;
     }
 }
@@ -159,12 +218,14 @@ function calculateUsdTvl(
     whitelistRaw,
     allowUndefinedBlock = true,
     coreAssetName,
-    decimals = 18
+    decimals = 18,
+    stableSwapContractAddress = [],
+    stablePoolTokenMap = {},
 ) {
     const whitelist = whitelistRaw.map(t => t.toLowerCase())
     const coreAsset = coreAssetRaw.toLowerCase()
     return async (timestamp, ethBlock, chainBlocks) => {
-        const block = await getBlock(timestamp, chain, chainBlocks, allowUndefinedBlock)
+        const block = chainBlocks[chain]
 
         let pairAddresses;
         const pairLength = (await sdk.api.abi.call({
@@ -276,6 +337,12 @@ function calculateUsdTvl(
                 }
             }
         }
+
+        const result = await getStableSwapPool(chain, block, stableSwapContractAddress, stablePoolTokenMap);
+
+        result.map((item) => {
+            sum(balances, item.token, Number(item.amount))
+        })
 
         Object.entries(balances).forEach(([address, amount]) => {
             const price = prices[address];

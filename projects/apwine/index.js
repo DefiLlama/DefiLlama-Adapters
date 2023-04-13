@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk")
 const abi = require("./abi.json")
-const {sumTokens, unwrapCrv} = require("../helper/unwrapLPs.js")
+const {sumTokens} = require("../helper/unwrapLPs.js")
 const {staking} = require("../helper/staking.js")
 const {pool2s} = require("../helper/pool2.js")
 
@@ -77,7 +77,7 @@ const tvl_from_registry = (chain) => {
     
     // ------------------------------
     // B. Also get AMM pools balances (get pools and underlyings balances)
-    const {output: ammPools} = await sdk.api.abi.multiCall({
+    const ammPools = (await sdk.api.abi.multiCall({
       abi: abi['ammregistry_getFutureAMMPool'],
       calls: futureVaults.map((vault) => ({
         target: AMMregistry,
@@ -85,7 +85,7 @@ const tvl_from_registry = (chain) => {
       })),
       block,
       chain,
-    })
+    })).output.filter(v=>v.output !== "0x0000000000000000000000000000000000000000")
     const {output: underlyingOfIBTAddresses} = await sdk.api.abi.multiCall({
       abi: abi['ammPool_getUnderlyingOfIBTAddress'],
       calls: ammPools.map((vault) => ({
@@ -99,41 +99,7 @@ const tvl_from_registry = (chain) => {
       .concat(underlyingOfIBTAddresses.map((t, i) => [t.output, ammPools[i].output]))
     // Use FYTAddresses in the concat to get balances of FYT
     // Use underlyingOfIBTAddresses in concat to mimic a twice
-    await sumTokens(balances, tokensAndOwnersAMM, block, chain, transform[chain]) 
-
-    // const {output: FYTAddresses} = await sdk.api.abi.multiCall({
-    //   abi: abi['ammPool_getFYTAddress'],
-    //   calls: ammPools.map((vault) => ({
-    //     target: vault.output,
-    //   })),
-    //   block,
-    //   chain,
-    // })
-    // let transform_to_underlying = (addr) => {
-    //   const idx = FYTAddresses.map(c => c.output).indexOf(addr)
-    //   if (idx >= 0) {
-    //     return transform[chain](underlyingOfIBTAddresses[idx].output)
-    //   } 
-    //   return transform[chain](addr)
-    // }
-    // transform_to_underlying = transform[chain]
-
-    // ------------------------
-    // Handle wrapped pools in balances - like curvePools, etc
-    for (let i = 0; i < 2; i++) { // since crvTriCrypto contains am3crv, unwrap twice
-      for (const token of Object.keys(balances)) {
-        if (Object.keys(tokensToUnwrap).includes(token) && balances[token] > 0) {
-          if (tokensToUnwrap[token].type === 'crv') {
-            await unwrapCrv(balances, tokensToUnwrap[token].unwrapTo, balances[token], block, chain, transform[chain]) 
-          }
-          balances[token] = 0 // Once unwrapped, set balance of wrapped curve token to zero
-          // console.log('unwrapping', token, balances)
-        }
-      }
-    }
-
-    console.log(`balances for chain ${chain}`, balances) 
-    return balances
+    return sumTokens(balances, tokensAndOwnersAMM, block, chain, transform[chain]) 
   }
 }
 
@@ -145,7 +111,7 @@ module.exports = {
   },
   polygon: {
     tvl: tvl_from_registry('polygon'), 
-    pool2: pool2s([APW_WETH_cometh_staking, APW_MUST_cometh_staking], [APW_WETH_cometh, APW_MUST_cometh], "polygon", id=>`polygon:${id}`)
+    pool2: pool2s([APW_WETH_cometh_staking, APW_MUST_cometh_staking], [APW_WETH_cometh, APW_MUST_cometh], "polygon")
   },
   methodology: `Use the registry to retrieve futureVaults, and get for each vault the IBT which is the token that this vault holds - the user locked collateral`
 }

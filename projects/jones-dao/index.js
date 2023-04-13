@@ -1,64 +1,45 @@
-const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
 const { pool2s } = require("../helper/pool2");
-const { staking } = require("../helper/staking");
-
-const jones = "0x10393c20975cf177a3513071bc110f7962cd67da";
-const jonesStaking = "0xf1a26cf6309a59794da29b5b2e6fabd3070d470f";
-
-const vaults = [
-    "0x50744d5e6D138ACA596F7D36E659d097BE2d561C", // ETH
-    "0xeefD6ba4F562330a3ba35BAdcE2210A2e6dd2281" // gOHM
-]
+const { stakings } = require("../helper/staking");
+const addresses = require("./addresses.json");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const jTokenToToken = {
-    "0x662d0f9ff837a51cf89a1fe7e0882a906dac08a3": "arbitrum:0x82af49447d8a07e3bd95bd0d56f35241523fbab1", // jETH
-    "0x5375616bb6c52a90439ff96882a986d8fcdce421": "arbitrum:0x8d9ba570d6cb60c7e3e0f31343efe75ab8e65fb1" // jgOHM
+  "0x662d0f9ff837a51cf89a1fe7e0882a906dac08a3": "arbitrum:0x82af49447d8a07e3bd95bd0d56f35241523fbab1", // jETH
+  "0x5375616bb6c52a90439ff96882a986d8fcdce421": "arbitrum:0x8d9ba570d6cb60c7e3e0f31343efe75ab8e65fb1", // jgOHM,
+  "0xf018865b26ffab9cd1735dcca549d95b0cb9ea19": "arbitrum:0x6c2c06790b3e3e3c38e12ee22f8183b37a13ee55", // jDPX
+  "0x1f6fa7a58701b3773b08a1a16d06b656b0eccb23": "arbitrum:0x32eb7902d4134bf98a28b963d26de779af92a212" // jrdpx
 }
 
-const lpStaking = [
-    "0x360a766F30F0Ba57d2865eFb32502FB800b14dD3", // JONES-ETH LP 
-    "0x13f6A63867046107780Bc3fEBdeE90E7AfCdfd99", // JONES-USDC LP 
-    "0xBAc58e8b57935A0B60D5Cb4cd9F6C21049595F04", // jETH-ETH LP 
-    "0x7eCe38dBE9D61D0d9Bf2D804A87A7d21b5937a56" // jgOHM-gOHM LP
-]
+async function tvl(timestamp, block, chainBlocks, { api }) {
+  let metaVaultsAddresses = [addresses.DpxEthBullVault, addresses.DpxEthBearVault, addresses.RdpxEthBullVault, addresses.RdpxEthBearVault];
 
-const lps = [
-    "0xe8EE01aE5959D3231506FcDeF2d5F3E85987a39c", // JONES-ETH LP
-    "0xa6efc26daa4bb2b9bf5d23a0bc202a2badc2b59e", // JONES-USDC LP
-    "0xdf1a6dd4e5b77d7f2143ed73074be26c806754c5", // jETH-ETH LP
-    "0x292d1587a6bb37e34574c9ad5993f221d8a5616c" // jgOHM-gOHM LP
-]
-
-async function tvl(timestamp, block, chainBlocks) {
-    let balances = {};
-    block = chainBlocks.arbitrum;
-    chain = "arbitrum";
-    const vaultBalances = (await sdk.api.abi.multiCall({
-        calls: vaults.map(p => ({
-            target: p
-        })),
-        abi: abi["snapshotVaultBalance"],
-        block,
-        chain
-    })).output;
-    sdk.util.sumSingleBalance(balances, "arbitrum:0x82af49447d8a07e3bd95bd0d56f35241523fbab1", vaultBalances[0].output);
-    sdk.util.sumSingleBalance(balances, "arbitrum:0x8d9ba570d6cb60c7e3e0f31343efe75ab8e65fb1", vaultBalances[1].output);
-
-    return balances;
+  const [
+    tokens, bals, vAssets, vBals,
+  ] = await Promise.all([
+    api.multiCall({  abi: 'address:depositToken', calls: metaVaultsAddresses}),
+    api.multiCall({  abi: 'uint256:workingBalance', calls: metaVaultsAddresses}),
+    api.multiCall({ abi: 'address:asset', calls: addresses.vaults }),
+    api.multiCall({ abi: 'uint256:totalAssets', calls: addresses.vaults }),
+  ])
+  const toa = []
+  api.addTokens(tokens,bals)
+  api.addTokens(vAssets,vBals)
+  Object.values(addresses.trackers).map(tracker => toa.push([tracker.token, tracker.holder]))
+  toa.push([addresses.glp, addresses.strategy,])
+  return sumTokens2({ api, tokensAndOwners: toa, });
 }
 
 module.exports = {
-    misrepresentedTokens: true,
-    arbitrum: {
-        tvl,
-        pool2: pool2s(lpStaking, lps, "arbitrum", addr=>{
-            addr = addr.toLowerCase();
-            if (jTokenToToken[addr] !== undefined) {
-                return jTokenToToken[addr];
-            }
-            return `arbitrum:${addr}`;
-        }),
-        staking: staking(jonesStaking, jones, "arbitrum")
-    }
+  arbitrum: {
+    tvl,
+    pool2: pool2s(addresses.lpStaking, addresses.lps, "arbitrum", addr => {
+      addr = addr.toLowerCase();
+      if (jTokenToToken[addr] !== undefined) {
+        return jTokenToToken[addr];
+      }
+      return `arbitrum:${addr}`;
+    }),
+    staking: stakings(addresses.jonesStaking, addresses.jones)
+  }
 }
+// node test.js projects/jones-dao/index.js

@@ -1,11 +1,10 @@
-const retry = require('async-retry')
-const axios = require('axios')
+const { get } = require('../helper/http')
 const { toUSDTBalances } = require('../helper/balances');
 
 async function fetchLiquidity() {
-  const claimswapInfo = await retry(async bail => axios.get('https://data-api.claimswap.org/dashboard/v2/allpool'));
+  const claimswapInfo = await get('https://data-api.claimswap.org/dashboard/v2/allpool');
   let totalValue = 0;
-  for (const pool of claimswapInfo.data) {
+  for (const pool of claimswapInfo) {
     totalValue = totalValue + pool.liquidity;
   }
 
@@ -13,8 +12,8 @@ async function fetchLiquidity() {
 }
 
 async function fetchCls() {
-  const claimswapInfo = await retry(async bail => await axios.get('https://data-api.claimswap.org/dashboard/v2/index'));
-  const clsValue = claimswapInfo.data.claPrice * claimswapInfo.data.totalClaStaked;
+  const claimswapInfo = await get('https://data-api.claimswap.org/dashboard/v2/index');
+  const clsValue = claimswapInfo.claPrice * claimswapInfo.totalClaStaked;
   return toUSDTBalances(clsValue.toFixed(2));
 }
 

@@ -8,26 +8,28 @@ const pool2s = [
 // Retrieve Staked Token Values from API
 const endpoint = "https://crucible.alchemist.wtf/api/get-program-staked-usd?network=1"
 
-function get(includePool2){
-return async function() {
-    const rewardPrograms = await utils.fetchURL(endpoint)
-    return Object.entries(rewardPrograms.data).reduce((t, c)=>{
-        let isPool2 = pool2s.some(p=>p.toLowerCase()===c[0].toLowerCase())
-        if(includePool2){
-            isPool2 = !isPool2 
-        }
-        if(isPool2){
-            return t
-        }
-        return t+c[1]
-    }, 0)
-}
+function get(includePool2) {
+    return async function () {
+        const rewardPrograms = await utils.fetchURL(endpoint)
+        const tether = Object.entries(rewardPrograms.data).reduce((t, c) => {
+            let isPool2 = pool2s.some(p => p.toLowerCase() === c[0].toLowerCase())
+            if (includePool2) {
+                isPool2 = !isPool2
+            }
+            if (isPool2) {
+                return t
+            }
+            return t + c[1]
+        }, 0)
+        return { tether }
+    }
 }
 
-module.exports={
+module.exports = {
     methodology: 'Tvl equals the sum of the tokens locked on all rewards programs except their own (aludels). Aludels are counted as pool2',
-    fetch: get(false),
-    pool2:{
-        fetch: get(true)
+    timetravel: false,
+    ethereum: {
+        tvl: get(false),
+        pool2:  get(true),
     }
 }

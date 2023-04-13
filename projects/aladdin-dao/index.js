@@ -1,9 +1,6 @@
 const sdk = require("@defillama/sdk");
-const tokenMasterABI = require('./abis/TokenMaster.json')
-const {unwrapUniswapLPs, unwrapCrv} = require('../helper/unwrapLPs')
 const vaultABI = require('./abis/Vault.json')
 
-// const config = require('./config.json')
 
 const tokenMaster = '0xfF4446E9dF1c8281CE1d42610c3bC0342f93E4d7'
 const aldsETH = '0xB17d98c36d2238Ffcb27bF797cA9967B3Cc9Aa07'
@@ -19,9 +16,9 @@ const slpETHWBTC = '0xceff51756c56ceffca006cd410b03ffc46dd3a58'
 
 const pools = [aldcrvRenWBTC, aldsETH, ald3CRV, aldSLPETHWBTC, unilpALDETH, unilpALDUSDC]
 const aldVaults = [aldcrvRenWBTC, aldsETH, ald3CRV, aldSLPETHWBTC]
-const aldVaultUnderlyingTokens = [crvRenWBTC, SETH, threeCRV, slpETHWBTC];
+const aldVaultUnderlyingTokens = [crvRenWBTC, SETH, threeCRV, ];
 
-async function tvl(timestamp, block) {
+async function tvl(timestamp, block, _, api) {
   let balances = {}
   const lockedTokens = await sdk.api.abi.multiCall({
     abi: 'erc20:balanceOf',
@@ -53,19 +50,12 @@ async function tvl(timestamp, block) {
     } else if (index === 0 || index == 1 || index == 2 ) {
       crvBalances.push(aldUnderlyingTokenBalances[index])
     } else if (index === 3) {
-      lpPositions.push({balance: aldUnderlyingTokenBalances[index], token: aldVaultUnderlyingTokens[index]})
+      lpPositions.push({balance: aldUnderlyingTokenBalances[index], token: slpETHWBTC})
     }
   })
-  await unwrapUniswapLPs(
-    balances,
-    lpPositions,
-    block,
-  );
 
-  await unwrapCrv(balances, aldVaultUnderlyingTokens[0], crvBalances[0]);
-  await unwrapCrv(balances, aldVaultUnderlyingTokens[1], crvBalances[1]);
-  await unwrapCrv(balances, aldVaultUnderlyingTokens[2], crvBalances[2]);
-
+  lpPositions.forEach(({balance, token}) => sdk.util.sumSingleBalance(balances,token,balance, api.chain))
+  aldVaultUnderlyingTokens.forEach((token, i) => sdk.util.sumSingleBalance(balances,token,crvBalances[i], api.chain))
   return balances
 }
 
@@ -75,5 +65,4 @@ module.exports = {
   ethereum:{
     tvl,
   },
-  tvl
 }

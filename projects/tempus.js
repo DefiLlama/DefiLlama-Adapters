@@ -21,6 +21,14 @@ const CHAIN_DATA = {
       {
         address: "0xc58b8DD0075f7ae7B1CF54a56F899D8b25a7712E",
         token: USDC
+      },
+      {
+        address: "0x443297DE16C074fDeE19d2C9eCF40fdE2f5F62C2",
+        token: USDC
+      },
+      {
+        address: "0x7e0fc07280f47bac3D55815954e0f904c86f642E",
+        token: DAI
       }
     ]
   },
@@ -52,12 +60,14 @@ const CHAIN_DATA = {
 }
 
 
-async function tvl(chain, timestamp, block) {
+function tvl(chain) {
+  return async (_, _b, {[chain]: block}) => {
+
   const { stats, pools } = CHAIN_DATA[chain];
   let balances = {};
   const lockedBalances = (
     await sdk.api.abi.multiCall({
-      abi: { "inputs": [ { "internalType": "contract ITempusPool", "name": "pool", "type": "address" } ], "name": "totalValueLockedInBackingTokens", "outputs": [ { "internalType": "uint256", "name": "", "type": "uint256" } ], "stateMutability": "view", "type": "function" },
+      abi: 'function totalValueLockedInBackingTokens(address pool) view returns (uint256)',
       calls: pools.map((p) => ({
         target: stats,
         params: [p.address],
@@ -76,14 +86,15 @@ async function tvl(chain, timestamp, block) {
   }
   
   return balances;
+  }
 }
 
 module.exports = {
   methodology: `All assets that were deposited into our active pools.`,
   ethereum: {
-    tvl: tvl.bind(null, "ethereum"),
+    tvl: tvl("ethereum"),
   },
   fantom: {
-    tvl: tvl.bind(null, "fantom")
+    tvl: tvl("fantom")
   }
 };

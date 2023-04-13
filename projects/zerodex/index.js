@@ -1,43 +1,24 @@
-const { request, gql } = require("graphql-request");
-const sdk = require('@defillama/sdk');
-const { toUSDTBalances } = require('../helper/balances');
-
-const graphUrl = 'https://zero-graph.0.exchange/subgraphs/name/zeroexchange/zerograph'
-const graphQuery = gql`
-query get_tvl($block: Int) {
-  zeroFactory(
-    id: "0x2Ef422F30cdb7c5F1f7267AB5CF567A88974b308",
-    block: { number: $block }
-  ) {
-    totalLiquidityUSD
-  },
-  tokens(where: { symbol: "USDT" }, first:1) {
-    derivedETH
-  }
-}
-`;
-
-async function tvl(timestamp) {
-  const {block} = await sdk.api.util.lookupBlock(timestamp,{
-    chain: 'avax'
-  })
-  const response = await request(
-    graphUrl,
-    graphQuery,
-    {
-      block,
-    }
-  );
-
-  const usdTvl = Number(response.zeroFactory.totalLiquidityUSD)
-
-  return toUSDTBalances(usdTvl)
-}
-
+const { getUniTVL } = require('../helper/unknownTokens');
 module.exports = {
-  misrepresentedTokens: true,
-  avalanche:{
-    tvl,
+    avax: {
+        tvl: getUniTVL( {
+          chain: 'avax',
+          factory: '0x2Ef422F30cdb7c5F1f7267AB5CF567A88974b308',
+          useDefaultCoreAssets: true,
+        })
+    },
+    bsc: {
+        tvl: getUniTVL( {
+          chain: 'bsc',
+          factory: '0x52abdb3536a3a966056e096f2572b2755df26eac',
+          useDefaultCoreAssets: true,
+        })
+    },
+    polygon: {
+      tvl: getUniTVL( {
+        chain: 'polygon',
+        factory: '0x6fd98cf211134081fe02f551d64cf89671d5443b',
+        useDefaultCoreAssets: true,
+      })
   },
-  tvl
-}
+};

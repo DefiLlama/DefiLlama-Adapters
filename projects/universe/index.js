@@ -57,23 +57,6 @@ const USDC_XYZ_SUSHI_LP_TOKEN = {
     decimals: 18,
 };
 
-// Unused but will leave it because they added it to the PR
-function createAbiViewItemFor(name, inputs, outputs) {
-    return {
-        name,
-        type: 'function',
-        stateMutability: 'view',
-        inputs: inputs.map(input => ({
-            name: '',
-            type: input,
-        })),
-        outputs: outputs.map(output => ({
-            name: '',
-            type: output,
-        })),
-    };
-}
-
 async function pool2(_timestamp, block) {
     const balance = await sdk.api.abi.call({
         abi: 'erc20:balanceOf',
@@ -110,11 +93,8 @@ async function tvl(timestamp, block) {
 module.exports = {
     methodology: 'TVL counts tokens that have been deposited to the yield farming vaults. Pool2 TVL counts SushiSwap LP tokens (USDC-XYZ) that have been deposited to the yield farm.',
     ethereum:{
-        tvl
+        tvl,
+        pool2,
     },
-    pool2:{
-        tvl: pool2,
-    },
-    tvl,
     start: 1621939189, // May-25-2021 10:39:49 AM +UTC
 };

@@ -1,5 +1,4 @@
 const { sumTokensAndLPsSharedOwners } = require('./helper/unwrapLPs');
-const { getBlock } = require('./helper/getBlock');
 const { transformPolygonAddress } = require('./helper/portedTokens');
 
 const tokens = [
@@ -18,7 +17,7 @@ const fundedContracts = [
 async function tvl(timestamp, block, chainBlocks) {
     const transform = await transformPolygonAddress();
     const balances = {};
-    block = await getBlock(timestamp, "polygon", chainBlocks);
+    block = chainBlocks.polygon;
 
     await sumTokensAndLPsSharedOwners(
         balances, 
@@ -30,11 +29,11 @@ async function tvl(timestamp, block, chainBlocks) {
         );
 
     return balances;
-};
+}
 async function staking(timestamp, block, chainBlocks) {
     const transform = await transformPolygonAddress();
     const balances = {};
-    block = await getBlock(timestamp, "polygon", chainBlocks);
+    block = chainBlocks.polygon;
 
     await sumTokensAndLPsSharedOwners(
         balances, 
@@ -46,7 +45,7 @@ async function staking(timestamp, block, chainBlocks) {
         );
 
     return balances;
-};
+}
 // node test.js projects/polyroll.js
 module.exports={
     polygon: {

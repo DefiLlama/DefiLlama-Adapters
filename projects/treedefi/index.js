@@ -22,5 +22,4 @@ module.exports = {
   bsc: {
     tvl: bscTvl,
   },
-  tvl: bscTvl,
 };
