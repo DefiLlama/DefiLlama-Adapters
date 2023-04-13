@@ -16,5 +16,6 @@ module.exports = {
   polygon: { tvl },
   avax: { tvl },
   arbitrum: { tvl },
+  optimism: { tvl },
   fantom: { tvl },
 }
