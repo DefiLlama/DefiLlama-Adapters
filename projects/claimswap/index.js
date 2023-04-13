@@ -13,7 +13,7 @@ async function fetchLiquidity() {
 }
 
 async function fetchCls() {
-  const claimswapInfo = await retry(async bail => await axios.get('https://data-api.claimswap.org/dashboard/index'));
+  const claimswapInfo = await retry(async bail => await axios.get('https://data-api.claimswap.org/dashboard/v2/index'));
   const clsValue = claimswapInfo.data.claPrice * claimswapInfo.data.totalClaStaked;
   return toUSDTBalances(clsValue.toFixed(2));
 }
