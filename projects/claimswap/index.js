@@ -3,7 +3,7 @@ const axios = require('axios')
 const { toUSDTBalances } = require('../helper/balances');
 
 async function fetchLiquidity() {
-  const claimswapInfo = await retry(async bail => axios.get('https://data-api.claimswap.org/dashboard/allpool'));
+  const claimswapInfo = await retry(async bail => axios.get('https://data-api.claimswap.org/dashboard/v2/allpool'));
   let totalValue = 0;
   for (const pool of claimswapInfo.data) {
     totalValue = totalValue + pool.liquidity;
