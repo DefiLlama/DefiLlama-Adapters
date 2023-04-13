@@ -15,7 +15,7 @@ const DCA_PORTFOLIO_CONTRACTS = {'avax': [
 async function tvl(_, _1, _2, { api }) {
     const balances = {};
     if (api.chain in INDEX_TOKEN_CONTRACT) {
-        indexComponents = await api.call({
+        var indexComponents = await api.call({
             abi: "address[]:allComponents",
             target: INDEX_TOKEN_CONTRACT[api.chain],
         })
@@ -32,7 +32,7 @@ async function tvl(_, _1, _2, { api }) {
         })
     } 
     if (api.chain in DCA_PORTFOLIO_CONTRACTS) {
-        for (i in DCA_PORTFOLIO_CONTRACTS[api.chain]) {
+        for (var i in DCA_PORTFOLIO_CONTRACTS[api.chain]) {
             await addDCAEquityValuationToBalances(balances, DCA_PORTFOLIO_CONTRACTS[api.chain][i], api)
         }
     }
@@ -44,7 +44,7 @@ async function tvl(_, _1, _2, { api }) {
   }
 
   async function addEquityValuationToBalances(balances, address, api) {
-    usdc_balance = await api.call({
+    var usdc_balance = await api.call({
         target: address,
         abi: "function getEquityValuation(bool startIndex_, bool endIndex_) view returns (uint256)",
         params: [true, false],
@@ -53,7 +53,7 @@ async function tvl(_, _1, _2, { api }) {
   }
 
   async function addDCAEquityValuationToBalances(balances, address, api) {
-    equity = await api.call({
+    var equity = await api.call({
         target: address,
         abi: "function equityValuation() view returns (uint256,uint256,uint256,uint256,address)",
     })
