@@ -268,6 +268,7 @@ const assetList = [
   ["XRP", "BEP20", "0xe2fc31f816a9b94326492132018c3aecc4a93ae1"],
   ["HFT", "ETH", "0xf977814e90da44bfa03b6295a0616a897441acec"],
   ["ENJ", "ETH", "0xf977814e90da44bfa03b6295a0616a897441acec"],
+  /*
   ["LTC", "LTC", "MWGTiJBNEQSfxTCrdC2VKEa55Lck27wr67"],
   ["LTC", "LTC", "MLkNzCps6cXou2DELVfxDuRC4uZGwr397o"],
   ["LTC", "LTC", "MRwsBPhSteTreKQrNE6BXU1U33PMsn8jCS"],
@@ -277,6 +278,7 @@ const assetList = [
   ["LTC", "LTC", "MSeDRiNoH5Afr9b9rNo837hYzpxBXXqMZf"],
   ["LTC", "LTC", "M8T1B2Z97gVdvmfkQcAtYbEepune1tzGua"],
   ["LTC", "LTC", "LZEjckteAtWrugbsy9zU8VHEZ4iUiXo9Nm"],
+  */
   ["MATIC", "MATIC", "0xf977814e90da44bfa03b6295a0616a897441acec"],
   ["USDT", "MATIC", "0xe7804c37c13166ff0b37f5ae0bb07a3aebb6e245"],
   ["BUSD", "MATIC", "0xf977814e90da44bfa03b6295a0616a897441acec"],
