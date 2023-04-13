@@ -53,6 +53,7 @@
   "energyweb",
   "enuls",
   "eos",
+  "equilibrium",
   "era",
   "ergo",
   "ethereum",
@@ -105,6 +106,7 @@
   "loop",
   "lung",
   "map",
+  "meta",
   "meter",
   "metis",
   "milkomeda",
@@ -197,5 +199,6 @@
   "zeniq",
   "zilliqa",
   "zksync",
-  "zyx"
+  "zyx",
+  "filecoin"
 ]
