@@ -7,6 +7,7 @@ const COVALENT_KEY = env.COVALENT_KEY ?? 'ckey_72cd3b74b4a048c9bc671f7c5a6'
 
 const chainIds = {
   'ethereum': 1,
+  'optimism': 10,
   'bsc': 56,
   'polygon': 137,
   'arbitrum': 42161,
