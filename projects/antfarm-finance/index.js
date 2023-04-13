@@ -1,4 +1,5 @@
 const { uniTvlExport } = require("../helper/calculateUniTvl.js");
+const { staking } = require("../helper/staking.js");
 
 module.exports = {
   misrepresentedTokens: true,
@@ -18,6 +19,11 @@ module.exports = {
       undefined,
       undefined,
       { hasStablePools: false, useDefaultCoreAssets: true }
+    ),
+    staking: staking(
+      "0x6142b36B3dD1812993C2ecaa300b962A7Da0A900",
+      "0x518b63Da813D46556FEa041A88b52e3CAa8C16a8",
+      "ethereum"
     ),
   },
   polygon_zkevm: {
