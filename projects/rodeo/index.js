@@ -11,34 +11,6 @@ const pools = [
   },
 ];
 
-const getPoolInfos = async (chain) => {
-  const yieldPools = allPools.map((pool) => {
-    return {...pool};
-  });
-
-  const peekPools = (
-    await sdk.api.abi.multiCall({
-      target: addressInvestorHelper,
-      chain,
-      abi: abi.peekPools,
-      calls: yieldPools.map((pool) => ({
-        params: [[pool.address]],
-      })),
-    })
-  ).output;
-
-  return yieldPools.map((pool, i) => {
-    const values = peekPools[i].output;
-    return {
-      share: values[1][0],
-      supply: values[2][0],
-      borrow: values[3][0],
-      rate: values[4][0],
-      price: values[5][0],
-    }
-  });
-}
-
 const tvl = async () => {
   const { output } = await sdk.api.abi.call({
     chain: "arbitrum",
