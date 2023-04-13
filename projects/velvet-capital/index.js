@@ -1,12 +1,9 @@
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
-const axios = require("axios");
-
-
+const { getConfig } = require('../helper/cache')
 
 async function tvl(_, _b, _cb, { api, }) {
-  const response = await axios.get("https://defivas.xyz/api/portfolio")
-  const indexes = response.data.data;
-  console.log(indexes)
+  const response = await getConfig('velvet-capital', "https://defivas.xyz/api/portfolio")
+  const indexes = response.data;
   const ownerTokens = []
   const [vaults, tokens, libraries] = await Promise.all([
     api.multiCall({ abi: 'address:vault', calls: indexes }),
