@@ -1,13 +1,13 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
+const { utils: { parseUnits }} = require("ethers");
 
-const addressInvestorHelper = "0x6f456005A7CfBF0228Ca98358f60E6AE1d347E18"
-const USDC = "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8"
-const allPools = [
+const investorHelper = "0x6f456005A7CfBF0228Ca98358f60E6AE1d347E18";
+const pools = [
   {
-    asset: USDC,
     address: "0x0032F5E1520a66C6E572e96A11fBF54aea26f9bE",
     slug: "usdc-v1",
+    asset: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
   },
 ];
 
@@ -40,19 +40,21 @@ const getPoolInfos = async (chain) => {
 }
 
 const tvl = async () => {
-  const balances = {}
-  const poolsBalances = await getPoolInfos('arbitrum');
-  const tvl = poolsBalances.reduce((acc, { supply }) => {
-    acc = acc + supply;
-    return acc
-  }, 0);
-  sdk.util.sumSingleBalance(balances, "arbitrum:" + USDC, tvl);
-  return balances;
+  const { output } = await sdk.api.abi.call({
+    chain: "arbitrum",
+    target: investorHelper,
+    abi: abi.peekPools,
+    params: [pools.concat(pools).map((p) => p.address)],
+  });
+  return pools.reduce((balances, pool, i) => {
+    const supply = parseUnits(output[2][i], 0);
+    const borrow = parseUnits(output[3][i], 0);
+    balances["arbitrum:" + pool.asset] = supply.sub(borrow).toString();
+    return balances;
+    }, {});
 }
 
 module.exports = {
-  arbitrum: {
-    tvl
-  },
-  methodology: `The result is calculated by subtracting borrow tvl from supply tvl`
+  arbitrum: { tvl },
+  methodology: `The TVL shown is the result of subtracting the borrow from the supply for each Rodeo lending pool`,
 };
