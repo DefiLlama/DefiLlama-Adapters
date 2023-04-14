@@ -4,7 +4,7 @@ const { getUniqueAddresses } = require('../helper/utils')
 // taken from https://www.binance.com/en/blog/community/our-commitment-to-transparency-2895840147147652626
 const assetList = [
   ["BTC", "BTC", "34xp4vRoCGJym3xR7yCVPFHoCNxv4Twseo"],
-  ["BTC", "BTC", "3LYJfcfHPXYJreMsASk2jkn69LWEYKzexb"],
+  //["BTC", "BTC", "3LYJfcfHPXYJreMsASk2jkn69LWEYKzexb"],
   ["BTC", "BTC", "3M219KR5vEneNb47ewrPfWyb5jQ2DjxRP6"],
   ["BTC", "BTC", "3JJmF63ifcamPLiAmLgG96RA599yNtY3EQ"],
   ["BTC", "BTC", "3HdGoUTbcztBnS7UzY4vSPYhwr424CiWAA"],
@@ -54,7 +54,7 @@ const assetList = [
   ["BUSD", "TRX", "TNXoiAJ3dct8Fjg4M9fkLFh9S2v9TXc32G"],
   ["USDT", "TRX", "TYASr5UV6HEcXatwdFQfmLVUqQQQMUxHLS"],
   ["BUSD", "ETH", "0xf977814e90da44bfa03b6295a0616a897441acec"],
-  ["BUSD", "ETH", "0x47ac0Fb4F2D84898e4D9E7b4DaB3C24507a6D503"],
+ // ["BUSD", "ETH", "0x47ac0Fb4F2D84898e4D9E7b4DaB3C24507a6D503"],
   ["BUSD", "ETH", "0xbe0eb53f46cd790cd13851d5eff43d12404d33e8"],
   ["BUSD", "ETH", "0x5a52e96bacdabb82fd05763e25335261b270efcb"],
   ["BUSD", "ETH", "0xa344c7aDA83113B3B56941F6e85bf2Eb425949f3"],
