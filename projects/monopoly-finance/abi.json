@@ -3,5 +3,8 @@
   "poolLength": "uint256:poolLength",
   "totalSupply": "uint256:totalSupply",
   "getReserves": "function getReserves() view returns (uint256 _reserve0, uint256 _reserve1)",
-  "getAssets": "function getAssets() view returns (address[] assets)"
+  "getAssets": "function getAssets() view returns (address[] assets)",
+  "token0": "address:token0",
+  "token1": "address:token1",
+  "getTotalAmounts": "function getTotalAmounts() view returns (uint256 totalAmount0, uint256 totalAmount1)"
 }
