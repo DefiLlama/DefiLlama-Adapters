@@ -7,6 +7,12 @@ const chain = 'optimism'
 const { getConfig } = require('../helper/cache')
 const transform = t => `${chain}:${t}`
 
+// api
+const BASE_URL = "https://perps-api-experimental.polynomial.fi/snx-perps/tvl";
+const api = axios.create({
+  baseURL: BASE_URL,
+});
+
 // Polynomial contract addresses
 const polynomial_contracts = [
   '0xfa923aa6b4df5bea456df37fa044b37f0fddcdb4', 
@@ -97,28 +103,18 @@ async function tvl (timestamp, ethBlock, {[chain]: block}) {
     transform(collat.output), 
     BigNumber(totalFunds[idx].output).plus(BigNumber(pendingDeposits[idx].output)).plus(BigNumber(premiumCollected[idx].output)).toFixed(0)
   ])
-  
-  // Cnovert token_balances_pairs to object and aggregate similar tokens
-  var balances ={};
+
+  // Add Perp Tvl
+  const perpApi = await api.get();
+
+  // Convert token_balances_pairs to object and aggregate similar tokens
+  var balances ={
+    'optimism:0x8c6f28f2F1A3C87F0f938b96d27520d9751ec8d9': perpApi.data.tvl * 1e18
+  };
   tokens_balances_pairs.forEach( e => {
-    let mainnetTokenAddress = getL1SynthAddressFromL2SynthAddress(e[0]);
-    if( balances.hasOwnProperty(mainnetTokenAddress) ){
-      balances[mainnetTokenAddress] = BigNumber(balances[mainnetTokenAddress]).plus( BigNumber(e[1]) )
-    } else{
-      balances[mainnetTokenAddress] = e[1];
-    }
+    let mainnetTokenAddress = getL1SynthAddressFromL2SynthAddress(e[0])
+    sdk.util.sumSingleBalance(balances, mainnetTokenAddress, e[1])
   })
-  const v2balance = await getV2Balance(block)
-
-  Object.keys(balances).forEach(key => {
-    const v1Amount = balances[key]
-    const v2Amount = v2balance[key]
-
-    if (v2Amount) {
-      balances[key] = BigNumber(v1Amount).plus(v2Amount)
-    }
-  })
-
   return balances
 }
 
@@ -131,7 +127,7 @@ function tvlSumUp(contract) {
     // XXX: The logic needs more discussion
     // .minus(new BigNumber(withdrawal))
 }
-async function getV2Balance(block) {
+async function getV2Balance(_, _1,{ optimism: block }) {
   const ENDPOINT = 'https://earn-api.polynomial.fi/vaults'
   const response = await getConfig('polynomial-vaults', ENDPOINT)
   // Only allow contracts which sets underlying and COLLATERAL
@@ -171,12 +167,7 @@ async function getV2Balance(block) {
   const result = Object.keys(contractTable).reduce((balance, vaultAddress) => {
     const amount = tvlSumUp(contractTable[vaultAddress])
     const key =  `ethereum:${contractL1Synths[vaultAddress]}`
-    const prev = balance[key]
-    if (key in balance) {
-      balance[key] = prev.plus(amount)
-    } else {
-      balance[key] = amount
-    }
+    sdk.util.sumSingleBalance(balance, key, +amount)
 
     return balance
   }, {})
@@ -186,7 +177,7 @@ async function getV2Balance(block) {
 
 module.exports = {
   optimism: {
-    tvl,
+    tvl: sdk.util.sumChainTvls([tvl, getV2Balance]),
   },
   methodology: 'Using contract methods, TVL is pendingDeposits + totalFunds + premiumCollected and the asset is UNDERLYING or COLLATERAL (put vs call) ',
 }
