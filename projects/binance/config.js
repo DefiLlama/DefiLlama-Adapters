@@ -302,13 +302,16 @@ const assetList = [
   ["SOL", "SOL", "2ojv9BAiHUrvsm9gxDe7fJSzbNZSJcxZvf8dqmWGHG8S"],
   ["USDC", "SOL", "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9"],
   ["SOL", "SOL", "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9"],
+  ["DOT", "DOT", "1743nDTMZisPgBCYSAgkUn1kVG7MePc9rvMEjoRNf4ipVkF"],
+  ["DOT", "DOT", "1qnJN7FViy3HZaxZK9tGAA71zxHSBeUweirKqCaox4t8GT7"],
+  ["DOT", "DOT", "16ZL8yLyXv3V3L3z9ofR1ovFLziyXaN1DPq4yffMAZ9czzBD"],
 ]
 
 function getAddresses(chain) {
   return assetList.filter(i => i[1] === chain).map(i => i[2])
 }
 function getOwners(chain) {
-  const isCaseSensitive = ['BTC', 'TRX', 'SOL', 'XRP', 'LTC'].includes(chain)
+  const isCaseSensitive = ['BTC', 'TRX', 'SOL', 'XRP', 'LTC', 'DOT'].includes(chain)
   return getUniqueAddresses(assetList.filter(i => i[1] === chain).map(i => i[2]), isCaseSensitive)
 }
 
@@ -357,4 +360,7 @@ module.exports = {
     owners: getOwners('SOL')
   }
   */
+  polkadot: {
+    owners: getOwners('DOT')
+  },
 }
