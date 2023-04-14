@@ -22,7 +22,7 @@ async function tvl(_, __, _1, { api }) {
   });
 
   const toa = [
-    ...pools.map((pool, i) => [pool, underlyings[i]]),
+    ...pools.map((pool, i) => [underlyings[i], pool]),
     ...collaterals.map((collateral) => [collateral, ROCI_COLLATERAL_MANAGER]),
   ];
 
