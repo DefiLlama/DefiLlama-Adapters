@@ -1,8 +1,9 @@
-const sdk = require('@defillama/sdk');
-const UNIETH_TOKEN= '0xf1376bcef0f78459c0ed0ba5ddce976f1ddf51f4';
+const { nullAddress } = require("../helper/tokenMapping");
+
+const UNIETH_TOKEN = '0xf1376bcef0f78459c0ed0ba5ddce976f1ddf51f4';
 const UNIETH_STAKING = "0x4beFa2aA9c305238AA3E0b5D17eB20C045269E9d";
 
-async function tvl(_, _1, _2, {api}) {
+async function tvl(_, _1, _2, { api }) {
 	const totalSupply = await api.call({
 		abi: 'erc20:totalSupply',
 		target: UNIETH_TOKEN,
@@ -13,15 +14,12 @@ async function tvl(_, _1, _2, {api}) {
 		target: UNIETH_STAKING,
 	});
 
-	const balances = {
-		"ethereum": totalSupply * exchangeRatio / 1e18,
-	}
-	return balances;
+	api.add(nullAddress, totalSupply * exchangeRatio / 1e18)
 }
 
 module.exports = {
-  methodology: 'Counts the total ethers staked with RockX Staking Contract.',
-  ethereum: {
-	tvl,
-  }
+	methodology: 'Counts the total ethers staked with RockX Staking Contract.',
+	ethereum: {
+		tvl,
+	}
 };
