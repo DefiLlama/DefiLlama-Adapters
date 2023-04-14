@@ -1,32 +1,23 @@
-const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const { utils: { parseUnits }} = require("ethers");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const investorHelper = "0x6f456005A7CfBF0228Ca98358f60E6AE1d347E18";
 const pools = [
-  {
-    address: "0x0032F5E1520a66C6E572e96A11fBF54aea26f9bE",
-    slug: "usdc-v1",
-    asset: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
-  },
+  "0x0032F5E1520a66C6E572e96A11fBF54aea26f9bE", // usdc-v1
 ];
 
-const tvl = async () => {
-  const { output } = await sdk.api.abi.call({
-    chain: "arbitrum",
-    target: investorHelper,
-    abi: abi.peekPools,
-    params: [pools.concat(pools).map((p) => p.address)],
-  });
-  return pools.reduce((balances, pool, i) => {
-    const supply = parseUnits(output[2][i], 0);
-    const borrow = parseUnits(output[3][i], 0);
-    balances["arbitrum:" + pool.asset] = supply.sub(borrow).toString();
-    return balances;
-    }, {});
+async function borrowed(_, _1, _2, { api }) {
+  const assets = await api.multiCall({  abi: 'address:asset', calls: pools})
+  const data = await api.call({  abi: abi.peekPools, target: investorHelper, params: [pools]})
+  data[3].forEach((v, i) => api.add(assets[i], v))
+}
+
+async function tvl(_, _b, _cb, { api, }) {
+  const assets = await api.multiCall({  abi: 'address:asset', calls: pools}) 
+  return sumTokens2({ api, tokensAndOwners2: [assets, pools]})
 }
 
 module.exports = {
-  arbitrum: { tvl },
+  arbitrum: { tvl, borrowed, },
   methodology: `The TVL shown is the result of subtracting the borrow from the supply for each Rodeo lending pool`,
 };
