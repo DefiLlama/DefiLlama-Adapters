@@ -355,11 +355,9 @@ module.exports = {
   ripple: {
     owners: getOwners('XRP')
   },
-  /*
   solana: {
     owners: getOwners('SOL')
-  }
-  */
+  },
   polkadot: {
     owners: getOwners('DOT')
   },
