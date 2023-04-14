@@ -8,6 +8,7 @@ const abiStandard = "uint256:standardStrategyDeposits"
 const abiStable = "uint256:stablecoinStrategyDeposits"
 const abiFarm = "uint256:totalDeposits"
 const abiYearn = "uint256:totalAssets"
+const abiV3 = "function getUnderlyingBalances() view returns (uint256, uint256)"
 
 const lpReservesAbi = 'function balances(uint256 index) view returns (uint256)'
 const tokenAbi = 'function coins(uint256 index) view returns (address)'
@@ -120,6 +121,24 @@ const yearnHives = [
   }
 ]
 
+const pcsV3 = [
+  {
+    hive: "0x25223015ee4dbaf9525ddd43797cae1dcd83f6b5",
+    token0: "0x55d398326f99059ff775485246999027b3197955",
+    token1: "0xe9e7cea3dedca5984780bafc599bd69add087d56"
+  },
+  {
+    hive: "0x9eab3bf245da9b6d8705b1a906ee228382c38f93",
+    token0: "0x55d398326f99059ff775485246999027b3197955",
+    token1: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d"
+  },
+  {
+    hive: "0x76ab668d93135bcd64df8e4a7ab9dd05fac4cdbf",
+    token0: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+    token1: "0xe9e7cea3dedca5984780bafc599bd69add087d56"
+  }
+]
+
 async function tvl(timestamp, block, chainBlocks, { api }) {
   const balances = api.getBalances();
 
@@ -132,7 +151,8 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
     stableHiveBalancesStandard,
     stableHiveBalancesStable,
     farmBalances,
-    yearnBalances] = await Promise.all([
+    yearnBalances,
+    pcsV3Balances] = await Promise.all([
       api.multiCall({ calls: pcsHives.map(getHive), abi: abiGrizzly, }),
       api.multiCall({ calls: pcsHives.map(getHive), abi: abiStandard, }),
       api.multiCall({ calls: pcsHives.map(getHive), abi: abiStable, }),
@@ -141,6 +161,7 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
       api.multiCall({ calls: stableHives.map(getHive), abi: abiStable, }),
       api.multiCall({ calls: farms.map(getHive), abi: abiFarm, }),
       api.multiCall({ calls: yearnHives.map(getHive), abi: abiYearn, }),
+      api.multiCall({ calls: pcsV3.map(getHive), abi: abiV3, }),
     ]);
 
   hiveBalancesGrizzly.map((b, i) => {
@@ -164,6 +185,11 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
 
   farmBalances.forEach((b, i) => api.add(farms[i].token, b));
   yearnBalances.forEach((b, i) => api.add(yearnHives[i].token, b));
+
+  pcsV3Balances.forEach((b, i) => {
+    api.add(pcsV3[i].token0, b[0])
+    api.add(pcsV3[i].token1, b[1])
+  });
 
   await unwrapStablePcsLPs(balances, lpPositionsStable, api)
   await unwrapLPsAuto({ ...api, balances, })
