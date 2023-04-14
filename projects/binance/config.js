@@ -268,7 +268,6 @@ const assetList = [
   ["XRP", "BEP20", "0xe2fc31f816a9b94326492132018c3aecc4a93ae1"],
   ["HFT", "ETH", "0xf977814e90da44bfa03b6295a0616a897441acec"],
   ["ENJ", "ETH", "0xf977814e90da44bfa03b6295a0616a897441acec"],
-  /*
   ["LTC", "LTC", "MWGTiJBNEQSfxTCrdC2VKEa55Lck27wr67"],
   ["LTC", "LTC", "MLkNzCps6cXou2DELVfxDuRC4uZGwr397o"],
   ["LTC", "LTC", "MRwsBPhSteTreKQrNE6BXU1U33PMsn8jCS"],
@@ -278,7 +277,6 @@ const assetList = [
   ["LTC", "LTC", "MSeDRiNoH5Afr9b9rNo837hYzpxBXXqMZf"],
   ["LTC", "LTC", "M8T1B2Z97gVdvmfkQcAtYbEepune1tzGua"],
   ["LTC", "LTC", "LZEjckteAtWrugbsy9zU8VHEZ4iUiXo9Nm"],
-  */
   ["MATIC", "MATIC", "0xf977814e90da44bfa03b6295a0616a897441acec"],
   ["USDT", "MATIC", "0xe7804c37c13166ff0b37f5ae0bb07a3aebb6e245"],
   ["BUSD", "MATIC", "0xf977814e90da44bfa03b6295a0616a897441acec"],
@@ -291,13 +289,11 @@ const assetList = [
   ["ETH", "OP", "0xF977814e90dA44bFA03b6295A0616a897441aceC"],
   ["ETH", "OP", "0xacd03d601e5bb1b275bb94076ff46ed9d753435a"],
   ["BUSD", "OP", "0xacd03d601e5bb1b275bb94076ff46ed9d753435a"],
-  /*
   ["XRP", "XRP", "rNU4eAowPuixS5ZCWaRL72UUeKgxcKExpK"],
   ["XRP", "XRP", "rs8ZPbYqgecRcDzQpJYAMhSxSi5htsjnza"],
   ["XRP", "XRP", "rBtttd61FExHC68vsZ8dqmS3DfjFEceA1A"],
   ["XRP", "XRP", "rDAE53VfMvftPB4ogpWGWvzkQxfht6JPxr"],
   ["XRP", "XRP", "rEy8TFcrAPvhpKrwyrscNYyqBGUkE9hKaJ"],
-  */
   ["USDT", "SOL", "5tzFkiKscXHK5ZXCGbXZxdw7gTjjD1mBwuoFbhUvuAi9"],
   ["SOL", "SOL", "3yFwqXBfZY4jBVUafQ1YEXw189y2dN3V5KQq9uzBDy1E"],
   ["USDC", "SOL", "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM"],
@@ -312,7 +308,7 @@ function getAddresses(chain) {
   return assetList.filter(i => i[1] === chain).map(i => i[2])
 }
 function getOwners(chain) {
-  const isCaseSensitive = ['BTC', 'TRX', 'SOL'].includes(chain)
+  const isCaseSensitive = ['BTC', 'TRX', 'SOL', 'XRP', 'LTC'].includes(chain)
   return getUniqueAddresses(assetList.filter(i => i[1] === chain).map(i => i[2]), isCaseSensitive)
 }
 
@@ -333,7 +329,7 @@ module.exports = {
   },
   bep2: {
     geckoId: 'binancecoin',
-    owners: getAddresses('BEP2'), 
+    owners: getAddresses('BEP2'),
   },
   tron: {
     owners: getOwners('TRX'),
@@ -344,23 +340,19 @@ module.exports = {
   arbitrum: {
     owners: getOwners('ARB'),
   },
-  /*
   litecoin: {
     owners: getOwners('LTC')
   },
-  */
   polygon: {
     owners: getOwners('MATIC')
   },
   optimism: {
     owners: getOwners('OP')
   },
-  /*
   ripple: {
     owners: getOwners('XRP')
   },
- solana: {
-  owners: getOwners('SOL')
-}
-*/
+  solana: {
+    owners: getOwners('SOL')
+  }
 }
