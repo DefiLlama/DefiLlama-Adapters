@@ -18,7 +18,7 @@ const blacklistedTokens = [
 
 let connection, provider
 
-const endpoint = env.SOLANA_RPC || "https://api.mainnet-beta.solana.com/
+const endpoint = env.SOLANA_RPC || "https://api.mainnet-beta.solana.com/"
 
 function getConnection() {
   if (!connection) connection = new Connection(endpoint)
