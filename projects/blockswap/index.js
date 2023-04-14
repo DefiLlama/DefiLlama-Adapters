@@ -4,7 +4,7 @@ const { GraphQLClient, gql } = require('graphql-request');
 
 const ethAddress = '0x0000000000000000000000000000000000000000'
 
-const lsd_subgraph = 'https://api.thegraph.com/subgraphs/name/vince0656/lsd-mainnet'
+const lsd_subgraph = 'https://api.thegraph.com/subgraphs/name/stakehouse-dev/lsd'
 
 const stakehouse_subgraph = 'https://api.thegraph.com/subgraphs/name/stakehouse-dev/stakehouse-protocol'
 
@@ -73,9 +73,9 @@ async function tvl(_, _1, _2, { api }) {
 
     results = await lsdGraphQLClient.request(query)
     let totaIdleETHInGiantPools = Number(results.giantSavETHPools[0].availableToStake) + Number(results.giantFeesAndMevPools[0].availableToStake)
-    
+
     await sdk.util.sumSingleBalance(balances, ethAddress, (totalETHStakedAndMinted + totalIdleETHFromValidators + totalIdleETHInPools + totaIdleETHInGiantPools), api.chain)
-    
+
     return balances;
 }
 
