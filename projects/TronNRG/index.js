@@ -4,9 +4,9 @@ const {
 
 async function getCurrentStake() {
 	let postdata = {
-		"contract_address": "414b8a2c619bccb710206b3d11e28dce62d8d72a8b",
-		"owner_address": "4128fb7be6c95a27217e0e0bff42ca50cd9461cc9f",
-		"function_selector": "reservedTRX()",
+		"contract_address": "413346c747c65b7e53d79737dcf106c82cece27a92",
+		"owner_address": "417c97da66c8e3c48bbc6ed925fdd8596e50365925",
+		"function_selector": "readStaked()",
 		"parameter": "",
 		"call_value": 0
 	};
