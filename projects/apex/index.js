@@ -1,28 +1,42 @@
-const {
-  GraphQLClient,
-  gql
-} = require('graphql-request')
+const sdk = require('@defillama/sdk');
 
-async function fetch() {
+const BigNumber = require("bignumber.js");
 
-  var endpoint = 'https://api.apex.exchange/g2/subgraphs/name/apex/exchange'
-  var graphQLClient = new GraphQLClient(endpoint)
 
-  var query = gql `
-    {
-      dexFactories{
-        totalLiquidityUSD
-      }
-    }
-    `;
+const tokens = [
+  '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+];
 
-  const results = await graphQLClient.request(query)
-  return parseFloat(results.dexFactories[0].totalLiquidityUSD)
+const ownerAddress = [
+  '0xA1D5443F2FB80A5A55ac804C948B45ce4C52DCbb'
+]
+
+async function tvl (timestamp, block) {
+  const balances = {};
+
+  let balanceOfCalls = [];
+  ownerAddress.forEach((contract) => {
+    balanceOfCalls = [
+      ...balanceOfCalls,
+      ...tokens.map((token) => ({
+        target: token,
+        params: contract
+      }))
+    ];
+  });
+
+  const balanceOfResult = (await sdk.api.abi.multiCall({
+    block,
+    calls: balanceOfCalls,
+    abi: 'erc20:balanceOf',
+  }));
+
+  sdk.util.sumMultiBalanceOf(balances, balanceOfResult, true)
+
+  return balances;
 }
 
 module.exports = {
-  arbitrum: {
-    fetch
-  },
-  fetch
-}
+  start: 15402867,
+  ethereum: { tvl },
+};
