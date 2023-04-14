@@ -9,32 +9,32 @@ const lsd_subgraph = 'https://api.thegraph.com/subgraphs/name/stakehouse-dev/lsd
 const stakehouse_subgraph = 'https://api.thegraph.com/subgraphs/name/stakehouse-dev/stakehouse-protocol'
 
 async function tvl(_, _1, _2, { api }) {
-    let balances = {};
-    let query
-    let results
+  let balances = {};
+  let query
+  let results
 
-    const lsdGraphQLClient = new GraphQLClient(lsd_subgraph)
-    const stakehouseGraphQLClient = new GraphQLClient(stakehouse_subgraph)
+  const lsdGraphQLClient = new GraphQLClient(lsd_subgraph)
+  const stakehouseGraphQLClient = new GraphQLClient(stakehouse_subgraph)
 
-    // Get the stakehouseAccounts and calculate the total staked ETH (for lifecyclestatus = 2)/minted dETH (for lifecyclestatus = 3)
-    query = gql`{
+  // Get the stakehouseAccounts and calculate the total staked ETH (for lifecyclestatus = 2)/minted dETH (for lifecyclestatus = 3)
+  query = gql`{
         stakehouseAccounts {
           lifecycleStatus
           totalDETHMinted
         }
     }`
-    results = await stakehouseGraphQLClient.request(query)
+  results = await stakehouseGraphQLClient.request(query)
 
-    let totalETHStakedAndMinted = 0
-    for (let i = 0; i < results.stakehouseAccounts.length; i++) {
-        if (results.stakehouseAccounts[i].lifecycleStatus === "2")
-            totalETHStakedAndMinted += (32) * 10 ** 18
-        else if (results.stakehouseAccounts[i].lifecycleStatus === "3")
-            totalETHStakedAndMinted += (Number(results.stakehouseAccounts[i].totalDETHMinted) + (8 * 10 ** 18))
-    }
+  let totalETHStakedAndMinted = 0
+  for (let i = 0; i < results.stakehouseAccounts.length; i++) {
+    if (results.stakehouseAccounts[i].lifecycleStatus === "2")
+      totalETHStakedAndMinted += (32) * 10 ** 18
+    else if (results.stakehouseAccounts[i].lifecycleStatus === "3")
+      totalETHStakedAndMinted += (Number(results.stakehouseAccounts[i].totalDETHMinted) + (8 * 10 ** 18))
+  }
 
-    // Get the LP balances for the idle ETH in Protected Staking and the Fees and MEV Pools
-    query = gql`{
+  // Get the LP balances for the idle ETH in Protected Staking and the Fees and MEV Pools
+  query = gql`{
         lptokens(where:{
           lifecycleStatus: "NOT_STAKED"
         }) {
@@ -42,27 +42,27 @@ async function tvl(_, _1, _2, { api }) {
           minted
         }
     }`
-    results = await lsdGraphQLClient.request(query)
+  results = await lsdGraphQLClient.request(query)
 
-    let totalIdleETHInPools = 0
+  let totalIdleETHInPools = 0
 
-    for (let i = 0; i < results.lptokens.length; i++)
-        totalIdleETHInPools += (Number(results.lptokens[i].minted) - Number(results.lptokens[i].withdrawn))
+  for (let i = 0; i < results.lptokens.length; i++)
+    totalIdleETHInPools += (Number(results.lptokens[i].minted) - Number(results.lptokens[i].withdrawn))
 
-    // Get the idle ETH deposited by the validators still in the "WAITING_FOR_ETH" and "READY_TO_STAKE" status
-    query = gql`{
+  // Get the idle ETH deposited by the validators still in the "WAITING_FOR_ETH" and "READY_TO_STAKE" status
+  query = gql`{
         lsdvalidators(where: {
           status_in: ["WAITING_FOR_ETH", "READY_TO_STAKE"]
         }) {
           id
         }
     }`
-    results = await lsdGraphQLClient.request(query)
+  results = await lsdGraphQLClient.request(query)
 
-    let totalIdleETHFromValidators = (results.lsdvalidators.length) * 4 * 10 ** 18
+  let totalIdleETHFromValidators = (results.lsdvalidators.length) * 4 * 10 ** 18
 
-    // get remaining idle ETH from both giant pools
-    query = gql`{
+  // get remaining idle ETH from both giant pools
+  query = gql`{
         giantSavETHPools {
           availableToStake
         }
@@ -71,16 +71,17 @@ async function tvl(_, _1, _2, { api }) {
         }
     }`
 
-    results = await lsdGraphQLClient.request(query)
-    let totaIdleETHInGiantPools = Number(results.giantSavETHPools[0].availableToStake) + Number(results.giantFeesAndMevPools[0].availableToStake)
+  results = await lsdGraphQLClient.request(query)
+  let totaIdleETHInGiantPools = Number(results.giantSavETHPools[0].availableToStake) + Number(results.giantFeesAndMevPools[0].availableToStake)
 
-    await sdk.util.sumSingleBalance(balances, ethAddress, (totalETHStakedAndMinted + totalIdleETHFromValidators + totalIdleETHInPools + totaIdleETHInGiantPools), api.chain)
+  await sdk.util.sumSingleBalance(balances, ethAddress, (totalETHStakedAndMinted + totalIdleETHFromValidators + totalIdleETHInPools + totaIdleETHInGiantPools), api.chain)
 
-    return balances;
+  return balances;
 }
 
 module.exports = {
-    ethereum: {
-        tvl
-    }
+  timetravel: false,
+  ethereum: {
+    tvl
+  }
 };
