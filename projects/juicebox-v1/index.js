@@ -7,6 +7,8 @@ const Terminal_v1_1 = "0x981c8ECD009E3E84eE1fF99266BF1461a12e5c68";
 const ETH = '0x0000000000000000000000000000000000000000'
 
 module.exports = {
+    timetravel: true,
+    methodology: "Count the value of the Ether in the Juicebox V1 terminals",
     ethereum:
     {
         start: 1626369243, // 2021-06-15 17:14:03 (UTC)
