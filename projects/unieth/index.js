@@ -15,13 +15,13 @@ async function tvl(_, _1, _2, {api}) {
 
 	const balances = {
 		"ethereum": totalSupply * exchangeRatio / 1e18,
-  	}
+	}
 	return balances;
 }
 
 module.exports = {
   methodology: 'Counts the total ethers staked with RockX Staking Contract.',
   ethereum: {
-	  tvl,
+	tvl,
   }
 };
