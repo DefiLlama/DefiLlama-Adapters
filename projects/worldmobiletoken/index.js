@@ -8,6 +8,7 @@ module.exports = {
   methodology: 'Counts amount of WMT locked; converted by the price of ADA sitting in the orderbook.',
   timetravel: false,
   cardano: {
-    tvl: sumTokensExport({ scripts: scriptAddresses, })
+    tvl: () => 0,
+    staking: sumTokensExport({ scripts: scriptAddresses, })
   },
 };
