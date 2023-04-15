@@ -5,8 +5,10 @@ module.exports = {
   misrepresentedTokens: true,
   rsk: {
     tvl: async () => {
+      // tvlProtocol - margin account tvl
+      const { tvlAmm, tvlProtocol, } = await get('https://backend.sovryn.app/tvl')
       return {
-        'tether': (await get('https://backend.sovryn.app/tvl')).tvlAmm.totalUsd
+        'tether': tvlAmm.totalUsd + tvlProtocol.totalUsd
       }
     }
   }
