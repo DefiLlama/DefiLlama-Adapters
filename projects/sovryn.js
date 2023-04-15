@@ -2,7 +2,7 @@ const { get } = require('./helper/http')
 
 async function fetch() {
   const data = await get('https://backend.sovryn.app/tvl')
-  const tvl = data.tvlLending.totalUsd + data.tvlAmm.totalUsd + data.tvlProtocol.totalUsd + data.tvlSubprotocols.totalUsd + data.tvlZero.totalUsd + data.tvlMynt.totalUsd;
+  const tvl = data.tvlLending.totalUsd + data.tvlAmm.totalUsd + data.tvlProtocol.totalUsd + data.tvlSubprotocols.totalUsd
   return tvl;
 }
 
