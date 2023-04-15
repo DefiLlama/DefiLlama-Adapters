@@ -289,6 +289,18 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
   console.table(logObj)
 }
 
+function once(func) {
+  let previousResponse 
+  let called = false
+  function wrapped(...args) {
+    if (called) return previousResponse
+    called = true
+    previousResponse = func(...args)
+    return previousResponse
+  }
+  return wrapped
+}
+
 module.exports = {
   log,
   createIncrementArray,
@@ -308,4 +320,5 @@ module.exports = {
   getSymbols,
   getDecimals,
   getParamCalls,
+  once,
 }
