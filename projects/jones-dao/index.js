@@ -13,13 +13,14 @@ const jTokenToToken = {
 }
 const AURA = '0xC0c293ce456fF0ED870ADd98a0828Dd4d2903DBF'
 const AURALocker = '0x3Fa73f1E5d8A792C80F426fc8F84FBF7Ce9bBCAC'
+const USDC = '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8';
 const jAuraStrategy = '0x7629fc134e5a7feBEf6340438D96881C8D121f2c';
 
 async function tvl(timestamp, block, chainBlocks, { api }) {
   let metaVaultsAddresses = [addresses.DpxEthBullVault, addresses.DpxEthBearVault, addresses.RdpxEthBullVault, addresses.RdpxEthBearVault];
 
   const [
-    tokens, bals, vAssets, vBals,
+    tokens, bals, vAssets, vBals, 
   ] = await Promise.all([
     api.multiCall({  abi: 'address:depositToken', calls: metaVaultsAddresses}),
     api.multiCall({  abi: 'uint256:workingBalance', calls: metaVaultsAddresses}),
@@ -27,10 +28,18 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
     api.multiCall({ abi: 'uint256:totalAssets', calls: addresses.vaults }),
   ])
 
+  const usdcBalance = await sdk.api.erc20.balanceOf({
+      target: USDC,
+      owner: addresses.trackers.uvert.token,
+      chain: 'arbitrum',
+      block: chainBlocks['arbitrum']
+  }).then(result => result.output)
+
   const toa = []
 
   api.addTokens(tokens,bals)
   api.addTokens(vAssets,vBals)
+  api.addToken(USDC, usdcBalance)
   Object.values(addresses.trackers).map(tracker => toa.push([tracker.token, tracker.holder]))
   toa.push([addresses.glp, addresses.strategy,])
 
