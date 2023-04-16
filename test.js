@@ -354,16 +354,16 @@ async function computeTVL(balances, timestamp) {
     })
     .filter((item) => item !== undefined);
 
-  const burl = "https://coins.llama.fi/prices/current/";
   const unknownTokens = {}
   let tokenData = []
   readKeys.forEach(i => unknownTokens[i] = true)
 
   const { errors } = await PromisePool.withConcurrency(5)
-    .for(sliceIntoChunks(readKeys, 40))
+    .for(sliceIntoChunks(readKeys, 200))
     .process(async (keys) => {
-      const coins = keys.join(',');
-      tokenData.push((await axios.get(`${burl}${coins}`)).data.coins)
+      tokenData.push((await axios.post(`https://coins.llama.fi/prices`, {
+        coins: keys
+      })).data.coins)
     })
 
   if (errors && errors.length)
