@@ -1,17 +1,10 @@
 const sdk = require('@defillama/sdk')
-const axios = require('axios')
 const BigNumber = require('bignumber.js')
 const abi = require('./abi.json')
 const abi2 = require('./abi2.json')
 const chain = 'optimism'
 const { getConfig } = require('../helper/cache')
 const transform = t => `${chain}:${t}`
-
-// api
-const BASE_URL = "https://perps-api-experimental.polynomial.fi/snx-perps/tvl";
-const api = axios.create({
-  baseURL: BASE_URL,
-});
 
 // Polynomial contract addresses
 const polynomial_contracts = [
@@ -104,13 +97,8 @@ async function tvl (timestamp, ethBlock, {[chain]: block}) {
     BigNumber(totalFunds[idx].output).plus(BigNumber(pendingDeposits[idx].output)).plus(BigNumber(premiumCollected[idx].output)).toFixed(0)
   ])
 
-  // Add Perp Tvl
-  const perpApi = await api.get();
-
   // Convert token_balances_pairs to object and aggregate similar tokens
-  var balances ={
-    'optimism:0x8c6f28f2F1A3C87F0f938b96d27520d9751ec8d9': perpApi.data.tvl * 1e18
-  };
+  var balances ={};
   tokens_balances_pairs.forEach( e => {
     let mainnetTokenAddress = getL1SynthAddressFromL2SynthAddress(e[0])
     sdk.util.sumSingleBalance(balances, mainnetTokenAddress, e[1])
@@ -179,5 +167,10 @@ module.exports = {
   optimism: {
     tvl: sdk.util.sumChainTvls([tvl, getV2Balance]),
   },
+  hallmarks:[
+    [1648728000, "Earn V1 Launch"],
+    [1655380800, "Earn V1 Shutdown"],
+    [1660132800, "Earn V2 Launch"],
+  ],
   methodology: 'Using contract methods, TVL is pendingDeposits + totalFunds + premiumCollected and the asset is UNDERLYING or COLLATERAL (put vs call) ',
 }
