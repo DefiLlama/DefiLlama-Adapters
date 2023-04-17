@@ -2,7 +2,6 @@
 let abi = require('./abi')
 const { sumTokens2, } = require('../helper/unwrapLPs')
 
-const sdk = require('@defillama/sdk')
 const nullAddress = '0x0000000000000000000000000000000000000000'
 const poolHelpers = {
   'bsc': '0x93C22Fbeff4448F2fb6e432579b0638838Ff9581',
@@ -10,7 +9,8 @@ const poolHelpers = {
   'era': '0x936c9A1B8f88BFDbd5066ad08e5d773BC82EB15F',
 }
 
-const getTvl = async (chain, block) => {
+const tvl = async (_, _1, _2, { api }) => {
+  const chain = api.chain
   const toa = []
   let i = 1
   let foundLastPool = false
@@ -20,15 +20,14 @@ const getTvl = async (chain, block) => {
   do {
     const calls = []
     for (let j = i; j < i + chunkSize; j++)
-      calls.push({ params: j })
+      calls.push(j)
     i += chunkSize
-    const { output: poolMetas } = await sdk.api.abi.multiCall({
+    const poolMetas = await api.multiCall({
       target: poolHelpers[chain],
       abi: abi.poolMetas,
       calls,
-      chain, block,
     })
-    for (const { output } of poolMetas) {
+    for (const output of poolMetas) {
       if (output.tokenX === nullAddress && output.fee === '0') {
         foundLastPool = true
         break;
@@ -37,36 +36,21 @@ const getTvl = async (chain, block) => {
     }
   } while (!foundLastPool)
 
-  const poolCalls = poolMetaData.map(i => ({ params: [i.tokenX, i.tokenY, i.fee] }))
-  const { output: pools } = await sdk.api.abi.multiCall({
+  const poolCalls = poolMetaData.map(i => ({params: [i.tokenX, i.tokenY, i.fee]}))
+  console.log(poolCalls)
+  const pools = await api.multiCall({
     target: poolHelpers[chain],
     abi: abi.pool,
     calls: poolCalls,
-    chain, block,
   })
-  pools.forEach(({ output }, i) => toa.push([poolMetaData[i].tokenX, output], [poolMetaData[i].tokenY, output],))
+  pools.forEach((output, i) => toa.push([poolMetaData[i].tokenX, output], [poolMetaData[i].tokenY, output],))
 
-  return sumTokens2({ tokensAndOwners: toa, chain, block })
+  return sumTokens2({ tokensAndOwners: toa, api })
 }
 
 module.exports = {
-  bsc: {
-    tvl: async (ts, _b, { bsc: block }) => {
-      const chain = 'bsc'
-      return getTvl(chain, block)
-    }
-  },
-  arbitrum: {
-    tvl: async (ts, _b, { arbitrum: block }) => {
-      const chain = 'arbitrum'
-      return getTvl(chain, block)
-    }
-  },
-  era: {
-    tvl: async (ts, _b, { era: block }) => {
-      const chain = 'era'
-      return getTvl(chain, block)
-    }
-  }
+  era: { tvl },
+  arbitrum: { tvl },
+  bsc: { tvl },
   // ownTokens: ['IZI', 'IUSD'],
 }
