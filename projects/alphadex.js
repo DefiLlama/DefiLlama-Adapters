@@ -5,14 +5,12 @@ module.exports = {
   moonriver: {
     tvl: getUniTVL({
       factory: "0xdD9EFCbDf9f422e2fc159eFe77aDD3730d48056d",
-      chain: "moonriver",
       useDefaultCoreAssets: true,
     }),
   },
   kava: {
     tvl: getUniTVL({
       factory: "0x7e666D934F7525dF840d0CfFEaa3d6Bf3b3253a3",
-      chain: "Kava EVM Co-chain",
       useDefaultCoreAssets: true,
     }),
   },
