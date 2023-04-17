@@ -10,7 +10,7 @@ async function tvl(_, _b, _cb, { api, }) {
     eventAbi: 'event NewStableSwapPair (address indexed swapContract, address tokenA, address tokenB, address tokenC, address LP)',
     onlyArgs: true,
   })
-  return sumTokens2({ api, ownerTokens: logs.map(i => ([i.pooledTokens, i.swapAddress]))})
+  return sumTokens2({ api, ownerTokens: logs.map(({ tokenA, tokenB, tokenC, swapContract}) => ([[tokenA, tokenB, tokenC], swapContract]))})
 }
 
 module.exports = {
