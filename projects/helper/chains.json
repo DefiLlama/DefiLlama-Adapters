@@ -53,6 +53,7 @@
   "energyweb",
   "enuls",
   "eos",
+  "eos_evm",
   "equilibrium",
   "era",
   "ergo",
@@ -64,6 +65,7 @@
   "europa",
   "fantom",
   "findora",
+  "filecoin",
   "flare",
   "flow",
   "functionx",
@@ -200,6 +202,5 @@
   "zeniq",
   "zilliqa",
   "zksync",
-  "zyx",
-  "filecoin"
+  "zyx"
 ]

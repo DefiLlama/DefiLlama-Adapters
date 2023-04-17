@@ -1424,5 +1424,12 @@
   "polygon_zkevm": [
     "0x4F9A0e7FD2Bf6067db6994CF12E4495Df938E6e9",
     "0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035"
+  ],
+  "eos_evm": [
+    "0xc00592aA41D32D137dC480d9f6d0Df19b860104F",
+    "0x922d641a426dcffaef11680e5358f34d97d112e1",
+    "0x765277eebeca2e31912c9946eae1021199b39c61",
+    "0xfa9343c3897324496a05fc75abed6bac29f8a40f",
+    "0xefaeee334f0fd1712f9a8cc375f427d9cdd40d73"
   ]
 }
