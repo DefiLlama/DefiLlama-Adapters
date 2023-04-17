@@ -16,7 +16,7 @@ const endPoints = {
   cosmos: "https://cosmoshub-lcd.stakely.io",
   kujira: "https://lcd.kaiyo.kujira.setten.io",
   comdex: "https://rest.comdex.one",
-  terra: "https://columbus-lcd.terra.dev",
+  terra: "https://terraclassic-lcd-server-01.stakely.io",
   terra2: "https://phoenix-lcd.terra.dev",
   umee: "https://umee-api.polkachu.com",
   orai: "https://lcd.orai.io",
