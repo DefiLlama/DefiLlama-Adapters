@@ -1,59 +1,8 @@
-const { request, gql } = require("graphql-request");
-const { getBlock } = require("../helper/http");
-const { sumTokensExport, sumTokens2 } = require("../helper/unwrapLPs");
-
-const graphs = {
-  arbitrum:
-    "https://api.studio.thegraph.com/proxy/43214/core-subgraph-arbitrum-v2/v0.0.3",
-};
-const graph =
-  "https://api.studio.thegraph.com/proxy/43214/core-subgraph-arbitrum-v2/v0.0.3";
-
-const tvl =
-  (chain) =>
-  async (_, _b, { [chain]: block }) => {
-    block = await getBlock(_, chain, { [chain]: block });
-
-    let graphQuery = gql`
-      query gridQuery($block: Int) {
-        grids(block: { number: $block }) {
-          id
-          token0 {
-            id
-          }
-          token1 {
-            id
-          }
-        }
-      }
-    `;
-
-    const res = await request(graphs[chain], graphQuery, {
-      block: block - 5000,
-    });
-
-    const tokensAndOwners = res.grids
-      .map((i) => [
-        [i.token0.id, i.id],
-        [i.token1.id, i.id],
-      ])
-      .flat();
-
-    const balances = {};
-    await sumTokens2({
-      balances,
-      chain: "arbitrum",
-      tokensAndOwners,
-      block,
-      blacklistedTokens: [],
-    });
-
-    return balances;
-  };
+const { sumTokens2 } = require("../helper/unwrapLPs");
+const { getLogs } = require('../helper/cache/getLogs')
 
 module.exports = {
-  methodology: `Counts the tokens locked on order book grid, pulling the data from the 'GridexProtocol/subgraph' subgraph`,
-  timetravel: false,
+  methodology: `Counts the tokens locked on order book grid`,
   hallmarks: [
     [1672531200, "GDX Airdrop #1"],
     [1672531200, "GDX Airdrop #2"],
@@ -62,10 +11,25 @@ module.exports = {
   ],
 };
 
-const chains = ["arbitrum"];
+const config = {
+  arbitrum: { factory: '0x32d1F0Dce675902f89D72251DB4AB1d728efa19c', fromBlock: 64404349, },
+}
 
-chains.forEach((chain) => {
+Object.keys(config).forEach(chain => {
+  const { factory, fromBlock, } = config[chain]
   module.exports[chain] = {
-    tvl: tvl(chain),
-  };
-});
+    tvl: async (_, _b, _cb, { api, }) => {
+      const logs = await getLogs({
+        api,
+        target: factory,
+        topics: ['0xfe23981920c53fdfe858f29ee2c426fb8bf164162938c157cdf27bac46fccab7'],
+        eventAbi: 'event GridCreated (address indexed token0, address indexed token1, int24 indexed resolution, address grid)',
+        onlyArgs: true,
+        fromBlock,
+      })
+
+      const ownerTokens = logs.map(i => [[i.token0, i.token1], i.grid])
+      return sumTokens2({ api, ownerTokens, })
+    }
+  }
+})
