@@ -13,7 +13,7 @@ function tvl(treasury, tokens) {
     );
     const result = {};
     for (let i = 0; i < tokens.length; i++) {
-      result[tokens[i]] = balance[i].output;
+      result[chain + ":" + tokens[i]] = balance[i].output;
     }
     return result;
   };
