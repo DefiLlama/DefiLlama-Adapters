@@ -44,6 +44,7 @@ const blacklisted_LPS = [
   '0xf146190e4d3a2b9abe8e16636118805c628b94fe',
   '0xCC8Fa225D80b9c7D42F96e9570156c65D6cAAa25',
   '0xaee4164c1ee46ed0bbc34790f1a3d1fc87796668',
+  '0x93669cfce302c9971169f8106c850181a217b72b',
 ].map(i => i.toLowerCase())
 
 function isLP(symbol, token, chain) {
