@@ -6,7 +6,7 @@ const { requery } = require("./requery");
 const { getChainTransform, getFixBalances, } = require('./portedTokens');
 const { usdtAddress } = require('./balances');
 const agoraAbi = require("./../agora/abi.json");
-const { sumTokens2 } = require('./unwrapLPs')
+const { sumTokens2, nullAddress } = require('./unwrapLPs')
 // ask comptroller for all markets array
 async function getAllCTokens(comptroller, block, chain, allMarketsAbi = abi['getAllMarkets']) {
   return (await sdk.api.abi.call({
@@ -19,7 +19,7 @@ async function getAllCTokens(comptroller, block, chain, allMarketsAbi = abi['get
 }
 
 // returns [{cToken, underlying}]
-async function getMarkets(comptroller, block, chain, cether, cetheEquivalent, blacklist = [], abis={}) {
+async function getMarkets(comptroller, block, chain, cether, cetheEquivalent, blacklist = [], abis = {}) {
   const marketKey = `${chain}:${comptroller}:${block}`
 
   if (!marketsCache[marketKey]) marketsCache[marketKey] = _getMarkets()
@@ -102,26 +102,27 @@ async function unwrapPuffTokens(balances, lpPositions, block) {
 
 let marketsCache = {}
 
-function getCompoundV2Tvl(comptroller, chain = "ethereum", transformAdress,
+function getCompoundV2Tvl(comptroller, chain, transformAdress,
   cether = "0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5", cetheEquivalent = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
   borrowed = false, checkForLPTokens = undefined,
   {
     fetchBalances = false,
     blacklistedTokens = [],
-    abis = {
-      getAllMarkets: abi['getAllMarkets']
-    }
+    abis = {}
   } = {}) {
+  abis = { ...abi, ...abis }
   blacklistedTokens = blacklistedTokens.map(i => i.toLowerCase())
-  return async (timestamp, ethBlock, {[chain]: block}, { api = undefined } = {}) => {
+  return async (timestamp, ethBlock, _, { api = undefined } = {}) => {
     if (!api) {
-      api = new sdk.ChainApi({ block, chain, })
+      api = new sdk.ChainApi({ chain, })
     }
+    chain = api.chain
+    const block = api.block
     if (!transformAdress) transformAdress = await getChainTransform(chain)
     let balances = {};
-    let markets = await getMarkets(comptroller, block, chain, cether, cetheEquivalent, blacklistedTokens, abis);
+    let markets = await getMarkets(comptroller, block, chain, cether, cetheEquivalent, blacklistedTokens, abis)
     if (!borrowed && fetchBalances) {
-      return sumTokens2({ api, tokensAndOwners: markets.map(i => [i.underlying, i.cToken]), blacklistedTokens,})
+      return sumTokens2({ api, tokensAndOwners: markets.map(i => [i.underlying, i.cToken]), blacklistedTokens, })
     }
     const cTokenCalls = markets.map(market => ({
       target: market.cToken,
@@ -131,7 +132,7 @@ function getCompoundV2Tvl(comptroller, chain = "ethereum", transformAdress,
       block,
       chain,
       calls: cTokenCalls,
-      abi: borrowed ? abi.totalBorrows : abi['getCash'],
+      abi: borrowed ? abis.totalBorrows : abis.getCash,
     });
 
     let symbols;
@@ -196,7 +197,7 @@ async function getUnderlyingDecimalsMultiple(block, chain, marketData, cether) {
     chain,
   })
 
-  decimals.forEach(({ output}, i) => {
+  decimals.forEach(({ output }, i) => {
     response[marketData[i].cToken] = output
   })
 
@@ -239,7 +240,7 @@ function getCompoundUsdTvl(comptroller, chain, cether, borrowed, abis = {
   blacklist = [],
   cetheEquivalent = undefined,
 } = {}) {
-  return async (timestamp, ethBlock, {[chain]: block}) => {
+  return async (timestamp, ethBlock, { [chain]: block }) => {
     let tvl = new BigNumber('0');
     blacklist = blacklist.map(i => i.toLowerCase())
     const marketData = await getMarkets(comptroller, block, chain, cether, cetheEquivalent, blacklist, abis)
@@ -261,13 +262,13 @@ function getCompoundUsdTvl(comptroller, chain, cether, borrowed, abis = {
   }
 }
 
-function compoundExports(comptroller, chain, cether, cetheEquivalent, transformAdressRaw, checkForLPTokens, { blacklistedTokens = [], fetchBalances, } = {}) {
+function compoundExports(comptroller, chain, cether, cetheEquivalent, transformAdressRaw, checkForLPTokens, { blacklistedTokens = [], fetchBalances, abis = {} } = {}) {
   if (cether !== undefined && cetheEquivalent === undefined) {
     throw new Error("You need to define the underlying for native cAsset")
   }
   return {
-    tvl: getCompoundV2Tvl(comptroller, chain, transformAdressRaw, cether, cetheEquivalent, false, checkForLPTokens, { blacklistedTokens, fetchBalances }),
-    borrowed: getCompoundV2Tvl(comptroller, chain, transformAdressRaw, cether, cetheEquivalent, true, checkForLPTokens, { blacklistedTokens, fetchBalances })
+    tvl: getCompoundV2Tvl(comptroller, chain, transformAdressRaw, cether, cetheEquivalent, false, checkForLPTokens, { blacklistedTokens, fetchBalances, abis }),
+    borrowed: getCompoundV2Tvl(comptroller, chain, transformAdressRaw, cether, cetheEquivalent, true, checkForLPTokens, { blacklistedTokens, fetchBalances, abis })
   }
 }
 
@@ -320,9 +321,14 @@ function compoundExportsWithDifferentBase(comptroller, chain, token) {
   }
 }
 
+function compoundExports2({ comptroller, chain, cether, cetheEquivalent = nullAddress, transformAdressRaw, checkForLPTokens, blacklistedTokens = [], fetchBalances = true, abis = {} }) {
+  return compoundExports(comptroller, chain, cether, cetheEquivalent, transformAdressRaw, checkForLPTokens, { blacklistedTokens, fetchBalances, abis, })
+}
+
 module.exports = {
   getCompoundV2Tvl,
   compoundExports,
+  compoundExports2,
   getCompoundUsdTvl,
   compoundExportsWithAsyncTransform,
   fullCoumpoundExports,
