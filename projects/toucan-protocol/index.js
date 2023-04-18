@@ -56,6 +56,9 @@ module.exports = {
   polygon: {
     tvl: getCalculationMethod("polygon")
   },
+  regen: {
+    tvl: getRegenCredits()
+  },
   hallmarks: [
     [1653429600, "Verra prohibits tokenization"],
   ]
