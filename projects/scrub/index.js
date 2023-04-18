@@ -40,7 +40,7 @@ const lionStaking = {
         ['0x990e157fC8a492c28F5B50022F000183131b9026', '0x199A0CD96065f50F9f7978c7BB47869503a9eD1E'], // Lion cave
         ['0x471F79616569343e8e84a66F342B7B433b958154', '0x67041094c4fc1492A1AB988Fb8De0ab4A0a4A080'], // Tiger staking
       ],
-      lpsPrice,
+      lps: lpsPrice,
       useDefaultCoreAssets: true,
       restrictTokenRatio: 100,
     }),
