@@ -452,13 +452,13 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
     block,
     chain
   })
-  balanceOfTokens.output.forEach((result, idx) => {
+  balanceOfTokens.output.forEach((result) => {
     const token = transformAddress(result.input.target)
     let balance = BigNumber(result.output)
     if (result.output === null ||isNaN(+result.output)) {
       sdk.log('failed for', token, balance, balances[token])
       if (ignoreFailed) balance = BigNumber(0)
-      else throw e
+      else throw new Error('Unable to fetch balance for: ' + result.input.target)
     }
     balances[token] = BigNumber(balances[token] || 0).plus(balance).toFixed(0)
   })
