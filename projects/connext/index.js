@@ -37,7 +37,6 @@ function chainTvl(chain) {
     if (!owners.length)
       return {}
     const tokens = await getAssetIds(chainId)
-    console.log(api.chain, owners, tokens)
     return sumTokens2({ owners, tokens, api, })
   };
 }
