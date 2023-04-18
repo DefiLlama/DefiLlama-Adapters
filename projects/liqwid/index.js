@@ -19,7 +19,6 @@ const scriptAddresses = [
   "addr1xxqqegnx4ref4q6derz2n0zs0jeanaxdq7ynfhwv3luhsg6s80extwffmz4yagvdxvr6cpd8nm3qne020739j706h3jqsd0vf2",
   "addr1xxqqegnx4ref4q6derz2n0zs0jeanaxdq7ynfhwv3luhsglccartl0f44hvc4vq8n3042epqvqq8cd4g9znpl5kdeyps7frwge",
   "addr1wypcayfxkqgnh8zfdsj9kft2hlpfvgtpmrkjlcge2e9rjvcelddkc", // batch
-  "addr1w8q93prq7gd3gax73amzrv7fq4evup0wpr3zkqrtktep7eqy26922", // batch
   "addr1w9afj34vc68qdm7heuz7esmr8sj76wpa45t7dh3ag8xpplgml3zuk", // batchFinal
   // DJED Market
   "addr1w8dprfgfdxnlwu3948579jrwg0ferf5a63ln8xj0mqcdzegayxmqq",
