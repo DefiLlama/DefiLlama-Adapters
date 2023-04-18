@@ -1,8 +1,9 @@
 const { getChainTvl } = require("../helper/getUniSubgraphTvl")
 module.exports={
+  misrepresentedTokens: true,
   fantom:{
       tvl: getChainTvl({
-          fantom: 'https://api.fura.org/subgraphs/name/spookyswap'
+          fantom: 'https://api.thegraph.com/subgraphs/name/eerieeight/spookyswap'
       })('fantom')
   }
 }
