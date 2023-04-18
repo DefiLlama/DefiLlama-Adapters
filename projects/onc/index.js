@@ -21,7 +21,7 @@ function tvl(treasury, tokens) {
 
 module.exports = {
   methodology: "Gets TVL inside the ONC Treasury.",
-  zksync: {
+  era: {
     tvl: tvl("0x581f87De7a655f50932F706873fcc7024d2309Fa", [
       "0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4", // USDC
       "0x4BEf76b6b7f2823C6c1f4FcfEACD85C24548ad7e", // DAI
