@@ -27,6 +27,10 @@ const HYPE_REGISTRY = {
     "0x66CD859053c458688044d816117D5Bdf42A56813", // Uniswap
     "0x37595FCaF29E4fBAc0f7C1863E3dF2Fe6e2247e9", // Zyberswap
   ],
+  bsc: [
+    "0x0b4645179C1b668464Df01362fC6219a7ab3234c", // Uniswap
+    "0xd4bcFC023736Db5617E5638748E127581d5929bd", // Thena
+  ],
   celo: ["0x0F548d7AD1A0CB30D1872b8C18894484d76e1569"],
 };
 
@@ -122,6 +126,9 @@ module.exports = {
     tvl: tvlWrapper,
   },
   arbitrum: {
+    tvl: tvlWrapper,
+  },
+  bsc: {
     tvl: tvlWrapper,
   },
   celo: {

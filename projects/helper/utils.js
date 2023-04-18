@@ -44,6 +44,7 @@ const blacklisted_LPS = [
   '0xf146190e4d3a2b9abe8e16636118805c628b94fe',
   '0xCC8Fa225D80b9c7D42F96e9570156c65D6cAAa25',
   '0xaee4164c1ee46ed0bbc34790f1a3d1fc87796668',
+  '0x93669cfce302c9971169f8106c850181a217b72b',
 ].map(i => i.toLowerCase())
 
 function isLP(symbol, token, chain) {
@@ -66,6 +67,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'arbitrum' && ['DXS', 'ZLP', ].includes(symbol)) return true
   if (chain === 'metis' && ['NLP', 'ALP'].includes(symbol)) return true // Netswap/Agora LP Token
   if (chain === 'optimism' && /(-ZS)/.test(symbol)) return true
+  if (chain === 'arbitrum' && /^(crAMM|vrAMM)-/.test(symbol)) return true // ramses LP
   if (chain === 'bsc' && /(-APE-LP-S)/.test(symbol)) return false
   if (['fantom', 'nova',].includes(chain) && ['NLT'].includes(symbol)) return true
   let label
@@ -172,7 +174,11 @@ async function diplayUnknownTable({ tvlResults = {}, tvlBalances = {}, storedKey
     if (balances[token] === '0') delete balances[token]
   })
 
-  return debugBalances({ balances, chain: storedKey, log, tableLabel, withETH: false, })
+  try {
+    await debugBalances({ balances, chain: storedKey, log, tableLabel, withETH: false, })
+  } catch (e) {
+    log('failed to fetch prices for', balances)
+  }
 }
 
 const nullAddress = '0x0000000000000000000000000000000000000000'
@@ -284,6 +290,18 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
   console.table(logObj)
 }
 
+function once(func) {
+  let previousResponse 
+  let called = false
+  function wrapped(...args) {
+    if (called) return previousResponse
+    called = true
+    previousResponse = func(...args)
+    return previousResponse
+  }
+  return wrapped
+}
+
 module.exports = {
   log,
   createIncrementArray,
@@ -303,4 +321,5 @@ module.exports = {
   getSymbols,
   getDecimals,
   getParamCalls,
+  once,
 }

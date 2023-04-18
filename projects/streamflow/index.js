@@ -33,6 +33,7 @@ async function vesting() {
 }
 
 module.exports = {
+  methodology: 'Token breakdown: https://metabase.internal-streamflow.com/public/dashboard/fe3731c1-fbe4-4fb6-8960-515af1d6e72d', 
   timetravel: false,
   misrepresentedTokens: true,
   solana: {
