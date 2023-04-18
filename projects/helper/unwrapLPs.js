@@ -422,7 +422,7 @@ tokensAndOwners [
     [token, owner] - eg ["0xaaa", "0xbbb"]
 ]
 */
-async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereum", transformAddress, { resolveLP = false, unwrapAll = false, blacklistedLPs = [], skipFixBalances = false, abis = {}, } = {}) {
+async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereum", transformAddress, { resolveLP = false, unwrapAll = false, blacklistedLPs = [], skipFixBalances = false, abis = {}, ignoreFailed = false } = {}) {
   if (!transformAddress)
     transformAddress = await getChainTransform(chain)
 
@@ -454,13 +454,13 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
   })
   balanceOfTokens.output.forEach((result, idx) => {
     const token = transformAddress(result.input.target)
-    const balance = BigNumber(result.output)
-    try {
-      balances[token] = BigNumber(balances[token] || 0).plus(balance).toFixed(0)
-    } catch (e) {
-      console.log(token, balance, balances[token])
-      throw e
+    let balance = BigNumber(result.output)
+    if (result.output === null ||isNaN(+result.output)) {
+      sdk.log('failed for', token, balance, balances[token])
+      if (ignoreFailed) balance = BigNumber(0)
+      else throw e
     }
+    balances[token] = BigNumber(balances[token] || 0).plus(balance).toFixed(0)
   })
 
   Object.entries(balances).forEach(([token, value]) => {
@@ -680,6 +680,7 @@ async function sumTokens2({
   resolveUniV3 = false,
   resolveArtBlocks = false,
   resolveNFTs = false,
+  ignoreFailed = false,
 }) {
   if (api) {
     chain = api.chain ?? chain
@@ -714,7 +715,7 @@ async function sumTokens2({
       })
     }
     if (tokensAndOwners2.length) {
-      const [_tokens, _owners ] = tokensAndOwners2
+      const [_tokens, _owners] = tokensAndOwners2
       _tokens.forEach((v, i) => tokensAndOwners.push([v, _owners[i]]))
     }
   }
@@ -727,7 +728,7 @@ async function sumTokens2({
   tokensAndOwners = getUniqueToA(tokensAndOwners)
   log(chain, 'summing tokens', tokensAndOwners.length)
 
-  await sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveLP, unwrapAll, blacklistedLPs, skipFixBalances: true, abis, })
+  await sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveLP, unwrapAll, blacklistedLPs, skipFixBalances: true, abis, ignoreFailed, })
 
   if (!skipFixBalances) {
     const fixBalances = await getFixBalances(chain)
