@@ -381,6 +381,10 @@ async function computeTVL(balances, timestamp) {
 
       if (data == undefined) tokenBalances[`UNKNOWN (${address})`] = balance
       if ('confidence' in data && data.confidence < confidenceThreshold) return
+      if (Math.abs(data.timestamp - Date.now()/1e3) > (24*3600)) {
+        console.log(`Price for ${address} is stale, ignoring...`)
+        return
+      }
 
       let amount, usdAmount;
       if (address.includes(":") && !address.startsWith("coingecko:")) {
