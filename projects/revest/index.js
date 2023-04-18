@@ -1,8 +1,6 @@
 const { sumTokens2, } = require("../helper/unwrapLPs")
 const { covalentGetTokens, } = require("../helper/http")
-const { getChainTransform } = require('../helper/portedTokens')
 const { getUniqueAddresses } = require('../helper/utils')
-
 
 const config = {
   ethereum: {
@@ -29,9 +27,9 @@ module.exports = {
 
 
 Object.keys(config).forEach(chain => {
-  const { holder, revest, graph, } = config[chain]
+  const { holder, revest, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, { [chain]: block }, { api }) => {
+    tvl: async (_, _b, _1, { api }) => {
       const blacklist = []
       if (revest) blacklist.push(revest.toLowerCase())
       let tokens = await covalentGetTokens(holder, api.chain)
@@ -41,11 +39,8 @@ Object.keys(config).forEach(chain => {
   }
 
   if (revest)
-    module.exports[chain].staking = async (_, _b, { [chain]: block }) => {
-      const transform = await getChainTransform(chain)
-      const balances = await sumTokens2({ chain, block, owner: holder, tokens: [revest] })
-      if (!graph) return balances
-      return queryGraph(graph, [revest], transform, balances)
+    module.exports[chain].staking = async (_, _b, _1, { api }) => {
+      return sumTokens2({ api, owner: holder, tokens: [revest] })
     }
 })
 
