@@ -1,0 +1,10 @@
+{
+    "boxesLength": "function boxesLength() external view returns (uint256)",
+    "boxInfo": "function boxInfo(uint256 _boxid) external view returns (address)",
+    "getDepositTotal": "function getDepositTotal() external view returns (uint256)",
+    "getBorrowTotal": "function getBorrowTotal() external view returns (uint256)",
+    "baseToken": "function baseToken() public view virtual returns (address)",
+    "getBaseTokenPerLPToken": "function getBaseTokenPerLPToken() external view returns (uint256)",
+    "poolInfo": "function poolInfo (uint256 _pid) public view returns ( address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accRewardPerShare, uint256 totalAmount)",
+    "poolLength": "function poolLength() external view returns (uint256)"
+}
