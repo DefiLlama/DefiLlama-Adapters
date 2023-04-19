@@ -8,7 +8,8 @@ const config = {
 }
 // openleverage overcollateralized-borrowing-contracts, Currently just deployed on the bnb chain
 const borrowConfig = {
-  bsc: '0xf436f8fe7b26d87eb74e5446acec2e8ad4075e47'
+    bsc: '0xf436f8fe7b26d87eb74e5446acec2e8ad4075e47',
+    arbitrum : '0xe7779ebb5c28ccd6d3dcf13920b06402ca52189c'
 }
 module.exports = {};
 
