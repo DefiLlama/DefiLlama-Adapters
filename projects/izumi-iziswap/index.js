@@ -9,6 +9,11 @@ const poolHelpers = {
   'era': '0x936c9A1B8f88BFDbd5066ad08e5d773BC82EB15F',
 }
 
+const blacklistedTokens = [
+  '0x0a3bb08b3a15a19b4de82f8acfc862606fb69a2d',
+  '0x1382628e018010035999A1FF330447a0751aa84f',
+]
+
 const tvl = async (_, _1, _2, { api }) => {
   const chain = api.chain
   const toa = []
@@ -37,7 +42,6 @@ const tvl = async (_, _1, _2, { api }) => {
   } while (!foundLastPool)
 
   const poolCalls = poolMetaData.map(i => ({params: [i.tokenX, i.tokenY, i.fee]}))
-  console.log(poolCalls)
   const pools = await api.multiCall({
     target: poolHelpers[chain],
     abi: abi.pool,
@@ -45,7 +49,7 @@ const tvl = async (_, _1, _2, { api }) => {
   })
   pools.forEach((output, i) => toa.push([poolMetaData[i].tokenX, output], [poolMetaData[i].tokenY, output],))
 
-  return sumTokens2({ tokensAndOwners: toa, api })
+  return sumTokens2({ tokensAndOwners: toa, api, blacklistedTokens, })
 }
 
 module.exports = {
