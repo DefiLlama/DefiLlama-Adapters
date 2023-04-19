@@ -12,4 +12,7 @@ module.exports = {
             factory: '0x764E6581B5A88C8D9C5e4eAe204A3d234dA8068b',
         }),
     },
+    hallmarks: [
+        [1682085600, "Liquidity incentives start"]
+    ]
 }
