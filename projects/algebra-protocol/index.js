@@ -8,12 +8,14 @@ const graphs = {
   dogechain:
     "https://graph-node.dogechain.dog/subgraphs/name/quickswap/dogechain-info",
   moonbeam: "https://api.thegraph.com/subgraphs/name/stellaswap/pulsar",
+  bsc: "https://api.thegraph.com/subgraphs/name/iliaazhel/thena-info",
 };
 
 const blacklists = {
   polygon: [],
   dogechain: [],
   moonbeam: [],
+  bsc: [],
 };
 
 function v3TvlPaged(chain) {
@@ -66,7 +68,7 @@ module.exports = {
   timetravel: false,
 };
 
-const chains = ["polygon", "dogechain", "moonbeam"];
+const chains = ["polygon", "dogechain", "moonbeam", "bsc"];
 
 chains.forEach((chain) => {
   module.exports[chain] = {
