@@ -6,7 +6,7 @@ const config = {
     kcc: '0xEF6890d740E1244fEa42E3D1B9Ff515C24c004Ce',
     arbitrum: '0x2925671dc7f2def9e4ad3fa878afd997f0b4db45'
 }
-// openleverage overcollateralized-borrowing-contracts, Currently just deployed on the bnb chain
+// openleverage overcollateralized-borrowing-contracts
 const borrowConfig = {
     bsc: '0xf436f8fe7b26d87eb74e5446acec2e8ad4075e47',
     arbitrum : '0xe7779ebb5c28ccd6d3dcf13920b06402ca52189c'
