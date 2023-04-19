@@ -69,5 +69,22 @@
           "token": "0xdBdb4d16EdA451D0503b854CF79D55697F90c8DF",
           "holder": "0xAB8e74017a8Cc7c15FFcCd726603790d26d7DeCa"
       }
+    },
+    "cvxLPpools": {
+      "alUSD​+FRAXBP": {
+        "poolAddress":  "0x26598e3E511ADFadefD70ab2C3475Ff741741104",
+        "holder": "0x06378717d86b8cd2dba58c87383da1eda92d3495",
+        "tokenAddress": "0x5BcAfc77f19F72bCf1420cC1722c3e06E16Ec29a"
+      },
+      "alUSD-3CRV": {
+        "poolAddress":  "0x02E2151D4F351881017ABdF2DD2b51150841d5B3",
+        "holder": "0x9735f7d3ea56b454b24ffd74c58e9bd85cfad31b",
+        "tokenAddress": "0xCA3D9F45FfA69ED454E66539298709cb2dB8cA61"
+      },
+      "alETH-ETH": {
+        "poolAddress":  "0x48Bc302d8295FeA1f8c3e7F57D4dDC9981FEE410",
+        "holder": "0xe761bf731a06fe8259fee05897b2687d56933110",
+        "tokenAddress": "0x0BF4C896100801cecFF4ad1e742E5227D67EcD7b"
+      }
     }
   }
