@@ -37,4 +37,8 @@ module.exports = maverickTVL({
     factory: "0xa5eBD82503c72299073657957F41b9cEA6c0A43A",
     fromBlock: 16727800,
   },
+  era: {
+    factory: "0x96707414DB71e553F6a49c7aDc376e40F3BEfC33",
+    fromBlock: 1337265,
+  },
 });
