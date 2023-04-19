@@ -113,5 +113,13 @@ module.exports = {
         '0x39dE19C9fF25693A2311AAD1dc5C790194084A39', // portal v2
       ]
     },
+    {
+      id: 42161,
+      name: 'arbitrum',
+      stable: '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8', // USDC
+      holders: [
+        '0x01A3c8E513B758EBB011F7AFaf6C37616c9C24d9', // portal v2
+      ]
+    },
   ]
 }
