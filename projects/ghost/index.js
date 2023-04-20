@@ -1,31 +1,18 @@
 const {
-  sumTokens,
   queryContracts,
   queryContract,
 } = require("../helper/chain/cosmos");
 
-const chain = "kujira";
-
-async function tvl() {
+async function tvl(_, _1, _2, { api }) {
+  const chain = api.chain
   const contracts = await queryContracts({ chain, codeId: 106 });
-  const deposits = await Promise.all(
-    contracts.map((contract) =>
-      Promise.all([
-        queryContract({ contract, chain, data: { status: {} } }),
-        queryContract({ contract, chain, data: { config: {} } }),
-      ])
-    )
-  );
-
-  const balances = deposits.reduce(
-    (agg, [{ deposited }, { denom }]) => ({
-      ...agg,
-      [denom]: deposited,
-    }),
-    {}
-  );
-
-  return sumTokens({ owners: [], balances, chain });
+  const deposited = (await Promise.all(
+    contracts.map(contract => queryContract({ contract, chain, data: { status: {} } }))
+  )).map(i => i.deposited)
+  const tokens = (await Promise.all(
+    contracts.map(contract => queryContract({ contract, chain, data: { config: {} } }))
+  )).map(i => i.denom)
+  api.addTokens(tokens, deposited)
 }
 
 module.exports = {
