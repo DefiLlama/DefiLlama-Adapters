@@ -41,6 +41,8 @@ async function getBalances(vault, length, chain, block) {
   console.log("Calls:", calls); // Add this line to see the content of calls array
 
   const tokens = output.map(i => i.output.tokenAddress);
+	
+  const blacklist = [];
   
   return vestingHelper({
     useDefaultCoreAssets: true,
