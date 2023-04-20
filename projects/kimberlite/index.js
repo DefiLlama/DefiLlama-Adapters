@@ -63,6 +63,6 @@ chains.forEach(chain => {
   }
 
   module.exports[chain] = {
-    tvl: async (_, _b, { [chain]: block }) => calculateTvl(contract, block, chain),
+    tvl: async (_, _b, { [chain]: block }) => calculateTvl(contract, chain, block),
   }
 })
