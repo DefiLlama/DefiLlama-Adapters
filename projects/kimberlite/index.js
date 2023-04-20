@@ -5,6 +5,8 @@ const { config } = require('./config')
 
 async function calculateTvl(contract, chain, block) {
   
+  let blacklist = [];
+  
   const { output: lengths } = await sdk.api.abi.multiCall({
     abi: abi.depositId,
     calls: [{ target: contract }],
