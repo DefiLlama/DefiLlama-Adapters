@@ -6,8 +6,8 @@ const { config } = require('./config')
 async function calculateTvl(contract, chain, block) {
 	  
   const { output: lengths } = await sdk.api.abi.multiCall({
-	target: contract
     abi: abi.depositId,
+    calls: [{ target: contract }],
     chain, block,
   })
 		
