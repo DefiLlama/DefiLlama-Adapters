@@ -4,18 +4,14 @@ const { vestingHelper } = require("../helper/unknownTokens");
 const { config } = require('./config')
 
 async function calculateTvl(contract, chain, block) {
-	
-  const blacklist = [];
-  
+	  
   const { output: lengths } = await sdk.api.abi.multiCall({
+	target: contract
     abi: abi.depositId,
-    calls: [{ target: contract }],
     chain, block,
   })
-  
-  const contractBalance = await getBalances(contract, lengths[0].output);
-  
-  const contractBalance = await getBalances(contract, lengths[0].output);
+		
+  const contractBalance = await getBalances(contract, lengths);
 	console.log("contractBalance:", contractBalance);
 
   Object.entries(contractBalance).forEach(([token, val]) => {
@@ -23,6 +19,7 @@ async function calculateTvl(contract, chain, block) {
   })
 
   async function getBalances(vault, length) {
+	const blacklist = [];
     const calls = []
     for (let i = 1; i <= length; i++)
       calls.push({ target: vault, params: i })
