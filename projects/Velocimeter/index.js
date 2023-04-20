@@ -7,7 +7,6 @@ module.exports = {
     tvl: getUniTVL({
       factory: '0xb12aF64E128A1D4489D13314eB4Df81cBCE126aC',
       useDefaultCoreAssets: true,
-      fetchBalances: true,
       hasStablePools: true,
     }),
     staking: staking(
