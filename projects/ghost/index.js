@@ -25,7 +25,7 @@ async function tvl() {
     {}
   );
 
-  return sumTokens({ owners: contracts, balances, chain });
+  return sumTokens({ owners: [], balances, chain });
 }
 
 module.exports = {
