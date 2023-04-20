@@ -33,7 +33,10 @@ async function getBalances(contract, length, chain, block) {
     });
   }
 
+  console.log("Calls:", calls); // Add this line to see the content of calls array
+
   const balances = await sdk.api.abi.multiCall({ calls });
+  console.log("Balances:", balances); // Add this line to see the content of balances object
 
   balances.output.forEach((balance, index) => {
     const token = tokens[index];
@@ -42,6 +45,7 @@ async function getBalances(contract, length, chain, block) {
     }
   });
 
+  console.log("Result:", result); // Add this line to see the content of result object
   return result;
 }
 
