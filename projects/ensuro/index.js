@@ -1,6 +1,5 @@
-const sdk = require('@defillama/sdk');
-const { default: BigNumber } = require('bignumber.js');
-// const { abi } = require("./abi");
+const { sumTokens2 } = require('../helper/unwrapLPs')
+
 const addressBook = {
   polygon: {
     usdc: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
@@ -26,42 +25,17 @@ const addressBook = {
 };
 
 async function tvl(_timestamp, _block, _blocksOthers, { api }) {
-  const balances = {};
   const addresses = addressBook[api.chain];
+  const ownerTokens = addresses.reserves.map(i => [[addresses.usdc, addresses.aave_v3_usdc], i.address])
 
-  for (const reserve of addresses.reserves) {
-    const liquidBalance = await api.call({
-      abi: 'erc20:balanceOf',
-      target: addresses.usdc,
-      params: [reserve.address],
-    });
-    const inAAVEBalance = await api.call({
-      abi: 'erc20:balanceOf',
-      target: addresses.aave_v3_usdc,
-      params: [reserve.address],
-    });
-    sdk.util.sumSingleBalance(balances, addresses.usdc, liquidBalance, api.chain);
-    sdk.util.sumSingleBalance(balances, addresses.aave_v3_usdc, inAAVEBalance, api.chain);
-  }
   if (addresses.v1) {
-    const liquidBalance = await api.call({
-      abi: 'erc20:balanceOf',
-      target: addresses.usdc,
-      params: [addresses.v1.pool],
-    });
-    const inAAVEBalance = await api.call({
-      abi: 'erc20:balanceOf',
-      target: addresses.aave_v2_usdc,
-      params: [addresses.v1.asset_manager],
-    });
-    sdk.util.sumSingleBalance(balances, addresses.usdc, liquidBalance, api.chain);
-    sdk.util.sumSingleBalance(balances, addresses.aave_v2_usdc, inAAVEBalance, api.chain);
+    ownerTokens.push([[addresses.usdc], addresses.v1.pool])
+    ownerTokens.push([[addresses.aave_v2_usdc], addresses.v1.asset_manager])
   }
-  return balances;
+  return sumTokens2({ api, ownerTokens, });
 }
 
 module.exports = {
-  timetravel: true,
   methodology: `Sums the USDC amounts (both liquid and invested in AAVE) of the different protocol reserves (https://docs.ensuro.co/product-docs/smart-contracts/reserves).`,
   polygon: {
     tvl
