@@ -19,27 +19,30 @@ async function calculateTvl(contract, chain, block) {
   });
 }
 
-async function getBalances(vault, length, chain, block) {
-  const blacklist = [];
+async function getBalances(contract, length, chain, block) {
+  const result = {};
   const calls = [];
-  for (let i = 1; i <= length; i++)
-    calls.push({ target: vault, params: i });
-  const { output } = await sdk.api.abi.multiCall({
-    abi: abi.lockedToken,
-    requery: true,
-    calls,
-    chain,
-    block,
+
+  for (let i = 0; i < length; i++) {
+    calls.push({
+      target: contract,
+      params: [i],
+      abi: abi.balance,
+      chain,
+      block,
+    });
+  }
+
+  const balances = await sdk.api.abi.multiCall({ calls });
+
+  balances.output.forEach((balance, index) => {
+    const token = tokens[index];
+    if (balance.success) {
+      result[token] = balance.output;
+    }
   });
-  const tokens = output.map((i) => i.output.tokenAddress);
-  return await vestingHelper({
-    useDefaultCoreAssets: true,
-    blacklist,
-    owner: vault,
-    tokens,
-    block,
-    chain,
-  });
+
+  return result;
 }
 
 const chains = [
