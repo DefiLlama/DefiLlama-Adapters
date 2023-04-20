@@ -10,6 +10,8 @@ async function calculateTvl(contract, chain, block) {
     chain,
     block,
   });
+  
+  console.log("Lengths:", lengths); // Add this line to see the content of lengths object
 
   const contractBalance = await getBalances(contract, lengths.output, chain, block);
   console.log("contractBalance:", contractBalance);
@@ -20,6 +22,9 @@ async function calculateTvl(contract, chain, block) {
 }
 
 async function getBalances(contract, length, chain, block) {
+	
+  console.log("Length:", length); // Add this line to see the value of length
+
   const result = {};
   const calls = [];
 
@@ -52,7 +57,7 @@ async function getBalances(contract, length, chain, block) {
 const chains = [
   'arbitrum',
   'bsc',
-  'ethereum',
+  //'ethereum',
   'polygon',
   'core',
   'dogechain',
@@ -66,7 +71,7 @@ chains.forEach(chain => {
 
   switch (chain) {
     case 'arbitrum': contract = config.kimberliteSafeARB.locker; break;
-    case 'ethereum': contract = config.kimberliteSafeETH.locker; break;
+    //case 'ethereum': contract = config.kimberliteSafeETH.locker; break;
     case 'metis': contract = config.kimberliteSafeMETIS.locker; break;
     case 'polygon': contract = config.kimberliteSafeMATIC.locker ; break;
 	case 'core': contract = config.kimberliteSafeCORE.locker ; break;
