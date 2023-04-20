@@ -27,7 +27,8 @@ const config = {
       "0xB237f4264938f0903F5EC120BB1Aa4beE3562FfF",
       "0xd371281896f2F5f7A2C65F49d23A2B6ecfd594f3",
       "0xe47ca047Cb7E6A9AdE9405Ca68077d63424F34eC",
-      "0xa864956ff961ce62c266a8563b46577d3573372e"
+      "0xa864956ff961ce62c266a8563b46577d3573372e",
+      "0x950eceee9e7d7366a24fc9d2ed4c0c37d17a0fa9"
     ]
   },
   fantom: {
@@ -85,16 +86,16 @@ const config = {
       "0x4a0474E3262d4DB3306Cea4F207B5d66eC8E0AA9",
     ]
   },
+  harmony: {
+    vaults: [
+      //"0x12FcB286D664F37981a42cbAce92eAf28d1dA94f",
+      //"0x46469f995A5CB60708200C25EaD3cF1667Ed36d6",
+    ]
+  },
   xdai: {
     vaults: [
       "0x5c49b268c9841AFF1Cc3B0a418ff5c3442eE3F3b",
       "0x014a177e9642d1b4e970418f894985dc1b85657f",
-    ]
-  },
-  harmony: {
-    vaults: [
-      "0x12FcB286D664F37981a42cbAce92eAf28d1dA94f",
-      "0x46469f995A5CB60708200C25EaD3cF1667Ed36d6",
     ]
   },
   ethereum: {
@@ -105,6 +106,7 @@ const config = {
       "0x8C45969aD19D297c9B85763e90D0344C6E2ac9d1",
       "0xcc61Ee649A95F2E2f0830838681f839BDb7CB823",
       "0x82E90EB7034C1DF646bD06aFb9E67281AAb5ed28",
+      "0xCA3EB45FB186Ed4e75B9B22A514fF1d4abAdD123"
     ]
   },
   bsc: {

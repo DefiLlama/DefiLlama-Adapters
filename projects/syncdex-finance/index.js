@@ -20,7 +20,10 @@ const owners = [native_staking_contract, usdc_staking_contract, sydx_staking_con
 
 module.exports = {
   era: {
-    tvl: sumTokensExport({ owners, tokens: assets }),
-    staking: sumTokensExport({ owners, tokens: [SYNC_DEX] }),
+    hallmarks: [
+      [1681340401,"Rug Pull"]
+    ],
+    tvl: () => 0,
+    staking: () => 0,
   },
 };
