@@ -42,9 +42,28 @@ async function calculateTvl(contract, chain, block) {
   }
 };
 
+async function getTotalTvl(block) {
+  const networks = ['ethereum', 'bsc', 'metis', 'polygon', 'core', 'dogechain', 'arbitrum'];
+  const promises = networks.map(async (network) => {
+    const tvl = await module.exports[network].tvl(null, null, { [network]: block });
+    return tvl;
+  });
+
+  const tvlArray = await Promise.all(promises);
+  const totalTvl = tvlArray.reduce((accumulator, tvl) => {
+    for (const [token, value] of Object.entries(tvl)) {
+      sdk.util.sumSingleBalance(accumulator, token, value);
+    }
+    return accumulator;
+  }, {});
+
+  return totalTvl;
+}
+
 module.exports = {
   methodology:
     "Counts TVL of all the tokens locked on the Kimberlite Safe locker smart contracts.",
+  tvl: getTotalTvl,
   ethereum: {
     tvl: async (_, _b, { ethereum: block }) => calculateTvl(config.kimberliteSafeETH.locker, config.kimberliteSafeETH.chain, block)
   },
