@@ -1,4 +1,4 @@
-const config = [
+const config = {
   kimberliteSafeETH: {
     chain: "ethereum",
     locker: "0x1492AfF2D39fa5fFBF717DE80B15DCf3311B1BAb", 
@@ -34,7 +34,7 @@ const config = [
     locker: "0xE4E56E5e234783BCb77A80e19C8B3B5b42588AAb", 
     startBlock: 49220342
   },
-]
+}
 
 module.exports = {
   config
