@@ -1,6 +1,6 @@
 const { getUniTVL, } = require('../helper/unknownTokens')
 
-const dexTVL = getUniTVL({ factory: '0x88F1E030eb4C6C4320Da3992070bAF6c648ce37f', fetchBalances: true, useDefaultCoreAssets: true })
+const dexTVL = getUniTVL({ factory: '0x88F1E030eb4C6C4320Da3992070bAF6c648ce37f',  useDefaultCoreAssets: true })
 
 module.exports = {
       hallmarks: [
