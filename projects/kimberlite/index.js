@@ -4,39 +4,43 @@ const { vestingHelper } = require("../helper/unknownTokens");
 const { config } = require('./config')
 
 async function calculateTvl(contract, chain, block) {
-	  
   const { output: lengths } = await sdk.api.abi.multiCall({
+    target: contract,
     abi: abi.depositId,
-    calls: [{ target: contract }],
-    chain, block,
-  })
-		
-  const contractBalance = await getBalances(contract, lengths);
-	console.log("contractBalance:", contractBalance);
+    chain,
+    block,
+  });
+
+  const contractBalance = await getBalances(contract, lengths, chain, block);
+  console.log("contractBalance:", contractBalance);
 
   Object.entries(contractBalance).forEach(([token, val]) => {
-  sdk.util.sumSingleBalance(balances, token, val);
-  })
+    sdk.util.sumSingleBalance(balances, token, val);
+  });
+}
 
-  async function getBalances(vault, length) {
-	const blacklist = [];
-    const calls = []
-    for (let i = 1; i <= length; i++)
-      calls.push({ target: vault, params: i })
-    const { output } = await sdk.api.abi.multiCall({
-      abi: abi.lockedToken, requery: true,
-      calls, chain, block,
-    })
-    const tokens = output.map(i => i.output.tokenAddress)
-    return vestingHelper({
-      useDefaultCoreAssets: true,
-      blacklist,
-      owner: vault,
-      tokens,
-      block, chain,
-    })
-  }
-};
+  async function getBalances(vault, length, chain, block) {
+  const blacklist = [];
+  const calls = [];
+  for (let i = 1; i <= length; i++)
+    calls.push({ target: vault, params: i });
+  const { output } = await sdk.api.abi.multiCall({
+    abi: abi.lockedToken,
+    requery: true,
+    calls,
+    chain,
+    block,
+  });
+  const tokens = output.map((i) => i.output.tokenAddress);
+  return await vestingHelper({
+    useDefaultCoreAssets: true,
+    blacklist,
+    owner: vault,
+    tokens,
+    block,
+    chain,
+  });
+}
 
 const chains = [
   'arbitrum',
