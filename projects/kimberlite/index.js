@@ -13,7 +13,7 @@ async function calculateTvl(contract, chain, block) {
   
   console.log("Lengths:", lengths); // Add this line to see the content of lengths object
 
-  const contractBalance = await getBalances(contract, lengths.output, chain, block);
+  const contractBalance = await getBalances(contract, lengths, chain, block);
   console.log("contractBalance:", contractBalance);
 
   Object.entries(contractBalance).forEach(([token, val]) => {
