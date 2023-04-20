@@ -21,43 +21,40 @@ async function calculateTvl(contract, chain, block) {
   });
 }
 
-async function getBalances(contract, length, chain, block) {
+async function getBalances(vault, length, chain, block) {
 	
   console.log("Length:", length); // Add this line to see the value of length
 
-  const result = {};
   const calls = [];
-
-  for (let i = 0; i < length; i++) {
-    calls.push({
-      target: contract,
-      params: [i],
-      abi: abi.balance,
-      chain,
-      block,
-    });
+  for (let i = 1; i <= length; i++) {
+    calls.push({ target: vault, params: [i] }); // Pass the parameter as an array
   }
-
+  
+  const { output } = await sdk.api.abi.multiCall({
+    abi: abi.lockedToken,
+    requery: true,
+    calls,
+    chain,
+    block,
+  });
+  
   console.log("Calls:", calls); // Add this line to see the content of calls array
 
-  const balances = await sdk.api.abi.multiCall({ calls });
-  console.log("Balances:", balances); // Add this line to see the content of balances object
-
-  balances.output.forEach((balance, index) => {
-    const token = tokens[index];
-    if (balance.success) {
-      result[token] = balance.output;
-    }
+  const tokens = output.map(i => i.output.tokenAddress);
+  
+  return vestingHelper({
+    useDefaultCoreAssets: true,
+    blacklist,
+    owner: vault,
+    tokens,
+    block,
+    chain,
   });
-
-  console.log("Result:", result); // Add this line to see the content of result object
-  return result;
 }
 
 const chains = [
   'arbitrum',
   'bsc',
-  //'ethereum',
   'polygon',
   'core',
   'dogechain',
@@ -71,7 +68,6 @@ chains.forEach(chain => {
 
   switch (chain) {
     case 'arbitrum': contract = config.kimberliteSafeARB.locker; break;
-    //case 'ethereum': contract = config.kimberliteSafeETH.locker; break;
     case 'metis': contract = config.kimberliteSafeMETIS.locker; break;
     case 'polygon': contract = config.kimberliteSafeMATIC.locker ; break;
 	case 'core': contract = config.kimberliteSafeCORE.locker ; break;
