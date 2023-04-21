@@ -54,7 +54,7 @@ async function getBalances(contract, chain, block, length) {
       ],
       log_minTokenValue: 1e6,
     })
- };
+ }
 
 const chains = [
   'arbitrum',
