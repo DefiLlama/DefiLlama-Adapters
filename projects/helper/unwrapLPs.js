@@ -503,6 +503,8 @@ async function unwrapLPsAuto({ api, balances, block, chain = "ethereum", transfo
     chain = api.chain ?? chain
     block = api.block ?? block
     if (!balances) balances = api.getBalances()
+  } else {
+    api = new sdk.ChainApi({ chain, block })
   }
 
   if (!transformAddress)
@@ -534,7 +536,7 @@ async function unwrapLPsAuto({ api, balances, block, chain = "ethereum", transfo
 
   async function _addTokensAndLPs(balances, tokens, amounts) {
     const symbols = (await sdk.api.abi.multiCall({
-      calls: tokens.map(t => ({ target: t.output })), abi: symbol, block, chain
+      calls: tokens.map(t => ({ target: t.output })), abi: symbol, block, chain, permitFailure: true,
     })).output
     const lpBalances = []
     symbols.forEach(({ output }, idx) => {
