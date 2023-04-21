@@ -21,7 +21,7 @@ async function calculateTvl(contract, chain, block) {
 	
 	console.log("TokensAndContract:", tokensAndOwners); // Add this line to see the value of tokensAndContract
 	
-	return sumTokens2({ tokensAndOwners, chain, block, resolveLP = false, })
+	return sumTokens2({ tokensAndOwners, chain, block,  })
 }
 
 async function mapTokensToContract(contract, chain, block, length) {
