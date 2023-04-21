@@ -1,60 +1,28 @@
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
-const { vestingHelper } = require("../helper/unknownTokens");
 const { config } = require('./config')
+const { sumTokens2, } = require('../helper/unwrapLPs')
 
 async function calculateTvl(contract, chain, block) {
-  const { output: lengths } = await sdk.api.abi.call({
-    target: contract,
-    abi: abi.depositId,
-    chain,
-    block,
-  });
-  
-  console.log("Lengths:", lengths); // Add this line to see the content of lengths object
-
- // const contractBalance = await getBalances(contract, lengths, chain, block);
-  
-  const contractBalance = (await getBalances(contract, lengths, chain, block)) || {};  
-  
-  console.log("contractBalance:", contractBalance);
-
-  Object.entries(contractBalance).forEach(([token, val]) => {
-    sdk.util.sumSingleBalance(balances, token, val);
-  });
+	
+	console.log("Contract:", contract); // Add this line to see the value of contract
+	console.log("Chain:", chain); // Add this line to see the value of chain
+	console.log("Block:", block); // Add this line to see the value of block
+	
+    let tokensAndOwners = await mapTokensToContract(contract, chain, block)
+	
+	console.log("TokensAndContract:", tokensAndOwners); // Add this line to see the value of tokensAndContract
+	
+	return sumTokens2({ tokensAndOwners, chain, block,  })
 }
 
-async function getBalances(vault, length, chain, block) {
-	
-  console.log("Length:", length); // Add this line to see the value of length
-
-  const calls = [];
-  for (let i = 1; i <= length; i++) {
-    calls.push({ target: vault, params: [i] }); // Pass the parameter as an array
-  }
+async function mapTokensToContract(contract, chain, block) {
+	const { output: safeTokenHoldings } = await sdk.api.abi.multiCall({
+    calls: [{ target: contract }],
+    abi: abi.token,
+    chain, block,
+  })
   
-  const { output } = await sdk.api.abi.multiCall({
-    abi: abi.lockedToken,
-    requery: true,
-    calls,
-    chain,
-    block,
-  });
-  
-  console.log("Calls:", calls); // Add this line to see the content of calls array
-
-  const tokens = output.map(i => i.output.tokenAddress);
-	
-  const blacklist = [];
-  
-  return vestingHelper({
-    useDefaultCoreAssets: true,
-    blacklist,
-    owner: vault,
-    tokens,
-    block,
-    chain,
-  });
+  return safeTokenHoldings.map(({ output}, i) => ([output, contract]))
 }
 
 const chains = [
