@@ -30,7 +30,7 @@ async function mapTokensToContract(contract, chain, block, length) {
 	const tokensArray = [];
 
 	for (let i = 1; i <= length; i++) {
-		calls.push({ target: vault, params: [i] }); // Pass the parameter as an array
+		calls.push({ target: contract, params: [i] }); // Pass the parameter as an array
 	}
 	
 	console.log("Calls:", calls); // Add this line to see the content of calls array
@@ -48,7 +48,7 @@ async function mapTokensToContract(contract, chain, block, length) {
 	}
 	
 	const uniqueTokens = filterDuplicates(tokensArray);
-	const mappedTokens = uniqueTokens.map((token, i) => ([token, vault]));
+	const mappedTokens = uniqueTokens.map((token, i) => ([token, contract]));
 	return mappedTokens;
 }
 
