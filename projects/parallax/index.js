@@ -1,43 +1,15 @@
-const sdk = require("@defillama/sdk");
-const prllxERC20 = require("./abis/prllxERC20.json");
-const contracts = require("./contracts.json");
-const { default: BigNumber } = require("bignumber.js");
-const { getPrice } = require("./getPrice");
+async function tvl(time, _ethBlock, _1, { api }) {
+  await Promise.all([
+    addMIMStrategy(api)
+  ])
+}
 
-async function tvl(time, _ethBlock, { arbitrum: block }) {
-  const strategyId = (
-    await sdk.api.abi.call({
-      block,
-      target: contracts["parallaxCoreAddress"],
-      params: contracts["strategyAddress"],
-      abi: prllxERC20["strategyToId"],
-      chain: "arbitrum",
-    })
-  ).output;
-
-  const strategy = (
-    await sdk.api.abi.call({
-      block,
-      target: contracts["parallaxCoreAddress"],
-      params: strategyId,
-      abi: prllxERC20["strategies"],
-      chain: "arbitrum",
-    })
-  ).output;
-
-  const balances = {};
-  const { price, decimals } = await getPrice(contracts["lpAddresss"], block);
-
-  const totalStaked = new BigNumber(strategy.totalStaked).div(`1e${decimals}`);
-  const totalStakedTVL = price.times(totalStaked).times(1e6).toFixed(0);
-
-  sdk.util.sumSingleBalance(
-    balances,
-    `arbitrum:${contracts["usdc"]}`,
-    totalStakedTVL
-  );
-
-  return balances;
+async function addMIMStrategy(api) {
+  const token = '0x30dF229cefa463e991e29D42DB0bae2e122B2AC7'
+  const sorbettiere = '0x839de324a1ab773f76a53900d70ac1b913d2b387'
+  const strategy = '0x7b8eFCd93ee71A0480Ad4dB06849B75573168AF4'
+  const [bal] = await api.call({  abi: 'function userInfo(uint256, address) view returns (uint256,uint256,uint256)', target: sorbettiere, params:[0, strategy] })
+  api.add(token, bal)
 }
 
 module.exports = {
