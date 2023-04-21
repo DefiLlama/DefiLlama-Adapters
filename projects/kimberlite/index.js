@@ -28,12 +28,18 @@ async function calculateTvl(contract, chain, block) {
 	
 	const balancesB = await sumTokens2({ tokensAndOwners, chain, block,  });
 	
-	console.log("BalancesB:", balancesA); // Add this line to see the value of balancesB
+	console.log("BalancesB:", balancesB); // Add this line to see the value of balancesB
 	
-	// Add balancesA and balancesB using BigInt
-	const totalBalance = BigInt(balancesA) + BigInt(balancesB);
+	// Extract numeric values from balancesA and balancesB objects
+	const balancesANumeric = Object.values(balancesA).reduce((acc, value) => acc + BigInt(value), BigInt(0));
+	const balancesBNumeric = Object.values(balancesB).reduce((acc, value) => acc + BigInt(value), BigInt(0));
 
-	return totalBalance;  
+	// Add balancesANumeric and balancesBNumeric using BigInt
+	const totalBalance = BigInt(balancesANumeric) + BigInt(balancesBNumeric);
+
+	// Convert totalBalance to an object and return it
+	const totalBalanceObject = { totalBalance: totalBalance.toString() };
+	return totalBalanceObject;  
 }
 
 async function mapTokensToContract(contract, chain, block, length) {
