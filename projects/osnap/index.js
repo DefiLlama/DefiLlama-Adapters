@@ -7,7 +7,7 @@ async function tvl(_, _1, _2, api) {
   const balances = {};
 
   const url =
-    "https://raw.githubusercontent.com/UMAprotocol/protocol/main/packages/core/config/adapters/defiLlama/oSnap.json";
+    "https://raw.githubusercontent.com/UMAprotocol/protocol/master/packages/core/config/adapters/defiLlama/oSnap.json";
   const config = await getConfig(url);
 
   const { tokens, avatars } = config[api.chain];
