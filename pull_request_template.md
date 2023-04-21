@@ -13,49 +13,49 @@
 
 ---
 ##### Name (to be shown on DefiLlama):
-
+PrivCash
 
 ##### Twitter Link:
-
+https://twitter.com/privcash_
 
 ##### List of audit links if any:
-
+N/A
 
 ##### Website Link:
-
+https://priv.cash
 
 ##### Logo (High resolution, will be shown with rounded borders):
-
+https://priv.cash/img/privcash_hd_logo.png
 
 ##### Current TVL:
-
+N/A
 
 ##### Treasury Addresses (if the protocol has treasury)
-
+N/A
 
 ##### Chain:
-
+KAVA
 
 ##### Coingecko ID (so your TVL can appear on Coingecko, leave empty if not listed): (https://api.coingecko.com/api/v3/coins/list)
-
+N/A
 
 ##### Coinmarketcap ID (so your TVL can appear on Coinmarketcap, leave empty if not listed): (https://api.coinmarketcap.com/data-api/v3/map/all?listing_status=active,inactive,untracked&start=1&limit=10000)
-
+N/A
 
 ##### Short Description (to be shown on DefiLlama):
-
+PrivCash is a decentralized protocol for private transactions on the Kava network
 
 ##### Token address and ticker if any:
-
+N/A
 
 ##### Category (full list at https://defillama.com/categories) *Please choose only one:
-
+Privacy
 
 ##### Oracle used (Chainlink/Band/API3/TWAP or any other that you are using):
-
+N/A
 
 ##### forkedFrom (Does your project originate from another project):
-
+https://github.com/tornadocash/tornado-core
 
 ##### methodology (what is being counted as tvl, how is tvl being calculated):
-
+All deposit nominal contracts (KAVA + USDC + PRIV)
