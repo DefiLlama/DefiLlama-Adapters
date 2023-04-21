@@ -1,28 +1,59 @@
 const sdk = require("@defillama/sdk");
 const { config } = require('./config')
 const { sumTokens2, } = require('../helper/unwrapLPs')
+const abi = require("./abi.json");
 
 async function calculateTvl(contract, chain, block) {
 	
-	console.log("Contract:", contract); // Add this line to see the value of contract
+	const { output: lengths } = await sdk.api.abi.call({
+		target: contract,
+		abi: abi.depositId,
+		chain,
+		block,
+	});
+  
 	console.log("Chain:", chain); // Add this line to see the value of chain
+	console.log("Contract:", contract); // Add this line to see the value of contract
+	console.log("Lengths:", lengths); // Add this line to see the content of lengths object
 	console.log("Block:", block); // Add this line to see the value of block
 	
-    let tokensAndOwners = await mapTokensToContract(contract, chain, block)
+    let tokensAndOwners = await mapTokensToContract(contract, chain, block, lengths)
 	
 	console.log("TokensAndContract:", tokensAndOwners); // Add this line to see the value of tokensAndContract
 	
 	return sumTokens2({ tokensAndOwners, chain, block,  })
 }
 
-async function mapTokensToContract(contract, chain, block) {
-	const { output: safeTokenHoldings } = await sdk.api.abi.multiCall({
-    calls: [{ target: contract }],
-    abi: abi.token,
-    chain, block,
-  })
+async function mapTokensToContract(contract, chain, block, lenght) {
+	
+	const calls = [];
+	const tokensArray = [];
+
+	for (let i = 1; i <= length; i++) {
+		calls.push({ target: vault, params: [i] }); // Pass the parameter as an array
+	}
+	
+	console.log("Calls:", calls); // Add this line to see the content of calls array
+	
+	const { output } = await sdk.api.abi.multiCall({
+		abi: abi.lockedToken,
+		requery: true,
+		calls,
+		chain,
+		block,
+	});
   
-  return safeTokenHoldings.map(({ output}, i) => ([output, contract]))
+	for (const item of output) {
+		tokensArray.push(item.output.tokenAddress);
+	}
+	
+	const uniqueTokens = filterDuplicates(tokensArray);
+	const mappedTokens = uniqueTokens.map((token, i) => ([token, vault]));
+	return mappedTokens;
+}
+
+function filterDuplicates(tokensArray) {
+  return [...new Set(tokensArray.map(token => token.toLowerCase()))];
 }
 
 const chains = [
