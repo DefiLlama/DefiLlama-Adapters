@@ -3,8 +3,7 @@ const uniswapAbi = require('../abis/uniswap')
 const { getCache, setCache, } = require('../cache');
 const { transformBalances, transformDexBalances, } = require('../portedTokens')
 const { getCoreAssets, } = require('../tokenMapping')
-const { sliceIntoChunks, } = require('../utils')
-const { sumTokens2, } = require('../unwrapLPs')
+const { sliceIntoChunks, sleep } = require('../utils')
 const sdk = require('@defillama/sdk')
 
 const cacheFolder = 'uniswap-forks'
@@ -15,23 +14,27 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
   abis = {},
   chain: _chain = 'ethereum',
   queryBatched = 0,
+  waitBetweenCalls,
+  hasStablePools = false,
+  stablePoolSymbol = 'sAMM',
 }) {
+
+  let updateCache = false
+
+  const abi = { ...uniswapAbi, ...abis }
+  factory = factory.toLowerCase()
+  blacklist = (blacklistedTokens || blacklist).map(i => i.toLowerCase())
 
   return async (_, _b, cb, { api, chain } = {}) => {
 
     if (!chain)
       chain = _chain
+    const key = `${factory}-${chain}`
 
     if (!coreAssets && useDefaultCoreAssets)
       coreAssets = getCoreAssets(chain)
-    blacklist = (blacklistedTokens || blacklist).map(i => i.toLowerCase())
 
-    const abi = { ...uniswapAbi, ...abis }
-    factory = factory.toLowerCase()
-    const key = `${factory}-${chain}`
-
-
-    let cache = await _getCache(cacheFolder, key)
+    let cache = await _getCache(cacheFolder, key, api)
 
     const _oldPairInfoLength = cache.pairs.length
     const length = await api.call({ abi: abi.allPairsLength, target: factory, })
@@ -42,12 +45,27 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
       pairCalls.push(i)
 
     const calls = await api.multiCall({ abi: abi.allPairs, calls: pairCalls, target: factory })
-    const token0s = await api.multiCall({ abi: abi.token0, calls })
-    const token1s = await api.multiCall({ abi: abi.token1, calls })
+
+    const [
+      token0s, token1s
+    ] = await Promise.all([
+      api.multiCall({ abi: abi.token0, calls }),
+      api.multiCall({ abi: abi.token1, calls }),
+    ])
+    let symbols
+    if (hasStablePools) {
+      symbols = await api.multiCall({ abi: 'erc20:symbol', calls, })
+      cache.symbols.push(...symbols)
+    }
 
     cache.pairs.push(...calls)
     cache.token0s.push(...token0s)
     cache.token1s.push(...token1s)
+
+    updateCache = updateCache || cache.pairs.length > _oldPairInfoLength
+
+    if (updateCache)
+      await setCache(cacheFolder, key, cache)
 
     if (cache.pairs.length > length)
       cache.pairs = cache.pairs.slice(0, length)
@@ -55,8 +73,10 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
     let reserves = []
     if (queryBatched) {
       const batchedCalls = sliceIntoChunks(cache.pairs, queryBatched)
-      for (const calls of batchedCalls)
+      for (const calls of batchedCalls) {
         reserves.push(...await api.multiCall({ abi: abi.getReserves, calls }))
+        if (waitBetweenCalls) await sleep(waitBetweenCalls)
+      }
     } else if (fetchBalances) {
       const calls = []
       cache.pairs.forEach((owner, i) => {
@@ -72,23 +92,26 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
       reserves = await api.multiCall({ abi: abi.getReserves, calls: cache.pairs })
 
 
-    if (cache.pairs.length > _oldPairInfoLength)
-      await setCache(cacheFolder, key, cache)
-
+    const balances = {}
     if (coreAssets) {
       const data = []
       reserves.forEach(({ _reserve0, _reserve1 }, i) => {
-        data.push({
-          token0: cache.token0s[i],
-          token1: cache.token1s[i],
-          token1Bal: _reserve1,
-          token0Bal: _reserve0,
-        })
+        if (hasStablePools && cache.symbols[i].startsWith(stablePoolSymbol)) {
+          sdk.log('found stable pool: ', stablePoolSymbol)
+          sdk.util.sumSingleBalance(balances, cache.token0s[i], _reserve0)
+          sdk.util.sumSingleBalance(balances, cache.token1s[i], _reserve1)
+        } else {
+          data.push({
+            token0: cache.token0s[i],
+            token1: cache.token1s[i],
+            token1Bal: _reserve1,
+            token0Bal: _reserve0,
+          })
+        }
       })
-      return transformDexBalances({ chain, data, coreAssets, blacklistedTokens: blacklist })
+      return transformDexBalances({ balances, chain, data, coreAssets, blacklistedTokens: blacklist })
     }
 
-    const balances = {}
     const blacklistedSet = new Set(blacklist)
     reserves.forEach(({ _reserve0, _reserve1 }, i) => {
       if (!blacklistedSet.has(cache.token0s[i].toLowerCase())) sdk.util.sumSingleBalance(balances, cache.token0s[i], _reserve0)
@@ -98,17 +121,33 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
     return transformBalances(chain, balances)
   }
 
-  async function _getCache(cacheFolder, key) {
+  async function _getCache(cacheFolder, key, api) {
     let cache = await getCache(cacheFolder, key)
     if (cache.pairs) {
-      if (cache.pairs.includes(null) || cache.token0s.includes(null) || cache.token1s.includes(null))
-        cache.pairs = undefined
+      for (let i = 0; i < cache.pairs.length; i++) {
+        if (!cache.pairs[i]) {
+          cache.pairs[i] = await api.call({ abi: abi.allPairsLength, target: factory, params: i })
+          updateCache = true
+        }
+        let pair = cache.pairs[i]
+        if (!cache.token0s[i]) {
+          cache.token0s[i] = await api.call({ abi: abi.token0, target: pair })
+          updateCache = true
+        }
+        if (!cache.token1s[i]) {
+          cache.token1s[i] = await api.call({ abi: abi.token1, target: pair })
+          updateCache = true
+        }
+      }
+      // if (cache.pairs.includes(null) || cache.token0s.includes(null) || cache.token1s.includes(null))
+      //   cache.pairs = undefined
     }
-    if (!cache.pairs) {
+    if (!cache.pairs || (hasStablePools && !cache.symbols)) {
       cache = {
         pairs: [],
         token0s: [],
         token1s: [],
+        symbols: [],
       }
     }
     return cache

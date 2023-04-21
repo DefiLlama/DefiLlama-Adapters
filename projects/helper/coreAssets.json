@@ -37,13 +37,11 @@
     "0x0f83287ff768d1c1e17a42f44d644d7f22e8ee1d",
     "0x9fcf418b971134625cdf38448b949c8640971671",
     "0x8751d4196027d4e6da63716fa7786b5174f04c15",
-    "0xf56b164efd3cfc02ba739b719b6526a6fa1ca32a",
     "0xb1c9bc94acd2fae6aabf4ffae4429b93512a81d2",
     "0x5067006f830224960fb419d7f25a3a53e9919bb0",
     "0x2e9d63788249371f1dfc918a52f8d799f4a38c94",
     "0x6b3595068778dd592e39a122f4f5a5cf09c90fe2",
-    "0x36f8d0d0573ae92326827c4a82fe4ce4c244cab6",
-    "0xcf0c122c6b73ff809c693db761e7baebe62b6a2e"
+    "0x36f8d0d0573ae92326827c4a82fe4ce4c244cab6"
   ],
   "fantom": [
     "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
@@ -71,6 +69,15 @@
   "csc": [
     "0xe6f8988d30614afe4f7124b76477add79c665822",
     "0x398dca951cd4fc18264d995dcd171aa5debda129"
+  ],
+  "europa": [
+    "0x73d22d8a2D1f59Bf5Bcf62cA382481a2073FAF58",
+    "0xcb011E86DF014a46F4e3AC3F3cbB114A4EB80870",
+    "0xE0595a049d02b7674572b0d59cd4880Db60EDC50",
+    "0xD2Aaa00700000000000000000000000000000000",
+    "0x1c0491E3396AD6a35f061c62387a95d7218FC515",
+    "0x5F795bb52dAC3085f578f4877D450e2929D2F13d",
+    "0xD05C4be5f3be302d376518c9492EC0147Fa5A718"
   ],
   "avax": [
     "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
@@ -158,11 +165,11 @@
     "0x772f317ec695ce20290b56466b3f48501ba81352",
     "0x3f847b01d4d498a293e3197b186356039ecd737f",
     "0xe85afccdafbe7f2b096f268e31cce3da8da2990a",
-    "0xbb1aa6e59e5163d8722a122cd66eba614b59df0d",
-    "0xfb5b838b6cfeedc2873ab27866079ac55363d37e"
+    "0xbb1aa6e59e5163d8722a122cd66eba614b59df0d"
   ],
   "polygon": [
     "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+    "0xfd28c7cea3c50a060cb4c0059e453c6d4dd9829d",
     "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
     "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
     "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
@@ -183,7 +190,6 @@
     "0x6d3cc56dfc016151ee2613bdde0e03af9ba885cc",
     "0xe4f7761b541668f88d04fe9f2e9df10ca613aef7",
     "0x81a123f10c78216d32f8655eb1a88b5e9a3e9f2f",
-    "0xaf12f8ec3f8c711d15434b63f9d346224c1c4666",
     "0xc5b57e9a1e7914fda753a88f24e5703e617ee50c",
     "0xf826a91e8de52bc1baf40d88203e572dc2551aa3",
     "0x28cead9e4ff96806c79f4189ef28fc61418e2216",
@@ -262,6 +268,7 @@
     "0x8c6f28f2f1a3c87f0f938b96d27520d9751ec8d9",
     "0xc5db22719a06418028a40a9b5e9a7c02959d0d08",
     "0xe405de8f52ba7559f9df3c368500b6e6ae6cee49",
+    "0x94b008aa00579c1307b0ef2c499ad98a8ce58e58",
     "0x298b9b95708152ff6968aafd889c6586e9169f1d"
   ],
   "moonriver": [
@@ -319,6 +326,7 @@
     "0x93c15cd7de26f07265f0272e0b831c5d7fab174f",
     "0x1addd80e6039594ee970e5872d247bf0414c8903",
     "0x4e971a87900b931ff39d1aad67697f49835400b6",
+    "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a",
     "0x5326e71ff593ecc2cf7acae5fe57582d6e74cff1"
   ],
   "fuse": [
@@ -348,9 +356,7 @@
   "oasis": [
     "0x3223f17957ba502cbe71401d55a0db26e5f7c68f",
     "0x4bf769b05e832fcdc9053fffbc78ca889acb5e1e",
-    "0x6cb9750a92643382e020ea9a170abb83df05f30b",
     "0xdc19a122e268128b5ee20366299fc7b5b199c8e3",
-    "0x94fbffe5698db6f54d6ca524dbe673a7729014be",
     "0x80a16016cc4a2e6a2caca8a4a498b1699ff0f844",
     "0x21c718c22d52d0f3a789b752d4c2fd5908a8a733",
     "0x5c78a65ad6d0ec6618788b6e8e211f31729111ca",
@@ -693,9 +699,17 @@
     "uluna",
     "terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26"
   ],
+  "terra": [
+    "uluna",
+    "uusd"
+  ],
   "crescent": [
     "ubcre",
     "ucre"
+  ],
+  "orai": [
+    "orai",
+    "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh"
   ],
   "juno": [
     "ujuno"
@@ -708,7 +722,9 @@
     "factory/kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7/uusk"
   ],
   "injective": [
-    "inj"
+    "inj",
+    "ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9",
+    "factory/inj14ejqjyq8um4p3xfqj74yld5waqljf88f9eneuk/inj1q6zlut7gtkzknkk773jecujwsdkgq882akqksk"
   ],
   "comdex": [
     "ucmdx",
@@ -1086,6 +1102,9 @@
   ],
   "vision": [
     "0x1db6cdc620388a0b6046b20cd59503a0839adcff",
+    "0x4dE4B92C12dD4584873e72447573382C41da5597",
+    "0x9261Bb697FE632dd4746c78406E955123085Bf4C",
+    "0xf6515Ce2ab3482C84Daaef961793bdFa3266b8ad",
     "0x79ffbc4fff98b821d59dbd7b33f91a2783006b6f"
   ],
   "kava": [
@@ -1104,6 +1123,7 @@
     "0x7f5373ae26c3e8ffc4c77b7255df7ec1a9af52a6",
     "0x5c7e299cf531eb66f2a1df637d37abb78e6200c7",
     "0xa0eeda2e3075092d66384fe8c91a1da4bca21788",
+    "0xdb0e1e86b01c4ad25241b1843e407efc4d615248",
     "0xea616011e5ac9a5b91e22cac59b4ec6f562b83f9"
   ],
   "sx": [
@@ -1133,6 +1153,7 @@
     "0x9fae2529863bd691b4a7171bdfcf33c7ebb10a65"
   ],
   "thundercore": [
+    "0x0000000000000000000000000000000000000000",
     "0x413cefea29f2d07b8f2acfa69d92466b9535f717",
     "0x4f3c8e20942461e2c3bdd8311ac57b0c222f2b82",
     "0x6576bb918709906dcbfdceae4bb1e6df7c8a1077",
@@ -1240,7 +1261,6 @@
   "wemix": [
     "0x7d72b22a74a216af4a002a1095c8c707d6ec1c5f",
     "0x8e81fcc2d4a3baa0ee9044e0d7e36f59c9bba9c1",
-    "0x9b377bd7db130e8bd2f3641e0e161cb613da93de",
     "0x461d52769884ca6235b685ef2040f47d30c94eb5",
     "0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d"
   ],
@@ -1367,7 +1387,47 @@
   "bitindi": [
     "0x15E162205421dc3A47b15A1A740FbF5EAbB77921"
   ],
+  "core": [
+    "0x191E94fa59739e188dcE837F7f6978d84727AD01",
+    "0x900101d06a7426441ae63e9ab3b9b0f63be145f1",
+    "0xa4151b2b3e269645181dccf2d426ce75fcbdeca9",
+    "0x40375c92d9faf44d2f9db9bd9ba41a3317a2404f"
+  ],
+  "crab": [
+    "0x2d2b97ea380b0185e9fdf8271d1afb5d2bf18329"
+  ],
+  "lung": [
+    "0xf51666bcb4b787df919395258fb1d9556f4e357b"
+  ],
+  "loop": [
+    "0x3936D20a39eD4b0d44EaBfC91757B182f14A38d5"
+  ],
+  "rpg": [
+    "0x8bb3887ab4fec66eb9aadd7836b6944215008355",
+    "0x71d9cfd1b7adb1e8eb4c193ce6ffbe19b4aee0db"
+  ],
   "map": [
-    "0x13cb04d4a5dfb6398fc5ab005a6c84337256ee23"
+    "0x13cb04d4a5dfb6398fc5ab005a6c84337256ee23",
+    "0x9f722b2cb30093f766221fd0d37964949ed66918",
+    "0x05ab928d446d8ce6761e368c8e7be03c3168a9ec",
+    "0x35bf4004c3fc9f509259d4942da6bae3669e1db1"
+  ],
+  "bone": [
+    "0xcda1fa23ff3b9b7172be82237bf662efb69437e9"
+  ],
+  "era": [
+    "0x5aea5775959fbc2557cc8789bc1bf90a239d9a91",
+    "0x3355df6d4c9c3035724fd0e3914de96a5a83aaf4"
+  ],
+  "polygon_zkevm": [
+    "0x4F9A0e7FD2Bf6067db6994CF12E4495Df938E6e9",
+    "0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035"
+  ],
+  "eos_evm": [
+    "0xc00592aA41D32D137dC480d9f6d0Df19b860104F",
+    "0x922d641a426dcffaef11680e5358f34d97d112e1",
+    "0x765277eebeca2e31912c9946eae1021199b39c61",
+    "0xfa9343c3897324496a05fc75abed6bac29f8a40f",
+    "0xefaeee334f0fd1712f9a8cc375f427d9cdd40d73"
   ]
 }

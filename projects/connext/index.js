@@ -59,58 +59,46 @@ sdk().then((sdkObj) => {
 });
 
 
-const chainNameToChainId = {
-    ethereum: 1,
-    bsc: 56,
-    polygon: 137,
-    arbitrum: 42161,
-    optimism: 10,
-    xdai: 100,
-};
-  
-let getContractsPromise
 
+// Taken from @connext/nxtp-contracts
 async function getContracts() {
-    if (!getContractsPromise)
-      getContractsPromise = getConfig('connect/contracts', 'https://raw.githubusercontent.com/connext/monorepo/main/packages/deployments/contracts/deployments.json')
-    return getContractsPromise
-  }
-  
+  return getConfig('connect/contracts', 'https://raw.githubusercontent.com/connext/monorepo/main/packages/deployments/contracts/deployments.json')
+}
 
 async function getDeployedContractAddress(chainId) {
-    const contracts = await getContracts()
-    const record = contracts[String(chainId)] || {}
-    const name = Object.keys(record)[0];
-    if (!name) {
-        return undefined;
-    }
-    const contract = record[name]?.contracts?.TransactionManager;
-    return contract ? contract.address : undefined;
+  const allContracts = await getContracts()
+  const record = allContracts[chainId + ''] ?? []
+  const contracts =  (record ?? [])[0]?.contracts ?? {}
+  return [
+    contracts.Connext?.address,
+    contracts.Connext_DiamondProxy?.address,
+  ].filter(i => i)
 }
 
 let getAssetsPromise
 // Taken from @connext/monorepo/package
 async function getAssetIds(chainId) {
-    const url = "https://raw.githubusercontent.com/connext/chaindata/main/crossChain.json"
-    if (!getAssetsPromise)
-        getAssetsPromise = getConfig('connect/assets/'+chainId, url)
-    const data = await getAssetsPromise
-    const chainData = data.find(item => item.chainId === chainId) || {}
-    return Object.keys(chainData.assetId || {}).map(id => id.toLowerCase())
+  const url = "https://raw.githubusercontent.com/connext/chaindata/main/crossChain.json"
+  if (!getAssetsPromise)
+    getAssetsPromise = getConfig('connect/assets/'+chainId, url)
+  const data = await getAssetsPromise
+  const chainData = data.find(item => item.chainId === chainId) || {}
+  return Object.entries(chainData.assetId || {}).filter(i => i[0].length && !i[1].symbol.startsWith('next')).map(i => i[0])
 }
 
 
 // calculate tvl
 
 function chainTvl(chain) {
-return async (time, ethBlock, { [chain]: block }) => {
-    const chainId = chainNameToChainId[chain]
-    const contractAddress = await getDeployedContractAddress(chainId)
-    if (!contractAddress)
-    return {}
+  return async (time, ethBlock,_, { api }) => {
+
+    const chainId = api.chainId
+    const owners = await getDeployedContractAddress(chainId)
+    if (!owners.length)
+      return {}
     const tokens = await getAssetIds(chainId)
-    return sumTokens2({ owner: contractAddress, tokens, chain, block, })
-};
+    return sumTokens2({ owners, tokens, api, })
+  };
 }
 
 
@@ -148,12 +136,29 @@ async function stableswapTVL(_, _b, { [chain]: block }) {
   }
 
 const chains = [
-"ethereum",
-"bsc",
-"polygon",
-"optimism",
-"arbitrum",
-"xdai",
+  "ethereum",
+  "bsc",
+  "polygon",
+  "xdai",
+  "optimism",
+  "arbitrum",
+
+  // deprecated?
+  // "moonriver",
+  // "fantom",
+  // "avax",
+  // "moonbeam",
+  // "fuse",
+  // "cronos",
+  // "milkomeda",
+  // "boba",
+  // "evmos",
+  // "harmony",
+  // "okexchain",
+  // "metis",
+  // "heco",
+  // "aurora",
+
 ];
 
 

@@ -9,7 +9,6 @@ module.exports={
         chain: 'cronos',
         factory: '0x570aA1E0aa3d679Bc9DaAA47564ed3Daba1208FE',
         useDefaultCoreAssets: true,
-        fetchBalances: true,
       
       }),
         staking: staking("0x81b5118bF8A720B19FEC6F3078d2b555790cb0AB", "0x95ac4a86c0677971c4125ACe494e3C17a87a4C61", 'cronos')
