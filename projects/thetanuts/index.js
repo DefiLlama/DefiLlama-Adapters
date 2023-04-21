@@ -38,12 +38,14 @@ const ftmCallVault = '0x302ABD505757FD355C8ef3cF8b4918D6404f4996'
 const ftmPutVault = '0x7EDa4C29726355D0d8E85001B9152158b35Eae4f'
 
 //BSC Vaults
-const adaPutVault = '0xF98297A842f52Cd1f6c6f5f003Cd701813b1C461'
-const adaCallVault = '0x8BE731cB3b301b4a209C1A38ea14D6438e6913F6'
-const bchPutVault = '0xc879ecC0d2cdA26072e9049178a99B26C51eDF8a'
-const bchCallVault = '0xfe9B8054B947aCEeC01912Cf1811DB06fc804b69'
-const wbnbPutVault = '0x9EF72De1782431cf54518c42C06e26014E7201D1'
-const wbnbCallVault = '0xc75C3BE0Bc41857B9c1a675475F6E0a7c5Db63fC'
+const adaCallVault = '0xF98297A842f52Cd1f6c6f5f003Cd701813b1C461'
+const adaPutVault = '0x8BE731cB3b301b4a209C1A38ea14D6438e6913F6'
+const bchCallVault = '0xc879ecC0d2cdA26072e9049178a99B26C51eDF8a'
+const bchPutVault = '0xfe9B8054B947aCEeC01912Cf1811DB06fc804b69'
+const wbnbCallVault = '0x9EF72De1782431cf54518c42C06e26014E7201D1'
+const wbnbPutVault = '0xc75C3BE0Bc41857B9c1a675475F6E0a7c5Db63fC'
+
+//Woo Vaults
 const wooSynVault_Bi_10 = '0x74b9C75ee344cc6D323489906c571912980d03ac'
 const wooSynVault_Bi_25 = '0x91E3d1461B4655E48Be431895E483C3b17915DA5'
 const wooSynVault_Mo_10 = '0x68B727b3D2EC73026FD1c7B9f736604f1c09C541'
@@ -64,6 +66,8 @@ const nearCallVault = '0xfc7F11Bb0d97d9db1f701eEA0fDE611536F1EB5F'
 const bobaCallVault = '0x5a9f1D95C59365613B4224e690Bb4971DD246142'
 const bobaPutVault = '0xff5fe7909fc4d0d6643f1e8be8cba72610d0b485'
 
+//Arbitrum Vaults
+const arbCallVault = '0x0833EC3262Dcc417D88f85Ed5E1EBAf768080f41'
 
 
 // Ethereum Assets
@@ -78,6 +82,7 @@ const bit = '0x1a4b46696b2bb4794eb3d4c26f1c55f9170fa4c5'
 // Avalanche Assets
 const wavax = '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7'
 const usdce = '0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664'
+const usdc_avax  = '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E'
 
 // Fantom Assets
 const wftm = '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83'
@@ -102,7 +107,8 @@ const near = '0xC42C30aC6Cc15faC9bD938618BcaA1a1FaE8501d'
 let boba = '0xa18bF3994C0Cc6E3b63ac420308E5383f53120D7'
 const bobaUSDC = '0x66a2A913e447d6b4BF33EFbec43aAeF87890FBbc'
 
-
+// Arbitrum assets
+let arb = '0x912ce59144191c1204e64559fe8253a0e49e6548'
 
 
 async function addVault(balances, vault, token, block, chain) {
@@ -137,6 +143,10 @@ async function addVault(balances, vault, token, block, chain) {
 
     else if(chain == 'aurora'){
     sdk.util.sumSingleBalance(balances,`aurora:${token}`,totalBalance.output)
+    }
+    
+    else if(chain == 'arbitrum'){
+    sdk.util.sumSingleBalance(balances,`arbitrum:${token}`,totalBalance.output)
     }
 }
 
@@ -175,7 +185,7 @@ async function avaxTvl(timestamp, ethblocks, chainBlocks) {
     const balances = {}
     await Promise.all([
         addVault(balances, avaxCallVault, wavax, chainBlocks["avax"], 'avax'),
-        addVault(balances, avaxPutVault, usdce, chainBlocks["avax"], 'avax'),
+        addVault(balances, avaxPutVault, usdc_avax, chainBlocks["avax"], 'avax'),
     ])
     return balances
 }
@@ -240,6 +250,13 @@ async function auroraTvl(timestamp, ethblocks, chainBlocks) {
     return balances
 }
 
+async function arbTvl(timestamp, ethblocks, chainBlocks) {
+    const balances = {}
+    await Promise.all([
+        addVault(balances, arbCallVault, arb, chainBlocks["arbitrum"], 'arbitrum'),
+    ])
+    return balances
+}
 
 module.exports = {
     methodology: `Only the funds deposited by the users into our vaults are calculated as TVL.`,
@@ -263,6 +280,9 @@ module.exports = {
     },
     aurora: {
         tvl: auroraTvl
+    },
+    arbitrum: {
+        tvl: arbTvl
     },
     hallmarks: [
       [Math.floor(new Date('2022-09-30')/1e3), 'Thetanuts migration V0 -> V1'],
