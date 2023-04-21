@@ -21,31 +21,27 @@
     "masterCopyDeploymentBlock": 83168480,
     "mpcAddress": "0x000000000000aDdB49795b0f9bA5BC298cDda236",
     "tokens": [],
-    "logMaxBlockLookBack": 1000,
-    "avatars": []
+    "logMaxBlockLookBack": 1000
   },
   "arbitrum": {
     "masterCopyAddress": "0x30679ca4ea452d3df8a6c255a806e08810321763",
     "masterCopyDeploymentBlock": 72850751,
     "mpcAddress": "0x000000000000aDdB49795b0f9bA5BC298cDda236",
     "tokens": [],
-    "logMaxBlockLookBack": 10000,
-    "avatars": []
+    "logMaxBlockLookBack": 10000
   },
   "avax": {
     "masterCopyAddress": "0xEF8b46765ae805537053C59f826C3aD61924Db45",
     "masterCopyDeploymentBlock": 28050250,
     "mpcAddress": "0x000000000000aDdB49795b0f9bA5BC298cDda236",
     "tokens": [],
-    "logMaxBlockLookBack": 2000,
-    "avatars": []
+    "logMaxBlockLookBack": 2000
   },
   "xdai": {
     "masterCopyAddress": "0x972396Ab668cd11dc1F6321A5ae30c6A8d3759F0",
     "masterCopyDeploymentBlock": 27102135,
     "mpcAddress": "0x000000000000aDdB49795b0f9bA5BC298cDda236",
     "tokens": [],
-    "logMaxBlockLookBack": 10000,
-    "avatars": []
+    "logMaxBlockLookBack": 10000
   }
 }
