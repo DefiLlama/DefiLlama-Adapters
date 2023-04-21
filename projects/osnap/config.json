@@ -1,0 +1,51 @@
+{
+  "ethereum": {
+    "masterCopyAddress": "0x28CeBFE94a03DbCA9d17143e9d2Bd1155DC26D5d",
+    "masterCopyDeploymentBlock": 16890621,
+    "mpcAddress": "0x000000000000aDdB49795b0f9bA5BC298cDda236",
+    "tokens": [
+      "0x44108f0223A3C3028F5Fe7AEC7f9bb2E66beF82F",
+      "0x04Fa0d235C4abf4BcF4787aF4CF447DE572eF828"
+    ],
+    "logMaxBlockLookBack": 20000
+  },
+  "polygon": {
+    "masterCopyAddress": "0x3Cc4b597E9c3f51288c6Cd0c087DC14c3FfdD966",
+    "masterCopyDeploymentBlock": 40677035,
+    "mpcAddress": "0x000000000000aDdB49795b0f9bA5BC298cDda236",
+    "tokens": [],
+    "logMaxBlockLookBack": 2000
+  },
+  "optimism": {
+    "masterCopyAddress": "0x357fe84E438B3150d2F68AB9167bdb8f881f3b9A",
+    "masterCopyDeploymentBlock": 83168480,
+    "mpcAddress": "0x000000000000aDdB49795b0f9bA5BC298cDda236",
+    "tokens": [],
+    "logMaxBlockLookBack": 1000,
+    "avatars": []
+  },
+  "arbitrum": {
+    "masterCopyAddress": "0x30679ca4ea452d3df8a6c255a806e08810321763",
+    "masterCopyDeploymentBlock": 72850751,
+    "mpcAddress": "0x000000000000aDdB49795b0f9bA5BC298cDda236",
+    "tokens": [],
+    "logMaxBlockLookBack": 10000,
+    "avatars": []
+  },
+  "avax": {
+    "masterCopyAddress": "0xEF8b46765ae805537053C59f826C3aD61924Db45",
+    "masterCopyDeploymentBlock": 28050250,
+    "mpcAddress": "0x000000000000aDdB49795b0f9bA5BC298cDda236",
+    "tokens": [],
+    "logMaxBlockLookBack": 2000,
+    "avatars": []
+  },
+  "xdai": {
+    "masterCopyAddress": "0x972396Ab668cd11dc1F6321A5ae30c6A8d3759F0",
+    "masterCopyDeploymentBlock": 27102135,
+    "mpcAddress": "0x000000000000aDdB49795b0f9bA5BC298cDda236",
+    "tokens": [],
+    "logMaxBlockLookBack": 10000,
+    "avatars": []
+  }
+}
