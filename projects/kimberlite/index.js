@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const { config } = require('./config')
+const { sumTokens2, } = require('../helper/unwrapLPs')
 const abi = require("./abi.json");
-const { vestingHelper } = require("../helper/unknownTokens");
 
 async function calculateTvl(contract, chain, block) {
 	
@@ -17,44 +17,44 @@ async function calculateTvl(contract, chain, block) {
 	console.log("Lengths:", lengths); // Add this line to see the content of lengths object
 	console.log("Block:", block); // Add this line to see the value of block
 	
-	const allBalances = await getBalances(contract, chain, block, lengths);
-
-	console.log("Balances:", allBalances); // Add this line to see the value of block
+    let tokensAndOwners = await mapTokensToContract(contract, chain, block, lengths)
 	
-	return allBalances;
+	console.log("TokensAndContract:", tokensAndOwners); // Add this line to see the value of tokensAndContract
+	
+	return sumTokens2({ tokensAndOwners, chain, block, resolveLP = true })
 }
 
-async function getBalances(contract, chain, block, length) {
-    const calls = [];
-    for (let i = 1; i <= length; i++)
-    calls.push({ target: contract, params: [i] })
-  
+async function mapTokensToContract(contract, chain, block, length) {
+	
+	const calls = [];
+	const tokensArray = [];
+
+	for (let i = 1; i <= length; i++) {
+		calls.push({ target: contract, params: [i] }); // Pass the parameter as an array
+	}
+	
 	console.log("Calls:", calls); // Add this line to see the content of calls array
 	
-    const { output } = await sdk.api.abi.multiCall({
-      abi: abi.lockedToken, requery: true,
-      calls, chain, block,
-    });
+	const { output } = await sdk.api.abi.multiCall({
+		abi: abi.lockedToken,
+		requery: true,
+		calls,
+		chain,
+		block,
+	});
+  
+	for (const item of output) {
+		tokensArray.push(item.output.tokenAddress);
+	}
 	
-    const token = output.map(i => i.output.tokenAddress);
-	
-	const blacklist = [];
-	
-    return await vestingHelper({
-      useDefaultCoreAssets: true,
-      blacklist,
-      owner: contract,
-      token,
-      block, chain,
-      log_coreAssetPrices: [
-        300/ 1e18,
-        1/ 1e18,
-        1/ 1e18,
-        1/ 1e18,
-      ],
-      log_minTokenValue: 1e6,
-    })
- };
+	const uniqueTokens = filterDuplicates(tokensArray);
+	const mappedTokens = uniqueTokens.map((token, i) => ([token, contract]));
+	return mappedTokens;
+}
+
+function filterDuplicates(tokensArray) {
+  return [...new Set(tokensArray.map(token => token.toLowerCase()))];
+}
 
 const chains = [
   'arbitrum',
