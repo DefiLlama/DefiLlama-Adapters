@@ -1,67 +1,45 @@
-const sdk = require("@defillama/sdk");
-const { getChainTransform } = require("../helper/portedTokens.js");
-const { sumTokensSharedOwners, genericUnwrapCvx } = require("../helper/unwrapLPs");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 const { staking } = require("../helper/staking.js");
 const contracts = require("./contracts");
 
 function tvl(chain) {
-  return async (timestamp, block, chainBlocks) => {
-    const balances = {};
-    const transform = await getChainTransform(chain);
+  return async (timestamp, block, chainBlocks, { api }) => {
+    const tokens = Object.values(contracts[chain].underlyingTokens).concat(Object.values(contracts[chain].yvTokens))
+    await sumTokens2({ tokens, api, owners: Object.values(contracts[chain].tokenHolders) })
+    if (api.chain !== 'ethereum') return
 
-    await sumTokensSharedOwners(
-      balances,
-      Object.values(contracts[chain].underlyingTokens).concat(
-        Object.values(contracts[chain].yvTokens)
-      ),
-      Object.values(contracts[chain].tokenHolders),
-      chainBlocks[chain],
-      chain,
-      transform
-    );
-
-    const lpPoolKeys = Object.keys(contracts.cvxLPpools);
-    const lpBalances = await Promise.all(
-      lpPoolKeys.map(async (lpPoolName) => {
-        const { poolAddress, holder, tokenAddress } =
-          contracts.cvxLPpools[lpPoolName];
-        const lpTokenBalance = await sdk.api.abi.call({
-          target: poolAddress,
-          abi: "erc20:balanceOf",
-          params: holder,
-          chain,
-          block: chainBlocks[chain],
-        });
-
-        return lpTokenBalance.output;
+    await Promise.all(
+      Object.values(contracts.cvxLPpools).map(async ({ poolAddress, holder, tokenAddress, alToken }) => {
+        const lpTokenBalance = await api.call({ target: poolAddress, abi: "erc20:balanceOf", params: holder, })
+        const supply = await api.call({ target: tokenAddress, abi: "erc20:totalSupply", })
+        const ratio = lpTokenBalance / supply
+        if (+ratio === 0) return;
+        const tokenBalances = await api.multiCall({ target: tokenAddress, abi: 'function balances(uint256) view returns (uint256)', calls: [0, 1] })
+        const tokens = await api.multiCall({ target: tokenAddress, abi: 'function coins(uint256) view returns (address)', calls: [0, 1] })
+        alToken = alToken.toLowerCase()
+        tokens.forEach((token, i) => {
+          if (token.toLowerCase() !== alToken) {
+            api.add(token, tokenBalances[i] * ratio)
+          }
+        })
       })
     );
-
-    lpPoolKeys.forEach((lpPoolName, i) => {
-      const { tokenAddress  } = contracts.cvxLPpools[lpPoolName];
-      sdk.util.sumSingleBalance(
-        balances,
-        tokenAddress,
-        lpBalances[i].toString()
-      );
-    });
-
-    return balances;
   };
 }
 
 module.exports = {
+  doublecounted: true,
   ethereum: {
     tvl: tvl("ethereum"),
-    // staking: staking(
-    //   contracts.ethereum.staking.holder,
-    //   contracts.ethereum.staking.token
-    // ),
+    staking: staking(
+      contracts.ethereum.staking.holder,
+      contracts.ethereum.staking.token
+    ),
   },
-  // fantom: {
-  //   tvl: tvl("fantom"),
-  // },
-  // optimism: {
-  //   tvl: tvl("optimism"),
-  // },
+  fantom: {
+    tvl: tvl("fantom"),
+  },
+  optimism: {
+    tvl: tvl("optimism"),
+  },
 };
