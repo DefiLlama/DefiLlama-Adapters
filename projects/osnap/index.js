@@ -1,10 +1,5 @@
 const sdk = require("@defillama/sdk");
-const { providers } = require("@defillama/sdk/build/general");
-const { Contract } = require("ethers");
-const { paginatedEventQuery, getConfig } = require("./utils");
-
-const mpcAbi = require("./mpcAbi.json");
-const ogAbi = require("./ogAbi.json");
+const { getConfig } = require("./utils");
 
 const ethAddress = "0x0000000000000000000000000000000000000000";
 
@@ -15,46 +10,10 @@ async function tvl(_, _1, _2, api) {
     "https://raw.githubusercontent.com/md0x/DefiLlama-Adapters/main/projects/osnap/config.json";
   const config = await getConfig(url);
 
-  const {
-    masterCopyAddress,
-    masterCopyDeploymentBlock,
-    mpcAddress,
-    tokens,
-    logMaxBlockLookBack,
-    avatars,
-  } = config[api.chain];
-
-  let avatarList;
-  if (avatars) {
-    avatarList = avatars;
-  } else {
-    const mpc = new Contract(mpcAddress, mpcAbi, providers[api.chain]);
-    const filter = mpc.filters.ModuleProxyCreation(null, masterCopyAddress);
-
-    const events = await paginatedEventQuery(
-      mpc,
-      filter,
-      {
-        fromBlock: masterCopyDeploymentBlock,
-        toBlock: await providers[api.chain].getBlockNumber(),
-        maxBlockLookBack: logMaxBlockLookBack,
-      },
-      0
-    );
-    const avatarsFromEvents = await Promise.all(
-      events.map(async (event) => {
-        const proxy = event.args.proxy;
-        const og = new Contract(proxy, ogAbi, providers[api.chain]);
-        const avatar = await og.avatar();
-        return avatar;
-      })
-    );
-    // remove duplicates
-    avatarList = [...new Set(avatarsFromEvents)];
-  }
+  const { tokens, avatars } = config[api.chain];
 
   await Promise.all(
-    avatarList.map(async (avatar) => {
+    avatars.map(async (avatar) => {
       // eth balance
       const { output: balance } = await sdk.api.eth.getBalance({
         target: avatar,
