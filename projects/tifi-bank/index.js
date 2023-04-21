@@ -30,6 +30,6 @@ module.exports = {
   bsc: {
     tvl: getUniTVL({ chain: 'bsc', factory: '0xb3456550c17128ca7ebbcc47d4be6cae29d43853', }),
     staking: stakings(stakingContracts, '0x17E65E6b9B166Fb8e7c59432F0db126711246BC0', 'bsc'),
-    pool2: sumTokensExport({ tokens: [lpTokens], owners: lpContract, useDefaultCoreAssets: true }),
+    pool2: sumTokensExport({ tokens: lpTokens, owners: lpContract, useDefaultCoreAssets: true }),
   }
 }
