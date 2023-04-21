@@ -27,7 +27,7 @@ async function calculateTvl(contract, chain, block) {
 async function getBalances(contract, chain, block, length) {
     const calls = [];
     for (let i = 1; i <= length; i++)
-    calls.push({ target: contract, params: i })
+    calls.push({ target: contract, params: [i] })
   
 	console.log("Calls:", calls); // Add this line to see the content of calls array
 	
