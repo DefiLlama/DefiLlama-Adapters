@@ -34,20 +34,19 @@ async function calculateTvl(contract, chain, block) {
 	
 	// Iterate through the keys of balancesA and add them to balancesC
   for (const key in balancesA) {
-    balancesC[key] = BigInt(balancesA[key]);
+    balancesC[key] = BigInt(balancesA[key]).toString();
   }
 
   // Iterate through the keys of balancesB
   for (const key in balancesB) {
     // If the key already exists in balancesC, add the balance from balancesB
     if (balancesC.hasOwnProperty(key)) {
-      balancesC[key] += BigInt(balancesB[key]);
+      balancesC[key] = (BigInt(balancesC[key]) + BigInt(balancesB[key])).toString();
     } else {
       // If the key doesn't exist in balancesC, add it with the balance from balancesB
-      balancesC[key] = BigInt(balancesB[key]);
+      balancesC[key] = BigInt(balancesB[key]).toString();
     }
-  }
-  
+  }  
 	console.log("BalancesC:", balancesC); // Add this line to see the value of balancesC
   
 	return balancesC;  
