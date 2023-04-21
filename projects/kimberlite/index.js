@@ -1,7 +1,8 @@
 const sdk = require("@defillama/sdk");
 const { config } = require('./config')
-const { sumTokens2, } = require('../helper/unwrapLPs')
 const abi = require("./abi.json");
+const { sumTokens2, } = require('../helper/unwrapLPs')
+const { vestingHelper } = require("../helper/unknownTokens");
 
 async function calculateTvl(contract, chain, block) {
 	
@@ -17,11 +18,22 @@ async function calculateTvl(contract, chain, block) {
 	console.log("Lengths:", lengths); // Add this line to see the content of lengths object
 	console.log("Block:", block); // Add this line to see the value of block
 	
-    let tokensAndOwners = await mapTokensToContract(contract, chain, block, lengths)
+	const balancesA = await getBalances(contract, chain, block, lengths);
+
+	console.log("BalancesA:", balancesA); // Add this line to see the value of balancesA
+	
+	let tokensAndOwners = await mapTokensToContract(contract, chain, block, lengths)
 	
 	console.log("TokensAndContract:", tokensAndOwners); // Add this line to see the value of tokensAndContract
 	
-	return sumTokens2({ tokensAndOwners, chain, block,  })
+	const balancesB = await sumTokens2({ tokensAndOwners, chain, block,  });
+	
+	console.log("BalancesB:", balancesA); // Add this line to see the value of balancesB
+	
+	// Add balancesA and balancesB using BigInt
+	const totalBalance = BigInt(balancesA) + BigInt(balancesB);
+
+	return totalBalance;  
 }
 
 async function mapTokensToContract(contract, chain, block, length) {
@@ -50,6 +62,38 @@ async function mapTokensToContract(contract, chain, block, length) {
 	const uniqueTokens = filterDuplicates(tokensArray);
 	const mappedTokens = uniqueTokens.map((token, i) => ([token, contract]));
 	return mappedTokens;
+}
+
+async function getBalances(contract, chain, block, length) {
+    const calls = [];
+    for (let i = 1; i <= length; i++)
+    calls.push({ target: contract, params: i })
+  
+	console.log("Calls:", calls); // Add this line to see the content of calls array
+	
+    const { output } = await sdk.api.abi.multiCall({
+      abi: abi.lockedToken, requery: true,
+      calls, chain, block,
+    });
+	
+    const tokens = output.map(i => i.output.tokenAddress);
+	
+	const blacklist = [];
+	
+    return await vestingHelper({
+      useDefaultCoreAssets: true,
+      blacklist,
+      owner: contract,
+      tokens,
+      block, chain,
+      log_coreAssetPrices: [
+        300/ 1e18,
+        1/ 1e18,
+        1/ 1e18,
+        1/ 1e18,
+      ],
+      log_minTokenValue: 1e6,
+    })
 }
 
 function filterDuplicates(tokensArray) {
