@@ -31,7 +31,7 @@ async function unwrapUniswapLPs(balances, lpPositions, block, chain = 'ethereum'
   const [
     lpReserves, lpSupplies, tokens0, tokens1,
   ] = await Promise.all([
-    api.multiCall({ abi: lpReservesAbi, calls: lpTokenCalls, }),
+    uni_type === 'standard' ? api.multiCall({ abi: lpReservesAbi, calls: lpTokenCalls, }) : null,
     api.multiCall({ abi: lpSuppliesAbi, calls: lpTokenCalls, }),
     api.multiCall({ abi: token0Abi, calls: lpTokenCalls, }),
     api.multiCall({ abi: token1Abi, calls: lpTokenCalls, }),
@@ -39,9 +39,8 @@ async function unwrapUniswapLPs(balances, lpPositions, block, chain = 'ethereum'
   let gelatoPools, gToken0Bals, gToken1Bals
   if (uni_type === 'gelato') {
     gelatoPools = await api.multiCall({ abi: gelatoPoolsAbi, calls: lpTokenCalls, })
-    gToken1Bals = await api.multiCall({ abi: gelatoPoolsAbi, calls: gelatoPools.map((v, i) => ({ target: tokens0[i], params: v })), })
-    gToken0Bals = await api.multiCall({ abi: gelatoPoolsAbi, calls: gelatoPools.map((v, i) => ({ target: tokens1[i], params: v })), })
-
+    gToken1Bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: gelatoPools.map((v, i) => ({ target: tokens0[i], params: v })), })
+    gToken0Bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: gelatoPools.map((v, i) => ({ target: tokens1[i], params: v })), })
   }
   lpPositions.map((lpPosition, i) => {
     const token0 = tokens0[i].toLowerCase()
