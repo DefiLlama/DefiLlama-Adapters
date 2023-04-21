@@ -79,6 +79,7 @@ chains.forEach(chain => {
   }
 
   module.exports[chain] = {
+    misrepresentedTokens: true,
     tvl: async (_, _b, { [chain]: block }) => calculateTvl(contract, chain, block),
   }
 })
