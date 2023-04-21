@@ -24,7 +24,7 @@ async function calculateTvl(contract, chain, block) {
 	return sumTokens2({ tokensAndOwners, chain, block,  })
 }
 
-async function mapTokensToContract(contract, chain, block, lenght) {
+async function mapTokensToContract(contract, chain, block, length) {
 	
 	const calls = [];
 	const tokensArray = [];
