@@ -30,16 +30,27 @@ async function calculateTvl(contract, chain, block) {
 	
 	console.log("BalancesB:", balancesB); // Add this line to see the value of balancesB
 	
-	// Extract numeric values from balancesA and balancesB objects
-	const balancesANumeric = Object.values(balancesA).reduce((acc, value) => acc + BigInt(value), BigInt(0));
-	const balancesBNumeric = Object.values(balancesB).reduce((acc, value) => acc + BigInt(value), BigInt(0));
+	const balancesC = {};
+	
+	// Iterate through the keys of balancesA and add them to balancesC
+  for (const key in balancesA) {
+    balancesC[key] = BigInt(balancesA[key]);
+  }
 
-	// Add balancesANumeric and balancesBNumeric using BigInt
-	const totalBalance = BigInt(balancesANumeric) + BigInt(balancesBNumeric);
-
-	// Convert totalBalance to an object and return it
-	const totalBalanceObject = { totalBalance: totalBalance.toString() };
-	return totalBalanceObject;  
+  // Iterate through the keys of balancesB
+  for (const key in balancesB) {
+    // If the key already exists in balancesC, add the balance from balancesB
+    if (balancesC.hasOwnProperty(key)) {
+      balancesC[key] += BigInt(balancesB[key]);
+    } else {
+      // If the key doesn't exist in balancesC, add it with the balance from balancesB
+      balancesC[key] = BigInt(balancesB[key]);
+    }
+  }
+  
+	console.log("BalancesC:", balancesC); // Add this line to see the value of balancesC
+  
+	return balancesC;  
 }
 
 async function mapTokensToContract(contract, chain, block, length) {
