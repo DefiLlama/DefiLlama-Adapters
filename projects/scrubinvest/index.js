@@ -16,6 +16,11 @@ module.exports = {
             ["0x7f8ed7d31795dc6f5fc5f6685b11419674361501","0xa2355f35Ab85f1771FB1085a0e5b2599B8F47457"],
             ["0x09d6561b3795ae237e42f7adf3dc83742e10a2e8","0x2c1C6aaB89272d07B7f78bFe93eefb6D2631Cf94"],
           ],
+          lps: [
+            "0xeA848151ACB1508988e56Ee7689F004df2B15ced",
+            "0x7f8ed7d31795dc6f5fc5f6685b11419674361501",
+            "0x09d6561b3795ae237e42f7adf3dc83742e10a2e8"
+            ]
         }),
     }
 };
