@@ -10,16 +10,10 @@ module.exports = {
             '0x92e17FD2DA50775FBD423702E4717cCD7FB2A6BB',
             '0x58333b7D0644b52E0e56cC3803CA94aF9e0B52C3',
             '0x24149e2D0D3F79EBb7Fc464b09e3628dE395b39D',
-          // Vaults Equilibre Scrub
+          // Vaults Equilibre Scrub LP
             '0xeA848151ACB1508988e56Ee7689F004df2B15ced',
             '0x7f8ed7d31795dc6f5fc5f6685b11419674361501',
             '0x09d6561b3795ae237e42f7adf3dc83742e10a2e8',
-            // single tokens in LPs
-            '0x471F79616569343e8e84a66F342B7B433b958154',
-            '0x990e157fC8a492c28F5B50022F000183131b9026',
-            '0x38481Fdc1aF61E6E72E0Ff46F069315A59779C65',
-            '0xfA9343C3897324496A05fC75abeD6bAC29f8A40f',
-            '0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b'
          
           ],
           owners: [
@@ -34,7 +28,6 @@ module.exports = {
             "0xa2355f35Ab85f1771FB1085a0e5b2599B8F47457",
             "0x2c1C6aaB89272d07B7f78bFe93eefb6D2631Cf94",
           ],
-          unwrapAll:true,
           resolveLP:true
         }),
     }
