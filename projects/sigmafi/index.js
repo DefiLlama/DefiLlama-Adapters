@@ -2,8 +2,8 @@ const utils = require('./helper/utils');
 const { toUSDTBalances } = require('./helper/balances');
 
 async function tvl() {
-  const SigmaFiTVL = await utils.fetchURL('https://api.sigmaexplorer.org/sigmafi/tvl/summary');
-  return toUSDTBalances(SigmaFiTVL);
+  const totalTVL = await utils.fetchURL('https://api.sigmaexplorer.org/sigmafi/tvl/summary');
+  return toUSDTBalances(totalTVL);
 }
 
 module.exports = {
