@@ -14,7 +14,7 @@ module.exports = {
             '0xeA848151ACB1508988e56Ee7689F004df2B15ced',
             '0x7f8ed7d31795dc6f5fc5f6685b11419674361501',
             '0x09d6561b3795ae237e42f7adf3dc83742e10a2e8',
-          ]
+          ],
           balances: [
             // [tokenAddress, ownerContractAddress]
             // YieldOptimizers Mare
