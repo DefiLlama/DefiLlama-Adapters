@@ -7,7 +7,10 @@ async function tvl() {
 }
 
 module.exports = {
-  misrepresentedTokens: false,
-  tvl,
-  methodology: 'SigmaFi TVL is achieved by making a call to its API: https://api.sigmaexplorer.org/sigmafi/tvl/summary API endpoint.',
-};
+    misrepresentedTokens: true,
+    timetravel: false,
+    ergo:{
+        tvl
+    },
+    methodology: 'SigmaFi TVL is achieved by making a call to its API: https://api.sigmaexplorer.org/sigmafi/tvl/summary API endpoint.'
+}
