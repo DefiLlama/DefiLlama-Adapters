@@ -21,16 +21,6 @@ module.exports = {
         "0xCA0d7b385e9DC484C646C50F1BBA6B01CC60E361", // 10000 
         "0xc500DA72cCeA705aD5Ee3A4d77ABb1864DD30a4F", // 100000 
       ],
-    },
-    {
-      tokens: ['0x5Ba0Ab8f8E04419b91B0387d1A86FdaE7904B5e6'],   // PRIV
-      holders: [
-        "0x6Aa0e5a0E753c9620Dfb491C65b281Cb6F1De5e7", // 10 
-        "0x71bad84Af58079d14Ba39f8B1D28EcA16A501921", // 100 
-        "0x3bB83810eDD5081677B7d818867BDB007D382e64", // 1000 
-        "0x8f9A2A8AE7021fbBE62b81e2c6c54844f3F69065", // 10000 
-        "0x16Bad1d7A84Bec3c70F8c6c9E8D21fE5FbbBC397", // 100000
-      ],
-    }    
+    } 
   ]  
 }
