@@ -2,7 +2,7 @@ const { sumTokensExport } = require("../helper/unwrapLPs");
 
 module.exports = {
     kava: {
-        tvl: sumTokensAndLPs({ 
+        tvl: addTokensAndLPs({ 
           chain: 'kava', 
           tokens: [ 
           // YieldOptimizers Mare
