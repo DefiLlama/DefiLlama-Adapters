@@ -14,6 +14,13 @@ module.exports = {
             '0xeA848151ACB1508988e56Ee7689F004df2B15ced',
             '0x7f8ed7d31795dc6f5fc5f6685b11419674361501',
             '0x09d6561b3795ae237e42f7adf3dc83742e10a2e8',
+            // single tokens in LPs
+            '0x471F79616569343e8e84a66F342B7B433b958154',
+            '0x990e157fC8a492c28F5B50022F000183131b9026',
+            '0x38481Fdc1aF61E6E72E0Ff46F069315A59779C65',
+            '0xfA9343C3897324496A05fC75abeD6bAC29f8A40f',
+            '0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b'
+         
           ],
           owners: [
             // [tokenAddress, ownerContractAddress]
