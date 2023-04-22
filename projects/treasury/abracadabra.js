@@ -1,8 +1,8 @@
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
-const teamTokens = "0x5A7C5505f3CFB9a0D9A8493EC41bf27EE48c406D";
-const treasury = "0xdf2c270f610dc35d8ffda5b453e74db5471e126b";
-const arbDelegate = "0xA71A021EF66B03E45E0d85590432DFCfa1b7174C";
+const mainnetTeamTokens = "0x5A7C5505f3CFB9a0D9A8493EC41bf27EE48c406D";
+const mainnetTreasury = "0xdf2c270f610dc35d8ffda5b453e74db5471e126b";
+const arbitrumTreasury = "0xA71A021EF66B03E45E0d85590432DFCfa1b7174C";
 const SPELL = "0x090185f2135308BaD17527004364eBcC2D37e5F6";
 
 module.exports = treasuryExports({
@@ -29,16 +29,23 @@ module.exports = treasuryExports({
       // Stargate pools
       "0xdf0770dF86a8034b3EFEf0A1Bb3c889B8332FF56", // S*USDC
       "0x38EA452219524Bb87e18dE1C24D3bB59510BD783", // S*USDT
+      // Magic autocompounders
+      "0xf35b31B941D94B249EaDED041DB1b05b7097fEb6", // magicAPE
     ],
-    owners: [teamTokens, treasury],
+    owners: [mainnetTeamTokens, mainnetTreasury],
     ownTokens: [SPELL],
   },
   arbitrum: {
     tokens: [
       nullAddress,
       "0x912CE59144191C1204E64559FE8253a0e49E6548", // ARB
+      "0xfea7a6a0b346362bf88a9e4a88416b77a57d6c2a", // MIM
+      "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8", // USDC
+      "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9", // USDT
+      // Magic autocompounders
+      "0x85667409a723684fe1e57dd1abde8d88c2f54214", // magicGLP
     ],
-    owners: [arbDelegate],
-    ownTokens: [SPELL],
+    owners: [arbitrumTreasury],
+    ownTokens: [],
   },
 });
