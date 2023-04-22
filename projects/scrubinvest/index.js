@@ -28,7 +28,7 @@ module.exports = {
             "0xa2355f35Ab85f1771FB1085a0e5b2599B8F47457",
             "0x2c1C6aaB89272d07B7f78bFe93eefb6D2631Cf94",
           ],
-          resolveLP: true,
+          resolveLPs: true,
           useDefaultCoreAssets: true,
 
         }),
