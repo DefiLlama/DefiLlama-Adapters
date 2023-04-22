@@ -20,7 +20,7 @@ Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: () => ({}),
     staking: (_, _b, { [chain]: block }) => {
-      return sumTokens2({ chain, block, tokens: STAKING, owners: SKILL_TOKEN_CONTRACT,})
+      return sumTokens2({ chain, block, tokens: STAKING, owners: [SKILL_TOKEN_CONTRACT],})
     },
   }
 })
