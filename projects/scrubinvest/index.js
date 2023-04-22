@@ -17,6 +17,7 @@ module.exports = {
             ['0x09d6561b3795ae237e42f7adf3dc83742e10a2e8',"0x2c1C6aaB89272d07B7f78bFe93eefb6D2631Cf94"],
           ],
           resolveLPs: true,
+          unwrapAll: true
         }),
     }
 };
