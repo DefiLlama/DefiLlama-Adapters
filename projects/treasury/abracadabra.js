@@ -2,6 +2,7 @@ const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 const teamTokens = "0x5A7C5505f3CFB9a0D9A8493EC41bf27EE48c406D";
 const treasury = "0xdf2c270f610dc35d8ffda5b453e74db5471e126b";
+const arbDelegate = "0xA71A021EF66B03E45E0d85590432DFCfa1b7174C";
 const SPELL = "0x090185f2135308BaD17527004364eBcC2D37e5F6";
 
 module.exports = treasuryExports({
@@ -30,6 +31,14 @@ module.exports = treasuryExports({
       "0x38EA452219524Bb87e18dE1C24D3bB59510BD783", // S*USDT
     ],
     owners: [teamTokens, treasury],
+    ownTokens: [SPELL],
+  },
+  arbitrum: {
+    tokens: [
+      nullAddress,
+      "0x912CE59144191C1204E64559FE8253a0e49E6548", // ARB
+    ],
+    owners: [arbDelegate],
     ownTokens: [SPELL],
   },
 });
