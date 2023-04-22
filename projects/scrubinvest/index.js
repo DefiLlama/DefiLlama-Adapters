@@ -1,8 +1,8 @@
-const { addTokensAndLPs } = require("../helper/unwrapLPs");
+const { sumTokensExport } = require("../helper/unwrapLPs");
 
 module.exports = {
     kava: {
-        tvl: addTokensAndLPs({ 
+        tvl: sumTokensExport({ 
           chain: 'kava', 
           tokens: [ 
           // YieldOptimizers Mare
@@ -15,7 +15,7 @@ module.exports = {
             '0x7f8ed7d31795dc6f5fc5f6685b11419674361501',
             '0x09d6561b3795ae237e42f7adf3dc83742e10a2e8',
           ],
-          balances: [
+          owners: [
             // [tokenAddress, ownerContractAddress]
             // YieldOptimizers Mare
             '0xcd017B495DF1dE2DC8069b274e2ddfBB78561176',
@@ -27,6 +27,8 @@ module.exports = {
             "0xa2355f35Ab85f1771FB1085a0e5b2599B8F47457",
             "0x2c1C6aaB89272d07B7f78bFe93eefb6D2631Cf94",
           ],
+          unwrapAll:true,
+          resolveLP:true
         }),
     }
 };
