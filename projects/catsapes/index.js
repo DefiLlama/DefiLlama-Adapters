@@ -1,4 +1,4 @@
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const { sumTokensExport } = require('../helper/unwrapLPs')
 
 
 const config = {
@@ -20,7 +20,7 @@ Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: () => ({}),
     staking: (_, _b, { [chain]: block }) => {
-      return sumTokens2({ chain, block, tokens: STAKING, owners: [SKILL_TOKEN_CONTRACT],})
+      return sumTokensExport({ chain, block, tokens: STAKING, owners: SKILL_TOKEN_CONTRACT})
     },
   }
 })
