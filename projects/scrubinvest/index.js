@@ -1,4 +1,4 @@
-const { sumTokensExport } = require("../helper/unwrapLPs");
+const { addTokensAndLPs } = require("../helper/unwrapLPs");
 
 module.exports = {
     kava: {
