@@ -1,15 +1,35 @@
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 const teamTokens = "0x5A7C5505f3CFB9a0D9A8493EC41bf27EE48c406D";
+const treasury = "0xdf2c270f610dc35d8ffda5b453e74db5471e126b";
 const SPELL = "0x090185f2135308BaD17527004364eBcC2D37e5F6";
-
 
 module.exports = treasuryExports({
   ethereum: {
-    tokens: [ 
-        nullAddress
-     ],
-    owners: [teamTokens],
+    tokens: [
+      nullAddress,
+      SPELL,
+      "0xdac17f958d2ee523a2206206994597c13d831ec7", // USDT
+      "0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3", // MIM
+      "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC
+      "0x6b175474e89094c44da98b954eedeac495271d0f", // DAI
+      "0xd533a949740bb3306d119cc777fa900ba034cd52", // CRV
+      "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // wETH
+      "0x4d224452801aced8b2f0aebe155379bb5d594381", // APE
+      // Yearn vaults
+      "0x27B5739e22ad9033bcBf192059122d163b60349D", // st-yCRV
+      "0xdCD90C7f6324cfa40d7169ef80b12031770B4325", // yvCurve-stETH
+      "0xa258C4606Ca8206D8aA700cE2143D7db854D168c", // yvWETH
+      "0xdA816459F1AB5631232FE5e97a05BBBb94970c95", // yvDAI
+      "0x3B27F92C0e212C671EA351827EDF93DB27cc0c65", // yvUSDT
+      "0xa354F35829Ae975e850e23e9615b11Da1B3dC4DE", // yvUSDC
+      "0x27b7b1ad7288079A66d12350c828D3C00A6F07d7", // yvCurve-IronBank
+      "0x1635b506a88fBF428465Ad65d00e8d6B6E5846C3", // yvCurve-CVXETH
+      // Stargate pools
+      "0xdf0770dF86a8034b3EFEf0A1Bb3c889B8332FF56", // S*USDC
+      "0x38EA452219524Bb87e18dE1C24D3bB59510BD783", // S*USDT
+    ],
+    owners: [teamTokens, treasury],
     ownTokens: [SPELL],
   },
-})
+});
