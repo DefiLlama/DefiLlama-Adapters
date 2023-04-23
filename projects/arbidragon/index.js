@@ -1,7 +1,7 @@
 const { getUniTVL, sumTokensExport } = require('../helper/unknownTokens')
 const ARBID = "0xf3f45fA22c374c82Ca8573FFCb8D529B9e1A27A1";
 
-const dexTVL = getUniTVL({ factory: '0xC9E7aC651Bc55EcF554f53bB4B6e17b9A1A22A84', fetchBalances: true, useDefaultCoreAssets: true })
+const dexTVL = getUniTVL({ factory: '0xC9E7aC651Bc55EcF554f53bB4B6e17b9A1A22A84',  useDefaultCoreAssets: true })
 
 
 module.exports = {

@@ -1,7 +1,7 @@
 const { getUniTVL, sumTokensExport } = require('../helper/unknownTokens')
 const ARX = "0xD5954c3084a1cCd70B4dA011E67760B8e78aeE84";
 
-const dexTVL = getUniTVL({ factory: '0x1C6E968f2E6c9DEC61DB874E28589fd5CE3E1f2c', fetchBalances: true, useDefaultCoreAssets: true })
+const dexTVL = getUniTVL({ factory: '0x1C6E968f2E6c9DEC61DB874E28589fd5CE3E1f2c',  useDefaultCoreAssets: true })
 
 
 module.exports = {

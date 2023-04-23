@@ -35,7 +35,7 @@ Object.keys(config).forEach(chain => {
       })
 
       const vaults = logs.filter(i => i.vaultType === 'SCYVault' || i.vaultType === 'SCYWEpochVault').map(i => i.vault)
-      const bals = await api.multiCall({ abi: 'uint256:getTvl', calls: vaults })
+      const bals = (await api.multiCall({ abi: 'uint256:getTvl', calls: vaults, permitFailure: true, })).map(i => i ?? 0)
       const tokens = await api.multiCall({ abi: 'address:underlying', calls: vaults })
       api.addTokens(tokens, bals.map(i => i || 0))
 

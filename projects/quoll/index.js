@@ -59,6 +59,7 @@ async function voterProxyBalances(block) {
       };
     }),
     chain,
+    permitFailure: true,
   });
   return underlyingAmounts.output
     .map((a, i) => {
