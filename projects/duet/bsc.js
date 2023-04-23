@@ -41,12 +41,12 @@ async function tvl(_, _1, _2, { api }) {
     acc[v] = underlyings[i]
     return acc
   }, {})
-  const pairs = await api.multiCall({ abi: 'address:pair', calls: uniqueVaults })
+  const pairs = await api.multiCall({ abi: 'address:pair', calls: uniqueVaults, permitFailure: true, })
   const maybeIsSingle = uniqueVaults.filter((v, i) => {
     if (!pairs[i]) return true
     tokensAndOwners.push([pairs[i], underlyingMap[v]])
   })
-  const tokens = await api.multiCall({ abi: 'address:underlyingToken', calls: maybeIsSingle })
+  const tokens = await api.multiCall({ abi: 'address:underlyingToken', calls: maybeIsSingle, permitFailure: true,  })
   maybeIsSingle.forEach((v, i) => {
     if (!tokens[i]) return;
     tokensAndOwners.push([tokens[i], underlyingMap[v]])

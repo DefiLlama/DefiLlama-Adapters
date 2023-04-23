@@ -19,6 +19,8 @@ module.exports = {
       BOB: "0xeA6cDd9e8819BbF7f8791E7D084d9F0a6Afa7892",
       frxETH: "0x2Ea772346486972E7690219c190dAdDa40Ac5dA4",
       overnight: "0x9498563e47D7CFdFa22B818bb8112781036c201C", // USD+ pool
+      mim: "0xb8b1b72a9b9ba90e2539348fec1ad6b265f9f684",
+      ankrBNB: "0x6f1c689235580341562cdc3304e923cc8fad5bfa",
     },
   },
   arbitrum: {
