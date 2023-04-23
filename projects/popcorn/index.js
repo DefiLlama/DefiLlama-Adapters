@@ -28,7 +28,7 @@ module.exports = {
   methodology: ``,
   ethereum: {
     staking: staking(true, [ADDRESSES.ethereum.popLocker], ADDRESSES.ethereum.pop,),
-    pool2: getLPTokensStakedTVL('ethereum'),
+    //pool2: getLPTokensStakedTVL('ethereum'),
     start: 12237585,
     tvl: getTVL('ethereum'),
   },
@@ -38,7 +38,7 @@ module.exports = {
   },
   polygon: {
     staking: staking(true, [ADDRESSES.polygon.popLocker], ADDRESSES.polygon.pop, 'polygon'),
-    pool2: getLPTokensStakedTVL("polygon"),
+    //pool2: getLPTokensStakedTVL("polygon"),
     tvl: getTVL('polygon'),
   },
   arbitrum: {
