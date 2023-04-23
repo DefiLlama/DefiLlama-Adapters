@@ -188,6 +188,7 @@ async function getOracle(block, chain, comptroller, oracleAbi) {
 }
 
 async function getUnderlyingDecimalsMultiple(block, chain, marketData, cether) {
+  marketData = marketData.filter(i => i.underlying)
   const response = {}
   const calls = marketData.map(i => ({ target: i.underlying }))
   const { output: decimals } = await sdk.api.abi.multiCall({
@@ -253,7 +254,7 @@ function getCompoundUsdTvl(comptroller, chain, cether, borrowed, abis = {
 
     allMarkets.forEach(token => {
       let amount = new BigNumber(amounts[token]);
-      let decimals = decimalsAll[token];
+      let decimals = decimalsAll[token] ?? 0;
       let locked = amount.div(10 ** decimals);
       let underlyingPrice = new BigNumber(underlyingPrices[token]).div(10 ** (18 + 18 - decimals))
       tvl = tvl.plus(locked.times(underlyingPrice));
