@@ -1,4 +1,5 @@
 const { staking } = require("../helper/staking");
+const { pool2 } = require("../helper/pool2");
 
 // Contracts
 const stakingUNIv2Contracts = [
@@ -19,9 +20,13 @@ const FOXy = "0xDc49108ce5C57bc3408c3A5E95F3d864eC386Ed3";
 
 module.exports = {
   ethereum: {
-    pool2: staking(
-      [...stakingUNIv2Contracts, stakingFoxy],
-      [ETH_FOX_UNIV2, FOX, tFOX, FOXy]
+    pool2: pool2(
+      [...stakingUNIv2Contracts, ],
+      [ETH_FOX_UNIV2, ]
+    ),
+    staking: staking(
+      [stakingFoxy],
+      [FOX, tFOX]
     ),
     tvl: async () => ({}),
   },
