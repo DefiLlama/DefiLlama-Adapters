@@ -11,6 +11,20 @@ const treasury_drip2 = "0xC0D8fD5c722AF68437E7dFc095a980500dC0961D";
 const BADGER = "0x3472A5A71965499acd81997a54BBA8D852C6E53d";
 const DIGG = "0x798D1bE841a82a273720CE31c822C61a67a601C3";
 
+const mapping = {
+  '0x4efc8ded860bc472fa8d938dc3fd4946bc1a0a18': '0xb460daa847c45f1c4a41cb05bfb3b51c92e41b36',
+  '0xd7c9c6922db15f47ef3131f2830d8e87f7637210': '0x8eb6c82c3081bbbd45dcac5afa631aac53478b7c',
+  '0xaad4ee162dbc9c25cca26ba4340b36e3ef7c1a80': '0x1ee442b5326009bb18f2f472d3e0061513d1a0ff',
+}
+
+Object.entries(mapping).forEach(([key, val]) => mapping[key.toLowerCase()] = val)
+
+const transformAddress = i => {
+  i = i.toLowerCase()
+  i = mapping[i] ?? i
+  return 'ethereum:' + i
+}
+
 module.exports = treasuryExports({
   ethereum: {
     tokens: [
@@ -23,9 +37,14 @@ module.exports = treasuryExports({
         "0x9ff58f4fFB29fA2266Ab25e75e2A8b3503311656",//aWBTC
         "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",//WETH
         "0xae78736Cd615f374D3085123A210448E74Fc6393",//rETH
+        "0x09b2e090531228d1b8e3d948c73b990cb6e60720", // BADGERFRAX-f
+        "0xaad4ee162dbc9c25cca26ba4340b36e3ef7c1a80", // aura50rETH-50BADGER-vault
+        "0x4efc8ded860bc472fa8d938dc3fd4946bc1a0a18", // aura20WBTC-80BADGER-vault
+        "0xd7c9c6922db15f47ef3131f2830d8e87f7637210", // aura40WBTC-40DIGG-20graviAURA-vault
      ],
     owners: [treasury_vault, treasury_ops, treasury_voter, treasury_dev, treasury_tech, treasury_pay, treasury_drip1, treasury_drip2],
     ownTokens: [BADGER, DIGG],
     resolveUniV3: true,
+    transformAddress,
   },
 })
