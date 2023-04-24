@@ -1,8 +1,8 @@
-const { getUniTVL } = require('../helper/unknownTokens')
+const { uniTvlExport } = require("../helper/calculateUniTvl.js");
 
 module.exports = {
-  misrepresentedTokens: true,
   avax: {
-    tvl: getUniTVL({ factory: '0xc62Ca231Cd2b0c530C622269dA02374134511a36', useDefaultCoreAssets: true,  })
-  }
-}
+    tvl: uniTvlExport("0xc62Ca231Cd2b0c530C622269dA02374134511a36", "avax", undefined, undefined, { hasStablePools: true, useDefaultCoreAssets: false, }),
+  },
+};
+
