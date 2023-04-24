@@ -28,6 +28,9 @@ async function tvl(_, _b, _cb, { api, }) {
 }
 
 module.exports = {
+  hallmarks: [
+    [1682298000,"Launch on Optimism"]
+  ],
   methodology: 'We count the token balances in in different liquidity book contracts',
   fantom:{
     tvl,
