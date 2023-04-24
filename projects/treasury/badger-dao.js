@@ -26,5 +26,6 @@ module.exports = treasuryExports({
      ],
     owners: [treasury_vault, treasury_ops, treasury_voter, treasury_dev, treasury_tech, treasury_pay, treasury_drip1, treasury_drip2],
     ownTokens: [BADGER, DIGG],
+    resolveUniV3: true,
   },
 })
