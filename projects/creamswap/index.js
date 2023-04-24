@@ -120,7 +120,8 @@ async function tvl(timestamp, block, _, { api }) {
     sdk.api.abi.multiCall({
       block,
       calls: underlyingBalanceCalls,
-      abi: abi['balanceOfUnderlying']
+      abi: abi['balanceOfUnderlying'],
+      permitFailure: true,
     }),
     sdk.api.abi.multiCall({
       block,

@@ -22,7 +22,7 @@ async function tvl(_time, block, _, { api }) {
   const basketHandlers = await api.multiCall({ abi: 'address:basketHandler', calls: mains })
   const basketRes = await api.multiCall({ abi: "function quote(uint192, uint8) view returns (address[], uint256[])", calls: basketHandlers.map(i => ({ target: i, params: [0, 0] })) })
   const basketTokens = await Promise.all(basketRes.map(async ([tokens]) => {
-    const aTokens = await api.multiCall({ abi: 'address:ATOKEN', calls: tokens })
+    const aTokens = await api.multiCall({ abi: 'address:ATOKEN', calls: tokens, permitFailure: true, })
     aTokens.forEach((v, i) => v && ownerTokens.push([[v], tokens[i]]))
     return tokens.filter((_, i) => !aTokens[i])
   }))

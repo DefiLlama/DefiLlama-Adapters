@@ -130,6 +130,7 @@ Object.keys(CONFIG).forEach((chain) => {
             calls,
             chain,
             block,
+            permitFailure: true,
           });
 
           currentRes = res.map((i) => i.output).filter((i) => i);

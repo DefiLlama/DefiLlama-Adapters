@@ -93,6 +93,7 @@ async function getHypervisorBalances({ hypervisors, api, balances = {} }) {
   const supplies = await api.multiCall({
     abi: "erc20:totalSupply",
     calls: hypervisors,
+    permitFailure: true,
   });
   hypervisors = hypervisors.filter((_, i) => +supplies[i] > 0);
 
