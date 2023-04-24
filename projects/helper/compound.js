@@ -196,10 +196,12 @@ async function getUnderlyingDecimalsMultiple(block, chain, marketData, cether) {
     abi: "erc20:decimals",
     block,
     chain,
+    permitFailure: true,
   })
 
   decimals.forEach(({ output }, i) => {
-    response[marketData[i].cToken] = output
+    if (output !== null)
+      response[marketData[i].cToken] = output
   })
 
   return response
