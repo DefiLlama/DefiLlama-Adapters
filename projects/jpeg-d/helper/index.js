@@ -1,4 +1,4 @@
-const { sumTokens2 } = require("../../helper/unwrapLPs");
+const { sumTokens2, nullAddress } = require("../../helper/unwrapLPs");
 const abi = require("./abis");
 const {
   VAULTS_ADDRESSES,
@@ -13,8 +13,13 @@ const {
   APE,
   BAKC,
   JPEG,
-  helperToNftMapping,
+  PETH_POOL,
+  USD_POOL,
+  PETH_ETH_F,
+  PUSD_USD_F,
   artBlockOwners,
+  LP_STAKING,
+  helperToNftMapping,
 } = require("./addresses");
 
 /**
@@ -173,11 +178,31 @@ async function vaultsTvl(api) {
   })
 }
 
+
+async function autocompoundingTvl(api) {
+  const curveBalApi = 'function balances(uint256) view returns (uint256)'
+  const [
+    ethInPETHFactory, pethGaugeSupply, pethGaugeBalance,
+    usdInPUSDFactory, pusdGaugeSupply, pusdGaugeBalance,
+   ] = await api.batchCall([
+    { target: PETH_POOL, abi: curveBalApi, params: [0]},
+    { target: PETH_POOL, abi: 'erc20:totalSupply'},
+    { target: PETH_ETH_F, abi: 'erc20:balanceOf', params: [LP_STAKING]},
+    { target: USD_POOL, abi: curveBalApi, params: [1]},
+    { target: USD_POOL, abi: 'erc20:totalSupply'},
+    { target: PUSD_USD_F, abi: 'erc20:balanceOf', params: [LP_STAKING]},
+   ])
+   
+   api.add(nullAddress, ethInPETHFactory * pethGaugeSupply / pethGaugeSupply)
+   api.add('0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490', usdInPUSDFactory * pusdGaugeBalance / pusdGaugeSupply)
+}
+
 async function tvl(ts, b, cb, { api }) {
   await Promise.all([
     getStakedApeAmount(api),
     getWalletStakedBakcCount(api),
     vaultsTvl(api),
+    autocompoundingTvl(api),
     sumTokens2({ api, resolveArtBlocks: true, owners: [...artBlockOwners], }),
   ]);
 }
