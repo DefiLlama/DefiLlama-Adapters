@@ -5,7 +5,7 @@ const env = require('../env')
 
 function getEndpoint(isTerra2 = false) {
   if (!isTerra2)
-    return env.TERRA_RPC || 'https://columbus-lcd.terra.dev'
+    return env.TERRA_RPC || 'https://terraclassic-lcd-server-01.stakely.io'
   return env.TERRA2_RPC || 'https://phoenix-lcd.terra.dev'
 }
 

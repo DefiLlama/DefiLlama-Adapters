@@ -80,6 +80,7 @@ async function fantomStaking(timestamp, block, chainBlocks) {
 
 // node test.js projects/popsicle/index.js
 module.exports = {
+  doublecounted: true,
   misrepresentedTokens: true,
   ethereum: {
     pool2: pool2("ethereum"),

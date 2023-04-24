@@ -1,7 +1,6 @@
 module.exports = {
   chains: [
     {
-      id: 1,
       name: 'ethereum',
       stable: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
       holders: [
@@ -10,7 +9,6 @@ module.exports = {
       ]
     },
     {
-      id: 56,
       name: 'bsc',
       stable: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56', // BUSD
       holders: [
@@ -20,7 +18,6 @@ module.exports = {
       ]
     },
     {
-      id: 43114,
       name: 'avax',
       stable: '0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664', // USDC.e
       holders: [
@@ -31,7 +28,6 @@ module.exports = {
       ]
     },
     {
-      id: 137,
       name: 'polygon',
       stable: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174', // USDC
       holders: [
@@ -43,7 +39,6 @@ module.exports = {
       ]
     },
     {
-      id: 40,
       name: 'telos',
       stable: '0x818ec0a7fe18ff94269904fced6ae3dae6d6dc0b', // USDC
       holders: [
@@ -53,7 +48,6 @@ module.exports = {
       ]
     },
     {
-      id: 1313161554,
       name: 'aurora',
       stable: '0xB12BFcA5A55806AaF64E99521918A4bf0fC40802', // USDC
       holders: [
@@ -63,7 +57,6 @@ module.exports = {
       ]
     },
     // {
-    //   id: 2001,
     //   name: 'milkomeda',
     //   stable: '0x42110A5133F91B49E32B671Db86E2C44Edc13832', // sUSDC
     //   holders: [
@@ -71,7 +64,6 @@ module.exports = {
     //   ]
     // },
     {
-      id: 288,
       name: 'boba',
       stable: '0x66a2A913e447d6b4BF33EFbec43aAeF87890FBbc', // USDC
       holders: [
@@ -82,7 +74,6 @@ module.exports = {
       ]
     },
     {
-      id: 43288,
       name: 'boba_avax',
       stable: '0x126969743a6d300bab08F303f104f0f7DBAfbe20', // USDC.e
       holders: [
@@ -90,7 +81,6 @@ module.exports = {
       ]
     },
     {
-      id: 56288,
       name: 'boba_bnb',
       stable: '0x9F98f9F312D23d078061962837042b8918e6aff2', // USDC
       holders: [
@@ -98,11 +88,24 @@ module.exports = {
       ]
     },
     {
-      id: 2222,
       name: 'kava',
       stable: '0xfA9343C3897324496A05fC75abeD6bAC29f8A40f', // USDC
       holders: [
         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
+      ]
+    },
+    {
+      name: 'era',
+      stable: '0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4', // USDC
+      holders: [
+        '0x39dE19C9fF25693A2311AAD1dc5C790194084A39', // portal v2
+      ]
+    },
+    {
+      name: 'arbitrum',
+      stable: '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8', // USDC
+      holders: [
+        '0x01A3c8E513B758EBB011F7AFaf6C37616c9C24d9', // portal v2
       ]
     },
   ]

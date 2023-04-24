@@ -89,7 +89,10 @@ const defaultTokens = {
     '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063', //DAI
   ],
   algorand: [],
-  solana: [],
+  solana: [
+    'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', // USDC
+    'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB', // USDT
+  ],
   bsc: [
     nullAddress,
     '0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c', // BTCB

@@ -16,12 +16,13 @@ const endPoints = {
   cosmos: "https://cosmoshub-lcd.stakely.io",
   kujira: "https://lcd.kaiyo.kujira.setten.io",
   comdex: "https://rest.comdex.one",
-  terra: "https://columbus-lcd.terra.dev",
+  terra: "https://terraclassic-lcd-server-01.stakely.io",
   terra2: "https://phoenix-lcd.terra.dev",
   umee: "https://umee-api.polkachu.com",
   orai: "https://lcd.orai.io",
   juno: "https://lcd-juno.cosmostation.io",
   cronos: 'https://lcd-crypto-org.cosmostation.io',
+  injective: 'https://lcd-injective.whispernode.com:443',
 }
 
 const chainSubpaths = {
@@ -148,6 +149,14 @@ async function queryContract({ contract, chain, data }) {
   ).data.data;
 }
 
+async function queryContracts({ chain, codeId }) {
+  return (
+    await axios.get(
+      `${getEndpoint(chain)}/cosmwasm/wasm/v1/code/${codeId}/contracts`
+    )
+  ).data.contracts;
+}
+
 function getAssetInfo(asset) {
   return [
     asset.info.native_token?.denom ?? asset.info.token?.contract_addr,
@@ -202,6 +211,7 @@ module.exports = {
   queryV1Beta1,
   queryContractStore,
   queryContract,
+  queryContracts,
   sumTokens,
   getTokenBalance,
   getToken,
