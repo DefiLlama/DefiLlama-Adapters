@@ -1,5 +1,6 @@
-const { getLogs } = require('../helper/cache/getLogs')
+const { GraphQLClient, gql } = require('graphql-request')
 const sdk = require('@defillama/sdk')
+const BigNumber = require('bignumber.js');
 
 module.exports = {
   doublecounted: true,
@@ -7,76 +8,58 @@ module.exports = {
   start: 1667197843, // Mon Oct 31 2022 06:30:43 GMT+0000
 };
 
-const configs = {
-  ethereum: [
-    {
-      factory: '0x823db50c56d8a994af0ceb3f7dc421852cf6fbff',
-      fromBlock: 15891335,
+const GRAPH_CLIENTS = {
+  ethereum: new GraphQLClient('https://api.thegraph.com/subgraphs/name/ilyamk/quadrat-v1-ethereum'),
+  polygon: new GraphQLClient('https://api.thegraph.com/subgraphs/name/ilyamk/quadrat-v1-polygon'),
+  arbitrum: new GraphQLClient('https://api.thegraph.com/subgraphs/name/ilyamk/quadrat-v1-arbitrum'),
+  optimism: new GraphQLClient('https://api.thegraph.com/subgraphs/name/ilyamk/quadrat-v1-optimism'),
+  bsc: new GraphQLClient('https://api.thegraph.com/subgraphs/name/ilyamk/quadrat-v1-bnb'),
+};
+
+const GRAPH_QUERY = gql`
+  query Strategies ($skip: Int! $first: Int! $timestamp: BigInt!) {
+    strategies (skip: $skip first: $first) {
+      meta {
+        token0 { id decimals }
+        token1 { id decimals }
+      }
+      history (orderBy: timestamp orderDirection: desc skip: 0 first: 1 where: { timestamp_lte: $timestamp timeframe: ONE_DAY }) {
+        tvlToken0
+        tvlToken1
+      }
     }
-  ],
-  polygon: [
-    {
-      factory: '0x1a639e9249d26c70edf0b7410a8495d9b72140ff',
-      fromBlock: 35028277,
+  }
+`;
+
+function strategiesTvl(chain) {
+  return async (timestamp, _, _1, { api }) => {
+    const client = GRAPH_CLIENTS[chain];
+    const startDayTimestamp = Math.floor(timestamp / 86400) * 86400;
+    const { strategies } = await client.request(GRAPH_QUERY, { skip: 0, first: 1, timestamp: startDayTimestamp });
+
+    if (!Array.isArray(strategies)) {
+      return {}
     }
-  ],
-  optimism: [
-    {
-      factory: '0x3ae3b506a39ffc1aa3964f6dc888891ea10671ed',
-      fromBlock: 33415677,
-    }
-  ],
-  arbitrum: [
-    {
-      factory: '0xb8d498f025c45a8a7a63277cb1cca36c2599bbd7',
-      fromBlock: 34510988,
-    }
-  ],
-  bsc: [
-    {
-      factory: '0x28e9f86690449059734e079eaaa66d8913263bed', // For Uniswap V3
-      fromBlock: 26497758,
-    },
-    {
-      factory: '0xce5ee90894f79a184919a5d3afd1f754b35a919d', // For PancakeSwap V3
-      fromBlock: 27461875,
-    }
-  ],
+
+    const balances = {}
+
+    strategies.forEach(strategy => {
+      const dayData = strategy.history[0];
+      if (dayData)  {
+        const { token0, token1 } = strategy.meta
+        const tvlToken0 = new BigNumber(dayData.tvlToken0).times(new BigNumber(10).pow(token0.decimals)).toFixed(0, 1)
+        const tvlToken1 = new BigNumber(dayData.tvlToken1).times(new BigNumber(10).pow(token1.decimals)).toFixed(0, 1)
+
+        sdk.util.sumSingleBalance(balances, token0.id, tvlToken0, api.chain);
+        sdk.util.sumSingleBalance(balances, token1.id, tvlToken1, api.chain);
+      }
+    });
+    return balances
+  };
 }
 
-Object.keys(configs).forEach(chain => {
-  const config = configs[chain]
+Object.keys(GRAPH_CLIENTS).forEach(chain => {
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
-      const balances = {}
-
-      for (const { factory, fromBlock } of config) {
-        const logs = await getLogs({
-          api,
-          target: factory,
-          topics: ['0x9c5d829b9b23efc461f9aeef91979ec04bb903feb3bee4f26d22114abfc7335b'],
-          fromBlock,
-          onlyArgs: true,
-          eventAbi: 'event PoolCreated (address indexed uniPool, address indexed manager, address indexed pool)'
-        })
-
-        const calls = logs.map(i => i.pool)
-
-        const [token0, token1, bals] = await Promise.all([
-          api.multiCall({ abi: 'address:token0', calls }),
-          api.multiCall({ abi: 'address:token1', calls }),
-          api.multiCall({ abi: 'function getUnderlyingBalances() view returns (uint256 amount0, uint256 amount1)', calls }),
-        ])
-
-        bals.forEach((val, i) => {
-          if (!val) return;
-          const { amount0, amount1 }  = val
-          sdk.util.sumSingleBalance(balances, token0[i], amount0, api.chain)
-          sdk.util.sumSingleBalance(balances, token1[i], amount1, api.chain)
-        })
-      }
-
-      return balances
-    }
+    tvl: strategiesTvl(chain)
   }
 })
