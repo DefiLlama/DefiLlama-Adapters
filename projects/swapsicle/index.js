@@ -105,6 +105,18 @@ async function stakedAVAXIceBox2(timestamp, ethBlock, chainBlocks) {
   return balances;
 }
 
+async function stakedTLOSIceBox(timestamp, _, { telos: block }) {
+  const balances = {};
+  const stakedSTLOS = await sdk.api.abi.call({
+      target: contracts.telos.stakingContract_IB2,
+      abi: iceBoxABI.totalPrimaryStaked,
+      chain: "telos", block,
+  });
+
+    balances[getTLOSAddress(contracts.telos.stlos)] = stakedSTLOS.output;
+    return balances;
+}
+
 module.exports = {
   misrepresentedTokens: true,
   methodology: "",
@@ -145,6 +157,7 @@ module.exports = {
       // Ice Cream Van
       stakingPricedLP(contracts.telos.stakingContract_sPOPS, contracts.telos.pops,'telos','0x6dee26f527adb0c24fef704228d8e458b46f9f5f',"wrapped-telos",true), 
       // Ice Box
+      stakedTLOSIceBox
    ])
   },
   //start: 15434772,
