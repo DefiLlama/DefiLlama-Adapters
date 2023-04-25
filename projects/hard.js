@@ -41,32 +41,29 @@ const decimals = {
     [AKT_DENOM]: 6,
     [AXLUSDC_DENOM]: 6,
     [MULTICHAIN_WBTC]: 8,
+    [MULTICHAIN_USDC]: 6,
+    [MULTICHAIN_USDT]: 6,
     [AXLUSDC_DENOM]: 6,
     [AXLUSDC_DENOM]: 6,
 }
 
-const tvl = async () => {
-    const balances = {};
+const tvl = async (_, _1, _2, { api }) => {
     const totalDeposited = await get('https://api2.kava.io/hard/total-deposited');
     const totalBorrowed = await get('https://api2.kava.io/hard/total-borrowed');
 
     for (const coin of totalDeposited.result) {
         const borrowed = Number(totalBorrowed.result.find(item => item.denom === coin.denom)?.amount || 0);
-        balances[coingeckoIds[coin.denom]] = (Number(coin.amount)-borrowed) / (10**decimals[coin.denom]);
+        api.add(coingeckoIds[coin.denom], (coin.amount - borrowed) / (10 ** decimals[coin.denom]), { skipChain: true })
     }
-
-    return balances;
 }
 
-const borrowed = async () => {
-    const balances = {};
+const borrowed = async (_, _1, _2, { api }) => {
     const totalBorrowed = await get('https://api2.kava.io/hard/total-borrowed');
 
     for (const coin of totalBorrowed.result) {
-        balances[coingeckoIds[coin.denom]] = Number(coin.amount)/(10**decimals[coin.denom]);
+        api.add(coingeckoIds[coin.denom], coin.amount / (10 ** decimals[coin.denom]), { skipChain: true })
     }
 
-    return balances;
 }
 
 
