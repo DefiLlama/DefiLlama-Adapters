@@ -4,10 +4,11 @@ const { getUniTVL } = require('../helper/unknownTokens')
 const { stakingPricedLP } = require("../helper/staking")
 const sdk = require("@defillama/sdk")
 const BigNumber = require("bignumber.js");
+const iceBoxABI = require("./iceBoxABI.json");
+const iceVaultABI = require("./icevaultABI.json");
 
-//const stakingContract_IB = "0x6aA10ead8531504a8A3B04a9BfCFd18108F2d2c2";
 const WAVAX = '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7'
-const WTLOS = '0xd102ce6a4db07d247fcc28f366a623df0938ca9e'
+//const WTLOS = '0xd102ce6a4db07d247fcc28f366a623df0938ca9e'
 
 const contracts = {
   avax: {
@@ -66,21 +67,16 @@ async function iceBox(contract, block, chain) {
 }
 
 // Avalanche - IceVault Staking (USDC)
-async function stakedUSDC(timestamp, ethBlock, chainBlocks) {
+async function stakedUSDC(timestamp, _, { avax: block }) {
   const balances = {};
-  const tokenBalance = new BigNumber(
-    (
-      await sdk.api.abi.call({
-        abi: "erc20:balanceOf",
-        chain: "avax",
-        target: contracts.avax.usdc,
-        params: [contracts.avax.stakingContract_IV],
-        block: chainBlocks["avax"],
-      })
-    ).output
-  );
 
-  balances[getAVAXAddress(contracts.avax.usdc)] = tokenBalance;
+  const tokenBalance = await sdk.api.abi.call({
+    target: contracts.avax.stakingContract_IV,
+    abi: iceVaultABI.totalStaked,
+    chain: "avax", block,
+  });
+
+  balances[getAVAXAddress(contracts.avax.usdc)] = tokenBalance.output;
 
   return balances;
 }
@@ -113,8 +109,8 @@ async function stakedTLOSIceBox(timestamp, _, { telos: block }) {
       chain: "telos", block,
   });
 
-    balances[getTLOSAddress(contracts.telos.stlos)] = stakedSTLOS.output;
-    return balances;
+  balances[getTLOSAddress(contracts.telos.stlos)] = stakedSTLOS.output;
+  return balances;
 }
 
 module.exports = {
