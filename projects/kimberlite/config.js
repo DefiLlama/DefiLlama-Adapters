@@ -34,6 +34,11 @@ const config = {
     locker: "0xE4E56E5e234783BCb77A80e19C8B3B5b42588AAb", 
     startBlock: 49220342
   },
+  kimberliteSafeKAVA: {
+    chain: "kava",
+    locker: "0xE4E56E5e234783BCb77A80e19C8B3B5b42588AAb", 
+    startBlock: 4533304
+  },
 }
 
 module.exports = {

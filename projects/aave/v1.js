@@ -97,7 +97,7 @@ async function uniswapV1Market(balances, uniswapLendingPoolCore, block, borrowed
     const uniswapV1TokenBalance = await sdk.api.abi.multiCall({
         abi: 'erc20:balanceOf',
         calls: uniswapV1Tokens.output.map(t => ({
-            target: t.output || nullAddress,
+            target: t.output,
             params: t.input.target
         })),
         permitFailure: true,

@@ -271,12 +271,13 @@ async function getTokenPrices(tokens, block, chain, coreOracleAddress) {
         chain,
         abi: abi["getETHPx"],
         block,
+        permitFailure: true,
     });
 
     const tokenPrices = {};
     for (let i = 0; i < _ethPrices.length; i++) {
-        const price = BigNumber(_ethPrices[i].output).div(BigNumber(2).pow(112));
-        if (price.gte(0)) {
+        const price = _ethPrices[i].output / 2 ** 112;
+        if (price > 0) {
             tokenPrices[tokens[i]] = price;
         }
     }

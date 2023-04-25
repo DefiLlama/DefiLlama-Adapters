@@ -65,9 +65,10 @@ function tvl(chain) {
       .flat();
 
     const gameContractBalances = await sdk.api.abi.multiCall({
-      calls,
+      calls: calls.filter(i => i.target),
       abi: "erc20:balanceOf",
       chain,
+      permitFailure: true,
     });
 
     sdk.util.sumMultiBalanceOf(
