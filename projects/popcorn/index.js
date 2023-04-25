@@ -3,6 +3,9 @@ const { staking } = require('./staking')
 const { ADDRESSES } = require("./constants");
 const { addButterV2TVL, addThreeXTVL } = require("./butter")
 const { addStakingPoolsTVL } = require("./stakingPools")
+const { addVaultToTVL } = require("./vaults");
+
+const vaultChains = Object.keys(ADDRESSES).filter(chain => Object.keys(ADDRESSES[chain]).includes('vaultRegistry'));
 
 function getTVL(chain = undefined) {
   return async (timestamp, block, chainBlocks) => {
@@ -10,6 +13,10 @@ function getTVL(chain = undefined) {
     if (chain && chain === 'ethereum') {
       await addButterV2TVL(balances, timestamp, chainBlocks, chain);
       await addThreeXTVL(balances, timestamp, chainBlocks, chain);
+    }
+
+    if (chain && vaultChains.includes(chain)) {
+      await addVaultToTVL(balances, timestamp, chainBlocks, chain, ADDRESSES[chain].vaultRegistry);
     }
     return balances;
   }
