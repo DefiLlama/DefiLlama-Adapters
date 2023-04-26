@@ -56,6 +56,7 @@ async function getNames(chain, tokens) {
     abi: erc20Abi.name,
     calls: missing,
     chain,
+    permitFailure: true,
   })
   res.forEach((name, i) => {
     const key = chain + '-' + missing[i]

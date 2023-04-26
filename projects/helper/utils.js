@@ -44,6 +44,7 @@ const blacklisted_LPS = [
   '0xf146190e4d3a2b9abe8e16636118805c628b94fe',
   '0xCC8Fa225D80b9c7D42F96e9570156c65D6cAAa25',
   '0xaee4164c1ee46ed0bbc34790f1a3d1fc87796668',
+  '0x93669cfce302c9971169f8106c850181a217b72b',
 ].map(i => i.toLowerCase())
 
 function isLP(symbol, token, chain) {
@@ -63,7 +64,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'klaytn' && ['NLP'].includes(symbol)) return true
   if (chain === 'fantom' && ['HLP'].includes(symbol)) return true
   if (chain === 'songbird' && ['FLRX', 'OLP'].includes(symbol)) return true
-  if (chain === 'arbitrum' && ['DXS', 'ZLP', ].includes(symbol)) return true
+  if (chain === 'arbitrum' && ['DXS', 'ZLP',].includes(symbol)) return true
   if (chain === 'metis' && ['NLP', 'ALP'].includes(symbol)) return true // Netswap/Agora LP Token
   if (chain === 'optimism' && /(-ZS)/.test(symbol)) return true
   if (chain === 'arbitrum' && /^(crAMM|vrAMM)-/.test(symbol)) return true // ramses LP
@@ -236,17 +237,20 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
     abi: 'erc20:symbol',
     calls: tokens.map(i => ({ target: i })),
     chain,
+    permitFailure: true,
   })
   const { output: decimals } = await sdk.api.abi.multiCall({
     abi: 'erc20:decimals',
     calls: tokens.map(i => ({ target: i })),
     chain,
+    permitFailure: true,
   })
 
   const { output: name } = await sdk.api.abi.multiCall({
     abi: erc20.name,
     calls: tokens.map(i => ({ target: i })),
     chain,
+    permitFailure: true,
   })
 
   let symbolsETH, nameETH
@@ -255,11 +259,13 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
     symbolsETH = await sdk.api.abi.multiCall({
       abi: 'erc20:symbol',
       calls: ethTokens.map(i => ({ target: i })),
+      permitFailure: true,
     })
 
     nameETH = await sdk.api.abi.multiCall({
       abi: erc20.name,
       calls: ethTokens.map(i => ({ target: i })),
+      permitFailure: true,
     })
 
     symbolsETH = symbolsETH.output
@@ -290,7 +296,7 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
 }
 
 function once(func) {
-  let previousResponse 
+  let previousResponse
   let called = false
   function wrapped(...args) {
     if (called) return previousResponse

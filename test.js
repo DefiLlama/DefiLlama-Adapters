@@ -359,11 +359,9 @@ async function computeTVL(balances, timestamp) {
   readKeys.forEach(i => unknownTokens[i] = true)
 
   const { errors } = await PromisePool.withConcurrency(5)
-    .for(sliceIntoChunks(readKeys, 200))
+    .for(sliceIntoChunks(readKeys, 100))
     .process(async (keys) => {
-      tokenData.push((await axios.post(`https://coins.llama.fi/prices`, {
-        coins: keys
-      })).data.coins)
+      tokenData.push((await axios.get(`https://coins.llama.fi/prices/current/${keys.join(',')}`)).data.coins)
     })
 
   if (errors && errors.length)
@@ -381,6 +379,10 @@ async function computeTVL(balances, timestamp) {
 
       if (data == undefined) tokenBalances[`UNKNOWN (${address})`] = balance
       if ('confidence' in data && data.confidence < confidenceThreshold) return
+      if (Math.abs(data.timestamp - Date.now() / 1e3) > (24 * 3600)) {
+        console.log(`Price for ${address} is stale, ignoring...`)
+        return
+      }
 
       let amount, usdAmount;
       if (address.includes(":") && !address.startsWith("coingecko:")) {

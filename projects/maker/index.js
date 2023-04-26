@@ -27,6 +27,7 @@ async function getJoins(block, api) {
   const ilks = await api.multiCall({
     abi: MakerMCDConstants.ilk,
     calls: auths,
+    permitFailure: true,
   });
 
   ilks.forEach((_, i) => {
@@ -57,6 +58,7 @@ async function tvl(timestamp, block, _, { api }) {
     const { output: gems } = await sdk.api.abi.multiCall({
       abi: MakerMCDConstants.gem,
       block, calls: joins.map(i => ({ target: i })),
+      permitFailure: true,
     })
     const dogCalls = dogs.map(i => ({ target: i }))
 
@@ -73,6 +75,7 @@ async function tvl(timestamp, block, _, { api }) {
     const { output: dogRes } = await sdk.api.abi.multiCall({
       abi: MakerMCDConstants.dog,
       calls: dogCalls, block,
+      permitFailure: true,
     })
 
     const failedCalls = dogRes.filter(i => !i.success)

@@ -2,11 +2,14 @@ const { sumTokensExport, nullAddress, } = require('../helper/sumTokens')
 const { covalentGetTokens } = require('./http')
 const axios = require("axios")
 
+const ARB = "0x912CE59144191C1204E64559FE8253a0e49E6548";
+
 function treasuryExports(config) {
   const chains = Object.keys(config)
   const exportObj = {  }
   chains.forEach(chain => {
-    let { ownTokenOwners = [], ownTokens, owners = [], fetchTokens = false } = config[chain]
+    let { ownTokenOwners = [], ownTokens, owners = [], fetchTokens = false, tokens = [] } = config[chain]
+    if (chain === 'solana')  config[chain].solOwners = owners
     if (chain === 'solana')  config[chain].solOwners = owners
     const tvlConfig = { ...config[chain] }
     tvlConfig.blacklistedTokens = ownTokens
@@ -18,6 +21,9 @@ function treasuryExports(config) {
         return sumTokensExport(tvlConfig)(_, _b, _cb, api)
       }}
     } else {
+      if (chain === 'arbitrum')  {
+        tvlConfig.tokens = [...tokens, ARB]
+      }
       exportObj[chain] = { tvl: sumTokensExport(tvlConfig) }
     }
 

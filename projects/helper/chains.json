@@ -53,6 +53,7 @@
   "energyweb",
   "enuls",
   "eos",
+  "eos_evm",
   "equilibrium",
   "era",
   "ergo",
@@ -64,6 +65,7 @@
   "europa",
   "fantom",
   "findora",
+  "filecoin",
   "flare",
   "flow",
   "functionx",
@@ -123,6 +125,7 @@
   "nova",
   "nuls",
   "oasis",
+  "oas",
   "obyte",
   "okexchain",
   "omax",
@@ -143,6 +146,7 @@
   "pool2",
   "posi",
   "proton",
+  "quicksilver",
   "reef",
   "regen",
   "rei",
@@ -200,6 +204,5 @@
   "zeniq",
   "zilliqa",
   "zksync",
-  "zyx",
-  "filecoin"
+  "zyx"
 ]
