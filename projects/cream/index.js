@@ -46,6 +46,7 @@ async function ethereumTvl(timestamp, block) {
       block,
       calls: tokens_ethereum.map((token) => ({ target: token.token_address })),
       abi: abiCerc20["underlying"],
+      permitFailure: true,
     })
   ).output;
 
@@ -123,6 +124,7 @@ async function lending(block, chain, borrowed) {
       block,
       calls: tokens_bsc.map((token) => ({ target: token.token_address })),
       abi: abiCerc20["underlying"],
+      permitFailure: true,
       chain,
     })
   ).output;
