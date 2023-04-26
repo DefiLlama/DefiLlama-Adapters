@@ -10,6 +10,7 @@ const treasury_drip1 = "0xA3Dc099D14722D0e25B3A904427377B4B2ab9fA4";
 const treasury_drip2 = "0xC0D8fD5c722AF68437E7dFc095a980500dC0961D";
 const BADGER = "0x3472A5A71965499acd81997a54BBA8D852C6E53d";
 const DIGG = "0x798D1bE841a82a273720CE31c822C61a67a601C3";
+const treasuryarb = "0xb364bab258ad35dd83c7dd4e8ac78676b7aa1e9f"
 
 const mapping = {
   '0x4efc8ded860bc472fa8d938dc3fd4946bc1a0a18': '0xb460daa847c45f1c4a41cb05bfb3b51c92e41b36',
@@ -47,4 +48,11 @@ module.exports = treasuryExports({
     resolveUniV3: true,
     transformAddress,
   },
+  arbitrum: {
+    tokens: [
+      nullAddress,
+      "0x11cDb42B0EB46D95f990BeDD4695A6e3fA034978"
+    ],
+    owners: [treasuryarb]
+  }
 })
