@@ -1,29 +1,11 @@
-const sdk = require("@defillama/sdk");
+const { sumTokensExport } = require("../helper/unwrapLPs");
 
-const ETH_ADDRESS = "0x0000000000000000000000000000000000000000";
 // Lybra holds total stake collateral (deposited ETH)
 const LYBRA_CONTRACT = "0x97de57eC338AB5d51557DA3434828C5DbFaDA371";
 
-async function tvl(_, block) {
-
-  const lybraEthTvl = (
-    await sdk.api.abi.call({
-      target: LYBRA_CONTRACT,
-      abi: "uint256:totalDepositedEther",
-      block,
-    })
-  ).output;
-
-  return {
-    [ETH_ADDRESS]: lybraEthTvl,
-  };
-}
-
 module.exports = {
-  timetravel: true,
   start: 1682265600,
   ethereum: {
-    tvl,
+    tvl: sumTokensExport({ owner: LYBRA_CONTRACT, tokens: ['0xae7ab96520de3a18e5e111b5eaab095312d7fe84']}),
   }
-  
 };
