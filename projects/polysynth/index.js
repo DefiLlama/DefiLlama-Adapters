@@ -22,7 +22,7 @@ Object.keys(chains).forEach(chain => {
     tvl: async (_, _b, _cb, { api, }) => {
       const vaultData = await getVaults(chain)
       const vaults = vaultData.map(i => i.id)
-      const beefys = await api.multiCall({ abi: 'address:BEEFY_VAULT', calls: vaults })
+      const beefys = await api.multiCall({ abi: 'address:BEEFY_VAULT', calls: vaults, permitFailure: true, })
       const tokens = vaultData.map((v, i) => beefys[i] ? beefys[i] : v.underlying_asset)
       return sumTokens2({ api, tokensAndOwners2: [tokens, vaults] })
     }

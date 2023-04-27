@@ -6,7 +6,6 @@ module.exports = {
     tvl: getUniTVL({
       useDefaultCoreAssets: true,
       hasStablePools: true,
-      fetchBalances: true,
       factory: '0x0Ed2a54c8fD6dcc3cF0f8fd97c748438f0f32eAD',
     }),
   },

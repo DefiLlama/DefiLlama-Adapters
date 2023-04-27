@@ -3,8 +3,6 @@ const { tvl, stakingJPEGD } = require("./helper/index");
 const {
   LP_STAKING,
   JPEG_WETH_SLP,
-  PETH_ETH_F,
-  PUSD_USD_F,
 } = require("./helper/addresses");
 
 module.exports = {
@@ -12,7 +10,7 @@ module.exports = {
   ethereum: {
     tvl,
     staking: stakingJPEGD,
-    pool2: staking(LP_STAKING, [JPEG_WETH_SLP, PETH_ETH_F, PUSD_USD_F, ]),
+    pool2: staking(LP_STAKING, [JPEG_WETH_SLP,]),
   },
   hallmarks: [
     [1666003500, "pETH borrows"],

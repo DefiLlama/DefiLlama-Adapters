@@ -82,10 +82,11 @@ async function tvl(timestamp, _block, { xdai: block }) {
   const { output } = await sdk.api.abi.multiCall({
     abi: balanceAbi,
     calls, chain, block,
+    permitFailure: true,
   })
 
   output.forEach(({ input, output }) => {
-    sdk.util.sumSingleBalance(balances, input.params[0].toLowerCase(), output)
+    if (output) sdk.util.sumSingleBalance(balances, input.params[0].toLowerCase(), output)
   })
 
   const tokens = Object.keys(balances)

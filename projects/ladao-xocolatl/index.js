@@ -12,4 +12,12 @@ module.exports = {
       ]
     })
   },
+  bsc: {
+    tvl: sumTokensExport({
+      tokensAndOwners: [
+        ['0x2170Ed0880ac9A755fd29B2688956BD959F933F8','0xd411BE9A105Ea7701FabBe58C2834b7033EBC203'],
+        ['0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c','0x070ccE6887E70b75015F948b12601D1E759D2024']
+      ]
+    })
+  },
 }

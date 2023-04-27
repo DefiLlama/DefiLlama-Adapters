@@ -16,4 +16,7 @@ module.exports = treasuryExports({
     owners: [oneInchTreasury],
     ownTokens: [ONE_INCH]
   },
+  arbitrum: {
+    owners: ['0x71890ac6209fae61e9d66691c47b168b8300a7c5']
+  }
 })
