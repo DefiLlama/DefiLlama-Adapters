@@ -5,12 +5,6 @@ const CHAIN = {
   56: "binance",
   137: "polygon",
   250: "fantom",
-  2222: "kava",
-  42161: "arbitrum",
-  43114: "avax",
-  10: "optimism",
-  8217: "klaytn",
-  1313161554: "aurora",
 };
 
 const getTradingStatus = async (chainId, formattedDate) => {
