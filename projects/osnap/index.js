@@ -39,6 +39,7 @@ async function tvl(_, _1, _2, api) {
 }
 
 module.exports = {
+  timeTravel: false,
   methodology:
     "Calculates the total value held by the Avatars of all deployed OGs modules",
   ethereum: {
