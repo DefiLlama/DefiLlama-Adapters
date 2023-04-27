@@ -7,7 +7,7 @@ const CHAIN = {
   250: "fantom",
   2222: "kava",
   42161: "arbitrum",
-  43114: "avalanche",
+  43114: "avax",
   10: "optimism",
   8217: "klaytn",
   1313161554: "aurora",
