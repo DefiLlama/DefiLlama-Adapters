@@ -8,8 +8,9 @@ const pools = [
 ]
 
 module.exports = {
+  misrepresentedTokens: true,
   arbitrum: {
-    staking: stakings(pools, SAPR, 'arbitrum'),
-    tvl: getUniTVL({ chain: 'arbitrum', factory})
+    staking: stakings(pools, SAPR,),
+    tvl: getUniTVL({ fetchBalances: true, useDefaultCoreAssets: true, factory })
   }
 };
