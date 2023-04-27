@@ -43,6 +43,7 @@ async function getSymbolsAndBalances(masterChef, block, chain, poolInfo) {
             })),
             abi: 'erc20:symbol',
             chain,
+            permitFailure: true,
         }),
         sdk.api.abi.multiCall({
             block,
@@ -52,6 +53,7 @@ async function getSymbolsAndBalances(masterChef, block, chain, poolInfo) {
             })),
             abi: 'erc20:balanceOf',
             chain,
+            permitFailure: true,
         })
     ])
     return [symbols, tokenBalances]

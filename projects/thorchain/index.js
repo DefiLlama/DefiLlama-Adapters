@@ -18,6 +18,7 @@ const chainMapping = {
   LTC: 'litecoin',
   BCH: 'bitcoin-cash',
   DOGE: 'dogecoin',
+  GAIA: 'cosmos',
 }
 
 const defillamaChainMapping = {

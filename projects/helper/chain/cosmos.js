@@ -16,7 +16,7 @@ const endPoints = {
   cosmos: "https://cosmoshub-lcd.stakely.io",
   kujira: "https://lcd.kaiyo.kujira.setten.io",
   comdex: "https://rest.comdex.one",
-  terra: "https://columbus-lcd.terra.dev",
+  terra: "https://terraclassic-lcd-server-01.stakely.io",
   terra2: "https://phoenix-lcd.terra.dev",
   umee: "https://umee-api.polkachu.com",
   orai: "https://lcd.orai.io",
@@ -149,6 +149,14 @@ async function queryContract({ contract, chain, data }) {
   ).data.data;
 }
 
+async function queryContracts({ chain, codeId }) {
+  return (
+    await axios.get(
+      `${getEndpoint(chain)}/cosmwasm/wasm/v1/code/${codeId}/contracts`
+    )
+  ).data.contracts;
+}
+
 function getAssetInfo(asset) {
   return [
     asset.info.native_token?.denom ?? asset.info.token?.contract_addr,
@@ -203,6 +211,7 @@ module.exports = {
   queryV1Beta1,
   queryContractStore,
   queryContract,
+  queryContracts,
   sumTokens,
   getTokenBalance,
   getToken,
