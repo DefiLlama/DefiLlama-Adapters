@@ -13,18 +13,11 @@ const CHAIN = {
   1313161554: "aurora",
 };
 
-const getFee = async (chainId, formattedDate) => {
-  const { data } = await axios.get(
-    `https://api.plexus.app/v1/dashboard/fee?date=${formattedDate}`
-  );
-  return data.data[chainId];
-};
-
 const getTradingStatus = async (chainId, formattedDate) => {
   const { data } = await axios.get(
     `https://api.plexus.app/v1/dashboard/status?date=${formattedDate}`
   );
-  return data.data[chainId];
+  return data.data[chainId] ?? { volume: 0, fee: 0 };
 };
 
 const timeStampToDate = (timestamp) => {
@@ -42,12 +35,7 @@ module.exports = Object.entries(CHAIN).reduce(
     result[chainName] = {
       fetch: async (timestamp) => {
         const formattedDate = timeStampToDate(timestamp);
-        const [fee, status] = await Promise.all([
-          getFee(chainId, formattedDate),
-          getTradingStatus(chainId, formattedDate),
-        ]);
-
-        return { fee, status };
+        return await getTradingStatus(chainId, formattedDate);
       },
     };
     return result;
