@@ -1,0 +1,178 @@
+{
+    "sumVaultUnderlyingAmounts": "uint256:sumVaultUnderlyingAmounts",
+    "queuedDepositsTotalAmount": "uint256:queuedDepositsTotalAmount",
+    "getLOVVaultMetadata":  {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "productAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "leverage",
+            "type": "uint256"
+          }
+        ],
+        "name": "getLOVVaultMetadata",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "vaultStart",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "tradeDate",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "tradeExpiry",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "aprBps",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "tenorInDays",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "underlyingAmount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "currentAssetAmount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "totalCouponPayoff",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "vaultFinalPayoff",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "queuedWithdrawalsSharesAmount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "queuedWithdrawalsCount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "optionBarriersCount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "leverage",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "vaultAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "enum VaultStatus",
+                "name": "vaultStatus",
+                "type": "uint8"
+              },
+              {
+                "internalType": "bool",
+                "name": "isKnockedIn",
+                "type": "bool"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "uint256",
+                    "name": "barrierBps",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "barrierAbsoluteValue",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "strikeBps",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "strikeAbsoluteValue",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "string",
+                    "name": "asset",
+                    "type": "string"
+                  },
+                  {
+                    "internalType": "string",
+                    "name": "oracleName",
+                    "type": "string"
+                  },
+                  {
+                    "internalType": "enum OptionBarrierType",
+                    "name": "barrierType",
+                    "type": "uint8"
+                  }
+                ],
+                "internalType": "struct OptionBarrier[]",
+                "name": "optionBarriers",
+                "type": "tuple[]"
+              }
+            ],
+            "internalType": "struct FCNVaultMetadata[]",
+            "name": "",
+            "type": "tuple[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      "getLOVProductQueuedDeposits":   {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "fcnProductAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "leverage",
+            "type": "uint256"
+          }
+        ],
+        "name": "getLOVProductQueuedDeposits",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "totalQueuedDeposits",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      }
+    
+}
+
