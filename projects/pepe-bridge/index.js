@@ -11,6 +11,9 @@ const config = {
       ],
       '0x0de7b091A21BD439bdB2DfbB63146D9cEa21Ea83'
     ]
+  ],
+  bsc: [
+    [[nullAddress], '0xF1632012f6679Fcf464721433AFAAe9c11ad9e03'] // BNB
   ]
 }
 module.exports = {};
