@@ -1,5 +1,6 @@
 const sdk = require("@defillama/sdk");
 
+const ETH_ADDRESS = "0x0000000000000000000000000000000000000000";
 // Lybra holds total stake collateral (deposited ETH)
 const LYBRA_CONTRACT = "0x97de57eC338AB5d51557DA3434828C5DbFaDA371";
 
