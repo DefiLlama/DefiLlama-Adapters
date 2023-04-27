@@ -8,7 +8,7 @@ const { addVaultToTVL } = require("./vault");
 const vaultChains = Object.keys(ADDRESSES).filter(chain => Object.keys(ADDRESSES[chain]).includes('vaultRegistry'));
 
 function getTVL(chain = undefined) {
-  return async (timestamp, block, chainBlocks) => {
+  return async (timestamp, block, chainBlocks, { api }) => {
     let balances = {};
     if (chain && chain === 'ethereum') {
       await addButterV2TVL(balances, timestamp, chainBlocks, chain);
@@ -16,7 +16,7 @@ function getTVL(chain = undefined) {
     }
 
     if (chain && vaultChains.includes(chain)) {
-      await addVaultToTVL(balances, timestamp, chainBlocks, chain, ADDRESSES[chain].vaultRegistry);
+      await addVaultToTVL(balances, api, ADDRESSES[chain].vaultRegistry);
     }
     return balances;
   }
