@@ -2,7 +2,7 @@ const { sumTokens2, nullAddress } = require("../helper/unwrapLPs");
 const { getLogs } = require("../helper/cache/getLogs");
 const { staking } = require("../helper/staking");
 
-const FACTORY_CONTRACT = "0x9CAc6c4fDb0fCbbB1cA3064f7f6C3FAD22B0B92D";
+const FACTORY_CONTRACT = "0x498B8f1E767E2A32ab68C1301F1e98b59a34dA94";
 const WETH_ADDRESS = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 
 async function tvl(timestamp, block, chainBlocks, { api }) {
