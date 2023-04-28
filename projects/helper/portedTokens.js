@@ -6,7 +6,6 @@ const {
   stripTokenHeader,
   transformTokens,
   fixBalancesTokens,
-  unsupportedGeckoChains,
   ibcChains,
   distressedAssts,
 } = require('./tokenMapping')
@@ -37,7 +36,8 @@ async function transformArbitrumAddress() {
 
 async function transformInjectiveAddress() {
   return addr => {
-    addr = addr.replaceAll('/', ':')
+    if (addr.includes('ibc/')) return addr.replace(/.*ibc\//, 'ibc/').replace(/\//g, ':')
+    addr = addr.replace(/\//g, ':')
     if (addr.startsWith('peggy0x'))
       return `ethereum:${addr.replace('peggy', '')}`
     return `injective:${addr}`;
@@ -45,7 +45,6 @@ async function transformInjectiveAddress() {
 }
 
 function fixBalances(balances, mapping, { chain, } = {}) {
-  // const removeUnmapped = unsupportedGeckoChains.includes(chain) // TODO: fix server-side, remove this
   const removeUnmapped = false
 
   Object.keys(balances).forEach(token => {
@@ -131,12 +130,12 @@ async function getChainTransform(chain) {
     return transformChainAddress(transformTokens[chain], chain)
 
   return addr => {
-    if (addr.includes('ibc/')) return addr.replace(/.*ibc\//, 'ibc/').replaceAll('/', ':')
+    if (addr.includes('ibc/')) return addr.replace(/.*ibc\//, 'ibc/').replace(/\//g, ':')
     if (addr.startsWith('coingecko:')) return addr
     if (addr.startsWith(chain + ':') || addr.startsWith('ibc:')) return addr
     if (distressedAssts.has(addr.toLowerCase())) return 'ethereum:0xbad'
 
-    addr = normalizeAddress(addr, chain).replaceAll('/', ':')
+    addr = normalizeAddress(addr, chain).replace(/\//g, ':')
     const chainStr = `${chain}:${addr}`
     if ([...ibcChains, 'ton', 'defichain', 'waves'].includes(chain)) return chainStr
     if (chain === 'cardano' && addr === 'ADA') return 'coingecko:cardano'
@@ -175,6 +174,7 @@ async function transformDexBalances({ chain, data, balances = {}, restrictTokenR
     i.token1Bal = +i.token1Bal
     priceToken(i)
   })
+  // sdk.log(prices) 
   data.forEach(addTokens)
   updateBalances(balances)
 
@@ -203,8 +203,8 @@ async function transformDexBalances({ chain, data, balances = {}, restrictTokenR
   }
 
   function updateBalances(balances) {
-    Object.entries(balances).forEach(([token, bal]) => {
-      bal = +bal
+    Object.entries(balances).forEach(([token]) => {
+      let bal = +balances[token] // this is safer as token balance might change while looping when two entries for same token exist
       const tokenKey = normalizeAddress(token, chain)
       if (!prices[tokenKey]) return;
       const priceObj = prices[tokenKey]

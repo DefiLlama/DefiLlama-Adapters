@@ -10,22 +10,24 @@ const apps = require("./apps.json");
 
 async function defaultTVL({ balances, chain, block, app }) {
   const farms = await getUnoFarms({ chain, block, factory: app.factory });
-  const promises = []
+  const promises = [];
 
   for (let k = 0; k < app.masterChefs.length; k++) {
     for (let i = 0; i < farms.length; i++) {
-      promises.push(getUserMasterChefBalances({
-        balances,
-        masterChefAddress: app.masterChefs[k],
-        userAddres: farms[i],
-        block,
-        chain,
-        poolInfoABI: app.poolInfoABI[k],
-        getLPAddress: app.getLPAddress[k] ? eval(app.getLPAddress[k]) : null,
-      }))
+      promises.push(
+        getUserMasterChefBalances({
+          balances,
+          masterChefAddress: app.masterChefs[k],
+          userAddres: farms[i],
+          block,
+          chain,
+          poolInfoABI: app.poolInfoABI[k],
+          getLPAddress: app.getLPAddress[k] ? eval(app.getLPAddress[k]) : null,
+        })
+      );
     }
   }
-  await Promise.all(promises)
+  await Promise.all(promises);
 }
 
 async function balancerTVL({ balances, chain, block, app }) {
@@ -40,7 +42,7 @@ async function balancerTVL({ balances, chain, block, app }) {
 }
 
 async function quickswapTVL({ balances, chain, block, app }) {
-  const transform = addr => chain + ':'+addr;
+  const transform = (addr) => chain + ":" + addr;
   const farms = await getFullInfoQuickswapUnoFarm({
     chain,
     block,
@@ -59,7 +61,7 @@ async function quickswapTVL({ balances, chain, block, app }) {
     })
   ).output.map((a) => a.output);
   farms.map((v, i) => {
-    const res = sdk.util.sumSingleBalance(
+    sdk.util.sumSingleBalance(
       balances,
       transform(v.stakeToken),
       balanceOfFarm[i]
@@ -71,24 +73,25 @@ async function tvl(_, _1, chainBlocks, { api }) {
   const chain = api.chain;
   const block = chainBlocks[chain];
   let balances = {};
-  const promises = []
+  const promises = [];
   const arrayOfApps = apps[chain];
   for (let j = 0; j < arrayOfApps.length; j++) {
     const app = arrayOfApps[j];
     if (app.name == "balancer") {
-      promises.push(balancerTVL({ balances, chain, block, app }))
+      promises.push(balancerTVL({ balances, chain, block, app }));
     } else if (app.name == "quickswap") {
-      promises.push(quickswapTVL({ balances, chain, block, app }))
+      promises.push(quickswapTVL({ balances, chain, block, app }));
     } else {
-      promises.push(defaultTVL({ balances, chain, block, app }))
+      promises.push(defaultTVL({ balances, chain, block, app }));
     }
   }
-  await Promise.all(promises)
+  await Promise.all(promises);
   return balances;
 }
 
 module.exports = {
-  start: 1655206,
+  start: 1656018000,
+  timetravel: true,
   polygon: {
     tvl,
   },
@@ -98,5 +101,7 @@ module.exports = {
   aurora: {
     tvl,
   },
-  methodology: "count the number of lp Tokens deposited to our farms",
+  avax: {
+    tvl,
+  },
 };

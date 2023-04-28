@@ -1,0 +1,5 @@
+{
+  "poolInfo": "function poolInfo(uint256) view returns (address token, uint256 allocPoint, uint256 accGmcPerShare, bool isStarted)",
+  "poolLength": "uint256:poolLength"
+}
+

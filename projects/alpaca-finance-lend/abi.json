@@ -1,0 +1,6 @@
+{
+  "vaultDebtVal": "uint256:vaultDebtVal",
+  "totalToken": "uint256:totalToken",
+  "pendingInterest": "function pendingInterest(uint256 value) public view returns (uint256)",
+  "balanceOf": "function balanceOf(address account) view returns (uint256)"
+}

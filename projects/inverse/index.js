@@ -48,6 +48,7 @@ async function getAllUnderlying(block, tokens) {
         })
       ),
       abi: abi["underlying"],
+      permitFailure: true,
     })
   ).output;
 

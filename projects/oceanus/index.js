@@ -40,7 +40,6 @@ module.exports = {
   misrepresentedTokens: true,
   metis: {
     tvl: (async) => ({}),
-    treasury: staking(treasuryContract, SEA, "metis"),
     staking: Staking,
     pool2: pool2Exports(OShareRewardPool, lpPool2Addresses, "metis"),
   },
