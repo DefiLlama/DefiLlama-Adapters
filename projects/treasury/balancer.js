@@ -26,4 +26,12 @@ module.exports = treasuryExports({
     owners: [eth],
     ownTokens: [bal, abal],
   },
+  arbitrum: {
+    owners: ['0xaf23dc5983230e9eeaf93280e312e57539d098d0'],
+    tokens: [
+      "0x82af49447d8a07e3bd95bd0d56f35241523fbab1", // WETH
+      "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8", // USDC
+    ],
+    ownTokens: ['0xbc2597d3f1f9565100582cde02e3712d03b8b0f6'],
+  }
 });

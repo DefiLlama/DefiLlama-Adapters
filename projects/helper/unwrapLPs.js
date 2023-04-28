@@ -24,106 +24,50 @@ const token1Abi = "address:token1"
 async function unwrapUniswapLPs(balances, lpPositions, block, chain = 'ethereum', transformAddress = null, excludeTokensRaw = [], retry = false, uni_type = 'standard',) {
   if (!transformAddress)
     transformAddress = await getChainTransform(chain)
+  const api = new sdk.ChainApi({ chain, block })
   lpPositions = lpPositions.filter(i => +i.balance > 0)
   const excludeTokens = excludeTokensRaw.map(addr => addr.toLowerCase())
-  const lpTokenCalls = lpPositions.map(lpPosition => ({
-    target: lpPosition.token
-  }))
-  const lpReserves = sdk.api.abi.multiCall({
-    block,
-    abi: lpReservesAbi,
-    calls: lpTokenCalls,
-    chain
-  })
-  const lpSupplies = sdk.api.abi.multiCall({
-    block,
-    abi: lpSuppliesAbi,
-    calls: lpTokenCalls,
-    chain
-  })
-  const tokens0 = sdk.api.abi.multiCall({
-    block,
-    abi: token0Abi,
-    calls: lpTokenCalls,
-    chain
-  })
-  const tokens1 = sdk.api.abi.multiCall({
-    block,
-    abi: token1Abi,
-    calls: lpTokenCalls,
-    chain
-  })
-  if (retry) {
-    await Promise.all([
-      [lpReserves, lpReservesAbi],
-      [lpSupplies, lpSuppliesAbi],
-      [tokens0, token0Abi],
-      [tokens1, token1Abi]
-    ].map(async call => {
-      await requery(await call[0], chain, block, call[1])
-    }))
+  const lpTokenCalls = lpPositions.map(i => i.token)
+  const [
+    lpReserves, lpSupplies, tokens0, tokens1,
+  ] = await Promise.all([
+    uni_type === 'standard' ? api.multiCall({ abi: lpReservesAbi, calls: lpTokenCalls, }) : null,
+    api.multiCall({ abi: lpSuppliesAbi, calls: lpTokenCalls, }),
+    api.multiCall({ abi: token0Abi, calls: lpTokenCalls, }),
+    api.multiCall({ abi: token1Abi, calls: lpTokenCalls, }),
+  ])
+  let gelatoPools, gToken0Bals, gToken1Bals
+  if (uni_type === 'gelato') {
+    gelatoPools = await api.multiCall({ abi: gelatoPoolsAbi, calls: lpTokenCalls, })
+    gToken1Bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: gelatoPools.map((v, i) => ({ target: tokens0[i], params: v })), })
+    gToken0Bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: gelatoPools.map((v, i) => ({ target: tokens1[i], params: v })), })
   }
-  await Promise.all(lpPositions.map(async lpPosition => {
-    try {
-      let token0, token1, supply
-      const lpToken = lpPosition.token
-      const token0_ = (await tokens0).output.find(call => call.input.target === lpToken)
-      const token1_ = (await tokens1).output.find(call => call.input.target === lpToken)
-      const supply_ = (await lpSupplies).output.find(call => call.input.target === lpToken)
+  lpPositions.map((lpPosition, i) => {
+    const token0 = tokens0[i].toLowerCase()
+    const token1 = tokens1[i].toLowerCase()
+    const supply = lpSupplies[i]
 
-      token0 = token0_.output.toLowerCase()
-      token1 = token1_.output.toLowerCase()
-      supply = supply_.output
-      // console.log(token0_, supply_, token1_, lpToken)
-
-      if (supply === "0") {
-        return
-      }
-
-      let _reserve0, _reserve1
-      if (uni_type === 'standard') {
-        ({ _reserve0, _reserve1 } = (await lpReserves).output.find(call => call.input.target === lpToken).output)
-      }
-      else if (uni_type === 'gelato') {
-        const gelatoPools = sdk.api.abi.multiCall({
-          block,
-          abi: gelatoPoolsAbi,
-          calls: lpTokenCalls,
-          chain
-        });
-        const gelatoPool = (await gelatoPools).output.find(call => call.input.target === lpToken).output
-        const [{ output: _reserve0_ }, { output: _reserve1_ }] = (await Promise.all([
-          sdk.api.erc20.balanceOf({
-            target: token0,
-            owner: gelatoPool,
-            block,
-            chain
-          })
-          , sdk.api.erc20.balanceOf({
-            target: token1,
-            owner: gelatoPool,
-            block,
-            chain
-          })
-        ]))
-        _reserve0 = _reserve0_
-        _reserve1 = _reserve1_
-      }
-
-      if (!excludeTokens.includes(token0)) {
-        const token0Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve0)).div(BigNumber(supply))
-        sdk.util.sumSingleBalance(balances, await transformAddress(token0), token0Balance.toFixed(0))
-      }
-      if (!excludeTokens.includes(token1)) {
-        const token1Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve1)).div(BigNumber(supply))
-        sdk.util.sumSingleBalance(balances, await transformAddress(token1), token1Balance.toFixed(0))
-      }
-    } catch (e) {
-      sdk.log(e)
-      console.log(`Failed to get data for LP token at ${lpPosition.token} on chain ${chain}`)
-      throw e
+    if (supply === "0") {
+      return
     }
-  }))
+
+    let _reserve0, _reserve1
+    if (uni_type === 'standard') {
+      _reserve0 = lpReserves[i]._reserve0
+      _reserve1 = lpReserves[i]._reserve1
+    } else if (uni_type === 'gelato') {
+      _reserve0 = gToken0Bals[i]
+      _reserve1 = gToken1Bals[i]
+    }
+
+    const ratio = lpPosition.balance / supply
+    if (!excludeTokens.includes(token0)) {
+      sdk.util.sumSingleBalance(balances, transformAddress(token0), ratio * _reserve0)
+    }
+    if (!excludeTokens.includes(token1)) {
+      sdk.util.sumSingleBalance(balances, transformAddress(token1), ratio * _reserve1)
+    }
+  })
 }
 
 const gelatoPoolsAbi = 'address:pool'
@@ -455,7 +399,7 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
   balanceOfTokens.output.forEach((result) => {
     const token = transformAddress(result.input.target)
     let balance = BigNumber(result.output)
-    if (result.output === null ||isNaN(+result.output)) {
+    if (result.output === null || isNaN(+result.output)) {
       sdk.log('failed for', token, balance, balances[token])
       if (ignoreFailed) balance = BigNumber(0)
       else throw new Error('Unable to fetch balance for: ' + result.input.target)
@@ -559,6 +503,8 @@ async function unwrapLPsAuto({ api, balances, block, chain = "ethereum", transfo
     chain = api.chain ?? chain
     block = api.block ?? block
     if (!balances) balances = api.getBalances()
+  } else {
+    api = new sdk.ChainApi({ chain, block })
   }
 
   if (!transformAddress)
@@ -590,7 +536,7 @@ async function unwrapLPsAuto({ api, balances, block, chain = "ethereum", transfo
 
   async function _addTokensAndLPs(balances, tokens, amounts) {
     const symbols = (await sdk.api.abi.multiCall({
-      calls: tokens.map(t => ({ target: t.output })), abi: symbol, block, chain
+      calls: tokens.map(t => ({ target: t.output })), abi: symbol, block, chain, permitFailure: true,
     })).output
     const lpBalances = []
     symbols.forEach(({ output }, idx) => {

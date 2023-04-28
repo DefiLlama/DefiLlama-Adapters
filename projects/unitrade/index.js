@@ -64,6 +64,7 @@ async function tvl(_, block) {
         target: UNITRADE_BRIDGE,
         params: index,
       })),
+      permitFailure: true,
     })
   ).output
     .filter((item) => item.output !== null)
