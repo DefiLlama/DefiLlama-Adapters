@@ -1,17 +1,27 @@
-const { getChainTvl } = require("../helper/getHydraV3SubgraphTvl");
+const { blockQuery } = require('../helper/http')
+const { getBlock } = require('../hydradex/getHydraV3SubgraphTvl')
 
-const v3graph = getChainTvl(
-  {
-    hydra: "https://graph.hydradex.org/subgraphs/name/v3-subgraph",
-  },
-  "factories",
-  "totalValueLockedUSD"
-);
+async function tvl(timestamp) {
+  const endpoint = 'https://graph.hydradex.org/subgraphs/name/v3-subgraph'
+  const block = +(await getBlock('https://graph.hydradex.org/subgraphs/name/blocklytics/ethereum-blocks', timestamp))
+  const query = `query ($block: Int){
+    factories (block: { number: $block }) {
+      totalValueLockedUSD
+    }
+    }`
+  const { factories: [{ totalValueLockedUSD }] } = await blockQuery(endpoint, query, {
+    api: {
+      getBlock: () => block,
+      block
+    }
+  })
+  return { tether: totalValueLockedUSD }
+}
 
 module.exports = {
-  timetravel: false,
-  methodology: `Counts the tokens locked on AMM pools, pulling the data from https://graph.hydradex.org/subgraphs/name/v3-subgraph`,
+  misrepresentedTokens: true,
+  methodology: "We count liquidity on the dex, pulling data from subgraph",
   hydra: {
-    tvl: v3graph("hydra"),
+    tvl,
   },
 };
