@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { blockQuery } = require("../helper/http");
-const env= require("../helper/env");
+const env = require("../helper/env");
 const BigNumber = require("bignumber.js");
 
 const OlympusStakings = [
@@ -10,7 +10,7 @@ const OlympusStakings = [
   "0xFd31c7d00Ca47653c6Ce64Af53c1571f9C36566a",
 ];
 
-const OHM = "0x383518188c0c6d7730d91b2c03a03c837814a899";
+const OHM = "0x383518188c0c6d7730d91b2c03a03c837814a899" // this is OHM v1
 
 /** Map any staked assets without price feeds to those with price feeds.
  * All balances are 1: 1 to their unstaked counterpart that has the price feed.
@@ -112,7 +112,7 @@ function sumBalancesByTokenAddress(arr) {
  * #2. Call tokenRecords with block num from prev query
  * #3. Sum values returned
  ***/
-async function tvl(timestamp, block, _, { api }, poolsOnly = false) {
+async function tvl(timestamp, block, _, { api }, isOwnTokensMode = false) {
   const indexedBlockForEndpoint = await blockQuery(
     subgraphUrls[api.chain],
     getLatestBlockIndexed,
@@ -130,16 +130,16 @@ async function tvl(timestamp, block, _, { api }, poolsOnly = false) {
   if (now - blockNum[0].timestamp > 3 * aDay) {
     throw new Error("outdated");
   }
-  const filteredTokenRecords = poolsOnly
-    ? tokenRecords.filter((t) => t.category === "Protocol-Owned Liquidity")
-    : tokenRecords;
+  // const filteredTokenRecords = poolsOnly
+  //   ? tokenRecords.filter((t) => t.category === "Protocol-Owned Liquidity")
+  //   : tokenRecords;
 
   /**
    * iterates over filtered list from subgraph and returns any addresses
    * that need to be normalized for pricing .
    * See addressMap above
    **/
-  const normalizedFilteredTokenRecords = filteredTokenRecords.map((token) => {
+  const normalizedFilteredTokenRecords = tokenRecords.map((token) => {
     const normalizedAddress = addressMap[token.tokenAddress]
       ? addressMap[token.tokenAddress]
       : token.tokenAddress;
@@ -149,27 +149,22 @@ async function tvl(timestamp, block, _, { api }, poolsOnly = false) {
   const tokensToBalances = sumBalancesByTokenAddress(
     normalizedFilteredTokenRecords
   );
-  const balances = await Promise.all(
-    tokensToBalances.map(async (token, index) => {
-      const decimals = await sdk.api.abi.call({
-        abi: "erc20:decimals",
-        target: token.tokenAddress,
-        chain: api.chain,
-      });
-      return [
-        `${api.chain}:${token.tokenAddress}`,
-        Number(
-          BigNumber(token.balance)
-            .times(10 ** decimals.output)
-            .toFixed(0)
-        ),
-      ];
-    })
-  );
-  return Object.fromEntries(balances);
+  const tokens = tokensToBalances.map(i => i.tokenAddress)
+  const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: tokens })
+  const ownTokens = new Set([
+    '0x0ab87046fBb341D058F17CBC4c1133F25a20a52f', // GOHM
+    '0x64aa3364f17a4d01c6f1751fd97c2bd3d7e7f1d5', // OHM
+  ].map(i => i.toLowerCase()))
+  tokensToBalances.map(async (token, i) => {
+    if (ownTokens.has(token.tokenAddress.toLowerCase())) {
+      if (!isOwnTokensMode) return;
+    } else if (isOwnTokensMode) return;
+    api.add(token.tokenAddress, token.balance * 10 ** decimals[i])
+  })
+  return api.getBalances()
 }
 
-async function pool2(timestamp, block, _, { api }) {
+async function ownTokens(timestamp, block, _, { api }) {
   return tvl(timestamp, block, _, { api }, true);
 }
 
@@ -181,7 +176,7 @@ module.exports = {
   ethereum: {
     staking,
     tvl,
-    // pool2,
+    ownTokens,
   },
   arbitrum: {
     tvl,
