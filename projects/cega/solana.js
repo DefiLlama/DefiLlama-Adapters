@@ -25,6 +25,6 @@ async function getSolanaTvl() {
 
 module.exports = {
   solana: {
-     tvl: getSolanaTvl().then((result) => { console.log(result )})
+     tvl: getSolanaTvl().then((result) => { console.log(result )}),
   }
 }
