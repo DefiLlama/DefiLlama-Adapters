@@ -1,15 +1,4 @@
 const { getUniTVL } = require('../helper/unknownTokens')
-const ethers = require("ethers")
-const { config } = require('@defillama/sdk/build/api');
-
-
-config.setProvider("ethereumclassic", new ethers.providers.StaticJsonRpcProvider(
-  "https://etc.mytokenpocket.vip",
-  {
-    name: "ethereumclassic",
-    chainId: 61,
-  }
-))
 
 module.exports = {
   misrepresentedTokens: true,

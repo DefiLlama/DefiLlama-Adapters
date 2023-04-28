@@ -15,7 +15,6 @@ module.exports = {
   misrepresentedTokens: false,
   bsc: {
     tvl: () => ({}),
-    treasury:  staking(config.bsc.vaultContract, config.bsc.busd, "bsc"),
     staking:  staking(config.bsc.windmillContract, config.bsc.tokenContract, "bsc"),
   },
   methodology:

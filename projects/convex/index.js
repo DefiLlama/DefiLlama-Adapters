@@ -37,16 +37,17 @@ async function tvl(chain, block) {
   let poolInfo = await sdk.api2.abi.fetchList({ chain, block, lengthAbi: ABI.poolLength, itemAbi: abiPoolInfo, target: boosterAddress })
   const { output: gaugeBalances } = await sdk.api.abi.multiCall({
     abi: 'erc20:balanceOf',
-    calls: poolInfo.map(i => ({ target: i.gauge, params: staker })),
+    calls: Array.from(new Set(poolInfo.map(p=>p.gauge))).map(i => ({ target: i, params: staker })),
     chain, block,
   })
-  gaugeBalances.forEach(({ output }, i) => sdk.util.sumSingleBalance(balances, chain + ':' + poolInfo[i].lptoken, output))
+  gaugeBalances.forEach(({ output, input }, i) => sdk.util.sumSingleBalance(balances, chain + ':' + poolInfo.find(p=>p.gauge.toLowerCase()===input.target.toLowerCase()).lptoken, output))
   return balances
 }
 
 const chains = [
   'ethereum',
   'arbitrum',
+  'polygon',
 ]
 
 module.exports = {

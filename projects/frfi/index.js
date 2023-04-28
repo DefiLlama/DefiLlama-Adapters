@@ -15,4 +15,6 @@ module.exports = {
   timetravel: false,
   bsc: { tvl: tvl('56') },
   polygon: { tvl: tvl('137') },
+  ethereum: { tvl: tvl('1') },
+  kava: { tvl: tvl('2222') },
 };

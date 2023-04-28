@@ -1,4 +1,3 @@
-
 const coreAssets = require('./coreAssets.json')
 const nullAddress = '0x0000000000000000000000000000000000000000'
 
@@ -14,9 +13,8 @@ const nullAddress = '0x0000000000000000000000000000000000000000'
 // carbon: https://api-insights.carbon.network/info/denom_gecko_map
 // orbit brige: https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList
 
-const unsupportedGeckoChains = ['aptos', 'terra2', 'terra', 'kujira']
-const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'stargaze', ]
-const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano',]
+const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'stargaze', 'umee', 'orai', 'persistence', ]
+const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks']
 
 const tokens = {
   null: nullAddress,
@@ -108,7 +106,8 @@ function getCoreAssets(chain = 'ethereum') {
   return addresses
 }
 
-function normalizeAddress(address, chain) {
+function normalizeAddress(address, chain, extractChain = false) {
+  if (!chain && extractChain && address.includes(':')) chain = address.split(':')[0]
   if (caseSensitiveChains.includes(chain)) return address
   return address.toLowerCase()
 }
@@ -120,18 +119,24 @@ function stripTokenHeader(token, chain) {
   return token.indexOf(":") > -1 ? token.split(":")[1] : token;
 }
 
-const whitelistedNFTs = {
-  ethereum: ["0x059EDD72Cd353dF5106D2B9cC5ab83a52287aC3a", "0xed5af388653567af2f388e6224dc7c4b3241c544", "0xba30E5F9Bb24caa003E9f2f0497Ad287FDF95623", "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d", "0x306b1ea3ecdf94aB739F1910bbda052Ed4A9f949", "0x49cf6f5d44e70224e2e23fdcdd2c053f30ada28b", "0x1A92f7381B9F03921564a437210bB9396471050C", "0x1CB1A5e65610AEFF2551A50f76a87a7d3fB649C6", "0x42069ABFE407C60cf4ae4112bEDEaD391dBa1cdB", "0xb7f7f6c52f2e2fdb1963eab30438024864c313f6", "0x892848074ddeA461A15f337250Da3ce55580CA85", "0xF87E31492Faf9A91B02Ee0dEAAd50d51d56D5d4d", "0xd1258DB6Ac08eB0e625B75b371C023dA478E94A9", "0x8a90cab2b38dba80c64b7734e58ee1db38b8992e", "0x521f9C7505005CFA19A8E5786a9c3c9c9F5e6f42", "0xbCe3781ae7Ca1a5e050Bd9C4c77369867eBc307e", "0x026224A2940bFE258D0dbE947919B62fE321F042", "0x60e4d786628fea6478f785a6d7e704777c86a7c6", "0x7bd29408f11d2bfc23c34f18275bbf23bb716bc7", "0x5Af0D9827E0c53E4799BB226655A1de152A425a5", "0x23581767a106ae21c074b2276d25e5c3e136a68b", "0x9c8ff314c9bc7f6e59a9d9225fb22946427edc03", "0x34d85c9CDeB23FA97cb08333b511ac86E1C4E258", "0xbd3531da5cf5857e7cfaa92426877b022e612cf8", "0x5cc5b05a8a13e3fbdb0bb9fccd98d38e50f90c38", "0xa3aee8bce55beea1951ef834b99f3ac60d1abeeb", "0xe785e82358879f061bc3dcac6f0444462d4b5330",],
-}
-function getWhitelistedNFTs(chain = 'ethereum') {
-  return whitelistedNFTs[chain].map(i => i.toLowerCase())
-}
+const eulerTokens = [
+  "0x1b808f49add4b8c6b5117d9681cf7312fcf0dc1d",
+  "0xe025e3ca2be02316033184551d4d3aa22024d9dc",
+  "0xeb91861f8a4e1c12333f42dce8fb0ecdc28da716",
+  "0x4d19f33948b99800b6113ff3e83bec9b537c85d2",
+  "0x5484451a88a35cd0878a1be177435ca8a0e4054e",
+  "0x64ad6d2472de5ddd3801fb4027c96c3ee7a7ee82",
+  // 4626 wrapped eTokens
+  "0x60897720aa966452e8706e74296b018990aec527",
+  "0x3c66B18F67CA6C1A71F829E2F6a0c987f97462d0",
+  "0x4169Df1B7820702f566cc10938DA51F6F597d264",
+  "0xbd1bd5c956684f7eb79da40f582cbe1373a1d593",
+]
 
 module.exports = {
   nullAddress,
   tokens,
   tokensBare,
-  unsupportedGeckoChains,
   caseSensitiveChains,
   transformTokens,
   fixBalancesTokens,
@@ -140,6 +145,6 @@ module.exports = {
   ibcChains,
   stripTokenHeader,
   getUniqueAddresses,
-  getWhitelistedNFTs,
   distressedAssts,
+  eulerTokens,
 }

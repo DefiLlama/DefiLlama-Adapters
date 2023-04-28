@@ -1,6 +1,7 @@
 const sdk = require('@defillama/sdk');
 const BigNumber = require("bignumber.js");
 const abi = require('../helper/abis/aave.json');
+const { nullAddress } = require('../helper/unwrapLPs');
 
 async function getV1Assets(lendingPoolCore, block, chain) {
     const reserves = (
@@ -78,6 +79,7 @@ async function uniswapV1Market(balances, uniswapLendingPoolCore, block, borrowed
         sdk.api.abi.multiCall({
             abi: "address:tokenAddress",
             calls: uniswapv1Calls,
+            permitFailure: true,
             block
         }),
         sdk.api.eth.getBalances({
@@ -87,6 +89,7 @@ async function uniswapV1Market(balances, uniswapLendingPoolCore, block, borrowed
         sdk.api.abi.multiCall({
             abi: 'erc20:totalSupply',
             calls: uniswapv1Calls,
+            permitFailure: true,
             block
         }),
     ])
@@ -97,6 +100,7 @@ async function uniswapV1Market(balances, uniswapLendingPoolCore, block, borrowed
             target: t.output,
             params: t.input.target
         })),
+        permitFailure: true,
         block
     })
 

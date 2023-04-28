@@ -71,6 +71,38 @@
       "address": "0x63cb0f59b7e67c7d4cb96214ca456597d85c587d",
       "token": "0xC08512927D12348F6620a698105e1BAac6EcD911",
       "currency": "GYEN"
+    },
+	{
+      "address": "0xDA9dcc7fd51F0D9Aa069a82647A5F3ba594edAED",
+      "token": "0xcadc0acd4b445166f12d2c07eac6e2544fbe2eef"
+    },
+    {
+      "address": "0xACC5Dca0B684f444bC6b4be30B95Ca7D928A4B9c",
+      "token": "0x70e8de73ce538da2beed35d14187f6959a8eca96"
+    },
+    {
+      "address": "0xb7dB2F8d25C51A26799bE6765720c3C6D84CD2f2",
+      "token": "0xebf2096e01455108badcbaf86ce30b6e5a72aa52"
+    },
+    {
+      "address": "0xc147cee0F6BB0e56240868c9f53aE916D3b86073",
+      "token": "0xda446fad08277b4d2591536f204e018f32b6831c",
+      "currency": "NZDS"
+    },
+    {
+      "address": "0x38F818fCd57F8A1782bBCC1C90CB0FD03e7f0bd1",
+      "token": "0x2c537e5624e4af88a7ae4060c022609376c8d0eb",
+      "currency": "TRYb"
+    },
+    {
+      "address": "0x8cd86fbC94BeBFD910CaaE7aE4CE374886132c48",
+      "token": "0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c",
+      "currency": "EUROC"
+    },
+	{
+      "address": "0x9aFD65013770525E43a84e49c87B3015C2C32517",
+      "token": "0xC08512927D12348F6620a698105e1BAac6EcD911",
+      "currency": "GYEN"
     }
   ],
   "polygon": [
@@ -123,6 +155,26 @@
       "address": "0xefac71536feBE220D0Bb5128AeBBD1e3df2a1e67",
       "token": "0xeafe31cd9e8e01c8f0073a2c974f728fb80e9dce",
       "currency": "NZDs"
+    },
+	{
+      "address": "0x6691FA63aa1d7E422Dc5D19C9B04F25909fdE966",
+      "token": "0x9de41aFF9f55219D5bf4359F167d1D0c772A396D",
+      "currency": "CADC"
+    },
+    {
+      "address": "0x2385D7aB31F5a470B1723675846cb074988531da",
+      "token": "0xe111178a87a3bff0c8d18decba5798827539ae99",
+      "currency": "EURS"
+    },
+    {
+      "address": "0xBc408da6A7237682c8672eF7a66AFF09a9069b15",
+      "token": "0xDC3326e71D45186F113a2F448984CA0e8D201995",
+      "currency": "XSGD"
+    },
+    {
+      "address": "0xAAb708fBd208Ac262821E229ded16234277b2B13",
+      "token": "0x4fb71290ac171e1d144f7221d882becac7196eb5",
+      "currency": "TRYb"
     }
   ]
 }
