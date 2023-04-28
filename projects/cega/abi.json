@@ -1,6 +1,38 @@
 {
     "sumVaultUnderlyingAmounts": "uint256:sumVaultUnderlyingAmounts",
     "queuedDepositsTotalAmount": "uint256:queuedDepositsTotalAmount",
+    "getProductNames": {
+      "inputs": [],
+      "name": "getProductNames",
+      "outputs": [
+        {
+          "internalType": "string[]",
+          "name": "",
+          "type": "string[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    "products":  {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "name": "products",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
     "getLOVVaultMetadata":  {
         "inputs": [
           {

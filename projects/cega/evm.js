@@ -4,27 +4,44 @@ const abi = require("./abi.json");
 
 const usdcDecimals = 10 ** 6;
 const maxLeverage = 5;
+const LOV_SUFFIX = "-lov";
+const CEGA_STATE = "0x0730AA138062D8Cc54510aa939b533ba7c30f26B";
 const CEGA_PRODUCT_VIEWER = "0x31C73c07Dbd8d026684950b17dD6131eA9BAf2C4";
-const FCN_PRODUCTS = [
-    "0x042021d59731d3fFA908c7c4211177137Ba362Ea", // supercharger
-    "0x56F00A399151EC74cf7bE8DC38225363E84975E6", // go fast 
-    "0x784e3C592A6231D92046bd73508B3aAe3A7cc815", // insanic
-    "0xAB8631417271Dbb928169F060880e289877Ff158", // starboard
-    "0xcf81b51AecF6d88dF12Ed492b7b7f95bBc24B8Af", // autopilot
-    "0x80ec1c0da9bfBB8229A1332D40615C5bA2AbbEA8", // cruise control
-    "0x94C5D3C2fE4EF2477E562EEE7CCCF07Ee273B108", // genesis basket
-];
 
-const LOV_PRODUCTS = [
-'0xF9B7BF3f4616209Aa9d412443Aa0f94449c63122', // supercharger-lov
-'0xDC60989aaa5fbA0C2435D755056b41A9Ff415F13', // insanic-lov
-'0xeF1CE301B311654419810c8F5DbBD7Eb595F3d96' // go-fast-lov
-]; 
+async function getProducts(){
+    const productNames = await sdk.api.abi.call({
+        target: CEGA_STATE,
+        abi: abi.getProductNames,
+    })
+    const LOVProductNames = productNames.output.filter(v => v.includes(LOV_SUFFIX))
+    const FCNProductNames = productNames.output.filter(v => !v.includes(LOV_SUFFIX))
+
+    let FCNProducts = []; 
+    for(const product of FCNProductNames){
+        const FCNProductAddress = await sdk.api.abi.call({
+            target: CEGA_STATE,
+            abi: abi.products,
+            params: product
+        })
+    FCNProducts.push(FCNProductAddress.output);
+    }
+
+    let LOVProducts = [];
+    for(const product of LOVProductNames){
+        const LOVProductAddress = await sdk.api.abi.call({
+            target: CEGA_STATE,
+            abi: abi.products,
+            params: product
+        })
+        LOVProducts.push(LOVProductAddress.output);
+    }
+    return [FCNProducts, LOVProducts];
+}
 
 
-async function getSumVaultUnderlyingFcnProducts(){
+async function getSumFCNProductDeposits(fcnProducts){
     let totalBalance = 0; 
-    for (const product of FCN_PRODUCTS){
+    for (const product of fcnProducts){
         const result = await sdk.api.abi.call({
             target: product,
             abi: abi.sumVaultUnderlyingAmounts,
@@ -35,9 +52,9 @@ async function getSumVaultUnderlyingFcnProducts(){
     return (totalBalance / usdcDecimals);
 }
 
-async function getSumVaultQueuedDepositsFcnProducts(){
+async function getSumFCNProductQueuedDeposits(fcnProducts){
     let totalBalance = 0; 
-    for (const product of FCN_PRODUCTS){
+    for (const product of fcnProducts){
         const result = await sdk.api.abi.call({
             target: product,
             abi: abi.queuedDepositsTotalAmount,
@@ -48,9 +65,9 @@ async function getSumVaultQueuedDepositsFcnProducts(){
     return (totalBalance / usdcDecimals);
 }
 
-async function getSumLOVProductDeposits(){
+async function getSumLOVProductDeposits(lovProducts){
     let totalBalance = 0; 
-    for (const product of LOV_PRODUCTS){
+    for (const product of lovProducts){
         for (let i = 2; i < maxLeverage; i++){
         const result = await sdk.api.abi.call({
             target: CEGA_PRODUCT_VIEWER,
@@ -64,9 +81,9 @@ async function getSumLOVProductDeposits(){
     return totalBalance / usdcDecimals;
 }
 
-async function getSumLOVProductQueuedDeposits(){
+async function getSumLOVProductQueuedDeposits(lovProducts){
     let totalBalance = 0; 
-    for (const product of LOV_PRODUCTS){
+    for (const product of lovProducts){
         for (let i = 2; i < maxLeverage; i++){
         const result = await sdk.api.abi.call({
             target: CEGA_PRODUCT_VIEWER,
@@ -80,11 +97,12 @@ async function getSumLOVProductQueuedDeposits(){
 }
 
 async function getEthereumTvl(){
+    const [fcnProducts, lovProducts] = await getProducts();
     const results = await Promise.all([
-        getSumVaultUnderlyingFcnProducts(),
-        getSumVaultQueuedDepositsFcnProducts(),
-        getSumLOVProductDeposits(),
-        getSumLOVProductQueuedDeposits()
+        getSumFCNProductDeposits(fcnProducts),
+        getSumFCNProductQueuedDeposits(fcnProducts),
+        getSumLOVProductDeposits(lovProducts),
+        getSumLOVProductQueuedDeposits(lovProducts)
     ]);
     const sum = results.reduce((total, currentValue) => total + currentValue, 0);
     return sum 
@@ -96,5 +114,3 @@ module.exports = {
        tvl: getEthereumTvl().then((result) => { console.log(result)})
     }
 }
-
-
