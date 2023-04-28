@@ -18,6 +18,5 @@ async function getBlock(endpoint, timestamp) {
 }
 
 module.exports = {
-  getChainTvl,
   getBlock,
 };
