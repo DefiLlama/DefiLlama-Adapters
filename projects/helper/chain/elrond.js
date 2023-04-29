@@ -1,5 +1,5 @@
 const { get, graphQuery } = require('../http')
-const { getCoreAssets, tokens: TOKENS } = require('../tokenMapping')
+const { getCoreAssets, } = require('../tokenMapping')
 const { transformBalances } = require('../portedTokens')
 const sdk = require('@defillama/sdk')
 const chain = 'elrond'
@@ -33,6 +33,7 @@ async function getElrondBalance(address) {
   const { data: { account: { balance } } } = await get(`${API_HOST}/address/${address}`)
   return balance
 }
+const nullAddress = '0x0000000000000000000000000000000000000000'
 
 async function getTokens({ address, balances = {}, tokens = [], blacklistedTokens = [] }) {
   const prices = await getTokenPrices()
@@ -45,10 +46,10 @@ async function getTokens({ address, balances = {}, tokens = [], blacklistedToken
       if (blacklistedTokens.includes(token)) return; // skip blacklisted tokens
       if (!coreAssets.has(token)) {
         if (i.valueUsd)
-          return sdk.util.sumSingleBalance(balances, TOKENS.usdt, i.valueUsd * 1e6)
+          return sdk.util.sumSingleBalance(balances, 'ethereum:0xdac17f958d2ee523a2206206994597c13d831ec7', i.valueUsd * 1e6)
 
         if (prices[token])
-          return sdk.util.sumSingleBalance(balances, TOKENS.null, (prices[token] * i.balance).toFixed(0), chain)
+          return sdk.util.sumSingleBalance(balances, nullAddress, (prices[token] * i.balance).toFixed(0), chain)
       }
       return sdk.util.sumSingleBalance(balances, token, i.balance / (10 ** i.decimals), chain)
     })
@@ -62,10 +63,10 @@ async function sumTokens({ owners = [], tokens = [], balances = {}, blacklistedT
   }
 
   await Promise.all(owners.map(i => getTokens({ address: i, balances, tokens, blacklistedTokens, })))
-  if (!tokens.length || tokens.includes(TOKENS.null))
+  if (!tokens.length || tokens.includes(nullAddress))
     await Promise.all(owners.map(async i => {
       const bal = await getElrondBalance(i)
-      sdk.util.sumSingleBalance(balances, TOKENS.null, bal, chain)
+      sdk.util.sumSingleBalance(balances, nullAddress, bal, chain)
     }))
   return transformBalances(chain, balances)
 }

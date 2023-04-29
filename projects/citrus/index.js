@@ -1,4 +1,4 @@
-const { getProvider, tokens, } = require('../helper/solana');
+const { getProvider, } = require('../helper/solana');
 const { Program } = require("@project-serum/anchor");
 const { getConfig } = require('../helper/cache');
 const axios = require("axios");
@@ -38,11 +38,11 @@ async function getStats() {
 }
 
 const tvl = async () => {
-  return { [tokens.solana]: (await getStats()).tvl }
+  return { ['solana:So11111111111111111111111111111111111111112']: (await getStats()).tvl }
 };
 
 const borrowed = async () => {
-  return { [tokens.solana]: (await getStats()).borrowed }
+  return { ['solana:So11111111111111111111111111111111111111112']: (await getStats()).borrowed }
 }
 
 module.exports = {

@@ -1,4 +1,3 @@
-const { tokensBare, } = require('./tokenMapping')
 const { nullAddress } = require('./unwrapLPs')
 const { sumTokensExport } = require('../helper/sumTokens')
 const sdk = require('@defillama/sdk')
@@ -6,11 +5,11 @@ const sdk = require('@defillama/sdk')
 const defaultTokens = {
   ethereum: [
     nullAddress,
-    tokensBare.usdt,
-    tokensBare.usdc,
-    tokensBare.link,
-    tokensBare.dai,
-    tokensBare.wbtc,
+    '0xdac17f958d2ee523a2206206994597c13d831ec7',
+    '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+    '0x514910771af9ca656af840dff83e8264ecf986ca',
+    '0x6b175474e89094c44da98b954eedeac495271d0f',
+    '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
     '0x0000000000085d4780B73119b644AE5ecd22b376', // TUSD
     '0x4fabb145d64652a948d72533023f6e7a623c7c53', // BUSD
     '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0', // MATIC
