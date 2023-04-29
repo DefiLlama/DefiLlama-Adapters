@@ -15,50 +15,32 @@
 
 ##### Name (to be shown on DefiLlama):
 
-DeriTrade
-
 ##### Twitter Link:
-
-https://twitter.com/deritrade?lang=en
 
 ##### List of audit links if any:
 
 ##### Website Link:
 
-https://deri.trade
-
-##### Logo (High resolution, preferably in .svg and .png, for application on both white and black backgrounds. Will be shown with rounded borders):
+##### Logo (High resolution, will be shown with rounded borders):
 
 ##### Current TVL:
-
-0
 
 ##### Treasury Addresses (if the protocol has treasury)
 
 ##### Chain:
 
-Arbitrum, BSC, zkSync Era
+##### Coingecko ID (so your TVL can appear on Coingecko, leave empty if not listed): (https://api.coingecko.com/api/v3/coins/list)
 
-##### Coingecko ID (so your TVL can appear on Coingecko): (https://api.coingecko.com/api/v3/coins/list)
-
-##### Coinmarketcap ID (so your TVL can appear on Coinmarketcap): (https://api.coinmarketcap.com/data-api/v3/map/all?listing_status=active,inactive,untracked&start=1&limit=10000)
+##### Coinmarketcap ID (so your TVL can appear on Coinmarketcap, leave empty if not listed): (https://api.coinmarketcap.com/data-api/v3/map/all?listing_status=active,inactive,untracked&start=1&limit=10000)
 
 ##### Short Description (to be shown on DefiLlama):
-
-DERI TRADE is a Multi-Chain Decentralized Derivatives Protocol.
 
 ##### Token address and ticker if any:
 
 ##### Category (full list at https://defillama.com/categories) \*Please choose only one:
 
-Derivatives
-
 ##### Oracle used (Chainlink/Band/API3/TWAP or any other that you are using):
 
-No
-
 ##### forkedFrom (Does your project originate from another project):
-
-No
 
 ##### methodology (what is being counted as tvl, how is tvl being calculated):
