@@ -4,6 +4,7 @@ const sdk = require('@defillama/sdk')
 const http = require('../http')
 const env = require('../env')
 const coreTokensAll = require('../coreAssets.json')
+const ADDRESSES = coreAssetsAll
 const { transformBalances } = require('../portedTokens')
 const { log, getUniqueAddresses } = require('../utils')
 
