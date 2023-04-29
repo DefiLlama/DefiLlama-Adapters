@@ -93,7 +93,7 @@ for (const [chain, mapping] of Object.entries(fixBalancesTokens))
   normalizeMapping(mapping, chain)
 
 for (const [chain, mapping] of Object.entries(coreAssets))
-  coreAssets[chain] = mapping.map(i => stripTokenHeader(i, chain))
+  coreAssets[chain] = Object.values(mapping).map(i => stripTokenHeader(i, chain))
 
 function getCoreAssets(chain = 'ethereum') {
   const tokens = [
