@@ -10,7 +10,7 @@ const stateCache = {}
 const accountCache = {}
 const assetCache = {}
 
-const geckoMapping = coreAssets.algorand ?? {}
+const geckoMapping = Object.values(coreAssets.algorand)
 const axiosObj = axios.create({
   baseURL: 'https://algoindexer.algoexplorerapi.io',
   timeout: 300000,
@@ -163,10 +163,10 @@ async function getPriceFromAlgoFiLP(lpAssetId, unknownAssetId) {
   const unknownAssetQuantity = lpInfo.reserveInfo.assets.find(i => i['asset-id'] === '' + unknownAssetId).amount
   for (const i of lpInfo.reserveInfo.assets) {
     const id = i['asset-id']
-    if (geckoMapping[id]) {
+    if (geckoMapping.includes(id)) {
       return {
         price: i.amount / unknownAssetQuantity,
-        geckoId: geckoMapping[id],
+        geckoId: 'algorand:'+id,
         decimals: 0,
       }
     }
