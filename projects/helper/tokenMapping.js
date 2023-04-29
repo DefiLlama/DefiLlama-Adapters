@@ -1,6 +1,6 @@
 let coreAssets = require('./coreAssets.json')
 const ADDRESSES = coreAssets
-const nullAddress = '0x0000000000000000000000000000000000000000'
+const nullAddress = ADDRESSES.null
 
 coreAssets = JSON.parse(JSON.stringify(coreAssets))
 
@@ -21,8 +21,8 @@ const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand',
 
 const distressedAssts = new Set(Object.values({
   CRK: '0x065de42e28e42d90c2052a1b49e7f83806af0e1f',
-  aBNBc: '0xe85afccdafbe7f2b096f268e31cce3da8da2990a',
-  aBNBb: '0xbb1aa6e59e5163d8722a122cd66eba614b59df0d',
+  aBNBc: ADDRESSES.bsc.ankrBNB,
+  aBNBb: ADDRESSES.bsc.aBNBb,
   XRPC: '0xd4ca5c2aff1eefb0bea9e9eab16f88db2990c183',
 }).map(i => i.toLowerCase()))
 
@@ -30,7 +30,7 @@ const transformTokens = {
   // Sample Code
   // cronos: {
   //   "0x065de42e28e42d90c2052a1b49e7f83806af0e1f": "0x123", // CRK token is mispriced
-  //   "0x87EFB3ec1576Dec8ED47e58B832bEdCd86eE186e": "0x0000000000085d4780B73119b644AE5ecd22b376",
+  //   [ADDRESSES.cronos.TUSD]: ADDRESSES.ethereum.TUSD,
   // },
 }
 const ibcMappings = {
@@ -43,9 +43,9 @@ const fixBalancesTokens = {
   // Sample Code
   // arbitrum_nova: {
   //   [nullAddress]: { coingeckoId: "ethereum", decimals: 18 },
-  //   '0x722E8BdD2ce80A4422E880164f2079488e115365': { coingeckoId: "ethereum", decimals: 18 },
-  //   '0x52484e1ab2e2b22420a25c20fa49e173a26202cd': { coingeckoId: "tether", decimals: 6 },
-  //   '0x750ba8b76187092b0d1e87e28daaf484d1b5273b': { coingeckoId: "usd-coin", decimals: 6 },
+  //   [ADDRESSES.arbitrum_nova.WETH]: { coingeckoId: "ethereum", decimals: 18 },
+  //   [ADDRESSES.arbitrum_nova.USDT]: { coingeckoId: "tether", decimals: 6 },
+  //   [ADDRESSES.arbitrum_nova.USDC]: { coingeckoId: "usd-coin", decimals: 6 },
   // },
 }
 

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { Program } = require("@project-serum/anchor");
 const { getProvider, sumTokens2, getTokenBalance, } = require("../helper/solana");
 const sdk = require('@defillama/sdk')
@@ -11,7 +12,7 @@ const MM_multisigs = [
 ]
 
 const vaultMintAuthority = '4nhbsUdKEwVQXuYDotgdQHoMWW83GvjXENwLsf9QrRJT'
-const usdcTokenSpl = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
+const usdcTokenSpl = ADDRESSES.solana.USDC
 
 async function tvl() {
   const products = await getProducts()
@@ -49,7 +50,7 @@ async function getProducts() {
 
 async function getMMbalance() {
   const { output: bals } = await sdk.api.abi.multiCall({
-    target: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+    target: ADDRESSES.ethereum.USDC,
     abi: 'erc20:balanceOf',
     calls: MM_multisigs.map(i => ({ params: i})),
   })

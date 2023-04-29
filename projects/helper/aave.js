@@ -1,3 +1,4 @@
+const ADDRESSES = require('./coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { default: BigNumber } = require('bignumber.js');
 const abi = require('./abis/aave.json');
@@ -30,7 +31,7 @@ async function getV2Reserves(block, addressesProviderRegistry, chain, dataHelper
 
     validProtocolDataHelpers = protocolDataHelpers.filter(
       (helper) =>
-        helper.output !== "0x0000000000000000000000000000000000000000"
+        helper.output !== ADDRESSES.null
     ).map(p => p.output);
   } else {
     validProtocolDataHelpers = dataHelperAddress

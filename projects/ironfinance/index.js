@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const abiPolygon = require('./abi-polygon.json');
 const { transformAddress } = require('./utils');
@@ -15,7 +16,7 @@ const Contracts = {
     lend: {
       ironController: '0xF20fcd005AFDd3AD48C85d0222210fe168DDd10c',
     },
-    wrappedNative: '0x0000000000000000000000000000000000001010',
+    wrappedNative: ADDRESSES.polygon.WMATIC_1,
   },
   avax: {
     pools: {
@@ -29,7 +30,7 @@ const Contracts = {
     lend: {
       ironController: '0xDc4C597E36Fc80876801df0309Cc11A7C12E0764',
     },
-    wrappedNative: '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83',
+    wrappedNative: ADDRESSES.fantom.WFTM,
   },
 };
 

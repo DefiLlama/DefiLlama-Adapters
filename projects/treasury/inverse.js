@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { treasuryExports, nullAddress } = require("../helper/treasury");
 
 const inv = "0x41D5D79431A913C4aE7d69a668ecdfE5fF9DFB68";
@@ -10,17 +11,17 @@ module.exports = treasuryExports({
   ethereum: {
     tokens: [
       nullAddress,
-      "0x6B175474E89094C44Da98b954EedeAC495271d0F", // DAI
-      "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // USDC
+      ADDRESSES.ethereum.DAI, // DAI
+      ADDRESSES.ethereum.USDC, // USDC
       "0x865377367054516e17014CcdED1e7d814EDC9ce4", // DOLA
-      "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", // WBTC
-      "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", // WETH
-      "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e", // YFI
+      ADDRESSES.ethereum.WBTC, // WBTC
+      ADDRESSES.ethereum.WETH, // WETH
+      ADDRESSES.ethereum.YFI, // YFI
       "0xC0c293ce456fF0ED870ADd98a0828Dd4d2903DBF", // AURA
       "0xba100000625a3754423978a60c9317c58a424e3D", // BAL
       "0x73968b9a57c6E53d41345FD57a6E6ae27d6CDB2F", // SDT
-      "0xFEEf77d3f69374f66429C91d732A244f074bdf74", // cvxFXS
-      "0xD533a949740bb3306d119CC777fa900bA034cd52", // CRV
+      ADDRESSES.ethereum.cvxFXS, // cvxFXS
+      ADDRESSES.ethereum.CRV, // CRV
       "0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B", // CVX
       "0x4C2e59D098DF7b6cBaE0848d66DE2f8A4889b9C3", // FODL
       "0x5aFE3855358E112B5647B952709E6165e1c1eEEe", // SAFE
@@ -43,7 +44,7 @@ module.exports = treasuryExports({
   optimism: {
     tokens: [
       nullAddress,
-      "0x7F5c764cBc14f9669B88837ca1490cCa17c31607", // USDC
+      ADDRESSES.optimism.USDC, // USDC
       "0x8aE125E8653821E851F12A49F7765db9a9ce7384", // DOLA
     ],
     owners: [opmultisig],
@@ -52,7 +53,7 @@ module.exports = treasuryExports({
   bsc: {
     tokens: [
       nullAddress,
-      "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", // WBNB
+      ADDRESSES.bsc.WBNB, // WBNB
       "0x2F29Bc0FFAF9bff337b31CBe6CB5Fb3bf12e5840", // DOLA
       // "0xfBBF371C9B0B994EebFcC977CEf603F7f31c070D", // veTHE
     ],

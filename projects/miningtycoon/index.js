@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 
 const tokenFarm = '0xBdfbeecF52bCfF5aa8cc1B8A4B737B2Af3D1BA2F';
@@ -10,7 +11,7 @@ const bsc_tokenFarm = '0xA05Cbf21620553Ade9a3368f1b20D81eEe74a1FC';
 const bsc_tokenFarm2 = '0x973fEAf394F5E882B0F8a9B5CDC0b3E28AA08926';
 
 const bsc_NTToken = '0xfbcf80ed90856AF0d6d9655F746331763EfDb22c';
-const bsc_USDTToken = '0x55d398326f99059fF775485246999027B3197955';
+const bsc_USDTToken = ADDRESSES.bsc.USDT;
 
 async function tvl(timestamp, ethBlock, chainBlocks) {
 	let balances = {};

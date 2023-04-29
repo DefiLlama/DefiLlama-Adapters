@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { default: BigNumber } = require('bignumber.js');
 const abiMoonriver = require('./abi-moonriver.json');
@@ -70,9 +71,9 @@ const moonriverTvl = async (timestamp, ethBlock, chainBlocks) => {
 
 function getTokenId(address) {
   switch(address) {
-      case '0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d':
+      case [ADDRESSES.moonriver.USDC]:
           return ['usd-coin', 6]
-      case '0xb44a9b6905af7c801311e8f4e76932ee959c663c':
+      case [ADDRESSES.moonriver.USDT]:
           return ['tether', 6]
       case '0x80a16016cc4a2e6a2caca8a4a498b1699ff0f844':
           return ['dai', 18]

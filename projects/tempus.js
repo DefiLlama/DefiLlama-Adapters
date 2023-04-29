@@ -1,10 +1,11 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 
-const USDT = "0xdac17f958d2ee523a2206206994597c13d831ec7";
-const USDC = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
-const DAI = "0x6b175474e89094c44da98b954eedeac495271d0f";
-const YFI = "0x0bc529c00c6401aef6d220be8c6ea1667f6ad93e";
-const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+const USDT = ADDRESSES.ethereum.USDT;
+const USDC = ADDRESSES.ethereum.USDC
+const DAI = ADDRESSES.ethereum.DAI;
+const YFI = ADDRESSES.ethereum.YFI;
+const WETH = ADDRESSES.ethereum.WETH;
 
 const CHAIN_DATA = {
   ethereum: {

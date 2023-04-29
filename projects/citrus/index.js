@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getProvider, } = require('../helper/solana');
 const { Program } = require("@project-serum/anchor");
 const { getConfig } = require('../helper/cache');
@@ -38,11 +39,11 @@ async function getStats() {
 }
 
 const tvl = async () => {
-  return { ['solana:So11111111111111111111111111111111111111112']: (await getStats()).tvl }
+  return { ['solana:' + ADDRESSES.solana.SOL]: (await getStats()).tvl }
 };
 
 const borrowed = async () => {
-  return { ['solana:So11111111111111111111111111111111111111112']: (await getStats()).borrowed }
+  return { ['solana:' + ADDRESSES.solana.SOL]: (await getStats()).borrowed }
 }
 
 module.exports = {

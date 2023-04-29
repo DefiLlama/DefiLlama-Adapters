@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { request, gql } = require("graphql-request");
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
@@ -44,7 +45,7 @@ const graphQueries = {
 };
 
 // --- We need to token as ref for the balances object ---
-const usdtToken = "0xdac17f958d2ee523a2206206994597c13d831ec7";
+const usdtToken = ADDRESSES.ethereum.USDT;
 
 function getMDEXLiquidity(block, chain) {
   return request(graphUrls[chain], graphQueries[chain], {

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const abis = {
@@ -9,7 +10,7 @@ module.exports = {
   ethereum:{
     tvl: async (_, b, cb, { api }) => {
       const info = await api.fetchList({  lengthAbi: abis.poolLength, itemAbi: abis.poolInfo, target: '0x078aadff42c94b01f135b0ab1d4b794902c67c3f'})
-      return sumTokens2({ api, tokens: ['0xae7ab96520de3a18e5e111b5eaab095312d7fe84'], owners: info.map(i => i.una.assetManagementAddr)})
+      return sumTokens2({ api, tokens: [ADDRESSES.ethereum.STETH], owners: info.map(i => i.una.assetManagementAddr)})
     },
   },
 }

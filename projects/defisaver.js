@@ -1,9 +1,10 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const defisaverABIs = require("./config/defisaver/abis");
 const utils = require("./helper/utils");
 const { nullAddress, } = require("./helper/tokenMapping");
 const sdk = require('@defillama/sdk')
 
-const dai = '0x6b175474e89094c44da98b954eedeac495271d0f'
+const dai = ADDRESSES.ethereum.DAI
 
 const {
   CompoundSubscriptions,
@@ -133,13 +134,13 @@ async function tvl(ts, block, _, { api }) {
 
 const assetMapping = {
   ETH: nullAddress,
-  DAI: '0x6b175474e89094c44da98b954eedeac495271d0f',
-  BAT: '0x0d8775f648430679a709e98d2b0cb6250d2887ef',
-  RETH: '0xae78736cd615f374d3085123a210448e74fc6393',
-  LINK: '0x514910771af9ca656af840dff83e8264ecf986ca',
-  WBTC: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
-  MATIC: '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0',
-  WSTETH: '0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0'
+  DAI: ADDRESSES.ethereum.DAI,
+  BAT: ADDRESSES.ethereum.BAT,
+  RETH: ADDRESSES.ethereum.RETH,
+  LINK: ADDRESSES.ethereum.LINK,
+  WBTC: ADDRESSES.ethereum.WBTC,
+  MATIC: ADDRESSES.ethereum.MATIC,
+  WSTETH: ADDRESSES.ethereum.WSTETH
 }
 
 module.exports = {

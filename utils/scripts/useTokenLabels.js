@@ -11,13 +11,11 @@ const { ibcChains } = require('../../projects/helper/tokenMapping')
 // const rootFolder = projectsDir + '/zharta'
 const rootFolder = projectsDir
 
-const ignoredChains = ['algorand', 'defichain', ...ibcChains]
+const ignoredChains = ['tezos', 'waves', 'algorand', 'klaytn', 'astar', 'iotex', 'elrond', 'defichain', 'cardano', ...ibcChains]
 
 function run() {
   ignoredChains.forEach(i => delete allLabels[i])
-  console.table(Object.entries(allLabels).map(([c, mapping]) => {
-    return [c, Object.values(mapping).length]
-  }).sort((a, b) => b[1] - a[1]))
+  // console.table(Object.entries(allLabels).map(([c, mapping]) => {    return [c, Object.values(mapping).length]  }).sort((a, b) => b[1] - a[1]))
 
   // return;
 
@@ -48,15 +46,15 @@ function updateFile(file) {
       })
     }
   })
-  if (updateFile)
+  if (!importedAddresses && updateFile)
     fileStr = requireStr + fileStr
   fs.writeFileSync(file, fileStr, { encoding: 'utf-8' })
 
   function updateFileStr(label, address, file) {
-    if (!importedAddresses && !updateFile) {
+    if (!updateFile) {
       updateFile = (new RegExp(address, 'i')).test(fileStr)
-      if (updateFile)
-        console.log(updateFile, address, new RegExp(address, 'i'), file)
+      // if (updateFile)
+      //   console.log(updateFile, address, new RegExp(address, 'i'), file)
     }
     if (!updateFile) return;
     const tokensBareRegex = new RegExp('["\']' + address + '["\']\\s*:', 'gi')

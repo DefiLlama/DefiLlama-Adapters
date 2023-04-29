@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 
@@ -78,7 +79,7 @@ async function avax(timestamp, ethBlock, chainBlocks) {
   }, 0);
 
   return {
-    "avax:0x0000000000000000000000000000000000000000": TotalBalance
+    ["avax:" + ADDRESSES.null]: TotalBalance
   };
 }
 

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../coreAssets.json')
 const axios = require('axios')
 const BigNumber = require('bignumber.js')
 const ethers = require('ethers')
@@ -72,7 +73,7 @@ function decodeParams({types, output, ignoreMethodHash}) {
 }
 
 // api reference: https://developers.tron.network/reference
-const owner_address = 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t'
+const owner_address = ADDRESSES.tron.USDT
 
 async function unverifiedCall({ target, abi, parameter = [], isBigNumber, types = [], isAddress }) {
   var body = {
@@ -123,7 +124,7 @@ async function getTrxBalance(account) {
   return data.balance + (data.totalFrozen || 0)
 }
 
-const nullAddress = '0x0000000000000000000000000000000000000000'
+const nullAddress = ADDRESSES.null
 const gasTokens = [nullAddress, '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee']
 
 async function sumTokens({

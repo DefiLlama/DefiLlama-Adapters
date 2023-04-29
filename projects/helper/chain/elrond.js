@@ -1,3 +1,4 @@
+const ADDRESSES = require('../coreAssets.json')
 const { get, graphQuery } = require('../http')
 const { getCoreAssets, } = require('../tokenMapping')
 const { transformBalances } = require('../portedTokens')
@@ -33,7 +34,7 @@ async function getElrondBalance(address) {
   const { data: { account: { balance } } } = await get(`${API_HOST}/address/${address}`)
   return balance
 }
-const nullAddress = '0x0000000000000000000000000000000000000000'
+const nullAddress = ADDRESSES.null
 
 async function getTokens({ address, balances = {}, tokens = [], blacklistedTokens = [] }) {
   const prices = await getTokenPrices()
@@ -46,7 +47,7 @@ async function getTokens({ address, balances = {}, tokens = [], blacklistedToken
       if (blacklistedTokens.includes(token)) return; // skip blacklisted tokens
       if (!coreAssets.has(token)) {
         if (i.valueUsd)
-          return sdk.util.sumSingleBalance(balances, 'ethereum:0xdac17f958d2ee523a2206206994597c13d831ec7', i.valueUsd * 1e6)
+          return sdk.util.sumSingleBalance(balances, 'ethereum:' + ADDRESSES.ethereum.USDT, i.valueUsd * 1e6)
 
         if (prices[token])
           return sdk.util.sumSingleBalance(balances, nullAddress, (prices[token] * i.balance).toFixed(0), chain)

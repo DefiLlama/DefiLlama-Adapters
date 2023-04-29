@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens,  } = require("../helper/unwrapLPs")
 const { sumSingleBalance, TOKEN_LIST, getDenomBalance, } = require('../helper/chain/terra')
 const sdk = require("@defillama/sdk")
 const { getChainTransform, getFixBalances } = require("../helper/portedTokens")
 const config = require("./config")
 
-const nullAddress = '0x0000000000000000000000000000000000000000'
+const nullAddress = ADDRESSES.null
 
 Object.keys(config).forEach(chain => {
   const chainExport = {

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
 
 
@@ -12,7 +13,7 @@ async function ethtvl(timestamp, block) {
   })
 
   return {
-    '0x0000000000000000000000000000000000000000': ethBalance.output,
+    [ADDRESSES.null]: ethBalance.output,
     
   }
 }
