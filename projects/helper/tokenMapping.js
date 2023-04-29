@@ -1,5 +1,8 @@
-const coreAssets = require('./coreAssets.json')
+let coreAssets = require('./coreAssets.json')
+const ADDRESSES = coreAssets
 const nullAddress = '0x0000000000000000000000000000000000000000'
+
+coreAssets = JSON.parse(JSON.stringify(coreAssets))
 
 // Multichain bridge info: https://bridgeapi.anyswap.exchange/v2/serverInfo/all
 // IBC info - https://github.com/PulsarDefi/IBC-Cosmos/blob/main/ibc_data.json

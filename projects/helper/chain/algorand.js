@@ -4,6 +4,7 @@ const axios = require('axios')
 const { getApplicationAddress } = require('./algorandUtils/address')
 const { RateLimiter } = require("limiter");
 const coreAssets = require('../coreAssets.json')
+const ADDRESSES = coreAssets
 const sdk = require('@defillama/sdk');
 const { default: BigNumber } = require('bignumber.js');
 const stateCache = {}
