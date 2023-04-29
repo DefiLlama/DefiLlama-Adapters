@@ -8,7 +8,7 @@ const graphUrlMainnet = "https://api.thegraph.com/subgraphs/name/gysr-io/gysr";
 const graphUrlPolygon = "https://api.thegraph.com/subgraphs/name/gysr-io/gysr-polygon";
 const graphQuery = gql`
 query GET_TVL($block: Int) {
-  platform(id: ADDRESSES.null, block: { number: $block }) {
+  platform(id: "${ADDRESSES.null}", block: { number: $block }) {
     tvl
   }
 }
@@ -36,7 +36,7 @@ async function polygon(_, ethBlock, chainBlocks) {
     graphUrlPolygon,
     graphQuery,
     {
-      block
+      block: block - 200
     }
   );
 
