@@ -16,30 +16,6 @@ const nullAddress = '0x0000000000000000000000000000000000000000'
 const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'stargaze', 'umee', 'orai', 'persistence', ]
 const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks']
 
-const tokens = {
-  null: nullAddress,
-  aave: 'ethereum:0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9',
-  matic: 'ethereum:0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0',
-  bat: 'ethereum:0x0d8775f648430679a709e98d2b0cb6250d2887ef',
-  reth: 'ethereum:0xae78736cd615f374d3085123a210448e74fc6393',
-  steth: 'ethereum:0xae7ab96520de3a18e5e111b5eaab095312d7fe84',
-  solana: 'solana:So11111111111111111111111111111111111111112',
-  dai: 'ethereum:0x6b175474e89094c44da98b954eedeac495271d0f',
-  usdt: 'ethereum:0xdac17f958d2ee523a2206206994597c13d831ec7',
-  usdc: 'ethereum:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-  ethereum: 'ethereum:' + nullAddress,
-  weth: 'ethereum:0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-  busd: 'bsc:0xe9e7cea3dedca5984780bafc599bd69add087d56',
-  bsc: 'bsc:' + nullAddress,
-  bnb: 'bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
-  link: 'ethereum:0x514910771af9ca656af840dff83e8264ecf986ca',
-  wbtc: 'ethereum:0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
-  wsteth: 'ethereum:0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0',
-}
-const tokensBare = {}
-for (const [label, value] of Object.entries(tokens))
-  tokensBare[label] = value.split(':')[1]
-
 const distressedAssts = new Set(Object.values({
   CRK: '0x065de42e28e42d90c2052a1b49e7f83806af0e1f',
   aBNBc: '0xe85afccdafbe7f2b096f268e31cce3da8da2990a',
@@ -135,8 +111,6 @@ const eulerTokens = [
 
 module.exports = {
   nullAddress,
-  tokens,
-  tokensBare,
   caseSensitiveChains,
   transformTokens,
   fixBalancesTokens,

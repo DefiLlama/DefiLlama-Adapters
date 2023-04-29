@@ -1,5 +1,4 @@
 const { sumTokens } = require('../helper/chain/elrond')
-const { tokens } = require('../helper/tokenMapping')
 const { get } = require('../helper/http')
 const sdk = require('@defillama/sdk')
 
@@ -30,8 +29,8 @@ async function getPrices() {
 
 async function tvl() {
   const tokensAndOwners = [
-    [tokens.null, 'erd1qqqqqqqqqqqqqpgqwqxfv48h9ssns5cc69yudvph297veqeeznyqr4l930'],
-    [tokens.null, 'erd1qqqqqqqqqqqqqpgqyhj3hk6kkw7405j42g20th3g2h5s8076znyqrpe2pr'],
+    ['0x0000000000000000000000000000000000000000', 'erd1qqqqqqqqqqqqqpgqwqxfv48h9ssns5cc69yudvph297veqeeznyqr4l930'],
+    ['0x0000000000000000000000000000000000000000', 'erd1qqqqqqqqqqqqqpgqyhj3hk6kkw7405j42g20th3g2h5s8076znyqrpe2pr'],
     ['USDC-c76f1f', 'erd1qqqqqqqqqqqqqpgq3lh80a92d49am3t2pfzheapdxtykzt5kznyqsjhfrx'],
     ['USDC-c76f1f', 'erd1qqqqqqqqqqqqqpgq25l7fgjdecaanxuuzxnquzs7k80q6mqaznyqzjclf5'],
     ['ZPAYWEGLD-34e5c1', 'erd1qqqqqqqqqqqqqpgqrpa6ezy0q4xuj6y9plgv85va43x7wy3dznyqr2rwcz'],

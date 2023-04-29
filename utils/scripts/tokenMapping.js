@@ -128,5 +128,5 @@ async function run() {
   })
 
   await Promise.all(promises)
-  writeToCache()
+  // writeToCache()
 }

@@ -1,9 +1,9 @@
 const defisaverABIs = require("./config/defisaver/abis");
 const utils = require("./helper/utils");
-const { tokensBare, nullAddress, } = require("./helper/tokenMapping");
+const { nullAddress, } = require("./helper/tokenMapping");
 const sdk = require('@defillama/sdk')
 
-const dai = tokensBare.dai
+const dai = '0x6b175474e89094c44da98b954eedeac495271d0f'
 
 const {
   CompoundSubscriptions,
@@ -133,13 +133,13 @@ async function tvl(ts, block, _, { api }) {
 
 const assetMapping = {
   ETH: nullAddress,
-  DAI: tokensBare.dai,
-  BAT: tokensBare.BAT,
-  RETH: tokensBare.reth,
-  LINK: tokensBare.link,
-  WBTC: tokensBare.wbtc,
-  MATIC: tokensBare.matic,
-  WSTETH: tokensBare.wsteth,
+  DAI: '0x6b175474e89094c44da98b954eedeac495271d0f',
+  BAT: '0x0d8775f648430679a709e98d2b0cb6250d2887ef',
+  RETH: '0xae78736cd615f374d3085123a210448e74fc6393',
+  LINK: '0x514910771af9ca656af840dff83e8264ecf986ca',
+  WBTC: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
+  MATIC: '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0',
+  WSTETH: '0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0'
 }
 
 module.exports = {

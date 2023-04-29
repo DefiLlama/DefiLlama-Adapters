@@ -1,16 +1,14 @@
 const axios = require("axios");
 const http = require('./http')
-const cache = require('./cache')
 const env = require('./env')
 const { transformBalances: transformBalancesOrig, transformDexBalances, } = require('./portedTokens.js')
-const { tokens, getUniqueAddresses } = require('./tokenMapping')
+const { getUniqueAddresses } = require('./tokenMapping')
 const { Connection, PublicKey, Keypair } = require("@solana/web3.js")
 const { AnchorProvider: Provider, Wallet, } = require("@project-serum/anchor");
 const { sleep, sliceIntoChunks, log, } = require('./utils')
 const { decodeAccount } = require('./utils/solana/layout')
 
 const sdk = require('@defillama/sdk')
-const tokenMapping = tokens
 
 const blacklistedTokens = [
   'CowKesoLUaHSbAMaUxJUj7eodHHsaLsS65cy8NFyRDGP',
@@ -335,7 +333,7 @@ async function sumTokens2({
 
   if (solOwners.length) {
     const solBalance = await getSolBalances(solOwners)
-    sdk.util.sumSingleBalance(balances, tokenMapping.solana, solBalance)
+    sdk.util.sumSingleBalance(balances, 'solana:So11111111111111111111111111111111111111112', solBalance)
   }
 
   blacklistedTokens.forEach(i => delete balances['solana:'+i])
@@ -368,7 +366,6 @@ function readBigUInt64LE(buffer, offset) {
 
 module.exports = {
   endpoint,
-  tokens,
   getTokenSupply,
   getTokenBalance,
   getTokenAccountBalance,
