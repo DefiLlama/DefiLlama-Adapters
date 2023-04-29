@@ -1,4 +1,4 @@
-const ADDRESSES = {
+const ADDRESSES_ = {
 
   ethereum: {
     popLocker: "0xeEE1d31297B042820349B03027aB3b13a9406184",  // done
@@ -67,5 +67,5 @@ const ADDRESSES = {
 }
 
 module.exports = {
-  ADDRESSES
+  ADDRESSES:ADDRESSES_
 }

@@ -11,7 +11,7 @@ const { ibcChains } = require('../../projects/helper/tokenMapping')
 // const rootFolder = projectsDir + '/zharta'
 const rootFolder = projectsDir
 
-const ignoredChains = ['tezos', 'waves', 'algorand', 'defichain', ...ibcChains]
+const ignoredChains = ['algorand', 'defichain', ...ibcChains]
 
 function run() {
   ignoredChains.forEach(i => delete allLabels[i])
@@ -31,7 +31,8 @@ function run() {
 run()
 
 function updateFile(file) {
-  const relativePath = path.relative(file + '/..', allLabelsFile)
+  let relativePath = path.relative(file + '/..', allLabelsFile)
+  if (relativePath.startsWith('coreAssets')) relativePath = './' + relativePath
   const requireStr = `const ADDRESSES = require('${relativePath}')\n`
   let fileStr = fs.readFileSync(file, 'utf-8')
   const importedAddresses = fileStr.includes('coreAssets.json')
@@ -54,8 +55,8 @@ function updateFile(file) {
   function updateFileStr(label, address, file) {
     if (!importedAddresses && !updateFile) {
       updateFile = (new RegExp(address, 'i')).test(fileStr)
-      // if (updateFile)
-      //   console.log(updateFile, address, new RegExp(address, 'i'), file)
+      if (updateFile)
+        console.log(updateFile, address, new RegExp(address, 'i'), file)
     }
     if (!updateFile) return;
     const tokensBareRegex = new RegExp('["\']' + address + '["\']\\s*:', 'gi')
