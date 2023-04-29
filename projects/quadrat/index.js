@@ -24,6 +24,10 @@ const config = {
     factory: '0xb8d498f025c45a8a7a63277cb1cca36c2599bbd7',
     fromBlock: 34510988,
   },
+  bsc: {
+    factory: '0x28e9f86690449059734e079eaaa66d8913263bed',
+    fromBlock: 26497758,
+  },
 }
 
 Object.keys(config).forEach(chain => {
@@ -51,7 +55,7 @@ Object.keys(config).forEach(chain => {
 
       bals.forEach((val, i) => {
         if (!val) return;
-        const { amount0, amount1 }  = val
+        const { amount0, amount1 } = val
         sdk.util.sumSingleBalance(balances, token0[i], amount0, api.chain)
         sdk.util.sumSingleBalance(balances, token1[i], amount1, api.chain)
       })

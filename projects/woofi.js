@@ -43,6 +43,10 @@ const wooPPConfig = {
 		'0x4200000000000000000000000000000000000042', // OP
 		'0x7F5c764cBc14f9669B88837ca1490cCa17c31607', // USDC
 	],
+	era: [
+		"0x5AEa5775959fBC2557Cc8789bC1bf90A239D9a91", // WETH
+		"0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4", // USDC
+	],
 }
 
 const chainConfig = {
@@ -76,13 +80,19 @@ const chainConfig = {
 		woo: '0x871f2f2ff935fd1ed867842ff2a7bfd051a5e527',
 		stakingContract: '',
 	},
+	era: {
+		wooPPContract: '0x42ED123EB5266A5B8E2B54B2C76180CCF5e72FEe',
+		woo: '',
+		stakingContract: '',
+	},
 }
 
+const noStakingChains = ['optimism', 'era']
 Object.keys(chainConfig).forEach(chain => {
 	const wooPPTokens = wooPPConfig[chain]
 	const { wooPPContract, woo, stakingContract } = chainConfig[chain]
 	var stakingAmount = 0
-	if (chain != 'optimism') {
+	if (noStakingChains.indexOf(chain) == -1) {
 		stakingAmount = staking(stakingContract, woo, chain)
 	}
 	module.exports[chain] = {

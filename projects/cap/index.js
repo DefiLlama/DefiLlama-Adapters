@@ -1,7 +1,6 @@
 const { sumTokensExport, nullAddress, } = require('../helper/unwrapLPs')
 
 const contracts = {
-    "treasury": "0x283C41b726634fBD6B72aA22741B202DB7E56aaC",
     "treasuryV2": "0x1058AFe66BB5b79C295CCCE51016586949Bc4e8d",
     "trading1": "0x9BC357bc5b312AaCD41a84F3C687F031B8786853",
     "trading2": "0xA55Eee92a46A50A4C65908F28A0BE966D3e71633",
@@ -21,7 +20,6 @@ module.exports = {
     arbitrum: {
         staking: sumTokensExport({ owner: contracts.staking, tokens: [ cap ]}),
         tvl: sumTokensExport({ tokensAndOwners: [
-            [usdc, contracts.treasury], 
             [nullAddress, contracts.trading1], 
             [nullAddress, contracts.trading2], 
             [nullAddress, contracts.trading3], 

@@ -16,6 +16,7 @@ const pools = [
   "0x89E9EFD9614621309aDA948a761D364F0236eDEA",
   "0x8b4a45da5b0705ae4f47ebefc180c099345cf57e",
   "0xDeD29DF6b2193B885F45B5F5027ed405291A96C1",
+  "0xb3393f4e609c504da770ebc968540784cc4e016c",
 ];
 
 async function getToa(pool, api) {

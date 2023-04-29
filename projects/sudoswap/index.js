@@ -39,8 +39,9 @@ module.exports = {
       const data = await graphFetchById({
         endpoint: 'https://api.thegraph.com/subgraphs/name/zeframlou/sudoswap',
         query,
+        api,
         options: {
-          timestamp, chain: 'ethereum', chainBlocks, useBlock: true,
+          useBlock: true,
         }
       })
       const balances = {}
