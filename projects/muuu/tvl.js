@@ -1,44 +1,45 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const BigNumberJs = require("bignumber.js");
 const ABI = require("./abi.json");
 const { toBigNumberJsOrZero } = require("./utils.js");
 
-const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+const ZERO_ADDRESS = ADDRESSES.null;
 const REGISTRY_ADDRESS = "0xDA820e20A89928e43794645B9A9770057D65738B";
 const BOOSTER_ADDRESS = "0x6d12e3dE6dAcDBa2779C4947c0F718E13b78cfF4";
 const MUKGL_ADDRESS = "0x5eaAe8435B178d4677904430BAc5079e73aFa56e";
 const MUUU_REWARDS_ADDRESS = "0xB2ae0CF4819f2BE89574D3dc46D481cf80C7a255";
 const TOKENS = {
   // USDC
-  "0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98":
-    "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+  [ADDRESSES.moonbeam.USDC]:
+    ADDRESSES.ethereum.USDC,
   // USDT
-  "0x3795C36e7D12A8c252A20C5a7B455f7c57b60283":
-    "0xdac17f958d2ee523a2206206994597c13d831ec7",
+  [ADDRESSES.astar.USDT]:
+    ADDRESSES.ethereum.USDT,
   // DAI
-  "0x6De33698e9e9b787e09d3Bd7771ef63557E148bb":
-    "0x6b175474e89094c44da98b954eedeac495271d0f",
+  [ADDRESSES.astar.DAI]:
+    ADDRESSES.ethereum.DAI,
   // Starlay lUSDC -> USDC
-  "0xC404E12D3466acCB625c67dbAb2E1a8a457DEf3c":
-    "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+  [ADDRESSES.astar.lUSDC]:
+    ADDRESSES.ethereum.USDC,
   // Starlay lUSDT -> USDT
-  "0x430D50963d9635bBef5a2fF27BD0bDDc26ed691F":
-    "0xdac17f958d2ee523a2206206994597c13d831ec7",
+  [ADDRESSES.astar.lUSDT]:
+    ADDRESSES.ethereum.USDT,
   // Starlay lDAI -> DAI
-  "0x4dd9c468A44F3FEF662c35c1E9a6108B70415C2c":
-    "0x6b175474e89094c44da98b954eedeac495271d0f",
+  [ADDRESSES.astar.lDAI]:
+    ADDRESSES.ethereum.DAI,
   // BUSD
-  "0x4Bf769b05E832FCdc9053fFFBC78Ca889aCb5E1E":
-    "0x4fabb145d64652a948d72533023f6e7a623c7c53",
+  [ADDRESSES.oasis.ceUSDT]:
+    ADDRESSES.ethereum.BUSD,
   // 3KGL -> DAI(TMP)
   "0x18BDb86E835E9952cFaA844EB923E470E832Ad58":
-    "0x6b175474e89094c44da98b954eedeac495271d0f",
+    ADDRESSES.ethereum.DAI,
   // BAI -> DAI(TMP)
-  "0x733ebcC6DF85f8266349DEFD0980f8Ced9B45f35":
-    "0x6b175474e89094c44da98b954eedeac495271d0f",
+  [ADDRESSES.astar.BAI]:
+    ADDRESSES.ethereum.DAI,
   // oUSD -> DAI(TMP)
-  "0x29F6e49c6E3397C3A84F715885F9F233A441165C":
-    "0x6b175474e89094c44da98b954eedeac495271d0f",
+  [ADDRESSES.astar.oUSD]:
+    ADDRESSES.ethereum.DAI,
 };
 
 const transformTokenAddress = (address) => TOKENS[address];

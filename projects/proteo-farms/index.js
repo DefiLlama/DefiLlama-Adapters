@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens } = require('../helper/chain/elrond')
 const { get } = require('../helper/http')
 const sdk = require('@defillama/sdk')
@@ -11,10 +12,10 @@ async function getPrices() {
   async function _getPrices() {
     const getApi = ({ token1, token2 }) => `https://api.multiversx.com/mex/pairs/${token1}/${token2}?fields=price`
     const lps = [
-      // { lp: 'PROTEOEGLD-baf054', token1: 'PROTEO-0c7311', token2: 'WEGLD-bd4d79', },
-      { lp: 'ZPAYWEGLD-34e5c1', token1: 'ZPAY-247875', token2: 'WEGLD-bd4d79', },
-      { lp: 'AEROWEGLD-81cc37', token1: 'AERO-458bbf', token2: 'WEGLD-bd4d79', },
-      { lp: 'KROUSDC-7787ab', token1: 'USDC-c76f1f', token2: 'KRO-df97ec', },
+      // { lp: 'PROTEOEGLD-baf054', token1: 'PROTEO-0c7311', token2: ADDRESSES.elrond.WEGLD, },
+      { lp: 'ZPAYWEGLD-34e5c1', token1: ADDRESSES.elrond.ZPAY, token2: ADDRESSES.elrond.WEGLD, },
+      { lp: 'AEROWEGLD-81cc37', token1: ADDRESSES.elrond.AERO, token2: ADDRESSES.elrond.WEGLD, },
+      { lp: 'KROUSDC-7787ab', token1: 'USDC-c76f1f', token2: ADDRESSES.elrond.KRO, },
     ]
 
     const prices = {}
@@ -29,8 +30,8 @@ async function getPrices() {
 
 async function tvl() {
   const tokensAndOwners = [
-    ['0x0000000000000000000000000000000000000000', 'erd1qqqqqqqqqqqqqpgqwqxfv48h9ssns5cc69yudvph297veqeeznyqr4l930'],
-    ['0x0000000000000000000000000000000000000000', 'erd1qqqqqqqqqqqqqpgqyhj3hk6kkw7405j42g20th3g2h5s8076znyqrpe2pr'],
+    [ADDRESSES.null, 'erd1qqqqqqqqqqqqqpgqwqxfv48h9ssns5cc69yudvph297veqeeznyqr4l930'],
+    [ADDRESSES.null, 'erd1qqqqqqqqqqqqqpgqyhj3hk6kkw7405j42g20th3g2h5s8076znyqrpe2pr'],
     ['USDC-c76f1f', 'erd1qqqqqqqqqqqqqpgq3lh80a92d49am3t2pfzheapdxtykzt5kznyqsjhfrx'],
     ['USDC-c76f1f', 'erd1qqqqqqqqqqqqqpgq25l7fgjdecaanxuuzxnquzs7k80q6mqaznyqzjclf5'],
     ['ZPAYWEGLD-34e5c1', 'erd1qqqqqqqqqqqqqpgqrpa6ezy0q4xuj6y9plgv85va43x7wy3dznyqr2rwcz'],

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const StEthVaultContract = '0xfc85db895e070017ab9c84cb65b911d56b729ee9';
 
@@ -12,7 +13,7 @@ async function tvl(_, _1, _2, { api }) {
   });
     
   return {
-    'ethereum:0x0000000000000000000000000000000000000000': EthBalance
+    ['ethereum:' + ADDRESSES.null]: EthBalance
   };
 }
 

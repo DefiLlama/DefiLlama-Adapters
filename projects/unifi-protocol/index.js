@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getUniTVL } = require('../helper/unknownTokens')
 const { staking } = require('../helper/staking')
 const { getTokenBalance } = require('../helper/chain/tron');
@@ -73,7 +74,7 @@ const dexExports = {
   tron: {
     tvl: async () => {
       return {
-        "tether": await getTokenBalance('TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t', 'TDrFhbM8kDiPtSx3Cgd71K3qwwu77bRdYQ'),
+        "tether": await getTokenBalance(ADDRESSES.tron.USDT, 'TDrFhbM8kDiPtSx3Cgd71K3qwwu77bRdYQ'),
         "tron": await getTokenBalance('TNUC9Qb1rRpS5CbWLmNMxXBjyFoydXjWFR', 'TDrFhbM8kDiPtSx3Cgd71K3qwwu77bRdYQ'),
       }
     }

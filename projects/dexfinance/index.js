@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const { ETF_ABI, } = require('./abi');
@@ -17,7 +18,7 @@ const TOKENS = {
   DEXSHARE: '0xf4914e6d97a75f014acfcf4072f11be5cffc4ca6',
   DEXIRA: '0x147e07976e1ae78287c33aafaab87760d32e50a5',
   WDEX_DEXSHARE: '0x6647047433df4cfc9912d092fd155b9d972a4a85',
-  BNB: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
+  BNB: ADDRESSES.bsc.WBNB,
 };
 
 const chain = 'bsc'

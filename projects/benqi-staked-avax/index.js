@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const savaxAbi = require("./savax.json");
 
 const SAVAX = "0x2b2C81e08f1Af8835a78Bb2A90AE924ACE0eA4bE";
-const WAVAX = "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7";
+const WAVAX = ADDRESSES.avax.WAVAX;
 
 const transformAddress = (addr) => `avax:${addr}`;
 

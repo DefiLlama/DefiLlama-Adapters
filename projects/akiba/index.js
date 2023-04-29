@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport, nullAddress, } = require('../helper/unknownTokens')
 
 const Contracts = {
   kava: {
-    wkava: "0xc86c7C0eFbd6A49B35E8714C5f59D99De09A225b",
+    wkava: ADDRESSES.kava.WKAVA,
     akiba: "0x8f5af8d2E06c976970752b5596BE05Cd518Adcdd",
     bank: "0x0CA1088C075E5C9447D5C07984aCCc48c816D01D", // Pool
     multiFeeDistribution: "0xa41045953C7fa32CCea9132997b2E7460db5ae3F", // Staking

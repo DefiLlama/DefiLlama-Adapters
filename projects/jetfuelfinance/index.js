@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
@@ -45,9 +46,9 @@ const single_side_vault = [
 ];
 
 const single_side_assets = [
-  "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
-  "0x250632378e573c6be1ac2f97fcdf00515d0aa91b",
-  "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c",
+  ADDRESSES.bsc.WBNB,
+  ADDRESSES.bsc.BETH,
+  ADDRESSES.bsc.BTCB,
 ];
 
 //const factoryTvl = uniTvlExport(factory, 'bsc')
@@ -110,7 +111,7 @@ const bscTvl = async (timestamp, block, chainBlocks) => {
   return balances;
 };
 
-const {tvl:lendingTvl, borrowed} = compoundExports("0x67340bd16ee5649a37015138b3393eb5ad17c195", "bsc", "0xE24146585E882B6b59ca9bFaaaFfED201E4E5491", "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c")
+const {tvl:lendingTvl, borrowed} = compoundExports("0x67340bd16ee5649a37015138b3393eb5ad17c195", "bsc", "0xE24146585E882B6b59ca9bFaaaFfED201E4E5491", ADDRESSES.bsc.WBNB)
 
 module.exports = {
   bsc: {

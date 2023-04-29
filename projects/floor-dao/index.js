@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, sumTokensExport, } = require('../helper/unwrapLPs')
 const sdk = require("@defillama/sdk");
 // https://docs.floor.xyz/fundamentals/treasury
 
-const WETH = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+const WETH = ADDRESSES.ethereum.WETH
 
 const NFTX_LP_STAKING = '0x688c3e4658b5367da06fd629e41879beab538e37'
 const treasury = '0x91E453f442d25523F42063E1695390e325076ca2'

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensSharedOwners, nullAddress, sumTokens2, } = require("../helper/unwrapLPs");
 const { getChainTransform } = require("../helper/portedTokens");
 const { getCache } = require("../helper/http");
@@ -38,7 +39,7 @@ async function getDecimals(chain, token) {
 
 const gasTokens = [
   '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-  '0x0000000000000000000000000000000000000000',
+  ADDRESSES.null,
 ]
 
 async function getNames(chain, tokens) {

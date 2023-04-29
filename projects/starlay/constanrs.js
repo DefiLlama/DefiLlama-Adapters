@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const DEFAULT_DECIMALS = 18
 
 const TOKEN_INFO = {
@@ -5,36 +6,36 @@ const TOKEN_INFO = {
   ausd: { key: "acala-dollar", decimals:12 }
 }
 
-const LAY_ADDRESS = "0xc4335B1b76fA6d52877b3046ECA68F6E708a27dd"
+const LAY_ADDRESS = ADDRESSES.astar.LAY
 
 const TOKENS = {
   // WASTR
   "0xAeaaf0e2c81Af264101B9129C00F4440cCF0F720": "astar",
   // WETH
-  "0x81ECac0D6Be0550A00FF064a4f9dd2400585FE9c":
-    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+  [ADDRESSES.moonbeam.USDT]:
+    ADDRESSES.ethereum.WETH,
   // wBTC
-  "0xad543f18cFf85c77E140E3E5E3c3392f6Ba9d5CA":
-    "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+  [ADDRESSES.astar.WBTC]:
+    ADDRESSES.ethereum.WBTC,
   // SDN
-  "0x75364D4F779d0Bd0facD9a218c67f87dD9Aff3b4": "shiden",
+  [ADDRESSES.astar.SDN]: "shiden",
   // USDC
-  "0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98":
-    "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+  [ADDRESSES.moonbeam.USDC]:
+    ADDRESSES.ethereum.USDC,
   // USDT
-  "0x3795C36e7D12A8c252A20C5a7B455f7c57b60283":
-    "0xdac17f958d2ee523a2206206994597c13d831ec7",
+  [ADDRESSES.astar.USDT]:
+    ADDRESSES.ethereum.USDT,
   // DAI
-  "0x6De33698e9e9b787e09d3Bd7771ef63557E148bb":
-    "0x6b175474e89094c44da98b954eedeac495271d0f",
+  [ADDRESSES.astar.DAI]:
+    ADDRESSES.ethereum.DAI,
   // BUSD
-  "0x4Bf769b05E832FCdc9053fFFBC78Ca889aCb5E1E": "binance-usd",
+  [ADDRESSES.oasis.ceUSDT]: "binance-usd",
   // MATIC
-  "0xdd90E5E87A2081Dcf0391920868eBc2FFB81a1aF": "matic-network",
+  [ADDRESSES.astar.MATIC]: "matic-network",
   // BNB
-  "0x7f27352D5F83Db87a5A3E00f4B07Cc2138D8ee52": "binancecoin",
+  [ADDRESSES.milkomeda.BNB]: "binancecoin",
   // DOT
-  "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF": TOKEN_INFO.dot.key,
+  [ADDRESSES.astar.DOT]: TOKEN_INFO.dot.key,
   // aUSD
   "0xfFFFFfFF00000000000000010000000000000001": TOKEN_INFO.ausd.key,
   // LAY

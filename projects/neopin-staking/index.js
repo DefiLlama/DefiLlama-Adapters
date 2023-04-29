@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getStakedTron } = require('../helper/chain/tron');
 const { staking } = require('../helper/staking')
 const { sumTokensExport } = require('../helper/sumTokens');
@@ -13,7 +14,7 @@ module.exports = {
       ],
       tokens: [nullAddress],
     }),
-    staking: staking('0x306ee01a6ba3b4a8e993fa2c1adc7ea24462000c', '0xe06597d02a2c3aa7a9708de2cfa587b128bd3815', 'klaytn'),
+    staking: staking('0x306ee01a6ba3b4a8e993fa2c1adc7ea24462000c', ADDRESSES.klaytn.NPT, 'klaytn'),
   },
   tron: {
     tvl: async () => {

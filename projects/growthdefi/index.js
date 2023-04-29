@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const clqdr = require("./abis/clqdr.json");
@@ -290,8 +291,8 @@ const psmConfig = {
 };
 
 const stableConfig = {
-  avax: ["0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664"],
-  bsc: ["0xe9e7cea3dedca5984780bafc599bd69add087d56"],
+  avax: [ADDRESSES.avax.USDC_e],
+  bsc: [ADDRESSES.bsc.BUSD],
   fantom: [],
 };
 
@@ -302,9 +303,9 @@ const autoGem = {
 };
 
 const DAI = {
-  avax: "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70",
+  avax: ADDRESSES.avax.DAI,
   bsc: "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3",
-  fantom: "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
+  fantom: ADDRESSES.fantom.DAI,
 };
 
 //*** PSM staked portion as product of GrowthDefi Protocol ***//

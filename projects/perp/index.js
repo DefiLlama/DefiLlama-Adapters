@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { getChainTransform } = require('../helper/portedTokens');
 const { staking } = require("../helper/staking");
 
 const insuranceFund = "0x8C29F6F7fc1999aB84b476952E986F974Acb3824"
 const clearingHouse = "0x5d9593586b4B5edBd23E7Eba8d88FD8F09D83EBd"
-const usdcXdai = "0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83"
+const usdcXdai = ADDRESSES.xdai.USDC
 
 const perpToken = "0xbC396689893D065F41bc2C6EcbeE5e0085233447"
 const stakingContract = "0x0f346e19F01471C02485DF1758cfd3d624E399B4"
@@ -35,7 +36,7 @@ module.exports = {
         staking: staking(stakingContract, perpToken)
     },
     optimism:{
-        tvl: staking("0xAD7b4C162707E0B2b5f6fdDbD3f8538A5fbA0d60", "0x7f5c764cbc14f9669b88837ca1490cca17c31607", "optimism")
+        tvl: staking("0xAD7b4C162707E0B2b5f6fdDbD3f8538A5fbA0d60", ADDRESSES.optimism.USDC, "optimism")
     },
 
 }

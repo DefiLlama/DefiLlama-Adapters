@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { sumTokensExport } = require('../helper/unwrapLPs')
 const BigNumber = require("bignumber.js");
@@ -7,8 +8,8 @@ const v202Address = '0xAdBAeE9665C101413EbFF07e20520bdB67C71AB6';
 const v3Address = '0x4006A8840F8640A7D8F46D2c3155a58c76eCD56e';
 const v320Address = '0x68a154fB3e8ff6e4DA10ECd54DEF25D9149DDBDE';
 
-const WETH_CONTRACT = "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1";
-const USDC_CONTRACT = "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8";
+const WETH_CONTRACT = ADDRESSES.arbitrum.WETH;
+const USDC_CONTRACT = ADDRESSES.arbitrum.USDC;
 
 const abi = {
     v3: {

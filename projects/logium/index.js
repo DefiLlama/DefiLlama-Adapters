@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 
 
 const { getBlock } = require('../helper/http')
 const { providers } = require('@defillama/sdk/build/general');
 const { Contract } = require('ethers')
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const USDC = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
+const USDC = ADDRESSES.ethereum.USDC
 const LOGIUM_CORE = '0xc61d1dcceeec03c94d729d8f8344ce3be75d09fe'
 const ONE_DAY = 24 * 60 * 60
 

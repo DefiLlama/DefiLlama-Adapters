@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress } = require('../helper/unwrapLPs')
 
 module.exports = {
@@ -13,7 +14,7 @@ module.exports = {
       ],
     },
     {
-      tokens: ['0xfa9343c3897324496a05fc75abed6bac29f8a40f'],   // USDC
+      tokens: [ADDRESSES.telos.ETH],   // USDC
       holders: [
         "0xe4e992802314dbbd8BB9d050afae19ca1c45cB1A", // 10 
         "0x8DFB4d1925cC8C7446AfA92f1cDd6c8be567Ae7C", // 100 

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
@@ -83,7 +84,7 @@ async function getHidingVaultBalances(timestamp, block) {
       // get the underlying token address
       const isCEth = cTokenAddress.toLowerCase() === "0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5"
       const { output: token } = isCEth
-        ? { output: '0x0000000000000000000000000000000000000000' } // ETH has no underlying asset on Compound
+        ? { output: ADDRESSES.null } // ETH has no underlying asset on Compound
         : await sdk.api.abi.call(
           {
             block,

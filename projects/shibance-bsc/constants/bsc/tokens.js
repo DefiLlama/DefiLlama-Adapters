@@ -1,3 +1,4 @@
+const ADDRESSES = require('../../../helper/coreAssets.json')
 const tokens = {
   bnb: {
     symbol: "BNB",
@@ -24,7 +25,7 @@ const tokens = {
   wbnb: {
     symbol: "wBNB",
     address: {
-      56: "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+      56: ADDRESSES.bsc.WBNB,
       97: "0xae13d989dac2f0debff460ac112a837c89baa7cd",
     },
     decimals: 18,
@@ -33,7 +34,7 @@ const tokens = {
   busd: {
     symbol: "BUSD",
     address: {
-      56: "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+      56: ADDRESSES.bsc.BUSD,
       97: "0x8301f2213c0eed49a7e28ae4c3e91722919b8b47",
     },
     decimals: 18,
@@ -42,7 +43,7 @@ const tokens = {
   usdt: {
     symbol: "USDT",
     address: {
-      56: "0x55d398326f99059ff775485246999027b3197955",
+      56: ADDRESSES.bsc.USDT,
       97: "0x9D4BB7939D27D3bd7F425744DFBf7eE777490388",
     },
     decimals: 18,

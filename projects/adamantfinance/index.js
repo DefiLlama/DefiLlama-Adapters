@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { stakings } = require("../helper/staking");
@@ -38,7 +39,7 @@ const stakingContracts_Arbitrum = [
 ];
 
 const lpAddresses_arbitrum = [];
-const ARBY = "0x09ad12552ec45f82bE90B38dFE7b06332A680864"
+const ARBY = ADDRESSES.arbitrum.ARBY
 
 /*** Cronos Addresses ***/
 const stakingContracts_cronos = [
@@ -46,7 +47,7 @@ const stakingContracts_cronos = [
   "0xD4bcCf04a7CA546D3cfC46205AA7C58EB98c7495",
   "0x323663B759567BAf744C182634585F7164c3c442",
 ];
-const CADDY = "0x09ad12552ec45f82be90b38dfe7b06332a680864";
+const CADDY = ADDRESSES.arbitrum.ARBY;
 
 const vaultAddresses_cronos = [
   "0x3a9645ee664DCE6529Af678aaB4fE3AD9d68323f",

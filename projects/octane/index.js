@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { pool2s } = require('../helper/pool2')
 const { stakings } = require('../helper/staking')
 const venusFinanceAbi = require("../cookfinance/venusFinanceAbi.json");
@@ -31,7 +32,7 @@ async function tvl(timestamp, _, { bsc: block }) {
       }),
     ])
     if (vToken === '0xa07c5b74c9b40447a954e1466938b865b6bbea36')
-      token = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'
+      token = ADDRESSES.bsc.WBNB
     else
       token = (await sdk.api.abi.call({
         target: vToken,

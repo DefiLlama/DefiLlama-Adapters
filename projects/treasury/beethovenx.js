@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 const ftm = "0xa1e849b1d6c2fd31c63eef7822e9e0632411ada7";
@@ -6,9 +7,9 @@ const eth = "0xea06e1b4259730724885a39ce3ca670efb020e26";
 
 const ftmTokens = [
   nullAddress,
-  "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75", // USDC
+  ADDRESSES.fantom.USDC, // USDC
   "0x841FAD6EAe12c286d1Fd18d1d525DFfA75C7EFFE", // BOO
-  "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83", // WFTM
+  ADDRESSES.fantom.WFTM, // WFTM
   "0xc5713B6a0F26bf0fdC1c52B90cd184D950be515C", // LINSPIRIT
   "0xde5ed76e7c05ec5e4572cfc88d1acea165109e44", // DEUS
   "0xc3f069d7439baf6d4d6e9478d9cc77778e62d147", // FLIBERO
@@ -26,7 +27,7 @@ const ftmOwnTokens = [
 
 const opTokens = [
   nullAddress,
-  "0x4200000000000000000000000000000000000042", // OP
+  ADDRESSES.optimism.OP, // OP
   "0xFdb794692724153d1488CcdBE0C56c252596735F", // LDO
   "0xFE8B128bA8C78aabC59d4c64cEE7fF28e9379921", // BAL
   "0x38f79beFfC211c6c439b0A3d10A0A673EE63AFb4", // BPT-rETH-ETH-gauge

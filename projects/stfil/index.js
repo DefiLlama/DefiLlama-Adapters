@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const {sumTokens2} = require('../helper/unwrapLPs');
 const {utils} = require("ethers");
 const {get} = require('../helper/http');
 
 const poolAddr = '0xC8E4EF1148D11F8C557f677eE3C73901CD796Bf6' // pool address
 const tokens = [
-    '0x0000000000000000000000000000000000000000', // FIL
+    ADDRESSES.null, // FIL
 ]
 
 const getActiveMinersFromRPC = async () => {

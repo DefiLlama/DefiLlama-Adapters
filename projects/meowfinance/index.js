@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { pool2Exports } = require("../helper/pool2");
@@ -10,10 +11,10 @@ const meowFtm = "0x150Aeb5389d56E258c2bbb42c7e67e944EDEE913";
 const treasuryContract = "0x7d25f49C648B2a12B5f530Df929204352cb6080e";
 
 const translate = {
-  "0x049d68029688eabf473097a2fc38ef61633a3c7a":
-    "0xdac17f958d2ee523a2206206994597c13d831ec7",
-  "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e":
-    "0x6b175474e89094c44da98b954eedeac495271d0f",
+  [ADDRESSES.fantom.fUSDT]:
+    ADDRESSES.ethereum.USDT,
+  [ADDRESSES.fantom.DAI]:
+    ADDRESSES.ethereum.DAI,
 };
 
 const workers = [

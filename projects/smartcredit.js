@@ -1,3 +1,4 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const { GraphQLClient, } = require('graphql-request')
 const sdk = require('@defillama/sdk')
 const { default: BigNumber } = require('bignumber.js')
@@ -14,7 +15,7 @@ async function getStats() {
 
 function replaceEth(addr) {
   if (addr.toLowerCase() === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee')
-    return '0x0000000000000000000000000000000000000000'
+    return ADDRESSES.null
   return addr
 }
 

@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, nullAddress } = require("../helper/unwrapLPs");
 const { getLogs } = require("../helper/cache/getLogs");
 const { staking } = require("../helper/staking");
 
 const FACTORY_CONTRACT = "0xe4a51ec59233ba1f62b71f84554622a532b584ed";
-const WETH_ADDRESS = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+const WETH_ADDRESS = ADDRESSES.ethereum.WETH;
 const AGI_ETH_LP_ADDRESS = "0x498c00E1ccC2AFFf80F6Cc6144EAEB95c46cc3B5";
 const AGI_ETH_STAKING_POOL = "0xC8187048f7Ab0db0774b674fEf3f4F4285A01bF4";
 

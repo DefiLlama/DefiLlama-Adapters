@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
@@ -13,7 +14,7 @@ async function tvl(_, _b, _cb, { api, }) {
   })
 
   const ownerTokens = [
-    [['0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9'], '0x0e1Ddf8D61f0570Bf786594077CD431c727335A9'], // psm module
+    [[ADDRESSES.arbitrum.USDT], '0x0e1Ddf8D61f0570Bf786594077CD431c727335A9'], // psm module
   ]
 
   ownerTokens.push([logs.map(i => i.token), CDP])

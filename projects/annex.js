@@ -1,12 +1,13 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const { compoundExports } = require('./helper/compound')
 
-const wBNB = "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c";
+const wBNB = ADDRESSES.bsc.WBNB;
 const cBNB = "0xC5a83aD9f3586e143D2C718E8999206887eF9dDc";
 
 const wCRO = "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23";
 const cCRO = "0x61FCA31c51aCc4CC683291Be936E6799AeAAFe41";
 
-const wKAVA = "0xc86c7C0eFbd6A49B35E8714C5f59D99De09A225b";
+const wKAVA = ADDRESSES.kava.WKAVA;
 const cKAVA = "0x5642Aa2fC7028a203C689Bf21c1a92861D8C449B";
 
 module.exports = {

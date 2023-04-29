@@ -1,3 +1,4 @@
+const ADDRESSES = require('./coreAssets.json')
 const axios = require("axios");
 const http = require('./http')
 const env = require('./env')
@@ -333,7 +334,7 @@ async function sumTokens2({
 
   if (solOwners.length) {
     const solBalance = await getSolBalances(solOwners)
-    sdk.util.sumSingleBalance(balances, 'solana:So11111111111111111111111111111111111111112', solBalance)
+    sdk.util.sumSingleBalance(balances, 'solana:' + ADDRESSES.solana.SOL, solBalance)
   }
 
   blacklistedTokens.forEach(i => delete balances['solana:'+i])

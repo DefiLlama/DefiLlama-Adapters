@@ -1,14 +1,15 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 
 const config = {
   ethereum: {
     userManager: "0x49c910Ba694789B58F53BFF80633f90B8631c195",
-    DAI: "0x6b175474e89094c44da98b954eedeac495271d0f",
+    DAI: ADDRESSES.ethereum.DAI,
     uDAI: "0x954F20DF58347b71bbC10c94827bE9EbC8706887",
   },
   arbitrum: {
     userManager: "0xb71F3D4342AaE0b8D531E14D2CF2F45d6e458A5F",
-    DAI: "0x6b175474e89094c44da98b954eedeac495271d0f",
+    DAI: ADDRESSES.ethereum.DAI,
     uDAI: "0x954F20DF58347b71bbC10c94827bE9EbC8706887",
   },
 };

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require("../helper/staking");
 const { ethers } = require("ethers");
 const { getUniTVL } = require('../helper/unknownTokens')
@@ -7,14 +8,14 @@ const BigNumber = require("bignumber.js");
 const iceBoxABI = require("./iceBoxABI.json");
 const iceVaultABI = require("./icevaultABI.json");
 
-const WAVAX = '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7'
-//const WTLOS = '0xd102ce6a4db07d247fcc28f366a623df0938ca9e'
+const WAVAX = ADDRESSES.avax.WAVAX
+//const WTLOS = ADDRESSES.telos.WTLOS
 
 const contracts = {
   avax: {
     factory: "0x9c60c867ce07a3c403e2598388673c10259ec768",
     pops: "0x240248628B7B6850352764C5dFa50D1592A033A8",
-    usdc: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+    usdc: ADDRESSES.avax.USDC,
     stakingContract_sPOPS: "0x5108176bC1B7e72440e6B48862c51d7eB0AEd5c4",
     stakingContract_IB: "0x6aA10ead8531504a8A3B04a9BfCFd18108F2d2c2",
     stakingContract_IB2: "0x737CAE995aCec229a6958B49f6d3eB9F383480Ab",
@@ -44,7 +45,7 @@ const contracts = {
     stakingContract_IB: '0xac448d75e945923b176ebca4ff2b5a82de73f812',
     stakingContract_IB2: '0x08010b76d4b03cabcfb0f6ba9db7de8336c715fe',
     pops: "0x173fd7434b8b50df08e3298f173487ebdb35fd14",
-    stlos: "0xB4B01216a5Bc8F1C8A33CD990A1239030E60C905"
+    stlos: ADDRESSES.telos.STLOS
   }
 }
 
@@ -59,7 +60,7 @@ function getTLOSAddress(address) {
 // AVAX (ETH) staking product
 async function iceBox(contract, block, chain) {
   let balances = {
-    "0x0000000000000000000000000000000000000000": (
+    [ADDRESSES.null]: (
       await sdk.api.eth.getBalance({ target: contract, block, chain: chain })
     ).output,
   };
@@ -86,7 +87,7 @@ async function stakedAVAXIceBox(timestamp, ethBlock, chainBlocks) {
   const block = chainBlocks.avax;
 
   const ibBalance = await iceBox(contracts.avax.stakingContract_IB, block, 'avax');
-  balances[getAVAXAddress(WAVAX)] = ibBalance["0x0000000000000000000000000000000000000000"];
+  balances[getAVAXAddress(WAVAX)] = ibBalance[ADDRESSES.null];
 
   return balances;
 }
@@ -96,7 +97,7 @@ async function stakedAVAXIceBox2(timestamp, ethBlock, chainBlocks) {
   const block = chainBlocks.avax;
 
   const ibBalance2 = await iceBox(contracts.avax.stakingContract_IB2, block, 'avax');
-  balances[getAVAXAddress(WAVAX)] = ibBalance2["0x0000000000000000000000000000000000000000"]
+  balances[getAVAXAddress(WAVAX)] = ibBalance2[ADDRESSES.null]
 
   return balances;
 }

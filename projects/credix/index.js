@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const BigNumber = require("bignumber.js");
 const { PublicKey } = require("@solana/web3.js");
 const { Program, utils } = require("@project-serum/anchor");
@@ -6,7 +7,7 @@ const { getProvider, sumTokens2 } = require("../helper/solana");
 const MAX_NUMBER_OF_ACCOUNT_INFOS = 99;
 const MARKET_SEED = "credix-marketplace";
 const IDL = require("./credix.json");
-const USDC = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
+const USDC = ADDRESSES.solana.USDC
 const programId = new PublicKey("CRDx2YkdtYtGZXGHZ59wNv1EwKHQndnRc1gT4p8i2vPX");
 const encodeSeedString = (seedString) => Buffer.from(utils.bytes.utf8.encode(seedString));
 

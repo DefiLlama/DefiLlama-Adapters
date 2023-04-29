@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 /*==================================================
   Modules
   ==================================================*/
@@ -14,7 +15,7 @@ const IDEX_POLYGON_CUSTODY_CONTRACT = "0x3bcc4eca0a40358558ca8d1bcd2d1dbde63eb46
   ==================================================*/
 
 async function tvl(_timestamp, block, chain) {
-  let tokens = ['0x0000000000000000000000000000000000000000']
+  let tokens = [ADDRESSES.null]
   let owner
 
   switch (chain) {

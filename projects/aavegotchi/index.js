@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
 const { transformPolygonAddress } = require("../helper/portedTokens");
@@ -8,7 +9,7 @@ const { getBlock } = require('../helper/http')
 const vaultContractETH = "0xFFE6280ae4E864D9aF836B562359FD828EcE8020";
 const tokensETH = [
   "0x3F382DbD960E3a9bbCeaE22651E88158d2791550", // GHST
-  "0x6b175474e89094c44da98b954eedeac495271d0f", // DAI
+  ADDRESSES.ethereum.DAI, // DAI
 ];
 
 const vaultContractsPolygon = [

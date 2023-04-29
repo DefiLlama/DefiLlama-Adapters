@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
   const sdk = require('@defillama/sdk');
 
   const BigNumber = require('bignumber.js');
@@ -13,11 +14,11 @@
 /*==================================================
   Ethereum Settings
   ==================================================*/
-const DAI = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
+const DAI = ADDRESSES.ethereum.DAI;
 const PAX = "0x8E870D67F660D95d5be530380D0eC0bd388289E1";
-const TUSD = "0x0000000000085d4780B73119b644AE5ecd22b376";
-const USDC = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
-const USDT = "0xdAC17F958D2ee523a2206206994597C13D831ec7";
+const TUSD = ADDRESSES.ethereum.TUSD;
+const USDC = ADDRESSES.ethereum.USDC;
+const USDT = ADDRESSES.ethereum.USDT;
 const USDx = "0xeb269732ab75A6fD61Ea60b06fE994cD32a83549";
 
 /*==================================================
@@ -38,10 +39,10 @@ const goldxProtocol = "0x355C665e101B9DA58704A8fDDb5FeeF210eF20c0"; // GOLDx
 /*==================================================
   BSC Settings
   ==================================================*/
-const BSC_BUSD = "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56";
+const BSC_BUSD = ADDRESSES.bsc.BUSD;
 const BSC_DAI = "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3";
-const BSC_USDC = "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d";
-const BSC_USDT = "0x55d398326f99059fF775485246999027B3197955";
+const BSC_USDC = ADDRESSES.bsc.USDC;
+const BSC_USDT = ADDRESSES.bsc.USDT;
 
 
 let oracles = {
@@ -147,12 +148,12 @@ const excludeAlliTokens = {
 const dfStakingPools = "0x41602ccf9b1F63ea1d0Ab0F0A1D2F4fd0da53f60";
 
 const USXs = {
-  "ethereum": "0x0a5e677a6a24b2f1a2bf4f3bffc443231d2fdec8",
+  "ethereum": ADDRESSES.ethereum.USX,
   "bsc": "0xb5102cee1528ce2c760893034a4603663495fd72",
   "arbitrum": "0x641441c631e2f909700d2f41fd87f0aa6a6b4edb",
   "polygon": "0xCf66EB3D546F0415b368d98A95EAF56DeD7aA752",
   "avax": "0x853ea32391AaA14c112C645FD20BA389aB25C5e0",
-  "kava": "0xDb0E1e86B01c4ad25241b1843E407Efc4D615248",
+  "kava": ADDRESSES.kava.USX,
 };
 
 async function getDFStakingValue(block) {

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { staking, } = require("../helper/staking");
 const { sumUnknownTokens } = require('../helper/unknownTokens');
@@ -13,7 +14,7 @@ const plsJones = "0xe7f6C3c1F0018E4C08aCC52965e5cbfF99e34A44";
 const plsJonesFarm = "0x23B87748b615096d1A0F48870daee203A720723D";
 const plsSpa = "0x0D111e482146fE9aC9cA3A65D92E65610BBC1Ba6";
 const plsSpaFarm = "0x73e7c78E8a85C074733920f185d1c78163b555C8";
-const plvGlpToken = "0x5326E71Ff593Ecc2CF7AcaE5Fe57582D6e74CFF1";
+const plvGlpToken = ADDRESSES.arbitrum.plvGLP;
 const plgGlpPlutusChef = "0x4E5Cf54FdE5E1237e80E87fcbA555d829e1307CE";
 
 const dpxPlsDpxMasterChef = "0xA61f0d1d831BA4Be2ae253c13ff906d9463299c2";

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { sumTokensSharedOwners} = require("../helper/unwrapLPs");
 const { staking } = require("../helper/staking");
@@ -25,10 +26,10 @@ const ethVaults = [
 ]
 
 const ethCollaterals = [
-  "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH
-  "0x6B175474E89094C44Da98b954EedeAC495271d0F", // DAI
-  "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // USDC
-  "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", // WBTC
+  ADDRESSES.ethereum.WETH, // WETH
+  ADDRESSES.ethereum.DAI, // DAI
+  ADDRESSES.ethereum.USDC, // USDC
+  ADDRESSES.ethereum.WBTC, // WBTC
 ]
 
 const optVaults = [
@@ -40,8 +41,8 @@ const optVaults = [
 ]
 
 const optCollaterals = [
-  "0x4200000000000000000000000000000000000006", // WETH
-  "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1", // DAI
+  ADDRESSES.tombchain.FTM, // WETH
+  ADDRESSES.optimism.DAI, // DAI
   "0x350a791Bfc2C21F9Ed5d10980Dad2e2638ffa7f6", // LINK
   "0x8700dAec35aF8Ff88c16BdF0418774CB3D7599B4", // SNX
   "0x6fd9d7AD17242c41f7131d257212c54A0e816691" // UNI
@@ -61,7 +62,7 @@ async function optTvl(timestamp, block, chainBlocks) {
 
 const treasuryAddress = "0xa54074b2cc0e96a43048d4a68472F7F046aC0DA8";
 const treasuryContents = [
-  "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+  ADDRESSES.ethereum.USDC
 ]
 const optTreasury = "0x271901c3268D0959bbc9543DE4f073D3708C88F7";
 
@@ -71,7 +72,7 @@ async function treasury(timestamp, block) {
     target: treasuryAddress,
     block,
   })).output;
-  sdk.util.sumSingleBalance(balances, "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", ethBal);
+  sdk.util.sumSingleBalance(balances, ADDRESSES.ethereum.WETH, ethBal);
   await sumTokensSharedOwners(balances, treasuryContents, [treasuryAddress], block);
   return balances;
 }

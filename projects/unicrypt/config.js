@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 // const { ethereum } = require(".")
 
 const { getNumLockedTokens, getLockedTokenAtIndex,
@@ -24,7 +25,7 @@ const { getNumLockedTokens, getLockedTokenAtIndex,
   
   const tokens = {
     uncx_eth: '0xaDB2437e6F65682B85F814fBc12FeC0508A7B1D0',
-    weth: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+    weth: ADDRESSES.ethereum.WETH
   }
   
   const governanceTokens = { // UNCX

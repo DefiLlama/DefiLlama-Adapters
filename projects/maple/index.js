@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { staking, } = require("../helper/staking")
@@ -6,7 +7,7 @@ const { PublicKey } = require('@solana/web3.js')
 const { getLogs } = require('../helper/cache/getLogs')
 
 const MapleTreasury = "0xa9466EaBd096449d650D5AEB0dD3dA6F52FD0B19";
-const USDC = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
+const USDC = ADDRESSES.ethereum.USDC;
 const chain = 'ethereum'
 
 /*** Solana TVL Portions ***/
@@ -16,7 +17,7 @@ const TVL_DATA_SIZE = 8;
 const PROGRAM_ID = "5D9yi4BKrxF8h65NkVE1raCCWFKUs5ngub2ECxhvfaZe";
 
 let _tvl
-const usdc = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
+const usdc = ADDRESSES.solana.USDC
 
 function getTvl(borrowed = false) {
   return async () => {

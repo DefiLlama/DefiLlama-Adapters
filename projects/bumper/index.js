@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
 
-const USDC = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+const USDC = ADDRESSES.ethereum.USDC
 const contract = "0xBabeE6d5F6EDD301B5Fae591a0D61AB702b359d0"
 async function tvl(time, block) {
     return {

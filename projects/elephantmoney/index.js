@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { stakings } = require("../helper/staking");
 
 const contracts = {
-  BUSD: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
+  BUSD: ADDRESSES.bsc.BUSD,
   TRUNK: '0xdd325C38b12903B727D16961e61333f4871A70E0',
   treasury: '0xCb5a02BB3a38e92E591d323d6824586608cE8cE4',
   LP_TRUNK: '0xf15A72B15fC4CAeD6FaDB1ba7347f6CCD1E0Aede',

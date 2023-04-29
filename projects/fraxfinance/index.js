@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
 const { staking, stakings } = require("../helper/staking");
 const { sumTokens } = require("../helper/unwrapLPs");
 
-const USDC = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
+const USDC = ADDRESSES.ethereum.USDC;
 const FXS = "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0";
 
 const FEI3CRVs = [
@@ -146,8 +147,8 @@ const fantomTvl = async (timestamp, ethBlock, chainBlocks) => {
   // Curve FRAX2Pool
   await sumTokens(balances, [
     ["0x8866414733f22295b7563f9c5299715d2d76caf4", "0x7a656b342e14f745e2b164890e88017e27ae7320"],
-    ["0x04068da6c83afcfa0e13ba15a6696662335d5b75", "0xbea9f78090bdb9e662d8cb301a00ad09a5b756e9"]
-  ], block, chain, addr => addr === "0x8866414733f22295b7563f9c5299715d2d76caf4" ? "0x6b175474e89094c44da98b954eedeac495271d0f" : `${chain}:${addr}`)
+    [ADDRESSES.fantom.USDC, "0xbea9f78090bdb9e662d8cb301a00ad09a5b756e9"]
+  ], block, chain, addr => addr === "0x8866414733f22295b7563f9c5299715d2d76caf4" ? [ADDRESSES.ethereum.DAI]: `${chain}:${addr}`)
 
   return balances;
 }

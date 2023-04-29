@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, nullAddress, } = require('../helper/unwrapLPs')
 
 // cVault UniV2 pairs
@@ -16,15 +17,15 @@ const WCORE   =    '0x17B8c1A92B66b1CF3092C5d223Cb3a129023b669' // wCORE
 
 // ERC20 Tokens
 const COREDAO =    '0xf66cd2f8755a21d3c8683a10269f795c0532dd58' // coreDAO
-const DAI   =      '0x6B175474E89094C44Da98b954EedeAC495271d0F' // DAI
+const DAI   =      ADDRESSES.ethereum.DAI // DAI
 const DELTA =      '0x9EA3b5b4EC044b70375236A281986106457b20EF' // DELTA
 const FANNY =       '0x8ad66f7e0e3e3dc331d3dbf2c662d7ae293c1fe0' // FANNY
 const CORE = '0x62359ed7505efc61ff1d56fef82158ccaffa23d7' // CORE
 const DELTA_RLP =      '0xfcfc434ee5bff924222e084a8876eee74ea7cfba' // DELTA rLP       
-const WETH =       '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2' // wETH
-const USDC = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
-const USDT = "0xdac17f958d2ee523a2206206994597c13d831ec7"
-const WBTC = "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"
+const WETH =       ADDRESSES.ethereum.WETH // wETH
+const USDC = ADDRESSES.ethereum.USDC
+const USDT = ADDRESSES.ethereum.USDT
+const WBTC = ADDRESSES.ethereum.WBTC
 
 // Ecosystem contracts
 const CORE_DEPLOYER      = '0x5a16552f59ea34e44ec81e58b3817833e9fd5436' // CoreVault Deployer/Multisig

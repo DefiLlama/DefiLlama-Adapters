@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const poolInfoAbi = require("../helper/abis/masterchef.json");
 const { sumTokensAndLPsSharedOwners, sumTokens2 } = require('../helper/unwrapLPs');
@@ -71,7 +72,7 @@ async function fantomStaking(timestamp, block, chainBlocks) {
   return sumTokens2({
     tokensAndOwners: [
       ['0xf16e81dce15b08f326220742020379b855b87df9', '0xaE2e07276A77DAdE3378046eEd92FfDE3995b0D5'], // ICE
-      ['0x7f620d7d0b3479b1655cefb1b0bc67fb0ef4e443', '0xBC8d95Ab498502242b41fdaD30bDFfC841f436e2'], // nICE
+      [ADDRESSES.fantom.nICE, '0xBC8d95Ab498502242b41fdaD30bDFfC841f436e2'], // nICE
     ],
     chain: 'fantom',
     block: chainBlocks.fantom,

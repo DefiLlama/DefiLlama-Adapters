@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const sTlosAbi = require("./sTlos.json");
 
-const sTLOS = "0xb4b01216a5bc8f1c8a33cd990a1239030e60c905";
+const sTLOS = ADDRESSES.telos.STLOS;
 
 async function tvl(timestamp, _, { telos: block }) {
     const pooledTLOS = await sdk.api.abi.call({

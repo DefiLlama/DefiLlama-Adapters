@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { requery } = require("../helper/requery");
 const abi = require("./abi");
@@ -28,18 +29,18 @@ const fusePoolLensAddress = '0x8dA38681826f4ABBe089643D2B3fE4C6e4730493'
 const fusePoolDirectoryAddress = '0x835482FE0532f169024d5E9410199369aAD5C77E'
 const rariGovernanceTokenUniswapDistributorAddress = '0x1FA69a416bCF8572577d3949b742fBB0a9CD98c7'
 const sushiETHRGTPairAddress = '0x18a797c7c70c1bf22fdee1c09062aba709cacf04'
-const WETHTokenAddress = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+const WETHTokenAddress = ADDRESSES.ethereum.WETH
 const RGTTokenAddress = '0xD291E7a03283640FDc51b121aC401383A46cC623'
 const RGTETHSushiLPTokenAddress = '0x18a797c7c70c1bf22fdee1c09062aba709cacf04'
-const ETHAddress = '0x0000000000000000000000000000000000000000'
+const ETHAddress = ADDRESSES.null
 const bigNumZero = BigNumber('0')
 
 const tokenMapWithKeysAsSymbol = {
-  'DAI': '0x6b175474e89094c44da98b954eedeac495271d0f',
-  'USDC': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-  'USDT': '0xdac17f958d2ee523a2206206994597c13d831ec7',
-  'TUSD': '0x0000000000085d4780b73119b644ae5ecd22b376',
-  'BUSD': '0x4fabb145d64652a948d72533023f6e7a623c7c53',
+  'DAI': ADDRESSES.ethereum.DAI,
+  'USDC': ADDRESSES.ethereum.USDC,
+  'USDT': ADDRESSES.ethereum.USDT,
+  'TUSD': ADDRESSES.ethereum.TUSD,
+  'BUSD': ADDRESSES.ethereum.BUSD,
   'SUSD': '0x57ab1ec28d129707052df4df418d58a2d46d5f51',
   'MUSD': '0xe2f2a5c287993345a840db3b0845fbc70f5935a5'
 }

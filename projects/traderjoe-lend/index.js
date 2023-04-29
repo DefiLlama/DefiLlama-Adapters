@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { getCompoundV2Tvl } = require('../helper/compound');
 
@@ -13,7 +14,7 @@ module.exports = {
         "avax", 
         addr => `avax:${addr}`, 
         "0xC22F01ddc8010Ee05574028528614634684EC29e", 
-        "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+        ADDRESSES.avax.WAVAX,
         false
     ),
     borrowed: getCompoundV2Tvl(
@@ -21,7 +22,7 @@ module.exports = {
       "avax", 
       addr => `avax:${addr}`, 
       "0xC22F01ddc8010Ee05574028528614634684EC29e", 
-      "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", 
+      ADDRESSES.avax.WAVAX, 
       true
       ),
   }

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { request, gql } = require("graphql-request");
 const sdk = require("@defillama/sdk");
 const { getTokenSupply } = require('../helper/solana')
@@ -96,7 +97,7 @@ async function polygon(timestamp, ethBlock, chainBlocks) {
 async function arbitrum(timestamp, ethBlock, chainBlocks) {
     return {
         "0xeb4c2781e4eba804ce9a9803c67d0893436bb27d": (await sdk.api.erc20.totalSupply({
-            target: "0xdbf31df14b66535af65aac99c32e9ea844e14501",
+            target: ADDRESSES.fantom.renBTC,
             chain: "arbitrum",
             block: chainBlocks.arbitrum
         })).output

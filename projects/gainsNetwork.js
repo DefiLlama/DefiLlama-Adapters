@@ -1,14 +1,15 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const { pool2 } = require("./helper/pool2");
 const { staking } = require("./helper/staking");
 const { sumTokens2 } = require("./helper/unwrapLPs");
 
 const tokens = {
   polygon: {
-    DAI: "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
+    DAI: ADDRESSES.polygon.DAI,
     dQUICK: "0xf28164a485b0b2c90639e47b0f377b4a438a16b1",
   },
   arbitrum: {
-    DAI: "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1",
+    DAI: ADDRESSES.optimism.DAI,
   },
 };
 

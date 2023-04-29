@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const {  nullAddress,treasuryExports } = require("../helper/treasury");
 
 const Treasury = "0x8b1522402fece066d83e0f6c97024248be3c8c01";
@@ -9,8 +10,8 @@ module.exports = treasuryExports({
   bsc: {
     tokens: [ 
         nullAddress,
-        '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',//BUSD
-        '0x55d398326f99059fF775485246999027B3197955',//BSC-USD
+        ADDRESSES.bsc.BUSD,//BUSD
+        ADDRESSES.bsc.USDT,//BSC-USD
      ],
     owners: [Treasury],
     ownTokens: [GYRO],

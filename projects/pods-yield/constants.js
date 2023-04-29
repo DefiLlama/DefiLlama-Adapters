@@ -1,5 +1,6 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 module.exports = {
-  ADDRESS_ZERO: '0x0000000000000000000000000000000000000000',
+  ADDRESS_ZERO: ADDRESSES.null,
   EXPIRATION_START_FROM: 1605000000,
   NETWORK_MAINNET: {
     id: 1,

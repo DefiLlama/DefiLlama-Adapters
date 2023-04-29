@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { tombTvl } = require("../helper/tomb");
 const FUSE_ON_ETH = "0x970b9bb2c0444f5e81e9d0efb84c8ccdcdcaf84d";
-const FUSE_ON_FUSE = "0x0be9e53fd7edac9f859882afdda116645287c629";
+const FUSE_ON_FUSE = ADDRESSES.fuse.WFUSE;
 const AMP = "0x2b09179D26FdDB27a24ee25328890791c7A984c2".toLowerCase();
 const CURRENT = "0x3B1292FEf70C3F9Fb933DD2e2F4B734DcB35648d".toLowerCase();
 

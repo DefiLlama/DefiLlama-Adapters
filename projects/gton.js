@@ -1,3 +1,4 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const { sumTokensExport, nullAddress } = require("./helper/unwrapLPs");
 const { staking } = require('./helper/staking')
 
@@ -13,13 +14,13 @@ module.exports = {
             '0xddcb3ffd12750b45d32e084887fdf1aabab34239',
             '0x841fad6eae12c286d1fd18d1d525dffa75c7effe',
             '0x5cc61a78f164885776aa610fb0fe1257df78e59b',
-            '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83',
+            ADDRESSES.fantom.WFTM,
             '0xb688e18f34e6e424c44b247318f22367ed7df3e2',
-            '0xdbf31df14b66535af65aac99c32e9ea844e14501',
+            ADDRESSES.fantom.renBTC,
             '0x1E4F97b9f9F913c46F1632781732927B9019C68b',
             '0x657A1861c15A3deD9AF0B6799a195a249ebdCbc6',
             '0xc3f069d7439baf6d4d6e9478d9cc77778e62d147',
-            '0x049d68029688eabf473097a2fc38ef61633a3c7a',
+            ADDRESSES.fantom.fUSDT,
             '0xf16e81dce15b08f326220742020379b855b87df9',
         ]}),
         staking: staking([stakingContract, treasury,], gton, chain),

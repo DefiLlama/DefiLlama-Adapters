@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens } = require('../helper/unwrapLPs')
 const sdk = require('@defillama/sdk')
 const { transformBscAddress } = require('../helper/portedTokens');
@@ -12,14 +13,14 @@ const tokenHolderMap = [
       checkETHBalance: true,
     },
     {
-      tokens: '0x55d398326f99059fF775485246999027B3197955',   // USDT
+      tokens: ADDRESSES.bsc.USDT,   // USDT
       holders: [
         "0x682ce0e340A0248B4554E14e834969F2E421dB2D" // USDT table
       ],
     }
 ]
 
-const WBNB = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+const WBNB = ADDRESSES.bsc.WBNB
 
 function normalizeArray(arrayOrString){
     if(Array.isArray(arrayOrString)){

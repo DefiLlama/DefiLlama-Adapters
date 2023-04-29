@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
 
-const cUSDTokenAddress = "0x765DE816845861e75A25fCA122bb6898B8B1282a"
+const cUSDTokenAddress = ADDRESSES.celo.cUSD
 
 const stakingContract = "0x8ea91a982d93836415CE3abbaf12d59fb8cE3Ff8"
 

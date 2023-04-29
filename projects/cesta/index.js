@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 
@@ -8,7 +9,7 @@ async function avax(timestamp, block) {
     StableAvax: "0xfbE9613a6bd9d28ceF286b01357789b2b02E46f5",
     StableStable: "0xB103F669E87f67376FB9458A67226f2774a0B4FD",
   };
-  let usd = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
+  let usd = ADDRESSES.ethereum.USDC;
 
   let [DexAvaxTVL, DexStableTVL, StableAvaxTVL, StableStableTVL] =
     await Promise.all([

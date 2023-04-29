@@ -1,6 +1,7 @@
+const ADDRESSES = require('./coreAssets.json')
 const BigNumber = require("bignumber.js");
 
-const usdtAddress = "0xdac17f958d2ee523a2206206994597c13d831ec7";
+const usdtAddress = ADDRESSES.ethereum.USDT;
 
 const toUSDT = (value, times = 1e6) => BigNumber(value).times(times).toFixed(0);
 

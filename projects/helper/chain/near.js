@@ -1,3 +1,4 @@
+const ADDRESSES = require('../coreAssets.json')
 const axios = require("axios")
 const { default: BigNumber } = require("bignumber.js")
 const sdk = require('@defillama/sdk')
@@ -16,7 +17,7 @@ const endpoint = "https://rpc.mainnet.near.org"
 const tokenMapping = {
   'wrap.near': { name: 'near', decimals: 24, },
   'meta-pool.near': { name: 'staked-near', decimals: 24, },
-  'linear-protocol.near': { name: 'linear-protocol', decimals: 24, },
+  [ADDRESSES.near.LINA]: { name: 'linear-protocol', decimals: 24, },
   'usn': { name: 'usn', decimals: 18, },
   'aurora': { name: 'ethereum', decimals: 18, },
   'token.skyward.near': { name: 'skyward-finance', decimals: 18, },
@@ -33,11 +34,11 @@ const tokenMapping = {
   // '6b175474e89094c44da98b954eedeac495271d0f.factory.bridge.near': { name: 'dai', decimals: 18 },
   // 'a0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.factory.bridge.near': { name: 'usd-coin', decimals: 6 },
   // 'dac17f958d2ee523a2206206994597c13d831ec7.factory.bridge.near': { name: 'tether', decimals: 6 },
-  // '2260fac5e5542a773aa44fbcfedf7c193bc2c599.factory.bridge.near': { name: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', decimals: 0 },
+  // '2260fac5e5542a773aa44fbcfedf7c193bc2c599.factory.bridge.near': { name: ADDRESSES.ethereum.WBTC, decimals: 0 },
   // 'aaaaaa20d9e0e2461697782ef11675f668207961.factory.bridge.near': { name: 'aurora-near', decimals: 18 },
-  'token.burrow.near': { name: 'burrow', decimals: 18 },
-  'token.paras.near': { name: 'paras', decimals: 18 },
-  'token.pembrock.near': { name: 'pembrock', decimals: 18 },
+  [ADDRESSES.near.BURROW]: { name: 'burrow', decimals: 18 },
+  [ADDRESSES.near.PARAS]: { name: 'paras', decimals: 18 },
+  [ADDRESSES.near.PEMBROCK]: { name: 'pembrock', decimals: 18 },
   'token.sweat': { name: 'sweatcoin', decimals: 18 },
   'v2-nearx.stader-labs.near': { name: 'stader-nearx', decimals: 24 },
 }

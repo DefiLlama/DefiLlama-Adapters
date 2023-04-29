@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { getUniTVL } = require('../helper/unknownTokens')
 const { compoundExports } = require('../helper/compound')
@@ -12,7 +13,7 @@ const url = "https://api.bdollar.fi/api/bvault/get-vaults";
 
 const BDEX_FACTORY = "0x2C358A7C62cdb9D554A65A86EEa034bc55D1E715";
 const COMPTROLLER = "0xEEea0D4aAd990c4ede8e064A8Cb0A627B432EDa0";
-const wBNB = "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c";
+const wBNB = ADDRESSES.bsc.WBNB;
 const cBNB = "0xa3948b027f94ca195eac645746435aaa7eb555a7";
 const chain = 'bsc'
 

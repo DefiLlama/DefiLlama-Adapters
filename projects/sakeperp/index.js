@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 
@@ -8,7 +9,7 @@ const bscSake = "0x8BD778B12b15416359A227F0533Ce2D91844e1eD";
 const bscFactory = "0xA534cf041Dcd2C95B4220254A0dCb4B905307Fd8";
 const bscSakebar = "0xbC83FAdA7D0881F772daaB2B4295F949FA309B59";
 const perpVault = "0xa34dA41edB2b15A20893d2208377E24D8dcdeB6e";
-const bUsd = "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56";
+const bUsd = ADDRESSES.bsc.BUSD;
 
 async function tvl(factory, block, chain) {
   let balances = {};

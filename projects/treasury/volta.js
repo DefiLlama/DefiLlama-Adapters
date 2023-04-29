@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
@@ -12,12 +13,12 @@ module.exports = treasuryExports({
     ],
     tokens: [
       nullAddress,
-      "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9", // USDT
-      "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1", // DAI
-      "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8", // USDC
+      ADDRESSES.arbitrum.USDT, // USDT
+      ADDRESSES.optimism.DAI, // DAI
+      ADDRESSES.arbitrum.USDC, // USDC
       "0xd85E038593d7A098614721EaE955EC2022B9B91B", // gDAI
       "0xd92Be5A1c565Db5256cDD537B875ED46111Bd8b0", // VOLT2USD3CRV-f 
-      "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1", // WETH
+      ADDRESSES.arbitrum.WETH, // WETH
       "0x39ff5098081FBE1ab241c31Fe0a9974FE9891d04", // voltGNS
     ],
   },

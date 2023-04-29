@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumUnknownTokens } = require("../helper/unknownTokens");
-const WSGB = '0x02f0826ef6aD107Cfc861152B32B52fD11BaB9ED'
-const CANARY_DOLLAR = '0x70Ad7172EF0b131A1428D0c1F66457EB041f2176'
- const EXFI = '0xC348F894d0E939FE72c467156E6d7DcbD6f16e21';
+const WSGB = ADDRESSES.songbird.WSGB
+const CANARY_DOLLAR = ADDRESSES.songbird.CAND
+ const EXFI = ADDRESSES.songbird.EXFI;
  const SFIN = '0x0D94e59332732D18CF3a3D457A8886A2AE29eA1B';
 
 const chain = 'songbird'

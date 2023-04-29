@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { masterchefExports } = require('../helper/unknownTokens')
-const wDoge = '0xB7ddC6414bf4F5515b52D8BdD69973Ae205ff101'
-const nullAddress = '0x0000000000000000000000000000000000000000'
+const wDoge = ADDRESSES.dogechain.WWDOGE
+const nullAddress = ADDRESSES.null
 
 
 module.exports = masterchefExports({

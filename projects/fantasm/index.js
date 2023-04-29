@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const Abis = require("./abi.json");
 const sdk = require("@defillama/sdk");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
@@ -5,7 +6,7 @@ const { staking } = require("../helper/staking");
 
 const Contracts = {
   fantomV1: {
-    wftm: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
+    wftm: ADDRESSES.fantom.WFTM,
     fsm: "0xaa621D2002b5a6275EF62d7a065A865167914801",
     bank: "0x880672AB1d46D987E5d663Fc7476CD8df3C9f937",
     multiFeeDistribution: "0x348634Ea9367690383716FbCa8f225366bbC5966",
@@ -17,7 +18,7 @@ const Contracts = {
     ],
   },
   fantom: {
-    wftm: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
+    wftm: ADDRESSES.fantom.WFTM,
     fxm: "0x132b56763C0e73F95BeCA9C452BadF89802ba05e",
     bank: "0xa3B99CdFdDe2216AfB1D58D6108cC93fea413A76",
     multiFeeDistribution: "0xC4510604504Fd50f64499fF6186AEf1F740dE38B",

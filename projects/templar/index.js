@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const {staking} = require("../helper/staking");
 const {sumTokensAndLPsSharedOwners} = require("../helper/unwrapLPs");
@@ -13,8 +14,8 @@ async function bscTvl(timestamp, block, chainBlocks) {
   await sumTokensAndLPsSharedOwners(
     balances,
     [
-      ["0xe9e7cea3dedca5984780bafc599bd69add087d56", false], // BUSD
-      ["0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", false], // WBNB
+      [ADDRESSES.bsc.BUSD, false], // BUSD
+      [ADDRESSES.bsc.WBNB, false], // WBNB
       ["0xfe19f0b51438fd612f6fd59c1dbb3ea319f433ba", false], // MIM
       ["0x9911e98974d0badde85bd5f4d1f93087aa3ec5fa", true], // MIM-BUSD CAKELP
       ["0xbf598a387c5f96f8bac9bdccf8fb68bc189cdff7", true], // TEM-MIM CAKELP
@@ -62,7 +63,7 @@ async function harmonyTvl (timestamp, block, chainBlocks) {
     await sumTokensAndLPsSharedOwners(balances, [
         ["0xef977d2f931c1978db5f6747666fa1eacb0d0339", false], // DAI
         ["0xeed838406194feba1bd654cfdf85a941ac0944bc", true], // TEM DAI SLP
-        ["0xcf664087a5bb0237a0bad6742852ec6c8d69a27a", false] // WONE
+        [ADDRESSES.harmony.WONE, false] // WONE
     ], [harmonyTreasury], chainBlocks.harmony, "harmony", addr=> {
         addr = addr.toLowerCase();
         if (addr == "0xd754ae7bb55feb0c4ba6bc037b4a140f14ebe018") {

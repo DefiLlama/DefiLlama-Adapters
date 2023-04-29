@@ -1,3 +1,4 @@
+const ADDRESSES = require('../../helper/coreAssets.json')
 module.exports = {
   ethereum: {
     UiPoolDataProvider: "0x5250cCE48E43AB930e45Cc8E71C87Ca4B51244cf",
@@ -8,7 +9,7 @@ module.exports = {
     UniswapV2PairWETH: "0x336ef4e633b1117dca08c1a57f4139c62c32c935",
     StakedBUNI: "0x647C509AF2A2b2294bB79fCE12DaEc8e7cf938f7",
     Treasury: "0x472FcC65Fab565f75B1e0E861864A86FE5bcEd7B",
-    USDC: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    USDC: ADDRESSES.ethereum.USDC,
     ApeCoin: "0x4d224452801ACEd8B2F0aebE155379bb5D594381",
     BNFTRegistry: "0x79d922DD382E42A156bC0A354861cDBC4F09110d",
   },

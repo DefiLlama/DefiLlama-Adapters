@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require("../helper/unwrapLPs.js");
 
@@ -8,10 +9,10 @@ const rsr = "0x320623b8E4fF03373931769A31Fc52A4E78B5d70";
 async function tvl(_time, block, _, { api }) {
   // First section is for RSV which will soon be deprecated
   const ownerTokens = [[[
-    "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", //usdc
+    ADDRESSES.ethereum.USDC, //usdc
     "0x8e870d67f660d95d5be530380d0ec0bd388289e1", //pax
-    "0x0000000000085d4780B73119b644AE5ecd22b376", //tusd
-    "0x4Fabb145d64652a948d72533023f6E7A623C7C53", //busd
+    ADDRESSES.ethereum.TUSD, //tusd
+    ADDRESSES.ethereum.BUSD, //busd
   ], vault]]
   const creationLogs = await _getLogs(api)
 

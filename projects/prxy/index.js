@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = "uint256:getTVLInUsd";
 const axios = require("axios");
-const usdc = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
+const usdc = ADDRESSES.ethereum.USDC;
 const prxy = "0xab3d689c22a2bb821f50a4ff0f21a7980dcb8591";
 const prxyTransformed = `polygon:${prxy}`;
-const wbtc = "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599";
+const wbtc = ADDRESSES.ethereum.WBTC;
 const btcpx = "0x9C32185b81766a051E08dE671207b34466DD1021";
 const farmProxy = "0x256116a8Ea8bAd13897462117d88082C464B68e1";
 
@@ -79,7 +80,7 @@ async function farmPrxyStaking(timestamp, ethBlock, chainBlocks){
     chain: "polygon"
   })).output;
 
-return {'0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48': farmStaking} 
+return {[ADDRESSES.ethereum.USDC]: farmStaking} 
 }
 
 

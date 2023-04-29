@@ -1,3 +1,4 @@
+const ADDRESSES = require('./coreAssets.json')
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const token0 = 'address:token0'
@@ -359,7 +360,7 @@ async function sumBalancerLps(balances, tokensAndOwners, block, chain, transform
   })
 }
 
-const nullAddress = '0x0000000000000000000000000000000000000000'
+const nullAddress = ADDRESSES.null
 const gasTokens = [nullAddress, '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb']
 /*
 tokensAndOwners [

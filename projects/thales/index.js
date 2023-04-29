@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
 const { sumTokensAndLPsSharedOwners } = require('../helper/unwrapLPs')
 const { staking } = require('../helper/staking')
@@ -7,11 +8,11 @@ const { dodoPool2 } = require('../helper/pool2')
 const ethMarketsManager = "0x5ed98Ebb66A929758C7Fe5Ac60c979aDF0F4040a"
 const ETH_SUSD = "0x57ab1ec28d129707052df4df418d58a2d46d5f51"
 const ETH_THALES = "0x8947da500eb47f82df21143d0c01a29862a8c3c5"
-const ETH_WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
-const ETH_USDC = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+const ETH_WETH = ADDRESSES.ethereum.WETH
+const ETH_USDC = ADDRESSES.ethereum.USDC
 
 const opMarketsManager = "0xBE086E0A2c588Ad64C8530048cE4356190D6a6F3"
-const OP_SUSD = "0x8c6f28f2f1a3c87f0f938b96d27520d9751ec8d9"
+const OP_SUSD = ADDRESSES.optimism.sUSD
 const opThalesStaking = "0xc392133eea695603b51a5d5de73655d571c2ce51"
 const opThalesAmm = "0x5ae7454827d83526261f3871c1029792644ef1b1"
 const opThalesLpToken = "0xac6705BC7f6a35eb194bdB89066049D6f1B0B1b5";
@@ -21,11 +22,11 @@ const opSportsMarketsManager = "0xFBffEbfA2bF2cF84fdCf77917b358fC59Ff5771e"
 const opSportsAmm = "0x170a5714112daEfF20E798B6e92e25B86Ea603C1"
 
 const polygonMarketsManager = "0x85f1B57A1D3Ac7605de3Df8AdA056b3dB9676eCE"
-const polygon_USDC = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"
+const polygon_USDC = ADDRESSES.polygon.USDC
 const polygonThalesAmm = "0x9b6d76B1C6140FbB0ABc9C4a348BFf4e4e8a1213"
 
 const arbitrumMarketsManager = "0x95d93c88c1b5190fA7FA4350844e0663e5a11fF0"
-const arbitrum_USDC = "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8"
+const arbitrum_USDC = ADDRESSES.arbitrum.USDC
 const arbitrumThalesAMM = "0x2b89275efB9509c33d9AD92A4586bdf8c4d21505"
 
 
@@ -33,11 +34,11 @@ const L2toL1Synths = {
     //THALES
     "0x217d47011b23bb961eb6d93ca9945b7501a5bb11": ETH_THALES, 
     // sUSD
-    "0x8c6f28f2f1a3c87f0f938b96d27520d9751ec8d9": ETH_SUSD, 
+    [ADDRESSES.optimism.sUSD]: ETH_SUSD, 
     // WETH
-    "0x4200000000000000000000000000000000000006": ETH_WETH,
+    [ADDRESSES.tombchain.FTM]: ETH_WETH,
     // USDC
-    "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174": ETH_USDC,
+    [ADDRESSES.polygon.USDC]: ETH_USDC,
 }
 
 const transform = (addr)=>{

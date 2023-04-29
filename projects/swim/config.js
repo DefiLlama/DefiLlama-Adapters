@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 module.exports = {
     solana: {
       tvl: {
@@ -5,12 +6,12 @@ module.exports = {
           {
             pool: 'AfhhYsLMXXyDxQ1B7tNqLTXXDHYtDxCzPcnXWXzHAvDb', // Hexapool
             tokens: [
-              'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', // Solana-USDC
-              'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB', // Solana-USDT
+              ADDRESSES.solana.USDC, // Solana-USDC
+              ADDRESSES.solana.USDT, // Solana-USDT
               'A9mUU4qviSctJVPJdBJWkb28deg915LYJKrzQ19ji3FM', // Eth-USDC
               'Dn4noZ5jgGfkntzcQSUZ8czkreiZ1ForXYoV2H8Dm7S1', // Eth-USDT
-              '5RpUwQ8wtdPCZHhu6MERp2RGrpobsbZ6MH5dDHkUjs2', // Bsc-BUSD
-              '8qJSyQprMC57TWKaYEmetUR3UUiTP2M3hXdcvFhkZdmv', // Bsc-USDT
+              ADDRESSES.solana.BUSDbs, // Bsc-BUSD
+              ADDRESSES.solana.USDTbs, // Bsc-USDT
             ],
             symbols: [
               "usd-coin",

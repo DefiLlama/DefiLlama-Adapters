@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require("../helper/staking");
 const { sumTokens2, nullAddress } = require("../helper/unwrapLPs");
 const FACTORY_CONTRACT = "0x3B4b6B14d07A645005658E6Ea697edb0BD7bf2b1";
@@ -13,7 +14,7 @@ async function tvl(_, _1, _2, { api }) {
   const owners = await api.multiCall({ abi: abis.getStakingPoolAddress, target: FACTORY_CONTRACT, calls: tokens })
   tokens.forEach((v, i) => {
     if (v === nullAddress) {
-      tokens.push('0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2')
+      tokens.push(ADDRESSES.ethereum.WETH)
       owners.push(owners[i])
     }
   })

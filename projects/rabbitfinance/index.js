@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { staking } = require("../helper/staking");
@@ -27,10 +28,10 @@ const bscTvl = async (timestamp, ethBlock, { [chain]: block }) => {
   // ).map((addr) => addr.contract_address);
 
   const poolsInfo = [
-    '0x55d398326f99059ff775485246999027b3197955',
-    '0xe9e7cea3dedca5984780bafc599bd69add087d56',
-    '0x2170ed0880ac9a755fd29b2688956bd959f933f8',
-    '0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c',
+    ADDRESSES.bsc.USDT,
+    ADDRESSES.bsc.BUSD,
+    ADDRESSES.bsc.ETH,
+    ADDRESSES.bsc.BTCB,
     '0x95a1199eba84ac5f19546519e287d43d2f0e1b41',
     '0x3ee2200efb3400fabb9aacf31297cbdd1d435d47',
     '0x9c65ab58d8d978db963e63f2bfb7121627e3a739',

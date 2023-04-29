@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const BigNumber = require("bignumber.js");
 const { getBalanceNumber } = require('./format');
 const chains = require('./constants/chain');
@@ -74,7 +75,7 @@ async function getTvl(chain, timestamp, _ethBlock, chainBlocks) {
 
   const balances = {};
   const usdMappings = {
-    'bsc' : '0x4fabb145d64652a948d72533023f6e7a623c7c53'
+    'bsc' : ADDRESSES.ethereum.BUSD
   }
   const baseToken = usdMappings[chain];
   balances[`${chain}:${baseToken}`] = tvl.toNumber();

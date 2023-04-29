@@ -1,3 +1,4 @@
+const ADDRESSES = require('./coreAssets.json')
 
 const abi = require("../tenfinance/abi.json")
 const { getUniqueAddresses, log, } = require('../helper/utils')
@@ -46,7 +47,7 @@ function yieldHelper({
         target: masterchef,
       })
 
-      let _poolFilter = i => !blacklistedTokens.includes(i.want.toLowerCase()) && !blacklistedTokens.includes(i.strat.toLowerCase()) && i.strat !== '0x0000000000000000000000000000000000000000'
+      let _poolFilter = i => !blacklistedTokens.includes(i.want.toLowerCase()) && !blacklistedTokens.includes(i.strat.toLowerCase()) && i.strat !== ADDRESSES.null
       let _getPoolIds = i => i.strat
 
       if (getPoolIds) _getPoolIds = getPoolIds

@@ -1,9 +1,10 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const { call } = require('./helper/chain/near')
 
 async function tvl() {
     return { 
       near: (await call(
-        'linear-protocol.near', 
+        ADDRESSES.near.LINA, 
         'get_total_staked_balance', 
         {}
       ) / 1e24 )

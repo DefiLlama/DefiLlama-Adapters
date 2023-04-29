@@ -1,3 +1,4 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { PromisePool } = require('@supercharge/promise-pool')
 const { BigNumber } = require("bignumber.js");
@@ -42,7 +43,7 @@ function exampleVaultDebug() {
     "contractAddress": "0xbaac2b4491727d78d2b78815144570b9f2fe8899",
     "pools": [{
       "pool": "0x7731CA4d00800b6a681D031F565DeB355c5b77dA",
-      "tokens": ["0xBAac2B4491727D78D2b78815144570b9f2Fe8899", "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"],
+      "tokens": ["0xBAac2B4491727D78D2b78815144570b9f2Fe8899", ADDRESSES.ethereum.WETH],
       "provider": "UNISWAP_V3"
     }],
     "tokenAddress": "0xabEFBc9fD2F806065b4f3C237d4b59D9A97Bcac7",
@@ -81,7 +82,7 @@ function getVaultsTvlApi(vaults) {
   return vaults.reduce((acc, vault) => acc.plus(BigNumber(vault.analytics ? vault.analytics.tvlUsd : 0)), BigNumber(0))
 }
 
-const usdc = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
+const usdc = ADDRESSES.ethereum.USDC
 /* async function tvl_api(timestamp, block, chainBlocks, chain) {
   const { vaults, openedVaultsCount } = await retrieveVaultsAPI()
   return { [usdc]: getVaultsTvlApi(vaults).times(1e6) }

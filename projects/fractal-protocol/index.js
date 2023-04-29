@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
 const { userInfo } = require('../pendle/abi.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
@@ -28,7 +29,7 @@ module.exports = {
         '0x33baeDa08b8afACc4d3d07cf31d49FC1F1f3E893': tUSDBal,
         '0x10BE382cfAB53e0aBD093D6801B5e95C6Aedb715': convexTUSD,
       }
-      return sumTokens2({ balances, owners: [FRACTAL_VAULT_CONTRACT, YIELD_RESERVE,], tokens: ['0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'], block, })
+      return sumTokens2({ balances, owners: [FRACTAL_VAULT_CONTRACT, YIELD_RESERVE,], tokens: [ADDRESSES.ethereum.USDC], block, })
     },
     borrowed: async (_, block) => {
       const loanContract = '0xf0e3020934450152308e4a84a3c4a5801fcb8d29'

@@ -1,10 +1,11 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const sdk = require("@defillama/sdk")
 const BigNumber = require("bignumber.js")
 const { getConfig } = require('./helper/cache')
 
 // Loop through all RealT tokens listed by realt.community API and accumulate tokenprice * supply, where supply is biggest of xdai or mainnet
 // See https://api.realt.community/ for reference
-const xdai_usdc = 'xdai:0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83'
+const xdai_usdc = 'xdai:' + ADDRESSES.xdai.USDC
 async function xdaiTvl(timestamp, block, chainBlocks) {
   let realt_tokens = await getConfig('realt', 'https://api.realt.community/v1/token')
 

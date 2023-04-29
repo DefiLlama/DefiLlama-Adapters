@@ -1,14 +1,15 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const {transformOptimismAddress} = require('../helper/portedTokens')
 const {sumTokensAndLPsSharedOwners} = require('../helper/unwrapLPs')
 
 const tokens = [
-    "0x7f5c764cbc14f9669b88837ca1490cca17c31607", //USDC
+    ADDRESSES.optimism.USDC, //USDC
     "0x68f180fcce6836688e9084f035309e29bf0a2095", //WBTC
-    "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1", //DAI
-    "0x94b008aa00579c1307b0ef2c499ad98a8ce58e58", //USDT
+    ADDRESSES.optimism.DAI, //DAI
+    ADDRESSES.optimism.USDT, //USDT
     "0x8700daec35af8ff88c16bdf0418774cb3d7599b4", //SNX
-    "0x4200000000000000000000000000000000000006", //ETH
-    "0x4200000000000000000000000000000000000042"  //OP
+    ADDRESSES.tombchain.FTM, //ETH
+    ADDRESSES.optimism.OP  //OP
 ]
 
 const owners = [

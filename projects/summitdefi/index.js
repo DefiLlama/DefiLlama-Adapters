@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const abi = require("./abi.json");
@@ -152,7 +153,7 @@ async function staking(timestamp, block, chainBlocks) {
         block,
         chain
     })).output;
-    sdk.util.sumSingleBalance(balances, "fantom:0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e", BigNumber(summitInEverest).times(summitValueInUSDC).toFixed(0));
+    sdk.util.sumSingleBalance(balances, "fantom:" + ADDRESSES.fantom.DAI, BigNumber(summitInEverest).times(summitValueInUSDC).toFixed(0));
     return balances;
 }
 

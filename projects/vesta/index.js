@@ -1,13 +1,14 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { sumBalancerLps, } = require("../helper/unwrapLPs.js");
 const { transformArbitrumAddress } = require("../helper/portedTokens");
 
 const VaultTokens = {
   gOHM: "0x8d9ba570d6cb60c7e3e0f31343efe75ab8e65fb1",
-  ETH: "0x0000000000000000000000000000000000000000",
-  renBTC: "0xdbf31df14b66535af65aac99c32e9ea844e14501",
+  ETH: ADDRESSES.null,
+  renBTC: ADDRESSES.fantom.renBTC,
   DPX: "0x6c2c06790b3e3e3c38e12ee22f8183b37a13ee55",
-  GMX: "0xfc5a1a6eb076a2c7ad06ed22c90d7e710e35ad0a",
+  GMX: ADDRESSES.arbitrum.GMX,
   GLP: "0x2f546ad4edd93b956c8999be404cdcafde3e89ae"
 }
 

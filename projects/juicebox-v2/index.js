@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 // V2 Juicebox Terminals
 const Terminal_V2 = "0x7Ae63FBa045Fec7CaE1a75cF7Aa14183483b8397";
 // Tokens
-const ETH = '0x0000000000000000000000000000000000000000'
+const ETH = ADDRESSES.null
 
 module.exports = {
   timetravel: true,

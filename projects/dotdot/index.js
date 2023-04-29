@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { pool2 } = require("../helper/pool2");
 const { staking } = require("../helper/staking");
 const { transformBalances } = require("../helper/portedTokens");
@@ -66,9 +67,9 @@ async function fixVal3EPS(block, balances) {
   const { output } = await sdk.api.abi.multiCall({
     abi: "erc20:balanceOf",
     calls: [
-      { params, target: "0xaed19dab3cd68e4267aec7b2479b1ed2144ad77f" },
-      { params, target: "0xa6fdea1655910c504e974f7f1b520b74be21857b" },
-      { params, target: "0x5f7f6cb266737b89f7af86b30f03ae94334b83e9" }
+      { params, target: ADDRESSES.bsc.valBUSD },
+      { params, target: ADDRESSES.bsc.valUSDC },
+      { params, target: ADDRESSES.bsc.valUSDT }
     ],
     chain,
     block
@@ -88,7 +89,7 @@ async function resolveEpsLP({
   if (token.toLowerCase() === "0xaf4de8e872131ae328ce21d909c74705d3aaf452") {
     sdk.util.sumSingleBalance(
       balances,
-      "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+      ADDRESSES.bsc.BUSD,
       tokenBalance
     ); // store 3EPS as BUSD
     return;

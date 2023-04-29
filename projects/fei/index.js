@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { sumTokensAndLPsSharedOwners } = require('../helper/unwrapLPs')
 
-const weth = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
+const weth = ADDRESSES.ethereum.WETH
 
 async function tvl(timestamp, block) {
   const balances = {}
@@ -47,7 +48,7 @@ async function tvl(timestamp, block) {
   ]
   await sumTokensAndLPsSharedOwners(balances, [
     ['0x94b0a3d511b6ecdb17ebf877278ab030acb0a878', true], // FEI-ETH Uni V2 LP (NOTE: this counts both FEI and ETH, but only the FEI doesn't count as PCV)
-    ['0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84', false], // stETH
+    [ADDRESSES.ethereum.STETH, false], // stETH
     ['0x030ba81f1c18d280636f32af80b9aad02cf0854e', false], // aWETH
     ['0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5', false], // cETH
     ['0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643', false], // cDAI

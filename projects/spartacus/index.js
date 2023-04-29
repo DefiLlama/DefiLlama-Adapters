@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require('../helper/staking')
 const { sumTokensAndLPsSharedOwners } = require('../helper/unwrapLPs')
 const { transformFantomAddress } = require('../helper/portedTokens')
@@ -9,8 +10,8 @@ async function tvl(time, ethBlock, chainBlocks) {
     const balances = {}
     const transform = await transformFantomAddress()
     await sumTokensAndLPsSharedOwners(balances, [
-        ["0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e", false],
-        ["0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83", false], // FTM asset
+        [ADDRESSES.fantom.DAI, false],
+        [ADDRESSES.fantom.WFTM, false], // FTM asset
         ["0xfa5a5f0bc990be1d095c5385fff6516f6e03c0a7", true]
     ], [treasury], chainBlocks.fantom, "fantom", transform)
     return balances
