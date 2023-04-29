@@ -3,7 +3,7 @@ const { getProvider} = require("../helper/solana");
 const sdk = require('@defillama/sdk')
 const idl = require("./idl.json");
 
-const usdcDecimals = 10 ** 6;
+const usdcAddress = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
 
 async function getProducts() {
   const provider = getProvider();
@@ -13,6 +13,7 @@ async function getProducts() {
 }
 
 async function getSolanaTvl() {
+  const balances = {};
   const products = await getProducts()
   let totalAmount = 0;
   products.forEach(({ account: i }) => {
@@ -20,11 +21,12 @@ async function getSolanaTvl() {
     const underlyingAmount = i.underlyingAmount.toNumber();
     totalAmount += underlyingAmount;
   });
-  return totalAmount / usdcDecimals;
+  await sdk.util.sumSingleBalance(balances, usdcAddress, totalAmount, "solana");
+  return balances;
 }
 
 module.exports = {
   solana: {
-     tvl: getSolanaTvl().then((result) => { console.log(result )}),
+     tvl: getSolanaTvl,
   }
 }

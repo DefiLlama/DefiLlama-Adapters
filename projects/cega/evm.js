@@ -2,11 +2,11 @@
 const sdk = require('@defillama/sdk')
 const abi = require("./abi.json");
 
-const usdcDecimals = 10 ** 6;
 const maxLeverage = 5;
 const LOV_SUFFIX = "-lov";
 const CEGA_STATE = "0x0730AA138062D8Cc54510aa939b533ba7c30f26B";
 const CEGA_PRODUCT_VIEWER = "0x31C73c07Dbd8d026684950b17dD6131eA9BAf2C4";
+const usdcAddress = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
 
 async function getProducts(){
     const productNames = await sdk.api.abi.call({
@@ -49,7 +49,7 @@ async function getSumFCNProductDeposits(fcnProducts){
         const amount = parseInt(result.output)
         totalBalance += amount; 
     }
-    return (totalBalance / usdcDecimals);
+    return totalBalance;
 }
 
 async function getSumFCNProductQueuedDeposits(fcnProducts){
@@ -62,7 +62,7 @@ async function getSumFCNProductQueuedDeposits(fcnProducts){
         const amount = parseInt(result.output)
         totalBalance += amount; 
     }
-    return (totalBalance / usdcDecimals);
+    return totalBalance;
 }
 
 async function getSumLOVProductDeposits(lovProducts){
@@ -78,7 +78,7 @@ async function getSumLOVProductDeposits(lovProducts){
         totalBalance += amount; 
         }
     }
-    return totalBalance / usdcDecimals;
+    return totalBalance;
 }
 
 async function getSumLOVProductQueuedDeposits(lovProducts){
@@ -93,10 +93,11 @@ async function getSumLOVProductQueuedDeposits(lovProducts){
         totalBalance += parseInt(result.output);
         }
     }
-    return totalBalance / usdcDecimals;
+    return totalBalance;
 }
 
 async function getEthereumTvl(){
+    const balances = {};
     const [fcnProducts, lovProducts] = await getProducts();
     const results = await Promise.all([
         getSumFCNProductDeposits(fcnProducts),
@@ -105,12 +106,14 @@ async function getEthereumTvl(){
         getSumLOVProductQueuedDeposits(lovProducts)
     ]);
     const sum = results.reduce((total, currentValue) => total + currentValue, 0);
-    return sum 
+
+    await sdk.util.sumSingleBalance(balances, usdcAddress, sum);
+    return balances;
 }
 
 
 module.exports = {
     ethereum: {
-       tvl: getEthereumTvl().then((result) => { console.log(result)})
+       tvl: getEthereumTvl,
     }
 }
