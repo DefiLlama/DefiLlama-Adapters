@@ -8,7 +8,7 @@ module.exports = {
 
     tvl: getUniTVL({
 
-      factory: '0xEFD3ad14E5cF09b0EbE435756337fb2e9D10Dc1a',
+      factory: '0xd72441aCa423dE457cF866aAD8083A403b11b08B',
 
       fetchBalances: true,
 
