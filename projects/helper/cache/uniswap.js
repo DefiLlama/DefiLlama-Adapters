@@ -142,7 +142,8 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
       // if (cache.pairs.includes(null) || cache.token0s.includes(null) || cache.token1s.includes(null))
       //   cache.pairs = undefined
     }
-    if (!cache.pairs || (hasStablePools && !cache.symbols)) {
+
+    if (!cache.pairs || (hasStablePools && (!cache.symbols || !cache.symbols.length))) {
       cache = {
         pairs: [],
         token0s: [],
