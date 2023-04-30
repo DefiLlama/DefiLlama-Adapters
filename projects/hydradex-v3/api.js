@@ -3,5 +3,5 @@ const { getExports } = require('../helper/heroku-api')
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
-  ...getExports("hydradex", ['hydra']),
+  ...getExports("hydradex-v3", ['hydra']),
 }
