@@ -1,53 +1,23 @@
+const { sumTokens2 } = require('../helper/unwrapLPs');
 const abi = require('./abi');
-const sdk = require('@defillama/sdk');
 
 const v2Contract = "0x1344A36A1B56144C3Bc62E7757377D288fDE0369"
 
-async function tvl (timestamp, block) {
-  const maxCurrencyId = (await sdk.api.abi.call({
-    block,
-    target: v2Contract,
-    abi: abi['getMaxCurrencyId']
-  })).output;
-
-  const addressCalls = []
-  for (let i = 1; i <= maxCurrencyId; i++) {
-    addressCalls.push({
-      target: v2Contract,
-      params: i
-    })
-  }
-
-  const supportedTokens = (await sdk.api.abi.multiCall({
-    calls: addressCalls,
-    target: v2Contract,
-    abi: abi['getCurrency'],
-    block,
-  })).output
-
-  const balanceCalls = supportedTokens.map((s) => {
-    return {
-      // Target is the asset token address, first parameter, first slot in tuple
-      target: s.output[0][0],
-      params: v2Contract
-    }
-  })
-
-  const balances = (await sdk.api.abi.multiCall({
-    calls: balanceCalls,
-    abi: 'erc20:balanceOf',
-    block
-  })).output
-
-  const balanceMap = balances.reduce((obj, b) => {
-    obj[b.input.target] = b.output
-    return obj
-  }, {})
-
-  return balanceMap
+async function tvl(timestamp, block, _, { api }) {
+  let tokens = await api.fetchList({ lengthAbi: abi.getMaxCurrencyId, itemAbi: abi.getCurrency, target: v2Contract, startFromOne: true, })
+  tokens = tokens.flat().map(i => i[0])
+  const tokenNames = await api.multiCall({  abi: 'string:name', calls: tokens, permitFailure: true, })
+  const nwTokens = tokens.filter((v, i) => tokenNames[i] && tokenNames[i].startsWith('Notional Wrapped'))
+  let nwBals = await api.multiCall({  abi: 'erc20:balanceOf', calls: nwTokens.map(i => ({ target: i, params: v2Contract}))})
+  const underlyingTokens = await api.multiCall({  abi: 'address:underlying', calls: nwTokens})
+  const exchangeRate = await api.multiCall({  abi: 'uint256:getExchangeRateView', calls: nwTokens})
+  const tDecimals = await api.multiCall({  abi: 'erc20:decimals', calls: nwTokens})
+  const uDecimals =( await api.multiCall({  abi: 'erc20:decimals', calls: nwTokens, permitFailure: true,})).map(i => i ?? 18)
+  nwBals = nwBals.map((bal, i) => bal * (exchangeRate[i]/1e18) * (10 ** uDecimals[i] / 10 ** tDecimals[i]))
+  api.addTokens(underlyingTokens, nwBals)
+  return sumTokens2({ api, owner: v2Contract, tokens, blacklistedTokens: nwTokens })
 }
 
-  module.exports = {
-    //start: 1602115200,  // Oct-08-2020 12:00:00 AM +UTC
-    ethereum: { tvl },
-  };
+module.exports = {
+  ethereum: { tvl },
+};
