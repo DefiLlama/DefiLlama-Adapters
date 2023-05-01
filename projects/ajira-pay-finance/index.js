@@ -1,6 +1,7 @@
 const { staking } = require("../helper/staking");
 const { getUniTVL } = require("../helper/unknownTokens.js");
 const { sumTokens } = require('../helper/unwrapLPs')
+const { sumTokensExport, nullAddress, } = require('../helper/unknownTokens')
 
 const AJP_CONTRACT_ADDRESS = "0x9DBC0Ad09184226313FbDe094E7c3DD75c94f997"
 const KAVA_STAKING_CONTRACT = "0x894E327f11b09ab87Af86876dCfCEF40eA086f34"
@@ -31,14 +32,18 @@ const kava_tokens = [
 
 const ethereum_tokens = [
     '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
-    '0xdAC17F958D2ee523a2206206994597C13D831ec7'
+    '0xdAC17F958D2ee523a2206206994597C13D831ec7', '0x4Fabb145d64652a948d72533023f6E7A623C7C53',
+    '0x6B175474E89094C44Da98b954EedeAC495271d0F', '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984'
 ]
 
 const treasuries = [
     '0x98286347b1325a9D8e05A9f4D9D6009c888e13dA','0xb00375686741591FeB3541e1740E75FE21CD9f31',
     '0x7764EA261b62a55Af97Bf290F6ac77E8d647B996', '0xdBD5c57F3a0A6eFC7c9E91639D72Cc139c581AB4',
-    '0x07871De755d9D922Cb1735A9F2418cBe9F1808EE', '0x9DBC0Ad09184226313FbDe094E7c3DD75c94f997'
+    '0x07871De755d9D922Cb1735A9F2418cBe9F1808EE', '0x9DBC0Ad09184226313FbDe094E7c3DD75c94f997',
+    '0xe68523CdeEC7bB76799d88f0913129733dbe7C48'
 ]
+
+const kava_treasury = '0xdBD5c57F3a0A6eFC7c9E91639D72Cc139c581AB4'
 
 async function tvlBSC(ttimestamp, _b, {bsc: block}){
     const balances = {}
@@ -49,12 +54,6 @@ async function tvlBSC(ttimestamp, _b, {bsc: block}){
 async function tvlArbitrum(ttimestamp, _b, {arbitrum: block}){
     const balances = {}
     await sumTokens(balances, arb_tokens.map(t=>treasuries.map(p=>[t,p])).flat(), block, 'arbitrum')
-    return balances
-}
-
-async function tvlKava(ttimestamp, _b, {kava: block}){
-    const balances = {}
-    await sumTokens(balances, kava_tokens.map(t=>treasuries.map(p=>[t,p])).flat(), block, 'kava')
     return balances
 }
 
@@ -73,21 +72,24 @@ async function tvlEthereum(ttimestamp, _b, {ethereum: block}){
 module.exports = {
     timetravel: true,
     misrepresentedTokens: true,
-    methodology: "Ajira Pay Finance TVL Calculations are based on AJP KAVA Staking pool and treasury balances",
-    kava: {
-        staking: staking(KAVA_STAKING_CONTRACT, AJP_CONTRACT_ADDRESS, "kava"),
-        tvl: tvlKava
-    },
+    methodology: "Ajira Pay Finance TVL Calculations are based on AJP KAVA Staking pool and treasury balances across all chains",
     bsc: {
         tvl: tvlBSC
     },
+    ethereum: {
+        tvl: sumTokensExport({ owner: treasuries[2],  tokens: 
+            [ethereum_tokens[0], ethereum_tokens[1], ethereum_tokens[2], ethereum_tokens[3], ethereum_tokens[4], ethereum_tokens[5], nullAddress] })
+    },
     polygon: {
-        tvl: tvlPolygon
+        tvl: sumTokensExport({ owner: treasuries[2],  tokens: 
+            [polygon_tokens[0], polygon_tokens[1], polygon_tokens[2], polygon_tokens[3], polygon_tokens[4], polygon_tokens[5], polygon_tokens[6], nullAddress] 
+        })
     },
     arbitrum: {
-        tvl: tvlArbitrum
+        tvl: sumTokensExport({ owner: treasuries[2],  tokens: [arb_tokens[0], arb_tokens[1],  nullAddress] })
     },
-    ethereum: {
-        tvl: tvlEthereum
-    }
+    kava: {
+        staking: staking(KAVA_STAKING_CONTRACT, AJP_CONTRACT_ADDRESS, "kava"),
+        tvl: sumTokensExport({ owner: kava_treasury,  tokens: [kava_tokens[0], kava_tokens[1], kava_tokens[2], kava_tokens[3], nullAddress] })
+    },
 };
