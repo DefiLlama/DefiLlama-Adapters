@@ -32,6 +32,7 @@ const chains = {
   heco: 128,
   polygon: 137,
   fantom: 250,
+  zksync: 324,
   metis: 1088,
   moonbeam: 1284,
   moonriver: 1285,
