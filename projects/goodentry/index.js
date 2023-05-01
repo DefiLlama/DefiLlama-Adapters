@@ -64,9 +64,7 @@ function geTvl() {
             try {
               aTokenAddress = (await sdk.api.abi.call({target: pool, abi: getReserveDataAbi, block, chain, params: atn})).output.aTokenAddress;
               balance = (await sdk.api.abi.call({target: atn, abi: balanceOfAbi, block, chain, params: aTokenAddress})).output;
-            }
-            catch(e) {}
-            try {
+
               // if it's a ticker, can call underlying
               const underlying = (await sdk.api.abi.call({target: atn, abi: getUnderlyingAbi, block, chain, params: balance})).output;
               const token0 = (await sdk.api.abi.call({target: atn, abi: token0Abi, block, chain})).output.token;
