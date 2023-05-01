@@ -1,5 +1,4 @@
 
-const sdk = require('@defillama/sdk')
 const abi = require("./abi.json");
 
 const maxLeverage = 5;
@@ -7,113 +6,61 @@ const LOV_SUFFIX = "-lov";
 const CEGA_STATE = "0x0730AA138062D8Cc54510aa939b533ba7c30f26B";
 const CEGA_PRODUCT_VIEWER = "0x31C73c07Dbd8d026684950b17dD6131eA9BAf2C4";
 const usdcAddress = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
+const sumArray = (acc, i) => acc + +i
 
-async function getProducts(){
-    const productNames = await sdk.api.abi.call({
-        target: CEGA_STATE,
-        abi: abi.getProductNames,
-    })
-    const LOVProductNames = productNames.output.filter(v => v.includes(LOV_SUFFIX))
-    const FCNProductNames = productNames.output.filter(v => !v.includes(LOV_SUFFIX))
+async function getEthereumTvl(_, _1, _2, { api }) {
 
-    let FCNProducts = []; 
-    for(const product of FCNProductNames){
-        const FCNProductAddress = await sdk.api.abi.call({
-            target: CEGA_STATE,
-            abi: abi.products,
-            params: product
-        })
-    FCNProducts.push(FCNProductAddress.output);
-    }
+  async function getProducts() {
+    const productNames = await api.call({ target: CEGA_STATE, abi: abi.getProductNames, })
+    const LOVProductNames = productNames.filter(v => v.includes(LOV_SUFFIX))
+    const FCNProductNames = productNames.filter(v => !v.includes(LOV_SUFFIX))
 
-    let LOVProducts = [];
-    for(const product of LOVProductNames){
-        const LOVProductAddress = await sdk.api.abi.call({
-            target: CEGA_STATE,
-            abi: abi.products,
-            params: product
-        })
-        LOVProducts.push(LOVProductAddress.output);
-    }
+    let FCNProducts = await api.multiCall({ target: CEGA_STATE, abi: abi.products, calls: FCNProductNames });
+    let LOVProducts = await api.multiCall({ target: CEGA_STATE, abi: abi.products, calls: LOVProductNames });
     return [FCNProducts, LOVProducts];
-}
+  }
 
+  async function getSumFCNProductDeposits(fcnProducts) {
+    return api.multiCall({ abi: abi.sumVaultUnderlyingAmounts, calls: fcnProducts });
+  }
 
-async function getSumFCNProductDeposits(fcnProducts){
-    let totalBalance = 0; 
-    for (const product of fcnProducts){
-        const result = await sdk.api.abi.call({
-            target: product,
-            abi: abi.sumVaultUnderlyingAmounts,
-        })
-        const amount = parseInt(result.output)
-        totalBalance += amount; 
-    }
-    return totalBalance;
-}
+  async function getSumFCNProductQueuedDeposits(fcnProducts) {
+    return api.multiCall({ abi: abi.queuedDepositsTotalAmount, calls: fcnProducts });
+  }
 
-async function getSumFCNProductQueuedDeposits(fcnProducts){
-    let totalBalance = 0; 
-    for (const product of fcnProducts){
-        const result = await sdk.api.abi.call({
-            target: product,
-            abi: abi.queuedDepositsTotalAmount,
-        })
-        const amount = parseInt(result.output)
-        totalBalance += amount; 
-    }
-    return totalBalance;
-}
+  async function getSumLOVProductDeposits(lovProducts) {
+    const calls = getLOVCalls(lovProducts)
+    let amounts = await api.multiCall({ target: CEGA_PRODUCT_VIEWER, abi: abi.getLOVVaultMetadata, calls });
+    return amounts.flat().map(i => i.underlyingAmount)
+  }
 
-async function getSumLOVProductDeposits(lovProducts){
-    let totalBalance = 0; 
-    for (const product of lovProducts){
-        for (let i = 2; i < maxLeverage; i++){
-        const result = await sdk.api.abi.call({
-            target: CEGA_PRODUCT_VIEWER,
-            abi: abi.getLOVVaultMetadata, 
-            params: [product , i],
-        })
-        const amount = result.output.reduce((total, arg) => total + parseInt(arg.underlyingAmount), 0);
-        totalBalance += amount; 
-        }
-    }
-    return totalBalance;
-}
+  async function getSumLOVProductQueuedDeposits(lovProducts) {
+    const calls = getLOVCalls(lovProducts)
+    return api.multiCall({ target: CEGA_PRODUCT_VIEWER, abi: abi.getLOVProductQueuedDeposits, calls });
+  }
 
-async function getSumLOVProductQueuedDeposits(lovProducts){
-    let totalBalance = 0; 
-    for (const product of lovProducts){
-        for (let i = 2; i < maxLeverage; i++){
-        const result = await sdk.api.abi.call({
-            target: CEGA_PRODUCT_VIEWER,
-            abi: abi.getLOVProductQueuedDeposits, 
-            params: [product , i],
-        })
-        totalBalance += parseInt(result.output);
-        }
-    }
-    return totalBalance;
-}
+  function getLOVCalls(lovProducts) {
+    const calls = []
+    for (const product of lovProducts)
+      for (let i = 2; i < maxLeverage; i++)
+        calls.push([product, i])
+    return calls.map(i => ({ params: i}))
+  }
 
-async function getEthereumTvl(){
-    const balances = {};
-    const [fcnProducts, lovProducts] = await getProducts();
-    const results = await Promise.all([
-        getSumFCNProductDeposits(fcnProducts),
-        getSumFCNProductQueuedDeposits(fcnProducts),
-        getSumLOVProductDeposits(lovProducts),
-        getSumLOVProductQueuedDeposits(lovProducts)
-    ]);
-    const sum = results.reduce((total, currentValue) => total + currentValue, 0);
+  const [fcnProducts, lovProducts] = await getProducts()
+  const results = await Promise.all([
+    getSumFCNProductDeposits(fcnProducts),
+    getSumFCNProductQueuedDeposits(fcnProducts),
+    getSumLOVProductDeposits(lovProducts),
+    getSumLOVProductQueuedDeposits(lovProducts)
+  ]);
 
-    await sdk.util.sumSingleBalance(balances, usdcAddress, sum);
-    return balances;
+  api.add(usdcAddress, results.flat().reduce(sumArray, 0))
 }
 
 
 module.exports = {
-    ethereum: {
-       tvl: getEthereumTvl,
-    }
+  ethereum: {
+    tvl: getEthereumTvl,
+  }
 }
