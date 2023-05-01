@@ -11,9 +11,7 @@ async function tvl(timestamp, block, _, { api }) {
   let nwBals = await api.multiCall({  abi: 'erc20:balanceOf', calls: nwTokens.map(i => ({ target: i, params: v2Contract}))})
   const underlyingTokens = await api.multiCall({  abi: 'address:underlying', calls: nwTokens})
   const exchangeRate = await api.multiCall({  abi: 'uint256:getExchangeRateView', calls: nwTokens})
-  const tDecimals = await api.multiCall({  abi: 'erc20:decimals', calls: nwTokens})
-  const uDecimals =( await api.multiCall({  abi: 'erc20:decimals', calls: nwTokens, permitFailure: true,})).map(i => i ?? 18)
-  nwBals = nwBals.map((bal, i) => bal * (exchangeRate[i]/1e18) * (10 ** uDecimals[i] / 10 ** tDecimals[i]))
+  nwBals = nwBals.map((bal, i) => bal * (exchangeRate[i]/1e18))
   api.addTokens(underlyingTokens, nwBals)
   return sumTokens2({ api, owner: v2Contract, tokens, blacklistedTokens: nwTokens })
 }
