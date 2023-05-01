@@ -93,7 +93,6 @@ async function getDenomBalance({ denom, owner, block, chain } = {}) {
   if (block !== undefined) {
     endpoint += `?height=${block - (block % 100)}`;
   }
-  console.log("ENDPOINT:", endpoint);
   const data = (await axios.get(endpoint)).data.result;
 
   const balance = data.find((balance) => balance.denom === denom);
