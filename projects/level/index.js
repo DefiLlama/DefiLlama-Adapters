@@ -24,4 +24,7 @@ module.exports = {
     tvl,
     pool2: pool2(Contracts.Chef, Contracts.LVL_BNB_LP)
   },
+  hallmarks: [
+    [Math.floor(new Date('2023-05-01')/1e3), 'Protocol was hacked'],
+  ],
 };
