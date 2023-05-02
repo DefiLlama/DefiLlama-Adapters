@@ -7,7 +7,7 @@ const WFTM = "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83";
 
 module.exports = {
   fantom: {
-    staking: staking(FTMStaking, WFTM, "fantom", WFTM, 18),
+    staking: staking(FTMStaking, WFTM),
     tvl: gmxExports({ vault: FTMVault })
   }
 };
