@@ -9,7 +9,8 @@ const KAVA_STAKING_CONTRACT = "0x894E327f11b09ab87Af86876dCfCEF40eA086f34"
 const arb_tokens = [
     '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8', '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
     '0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f', '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9', 
-    '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1', '0x9DBC0Ad09184226313FbDe094E7c3DD75c94f997'
+    '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1', '0x9DBC0Ad09184226313FbDe094E7c3DD75c94f997',
+    '0x912CE59144191C1204E64559FE8253a0e49E6548'
 ]
 
 const bsc_tokens = [
@@ -87,7 +88,7 @@ module.exports = {
         })
     },
     arbitrum: {
-        tvl: sumTokensExport({ owner: treasuries[2],  tokens: [arb_tokens[0], arb_tokens[1], arb_tokens[2], arb_tokens[3], arb_tokens[4], arb_tokens[5], nullAddress] })
+        tvl: sumTokensExport({ owner: treasuries[2],  tokens: [arb_tokens[0], arb_tokens[1], arb_tokens[2], arb_tokens[3], arb_tokens[4], arb_tokens[5], arb_tokens[6], nullAddress] })
     },
     kava: {
         staking: staking(KAVA_STAKING_CONTRACT, AJP_CONTRACT_ADDRESS, "kava"),
