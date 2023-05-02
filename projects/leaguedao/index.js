@@ -27,7 +27,7 @@ module.exports = {
       [xyz, false],
       [ionx, false],
       [entr, false],
-      [leagUsdc, true],
+      [leagUsdc, false],
     ],
     "ethereum",
     stakingContract,
