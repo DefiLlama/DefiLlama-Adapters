@@ -42,7 +42,9 @@
 ##### Coinmarketcap ID (so your TVL can appear on Coinmarketcap, leave empty if not listed): (https://api.coinmarketcap.com/data-api/v3/map/all?listing_status=active,inactive,untracked&start=1&limit=10000)
 
 
-##### Short Description (to be shown on DefiLlama): A perpetual and spot trading platform
+##### Short Description (to be shown on DefiLlama): 
+Flux exchange is a decentralised platform for spot and perpetual trading that
+allows liquidity providers to earn income through market making, swap fees, and leveraged trading.
 
 
 ##### Token address and ticker if any:
