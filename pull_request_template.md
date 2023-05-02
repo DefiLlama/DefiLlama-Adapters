@@ -12,19 +12,19 @@
 7. No need to go to our discord and announce that you've created a PR, we monitor all PRs and will review it asap
 
 ---
-##### Name (to be shown on DefiLlama): Flux Exchange
+##### Name (to be shown on DefiLlama):
 
 
-##### Twitter Link: https://twitter.com/Flux_Exchange
+##### Twitter Link:
 
 
 ##### List of audit links if any:
 
 
-##### Website Link: https://app.fluxexchange.io
+##### Website Link:
 
 
-##### Logo (High resolution, will be shown with rounded borders): 
+##### Logo (High resolution, will be shown with rounded borders):
 
 
 ##### Current TVL:
@@ -33,7 +33,7 @@
 ##### Treasury Addresses (if the protocol has treasury)
 
 
-##### Chain: Fantom Opera, zKSync-Era
+##### Chain:
 
 
 ##### Coingecko ID (so your TVL can appear on Coingecko, leave empty if not listed): (https://api.coingecko.com/api/v3/coins/list)
@@ -42,9 +42,7 @@
 ##### Coinmarketcap ID (so your TVL can appear on Coinmarketcap, leave empty if not listed): (https://api.coinmarketcap.com/data-api/v3/map/all?listing_status=active,inactive,untracked&start=1&limit=10000)
 
 
-##### Short Description (to be shown on DefiLlama): 
-Flux exchange is a decentralised platform for spot and perpetual trading that
-allows liquidity providers to earn income through market making, swap fees, and leveraged trading.
+##### Short Description (to be shown on DefiLlama):
 
 
 ##### Token address and ticker if any:
@@ -53,10 +51,10 @@ allows liquidity providers to earn income through market making, swap fees, and 
 ##### Category (full list at https://defillama.com/categories) *Please choose only one:
 
 
-##### Oracle used (Chainlink/Band/API3/TWAP or any other that you are using): ChainLink / API
+##### Oracle used (Chainlink/Band/API3/TWAP or any other that you are using):
 
 
-##### forkedFrom (Does your project originate from another project): GMX
+##### forkedFrom (Does your project originate from another project):
 
 
 ##### methodology (what is being counted as tvl, how is tvl being calculated):
