@@ -2,7 +2,7 @@ const { staking } = require("../helper/staking");
 const { sumTokensExport, nullAddress, } = require('../helper/unknownTokens')
 
 const AJP_CONTRACT_ADDRESS = "0x9DBC0Ad09184226313FbDe094E7c3DD75c94f997"
-const KAVA_STAKING_CONTRACT = "0x894E327f11b09ab87Af86876dCfCEF40eA086f34"
+const KAVA_STAKING_CONTRACT = "0xE6B06E3cBfDFe6AAc5e18C2eE1bFF53dFD276B39"
 
 const arb_tokens = [
     '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8', '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
@@ -44,7 +44,8 @@ const ethereum_tokens = [
 const owners = {
     bsc: '0x12A65dFDD9E94Bd7f7547d1C4365c5c067f47ed0',
     arbitrum: '0x396B58574c0760E84E16468457c460bdCC6f8b57',
-    polygon: '0xd7B2DEcAAcD75ADb92C1ee0C77e2303c815012d0'
+    polygon: '0xd7B2DEcAAcD75ADb92C1ee0C77e2303c815012d0',
+    kava: '0xdBD5c57F3a0A6eFC7c9E91639D72Cc139c581AB4'
 }
 
 module.exports = {
@@ -62,6 +63,6 @@ module.exports = {
     },
     kava: {
         staking: staking(KAVA_STAKING_CONTRACT, AJP_CONTRACT_ADDRESS, "kava"),
-        tvl: () =>({})
+        tvl: sumTokensExport({ owner: owners.kava,  tokens: kava_tokens })
     }
 };
