@@ -1,11 +1,5 @@
 const { stakings } = require("../helper/staking");
-const sdk = require("@defillama/sdk");
-const {
-  sumTokensAndLPsSharedOwners,
-  unwrapUniswapV3NFTs,
-  sumTokens2,
-} = require("../helper/unwrapLPs");
-const BigNumber = require("bignumber.js");
+const { sumTokensExport, nullAddress, } = require("../helper/unwrapLPs");
 
 const bscOwner = "0xEA724deA000b5e5206d28f4BC2dAD5f2FA1fe788";
 const bscStaking = "0xa1f61Ca61fe8655d2a204B518f6De964145a9324";
@@ -27,94 +21,22 @@ const ethTokens = {
   USDC: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
   USDT: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
 };
-const ethOwner = "0x4Bd973e98585b003c31f4C8b9d6eAC5d3293B1e5";
-
-async function bscTvl(timestamp, _, chainBlocks) {
-  const chain = "bsc";
-  const block = chainBlocks.bsc;
-  const balances = {};
-
-  // Add tokens Vault
-  await sumTokens2({
-    balances,
-    tokens: [bscTokens.TM, bscTokens.DAI, bscTokens.BUSD, bscTokens.WBNB],
-    owner: bscTreasuryContract,
-    chain,
-    transformAddress: (addr) =>
-      addr === bscTokens.TM.toLowerCase()
-        ? `bsc:${bscTokens.BUSD}`
-        : `bsc:${addr}`,
-  });
-
-  // Add tokens UniswapV3LP
-  await unwrapUniswapV3NFTs({
-    balances,
-    owners: ["0xEA724deA000b5e5206d28f4BC2dAD5f2FA1fe788"],
-    chain,
-  });
-
-  // Add tokens Venus
-  for (const vToken of [bscTokens.VBUSD, bscTokens.VBTC]) {
-    let token;
-    const [{ output: balance }, { output: exchangeRateStored }] =
-      await Promise.all([
-        sdk.api.abi.call({
-          target: vToken,
-          params: [bscOwner],
-          abi: "erc20:balanceOf",
-          chain,
-          block,
-        }),
-        sdk.api.abi.call({
-          target: vToken,
-          abi: "uint256:exchangeRateStored",
-          chain,
-          block,
-        }),
-      ]);
-    token = (
-      await sdk.api.abi.call({
-        target: vToken,
-        abi: "address:underlying",
-        chain,
-        block,
-      })
-    ).output;
-
-    sdk.util.sumSingleBalance(
-      balances,
-      "bsc:" + token,
-      BigNumber((balance * exchangeRateStored) / 1e18).toFixed(0)
-    );
-  }
-
-  return balances;
-}
-
-async function ethVaults(timestamp) {
-  const balances = {};
-
-  // Add tokens UniswapV3LP
-  await unwrapUniswapV3NFTs({
-    balances,
-    owners: [ethOwner],
-  });
-
-  await sumTokens2({
-    balances,
-    tokens: [ethTokens.USDC, ethTokens.USDT],
-    owner: ethOwner,
-  });
-
-  return balances;
-}
+const ethOwner = "0x4Bd973e98585b003c31f4C8b9d6eAC5d3293B1e5"
 
 module.exports = {
+  moonriver: {
+    tvl: () => 0,
+    staking: () => 0,
+  },
+  harmony: {
+    tvl: () => 0,
+    staking: () => 0,
+  },
   bsc: {
-    tvl: bscTvl,
+    tvl: sumTokensExport({ owners: [bscOwner, bscTreasuryContract,], tokens: [bscTokens.TM, bscTokens.DAI, bscTokens.BUSD, bscTokens.WBNB, bscTokens.VBUSD, bscTokens.VBTC], resolveUniV3: true, }),
     staking: stakings([bscStaking, bscStakingV2], bscTokens.TEM, "bsc"),
   },
   ethereum: {
-    tvl: ethVaults,
+    tvl: sumTokensExport({ owner: ethOwner, tokens: [ethTokens.USDC, ethTokens.USDT, nullAddress, '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599'], resolveUniV3: true, }),
   },
-};
+}
