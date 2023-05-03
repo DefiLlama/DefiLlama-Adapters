@@ -15,7 +15,7 @@ async function tvl(timestamp) {
       block
     }
   })
-  return { tether: totalValueLockedUSD }
+  return { tether: +totalValueLockedUSD }
 }
 
 module.exports = {
