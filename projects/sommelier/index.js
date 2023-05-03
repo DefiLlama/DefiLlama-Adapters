@@ -24,7 +24,11 @@ const cellarsV0816 = [
 ];
 
 const REAL_YIELD_USD = "0x97e6e0a40a3d02f12d1cec30ebfbae04e37c119e";
-const cellarsV2 = [{ id: REAL_YIELD_USD, startBlock: 16431804 }];
+const REAL_YIELD_ETH = "0xb5b29320d2dde5ba5bafa1ebcd270052070483ec";
+const cellarsV2 = [
+  { id: REAL_YIELD_USD, startBlock: 16431804 },
+  { id: REAL_YIELD_ETH, startBlock: 16986127 },
+];
 
 async function tvl(timestamp, block, chainBlocks, { api }) {
   const balances = {};
@@ -70,5 +74,6 @@ module.exports = {
     [1666886400, "ETH-BTC Trend & Momentum Cellars Launch"],
     [1669741200, "Steady ETH & BTC Cellars Launch"],
     [1674671068, "Real Yield USD Cellar Launch"],
+    [1681233049, "Real Yield ETH Cellar Launch"],
   ],
 };

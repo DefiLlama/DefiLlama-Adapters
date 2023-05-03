@@ -40,7 +40,9 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
   return sumTokens2({ api, ownerTokens });
 }
 
-module.exports = {};
+module.exports = {
+  doublecounted: true,
+};
 
 Object.keys(CONFIG).forEach(chain => {
   module.exports[chain] = { tvl }

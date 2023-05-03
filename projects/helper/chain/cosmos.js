@@ -10,20 +10,20 @@ const { log } = require("../utils");
 // https://cosmos-chain.directory/chains/cosmoshub
 // https://cosmos-chain.directory/chains
 const endPoints = {
-
   crescent: "https://mainnet.crescent.network:1317",
   osmosis: "https://lcd.osmosis.zone",
   cosmos: "https://cosmoshub-lcd.stakely.io",
-  kujira: "https://lcd.kaiyo.kujira.setten.io",
+  kujira: "https://rest.cosmos.directory/kujira",
   comdex: "https://rest.comdex.one",
-  terra: "https://columbus-lcd.terra.dev",
+  terra: "https://terraclassic-lcd-server-01.stakely.io",
   terra2: "https://phoenix-lcd.terra.dev",
   umee: "https://umee-api.polkachu.com",
   orai: "https://lcd.orai.io",
   juno: "https://lcd-juno.cosmostation.io",
-  cronos: 'https://lcd-crypto-org.cosmostation.io',
-  injective: 'https://lcd-injective.whispernode.com:443',
-}
+  cronos: "https://lcd-crypto-org.cosmostation.io",
+  injective: "https://lcd-injective.whispernode.com:443",
+  migaloo: "https://migaloo-api.polkachu.com",
+};
 
 const chainSubpaths = {
   crescent: "crescent",
@@ -32,7 +32,7 @@ const chainSubpaths = {
 };
 
 function getEndpoint(chain) {
-  if (!endPoints[chain]) throw new Error("Chain not found: "+ chain);
+  if (!endPoints[chain]) throw new Error("Chain not found: " + chain);
   return endPoints[chain];
 }
 
@@ -64,24 +64,27 @@ async function queryV1Beta1({ chain, paginationKey, block, url } = {}) {
 }
 
 async function getTokenBalance({ token, owner, block, chain }) {
-  let denom = token.native_token?.denom
-  if (denom) return getDenomBalance({denom, owner, block, chain,})
-  token = token.token.contract_addr
-  return getBalance({ token, owner, block, chain, })
+  let denom = token.native_token?.denom;
+  if (denom) return getDenomBalance({ denom, owner, block, chain });
+  token = token.token.contract_addr;
+  return getBalance({ token, owner, block, chain });
 }
 
 function getToken(token) {
-  let denom = token.native_token?.denom
-  return denom ? denom : token.token.contract_addr
+  let denom = token.native_token?.denom;
+  return denom ? denom : token.token.contract_addr;
 }
 
-
 async function getBalance({ token, owner, block, chain } = {}) {
+  const data = await queryContract({
+    contract: token,
+    block,
+    chain,
+    data: {
+      balance: { address: owner },
+    },
+  });
 
-  const data = await queryContract({ contract: token, block, chain, data: {
-    balance: { address: owner }
-  }})
-  
   return Number(data.balance);
 }
 
@@ -149,6 +152,14 @@ async function queryContract({ contract, chain, data }) {
   ).data.data;
 }
 
+async function queryContracts({ chain, codeId }) {
+  return (
+    await axios.get(
+      `${getEndpoint(chain)}/cosmwasm/wasm/v1/code/${codeId}/contracts`
+    )
+  ).data.contracts;
+}
+
 function getAssetInfo(asset) {
   return [
     asset.info.native_token?.denom ?? asset.info.token?.contract_addr,
@@ -197,12 +208,14 @@ module.exports = {
   endPoints,
   totalSupply,
   getBalance,
+  getBalance2,
   getDenomBalance,
   unwrapLp,
   query,
   queryV1Beta1,
   queryContractStore,
   queryContract,
+  queryContracts,
   sumTokens,
   getTokenBalance,
   getToken,

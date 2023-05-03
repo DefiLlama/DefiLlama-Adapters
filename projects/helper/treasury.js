@@ -2,11 +2,14 @@ const { sumTokensExport, nullAddress, } = require('../helper/sumTokens')
 const { covalentGetTokens } = require('./http')
 const axios = require("axios")
 
+const ARB = "0x912CE59144191C1204E64559FE8253a0e49E6548";
+
 function treasuryExports(config) {
   const chains = Object.keys(config)
   const exportObj = {  }
   chains.forEach(chain => {
-    let { ownTokenOwners = [], ownTokens, owners = [], fetchTokens = false } = config[chain]
+    let { ownTokenOwners = [], ownTokens, owners = [], fetchTokens = false, tokens = [] } = config[chain]
+    if (chain === 'solana')  config[chain].solOwners = owners
     if (chain === 'solana')  config[chain].solOwners = owners
     const tvlConfig = { ...config[chain] }
     tvlConfig.blacklistedTokens = ownTokens
@@ -18,6 +21,9 @@ function treasuryExports(config) {
         return sumTokensExport(tvlConfig)(_, _b, _cb, api)
       }}
     } else {
+      if (chain === 'arbitrum')  {
+        tvlConfig.tokens = [...tokens, ARB]
+      }
       exportObj[chain] = { tvl: sumTokensExport(tvlConfig) }
     }
 
@@ -45,8 +51,37 @@ async function getComplexTreasury(owners){
   return sum
 }
 
+function ohmStaking(exports) {
+  const dummyTvl = () => ({})
+  const newExports = {}
+  Object.entries(exports).forEach(([chain, value]) => {
+    if (typeof value === 'object' && typeof value.tvl === 'function') {
+      newExports[chain] = { ...value, tvl: dummyTvl}
+    } else {
+      newExports[chain] = value
+    }
+  })
+  return newExports
+}
+
+function ohmTreasury(exports) {
+  const dummyTvl = () => ({})
+  const newExports = {}
+  Object.entries(exports).forEach(([chain, value]) => {
+    if (typeof value === 'object' && typeof value.staking === 'function') {
+      newExports[chain] = { ...value,}
+      delete newExports[chain].staking
+    } else {
+      newExports[chain] = value
+    }
+  })
+  return newExports
+}
+
 module.exports = {
   nullAddress,
   treasuryExports,
-  getComplexTreasury
+  getComplexTreasury,
+  ohmTreasury,
+  ohmStaking,
 }
