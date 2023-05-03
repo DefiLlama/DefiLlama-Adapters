@@ -29,7 +29,7 @@ const tvlQuery = gql`
     }
 `
 
-function getTvl(chain, graphUrl) {
+function getTvl(graphUrl) {
     return async () => {
         const { uniswapFactories } = await request(graphUrl, tvlQuery)
         return toUSDTBalances(uniswapFactories[0].totalLiquidityUSD)
@@ -44,7 +44,7 @@ module.exports = {
 
 for (const [chain, subgraph] of Object.entries(subgraphs)) {
     module.exports[chain] = {
-        tvl: getTvl(chain, subgraph),
-        staking: stakings(stakingContracts[chain], cros[chain], chain)
+        tvl: getTvl(subgraph),
+        staking: stakings(stakingContracts[chain], cros[chain], chain),
     }
 }
