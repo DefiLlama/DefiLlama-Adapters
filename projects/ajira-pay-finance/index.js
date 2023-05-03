@@ -63,6 +63,6 @@ module.exports = {
     },
     kava: {
         staking: staking(KAVA_STAKING_CONTRACT, AJP_CONTRACT_ADDRESS, "kava"),
-        tvl: sumTokensExport({ owner: owners.kava,  tokens: kava_tokens })
+        tvl: () => ({})
     }
 };
