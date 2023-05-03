@@ -4,7 +4,7 @@ const { toUSDTBalances } = require("../helper/balances");
 
 const subgraphs = {
     cronos: "https://graph.croswap.com/subgraphs/name/croswap/croswap-v2",
-    arbitrum: "https://arb1-graph.croswap.com/subgraphs/name/croswap/croswap-v2",
+    arbitrum: "https://arb1-graph.croswap.com/subgraphs/name/croswap/croswap-v3",
 }
 
 const stakingContracts = {
