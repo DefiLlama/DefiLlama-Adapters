@@ -4,21 +4,21 @@ const { toUSDTBalances } = require("../helper/balances");
 
 const subgraphs = {
     cronos: "https://graph.croswap.com/subgraphs/name/croswap/croswap-v2",
-    arbitrum: "https://arb1-graph.croswap.com/subgraphs/name/croswap/croswap-v3",
+    // arbitrum: "https://arb1-graph.croswap.com/subgraphs/name/croswap/croswap-v3",
 }
 
 const stakingContracts = {
     cronos: [
       '0xedfe968033fd2b9a98371d052cd7f32a711e533a' // cros escrow pool
     ],
-    arbitrum: [
-      '0x8e9DA87f58A8480dD6b8878Aa37144a5Fb2F122D' // cros escrow pool
-    ]
+    // arbitrum: [
+    //   '0x8e9DA87f58A8480dD6b8878Aa37144a5Fb2F122D' // cros escrow pool
+    // ]
 }
 
 const cros = {
     cronos: '0x1Ba477CA252C0FF21c488d41759795E7E7812aB4',
-    arbitrum: '0x780469101caBD2bFe4B596D98d4777C2a142e012'
+    // arbitrum: '0x780469101caBD2bFe4B596D98d4777C2a142e012'
 }
 
 const tvlQuery = gql`
