@@ -7,6 +7,8 @@ const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const erc20Abi = require("../helper/abis/erc20.json");
 const contracts = require("./contracts.json");
+const { getLogs } = require('../helper/cache/getLogs')
+
 const chains = [
   "ethereum", //-200M
   "polygon", //-40M
@@ -36,6 +38,7 @@ async function getDecimals(chain, token) {
   return decimalsCache[key]
 }
 
+
 const gasTokens = [
   '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
   '0x0000000000000000000000000000000000000000',
@@ -61,7 +64,7 @@ async function getNames(chain, tokens) {
   res.forEach((name, i) => {
     const key = chain + '-' + missing[i]
     nameCache[key] = name ?? ''
-    mapping[missing[i]] = nameCache[key] 
+    mapping[missing[i]] = nameCache[key]
   })
 
   return mapping
@@ -70,7 +73,7 @@ async function getNames(chain, tokens) {
 const registryIdsReverse = Object.fromEntries(Object.entries(registryIds).map(i => i.reverse()))
 
 async function getPool({ chain, block, registry }) {
-  const data = await sdk.api2.abi.fetchList({ chain, block, target: registry, itemAbi: abi.pool_list, lengthAbi: abi.pool_count, withMetadata: true,  })
+  const data = await sdk.api2.abi.fetchList({ chain, block, target: registry, itemAbi: abi.pool_list, lengthAbi: abi.pool_count, withMetadata: true, })
   return data.filter(i => i.output)
 }
 
@@ -156,7 +159,7 @@ async function unwrapPools({ poolList, registry, chain, block }) {
   let calls = aggregateBalanceCalls({ coins, nCoins, wrapped });
   const allTokens = getUniqueAddresses(calls.map(i => i[0]))
   const tokenNames = await getNames(chain, allTokens)
-  const blacklistedTokens = [...blacklist, ...(Object.values(metapoolBases))] 
+  const blacklistedTokens = [...blacklist, ...(Object.values(metapoolBases))]
   Object.entries(tokenNames).forEach(([token, name]) => {
     if ((name ?? '').startsWith('Curve.fi ')) {
       sdk.log(chain, 'blacklisting', name)
@@ -167,11 +170,40 @@ async function unwrapPools({ poolList, registry, chain, block }) {
 }
 
 const blacklists = {
-  ethereum: [ '0x6b8734ad31d42f5c05a86594314837c416ada984', ],
+  ethereum: ['0x6b8734ad31d42f5c05a86594314837c416ada984', '0x95ECDC6caAf7E4805FCeF2679A92338351D24297', '0x5aa00dce91409b58b6a1338639b9daa63eb22be7', '0xEf1385D2b5dc6D14d5fecB86D53CdBefeCA20fcC'],
+}
+
+const config = {
+  ethereum: {
+    plainFactoryConfig: [
+      { plainFactory: '0x528baca578523855a64ee9c276826f934c86a54c', fromBlock: 17182168 },
+      { plainFactory: '0x0145fd99f1dd6e2491e44fca608c481c9c5b97a9', fromBlock: 17182168 },
+    ]
+  },
+}
+
+async function addPlainFactoryConfig({ api, tokensAndOwners, plainFactoryConfig = [] }) {
+  return Promise.all(plainFactoryConfig.map(async ({ plainFactory, fromBlock }) => {
+    const logs = await getLogs({
+      api,
+      target: plainFactory,
+      topics: ['0xb8f6972d6e56d21c47621efd7f02fe68f07a17c999c42245b3abd300f34d61eb'],
+      eventAbi: 'event PlainPoolDeployed(address[4] coins, uint256 A, uint256 fee, address deployer, address pool)',
+      onlyArgs: true,
+      fromBlock,
+    })
+    logs.forEach(log => {
+      log.coins.forEach((coin, i) => {
+        if (i > 1 && coin === nullAddress) return;
+        tokensAndOwners.push([coin, log.pool])
+      })
+    })
+  }))
 }
 
 function tvl(chain) {
-  return async (_t, _e, { [chain]: block }) => {
+  const { plainFactoryConfig = [] } = config[chain] ?? {}
+  return async (_t, _e, { [chain]: block }, { api }) => {
     let balances = {};
     const transform = await getChainTransform(chain);
     const poolLists = await getPools(block, chain);
@@ -185,7 +217,8 @@ function tvl(chain) {
     const blacklistedTokens = res.map(i => i.blacklistedTokens).flat()
     if (blacklists[chain])
       blacklistedTokens.push(...blacklists[chain])
-    await sumTokens2({  balances, chain, block, tokensAndOwners, transformAddress: transform, blacklistedTokens })
+    await addPlainFactoryConfig({ api, tokensAndOwners, plainFactoryConfig })
+    await sumTokens2({ balances, chain, block, tokensAndOwners, transformAddress: transform, blacklistedTokens })
     await handleUnlistedFxTokens(balances, chain);
     return balances;
   };
