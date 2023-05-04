@@ -6,6 +6,7 @@ const config = {
     pools: [
       { factory: '0x818709b85052ddc521fae9c78737b27316337e3a', fromBlock: 17182152 },
       { factory: '0x30a2F3c3AA6D12C0a36Bed210dCF1B32EF6228Cc', fromBlock: 17187330 },
+      { factory: '0xfa3e2db8eb6c646e0d24046c1a185934d41a8f7a', fromBlock: 17187330 },
     ]
   },
 }
@@ -20,7 +21,6 @@ Object.keys(config).forEach(chain => {
     tvl: async (_, _b, _cb, { api, }) => {
       const logs = await Promise.all(pools.map(getLogs_))
 
-      console.log(logs)
       return sumTokens2({ api, tokensAndOwners: logs.flat().map(i => [i.collateral, i.amm]) })
 
       async function getLogs_({ factory, fromBlock }) {
