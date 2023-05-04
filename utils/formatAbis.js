@@ -1,7 +1,9 @@
 const ethers = require('ethers')
 const glob = require('glob')
 const jsonfile = require('jsonfile')
+const fs = require('fs')
 
+let data = require('../projects/test/abi.js')
 const rootFolder = '../projects'
 const rootFolderTest = '../projects/yfii'
 
@@ -85,12 +87,12 @@ function print() {
   }
   console.log(res)
   res = transform(res)
+  fs.writeFileSync(__dirname+'/../projects/test/abi.js', 'module.exports = '+JSON.stringify(res, null, 2))
   // console.log(res)
   console.log(JSON.stringify(res, null, 2))
 }
 
 
-let data = 
 
 
 print()

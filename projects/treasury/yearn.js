@@ -2,7 +2,7 @@ const {  nullAddress,treasuryExports } = require("../helper/treasury");
 
 const yearnTreasury = "0x93a62da5a14c80f265dabc077fcee437b1a0efde";
 const yearnTreasury1 = "0xFEB4acf3df3cDEA7399794D0869ef76A6EfAff52";
-
+const yearnTreasuryarb = "0xb6bc033d34733329971b938fef32fad7e98e56ad"
 const YEARN = "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e";
 
 
@@ -23,5 +23,12 @@ module.exports = treasuryExports({
      ],
     owners: [yearnTreasury,yearnTreasury1],
     ownTokens: [YEARN],
+    fetchTokens: true,
   },
+  arbitrum: {
+    tokens: [
+      nullAddress
+    ],
+    owners: [yearnTreasuryarb]
+  }
 })
