@@ -262,8 +262,3 @@ module.exports.hallmarks = [
   [1654822801, "stETH depeg"],
   [1667692800, "FTX collapse"]
 ];
-
-module.exports = {
-  // 0x528baca578523855a64ee9c276826f934c86a54c
-  ethereum: module.exports.ethereum
-}
