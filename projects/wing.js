@@ -20,6 +20,9 @@ const config = {
   ontology_evm: {
     url: "https://ethapi.wing.finance/ontevm/flash-pool/detail",
   },
+  p2p: {
+    url: "https://ethapi.wing.finance/p2p/matching-pool/detail",
+  },
 }
 
 module.exports = {
