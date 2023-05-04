@@ -170,15 +170,38 @@ async function unwrapPools({ poolList, registry, chain, block }) {
 }
 
 const blacklists = {
-  ethereum: ['0x6b8734ad31d42f5c05a86594314837c416ada984', '0x95ECDC6caAf7E4805FCeF2679A92338351D24297'],
+  ethereum: ['0x6b8734ad31d42f5c05a86594314837c416ada984', '0x95ECDC6caAf7E4805FCeF2679A92338351D24297', '0x5aa00dce91409b58b6a1338639b9daa63eb22be7'],
 }
 
 const config = {
-  ethereum: { plainFactory: '0x528baca578523855a64ee9c276826f934c86a54c', plainFactoryStartBlock: 17182168 },
+  ethereum: {
+    plainFactoryConfig: [
+      { plainFactory: '0x528baca578523855a64ee9c276826f934c86a54c', fromBlock: 17182168 },
+    ]
+  },
+}
+
+async function addPlainFactoryConfig({ api, tokensAndOwners, plainFactoryConfig = [] }) {
+  return Promise.all(plainFactoryConfig.map(async ({ plainFactory, fromBlock }) => {
+    const logs = await getLogs({
+      api,
+      target: plainFactory,
+      topics: ['0xb8f6972d6e56d21c47621efd7f02fe68f07a17c999c42245b3abd300f34d61eb'],
+      eventAbi: 'event PlainPoolDeployed(address[4] coins, uint256 A, uint256 fee, address deployer, address pool)',
+      onlyArgs: true,
+      fromBlock,
+    })
+    logs.forEach(log => {
+      log.coins.forEach((coin, i) => {
+        if (i > 1 && coin === nullAddress) return;
+        tokensAndOwners.push([coin, log.pool])
+      })
+    })
+  }))
 }
 
 function tvl(chain) {
-  const { plainFactory, plainFactoryStartBlock, } = config[chain] ?? {}
+  const { plainFactoryConfig = [] } = config[chain] ?? {}
   return async (_t, _e, { [chain]: block }, { api }) => {
     let balances = {};
     const transform = await getChainTransform(chain);
@@ -193,22 +216,7 @@ function tvl(chain) {
     const blacklistedTokens = res.map(i => i.blacklistedTokens).flat()
     if (blacklists[chain])
       blacklistedTokens.push(...blacklists[chain])
-    if (plainFactory) {
-      const logs = await getLogs({
-        api,
-        target: plainFactory,
-        topics: ['0xb8f6972d6e56d21c47621efd7f02fe68f07a17c999c42245b3abd300f34d61eb'],
-        eventAbi: 'event PlainPoolDeployed(address[4] coins, uint256 A, uint256 fee, address deployer, address pool)',
-        onlyArgs: true,
-        fromBlock: plainFactoryStartBlock,
-      })
-      logs.forEach(log => {
-        log.coins.forEach((coin, i) => {
-          if (i>1 && coin === nullAddress) return;
-          tokensAndOwners.push([coin, log.pool])
-        })
-      })
-    }
+    await addPlainFactoryConfig({ api, tokensAndOwners, plainFactoryConfig })
     await sumTokens2({ balances, chain, block, tokensAndOwners, transformAddress: transform, blacklistedTokens })
     await handleUnlistedFxTokens(balances, chain);
     return balances;
