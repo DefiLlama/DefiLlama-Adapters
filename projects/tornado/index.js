@@ -1,27 +1,14 @@
-const {tokenHolderBalances} = require('../helper/tokenholders')
+const { sumTokens2, sumTokensExport } = require('../helper/unwrapLPs')
 
-const { ethereum, bsc, polygon, optimism, arbitrum, xdai, avax } = require('./config.js')
+const config = require('./config.js')
 
-module.exports={
-  ethereum: {
-    tvl: tokenHolderBalances(ethereum)
-  },
-  bsc: {
-    tvl: tokenHolderBalances(bsc, 'bsc')
-  },
-  polygon: {
-    tvl: tokenHolderBalances(polygon, 'polygon')
-  },
-  optimism: {
-    tvl: tokenHolderBalances(optimism, 'optimism')
-  },
-  arbitrum: {
-    tvl: tokenHolderBalances(arbitrum, 'arbitrum')
-  },
-  xdai: {
-    tvl: tokenHolderBalances(xdai, 'xdai')
-  },
-  avax: {
-    tvl: tokenHolderBalances(avax, 'avax')
-  },
-}
+
+module.exports = {
+};
+
+Object.keys(config).forEach(chain => {
+  const tokensAndOwners = config[chain].map(({ tokens, holders }) => holders.map(o => tokens.map(t =>  [t, o])).flat()).flat()
+  module.exports[chain] = {
+    tvl: sumTokensExport({ tokensAndOwners })
+  }
+})

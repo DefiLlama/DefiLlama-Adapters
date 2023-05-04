@@ -28,7 +28,7 @@ function convertSymbol(symbol) {
     case 'hard':
       return {id: 'kava-lend', decimals: 6};
     case 'hbtc':
-      return {id: 'bitcoin', decimals: 8};
+      return {id: 'huobi-btc', decimals: 8};
     case 'swp':
       return {id: 'kava-swap', decimals: 6};
     case 'ukava':

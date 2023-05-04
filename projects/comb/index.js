@@ -41,7 +41,7 @@ async function tvl(_, _1, _2, { api }) {
     sdk.util.sumSingleBalance(balances, v.toLowerCase(), supply2[i], api.chain)
   })
   
-  await unwrapLPsAuto({ ...api, balances })
+  await unwrapLPsAuto({ api, balances })
   Object.entries(balances).forEach(([token, bal]) => {
     if (prices[token]) {
       sdk.util.sumSingleBalance(balances,'tether',prices[token] * bal)

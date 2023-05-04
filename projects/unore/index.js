@@ -47,8 +47,8 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const { pools, uToken, tokensAndOwners, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api,}) =>  sumTokens2({...api, tokensAndOwners})
+    tvl: async (_, _b, _cb, { api,}) =>  sumTokens2({api, tokensAndOwners})
   }
   if (uToken)
-  module.exports[chain].staking = async (_, _b, _cb, { api,}) =>  sumTokens2({...api, tokens: [uToken], owners: pools})
+  module.exports[chain].staking = async (_, _b, _cb, { api,}) =>  sumTokens2({api, tokens: [uToken], owners: pools})
 })

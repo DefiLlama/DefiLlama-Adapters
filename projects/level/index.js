@@ -16,7 +16,7 @@ const Contracts = {
 }
 
 async function tvl(_, _b, _cb, { api, }) {
-  return sumTokens2({ ...api, owner: Contracts.Pool, tokens: Object.values(Contracts.Tokens) })
+  return sumTokens2({ api, owner: Contracts.Pool, tokens: Object.values(Contracts.Tokens) })
 }
 
 module.exports = {
@@ -24,4 +24,7 @@ module.exports = {
     tvl,
     pool2: pool2(Contracts.Chef, Contracts.LVL_BNB_LP)
   },
+  hallmarks: [
+    [Math.floor(new Date('2023-05-01')/1e3), 'Protocol was hacked'],
+  ],
 };

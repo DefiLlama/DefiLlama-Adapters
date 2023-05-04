@@ -108,6 +108,7 @@ async function getBalances(timestamp, block, chainBlocks, network) {
         chainBlocks,
         calls: iTokenCalls,
                chain: network,
+               permitFailure: true,
         abi: abi.totalAssetSupply
     });
 
@@ -115,6 +116,7 @@ async function getBalances(timestamp, block, chainBlocks, network) {
         chainBlocks,
         calls: iTokenCalls,
                chain: network,
+               permitFailure: true,
         abi: abi.totalAssetBorrow
     });
 

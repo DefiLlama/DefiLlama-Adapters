@@ -79,8 +79,12 @@ function tvl(borrowed) {
 
 module.exports = {
   timetravel: false,
+  hallmarks: [
+    [Math.floor(new Date('2023-01-12')/1e3), 'Protocol was hacked'],
+  ],
   heco: {
     tvl: tvl(false),
-    borrowed: tvl(true),
+    // borrowed: tvl(true),
+    borrowed: () => 0,
   }
 };

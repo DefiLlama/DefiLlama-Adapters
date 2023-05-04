@@ -14,7 +14,7 @@ async function tvl(_, _b, _cb, { api, }) {
   const underlying = await api.multiCall({ abi: 'address:UNDERLYING', calls: vaults })
   const bals = await api.multiCall({ abi: 'uint256:totalHoldings', calls: vaults })
   bals.forEach((v, i) => sdk.util.sumSingleBalance(balances,underlying[i],v, api.chain))
-  await unwrapLPsAuto({ ...api, balances})
+  await unwrapLPsAuto({ api, balances})
   return balances
 }
 

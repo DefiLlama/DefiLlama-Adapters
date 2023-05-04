@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
-const { getV2Reserves, getTvl, getBorrowed, aaveChainTvl } = require('../helper/aave');
+const { aaveChainTvl } = require('../helper/aave');
 
 function v2(chain, v2Registry){
   const section = borrowed => sdk.util.sumChainTvls([

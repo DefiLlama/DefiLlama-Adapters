@@ -19,7 +19,8 @@ const bentoboxes = {
   //kava: "0xc35DADB65012eC5796536bD9864eD8773aBc74C4",
 };
 
-const toAmountAbi = 'function toAmount(address token, uint256 share, bool roundUp) view returns (uint256 amount)';
+const toAmountAbi =
+  "function toAmount(address token, uint256 share, bool roundUp) view returns (uint256 amount)";
 
 const bentoSubgraphs = {
   ethereum:
@@ -81,7 +82,7 @@ const furoSubgraphs = {
 const furoQuery = gql`
   query get_tokens($block: Int, $id: ID!) {
     tokens(
-      block: { number: $block },
+      block: { number: $block }
       orderBy: liquidityShares
       orderDirection: desc
       first: 1000
@@ -122,16 +123,22 @@ const kashiQuery = gql`
 `;
 
 const tridentSubgraphs = {
-  polygon: "https://api.thegraph.com/subgraphs/name/sushi-qa/trident-polygon",
-  optimism: "https://api.thegraph.com/subgraphs/name/sushi-qa/trident-optimism",
-  //kava: "https://pvt.graph.kava.io/subgraphs/name/sushi-qa/trident-kava",
-  //metis: "https://andromeda.thegraph.metis.io/subgraphs/name/sushi-qa/trident-metis",
+  polygon: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-polygon",
+  optimism: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-optimism",
+  kava: "https://pvt.graph.kava.io/subgraphs/name/sushi-v2/trident-kava",
+  metis:
+    "https://andromeda.thegraph.metis.io/subgraphs/name/sushi-v2/trident-metis",
+  bittorrent:
+    "https://subgraphs.sushi.com/subgraphs/name/sushi-v2/trident-bttc",
+  arbitrum: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-arbitrum",
+  bsc: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-bsc",
+  avax: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-avalanche",
 };
 
 const tridentQuery = gql`
   query get_tokens($block: Int, $id: ID!) {
     tokens(
-      block: { number: $block },
+      block: { number: $block }
       first: 1000
       orderBy: liquidityUSD
       orderDirection: desc
@@ -152,7 +159,7 @@ async function getFuroTokens(chain, block) {
     return balances;
   }
 
-  const tokens = await fetchAllTokens(subgraph, furoQuery, block, 'furo')
+  const tokens = await fetchAllTokens(subgraph, furoQuery, block, "furo");
 
   const calls = tokens.map((token) => {
     return {
@@ -163,7 +170,8 @@ async function getFuroTokens(chain, block) {
     target: bentoboxes[chain],
     abi: toAmountAbi,
     calls,
-    chain, block,
+    chain,
+    block,
   });
 
   output.forEach(
@@ -174,7 +182,12 @@ async function getFuroTokens(chain, block) {
         params: [tokenId],
       },
     }) => {
-      if (success) sdk.util.sumSingleBalance(balances, tokenId, BigNumber(amount).toFixed(0))
+      if (success)
+        sdk.util.sumSingleBalance(
+          balances,
+          tokenId,
+          BigNumber(amount).toFixed(0)
+        );
     }
   );
 
@@ -189,15 +202,23 @@ async function getKashiTokens(chain, block) {
     return balances;
   }
 
-  const kashiPairs = await fetchAllTokens(subgraph, kashiQuery, block, 'kashi');
-  const shareBalances = {}
+  const kashiPairs = await fetchAllTokens(subgraph, kashiQuery, block, "kashi");
+  const shareBalances = {};
   kashiPairs.map((pair) => {
     if (pair.totalAsset.elastic > 0) {
-      sdk.util.sumSingleBalance(shareBalances, pair.asset.id, BigNumber(pair.totalAsset.elastic).toFixed(0))
+      sdk.util.sumSingleBalance(
+        shareBalances,
+        pair.asset.id,
+        BigNumber(pair.totalAsset.elastic).toFixed(0)
+      );
     }
 
     if (pair.totalCollateralShare > 0) {
-      sdk.util.sumSingleBalance(shareBalances, pair.collateral.id, BigNumber(pair.totalCollateralShare).toFixed(0))
+      sdk.util.sumSingleBalance(
+        shareBalances,
+        pair.collateral.id,
+        BigNumber(pair.totalCollateralShare).toFixed(0)
+      );
     }
   });
 
@@ -210,7 +231,8 @@ async function getKashiTokens(chain, block) {
     target: bentoboxes[chain],
     abi: toAmountAbi,
     calls,
-    chain, block,
+    chain,
+    block,
   });
 
   output.forEach(
@@ -221,7 +243,7 @@ async function getKashiTokens(chain, block) {
         params: [tokenId],
       },
     }) => {
-      if (success) sdk.util.sumSingleBalance(balances, tokenId, amount)
+      if (success) sdk.util.sumSingleBalance(balances, tokenId, amount);
     }
   );
 
@@ -236,9 +258,13 @@ async function getTridentTokens(chain, block) {
     return balances;
   }
 
-  const tokens = await fetchAllTokens(subgraph, tridentQuery, block, 'trident');
+  const tokens = await fetchAllTokens(subgraph, tridentQuery, block, "trident");
   tokens.map((token) => {
-    sdk.util.sumSingleBalance(balances, token.id, BigNumber(token.liquidity).toFixed(0))
+    sdk.util.sumSingleBalance(
+      balances,
+      token.id,
+      BigNumber(token.liquidity).toFixed(0)
+    );
   });
 
   return balances;
@@ -250,7 +276,7 @@ async function getBentoboxTokensArray(chain, block) {
   if (!subgraph) {
     return [];
   }
-  return fetchAllTokens(subgraph, bentoQuery, block, 'bento')
+  return fetchAllTokens(subgraph, bentoQuery, block, "bento");
 }
 
 async function fetchAllTokens(subgraph, query, block, type) {
@@ -258,14 +284,14 @@ async function fetchAllTokens(subgraph, query, block, type) {
 
   //query all tokens even if > 1000 as we can't order efficiently by $ liquidity
   let id = 0;
-  while (true) {    // eslint-disable-line
+  while (true) {  // eslint-disable-line
     let result = await request(subgraph, query, {
-      id, block,
+      id,
+      block,
     });
 
-    let tokens = result.tokens
-    if (type === 'kashi')
-      tokens = result.kashiPairs
+    let tokens = result.tokens;
+    if (type === "kashi") tokens = result.kashiPairs;
 
     allTokens.push(...tokens);
     if (tokens.length < 1000) {
@@ -275,7 +301,6 @@ async function fetchAllTokens(subgraph, query, block, type) {
   }
 
   return allTokens;
-
 }
 
 module.exports = {

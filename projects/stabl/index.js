@@ -19,7 +19,8 @@ Object.keys(vaults).forEach(chain => {
     tvl: async (_, _b, {[chain]: block}) => {
         const { output } = await sdk.api.abi.call({ chain, block, abi, target: vaults[chain]})
         return {
-            [`${chain}:${assets[chain]}`]: output
+            // refilling wont work because at mar 26th the decimals used by checkBalance() changed
+            [`${chain}:${assets[chain]}`]: output/100
         }
     }
   }

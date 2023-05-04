@@ -47,6 +47,7 @@ async function tvl(_, block) {
     calls: dynasets.map((addr) => ({ target: addr })),
     abi: abi.getCurrentTokens,
     block,
+    permitFailure: true,
   });
   const tokensAndOwners = [];
   tokens

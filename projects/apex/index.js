@@ -1,28 +1,13 @@
-const {
-  GraphQLClient,
-  gql
-} = require('graphql-request')
+const { sumTokensExport } = require('../helper/unwrapLPs')
+const tokens = [
+  '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+];
 
-async function fetch() {
-
-  var endpoint = 'https://api.apex.exchange/g2/subgraphs/name/apex/exchange'
-  var graphQLClient = new GraphQLClient(endpoint)
-
-  var query = gql `
-    {
-      dexFactories{
-        totalLiquidityUSD
-      }
-    }
-    `;
-
-  const results = await graphQLClient.request(query)
-  return parseFloat(results.dexFactories[0].totalLiquidityUSD)
-}
-
+const owners = [
+  '0xA1D5443F2FB80A5A55ac804C948B45ce4C52DCbb'
+]
 module.exports = {
-  arbitrum: {
-    fetch
-  },
-  fetch
-}
+  start: 15402867,
+  ethereum: { tvl: sumTokensExport({ owners, tokens, }) },
+  arbitrum: { tvl: () => 0 }
+};

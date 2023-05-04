@@ -749,56 +749,5 @@ module.exports = {
       },
     },
   ],
-  errors: [
-    {
-      code: 300,
-      name: 'IncorrectTokenAccount',
-      msg: 'Token account is not owned by main account.',
-    },
-    {
-      code: 301,
-      name: 'UnsupportedTokenMint',
-      msg: 'The given token mint is not supported.',
-    },
-    {
-      code: 302,
-      name: 'UnauthorizedAddToken',
-      msg: 'Account is not authorized to add a new token.',
-    },
-    {
-      code: 303,
-      name: 'UnauthorizedSetPrice',
-      msg: 'Account is not authorized to set token price.',
-    },
-    {
-      code: 304,
-      name: 'StaleData',
-      msg: 'Stale price or interest data.',
-    },
-    {
-      code: 305,
-      name: 'TooManyDecimals',
-      msg: 'Too many decimals in token mint',
-    },
-    {
-      code: 306,
-      name: 'InsufficientCollateral',
-      msg: 'Account has insufficient collateral.',
-    },
-    {
-      code: 307,
-      name: 'SufficientCollateral',
-      msg: 'Account has sufficient collateral.',
-    },
-    {
-      code: 308,
-      name: 'InvalidTokenConfiguration',
-      msg: 'Invalid token configuration.',
-    },
-    {
-      code: 309,
-      name: 'InvalidTokenId',
-      msg: 'Invalid token id.',
-    },
-  ],
+  errors: [],
 };

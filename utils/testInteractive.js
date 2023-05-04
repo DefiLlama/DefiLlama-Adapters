@@ -1,6 +1,15 @@
 const inquirer = require('inquirer')
 const childProcess = require('child_process')
 inquirer.registerPrompt('fuzzypath', require('inquirer-fuzzy-path'))
+console.log('Starting directory: ' + process.cwd());
+try {
+  process.chdir('./projects/');
+  console.log('New directory: ' + process.cwd());
+}
+catch (err) {
+  console.log('chdir: ' + err);
+}
+
 
 const adapterPrompt = {
   type: 'fuzzypath',
@@ -8,7 +17,7 @@ const adapterPrompt = {
   excludePath: nodePath => nodePath.startsWith('helper'),
   excludeFilter: nodePath => nodePath == '.',
   itemType: 'any',
-  rootPath: 'projects',
+  rootPath: '.',
   message: 'Select an adapter to run:',
   suggestOnly: false,
   depthLimit: 0,
@@ -48,7 +57,7 @@ async function runAdapter(adapterPath, debugMode) {
 
     const startTime = Date.now()
 
-    const child = childProcess.fork('test.js', [adapterPath], {
+    const child = childProcess.fork(__dirname +'/../test.js', [adapterPath], {
       env,
     })
 

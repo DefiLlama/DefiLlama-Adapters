@@ -1,9 +1,9 @@
-const { uniTvlExport } = require("../helper/calculateUniTvl");
+const { getUniTVL } = require("../helper/unknownTokens");
+
 module.exports = {
-  doublecounted: false,
-  timetravel: true,
+  misrepresentedTokens: true,
   start: 1669075200,
   arbitrum: {
-    tvl: uniTvlExport("0x6EcCab422D763aC031210895C81787E87B43A652", "arbitrum"),
+    tvl: getUniTVL({ factory: '0x6EcCab422D763aC031210895C81787E87B43A652', useDefaultCoreAssets: true,}),
   },
 };

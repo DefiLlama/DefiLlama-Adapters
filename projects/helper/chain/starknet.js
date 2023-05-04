@@ -1,4 +1,5 @@
 // https://www.starknetjs.com/docs/API/contract
+const { getUniqueAddresses} = require('../tokenMapping')
 const { Provider, Contract, validateAndParseAddress } = require('starknet')
 const { PromisePool } = require('@supercharge/promise-pool')
 
@@ -44,9 +45,55 @@ async function multiCall({ abi: rootAbi, target: rootTarget, calls = [],  allAbi
   return results.map(i => i[1])
 }
 
+const balanceOfABI = {
+  "name": "balanceOf",
+  "type": "function",
+  "inputs": [
+    {
+      "name": "account",
+      "type": "felt"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "balance",
+      "type": "Uint256"
+    }
+  ],
+  "stateMutability": "view"
+}
+
+
+async function sumTokens({ owner, owners = [], tokens = [], tokensAndOwners = [], blacklistedTokens = [], token, api, }) {
+  if (token) tokens = [token]
+  if (owner) owners = [owner]
+
+  owners = getUniqueAddresses(owners, 'starknet')
+  blacklistedTokens = getUniqueAddresses(blacklistedTokens, 'starknet')
+
+  if (!tokensAndOwners.length) {
+    if (!owners.length && owner)
+      owners = [owner]
+    
+    tokensAndOwners = tokens.map(t => owners.map(o => ([t, o]))).flat()
+  }
+
+  tokensAndOwners = getUniqueToA(tokensAndOwners, 'starknet')
+  tokensAndOwners = tokensAndOwners.filter(i => !blacklistedTokens.includes(i[0]))
+  const res = await multiCall({ abi: balanceOfABI, calls: tokensAndOwners.map(i => ({ target: i[0], params: i[1]}))})
+  res.forEach((v, i) => api.add(tokensAndOwners[i][0], +v))
+
+
+  function getUniqueToA(toa, chain) {
+    toa = toa.map(i => i.join('¤'))
+    return getUniqueAddresses(toa, chain).map(i => i.split('¤'))
+  }
+}
+
 module.exports = {
   getProvider,
   call,
   multiCall,
   parseAddress: validateAndParseAddress,
+  sumTokens,
 }

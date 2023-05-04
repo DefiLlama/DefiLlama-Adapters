@@ -1,5 +1,5 @@
 const { get, post, } = require('../http')
-const CHAIN_RPC = 'https://proton.greymass.com';
+const CHAIN_RPC = 'https://proton.eoscafeblock.com';
 const SWAP_CONTRACT = 'proton.swaps';
 const ORACLES_CONTRACT = 'oracles';
 

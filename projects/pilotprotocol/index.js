@@ -91,6 +91,7 @@ const hecoTvl = async (timestamp, ethBlock, chainBlocks) => {
       })),
       chain: "heco",
       block: chainBlocks["heco"],
+      permitFailure: true,
     })
   ).output.map((st) => st.output);
 

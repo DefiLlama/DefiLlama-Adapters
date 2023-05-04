@@ -145,7 +145,7 @@ async function getTokenPrices({ api, chain = '' }) {
     let baseAsset = mapping.assets[0].assetId
     let quoteAsset = mapping.assets[1].assetId
     let baseAmount, quoteAmount
-    
+
     if (data) {
       baseAmount = +data.baseAmount
       quoteAmount = +data.quoteAmount
@@ -154,19 +154,19 @@ async function getTokenPrices({ api, chain = '' }) {
       baseAmount = +lpTokenPoolsReverse[i].quoteAmount
     }
 
-    const coreToken1 = coreAssets.includes(''+baseAsset)
-    const coreToken2 = coreAssets.includes(''+quoteAsset)
+    const coreToken1 = coreAssets.includes('' + baseAsset)
+    const coreToken2 = coreAssets.includes('' + quoteAsset)
     if (coreToken1 && coreToken2) {
-      prices[lpAssetId] = { ...geckoMapping[baseAsset], price: baseAmount * 2 /totalSupplies[lpAssetId] }
+      prices[lpAssetId] = { ...geckoMapping[baseAsset], price: baseAmount * 2 / totalSupplies[lpAssetId] }
       sdk.util.sumSingleBalance(balances, baseAsset, baseAmount)
       sdk.util.sumSingleBalance(balances, quoteAsset, quoteAmount)
     } else if (coreToken1) {
-      prices[lpAssetId] = { ...geckoMapping[baseAsset], price: baseAmount * 2 /totalSupplies[lpAssetId] }
-      prices[quoteAsset] = { ...geckoMapping[baseAsset], price: baseAmount  / quoteAmount }
+      prices[lpAssetId] = { ...geckoMapping[baseAsset], price: baseAmount * 2 / totalSupplies[lpAssetId] }
+      prices[quoteAsset] = { ...geckoMapping[baseAsset], price: baseAmount / quoteAmount }
       sdk.util.sumSingleBalance(balances, baseAsset, baseAmount * 2)
     } else if (coreToken2) {
-      prices[lpAssetId] = { ...geckoMapping[quoteAsset], price: quoteAmount * 2 /totalSupplies[lpAssetId] }
-      prices[baseAsset] = { ...geckoMapping[quoteAsset], price: quoteAmount  / baseAmount }
+      prices[lpAssetId] = { ...geckoMapping[quoteAsset], price: quoteAmount * 2 / totalSupplies[lpAssetId] }
+      prices[baseAsset] = { ...geckoMapping[quoteAsset], price: quoteAmount / baseAmount }
       sdk.util.sumSingleBalance(balances, quoteAsset, quoteAmount * 2)
     } else {
       sdk.util.sumSingleBalance(balances, baseAsset, baseAmount)
@@ -204,10 +204,10 @@ const geckoMappings = {
       ACA: 'acala',
       DOT: 'polkadot',
       AUSD: 'acala-dollar',
-      LDOT: 'liquid-staking-dot',
+      // LDOT: 'liquid-staking-dot',  // coingecko delisted it
     },
     liquidCrowdloan: {
-      13: 'liquid-crowdloan-dot',
+      // 13: 'liquid-crowdloan-dot',  // coingecko delisted it
     }
   },
   karura: {
@@ -241,8 +241,10 @@ async function addTokenBalance({ balances, amount, chain, tokenArg, api, wallet,
   if (chain === 'acala' && tokenJson.foreignAsset === 3) return;
 
   const price = await wallet.getPrice(token)
-  if (price)
+  if (price) {
+    sdk.log('Adding token value in USD (in millions), amount: ', forceToCurrencyName(tokenArg), amount.times(price).toNumber() / 1e6, amount.toNumber()/1e6,)
     sdk.util.sumSingleBalance(balances, 'tether', amount.times(price).toNumber())
+  }
 }
 
 module.exports = {

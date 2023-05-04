@@ -60,7 +60,9 @@ function tvlWithBamm() {
 
 module.exports={
     hallmarks: [
-        [1647302400, "Reentrancy attack"]
+        [1647302400, "Reentrancy attack"],
+        [1681541920, "Protocol hacked (oc Optimism)"],
+
     ],
     ethereum:compoundExports(comptroller, "ethereum", "0xfCD8570AD81e6c77b8D252bEbEBA62ed980BD64D", "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"),
     arbitrum:tvlWithBamm(comptroller, "arbitrum", "0x8e15a22853A0A60a0FBB0d875055A8E66cff0235", "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1"),

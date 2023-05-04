@@ -22,12 +22,15 @@ async function tvl(_, _b, _cb, { api, }) {
     toa.push([tokenA[i], pools[i]])
     toa.push([tokenB[i], pools[i]])
   })
-  return sumTokens2({...api, tokensAndOwners: toa, })
+  return sumTokens2({api, tokensAndOwners: toa, })
 }
 
 module.exports = {
+  hallmarks: [
+    [1680097334,"Acquired by Swapline"]
+  ],
   methodology: 'We count the token balances in in different liquidity book contracts',
   fantom:{
-    tvl,
+    tvl: () => 0
   },
 };

@@ -1,8 +1,6 @@
-const sdk = require('@defillama/sdk');
-const abi = require('./ABI.json');
 const { covalentGetTokens } = require('../helper/http');
-const { getChainTransform } = require('../helper/portedTokens');
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { staking } = require('../helper/staking')
 
 const CONTRACTS = {
   ethereum: {
@@ -22,55 +20,33 @@ const CONTRACTS = {
     RAIL: '0x92A9C92C215092720C731c96D4Ff508c831a714f',
     PROXY: '0x19B620929f97b7b990801496c3b361CA5dEf8C71',
   },
+  
+  arbitrum: {
+    PROXY: '0xFA7093CDD9EE6932B4eb2c9e1cde7CE00B1FA4b9',
+  },
 };
-const blackedlistedTokens = [
+const blacklistedTokens = [
   '0x2e14949ce0133ccfd4c0cbe707ba878015a7a40c',
 ]
 
 function getTVLFunc(contractAddress, chain) {
-  return async function (timestamp, _, { [chain]: block }) {
+  return async function (timestamp, _, { [chain]: block }, { api }) {
     const tokens = await covalentGetTokens(contractAddress, chain);
-    return sumTokens2({ owner: contractAddress, tokens, blacklistedTokens: [CONTRACTS[chain].RAIL, ...blackedlistedTokens], chain, block, })
-  }
-}
-
-function getStakingFunc(stackingContractAddress, chain) {
-  return async function staking(timestamp, blockEth, { [chain]: block }) {
-    const chainTransform = await getChainTransform(chain);
-    const balances = {};
-
-    const railAddress = chainTransform(CONTRACTS[chain].RAIL);
-    const interval = await sdk.api.abi.call({
-      target: stackingContractAddress,
-      abi: abi['intervalAtTime'],
-      params: timestamp,
-      block: block,
-      chain
-    });
-
-    const railTVL = await sdk.api.abi.call({
-      target: stackingContractAddress,
-      abi: abi['globalsSnapshotAt'],
-      params: [interval.output, 0],
-      block: block,
-      chain
-    });
-
-    balances[railAddress] = railTVL.output.totalStaked;
-    return balances;
+    if (CONTRACTS[chain].RAIL) blacklistedTokens.push(CONTRACTS[chain].RAIL)
+    return sumTokens2({ owner: contractAddress, tokens, blacklistedTokens, api })
   }
 }
 
 function getChainTVL(chain) {
   return {
-    staking: getStakingFunc(CONTRACTS[chain].STAKING, chain),
+    staking: CONTRACTS[chain].STAKING ? staking(CONTRACTS[chain].STAKING, CONTRACTS[chain].RAIL) : undefined,
     tvl: getTVLFunc(CONTRACTS[chain].PROXY, chain),
   };
 }
 
 module.exports = {
-  ethereum: getChainTVL('ethereum'),
-  bsc: getChainTVL('bsc'),
-  polygon: getChainTVL('polygon'),
-}
+};
 
+Object.keys(CONTRACTS).forEach(chain => {
+  module.exports[chain] = getChainTVL(chain)
+})

@@ -8,6 +8,4 @@ const tokens = [
     ["0x7d63809EBF83EF54c7CE8dEd3591D4E8Fc2102eE", true] // IMMO-CUSD
 ]
 
-module.exports = {
-    ...ohmTvl(treasury, tokens, "celo", stakingContract, immo)
-}
+module.exports =ohmTvl(treasury, tokens, "celo", stakingContract, immo)

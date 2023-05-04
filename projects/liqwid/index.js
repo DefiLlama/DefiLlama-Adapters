@@ -1,44 +1,38 @@
-const { GraphQLClient, } = require('graphql-request')
-const { sumTokensExport, nullAddress } = require("../helper/sumTokens");
+const { sumTokensExport } = require('../helper/chain/cardano');
 
-async function _tvl() {
-    var endpoint = 'https://api.liqwiddev.net/graphql'
-    var graphQLClient = new GraphQLClient(endpoint)
-
-    var query = ` {
-      markets {
-        totalSupply
-        marketId
-    }
-   } `;
-    var results = await graphQLClient.request(query)
-    return {cardano:results.markets.find(i => i.marketId === 'Ada').totalSupply / 1e6}
-}
+const scriptAddresses = [
+  // Ada Market
+  "addr1xxqqegnx4ref4q6derz2n0zs0jeanaxdq7ynfhwv3luhsg63z228hznt0rz2enxfzhtk2270gels0ht9uvf9wmyxs99qgwkkf2",
+  "addr1xxqqegnx4ref4q6derz2n0zs0jeanaxdq7ynfhwv3luhsglnschmu7dwefmhkd078735ucq2yh90ylkzxrenz9cy8uds3gzd0f",
+  "addr1xxqqegnx4ref4q6derz2n0zs0jeanaxdq7ynfhwv3luhsgcfpkhcpsthxpprf49lvfy2jhga5mygpfcj4qaypfzkmhnsw9rpx7",
+  "addr1xxqqegnx4ref4q6derz2n0zs0jeanaxdq7ynfhwv3luhsgl0sfgalgyvgedlnhfl7u2059dkyhp453hm86797rm5qhasyaak0d",
+  "addr1xxqqegnx4ref4q6derz2n0zs0jeanaxdq7ynfhwv3luhsga3q9zvxe5ehfytyye9m3dq3knvuz2fdnax7lhhjm4vvjgqlgr6ws",
+  "addr1xxqqegnx4ref4q6derz2n0zs0jeanaxdq7ynfhwv3luhsgmys5sq3xea3866499dczkshygljanhepcqjfwyhe3fpadsa5wd69",
+  "addr1xxqqegnx4ref4q6derz2n0zs0jeanaxdq7ynfhwv3luhsg6ypq27sagqxt4jwt57mdsef3zu65ng4zmzxaa246s97nxswjed26",
+  "addr1xxqqegnx4ref4q6derz2n0zs0jeanaxdq7ynfhwv3luhsgesaw6lwmnlk6z0aehzea9nwfvdvang9v42yylt83ym8zqqrjh90k",
+  "addr1xxqqegnx4ref4q6derz2n0zs0jeanaxdq7ynfhwv3luhsgelzwuv27k9keyjpag32pmx9mf63tn77feppvm7d0s5ndnsct59as",
+  "addr1xxqqegnx4ref4q6derz2n0zs0jeanaxdq7ynfhwv3luhsgmupshega3f5ym0freunp0p46rchpthvsyty398fh0msyws7wkxyx",
+  "addr1xxqqegnx4ref4q6derz2n0zs0jeanaxdq7ynfhwv3luhsg70l2wkhq0pr72jsdrv2kn8v3pqnrt0qykpq9fwr2wn0czswer98l",
+  "addr1xxqqegnx4ref4q6derz2n0zs0jeanaxdq7ynfhwv3luhsg6a0x7l0scsd0wvfm3ljugdpsu4kctwfjyud65xfeht5uyqr02la5",
+  "addr1xxqqegnx4ref4q6derz2n0zs0jeanaxdq7ynfhwv3luhsg78jkqyfeeuz5m6sfv27g9vav8w83lsaqewjqxnpnpjd9wsmng4ka",
+  "addr1xxqqegnx4ref4q6derz2n0zs0jeanaxdq7ynfhwv3luhsglwdw2g8sat0hr2pdt2ct27n33z0w6dzsfy684ut24gjfsqjxugry",
+  "addr1xxqqegnx4ref4q6derz2n0zs0jeanaxdq7ynfhwv3luhsg6s80extwffmz4yagvdxvr6cpd8nm3qne020739j706h3jqsd0vf2",
+  "addr1xxqqegnx4ref4q6derz2n0zs0jeanaxdq7ynfhwv3luhsglccartl0f44hvc4vq8n3042epqvqq8cd4g9znpl5kdeyps7frwge",
+  "addr1wypcayfxkqgnh8zfdsj9kft2hlpfvgtpmrkjlcge2e9rjvcelddkc", // batch
+  "addr1w9afj34vc68qdm7heuz7esmr8sj76wpa45t7dh3ag8xpplgml3zuk", // batchFinal
+  // DJED Market
+  "addr1w8dprfgfdxnlwu3948579jrwg0ferf5a63ln8xj0mqcdzegayxmqq",
+  "addr1w9wjz8tjt87gldh2usu8t5mfe4nkmlngp30a387h8s94fyg5uup5n",
+  "addr1w8f7k5z4casxhcvz3vf5hlnt7fhgt5209t5hm36pdpduv6qdwf8ny",
+  // SHEN Market
+  "addr1wyw3ap36lnepstpjadwg8cg73llvmju4y94kmfld23lkzjggq4hyj",
+  "addr1wxrxa3ucywn3lqpkzlyucak0a7aavkudh49fqt06yc05sws4l4zs2",
+  "addr1wy6e9jukn8fpx7kesrpmapsnmz0cgq6lnskuff0xc0junggv6gd8l",
+];
 
 module.exports = {
   cardano: {
-    tvl: sumTokensExport({
-      tokens: [nullAddress],
-      owners: [
-        "addr1x97atw4jlfulpp73agh4hav2nfwlcwcfqcgr9mpucde9vmj3z228hznt0rz2enxfzhtk2270gels0ht9uvf9wmyxs99qsgwdnc",
-        "addr1x97atw4jlfulpp73agh4hav2nfwlcwcfqcgr9mpucde9vmhccartl0f44hvc4vq8n3042epqvqq8cd4g9znpl5kdeypsx0m4jt",
-        "addr1x97atw4jlfulpp73agh4hav2nfwlcwcfqcgr9mpucde9vmh0sfgalgyvgedlnhfl7u2059dkyhp453hm86797rm5qhasum9d4l",
-        "addr1x97atw4jlfulpp73agh4hav2nfwlcwcfqcgr9mpucde9vm43q9zvxe5ehfytyye9m3dq3knvuz2fdnax7lhhjm4vvjgq8wmp5z",
-        "addr1x97atw4jlfulpp73agh4hav2nfwlcwcfqcgr9mpucde9vmjypq27sagqxt4jwt57mdsef3zu65ng4zmzxaa246s97nxsk5pksg",
-        "addr1x97atw4jlfulpp73agh4hav2nfwlcwcfqcgr9mpucde9vmsfpkhcpsthxpprf49lvfy2jhga5mygpfcj4qaypfzkmhnskrm6uv",
-        "addr1x97atw4jlfulpp73agh4hav2nfwlcwcfqcgr9mpucde9vmja0x7l0scsd0wvfm3ljugdpsu4kctwfjyud65xfeht5uyqmfjy8x",
-        "addr1x97atw4jlfulpp73agh4hav2nfwlcwcfqcgr9mpucde9vmk0l2wkhq0pr72jsdrv2kn8v3pqnrt0qykpq9fwr2wn0czsklm7ad",
-        "addr1x97atw4jlfulpp73agh4hav2nfwlcwcfqcgr9mpucde9vmhnschmu7dwefmhkd078735ucq2yh90ylkzxrenz9cy8udsfw6k4m",
-        "addr1x97atw4jlfulpp73agh4hav2nfwlcwcfqcgr9mpucde9vmnupshega3f5ym0freunp0p46rchpthvsyty398fh0msywsxgwa75",
-        "addr1x97atw4jlfulpp73agh4hav2nfwlcwcfqcgr9mpucde9vm3lzwuv27k9keyjpag32pmx9mf63tn77feppvm7d0s5ndnsqdv78z",
-        "addr1x97atw4jlfulpp73agh4hav2nfwlcwcfqcgr9mpucde9vmhwdw2g8sat0hr2pdt2ct27n33z0w6dzsfy684ut24gjfsq2qynek",
-        "addr1x97atw4jlfulpp73agh4hav2nfwlcwcfqcgr9mpucde9vmnys5sq3xea3866499dczkshygljanhepcqjfwyhe3fpads9jkkqh",
-        "addr1x97atw4jlfulpp73agh4hav2nfwlcwcfqcgr9mpucde9vmjs80extwffmz4yagvdxvr6cpd8nm3qne020739j706h3jqgthhnc",
-        "addr1x97atw4jlfulpp73agh4hav2nfwlcwcfqcgr9mpucde9vmk8jkqyfeeuz5m6sfv27g9vav8w83lsaqewjqxnpnpjd9wsr4swv0",
-        "addr1x97atw4jlfulpp73agh4hav2nfwlcwcfqcgr9mpucde9vm3saw6lwmnlk6z0aehzea9nwfvdvang9v42yylt83ym8zqqm5074y",
-        "addr1vxcl9us2s7q68w5k0kx8k5rg6gwhn85qnhxwytm9zeuavcgte4yd6",
-      ]
-    }),
+    tvl: sumTokensExport({ scripts: scriptAddresses, }),
     methodology: 'Adds up the Ada in the 16 action tokens and batch final token.'
   }
 };

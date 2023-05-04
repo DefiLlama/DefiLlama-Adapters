@@ -44,7 +44,8 @@ async function calcTvl(block, chain, pool2) {
         })),
         abi: token0Abi,
         block,
-        chain
+        chain,
+        permitFailure: true,
     })).output;
     const token1Address = (await sdk.api.abi.multiCall({
         calls: tokenList.map(p => ({
@@ -52,6 +53,7 @@ async function calcTvl(block, chain, pool2) {
         })),
         abi: token1Abi,
         block,
+        permitFailure: true,
         chain
     })).output;
     

@@ -26,10 +26,12 @@ const v1_2_ShortCollateral = [
     ]
 
 const v1_3_arb_ShortCollateral = [
-    '0xef4a92fcde48c84ef2b5c4a141a4cd1988fc73a9',
+    '0xef4a92fcde48c84ef2b5c4a141a4cd1988fc73a9', //WETH
+    '0x5a4842c0c1f81ebbae7bb3ec07edf7ae55aac631', //WBTC
     ]
 const v1_3_arb_LiquidityPool = [
-    '0xb619913921356904bf62aba7271e694fd95aa10d',
+    '0xb619913921356904bf62aba7271e694fd95aa10d', //WETH
+    '0xec6f3ef9481e7b8484290edbae2cedcdb0ce790e', //WBTC
     ]
 
 const op_pools = [...new Set([...v1_0_Pools, ...v1_1_LiquidityPool, ...v1_1_ShortCollateral, ...v1_2_LiquidityPool, ...v1_2_ShortCollateral].map(t=>t.toLowerCase()))]
@@ -81,6 +83,7 @@ module.exports = {
     [1635822974, "Token Program Start"],
     [1655341200, "Lyra V1.1 End"],
     [1656291600, "Lyra Avalon Start"],
-    [1659560056, "OP Rewards Distribution Start"]
+    [1659560056, "OP Rewards Distribution Start"],
+    [1675080000, "Launch on Arbitrum"]
   ]
 }

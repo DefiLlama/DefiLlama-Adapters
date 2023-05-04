@@ -135,33 +135,10 @@ async function calLyfTvl(chain, block) {
     });
   }
 
-  /// @dev getting all unused liquidity on each vault
-  const unusedBTOKEN = (
-    await sdk.api.abi.multiCall({
-      block,
-      abi: abi.balanceOf,
-      calls: addresses["Vaults"].map((v) => {
-        return {
-          target: v["baseToken"],
-          params: [v["address"]],
-        };
-      }),
-      chain,
-    })
-  ).output;
-
-  unusedBTOKEN.forEach((u) => {
-    balances[`${chain}:${u.input.target.toLowerCase()}`] = BigNumber(
-      balances[`${chain}:${u.input.target.toLowerCase()}`] || 0
-    )
-      .plus(BigNumber(u.output))
-      .toFixed(0);
-  });
-
   return balances;
 }
 
 module.exports = {
-  calLyfTvl
+  calLyfTvl, getProcolAddresses,
 }
   

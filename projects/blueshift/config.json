@@ -2,11 +2,11 @@
   "registry": {
     "milkomeda": "0x83E384d119adA05195Caca26396B8f56fdDA1c91",
     "milkomeda_a1": "0x93e9c79582cAd65627758bbdB067EAB1c79E005c",
-    "kava": "0xcfEE60ec5EB1e4e48593750A96c96E040eAB686A"
+    "kava": "0xe46e53672B160a67faEdE644d4A339CDeC1f671c"
   },
   "manualPool": {
     "milkomeda": "0xA4f0e3C80C77b347250B9D3999478E305FF814A4",
     "milkomeda_a1": "0x589E3Edd93A22FB316cff53eABA6BB958ff601cd",
-    "kava": ""
+    "kava": "0x7A60918Bd5c83Ef7e2ABA87D13e3FD704f6A77E1"
   }
 }

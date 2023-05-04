@@ -60,6 +60,7 @@ module.exports = {
   },
   kava: {
     start: 2499737,
+    staking: (timestamp, block, chainBlocks) => staking('kava', chainBlocks),
     tvl: (timestamp, block, chainBlocks) => tvl('kava', chainBlocks)
   }
 };

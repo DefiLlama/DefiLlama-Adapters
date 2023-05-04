@@ -139,4 +139,7 @@ module.exports = {
   elastos: compoundExportsWithDifferentBase("0xE52792E024697A6be770e5d6F1C455550265B2CD", "elastos", "elastos"),
   kava: compoundExportsWithDifferentBase("0xD2CBE89a36df2546eebc71766264e0F306d38196", "kava", "kava"),
   bittorrent: compoundExportsWithDifferentBase("0xE52792E024697A6be770e5d6F1C455550265B2CD", "bittorrent", "bittorrent"),
+  hallmarks: [
+    [Math.floor(new Date('2023-04-24')/1e3), 'Protocol was hacked'],
+  ],
 };

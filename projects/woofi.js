@@ -34,6 +34,7 @@ const wooPPConfig = {
 		'0x82aF49447D8a07e3bd95BD0d56f35241523fBab1', // WETH
 		'0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f', // WBTC
 		'0xcAFcD85D8ca7Ad1e1C6F82F651fA15E33AEfD07b', // WOO
+		'0x912CE59144191C1204E64559FE8253a0e49E6548', // ARB
 		'0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8', // USDC
 	],
 	optimism: [
@@ -41,6 +42,10 @@ const wooPPConfig = {
 		'0x68f180fcCe6836688e9084f035309E29Bf0A2095', // WBTC
 		'0x4200000000000000000000000000000000000042', // OP
 		'0x7F5c764cBc14f9669B88837ca1490cCa17c31607', // USDC
+	],
+	era: [
+		"0x5AEa5775959fBC2557Cc8789bC1bf90A239D9a91", // WETH
+		"0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4", // USDC
 	],
 }
 
@@ -51,7 +56,7 @@ const chainConfig = {
 		stakingContract: '0x2Fe5E5D341cFFa606a5d9DA1B6B646a381B0f7ec',
 	},
 	bsc: {
-		wooPPContract: '0xEc054126922a9a1918435c9072c32f1B60cB2B90',
+		wooPPContract: '0x59dE3B49314Bf5067719364A2Cb43e8525ab93FA',
 		woo: '0x4691937a7508860f876c9c0a2a617e7d9e945d4b',
 		stakingContract: '0x2AEab1a338bCB1758f71BD5aF40637cEE2085076',
 	},
@@ -75,13 +80,19 @@ const chainConfig = {
 		woo: '0x871f2f2ff935fd1ed867842ff2a7bfd051a5e527',
 		stakingContract: '',
 	},
+	era: {
+		wooPPContract: '0x42ED123EB5266A5B8E2B54B2C76180CCF5e72FEe',
+		woo: '',
+		stakingContract: '',
+	},
 }
 
+const noStakingChains = ['optimism', 'era']
 Object.keys(chainConfig).forEach(chain => {
 	const wooPPTokens = wooPPConfig[chain]
 	const { wooPPContract, woo, stakingContract } = chainConfig[chain]
 	var stakingAmount = 0
-	if (chain != 'optimism') {
+	if (noStakingChains.indexOf(chain) == -1) {
 		stakingAmount = staking(stakingContract, woo, chain)
 	}
 	module.exports[chain] = {
