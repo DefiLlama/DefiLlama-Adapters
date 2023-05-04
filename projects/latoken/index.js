@@ -58,13 +58,13 @@ const config = {
   eos: {
     owners: ["latokenabbc1", "latokeneos11"],
   },
-  energyweb: {
-    owners: [
-      "0x26b52C889FCf3B8f449aD1c0F07b8572E6ACE262", //hot wallet
-      "0x0F307b17d41acE555620DF5a55Dd5A01637e3b42", //cold wallet
-      "0x6fb194fc9806fE320E0CBD658e31F13B1bAa3925", //custody wallet
-    ],
-  },
+  // energyweb: {
+  //   owners: [
+  //     "0x26b52C889FCf3B8f449aD1c0F07b8572E6ACE262", //hot wallet
+  //     "0x0F307b17d41acE555620DF5a55Dd5A01637e3b42", //cold wallet
+  //     "0x6fb194fc9806fE320E0CBD658e31F13B1bAa3925", //custody wallet
+  //   ],
+  // },
   ethereumclassic: {
     owners: [
       "0xE69963CE13ED742639C8287913682bC008B3e622", //hot wallet
@@ -73,12 +73,12 @@ const config = {
   // filecoin: {
   //   owners: ["f1iy5dvp6ggzhtraxodbfdkbiw5s67mhff4w43pai"], //hot wallet
   // },
-  gochain: {
-    owners: [
-      "0xA1a0538D556B3E77f7E1340E3Ebd70C649c4bb84", //hot wallet
-      "0x1771C9c8d5AF830d322c2E1D2161D002844679EF", //subsidy wallet
-    ],
-  },
+  // gochain: {
+  //   owners: [
+  //     "0xA1a0538D556B3E77f7E1340E3Ebd70C649c4bb84", //hot wallet
+  //     "0x1771C9c8d5AF830d322c2E1D2161D002844679EF", //subsidy wallet
+  //   ],
+  // },
   // injective: {
   //   owners: [
   //     "inj1uyc234cek2ja9ru7a870cmx2lcavt5um2nk6hh", //hot wallet
