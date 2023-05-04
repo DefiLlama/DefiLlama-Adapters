@@ -16,6 +16,8 @@ async function stablePoolTVL(_, _b, { [chain]: block }) {
     '0xb86271571c90ad4e0c9776228437340b42623402', // ETH
     '0x7FbE3126C03444D43fC403626ec81E3e809E6b46', // MAI B4P
     '0xB1BC9f56103175193519Ae1540A0A4572b1566F6', // 4pool WH
+    '0x5c3dc0ab1bd70c5cdc8d0865e023164d4d3fd8ec', // Frax pool
+    '0x95953409374e1ed252c6D100E7466E346E3dC5b9', // 2pool
   ]
 
   let { output: lpTokens } = await sdk.api.abi.multiCall({
