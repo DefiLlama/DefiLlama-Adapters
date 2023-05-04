@@ -2,6 +2,7 @@
   "vaultsLength": "uint256:vaultsLength",
   "vaults": "function _vaults(uint256) view returns (address)",
   "vaultTvlUsdc": "function vaultTvlUsdc(address _vault) view returns (uint256)",
+  "totalTvlUsdc": "function totalTvlUsdc(address[] _vault) view returns (uint256)",
   "strategy": "address:strategy",
   "platform": "uint8:platform",
   "vaultsList": "address[]:vaultsList",

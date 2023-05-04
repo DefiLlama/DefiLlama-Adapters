@@ -48,7 +48,7 @@ async function getLPList({ lps, chain, block, lpFilter = isLP, cache = {}, }) {
   if (!cache.symbol) cache.symbol = {}
   lps = lps.filter(i => i)
   const callArgs = lps.filter(i => !cache.symbol[i]).map(t => ({ target: t }));
-  (await sdk.api.abi.multiCall({ calls: callArgs, abi: symbol, block, chain })).output
+  (await sdk.api.abi.multiCall({ calls: callArgs, abi: symbol, block, chain, permitFailure: true, })).output
     .forEach(i => cache.symbol[i.input.target] = i.output)
   return lps.filter(i => lpFilter(cache.symbol[i], i, chain))
 }
