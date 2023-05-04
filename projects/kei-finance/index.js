@@ -21,28 +21,9 @@ const graphQuery = `
   }
 `;
 
-async function tvl(_, _1, _2, { api }) {
-  // const tokenBalance = await sdk.api.erc20.balanceOf({
-  //   target: TOKEN_ADDRESS,
-  //   owner: TREASURY_ADDRESS
-  // });
-
-  const wethBalance = await sdk.api.erc20.balanceOf({
-    target: WETH_ADDRESS,
-    owner: TREASURY_ADDRESS
-  });
-
-  console.log(wethBalance)
-
-  return {
-    [WETH_ADDRESS]: wethBalance.output,
-    // [TOKEN_ADDRESS]: tokenBalance.output
-  };
-}
-
 module.exports = {
   ethereum: {
-    tvl,
+    tvl: () => 0,
     staking: async () => {
       const {  staking } = await request(
         config.ethereum.subgraph,
