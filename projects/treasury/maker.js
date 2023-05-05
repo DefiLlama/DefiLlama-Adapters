@@ -18,4 +18,11 @@ module.exports = treasuryExports({
     owners: [treasury],
     ownTokens: [MKR, DAI],
   },
+  arbitrum: {
+    tokens: [ 
+        nullAddress,
+     ],
+    owners: ['0x10e6593cdda8c58a1d0f14c5164b376352a55f2f'],
+    ownTokens: [],
+  },
 })

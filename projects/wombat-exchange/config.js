@@ -21,6 +21,7 @@ module.exports = {
       overnight: "0x9498563e47D7CFdFa22B818bb8112781036c201C", // USD+ pool
       mim: "0xb8b1b72a9b9ba90e2539348fec1ad6b265f9f684",
       ankrBNB: "0x6f1c689235580341562cdc3304e923cc8fad5bfa",
+      bnby: "0xbed9B758A681d73a95Ab4c01309C63aa16297b80",
     },
   },
   arbitrum: {
@@ -40,9 +41,6 @@ module.exports = {
   },
   hallmarks: [
     [1662417125, "Liquidity Mining Start"],
-    [1663120800, "Staking Pool Start"],
-    [1663725600, "Side Pool Start"],
-    [1674021600, "Gauge Voting Start"],
     [1680674400, "Arbitrum Launching"],
   ],
 };
