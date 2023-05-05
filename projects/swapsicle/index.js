@@ -43,6 +43,7 @@ const contracts = {
     stakingContract_sPOPS: "0x14e374cef17d800109710aa2c2d73e50db76d367",
     stakingContract_IB: '0xac448d75e945923b176ebca4ff2b5a82de73f812',
     stakingContract_IB2: '0x08010b76d4b03cabcfb0f6ba9db7de8336c715fe',
+    stakingContract_NFT: '0x552fd5743432eC2dAe222531e8b88bf7d2410FBc',
     pops: "0x173fd7434b8b50df08e3298f173487ebdb35fd14",
     stlos: "0xB4B01216a5Bc8F1C8A33CD990A1239030E60C905"
   }
@@ -152,6 +153,8 @@ module.exports = {
     staking: sdk.util.sumChainTvls([
       // Ice Cream Van
       stakingPricedLP(contracts.telos.stakingContract_sPOPS, contracts.telos.pops,'telos','0x6dee26f527adb0c24fef704228d8e458b46f9f5f',"wrapped-telos",true), 
+      // NFT's
+      stakingPricedLP(contracts.telos.stakingContract_NFT, contracts.telos.pops,'telos','0x6dee26f527adb0c24fef704228d8e458b46f9f5f',"wrapped-telos",true), 
       // Ice Box
       stakedTLOSIceBox
    ])
