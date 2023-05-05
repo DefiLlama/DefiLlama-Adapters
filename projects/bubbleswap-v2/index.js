@@ -24,6 +24,6 @@ module.exports = {
   timetravel: false,
   methodology: "Data is retrieved from the api at https://api.bubbleswap.io/",
   hallmarks: [
-    [1676644131, "V2 Launch"],
+    [1683288000, "V2 Launch"],
   ]
 }
