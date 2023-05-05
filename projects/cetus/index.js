@@ -18,9 +18,9 @@ async function tvl() {
   async function addPool(poolAddr) {
     const res = await getResources(poolAddr)
     const val = res.find(i => i.type.includes('::pool::Pool'))
-    const [token0, token1 ] = val.type.split('::pool::Pool<')[1].replace('>', '').split(', ')
+    const [token0, token1] = val.type.split('::pool::Pool<')[1].replace('>', '').split(', ')
     data.push({
-      token0, 
+      token0,
       token1,
       token0Bal: val.data.coin_a.value,
       token1Bal: val.data.coin_b.value,
@@ -28,23 +28,16 @@ async function tvl() {
   }
 }
 
-async function getListItems(list, start, items = []) {
-  const { fields: { value: { fields } }} = await sui.getDynamicFieldObject(list, start)
-  items.push(fields.value)
-  start = fields.next
-  if (start) return getListItems(list, start, items)
-  return items
-}
-
 async function suiTVL() {
   const { api } = arguments[3]
   const poolObjectID = '0xf699e7f2276f5c9a75944b37a0c5b5d9ddfd2471bf6242483b03ab2887d198d0'
-  const { fields: { list: { fields: listObject } }} = await sui.getObject(poolObjectID)
-  const items = await getListItems(listObject.id.id, listObject.head)
+  const { fields: { list: { fields: listObject } } } = await sui.getObject(poolObjectID)
+  const items = (await sui.getDynamicFieldObjects({ parent: listObject.id.id })).map(i => i.fields.value.fields.value)
   const poolInfo = await sui.getObjects(items.map(i => i.fields.pool_id))
-  items.forEach((v, i) => {
-    api.add('0x'+v.fields.coin_type_a.fields.name, poolInfo[i].fields.coin_a)
-    api.add('0x'+v.fields.coin_type_b.fields.name, poolInfo[i].fields.coin_b)
+  poolInfo.forEach(({ type: typeStr, fields }) => {
+    const [coinA, coinB] = typeStr.replace('>', '').split('<')[1].split(', ')
+    api.add(coinA, fields.coin_a)
+    api.add(coinB, fields.coin_b)
   })
 }
 
