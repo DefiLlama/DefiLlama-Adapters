@@ -12,9 +12,9 @@ const assetCache = {}
 
 const geckoMapping = coreAssets.algorand ?? {}
 const axiosObj = axios.create({
-  baseURL: 'https://algoindexer.algoexplorerapi.io',
+  baseURL: "https://mainnet-idx.algonode.cloud",
   timeout: 300000,
-})
+});
 
 const indexerLimiter = new RateLimiter({ tokensPerInterval: 10, interval: "second" });
 
