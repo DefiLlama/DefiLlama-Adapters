@@ -1,14 +1,10 @@
-const sdk = require('@defillama/sdk')
-const { sumTokensAndLPsSharedOwners } = require('../helper/unwrapLPs')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 const { staking } = require('../helper/staking')
 const abi = require('./abi.json')
 const { dodoPool2 } = require('../helper/pool2')
 
 const ethMarketsManager = "0x5ed98Ebb66A929758C7Fe5Ac60c979aDF0F4040a"
 const ETH_SUSD = "0x57ab1ec28d129707052df4df418d58a2d46d5f51"
-const ETH_THALES = "0x8947da500eb47f82df21143d0c01a29862a8c3c5"
-const ETH_WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
-const ETH_USDC = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
 
 const opMarketsManager = "0xBE086E0A2c588Ad64C8530048cE4356190D6a6F3"
 const OP_SUSD = "0x8c6f28f2f1a3c87f0f938b96d27520d9751ec8d9"
@@ -39,163 +35,56 @@ const arbSportsVault = ["0xfF7AEA98740fA1e2a9eB81680583e62aaFf1e3Ad", "0xE26374c
 const arbAmmVault = ["0x640c34D9595AD5351Da8c5C833Bbd1AfD20519ea", "0x0A29CddbdAAf56342507574820864dAc967D2683", "0x008A4e30A8b41781F5cb017b197aA9Aa4Cd53b46"]
 const arbThalesToken = "0xE85B662Fe97e8562f4099d8A1d5A92D4B453bF30"
 
-const L2toL1Synths = {
-    //THALES
-    "0x217d47011b23bb961eb6d93ca9945b7501a5bb11": ETH_THALES, 
-    // sUSD
-    "0x8c6f28f2f1a3c87f0f938b96d27520d9751ec8d9": ETH_SUSD, 
-    // WETH
-    "0x4200000000000000000000000000000000000006": ETH_WETH,
-    // USDC
-    "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174": ETH_USDC,
+async function guniPool2(_timestamp, _ethBlock, chainBlocks, { api }) {
+  const [lp, token0, token1] = await api.batchCall([
+    { target: opThalesLpToken, abi: abi.getUnderlyingBalance, },
+    { target: opThalesLpToken, abi: 'address:token0', },
+    { target: opThalesLpToken, abi: 'address:token1', },
+  ])
+  api.add(token0, lp[0])
+  api.add(token1, lp[1])
 }
 
-const transform = (addr)=>{
-    return L2toL1Synths[addr] || addr;
+async function getMarkets(api, manager) {
+  return api.call({ target: manager, abi: abi.activeMarkets, params: [0, 1000] })
 }
 
-async function eth_tvl(_time, block){
-    const markets = await sdk.api.abi.call({
-        target: ethMarketsManager,
-        abi: abi.activeMarkets,
-        block,
-        params:[0, 1000]
-    })
-    const balances = {}
-    await sumTokensAndLPsSharedOwners(balances, [[ETH_SUSD, false]], markets.output, block)
-    return balances
+async function addSportsLPTvl(api, contract, token) {
+  api.add(token, await api.call({ target: contract, abi: abi.totalDeposited, }))
 }
 
-async function op_tvl(_time, block, cb){
-    block = cb.optimism
-    const markets = await sdk.api.abi.call({
-        target: opMarketsManager,
-        abi: abi.activeMarkets,
-        block,
-        params:[0, 1000],
-        chain: "optimism"
-    })
-    const balances = {}
-    await sumTokensAndLPsSharedOwners(balances, [[OP_SUSD, false]], markets.output, block, "optimism", transform)
-    return balances
-}
-
-async function op_sports_tvl(_time, block, cb){
-    block = cb.optimism
-    const markets = await sdk.api.abi.call({
-        target: opSportsMarketsManager,
-        abi: abi.activeMarkets,
-        block,
-        params:[0, 1000],
-        chain: "optimism"
-    })
-    const balances = {}
-    await sumTokensAndLPsSharedOwners(balances, [[OP_SUSD, false]], markets.output, block, "optimism", transform)
-    return balances
-}
-
-async function op_sportsLp_tvl(_time, block, cb){
-    block = cb.optimism
-    const totalDeposited = await sdk.api.abi.call({
-        target: opSportsLp,
-        abi: abi.totalDeposited,
-        block,
-        chain: "optimism"
-    })
-    return {[ETH_SUSD]: totalDeposited.output}
-}
-
-async function polygon_tvl(_time, block, cb){
-    block = cb.polygon
-    const markets = await sdk.api.abi.call({
-        target: polygonMarketsManager,
-        abi: abi.activeMarkets,
-        block,
-        params:[0, 1000],
-        chain: "polygon"
-    })
-    const balances = {}
-    await sumTokensAndLPsSharedOwners(balances, [[polygon_USDC, false]], markets.output, block, "polygon")
-    return balances
-}
-
-async function arbitrum_tvl(_time, block, cb){
-    block = cb.arbitrum
-    const markets = await sdk.api.abi.call({
-        target: arbitrumMarketsManager,
-        abi: abi.activeMarkets,
-        block,
-        params:[0, 1000],
-        chain: "arbitrum"
-    })
-    const balances = {}
-    await sumTokensAndLPsSharedOwners(balances, [[arbitrum_USDC, false]], markets.output, block, "arbitrum")
-    return balances
-}
-
-async function arb_sports_tvl(_time, block, cb){
-    block = cb.arbitrum
-    const markets = await sdk.api.abi.call({
-        target: arbSportsMarketsManager,
-        abi: abi.activeMarkets,
-        block,
-        params:[0, 1000],
-        chain: "arbitrum"
-    })
-    const balances = {}
-    await sumTokensAndLPsSharedOwners(balances, [[arbitrum_USDC, false]], markets.output, block, "arbitrum")
-    return balances
-}
-
-async function arb_sportsLp_tvl(_time, block, cb){
-    block = cb.optimism
-    const totalDeposited = await sdk.api.abi.call({
-        target: arbSportsLp,
-        abi: abi.totalDeposited,
-        block,
-        chain: "arbitrum"
-    })
-    return {[ETH_USDC]: totalDeposited.output}
-}
-
-function guniPool2(_time, chain="optimism") {
-    return async (_timestamp, _ethBlock, chainBlocks) => {
-        const block = chainBlocks[chain]
-        const lp = await sdk.api.abi.call({
-            target: opThalesLpToken,
-            abi: abi.getUnderlyingBalance,
-            block,
-            chain: "optimism"
-        })
-        const balances = {}
-        sdk.util.sumSingleBalance(balances, ETH_THALES, lp.output.amount0Current)
-        sdk.util.sumSingleBalance(balances, ETH_WETH, lp.output.amount1Current)
-        return balances
-    }
-}
-
-module.exports={
-    methodology: "sUSD/USDC locked on markets",
-    ethereum:{
-        tvl: eth_tvl,
-        pool2: dodoPool2("0x136829c258e31b3ab1975fe7d03d3870c3311651", "0x031816fd297228e4fd537c1789d51509247d0b43")
+module.exports = {
+  methodology: "sUSD/USDC locked on markets",
+  ethereum: {
+    tvl: async (_, _1, _2, { api }) => {
+      return sumTokens2({ api, owners: await getMarkets(api, ethMarketsManager), tokens: [ETH_SUSD] })
     },
-    optimism:{
-        tvl: sdk.util.sumChainTvls([op_tvl, op_sports_tvl, op_sportsLp_tvl, // sUSD in all active markets
-            staking([opThalesAmm, opParlayAmm, opRangedAmm, ...opSportsVault, ...opAmmVault], OP_SUSD, "optimism", ETH_SUSD),
-        ]),
-        staking: staking(opThalesStaking, opThalesToken, "optimism", ETH_THALES), 
-        pool2: guniPool2()
+    pool2: dodoPool2("0x136829c258e31b3ab1975fe7d03d3870c3311651", "0x031816fd297228e4fd537c1789d51509247d0b43"),
+  },
+  polygon: {
+    tvl: async (_, _1, _2, { api }) => {
+      const markets = await getMarkets(api, polygonMarketsManager)
+      markets.push(polygonThalesAmm, polygonRangedAMM)
+      return sumTokens2({ api, owners: markets, tokens: [polygon_USDC] })
     },
-    polygon:{
-        tvl: sdk.util.sumChainTvls([polygon_tvl, // USDC in all active markets
-            staking([polygonThalesAmm, polygonRangedAMM], polygon_USDC, "polygon", ETH_USDC),
-        ])
+  },
+  optimism: {
+    tvl: async (_, _1, _2, { api }) => {
+      await addSportsLPTvl(api, opSportsLp, OP_SUSD)
+      const markets = (await Promise.all([opMarketsManager, opSportsMarketsManager,].map(i => getMarkets(api, i)))).flat()
+      markets.push(opThalesAmm, opParlayAmm, opRangedAmm, ...opSportsVault, ...opAmmVault)
+      return sumTokens2({ api, tokens: [OP_SUSD], owners: markets })
     },
-    arbitrum:{
-        tvl: sdk.util.sumChainTvls([arbitrum_tvl, arb_sports_tvl, arb_sportsLp_tvl, // USDC in all active markets
-            staking([arbitrumThalesAMM, arbParlayAmm, ...arbSportsVault, ...arbAmmVault], arbitrum_USDC, "arbitrum", ETH_USDC),
-        ]),
-        staking: staking(arbThalesStaking, arbThalesToken, "arbitrum", ETH_THALES), 
-    }
+    staking: staking(opThalesStaking, opThalesToken),
+    pool2: guniPool2,
+  },
+  arbitrum: {
+    tvl: async (_, _1, _2, { api }) => {
+      await addSportsLPTvl(api, arbSportsLp, arbitrum_USDC)
+      const markets = (await Promise.all([arbitrumMarketsManager, arbSportsMarketsManager,].map(i => getMarkets(api, i)))).flat()
+      markets.push(arbitrumThalesAMM, arbParlayAmm, ...arbSportsVault, ...arbAmmVault)
+      return sumTokens2({ api, tokens: [arbitrum_USDC], owners: markets })
+    },
+    staking: staking(arbThalesStaking, arbThalesToken),
+  },
 }
