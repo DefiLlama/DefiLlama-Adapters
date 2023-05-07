@@ -41,14 +41,17 @@ async function getDynamicFieldObject(parent, id) {
   }])).content
 }
 
-async function getDynamicFieldObjects({ parent, cursor = null, limit = 9999, items = [], idFilter = i => i }) {
+async function getDynamicFieldObjects({ parent, cursor = null, limit = 49, items = [], idFilter = i => i, addedIds = new Set() }) {
   const {
     result: { data, hasNextPage, nextCursor }
   } = await http.post(endpoint, { jsonrpc: "2.0", id: 1, method: 'suix_getDynamicFields', params: [parent, cursor, limit], })
   sdk.log('[sui] fetched items length', data.length, hasNextPage, nextCursor)
-  items.push(...(await getObjects(data.filter(idFilter).map(i => i.objectId))))
+  const fetchIds = data.filter(idFilter).map(i => i.objectId).filter(i => !addedIds.has(i))
+  fetchIds.forEach(i => addedIds.add(i))
+  const objects = await getObjects(fetchIds)
+  items.push(...objects)
   if (!hasNextPage) return items
-  return getDynamicFieldObjects({ parent, cursor: nextCursor, items, limit, idFilter })
+  return getDynamicFieldObjects({ parent, cursor: nextCursor, items, limit, idFilter, addedIds })
 }
 
 async function call(method, params) {
@@ -70,24 +73,32 @@ function dexExport({
   token0Reserve = i => i.fields.coin_x_reserve,
   token1Reserve = i => i.fields.coin_y_reserve,
   getTokens = i => i.type.split('<')[1].replace('>', '').split(', '),
+  isAMM = true,
 }) {
   return {
     timetravel: false,
     misrepresentedTokens: true,
     sui: {
-      tvl: async () => {
+      tvl: async (_, _1, _2, { api }) => {
         const data = []
-        let pools = await getDynamicFieldObjects({ parent: account, idFilter: i => i.objectType.includes(poolStr) })
+        let pools = await getDynamicFieldObjects({ parent: account, idFilter: i => poolStr ? i.objectType.includes(poolStr) : i })
         sdk.log(`[sui] Number of pools: ${pools.length}`)
         pools.forEach(i => {
           const [token0, token1] = getTokens(i)
-          data.push({
-            token0,
-            token1,
-            token0Bal: token0Reserve(i),
-            token1Bal: token1Reserve(i),
-          })
+          if (isAMM) {
+            data.push({
+              token0,
+              token1,
+              token0Bal: token0Reserve(i),
+              token1Bal: token1Reserve(i),
+            })
+          } else {
+            api.add(token0, token0Reserve(i))
+            api.add(token1, token1Reserve(i))
+          }
         })
+
+        if (!isAMM) return api.getBalances()
 
         return transformDexBalances({ chain: 'sui', data })
       }
