@@ -52,7 +52,7 @@ const owners = {
 module.exports = {
     timetravel: true,
     misrepresentedTokens: true,
-    methodology: "Ajira Pay Finance TVL Calculations are based on AJP KAVA Staking pool and treasury balances across all chains",
+    methodology: "Ajira Pay Finance TVL Calculations are based on AJP KAVA and BSC Staking pools and treasury balances across all chains",
     bsc: {
         staking: staking(BSC_STAKING_CONTRACT, AJP_CONTRACT_ADDRESS, "bsc"),
         tvl:  sumTokensExport({ owner: owners.bsc,  tokens: bsc_tokens })
