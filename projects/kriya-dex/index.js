@@ -11,14 +11,14 @@ const getPoolIDs = async () => {
 
 const getPoolInfo = async (poolId) => {
     const { fields } = await sui.getObject(poolId);
-    const lsp_type = fields.lsp_supply.type;
+    const lspType = fields.lsp_supply.type;
     const onlyTypes = lsp_type.replace('0x2::balance::Supply<', '').split("<")[1].replace(">", "").replace(">", "").replace(" ", "");
     const [typeA, typeB] = onlyTypes.split(",");
     return {
-        coin_x: typeA,
-        coin_y: typeB,
-        balance_x: fields.token_x,
-        balance_y: fields.token_y,
+        coinX: typeA,
+        coinY: typeB,
+        balanceX: fields.token_x,
+        balanceY: fields.token_y,
     };
 }
 
@@ -28,14 +28,14 @@ async function kriyaTVL(_, _1, _2, { api }) {
     for (const pool of poolIds) {
         const res = await getPoolInfo(pool)
         
-        api.add(res.coin_x, Number(res.balance_x));
-        api.add(res.coin_y, Number(res.balance_y));
+        api.add(res.coinX, Number(res.balanceX));
+        api.add(res.coinY, Number(res.balanceY));
     }
 }
 
 module.exports = {
     timetravel: true,
-    methodology: "Collects TVL for all pools created on KriyaDEX, including community pools",
+    methodology: "Collects TVL for all pools created on KriyaDEX",
     sui: {
         tvl: kriyaTVL,
     }
