@@ -18,12 +18,7 @@ async function getObject(objectId) {
 }
 
 async function queryEvents(queryObject) {
-  let { result }= await http.post(endpoint, {
-        jsonrpc: "2.0", id: 1, method: 'suix_queryEvents', params: [
-        queryObject,
-    ],
-  })
-  return result.data;
+  return call('suix_queryEvents', queryObject)
 }
 
 async function getObjects(objectIds) {
