@@ -3,6 +3,7 @@ const { sumTokensExport, nullAddress, } = require('../helper/unknownTokens')
 
 const AJP_CONTRACT_ADDRESS = "0x9DBC0Ad09184226313FbDe094E7c3DD75c94f997"
 const KAVA_STAKING_CONTRACT = "0xD1cAf204721A02016993796663EDb00E6Ad9dac4"
+const BSC_STAKING_CONTRACT = '0xEbD5a0bAED48747ea10feEB61a09a93550Fddcef'
 
 const arb_tokens = [
     '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8', '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
@@ -53,6 +54,7 @@ module.exports = {
     misrepresentedTokens: true,
     methodology: "Ajira Pay Finance TVL Calculations are based on AJP KAVA Staking pool and treasury balances across all chains",
     bsc: {
+        staking: staking(BSC_STAKING_CONTRACT, AJP_CONTRACT_ADDRESS, "bsc"),
         tvl:  sumTokensExport({ owner: owners.bsc,  tokens: bsc_tokens })
     },
     polygon: {
