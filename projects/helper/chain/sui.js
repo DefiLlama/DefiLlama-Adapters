@@ -17,6 +17,15 @@ async function getObject(objectId) {
   }])).content
 }
 
+async function queryEvents(queryObject) {
+  let { result }= await http.post(endpoint, {
+        jsonrpc: "2.0", id: 1, method: 'suix_queryEvents', params: [
+        queryObject,
+    ],
+  })
+  return result.data;
+}
+
 async function getObjects(objectIds) {
   const {
     result
@@ -97,6 +106,7 @@ module.exports = {
   multiCall,
   getObject,
   getObjects,
+  queryEvents,
   getDynamicFieldObject,
   getDynamicFieldObjects,
   dexExport,
