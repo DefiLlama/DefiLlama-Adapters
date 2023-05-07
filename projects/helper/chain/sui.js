@@ -17,6 +17,10 @@ async function getObject(objectId) {
   }])).content
 }
 
+async function queryEvents(queryObject) {
+  return call('suix_queryEvents', queryObject)
+}
+
 async function getObjects(objectIds) {
   const {
     result
@@ -97,6 +101,7 @@ module.exports = {
   multiCall,
   getObject,
   getObjects,
+  queryEvents,
   getDynamicFieldObject,
   getDynamicFieldObjects,
   dexExport,
