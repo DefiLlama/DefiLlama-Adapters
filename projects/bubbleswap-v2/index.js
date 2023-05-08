@@ -7,15 +7,8 @@ async function fetch(){
             //I would prefer the user agengt to be set to something like axios, or DefiLlama, but our WAF only allows the bellow
             'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'
         }
-    });
-
-    if(!response.ok || response?.data?.sumTVL === undefined) {
-
-        return null;
-
-    }
-
-    return Number(response?.data?.sumTVL) || 0;
+    })
+    return response.data.data.sumTVL
 
 }
 
