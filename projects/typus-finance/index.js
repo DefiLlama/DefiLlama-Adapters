@@ -16,14 +16,12 @@ async function tvl(_, _1, _2, { api }) {
 
   const depositVaults = await sui.getObjects(depositVaultIds);
 
-  depositVaults.forEach(({ type, fields }) => {
+  depositVaults.forEach(({ type, fields: { value: { fields }} }) => {
     const coin = type.replace(">>", "").split(", ")[2];
-    var value = BigInt(0);
-    value += BigInt(fields.value.fields.active_sub_vault.fields.balance);
-    value += BigInt(fields.value.fields.deactivating_sub_vault.fields.balance);
-    value += BigInt(fields.value.fields.inactive_sub_vault.fields.balance);
-    value += BigInt(fields.value.fields.warmup_sub_vault.fields.balance);
-    api.add(coin, value.toString());
+    api.add(coin, fields.active_sub_vault.fields.balance)
+    api.add(coin, fields.deactivating_sub_vault.fields.balance)
+    api.add(coin, fields.inactive_sub_vault.fields.balance)
+    api.add(coin, fields.warmup_sub_vault.fields.balance)
   });
 
   const bidVaultFields = await sui.getDynamicFieldObjects({
@@ -34,15 +32,11 @@ async function tvl(_, _1, _2, { api }) {
 
   const bidVaults = await sui.getObjects(bidVaultIds);
 
-  bidVaults.forEach(({ type, fields }) => {
+  bidVaults.forEach(({ type, fields: { value: { fields }} }) => {
     const coin = type.replace(">>", "").split(", ")[2];
-    var value = BigInt(0);
-    value += BigInt(fields.value.fields.bidder_sub_vault.fields.balance);
-    value += BigInt(fields.value.fields.premium_sub_vault.fields.balance);
-    value += BigInt(
-      fields.value.fields.performance_fee_sub_vault.fields.balance
-    );
-    api.add(coin, value.toString());
+    api.add(coin, fields.bidder_sub_vault.fields.balance)
+    api.add(coin, fields.premium_sub_vault.fields.balance)
+    api.add(coin, fields.performance_fee_sub_vault.fields.balance)
   });
 }
 
