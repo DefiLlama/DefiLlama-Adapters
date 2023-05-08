@@ -1,0 +1,162 @@
+{
+    "getTokenPrice": {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_token",
+                "type": "address"
+            }
+        ],
+        "name": "getTokenPrice",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "getGlpPrice": {
+        "inputs": [
+            {
+                "internalType": "bool",
+                "name": "_isBuying",
+                "type": "bool"
+            }
+        ],
+        "name": "getGlpPrice",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "price",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "borrowedRewardPool": {
+        "inputs": [],
+        "name": "borrowedRewardPool",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "supplyRewardPool": {
+        "inputs": [],
+        "name": "supplyRewardPool",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "workingBalance": {
+        "inputs": [
+            {
+                "internalType": "address[]",
+                "name": "_vaults",
+                "type": "address[]"
+            }
+        ],
+        "name": "workingBalance",
+        "outputs": [
+            {
+                "internalType": "address[]",
+                "name": "",
+                "type": "address[]"
+            },
+            {
+                "internalType": "uint256[]",
+                "name": "",
+                "type": "uint256[]"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "borrowedBalance": {
+        "inputs": [
+            {
+                "internalType": "address[]",
+                "name": "_vaults",
+                "type": "address[]"
+            }
+        ],
+        "name": "borrowedBalance",
+        "outputs": [
+            {
+                "internalType": "address[]",
+                "name": "",
+                "type": "address[]"
+            },
+            {
+                "internalType": "uint256[]",
+                "name": "",
+                "type": "uint256[]"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "lockedBalance": {
+        "inputs": [
+            {
+                "internalType": "address[]",
+                "name": "_vaults",
+                "type": "address[]"
+            }
+        ],
+        "name": "lockedBalance",
+        "outputs": [
+            {
+                "internalType": "address[]",
+                "name": "",
+                "type": "address[]"
+            },
+            {
+                "internalType": "uint256[]",
+                "name": "",
+                "type": "uint256[]"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "debtBalance": {
+        "inputs": [
+            {
+                "internalType": "address[]",
+                "name": "_vaults",
+                "type": "address[]"
+            }
+        ],
+        "name": "debtBalance",
+        "outputs": [
+            {
+                "internalType": "address[]",
+                "name": "",
+                "type": "address[]"
+            },
+            {
+                "internalType": "uint256[]",
+                "name": "",
+                "type": "uint256[]"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+}
