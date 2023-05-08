@@ -54,7 +54,7 @@ function chainTvls(chain) {
     let tokenList = data.origins.filter(x => x.chain === targetChain && !x.is_nft).map(x => x.address)
     tokenList.push(nullAddress)
     const balances = await sumTokens2({ owner: vault, tokens: tokenList, chain, block, blacklistedTokens: [
-      '0x662b67d00a13faf93254714dd601f5ed49ef2f51' // ORC, blacklist project's own token
+      // '0x662b67d00a13faf93254714dd601f5ed49ef2f51' // ORC, blacklist project's own token
       // reason for skipping, most of the tvl comes from this transaction which is about 25% of ORU supply on ETH
       // https://etherscan.io/tx/0x0a556fcef2a867421ec3941251ad3c10ae1402a23ddd9ad4b1097b686ced89f7
     ] })
