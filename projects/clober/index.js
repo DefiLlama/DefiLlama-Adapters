@@ -1,20 +1,11 @@
 const abi = require("./abi.json");
+const { fetchURL } = require('../helper/utils')
 const { sumTokens2 } = require('../helper/unwrapLPs')
-
-function factoryAddress(chainId){
-    if(chainId === 1101){
-        return "0x24aC0938C010Fb520F1068e96d78E0458855111D"
-    }else{
-        return "0x93A43391978BFC0bc708d5f55b0Abe7A9ede1B91"
-    }
-}
 
 async function tvl(_, _b, _cb, { api }) {
     const chainId = await api.getChainId()
-    let tokenAddresses = await api.fetchList({  lengthAbi: abi.nonce, itemAbi: abi.computeTokenAddress, target: factoryAddress(chainId)})
-    tokenAddresses = tokenAddresses.flat()
-    const markets = await api.multiCall({  abi: abi.market, calls: tokenAddresses })
-    const base = await api.multiCall({  abi: abi.baseToken, calls: markets}) 
+    const markets = (await fetchURL(`https://prod.clober-api.com/${chainId}/markets`)).data.markets.map((market) => market.address)
+    const base = await api.multiCall({  abi: abi.baseToken, calls: markets})
     const quote = await api.multiCall({  abi: abi.quoteToken, calls: markets})
     const tokens = [base, quote].flat()
     const symbols = await api.multiCall({  abi: 'erc20:symbol', calls: tokens})
