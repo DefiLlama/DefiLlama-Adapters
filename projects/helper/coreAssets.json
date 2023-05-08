@@ -1452,5 +1452,8 @@
     "0xb7844e289a8410e50fb3ca48d69eb9cf29e27d223ef90353fe1bd8e27ff8f3f8::coin::COIN",
     "0xb231fcda8bbddb31f2ef02e6161444aec64a514e2c89279584ac9806ce9cf037::coin::COIN",
     "0x2::sui::SUI"
+  ],
+  "grove": [
+    "0xE85f139488c689038028a3EB8fC38dcC29D4C340"
   ]
 }

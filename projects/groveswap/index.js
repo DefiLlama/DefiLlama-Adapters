@@ -10,4 +10,7 @@ module.exports =  {
   ethereum: {
     tvl: getUniTVL({ useDefaultCoreAssets: true, factory: '0x6c565c5bbdc7f023cae8a2495105a531caac6e54', }),
   },
+  grove: {
+    tvl: getUniTVL({ useDefaultCoreAssets: true, factory: '0x401e7e28e0C679E1a3242ac6CD93C9c56208A260', }),
+  }
 }
