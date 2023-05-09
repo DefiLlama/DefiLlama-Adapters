@@ -14,20 +14,34 @@ async function tvl(_, _1, _2, api) {
 
   await Promise.all(
     avatars.map(async (avatar) => {
+      const {
+        excludedTokens,
+        tokens: avatarTokens,
+        address: avatarAddress,
+      } = avatar;
       // eth balance
       const { output: balance } = await sdk.api.eth.getBalance({
-        target: avatar,
+        target: avatarAddress,
         block: api.block,
       });
       await sdk.util.sumSingleBalance(balances, ethAddress, balance);
 
+      // combine avatar tokens and global tokens and remove excluded tokens
+      const filteredTokens = [
+        ...new Set(
+          [...tokens, ...avatarTokens].filter(
+            (t) => !excludedTokens.includes(t)
+          )
+        ),
+      ];
+
       // erc20 balances
       await Promise.all(
-        tokens.map(async (token) => {
+        filteredTokens.map(async (token) => {
           const balance = await api.api.call({
             abi: "erc20:balanceOf",
             target: token,
-            params: [avatar],
+            params: [avatarAddress],
           });
           await sdk.util.sumSingleBalance(balances, token, balance, api.chain);
         })
