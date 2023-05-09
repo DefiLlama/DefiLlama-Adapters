@@ -76,9 +76,17 @@ async function tvl(
     .forEach((x) => {
       SC2_tvl += parseInt(x.loanRequestData.loanAmnt);
     });
+    
+  const dataOffers = await get("https://api.fluidtokens.com/get-available-collection-offers");
+  let SC_offers_tvl = 0;
+  
+  dataOffers.forEach((i) => {
+      SC_offers_tvl += parseInt(i.offerData.loanAmnt);
+    });
+  
 
   return {
-    cardano: (SC1_tvl + SC2_tvl) / 1e6,
+    cardano: (SC1_tvl + SC2_tvl +SC_offers_tvl) / 1e6,
   };
 }
 
