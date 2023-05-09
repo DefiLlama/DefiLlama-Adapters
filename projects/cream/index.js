@@ -68,7 +68,7 @@ async function ethereumTvl(timestamp, block) {
         balance: cashVal.output,
       });
     } else if (underlyings[idx].output === crvIB || underlyings[idx].output === CRETH2) {
-      return; // Exclude CRETH2
+      return; // Exclude CRETH2 //https://twitter.com/0xngmi/status/1398565590856515585
     } else {
       const token =
         replacements[underlyings[idx].output] || underlyings[idx].output;
