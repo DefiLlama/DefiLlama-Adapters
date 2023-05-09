@@ -41,7 +41,7 @@ async function getDynamicFieldObject(parent, id) {
   }])).content
 }
 
-async function getDynamicFieldObjects({ parent, cursor = null, limit = 49, items = [], idFilter = i => i, addedIds = new Set() }) {
+async function getDynamicFieldObjects({ parent, cursor = null, limit = 48, items = [], idFilter = i => i, addedIds = new Set() }) {
   const {
     result: { data, hasNextPage, nextCursor }
   } = await http.post(endpoint, { jsonrpc: "2.0", id: 1, method: 'suix_getDynamicFields', params: [parent, cursor, limit], })
