@@ -12,8 +12,7 @@ module.exports = {
   methodology:
     "TVL is comprised of tokens deposited to Zenith protocol as collateral, similar to Compound Finance and other lending protocols the borrowed tokens are not counted as TVL.",
   ethereum: {
-    tvl: (async) => ({}),
     pool2: pool2s([contracts.masterChef], pool2),
-    staking: stakings([contracts.masterChef], stakeTokens),
+    tvl: stakings([contracts.masterChef], stakeTokens),
   },
 };
