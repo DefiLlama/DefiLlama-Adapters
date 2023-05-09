@@ -3,7 +3,7 @@ const { getUniTVL } = require('../helper/unknownTokens')
 const factories = {
   heco: "0xb0b670fc1F7724119963018DB0BfA86aDb22d941",
   bsc: "0x3CD1C46068dAEa5Ebb0d3f55F6915B10648062B8",
-  bttc: "0xaB083A5268705EAf24daa6B8F5Db57458adfe8eB"
+  bittorrent: "0xaB083A5268705EAf24daa6B8F5Db57458adfe8eB"
 };
 
 const hecoTvl = getUniTVL({ factory: factories.heco, chain: 'heco', useDefaultCoreAssets: true })
