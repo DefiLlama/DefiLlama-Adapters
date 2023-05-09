@@ -12,8 +12,13 @@ async function heco() {
 async function bsc() { 
     return (await fetch(56));
 }
+
+async function bttc() {
+    return (await fetch(199));
+}
+
 async function total() {
-    return (await fetch(128)) + (await fetch(56));
+    return (await fetch(128)) + (await fetch(56)) + (await fetch(199));
 }
 
 module.exports = {
@@ -23,6 +28,9 @@ module.exports = {
     },
     bsc: {
         fetch: bsc
+    },
+    bttc: {
+        fetch: bttc
     },
     fetch: total
 };
