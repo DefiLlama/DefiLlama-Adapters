@@ -13,7 +13,7 @@ async function bsc() {
     return (await fetch(56));
 }
 
-async function bttc() {
+async function bittorrent() {
     return (await fetch(199));
 }
 
@@ -29,8 +29,8 @@ module.exports = {
     bsc: {
         fetch: bsc
     },
-    bttc: {
-        fetch: bttc
+    bittorrent: {
+        fetch: bittorrent
     },
     fetch: total
 };
