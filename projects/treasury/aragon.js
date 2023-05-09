@@ -23,8 +23,10 @@ module.exports = treasuryExports({
         '0x24cCeDEBF841544C9e6a62Af4E8c2fA6e5a46FdE',//BlueSparrow
         '0x232FB065D9d24c34708eeDbF03724f2e95ABE768',//SHEESHA
         '0xaC9Bb427953aC7FDDC562ADcA86CF42D988047Fd',//STT
+        "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",//MANA
+        "0xdac17f958d2ee523a2206206994597c13d831ec7",//USDT
      ],
-    owners: [aragonTreasury],
+    owners: [aragonTreasury, "0x7ecd1eac2a07974bcbabafee44b5cc44ceee9540", "0xcafe1a77e84698c83ca8931f54a755176ef75f2c"],
     ownTokens: [ANT, ANT_ETH_LP],
   },
 })
