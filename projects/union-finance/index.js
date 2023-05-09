@@ -8,8 +8,13 @@ const config = {
   },
   arbitrum: {
     userManager: "0xb71F3D4342AaE0b8D531E14D2CF2F45d6e458A5F",
-    DAI: "0x6b175474e89094c44da98b954eedeac495271d0f",
+    DAI: "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1",
     uDAI: "0x954F20DF58347b71bbC10c94827bE9EbC8706887",
+  },
+  optimism: {
+    userManager: "0x8E195D65b9932185Fcc76dB5144534e0f3597628",
+    DAI: "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1",
+    uDAI: "0xE478b5e7A423d7CDb224692d0a816CA146A744b2",
   },
 };
 
@@ -92,7 +97,8 @@ function borrowing(chain) {
 module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
-  methodology: "Counts the tokens locked in the contracts to be used to underwrite or to borrow. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted.",
+  methodology:
+    "Counts the tokens locked in the contracts to be used to underwrite or to borrow. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted.",
   ethereum: {
     tvl: tvl("ethereum"),
     borrowed: borrowing("ethereum"),
@@ -100,5 +106,9 @@ module.exports = {
   arbitrum: {
     tvl: tvl("arbitrum"),
     borrowed: borrowing("arbitrum"),
+  },
+  optimism: {
+    tvl: tvl("optimism"),
+    borrowed: borrowing("optimism"),
   },
 };
