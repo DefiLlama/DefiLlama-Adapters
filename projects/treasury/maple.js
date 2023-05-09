@@ -1,4 +1,4 @@
-const { nullAddress, treasuryExports } = require("../helper/treasury");
+const { treasuryExports } = require("../helper/treasury");
 
 module.exports = treasuryExports({
   ethereum: {
