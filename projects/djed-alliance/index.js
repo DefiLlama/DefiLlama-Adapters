@@ -13,7 +13,7 @@ async function tvl(chain, chainBlocks) {
     abi: abi.Djed.reserve, chain: chain, target: config.djedAddress[chain], params: [ 0 ], block: chainBlocks[chain],
   })).output;
 
-  sdk.util.sumSingleBalance(balances, '0xAE83571000aF4499798d1e3b0fA0070EB3A3E3F9', reserve);
+  sdk.util.sumSingleBalance(balances, config.reserveTokenAddress[chain], reserve); // Using WADA address instead of mADA
   return transformBalances(chain, balances);
 }
 
