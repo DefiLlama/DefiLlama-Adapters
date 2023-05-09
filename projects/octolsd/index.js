@@ -17,6 +17,7 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
 
   const lsdAddresses = logs.map((i) => i.stakingToken);
   return sumTokens2({ api, owner:POOL_CONTRACT , tokens: lsdAddresses, resolveLP: true});
+
 }
 
 module.exports = {
