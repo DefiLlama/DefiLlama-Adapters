@@ -5,6 +5,8 @@ const anchorTreasury = "0x926df14a23be491164dcf93f4c468a50ef659d5b";
 const multisig = "0x9D5Df30F475CEA915b1ed4C0CCa59255C897b61B";
 const opmultisig = "0xa283139017a2f5bade8d8e25412c600055d318f8";
 const bnbmultisig = "0xf7da4bc9b7a6bb3653221ae333a9d2a2c2d5bda7";
+const treasury1 = "0x4b6c63e6a94ef26e2df60b89372db2d8e211f1b7"
+const treasury2 = "0x943dbdc995add25a1728a482322f9b3c575b16fb"
 
 module.exports = treasuryExports({
   ethereum: {
@@ -32,7 +34,7 @@ module.exports = treasuryExports({
       "0x7e05540A61b531793742fde0514e6c136b5fbAfE", // xFODL
       "0xAD038Eb671c44b853887A7E32528FaB35dC5D710", // DBR
     ],
-    owners: [anchorTreasury, multisig],
+    owners: [anchorTreasury, multisig, treasury1, treasury2],
     ownTokens: [
       inv,
       "0x73E02EAAb68a41Ea63bdae9Dbd4b7678827B2352", // Uniswap INV/ETH LP
