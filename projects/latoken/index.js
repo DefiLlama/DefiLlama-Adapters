@@ -76,9 +76,9 @@ const config = {
       "0xE69963CE13ED742639C8287913682bC008B3e622", //hot wallet
     ],
   },
-  lachain: {
-    owners: ["0xEFf6E17Fdc68d56812DA40f7d05FC8cDfd212440"],
-  },
+  // lachain: {
+  //   owners: ["0xEFf6E17Fdc68d56812DA40f7d05FC8cDfd212440"],
+  // },
   // filecoin: {
   //   owners: ["f1iy5dvp6ggzhtraxodbfdkbiw5s67mhff4w43pai"], //hot wallet
   // },
