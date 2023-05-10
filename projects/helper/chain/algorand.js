@@ -1,24 +1,24 @@
 // documentation: https://developer.algorand.org/docs/get-details/indexer/?from_query=curl#sdk-client-instantiations
 
-const axios = require("axios")
-const { getApplicationAddress } = require("./algorandUtils/address")
-const { RateLimiter } = require("limiter")
-const coreAssets = require("../coreAssets.json")
-const sdk = require("@defillama/sdk")
-const { default: BigNumber } = require("bignumber.js")
+const axios = require('axios')
+const { getApplicationAddress } = require('./algorandUtils/address')
+const { RateLimiter } = require('limiter')
+const coreAssets = require('../coreAssets.json')
+const sdk = require('@defillama/sdk')
+const { default: BigNumber } = require('bignumber.js')
 const stateCache = {}
 const accountCache = {}
 const assetCache = {}
 
 const geckoMapping = coreAssets.algorand ?? {}
 const axiosObj = axios.create({
-  baseURL: "https://mainnet-idx.algonode.cloud",
-  timeout: 300000
+  baseURL: 'https://mainnet-idx.algonode.cloud',
+  timeout: 300000,
 })
 
 const indexerLimiter = new RateLimiter({
   tokensPerInterval: 10,
-  interval: "second"
+  interval: 'second',
 })
 
 async function lookupApplications(appId) {
@@ -33,15 +33,15 @@ async function searchAccounts({
   appId,
   limit = 1000,
   nexttoken,
-  searchParams
+  searchParams,
 }) {
-  const response = await axiosObj.get("/v2/accounts", {
+  const response = await axiosObj.get('/v2/accounts', {
     params: {
       ...searchParams,
-      "application-id": appId,
+      'application-id': appId,
       limit,
-      next: nexttoken
-    }
+      next: nexttoken,
+    },
   })
   return response.data
 }
@@ -54,9 +54,9 @@ async function searchAccountsAll({ appId, limit = 1000, searchParams = {} }) {
       appId,
       limit,
       nexttoken,
-      searchParams
+      searchParams,
     })
-    nexttoken = res["next-token"]
+    nexttoken = res['next-token']
     accounts.push(...res.accounts)
   } while (nexttoken)
   return accounts
@@ -78,25 +78,25 @@ async function sumTokens({
   blacklistedTokens = [],
   tinymanLps = [],
   blacklistOnLpAsWell = false,
-  tokensAndOwners = []
+  tokensAndOwners = [],
 }) {
   if (owner) owners = [owner]
   if (token) tokens = [token]
-  if (tokensAndOwners.length) owners = tokensAndOwners.map((i) => i[1])
+  if (tokensAndOwners.length) owners = tokensAndOwners.map(i => i[1])
   const accounts = await Promise.all(owners.map(getAccountInfo))
   accounts.forEach(({ assets }, i) => {
     if (tokensAndOwners.length) tokens = [tokensAndOwners[i][0]]
-    assets.forEach((i) => {
-      if (!tokens.length || tokens.includes(i["asset-id"]))
+    assets.forEach(i => {
+      if (!tokens.length || tokens.includes(i['asset-id']))
         if (
           !blacklistedTokens.length ||
-          !blacklistedTokens.includes(i["asset-id"])
+          !blacklistedTokens.includes(i['asset-id'])
         )
           sdk.util.sumSingleBalance(
             balances,
-            i["asset-id"],
+            i['asset-id'],
             BigNumber(i.amount).toFixed(0),
-            "algorand"
+            'algorand'
           )
     })
   })
@@ -107,7 +107,7 @@ async function sumTokens({
           balances,
           lpId: lp,
           unknownAsset: unknown,
-          blacklistedTokens: blacklistOnLpAsWell ? blacklistedTokens : []
+          blacklistedTokens: blacklistOnLpAsWell ? blacklistedTokens : [],
         })
       )
     )
@@ -121,7 +121,7 @@ async function getAssetInfo(assetId) {
 
   async function _getAssetInfo() {
     const {
-      data: { asset }
+      data: { asset },
     } = await axiosObj.get(`/v2/assets/${assetId}`)
     const reserveInfo = await getAccountInfo(asset.params.reserve)
     const assetObj = { ...asset.params, ...asset, reserveInfo }
@@ -137,38 +137,38 @@ async function resolveTinymanLp({
   balances,
   lpId,
   unknownAsset,
-  blacklistedTokens
+  blacklistedTokens,
 }) {
-  const lpBalance = balances["algorand:" + lpId]
-  if (lpBalance && lpBalance !== "0") {
+  const lpBalance = balances['algorand:' + lpId]
+  if (lpBalance && lpBalance !== '0') {
     const lpInfo = await getAssetInfo(lpId)
     let ratio = lpBalance / lpInfo.circulatingSupply
     if (unknownAsset && lpInfo.assets[unknownAsset]) {
       ratio = ratio * 2
-      Object.keys(lpInfo.assets).forEach((token) => {
+      Object.keys(lpInfo.assets).forEach(token => {
         if (!blacklistedTokens.length || !blacklistedTokens.includes(token))
           if (token !== unknownAsset)
             sdk.util.sumSingleBalance(
               balances,
               token,
               BigNumber(lpInfo.assets[token].amount * ratio).toFixed(0),
-              "algorand"
+              'algorand'
             )
       })
     } else {
-      Object.keys(lpInfo.assets).forEach((token) => {
+      Object.keys(lpInfo.assets).forEach(token => {
         if (!blacklistedTokens.length || !blacklistedTokens.includes(token))
           sdk.util.sumSingleBalance(
             balances,
             token,
             BigNumber(lpInfo.assets[token].amount * ratio).toFixed(0),
-            "algorand"
+            'algorand'
           )
       })
     }
   }
   delete balances[lpId]
-  delete balances["algorand:" + lpId]
+  delete balances['algorand:' + lpId]
   return balances
 }
 
@@ -178,15 +178,15 @@ async function getAccountInfo(accountId) {
 
   async function _getAccountInfo() {
     const {
-      data: { account }
+      data: { account },
     } = await axiosObj.get(`/v2/accounts/${accountId}`)
     if (!account.assets) account.assets = []
     if (account.amount)
-      account.assets.push({ amount: account.amount, "asset-id": "1" })
+      account.assets.push({ amount: account.amount, 'asset-id': '1' })
     account.assetMapping = {}
-    account.assets.forEach((i) => {
-      i["asset-id"] = "" + i["asset-id"]
-      account.assetMapping[i["asset-id"]] = i
+    account.assets.forEach(i => {
+      i['asset-id'] = '' + i['asset-id']
+      account.assetMapping[i['asset-id']] = i
     })
     return account
   }
@@ -198,11 +198,11 @@ const tokens = {
   usdcGoUsdLp: 885102318,
   gard: 684649988,
   gold$: 246516580,
-  silver$: 246519683
+  silver$: 246519683,
 }
 
 // store all asset ids as string
-Object.keys(tokens).forEach((t) => (tokens[t] = "" + tokens[t]))
+Object.keys(tokens).forEach(t => (tokens[t] = '' + tokens[t]))
 
 async function getAppGlobalState(marketId) {
   if (!stateCache[marketId]) stateCache[marketId] = _getAppGlobalState()
@@ -211,8 +211,8 @@ async function getAppGlobalState(marketId) {
   async function _getAppGlobalState() {
     let response = await lookupApplications(marketId)
     let results = {}
-    response.application.params["global-state"].forEach((x) => {
-      let decodedKey = Buffer.from(x.key, "base64").toString("binary")
+    response.application.params['global-state'].forEach(x => {
+      let decodedKey = Buffer.from(x.key, 'base64').toString('binary')
       results[decodedKey] = x.value.uint
     })
 
@@ -222,24 +222,24 @@ async function getAppGlobalState(marketId) {
 
 async function getPriceFromAlgoFiLP(lpAssetId, unknownAssetId) {
   let lpInfo = await getAssetInfo(lpAssetId)
-  if (lpInfo["unit-name"] !== "AF-POOL")
-    throw new Error("No, this is not an AlgoFi LP")
+  if (lpInfo['unit-name'] !== 'AF-POOL')
+    throw new Error('No, this is not an AlgoFi LP')
 
   const unknownAssetQuantity = lpInfo.reserveInfo.assets.find(
-    (i) => i["asset-id"] === "" + unknownAssetId
+    i => i['asset-id'] === '' + unknownAssetId
   ).amount
   for (const i of lpInfo.reserveInfo.assets) {
-    const id = i["asset-id"]
+    const id = i['asset-id']
     if (geckoMapping[id]) {
       return {
         price: i.amount / unknownAssetQuantity,
         geckoId: geckoMapping[id],
-        decimals: 0
+        decimals: 0,
       }
     }
   }
 
-  throw new Error("Not mapped with any whitelisted assets")
+  throw new Error('Not mapped with any whitelisted assets')
 }
 
 module.exports = {
@@ -253,5 +253,5 @@ module.exports = {
   lookupAccountByID: withLimiter(lookupAccountByID),
   searchAccounts: withLimiter(searchAccounts),
   getAppGlobalState: getAppGlobalState,
-  getPriceFromAlgoFiLP
+  getPriceFromAlgoFiLP,
 }
