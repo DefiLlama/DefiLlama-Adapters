@@ -67,37 +67,18 @@ async function ethereumTvl(timestamp, block) {
         token: underlyings[idx].output,
         balance: cashVal.output,
       });
-    } else if (underlyings[idx].output === crvIB) {
-      return; // https://twitter.com/0xngmi/status/1398565590856515585
+    } else if (underlyings[idx].output === crvIB || underlyings[idx].output === CRETH2) {
+      return; // Exclude CRETH2 //https://twitter.com/0xngmi/status/1398565590856515585
     } else {
       const token =
         replacements[underlyings[idx].output] || underlyings[idx].output;
       sdk.util.sumSingleBalance(balances, token, cashVal.output);
     }
   });
+
   await unwrapUniswapLPs(balances, lpPositions, block);
 
-  // --- Grab the accumulated on CRETH2 (ETH balance and update proper balances key) ---
-  const accumCRETH2 = (
-    await sdk.api.abi.call({
-      block,
-      target: CRETH2,
-      abi: abiCereth2["accumulated"],
-    })
-  ).output;
-
-  /* 
-    In theory the ETH deposited in `0xcBc1065255cBc3aB41a6868c22d1f1C573AB89fd` mints CRETH2 which later,
-    but represents the same ETH portion, so we should deduct from the total value given by `accumulated()``
-    the amount of ETH already deployed in the ethereum market place, otherwise it will account a certain %
-    twice. Only certain portion can be considered "idle" in the eth deposit contract to account again as extra
-    eth tvl
-  */
-  const iddleInETHDepositContract = +accumCRETH2 - +(balances[CRETH2] ?? 0)
-
-  sdk.util.sumSingleBalance(balances, nullAddress, +iddleInETHDepositContract)
-
-
+ 
   return balances;
 }
 

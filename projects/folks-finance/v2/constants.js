@@ -34,6 +34,21 @@ const pools = [
     appId: 1044267181,
     assetId: 287867876,
   },
+  // Gard
+  {
+    appId: 1060585819,
+    assetId: 684649988,
+  },
+  // WBTC
+  {
+    appId: 1067289273,
+    assetId: 1058926737,
+  },
+  // WETH
+  {
+    appId: 1067289481,
+    assetId: 887406851,
+  },
 ];
 
 const oracleAppId = 1040271396;
