@@ -50,7 +50,9 @@ async function tvl(timestamp, block, chainBlocks, network, chainId) {
             sdk.util.sumSingleBalance(balances, `${network}:${tokens[i]["address"]}`, balanceOfList[i]);
         }
     } catch (error) {
-
+        for (let k = 0; k < tokens.length; k++) {
+            sdk.util.sumSingleBalance(balances, `${network}:${tokens[k]["address"]}`, 0);
+        }
     }
 
     if (graphUrlList[network]) {
@@ -151,8 +153,8 @@ async function concrete(slots, block, chain) {
     ).output.map((concrete) => concrete.output);
 
     let concretes = {};
-    for (var i = 0; i < concreteLists.length; i++) {
-        concretes[slotsList[i].contractAddress] = concreteLists[i];
+    for (var k = 0; k < concreteLists.length; k++) {
+        concretes[slotsList[k].contractAddress] = concreteLists[k];
     }
 
     return concretes;
