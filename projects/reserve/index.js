@@ -1,8 +1,8 @@
 const { getLogs } = require('../helper/cache/getLogs')
-const { sumTokens2 } = require("../helper/unwrapLPs.js");
+const { sumTokens2, genericUnwrapCvx } = require("../helper/unwrapLPs.js");
 
 const vault = "0xaedcfcdd80573c2a312d15d6bb9d921a01e4fb0f";
-const deployerAddress = "0xFd6CC4F251eaE6d02f9F7B41D1e80464D3d2F377";
+const deployerAddresses = ["0xFd6CC4F251eaE6d02f9F7B41D1e80464D3d2F377", "0x5c46b718Cd79F2BBA6869A3BeC13401b9a4B69bB"];
 const rsr = "0x320623b8E4fF03373931769A31Fc52A4E78B5d70";
 
 async function tvl(_time, block, _, { api }) {
@@ -13,6 +13,7 @@ async function tvl(_time, block, _, { api }) {
     "0x0000000000085d4780B73119b644AE5ecd22b376", //tusd
     "0x4Fabb145d64652a948d72533023f6E7A623C7C53", //busd
   ], vault]]
+  const lpBalances = {}
   const creationLogs = await _getLogs(api)
 
   const mains = creationLogs.map(i => i.main)
@@ -21,8 +22,16 @@ async function tvl(_time, block, _, { api }) {
   const backingManagers = await api.multiCall({ abi: 'address:backingManager', calls: mains })
   const basketHandlers = await api.multiCall({ abi: 'address:basketHandler', calls: mains })
   const basketRes = await api.multiCall({ abi: "function quote(uint192, uint8) view returns (address[], uint256[])", calls: basketHandlers.map(i => ({ target: i, params: [0, 0] })) })
-  const basketTokens = await Promise.all(basketRes.map(async ([tokens]) => {
+  const basketTokens = await Promise.all(basketRes.map(async ([tokens], idx) => {
     const aTokens = await api.multiCall({ abi: 'address:ATOKEN', calls: tokens, permitFailure: true, })
+    
+    // Update lpBalances for Curve tokens
+    const cvxTokens = await api.multiCall({ abi: 'address:convexToken', calls: tokens, permitFailure: true})
+
+    const basePools = await api.multiCall({abi: 'address:convexPool', calls: tokens, permitFailure: true})
+    
+    cvxTokens.forEach((v, i) => v && genericUnwrapCvx(lpBalances, tokens[i], basePools[i], block, api.chain)) 
+
     aTokens.forEach((v, i) => v && ownerTokens.push([[v], tokens[i]]))
     return tokens.filter((_, i) => !aTokens[i])
   }))
@@ -32,7 +41,12 @@ async function tvl(_time, block, _, { api }) {
     ownerTokens.push([tokens, backingManagers[i]])
   })
 
-  return sumTokens2({ api, ownerTokens, blacklistedTokens: [rsr] })
+  
+  const tokenBalances = await sumTokens2({ api, ownerTokens, blacklistedTokens: [rsr] })
+
+  console.log({...lpBalances, ...tokenBalances})
+
+  return {...lpBalances, ...tokenBalances}
 }
 
 async function staking(_time, block, _, { api }) {
@@ -42,14 +56,16 @@ async function staking(_time, block, _, { api }) {
 }
 
 async function _getLogs(api) {
-  return getLogs({
-    api,
-    target: deployerAddress,
-    topic: 'RTokenCreated(address,address,address,address,string)',
-    fromBlock: 16680995,
-    eventAbi: 'event RTokenCreated(address indexed main, address indexed rToken, address stRSR, address indexed owner, string version)',
-    onlyArgs: true,
-  })
+  const resLog = (await Promise.all(deployerAddresses.map(deployerAddress =>  
+    getLogs({
+      api,
+      target: deployerAddress,
+      topic: 'RTokenCreated(address,address,address,address,string)',
+      fromBlock: 16680995,
+      eventAbi: 'event RTokenCreated(address indexed main, address indexed rToken, address stRSR, address indexed owner, string version)',
+      onlyArgs: true,
+  })))).flat()
+  return resLog
 }
 
 module.exports = {
