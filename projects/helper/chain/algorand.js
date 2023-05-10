@@ -95,8 +95,8 @@ async function sumTokens({
           lpId: lp,
           unknownAsset: unknown,
           blacklistedTokens: blacklistOnLpAsWell ? blacklistedTokens : [],
-        })
-      )
+        }),
+      ),
     )
   }
   return balances
@@ -133,7 +133,7 @@ async function resolveTinymanLp({ balances, lpId, unknownAsset, blacklistedToken
               balances,
               token,
               BigNumber(lpInfo.assets[token].amount * ratio).toFixed(0),
-              'algorand'
+              'algorand',
             )
       })
     } else {
@@ -143,7 +143,7 @@ async function resolveTinymanLp({ balances, lpId, unknownAsset, blacklistedToken
             balances,
             token,
             BigNumber(lpInfo.assets[token].amount * ratio).toFixed(0),
-            'algorand'
+            'algorand',
           )
       })
     }
