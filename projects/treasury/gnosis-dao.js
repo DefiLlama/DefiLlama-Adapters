@@ -38,5 +38,6 @@ module.exports = treasuryExports({
      ],
     owners: [treasury, treasury1, treasury2, treasury3, vestingAddress],
     ownTokens: [GNO, LP, LP2],
+    resolveUniV3: true,
   },
 })
