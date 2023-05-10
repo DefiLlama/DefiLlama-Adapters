@@ -15,6 +15,18 @@ module.exports = treasuryExports({
         nullAddress
      ],
     owners: [treasury, treasury2, vesting1, vesting2, vesting3, vesting4],
-    ownTokens: [PARA],
+    ownTokens: [PARA, "0xcb0e14e96f2cefa8550ad8e4aea344f211e5061d"],
+  },
+  optimism: {
+    tokens: [ 
+        "0x4200000000000000000000000000000000000042"
+     ],
+    owners: ["0xb8313eaf73aed8fea1d9930df199b3c1bdb67b47"],
+  },
+  arbitrum: {
+    tokens: [ 
+        "0x912ce59144191c1204e64559fe8253a0e49e6548"
+     ],
+    owners: ["0xfe98240ddAEDF78E278C28F1EdD690ee1a774e66"],
   },
 })
