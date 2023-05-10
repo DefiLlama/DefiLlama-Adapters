@@ -9,7 +9,10 @@ async function tvl(_, _b, _cb, { api, }) {
     { target: '0xA250a3b6a5e5E8b398092537951F8Bd80639ed5c', params: '0xE04539bD52618B7d197Be54B3e4D80732082906E' },
     { target: '0xCa0d15B4BB6ad730fE40592f9E25A2E052842c92', params: '0xEa892552BD31A20F42ceb3476D6A280c405883d0' },
     { target: '0xa27a1f03479cfe4B0b97Fd8c772a84aD815C1946', params: '0xa1FA74fD861FFf2fc5f7a618A05beB12709fB419' },
-    { target: '0x74AE6bB3138DB1969c52f39e2c311d997528633B', params: '0x2D1D648c2AEdf62037f2b80f9cC8c93258179380' }
+    { target: '0x74AE6bB3138DB1969c52f39e2c311d997528633B', params: '0x2D1D648c2AEdf62037f2b80f9cC8c93258179380' },
+    { target: '0x8EEA85dA61b397EaB933C001DAAD6fC1C5A4c67C', params: '0xcf4673F714183C42DADc1B42DAC21BE09cfc3684' },
+    { target: '0xc28fcef5970fd23e5bfcdc31ce1ba72ef98cc70a', params: '0xef7541FCa94988fA423bC418a854f7967f83a3E0' },
+    { target: '0x371d33963fb89ec9542a11ccf955b3a90391f99f', params: '0x43Ac7f627e41EBDa7515FEaCa425306AaB9cB602' },
   ]
   const bals = await api.multiCall({    abi: 'erc20:balanceOf', calls  })
   const lps = await api.multiCall({  abi: 'address:stake', calls: calls.map(i => i.target)})

@@ -101,7 +101,7 @@ async function getBorrowed(balances, block, chain, v2ReserveTokens, dataHelper, 
   })
 }
 
-function aaveChainTvl(chain, addressesProviderRegistry, transformAddressRaw, dataHelperAddresses, borrowed, v3 = false, { abis = {}, oracle, } = {}) {
+function aaveChainTvl(chain, addressesProviderRegistry, transformAddressRaw, dataHelperAddresses, borrowed, v3 = false, { abis = {}, oracle, blacklistedTokens = [], } = {}) {
   return async (timestamp, ethBlock, { [chain]: block }) => {
     const balances = {}
     const { transformAddress, fixBalances, v2Atokens, v2ReserveTokens, dataHelper, updateBalances } = await getData({ oracle, chain, block, addressesProviderRegistry, dataHelperAddresses, transformAddressRaw, abis, })
@@ -112,13 +112,19 @@ function aaveChainTvl(chain, addressesProviderRegistry, transformAddressRaw, dat
     }
     if (updateBalances) updateBalances(balances)
     fixBalances(balances)
+    Object.keys(balances).forEach((key) => {
+      if (!blacklistedTokens.length) return;
+      if (blacklistedTokens.some(i => new RegExp(i, 'gi').test(key))) {
+        delete balances[key]
+      }
+    })
     return balances
   }
 }
-function aaveExports(chain, addressesProviderRegistry, transform = undefined, dataHelpers = undefined, { oracle, abis } = {}) {
+function aaveExports(chain, addressesProviderRegistry, transform = undefined, dataHelpers = undefined, { oracle, abis, v3 = false, blacklistedTokens = [] } = {}) {
   return {
-    tvl: aaveChainTvl(chain, addressesProviderRegistry, transform, dataHelpers, false, undefined, { oracle, abis, }),
-    borrowed: aaveChainTvl(chain, addressesProviderRegistry, transform, dataHelpers, true, undefined, { oracle, abis })
+    tvl: aaveChainTvl(chain, addressesProviderRegistry, transform, dataHelpers, false, v3, { oracle, abis, blacklistedTokens, }),
+    borrowed: aaveChainTvl(chain, addressesProviderRegistry, transform, dataHelpers, true, v3, { oracle, abis, })
   }
 }
 
