@@ -1,9 +1,16 @@
 const { getLogs } = require('../helper/cache/getLogs')
-const { sumTokens2, genericUnwrapCvx } = require("../helper/unwrapLPs.js");
+const { sumTokens2, genericUnwrapCvx, unwrapCreamTokens } = require("../helper/unwrapLPs.js");
 
 const vault = "0xaedcfcdd80573c2a312d15d6bb9d921a01e4fb0f";
 const deployerAddresses = ["0xFd6CC4F251eaE6d02f9F7B41D1e80464D3d2F377", "0x5c46b718Cd79F2BBA6869A3BeC13401b9a4B69bB"];
 const rsr = "0x320623b8E4fF03373931769A31Fc52A4E78B5d70";
+
+const fluxTokenAddresses = [
+  "0x465a5a630482f3abD6d3b84B39B29b07214d19e5", // fUSDC
+  "0xe2bA8693cE7474900A045757fe0efCa900F6530b", // fDAI
+  "0x81994b9607e06ab3d5cF3AffF9a67374f05F27d7", // fUSDT
+  "0x1C9A2d6b33B4826757273D47ebEe0e2DddcD978B" // fFRAX
+]
 
 async function tvl(_time, block, _, { api }) {
   // First section is for RSV which will soon be deprecated
@@ -14,6 +21,7 @@ async function tvl(_time, block, _, { api }) {
     "0x4Fabb145d64652a948d72533023f6E7A623C7C53", //busd
   ], vault]]
   const lpBalances = {}
+  const fluxBalances = {}
   const creationLogs = await _getLogs(api)
 
   const mains = creationLogs.map(i => i.main)
@@ -31,22 +39,29 @@ async function tvl(_time, block, _, { api }) {
     const basePools = await api.multiCall({abi: 'address:convexPool', calls: tokens, permitFailure: true})
     
     cvxTokens.forEach((v, i) => v && genericUnwrapCvx(lpBalances, tokens[i], basePools[i], block, api.chain)) 
-
+    
     aTokens.forEach((v, i) => v && ownerTokens.push([[v], tokens[i]]))
     return tokens.filter((_, i) => !aTokens[i])
   }))
+
   basketTokens.forEach((tokens, i) => {
     ownerTokens.push([tokens, rTokens[i]])
     // ownerTokens.push([tokens, stRsrs[i]])
     ownerTokens.push([tokens, backingManagers[i]])
   })
 
+  ownerTokens.forEach(([tokens, owner]) => {
+  
+    const fluxListWithOwner = tokens.filter(token => fluxTokenAddresses.includes(token)).map(fluxToken => [fluxToken, owner])
+
+
+    fluxListWithOwner.length && unwrapCreamTokens(fluxBalances, fluxListWithOwner)
+
+  })
   
   const tokenBalances = await sumTokens2({ api, ownerTokens, blacklistedTokens: [rsr] })
-
-  console.log({...lpBalances, ...tokenBalances})
-
-  return {...lpBalances, ...tokenBalances}
+  
+  return {...lpBalances, ...tokenBalances, ...fluxBalances}
 }
 
 async function staking(_time, block, _, { api }) {
