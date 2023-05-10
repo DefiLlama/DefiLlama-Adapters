@@ -50,17 +50,13 @@ async function tvl(_time, block, _, { api }) {
     ownerTokens.push([tokens, backingManagers[i]])
   })
 
-  ownerTokens.forEach(([tokens, owner]) => {
-  
+  await Promise.all(ownerTokens.map(([tokens, owner]) => {
     const fluxListWithOwner = tokens.filter(token => fluxTokenAddresses.includes(token)).map(fluxToken => [fluxToken, owner])
-
-
-    fluxListWithOwner.length && unwrapCreamTokens(fluxBalances, fluxListWithOwner)
-
-  })
+    return fluxListWithOwner.length && unwrapCreamTokens(fluxBalances, fluxListWithOwner)
+  }))
   
   const tokenBalances = await sumTokens2({ api, ownerTokens, blacklistedTokens: [rsr] })
-  
+
   return {...lpBalances, ...tokenBalances, ...fluxBalances}
 }
 
