@@ -29,12 +29,7 @@ async function lookupAccountByID(accountId) {
   return (await axiosObj.get(`/v2/accounts/${accountId}`)).data
 }
 
-async function searchAccounts({
-  appId,
-  limit = 1000,
-  nexttoken,
-  searchParams,
-}) {
+async function searchAccounts({ appId, limit = 1000, nexttoken, searchParams }) {
   const response = await axiosObj.get('/v2/accounts', {
     params: {
       ...searchParams,
@@ -88,16 +83,8 @@ async function sumTokens({
     if (tokensAndOwners.length) tokens = [tokensAndOwners[i][0]]
     assets.forEach(i => {
       if (!tokens.length || tokens.includes(i['asset-id']))
-        if (
-          !blacklistedTokens.length ||
-          !blacklistedTokens.includes(i['asset-id'])
-        )
-          sdk.util.sumSingleBalance(
-            balances,
-            i['asset-id'],
-            BigNumber(i.amount).toFixed(0),
-            'algorand'
-          )
+        if (!blacklistedTokens.length || !blacklistedTokens.includes(i['asset-id']))
+          sdk.util.sumSingleBalance(balances, i['asset-id'], BigNumber(i.amount).toFixed(0), 'algorand')
     })
   })
   if (tinymanLps.length) {
@@ -125,20 +112,14 @@ async function getAssetInfo(assetId) {
     } = await axiosObj.get(`/v2/assets/${assetId}`)
     const reserveInfo = await getAccountInfo(asset.params.reserve)
     const assetObj = { ...asset.params, ...asset, reserveInfo }
-    assetObj.circulatingSupply =
-      assetObj.total - reserveInfo.assetMapping[assetId].amount
+    assetObj.circulatingSupply = assetObj.total - reserveInfo.assetMapping[assetId].amount
     assetObj.assets = { ...reserveInfo.assetMapping }
     delete assetObj.assets[assetId]
     return assetObj
   }
 }
 
-async function resolveTinymanLp({
-  balances,
-  lpId,
-  unknownAsset,
-  blacklistedTokens,
-}) {
+async function resolveTinymanLp({ balances, lpId, unknownAsset, blacklistedTokens }) {
   const lpBalance = balances['algorand:' + lpId]
   if (lpBalance && lpBalance !== '0') {
     const lpInfo = await getAssetInfo(lpId)
@@ -181,8 +162,7 @@ async function getAccountInfo(accountId) {
       data: { account },
     } = await axiosObj.get(`/v2/accounts/${accountId}`)
     if (!account.assets) account.assets = []
-    if (account.amount)
-      account.assets.push({ amount: account.amount, 'asset-id': '1' })
+    if (account.amount) account.assets.push({ amount: account.amount, 'asset-id': '1' })
     account.assetMapping = {}
     account.assets.forEach(i => {
       i['asset-id'] = '' + i['asset-id']
@@ -222,12 +202,9 @@ async function getAppGlobalState(marketId) {
 
 async function getPriceFromAlgoFiLP(lpAssetId, unknownAssetId) {
   let lpInfo = await getAssetInfo(lpAssetId)
-  if (lpInfo['unit-name'] !== 'AF-POOL')
-    throw new Error('No, this is not an AlgoFi LP')
+  if (lpInfo['unit-name'] !== 'AF-POOL') throw new Error('No, this is not an AlgoFi LP')
 
-  const unknownAssetQuantity = lpInfo.reserveInfo.assets.find(
-    i => i['asset-id'] === '' + unknownAssetId
-  ).amount
+  const unknownAssetQuantity = lpInfo.reserveInfo.assets.find(i => i['asset-id'] === '' + unknownAssetId).amount
   for (const i of lpInfo.reserveInfo.assets) {
     const id = i['asset-id']
     if (geckoMapping[id]) {
