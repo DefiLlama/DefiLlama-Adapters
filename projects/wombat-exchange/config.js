@@ -22,6 +22,8 @@ module.exports = {
       ankrBNB: "0x6f1c689235580341562cdc3304e923cc8fad5bfa",
       bnby: "0xbed9B758A681d73a95Ab4c01309C63aa16297b80",
       smartHAY: "0xa61dccC6c6E34C8Fbf14527386cA35589e9b8C27",
+      wBETH: "0x8b892b6Ea1d0e5B29b719d6Bd6eb9354f1cDE060",
+      ankrETH: "0x1b507b97c89eDE3E40d1b2Ed92972197c6276D35",
     },
   },
   arbitrum: {
@@ -37,8 +39,7 @@ module.exports = {
       frax: "0x4a8686df475D4c44324210FFA3Fc1DEA705296e0", // FRAX-MAI-USD+
       bob: "0x917caF2b4D6040a9D67A5F8CEfC4F89d1b214c1A",
       mim: "0x29eeB257a2A6eCDE2984aCeDF80A1B687f18eC91",
-      wBETH: "0x8b892b6Ea1d0e5B29b719d6Bd6eb9354f1cDE060",
-      ankrETH: "0x1b507b97c89eDE3E40d1b2Ed92972197c6276D35",
+      jUSDC: "0xc7a6bA5F28993BaDb566007bD2E0CB253c431974",
     },
   },
   hallmarks: [
