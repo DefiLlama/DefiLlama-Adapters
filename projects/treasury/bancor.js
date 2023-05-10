@@ -29,7 +29,8 @@ module.exports = treasuryExports({
         "0x0d438F3b5175Bebc262bF23753C1E53d03432bDE",
         "0x0F5D2fB29fb7d3CFeE444a200298f468908cC942",
         "0x6710c63432A2De02954fc0f851db07146a6c0312",
-        "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9"
+        "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9",
+        "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"
      ],
     owners: [treasury],
     ownTokens: [BNT, vBNT],
