@@ -62,7 +62,6 @@ async function bscTvl(_, _1, _2, { api }) {
         coreAssets: ['0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'],
         minLPRatio: 0.001
     })
-    console.log(54, prices.balances, pools);
 
     balances = await prices.updateBalances(prices.balances);
     return balances;
