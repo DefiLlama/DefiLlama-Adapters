@@ -1,91 +1,42 @@
-const sdk = require("@defillama/sdk");
-const {staking} = require("../helper/staking");
-const {sumTokensAndLPsSharedOwners} = require("../helper/unwrapLPs");
-const {fixHarmonyBalances} = require("../helper/portedTokens");
+const { stakings } = require("../helper/staking");
+const { sumTokensExport, nullAddress, } = require("../helper/unwrapLPs");
 
-
-const bscTem = "0x19e6BfC1A6e4B042Fb20531244D47E252445df01";
+const bscOwner = "0xEA724deA000b5e5206d28f4BC2dAD5f2FA1fe788";
 const bscStaking = "0xa1f61Ca61fe8655d2a204B518f6De964145a9324";
+const bscStakingV2 = "0xffC7B93b53BC5F4732b414295E989684702D0eb5";
 const bscTreasuryContract = "0xd01e8D805BB310F06411e70Fd50eB58cAe2B4C27";
 
-async function bscTvl(timestamp, block, chainBlocks) {
-  let balances = {};
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [
-      ["0xe9e7cea3dedca5984780bafc599bd69add087d56", false], // BUSD
-      ["0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", false], // WBNB
-      ["0xfe19f0b51438fd612f6fd59c1dbb3ea319f433ba", false], // MIM
-      ["0x9911e98974d0badde85bd5f4d1f93087aa3ec5fa", true], // MIM-BUSD CAKELP
-      ["0xbf598a387c5f96f8bac9bdccf8fb68bc189cdff7", true], // TEM-MIM CAKELP
-      ["0x1ede821daade714edade648f525ada0c5fe4ee3a", true], // TEM-BUSD CAKELP
-    ],
-    [bscTreasuryContract],
-    chainBlocks.bsc,
-    "bsc",
-    (addr) => {
-      if (addr.toLowerCase() === "0xfe19f0b51438fd612f6fd59c1dbb3ea319f433ba") {
-        return "0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3";
-      }
-      return `bsc:${addr}`;
-    }
-  );
-  return balances;
-}
+const bscTokens = {
+  BUSD: "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+  WBNB: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+  MIM: "0xfe19f0b51438fd612f6fd59c1dbb3ea319f433ba",
+  TM: "0x194d1D62d8d798Fcc81A6435e6d13adF8bcC2966",
+  DAI: "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",
+  TEM: "0x19e6BfC1A6e4B042Fb20531244D47E252445df01",
+  VBUSD: "0x95c78222B3D6e262426483D42CfA53685A67Ab9D",
+  VBTC: "0x882C173bC7Ff3b7786CA16dfeD3DFFfb9Ee7847B",
+};
 
-const moonriverTem = "0xD86E3F7B2Ff4e803f90c799D702955003bcA9875";
-const moonriverStaking = "0xa1f61Ca61fe8655d2a204B518f6De964145a9324";
-const moonriverTreasuryContract = "0xd01e8D805BB310F06411e70Fd50eB58cAe2B4C27";
-
-async function moonriverTvl (timestamp, block, chainBlocks) {
-    let balances = {};
-    await sumTokensAndLPsSharedOwners(balances, [
-        ["0x5eF6e7e82b2402d354a22a0714299920135B45bE", true], // temMim HBLP
-        ["0x0cae51e1032e8461f4806e26332c030e34de3adb", false], // MIM
-        ["0x98878B06940aE243284CA214f92Bb71a2b032B8A", false] // WMOVR
-    ], [moonriverTreasuryContract], chainBlocks.moonriver, "moonriver", addr=> {
-        if (addr.toLowerCase() === "0xd86e3f7b2ff4e803f90c799d702955003bca9875") {
-            return "bsc:0x19e6BfC1A6e4B042Fb20531244D47E252445df01"
-        }
-        return `moonriver:${addr}`
-    })
-    return balances;
-}
-
-
-const harmonyTem = "0xd754ae7bb55feb0c4ba6bc037b4a140f14ebe018";
-const harmonyStaking = "0xd86e3f7b2ff4e803f90c799d702955003bca9875";
-const harmonyTreasury = "0x92ae908d7bcf891ffa47ae10596e6a66cf43a77a";
-
-async function harmonyTvl (timestamp, block, chainBlocks) {
-    let balances = {};
-    await sumTokensAndLPsSharedOwners(balances, [
-        ["0xef977d2f931c1978db5f6747666fa1eacb0d0339", false], // DAI
-        ["0xeed838406194feba1bd654cfdf85a941ac0944bc", true], // TEM DAI SLP
-        ["0xcf664087a5bb0237a0bad6742852ec6c8d69a27a", false] // WONE
-    ], [harmonyTreasury], chainBlocks.harmony, "harmony", addr=> {
-        addr = addr.toLowerCase();
-        if (addr == "0xd754ae7bb55feb0c4ba6bc037b4a140f14ebe018") {
-            return `bsc:0x19e6BfC1A6e4B042Fb20531244D47E252445df01`;
-        }
-        return `harmony:${addr}`;
-    })
-    fixHarmonyBalances(balances);
-    return balances;
-}
+const ethTokens = {
+  USDC: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+  USDT: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+};
+const ethOwner = "0x4Bd973e98585b003c31f4C8b9d6eAC5d3293B1e5"
 
 module.exports = {
-    bsc: {
-        tvl: bscTvl,
-        staking: staking(bscStaking, bscTem, "bsc")
-    },
-    moonriver: {
-        tvl: moonriverTvl,
-        staking: staking(moonriverStaking, moonriverTem, "moonriver", "bsc:0x19e6BfC1A6e4B042Fb20531244D47E252445df01")
-    },
-    harmony: {
-        tvl: harmonyTvl,
-        staking: staking(harmonyStaking, harmonyTem, "harmony", "bsc:0x19e6BfC1A6e4B042Fb20531244D47E252445df01")
-    },
-    tvl: sdk.util.sumChainTvls([bscTvl, moonriverTvl, harmonyTvl])
+  moonriver: {
+    tvl: () => 0,
+    staking: () => 0,
+  },
+  harmony: {
+    tvl: () => 0,
+    staking: () => 0,
+  },
+  bsc: {
+    tvl: sumTokensExport({ owners: [bscOwner, bscTreasuryContract,], tokens: [bscTokens.TM, bscTokens.DAI, bscTokens.BUSD, bscTokens.WBNB, bscTokens.VBUSD, bscTokens.VBTC], resolveUniV3: true, }),
+    staking: stakings([bscStaking, bscStakingV2], bscTokens.TEM, "bsc"),
+  },
+  ethereum: {
+    tvl: sumTokensExport({ owner: ethOwner, tokens: [ethTokens.USDC, ethTokens.USDT, nullAddress, '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599'], resolveUniV3: true, }),
+  },
 }

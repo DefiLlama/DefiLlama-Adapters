@@ -1,12 +1,18 @@
-const axios = require("axios");
+const { PublicKey } = require("@solana/web3.js");
+const { getConnection, decodeAccount, } = require("../helper/solana");
 
-const api = "https://api.uxd.fi/api/uxd-circulating-supply";
-
-async function fetch() {
-    const result = (await axios.get(api)).data;
-    return result;
+async function tvl() {
+  const connection = getConnection()
+  const mint = await connection.getAccountInfo(new PublicKey('7kbnvuGBxxj8AG9qp8Scn56muWGaRaFqxg1FsRp3PaFT'));
+  const mintInfo = decodeAccount('mint', mint)
+  return {
+    'uxd-stablecoin': mintInfo.supply.toString() / (10 ** mintInfo.decimals)
+  };
 }
 
 module.exports = {
-    fetch
+  timetravel: false,
+  solana: {
+    tvl,
+  },
 }

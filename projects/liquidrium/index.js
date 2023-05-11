@@ -1,15 +1,15 @@
 const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
-const {vaults} = require('./vaults');1
+const { vaults } = require('./vaults'); 1
 
-function calculateValue(amount, decimals){
+function calculateValue(amount, decimals) {
 	return amount / 10 ** decimals;
-};
+}
 async function tvl(block, chain) {
 	let balances = {};
 
-	for(let i=0; i<vaults.length; i++){
-		if(vaults[i].chain == chain){
+	for (let i = 0; i < vaults.length; i++) {
+		if (vaults[i].chain == chain) {
 			const poolTVL = await sdk.api.abi.call({
 				target: vaults[i].address,
 				abi: abi['getTotalAmounts'],
@@ -26,30 +26,29 @@ async function tvl(block, chain) {
 				balances, vaults[i].token1Name, token0Amount);
 			sdk.util.sumSingleBalance(
 				balances, vaults[i].token2Name, token1Amount);
-		};
-	};
+		}
+	}
 
 	return balances;
-};
+}
 async function tvlPolygon(timestamp, block, chainBlocks) {
 	return await tvl(chainBlocks['polygon'], 'polygon');
-};
+}
 async function tvlArbitrum(timestamp, block, chainBlocks) {
 	return await tvl(chainBlocks['arbitrum'], 'arbitrum');
-};
+}
 async function tvlEth(timestamp, block, chainBlocks) {
 	return await tvl(block, 'ethereum');
-};
+}
 module.exports = {
 	polygon: {
-	  tvl: tvlPolygon,
+		tvl: tvlPolygon,
 	},
 	arbitrum: {
-	  tvl: tvlArbitrum,
+		tvl: tvlArbitrum,
 	},
 	ethereum: {
 		tvl: tvlEth,
 	},
-	tvl: sdk.util.sumChainTvls([tvlPolygon, tvlArbitrum, tvlEth]),
 	methodology: 'We iterate through each HyperLiquidrium and get the total amounts of each deposited asset, then multiply it by their USD dollar provided by CoinGecko'
 };

@@ -1,8 +1,9 @@
 const sdk = require("@defillama/sdk");
 const utils = require("../helper/utils");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const { unwrapUniswapLPs, nullAddress } = require("../helper/unwrapLPs");
 const { getCompoundV2Tvl, compoundExports } = require("../helper/compound");
-const {  transformBscAddress } = require('../helper/portedTokens')
+const { transformBscAddress } = require('../helper/portedTokens')
+const { getConfig } = require('../helper/cache')
 
 const abiCerc20 = require("./cerc20.json");
 const abiCereth2 = require("./creth2.json");
@@ -26,10 +27,10 @@ async function ethereumTvl(timestamp, block) {
   let balances = {};
 
   let tokens_ethereum = (
-    await utils.fetchURL(
+    await getConfig('cream/ethereum',
       "https://api.cream.finance/api/v1/crtoken?comptroller=eth"
     )
-  ).data;
+  );
 
   //  --- Grab all the getCash values of crERC20 (Lending Contract Addresses) ---
   let cashValues = (
@@ -45,6 +46,7 @@ async function ethereumTvl(timestamp, block) {
       block,
       calls: tokens_ethereum.map((token) => ({ target: token.token_address })),
       abi: abiCerc20["underlying"],
+      permitFailure: true,
     })
   ).output;
 
@@ -65,54 +67,35 @@ async function ethereumTvl(timestamp, block) {
         token: underlyings[idx].output,
         balance: cashVal.output,
       });
-    } else if (underlyings[idx].output === crvIB) {
-      return; // https://twitter.com/0xngmi/status/1398565590856515585
+    } else if (underlyings[idx].output === crvIB || underlyings[idx].output === CRETH2) {
+      return; // Exclude CRETH2 //https://twitter.com/0xngmi/status/1398565590856515585
     } else {
       const token =
         replacements[underlyings[idx].output] || underlyings[idx].output;
       sdk.util.sumSingleBalance(balances, token, cashVal.output);
     }
   });
+
   await unwrapUniswapLPs(balances, lpPositions, block);
 
-  // --- Grab the accumulated on CRETH2 (ETH balance and update proper balances key) ---
-  const accumCRETH2 = (
-    await sdk.api.abi.call({
-      block,
-      target: CRETH2,
-      abi: abiCereth2["accumulated"],
-    })
-  ).output;
-
-  /* 
-    In theory the ETH deposited in `0xcBc1065255cBc3aB41a6868c22d1f1C573AB89fd` mints CRETH2 which later,
-    but represents the same ETH portion, so we should deduct from the total value given by `accumulated()``
-    the amount of ETH already deployed in the ethereum market place, otherwise it will account a certain %
-    twice. Only certain portion can be considered "idle" in the eth deposit contract to account again as extra
-    eth tvl
-  */
-  const iddleInETHDepositContract =
-    BigNumber(accumCRETH2).minus(balances[CRETH2]);
-
-  balances["0x0000000000000000000000000000000000000000"] = BigNumber(balances["0x0000000000000000000000000000000000000000"]).plus(iddleInETHDepositContract).toFixed(0);
-
+ 
   return balances;
 }
 
-async function lending(block, chain, borrowed){
+async function lending(block, chain, borrowed) {
   let balances = {};
 
   let tokens_bsc = (
-    await utils.fetchURL(
+    await getConfig('cream/'+chain,
       `https://api.cream.finance/api/v1/crtoken?comptroller=${chain}`
     )
-  ).data;
+  );
 
   let cashValues = (
     await sdk.api.abi.multiCall({
       block,
       calls: tokens_bsc.map((token) => ({ target: token.token_address })),
-      abi: borrowed? abiCerc20.totalBorrows: abiCerc20["getCash"],
+      abi: borrowed ? abiCerc20.totalBorrows : abiCerc20["getCash"],
       chain,
     })
   ).output;
@@ -122,6 +105,7 @@ async function lending(block, chain, borrowed){
       block,
       calls: tokens_bsc.map((token) => ({ target: token.token_address })),
       abi: abiCerc20["underlying"],
+      permitFailure: true,
       chain,
     })
   ).output;
@@ -134,7 +118,7 @@ async function lending(block, chain, borrowed){
         token: underlyings[idx].output,
         balance: cashVal.output,
       });
-    } else if (tokens_bsc[idx].symbol==="crBNB") {
+    } else if (tokens_bsc[idx].symbol === "crBNB") {
       sdk.util.sumSingleBalance(
         balances,
         "bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
@@ -175,6 +159,9 @@ const bscBorrowed = async (timestamp, ethBlock, chainBlocks) => {
 }
 
 module.exports = {
+  hallmarks: [
+    [1635292800, "Flashloan exploit"]
+  ],
   timetravel: false, // bsc and fantom api's for staked coins can't be queried at historical points
   start: 1599552000, // 09/08/2020 @ 8:00am (UTC)
   ethereum: {
@@ -185,5 +172,7 @@ module.exports = {
     borrowed: bscBorrowed
     //getCompoundV2Tvl("0x589de0f0ccf905477646599bb3e5c622c84cc0ba", "bsc", addr=>`bsc:${addr}`,  "0x1Ffe17B99b439bE0aFC831239dDECda2A790fF3A", "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c", true),
   },
-  polygon:compoundExports("0x20ca53e2395fa571798623f1cfbd11fe2c114c24", "polygon"),
+  // ethereum:compoundExports("0x3d5BC3c8d13dcB8bF317092d84783c2697AE9258", "ethereum", "0xd06527d5e56a3495252a528c4987003b712860ee", nullAddress),
+  polygon: compoundExports("0x20ca53e2395fa571798623f1cfbd11fe2c114c24", "polygon"),
+  arbitrum: compoundExports("0xbadaC56c9aca307079e8B8FC699987AAc89813ee", "arbitrum"),
 };

@@ -1,18 +1,20 @@
-const {calculateUniTvl} = require('../helper/calculateUniTvl.js')
-const {transformFantomAddress} = require('../helper/portedTokens.js')
 const {staking} = require('../helper/staking')
+const { getUniTVL } = require('../helper/unknownTokens')
+const sdk = require('@defillama/sdk');
+
 
 const factory = '0xEF45d134b73241eDa7703fa787148D9C9F4950b0'
-async function tvl(_timestamp, _ethBlock, chainBlocks){
-  const transform = await transformFantomAddress();
+const factory2 = '0x9d3591719038752db0c8bEEe2040FfcC3B2c6B9c'
+const chain = 'fantom'
+const ammTvl = getUniTVL({ chain, factory, useDefaultCoreAssets: false, })
+const ammTvl2 = getUniTVL({ chain, factory: factory2, useDefaultCoreAssets: false, })
 
-  const balances = await calculateUniTvl(transform, chainBlocks['fantom'], 'fantom', factory, 3795376, true);
-  return balances
-}
 
 module.exports = {
+  timetravel: true,
+  doublecounted: false,
   fantom:{
-    tvl,
+    tvl: sdk.util.sumChainTvls([ammTvl,ammTvl2]),
     staking: staking("0x2fbff41a9efaeae77538bd63f1ea489494acdc08", "0x5cc61a78f164885776aa610fb0fe1257df78e59b", 'fantom')
   },
 }

@@ -311,7 +311,7 @@ async function fetchFarms(chain, block) {
     allInfos = fetchFarmsPrices(allInfos);
     return allInfos;
   } catch(e) {
-    console.log("fetchFarms.error", e);
+    sdk.log("fetchFarms.error", e);
   }
 }
 

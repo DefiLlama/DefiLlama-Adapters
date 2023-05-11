@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const _us = require('underscore');
+
 const abi = require('./abi.json');
 const {transformFantomAddress} = require('../helper/portedTokens')
 
@@ -18,7 +18,7 @@ async function tvl(_, _ethBlock, chainBlocks) {
 
   const decimalsOfReserve = (
     await sdk.api.abi.multiCall({
-      calls: _us.map(reserves_mensa, (reserve) => ({
+      calls: reserves_mensa.map((reserve) => ({
         target: reserve
       })),
       abi: "erc20:decimals",
@@ -54,7 +54,7 @@ async function tvl(_, _ethBlock, chainBlocks) {
   const balanceOfResults = await sdk.api.abi.multiCall({
     block: chainBlocks['fantom'],
     chain: 'fantom',
-    calls: _us.map(assets, (reserve) => ({
+    calls: assets.map((reserve) => ({
       target: reserve.address,
       params: _mensaCoreAddress,
     })),
@@ -75,10 +75,10 @@ async function tvl(_, _ethBlock, chainBlocks) {
 }
 
 module.exports = {
+  deadFrom: 1648765747,
   misrepresentedTokens: true,
   methodology: 'Using the same methodology applied to other lending platforms, TVL for Mensa consists deposits made to the protocol and borrowed tokens are not counted.',
   fantom:{
     tvl,
   },
-  tvl
 };

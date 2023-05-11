@@ -1,58 +1,37 @@
-const { request, gql } = require("graphql-request");
-const {toUSDTBalances} = require('../helper/balances')
+const { request } = require("graphql-request");
+const { toUSDTBalances } = require('../helper/balances')
 
-const LiquidityQuery= gql`
+const LiquidityQuery = `
 {
-    farms {
-      farmingToken {
-        identifier
-      }
-      farmTokenPriceUSD
-      farmingTokenReserve
-    }
-    pairs {
-      firstToken {
-        decimals
-      }
-      secondToken {
-        decimals
-      }
-      firstTokenPriceUSD
-      secondTokenPriceUSD
-      info {
-        reserves0
-        reserves1
-      }
+    factory {
+      pairCount
+      totalValueLockedUSD
     }
   }
-  
 `
 
-async function tvl(){
-    const {pairs} = await request("https://graph.maiar.exchange/graphql", LiquidityQuery)
-    const totalTvl = pairs.reduce((total, pair)=>{
-        if(pair.firstTokenPriceUSD === "NaN" || pair.secondTokenPriceUSD === "NaN"){
-            return total
-        }
-        return total 
-        + (pair.firstTokenPriceUSD * pair.info.reserves0 / (10**(pair.firstToken.decimals)))
-        + (pair.secondTokenPriceUSD * pair.info.reserves1 / (10**(pair.secondToken.decimals))) 
-    }, 0)
-    return toUSDTBalances(totalTvl)
+const StakingQuery2 = `{
+  totalValueLockedUSD
+  totalValueStakedUSD
+  totalLockedMexStakedUSD
+}`
+
+async function tvl() {
+  const results = await request("http://graph.xexchange.com/graphql", LiquidityQuery)
+
+  return toUSDTBalances(results.factory.totalValueLockedUSD)
 }
 
-async function staking(){
-    const data = await request("https://graph.maiar.exchange/graphql", LiquidityQuery)
-    const mexFarm = data.farms.find(f=>f.farmingToken.identifier === "MEX-455c57")
-    return toUSDTBalances(mexFarm.farmTokenPriceUSD*mexFarm.farmingTokenReserve/1e18)
+async function stakingAndLockedMEX() {
+  const results = await request("http://graph.xexchange.com/graphql", StakingQuery2)
+  return toUSDTBalances(results.totalValueStakedUSD)
 }
 
-
-module.exports={
+module.exports = {
   misrepresentedTokens: true,
   timetravel: false,
-    elrond:{
-        tvl,
-        staking
-    },
+  elrond: {
+    tvl,
+    staking: stakingAndLockedMEX,
+  },
 }

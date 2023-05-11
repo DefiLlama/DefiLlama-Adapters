@@ -49,11 +49,11 @@ const ethTvl = async (timestamp, block) => {
 };
 
 module.exports = {
+  deadFrom: 1648765747,
   misrepresentedTokens: true,
   ethereum: {
     tvl: ethTvl,
   },
-  tvl: sdk.util.sumChainTvls([ethTvl]),
   methodology:
     "Counts tvl on all the Pools through Factory Contract",
 };

@@ -14,7 +14,6 @@ async function tvl(_timestamp, ethBlock){
 
 module.exports = {
     ethereum:{
-        tvl
+        tvl: () => ({}), //Project is dead
     },
-    tvl
 }

@@ -1,24 +1,23 @@
-const BigNumber = require('bignumber.js')
-const { request, gql } = require("graphql-request");
 
-const graphUrl = 'https://granada-api.quipuswap.com';
-const tvlQuery = gql`
-query {
-  overview {
-    xtzUsdQuote
-    totalLiquidity
-  }
-}`;
+const { sumTokens2, } = require('../helper/chain/tezos')
+const { get, } = require('../helper/http')
 
-async function fetch() {
-    const data = await request(graphUrl, tvlQuery);
-    const xtzUsdQuote = new BigNumber(data.overview.xtzUsdQuote);
-    const totalLiquidity = new BigNumber(data.overview.totalLiquidity);
-    return totalLiquidity.multipliedBy(xtzUsdQuote).dividedBy(1000000).toFixed(0);
+async function tvl() {
+  const tokenToTokenLPAddress = 'KT1VNEzpf631BLsdPJjt2ZhgUitR392x6cSi'
+  return sumTokens2({ owners: [tokenToTokenLPAddress, ... await getLPs('Quipuswap')], includeTezos: true, })
+}
+
+async function getLPs(dex) {
+  const { contracts } = await get('https://api.teztools.io/token/prices')
+  const LPs = {}
+  for (const { pairs } of contracts)
+    pairs.filter(p => p.dex === dex).forEach(p => LPs[p.address] = p)
+  return Object.keys(LPs)
 }
 
 module.exports = {
-  methodology: 'TVL counts the liquidity of QuipuSwap DEX. Data is pulled from:"https://granada-api.quipuswap.com".',
-    misrepresentedTokens: true,
-    fetch
+  timetravel: false,
+  tezos: {
+    tvl,
+  }
 }

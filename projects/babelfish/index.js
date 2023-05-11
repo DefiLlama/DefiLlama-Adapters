@@ -15,7 +15,7 @@ async function getTvl() {
     .div(prec);
 }
 
-getTvl().then(tvl => console.log(tvl.toString()));
+
 
 module.exports = {
   fetch: getTvl

@@ -1,10 +1,9 @@
-const retry = require('async-retry')
-const axios = require("axios");
+const { get } = require('../helper/http')
 
 async function staking() {
-    let response = await retry(async bail => await axios.get('https://cdn-b.chikn.farm/api/feed/staked'))
+    let response = await get('https://cdn-b.chikn.farm/api/feed/staked')
     return {
-        'chikn-egg': response.data.totalStakedAmount
+        'chikn-egg': response.totalStakedAmount
     }
 }
 
@@ -13,7 +12,7 @@ async function tvl() {
 }
 
 module.exports = {
-    avalanche:{
+    avax:{
         tvl,
         staking
     },

@@ -13,9 +13,6 @@ async function fetch() {
 
 module.exports = {
   methodology: `${lendingMarket}. Pizza TVL is achieved by making a call to its Pizza API V2.`,
-  name: 'Pizza',
-  token: 'PIZZA',
-  category: 'lending',
   eos: {
     fetch: eos
   },

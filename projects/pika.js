@@ -1,17 +1,13 @@
-const { getBlock } = require('./helper/getBlock')
-const sdk = require('@defillama/sdk')
+const { sumTokens2 } = require('./helper/unwrapLPs')
+const chain = 'optimism'
 
-async function tvl(timestamp, block, chainBlocks) {
-	block = await getBlock(timestamp, 'optimism', chainBlocks);
-	const balance = (await sdk.api.erc20.balanceOf({
-		target: '0x7f5c764cbc14f9669b88837ca1490cca17c31607',
-		owner: '0x2FaE8C7Edd26213cA1A88fC57B65352dbe353698',
-		block: block,
-		chain: 'optimism'
-	})).output;
-	console.log(balance);
-	return { '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48': balance }
-};
+async function tvl(_, _b, { [ chain]: block }) {
+  const owners = [
+    '0x2FaE8C7Edd26213cA1A88fC57B65352dbe353698', '0xD5A8f233CBdDb40368D55C3320644Fb36e597002',
+  ]
+  const tokens = ['0x7f5c764cbc14f9669b88837ca1490cca17c31607']
+  return sumTokens2({ chain, block, owners, tokens, })
+}
 
 module.exports = {
 	optimism: {

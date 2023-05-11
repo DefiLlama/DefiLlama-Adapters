@@ -1,4 +1,4 @@
-const { transformAvaxAddress } = require("../helper/portedTokens");
+
 const { stakings } = require("../helper/staking");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 
@@ -18,7 +18,7 @@ const SASHI_MIM_JLP = "0x71f8DF8A958D5a09694312a79355655F44310084";
 async function avaxTvl(timestamp, chainBlocks) {
   const balances = {};
 
-  let transformAddress = await transformAvaxAddress();
+  let transformAddress = addr => 'avax:'+addr
 
   await sumTokensAndLPsSharedOwners(
     balances,

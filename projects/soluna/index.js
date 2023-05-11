@@ -1,22 +1,18 @@
-const { LCDClient } = require('@terra-money/terra.js')
-const retry = require('async-retry')
+const { sumSingleBalance, TOKEN_LIST, getBalance, } = require('../helper/chain/terra')
 
-async function fetch() {
-  const terra = new LCDClient({
-    URL: "https://lcd.terra.dev/",
-    chainID: "columbus-5",
-  });
+async function tvl(timestamp, ethBlock, { terra: block }) {
+	const balances = {}
+	const aUSTBalance = await getBalance(TOKEN_LIST.anchorust, 'terra1aug2pyftq4e85kq5590ud30yswnewa42n9fmr8', block)
+	sumSingleBalance(balances, TOKEN_LIST.anchorust, aUSTBalance)
 
-  const result = await retry(async bail => 
-    terra.wasm.contractQuery(
-      "terra1aug2pyftq4e85kq5590ud30yswnewa42n9fmr8",
-      { total_deposit_amount: { } } // query msg
-    )
-  );
-  
-  return parseFloat(result.amount) / 10 ** 6;
+	return balances
 }
 
 module.exports = {
-  fetch
+  terra: {
+    tvl
+  },
+hallmarks:[
+[1651881600, "UST depeg"],
+  ]
 }

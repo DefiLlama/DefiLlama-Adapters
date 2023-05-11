@@ -1,0 +1,16 @@
+module.exports = {
+  ADDRESS_ZERO: '0x0000000000000000000000000000000000000000',
+  EXPIRATION_START_FROM: 1605000000,
+  NETWORK_MAINNET: {
+    id: 1,
+    name: 'ethereum',
+    vaults: [
+      '0xbab1e772d70300422312dff12daddcb60864bd41',
+      '0x463F9ED5e11764Eb9029762011a03643603aD879',
+      '0x5FE4B38520e856921978715C8579D2D7a4d2274F'
+    ]
+  },
+  ABI_SHORT: {
+    asset: 'address:asset'
+  }
+}

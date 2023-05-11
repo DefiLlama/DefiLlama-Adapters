@@ -1,66 +1,22 @@
-/*==================================================
-  Modules
-  ==================================================*/
+const { sumTokens2 } = require('../helper/unwrapLPs');
 
-  const sdk = require('@defillama/sdk');
-  const _ = require('underscore');
-  const BigNumber = require('bignumber.js');
+const pools = [
+  '0xcafea112Db32436c2390F5EC988f3aDB96870627'   // current pool
+];
+const yieldPools = [
+  '0x27f23c710dd3d878fe9393d93465fed1302f2ebd'
+]
+const getAssetsABI = "function getAssets() view returns (tuple(address assetAddress, bool isCoverAsset, bool isAbandoned)[])"
 
-/*==================================================
-  Settings
-  ==================================================*/
+async function tvl(timestamp, block, _, { api }) {
+  const assets = await api.multiCall({ abi: getAssetsABI, calls: pools})
+  const ownerTokens = assets.map((v, i) => [v.map(i => i.assetAddress), pools[i]])
+  const assets2 = await api.multiCall({  abi: 'address[]:getTrackedAssets', calls: yieldPools }) 
+  assets2.forEach((v, i) => ownerTokens.push([v, yieldPools[i]]))
+  return sumTokens2({ api, ownerTokens, blacklistedTokens: yieldPools})
+}
 
-  const pools = [
-    '0xcafea35cE5a2fc4CED4464DA4349f81A122fd12b'   // current pool
-  ];
-
-  const tokensAddresses = [
-    '0x6B175474E89094C44Da98b954EedeAC495271d0F', // DAI
-    '0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84', // stETH
-  ]
-
-/*==================================================
-  TVL
-  ==================================================*/
-
-  async function tvl(timestamp, block) {
-    let balances = {};
-
-    let calls = [];
-
-    _.each(pools, (pool) => {
-      _.each(tokensAddresses, (tokenAddress) => {
-        calls.push({
-          target: tokenAddress,
-          params: pool
-        })
-      });
-    });
-
-    let balanceOfResults = await sdk.api.abi.multiCall({
-      block,
-      calls,
-      abi: 'erc20:balanceOf'
-    });
-
-    sdk.util.sumMultiBalanceOf(balances, balanceOfResults);
-
-    for(let pool of pools) {
-      let balance = (await sdk.api.eth.getBalance({target: pool, block})).output;
-      balances['0x0000000000000000000000000000000000000000'] = BigNumber(balances['0x0000000000000000000000000000000000000000'] || 0).plus(balance).toFixed();
-    }
-
-    return balances;
-  }
-
-/*==================================================
-  Exports
-  ==================================================*/
-
-  module.exports = {
-    name: 'Nexus Mutual',
-    token: 'NXM',
-    category: 'derivatives',
-    start: 1558569600, // 05/23/2019 @ 12:00am (UTC)
-    tvl
-  }
+module.exports = {
+  start: 1558569600, // 05/23/2019 @ 12:00am (UTC)
+  ethereum: { tvl }
+}

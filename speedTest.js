@@ -8,7 +8,7 @@ function createProvider(name, url, chainId) {
     name.toUpperCase() + '_RPC',
     url
   ].join('='));
-  
+
   return new ethers.providers.JsonRpcProvider(url,
     {
       name: name,
@@ -45,7 +45,7 @@ function createProvider(name, url, chainId) {
     const spend = Date.now() - start
     console.log(name, "spend", spend / 1000, "s", "block", lastBlockNumber);
   }
-  
+
   console.log('.env')
   console.log(allNetworks.join("\n"))
 })();

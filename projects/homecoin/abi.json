@@ -1,0 +1,3 @@
+{
+  "getContractData": "function getContractData() view returns (address, address, uint256, uint256, uint256, uint256)"
+}

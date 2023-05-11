@@ -1,8 +1,8 @@
-const { request, gql } = require('graphql-request');
+const { request,  } = require('graphql-request');
 const { toUSDTBalances } = require('./helper/balances');
 
 const graphUrl = 'https://api.thegraph.com/subgraphs/name/omegasyndicate/defiplaza';
-const graphQuery = gql`
+const graphQuery = `
    query get_tvl($timestamp: Int) {
       hourlies(first: 1, orderBy: date, orderDirection: desc, where:{date_lte: $timestamp}) {
 			totalValueLockedUSD
@@ -23,5 +23,4 @@ module.exports = {
    ethereum: {
       tvl,
    },
-   tvl,
 };

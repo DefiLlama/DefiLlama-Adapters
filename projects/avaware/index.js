@@ -1,9 +1,7 @@
 const sdk = require("@defillama/sdk");
-const erc20 = require("../helper/abis/erc20.json");
 const abi = require("./abi.json");
 
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { transformAvaxAddress } = require("../helper/portedTokens");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 
 const FarmPoolManager = "0x7ec4AeaeB57EcD237F35088D11C59525f7D631FE";
@@ -14,7 +12,7 @@ const AVE = "0x78ea17559B3D2CF85a7F9C2C704eda119Db5E6dE";
 const staking = async (timestamp, ethBlock, chainBlocks) => {
   const balances = {};
 
-  const transformAddress = await transformAvaxAddress();
+  const transformAddress = addr => 'avax:'+addr;
 
   await sumTokensAndLPsSharedOwners(
     balances,
@@ -30,82 +28,47 @@ const staking = async (timestamp, ethBlock, chainBlocks) => {
 
 /*** farms TVL portion ***/
 const avaxTvl = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
+  const chain = 'avax'
+  const block = chainBlocks[chain]
 
   const CountOfPools = (
     await sdk.api.abi.call({
       abi: abi.poolCount,
       target: FarmPoolManager,
-      chain: "avax",
-      block: chainBlocks["avax"],
+      chain, block,
     })
   ).output;
 
-  const lpPositions = [];
+  const indices = []
 
   for (let index = 0; index < CountOfPools; index++) {
     if (index == 14) {
       continue // 14 isn't a normal pool, it's NFT staking rewards
     }
-    const getPoolAddress = (
-      await sdk.api.abi.call({
-        abi: abi.getPool,
-        target: FarmPoolManager,
-        params: index,
-        chain: "avax",
-        block: chainBlocks["avax"],
-      })
-    ).output.pool;
-
-    const stakingLpOrTokens = (
-      await sdk.api.abi.call({
-        abi: abi.stakingToken,
-        target: getPoolAddress,
-        chain: "avax",
-        block: chainBlocks["avax"],
-      })
-    ).output;
-
-    const balanceOfLpoOrToken = (
-      await sdk.api.abi.call({
-        abi: erc20.balanceOf,
-        target: stakingLpOrTokens,
-        params: getPoolAddress,
-        chain: "avax",
-        block: chainBlocks["avax"],
-      })
-    ).output;
-
-    if (index == 8) {
-      sdk.util.sumSingleBalance(
-        balances,
-        `avax:${stakingLpOrTokens}`,
-        balanceOfLpoOrToken
-      );
-    } else {
-      lpPositions.push({
-        token: stakingLpOrTokens,
-        balance: balanceOfLpoOrToken,
-      });
-    }
+    indices.push(index)
   }
 
-  const transformAddress = await transformAvaxAddress();
+  const { output: poolsRes } = await sdk.api.abi.multiCall({
+    target: FarmPoolManager,
+    abi: abi.getPool,
+    calls: indices.map(i => ({ params: i })),
+    chain, block,
+  })
+  const pools = poolsRes.map(i => i.output.pool)
 
-  await unwrapUniswapLPs(
-    balances,
-    lpPositions,
-    chainBlocks["avax"],
-    "avax",
-    transformAddress
-  );
-
-  return balances;
+  const { output: tokens } = await sdk.api.abi.multiCall({
+    target: FarmPoolManager,
+    abi: abi.stakingToken,
+    calls: pools.map(i => ({ target: i })),
+    chain, block,
+  })
+  const toa = []
+  tokens.forEach(({ output, input: { target } }) => toa.push([output, target]))
+  return sumTokens2({ tokensAndOwners: toa, chain, block, })
 };
 
 module.exports = {
-  timetravel: true,
-  avalanche: {
+  avax:{
     staking,
     tvl: avaxTvl,
   },

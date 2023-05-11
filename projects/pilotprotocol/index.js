@@ -1,8 +1,7 @@
 const sdk = require("@defillama/sdk");
-const erc20 = require("../helper/abis/erc20.json");
 const abi = require("./abi.json");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { transformHecoAddress } = require("../helper/portedTokens");
+const { getChainTransform } = require("../helper/portedTokens");
 
 const HECOPOOL_CONTRACT = "0xFB03e11D93632D97a8981158A632Dd5986F5E909";
 const BANK_CONTRACT = "0xD42Ef222d33E3cB771DdA783f48885e15c9D5CeD";
@@ -92,6 +91,7 @@ const hecoTvl = async (timestamp, ethBlock, chainBlocks) => {
       })),
       chain: "heco",
       block: chainBlocks["heco"],
+      permitFailure: true,
     })
   ).output.map((st) => st.output);
 
@@ -115,7 +115,7 @@ const hecoTvl = async (timestamp, ethBlock, chainBlocks) => {
         await sdk.api.abi.call({
           abi: abi.userInfo,
           target: HECOPOOL_CONTRACT,
-          params: [(pid = hecoPoolId[index]), (farm = farmingPools[index])],
+          params: [hecoPoolId[index], farmingPools[index]],
           chain: "heco",
           block: chainBlocks["heco"],
         })
@@ -128,7 +128,7 @@ const hecoTvl = async (timestamp, ethBlock, chainBlocks) => {
     } else {
       // Single side staking reward contracts
       const balance = await sdk.api.abi.call({
-        abi: erc20.balanceOf,
+        abi: 'erc20:balanceOf',
         target: stakingToken[index],
         params: farmingPools[index],
         chain: "heco",
@@ -143,7 +143,7 @@ const hecoTvl = async (timestamp, ethBlock, chainBlocks) => {
     }
   }
 
-  const transformAddress = await transformHecoAddress();
+  const transformAddress = await getChainTransform('heco');
 
   await unwrapUniswapLPs(
     balances,
@@ -160,5 +160,4 @@ module.exports = {
   heco: {
     tvl: hecoTvl,
   },
-  tvl: sdk.util.sumChainTvls([hecoTvl]),
 };

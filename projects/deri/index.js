@@ -35,7 +35,7 @@ async function perpetualPool(
     })
   ).output.map((value) => value.output);
 
-  for (i = 0; i < bTokens.length; i++) {
+  for (let i = 0; i < bTokens.length; i++) {
     let tokenBalance = (
       await sdk.api.erc20.balanceOf({
         block,
@@ -76,7 +76,8 @@ async function v3Pool(
   pool,
   token,
   balances,
-  transform = (a) => a
+  transform = (a) => a,
+  decimals = 18
 ) {
   let liquidity = (
     await sdk.api.abi.call({
@@ -87,7 +88,10 @@ async function v3Pool(
       chain,
     })
   ).output;
-  // console.log(pool, liquidity)
+  if (decimals !== 18) {
+    // fix arbitrum usdc token with decimals 6
+    liquidity = liquidity / 10**(18 - decimals)
+  }
   sdk.util.sumSingleBalance(balances, transform(token), liquidity);
 }
 
@@ -143,10 +147,27 @@ let polygonContracts = {
     lite: true,
   },
 };
+
+let config = {
+  arbitrum: {
+    futureMain: {
+      bTokenSymbol: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
+      pool: "0xDE3447Eb47EcDf9B5F90E7A6960a14663916CeE8",
+      v3: true,
+    },
+  },
+  era: {
+    futureMain: {
+      bTokenSymbol: "0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4",
+      pool: "0x9F63A5f24625d8be7a34e15477a7d6d66e99582e",
+      v3: true,
+    },
+  },
+};
 async function bsc(timestamp, ethBlock, chainBlocks) {
   let balances = {};
   const transform = (a) => `bsc:${a}`;
-  for ([key, contract] of Object.entries(bscContracts)) {
+  for (let [key, contract] of Object.entries(bscContracts)) {
     if (contract.lite === true) {
       await perpetualPoolLite(
         chainBlocks["bsc"],
@@ -180,7 +201,7 @@ async function bsc(timestamp, ethBlock, chainBlocks) {
 async function polygon(timestamp, ethBlock, chainBlocks) {
   let balances = {};
   const transform = await transformPolygonAddress();
-  for ([key, contract] of Object.entries(polygonContracts)) {
+  for (let [key, contract] of Object.entries(polygonContracts)) {
     if (contract.lite === true) {
       await perpetualPoolLite(
         chainBlocks["polygon"],
@@ -202,12 +223,38 @@ async function polygon(timestamp, ethBlock, chainBlocks) {
   }
   return balances;
 }
+async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
+  let balances = {};
+  const contracts = config[api.chain]
+  const transform = (a) => `${api.chain}:${a}`;
+  for (let [key, contract] of Object.entries(contracts)) {
+    if (contract.v3 === true) {
+      await v3Pool(
+        api.block,
+        api.chain,
+        contract.pool,
+        contract.bTokenSymbol,
+        balances,
+        transform,
+        6,                      // bToken decimals
+      );
+    }
+    return balances;
+  }
+}
 // node test.js projects/deri/index.js
 module.exports = {
+  misrepresentedTokens: true,
   bsc: {
     tvl: bsc,
   },
   polygon: {
     tvl: polygon,
+  },
+  arbitrum: {
+    tvl,
+  },
+  era: {
+    tvl,
   },
 };

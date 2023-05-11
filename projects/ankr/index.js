@@ -1,23 +1,109 @@
+const { get } = require("../helper/http")
 const sdk = require('@defillama/sdk');
+const abi = require("./abi.json");
+const { ethers } = require("ethers");
+const { toUSDTBalances } = require("../helper/balances")
 
-const wethAddress = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+let _response
 
-async function tvl(timestamp, block) {
-  const supply = await sdk.api.erc20.totalSupply({
-    target: '0xE95A203B1a91a908F9B9CE46459d101078c2c3cb',
-    block
-  })
+async function getTvls(serviceName, key) {
+  if (!_response) _response = get('https://api.staking.ankr.com/v1alpha/metrics')
+  const response = await _response
+  const data = response.services.find(i => i.serviceName === serviceName)
+  return data ? +data[key] : 0;
+}
 
-
+async function getETHTvl() {
   return {
-    [wethAddress]: supply.output 
+    ethereum: await getTvls("eth", "totalStaked"),
+    'matic-network': await getTvls("polygon", "totalStaked"),
   }
 }
 
-module.exports = {
-  ethereum: {
-    tvl,
-  },
-  tvl,
-  methodology: `We get the total supply of aETHc, the ETH staking contract and convert it to USD.`
+async function getBscTvl() {
+  return {
+    binancecoin: await getTvls("bnb", "totalStaked"),
+  }
 }
+
+async function getAvaxTvl() {
+  return {
+    'avalanche-2': await getTvls("avax", "totalStaked"),
+  }
+}
+
+async function polkadot() {
+  return {
+    polkadot: await getTvls("dot", "totalStaked"),
+  }
+}
+
+async function ksm() {
+  return {
+    kusama: await getTvls("ksm", "totalStaked"),
+  }
+}
+
+async function getFantomTvl() {
+  return {
+    fantom: await getTvls("ftm", "totalStaked"),
+  }
+}
+
+async function getGnosisTvl(timestamp, block, chainBlocks) {
+  
+  //Current Ankr Provider Address, there is a hard cap on how much mGNO each address can stake, other addresses might appear*/
+  const ankrProviderAddress = "0x4069D8A3dE3A72EcA86CA5e0a4B94619085E7362"
+  
+  //Staking Pool Proxy Contract
+  const proxyStakingPool = "0xfd0f61255913825da1c194b985f04982966c34d6"
+  
+  //Staking Pool Logic Contract = "0xb6fcfcc497271d837c050ec912004bca0d70db0f"
+  //Provider Registry Proxy Contract  = "0x8a2f83347f0e59faefe2320b7422f8aa432ce27a"
+  //Provider Registry Logic Contract = "0x6c6f910a79639dcc94b4feef59ff507c2e843929"
+
+
+    var providerBalance = (await sdk.api.abi.call({
+      abi: abi.getProviderBalance,
+      chain: 'xdai',
+      target: proxyStakingPool,
+      params: [ankrProviderAddress],
+      block: chainBlocks['xdai'],
+    })).output
+
+    //providerBalance = [balance, totalCap]
+    var staked = ethers.utils.formatEther(providerBalance[0])
+
+    //Staked amount is in mGNO, 32 mGNO = 1 GNO
+    var trueStaked = staked / 32
+
+    return {
+      gnosis: trueStaked
+    }
+}
+
+module.exports = {
+  timetravel: false,
+  ethereum: {
+    tvl: getETHTvl,
+  },
+  bsc: {
+    tvl: getBscTvl,
+  },
+  avax:{
+    tvl: getAvaxTvl,
+  },
+  fantom: {
+    tvl: getFantomTvl,
+  },
+  polkadot: {
+    tvl: polkadot,
+  },
+  kusama: {
+    tvl: ksm,
+  },
+  xdai: {
+    tvl: getGnosisTvl,
+  },
+  methodology: `We get the total staked amount and total staked USD from Ankr's official API. Gnosis: Gets staked amount from the staking pool.`,
+};

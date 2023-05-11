@@ -1,0 +1,9 @@
+{
+  "MANAGEMENT_WINDOW_OPEN": "bool:MANAGEMENT_WINDOW_OPEN",
+  "snapshotVaultBalance": "uint256:snapshotVaultBalance",
+  "snapshotAssetBalance": "uint256:snapshotAssetBalance",
+  "balanceOf": "function balanceOf(address account) view returns (uint256)",
+  "totalAssets": "uint256:totalAssets",
+  "state": "uint8:state",
+  "snapShotAssetBalance": "uint256:snapshotAssetBalance"
+}

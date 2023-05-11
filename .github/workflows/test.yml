@@ -1,0 +1,51 @@
+name: Test_Change
+on:
+  pull_request
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - id: file_changes
+        uses: trilom/file-changes-action@v1.2.4
+        with:
+          output: 'json'
+          fileOutput: 'json'
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Run changes files through test script
+        env:
+          LLAMA_DEBUG_MODE: "true"
+          BSC_RPC: https://rpc.ankr.com/bsc,https://bsc-dataseed4.binance.org
+        run: |
+          RUN_FILES=$(
+            MODIFIED=${{ steps.file_changes.outputs.files_modified}} \
+            ADDED=${{ steps.file_changes.outputs.files_added}} \
+            node ${{ github.workspace }}/.github/workflows/getFileList.js
+          )
+
+          if [ "$RUN_FILES" = "[]" ]; then
+            echo "No adapter files were modified"
+            exit 0
+          fi
+
+          npm remove typescript @types/async-retry @types/bn.js ts-node @solendprotocol/solend-sdk @hover-labs/kolibri-js
+          # npm ci --omit=dev
+          npm ci
+          # npm update @defillama/sdk
+
+          for i in $(echo $RUN_FILES | tr  -d '"[]' | tr "," "\n")
+          do 
+            { 
+              node ${{ github.workspace }}/test.js ${{ github.workspace }}/${i} 2>&1 | tee output.txt
+              node ${{ github.workspace }}/.github/workflows/commentResult.js /home/runner/work/DefiLlama-Adapters/DefiLlama-Adapters/output.txt "${{ github.repository_owner }}" "${{ github.event.repository.name }}" "${{ github.event.number }}" ${i}
+              if grep -q "\-\-\-\- ERROR \-\-\-\-" output.txt; then
+                exit 1;
+              fi
+            } || { 
+              echo -n $i
+              echo ' doesnt run'
+            }
+          done
+        
+      - name: Run ESLint
+        uses: eslint/github-action@v0

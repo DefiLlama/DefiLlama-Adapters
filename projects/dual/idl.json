@@ -1,0 +1,67 @@
+{
+  "version": "0.1.0",
+  "name": "dual_market",
+  "instructions": [],
+  "accounts": [
+    {
+      "name": "DIPState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "strike",
+            "type": "u64"
+          },
+          {
+            "name": "expiration",
+            "type": "u64"
+          },
+          {
+            "name": "splMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "vaultMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "vaultMintBump",
+            "type": "u8"
+          },
+          {
+            "name": "vaultSpl",
+            "type": "publicKey"
+          },
+          {
+            "name": "vaultSplBump",
+            "type": "u8"
+          },
+          {
+            "name": "optionMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "optionBump",
+            "type": "u8"
+          },
+          {
+            "name": "vaultUsdc",
+            "type": "publicKey"
+          },
+          {
+            "name": "vaultUsdcBump",
+            "type": "u8"
+          },
+          {
+            "name": "usdcMint",
+            "type": "publicKey"
+          }
+        ]
+      }
+    }
+  ],
+  "errors": [],
+  "metadata": {
+    "address": "DiPbvUUJkDhV9jFtQsDFnMEMRJyjW5iS6NMwoySiW8ki"
+  }
+}

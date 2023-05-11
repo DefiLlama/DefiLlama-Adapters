@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const { getBlock } = require("./helper/getBlock");
 
 const ethContracts = [
   /**
@@ -25,6 +24,13 @@ const ethContracts = [
    * coinmarketcap: wrapped-filecoin
    */
   '0x6e1A19F235bE7ED8E3369eF73b196C07257494DE',
+
+  /**
+   * WFLOW
+   *
+   * coingecko: wrapped-flow
+   */
+  '0x5c147e74d63b1d31aa3fd78eb229b65161983b2b',
 
   /**
    * WKDA
@@ -74,14 +80,14 @@ const celoContracts = [
 
 const ethTvls = ethContracts.map((contractAddress) => {
   return async (timestamp, block) => {
-      if (contractAddress == '0x53c4871322Bb47e7A24136fce291a6dcC832a294') {
-        return {
-            litecoin: (
-              await sdk.api.erc20.totalSupply({
-                block,
-                target: contractAddress,
-              })
-            ).output / 10 ** 18,
+    if (contractAddress == '0x53c4871322Bb47e7A24136fce291a6dcC832a294') {
+      return {
+        litecoin: (
+          await sdk.api.erc20.totalSupply({
+            block,
+            target: contractAddress,
+          })
+        ).output / 10 ** 18,
       }
     }
     return {
@@ -96,9 +102,7 @@ const ethTvls = ethContracts.map((contractAddress) => {
 });
 
 const celoTvls = celoContracts.map((contractAddress) => {
-  return async (timestamp, ethBlock, chainBlocks) => {
-    const block = await getBlock(timestamp, "celo", chainBlocks);
-
+  return async (timestamp, ethBlock, { celo: block }) => {
     return {
       [`celo:${contractAddress}`]: (
         await sdk.api.erc20.totalSupply({

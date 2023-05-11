@@ -1,8 +1,6 @@
 
 const sdk = require('@defillama/sdk');
-const { getBlock } = require('./helper/getBlock');
-const { transformMoonriverAddress } = require('./helper/portedTokens');
-const { unwrapUniswapLPs } = require('./helper/unwrapLPs');
+const { unwrapUniswapLPs, sumTokens2, } = require('./helper/unwrapLPs');
 const abi = require("./pendle/abi.json");
 
 const masterchefContract = '0x1f4b7660b6AdC3943b5038e3426B33c1c0e343E6'
@@ -23,14 +21,13 @@ const tokens = [
     }
 ];
 // node test.js projects/rivrkitty.js
-async function pool2(timestamp, block, chainBlocks) {
+async function pool2(timestamp, _block, { moonriver: block }) {
+    const chain = 'moonriver'
     const balances = {};
-    block = await getBlock(timestamp, 'moonriver', chainBlocks);
-    const transform = await transformMoonriverAddress();
 
     const masterChefDeposits = await sdk.api.abi.call({
         target: masterchefContract,
-        abi,
+        abi: abi.userInfo,
         params: [19, stakingContract],
         block,
         chain: 'moonriver'
@@ -44,41 +41,10 @@ async function pool2(timestamp, block, chainBlocks) {
         }],
         block,
         'moonriver',
-        transform
     );
-
-    const balanceOfs = (await sdk.api.abi.multiCall({
-        calls: tokens.map(c => ({
-            target: c.address,
-            params: [stakingContract]})),
-        abi: 'erc20:balanceOf',
-        block,
-        chain: 'moonriver'
-      })).output;
-    
-      for (let i = 0; i < tokens.length - 1; i++) {
-        if (tokens[i].isLP) {
-            await unwrapUniswapLPs(
-                balances,
-                [{
-                    balance: balanceOfs[i].output, 
-                    token: tokens[i].address
-                }],
-                block,
-                'moonriver',
-                transform
-            );
-        } else {
-            await sdk.util.sumSingleBalance(
-                balances, 
-                transform(tokens[i].address), 
-                balanceOfs[i].output
-            );
-        };
-    };
-
-    return balances;
-};
+    const tokens1 = tokens.filter(t => t.isLP).map(i => i.address)
+    return sumTokens2({ balances, chain, block, owner: stakingContract, tokens: tokens1, resolveLP: true, })
+}
 
 module.exports = {
     moonriver: {

@@ -1,6 +1,4 @@
-const { getBalance, unwrapLp } = require("../helper/terra");
-const { getBlock } = require("../helper/getBlock");
-const utils = require("../helper/utils");
+const { getBalance, unwrapLp } = require("../helper/chain/terra");
 
 const holderToken = "terra1w6xf64nlmy3fevmmypx6w2fa34ue74hlye3chk";
 const token = "terra1dy9kmlm4anr92e42mrkjwzyvfqwz66un00rwr5";
@@ -8,9 +6,7 @@ const token = "terra1dy9kmlm4anr92e42mrkjwzyvfqwz66un00rwr5";
 const holderlp = "terra1ude6ggsvwrhefw2dqjh4j6r7fdmu9nk6nf2z32";
 const pair = "terra17fysmcl52xjrs8ldswhz7n6mt37r9cmpcguack"; // VKR-UST lp
 
-async function staking(timestamp, chainBlocks) {
-  const block = await getBlock(timestamp, "terra", chainBlocks, true);
-
+async function staking(timestamp, _, { terra: block }) {
   const tokenBalance = await getBalance(token, holderToken, block);
 
   return {
@@ -18,9 +14,8 @@ async function staking(timestamp, chainBlocks) {
   };
 }
 
-async function pool2(timestamp, chainBlocks) {
+async function pool2(timestamp,_, { terra: block }) {
   const ustBalances = {};
-  const block = await getBlock(timestamp, "terra", chainBlocks, true);
   const balance = await getBalance(pair, holderlp, block);
   await unwrapLp(ustBalances, pair, balance, block);
 
@@ -31,10 +26,13 @@ async function pool2(timestamp, chainBlocks) {
 
 module.exports = {
   terra: {
+    tvl: () => ({}),
     staking: staking,
     pool2: pool2,
   },
-  tvl: (tvl) => ({}),
   misrepresentedTokens: true,
   timetravel: true,
 };
+module.exports.hallmarks = [
+        [1651881600, "UST depeg"],
+      ]

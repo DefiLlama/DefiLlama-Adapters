@@ -35,6 +35,5 @@ module.exports = {
   ethereum: {
     tvl: ethTvl,
   },
-  tvl: sdk.util.sumChainTvls([ethTvl]),
   methodology: "We count as TVL all the Yield Farms through Staking Contract",
 };

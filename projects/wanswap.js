@@ -1,14 +1,3 @@
-const utils = require('./helper/utils');
+const { uniTvlExport } = require('./helper/unknownTokens')
 
-/* * * * * * * *
-* ==> Correct adapter needs to be created.
-*
-*****************/
-async function fetch() {
-  var totalTvl = await utils.fetchURL('http://wanstakeinsight.com/wanswap_api/get_tvl')
-  return totalTvl.data.result;
-}
-
-module.exports = {
-  fetch
-}
+module.exports = uniTvlExport('wan', '0x1125C5F53C72eFd175753d427aA116B972Aa5537')

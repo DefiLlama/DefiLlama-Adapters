@@ -1,8 +1,6 @@
 const sdk = require("@defillama/sdk");
-const { getBlock } = require("./helper/getBlock");
 
-async function tvl(timestamp, block, chainBlocks) {
-  block = await getBlock(timestamp, "theta", chainBlocks);
+async function tvl(timestamp, _, { theta: block }) {
   return {
     "theta-fuel": (
       await sdk.api.eth.getBalance({
@@ -13,7 +11,7 @@ async function tvl(timestamp, block, chainBlocks) {
       })
     ).output,
   };
-};
+}
 
 module.exports = {
   theta: {

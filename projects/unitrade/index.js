@@ -59,11 +59,12 @@ async function tvl(_, block) {
   //fetching first 10 gateway tokens and formatting output (temp fix until we can fetch addedTokens.length )
   const gatewayTokens = (
     await sdk.api.abi.multiCall({
-      abi: gatewayAbi.abi.filter((item) => item.name === "tokens")[0],
+      abi: gatewayAbi.abi,
       calls: new Array(10).fill(null).map((_, index) => ({
         target: UNITRADE_BRIDGE,
         params: index,
       })),
+      permitFailure: true,
     })
   ).output
     .filter((item) => item.output !== null)

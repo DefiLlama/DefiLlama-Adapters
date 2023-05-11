@@ -1,0 +1,4 @@
+{
+  "currentPriceDAI": "uint256:currentPriceDAI",
+  "totalDelegated": "uint256:totalDelegated"
+}

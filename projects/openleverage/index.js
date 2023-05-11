@@ -1,67 +1,36 @@
-const sdk = require('@defillama/sdk');
-const erc20 = require("../helper/abis/erc20.json");
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
-controller_address = '0x0eabe8e34a1fae4601953667f811acb9ff808e78'
-openlev_address = '0x03bf707deb2808f711bb0086fc17c5cafa6e8aaf'
-
-async function tvl(timestamp, block) {
-    const logOutput = (await sdk.api.util.getLogs({
-        target: controller_address,
-        fromBlock: 13755184,
-        toBlock: block,
-        keys:[],
-        topic:'LPoolPairCreated(address,address,address,address,uint16,uint16,bytes)'
-    })).output
-
-    tokenAddressList = []
-    poolAddressList = []
-    poolToToken = {}
-    for (const s of logOutput) {
-        token0 = "0x"+s.data.slice(26, 66)
-        tokenAddressList.push(token0)
-        pool0 = "0x"+s.data.slice(90, 130)
-        poolAddressList.push(pool0)
-        poolToToken[pool0] = token0
-
-        token1 = "0x"+s.data.slice(154, 194)
-        tokenAddressList.push(token1)
-        pool1 = "0x"+s.data.slice(218, 258)
-        poolAddressList.push(pool1)
-        poolToToken[pool1] = token1
-
-    }
-    tokenAddressList = Array.from(new Set(tokenAddressList))
-
-    const balances = {}
-    for (const pool of poolAddressList) {
-        const poolBalance = (
-            await sdk.api.abi.call({
-                abi: erc20.balanceOf,
-                target: poolToToken[pool],
-                params: pool
-            })
-        ).output;
-        sdk.util.sumSingleBalance(balances, poolToToken[pool], poolBalance);
-    }
-    for (const token of tokenAddressList) {
-        const openlevBalance = (
-            await sdk.api.abi.call({
-                abi: erc20.balanceOf,
-                target: token,
-                params: openlev_address
-            })
-        ).output;
-        sdk.util.sumSingleBalance(balances, token, openlevBalance);
-    }
-    return balances
+const config = {
+  ethereum: '0x03bf707deb2808f711bb0086fc17c5cafa6e8aaf',
+  bsc: '0x6A75aC4b8d8E76d15502E69Be4cb6325422833B4',
+  kcc: '0xEF6890d740E1244fEa42E3D1B9Ff515C24c004Ce',
+  arbitrum: '0x2925671dc7f2def9e4ad3fa878afd997f0b4db45'
 }
-
-
-
-module.exports = {
-  name: 'openleverage',               // project name
-  website: 'https://openleverage.finance',
-  token: 'OLE',
-  start: 1638720000,            // 12/06/2021
-  tvl                           // tvl adapter
+// openleverage overcollateralized-borrowing-contracts
+const borrowConfig = {
+  bsc: '0xf436f8fe7b26d87eb74e5446acec2e8ad4075e47',
+  arbitrum: '0xe7779ebb5c28ccd6d3dcf13920b06402ca52189c'
 }
+module.exports = {};
+
+Object.keys(config).forEach(chain => {
+  const openLevAddr = config[chain]
+  const borrowAddr = borrowConfig[chain]
+  module.exports[chain] = {
+    tvl: async (_, _b, _cb, { api, }) => {
+      const data = await api.fetchList({ lengthAbi: 'uint256:numPairs', itemAbi: "function markets(uint16) view returns (address pool0, address pool1, address token0, address token1, uint16 marginLimit, uint16 feesRate, uint16 priceDiffientRatio, address priceUpdater, uint256 pool0Insurance, uint256 pool1Insurance)", target: openLevAddr })
+      const tokensAndOwners = data.map(i => {
+        const toa = [
+          [i.token0, openLevAddr],
+          [i.token0, i.pool0],
+          [i.token1, openLevAddr],
+          [i.token1, i.pool1],
+        ]
+        if (borrowAddr)
+          toa.push([i.token0, borrowAddr], [i.token1, borrowAddr],)
+        return toa
+      }).flat()
+      return sumTokens2({ api, tokensAndOwners })
+    }
+  }
+})

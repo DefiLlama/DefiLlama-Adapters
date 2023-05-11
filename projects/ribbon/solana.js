@@ -1,16 +1,15 @@
-const { getTokenAccountBalance } = require("../helper/solana");
+const { get } = require('../helper/http')
 
 const tvl = async () => {
-    const [solana] = await Promise.all([
-        getTokenAccountBalance('3ghzHYHC7nXx11DEq7aGNHwTyT3SWmCs1B2Ay7HB8ZCk')
-    ])
-    return {
-        solana
-    }
-}
+  const vault = await get("https://solana-vault.uc.r.appspot.com/tvl")
+
+  return {
+    solana: +vault.sol.tvl
+  };
+};
 
 module.exports = {
-    solana: {
-        tvl
-    },
-}
+  solana: {
+    tvl,
+  },
+};

@@ -1,114 +1,74 @@
-const BigNumber = require("bignumber.js");
-const HTMLParser = require("node-html-parser");
-const fetch = require('node-fetch');
 const axios = require("axios");
-const moment = require("moment");
-const papa = require("papaparse");
-const _ = require("underscore");
 
-// Scrapers
-const Scraper1ML = require("./utils/Scraper1ML.js");
-const ScraperLightBlock = require("./utils/ScraperLightBlock.js");
 
-// is there a better way to just return btc? since it is not on ethereum it is not really wbtc.
-const WBTC_ADDRESS = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599'
+const dayHistory = {};
 
-let historyTimestamp = 0;
+async function GetDailyHistory() {
+  let { data } = await axios.get('https://bitcoinvisuals.com/static/data/data_daily.csv');
+  data = parseCSV(data);
 
-function GetDailyHistory() {
-    return new Promise(async (resolve, reject) => {
-      try {
-        let timestamp = moment().startOf('day').unix();
+  data.forEach((row) => {
+    if (!row.capacity_total) return;
+    dayHistory[row.day] = row.capacity_total;
+  });
+}
 
-        if(timestamp == historyTimestamp) {
-          resolve();
-          return;
-        }
+async function get1MLCapacity() {
+  try {
+    const { data } = await axios.get('https://1ml.com/statistics?json=true')
+    return data.networkcapacity / 1e8
+  } catch (e) {
+    console.error(e)
+    return getFromTxStat()
+  }
+}
 
-        dayHistory = {};
+async function getFromTxStat() {
+  const { data } = await axios.get('https://txstats.com/api/datasources/proxy/1/query?db=p2shinfo&q=SELECT%20last(%22value%22)%20%20%2F%20100000000%20FROM%20%22ln_stats%22%20WHERE%20time%20%3E%3D%20now()%20-%201d%20GROUP%20BY%20time(6h)%20fill(null)&epoch=ms')
+  return data.results[0].series[0].values.pop()[1]
+}
 
-        let response = await axios.get('https://bitcoinvisuals.com/static/data/data_daily.csv');
+async function getChannelCapacity(timestamp) {
+  const day = new Date(timestamp * 1000).toISOString().slice(0,10)
+  return dayHistory[day]
+}
 
-        let data = papa.parse(response.data, {
-          header: true,
-          skipEmptyLines: true
-        });
+async function tvl(timestamp) {
+  const getCurrentTVL = (Date.now() / 1000 - timestamp) < 24 * 3600 // if the time difference is under 24 hours i.e we are not refilling old data
+  let channelCapacity
 
-        data = _.each(data.data, (row) => {
-          let timestamp = moment(row.day, '').utcOffset(0).startOf('day').add(1, 'day').unix();
-
-          dayHistory[timestamp] = row.capacity_total;
-        });
-
-        historyTimestamp = timestamp;
-
-        resolve();
-      } catch(error) {
-        reject(error);
-      }
-    });
+  if (getCurrentTVL) {
+    channelCapacity = await get1MLCapacity()
+  } else {
+    await GetDailyHistory();
+    channelCapacity = await getChannelCapacity(timestamp)
   }
 
-async function tvl(timestamp, block) {
-    await GetDailyHistory();
+  // if none of our scrape targets worked then throw an error
+  if (channelCapacity == null)
+    throw "Unable to determine LN channel capacity."
 
-    let channelCapacity = null;
-
-    if (dayHistory[timestamp] && moment().utcOffset(0).startOf('hour').unix() != timestamp) {
-        channelCapacity = new BigNumber(dayHistory[timestamp]);
-      } else {
-        // else try scraping from one of our sources
-        let scrapers = [new Scraper1ML(), new ScraperLightBlock()];
-
-        for (var i = 0; i < scrapers.length; i++) {
-          let scraper = scrapers[i];
-
-          let scrapeTarget = scraper.URL();
-
-          let amount = null;
-
-          try {
-            // load page html
-            let html = await fetch(scrapeTarget).then(function (response) { 
-                return response.text()
-            });
-
-            // parse the html
-            let parsedHTML = HTMLParser.parse(html);
-
-            amount = scraper.scrape(parsedHTML);
-
-            amount = amount.replace(',', '');
-
-            // check that the amount we parsed is a valid number, if not then continue to next scraper
-            if (isNaN(Number(amount))) {
-              continue;
-            }
-
-          } catch (error) {
-            console.log(error);
-          }
-
-          // break if we successfully scraped a channel capacity
-          if (amount != null) {
-            channelCapacity = new BigNumber(amount);
-            break;
-          }
-        }
-      }
-
-
-        // if none of our scrape targets worked then throw an error
-        if (channelCapacity == null) {
-            throw "Unable to determine LN channel capacity."
-          }
-
-        return {
-            [WBTC_ADDRESS] : channelCapacity.times(Math.pow(10, 8)).toFixed()
-        }
+  return {
+    bitcoin: channelCapacity
+  }
 }
 
 module.exports = {
-    start: 1516406400,
-    tvl,
-  };
+  start: 1516406400,
+  bitcoin: { tvl },
+};
+
+
+function parseCSV(csvData) {
+  csvData = csvData.replaceAll('\r', '').split('\n').map(i => i.split(','))
+  const headers = csvData.shift()
+  return csvData.map(row => toObject(headers, row))
+}
+
+function toObject(keys, values) {
+  const res = {}
+  keys.forEach((key, i) => {
+    res[key] = values[i]
+  })
+  return res
+}
