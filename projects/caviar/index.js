@@ -18,7 +18,7 @@ async function tvl(_, _b, _cb, { api, }) {
   const ethKey = 'ethereum:'+nullAddress
   return {
     ...balances,
-    [ethKey]: (balances[ethKey] ?? 0) * 2
+    [ethKey]: (balances[nullAddress] ?? 0) * 2
   }
 }
 
