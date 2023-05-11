@@ -1,7 +1,8 @@
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
-const nftxDao = "0x40D73Df4F99bae688CE3C23a01022224FE16C7b2";
-const nftx = "0x87d73E916D7057945c9BcD8cdd94e42A6F47f776"
+const treasury = "0x086b4ecd75c494dd36641195e89c25373e06d7cb";
+const treasury2 = "0x22341fb5d92d3d801144aa5a925f401a91418a05"
+const note = "0xCFEAead4947f0705A14ec42aC3D44129E1Ef3eD5"
 
 module.exports = treasuryExports({
   ethereum: {
@@ -9,7 +10,7 @@ module.exports = treasuryExports({
         nullAddress,
         '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',//USDC
      ],
-    owners: [nftxDao],
-    ownTokens: [nftx],
+    owners: [treasury],
+    ownTokens: [note],
   },
 })
