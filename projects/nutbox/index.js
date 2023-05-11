@@ -114,6 +114,7 @@ async function bscTvl(_, _1, _2, { api }) {
 }
 
 async function enulsTvl(_, _1, _2, {api}) {
+    let balances = {}
     const pools = await getENULSPools();
     const wnuls = '0x217dffF57E3b855803CE88a1374C90759Ea071bD'
     const res = await getTokenPrices({
