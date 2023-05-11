@@ -498,6 +498,16 @@ async function genericUnwrapCvx(balances, holder, cvx_BaseRewardPool, block, cha
   return balances
 }
 
+async function genericUnwrapCvxDeposit({ api, owner, token, balances }) {
+  if (!balances) balances = await api.getBalances()
+  const [bal, cToken ] = await api.batchCall([
+    { target: token, params: owner, abi: 'erc20:balanceOf' },
+    { target: token,  abi: 'address:curveToken' },
+  ])
+  sdk.util.sumSingleBalance(balances, cToken, bal, api.chain)
+  return balances
+}
+
 async function unwrapLPsAuto({ api, balances, block, chain = "ethereum", transformAddress, excludePool2 = false, onlyPool2 = false, pool2Tokens = [], blacklistedLPs = [], abis = {}, }) {
   if (api) {
     chain = api.chain ?? chain
@@ -749,4 +759,5 @@ module.exports = {
   unwrapBalancerToken,
   unwrapBalancerPool,
   sumTokensExport,
+  genericUnwrapCvxDeposit,
 }
