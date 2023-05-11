@@ -4,6 +4,8 @@ const pieDaoTreasury = "0x3bCF3Db69897125Aa61496Fc8a8B55A5e3f245d5";
 const DOUGH = "0xad32A8e6220741182940c5aBF610bDE99E737b2D";
 const DOUGH_LP = "0xE8846B27988FF52c371D5BD27Bf8DBA4097C93D2"
 
+const treasury = "0x267070804c46a47aa92a76d59d70c05d30de46e3"
+
 module.exports = treasuryExports({
   ethereum: {
     tokens: [ 
@@ -30,7 +32,7 @@ module.exports = treasuryExports({
         '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',//USDC
         '0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84' //stETH
      ],
-    owners: [pieDaoTreasury],
+    owners: [pieDaoTreasury, treasury],
     ownTokens: [DOUGH, DOUGH_LP],
   },
 })
