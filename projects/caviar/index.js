@@ -15,10 +15,8 @@ async function tvl(_, _b, _cb, { api, }) {
   const pools = await api.multiCall({  abi: "function pairs(address, address, bytes32) view returns (address)", calls: calls.map(i => ({ params: i})), target: factory }) 
 
   const balances = await sumTokens2({ api, owners: pools, tokens: [nullAddress]})
-  const ethKey = 'ethereum:'+nullAddress
   return {
-    ...balances,
-    [ethKey]: (balances[nullAddress] ?? 0) * 2
+    [nullAddress]: (balances[nullAddress] ?? 0) * 2
   }
 }
 
