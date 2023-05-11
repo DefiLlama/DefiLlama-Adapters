@@ -1,10 +1,10 @@
+const { simulateTransaction } = require("@project-serum/anchor/dist/cjs/utils/rpc");
 const {  nullAddress,treasuryExports } = require("../helper/treasury");
 
-const shaTreasury = "0x90A48D5CF7343B08dA12E067680B4C6dbfE551Be";
+const treasury = "0xdff2aea378e41632e45306a6de26a7e0fd93ab07";
+const treasury2 = "0xe1f03b7b0ebf84e9b9f62a1db40f1efb8faa7d22"
 
-const LP = "0x470e8de2eBaef52014A47Cb5E6aF86884947F08c"
-const FOX = "0xc770EEfAd204B5180dF6a14Ee197D99d808ee52d";
-const tFOX = "0x808D3E6b23516967ceAE4f17a5F9038383ED5311"
+const SILO = "0x6f80310CA7F2C654691D1383149Fa1A57d8AB1f8"
 
 
 module.exports = treasuryExports({
@@ -16,10 +16,9 @@ module.exports = treasuryExports({
         '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0',//LUSD
         '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',//WETH
         '0xdAC17F958D2ee523a2206206994597C13D831ec7',//USDT
-        '0x6f80310CA7F2C654691D1383149Fa1A57d8AB1f8',//SILO
         '0x2e9d63788249371f1DFC918a52f8d799F4a38C94',//TOKE
      ],
-    owners: [shaTreasury],
-    ownTokens: [FOX, LP, tFOX],
+    owners: [treasury, treasury2],
+    ownTokens: [SILO],
   },
 })

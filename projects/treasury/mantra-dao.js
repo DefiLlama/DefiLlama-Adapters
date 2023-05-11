@@ -1,7 +1,8 @@
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
-const keeperDaoTreasury = "0x9a67F1940164d0318612b497E8e6038f902a00a4";
-const ROOK = "0xfA5047c9c78B8877af97BDcb85Db743fD7313d4a";
+const treasury = "0xc8899da25423ac52aa711b97ae04c8888fa1e1d7";
+const treasury2 = "0xd84701828745c98405a3e1153fccea627963859a"
+const OM = "0x3593d125a4f7849a1b059e64f4517a86dd60c95d";
 
 
 module.exports = treasuryExports({
@@ -16,10 +17,9 @@ module.exports = treasuryExports({
         '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',//WETH
         '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',//WBTC
         '0xdBdb4d16EdA451D0503b854CF79D55697F90c8DF',//ALCX
-        '0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D',//renBTC
-        '0xdAC17F958D2ee523a2206206994597C13D831ec7'
+        '0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D'//renBTC
      ],
-    owners: [keeperDaoTreasury],
-    ownTokens: [ROOK],
+    owners: [treasury, treasury2],
+    ownTokens: [OM],
   },
 })
