@@ -9,9 +9,9 @@ async function fetch(){
         }
     });
 
-    if(!response?.data?.ok 
-        || !response?.data?.data 
-        || !Array.isArray(response?.data?.data) 
+    if(!response?.data?.ok
+        || !response?.data?.data
+        || !Array.isArray(response?.data?.data)
         || !response?.data?.data?.length > 0) {
 
         return null;
@@ -19,7 +19,7 @@ async function fetch(){
     }
 
     const lastItem = response.data.data[response.data.data.length - 1];
-    
+
     if(isNaN(lastItem[1])){
         return null;
     }
