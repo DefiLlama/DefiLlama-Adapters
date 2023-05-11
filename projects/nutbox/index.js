@@ -10,10 +10,7 @@ async function getBSCPools() {
         pools(where: {status: OPENED, poolFactory: "0xf870724476912057C807056b29c1161f5Fe0199a"}, first: 1000){
             id
             asset
-            status
-            chainId
             totalAmount
-            poolFactory
         }
     }
     `
@@ -65,6 +62,7 @@ async function bscTvl(_, _1, _2, { api }) {
         coreAssets: ['0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'],
         minLPRatio: 0.001
     })
+    console.log(54, prices.balances, pools);
 
     balances = await prices.updateBalances(prices.balances);
     return balances;
