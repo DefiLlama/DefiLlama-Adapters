@@ -2,6 +2,7 @@
 const sdk = require('@defillama/sdk');
 const { GraphQLClient, gql } = require('graphql-request');
 const client = new GraphQLClient('https://api.thegraph.com/subgraphs/name/terryyyyyy/walnutinbsc')
+const { getTokenPrices } = require('../helper/cache/sumUnknownTokens')
 
 async function getBSCPools() {
     const query = gql`
@@ -23,21 +24,61 @@ async function getBSCPools() {
             return pools
         }
     }catch(e) {
-        console.log('Get community from graph fail:', e);
+        console.log('Get bsc pool from graph fail:', e);
         return []
     }
 }
 
-async function tvl(_, _1, _2, { api }) {
-  const balances = {};
+async function getENULSPools() {
+    const query = `{
+        pools(first: 1000,status: OPENED, poolFactory: "0xb71A12De824B837eCD30D41384e80C8CDFb5D694"){
+          edges{
+            node{
+              id
+              asset
+              totalAmount
+            }
+          }
+        }
+      }`
+      try {
+        const restClient = new GraphQLClient('https://enuls-graph.nutbox.app/v1/common/search')
+        let data = await restClient.request(query)
+        data = JSON.parse(data.value).pools.edges
+        data = data.map(p => p.node)
+        return data
+      }catch(e) {
+        console.log('Get enuls pool from our service fail:', e);
+        return []
+      }
+}
 
-  const pools = await getBSCPools();
+async function bscTvl(_, _1, _2, { api }) {
+    let balances = {};
 
-  for (let p of pools) {
-    // balances['bsc:' + p.asset] = p.totalAmount; 
-    await sdk.util.sumSingleBalance(balances, p.asset, p.totalAmount, api.chain)
-  }
-  return balances;
+    const pools = await getBSCPools();
+
+    const prices = await getTokenPrices({
+        block: 'latest',
+        chain: 'bsc',
+        lps: pools.map(p=>p.asset),
+        coreAssets: ['0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'],
+        minLPRatio: 0.001
+    })
+
+    balances = await prices.updateBalances(prices.balances);
+    return balances;
+}
+
+async function enulsTvl(_, _1, _2, {api}) {
+    const pools = await getENULSPools();
+    const prices = await getTokenPrices({
+        block: 'latest',
+        chain: 'enuls',
+        lps: pools.map(p => p.asset),
+        coreAssets: ['0x217dffF57E3b855803CE88a1374C90759Ea071bD'],
+    })
+    return await prices.updateBalances(prices.balances);
 }
 
 module.exports = {
@@ -46,6 +87,9 @@ module.exports = {
   methodology: 'counts the number of Nubox staking tokens in the ERC20 staking contract.',
   start: 15414978,
   bsc: {
-    tvl,
+    tvl: bscTvl,
+  },
+  enuls: {
+    tvl: enulsTvl,
   }
 }; 
