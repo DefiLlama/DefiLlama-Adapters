@@ -15,7 +15,7 @@ module.exports = {
     staking: staking(FTMStaking, WFTM),
     tvl: gmxExports({ vault: FTMVault })
   },
-  zksync: {
+  era: {
     staking: staking(zkSyncStaking, WETH),
     tvl: gmxExports({ vault: zkSyncVault })
   }
