@@ -109,12 +109,18 @@ const ETH_WALLETS = [
     '0x4F2083f5fBede34C2714aFfb3105539775f7FE64',
     '0x849d52316331967b6ff1198e5e32a0eb168d039d',
     '0x4971dd016127f390a3ef6b956ff944d0e2e1e462',
+    '0x58e6c7ab55aa9012eacca16d1ed4c15795669e1c',
+    '0x616de58c011f8736fa20c7ae5352f7f6fb9f0669',
 ]
 
 const WALLET_XDAI_e6f = '0x458cd345b4c05e8df39d0a07220feb4ec19f5e6f'
 const WALLET_XDAI_969 = '0x10e4597ff93cbee194f4879f8f1d54a370db6969'
 
-const WALLETS_XDAI = [WALLET_XDAI_e6f, WALLET_XDAI_969]
+const WALLETS_XDAI = [
+    '0x458cd345b4c05e8df39d0a07220feb4ec19f5e6f',
+    '0x10e4597ff93cbee194f4879f8f1d54a370db6969',
+    '0x54e191b01aa9c1f61aa5c3bce8d00956f32d3e71',
+]
 
 
 function cartesianProduct(a, b) {
