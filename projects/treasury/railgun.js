@@ -90,7 +90,6 @@ module.exports = treasuryExports({
         "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",//usdt
         "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",//dai
         "0x1a3acf6D19267E2d3e7f898f42803e90C9219062",//fxs
-        "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0",//wsteth
         "0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6",//wbtc
         "0xE5417Af564e4bFDA1c483642db72007871397896",//gns
         "0x2C89bbc92BD86F8075d1DEcc58C7F4E0107f286b",//avax

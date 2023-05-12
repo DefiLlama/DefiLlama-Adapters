@@ -30,7 +30,6 @@ module.exports = treasuryExports({
       "0x7f50786A0b15723D741727882ee99a0BF34e3466", // Stake DAO sdCRV Gauge
       "0x445494F823f3483ee62d854eBc9f58d5B9972A25", // 50DOLA-50DBR
       "0xb204BF10bc3a5435017D3db247f56dA601dFe08A", // 50DOLA-50WETH
-      "0xC36442b4a4522E871399CD717aBDD847Ab11FE88", // UNI V3 DOLA + DBR
       "0x7e05540A61b531793742fde0514e6c136b5fbAfE", // xFODL
       "0xAD038Eb671c44b853887A7E32528FaB35dC5D710", // DBR
     ],
@@ -41,6 +40,7 @@ module.exports = treasuryExports({
       "0xA5D7A7690B72a89B7b720E43fC9cBda5419d0C71", // 50INV-50DOLA Aura Deposit Vault
       // "0x9c7305eb78a432ced5C4D14Cac27E8Ed569A2e26", // veNFT
     ],
+    resolveUniV3: true,
   },
   optimism: {
     tokens: [
