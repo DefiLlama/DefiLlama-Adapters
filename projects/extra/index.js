@@ -6,7 +6,7 @@ const subgraphUrls = {
   optimism: `https://api.thegraph.com/subgraphs/name/extrafi/extrasubgraph`,
 };
 
-async function tvl(timestamp, block) {
+async function tvl(timestamp, block, chainBlocks) {
   const chain = 'optimism';
   const balances = {};
   const vaultsQuery = `{
@@ -36,8 +36,7 @@ async function tvl(timestamp, block) {
     balances[`optimism:${lendingPool.underlyingTokenAddress}`] = remainAmount;
   });
 
-  // Error when use default OPTOMISM RPC, it worked when changed to a new one.
-  await unwrapUniswapLPs(balances, lpPositions, block, chain);
+  await unwrapUniswapLPs(balances, lpPositions, chainBlocks.optimism, chain);
   return balances
 }
 
