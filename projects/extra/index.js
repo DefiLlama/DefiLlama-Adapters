@@ -35,6 +35,8 @@ async function tvl(timestamp, block) {
     const remainAmount = new BigNumber(lendingPool.totalLiquidity).minus(new BigNumber(lendingPool.totalBorrows)).toFixed(0);
     balances[`optimism:${lendingPool.underlyingTokenAddress}`] = remainAmount;
   });
+
+  // Error when use default OPTOMISM RPC, it worked when changed to a new one.
   await unwrapUniswapLPs(balances, lpPositions, block, chain);
   return balances
 }
