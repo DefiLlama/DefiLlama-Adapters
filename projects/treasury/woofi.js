@@ -5,7 +5,6 @@ const treasuryETH = "0xfa2d1f15557170f6c4a4c5249e77f534184cdb79"
 const WOO = "0x4691937a7508860F876c9c0a2a617E7d9E945D4B"
 const WOOBSC= "0x4691937a7508860F876c9c0a2a617E7d9E945D4B"
 const LP = "0x2FC8bC3eE171eD5610ba3093909421E90b47Fc07"
-const LP2 = "0xC36442b4a4522E871399CD717aBDD847Ab11FE88"
 const treasuryBSC = "0xfd899c7c5ed84537e2acfc998ce26c3797654ae8"
 
 module.exports = treasuryExports({
@@ -24,8 +23,9 @@ module.exports = treasuryExports({
         
      ],
     owners: [treasuryETH],
-    ownTokens: [WOO, LP, LP2],
+    ownTokens: [WOO, LP],
     resolveLP: true,
+    resolveUniV3: true,
   },
   bsc: {
     tokens: [ 
