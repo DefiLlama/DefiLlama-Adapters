@@ -1,7 +1,6 @@
 // Maverick Protocol
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { getLogs } = require("../helper/cache/getLogs");
-const BigNumber = require("bignumber.js");
 
 function maverickTVL(config) {
   const exports = {};
