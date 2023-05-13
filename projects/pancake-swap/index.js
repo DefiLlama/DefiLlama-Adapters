@@ -75,7 +75,7 @@ module.exports = {
   misrepresentedTokens: true,
   methodology: 'TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://pancakeswap.finance/info as the source. Staking accounts for the CAKE locked in MasterChef (0x73feaa1eE314F8c655E354234017bE2193C9E24E)',
   bsc: {
-    staking: stakings(["0x73feaa1eE314F8c655E354234017bE2193C9E24E", "0x45c54210128a065de780c4b0df3d16664f7f859e"], "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82", "bsc"),
+    staking: stakings(["0x73feaa1eE314F8c655E354234017bE2193C9E24E", "0xa5f8C5Dbd5F286960b9d90548680aE5ebFf07652", "0x45c54210128a065de780c4b0df3d16664f7f859e"], "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82", "bsc"),
     tvl
   },
   ethereum: {
