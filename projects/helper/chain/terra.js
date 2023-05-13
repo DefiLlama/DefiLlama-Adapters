@@ -50,7 +50,7 @@ async function getDenomBalance(denom, owner, block, { isTerra2 = false } = {}) {
   if (block !== undefined) {
     endpoint += `?height=${block - (block % 100)}`
   }
-  const data = (await axios.get(endpoint)).data.result
+  const data = (await axios.get(endpoint)).data.balances;
 
   const balance = data.find(balance => balance.denom === denom);
   return balance ? Number(balance.amount) : 0
