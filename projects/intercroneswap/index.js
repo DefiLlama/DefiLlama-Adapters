@@ -68,8 +68,8 @@ async function getTronPairs(balances) {
     const allPairs = await axios.get(IswapURL + '11111')
     for (let index = 0; index < allPairs.data.data.length; index++) {
         const pair = allPairs.data.data[index];
-        t0 = Object.values(tokens).find((token) => token.address === fromHex(pair.tokenAmount0.address) )
-        t1 = Object.values(tokens).find((token) => token.address === fromHex(pair.tokenAmount1.address) )
+        const t0 = Object.values(tokens).find((token) => token.address === fromHex(pair.tokenAmount0.address) )
+        const t1 = Object.values(tokens).find((token) => token.address === fromHex(pair.tokenAmount1.address) )
         if (!t0) {
             sdk.log('couldn\'t find token: ', pair.tokenAmount0.symbol);   
             continue
@@ -78,8 +78,11 @@ async function getTronPairs(balances) {
             continue
         }
 
-        sdk.util.sumSingleBalance(balances, t0.id, Number(pair.tokenAmount0.numerator / (10 ** pair.tokenAmount0.decimals)))
-        sdk.util.sumSingleBalance(balances, t1.id, Number(pair.tokenAmount1.numerator / (10 ** pair.tokenAmount1.decimals)))
+        const { tokenAmount0, tokenAmount1 } = pair;
+
+        sdk.util.sumSingleBalance(balances, t0.id, Number(tokenAmount0.numerator / (10 ** tokenAmount0.decimals)))
+
+        sdk.util.sumSingleBalance(balances, t1.id, Number(tokenAmount1.numerator / (10 ** tokenAmount1.decimals)))
 
     }
 }
