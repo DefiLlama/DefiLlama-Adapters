@@ -34,18 +34,22 @@ module.exports = treasuryExports({
 
      ],
     owners: [treasury, treasury1, treasurypolygon, treasurypolygon1, treasuryfantom, treasuryfantom1],
-    ownTokens: [MIMO, MIMOfantom, MIMOpolygon],
+    ownTokens: [MIMO,],
   },
   polygon: {
     tokens: [
         nullAddress,
-        ADDRESSES.polygon.USDC//USDC
-    ]
+        '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174'//USDC
+    ],
+    owners: [treasury, treasury1, treasurypolygon, treasurypolygon1, treasuryfantom, treasuryfantom1],
+    ownTokens: [MIMOpolygon,],
   },
   fantom: {
     tokens: [
         nullAddress,
-        ADDRESSES.fantom.USDC//USDC
-    ]
+        '0x04068DA6C83AFCFA0e13ba15A6696662335D5B75'//USDC
+    ],
+    owners: [treasury, treasury1, treasurypolygon, treasurypolygon1, treasuryfantom, treasuryfantom1],
+    ownTokens: [MIMOfantom,],
   }
 })

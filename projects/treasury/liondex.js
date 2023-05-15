@@ -12,7 +12,6 @@ module.exports = treasuryExports({
         nullAddress,
         ADDRESSES.arbitrum.USDC,
         "0x8971dFb268B961a9270632f28B24F2f637c94244",
-        "0xC36442b4a4522E871399CD717aBDD847Ab11FE88"
      ],
     owners: [Treasury],
     ownTokens: [LION],

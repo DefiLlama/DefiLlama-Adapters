@@ -84,7 +84,7 @@ const config = {
   moonriver: {
     vaults: [
       // "0x97D811A7eb99Ef4Cb027ad59800cE27E68Ee1109",
-      "0x4a0474E3262d4DB3306Cea4F207B5d66eC8E0AA9",
+      //"0x4a0474E3262d4DB3306Cea4F207B5d66eC8E0AA9",
     ]
   },
   harmony: {

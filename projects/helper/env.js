@@ -6,6 +6,7 @@ module.exports = {
   GETBLOCK_KEY: env.GETBLOCK_KEY,
   SOLANA_RPC: env.SOLANA_RPC,
   APTOS_RPC: env.APTOS_RPC,
+  SUI_RPC: env.SUI_RPC,
   TERRA_RPC: env.TERRA_RPC,
   TERRA2_RPC: env.TERRA2_RPC,
   LOFTY_API: env.LOFTY_API,

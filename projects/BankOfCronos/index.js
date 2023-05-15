@@ -8,7 +8,8 @@ const USDC_ADDRESS = ADDRESSES.cronos.USDC;
 module.exports = {
   start: 6949784,
   cronos: {
-    tvl: sumTokensExport({ owner: BOC_TREASURY_ADDRESS, tokens: [CUSD_ADDRESS, USDC_ADDRESS]}),
+    // tvl: sumTokensExport({ owner: BOC_TREASURY_ADDRESS, tokens: [CUSD_ADDRESS, USDC_ADDRESS]}),
+    tvl: () => 0
   },
   methodology:
     "CDP collateral value + treasury mv",

@@ -5,7 +5,8 @@ const treasuryContractsETH = [
   "0x89c51828427f70d77875c6747759fb17ba10ceb0", //Aave Grants DAO
   "0xe3d9988f676457123c5fd01297605efdd0cba1ae", //Aave V1 Treasury
   "0x464C71f6c2F760DdA6093dCB91C24c39e5d6e18c", //Aave V2 Collector
-  "0x25f2226b597e8f9514b3f68f00f494cf4f286491" //Aave Ecosystem Reserve
+  "0x25f2226b597e8f9514b3f68f00f494cf4f286491", //Aave Ecosystem Reserve
+  "0xd784927Ff2f95ba542BfC824c8a8a98F3495f6b5", //V2 Incentives Controller
 ];
 
 const treasuryContractsMATIC = [
@@ -18,6 +19,10 @@ const treasuryContractsAvax = [
   "0x5ba7fd868c40c16f7aDfAe6CF87121E13FC2F7a0" //Aave V3 Treasury
 ];
 
+const treasuryContractsFantom = [
+  "0xBe85413851D195fC6341619cD68BfDc26a25b928", //Treasury V3
+];
+
 const aaveTreasuryOptimism = ["0xB2289E329D2F85F1eD31Adbb30eA345278F21bcf"]
 const aaveTreasuryArbitrum = ["0x053D55f9B5AF8694c503EB288a1B7E552f590710"]
 
@@ -26,6 +31,7 @@ const AAVEPOLYGON = '0xD6DF932A45C0f255f85145f286eA0b292B21C90B';
 const AAVEAVAX = '0x63a72806098bd3d9520cc43356dd78afe5d386d9';
 const AAVEARBITRUM = '0xba5ddd1f9d7f570dc94a51479a000e3bce967196';
 const AAVEOPTIMISM = '0x76fb31fb4af56892a25e32cfc43de717950c9278';
+const AAVEFANTOM = "0xf329e36C7bF6E5E86ce2150875a84Ce77f477375";
 
 
 module.exports = treasuryExports({
@@ -259,5 +265,20 @@ module.exports = treasuryExports({
     ],
     owners: aaveTreasuryOptimism,
     ownTokens: [AAVEOPTIMISM],
+  },
+  fantom: {
+    tokens: [
+      "0x513c7E3a9c69cA3e22550eF58AC1C0088e918FFf", // aFanCRV
+      "0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE", // aFanDAI
+      "0x191c10Aa4AF7C30e871E70C95dB0E4eb77237530", // aFanLINK
+      "0xc45A479877e1e9Dfe9FcD4056c699575a1045dAA", // aFanSUSHI
+      "0x625E7708f30cA75bfd92586e17077590C60eb4cD", // aFanUSDC
+      "0x6ab707Aca953eDAeFBc4fD23bA73294241490620", // aFanUSDT
+      "0x078f358208685046a11C85e8ad32895DED33A249", // aFanWBTC
+      "0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8", // aFanWETH
+      "0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97", // aFanWFTM
+    ],
+    owners: treasuryContractsFantom,
+    ownTokens: [AAVEFANTOM]
   },
 })

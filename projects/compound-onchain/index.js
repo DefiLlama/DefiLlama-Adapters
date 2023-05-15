@@ -171,7 +171,7 @@ async function tvl(timestamp, block) {
 module.exports = {
   hallmarks: [
     [1632873600, "Comptroller vulnerability exploit"],
-    [1623715200, "Liquidity mining begins"]
+    [1592226000, "COMP distribution begins"]
   ],
   timetravel: true,
   ethereum: {

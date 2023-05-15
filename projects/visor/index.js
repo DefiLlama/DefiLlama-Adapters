@@ -23,6 +23,8 @@ const HYPE_REGISTRY = {
     "0x0Ac4C7b794f3D7e7bF1093A4f179bA792CF15055", // Uniswap
     "0xAeC731F69Fa39aD84c7749E913e3bC227427Adfd", // Quickswap
   ],
+  polygon_zkevm: ["0xD08B593eb3460B7aa5Ce76fFB0A3c5c938fd89b8", // Quickswap
+  ],
   optimism: ["0xF5BFA20F4A77933fEE0C7bB7F39E7642A070d599"],
   arbitrum: [
     "0x66CD859053c458688044d816117D5Bdf42A56813", // Uniswap
@@ -122,6 +124,9 @@ module.exports = {
     ),
   },
   polygon: {
+    tvl: tvlWrapper,
+  },
+  polygon_zkevm: {
     tvl: tvlWrapper,
   },
   optimism: {

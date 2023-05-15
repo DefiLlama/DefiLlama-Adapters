@@ -7,7 +7,8 @@ module.exports = {
     name: 'ethereum',
     vaults: [
       '0xbab1e772d70300422312dff12daddcb60864bd41',
-      '0x463F9ED5e11764Eb9029762011a03643603aD879'
+      '0x463F9ED5e11764Eb9029762011a03643603aD879',
+      '0x5FE4B38520e856921978715C8579D2D7a4d2274F'
     ]
   },
   ABI_SHORT: {

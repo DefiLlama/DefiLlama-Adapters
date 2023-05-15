@@ -2,6 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 const eth = "0x10A19e7eE7d7F8a52822f6817de8ea18204F2e4f";
+const eth2 = "0xb129f73f1afd3a49c701241f374db17ae63b20eb"
 const polygon = "0xd2bD536ADB0198f74D5f4f2Bd4Fe68Bae1e1Ba80";
 const arbitrum = "0x6207ed574152496c9B072C24FD87cE9cd9E17320";
 const optimism = "0x043f9687842771b3dF8852c1E9801DCAeED3f6bc";
@@ -24,7 +25,7 @@ module.exports = treasuryExports({
       ADDRESSES.ethereum.STETH, // stETH
       "0x5aFE3855358E112B5647B952709E6165e1c1eEEe", // SAFE
     ],
-    owners: [eth],
+    owners: [eth, eth2],
     ownTokens: [bal, abal],
   },
   arbitrum: {

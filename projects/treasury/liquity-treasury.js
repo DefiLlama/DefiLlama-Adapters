@@ -7,7 +7,10 @@ const treasury2 = "0xcCb2656afB1Cc4cB130e8C8C903ad674069c6FCD";
 const treasuryOP = "0xd2D4e9024D8C90aB52032a9F1e0d92D4cE20191B";
 const treasuryOP2 = "0x2f593f151aF4bb9A71bcA6cAce1d3c56C2844117";
 
+const treasuryARB = "0xc5adb3d91329e1600cbf573485b1d3207bcf6de2"
+
 const LQTY = "0x6dea81c8171d0ba574754ef6f8b412f2ed88c54d";
+
 
 
 
@@ -32,5 +35,11 @@ module.exports = treasuryExports({
         '0x3c8B650257cFb5f272f799F5e2b4e65093a11a05',//velo
     ],
     owners: [treasuryOP, treasuryOP2],
+  },
+  arbitrum: {
+    tokens: [
+        nullAddress,
+    ],
+    owners: [treasuryARB],
   }
 })

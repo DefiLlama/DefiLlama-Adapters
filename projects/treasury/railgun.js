@@ -91,8 +91,7 @@ module.exports = treasuryExports({
         ADDRESSES.polygon.USDT,//usdt
         ADDRESSES.polygon.DAI,//dai
         "0x1a3acf6D19267E2d3e7f898f42803e90C9219062",//fxs
-        ADDRESSES.ethereum.WSTETH,//wsteth
-        ADDRESSES.polygon.WBTC,//wbtc
+        "0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6",//wbtc
         "0xE5417Af564e4bFDA1c483642db72007871397896",//gns
         "0x2C89bbc92BD86F8075d1DEcc58C7F4E0107f286b",//avax
         "0x53E0bca35eC356BD5ddDFebbD1Fc0fD03FaBad39",//link
