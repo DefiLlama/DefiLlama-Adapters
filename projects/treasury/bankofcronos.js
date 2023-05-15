@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const {  nullAddress,treasuryExports } = require("../helper/treasury");
 
-const teamTreasury = "0x1087234fe877721F30016ebeD5BEd061397C8851";
+const teamTreasury = "0xBacF28BF21B374459C738289559EF89978D08102";
 
 const BOC = "0xe5786DDFc4D6DcA0973D1c5b02987cBbac66ed87";
 const pBOC = "0xF93fB4CDB0e40dbF33d2cDbf11D9516f6aDd7e8e";
@@ -17,6 +17,6 @@ module.exports = treasuryExports({
         ADDRESSES.cronos.WBTC,//WBTC
      ],
     owners: [teamTreasury],
-    ownTokens: [BOC, pBOC],
+    // ownTokens: [BOC, pBOC],
   },
 })

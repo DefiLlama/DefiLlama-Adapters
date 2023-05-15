@@ -13,9 +13,9 @@ const assetCache = {}
 
 const geckoMapping = Object.values(coreAssets.algorand)
 const axiosObj = axios.create({
-  baseURL: 'https://algoindexer.algoexplorerapi.io',
+  baseURL: "https://mainnet-idx.algonode.cloud",
   timeout: 300000,
-})
+});
 
 const indexerLimiter = new RateLimiter({ tokensPerInterval: 10, interval: "second" });
 
@@ -136,6 +136,8 @@ const tokens = {
   goUsd: 672913181,
   usdcGoUsdLp: 885102318,
   gard: 684649988,
+  gold$: 246516580,
+  silver$: 246519683,
 }
 
 // store all asset ids as string

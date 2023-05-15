@@ -1,5 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumUnknownTokens } = require("../helper/unknownTokens");
+const { staking } = require('../helper/staking')
 const WSGB = ADDRESSES.songbird.WSGB
 const CANARY_DOLLAR = ADDRESSES.songbird.CAND
  const EXFI = ADDRESSES.songbird.EXFI;
@@ -46,13 +47,6 @@ async function pool2(timestamp, ethblock, { [chain]: block }) {
   ]
   return sumUnknownTokens({ tokensAndOwners: tokens, chain, block, useDefaultCoreAssets: true, })
 }
-async function staking(timestamp, ethblock, { [chain]: block }) {
-  const tokens = [
-    [SFIN, '0x554742076743b366504972F86609d64fd18BDC34'],
-    [SFIN,'0xd0dbAFF52224C0882cfaf1765f347Cb5e4364FA1']
-  ]
-  return sumUnknownTokens({ tokensAndOwners: tokens, chain, block, useDefaultCoreAssets: true, lps: ['0x48195Ca4D228ce487AE2AE1335B017a95493Ade6'] })
-}
 
 module.exports = {
   misrepresentedTokens: true,
@@ -60,6 +54,6 @@ module.exports = {
   songbird: {
     tvl: farmTvl,
     pool2,
-    staking,
+    staking: staking(['0x554742076743b366504972F86609d64fd18BDC34', '0xd0dbAFF52224C0882cfaf1765f347Cb5e4364FA1'], SFIN),
   }
 };

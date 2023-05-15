@@ -32,7 +32,7 @@ async function ownTokens(timestamp, block) {
   return balances;
 }
 
-module.exports = treasuryExports({
+module.exports = {
   ethereum: {
     tvl: sumTokensExport({
       tokens,
@@ -40,4 +40,4 @@ module.exports = treasuryExports({
     }),
     ownTokens,
   },
-});
+};

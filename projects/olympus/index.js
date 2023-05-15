@@ -1,16 +1,18 @@
 const sdk = require("@defillama/sdk");
 const { blockQuery } = require("../helper/http");
 const env = require("../helper/env");
-const BigNumber = require("bignumber.js");
+const { staking } = require('../helper/staking')
 
 const OlympusStakings = [
   // Old Staking Contract
   "0x0822F3C03dcc24d200AFF33493Dc08d0e1f274A2",
   // New Staking Contract
   "0xFd31c7d00Ca47653c6Ce64Af53c1571f9C36566a",
+  "0xb63cac384247597756545b500253ff8e607a8020",
 ];
 
-const OHM = "0x383518188c0c6d7730d91b2c03a03c837814a899" // this is OHM v1
+const OHM_V1 = "0x383518188c0c6d7730d91b2c03a03c837814a899" // this is OHM v1
+const OHM = "0x64aa3364f17a4d01c6f1751fd97c2bd3d7e7f1d5" // this is OHM v1
 
 /** Map any staked assets without price feeds to those with price feeds.
  * All balances are 1: 1 to their unstaked counterpart that has the price feed.
@@ -38,24 +40,6 @@ const addressMap = {
     "0xc55126051B22eBb829D00368f4B12Bde432de5Da", //rlBTRFLY -> BTRFLY V2
   "0xc0d4ceb216b3ba9c3701b291766fdcba977cec3a":
     "0xc55126051B22eBb829D00368f4B12Bde432de5Da", //BTRFLY -> BTRFLYV2
-};
-
-/*** Staking of native token (OHM) TVL Portion ***/
-const staking = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
-
-  for (const stakings of OlympusStakings) {
-    const stakingBalance = await sdk.api.abi.call({
-      abi: "erc20:balanceOf",
-      target: OHM,
-      params: stakings,
-      block: ethBlock,
-    });
-
-    sdk.util.sumSingleBalance(balances, OHM, stakingBalance.output);
-  }
-
-  return balances;
 };
 
 const protocolQuery = (block) => `
@@ -148,8 +132,13 @@ async function tvl(timestamp, block, _, { api }, isOwnTokensMode = false) {
 
   const tokensToBalances = sumBalancesByTokenAddress(
     normalizedFilteredTokenRecords
-  );
+  ).filter(i => {
+    if (api.chain !== 'arbitrum') return true;
+    return !['0x89dc7e71e362faf88d92288fe2311d25c6a1b5e0000200000000000000000423', '0xce6195089b302633ed60f3f427d1380f6a2bfbc7000200000000000000000424'].includes(i.tokenAddress)
+  })
   const tokens = tokensToBalances.map(i => i.tokenAddress)
+
+
   const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: tokens })
   const ownTokens = new Set([
     '0x0ab87046fBb341D058F17CBC4c1133F25a20a52f', // GOHM
@@ -174,7 +163,7 @@ module.exports = {
   methodology:
     "TVL is the sum of the value of all assets held by the treasury (excluding pTokens). Please visit https://app.olympusdao.finance/#/dashboard for more info.",
   ethereum: {
-    staking,
+    staking: staking(OlympusStakings, [OHM, OHM_V1]),
     tvl,
     ownTokens,
   },

@@ -25,9 +25,11 @@ const cellarsV0816 = [
 
 const REAL_YIELD_USD = "0x97e6e0a40a3d02f12d1cec30ebfbae04e37c119e";
 const REAL_YIELD_ETH = "0xb5b29320d2dde5ba5bafa1ebcd270052070483ec";
+const DEFI_STARS = "0x03df2a53cbed19b824347d6a45d09016c2d1676a";
 const cellarsV2 = [
   { id: REAL_YIELD_USD, startBlock: 16431804 },
   { id: REAL_YIELD_ETH, startBlock: 16986127 },
+  { id: DEFI_STARS, startBlock: 17181497 },
 ];
 
 async function tvl(timestamp, block, chainBlocks, { api }) {

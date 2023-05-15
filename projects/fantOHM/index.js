@@ -73,7 +73,7 @@ async function fantomTvl(timestamp, _, {fantom: block}) {
 	await sumTokensAndLPsSharedOwners(balances, [
 				[ADDRESSES.fantom.DAI, false], // DAI
 				[ADDRESSES.fantom.WFTM, false], // wFTM
-				["0x6fc9383486c163fa48becdec79d6058f984f62ca", false], // USDB
+				// ["0x6fc9383486c163fa48becdec79d6058f984f62ca", false], // USDB
 				[ADDRESSES.fantom.USDC, false], // USDC
 				["0xd77fc9c4074b56ecf80009744391942fbfddd88b", true],  // DAI/FHM
 			], [fantomTreasuryContract], block, "fantom",
@@ -86,7 +86,7 @@ async function fantomTvl(timestamp, _, {fantom: block}) {
 
 	// investments
 	await Promise.all([
-		balanceOf(fantomGnosisContract, "0x6fc9383486c163fa48becdec79d6058f984f62ca", "fantom:0x6fc9383486c163fa48becdec79d6058f984f62ca", balances, block), // USDB
+		// balanceOf(fantomGnosisContract, "0x6fc9383486c163fa48becdec79d6058f984f62ca", "fantom:0x6fc9383486c163fa48becdec79d6058f984f62ca", balances, block), // USDB
 		balanceOf(fantomGnosisContract, ADDRESSES.fantom.DAI, ADDRESSES.ethereum.DAI, balances, block), // DAI
 		beetsFtm_BeetsLp(fantohmDaoDeployerWallet, balances, block), // beets/wftm LP
 		lqdrFtm_BeetsLp(fantohmDaoDeployerWallet, balances, block), // lqdr/wftm LP
@@ -94,8 +94,8 @@ async function fantomTvl(timestamp, _, {fantom: block}) {
 
 	// usdbalance.com
 	await Promise.all([
-		balanceOf(ftmTradfi3mContract, "0x6fc9383486c163fa48becdec79d6058f984f62ca", "fantom:0x6fc9383486c163fa48becdec79d6058f984f62ca", balances, block), // USDB
-		balanceOf(ftmTradfi6mContract, "0x6fc9383486c163fa48becdec79d6058f984f62ca", "fantom:0x6fc9383486c163fa48becdec79d6058f984f62ca", balances, block), // USDB
+		// balanceOf(ftmTradfi3mContract, "0x6fc9383486c163fa48becdec79d6058f984f62ca", "fantom:0x6fc9383486c163fa48becdec79d6058f984f62ca", balances, block), // USDB
+		// balanceOf(ftmTradfi6mContract, "0x6fc9383486c163fa48becdec79d6058f984f62ca", "fantom:0x6fc9383486c163fa48becdec79d6058f984f62ca", balances, block), // USDB
 
 		balanceOfStablePool(masterChefContract, "0xD5E946b5619fFf054c40D38c976f1d06C1e2fA82", "fantom:0x6fc9383486c163fa48becdec79d6058f984f62ca", "fantom:" + ADDRESSES.fantom.DAI, balances, block), // USDB-DAI stable pool
 	]);
@@ -120,13 +120,13 @@ async function ethTvl(timestamp, block, chainBlocks) {
 
 	// usdbalance.com
 	await Promise.all([
-		balanceOf(ethGnosisContract, "0x02B5453D92B730F29a86A0D5ef6e930c4Cf8860B", "fantom:0x6fc9383486c163fa48becdec79d6058f984f62ca", balances, block, "ethereum"), // USDB
+		// balanceOf(ethGnosisContract, "0x02B5453D92B730F29a86A0D5ef6e930c4Cf8860B", "fantom:0x6fc9383486c163fa48becdec79d6058f984f62ca", balances, block, "ethereum"), // USDB
 		balanceOf(ethGnosisContract, ADDRESSES.ethereum.DAI, "ethereum:" + ADDRESSES.ethereum.DAI, balances, block, "ethereum"), // DAI
 
-		balanceOf(ethTreasuryContract, "0x02B5453D92B730F29a86A0D5ef6e930c4Cf8860B", "fantom:0x6fc9383486c163fa48becdec79d6058f984f62ca", balances, block, "ethereum"), // USDB
+		// balanceOf(ethTreasuryContract, "0x02B5453D92B730F29a86A0D5ef6e930c4Cf8860B", "fantom:0x6fc9383486c163fa48becdec79d6058f984f62ca", balances, block, "ethereum"), // USDB
 
-		balanceOf(ethTradfi3mContract, "0x02B5453D92B730F29a86A0D5ef6e930c4Cf8860B", "fantom:0x6fc9383486c163fa48becdec79d6058f984f62ca", balances, block, "ethereum"), // USDB
-		balanceOf(ethTradfi6mContract, "0x02B5453D92B730F29a86A0D5ef6e930c4Cf8860B", "fantom:0x6fc9383486c163fa48becdec79d6058f984f62ca", balances, block, "ethereum"), // USDB
+		// balanceOf(ethTradfi3mContract, "0x02B5453D92B730F29a86A0D5ef6e930c4Cf8860B", "fantom:0x6fc9383486c163fa48becdec79d6058f984f62ca", balances, block, "ethereum"), // USDB
+		// balanceOf(ethTradfi6mContract, "0x02B5453D92B730F29a86A0D5ef6e930c4Cf8860B", "fantom:0x6fc9383486c163fa48becdec79d6058f984f62ca", balances, block, "ethereum"), // USDB
 	]);
 
 	return balances;

@@ -2,6 +2,7 @@ const { queryContract } = require("../helper/chain/terra");
 const {
   queryContract: queryContractCosmos,
   getBalance,
+  getBalance2,
 } = require("../helper/chain/cosmos");
 
 // For testing run
@@ -55,19 +56,31 @@ const config = {
     coinGeckoId: "juno-network",
     hub: "juno17cya4sw72h4886zsm2lk3udxaw5m8ssgpsl6nd6xl6a4ukepdgkqeuv99x",
   },
+  migaloo: {
+    coinGeckoId: "white-whale",
+    hub: "migaloo1436kxs0w2es6xlqpp9rd35e3d0cjnw4sv8j3a7483sgks29jqwgshqdky4",
+    voteEscrow:
+      "migaloo1hntfu45etpkdf8prq6p6la9tsnk3u3muf5378kds73c7xd4qdzysuv567q",
+    ampToken:
+      "factory/migaloo1436kxs0w2es6xlqpp9rd35e3d0cjnw4sv8j3a7483sgks29jqwgshqdky4/ampWHALE",
+  },
 };
 
-async function tvlHub(chain) {
-  let chainConfig = config[chain];
-  let coinGeckoId = chainConfig.coinGeckoId;
-
-  const res = await queryContractCosmos({
-    contract: chainConfig.hub,
+async function getState(chain, contract) {
+  return queryContractCosmos({
+    contract,
     chain,
     data: { state: {} },
   });
+}
 
-  let tvl = +(res.tvl_uluna ?? res.tvl_utoken ?? 0) / 1e6;
+async function tvlHub(chain, state) {
+  let chainConfig = config[chain];
+  let coinGeckoId = chainConfig.coinGeckoId;
+
+  state ||= await getState(chain, chainConfig.hub);
+
+  let tvl = +(state.tvl_uluna ?? state.tvl_utoken ?? 0) / 1e6;
   return {
     [coinGeckoId]: tvl,
   };
@@ -77,11 +90,7 @@ async function tvlArbVault(chain) {
   let chainConfig = config[chain];
   let coinGeckoId = chainConfig.coinGeckoId;
 
-  const res = await queryContractCosmos({
-    contract: chainConfig.arbVault,
-    chain,
-    data: { state: {} },
-  });
+  const res = await getState(chain, chainConfig.arbVault);
 
   let tvl = +(res.balances.tvl_utoken ?? 0) / 1e6;
   return {
@@ -89,20 +98,40 @@ async function tvlArbVault(chain) {
   };
 }
 
-async function tvlAmpGovernance(chain) {
+async function tvlAmpGovernance(chain, state) {
   let chainConfig = config[chain];
-  let coinGeckoId = chainConfig.coinGeckoIdAmp;
 
-  const res = await getBalance({
-    owner: chainConfig.voteEscrow,
-    token: chainConfig.ampToken,
-    chain,
-  });
+  let isTokenFactory = chainConfig.ampToken.startsWith("factory");
 
-  let tvl = +(res.tvl_uluna ?? res.tvl_utoken ?? 0) / 1e6;
-  return {
-    [coinGeckoId]: tvl,
-  };
+  let ampAmount = 0;
+
+  if (isTokenFactory) {
+    let balances = await getBalance2({
+      owner: chainConfig.voteEscrow,
+      token: isTokenFactory,
+      chain,
+    });
+
+    ampAmount = +(balances[chainConfig.ampToken] ?? 0);
+  } else {
+    ampAmount = await getBalance({
+      owner: chainConfig.voteEscrow,
+      token: chainConfig.ampToken,
+      chain,
+    });
+  }
+
+  if (chainConfig.coinGeckoIdAmp) {
+    return {
+      [chainConfig.coinGeckoIdAmp]: ampAmount / 1e6,
+    };
+  } else {
+    state ||= await getState(chain, chainConfig.hub);
+    let amount = (ampAmount / 1e6) * +state.exchange_rate;
+    return {
+      [chainConfig.coinGeckoId]: amount,
+    };
+  }
 }
 
 async function farm2Tvl(farm) {
@@ -183,6 +212,16 @@ function junoTvl() {
   return mergePromises([tvlHub("juno")]);
 }
 
+async function migalooTvl() {
+  let chain = "migaloo";
+  let chainConfig = config[chain];
+  let state = await getState(chain, chainConfig.hub);
+  return await mergePromises([
+    tvlHub(chain, state),
+    tvlAmpGovernance(chain, state),
+  ]);
+}
+
 function terra2Tvl() {
   return mergePromises([
     tvlHub("terra2"),
@@ -200,4 +239,5 @@ module.exports = {
   terra: { tvl: terraTvl },
   kujira: { tvl: kujiraTvl },
   juno: { tvl: junoTvl },
+  migaloo: { tvl: migalooTvl },
 };

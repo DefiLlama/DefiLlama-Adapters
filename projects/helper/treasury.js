@@ -51,8 +51,37 @@ async function getComplexTreasury(owners){
   return sum
 }
 
+function ohmStaking(exports) {
+  const dummyTvl = () => ({})
+  const newExports = {}
+  Object.entries(exports).forEach(([chain, value]) => {
+    if (typeof value === 'object' && typeof value.tvl === 'function') {
+      newExports[chain] = { ...value, tvl: dummyTvl}
+    } else {
+      newExports[chain] = value
+    }
+  })
+  return newExports
+}
+
+function ohmTreasury(exports) {
+  const dummyTvl = () => ({})
+  const newExports = {}
+  Object.entries(exports).forEach(([chain, value]) => {
+    if (typeof value === 'object' && typeof value.staking === 'function') {
+      newExports[chain] = { ...value,}
+      delete newExports[chain].staking
+    } else {
+      newExports[chain] = value
+    }
+  })
+  return newExports
+}
+
 module.exports = {
   nullAddress,
   treasuryExports,
-  getComplexTreasury
+  getComplexTreasury,
+  ohmTreasury,
+  ohmStaking,
 }

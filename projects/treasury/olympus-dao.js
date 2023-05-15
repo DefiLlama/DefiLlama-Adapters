@@ -1,5 +1,3 @@
-const olympus = require("../olympus/index");
-
-module.exports = olympus;
+module.exports = require("../olympus/index");
 
 delete module.exports.ethereum.staking

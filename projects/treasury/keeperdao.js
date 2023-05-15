@@ -17,7 +17,8 @@ module.exports = treasuryExports({
         ADDRESSES.ethereum.WETH,//WETH
         ADDRESSES.ethereum.WBTC,//WBTC
         '0xdBdb4d16EdA451D0503b854CF79D55697F90c8DF',//ALCX
-        '0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D'//renBTC
+        '0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D',//renBTC
+        '0xdAC17F958D2ee523a2206206994597C13D831ec7'
      ],
     owners: [keeperDaoTreasury],
     ownTokens: [ROOK],

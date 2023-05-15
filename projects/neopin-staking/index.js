@@ -7,10 +7,10 @@ const { nullAddress } = require('../helper/unwrapLPs');
 module.exports = {
   klaytn: {
     tvl: sumTokensExport({
-      chain: 'klaytn',
       owners: [
         '0xDa664b81C13b050F9b0435D0B712218Aa8BB1609',
         '0x0D3ACA076712DE598DF856cEcEF76daD38F0A75b',
+        '0xf9d92BAd7b1410dfFB0a204B7aa418C9fd5A898F',
       ],
       tokens: [nullAddress],
     }),

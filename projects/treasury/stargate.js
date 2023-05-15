@@ -128,8 +128,8 @@ module.exports = treasuryExports({
       "0x296F55F8Fb28E498B858d0BcDA06D955B2Cb3f97", // STG
       "0xec376c3856a4232bB6Ed9752d29402DDCD09A9A3", // STG/USDC RAKIS-5
       "0xE7D2E422098D8b3AF11695A734d347563ae160Cb", // bb-STG-USD-gauge
-      "0xC36442b4a4522E871399CD717aBDD847Ab11FE88", // STG-USDC UNI-V3
     ],
+    resolveUniV3: true,
   },
   fantom: {
     owners: [fantom],
