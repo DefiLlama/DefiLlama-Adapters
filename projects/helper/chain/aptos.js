@@ -99,8 +99,8 @@ async function getTableData({ table, data }) {
   return response
 }
 
-async function function_view({ functionStr, type_arguments = [], arguments = [] }) {
-  const response = await http.post(`${endpoint}/v1/view`, { "function": functionStr, "type_arguments": type_arguments, arguments })
+async function function_view({ functionStr, type_arguments = [], args = [] }) {
+  const response = await http.post(`${endpoint}/v1/view`, { "function": functionStr, "type_arguments": type_arguments, arguments:args })
   return response
 }
 
