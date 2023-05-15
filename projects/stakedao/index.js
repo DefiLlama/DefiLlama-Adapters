@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require('./abi.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
@@ -77,13 +78,13 @@ async function tvl(timestamp, block, _, { api }) {
   const angle_sanUSDC_V3 = {
     contract: angle_protocol.locker,
     sanUsdcEurGauge: '0x51fE22abAF4a26631b2913E417c0560D547797a7',
-    usdcToken: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+    usdcToken: ADDRESSES.ethereum.USDC,
     abi: 'balanceOf',
   }
   const angle_sanDAI_V3 = {
     contract: angle_protocol.locker,
     sanDaiEurGauge: '0x8E2c0CbDa6bA7B65dbcA333798A3949B07638026',
-    daiToken: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+    daiToken: ADDRESSES.ethereum.DAI,
     abi: 'balanceOf',
   }
   const angle_sanFRAX_V3 = {

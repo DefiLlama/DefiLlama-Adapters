@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { sumTokens } = require('../helper/unwrapLPs')
 
@@ -81,7 +82,7 @@ function tvl(chain) {
           chain
         })).output;
     
-        balances['0x514910771af9ca656af840dff83e8264ecf986ca'] = 
+        balances[ADDRESSES.ethereum.LINK] = 
           balances[cLINK] * (exchangeRate / 10 ** 28);
         delete balances[cLINK];
       }

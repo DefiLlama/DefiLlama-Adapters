@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { Program } = require("@project-serum/anchor");
 const { getProvider} = require("../helper/solana");
 const sdk = require('@defillama/sdk')
 const idl = require("./idl.json");
 
-const usdcAddress = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
+const usdcAddress = ADDRESSES.solana.USDC;
 const PURE_OPTIONS_PRODUCTS = [
   'insanic-2',
   'supercharger',

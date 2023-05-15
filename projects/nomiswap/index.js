@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getUniTVL } = require("../helper/unknownTokens");
 const { stakings } = require("../helper/staking");
 const sdk = require('@defillama/sdk')
@@ -10,7 +11,7 @@ const factories = [constantProductFactory, stableSwapFactory].map(factory => get
   useDefaultCoreAssets: true
 }))
 
-const NMX = "0xd32d01a43c869edcd1117c640fbdcfcfd97d9d65"
+const NMX = ADDRESSES.bsc.NMX
 
 const stakingPools = [
   // Staking pool

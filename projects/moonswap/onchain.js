@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const factoryAbi = require("../helper/abis/factory.json");
 const token0 = 'address:token0'
@@ -91,11 +92,11 @@ function getTokenId(address) {
     switch(address) {
         case '0x98878b06940ae243284ca214f92bb71a2b032b8a':
             return ['moonriver', 18]
-        case '0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d':
+        case [ADDRESSES.moonriver.USDC]:
             return ['usd-coin', 6]
-        case '0xb44a9b6905af7c801311e8f4e76932ee959c663c':
+        case [ADDRESSES.moonriver.USDT]:
             return ['tether', 6]
-        case '0x639a647fbe20b6c8ac19e48e2de44ea792c62c5c':
+        case [ADDRESSES.moonriver.ETH]:
             return ['ethereum', 18]
         case '0x5d9ab5522c64e1f6ef5e3627eccc093f56167818':
             return ['binance-usd', 18]

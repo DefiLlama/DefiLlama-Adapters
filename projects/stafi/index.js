@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const {chainExports} = require('../helper/exports')
 const {usdtAddress} = require('../helper/balances')
 const {getApiTvl} = require('../helper/historicalApi');
 const { fetchURL } = require('../helper/utils');
 
-const wethAddress = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+const wethAddress = ADDRESSES.ethereum.WETH
 
 async function ethereum(timestamp, block) {
   const supply = await sdk.api.erc20.totalSupply({

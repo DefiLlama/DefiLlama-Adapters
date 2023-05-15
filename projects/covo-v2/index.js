@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport, nullAddress } = require('../helper/unwrapLPs')
 
 const fundStore = "0xED29cB1b164dd7EA1c5065E79a15dA31EC34327B";
@@ -7,7 +8,7 @@ module.exports = {
   polygon: {
     tvl: sumTokensExport({ owners: [fundStore], tokens: [
       nullAddress,
-      '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',//USDC
+      ADDRESSES.polygon.USDC,//USDC
     ]}),
     staking: sumTokensExport({ owners: [fundStore], tokens: [covo]})
   },

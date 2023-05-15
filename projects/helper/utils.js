@@ -1,3 +1,4 @@
+const ADDRESSES = require('./coreAssets.json')
 const BigNumber = require("bignumber.js");
 const axios = require("axios");
 const sdk = require('@defillama/sdk')
@@ -181,7 +182,7 @@ async function diplayUnknownTable({ tvlResults = {}, tvlBalances = {}, storedKey
   }
 }
 
-const nullAddress = '0x0000000000000000000000000000000000000000'
+const nullAddress = ADDRESSES.null
 async function getSymbols(chain, tokens) {
   tokens = tokens.filter(i => i.includes('0x')).map(i => i.slice(i.indexOf('0x'))).filter(i => i !== nullAddress)
   const calls = tokens.map(i => ({ target: i }))

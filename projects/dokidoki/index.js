@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { unwrapUniswapLPs, sumTokens2 } = require("../helper/unwrapLPs");
 
@@ -42,11 +43,11 @@ const ethPool2LPs = [
 const ethPools = [
   {
     pool: "0xb3a2AF499aF8f717BB3431968f8e0b038C975686",
-    token: "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+    token: ADDRESSES.ethereum.WBTC,
   }, // WBTC
   {
     pool: "0xde846827cE3022EcD5eFD6ed316a2dEf9AB299B8",
-    token: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+    token: ADDRESSES.ethereum.WETH,
   }, // WETH
 ];
 

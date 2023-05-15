@@ -7,7 +7,7 @@ const coreTokensAll = require('../coreAssets.json')
 const { transformBalances } = require('../portedTokens')
 const { log, getUniqueAddresses } = require('../utils')
 
-const coreTokens = coreTokensAll.aptos
+const coreTokens = Object.values(coreTokensAll.aptos)
 
 const endpoint = env.APTOS_RPC || "https://aptos-mainnet.pontem.network"
 
