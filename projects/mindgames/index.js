@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getUniTVL, staking } = require('../helper/unknownTokens')
 const xCRX = "0x35AfE95662fdf442762a11E4eD5172C81fBceF7e";
 const CRX = "0xb21Be1Caf592A5DC1e75e418704d1B6d50B0d083";
@@ -16,7 +17,7 @@ module.exports = {
         owner: xCRX,
         tokens: [CRX],
         chain: 'arbitrum',
-        coreAssets: ['0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8'],
+        coreAssets: [ADDRESSES.arbitrum.USDC],
         lps: ['0xf7305D209BFeCF40Bd53ccBdbe5303B3153d0660']
       })
   },

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getConfig } = require('../helper/cache');
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
@@ -9,7 +10,7 @@ async function getProjectInfo() {
 }
 
 const config = {
-  arbitrum: { fsglp: '0x1aDDD80E6039594eE970E5872D247bf0414C8903' },
+  arbitrum: { fsglp: ADDRESSES.arbitrum.fsGLP },
   avax: { fsglp: '0x9e295B5B976a184B14aD8cd72413aD846C299660' },
 }
 

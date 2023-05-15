@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const contracts = require("./contracts.json");
 const { pool2 } = require("./../helper/pool2");
 const { staking } = require(".././helper/staking.js");
@@ -5,7 +6,7 @@ const {
   sumLPWithOnlyOneTokenOtherThanKnown, sumTokens2, nullAddress
 } = require("./../helper/unwrapLPs");
 
-const wiotx = "0xA00744882684C3e4747faEFD68D283eA44099D03";
+const wiotx = ADDRESSES.iotex.WIOTX;
 
 function tvl(chain, gasToken) {
   return async (timestamp, block, chainBlocks) => {
@@ -32,7 +33,7 @@ async function iotexPool2(timestamp, block, chainBlocks) {
     balances,
     contracts.iotex.pool2.token,
     contracts.iotex.pool2.address,
-    "0x4d7b88403aa2f502bf289584160db01ca442426c",
+    ADDRESSES.iotex.CYC,
     block,
     "iotex"
   );
@@ -52,7 +53,7 @@ module.exports = {
     ),
   },
   ethereum: {
-    tvl: tvl("ethereum", "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"),
+    tvl: tvl("ethereum", ADDRESSES.ethereum.WETH),
     pool2: pool2(
       contracts.ethereum.pool2.address,
       contracts.ethereum.pool2.token,
@@ -60,7 +61,7 @@ module.exports = {
     ),
   },
   bsc: {
-    tvl: tvl("bsc", "bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"),
+    tvl: tvl("bsc", "bsc:" + ADDRESSES.bsc.WBNB),
     pool2: pool2(contracts.bsc.pool2.address, contracts.bsc.pool2.token, "bsc"),
     staking: staking(
       contracts.bsc.staking.address,

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const {  nullAddress,treasuryExports } = require("../helper/treasury");
 
 const alchemixTreasury = "0x8392F6669292fA56123F71949B52d883aE57e225";
@@ -8,11 +9,11 @@ module.exports = treasuryExports({
   ethereum: {
     tokens: [ 
         nullAddress,
-        '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',//USDC
-        '0x6B175474E89094C44Da98b954EedeAC495271d0F',//DAI
+        ADDRESSES.ethereum.USDC,//USDC
+        ADDRESSES.ethereum.DAI,//DAI
         '0x028171bCA77440897B824Ca71D1c56caC55b68A3',//aDAI
-        '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',//WETH
-        '0xdAC17F958D2ee523a2206206994597C13D831ec7',//USDT
+        ADDRESSES.ethereum.WETH,//WETH
+        ADDRESSES.ethereum.USDT,//USDT
      ],
     owners: [alchemixTreasury],
     ownTokens: [ALCX],

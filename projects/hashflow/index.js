@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { get } = require('../helper/http') 
 const { chainExports } = require('../helper/exports');
 const { sumTokens } = require("../helper/unwrapLPs");
@@ -15,7 +16,7 @@ const chainIds = {
 let dataCacheUpdating
 
 async function updateDataCache() {
-  const null_addr = '0x0000000000000000000000000000000000000000';
+  const null_addr = ADDRESSES.null;
   const allChainData = {}
 
   for (const chain of Object.keys(chainIds)) {

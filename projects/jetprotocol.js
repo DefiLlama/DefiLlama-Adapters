@@ -1,3 +1,4 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const { getTokenBalance } = require("./helper/solana");
 
 async function borrowed() {
@@ -30,7 +31,7 @@ async function borrowed() {
 async function tvl() {
   const [usdcAmount, ethAmount, solAmount, btcAmount] = await Promise.all([
     getTokenBalance(
-      "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      ADDRESSES.solana.USDC,
       "7gpj9cpzBBW9Ci1yMwWz7iGbQYpm5fZmadNQyrYsqch8"
     ),
     getTokenBalance(
@@ -38,7 +39,7 @@ async function tvl() {
       "7gpj9cpzBBW9Ci1yMwWz7iGbQYpm5fZmadNQyrYsqch8"
     ),
     getTokenBalance(
-      "So11111111111111111111111111111111111111112",
+      ADDRESSES.solana.SOL,
       "7gpj9cpzBBW9Ci1yMwWz7iGbQYpm5fZmadNQyrYsqch8"
     ),
     getTokenBalance(

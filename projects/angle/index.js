@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
 const { getConfig } = require("../helper/cache");
@@ -55,7 +56,7 @@ async function tvl(_, _1, _2, { api }) {
     };
 
     // count the USDC in pool manager contract
-    tokensAndOwners.push(['0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', '0xe9f183FC656656f1F17af1F2b0dF79b8fF9ad8eD']) // add USDC in USDC manager
+    tokensAndOwners.push([ADDRESSES.ethereum.USDC, '0xe9f183FC656656f1F17af1F2b0dF79b8fF9ad8eD']) // add USDC in USDC manager
     const poolManagers = getUniqueAddresses([agEUR].map(i => Object.values(i.poolManagers)).flat())
 
     let assets = await api.multiCall({

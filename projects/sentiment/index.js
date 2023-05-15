@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { graphFetchById } = require('../helper/http')
 
 async function tvl(timestamp, ethBlock, { arbitrum: block }, { api }) {
@@ -14,7 +15,7 @@ async function tvl(timestamp, ethBlock, { arbitrum: block }, { api }) {
     api.multiCall({ target: "0xc0ac97A0eA320Aa1E32e9DEd16fb580Ef3C078Da", calls: userAccounts, abi: "function getBorrows(address account) view returns (uint256)", }),
   ])
   for (let i = 0; i < equity.length; i++)
-    api.add('0x82af49447d8a07e3bd95bd0d56f35241523fbab1', equity[i] - borrows[i], {})
+    api.add(ADDRESSES.arbitrum.WETH, equity[i] - borrows[i], {})
 }
 
 module.exports = {

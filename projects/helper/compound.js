@@ -1,3 +1,4 @@
+const ADDRESSES = require('./coreAssets.json')
 
 const sdk = require('@defillama/sdk');
 const abi = require('./abis/compound.json');
@@ -37,11 +38,11 @@ async function getMarkets(comptroller, block, chain, cether, cetheEquivalent, bl
         return;
       }
       if (cToken === '0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5'.toLowerCase()) {
-        markets.push({ underlying: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', cToken })  //cETH => WETH
+        markets.push({ underlying: ADDRESSES.ethereum.WETH, cToken })  //cETH => WETH
         return;
       }
       if (cToken === '0x5C0401e81Bc07Ca70fAD469b451682c0d747Ef1c'.toLowerCase() && chain === 'avax') {
-        markets.push({ underlying: '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7', cToken })
+        markets.push({ underlying: ADDRESSES.avax.WAVAX, cToken })
         return;
       }
       if (['0xd2ec53e8dd00d204d3d9313af5474eb9f5188ef6', '0x0aeadb9d4c6a80462a47e87e76e487fa8b9a37d7'].includes(cToken) && chain === 'rsk') {
@@ -103,7 +104,7 @@ async function unwrapPuffTokens(balances, lpPositions, block) {
 let marketsCache = {}
 
 function getCompoundV2Tvl(comptroller, chain, transformAdress,
-  cether = "0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5", cetheEquivalent = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+  cether = "0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5", cetheEquivalent = ADDRESSES.ethereum.WETH,
   borrowed = false, checkForLPTokens = undefined,
   {
     fetchBalances = false,

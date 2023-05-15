@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getProvider } = require('../helper/solana')
 const BigNumber = require('bignumber.js')
 const { PublicKey } = require('@solana/web3.js')
@@ -16,12 +17,12 @@ const MINTS = [
   },
   {
     symbol: 'SOL',
-    mintAddress: 'So11111111111111111111111111111111111111112',
+    mintAddress: ADDRESSES.solana.SOL,
     decimals: 9,
   },
   {
     symbol: 'USDC',
-    mintAddress: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+    mintAddress: ADDRESSES.solana.USDC,
     decimals: 6,
   },
   {
@@ -31,7 +32,7 @@ const MINTS = [
   },
   {
     symbol: 'USDT',
-    mintAddress: 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
+    mintAddress: ADDRESSES.solana.USDT,
     decimals: 6,
   },
 ];

@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const BigNumber = require("bignumber.js");
 const {tvlV1Eth, tvlV1Bsc} = require('./v1.js')
 const {tvlV2, tvlV2Onchain} = require('./v2.js')
 
 async function ethTvl(timestamp, block) {
-  const ethAddress = "0x0000000000000000000000000000000000000000";
+  const ethAddress = ADDRESSES.null;
   const balances = {};
 
   const tvls = await Promise.all([

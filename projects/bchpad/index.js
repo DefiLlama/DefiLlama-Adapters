@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const chain = "smartbch"
 
 // token contracts
 const BPAD = "0x9192940099fDB2338B928DE2cad9Cd1525fEa881"
-const CATS = "0x265bD28d79400D55a1665707Fa14A72978FA6043"
+const CATS = ADDRESSES.smartbch._CATS
 
 // tvl pools
 const BPAD_POOL = "0xc39f046a0E2d081e2D01558269D1e3720D2D2EA1" // BPAD single asset pool, ended

@@ -1,3 +1,4 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const { sumTokens2, nullAddress, sumTokensExport } = require('./helper/unwrapLPs')
 
 const HAKKA_ADDRESSES = {
@@ -20,9 +21,9 @@ async function ethereum(_, block) {
     [nullAddress, thirdFloorAddress], // thirdFloor
     // guild bank
     [nullAddress, hakkaGuildBank],
-    ['0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2', hakkaGuildBank],
+    [ADDRESSES.ethereum.MKR, hakkaGuildBank],
     ['0x35101c731b1548B5e48bb23F99eDBc2f5c341935', hakkaGuildBank],
-    ['0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', hakkaGuildBank],
+    [ADDRESSES.ethereum.USDC, hakkaGuildBank],
   ]
 
   return sumTokens2({ tokensAndOwners: toa, block, })
@@ -30,8 +31,8 @@ async function ethereum(_, block) {
 async function bsc(_, _b, { bsc: block }) {
   const chain = 'bsc'
   const toa = [
-    ['0xe9e7cea3dedca5984780bafc599bd69add087d56', BSC_BHS_ADDRESS], // thirdFloor
-    ['0x55d398326f99059ff775485246999027b3197955', BSC_BHS_ADDRESS], // thirdFloor
+    [ADDRESSES.bsc.BUSD, BSC_BHS_ADDRESS], // thirdFloor
+    [ADDRESSES.bsc.USDT, BSC_BHS_ADDRESS], // thirdFloor
   ]
 
   return sumTokens2({ tokensAndOwners: toa, block, chain })

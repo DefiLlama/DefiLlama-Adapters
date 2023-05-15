@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { transformPolygonAddress } = require("../helper/portedTokens");
 const abi = require("./abi");
@@ -97,16 +98,16 @@ async function v3Pool(
 
 let bscContracts = {
   a: {
-    bTokenSymbol: "0x4fabb145d64652a948d72533023f6e7a623c7c53",
+    bTokenSymbol: ADDRESSES.ethereum.BUSD,
     pool: "0x66f501dda450C8978c4A1115D7b2A7FAa7702F05",
   },
   b: {
-    bTokenSymbol: "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+    bTokenSymbol: ADDRESSES.bsc.BUSD,
     pool: "0x574022307e60bE1f07da6Ec1cB8fE23d426e5831",
     lite: true,
   },
   everlastingOption: {
-    bTokenSymbol: "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+    bTokenSymbol: ADDRESSES.bsc.BUSD,
     pool: "0x08aD0E0b4458183758fC5b9b6D27c372965fB780",
     lite: true,
   },
@@ -116,28 +117,28 @@ let bscContracts = {
     lite: true,
   },
   option: {
-    bTokenSymbol: "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+    bTokenSymbol: ADDRESSES.bsc.BUSD,
     pool: "0x243681B8Cd79E3823fF574e07B2378B8Ab292c1E",
     v3: true,
   },
   futureMain: {
-    bTokenSymbol: "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+    bTokenSymbol: ADDRESSES.bsc.BUSD,
     pool: "0x4ad5cb09171275A4F4fbCf348837c63a91ffaB04",
     v3: true,
   },
   futureInno: {
-    bTokenSymbol: "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+    bTokenSymbol: ADDRESSES.bsc.BUSD,
     pool: "0xD2D950e338478eF7FeB092F840920B3482FcaC40",
     v3: true,
   },
 };
 let polygonContracts = {
   a: {
-    bTokenSymbol: "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
+    bTokenSymbol: ADDRESSES.polygon.USDT,
     pool: "0x4Db087225C920Bec55B2dCEAa629BDc5782623D9",
   },
   b: {
-    bTokenSymbol: "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
+    bTokenSymbol: ADDRESSES.polygon.USDT,
     pool: "0xA8769A4Fb0Ca82eb474448B1683DCA3c79798B69",
     lite: true,
   },
@@ -151,14 +152,14 @@ let polygonContracts = {
 let config = {
   arbitrum: {
     futureMain: {
-      bTokenSymbol: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
+      bTokenSymbol: ADDRESSES.arbitrum.USDC,
       pool: "0xDE3447Eb47EcDf9B5F90E7A6960a14663916CeE8",
       v3: true,
     },
   },
   era: {
     futureMain: {
-      bTokenSymbol: "0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4",
+      bTokenSymbol: ADDRESSES.era.USDC,
       pool: "0x9F63A5f24625d8be7a34e15477a7d6d66e99582e",
       v3: true,
     },

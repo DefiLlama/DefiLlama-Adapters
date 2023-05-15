@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const Ss = {
   id: 'tez',
   name: 'Tezos',
@@ -275,47 +276,47 @@ const Ss = {
     }),
     youToken: Object.assign(Object.assign({
     }, ws), {
-      contractAddress: 'KT1Xobej4mc6XgEjDoJoHtTKgbD1ELMvcQuL'
+      contractAddress: ADDRESSES.tezos.YOU
     }),
     uusdToken: Object.assign(Object.assign({
     }, Ds), {
-      contractAddress: 'KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW'
+      contractAddress: ADDRESSES.tezos.uUSD
     }),
     udefiToken: Object.assign(Object.assign({
     }, ks), {
-      contractAddress: 'KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW'
+      contractAddress: ADDRESSES.tezos.uUSD
     }),
     ubtcToken: Object.assign(Object.assign({
     }, Ns), {
-      contractAddress: 'KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW'
+      contractAddress: ADDRESSES.tezos.uUSD
     }),
     tzbtcToken: Object.assign(Object.assign({
     }, Bs), {
-      contractAddress: 'KT1PWx2mnDueood7fEmfbBDKx1D9BAnnXitn'
+      contractAddress: ADDRESSES.tezos.tzBTC
     }),
     kusdToken: Object.assign(Object.assign({
     }, Rs), {
-      contractAddress: 'KT1K9gCRgaLRFKTErYt1wVxA3Frb9FjasjTV'
+      contractAddress: ADDRESSES.tezos.kUSD
     }),
     usdtzToken: Object.assign(Object.assign({
     }, Ps), {
-      contractAddress: 'KT1LN4LPSqTMS7Sd2CJw4bbDGRkMv2t68Fy9'
+      contractAddress: ADDRESSES.tezos.USDtz
     }),
     usdtToken: Object.assign(Object.assign({
     }, Fd), {
-      contractAddress: 'KT1XnTn74bUtxHfDtBmm2bGZAQfhPbvKWR8o'
+      contractAddress: ADDRESSES.tezos.USDt
     }),
     wusdcToken: Object.assign(Object.assign({
     }, xs), {
-      contractAddress: 'KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ'
+      contractAddress: ADDRESSES.tezos.AAVE
     }),
     wwbtcToken: Object.assign(Object.assign({
     }, Ms), {
-      contractAddress: 'KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ'
+      contractAddress: ADDRESSES.tezos.AAVE
     }),
     plentyToken: Object.assign(Object.assign({
     }, Os), {
-      contractAddress: 'KT1GRSvLoikDsXujKgZPsGLX8k8VvR2Tq95b'
+      contractAddress: ADDRESSES.tezos.PLENTY
     }),
     tzbtcLP: Object.assign(Object.assign({
     }, Ts), {

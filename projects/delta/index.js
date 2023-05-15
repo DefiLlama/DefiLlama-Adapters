@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const { staking } = require("../helper/staking");
@@ -7,7 +8,7 @@ const rebasingContract = "0xfcfC434ee5BfF924222e084a8876Eee74Ea7cfbA";
 const DELTA_WETH_SLP = "0x1498bd576454159Bb81B5Ce532692a8752D163e8";
 
 const DELTA = "0x9EA3b5b4EC044b70375236A281986106457b20EF";
-const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+const WETH = ADDRESSES.ethereum.WETH;
 
 async function Pool2(timestamp, block) {
   const balances = {};

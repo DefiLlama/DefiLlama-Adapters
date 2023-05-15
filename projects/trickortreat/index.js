@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const {addFundsInMasterChef} = require("../helper/masterchef");
 const {pool2BalanceFromMasterChefExports} = require("../helper/pool2");
@@ -7,8 +8,8 @@ const masterchef = "0x2755AC6BD7BDbaCbdE08504f45f73D150Ee660F5";
 const trick = "0xA5aFce54270D9afA6a80464bBD383BE506888e6A";
 
 const translate = {
-    "fantom:0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E": "0x6b175474e89094c44da98b954eedeac495271d0f",
-    "fantom:0xb3654dc3D10Ea7645f8319668E8F54d2574FBdC8": "0x514910771af9ca656af840dff83e8264ecf986ca"
+    ["fantom:" + ADDRESSES.fantom.DAI]: ADDRESSES.ethereum.DAI,
+    "fantom:0xb3654dc3D10Ea7645f8319668E8F54d2574FBdC8": ADDRESSES.ethereum.LINK
 }
 
 const wMEMO = "0x0da67235dd5787d67955420c84ca1cecd4e5bb3b"

@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require('../helper/staking')
 const { getUniTVL } = require('../helper/unknownTokens')
 
-const che = "0x8179d97eb6488860d816e3ecafe694a4153f216c"
+const che = ADDRESSES.okexchain.CHE
 const cheStaking = "0x9Ab8BCf67fE8d8D2aD27D42Ec2A0fD5C206DAE60"
 
 module.exports = {
