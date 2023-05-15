@@ -5,10 +5,11 @@ const treasury = "0x4971DD016127F390a3EF6b956Ff944d0E2e1e462";
 const treasury1 = "0x0DA0C3e52C977Ed3cBc641fF02DD271c3ED55aFe";
 const treasury2 = "0x849D52316331967b6fF1198e5E32A0eB168D039d";
 const treasury3= "0xBc79855178842FDBA0c353494895DEEf509E26bB";
-const vestingAddress = "0x849d52316331967b6ff1198e5e32a0eb168d039d";
 const GNO= "0x6810e776880C02933D47DB1b9fc05908e5386b96";
 const LP = "0x6256518aE9a97C408a03AAF1A244989Ce6B937F6"
 const LP2 = "0x228054e9c056F024FC724F515A2a8764Ae175ED6"
+const LP3 = "0x712CC5BeD99aA06fC4D5FB50Aea3750fA5161D0f"
+const LP4 = "0xD3780729035c5b302f76ced0E7F74cF0Fb7c739a"
 
 
 module.exports = treasuryExports({
@@ -35,10 +36,20 @@ module.exports = treasuryExports({
         '0x6243d8CEA23066d098a15582d81a598b4e8391F4',//FLX
         ADDRESSES.ethereum.LIDO,//LDO
         '0x1982b2F5814301d4e9a8b0201555376e62F82428',
-        "0x712CC5BeD99aA06fC4D5FB50Aea3750fA5161D0f"
+        "0x712CC5BeD99aA06fC4D5FB50Aea3750fA5161D0f",
+        "0xA13a9247ea42D743238089903570127DdA72fE44",
+        "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0",
+        "0x543Ff227F64Aa17eA132Bf9886cAb5DB55DCAddf",
+        "0x9c39809Dec7F95F5e0713634a4D0701329B3b4d2",
+        "0x5209dB28b3cF22a944401c83370Af7A703ffFb08",
+        "0xACAdA51C320947E7ed1a0D0F6b939b0FF465E4c2",
+        "0x001B78CEC62DcFdc660E06A91Eb1bC966541d758",
+        "0xe4683Fe8F53da14cA5DAc4251EaDFb3aa614d528",
+        "0xfAA2eD111B4F580fCb85C48E6DC6782Dc5FCD7a6"
      ],
-    owners: [treasury, treasury1, treasury2, treasury3, vestingAddress],
-    ownTokens: [GNO, LP, LP2],
+    owners: [treasury, treasury1, treasury2, treasury3],
+    ownTokens: [GNO, LP, LP2, LP3, LP4],
     resolveUniV3: true,
+    resolveLP: true,
   },
 })
