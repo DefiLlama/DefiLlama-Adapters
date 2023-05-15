@@ -4,7 +4,7 @@ const { staking } = require('../helper/staking')
 const WSGB = ADDRESSES.songbird.WSGB
 const CANARY_DOLLAR = ADDRESSES.songbird.CAND
  const EXFI = ADDRESSES.songbird.EXFI;
- const SFIN = '0x0D94e59332732D18CF3a3D457A8886A2AE29eA1B';
+ const SFIN = ADDRESSES.songbird.SFIN;
 
 const chain = 'songbird'
 

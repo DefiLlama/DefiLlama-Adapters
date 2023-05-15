@@ -327,7 +327,7 @@ async function getTokenPrice(contractAddress) {
         target: "0xED7d5F38C79115ca12fe6C0041abb22F0A06C300",
         abi: mdexRouter['getAmountsIn'],
         chain: "heco",
-        params: [1e8, ['0xa71edc38d189767582c38a3145b5873052c3e47a', underlyingCoinsAddress.output]],
+        params: [1e8, [ADDRESSES.heco.USDT, underlyingCoinsAddress.output]],
     });
 
     return getAmountsIn.output[0] / Math.pow(10, 26 - 18)
@@ -363,7 +363,7 @@ async function getPrice(contractAddress,dc) {
         target: "0xED7d5F38C79115ca12fe6C0041abb22F0A06C300",
         abi: mdexRouter['getAmountsOut'],
         chain: "heco",
-        params: [1e8, [contractAddress,'0xa71edc38d189767582c38a3145b5873052c3e47a']],
+        params: [1e8, [contractAddress,ADDRESSES.heco.USDT]],
     });
 
     return getAmountsIn.output[1] / Math.pow(10, 26 - dc)

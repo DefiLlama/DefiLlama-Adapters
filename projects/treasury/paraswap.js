@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 const treasury = "0x5A61D9214adEFD7669428a03A4e8734A00E9F464";
@@ -19,7 +20,7 @@ module.exports = treasuryExports({
   },
   optimism: {
     tokens: [ 
-        "0x4200000000000000000000000000000000000042"
+        ADDRESSES.optimism.OP
      ],
     owners: ["0xb8313eaf73aed8fea1d9930df199b3c1bdb67b47"],
   },

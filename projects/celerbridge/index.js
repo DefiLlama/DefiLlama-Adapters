@@ -94,7 +94,7 @@ const liquidityBridgeTokens = [
     bsc: ADDRESSES.bsc.USDT,
     ethereum: ADDRESSES.ethereum.USDT,
     fantom: ADDRESSES.fantom.fUSDT,
-    heco: "0xa71edc38d189767582c38a3145b5873052c3e47a",
+    heco: ADDRESSES.heco.USDT,
     okexchain: ADDRESSES.okexchain.USDT,
     optimism: ADDRESSES.optimism.USDT,
     polygon: ADDRESSES.polygon.USDT,

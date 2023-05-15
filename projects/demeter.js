@@ -6,7 +6,7 @@ const config = {
   heco: {
     markets: [
       [
-          "0xa71EdC38d189767582C38A3145b5873052c3e47a",
+          ADDRESSES.heco.USDT,
           "0x8d8fD8139CEaf0034A021E6eb039bB6f70C83d9c"
       ],
       [

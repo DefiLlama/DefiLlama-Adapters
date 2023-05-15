@@ -39,7 +39,7 @@ module.exports = treasuryExports({
   polygon: {
     tokens: [
         nullAddress,
-        '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174'//USDC
+        ADDRESSES.polygon.USDC//USDC
     ],
     owners: [treasury, treasury1, treasurypolygon, treasurypolygon1, treasuryfantom, treasuryfantom1],
     ownTokens: [MIMOpolygon,],
@@ -47,7 +47,7 @@ module.exports = treasuryExports({
   fantom: {
     tokens: [
         nullAddress,
-        '0x04068DA6C83AFCFA0e13ba15A6696662335D5B75'//USDC
+        ADDRESSES.fantom.USDC//USDC
     ],
     owners: [treasury, treasury1, treasurypolygon, treasurypolygon1, treasuryfantom, treasuryfantom1],
     ownTokens: [MIMOfantom,],
