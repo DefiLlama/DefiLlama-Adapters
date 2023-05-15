@@ -7,6 +7,7 @@ async function tvl() {
       'Bzjkrm1bFwVXUaV9HTnwxFrPtNso7dnwPQamhqSxtuhZ',
       'GXWqPpjQpdz7KZw9p7f5PX2eGxHAhvpNXiviFkAB8zXg',
       'DfYCNezifxAEsQbAJ1b3j6PX3JVBe8fu11KBhxsbw5d2',
+      '2CqkQvYxp9Mq4PqLvAQ1eryYxebUh4Liyn5YMDtXsYci', // insurance fund
     ]
   })
 }

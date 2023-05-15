@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk")
 const { default: BigNumber } = require("bignumber.js");
 const { getResource, getResources, coreTokens } = require("../helper/chain/aptos");
@@ -101,12 +102,14 @@ function calculateFarmTokens(pools, farms) {
 }
 
 async function tvl() {
+  /*
   const pools = await getLiquidSwapPools()
   const farms = await getMasterChefPools(pools)
   const balances = calculateFarmTokens(pools, farms)
   const tvl = await transformBalances('aptos', balances)
+  */
 
-  return tvl
+  return {}
 }
 
 async function staking() {

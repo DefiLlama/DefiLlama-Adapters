@@ -1,5 +1,5 @@
 const { get } = require('../helper/http')
-const { getAssets } = require('../helper/chain/cardano/blockfrost')
+const { sumTokensExport } = require('../helper/chain/cardano')
 
 let tokenPrice
 const DAY = 24 * 60 * 60 * 1000
@@ -18,18 +18,10 @@ async function getTokenPrice() {
 }
 
 module.exports = {
-  misrepresentedTokens: true,
   timetravel: false,
   cardano: {
     tvl: () => ({}),
-    staking: async () => {
-      const data = await getAssets('addr1w8p79rekquuw5kmdg4z36y9gpnm88k5huddwqluk9mjjeqgc3xmss')
-      const balance = data.find(i => i.unit === 'b34b3ea80060ace9427bda98690a73d33840e27aaa8d6edb7f0c757a634e455441').quantity
-      return {
-        // cneta: +balance * (await getTokenPrice())
-        cneta: +balance
-      }
-    }
+    staking: sumTokensExport({ tokens: ['b34b3ea80060ace9427bda98690a73d33840e27aaa8d6edb7f0c757a634e455441'], owner: 'addr1w8p79rekquuw5kmdg4z36y9gpnm88k5huddwqluk9mjjeqgc3xmss'})
   },
   ergo: {
     staking: async () => {

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, nullAddress, } = require("../helper/unwrapLPs");
 const sdk = require("@defillama/sdk");
 
@@ -18,13 +19,17 @@ const config = {
       "0x86f78d3cbca0636817ad9e27a44996c738ec4932",
       "0xa478E708A27853848C6Bc979668fe6225FEe46Fa",
       "0x7198ff382b5798dab7dc72a23c1fec9dc091893b",
+      "0xc88c8ada95d92c149377aa660837460775dcc6d9"
     ]
   },
   arbitrum: {
     vaults: [
       "0xC76a3cBefE490Ae4450B2fCC2c38666aA99f7aa0",
       "0xB237f4264938f0903F5EC120BB1Aa4beE3562FfF",
-      "0xd371281896f2F5f7A2C65F49d23A2B6ecfd594f3"
+      "0xd371281896f2F5f7A2C65F49d23A2B6ecfd594f3",
+      "0xe47ca047Cb7E6A9AdE9405Ca68077d63424F34eC",
+      "0xa864956ff961ce62c266a8563b46577d3573372e",
+      "0x950eceee9e7d7366a24fc9d2ed4c0c37d17a0fa9"
     ]
   },
   fantom: {
@@ -79,19 +84,19 @@ const config = {
   moonriver: {
     vaults: [
       // "0x97D811A7eb99Ef4Cb027ad59800cE27E68Ee1109",
-      "0x4a0474E3262d4DB3306Cea4F207B5d66eC8E0AA9",
+      //"0x4a0474E3262d4DB3306Cea4F207B5d66eC8E0AA9",
+    ]
+  },
+  harmony: {
+    vaults: [
+      //"0x12FcB286D664F37981a42cbAce92eAf28d1dA94f",
+      //"0x46469f995A5CB60708200C25EaD3cF1667Ed36d6",
     ]
   },
   xdai: {
     vaults: [
       "0x5c49b268c9841AFF1Cc3B0a418ff5c3442eE3F3b",
       "0x014a177e9642d1b4e970418f894985dc1b85657f",
-    ]
-  },
-  harmony: {
-    vaults: [
-      "0x12FcB286D664F37981a42cbAce92eAf28d1dA94f",
-      "0x46469f995A5CB60708200C25EaD3cF1667Ed36d6",
     ]
   },
   ethereum: {
@@ -102,6 +107,7 @@ const config = {
       "0x8C45969aD19D297c9B85763e90D0344C6E2ac9d1",
       "0xcc61Ee649A95F2E2f0830838681f839BDb7CB823",
       "0x82E90EB7034C1DF646bD06aFb9E67281AAb5ed28",
+      "0xCA3EB45FB186Ed4e75B9B22A514fF1d4abAdD123"
     ]
   },
   bsc: {
@@ -145,7 +151,8 @@ const config = {
       "0x1f0aa72b980d65518e88841ba1da075bd43fa933",
       "0x9A05b116b56304F5f4B3F1D5DA4641bFfFfae6Ab",
       "0xF1104493eC315aF2cb52f0c19605443334928D38",
-      "0xb1f28350539b06d5a35d016908eef0424bd13c4b"
+      "0xb1f28350539b06d5a35d016908eef0424bd13c4b",
+      "0x3bcbAC61456c9C9582132D1493A00E318EA9C122"
     ],
     toa: [
       [nullAddress, '0xa3fa99a148fa48d14ed51d610c367c61876997f1'],
@@ -180,15 +187,15 @@ const config = {
       ], // amWBTC
       // anchor
       [
-        "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+        ADDRESSES.polygon.USDC,
         "0x947D711C25220d8301C087b25BA111FE8Cbf6672",
       ], //USDC
       [
-        "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
+        ADDRESSES.polygon.USDT,
         "0xa4742A65f24291AA421497221AaF64c70b098d98",
       ], //USDT
       [
-        "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
+        ADDRESSES.polygon.DAI,
         "0x6062E92599a77E62e0cC9749261eb2eaC3aBD44F",
       ], //DAI
     ]

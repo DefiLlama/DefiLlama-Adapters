@@ -1,9 +1,10 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const { ohmTvl } = require('./helper/ohm')
 
 const treasury = "0x873ad91fA4F2aA0d557C0919eC3F6c9D240cDd05"
 module.exports = ohmTvl(treasury, [
     //curve 
-    ["0xD533a949740bb3306d119CC777fa900bA034cd52", false],
+    [ADDRESSES.ethereum.CRV, false],
     //frax
     ["0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0", false],
     //Sushi LP

@@ -1,59 +1,78 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
-const { getTokenBalance, getTrxBalance, unverifiedCall } = require('../helper/chain/tron');
+const { getTokenBalance, getTrxBalance, unverifiedCall, sumTokens } = require('../helper/chain/tron');
 
 const pools = [
   {
     pool: 'TKcEU8ekq2ZoFzLSGFYCUY6aocJBX9X31b', stablecoins: [
-      ["TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t", "tether"], // USDT
-      ["TMwFHYXLJaRUPeW6421aqXL4ZEzPRFGkGT", "just-stablecoin"], // USDJ
-      ["TUpMhErZL2fhh4sVNULAbNKLokS4GjC1F4", "true-usd"] // TUSD 
+      ADDRESSES.tron.USDT, // USDT
+      "TMwFHYXLJaRUPeW6421aqXL4ZEzPRFGkGT", // // USDJ
+      "TUpMhErZL2fhh4sVNULAbNKLokS4GjC1F4", // // TUSD 
     ]
   },
   {
     pool: 'TKVsYedAY23WFchBniU7kcx1ybJnmRSbGt', stablecoins: [  // USDD 3pool
-    ["TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t", "tether"], // USDT
-    ["TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn", "usdd"], // USDD
-    ["TUpMhErZL2fhh4sVNULAbNKLokS4GjC1F4", "true-usd"] // TUSD 
+    ADDRESSES.tron.USDT, // USDT
+    ADDRESSES.tron.USDD, // USDD
+    "TUpMhErZL2fhh4sVNULAbNKLokS4GjC1F4", // // TUSD 
     ]
   },
   {
     pool: 'TAUGwRhmCP518Bm4VBqv7hDun9fg8kYjC4', stablecoins: [  // USDD 2pool
-    ["TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn", "usdd"], // USDD
-    ["TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t", "tether"], // USDT
+    ADDRESSES.tron.USDD, // USDD
+    ADDRESSES.tron.USDT, // USDT
     ]
   },
   {
     pool: 'TQx6CdLHqjwVmJ45ecRzodKfVumAsdoRXH', stablecoins: [
-      ["TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8", "usd-coin"], // USDC
+      ADDRESSES.tron.USDC, // // USDC
     ]
   },
   {
     pool: 'TB6zgiG14iQkNxqU4mYe7cMiS5aCYfyidL', stablecoins: [
-      ["TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8", "usd-coin"], // USDC
+      ADDRESSES.tron.USDC, // // USDC
     ]
   },
   {
-    pool: 'TNTfaTpkdd4AQDeqr8SGG7tgdkdjdhbP5c', stablecoins: [  // new USDD 2pool
-      ["TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn", "usdd"], // USDD
-      ["TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t", "tether"], // USDT
+    pool: 'TNTfaTpkdd4AQDeqr8SGG7tgdkdjdhbP5c', stablecoins: [  // USDD 2pool
+      ADDRESSES.tron.USDD, // USDD
+      ADDRESSES.tron.USDT, // USDT
+    ]
+  },
+  {
+    pool: 'TExeaZuD5YPi747PN5yEwk3Ro9eT2jJfB6', stablecoins: [  // USDC 2pool
+      ADDRESSES.tron.USDC, // // USDC
+      ADDRESSES.tron.USDT, // USDT
+    ]
+  },
+  {
+    pool: 'TS8d3ZrSxiGZkqhJqMzFKHEC1pjaowFMBJ', stablecoins: [  // new TUSD 2pool
+      "TUpMhErZL2fhh4sVNULAbNKLokS4GjC1F4", // // TUSD
+      ADDRESSES.tron.USDT, // USDT
+    ]
+  },
+  {
+    pool: 'TE7SB1v9vRbYRe5aJMWQWp9yfE2k9hnn3s', stablecoins: [  // new USDD/2USD
+      ADDRESSES.tron.USDC, // // USDC
+    ]
+  },
+  {
+    pool: 'TKBqNLyGJRQbpuMhaT49qG7adcxxmFaVxd', stablecoins: [  // new USDJ/2USD
+      "TMwFHYXLJaRUPeW6421aqXL4ZEzPRFGkGT", // // USDJ
+    ]
+  },
+  {
+    pool: 'TLssvTsY4YZeDPwemQvUzLdoqhFCbVxDGo', stablecoins: [  // new USDC/2USD
+      ADDRESSES.tron.USDD, // USDD
     ]
   }
 ]
 
   async function tvl() {
-    const balances = {}
-    for( let poolConfig of pools) {
-      const {
-        pool, 
-        stablecoins
-      } = poolConfig
-      for ( let [token, label] of stablecoins) {
-        const tokenBalace= await getTokenBalance(token, pool)
-        sdk.util.sumSingleBalance(balances, label, tokenBalace)
-      }
-    }
-
-    return balances
+    const tokensAndOwners = pools.map(({ pool, stablecoins}) => {
+      return stablecoins.map(v => [v, pool])
+    }).flat()
+    return sumTokens({ tokensAndOwners })
   }
 
 const stakingContract = "TXbA1feyCqWAfAQgXvN1ChTg82HpBT8QPb"

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs');
 const { createIncrementArray } = require('../helper/utils');
@@ -15,7 +16,7 @@ const CONFIG = {
       },
     ],
     startBlock: 13234803,
-    gasToken: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+    gasToken: ADDRESSES.ethereum.WETH,
   },
   avax: {
     factories: [
@@ -25,7 +26,7 @@ const CONFIG = {
       },
     ],
     startBlock: 16037331,
-    gasToken: '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7',
+    gasToken: ADDRESSES.avax.WAVAX,
   },
   polygon: {
     factories: [
@@ -45,7 +46,7 @@ const CONFIG = {
       },
     ],
     startBlock: 20928838,
-    gasToken: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
+    gasToken: ADDRESSES.bsc.WBNB,
   },
   fantom: {
     factories: [
@@ -55,7 +56,41 @@ const CONFIG = {
       },
     ],
     startBlock: 46604874,
-    gasToken: '0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83',
+    gasToken: ADDRESSES.fantom.WFTM,
+  },
+  optimism: {
+    factories: [
+      {
+        factory: '0xb4FD0Ce108e196d0C9844c48174d4C32Cd42F7bC',
+        version: '0.5.2',
+      },
+      {
+        factory: '0x4f2be0244146b4408154504a481c799ba1a9a355',
+        version: '0.6.0',
+      },
+    ],
+    startBlock: 39240199,
+    gasToken: ADDRESSES.tombchain.FTM,
+  },
+  arbitrum: {
+    factories: [
+      {
+        factory: '0xb4FD0Ce108e196d0C9844c48174d4C32Cd42F7bC',
+        version: '0.5.2',
+      },
+    ],
+    startBlock: 33495774,
+    gasToken: ADDRESSES.arbitrum.WETH,
+  },
+  aurora: {
+    factories: [
+      {
+        factory: '0xb4FD0Ce108e196d0C9844c48174d4C32Cd42F7bC',
+        version: '0.5.2',
+      },
+    ],
+    startBlock: 80670441,
+    gasToken: '0xc9bdeed33cd01541e1eed10f90519d2c06fe3feb',
   },
 };
 
@@ -96,6 +131,7 @@ Object.keys(CONFIG).forEach((chain) => {
             calls,
             chain,
             block,
+            permitFailure: true,
           });
 
           currentRes = res.map((i) => i.output).filter((i) => i);

@@ -1,5 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { get } = require('../helper/http')
 const { toUSDTBalances } = require('../helper/balances')
+const { sumTokensExport } = require('../helper/unwrapLPs')
 
 async function offers() {
   const markets = await get('https://zigzag-exchange.herokuapp.com/api/v1/markets')
@@ -19,5 +21,15 @@ module.exports = {
   zksync: {
     offers,
     tvl: async () => ({})
+  },
+  arbitrum: {
+    tvl: sumTokensExport({ owner: '0xf4037f59c92c9893c43c2372286699430310cfe7', tokens: [
+      ADDRESSES.arbitrum.USDC,
+      ADDRESSES.arbitrum.WETH,
+      ADDRESSES.arbitrum.USDT,
+      ADDRESSES.arbitrum.WBTC,
+      '0x912CE59144191C1204E64559FE8253a0e49E6548',
+      ADDRESSES.arbitrum.LINK,
+    ]})
   }
 }

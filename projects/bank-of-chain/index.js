@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 // const BigNumber = require("bignumber.js");
 // const utils = require('../helper/utils');
 // const { toUSDTBalances } = require('../helper/balances');
@@ -7,8 +8,8 @@ const risk_off_abi = require("./risk_off_vault_abi.json");
 const RISK_OFF_USD_VAULT = "0x30D120f80D60E7b58CA9fFaf1aaB1815f000B7c3"
 const RISK_OFF_ETH_VAULT = "0x8f0Cb368C63fbEDF7a90E43fE50F7eb8B9411746"
 
-const usdtAddress = "0xdac17f958d2ee523a2206206994597c13d831ec7";
-const ethAddress = '0x0000000000000000000000000000000000000000';
+const usdtAddress = ADDRESSES.ethereum.USDT;
+const ethAddress = ADDRESSES.null;
 
 const chains = {
   ethereum: 1,

@@ -1,10 +1,10 @@
+const ADDRESSES = require('./coreAssets.json')
 const BigNumber = require("bignumber.js");
 const axios = require("axios");
 const sdk = require('@defillama/sdk')
 const http = require('./http')
 const env = require('./env')
 const erc20 = require('./abis/erc20.json')
-const ethers = require("ethers");
 
 async function returnBalance(token, address, block, chain) {
   const { output: decimals } = await sdk.api.erc20.decimals(token, chain)
@@ -39,12 +39,13 @@ function getParamCalls(length) {
   return createIncrementArray(length).map(i => ({ params: i }))
 }
 
-const LP_SYMBOLS = ['SLP', 'spLP', 'JLP', 'OLP', 'SCLP', 'DLP', 'MLP', 'MSLP', 'ULP', 'TLP', 'HMDX', 'YLP', 'SCNRLP', 'PGL', 'GREEN-V2', 'PNDA-V2', 'vTAROT', 'vEvolve', 'TETHYSLP', 'BAO-V2', 'DINO-V2', 'DFYNLP', 'LavaSwap', 'RLP', 'ZDEXLP', 'lawSWAPLP', 'ELP',]
+const LP_SYMBOLS = ['SLP', 'spLP', 'JLP', 'OLP', 'SCLP', 'DLP', 'MLP', 'MSLP', 'ULP', 'TLP', 'HMDX', 'YLP', 'SCNRLP', 'PGL', 'GREEN-V2', 'PNDA-V2', 'vTAROT', 'vEvolve', 'TETHYSLP', 'BAO-V2', 'DINO-V2', 'DFYNLP', 'LavaSwap', 'RLP', 'ZDEXLP', 'lawSWAPLP', 'ELP', 'ICELP', 'LFG_LP', 'KoffeeMug']
 const blacklisted_LPS = [
   '0xb3dc4accfe37bd8b3c2744e9e687d252c9661bc7',
   '0xf146190e4d3a2b9abe8e16636118805c628b94fe',
   '0xCC8Fa225D80b9c7D42F96e9570156c65D6cAAa25',
   '0xaee4164c1ee46ed0bbc34790f1a3d1fc87796668',
+  '0x93669cfce302c9971169f8106c850181a217b72b',
 ].map(i => i.toLowerCase())
 
 function isLP(symbol, token, chain) {
@@ -64,9 +65,10 @@ function isLP(symbol, token, chain) {
   if (chain === 'klaytn' && ['NLP'].includes(symbol)) return true
   if (chain === 'fantom' && ['HLP'].includes(symbol)) return true
   if (chain === 'songbird' && ['FLRX', 'OLP'].includes(symbol)) return true
-  if (chain === 'arbitrum' && ['DXS', 'ZLP', ].includes(symbol)) return true
+  if (chain === 'arbitrum' && ['DXS', 'ZLP',].includes(symbol)) return true
   if (chain === 'metis' && ['NLP', 'ALP'].includes(symbol)) return true // Netswap/Agora LP Token
   if (chain === 'optimism' && /(-ZS)/.test(symbol)) return true
+  if (chain === 'arbitrum' && /^(crAMM|vrAMM)-/.test(symbol)) return true // ramses LP
   if (chain === 'bsc' && /(-APE-LP-S)/.test(symbol)) return false
   if (['fantom', 'nova',].includes(chain) && ['NLT'].includes(symbol)) return true
   let label
@@ -173,10 +175,14 @@ async function diplayUnknownTable({ tvlResults = {}, tvlBalances = {}, storedKey
     if (balances[token] === '0') delete balances[token]
   })
 
-  return debugBalances({ balances, chain: storedKey, log, tableLabel, withETH: false, })
+  try {
+    await debugBalances({ balances, chain: storedKey, log, tableLabel, withETH: false, })
+  } catch (e) {
+    log('failed to fetch prices for', balances)
+  }
 }
 
-const nullAddress = '0x0000000000000000000000000000000000000000'
+const nullAddress = ADDRESSES.null
 async function getSymbols(chain, tokens) {
   tokens = tokens.filter(i => i.includes('0x')).map(i => i.slice(i.indexOf('0x'))).filter(i => i !== nullAddress)
   const calls = tokens.map(i => ({ target: i }))
@@ -232,17 +238,20 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
     abi: 'erc20:symbol',
     calls: tokens.map(i => ({ target: i })),
     chain,
+    permitFailure: true,
   })
   const { output: decimals } = await sdk.api.abi.multiCall({
     abi: 'erc20:decimals',
     calls: tokens.map(i => ({ target: i })),
     chain,
+    permitFailure: true,
   })
 
   const { output: name } = await sdk.api.abi.multiCall({
     abi: erc20.name,
     calls: tokens.map(i => ({ target: i })),
     chain,
+    permitFailure: true,
   })
 
   let symbolsETH, nameETH
@@ -251,11 +260,13 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
     symbolsETH = await sdk.api.abi.multiCall({
       abi: 'erc20:symbol',
       calls: ethTokens.map(i => ({ target: i })),
+      permitFailure: true,
     })
 
     nameETH = await sdk.api.abi.multiCall({
       abi: erc20.name,
       calls: ethTokens.map(i => ({ target: i })),
+      permitFailure: true,
     })
 
     symbolsETH = symbolsETH.output
@@ -285,6 +296,18 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
   console.table(logObj)
 }
 
+function once(func) {
+  let previousResponse
+  let called = false
+  function wrapped(...args) {
+    if (called) return previousResponse
+    called = true
+    previousResponse = func(...args)
+    return previousResponse
+  }
+  return wrapped
+}
+
 module.exports = {
   log,
   createIncrementArray,
@@ -304,4 +327,5 @@ module.exports = {
   getSymbols,
   getDecimals,
   getParamCalls,
+  once,
 }

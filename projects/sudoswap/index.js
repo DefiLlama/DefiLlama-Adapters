@@ -1,5 +1,5 @@
 const { graphFetchById, } = require('../helper/http')
-const { whitelistedNFTs, ART_BLOCKS, sumArtBlocks } = require('../helper/nft')
+const { ART_BLOCKS, sumArtBlocks } = require('../helper/nft')
 const sdk = require('@defillama/sdk')
 
 const query = `
@@ -31,7 +31,6 @@ query get_pairs($lastId: String, $block: Int) {
 
 module.exports = {
   methodology: 'Sum up all the ETH in pools and count whitelisted NFT values as well (price fetched from chainlink)',
-  misrepresentedTokens: true,
   hallmarks: [
     [Math.floor(new Date('2022-12-06') / 1e3), 'TVL includes whitelisted nft value as well'],
   ],
@@ -40,23 +39,24 @@ module.exports = {
       const data = await graphFetchById({
         endpoint: 'https://api.thegraph.com/subgraphs/name/zeframlou/sudoswap',
         query,
+        api,
         options: {
-          timestamp, chain: 'ethereum', chainBlocks, useBlock: true,
+          useBlock: true,
         }
       })
-      const whitelisted = new Set(whitelistedNFTs.ethereum)
       const balances = {}
       const artBlockOwners = []
       data.forEach(({ ethBalance, collection, numNfts, id }) => {
         sdk.util.sumSingleBalance(balances, 'ethereum', ethBalance / 1e18)
         const nft = collection.id.toLowerCase()
-        if (nft === ART_BLOCKS) {
-          if (+numNfts > 0)
+
+        if (+numNfts > 0) {
+          if (nft === ART_BLOCKS) {
             artBlockOwners.push(id)
-          return;
-        }
-        if (+numNfts > 0 && whitelisted.has(nft))
+            return;
+          }
           sdk.util.sumSingleBalance(balances, nft, numNfts)
+        }
       })
 
       return sumArtBlocks({ api, owners: artBlockOwners, balances, })
