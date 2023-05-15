@@ -33,6 +33,9 @@ module.exports = treasuryExports({
       "0xb204BF10bc3a5435017D3db247f56dA601dFe08A", // 50DOLA-50WETH
       "0x7e05540A61b531793742fde0514e6c136b5fbAfE", // xFODL
       "0xAD038Eb671c44b853887A7E32528FaB35dC5D710", // DBR
+      "0x0a6B1d9F920019BAbc4De3F10c94ECB822106104",
+      "0x73E02EAAb68a41Ea63bdae9Dbd4b7678827B2352",
+      "0xC36442b4a4522E871399CD717aBDD847Ab11FE88"
     ],
     owners: [anchorTreasury, multisig, treasury1, treasury2],
     ownTokens: [
@@ -42,6 +45,7 @@ module.exports = treasuryExports({
       // "0x9c7305eb78a432ced5C4D14Cac27E8Ed569A2e26", // veNFT
     ],
     resolveUniV3: true,
+    resolveLP: true,
   },
   optimism: {
     tokens: [
@@ -61,5 +65,22 @@ module.exports = treasuryExports({
     ],
     owners: [bnbmultisig],
     ownTokens: [],
+  },
+  arbitrum: {
+    tokens: [
+      nullAddress,
+      ADDRESSES.arbitrum.DAI,
+      "0xAAA6C1E32C55A7Bfa8066A6FAE9b42650F262418"
+    ],
+    owners: ["0x23dedab98d7828afbd2b7ab8c71089f2c517774a"],
+    ownTokens: ["0x6A7661795C374c0bFC635934efAddFf3A7Ee23b6"],
+  },
+  polygon: {
+    tokens: [
+      nullAddress,
+      ADDRESSES.polygon.USDC,
+      
+    ],
+    owners: ["0x5d18b089e838dffbb417a87874435175f3a9b000"],
   },
 });
