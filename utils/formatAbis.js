@@ -59,6 +59,10 @@ function isTransformable(obj, file) {
 function transform(obj, file) {
   const res = {}
   for (const [key, value] of Object.entries(obj)) {
+    if (['constructor', 'error'].includes(value.type)) {
+      console.log('skipping element of type: ', value.type)
+      continue;
+    }
     if (!value.inputs) console.log('inputs missing', file)
     const iLen = value.inputs.length === 0
     const oLen = value.outputs?.length === 1

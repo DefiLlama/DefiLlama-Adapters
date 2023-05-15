@@ -6,6 +6,8 @@ const treasury2 = "0x849D52316331967b6fF1198e5E32A0eB168D039d";
 const treasury3= "0xBc79855178842FDBA0c353494895DEEf509E26bB";
 const vestingAddress = "0x849d52316331967b6ff1198e5e32a0eb168d039d";
 const GNO= "0x6810e776880C02933D47DB1b9fc05908e5386b96";
+const LP = "0x6256518aE9a97C408a03AAF1A244989Ce6B937F6"
+const LP2 = "0x228054e9c056F024FC724F515A2a8764Ae175ED6"
 
 
 module.exports = treasuryExports({
@@ -31,8 +33,11 @@ module.exports = treasuryExports({
         '0x6f40d4A6237C257fff2dB00FA0510DeEECd303eb',//INST
         '0x6243d8CEA23066d098a15582d81a598b4e8391F4',//FLX
         '0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32',//LDO
+        '0x1982b2F5814301d4e9a8b0201555376e62F82428',
+        "0x712CC5BeD99aA06fC4D5FB50Aea3750fA5161D0f"
      ],
     owners: [treasury, treasury1, treasury2, treasury3, vestingAddress],
-    ownTokens: [GNO],
+    ownTokens: [GNO, LP, LP2],
+    resolveUniV3: true,
   },
 })

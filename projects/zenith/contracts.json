@@ -18,6 +18,15 @@
         "pid": 1,
         "name":"ZTH-ETH",
         "asset": "0xAC0155CBd306e41C1287E2c53e1306178397b823"
+    },
+    {
+      "pid": 4,
+      "name":"stETH",
+      "asset": "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84"
+    }, {
+      "pid": 5,
+      "name":"rETH",
+      "asset": "0xae78736Cd615f374D3085123A210448E74Fc6393"
     }
   ] 
 }
