@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 
 let abi = require('./abi')
 const { sumTokens2, } = require('../helper/unwrapLPs')
 
-const nullAddress = '0x0000000000000000000000000000000000000000'
+const nullAddress = ADDRESSES.null
 const poolHelpers = {
   'bsc': '0x93C22Fbeff4448F2fb6e432579b0638838Ff9581',
   'arbitrum': '0x611575eE1fbd4F7915D0eABCC518eD396fF78F0c',
@@ -10,7 +11,7 @@ const poolHelpers = {
 }
 
 const blacklistedTokens = [
-  '0x0a3bb08b3a15a19b4de82f8acfc862606fb69a2d',
+  ADDRESSES.bsc.iUSD,
   '0x1382628e018010035999A1FF330447a0751aa84f',
 ]
 

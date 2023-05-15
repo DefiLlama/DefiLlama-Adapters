@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { stakings } = require("../helper/staking");
 const { unwrapLPsAuto } = require("../helper/unwrapLPs");
@@ -124,18 +125,18 @@ const yearnHives = [
 const pcsV3 = [
   {
     hive: "0x25223015ee4dbaf9525ddd43797cae1dcd83f6b5",
-    token0: "0x55d398326f99059ff775485246999027b3197955",
-    token1: "0xe9e7cea3dedca5984780bafc599bd69add087d56"
+    token0: ADDRESSES.bsc.USDT,
+    token1: ADDRESSES.bsc.BUSD
   },
   {
     hive: "0x9eab3bf245da9b6d8705b1a906ee228382c38f93",
-    token0: "0x55d398326f99059ff775485246999027b3197955",
-    token1: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d"
+    token0: ADDRESSES.bsc.USDT,
+    token1: ADDRESSES.bsc.USDC
   },
   {
     hive: "0x76ab668d93135bcd64df8e4a7ab9dd05fac4cdbf",
-    token0: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
-    token1: "0xe9e7cea3dedca5984780bafc599bd69add087d56"
+    token0: ADDRESSES.bsc.USDC,
+    token1: ADDRESSES.bsc.BUSD
   }
 ]
 

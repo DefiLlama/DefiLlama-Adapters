@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const { getUniqueAddresses } = require('../helper/utils')
 
@@ -16,6 +17,11 @@ const assetList = [
   ["BTC", "BTC", "3JFJPpH8Chwo7CDbyYQ4XcfgcjEP1FGRMJ"],
   ["BTC", "BTC", "34HpHYiyQwg69gFmCq2BGHjF1DZnZnBeBP"],
   ["BTC", "BTC", "bc1qm34lsc65zpw79lxes69zkqmk6ee3ewf0j77s3h"],
+  ["BTC", "BTC", "38Xnrq8MZiKmYmwobbYdZQ5nnCbX1qvQfE"],
+  ["BTC", "BTC", "3EbJfpmFgufYtzW9UFvf1GAfm2ted1Rwnr"],
+  ["BTC", "BTC", "38DN2uFMZPiHLHJigfv4kWC9JWJrNnhLcn"],
+  ["BTC", "BTC", "3Qxak1CZhLyZ7GVckKphLURdLBCjMfz9bA"],
+  ["BTC", "BTC", "36zSLdRv1jyewjaC12fqK5fptn7PqewunL"],
   ["ETH", "ETH", "0xbe0eb53f46cd790cd13851d5eff43d12404d33e8"],
   ["ETH", "ETH", "0xf977814e90da44bfa03b6295a0616a897441acec"],
   ["ETH", "ETH", "0x5a52e96bacdabb82fd05763e25335261b270efcb"],
@@ -323,12 +329,12 @@ module.exports = {
     owners: getOwners('ETH'),
     blacklistedTokens: [
       '0x9be89d2a4cd102d8fecc6bf9da793be995c22541', // BBTC
-      '0xB8c77482e45F1F44dE1745F52C74426C631bDD52', // WBNB
+      ADDRESSES.ethereum.BNB, // WBNB
     ]
   },
   bsc: {
     owners: getOwners('BEP20'),
-    tokens: ['0x0000000000000000000000000000000000000000',],
+    tokens: [ADDRESSES.null,],
   },
   bep2: {
     geckoId: 'binancecoin',

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
 const { getTokenBalance } = require('../helper/chain/tron')
 const { getUniTVL } = require('../helper/unknownTokens')
@@ -13,7 +14,7 @@ const tokens = {
   CUBE: { 'address': 'TQxzbBVFRFUgHXnhyCRiatrkwX9BAJnHam', 'id': '_cube' },
   CYFM: { 'address': 'TZ5jA9F5zGRgi9qk9ATMu6D7wyEpnxQGJh', 'id': 'cyberfm' },
   ICR: { 'address': 'TKqvrVG7a2zJvQ3VysLoiz9ijuMNDehwy7', 'id': 'intercrone' },
-  JM: { 'address': 'TVHH59uHVpHzLDMFFpUgCx2dNAQqCzPhcR', 'id': 'justmoney-2' },
+  JM: { 'address': ADDRESSES.tron.JM, 'id': 'justmoney-2' },
   JST: { 'address': 'TCFLL5dx5ZJdKnWuesXxi1VPwjLVmWZZy9', 'id': 'just' },
   KLV: { 'address': 'TVj7RNVHy6thbM7BWdSe9G6gXwKhjhdNZS', 'id': 'klever' },
   KODX: { 'address': 'TTUwzoZAK6rpDjpSh8B2XFTnxGfbMLHJaq', 'id': 'kodx' },
@@ -34,8 +35,8 @@ const tokens = {
   turu: { 'address': 'TK8K7HFDLkhYS6XnFC8MKQkVK6Xq8D13qJ', 'id': '_turu' },
   TREX: { 'address': 'THyYjzy42cy83Nwg6pbsUTcV1GBrPPqGE5', 'id': '_trex' },
   TWJ: { 'address': 'TNq5PbSssK5XfmSYU4Aox4XkgTdpDoEDiY', 'id': '_twj' },
-  USDD: { 'address': 'TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn', 'id': 'usdd' },
-  USDT: { 'address': 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t', 'id': 'tether' },
+  USDD: { 'address': ADDRESSES.tron.USDD, 'id': 'usdd' },
+  USDT: { 'address': ADDRESSES.tron.USDT, 'id': 'tether' },
   USTX: { 'address': 'TYX2iy3i3793YgKU5vqKxDnLpiBMSa5EdV', 'id': 'upstabletoken' },
   VBS: { 'address': 'TJRc6ZTMhHEPrWPtfsVvXW1mxHPLw1arZo', 'id': '_vbs' },
   WOX: { 'address': 'TYVFMntFj7xLMxp1CvuXwg9LpPw1dPwWhM', 'id': '_wox' },
