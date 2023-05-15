@@ -5,6 +5,8 @@ const anchorTreasury = "0x926df14a23be491164dcf93f4c468a50ef659d5b";
 const multisig = "0x9D5Df30F475CEA915b1ed4C0CCa59255C897b61B";
 const opmultisig = "0xa283139017a2f5bade8d8e25412c600055d318f8";
 const bnbmultisig = "0xf7da4bc9b7a6bb3653221ae333a9d2a2c2d5bda7";
+const treasury1 = "0x4b6c63e6a94ef26e2df60b89372db2d8e211f1b7"
+const treasury2 = "0x943dbdc995add25a1728a482322f9b3c575b16fb"
 
 module.exports = treasuryExports({
   ethereum: {
@@ -28,17 +30,17 @@ module.exports = treasuryExports({
       "0x7f50786A0b15723D741727882ee99a0BF34e3466", // Stake DAO sdCRV Gauge
       "0x445494F823f3483ee62d854eBc9f58d5B9972A25", // 50DOLA-50DBR
       "0xb204BF10bc3a5435017D3db247f56dA601dFe08A", // 50DOLA-50WETH
-      "0xC36442b4a4522E871399CD717aBDD847Ab11FE88", // UNI V3 DOLA + DBR
       "0x7e05540A61b531793742fde0514e6c136b5fbAfE", // xFODL
       "0xAD038Eb671c44b853887A7E32528FaB35dC5D710", // DBR
     ],
-    owners: [anchorTreasury, multisig],
+    owners: [anchorTreasury, multisig, treasury1, treasury2],
     ownTokens: [
       inv,
       "0x73E02EAAb68a41Ea63bdae9Dbd4b7678827B2352", // Uniswap INV/ETH LP
       "0xA5D7A7690B72a89B7b720E43fC9cBda5419d0C71", // 50INV-50DOLA Aura Deposit Vault
       // "0x9c7305eb78a432ced5C4D14Cac27E8Ed569A2e26", // veNFT
     ],
+    resolveUniV3: true,
   },
   optimism: {
     tokens: [

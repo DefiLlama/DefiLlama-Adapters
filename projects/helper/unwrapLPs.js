@@ -366,7 +366,7 @@ tokensAndOwners [
     [token, owner] - eg ["0xaaa", "0xbbb"]
 ]
 */
-async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereum", transformAddress, { resolveLP = false, unwrapAll = false, blacklistedLPs = [], skipFixBalances = false, abis = {}, ignoreFailed = false } = {}) {
+async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereum", transformAddress, { resolveLP = false, unwrapAll = false, blacklistedLPs = [], skipFixBalances = false, abis = {}, permitFailure = false } = {}) {
   if (!transformAddress)
     transformAddress = await getChainTransform(chain)
 
@@ -392,6 +392,7 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
       target: t[0],
       params: t[1]
     })),
+    permitFailure,
     abi: 'erc20:balanceOf',
     block,
     chain
@@ -401,7 +402,7 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
     let balance = BigNumber(result.output)
     if (result.output === null || isNaN(+result.output)) {
       sdk.log('failed for', token, balance, balances[token])
-      if (ignoreFailed) balance = BigNumber(0)
+      if (permitFailure) balance = BigNumber(0)
       else throw new Error('Unable to fetch balance for: ' + result.input.target)
     }
     balances[token] = BigNumber(balances[token] || 0).plus(balance).toFixed(0)
@@ -495,6 +496,16 @@ async function genericUnwrapCvx(balances, holder, cvx_BaseRewardPool, block, cha
     block: block,
   })
   sdk.util.sumSingleBalance(balances, crvPoolInfo.lptoken, cvx_LP_bal, chain)
+  return balances
+}
+
+async function genericUnwrapCvxDeposit({ api, owner, token, balances }) {
+  if (!balances) balances = await api.getBalances()
+  const [bal, cToken ] = await api.batchCall([
+    { target: token, params: owner, abi: 'erc20:balanceOf' },
+    { target: token,  abi: 'address:curveToken' },
+  ])
+  sdk.util.sumSingleBalance(balances, cToken, bal, api.chain)
   return balances
 }
 
@@ -626,7 +637,7 @@ async function sumTokens2({
   resolveUniV3 = false,
   resolveArtBlocks = false,
   resolveNFTs = false,
-  ignoreFailed = false,
+  permitFailure = false,
 }) {
   if (api) {
     chain = api.chain ?? chain
@@ -674,7 +685,7 @@ async function sumTokens2({
   tokensAndOwners = getUniqueToA(tokensAndOwners)
   log(chain, 'summing tokens', tokensAndOwners.length)
 
-  await sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveLP, unwrapAll, blacklistedLPs, skipFixBalances: true, abis, ignoreFailed, })
+  await sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveLP, unwrapAll, blacklistedLPs, skipFixBalances: true, abis, permitFailure, })
 
   if (!skipFixBalances) {
     const fixBalances = await getFixBalances(chain)
@@ -749,4 +760,5 @@ module.exports = {
   unwrapBalancerToken,
   unwrapBalancerPool,
   sumTokensExport,
+  genericUnwrapCvxDeposit,
 }
