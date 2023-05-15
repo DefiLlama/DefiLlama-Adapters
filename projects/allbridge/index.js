@@ -65,7 +65,7 @@ const data = {
         },
         tokens: [
             {name: "bitcoin", address: "0x66a79D23E58475D2738179Ca52cd0b41d73f0BEa", decimals: 18},
-            {name: "tether", address: "0xa71EdC38d189767582C38A3145b5873052c3e47a", decimals: 18},
+            {name: "tether", address: ADDRESSES.heco.USDT, decimals: 18},
             {name: "apyswap", address: "0x90e8896b12a92D51CD213b681C2CaD83A9a6bD49", decimals: 18},
 
         ]

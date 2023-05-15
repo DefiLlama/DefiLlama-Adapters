@@ -54,7 +54,7 @@ const tokensConf = {
   heco: {
     HT: nullAddress,
     USDC: ADDRESSES.heco.USDC_HECO,
-    USDT: "0xa71edc38d189767582c38a3145b5873052c3e47a",
+    USDT: ADDRESSES.heco.USDT,
     HUSD: "0x0298c2b32eae4da002a15f36fdf7615bea3da047",
     ETH: "0x64ff637fb478863b7468bc97d30a5bf3a428a1fd",
     SWFTC: "0x329dda64Cbc4DFD5FA5072b447B3941CE054ebb3",

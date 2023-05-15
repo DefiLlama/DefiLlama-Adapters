@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress } = require('../helper/unwrapLPs');
 
 module.exports = {
@@ -41,7 +42,7 @@ module.exports = {
       ],
     },
     {
-      tokens: ['0x8E81fCc2d4A3bAa0eE9044E0D7E36F59C9BbA9c1'], // WEMIXDollar
+      tokens: [ADDRESSES.wemix.WEMIX_], // WEMIXDollar
       holders: [
         '0x144120Ef18d4223Ab3f4695653a5755C23FBF469',
         '0xc978f195C838d3344f74DDBA84235130B3091847',
@@ -50,7 +51,7 @@ module.exports = {
       ],
     },
     {
-      tokens: ['0x765277EebeCA2e31912C9946eAe1021199B39C61'], // ETH
+      tokens: [ADDRESSES.shiden.ETH], // ETH
       holders: [
         '0x2D3bAeBa85D78D202887D34f5618380e90F3c272',
         '0xD2510D275dbca0fe333dAff8Eb51b9105f6aC212',

@@ -111,7 +111,7 @@ module.exports = {
     },
     {
       name: 'optimism',
-      stable: '0x7F5c764cBc14f9669B88837ca1490cCa17c31607', // USDC
+      stable: ADDRESSES.optimism.USDC, // USDC
       holders: [
         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
       ]

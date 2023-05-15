@@ -26,7 +26,7 @@ const config = {
     nativeBridge: ['0x0A19afbE4519A40Df3b48BE46EDc0720724B4A6B'], tokenBridge: ['0x5DDDc78C8a59CeD4d25a8FD96BF9D9FdA561D0FF'], tokens: ['0x3c2b8be99c50593081eaa2a724f0b8285f5aba8f'],
   },
   heco: {
-    nativeBridge: ['0xbBF0b12A0Be425Db284905A3Cb0Ab72b178b6A4F'], tokenBridge: ['0x334d6D6c5EaE4bf5ec7De39a1547e6bDBdDcfbf3'], tokens: ['0xa71edc38d189767582c38a3145b5873052c3e47a'],
+    nativeBridge: ['0xbBF0b12A0Be425Db284905A3Cb0Ab72b178b6A4F'], tokenBridge: ['0x334d6D6c5EaE4bf5ec7De39a1547e6bDBdDcfbf3'], tokens: [ADDRESSES.heco.USDT],
   },
 }
 

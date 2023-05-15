@@ -16,7 +16,7 @@ async function tvl(timestamp, block, chainBlocks, {api}) {
     '0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72',//ens
     '0x4da27a545c0c5B758a6BA100e3a049001de870f5',//staave
     '0xc00e94Cb662C3520282E6f5717214004A7f26888',//comp
-    '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9',//aave
+    ADDRESSES.ethereum.AAVE,//aave
     '0x8f8221aFbB33998d8584A2B05749bA73c37a938a',//req
  ].map(t=>[t, treasury])
   await sumTokens(balances, tokensAndOwners, block);

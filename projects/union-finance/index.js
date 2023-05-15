@@ -9,12 +9,12 @@ const config = {
   },
   arbitrum: {
     userManager: "0xb71F3D4342AaE0b8D531E14D2CF2F45d6e458A5F",
-    DAI: "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1",
+    DAI: ADDRESSES.optimism.DAI,
     uDAI: "0x954F20DF58347b71bbC10c94827bE9EbC8706887",
   },
   optimism: {
     userManager: "0x8E195D65b9932185Fcc76dB5144534e0f3597628",
-    DAI: "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1",
+    DAI: ADDRESSES.optimism.DAI,
     uDAI: "0xE478b5e7A423d7CDb224692d0a816CA146A744b2",
   },
 };
