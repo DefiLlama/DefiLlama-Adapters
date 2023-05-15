@@ -17,4 +17,13 @@ module.exports = {
   ethereum: {
     tvl,
   },
+  polygon: {
+    tvl,
+  },
+  optimism: {
+    tvl,
+  },
+  arbitrum: {
+    tvl,
+  },
 };
