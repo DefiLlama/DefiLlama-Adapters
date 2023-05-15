@@ -99,6 +99,27 @@ async function getTableData({ table, data }) {
   return response
 }
 
+async function function_view({ functionStr, type_arguments = [], arguments = [] }) {
+  const response = await http.post(`${endpoint}/v1/view`, { "function": functionStr, "type_arguments": type_arguments, arguments })
+  return response
+}
+
+function hexToString(hexString) {
+  if (hexString.startsWith('0x')) hexString = hexString.slice(2);
+  const byteLength = hexString.length / 2;
+  const byteArray = new Uint8Array(byteLength);
+
+  for (let i = 0; i < byteLength; i++) {
+    const hexByte = hexString.substr(i * 2, 2);
+    byteArray[i] = parseInt(hexByte, 16);
+  }
+
+  const decoder = new TextDecoder('utf-8');
+  const stringValue = decoder.decode(byteArray);
+
+  return stringValue
+}
+
 module.exports = {
   endpoint,
   dexExport,
@@ -109,4 +130,6 @@ module.exports = {
   coreTokens,
   sumTokens,
   getTableData,
+  function_view,
+  hexToString,
 };
