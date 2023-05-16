@@ -28,13 +28,12 @@ const scriptAddresses = [
   "addr1wyw3ap36lnepstpjadwg8cg73llvmju4y94kmfld23lkzjggq4hyj",
   "addr1wxrxa3ucywn3lqpkzlyucak0a7aavkudh49fqt06yc05sws4l4zs2",
   "addr1wy6e9jukn8fpx7kesrpmapsnmz0cgq6lnskuff0xc0junggv6gd8l",
-  // Staked LQ
-  "addr1w8arvq7j9qlrmt0wpdvpp7h4jr4fmfk8l653p9t907v2nsss7w7r4",
 ];
 
 module.exports = {
   cardano: {
     tvl: sumTokensExport({ scripts: scriptAddresses, }),
+    staking: sumTokensExport({ scripts: ["addr1w8arvq7j9qlrmt0wpdvpp7h4jr4fmfk8l653p9t907v2nsss7w7r4"], }),
     methodology: 'Adds up the Ada in the 16 action tokens and batch final token.'
   }
 };
