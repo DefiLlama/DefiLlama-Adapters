@@ -67,7 +67,15 @@ async function getTokenSupply(token) {
 async function getGeckoSolTokens() {
   const tokens = await getTokenList()
   const tokenSet = new Set()
-  tokens.filter(i => i.extensions?.coingeckoId).forEach(i => tokenSet.add(i.address))
+  tokens.filter(i => i.extensions?.coingeckoId && i.chainId === 101).forEach(i => tokenSet.add(i.address))
+  return tokenSet
+}
+
+
+async function getValidGeckoSolTokens() {
+  const tokens = await getTokenList()
+  const tokenSet = new Set()
+  tokens.filter(i => i.extensions?.coingeckoId && i.chainId === 101 && !i.name.includes('(Wormhole v1)')).forEach(i => tokenSet.add(i.address))
   return tokenSet
 }
 
@@ -107,6 +115,9 @@ async function getTokenBalances(tokensAndAccounts) {
   const body = tokensAndAccounts.map(([token, account]) => formTokenBalanceQuery(token, account))
   const tokenBalances = await axios.post(endpoint, body);
   const balances = {}
+  tokenBalances.data.forEach((v, i )=> {
+    if (!v.result) console.log(v, tokensAndAccounts[i])
+  } )
   tokenBalances.data.forEach(({ result: { value } }) => {
     value.forEach(({ account: { data: { parsed: { info: { mint, tokenAmount: { amount } } } } } }) => {
       sdk.util.sumSingleBalance(balances, mint, amount)
@@ -315,6 +326,7 @@ async function sumTokens2({
   tokensAndOwners = tokensAndOwners.filter(([token]) => !blacklistedTokens.includes(token))
 
   if (tokensAndOwners.length) {
+    tokensAndOwners = getUnique(tokensAndOwners)
     log('total balance queries: ', tokensAndOwners.length)
     const chunks = sliceIntoChunks(tokensAndOwners, 99)
     for (const chunk of chunks) {
@@ -344,6 +356,14 @@ async function sumTokens2({
   async function _sumTokens(tokensAndAccounts) {
     const tokenBalances = await getTokenBalances(tokensAndAccounts)
     return transformBalances({ tokenBalances, balances, })
+  }
+
+  function getUnique(tokensAndOwners) {
+    const set = new Set()
+    tokensAndOwners.forEach(i => {
+      set.add(i.join('$'))
+    })
+    return [...set].map(i => i.split('$'))
   }
 }
 
@@ -389,4 +409,5 @@ module.exports = {
   getTokenList,
   readBigUInt64LE,
   decodeAccount,
+  getValidGeckoSolTokens,
 };
