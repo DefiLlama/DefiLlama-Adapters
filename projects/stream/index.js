@@ -26,13 +26,6 @@ async function tvl(_, _1, _2, { api }) {
     target: TBILL_VAULT_CLUB_BOND_CONTRACT,
   });
 
-  console.log(
-    totalSupply,
-    vaultBalance,
-    (totalSupply - vaultBalance) / (vaultToken / baseToken),
-    totalSupply - vaultBalance
-  );
-
   return {
     "usd-coin":
       (totalSupply - vaultBalance) / (vaultToken / baseToken) / 10 ** decimals,
