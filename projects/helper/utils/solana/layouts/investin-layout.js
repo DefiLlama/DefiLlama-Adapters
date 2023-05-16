@@ -1,7 +1,7 @@
 const {
   struct, s32, u8, u16, seq, blob, Layout, bits, u32, publicKey, uint64, u64, uint128, u128, BufferLayout,
 } = require('./layout-base')
-
+const BN = require("bn.js");
 
 function U64F64(property = "u64F64") {
 
