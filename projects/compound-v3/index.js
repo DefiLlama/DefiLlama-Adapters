@@ -5,16 +5,14 @@ const markets = [
   '0xa17581a9e3356d9a858b789d68b4d866e593ae94', // ETH Market
 ]
 
-const collaterals = [
-  ADDRESSES.ethereum.USDC,
-  ADDRESSES.ethereum.WETH,
-]
-
 module.exports = compoundV3Exports({
   ethereum: {
-    markets, collaterals,
+    markets,
+  },
+  arbitrum: {
+    markets: ['0xA5EDBDD9646f8dFF606d7448e414884C7d905dCA'],
   },
   polygon: {
-    markets:["0xF25212E676D1F7F89Cd72fFEe66158f541246445"], collaterals:[ADDRESSES.polygon.USDC],
+    markets:["0xF25212E676D1F7F89Cd72fFEe66158f541246445"],
   }
 })
