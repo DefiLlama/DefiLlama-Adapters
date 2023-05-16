@@ -1264,5 +1264,9 @@
   },
   "grove": {
     "WGRV": "0xE85f139488c689038028a3EB8fC38dcC29D4C340"
+  },
+  "pulse": {
+    "ETH": "0x02dcdd04e3f455d838cd1249292c58f3b79e3c3c",
+    "DAI": "0xefd766ccb38eaf1dfd701853bfce31359239f305"
   }
 }

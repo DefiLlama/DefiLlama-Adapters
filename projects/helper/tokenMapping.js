@@ -29,7 +29,7 @@ const distressedAssts = new Set(Object.values({
 const transformTokens = {
   ethereum: {
     '0xe0b469cb3eda0ece9e425cfeda4df986a55ea9f8': ADDRESSES.ethereum.WETH
-  }
+  },
   // Sample Code
   // cronos: {
   //   "0x065de42e28e42d90c2052a1b49e7f83806af0e1f": "0x123", // CRK token is mispriced
@@ -50,6 +50,10 @@ const fixBalancesTokens = {
   //   [ADDRESSES.arbitrum_nova.USDT]: { coingeckoId: "tether", decimals: 6 },
   //   [ADDRESSES.arbitrum_nova.USDC]: { coingeckoId: "usd-coin", decimals: 6 },
   // },
+  pulse: {
+    '0x02dcdd04e3f455d838cd1249292c58f3b79e3c3c': { coingeckoId: ADDRESSES.ethereum.WETH, decimals: 0, },
+    '0xefd766ccb38eaf1dfd701853bfce31359239f305': { coingeckoId: ADDRESSES.ethereum.DAI, decimals: 0, },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
