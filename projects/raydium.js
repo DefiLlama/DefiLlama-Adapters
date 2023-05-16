@@ -18,7 +18,6 @@ async function ammStableTvl() {
   return sumTokens2({ tokenAccounts })
 }
 
-
 async function tvlCLMM() {
   const connection = getConnection()
   const accounts = await connection.getProgramAccounts(new PublicKey(CLMM), {
