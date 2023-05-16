@@ -1,5 +1,9 @@
-const sdk = require('@defillama/sdk')
 const { getLogs } = require("../helper/cache/getLogs");
+
+const abi = {
+  lendBalance: "function lendBalance() view returns (uint256)",
+  colBalance: "function colBalance() view returns (uint256)"
+}
 
 async function tvl(timestamp, block, chainBlocks, { api }) {
   const { factory, fromBlock } = config[api.chain]
@@ -8,17 +12,9 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
     target: factory,
     topics: ['0xee5c84cc965f1ed0b60a1a4a5a02cf02830b6262b89a9063fda05b63ce8b2f8b'],
     fromBlock,
+    onlyArgs: true,
     eventAbi: 'event DeployPool(address poolAddress,address deployer,address implementation,(address feesManager,bytes32 strategy,address oracle,address treasury,address posTracker),(uint8 poolType,address owner,uint48 expiry,address colToken,uint48 protocolFee,address lendToken,uint48 ltv,uint48 pauseTime,uint256 lendRatio,address[] allowlist,bytes32 feeRatesAndType))'
   })
-
-  block = chainBlocks.arbitrum;
-  const balances = {};
-  const transform = addr => `${api.chain}:${addr}`
-
-  const abi = {
-    lendBalance: "function lendBalance() view returns (uint256)",
-    colBalance: "function colBalance() view returns (uint256)"
-  }
 
   // lend assets may be stored in AAVE if the lender chooses so we can't
   // rely on balanceOf calls to get lend balances. Each pool has a 
@@ -26,36 +22,20 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
   // that are in the pool and are currently in AAVE that belong to the pool
 
   // get lend balances returned from the lendBalance method
-  const { output: lendOutput } = await sdk.api.abi.multiCall({
-    abi: abi.lendBalance,
-    calls: logs.map(log => ({
-      target: log.args[0],
-    })),
-    block,
-    chain: api.chain
-  });
+  const lendOutput = await api.multiCall({ abi: abi.lendBalance, calls: logs.map(i => i.poolAddress), });
 
   // get col balances returned from the colBalance method
-  const { output: colOutput } = await sdk.api.abi.multiCall({
-    abi: abi.colBalance,
-    calls: logs.map(log => ({
-      target: log.args[0],
-    })),
-    block,
-    chain: api.chain
-  });
+  const colOutput = await api.multiCall({ abi: abi.colBalance, calls: logs.map(i => i.poolAddress), });
 
+  console.log(lendOutput, colOutput)
   lendOutput.forEach((res, i) => {
-    if (!res.success) return;
     // extract collateral and lend tokens
-    const lendToken = logs[i].args[4].lendToken;
-    const colToken = logs[i].args[4].colToken;
+    const lendToken = logs[i][4].lendToken;
+    const colToken = logs[i][4].colToken;
     // add collateral and lend token balances returned from contract calls
-    sdk.util.sumSingleBalance(balances, transform(lendToken), res.output);
-    sdk.util.sumSingleBalance(balances, transform(colToken), colOutput[i].output);
+    api.add(lendToken, res)
+    api.add(colToken, colOutput[i])
   });
-
-  return balances;
 }
 
 const config = {
@@ -64,6 +44,7 @@ const config = {
 }
 
 module.exports = {
+  doublecounted: true,
   methodology: 'The sum of the balance of all listed collateral and lend tokens in all deployed pools.',
   start: 88774917,
 };
