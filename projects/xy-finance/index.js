@@ -41,6 +41,15 @@ const config = {
   klaytn: {
     chainId: '8217',
   },
+  wemix: {
+    chainId: '1111',
+  },
+  zksync: {
+    chainId: '324',
+  },
+  polygon_zkevm: {
+    chainId: '1101',
+  },
 }
 
 const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
@@ -213,6 +222,36 @@ const yPoolDepositContract = {
     "USDC": {
       "contractAddress": "0xB238d4339a44f93aBCF4071A9bB0f55D2403Fd84",
       "tokenAddress": ADDRESSES.klaytn.oUSDC
+    }
+  },
+  "1111": {
+    "USDT": {
+      "contractAddress": "0xA5Cb30E5d30A9843B6481fFd8D8D35DDED3a3251",
+      "tokenAddress": "0xA649325Aa7C5093d12D6F98EB4378deAe68CE23F"
+    },
+    "USDC": {
+      "contractAddress": "0x3243278E0F93cD6F88FC918E0714baF7169AFaB8",
+      "tokenAddress": "0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D"
+    }
+  },
+  "324": {
+    "ETH": {
+      "contractAddress": "0x935283A00FBF8E40fd2f8C432A488F6ADDC8dB67",
+      "tokenAddress": ethAddress
+    },
+    "USDC": {
+      "contractAddress": "0x75167284361c8D61Be7E4402f4953e2b112233cb",
+      "tokenAddress": "0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4"
+    }
+  },
+  "1101": {
+    "ETH": {
+      "contractAddress": "0x9fE77412aA5c6Ba67fF3095bBc534884F9a61a38",
+      "tokenAddress": ethAddress
+    },
+    "USDC": {
+      "contractAddress": "0x1acCfC3a45313f8F862BE7fbe9aB25f20A93d598",
+      "tokenAddress": "0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035"
     }
   },
 }
