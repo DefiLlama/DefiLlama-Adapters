@@ -33,6 +33,7 @@ const scriptAddresses = [
 module.exports = {
   cardano: {
     tvl: sumTokensExport({ scripts: scriptAddresses, }),
+    staking: sumTokensExport({ scripts: ["addr1w8arvq7j9qlrmt0wpdvpp7h4jr4fmfk8l653p9t907v2nsss7w7r4"], }),
     methodology: 'Adds up the Ada in the 16 action tokens and batch final token.'
   }
 };
