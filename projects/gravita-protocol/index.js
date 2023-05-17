@@ -61,7 +61,7 @@ module.exports = {
   timetravel: false,
   misrepresentedTokens: false,
   methodology:
-    "Total Value Locked as Collateral on the Gravita platform + GRAI tokens deposited on our Stability Pool",
+    "Adds up the total value locked as collateral on the Gravita platform",
   start: 1684256400, // Tuesday, May 15, 2023 17:00 GMT
   ethereum: {
     tvl,
