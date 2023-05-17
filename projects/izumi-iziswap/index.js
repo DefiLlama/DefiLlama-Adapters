@@ -8,6 +8,7 @@ const poolHelpers = {
   'bsc': '0x93C22Fbeff4448F2fb6e432579b0638838Ff9581',
   'arbitrum': '0x611575eE1fbd4F7915D0eABCC518eD396fF78F0c',
   'era': '0x936c9A1B8f88BFDbd5066ad08e5d773BC82EB15F',
+  'meter': '0x07aBf894D5C25E626bb30f75eFC728a1d86BEeDC',
 }
 
 const blacklistedTokens = [
@@ -48,8 +49,8 @@ const tvl = async (_, _1, _2, { api }) => {
     abi: abi.pool,
     calls: poolCalls,
   })
+  
   pools.forEach((output, i) => toa.push([poolMetaData[i].tokenX, output], [poolMetaData[i].tokenY, output],))
-
   return sumTokens2({ tokensAndOwners: toa, api, blacklistedTokens, })
 }
 
@@ -57,5 +58,6 @@ module.exports = {
   era: { tvl },
   arbitrum: { tvl },
   bsc: { tvl },
+  meter: {tvl},
   // ownTokens: ['IZI', 'IUSD'],
 }
