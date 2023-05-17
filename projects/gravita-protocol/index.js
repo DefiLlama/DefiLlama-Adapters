@@ -1,4 +1,5 @@
 const sdk = require("@defillama/sdk");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const ADMIN_CONTRACT_ADDRESS = "0xf7Cc67326F9A1D057c1e4b110eF6c680B13a1f53";
 const BORROWER_OPS_ADDRESS = "0x2bCA0300c2aa65de6F19c2d241B54a445C9990E2";
@@ -39,22 +40,9 @@ async function _getStabilityPoolDeposits(api) {
 }
 
 async function tvl(_, _1, _2, { api }) {
-  const balances = {};
   const collAddresses = await _getCollateralAddresses(api);
-  for (const collAddress of collAddresses) {
-    const collBalance = await _getCollateralBalance(api, collAddress);
-    sdk.util.sumSingleBalance(balances, collAddress, collBalance, api.chain);
-  }
-  if (USE_STAKED_GRAI) {
-    const spDepositBalance = await _getStabilityPoolDeposits(api);
-    sdk.util.sumSingleBalance(
-      balances,
-      GRAI_TOKEN_ADDRESS,
-      spDepositBalance,
-      api.chain
-    );
-  }
-  return balances;
+  const pool = await api.call({  abi: 'address:activePool', target: ADMIN_CONTRACT_ADDRESS})
+  return sumTokens2({ api, tokens: collAddresses, owner: pool})
 }
 
 module.exports = {
