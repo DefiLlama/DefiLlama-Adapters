@@ -5,7 +5,6 @@ module.exports = {
       name: 'ethereum',
       tokens: [
         ADDRESSES.ethereum.USDC,
-        '0xd38bb40815d2b0c2d2c866e0c72c5728ffc76dd9', // SIS
       ],
       holders: [
         '0xb80fDAA74dDA763a8A158ba85798d373A5E84d84', // portal v1
