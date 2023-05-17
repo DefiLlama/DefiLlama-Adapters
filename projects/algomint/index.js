@@ -1,6 +1,6 @@
 const { tokens } = require("../helper/chain/algorand");
 
-const { getPrices, lpTokenPostion } = require("./utils");
+const { lpTokenPostion } = require("./utils");
 
 //Algomint Basket contracts where the liquidty is held
 const goUsdBasketAddress =
@@ -42,22 +42,21 @@ async function tvl() {
     goEthBasketAddress
   );
 
-  //Function gets current market prices from coingecko
-  const marketPrices = await getPrices();
   //positionA is USDC in the LP
-  const usdcTvlvalue =
-    (usdcPostion.positionA / 10 ** 6) * marketPrices.usdcPrice;
+  const usdcTvlvalue = usdcPostion.positionA / 10 ** 6;
   //positionA is USDT in the LP
-  const usdtTvlValue =
-    (usdtPosition.positionA / 10 ** 6) * marketPrices.usdtPrice;
+  const usdtTvlValue = usdtPosition.positionA / 10 ** 6;
   //positionB is wBTC in the LP
-  const wBtcTvlValue =
-    (wBtcPosition.positionB / 10 ** 8) * marketPrices.btcPrice;
+
+  const wBtcTvlValue = wBtcPosition.positionB / 10 ** 8;
   //positionB is wEth in the LP
-  const wEthTvlValue =
-    (wEthPosition.positionB / 10 ** 8) * marketPrices.ethPrice;
-  //Returns total TVL in USD
-  return usdcTvlvalue + usdtTvlValue + wBtcTvlValue + wEthTvlValue;
+  const wEthTvlValue = wEthPosition.positionB / 10 ** 8;
+  return {
+    bitcoin: wBtcTvlValue,
+    ethereum: wEthTvlValue,
+    tether: usdtTvlValue,
+    usd: usdcTvlvalue,
+  };
 }
 
 module.exports = {
