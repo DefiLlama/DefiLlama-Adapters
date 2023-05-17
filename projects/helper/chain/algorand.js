@@ -190,12 +190,6 @@ async function getAccountInfo(accountId) {
 
 const tokens = {
   usdc: 31566704,
-  usdt: 312769,
-  wBtc: 1058926737,
-  wEth: 887406851,
-  wBtcGoBtcLp: 1058934626,
-  wEthGoEthLp: 1058935051,
-  usdtGoUsdLp: 1081978679,
   goUsd: 672913181,
   usdcGoUsdLp: 885102318,
   gard: 684649988,
