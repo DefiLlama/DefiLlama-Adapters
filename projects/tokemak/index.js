@@ -135,9 +135,9 @@ async function tvl(timestamp, block, _, { api }) {
     target: cvxcvxFxsPool,
     params: [tokeTreasury],
   });
-  sdk.util.sumSingleBalance(balances,cvxcrvFrax,cvxcrvFraxBal)
-  sdk.util.sumSingleBalance(balances,cvxcrvFrax,treasuryFraxBal[0]['liquidity'])
-  sdk.util.sumSingleBalance(balances,cvxcvxFxs,cvxcvxFxsBal)
+  sdk.util.sumSingleBalance(balances, cvxcrvFrax, cvxcrvFraxBal)
+  sdk.util.sumSingleBalance(balances, cvxcrvFrax, treasuryFraxBal[0]['liquidity'])
+  sdk.util.sumSingleBalance(balances, cvxcvxFxs, cvxcvxFxsBal)
 
   let curveHoldings = positions.exchanges.filter(
     pool => pool.type == 'Curve')
@@ -148,8 +148,8 @@ async function tvl(timestamp, block, _, { api }) {
   const calls = []
   lpBalances(curveHoldings, toa, tokens, calls,)
   lpBalances(uniHoldings, toa, tokens, calls)
-  const amountRes = await api.multiCall({  abi: abi.userInfo, calls})
-  tokens.forEach((val, i) => sdk.util.sumSingleBalance(balances,val,amountRes[i].amount, api.chain))
+  const amountRes = await api.multiCall({ abi: abi.userInfo, calls })
+  tokens.forEach((val, i) => sdk.util.sumSingleBalance(balances, val, amountRes[i].amount, api.chain))
 
 
   return sumTokens2({ balances, api, tokensAndOwners: toa, })
@@ -170,23 +170,20 @@ function lpBalances(holdings, toa, tokens, calls) {
     toa.push([token, manager])
     if (!pool.hasOwnProperty('staking'))
       continue
-    
+
     tokens.push(token)
-    calls.push({ target: masterChef, params: [pool.staking.pool_id, manager]})
+    calls.push({ target: masterChef, params: [pool.staking.pool_id, manager] })
   }
 }
 
-async function staking(timestamp, block) {
-  let balances = {}
-  await sumTokens(balances, [
-    [toke, rtoke1], [toke, rtoke2], [toke, rtoke3]
-  ], block)
+async function staking(timestamp, block, _, { api }) {
   let vestedToke = '57238445'
-  let balance = balances['ethereum:'+toke]/1e18 - vestedToke
-  if (balance < 0) balance = 0
-  return {
-    tokemak: BigNumber(balance).toFixed(0)
-  }
+  api.add(ADDRESSES.ethereum.TOKE, vestedToke * 1e18 * -1)
+  return sumTokens2({
+    api, tokensAndOwners: [
+      [toke, rtoke1], [toke, rtoke2], [toke, rtoke3]
+    ]
+  })
 }
 
 async function pool2(timestamp, block) {
