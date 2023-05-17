@@ -3,10 +3,9 @@ const contracts = require("./contracts.json");
 const { pool2 } = require("./../helper/pool2");
 const { staking } = require(".././helper/staking.js");
 const {
-  sumLPWithOnlyOneTokenOtherThanKnown, sumTokens2, nullAddress
+  sumTokens2, nullAddress, 
 } = require("./../helper/unwrapLPs");
-
-const wiotx = ADDRESSES.iotex.WIOTX;
+const {sumTokensExport} = require("./../helper/unknownTokens");
 
 function tvl(chain, gasToken) {
   return async (timestamp, block, chainBlocks) => {
@@ -26,57 +25,23 @@ function tvl(chain, gasToken) {
   };
 }
 
-async function iotexPool2(timestamp, block, chainBlocks) {
-  block = chainBlocks.iotex
-  const balances = {};
-  let a = await sumLPWithOnlyOneTokenOtherThanKnown(
-    balances,
-    contracts.iotex.pool2.token,
-    contracts.iotex.pool2.address,
-    ADDRESSES.iotex.CYC,
-    block,
-    "iotex"
-  );
-  return { iotex: balances[wiotx] / 10 ** 18 };
-}
-
 module.exports = {
   iotex: {
     tvl: tvl("iotex", "iotex"),
-    pool2: iotexPool2,
-    staking: staking(
-      contracts.iotex.staking.address,
-      contracts.iotex.staking.token,
-      "iotex",
-      "cyclone-protocol",
-      18
-    ),
+    pool2: sumTokensExport({ owner: contracts.iotex.pool2.address, tokens: [contracts.iotex.pool2.token], }),
+    staking: staking(contracts.iotex.staking.address, contracts.iotex.staking.token, "iotex", "cyclone-protocol", 18),
   },
   ethereum: {
     tvl: tvl("ethereum", ADDRESSES.ethereum.WETH),
-    pool2: pool2(
-      contracts.ethereum.pool2.address,
-      contracts.ethereum.pool2.token,
-      "ethereum"
-    ),
+    pool2: pool2(contracts.ethereum.pool2.address, contracts.ethereum.pool2.token, "ethereum"),
   },
   bsc: {
     tvl: tvl("bsc", "bsc:" + ADDRESSES.bsc.WBNB),
     pool2: pool2(contracts.bsc.pool2.address, contracts.bsc.pool2.token, "bsc"),
-    staking: staking(
-      contracts.bsc.staking.address,
-      contracts.bsc.staking.token,
-      "bsc",
-      "cyclone-protocol",
-      18
-    ),
+    staking: staking(contracts.bsc.staking.address, contracts.bsc.staking.token, "bsc", "cyclone-protocol", 18),
   },
   polygon: {
     tvl: tvl("polygon", "polygon:0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"),
-    pool2: pool2(
-      contracts.polygon.pool2.address,
-      contracts.polygon.pool2.token,
-      "polygon"
-    ),
+    pool2: pool2(contracts.polygon.pool2.address, contracts.polygon.pool2.token,),
   },
 };
