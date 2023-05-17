@@ -5,7 +5,7 @@ const BORROWER_OPS_ADDRESS = "0x2bCA0300c2aa65de6F19c2d241B54a445C9990E2";
 const STABILITY_POOL_ADDRESS = "0x4F39F12064D83F6Dd7A2BDb0D53aF8be560356A6";
 const GRAI_TOKEN_ADDRESS = "0x15f74458aE0bFdAA1a96CA1aa779D715Cc1Eefe4";
 
-const USE_STAKED_GRAI = true;
+const USE_STAKED_GRAI = false;
 
 /**
  * Returns an array of addresses containing the collateral tokens accepted by the platform.
