@@ -1,28 +1,41 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
+const BN = require("bn.js");
 const BigNumber = require("bignumber.js");
 const { coreTokens } = require("../helper/chain/aptos");
 const { getResources } = require("../helper/chain/aptos");
 const { getConfig } = require('../helper/cache')
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const sui = require('../helper/chain/sui')
 const { transformBalances } = require("../helper/portedTokens");
+const { getObject } = require("../helper/chain/sui");
+const { i32BitsToNumber, getCoinAmountFromLiquidity, tickIndexToSqrtPriceX64 } = require("./utils")
 
 async function getProcolAddresses(chain) {
-  if (chain === 'avax') {
-    return (
-      await getConfig('mole/'+chain,
-        "https://raw.githubusercontent.com/Mole-Fi/mole-protocol/main/.avalanche_mainnet.json"
-      )
-    );
-  }else if(chain === 'aptos') {
+  // if (chain === 'avax') {
+  //   return (
+  //     await getConfig('mole/'+chain,
+  //       "https://raw.githubusercontent.com/Mole-Fi/mole-protocol/main/.avalanche_mainnet.json"
+  //     )
+  //   );
+  // }
+  
+  if(chain === 'aptos') {
     return (
       await getConfig('mole/'+chain,
         "https://raw.githubusercontent.com/Mole-Fi/mole-protocol/main/.aptos_mainnet.json"
       )
     );
+  }else if(chain === 'sui') {
+    return (
+      await getConfig('mole/'+chain,
+        "https://raw.githubusercontent.com/Mole-Fi/mole-protocol/main/.sui_mainnet.json"
+      )
+    );
   }
 }
 
+// avax
 async function calLyfTvl(chain, block) {
   /// @dev Initialized variables
   const balances = {};
@@ -93,6 +106,7 @@ async function calLyfTvl(chain, block) {
   return balances;
 }
 
+// aptos
 async function calLyfTvlAptos() {
   /// @dev Initialized variables
   const balances = {};
@@ -215,8 +229,73 @@ async function unwrapPancakeSwapLps({
   })
 }
 
+// sui
+async function calLyfTvlSui(api) {
+
+  // calculate the Farming TVL.
+
+  /// @dev Getting all resources
+  const addresses = await getProcolAddresses('sui');
+  const workerInfoIds = addresses.Vaults.flatMap(valut => valut.workers).map(worker => worker.workerInfo)
+  const workerInfos = await sui.getObjects(workerInfoIds)
+
+  let poolIds = []
+  workerInfos.forEach(workerInfo => 
+    {
+      let poolId = workerInfo.fields.position_nft.fields.pool
+      // poolId = poolId.replace('0x0', '0x')
+      if (!poolIds.includes(poolId)) {
+        poolIds.push(poolId)
+      }
+    }
+  )
+
+  const poolInfos =  await sui.getObjects(poolIds)
+  let poolMap = new Map()
+  poolInfos.forEach(poolInfo =>
+    {
+      // const poolId = poolInfo.fields.id.id.replace('0x0', '0x')
+      poolMap.set(poolInfo.fields.id.id, poolInfo)
+    }
+  )
+
+  workerInfos.forEach(workerInfo => 
+    {
+      const liquidity = workerInfo.fields.position_nft.fields.liquidity
+      const tickLowerIndex = i32BitsToNumber(workerInfo.fields.position_nft.fields.tick_lower_index.fields.bits)
+      const tickUpperIndex = i32BitsToNumber(workerInfo.fields.position_nft.fields.tick_upper_index.fields.bits)
+      let poolId = workerInfo.fields.position_nft.fields.pool
+      // poolId = poolId.replace('0x0', '0x')
+      const currentSqrtPrice = poolMap.get(poolId).fields.current_sqrt_price
+
+      const coinAmounts = getCoinAmountFromLiquidity(new BN(liquidity), new BN(currentSqrtPrice), tickIndexToSqrtPriceX64(tickLowerIndex), 
+          tickIndexToSqrtPriceX64(tickUpperIndex))
+
+      let coinAamount = coinAmounts.coinA
+      let coinBamount = coinAmounts.coinB
+      
+      const [coinA, coinB] = poolMap.get(poolId).type.replace('>', '').split('<')[1].split(', ')
+      api.add(coinA, coinAamount.toString())
+      api.add(coinB, coinBamount.toString())
+    }
+  )
+
+  // calculate the Vault TVL.
+
+  const vaultInfoIds = addresses.Vaults.map(valut => valut.vaultInfo)
+  const vaultInfos = await sui.getObjects(vaultInfoIds)
+  
+  for (let i = 0; i < vaultInfos.length; i++) {
+    const baseToken = addresses.Vaults[i].baseToken
+    const tokenAmount = vaultInfos[i].fields.value.fields.coin
+    api.add(baseToken, tokenAmount)
+  }
+}
+
+
 module.exports = {
   calLyfTvl,
-  calLyfTvlAptos
+  calLyfTvlAptos,
+  calLyfTvlSui,
 }
   
