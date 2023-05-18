@@ -7,6 +7,7 @@ const {
   BAYC_APE_STAKING_STRATEGY,
   MAYC_APE_STAKING_STRATEGY,
   APE_STAKING,
+  P2P_APE_STAKING,
   STAKING_CONTRACT,
   APE,
   JPEG,
@@ -100,14 +101,29 @@ async function stakingJPEGD(_, _1, _2, { api }) {
  * @returns the amount of $APE tokens staked on JPEG'd
  */
 async function getStakedApeAmount(api) {
-  const apeDepositAddresses = await getApeDepositAddresses(api);
-  const apeStakes = await api.multiCall({
-    abi: abi.APE_STAKING.stakedTotal,
-    target: APE_STAKING,
-    calls: apeDepositAddresses,
-  });
+  const [apeDepositAddresses, lastNonce] = await Promise.all([
+    getApeDepositAddresses(api),
+    api.call({
+      target: P2P_APE_STAKING,
+      abi: abi.P2P_APE_STAKING_ABI.nextNonce,
+    }),
+  ]);
+
+  const [apeStakes, offers] = await Promise.all([
+    api.multiCall({
+      abi: abi.APE_STAKING.stakedTotal,
+      target: APE_STAKING,
+      calls: apeDepositAddresses,
+    }),
+    api.multiCall({
+      abi: abi.P2P_APE_STAKING_ABI.offers,
+      target: P2P_APE_STAKING,
+      calls: new Array(Number(lastNonce)).fill(null).map((_, i) => i),
+    }),
+  ]);
 
   apeStakes.forEach((v) => api.add(APE, v));
+  offers.forEach((v) => api.add(APE, v.apeAmount));
 }
 
 async function vaultsTvl(api) {
