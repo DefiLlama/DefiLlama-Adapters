@@ -1,14 +1,17 @@
+const ADDRESSES = require("../helper/coreAssets.json");
 const BigNumber = require("bignumber.js");
 const { PublicKey } = require("@solana/web3.js");
-const { Program, utils } = require("@project-serum/anchor");
-const { getProvider, sumTokens2 } = require("../helper/solana");
+const { Program, utils, BN } = require("@project-serum/anchor");
+const { getProvider, sumTokens2, sumTokens } = require("../helper/solana");
 
 const MAX_NUMBER_OF_ACCOUNT_INFOS = 99;
-const MARKET_SEED = "credix-marketplace";
+const MARKET_SEED_FINTECH = "credix-marketplace";
+const MARKET_SEED_RECEIVABLES = "receivables-factoring";
 const IDL = require("./credix.json");
-const USDC = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
+const USDC = ADDRESSES.solana.USDC;
 const programId = new PublicKey("CRDx2YkdtYtGZXGHZ59wNv1EwKHQndnRc1gT4p8i2vPX");
-const encodeSeedString = (seedString) => Buffer.from(utils.bytes.utf8.encode(seedString));
+const encodeSeedString = (seedString) =>
+  Buffer.from(utils.bytes.utf8.encode(seedString));
 
 const constructProgram = (provider) => {
   return new Program(IDL, programId, provider);
@@ -29,8 +32,20 @@ const findSigningAuthorityPDA = async (globalMarketSeed) => {
   return findPDA(seeds);
 };
 
-async function generateRepaymentSchedulePDA(deal) {
-  const marketAdress = await findGlobalMarketStatePDA(MARKET_SEED);
+const findDealPda = (marketPk, borrowerPk, dealNumber) => {
+  const dealSeed = encodeSeedString("deal-info");
+  const dealNumberSeed = new BN(dealNumber).toArrayLike(Buffer, "le", 2);
+  const seeds = [
+    marketPk.toBuffer(),
+    borrowerPk.toBuffer(),
+    dealNumberSeed,
+    dealSeed,
+  ];
+  return findPDA(seeds);
+};
+
+async function generateRepaymentSchedulePDA(deal, globalMarketSeed) {
+  const marketAdress = await findGlobalMarketStatePDA(globalMarketSeed);
   const seed = [
     marketAdress[0].toBuffer(),
     deal.publicKey.toBuffer(),
@@ -123,8 +138,35 @@ function chunk(inputArray, perChunk) {
   return result;
 }
 
-async function fetchRepaymentScheduleForDeals(program, provider, deals) {
-  const pdaPromises = deals.map((d) => generateRepaymentSchedulePDA(d));
+async function asyncFilter(arr, filter) {
+  const results = await Promise.all(arr.map(filter));
+  return arr.filter((_, i) => results[i]);
+}
+
+async function filterDealsForMarket(deals, globalMarketSeed) {
+  const [globalMarketStatePk] = await findGlobalMarketStatePDA(
+    globalMarketSeed
+  );
+  const marketDeals = await asyncFilter(deals, async (deal) => {
+    const [dealPDA] = await findDealPda(
+      globalMarketStatePk,
+      deal.account.borrower,
+      deal.account.dealNumber
+    );
+    return dealPDA.equals(deal.publicKey);
+  });
+  return marketDeals;
+}
+
+async function fetchRepaymentScheduleForDeals(
+  program,
+  provider,
+  deals,
+  globalMarketSeed
+) {
+  const pdaPromises = deals.map((d) =>
+    generateRepaymentSchedulePDA(d, globalMarketSeed)
+  );
   const pdas = await Promise.all(pdaPromises);
   const addresses = pdas.map((pda) => pda[0]);
   const addressesChunks = chunk(addresses, MAX_NUMBER_OF_ACCOUNT_INFOS - 1);
@@ -146,25 +188,42 @@ async function fetchRepaymentScheduleForDeals(program, provider, deals) {
 }
 
 async function tvl() {
-  const [signingAuthorityKey] = await findSigningAuthorityPDA(MARKET_SEED);
-  return sumTokens2({ tokensAndOwners: [[USDC, signingAuthorityKey]] });
+  // Fintech pool
+  const [signingAuthorityKeyFintech] = await findSigningAuthorityPDA(
+    MARKET_SEED_FINTECH
+  );
+
+  // Receivables factoring pool
+  const [signingAuthorityKeyReceivables] = await findSigningAuthorityPDA(
+    MARKET_SEED_RECEIVABLES
+  );
+  const tokens = await sumTokens2({
+    tokensAndOwners: [
+      [USDC, signingAuthorityKeyFintech],
+      [USDC, signingAuthorityKeyReceivables],
+    ],
+  });
+  return tokens;
 }
 
-async function borrowed() {
-  const provider = getProvider();
-  const program = constructProgram(provider);
-  const allDeals = await program.account.deal.all();
+async function fetchOutstandingCreditPool(
+  provider,
+  program,
+  deals,
+  globalMarketSeed
+) {
+  const marketDeals = await filterDealsForMarket(deals, globalMarketSeed);
   const allRepaymentSchedules = await fetchRepaymentScheduleForDeals(
     program,
     provider,
-    allDeals
+    marketDeals,
+    globalMarketSeed
   );
-  const inProgressSchedules = allDeals.map((deal, index) => {
+  const inProgressSchedules = marketDeals.map((deal, index) => {
     const schedule = allRepaymentSchedules[index];
     const dealIsInProgress = isInProgress(deal, schedule);
     return dealIsInProgress ? schedule : null;
   });
-
   const totalOutstandingCredit = inProgressSchedules
     .filter((schedule) => schedule !== null)
     .reduce((principalSum, schedule) => {
@@ -173,8 +232,34 @@ async function borrowed() {
         .minus(principalRepaid(schedule));
     }, new BigNumber(0));
 
+  return totalOutstandingCredit;
+}
+
+async function borrowed() {
+  const provider = getProvider();
+  const program = constructProgram(provider);
+  const allDeals = await program.account.deal.all();
+
+  // FinTech pool
+  const totalOutstandingCreditFintech = await fetchOutstandingCreditPool(
+    provider,
+    program,
+    allDeals,
+    MARKET_SEED_FINTECH
+  );
+
+  // Receivables factoring pool
+  const totalOutstandingCreditReceivables = await fetchOutstandingCreditPool(
+    provider,
+    program,
+    allDeals,
+    MARKET_SEED_RECEIVABLES
+  );
+
   return {
-    ['solana:' + USDC]: totalOutstandingCredit.toString()
+    ["solana:" + USDC]: totalOutstandingCreditFintech
+      .plus(totalOutstandingCreditReceivables)
+      .toString(),
   };
 }
 

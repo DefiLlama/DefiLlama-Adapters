@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk")
 const abi = require('./abi')
 const { getChainTransform } = require('../helper/portedTokens')
@@ -8,9 +9,9 @@ let totalTvl
 
 const contract = '0xf300b9171aAb493F4584b8f5601d97E627AaB451'
 const blur = '0x4165084a6e5388ce53c9d9892f904a2712dd943a'
-const wbnb = '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
+const wbnb = ADDRESSES.bsc.WBNB
 const sushi = '0x4165084A6e5388ce53c9D9892f904a2712Dd943A'
-const busd = '0x66e428c3f67a68878562e79a0234c1f83c208770'
+const busd = ADDRESSES.cronos.USDT
 
 async function gettotalTvl(block) {
   if (!totalTvl) totalTvl = getTVL()

@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const ABI = require("./abi.json");
 
 const addresses = {
   vaultInfo: "0x73956FF7375476EBFD5e82d80Ea9065a5bCc3d2b",
   collateralPoolAddress: "0xbd198617aD1dc75B0f7A0A67BbE31993919Cd716",
-  fsGlpAddress: "0x1addd80e6039594ee970e5872d247bf0414c8903",
+  fsGlpAddress: ADDRESSES.arbitrum.fsGLP,
   fsGlpHolders: ["0x65C59eE732BD249224718607Ee0EC0e293309923", "0x49EE14e37Cb47bff8c512B3A0d672302A3446eb1"],
   vaults: [
     // weth pool

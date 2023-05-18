@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const {sumTokens2} = require('../helper/unwrapLPs');
 const {utils} = require("ethers");
 const {get} = require('../helper/http');
 
 const tokens = [
-    '0x0000000000000000000000000000000000000000', // FIL
+    ADDRESSES.null, // FIL
 ]
 
 const getActiveMinersFromRPC = async () => {

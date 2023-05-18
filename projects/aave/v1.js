@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const BigNumber = require("bignumber.js");
 const abi = require('../helper/abis/aave.json');
@@ -57,7 +58,7 @@ async function depositMultiMarketV1Tvl(balances, lendingPoolCore, block, chain, 
     return balances;
 }
 
-function multiMarketV1Tvl(balances, lendingPoolCore, block, borrowed, chain="ethereum", eth = "0x0000000000000000000000000000000000000000") {
+function multiMarketV1Tvl(balances, lendingPoolCore, block, borrowed, chain="ethereum", eth = ADDRESSES.null) {
     return (borrowed?multiMarketV1TvlBorrowed:depositMultiMarketV1Tvl)(balances, lendingPoolCore, block, chain, eth)
 }
 
@@ -65,7 +66,7 @@ async function singleAssetV1Market(balances, lendingPoolCore, block, borrowed, c
     return multiMarketV1Tvl(balances, lendingPoolCore, block, borrowed, chain, eth);
 }
 
-async function uniswapV1Market(balances, uniswapLendingPoolCore, block, borrowed, eth = "0x0000000000000000000000000000000000000000"){
+async function uniswapV1Market(balances, uniswapLendingPoolCore, block, borrowed, eth = ADDRESSES.null){
     const uniswapMarketTvlBalances = {}
     await multiMarketV1Tvl(
         uniswapMarketTvlBalances,

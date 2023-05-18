@@ -1,3 +1,4 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const { sumTokens } = require("./helper/unwrapLPs");
 const { compoundExports } = require("./helper/compound");
 const { stakingAssetsETH, stakingAssetsBSC, stakingAssetsPOLYGON, } = require("./config/mantra-dao/contracts/naked-staking-contracts");
@@ -11,7 +12,7 @@ const chainConfig = {
 
 const comptroller = "0x606246e9EF6C70DCb6CEE42136cd06D127E2B7C7"
 const zenETH = "0x4F905f75F5576228eD2D0EA508Fb0c32a0696090"
-const zenETHEquivalent = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
+const zenETHEquivalent = ADDRESSES.ethereum.WETH;
 
 module.exports = {}
 

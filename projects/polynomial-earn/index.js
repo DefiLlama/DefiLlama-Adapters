@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
 const BigNumber = require('bignumber.js')
 const abi = require('./abi.json')
@@ -19,8 +20,8 @@ const MAINNET_SETH = '0x5e74C9036fb86BD7eCdcb084a0673EFc32eA31cb'
 
 //Optimism Synths to Mainnet Synths
 const L2toL1Synths = {
-  '0xe405de8f52ba7559f9df3c368500b6e6ae6cee49': MAINNET_SETH,
-  '0x8c6f28f2f1a3c87f0f938b96d27520d9751ec8d9': MAINNET_SUSD,
+  [ADDRESSES.optimism.sETH]: MAINNET_SETH,
+  [ADDRESSES.optimism.sUSD]: MAINNET_SUSD,
   '0x298b9b95708152ff6968aafd889c6586e9169f1d': '0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6',
   '0xc5db22719a06418028a40a9b5e9a7c02959d0d08': '0xbbc455cb4f1b9e4bfc4b73970d360c8f032efee6'
 }
