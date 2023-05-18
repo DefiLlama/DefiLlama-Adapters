@@ -1,7 +1,8 @@
 const sdk = require("@defillama/sdk");
 const { blockQuery } = require("../helper/http");
 const env = require("../helper/env");
-const { staking } = require('../helper/staking')
+const { staking } = require('../helper/staking');
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const OlympusStakings = [
   // Old Staking Contract
@@ -150,7 +151,7 @@ async function tvl(timestamp, block, _, { api }, isOwnTokensMode = false) {
     } else if (isOwnTokensMode) return;
     api.add(token.tokenAddress, token.balance * 10 ** decimals[i])
   })
-  return api.getBalances()
+  return sumTokens2({ api, resolveLP: true, })
 }
 
 async function ownTokens(timestamp, block, _, { api }) {
