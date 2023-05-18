@@ -1,3 +1,4 @@
+const ADDRESSES = require('../../helper/coreAssets.json')
 const { sumTokens2, nullAddress } = require("../../helper/unwrapLPs");
 const abi = require("./abis");
 const {
@@ -138,7 +139,7 @@ async function getWalletStakedBakcCount(api) {
 
   const bakcIds = Array.from(new Set(bakcIdsBN.map((id) => id.toString())));
   const ownerBakcIndexTuples = bakcIds.map((bakcId) => [
-    "0x0000000000000000000000000000000000000000", // random owner address, it's not used. just for consistent parameters
+    ADDRESSES.null, // random owner address, it's not used. just for consistent parameters
     bakcId.toString(),
   ]);
 

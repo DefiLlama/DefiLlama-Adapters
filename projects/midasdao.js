@@ -1,3 +1,4 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const { sumTokensAndLPsSharedOwners } = require("./helper/unwrapLPs");
 const sdk = require('@defillama/sdk');
 
@@ -7,7 +8,7 @@ const CROWN = "0x39912d83acb4a373321387300f4fbe88aa5d6f14";
 const JoePair = "0x089a9BF16453b519Fab02e40d143C0dcF9083778";
 const TREASURY = "0x6D9Cfb705C7b7A5ca1C4565A47Fa1b26FC1bE3d0";
 const MIM = "0x130966628846BFd36ff31a822705796e8cb8C18D";
-const WAVAX = "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"
+const WAVAX = ADDRESSES.avax.WAVAX
 
 const staking = async (timestamp, ethBlock, chainBlocks) => {
     const balances = {};

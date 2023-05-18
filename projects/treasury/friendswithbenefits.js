@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 const treasury = "0x33e626727B9Ecf64E09f600A1E0f5adDe266a0DF";
@@ -9,8 +10,8 @@ module.exports = treasuryExports({
   ethereum: {
     tokens: [ 
         nullAddress,
-        '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',//usdc
-        '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',//weth
+        ADDRESSES.ethereum.USDC,//usdc
+        ADDRESSES.ethereum.WETH,//weth
         '0xBcca60bB61934080951369a648Fb03DF4F96263C',//ausdc
         '0x9355372396e3F6daF13359B7b607a3374cc638e0',//whale
      ],

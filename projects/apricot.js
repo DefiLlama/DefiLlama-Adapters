@@ -1,3 +1,4 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const { sumTokens2, sumOrcaLPs } = require('./helper/solana')
 
 async function tvl() {
@@ -28,13 +29,13 @@ async function tvl() {
   }
   const owner = '7Ne6h2w3LpTNTa7CNYcUs7UkjeJT3oW7jcrXWfVScTXW'
   const tokens = [
-    'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+    ADDRESSES.solana.USDC,
     '9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E',
     '2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk',
     'mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So',
-    'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
+    ADDRESSES.solana.USDT,
     '4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R',
-    'So11111111111111111111111111111111111111112',
+    ADDRESSES.solana.SOL,
     '9vMJfxuKxXBoEa7rM12mYLMwTacLMLDJqHozw96WQL8i',
     'orcaEKTdK7LKz57vaAYr9QeNsVEPfiu6QeMU1kektZE',
   ]

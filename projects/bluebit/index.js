@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abis.json");
 const { staking } = require("../helper/staking");
 const { toUSDTBalances } = require("../helper/balances");
 const { getBlock } = require("../helper/http");
 
-const account = "0x0000000000000000000000000000000000000000";
+const account = ADDRESSES.null;
 const token = "0x4148d2Ce7816F0AE378d98b40eB3A7211E1fcF0D";
 const veToken = "0xdf7C547f332351A86DB0D89a89799A7aB4eC9dEB";
 

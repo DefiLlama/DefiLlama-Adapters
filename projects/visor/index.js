@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const hypervisorAbi = require("./abis/hypervisor.json");
 const { staking } = require("../helper/staking");
@@ -38,7 +39,7 @@ const HYPE_REGISTRY = {
 
 /* List of bad addresses added to registries that need to be excluded manually */
 const blacklist = {
-  ethereum: ["0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"],
+  ethereum: [ADDRESSES.ethereum.WBTC],
   polygon: ["0xa9782a2c9c3fb83937f14cdfac9a6d23946c9255"],
 };
 

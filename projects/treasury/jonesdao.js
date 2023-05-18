@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 const treasury = "0xFa82f1bA00b0697227E2Ad6c668abb4C50CA0b1F";
@@ -7,9 +8,9 @@ module.exports = treasuryExports({
   arbitrum: {
     tokens: [ 
         nullAddress,
-        "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8", // USDC
+        ADDRESSES.arbitrum.USDC, // USDC
         "0x3d9907F9a368ad0a51Be60f7Da3b97cf940982D8", // GRAIL
-        "0xFEa7a6a0B346362BF88A9e4A88416B77a57D6c2A", // MIM
+        ADDRESSES.arbitrum.MIM, // MIM
         "0x3CAaE25Ee616f2C8E13C74dA0813402eae3F496b", // xGRAIL
         "0x616279fF3dBf57A55e3d1F2E309e5D704E4e58Ae", // jGLP-USDC CMLT-LP
         "0x2bcd0aac7D98697D8760fB291625829113E354e7", // jUSDC-WETH CMLT-LP
@@ -23,7 +24,7 @@ module.exports = treasuryExports({
   ethereum: {
     tokens: [ 
         nullAddress,
-        "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // USDC
+        ADDRESSES.ethereum.USDC, // USDC
      ],
     owners: [treasury,],
     ownTokens: [],
