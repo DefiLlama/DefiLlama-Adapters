@@ -108,6 +108,7 @@ const networks = {
     ],
   },
   terra2: {
+    wrapped_luna: "terra1ufj34v4agxlazv6gv36fsdm5e8y4kclqgp0qt0l8ureql9pcwssspma238",
     factory: "terra1lnq5rk4gla2c537hpyxq6wjs8g0k0dedxug2p50myydaqjtm4g5ss94y8n",
     masterPool:
       "terra1gz50vgzjssefzmld0kfkt7sfvejgel9znun9chsc82k09xfess5qqu8qyc", // Ozone v2 underwriting master pool
@@ -152,7 +153,7 @@ async function getManagedVaults(vaultManager, block, chain) {
 async function terra2(timestamp, ethBlock, chainBlocks) {
   const balances = { "terra-luna-2": 0 };
 
-  const { vaults } = await queryContract({
+  const { addresses } = await queryContract({
     contract: networks.terra2.factory,
     isTerra2: true,
     data: {
@@ -160,14 +161,26 @@ async function terra2(timestamp, ethBlock, chainBlocks) {
     },
   });
 
-  // Go through each vault and add it's underwriting balance
-  // stored in allocation_vector slot 0
   // 09-28-22 As of now, the only asset supported for deposit
   // is Luna2 in the form of wrapped Luna2 since RH Ozone v2 does
   // not support native token types
-  vaults.forEach((vault) => {
-    balances["terra-luna-2"] +=
-      parseInt(vault.state.allocation_vector[0]) / 1e6;
+  // For each vault, query its wrapped LUNA2 balance
+  let vault_balances = Promise.all(addresses.map(async (address) => {
+    const { balance } = await queryContract({
+      contract: networks.terra2.wrapped_luna,
+      isTerra2: true,
+      data: {
+        balance: { address: address}
+      }
+    })
+    return balance;
+  }));
+
+  vault_balances = await vault_balances;
+
+ 
+  vault_balances.forEach((balance) => {
+    balances["terra-luna-2"] += balance / 1e6;
   });
 
   // Query the Master underwriting vault
