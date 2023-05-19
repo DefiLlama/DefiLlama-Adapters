@@ -19,72 +19,7 @@ const APE_STAKING = {
 
 const P2P_APE_STAKING_ABI = {
   nextNonce: "function nextNonce() external view returns (uint256)",
-  offers: {
-    inputs: [
-      {
-        internalType: "uint24",
-        name: "",
-        type: "uint24",
-      },
-    ],
-    name: "offers",
-    outputs: [
-      {
-        internalType: "enum ApeMatchingMarketplace.OfferType",
-        name: "offerType",
-        type: "uint8",
-      },
-      {
-        components: [
-          {
-            internalType: "enum ApeStakingLib.Collections",
-            name: "collection",
-            type: "uint8",
-          },
-          {
-            internalType: "uint16",
-            name: "tokenId",
-            type: "uint16",
-          },
-        ],
-        internalType: "struct ApeMatchingMarketplace.MainNFT",
-        name: "mainNft",
-        type: "tuple",
-      },
-      {
-        internalType: "uint16",
-        name: "bakcTokenId",
-        type: "uint16",
-      },
-      {
-        internalType: "uint80",
-        name: "apeAmount",
-        type: "uint80",
-      },
-      {
-        internalType: "uint16",
-        name: "apeRewardShareBps",
-        type: "uint16",
-      },
-      {
-        internalType: "uint16",
-        name: "bakcRewardShareBps",
-        type: "uint16",
-      },
-      {
-        internalType: "bool",
-        name: "isPaired",
-        type: "bool",
-      },
-      {
-        internalType: "uint80",
-        name: "lastSingleStakingRewardPerShare",
-        type: "uint80",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
+  offers: "function offers(uint24) view returns (uint8 offerType, tuple(uint8 collection, uint16 tokenId) mainNft, uint16 bakcTokenId, uint80 apeAmount, uint16 apeRewardShareBps, uint16 bakcRewardShareBps, bool isPaired, uint80 lastSingleStakingRewardPerShare)"
 };
 
 const ERC721 = {
