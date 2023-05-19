@@ -5,14 +5,10 @@ const ethers = require('ethers')
 const sdk = require('@defillama/sdk')
 const { getUniqueAddresses, } = require('../utils')
 const { get, } = require('../http')
-const { transformBalances, } = require('../portedTokens')
 const { toHex, fromHex, } = require('tron-format-address')
+const { sliceIntoChunks } = require('@defillama/sdk/build/util')
 const axiosObj = axios.create({
-  baseURL: 'https://api.trongrid.io/',
-  headers: {
-    'TRON-PRO-API-KEY': 'b5681c79-7e8e-4dcc-a290-86b4eb95157b',
-    'Content-Type': 'application/json'
-  },
+  baseURL: 'https://rpc.ankr.com/http/tron/',
   timeout: 300000,
 })
 
@@ -56,7 +52,7 @@ function encodeParams(inputs) {
   return abiCoder.encode(types, values).replace(/^(0x)/, '');
 }
 
-function decodeParams({types, output, ignoreMethodHash}) {
+function decodeParams({ types, output, ignoreMethodHash }) {
   if (ignoreMethodHash && output.replace(/^0x/, '').length % 64 === 8)
     output = '0x' + output.replace(/^0x/, '').substring(8);
 
@@ -93,35 +89,82 @@ async function unverifiedCall({ target, abi, parameter = [], isBigNumber, types 
   return decodeParams({ types, output: axiosResponse.data.constant_result[0], ignoreMethodHash: true })
 }
 
+
+async function call({ target, abi, params = [], isBigNumber, resTypes = [], isAddress, complexDecodeRes }) {
+  if (target.startsWith('0x')) target = fromHex(target)
+  var body = {
+    owner_address: owner_address,
+    contract_address: target,
+    function_selector: abi,
+    parameter: encodeParams(params),
+    visible: true,
+  };
+  const axiosResponse = await axiosObj.post('/wallet/triggerconstantcontract', body)
+  const result = axiosResponse.data['constant_result']
+  if (isBigNumber)
+    return BigNumber("0x" + result[0])
+  if (isAddress) {
+    const str = '0x' + result[0].slice(-40)
+    return fromHex(str)
+  }
+  let output
+  if (complexDecodeRes) {
+    output = ethers.utils.defaultAbiCoder.decode(complexDecodeRes, '0x' + result[0])
+    complexDecodeRes.forEach((v, i) => {
+      if (v === 'address') output[i] = fromHex(output[i])
+    })
+  } else {
+    output = resTypes.map((resType, i) => {
+      switch (resType) {
+        case 'number': return +BigNumber('0x' + result[i])
+        case 'address': return fromHex('0x' + result[i].slice(-40))
+        default:
+          throw new Error('Unknown tron type: ' + resType)
+      }
+    })
+
+  }
+  return output.length === 1 ? output[0] : output
+}
+
 async function multicall({ calls, ...options }) {
   const res = []
-  for (const target of calls)
-    res.push(await unverifiedCall({ target, ...options }))
+  const customParams = calls.map(v => {
+    if (options.target) return { params: v }
+    return { target: v, }
+  })
+  const chunks = sliceIntoChunks(customParams, 5)
+  for (const chunk of chunks) {
+    const items = []
+    for (const i of chunk) items.push(call({ ...options, ...i }))
+    res.push(...await Promise.all(items))
+  }
   return res
 }
 
-async function getUnverifiedTokenBalance(token, account) {
-  const data = await getAccountDetails(account)
-  const bal = data.trc20token_balances.find(i => i.tokenId === token)?.balance ?? 0
-  return BigNumber(bal)
-}
-
-async function getTokenDecimals(token, account) {
-  const data = await getAccountDetails(account)
-  return data.trc20token_balances.find(i => i.tokenId === token)?.tokenDecimal ?? 0
-}
-
 async function getTokenBalance(token, account) {
-  const [balance, decimals] = await Promise.all([
-    getUnverifiedTokenBalance(token, account),
-    getTokenDecimals(token, account)
-  ]);
-  return Number(balance.toString()) / (10 ** decimals)
+  return call({
+    target: token, abi: 'balanceOf(address)', params: [{
+      type: 'address',
+      value: toHex(account)
+    }], resTypes: ['number']
+  })
+}
+
+async function getTokenDecimals(token) {
+  return call({ target: token, abi: 'decimals()', resTypes: ['number'] })
 }
 
 async function getTrxBalance(account) {
-  const data = await getAccountDetails(account)
-  return data.balance + (data.totalFrozen || 0)
+  var body = {
+    address: account,
+    visible: true,
+  };
+  const { data } = await axiosObj.post('/wallet/getaccount', body)
+  return data.balance ?? 0
+
+  // const data = await getAccountDetails(account)
+  // return data.balance + (data.totalFrozen || 0)
 }
 
 const nullAddress = ADDRESSES.null
@@ -152,6 +195,9 @@ async function sumTokens({
       return true
     tronBalanceInputs.push(i[1])
     return false
+  }).map(([token, owner]) => {
+    if (token.startsWith('0x')) token = fromHex(token)
+    return [token, owner]
   })
   tronBalanceInputs = getUniqueAddresses(tronBalanceInputs, true)
 
@@ -160,10 +206,10 @@ async function sumTokens({
     bals.forEach(balance => sdk.util.sumSingleBalance(balances, nullAddress, balance))
   }
 
-  const results = await Promise.all(tokensAndOwners.map(i => getUnverifiedTokenBalance(i[0], i[1])))
+  const results = await Promise.all(tokensAndOwners.map(i => getTokenBalance(i[0], i[1])))
 
-  results.forEach((bal, i) => sdk.util.sumSingleBalance(balances, 'tron:' + tokensAndOwners[i][0], bal.toFixed(0)))
-  return transformBalances('tron', balances)
+  results.forEach((bal, i) => sdk.util.sumSingleBalance(balances, tokensAndOwners[i][0], bal, 'tron'))
+  return balances
 
   function getUniqueToA(toa) {
     toa = toa.map(i => i.join('-'))
@@ -171,11 +217,19 @@ async function sumTokens({
   }
 }
 
+function sumTokensExport(params) {
+  return async () => sumTokens(params)
+}
+
 module.exports = {
+  fromHex,
+  toHex,
+  call,
   multicall,
-  getTokenBalance,
   getTrxBalance,
-  unverifiedCall,
   sumTokens,
   getStakedTron,
+  getTokenDecimals,
+  getTokenBalance,
+  sumTokensExport,
 }

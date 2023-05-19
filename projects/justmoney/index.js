@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require('@defillama/sdk')
 const { getTokenBalance } = require('../helper/chain/tron')
 const { getUniTVL } = require('../helper/unknownTokens')
+const { transformDexBalances } = require('../helper/portedTokens')
 
 const tokens = {
   ACTIV: { 'address': 'TVoxBVmFuBM7dsRnfi1V8v1iupv4uyPifN', 'id': '_activ' },
@@ -94,42 +94,42 @@ const pairs = [
 ]
 
 async function tronTvl() {
-  const balances = {}
+  const data = []
 
   await Promise.all(pairs.map(addPairs))
-  return balances
+  return transformDexBalances({ chain: 'tron', data, })
 
   async function addPairs([tokenA, tokenB, pool]) {
-    if (!tokenA.id.startsWith('_')) sdk.util.sumSingleBalance(balances, tokenA.id, await getTokenBalance(tokenA.address, pool))
-    if (!tokenB.id.startsWith('_')) sdk.util.sumSingleBalance(balances, tokenB.id, await getTokenBalance(tokenB.address, pool))
+    data.push({
+      token0:tokenA.address,
+      token0Bal:await getTokenBalance(tokenA.address, pool),
+      token1:tokenB.address,
+      token1Bal:await getTokenBalance(tokenB.address, pool),
+    })
   }
 }
 
 module.exports = {
   bsc: {
     tvl: getUniTVL({
-      chain: 'bsc',
       factory: '0xF2Fb1b5Be475E7E1b3C31082C958e781f73a1712',
       useDefaultCoreAssets: true,
     }),
   },
   bittorrent: {
     tvl: getUniTVL({
-      chain: 'bittorrent',
       factory: '0x4dEb2f0976DC3Bf351555524B3A24A4feA4e137E',
       useDefaultCoreAssets: true,
     }),
   },
   ethereum: {
     tvl: getUniTVL({
-      chain: 'ethereum',
       factory: '0xd36Aba9Ec96523b0A89886c76065852aDFE2Eb39',
       useDefaultCoreAssets: true,
     }),
   },
   polygon: {
     tvl: getUniTVL({
-      chain: 'polygon',
       factory: '0xD36ABA9EC96523B0A89886C76065852ADFE2EB39',
       useDefaultCoreAssets: true,
     }),
