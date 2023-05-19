@@ -502,9 +502,9 @@ async function genericUnwrapCvx(balances, holder, cvx_BaseRewardPool, block, cha
 
 async function genericUnwrapCvxDeposit({ api, owner, token, balances }) {
   if (!balances) balances = await api.getBalances()
-  const [bal, cToken ] = await api.batchCall([
+  const [bal, cToken] = await api.batchCall([
     { target: token, params: owner, abi: 'erc20:balanceOf' },
-    { target: token,  abi: 'address:curveToken' },
+    { target: token, abi: 'address:curveToken' },
   ])
   sdk.util.sumSingleBalance(balances, cToken, bal, api.chain)
   return balances
@@ -705,39 +705,38 @@ function sumTokensExport({ balances, tokensAndOwners, tokens, owner, owners, tra
   return async (_, _b, _cb, { api }) => sumTokens2({ api, balances, tokensAndOwners, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, resolveUniV3, resolveArtBlocks, resolveNFTs, })
 }
 
-async function unwrapBalancerToken({ chain, block, balancerToken, owner, balances = {}, isBPool = false, }) {
-  const { output: lpTokens } = await sdk.api.erc20.balanceOf({ target: balancerToken, owner, chain, block, })
-  const { output: lpSupply } = await sdk.api.erc20.totalSupply({ target: balancerToken, chain, block, })
-  let underlyingPool = balancerToken
-  if (!isBPool)
-    underlyingPool = await sdk.api2.abi.call({ target: balancerToken, abi: bPool, chain, block, })
-  const { output: underlyingTokens } = await sdk.api.abi.call({ target: underlyingPool, abi: getCurrentTokens, chain, block, })
-
+async function unwrapBalancerToken({ api, chain, block, balancerToken, owner, balances = {}, isBPool = false, isV2 = true }) {
+  if (!api) {
+    api = new sdk.ChainApi({ chain, block, })
+  }
+  const [lpSupply, lpTokens] = await api.batchCall([
+    { abi: 'erc20:totalSupply', target: balancerToken },
+    { abi: 'erc20:balanceOf', target: balancerToken, params: owner },
+  ])
+  if (+lpTokens === 0) return balances
   const ratio = lpTokens / lpSupply
-  const tempBalances = await sumTokens2({ owner: underlyingPool, tokens: underlyingTokens, chain, block, })
-  for (const [token, value] of Object.entries(tempBalances)) {
-    const newValue = BigNumber(value * ratio).toFixed(0)
-    sdk.util.sumSingleBalance(balances, token, newValue)
+
+  if (isV2) {
+    const poolId = await api.call({ abi: 'function getPoolId() view returns (bytes32)', target: balancerToken })
+    const vault = await api.call({ abi: 'address:getVault', target: balancerToken })
+    const [tokens, bals] = await api.call({ abi: 'function getPoolTokens(bytes32) view returns (address[], uint256[],uint256)', target: vault, params: poolId })
+    tokens.forEach((v, i) => {
+      sdk.util.sumSingleBalance(balances, v, bals[i] * ratio, api.chain)
+    })
+  } else {
+    let underlyingPool = balancerToken
+    if (!isBPool)
+      underlyingPool = await api.call({ target: balancerToken, abi: bPool, })
+
+    const underlyingTokens = await api.call({ target: underlyingPool, abi: getCurrentTokens, })
+
+    const tempBalances = await sumTokens2({ owner: underlyingPool, tokens: underlyingTokens, api, })
+    for (const [token, value] of Object.entries(tempBalances)) {
+      const newValue = BigNumber(value * ratio).toFixed(0)
+      sdk.util.sumSingleBalance(balances, token, newValue)
+    }
   }
 
-  return balances
-}
-
-async function unwrapBalancerPool({ chain = 'ethereum', block, balancerPool, owner, balances = {} }) {
-  const { output: vault } = await sdk.api.abi.call({ target: balancerPool, abi: getBalancerVault, chain, block, })
-  const { output: poolId } = await sdk.api.abi.call({ target: balancerPool, abi: getPoolId, chain, block, })
-  const { output: poolTokens } = await sdk.api.abi.call({ target: vault, params: [poolId], abi: getPoolTokens, chain, block, })
-  const transform = await getChainTransform(chain)
-
-  const { output: lpTokens } = await sdk.api.erc20.balanceOf({ target: balancerPool, owner, chain, block, })
-  const { output: lpSupply } = await sdk.api.erc20.totalSupply({ target: balancerPool, chain, block, })
-
-  const ratio = lpTokens / lpSupply
-  const { tokens, balances: bal, } = poolTokens
-  tokens.forEach((token, i) => {
-    const newValue = BigNumber(+bal[i] * ratio).toFixed(0)
-    sdk.util.sumSingleBalance(balances, transform(token), newValue)
-  })
   return balances
 }
 
@@ -759,7 +758,6 @@ module.exports = {
   nullAddress,
   sumTokens2,
   unwrapBalancerToken,
-  unwrapBalancerPool,
   sumTokensExport,
   genericUnwrapCvxDeposit,
 }
