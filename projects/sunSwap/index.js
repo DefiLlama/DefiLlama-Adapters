@@ -1,8 +1,12 @@
 const { get } = require('../helper/http')
 
-async function tvl(){
+async function tvl(ts){
+  const { data } = await get('https://abc.endjgfsv.link/swap/scan/liquidityall')
+  const lastItem = data[data.length -1]
+  if (lastItem.time < (ts - 24 * 3600)) throw new Error('Outdated Data!')
+
   return {
-    tether: (await get('https://sbc.endjgfsv.link/ssp/getSunIOTvl')).data.allSwaps
+    tether: lastItem.liquidity
   }
 }
 
