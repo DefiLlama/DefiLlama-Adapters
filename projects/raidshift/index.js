@@ -1,4 +1,5 @@
-const { multicall, sumTokens } = require('../helper/chain/tron')
+const { multicall, sumTokens, } = require('../helper/chain/tron')
+const { nullAddress } = require('../helper/tokenMapping')
 
 const contracts = [
   'TC3TuowSyMxJSLaqiWJuCkZ2i3q7JCFR4x',
@@ -16,12 +17,17 @@ const contracts = [
 ]
 
 async function tvl() {
-  const tokenAs = await multicall({ calls: contracts, abi: 'tokenA()', isAddress: true,})
-  const tokenBs = await multicall({ calls: contracts, abi: 'tokenB()', isAddress: true,})
+  const tokenAs = await multicall({ calls: contracts, abi: 'tokenA()', resTypes:['address'],})
+  const tokenBs = await multicall({ calls: contracts, abi: 'tokenB()', resTypes:['address'],})
   const tokensAndOwners = []
-  tokenAs.forEach((t, i) => tokensAndOwners.push([t, contracts[i]]))
-  tokenBs.forEach((t, i) => tokensAndOwners.push([t, contracts[i]]))
+  tokenAs.forEach((t, i) => tokensAndOwners.push([fixNullToken(t), contracts[i]]))
+  tokenBs.forEach((t, i) => tokensAndOwners.push([fixNullToken(t), contracts[i]]))
   return sumTokens({ tokensAndOwners, })
+
+  function fixNullToken(token) {
+    if (token === '0x') return nullAddress
+    return token
+  }
 }
 
 module.exports = {

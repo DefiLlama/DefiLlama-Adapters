@@ -1,6 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
-const { getTokenBalance, getTrxBalance, unverifiedCall, sumTokens } = require('../helper/chain/tron');
+const { getTokenBalance, getTrxBalance, sumTokens, sumTokensExport, call, } = require('../helper/chain/tron');
+const { nullAddress } = require('../helper/unwrapLPs');
 
 const pools = [
   {
@@ -68,43 +69,37 @@ const pools = [
   }
 ]
 
-  async function tvl() {
-    const tokensAndOwners = pools.map(({ pool, stablecoins}) => {
-      return stablecoins.map(v => [v, pool])
-    }).flat()
-    return sumTokens({ tokensAndOwners })
-  }
+async function tvl() {
+  const tokensAndOwners = pools.map(({ pool, stablecoins }) => {
+    return stablecoins.map(v => [v, pool])
+  }).flat()
+  return sumTokens({ tokensAndOwners })
+}
 
 const stakingContract = "TXbA1feyCqWAfAQgXvN1ChTg82HpBT8QPb"
 const sun = "TSSMHYeV2uE9qYH95DqyoCuNCzEL1NvU3S"
-async function staking() {
-  return {
-    "sun-token": await getTokenBalance(sun, stakingContract)
-  }
-}
 
 const lpToken = 'TDQaYrhQynYV9aXTYj63nwLAafRffWSEj6'
 const oldLpStaking = "TGsymdggp98tLKZWGHcGX58TjTcaQr9s4x"
 const lpStaking = "TAkrcKsS5FW9f3ZfzvWy6Zvsz9uEjUxPoV"
 
 async function pool2() {
+  const { api } = arguments[3]
   const [lpTokenAmount, sunInLp, trxInLp, totalSupply] = await Promise.all([
     getTokenBalance(lpToken, lpStaking),
     getTokenBalance(sun, lpToken),
     getTrxBalance(lpToken),
-    unverifiedCall({ target: lpToken, abi: 'totalSupply()', isBigNumber: true }),
+    call({ target: lpToken, abi: 'totalSupply()', resTypes: ['number'] }),
   ])
-  return {
-    "sun-token": sunInLp * lpTokenAmount / (totalSupply / 10 ** 6),
-    "tron": trxInLp * lpTokenAmount / totalSupply,
-  }
+  api.add(sun, sunInLp * lpTokenAmount / totalSupply)
+  api.add(nullAddress, trxInLp * lpTokenAmount / totalSupply)
 }
 
 
 module.exports = {
   tron: {
     tvl,
-    staking,
-    pool2
+    staking: sumTokensExport({ owner: stakingContract, tokens: [sun]}),
+    // pool2
   },
 }
