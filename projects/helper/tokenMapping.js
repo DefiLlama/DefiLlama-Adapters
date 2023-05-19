@@ -51,6 +51,7 @@ const fixBalancesTokens = {
   //   [ADDRESSES.arbitrum_nova.USDC]: { coingeckoId: "usd-coin", decimals: 6 },
   // },
   pulse: {
+    '0xa1077a294dde1b09bb078844df40758a5d0f9a27': { coingeckoId: "pulsechain", decimals: 18 },
     '0x02dcdd04e3f455d838cd1249292c58f3b79e3c3c': { coingeckoId: ADDRESSES.ethereum.WETH, decimals: 0, },
     '0xefd766ccb38eaf1dfd701853bfce31359239f305': { coingeckoId: ADDRESSES.ethereum.DAI, decimals: 0, },
   },
