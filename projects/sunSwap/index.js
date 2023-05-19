@@ -1,28 +1,15 @@
-const axios = require('axios')
+const { get } = require('../helper/http')
 
-let nowDate = new Date();
-nowDate.setFullYear(nowDate.getFullYear() - 1);
-let T = parseInt(nowDate.getTime() / 1000);
-
-const url = "https://apilist.tronscan.org/api/defiTvl?type=tvlline&project=&startTime=" + T;
-
-function getItemByName (projectName, listArr) {
-  for (let i = 0; i < listArr.length; i++) {
-    if (listArr[i].project === projectName) {
-      return listArr[i];
-    }
+async function tvl(){
+  return {
+    tether: (await get('https://sbc.endjgfsv.link/ssp/getSunIOTvl')).data.allSwaps
   }
 }
 
-async function fetch(){
-    const pools = await axios.get(url);
-    let item = getItemByName('SUN.io', pools.data.projects);
-    return parseInt(item.locked);
-}
-
 module.exports = {
+  misrepresentedTokens: true,
+  timetravel: false,
   tron: {
-    fetch
+    tvl
   },
-    fetch
 }
