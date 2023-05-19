@@ -14,7 +14,7 @@ const config = {
   vestingContract: '0x23d1bFE8fA50a167816fBD79D7932577c06011f4' },
 }
 
-contractAbis = {
+const contractAbis = {
   "totalStaked": "function total_staked() view returns (uint256)",
   "balanceOf": "function balanceOf(address account) view returns (uint256)"
 }
