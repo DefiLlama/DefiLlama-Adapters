@@ -1,7 +1,5 @@
-const ADDRESSES = require('../helper/coreAssets.json')
 const { getUniTVL } = require('../helper/unknownTokens')
 const { staking } = require('../helper/staking')
-const { sumTokensExport } = require('../helper/chain/tron');
 
 const dexExports = {
   timetravel: false,
@@ -62,12 +60,10 @@ const dexExports = {
     }),
   },
   tron: {
-    tvl: sumTokensExport({
-      tokensAndOwners: [
-        [ADDRESSES.tron.USDT, 'TDrFhbM8kDiPtSx3Cgd71K3qwwu77bRdYQ'],
-        [ADDRESSES.tron.WTRX, 'TDrFhbM8kDiPtSx3Cgd71K3qwwu77bRdYQ'],
-      ]
-    })
+    tvl: getUniTVL({
+      factory: 'TUtmsH4DZewoihrybFU2RG1pdW9sBhuSRZ',
+      useDefaultCoreAssets: true,
+    }),
   },
 }
 
