@@ -9,6 +9,7 @@ const TOKEN_INFO = {
     address: "0xfFFFFfFF00000000000000010000000000000001",
   },
   wastr: { address: "0xAeaaf0e2c81Af264101B9129C00F4440cCF0F720" },
+  nativeUsdt: { address: "0xffffffff000000000000000000000001000007c0" },
 };
 
 const LAY_ADDRESS = ADDRESSES.astar.LAY;
@@ -24,8 +25,10 @@ const TOKENS = {
   [ADDRESSES.astar.SDN]: "shiden",
   // USDC
   [ADDRESSES.astar.USDC]: ADDRESSES.ethereum.USDC,
-  // USDT
+  // USDT (celer USDT)
   [ADDRESSES.astar.USDT]: ADDRESSES.ethereum.USDT,
+  // USDT (native USDT)
+  [TOKEN_INFO.nativeUsdt.address.toLowerCase()]: ADDRESSES.ethereum.USDT,
   // DAI
   [ADDRESSES.astar.DAI]: ADDRESSES.ethereum.DAI,
   // BUSD
