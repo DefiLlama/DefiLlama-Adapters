@@ -9,7 +9,7 @@ const {
 } = require("./constanrs");
 const { getLockedLAY } = require("./ve");
 
-const transferFromAddress = (underlying) => TOKENS[underlying];
+const transferFromAddress = (underlying) => TOKENS[underlying.toLowerCase()];
 
 function astar(borrowed) {
   return async (timestamp, _, { astar: block }) => {
