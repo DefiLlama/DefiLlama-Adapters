@@ -12,6 +12,7 @@ const { isLP, log, } = require('./utils')
 const { sumArtBlocks, whitelistedNFTs, } = require('./nft')
 const wildCreditABI = require('../wildcredit/abi.json');
 const { covalentGetTokens } = require("./http");
+const { getUniqueAddresses, normalizeAddress } = require('../helper/tokenMapping')
 
 const lpReservesAbi = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
 const lpSuppliesAbi = "uint256:totalSupply"
@@ -741,6 +742,57 @@ async function unwrapBalancerToken({ api, chain, block, balancerToken, owner, ba
   return balances
 }
 
+async function unwrapMakerPositions({ api, blacklistedTokens = [], whitelistedTokens = [], owner, skipDebt = false }) {
+  const vaultIds = []
+  const chain = api.chain
+  if (chain && chain !== 'ethereum') throw new Error('Maker protocol not found in chain')
+  blacklistedTokens = getUniqueAddresses(blacklistedTokens, chain)
+  whitelistedTokens = getUniqueAddresses(whitelistedTokens, chain)
+  // taken from https://maker.defiexplore.com/api/users/0x849d52316331967b6ff1198e5e32a0eb168d039d?orderTx=DESC&order=DESC&sortBy=debt
+  // https://docs.makerdao.com/smart-contract-modules/proxy-module/cdp-manager-detailed-documentation
+  const PROXY_REGISTRY = '0x4678f0a6958e4D2Bc4F1BAF7Bc52E8F3564f3fE4'
+  const ds_proxy = await api.call({ abi: 'function proxies(address) view returns (address)', target: PROXY_REGISTRY, params: owner })
+  const CDP_MANAGER = '0x5ef30b9986345249bc32d8928b7ee64de9435e39'
+  const ILK_REGISTRY = '0x5a464C28D19848f44199D003BeF5ecc87d090F87'
+  const vaultCount = await api.call({ abi: 'function count(address) view returns (uint256)', target: CDP_MANAGER, params: ds_proxy })
+  if (vaultCount < 1) return api.getBalances()
+  vaultIds.push(await api.call({ abi: 'function first(address) view returns (uint256)', target: CDP_MANAGER, params: ds_proxy }))
+  for (let i = 0; i < vaultCount - 1; i++) {
+    const [_, nextId] = await api.call({ abi: 'function list(uint256) view returns (uint256,uint256)', target: CDP_MANAGER, params: vaultIds[i] })
+    vaultIds.push(nextId)
+  }
+  const ilks = await api.multiCall({ abi: 'function ilks(uint256) view returns (bytes32)', calls: vaultIds, target: CDP_MANAGER })
+  const urns = await api.multiCall({ abi: 'function urns(uint256) view returns (address)', calls: vaultIds, target: CDP_MANAGER })
+  let collaterals = await api.multiCall({ abi: 'function gem(bytes32) view returns (address)', calls: ilks, target: ILK_REGISTRY })
+  const vat = await api.call({ abi: 'address:vat', target: CDP_MANAGER })
+  const cdpData = await api.multiCall({ abi: 'function urns(bytes32, address) view returns (uint256 collateralBal, uint256 debt)', calls: urns.map((v, i) => ({ params: [ilks[i], v] })), target: vat })
+  collaterals = collaterals.map(i => normalizeAddress(i, chain))
+  cdpData.forEach(({ collateralBal, debt }, i) => {
+    if (!skipDebt)
+      api.add(ADDRESSES.ethereum.DAI, debt * -1)
+    const collateral = collaterals[i]
+    if (blacklistedTokens.length && blacklistedTokens.includes(collateral, chain)) return;
+    if (whitelistedTokens.length && !whitelistedTokens.includes(collateral, chain)) return;
+    api.add(collateral, collateralBal)
+  })
+  return api.getBalances()
+}
+
+async function unwrap4626Tokens({ api, tokensAndOwners, }) {
+  const tokens = tokensAndOwners.map(i => i[0])
+  const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: tokensAndOwners.map(i => ({ target: i[0], params: i[1] })), })
+  const assets = await api.multiCall({ abi: 'address:asset', calls: tokens, })
+  api.addTokens(assets, bals)
+  return api.getBalances()
+}
+
+async function unwrapConvexRewardPools({ api, tokensAndOwners }) {
+  const bals = await api.multiCall({  abi: 'erc20:balanceOf', calls: tokensAndOwners.map(([t, o]) => ({ target: t, params: o}))})
+  const tokens = await api.multiCall({  abi: 'address:stakingToken', calls: tokensAndOwners.map(i => i[0])})
+  api.addTokens(tokens, bals)
+  return api.getBalances()
+}
+
 module.exports = {
   unwrapUniswapLPs,
   unwrapUniswapV3NFTs,
@@ -761,4 +813,7 @@ module.exports = {
   unwrapBalancerToken,
   sumTokensExport,
   genericUnwrapCvxDeposit,
+  unwrapMakerPositions,
+  unwrap4626Tokens,
+  unwrapConvexRewardPools,
 }
