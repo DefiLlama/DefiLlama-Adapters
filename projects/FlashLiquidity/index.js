@@ -8,12 +8,14 @@ module.exports = {
     tvl: getUniTVL({
       factory: factory,
       useDefaultCoreAssets: true,
+      fetchBalances: true,
     }),
   },
   polygon_zkevm: {
     tvl: getUniTVL({
       factory: factory,
       useDefaultCoreAssets: true,
+      fetchBalances: true,
     }),
   },
   methodology:
