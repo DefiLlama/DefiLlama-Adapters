@@ -6,7 +6,7 @@ const {
   TOKEN_INFO,
   DEFAULT_DECIMALS,
   LAY_ADDRESS,
-} = require("./constanrs");
+} = require("./constants");
 const { getLockedLAY } = require("./ve");
 
 const transferFromAddress = (underlying) => TOKENS[underlying.toLowerCase()];

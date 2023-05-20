@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const { toBigNumberJsOrZero } = require("./utils.js");
 
-const { VOTING_ESCROW_ADDRESS, LAY_ADDRESS } = require("./constanrs");
+const { VOTING_ESCROW_ADDRESS, LAY_ADDRESS } = require("./constants.js");
 
 const getLockedLAY = async (chain, block) => {
   const lockedLAYBalance = (
