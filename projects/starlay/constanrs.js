@@ -1,33 +1,28 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const DEFAULT_DECIMALS = 18
+const ADDRESSES = require("../helper/coreAssets.json");
+const DEFAULT_DECIMALS = 18;
 
 const TOKEN_INFO = {
-  dot: { key: "polkadot", decimals:10 },
-  ausd: { key: "acala-dollar", decimals:12 }
-}
+  dot: { key: "polkadot", decimals: 10 },
+  ausd: { key: "acala-dollar", decimals: 12 },
+};
 
-const LAY_ADDRESS = ADDRESSES.astar.LAY
+const LAY_ADDRESS = ADDRESSES.astar.LAY;
 
 const TOKENS = {
   // WASTR
   "0xAeaaf0e2c81Af264101B9129C00F4440cCF0F720": "astar",
   // WETH
-  [ADDRESSES.moonbeam.USDT]:
-    ADDRESSES.ethereum.WETH,
+  [ADDRESSES.moonbeam.USDT]: ADDRESSES.ethereum.WETH,
   // wBTC
-  [ADDRESSES.astar.WBTC]:
-    ADDRESSES.ethereum.WBTC,
+  [ADDRESSES.astar.WBTC]: ADDRESSES.ethereum.WBTC,
   // SDN
   [ADDRESSES.astar.SDN]: "shiden",
   // USDC
-  [ADDRESSES.moonbeam.USDC]:
-    ADDRESSES.ethereum.USDC,
+  [ADDRESSES.moonbeam.USDC]: ADDRESSES.ethereum.USDC,
   // USDT
-  [ADDRESSES.astar.USDT]:
-    ADDRESSES.ethereum.USDT,
+  [ADDRESSES.astar.USDT]: ADDRESSES.ethereum.USDT,
   // DAI
-  [ADDRESSES.astar.DAI]:
-    ADDRESSES.ethereum.DAI,
+  [ADDRESSES.astar.DAI]: ADDRESSES.ethereum.DAI,
   // BUSD
   [ADDRESSES.oasis.ceUSDT]: "binance-usd",
   // MATIC
@@ -42,7 +37,7 @@ const TOKENS = {
   [LAY_ADDRESS]: "starlay-finance",
 };
 
-const VOTING_ESCROW_ADDRESS = "0xDf32D28c1BdF25c457E82797316d623C2fcB29C8"
+const VOTING_ESCROW_ADDRESS = "0xDf32D28c1BdF25c457E82797316d623C2fcB29C8";
 
 module.exports = {
   DEFAULT_DECIMALS,
@@ -50,4 +45,4 @@ module.exports = {
   LAY_ADDRESS,
   TOKENS,
   VOTING_ESCROW_ADDRESS,
-}
+};
