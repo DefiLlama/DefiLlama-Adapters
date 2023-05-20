@@ -23,8 +23,10 @@ const TOKENS = {
   [ADDRESSES.moonbeam.USDC]: ADDRESSES.ethereum.USDC,
   // Starlay lUSDC -> USDC
   [ADDRESSES.astar.lUSDC]: ADDRESSES.ethereum.USDC,
-  // USDT
+  // celer USDT
   [ADDRESSES.astar.USDT]: ADDRESSES.ethereum.USDT,
+  // native USDT
+  [ADDRESSES.astar.nativeUSDT]: ADDRESSES.ethereum.USDT,
   // Starlay lUSDT -> USDT
   [ADDRESSES.astar.lUSDT]: ADDRESSES.ethereum.USDT,
   // DAI
