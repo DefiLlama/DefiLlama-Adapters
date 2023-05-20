@@ -109,6 +109,7 @@ function chainTvl(chain) {
 
 module.exports = {
   timetravel: false,
+  misrepresentedTokens: true,
   ethereum: {
     tvl: chainTvl('ethereum'),
   },
@@ -121,4 +122,5 @@ module.exports = {
   polygon: {
     tvl: chainTvl('polygon'),
   },
+  methodology: `Rigoblock TVL on Ethereum, Arbitrum, Optimism and Polygon pulled from onchain data. Includes the smart pools' own GRG staked balances.`,
 }
