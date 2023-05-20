@@ -1,27 +1,25 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require('@defillama/sdk')
-const { getTokenBalance, getTrxBalance, sumTokens, sumTokensExport, call, } = require('../helper/chain/tron');
-const { nullAddress } = require('../helper/unwrapLPs');
+const { sumTokensExport } = require('../helper/unwrapLPs')
 
 const pools = [
   {
     pool: 'TKcEU8ekq2ZoFzLSGFYCUY6aocJBX9X31b', stablecoins: [
       ADDRESSES.tron.USDT, // USDT
-      "TMwFHYXLJaRUPeW6421aqXL4ZEzPRFGkGT", // // USDJ
-      "TUpMhErZL2fhh4sVNULAbNKLokS4GjC1F4", // // TUSD 
+      ADDRESSES.tron.USDJ,
+      ADDRESSES.tron.TUSD,
     ]
   },
   {
     pool: 'TKVsYedAY23WFchBniU7kcx1ybJnmRSbGt', stablecoins: [  // USDD 3pool
-    ADDRESSES.tron.USDT, // USDT
-    ADDRESSES.tron.USDD, // USDD
-    "TUpMhErZL2fhh4sVNULAbNKLokS4GjC1F4", // // TUSD 
+      ADDRESSES.tron.USDT, // USDT
+      ADDRESSES.tron.USDD, // USDD
+      ADDRESSES.tron.TUSD,
     ]
   },
   {
     pool: 'TAUGwRhmCP518Bm4VBqv7hDun9fg8kYjC4', stablecoins: [  // USDD 2pool
-    ADDRESSES.tron.USDD, // USDD
-    ADDRESSES.tron.USDT, // USDT
+      ADDRESSES.tron.USDD, // USDD
+      ADDRESSES.tron.USDT, // USDT
     ]
   },
   {
@@ -48,7 +46,7 @@ const pools = [
   },
   {
     pool: 'TS8d3ZrSxiGZkqhJqMzFKHEC1pjaowFMBJ', stablecoins: [  // new TUSD 2pool
-      "TUpMhErZL2fhh4sVNULAbNKLokS4GjC1F4", // // TUSD
+      ADDRESSES.tron.TUSD,
       ADDRESSES.tron.USDT, // USDT
     ]
   },
@@ -59,7 +57,7 @@ const pools = [
   },
   {
     pool: 'TKBqNLyGJRQbpuMhaT49qG7adcxxmFaVxd', stablecoins: [  // new USDJ/2USD
-      "TMwFHYXLJaRUPeW6421aqXL4ZEzPRFGkGT", // // USDJ
+      ADDRESSES.tron.USDJ,
     ]
   },
   {
@@ -69,12 +67,9 @@ const pools = [
   }
 ]
 
-async function tvl() {
-  const tokensAndOwners = pools.map(({ pool, stablecoins }) => {
-    return stablecoins.map(v => [v, pool])
-  }).flat()
-  return sumTokens({ tokensAndOwners })
-}
+const ownerTokens = pools.map(({ pool, stablecoins }) => {
+  return [stablecoins, pool]
+})
 
 const stakingContract = "TXbA1feyCqWAfAQgXvN1ChTg82HpBT8QPb"
 const sun = "TSSMHYeV2uE9qYH95DqyoCuNCzEL1NvU3S"
@@ -83,7 +78,7 @@ const lpToken = 'TDQaYrhQynYV9aXTYj63nwLAafRffWSEj6'
 const oldLpStaking = "TGsymdggp98tLKZWGHcGX58TjTcaQr9s4x"
 const lpStaking = "TAkrcKsS5FW9f3ZfzvWy6Zvsz9uEjUxPoV"
 
-async function pool2() {
+/* async function pool2() {
   const { api } = arguments[3]
   const [lpTokenAmount, sunInLp, trxInLp, totalSupply] = await Promise.all([
     getTokenBalance(lpToken, lpStaking),
@@ -94,12 +89,12 @@ async function pool2() {
   api.add(sun, sunInLp * lpTokenAmount / totalSupply)
   api.add(nullAddress, trxInLp * lpTokenAmount / totalSupply)
 }
-
+ */
 
 module.exports = {
   tron: {
-    tvl,
-    staking: sumTokensExport({ owner: stakingContract, tokens: [sun]}),
+    tvl: sumTokensExport({ ownerTokens }),
+    staking: sumTokensExport({ owner: stakingContract, tokens: [sun] }),
     // pool2
   },
 }

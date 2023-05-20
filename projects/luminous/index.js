@@ -1,9 +1,5 @@
-const {
-  getTokenBalance,
-  getTrxBalance,
-  call,
-  sumTokensExport,
-} = require("../helper/chain/tron");
+const sdk = require('@defillama/sdk')
+const { sumTokensExport } = require('../helper/unwrapLPs')
 const { nullAddress } = require("../helper/tokenMapping");
 
 const stakingWaterContract = "THyHbFrG5wnxdp9Lv7AgwJ4k7Nt1dp2pzj";
@@ -20,24 +16,29 @@ const lumiLpToken = "TUhZUbJaVicbQeNXHGBKxVsVuNL94usuoU";
 
 async function Pool2() {
   const { api } = arguments[3]
+
   const [
     waterLpTokenAmount,
     lumiLpTokenAmount,
     waterInLp,
     lumiInLp,
-    trxInWaterLp,
-    trxInLumiLp,
     waterLpTotalSupply,
     lumiLpTotalSupply,
+  ] = await api.batchCall([
+    { abi: 'erc20:balanceOf', target: waterLpToken, params: lumiFarm },
+    { abi: 'erc20:balanceOf', target: lumiLpToken, params: waterFarm },
+    { abi: 'erc20:balanceOf', target: WATER, params: waterLpToken },
+    { abi: 'erc20:balanceOf', target: LUMI, params: lumiLpToken },
+    { abi: 'erc20:totalSupply', target: waterLpToken, },
+    { abi: 'erc20:totalSupply', target: lumiLpToken, },
+  ])
+
+  const [
+    { output: trxInWaterLp},
+    { output: trxInLumiLp},
   ] = await Promise.all([
-    getTokenBalance(waterLpToken, lumiFarm),
-    getTokenBalance(lumiLpToken, waterFarm),
-    getTokenBalance(WATER, waterLpToken),
-    getTokenBalance(LUMI, lumiLpToken),
-    getTrxBalance(waterLpToken),
-    getTrxBalance(lumiLpToken),
-    call({ target: waterLpToken, abi: 'totalSupply()', resTypes:['number'] }),
-    call({ target: lumiLpToken, abi: 'totalSupply()', resTypes:['number'] }),
+    sdk.api.eth.getBalance({ target: waterLpToken, chain: 'tron'}),
+    sdk.api.eth.getBalance({ target: lumiLpToken, chain: 'tron'}),
   ]);
 
   api.add(WATER, (waterInLp * waterLpTokenAmount) / waterLpTotalSupply)
@@ -48,10 +49,12 @@ async function Pool2() {
 
 module.exports = {
   tron: {
-    staking: sumTokensExport({ tokensAndOwners: [
-      [WATER,stakingWaterContract],
-      [LUMI,stakingLumiContract],
-    ]}),
+    staking: sumTokensExport({
+      tokensAndOwners: [
+        [WATER, stakingWaterContract],
+        [LUMI, stakingLumiContract],
+      ]
+    }),
     pool2: Pool2,
     tvl: (async) => ({}),
   },

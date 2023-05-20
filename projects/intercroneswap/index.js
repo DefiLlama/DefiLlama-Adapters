@@ -1,7 +1,5 @@
 const sdk = require('@defillama/sdk')
-const { chainExports: getChainExports } = require('../helper/exports.js')
 const { getUniTVL } = require('../helper/unknownTokens.js')
-const { tronDex } = require('../helper/chain/tron-dex.js')
 
 const TRON_FACTORY_V2 = 'TPvaMEL5oY2gWsJv7MDjNQh2dohwvwwVwx'
 const TRON_FACTORY_V1 = 'TJL9Tj2rf5WPUkaYMzbvWErn6M8wYRiHG7'
@@ -11,17 +9,21 @@ const factories = {
 }
 
 function chainTvl(chain) {
-  return getUniTVL({ chain, factory: factories[chain], useDefaultCoreAssets: false, })
+  module.exports[chain] = {
+    tvl: getUniTVL({ factory: factories[chain], useDefaultCoreAssets: true, })
+  }
 }
 
-const chainExports = getChainExports(chainTvl, Object.keys(factories))
-
-chainExports.misrepresentedTokens = true
-chainExports.timetravel = true
-
 module.exports = {
-  ...chainExports,
-  tron: {
-    tvl: sdk.util.sumChainTvls([tronDex({ factory: TRON_FACTORY_V1}), tronDex({ factory: TRON_FACTORY_V2})])
-  }
-} 
+  timetravel: false,
+  misrepresentedTokens: true
+}
+
+Object.keys(factories).map(chainTvl)
+
+module.exports.tron = {
+  tvl: sdk.util.sumChainTvls([
+    getUniTVL({ factory: TRON_FACTORY_V1, useDefaultCoreAssets: true, }),
+    getUniTVL({ factory: TRON_FACTORY_V2, useDefaultCoreAssets: true, }),
+  ])
+}
