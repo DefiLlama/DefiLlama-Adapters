@@ -41,7 +41,7 @@ function astar(borrowed) {
     return Object.keys(balances).reduce((res, key) => {
       if (key.startsWith("0x")) return { ...res, [key]: balances[key] };
       for (const token of Object.values(TOKEN_INFO)) {
-        if (key === token.key)
+        if (key === token.key && token.decimals)
           return {
             ...res,
             [key]: new BigNumber(balances[key])
