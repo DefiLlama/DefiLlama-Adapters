@@ -58,6 +58,11 @@ const config = {
       '0x36Df0A76a124d8b2205fA11766eC2eFF8Ce38A35', // Tarot Paprika
     ]
   },
+  era: {
+    factories: [
+      '0xf450b51fb2E1e4f05DAf9Cf7D9BB97714540B4f4', // Tarot Zeniths
+    ]
+  },
 }
 
 module.exports = {}
