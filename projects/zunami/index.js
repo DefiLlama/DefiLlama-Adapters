@@ -9,14 +9,14 @@ const usdt = ADDRESSES.ethereum.USDT;
 const usdtDecimals = 6;
 
 async function ethTvl(timestamp, block) {
-  const totalHoldings = (await sdk.api.abi.call({
+  const totalHoldingsOmnipool = (await sdk.api.abi.call({
     block,
     abi: abi.totalHoldings,
     target: zunamiContract,
   })).output / 10 ** (zunamiHoldingsDecimals - usdtDecimals);
 
   return {
-    [usdt]: totalHoldings,
+    [usdt]: totalHoldingsOmnipool,
   };
 }
 
