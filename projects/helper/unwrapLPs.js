@@ -3,7 +3,7 @@ const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const token0 = 'address:token0'
 const symbol = 'string:symbol'
-const { getPoolTokens, getPoolId, bPool, getCurrentTokens, getVault: getBalancerVault, } = require('./abis/balancer.json')
+const { getPoolTokens, getPoolId, bPool, getCurrentTokens, } = require('./abis/balancer.json')
 const { requery } = require('./requery')
 const { getChainTransform, getFixBalances } = require('./portedTokens')
 const { getUniqueAddresses, normalizeAddress } = require('./tokenMapping')
@@ -11,7 +11,7 @@ const creamAbi = require('./abis/cream.json')
 const { isLP, log, } = require('./utils')
 const { sumArtBlocks, whitelistedNFTs, } = require('./nft')
 const wildCreditABI = require('../wildcredit/abi.json');
-const { covalentGetTokens } = require("./http");
+const { covalentGetTokens, get } = require("./http");
 
 const lpReservesAbi = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
 const lpSuppliesAbi = "uint256:totalSupply"
@@ -368,6 +368,11 @@ async function sumBalancerLps(balances, tokensAndOwners, block, chain, transform
   })
 }
 
+async function getTrxBalance(account) {
+  const data = await get('https://apilist.tronscan.org/api/account?address=' + account)
+  return data.balance + (data.totalFrozen || 0)
+}
+
 const nullAddress = ADDRESSES.null
 const gasTokens = [nullAddress, '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb']
 /*
@@ -392,8 +397,13 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
   ethBalanceInputs = getUniqueAddresses(ethBalanceInputs, chain)
 
   if (ethBalanceInputs.length) {
-    const { output: ethBalances } = await sdk.api.eth.getBalances({ targets: ethBalanceInputs, chain, block })
-    ethBalances.forEach(({ balance }) => sdk.util.sumSingleBalance(balances, transformAddress(nullAddress), balance))
+    if(chain === "tron"){
+      const ethBalances = await Promise.all(ethBalanceInputs.map(getTrxBalance))
+      ethBalances.forEach(balance => sdk.util.sumSingleBalance(balances, transformAddress(nullAddress), balance))
+    } else {
+      const { output: ethBalances } = await sdk.api.eth.getBalances({ targets: ethBalanceInputs, chain, block })
+      ethBalances.forEach(({ balance }) => sdk.util.sumSingleBalance(balances, transformAddress(nullAddress), balance))
+    }
   }
 
   const balanceOfTokens = await sdk.api.abi.multiCall({
