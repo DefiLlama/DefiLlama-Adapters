@@ -18,7 +18,7 @@ async function aptosTvl() {
 async function suiTvl() {
   const { api } = arguments[3]
 
-  const lyfTvl = await calLyfTvlSui(api)
+  return calLyfTvlSui(api)
 }
 
 // run command： node test.js projects/mole/index.js
