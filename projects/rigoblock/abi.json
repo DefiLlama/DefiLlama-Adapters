@@ -1,3 +1,0 @@
-{
-  "balanceOf": "function balanceOf(address staker) view returns (uint256)"
-}
