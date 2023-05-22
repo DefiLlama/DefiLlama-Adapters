@@ -252,9 +252,6 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
     const ethApi = new sdk.ChainApi()
     symbolsETH = await ethApi.multiCall({ abi: 'erc20:symbol', calls: ethTokens, permitFailure: true, })
     nameETH = await ethApi.multiCall({ abi: erc20.name, calls: ethTokens, permitFailure: true, })
-
-    symbolsETH = symbolsETH
-    nameETH = nameETH
   }
 
   let symbolMapping = symbols.reduce((a, i, y) => ({ ...a, [tokens[y]]: i }), {})
