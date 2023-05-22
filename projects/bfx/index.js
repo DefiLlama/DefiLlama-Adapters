@@ -10,7 +10,7 @@ const bscBFX = "0x491347561CEc563aD7D91135F92dBdC700277505";
 module.exports = {
 
   bsc: {
-    staking: staking(bscStaking, bscBFX, "bsc", bscBFX, 18),
+    staking: staking(bscStaking, bscBFX),
     tvl: gmxExports({ vault: bscVault })
   },
 
