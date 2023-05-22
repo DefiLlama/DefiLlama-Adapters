@@ -12,7 +12,6 @@ const { isLP, log, } = require('./utils')
 const { sumArtBlocks, whitelistedNFTs, } = require('./nft')
 const wildCreditABI = require('../wildcredit/abi.json');
 const { covalentGetTokens } = require("./http");
-const { getUniqueAddresses, normalizeAddress } = require('../helper/tokenMapping')
 
 const lpReservesAbi = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
 const lpSuppliesAbi = "uint256:totalSupply"
