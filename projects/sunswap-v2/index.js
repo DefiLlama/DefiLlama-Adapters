@@ -1,19 +1,9 @@
-const { get } = require('../helper/http')
-
-async function tvl(ts){
-  const { data } = await get('https://pabc.endjgfsv.link/swapv2/scan/getAllLiquidityVolume')
-  const lastItem = data[data.length -1]
-  if (lastItem.time < (ts - 24 * 3600)) throw new Error('Outdated Data!')
-
-  return {
-    tether: lastItem.liquidity
-  }
-}
+const { getUniTVL } = require('../helper/unknownTokens.js')
 
 module.exports = {
-  misrepresentedTokens: true,
   timetravel: false,
+  misrepresentedTokens: true,
   tron: {
-    tvl
-  },
+    tvl: getUniTVL({ factory: 'TKWJdrQkqHisa1X8HUdHEfREvTzw4pMAaY', useDefaultCoreAssets: true, }),
+  }
 }
