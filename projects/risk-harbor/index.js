@@ -39,6 +39,7 @@ const networks = {
     ],
   },
   arbitrum: {
+    vaultManager: "0x713C8810F79B4F101f66bB5b5a1326473ae5c7f7",
     vaults: [
       [
         ADDRESSES.arbitrum.USDC,
