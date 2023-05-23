@@ -3,18 +3,26 @@ const { nullAddress, sumTokensExport, } = require('../helper/unwrapLPs');
 
 const config = {
   ethereum: [
-    [[nullAddress], '0x882260324AD5A87bF5007904B4A8EF87023c856A'], // ETH
+    [[nullAddress], '0x882260324AD5A87bF5007904B4A8EF87023c856A'],
     [
       [
-        ADDRESSES.ethereum.USDT, // USDT
-        ADDRESSES.ethereum.USDC, // USDC
-        ADDRESSES.ethereum.WBTC, // WBTC
+        ADDRESSES.ethereum.USDT,
+        ADDRESSES.ethereum.USDC,
+        ADDRESSES.ethereum.WBTC,
       ],
       '0x0de7b091A21BD439bdB2DfbB63146D9cEa21Ea83'
     ]
   ],
   bsc: [
-    [[nullAddress], '0xF1632012f6679Fcf464721433AFAAe9c11ad9e03'] // BNB
+    [[nullAddress], '0xF1632012f6679Fcf464721433AFAAe9c11ad9e03'],
+    [
+      [
+        ADDRESSES.bsc.USDT,
+        ADDRESSES.bsc.USDC,
+        ADDRESSES.bsc.BTCB,
+      ],
+      '0x8DF12786EC0E34e60D4c52f9052ba4e536e9367a'
+    ]
   ]
 }
 module.exports = {};
