@@ -128,9 +128,9 @@ module.exports = {
       ]
     },
     {
-      name: 'optimism',
+      name: 'arbitrum_nova',
       tokens: [
-        ADDRESSES.optimism.USDC,
+        ADDRESSES.arbitrum_nova.USDC,
       ],
       holders: [
         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
