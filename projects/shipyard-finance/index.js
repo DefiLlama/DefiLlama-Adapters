@@ -81,5 +81,8 @@ module.exports = {
   },
   ethereum: {
     tvl: chainTvl('ethereum', ETHEREUM),
-  }
+  },
+  hallmarks: [
+    [1677200400, "Vaults deprecated"]
+  ]
 };

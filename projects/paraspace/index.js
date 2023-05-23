@@ -9,4 +9,8 @@ module.exports = {
     tvl,
     borrowed,
   },
+  arbitrum: {
+    tvl,
+    borrowed,
+  }
 };

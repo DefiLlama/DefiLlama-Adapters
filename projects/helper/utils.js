@@ -1,3 +1,4 @@
+const ADDRESSES = require('./coreAssets.json')
 const BigNumber = require("bignumber.js");
 const axios = require("axios");
 const sdk = require('@defillama/sdk')
@@ -177,11 +178,12 @@ async function diplayUnknownTable({ tvlResults = {}, tvlBalances = {}, storedKey
   try {
     await debugBalances({ balances, chain: storedKey, log, tableLabel, withETH: false, })
   } catch (e) {
+    // console.log(e)
     log('failed to fetch prices for', balances)
   }
 }
 
-const nullAddress = '0x0000000000000000000000000000000000000000'
+const nullAddress = ADDRESSES.null
 async function getSymbols(chain, tokens) {
   tokens = tokens.filter(i => i.includes('0x')).map(i => i.slice(i.indexOf('0x'))).filter(i => i !== nullAddress)
   const calls = tokens.map(i => ({ target: i }))
@@ -218,7 +220,13 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
   const tokens = []
   const ethTokens = []
   Object.keys(balances).forEach(label => {
-    const token = stripTokenHeader(label)
+    let token = stripTokenHeader(label)
+    if (chain === 'tron') {
+      token = label.slice(5)
+      tokens.push(token)
+      labelMapping[label] = token
+      return
+    }
     if (!token.startsWith('0x')) return;
     if (!label.startsWith(chain))
       ethTokens.push(token)
@@ -232,52 +240,26 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
     return;
   }
 
+  const api = new sdk.ChainApi({ chain })
 
-  const { output: symbols } = await sdk.api.abi.multiCall({
-    abi: 'erc20:symbol',
-    calls: tokens.map(i => ({ target: i })),
-    chain,
-    permitFailure: true,
-  })
-  const { output: decimals } = await sdk.api.abi.multiCall({
-    abi: 'erc20:decimals',
-    calls: tokens.map(i => ({ target: i })),
-    chain,
-    permitFailure: true,
-  })
-
-  const { output: name } = await sdk.api.abi.multiCall({
-    abi: erc20.name,
-    calls: tokens.map(i => ({ target: i })),
-    chain,
-    permitFailure: true,
-  })
+  const symbols = await api.multiCall({ abi: 'erc20:symbol', calls: tokens, permitFailure: true, })
+  const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: tokens, permitFailure: true, })
+  const name = await api.multiCall({ abi: erc20.name, calls: tokens, permitFailure: true, })
 
   let symbolsETH, nameETH
 
   if (withETH) {
-    symbolsETH = await sdk.api.abi.multiCall({
-      abi: 'erc20:symbol',
-      calls: ethTokens.map(i => ({ target: i })),
-      permitFailure: true,
-    })
-
-    nameETH = await sdk.api.abi.multiCall({
-      abi: erc20.name,
-      calls: ethTokens.map(i => ({ target: i })),
-      permitFailure: true,
-    })
-
-    symbolsETH = symbolsETH.output
-    nameETH = nameETH.output
+    const ethApi = new sdk.ChainApi()
+    symbolsETH = await ethApi.multiCall({ abi: 'erc20:symbol', calls: ethTokens, permitFailure: true, })
+    nameETH = await ethApi.multiCall({ abi: erc20.name, calls: ethTokens, permitFailure: true, })
   }
 
-  let symbolMapping = symbols.reduce((a, i) => ({ ...a, [i.input.target]: i.output }), {})
-  let decimalsMapping = decimals.reduce((a, i) => ({ ...a, [i.input.target]: i.output }), {})
-  let nameMapping = name.reduce((a, i) => ({ ...a, [i.input.target]: i.output }), {})
+  let symbolMapping = symbols.reduce((a, i, y) => ({ ...a, [tokens[y]]: i }), {})
+  let decimalsMapping = decimals.reduce((a, i, y) => ({ ...a, [tokens[y]]: i }), {})
+  let nameMapping = name.reduce((a, i, y) => ({ ...a, [tokens[y]]: i }), {})
   if (withETH) {
-    symbolMapping = symbolsETH.reduce((a, i) => ({ ...a, [i.input.target]: i.output }), symbolMapping)
-    nameMapping = nameETH.reduce((a, i) => ({ ...a, [i.input.target]: i.output }), nameMapping)
+    symbolMapping = symbolsETH.reduce((a, i, y) => ({ ...a, [ethTokens[y]]: i }), symbolMapping)
+    nameMapping = nameETH.reduce((a, i, y) => ({ ...a, [ethTokens[y]]: i }), nameMapping)
   }
   const logObj = []
   Object.entries(balances).forEach(([label, balance]) => {
