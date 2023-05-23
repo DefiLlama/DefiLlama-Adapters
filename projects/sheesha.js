@@ -1,9 +1,10 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const { sumLPWithOnlyOneToken } = require("./helper/unwrapLPs");
 const { stakingUnknownPricedLP } = require("./helper/staking");
 
 async function pool2(timestamp, block, chainBlocks) {
   const balances = {};
-  await sumLPWithOnlyOneToken(balances, "0xB31Ecb43645EB273210838e710f2692CC6b30a11", "0x5d350F07c1D9245c1Ecb7c622c67EDD49c6a0A35", "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", chainBlocks.bsc, "bsc", addr=>`bsc:${addr}`)
+  await sumLPWithOnlyOneToken(balances, "0xB31Ecb43645EB273210838e710f2692CC6b30a11", "0x5d350F07c1D9245c1Ecb7c622c67EDD49c6a0A35", ADDRESSES.bsc.WBNB, chainBlocks.bsc, "bsc", addr=>`bsc:${addr}`)
   return balances
 }
 

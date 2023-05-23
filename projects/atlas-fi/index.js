@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require("../helper/unwrapLPs")
 const { sumTokensExport } = require("../helper/unknownTokens")
 const VAULT = '0x3A93FCCcD2769579eFE03d6DeF2C4468F5F0bd38'
@@ -8,7 +9,7 @@ async function tvl(_, _b, _cb, { api, }) {
 		api,
 		ownerTokens: [
 			[[
-				'0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9',
+				ADDRESSES.arbitrum.USDT,
 				'0xf6995955e4b0e5b287693c221f456951d612b628',
 				'0xee338313f022caee84034253174fa562495dcc15',
 				'0x8dc3312c68125a94916d62b97bb5d925f84d4ae0',

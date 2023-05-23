@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
 const {sumTokens} = require('../helper/unwrapLPs')
 
-const dai = "0x6b175474e89094c44da98b954eedeac495271d0f"
-const usdc = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+const dai = ADDRESSES.ethereum.DAI
+const usdc = ADDRESSES.ethereum.USDC
 async function eth(timestamp, block) {
     const balances = {}
     await sumTokens(balances, [
@@ -14,8 +15,8 @@ async function eth(timestamp, block) {
     return balances
 }
 
-const polygonDai = "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063"
-const polygonUsdc = "0x2791bca1f2de4661ed88a30c99a7a9449aa84174"
+const polygonDai = ADDRESSES.polygon.DAI
+const polygonUsdc = ADDRESSES.polygon.USDC
 async function polygon(timestamp, block, chainBlocks) {
     const balances = {}
     await sumTokens(balances, [
@@ -27,8 +28,8 @@ async function polygon(timestamp, block, chainBlocks) {
     return balances
 }
 
-const arbitrumDai = "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
-const arbitrumUsdc = "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8"
+const arbitrumDai = ADDRESSES.optimism.DAI
+const arbitrumUsdc = ADDRESSES.arbitrum.USDC
 async function arbitrum(timestamp, block, chainBlocks) {
     const balances = {}
     await sumTokens(balances, [

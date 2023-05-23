@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 
 const getAllCollateralAbi = 'function getAllCollateral() view returns (address[], uint256[])'
@@ -114,7 +115,7 @@ async function tvl(_, _block, chainBlocks) {
 
   return {
     // In USDC, USDC has decimal of 6
-    ["avax:0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E"]: total / (10 ** 12)
+    ["avax:" + ADDRESSES.avax.USDC]: total / (10 ** 12)
   }
 }
 
@@ -152,7 +153,7 @@ async function pool2(_, _block, chainBlocks) {
   const pool2ValueUSD = (YETIReserve * YETIPrice + AVAXReserve * AVAXPrice) / 10 ** 18
   return {
     // In USDC, USDC has decimal of 6
-    ["avax:0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E"]: pool2ValueUSD / (10 ** 12)
+    ["avax:" + ADDRESSES.avax.USDC]: pool2ValueUSD / (10 ** 12)
   }
 }
 
@@ -179,7 +180,7 @@ async function staking(_, _block, chainBlocks) {
   const stakingUSD = veYETIBalance * YETIPrice / (10 ** 18)
   return {
     // In USDC, USDC has decimal of 6
-    ["avax:0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E"]: stakingUSD / (10 ** 12)
+    ["avax:" + ADDRESSES.avax.USDC]: stakingUSD / (10 ** 12)
   }
 }
 

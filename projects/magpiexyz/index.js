@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
 const { staking } = require('../helper/staking')
 const WombatPoolHelperAbi = require("./abis/wombatPoolHelper.json")
@@ -20,7 +21,7 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
   const balances = {};
   const womBal = await api.call({ abi: 'erc20:balanceOf', target: MWOMAddress, params: MasterMagpieAddress })
   sdk.util.sumSingleBalance(balances, WOMAddress, womBal, api.chain)
-  if (MWOMSVAddress != "0x0000000000000000000000000000000000000000") {
+  if (MWOMSVAddress != ADDRESSES.null) {
     const mWomSVBal = await api.call({ abi: 'erc20:balanceOf', target: MWOMAddress, params: MWOMSVAddress })
     sdk.util.sumSingleBalance(balances, WOMAddress, mWomSVBal, api.chain)
   }

@@ -1,3 +1,4 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 
 const { sumTokensExport } = require('./helper/unwrapLPs')
 
@@ -5,7 +6,7 @@ const config = {
   heco: {
     markets: [
       [
-          "0xa71EdC38d189767582C38A3145b5873052c3e47a",
+          ADDRESSES.heco.USDT,
           "0x8d8fD8139CEaf0034A021E6eb039bB6f70C83d9c"
       ],
       [
@@ -21,7 +22,7 @@ const config = {
           "0x59a626a783A9C071fDcEFC95B3664a34d0592e24"
       ],
       [
-          "0x5545153CCFcA01fbd7Dd11C0b23ba694D9509A6F",
+          ADDRESSES.heco.WHT,
           "0xDA77B5663a0baFa56080Ae5D0a1F462848465b14"
       ],
       [
@@ -73,23 +74,23 @@ const config = {
   bsc: {
     markets: [
       [
-        "0x55d398326f99059fF775485246999027B3197955",
+        ADDRESSES.bsc.USDT,
         "0x89bB17aF665Ec0607268C697Bb294117992027Cf"
       ],
       [
-        "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+        ADDRESSES.bsc.BUSD,
         "0xB275b6AE294159278547297dBE7617f66A7bC6e2"
       ],
       [
-        "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c",
+        ADDRESSES.bsc.BTCB,
         "0x6c9FcBD7aD9dFB241f4fA2cc08FaABb42d764606"
       ],
       [
-        "0x2170Ed0880ac9A755fd29B2688956BD959F933F8",
+        ADDRESSES.bsc.ETH,
         "0x4A345187BFAe9A14DA764C2222c4B7E816C18216"
       ],
       [
-        "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+        ADDRESSES.bsc.WBNB,
         "0x5C4E2B1E6E03cCF5F3c3356C008a69C7f93BD10B"
       ],
       [

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
@@ -5,7 +6,7 @@ const { default: BigNumber } = require("bignumber.js");
 const { getBlock } = require("../helper/http");
 
 const NEAR_TOKEN = "0x85f17cf997934a597031b2e18a9ab6ebd4b9f6a4";
-const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+const WETH = ADDRESSES.ethereum.WETH;
 
 async function addEthBalances(addresses, block, balances) {
   await Promise.all(
@@ -60,7 +61,7 @@ const data = {
     "0xc770eefad204b5180df6a14ee197d99d808ee52d",
     "0xc7283b66eb1eb5fb86327f08e1b5816b0720212b",
     "0xa693B19d2931d498c5B318dF961919BB4aee87a5",
-    "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+    ADDRESSES.ethereum.WETH,
     "0x85f17cf997934a597031b2e18a9ab6ebd4b9f6a4",
   ],
 };

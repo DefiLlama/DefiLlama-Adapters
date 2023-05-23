@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { transformBscAddress } = require("../helper/portedTokens");
 const { addFundsInMasterChef } = require("../helper/masterchef");
@@ -11,7 +12,7 @@ const squidBnbLP = "0x2e0484D3684701dC032f29cce59c785A5837B34E";
 const solWbnbLP = {
   lpToken: "0x9d5B48AD38748c6DBD77399eccE3FD8B6f980456",
   token0: ["solana"],
-  token1: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+  token1: ADDRESSES.bsc.WBNB,
 };
 
 const getReserves = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)';

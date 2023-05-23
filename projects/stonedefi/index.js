@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const {BigNumber} = require("bignumber.js");
@@ -135,7 +136,7 @@ module.exports = {
     pool2: pool2s([bsccakevault, stbnbcakevault], [stbnbcakelp, bsccakelp], "bsc", addr=>{
       addr = addr.toLowerCase();
       if (addr === "0xd523a3c371c0c301794120c7ca9639f22c02839a") {
-        return "bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+        return "bsc:" + ADDRESSES.bsc.WBNB
       }
       else if (addr === "0xf7fb08c187e6cd1f2149e6c818d0b6d4d4ef1430") {
         return "0xe63d6b308bce0f6193aec6b7e6eba005f41e36ab"

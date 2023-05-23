@@ -1,7 +1,8 @@
 const sdk = require("@defillama/sdk");
 const { blockQuery } = require("../helper/http");
 const env = require("../helper/env");
-const { staking } = require('../helper/staking')
+const { staking } = require('../helper/staking');
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const OlympusStakings = [
   // Old Staking Contract
@@ -132,8 +133,13 @@ async function tvl(timestamp, block, _, { api }, isOwnTokensMode = false) {
 
   const tokensToBalances = sumBalancesByTokenAddress(
     normalizedFilteredTokenRecords
-  );
+  ).filter(i => {
+    if (api.chain !== 'arbitrum') return true;
+    return !['0x89dc7e71e362faf88d92288fe2311d25c6a1b5e0000200000000000000000423', '0xce6195089b302633ed60f3f427d1380f6a2bfbc7000200000000000000000424'].includes(i.tokenAddress)
+  })
   const tokens = tokensToBalances.map(i => i.tokenAddress)
+
+
   const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: tokens })
   const ownTokens = new Set([
     '0x0ab87046fBb341D058F17CBC4c1133F25a20a52f', // GOHM
@@ -145,7 +151,7 @@ async function tvl(timestamp, block, _, { api }, isOwnTokensMode = false) {
     } else if (isOwnTokensMode) return;
     api.add(token.tokenAddress, token.balance * 10 ** decimals[i])
   })
-  return api.getBalances()
+  return sumTokens2({ api, resolveLP: true, })
 }
 
 async function ownTokens(timestamp, block, _, { api }) {

@@ -1,3 +1,4 @@
+const ADDRESSES = require('./coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { default: BigNumber } = require('bignumber.js');
 const abi = require('./abis/aave.json');
@@ -30,7 +31,7 @@ async function getV2Reserves(block, addressesProviderRegistry, chain, dataHelper
 
     validProtocolDataHelpers = protocolDataHelpers.filter(
       (helper) =>
-        helper.output !== "0x0000000000000000000000000000000000000000"
+        helper.output !== ADDRESSES.null
     ).map(p => p.output);
   } else {
     validProtocolDataHelpers = dataHelperAddress
@@ -124,7 +125,7 @@ function aaveChainTvl(chain, addressesProviderRegistry, transformAddressRaw, dat
 function aaveExports(chain, addressesProviderRegistry, transform = undefined, dataHelpers = undefined, { oracle, abis, v3 = false, blacklistedTokens = [] } = {}) {
   return {
     tvl: aaveChainTvl(chain, addressesProviderRegistry, transform, dataHelpers, false, v3, { oracle, abis, blacklistedTokens, }),
-    borrowed: aaveChainTvl(chain, addressesProviderRegistry, transform, dataHelpers, true, v3, { oracle, abis, blacklistedTokens, })
+    borrowed: aaveChainTvl(chain, addressesProviderRegistry, transform, dataHelpers, true, v3, { oracle, abis, })
   }
 }
 

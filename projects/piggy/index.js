@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const {getLiquityTvl} = require('../helper/liquity')
 
-const BNB_ADDRESS = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
+const BNB_ADDRESS = ADDRESSES.bsc.WBNB;
 
 // TroveManager holds total system collateral (deposited BNB)
 const TROVE_MANAGER_ADDRESS = "0xb283466d09177c5C6507785d600caFDFa538C65C";

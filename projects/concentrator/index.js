@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require('./abis/abi.json')
 const { default: BigNumber } = require("bignumber.js");
@@ -21,7 +22,7 @@ const concentratorAsdCRVAddress = "0x43E54C2E7b3e294De3A155785F52AB49d87B9922"
 const concentratorNewVault = '0x3Cf54F3A1969be9916DAD548f3C084331C4450b5';
 const concentratorAfxsVault = '0xD6E3BB7b1D6Fa75A71d48CFB10096d59ABbf99E1';
 const concentratorAfrxETHVault = '0x50B47c4A642231dbe0B411a0B2FBC1EBD129346D';
-const usdtAddress = "0xdac17f958d2ee523a2206206994597c13d831ec7";
+const usdtAddress = ADDRESSES.ethereum.USDT;
 const aladdinBalancerLPGauge = '0x33e411ebE366D72d058F3eF22F1D0Cf8077fDaB0';
 const clevCVXAddress = "0xf05e58fCeA29ab4dA01A495140B349F8410Ba904"
 const clevCVXCVXAddress = "0xF9078Fb962A7D13F55d40d49C8AA6472aBD1A5a6"

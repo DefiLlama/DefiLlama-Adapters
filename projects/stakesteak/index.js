@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const {addFundsInMasterChef} = require('../helper/masterchef')
 const sdk = require('@defillama/sdk')
 const {staking} = require('../helper/staking')
 const {transformFantomAddress} = require('../helper/portedTokens')
 const poolInfoAbi = 'function getPoolInfo(uint256 _pid) view returns (tuple(address stakingToken, uint256 stakingTokenTotalAmount, uint32 lastRewardTime, uint256[] AccRewardsPerShare, uint256[] AllocPoints))'
 
-const tusd = "0x0000000000085d4780b73119b644ae5ecd22b376"
+const tusd = ADDRESSES.ethereum.TUSD
 const ifusd = "0x9fC071cE771c7B27b7d9A57C32c0a84c18200F8a"
 
 async function tvl(_t, _b, chainBlocks){

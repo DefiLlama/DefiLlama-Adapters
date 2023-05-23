@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, sumTokensExport } = require('../helper/unwrapLPs')
 
 const config = {
@@ -15,7 +16,7 @@ module.exports = {
   arbitrum: {
     tvl: sumTokensExport({
       owners: [config.clearinghouse, config.endpoint],
-      tokens: ['0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f', '0x82af49447d8a07e3bd95bd0d56f35241523fbab1', '0xff970a61a04b1ca14834a43f5de4533ebddb5cc8'],
+      tokens: [ADDRESSES.arbitrum.WBTC, ADDRESSES.arbitrum.WETH, ADDRESSES.arbitrum.USDC],
     })
   }
 }

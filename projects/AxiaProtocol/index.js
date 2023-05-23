@@ -17,10 +17,10 @@ const oracleFundLPEth = '0xbf11db4e63c72c5dffde0f5831d667817c9e9ad5'
 
 async function tvl(_, _b, _cb, { api, }) {
   const balances = {}
-  
+
   await Promise.all([
-    unwrapBalancerToken({ ...api, owner: defiFundEth, balancerToken: defiFundLPEth, balances, isBPool: true, }),
-    unwrapBalancerToken({ ...api, owner: oracleFundEth, balancerToken: oracleFundLPEth, balances, isBPool: true, }),
+    unwrapBalancerToken({ api, owner: defiFundEth, balancerToken: defiFundLPEth, balances, isBPool: true, isV2: false, }),
+    unwrapBalancerToken({ api, owner: oracleFundEth, balancerToken: oracleFundLPEth, balances, isBPool: true, isV2: false, }),
   ])
 
   return balances

@@ -4,6 +4,7 @@ const sdk = require('@defillama/sdk')
 const http = require('../http')
 const env = require('../env')
 const { transformDexBalances } = require('../portedTokens')
+const { sliceIntoChunks } = require('../utils')
 
 //https://docs.sui.io/sui-jsonrpc
 
@@ -17,11 +18,26 @@ async function getObject(objectId) {
   }])).content
 }
 
-async function queryEvents(queryObject) {
-  return call('suix_queryEvents', queryObject)
+async function queryEvents({ eventType, transform = i => i }) {
+  let filter = {}
+  if (eventType) filter.MoveEventType = eventType 
+  const items = []
+  let cursor = null
+  do {
+    const { data , nextCursor, hasNextPage } = await call('suix_queryEvents', [filter, cursor], { withMetadata: true, })
+     cursor = hasNextPage ? nextCursor : null
+     items.push(...data)
+  } while (cursor)
+  return items.map(i => i.parsedJson).map(transform)
 }
 
 async function getObjects(objectIds) {
+  if (objectIds.length > 49) {
+    const chunks = sliceIntoChunks(objectIds, 49)
+    const res = []
+    for (const chunk of chunks) res.push(...(await getObjects(chunk)))
+    return res
+  }
   const {
     result
   } = await http.post(endpoint, {
@@ -41,7 +57,7 @@ async function getDynamicFieldObject(parent, id) {
   }])).content
 }
 
-async function getDynamicFieldObjects({ parent, cursor = null, limit = 49, items = [], idFilter = i => i, addedIds = new Set() }) {
+async function getDynamicFieldObjects({ parent, cursor = null, limit = 48, items = [], idFilter = i => i, addedIds = new Set() }) {
   const {
     result: { data, hasNextPage, nextCursor }
   } = await http.post(endpoint, { jsonrpc: "2.0", id: 1, method: 'suix_getDynamicFields', params: [parent, cursor, limit], })
@@ -54,12 +70,12 @@ async function getDynamicFieldObjects({ parent, cursor = null, limit = 49, items
   return getDynamicFieldObjects({ parent, cursor: nextCursor, items, limit, idFilter, addedIds })
 }
 
-async function call(method, params) {
+async function call(method, params,  { withMetadata = false} = {}) {
   if (!Array.isArray(params)) params = [params]
   const {
-    result: { data }
+    result
   } = await http.post(endpoint, { jsonrpc: "2.0", id: 1, method, params, })
-  return data
+  return withMetadata ? result : result.data
 }
 
 async function multiCall(calls) {
@@ -74,6 +90,8 @@ function dexExport({
   token1Reserve = i => i.fields.coin_y_reserve,
   getTokens = i => i.type.split('<')[1].replace('>', '').split(', '),
   isAMM = true,
+  eventType,
+  eventTransform,
 }) {
   return {
     timetravel: false,
@@ -81,7 +99,13 @@ function dexExport({
     sui: {
       tvl: async (_, _1, _2, { api }) => {
         const data = []
-        let pools = await getDynamicFieldObjects({ parent: account, idFilter: i => poolStr ? i.objectType.includes(poolStr) : i })
+        let pools
+        if (!eventType) {
+          pools = await getDynamicFieldObjects({ parent: account, idFilter: i => poolStr ? i.objectType.includes(poolStr) : i })
+        } else {
+          pools = await queryEvents({ eventType, transform: eventTransform })
+          pools = await getObjects(pools)
+        }
         sdk.log(`[sui] Number of pools: ${pools.length}`)
         pools.forEach(i => {
           const [token0, token1] = getTokens(i)

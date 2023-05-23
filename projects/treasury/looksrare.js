@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress } = require("../helper/treasury");
 const {
   unwrapUniswapV3NFTs,
@@ -10,7 +11,7 @@ const looks = "0xf4d2888d29D722226FafA5d9B24F9164c092421E";
 
 const tokens = [
   nullAddress,
-  "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // USDC
+  ADDRESSES.ethereum.USDC, // USDC
   "0x5aFE3855358E112B5647B952709E6165e1c1eEEe", // SAFE
 ];
 

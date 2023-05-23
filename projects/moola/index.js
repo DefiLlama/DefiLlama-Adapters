@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { aaveChainTvl } = require('../helper/aave')
 const { singleAssetV1Market } = require('../aave/v1')
 const sdk = require('@defillama/sdk')
 
 const v1PoolCore = "0xAF106F8D4756490E7069027315F4886cc94A8F73"
-const gasAsset = "0x471ece3750da237f93b8e339c536989b8978a438"
+const gasAsset = ADDRESSES.celo.CELO
 
 function lending(borrowed) {
     return async (timestamp, ethBlock, {celo: block}) => {
