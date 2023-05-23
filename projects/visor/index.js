@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const hypervisorAbi = require("./abis/hypervisor.json");
 const { staking } = require("../helper/staking");
@@ -22,17 +23,23 @@ const HYPE_REGISTRY = {
     "0x0Ac4C7b794f3D7e7bF1093A4f179bA792CF15055", // Uniswap
     "0xAeC731F69Fa39aD84c7749E913e3bC227427Adfd", // Quickswap
   ],
+  polygon_zkevm: ["0xD08B593eb3460B7aa5Ce76fFB0A3c5c938fd89b8", // Quickswap
+  ],
   optimism: ["0xF5BFA20F4A77933fEE0C7bB7F39E7642A070d599"],
   arbitrum: [
     "0x66CD859053c458688044d816117D5Bdf42A56813", // Uniswap
     "0x37595FCaF29E4fBAc0f7C1863E3dF2Fe6e2247e9", // Zyberswap
+  ],
+  bsc: [
+    "0x0b4645179C1b668464Df01362fC6219a7ab3234c", // Uniswap
+    "0xd4bcFC023736Db5617E5638748E127581d5929bd", // Thena
   ],
   celo: ["0x0F548d7AD1A0CB30D1872b8C18894484d76e1569"],
 };
 
 /* List of bad addresses added to registries that need to be excluded manually */
 const blacklist = {
-  ethereum: ["0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"],
+  ethereum: [ADDRESSES.ethereum.WBTC],
   polygon: ["0xa9782a2c9c3fb83937f14cdfac9a6d23946c9255"],
 };
 
@@ -89,6 +96,7 @@ async function getHypervisorBalances({ hypervisors, api, balances = {} }) {
   const supplies = await api.multiCall({
     abi: "erc20:totalSupply",
     calls: hypervisors,
+    permitFailure: true,
   });
   hypervisors = hypervisors.filter((_, i) => +supplies[i] > 0);
 
@@ -118,10 +126,16 @@ module.exports = {
   polygon: {
     tvl: tvlWrapper,
   },
+  polygon_zkevm: {
+    tvl: tvlWrapper,
+  },
   optimism: {
     tvl: tvlWrapper,
   },
   arbitrum: {
+    tvl: tvlWrapper,
+  },
+  bsc: {
     tvl: tvlWrapper,
   },
   celo: {

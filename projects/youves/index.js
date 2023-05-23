@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { GraphQLClient, gql } = require("graphql-request");
 const sdk = require("@defillama/sdk")
 const { addDexPosition, resolveLPPosition, getStorage, usdtAddressTezos, } = require('../helper/chain/tezos')
@@ -25,7 +26,7 @@ const engines = {
 
 const uDEFI_LP = 'KT1H8sJY2VzrbiX4pYeUVsoMUd4iGw2DV7XH'
 const uDEFI_TOKEN = 'KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW-1'
-const tzBTC_TOKEN = 'KT1PWx2mnDueood7fEmfbBDKx1D9BAnnXitn'
+const tzBTC_TOKEN = ADDRESSES.tezos.tzBTC
 
 
 async function fetchBalance(balances, token, engineAddress, decimals = 0, sharePrice) {
@@ -65,7 +66,7 @@ async function tvl() {
   const balances = {}
   const sharePrice = await getTzBTCLPSharePrice()
   await Promise.all([
-    // fetchBalance(balances, 'KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW', engines.uDefiuUSDV2, 0),  // disabling this because backing of uUSD is already counted in tvl
+    // fetchBalance(balances, ADDRESSES.tezos.uUSD, engines.uDefiuUSDV2, 0),  // disabling this because backing of uUSD is already counted in tvl
     fetchBalance(balances, usdtAddressTezos, engines.uUSDUSDtV3, 0),
     fetchBalance(balances, tzBTC_TOKEN, engines.uUSDtzBTCV2, 0),
     fetchBalance(balances, tzBTC_TOKEN, engines.uUSDtzBTCV3, 0),

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unwrapLPs')
 
 const contracts = [
@@ -5,7 +6,7 @@ const contracts = [
 ];
 
 const tokens = [
-    '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d'
+    ADDRESSES.bsc.USDC
 ];
 
 module.exports = {

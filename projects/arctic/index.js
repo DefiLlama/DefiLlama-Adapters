@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 
 let abi = require('./abi')
 const { sumTokens2, } = require('../helper/unwrapLPs')
 
 const sdk = require('@defillama/sdk')
-const nullAddress = '0x0000000000000000000000000000000000000000'
+const nullAddress = ADDRESSES.null
 const poolHelper = '0xE78e7447223aaED59301b44513D1d3A892ECF212'
 
 module.exports = {

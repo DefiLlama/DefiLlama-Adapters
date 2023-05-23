@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require('../helper/staking')
 const { sumTokens2 } = require('../helper/unwrapLPs');
 const sdk = require('@defillama/sdk');
@@ -24,7 +25,7 @@ async function polygonTvl(timestamp, block, chainBlocks) {
   await sumTokens2({
     balances,
     owners: [ylSPHEREvault],
-    tokens: ["0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270", "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174", "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619", "0xc2132D05D31c914a87C6611C10748AEb04B58e8F", "0x4Af613f297ab00361D516454E5E46bc895889653", "0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6"],
+    tokens: ["0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270", ADDRESSES.polygon.USDC, ADDRESSES.polygon.WETH_1, ADDRESSES.polygon.USDT, "0x4Af613f297ab00361D516454E5E46bc895889653", ADDRESSES.polygon.WBTC],
     chain: 'polygon',
     block: chainBlocks.polygon
   })
@@ -72,6 +73,7 @@ const chains = {
 }
 
 module.exports = {
+  doublecounted: true,
   misrepresentedTokens: false,
   methodology: "TVL is calculated by summing the liquidity in the Uniswap V3 pools.",
   polygon: {
