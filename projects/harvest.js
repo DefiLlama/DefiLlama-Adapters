@@ -1,10 +1,11 @@
 const { get } = require('./helper/http')
 
 // historical tvl on https://ethparser-api.herokuapp.com/api/transactions/history/alltvl?network=eth
-const endpoint = "https://api-ui.harvest.finance/vaults?key=41e90ced-d559-4433-b390-af424fdc76d6"
+const endpoint = "https://api.harvest.finance/vaults?key=41e90ced-d559-4433-b390-af424fdc76d6"
 const chains = {
   ethereum: 'eth',
-  bsc: 'bsc',
+  // bsc: 'bsc',
+  arbitrum: 'arbitrum',
   polygon: 'matic'
 }
 

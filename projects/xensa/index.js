@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require('./abi.json');
 
@@ -34,7 +35,7 @@ async function tvl(timestamp, _ethBlock, chainBlocks) {
   })
 
   const balances = {};
-  balances['okexchain:0x8f8526dbfd6e38e3d8307702ca8469bae6c56c15'] = balance_okt
+  balances['okexchain:' + ADDRESSES.okexchain.WOKT] = balance_okt
   const transform = addr=>`okexchain:${addr}`// await transformAddress()
   sdk.util.sumMultiBalanceOf(balances, balanceOfResults, true, transform)
 

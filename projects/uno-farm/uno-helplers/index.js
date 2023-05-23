@@ -111,6 +111,7 @@ async function getFullInfoBalancerUnoFarm({
       calls: streamerCalls,
       abi: UnoFarmBalancerABI.streamer,
       chain,
+      permitFailure: true,
     })
   ).output.map((a) => a.output);
 

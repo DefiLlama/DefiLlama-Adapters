@@ -5,7 +5,7 @@ const env = require('../env')
 
 function getEndpoint(isTerra2 = false) {
   if (!isTerra2)
-    return env.TERRA_RPC || 'https://columbus-lcd.terra.dev'
+    return env.TERRA_RPC || 'https://terraclassic-lcd-server-01.stakely.io'
   return env.TERRA2_RPC || 'https://phoenix-lcd.terra.dev'
 }
 
@@ -50,7 +50,9 @@ async function getDenomBalance(denom, owner, block, { isTerra2 = false } = {}) {
   if (block !== undefined) {
     endpoint += `?height=${block - (block % 100)}`
   }
-  const data = (await axios.get(endpoint)).data.result
+  let {data} = (await axios.get(endpoint));
+  if (isTerra2) data = data.balances
+  else data = data.result
 
   const balance = data.find(balance => balance.denom === denom);
   return balance ? Number(balance.amount) : 0

@@ -1,10 +1,11 @@
+const ADDRESSES = require('../coreAssets.json')
 const http = require('../http')
 const sdk = require('@defillama/sdk')
 const { PromisePool } = require('@supercharge/promise-pool')
 
 const RPC_ENDPOINT = 'https://api.tzkt.io'
 
-const usdtAddressTezos = 'KT1XnTn74bUtxHfDtBmm2bGZAQfhPbvKWR8o'
+const usdtAddressTezos = ADDRESSES.tezos.USDt
 const transformAddressDefault = t => 'tezos:' + t
 
 const tokenBlacklist = [

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk")
 const ITVL = {
   pool2: "uint256:pool2",
@@ -6,7 +7,7 @@ const ITVL = {
   usd: "address:usd",
 }
 const tvlGuru = "0x426a4A4B73d4CD173C9aB78d18c0d79d1717eaA9";   //On-Chain Universal TVL Finder
-const USD = "kcc:0x0039f574eE5cC39bdD162E9A88e3EB1f111bAF48";   //same as abi.call({target:tvlGuru,abi:ITVL["usd"]})
+const USD = "kcc:" + ADDRESSES.kcc.USDT;   //same as abi.call({target:tvlGuru,abi:ITVL["usd"]})
 //NOTE: USD===kcc:USDT is used explicitly to reduce EVM calls by this adapter. It makes this process faster.
 async function pool2(timestamp,_, {kcc: block}) {
    let _pool2 = await sdk.api.abi.call({

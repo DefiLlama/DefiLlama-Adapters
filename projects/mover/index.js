@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const baseLedgerAbi = require("./baseLedgerPoolAbi.json");
 const savingsPoolAbi = require("./savingsPoolAbi.json");
@@ -14,8 +15,8 @@ const MOVER_WETH_SLP = "0x87b918e76c92818DB0c76a4E174447aeE6E6D23f";
 
 const savingsPool = "0xAF985437DCA19DEFf89e61F83Cd526b272523719";
 const savingsPlusPolygonPool = "0x77D5333d97A092cA01A783468E53E550C379dc3C";
-const USDC = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
-const USDCinPolygon = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174";
+const USDC = ADDRESSES.ethereum.USDC;
+const USDCinPolygon = ADDRESSES.polygon.USDC;
 const baseLedgerPool = '0x1f15F293C1Cd3d05d58d3EdeAf0C72c5A2dfeaFf';
 const UBT = '0x8400D94A5cb0fa0D041a3788e395285d61c9ee5e';
 

@@ -1,3 +1,4 @@
+const ADDRESSES = require("../helper/coreAssets.json");
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { default: BigNumber } = require("bignumber.js");
@@ -27,9 +28,7 @@ async function getReserves(block) {
     })
   ).output;
   const validProtocolDataHelpers = protocolDataHelpers
-    .filter(
-      (helper) => helper.output !== "0x0000000000000000000000000000000000000000"
-    )
+    .filter((helper) => helper.output !== ADDRESSES.null)
     .map((p) => p.output);
 
   const lTokenMarketData = (

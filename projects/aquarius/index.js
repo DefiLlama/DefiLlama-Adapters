@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const {getLiquityTvl} = require('../helper/liquity')
 
-const FTM_ADDRESS = '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83';
+const FTM_ADDRESS = ADDRESSES.fantom.WFTM;
 const TROVE_MANAGER_ADDRESS = "0xC87D230B3239d1A90463463d8adDFD70709D391b";
 
 module.exports = {

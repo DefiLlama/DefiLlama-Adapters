@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 
 const readerAbi = require("./reader.json");
@@ -6,8 +7,8 @@ const { staking } = require("../helper/staking");
 const { sumTokens2 } = require('../helper/unwrapLPs');
 const { default: BigNumber } = require("bignumber.js");
 
-const DAI_ADDRESS = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
-const USDC_ADDRESS = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
+const DAI_ADDRESS = ADDRESSES.ethereum.DAI;
+const USDC_ADDRESS = ADDRESSES.ethereum.USDC;
 const MVLP_ADDRESS = "0x9F4f8bc00F48663B7C204c96b932C29ccc43A2E8";
 const MVLP_DECIMALS = 18;
 
@@ -22,7 +23,7 @@ const READER_CONTRACT = "0x01dd8B434A83cbdDFa24f2ef1fe2D6920ca03734"; // getToke
 
 const stakingAddress = "0x42162457006DB4DA3a7af5B53DFee5A891243b4D"; // Governance Staking
 const stakingTokenAddress = "0x788B6D2B37Aa51D916F2837Ae25b05f0e61339d1"; // MVD
-const ADDRESS_ZERO = "0x0000000000000000000000000000000000000000";
+const ADDRESS_ZERO = ADDRESSES.null;
 
 async function getTvl(timestamp, block) {
   const toa = [

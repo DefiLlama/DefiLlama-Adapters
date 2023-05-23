@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require('./abi.json')
 
 const factory = "0x60d0769c4940cA58648C0AA34ecdf390a10F272e"
-const usdt = "0xdac17f958d2ee523a2206206994597c13d831ec7"
+const usdt = ADDRESSES.ethereum.USDT
 async function tvl(timestamp, ethBlock) {
     const balances = {};
     const contractsLength = await sdk.api.abi.call({

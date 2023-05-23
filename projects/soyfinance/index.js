@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getUniTVL } = require('../helper/unknownTokens')
 
 module.exports = {
@@ -20,7 +21,7 @@ module.exports = {
   },
   bittorrent: {
     tvl: getUniTVL({
-      factory: '0xbf6c50889d3a620eb42c0f188b65ade90de958c4',
+      factory: ADDRESSES.callisto.BUSDT,
       chain: 'bittorrent',
       useDefaultCoreAssets: true,
     })

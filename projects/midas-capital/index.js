@@ -4,6 +4,7 @@ const { compoundExportsWithAsyncTransform } = require("../helper/compound");
 const pools = {
   bsc: {
     pools: [
+      "0x1851e32F34565cb95754310b031C5a2Fc0a8a905", // Helio-Ankr
       "0x31d76A64Bc8BbEffb601fac5884372DEF910F044", // Jarvis
       "0xb2234eE69555EE4C3b6cEA4fd25c4979BbDBf0fd", // Risedile
       "0xEF0B026F93ba744cA3EDf799574538484c2C4f80", // AutoHedge

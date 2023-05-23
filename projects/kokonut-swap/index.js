@@ -21,10 +21,10 @@ async function tvl(timestamp, _, { klaytn: block }) {
       params: p
     })),
     abi: abi.getPoolPriceInfo,
-    block, chain
+    block, chain,
+    permitFailure: true,
   });
 
-  await requery(info, chain, block, abi.getPoolPriceInfo);
   const gasToken = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'.toLowerCase()
   const tokenSet = new Set()
 

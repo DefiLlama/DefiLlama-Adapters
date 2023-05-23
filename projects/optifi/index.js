@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { Program } = require("@project-serum/anchor");
 const { getProvider, sumTokens2, } = require("../helper/solana");
 const idl = require('./idl.json')
@@ -14,7 +15,7 @@ async function tvl() {
   }
 
   const tokens = [
-    'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',  // USDC
+    ADDRESSES.solana.USDC,  // USDC
   ]
 
   const serumPCVaults = [

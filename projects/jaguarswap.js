@@ -16,7 +16,6 @@ module.exports = {
   methodology: 'All tokens and LP tokens staked on the Masterchef (0x1cCf20F4eE3EFD291267c07268BEcbFDFd192311) are counted as the TVL, with the exception of the native token(JAGUAR) which is considered staking TVL.',
   arbitrum: {
     tvl: arbitrumTvl,
-    staking: staking(STAKING_CONTRACT, JAGUAR, "arbitrum", `arbitrum:${JAGUAR}`)
+    staking: staking(STAKING_CONTRACT, JAGUAR)
   },
 }
-// node test.js projects/jaguarswap.js

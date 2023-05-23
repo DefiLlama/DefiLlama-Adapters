@@ -14,4 +14,11 @@ module.exports = {
           useDefaultCoreAssets: true,
         })
     },
+    polygon: {
+      tvl: getUniTVL( {
+        chain: 'polygon',
+        factory: '0x6fd98cf211134081fe02f551d64cf89671d5443b',
+        useDefaultCoreAssets: true,
+      })
+  },
 };

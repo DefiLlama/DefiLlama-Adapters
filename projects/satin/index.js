@@ -5,7 +5,6 @@ module.exports = {
   polygon: {
     tvl: getUniTVL({
       factory: "0x30030Aa4bc9bF07005cf61803ac8D0EB53e576eC",
-      fetchBalances: true,
       hasStablePools: true,
       useDefaultCoreAssets: true,
     }),

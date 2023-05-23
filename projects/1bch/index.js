@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { getUniTVL } = require('../helper/unknownTokens')
 const { stakingPricedLP } = require('../helper/staking')
 
-const WBCH = "0x3743eC0673453E5009310C727Ba4eaF7b3a1cc04";
+const WBCH = ADDRESSES.smartbch.WBCH;
 const rBCH = "0xb4602588E5F1F9653B6F234206c91552E457fAcB";
 const FACTORY = "0x3dC4e6aC26df957a908cfE1C0E6019545D08319b";
 const MASTERBREEDER = "0xeC0A7496e66a206181034F86B261DDDC1A2c406E";

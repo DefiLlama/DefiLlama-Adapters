@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { ethers: {BigNumber} } = require("ethers")
 const { staking } = require("../helper/staking");
@@ -59,11 +60,12 @@ async function voterProxyBalances(block) {
       };
     }),
     chain,
+    permitFailure: true,
   });
   return underlyingAmounts.output
     .map((a, i) => {
       if (masterWombatVoterProxyBalances.output[i].output.amount === '0') return;
-      if (underlyingTokens.output[i].output.toLowerCase() === '0xE85aFCcDaFBE7F2B096f268e31ccE3da8dA2990A'.toLowerCase()) return; // disable aBNBc (ankr bnb)
+      if (underlyingTokens.output[i].output.toLowerCase() === ADDRESSES.bsc.ankrBNB.toLowerCase()) return; // disable aBNBc (ankr bnb)
       return ({amount: a.output.amount, token: underlyingTokens.output[i].output})
     }).filter(i => i);
 }

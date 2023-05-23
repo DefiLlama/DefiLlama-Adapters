@@ -1,7 +1,7 @@
 const { sumTokens2 } = require('./unwrapLPs');
 const { getLogs } = require('./cache/getLogs')
 
-function onChainTvl(vault, fromBlock, { blacklistedTokens = [] } = {}) {
+function onChainTvl(vault, fromBlock, { blacklistedTokens = [], preLogTokens = [] } = {}) {
   return async (_, _1, _2, { api }) => {
     const logs = await getLogs({
       api,
@@ -23,6 +23,7 @@ function onChainTvl(vault, fromBlock, { blacklistedTokens = [] } = {}) {
     })
 
     const tokens = logs2.map(i => i.tokens).flat()
+    tokens.push(...preLogTokens)
     const pools = logs.map(i => i.poolAddress)
     blacklistedTokens = [...blacklistedTokens, ...pools]
 

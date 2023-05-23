@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 // const utils = require('web3-utils');
 const sdk = require('@defillama/sdk');
 const MakerSCDConstants = require("./abis/makerdao.js");
@@ -27,6 +28,7 @@ async function getJoins(block, api) {
   const ilks = await api.multiCall({
     abi: MakerMCDConstants.ilk,
     calls: auths,
+    permitFailure: true,
   });
 
   ilks.forEach((_, i) => {
@@ -57,6 +59,7 @@ async function tvl(timestamp, block, _, { api }) {
     const { output: gems } = await sdk.api.abi.multiCall({
       abi: MakerMCDConstants.gem,
       block, calls: joins.map(i => ({ target: i })),
+      permitFailure: true,
     })
     const dogCalls = dogs.map(i => ({ target: i }))
 
@@ -73,6 +76,7 @@ async function tvl(timestamp, block, _, { api }) {
     const { output: dogRes } = await sdk.api.abi.multiCall({
       abi: MakerMCDConstants.dog,
       calls: dogCalls, block,
+      permitFailure: true,
     })
 
     const failedCalls = dogRes.filter(i => !i.success)
@@ -111,7 +115,7 @@ async function unwrapGunis({ api, toa, balances = {} }) {
     sdk.util.sumSingleBalance(balances, token0s[i], token0Bal)
     sdk.util.sumSingleBalance(balances, token1s[i], token1Bal)
   })
-  sdk.util.removeTokenBalance(balances, '0x6b175474e89094c44da98b954eedeac495271d0f') // remove dai balances
+  sdk.util.removeTokenBalance(balances, ADDRESSES.ethereum.DAI) // remove dai balances
   return balances
 }
 

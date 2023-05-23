@@ -63,6 +63,7 @@ async function tvl(chain, block, chainId) {
     abi,
     block,
     chain,
+    permitFailure: true,
     calls: vaults.map(v => ({ target: v }))
   })))
   const lpPositions = []

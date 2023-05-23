@@ -1,3 +1,4 @@
+const ADDRESSES = require('../../helper/coreAssets.json')
 module.exports = {
   // addresses for kovan version 0.2.17
   KOVANVAT: "0xba987bdb501d131f766fee8180da5d81b34b69d9",
@@ -7,7 +8,7 @@ module.exports = {
   VAT: "0x35d1b3f3d7966a1dfe207aa4514c12a259a0492b",
   POT: "0x197e90f9fad81970ba7976f33cbd77088e5d7cf7",
   JUG: "0x19c0976f590d67707e62397c87829d896dc0f1f1",
-  DAI: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+  DAI: ADDRESSES.ethereum.DAI,
   STARTBLOCK: 8928152,
   ilk: "function ilk() view returns (bytes32)",
   gem: "address:gem",

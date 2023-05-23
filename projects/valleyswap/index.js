@@ -1,13 +1,15 @@
 const { getUniTVL } = require('../helper/unknownTokens')
 
 module.exports = {
-  timetravel: true,
   start: 411656,
   oasis: {
+    hallmarks: [
+      [1681743600,"Remove Fake USDT"]
+    ],
     tvl: getUniTVL({
       factory: '0xa25464822b505968eEc9A45C43765228c701d35f',
-      chain: 'oasis',
       useDefaultCoreAssets: true,
+      blacklistedTokens: ['0x6Cb9750a92643382e020eA9a170AbB83Df05F30B', '0x94fbffe5698db6f54d6ca524dbe673a7729014be'],
     }),
   },
   misrepresentedTokens: true,

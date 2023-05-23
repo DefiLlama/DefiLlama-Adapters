@@ -91,6 +91,7 @@ function protocolTvl(chain) {
 }
 
 module.exports = {
+  doublecounted: true,
   ethereum: {
     tvl: protocolTvl("ethereum"),
     staking: staking(PILOT_STAKING_CONTRACT, PILOT, "ethereum"),

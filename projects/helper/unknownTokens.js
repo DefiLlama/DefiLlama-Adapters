@@ -71,11 +71,12 @@ function unknownTombs({ token = [], shares = [], rewardPool = [], masonry = [], 
   }
 }
 
-function pool2({ stakingContract, lpToken, chain = "ethereum", transformAddress, coreAssets = [], useDefaultCoreAssets = false, }) {
+function pool2({ stakingContract, lpToken, chain, transformAddress, coreAssets = [], useDefaultCoreAssets = false, }) {
   if (!coreAssets.length && useDefaultCoreAssets)
     coreAssets = getCoreAssets(chain)
 
-  return async (_timestamp, _ethBlock, chainBlocks) => {
+  return async (_timestamp, _ethBlock, chainBlocks, { api }) => {
+    if (!chain) chain = api.chain
     const block = chainBlocks[chain]
     if (!transformAddress)
       transformAddress = await getChainTransform(chain)
