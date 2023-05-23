@@ -1,4 +1,3 @@
-const BigNumber = require('bignumber.js')
 const {
   formQuery,
   call
@@ -11,7 +10,7 @@ const tvlFields = {
 
   //'total_supply' contract field: it's total amount of minted stzil
   //https://github.com/avely-finance/avely-contracts/blob/main/contracts/source/stzil.scilla#L355
-  [STZIL_CONTRACT_ADDRESS]: 'total_supply',
+  // [STZIL_CONTRACT_ADDRESS]: 'total_supply',
 
   //get 'totalstakeamount' contract field: it's total amount of zil, staked in Zilliqa native staking contract through StZIL contract
   //https://github.com/avely-finance/avely-contracts/blob/main/contracts/source/stzil.scilla#L353
@@ -19,23 +18,16 @@ const tvlFields = {
 }
 
 async function tvl() {
-
+  const { api } = arguments[3]
   const query = prepareQuery(tvlFields)
 
   const data = await call(query)
-  //console.log(data)
-
-  let balances = []
 
   data.forEach((response) => {
     const { id, result } = response
     if (!id || !result || !tvlFields[id] || !result[tvlFields[id]]) return
-    balances[id] = BigNumber(result[tvlFields[id]]).shiftedBy(DECIMALS * -1)
+    api.add(id, result[tvlFields[id]] / (10 ** DECIMALS), { skipChain: true})
   })
-
-  //console.log(balances)
-
-  return balances
 }
 
 //prepare batch GetSmartContractSubState query
@@ -61,7 +53,7 @@ module.exports = {
   zilliqa: {
     tvl
   },
-  methodology: 'TVL represents the sum of stakes denominated in ZIL and staked in the native Zilliqa staking contract via the STZIL contract, along with the amount of correspondingly minted StZIL tokens.',
+  methodology: 'TVL represents the sum of stakes denominated in ZIL and staked in the native Zilliqa staking contract via the STZIL contract',
   timetravel: false,
 }
 
