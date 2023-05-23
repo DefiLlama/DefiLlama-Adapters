@@ -1280,6 +1280,8 @@
   "pulse": {
     "WPLS": "0xa1077a294dde1b09bb078844df40758a5d0f9a27",
     "ETH": "0x02dcdd04e3f455d838cd1249292c58f3b79e3c3c",
+    "USDC": "0x15D38573d2feeb82e7ad5187aB8c1D52810B1f07",
+    "USDT": "0x0Cb6F5a34ad42ec934882A05265A7d5F59b51A2f",
     "DAI": "0xefd766ccb38eaf1dfd701853bfce31359239f305"
   }
 }
