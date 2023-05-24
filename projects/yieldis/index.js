@@ -1,5 +1,6 @@
 const { getLogs } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { eulerTokens } = require('../helper/tokenMapping')
 
 const config = {
   arbitrum: {
@@ -32,11 +33,17 @@ const config = {
       '0xA4d45197E3261721B8A8d901489Df5d4D2E79eD7',
       '0x4b32C37Be5949e77ba3726E863a030BD77942A97',
     ].map(i => i.toLowerCase())),
-    blacklistedTokens: ['0x1344A36A1B56144C3Bc62E7757377D288fDE0369'],
+    blacklistedTokens: [
+      '0x1344A36A1B56144C3Bc62E7757377D288fDE0369',
+      ...eulerTokens
+    ],
   },
 }
 
 module.exports = {
+  hallmarks: [
+    [Math.floor(new Date('2023-03-13') / 1e3), 'Euler was hacked'],
+  ],
 };
 
 Object.keys(config).forEach(chain => {

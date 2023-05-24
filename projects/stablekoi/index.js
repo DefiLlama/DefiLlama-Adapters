@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens } = require("../helper/unwrapLPs");
 const { getFixBalances } = require("../helper/portedTokens");
 const { GraphQLClient, gql } = require("graphql-request");
@@ -99,7 +100,7 @@ const v1Pools = [
       },
       {
         "symbol": "USDC|bsc",
-        "address": "0xfA307CfdEA89DC197A346c338a98aC85d517af6e",
+        "address": ADDRESSES.godwoken_v1.USDC_bsc,
       }
     ]
   },
@@ -127,7 +128,7 @@ const v1Pools = [
       },
       {
         "symbol": "USDT|bsc",
-        "address": "0xDFF2faCdFe47C1D5b51f18231f900949F1d5988f",
+        "address": ADDRESSES.godwoken_v1.USDT_bsc,
       }
     ]
   },
@@ -137,11 +138,11 @@ const v1Pools = [
     "tokens": [
       {
         "symbol": "WBTC|eth",
-        "address": "0x82455018F2c32943b3f12F4e59D0DA2FAf2257Ef",
+        "address": ADDRESSES.godwoken_v1.WBTC_eth,
       },
       {
         "symbol": "BTCB|bsc",
-        "address": "0xEF2439e020509259FA603c34B35A81FFe676CFB4",
+        "address": ADDRESSES.godwoken_v1.BTCB_bsc,
       }
     ]
   }

@@ -39,7 +39,7 @@ function fetch(chain, type) {
         result = { [usdtAddress]: toUSDT(pool2) };
         break;
       case "staking":
-        const picklesLocked = response.dill.pickleLocked;
+        const picklesLocked = response.dill?.pickleLocked || 0;
         result = { [pickleAddress]: picklesLocked * 1e18 };
         break;
     }

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { request, gql } = require("graphql-request");
 const { getBlock } = require("../helper/http");
@@ -59,8 +60,8 @@ function kashiLending(chain, borrowed) {
 
     kashiPairs.map(async (pair) => {
       if (
-        pair.asset.id === "0x0000000000000000000000000000000000000000" ||
-        pair.collateral.id === "0x0000000000000000000000000000000000000000"
+        pair.asset.id === ADDRESSES.null ||
+        pair.collateral.id === ADDRESSES.null
       ) {
         return;
       }

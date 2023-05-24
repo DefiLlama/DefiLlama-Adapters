@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const {  nullAddress,treasuryExports } = require("../helper/treasury");
 
 const sparTreasury1 = "0x8CFA87aD11e69E071c40D58d2d1a01F862aE01a8";
@@ -9,8 +10,8 @@ module.exports = treasuryExports({
   fantom: {
     tokens: [ 
         nullAddress,
-        '0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E',//DAI
-        '0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83',//WFTM
+        ADDRESSES.fantom.DAI,//DAI
+        ADDRESSES.fantom.WFTM,//WFTM
      ],
     owners: [sparTreasury1],
     ownTokens: [SPA],

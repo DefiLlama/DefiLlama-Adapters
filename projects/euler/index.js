@@ -4,11 +4,12 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 
 module.exports = {
   hallmarks: [[1654387200, "Whale Deposit"],
+  [1667865600, "FTX collapse"],
   [Math.floor(new Date('2023-03-13') / 1e3), 'Protocol was hacked'],],
   methodology: `TVL is supply balance minus borrows the euler contract. Borrows are pulled from the subgraph.`,
   ethereum: {
     tvl, 
-    // borrowed,
+    borrowed: () => 0,
   },
 };
 
@@ -38,5 +39,5 @@ async function borrowed(_, _b, _cb, { api, }) {
   })
   const bals = await api.multiCall({  abi: 'erc20:totalSupply', calls: logs.map(i => i.dToken)})
   api.addTokens(logs.map(i => i.underlying.toLowerCase()), bals)
-  delete api.balances["ethereum:0x31c8eacbffdd875c74b94b077895bd78cf1e64a3"]
+  delete api.getBalances()["ethereum:0x31c8eacbffdd875c74b94b077895bd78cf1e64a3"]
 }

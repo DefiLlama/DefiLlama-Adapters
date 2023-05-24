@@ -1,90 +1,47 @@
-const abi = require("./abi.json");
 const contracts = require("./contracts");
-const { request, gql } = require("graphql-request");
-const { call, multiCall } = require("@defillama/sdk/build/abi");
-const { sumSingleBalance } = require("@defillama/sdk/build/generalUtil");
-const { getBlock } = require("../helper/http");
-const api = "https://api-v2.pendle.finance/core/graphql";
-const chainIdMap = { ethereum: 1, arbitrum: 42161 };
+const { staking } = require('../helper/staking')
+const { getLogs } = require('../helper/cache/getLogs')
 
-function tvl(chain) {
-  const query = gql`
-    query {
-      markets(chainId: ${chainIdMap[chain]}) {
-        results {
-          address
-          sy {
-            address
-          }
-        }
-      }
+const config = {
+  ethereum: { factory: '0x27b1dacd74688af24a64bd3c9c1b143118740784', fromBlock: 16032059 },
+  arbitrum: { factory: '0xf5a7de2d276dbda3eef1b62a9e718eff4d29ddc8', fromBlock: 62979673 },
+}
+
+module.exports = {}
+
+Object.keys(config).forEach(chain => {
+  const { factory, fromBlock } = config[chain]
+  module.exports[chain] = {
+    tvl: async (_, _b, _cb, { api, }) => {
+      const logs = await getLogs({
+        api,
+        target: factory,
+        topics: ['0x166ae5f55615b65bbd9a2496e98d4e4d78ca15bd6127c0fe2dc27b76f6c03143'],
+        eventAbi: 'event CreateNewMarket (address indexed market, address indexed PT, int256 scalarRoot, int256 initialAnchor)',
+        onlyArgs: true,
+        fromBlock,
+      })
+      const pt = logs.map(i => i.PT)
+      const sy = [
+        ...new Set(
+          (await api.multiCall({
+            abi: "address:SY",
+            calls: pt,
+          })).map(s => s.toLowerCase()),
+        ),
+      ]
+      const [data, supply, decimals] = await Promise.all([
+        api.multiCall({ abi: 'function assetInfo() view returns (uint8 assetType , address uAsset , uint8 decimals )', calls: sy }),
+        api.multiCall({ abi: 'erc20:totalSupply', calls: sy }),
+        api.multiCall({ abi: 'erc20:decimals', calls: sy }),
+      ])
+      data.forEach((v, i) => {
+        let value = supply[i] * (10 ** (v.decimals - decimals[i]))
+        api.add(v.uAsset, value)
+      })
+      return api.getBalances()
     }
-  `;
+  }
+})
 
-  return async (timestamp, block, chainBlocks) => {
-    block = await getBlock(timestamp, chain, chainBlocks);
-    const balances = {};
-    const res = await request(api, query);
-    const sys = [...new Set(res.markets.results.map(r => r.sy.address))];
-
-    const [underlyings, supplies, rates] = await Promise.all([
-      multiCall({
-        calls: sys.map(sy => ({
-          target: sy,
-        })),
-        abi: abi.assetInfo,
-        block,
-        chain,
-      }).then(c =>
-        c.output.map(o => ({
-          address: o.output.assetAddress,
-          decimals: o.output.assetDecimals,
-        })),
-      ),
-      multiCall({
-        calls: sys.map(sy => ({
-          target: sy,
-        })),
-        abi: "erc20:totalSupply",
-        block,
-        chain,
-      }).then(c => c.output.map(o => o.output)),
-      multiCall({
-        calls: sys.map(sy => ({
-          target: sy,
-        })),
-        abi: abi.exchangeRate,
-        block,
-        chain,
-      }).then(c => c.output.map(o => o.output)),
-    ]);
-    underlyings.map((u, i) => {
-      sumSingleBalance(
-        balances,
-        `${chain == "ethereum" ? "" : `${chain}:`}${u.address}`,
-        supplies[i] * rates[i] / 10 ** u.decimals,
-      );
-    });
-
-    return balances;
-  };
-}
-async function staking(_, block) {
-  return {
-    [contracts.v2.PENDLE]: (await call({
-      target: contracts.v2.PENDLE,
-      abi: "erc20:balanceOf",
-      block,
-      params: [contracts.v2.vePENDLE],
-    })).output,
-  };
-}
-module.exports = {
-  ethereum: {
-    tvl: tvl("ethereum"),
-    staking,
-  },
-  arbitrum: {
-    tvl: tvl("arbitrum"),
-  },
-};
+module.exports.ethereum.staking = staking(contracts.v2.vePENDLE, contracts.v2.PENDLE)
