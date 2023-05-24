@@ -1,5 +1,6 @@
 const ADDRESSES = require("../helper/coreAssets.json");
 const { sumTokens2 } = require("../helper/unwrapLPs");
+const sdk = require("@defillama/sdk");
 
 const optimismvault = "0x10235996C4DAbCE8430a71Cbc06571bd475A1d0C";
 
@@ -22,12 +23,13 @@ async function tvl(_, _b, _cb, { api }) {
     params: [optimismvault],
   });
 
-  Weth_vault_balance = Weth_vault_balance / 10 ** 18;
-  Weth_vault_balance=1.2
+  await sdk.util.sumSingleBalance(
+    balances,
+    ADDRESSES.optimism.WETH,
+    Weth_vault_balance,
+    api.chain
+  );
 
-  balances["ethereum"] = Weth_vault_balance;
-  console.log(balances);
-  
   return sumTokens2({
     balances: balances,
     api,
