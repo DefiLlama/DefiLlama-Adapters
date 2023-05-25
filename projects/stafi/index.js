@@ -25,7 +25,7 @@ const chainToParams={
   kusama: ["RKSM", "kusama"],
   solana: ["RSOL", "solana"],
   cosmos: ["RATOM", "cosmos"],
-  carbon: ["RSWTH", "carbon-protocol"],
+  carbon: ["RSWTH", "switcheo"],
   chihuahua: ["RHUAHUA", "chihuahua-chain"],
   irisnet:["RIRIS","irisnet"]
 }
