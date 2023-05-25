@@ -21,7 +21,6 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
   const lsdAddresses = logs.map((i) => i.stakingToken === nullAddress ? WETH_ADDRESS : i.stakingToken);
   const poolAddresses = logs.map((i) => i.poolAddress);
 
-  console.log(poolAddresses)
   return sumTokens2({ api, tokensAndOwners2: [lsdAddresses, poolAddresses], blacklistedTokens: [BERRY_ETH_LP_ADDRESS], });
 }
 
