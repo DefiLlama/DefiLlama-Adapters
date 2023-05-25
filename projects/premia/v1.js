@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { request, gql } = require("graphql-request");
 const sdk = require('@defillama/sdk')
 
@@ -52,8 +53,8 @@ const graphUrls = {
     bsc: 'https://api.thegraph.com/subgraphs/name/premiafinance/premia-bsc',
 };
 const denominators = {
-    ethereum: "0x6b175474e89094c44da98b954eedeac495271d0f", //DAI
-    bsc: "0xe9e7cea3dedca5984780bafc599bd69add087d56", //BUSD
+    ethereum: ADDRESSES.ethereum.DAI, //DAI
+    bsc: ADDRESSES.bsc.BUSD, //BUSD
 }
 
 module.exports = function v1Tvl(chain) {

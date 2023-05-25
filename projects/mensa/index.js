@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 
 const abi = require('./abi.json');
@@ -68,7 +69,7 @@ async function tvl(_, _ethBlock, chainBlocks) {
     balances[transform(_item.address)] = balanceOfResults.output[_i].output;
   })
 
-  balances['fantom:0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83'] = balance_ftm
+  balances['fantom:' + ADDRESSES.fantom.WFTM] = balance_ftm
 
   return balances;
 

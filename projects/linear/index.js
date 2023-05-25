@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 
@@ -10,7 +11,7 @@ const LnRewardLockerAddress = "0x66D60EDc3876b8aFefD324d4edf105fd5c4aBeDc";
 const tokens = {
   lUSD: "0x23e8a70534308a4aaf76fb8c32ec13d17a3bd89e",
   LINA: "0x762539b45A1dCcE3D36d080F74d1AED37844b878",
-  bUSD: "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+  bUSD: ADDRESSES.bsc.BUSD,
   LPTOKEN: "0x392f351fc02a3b74f7900de81a9aaac13ec28e95",
 };
 

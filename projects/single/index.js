@@ -18,6 +18,10 @@ const constants = {
   'fantom': {
     chainId: 250,
     single: '0x8cc97b50fe87f31770bcdcd6bc8603bc1558380b'
+  },
+  'arbitrum': {
+    chainId: 42161,
+    single: '0x55853edc67aa68ec2e3903ac00f2bc5bf2ca8db0'
   }
 }
 
@@ -26,7 +30,7 @@ const getWMasterChefBalances = ({ masterChef: masterChefAddress, wMasterChef, na
   if (name === "vvsMultiYield") {
     return getUserCraftsmanV2Balances({ ...commonParams, poolInfoABI: vvsPoolInfoABI, craftsmanV1: rest.craftsmanV1, ...args })
   }
-  if (name === "spookyMultiYield") {
+  if (name === "spookyMultiYield" || name === "sushi") {
     return getUserMasterChefBalances({ ...commonParams, poolInfoABI: spookyMasterChefV2PoolInfoABI, getLPAddress: a => a, ...args })
   }
   return getUserMasterChefBalances({ ...commonParams, poolInfoABI: vvsPoolInfoABI, ...args })
@@ -110,6 +114,7 @@ module.exports = {
     tvl: cronosTvl,
   },
   fantom: getHelpers('fantom'),
+  arbitrum: getHelpers('arbitrum'),
 } // see if single will run with updated unwrapLPs
 
 
