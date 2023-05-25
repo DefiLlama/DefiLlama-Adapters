@@ -41,6 +41,7 @@ module.exports = {
       mim: "0x29eeB257a2A6eCDE2984aCeDF80A1B687f18eC91",
       jUSDC: "0xc7a6bA5F28993BaDb566007bD2E0CB253c431974",
       ankrETH: "0xB9bdfE449Da096256Fe7954Ef61A18eE195Db77B",
+      wstETH: "0xe14302040c0A1eb6fB5A4A79EfA46D60029358d9",
     },
   },
   hallmarks: [
