@@ -28,7 +28,8 @@ const distressedAssts = new Set(Object.values({
 
 const transformTokens = {
   ethereum: {
-    '0xe0b469cb3eda0ece9e425cfeda4df986a55ea9f8': ADDRESSES.ethereum.WETH
+    '0xe0b469cb3eda0ece9e425cfeda4df986a55ea9f8': ADDRESSES.ethereum.WETH,
+    [ADDRESSES.ethereum.vlCVX]: ADDRESSES.ethereum.CVX,
   },
   // Sample Code
   // cronos: {
