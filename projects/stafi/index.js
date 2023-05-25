@@ -26,8 +26,8 @@ const chainToParams={
   solana: ["RSOL", "solana"],
   cosmos: ["RATOM", "cosmos"],
   carbon: ["RSWTH", "switcheo"],
-  chihuahua: ["RHUAHUA", "chihuahua-chain"],
-  irisnet:["RIRIS","irisnet"]
+  chihuahua: ["RHUAHUA", "chihuahua-token"],
+  irisnet:["RIRIS","iris-network"]
 }
 
 function getTvlFunction(token, cgId){
