@@ -25,6 +25,9 @@ const chainToParams={
   kusama: ["RKSM", "kusama"],
   solana: ["RSOL", "solana"],
   cosmos: ["RATOM", "cosmos"],
+  irisnet: ["RIRIS", "irisnet"],
+  carbon: ["RSWTH", "carbon"],
+  chihuahua:["RHUAHUA", "chihuahua"]
 }
 
 function getTvlFunction(token, cgId){
@@ -64,7 +67,7 @@ module.exports = {
     tvl: chainTvl('polygon')
   },
   cosmos: {
-    tvl: chainTvl('cosmos')
+    tvl: sdk.util.sumChainTvls([chainTvl('cosmos'),chainTvl('irisnet'),chainTVL('carbon'),chainTVL('chihuahua')])
   },
   solana: {
     tvl: chainTvl('solana')
