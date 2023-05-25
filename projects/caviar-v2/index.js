@@ -12,7 +12,6 @@ async function tvl(_, _b, _cb, { api, }) {
     onlyArgs: true,
   })
   const pools = logs.map(i => i.privatePool)
-  console.log(pools)
   const tokens = await api.multiCall({  abi: 'address:baseToken', calls: pools})
   const nfts = await api.multiCall({  abi: 'address:nft', calls: pools})
   const ownerTokens = pools.map((v, i) => [[tokens[i], nfts[i]], v])
