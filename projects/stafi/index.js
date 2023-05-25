@@ -25,7 +25,7 @@ const chainToParams={
   kusama: ["RKSM", "kusama"],
   solana: ["RSOL", "solana"],
   cosmos: ["RATOM", "cosmos"],
-  carbon: ["RSWTH", "carbon"],
+  carbon: ["RSWTH", "carbon-network"],
 }
 
 function getTvlFunction(token, cgId){
