@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, nullAddress } = require("../helper/unwrapLPs");
 const { getLogs } = require("../helper/cache/getLogs");
-const { staking } = require("../helper/staking");
+const { pool2 } = require("../helper/pool2");
 
 const FACTORY_CONTRACT = "0x09cA2dF4956720aB75c55313a7c83A63286fDd42";
 const WETH_ADDRESS = ADDRESSES.arbitrum.WETH;
@@ -21,6 +21,7 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
   const lsdAddresses = logs.map((i) => i.stakingToken === nullAddress ? WETH_ADDRESS : i.stakingToken);
   const poolAddresses = logs.map((i) => i.poolAddress);
 
+  console.log(poolAddresses)
   return sumTokens2({ api, tokensAndOwners2: [lsdAddresses, poolAddresses], blacklistedTokens: [BERRY_ETH_LP_ADDRESS], });
 }
 
@@ -29,6 +30,6 @@ module.exports = {
     methodology:
       "TVL of Staked ETH & LSD tokens, with pool2 including value of staked BERRY/ETH Uniswap-V2 LP tokens",
     tvl,
-    pool2: staking([BERRY_ETH_STAKING_POOL], [BERRY_ETH_LP_ADDRESS]),
+    pool2: pool2([BERRY_ETH_STAKING_POOL], [BERRY_ETH_LP_ADDRESS]),
   },
 };
