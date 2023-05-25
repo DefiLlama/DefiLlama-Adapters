@@ -32,6 +32,7 @@ const TOKENS = {
   [ADDRESSES.astar.aUSD]: ADDRESSES.ethereum.DAI,
   // ASTR
   [ADDRESSES.astar.nASTR]: "0x67f6b5bc5670fd29bcc8af3d6633b2840aba2f30",
+  [ADDRESSES.astar.WASTR]: "0x67f6b5bc5670fd29bcc8af3d6633b2840aba2f30",
 };
 
 const transformTokenAddress = (address) => TOKENS[address];
