@@ -4,7 +4,14 @@ const { request } = require("graphql-request");
 const supportedChains = {
     polygon: {
         subgraphEndpoint: 'steer-protocol-polygon'
-    }
+    },
+    arbitrum: {
+        subgraphEndpoint: 'steer-protocol-arbitrum'
+    },
+    // optimism: {
+    //     subgraphEndpoint: 'steer-protocol-optimism'
+    // },
+    
 }
 
 const graphURLBaseEndpoint = 'https://api.thegraph.com/subgraphs/name/steerprotocol/'
