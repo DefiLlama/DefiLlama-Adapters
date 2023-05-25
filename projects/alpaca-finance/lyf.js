@@ -139,6 +139,7 @@ async function calLyfTvl(chain, block) {
 }
 
 module.exports = {
-  calLyfTvl, getProcolAddresses,
+  calLyfTvl,
+  getProcolAddresses
 }
   
