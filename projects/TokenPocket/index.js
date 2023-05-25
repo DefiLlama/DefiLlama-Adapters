@@ -11,7 +11,19 @@ async function tvl() {
       }
     )
   )
-  return { ethereum: tvlData.data.data.staking.total_amount} 
+  const tvlDataOld = (
+    await axios.get(
+      "https://preserver.mytokenpocket.vip/v1/pledge/method_any_v1",
+      {
+        headers: {
+          api: "/eth2/v1/global",
+        },
+      }
+    )
+  )
+  const total = tvlData.data.data.staking.total_amount + tvlDataOld.data.data.data.staking_total
+  // return { ethereum: tvlData.data.data.staking.total_amount} 
+  return { ethereum: total} 
 }
 
 module.exports = {
