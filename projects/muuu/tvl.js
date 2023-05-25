@@ -8,6 +8,7 @@ const ZERO_ADDRESS = ADDRESSES.null;
 const REGISTRY_ADDRESS = "0xDA820e20A89928e43794645B9A9770057D65738B";
 const BOOSTER_ADDRESS = "0x6d12e3dE6dAcDBa2779C4947c0F718E13b78cfF4";
 const MUKGL_ADDRESS = "0x5eaAe8435B178d4677904430BAc5079e73aFa56e";
+const MULAY_ADDRESS = "0xDDF2ad1d9bFA208228166311FC22e76Ea7a4C44D";
 const MUUU_REWARDS_ADDRESS = "0xB2ae0CF4819f2BE89574D3dc46D481cf80C7a255";
 const TOKENS = {
   // USDC
@@ -155,6 +156,17 @@ async function tvl(timestamp, block, chainBlocks) {
     allCoins,
     "kagla-finance",
     toBigNumberJsOrZero(muKGL.output).shiftedBy(-18).toNumber()
+  );
+
+  const muLAY = await sdk.api.erc20.totalSupply({
+    target: MULAY_ADDRESS,
+    block: chainBlocks["astar"],
+    chain: "astar",
+  });
+  sdk.util.sumSingleBalance(
+    allCoins,
+    "starlay-finance",
+    toBigNumberJsOrZero(muLAY.output).shiftedBy(-18).toNumber()
   );
 
   return allCoins;
