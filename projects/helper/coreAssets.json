@@ -537,9 +537,18 @@
     "USDC": "TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8",
     "USDD": "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn",
     "JM": "TVHH59uHVpHzLDMFFpUgCx2dNAQqCzPhcR",
+    "JST": "TCFLL5dx5ZJdKnWuesXxi1VPwjLVmWZZy9",
     "BTC": "TN3W4H6rK2ce4vX9YnFQHwKENnHjoxb3m9",
     "LTC": "TR3DLthpnDdCGabhVDbD3VMsiJoCXY3bZd",
     "DOGE": "THbVQp8kMjStKNnf2iCY6NEzThKMK5aBHg",
+    "SUN": "TSSMHYeV2uE9qYH95DqyoCuNCzEL1NvU3S",
+    "SUN_1": "TKkeiboTkxXKJpbmVFbv4a8ov5rAfRDMf9",
+    "WBTT": "TKfjV9RNKJJCqPvBtK8L7Knykh7DNWvnYt",
+    "BUSD": "TMz2SWatiAtZVVcH2ebpsbVtYwUPT9EdjH",
+    "WTRX": "TNUC9Qb1rRpS5CbWLmNMxXBjyFoydXjWFR",
+    "BTT": "TAFjULxiVgT4qWk6UZwjqwZXTSaGaqnVp4",
+    "TUSD": "TUpMhErZL2fhh4sVNULAbNKLokS4GjC1F4",
+    "USDJ": "TMwFHYXLJaRUPeW6421aqXL4ZEzPRFGkGT",
     "ETH": "THb4CqiFdwNHsWsQCs4JhzwjMWys4aqCbF"
   },
   "lachain": {
@@ -1271,6 +1280,8 @@
   "pulse": {
     "WPLS": "0xa1077a294dde1b09bb078844df40758a5d0f9a27",
     "ETH": "0x02dcdd04e3f455d838cd1249292c58f3b79e3c3c",
+    "USDC": "0x15D38573d2feeb82e7ad5187aB8c1D52810B1f07",
+    "USDT": "0x0Cb6F5a34ad42ec934882A05265A7d5F59b51A2f",
     "DAI": "0xefd766ccb38eaf1dfd701853bfce31359239f305"
   }
 }

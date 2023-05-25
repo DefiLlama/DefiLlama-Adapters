@@ -1,0 +1,4 @@
+{
+    "getFloatingBalance": "function getFloatingBalance(address _token) external view returns (uint256 _floating)",
+    "getGlobalDebtValueWithPendingInterest": "function getGlobalDebtValueWithPendingInterest(address _token) external view returns (uint256)"
+}
