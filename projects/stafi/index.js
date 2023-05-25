@@ -67,7 +67,7 @@ module.exports = {
     tvl: chainTvl('polygon')
   },
   cosmos: {
-    tvl: sdk.util.sumChainTvls([chainTvl('cosmos'),chainTvl('irisnet'),chainTVL('carbon'),chainTVL('chihuahua')])
+    tvl: sdk.util.sumChainTvls([chainTvl('cosmos'), chainTvl('irisnet'), chainTVL('carbon'), chainTVL('chihuahua')])
   },
   solana: {
     tvl: chainTvl('solana')
