@@ -35,6 +35,9 @@ const transformTokens = {
   //   "0x065de42e28e42d90c2052a1b49e7f83806af0e1f": "0x123", // CRK token is mispriced
   //   [ADDRESSES.cronos.TUSD]: ADDRESSES.ethereum.TUSD,
   // },
+  optimism: {
+    '0xd158b0f013230659098e58b66b602dff8f7ff120': ADDRESSES.ethereum.WETH
+  }
 }
 const ibcMappings = {
   // Sample Code
