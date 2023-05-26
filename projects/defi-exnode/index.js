@@ -6,7 +6,7 @@ const API = 'https://dex.exnode.ru/api/portfoliov2/users/tvl'
 function tvlByChain(chainId) {
   return async ()=>{
     const resp = await get(API)
-    return BigNumber(resp.chains[chainId]||0).toFixed(2)
+    return BigNumber(resp[chainId]||0).toFixed(2)
   }
 }
 async function fetch() {
