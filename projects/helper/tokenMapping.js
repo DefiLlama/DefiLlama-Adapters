@@ -64,6 +64,9 @@ const fixBalancesTokens = {
     '0x8fa78ceb7f04118ec6d06aac37ca854691d8e963': { coingeckoId: "stride", decimals: 6 },
     '0xe60ce2dfa6d4ad37ade1dcb7ac4d6c3a093b3a7e': { coingeckoId: "rocket-pool-eth", decimals: 18 },//axlRETH
     '0xb72a7567847aba28a2819b855d7fe679d4f59846': { coingeckoId: "tether-usd-celer", decimals: 6 },
+  },
+  era: {
+    '0x2039bb4116B4EFc145Ec4f0e2eA75012D6C0f181': { coingeckoId: "binance-usd", decimals: 18 },
   }
 }
 
