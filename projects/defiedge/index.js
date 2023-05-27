@@ -28,4 +28,5 @@ module.exports = {
   polygon: { tvl: tvl("polygon") },
   arbitrum: { tvl: tvl("arbitrum") },
   optimism: { tvl: tvl("optimism") },
+  bsc: {tvl: tvl("bsc")}
 };

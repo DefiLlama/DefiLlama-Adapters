@@ -12,5 +12,8 @@ module.exports = {
   arbitrum: {
     staking: stakings(pools, SAPR,),
     tvl: getUniTVL({ fetchBalances: true, useDefaultCoreAssets: true, factory })
-  }
+  },
+  hallmarks: [
+    [Math.floor(new Date('2023-05-18')/1e3), 'Project rugged!'],
+  ],
 };

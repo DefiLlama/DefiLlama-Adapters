@@ -26,6 +26,6 @@ module.exports = {
     pool2: pool2(Contracts.Chef, Contracts.LVL_BNB_LP)
   },
   hallmarks: [
-    [Math.floor(new Date('2023-05-01')/1e3), 'Protocol was hacked'],
+    [Math.floor(new Date('2023-05-01')/1e3), 'Referral contract exploited'],
   ],
 };
