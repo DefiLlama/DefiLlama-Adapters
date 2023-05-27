@@ -1,5 +1,6 @@
 const { treasuryExports, nullAddress } = require("../helper/treasury");
 
+const VARA = '0xE1da44C0dA55B075aE8E2e4b6986AdC76Ac77d73'
 
 const equilibre = [
     '0x3a724E0082b0E833670cF762Ea6bd711bcBdFf37', // TREASURY ETH
@@ -22,7 +23,7 @@ const equilibre = [
 
 const tokens = [
   nullAddress,
-  "0xE1da44C0dA55B075aE8E2e4b6986AdC76Ac77d73", // VARA
+  //"0xE1da44C0dA55B075aE8E2e4b6986AdC76Ac77d73", // VARA
   "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f", // USDC
   "0xc86c7C0eFbd6A49B35E8714C5f59D99De09A225b", // WKAVA
   "0x765277EebeCA2e31912C9946eAe1021199B39C61", // DAI
@@ -66,6 +67,7 @@ module.exports = treasuryExports({
   kava: {
     tokens, 
     owners: equilibre,
-    ownTokenOwners: equilibre
+    ownTokenOwners: equilibre,
+    ownTokens: [VARA]
   },
 });
