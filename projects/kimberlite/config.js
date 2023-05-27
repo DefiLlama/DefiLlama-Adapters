@@ -12,7 +12,7 @@ const config = {
   kimberliteSafePLS: {
     chain: "pulse",
     locker: "0x5752Ed96a3Bfe6bdA9A290230e02E5e9E3A6e955", 
-    startBlock: 17366714
+    startBlock: 17366715
   },
   kimberliteSafeMETIS: {
     chain: "metis",
