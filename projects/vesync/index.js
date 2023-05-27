@@ -1,4 +1,4 @@
-const { getUniTVL } = require('../helper/unknownTokens');
+const { getUniTVL } = require('./getUniTVL');
 const sdk = require('@defillama/sdk');
 const { default: BigNumber } = require('bignumber.js');
 
