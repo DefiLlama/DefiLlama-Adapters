@@ -111,6 +111,18 @@ async function tvl(timestamp, block, chainBlocks) {
         })
       ).output;
 
+      if (pool != ZERO_ADDRESS) {
+        const virtual_price = (
+          await sdk.api.abi.call({
+            target: pool,
+            block: chainBlocks["astar"],
+            chain: "astar",
+            abi: ABI.get_virtual_price,
+          })
+        ).output;
+        console.log("pool, virtual price", pool, virtual_price);
+      }
+
       const coins = [];
       for (let key in maincoins) {
         let coin = maincoins[key];
