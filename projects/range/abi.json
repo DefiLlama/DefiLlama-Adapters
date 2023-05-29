@@ -1,5 +1,3 @@
 {
-  "token0": "function token0() external view returns (address)",
-  "token1": "function token1() external view returns (address)",
   "underlyingBalance": "function getUnderlyingBalances() public view returns (uint256 amount0Current, uint256 amount1Current)"
 }
