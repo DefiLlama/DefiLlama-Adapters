@@ -91,7 +91,7 @@ function print() {
   }
   console.log(res)
   res = transform(res)
-  fs.writeFileSync(__dirname+'/../projects/test/abi.js', JSON.stringify(res, null, 2))
+  fs.writeFileSync(__dirname+'/../projects/test/abi.json', JSON.stringify(res, null, 2))
   // console.log(res)
   console.log(JSON.stringify(res, null, 2))
 }
