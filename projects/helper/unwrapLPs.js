@@ -3,15 +3,15 @@ const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const token0 = 'address:token0'
 const symbol = 'string:symbol'
-const { getPoolTokens, getPoolId, bPool, getCurrentTokens, getVault: getBalancerVault, } = require('./abis/balancer.json')
+const { getPoolTokens, getPoolId, bPool, getCurrentTokens, } = require('./abis/balancer.json')
 const { requery } = require('./requery')
 const { getChainTransform, getFixBalances } = require('./portedTokens')
+const { getUniqueAddresses, normalizeAddress } = require('./tokenMapping')
 const creamAbi = require('./abis/cream.json')
 const { isLP, log, } = require('./utils')
 const { sumArtBlocks, whitelistedNFTs, } = require('./nft')
 const wildCreditABI = require('../wildcredit/abi.json');
-const { covalentGetTokens } = require("./http");
-const { getUniqueAddresses, normalizeAddress } = require('../helper/tokenMapping')
+const { covalentGetTokens, get } = require("./http");
 
 const lpReservesAbi = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
 const lpSuppliesAbi = "uint256:totalSupply"
@@ -188,7 +188,7 @@ async function sumLPWithOnlyOneTokenOtherThanKnown(balances, lpToken, owner, tok
   }
   await sumLPWithOnlyOneToken(balances, lpToken, owner, listedToken, block, chain, transformAddress)
 }
-async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], block, chain = 'ethereum', transformAddress, owner, nftAddress, owners }) {
+async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], block, chain = 'ethereum', owner, nftAddress, owners, blacklistedTokens = [], whitelistedTokens = [], }) {
   if (!nftsAndOwners.length) {
     if (!nftAddress)
       switch (chain) {
@@ -202,16 +202,16 @@ async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], block, c
 
     if ((!owners || !owners.length) && owner)
       owners = [owner]
-    owners = getUniqueAddresses(owners)
+    owners = getUniqueAddresses(owners, chain)
     nftsAndOwners = owners.map(o => [nftAddress, o])
   }
-  await Promise.all(nftsAndOwners.map(([nftAddress, owner]) => unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain, transformAddress })))
+  await Promise.all(nftsAndOwners.map(([nftAddress, owner]) => unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain, blacklistedTokens, whitelistedTokens, })))
   return balances
 }
 
-async function unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain = 'ethereum', transformAddress }) {
-  if (!transformAddress)
-    transformAddress = await getChainTransform(chain)
+async function unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain = 'ethereum', blacklistedTokens = [], whitelistedTokens = [], }) {
+  blacklistedTokens = getUniqueAddresses(blacklistedTokens, chain)
+  whitelistedTokens = getUniqueAddresses(whitelistedTokens, chain)
 
   const nftPositions = (await sdk.api.erc20.balanceOf({ target: nftAddress, owner, block, chain })).output
   const factory = (await sdk.api.abi.call({ target: nftAddress, abi: wildCreditABI.factory, block, chain })).output
@@ -276,9 +276,16 @@ async function unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain = 
       amount1 = liquidity * (sb - sa)
     }
 
-    sdk.util.sumSingleBalance(balances, transformAddress(token0), new BigNumber(amount0).toFixed(0))
-    sdk.util.sumSingleBalance(balances, transformAddress(token1), new BigNumber(amount1).toFixed(0))
+    addToken({ balances, token: token0, amount: amount0, chain, blacklistedTokens, whitelistedTokens})
+    addToken({ balances, token: token1, amount: amount1, chain, blacklistedTokens, whitelistedTokens})
   }
+}
+
+function addToken({ balances, token, amount, chain, blacklistedTokens = [], whitelistedTokens = [] }) {
+  const addr = normalizeAddress(token, chain)
+  if (blacklistedTokens.length && blacklistedTokens.includes(addr)) return;
+  if (whitelistedTokens.length && !whitelistedTokens.includes(addr)) return;
+  sdk.util.sumSingleBalance(balances, token, amount, chain)
 }
 
 /*
@@ -361,6 +368,11 @@ async function sumBalancerLps(balances, tokensAndOwners, block, chain, transform
   })
 }
 
+async function getTrxBalance(account) {
+  const data = await get('https://apilist.tronscan.org/api/account?address=' + account)
+  return data.balance + (data.totalFrozen || 0)
+}
+
 const nullAddress = ADDRESSES.null
 const gasTokens = [nullAddress, '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb']
 /*
@@ -375,18 +387,23 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
   let ethBalanceInputs = []
 
   tokensAndOwners = tokensAndOwners.filter(i => {
-    const token = i[0].toLowerCase()
+    const token = normalizeAddress(i[0], chain)
     if (token !== nullAddress && !gasTokens.includes(token))
       return true
     ethBalanceInputs.push(i[1])
     return false
   })
 
-  ethBalanceInputs = getUniqueAddresses(ethBalanceInputs)
+  ethBalanceInputs = getUniqueAddresses(ethBalanceInputs, chain)
 
   if (ethBalanceInputs.length) {
-    const { output: ethBalances } = await sdk.api.eth.getBalances({ targets: ethBalanceInputs, chain, block })
-    ethBalances.forEach(({ balance }) => sdk.util.sumSingleBalance(balances, transformAddress(nullAddress), balance))
+    if(chain === "tron"){
+      const ethBalances = await Promise.all(ethBalanceInputs.map(getTrxBalance))
+      ethBalances.forEach(balance => sdk.util.sumSingleBalance(balances, transformAddress(nullAddress), balance))
+    } else {
+      const { output: ethBalances } = await sdk.api.eth.getBalances({ targets: ethBalanceInputs, chain, block })
+      ethBalances.forEach(({ balance }) => sdk.util.sumSingleBalance(balances, transformAddress(nullAddress), balance))
+    }
   }
 
   const balanceOfTokens = await sdk.api.abi.multiCall({
@@ -637,6 +654,7 @@ async function sumTokens2({
   abis = {},
   api,
   resolveUniV3 = false,
+  uniV3WhitelistedTokens = [],
   resolveArtBlocks = false,
   resolveNFTs = false,
   permitFailure = false,
@@ -662,8 +680,8 @@ async function sumTokens2({
   }
 
   if (!tokensAndOwners.length) {
-    tokens = getUniqueAddresses(tokens)
-    owners = getUniqueAddresses(owners)
+    tokens = getUniqueAddresses(tokens, chain)
+    owners = getUniqueAddresses(owners, chain)
     if (owner) tokensAndOwners = tokens.map(t => [t, owner])
     if (owners.length) tokensAndOwners = tokens.map(t => owners.map(o => [t, o])).flat()
     if (ownerTokens.length) {
@@ -680,10 +698,10 @@ async function sumTokens2({
   }
 
   if (resolveUniV3)
-    await unwrapUniswapV3NFTs({ balances, chain, block, owner, owners, })
+    await unwrapUniswapV3NFTs({ balances, chain, block, owner, owners, blacklistedTokens, whitelistedTokens: uniV3WhitelistedTokens, })
 
-  blacklistedTokens = blacklistedTokens.map(t => t.toLowerCase())
-  tokensAndOwners = tokensAndOwners.map(([t, o]) => [t.toLowerCase(), o]).filter(([token]) => !blacklistedTokens.includes(token))
+  blacklistedTokens = blacklistedTokens.map(t => normalizeAddress(t, chain))
+  tokensAndOwners = tokensAndOwners.map(([t, o]) => [normalizeAddress(t, chain), o]).filter(([token]) => !blacklistedTokens.includes(token))
   tokensAndOwners = getUniqueToA(tokensAndOwners)
   log(chain, 'summing tokens', tokensAndOwners.length)
 
@@ -698,7 +716,7 @@ async function sumTokens2({
 
   function getUniqueToA(toa) {
     toa = toa.map(i => i.join('-'))
-    return getUniqueAddresses(toa).map(i => i.split('-'))
+    return getUniqueAddresses(toa, chain).map(i => i.split('-'))
   }
 }
 

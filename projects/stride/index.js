@@ -9,6 +9,7 @@ const coinGeckoIds = {
   uluna: "terra-luna-2",
   aevmos: "evmos",
   inj: "injective-protocol",
+  uumee: "umee",
 };
 
 function getCoinDenom(denom) {
@@ -26,7 +27,7 @@ async function tvl() {
   const balances = {};
 
   const { host_zone: hostZones } = await get(
-    "https://stride-library.main.stridenet.co/api/Stride-Labs/stride/stakeibc/host_zone"
+    "https://stride-fleet.main.stridenet.co/api/Stride-Labs/stride/stakeibc/host_zone"
   );
 
   const { supply: assetBalances } = await get(
