@@ -64,6 +64,10 @@ const tokens = [
 
 
 module.exports = treasuryExports({
+  ethereum: {
+    tokens: [nullAddress],
+    owners: ['0x8B21Bdb9B1aa2094460851dA19185A989529fBe3']
+  },
   kava: {
     tokens, 
     owners: equilibre,
