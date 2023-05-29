@@ -10,6 +10,7 @@ const config = {
 
 module.exports = {
   methodology: 'assets deployed on DEX as LP + asset balance of vaults',
+  doublecounted: true,
   start: 1683965157,
 };
 
