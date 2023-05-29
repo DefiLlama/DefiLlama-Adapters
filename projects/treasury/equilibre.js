@@ -3,6 +3,7 @@ const { treasuryExports, nullAddress } = require("../helper/treasury");
 const VARA = '0xE1da44C0dA55B075aE8E2e4b6986AdC76Ac77d73'
 
 const equilibre = [
+    '0x8B21Bdb9B1aa2094460851dA19185A989529fBe3', // MULTI-SIGN ETH
     '0x3a724E0082b0E833670cF762Ea6bd711bcBdFf37', // TREASURY ETH
     '0x79dE631fFb7291Acdb50d2717AE32D44D5D00732', // TREASURY KAVA
     '0x283270C265eB3D6e910920AdFf85e746C8063fed',
