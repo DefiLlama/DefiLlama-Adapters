@@ -23,27 +23,27 @@ const config = {
 
 async function tvl(timestamp, blocks, chainBlocks, { api }) {
   const balances = {};
-  for(const chain in config) {
-    const { factory, fromBlock } = config[chain];
-    const logs = await getLogs({
-      target: factory,
-      topic: 'VaultCreated(address,address)',
-      api,
-      fromBlock,
-    });
-    for (const log of logs) {
-      const uni_pool = `0x${log.topics[1].substring(26)}`.toLowerCase();
-      const vault =`0x${log.topics[2].substring(26)}`.toLowerCase();
-      const token0 = (await sdk.api.abi.call({target: uni_pool,abi: ABI.token0,chain: chain}))['output'];
-      const token1 = (await sdk.api.abi.call({target: uni_pool,abi: ABI.token1,chain: chain}))['output'];
-      const underLyingBalance = (await sdk.api.abi.call({target: vault, abi: ABI.underlyingBalance, chain: chain, block:chainBlocks[chain]})).output;
-      await sdk.util.sumSingleBalance(balances, token0, underLyingBalance['amount0Current'],chain);
-      await sdk.util.sumSingleBalance(balances, token1, underLyingBalance['amount1Current'],chain);
-    }
+  const chain = api.chain;
+  const { factory, fromBlock } = config[chain];
+  const logs = await getLogs({
+    target: factory,
+    topic: 'VaultCreated(address,address)',
+    api,
+    fromBlock,
+    chain: chain,
+  });
+  for (const log of logs) {
+    const uni_pool = `0x${log.topics[1].substring(26)}`.toLowerCase();
+    const vault =`0x${log.topics[2].substring(26)}`.toLowerCase();
+    const token0 = (await sdk.api.abi.call({target: uni_pool,abi: ABI.token0,chain: chain}))['output'];
+    const token1 = (await sdk.api.abi.call({target: uni_pool,abi: ABI.token1,chain: chain}))['output'];
+    const underLyingBalance = (await sdk.api.abi.call({target: vault, abi: ABI.underlyingBalance, chain: chain, block:chainBlocks[chain]})).output;
+    await sdk.util.sumSingleBalance(balances, token0, underLyingBalance['amount0Current'],chain);
+    await sdk.util.sumSingleBalance(balances, token1, underLyingBalance['amount1Current'],chain);
   }
-  console.log(balances);
-  return balances;
+return balances;
 }
+
 
 module.exports = {
   timetravel: true,
