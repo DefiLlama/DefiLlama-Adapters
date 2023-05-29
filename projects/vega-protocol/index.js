@@ -6,7 +6,7 @@ const BigNumber = require("bignumber.js");
 
 const config = {
   ethereum: { 
-    fromBlock: 17346166, 
+    fromBlock: 17343884, 
     vega: '0xcb84d72e61e383767c4dfeb2d8ff7f4fb89abc6e', 
     stakingContract: '0x195064D33f09e0c42cF98E665D9506e0dC17de68', 
     assetPool: '0xA226E2A13e07e750EfBD2E5839C5c3Be80fE7D4d',
