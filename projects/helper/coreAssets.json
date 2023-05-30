@@ -18,6 +18,8 @@
     "YFI": "0x0bc529c00c6401aef6d220be8c6ea1667f6ad93e",
     "DAI": "0x6b175474e89094c44da98b954eedeac495271d0f",
     "cvxFXS": "0xfeef77d3f69374f66429c91d732a244f074bdf74",
+    "vlCVX": "0x72a19342e8f1838460ebfccef09f6585e32db86e",
+    "CVX": "0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B",
     "BNB": "0xb8c77482e45f1f44de1745f52c74426c631bdd52",
     "tBTC": "0x18084fba666a33d37592fa2633fd49a74dd93a88",
     "USX": "0x0a5e677a6a24b2f1a2bf4f3bffc443231d2fdec8",
@@ -29,6 +31,7 @@
     "MKR": "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2",
     "CRV": "0xd533a949740bb3306d119cc777fa900ba034cd52",
     "FTM": "0x4e15361fd6b4bb609fa63c81a2be19d873717870",
+    "GNO": "0x6810e776880C02933D47DB1b9fc05908e5386b96",
     "SUSHI": "0x6b3595068778dd592e39a122f4f5a5cf09c90fe2"
   },
   "fantom": {
@@ -536,9 +539,18 @@
     "USDC": "TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8",
     "USDD": "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn",
     "JM": "TVHH59uHVpHzLDMFFpUgCx2dNAQqCzPhcR",
+    "JST": "TCFLL5dx5ZJdKnWuesXxi1VPwjLVmWZZy9",
     "BTC": "TN3W4H6rK2ce4vX9YnFQHwKENnHjoxb3m9",
     "LTC": "TR3DLthpnDdCGabhVDbD3VMsiJoCXY3bZd",
     "DOGE": "THbVQp8kMjStKNnf2iCY6NEzThKMK5aBHg",
+    "SUN": "TSSMHYeV2uE9qYH95DqyoCuNCzEL1NvU3S",
+    "SUN_1": "TKkeiboTkxXKJpbmVFbv4a8ov5rAfRDMf9",
+    "WBTT": "TKfjV9RNKJJCqPvBtK8L7Knykh7DNWvnYt",
+    "BUSD": "TMz2SWatiAtZVVcH2ebpsbVtYwUPT9EdjH",
+    "WTRX": "TNUC9Qb1rRpS5CbWLmNMxXBjyFoydXjWFR",
+    "BTT": "TAFjULxiVgT4qWk6UZwjqwZXTSaGaqnVp4",
+    "TUSD": "TUpMhErZL2fhh4sVNULAbNKLokS4GjC1F4",
+    "USDJ": "TMwFHYXLJaRUPeW6421aqXL4ZEzPRFGkGT",
     "ETH": "THb4CqiFdwNHsWsQCs4JhzwjMWys4aqCbF"
   },
   "lachain": {
@@ -1268,7 +1280,10 @@
     "WGRV": "0xE85f139488c689038028a3EB8fC38dcC29D4C340"
   },
   "pulse": {
+    "WPLS": "0xa1077a294dde1b09bb078844df40758a5d0f9a27",
     "ETH": "0x02dcdd04e3f455d838cd1249292c58f3b79e3c3c",
+    "USDC": "0x15D38573d2feeb82e7ad5187aB8c1D52810B1f07",
+    "USDT": "0x0Cb6F5a34ad42ec934882A05265A7d5F59b51A2f",
     "DAI": "0xefd766ccb38eaf1dfd701853bfce31359239f305"
   }
 }

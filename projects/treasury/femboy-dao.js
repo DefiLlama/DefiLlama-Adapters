@@ -1,12 +1,10 @@
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
-const treasury = "0xfdb1157ac847d334b8912df1cd24a93ee22ff3d0";
-
 module.exports = treasuryExports({
-  arbitrum: {
+  ethereum: {
     tokens: [ 
         nullAddress,
      ],
-    owners: [treasury,],
+    owners: ['0xf78A448E464a1fEB693D76c9211D2d03ae488206',],
   },
 })

@@ -3,14 +3,15 @@ const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const token0 = 'address:token0'
 const symbol = 'string:symbol'
-const { getPoolTokens, getPoolId, bPool, getCurrentTokens, getVault: getBalancerVault, } = require('./abis/balancer.json')
+const { getPoolTokens, getPoolId, bPool, getCurrentTokens, } = require('./abis/balancer.json')
 const { requery } = require('./requery')
 const { getChainTransform, getFixBalances } = require('./portedTokens')
+const { getUniqueAddresses, normalizeAddress } = require('./tokenMapping')
 const creamAbi = require('./abis/cream.json')
-const { isLP, getUniqueAddresses, log, } = require('./utils')
+const { isLP, log, } = require('./utils')
 const { sumArtBlocks, whitelistedNFTs, } = require('./nft')
 const wildCreditABI = require('../wildcredit/abi.json');
-const { covalentGetTokens } = require("./http");
+const { covalentGetTokens, get } = require("./http");
 
 const lpReservesAbi = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
 const lpSuppliesAbi = "uint256:totalSupply"
@@ -187,7 +188,7 @@ async function sumLPWithOnlyOneTokenOtherThanKnown(balances, lpToken, owner, tok
   }
   await sumLPWithOnlyOneToken(balances, lpToken, owner, listedToken, block, chain, transformAddress)
 }
-async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], block, chain = 'ethereum', transformAddress, owner, nftAddress, owners }) {
+async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], block, chain = 'ethereum', owner, nftAddress, owners, blacklistedTokens = [], whitelistedTokens = [], }) {
   if (!nftsAndOwners.length) {
     if (!nftAddress)
       switch (chain) {
@@ -201,16 +202,16 @@ async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], block, c
 
     if ((!owners || !owners.length) && owner)
       owners = [owner]
-    owners = getUniqueAddresses(owners)
+    owners = getUniqueAddresses(owners, chain)
     nftsAndOwners = owners.map(o => [nftAddress, o])
   }
-  await Promise.all(nftsAndOwners.map(([nftAddress, owner]) => unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain, transformAddress })))
+  await Promise.all(nftsAndOwners.map(([nftAddress, owner]) => unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain, blacklistedTokens, whitelistedTokens, })))
   return balances
 }
 
-async function unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain = 'ethereum', transformAddress }) {
-  if (!transformAddress)
-    transformAddress = await getChainTransform(chain)
+async function unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain = 'ethereum', blacklistedTokens = [], whitelistedTokens = [], }) {
+  blacklistedTokens = getUniqueAddresses(blacklistedTokens, chain)
+  whitelistedTokens = getUniqueAddresses(whitelistedTokens, chain)
 
   const nftPositions = (await sdk.api.erc20.balanceOf({ target: nftAddress, owner, block, chain })).output
   const factory = (await sdk.api.abi.call({ target: nftAddress, abi: wildCreditABI.factory, block, chain })).output
@@ -275,9 +276,16 @@ async function unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain = 
       amount1 = liquidity * (sb - sa)
     }
 
-    sdk.util.sumSingleBalance(balances, transformAddress(token0), new BigNumber(amount0).toFixed(0))
-    sdk.util.sumSingleBalance(balances, transformAddress(token1), new BigNumber(amount1).toFixed(0))
+    addToken({ balances, token: token0, amount: amount0, chain, blacklistedTokens, whitelistedTokens})
+    addToken({ balances, token: token1, amount: amount1, chain, blacklistedTokens, whitelistedTokens})
   }
+}
+
+function addToken({ balances, token, amount, chain, blacklistedTokens = [], whitelistedTokens = [] }) {
+  const addr = normalizeAddress(token, chain)
+  if (blacklistedTokens.length && blacklistedTokens.includes(addr)) return;
+  if (whitelistedTokens.length && !whitelistedTokens.includes(addr)) return;
+  sdk.util.sumSingleBalance(balances, token, amount, chain)
 }
 
 /*
@@ -360,6 +368,11 @@ async function sumBalancerLps(balances, tokensAndOwners, block, chain, transform
   })
 }
 
+async function getTrxBalance(account) {
+  const data = await get('https://apilist.tronscan.org/api/account?address=' + account)
+  return data.balance + (data.totalFrozen || 0)
+}
+
 const nullAddress = ADDRESSES.null
 const gasTokens = [nullAddress, '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb']
 /*
@@ -374,18 +387,23 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
   let ethBalanceInputs = []
 
   tokensAndOwners = tokensAndOwners.filter(i => {
-    const token = i[0].toLowerCase()
+    const token = normalizeAddress(i[0], chain)
     if (token !== nullAddress && !gasTokens.includes(token))
       return true
     ethBalanceInputs.push(i[1])
     return false
   })
 
-  ethBalanceInputs = getUniqueAddresses(ethBalanceInputs)
+  ethBalanceInputs = getUniqueAddresses(ethBalanceInputs, chain)
 
   if (ethBalanceInputs.length) {
-    const { output: ethBalances } = await sdk.api.eth.getBalances({ targets: ethBalanceInputs, chain, block })
-    ethBalances.forEach(({ balance }) => sdk.util.sumSingleBalance(balances, transformAddress(nullAddress), balance))
+    if(chain === "tron"){
+      const ethBalances = await Promise.all(ethBalanceInputs.map(getTrxBalance))
+      ethBalances.forEach(balance => sdk.util.sumSingleBalance(balances, transformAddress(nullAddress), balance))
+    } else {
+      const { output: ethBalances } = await sdk.api.eth.getBalances({ targets: ethBalanceInputs, chain, block })
+      ethBalances.forEach(({ balance }) => sdk.util.sumSingleBalance(balances, transformAddress(nullAddress), balance))
+    }
   }
 
   const balanceOfTokens = await sdk.api.abi.multiCall({
@@ -505,6 +523,16 @@ async function genericUnwrapCvxDeposit({ api, owner, token, balances }) {
   const [bal, cToken] = await api.batchCall([
     { target: token, params: owner, abi: 'erc20:balanceOf' },
     { target: token, abi: 'address:curveToken' },
+  ])
+  sdk.util.sumSingleBalance(balances, cToken, bal, api.chain)
+  return balances
+}
+
+async function genericUnwrapCvxRewardPool({ api, owner, pool, balances }) {
+  if (!balances) balances = await api.getBalances()
+  const [bal, cToken] = await api.batchCall([
+    { target: pool, params: owner, abi: 'erc20:balanceOf' },
+    { target: pool, abi: 'address:stakingToken' },
   ])
   sdk.util.sumSingleBalance(balances, cToken, bal, api.chain)
   return balances
@@ -636,6 +664,7 @@ async function sumTokens2({
   abis = {},
   api,
   resolveUniV3 = false,
+  uniV3WhitelistedTokens = [],
   resolveArtBlocks = false,
   resolveNFTs = false,
   permitFailure = false,
@@ -661,8 +690,8 @@ async function sumTokens2({
   }
 
   if (!tokensAndOwners.length) {
-    tokens = getUniqueAddresses(tokens)
-    owners = getUniqueAddresses(owners)
+    tokens = getUniqueAddresses(tokens, chain)
+    owners = getUniqueAddresses(owners, chain)
     if (owner) tokensAndOwners = tokens.map(t => [t, owner])
     if (owners.length) tokensAndOwners = tokens.map(t => owners.map(o => [t, o])).flat()
     if (ownerTokens.length) {
@@ -679,10 +708,10 @@ async function sumTokens2({
   }
 
   if (resolveUniV3)
-    await unwrapUniswapV3NFTs({ balances, chain, block, owner, owners, })
+    await unwrapUniswapV3NFTs({ balances, chain, block, owner, owners, blacklistedTokens, whitelistedTokens: uniV3WhitelistedTokens, })
 
-  blacklistedTokens = blacklistedTokens.map(t => t.toLowerCase())
-  tokensAndOwners = tokensAndOwners.map(([t, o]) => [t.toLowerCase(), o]).filter(([token]) => !blacklistedTokens.includes(token))
+  blacklistedTokens = blacklistedTokens.map(t => normalizeAddress(t, chain))
+  tokensAndOwners = tokensAndOwners.map(([t, o]) => [normalizeAddress(t, chain), o]).filter(([token]) => !blacklistedTokens.includes(token))
   tokensAndOwners = getUniqueToA(tokensAndOwners)
   log(chain, 'summing tokens', tokensAndOwners.length)
 
@@ -697,7 +726,7 @@ async function sumTokens2({
 
   function getUniqueToA(toa) {
     toa = toa.map(i => i.join('-'))
-    return getUniqueAddresses(toa).map(i => i.split('-'))
+    return getUniqueAddresses(toa, chain).map(i => i.split('-'))
   }
 }
 
@@ -740,6 +769,57 @@ async function unwrapBalancerToken({ api, chain, block, balancerToken, owner, ba
   return balances
 }
 
+async function unwrapMakerPositions({ api, blacklistedTokens = [], whitelistedTokens = [], owner, skipDebt = false }) {
+  const vaultIds = []
+  const chain = api.chain
+  if (chain && chain !== 'ethereum') throw new Error('Maker protocol not found in chain')
+  blacklistedTokens = getUniqueAddresses(blacklistedTokens, chain)
+  whitelistedTokens = getUniqueAddresses(whitelistedTokens, chain)
+  // taken from https://maker.defiexplore.com/api/users/0x849d52316331967b6ff1198e5e32a0eb168d039d?orderTx=DESC&order=DESC&sortBy=debt
+  // https://docs.makerdao.com/smart-contract-modules/proxy-module/cdp-manager-detailed-documentation
+  const PROXY_REGISTRY = '0x4678f0a6958e4D2Bc4F1BAF7Bc52E8F3564f3fE4'
+  const ds_proxy = await api.call({ abi: 'function proxies(address) view returns (address)', target: PROXY_REGISTRY, params: owner })
+  const CDP_MANAGER = '0x5ef30b9986345249bc32d8928b7ee64de9435e39'
+  const ILK_REGISTRY = '0x5a464C28D19848f44199D003BeF5ecc87d090F87'
+  const vaultCount = await api.call({ abi: 'function count(address) view returns (uint256)', target: CDP_MANAGER, params: ds_proxy })
+  if (vaultCount < 1) return api.getBalances()
+  vaultIds.push(await api.call({ abi: 'function first(address) view returns (uint256)', target: CDP_MANAGER, params: ds_proxy }))
+  for (let i = 0; i < vaultCount - 1; i++) {
+    const [_, nextId] = await api.call({ abi: 'function list(uint256) view returns (uint256,uint256)', target: CDP_MANAGER, params: vaultIds[i] })
+    vaultIds.push(nextId)
+  }
+  const ilks = await api.multiCall({ abi: 'function ilks(uint256) view returns (bytes32)', calls: vaultIds, target: CDP_MANAGER })
+  const urns = await api.multiCall({ abi: 'function urns(uint256) view returns (address)', calls: vaultIds, target: CDP_MANAGER })
+  let collaterals = await api.multiCall({ abi: 'function gem(bytes32) view returns (address)', calls: ilks, target: ILK_REGISTRY })
+  const vat = await api.call({ abi: 'address:vat', target: CDP_MANAGER })
+  const cdpData = await api.multiCall({ abi: 'function urns(bytes32, address) view returns (uint256 collateralBal, uint256 debt)', calls: urns.map((v, i) => ({ params: [ilks[i], v] })), target: vat })
+  collaterals = collaterals.map(i => normalizeAddress(i, chain))
+  cdpData.forEach(({ collateralBal, debt }, i) => {
+    if (!skipDebt)
+      api.add(ADDRESSES.ethereum.DAI, debt * -1)
+    const collateral = collaterals[i]
+    if (blacklistedTokens.length && blacklistedTokens.includes(collateral, chain)) return;
+    if (whitelistedTokens.length && !whitelistedTokens.includes(collateral, chain)) return;
+    api.add(collateral, collateralBal)
+  })
+  return api.getBalances()
+}
+
+async function unwrap4626Tokens({ api, tokensAndOwners, }) {
+  const tokens = tokensAndOwners.map(i => i[0])
+  const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: tokensAndOwners.map(i => ({ target: i[0], params: i[1] })), })
+  const assets = await api.multiCall({ abi: 'address:asset', calls: tokens, })
+  api.addTokens(assets, bals)
+  return api.getBalances()
+}
+
+async function unwrapConvexRewardPools({ api, tokensAndOwners }) {
+  const bals = await api.multiCall({  abi: 'erc20:balanceOf', calls: tokensAndOwners.map(([t, o]) => ({ target: t, params: o}))})
+  const tokens = await api.multiCall({  abi: 'address:stakingToken', calls: tokensAndOwners.map(i => i[0])})
+  api.addTokens(tokens, bals)
+  return api.getBalances()
+}
+
 module.exports = {
   unwrapUniswapLPs,
   unwrapUniswapV3NFTs,
@@ -760,4 +840,8 @@ module.exports = {
   unwrapBalancerToken,
   sumTokensExport,
   genericUnwrapCvxDeposit,
+  genericUnwrapCvxRewardPool,
+  unwrapMakerPositions,
+  unwrap4626Tokens,
+  unwrapConvexRewardPools,
 }
