@@ -26,7 +26,7 @@ async function tvl(_, _1, _2, { api }) {
 
   sdk.util.sumSingleBalance(
     balances,
-    POOL,
+    "0x0000000000000000000000000000000000000000",
     b.toFixed(0),
     api.chain
   );
