@@ -26,7 +26,7 @@ async function tvl(_, _1, _2, { api }) {
 
   sdk.util.sumSingleBalance(
     balances,
-    "0x0000000000000000000000000000000000000000",
+    "filecoin",
     b.toFixed(0),
     api.chain
   );
