@@ -10,33 +10,31 @@ const BOOSTER_ADDRESS = "0x6d12e3dE6dAcDBa2779C4947c0F718E13b78cfF4";
 const MUKGL_ADDRESS = "0x5eaAe8435B178d4677904430BAc5079e73aFa56e";
 const MULAY_ADDRESS = "0xDDF2ad1d9bFA208228166311FC22e76Ea7a4C44D";
 const MUUU_REWARDS_ADDRESS = "0xB2ae0CF4819f2BE89574D3dc46D481cf80C7a255";
-const TOKENS = {
-  // USDC
-  [ADDRESSES.moonbeam.USDC]: ADDRESSES.ethereum.USDC,
-  // USDT
-  [ADDRESSES.astar.USDT]: ADDRESSES.ethereum.USDT,
-  // DAI
-  [ADDRESSES.astar.DAI]: ADDRESSES.ethereum.DAI,
-  // Starlay lUSDC -> USDC
-  [ADDRESSES.astar.lUSDC]: ADDRESSES.ethereum.USDC,
-  // Starlay lUSDT -> USDT
-  [ADDRESSES.astar.lUSDT]: ADDRESSES.ethereum.USDT,
-  // Starlay lDAI -> DAI
-  [ADDRESSES.astar.lDAI]: ADDRESSES.ethereum.DAI,
-  // BUSD
-  [ADDRESSES.oasis.ceUSDT]: ADDRESSES.ethereum.BUSD,
-  // 3KGL -> DAI(TMP)
-  "0x18BDb86E835E9952cFaA844EB923E470E832Ad58": ADDRESSES.ethereum.DAI,
-  // BAI -> DAI(TMP)
-  [ADDRESSES.astar.BAI]: ADDRESSES.ethereum.DAI,
-  // aUSD -> DAI(TMP)
-  [ADDRESSES.astar.aUSD]: ADDRESSES.ethereum.DAI,
-  // ASTR
-  [ADDRESSES.astar.nASTR]: "0x67f6b5bc5670fd29bcc8af3d6633b2840aba2f30",
-  [ADDRESSES.astar.WASTR]: "0x67f6b5bc5670fd29bcc8af3d6633b2840aba2f30",
-};
-
-const transformTokenAddress = (address) => TOKENS[address];
+// const TOKENS = {
+//   // USDC
+//   [ADDRESSES.moonbeam.USDC]: ADDRESSES.ethereum.USDC,
+//   // USDT
+//   [ADDRESSES.astar.USDT]: ADDRESSES.ethereum.USDT,
+//   // DAI
+//   [ADDRESSES.astar.DAI]: ADDRESSES.ethereum.DAI,
+//   // Starlay lUSDC -> USDC
+//   [ADDRESSES.astar.lUSDC]: ADDRESSES.ethereum.USDC,
+//   // Starlay lUSDT -> USDT
+//   [ADDRESSES.astar.lUSDT]: ADDRESSES.ethereum.USDT,
+//   // Starlay lDAI -> DAI
+//   [ADDRESSES.astar.lDAI]: ADDRESSES.ethereum.DAI,
+//   // BUSD
+//   [ADDRESSES.oasis.ceUSDT]: ADDRESSES.ethereum.BUSD,
+//   // 3KGL -> DAI(TMP)
+//   "0x18BDb86E835E9952cFaA844EB923E470E832Ad58": ADDRESSES.ethereum.DAI,
+//   // BAI -> DAI(TMP)
+//   [ADDRESSES.astar.BAI]: ADDRESSES.ethereum.DAI,
+//   // aUSD -> DAI(TMP)
+//   [ADDRESSES.astar.aUSD]: ADDRESSES.ethereum.DAI,
+//   // ASTR
+//   [ADDRESSES.astar.nASTR]: "0x67f6b5bc5670fd29bcc8af3d6633b2840aba2f30",
+//   [ADDRESSES.astar.WASTR]: "0x67f6b5bc5670fd29bcc8af3d6633b2840aba2f30",
+// };
 
 async function tvl(timestamp, block, chainBlocks) {
   let allCoins = {};
@@ -87,7 +85,6 @@ async function tvl(timestamp, block, chainBlocks) {
       ).output;
 
       const muuuFinanceShare = BigNumberJs(supplyFromMuuuFinance)
-        .times(1e18)
         .div(totalsupply)
         .toFixed(6);
 
@@ -101,16 +98,6 @@ async function tvl(timestamp, block, chainBlocks) {
         })
       ).output;
 
-      const maincoins = (
-        await sdk.api.abi.call({
-          target: REGISTRY_ADDRESS,
-          block: chainBlocks["astar"],
-          chain: "astar",
-          abi: ABI.get_coins,
-          params: pool,
-        })
-      ).output;
-
       if (pool != ZERO_ADDRESS) {
         const virtual_price = (
           await sdk.api.abi.call({
@@ -120,40 +107,23 @@ async function tvl(timestamp, block, chainBlocks) {
             abi: ABI.get_virtual_price,
           })
         ).output;
-        console.log("pool, virtual price", pool, virtual_price);
-      }
 
-      const coins = [];
-      for (let key in maincoins) {
-        let coin = maincoins[key];
-        if (coin == ZERO_ADDRESS) {
-          continue;
-        }
+        const rewardSupply = (
+          await sdk.api.erc20.totalSupply({
+            target: poolInfo[i].crvRewards,
+            block: chainBlocks["astar"],
+            chain: "astar",
+          })
+        ).output;
 
-        const bal = await sdk.api.erc20.balanceOf({
-          target: coin,
-          owner: pool,
-          block: chainBlocks["astar"],
-          chain: "astar",
-        });
-        coins.push({ coin: coin, balance: bal.output });
-      }
+        const tvl = BigNumberJs(rewardSupply.toString())
+          .multipliedBy(muuuFinanceShare)
+          .dividedBy(1e18)
+          .multipliedBy(BigNumberJs(virtual_price.toString()));
 
-      for (var c = 0; c < coins.length; c++) {
-        const balanceShare = BigNumberJs(coins[c].balance.toString())
-          .times(muuuFinanceShare)
-          .div(1e18)
-          .toFixed(0);
-
-        const coinAddress = coins[c].coin;
-
-        // convert 3KGL tokens to DAI. This is temp and should convert using virtual price
-        // as the tokens have accrued interest, this means current tvl is under reporting
-        sdk.util.sumSingleBalance(
-          allCoins,
-          transformTokenAddress(coinAddress),
-          balanceShare
-        );
+        allCoins[ADDRESSES.ethereum.DAI] = allCoins[ADDRESSES.ethereum.DAI]
+          ? allCoins[ADDRESSES.ethereum.DAI].plus(tvl)
+          : tvl;
       }
     })
   );
