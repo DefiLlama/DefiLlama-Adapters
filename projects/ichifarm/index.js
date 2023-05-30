@@ -216,6 +216,7 @@ async function polygonTvl(_, _b, { polygon: block }){
 module.exports = {
   methodology: "Tokens deposited to mint oneTokens excluding oneTokens , Vault deposits",
   misrepresentedTokens: true,
+  doublecounted: true,
   ethereum: {
     tvl,
     pool2: async (_, block) => {
