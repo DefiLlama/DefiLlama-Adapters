@@ -27,7 +27,7 @@ async function tvl(_, _1, _2, { api }) {
   sdk.util.sumSingleBalance(
     balances,
     POOL,
-    b.div(10**18).toFixed(0),  
+    b,
     api.chain
   );
 
