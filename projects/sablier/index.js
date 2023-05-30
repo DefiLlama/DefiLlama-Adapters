@@ -1,4 +1,4 @@
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const { sumTokens2, sumTokensExport } = require('../helper/unwrapLPs')
 const { covalentGetTokens } = require('../helper/http')
 const { isWhitelistedToken } = require('../helper/streamingHelper')
 const { getUniqueAddresses } = require('../helper/utils')
@@ -35,6 +35,16 @@ module.exports = {
   ],
   start: 1573582731,
   timetravel: false,
+  ronin: {
+    tvl: sumTokensExport({
+      owner: '0xDe9dCc27aa1552d591Fc9B9c21881feE43BD8118',
+      tokens: [
+        '0x0b7007c13325c48911f73a2dad5fa5dcbf808adc',
+        '0xc99a6a985ed2cac1ef41640596c5a5f9f4e19ef5',
+        '0x97a9107c1793bc407d6f527b77e7fff4d812bece',
+      ]
+    })
+  }
 };
 
 const config = {
