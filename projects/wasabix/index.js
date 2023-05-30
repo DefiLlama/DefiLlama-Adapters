@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { sumTokens } = require("../helper/unwrapLPs")
@@ -7,7 +8,7 @@ const { pool2s } = require('../helper/pool2')
 const tokens = {
   dai: {
     token:'DAI',
-    address:'0x6b175474e89094c44da98b954eedeac495271d0f',
+    address:ADDRESSES.ethereum.DAI,
     decimals:18,
     correspondingMintableToken: 'waUSD'
   },
@@ -19,7 +20,7 @@ const tokens = {
   },
   wbtc: {
     token:'wBTC',
-    address:'0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
+    address:ADDRESSES.ethereum.WBTC,
     decimals:8,
     correspondingMintableToken: 'waBTC'
   },
@@ -48,7 +49,7 @@ const tokens = {
   },
   weth: {
     token:'WETH',
-    address:'0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+    address:ADDRESSES.ethereum.WETH,
     decimals:18,
     correspondingMintableToken: 'waETH'
   },
@@ -65,7 +66,7 @@ const tokens = {
   },
   usdc: {
     token: 'usdc',
-    address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+    address: ADDRESSES.ethereum.USDC,
     decimals: 6
   }
 }
@@ -221,7 +222,7 @@ const tokensPolygon = {
   },
   usdc: {
     token: 'USDC',
-    address: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+    address: ADDRESSES.polygon.USDC,
     decimals: 6,
   },
   pusd: {
@@ -265,7 +266,7 @@ async function eth(timestamp, block) {
       tokens.wbtc.address,
       tokens.lusd.address,
       tokens.weth.address
-    ].map(t => [t, contracts.stakingPools.address]), block, undefined, undefined, { resolveLP: true })
+    ].map(t => [t, contracts.stakingPools.address]), block)
 
 
     await sumTokens(balances, [
@@ -274,7 +275,7 @@ async function eth(timestamp, block) {
       tokens.wbtc.address,
       tokens.lusd.address,
       tokens.weth.address
-    ].map(t => [t, contracts.stakingPoolsV4.address]), block, undefined, undefined, { resolveLP: true })
+    ].map(t => [t, contracts.stakingPoolsV4.address]), block)
    
     // vaults
 
@@ -335,7 +336,7 @@ const tokensBSC = {
   },
   wbnb: {
     token:'WBNB',
-    address:'0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
+    address:ADDRESSES.bsc.WBNB,
     decimals:18,
     correspondingMintableToken: 'waBNB'
   },
@@ -347,7 +348,7 @@ const tokensBSC = {
   },
   busd: {
     token: 'BUSD',
-    address: '0xe9e7cea3dedca5984780bafc599bd69add087d56',
+    address: ADDRESSES.bsc.BUSD,
     decimals: 18,
     correspondingMintableToken: 'waBUSD'
   }
@@ -371,7 +372,7 @@ const collectorsBSC = [
   },
 ]
 
-const busd = 'bsc:0xe9e7cea3dedca5984780bafc599bd69add087d56'
+const busd = 'bsc:' + ADDRESSES.bsc.BUSD
 
 async function bsc(timestamp, block, chainBlocks) {
     let balances = {};
@@ -452,8 +453,6 @@ async function polygon(timestamp, block, chainBlocks) {
     // let poolAddr = vault.input.target
     // sdk.util.sumSingleBalance(balances, _.find(vaultCalls, {target: poolAddr}).token, totalDeposited); 
   }
-
-  // console.log('vaultTvl', vaultTvl)
 
   //collectors
 

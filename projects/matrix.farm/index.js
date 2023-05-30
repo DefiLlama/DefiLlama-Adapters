@@ -20,5 +20,14 @@ module.exports = {
   optimism: {
     fetch: fetch('optimism'),
   },
+  dogechain: {
+    fetch: fetch('dogechain'),
+  },
+  arbitrum: {
+    fetch: fetch('arbitrum'),
+  },
+  bsc: {
+    fetch: fetch('binance'),
+  },
   fetch: fetch('tvl')
 }

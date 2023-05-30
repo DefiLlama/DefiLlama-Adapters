@@ -21,7 +21,7 @@ async function getBalance(balances, fyield, chainBlocks, transform) {
       block: chainBlocks[fyield.chain],
     })
   ).output;
-  await sdk.util.sumSingleBalance(
+  sdk.util.sumSingleBalance(
     balances,
     transform(fyield.yieldBearingAsset),
     collateralBalance

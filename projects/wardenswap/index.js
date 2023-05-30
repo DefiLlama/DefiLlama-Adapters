@@ -9,14 +9,7 @@ module.exports = {
     tvl: getUniTVL({
       chain: 'bsc',
       factory: '0x3657952d7bA5A0A4799809b5B6fdfF9ec5B46293',
-      coreAssets: [
-        '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // wbnb
-        '0xe9e7cea3dedca5984780bafc599bd69add087d56', // busd
-        '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d', // USDC
-        '0x55d398326f99059ff775485246999027b3197955', // USDT
-        '0x2170ed0880ac9a755fd29b2688956bd959f933f8', // ETH
-        wardenTokenAddress,
-      ],
+      useDefaultCoreAssets: true,
     }),
     staking: staking(masterchefAddress, wardenTokenAddress, "bsc")
   },

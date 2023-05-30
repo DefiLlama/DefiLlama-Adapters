@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 /*==================================================
   Modules
   ==================================================*/
@@ -16,9 +17,9 @@ const poolAddressesKava = [
     "0x9076e914D94431A38311B247b289B7274E08d6f9",
 ];
 
-const DAI = "0x765277EebeCA2e31912C9946eAe1021199B39C61"
-const USDC = "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
-const USDT = "0xB44a9B6905aF7c801311e8F4E76932ee959c663C"
+const DAI = ADDRESSES.shiden.ETH
+const USDC = ADDRESSES.telos.ETH
+const USDT = ADDRESSES.moonriver.USDT
 
 async function tvl(timestamp, chainBlocks) {
     const balances = {};

@@ -1,41 +1,81 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
-const { queryV1Beta1 } = require("../helper/terra");
-const { sumTokens } = require("../helper/unwrapLPs");
+const {
+  queryV1Beta1,
+  queryContract,
+  getDenomBalance,
+} = require("../helper/chain/terra");
+const { sumTokens, } = require("../helper/unwrapLPs");
+const vaultManagerAbi = "address[]:getVaults";
+const vaultAbi = 'function self() view returns (tuple(address underwritingToken, uint32 start, uint32 expiration, uint8 underwritingTokenDecimals) config, tuple(tuple(tuple(uint128 numerator, uint128 denominator)[] expectedXVector, tuple(uint128 numerator, uint128 denominator)[] varCovarMatrix, tuple(uint128 numerator, uint128 denominator) lambda) config) amm, tuple(tuple(address standard, address rollover) underwritingPositionERC20, address nextVault, uint56 poolCount, uint32 latestInteraction, bool paused, uint256 premiums, uint256 premiumsAccruedPerShare, uint256 premiumDripBasis, uint256[] allocationVector) state)'
 
 const networks = {
   ethereum: {
+    // V2.5 Factory (underwriting tokens are dynamically fetched)
+    vaultManager: "0x7B99AfA5A2EC23499e6CD6955dEdF85318347cc9",
+    // V2 Vaults
     vaults: [
       // [underwritingAsset, vaultAddress]
       [
-        "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        ADDRESSES.ethereum.USDC,
         "0x83944C256e5C057A246aE1b1945934440eb35Af6",
       ],
       [
-        "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        ADDRESSES.ethereum.USDC,
         "0x8D999a2f262FfDA47A734B987D1A15bc984e45Be",
       ],
       [
-        "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        ADDRESSES.ethereum.USDC,
         "0x0881Ec8e0e743906E1c1dFeE8Ae12BfDc0611b24",
       ],
       [
-        "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        ADDRESSES.ethereum.USDC,
         "0x8529687adD661120C9E23E366Cc7F545f1A03ADf",
+      ],
+      [
+        ADDRESSES.ethereum.USDC,
+        "0x61635d1De721DD1DB35f8aCFD0f1ea367dF65671",
       ],
     ],
   },
   arbitrum: {
+    vaultManager: "0x713C8810F79B4F101f66bB5b5a1326473ae5c7f7",
     vaults: [
       [
-        "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+        ADDRESSES.arbitrum.USDC,
         "0x207472891AF32F5636c35d9ca8e17464Df7108bB",
       ],
+      [
+        ADDRESSES.arbitrum.USDC,
+        "0xbcA81A2118982182d897845571BE950aE94C619c",
+      ],
+      [
+        ADDRESSES.arbitrum.USDC,
+        "0x2DafE4DD7C661c2CEaf967d51206f5130AA32782",
+      ],
+      [
+        ADDRESSES.arbitrum.USDC,
+        "0xdd74ee6c6568429537bf30cb63dab0061b83c41a"
+      ],
+      [
+        ADDRESSES.arbitrum.USDC,
+        "0xc7c52aa35d499e0c18ff3854f24e65d43c97d5a4"
+      ],
+      [
+        ADDRESSES.arbitrum.USDC,
+        "0x695d803207579bb4f34c97ab3e3a449de8ad042e"
+      ],
+      [
+        ADDRESSES.arbitrum.USDC,
+        "0x451709e54474a7a7df889e98124180847782cb4a"
+      ]
     ],
   },
   avax: {
+    vaultManager: "0xBf8c506a56F355d2340F37a91FA6569737b08254",
     vaults: [
       [
-        "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
+        ADDRESSES.avax.USDC,
         "0x2DafE4DD7C661c2CEaf967d51206f5130AA32782",
       ],
       [
@@ -44,7 +84,11 @@ const networks = {
         "0x2DafE4DD7C661c2CEaf967d51206f5130AA32782",
       ],
       [
-        "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
+        ADDRESSES.avax.USDC,
+        "0xBe09C11d28683E283fdf7566DE1685A6A221B6bf",
+      ],
+      [
+        ADDRESSES.avax.USDC,
         "0xBe09C11d28683E283fdf7566DE1685A6A221B6bf",
       ],
     ],
@@ -52,7 +96,7 @@ const networks = {
   fantom: {
     vaults: [
       [
-        "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75",
+        ADDRESSES.fantom.USDC,
         "0xca67B16b02E418CFbC9EF287C7C20B77dbb665f2",
       ],
     ],
@@ -60,10 +104,56 @@ const networks = {
   aurora: {
     vaults: [
       [
-        "0xb12bfca5a55806aaf64e99521918a4bf0fc40802",
+        ADDRESSES.aurora.USDC_e,
         "0x8D999a2f262FfDA47A734B987D1A15bc984e45Be",
       ],
     ],
+  },
+  optimism: {
+    vaultManager: "0x7c1187AF4D6B23F7f7682799454168E24bC06EED",
+    vaults: [
+      [
+        ADDRESSES.optimism.USDC,
+        "0xfB969b45Fa9186CD8B420407552aD447F7c3817b",
+      ],
+      [
+        ADDRESSES.optimism.USDC,
+        "0x88e7385eacf8e31c9cddce7632bfe654b58f4a09",
+      ],
+      [
+        ADDRESSES.optimism.USDC,
+        "0x88e7385eacf8e31c9cddce7632bfe654b58f4a09"
+      ],
+      [
+        ADDRESSES.optimism.USDC,
+        "0x01bd59477e03d9034684a118ba67cfa32cd9b123"
+      ],
+      [
+        ADDRESSES.optimism.USDC,
+        "0xdf9d37e1a19474e5928fb410a3f8513a25ba680c"
+      ]
+      
+    ],
+  },
+  polygon: {
+    vaults: [
+      [
+        ADDRESSES.polygon.USDC,
+        "0xdf9d37e1a19474e5928fb410a3f8513a25ba680c"
+      ],
+      [
+        ADDRESSES.polygon.USDC,
+        "0xadaab38f3ecdf2b486eb3cab7f54bdcbdfb7fd66"
+      ],
+      [
+        ADDRESSES.polygon.USDC,
+        "0x4db26943e581c1befaa5d682f6404de17c028487"
+      ],
+      [
+        ADDRESSES.polygon.USDC,
+        "0xa644bdf7f0da0b83623ac4d01607ea91a24b1ede"
+      ]
+    ]
   },
   terra: {
     vaults: [
@@ -72,40 +162,96 @@ const networks = {
     ],
   },
   terra2: {
-    vaults: [
+    wrapped_luna: "terra1ufj34v4agxlazv6gv36fsdm5e8y4kclqgp0qt0l8ureql9pcwssspma238",
+    factory: "terra1lnq5rk4gla2c537hpyxq6wjs8g0k0dedxug2p50myydaqjtm4g5ss94y8n",
+    masterPool:
       "terra1gz50vgzjssefzmld0kfkt7sfvejgel9znun9chsc82k09xfess5qqu8qyc", // Ozone v2 underwriting master pool
-    ],
   },
 };
 
+async function getManagedVaults(vaultManager, block, chain) {
+  let res = [];
+  const { output: managedVaults } = await sdk.api.abi.call({
+    abi: vaultManagerAbi,
+    target: vaultManager,
+    block,
+    chain,
+  });
+
+  let calls = [];
+  managedVaults.forEach((vault) => {
+    calls.push({
+      target: vault,
+    });
+  });
+
+  const { output: vaultStoragesResult } = await sdk.api.abi.multiCall({
+    abi: vaultAbi,
+    calls,
+    block,
+    chain,
+  });
+
+  // Join the two arrays into [[underwritingToken, vaultAddr]]
+  vaultStoragesResult.forEach((vaultStorageResult) => {
+    if (vaultStorageResult.success) {
+      const underwritingToken =
+        vaultStorageResult.output.config.underwritingToken;
+      res.push([underwritingToken, vaultStorageResult.input.target]);
+    }
+  });
+
+  return res;
+}
+
 async function terra2(timestamp, ethBlock, chainBlocks) {
   const balances = { "terra-luna-2": 0 };
-  for (const vaultAddr of networks.terra2.vaults) {
-    let paginationKey;
 
-    do {
-      const data = await queryV1Beta1(
-        `bank/v1beta1/balances/${vaultAddr}`,
-        paginationKey,
-        chainBlocks.terra2,
-        { isTerra2: true }
-      );
+  const { addresses } = await queryContract({
+    contract: networks.terra2.factory,
+    isTerra2: true,
+    data: {
+      get_vaults: {},
+    },
+  });
 
-      paginationKey = data.pagination.next_key;
+  // 09-28-22 As of now, the only asset supported for deposit
+  // is Luna2 in the form of wrapped Luna2 since RH Ozone v2 does
+  // not support native token types
+  // For each vault, query its wrapped LUNA2 balance
+  let vault_balances = Promise.all(addresses.map(async (address) => {
+    const { balance } = await queryContract({
+      contract: networks.terra2.wrapped_luna,
+      isTerra2: true,
+      data: {
+        balance: { address: address}
+      }
+    })
+    return balance;
+  }));
 
-      data.balances.forEach(({ denom, amount }) => {
-        // Ozone V2 is underwritten in luna
-        if (denom === "uluna") {
-          balances["terra-luna-2"] += parseInt(amount) / 1e6;
-        }
-      });
-    } while (paginationKey);
-  }
+  vault_balances = await vault_balances;
+
+ 
+  vault_balances.forEach((balance) => {
+    balances["terra-luna-2"] += balance / 1e6;
+  });
+
+  // Query the Master underwriting vault
+  balances["terra-luna-2"] +=
+    (await getDenomBalance(
+      "uluna",
+      networks.terra2.masterPool,
+      chainBlocks.terra2,
+      {
+        isTerra2: true,
+      }
+    )) / 1e6;
+
   return balances;
 }
 
 async function terra(timestamp, ethBlock, chainBlocks) {
-  let block;
   const balances = { terrausd: 0 };
 
   for (const vaultAddr of networks.terra.vaults) {
@@ -136,30 +282,29 @@ async function terra(timestamp, ethBlock, chainBlocks) {
 }
 
 function evm(chainName) {
-  return async (timestamp, block, chainBlocks) => {
-    const balances = {};
+  return async (timestamp, block, chainBlocks, { api }) => {
     const network = networks[chainName];
-    if (chainName === "ethereum") {
-      await sumTokens(balances, network.vaults, block);
-    } else {
-      await sumTokens(
-        balances,
-        network.vaults,
-        chainBlocks[chainName],
-        chainName,
-        null,
-        {
-          resolveCrv: true,
-        }
+
+    if (network.vaultManager) {
+      const managedVaults = await getManagedVaults(
+        network.vaultManager,
+        api.block,
+        chainName
       );
+      network.vaults = [...network.vaults, ...managedVaults];
     }
-    return balances;
+
+    return sumTokens(
+      undefined,
+      network.vaults,
+      api.block,
+      chainName,
+    );
   };
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
+  timetravel: false,
   methodology: "Amount of underwriter capital inside the protocol",
   terra: {
     tvl: terra,
@@ -167,14 +312,13 @@ module.exports = {
   terra2: {
     tvl: terra2,
   },
-
   ethereum: {
     tvl: evm("ethereum"),
   },
   arbitrum: {
     tvl: evm("arbitrum"),
   },
-  avalanche: {
+  avax: {
     tvl: evm("avax"),
   },
   fantom: {
@@ -183,4 +327,11 @@ module.exports = {
   aurora: {
     tvl: evm("aurora"),
   },
+  optimism: {
+    tvl: evm("optimism"),
+  },
+  polygon: {
+    tvl: evm("polygon"),
+  },
+  hallmarks: [[1651881600, "UST depeg"]],
 };

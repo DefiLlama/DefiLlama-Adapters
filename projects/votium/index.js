@@ -1,5 +1,5 @@
-const sdk = require("@defillama/sdk");
-const utils = require("../helper/utils");
+const { getConfig } = require('../helper/cache')
+
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 
 const multiMerkleStashContracts = "0x378Ba9B73309bE80BF4C2c027aAD799766a7ED5A";
@@ -11,7 +11,7 @@ const API_URL =
 async function ethTvl() {
   const balances = {};
 
-  const tokenAddresses = (await utils.fetchURL(API_URL)).data.map(
+  const tokenAddresses = (await getConfig('Votium', API_URL)).map(
     (addr) => addr.value
   );
 

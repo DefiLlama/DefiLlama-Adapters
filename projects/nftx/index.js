@@ -1,55 +1,59 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { gql } = require("graphql-request");
-const { blockQuery } = require('../helper/graph')
+const { blockQuery } = require('../helper/http')
 const { getTokenPrices } = require('../helper/unknownTokens')
 const sdk = require('@defillama/sdk')
+const { getChainTransform } = require('../helper/portedTokens')
 
 const config = {
   ethereum: {
-    weth: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-    graphUrl: 'https://graph-proxy.nftx.xyz/c/nftx-indexer/subgraphs/id/QmTCMt7aWvxCnEwTQAB1r9a5QMk9cpoFTMfefm4D1c2ewT'
+    weth: ADDRESSES.ethereum.WETH,
+    graphUrl: 'https://graph-proxy.nftx.xyz/c/shared/subgraphs/name/nftx-project/nftx-v2-1-mainnet'
   },
   arbitrum: {
-    weth: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
-    graphUrl: 'https://graph-proxy.nftx.xyz/nftx-arbitrum/subgraphs/name/nftx-hosted/nftx-v2-arbitrum'
+    weth: ADDRESSES.arbitrum.WETH,
+    graphUrl: 'https://graph-proxy.nftx.xyz/shared/subgraphs/name/nftx-project/nftx-v2-arbitrum'
   },
 }
 function getTvl(chain) {
   const { weth, graphUrl } = config[chain]
-  return async (_timestamp, block) => {
-    const { vaults } = await blockQuery(graphUrl, graphQuery, block, 100)
+  return async (timestamp, _, cb, { api }) => {
+    const { vaults } = await blockQuery(graphUrl, graphQuery, { api })
+    const block = api.block
     const LPs = new Set(vaults.map(v => v.lpStakingPool.stakingToken.id))
     const tokens = new Set(vaults.map(v => v.token.id))
-  
+    const transform = await getChainTransform(chain)
+
     const weth_balances = await sdk.api.abi.multiCall({
       abi: 'erc20:balanceOf',
       calls: Array.from(LPs).map(lp => ({
         target: weth,
         params: lp
       })),
-      block, chain, 
+      block, chain,
     })
-  
+
     const token_balances = await sdk.api.abi.multiCall({
       abi: 'erc20:totalSupply',
       calls: Array.from(tokens).map(token => ({
         target: token,
       })),
-      block, chain, 
+      block, chain,
     })
-  
+
     const balances = {}
-  
+
     sdk.util.sumMultiBalanceOf(balances, token_balances)
     //sdk.util.sumMultiBalanceOf(balances, weth_balances)
-  
+
     const lps = weth_balances.output
       .filter(({ output }) => +output > 2 * 1e18) // only pick pools with minimum 2 eth in it
       .map(({ input }) => input.params[0])
-  
+
     const { updateBalances, prices } = await getTokenPrices({
-      block, coreAssets: [weth], lps, allLps: true, chain, 
+      block, useDefaultCoreAssets: true, lps, allLps: true, chain,
     })
-  
+
     const print = []
     vaults.forEach(vault => {
       const price = prices[vault.token.id]
@@ -60,12 +64,14 @@ function getTvl(chain) {
       print.push({ id: vault.token.id, balance, name: vault.token.name, val: total })
     })
     print.sort((a, b) => b.val - a.val)
-    console.table(print)
-    console.log(print.reduce((a, i) => a + i.val, 0))
-  
+    // console.table(print)
+    // console.log(print.reduce((a, i) => a + i.val, 0))
+
     updateBalances(balances)
-  
-    return balances
+    const transformedBalances = {}
+    Object.entries(balances).forEach(([token, balance]) => sdk.util.sumSingleBalance(transformedBalances, transform(token), balance))
+
+    return transformedBalances
   }
 }
 

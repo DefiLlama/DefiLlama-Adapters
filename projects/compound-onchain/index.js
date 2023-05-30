@@ -1,26 +1,27 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
 const v1abi = require('./v1Abi.json');
 const BigNumber = require('bignumber.js');
-const {lendingMarket} = require('../helper/methodologies')
+const { lendingMarket } = require('../helper/methodologies')
 
 // cache some data
 const markets = [
   {
-    underlying: '0x0D8775F648430679A709E98d2b0Cb6250d2887EF',
+    underlying: ADDRESSES.ethereum.BAT,
     symbol: 'BAT',
     decimals: 18,
     cToken: '0x6C8c6b02E7b2BE14d4fA6022Dfd6d75921D90E4E',
   },
   {
-    underlying: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+    underlying: ADDRESSES.ethereum.DAI,
     symbol: 'DAI',
     decimals: 18,
     cToken: '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643',
   },
   {
-    underlying: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+    underlying: ADDRESSES.ethereum.WETH,
     symbol: 'WETH',
     decimals: 18,
     cToken: '0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5',
@@ -32,28 +33,22 @@ const markets = [
     cToken: '0x158079Ee67Fce2f58472A96584A73C7Ab9AC95c1',
   },
   {
-    underlying: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+    underlying: ADDRESSES.ethereum.USDC,
     symbol: 'USDC',
     decimals: 6,
     cToken: '0x39AA39c021dfbaE8faC545936693aC917d5E7563',
   },
   {
-    underlying: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+    underlying: ADDRESSES.ethereum.USDT,
     symbol: 'USDT',
     decimals: 6,
     cToken: '0xf650C3d88D12dB855b8bf7D11Be6C55A4e07dCC9',
   },
   {
-    underlying: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
+    underlying: ADDRESSES.ethereum.WBTC,
     symbol: 'WBTC',
     decimals: 8,
     cToken: '0xC11b1268C1A384e55C48c2391d8d480264A3A7F4',//cWBTC - legacy
-  },
-  {
-    underlying: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
-    symbol: 'WBTC',
-    decimals: 8,
-    cToken: '0xccf4429db6322d5c611ee964527d42e5d685dd6a'//cWBTC
   },
   {
     underlying: '0xE41d2489571d322189246DaFA5ebDe1F4699F498',
@@ -79,17 +74,7 @@ async function getAllCTokens(block) {
   })).output;
 }
 
-async function getUnderlying(block, cToken) {
-  if (cToken === '0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5') {
-    return '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';//cETH => WETH
-  }
-
-  return (await sdk.api.abi.call({
-    block,
-    target: cToken,
-    abi: abi['underlying'],
-  })).output;
-}
+const CTOKEN_WETH = '0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5'.toLowerCase()
 
 // returns {[underlying]: {cToken, decimals, symbol}}
 async function getMarkets(block) {
@@ -97,36 +82,30 @@ async function getMarkets(block) {
     // the allMarkets getter was only added in this block.
     return markets;
   } else {
-    let allCTokens = await getAllCTokens(block);
-    // if not in cache, get from the blockchain
-    await (
-      Promise.all(allCTokens.map(async (cToken) => {
-        let foundMarket = false;
-        for (let market of markets) {
-          if (market.cToken.toLowerCase() === cToken.toLowerCase()) {
-            foundMarket = true;
-          }
-        }
-        if (!foundMarket) {
-          let underlying = await getUnderlying(block, cToken);
-          markets.push({ underlying, cToken })
-        }
-      }))
-    );
+    const markets = [{
+      cToken: CTOKEN_WETH,
+      underlying: ADDRESSES.ethereum.WETH, //cETH => WETH
+    }]
 
+    const allCTokens = await getAllCTokens(block)
+    const calls = allCTokens.filter(i => i.toLowerCase() !== CTOKEN_WETH).map(i => ({ target: i }))
+    const { output } = await sdk.api.abi.multiCall({
+      abi: abi['underlying'], calls, block,
+    })
+    output.forEach(({ input: { target: cToken }, output: underlying}) => markets.push({ cToken, underlying, }))
     return markets;
   }
 }
 
 const v1Contract = '0x3FDA67f7583380E67ef93072294a7fAc882FD7E7'
-async function v1Tvl(balances, block, borrowed){
+async function v1Tvl(balances, block, borrowed) {
   const marketsLength = await sdk.api.abi.call({
     target: v1Contract,
     block,
     abi: v1abi.getCollateralMarketsLength
   });
   const underlyings = await sdk.api.abi.multiCall({
-    calls: Array(Number(marketsLength.output)).fill().map((n, i)=>({
+    calls: Array(Number(marketsLength.output)).fill().map((n, i) => ({
       target: v1Contract,
       params: [i]
     })),
@@ -134,37 +113,27 @@ async function v1Tvl(balances, block, borrowed){
     abi: v1abi.collateralMarkets
   });
   const markets = await sdk.api.abi.multiCall({
-    calls: underlyings.output.map(m=>({
+    calls: underlyings.output.map(m => ({
       target: v1Contract,
       params: [m.output]
     })),
     block,
     abi: v1abi.markets
   });
-  markets.output.forEach(m=>{
+  markets.output.forEach(m => {
     const token = m.input.params[0]
     let amount
-    if(borrowed){
+    if (borrowed) {
       amount = m.output.totalBorrows
+    } else {
+      amount = BigNumber(m.output.totalSupply).minus(m.output.totalBorrows).toFixed(0)
     }
     sdk.util.sumSingleBalance(balances, token, amount)
   })
 }
 
-async function v2Tvl(balances, block, borrowed){
+async function v2Tvl(balances, block, borrowed) {
   let markets = await getMarkets(block);
-
-  // Get V1 tokens locked
-  let v1Locked = await sdk.api.abi.multiCall({
-    block,
-    calls: markets.map((market) => ({
-      target: market.underlying,
-      params: '0x3FDA67f7583380E67ef93072294a7fAc882FD7E7',
-    })),
-    abi: 'erc20:balanceOf',
-  });
-
-  sdk.util.sumMultiBalanceOf(balances, v1Locked);
 
   // Get V2 tokens locked
   let v2Locked = await sdk.api.abi.multiCall({
@@ -172,19 +141,19 @@ async function v2Tvl(balances, block, borrowed){
     calls: markets.map((market) => ({
       target: market.cToken,
     })),
-    abi: borrowed?abi.totalBorrows: abi['getCash'],
+    abi: borrowed ? abi.totalBorrows : abi['getCash'],
   });
 
   markets.forEach((market) => {
     let getCash = v2Locked.output.find((result) => result.input.target === market.cToken);
-      balances[market.underlying] = BigNumber(balances[market.underlying] || 0)
-        .plus(getCash.output)
-        .toFixed();
+    balances[market.underlying] = BigNumber(balances[market.underlying] || 0)
+      .plus(getCash.output)
+      .toFixed();
   });
   return balances;
 }
 
-async function borrowed(timestamp, block){
+async function borrowed(timestamp, block) {
   const balances = {};
   await v1Tvl(balances, block, true)
   await v2Tvl(balances, block, true)
@@ -194,25 +163,15 @@ async function borrowed(timestamp, block){
 async function tvl(timestamp, block) {
   let balances = {};
 
-  // Get V1 tokens locked
-  let v1Locked = await sdk.api.abi.multiCall({
-    block,
-    calls: markets.map((market) => ({
-      target: market.underlying,
-      params: v1Contract,
-    })),
-    abi: 'erc20:balanceOf',
-  });
-
-  sdk.util.sumMultiBalanceOf(balances, v1Locked);
-
+  await v1Tvl(balances, block, false)
   await v2Tvl(balances, block, false)
   return balances;
 }
 
 module.exports = {
   hallmarks: [
-    [1632873600,"Comptroller vulnerability exploit"]
+    [1632873600, "Comptroller vulnerability exploit"],
+    [1592226000, "COMP distribution begins"]
   ],
   timetravel: true,
   ethereum: {

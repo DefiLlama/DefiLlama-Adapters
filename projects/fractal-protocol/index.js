@@ -1,22 +1,98 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
-const getTokenPrice = {"inputs":[],"name":"getTokenPrice","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
-const USDF_TOKEN_CONTRACT = '0x51acB1ea45c1EC2512ae4202B9076C13016dc8aA';
-const FRACTAL_VAULT_CONTRACT = '0x3eB82f2eD4d992dc0Bed328214A0907250f4Ec82';
-
-async function tvl(timestamp, block) {
-  const { output: totalSupply } = await sdk.api.erc20.totalSupply({ target: USDF_TOKEN_CONTRACT, block }) 
-  const { output: price } = await sdk.api.abi.call({ target: FRACTAL_VAULT_CONTRACT, block, abi: getTokenPrice }) 
-
-  return {
-    'usd-coin': totalSupply * price / 1e12
-  }
-}
+const { userInfo } = require('../pendle/abi.json')
+const { sumTokens2 } = require('../helper/unwrapLPs')
+const FRACTAL_VAULT_CONTRACT = '0x3EAa4b3e8967c02cE1304C1EB35e8C5409838DFC';
+const YIELD_RESERVE = '0xbA83B569e99B6afc2f2BfE5124460Be6f36a4a56';
 
 module.exports = {
+  misrepresentedTokens: true,
   ethereum: {
-    methodology: "USDF is minted when USDC is deposited into the Fractal Vault. TVL = totalSupply * usdfPrice.",
-    tvl,
-  }
+    tvl: async (_, block) => {
+      const convexStakingWrapper_tUSD = '0x00Ec5E23B203B8aE16d55C7F601d1c67e45D826c'
+      const franUnifiedFarm_tUSD = '0xb324b2bd8a3dc55b04111e84d5cce0c3771f8889'
+      const convexStakingWrapper_alUSD = '0x0def0fac24dead04e2f4b49b5fb50b10478e2fa6'
+      const franUnifiedFarm_alUSD = '0x711d650cd10df656c2c28d375649689f137005fa'
+      const { output: tUSDBal } = await sdk.api.abi.call({
+        target: franUnifiedFarm_tUSD, params: convexStakingWrapper_tUSD,
+        abi: abis.lockedLiquidityOf, block,
+      })
+      const { output: alUSDBal } = await sdk.api.abi.call({
+        target: franUnifiedFarm_alUSD, params: convexStakingWrapper_alUSD,
+        abi: abis.lockedLiquidityOf, block,
+      })
+      const { output: convexTUSD  } = await sdk.api.erc20.balanceOf({
+        target: '0x4a744870fd705971c8c00ac510eac2206c93d5bb', owner: '0xFD1D1339Dbc24496D70DBF7912c07aE2EF71bC2d', block,
+      })
+      const balances = {
+        '0xB30dA2376F63De30b42dC055C93fa474F31330A5': alUSDBal,
+        '0x33baeDa08b8afACc4d3d07cf31d49FC1F1f3E893': tUSDBal,
+        '0x10BE382cfAB53e0aBD093D6801B5e95C6Aedb715': convexTUSD,
+      }
+      return sumTokens2({ balances, owners: [FRACTAL_VAULT_CONTRACT, YIELD_RESERVE,], tokens: [ADDRESSES.ethereum.USDC], block, })
+    },
+    borrowed: async (_, block) => {
+      const loanContract = '0xf0e3020934450152308e4a84a3c4a5801fcb8d29'
+      const { output: token } = await sdk.api.abi.call({ block, target: loanContract, abi: abis.principalToken })
+      const { output: debt } = await sdk.api.abi.call({ block, target: loanContract, abi: abis.getDebt })
+      return {
+        [token]: debt.principalDebtAmount,
+      }
+    }
+  },
+  avax: {
+    tvl: async (_, _b, { avax: block }) => {
+      const chain = 'avax'
+      const strategy = '0x9fea225c7953869e68b8228d2c90422d905e5117'
+      const nUSDLP = '0xCA87BF3ec55372D9540437d7a86a7750B42C02f4'
+      const nUSDSwap = '0xed2a7edd7413021d440b09d654f3b87712abab66'
+      const synapseMiniChef = '0x3a01521f8e7f012eb37eaaf1cb9490a5d9e18249'
+      const { output: { amount } } = await sdk.api.abi.call({
+        target: synapseMiniChef, params: [1, strategy],
+        abi: userInfo, chain, block,
+      })
+      const { output: price } = await sdk.api.abi.call({
+        target: nUSDSwap, abi: abis.getVirtualPrice, chain, block,
+      })
+      return { tether: amount * price / 1e36 }
+    }
+  },
+  polygon: {
+    tvl: async (_, _b, { polygon: block }) => {
+      const chain = 'polygon'
+      const strategy = '0x894cB5e24DDdD9ececb27831647ae869541Af28F'
+      const nUSDLP = '0x7479e1bc2f2473f9e78c89b4210eb6d55d33b645'
+      const nUSDSwap = '0x85fcd7dd0a1e1a9fcd5fd886ed522de8221c3ee5'
+      const synapseMiniChef = '0x7875af1a6878bda1c129a4e2356a3fd040418be5'
+      const { output: { amount } } = await sdk.api.abi.call({
+        target: synapseMiniChef, params: [1, strategy],
+        abi: userInfo, chain, block,
+      })
+      const { output: price } = await sdk.api.abi.call({
+        target: nUSDSwap, abi: abis.getVirtualPrice, chain, block,
+      })
+      return { tether: amount * price / 1e36 }
+    }
+  },
+  moonriver: {
+    tvl: async (_, _b, { moonriver: block }) => {
+      const chain = 'moonriver'
+      const muSDCToken = '0xd0670aee3698f66e2d4daf071eb9c690d978bfa8'
+      const { output: mUSDC } = await sdk.api.erc20.balanceOf({ target: muSDCToken, chain, block, owner: '0x3Bc4D91B0dEdC1e8E93B356a7572f51815fe843B' })
+      const { output:  exchangeRate } = await sdk.api.abi.call({
+        target: muSDCToken, abi: abis.exchangeRateStored, chain, block,
+      })
+      return {
+        tether: mUSDC/1e8 * exchangeRate/1e16
+      }
+    }
+  },
 }
 
-
+const abis = {
+  exchangeRateStored: "uint256:exchangeRateStored",
+  getVirtualPrice: "uint256:getVirtualPrice",
+  principalToken: "address:principalToken",
+  lockedLiquidityOf: "function lockedLiquidityOf(address account) view returns (uint256)",
+  getDebt: "function getDebt() view returns (uint256 interestDebtAmount, uint256 grossDebtAmount, uint256 principalDebtAmount, uint256 interestOwed, uint256 applicableLateFee, uint256 netDebtAmount, uint256 daysSinceFunding, uint256 currentBillingCycle, uint256 minPaymentAmount, uint256 maxPaymentAmount)",
+}

@@ -1,9 +1,9 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
-const { getBlock } = require('./helper/getBlock');
 const { transformOptimismAddress } = require('./helper/portedTokens');
 
 const WBTC = "0x68f180fcce6836688e9084f035309e29bf0a2095";
-const bitANT = "0x5029c236320b8f15ef0a657054b84d90bfbeded3";
+const bitANT = ADDRESSES.optimism.BitANT;
 const bitBTC = "0xc98b98d17435aa00830c87ea02474c5007e1f272";
 
 const tvlContracts = [
@@ -59,20 +59,18 @@ async function findBalances(contracts, block) {
                 transform(contracts[i].token), 
                 balanceOfs[i].output
             );
-        };
-    };
+        }
+    }
     return balances;
-};
+}
 
 async function tvl(timestamp, block, chainBlocks) {
-    block = await getBlock(timestamp, 'optimism', chainBlocks);
-    return await findBalances(tvlContracts, block);
-};
+    return await findBalances(tvlContracts, chainBlocks.optimism);
+}
 
 async function staking(timestamp, block, chainBlocks) {
-    block = await getBlock(timestamp, 'optimism', chainBlocks);
-    return await findBalances(stakingContracts, block);
-};
+    return await findBalances(stakingContracts, chainBlocks.optimism);
+}
 
 module.exports = {
     optimism: {

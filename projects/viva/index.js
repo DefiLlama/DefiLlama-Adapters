@@ -1,28 +1,16 @@
-const retry = require('async-retry')
-const utils = require('../helper/utils');
+const { get } = require('../helper/http')
 
-async function getData() {
-  const res = await retry(async bail => await utils.fetchURL('https://vite-info-api.xvite.workers.dev/'))
-  return res.data;
-}
-
-async function viva() {
-  const data = await getData()
-  return data.tvlRankings.filter((i) => {
-    return i.name == 'Viva'
-  })[0].amount
-}
-
-async function fetch() {
-  const data = await getData()
-  return data.tvl
+async function tvl() {
+  const data = await get('https://vite-info-api.xvite.workers.dev/')
+  return {
+    tether: data.tvlRankings.filter(i => i.name == 'Viva')[0].amount
+  }
 }
 
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
   vite:{
-    fetch: viva
+    tvl
   },
-  fetch: viva
 }

@@ -13,12 +13,14 @@ module.exports = {
       '0x5555f75e3d5278082200fb451d1b6ba946d8e13b', //ibJPY
       '0x1cc481ce2bd2ec7bf67d1be64d4878b16078f309', //ibCHF
       '0x69681f8fde45345c3870bcd5eaf4a05a60e7d227', //ibGBP
-      '0x81d66D255D47662b6B16f3C5bbfBb15283B05BC2'  //ibZAR
+      '0x81d66D255D47662b6B16f3C5bbfBb15283B05BC2', //ibZAR
+      '0x4e3a36A633f63aee0aB57b5054EC78867CB3C0b8', //old hacked sUSD cream market
     ]
   }),
   fantom: {
     tvl: getCompoundV2Tvl("0x4250a6d3bd57455d7c6821eecb6206f507576cd2", "fantom", ftmSFIreplace, undefined, undefined, false),
     borrowed: getCompoundV2Tvl("0x4250a6d3bd57455d7c6821eecb6206f507576cd2", "fantom", ftmSFIreplace, undefined, undefined, true)
   },
-  avalanche:compoundExports("0x2eE80614Ccbc5e28654324a66A396458Fa5cD7Cc", "avax"),
+  avax:compoundExports("0x2eE80614Ccbc5e28654324a66A396458Fa5cD7Cc", "avax"),
+  optimism: compoundExports("0xE0B57FEEd45e7D908f2d0DaCd26F113Cf26715BF", "optimism")
 };

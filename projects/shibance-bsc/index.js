@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const BigNumber = require("bignumber.js");
 const { getBalanceNumber } = require('./format');
 const chains = require('./constants/chain');
@@ -20,7 +21,6 @@ async function getTvl(chain, timestamp, _ethBlock, chainBlocks) {
   };
 
   const chainId = chains[chain];
-  // console.log("block", block);
   const [vData, pools, farmsLP] = await Promise.all([
     fetchPublicVaultData(chain, block),
     fetchPoolsTotalStaking(chain, block),
@@ -75,26 +75,14 @@ async function getTvl(chain, timestamp, _ethBlock, chainBlocks) {
 
   const balances = {};
   const usdMappings = {
-    'bsc' : '0x4fabb145d64652a948d72533023f6e7a623c7c53'
+    'bsc' : ADDRESSES.ethereum.BUSD
   }
   const baseToken = usdMappings[chain];
   balances[`${chain}:${baseToken}`] = tvl.toNumber();
 
-  // if (chainBlocks) return balances;
   return tvl.toNumber();
 }
 
-// (async () => {
-//   try {
-//     console.log(
-//       await getTvl("bsc", null, null, {
-//         bsc: 10700328,
-//       })
-//     );
-//   } catch(e) {
-//     console.log(e.stack)
-//   }
-// })();
 
 module.exports = {
   misrepresentedTokens: true,
@@ -102,11 +90,4 @@ module.exports = {
   bsc: {
     tvl: getChainTvl("bsc"),
   }
-  // kcc: {
-  //   tvl: getChainTvl("kcc"),
-  // },
-  // bsc: {
-  //   tvl: getChainTvl("bsc"),
-  // },
-  // tvl: getChainTvl("bsc"),
 };

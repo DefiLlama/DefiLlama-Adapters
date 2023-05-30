@@ -7,7 +7,7 @@ module.exports = {
   misrepresentedTokens: true,
   avax: {
     pool2: pool2(stakingPool2Contract, WAVAX_THOR_JLP, "avax"),
+    tvl: (async) => ({}),
   },
-  tvl: (async) => ({}),
   methodology: "Counts liquidty on pool2 only",
 };

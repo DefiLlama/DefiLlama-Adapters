@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { getFixBalances } = require("../helper/portedTokens");
 const { getTokenPrices } = require("../helper/unknownTokens")
 const { stakingUnknownPricedLP } = require("../helper/staking")
 
-const wkavaAddress = "0xc86c7C0eFbd6A49B35E8714C5f59D99De09A225b";
+const wkavaAddress = ADDRESSES.kava.WKAVA;
 const rshareTokenAddress = "0x5547F680Ad0104273d0c007073B87f98dEF199c6";
 const rshareRewardPoolAddress = "0x63c8069EE16BA666800cECaFd99f4C75ad6dd7Aa";
 const genesisPoolAddress = "0x0D6f8847EdB9ea4203241529ee753f6b26920f11";
@@ -19,7 +20,8 @@ const Kavalps = [rubyKavaLp, rshareKavaLp, rubyRshareLp, rubyUsdcLp];
 async function calcPool2(genesisPool, rewardPool, lps, block, chain) {
   let balances = {};
   const { updateBalances, } = await getTokenPrices({
-    block, chain, coreAssets: [wkavaAddress], allLps: true, lps,
+    block, chain, 
+    useDefaultCoreAssets: true, allLps: true, lps,
   })
 
    // calculate rewardPool
@@ -68,7 +70,7 @@ async function calcKava(rewardPool, block, chain) {
     })
   ).output;
 
-  await sdk.util.sumSingleBalance(
+  sdk.util.sumSingleBalance(
     balances,
     `kava:${wkavaAddress}`,
     wkavaRewardBalance

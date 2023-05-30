@@ -1,41 +1,48 @@
-const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
-const constants = require("./constants");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
-async function balanceOf(owner, target, block) {
-  const chain = "avax";
-  let decimals = (await sdk.api.erc20.decimals(target, chain)).output;
-  let balance = (
-    await sdk.api.erc20.balanceOf({
-      owner,
-      target,
-      block,
-      chain,
-    })
-  ).output;
-  return Number(balance) / 10 ** decimals;
+const pools = [
+  "0xbe52548488992Cc76fFA1B42f3A58F646864df45",
+  "0x66357dcace80431aee0a7507e2e361b7e2402370",
+  "0x39dE4e02F76Dbd4352Ec2c926D8d64Db8aBdf5b2",
+  "0xB8E567fc23c39C94a1f6359509D7b43D1Fbed824",
+  "0x30C30d826be87Cd0A4b90855C2F38f7FcfE4eaA7",
+  "0x4658EA7e9960D6158a261104aAA160cC953bb6ba",
+  "0xC828D995C686AaBA78A4aC89dfc8eC0Ff4C5be83",
+  "0x81E63d0EEBA2D85609A6b206737e98e39B888F4C",
+  "0x91BB10D68C72d64a7cE10482b453153eEa03322C",
+  "0x27912AE6Ba9a54219d8287C3540A8969FF35500B",
+  "0x233Ba46B01d2FbF1A31bDBc500702E286d6de218",
+  "0x89E9EFD9614621309aDA948a761D364F0236eDEA",
+  "0x8b4a45da5b0705ae4f47ebefc180c099345cf57e",
+  "0xDeD29DF6b2193B885F45B5F5027ed405291A96C1",
+  "0xb3393f4e609c504da770ebc968540784cc4e016c",
+];
+
+async function getToa(pool, api) {
+  const tokens = await api.call({
+    abi: "function getTokenAddresses() view returns (address[])",
+    target: pool,
+  });
+  const owners = await api.multiCall({
+    abi: "function assetOf(address) view returns (address)",
+    calls: tokens,
+    target: pool,
+  });
+  return tokens.map((val, i) => [val, owners[i]]);
 }
 
-async function tvl(timestamp, ethereumBlock, chainBlocks) {
-  const block = chainBlocks["avax"];
-  let balances = {};
-
-  for (const key in constants) {
-    const { id, addresses } = constants[key];
-    let totalBalance = 0;
-    for (const { token, lpTokens } of addresses) {
-      for (const lpToken of lpTokens) {
-        totalBalance += await balanceOf(lpToken, token, block);
-      }
-    }
-    balances[id] = totalBalance;
-  }
-
-  return balances;
+async function tvl(timestamp, ethereumBlock, chainBlocks, { api }) {
+  const toa = (await Promise.all(pools.map((i) => getToa(i, api)))).flat();
+  toa.push([
+    "0xb599c3590f42f8f995ecfa0f85d2980b76862fc1",
+    "0xc7388d98fa86b6639d71a0a6d410d5cdfc63a1d0",
+  ]);
+  return sumTokens2({ api, tokensAndOwners: toa });
 }
 
 module.exports = {
-  avalanche: {
+  avax: {
     tvl,
     staking: staking(
       "0x5857019c749147eee22b1fe63500f237f3c1b692",

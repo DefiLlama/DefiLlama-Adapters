@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const abiPolygon = require('./abi-polygon.json');
 const { transformAddress } = require('./utils');
@@ -15,7 +16,7 @@ const Contracts = {
     lend: {
       ironController: '0xF20fcd005AFDd3AD48C85d0222210fe168DDd10c',
     },
-    wrappedNative: '0x0000000000000000000000000000000000001010',
+    wrappedNative: ADDRESSES.polygon.WMATIC_1,
   },
   avax: {
     pools: {
@@ -29,7 +30,7 @@ const Contracts = {
     lend: {
       ironController: '0xDc4C597E36Fc80876801df0309Cc11A7C12E0764',
     },
-    wrappedNative: '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83',
+    wrappedNative: ADDRESSES.fantom.WFTM,
   },
 };
 
@@ -68,7 +69,7 @@ const poolTvl = async (chain, poolAddress, block, addressTransformer) => {
 
 const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
   let block = chainBlocks['polygon'];
-  const addressTransformer = await transformAddress('polygon');
+  const addressTransformer = transformAddress('polygon');
   const tvl = {};
 
   for (let address of Object.values(Contracts.polygon.pools)) {
@@ -89,7 +90,7 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
 
 const avaxTvl = async (timestamp, ethBlock, chainBlocks) => {
   let tvl = {};
-  const addressTransformer = await transformAddress('avax');
+  const addressTransformer = transformAddress('avax');
   for (let address of Object.values(Contracts.avax.pools)) {
     const balances = await poolTvl(
       'avax',
@@ -107,7 +108,7 @@ const avaxTvl = async (timestamp, ethBlock, chainBlocks) => {
 };
 
 const fantomTvl = async (timestamp, ethBlock, chainBlocks) => {
-  const addressTransformer = await transformAddress('fantom');
+  const addressTransformer = transformAddress('fantom');
   const block = chainBlocks['fantom'];
 
   let tvl = {};
@@ -138,11 +139,14 @@ module.exports = {
     tvl: sdk.util.sumChainTvls([polygonTvl, polygonLending]),
     borrowed: polygonBorrowed
   },
-  avalanche: {
+  avax:{
     tvl: avaxTvl,
   },
   fantom: {
     tvl:  sdk.util.sumChainTvls([fantomTvl, fantomLending]),
     borrowed: fantomBorrowed
   },
+  hallmarks: [
+    [1652270400,"Re-entrancy Exploit"]
+  ],
 };

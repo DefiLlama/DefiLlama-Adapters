@@ -1,15 +1,16 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const farmUtils = require('./farm-utils');
 const BigNumber = require('bignumber.js');
 const url = "https://api.safedollar.fi/api/public/getAllCollateral";
-const utils = require('../helper/utils');;
+const utils = require('../helper/utils');
 /**
  * calculate collateral locked in safedollar 
  */
 const Contracts = {
   SafeAssets: [{
     collateralAddress: "0x736Fb0CbB5F55941ecF6A811be4926c2cFa4dD4b",
-    address: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174"
+    address: ADDRESSES.polygon.USDC
   },{
     collateralAddress: "0xbd75b2a992ea83abed729e60022c9fe8fe539e54",
     address: "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"

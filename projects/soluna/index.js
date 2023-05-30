@@ -1,4 +1,4 @@
-const { sumSingleBalance, TOKEN_LIST, getBalance, } = require('../helper/terra')
+const { sumSingleBalance, TOKEN_LIST, getBalance, } = require('../helper/chain/terra')
 
 async function tvl(timestamp, ethBlock, { terra: block }) {
 	const balances = {}
@@ -11,5 +11,8 @@ async function tvl(timestamp, ethBlock, { terra: block }) {
 module.exports = {
   terra: {
     tvl
-  }
+  },
+hallmarks:[
+[1651881600, "UST depeg"],
+  ]
 }

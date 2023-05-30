@@ -16,6 +16,10 @@ const {
   moonriverArchives,
   milkomedaArchives,
   smartbchArchives,
+  dogeArchives,
+  dexitArchives,
+  coreDaoArchives,
+  bitgertArchives,
 } = require("./config");
 const {
   getStorageLPLockDataV33,
@@ -89,7 +93,7 @@ function getTVLTotal(args) {
         tokenSet.add(output.lpAddress)
       })
 
-      const tempBalances = await vestingHelper({ coreAssets: args.coreAssets, owner: lockContract, tokens: [...tokenSet], chain, block, })
+      const tempBalances = await vestingHelper({ useDefaultCoreAssets: true, owner: lockContract, tokens: [...tokenSet], chain, block, })
 
       Object.entries(tempBalances).forEach(([token, bal]) => sdk.util.sumSingleBalance(balances, token, bal))
     }
@@ -116,9 +120,7 @@ function getTVLTotal(args) {
         lpData.forEach(({ output: { lockedLPTokens, lpLockContract } }) => tokensAndOwners.push([lockedLPTokens, lpLockContract]))
       }
 
-      const tempBalances = await sumUnknownTokens({
-        chain, block, tokensAndOwners, coreAssets: args.coreAssets, balances,
-      })
+      const tempBalances = await sumUnknownTokens({ chain, block, tokensAndOwners, useDefaultCoreAssets: true, })
 
       Object.entries(tempBalances).forEach(([token, bal]) => sdk.util.sumSingleBalance(balances, token, bal))
     }
@@ -174,4 +176,18 @@ module.exports = {
   smartbch: {
     tvl: getTVLTotal(smartbchArchives),
   },
+  dogechain: {
+    tvl: getTVLTotal(dogeArchives),
+  },
+  dexit: {
+    tvl: getTVLTotal(dexitArchives),
+  },
+  core: {
+    tvl: getTVLTotal(coreDaoArchives),
+  },
+  bitgert: {
+    tvl: getTVLTotal(bitgertArchives),
+  }
 };
+
+module.exports.dexit.tvl = () => ({})

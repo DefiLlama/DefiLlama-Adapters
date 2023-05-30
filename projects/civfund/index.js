@@ -16,6 +16,6 @@ module.exports = {
     ethereum: {
         tvl: () => ({}),
         staking: async (_, block) => sumTokens2({ block, owner: civFarmContract, tokens: stakingTokens}),
-        pool2: async (_, block) => sumTokens2({ block, owner: civFarmContract, tokens: pool2Tokens, resolveLP: true }),
+        pool2: async (_, block) => sumTokens2({ block, owner: civFarmContract, tokens: pool2Tokens}),
     },
 }

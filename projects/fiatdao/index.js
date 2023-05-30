@@ -1,15 +1,17 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk")
 const { default: BigNumber } = require("bignumber.js")
 const abi = require('./abi.json')
 
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs")
-const { fetchURL } = require("../helper/utils")
+const { getConfig } = require('../helper/cache')
+
 
 const STAKING_CONTRACT = "0xe98ae8cD25CDC06562c29231Db339d17D02Fd486"
 const STAKING_NFT = "0xE9F9936a639809e766685a436511eac3Fb1C85bC"
 const RGT = "0xD291E7a03283640FDc51b121aC401383A46cC623"
-const YFI = "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e"
-const MKR = "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2"
+const YFI = ADDRESSES.ethereum.YFI
+const MKR = ADDRESSES.ethereum.MKR
 const BOND = "0x0391D2021f89DC339F60Fff84546EA23E337750f"
 const UMA = "0x04Fa0d235C4abf4BcF4787aF4CF447DE572eF828"
 const GOHM = "0x0ab87046fbb341d058f17cbc4c1133f25a20a52f"
@@ -58,14 +60,14 @@ async function tvl(timestamp, block) {
   if (block && block < 14928955 ) return {};
   const balances = {};
 
-  const metadata = (await fetchURL('https://raw.githubusercontent.com/fiatdao/changelog/main/metadata/metadata-mainnet.json')).data
+  const metadata = (await getConfig('fiatdao', 'https://raw.githubusercontent.com/fiatdao/changelog/main/metadata/metadata-mainnet.json'))
   const allVaults = Object.keys(metadata)
   const { output: tokensAll } = await sdk.api.abi.multiCall({ abi: abi.token, calls: allVaults.map(i => ({ target: i })), block, })
   const tokens = []
   const vaults = []
 
   tokensAll.forEach(({ output, input: { target } }) => {
-    if (output !== '0x0000000000000000000000000000000000000000') {
+    if (output !== ADDRESSES.null) {
       vaults.push(target)
       tokens.push(output)
     }

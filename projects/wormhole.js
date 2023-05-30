@@ -1,15 +1,14 @@
-const retry = require('async-retry')
-const axios = require("axios");
+const { get } = require('./helper/http')
 const BigNumber = require("bignumber.js");
 const url = 'https://europe-west3-wormhole-315720.cloudfunctions.net/mainnet-notionaltvl'
 let _response
 
 function fetch(chainId) {
   return async () => {
-    if (!_response) _response = retry(async bail => await axios.get(url))
+    if (!_response) _response = get(url)
     const res = await _response
-    if (chainId in res.data.AllTime) {
-      const tvl = res.data.AllTime[chainId]["*"].Notional
+    if (chainId in res.AllTime) {
+      const tvl = res.AllTime[chainId]["*"].Notional
       return new BigNumber(tvl).toFixed(2)
     } else {
       console.log('Chain no longer supported: %s', chainId)
@@ -26,6 +25,9 @@ module.exports = {
   ethereum: {
     fetch: fetch("2")
   },
+  aptos: {
+    fetch: fetch("22")
+  },
   terra: {
     fetch: fetch("3")
   },
@@ -40,6 +42,9 @@ module.exports = {
   },
   oasis: {
     fetch: fetch("7")
+  },
+  algorand: {
+    fetch: fetch("8")
   },
   aurora: {
     fetch: fetch("9")
@@ -59,8 +64,18 @@ module.exports = {
   celo: {
     fetch: fetch("14")
   },
+  near: {
+    fetch: fetch("15")
+  },
+  moonbeam: {
+    fetch: fetch("16")
+  },
   terra2: {
     fetch: fetch("18")
   },
-  fetch: fetch("*")
+  fetch: fetch("*"),
+  hallmarks:[
+    [1652008803, "UST depeg"],
+    [Math.floor(new Date('2022-02-02')/1e3), 'Hacked: Signature Exploit'],
+  ],
 }

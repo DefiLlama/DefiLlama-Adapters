@@ -19,12 +19,7 @@ module.exports = {
       getUniTVL({
         factory: '0xb89E86701C4Fe4a22a16914e3b0Df53eA4BE771b',
         chain: 'cronos',
-        coreAssets: [
-          "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23",
-          "0xc21223249CA28397B4B6541dfFaEcC539BfF0c59",
-          "0x66e428c3f67a68878562e79A0234c1F83c208770",
-          "0xe243CCab9E66E6cF1215376980811ddf1eb7F689",
-        ]
+        useDefaultCoreAssets: true,
       }),
       lendingMarket.tvl
     ]),

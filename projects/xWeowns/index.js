@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 
 const contracts = {
     "xWeowns": "0xaBA0Bb586335B938a7a817A900017D891268d32c",
     "USDT": "0x32D2b9bBCf25525b8D7E92CBAB14Ca1a5f347B14",
-    "USDTethereum": "0xdac17f958d2ee523a2206206994597c13d831ec7"
+    "USDTethereum": ADDRESSES.ethereum.USDT
 };
 
 async function tvl(timestamp, block, chainBlocks) {
@@ -17,7 +18,7 @@ async function tvl(timestamp, block, chainBlocks) {
             chain: 'lachain'
         })).output
     };
-};
+}
 
 module.exports = {
     doublecounted: false,

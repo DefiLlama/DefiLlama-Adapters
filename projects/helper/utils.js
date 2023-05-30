@@ -1,8 +1,9 @@
+const ADDRESSES = require('./coreAssets.json')
 const BigNumber = require("bignumber.js");
-const retry = require('async-retry')
 const axios = require("axios");
 const sdk = require('@defillama/sdk')
 const http = require('./http')
+const env = require('./env')
 const erc20 = require('./abis/erc20.json')
 
 async function returnBalance(token, address, block, chain) {
@@ -18,49 +19,12 @@ async function returnEthBalance(address) {
   return parseFloat(ethAmount);
 }
 
-async function getPrices(object) {
-  var stringFetch = '';
-  for (var key in object[0]) {
-    if (object[0][key] != 'stable') {
-      if (stringFetch.length > 0) {
-        stringFetch = stringFetch + ',' + object[0][key];
-      } else {
-        stringFetch = object[0][key];
-      }
-    }
-  }
-  return fetchURL(`https://api.coingecko.com/api/v3/simple/price?ids=${stringFetch}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`)
-}
-
-async function getPricesFromContract(object) {
-  var contractFetch = ''
-  for (var key in object) {
-    if (object[key]) {
-      if (contractFetch.length > 0) {
-        contractFetch = contractFetch + ',' + object[key];
-      } else {
-        contractFetch = object[key];
-      }
-    }
-  }
-  return fetchURL(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${contractFetch}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`)
-}
-
-async function getPricesfromString(stringFeed) {
-  return fetchURL(`https://api.coingecko.com/api/v3/simple/price?ids=${stringFeed}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`)
-}
-
-
 async function fetchURL(url) {
-  return retry(async bail => await axios.get(url), {
-    retries: 3
-  })
+  return axios.get(url)
 }
 
 async function postURL(url, data) {
-  return retry(async bail => await axios.post(url, data), {
-    retries: 3
-  })
+  return axios.post(url, data)
 }
 
 function createIncrementArray(length) {
@@ -71,40 +35,57 @@ function createIncrementArray(length) {
   return arr
 }
 
-const LP_SYMBOLS = ['SLP', 'spLP', 'JLP', 'OLP', 'SCLP', 'DLP', 'MLP', 'MSLP', 'ULP', 'TLP', 'HMDX', 'YLP', 'SCNRLP', 'PGL', 'GREEN-V2', 'PNDA-V2', 'vTAROT', 'TETHYSLP', 'BAO-V2', 'DINO-V2', 'DFYNLP', 'LavaSwap', 'RLP', 'ZDEXLP', 'lawSWAPLP']
+function getParamCalls(length) {
+  return createIncrementArray(length).map(i => ({ params: i }))
+}
+
+const LP_SYMBOLS = ['SLP', 'spLP', 'JLP', 'OLP', 'SCLP', 'DLP', 'MLP', 'MSLP', 'ULP', 'TLP', 'HMDX', 'YLP', 'SCNRLP', 'PGL', 'GREEN-V2', 'PNDA-V2', 'vTAROT', 'vEvolve', 'TETHYSLP', 'BAO-V2', 'DINO-V2', 'DFYNLP', 'LavaSwap', 'RLP', 'ZDEXLP', 'lawSWAPLP', 'ELP', 'ICELP', 'LFG_LP', 'KoffeeMug']
 const blacklisted_LPS = [
   '0xb3dc4accfe37bd8b3c2744e9e687d252c9661bc7',
   '0xf146190e4d3a2b9abe8e16636118805c628b94fe',
   '0xCC8Fa225D80b9c7D42F96e9570156c65D6cAAa25',
   '0xaee4164c1ee46ed0bbc34790f1a3d1fc87796668',
+  '0x93669cfce302c9971169f8106c850181a217b72b',
 ].map(i => i.toLowerCase())
 
 function isLP(symbol, token, chain) {
   // console.log(symbol, chain, token)
   if (!symbol) return false
-  if (token && blacklisted_LPS.includes(token.toLowerCase())) return false
+  if (token && blacklisted_LPS.includes(token.toLowerCase()) || symbol.includes('HOP-LP-')) return false
   if (chain === 'bsc' && ['OLP', 'DLP', 'MLP', 'LP'].includes(symbol)) return false
-  if (chain === 'bsc' && ['WLP', 'FstLP', ].includes(symbol)) return true
-  if (chain === 'avax' && ['ELP', 'EPT', 'CRL', 'YSL'].includes(symbol)) return true
+  if (chain === 'bsc' && ['WLP', 'FstLP', 'BLP',].includes(symbol)) return true
+  if (chain === 'pulse' && ['PLP',].includes(symbol)) return true
+  if (chain === 'avax' && ['ELP', 'EPT', 'CRL', 'YSL', 'BGL', 'PLP'].includes(symbol)) return true
   if (chain === 'ethereum' && ['SSLP'].includes(symbol)) return true
+  if (chain === 'polygon' && ['WLP', 'FLP'].includes(symbol)) return true
+  if (chain === 'moonriver' && ['HBLP'].includes(symbol)) return true
+  if (chain === 'ethpow' && ['LFG_LP'].includes(symbol)) return true
+  if (chain === 'ethereum' && ['SUDO-LP'].includes(symbol)) return false
+  if (chain === 'dogechain' && ['DST-V2'].includes(symbol)) return true
   if (chain === 'harmony' && ['HLP'].includes(symbol)) return true
+  if (chain === 'klaytn' && ['NLP'].includes(symbol)) return true
+  if (chain === 'fantom' && ['HLP'].includes(symbol)) return true
   if (chain === 'songbird' && ['FLRX', 'OLP'].includes(symbol)) return true
+  if (chain === 'arbitrum' && ['DXS', 'ZLP',].includes(symbol)) return true
   if (chain === 'metis' && ['NLP', 'ALP'].includes(symbol)) return true // Netswap/Agora LP Token
+  if (chain === 'optimism' && /(-ZS)/.test(symbol)) return true
+  if (chain === 'arbitrum' && /^(crAMM|vrAMM)-/.test(symbol)) return true // ramses LP
+  if (chain === 'bsc' && /(-APE-LP-S)/.test(symbol)) return false
   if (['fantom', 'nova',].includes(chain) && ['NLT'].includes(symbol)) return true
   let label
 
-  if (symbol.startsWith('ZLK-LP') || symbol.includes('DMM-LP') || (chain === 'avax' && 'DLP' === symbol))
+  if (symbol.startsWith('ZLK-LP') || symbol.includes('DMM-LP') || (chain === 'avax' && 'DLP' === symbol) || symbol === 'fChe-LP')
     label = 'Blackisting this LP because of unsupported abi'
 
   if (label) {
-    if (DEBUG_MODE) console.log(label, token, symbol)
+    sdk.log(label, token, symbol)
     return false
   }
 
-  const isLPRes = LP_SYMBOLS.includes(symbol) || /(UNI-V2|vAMM)/.test(symbol) || symbol.split(/\W+/).includes('LP')
+  const isLPRes = LP_SYMBOLS.includes(symbol) || /(UNI-V2|vAMM|sAMM)/.test(symbol) || symbol.split(/\W+/).includes('LP')
 
-  if (DEBUG_MODE && isLPRes && !['UNI-V2', 'Cake-LP'].includes(symbol))
-    console.log(chain, symbol, token)
+  if (isLPRes && !['UNI-V2', 'Cake-LP'].includes(symbol))
+    sdk.log(chain, symbol, token)
 
   return isLPRes
 }
@@ -149,23 +130,21 @@ async function getBalance(chain, account) {
   switch (chain) {
     case 'bitcoin':
       return (await http.get(`https://chain.api.btc.com/v3/address/${account}`)).data.balance / 1e8
+    case 'bep2':
+      const balObject = (await http.get(`https://api-binance-mainnet.cosmostation.io/v1/account/${account}`)).balances.find(i => i.symbol === 'BNB')
+      return +(balObject || { free: 0 }).free
     default: throw new Error('Unsupported chain')
   }
 }
 
-function getUniqueAddresses(addresses) {
+function getUniqueAddresses(addresses, isCaseSensitive = false) {
   const set = new Set()
-  addresses.forEach(i => set.add(i.toLowerCase()))
+  addresses.forEach(i => set.add(isCaseSensitive ? i : i.toLowerCase()))
   return [...set]
 }
 
-const DEBUG_MODE = !!process.env.LLAMA_DEBUG_MODE
-
-function log(...args) {
-  if (DEBUG_MODE) {
-    console.log(...args);
-  }
-}
+const DEBUG_MODE = env.LLAMA_DEBUG_MODE
+const log = sdk.log
 
 function sliceIntoChunks(arr, chunkSize = 100) {
   const res = [];
@@ -186,20 +165,55 @@ function stripTokenHeader(token) {
   return token.indexOf(":") > -1 ? token.split(":")[1] : token;
 }
 
-async function diplayUnknownTable({ tvlResults = {}, tvlBalances = {}, storedKey = 'ethereum', log = false, tableLabel = 'Unrecognized tokens' }) {
-  if (!DEBUG_MODE && !log) return;
+async function diplayUnknownTable({ tvlResults = {}, tvlBalances = {}, storedKey = 'ethereum', tableLabel = 'Unrecognized tokens' }) {
+  if (!DEBUG_MODE) return;
   const balances = {}
+  storedKey = storedKey.split('-')[0]
   Object.entries(tvlResults.tokenBalances).forEach(([label, balance]) => {
     if (!label.startsWith('UNKNOWN')) return;
     const token = label.split('(')[1].replace(')', '')
-    balances[token] = +(+tvlBalances[token] / 1e18).toFixed(0)
-    if (balances[token] === 0) delete balances[token]
+    balances[token] = tvlBalances[token]
+    if (balances[token] === '0') delete balances[token]
   })
 
-  return debugBalances({ balances, chain: storedKey, log, tableLabel })
+  try {
+    await debugBalances({ balances, chain: storedKey, log, tableLabel, withETH: false, })
+  } catch (e) {
+    // console.log(e)
+    log('failed to fetch prices for', balances)
+  }
 }
 
-async function debugBalances({ balances = {}, chain, log = false, tableLabel = '' }) {
+const nullAddress = ADDRESSES.null
+async function getSymbols(chain, tokens) {
+  tokens = tokens.filter(i => i.includes('0x')).map(i => i.slice(i.indexOf('0x'))).filter(i => i !== nullAddress)
+  const calls = tokens.map(i => ({ target: i }))
+  const { output: symbols } = await sdk.api.abi.multiCall({
+    abi: 'erc20:symbol',
+    calls,
+    chain,
+  })
+
+  const response = {}
+  symbols.map(i => response[i.input.target] = i.output)
+  return response
+}
+
+async function getDecimals(chain, tokens) {
+  tokens = tokens.filter(i => i.includes('0x')).map(i => i.slice(i.indexOf('0x')))
+  const calls = tokens.map(i => ({ target: i }))
+  const { output: symbols } = await sdk.api.abi.multiCall({
+    abi: 'erc20:decimals',
+    calls,
+    chain,
+  })
+
+  const response = {}
+  symbols.map(i => response[i.input.target] = i.output)
+  return response
+}
+
+async function debugBalances({ balances = {}, chain, log = false, tableLabel = '', withETH = true }) {
   if (!DEBUG_MODE && !log) return;
   if (!Object.keys(balances).length) return;
 
@@ -207,7 +221,13 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
   const tokens = []
   const ethTokens = []
   Object.keys(balances).forEach(label => {
-    const token = stripTokenHeader(label)
+    let token = stripTokenHeader(label)
+    if (chain === 'tron') {
+      token = label.slice(5)
+      tokens.push(token)
+      labelMapping[label] = token
+      return
+    }
     if (!token.startsWith('0x')) return;
     if (!label.startsWith(chain))
       ethTokens.push(token)
@@ -221,56 +241,62 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
     return;
   }
 
+  const api = new sdk.ChainApi({ chain })
 
-  const { output: symbols } = await sdk.api.abi.multiCall({
-    abi: 'erc20:symbol',
-    calls: tokens.map(i => ({ target: i })),
-    chain,
-  })
+  const symbols = await api.multiCall({ abi: 'erc20:symbol', calls: tokens, permitFailure: true, })
+  const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: tokens, permitFailure: true, })
+  const name = await api.multiCall({ abi: erc20.name, calls: tokens, permitFailure: true, })
 
-  const { output: name } = await sdk.api.abi.multiCall({
-    abi: erc20.name,
-    calls: tokens.map(i => ({ target: i })),
-    chain,
-  })
+  let symbolsETH, nameETH
 
-  const { output: symbolsETH } = await sdk.api.abi.multiCall({
-    abi: 'erc20:symbol',
-    calls: ethTokens.map(i => ({ target: i })),
-  })
+  if (withETH) {
+    const ethApi = new sdk.ChainApi()
+    symbolsETH = await ethApi.multiCall({ abi: 'erc20:symbol', calls: ethTokens, permitFailure: true, })
+    nameETH = await ethApi.multiCall({ abi: erc20.name, calls: ethTokens, permitFailure: true, })
+  }
 
-  const { output: nameETH } = await sdk.api.abi.multiCall({
-    abi: erc20.name,
-    calls: ethTokens.map(i => ({ target: i })),
-  })
-
-  let symbolMapping = symbols.reduce((a, i) => ({ ...a, [i.input.target]: i.output }), {})
-  let nameMapping = name.reduce((a, i) => ({ ...a, [i.input.target]: i.output }), {})
-  symbolMapping = symbolsETH.reduce((a, i) => ({ ...a, [i.input.target]: i.output }), symbolMapping)
-  nameMapping = nameETH.reduce((a, i) => ({ ...a, [i.input.target]: i.output }), nameMapping)
+  let symbolMapping = symbols.reduce((a, i, y) => ({ ...a, [tokens[y]]: i }), {})
+  let decimalsMapping = decimals.reduce((a, i, y) => ({ ...a, [tokens[y]]: i }), {})
+  let nameMapping = name.reduce((a, i, y) => ({ ...a, [tokens[y]]: i }), {})
+  if (withETH) {
+    symbolMapping = symbolsETH.reduce((a, i, y) => ({ ...a, [ethTokens[y]]: i }), symbolMapping)
+    nameMapping = nameETH.reduce((a, i, y) => ({ ...a, [ethTokens[y]]: i }), nameMapping)
+  }
   const logObj = []
   Object.entries(balances).forEach(([label, balance]) => {
     let token = labelMapping[label]
     let name = token && nameMapping[token] || '-'
     let symbol = token && symbolMapping[token] || '-'
-    logObj.push({ name, symbol, balance, label })
+    let decimal = token && decimalsMapping[token]
+    if (decimal)
+      balance = (balance / (10 ** decimal)).toFixed(0)
+
+    logObj.push({ name, symbol, balance, label, decimals: decimal })
   })
 
   console.log('Balance table for [%s] %s', chain, tableLabel)
   console.table(logObj)
 }
 
+function once(func) {
+  let previousResponse
+  let called = false
+  function wrapped(...args) {
+    if (called) return previousResponse
+    called = true
+    previousResponse = func(...args)
+    return previousResponse
+  }
+  return wrapped
+}
+
 module.exports = {
-  DEBUG_MODE,
   log,
   createIncrementArray,
   fetchURL,
   postURL,
-  getPricesfromString,
-  getPrices,
   returnBalance,
   returnEthBalance,
-  getPricesFromContract,
   isLP,
   mergeExports,
   getBalance,
@@ -280,4 +306,8 @@ module.exports = {
   debugBalances,
   stripTokenHeader,
   diplayUnknownTable,
+  getSymbols,
+  getDecimals,
+  getParamCalls,
+  once,
 }

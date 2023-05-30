@@ -30,9 +30,9 @@ async function tvl() {
     for (let i = 0; i < tokenAddresses.length; i++) {
         const supply = (await axios.get(burl + tokenAddresses[i])).data.totalSupply;
         balances[tokenMap[tokenAddresses[i]]] = new BigNumber(supply);
-    };
+    }
     return balances;
-};
+}
 
 function evm(chain, target) {
     return async (timestamp, block, chainBlocks) => {
@@ -43,7 +43,7 @@ function evm(chain, target) {
             chain
         })).output / 10 ** 9 };
     };
-};
+}
 
 module.exports = {
     timetravel: false,
@@ -56,7 +56,7 @@ module.exports = {
     ethereum: {
         tvl: evm('ethereum', '0x29d578CEc46B50Fa5C88a99C6A4B70184C062953')
     },
-    avalanche: {
+    avax:{
         tvl: evm('avax', '0x1ffefd8036409cb6d652bd610de465933b226917')
     },
     milkomeda: {
@@ -68,4 +68,7 @@ module.exports = {
     fantom: {
         tvl: evm('fantom', '0x1ffEFD8036409Cb6d652bd610DE465933b226917')
     },
+    hallmarks:[
+        [1651881600, "UST depeg"],
+      ],
 };

@@ -1,0 +1,3 @@
+{
+  "getTotalTokens": "function getTotalTokens(address token, uint256 contractBalance, address tokenStrategy) returns (uint256 totalTokens)"
+}

@@ -42,6 +42,7 @@
     "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     "wrapped": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
     "metapoolBases": {
+      "am3CRVg": "0xe7a24ef0c5e95ffb0f6684b813a78f2a3ad7d171",
       "am3CRV": "0x19793b454d3afc7b454f206ffe95ade26ca6912c",
       "4eur-f": "0xad326c253a84e9805559b73a08724e11e49ca651"
     },
@@ -102,12 +103,17 @@
       "3CRV": "0xc5cfada84e902ad92dd40194f0883ad49639b023"
     }
   },
+  "celo": {
+    "registriesMapping": {
+      "stableFactory": "0x5277a0226d10392295e8d383e9724d6e416d6e6c"
+    }
+  },
   "optimism": {
     "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
     "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     "wrapped": "0x4200000000000000000000000000000000000006",
     "metapoolBases": {
-      "3CRV": "0x061b87122ed14b9526a813209c8a59a633257bab"
+      "3CRV": "0x1337bedc9d22ecbe766df105c9623922a27963ec"
     }
   },
   "xdai": {
@@ -122,6 +128,12 @@
     "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
     "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     "wrapped": "0x4244eb811d6e0ef302326675207a95113db4e1f8",
+    "metapoolBases": {}
+  },
+  "kava": {
+    "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
+    "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "wrapped": "0xc86c7c0efbd6a49b35e8714c5f59d99de09a225b",
     "metapoolBases": {}
   }
 }

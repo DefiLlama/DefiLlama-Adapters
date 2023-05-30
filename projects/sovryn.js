@@ -1,11 +1,18 @@
-const retry = require('async-retry')
-const axios = require("axios");
+const { get } = require('./helper/http')
+
 async function fetch() {
-  let tvl_feed = await retry(async bail => await axios.get('https://backend.sovryn.app/tvl'))
-  let tvl = tvl_feed.data.tvlLending.totalUsd + tvl_feed.data.tvlAmm.totalUsd + tvl_feed.data.tvlProtocol.totalUsd + tvl_feed.data.tvlSubprotocols.totalUsd;
+  const data = await get('https://backend.sovryn.app/tvl')
+  const tvl = data.tvlLending.totalUsd + data.tvlAmm.totalUsd + data.tvlProtocol.totalUsd + data.tvlSubprotocols.totalUsd
   return tvl;
 }
 
 module.exports = {
-  fetch
+  methodology: "Sum up TVL of all Sovryn contracts and subprotocols (Lending Protocol, AMMs, Protocol Contract that holds margin trading collateral, Zero Lending Protocol and Mynt Bitcoin-backed stablecoin protocol). This data comes from the Sovryn backend API, which is open source and can be found here: https://github.com/DistributedCollective/Sovryn-graph-wrapper",
+  rsk: {
+    fetch
+  },
+  fetch,
+  hallmarks: [
+    [1680685098, "Mynt and Zero added to TVL"]
+  ]
 }
