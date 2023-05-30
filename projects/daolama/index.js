@@ -2,7 +2,7 @@ const { tvl } = require('./tvl');
 const { borrowed } = require('./borrowed');
 
 module.exports = {
-  methodology: 'Counts the tokens and the floor value of NFTs locked in the contracts to be used as collateral to borrow. Borrowed coins are not counted towards the TVL',
+  methodology: 'Counts minimum values of all pledged NFTs as borrowed TON coins (50% of actual prices) plus the pool size. Actual prices of total NFTs may be higher. Doesn\'t count NFTs that were not bought back.',
   timetravel: false,
   misrepresentedTokens: true,
   ton: {
