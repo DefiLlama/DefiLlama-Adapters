@@ -1,12 +1,12 @@
 const sdk = require("@defillama/sdk");
-const {get} = require("../helper/http");
+// const {get} = require("../helper/http");
 const BigNumber = require('bignumber.js');
 const POOL = "0x587A7eaE9b461ad724391Aa7195210e0547eD11d";
 
 async function tvl(_, _1, _2, { api }) {
 
-  let price = await get("https://api.coingecko.com/api/v3/simple/price?ids=filecoin&vs_currencies=usd");
-  let priceFloat = price.filecion.usd;
+  // let price = await get("https://api.coingecko.com/api/v3/simple/price?ids=filecoin&vs_currencies=usd");
+  // let priceFloat = price.filecion.usd;
   
   const balances = {};
   const bal = await sdk.api2.eth.getBalance({target: POOL, chain: api.chain, decimals: api.decimals});
@@ -27,11 +27,9 @@ async function tvl(_, _1, _2, { api }) {
   sdk.util.sumSingleBalance(
     balances,
     POOL,
-    b.times(priceFloat).div(10**18).toFixed(0),  
+    b.div(10**18).toFixed(0),  
     api.chain
   );
-
-  console.log(balances);
 
   return balances;
 }
