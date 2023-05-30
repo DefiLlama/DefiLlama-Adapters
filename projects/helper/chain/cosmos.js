@@ -23,6 +23,7 @@ const endPoints = {
   cronos: "https://lcd-crypto-org.cosmostation.io",
   injective: "https://lcd-injective.whispernode.com:443",
   migaloo: "https://migaloo-api.polkachu.com",
+  fxcore: "https://fx-rest.functionx.io",
 };
 
 const chainSubpaths = {

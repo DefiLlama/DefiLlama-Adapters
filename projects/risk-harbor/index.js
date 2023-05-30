@@ -39,6 +39,7 @@ const networks = {
     ],
   },
   arbitrum: {
+    vaultManager: "0x713C8810F79B4F101f66bB5b5a1326473ae5c7f7",
     vaults: [
       [
         ADDRESSES.arbitrum.USDC,
@@ -52,6 +53,22 @@ const networks = {
         ADDRESSES.arbitrum.USDC,
         "0x2DafE4DD7C661c2CEaf967d51206f5130AA32782",
       ],
+      [
+        ADDRESSES.arbitrum.USDC,
+        "0xdd74ee6c6568429537bf30cb63dab0061b83c41a"
+      ],
+      [
+        ADDRESSES.arbitrum.USDC,
+        "0xc7c52aa35d499e0c18ff3854f24e65d43c97d5a4"
+      ],
+      [
+        ADDRESSES.arbitrum.USDC,
+        "0x695d803207579bb4f34c97ab3e3a449de8ad042e"
+      ],
+      [
+        ADDRESSES.arbitrum.USDC,
+        "0x451709e54474a7a7df889e98124180847782cb4a"
+      ]
     ],
   },
   avax: {
@@ -99,7 +116,44 @@ const networks = {
         ADDRESSES.optimism.USDC,
         "0xfB969b45Fa9186CD8B420407552aD447F7c3817b",
       ],
+      [
+        ADDRESSES.optimism.USDC,
+        "0x88e7385eacf8e31c9cddce7632bfe654b58f4a09",
+      ],
+      [
+        ADDRESSES.optimism.USDC,
+        "0x88e7385eacf8e31c9cddce7632bfe654b58f4a09"
+      ],
+      [
+        ADDRESSES.optimism.USDC,
+        "0x01bd59477e03d9034684a118ba67cfa32cd9b123"
+      ],
+      [
+        ADDRESSES.optimism.USDC,
+        "0xdf9d37e1a19474e5928fb410a3f8513a25ba680c"
+      ]
+      
     ],
+  },
+  polygon: {
+    vaults: [
+      [
+        ADDRESSES.polygon.USDC,
+        "0xdf9d37e1a19474e5928fb410a3f8513a25ba680c"
+      ],
+      [
+        ADDRESSES.polygon.USDC,
+        "0xadaab38f3ecdf2b486eb3cab7f54bdcbdfb7fd66"
+      ],
+      [
+        ADDRESSES.polygon.USDC,
+        "0x4db26943e581c1befaa5d682f6404de17c028487"
+      ],
+      [
+        ADDRESSES.polygon.USDC,
+        "0xa644bdf7f0da0b83623ac4d01607ea91a24b1ede"
+      ]
+    ]
   },
   terra: {
     vaults: [
@@ -275,6 +329,9 @@ module.exports = {
   },
   optimism: {
     tvl: evm("optimism"),
+  },
+  polygon: {
+    tvl: evm("polygon"),
   },
   hallmarks: [[1651881600, "UST depeg"]],
 };

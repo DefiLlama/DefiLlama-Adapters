@@ -7,8 +7,8 @@ const config = require("./config")
 
 async function getPoolList(api, MasterMagpieAddress, VlMGPAddress, MWOMAddress, MWOMSVAddress) {
   let poolTokens = await api.fetchList({ lengthAbi: MasterMagpieAbi.poolLength, itemAbi: MasterMagpieAbi.registeredToken, target: MasterMagpieAddress })
-  const customPools = new Set([MWOMAddress, VlMGPAddress, MWOMSVAddress])
-  poolTokens = poolTokens.filter(i => !customPools.has(i))
+  const customPools = new Set([MWOMAddress, VlMGPAddress, MWOMSVAddress, '0x2130Df9dba40AfeFcA4C9b145f5ed095335c5FA3'].map(i => i.toLowerCase()))
+  poolTokens = poolTokens.filter(i => !customPools.has(i.toLowerCase()))
   const infos = await api.multiCall({ calls: poolTokens, abi: MasterMagpieAbi.tokenToPoolInfo, target: MasterMagpieAddress })
   const depositTokens = await api.multiCall({ calls: infos.map(i => i.helper), abi: WombatPoolHelperAbi.depositToken, })
   return [poolTokens, depositTokens]

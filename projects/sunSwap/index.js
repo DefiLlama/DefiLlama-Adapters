@@ -1,28 +1,19 @@
-const axios = require('axios')
+const { get } = require('../helper/http')
 
-let nowDate = new Date();
-nowDate.setFullYear(nowDate.getFullYear() - 1);
-let T = parseInt(nowDate.getTime() / 1000);
+async function tvl(ts){
+  const { data } = await get('https://abc.endjgfsv.link/swap/scan/liquidityall')
+  const lastItem = data[data.length -1]
+  if (lastItem.time < (ts - 24 * 3600)) throw new Error('Outdated Data!')
 
-const url = "https://apilist.tronscan.org/api/defiTvl?type=tvlline&project=&startTime=" + T;
-
-function getItemByName (projectName, listArr) {
-  for (let i = 0; i < listArr.length; i++) {
-    if (listArr[i].project === projectName) {
-      return listArr[i];
-    }
+  return {
+    tether: lastItem.liquidity
   }
 }
 
-async function fetch(){
-    const pools = await axios.get(url);
-    let item = getItemByName('SUN.io', pools.data.projects);
-    return parseInt(item.locked);
-}
-
 module.exports = {
+  misrepresentedTokens: true,
+  timetravel: false,
   tron: {
-    fetch
+    tvl
   },
-    fetch
 }
