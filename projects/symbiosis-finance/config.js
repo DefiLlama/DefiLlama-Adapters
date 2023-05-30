@@ -145,5 +145,14 @@ module.exports = {
         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
       ]
     },
+    {
+      name: 'polygon_zkevm',
+      tokens: [
+        ADDRESSES.polygon_zkevm.USDC,
+      ],
+      holders: [
+        '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
+      ]
+    },
   ]
 }
