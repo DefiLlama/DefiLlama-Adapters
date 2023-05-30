@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { blockQuery } = require("../helper/http");
 const env = require("../helper/env");
@@ -25,8 +26,8 @@ const addressMap = {
     "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0", // veFXS -> FXS
   "0x3fa73f1e5d8a792c80f426fc8f84fbf7ce9bbcac":
     "0xc0c293ce456ff0ed870add98a0828dd4d2903dbf", //vlAURA -> AURA
-  "0x72a19342e8f1838460ebfccef09f6585e32db86e":
-    "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b", //vlCVX -> CVX
+  [ADDRESSES.ethereum.vlCVX]:
+    ADDRESSES.ethereum.CVX, //vlCVX -> CVX
   "0xa02d8861fbfd0ba3d8ebafa447fe7680a3fa9a93":
     "0xd1ec5e215e8148d76f4460e4097fd3d5ae0a3558", //aura50OHM-50WETH -> 50OHM-50WETH
   "0x0ef97ef0e20f84e82ec2d79cbd9eda923c3daf09":

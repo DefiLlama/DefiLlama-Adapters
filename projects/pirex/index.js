@@ -2,9 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 
-const CVX = "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b";
 const PirexCVX = "0x35A398425d9f1029021A92bc3d2557D42C8588D7";
-const CVXLocker = "0x72a19342e8F1838460eBFCCEf09F6585e32db86E";
 const pxGMX = "0x9a592b4539e22eeb8b2a3df679d572c7712ef999";
 const pxGLP = "0x0eac365e4d7de0e293078bd771ba7d0ba9a4c892"
 const GMX = ADDRESSES.arbitrum.GMX;
@@ -14,11 +12,11 @@ async function ethereum(ts, block, _, { api }) {
   const balances = {};
   const { locked: lockedCVX } = await api.call({
     abi: abi.balances,
-    target: CVXLocker,
+    target: ADDRESSES.ethereum.vlCVX,
     params: [PirexCVX],
   });
 
-  sdk.util.sumSingleBalance(balances, CVX, lockedCVX);
+  sdk.util.sumSingleBalance(balances, ADDRESSES.ethereum.CVX, lockedCVX);
 
   return balances;
 }
