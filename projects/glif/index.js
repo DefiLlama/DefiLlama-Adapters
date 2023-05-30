@@ -23,7 +23,7 @@ module.exports = {
 
       const totalAssetsBN = BigNumber.from(totalAssets)
       const totalIssuedBN = BigNumber.from(totalIssued)
-      const totalLockedByMinersBN = BigNumber.from(totalLockedByMiners)
+      const totalLockedByMinersBN = BigNumber.from(totalLockedByMiners.totalMinerCollaterals)
 
       // first we remove the totalIssued by the Pool from its totalAssets, to avoid double counting in the next step
       const totalAssetsMinusIssued = totalAssetsBN.sub(totalIssuedBN);
