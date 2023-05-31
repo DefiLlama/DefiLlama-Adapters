@@ -15,18 +15,17 @@ async function tvl(timestamp, ethBlock) {
     })
   ).output;
 
-  for (let i = 0; i < stablecoins.length; i++) {
+
     const balance_stablecoin = (
       await sdk.api.abi.call({
         abi: abi.checkBalance,
         target: VAULT_CONTRACT,
-        params: stablecoins[i],
         block: ethBlock,
       })
     ).output;
 
     sdk.util.sumSingleBalance(balances, stablecoins, balance_stablecoin);
-  }
+
   return balances;
 }
 
@@ -35,3 +34,4 @@ module.exports = {
     tvl: tvl,
   },
 };
+
