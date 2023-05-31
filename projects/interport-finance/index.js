@@ -1,17 +1,37 @@
 const { sumTokens2 } = require('../helper/unwrapLPs');
 const { staking } = require('../helper/staking');
 
-const vault = '0xEc8DDCb498b44C35EFaD7e5e43E0Caf6D16A66E8';
+const usdtVault = '0xEc8DDCb498b44C35EFaD7e5e43E0Caf6D16A66E8';
+const usdcVault = '0x5b45B414c6CD2a3341bE70Ba22BE786b0124003F';
+const usdcVaultZksync = '0xc724832c5ed81599aE3E4EBC0eC4f87A285B5838';
 
 module.exports = {
-  methodology: 'Interport TVL is calculated by summing the USDT balance of the vaults contracts, ITP token balance in the ITP Revenue Share contract and LP token balance in the LP Revenue Share contract.',
+  methodology: 'Interport TVL is calculated by summing the USDT and USDC balance of the vaults contracts, ITP token balance in the ITP Revenue Share contract and LP token balance in the LP Revenue Share contract.',
 };
 
 ['ethereum', 'avax', 'bsc', 'fantom', 'arbitrum', 'polygon'].forEach(chain => {
   module.exports[chain] = {
     tvl: async (_, _1, _2, { api }) => {
-      const token = await api.call({  abi: 'address:asset', target: vault}) 
-      return sumTokens2({ api, owner: vault, tokens: [token]})
+      const token = await api.call({  abi: 'address:asset', target: usdtVault})
+      return sumTokens2({ api, owner: usdtVault, tokens: [token]})
+    }
+  }
+});
+
+['ethereum', 'avax', 'bsc', 'fantom', 'arbitrum', 'polygon'].forEach(chain => {
+  module.exports[chain] = {
+    tvl: async (_, _1, _2, { api }) => {
+      const token = await api.call({  abi: 'address:asset', target: usdcVault})
+      return sumTokens2({ api, owner: usdtVault, tokens: [token]})
+    }
+  }
+});
+
+['zksync'].forEach(chain => {
+  module.exports[chain] = {
+    tvl: async (_, _1, _2, { api }) => {
+      const token = await api.call({  abi: 'address:asset', target: usdcVaultZksync})
+      return sumTokens2({ api, owner: usdtVault, tokens: [token]})
     }
   }
 })
