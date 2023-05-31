@@ -5,28 +5,10 @@ const ETHV2Funds = [
   '0x69c53679EC1C06f3275b64C428e8Cd069a2d3966', // ETH V2 Fund (ETH mainnet)
 ]
 
-async function ethereum(timestamp, blockETH, chainBlocks){
-  let balances = {};
-
-  for (const fund of ETHV2Funds) {
-    const tokenUnderlying = (await sdk.api.abi.call({
-      target: fund,
-      abi: abi.tokenUnderlying,
-      chain: 'ethereum',
-      block: blockETH
-    })).output
-
-    const underlyingInFund = (await sdk.api.abi.call({
-      target: fund,
-      abi: abi.getTotalUnderlying,
-      chain: 'ethereum',
-      block: blockETH
-    })).output
-
-    sdk.util.sumSingleBalance(balances, tokenUnderlying, underlyingInFund)
-  }
-  
-  return balances
+async function ethereum(timestamp, blockETH, chainBlocks, { api }){
+  const tokens = await api.multiCall({  abi: abi.tokenUnderlying, calls: ETHV2Funds})
+  const bals = await api.multiCall({  abi: abi.getTotalUnderlying, calls: ETHV2Funds})
+  api.addTokens(tokens, bals)
 }
 
 module.exports = {
