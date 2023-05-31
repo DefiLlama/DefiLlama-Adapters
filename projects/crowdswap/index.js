@@ -19,10 +19,11 @@ async function tvl(_, _b, _cb, { api, }) {
   const token0s = await api.multiCall({ abi: 'address:token0', calls: pools })
   const token1s = await api.multiCall({ abi: 'address:token1', calls: pools })
   const tokensAndOwners = pools.map((pool, i) => [[token0s[i], pool], [token1s[i], pool]]).flat()
-  return sumTokens2({ api, tokensAndOwners})
+  return sumTokens2({ api, tokensAndOwners })
 }
 
 const config = {
+  ethereum: { factory: '0xBeA843A2DC516c6F38F159a6a55e80Ec40Cf2286', fromBlock: 16882649, },
   arbitrum: { factory: '0x9ff74eea1e7f0f8ee437b70d68f7cdc1a1030642', fromBlock: 91681087, },
   polygon: { factory: '0xab7dac1daf712693539d770a967a9bc7ba47470c', fromBlock: 37984740, },
   bsc: { factory: '0x08f65111cb9b517b10e5c1e63cb2224467e7988a', fromBlock: 25927093, },
