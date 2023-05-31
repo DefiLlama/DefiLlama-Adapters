@@ -28,6 +28,10 @@ const scriptAddresses = [
   "addr1wyw3ap36lnepstpjadwg8cg73llvmju4y94kmfld23lkzjggq4hyj",
   "addr1wxrxa3ucywn3lqpkzlyucak0a7aavkudh49fqt06yc05sws4l4zs2",
   "addr1wy6e9jukn8fpx7kesrpmapsnmz0cgq6lnskuff0xc0junggv6gd8l",
+  // iUSD Market
+  "addr1wyslq7j0q9kq2ve28yzfgv5fdz4nzfay6cup2r634zr5zdqlhptgt", // action
+  "addr1wxwwjr76m4cgn6768p9ljg2jrg08evhrvh0wdq0q60327rqfenh4g", // batch
+  "addr1w9p7xj8wxvgpfjs532a8nmue69zj73k8644zes7vmg7c72s8symwu", // batchFinal
 ];
 
 module.exports = {
