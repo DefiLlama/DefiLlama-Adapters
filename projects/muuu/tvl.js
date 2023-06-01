@@ -10,31 +10,6 @@ const BOOSTER_ADDRESS = "0x6d12e3dE6dAcDBa2779C4947c0F718E13b78cfF4";
 const MUKGL_ADDRESS = "0x5eaAe8435B178d4677904430BAc5079e73aFa56e";
 const MULAY_ADDRESS = "0xDDF2ad1d9bFA208228166311FC22e76Ea7a4C44D";
 const MUUU_REWARDS_ADDRESS = "0xB2ae0CF4819f2BE89574D3dc46D481cf80C7a255";
-// const TOKENS = {
-//   // USDC
-//   [ADDRESSES.moonbeam.USDC]: ADDRESSES.ethereum.USDC,
-//   // USDT
-//   [ADDRESSES.astar.USDT]: ADDRESSES.ethereum.USDT,
-//   // DAI
-//   [ADDRESSES.astar.DAI]: ADDRESSES.ethereum.DAI,
-//   // Starlay lUSDC -> USDC
-//   [ADDRESSES.astar.lUSDC]: ADDRESSES.ethereum.USDC,
-//   // Starlay lUSDT -> USDT
-//   [ADDRESSES.astar.lUSDT]: ADDRESSES.ethereum.USDT,
-//   // Starlay lDAI -> DAI
-//   [ADDRESSES.astar.lDAI]: ADDRESSES.ethereum.DAI,
-//   // BUSD
-//   [ADDRESSES.oasis.ceUSDT]: ADDRESSES.ethereum.BUSD,
-//   // 3KGL -> DAI(TMP)
-//   "0x18BDb86E835E9952cFaA844EB923E470E832Ad58": ADDRESSES.ethereum.DAI,
-//   // BAI -> DAI(TMP)
-//   [ADDRESSES.astar.BAI]: ADDRESSES.ethereum.DAI,
-//   // aUSD -> DAI(TMP)
-//   [ADDRESSES.astar.aUSD]: ADDRESSES.ethereum.DAI,
-//   // ASTR
-//   [ADDRESSES.astar.nASTR]: "0x67f6b5bc5670fd29bcc8af3d6633b2840aba2f30",
-//   [ADDRESSES.astar.WASTR]: "0x67f6b5bc5670fd29bcc8af3d6633b2840aba2f30",
-// };
 
 async function tvl(timestamp, block, chainBlocks) {
   let allCoins = {};
