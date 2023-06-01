@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { stakings } = require('../helper/staking')
 const { pool2UniV3 } = require('../helper/pool2')
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs');
@@ -9,10 +10,10 @@ const config = {
     toa: [
       [nullAddress, '0xaAA50f60a256b74D1C71ED4AD739836b50059201'],  // ETH pool legacy
       [nullAddress,'0x9494c9FfE0735832885269a10c910CDb227a7B0F'],   // ETH pool new
-      ['0xdac17f958d2ee523a2206206994597c13d831ec7', '0x51bb873D5b68309cf645e84234bC290b7D991D2C'], //usdt pool legacy 
-      ['0xdac17f958d2ee523a2206206994597c13d831ec7', '0x2535D0578562C88c1c875075A1085a4AD3117b20'], //usdt pool new 
-      ['0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', '0xdCE224F9299CDd66e4D01D196d4cabce35a2F478'], //wbtc pool legacy 
-      ['0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', '0x725fbd08e4c5d4b5978E48667d96D03F9B1C4d3A'], //wbtc pool new
+      [ADDRESSES.ethereum.USDT, '0x51bb873D5b68309cf645e84234bC290b7D991D2C'], //usdt pool legacy 
+      [ADDRESSES.ethereum.USDT, '0x2535D0578562C88c1c875075A1085a4AD3117b20'], //usdt pool new 
+      [ADDRESSES.ethereum.WBTC, '0xdCE224F9299CDd66e4D01D196d4cabce35a2F478'], //wbtc pool legacy 
+      [ADDRESSES.ethereum.WBTC, '0x725fbd08e4c5d4b5978E48667d96D03F9B1C4d3A'], //wbtc pool new
       ['0x45804880De22913dAFE09f4980848ECE6EcbAf78', '0x787c68f6bCAb352Ec871C522d038bc7A30268020'], //paxg pool
     ],
     token: '0x3E5D9D8a63CC8a88748f229999CF59487e90721e',
@@ -37,6 +38,16 @@ const config = {
       '0x842fDf4A6e861983D3Ef9299bF26EFC1FDB1Ba7A', // Smart Pool 2 months + 6 months
       '0x799BfC125170ab4dF34E9dC07DB47AA0edB9bC7C', // Smart Pool 6 months + 6 months
     ],
+  },
+  
+  optimism: {
+    toa: [
+      [nullAddress, '0x5B7C5daa5f4Bb37c457dA468Da1CDaA6219892A1'],  // ETH pool 
+      [ADDRESSES.optimism.USDC, '0x24682cFDc060316355C26C420d0748F289502e83'], //usdt pool new 
+      ['0x68f180fcCe6836688e9084f035309E29Bf0A2095', '0x469CC7AF1696B5e4E6151796Dc3B3fEf39b34f39'], //wbtc pool new
+      [ADDRESSES.optimism.OP, '0xc9394748D5f633152AD3F8f557a9B7743148db1B'], //Op pool new
+    ],
+    token: '0x3E5D9D8a63CC8a88748f229999CF59487e90721e',
   },
 }
 
