@@ -1,22 +1,20 @@
-async function tvl(_, _b, _cb, { api }) {
-  const nGlpVaults = "0x6Bfa4F1DfAfeb9c37E4E8d436E1d0C5973E47e25";
-  const nUSDCVault = "0x2a958665bC9A1680135241133569C7014230Cb21";
+const ADDRESSES = require("../helper/coreAssets.json");
+const { nullAddress, treasuryExports } = require("../helper/treasury");
 
-  const nGlpTotalValue = await api.call({
-    abi: "uint256:totalValue",
-    target: nGlpVaults,
-  });
-  const nUSDCTotalValue = await api.call({
-    abi: "uint256:totalAssets",
-    target: nUSDCVault,
-  });
+const treasury = "0xfba3b455211a3a09689788Ac3A14B4F8Baf012B4";
+const NEU = "0xdA51015b73cE11F77A115Bb1b8a7049e02dDEcf0";
+const esNEU = "0xdeBB612442159b34c24B7BAF20b1CC3218a06925";
+const sbfNEU = "0x44F0685482A7180785e309947176C34D0A3d9187";
 
-  const tvl = nUSDCTotalValue + (nGlpTotalValue / 1e24).toFixed();
-
-  return tvl; // tvl in 6 decimal
-}
-module.exports = {
+module.exports = treasuryExports({
   arbitrum: {
-    tvl,
+    tokens: [
+      nullAddress,
+      ADDRESSES.arbitrum.USDC,
+      "0x422B5A91b5Cdef61D3400671CCdd5bE22C7CE655",
+      ADDRESSES.optimism.DAI,
+    ],
+    owners: [treasury],
+    ownTokens: [NEU, esNEU, sbfNEU],
   },
-};
+});
