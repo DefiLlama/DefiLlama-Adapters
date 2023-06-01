@@ -35,15 +35,12 @@ async function getAllPairs(factory, chain) {
 }
 
 function xpla(timestamp, ethBlock, chainBlocks) {
-  console.log("log1:")
   const factory = "xpla1j33xdql0h4kpgj2mhggy4vutw655u90z7nyj4afhxgj4v5urtadq44e3vd"
 
     try{
     return async (_, _1, _2, { chain }) => {
-      console.log("log2:")
       const pairs = (await getAllPairs(factory, chain)).filter(pair => (pair.assets[0].balance && pair.assets[1].balance))
 
-      console.log("log3:", JSON.stringify(pairs))
       const data = pairs.map(({ assets }) => ({
         token0: assets[0].addr === 'axpla' ? 'xpla' : assets[0].addr,
         token0Bal: assets[0].addr === 'axpla' ? assets[0].balance/1000000000000000000 : assets[0].balance,
@@ -51,7 +48,6 @@ function xpla(timestamp, ethBlock, chainBlocks) {
         token1Bal: assets[1].addr === 'axpla' ? assets[1].balance/1000000000000000000 : assets[1].balance,
       }))
       
-      console.log("log4:")
       return transformDexBalances({ chain, data })
     }
   } catch(err) {
