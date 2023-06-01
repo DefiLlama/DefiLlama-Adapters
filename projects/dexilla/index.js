@@ -60,8 +60,11 @@ async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
 }
 
 module.exports = {
+  hallmarks: [
+    [1685577300,"Rug Pull"]
+  ],
   misrepresentedTokens: false,
   methodology: 'TVL counts the ERC20 tokens on the exchange contracts.',
-  start: 1685022373, // May 25, 2023 @ 13:46:13 (UTC +0)
+  start: 1685022373, // May 25, 2023 @ 13:46:13 (UTC +0) ,
   era: { tvl },
 }
