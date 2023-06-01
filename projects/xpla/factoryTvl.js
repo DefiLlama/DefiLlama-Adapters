@@ -48,7 +48,7 @@ function xpla(timestamp, ethBlock, chainBlocks) {
         token1Bal: assets[1].addr === 'axpla' ? assets[1].balance/1000000000000000000 : assets[1].balance,
       }))
       
-      return transformDexBalances({ chain, data })
+      return await transformDexBalances({ chain, data })
     }
   } catch(err) {
     console.log("err:",err)
