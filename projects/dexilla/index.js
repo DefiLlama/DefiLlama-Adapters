@@ -8,17 +8,17 @@ const BUSD = '0x2039bb4116B4EFc145Ec4f0e2eA75012D6C0f181'
 
 const exchanges = [
   {
-    addr: '0x9AD0de2A1c5E5521aE5df1070de3b501844F34DB',
+    addr: '0xCA2eE260BFA64D8Fb01B1cd75615aAa42D528214',
     token1: WETH,
     token2: USDC,
   },
   {
-    addr: '0xBA64D4604032bc0cDaa66c79d74fde329a70DBeE',
+    addr: '0x588450db6e3586Ec0468a7Bb36f1d5f3BbbE2084',
     token1: WETH,
     token2: BUSD,
   },
   {
-    addr: '0x61A9536f40bE8f6197562C6A3c69A29CA14D7B13',
+    addr: '0x0DE31204e919D71f0E7b9E5766950e99f1017826',
     token1: USDC,
     token2: BUSD,
   },
