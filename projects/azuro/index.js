@@ -5,9 +5,11 @@ const config = {
   polygon: {
     owners: [
       '0x2a838ab9b037db117576db8d0dcc3b686748ef7c',
+      '0x7043E4e1c4045424858ECBCED80989FeAfC11B36',
     ],
     tokens: [
-      ADDRESSES.polygon.USDC, // USDC
+      ADDRESSES.polygon.USDC,
+      ADDRESSES.polygon.USDT,
     ],
   },
   xdai: {
