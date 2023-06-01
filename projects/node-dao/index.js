@@ -4,9 +4,8 @@ module.exports = {
   ethereum: {
     tvl: async (_, _1, _2, { api }) => {
       const owner = '0x8103151E2377e78C04a3d2564e20542680ed3096'
-      const nfts = await api.call({ target: '0x58553f5c5a6aee89eabfd42c231a18ab0872700d', abi: 'erc20:balanceOf', params: owner })
-      api.add(nullAddress, nfts * 32 * 1e18)
-      return sumTokens2({ api, owner, tokens: [nullAddress]})
+      const totalEth = await api.call({  abi: 'uint256:getTotalEthValue', target: owner })
+      api.add(nullAddress,totalEth)
     }
   },
   filecoin: {
