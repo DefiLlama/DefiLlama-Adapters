@@ -48,6 +48,7 @@ function xpla(timestamp, ethBlock, chainBlocks) {
     }))
     
     return await transformDexBalances({ chain, data })
+  }
 }
 
 module.exports = {
