@@ -1,3 +1,0 @@
-{
-  "checkBalance": "function checkBalance() external view returns (uint256)"
-}
