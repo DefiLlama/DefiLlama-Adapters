@@ -1,41 +1,25 @@
-const sdk = require("@defillama/sdk");
-const { api } = require("@defillama/sdk");
-const { ethers } = require("ethers");
-// const abi = require("./abi.json");
-
+const sdk = require('@defillama/sdk');
+const { transformArbitrumAddress } = require('../helper/portedTokens');
 const VAULT_CONTRACT = "0xD522395dfD017F47a932D788eC7CB058aDBbc783";
+const USDC = "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8"
 
-async function arbTvl(_, _1, _2, { api }) {
+async function tvl(timestamp, block, chainBlocks){
   const balances = {};
-  const abi = ["function checkBalance() external view returns (uint256)"];
- const contract = new ethers.Contract(VAULT_CONTRACT, abi, ethers.provider);
-  // const stablecoins = (
-  //   await sdk.api.abi.call({
-  //     abi: abi.getAllAssets,
-  //     target: VAULT_CONTRACT,
-  //     block: ethBlock,
-  //   })
-  // ).output;
+  const transform = await transformArbitrumAddress();
 
-  // const balance_stablecoin = (
-  //   await api.call({
-  //     abi: abi,
-  //     target: VAULT_CONTRACT,
-  //     block: _2,
-  //   })
-  // );
+  const collateralBalance = (await sdk.api.abi.call({
+    abi: "uint256:checkBalance",
+    chain: 'arbitrum',
+    target: VAULT_CONTRACT,
+    block: chainBlocks['arbitrum'],
+  })).output;
 
-  const balance_stablecoin = await contract.checkBalance();
-  // console.log(balance_stablecoin);
-
-  sdk.util.sumSingleBalance(balances, VAULT_CONTRACT, balance_stablecoin, api.chain);
-
+  sdk.util.sumSingleBalance(balances, transform(USDC), collateralBalance);
   return balances;
 }
 
 module.exports = {
-
   arbitrum: {
-    tvl: arbTvl,
-  },
+    tvl
+  }
 };
