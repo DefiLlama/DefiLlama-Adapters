@@ -12,6 +12,7 @@ module.exports = {
     [1677628800, "GDX Airdrop #2"],
     [1678838400, "Maker Rewards Launch"],
     [1679616000, "GDX Airdrop #3"],
+    [1682294400, "GDX Staking Launch"],
     [1682550000, "GDX Airdrop #4"],
   ],
 };
