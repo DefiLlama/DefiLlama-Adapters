@@ -23,12 +23,16 @@ const endPoints = {
   cronos: "https://lcd-crypto-org.cosmostation.io",
   injective: "https://lcd-injective.whispernode.com:443",
   migaloo: "https://migaloo-api.polkachu.com",
+  fxcore: "https://fx-rest.functionx.io",
+  xpla: "https://dimension-lcd.xpla.dev",
+  kava: "https://api2.kava.io",
 };
 
 const chainSubpaths = {
   crescent: "crescent",
   comdex: "comdex",
   umee: "umee",
+  kava: "kava",
 };
 
 function getEndpoint(chain) {
