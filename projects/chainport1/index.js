@@ -11,7 +11,6 @@ const vault5eth = "0x873089bC765a1C0AFAd48e34fCd305d17D81be87"
 const vault6eth = "0x450aD18B4442ce2972Af2a7A12439984db4Afaf9"
 const vault7eth = "0x763a0ca93af05ade98a52dc1e5b936b89bf8b89a"
 
-const portx = "0x104F3152D8ebFC3f679392977356962Ff36566aC"
 
 //BSC CHAIN
 
@@ -51,10 +50,10 @@ module.exports = treasuryExports({
         "0x43A96962254855F16b925556f9e97BE436A43448",
         "0x4da0C48376C277cdBd7Fc6FdC6936DEE3e4AdF75",
         "0x8E0fE2947752BE0d5ACF73aaE77362Daf79cB379",
-        "0xFe459828c90c0BA4bC8b42F5C5D44F316700B430"
+        "0xFe459828c90c0BA4bC8b42F5C5D44F316700B430",
+        "0x104F3152D8ebFC3f679392977356962Ff36566aC"
      ],
     owners: [vault1eth, vault2eth, vault3eth, vault4eth, vault5eth, vault6eth, vault7eth],
-    ownTokens: [portx],
   },
   bsc: {
     tokens: [ 
