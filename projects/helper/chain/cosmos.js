@@ -25,12 +25,14 @@ const endPoints = {
   migaloo: "https://migaloo-api.polkachu.com",
   fxcore: "https://fx-rest.functionx.io",
   xpla: "https://dimension-lcd.xpla.dev",
+  kava: "https://api2.kava.io",
 };
 
 const chainSubpaths = {
   crescent: "crescent",
   comdex: "comdex",
   umee: "umee",
+  kava: "kava",
 };
 
 function getEndpoint(chain) {
