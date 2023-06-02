@@ -72,6 +72,9 @@ const fixBalancesTokens = {
     'FX': { coingeckoId: "fx-coin", decimals: 18 },
     'usdt': { coingeckoId: "tether", decimals: 6 },
   },
+  xpla: {
+    'axpla': { coingeckoId: "xpla", decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
