@@ -24,6 +24,7 @@ const endPoints = {
   injective: "https://lcd-injective.whispernode.com:443",
   migaloo: "https://migaloo-api.polkachu.com",
   fxcore: "https://fx-rest.functionx.io",
+  xpla: "https://dimension-lcd.xpla.dev",
 };
 
 const chainSubpaths = {
