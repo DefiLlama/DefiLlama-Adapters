@@ -44,6 +44,10 @@ async function bscTvl() {
 }
 
 module.exports = {
+  hallmarks: [
+    [1671724719, "Start of bridge"],
+    [1683547217, "Ethereum, Binance vaults deployed"],
+  ],
   methodology:
     "TVL counts native tokens locked in EquitoFinance bridge vaults.",
   algorand: { tvl: algoTvl },
