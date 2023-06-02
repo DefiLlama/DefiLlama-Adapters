@@ -75,6 +75,28 @@ const fixBalancesTokens = {
   xpla: {
     'axpla': { coingeckoId: "xpla", decimals: 18 },
   },
+  kava: {
+    'bnb': { coingeckoId: "binancecoin", decimals: 8 },
+    'btcb': { coingeckoId: "bitcoin", decimals: 8  },
+    'busd': { coingeckoId: "binance-usd", decimals: 8 },
+    'hard': { coingeckoId: "kava-lend", decimals: 6 },
+    'swp': { coingeckoId: "kava-swap", decimals: 6 },
+    'ukava': { coingeckoId: "kava", decimals: 6 },
+    'bkava': { coingeckoId: "kava", decimals: 6 },
+    'xrpb': { coingeckoId: "ripple", decimals: 8 },
+    'usdx': { coingeckoId: "usdx", decimals: 6 },
+    'hbtc': { coingeckoId: "huobi-btc", decimals: 8 },
+    'erc20:axelar:usdc': { coingeckoId: "usd-coin", decimals: 6 },
+    'erc20:multichain:usdc': { coingeckoId: "usd-coin", decimals: 6 },
+    'erc20:multichain:usdt': { coingeckoId: "tether", decimals: 6 },
+    'erc20:multichain:wbtc': { coingeckoId: "wrapped-bitcoin", decimals: 8 },
+    'erc20:multichain:dai': { coingeckoId: "dai", decimals: 18 },
+    'ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2': { coingeckoId: "cosmos", decimals: 6 },
+    'ibc/799FDD409719A1122586A629AE8FCA17380351A51C1F47A80A1B8E7F2A491098': { coingeckoId: "akash-network", decimals: 6 },
+    'ibc/B8AF5D92165F35AB31F3FC7C7B444B9D240760FA5D406C49D24862BD0284E395': { coingeckoId: "terra-luna", decimals: 6 },
+    'ibc/0471F1C4E7AFD3F07702BEF6DC365268D64570F7C1FDC98EA6098DD6DE59817B': { coingeckoId: "osmosis", decimals: 6 },
+    'ibc/B448C0CA358B958301D328CCDC5D5AD642FC30A6D3AE106FF721DB315F3DDE5C': { coingeckoId: "terrausd", decimals: 6 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
