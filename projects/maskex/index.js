@@ -67,6 +67,11 @@ const config = {
         'TYshj25EXjnPB7P5xRGLmFTNPV6HMoZyrq',
         'TUiATx1SGs3TwwKY1atafMvYjrQD8KLiSk',
     ]
+  },
+  bitcoin: {
+    owners: [
+        '39DUz1NCkLu25GczWiAjjgZBu4mUjKbdNA', // this wallet was collected from https://blog.maskex.com/news/announcements/embracing-transparency-maskex-reveals-wallet-addresses
+    ]
   }
 }
 
