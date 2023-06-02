@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const REFERENCE_ASSETS = {};
 const coins = {};
 
@@ -761,7 +762,7 @@ module.exports = [{
     referenceAsset: REFERENCE_ASSETS.EUR,
     oldAdditionalRewards: [{
         name: 'SNX',
-        rewardTokenAddress: '0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F',
+        rewardTokenAddress: ADDRESSES.ethereum.SNX,
         rewardTokenDecimals: 18,
         rewardTokenCoingeckoId: 'havven',
     }],
@@ -856,7 +857,7 @@ module.exports = [{
     additionalRewards: [{
         name: 'LDO',
         amountDataKey: 'ldoRewards',
-        rewardTokenAddress: '0x5a98fcbea516cf06857215779fd812ca3bef1b32',
+        rewardTokenAddress: ADDRESSES.ethereum.LIDO,
         rewardTokenDecimals: 18,
         rewardTokenCoingeckoId: 'lido-dao',
     }],

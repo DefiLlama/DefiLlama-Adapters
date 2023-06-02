@@ -48,7 +48,7 @@ async function getLPList({ lps, chain, block, lpFilter = isLP, cache = {}, }) {
   if (!cache.symbol) cache.symbol = {}
   lps = lps.filter(i => i)
   const callArgs = lps.filter(i => !cache.symbol[i]).map(t => ({ target: t }));
-  (await sdk.api.abi.multiCall({ calls: callArgs, abi: symbol, block, chain })).output
+  (await sdk.api.abi.multiCall({ calls: callArgs, abi: symbol, block, chain, permitFailure: true, })).output
     .forEach(i => cache.symbol[i.input.target] = i.output)
   return lps.filter(i => lpFilter(cache.symbol[i], i, chain))
 }
@@ -356,10 +356,17 @@ async function getTokenPrices({
   }
 }
 
-async function sumUnknownTokens({ tokensAndOwners = [], balances = {},
+async function sumUnknownTokens({ api, tokensAndOwners = [], balances,
   coreAssets = [], owner, tokens, chain = 'ethereum', block, restrictTokenRatio, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
-  log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [], useDefaultCoreAssets = false, cache = {},
+  log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [], useDefaultCoreAssets = false, cache = {}, resolveLP = false,
 }) {
+  if (api) {
+    chain = api.chain ?? chain
+    block = api.block ?? block
+    if (!balances) balances = api.getBalances()
+  } else if (!balances) {
+    balances = {}
+  }
   if (!coreAssets.length && useDefaultCoreAssets)
     coreAssets = getCoreAssets(chain)
   blacklist = getUniqueAddresses(blacklist)
@@ -369,7 +376,7 @@ async function sumUnknownTokens({ tokensAndOwners = [], balances = {},
     else if (owner)
       tokensAndOwners = tokens.map(t => [t, owner])
   tokensAndOwners = tokensAndOwners.filter(t => !blacklist.includes(t[0]))
-  await sumTokens2({ balances, chain, block, tokensAndOwners, skipFixBalances: true, })
+  await sumTokens2({ api, balances, chain, block, tokensAndOwners, skipFixBalances: true, resolveLP, })
   const { updateBalances, } = await getTokenPrices({ cache, coreAssets, lps: [...tokensAndOwners.map(t => t[0]), ...lps,], chain, block, restrictTokenRatio, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio })
   await updateBalances(balances, { skipConversion, onlyLPs })
   const fixBalances = await getFixBalances(chain)

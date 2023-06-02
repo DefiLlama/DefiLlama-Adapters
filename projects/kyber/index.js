@@ -73,6 +73,9 @@ function elastic(chain) {
 
 module.exports = {
   timetravel: false,
+  hallmarks: [
+    [Math.floor(new Date('2023-04-17')/1e3), 'Kyber team identified a vuln'],
+  ],
 };
 Object.keys(chains).forEach(chain => {
   module.exports[chain] = {

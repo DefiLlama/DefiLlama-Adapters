@@ -1,3 +1,4 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abis = require('./config/cover/cover.js')
 const { sumTokens } = require('./helper/unwrapLPs');
@@ -21,7 +22,7 @@ async function tvl(ts, block) {
 
   protocolDetails.forEach(({ output }) => {
     output._allCovers.forEach(cover => toa.push(
-      ['0x6b175474e89094c44da98b954eedeac495271d0f', cover],  // DAI
+      [ADDRESSES.ethereum.DAI, cover],  // DAI
       ['0x16de59092dAE5CcF4A1E6439D611fd0653f0Bd01', cover],  // yearn DAI
     ))
   })

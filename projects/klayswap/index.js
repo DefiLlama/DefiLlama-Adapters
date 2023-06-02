@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require('../helper/staking')
 const { getUniTVL } = require('../helper/unknownTokens');
 const kslp = require('../helper/abis/kslp');
@@ -15,7 +16,7 @@ async function singlePoolTvl(_, _b, _cb, { api, }) {
 
 const dexTVL = getUniTVL({
   useDefaultCoreAssets: true,
-  factory: '0xc6a2ad8cc6e4a7e08fc37cc5954be07d499e7654',
+  factory: ADDRESSES.klaytn.KSP,
   abis: {
     allPairsLength: kslp.getPoolCount,
     allPairs: kslp.pools,
@@ -30,7 +31,7 @@ module.exports = {
   methodology: 'TVL counts the liquidity of KlaySwap DEX and staking counts the KSP that has been staked',
   klaytn: {
     tvl: sdk.util.sumChainTvls([singlePoolTvl, dexTVL,]),
-    staking: staking('0x2f3713f388bc4b8b364a7a2d8d57c5ff4e054830', '0xc6a2ad8cc6e4a7e08fc37cc5954be07d499e7654')
+    staking: staking('0x2f3713f388bc4b8b364a7a2d8d57c5ff4e054830', ADDRESSES.klaytn.KSP)
   },
   misrepresentedTokens: true,
 }

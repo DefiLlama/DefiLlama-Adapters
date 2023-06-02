@@ -1,8 +1,9 @@
 const abi = require('./abi')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const sdk = require('@defillama/sdk')
+const { nullAddress } = require('../helper/tokenMapping')
 
-function tarotHelper(exportsObj, config) {
+function tarotHelper(exportsObj, config, { tarotSymbol = 'vTAROT' } = {}) {
   async function tvl(_, _b, _cb, { api, }) {
     const { factories } = config[api.chain]
     const pools = []
@@ -24,21 +25,19 @@ function tarotHelper(exportsObj, config) {
       abi: abi.underlying,
       calls: pools,
     })
+
+    const filteredUnderlyings = underlyings.filter(i => i !== nullAddress)
+    const uSymbols = await api.multiCall({ abi: 'erc20:symbol', calls: filteredUnderlyings })
+    const uvTokens = filteredUnderlyings.filter((_, i) => uSymbols[i] === tarotSymbol)
+    const [uToken, totalBalance] = await Promise.all([
+      api.multiCall({ abi: 'address:underlying', calls: uvTokens }),
+      api.multiCall({ abi: 'uint256:totalBalance', calls: uvTokens }),
+    ])
+
     const toa = pools.map((v, i) => [underlyings[i], v])
+    api.addTokens(uToken, totalBalance)
     return sumTokens2({
-      api, tokensAndOwners: toa, resolveLP: true, blacklistedLPs: [
-        '0xa5c76fe460128936229f80f651b1deafa37583ae', // evolve in cronos
-        // '0x1f2bff0e37c592c7de6393c9dd3c0f7933408228', // disabled because _getReserves has a different abi compared to others
-        '0x357c1b507ef563d342afecd01001f1c0b525e25b', // disabled Error: Returned error: execution reverted: VaultToken: INSUFFICIENT_RESERVES
-        // '0x526b38991627c509a570ac18a46f7ac7aabc7e4a', // disabled Error: Returned error: execution reverted: VaultToken: INSUFFICIENT_RESERVES
-        '0x8706dc2067d64651620d66052bc065da1c81327f', // disabled Error: Returned error: execution reverted: VaultToken: INSUFFICIENT_RESERVES
-        '0x1c669f6caaf59dbfe86e9d8b9fb694d4d06611d5', // disabled Error: Returned error: execution reverted: VaultToken: INSUFFICIENT_RESERVES
-        '0x6cce00972bff06ec4fed6602bd22f65214e14d1f', // Not a smart contract
-        // '0x9bf544e9e96033d1c8b667824844a40aa6c2132a', //
-        '0x7eac79383c42bc16e33cd100008ee6d5e491680f', //
-        '0x05b2bcb2295a6f07c5d490128b6b4787c8c4464e', //
-        '0xd8d4a4738e285c33a2890fb2e225c692b84c55ca', //
-      ]
+      api, tokensAndOwners: toa, resolveLP: true, blacklistedTokens: uvTokens,
     })
   }
 

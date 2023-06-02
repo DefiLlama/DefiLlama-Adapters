@@ -36,6 +36,7 @@ async function transformArbitrumAddress() {
 
 async function transformInjectiveAddress() {
   return addr => {
+    if (addr.includes('ibc/')) return addr.replace(/.*ibc\//, 'ibc/').replace(/\//g, ':')
     addr = addr.replace(/\//g, ':')
     if (addr.startsWith('peggy0x'))
       return `ethereum:${addr.replace('peggy', '')}`
@@ -139,6 +140,7 @@ async function getChainTransform(chain) {
     if ([...ibcChains, 'ton', 'defichain', 'waves'].includes(chain)) return chainStr
     if (chain === 'cardano' && addr === 'ADA') return 'coingecko:cardano'
     if (chain === 'near' && addr.endsWith('.near')) return chainStr
+    if (chain === 'tron' && addr.startsWith('T')) return chainStr
     if (chain === 'tezos' && addr.startsWith('KT1')) return chainStr
     if (chain === 'terra2' && addr.startsWith('terra1')) return chainStr
     if (chain === 'algorand' && /^\d+$/.test(addr)) return chainStr
@@ -173,6 +175,7 @@ async function transformDexBalances({ chain, data, balances = {}, restrictTokenR
     i.token1Bal = +i.token1Bal
     priceToken(i)
   })
+  // sdk.log(prices) 
   data.forEach(addTokens)
   updateBalances(balances)
 
@@ -201,8 +204,8 @@ async function transformDexBalances({ chain, data, balances = {}, restrictTokenR
   }
 
   function updateBalances(balances) {
-    Object.entries(balances).forEach(([token, bal]) => {
-      bal = +bal
+    Object.entries(balances).forEach(([token]) => {
+      let bal = +balances[token] // this is safer as token balance might change while looping when two entries for same token exist
       const tokenKey = normalizeAddress(token, chain)
       if (!prices[tokenKey]) return;
       const priceObj = prices[tokenKey]

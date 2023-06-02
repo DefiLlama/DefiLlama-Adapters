@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const {transformPolygonAddress} = require('../helper/portedTokens');
 
 const ethPool = "0x8e300739960457B532Af3bEd62475B790e0Dee5E"
 const usdcPool = "0x05a37e1745926D8725A6C5dbD7Fd9873Dd9E356e"
-const usdcMatic = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"
-const wethMatic = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"
+const usdcMatic = ADDRESSES.polygon.USDC
+const wethMatic = ADDRESSES.polygon.WETH_1
 
 async function tvl(_timestamp, ethBlock, chainBlocks) {
     const balances = {};

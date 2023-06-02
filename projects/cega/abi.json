@@ -1,0 +1,8 @@
+{
+  "sumVaultUnderlyingAmounts": "uint256:sumVaultUnderlyingAmounts",
+  "queuedDepositsTotalAmount": "uint256:queuedDepositsTotalAmount",
+  "getProductNames": "string[]:getProductNames",
+  "products": "function products(string) view returns (address)",
+  "getLOVVaultMetadata": "function getLOVVaultMetadata(address productAddress, uint256 leverage) view returns (tuple(uint256 vaultStart, uint256 tradeDate, uint256 tradeExpiry, uint256 aprBps, uint256 tenorInDays, uint256 underlyingAmount, uint256 currentAssetAmount, uint256 totalCouponPayoff, uint256 vaultFinalPayoff, uint256 queuedWithdrawalsSharesAmount, uint256 queuedWithdrawalsCount, uint256 optionBarriersCount, uint256 leverage, address vaultAddress, uint8 vaultStatus, bool isKnockedIn, tuple(uint256 barrierBps, uint256 barrierAbsoluteValue, uint256 strikeBps, uint256 strikeAbsoluteValue, string asset, string oracleName, uint8 barrierType)[] optionBarriers)[])",
+  "getLOVProductQueuedDeposits": "function getLOVProductQueuedDeposits(address fcnProductAddress, uint256 leverage) view returns (uint256 totalQueuedDeposits)"
+}

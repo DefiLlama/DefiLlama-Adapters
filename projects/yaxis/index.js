@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const { unwrapUniswapLPs, } = require("../helper/unwrapLPs");
@@ -61,7 +62,7 @@ async function tvl(timestamp, block) {
     })
   ).output;
 
-  balances["0x0000000000000000000000000000000000000000"] = BigNumber(alethVault)
+  balances[ADDRESSES.null] = BigNumber(alethVault)
     .multipliedBy(eth)
     .dividedBy(crvTotalSupply)
     .toFixed(0);
