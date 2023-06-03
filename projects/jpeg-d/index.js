@@ -16,9 +16,9 @@ module.exports = {
     //[1674669600, "Autoglyphs & Fidenza support"], not that much impact on TVL
     //[1675166400, "Ringers & Chromie Squiggle support"], not that much impact on TVL
     //[1675598400, "70% LTV for CryptoPunks & BAYC"], not that much impact on TVL
-    [1678665600, "Otherdeeds & Meebits support"], 
+    //[1678665600, "Otherdeeds & Meebits support"], 
    // [1679529600, "BAKC support"], not that much impact on TVL
     [1683662400, "P2P Ape Staking"],
-    [1684108800, "Milady support"],
+    //[1684108800, "Milady support"],
   ],
 };
