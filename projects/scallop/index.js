@@ -12,7 +12,7 @@ const SCALLOP_PROGRAM_ID = new PublicKey("SCPv1LabixHirZbX6s7Zj3oiBogadWZvGUKRvX
 const COUPON_SEED = "coupon_seed";
 const POOL_AUTHORITY = "pool_authority_seed";
 
-const SCALLOP_SUI_MARKET_ID = "0x4448d9ae766de43b1644f6ad0a7c39c1bdd12cd1eb0f90b9f8c2b708562ab7ec"
+const SCALLOP_SUI_MARKET_ID = "0xcdd65d04519aea065fdbd15315ab75ff41a65a4a39fd71e107dffc4a06c02f32"
 
 function getTokenGeckoId(mintAuthority) {
   for (let i = 0; i < activePoolBases.length; i++) {
