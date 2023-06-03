@@ -66,12 +66,23 @@ async function suiTvl() {
       parent: object.fields.vault.fields.balance_sheets.fields.table.fields.id.id,
     });
 
-  console.log(balanceSheetsFields[0].fields.id)
   const balanceSheets = await sui.getObjects(balanceSheetsFields.map((e) => e.fields.id.id))
   
   balanceSheets.forEach((e) => {
+    const coinType = '0x' + e.fields.name.fields.name
     const amount = new BigNumber(e.fields.value.fields.cash).plus(new BigNumber(e.fields.value.fields.debt)).toString()
-    api.add(e.fields.name, amount)
+    api.add(coinType, amount)
+  })
+
+  const collateralStatsFields = await sui.getDynamicFieldObjects({
+    parent: object.fields.collateral_stats.fields.table.fields.id.id,
+  });
+
+  const collateralStats = await sui.getObjects(collateralStatsFields.map((e) => e.fields.id.id))
+
+  collateralStats.forEach((e) => {
+    const coinType = '0x' + e.fields.name.fields.name
+    api.add(coinType, e.fields.value.fields.amount)
   })
 }
 
