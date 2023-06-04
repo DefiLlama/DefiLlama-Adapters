@@ -1,5 +1,0 @@
-{
-  "underlyingToAssetConfig": "function underlyingToAssetConfig(address underlying) view returns (tuple(address eTokenAddress, bool borrowIsolated, uint32 collateralFactor, uint32 borrowFactor, uint24 twapWindow))",
-  "getEnteredMarkets": "function getEnteredMarkets(address account) view returns (address[])",
-  "getTotalSupplyAndDebts": "function getTotalSupplyAndDebts(address underlying) view returns (uint256 poolSize, uint256 totalBalances, uint256 totalBorrows, uint256 reserveBalance)"
-}

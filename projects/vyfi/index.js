@@ -2,18 +2,46 @@ const { toUSDTBalances } = require("../helper/balances");
 const { fetchURL } = require("../helper/utils");
 
 async function getStakingData() {
-  const tvl = await fetchURL("https://api.vyfi.io/analytics");
-  if (tvl.data.totalValueLocked <= 0) {
-    throw new Error("vyfi tvl is below 0");
+  const data = await fetchURL("https://api.vyfi.io/analytics");
+  
+  let tvl = 0;
+
+  // Include the total value locked in nftVaults and nftVaultsV2 and lpVaults
+  tvl += data.data.nftVaults.totalValueLocked;
+  tvl += data.data.nftVaultsV2.totalValueLocked;
+  tvl += data.data.lpVaultsV2.totalValueLocked;
+
+  for (const vault of data.data.tokenVaults.vaults.concat(data.data.tokenVaultsV2.vaults)) {
+    if (vault.project !== 'vyfi') {
+      tvl += vault.totalVaultValue;
+    }
   }
-  return toUSDTBalances(tvl.data.totalValueLocked);
+
+  return toUSDTBalances(tvl);
 }
+
+
+async function getVYFIVaultsData() {
+  const data = await fetchURL("https://api.vyfi.io/analytics");
+  
+  let tvl = 0;
+  for (const vault of data.data.tokenVaults.vaults.concat(data.data.tokenVaultsV2.vaults)) {
+    if (vault.project === 'vyfi') {
+      tvl += vault.totalVaultValue;
+    }
+  }
+  
+  return toUSDTBalances(tvl);
+}
+
+
+
 
 module.exports = {
   misrepresentedTokens: true,
   timetravel: false,
   cardano: {
-    tvl: () => ({}),
-    staking: getStakingData,
+    tvl: getStakingData,
+    staking: getVYFIVaultsData
   },
 };

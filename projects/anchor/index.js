@@ -36,7 +36,7 @@ module.exports = {
       // sumSingleBalance(balances, 'uusd', uusd,)
       return balances
     },
-    borrowed
+    // borrowed
   },
   avax: {
     tvl: avalancheTVL

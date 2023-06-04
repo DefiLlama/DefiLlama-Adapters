@@ -1,7 +1,9 @@
 const ethers = require('ethers')
 const glob = require('glob')
 const jsonfile = require('jsonfile')
+const fs = require('fs')
 
+let data = require('../projects/test/abi.json')
 const rootFolder = '../projects'
 const rootFolderTest = '../projects/yfii'
 
@@ -57,6 +59,10 @@ function isTransformable(obj, file) {
 function transform(obj, file) {
   const res = {}
   for (const [key, value] of Object.entries(obj)) {
+    if (['constructor', 'error'].includes(value.type)) {
+      console.log('skipping element of type: ', value.type)
+      continue;
+    }
     if (!value.inputs) console.log('inputs missing', file)
     const iLen = value.inputs.length === 0
     const oLen = value.outputs?.length === 1
@@ -85,12 +91,12 @@ function print() {
   }
   console.log(res)
   res = transform(res)
+  fs.writeFileSync(__dirname+'/../projects/test/abi.json', JSON.stringify(res, null, 2))
   // console.log(res)
   console.log(JSON.stringify(res, null, 2))
 }
 
 
-let data = 
 
 
 print()
