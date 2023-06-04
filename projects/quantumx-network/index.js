@@ -1,4 +1,5 @@
-var abiFile = require("./src/assets/abi/farms.abi.json");
+const { toUSDTBalances } = require("../helper/balances");
+var abiFile = require("./farms.abi.json");
 var {
   AbiRegistry,
   ContractFunction,
@@ -187,7 +188,7 @@ const tvl = async () => {
         : [];
 
       // console.log(pools);
-      console.log(farms.length);
+      // console.log(farms.length);
 
       // get tvl in dollar for farms
       for (let i = 0; i < farms.length; i++) {
@@ -239,7 +240,8 @@ const tvl = async () => {
         }
       }
 
-      return tvlDollar;
+      console.log("\n\nTotal calculated: ", tvlDollar);
+      return toUSDTBalances(tvlDollar);
     }
   } catch (err) {
     console.log("Exeption error : ", err);
