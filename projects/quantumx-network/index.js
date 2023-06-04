@@ -1,16 +1,15 @@
-const { toUSDTBalances } = require("../helper/balances");
-var abiFile = require("./farms.abi.json");
+var abiFile = require("./src/assets/abi/farms.abi.json");
 var {
   AbiRegistry,
   ContractFunction,
   ResultsParser,
   SmartContract,
-  SmartContractAbi,
+  // SmartContractAbi,
   Address,
-} = require("@elrondnetwork/erdjs/out");
+} = require("@multiversx/sdk-core/out");
 var {
   ProxyNetworkProvider,
-} = require("@elrondnetwork/erdjs-network-providers/out");
+} = require("@multiversx/sdk-network-providers");
 var axios = require("axios");
 var BigNumber = require("bignumber.js");
 //provider
@@ -78,12 +77,12 @@ const formatBalanceDolar = (token, price) => {
 const scQuery = async (funcName, args) => {
   try {
     const abiRegistry = await AbiRegistry.create(abiFile);
-    const abi = new SmartContractAbi(abiRegistry, ["Farms"]);
+    // const abi = new SmartContractAbi(abiRegistry, ["Farms"]);
     const contract = new SmartContract({
       address: new Address(
         "erd1qqqqqqqqqqqqqpgql6dxenaameqn2uyyru3nmmpf7e95zmlxu7zskzpdcw"
       ),
-      abi: abi,
+      abi: abiRegistry,
     });
 
     const query = contract.createQuery({
@@ -107,11 +106,13 @@ const tvl = async () => {
   let tvlDollar = 0;
 
   try {
+    console.log("getting all farms");
     const scFarmsRes = await scQuery("getAllFarms", []);
     const allFarmsFirstValue = scFarmsRes?.firstValue?.valueOf();
     if (allFarmsFirstValue) {
       // get all farms from sc
       const allFarms = allFarmsFirstValue.map((farm) => {
+        // console.log(farm);
         return {
           farm: {
             farmId: farm.field0.id.toNumber(),
@@ -120,8 +121,8 @@ const tvl = async () => {
             rewardToken: farm.field0.reward_token,
             creator: farm.field0.creator.bech32(),
           },
-          stakedBalance: farm.field1.toNumber(),
-          totalRewardsLeft: farm.field2.toNumber(),
+          stakedBalance: farm.field2.toNumber(),
+          totalRewardsLeft: farm.field3.toNumber(),
         };
       });
 
@@ -131,18 +132,22 @@ const tvl = async () => {
       let tokensInfo = [];
 
       // get the info of tokens in array from multiversx api
+      console.log("\n\ngetting all tokens info");
       const { data: tokensData } = await getFromAllTokens({
         identifiers: tokensIdentifiers.join(","),
       });
       // add info of the returned tokens to the array of info
       tokensInfo = [...tokensData];
+      // console.log(tokensInfo);
 
       // if egld is include in tokens indentifeirs, we need to get the data of egld for price
       const isEgldonTokens = tokensIdentifiers.includes("EGLD");
       if (isEgldonTokens) {
         // fetch egld data
+        console.log("getting egld data");
 
         const { data: egldData } = await getEconomics();
+        console.log("egldData", egldData);
 
         tokensInfo.unshift({
           type: "FungibleESDT",
@@ -157,8 +162,13 @@ const tvl = async () => {
         });
       }
 
+      console.log("\n\ngetting lp prices");
       const lptokensInfo = await fetchLpPrices();
+      // console.log(lptokensInfo);
+
+      console.log("\n\ngetting mex pairs");
       const { data: mexPairs } = await getMexPairs();
+
       const pools = mexPairs
         ? allFarms.filter(
             (farm) =>
@@ -172,9 +182,12 @@ const tvl = async () => {
             (farm) =>
               mexPairs.findIndex(
                 (mexPair) => mexPair.id === farm.farm.stakingToken
-              ) !== -1
+              ) !== -1 || farm.farm.stakingToken == "RAREWEGLD-b29251"
           )
         : [];
+
+      // console.log(pools);
+      console.log(farms.length);
 
       // get tvl in dollar for farms
       for (let i = 0; i < farms.length; i++) {
@@ -188,16 +201,19 @@ const tvl = async () => {
           lptokensInfo.find(
             (lpToken) => lpToken.token === farm.farm.stakingToken
           )?.tokenvalue || 0;
-        if (lpPrice) {
-          tvlDollar += formatBalanceDolar(
-            {
-              balance: farm.stakedBalance,
-              decimals: stakingToken.decimals,
-            },
-            Number(lpPrice)
-          );
-        }
+
+        tvlDollar += formatBalanceDolar(
+          {
+            balance: farm.stakedBalance,
+            decimals: stakingToken.decimals,
+          },
+          Number(lpPrice)
+        );
+        // console.log(stakingToken?.identifier);
+        // console.log(farm.stakedBalance);
+        // console.log(tvlDollar);
       }
+
       //   // get tvl in dollar for pools
       for (let i = 0; i < pools.length; i++) {
         const farm = pools[i];
@@ -205,7 +221,11 @@ const tvl = async () => {
         const stakingToken = tokensInfo.find(
           (token) => token.identifier === farm.farm.stakingToken
         );
-        if (stakingToken?.price) {
+
+        if (stakingToken?.identifier != "BONEZ-ff9a73" 
+        && stakingToken?.identifier != "RAREWEGLD-b29251"
+        && farm.farm.farmId != 36
+        && farm.farm.farmId != 41) {
           tvlDollar += formatBalanceDolar(
             {
               balance: farm.stakedBalance,
@@ -213,15 +233,18 @@ const tvl = async () => {
             },
             stakingToken?.price
           );
+          // console.log(stakingToken?.identifier);
+          // console.log(tvlDollar);
+          // console.log(farm);
         }
       }
 
-      return toUSDTBalances(tvlDollar);
+      return tvlDollar;
     }
   } catch (err) {
     console.log("Exeption error : ", err);
   }
-  return toUSDTBalances(tvlDollar);
+  return tvlDollar;
 };
 
 module.exports = {
