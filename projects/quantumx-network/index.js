@@ -13,6 +13,8 @@ var {
 } = require("@multiversx/sdk-network-providers");
 var axios = require("axios");
 var BigNumber = require("bignumber.js");
+const sdk = require('@defillama/sdk')
+
 //provider
 const provider = new ProxyNetworkProvider("https://api.multiversx.com", {
   timeout: 30000,
@@ -107,13 +109,13 @@ const tvl = async () => {
   let tvlDollar = 0;
 
   try {
-    console.log("getting all farms");
+    sdk.log("getting all farms");
     const scFarmsRes = await scQuery("getAllFarms", []);
     const allFarmsFirstValue = scFarmsRes?.firstValue?.valueOf();
     if (allFarmsFirstValue) {
       // get all farms from sc
       const allFarms = allFarmsFirstValue.map((farm) => {
-        // console.log(farm);
+        // sdk.log(farm);
         return {
           farm: {
             farmId: farm.field0.id.toNumber(),
@@ -133,22 +135,22 @@ const tvl = async () => {
       let tokensInfo = [];
 
       // get the info of tokens in array from multiversx api
-      console.log("\n\ngetting all tokens info");
+      sdk.log("\n\ngetting all tokens info");
       const { data: tokensData } = await getFromAllTokens({
         identifiers: tokensIdentifiers.join(","),
       });
       // add info of the returned tokens to the array of info
       tokensInfo = [...tokensData];
-      // console.log(tokensInfo);
+      // sdk.log(tokensInfo);
 
       // if egld is include in tokens indentifeirs, we need to get the data of egld for price
       const isEgldonTokens = tokensIdentifiers.includes("EGLD");
       if (isEgldonTokens) {
         // fetch egld data
-        console.log("getting egld data");
+        sdk.log("getting egld data");
 
         const { data: egldData } = await getEconomics();
-        console.log("egldData", egldData);
+        sdk.log("egldData", egldData);
 
         tokensInfo.unshift({
           type: "FungibleESDT",
@@ -163,11 +165,11 @@ const tvl = async () => {
         });
       }
 
-      console.log("\n\ngetting lp prices");
+      sdk.log("\n\ngetting lp prices");
       const lptokensInfo = await fetchLpPrices();
-      // console.log(lptokensInfo);
+      // sdk.log(lptokensInfo);
 
-      console.log("\n\ngetting mex pairs");
+      sdk.log("\n\ngetting mex pairs");
       const { data: mexPairs } = await getMexPairs();
 
       const pools = mexPairs
@@ -187,8 +189,8 @@ const tvl = async () => {
           )
         : [];
 
-      // console.log(pools);
-      // console.log(farms.length);
+      // sdk.log(pools);
+      // sdk.log(farms.length);
 
       // get tvl in dollar for farms
       for (let i = 0; i < farms.length; i++) {
@@ -210,9 +212,9 @@ const tvl = async () => {
           },
           Number(lpPrice)
         );
-        // console.log(stakingToken?.identifier);
-        // console.log(farm.stakedBalance);
-        // console.log(tvlDollar);
+        // sdk.log(stakingToken?.identifier);
+        // sdk.log(farm.stakedBalance);
+        // sdk.log(tvlDollar);
       }
 
       //   // get tvl in dollar for pools
@@ -234,17 +236,17 @@ const tvl = async () => {
             },
             stakingToken?.price
           );
-          // console.log(stakingToken?.identifier);
-          // console.log(tvlDollar);
-          // console.log(farm);
+          // sdk.log(stakingToken?.identifier);
+          // sdk.log(tvlDollar);
+          // sdk.log(farm);
         }
       }
 
-      console.log("\n\nTotal calculated: ", tvlDollar);
+      sdk.log("\n\nTotal calculated: ", tvlDollar);
       return toUSDTBalances(tvlDollar);
     }
   } catch (err) {
-    console.log("Exeption error : ", err);
+    sdk.log("Exeption error : ", err);
   }
   return tvlDollar;
 };
