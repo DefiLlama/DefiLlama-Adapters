@@ -35,12 +35,12 @@
       "token": "0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c",
       "currency": "EUROC"
     },
-	{
+    {
       "address": "0x57BC10876fEbdC57f0ABb8C82ffAE600eEcc03A2",
       "token": "0xC08512927D12348F6620a698105e1BAac6EcD911",
       "currency": "GYEN"
     },
-	{
+    {
       "address": "0xF3d7AA346965656E7c65FB4135531e0C2270AF83",
       "token": "0xcadc0acd4b445166f12d2c07eac6e2544fbe2eef"
     },
@@ -67,12 +67,12 @@
       "token": "0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c",
       "currency": "EUROC"
     },
-	{
+    {
       "address": "0x63cb0f59b7e67c7d4cb96214ca456597d85c587d",
       "token": "0xC08512927D12348F6620a698105e1BAac6EcD911",
       "currency": "GYEN"
     },
-	{
+    {
       "address": "0xDA9dcc7fd51F0D9Aa069a82647A5F3ba594edAED",
       "token": "0xcadc0acd4b445166f12d2c07eac6e2544fbe2eef"
     },
@@ -99,10 +99,16 @@
       "token": "0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c",
       "currency": "EUROC"
     },
-	{
+    {
       "address": "0x9aFD65013770525E43a84e49c87B3015C2C32517",
       "token": "0xC08512927D12348F6620a698105e1BAac6EcD911",
       "currency": "GYEN"
+    }
+    {
+      "address": "0x7d1bA2c18CbDE0D790Cc1d626F0c70b3c13C9eec",
+      "token": "0xC08512927D12348F6620a698105e1BAac6EcD911",
+      "currency": "GBPT"
+
     }
   ],
   "polygon": [
@@ -131,7 +137,7 @@
       "token": "0xeafe31cd9e8e01c8f0073a2c974f728fb80e9dce",
       "currency": "NZDs"
     },
-	{
+    {
       "address": "0xbe9fa3E654A1bf8fe740E9d930D595f31Fce1aE2",
       "token": "0x9de41aFF9f55219D5bf4359F167d1D0c772A396D",
       "currency": "CADC"
@@ -156,7 +162,7 @@
       "token": "0xeafe31cd9e8e01c8f0073a2c974f728fb80e9dce",
       "currency": "NZDs"
     },
-	{
+    {
       "address": "0x6691FA63aa1d7E422Dc5D19C9B04F25909fdE966",
       "token": "0x9de41aFF9f55219D5bf4359F167d1D0c772A396D",
       "currency": "CADC"
