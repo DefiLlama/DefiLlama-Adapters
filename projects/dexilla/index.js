@@ -1,67 +1,34 @@
-const sdk = require('@defillama/sdk')
-const { transformBalances } = require('../helper/portedTokens')
-const { era } = require('../helper/coreAssets.json')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
-const WETH = era.WETH
-const USDC = era.USDC
-const BUSD = '0x2039bb4116B4EFc145Ec4f0e2eA75012D6C0f181'
-
-const exchanges = [
-  {
-    addr: '0x9AD0de2A1c5E5521aE5df1070de3b501844F34DB',
-    token1: WETH,
-    token2: USDC,
+const config = {
+  era: {
+    exchanges: [
+      '0xCA2eE260BFA64D8Fb01B1cd75615aAa42D528214',
+      '0x588450db6e3586Ec0468a7Bb36f1d5f3BbbE2084',
+      '0x0DE31204e919D71f0E7b9E5766950e99f1017826',
+    ],
   },
-  {
-    addr: '0xBA64D4604032bc0cDaa66c79d74fde329a70DBeE',
-    token1: WETH,
-    token2: BUSD,
+  optimism: {
+    exchanges: [
+      '0x189c3f9dcAfe968Be3620cC58274E7c5DF057C7c',
+      '0x68D05405472C4f0c254A47922Dba9dbC4CFf2bD9',
+      '0x8F1F6751236855391BbBEDBf4Bf5AD7e383E6e50',
+    ],
   },
-  {
-    addr: '0x61A9536f40bE8f6197562C6A3c69A29CA14D7B13',
-    token1: USDC,
-    token2: BUSD,
-  },
-]
-
-async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
-  const balances = {}
-  const data = []
-
-  for (let i = 0; i < exchanges.length; i++) {
-    const reserves = await api.multiCall({
-      calls: [
-        {
-          target: exchanges[i].token1,
-          params: [exchanges[i].addr],
-        },
-        {
-          target: exchanges[i].token2,
-          params: [exchanges[i].addr],
-        },
-      ],
-      abi: 'erc20:balanceOf',
-    })
-
-    data.push({
-      token0Bal: reserves[0],
-      token1Bal: reserves[1],
-      token0: exchanges[i].token1,
-      token1: exchanges[i].token2,
-    })
-  }
-
-  data.forEach((d) => {
-    sdk.util.sumSingleBalance(balances, d.token0, d.token0Bal)
-    sdk.util.sumSingleBalance(balances, d.token1, d.token1Bal)
-  })
-
-  return transformBalances('era', balances)
 }
 
 module.exports = {
-  misrepresentedTokens: false,
   methodology: 'TVL counts the ERC20 tokens on the exchange contracts.',
-  start: 1685022373, // May 25, 2023 @ 13:46:13 (UTC +0)
-  era: { tvl },
+  start: 1685610580, // June 1, 2023 @ 9:09:40 (UTC +0)
 }
+
+Object.keys(config).forEach(chain => {
+  const { exchanges } = config[chain]
+  module.exports[chain] = {
+    tvl: async (_, _b, _cb, { api, }) => {
+      const baseTokens = await api.multiCall({  abi: 'address:baseToken', calls: exchanges})
+      const quoteTokens = await api.multiCall({  abi: 'address:quoteToken', calls: exchanges})
+      return sumTokens2({ api, tokensAndOwners: exchanges.map((v, i) => [[baseTokens[i], v], [quoteTokens[i], v ]]).flat()})
+    }
+  }
+})
