@@ -14,20 +14,21 @@ module.exports = treasuryExports({
   ethereum: {
     tokens: [
       nullAddress,
-      ADDRESSES.ethereum.USDC, // USDC
-      ADDRESSES.ethereum.USDT, // USDT
-      ADDRESSES.ethereum.WETH, // WETH
-      ADDRESSES.ethereum.DAI, // DAI
-      ADDRESSES.ethereum.TUSD, // TUSD
-      "0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B", // CVX
+      ADDRESSES.ethereum.USDC,
+      ADDRESSES.ethereum.USDT,
+      ADDRESSES.ethereum.WETH,
+      ADDRESSES.ethereum.DAI,
+      ADDRESSES.ethereum.TUSD,
+      ADDRESSES.ethereum.CVX,
       "0x853d955aCEf822Db058eb8505911ED77F175b99e", // FRAX
-      ADDRESSES.ethereum.LINK, // LINK
+      ADDRESSES.ethereum.LINK,
       "0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7", // cvxCRV
       "0x5aFE3855358E112B5647B952709E6165e1c1eEEe", // SAFE
       "0xC47EBd6c0f68fD5963005D28D0ba533750E5C11B",
       "0x34eD182D0812D119c92907852D2B429f095A9b07",
       "0x836A808d4828586A69364065A1e064609F5078c7",
-      "0x9848482da3Ee3076165ce6497eDA906E66bB85C5"
+      "0x9848482da3Ee3076165ce6497eDA906E66bB85C5",
+      ADDRESSES.ethereum.vlCVX,
     ],
     owners: [multisig, donationEvent, usdcVault, usdtVault, pethVault],
     ownTokens: [jpegd, lp],
