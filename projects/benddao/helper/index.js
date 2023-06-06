@@ -40,20 +40,15 @@ async function tvl(chain, timestamp, chainBlocks, { api }) {
 
   // cause stNFT do not have price, it should use the underlying asset price
   const stNFTMap = {
-    [addressMap.StBAYC]: addressMap.BAYC,
-    [addressMap.StMAYC]: addressMap.MAYC,
-    [addressMap.StBAKC]: addressMap.BAKC,
+    [addressMap.StBAYC.toLowerCase()]: addressMap.BAYC.toLowerCase(),
+    [addressMap.StMAYC.toLowerCase()]: addressMap.MAYC.toLowerCase(),
+    [addressMap.StBAKC.toLowerCase()]: addressMap.BAKC.toLowerCase(),
   };
 
   for (const asset in balances) {
     const underlyingAsset = stNFTMap[asset];
     if (underlyingAsset) {
-      sdk.util.sumSingleBalance(
-        balances,
-        underlyingAsset,
-        balances[asset],
-        api.chain
-      );
+      sdk.util.sumSingleBalance(balances, underlyingAsset, balances[asset]);
       delete balances[asset];
     }
   }
