@@ -103,12 +103,11 @@
       "address": "0x9aFD65013770525E43a84e49c87B3015C2C32517",
       "token": "0xC08512927D12348F6620a698105e1BAac6EcD911",
       "currency": "GYEN"
-    }
+    },
     {
       "address": "0x7d1bA2c18CbDE0D790Cc1d626F0c70b3c13C9eec",
       "token": "0xC08512927D12348F6620a698105e1BAac6EcD911",
       "currency": "GBPT"
-
     }
   ],
   "polygon": [
