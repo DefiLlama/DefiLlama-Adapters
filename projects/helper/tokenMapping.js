@@ -16,7 +16,7 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 // carbon: https://api-insights.carbon.network/info/denom_gecko_map
 // orbit brige: https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList
 
-const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'stargaze', 'umee', 'orai', 'persistence', ]
+const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'stargaze', 'umee', 'orai', 'persistence', 'fxcore',]
 const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui']
 
 const distressedAssts = new Set(Object.values({
@@ -64,6 +64,38 @@ const fixBalancesTokens = {
     '0x8fa78ceb7f04118ec6d06aac37ca854691d8e963': { coingeckoId: "stride", decimals: 6 },
     '0xe60ce2dfa6d4ad37ade1dcb7ac4d6c3a093b3a7e': { coingeckoId: "rocket-pool-eth", decimals: 18 },//axlRETH
     '0xb72a7567847aba28a2819b855d7fe679d4f59846': { coingeckoId: "tether-usd-celer", decimals: 6 },
+  },
+  era: {
+    '0x2039bb4116B4EFc145Ec4f0e2eA75012D6C0f181': { coingeckoId: "binance-usd", decimals: 18 },
+  },
+  fxcore: {
+    'FX': { coingeckoId: "fx-coin", decimals: 18 },
+    'usdt': { coingeckoId: "tether", decimals: 6 },
+  },
+  xpla: {
+    'axpla': { coingeckoId: "xpla", decimals: 18 },
+  },
+  kava: {
+    'bnb': { coingeckoId: "binancecoin", decimals: 8 },
+    'btcb': { coingeckoId: "bitcoin", decimals: 8  },
+    'busd': { coingeckoId: "binance-usd", decimals: 8 },
+    'hard': { coingeckoId: "kava-lend", decimals: 6 },
+    'swp': { coingeckoId: "kava-swap", decimals: 6 },
+    'ukava': { coingeckoId: "kava", decimals: 6 },
+    'bkava': { coingeckoId: "kava", decimals: 6 },
+    'xrpb': { coingeckoId: "ripple", decimals: 8 },
+    'usdx': { coingeckoId: "usdx", decimals: 6 },
+    'hbtc': { coingeckoId: "huobi-btc", decimals: 8 },
+    'erc20:axelar:usdc': { coingeckoId: "usd-coin", decimals: 6 },
+    'erc20:multichain:usdc': { coingeckoId: "usd-coin", decimals: 6 },
+    'erc20:multichain:usdt': { coingeckoId: "tether", decimals: 6 },
+    'erc20:multichain:wbtc': { coingeckoId: "wrapped-bitcoin", decimals: 8 },
+    'erc20:multichain:dai': { coingeckoId: "dai", decimals: 18 },
+    'ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2': { coingeckoId: "cosmos", decimals: 6 },
+    'ibc/799FDD409719A1122586A629AE8FCA17380351A51C1F47A80A1B8E7F2A491098': { coingeckoId: "akash-network", decimals: 6 },
+    'ibc/B8AF5D92165F35AB31F3FC7C7B444B9D240760FA5D406C49D24862BD0284E395': { coingeckoId: "terra-luna", decimals: 6 },
+    'ibc/0471F1C4E7AFD3F07702BEF6DC365268D64570F7C1FDC98EA6098DD6DE59817B': { coingeckoId: "osmosis", decimals: 6 },
+    'ibc/B448C0CA358B958301D328CCDC5D5AD642FC30A6D3AE106FF721DB315F3DDE5C': { coingeckoId: "terrausd", decimals: 6 },
   }
 }
 

@@ -4,6 +4,7 @@ const { treasuryExports, nullAddress } = require("../helper/treasury");
 const eth = "0xF930EBBd05eF8b25B1797b9b2109DDC9B0d43063";
 const poly = "0xdA2D2f638D6fcbE306236583845e5822554c02EA";
 const avax = "0x69D6C2ACb2485D629E184BC4E1DD972D8DDD8669";
+const arbitrumTreasury = "0xfdb1157ac847d334b8912df1cd24a93ee22ff3d0"
 
 const ethTokens = [
   nullAddress,
@@ -78,6 +79,12 @@ const polyTokens = [
   "0x5aa0197D0d3E05c4aA070dfA2f54Cd67A447173A", // fagEUR-1
 ];
 
+const arbTokens = [
+  nullAddress,
+  "0x912CE59144191C1204E64559FE8253a0e49E6548", //arb
+  "0x11cDb42B0EB46D95f990BeDD4695A6e3fA034978", //crv
+]
+
 const avaxTokens = [nullAddress];
 
 module.exports = treasuryExports({
@@ -98,5 +105,9 @@ module.exports = treasuryExports({
     ownTokens: [],
     ownTokenOwners: [avax],
     owners: [avax],
+  },
+  arbitrum: {
+    tokens: arbTokens,
+    owners: [arbitrumTreasury,],
   },
 });

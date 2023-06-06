@@ -6,7 +6,10 @@ const { fetchURL } = require('../helper/utils')
 async function staking() {
     let totalAda = 0
     // Milk locked
-    const tvlMilk = (await fetchURL("https://staking.muesliswap.com/milk-locked")).data
+    const tvlMilk = (
+        (await fetchURL("https://staking.muesliswap.com/milk-locked")).data +
+        (await fetchURL("https://staking.muesliswap.com/milk-vault-locked")).data
+    )
     if (tvlMilk.data <= 0) {
         throw new Error("muesliswap tvl is below 0")
     }
