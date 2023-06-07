@@ -71,7 +71,7 @@ async function polygon_zkevm_tvl(_, _b, _cb, { api }) {
     abi: abi.getRegisteredPools,
     chain: 'polygon_zkevm'
   })).output;
-  for (pool of poolList) {
+  for (const pool of poolList) {
     ownerTokens.push([pool.liquidity.map(t => t.addr), pool.addr]);
   }
   return sumTokens2({ api, ownerTokens });
