@@ -46,14 +46,6 @@ module.exports = {
 	timetravel: false,
   heco: {
     tvl: async (_, _1, _2, { api}) => {
-
-      	// const stakingHECO180 = await api.call({ target: filetStakingCon_HECO, abi: abi.filetBSCAbi, params:[1]})
-        // const stakingHECO360 = await api.call({ target: filetStakingCon_HECO, abi: abi.filetBSCAbi, params:[2]})
-        // const stakingHECO99 = await api.call({    target: filetStakingConFlexible_HECO,    abi: abi.FiletBSCCurrentAbi, params:[99] });
-
-      	// return {
-      	// 	["filecoin"]: new BigNumber(stakingHECO180.mPool.hasSoldOutToken).plus(stakingHECO360.mPool.hasSoldOutToken.toString()).plus(stakingHECO99.mPool.hasSoldOutToken.toString()).div(1e18).toString(),
-      	// }
         const tvlData = await fetchURL(filetAPI)
       	return {
       		["filecoin"]: new BigNumber(tvlData.data.data.hecoTvl),
@@ -83,10 +75,8 @@ module.exports = {
   
       // getMinersList
       const minerList = await getMinersList();
-      balances = {}
-      balances = await sumTokens2({ owner: filetStorageCon_FVM, tokens:[nullAddress], api, });
-      await sumTokens2({balances, api, owners: minerList, tokens: [nullAddress]});
-      return balances
+      let balances = await sumTokens2({ owner: filetStorageCon_FVM, tokens:[nullAddress], api, });
+      return sumTokens2({balances, api, owners: minerList, tokens: [nullAddress]});
     },
   },
   mixin: {
