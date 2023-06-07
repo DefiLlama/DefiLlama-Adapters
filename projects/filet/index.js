@@ -7,6 +7,7 @@ const BigNumber = require("bignumber.js")
 const { getExports } = require('../helper/heroku-api')
 const { nullAddress } = require("../helper/tokenMapping");
 const { get } = require("../helper/http");
+const {utils} = require("ethers");
 
 //bsc staking con
 const filetStakingCon_BSC = "0x9c821defD3BBb07C5c786C3bB039051364Fa6F39";
@@ -24,8 +25,22 @@ const poolOnFVM360 = 4011
 
 // filet 
 const filetAPI = "https://api.filet.finance/pledge/ext/tx/pledgeTxAll"
-
+const minerList = "https://api.filet.finance/pledge/pool/querySpList"
 const { sumTokens2 } = require('../helper/unwrapLPs')
+
+
+const getMinersList = async () => {
+  const resp = await get(minerList)
+  return resp.data.map(({minerId}) => {
+
+      let bytes = Buffer.alloc(20);
+      bytes.writeUint8(0xff, 0);
+      bytes.writeBigUint64BE(BigInt(minerId), 12);
+      return utils.getAddress('0x' + bytes.toString('hex'));
+  });
+}
+
+// 
 
 module.exports = {
 	timetravel: false,
@@ -57,13 +72,17 @@ module.exports = {
       const filetMpool180 = await api.call({    target: filetStorageCon_FVM,    abi: abi.filetFVMAbi, params:[poolOnFVM180] });
       const filetMpool360 = await api.call({    target: filetStorageCon_FVM,    abi: abi.filetFVMAbi, params:[poolOnFVM360] });
 
-      
       const filetNative_hasSoldOutToken = await api.call({    target: filetNativeCon, abi: "uint256:hasSoldOutToken", params:[] });
       api.add(nullAddress, filetMpool180.mPool.hasSoldOutToken)
       api.add(nullAddress, filetMpool360.mPool.hasSoldOutToken )
       api.add(nullAddress, filetNative_hasSoldOutToken )
   
-      return sumTokens2({ api, owner: filetStorageCon_FVM, tokens: [nullAddress]});
+      // getMinersList
+      const minerList = await getMinersList();
+      balances = {}
+      balances = await sumTokens2({ owner: filetStorageCon_FVM, tokens:[nullAddress], api, });
+      await sumTokens2({balances, api, owners: minerList, tokens: [nullAddress]});
+      return balances
     },
   },
   mixin: {
