@@ -13,6 +13,9 @@ module.exports = {
     terra2: {
         tvl: getFactoryTvl("terra14x9fr055x5hvr48hzy2t4q7kvjvfttsvxusa4xsdcy702mnzsvuqprer8r")
     },
+    neutron: {
+        tvl: getFactoryTvl("neutron1hptk0k5kng7hjy35vmh009qd5m6l33609nypgf2yc6nqnewduqasxplt4e")
+    },
     hallmarks: [
         [1651881600, "UST depeg"],
     ]

@@ -47,5 +47,5 @@ module.exports = {
   polygon: {
     tvl: tvl("polygon"),
   },
-  hallmarks: [1667955600, "Hack"]
+  hallmarks: [[1667955600, "Hack"]]
 };
