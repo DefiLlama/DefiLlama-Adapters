@@ -43,25 +43,25 @@ const getMinersList = async () => {
 // 
 
 module.exports = {
-	timetravel: false,
+  timetravel: false,
   heco: {
     tvl: async (_, _1, _2, { api}) => {
         const tvlData = await fetchURL(filetAPI)
-      	return {
-      		["filecoin"]: new BigNumber(tvlData.data.data.hecoTvl),
-      	}
+        return {
+          ["filecoin"]: new BigNumber(tvlData.data.data.hecoTvl),
+        }
       }
-	},
-	bsc: {
+  },
+  bsc: {
     tvl: async (_, _1, _2, { api}) => {
 
         const tvlData = await fetchURL(filetAPI)
-      	return {
-      		["filecoin"]: new BigNumber(tvlData.data.data.bscTvl),
-      	}
+        return {
+          ["filecoin"]: new BigNumber(tvlData.data.data.bscTvl),
+        }
       
       }
-	},
+  },
   filecoin: {
     tvl: async (_, _1, _2, { api }) => {
 
