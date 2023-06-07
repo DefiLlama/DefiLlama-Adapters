@@ -1,12 +1,25 @@
 const sdk = require("@defillama/sdk");
-const { transformPolygonAddress } = require("../helper/portedTokens");
+const {
+  transformPolygonAddress,
+  transformArbitrumAddress,
+} = require("../helper/portedTokens");
 const contracts = require("./contracts.json");
 
 // node test.js projects/dfx/index.js
 function tvl(chain) {
   return async (timestamp, block, chainBlocks) => {
-    const transform =
-      chain == "polygon" ? await transformPolygonAddress() : (a) => a;
+    let transform;
+    switch (chain) {
+      case "polygon":
+        transform = await transformPolygonAddress();
+        break;
+      case "arbitrum":
+        transform = await transformArbitrumAddress();
+        break;
+      default:
+        transform = (a) => a;
+    }
+
     const balances = {};
 
     const [tokenBalances, usdcBalances] = await Promise.all([
