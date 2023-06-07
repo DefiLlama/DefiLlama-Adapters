@@ -1,7 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require('@defillama/sdk');
 const { sumTokensExport } = require('../helper/unwrapLPs')
-const BigNumber = require("bignumber.js");
 
 const v320Address = '0x68a154fB3e8ff6e4DA10ECd54DEF25D9149DDBDE';
 
@@ -19,19 +17,11 @@ const abi = {
 
 
 async function borrowed(_time, _ethBlock, chainBlocks, { api }) {
-    let balances = {};
-
     // V3.2
     const v320USDCState = await api.call({ abi: abi.v320.getAsset, target: v320Address, params: 1})
     const v320ETHState = await api.call({ abi: abi.v320.getAsset, target: v320Address, params: 2 })
-    
-    const v320USDCBorrowed = (new BigNumber(v320USDCState[4][3])).toNumber()
-    const v320ETHBorrowed = (new BigNumber(v320ETHState[4][3])).toNumber()
-
-    await sdk.util.sumSingleBalance(balances, USDC_CONTRACT, v320USDCBorrowed, api.chain);
-    await sdk.util.sumSingleBalance(balances, WETH_CONTRACT, v320ETHBorrowed, api.chain);
-    
-    return balances;
+    api.add(WETH_CONTRACT, v320ETHState[4][3])
+    api.add(USDC_CONTRACT, v320USDCState[4][3])
 }
 
 
@@ -41,8 +31,4 @@ module.exports = {
         tvl: sumTokensExport({ owners: [v320Address], tokens: [USDC_CONTRACT, WETH_CONTRACT,] }),
         borrowed
     },
-    hallmarks: [
-        [1671092333, "Launch Predy V3"],
-        [1678734774, "Launch Predy V3.2"]
-    ],
 };

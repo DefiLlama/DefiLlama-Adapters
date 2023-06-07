@@ -1,5 +1,5 @@
-const ADDRESSES = require('./helper/coreAssets.json')
-const { sumTokensExport } = require('./helper/unwrapLPs')
+const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokensExport } = require('../helper/unwrapLPs')
 
 const v2Address = '0xc7ec02AEeCdC9087bf848c4C4f790Ed74A93F2AF';
 const v202Address = '0xAdBAeE9665C101413EbFF07e20520bdB67C71AB6';
