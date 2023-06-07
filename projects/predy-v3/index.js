@@ -1,7 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require('@defillama/sdk');
 const { sumTokensExport } = require('../helper/unwrapLPs')
-const BigNumber = require("bignumber.js");
 
 const v3Address = '0x4006A8840F8640A7D8F46D2c3155a58c76eCD56e';
 
@@ -19,15 +17,11 @@ const abi = {
 
 
 async function borrowed(_time, _ethBlock, chainBlocks, { api }) {
-    let balances = {};
-
     // V3
     const v3TokenState = await api.call({ abi: abi.v3.getTokenState, target: v3Address, })
+    api.add(WETH_CONTRACT, v3TokenState[0].totalNormalBorrowed)
+    api.add(USDC_CONTRACT, v3TokenState[1].totalNormalBorrowed)
 
-    await sdk.util.sumSingleBalance(balances, WETH_CONTRACT, v3TokenState[0]['totalNormalBorrowed'], api.chain);
-    await sdk.util.sumSingleBalance(balances, USDC_CONTRACT, v3TokenState[1]['totalNormalBorrowed'], api.chain);
-    
-    return balances;
 }
 
 
@@ -37,8 +31,4 @@ module.exports = {
         tvl: sumTokensExport({ owners: [v3Address], tokens: [USDC_CONTRACT, WETH_CONTRACT,] }),
         borrowed
     },
-    hallmarks: [
-        [1671092333, "Launch Predy V3"],
-        [1678734774, "Launch Predy V3.2"]
-    ],
 };
