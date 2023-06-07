@@ -1,9 +1,9 @@
 const { unwrapLPsAuto } = require('../helper/unwrapLPs')
 
 const config = {
-  bsc: { gaugeFactory: '0x3Bb920C4875411C40981f6eb6959d4e169877A66' },
-  arbitrum: { gaugeFactory: '0x01A07719596713bE5aB1C3AeEA76e3f5fde0885d' },
-  polygon: { gaugeFactory: '0x3F316559EB4f493C75638425106144261e20F3a2' },
+  bsc: { voters: ['0x3Bb920C4875411C40981f6eb6959d4e169877A66', '0xaE0439eC64985D4165d12dDE7F514D092B4C0E23'] },
+  arbitrum: { voters: ['0x01A07719596713bE5aB1C3AeEA76e3f5fde0885d', '0xF995f72445B14ae8D56523C9A0dE3F03334BFE2C'] },
+  polygon: { voters: ['0x3F316559EB4f493C75638425106144261e20F3a2', '0xf999009fF931749a0930B8db02C6Cd888c7DC5ED'] },
 }
 
 const totalAmountAbi = "function getTotalAmounts() view returns (uint256 total0, uint256 total1)"
@@ -11,10 +11,12 @@ const guageAbiBsc = "function gaugeListExtended() view returns (address[], addre
 const guageAbi = "function gaugeListExtended() view returns (address[], address[])"
 
 Object.keys(config).forEach(chain => {
-  const { gaugeFactory } = config[chain]
+  const { voters } = config[chain]
   module.exports[chain] = {
     tvl: async (_, _b, _cb, { api, }) => {
-      const [gauges] = await api.call({ abi: chain === 'bsc' ? guageAbiBsc : guageAbi, target: gaugeFactory })
+      const res = await api.multiCall({ abi: chain === 'bsc' ? guageAbiBsc : guageAbi, calls: voters })
+      let gauges = res.flatMap(i => i[0])
+      gauges = [...new Set(gauges.map(i => i.toLowerCase()))]
       const tokens = await api.multiCall({ abi: 'address:TOKEN', calls: gauges })
       const bals = (await api.multiCall({ abi: 'uint256:balance', calls: gauges, permitFailure: true })).map(i => i ?? 0)
       const isHypervisor = await api.multiCall({ abi: totalAmountAbi, calls: tokens, permitFailure: true })
