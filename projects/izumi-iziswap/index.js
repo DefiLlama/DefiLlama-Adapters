@@ -30,6 +30,7 @@ const tvl = async (_, _1, _2, { api }) => {
   let foundLastPool = false
   const chunkSize = 10
   const poolMetaData = []
+  const bTokens = [...blacklistedTokens]
 
   do {
     const calls = []
@@ -58,7 +59,8 @@ const tvl = async (_, _1, _2, { api }) => {
   })
 
   pools.forEach((output, i) => toa.push([poolMetaData[i].tokenX, output], [poolMetaData[i].tokenY, output],))
-  return sumTokens2({ tokensAndOwners: toa, api, blacklistedTokens, })
+  if (chain === 'era') bTokens.push('0x82af49447d8a07e3bd95bd0d56f35241523fbab1')
+  return sumTokens2({ tokensAndOwners: toa, api, blacklistedTokens: bTokens, })
 }
 
 Object.keys(poolHelpers).forEach(chain => {
