@@ -6,11 +6,6 @@
   },
   "ethereum": [
     {
-      "address": "0x57BC10876fEbdC57f0ABb8C82ffAE600eEcc03A2",
-      "token": "0xC08512927D12348F6620a698105e1BAac6EcD911",
-      "currency": "GYEN"
-    },
-    {
       "address": "0xDA9dcc7fd51F0D9Aa069a82647A5F3ba594edAED",
       "token": "0xcadc0acd4b445166f12d2c07eac6e2544fbe2eef"
     },
