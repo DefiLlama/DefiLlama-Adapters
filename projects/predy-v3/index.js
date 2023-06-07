@@ -29,6 +29,5 @@ module.exports = {
     methodology: "USDC and WETH locked on predy contracts",
     arbitrum: {
         tvl: sumTokensExport({ owners: [v3Address], tokens: [USDC_CONTRACT, WETH_CONTRACT,] }),
-        borrowed
     },
 };
