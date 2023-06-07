@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { transformPolygonAddress } = require("../helper/portedTokens");
-const contracts = require('./contracts.json');
+const contracts = require("./contracts.json");
 
 // node test.js projects/dfx/index.js
 function tvl(chain) {
@@ -47,5 +47,8 @@ module.exports = {
   polygon: {
     tvl: tvl("polygon"),
   },
-  hallmarks: [[1667955600, "Hack"]]
+  arbitrum: {
+    tvl: tvl("arbitrum"),
+  },
+  hallmarks: [[1667955600, "Hack"]],
 };
