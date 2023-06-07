@@ -311,6 +311,33 @@ const assetList = [
   ["DOT", "DOT", "1743nDTMZisPgBCYSAgkUn1kVG7MePc9rvMEjoRNf4ipVkF"],
   ["DOT", "DOT", "1qnJN7FViy3HZaxZK9tGAA71zxHSBeUweirKqCaox4t8GT7"],
   ["DOT", "DOT", "16ZL8yLyXv3V3L3z9ofR1ovFLziyXaN1DPq4yffMAZ9czzBD"],
+  //new chains
+  //["USDC", "ALGO", "MTCEM5YJJSYGW2RCXYXGE4SXLSPUUEJKQAWG2GUX6CNN72KQ3XPJCM6NOI"],
+  //["ALGO", "ALGO", "MTCEM5YJJSYGW2RCXYXGE4SXLSPUUEJKQAWG2GUX6CNN72KQ3XPJCM6NOI"],
+  //["USDC", "ALGO", "QYXDGS2XJJT7QNR6EJ2YHNZFONU6ROFM6BKTBNVT63ZXQ5OC6IYSPNDJ4U"],
+  //["ALGO", "ALGO", "QYXDGS2XJJT7QNR6EJ2YHNZFONU6ROFM6BKTBNVT63ZXQ5OC6IYSPNDJ4U"],
+  ["APT", "APT", "0xed8c46bec9dbc2b23c60568f822b95b87ea395f7e3fdb5e3adc0a30c55c0a60e"],
+  ["APT", "APT", "0xae1a6f3d3daccaf77b55044cea133379934bba04a11b9d0bbd643eae5e6e9c70"],
+  ["APT", "APT", "0xd91c64b777e51395c6ea9dec562ed79a4afa0cd6dad5a87b187c37198a1f855a"],
+  ["APT", "APT", "0x80174e0fe8cb2d32b038c6c888dd95c3e1560736f0d4a6e8bed6ae43b5c91f6f"],
+  ["APT", "APT", "0x5bd7de5c56d5691f32ea86c973c73fec7b1445e59736c97158020018c080bb00"],
+  //new tokens UNI
+  ["UNI", "BEP2", "bnb142q467df6jun6rt5u2ar58sp47hm5f9wvz2cvg"],
+  ["UNI", "BEP2", "bnb1u2agwjat20494fmc6jnuau0ls937cfjn4pjwtn"],
+  ["UNI", "BEP2", "bnb1fnd0k5l4p3ck2j9x9dp36chk059w977pszdgdz"],
+  ["UNI", "BEP2", "bnb1lsmt5a8vqqus5fwslx8pyyemgjtg4y6ugj308t"],
+  ["UNI", "ETH", "0xf977814e90da44bfa03b6295a0616a897441acec"],
+  ["UNI", "ETH", "0x21a31ee1afc51d94c2efccaa2092ad1028285549"],
+  ["UNI", "ETH", "0x5a52e96bacdabb82fd05763e25335261b270efcb"],
+  ["UNI", "ETH", "0xbe0eb53f46cd790cd13851d5eff43d12404d33e8"],
+  ["UNI", "ETH", "0xdfd5293d8e347dfe59e90efd55b2956a1343963d"],
+  ["UNI", "ETH", "0x28c6c06298d514db089934071355e5743bf21d60"],
+  //new token ARB
+  ["ARB", "ARB", "0xf977814e90da44bfa03b6295a0616a897441acec"],
+  ["ARB", "ARB", "0xb38e8c17e38363af6ebdcb3dae12e0243582891d"],
+  ["ARB", "ETH", "0x28c6c06298d514db089934071355e5743bf21d60"],
+  ["ARB", "ARB", "0xf92402bb795fd7cd08fb83839689db79099c8c9c"],
+
 ]
 
 function getAddresses(chain) {
@@ -366,5 +393,11 @@ module.exports = {
   },
   polkadot: {
     owners: getOwners('DOT')
+  },
+  algorand: {
+    owners: getOwners('ALGO')
+  },
+  aptos: {
+    owners: getOwners('APT')
   },
 }
