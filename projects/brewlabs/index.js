@@ -1,7 +1,7 @@
-const { setCache } = require('../helper/cache')
-const { sumUnknownTokens } = require('../helper/unknownTokens')
-const { post } = require('../helper/http')
-const sdk = require('@defillama/sdk')
+const { setCache } = require("../helper/cache");
+const { sumUnknownTokens } = require("../helper/unknownTokens");
+const { post } = require("../helper/http");
+const sdk = require("@defillama/sdk");
 
 const chainsList = ["ethereum", "bsc", "polygon"];
 const api_endpoint = "https://api.nodes-brewlabs.info/api";
@@ -30,41 +30,89 @@ module.exports = {
 const data = {
   pool2: {},
   staking: {},
-}
+};
 
 async function getStakingPools(chain, poolType) {
-  if (!data[poolType][chain]) data[poolType][chain] = _getPools()
-  return data[poolType][chain]
+  if (!data[poolType][chain]) data[poolType][chain] = _getPools();
+  return data[poolType][chain];
 
   async function _getPools() {
-    const poolTypeStr = poolType === 'pool2' ? 'farms' : 'pools'
-    const pools = await post(`${api_endpoint}/${poolTypeStr}`, { chainId: chains[chain]})
-    setCache(`brewlabs/pools`, chain, pools)
-    return pools
+    const poolTypeStr = poolType === "pool2" ? "farms" : "pools";
+    const pools = await post(`${api_endpoint}/${poolTypeStr}`, {
+      chainId: chains[chain],
+    });
+    setCache(`brewlabs/${poolTypeStr}`, chain, pools);
+    return pools;
   }
 }
 
-chainsList.forEach(chain => {
+chainsList.forEach((chain) => {
   module.exports[chain] = {
-    tvl: sdk.util.sumChainTvls([staking, pool2]),
-    // tvl: () => 0,
-    // pool2,
-    // staking,
-  }
-})
+    tvl: fetchTvl,
+    pool2,
+    staking,
+  };
+});
 
-async function staking(_, _b, _cb, { api, }) {
-  const pools = await getStakingPools(api.chain, 'staking')
-  const tokensAndOwners = pools.map(i => ([i.stakingToken.address, i.contractAddress]))
+async function fetchTvl(_, _b, _cb, { api }) {
+  const pools = await getStakingPools(api.chain, "staking");
+  const farms = await getStakingPools(api.chain, "pool2");
 
-  return sumUnknownTokens({ ...api, tokensAndOwners, blacklist})
+  let tokensAndOwners = pools
+    .filter(
+      (p) =>
+        p.stakingToken.symbol == "BREWLABS" ||
+        p.earningToken.symbol == "BREWLABS"
+    )
+    .map((i) => [
+      i.stakingToken.symbol == "BREWLABS"
+        ? i.stakingToken.address
+        : i.earningToken.address,
+      i.contractAddress,
+    ]);
+
+  tokensAndOwners.push(
+    ...farms
+      .filter(
+        (f) =>
+          f.token.symbol == "BREWLABS" ||
+          f.quoteToken.symbol == "BREWLABS" ||
+          f.earningToken.symbol == "BREWLABS"
+      )
+      .map((f) => [
+        f.token.symbol == "BREWLABS" || f.quoteToken.symbol == "BREWLABS"
+          ? f.lpAddress
+          : f.earningToken.address,
+        f.contractAddress,
+      ])
+  );
+
+  const balances = await sumUnknownTokens({ ...api, tokensAndOwners, blacklist });
+  return balances
 }
 
-const poolInfoAbi = "function poolInfo(uint256) view returns (address lpToken,  uint256,  uint256,  uint256,  uint256,  uint256,  uint16,  uint16)"
+async function staking(_, _b, _cb, { api }) {
+  const pools = await getStakingPools(api.chain, "staking");
+  const tokensAndOwners = pools.map((i) => [
+    i.stakingToken.address,
+    i.contractAddress,
+  ]);
 
-async function pool2(_, _b, _cb, { api, }) {
-  const pools = await getStakingPools(api.chain, 'pool2')
-  const infos = await api.multiCall({  abi: poolInfoAbi , calls: pools.map(i => ({ target: i.contractAddress, params: [0]}))})
-  const tokensAndOwners = pools.map((v, i) => ([infos[i].lpToken, v.contractAddress]))
-  return sumUnknownTokens({ ...api, tokensAndOwners, blacklist})
+  return sumUnknownTokens({ ...api, tokensAndOwners, blacklist });
+}
+
+const poolInfoAbi =
+  "function poolInfo(uint256) view returns (address lpToken,  uint256,  uint256,  uint256,  uint256,  uint256,  uint16,  uint16)";
+
+async function pool2(_, _b, _cb, { api }) {
+  const pools = await getStakingPools(api.chain, "pool2");
+  const infos = await api.multiCall({
+    abi: poolInfoAbi,
+    calls: pools.map((i) => ({ target: i.contractAddress, params: [0] })),
+  });
+  const tokensAndOwners = pools.map((v, i) => [
+    infos[i].lpToken,
+    v.contractAddress,
+  ]);
+  return sumUnknownTokens({ ...api, tokensAndOwners, blacklist });
 }
