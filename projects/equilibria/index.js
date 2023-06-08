@@ -77,7 +77,6 @@ async function tvl(chain, block) {
 
   return balances;
 }
-// node test.js projects/convex2/index.js
 
 const chains = ["ethereum", "arbitrum"];
 
