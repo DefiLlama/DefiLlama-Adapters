@@ -14,7 +14,9 @@ async function fetch() {
 module.exports = {
   methodology: `${lendingMarket}. Pizza TVL is achieved by making a call to its Pizza API V2.`,
   eos: {
-    fetch: eos
+    tvl: () => 0,
   },
-  fetch
+  hallmarks: [
+    [Math.floor(new Date('2023-02-16')/1e3), 'Product is winding down'],
+  ],
 }

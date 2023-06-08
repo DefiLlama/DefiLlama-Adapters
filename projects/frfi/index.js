@@ -2,6 +2,7 @@ const { fetchURL } = require("../helper/utils");
 const { toUSDTBalances } = require("../helper/balances");
 
 const tvl = (chain) => async () => {
+  return {}
   const response = await fetchURL(
     `https://backend-api-prod.frfi.io/autofarm?chainId=${chain}&$limit=100`
   );
