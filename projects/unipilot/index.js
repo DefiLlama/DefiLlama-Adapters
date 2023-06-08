@@ -116,7 +116,7 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
     api.add(vaults[v].token1Address, i.fees1)
   })
   return sumTokens2({ api, ownerTokens })
-};
+}
 
 module.exports = {
   doublecounted: true,
