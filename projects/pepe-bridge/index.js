@@ -9,6 +9,7 @@ const config = {
         ADDRESSES.ethereum.USDT,
         ADDRESSES.ethereum.USDC,
         ADDRESSES.ethereum.WBTC,
+        ADDRESSES.ethereum.CRV,
       ],
       '0x0de7b091A21BD439bdB2DfbB63146D9cEa21Ea83'
     ]
