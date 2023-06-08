@@ -42,6 +42,7 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
 Object.keys(config).forEach((chain) => {
   const { masterPenpie, mPENDLE } = config[chain];
   module.exports[chain] = {
+    doublecounted: true,
     tvl: tvl,
     staking: staking(masterPenpie, mPENDLE),
   };
