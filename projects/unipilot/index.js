@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { getLogs } = require("../helper/cache/getLogs");
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const { sumTokens2 } = require("../helper/unwrapLPs");
 const { staking } = require("../helper/staking");
 const getPositionDetails =
   "function getPositionDetails() returns (uint256 amount0, uint256 amount1, uint256 fees0, uint256 fees1, uint128 baseLiquidity, uint128 rangeLiquidity)";
@@ -68,25 +68,47 @@ function protocolTvl(chain) {
   return async (timestamp, block, chainBlocks, { api }) => {
     const balances = {};
     let vaults = {};
-    const activeVaultLogs = await getVaultLogs(chain, chainBlocks[chain], "activeFactory", api);
-    const passiveVaultLogs = await getVaultLogs(chain, chainBlocks[chain], "passiveFactory", api);
+    const activeVaultLogs = await getVaultLogs(
+      chain,
+      chainBlocks[chain],
+      "activeFactory",
+      api
+    );
+    const passiveVaultLogs = await getVaultLogs(
+      chain,
+      chainBlocks[chain],
+      "passiveFactory",
+      api
+    );
     vaults = { ...activeVaultLogs, ...passiveVaultLogs };
-    const ownerTokens = Object.entries(vaults).map(([v, i]) => [[i.token0Address, i.token1Address], v])
-    const vaultKeys = Object.keys(vaults)
+    const ownerTokens = Object.entries(vaults).map(([v, i]) => [
+      [i.token0Address, i.token1Address],
+      v,
+    ]);
+    const vaultKeys = Object.keys(vaults);
 
     //get vault reserves(amount, fees) from contract
     const vaultReserves = await api.multiCall({
       abi: getPositionDetails,
       calls: vaultKeys,
-    })
-
+    });
 
     vaultKeys.forEach((v, i) => {
-      i = vaultReserves[i]
-      sdk.util.sumSingleBalance(balances,vaults[v].token0Address,i.amount0, api.chain)
-      sdk.util.sumSingleBalance(balances,vaults[v].token1Address,i.amount1, api.chain)
-    })
-    return sumTokens2({ balances, api, ownerTokens})
+      i = vaultReserves[i];
+      sdk.util.sumSingleBalance(
+        balances,
+        vaults[v].token0Address,
+        i.amount0,
+        api.chain
+      );
+      sdk.util.sumSingleBalance(
+        balances,
+        vaults[v].token1Address,
+        i.amount1,
+        api.chain
+      );
+    });
+    return sumTokens2({ balances, api, ownerTokens });
   };
 }
 
