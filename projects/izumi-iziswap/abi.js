@@ -3,4 +3,5 @@ module.exports = {
   liquidityNum: "uint256:liquidityNum",
   pool: "function pool(address tokenX, address tokenY, uint24 fee) view returns (address)",
   poolMetas: "function poolMetas(uint128) view returns (address tokenX, address tokenY, uint24 fee)",
+  decimals: "uint8:decimals",
 }
