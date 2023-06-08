@@ -5,13 +5,11 @@ const { CONFIG_DATA } = require("./config");
 async function tvl(_, _b, _cb, { api, chain }) {
   const { dhedgeFactory, torosMultisigManager, } = CONFIG_DATA[chain];
 
-  let pools = await api.call({
+  const pools = await api.call({
     abi: DHEDGE_FACTORY_ABI,
     target: dhedgeFactory,
     params: [torosMultisigManager],
   })
-
-  pools = pools.filter(i => i.toLowerCase() !== '0x44Ca2d499E6254DfDc17fdef8C23e7283e7c24e4'.toLowerCase())
 
   const poolSummaries = await api.multiCall({
     abi: TOROS_POOL_ABI,
