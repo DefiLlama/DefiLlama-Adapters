@@ -1311,5 +1311,13 @@
     "USDC": "0x15D38573d2feeb82e7ad5187aB8c1D52810B1f07",
     "USDT": "0x0Cb6F5a34ad42ec934882A05265A7d5F59b51A2f",
     "DAI": "0xefd766ccb38eaf1dfd701853bfce31359239f305"
+  },
+  "onus": {
+    "WONUS": "0x4c761e48d1e735af551cc38abcbdce1d7faac6e4",
+    "BUSD": "0xdfB5E8a4AC08E46258A12AbE737bba5D8c452508",
+    "BNB": "0xbdce8c50c1e6f6501c2af8232d2d76ec75cda51d",
+    "USDT": "0xff276c6bca1f66fd54a8915e830735d6ab0c7b09",
+    "BTC": "0x935765ad27a1af00f73097c998a9fb721d2d7790",
+    "ETH": "0xb4373ebb073a4dcba47e567d075a9583fa3c763e"
   }
 }
