@@ -17,7 +17,8 @@ const config = {
 
 const contractAbis = {
   "totalStaked": "function total_staked() view returns (uint256)",
-  "balanceOf": "function balanceOf(address account) view returns (uint256)"
+  "balanceOf": "function balanceOf(address account) view returns (uint256)",
+  "totalVested": "function total_locked() view returns (uint256)"
 }
 
 module.exports = {
@@ -36,10 +37,14 @@ Object.keys(config).forEach(chain => {
         fromBlock,
       })
       const blacklistedTokens = []
-      if (vega) blacklistedTokens.push(vega)
       return sumTokens2({ api, blacklistedTokens, owner: assetPool, tokens: logs.map(i => i.asset_source) })
     },
-    //staking: staking(stakingContract, vega)
+    methodology: "TVL is calculated as the total amount of listed assets stored in Vega's ERC20 Asset Pool smart contract."
+    + "\n\nStaking is calculated by adding the total amount of VEGA token staked on Vega's Staking Bridge smart contract to the total amount of VEGA token staked on Vega's Vesting smart contract."
+    + "\n\nVesting is calculated as the total amount of VEGA token issued into tranches to vest on Vega's Vesting smart contract."
+    + "\n\nERC20 Asset Pool: 0xA226E2A13e07e750EfBD2E5839C5c3Be80fE7D4d"
+    + "\nStaking Bridge: 0x195064D33f09e0c42cF98E665D9506e0dC17de68"
+    + "\nVesting: 0x23d1bFE8fA50a167816fBD79D7932577c06011f4",    
     staking: async (_, _b, cb, { chain, block, api } = {}) => { 
 
       const vegaStakedInVesting = await api.call({ 
@@ -57,8 +62,19 @@ Object.keys(config).forEach(chain => {
         '0xcb84d72e61e383767c4dfeb2d8ff7f4fb89abc6e': BigNumber(vegaStakedInVesting).plus(BigNumber(vegaStakedInStaking)).toFixed(0)
       }
       
+    },
+    vesting: async (_, _b, cb, { chain, block, api } = {}) => { 
+
+      const vegaVested = await api.call({ 
+        abi: contractAbis.totalVested, 
+        target: vestingContract 
+      })
+
+      return {
+        '0xcb84d72e61e383767c4dfeb2d8ff7f4fb89abc6e': BigNumber(vegaVested).toFixed(0)
+      }
+      
     }
   }
 
 })
-
