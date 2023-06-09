@@ -1,5 +1,7 @@
 /* *** Common config *** */
 
+const { sliceIntoChunks } = require("@defillama/sdk/build/util");
+
 const DHEDGE_FACTORY_PROXIES = {
   ethereum: "0x03D20ef9bdc19736F5e8Baf92D02C8661a5941F7",
   polygon: "0xfdc7b8bFe0DD3513Cc669bB8d601Cb83e2F69cB0",
@@ -16,25 +18,9 @@ const DHEDGE_V1_TVL_ABI = "function totalFundValue() view returns (uint256)";
 
 const getV1TotalValueLocked = async (_, __, ___, { api, chain }) => {
   const target = DHEDGE_FACTORY_PROXIES[chain];
-  const vaultsLength = await api.call({
-    abi: DHEDGE_V1_VAULTS_QUANTITY_ABI,
-    target,
-  });
-  const vaults = await api.multiCall({
-    abi: DHEDGE_V1_VAULTS_ABI,
-    calls: Array.from({ length: vaultsLength }, (_, i) => ({
-      target,
-      params: [i],
-    })),
-  });
-  const vaultsValues = await api.multiCall({
-    abi: DHEDGE_V1_TVL_ABI,
-    calls: vaults,
-  });
-  const totalValueLocked = vaultsValues.reduce(
-    (acc, value) => acc + +(value ?? 0),
-    0
-  );
+  const vaults = await api.fetchList({ lengthAbi: DHEDGE_V1_VAULTS_QUANTITY_ABI, itemAbi: DHEDGE_V1_VAULTS_ABI, target, });
+  const vaultsValues = await api.multiCall({ abi: DHEDGE_V1_TVL_ABI, calls: vaults, permitFailure: true, });
+  const totalValueLocked = vaultsValues.reduce((acc, value) => acc + +(value ?? 0), 0);
   return {
     tether: totalValueLocked / 1e18,
   };
@@ -49,18 +35,14 @@ const DHEDGE_V2_VAULT_SUMMARY_ABI =
 
 const tvl = async (_, __, ___, { api, chain }) => {
   const target = DHEDGE_FACTORY_PROXIES[chain];
-  const vaults = await api.call({
-    abi: DHEDGE_V2_VAULTS_ABI,
-    target,
-  });
-  const summaries = await api.multiCall({
-    abi: DHEDGE_V2_VAULT_SUMMARY_ABI,
-    calls: vaults,
-  });
-  const totalValueLocked = summaries.reduce(
-    (acc, vault) => acc + +(vault?.totalFundValue ?? 0),
-    0
-  );
+  const vaults = await api.call({ abi: DHEDGE_V2_VAULTS_ABI, target, })
+  let chunkSize = chain === 'optimism' ? 42 : 250 // Optimism has a lower gas limit
+  const vaultChunks = sliceIntoChunks(vaults, chunkSize);
+  const summaries = [];
+  for (const chunk of vaultChunks) {
+    summaries.push(...await api.multiCall({ abi: DHEDGE_V2_VAULT_SUMMARY_ABI, calls: chunk, permitFailure: true,  }))
+  }
+  const totalValueLocked = summaries.reduce((acc, vault) => acc + +(vault?.totalFundValue ?? 0), 0);
   return {
     tether: totalValueLocked / 1e18,
   };
