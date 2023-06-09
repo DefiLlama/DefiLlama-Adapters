@@ -1,10 +1,10 @@
 const { getAdaInAddress } = require("../helper/chain/cardano");
-const axios = require("axios");
+const { getConfig } = require('../helper/cache')
 
 async function tvl() {
-  const res = await axios.get("https://api-mainnet-prod.minswap.org/defillama/dex-addresses")
-  const poolAddresses = res.data.pools
-  const orderAddresses = res.data.orders
+  const res = await getConfig("minswap", "https://api-mainnet-prod.minswap.org/defillama/dex-addresses")
+  const poolAddresses = res.pools
+  const orderAddresses = res.orders
   let liquidityPoolLocked = 0
   for (const addr of poolAddresses) {
     const adaLocked = await getAdaInAddress(addr)
