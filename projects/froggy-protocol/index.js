@@ -10,6 +10,8 @@ module.exports = yieldHelper({
   nativeToken: froggy,
   abis: {
     poolInfo: 'function poolInfo(uint256) view returns (address want, uint256 , uint256 , uint256 , uint256 , uint256 , uint256 , uint256 amount, uint256 , address strat)',
-    poolLength: 'function poolLength() view returns (uint256)'
-  }
+    poolLength: 'function poolLength() view returns (uint256)',
+    getReservesABI: 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1)',
+  },
+  useDefaultCoreAssets: true,
 })
