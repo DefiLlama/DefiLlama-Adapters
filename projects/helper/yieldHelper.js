@@ -21,6 +21,7 @@ function yieldHelper({
   getTokens,
   getTokenBalances,
   useDefaultCoreAssets = false,
+  getPoolsFn,
 }) {
   blacklistedTokens = getUniqueAddresses(blacklistedTokens)
   if (nativeToken) nativeTokens.push(nativeToken)
@@ -40,13 +41,18 @@ function yieldHelper({
         staking: {},
       }
 
-      let poolInfos = await api.fetchList({
-        lengthAbi: abis.poolLength || abi.poolLength,
-        itemAbi: abis.poolInfo || abi.poolInfo,
-        target: masterchef,
-      })
+      let poolInfos
+      if (getPoolsFn) {
+        poolInfos = await getPoolsFn(api)
+      } else {
+        poolInfos = await api.fetchList({
+          lengthAbi: abis.poolLength || abi.poolLength,
+          itemAbi: abis.poolInfo || abi.poolInfo,
+          target: masterchef,
+        })
+      }
 
-      let _poolFilter = i => !blacklistedTokens.includes(i.want.toLowerCase()) && !blacklistedTokens.includes(i.strat.toLowerCase()) && i.strat !== ADDRESSES.null
+      let _poolFilter = i => !blacklistedTokens.includes(i.want.toLowerCase()) && !blacklistedTokens.includes(i.strat?.toLowerCase()) && i.strat !== ADDRESSES.null
       let _getPoolIds = i => i.strat
 
       if (getPoolIds) _getPoolIds = getPoolIds
