@@ -44,8 +44,9 @@ function sumTokensExport(options) {
 }
 
 async function sumTokens(options) {
-  let { chain, owner, owners = [], tokens = [], tokensAndOwners = [], blacklistedTokens = [], balances = {}, token, } = options 
+  let { api, chain, owner, owners = [], tokens = [], tokensAndOwners = [], blacklistedTokens = [], balances = {}, token, } = options 
 
+  if (api) chain = api.chain
   if (token) tokens = [token]
   if (owner) owners = [owner]
 
@@ -67,6 +68,7 @@ async function sumTokens(options) {
   options.tokensAndOwners = getUniqueToA(tokensAndOwners, chain)
   options.owners = owners
   options.tokens = tokens
+  options.chain = chain
   options.blacklistedTokens = blacklistedTokens
   let helper = helpers[chain]
 

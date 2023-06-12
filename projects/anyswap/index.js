@@ -1,71 +1,15 @@
 const { get } = require('../helper/http')
 
-const chains = {
-  '1': 'ethereum',
-  '10': 'optimism',
-  '24': 'kardia',
-  '25': 'cronos',
-  '30': 'rsk',
-  '40': 'telos',
-  '56': 'bsc',
-  '57': 'syscoin',
-  '58': 'ontology_evm',
-  '61': 'ethereumclassic',
-  '66': 'okexchain',
-  '70': 'hoo',
-  '88': 'tomochain',
-  '100': 'xdai',
-  '106': 'velas',
-  '108': 'thundercore',
-  '122': 'fuse',
-  '128': 'heco',
-  '137': 'polygon',
-  '199': 'bittorrent',
-  '250': 'fantom',
-  '288': 'boba',
-  '321': 'kcc',
-  '336': 'shiden',
-  '592': 'astar',
-  '1024': 'clv',
-  '1030': 'conflux',
-  '1088': 'metis',
-  '1101': 'polygon_zkevm',
-  '1284': 'moonbeam',
-  '1285': 'moonriver',
-  '1818': 'cube',
-  '1294': 'boba',
-  '2000': 'dogechain',
-  '2001': 'milkomeda',
-  '2002': 'milkomeda_a1',
-  '2020': 'ronin',
-  '2222': 'kava',
-  '4689': 'iotex',
-  '8217': 'klaytn',
-  '9001': 'evmos',
-  '10000': 'smartbch',
-  '10001': 'ethpow',
-  '32659': 'fusion',
-  '42161': 'arbitrum',
-  '42170': 'arbitrum_nova',
-  '42220': 'celo',
-  '42262': 'oasis',
-  '43114': 'avax',
-  '47805': 'rei',
-  '53935': 'dfk',
-  '71402': 'godwoken_v1',
-  '1313161554': 'aurora',
-  '1666600000': 'harmony',
-  '32520': 'bitgert'
-}
-
-
+const { sumTokens } = require('../helper/sumTokens')
+const { getConfig } = require('../helper/cache');
+const { nullAddress } = require('../helper/tokenMapping');
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 let coingeckoMcapsPromise
 
 async function getCgMcaps() {
-    if (!coingeckoMcapsPromise) coingeckoMcapsPromise = _getData()
+  if (!coingeckoMcapsPromise) coingeckoMcapsPromise = _getData()
   return coingeckoMcapsPromise
 
   async function _getData() {
@@ -86,57 +30,121 @@ async function getCgMcaps() {
   }
 }
 
-let chainData
 async function getChainData() {
-  if (!chainData) chainData = get('https://netapi.anyswap.net/bridge/v2/info').then(i => i.bridgeList.filter(j => j.amount > 0))
-  return chainData
+  const { bridgeList } = await getConfig('anyswap', 'https://netapi.anyswap.net/bridge/v2/info')
+  return bridgeList
 }
-
-function fetchChain(chain) {
-  return async () => {
-    const data = await getChainData()
-    const protocolsInChain = chain === null ? data : data.filter(p => p.srcChainId.toString() === chain.toString())
-
-    const coingeckoMcaps = await getCgMcaps();
-    const counted = {}
-    let total = 0
-    protocolsInChain.forEach((item) => {
-      const tvl = Number(item.tvl || 0)
-
-      if (item.type === "bridge") {
-        total += tvl
-      } else if (item.type === "router") {
-        const label = item.label
-        const mcap = coingeckoMcaps[label]?.usd_market_cap
-        if (counted[label] === undefined) {
-          counted[label] = 0
-        }
-        if (mcap !== undefined && mcap > counted[label]) {
-          const tvlToAdd = Math.min(tvl, mcap - counted[label])
-          total += tvlToAdd
-          counted[label] += tvlToAdd
-        }
-      }
-    })
-    return total
-  }
-}
-
-
-const chainTvls = {}
-Object.keys(chains).forEach((chain) => {
-  const chainName = chains[chain]
-  chainTvls[chainName] = {
-    fetch: fetchChain(chain)
-  }
-})
 
 module.exports = {
-  misrepresentedTokens: true,
   timetravel: false,
-  ...chainTvls,
-  fetch: fetchChain(null),
-  hallmarks:[
+  hallmarks: [
     [1651881600, "UST depeg"],
   ],
+}
+
+const config = {
+  ethereum: { null: 'ETH' },
+  polygon: { null: 'MATIC' },
+  fantom: { null: 'FTM' },
+  // fusion: { null: 'FSN' },
+  bsc: { null: 'BNB' },
+  shiden: { null: 'SDN' },
+  avax: { null: 'AVAX' },
+  heco: { null: 'HT' },
+  harmony: { null: 'ONE' },
+  dfk: { null: 'JEWEL' },
+  arbitrum: {},
+  moonriver: {},
+  celo: {},
+  iotex: {},
+  telos: {},
+  fuse: {},
+  moonbeam: {},
+  boba: {},
+  velas: {},
+  moonbeam: {},
+  boba: {},
+  velas: {},
+  optimism: {},
+  kardia: {},
+  cronos: {},
+  rsk: {},
+  aurora: {},
+  bitgert: {},
+  godwoken_v1: {},
+  rei: {},
+  oasis: {},
+  arbitrum_nova: {},
+  boba_avax: {},
+  boba_bnb: {},
+  kcc: {},
+  astar: {},
+  clv: {},
+  metis: {},
+  polygon_zkevm: {},
+  dogechain: {},
+  milkomeda: {},
+  milkomeda_a1: {},
+  ronin: {},
+  kava: {},
+  klaytn: {},
+  evmos: {},
+  smartbch: {},
+  ethpow: {},
+  syscoin: {},
+  ontology_evm: {},
+  ethereumclassic: {},
+  okexchain: {},
+  tomochain: {},
+  xdai: {},
+  velas: {},
+  thundercore: {},
+  bittorrent: {},
+  gt: {},
+  rsk: {},
+  mintme: {},
+  step: {},
+  rpg: {},
+  wemix: {},
+  kekchain: {},
+  // dexit: {},
+  hpb: {},
+  omax: {},
+  canto: {},
+  findora: {},
+  era: {},
+  eos_evm: {},
+  flare: {},
+  // tenet: {},
+  // meld: {},
+  bitcoin: { nonTuringComplete: true, chainId: 'BTC' },
+  litecoin: { nonTuringComplete: true, chainId: 'LTC' },
+  terra: { nonTuringComplete: true, chainId: 'TERRA' },
+  near: {},
+
+}
+
+const blacklistedTokens = [
+  '0xab167e816e4d76089119900e941befdfa37d6b32', // SHINJA
+  '0xc342774492b54ce5f8ac662113ed702fc1b34972', // BGEO
+  '0xc312642dad4490d7f351391b85488d34778e9667', // BGEO
+]
+
+Object.keys(config).forEach(chain => { module.exports[chain] = { tvl } })
+
+async function tvl(_, _b, _cb, { api, }) {
+  const bridgeList = await getChainData()
+  let { nonTuringComplete, chainId } = config[api.chain] || {}
+  if (nonTuringComplete) {
+    const owners = bridgeList.filter(i => i.srcChainId === chainId).map(i => i.depositAddr)
+    return sumTokens({ api, owners})
+  }
+  const transformToken = (token) => token.toUpperCase() === config[api.chain]?.null ? nullAddress : token
+  if (!chainId) chainId = api.chainId + ''
+  const tokensAndOwners = bridgeList.filter(i => i.srcChainId === chainId && i.type === 'bridge').map(i => [transformToken(i.srcToken), i.depositAddr])
+  bridgeList.filter(i => i.srcChainId === chainId && i.type === 'router').filter(i => i.underlying).filter(i => tokensAndOwners.push([transformToken(i.underlying), i.srcToken]))
+  // console.table(tokensAndOwners)
+  // console.log(api.chain)
+  // return sumTokens({ api, tokensAndOwners, permitFailure: true, })
+  return sumTokens({ api, tokensAndOwners, permitFailure: false, blacklistedTokens })
 }

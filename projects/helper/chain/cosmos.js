@@ -27,6 +27,7 @@ const endPoints = {
   xpla: "https://dimension-lcd.xpla.dev",
   kava: "https://api2.kava.io",
   neutron: "https://rest-kralum.neutron-1.neutron.org",
+  terra: "https://terraclassic-lcd-server-01.stakely.io",
 };
 
 const chainSubpaths = {
