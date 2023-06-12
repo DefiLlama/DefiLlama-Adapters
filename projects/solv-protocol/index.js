@@ -18,7 +18,7 @@ async function tvl() {
   const chainId = api.getChainId()
   const tokens = await tokenList(chainId);
   await sumTokens2({ api, tokensAndOwners: tokens.map(i => [i.address, i.pool]), permitFailure: true })
-  await graphEarn(api)
+  // await graphEarn(api)
 }
 
 async function graphEarn(api) {

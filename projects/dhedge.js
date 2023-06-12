@@ -36,7 +36,7 @@ const DHEDGE_V2_VAULT_SUMMARY_ABI =
 const tvl = async (_, __, ___, { api, chain }) => {
   const target = DHEDGE_FACTORY_PROXIES[chain];
   const vaults = await api.call({ abi: DHEDGE_V2_VAULTS_ABI, target, })
-  let chunkSize = chain === 'optimism' ? 42 : 250 // Optimism has a lower gas limit
+  let chunkSize = chain === 'optimism' ? 42 : 51 // Optimism has a lower gas limit
   const vaultChunks = sliceIntoChunks(vaults, chunkSize);
   const summaries = [];
   for (const chunk of vaultChunks) {
