@@ -1,7 +1,4 @@
 {
-    "poolTvlInfo":"function totalTvl() view returns (tuple(uint256 pid, address lpToken, uint256 tvl)[])",
-    "reserves":"function getReserves() external view returns (uint, uint)",
-    "token0":"function token0() external view returns (address)",
-    "token1":"function token1() external view returns (address)",
-    "totalSupply":"function totalSupply() public view returns (uint256)"
+    "poolTvlInfo":"function totalTvl() view returns (tuple(uint256 pid, address want, uint256 tvl)[])",
+    "reserves":"function getReserves() external view returns (uint _reserve0, uint _reserve1)"
 }
