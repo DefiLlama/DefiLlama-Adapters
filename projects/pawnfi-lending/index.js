@@ -1,47 +1,37 @@
 const ABI = require("../pawnfi/helper/abi.json")
-const { Lending,LendCToken } = require("../pawnfi/helper/config.js")
-const sdk = require("@defillama/sdk")
+const { Lending, LendCToken } = require("../pawnfi/helper/config.js")
+const { sumTokens2 } = require('../helper/unwrapLPs')
+const { getLogs } = require('../helper/cache/getLogs')
 
+async function getPawnNFTTokens(api) {
+  const logs = await getLogs({
+    api,
+    target: '0x82cac2725345ea95a200187ae9a5506e48fe1c5d',
+    topics: ['0x0e9af31ba332bde3bd4bd41172ead69274cb4263d5a6f2fa934a14dacefed4b1'],
+    eventAbi: 'event PieceTokenCreated (address token, address pieceToken, uint256 pieceTokenLength)',
+    onlyArgs: true,
+    fromBlock: 17107816,
+  })
+  return logs.map(log => log.pieceToken)
+}
 
 async function borrowed(timestamp, block, _, { api }) {
-  const tokens = []
-  const bals = []
-  const items = await api.call({ 
-    abi: ABI.cTokenMetadataAll, 
-    target: Lending,
-    params: [LendCToken],
-  })
+  const blacklistedTokens = await getPawnNFTTokens(api)
+  const items = await api.call({ abi: ABI.cTokenMetadataAll, target: Lending, params: [LendCToken], })
   items.forEach((v) => {
-    tokens.push(v['underlyingAssetAddress'])
-    bals.push(v['totalBorrows'])
+    if (blacklistedTokens.includes(v.underlyingAssetAddress)) return
+    api.add(v.underlyingAssetAddress, v.totalBorrows)
   })
-  const balances = {}
-  bals.forEach((v, i) => sdk.util.sumSingleBalance(balances, tokens[i], v, api.chain))
-  return balances
 }
 
 
 async function tvl(timestamp, block, _, { api }) {
-  const tokens = []
-  const bals = []
-  const items = await api.call({ 
-    abi: ABI.cTokenMetadataAll, 
-    target: Lending,
-    params: [LendCToken],
-  })
-  items.forEach((v) => {
-    tokens.push(v['underlyingAssetAddress'])
-    bals.push(v['totalCash'])
-  })
-  const balances = {}
-  bals.forEach((v, i) => sdk.util.sumSingleBalance(balances, tokens[i], v, api.chain))
-  return balances
+  const blacklistedTokens = await getPawnNFTTokens(api)
+  const items = await api.call({ abi: ABI.cTokenMetadataAll, target: Lending, params: [LendCToken], })
+  return sumTokens2({ api, tokensAndOwners: items.map(i => [i.underlyingAssetAddress, i.cToken]), blacklistedTokens })
 }
 
 
-module.exports = module.exports = {
-   ethereum: {
-       tvl: tvl,
-       borrowed: borrowed
-   }
+module.exports = {
+  ethereum: { tvl, borrowed },
 }
