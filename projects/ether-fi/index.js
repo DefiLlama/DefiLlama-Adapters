@@ -100,7 +100,7 @@ const queryFromDepositEvent = async () => {
   
   try {
     const limit = config.PAGINATION_LIMIT;
-    const validators = [];
+    let validators = [];
   
     let offset = 0;
     while (true) {
