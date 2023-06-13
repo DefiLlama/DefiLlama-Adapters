@@ -103,7 +103,7 @@ const queryFromDepositEvent = async () => {
     let validators = [];
   
     let offset = 0;
-    while (true) {
+    for (;;) {
       const res = await graphQLClient.request(validatorQuery, { limit, offset });
       const { validators: batch } = res;
 
