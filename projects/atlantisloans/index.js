@@ -45,7 +45,7 @@ module.exports = {
   ),
   hallmarks: [
     [Math.floor(new Date('2023-04-01') / 1e3), 'Team stops all comms, stole funds (?)'],
-    [Math.floor(new Date('2023-06-10') / 1e3), 'Project rugged'],
+    [Math.floor(new Date('2023-06-10') / 1e3), 'Governance Attack'],
   ],
   methodology:
     "TVL is comprised of tokens deposited to the protocol as collateral, similar to Compound Finance and other lending protocols the borrowed tokens are not counted as TVL.",
