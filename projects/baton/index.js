@@ -1,4 +1,5 @@
 const { getLogs } = require("../helper/cache/getLogs");
+const { nullAddress } = require("../helper/tokenMapping");
 
 async function tvl(timestamp, blockHeight, _2, { api }) {
   const batonFactory = "0xEB8D09235255b37fBC810df41Fa879225c04639a";
@@ -11,68 +12,26 @@ async function tvl(timestamp, blockHeight, _2, { api }) {
     fromBlock: 17411300,
     eventAbi:
       "event FarmCreated(address farmAddress, address owner, address rewardsDistributor, address rewardsToken, address pairAddress, uint256 rewardsDuration, uint8 farmType)",
-    onlyArgs: false
+    onlyArgs: true
   });
 
   // filter any farms where the reward token is not fractional nfts or the underlying pair is not paired with eth
-  const filteredFarms = await Promise.all(
-    logs.map(async ({ args: { farmAddress, pairAddress, rewardsToken } }) => {
-      const baseToken = await api.call({
-        abi: "function baseToken() view returns (address)",
-        target: pairAddress,
-        params: []
-      });
+  let filteredLogs = logs.filter(i => i.pairAddress === i.rewardsToken)
+  const baseTokens = await api.multiCall({ abi: 'address:baseToken', calls: filteredLogs.map(i => i.pairAddress) })
+  const filteredFarms = filteredLogs.filter((i, idx) => baseTokens[idx] = nullAddress)
 
-      const isEthPairAndNftRewards =
-        pairAddress === rewardsToken &&
-        baseToken === "0x0000000000000000000000000000000000000000";
-
-      return [isEthPairAndNftRewards, { farmAddress, pairAddress }];
-    })
-  ).then(farms =>
-    farms.filter(([isEthPairAndNftRewards]) => isEthPairAndNftRewards)
-  );
-
-  // get the lp tokens staked and reward token balance for each farm and then calculate the eth value
-  const totalEthInFarms = await Promise.all(
-    filteredFarms.map(async ([, { farmAddress, pairAddress }]) => {
-      const totalStakedLpTokens = await api.call({
-        abi: "function totalSupply() view returns (uint256)",
-        target: farmAddress,
-        params: []
-      });
-
-      const [baseTokenAmount] = await api.call({
-        abi: "function removeQuote(uint256) view returns (uint256,uint256)",
-        target: pairAddress,
-        params: [totalStakedLpTokens]
-      });
-
-      const price = await api.call({
-        abi: "function price() view returns (uint256)",
-        target: pairAddress,
-        params: []
-      });
-
-      const rewardsTokenBalance = await api.call({
-        abi: "erc20:balanceOf",
-        target: pairAddress,
-        params: [farmAddress]
-      });
-
-      const stakedEthValue = (2 * baseTokenAmount) / 1e18;
-      const rewardsEthValue = (price * rewardsTokenBalance) / 1e36;
-
-      return stakedEthValue + rewardsEthValue;
-    })
-  ).then(farms => farms.reduce((a, b) => a + b, 0));
-
-  return { ethereum: totalEthInFarms };
+  const farms = filteredFarms.map(i => i.farmAddress)
+  const pairs = filteredFarms.map(i => i.pairAddress)
+  const totalSupplies = await api.multiCall({ abi: 'uint256:totalSupply', calls: farms })
+  const prices = await api.multiCall({ abi: 'uint256:price', calls: pairs })
+  const baseTokenAmounts = (await api.multiCall({ abi: "function removeQuote(uint256) view returns (uint256,uint256)", calls: pairs.map((v, i) => ({ target: v, params: [totalSupplies[i]] })) })).map(i => i[0])
+  const rewardBalances = (await api.multiCall({ abi: "erc20:balanceOf", calls: pairs.map((v, i) => ({ target: v, params: [farms[i]] })) }))
+  baseTokenAmounts.forEach(i => api.add(nullAddress, i * 2));
+  rewardBalances.forEach((v, i) => api.add(nullAddress, (prices[i] * v) / 1e18));
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
+  misrepresentedTokens: true,
   methodology:
     "Sums the total staked in baton farms and the total amount of tokens deposited as yield farming rewards.",
   start: 17411300,
