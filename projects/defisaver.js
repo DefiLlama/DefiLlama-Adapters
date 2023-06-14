@@ -1,9 +1,10 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const defisaverABIs = require("./config/defisaver/abis");
 const utils = require("./helper/utils");
-const { tokensBare, nullAddress, } = require("./helper/tokenMapping");
+const { nullAddress, } = require("./helper/tokenMapping");
 const sdk = require('@defillama/sdk')
 
-const dai = tokensBare.dai
+const dai = ADDRESSES.ethereum.DAI
 
 const {
   CompoundSubscriptions,
@@ -133,13 +134,13 @@ async function tvl(ts, block, _, { api }) {
 
 const assetMapping = {
   ETH: nullAddress,
-  DAI: tokensBare.dai,
-  BAT: tokensBare.BAT,
-  RETH: tokensBare.reth,
-  LINK: tokensBare.link,
-  WBTC: tokensBare.wbtc,
-  MATIC: tokensBare.matic,
-  WSTETH: tokensBare.wsteth,
+  DAI: ADDRESSES.ethereum.DAI,
+  BAT: ADDRESSES.ethereum.BAT,
+  RETH: ADDRESSES.ethereum.RETH,
+  LINK: ADDRESSES.ethereum.LINK,
+  WBTC: ADDRESSES.ethereum.WBTC,
+  MATIC: ADDRESSES.ethereum.MATIC,
+  WSTETH: ADDRESSES.ethereum.WSTETH
 }
 
 module.exports = {

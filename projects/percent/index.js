@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { stakings } = require("../helper/staking");
@@ -5,7 +6,7 @@ const { getCompoundV2Tvl } = require("../helper/compound");
 
 const comptroller = "0xf47dD16553A934064509C40DC5466BBfB999528B";
 const pETH = "0x45F157b3d3d7C415a0e40012D64465e3a0402C64";
-const pETHEquivalent = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
+const pETHEquivalent = ADDRESSES.ethereum.WETH;
 
 const pool2Contract = "0x23b53026187626Ed8488e119767ACB2Fe5F8de4e";
 const lpOfPool2 = "0xEB85B2E12320a123d447Ca0dA26B49E666b799dB";

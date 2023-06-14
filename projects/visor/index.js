@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const hypervisorAbi = require("./abis/hypervisor.json");
 const { staking } = require("../helper/staking");
@@ -17,22 +18,39 @@ const LIQUIDITY_MINING_POOLS = [
 /* List of hypervisor registries by chain
    One chain can have multiple registries for different underlying DEXes */
 const HYPE_REGISTRY = {
-  ethereum: ["0x31ccdb5bd6322483bebd0787e1dabd1bf1f14946"],
+  ethereum: [
+    "0x31ccdb5bd6322483bebd0787e1dabd1bf1f14946", // Uniswap
+  ],
   polygon: [
     "0x0Ac4C7b794f3D7e7bF1093A4f179bA792CF15055", // Uniswap
     "0xAeC731F69Fa39aD84c7749E913e3bC227427Adfd", // Quickswap
+    "0xcAC19d43C9558753d7535978A370055614Ce832E", // Retro
   ],
-  optimism: ["0xF5BFA20F4A77933fEE0C7bB7F39E7642A070d599"],
+  polygon_zkevm: [
+    "0xD08B593eb3460B7aa5Ce76fFB0A3c5c938fd89b8", // Quickswap
+  ],
+  optimism: [
+    "0xF5BFA20F4A77933fEE0C7bB7F39E7642A070d599", // Uniswap
+  ],
   arbitrum: [
     "0x66CD859053c458688044d816117D5Bdf42A56813", // Uniswap
     "0x37595FCaF29E4fBAc0f7C1863E3dF2Fe6e2247e9", // Zyberswap
   ],
-  celo: ["0x0F548d7AD1A0CB30D1872b8C18894484d76e1569"],
+  bsc: [
+    "0x0b4645179C1b668464Df01362fC6219a7ab3234c", // Uniswap
+    "0xd4bcFC023736Db5617E5638748E127581d5929bd", // Thena
+  ],
+  moonbeam: [
+    "0xB7dfC304D9cd88D98A262cE5B6a39Bb9d6611063", // Beamswap
+  ],
+  celo: [
+    "0x0F548d7AD1A0CB30D1872b8C18894484d76e1569", // Uniswap
+  ],
 };
 
 /* List of bad addresses added to registries that need to be excluded manually */
 const blacklist = {
-  ethereum: ["0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"],
+  ethereum: [ADDRESSES.ethereum.WBTC],
   polygon: ["0xa9782a2c9c3fb83937f14cdfac9a6d23946c9255"],
 };
 
@@ -89,6 +107,7 @@ async function getHypervisorBalances({ hypervisors, api, balances = {} }) {
   const supplies = await api.multiCall({
     abi: "erc20:totalSupply",
     calls: hypervisors,
+    permitFailure: true,
   });
   hypervisors = hypervisors.filter((_, i) => +supplies[i] > 0);
 
@@ -118,10 +137,19 @@ module.exports = {
   polygon: {
     tvl: tvlWrapper,
   },
+  polygon_zkevm: {
+    tvl: tvlWrapper,
+  },
   optimism: {
     tvl: tvlWrapper,
   },
   arbitrum: {
+    tvl: tvlWrapper,
+  },
+  bsc: {
+    tvl: tvlWrapper,
+  },
+  moonbeam: {
     tvl: tvlWrapper,
   },
   celo: {

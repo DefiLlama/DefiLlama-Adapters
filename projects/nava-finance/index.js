@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { unknownTombs, sumUnknownTokens } = require('../helper/unknownTokens')
 const { staking } = require('../helper/staking');
 const { sumTokens2 } = require('../helper/unwrapLPs')
@@ -13,7 +14,7 @@ const pool2lps = [
 ];
 const genesisPool = '0xb9F9993f0D4A63344D9571387E18f659B6AE5447'
 const OORT = '0x3D1BBD0eC9Af25e8f12383d9F6a6bbFa6DfeF06F'
-const WREI = '0x2545AF3D8b11e295bB7aEdD5826021AB54F71630'
+const WREI = ADDRESSES.rei.WREI
 const OORT_LP = '0xB95783dCE72CF2C7fa13a6b3D7399A4223259878'
 // module.exports = {
 //     ...tombTvl(bond, share, rewardPool, boardroom, pool2lps, "rei", undefined, false, pool2lps[1])

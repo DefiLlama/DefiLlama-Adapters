@@ -7,9 +7,11 @@ const COVALENT_KEY = env.COVALENT_KEY ?? 'ckey_72cd3b74b4a048c9bc671f7c5a6'
 
 const chainIds = {
   'ethereum': 1,
+  'optimism': 10,
   'bsc': 56,
   'polygon': 137,
   'arbitrum': 42161,
+  'fantom': 250,
   'avax': 43114,
 }
 
@@ -53,7 +55,7 @@ async function graphQuery(endpoint, graphQuery, params = {}, { timestamp, chain,
 
 async function covalentGetTokens(address, chain = 'ethereum') {
   let chainId = chainIds[chain]
-  if (!chainId) throw new Error('Missing chain to chain id mapping!!!')
+  if (!chainId) throw new Error('Missing chain to chain id mapping:' + chain)
   if (!address) throw new Error('Missing adddress')
 
   const timeNow = +Date.now()
@@ -103,9 +105,9 @@ async function blockQuery(endpoint, query, { api, blockCatchupLimit = 500, }) {
   }
 }
 
-async function graphFetchById({ endpoint, query, params = {}, options: { timestamp, chain, chainBlocks, useBlock = false } = {} }) {
+async function graphFetchById({  endpoint, query, params = {}, api, options: { useBlock = false } = {} }) {
   if (useBlock && !params.block)
-    params.block = await getBlock(timestamp, chain, chainBlocks) - 100
+    params.block = await api.getBlock() - 100
 
   let data = []
   let lastId = ""

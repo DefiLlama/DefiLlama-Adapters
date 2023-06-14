@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 const perpProtocolTreasury = "0xD374225abB84DCA94e121F0B8A06B93E39aD7a99";
@@ -12,9 +13,9 @@ module.exports = treasuryExports({
         '0xca1207647Ff814039530D7d35df0e1Dd2e91Fa84',//DHT
         '0x73968b9a57c6E53d41345FD57a6E6ae27d6CDB2F',//SDT
         '0x1494CA1F11D487c2bBe4543E90080AeBa4BA3C2b',//DPI
-        '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',//USDC
+        ADDRESSES.ethereum.USDC,//USDC
         '0xE0e05c43c097B0982Db6c9d626c4eb9e95C3b9ce',//USF
-        '0x6B175474E89094C44Da98b954EedeAC495271d0F',//DAI
+        ADDRESSES.ethereum.DAI,//DAI
         '0x1337DEF16F9B486fAEd0293eb623Dc8395dFE46a' //ARMOR
      ],
     owners: [perpProtocolTreasury],

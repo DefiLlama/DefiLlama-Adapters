@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require("../helper/staking");
 const { pool2 } = require("../helper/pool2");
 const { compoundExports } = require("../helper/compound");
@@ -20,11 +21,12 @@ module.exports = {
   bsc: {
     pool2: pool2(lpVaultStakingContract_BNB, ALT_BUSD_CakeLP_BNB, "bsc"),
     staking: staking(vaultStakingContract_BNB, ATL, "bsc"),
-    ...compoundExports(comptroller,
-      "bsc",
-      "0x5A9A90983A369b6bB8F062f0AFe6219Ac01caF63",
-      "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
-    ),
+    // ...compoundExports(comptroller,
+    //   "bsc",
+    //   "0x5A9A90983A369b6bB8F062f0AFe6219Ac01caF63",
+    //   ADDRESSES.bsc.WBNB
+    // ),
+    tvl: async () => ({}),
   },
   polygon: compoundExports(polygonComptroller,
     "polygon",
@@ -34,13 +36,17 @@ module.exports = {
   avax: compoundExports(avaxComptroller,
     "avax",
     "0x6bd2154fbc086cb43411966e0e72584196ccd065",
-    "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"
+    ADDRESSES.avax.WAVAX
   ),
   dogechain: compoundExports(dcComptroller,
     "dogechain",
     "0xbc46Dc817ce983CfD1B36cBc599031aCBEc2FDfe",
-    "0xb7ddc6414bf4f5515b52d8bdd69973ae205ff101"
+    ADDRESSES.dogechain.WWDOGE
   ),
+  hallmarks: [
+    [Math.floor(new Date('2023-04-01') / 1e3), 'Team stops all comms, stole funds (?)'],
+    [Math.floor(new Date('2023-06-10') / 1e3), 'Governance Attack'],
+  ],
   methodology:
     "TVL is comprised of tokens deposited to the protocol as collateral, similar to Compound Finance and other lending protocols the borrowed tokens are not counted as TVL.",
 };

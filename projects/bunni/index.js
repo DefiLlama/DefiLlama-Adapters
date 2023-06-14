@@ -25,6 +25,7 @@ const config = {
 }
 
 module.exports = {
+  doublecounted: true,
   hallmarks: [
     [1674475200,"$oLIT Rewards Start"]
   ],

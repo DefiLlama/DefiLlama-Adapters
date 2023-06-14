@@ -21,10 +21,12 @@ function tvl(network) {
 }
 
 module.exports = {
+  doublecounted: true,
   timetravel: false,
   misrepresentedTokens: true,
   ethereum: { tvl: tvl("mainnet") },
   polygon: { tvl: tvl("polygon") },
   arbitrum: { tvl: tvl("arbitrum") },
   optimism: { tvl: tvl("optimism") },
+  bsc: {tvl: tvl("bsc")}
 };
