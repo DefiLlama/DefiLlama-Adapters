@@ -23,18 +23,16 @@ module.exports = {
   },
   optimism: {
     tvl: sumTokensExport({
-      owner: '0x4C6bF87b7fc1C8Db85877151C6edE38Ed27c34f6',
+      owner: '0x4c6bf87b7fc1c8db85877151c6ede38ed27c34f6',
       tokens: [
-        "0x4200000000000000000000000000000000000042",
-        "0x4200000000000000000000000000000000000006",
-        "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
-        "0x1F32b1c2345538c0c6f582fCB022739c4A194Ebb",
-        "0x293aaC1fef48b2ebf95d0CB3a31A7B219e8Ece9E",
-        "0x4E71790712424f246358D08A4De6C9896482dE64",
-        "0x25Ee6eA9353E0ffa3155655F3dF9140684671f36",
-        "0x564baA321227abf6B2E88a38557b6517077aAD32"
-
+        ADDRESSES.optimism.USDC,
+        ADDRESSES.optimism.WETH,
+        ADDRESSES.optimism.OP,
+        "0xdd63ae655b388cd782681b7821be37fdb6d0e78d",
+        "0xccf3d1acf799bae67f6e354d685295557cf64761",
+        "0x19382707d5a47e74f60053b652ab34b6e30febad",
+        "0x539505dde2b9771debe0898a84441c5e7fdf6bc0",
       ]
     }),
-  },
+  }
 }
