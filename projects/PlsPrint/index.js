@@ -7,12 +7,12 @@ async function tvl(time, ethBlock, { bsc: block }) {
     tokens: [nullAddress],
     owner: contract,
     block,
-    chain: "Pulse",
+    chain: "pulse",
   });
 }
 
 module.exports = {
-  Pulse: {
+  pulse: {
     tvl,
   },
 };
