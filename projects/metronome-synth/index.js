@@ -20,7 +20,7 @@ module.exports = {
         "0xDD9F61a85fFE73E41eF889817972f0B0AaE6D6Dd"
       ]
     }),
-  }
+  },
   optimism: {
     tvl: sumTokensExport({
       owner: '0x4C6bF87b7fc1C8Db85877151C6edE38Ed27c34f6',
