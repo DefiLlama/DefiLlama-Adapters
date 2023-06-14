@@ -19,7 +19,9 @@ const getTvl = async (api, providerAddress) => {
       return {
         address: e.token.externalAddress,
         tvl:
-          (e.overview.availableLiquidity * e.oraclePrice) /
+          ((Number(e.overview.availableLiquidity) +
+            Number(e.overview.totalVariableDebt)) *
+            e.oraclePrice) /
           10 ** e.configuration.decimals,
       };
     });
