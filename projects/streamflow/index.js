@@ -1,46 +1,53 @@
 const { getCache } = require('../helper/http')
 
-const TVL_KEY = "TVL (unlocked) (L1+stables)";
-const VESTING_KEY = "TVL (locked) (vesting)";
+const TVL_KEY = "tvl";
+const VESTING_KEY = "tvl_vested";
 const api =
-  "https://app.datawisp.io/api/exec/sheet_results/8fd98286-f0e1-4a32-91cd-d88d827ae9d7";
+  "https://metabase.internal-streamflow.com/_public/api/v1/stats/accumulated";
+const chains = [
+  "solana",
+  "aptos",
+  "bsc",
+  "polygon",
+  "ethereum",
+];
+const chainMapping = {
+  bsc: 'bnb'
+};
 
-const flatten = (arr) => {
-  return arr.reduce((acc, next) => [...acc, ...next], []);
-}
-
-const getValueForKey = (arr, key) => {
+const getValueForKey = (arr, chain, key) => {
   for (let i = 0; i < arr.length; i++) {
-    const el = arr[i];
-    if (el[key] !== undefined) {
-      return el[key];
+    if (arr[i].chain.toLowerCase() === (chainMapping[chain] || chain) && arr[i][key] !== undefined) {
+      return arr[i][key];
     }
   }
-  return null;
+  return 0;
 }
 
 async function getCachedApiRespnse() {
-  let apiResponse = (await getCache(api)).data;
-  apiResponse = flatten(Object.values(apiResponse));
+  let apiResponse = (await getCache(api));
 
   return apiResponse;
 }
 
-async function tvl() {
+async function tvl(_, _1, _2, { api }) {
   return {
-    tether: getValueForKey(await getCachedApiRespnse(), TVL_KEY),
+    tether: getValueForKey(await getCachedApiRespnse(), api.chain, TVL_KEY),
   }
 }
-async function vesting() {
+async function vesting(_, _1, _2, { api }) {
   return {
-    tether: getValueForKey(await getCachedApiRespnse(), VESTING_KEY),
+    tether: getValueForKey(await getCachedApiRespnse(), api.chain, VESTING_KEY),
   }
 }
 
 module.exports = {
+  methodology: 'Token breakdown: https://metabase.internal-streamflow.com/public/dashboard/fe3731c1-fbe4-4fb6-8960-515af1d6e72d', 
   timetravel: false,
   misrepresentedTokens: true,
-  solana: {
-    tvl, vesting,
-  },
 }
+chains.forEach((chain) => {
+  module.exports[chain] = {
+    tvl, vesting
+  };
+});

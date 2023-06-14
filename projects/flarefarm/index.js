@@ -1,8 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumUnknownTokens } = require("../helper/unknownTokens");
-const WSGB = '0x02f0826ef6aD107Cfc861152B32B52fD11BaB9ED'
-const CANARY_DOLLAR = '0x70Ad7172EF0b131A1428D0c1F66457EB041f2176'
- const EXFI = '0xC348F894d0E939FE72c467156E6d7DcbD6f16e21';
- const SFIN = '0x0D94e59332732D18CF3a3D457A8886A2AE29eA1B';
+const { staking } = require('../helper/staking')
+const WSGB = ADDRESSES.songbird.WSGB
+const CANARY_DOLLAR = ADDRESSES.songbird.CAND
+ const EXFI = ADDRESSES.songbird.EXFI;
+ const SFIN = ADDRESSES.songbird.SFIN;
 
 const chain = 'songbird'
 
@@ -24,8 +26,11 @@ async function farmTvl(timestamp, ethblock, { [chain]: block }) {
     ['0x47C830E141234d029D953dF39B13d7728eB9f2d4','0xb4bD741343727EcBdACDE37124D869104b0AcAf8'],
     ['0xC6D2f9e21bcD963B42D85379581003be1146b3Aa','0x1d1FAD6faAFc6a5Cd6652fFA7BA43F9E4fa75C0d'],
     [EXFI, '0xD02C3e166223EE78F4d0ae99F5396142b48D97FE'], 
-    [WSGB, '0x5400Be51da9B8F96677EF1D3c4F8280A37C8c74C'],
+    [WSGB, '0x745d8896629842ef8E44D269f89A7A873086A6F2'],
     [EXFI, "0x61128b44C299b0f7a752BF6278f44f1EcefD9109"],
+    ['0x3233642aCf7664a69c33e5a6FFAb321608d7A65f','0xF81B465C562ED3f54Aea772D8A56FAF93884ea2E'],
+    [EXFI, "0x3B346b0b091fA8813f60Cd6e81b95b63375e22f5"],
+    ['0xc41aA3ac0e6efcb780cd4696E7eC3B8193BB46E1', "0xa275DD75C1182055C7039b839cC0Da017c78933a"]
   ];
 
   return sumUnknownTokens({ tokensAndOwners: tokens, chain, block, useDefaultCoreAssets: true, })
@@ -45,19 +50,13 @@ async function pool2(timestamp, ethblock, { [chain]: block }) {
   ]
   return sumUnknownTokens({ tokensAndOwners: tokens, chain, block, useDefaultCoreAssets: true, })
 }
-async function staking(timestamp, ethblock, { [chain]: block }) {
-  const tokens = [
-    [SFIN, '0x554742076743b366504972F86609d64fd18BDC34'],
-    [SFIN,'0xd0dbAFF52224C0882cfaf1765f347Cb5e4364FA1']
-  ]
-  return sumUnknownTokens({ tokensAndOwners: tokens, chain, block, useDefaultCoreAssets: true, lps: ['0x48195Ca4D228ce487AE2AE1335B017a95493Ade6'] })
-}
 
 module.exports = {
+  misrepresentedTokens: true,
   methodology: `Gets token balance from the smart contract address holding the user deposits. These addresses are are labele "tokensAndOwners". SFIN staked to earn more SFIN is labeles as "staking" category`,
   songbird: {
     tvl: farmTvl,
     pool2,
-    staking,
+    staking: staking(['0x554742076743b366504972F86609d64fd18BDC34', '0xd0dbAFF52224C0882cfaf1765f347Cb5e4364FA1'], SFIN),
   }
 };

@@ -1,0 +1,7 @@
+{
+  "concrete": "address:concrete",
+  "slotTotalValue": "function slotTotalValue(uint256 slot_) view returns (uint256)",
+  "slotBaseInfo": "function slotBaseInfo(uint256 slot_) view returns (tuple(address issuer, address currency, uint64 valueDate, uint64 maturity, uint64 createTime, bool transferable, bool isValid))",
+  "decimals": "uint8:decimals",
+  "balanceOf": "function balanceOf(address _owner) view returns (uint256 balance)"
+}

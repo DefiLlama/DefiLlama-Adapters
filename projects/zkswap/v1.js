@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const  sdk = require('@defillama/sdk');
 const { getLogs } = require('../helper/cache/getLogs')
 
@@ -9,7 +10,7 @@ module.exports = async function tvl(timestamp, block, _1, { api }) {
   // ETH
   const ETHBalance = (await sdk.api.eth.getBalance({target: MAIN, block})).output;
   const balances = {
-    '0x0000000000000000000000000000000000000000': ETHBalance
+    [ADDRESSES.null]: ETHBalance
   }
 
   // ERC20

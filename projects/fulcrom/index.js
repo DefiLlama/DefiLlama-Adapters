@@ -10,7 +10,7 @@ function fulExports({ vault, }) {
       itemAbi: abis.whitelistedTokens,
     })
 
-    return sumTokens2({ ...api, owner: vault, tokens: tokenAddresses, })
+    return sumTokens2({ api, owner: vault, tokens: tokenAddresses, })
   }
 }
 
