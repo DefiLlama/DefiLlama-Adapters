@@ -19,6 +19,12 @@ async function fetchPolygon() {
   return toUSDTBalances(value);
 }
 
+async function fetchArbitrum() {
+  const value = await get("https://data.cian.app/arbitrum/api/v1/tvl");
+
+  return toUSDTBalances(value);
+}
+
 module.exports = {
   misrepresentedTokens: true,
   doublecounted: true,
@@ -31,5 +37,8 @@ module.exports = {
   },
   ethereum: {
     tvl: fetchEthereum,
+  },
+  arbitrum: {
+    tvl: fetchArbitrum,
   },
 };
