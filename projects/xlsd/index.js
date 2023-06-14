@@ -14,6 +14,5 @@ module.exports = {
     methodology:
       "TVL of Staked ETH & LSD tokens in the StakingPool contracts",
     tvl: calcTvl
-
   },
 };
