@@ -1,8 +1,9 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { transformBscAddress } = require('./helper/portedTokens');
 
 const bnbPool = "0x55D10490C500FBF334C0fD91A0b205a5D64b9367"; //BNB_POOL
-const WBNBAddresss = "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c";
+const WBNBAddresss = ADDRESSES.bsc.WBNB;
 
 const poolsV1 = [
     "0x3BEC8B9e416d65209eB5432aDDCb38146E977CcB", //WBTC_POOL
@@ -17,8 +18,8 @@ const poolsV1 = [
 ];
 
 const tokens = [
-    "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c", //WBTC
-    "0x2170ed0880ac9a755fd29b2688956bd959f933f8", //WETH
+    ADDRESSES.bsc.BTCB, //WBTC
+    ADDRESSES.bsc.ETH, //WETH
     "0x8ff795a6f4d97e7887c79bea79aba5cc76444adf", //BCH
     "0x4338665cbb7b2485a8855a139b75d5e34ab0db94", //LTC
     "0x52ce071bd9b1c4b00a0b92d298c512478cad67e8", //COMP

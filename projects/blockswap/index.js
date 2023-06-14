@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 
 const { GraphQLClient, gql } = require('graphql-request');
 
-const ethAddress = '0x0000000000000000000000000000000000000000'
+const ethAddress = ADDRESSES.null
 
 const lsd_subgraph = 'https://api.thegraph.com/subgraphs/name/stakehouse-dev/lsd'
 

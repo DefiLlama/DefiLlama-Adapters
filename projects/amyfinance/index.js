@@ -1,15 +1,16 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensAndLPsSharedOwners } = require('../helper/unwrapLPs');
 const { transformArbitrumAddress } = require('../helper/portedTokens');
 
 const tokens = [
-    ["0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8", false], //USDC
-    ["0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9", false], //USDT
-    ["0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1", false], //DAI
-    ["0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f", false], //WBTC
-    ["0x82aF49447D8a07e3bd95BD0d56f35241523fBab1", false], //WETH
+    [ADDRESSES.arbitrum.USDC, false], //USDC
+    [ADDRESSES.arbitrum.USDT, false], //USDT
+    [ADDRESSES.optimism.DAI, false], //DAI
+    [ADDRESSES.arbitrum.WBTC, false], //WBTC
+    [ADDRESSES.arbitrum.WETH, false], //WETH
     ["0xFa7F8980b0f1E64A2062791cc3b0871572f1F7f0", false], //UNI
-    ["0xf97f4df75117a78c1A5a0DBb814Af92458539FB4", false], //LINK
-    ["0xFEa7a6a0B346362BF88A9e4A88416B77a57D6c2A", false], //MIM
+    [ADDRESSES.arbitrum.LINK, false], //LINK
+    [ADDRESSES.arbitrum.MIM, false], //MIM
     ["0xd4d42F0b6DEF4CE0383636770eF773390d85c61A", false], //SUSHI
 ];
 const aibContracts = [

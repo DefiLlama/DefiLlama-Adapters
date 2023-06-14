@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { stakings } = require("../helper/staking");
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
@@ -11,7 +12,7 @@ const OHM_STAKING_sUMAMI = "0xc9ecFeF2fac1E38b951B8C5f59294a8366Dfbd81";
 // glpUSDC vault is now deprecated
 const glpUSDC = "0x2e2153fd13459eba1f277ab9acd624f045d676ce";
 const glpInitBlock = 18703806;
-const USDC = "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8";
+const USDC = ADDRESSES.arbitrum.USDC;
 
 module.exports = {
   doublecounted: true,

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { BigNumber } = require("bignumber.js");
 const {compoundExports, getCompoundV2Tvl} = require('../helper/compound')
@@ -5,7 +6,7 @@ const { uniTvlExport } = require('../helper/calculateUniTvl.js');
 const { getFixBalancesSync } = require("../helper/portedTokens");
 
 const tqOne = "0x34B9aa82D89AE04f0f546Ca5eC9C93eFE1288940"; // tqONE
-const wOne = "0xcf664087a5bb0237a0bad6742852ec6c8d69a27a";
+const wOne = ADDRESSES.harmony.WONE;
 const stONEAddr = "0x22D62b19b7039333ad773b7185BB61294F3AdC19"; // stONE ERC20 contract
 const tranqToken = "0xcf1709ad76a79d5a60210f23e81ce2460542a836";
 

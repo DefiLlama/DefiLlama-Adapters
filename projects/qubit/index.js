@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
 
 const qBnb = "0xbE1B5D17777565D67A5D2793f879aBF59Ae5D351"; // qBNB
-const wBnb = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"; //wBNB
+const wBnb = ADDRESSES.bsc.WBNB; //wBNB
 const qoreComptroller = "0xf70314eb9c7fe7d88e6af5aa7f898b3a162dcd48";
 
 const dashboardKlaytn = "0x9A47D707FDffC561E3598990f25d3874af448568";

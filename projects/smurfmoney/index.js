@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { addFundsInMasterChef } = require("../helper/masterchef");
 
 const clever = "0x465bc6d1ab26efa74ee75b1e565e896615b39e79";
@@ -9,8 +10,8 @@ async function tvl (timestamp, block, chainBlocks) {
     let balances = {};
     await addFundsInMasterChef(balances, clevermasterchef, chainBlocks.fantom, "fantom", addr=>`fantom:${addr}`, undefined, [mushy, clever], true, true, clever);
     await addFundsInMasterChef(balances, mushymasterchef, chainBlocks.fantom,  "fantom", addr=>`fantom:${addr}`, undefined, [mushy, clever], true, true, mushy);
-    balances["0x6b175474e89094c44da98b954eedeac495271d0f"] = balances["fantom:0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E"];
-    delete balances["fantom:0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E"];
+    balances[ADDRESSES.ethereum.DAI] = balances["fantom:" + ADDRESSES.fantom.DAI];
+    delete balances["fantom:" + ADDRESSES.fantom.DAI];
     return balances;
 }
 

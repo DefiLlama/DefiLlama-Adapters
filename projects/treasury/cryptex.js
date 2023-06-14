@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 const treasuryARB = "0x9474b771fb46e538cfed114ca816a3e25bb346cf";
@@ -14,8 +15,8 @@ module.exports = treasuryExports({
   ethereum: {
     tokens: [ 
         nullAddress,
-        "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-        "0x514910771AF9Ca656af840dff83E8264EcF986CA"
+        ADDRESSES.ethereum.USDC,
+        ADDRESSES.ethereum.LINK
      ],
     owners: [treasuryETH, treasury2],
     ownTokens: [ctx],

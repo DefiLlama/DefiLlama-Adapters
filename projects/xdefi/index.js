@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const BigNumber = require('bignumber.js')
 const { GraphQLClient, gql, request } = require('graphql-request')
 
@@ -61,10 +62,10 @@ async function fetch() {
     }
     `
     const ethAddress = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
-    const wethAddress = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-    const usdt = "0xdac17f958d2ee523a2206206994597c13d831ec7"
-    const dai = "0x6b175474e89094c44da98b954eedeac495271d0f"
-    const usdc = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+    const wethAddress = ADDRESSES.ethereum.WETH;
+    const usdt = ADDRESSES.ethereum.USDT
+    const dai = ADDRESSES.ethereum.DAI
+    const usdc = ADDRESSES.ethereum.USDC
 
     const { tokenPrices } = await request(xdexApi, tokenPriceQuery, { ids: Object.keys(tokenDataWithLocked).concat(wethAddress) })
 

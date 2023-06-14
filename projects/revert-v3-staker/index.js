@@ -7,6 +7,7 @@ const config = {
 }
 
 module.exports = {
+  doublecounted: true
 };
 
 Object.keys(config).forEach(chain => {

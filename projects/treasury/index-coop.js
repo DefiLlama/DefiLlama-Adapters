@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { Indexed } = require("ethers/lib/utils");
 const {  nullAddress,treasuryExports } = require("../helper/treasury");
 
@@ -13,14 +14,14 @@ module.exports = treasuryExports({
     tokens: [ 
         nullAddress,
         '0x5aFE3855358E112B5647B952709E6165e1c1eEEe',//SAFE
-        '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
-        '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+        ADDRESSES.ethereum.USDC,
+        ADDRESSES.ethereum.DAI,
         '0x7C07F7aBe10CE8e33DC6C5aD68FE033085256A84',
         '0x056Fd409E1d7A124BD7017459dFEa2F387b6d5Cd',
         '0xAa6E8127831c9DE45ae56bB1b0d4D4Da6e5665BD',
         '0x39AA39c021dfbaE8faC545936693aC917d5E7563',
         '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0',
-        '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+        ADDRESSES.ethereum.USDT,
         '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643'
      ],
     owners: [treasury, treasury2, treasury3],

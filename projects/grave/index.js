@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { stakingPricedLP } = require("../helper/staking");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const { pool2Exports } = require("../helper/pool2");
@@ -18,9 +19,9 @@ async function atvl(timestamp, block, chainBlocks) {
     await sumTokensAndLPsSharedOwners(
 		balances,
 		[
-			["0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7", false],
-			["0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664", false],
-			["0x6e84a6216eA6dACC71eE8E6b0a5B7322EEbC0fDd", false],
+			[ADDRESSES.avax.WAVAX, false],
+			[ADDRESSES.avax.USDC_e, false],
+			[ADDRESSES.avax.JOE, false],
 			["0x070092b3A985f9E5424351D68730c9A318ad96eb", false],
 			
 		],
