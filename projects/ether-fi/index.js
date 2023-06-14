@@ -90,7 +90,7 @@ const queryFromDepositEvent = async () => {
   const graphQLClient = new GraphQLClient(config.GRAPH_URL);
   const validatorQuery = gql`
     query GetValidators($limit: Int!, $offset: Int!) {
-      validators(limit: $limit, offset: $offset) {
+      validators(limit: $limit, offset: $offset, , where: {and: [{phase_not: CANCELLED}, {phase_not: FULLY_WITHDRAWN}, {phase_not: EXITED}]}) {
         etherfiNode
         TNFTHolder
         validatorPubKey
