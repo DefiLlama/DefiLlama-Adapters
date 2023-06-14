@@ -24,14 +24,14 @@ async function ergotvl() {
 
 module.exports = {
   methodology: 'The TVL of each Djed deployment is the reserve belonging to the deployment. The TVL within a given blockchain is the sum of the TVLs of all known Djed deployments within that blockchain. The total TVL is the sum of the Djed TVLs on all blockchains.',
-  ergo:{
+  /*ergo:{ //has its own listing under sigmaUSD
     tvl: ergotvl
-  },
+  },*/
   cardano: {
     tvl: sumTokensExport({ owner: 'addr1z9s3v9vyyctzr4xagvrayw87yvzre6qcq7qw2uvqfznf92qm5kjdmrpmng059yellupyvwgay2v0lz6663swmds7hp0q2jjlf4', tokens: ['lovelace']}),
   },
-  milkomeda: {
+  /*milkomeda: {
     start: 10440400,
     tvl: (timestamp, block, chainBlocks) => tvl('milkomeda', chainBlocks)
-  },
+  },*/
 };

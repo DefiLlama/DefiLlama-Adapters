@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unwrapLPs')
 
 // Ethereum Vaults
@@ -70,41 +71,41 @@ const bobaPutVault = '0xff5fe7909fc4d0d6643f1e8be8cba72610d0b485'
 const arbCallVault = '0x0833EC3262Dcc417D88f85Ed5E1EBAf768080f41'
 
 // Ethereum Assets
-const weth = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
-const usdc = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
-const wbtc = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599'
+const weth = ADDRESSES.ethereum.WETH
+const usdc = ADDRESSES.ethereum.USDC
+const wbtc = ADDRESSES.ethereum.WBTC
 const ust = '0xa693b19d2931d498c5b318df961919bb4aee87a5'
 const tUSDC = '0x9f238fae3d1f1982716f136836fc2c0d1c2928ab'
 const tAlgo = '0x0354762a3c01730d07d2f7098365d64dc81b565d'
 const bit = '0x1a4b46696b2bb4794eb3d4c26f1c55f9170fa4c5'
 
 // Avalanche Assets
-const wavax = '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7'
-const usdce = '0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664'
-const usdc_avax = '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E'
+const wavax = ADDRESSES.avax.WAVAX
+const usdce = ADDRESSES.avax.USDC_e
+const usdc_avax = ADDRESSES.avax.USDC
 
 // Fantom Assets
-const wftm = '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83'
-const fusdc = '0x04068da6c83afcfa0e13ba15a6696662335d5b75'
+const wftm = ADDRESSES.fantom.WFTM
+const fusdc = ADDRESSES.fantom.USDC
 
 // Binance Smart Chain Assets
-const busd = '0xe9e7cea3dedca5984780bafc599bd69add087d56'
+const busd = ADDRESSES.bsc.BUSD
 const ada = '0x3ee2200efb3400fabb9aacf31297cbdd1d435d47'
 const bch = '0x8ff795a6f4d97e7887c79bea79aba5cc76444adf'
-const wbnb = '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
+const wbnb = ADDRESSES.bsc.WBNB
 const woo = '0x4691937a7508860F876c9c0a2a617E7d9E945D4B'
 
 // Polygon Assets
 const wmatic = '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270'
-const pousdc = '0x2791bca1f2de4661ed88a30c99a7a9449aa84174'
+const pousdc = ADDRESSES.polygon.USDC
 const ust_matic_wormhole = '0xE6469Ba6D2fD6130788E0eA9C0a0515900563b59'
 
 // Aurora Assets
-const near = '0xC42C30aC6Cc15faC9bD938618BcaA1a1FaE8501d'
+const near = ADDRESSES.aurora.NEAR
 
 // Boba Assets
-let boba = '0xa18bF3994C0Cc6E3b63ac420308E5383f53120D7'
-const bobaUSDC = '0x66a2A913e447d6b4BF33EFbec43aAeF87890FBbc'
+let boba = ADDRESSES.boba.BOBA
+const bobaUSDC = ADDRESSES.boba.USDC
 
 // Arbitrum assets
 let arb = '0x912ce59144191c1204e64559fe8253a0e49e6548'

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 /*==================================================
   Modules
 ==================================================*/
@@ -16,7 +17,7 @@ const Farm = '0x68145F3319F819b8E01Dfa3c094fa8205E9EfB9a';
 const VotingEscrow = '0xF92aBA2A79dC133278DE2CDDB38Db775A4b5B024';
 
 // Token
-const BUSD = "0xe9e7cea3dedca5984780bafc599bd69add087d56";
+const BUSD = ADDRESSES.bsc.BUSD;
 const ibALPACA = "0xf1be8ecc990cbcb90e166b71e368299f0116d421";
 const scUSD = "0x0E5C2b15666EEE4b66788E45CF4Da0392C070fa7";
 const SCIX = "0x2CFC48CdFea0678137854F010b5390c5144C0Aa5";

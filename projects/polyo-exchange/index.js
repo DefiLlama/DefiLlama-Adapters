@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 // polyo Asset Address
@@ -7,10 +8,10 @@ const Asset_P01_USDC = "0x17B308e859FD8ccC3D27EC290Fe5220c01188E52";
 const Asset_P01_USDT = "0x2d7FA7402569e061A2218dc4e7Ac79281a8C4fB5";
 
 // underlyingToken Address
-const BUSD = "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56";
+const BUSD = ADDRESSES.bsc.BUSD;
 const DAI = "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3";
-const USDC = "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d";
-const USDT = "0x55d398326f99059fF775485246999027B3197955";
+const USDC = ADDRESSES.bsc.USDC;
+const USDT = ADDRESSES.bsc.USDT;
 
 async function tvl(timestamp, ethereumBlock, chainBlocks) {
   const chain = 'bsc'

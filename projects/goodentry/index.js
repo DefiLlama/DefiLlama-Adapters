@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const abi = require('../helper/abis/aave.json');
 
 const addressesProviderRegistry = '0x01b76559D512Fa28aCc03630E8954405BcBB1E02';
@@ -12,7 +13,7 @@ const token1Abi = "function TOKEN1() view returns (address token, uint8 decimals
 
 async function tvl(timestamp, ethBlock, _, { api }) {
   const addressesProviders = await api.call({ target: addressesProviderRegistry, abi: abi["getAddressesProvidersList"], })
-  const validAddressesProviders = addressesProviders.filter((ap) => ap != "0x0000000000000000000000000000000000000000")
+  const validAddressesProviders = addressesProviders.filter((ap) => ap != ADDRESSES.null)
   const lendingPools = await api.multiCall({ calls: validAddressesProviders, abi: getLpAbi, })
   const aTokens = await api.multiCall({ calls: lendingPools, abi: abi["getReservesList"], })
 

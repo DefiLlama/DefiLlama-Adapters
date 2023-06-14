@@ -4,7 +4,6 @@ const { sumTokens2: sumTokensEVM, nullAddress, } = require('./unwrapLPs')
 const sdk = require('@defillama/sdk')
 
 const helpers = {
-  "tron": require("./chain/tron"),
   "eos": require("./chain/eos"),
   "elrond": require("./chain/elrond"),
   "cardano":require("./chain/cardano"),

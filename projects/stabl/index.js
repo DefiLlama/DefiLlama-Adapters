@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 
 const vaults = {
@@ -5,7 +6,7 @@ const vaults = {
 }
 
 const assets = {
-    polygon: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174", //USDC
+    polygon: ADDRESSES.polygon.USDC, //USDC
 }
 
 const abi = "uint256:checkBalance"

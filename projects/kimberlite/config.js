@@ -9,6 +9,11 @@ const config = {
     locker: "0xFb22A44FF24D599600A90eea13B14b5662b10353", 
     startBlock: 25521834
   },
+  kimberliteSafePLS: {
+    chain: "pulse",
+    locker: "0x5752Ed96a3Bfe6bdA9A290230e02E5e9E3A6e955", 
+    startBlock: 17366715
+  },
   kimberliteSafeMETIS: {
     chain: "metis",
     locker: "0xE4E56E5e234783BCb77A80e19C8B3B5b42588AAb", 
@@ -33,6 +38,11 @@ const config = {
     chain: "arbitrum",
     locker: "0xE4E56E5e234783BCb77A80e19C8B3B5b42588AAb", 
     startBlock: 49220342
+  },
+  kimberliteSafeZkEVM: {
+    chain: "polygon_zkevm",
+    locker: "0xE4E56E5e234783BCb77A80e19C8B3B5b42588AAb", 
+    startBlock: 279366
   },
   kimberliteSafeKAVA: {
     chain: "kava",

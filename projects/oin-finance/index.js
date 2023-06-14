@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const BigNumber = require("bignumber.js");
 const axios = require("axios");
 const BYTES = "100000000";
@@ -96,7 +97,7 @@ module.exports = {
   },
   harmony: {
     tvl: getStaking('harmony', [
-      ['0xcf664087a5bb0237a0bad6742852ec6c8d69a27a', '0xD018669755ad1e8c10807836A4729DCDEE8f036d'], // WONE
+      [ADDRESSES.harmony.WONE, '0xD018669755ad1e8c10807836A4729DCDEE8f036d'], // WONE
       ['0xb6768223895acc78efba06c28fdd8940f95a8ec2', '0x014186Ea70568806c2eEFeeaa1D2A71c18B9B95a'], // VIPER-LP
     ]),
   },

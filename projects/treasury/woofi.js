@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 const treasuryAVAX = "0xb54382c680b0ad037c9f441a8727ca6006fe2dd0";
@@ -11,7 +12,7 @@ module.exports = treasuryExports({
   avax: {
     tokens: [ 
         nullAddress,
-        "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664"
+        ADDRESSES.avax.USDC_e
      ],
     owners: [treasuryAVAX],
   },
@@ -19,7 +20,7 @@ module.exports = treasuryExports({
     tokens: [ 
         nullAddress,
         "0x43Dfc4159D86F3A37A5A4B3D4580b888ad7d4DDd",
-        "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+        ADDRESSES.ethereum.USDC
         
      ],
     owners: [treasuryETH],
@@ -30,7 +31,7 @@ module.exports = treasuryExports({
   bsc: {
     tokens: [ 
         nullAddress,
-        "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d"
+        ADDRESSES.bsc.USDC
      ],
     owners: [treasuryBSC],
     ownTokens: [WOOBSC],
