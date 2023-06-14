@@ -18,5 +18,21 @@ module.exports = {
         "0x691Af94cC63B99bd36173eD6Fb1eF5508b2774ec"
       ]
     }),
+  }
+  optimism: {
+    tvl: sumTokensExport({
+      owner: '0x4C6bF87b7fc1C8Db85877151C6edE38Ed27c34f6',
+      tokens: [
+        "0x4200000000000000000000000000000000000042",
+        "0x4200000000000000000000000000000000000006",
+        "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
+        "0x1F32b1c2345538c0c6f582fCB022739c4A194Ebb",
+        "0x293aaC1fef48b2ebf95d0CB3a31A7B219e8Ece9E",
+        "0x4E71790712424f246358D08A4De6C9896482dE64",
+        "0x25Ee6eA9353E0ffa3155655F3dF9140684671f36",
+        "0x564baA321227abf6B2E88a38557b6517077aAD32"
+
+      ]
+    }),
   },
 }
