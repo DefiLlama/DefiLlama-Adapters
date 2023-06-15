@@ -112,7 +112,7 @@ async function cosmosLCDQuery(url, chain) {
 
 module.exports = {
   timetravel: false,
-  methodology: 'Sum up token balances in Red Bank smart contract and vault underlying assets in Fields smart contract.',
+  methodology: 'Sum up token balances in Red Bank smart contract and vault underlying assets in Fields smart contract',
   osmosis: {
     tvl: osmosisTVL,
   },
