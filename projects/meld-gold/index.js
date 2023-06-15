@@ -19,7 +19,7 @@ async function tvl() {
     },
     {
       assetId: tokens.silver$,
-      grams: 1,
+      grams: ozToGrams,
       priceFeed: "0x379589227b15F1a12195D3f2d90bBc9F31f95235",
     },
   ];
