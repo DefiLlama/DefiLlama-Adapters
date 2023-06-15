@@ -4,8 +4,9 @@ module.exports = {
   misrepresentedTokens: true,
   bsc: {
     tvl: getUniTVL({
-      factory: '0x0ddb9d635cb92720896de709d18069450942dbba',
-      chain: 'bsc', 
+      factory: '0x70e881fa43a7124e36639b54162395451cef1922',
+      chain: 'bsc',
+      abi: 'uint256:allPairs',
       useDefaultCoreAssets: true
     })
   },
