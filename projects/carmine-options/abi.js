@@ -1,37 +1,36 @@
 const abi = [
   {
-    inputs: [
+    "name": "get_all_lptoken_addresses",
+    "type": "function",
+    "inputs": [],
+    "outputs": [
       {
-        name: "lptoken_address",
-        type: "felt",
+        "name": "array_len",
+        "type": "felt"
       },
-    ],
-    name: "get_unlocked_capital",
-    outputs: [
       {
-        name: "unlocked_capital",
-        type: "Uint256",
-      },
+        "name": "array",
+        "type": "felt*"
+      }
     ],
-    stateMutability: "view",
-    type: "function",
+    "stateMutability": "view"
   },
   {
-    inputs: [
+    "name": "get_underlying_token_address",
+    "type": "function",
+    "inputs": [
       {
-        name: "lptoken_address",
-        type: "felt",
-      },
+        "name": "lptoken_address",
+        "type": "felt"
+      }
     ],
-    name: "get_value_of_pool_position",
-    outputs: [
+    "outputs": [
       {
-        name: "res",
-        type: "felt",
-      },
+        "name": "underlying_token_address_",
+        "type": "felt"
+      }
     ],
-    stateMutability: "view",
-    type: "function",
+    "stateMutability": "view"
   },
 ];
 
