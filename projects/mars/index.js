@@ -22,20 +22,20 @@ async function osmosisSumVaultsTVL(balances) {
   const osmosisDenomTransform = await getChainTransform('osmosis');
 
   while (vaultPagesRemaining) {
-    const roverVaultsInfo = await queryContract({
+    const fieldsVaultsInfo = await queryContract({
       contract: creditManagerAddress,
       chain: 'osmosis',
       data: { 'vaults_info': { limit: pageLimit, 'start_after': startAfter } } 
     });
 
-    if(roverVaultsInfo.length === pageLimit) {
-      startAfter = roverVaultsInfo[roverVaultsInfo.length - 1].vault;
+    if(fieldsVaultsInfo.length === pageLimit) {
+      startAfter = fieldsVaultsInfo[fieldsVaultsInfo.length - 1].vault;
       vaultPagesRemaining = true
     } else {
       vaultPagesRemaining = false;
     }
 
-    await osmosisAddCoinsForVaultsInfoPage(coins, roverVaultsInfo);
+    await osmosisAddCoinsForVaultsInfoPage(coins, fieldsVaultsInfo);
   }
 
   coins.forEach(coin =>  {
@@ -43,26 +43,26 @@ async function osmosisSumVaultsTVL(balances) {
   })
 }
 
-async function osmosisAddCoinsForVaultsInfoPage(coins, roverVaultsInfoPage) {
-    let vaultsMetadata = roverVaultsInfoPage.map(rvi => ({ roverVaultInfo: rvi }));
+async function osmosisAddCoinsForVaultsInfoPage(coins, fieldsVaultsInfoPage) {
+    let vaultsMetadata = fieldsVaultsInfoPage.map(rvi => ({ fieldsVaultInfo: rvi }));
 
     // query the vault info for the vault contract itself to get the vault's
     // base token
     await Promise.all(vaultsMetadata.map(async vm => {
       let vaultInfo = await queryContract({
-        contract: vm.roverVaultInfo.vault.address,
+        contract: vm.fieldsVaultInfo.vault.address,
         chain: 'osmosis',
         data: { 'info': {} } 
       });
       vm.vaultInfo = vaultInfo;
     }));
 
-    // get total vault shares owned by rover for each vault
+    // get total vault shares owned by fields for each vault
     await Promise.all(vaultsMetadata.map(async vm => {
       let vaultShares = await queryContract({
         contract: creditManagerAddress,
         chain: 'osmosis',
-        data: { 'total_vault_coin_balance': { vault: vm.roverVaultInfo.vault } } 
+        data: { 'total_vault_coin_balance': { vault: vm.fieldsVaultInfo.vault } } 
       });
       vm.vaultShares = vaultShares;
     }));
@@ -70,7 +70,7 @@ async function osmosisAddCoinsForVaultsInfoPage(coins, roverVaultsInfoPage) {
     // convert vault shares to vault base asset
     await Promise.all(vaultsMetadata.map( async vm => {
       let query = {
-        contract: vm.roverVaultInfo.vault.address,
+        contract: vm.fieldsVaultInfo.vault.address,
         chain: 'osmosis',
         data: { 'convert_to_assets': { amount: vm.vaultShares } } 
       };
@@ -112,7 +112,7 @@ async function cosmosLCDQuery(url, chain) {
 
 module.exports = {
   timetravel: false,
-  methodology: 'sum up token balances in Mars smart contract in osmosis',
+  methodology: 'Sum up token balances in Red Bank smart contract and vault underlying assets in Fields smart contract.',
   osmosis: {
     tvl: osmosisTVL,
   },
