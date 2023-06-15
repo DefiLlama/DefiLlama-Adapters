@@ -80,12 +80,16 @@ async function getUserCamelotMasterBalances({ balances = {}, masterChefAddress, 
     const nitroPoolAddressesCalls = dummyArray.map(i => ({ target: wCamelotSpNFT, params: i }));
     const nitroPoolAddresses = (await sdk.api.abi.multiCall({ block, calls: nitroPoolAddressesCalls, abi: wCamelotSpNFTAbi.stakedNitroPool, chain, })).output
         .map(a => a.output)
-    const nitroPoolUserLpBalanceCalls = nitroPoolAddresses.map((v, i) => ({ target: v, params: wCamelotSpNFT  }));
+    const nitroPoolUserLpBalanceCalls = nitroPoolAddresses
+        .filter((v) => v !== '0x0000000000000000000000000000000000000000')
+        .map((v, i) => ({ target: v, params: wCamelotSpNFT  }));
     const nitroPoolUserLpBalance = (await sdk.api.abi.multiCall({ block, calls: nitroPoolUserLpBalanceCalls, abi: camelotNitroPoolAbi.userInfo, chain, })).output
         .map((v, i) => {
             if (!v.output?.totalDepositAmount || v.output.totalDepositAmount === "0") return
+            const lpTokenIdx = nitroPoolAddresses.findIndex(addr => addr === nitroPoolUserLpBalanceCalls[i].target)
+            if (lpTokenIdx === -1) return;
             return {
-                lpToken: lpTokens[i],
+                lpToken: lpTokens[lpTokenIdx],
                 balance: v.output.totalDepositAmount
             }
         })
