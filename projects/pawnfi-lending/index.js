@@ -2,6 +2,8 @@ const ABI = require("../pawnfi/helper/abi.json")
 const { Lending, LendCToken } = require("../pawnfi/helper/config.js")
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getLogs } = require('../helper/cache/getLogs')
+const { mergeExports } = require('../helper/utils')
+const nftTvl = require('../pawnfi-nft/index.js')
 
 async function getPawnNFTTokens(api) {
   const logs = await getLogs({
@@ -32,6 +34,6 @@ async function tvl(timestamp, block, _, { api }) {
 }
 
 
-module.exports = {
+module.exports = mergeExports([{
   ethereum: { tvl, borrowed },
-}
+}, nftTvl])
