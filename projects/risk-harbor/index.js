@@ -229,7 +229,7 @@ async function terra2(timestamp, ethBlock, chainBlocks, { api }) {
 }
 
 async function terra(timestamp, ethBlock, chainBlocks) {
-  return sumTokensCosmos({ owner: networks.terra.vaults, chain: "terra" });
+  return sumTokensCosmos({ owners: networks.terra.vaults, chain: "terra" });
 }
 
 function evm(chainName) {
