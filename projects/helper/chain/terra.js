@@ -1,51 +1,35 @@
 const axios = require('axios')
 const { default: BigNumber } = require("bignumber.js")
 const sdk = require('@defillama/sdk')
-const env = require('../env')
+const cosmos = require('./cosmos')
 
 function getEndpoint(isTerra2 = false) {
   if (!isTerra2)
-    return env.TERRA_RPC || 'https://terraclassic-lcd-server-01.stakely.io'
-  return env.TERRA2_RPC || 'https://phoenix-lcd.terra.dev'
+    return cosmos.endPoints.terra
+  return cosmos.endPoints.terra2
+}
+
+function getChain(isTerra2) {
+  if (!isTerra2)
+    return 'terra'
+  return 'terra2'
 }
 
 async function query(url, block, isTerra2 = false) {
-  block = undefined
-  let endpoint = `${getEndpoint(isTerra2)}/wasm/${url}`
-  if (block !== undefined) {
-    endpoint += `&height=${block - (block % 100)}`
-  }
-  return (await axios.get(endpoint)).data.result
-}
-
-const fetchAssets = async (path) => {
-  return (await axios.get(`https://assets.terra.money${path}`))
+  return cosmos.query(url, block, getChain(isTerra2))
 }
 
 async function queryV1Beta1(url, paginationKey, block, { isTerra2 = false } = {}) {
-  let endpoint = `${getEndpoint(isTerra2)}/cosmos/${url}`
-  if (block !== undefined) {
-    endpoint += `?height=${block - (block % 100)}`
-  }
-  if (paginationKey) {
-    const paginationQueryParam = `pagination.key=${paginationKey}`
-    if (block === undefined) {
-      endpoint += "?"
-    } else {
-      endpoint += "&"
-    }
-    endpoint += paginationQueryParam
-  }
-  return (await axios.get(endpoint)).data
+  return cosmos.queryV1Beta1({ chain: getChain(isTerra2), paginationKey, block, url })
 }
 
 
 async function getBalance(token, owner, block, { isTerra2 = false } = {}) {
-  const data = await query(`contracts/${token}/store?query_msg={"balance":{"address":"${owner}"}}`, block, isTerra2)
-  return Number(data.balance)
+  return cosmos.getBalance({ token, owner, block, chain: getChain(isTerra2) })
 }
 
 async function getDenomBalance(denom, owner, block, { isTerra2 = false } = {}) {
+  return cosmos.getDenomBalance({ denom, owner, block, chain: getChain(isTerra2) })
   let endpoint = `${getEndpoint(isTerra2)}/bank/balances/${owner}`
   if (block !== undefined) {
     endpoint += `?height=${block - (block % 100)}`
@@ -61,15 +45,18 @@ async function getDenomBalance(denom, owner, block, { isTerra2 = false } = {}) {
 
 // LP stuff
 async function totalSupply(token, block, { isTerra2 = false } = {}) {
+  return cosmos.totalSupply({token, block, chain: getChain(isTerra2)})
   const data = await query(`contracts/${token}/store?query_msg={"token_info":{}}`, block, isTerra2)
   return data.total_supply
 }
 
 async function lpMinter(token, block, { isTerra2 = false } = {}) {
+  return cosmos.lpMinter({token, block, chain: getChain(isTerra2)})
   const data = await query(`contracts/${token}/store?query_msg={"minter":{}}`, block, isTerra2)
   return data.minter
 }
 async function queryContract({ contract, isTerra2 = false, data }) {
+  return cosmos.queryContract({data, contract, chain: getChain(isTerra2)})
   if (typeof data !== 'string') data = JSON.stringify(data)
   data = Buffer.from(data).toString('base64')
 
@@ -122,6 +109,7 @@ const TOKEN_LIST = Object.keys(tokenMapping).reduce((agg, key) => {
 }, {})
 
 async function queryContractStore({ contract, queryParam, block, isTerra2= false, }) {
+
   if (typeof queryParam !== 'string') queryParam = JSON.stringify(queryParam)
   const url = `contracts/${contract}/store?query_msg=${queryParam}`
   return query(url, block, isTerra2)

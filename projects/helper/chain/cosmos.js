@@ -15,8 +15,8 @@ const endPoints = {
   cosmos: "https://cosmoshub-lcd.stakely.io",
   kujira: "https://rest.cosmos.directory/kujira",
   comdex: "https://rest.comdex.one",
-  terra: "https://terraclassic-lcd-server-01.stakely.io",
-  terra2: "https://phoenix-lcd.terra.dev",
+  terra: "https://api-terra-ia.cosmosia.notional.ventures",
+  terra2: "https://lcd-terra.wildsage.io",
   umee: "https://umee-api.polkachu.com",
   orai: "https://lcd.orai.io",
   juno: "https://lcd-juno.cosmostation.io",
@@ -47,6 +47,7 @@ async function query(url, block, chain) {
   if (block !== undefined) {
     endpoint += `&height=${block - (block % 100)}`;
   }
+  console.log(endpoint);
   return (await axios.get(endpoint)).data.result;
 }
 
@@ -142,17 +143,9 @@ async function lpMinter({ token, block, chain } = {}) {
 async function queryContract({ contract, chain, data }) {
   if (typeof data !== "string") data = JSON.stringify(data);
   data = Buffer.from(data).toString("base64");
-  if (chain === "terra") {
-    let path = `${getEndpoint(
-      chain
-    )}/terra/wasm/v1beta1/contracts/${contract}/store?query_msg=${data}`;
-    return (await axios.get(path)).data.query_result;
-  }
   return (
     await axios.get(
-      `${getEndpoint(
-        chain
-      )}/cosmwasm/wasm/v1/contract/${contract}/smart/${data}`
+      `${getEndpoint(chain)}/cosmwasm/wasm/v1/contract/${contract}/smart/${data}`
     )
   ).data.data;
 }
@@ -197,7 +190,8 @@ async function queryContractStore({
   return query(url, block, chain);
 }
 
-async function sumTokens({ balances = {}, owners = [], chain }) {
+async function sumTokens({ balances = {}, owners = [], chain, owner }) {
+  if (owner) owners = [owner]
   log(chain, "fetching balances for ", owners.length);
   let parallelLimit = 25;
 

@@ -1,10 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const {
-  queryV1Beta1,
   queryContract,
-  getDenomBalance,
-} = require("../helper/chain/terra");
+  sumTokens: sumTokensCosmos,
+} = require("../helper/chain/cosmos");
 const { sumTokens, } = require("../helper/unwrapLPs");
 const vaultManagerAbi = "address[]:getVaults";
 const vaultAbi = 'function self() view returns (tuple(address underwritingToken, uint32 start, uint32 expiration, uint8 underwritingTokenDecimals) config, tuple(tuple(tuple(uint128 numerator, uint128 denominator)[] expectedXVector, tuple(uint128 numerator, uint128 denominator)[] varCovarMatrix, tuple(uint128 numerator, uint128 denominator) lambda) config) amm, tuple(tuple(address standard, address rollover) underwritingPositionERC20, address nextVault, uint56 poolCount, uint32 latestInteraction, bool paused, uint256 premiums, uint256 premiumsAccruedPerShare, uint256 premiumDripBasis, uint256[] allocationVector) state)'
@@ -132,7 +131,7 @@ const networks = {
         ADDRESSES.optimism.USDC,
         "0xdf9d37e1a19474e5928fb410a3f8513a25ba680c"
       ]
-      
+
     ],
   },
   polygon: {
@@ -204,12 +203,10 @@ async function getManagedVaults(vaultManager, block, chain) {
   return res;
 }
 
-async function terra2(timestamp, ethBlock, chainBlocks) {
-  const balances = { "terra-luna-2": 0 };
-
+async function terra2(timestamp, ethBlock, chainBlocks, { api }) {
   const { addresses } = await queryContract({
     contract: networks.terra2.factory,
-    isTerra2: true,
+    chain: "terra2",
     data: {
       get_vaults: {},
     },
@@ -219,66 +216,20 @@ async function terra2(timestamp, ethBlock, chainBlocks) {
   // is Luna2 in the form of wrapped Luna2 since RH Ozone v2 does
   // not support native token types
   // For each vault, query its wrapped LUNA2 balance
-  let vault_balances = Promise.all(addresses.map(async (address) => {
+  for (const address of addresses) {
     const { balance } = await queryContract({
       contract: networks.terra2.wrapped_luna,
-      isTerra2: true,
-      data: {
-        balance: { address: address}
-      }
+      chain: 'terra2',
+      data: { balance: { address: address } }
     })
-    return balance;
-  }));
+    api.add('terra-luna-2', balance / 1e6)
+  }
 
-  vault_balances = await vault_balances;
-
- 
-  vault_balances.forEach((balance) => {
-    balances["terra-luna-2"] += balance / 1e6;
-  });
-
-  // Query the Master underwriting vault
-  balances["terra-luna-2"] +=
-    (await getDenomBalance(
-      "uluna",
-      networks.terra2.masterPool,
-      chainBlocks.terra2,
-      {
-        isTerra2: true,
-      }
-    )) / 1e6;
-
-  return balances;
+  return sumTokensCosmos({ balances: api.getBalances(), owner: networks.terra2.masterPool, chain: "terra2", })
 }
 
 async function terra(timestamp, ethBlock, chainBlocks) {
-  const balances = { terrausd: 0 };
-
-  for (const vaultAddr of networks.terra.vaults) {
-    let paginationKey;
-
-    do {
-      const data = await queryV1Beta1(
-        `bank/v1beta1/balances/${vaultAddr}`,
-        paginationKey,
-        chainBlocks.terra
-      );
-
-      paginationKey = data.pagination.next_key;
-
-      data.balances.forEach(({ denom, amount }) => {
-        /**
-         * 3/10/2022 - As of now the only supported underwriting token for Risk Harbor Ozone is UST, so
-         * balances should always be an array of length 1. Added support for dynamic balances length, denom checking, and pagination for
-         * future proofing and safety.
-         */
-        if (denom === "uusd") {
-          balances["terrausd"] += parseInt(amount) / 1e6;
-        }
-      });
-    } while (paginationKey);
-  }
-  return balances;
+  return sumTokensCosmos({ owner: networks.terra.vaults, chain: "terra" });
 }
 
 function evm(chainName) {
