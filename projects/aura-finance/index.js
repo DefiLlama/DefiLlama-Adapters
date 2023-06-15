@@ -2,7 +2,7 @@ const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { staking } = require("../helper/staking");
 const BigNumber = require('bignumber.js')
-const { unwrapBalancerPool } = require('../helper/unwrapLPs')
+const { unwrapBalancerToken } = require('../helper/unwrapLPs')
 
 const AURA_BOOSTER = "0x7818A1DA7BD1E64c199029E86Ba244a9798eEE10"
 const AURA_BOOSTER_2 = "0xA57b8d98dAE62B26Ec3bcC4a365338157060B234"
@@ -40,15 +40,15 @@ async function tvl(_, block, _1, { api }) {
   const { output: veBalance } = await sdk.api.erc20.balanceOf({ target: addresses.veBal, owner: addresses.auraDelegate, block })
   const ratio = veBalance / veBalTotalSupply
   const ratios = balancesinStaking.map((v, i) => +totalSupplies[i] > 0 ? v / totalSupplies[i]: 0)
-  const bal = await unwrapBalancerPool({ block, balancerPool: addresses.bal80eth20, owner: addresses.veBal, })
+  const bal = await unwrapBalancerToken({ api, balancerToken: addresses.bal80eth20, owner: addresses.veBal, })
   Object.entries(bal).forEach(([token, value]) => {
     api.add(token, +value * ratio, { skipChain: true,})
   })
   for (let [i, info] of poolTokensInfo.entries()) {
-    // // unwrapBalancerPool would be better here, but since crvRewards address holds aura-wrapped tokens, it won't work
+    // // unwrapBalancerToken would be better here, but since crvRewards address holds aura-wrapped tokens, it won't work
     // if (poolIds[i] == "0x3dd0843a028c86e0b760b1a76929d1c5ef93a2dd000200000000000000000249") {
     //   // Pool is 80BAL-20ETH/auraBAL, need to unwrap 80BAL-20ETH
-    //   const unwrapped = await unwrapBalancerPool({ block: api.block, balancerPool: addresses.bal80eth20, owner: BALANCER_VAULT })
+    //   const unwrapped = await unwrapBalancerToken({ block: api.block, balancerPool: addresses.bal80eth20, owner: BALANCER_VAULT })
     //   Object.entries(unwrapped).forEach(([token, balance]) => {
     //     api.add(token, balance * ratio)
     //   })

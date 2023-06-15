@@ -1,4 +1,5 @@
-const ADDRESSES = {
+const ADDRESSES = require('../helper/coreAssets.json')
+const ADDRESSES_ = {
 
   ethereum: {
     popLocker: "0xeEE1d31297B042820349B03027aB3b13a9406184",  // done
@@ -12,8 +13,8 @@ const ADDRESSES = {
 
     pop: "0xd0cd466b34a24fcb2f87676278af2005ca8a78c4",
 
-    usdc: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-    dai: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+    usdc: ADDRESSES.ethereum.USDC,
+    dai: ADDRESSES.ethereum.DAI,
 
     // for butter
     setBasicIssuanceModule: "0xd8EF3cACe8b4907117a45B0b125c68560532F94D",
@@ -49,7 +50,7 @@ const ADDRESSES = {
   },
   polygon: {
     pop: "0xc5b57e9a1e7914fda753a88f24e5703e617ee50c",
-    usdc: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+    usdc: ADDRESSES.polygon.USDC,
     popLocker: "0xe8af04AD759Ad790Aa5592f587D3cFB3ecC6A9dA",
     rewardsEscrow: "0xa82cAA79F35f7d6B6f1EC1971878F3474C894565",
 
@@ -67,5 +68,5 @@ const ADDRESSES = {
 }
 
 module.exports = {
-  ADDRESSES
+  ADDRESSES:ADDRESSES_
 }

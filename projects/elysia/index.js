@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { stakings } = require("../helper/staking");
 const { sumTokensExport,  } = require('../helper/unwrapLPs')
@@ -6,10 +7,10 @@ const addresses = {
   elfi: "0x4da34f8264cb33a5c9f17081b9ef5ff6091116f4",
   el: "0x2781246fe707bb15cee3e5ea354e2154a2877b16",
   elStaking: "0x3F0c3E32bB166901AcD0Abc9452a3f0c5b8B2C9D",
-  dai: "0x6b175474e89094c44da98b954eedeac495271d0f",
-  usdt: "0xdac17f958d2ee523a2206206994597c13d831ec7",
-  busd: "0x4fabb145d64652a948d72533023f6e7a623c7c53",
-  usdc: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+  dai: ADDRESSES.ethereum.DAI,
+  usdt: ADDRESSES.ethereum.USDT,
+  busd: ADDRESSES.ethereum.BUSD,
+  usdc: ADDRESSES.ethereum.USDC,
   elfiStaking: [
     "0xb41bcd480fbd986331eeed516c52e447b50dacb4",
     "0xCD668B44C7Cf3B63722D5cE5F655De68dD8f2750",
@@ -28,7 +29,7 @@ const moneyPools = {
     [addresses.usdt, '0xe0bda8e3a27e889837ae37970fe97194453ee79c'],
     [addresses.usdc, '0x3fea4cc5a03e372ac9cded96bd07795ac9034d71'],
   ],
-  bsc: [['0xe9e7cea3dedca5984780bafc599bd69add087d56', '0x5bb4d02a0ba38fb8b916758f11d9b256967a1f7f']]
+  bsc: [[ADDRESSES.bsc.BUSD, '0x5bb4d02a0ba38fb8b916758f11d9b256967a1f7f']]
 }
 
 function borrowed(chain) {

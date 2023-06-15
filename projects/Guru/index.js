@@ -28,3 +28,5 @@ Object.entries(tvlGuru).forEach(([chain, target]) => {
     tvl: async (_, _b, _c, { api, }) => ({ tether: ((await api.call({ target, abi: ITVL.tvl }))) / 1e18 }),
   }
 })
+
+module.exports.echelon.tvl = () => ({})
