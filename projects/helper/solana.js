@@ -11,8 +11,12 @@ const { decodeAccount } = require('./utils/solana/layout')
 
 const sdk = require('@defillama/sdk')
 
-const blacklistedTokens = [
+const blacklistedTokens_default = [
   'CowKesoLUaHSbAMaUxJUj7eodHHsaLsS65cy8NFyRDGP',
+  '674PmuiDtgKx3uKuJ1B16f9m5L84eFvNwj3xDMvHcbo7', // $WOOD
+  'SNSNkV9zfG5ZKWQs6x4hxvBRV6s8SqMfSGCtECDvdMd', // SNS
+  'A7rqejP8LKN8syXMr4tvcKjs2iJ4WtZjXNs1e6qP3m9g', // ZION
+  '2HeykdKjzHKGm2LKHw8pDYwjKPiFEoXAz74dirhUgQvq', // SAO
 ]
 
 let connection, provider
@@ -286,7 +290,7 @@ function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts) {
     }
 
     const coreTokens = await getGeckoSolTokens()
-    return transformDexBalances({ chain: 'solana', data, blacklistedTokens, coreTokens, })
+    return transformDexBalances({ chain: 'solana', data, blacklistedTokens: blacklistedTokens_default, coreTokens, })
   }
 
   async function _getTokenAccounts() {
@@ -322,6 +326,7 @@ async function sumTokens2({
     if (owner) tokensAndOwners = tokens.map(t => [t, owner])
     if (owners.length) tokensAndOwners = tokens.map(t => owners.map(o => [t, o])).flat()
   }
+  blacklistedTokens.push(...blacklistedTokens_default)
 
   tokensAndOwners = tokensAndOwners.filter(([token]) => !blacklistedTokens.includes(token))
 

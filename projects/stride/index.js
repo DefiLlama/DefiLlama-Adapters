@@ -10,6 +10,7 @@ const coinGeckoIds = {
   aevmos: "evmos",
   inj: "injective-protocol",
   uumee: "umee",
+  ucmdx: "comdex",
 };
 
 function getCoinDenom(denom) {
