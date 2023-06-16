@@ -29,7 +29,7 @@ async function tvl() {
     const { answer: price } = await api.call({ abi, target: priceFeed })
     const assetInfo = await getAssetInfo(assetId)
     const circulatingSupply = assetInfo.circulatingSupply
-    const marketCap = (circulatingSupply / grams / 10 ** 6) * (price / 10 ** 9)
+    const marketCap = (circulatingSupply / grams / 10 ** 6) * (price / 10 ** 8)
     totalMeldMarketCap += marketCap
   }
 
