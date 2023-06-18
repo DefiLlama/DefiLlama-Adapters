@@ -36,7 +36,8 @@ async function tvl(timestamp, block, _, { api }) {
 
 module.exports = mergeExports([{
   ethereum: { tvl, borrowed },
-  hallmarks: [
-    [Math.floor(new Date('2023-06-16')/1e3), 'Protocol was exploited'],
-  ],
 }, nftTvl])
+
+module.exports.hallmarks = [
+  [Math.floor(new Date('2023-06-16') / 1e3), 'Protocol was exploited'],
+]
