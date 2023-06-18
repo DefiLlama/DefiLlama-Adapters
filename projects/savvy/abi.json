@@ -1,0 +1,5 @@
+{
+  "totalDebt": "function getTotalDebtAmount() external view returns (uint256)",
+  "totalValueLocked": "function getTotalValueLocked() external view returns (uint256))",
+  "totalStaked": "function getTotalSVYStakedUSD() external view returns (uint256)"
+}
