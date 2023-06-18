@@ -4,13 +4,14 @@
   "coinsUint": "function coins(uint256 arg0) view returns (address) @2280",
   "coinsInt": "function coins(int128 arg0) view returns (address out) @2190",
   "coins": "function coins(uint256 arg0) view returns (address) @2280",
-  "get_balances": "function get_balances() view returns (uint256[2]) @2284",
+  "get_balances": "function get_balances(address _pool) view returns (uint256[8]) @2284",
   "underlying": "address:underlying",
   "exchangeRateStored": "uint256:exchangeRateStored",
   "get_underlying_coins": "function get_underlying_coins(address _pool) view returns (address[8]) @12194",
   "get_pool_from_lp_token": "function get_pool_from_lp_token(address arg0) view returns (address) @2443",
-  "get_coins": "function get_coins(address _pool) view returns (address[8]) @12102",
+  "get_coins": "function get_coins(address _pool) view returns (address[8])",
   "get_underlying_balances": "function get_underlying_balances(address _pool) view returns (uint256[8]) @162842",
   "get_virtual_price_from_lp_token": "function get_virtual_price_from_lp_token(address _token) view returns (uint256)",
+  "get_virtual_price": "function get_virtual_price() view returns (uint256)",
   "lockedSupply": "uint256:lockedSupply"
 }

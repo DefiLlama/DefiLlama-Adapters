@@ -1,3 +1,4 @@
+const ADDRESSES = require('../../../helper/coreAssets.json')
 
 const rawFarms = [
   {//0
@@ -28,7 +29,7 @@ const rawFarms = [
     subTokenSymbol1: 'ANKR',
     subTokenSymbol2: 'ANKR',
     subTokenAddresses1: '0xE95A203B1a91a908F9B9CE46459d101078c2c3cb',
-    subTokenAddresses2: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+    subTokenAddresses2: ADDRESSES.ethereum.USDC,
   },
   {//3
     title: 'onxEthSlpMulti',

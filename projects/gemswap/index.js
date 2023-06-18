@@ -1,6 +1,9 @@
 const { getUniTVL } = require('../helper/unknownTokens')
 
 module.exports = {
+  hallmarks: [
+    [1681430400,"Rug Pull"]
+  ],
   misrepresentedTokens: true,
   era: {
     tvl: getUniTVL({

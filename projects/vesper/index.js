@@ -15,6 +15,9 @@ const chainConfig = {
   polygon: {
     api: ['https://api-polygon.vesper.finance/pools?stages=prod'],
   },
+  optimism: {
+    api: ['https://api-optimism.vesper.finance/pools']
+  },
 }
 
 function getChainExports(chain) {
@@ -70,5 +73,5 @@ function getChainExports(chain) {
 
 module.exports = {
   start: 1608667205, // December 22 2020 at 8:00 PM UTC
-  ...['ethereum', 'avax', 'polygon'].reduce((acc, chain) => ({ ...acc, ...getChainExports(chain) }), {})
+  ...['ethereum', 'avax', 'polygon','optimism'].reduce((acc, chain) => ({ ...acc, ...getChainExports(chain) }), {})
 };

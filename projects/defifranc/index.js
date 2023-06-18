@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { staking } = require('../helper/staking')
 
 const Collaterals = {
-  ETH: "0x0000000000000000000000000000000000000000",
-  wBTC: "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"//
+  ETH: ADDRESSES.null,
+  wBTC: ADDRESSES.ethereum.WBTC//
 }
 
 const TROVE_MANAGER_ADDRESS = "0x99838142189adE67c1951f9c57c3333281334F7F"; // deposits in native ETH and wBTC
@@ -20,7 +21,7 @@ async function tvl(_, block, chainBlocks) {
   })
 
   output.forEach(({ input: { params: [token] }, output }) => {
-    if (token.toLowerCase() === '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599') // Fix wBTC balance
+    if (token.toLowerCase() === ADDRESSES.ethereum.WBTC) // Fix wBTC balance
       output /= 1e10
     sdk.util.sumSingleBalance(balances, token, output)
   })

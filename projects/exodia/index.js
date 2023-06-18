@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens } = require("../helper/unwrapLPs");
 const sdk = require('@defillama/sdk');
 const { transformFantomAddress } = require("../helper/portedTokens");
@@ -9,8 +10,8 @@ const wsexod = "0xe992C5Abddb05d86095B18a158251834D616f0D1"
 const gohm = "0x91fa20244fb509e8289ca630e5db3e9166233fdc"
 const mai = "0xfb98b335551a418cd0737375a2ea0ded62ea213b"
 const treasury = "0x6a654d988eebcd9ffb48ecd5af9bd79e090d8347"
-const dai = "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e"
-const wftm = "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83"
+const dai = ADDRESSES.fantom.DAI
+const wftm = ADDRESSES.fantom.WFTM
 const beetsvault = "0x20dd72Ed959b6147912C2e529F0a0C651c33c9ce"
 const poolid = "0xa216aa5d67ef95dde66246829c5103c7843d1aab000100000000000000000112"
 

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
 const BigNumber = require('bignumber.js')
 const getCacheBalances = 'function getCacheBalances() view returns (uint256, uint256)'
@@ -13,7 +14,7 @@ const { getLogs } = require('../helper/cache/getLogs')
 const START_BLOCK = 11142900
 const REGISTRY = '0x16274044dab9635Df2B5AeAF7CeCb5f381c71680'
 const FACTORY = '0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac'
-const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
+const ZERO_ADDRESS = ADDRESSES.null
 
 module.exports = async function tvl(_, block, _1, { api }) {
 
