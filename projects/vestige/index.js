@@ -26,7 +26,7 @@ async function fetch() {
 module.exports = {
   timetravel:false,
   misrepresentedTokens:true,
-  methodology:`Counts tokens in LPs only, transforms the price to USD and * them by 2 to account for the other side.`
+  methodology:`Counts tokens in LPs only, transforms the price to USD and * them by 2 to account for the other side.`,
   algorand: {
     fetch 
   },
