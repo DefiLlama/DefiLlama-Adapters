@@ -1,4 +1,0 @@
-{
-  "totalAssets": "function totalAssets() view returns (uint256)",
-  "totalDebt": "function totalDebt() view returns (uint256)"
-}
