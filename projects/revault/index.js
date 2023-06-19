@@ -12,8 +12,8 @@ const lpAddresses = [
   '0x804678fa97d91b974ec2af3c843270886528a9e6'
 ]
 
-async function tvl(timestamp, _, { bsc: block }) {
-  const tokenAddresses = Array.from(
+async function tvl(_, _1, _2, { api }) {
+    const tokenAddresses = Array.from(
     new Set(config.tokens.map((token) => token.address)));
 
   const transform = await transformBscAddress();
