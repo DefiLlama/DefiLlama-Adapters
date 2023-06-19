@@ -2,7 +2,7 @@ const POOL = "0x587A7eaE9b461ad724391Aa7195210e0547eD11d";
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 const { get } = require("../helper/http");
 const BigNumber = require("bignumber.js");
-const { sdk } = require("@defillama/sdk");
+// const { sdk } = require("@defillama/sdk");
 
 // async function tvl(_, _1, _2, { api }) {
 //   const totalBorrows = await api.call({    target: POOL,    abi: "uint256:totalBorrows",  });
@@ -16,9 +16,9 @@ const { sdk } = require("@defillama/sdk");
 async function tvl(_, _1, _2, { api }) {
 
   let tvl = await get("https://fvm.hashmix.org/fevmapi/tvl");
-  let b = new BigNumber.BigNumber(tvl, 10);
+  // let b = new BigNumber.BigNumber("337036288533616233281756");
 
-  api.add(nullAddress, b)
+  api.add(nullAddress, tvl.data)
 
   return sumTokens2({ api, owner: POOL, tokens: [nullAddress] });
 
