@@ -18,7 +18,7 @@ async function osmosisSumVaultsTVL(balances) {
   let coins = [];
   let vaultPagesRemaining = true;
   let startAfter = null;
-  const pageLimit = 2;
+  const pageLimit = 10;
   const osmosisDenomTransform = await getChainTransform('osmosis');
 
   while (vaultPagesRemaining) {
