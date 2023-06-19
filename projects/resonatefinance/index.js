@@ -6,7 +6,6 @@ const axios = require('axios');
 //API Endpoint: https://api.resonate.finance/{chainId}/tvl
 //https://github.com/Revest-Finance/railway-monorepo/blob/main/src/api.ts",
 async function tvl(_, _1, _2, { api }) {
-  
   let usdValue = 0;
   do {
       const {data, success} = await axios.get(`https://api.resonate.finance/${api.chainId}/tvl`);
@@ -18,10 +17,12 @@ async function tvl(_, _1, _2, { api }) {
   };
 }
 
-
-
 module.exports = {
     methodology: "We sum all the tokens deposited as principal and any unclaimed interest accrued on it.",
+    hallmarks: [
+      [1682438400, "Launch of Regen Portal"],
+      [1687276800, "Launch of Frax Portal"]
+    ],
     ethereum: {
       tvl
     },
