@@ -28,7 +28,7 @@
             "inputs": [],
             "outputs": [
                 {
-                    "type": "variadic<tuple<Farm,BigUint,BigUint>>",
+                    "type": "variadic<tuple<Farm,EgldOrEsdtTokenIdentifier,BigUint,BigUint,bool>>",
                     "multi_result": true
                 }
             ]

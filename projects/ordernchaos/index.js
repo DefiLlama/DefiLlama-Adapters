@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getChainTransform} = require("../helper/portedTokens")
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 
 
-const DAI = "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70"
-const USDC = "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E"
-const USDT = "0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7"
+const DAI = ADDRESSES.avax.DAI
+const USDC = ADDRESSES.avax.USDC
+const USDT = ADDRESSES.avax.USDt
 
 
 const collateralAddr = [

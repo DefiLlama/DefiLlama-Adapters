@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs");
 
 const native_staking_contract = "0x9212456Da7804245BDF02e7294E4f36D27f9c2B1";
@@ -9,9 +10,9 @@ const sydx_usdc_farming_contract = "0x75aC887df149076b7DF4deAA0267711475b71572";
 const usdc_usdplus_farming_contract = "0xF0B42d393eAB886bd9310AaF0A2B1eDbaaD31fdE"
 
 const assets = [
-  "0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4",
-  "0x5AEa5775959fBC2557Cc8789bC1bf90A239D9a91",
-  "0x0000000000000000000000000000000000000000", // This is address of native token (ETH), you can check native_staking_contract
+  ADDRESSES.era.USDC,
+  ADDRESSES.era.WETH,
+  ADDRESSES.null, // This is address of native token (ETH), you can check native_staking_contract
   "0x8E86e46278518EFc1C5CEd245cBA2C7e3ef11557"
 ];
 const SYNC_DEX = '0x3a34FA9a1288597Ad6C1Da709f001D37FeF8b19e'

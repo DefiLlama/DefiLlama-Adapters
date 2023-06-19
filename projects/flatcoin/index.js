@@ -1,14 +1,11 @@
-const { sumTokens } = require('../helper/chain/tron')
+const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokensExport } = require('../helper/unwrapLPs')
 
 const owner = 'TV8ndiKP98SF537BM9XvEbzkY2TerXNzEs'
-const token = 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t'
-
-async function tvl() {
-    return sumTokens({ tokensAndOwners: [[token, owner]], })
-}
+const token = ADDRESSES.tron.USDT
 
 module.exports = {
     tron: {
-        tvl,
+        tvl: sumTokensExport({tokensAndOwners: [[token, owner]], }),
     },
 }

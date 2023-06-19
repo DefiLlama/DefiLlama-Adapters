@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require("../helper/staking");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 
@@ -5,7 +6,7 @@ const empyreanStaking = "0xD080CBc2885c64510923Ac6F5c8896011f86a6aF";
 const EMPYR = "0xE9F226a228Eb58d408FdB94c3ED5A18AF6968fE1";
 
 const treasuryAddress = "0x4606f4e6D43d501b86Fc583f44ae27097A1F9EA7";
-const USDC = "0xB12BFcA5A55806AaF64E99521918A4bf0fC40802";
+const USDC = ADDRESSES.aurora.USDC_e;
 const EMPYR_USDC_TLP = "0x6e46c69FE35eF5BB78D7f35d92645C74245a6567";
 
 /*** Bonds TVL Portion (Treasury) ***

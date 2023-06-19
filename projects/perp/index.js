@@ -1,22 +1,25 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require("../helper/staking");
 
 const perpToken = "0xbC396689893D065F41bc2C6EcbeE5e0085233447"
+const perpTokenOP = "0x9e1028F5F1D5eDE59748FFceE5532509976840E0"
 const stakingContract = "0x0f346e19F01471C02485DF1758cfd3d624E399B4"
-
+const stakingContractOP = "0xD360B73b19Fb20aC874633553Fb1007e9FcB2b78"
 module.exports = {
   ethereum: {
     staking: staking(stakingContract, perpToken)
   },
   optimism: {
+    staking: staking(stakingContractOP, perpTokenOP),
     tvl: staking(
       [
         "0xAD7b4C162707E0B2b5f6fdDbD3f8538A5fbA0d60"
       ],
       [
-        "0x7f5c764cbc14f9669b88837ca1490cca17c31607",
-        "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58",
-        "0x4200000000000000000000000000000000000042",
-        "0x4200000000000000000000000000000000000006",
-        "0x2E3D870790dC77A83DD1d18184Acc7439A53f475"])
+        ADDRESSES.optimism.USDC,
+        ADDRESSES.optimism.USDT,
+        ADDRESSES.optimism.OP,
+        ADDRESSES.tombchain.FTM,
+        ADDRESSES.optimism.FRAX])
   },
 }

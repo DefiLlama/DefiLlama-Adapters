@@ -1,3 +1,4 @@
+const ADDRESSES = require('../../../helper/coreAssets.json')
 const tokens = {
   bnb: {
     symbol: "BNB",
@@ -22,7 +23,7 @@ const tokens = {
   wbnb: {
     symbol: "wBNB",
     address: {
-      321: "0x4446fc4eb47f2f6586f9faab68b3498f86c07521",
+      321: ADDRESSES.kcc.WKCS,
     },
     decimals: 18,
     projectLink: "https://www.kcc.io/",
@@ -30,7 +31,7 @@ const tokens = {
   busd: {
     symbol: "BUSD",
     address: {
-      321: "0x0039f574ee5cc39bdd162e9a88e3eb1f111baf48",
+      321: ADDRESSES.kcc.USDT,
     },
     decimals: 18,
     projectLink: "https://www.kcc.io/",
@@ -38,7 +39,7 @@ const tokens = {
   usdc: {
     symbol: "USDC",
     address: {
-      321: "0x980a5afef3d17ad98635f6c5aebcbaeded3c3430",
+      321: ADDRESSES.kcc.USDC,
     },
     decimals: 18,
     projectLink: "https://www.kcc.io/",

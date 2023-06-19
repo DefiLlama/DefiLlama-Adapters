@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 
 const m2m = {
@@ -5,7 +6,7 @@ const m2m = {
 }
 
 const assets = {
-  bsc: "0x55d398326f99059fF775485246999027B3197955", //USDT
+  bsc: ADDRESSES.bsc.USDT, //USDT
 }
 
 const abi = "uint256:totalNetAssets"

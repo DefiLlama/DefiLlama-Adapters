@@ -6,7 +6,7 @@ async function tvl() {
   const api = new sdk.ChainApi({})
   let totalMeldMarketCap = 0
 
-  // Gold is priced in oz, silver is priced in grams, but Meld Tokens are both priced in grams
+  // Gold is priced in oz, silver is priced in oz, but Meld Tokens are both priced in grams
   const ozToGrams = 28.349523
 
   // Meld tokens
@@ -18,7 +18,7 @@ async function tvl() {
     },
     {
       assetId: tokens.silver$,
-      grams: 1,
+      grams: ozToGrams,
       priceFeed: '0x379589227b15F1a12195D3f2d90bBc9F31f95235',
     },
   ]
@@ -29,7 +29,7 @@ async function tvl() {
     const { answer: price } = await api.call({ abi, target: priceFeed })
     const assetInfo = await getAssetInfo(assetId)
     const circulatingSupply = assetInfo.circulatingSupply
-    const marketCap = (circulatingSupply / grams / 10 ** 6) * (price / 10 ** 9)
+    const marketCap = (circulatingSupply / grams / 10 ** 6) * (price / 10 ** 8)
     totalMeldMarketCap += marketCap
   }
 

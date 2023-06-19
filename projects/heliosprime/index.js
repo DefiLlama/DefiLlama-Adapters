@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
 const { pool2 } = require("../helper/pool2");
@@ -5,7 +6,7 @@ const {getComponents} = require('./abi.json');
 const { sumTokens } = require("../helper/unwrapLPs");
 
 const CoverageContract = "0x69c316563414d091c57C7Ec098523e43Baa5E175";
-const USDT = "0xdac17f958d2ee523a2206206994597c13d831ec7";
+const USDT = ADDRESSES.ethereum.USDT;
 const EDP = "0x7633da43dfd4ee5a5da99740f077ca9d97aa0d0e"
 
 const StakingContract_BMI = "0xDfB820b95EEE42A858f50BEfbF834D2d24621153";
