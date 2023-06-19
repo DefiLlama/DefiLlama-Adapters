@@ -1,5 +1,6 @@
 const POOL = "0x587A7eaE9b461ad724391Aa7195210e0547eD11d";
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
+const { get } = require("../helper/http");
 
 // async function tvl(_, _1, _2, { api }) {
 //   const totalBorrows = await api.call({    target: POOL,    abi: "uint256:totalBorrows",  });
@@ -13,7 +14,7 @@ const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 async function tvl(_, _1, _2, { api }) {
 
   let tvl = await get("https://fvm.hashmix.org/fevmapi/tvl");
-  let b = new BigNumber.BigNumber(tvl.data, 10);
+  let b = new BigNumber.BigNumber(tvl, 10);
 
   const balances = {};
   // const bal = await sdk.api2.eth.getBalance({ target: POOL, chain: api.chain, decimals: api.decimals });
