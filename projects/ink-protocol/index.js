@@ -15,7 +15,7 @@ async function tvl() {
 module.exports = {
   methodology: 'TVL counts the UST that users deposited into Ink Protocol',
   terra: {
-    tvl
+    tvl: () => ({}),
   },
   hallmarks:[
     [1651881600, "UST depeg"],
