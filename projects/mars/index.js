@@ -7,9 +7,21 @@ const chain = 'osmosis'
 const contract = 'osmo1c3ljch9dfw5kf52nfwpxd2zmj2ese7agnx0p9tenkrryasrle5sqf3ftpg'
 
 async function borrowed() {
-  const res = await queryContract({ contract, chain: 'osmosis', data: { markets: { limit: 10 } } })
+  var lastDenom = ""
+  var lastResponse = []
+  var res
+
+  do {
+    res = await queryContract({ contract, chain: 'osmosis', data: { markets: {start_after: lastDenom} } })
+    const resLength = res.length
+    lastResponse.push(...res)
+    if (resLength != 0) {
+      lastDenom = res[resLength - 1].denom
+    }
+  } while (res.length != 0)
+  
   const borrowed = {};
-  res.forEach(i => {
+  lastResponse.forEach(i => {
     sdk.util.sumSingleBalance(borrowed, i.denom, i.debt_total_scaled * i.borrow_index / 1e6)
   })
 

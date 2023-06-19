@@ -2,7 +2,7 @@ const { getAdaInAddress } = require("../helper/chain/cardano");
 const { getConfig } = require('../helper/cache')
 
 async function tvl() {
-  const res = await getConfig("minswap", "https://api-mainnet-prod.minswap.org/defillama/dex-addresses")
+  const res = await getConfig("minswap", "https://api-mainnet-prod.minswap.org/dex-addresses")
   const poolAddresses = res.pools
   const orderAddresses = res.orders
   let liquidityPoolLocked = 0

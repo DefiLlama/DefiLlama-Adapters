@@ -16,6 +16,8 @@ const config = {
   },
 }
 
+const fallbackBlacklist = ["0x6543ee07cf5dd7ad17aeecf22ba75860ef3bbaaa"];
+
 async function tvl(_, block, _1, { api }) {
   const siloArray = await getSilos(api)
   const assets = await api.multiCall({
@@ -59,7 +61,7 @@ async function getSilos(api) {
       })
     )
 
-    return logs.map((log) => `0x${log.topics[1].substring(26)}`)
+    return logs.map((log) => `0x${log.topics[1].substring(26)}`).filter((address) => fallbackBlacklist.indexOf(address.toLowerCase()) === -1);
   }
 }
 

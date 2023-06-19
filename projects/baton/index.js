@@ -16,16 +16,17 @@ async function tvl(timestamp, blockHeight, _2, { api }) {
   });
 
   // filter any farms where the reward token is not fractional nfts or the underlying pair is not paired with eth
-  let filteredLogs = logs.filter(i => i.pairAddress === i.rewardsToken)
+  let filteredLogs = logs.filter(i => i.farmType === 2)
   const baseTokens = await api.multiCall({ abi: 'address:baseToken', calls: filteredLogs.map(i => i.pairAddress) })
   const filteredFarms = filteredLogs.filter((i, idx) => baseTokens[idx] = nullAddress)
 
   const farms = filteredFarms.map(i => i.farmAddress)
   const pairs = filteredFarms.map(i => i.pairAddress)
+  const rewardTokens = filteredFarms.map(i => i.rewardsToken)
   const totalSupplies = await api.multiCall({ abi: 'uint256:totalSupply', calls: farms })
-  const prices = await api.multiCall({ abi: 'uint256:price', calls: pairs })
+  const prices = await api.multiCall({ abi: 'uint256:price', calls: rewardTokens })
   const baseTokenAmounts = (await api.multiCall({ abi: "function removeQuote(uint256) view returns (uint256,uint256)", calls: pairs.map((v, i) => ({ target: v, params: [totalSupplies[i]] })) })).map(i => i[0])
-  const rewardBalances = (await api.multiCall({ abi: "erc20:balanceOf", calls: pairs.map((v, i) => ({ target: v, params: [farms[i]] })) }))
+  const rewardBalances = (await api.multiCall({ abi: "erc20:balanceOf", calls: rewardTokens.map((v, i) => ({ target: v, params: [farms[i]] })) }))
   baseTokenAmounts.forEach(i => api.add(nullAddress, i * 2));
   rewardBalances.forEach((v, i) => api.add(nullAddress, (prices[i] * v) / 1e18));
 }
