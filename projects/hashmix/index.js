@@ -18,7 +18,11 @@ async function tvl(_, _1, _2, { api }) {
   let tvl = await get("https://fvm.hashmix.org/fevmapi/tvl");
   let b = new BigNumber.BigNumber(tvl, 10);
 
-  const balances = {};
+  api.add(nullAddress, b)
+
+  return sumTokens2({ api, owner: POOL, tokens: [nullAddress] });
+
+  // const balances = {};
   // const bal = await sdk.api2.eth.getBalance({ target: POOL, chain: api.chain, decimals: api.decimals });
   // const totalBorrows = await sdk.api2.abi.call({
   //   target: POOL,
@@ -35,14 +39,14 @@ async function tvl(_, _1, _2, { api }) {
   // let b = new BigNumber.BigNumber(bal.output);
   // b = b.plus(new BigNumber.BigNumber(totalBorrows)).minus(new BigNumber.BigNumber(totalReserves));
 
-  sdk.util.sumSingleBalance(
-    balances,
-    nullAddress,
-    b.toFixed(0),
-    api.chain
-  );
+  // sdk.util.sumSingleBalance(
+  //   balances,
+  //   nullAddress,
+  //   b.toFixed(0),
+  //   api.chain
+  // );
 
-  return balances;
+  // return balances;
 }
 
 module.exports = {
