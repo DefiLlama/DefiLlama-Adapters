@@ -1,6 +1,5 @@
-const sdk = require('@defillama/sdk')
 const ADDRESSES = require('../helper/coreAssets.json');
-const { transformArbitrumAddress } = require('../helper/portedTokens');
+const { sumTokensExport } = require('../helper/unwrapLPs')
 
 const contracts = [
     '0x154fDc2e0c4A2e4b39AFc329f0df88499d96F665',
@@ -16,40 +15,10 @@ const tokens = [
     ADDRESSES.arbitrum.LINK
 ]
 
-async function tvl(block, chainBlocks) {
-    const balances = {};
-
-    const transform = await transformArbitrumAddress();
-
-    let balanceOfCalls = [];
-    contracts.forEach((contract) => {
-        balanceOfCalls = [
-            ...balanceOfCalls,
-            ...tokens.map((token) => ({
-                chain: 'arbitrum',
-                target: token,
-                params: contract,
-                block: block
-            }))
-        ];
-    });
-
-    const balanceOfResult = await sdk.api.abi.multiCall({
-        chain: 'arbitrum',
-        calls: balanceOfCalls,
-        abi: 'erc20:balanceOf',
-        block: chainBlocks['arbitrum']
-    });
-
-    sdk.util.sumMultiBalanceOf(balances, balanceOfResult, true, transform)
-
-    return balances;
-}
-
 module.exports = {
     start: 1678852800,  //  15/03/2023 @ 04:00am (UTC)
     arbitrum: {
-        tvl: tvl
+        tvl: sumTokensExport({ tokens, owners: contracts }),
     },
     hallmarks: [
         [1678852800, "Arbitrum Pairex Launch"]
