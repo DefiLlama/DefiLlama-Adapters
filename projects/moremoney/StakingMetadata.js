@@ -1,5 +1,6 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 
-const nullAddress = '0x0000000000000000000000000000000000000000'
+const nullAddress = ADDRESSES.null
 const sdk = require("@defillama/sdk");
 const addresses = require("./addresses.json");
 

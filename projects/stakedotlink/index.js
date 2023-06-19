@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 
 const sdlToken = "0xA95C5ebB86E0dE73B4fB8c47A45B792CFeA28C23";
 const sdlStakingPool = "0xAEF186611EC96427d161107fFE14bba8aA1C2284";
-const linkToken = "0x514910771af9ca656af840dff83e8264ecf986ca";
+const linkToken = ADDRESSES.ethereum.LINK;
 const linkStakingPool = "0xb8b295df2cd735b15BE5Eb419517Aa626fc43cD5";
 
 async function tvl(timestamp, ethBlock, chainBlocks) {

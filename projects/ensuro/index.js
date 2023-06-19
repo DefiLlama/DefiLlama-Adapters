@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const addressBook = {
   polygon: {
-    usdc: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+    usdc: ADDRESSES.polygon.USDC,
     aave_v3_usdc: "0x625E7708f30cA75bfd92586e17077590C60eb4cD",  // aPolUSDC
     aave_v2_usdc: "0x1a13F4Ca1d028320A707D99520AbFefca3998b7F",  // amUSDC
     reserves: [

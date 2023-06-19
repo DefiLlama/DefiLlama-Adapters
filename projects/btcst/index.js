@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { stakings } = require("../helper/staking");
 const { transformBscAddress } = require("../helper/portedTokens");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
@@ -21,7 +22,7 @@ const vaultContracts = [
 
 const listOfTokens = [
   //BTCB
-  "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c",
+  ADDRESSES.bsc.BTCB,
   //sigmaBTC
   "0x2cd1075682b0fccaadd0ca629e138e64015ba11c",
   //sigmaDOGE

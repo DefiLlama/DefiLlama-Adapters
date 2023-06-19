@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const LUSD = '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0';
-const WETH = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
-const USDC = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
+const WETH = ADDRESSES.ethereum.WETH;
+const USDC = ADDRESSES.ethereum.USDC;
 const YEARN_VAULT = '0x4fe4bf4166744bcbc13c19d959722ed4540d3f6a';
 const LIQUITY_VAULT = '0x91a6194f1278f6cf25ae51b604029075695a74e5';
 const WETH_VAULT = '0x1Fc623b96c8024067142Ec9c15D669E5c99c5e9D';

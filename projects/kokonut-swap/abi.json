@@ -1,5 +1,6 @@
 {
   "getPoolPriceInfo": "function getPoolPriceInfo(address swap) view returns (address[] tokens, uint256[] balances, uint256[] prices)",
   "getStakedEyePriceInfo": "function getStakedEyePriceInfo() view returns (uint256 balance, uint256 price)",
+  "getRegisteredPools": "function getRegisteredPools() view returns (tuple(address addr,string name,string symbol,address lpTokenAddress,uint256 lpTokenVirtualPrice,uint256 lpTokenTotalSupply,uint256 adminFee,tuple(address addr,string name,string symbol,uint8 decimals,uint256 balance,uint256 nativeBalance,uint256 allowance,bool isLpToken)[] liquidity,uint256 xcpProfit,uint256 priceScale,uint256 priceOracle)[])",
   "getPoolList": "address[]:getPoolList"
 }

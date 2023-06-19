@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
 
@@ -8,7 +9,7 @@ const POWER_eth = "0xF2f9A7e93f845b3ce154EfbeB64fB9346FCCE509";
 
     // ETH Prime Part
 const ethPrimeContract = "0xe40e1531a4B56fB65571AD2ca43Dc0048a316a2D";
-const WETH = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
+const WETH = ADDRESSES.ethereum.WETH;
 
     // PowerDAO Part
 const liquidityVaultContracts = [

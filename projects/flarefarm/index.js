@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumUnknownTokens } = require("../helper/unknownTokens");
 const { staking } = require('../helper/staking')
-const WSGB = '0x02f0826ef6aD107Cfc861152B32B52fD11BaB9ED'
-const CANARY_DOLLAR = '0x70Ad7172EF0b131A1428D0c1F66457EB041f2176'
- const EXFI = '0xC348F894d0E939FE72c467156E6d7DcbD6f16e21';
- const SFIN = '0x0D94e59332732D18CF3a3D457A8886A2AE29eA1B';
+const WSGB = ADDRESSES.songbird.WSGB
+const CANARY_DOLLAR = ADDRESSES.songbird.CAND
+ const EXFI = ADDRESSES.songbird.EXFI;
+ const SFIN = ADDRESSES.songbird.SFIN;
 
 const chain = 'songbird'
 
@@ -27,6 +28,9 @@ async function farmTvl(timestamp, ethblock, { [chain]: block }) {
     [EXFI, '0xD02C3e166223EE78F4d0ae99F5396142b48D97FE'], 
     [WSGB, '0x745d8896629842ef8E44D269f89A7A873086A6F2'],
     [EXFI, "0x61128b44C299b0f7a752BF6278f44f1EcefD9109"],
+    ['0x3233642aCf7664a69c33e5a6FFAb321608d7A65f','0xF81B465C562ED3f54Aea772D8A56FAF93884ea2E'],
+    [EXFI, "0x3B346b0b091fA8813f60Cd6e81b95b63375e22f5"],
+    ['0xc41aA3ac0e6efcb780cd4696E7eC3B8193BB46E1', "0xa275DD75C1182055C7039b839cC0Da017c78933a"]
   ];
 
   return sumUnknownTokens({ tokensAndOwners: tokens, chain, block, useDefaultCoreAssets: true, })

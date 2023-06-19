@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { get } = require('../helper/http')
 const { transformDexBalances } = require('../helper/portedTokens')
-const nullAddress = '0x0000000000000000000000000000000000000000'
+const nullAddress = ADDRESSES.null
 
 module.exports = {
   misrepresentedTokens: true,
