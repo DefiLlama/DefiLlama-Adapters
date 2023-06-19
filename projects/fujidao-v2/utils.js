@@ -56,7 +56,7 @@ const marketDebt = async (contracts, block, chain) => {
   );
   if(DEBUG) {
     console.debug(
-      "debug-debt:", supply.output.reduce((t,v) => t.plus(v.output), BigNumber(0)).toFixed(0)
+      "debug-debt:", debt.output.reduce((t,v) => t.plus(v.output), BigNumber(0)).toFixed(0)
     )
   }
   return debt.output.reduce((t,v) => t.plus(v.output), BigNumber(0)).toFixed(0);
