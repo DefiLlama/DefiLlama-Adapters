@@ -349,6 +349,7 @@ const assetList = [
   ["LTC", "LTC", "MB8nnFMvR5cgvpzQ1QXTDVfUM91BcsLH3k"],
   ["USDC", "TRX", "TDjPeMNaRxoNMwENrdtNYmZt1YAfVVjp59"],
   ["USDC", "TRX", "TL6VgVKo6natQb6hW5Hy2jcyX5EHgmwXLE"],
+  ["BTC", "BTC", "1Pzaqw98PeRfyHypfqyEgg5yycJRsENrE7"] // new wallet https://twitter.com/binance/status/1670723088802283520
 ]
 
 function getAddresses(chain) {
