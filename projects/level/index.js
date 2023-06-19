@@ -22,7 +22,7 @@ const ContractsArb = {
   Tokens: {
     ETH: ADDRESSES.arbitrum.WETH,
     USDT: ADDRESSES.arbitrum.USDT,
-    USDC: ADDRESSES.arbitrum.USDC,
+    USDC: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
     BTC: ADDRESSES.arbitrum.WBTC,
     ARB: "0x912CE59144191C1204E64559FE8253a0e49E6548"
   }
