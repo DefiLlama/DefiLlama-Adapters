@@ -6,9 +6,7 @@ const { getConnection, getTokenBalance } = require('../helper/solana')
 const { PublicKey } = require('@solana/web3.js')
 const { getLogs } = require('../helper/cache/getLogs')
 
-const MapleTreasury = "0xa9466EaBd096449d650D5AEB0dD3dA6F52FD0B19";
 const USDC = ADDRESSES.ethereum.USDC;
-const chain = 'ethereum'
 
 /*** Solana TVL Portions ***/
 const POOL_DISCRIMINATOR = "35K4P9PCU";
@@ -66,41 +64,51 @@ async function getPoolInfo(block, api) {
   if (!pInfos[block]) pInfos[block] = _getPoolInfo()
   return pInfos[block]
 
-  async function _getPoolInfo(){
+  async function _getPoolInfo() {
     const loanFactory = '0x1551717ae4fdcb65ed028f7fb7aba39908f6a7a6'
-    
+    const openTermLoanManagerFactory = '0x90b14505221a24039A2D11Ad5862339db97Cc160'
+
     const logs = await getLogs({
       api,
       target: loanFactory,
       topic: "InstanceDeployed(uint256,address,bytes)",
       fromBlock: 16126995,
     });
-    const proxies = logs.map(s=>"0x"+s.topics[2].slice(26, 66))
-    const assets = await sdk.api2.abi.multiCall({ block, abi: abis.fundsAsset, calls: proxies, })
-    return { proxies, assets, }
+    const logs2 = await getLogs({ // open term
+      api,
+      target: openTermLoanManagerFactory,
+      topic: "InstanceDeployed(uint256,address,bytes)",
+      fromBlock: 17372608,
+    });
+
+    let proxies = logs.map(s => "0x" + s.topics[2].slice(26, 66))
+    const proxiesOpenTerm = logs2.map(s => "0x" + s.topics[2].slice(26, 66))
+    proxies.push(...proxiesOpenTerm)
+    proxies = [...new Set(proxies.map(i => i.toLowerCase()))]
+    const managers = await api.multiCall({ abi: 'address:poolManager', calls: proxies })
+    const assets = await api.multiCall({ block, abi: abis.fundsAsset, calls: proxies, })
+    return { proxies, assets, managers }
   }
 }
 
 async function ethTvl2(_, block, _1, { api }) {
-  const { proxies, assets, } = await getPoolInfo(block, api)
-  const pools = await sdk.api2.abi.multiCall({
+  const { managers, assets, } = await getPoolInfo(block, api)
+  const pools = await api.multiCall({
     abi: abis.pool,
-    calls: proxies,
-    block,
+    calls: managers,
   })
 
-  return sumTokens2({ block, tokensAndOwners: pools.map((o, i) => ([assets[i], o]))})
+  return sumTokens2({ block, tokensAndOwners: pools.map((o, i) => ([assets[i], o])) })
 }
 
 async function borrowed2(_, block, _1, { api }) {
   const balances = {}
   const { proxies, assets, } = await getPoolInfo(block, api)
-  const principalOut = await sdk.api2.abi.multiCall({
+  const principalOut = await api.multiCall({
     abi: abis.principalOut,
     calls: proxies,
-    block,
   })
-  principalOut.forEach((val, i) => sdk.util.sumSingleBalance(balances,assets[i],val))
+  principalOut.forEach((val, i) => sdk.util.sumSingleBalance(balances, assets[i], val))
   return balances
 }
 
@@ -119,8 +127,8 @@ module.exports = {
   methodology:
     "We count liquidity by USDC deposited on the pools through PoolFactory contract",
 }
-  
-const abis ={
+
+const abis = {
   fundsAsset: "address:fundsAsset",
   principalOut: "uint128:principalOut",
   pool: "address:pool",

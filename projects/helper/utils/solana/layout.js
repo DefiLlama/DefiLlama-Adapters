@@ -48,6 +48,7 @@ const customDecoders = {
   // raydiumLPv4: defaultParseLayout(RAYDIUM_LIQUIDITY_STATE_LAYOUT_V4),
   raydiumCLMM: defaultParseLayout(RAYDIUM_LIQUIDITY_STATE_LAYOUT_CLMM),
   raydiumLPStable: defaultParseLayout(RAYDIUM_STABLE_STATE_LAYOUT_V1),
+  fluxbeam: defaultParseLayout(TokenSwapLayout),
 }
 
 function decodeAccount(layout, accountInfo) {

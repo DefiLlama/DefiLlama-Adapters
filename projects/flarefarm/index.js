@@ -28,6 +28,9 @@ async function farmTvl(timestamp, ethblock, { [chain]: block }) {
     [EXFI, '0xD02C3e166223EE78F4d0ae99F5396142b48D97FE'], 
     [WSGB, '0x745d8896629842ef8E44D269f89A7A873086A6F2'],
     [EXFI, "0x61128b44C299b0f7a752BF6278f44f1EcefD9109"],
+    ['0x3233642aCf7664a69c33e5a6FFAb321608d7A65f','0xF81B465C562ED3f54Aea772D8A56FAF93884ea2E'],
+    [EXFI, "0x3B346b0b091fA8813f60Cd6e81b95b63375e22f5"],
+    ['0xc41aA3ac0e6efcb780cd4696E7eC3B8193BB46E1', "0xa275DD75C1182055C7039b839cC0Da017c78933a"]
   ];
 
   return sumUnknownTokens({ tokensAndOwners: tokens, chain, block, useDefaultCoreAssets: true, })
