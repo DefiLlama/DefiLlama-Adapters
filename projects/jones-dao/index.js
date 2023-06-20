@@ -29,9 +29,6 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
     api.multiCall({ abi: 'uint256:totalAssets', calls: addresses.vaults }),
   ])
 
-  console.log("vAssets: ", vAssets);
-  console.log("vBals: ", vBals);
-
   const uvrtBalance = await sdk.api.erc20.balanceOf({
     target: addresses.trackers.uvert.token,
     owner: addresses.jonesGlpVaultRouter,
