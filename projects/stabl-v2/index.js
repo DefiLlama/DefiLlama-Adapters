@@ -6,7 +6,6 @@ const vault = "0x2D62f6D8288994c7900e9C359F8a72e84D17bfba";
 const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
   const balances = {};
 
-  // Account DAI, USDT and USDC backing up the minted OUSD
   const stablecoins = (
     await sdk.api.abi.call({
       abi: abi.getAllAssets,
