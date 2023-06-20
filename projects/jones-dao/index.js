@@ -5,7 +5,6 @@ const addresses = require("./addresses.json");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const lockerABI = require("./locked.json");
 const sdk = require('@defillama/sdk');
-const { updateVariableStatement } = require('typescript');
 
 const jTokenToToken = {
   "0x662d0f9ff837a51cf89a1fe7e0882a906dac08a3": "arbitrum:" + ADDRESSES.arbitrum.WETH, // jETH
