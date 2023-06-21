@@ -1,6 +1,6 @@
 const { request, gql } = require('graphql-request');
 const BigNumber = require("bignumber.js");
-const { log, sleep } = require("../helper/utils");
+const { log } = require("../helper/utils");
 
 const subgraphUrl = "https://api.thegraph.com/subgraphs/name/pacmanfinance/pacman-arbitrum";
 
@@ -36,7 +36,7 @@ async function tvl_arbitrum(timestamp, ethBlock, chainBlocks) {
     );
   }
   
-  console.log(balances)
+  //console.log(balances)
   return balances;
 }
 
