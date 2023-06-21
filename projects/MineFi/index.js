@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk');
 const ADDRESSES = require('../helper/coreAssets.json')
-const MINEFI_CONTRACT = "0xa0E711D8cBdb07176C30C73031F8018Ce7d4e5AB";
+const MINEFI_CONTRACT = "0xeCa50369cb0cDBaE173C9c81c1B48212adc4b501";
 
 
 async function tvl(_, _1, _2, { api }) {
