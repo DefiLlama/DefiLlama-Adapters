@@ -1,132 +1,85 @@
-const sdk = require("@defillama/sdk");
 const get_virtual_price = "function get_virtual_price() view returns (uint256)";
 const getRate = "function getRate() view returns (uint256)";
 const latestRoundData =
   "function latestRoundData() view returns (uint80 roundId,int256 answer,uint256 startedAt,uint256 updatedAt,uint80 answeredInRound)";
 const getPrice = "function getPrice() view returns (uint256 sushi,uint256 gmx)";
-const { ZERO } = require("../helper/ankr/utils");
 const { default: BigNumber } = require("bignumber.js");
 
-const getPriceMIM = async (tokenAddress, block) => {
-  try {
-    const priceLpWei = (
-      await sdk.api.abi.call({
-        target: tokenAddress,
-        abi: get_virtual_price,
-        block: block,
-        chain: "arbitrum",
-      })
-    ).output;
+const getPriceMIM = async (tokenAddress, api) => {
+  const priceLpWei = await api.call({
+    target: tokenAddress,
+    abi: get_virtual_price,
+  })
 
-    const decimals = (
-      await sdk.api.abi.call({
-        target: tokenAddress,
-        abi: "erc20:decimals",
-        chain: "arbitrum",
-        block,
-      })
-    ).output;
+  const decimals = await api.call({
+    target: tokenAddress,
+    abi: "erc20:decimals",
+  })
 
-    const tokenPrice = new BigNumber(priceLpWei).div(`1e${decimals}`);
+  const tokenPrice = new BigNumber(priceLpWei).div(`1e${decimals}`);
 
-    return {
-      price: tokenPrice,
-      decimals,
-    };
-  } catch (e) {
-    return {
-      price: ZERO,
-      decimals: 0,
-    };
-  }
+  return {
+    price: tokenPrice,
+    decimals,
+  };
 };
 
 const getPriceAura = async (
   tokenAddress,
   feedAddress,
-  chain = "ethereum",
-  block
+  api
 ) => {
-  try {
-    const decimals = (
-      await sdk.api.abi.call({
-        target: tokenAddress,
-        abi: "erc20:decimals",
-        chain: chain,
-        block,
-      })
-    ).output;
+  const decimals =
+    await api.call({
+      target: tokenAddress,
+      abi: "erc20:decimals",
+    })
 
-    const rate = (
-      await sdk.api.abi.call({
-        target: tokenAddress,
-        abi: getRate,
-        block: block,
-        chain: chain,
-      })
-    ).output;
+  const rate =
+    await api.call({
+      target: tokenAddress,
+      abi: getRate,
+    })
 
-    const getLatestRoundData = (
-      await sdk.api.abi.call({
-        target: feedAddress,
-        abi: latestRoundData,
-        block: block,
-        chain: chain,
-      })
-    ).output;
+  const getLatestRoundData =
+    await api.call({
+      target: feedAddress,
+      abi: latestRoundData,
+    })
 
-    const ethPriceInUSD = parseInt(getLatestRoundData.answer) / 10 ** 8;
-    const priceETH = new BigNumber(rate).div(`1e${decimals}`);
+  const ethPriceInUSD = parseInt(getLatestRoundData.answer) / 10 ** 8;
+  const priceETH = new BigNumber(rate).div(`1e${decimals}`);
 
-    const tokenPrice = new BigNumber(priceETH * ethPriceInUSD).div(
-      `1e${decimals}`
-    );
+  const tokenPrice = new BigNumber(priceETH * ethPriceInUSD).div(
+    `1e${decimals}`
+  );
 
-    return {
-      price: tokenPrice,
-      decimals,
-    };
-  } catch (e) {
-    return {
-      price: ZERO,
-      decimals: 0,
-    };
-  }
+  return {
+    price: tokenPrice,
+    decimals,
+  };
 };
 
-const getPriceSushi = async (backendAddress, chain = "arbitrum", block) => {
-  try {
-    const sushiDecimals = 14,
-      gmxDecimals = 8;
+const getPriceSushi = async (backendAddress, api) => {
+  const sushiDecimals = 14,
+    gmxDecimals = 8;
 
-    const sushiGmxPrice = (
-      await sdk.api.abi.call({
-        target: backendAddress,
-        abi: getPrice,
-        block: block,
-        chain: chain,
-      })
-    ).output;
+  const sushiGmxPrice = await api.call({
+    target: backendAddress,
+    abi: getPrice,
+  })
 
-    const sushiPrice = new BigNumber(sushiGmxPrice.sushi).div(
-      `1e${sushiDecimals}`
-    );
-    const gmxPrice = new BigNumber(sushiGmxPrice.gmx).div(`1e${gmxDecimals}`);
+  const sushiPrice = new BigNumber(sushiGmxPrice.sushi).div(
+    `1e${sushiDecimals}`
+  );
+  const gmxPrice = new BigNumber(sushiGmxPrice.gmx).div(`1e${gmxDecimals}`);
 
-    return {
-      sushiPrice: sushiPrice,
-      gmxPrice: gmxPrice,
-      sushiDecimals,
-      gmxDecimals,
-    };
-  } catch (e) {
-    return {
-      sushiPrice: ZERO,
-      gmxPrice: ZERO,
-      sushiDecimals: 14,
-      gmxDecimals: 8,
-    };
-  }
+  return {
+    sushiPrice: sushiPrice,
+    gmxPrice: gmxPrice,
+    sushiDecimals,
+    gmxDecimals,
+  };
 };
 
 module.exports = {

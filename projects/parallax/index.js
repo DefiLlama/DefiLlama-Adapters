@@ -6,58 +6,21 @@ const { getPriceMIM, getPriceAura, getPriceSushi } = require("./getPrice");
 const prllxERC20 = require("./abis/prllxERC20.json");
 const contracts = require("./contracts.json");
 
-async function tvl(time, _ethBlock, _1, { api }) {
-  await Promise.all([addMIMStrategy(api)]);
-}
+async function ethTvl(time, _ethBlock, { ethereum: block }, { api }) {
+  const strategyId = await api.call({
+    target: contracts.eth.parallaxAddress,
+    params: contracts.eth.strategyAddress,
+    abi: prllxERC20["strategyToId"],
+  })
 
-async function addMIMStrategy(api) {
-  const token = "0x30dF229cefa463e991e29D42DB0bae2e122B2AC7";
-  const sorbettiere = "0x839de324a1ab773f76a53900d70ac1b913d2b387";
-
-  const strategies = [
-    "0x7b8eFCd93ee71A0480Ad4dB06849B75573168AF4",
-    "0xbf81Ba9D10F96ce0bb1206DE5F2d5B363f9796A9",
-  ];
-  for (let iterator = 0; iterator < strategies.length; iterator++) {
-    const strategy = strategies[iterator];
-    const [bal] = await api.call({
-      abi: "function userInfo(uint256, address) view returns (uint256,uint256,uint256)",
-      target: sorbettiere,
-      params: [0, strategy],
-    });
-
-    api.add(token, bal);
-  }
-}
-
-async function ethTvl(time, _ethBlock, { ethereum: block }) {
-  const strategyId = (
-    await sdk.api.abi.call({
-      block,
-      target: contracts.eth.parallaxAddress,
-      params: contracts.eth.strategyAddress,
-      abi: prllxERC20["strategyToId"],
-      chain: "ethereum",
-    })
-  ).output;
-
-  const strategy = (
-    await sdk.api.abi.call({
-      block,
-      target: contracts.eth.parallaxAddress,
-      params: strategyId,
-      abi: prllxERC20["strategies"],
-      chain: "ethereum",
-    })
-  ).output;
+  const strategy = await api.call({
+    target: contracts.eth.parallaxAddress,
+    params: strategyId,
+    abi: prllxERC20["strategies"],
+  })
 
   const balances = {};
-  const { price, decimals } = await getPriceAura(
-    contracts.eth.lpAddress,
-    contracts.eth.feedAddress,
-    "ethereum",
-    block
-  );
+  const { price, decimals } = await getPriceAura(contracts.eth.lpAddress, contracts.eth.feedAddress, api,);
 
   // const totalStaked = new BigNumber(strategy.totalStaked).div(`1e${decimals}`);
   const totalStakedTVL = price
@@ -74,56 +37,38 @@ async function ethTvl(time, _ethBlock, { ethereum: block }) {
   return balances;
 }
 
-async function arbitrumTvl(time, _ethBlock, { arbitrum: block }) {
+async function arbitrumTvl(time, _ethBlock, { arbitrum: block }, { api }) {
   const balances = {};
 
-  const strategyId = (
-    await sdk.api.abi.call({
-      block,
-      target: contracts.arbitrum.mim.parallaxCoreAddress,
-      params: contracts.arbitrum.mim.strategyAddress,
-      abi: prllxERC20["strategyToId"],
-      chain: "arbitrum",
-    })
-  ).output;
+  const strategyId = await api.call({
+    target: contracts.arbitrum.mim.parallaxCoreAddress,
+    params: contracts.arbitrum.mim.strategyAddress,
+    abi: prllxERC20["strategyToId"],
+  })
 
-  const strategy = (
-    await sdk.api.abi.call({
-      block,
-      target: contracts.arbitrum.mim.parallaxCoreAddress,
-      params: strategyId,
-      abi: prllxERC20["strategies"],
-      chain: "arbitrum",
-    })
-  ).output;
+  const strategy = await api.call({
+    target: contracts.arbitrum.mim.parallaxCoreAddress,
+    params: strategyId,
+    abi: prllxERC20["strategies"],
+  })
 
-  const { price, decimals } = await getPriceMIM(
-    contracts.arbitrum.mim.lpAddresss,
-    block
-  );
+  const { price, decimals } = await getPriceMIM(contracts.arbitrum.mim.lpAddresss, api);
 
   const totalStaked = new BigNumber(strategy.totalStaked).div(`1e${decimals}`);
   const totalStakedTVLMIM = price.times(totalStaked).times(1e6).toFixed(0);
 
-  const strategyIdOld = (
-    await sdk.api.abi.call({
-      block,
-      target: contracts.arbitrum.mim.parallaxCoreAddressOld,
-      params: contracts.arbitrum.mim.strategyAddressOld,
-      abi: prllxERC20["strategyToId"],
-      chain: "arbitrum",
-    })
-  ).output;
+  const strategyIdOld = await api.call({
+    target: contracts.arbitrum.mim.parallaxCoreAddressOld,
+    params: contracts.arbitrum.mim.strategyAddressOld,
+    abi: prllxERC20["strategyToId"],
+  })
 
-  const strategyOld = (
-    await sdk.api.abi.call({
-      block,
+  const strategyOld =
+    await api.call({
       target: contracts.arbitrum.mim.parallaxCoreAddressOld,
       params: strategyIdOld,
       abi: prllxERC20["strategies"],
-      chain: "arbitrum",
     })
-  ).output;
 
   const totalStakedOld = new BigNumber(strategyOld.totalStaked).div(
     `1e${decimals}`
@@ -142,52 +87,32 @@ async function arbitrumTvl(time, _ethBlock, { arbitrum: block }) {
     totalStakedTVLMIMAll
   );
 
-  const strategySushiId = (
-    await sdk.api.abi.call({
-      block,
+  const strategySushiId =
+    await api.call({
       target: contracts.arbitrum.sushi.parallaxAddr,
       params: contracts.arbitrum.sushi.strategyAddrSushi,
       abi: prllxERC20["strategyToId"],
-      chain: "arbitrum",
     })
-  ).output;
 
-  const strategyGmxId = (
-    await sdk.api.abi.call({
-      block,
-      target: contracts.arbitrum.sushi.parallaxAddr,
-      params: contracts.arbitrum.sushi.strategyAddrGMX,
-      abi: prllxERC20["strategyToId"],
-      chain: "arbitrum",
-    })
-  ).output;
+  const strategyGmxId = await api.call({
+    target: contracts.arbitrum.sushi.parallaxAddr,
+    params: contracts.arbitrum.sushi.strategyAddrGMX,
+    abi: prllxERC20["strategyToId"],
+  })
 
-  const strategySushi = (
-    await sdk.api.abi.call({
-      block,
-      target: contracts.arbitrum.sushi.parallaxAddr,
-      params: strategySushiId,
-      abi: prllxERC20["strategies"],
-      chain: "arbitrum",
-    })
-  ).output;
+  const strategySushi = await api.call({
+    target: contracts.arbitrum.sushi.parallaxAddr,
+    params: strategySushiId,
+    abi: prllxERC20["strategies"],
+  })
 
-  const strategyGmx = (
-    await sdk.api.abi.call({
-      block,
-      target: contracts.arbitrum.sushi.parallaxAddr,
-      params: strategyGmxId,
-      abi: prllxERC20["strategies"],
-      chain: "arbitrum",
-    })
-  ).output;
+  const strategyGmx = await api.call({
+    target: contracts.arbitrum.sushi.parallaxAddr,
+    params: strategyGmxId,
+    abi: prllxERC20["strategies"],
+  })
 
-  const { sushiPrice, gmxPrice, sushiDecimals, gmxDecimals } =
-    await getPriceSushi(
-      contracts.arbitrum.sushi.parallaxBackendAddr,
-      "arbitrum",
-      block
-    );
+  const { sushiPrice, gmxPrice, sushiDecimals, gmxDecimals } = await getPriceSushi(contracts.arbitrum.sushi.parallaxBackendAddr, api,);
 
   const totalStakedSushi = new BigNumber(strategySushi.totalStaked).div(`1e18`);
   const totalStakedGmx = new BigNumber(strategyGmx.totalStaked).div(`1e18`);
