@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens,  } = require("../helper/unwrapLPs")
-const { sumSingleBalance, TOKEN_LIST, getDenomBalance, } = require('../helper/chain/terra')
+const { sumTokens: sumTokensCosmos, } = require('../helper/chain/cosmos')
 const sdk = require("@defillama/sdk")
 const { getChainTransform, getFixBalances } = require("../helper/portedTokens")
 const config = require("./config")
@@ -46,10 +46,7 @@ module.exports.ethereum.pool2 = async (ts, block) => {
 
 module.exports.terra = {}
 module.exports.terra.tvl = async (timestamp, ethBlock, { terra: block }) => {
-	const balances = {}
-  const balance = await getDenomBalance('uusd', 'terra1qwzdua7928ugklpytdzhua92gnkxp9z4vhelq8', block)
-  sumSingleBalance(balances, TOKEN_LIST.terrausd, balance)
-	return balances
+	return sumTokensCosmos({ owner: 'terra1qwzdua7928ugklpytdzhua92gnkxp9z4vhelq8', chain: 'terra'})
 }
 module.exports.hallmarks = [
         [1651881600, "UST depeg"],
