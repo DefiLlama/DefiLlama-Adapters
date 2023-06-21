@@ -37,7 +37,7 @@ module.exports = {
         tvl,
     },
 }
-    // module.exports.hallmarks = [
-    //     [1651881600, "UST depeg"],
-    //     [Math.floor(new Date('2022-09-13') / 1e3), 'Stop supporting Terra Classic'],
-    // ]
+module.exports.hallmarks = [
+    [1651881600, "UST depeg"],
+    [Math.floor(new Date('2022-09-13') / 1e3), 'Stop supporting Terra Classic'],
+]
