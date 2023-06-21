@@ -23,6 +23,9 @@ async function tvl(_, _b, _cb, { api, }) {
 
 module.exports = {
 	methodology: 'Sums the total value locked of all strategies in Atlas',
+	hallmarks: [
+		[1681776000, "Rug Pull"]
+	],
 	arbitrum: {
 		tvl,
 		pool2: sumTokensExport({ useDefaultCoreAssets: true, owner: FARM_PROXY, tokens: ['0x4edaa03fc13f8f13c3290c3728f587760b12e381'], lps: ['0x4edaa03fc13f8f13c3290c3728f587760b12e381'] }),
