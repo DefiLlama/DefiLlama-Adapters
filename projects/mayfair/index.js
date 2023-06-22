@@ -1,7 +1,7 @@
 const { staking } = require('../helper/staking');
 
-const token = "0xF9DF075716B2D9B95616341DC6bC64c85e56645c";
-const masterchef = "0xe401c80962c521E751454Fc1C9ff34014e0b8FFB";
+const token = "0xf9df075716b2d9b95616341dc6bc64c85e56645c";
+const masterchef = "0x5F54638dade598B9c478EcaB330C3E62861d00C1";
 
 module.exports = {
   arbitrum: {
