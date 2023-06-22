@@ -1,5 +1,5 @@
 // vaults are closed: https://articles.apollo.farm/apollo-dao-will-be-closing-vaults-on-terra-classic/
-const { tvlFromLockedGammTokens } = require('../helper/chain/cosmos')
+const { endPoints } = require('../helper/chain/cosmos')
 const { transformBalances } = require('../helper/portedTokens')
 
 const chain = 'osmosis'
@@ -27,6 +27,59 @@ async function tvl() {
     return transformBalances(chain, tvl)
 }
 
+async function tvlFromLockedGammTokens(contractAddresses, chain) {
+    let amounts = {}
+    if (chain != "osmosis") return amounts;
+    for (const contractName in contractAddresses) {
+        contractAddress = contractAddresses[contractName];
+        let gammBalanceEndpoint = `${getEndpoint(chain)}/bank/balances/${contractAddress}`;
+        const balances = (await axios.get(gammBalanceEndpoint)).data.result;
+        const gammTokens = balances.filter(item => item.denom.startsWith('gamm/pool'));
+        for (const gammToken of gammTokens) {
+            const gammAmount = gammToken.amount;
+            const poolID = gammToken.denom.split('gamm/pool/')[1];
+
+            let poolEndpoint = `${getEndpoint(chain)}/osmosis/gamm/v1beta1/pools/${poolID}`;
+            const poolData = (await axios.get(poolEndpoint)).data.pool;
+
+            let amount = calculateTokenAmounts(poolData, gammAmount)
+            for (const denom in amount) {
+                if (typeof amounts[denom] === "undefined") {
+                    amounts[denom] = amount[denom];
+                } else {
+                    amounts[denom] += amount[denom];
+                }
+            }
+        }
+    }
+    return amounts;
+}
+
+function calculateTokenAmounts(poolData, gammAmount) {
+    // Extract the total pool shares.
+    let totalShares = poolData.total_shares.amount;
+
+    // Initialize an object to hold the amounts of each token.
+    let tokenAmounts = {};
+
+    // For each token in the pool...
+    for (let asset of poolData.pool_assets) {
+        // Extract the token's denom and amount.
+        let denom = asset.token.denom;
+        let assetAmount = asset.token.amount;
+
+        // Calculate the amount of this token that corresponds to the given amount of pool shares.
+        tokenAmounts[denom] = (gammAmount * assetAmount) / totalShares;
+    }
+
+    return tokenAmounts;
+}
+
+function getEndpoint(chain) {
+    if (!endPoints[chain]) throw new Error("Chain not found: " + chain);
+    return endPoints[chain];
+}
+
 module.exports = {
     timetravel: false,
     methodology: "Total TVL on vaults",
@@ -36,8 +89,8 @@ module.exports = {
     osmosis: {
         tvl,
     },
+    hallmarks: [
+        [1651881600, "UST depeg"],
+        [Math.floor(new Date('2022-09-13') / 1e3), 'Stop supporting Terra Classic'],
+    ],
 }
-module.exports.hallmarks = [
-    [1651881600, "UST depeg"],
-    [Math.floor(new Date('2022-09-13') / 1e3), 'Stop supporting Terra Classic'],
-]
