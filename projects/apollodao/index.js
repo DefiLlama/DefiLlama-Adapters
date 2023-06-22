@@ -27,7 +27,7 @@ async function tvl() {
     let amounts = {}
     if (chain != "osmosis") return transformBalances(chain, amounts)
     for (const contractName in contractAddresses) {
-        contractAddress = contractAddresses[contractName];
+        let contractAddress = contractAddresses[contractName];
         let gammBalanceEndpoint = `${endPoints[chain]}/bank/balances/${contractAddress}`;
         const balances = (await axios.get(gammBalanceEndpoint)).data.result;
         const gammTokens = balances.filter(item => item.denom.startsWith('gamm/pool'));
