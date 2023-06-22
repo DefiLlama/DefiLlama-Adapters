@@ -1,45 +1,41 @@
 // vaults are closed: https://articles.apollo.farm/apollo-dao-will-be-closing-vaults-on-terra-classic/
+const axios = require("axios");
 const { endPoints } = require('../helper/chain/cosmos')
 const { transformBalances } = require('../helper/portedTokens')
 
 const chain = 'osmosis'
 
 const contractAddresses = {
-    ATOM_STATOM: "osmo1a6tcf60pyz8qq2n532dzcs7s7sj8klcmra04tvaqympzcvxqg9esn7xz7l",
-    ATOM_OSMO: "osmo1g3kmqpp8608szfp0pdag3r6z85npph7wmccat8lgl3mp407kv73qlj7qwp",
-    USDC_OSMO: "osmo1jfmwayj8jqp9tfy4v4eks5c2jpnqdumn8x8xvfllng0wfes770qqp7jl4j",
-    STOSMO_OSMO: "osmo1p4zqs5y2w5srzd2vesznzu5ql8wfq9tpz3e7mf2j3y07nxrtkdes5r5g0t",
-    WBTC_OSMO: "osmo185gqewrlde8vrqw7j8lpad67v8jfrx9u7770k9q87tqqecctp5tq50wt2c",
-    STRD_OSMO: "osmo1e3qjfcg9adrauz6jg030ptfy35r6zzplsgaavnn6xrh6686udhfqq7muwy",
-    EVMOS_OSMO: "osmo1rkv6vcmty4rpypuxp2a6a0y5ze4ztm3y6d6xwy5a7cye85f7reqsm85c5s",
-    JUNO_OSMO: "osmo1ceku0zks6y43r9l35n7wnv5pf82s6l4k5jhlrhkurakeemey9n4snz3x6z",
-    WETH_OSMO: "osmo1r235f4tdkwrsnj3mdm9hf647l754y6g6xsmz0nas5r4vr5tda3qsgtftef",
-    IST_OSMO: "osmo1qajgwrcce9srkq370pa9ew96dyk4hajyyk6rfpuexrktm8862xnst443kp",
-    ION_OSMO: "osmo1869zena97sctemj78sgjmu737p2g94905hsf3hhkrfgummrfz4tsxj2k6r",
-    CRO_OSMO: "osmo1gmd2vc4crmv7urlfn3j5avhplfncjf5mg649dkgsu5a0zvd6cgrsn9dq4l",
-    AXL_OSMO: "osmo1m9e4cks405tvzlppkw64znr35vkvujvptrdqtgu5q6luk4ccw9qqeuenwd",
-    DAI_OSMO: "osmo1lhs6kyuxytu4suua0qf88z5057wzpxs77tyrlgztw2uctcy75hcqf2ajrt",
-    AKT_OSMO: "osmo122ryl7pez7yjprtvjckltu2uvjxrq3kqt4nvclax2la7maj6757qg054ga",
+    atom_statom: "osmo1a6tcf60pyz8qq2n532dzcs7s7sj8klcmra04tvaqympzcvxqg9esn7xz7l",
+    atom_osmo: "osmo1g3kmqpp8608szfp0pdag3r6z85npph7wmccat8lgl3mp407kv73qlj7qwp",
+    usdc_osmo: "osmo1jfmwayj8jqp9tfy4v4eks5c2jpnqdumn8x8xvfllng0wfes770qqp7jl4j",
+    st_osmo_osmo: "osmo1p4zqs5y2w5srzd2vesznzu5ql8wfq9tpz3e7mf2j3y07nxrtkdes5r5g0t",
+    wbtc_osmo: "osmo185gqewrlde8vrqw7j8lpad67v8jfrx9u7770k9q87tqqecctp5tq50wt2c",
+    strd_osmo: "osmo1e3qjfcg9adrauz6jg030ptfy35r6zzplsgaavnn6xrh6686udhfqq7muwy",
+    evmos_osmo: "osmo1rkv6vcmty4rpypuxp2a6a0y5ze4ztm3y6d6xwy5a7cye85f7reqsm85c5s",
+    juno_osmo: "osmo1ceku0zks6y43r9l35n7wnv5pf82s6l4k5jhlrhkurakeemey9n4snz3x6z",
+    weth_osmo: "osmo1r235f4tdkwrsnj3mdm9hf647l754y6g6xsmz0nas5r4vr5tda3qsgtftef",
+    ist_osmo: "osmo1qajgwrcce9srkq370pa9ew96dyk4hajyyk6rfpuexrktm8862xnst443kp",
+    ion_osmo: "osmo1869zena97sctemj78sgjmu737p2g94905hsf3hhkrfgummrfz4tsxj2k6r",
+    cro_osmo: "osmo1gmd2vc4crmv7urlfn3j5avhplfncjf5mg649dkgsu5a0zvd6cgrsn9dq4l",
+    axl_osmo: "osmo1m9e4cks405tvzlppkw64znr35vkvujvptrdqtgu5q6luk4ccw9qqeuenwd",
+    dai_osmo: "osmo1lhs6kyuxytu4suua0qf88z5057wzpxs77tyrlgztw2uctcy75hcqf2ajrt",
+    akt_osmo: "osmo122ryl7pez7yjprtvjckltu2uvjxrq3kqt4nvclax2la7maj6757qg054ga",
 };
 
 async function tvl() {
-    let tvl = await tvlFromLockedGammTokens(contractAddresses, chain)
-    return transformBalances(chain, tvl)
-}
-
-async function tvlFromLockedGammTokens(contractAddresses, chain) {
     let amounts = {}
-    if (chain != "osmosis") return amounts;
+    if (chain != "osmosis") return transformBalances(chain, amounts)
     for (const contractName in contractAddresses) {
         contractAddress = contractAddresses[contractName];
-        let gammBalanceEndpoint = `${getEndpoint(chain)}/bank/balances/${contractAddress}`;
+        let gammBalanceEndpoint = `${endPoints[chain]}/bank/balances/${contractAddress}`;
         const balances = (await axios.get(gammBalanceEndpoint)).data.result;
         const gammTokens = balances.filter(item => item.denom.startsWith('gamm/pool'));
         for (const gammToken of gammTokens) {
             const gammAmount = gammToken.amount;
             const poolID = gammToken.denom.split('gamm/pool/')[1];
 
-            let poolEndpoint = `${getEndpoint(chain)}/osmosis/gamm/v1beta1/pools/${poolID}`;
+            let poolEndpoint = `${endPoints[chain]}/osmosis/gamm/v1beta1/pools/${poolID}`;
             const poolData = (await axios.get(poolEndpoint)).data.pool;
 
             let amount = calculateTokenAmounts(poolData, gammAmount)
@@ -52,7 +48,7 @@ async function tvlFromLockedGammTokens(contractAddresses, chain) {
             }
         }
     }
-    return amounts;
+    return transformBalances(chain, amounts)
 }
 
 function calculateTokenAmounts(poolData, gammAmount) {
@@ -73,11 +69,6 @@ function calculateTokenAmounts(poolData, gammAmount) {
     }
 
     return tokenAmounts;
-}
-
-function getEndpoint(chain) {
-    if (!endPoints[chain]) throw new Error("Chain not found: " + chain);
-    return endPoints[chain];
 }
 
 module.exports = {
