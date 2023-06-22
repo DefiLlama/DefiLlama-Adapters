@@ -37,14 +37,14 @@ contract UniV2TVL {
     ) {
         IUniswapV2Factory uniswapFactory = IUniswapV2Factory(factory);
         uint pairCount = uniswapFactory.allPairsLength();
-        if (endIndex == 0) endIndex = pairCount;
+        if (endIndex == 0 || endIndex > pairCount) endIndex = pairCount;
 
         // Create a set of base tokens for efficient membership check
-        for (uint i = startIndex; i < baseTokens.length; i++) {
+        for (uint i = 0; i < baseTokens.length; i++) {
             isBaseToken[baseTokens[i]] = true;
         }
 
-        for (uint i = 0; i < pairCount; i++) {
+        for (uint i = startIndex; i < endIndex; i++) {
             address pairAddress = uniswapFactory.allPairs(i);
             IUniswapV2Pair pair = IUniswapV2Pair(pairAddress);
             address token0 = pair.token0();
