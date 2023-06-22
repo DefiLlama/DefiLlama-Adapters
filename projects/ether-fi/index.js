@@ -1,24 +1,13 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require('@defillama/sdk');
-
-const ethTVL = async (block) => {
-  const tvl = await sdk.api.abi.call({
-    block,
-    chain: 'optimism',
-    abi: 'uint256:getTvl',
-    target: '0x7623e9DC0DA6FF821ddb9EbABA794054E078f8c4',
-  })
-  return tvl.output
-}
+const { nullAddress } = require("../helper/unwrapLPs");
+const sdk = require('@defillama/sdk')
 
 module.exports = {
-  misrepresentedTokens: true,
   ethereum: {
-    tvl: async (_, block, _2) => {
-      const tvl = await ethTVL(block)
-
+    tvl: async (timestamp) => {
+      const api = new sdk.ChainApi({ timestamp, chain: 'optimism' })
+      await api.getBlock()
       return {
-        ['ethereum:' + ADDRESSES.null]: tvl
+        [nullAddress]: await api.call({ target: '0x6329004E903B7F420245E7aF3f355186f2432466', abi: 'uint256:getTvl'})
       }
     }
   }
