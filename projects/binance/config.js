@@ -18,7 +18,7 @@ const assetList = [
   ["BTC", "BTC", "3JFJPpH8Chwo7CDbyYQ4XcfgcjEP1FGRMJ"],
   ["BTC", "BTC", "34HpHYiyQwg69gFmCq2BGHjF1DZnZnBeBP"],
   ["BTC", "BTC", "bc1qm34lsc65zpw79lxes69zkqmk6ee3ewf0j77s3h"],
-  ["BTC", "BTC", "38Xnrq8MZiKmYmwobbYdZQ5nnCbX1qvQfE"],
+ // ["BTC", "BTC", "38Xnrq8MZiKmYmwobbYdZQ5nnCbX1qvQfE"], old wallet that moved 3.1b to new one
   ["BTC", "BTC", "3EbJfpmFgufYtzW9UFvf1GAfm2ted1Rwnr"],
   ["BTC", "BTC", "38DN2uFMZPiHLHJigfv4kWC9JWJrNnhLcn"],
   ["BTC", "BTC", "3Qxak1CZhLyZ7GVckKphLURdLBCjMfz9bA"],
@@ -349,6 +349,8 @@ const assetList = [
   ["LTC", "LTC", "MB8nnFMvR5cgvpzQ1QXTDVfUM91BcsLH3k"],
   ["USDC", "TRX", "TDjPeMNaRxoNMwENrdtNYmZt1YAfVVjp59"],
   ["USDC", "TRX", "TL6VgVKo6natQb6hW5Hy2jcyX5EHgmwXLE"],
+  ["BTC", "BTC", "1Pzaqw98PeRfyHypfqyEgg5yycJRsENrE7"], // new wallet https://twitter.com/binance/status/1670723088802283520
+  ["BTC", "BTC", "39884E3j6KZj82FK4vcCrkUvWYL5MQaS3v"] // new wallet that got 3.1b
 ]
 
 function getAddresses(chain) {

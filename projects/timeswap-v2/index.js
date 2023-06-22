@@ -2,7 +2,7 @@ const { getLogs, getAddress } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 async function tvl(_, _b, _cb, { api }) {
-  const { factory, oldFactory, fromBlock } = config[api.chain];
+  const { factory, oldFactory, fromBlock, newFactory } = config[api.chain];
 
   const logs = await getLogs({
     api,
@@ -20,6 +20,23 @@ async function tvl(_, _b, _cb, { api }) {
       getAddress(i.data),
     ];
   });
+  if (newFactory) {
+    const newLogs = await getLogs({
+      api,
+      target: newFactory,
+      topics: [
+        "0x68ff1cfcdcf76864161555fc0de1878d8f83ec6949bf351df74d8a4a1a2679ab",
+      ],
+      fromBlock,
+    });
+    const newOwnerTokens = newLogs.map((i) => {
+      return [
+        [getAddress(i.topics[2]), getAddress(i.topics[3])],
+        getAddress(i.data),
+      ];
+    });
+    ownerTokens = [...ownerTokens, ...newOwnerTokens];
+  }
   if (oldFactory) {
     let oldOwnerTokens;
     const oldLogs = await getLogs({
@@ -57,6 +74,7 @@ const config = {
   },
   arbitrum: {
     factory: "0xcf0aca5c5b7e1bF63514D362243b6c50d5761FE8",
+    newFactory: "0x406d3Dfcbe20b642c2262b29b960822975371502",
     fromBlock: 70785970,
   },
 };

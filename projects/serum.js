@@ -32,6 +32,7 @@ module.exports = {
   timetravel: false,
   hallmarks: [
     [1667826000, "FTX/Alameda collapse"],
+    [1680310800, "Move to onchain data"],
   ],
   solana: { tvl, },
 }
