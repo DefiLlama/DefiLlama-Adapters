@@ -12,6 +12,9 @@ const ALGO_VAULT2 =
 const ETH_VAULT2 = "0x4d753245f273e119Be944Ae180A17DfE35258e1e";
 const BSC_VAULT2 = "0x7aFeCFABBA462121262D81d764e289aB77966aec";
 
+// Tokens
+const ETH_PSYOP = "0xaa07810aE08575921c476Ff088bc949da43e4964";
+
 module.exports = {
   hallmarks: [
     [1671724719, "Start of bridge"],
@@ -23,7 +26,7 @@ module.exports = {
   ethereum: {
     tvl: sumTokensExport({
       owners: [ETH_VAULT1, ETH_VAULT2],
-      tokens: [ADDRESSES.null],
+      tokens: [ADDRESSES.null, ADDRESSES.ethereum.INU, ETH_PSYOP],
     }),
   },
   bsc: {
