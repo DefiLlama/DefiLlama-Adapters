@@ -65,4 +65,7 @@ module.exports = {
     staking: stakingPricedLP(masonryAddress, tshareTokenAddress, "fantom", "0xB254973e067AF44eB4D506e7117A33C4F3F77783", "fantom"),
     treasury
   },
+  hallmarks: [
+    [1646179200, "Rug Pull"]
+  ]
 };
