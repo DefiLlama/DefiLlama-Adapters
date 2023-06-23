@@ -66,7 +66,7 @@ const getHelpers = (chain) => {
 
   async function tvl(tx, _block, chainBlocks) {
 
-    const  { wmasterchefs, vaults, }  = await fetchDataOnce()
+    const  { wmasterchefs }  = await fetchDataOnce()
 
     const balances = {}
     const block = chainBlocks[chain]
@@ -76,8 +76,10 @@ const getHelpers = (chain) => {
       await getWMasterChefBalances(wMasterChef, { balances, block, chain, excludePool2: true, pool2Tokens: [SINGLE_TOKEN] })
     }
 
-    const tokensAndOwners = vaults.map(({ token, address }) => [token, address])
-    await sumTokens2({ balances, tokensAndOwners, block, chain }) // Add lending pool tokens to balances
+    // moved lending pool data to new adapter
+    // const tokensAndOwners = vaults.map(({ token, address }) => [token, address])
+    // await sumTokens2({ balances, tokensAndOwners, block, chain })
+
     fixBalances(balances)
     return balances
   }
