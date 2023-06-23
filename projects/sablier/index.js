@@ -1,13 +1,14 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, sumTokensExport } = require('../helper/unwrapLPs')
 const { covalentGetTokens } = require('../helper/http')
 const { isWhitelistedToken } = require('../helper/streamingHelper')
 const { getUniqueAddresses } = require('../helper/utils')
 
 const blacklistedTokens = [
-  '0x57ab1e02fee23774580c119740129eac7081e9d3', // sUSD legacy
-  '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359',
-  '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2',
-  '0x57ab1e02fee23774580c119740129eac7081e9d3',
+  ADDRESSES.ethereum.sUSD_OLD,
+  // TODO: We shouldn't need to lowercase here
+  ADDRESSES.ethereum.SAI.toLowerCase(),
+  ADDRESSES.ethereum.MKR,
 ]
 
 async function getTokens(api, owners, isVesting) {
@@ -39,9 +40,9 @@ module.exports = {
     tvl: sumTokensExport({
       owner: '0xDe9dCc27aa1552d591Fc9B9c21881feE43BD8118',
       tokens: [
-        '0x0b7007c13325c48911f73a2dad5fa5dcbf808adc',
-        '0xc99a6a985ed2cac1ef41640596c5a5f9f4e19ef5',
-        '0x97a9107c1793bc407d6f527b77e7fff4d812bece',
+        ADDRESSES.ronin.USDC,
+        ADDRESSES.ronin.WETH,
+        ADDRESSES.ronin.AXS,
       ]
     })
   }
