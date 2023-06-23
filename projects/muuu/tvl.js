@@ -1,190 +1,62 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
-const BigNumberJs = require("bignumber.js");
+const ADDRESSES = require("../helper/coreAssets.json");
 const ABI = require("./abi.json");
-const { toBigNumberJsOrZero } = require("./utils.js");
+const { staking } = require('../helper/staking')
 
 const ZERO_ADDRESS = ADDRESSES.null;
 const REGISTRY_ADDRESS = "0xDA820e20A89928e43794645B9A9770057D65738B";
 const BOOSTER_ADDRESS = "0x6d12e3dE6dAcDBa2779C4947c0F718E13b78cfF4";
 const MUKGL_ADDRESS = "0x5eaAe8435B178d4677904430BAc5079e73aFa56e";
+const MULAY_ADDRESS = "0xDDF2ad1d9bFA208228166311FC22e76Ea7a4C44D";
+const MUU_TOKEN = "0xc5BcAC31cf55806646017395AD119aF2441Aee37";
 const MUUU_REWARDS_ADDRESS = "0xB2ae0CF4819f2BE89574D3dc46D481cf80C7a255";
-const TOKENS = {
-  // USDC
-  [ADDRESSES.moonbeam.USDC]:
-    ADDRESSES.ethereum.USDC,
-  // USDT
-  [ADDRESSES.astar.USDT]:
-    ADDRESSES.ethereum.USDT,
-  // DAI
-  [ADDRESSES.astar.DAI]:
-    ADDRESSES.ethereum.DAI,
-  // Starlay lUSDC -> USDC
-  [ADDRESSES.astar.lUSDC]:
-    ADDRESSES.ethereum.USDC,
-  // Starlay lUSDT -> USDT
-  [ADDRESSES.astar.lUSDT]:
-    ADDRESSES.ethereum.USDT,
-  // Starlay lDAI -> DAI
-  [ADDRESSES.astar.lDAI]:
-    ADDRESSES.ethereum.DAI,
-  // BUSD
-  [ADDRESSES.oasis.ceUSDT]:
-    ADDRESSES.ethereum.BUSD,
-  // 3KGL -> DAI(TMP)
-  "0x18BDb86E835E9952cFaA844EB923E470E832Ad58":
-    ADDRESSES.ethereum.DAI,
-  // BAI -> DAI(TMP)
-  [ADDRESSES.astar.BAI]:
-    ADDRESSES.ethereum.DAI,
-  // oUSD -> DAI(TMP)
-  [ADDRESSES.astar.oUSD]:
-    ADDRESSES.ethereum.DAI,
-};
 
-const transformTokenAddress = (address) => TOKENS[address];
-
-async function tvl(timestamp, block, chainBlocks) {
-  let allCoins = {};
-
-  const poolLength = (
-    await sdk.api.abi.call({
-      target: BOOSTER_ADDRESS,
-      abi: ABI.poolLength,
-      block: chainBlocks["astar"],
-      chain: "astar",
-    })
-  ).output;
-  const poolInfo = [];
-  const calldata = [];
-  for (let i = 0; i < poolLength; i++) {
-    calldata.push({
-      target: BOOSTER_ADDRESS,
-      params: [i],
-    });
-  }
-  const returnData = await sdk.api.abi.multiCall({
-    abi: ABI.poolInfo,
-    calls: calldata,
-    block: chainBlocks["astar"],
-    chain: "astar",
-  });
-  for (let i = 0; i < poolLength; i++) {
-    const pdata = returnData.output[i].output;
-    if (pdata.shutdown) continue;
-    poolInfo.push(pdata);
-  }
-  await Promise.all(
-    [...Array(Number(poolInfo.length)).keys()].map(async (i) => {
-      const supplyFromMuuuFinance = (
-        await sdk.api.erc20.totalSupply({
-          target: poolInfo[i].token,
-          block: chainBlocks["astar"],
-          chain: "astar",
-        })
-      ).output;
-
-      const totalsupply = (
-        await sdk.api.erc20.totalSupply({
-          target: poolInfo[i].lptoken,
-          block: chainBlocks["astar"],
-          chain: "astar",
-        })
-      ).output;
-
-      const muuuFinanceShare = BigNumberJs(supplyFromMuuuFinance)
-        .times(1e18)
-        .div(totalsupply)
-        .toFixed(6);
-
-      const pool = (
-        await sdk.api.abi.call({
-          target: REGISTRY_ADDRESS,
-          block: chainBlocks["astar"],
-          chain: "astar",
-          abi: ABI.get_pool_from_lp_token,
-          params: poolInfo[i].lptoken,
-        })
-      ).output;
-
-      const maincoins = (
-        await sdk.api.abi.call({
-          target: REGISTRY_ADDRESS,
-          block: chainBlocks["astar"],
-          chain: "astar",
-          abi: ABI.get_coins,
-          params: pool,
-        })
-      ).output;
-
-      const coins = [];
-      for (let key in maincoins) {
-        let coin = maincoins[key];
-        if (coin == ZERO_ADDRESS) {
-          continue;
-        }
-
-        const bal = await sdk.api.erc20.balanceOf({
-          target: coin,
-          owner: pool,
-          block: chainBlocks["astar"],
-          chain: "astar",
-        });
-        coins.push({ coin: coin, balance: bal.output });
-      }
-
-      for (var c = 0; c < coins.length; c++) {
-        const balanceShare = BigNumberJs(coins[c].balance.toString())
-          .times(muuuFinanceShare)
-          .div(1e18)
-          .toFixed(0);
-
-        const coinAddress = coins[c].coin;
-
-        // convert 3KGL tokens to DAI. This is temp and should convert using virtual price
-        // as the tokens have accrued interest, this means current tvl is under reporting
-        sdk.util.sumSingleBalance(
-          allCoins,
-          transformTokenAddress(coinAddress),
-          balanceShare
-        );
-      }
-    })
-  );
-
-  // When KGL's price is determined, we can count muKGL's TVL
-  const muKGL = await sdk.api.erc20.totalSupply({
-    target: MUKGL_ADDRESS,
-    block: chainBlocks["astar"],
-    chain: "astar",
-  });
-  sdk.util.sumSingleBalance(
-    allCoins,
-    "kagla-finance",
-    toBigNumberJsOrZero(muKGL.output).shiftedBy(-18).toNumber()
-  );
-
-  return allCoins;
-}
-
-// When MUUU's price is determined, we can count MUUU's TVL
-async function staking(timestamp, block, chainBlocks) {
-  const balances = {};
-  const muuuStakedSupply = await sdk.api.erc20.totalSupply({
-    target: MUUU_REWARDS_ADDRESS,
-    block: chainBlocks["astar"],
-    chain: "astar",
-  });
-
-  sdk.util.sumSingleBalance(
-    balances,
-    "muuu",
-    toBigNumberJsOrZero(muuuStakedSupply.output).shiftedBy(-18).toNumber()
-  );
-  return balances;
+async function tvl(timestamp, block, chainBlocks, { api }) {
+  const [veKGL, veLAY] = await api.multiCall({ abi: 'erc20:totalSupply', calls: [MUKGL_ADDRESS, MULAY_ADDRESS] })
+  api.add(ADDRESSES.astar.KGL, veKGL)
+  api.add(ADDRESSES.astar.LAY, veLAY)
+  const pools = await api.fetchList({ lengthAbi: ABI.poolLength, itemAbi: ABI.poolInfo, target: BOOSTER_ADDRESS })
+  const supply = await api.multiCall({ abi: 'erc20:totalSupply', calls: pools.map(i => i.token) })
+  let i = 0
+  for (const pool of pools) await addTokensInPool(api, pool.lptoken, supply[i++])
 }
 
 module.exports = {
   tvl,
-  staking,
+  staking: staking(MUUU_REWARDS_ADDRESS, MUU_TOKEN),
 };
+
+const poolMapping = {
+  '0x5c71534db6e54322943ad429209d97fa25bbfcd2': { pool:'0x4fD9011F0867e7e8AF7608Ad1BB969Da8b0aBa9B', tokenCount: 2 },
+  '0xe12332a6118832cbafc1913ec5d8c3a05e6fd880': { pool:'0xe12332a6118832cbafc1913ec5d8c3a05e6fd880', tokenCount: 2 },
+  '0xb91e7abcbf38d0cac1f99b062b75ae0c18e169d1': { pool:'0x578AA1be6D258677e80c9067711861dd981a663E', tokenCount: 2 },
+  '0xdc1c5babb4dad3117fd46d542f3b356d171417fa': { pool:'0xdc1c5babb4dad3117fd46d542f3b356d171417fa', tokenCount: 2 },
+}
+
+async function addTokensInPool(api, lpToken, tokenBal) {
+  let pool = await api.call({ target: REGISTRY_ADDRESS, abi: ABI.get_pool_from_lp_token, params: lpToken, })
+  let tokens = []
+  let bals = []
+  const mappingPool = poolMapping[lpToken.toLowerCase()]
+  const supply = await api.call({ abi: 'erc20:totalSupply', target: lpToken })
+  if (pool === ZERO_ADDRESS && !mappingPool) {
+    api.add(lpToken, tokenBal)
+    return;
+  } 
+  
+  if (mappingPool){
+    const { pool , tokenCount } = mappingPool
+    bals = await api.multiCall({ abi: "function balances(uint256) view returns (uint256)", target: pool, calls: Array(tokenCount).fill(0).map((_, i) => i)})
+    tokens = await api.multiCall({ abi: ABI.coins, target: pool, calls: Array(tokenCount).fill(0).map((_, i) => i)})
+    console.log(bals, tokens)
+  } else {
+    tokens = await api.call({  abi: ABI.get_coins, target: REGISTRY_ADDRESS, params: pool })
+    bals = await api.call({  abi: ABI.get_balances, target: REGISTRY_ADDRESS, params: pool })
+  }
+  const ratio = tokenBal / supply
+  for (const t of tokens) {
+    if (t === ZERO_ADDRESS) continue;
+    const name = await api.call({  abi: 'string:name', target: t })
+    if (name.includes('Kagla.fi')) await addTokensInPool(api, t, bals[tokens.indexOf(t)] * ratio)
+    else api.add(t, bals[tokens.indexOf(t)] * ratio)
+  }
+}
