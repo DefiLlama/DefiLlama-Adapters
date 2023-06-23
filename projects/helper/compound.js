@@ -7,7 +7,7 @@ const { requery } = require("./requery");
 const { getChainTransform, getFixBalances, } = require('./portedTokens');
 const { usdtAddress } = require('./balances');
 const agoraAbi = require("./../agora/abi.json");
-const { sumTokens2, nullAddress } = require('./unwrapLPs')
+const { sumTokens2, nullAddress, unwrapLPsAuto, } = require('./unwrapLPs')
 // ask comptroller for all markets array
 async function getAllCTokens(comptroller, block, chain, allMarketsAbi = abi['getAllMarkets']) {
   return (await sdk.api.abi.call({
@@ -109,7 +109,8 @@ function getCompoundV2Tvl(comptroller, chain, transformAdress,
   {
     fetchBalances = false,
     blacklistedTokens = [],
-    abis = {}
+    abis = {},
+    resolveLPs = true,
   } = {}) {
   abis = { ...abi, ...abis }
   blacklistedTokens = blacklistedTokens.map(i => i.toLowerCase())
@@ -170,6 +171,9 @@ function getCompoundV2Tvl(comptroller, chain, transformAdress,
     } else if (lpPositions.length > 0) {
       await unwrapUniswapLPs(balances, lpPositions, block, chain, transformAdress)
     }
+
+    if (resolveLPs) return unwrapLPsAuto({ balances, block, chain})
+
     return balances;
   }
 }
@@ -276,15 +280,15 @@ function compoundExports(comptroller, chain, cether, cetheEquivalent, transformA
   }
 }
 
-function compoundExportsWithAsyncTransform(comptroller, chain, cether, cetheEquivalent, transformAdressConstructor) {
+function compoundExportsWithAsyncTransform(comptroller, chain, cether, cetheEquivalent, options) {
   return {
     tvl: async (...args) => {
       const transformAddress = await getChainTransform(chain)
-      return getCompoundV2Tvl(comptroller, chain, transformAddress, cether, cetheEquivalent)(...args)
+      return getCompoundV2Tvl(comptroller, chain, transformAddress, cether, cetheEquivalent, false, undefined, options)(...args)
     },
     borrowed: async (...args) => {
       const transformAddress = await getChainTransform(chain)
-      return getCompoundV2Tvl(comptroller, chain, transformAddress, cether, cetheEquivalent, true)(...args)
+      return getCompoundV2Tvl(comptroller, chain, transformAddress, cether, cetheEquivalent, true, undefined, options)(...args)
     },
   }
 }

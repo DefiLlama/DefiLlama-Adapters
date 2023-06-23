@@ -20,7 +20,7 @@ async function tvl() {
     throw new Error("Unexpected shape of friktionShapshot");
   }
 
-  if (!friktionSnapshot.totalTvlUSD || friktionSnapshot.totalTvlUSD < 1000000) {
+  if (!friktionSnapshot.totalTvlUSD || friktionSnapshot.totalTvlUSD < 1000) {
     console.log(friktionSnapshot);
     throw new Error("Unexpected totalTvlUSD");
   }

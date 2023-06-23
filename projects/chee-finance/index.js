@@ -1,7 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const {compoundExports, compoundExportsWithAsyncTransform} = require('../helper/compound')
-const sdk = require("@defillama/sdk");
-const BigNumber = require("bignumber.js");
+const {compoundExports } = require('../helper/compound')
 
 module.exports={
     hallmarks: [

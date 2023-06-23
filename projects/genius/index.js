@@ -45,6 +45,10 @@ const STABILITY_POOL_COLLATERAL_ADDRESSES = {
   "polygon": {
     "DAI": ADDRESSES.polygon.DAI,
     "MATIC": nullAddress,
+  },
+  "pulse": {
+    "DAI": ADDRESSES.pulse.DAI,
+    "PLS": nullAddress
   }
 };
 
@@ -96,5 +100,9 @@ TVL: counts total number of value locked of all collateral tokens and native in 
   avax: {
     staking,
     tvl
-  }
+  },
+  pulse: {
+    staking,
+    tvl
+  },
 };
