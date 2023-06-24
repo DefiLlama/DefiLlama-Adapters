@@ -1,6 +1,7 @@
 // vaults are closed: https://articles.apollo.farm/apollo-dao-will-be-closing-vaults-on-terra-classic/
 const axios = require("axios");
-const { endPoints } = require('../helper/chain/cosmos')
+const { FormatTypes } = require("ethers/lib/utils");
+const { endPoints, queryContract } = require('../helper/chain/cosmos')
 const { transformBalances } = require('../helper/portedTokens')
 
 const chain = 'osmosis'
@@ -15,7 +16,7 @@ const contractAddresses = {
     evmos_osmo: "osmo1rkv6vcmty4rpypuxp2a6a0y5ze4ztm3y6d6xwy5a7cye85f7reqsm85c5s",
     juno_osmo: "osmo1ceku0zks6y43r9l35n7wnv5pf82s6l4k5jhlrhkurakeemey9n4snz3x6z",
     weth_osmo: "osmo1r235f4tdkwrsnj3mdm9hf647l754y6g6xsmz0nas5r4vr5tda3qsgtftef",
-    ist_osmo: "osmo1qajgwrcce9srkq370pa9ew96dyk4hajyyk6rfpuexrktm8862xnst443kp",
+ist_osmo: "osmo1qajgwrcce9srkq370pa9ew96dyk4hajyyk6rfpuexrktm8862xnst443kp",
     ion_osmo: "osmo1869zena97sctemj78sgjmu737p2g94905hsf3hhkrfgummrfz4tsxj2k6r",
     cro_osmo: "osmo1gmd2vc4crmv7urlfn3j5avhplfncjf5mg649dkgsu5a0zvd6cgrsn9dq4l",
     axl_osmo: "osmo1m9e4cks405tvzlppkw64znr35vkvujvptrdqtgu5q6luk4ccw9qqeuenwd",
@@ -28,23 +29,28 @@ async function tvl() {
     if (chain != "osmosis") return transformBalances(chain, amounts)
     for (const contractName in contractAddresses) {
         let contractAddress = contractAddresses[contractName];
-        let gammBalanceEndpoint = `${endPoints[chain]}/bank/balances/${contractAddress}`;
-        const balances = (await axios.get(gammBalanceEndpoint)).data.result;
-        const gammTokens = balances.filter(item => item.denom.startsWith('gamm/pool'));
-        for (const gammToken of gammTokens) {
-            const gammAmount = gammToken.amount;
-            const poolID = gammToken.denom.split('gamm/pool/')[1];
+        let vaultInfo = await queryContract({
+            contract: contractAddress,
+            chain: 'osmosis',
+            data: { 'info': {} } 
+          });
+        const gammToken = vaultInfo.base_token;
+        const poolID = gammToken.split('gamm/pool/')[1];
+        let totalAssets = await queryContract({
+            contract: contractAddress,
+            chain: 'osmosis',
+            data: { 'total_assets': {} } 
+          });
 
-            let poolEndpoint = `${endPoints[chain]}/osmosis/gamm/v1beta1/pools/${poolID}`;
-            const poolData = (await axios.get(poolEndpoint)).data.pool;
+        let poolEndpoint = `${endPoints[chain]}/osmosis/gamm/v1beta1/pools/${poolID}`;
+        const poolData = (await axios.get(poolEndpoint)).data.pool;
 
-            let amount = calculateTokenAmounts(poolData, gammAmount)
-            for (const denom in amount) {
-                if (typeof amounts[denom] === "undefined") {
-                    amounts[denom] = amount[denom];
-                } else {
-                    amounts[denom] += amount[denom];
-                }
+        let amount = calculateTokenAmounts(poolData, totalAssets)
+        for (const denom in amount) {
+            if (typeof amounts[denom] === "undefined") {
+                amounts[denom] = amount[denom];
+            } else {
+                amounts[denom] += amount[denom];
             }
         }
     }
@@ -59,15 +65,25 @@ function calculateTokenAmounts(poolData, gammAmount) {
     let tokenAmounts = {};
 
     // For each token in the pool...
-    for (let asset of poolData.pool_assets) {
-        // Extract the token's denom and amount.
-        let denom = asset.token.denom;
-        let assetAmount = asset.token.amount;
-
-        // Calculate the amount of this token that corresponds to the given amount of pool shares.
-        tokenAmounts[denom] = (gammAmount * assetAmount) / totalShares;
+    if (typeof poolData.pool_assets !== "undefined") {
+        for (let asset of poolData.pool_assets) {
+            // Extract the token's denom and amount.
+            let denom = asset.token.denom;
+            let assetAmount = asset.token.amount;
+    
+            // Calculate the amount of this token that corresponds to the given amount of pool shares.
+            tokenAmounts[denom] = (gammAmount * assetAmount) / totalShares;
+        }
+    } else {
+        for (let asset of poolData.pool_liquidity) {
+            // Extract the token's denom and amount.
+            let denom = asset.denom;
+            let assetAmount = asset.amount;
+    
+            // Calculate the amount of this token that corresponds to the given amount of pool shares.
+            tokenAmounts[denom] = (gammAmount * assetAmount) / totalShares;
+        }
     }
-
     return tokenAmounts;
 }
 
