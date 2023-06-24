@@ -184,7 +184,7 @@ async function tvl(timestamp, block) {
       await Promise.all(
         item.coins.map(async i => {
             try{
-                poolAmount = await calc(item, i, price_feed, block);
+                const poolAmount = await calc(item, i, price_feed, block);
                 if (item.type == 'btc') {
                     btcTVL += parseFloat(poolAmount);
                 } else {
