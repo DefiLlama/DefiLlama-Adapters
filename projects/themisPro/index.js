@@ -11,5 +11,5 @@ const treasuryTokens = [
 ]
 
 module.exports = {
-    ...ohmTvl(treasury, treasuryTokens, "filecoin", staking, token)
+    ...ohmTvl(treasury, treasuryTokens, "filecoin", staking, token,undefined,undefined,false)
 }
