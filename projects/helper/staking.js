@@ -25,7 +25,7 @@ function stakings(stakingContracts, stakingToken, _chain = "ethereum", transform
         let transformAddress = transformedTokenAddress
         if (typeof transformedTokenAddress === 'string') transformAddress = i => transformedTokenAddress
         const balances = await sumTokens2({ chain, block, tokens: stakingToken, owners: stakingContracts, transformAddress, })
-        
+
         if (decimals) {
             Object.keys(balances).forEach(key => {
                 balances[key] = BigNumber(balances[key]/ (10 ** decimals)).toFixed(0)
@@ -60,10 +60,14 @@ function stakingUnknownPricedLP(stakingContract, stakingToken, chain, lpContract
         let token, stakedBal;
         if(token0.toLowerCase() === stakingToken.toLowerCase()){
             token = token1;
-            stakedBal = BigNumber(bal.output).times(reserveAmounts[1]).div(reserveAmounts[0]).toFixed(0);
+            stakedBal = reserveAmounts[0] !== '0'
+                ? BigNumber(bal.output).times(reserveAmounts[1]).div(reserveAmounts[0]).toFixed(0)
+                : BigNumber(0);
         }else {
-            stakedBal = BigNumber(bal.output).times(reserveAmounts[0]).div(reserveAmounts[1]).toFixed(0);
-            token = token0
+            token = token0;
+            stakedBal = reserveAmounts[1] !== '0'
+                ? BigNumber(bal.output).times(reserveAmounts[0]).div(reserveAmounts[1]).toFixed(0)
+                : BigNumber(0);
         }
         if(decimals !== undefined){
             stakedBal = Number(stakedBal)/(10**decimals)
