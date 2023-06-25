@@ -4,7 +4,7 @@ const { stakings } = require("../helper/staking");
 const addresses = require("./addresses.json");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const lockerABI = require("./locked.json");
-const sdk = require('@defillama/sdk')
+const sdk = require('@defillama/sdk');
 
 const jTokenToToken = {
   "0x662d0f9ff837a51cf89a1fe7e0882a906dac08a3": "arbitrum:" + ADDRESSES.arbitrum.WETH, // jETH
@@ -29,18 +29,18 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
     api.multiCall({ abi: 'uint256:totalAssets', calls: addresses.vaults }),
   ])
 
-  const usdcBalance = await sdk.api.erc20.balanceOf({
-      target: USDC,
-      owner: addresses.trackers.uvert.token,
-      chain: 'arbitrum',
-      block: chainBlocks['arbitrum']
+  const uvrtBalance = await sdk.api.erc20.balanceOf({
+    target: addresses.trackers.uvert.token,
+    owner: addresses.jonesGlpVaultRouter,
+    chain: 'arbitrum',
+    block: chainBlocks['arbitrum']
   }).then(result => result.output)
 
   const toa = []
 
   api.addTokens(tokens,bals)
   api.addTokens(vAssets,vBals)
-  api.addToken(USDC, usdcBalance)
+  api.addToken(addresses.trackers.uvert.token, uvrtBalance)
   Object.values(addresses.trackers).map(tracker => toa.push([tracker.token, tracker.holder]))
   toa.push([addresses.glp, addresses.strategy,])
 
