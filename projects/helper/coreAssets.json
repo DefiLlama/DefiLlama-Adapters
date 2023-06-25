@@ -1319,5 +1319,8 @@
     "USDT": "0xff276c6bca1f66fd54a8915e830735d6ab0c7b09",
     "BTC": "0x935765ad27a1af00f73097c998a9fb721d2d7790",
     "ETH": "0xb4373ebb073a4dcba47e567d075a9583fa3c763e"
+  },
+  "filecoin": {
+    "USDT": "0x422849B355039bC58F2780cc4854919fC9cfaF94"
   }
 }
