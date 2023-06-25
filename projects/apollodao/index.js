@@ -82,6 +82,7 @@ function calculateTokenAmounts(poolData, gammAmount) {
             tokenAmounts[denom] = (gammAmount * assetAmount) / totalShares;
         }
     }
+
     return tokenAmounts;
 }
 
