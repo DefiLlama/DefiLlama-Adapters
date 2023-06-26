@@ -66,6 +66,7 @@ const config = {
   polygon: {
     oldFactory: "0xcAB2E5Ba8b3A8d8Bf8B50F0eec12884D0255fB4A",
     factory: "0xcf0aca5c5b7e1bF63514D362243b6c50d5761FE8",
+    newFactory: "0x406d3Dfcbe20b642c2262b29b960822975371502",
     fromBlock: 39476334,
   },
   ethereum: {
