@@ -119,7 +119,7 @@ const polygon = [
             contractType: lendBorrow.lender,
             address: '0x2F35d311fd2F0b0dA65FA268B86831279FB4fd98',
             miscInfo: {
-                tokenIn: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270'
+                tokenIn: ADDRESSES.polygon.WMATIC_2
             }
         }, {
             contractType: lendBorrow.borrower,

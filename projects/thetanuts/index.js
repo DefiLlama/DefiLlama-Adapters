@@ -96,7 +96,7 @@ const wbnb = ADDRESSES.bsc.WBNB
 const woo = '0x4691937a7508860F876c9c0a2a617E7d9E945D4B'
 
 // Polygon Assets
-const wmatic = '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270'
+const wmatic = ADDRESSES.polygon.WMATIC_2
 const pousdc = ADDRESSES.polygon.USDC
 const ust_matic_wormhole = '0xE6469Ba6D2fD6130788E0eA9C0a0515900563b59'
 

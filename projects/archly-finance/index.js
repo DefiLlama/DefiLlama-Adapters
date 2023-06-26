@@ -82,7 +82,7 @@ module.exports = {
             owner: ARCHLY_VE_TOKEN_OTHER,
             tokens: [ARCHLY_ARC_TOKEN_OTHER],
             lps: ['0x2651D7B53BaF1925D28A3b5A3ef371274e630C4C'],
-            coreAssets: ['0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270'],
+            coreAssets: [ADDRESSES.polygon.WMATIC_2],
             restrictTokenRatio: 100,
         })
     }

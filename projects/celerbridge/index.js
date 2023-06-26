@@ -451,7 +451,7 @@ const liquidityBridgeTokens = [
   },
   {
     // MATIC
-    polygon: "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+    polygon: ADDRESSES.polygon.WMATIC_2,
   },
   {
     // AAVE
@@ -487,7 +487,7 @@ const liquidityBridgeTokens = [
   },
   {
     // LUSD
-    ethereum: "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0",
+    ethereum: ADDRESSES.ethereum.LUSD,
   },
   {
     // JONES

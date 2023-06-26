@@ -21,7 +21,7 @@ module.exports = treasuryExports({
       ADDRESSES.ethereum.DAI,
       "0xaCe78D9BaB82b6B4783120Dba82aa10B040A14D9",
       "0xBCe0Cf87F513102F22232436CCa2ca49e815C3aC",
-      "0xd533a949740bb3306d119cc777fa900ba034cd52",
+      ADDRESSES.ethereum.CRV,
     ],
     ownTokens: [BTRF],
     owners: [treasury, treasury2,treasury3,treasury4],

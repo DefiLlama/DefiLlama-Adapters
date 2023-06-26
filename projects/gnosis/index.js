@@ -16,7 +16,7 @@ function addTvl(owner) {
     ADDRESSES.ethereum.WETH,
     ADDRESSES.ethereum.DAI,
     ADDRESSES.ethereum.USDC,
-    '0x6810e776880c02933d47db1b9fc05908e5386b96',
+    ADDRESSES.ethereum.GNO,
     ADDRESSES.ethereum.YFI,
     ADDRESSES.ethereum.sUSD,
     ADDRESSES.ethereum.UNI,

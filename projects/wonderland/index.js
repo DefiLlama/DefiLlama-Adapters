@@ -55,7 +55,7 @@ async function ethTvl(timestamp, ethBlock, chainBlocks) {
       ["0x66761Fa41377003622aEE3c7675Fc7b5c1C2FaC5", false], // CPOOL
       ["0xdBdb4d16EdA451D0503b854CF79D55697F90c8DF", false], // ALCX
       ["0xdB25f211AB05b1c97D595516F45794528a807ad8", false], // EURS
-      ["0x6810e776880C02933D47DB1b9fc05908e5386b96", false], // GNO
+      [ADDRESSES.ethereum.GNO, false], // GNO
       ["0x41D5D79431A913C4aE7d69a668ecdfE5fF9DFB68", false], // INV
       ["0xE80C0cd204D654CEbe8dd64A4857cAb6Be8345a3", false], // JPEG
       ["0x0C10bF8FcB7Bf5412187A595ab97a3609160b5c6", false], // USDD
