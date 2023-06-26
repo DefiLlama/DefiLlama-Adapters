@@ -15,5 +15,6 @@ module.exports = {
   hallmarks:[
     [1657760400, "First OP grant awarded"],
     [1659618000, "Loss $350k Operational Funds"],
+    [1687465883, "v2 Migration on OP Mainnet"], // https://twitter.com/VelodromeFi/status/1671979216039202816
   ]
 }
