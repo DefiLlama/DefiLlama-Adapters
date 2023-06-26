@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unwrapLPs')
 const tokens = {
-  "WMATIC": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+  "WMATIC": ADDRESSES.polygon.WMATIC_2,
   "WETH": ADDRESSES.polygon.WETH_1,
   "WBTC": ADDRESSES.polygon.WBTC,
   "DAI": ADDRESSES.polygon.DAI,

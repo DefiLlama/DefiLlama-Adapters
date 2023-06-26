@@ -10,7 +10,7 @@ const ring = {
 const weth = {
   "ethereum": ADDRESSES.ethereum.WETH,
   "heco": ADDRESSES.heco.WHT,
-  "polygon": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+  "polygon": ADDRESSES.polygon.WMATIC_2,
   "crab": ADDRESSES.crab.WCRAB,
 }
 
