@@ -62,7 +62,7 @@ const arb_tokens = [ADDRESSES.arbitrum.USDC, ADDRESSES.arbitrum.WETH,
 
 const L2toL1Synths = {
     [ADDRESSES.optimism.sETH]: '0x5e74c9036fb86bd7ecdcb084a0673efc32ea31cb',
-    [ADDRESSES.optimism.sUSD]: '0x57ab1ec28d129707052df4df418d58a2d46d5f51',
+    [ADDRESSES.optimism.sUSD]: ADDRESSES.ethereum.sUSD,
     '0x298b9b95708152ff6968aafd889c6586e9169f1d': '0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6',
     '0xc5db22719a06418028a40a9b5e9a7c02959d0d08': '0xbbc455cb4f1b9e4bfc4b73970d360c8f032efee6'
 }

@@ -21,7 +21,7 @@ module.exports = {
         ADDRESSES.ethereum.STETH, // Lido stETH
         ADDRESSES.ethereum.WSTETH, // Lido wstETH
         "0x5E8422345238F34275888049021821E8E08CAa1f", // frxETH
-        "0xac3E018457B222d93114458476f3E3416Abbe38F" // sfrxETH
+        ADDRESSES.ethereum.SFRETH // sfrxETH
       ]
     })
   }

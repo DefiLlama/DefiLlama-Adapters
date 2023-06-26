@@ -1,7 +1,7 @@
 const { sumTokens2 } = require("../helper/unwrapLPs")
 const { getFixBalances } = require("../helper/portedTokens")
 const { getUserMasterChefBalances } = require("../helper/masterchef")
-const { getUserCraftsmanV2Balances } = require("./helpers")
+const { getUserCraftsmanV2Balances, getUserCamelotMasterBalances } = require("./helpers")
 const vvsPoolInfoABI = 'function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accVVSPerShare)'
 const spookyMasterChefV2PoolInfoABI = 'function lpToken(uint256) view returns (address)'
 const { getConfig } = require('../helper/cache')
@@ -32,6 +32,9 @@ const getWMasterChefBalances = ({ masterChef: masterChefAddress, wMasterChef, na
   }
   if (name === "spookyMultiYield" || name === "sushi") {
     return getUserMasterChefBalances({ ...commonParams, poolInfoABI: spookyMasterChefV2PoolInfoABI, getLPAddress: a => a, ...args })
+  }
+  if (name === "camelot") {
+    return getUserCamelotMasterBalances({ ...commonParams, ...args })
   }
   return getUserMasterChefBalances({ ...commonParams, poolInfoABI: vvsPoolInfoABI, ...args })
 }

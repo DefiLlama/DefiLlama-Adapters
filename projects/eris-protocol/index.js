@@ -1,4 +1,3 @@
-const { queryContract } = require("../helper/chain/terra");
 const {
   queryContract: queryContractCosmos,
   getBalance,
@@ -135,8 +134,8 @@ async function tvlAmpGovernance(chain, state) {
 }
 
 async function farm2Tvl(farm) {
-  const res = await queryContract({
-    isTerra2: true,
+  const res = await queryContractCosmos({
+    chain: 'terra2',
     contract: farm,
     data: { state: {} },
   });
