@@ -9,7 +9,7 @@ module.exports = mergeExports([treasuryExports({
   ethereum: {
     tokens: [ 
         nullAddress,
-        ADDRESSES.ethereum.USDC,//USDC
+        ADDRESSES.ethereum.USDC,
         ADDRESSES.ethereum.CVX,
         ADDRESSES.ethereum.WETH,
         ADDRESSES.ethereum.CRV,
@@ -24,7 +24,7 @@ module.exports = mergeExports([treasuryExports({
 }), {
   ethereum: {
     tvl: async (_, _1, _2, { api }) => {
-      const lockedCVXBal = await api.call({  abi: 'erc20:balanceOf', target: '0x72a19342e8F1838460eBFCCEf09F6585e32db86E', params: Treasury })
+      const lockedCVXBal = await api.call({  abi: 'erc20:balanceOf', target: ADDRESSES.ethereum.vlCVX, params: Treasury })
       api.add(ADDRESSES.ethereum.CVX, lockedCVXBal)
       await genericUnwrapCvxRewardPool({ api, owner: Treasury, pool: '0x39D78f11b246ea4A1f68573c3A5B64E83Cff2cAe'})
       return api.getBalances()

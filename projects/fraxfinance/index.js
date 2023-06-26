@@ -154,7 +154,7 @@ async function addInvestorAMO(api, balances) {
       TrueUSD: ADDRESSES.ethereum.TUSD,
       'Gelato Network Token': '0x15b7c0c907e4c6b9adaaaabc300c08991d6cea05',
       'Staked Aave': '0x4da27a545c0c5b758a6ba100e3a049001de870f5',
-      'Convex Token': '0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b',
+      'Convex Token': ADDRESSES.ethereum.CVX,
       'Curve DAO Token': ADDRESSES.ethereum.CRV,
       'Bend Token': '0x0d02755a5700414b26ff040e1de35d337df56218',
       'Binance USD': ADDRESSES.ethereum.BUSD,
