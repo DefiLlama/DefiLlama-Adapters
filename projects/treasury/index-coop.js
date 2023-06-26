@@ -20,7 +20,7 @@ module.exports = treasuryExports({
         '0x056Fd409E1d7A124BD7017459dFEa2F387b6d5Cd',
         '0xAa6E8127831c9DE45ae56bB1b0d4D4Da6e5665BD',
         '0x39AA39c021dfbaE8faC545936693aC917d5E7563',
-        '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0',
+        ADDRESSES.ethereum.LUSD,
         ADDRESSES.ethereum.USDT,
         '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643'
      ],
