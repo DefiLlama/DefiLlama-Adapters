@@ -242,7 +242,7 @@ async function calc(item, i, price_feed, block) {
       multiplier = await new BigNumber(multiplier).div(10 ** 18).toFixed(4);
 
     }
-    poolAmount = poolAmount * multi;
+    poolAmount = poolAmount * multiplier;
   }
 
   return poolAmount;
