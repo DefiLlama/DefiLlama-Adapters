@@ -4,7 +4,7 @@ const config = {
   arbitrum: { registry: '0x9f5b097AD23e2CF4F34e502A3E41D941678877Dc', fromBlock: 88698956, },
   optimism: { registry: '0xC1Ecd10398A6D7036CceE1f50551ff169715081c', fromBlock: 96971465, },
   avax: { registry: '0x9f5b097AD23e2CF4F34e502A3E41D941678877Dc', fromBlock: 30434642, },
-  binance: { registry: '0x31e4ee367d4f2685BAfcAb9566e9C87E60D48983', fromBlock: 28461459, },
+  bsc: { registry: '0x31e4ee367d4f2685BAfcAb9566e9C87E60D48983', fromBlock: 28461459, },
   evmos: { registry: '0xD90c8970708FfdFC403bdb56636621e3E9CCe921', fromBlock: 13671900, },
   metis: { registry: '0x116Dba5DcE9CcDA828218b7eB46406810632014C', fromBlock: 6067741, },
   polygon_zkevm: { registry: '0x9f5b097AD23e2CF4F34e502A3E41D941678877Dc', fromBlock: 1022413, },
@@ -37,6 +37,7 @@ Object.keys(config).forEach(chain => {
         api.add(token0, bal.total0)
         api.add(token1, bal.total1)
       })
+      return api.getBalances()
     }
   }
 })
