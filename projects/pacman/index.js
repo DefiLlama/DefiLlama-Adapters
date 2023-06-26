@@ -12,14 +12,16 @@ const vaultsQuery = `
       }
       id
       availableAmount
+      totalDeposit
+      totalDebt
     }
   }
 `;
 
 async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
   const { vaults } = await graphQuery(subgraphUrl, vaultsQuery)
-  vaults.forEach(({ baseToken:  { id, decimals }, availableAmount}) => {
-    api.add(id, availableAmount * ( 10 ** decimals))
+  vaults.forEach(({ baseToken:  { id, decimals }, totalDebt, totalDeposit}) => {
+    api.add(id, (totalDeposit - totalDebt) * ( 10 ** decimals))
   })
 }
 
