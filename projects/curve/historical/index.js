@@ -235,12 +235,12 @@ async function calc(item, i, price_feed, block) {
   }
 
   if (item.type == 'yToken') {
-    var multiplier = 1;
+    var multi = 1;
     if (coins !== '0x8E870D67F660D95d5be530380D0eC0bd388289E1') { // PAX exception
-       multiplier = await getVirtualPrice(abis.abis.yTokens, coins, block)
-      multiplier = await new BigNumber(multiplier).div(10 ** 18).toFixed(4);
+      multi = await getVirtualPrice(abis.abis.yTokens, coins, block)
+      multi = await new BigNumber(multi).div(10 ** 18).toFixed(4);
     }
-    poolAmount = poolAmount * multiplier;
+    poolAmount = poolAmount * multi;
   }
 
   return poolAmount;
