@@ -1,4 +1,4 @@
-const { api } = require("@defillama/sdk");
+const { api, api2, } = require("@defillama/sdk");
 const { providers } = require("@defillama/sdk/build/general");
 const { Contract, BigNumber } = require("ethers");
 
@@ -13,6 +13,8 @@ const getV2CAs = async (creditFacade, block) => {
       time: e.blockNumber * 100000 + e.logIndex,
       address,
       operation,
+      ca: e.args.creditAccount ? e.args.creditAccount : null,
+      cf: creditFacade,
     });
   };
 
@@ -40,9 +42,14 @@ const getV2CAs = async (creditFacade, block) => {
         address: creditFacade,
         topics: [Object.values(topics)],
       },
-      undefined
+      undefined,
+      block
     )
-  ).map((log) => cf.interface.parseLog(log));
+  ).map((log) => ({
+    ...cf.interface.parseLog(log),
+    blockNumber: log.blockNumber,
+    logIndex: log.logIndex,
+  }));
 
   logs.forEach((log) => {
     switch (log.name) {
@@ -63,7 +70,7 @@ const getV2CAs = async (creditFacade, block) => {
 
   eventsByDate
     .sort((a, b) => {
-      return a.time > b.time ? 1 : -1;
+      return a.time - b.time;
     })
     .forEach((e) => {
       if (e.operation === "add") {
@@ -75,9 +82,10 @@ const getV2CAs = async (creditFacade, block) => {
 
   const openCAs = Array.from(accounts.values()).map(
     (borrower) =>
-      logs.find(
-        (log) => log.args.onBehalfOf && log.args.onBehalfOf === borrower
-      ).args.creditAccount
+      logs
+        .sort((a, b) => b.blockNumber - a.blockNumber)
+        .find((log) => log.args.onBehalfOf && log.args.onBehalfOf === borrower)
+        .args.creditAccount
   );
 
   const { output: totalValue } = await api.abi.multiCall({
@@ -89,10 +97,12 @@ const getV2CAs = async (creditFacade, block) => {
     block,
   });
 
-  return totalValue
-    .map((t) => t.output)
-    .reduce((a, c) => a.add(BigNumber.from(c)), BigNumber.from("0"))
-    .toString();
+  return totalValue[0]
+    ? totalValue
+      .map((t) => t.output)
+      .reduce((a, c) => a.add(BigNumber.from(c)), BigNumber.from("0"))
+      .toString()
+    : "0";
 };
 
 const getV1CAs = async (creditManager, block) => {
@@ -132,7 +142,11 @@ const getV1CAs = async (creditManager, block) => {
       },
       undefined
     )
-  ).map((log) => cm.interface.parseLog(log));
+  ).map((log) => ({
+    ...cm.interface.parseLog(log),
+    blockNumber: log.blockNumber,
+    logIndex: log.logIndex,
+  }));
 
   logs.forEach((log) => {
     switch (log.name) {
@@ -152,7 +166,7 @@ const getV1CAs = async (creditManager, block) => {
   });
   eventsByDate
     .sort((a, b) => {
-      return a.time > b.time ? 1 : -1;
+      return a.time - b.time;
     })
     .forEach((e) => {
       if (e.operation === "add") {
@@ -169,17 +183,14 @@ const getV1CAs = async (creditManager, block) => {
       ).args.creditAccount
   );
 
-  const { output: totalValue } = await api.abi.multiCall({
+  const totalValue= await api2.abi.multiCall({
     abi: abi["calcTotalValue"],
-    calls: openCAs.map((addr) => ({
-      target: cf,
-      params: [addr],
-    })),
+    target: cf,
+    calls: openCAs.filter(i => i !== '0xaBBd655b3791175113c1f1146D3B369494A2b815'), // filtered out address throwing error
     block,
   });
 
   return totalValue
-    .map((t) => t.output)
     .reduce((a, c) => a.add(BigNumber.from(c)), BigNumber.from("0"))
     .toString();
 };

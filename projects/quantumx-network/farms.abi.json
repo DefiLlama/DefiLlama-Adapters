@@ -1,0 +1,83 @@
+{
+    "buildInfo": {
+        "rustc": {
+            "version": "1.67.0-nightly",
+            "commitHash": "b7bc90fea3b441234a84b49fdafeb75815eebbab",
+            "commitDate": "2022-11-21",
+            "channel": "Nightly",
+            "short": "rustc 1.67.0-nightly (b7bc90fea 2022-11-21)"
+        },
+        "contractCrate": {
+            "name": "farms",
+            "version": "0.0.0"
+        },
+        "framework": {
+            "name": "elrond-wasm",
+            "version": "0.38.0"
+        }
+    },
+    "name": "Farms",
+    "constructor": {
+        "inputs": [],
+        "outputs": []
+    },
+    "endpoints": [
+        {
+            "name": "getAllFarms",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "variadic<tuple<Farm,EgldOrEsdtTokenIdentifier,BigUint,BigUint,bool>>",
+                    "multi_result": true
+                }
+            ]
+        }
+    ],
+    "events": [],
+    "hasCallback": false,
+    "types": {
+        "EsdtTokenPayment": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "token_identifier",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "token_nonce",
+                    "type": "u64"
+                },
+                {
+                    "name": "amount",
+                    "type": "BigUint"
+                }
+            ]
+        },
+        "Farm": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "creator",
+                    "type": "Address"
+                },
+                {
+                    "name": "creation_epoch",
+                    "type": "u64"
+                },
+                {
+                    "name": "staked_token",
+                    "type": "EgldOrEsdtTokenIdentifier"
+                },
+                {
+                    "name": "reward_token",
+                    "type": "EgldOrEsdtTokenIdentifier"
+                }
+            ]
+        }
+    }
+}

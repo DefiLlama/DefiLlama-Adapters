@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
 
 
@@ -12,12 +13,15 @@ async function ethtvl(timestamp, block) {
   })
 
   return {
-    '0x0000000000000000000000000000000000000000': ethBalance.output,
+    [ADDRESSES.null]: ethBalance.output,
     
   }
 }
 
 module.exports = {
+   hallmarks: [
+    [1676376000,"BLUR token launch"]
+  ],
     timetravel: true,
     misrepresentedTokens: false,
     methodology: 'TVL counts ETH tokens in the Blur Bidding address:0x0000000000A39bb272e79075ade125fd351887Ac',

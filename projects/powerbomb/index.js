@@ -39,14 +39,14 @@ const opCrvPengAddr = "0x68ca3a3BBD306293e693871E45Fe908C04387614"
 const opCrvSethPengAddr = "0x98f82ADA10C55BC7D67b92d51b4e1dae69eD0250"
 
 // harmony
-const oneCrv3poolBtcAddr = "0x12CEf50b6a6dDBeC998353724180184157a685a7"
-const oneCrv3poolEthAddr = "0xb6f8747Ab388087692f21FE8524DE5c07f6C7185"
+// const oneCrv3poolBtcAddr = "0x12CEf50b6a6dDBeC998353724180184157a685a7"
+// const oneCrv3poolEthAddr = "0xb6f8747Ab388087692f21FE8524DE5c07f6C7185"
 
 // avalanche
-const avaxCrv3poolBtcAddr = "0x2510E5054eeEbED40C3C580ae3241F5457b630D9"
-const avaxCrv3poolEthAddr = "0xFAcB839BF8f09f2e7B4b6C83349B5bbFD62fd659"
-const avaxCrv3poolGohmAddr = "0x4d3e58DAa8233Cc6a46b9c6e23df5A202B178550"
-const avaxCrv3poolWmemoAddr = "0x9adA6069D6C02c839111e8F406270ED03D1a9506"
+// const avaxCrv3poolBtcAddr = "0x2510E5054eeEbED40C3C580ae3241F5457b630D9"
+// const avaxCrv3poolEthAddr = "0xFAcB839BF8f09f2e7B4b6C83349B5bbFD62fd659"
+// const avaxCrv3poolGohmAddr = "0x4d3e58DAa8233Cc6a46b9c6e23df5A202B178550"
+// const avaxCrv3poolWmemoAddr = "0x9adA6069D6C02c839111e8F406270ED03D1a9506"
 
 const vaults = {
   arbitrum: [
@@ -86,16 +86,16 @@ const vaults = {
     opCrvPengAddr,
     opCrvSethPengAddr,
   ],
-  harmony: [
-    oneCrv3poolBtcAddr,
-    oneCrv3poolEthAddr,
-  ],
-  avax: [
-    avaxCrv3poolBtcAddr,
-    avaxCrv3poolEthAddr,
-    avaxCrv3poolGohmAddr,
-    avaxCrv3poolWmemoAddr,
-  ]
+  // harmony: [
+  //   oneCrv3poolBtcAddr,
+  //   oneCrv3poolEthAddr,
+  // ],
+  // avax: [
+  //   avaxCrv3poolBtcAddr,
+  //   avaxCrv3poolEthAddr,
+  //   avaxCrv3poolGohmAddr,
+  //   avaxCrv3poolWmemoAddr,
+  // ]
 }
 
 module.exports = {

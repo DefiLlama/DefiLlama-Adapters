@@ -1,3 +1,4 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const sdk = require("@defillama/sdk")
 const axios = require("axios")
 const { staking } = require("./helper/staking");
@@ -20,14 +21,14 @@ const contracts = {
       '0x5c69bee701ef814a2b6a3edd4b1652cb9cc5aa6f', // univ2_factory_ethereum, 
       '0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac' // sushiv1_factory_ethereum
     ],
-    weth: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+    weth: ADDRESSES.ethereum.WETH,
     univ3_factory: '0x1f98431c8ad98523631ae4a59f267346ea31f984',
     transform: addr => addr,
   }, 
   polygon: {
     nft20_rest_api: nft20_rest_api_base + '&network=1',
     uni_v2_factories: ['0xc35DADB65012eC5796536bD9864eD8773aBc74C4'], // sushiv1_factory_polygon
-    weth: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+    weth: ADDRESSES.polygon.WETH_1,
     univ3_factory: [],
     transform: addr => `polygon:${addr}`,
   }
@@ -42,7 +43,7 @@ function chainTvl(chain) {
   // Retrieve pools using REST API
   let nft20_pools = (await axios.get(nft20_rest_api)).data.data // ?perPage=20&page=1&sortBy=pool_users
   const nft20_lp_usd_balance = nft20_pools.reduce((acc, p) => parseFloat(p['lp_usd_balance']) + acc, 0)
-  console.log(`${chain}: nft20 pools count: ${nft20_pools.length}\n${chain}: nft20 usd balance of LP returned by API: ${(nft20_lp_usd_balance/1e6).toFixed(2)}M`)
+  sdk.log(`${chain}: nft20 pools count: ${nft20_pools.length}\n${chain}: nft20 usd balance of LP returned by API: ${(nft20_lp_usd_balance/1e6).toFixed(2)}M`)
 
   // Get LPs addresses of UNI_v2 and SUSHI_v1 pools
   const calls_v2 = nft20_pools
@@ -76,7 +77,7 @@ function chainTvl(chain) {
     })
   ).output
 
-  const LPs = [...uni_v2_LPs, ...uni_v3_LPs].filter(lp => lp.output !== '0x0000000000000000000000000000000000000000')
+  const LPs = [...uni_v2_LPs, ...uni_v3_LPs].filter(lp => lp.output !== ADDRESSES.null)
   const weth_LPs = (
     await sdk.api.abi.multiCall({
       calls: LPs.map(pool => ({

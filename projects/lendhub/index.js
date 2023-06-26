@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const sdk = require('@defillama/sdk');
 const cAbis = require('./abi.json');
@@ -22,7 +23,7 @@ async function getMarkets(block) {
   const calls = []
   for (const cToken of allCTokens) {
     if (cToken.toLowerCase() === '0x99a2114B282acC9dd25804782ACb4D3a2b1Ad215'.toLowerCase())
-      markets.push({ cToken, underlying: '0x5545153ccfca01fbd7dd11c0b23ba694d9509a6f' })
+      markets.push({ cToken, underlying: ADDRESSES.heco.WHT })
     else
       calls.push({ target: cToken })
   }
@@ -79,8 +80,12 @@ function tvl(borrowed) {
 
 module.exports = {
   timetravel: false,
+  hallmarks: [
+    [Math.floor(new Date('2023-01-12')/1e3), 'Protocol was hacked'],
+  ],
   heco: {
     tvl: tvl(false),
-    borrowed: tvl(true),
+    // borrowed: tvl(true),
+    borrowed: () => 0,
   }
 };

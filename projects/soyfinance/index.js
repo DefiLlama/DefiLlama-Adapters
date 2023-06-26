@@ -1,15 +1,5 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getUniTVL } = require('../helper/unknownTokens')
-const ethers = require("ethers")
-const { config } = require('@defillama/sdk/build/api');
-
-
-config.setProvider("ethereumclassic", new ethers.providers.StaticJsonRpcProvider(
-  "https://etc.mytokenpocket.vip",
-  {
-    name: "ethereumclassic",
-    chainId: 61,
-  }
-))
 
 module.exports = {
   misrepresentedTokens: true,
@@ -31,7 +21,7 @@ module.exports = {
   },
   bittorrent: {
     tvl: getUniTVL({
-      factory: '0xbf6c50889d3a620eb42c0f188b65ade90de958c4',
+      factory: ADDRESSES.callisto.BUSDT,
       chain: 'bittorrent',
       useDefaultCoreAssets: true,
     })

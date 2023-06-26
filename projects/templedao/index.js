@@ -1,11 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require("../helper/staking");
 const { pool2 } = require("../helper/pool2");
 const { sumTokens, sumTokens2, unwrapUniswapV3NFTs } = require("../helper/unwrapLPs")
 const { createIncrementArray } = require("../helper/utils")
-const { resolveCrvTokens } = require("../helper/resolveCrvTokens")
 const sdk = require('@defillama/sdk');
 const abi = require("./abi.json");
-const { GraphQLClient, gql } = require("graphql-request");
 const poolInfos = {}
 
 const templeStakingContract = "0xEc3C1aBDAb15EbC069ec5e320EaACf716eDfC011";
@@ -18,7 +17,7 @@ const auraLocker = '0x3Fa73f1E5d8A792C80F426fc8F84FBF7Ce9bBCAC';
 const templeTreasuryContract = "0x5c8898f8e0f9468d4a677887bc03ee2659321012";
 const FRAX = "0x853d955acef822db058eb8505911ed77f175b99e";
 const FXS = "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0";
-const CVX_FXS = "0xFEEf77d3f69374f66429C91d732A244f074bdf74";
+const CVX_FXS = ADDRESSES.ethereum.cvxFXS;
 const AURA = '0xC0c293ce456fF0ED870ADd98a0828Dd4d2903DBF'
 const TEMPLE_DENDEND1 = '0x8A5058100E60e8F7C42305eb505B12785bbA3BcA';
 const TEMPLE_DENDEND2 = '0xb0D978C8Be39C119922B99f483cD8C4092f0EA56';
@@ -61,7 +60,6 @@ async function getCvxPoolValue({ block, owner, pool, balances, chain }) {
   const ourPoolInfo = poolInfos[operator].find(i => JSON.stringify(i).indexOf(stakingToken) > -1)
   const crvToken = ourPoolInfo.lptoken
   balances[crvToken] = poolBalance
-  await resolveCrvTokens(balances, block, chain)
   async function setPoolInfo(operator) {
     if (poolInfos[operator])  return;
     const poolLength = +(await sdk.api.abi.call({ target: operator, block, chain, abi: abi.poolLength })).output
@@ -75,32 +73,7 @@ async function getCvxProxyVaultValue({block, balances, pool, vault}) {
   const unwrappedToken = (await sdk.api.abi.call({ target: stakingToken, block, chain, abi: abi.curveToken })).output
   const lpTokenBalance = (await sdk.api.abi.call({ target: stakingToken, params: [vault], block, chain, abi: abi.totalBalanceOf })).output
   sdk.util.sumSingleBalance(balances, unwrappedToken, lpTokenBalance);
-  await resolveCrvTokens(balances, block, chain)
 }
-
-async function fetchAuraPoolData(account) {
-  const endpoint = "https://api.thegraph.com/subgraphs/name/aurafinance/aura";
-  const graphQLClient = new GraphQLClient(endpoint);
-
-  const query = gql`
-  {
-    account(id: "${account}") {
-      poolAccounts {
-        pool {
-          lpToken {
-            id
-          }
-        }
-        balance
-      }
-    }
-  }
-  `;
-
-  return graphQLClient.request(query)
-}
-
-
 
 module.exports = {
   doublecounted: true,

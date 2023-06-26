@@ -1,10 +1,17 @@
-const { wavesAdapter } = require('../helper/chain/wavesAdapter')
+const { get } = require("../helper/http");
+const { toUSDTBalances } = require("../helper/balances");
 
-const endpoint = "http://51.158.191.108:8002/api/v1/history/swop"
+const swopfiBackendEndpoint = "https://backend.swop.fi";
+
+const getSwopFiTVL = async () => {
+  const poolsStats = await get(`${swopfiBackendEndpoint}/pools`);
+  return toUSDTBalances(poolsStats.overall.liquidity);
+}
 
 module.exports = {
-    timetravel: false,
-    waves: {
-        tvl: wavesAdapter(endpoint, item => item.totalLocked / 1e6)
-    }
-}
+  timetravel: false, // Waves blockchain,
+  methodology: "Counts the tokens locked on AMM pools",
+  waves: {
+    tvl: getSwopFiTVL,
+  }
+};

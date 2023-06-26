@@ -1,5 +1,5 @@
 const { graphFetchById, } = require('../helper/http')
-const { getWhitelistedNFTs, } = require('../helper/tokenMapping')
+const { ART_BLOCKS, sumArtBlocks } = require('../helper/nft')
 const sdk = require('@defillama/sdk')
 
 const query = `
@@ -7,7 +7,17 @@ query get_pairs($lastId: String, $block: Int) {
   pairs(
     first: 1000
     block: { number: $block }
-    where: {id_gt: $lastId}
+    where: {
+      and: [
+        {id_gt: $lastId}
+        {
+            or: [
+            { numNfts_gt: 0 },
+            { ethBalance_gt: 0 },
+          ]
+        }
+      ]
+    }
     ) {
     id
     ethBalance
@@ -21,28 +31,32 @@ query get_pairs($lastId: String, $block: Int) {
 
 module.exports = {
   methodology: 'Sum up all the ETH in pools and count whitelisted NFT values as well (price fetched from chainlink)',
-  misrepresentedTokens: true,
-  hallmarks: [
-    [Math.floor(new Date('2022-12-06') / 1e3), 'TVL includes whitelisted nft value as well'],
-  ],
   ethereum: {
-    tvl: async (timestamp, block, chainBlocks) => {
+    tvl: async (timestamp, block, chainBlocks, { api }) => {
       const data = await graphFetchById({
         endpoint: 'https://api.thegraph.com/subgraphs/name/zeframlou/sudoswap',
         query,
+        api,
         options: {
-          timestamp, chain: 'ethereum', chainBlocks, useBlock: true,
+          useBlock: true,
         }
       })
-      const whitelisted = new Set(getWhitelistedNFTs())
       const balances = {}
-      data.forEach(({ ethBalance, collection, numNfts }) => {
+      const artBlockOwners = []
+      data.forEach(({ ethBalance, collection, numNfts, id }) => {
         sdk.util.sumSingleBalance(balances, 'ethereum', ethBalance / 1e18)
-        if (+numNfts > 0 && whitelisted.has(collection.id.toLowerCase()))
-          sdk.util.sumSingleBalance(balances, collection.id.toLowerCase(), numNfts)
+        const nft = collection.id.toLowerCase()
+
+        if (+numNfts > 0) {
+          if (nft === ART_BLOCKS) {
+            artBlockOwners.push(id)
+            return;
+          }
+          sdk.util.sumSingleBalance(balances, nft, numNfts)
+        }
       })
 
-      return balances
+      return sumArtBlocks({ api, owners: artBlockOwners, balances, })
     }
   }
 }

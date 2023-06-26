@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk")
 const { sumTokens2 } = require("../helper/unwrapLPs")
 const {pool2 } = require("../helper/pool2")
@@ -8,7 +9,7 @@ const chain = 'arbitrum'
 // Arbitrum TVL
 const transformArbitrumAddress = addr => `arbitrum:${addr}`
 const treasuryContract = "0x5710B75A0aA37f4Da939A61bb53c519296627994"
-const WETH_arbitrum = "0x82af49447d8a07e3bd95bd0d56f35241523fbab1"
+const WETH_arbitrum = ADDRESSES.arbitrum.WETH
 const FOREX_arbitrum = "0xDb298285FE4C5410B05390cA80e8Fbe9DE1F259B"
 const treasuryTokens = [WETH_arbitrum, ]
 const perpsVault = "0x1785e8491e7e9d771b2A6E9E389c25265F06326A"

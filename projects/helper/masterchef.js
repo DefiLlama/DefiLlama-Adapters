@@ -43,6 +43,7 @@ async function getSymbolsAndBalances(masterChef, block, chain, poolInfo) {
             })),
             abi: 'erc20:symbol',
             chain,
+            permitFailure: true,
         }),
         sdk.api.abi.multiCall({
             block,
@@ -52,6 +53,7 @@ async function getSymbolsAndBalances(masterChef, block, chain, poolInfo) {
             })),
             abi: 'erc20:balanceOf',
             chain,
+            permitFailure: true,
         })
     ])
     return [symbols, tokenBalances]
@@ -287,7 +289,7 @@ function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingeck
         [chain]: {
             staking: getTvlPromise("staking"),
             pool2: getTvlPromise("pool2"),
-            masterchef: getTvlPromise("tvl"),
+            // masterchef: getTvlPromise("tvl"),
             tvl: getTvlPromise("tvl"),
         }
     };

@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
-const { unwrapCrv, unwrapUniswapLPs, unwrapYearn } = require("../helper/unwrapLPs");
+const { unwrapUniswapLPs, } = require("../helper/unwrapLPs");
 const { abi } = require("../yaxis/abi.js");
 const constants = require("../yaxis/constants.js");
 
@@ -34,11 +35,9 @@ async function tvl(timestamp, block) {
     })
   ).output.map((val) => val.output);
 
-  await Promise.all(
-    constants.VAULTS.map(async (vault, index) => {
-      await unwrapCrv(balances, vault.tokenContract, vaults[index]);
-    })
-  );
+  constants.VAULTS.map(async (vault, index) => {
+    sdk.util.sumSingleBalance(balances, vault.tokenContract, vaults[index])
+  })
 
   // Add ALETH eth balance
 
@@ -63,7 +62,7 @@ async function tvl(timestamp, block) {
     })
   ).output;
 
-  balances["0x0000000000000000000000000000000000000000"] = BigNumber(alethVault)
+  balances[ADDRESSES.null] = BigNumber(alethVault)
     .multipliedBy(eth)
     .dividedBy(crvTotalSupply)
     .toFixed(0);

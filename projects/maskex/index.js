@@ -21,6 +21,10 @@ const config = {
         '0xc3edbb9c181016cef5d76491f835930e9c8c4d2c',
         '0xdd9c649edb7ff80c6c9d238344260184a4f94b88',
         '0xfb65377800a7282cf81baf0f335fbc6f8ff36776',
+        '0x0ce7eefb9f862aa0374ee7bbc4d8a0fc2c651517',
+        '0x0ce92d3a15908b53371ff1afcae800f28142250c',
+        '0x95ad8841376058a000F489196F05ecf176bEB8ac',
+        '0x0B3c7bcE764E6f1B52443e30fcb4f34997A0674c',
     ],
   },
   bsc: {
@@ -37,6 +41,8 @@ const config = {
         '0xc6acb77befebff0359cc581973859eee8cbaeda1',
         '0xd666ad8d95903bce9b4dcd2cacde5145e36405c2',
         '0xd7aed730a7c4cf8dfe313b16712af3406f6dca5b',
+        '0x6db133e840376555a5ad5c1d7616872ef57e7f13',
+        '0xDCa6951B82e82AF6AAB4bB9e90CA00F5760370e1',
     ]
   },
   tron: {
@@ -59,6 +65,12 @@ const config = {
         'TXiZ9ddXTBUke9PDs5HLXVvvHY68kmC3me',
         'TYp46EYRTHb2grSfjkDFFtakcgedXBHEhh',
         'TYshj25EXjnPB7P5xRGLmFTNPV6HMoZyrq',
+        'TUiATx1SGs3TwwKY1atafMvYjrQD8KLiSk',
+    ]
+  },
+  bitcoin: {
+    owners: [
+        '39DUz1NCkLu25GczWiAjjgZBu4mUjKbdNA', // this wallet was collected from https://blog.maskex.com/news/announcements/embracing-transparency-maskex-reveals-wallet-addresses
     ]
   }
 }

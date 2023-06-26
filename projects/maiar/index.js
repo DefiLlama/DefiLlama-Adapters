@@ -32,6 +32,6 @@ module.exports = {
   timetravel: false,
   elrond: {
     tvl,
-    // staking: stakingAndLockedMEX,
+    staking: stakingAndLockedMEX,
   },
 }

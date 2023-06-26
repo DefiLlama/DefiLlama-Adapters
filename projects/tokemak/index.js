@@ -1,5 +1,6 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
-const { sumTokens, sumTokens2, unwrapCrv, unwrapUniswapLPs, genericUnwrapCvx, } = require('../helper/unwrapLPs')
+const { sumTokens, sumTokens2, } = require('../helper/unwrapLPs')
 const abi = require("../pendle/abi.json");
 const BigNumber = require('bignumber.js')
 const positions = require('./positions.json');
@@ -19,8 +20,8 @@ const cvxBoosterAddress = "0xF403C135812408BFbE8713b5A23a04b3D48AAE31";
 const degenesisContract = "0xc803737D3E12CC4034Dde0B2457684322100Ac38";
 const wethPool = "0xD3D13a578a53685B4ac36A1Bab31912D2B2A2F36";
 const usdcPool = "0x04bda0cf6ad025948af830e75228ed420b0e860d";
-const usdc = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
-const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+const usdc = ADDRESSES.ethereum.USDC;
+const weth = ADDRESSES.ethereum.WETH;
 const ohmPool = "0xe7a7D17e2177f66D035d9D50A7f48d8D8E31532D";
 const ohm = "0x383518188C0C6d7730D91b2c03a03C837814a899";
 const gohmPool = "0x41f6a95Bacf9bC43704c4A4902BA5473A8B00263";
@@ -31,20 +32,20 @@ const fxsPool = "0xADF15Ec41689fc5b6DcA0db7c53c9bFE7981E655";
 const fxs = "0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0";
 const tcrPool = "0x15A629f0665A3Eb97D7aE9A7ce7ABF73AeB79415";
 const tcr = "0x9C4A4204B79dd291D6b6571C5BE8BbcD0622F050";
-const toke = "0x2e9d63788249371f1dfc918a52f8d799f4a38c94";
+const toke = ADDRESSES.ethereum.TOKE;
 const rtoke1 = "0xa760e26aA76747020171fCF8BdA108dFdE8Eb930";
 const rtoke2 = "0x96f98ed74639689c3a11daf38ef86e59f43417d3";
 const rtoke3 = "0xA374A62DdBd21e3d5716cB04821CB710897c0972";
 const sushiPool = "0xf49764c9C5d644ece6aE2d18Ffd9F1E902629777";
-const sushi = "0x6B3595068778DD592e39A122f4f5a5cF09C90fE2";
+const sushi = ADDRESSES.ethereum.SUSHI;
 const fraxPool = "0x94671A3ceE8C7A12Ea72602978D1Bb84E920eFB2";
 const frax = "0x853d955acef822db058eb8505911ed77f175b99e";
 const daiPool = "0x0CE34F4c26bA69158BC2eB8Bf513221e44FDfB75";
-const dai = "0x6b175474e89094c44da98b954eedeac495271d0f";
+const dai = ADDRESSES.ethereum.DAI;
 const feiPool = "0x03DccCd17CC36eE61f9004BCfD7a85F58B2D360D";
 const fei = "0x956F47F50A910163D8BF957Cf5846D573E7f87CA";
 const lusdPool = "0x9eEe9eE0CBD35014e12E1283d9388a40f69797A3";
-const lusd = "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0";
+const lusd = ADDRESSES.ethereum.LUSD;
 const wormUstPool = "0x482258099De8De2d0bda84215864800EA7e6B03D";
 const wormtust = "0xa693b19d2931d498c5b318df961919bb4aee87a5";
 const foxPool = "0x808D3E6b23516967ceAE4f17a5F9038383ED5311";
@@ -52,7 +53,7 @@ const fox = "0xc770eefad204b5180df6a14ee197d99d808ee52d";
 const apwPool = "0xDc0b02849Bb8E0F126a216A2840275Da829709B0";
 const apw = "0x4104b135dbc9609fc1a9490e61369036497660c8";
 const snxPool = "0xeff721Eae19885e17f5B80187d6527aad3fFc8DE";
-const snx = "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f";
+const snx = ADDRESSES.ethereum.SNX;
 const gamma = '0x6bea7cfef803d1e3d5f7c0103f7ded065644e197';
 const gammaPool = '0x2Fc6e9c1b2C07E18632eFE51879415a580AD22E1';
 const mim = '0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3';
@@ -63,14 +64,14 @@ const uni = "0x5fa464cefe8901d66c09b85d5fcdc55b3738c688";
 const uniStaking = "0x1b429e75369ea5cd84421c1cc182cee5f3192fd3";
 const alusd = "0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9";
 const alusdPool = "0x7211508D283353e77b9A7ed2f22334C219AD4b4C";
-const steth = "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84";
+const steth = ADDRESSES.ethereum.STETH;
 const crvSteth = "0xDC24316b9AE028F1497c275EB9192a3Ea0f67022";
 const myc = "0x4b13006980acb09645131b91d259eaa111eaf5ba";
 const mycPool = "0x061aee9ab655e73719577EA1df116D7139b2A7E7";
 const visr = "0xF938424F7210f31dF2Aee3011291b658f872e91e";
 const visrPool = "0x2d3eADE781c4E203c6028DAC11ABB5711C022029";
 
-async function tvl(timestamp, block) {
+async function tvl(timestamp, block, _, { api }) {
   const cvxUSTWPool = "0x7e2b9b5244bcfa5108a76d5e7b507cfd5581ad4a";
   const cvxFRAXPool = "0xB900EF131301B307dB5eFcbed9DBb50A3e209B2e";
   const cvxalUSDPool = "0x02E2151D4F351881017ABdF2DD2b51150841d5B3";
@@ -105,110 +106,56 @@ async function tvl(timestamp, block) {
     [alusd, alusdPool],
     [myc, mycPool],
     [visr, visrPool],
-    [steth, tokeTreasury]
+    [steth, tokeTreasury],
+    [cvxstethPool, tokeManager],
+    [cvxUSTWPool, tokeManager],
+    [cvxFRAXPool, tokeManager],
+    [cvxalUSDPool, tokeManager],
   ]
-  const balances = await sumTokens2({ block, tokensAndOwners: toa })
-  await Promise.all([
-    unwrapCvxSteth(balances, tokeManager, cvxstethPool, block, "ethereum"),
-    genericUnwrapCvx(balances, tokeManager, cvxUSTWPool, block, "ethereum"),
-    genericUnwrapCvx(balances, tokeManager, cvxFRAXPool, block, "ethereum"),
-    genericUnwrapCvx(balances, tokeManager, cvxalUSDPool, block, "ethereum"),
-  ])
+  const balances = {}
 
   // cvxcrvFRAX
   const cvxFraxUsdcPool = "0x7e880867363A7e321f5d260Cade2B0Bb2F717B02";
-  const { output: cvxcrvFraxBal } = await sdk.api.abi.call({
+  const cvxcrvFraxBal = await api.call({
     abi: cvx_abi['cvxBRP_balanceOf'],
     target: cvxFraxUsdcPool,
     params: [tokeManager],
-    chain: "ethereum",
-    block
   });
   const fraxFraxUsdcPool = "0x963f487796d54d2f27bA6F3Fbe91154cA103b199";
-  const { output: treasuryFraxBal } = await sdk.api.abi.call({
+  const treasuryFraxBal = await api.call({
     abi: cvx_abi['stkcvxFRAXBP_lockedStakesOf'],
     target: fraxFraxUsdcPool,
     params: [tokeTreasuryFraxConvexVault],
-    chain: "ethereum",
-    block
   });
-  const fraxUsdcBal = BigNumber(cvxcrvFraxBal).plus(BigNumber(treasuryFraxBal[0]['liquidity']));
-  balances[cvxcrvFrax] = fraxUsdcBal.toFixed();
 
   /// cvxcvxFXS
   const cvxcvxFxsPool = "0xf27AFAD0142393e4b3E5510aBc5fe3743Ad669Cb";
-  const { output: cvxcvxFxsBal } = await sdk.api.abi.call({
+  const cvxcvxFxsBal = await api.call({
     abi: cvx_abi['cvxBRP_balanceOf'],
     target: cvxcvxFxsPool,
     params: [tokeTreasury],
-    chain: "ethereum",
-    block
   });
-  balances[cvxcvxFxs] = cvxcvxFxsBal;
+  sdk.util.sumSingleBalance(balances, cvxcrvFrax, cvxcrvFraxBal)
+  sdk.util.sumSingleBalance(balances, cvxcrvFrax, treasuryFraxBal[0]['liquidity'])
+  sdk.util.sumSingleBalance(balances, cvxcvxFxs, cvxcvxFxsBal)
 
   let curveHoldings = positions.exchanges.filter(
     pool => pool.type == 'Curve')
   let uniHoldings = positions.exchanges.filter(
     pool => pool.type != 'Curve')
 
-  await lpBalances(block, balances, curveHoldings)
-  await lpBalances(block, balances, uniHoldings)
+  const tokens = []
+  const calls = []
+  lpBalances(curveHoldings, toa, tokens, calls,)
+  lpBalances(uniHoldings, toa, tokens, calls)
+  const amountRes = await api.multiCall({ abi: abi.userInfo, calls })
+  tokens.forEach((val, i) => sdk.util.sumSingleBalance(balances, val, amountRes[i].amount, api.chain))
 
-  return balances
+
+  return sumTokens2({ balances, api, tokensAndOwners: toa, })
 }
 
-async function unwrapCvxSteth(balances, holder, cvx_BaseRewardPool, block, chain) {
-  const [{ output: cvx_LP_bal }, { output: pool_id }] = await Promise.all([
-    sdk.api.abi.call({
-      abi: cvx_abi['cvxBRP_balanceOf'],
-      target: cvx_BaseRewardPool,
-      params: [holder],
-      block
-    }),
-    sdk.api.abi.call({
-      abi: cvx_abi['cvxBRP_pid'],
-      target: cvx_BaseRewardPool,
-      block
-    })
-  ])
-
-  const { output: crvPoolInfo } = await sdk.api.abi.call({
-    abi: cvx_abi['cvxBooster_poolInfo'],
-    target: cvxBoosterAddress,
-    params: [pool_id],
-    block: block,
-  })
-  const { output: resolvedCrvTotalSupply } = await sdk.api.erc20.totalSupply({
-    target: crvPoolInfo.lptoken,
-    block
-  })
-
-  const crvLP_steth_balance = await sdk.api.abi.call({
-    abi: 'erc20:balanceOf',
-    target: steth,
-    params: crvSteth,
-    block
-  })
-  sdk.util.sumSingleBalance(
-    balances,
-    steth,
-    BigNumber(crvLP_steth_balance.output)
-      .times(cvx_LP_bal).div(resolvedCrvTotalSupply).toFixed(0)
-  )
-
-  const crvLP_eth_balance = await sdk.api.eth.getBalance({
-    target: crvSteth,
-    block
-  })
-  sdk.util.sumSingleBalance(
-    balances,
-    weth,
-    BigNumber(crvLP_eth_balance.output)
-      .times(cvx_LP_bal).div(resolvedCrvTotalSupply).toFixed(0)
-  )
-}
-
-async function lpBalances(block, balances, holdings) {
+function lpBalances(holdings, toa, tokens, calls) {
   const manager = "0xA86e412109f77c45a3BC1c5870b880492Fb86A14"
   let masterChef
   switch (holdings[0].type) {
@@ -218,52 +165,25 @@ async function lpBalances(block, balances, holdings) {
       masterChef = "0xc2EdaD668740f1aA35E4D8f227fB8E17dcA888Cd"; break;
   }
 
-  let lpPositions = []
   for (let pool of holdings) {
-    const wallet = (await sdk.api.abi.call({
-      block,
-      target: pool.pool_address,
-      abi: 'erc20:balanceOf',
-      params: [manager]
-    })).output;
-
-    if (wallet > 0) {
-      holdings[0].type == 'Curve' ?
-        await unwrapCrv(balances, pool.pool_address, wallet, block) :
-        lpPositions.push({ balance: wallet, token: pool.pool_address })
-    }
-
-    if (!pool.hasOwnProperty('staking')) {
+    const { pool_address: token } = pool
+    toa.push([token, manager])
+    if (!pool.hasOwnProperty('staking'))
       continue
-    }
 
-    const staked = (await sdk.api.abi.call({
-      block,
-      target: masterChef,
-      abi: abi.userInfo,
-      params: [pool.staking.pool_id, manager]
-    })).output.amount;
-
-    if (staked > 0) {
-      holdings[0].type == 'Curve' ?
-        await unwrapCrv(balances, pool.pool_address, staked, block) :
-        lpPositions.push({ balance: staked, token: pool.pool_address })
-    }
+    tokens.push(token)
+    calls.push({ target: masterChef, params: [pool.staking.pool_id, manager] })
   }
-  await unwrapUniswapLPs(balances, lpPositions, block)
 }
 
-async function staking(timestamp, block) {
-  let balances = {}
-  await sumTokens(balances, [
-    [toke, rtoke1], [toke, rtoke2], [toke, rtoke3]
-  ], block)
+async function staking(timestamp, block, _, { api }) {
   let vestedToke = '57238445'
-  let balance = balances[toke]/1e18 - vestedToke
-  if (balance < 0) balance = 0
-  return {
-    tokemak: BigNumber(balance).toFixed(0)
-  }
+  api.add(ADDRESSES.ethereum.TOKE, vestedToke * 1e18 * -1)
+  return sumTokens2({
+    api, tokensAndOwners: [
+      [toke, rtoke1], [toke, rtoke2], [toke, rtoke3]
+    ]
+  })
 }
 
 async function pool2(timestamp, block) {
