@@ -199,7 +199,7 @@ async function tvl(timestamp, block) {
     })
   )
 
-  var tvl = (price_feed.data.coins['coingecko:bitcoin'].price * btcTVL) + tvl
+  tvl = (price_feed.data.coins['coingecko:bitcoin'].price * btcTVL) + tvl
   return toUSDTBalances(tvl);
 }
 
@@ -225,7 +225,7 @@ async function calc(item, i, price_feed, block) {
 
 
   if (item.type == 'compound') {
-    var multiplier = 1;
+    let multiplier = 1;
     if (coins === '0x39AA39c021dfbaE8faC545936693aC917d5E7563') {
       multiplier = price_feed.data.coins['coingecko:compound-usd-coin'].price;
     }
@@ -236,9 +236,9 @@ async function calc(item, i, price_feed, block) {
   }
 
   if (item.type == 'yToken') {
-    var multiplier = 1;
+    let multiplier = 1;
     if (coins !== '0x8E870D67F660D95d5be530380D0eC0bd388289E1') { // PAX exception
-      var multiplier = await getVirtualPrice(abis.abis.yTokens, coins, block)
+      multiplier = await getVirtualPrice(abis.abis.yTokens, coins, block)
       multiplier = await new BigNumber(multiplier).div(10 ** 18).toFixed(4);
     }
     poolAmount = poolAmount * multiplier;
