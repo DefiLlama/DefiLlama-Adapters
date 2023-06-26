@@ -1,8 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { nullAddress, sumTokens2 } = require('../helper/unwrapLPs')
 const { createIncrementArray, getUniqueAddresses } = require('../helper/utils')
+
 const ddexMarginContractAddress = '0x241e82c79452f51fbfc89fac6d912e021db1a3b7'
-const SAI = '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359'
+const SAI = ADDRESSES.ethereum.SAI
 
 async function tvl(timestamp, block) {
   const tokens = []

@@ -7,7 +7,7 @@ const treasuries = ["0xa52fd396891e7a74b641a2cb1a6999fcf56b077e", "0x086c98855df
 
 const cvxCRVStaking = '0x3Fe65692bfCD0e6CF84cB1E7d24108E434A7587e'
 const CVX = ADDRESSES.ethereum.CVX
-const cvxCRV = '0x62b9c7356a2dc64a1969e19c23e4f579f9810aa7'
+const cvxCRV = ADDRESSES.ethereum.cvxCRV
 const FXS = '0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0'
 const veFXS = '0xc8418aF6358FFddA74e09Ca9CC3Fe03Ca6aDC5b0'
 const CRV = ADDRESSES.ethereum.CRV
