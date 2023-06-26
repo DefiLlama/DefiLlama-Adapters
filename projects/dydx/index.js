@@ -10,7 +10,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
   ];
 
   const tokens = [
-    '0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359',
+    ADDRESSES.ethereum.SAI,
     ADDRESSES.ethereum.WETH,
     ADDRESSES.ethereum.USDC,
     ADDRESSES.ethereum.DAI

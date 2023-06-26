@@ -12,18 +12,18 @@ module.exports = treasuryExports({
   ethereum: {
     tokens: [ 
         nullAddress,
-        ADDRESSES.ethereum.USDT,//USDT
-        ADDRESSES.ethereum.CRV,//CRV
-        ADDRESSES.ethereum.USDC,//USDC
+        ADDRESSES.ethereum.USDT,
+        ADDRESSES.ethereum.CRV,
+        ADDRESSES.ethereum.USDC,
         '0xba100000625a3754423978a60c9317c58a424e3D',//BAL
-        '0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7',//cvxCRV
+        ADDRESSES.ethereum.cvxCRV,
         '0x6DEA81C8171D0bA574754EF6F8b412F2Ed88c54D',//LQTY
         '0x41D5D79431A913C4aE7d69a668ecdfE5fF9DFB68',//INV
         '0xdBdb4d16EdA451D0503b854CF79D55697F90c8DF',//ALCX
         '0x73968b9a57c6E53d41345FD57a6E6ae27d6CDB2F',//SDT
         '0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490',//3CRV
         '0x4104b135DBC9609Fc1A9490E61369036497660c8',//APY
-        ADDRESSES.ethereum.LIDO,//LDO
+        ADDRESSES.ethereum.LIDO,
 
      ],
     owners: [treasury, treasury1, ],

@@ -1,7 +1,7 @@
+const { getLogs } = require('../helper/cache/getLogs')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { staking } = require("../helper/staking");
-const BigNumber = require('bignumber.js')
 const { unwrapBalancerToken } = require('../helper/unwrapLPs')
 
 const AURA_BOOSTER = "0x7818A1DA7BD1E64c199029E86Ba244a9798eEE10"
@@ -25,24 +25,24 @@ async function tvl(_, block, _1, { api }) {
 
   let failedCallIndices = poolIds.map((v, i) => [i, v]).filter(i => !i[1]).map(i => i[0])
   let newPoolIds = await api.multiCall({ calls: failedCallIndices.map(i => poolInputs[i]), abi: 'function POOL_ID() view returns (bytes32)', permitFailure: true, })
-  newPoolIds.forEach((v, i) => {    if (v)  poolIds[failedCallIndices[i]] = v  })
+  newPoolIds.forEach((v, i) => { if (v) poolIds[failedCallIndices[i]] = v })
 
   failedCallIndices = poolIds.map((v, i) => [i, v]).filter(i => !i[1]).map(i => i[0])
   const newLpTokens = await api.multiCall({ calls: failedCallIndices.map(i => poolInputs[i]), abi: 'address:lp_token', permitFailure: true, })
-  newPoolIds = await api.multiCall({ calls: newLpTokens.map(i => ({ target: i})), abi: abi.getPoolId, permitFailure: true, })
-  newPoolIds.forEach((v, i) => {    if (v)  poolIds[failedCallIndices[i]] = v  })
+  newPoolIds = await api.multiCall({ calls: newLpTokens.map(i => ({ target: i })), abi: abi.getPoolId, permitFailure: true, })
+  newPoolIds.forEach((v, i) => { if (v) poolIds[failedCallIndices[i]] = v })
 
 
   const poolTokensInfo = await api.multiCall({ calls: poolIds.map(poolId => ({ target: BALANCER_VAULT, params: poolId })), abi: abi.getPoolTokens, })
   const balancesinStaking = await api.multiCall({ calls: pools.map(pool => ({ target: pool.token, params: pool.crvRewards })), abi: 'erc20:balanceOf', })
-  const totalSupplies = await api.multiCall({ calls: pools.map(pool =>  pool.lptoken), abi: 'erc20:totalSupply', })
+  const totalSupplies = await api.multiCall({ calls: pools.map(pool => pool.lptoken), abi: 'erc20:totalSupply', })
   const { output: veBalTotalSupply } = await sdk.api.erc20.totalSupply({ target: addresses.veBal, block })
   const { output: veBalance } = await sdk.api.erc20.balanceOf({ target: addresses.veBal, owner: addresses.auraDelegate, block })
   const ratio = veBalance / veBalTotalSupply
-  const ratios = balancesinStaking.map((v, i) => +totalSupplies[i] > 0 ? v / totalSupplies[i]: 0)
+  const ratios = balancesinStaking.map((v, i) => +totalSupplies[i] > 0 ? v / totalSupplies[i] : 0)
   const bal = await unwrapBalancerToken({ api, balancerToken: addresses.bal80eth20, owner: addresses.veBal, })
   Object.entries(bal).forEach(([token, value]) => {
-    api.add(token, +value * ratio, { skipChain: true,})
+    api.add(token, +value * ratio, { skipChain: true, })
   })
   for (let [i, info] of poolTokensInfo.entries()) {
     // // unwrapBalancerToken would be better here, but since crvRewards address holds aura-wrapped tokens, it won't work
@@ -53,18 +53,39 @@ async function tvl(_, block, _1, { api }) {
     //     api.add(token, balance * ratio)
     //   })
     // } else {
-      info.tokens.forEach((token, j) => {
-        api.add(token, info.balances[j] * ratios[i])
-      })
+    info.tokens.forEach((token, j) => {
+      api.add(token, info.balances[j] * ratios[i])
+    })
     // }
   }
 }
 
 module.exports = {
-  timetravel: true,
   methodology: "TVL of Aura Finance consists of the total deposited assets, protocol-controlled value via veBAL and vote-locked AURA (staking)",
   ethereum: {
     tvl,
     staking: staking(addresses.auraLocker, addresses.aura)
+  },
+  arbitrum: {
+    tvl: async (_, _1, _2, { api }) => {
+      const logs = await getLogs({
+        api,
+        target: '0x6817149cb753bf529565b4d023d7507ed2ff4bc0',
+        topics: ['0xaa98436d09d130af48de49867af8b723bbbebb0d737638b5fe8f1bf31bbb71c0'],
+        eventAbi: 'event GaugeCreated (address indexed gauge)',
+        onlyArgs: true,
+        fromBlock: 72942741,
+      })
+
+      const voterProxy = '0xc181edc719480bd089b94647c2dc504e2700a2b0'
+      // const auraBalVault = '0x4EA9317D90b61fc28C418C247ad0CA8939Bbb0e9'
+      // const asset = await api.call({  abi: 'address:asset', target: auraBalVault })
+      // const bal = await api.call({  abi: 'uint256:totalAssets', target: auraBalVault })
+      // api.add(asset, bal)
+      const gauges = logs.map(log => log.gauge)
+      const tokens = await api.multiCall({ abi: 'address:lp_token', calls: gauges })
+      const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: gauges.map(i => ({ target: i, params: voterProxy })) })
+      api.addTokens(tokens, bals)
+    }
   }
 }

@@ -140,7 +140,7 @@ module.exports = {
         address: '0x8f5bbb2bb8c2ee94639e55d5f41de9b4839c1280',
         tokens: [
             '0xd8cA34fd379d9ca3C6Ee3b3905678320F5b45195', // gOHM
-            '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270', // wMATIC
+            ADDRESSES.polygon.WMATIC_2, // wMATIC
         ]
       },
       pools: [

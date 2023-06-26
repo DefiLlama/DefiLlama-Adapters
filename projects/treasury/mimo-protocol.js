@@ -19,11 +19,11 @@ module.exports = treasuryExports({
   ethereum: {
     tokens: [ 
         nullAddress,
-        ADDRESSES.ethereum.USDT,//USDT
-        ADDRESSES.ethereum.CRV,//CRV
-        ADDRESSES.ethereum.USDC,//USDC
+        ADDRESSES.ethereum.USDT,
+        ADDRESSES.ethereum.CRV,
+        ADDRESSES.ethereum.USDC,
         '0xba100000625a3754423978a60c9317c58a424e3D',//BAL
-        '0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7',//cvxCRV
+        ADDRESSES.ethereum.cvxCRV,
         '0x6DEA81C8171D0bA574754EF6F8b412F2Ed88c54D',//LQTY
         '0x41D5D79431A913C4aE7d69a668ecdfE5fF9DFB68',//INV
         '0xcAfE001067cDEF266AfB7Eb5A286dCFD277f3dE5',//PSP
@@ -39,7 +39,7 @@ module.exports = treasuryExports({
   polygon: {
     tokens: [
         nullAddress,
-        ADDRESSES.polygon.USDC//USDC
+        ADDRESSES.polygon.USDC
     ],
     owners: [treasury, treasury1, treasurypolygon, treasurypolygon1, treasuryfantom, treasuryfantom1],
     ownTokens: [MIMOpolygon,],
@@ -47,7 +47,7 @@ module.exports = treasuryExports({
   fantom: {
     tokens: [
         nullAddress,
-        ADDRESSES.fantom.USDC//USDC
+        ADDRESSES.fantom.USDC
     ],
     owners: [treasury, treasury1, treasurypolygon, treasurypolygon1, treasuryfantom, treasuryfantom1],
     ownTokens: [MIMOfantom,],

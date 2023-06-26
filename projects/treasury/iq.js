@@ -8,7 +8,7 @@ module.exports = treasuryExports({
   ethereum: {
     tokens: [ 
         nullAddress,
-        "0xac3E018457B222d93114458476f3E3416Abbe38F",
+        ADDRESSES.ethereum.SFRETH,
         "0x853d955aCEf822Db058eb8505911ED77F175b99e",
         "0x9D45081706102E7aadDD0973268457527722E274",
         ADDRESSES.ethereum.WETH,
