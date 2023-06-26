@@ -45,7 +45,7 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
       pairCalls.push(i)
 
     const calls = await api.multiCall({ abi: abi.allPairs, calls: pairCalls, target: factory })
-
+   console.log("calls",calls);
     const [
       token0s, token1s
     ] = await Promise.all([
