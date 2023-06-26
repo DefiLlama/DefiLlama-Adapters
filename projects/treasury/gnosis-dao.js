@@ -7,7 +7,7 @@ const treasury = "0x4971DD016127F390a3EF6b956Ff944d0E2e1e462";
 const treasury1 = "0x0DA0C3e52C977Ed3cBc641fF02DD271c3ED55aFe";
 const treasury2 = "0x849D52316331967b6fF1198e5E32A0eB168D039d";
 const treasury3 = "0xBc79855178842FDBA0c353494895DEEf509E26bB";
-const GNO = "0x6810e776880C02933D47DB1b9fc05908e5386b96";
+const GNO = ADDRESSES.ethereum.GNO;
 
 async function tvl(_, _b, _cb, { api, }) {
   const treasury = '0x849d52316331967b6ff1198e5e32a0eb168d039d'
@@ -41,7 +41,7 @@ module.exports = treasuryExports({
     tokens: [
       nullAddress,
       ADDRESSES.ethereum.USDC,
-      '0x6b175474e89094c44da98b954eedeac495271d0f',//DAI
+      ADDRESSES.ethereum.DAI,//DAI
       '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643',//cDAI
       '0x39AA39c021dfbaE8faC545936693aC917d5E7563',//cUSDC
       '0xc944E90C64B2c07662A292be6244BDf05Cda44a7',//GRT

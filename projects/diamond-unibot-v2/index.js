@@ -36,7 +36,7 @@ const config = {
         "0x8610D60f5329B0560c8F0CEb80175F342fe943F3",
       ], // WETH
       [
-        "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+        ADDRESSES.polygon.WMATIC_2,
         "0xEdD1efA76fe59e9106067D824b89B59157C5223C",
       ], // WMATIC
     ],
