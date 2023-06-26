@@ -1,3 +1,4 @@
+const ADDRESSES = require('../../helper/coreAssets.json')
 const { Web3 } = require('web3');
 const BigNumber = require("bignumber.js");
 const axios = require("axios");
@@ -143,7 +144,7 @@ let coinDecimals = [
     '0x8dAEBADE922dF735c38C80C7eBD708Af50815fAa': '18',
     '0x0316EB71485b0Ab14103307bf65a021042c6d380': '18',
     '0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D': '8',
-    '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599': '8',
+    [ADDRESSES.ethereum.WBTC]: '8',
     '0xfE18be6b3Bd88A2D2A7f928d00292E7a9963CfC6': '18',
     '0x196f4727526eA7FB1e17b2071B3d8eAA38486988': '18',
     '0xe2f2a5C287993345a840Db3B0845fbC70f5935a5': '18',
@@ -153,7 +154,7 @@ let coinDecimals = [
     '0x056Fd409E1d7A124BD7017459dFEa2F387b6d5Cd': '2', //GUSD
     '0x39AA39c021dfbaE8faC545936693aC917d5E7563': '8', //cUSD
     '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643': '8', //cDAI
-    '0xdAC17F958D2ee523a2206206994597C13D831ec7': '6', //USDT
+    [ADDRESSES.ethereum.USDT]: '6', //USDT
     '0x73a052500105205d34Daf004eAb301916DA8190f': '18', //yTUSD
     '0xd6aD7a6750A7593E092a9B218d66C0A814a3436e': '6', ///yUSDC
     '0x16de59092dAE5CcF4A1E6439D611fd0653f0Bd01': '18', ///yDAI
@@ -166,11 +167,11 @@ let coinDecimals = [
     '0x26EA744E5B887E5205727f55dFBE8685e3b21951': '6', ///y2USDC
     '0xC2cB1040220768554cf699b0d863A3cd4324ce32': '18', ///y2DAI
     '0xE6354ed5bC4b393a5Aad09f21c46E101e692d447': '6', ///y2USDT
-    '0x57Ab1ec28D129707052df4dF418D58a2D46d5f51': '18', //sUSD
-    '0x6B175474E89094C44Da98b954EedeAC495271d0F': '18', //DAI
-    '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48': '6', //USDC
+    [ADDRESSES.ethereum.sUSD]: '18', //sUSD
+    [ADDRESSES.ethereum.DAI]: '18', //DAI
+    [ADDRESSES.ethereum.USDC]: '6', //USDC
     '0x5BC25f649fc4e26069dDF4cF4010F9f706c23831': '18', //dusd
-    '0x0000000000085d4780B73119b644AE5ecd22b376': '18'
+    [ADDRESSES.ethereum.TUSD]: '18'
   }
 ]
 
@@ -198,7 +199,7 @@ async function tvl(timestamp, block) {
     })
   )
 
-   tvl = (price_feed.data.coins['coingecko:bitcoin'].price * btcTVL) + tvl
+  tvl = (price_feed.data.coins['coingecko:bitcoin'].price * btcTVL) + tvl
   return toUSDTBalances(tvl);
 }
 
@@ -224,7 +225,7 @@ async function calc(item, i, price_feed, block) {
 
 
   if (item.type == 'compound') {
-    var multiplier = 1;
+    let multiplier = 1;
     if (coins === '0x39AA39c021dfbaE8faC545936693aC917d5E7563') {
       multiplier = price_feed.data.coins['coingecko:compound-usd-coin'].price;
     }
@@ -235,10 +236,11 @@ async function calc(item, i, price_feed, block) {
   }
 
   if (item.type == 'yToken') {
-    var multi = 1;
+    let multiplier = 1;
     if (coins !== '0x8E870D67F660D95d5be530380D0eC0bd388289E1') { // PAX exception
-      multi = await getVirtualPrice(abis.abis.yTokens, coins, block)
-      multi = await new BigNumber(multi).div(10 ** 18).toFixed(4);
+      multiplier = await getVirtualPrice(abis.abis.yTokens, coins, block)
+      multiplier = await new BigNumber(multiplier).div(10 ** 18).toFixed(4);
+
     }
     poolAmount = poolAmount * multi;
   }

@@ -36,7 +36,7 @@ module.exports = {
     solace: '0x501acE9c35E60f03A2af4d484f49F9B1EFde9f40',
     tokens: [
       {
-        PoolToken: "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+        PoolToken: ADDRESSES.polygon.WMATIC_2,
         TokenTicker: "WMATIC",
       },
       {
