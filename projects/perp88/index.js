@@ -11,9 +11,6 @@ const tokens = {
 const POOL_DIAMOND_CONTRACT = '0xE7D96684A56e60ffBAAe0fC0683879da48daB383';
 
 module.exports = {
-  timetravel: false,
-  misrepresentedTokens: false,
-  methodology: 'Count every tokens under PoolDiamond management.',
   start: 1668684025,
   polygon: {
     tvl: sumTokensExport({
@@ -21,5 +18,17 @@ module.exports = {
       tokens: Object.values(tokens),
       chain: 'polygon',
     }),
+  },
+  arbitrum: {
+    tvl: sumTokensExport({
+      owner: '0x56CC5A9c0788e674f17F7555dC8D3e2F1C0313C0',
+      tokens: [
+        ADDRESSES.arbitrum.USDC,
+        ADDRESSES.arbitrum.WETH,
+        ADDRESSES.arbitrum.WBTC,
+        ADDRESSES.arbitrum.USDT,
+        ADDRESSES.arbitrum.fsGLP,
+      ]
+    })
   }
 }
