@@ -7,8 +7,8 @@ module.exports = uniV3Export({
     isAlgebra: true,
   },
   bsc: {
-    factory: "0xaA37Bea711D585478E1c04b04707cCb0f10D762a",
-    fromBlock: 28719189,
+    factory: "0xbbc7f5605c9cb341d9c41e46ae6ceb30511bdfcf",
+    fromBlock: 29291639,
     isAlgebra: true,
   },
 });
