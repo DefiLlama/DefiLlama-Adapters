@@ -27,7 +27,7 @@ function treasuryExports(config) {
       exportObj[chain] = { tvl: sumTokensExport(tvlConfig) }
     }
 
-    if (ownTokens) {
+    if (ownTokens.length > 0) {
       const { solOwners, ...otherOptions } = config[chain]
       const options = { ...otherOptions, owners: [...owners, ...ownTokenOwners], tokens: ownTokens, chain, uniV3WhitelistedTokens: ownTokens}
       exportObj[chain].ownTokens = sumTokensExport(options)

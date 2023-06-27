@@ -2,7 +2,7 @@ const index = require('./index')
 
 module.exports = {
   bsc: {
-    tvl: () => 0,
+    tvl: index.bsc.tvl,
     staking: index.bsc.staking,
   },
   moonriver: {
