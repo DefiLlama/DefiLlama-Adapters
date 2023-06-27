@@ -6,7 +6,13 @@ module.exports = {
     tvl: async () => {
       const data = await post('https://citizens.theapesociety.io/api/getLevvyData', {})
       return {
-        cardano: data.cardano
+        tvl: data.adaTVL,
+      }
+    }
+    borrowed: async () => {
+      const data = await post('https://citizens.theapesociety.io/api/getLevvyData', {})
+      return {
+        borrowed: data.borrowed,
       }
     }
   },
