@@ -2,7 +2,7 @@ const axios = require("axios");
 const { endPoints, queryContract } = require('../helper/chain/cosmos')
 const { transformBalances } = require('../helper/portedTokens')
 
-const chain = 'quarsar'
+const chain = 'quasar'
 
 const lpStrategyContracts = {
     1: [
@@ -99,7 +99,7 @@ function calculateTokenAmounts(poolData, gammAmount) {
 module.exports = {
     timetravel: false,
     methodology: "Total TVL on vaults",
-    quarsar: {
+    quasar: {
         tvl,
     },
 }
