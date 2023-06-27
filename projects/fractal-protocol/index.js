@@ -12,6 +12,7 @@ const abis = {
 
 const getEthTvl = async (timestamp, ethBlock) => {
   try {
+
     const { output: usdfTotalSupply } = await sdk.api.erc20.totalSupply({
       target: USDF_ETH,
       block: ethBlock,
@@ -23,11 +24,9 @@ const getEthTvl = async (timestamp, ethBlock) => {
       block: ethBlock,
     });
 
-    const tvl = (usdfTotalSupply / 1e6) * (usdfPrice / 1e6);
-
-    console.log('ETH TVL:', tvl);
-
-    return tvl;
+    return {
+      tether: (usdfTotalSupply / 1e6) * (usdfPrice / 1e6)
+    }
 
   } catch (error) {
     console.error('Error calculating ETH TVL:', error);
@@ -35,8 +34,40 @@ const getEthTvl = async (timestamp, ethBlock) => {
   }
 };
 
+const getArbTvl = async (_, _b, { arbitrum: block }) => {
+
+  try {
+
+    const chain = 'arbitrum'
+
+    const { output: usdfTotalSupply } = await sdk.api.erc20.totalSupply({
+      target: USDF_ARB,
+      block: block,
+      chain: chain
+    });
+
+    const { output: usdfPrice } = await sdk.api.abi.call({
+      target: FRACTAL_VAULT_CONTRACT_ARB,
+      abi: abis.getTokenPrice,
+      block: block,
+      chain: chain
+    });
+
+    return {
+      tether: (usdfTotalSupply / 1e6) * (usdfPrice / 1e6)
+    }
+
+  } catch (error) {
+    console.error('Error calculating ARB TVL:', error);
+    throw error;
+  }
+};
+
 module.exports = {
   ethereum: {
-    tvl: getEthTvl,
+    tvl: getEthTvl
   },
+  arbitrum: {
+    tvl: getArbTvl
+  }
 };
