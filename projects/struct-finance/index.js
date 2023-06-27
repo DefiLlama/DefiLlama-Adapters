@@ -2,7 +2,7 @@ const sdk = require("@defillama/sdk");
 const ADDRESSES = require('../helper/coreAssets.json');
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
-const address = {
+const addresses = {
   struct: {
     gmxYieldSource: "0x6aE12b0adF9716181c07D19dfe76442AB1b3817b",
     gmxFactory: "0x46f8765781ac36e5e8f9937658fa311af9d735d7",
@@ -17,7 +17,7 @@ const chain = "avax";
 async function tvl(ts, _, { [chain]: block }, { api }) {
   const { output: numberOfVaults } = await sdk.api.abi.call({
     abi: "function totalProducts() external view returns (uint256)",
-    target: address.struct.gmxFactory,
+    target: addresses.struct.gmxFactory,
     chain,
     block,
   });
@@ -30,19 +30,19 @@ async function tvl(ts, _, { [chain]: block }, { api }) {
   const { output: vaults } = await sdk.api.abi.multiCall({
     abi: "function allProducts(uint256) external view returns (address)",
     calls: indexArray.map((i) => ({
-      target: address.struct.gmxFactory,
+      target: addresses.struct.gmxFactory,
       params: i,
     })),
     chain,
     block,
   });
 
-  vaults.push({ output: address.struct.gmxYieldSource });
+  vaults.push({ output: addresses.struct.gmxYieldSource });
 
   return sumTokens2({
     api,
     owners: vaults.map((i) => i.output),
-    tokens: [ADDRESSES.avax.BTC_b, ADDRESSES.avax.USDC, address.token.fsGlp],
+    tokens: [ADDRESSES.avax.BTC_b, ADDRESSES.avax.USDC, addresses.token.fsGlp],
   });
 }
 
