@@ -3,7 +3,7 @@ const { sumTokensAndLPsSharedOwners } = require('./helper/unwrapLPs');
 const { transformPolygonAddress } = require('./helper/portedTokens');
 
 const tokens = [
-    ['0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270', false], //WMATIC
+    [ADDRESSES.polygon.WMATIC_2, false], //WMATIC
     [ADDRESSES.polygon.WETH_1, false], //WETH
     [ADDRESSES.polygon.USDT, false], //USDT
     ['0x831753dd7087cac61ab5644b308642cc1c33dc13', false] //QUICK

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require("../helper/staking");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
@@ -7,7 +8,7 @@ const TigrisAddresses = {
     xTIG: "0x19694Cf64572e6adf643Ae7B13d5b2921215B4E5",
     // tigUSD and USDT are 1:1 exchangeable via stable vault
     tigUSD: "0x7E491F53bF807f836E2dd6C4A4FBd193e1913EFd",
-    USDT: "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
+    USDT: ADDRESSES.arbitrum.USDT,
     TigStaking: "0x6E8BFBb31A46D0F5502426050Ea28b19F8E761f4",
     TokenSale: "0x45F52502aF87e7e4E446BA15BDf223A19b47DA98",
     StableVault: "0xe82fcefbDD034500B5862B4827CAE5c117f6b921",
@@ -20,7 +21,7 @@ const TigrisAddresses = {
     TigStaking: "0xC6c32eD781450228dFadfa49A430d7868B110F44",
     // tigUSD and DAI are 1:1 exchangeable via stable vault
     tigUSD: "0x76973Ba2AFF24F87fFE41FDBfD15308dEBB8f7E8",
-    DAI: "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",
+    DAI: ADDRESSES.polygon.DAI,
     StableVault: "0x3677415Dc23e49B7780ef46976F418F4a9d5031B",
     Treasury: "0x4f7046f36B5D5282A94cB448eAdB3cdf9Ff2b051",
     Lock: "0x638e39D4a927EfE3040F0f6D4d27e4CccD8c996A",

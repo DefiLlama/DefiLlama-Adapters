@@ -24,6 +24,9 @@ const config = {
       ],
       '0x8DF12786EC0E34e60D4c52f9052ba4e536e9367a'
     ]
+  ],
+  polygon: [
+    [[nullAddress], '0xEa3cc73165748AD1Ca76b4d1bA9ebC43fb399018'],
   ]
 }
 module.exports = {};
