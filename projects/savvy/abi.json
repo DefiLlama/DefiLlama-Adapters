@@ -1,5 +1,0 @@
-{
-  "totalDebt": "function getTotalDebtAmount() view returns (int256)",
-  "totalValueLocked": "function getTotalValueLocked() view returns (uint256)",
-  "totalStaked": "function getTotalSVYStakedUSD() view returns (uint256)"
-}
