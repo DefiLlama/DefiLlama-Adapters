@@ -1,6 +1,6 @@
 const axios = require("axios");
 const { endPoints, queryContract } = require('../helper/chain/cosmos')
-const { transformBalances } = require('../helper/portedTokens')
+const sdk = require('@defillama/sdk')
 
 const chain = 'quasar'
 
@@ -36,9 +36,9 @@ const lpStrategyContracts = {
 
 
 async function tvl() {
-    let amounts = {}
+    const api = new sdk.ChainApi({ chain: 'osmosis' })
 
-    for (const poolID in lpStrategyContracts){
+    for (const poolID in lpStrategyContracts) {
         let lpContracts = lpStrategyContracts[poolID];
         let poolEndpoint = `${endPoints['osmosis']}/osmosis/gamm/v1beta1/pools/${poolID}`;
         const poolData = (await axios.get(poolEndpoint)).data.pool;
@@ -49,19 +49,15 @@ async function tvl() {
                 chain: chain,
                 data: { 'lp_shares': {} }
             });
-            
+
             let amount = calculateTokenAmounts(poolData, lp_shares['lp_shares']['locked_shares'])
             for (const denom in amount) {
-                if (typeof amounts[denom] === "undefined") {
-                    amounts[denom] = amount[denom];
-                } else {
-                    amounts[denom] += amount[denom];
-                }
+                api.add(denom, amount[denom])
             }
         }
     }
 
-    return transformBalances(chain, amounts)
+    return api.getBalances()
 }
 
 
