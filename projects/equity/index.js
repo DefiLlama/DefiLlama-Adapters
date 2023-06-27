@@ -1,4 +1,4 @@
-// Equity Spot - Central Vaults
+// Equity - Central Vaults
 const { gmxExports } = require("../helper/gmx");
 
 module.exports = {
