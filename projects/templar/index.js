@@ -9,11 +9,11 @@ const bscTokens = {
 
 module.exports = {
   bsc: {
-    tvl: sumTokensExport({
+    staking: sumTokensExport({
       owners: [bscStaking, bscStakingV2],
       tokens: [bscTokens.TEM],
     }),
-    staking: () => 0,
+    tvl: () => 0,
   },
   ethereum: {
     tvl: () => 0,

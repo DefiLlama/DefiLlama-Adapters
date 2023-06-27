@@ -1,11 +1,8 @@
 const ADDRESSES = require("../helper/coreAssets.json");
-const { stakings } = require("../helper/staking");
 const { treasuryExports } = require("../helper/treasury");
-const { sumTokensExport, nullAddress } = require("../helper/unwrapLPs");
+const { nullAddress } = require("../helper/unwrapLPs");
 
 const bscOwner = "0xEA724deA000b5e5206d28f4BC2dAD5f2FA1fe788";
-const bscStaking = "0xa1f61Ca61fe8655d2a204B518f6De964145a9324";
-const bscStakingV2 = "0xffC7B93b53BC5F4732b414295E989684702D0eb5";
 const bscTreasuryContract = "0xd01e8D805BB310F06411e70Fd50eB58cAe2B4C27";
 
 const bscTokens = {
@@ -39,6 +36,7 @@ module.exports = treasuryExports({
       bscTokens.VBTC,
     ],
     owners: [bscOwner, bscTreasuryContract],
+    ownTokens: ['0x19e6BfC1A6e4B042Fb20531244D47E252445df01'],
     resolveUniV3: true,
   },
   ethereum: {
