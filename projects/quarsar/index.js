@@ -4,41 +4,47 @@ const { transformBalances } = require('../helper/portedTokens')
 
 const chain = 'quarsar'
 
-const vaultContracts = {
-    atom: "quasar1z89funaazn4ka8vrmmw4q27csdykz63hep4ay8q2dmlspc6wtdgq4grcxm",
-    osmo: "quasar1aakfpghcanxtc45gpqlx8j3rq0zcpyf49qmhm9mdjrfx036h4z5sjtnaa3",
+const lpStrategyContracts = {
+    1: [
+        "quasar14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9sy9numu",
+        "quasar1l468h9metf7m8duvay5t4fk2gp0xl94h94f3e02mfz4353de2ykqh6rcts",
+        "quasar1cp8cy5kvaury53frlsaml7ru0es2reln66nfj4v7j3kcfxl4datqsw0aw4",
+    ],
+    678: [
+        "quasar1suhgf5svhu4usrurvxzlgn54ksxmn8gljarjtxqnapv8kjnp4nrsmslfn4",
+    ],
+    704: [
+        "quasar1yyca08xqdgvjz0psg56z67ejh9xms6l436u8y58m82npdqqhmmtqk5tv30",
+    ],
+    803: [
+        "quasar1jgn70d6pf7fqtjke0q63luc6tf7kcavdty67gvfpqhwwsx52xmjq7kd34f",
+        "quasar1t9adyk9g2q0efn3xndunzy4wvdrnegjkpvp382vm2uc7hnvash5qpzmxe4",
+    ],
+    904: [
+        "quasar1ch4s3kkpsgvykx5vtz2hsca4gz70yks5v55nqcfaj7mgsxjsqypsxqtx2a",
+    ],
+    944: [
+        "quasar1xkakethwh43dds3ccmsjals9jt7qsfmedgm9dvm9tpqq8watpv9q0458u6",
+    ],
 }
-
-const lpStrategyContracts = [
-    "quasar14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9sy9numu",
-    "quasar1yyca08xqdgvjz0psg56z67ejh9xms6l436u8y58m82npdqqhmmtqk5tv30",
-    "quasar1suhgf5svhu4usrurvxzlgn54ksxmn8gljarjtxqnapv8kjnp4nrsmslfn4",
-    "quasar1l468h9metf7m8duvay5t4fk2gp0xl94h94f3e02mfz4353de2ykqh6rcts",
-    "quasar1jgn70d6pf7fqtjke0q63luc6tf7kcavdty67gvfpqhwwsx52xmjq7kd34f",
-    "quasar1xkakethwh43dds3ccmsjals9jt7qsfmedgm9dvm9tpqq8watpv9q0458u6",
-    "quasar1cp8cy5kvaury53frlsaml7ru0es2reln66nfj4v7j3kcfxl4datqsw0aw4",
-    "quasar1t9adyk9g2q0efn3xndunzy4wvdrnegjkpvp382vm2uc7hnvash5qpzmxe4",
-    "quasar1ch4s3kkpsgvykx5vtz2hsca4gz70yks5v55nqcfaj7mgsxjsqypsxqtx2a",
-]
 
 
 async function tvl() {
     let amounts = {}
-    for (const contractName in vaultContracts) {
-        let contractAddress = vaultContracts[contractName];
-        let tvlInfo = await queryContract({
-            contract: contractAddress,
-            chain: chain,
-            data: { 'get_tvl_info': {} }
-        });
 
-        for (const primitive of tvlInfo['primitives']){
-            let lockedShares = primitive['lp_shares']['locked_shares']
-            let poolID = primitive['lp_denom'].split('gamm/pool/')[1];
-            let poolEndpoint = `${endPoints['osmosis']}/osmosis/gamm/v1beta1/pools/${poolID}`;
-            const poolData = (await axios.get(poolEndpoint)).data.pool;
+    for (const poolID in lpStrategyContracts){
+        let lpContracts = lpStrategyContracts[poolID];
+        let poolEndpoint = `${endPoints['osmosis']}/osmosis/gamm/v1beta1/pools/${poolID}`;
+        const poolData = (await axios.get(poolEndpoint)).data.pool;
+
+        for (const contractAddress of lpContracts) {
+            let lp_shares = await queryContract({
+                contract: contractAddress,
+                chain: chain,
+                data: { 'lp_shares': {} }
+            });
             
-            let amount = calculateTokenAmounts(poolData, lockedShares)
+            let amount = calculateTokenAmounts(poolData, lp_shares['lp_shares']['locked_shares'])
             for (const denom in amount) {
                 if (typeof amounts[denom] === "undefined") {
                     amounts[denom] = amount[denom];
@@ -46,7 +52,7 @@ async function tvl() {
                     amounts[denom] += amount[denom];
                 }
             }
-        }     
+        }
     }
 
     return transformBalances(chain, amounts)
