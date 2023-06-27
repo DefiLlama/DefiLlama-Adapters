@@ -1,0 +1,105 @@
+{
+    "account_number": "446203",
+    "chain_id": "osmosis-1",
+    "fee": {
+      "gas": "2229399",
+      "amount": [
+        {
+          "amount": "55735",
+          "denom": "uosmo"
+        }
+      ]
+    },
+    "memo": "",
+    "msgs": [
+      {
+        "type": "wasm/MsgExecuteContract",
+        "value": {
+          "contract": "osmo1wsjce2duwvuczusee7r80wnh7mlxnlj6x8kegjhtjhhwysdmsyvqqgef6k",
+          "funds": [
+            {
+              "amount": "203999",
+              "denom": "uosmo"
+            }
+          ],
+          "msg": {
+            "mint_exact_amount_out": {
+              "core_addr": "osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm",
+              "input_asset": "uosmo",
+              "output_amount": "2000",
+              "swap_info": [
+                {
+                  "key": "uosmo,ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+                  "routes": [
+                    "1,uosmo"
+                  ]
+                },
+                {
+                  "key": "uosmo,ibc/6AE98883D4D5D5FF9E50D7130F1305DA2FFA0C652D1DD9C123657C6B4EB2DF8A",
+                  "routes": [
+                    "722,uosmo"
+                  ]
+                },
+                {
+                  "key": "uosmo,ibc/0954E1C28EB7AF5B72D24F3BC2B47BBB2FDF91BDDFD57B74B99E133AED40972A",
+                  "routes": [
+                    "584,uosmo"
+                  ]
+                },
+                {
+                  "key": "uosmo,ibc/46B44899322F3CD854D2D46DEEF881958467CDD4B3B10086DA49296BBED94BED",
+                  "routes": [
+                    "497,uosmo"
+                  ]
+                },
+                {
+                  "key": "uosmo,ibc/987C17B11ABC2B20019178ACE62929FE9840202CE79498E29FE8E5CB02B7C0A4",
+                  "routes": [
+                    "604,uosmo"
+                  ]
+                },
+                {
+                  "key": "uosmo,ibc/67795E528DF67C5606FC20F824EA39A6EF55BA133F4DC79C90A8C47A0901E17C",
+                  "routes": [
+                    "641,uosmo"
+                  ]
+                },
+                {
+                  "key": "uosmo,ibc/1480B8FD20AD5FCAE81EA87584D269547DD4D436843C1D20F15E00EB64743EF4",
+                  "routes": [
+                    "3,uosmo"
+                  ]
+                },
+                {
+                  "key": "uosmo,ibc/1DCC8A6CB5689018431323953344A9F6CC4D0BFB261E88C9F7777372C10CD076",
+                  "routes": [
+                    "42,uosmo"
+                  ]
+                },
+                {
+                  "key": "uosmo,ibc/A8CA5EE328FA10C9519DF6057DA1F69682D28F7D0F5CCC7ECB72E3DCA2D157A4",
+                  "routes": [
+                    "806,uosmo"
+                  ]
+                },
+                {
+                  "key": "uosmo,ibc/903A61A498756EA560B85A85132D3AEE21B5DEDD41213725D22ABF276EA6945E",
+                  "routes": [
+                    "812,uosmo"
+                  ]
+                },
+                {
+                  "key": "uosmo,uion",
+                  "routes": [
+                    "1013,uosmo"
+                  ]
+                }
+              ]
+            }
+          },
+          "sender": "osmo1tsg467x6ky8u535jm6ee046lthsuzuk3rrt0pg"
+        }
+      }
+    ],
+    "sequence": "124"
+  }
