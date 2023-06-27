@@ -1,10 +1,6 @@
 {
   "infoAggregator": "0x68D54ff41BA47355b95Bd477Bcf4d5ff4b2c2A59",
   "tokenHolders": {
-    "VeSVY": "0x9aEEe4656F67034B06D99294062feBA1015430ad",
-    "SavvyBooster": "0xbf837f2C7894cfF859a01d078d7AAa8c47221a2F",
-    "SavvyRedlist": "0x0d6554A8c6a7D98D4aa05206DaDdbcb3372b8F7F",
-    "WrapTokenGateway": "0x882e251c1E010205A9f9b0147F3331B4728BB640",
     "SavvyPositionManagerBTC": "0x3204d81C73F8100766C1691A67078b16Ec7c142c",
     "SavvyPositionManagerETH": "0x5c4eb1909fB21e39Fc45ee753420AeDeBA07F3EF",
     "SavvyPositionManagerUSD": "0x36358A1597DB299033b16fda567010D53c0A4EdA",
