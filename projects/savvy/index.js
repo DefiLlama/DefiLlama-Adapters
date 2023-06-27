@@ -9,7 +9,7 @@ function tvl(chain) {
 }
 
 module.exports = {
-  methodology: 'The calculated TVL is the current USD sum of all user deposits and SVY tokens staked in veSVY.',
+  methodology: 'The calculated TVL is the current sum of all base tokens and yield tokens in our contracts.',
   arbitrum: {
     tvl: tvl("arbitrum")
   }
