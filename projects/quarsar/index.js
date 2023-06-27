@@ -9,9 +9,11 @@ const lpStrategyContracts = {
         "quasar14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9sy9numu",
         "quasar1l468h9metf7m8duvay5t4fk2gp0xl94h94f3e02mfz4353de2ykqh6rcts",
         "quasar1cp8cy5kvaury53frlsaml7ru0es2reln66nfj4v7j3kcfxl4datqsw0aw4",
+        "quasar1kj8q8g2pmhnagmfepp9jh9g2mda7gzd0m5zdq0s08ulvac8ck4dq9ykfps",
     ],
     678: [
         "quasar1suhgf5svhu4usrurvxzlgn54ksxmn8gljarjtxqnapv8kjnp4nrsmslfn4",
+        "quasar1ma0g752dl0yujasnfs9yrk6uew7d0a2zrgvg62cfnlfftu2y0egqx8e7fv",
     ],
     704: [
         "quasar1yyca08xqdgvjz0psg56z67ejh9xms6l436u8y58m82npdqqhmmtqk5tv30",
@@ -20,11 +22,15 @@ const lpStrategyContracts = {
         "quasar1jgn70d6pf7fqtjke0q63luc6tf7kcavdty67gvfpqhwwsx52xmjq7kd34f",
         "quasar1t9adyk9g2q0efn3xndunzy4wvdrnegjkpvp382vm2uc7hnvash5qpzmxe4",
     ],
+    833: [
+        "quasar1ery8l6jquynn9a4cz2pff6khg8c68f7urt33l5n9dng2cwzz4c4qxhm6a2",
+    ],
     904: [
         "quasar1ch4s3kkpsgvykx5vtz2hsca4gz70yks5v55nqcfaj7mgsxjsqypsxqtx2a",
     ],
     944: [
         "quasar1xkakethwh43dds3ccmsjals9jt7qsfmedgm9dvm9tpqq8watpv9q0458u6",
+        "quasar1ch4s3kkpsgvykx5vtz2hsca4gz70yks5v55nqcfaj7mgsxjsqypsxqtx2a",
     ],
 }
 
