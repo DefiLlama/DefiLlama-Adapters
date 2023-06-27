@@ -38,7 +38,7 @@ Object.keys(config).forEach(chain => {
       ])
       data.forEach((v, i) => {
         let value = supply[i] * (10 ** (v.decimals - decimals[i]))
-        api.add(v.uAsset, value)
+        api.add(v.uAsset.toLowerCase(), value)
       })
       let balances = api.getBalances();
       const bridged = `arbitrum:${steth}`;

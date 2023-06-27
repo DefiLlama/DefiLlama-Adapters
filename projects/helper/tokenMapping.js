@@ -53,6 +53,10 @@ const fixBalancesTokens = {
   // },
   rpg: {
     '0x8e8816a1747fddc5f8b45d2e140a425d3788f659': { coingeckoId: "tether", decimals: 18 },
+  },
+  filecoin: {
+    '0xce5805cf6c84f71d2897f632e0aa60d2430ccd2a': { coingeckoId: "filecoin", decimals: 18 },
+    '0x422849B355039bC58F2780cc4854919fC9cfaF94': { coingeckoId: "tether", decimals: 6 },
   }
 }
 
