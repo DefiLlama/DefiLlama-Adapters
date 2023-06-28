@@ -1,62 +1,65 @@
-const axios = require("axios");
-const BigNumber = require("bignumber.js");
+const axios = require('axios')
 
-const mangoGroupId = "78b8f4cGCwmZ9ysPFMWLaLTkkaYnUjwMJYStWe5RTSSX";
-const statsEndpoint =
-    "https://api.mngo.cloud/data/v4/token-historical-stats?mango-group=" +
-    mangoGroupId;
-const metadataEndpoint = "https://api.mngo.cloud/data/v4/group-metadata";
+const endpoint = 'https://mango-transaction-log.herokuapp.com/v3/stats/spot_stats_hourly?mango-group=mainnet.1'
 
 // Very inefficient
 function findClosestToDate(values, date) {
-    let min = values[values.length - 1];
+    let min = values[0];
     for (const val of values) {
-        const valDate = new Date(val.date_hour).getTime();
-        const minDate = new Date(min.date_hour).getTime();
+        const valDate = new Date(val.time).getTime()
+        const minDate = new Date(min.time).getTime()
         if (Math.abs(valDate - date) < Math.abs(minDate - date)) {
-            min = val;
+            min = val
         }
     }
-    if (Math.abs(new Date(min.date_hour).getTime() - date) > 24 * 3600 * 1000) {
+    if(Math.abs(new Date(min.time).getTime()-date) > 24*3600*1000){
         return {
-            total_deposits: 0,
-            total_borrows: 0,
-        };
+            totalDeposits: 0,
+            totalBorrows: 0
+        }
     }
-    return min;
+    return min
 }
+
+const coingeckoIds = {
+    'ETH': 'ethereum',
+    'BTC': 'bitcoin',
+    'SOL': 'solana',
+    'SRM': 'serum',
+    'USDC': 'usd-coin',
+    'USDT': 'tether',
+    'MNGO': 'mango-markets',
+    'RAY': 'raydium',
+    'COPE': 'cope',
+    'FTT': 'ftx-token',
+    'MSOL': 'msol',
+    'BNB': 'binancecoin',
+    'AVAX': 'avalanche-wormhole',
+    'LUNA': 'terra-luna',
+    'GMT': 'stepn',
+}
+
 
 async function tvl(timestamp) {
     const balances = {};
-    const stats = await axios.get(statsEndpoint);
-    const metadata = await axios.get(metadataEndpoint);
-
-    const groupMetadata = metadata.data.groups.find(
-        (g) => g.publicKey == mangoGroupId
-    );
-
-    const date = new Date(timestamp * 1000).getTime();
-    groupMetadata.tokens.forEach((token) => {
-        const assetDeposits = stats.data.filter((s) => s.symbol === token.symbol);
+    const stats = await axios.get(endpoint)
+    const date = new Date(timestamp * 1000).getTime()
+    Object.entries(coingeckoIds).map(([mangoId, coingeckoId]) => {
+        const assetDeposits = stats.data.filter(s => s.name === mangoId)
         if (assetDeposits.length > 0) {
-            const closestVal = findClosestToDate(assetDeposits, date);
-            const nativeBalance = new BigNumber(
-                (closestVal.total_deposits * Math.pow(10, token.decimals)).toFixed(0)
-            );
-            balances["solana:" + token.mint] = nativeBalance;
+            const closestVal = findClosestToDate(assetDeposits, date)
+            balances[coingeckoId] = closestVal.totalDeposits - closestVal.totalBorrows
         }
-    });
-
-    return balances;
+    })
+    return balances
 }
 
 module.exports = {
-    // stats api only returns 30 days of data
     timetravel: false,
     solana: {
-        tvl: tvl,
+        tvl: () => ({}),
     },
-    hallmarks: [
+    hallmarks:[
         [1665521360, "Oracle Price Manipulation"],
-    ],
-};
+      ],
+}
