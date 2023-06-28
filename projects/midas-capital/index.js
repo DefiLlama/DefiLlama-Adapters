@@ -2,6 +2,12 @@ const sdk = require("@defillama/sdk");
 
 const { compoundExportsWithAsyncTransform } = require("../helper/compound");
 
+module.exports = {
+  hallmarks: [
+    [Math.floor(new Date('2023-06-17')/1e3), 'Protocol was exploited for $600k'],
+  ]
+}
+
 const pools = {
   bsc: {
     pools: [
