@@ -10,4 +10,5 @@ module.exports = uniV3Export({
     '0x121a3fba8456ebce13964363ba35fea00c2aa3d2',
   ] },
   ethereum: { factory: '0x0bfbcf9fa4f9c56b0f40a671ad40e0805a091865', fromBlock: 16950685, },
+  polygon_zkevm: { factory: '0x0BFbCF9fa4f9C56B0F40a671Ad40E0805A091865', fromBlock: 750148, },
 })
