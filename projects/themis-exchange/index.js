@@ -22,6 +22,7 @@ Object.keys(config).forEach(chain => {
 })
 
 async function borrowed(_, _b, _cb, { api, }) {
+  const { addressProvider } = config[api.chain]
   const tokens = await api.call({ abi: abi.getReservesList, target: addressProvider })
   const tokenData = await api.multiCall({ abi: abi.getReserveData, target: addressProvider, calls: tokens, })
   const vDebtSupply = await api.multiCall({ abi: 'erc20:totalSupply', calls: tokenData.map(i => i.variableDebtTokenAddress), })
