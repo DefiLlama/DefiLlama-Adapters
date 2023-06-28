@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { ethers } = require("ethers");
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 // Constants
 const METASTREET_POOL_FACTORY = "0x1c91c822F6C5e117A2abe2B33B0E64b850e67095";
@@ -108,12 +109,18 @@ function getMetaStreetBorrowedValue() {
 
 module.exports = {
   ethereum: {
-    tvl: getMetaStreetTVL(),
+    // tvl: getMetaStreetTVL(),
+    tvl,
     borrowed: getMetaStreetBorrowedValue(),
   },
-  timetravel: true,
-  misrepresentedTokens: false,
-  methodology:
-    "TVL is calculated by summing the total value of all liquidity nodes across all pools. The TVL includes tokens available, tokens loaned out, and interest earned. Total borrowed is calculated by subtracting the tokens available from the total value of all liquidity nodes across all pools.",
+  methodology: "TVL is calculated by summing the total value of all liquidity nodes across all pools. The TVL includes tokens available and collaterals",
   start: 17497132, // Block number of PoolFactory creation
 };
+
+async function tvl(_, _b, _cb, { api, }) {
+  const pools = await api.call({ target: METASTREET_POOL_FACTORY, abi: abi.getPools, })
+  const tokens = await api.multiCall({ abi: abi.currencyToken, calls: pools })
+  const collateralTokens = await api.multiCall({ abi: abi.collateralToken, calls: pools })
+  const ownerTokens = pools.map((pool, i) => [[tokens[i], collateralTokens[i]], pool,])
+  return sumTokens2({ api, ownerTokens, })
+}
