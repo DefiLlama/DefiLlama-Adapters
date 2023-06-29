@@ -15,7 +15,6 @@ async function tvl() {
   const { dexes, network } = config[api.chain]
   for (const dex of dexes) {
     const results = await graphQuery(endpoint, query, { network: [network], dex: [dex] })
-    console.log(results.stats.totalValueManaged, api.chain, dex)
     tvl += results.stats.totalValueManaged
   }
 
