@@ -1,10 +1,9 @@
-const { request, gql } = require("graphql-request");
 const { toUSDTBalances } = require('../helper/balances');
-const { getBlock } = require('../helper/http')
+const { blockQuery } = require('../helper/http')
 const { getUniTVL } = require("../helper/unknownTokens")
 
 const graphUrl = 'https://api.thegraph.com/subgraphs/name/zippoxer/sushiswap-subgraph-fork'
-const graphQuery = gql`
+const graphQuery = `
 query get_tvl($block: Int) {
   uniswapFactory(
     id: "0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac",
@@ -15,7 +14,7 @@ query get_tvl($block: Int) {
   }
 }
 `;
-const graphQueryPolygon = gql`
+const graphQueryPolygon = `
 query get_tvl($block: Int) {
   factory(
     id: "0xc35dadb65012ec5796536bd9864ed8773abc74c4",
@@ -26,33 +25,16 @@ query get_tvl($block: Int) {
 }
 `;
 
-async function eth(timestamp, ethBlock, chainBlocks) {
-  let block = ethBlock
-  if (block === undefined) {
-    block = await getBlock(timestamp, 'ethereum', chainBlocks)
-  }
-  const { uniswapFactory } = await request(
-    graphUrl,
-    graphQuery,
-    {
-      block: block - 50,
-    }
-  );
+async function eth(timestamp, ethBlock, chainBlocks, { api }) {
+  const { uniswapFactory } = await blockQuery(graphUrl, graphQuery, { api, });
   const usdTvl = Number(uniswapFactory.totalLiquidityUSD)
 
   return toUSDTBalances(usdTvl)
 }
 
-function getChainTVL(chain) {
-  return async (timestamp, _b, chainBlocks) => {
-    const block = await getBlock(timestamp, chain, chainBlocks, false)
-    const { factory } = await request(
-      'https://api.thegraph.com/subgraphs/name/sushiswap/exchange-' + chain,
-      graphQueryPolygon,
-      {
-        block: block - 100,
-      }
-    );
+function getChainTVL() {
+  return async (timestamp, _b, chainBlocks, { api }) => {
+    const { factory } = await blockQuery('https://api.thegraph.com/subgraphs/name/sushiswap/exchange-' + api.chain, graphQueryPolygon, { api, });
     const usdTvl = Number(factory.liquidityUSD)
 
     return toUSDTBalances(usdTvl)
@@ -95,7 +77,7 @@ module.exports = {
   //kava: {  //  tvl: kavaTridentTvl,  //},
 }
 
-// module.exports.polygon.tvl = getChainTVL('polygon')
+module.exports.polygon.tvl = getChainTVL('polygon')
 // module.exports.bsc.tvl = getChainTVL('bsc')
-// module.exports.fantom.tvl = getChainTVL('fantom')
+module.exports.fantom.tvl = getChainTVL('fantom')
 // module.exports.harmony.tvl = getChainTVL('harmony')
