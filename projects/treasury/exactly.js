@@ -1,4 +1,4 @@
-const sdk = require("@defillama/sdk");
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 /** @type {Record<string, { auditor: string }>} */
 const config = {
@@ -13,43 +13,10 @@ const config = {
 Object.entries(config).forEach(([chain, { auditor }]) => {
   module.exports[chain] = {
     tvl: async (_, __, ___, { api }) => {
-      const markets = await api.call({
-        abi: abis.allMarkets,
-        target: auditor,
-        chain,
-      });
-      const treasuries = [
-        ...new Set(
-          await api.multiCall({
-            abi: abis.treasury,
-            calls: markets,
-            chain,
-          })
-        ),
-      ];
-      const balances = {};
-      await Promise.all(
-        markets.map((market) =>
-          Promise.all(
-            treasuries.map(async (treasury) =>
-              sdk.util.sumSingleBalance(
-                balances,
-                market,
-                await api.call({
-                  abi: "erc20:balanceOf",
-                  target: market,
-                  params: treasury,
-                  chain,
-                }),
-                chain
-              )
-            )
-          )
-        )
-      );
-      return balances;
+      const markets = await api.call({ abi: abis.allMarkets, target: auditor, });
+      const treasuries = await api.multiCall({ abi: abis.treasury, calls: markets, })
+      return sumTokens2({ api, tokens: markets, owners: treasuries, })
     },
-    ownTokens: async (_, __, ___, ____) => ({}),
   };
 });
 
