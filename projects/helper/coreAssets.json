@@ -1309,6 +1309,9 @@
   "xpla": {
     "XPLA": "axpla"
   },
+  "chihuahua": {
+    "HUAHUA": "uhuahua"
+  },
   "pulse": {
     "WPLS": "0xa1077a294dde1b09bb078844df40758a5d0f9a27",
     "ETH": "0x02dcdd04e3f455d838cd1249292c58f3b79e3c3c",

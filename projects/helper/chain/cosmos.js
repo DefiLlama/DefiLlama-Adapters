@@ -21,6 +21,7 @@ const endPoints = {
   orai: "https://lcd.orai.io",
   juno: "https://lcd-juno.cosmostation.io",
   cronos: "https://lcd-crypto-org.cosmostation.io",
+  chihuahua: "https://rest.cosmos.directory/chihuahua",
   injective: "https://lcd-injective.whispernode.com:443",
   migaloo: "https://migaloo-api.polkachu.com",
   fxcore: "https://fx-rest.functionx.io",
