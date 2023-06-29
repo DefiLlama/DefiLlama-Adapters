@@ -50,16 +50,17 @@ module.exports = {
   timetravel: true,
   doublecounted: false,
   ethereum: {
-    tvl: sdk.util.sumChainTvls([ethTvl,ethMarketsTvl]),
+    // tvl: sdk.util.sumChainTvls([ethTvl,ethMarketsTvl]),
+    tvl: sdk.util.sumChainTvls([ethMarketsTvl]),
     staking: staking("0x6ed306DbA10E6c6B20BBa693892Fac21f3B91977", "0xC28E27870558cF22ADD83540d2126da2e4b464c2"),
     borrowed: borrowedEth,
   },
   bsc: {
-    tvl: sdk.util.sumChainTvls([bscTvl, bscMarketsTvl]),
+    tvl: sdk.util.sumChainTvls([bscMarketsTvl]),
     borrowed: borrowedBsc,
   },
   heco: {
-    tvl: sdk.util.sumChainTvls([hecoTvl,hecoMarketsTvl]),
+    tvl: sdk.util.sumChainTvls([hecoMarketsTvl]),
     borrowed: borrowedHeco,
   },
   methodology:

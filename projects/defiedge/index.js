@@ -1,20 +1,19 @@
-const { GraphQLClient, gql } = require("graphql-request");
+const { graphQuery } = require('../helper/http')
 
 var endpoint = "https://api.defiedge.io/graphql";
 
 function tvl(network) {
   return async (_timestamp, _block, _chainBlocks) => {
-    var graphQLClient = new GraphQLClient(endpoint);
 
-    var query = gql`
-      query Stats($network: [Network!]) {
-        stats(network: $network) {
+    var query = `
+      query Stats($network: [Network!] $dex: [Dex!] = [Uniswap, Apeswap, Pancakeswap, Arbidex]) {
+        stats(network: $network, dex: $dex) {
           totalValueManaged
         }
       }
     `;
 
-    var results = await graphQLClient.request(query, { network: [network] });
+    var results = await graphQuery(endpoint, query, { network: [network] });
 
     return { "usd-coin": results.stats.totalValueManaged };
   };

@@ -52,7 +52,7 @@ function isLP(symbol, token, chain) {
   // console.log(symbol, chain, token)
   if (!symbol) return false
   if (token && blacklisted_LPS.includes(token.toLowerCase()) || symbol.includes('HOP-LP-')) return false
-  if (chain === 'bsc' && ['OLP', 'DLP', 'MLP', 'LP'].includes(symbol)) return false
+  if (chain === 'bsc' && ['OLP', 'DLP', 'MLP', 'LP', 'Stable-LP'].includes(symbol)) return false
   if (chain === 'bsc' && ['WLP', 'FstLP', 'BLP',].includes(symbol)) return true
   if (chain === 'pulse' && ['PLP',].includes(symbol)) return true
   if (chain === 'avax' && ['ELP', 'EPT', 'CRL', 'YSL', 'BGL', 'PLP'].includes(symbol)) return true
