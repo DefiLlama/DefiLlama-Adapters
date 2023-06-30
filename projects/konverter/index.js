@@ -84,7 +84,7 @@ module.exports = {
   timetravel: true,
   doublecounted: true,
   methodology:
-    "Total value of CDP collaterals, deposited stablecoins in pegging module(PSM), and WCD staked in our vault",
+    "Sum of each liquidity pool's value",
   wemix: {
     tvl: tvlWemix
   }
