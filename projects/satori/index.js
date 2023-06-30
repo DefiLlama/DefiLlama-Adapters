@@ -11,4 +11,13 @@ module.exports = {
   polygon_zkevm: {
     tvl: sumTokensExport({ owners: WALLET_ADDR, tokens: [USDT_TOKEN_CONTRACT]}),
   },
+  era: {
+    tvl: sumTokensExport({
+      owners: [
+        "0x0842b33529516abe86CA8EA771aC4c84FDd0eeE0",
+        "0x48756b37Fd643bB40F669804730024F02900C476",
+      ],
+      tokens: ["0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4"],
+    }),
+  },
 };
