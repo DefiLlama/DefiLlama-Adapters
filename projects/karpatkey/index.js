@@ -1,7 +1,5 @@
 const {sumTokensExport} = require("../helper/unwrapLPs")
-const Addresses = require('./addresses.js');
-const Contracts = Addresses.Contracts;
-const Tokens = Addresses.Tokens
+const { Tokens } = require('./addresses.js')
 
 const WALLET_GNOSIS_DAO_eth = '0x849d52316331967b6ff1198e5e32a0eb168d039d'
 const WALLET_GNOSIS_LTD_eth = '0x4971dd016127f390a3ef6b956ff944d0e2e1e462'
