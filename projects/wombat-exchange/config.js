@@ -43,6 +43,7 @@ module.exports = {
       ankrETH: "0xB9bdfE449Da096256Fe7954Ef61A18eE195Db77B",
       wstETH: "0xe14302040c0A1eb6fB5A4A79EfA46D60029358d9",
       pendle: "0xe7159f15e7b1d6045506B228A1ed2136dcc56F48",
+      fUSD: "0x956454C7BE9318863297309183C79b793D370401",
     },
   },
   hallmarks: [
