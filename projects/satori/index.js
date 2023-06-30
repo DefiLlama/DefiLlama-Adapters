@@ -4,7 +4,7 @@ module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
   methodology:
-      "TVL includes the total token value inside the protocol's liquidity pools.",
+      "TVL includes the total token value inside the protocol's liquidity pools",
   polygon_zkevm: {
     tvl: sumTokensExport({
       chain: "polygon_zkevm",
