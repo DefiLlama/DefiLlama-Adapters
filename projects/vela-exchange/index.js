@@ -1,7 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require("../helper/staking")
 const { gql, request } = require('graphql-request');
-const retry = require('async-retry')
 const axios = require("axios");
 const { ethers } = require('ethers');
 
@@ -14,12 +13,13 @@ const endpoint = "https://api.thegraph.com/subgraphs/name/velaexchange/vela-exch
         poolInfos(where: {
           id: "all"
         }) {
+          pid1
           pid2
           pid3
         }
       }
       `;
-      let price_feed = await retry(async bail => await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=vela-token&vs_currencies=usd'))
+      let price_feed =  await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=vela-token&vs_currencies=usd')
       const graphRes = (await request(endpoint, graphQuery)).poolInfos.find(x => true);
       const pid2 = parseInt(ethers.utils.formatEther(graphRes?.pid2)) * price_feed.data['vela-token'].usd
       const pid3 = parseInt((ethers.utils.formatEther(graphRes?.pid3))) * price_feed.data['vela-token'].usd
