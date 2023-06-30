@@ -2,6 +2,9 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const chain = 'velas'
 module.exports = {
+  hallmarks: [
+    [1668556800, "USDV hack"]
+  ],
   velas: {
     tvl: async (_, _b, { [chain]: block }) => {
       return sumTokens2({
