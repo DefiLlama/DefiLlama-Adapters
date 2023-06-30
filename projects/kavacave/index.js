@@ -76,6 +76,9 @@ async function kavaTvl(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
+	hallmarks: [
+		[1660521600, "incentives not given"]
+	  ],
 	methodology:
 		"Staked LP is counted as TVL.",
 	kava: {
