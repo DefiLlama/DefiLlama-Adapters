@@ -1,9 +1,7 @@
-const { sumTokensExport } = require("../helper/unwrapLPs");
-const sdk = require('@defillama/sdk');
+const {sumTokensExport} = require("../helper/unwrapLPs")
 const Addresses = require('./addresses.js');
 const Contracts = Addresses.Contracts;
 const Tokens = Addresses.Tokens
-
 
 const WALLET_GNOSIS_DAO_eth = '0x849d52316331967b6ff1198e5e32a0eb168d039d'
 const WALLET_GNOSIS_LTD_eth = '0x4971dd016127f390a3ef6b956ff944d0e2e1e462'
@@ -18,47 +16,35 @@ const WALLET_KPK_gno = '0x54e191b01aa9c1f61aa5c3bce8d00956f32d3e71'
 
 const Wallets = {
     ethereum: [
-    WALLET_BALANCER_eth,
-    WALLET_ENS_eth,
-    WALLET_GNOSIS_DAO_eth,
-    WALLET_GNOSIS_LTD_eth,
-    WALLET_KPK_eth,
-    WALLET_COW_eth,
-],
-gnosis: [
-    WALLET_GNOSIs_DAO_gno,
-    WALLET_GNOSIS_LTD_gno,
-    WALLET_KPK_gno,
-]
+        WALLET_GNOSIS_DAO_eth,
+        WALLET_BALANCER_eth,
+        WALLET_ENS_eth,
+        WALLET_GNOSIS_LTD_eth,
+        WALLET_KPK_eth,
+        WALLET_COW_eth,
+    ],
+    xdai: [
+        WALLET_GNOSIs_DAO_gno,
+        WALLET_GNOSIS_LTD_gno,
+        WALLET_KPK_gno,
+    ]
 }
-
 
 function cartesianProduct(a, b) {
-    return a.flatMap(x => b.map(y => [x, y]));
+    return a.flatMap(x => b.map(y => [x, y]))
 }
-
-//Testing a a contract function call
-const ilk = sdk.api.abi.call({
-    target: Contracts.Maker.CDP_MANAGER_ADDRESS,
-    abi: 'function ilks(uint256) view returns (bytes32)',
-    params: [12],
-})
-//console.log(ilk)
-
-console.log(sumTokensExport({
-    tokensAndOwners: cartesianProduct(Tokens.ethereum, Wallets.ethereum)}))
 
 module.exports = {
     ethereum: {
         tvl: sumTokensExport({
-                tokensAndOwners: cartesianProduct(Tokens.ethereum, Wallets.ethereum)
-        })
+            tokensAndOwners: cartesianProduct(Tokens.ethereum, Wallets.ethereum)
+        }),
     },
     xdai: {
         tvl: sumTokensExport({
-                tokensAndOwners: cartesianProduct(Tokens.gnosis, Wallets.gnosis)
+            tokensAndOwners: cartesianProduct(Tokens.xdai, Wallets.xdai)
         }),
     }
-};
+}
 //To test, run
 //node test.js projects/karpatkey/index.js
