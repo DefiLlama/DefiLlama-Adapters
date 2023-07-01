@@ -1,14 +1,14 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require("../helper/staking")
-const { gql, request } = require('graphql-request');
-const axios = require("axios");
-const { ethers } = require('ethers');
+const { graphQuery } = require('../helper/http')
+
+const VELA = '0x088cd8f5eF3652623c22D48b1605DCfE860Cd704'
 
 const endpoint = "https://api.thegraph.com/subgraphs/name/velaexchange/vela-exchange-official"
-  async function fetch() {
-    let staking;
+async function staking_() {
+  const { api } = arguments[3]
 
-      const graphQuery = gql`
+  const query = `
       query {
         poolInfos(where: {
           id: "all"
@@ -19,25 +19,18 @@ const endpoint = "https://api.thegraph.com/subgraphs/name/velaexchange/vela-exch
         }
       }
       `;
-      let price_feed =  await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=vela-token&vs_currencies=usd')
-      const graphRes = (await request(endpoint, graphQuery)).poolInfos.find(x => true);
-      const pid2 = parseInt(ethers.utils.formatEther(graphRes?.pid2)) * price_feed.data['vela-token'].usd
-      const pid3 = parseInt((ethers.utils.formatEther(graphRes?.pid3))) * price_feed.data['vela-token'].usd
-      staking = parseInt(pid2 + pid3)
-      return {
-        'arbitrum': staking
-      }
-;
+  const graphRes = (await graphQuery(endpoint, query)).poolInfos.find(x => true);
+  api.add(VELA, graphRes?.pid2)
+  api.add(VELA, graphRes?.pid3)
 }
-
 
 module.exports = {
   methodology: "Counts USDC deposited to trade and to mint VLP. Staking counts VELA and esVELA deposited to earn esVELA",
   arbitrum: {
     tvl: staking('0xC4ABADE3a15064F9E3596943c699032748b13352', ADDRESSES.arbitrum.USDC),
-    staking: fetch
-   },
+    staking: staking_
+  },
   hallmarks: [
-    [Math.floor(new Date('2023-04-13')/1e3), 'Refunded tokens to VLP holders & traders'],
+    [Math.floor(new Date('2023-04-13') / 1e3), 'Refunded tokens to VLP holders & traders'],
   ],
 }
