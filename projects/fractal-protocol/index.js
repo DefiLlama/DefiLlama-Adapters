@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { userInfo } = require('../pendle/abi.json');
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
@@ -6,7 +7,7 @@ const FRACTAL_VAULT_CONTRACT_ETH = '0x3EAa4b3e8967c02cE1304C1EB35e8C5409838DFC';
 const FRACTAL_YIELD_RESERVE_ETH = '0xbA83B569e99B6afc2f2BfE5124460Be6f36a4a56';
 
 //Token Addresses ETH
-const USDC_ETH = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
+const USDC_ETH = ADDRESSES.ethereum.USDC;
 
 //Fractal Addreses ARB
 const FRACTAL_VAULT_CONTRACT_ARB = '0x80e1a981285181686a3951B05dEd454734892a09'
@@ -16,7 +17,7 @@ const FRACTAL_CAMELOT_POOL = '0xf011B036934b58A619D2822d90ecd726126Efdf2'
 const FRACTAL_CAMELOT_NITRO_POOL = '0x5d209809d3284309cC34B9D092f88fFc690de6c2'
 
 //Token Addresses Arb
-const USDC_ARB = '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8'
+const USDC_ARB = ADDRESSES.arbitrum.USDC
 const USDF_ARB = '0xae48b7C8e096896E32D53F10d0Bf89f82ec7b987'
 
 //Fractal Addresses All Chains

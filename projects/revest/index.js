@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, } = require("../helper/unwrapLPs")
 const { covalentGetTokens, } = require("../helper/http")
 const { getUniqueAddresses } = require('../helper/utils')
@@ -10,7 +11,7 @@ const getFNFTConfigABI = "function getFNFT(uint256 fnftId) external view returns
 const balanceOfABI = "function balanceOf(address account) view returns (uint256)"
 const getWalletABI = "function getFNFTAddress(uint256 fnftId) external view returns (address)"
 
-const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
+const ZERO_ADDRESS = ADDRESSES.null
 
 const config = {
   ethereum: {
