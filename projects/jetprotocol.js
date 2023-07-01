@@ -37,6 +37,8 @@ async function tvl() {
   ]});
 }
 
+// JPv1rCqrhagNNmJVM5J1he7msQ5ybtvE1nNuHpDHMNU
+// https://docs.jetprotocol.io/jet-protocol/protocol/smart-contracts
 module.exports = {
   timetravel: false,
   solana: {
