@@ -1,6 +1,7 @@
 const { default: axios } = require('axios');
 async function fetch(){
 
+    return 0
     return (await axios.get('https://api.tangent.bar/api/v1/MainStatistics')).data.allTVL
 
 
