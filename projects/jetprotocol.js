@@ -1,4 +1,4 @@
-const ADDRESSES = require('helper/coreAssets.json')
+const ADDRESSES = require('./helper/coreAssets.json')
 const { getTokenBalance, sumTokens2 } = require("./helper/solana");
 
 async function borrowed() {
