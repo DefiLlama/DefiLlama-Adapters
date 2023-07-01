@@ -16,7 +16,8 @@ const config = {
   },
 }
 
-const fallbackBlacklist = ["0x6543ee07cf5dd7ad17aeecf22ba75860ef3bbaaa"];
+const XAI = '0xd7c9f0e536dc865ae858b0c0453fe76d13c3beac'
+const fallbackBlacklist = ["0x6543ee07cf5dd7ad17aeecf22ba75860ef3bbaaa", ];
 
 async function tvl(_, block, _1, { api }) {
   const siloArray = await getSilos(api)
@@ -26,21 +27,22 @@ async function tvl(_, block, _1, { api }) {
   })
 
   const toa = assets.map((v, i) => ([v, siloArray[i]]))
-  return sumTokens2({ api, ownerTokens: toa, })
+  return sumTokens2({ api, ownerTokens: toa, blacklistedTokens: [XAI], })
 }
 
 async function borrowed(_, block, _1, { api }) {
-  const balances = {}
   const siloArray = await getSilos(api)
   const assetStates = await api.multiCall({
     abi: getAssetStateAbi,
     calls: siloArray.map(i => ({ target: i })),
   });
   assetStates.forEach(({ assets, assetsStorage }) => {
-    assetsStorage.forEach((i, j) => sdk.util.sumSingleBalance(balances, assets[j], i.totalBorrowAmount, api.chain))
+    assetsStorage
+      .forEach((i, j) => {
+        if (assets[j].toLowerCase() === XAI) return;
+        return api.add(assets[j], i.totalBorrowAmount)
+      })
   })
-
-  return balances
 }
 
 let silos = {}
