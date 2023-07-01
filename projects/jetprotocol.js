@@ -1,5 +1,5 @@
-const ADDRESSES = require('./helper/coreAssets.json')
-const { getTokenBalance } = require("./helper/solana");
+const ADDRESSES = require('helper/coreAssets.json')
+const { getTokenBalance, sumTokens2 } = require("./helper/solana");
 
 async function borrowed() {
   const [usdcAmount, ethAmount, solAmount, btcAmount] = await Promise.all([
@@ -29,30 +29,12 @@ async function borrowed() {
 }
 
 async function tvl() {
-  const [usdcAmount, ethAmount, solAmount, btcAmount] = await Promise.all([
-    getTokenBalance(
-      ADDRESSES.solana.USDC,
-      "7gpj9cpzBBW9Ci1yMwWz7iGbQYpm5fZmadNQyrYsqch8"
-    ),
-    getTokenBalance(
-      "2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk",
-      "7gpj9cpzBBW9Ci1yMwWz7iGbQYpm5fZmadNQyrYsqch8"
-    ),
-    getTokenBalance(
-      ADDRESSES.solana.SOL,
-      "7gpj9cpzBBW9Ci1yMwWz7iGbQYpm5fZmadNQyrYsqch8"
-    ),
-    getTokenBalance(
-      "9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E",
-      "7gpj9cpzBBW9Ci1yMwWz7iGbQYpm5fZmadNQyrYsqch8"
-    ),
-  ]);
-  return {
-    bitcoin: btcAmount,
-    "usd-coin": usdcAmount,
-    ethereum: ethAmount,
-    solana: solAmount,
-  };
+  return sumTokens2({ owner: '7gpj9cpzBBW9Ci1yMwWz7iGbQYpm5fZmadNQyrYsqch8', tokens: [
+    ADDRESSES.solana.USDC,
+    '2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk',
+    ADDRESSES.solana.SOL,
+    '9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E',
+  ]});
 }
 
 module.exports = {
