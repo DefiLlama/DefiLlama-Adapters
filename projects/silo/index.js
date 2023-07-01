@@ -17,7 +17,7 @@ const config = {
 }
 
 const XAI = '0xd7c9f0e536dc865ae858b0c0453fe76d13c3beac'
-const fallbackBlacklist = ["0x6543ee07cf5dd7ad17aeecf22ba75860ef3bbaaa", ];
+const fallbackBlacklist = ["0x6543ee07cf5dd7ad17aeecf22ba75860ef3bbaaa",];
 
 async function tvl(_, block, _1, { api }) {
   const siloArray = await getSilos(api)
@@ -45,26 +45,19 @@ async function borrowed(_, block, _1, { api }) {
   })
 }
 
-let silos = {}
-
 async function getSilos(api) {
   const chain = api.chain
   const { SILO_FACTORY, START_BLOCK, } = config[chain]
-  if (!silos[chain]) silos[chain] = _getSilos()
-  return silos[chain]
+  const logs = (
+    await getLogs({
+      api,
+      target: SILO_FACTORY,
+      fromBlock: START_BLOCK,
+      topic: 'NewSiloCreated(address,address,uint128)',
+    })
+  )
 
-  async function _getSilos() {
-    const logs = (
-      await getLogs({
-        api,
-        target: SILO_FACTORY,
-        fromBlock: START_BLOCK,
-        topic: 'NewSiloCreated(address,address,uint128)',
-      })
-    )
-
-    return logs.map((log) => `0x${log.topics[1].substring(26)}`).filter((address) => fallbackBlacklist.indexOf(address.toLowerCase()) === -1);
-  }
+  return logs.map((log) => `0x${log.topics[1].substring(26)}`).filter((address) => fallbackBlacklist.indexOf(address.toLowerCase()) === -1);
 }
 
 
