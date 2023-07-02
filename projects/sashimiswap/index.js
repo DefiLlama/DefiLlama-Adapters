@@ -5,6 +5,9 @@ const { staking } = require("../helper/staking");
 module.exports = {
   methodology:
     "We count liquidity on the Farms (LP tokens) threw Factory Contract; and on the lending markets same as compound",
+    hallmarks: [
+      [Math.floor(new Date('2021-12-30')/1e3), 'Protocol was hacked for 210K USD'],
+    ],
 };
 
 const config = {
