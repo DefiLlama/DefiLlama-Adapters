@@ -5,8 +5,8 @@ const LidoTreasury = "0x3e40D73EB977Dc6a537aF587D48316feE66E9C8c";
 const LDO = ADDRESSES.ethereum.LIDO;
 const treasuryMatic = "0xd65Fa54F8DF43064dfd8dDF223A446fc638800A9"
 
-//const treasurySolana = "GQ3QPrB1RHPRr4Reen772WrMZkHcFM4DL5q44x1BBTFm"
-//const LDOsol = "HZRCwxP2Vq9PCpPXooayhJ2bxTpo5xfpQrwB1svh332p"
+const treasurySolana = "GQ3QPrB1RHPRr4Reen772WrMZkHcFM4DL5q44x1BBTFm"
+const LDOsol = "HZRCwxP2Vq9PCpPXooayhJ2bxTpo5xfpQrwB1svh332p"
 
 module.exports = treasuryExports({
   ethereum: {
@@ -24,14 +24,11 @@ module.exports = treasuryExports({
     owners: [LidoTreasury, treasuryMatic],
     ownTokens: [LDO],
   },
-  /*
   solana: {
     tokens: [ 
-        nullAddress,
         "7dHbWXmci3dT8UFYWYZweBLXgycu7Y3iL6trKn1Y7ARj"
      ],
     owners: [treasurySolana],
     ownTokens: [LDOsol],
   },
-  */
 })
