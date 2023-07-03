@@ -1,42 +1,23 @@
-const sdk = require("@defillama/sdk");
-const BigNumber = require("bignumber.js");
-
-// constants
-const ETHER = new BigNumber(10).pow(18);
-
-// ABIs
-const dashBoardABI = 'function getTVLInfo() external view returns (tuple(uint256 earnTVL, uint256 collateralTVL, uint256 totalMintedWCD))'
-
-// contracts
-const dashboardWemix = "0x2F7D5012e3629D236f229712EE6066D47b2B3B3f";
-
-// functions
-const tvl = async () => {
-  const chain = "wemix"
-
-  const res = await sdk.api.abi.call(
-    {
-      target: dashboardWemix,
-      chain,
-      abi: dashBoardABI
-    }
-  )
-
-  const earnTVL = new BigNumber(res.output.earnTVL)
-  const collateralTVL = new BigNumber(res.output.collateralTVL)
-  const totalTVL = earnTVL.plus(collateralTVL)
-
-  return {
-    'usd': totalTVL.dividedBy(ETHER).toNumber()
-  }
+async function tvl(_, _b, _cb, { api, }) {
+  const cdpManager = '0x1B18d5a2f35B431aACa02B58eE9E4B7FBa9b098d'
+  const PSM = '0xbdd0b6212505bcD15C38839cf338E40aeCd95b13'
+  const ids = await api.call({ abi: abi.getCollateralIds, target: cdpManager })
+  const psmTokens = await api.call({ abi: abi.getPSMTokens, target: PSM })
+  const psmInfos = await api.multiCall({ abi: abi.getPSMTokenInfo, calls: psmTokens, target: PSM })
+  const infos = await api.multiCall({ abi: abi.getCollateralInfo, calls: ids, target: cdpManager })
+  infos.forEach(info => api.add(info.token, info.balance))
+  psmInfos.forEach((info, i) => api.add(psmTokens[i], info.balance))
 }
 
 module.exports = {
-  timetravel: true,
-  doublecounted: false,
-  methodology:
-    "Total value of collateral assets, WCD staked in our vault and collaterals in pegging module(PSM)",
   wemix: {
-    tvl: tvl,
-  },
+    tvl
+  }
 };
+
+const abi = {
+  "getCollateralIds": "uint256[]:getCollateralIds",
+  "getPSMTokenInfo": "function getPSMTokenInfo(address token) view returns (tuple(uint256 mintLimit, uint256 minReserve, uint256 balance, uint256 mintAmount, uint256 collateralId, address investor) tokenInfo)",
+  "getPSMTokens": "address[]:getPSMTokens",
+  "getCollateralInfo": "function getCollateralInfo(uint256 collateralId) view returns (tuple(address token, address investor, uint256 balance, uint256 maxLTV, uint256 liquidationLTV, uint256 debtCeiling, uint256 interestRate, uint256 liquidationBonusRate, uint256 lastUpdateTime, uint256 lastVaultId, tuple(uint256 originalDebt, uint256 debt, uint256 debtShare) debtInfo) collateralInfo)",
+}
