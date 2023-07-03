@@ -1,91 +1,23 @@
-const sdk = require("@defillama/sdk");
-const BigNumber = require("bignumber.js");
-const contracts = require("./contracts.json");
-
-// ABIs
-const priceCalculatorABI = {
-  priceOf: "function priceOf ( address ) external view returns ( uint )",
-  pricesOf: "function pricesOf ( address[] memory ) external view returns ( uint[] memory )"
-};
-const stableSwapHelperABI = {
-  calcWithdraw: "function calcWithdraw(address pool, uint amount) external view returns (uint[] memory)",
-  calcWithdrawUnderlying: "function calcWithdrawUnderlying(address pool, uint amount) external view returns (uint[] memory amounts)"
-};
-
-const getTokenPrices = async (tokens, chain) => {
-  const prices = {};
-  const res = await sdk.api.abi.call({
-    target: contracts[chain]["priceCalculator"],
-    params: [tokens],
-    chain: chain,
-    abi: priceCalculatorABI.pricesOf
-  });
-
-  tokens.forEach((token, i) => {
-    prices[token] = res.output[i];
-  });
-
-  return prices;
-};
-
-const getUnderlyingBalance = async (pool, chain) => {
-  const balances = {};
-  const poolInfo = contracts[chain]["pools"][pool];
-
-  const totalSupply = await sdk.api.abi.call({
-    target: poolInfo["poolToken"],
-    chain: chain,
-    abi: "erc20:totalSupply"
-  });
-
-  const underlyingBalances = await sdk.api.abi.call({
-    target: contracts[chain]["stableSwapHelper"],
-    chain: chain,
-    params: [pool, totalSupply.output],
-    abi: poolInfo.isMetaPool ? stableSwapHelperABI.calcWithdrawUnderlying : stableSwapHelperABI.calcWithdraw
-  });
-
-  poolInfo.underlyingTokens.forEach((token, i) => {
-    balances[token] = underlyingBalances.output[i];
-  });
-
-  return balances;
-};
-
-const tvl = async (chain) => {
-  const balances = {};
-  const tokenInfos = contracts[chain]["tokens"];
-  const tokenPrices = await getTokenPrices(Object.keys(tokenInfos), chain);
-
-  for (let pool of Object.keys(contracts[chain]["pools"])) {
-    const poolBalance = await getUnderlyingBalance(pool, chain);
-    Object.keys(poolBalance).forEach((key) => {
-      sdk.util.sumSingleBalance(balances, key, poolBalance[key]);
-    });
-  }
-
-  let tvl = new BigNumber(0);
-  Object.keys(balances).forEach((token) => {
-    const balance = new BigNumber(balances[token]);
-    const price = new BigNumber(tokenPrices[token]);
-    tvl = tvl.plus(balance.multipliedBy(price).dividedBy(new BigNumber(10).pow(18 + tokenInfos[token].decimals)));
-  });
-
-  return {
-    "usd": tvl.toNumber()
-  };
-};
-
-const tvlWemix = async () => {
-  return await tvl("wemix");
-};
+async function tvl(_, _b, _cb, { api, }) {
+  const cdpManager = '0x1B18d5a2f35B431aACa02B58eE9E4B7FBa9b098d'
+  const PSM = '0xbdd0b6212505bcD15C38839cf338E40aeCd95b13'
+  const ids = await api.call({ abi: abi.getCollateralIds, target: cdpManager })
+  const psmTokens = await api.call({ abi: abi.getPSMTokens, target: PSM })
+  const psmInfos = await api.multiCall({ abi: abi.getPSMTokenInfo, calls: psmTokens, target: PSM })
+  const infos = await api.multiCall({ abi: abi.getCollateralInfo, calls: ids, target: cdpManager })
+  infos.forEach(info => api.add(info.token, info.balance))
+  psmInfos.forEach((info, i) => api.add(psmTokens[i], info.balance))
+}
 
 module.exports = {
-  timetravel: true,
-  doublecounted: true,
-  methodology:
-    "Sum of each liquidity pool's value",
   wemix: {
-    tvl: tvlWemix
+    tvl
   }
 };
+
+const abi = {
+  "getCollateralIds": "uint256[]:getCollateralIds",
+  "getPSMTokenInfo": "function getPSMTokenInfo(address token) view returns (tuple(uint256 mintLimit, uint256 minReserve, uint256 balance, uint256 mintAmount, uint256 collateralId, address investor) tokenInfo)",
+  "getPSMTokens": "address[]:getPSMTokens",
+  "getCollateralInfo": "function getCollateralInfo(uint256 collateralId) view returns (tuple(address token, address investor, uint256 balance, uint256 maxLTV, uint256 liquidationLTV, uint256 debtCeiling, uint256 interestRate, uint256 liquidationBonusRate, uint256 lastUpdateTime, uint256 lastVaultId, tuple(uint256 originalDebt, uint256 debt, uint256 debtShare) debtInfo) collateralInfo)",
+}
