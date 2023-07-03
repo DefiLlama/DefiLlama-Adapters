@@ -47,7 +47,6 @@ async function sumTokens(options) {
   let { chain, owner, owners = [], tokens = [], tokensAndOwners = [], blacklistedTokens = [], balances = {}, token, api } = options 
   if (api) {
     chain = api.chain
-    block = api.block
   }
 
   if (token) tokens = [token]
