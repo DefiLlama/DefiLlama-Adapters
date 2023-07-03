@@ -26,25 +26,6 @@
           "0x8E81fCc2d4A3bAa0eE9044E0D7E36F59C9BbA9c1"
         ]
       }
-    },
-    "tokens": {
-      "0x2ec6Fc5c495aF0C439E17268d595286d5f897dD0": {
-        "name": "WCD",
-        "decimals": 18
-      },
-      "0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D": {
-        "name": "USDC",
-        "decimals": 6
-      },
-      "0xA649325Aa7C5093d12D6F98EB4378deAe68CE23F": {
-        "name": "USDT",
-        "decimals": 6
-      },
-      "0x8E81fCc2d4A3bAa0eE9044E0D7E36F59C9BbA9c1": {
-        "name": "WEMIX$",
-        "decimals": 18
-      }
     }
-
   }
 }
