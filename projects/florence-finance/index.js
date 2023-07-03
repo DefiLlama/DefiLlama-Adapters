@@ -26,7 +26,7 @@ async function tvl(_, _1, _2, { api }) {
     sdk.util.sumSingleBalance(balances, EURS_CONTRACT_ETH, Number(loansOutstanding) / Math.pow(10, 16));
   }
 
-  balances
+  return balances
 }
 
 module.exports = {
