@@ -22,7 +22,7 @@ async function tvl(_, _1, _2, { api }) {
   }
 
   for (const tank of tankList) {
-    api.add(BUCK, tank.fields.reserve / 1e9);
+    api.add(BUCK, tank.fields.reserve);
   }
 }
 
