@@ -32,7 +32,8 @@ const poolWithTokens = [
 
 const graphUrl = {
    'ethereum': 'https://api.thegraph.com/subgraphs/name/ichi-org/v1',
-   'polygon': 'https://api.thegraph.com/subgraphs/name/ichi-org/polygon-v1'
+   'polygon': 'https://api.thegraph.com/subgraphs/name/ichi-org/polygon-v1',
+   'arbitrum': 'https://api.thegraph.com/subgraphs/name/ichi-org/arbitrum-v1'
 }
 
 const graphQuery = gql`
@@ -53,6 +54,13 @@ async function getVaultsByGraph(chain = 'ethereum') {
   const vaults = [];
   data.ichiVaults.forEach( v => vaults.push({address: v.id, tokenA: v.tokenA, tokenB: v.tokenB}));
   
+  //special case for Retro vaults on polygon
+  if (chain === 'polygon'){
+    const retroGraphQLClient = new GraphQLClient('https://api.thegraph.com/subgraphs/name/ichi-org/polygon-v1-retro');
+    const retroData = await retroGraphQLClient.request(graphQuery);
+    retroData.ichiVaults.forEach((v) => vaults.push({ address: v.id, tokenA: v.tokenA, tokenB: v.tokenB }));
+  }
+
   return vaults;
 }
 
@@ -213,6 +221,19 @@ async function polygonTvl(_, _b, { polygon: block }){
   return balances;
 }
 
+async function arbitrumTvl(_, _b, { arbitrum: block }){
+  const chain = 'arbitrum'
+
+  const { balances, oneTokenList } = {balances: [], oneTokenList: []}
+
+  const vBalances = await vaultBalances(block, chain, oneTokenList)
+  const vBalancesTransformed = await transformBalances(chain,vBalances)
+  for(var token in vBalancesTransformed)
+    sdk.util.sumSingleBalance(balances, token, vBalancesTransformed[token])
+
+  return balances;
+}
+
 module.exports = {
   methodology: "Tokens deposited to mint oneTokens excluding oneTokens , Vault deposits",
   misrepresentedTokens: true,
@@ -231,5 +252,8 @@ module.exports = {
   },
   polygon: {
     tvl: polygonTvl
+  },
+  arbitrum: {
+    tvl: arbitrumTvl
   }
 } // node test.js projects/ichifarm/index.js
