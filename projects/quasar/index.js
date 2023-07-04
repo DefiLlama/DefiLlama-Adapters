@@ -1,6 +1,6 @@
 const axios = require("axios");
 const { endPoints, queryContract } = require('../helper/chain/cosmos')
-const { transformBalances } = require('../helper/portedTokens')
+const sdk = require('@defillama/sdk')
 
 const chain = 'quasar'
 
@@ -32,7 +32,7 @@ const lpStrategyContracts = {
 }
 
 async function tvlOsmosis() {
-    let amounts = {}
+    const api = new sdk.ChainApi({ chain: 'osmosis' })
 
     for (const poolID in lpStrategyContracts) {
         let lpContracts = lpStrategyContracts[poolID];
@@ -47,22 +47,18 @@ async function tvlOsmosis() {
                 let denom = ica_balances.amount.denom;
                 let amount = Number(ica_balances.amount.amount);
 
-                if (typeof amounts[denom] === "undefined") {
-                    amounts[denom] = amount;
-                } else {
-                    amounts[denom] += amount;
-                }
+                api.add(denom, amount)
             } catch (e) {
                 continue;
             }
         }
     }
 
-    return transformBalances('osmosis', amounts)
+    return api.getBalances()
 }
 
 async function tvlQuasar() {
-    let amounts = {}
+    const api = new sdk.ChainApi({ chain })
 
     for (const poolID in lpStrategyContracts){
         let lpContracts = lpStrategyContracts[poolID];
@@ -78,16 +74,12 @@ async function tvlQuasar() {
             
             let amount = calculateTokenAmounts(poolData, lp_shares['lp_shares']['locked_shares'])
             for (const denom in amount) {
-                if (typeof amounts[denom] === "undefined") {
-                    amounts[denom] = amount[denom];
-                } else {
-                    amounts[denom] += amount[denom];
-                }
+                api.add(denom, amount[denom])
             }
         }
     }
 
-    return transformBalances(chain, amounts)
+    return api.getBalances()
 }
 
 
