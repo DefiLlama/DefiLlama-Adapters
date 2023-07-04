@@ -60,7 +60,7 @@ const tvl = async (_, _1, _2, { api }) => {
   })
 
   pools.forEach((output, i) => toa.push([poolMetaData[i].tokenX, output], [poolMetaData[i].tokenY, output],))
-  // if (chain === 'era') bTokens.push('0x82af49447d8a07e3bd95bd0d56f35241523fbab1')
+  // if (chain === 'era') bTokens.push(ADDRESSES.arbitrum.WETH)
   return sumTokens2({ tokensAndOwners: toa, api, blacklistedTokens: bTokens, permitFailure: true})
 }
 

@@ -31,7 +31,7 @@ module.exports = {
   polygon: compoundExports(polygonComptroller,
     "polygon",
     "0xa65722af4957cef481edb4cb255f804dd36e8adc",
-    "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"
+    ADDRESSES.polygon.WMATIC_2
   ),
   avax: compoundExports(avaxComptroller,
     "avax",

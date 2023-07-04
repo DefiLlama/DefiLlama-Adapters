@@ -173,7 +173,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
   }
 
   async function liquityTvl(timestamp, block) {
-    if (block < lFirstBlock) return { '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0': '0' };
+    if (block < lFirstBlock) return { [ADDRESSES.ethereum.LUSD]: '0' };
 
     let totalBalance = new BigNumber(0);
 
@@ -202,7 +202,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
     }
 
     // all balance is lusd
-    return {'0x5f98805A4E8be255a32880FDeC7F6728C6568bA0' : totalBalance.toString(10)}
+    return {[ADDRESSES.ethereum.LUSD]: totalBalance.toString(10)}
   }
 
   async function tvlEth(timestamp, block) {

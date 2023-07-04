@@ -17,7 +17,9 @@
     "SNX": "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f",
     "YFI": "0x0bc529c00c6401aef6d220be8c6ea1667f6ad93e",
     "DAI": "0x6b175474e89094c44da98b954eedeac495271d0f",
+    "SAI": "0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359",
     "cvxFXS": "0xfeef77d3f69374f66429c91d732a244f074bdf74",
+    "cvxCRV": "0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7",
     "vlCVX": "0x72a19342e8f1838460ebfccef09f6585e32db86e",
     "CVX": "0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B",
     "BNB": "0xb8c77482e45f1f44de1745f52c74426c631bdd52",
@@ -33,6 +35,8 @@
     "FTM": "0x4e15361fd6b4bb609fa63c81a2be19d873717870",
     "GNO": "0x6810e776880C02933D47DB1b9fc05908e5386b96",
     "LUSD": "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0",
+    "sUSD_OLD": "0x57ab1e02fee23774580c119740129eac7081e9d3",
+    "sUSD": "0x57Ab1ec28D129707052df4dF418D58a2D46d5f51",
     "SUSHI": "0x6b3595068778dd592e39a122f4f5a5cf09c90fe2"
   },
   "fantom": {
@@ -1304,6 +1308,9 @@
   },
   "xpla": {
     "XPLA": "axpla"
+  },
+  "chihuahua": {
+    "HUAHUA": "uhuahua"
   },
   "pulse": {
     "WPLS": "0xa1077a294dde1b09bb078844df40758a5d0f9a27",
