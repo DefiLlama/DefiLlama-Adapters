@@ -16,7 +16,7 @@ query nfts($block: Int) {
   }
 }
 `
-const endpoint = 'https://api.thegraph.com/subgraphs/name/metastreet-labs/metastreet-v2-beta'
+const endpoint = 'https://api.studio.thegraph.com/query/49216/metastreet-v2-mainnet-devel/version/latest'
 
 // Constants
 const METASTREET_POOL_FACTORY = "0x1c91c822F6C5e117A2abe2B33B0E64b850e67095";
@@ -87,7 +87,7 @@ module.exports = {
     tvl,
     borrowed: getMetaStreetBorrowedValue(),
   },
-  methodology: "TVL is calculated by summing the total value of all liquidity nodes across all pools. The TVL includes tokens available and collaterals",
+  methodology: "TVL is calculated by summing the value of token balances and NFTs across all MetaStreet pools. Total borrowed is calculated by subtracting the tokens available from the total value of all liquidity nodes across all pools.",
   start: 17497132, // Block number of PoolFactory creation
 };
 
