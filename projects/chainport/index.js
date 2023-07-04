@@ -39,8 +39,8 @@ const config = {
         ADDRESSES.ethereum.BUSD,
         "0x8B3870Df408fF4D7C3A26DF852D41034eDa11d81",
         "0x0000000DE40dfa9B17854cBC7869D80f9F98D823",
-        // "0x42Baf1f659D765C65ADE5BB7E08eb2C680360d9d", //CORNOPIA 
-        // "0xBb3A8FD6Ec4bF0FDc6Cd2739b1e41192D12B1873", OBI 
+        "0x42Baf1f659D765C65ADE5BB7E08eb2C680360d9d", // CORNUCOPIAS 
+        "0xBb3A8FD6Ec4bF0FDc6Cd2739b1e41192D12B1873", // OBI 
         "0x3496B523e5C00a4b4150D6721320CdDb234c3079",
         "0x5F0bc16D50F72d10b719dBF6845DE2E599eb5624",
         "0x7659CE147D0e714454073a5dd7003544234b6Aa0",
@@ -89,7 +89,11 @@ const config = {
     owners: [vault1ftm, vault2ftm],
   },
   cardano: {
-    owners: ['addr1xxcqzje930yw0hykwhf0a89l62dmjwqqpfzdsppf8rhv9rg2czf3yffs8ar450sw50w4xn3pxxwvkz25s4ygh7pjq23ql4slcu'],
+    owners: [
+      'addr1xxcqzje930yw0hykwhf0a89l62dmjwqqpfzdsppf8rhv9rg2czf3yffs8ar450sw50w4xn3pxxwvkz25s4ygh7pjq23ql4slcu', // multi sig cold storage
+      'addr1v9nygflpcedeg004tfghu9hdxhg29sv9550sdyvvu4gxepq5ps9ra', // hot bridge address 1
+      'addr1vxku68zc6wrewfkrdaduw2t8yj7nsh0z6mg8vwuxh7pwjxckzjkjq' // hot bridge address 2
+    ],
   }
 }
 
