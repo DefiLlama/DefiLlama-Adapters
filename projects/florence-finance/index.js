@@ -2,7 +2,7 @@
 const FACTORY_CONTRACT_ETH = "0xD6348E8EacE62Eb3Eb77fBbA8D8c363e375fC455";
 const EURS_CONTRACT_ETH= "0xdb25f211ab05b1c97d595516f45794528a807ad8";
 
-async function tvl(_, _1, _2, { api }) {
+async function borrowed(_, _1, _2, { api }) {
   // Get all vaults
   const vaultIds = await api.call({ 
     abi: "function getLoanVaultIds() external view returns (string[])",
@@ -17,5 +17,5 @@ async function tvl(_, _1, _2, { api }) {
 module.exports = {
   start: 16077400,
   methodology: "Data is retrieved on-chain by taking the total sum of all loans outstanding (dominated in EURS Statis) from all platform vaults.",
-  ethereum: { tvl }
+  ethereum: { borrowed, tvl: () => ({}) }
 }
