@@ -1,13 +1,26 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const { ethers } = require("ethers");
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { blockQuery } = require('../helper/http')
+
+const query = `
+query nfts($block: Int) {
+  loans(where: { or: [{ status: "Active" }, { status: "Liquidated" }] } block: { number: $block }) {
+    collateralTokenIds
+    collateralToken {
+      id
+    }
+    pool {
+      id
+    }
+  }
+}
+`
+const endpoint = 'https://api.thegraph.com/subgraphs/name/metastreet-labs/metastreet-v2-beta'
 
 // Constants
 const METASTREET_POOL_FACTORY = "0x1c91c822F6C5e117A2abe2B33B0E64b850e67095";
-const MAX_UINT_128 = ethers.BigNumber.from(
-  "0xffffffffffffffffffffffffffffffff"
-);
+const MAX_UINT_128 = "0xffffffffffffffffffffffffffffffff"
 
 // Gets all MetaStreet V2 pools created by PoolFactory and their
 // corresponding currency token
@@ -33,34 +46,6 @@ async function getAllPoolsAndTokens(block) {
   return [pools, tokens];
 }
 
-// Calculates the TVL across all MetaStreet pools where
-// TVL includes the value of interest earned, tokens available,
-// and tokens loaned out
-async function getTVL(values, block, pools, tokens) {
-  const poolTVLs = (
-    await sdk.api.abi.multiCall({
-      abi: abi.liquidityNodes,
-      calls: pools.map((pool) => ({
-        target: pool,
-        params: [0, MAX_UINT_128],
-      })),
-      block,
-    })
-  ).output.map((response) =>
-    response.output.reduce(
-      (partialSum, node) => partialSum.add(node.value),
-      ethers.constants.Zero
-    )
-  );
-
-  // Sum up TVLs of each pool
-  for (let i = 0; i < pools.length; i++) {
-    sdk.util.sumSingleBalance(values, tokens[i], poolTVLs[i]);
-  }
-
-  return values;
-}
-
 // Calculates total borrowed value across all MetaStreet pools
 async function getBorrowedValue(values, block, pools, tokens) {
   const poolsBorrowedValue = (
@@ -74,8 +59,8 @@ async function getBorrowedValue(values, block, pools, tokens) {
     })
   ).output.map((response) =>
     response.output.reduce(
-      (partialSum, node) => partialSum.add(node.value).sub(node.available),
-      ethers.constants.Zero
+      (partialSum, node) => partialSum + +node.value - +node.available,
+      0
     )
   );
 
@@ -85,16 +70,6 @@ async function getBorrowedValue(values, block, pools, tokens) {
   }
 
   return values;
-}
-
-function getMetaStreetTVL() {
-  return async (_, block) => {
-    const values = {};
-    // Get all pools and tokens
-    const [pools, tokens] = await getAllPoolsAndTokens(block);
-    await getTVL(values, block, pools, tokens);
-    return values;
-  };
 }
 
 function getMetaStreetBorrowedValue() {
@@ -109,7 +84,6 @@ function getMetaStreetBorrowedValue() {
 
 module.exports = {
   ethereum: {
-    // tvl: getMetaStreetTVL(),
     tvl,
     borrowed: getMetaStreetBorrowedValue(),
   },
@@ -120,7 +94,9 @@ module.exports = {
 async function tvl(_, _b, _cb, { api, }) {
   const pools = await api.call({ target: METASTREET_POOL_FACTORY, abi: abi.getPools, })
   const tokens = await api.multiCall({ abi: abi.currencyToken, calls: pools })
-  const collateralTokens = await api.multiCall({ abi: abi.collateralToken, calls: pools })
-  const ownerTokens = pools.map((pool, i) => [[tokens[i], collateralTokens[i]], pool,])
+  // const collateralTokens = await api.multiCall({ abi: abi.collateralToken, calls: pools })
+  const ownerTokens = pools.map((pool, i) => [[tokens[i]], pool,])
+  const { loans } = await blockQuery(endpoint, query, { api, blockCatchupLimit: 600, })
+  loans.forEach(loan => api.add(loan.collateralToken.id, loan.collateralTokenIds.length))
   return sumTokens2({ api, ownerTokens, })
 }
