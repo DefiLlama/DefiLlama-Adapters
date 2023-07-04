@@ -15,9 +15,6 @@ const lpStrategyContracts = {
         "quasar1suhgf5svhu4usrurvxzlgn54ksxmn8gljarjtxqnapv8kjnp4nrsmslfn4",
         "quasar1ma0g752dl0yujasnfs9yrk6uew7d0a2zrgvg62cfnlfftu2y0egqx8e7fv",
     ],
-    704: [
-        "quasar1yyca08xqdgvjz0psg56z67ejh9xms6l436u8y58m82npdqqhmmtqk5tv30",
-    ],
     803: [
         "quasar1jgn70d6pf7fqtjke0q63luc6tf7kcavdty67gvfpqhwwsx52xmjq7kd34f",
         "quasar1t9adyk9g2q0efn3xndunzy4wvdrnegjkpvp382vm2uc7hnvash5qpzmxe4",
@@ -34,8 +31,37 @@ const lpStrategyContracts = {
     ],
 }
 
+async function tvlOsmosis() {
+    let amounts = {}
 
-async function tvl() {
+    for (const poolID in lpStrategyContracts) {
+        let lpContracts = lpStrategyContracts[poolID];
+        for (const contractAddress of lpContracts) {
+            try {
+                let ica_balances = await queryContract({
+                    contract: contractAddress,
+                    chain: chain,
+                    data: { 'ica_balance': {} }
+                });
+
+                let denom = ica_balances.amount.denom;
+                let amount = Number(ica_balances.amount.amount);
+
+                if (typeof amounts[denom] === "undefined") {
+                    amounts[denom] = amount;
+                } else {
+                    amounts[denom] += amount;
+                }
+            } catch (e) {
+                continue;
+            }
+        }
+    }
+
+    return transformBalances('osmosis', amounts)
+}
+
+async function tvlQuasar() {
     let amounts = {}
 
     for (const poolID in lpStrategyContracts){
@@ -100,6 +126,9 @@ module.exports = {
     timetravel: false,
     methodology: "Total TVL on vaults",
     quasar: {
-        tvl,
+        tvl: tvlQuasar,
+    },
+    osmosis: {
+        tvl: tvlOsmosis,
     },
 }
