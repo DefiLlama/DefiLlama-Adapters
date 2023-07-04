@@ -14,16 +14,18 @@ async function tvl(_, _1, _2, { api }) {
     item.type.includes("Bucket")
   );
 
-  const tankList = protocolFields.filter((item) => item.type.includes("Tank"));
+  //Uncomment it when BUCK listed on CoinGecko
+  // const tankList = protocolFields.filter((item) => item.type.includes("Tank"));
 
   for (const bucket of bucketList) {
     const coin = bucket.type.split("<").pop()?.replace(">", "") ?? "";
     api.add(coin, bucket.fields.collateral_vault);
   }
 
-  for (const tank of tankList) {
-    api.add(BUCK, tank.fields.reserve);
-  }
+  //Uncomment it when BUCK listed on CoinGecko
+  // for (const tank of tankList) {
+  //   api.add(BUCK, tank.fields.reserve);
+  // }
 }
 
 module.exports = {
