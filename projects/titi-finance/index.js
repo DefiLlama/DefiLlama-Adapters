@@ -1,6 +1,8 @@
 const ADDRESSES = require('../helper/coreAssets.json');
 const { sumTokensAndLPsSharedOwners, sumTokens2 } = require('../helper/unwrapLPs')
-const { stakings } = require("../helper/staking");
+const { stakingPricedLP, staking } = require("../helper/staking");
+const { stakingUnknownPricedLPInSyncSwap, pool2sEthereum, pool2sEra } = require("./utils");
+const { pool2s } = require("../helper/pool2");
 
 // --------------------------
 
@@ -47,10 +49,31 @@ module.exports = {
     methodology: `Calculate the reserve-type assets locked in the contract, including the user's stake funds in MarketMakerFund and the reserve of TiUSD issued by the protocol, TiTi-AMMs used to provide liquidity TiUSD is not included`,
     ethereum: {
         tvl: ethTvl,
-        // staking: stakings([ethTiTiStaking], [ethTiTiToken], 'ethereum')
+        // staking: staking([ethTiTiStaking], ethTiTiToken, "ethereum")
+        staking: stakingPricedLP(ethTiTiStaking, ethTiTiToken, 'ethereum', "0xca4AEf99b3567Dbb631DF0DCd51D446DB7eb63e5", "usd-coin", true, 6),
+        pool2: pool2sEthereum(
+            ["0x9A132b777FE7af6561BAAb60A03302C697fA8F3B"],
+            ["0x830Ce3859F98104DC600efBFAD90A65386B95404"],
+            "0xca4AEf99b3567Dbb631DF0DCd51D446DB7eb63e5",
+            "ethereum"
+        )
     },
     era: {
         tvl: eraTvl,
-        // staking: stakings([eraTiTiStaking], eraTiTiToken, "era")
+        staking: stakingUnknownPricedLPInSyncSwap(eraTiTiStaking, eraTiTiToken, 'era', "0x512f5a62eE69013643f37C12fd8Be391Db7b4550", "usd-coin", 6),
+        pool2: pool2sEra(
+            [
+                "0xA690DC59d6afC12d6789f46fc211DdD27f1C7f7c",
+                "0x2cbCE1EFC624138326877C386692E889D8C7c834",
+                "0xDc8440CdC50bEe0936bB49De82e80c2439dCEc42"
+            ],
+            [
+                "0x574E2E833A010997840f368edF6542d8950c2788",
+                "0x228D400F196760432BD8bcE74Fa1e6580aF4BF03",
+                "0xd4cb4f38de684122Af261ee822Dc1437601e5424"
+            ],
+            "0x512f5a62eE69013643f37C12fd8Be391Db7b4550",
+            "era"
+        )
     },
 }
