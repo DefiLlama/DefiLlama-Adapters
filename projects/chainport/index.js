@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json');
-const { sumTokensExport, nullAddress } = require("../helper/unwrapLPs");
+const { sumTokensExport, nullAddress } = require("../helper/sumTokens");
 
 //ETH
 
@@ -88,6 +88,9 @@ const config = {
      ],
     owners: [vault1ftm, vault2ftm],
   },
+  cardano: {
+    owners: ['addr1xxcqzje930yw0hykwhf0a89l62dmjwqqpfzdsppf8rhv9rg2czf3yffs8ar450sw50w4xn3pxxwvkz25s4ygh7pjq23ql4slcu'],
+  }
 }
 
 Object.keys(config).forEach(chain => {
