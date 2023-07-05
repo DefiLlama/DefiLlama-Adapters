@@ -19,15 +19,15 @@ module.exports = {
     [1675242000,"sifu 2M deposit"]
   ],
   fantom: {
-    staking: staking(fantomStaking, fantomMMY, "fantom", fantomMMY, 18),
+    staking: staking(fantomStaking, fantomMMY, "fantom"),
     tvl: gmxExports({ vault: fantomVault })
   },
   optimism: {
-    staking: staking(opStaking, opMMY, "optimism", fantomMMY, 18),
+    staking: staking(opStaking, opMMY, "optimism"),
     tvl: gmxExports({ vault: opVault })
   },
   arbitrum: {
-    staking: staking(arbStaking, arbMMY, "arbitrum", fantomMMY, 18),
+    staking: staking(arbStaking, arbMMY, "arbitrum"),
     tvl: gmxExports({ vault: arbVault })
   }
 
