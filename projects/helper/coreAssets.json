@@ -1312,6 +1312,10 @@
   "chihuahua": {
     "HUAHUA": "uhuahua"
   },
+  "filecoin": {
+    "WFIL": "0xce5805cf6c84f71d2897f632e0aa60d2430ccd2a",
+    "USDT": "0x422849B355039bC58F2780cc4854919fC9cfaF94"
+  },
   "pulse": {
     "WPLS": "0xa1077a294dde1b09bb078844df40758a5d0f9a27",
     "ETH": "0x02dcdd04e3f455d838cd1249292c58f3b79e3c3c",
