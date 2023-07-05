@@ -48,6 +48,10 @@ const wooPPConfig = {
 		ADDRESSES.era.WETH, // WETH
 		ADDRESSES.era.USDC, // USDC
 	],
+	polygon_zkevm: [
+		ADDRESSES.polygon_zkevm.WETH,
+		ADDRESSES.polygon_zkevm.USDC,
+	],
 }
 
 const chainConfig = {
@@ -86,9 +90,14 @@ const chainConfig = {
 		woo: '',
 		stakingContract: '',
 	},
+	polygon_zkevm: {
+		wooPPContract: '0xF5d215d9C84778F85746D15762DaF39B9E83a2d6',
+		woo: '',
+		stakingContract: '',
+	},
 }
 
-const noStakingChains = ['optimism', 'era']
+const noStakingChains = ['optimism', 'era', 'polygon_zkevm']
 Object.keys(chainConfig).forEach(chain => {
 	const wooPPTokens = wooPPConfig[chain]
 	const { wooPPContract, woo, stakingContract } = chainConfig[chain]
