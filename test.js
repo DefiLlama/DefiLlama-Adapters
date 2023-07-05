@@ -240,7 +240,7 @@ function checkExportKeys(module, filePath, chains) {
       )))
     process.exit(0)
 
-  const blacklistedRootExportKeys = ['tvl', 'staking', 'pool2', 'borrowed', 'treasury', 'offers', 'vesting'];
+  const blacklistedRootExportKeys = ['tvl', 'staking', 'pool2', 'borrowed', 'treasury', 'offers', 'vesting', 'entities'];
   const rootexportKeys = Object.keys(module).filter(item => typeof module[item] !== 'object');
   const unknownChains = chains.filter(chain => !chainList.includes(chain));
   const blacklistedKeysFound = rootexportKeys.filter(key => blacklistedRootExportKeys.includes(key));
