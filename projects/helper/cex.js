@@ -81,7 +81,15 @@ const defaultTokens = {
     '0x9d71CE49ab8A0E6D2a1e7BFB89374C9392FD6804',//nvir
     '0x5b649C07E7Ba0a1C529DEAabEd0b47699919B4a2',//sgt
     '0x4385328cc4d643ca98dfea734360c0f596c83449',
-
+    '0xbc396689893d065f41bc2c6ecbee5e0085233447', //perp
+    '0xd7c49cee7e9188cca6ad8ff264c1da2e69d4cf3b', //NXM
+    '0xaaef88cea01475125522e117bfe45cf32044e238', // GF
+    '0x949d48eca67b17269629c7194f4b727d4ef9e5d6', // MC
+    '0xbb0e17ef65f82ab018d8edd776e8dd940327b28b', // AXS
+    '0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0', // FXS
+    '0xd417144312dbf50465b1c641d016962017ef6240',// cqt
+    '0xcb84d72e61e383767c4dfeb2d8ff7f4fb89abc6e', //VEGA
+    '0xcccd1ba9f7acd6117834e0d28f25645decb1736a', //ecox
   ],
   tron: [
     nullAddress,
@@ -99,6 +107,7 @@ const defaultTokens = {
     ADDRESSES.polygon.USDC, //USDC
     ADDRESSES.polygon.DAI, //DAI
     '0x2AB0e9e4eE70FFf1fB9D67031E44F6410170d00e', //xen
+    '0x0169ec1f8f639b32eec6d923e24c2a2ff45b9dd6', //ALGB
   ],
   algorand: [],
   solana: [
