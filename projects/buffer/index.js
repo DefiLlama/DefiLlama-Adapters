@@ -15,7 +15,6 @@ const contracts = {
   USDC_POOL_V4: "0xfD9f8841C471Fcc55f5c09B8ad868BdC9eDeBDE1",
   POLY_POOL_V1: "0x6FD5B386d8bed29b3b62C0856250cdD849b3564d",
   ARB_POOL_V1: "0xaE0628C88EC6C418B3F5C005f804E905f8123833",
-  BFR_POOL_V1: "0xeAbEa290A623a648B3A8ab4B9AD668fb2063f8aB",
   BFR_STAKING: "0x173817F33f1C09bCb0df436c2f327B9504d6e067"
 };
 
@@ -29,7 +28,6 @@ module.exports = {
         contracts.USDC_POOL_V2,
         contracts.USDC_POOL_V3,
         contracts.ARB_POOL_V1,
-        contracts.BFR_POOL_V1,
         contracts.USDC_POOL_V4
       ]
     })
