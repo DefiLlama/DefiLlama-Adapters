@@ -2,7 +2,7 @@ const { getLogs } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const config = {
-  arbitrum: { factory: '0xDaD057C49d957c98D20285935B0a87f23907e22C', fromBlock: 107875529, }
+  arbitrum: { factory: '0x503A14768e23456620fB3Cb61e37A36A2736Cbd0', fromBlock: 107875529, }
 }
 
 Object.keys(config).forEach(chain => {
