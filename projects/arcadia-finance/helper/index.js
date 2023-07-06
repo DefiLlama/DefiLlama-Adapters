@@ -1,3 +1,6 @@
+const { sumTokens2 } = require('../../helper/unwrapLPs')
+const abi = require("./abi.json")
+
 const config = {
   optimism: {
     factory: "0x00CB53780Ea58503D3059FC02dDd596D0Be926cB",
@@ -15,22 +18,19 @@ const config = {
   }
 }
 
-const abi = require("./abi.json");
 
 async function tvl(_, _b, _cb, { api, }) {
   const { chain } = api
   let { factory, pools } = config[chain]
   pools = Object.values(pools)
   const poolAssets = await api.multiCall({ abi: 'address:asset', calls: pools })
-  const totalRealisedLiquidity = await api.multiCall({ abi: abi.totalRealisedLiquidity, calls: pools })
-  const totalUnrealisedLiquidity = await api.multiCall({ abi: abi.totalUnrealisedLiquidity, calls: pools })
-  api.addTokens(poolAssets, totalRealisedLiquidity)
-  api.addTokens(poolAssets, totalUnrealisedLiquidity)
 
   const vaults = await api.fetchList({ lengthAbi: abi.vaultLength, itemAbi: abi.vaultAddress, target: factory, })
   const assetData = await api.multiCall({ abi: abi.assetData, calls: vaults, })
 
   assetData.forEach((assetsInVaults) => api.addTokens(assetsInVaults[0], assetsInVaults[2]))
+
+  return sumTokens2({ api, tokensAndOwners2: [poolAssets, pools, ]})
 }
 
 module.exports = {
