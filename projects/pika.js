@@ -15,7 +15,13 @@ async function tvl(timestamp, block, chainBlocks) {
 		block: block,
 		chain: 'optimism'
 	})).output;
-	const totalBalance = Number(balance1) + Number(balance2);
+	const balance3 = (await sdk.api.erc20.balanceOf({
+		target: '0x7f5c764cbc14f9669b88837ca1490cca17c31607',
+		owner: '0x9b86B2Be8eDB2958089E522Fe0eB7dD5935975AB',
+		block: block,
+		chain: 'optimism'
+	})).output;
+	const totalBalance = Number(balance1) + Number(balance2) + Number(balance3);
 	return { '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48': totalBalance }
 };
 
