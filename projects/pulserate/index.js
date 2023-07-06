@@ -8,10 +8,15 @@ module.exports = {
     tvl: getUniTVL({
       factory: "0xE2332E5297b18a21DcE0E6ac461e821C353A00cA",
       useDefaultCoreAssets: true,
+      fetchBalances: true,
     }),
     staking: sumTokensExport({
       owners: ["0xD7A2F5A72079654E7997C615cC07A1b92D850b32"],
       tokens: [PSHARE],
+      lps: [
+        '0x91d3E933B7f2ccBAdf4d5278d826Cb10659a1c55',
+      ],
+      useDefaultCoreAssets: true,
     }),
   },
 };
