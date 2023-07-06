@@ -33,5 +33,5 @@ Object.keys(config).forEach(chain => {
     module.exports[chain].pool2 = isPool2 ? pool2(chef, lp) : staking(chef, lp)
   
   if (hash && vHash)
-    module.exports[chain].staking = staking(vHash, hash)
+    module.exports[chain].staking = staking(vHash, hash, undefined, 'arbitrum:'+config.arbitrum.hash)
 })
