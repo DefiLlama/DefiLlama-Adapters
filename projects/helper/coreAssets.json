@@ -108,7 +108,8 @@
     "YGG": "0x13ab6739368a4e4abf24695bf52959224367391f",
     "IVN": "0x6a46d878401f46b4c7f665f065e0667580e031ec",
     "ankrBNB": "0xe85afccdafbe7f2b096f268e31cce3da8da2990a",
-    "aBNBb": "0xbb1aa6e59e5163d8722a122cd66eba614b59df0d"
+    "aBNBb": "0xbb1aa6e59e5163d8722a122cd66eba614b59df0d",
+    "TUSD": "0x40af3827f39d0eacbf4a168f8d4ee67c121d11c9"
   },
   "polygon": {
     "WMATIC": "0xfd28c7cea3c50a060cb4c0059e453c6d4dd9829d",
