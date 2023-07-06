@@ -1,5 +1,4 @@
-const axios = require("axios");
-const { endPoints, queryContract } = require('../helper/chain/cosmos')
+const { queryContract } = require('../helper/chain/cosmos')
 const sdk = require('@defillama/sdk')
 
 const chain = 'quasar'
@@ -31,7 +30,7 @@ const lpStrategyContracts = {
     ],
 }
 
-async function tvlOsmosis() {
+async function tvl() {
     const api = new sdk.ChainApi({ chain: 'osmosis' })
 
     for (const poolID in lpStrategyContracts) {
@@ -49,6 +48,7 @@ async function tvlOsmosis() {
 
                 api.add(denom, amount)
             } catch (e) {
+                console.log(e)
                 continue;
             }
         }
@@ -57,70 +57,10 @@ async function tvlOsmosis() {
     return api.getBalances()
 }
 
-async function tvlQuasar() {
-    const api = new sdk.ChainApi({ chain })
-
-    for (const poolID in lpStrategyContracts){
-        let lpContracts = lpStrategyContracts[poolID];
-        let poolEndpoint = `${endPoints['osmosis']}/osmosis/gamm/v1beta1/pools/${poolID}`;
-        const poolData = (await axios.get(poolEndpoint)).data.pool;
-
-        for (const contractAddress of lpContracts) {
-            let lp_shares = await queryContract({
-                contract: contractAddress,
-                chain: chain,
-                data: { 'lp_shares': {} }
-            });
-            
-            let amount = calculateTokenAmounts(poolData, lp_shares['lp_shares']['locked_shares'])
-            for (const denom in amount) {
-                api.add(denom, amount[denom])
-            }
-        }
-    }
-
-    return api.getBalances()
-}
-
-
-function calculateTokenAmounts(poolData, gammAmount) {
-    // Extract the total pool shares.
-    let totalShares = poolData.total_shares.amount;
-
-    // Initialize an object to hold the amounts of each token.
-    let tokenAmounts = {};
-
-    // For each token in the pool...
-    if (typeof poolData.pool_assets !== "undefined") {
-        for (let asset of poolData.pool_assets) {
-            // Extract the token's denom and amount.
-            let denom = asset.token.denom;
-            let assetAmount = asset.token.amount;
-
-            // Calculate the amount of this token that corresponds to the given amount of pool shares.
-            tokenAmounts[denom] = (gammAmount * assetAmount) / totalShares;
-        }
-    } else {
-        for (let asset of poolData.pool_liquidity) {
-            // Extract the token's denom and amount.
-            let denom = asset.denom;
-            let assetAmount = asset.amount;
-
-            // Calculate the amount of this token that corresponds to the given amount of pool shares.
-            tokenAmounts[denom] = (gammAmount * assetAmount) / totalShares;
-        }
-    }
-
-    return tokenAmounts;
-}
-
 module.exports = {
     timetravel: false,
     methodology: "Total TVL on vaults",
-    quasar: {
-        tvl: tvlQuasar,
-    },
     osmosis: {
-        tvl: tvlOsmosis,
+        tvl,
     },
 }
