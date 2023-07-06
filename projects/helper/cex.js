@@ -95,7 +95,8 @@ const defaultTokens = {
     nullAddress,
     ADDRESSES.tron.USDT, // USDT
     ADDRESSES.tron.USDC,  // USDC
-    'TFptbWaARrWTX5Yvy3gNG5Lm8BmhPx82Bt' //wbt
+    'TFptbWaARrWTX5Yvy3gNG5Lm8BmhPx82Bt', //wbt
+    ADDRESSES.tron.TUSD
   ],
   polygon: [
     nullAddress,
