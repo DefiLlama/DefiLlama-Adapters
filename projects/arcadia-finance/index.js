@@ -13,7 +13,7 @@ async function tvlEthereum(timestamp, ethBlock, { ethereum: block }, { api }) {
 
 module.exports = {
   methodology:
-    "TVL includes ERC-20 tokens that have been supplied as well as ERC-20 tokens that are supplied for lending.",
+    "TVL includes ERC-20 tokens that have been supplied as collateral as well as ERC-20 tokens that are supplied by liquidity providers.",
   optimism:{
     tvl:tvlOptimism
   },
