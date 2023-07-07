@@ -64,7 +64,7 @@ const getRealBalance = (balance1, decimal) => {
   const real = balance.dividedBy(divider, 10);
   return real.toNumber();
 };
-const formatBalanceDolar = (token, price) => {
+const formatBalanceDolar = (token, price = 0) => {
   if (token && token.balance) {
     const strBalance = token.balance;
 
