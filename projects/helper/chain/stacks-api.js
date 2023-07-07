@@ -31,26 +31,3 @@ async function call({ target, abi, inputArgs = [], }) {
 module.exports = {
   call,
 }
-
-async function main() {
-  const result = await callReadOnlyFunction(options);
-  const result1 = await callReadOnlyFunction({...options, functionName: 'get-lp-data' });
-  console.log(sTransactions.cvToValue(result));
-  console.log(sTransactions.cvToValue(result1));
-  console.log(sTransactions.cvToValue(await callReadOnlyFunction({
-    contractAddress: 'SP1Z92MPDQEWZXW36VX71Q25HKF5K2EPCJ304F275',
-    contractName: 'stackswap-swap-v5k',
-    functionName: 'get-pair-count',
-    functionArgs: [],
-    network,
-    senderAddress
-  })))
-  console.log(sTransactions.cvToValue(await callReadOnlyFunction({
-    contractAddress: 'SP1Z92MPDQEWZXW36VX71Q25HKF5K2EPCJ304F275',
-    contractName: 'stackswap-swap-v5k',
-    functionName: 'get-pair-contracts',
-    functionArgs: [uintCV(5)],
-    network,
-    senderAddress
-  })))
-}
