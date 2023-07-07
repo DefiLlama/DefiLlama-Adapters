@@ -4,7 +4,6 @@ const { sumTokens2: sumTokensEVM, nullAddress, } = require('./unwrapLPs')
 const sdk = require('@defillama/sdk')
 
 const helpers = {
-  "tron": require("./chain/tron"),
   "eos": require("./chain/eos"),
   "elrond": require("./chain/elrond"),
   "cardano":require("./chain/cardano"),
@@ -45,7 +44,10 @@ function sumTokensExport(options) {
 }
 
 async function sumTokens(options) {
-  let { chain, owner, owners = [], tokens = [], tokensAndOwners = [], blacklistedTokens = [], balances = {}, token, } = options 
+  let { chain, owner, owners = [], tokens = [], tokensAndOwners = [], blacklistedTokens = [], balances = {}, token, api } = options 
+  if (api && !specialChains.includes(chain)) {
+    chain = api.chain
+  }
 
   if (token) tokens = [token]
   if (owner) owners = [owner]

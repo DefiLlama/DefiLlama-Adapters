@@ -18,6 +18,9 @@ async function tvl(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
+  hallmarks: [
+    [1646179200, "Rug Pull"]
+  ],
   deadFrom: 1648765747,
   methodology: "TVL includes all farms in MasterChef contract",
   fantom: {

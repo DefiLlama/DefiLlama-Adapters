@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { getChainTransform } = require("../helper/portedTokens");
-const { getConfig } = require('../helper/cache')
+const { getConfig } = require("../helper/cache");
 
 const apiUrl = "https://goodghosting-api.com/v1/games";
 
@@ -11,18 +11,26 @@ const chainIdMap = {
 };
 
 const contractVersions = {
-  v200: ["2.0.0", "2.0.1", "2.0.2", "2.0.3"],
+  v200: ["2.0.0", "2.0.1", "2.0.2", "2.0.3", "2.0.4", "2.0.5"],
   v001: "0.0.1",
   v002: "0.0.2",
   v003: "0.0.3",
 };
 
-const isV2Game = (contractVersion) =>
-  contractVersions.v200.includes(contractVersion);
+const isV2Game = (contractVersion) => {
+  if (contractVersions.v200.includes(contractVersion)) {
+    return true;
+  }
+  const [derivedContractVersion] = contractVersion.split("-");
+  if (contractVersions.v200.includes(derivedContractVersion)) {
+    return true;
+  }
+  return false;
+};
 
 function tvl(chain) {
   return async (timestamp, ethBlock, chainBlocks) => {
-    const gameData = await getConfig('good-ghosting', apiUrl)
+    const gameData = await getConfig("good-ghosting", apiUrl);
 
     const balances = {};
     const transform = await getChainTransform(chain);
@@ -57,9 +65,10 @@ function tvl(chain) {
       .flat();
 
     const gameContractBalances = await sdk.api.abi.multiCall({
-      calls,
+      calls: calls.filter(i => i.target),
       abi: "erc20:balanceOf",
       chain,
+      permitFailure: true,
     });
 
     sdk.util.sumMultiBalanceOf(

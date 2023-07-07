@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 /**
  * lp token addresses
  */
@@ -14,12 +15,12 @@ const USD2_MAI_LP = "0x3Eaa426861a283F0E46b6411aeB3C3608B090E0e";
 /**
  * token addresses
  */
-const mUSDC = "0xEA32A96608495e54156Ae48931A7c20f0dcc1a21";
-const mUSDT = "0xbB06DCA3AE6887fAbF931640f67cab3e3a16F4dC";
+const mUSDC = ADDRESSES.metis.m_USDC;
+const mUSDT = ADDRESSES.metis.m_USDT;
 const mDAI = "0x4c078361FC9BbB78DF910800A991C7c3DD2F6ce0";
 const mBUSD = "0xb809cda0c2f79f43248C32b5DcB09d5cD26BbF10"
-const DAI = "0x4651B38e7ec14BB3db731369BFE5B08F2466Bd0A"; // deprecated
-const MAI = "0xdFA46478F9e5EA86d57387849598dbFB2e964b02"
+const DAI = ADDRESSES.metis.DAI; // deprecated
+const MAI = ADDRESSES.moonbeam.MAI
 
 module.exports = {
   mBUSD: {

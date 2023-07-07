@@ -1,10 +1,11 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { unwrapUniswapLPs } = require("./helper/unwrapLPs")
 const { transformBscAddress } = require("./helper/portedTokens");
 const BigNumber = require('bignumber.js');
 const { sumSingleBalance } = require("@defillama/sdk/build/generalUtil");
 
-const usdtAddress = '0xdac17f958d2ee523a2206206994597c13d831ec7';
+const usdtAddress = ADDRESSES.ethereum.USDT;
 
 const oraichainToken = {
     'bsc': '0xa325ad6d9c92b55a3fc5ad7e412b1518f96441c0',

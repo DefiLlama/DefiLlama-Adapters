@@ -1,16 +1,17 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { getChainTransform,
   getFixBalances } = require("./helper/portedTokens");
 
 const minedTokens = {
   'cake': '0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82',
-  'busd': '0xe9e7cea3dedca5984780bafc599bd69add087d56',
-  'matic': '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-  'ftm': '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83',
-  'avax': '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7',
-  'usdc': '0x2791bca1f2de4661ed88a30c99a7a9449aa84174', // polygon
+  'busd': ADDRESSES.bsc.BUSD,
+  'matic': ADDRESSES.polygon.WMATIC_2,
+  'ftm': ADDRESSES.fantom.WFTM,
+  'avax': ADDRESSES.avax.WAVAX,
+  'usdc': ADDRESSES.polygon.USDC, // polygon
   'doge': '0xba2ae424d960c26247dd6c32edc70b295c744c43', // bsc
-  'eth': '0x2170ed0880ac9a755fd29b2688956bd959f933f8'   // bsc
+  'eth': ADDRESSES.bsc.ETH   // bsc
 };
 const minerContracts = {
   'cake': '0xD5d38f1815b4555527DE075a584268E08c5909EA',

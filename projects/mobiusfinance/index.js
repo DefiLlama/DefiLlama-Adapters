@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const formatBytes32String = require('ethers').utils.formatBytes32String;
 const { sumTokens, } = require('../helper/unwrapLPs')
 const { transformPolygonAddress } = require('../helper/portedTokens')
@@ -11,7 +12,7 @@ const ResolverJson = {
 
 const sdk = require('@defillama/sdk')
 const chain = 'polygon'
-const nullAddr = "0x0000000000000000000000000000000000000000"
+const nullAddr = ADDRESSES.null
 const motToken = '0x2db0Db271a10661e7090b6758350E18F6798a49D'
 
 async function tvl(ts, _block, { polygon: block }) {

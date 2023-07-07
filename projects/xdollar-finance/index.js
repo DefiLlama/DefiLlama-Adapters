@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const BigNumber = require('bignumber.js')
 const { transformBalances } = require('../helper/portedTokens.js')
@@ -5,23 +6,23 @@ const { staking } = require('../helper/staking')
 
 const {getLiquityTvl} = require('../helper/liquity')
 
-const ETH_ADDR = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-const BTC_ADDR = "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599";
-const USDC_ADDR = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
+const ETH_ADDR = ADDRESSES.ethereum.WETH;
+const BTC_ADDR = ADDRESSES.ethereum.WBTC;
+const USDC_ADDR = ADDRESSES.ethereum.USDC;
 
 const iotexTMs = {
-    "0x366D48c04B0d315acF27Bd358558e92D4e2E9f3D": "0xa00744882684c3e4747faefd68d283ea44099d03", // WIOTX
-    "0x7204e2f210865aA1854F33B3532ab2DEb386CB59": "0xa00744882684c3e4747faefd68d283ea44099d03", // WIOTX v2
+    "0x366D48c04B0d315acF27Bd358558e92D4e2E9f3D": ADDRESSES.iotex.WIOTX, // WIOTX
+    "0x7204e2f210865aA1854F33B3532ab2DEb386CB59": ADDRESSES.iotex.WIOTX, // WIOTX v2
 }
 const iotexStableAPs = {
-    "0x8Af0EE5A98609fEdaf301Af74d3ca4Da614eaD43": "0x84abcb2832be606341a50128aeb1db43aa017449", // BUSD_b
-    "0xF524F844216069b167d65DCe68B24F3358260BD5": "0x6fbcdc1169b5130c59e72e51ed68a84841c98cd1", // USDT
-    // "0x206aAF608d1DD7eA9Db4b8460B2Bf8647522f90a": "0xd6070ae98b8069de6b494332d1a1a81b6179d960", // any
-    "0x84724DAEC2943B1FDd5250ffcF64dfa290606250": "0x84abcb2832be606341a50128aeb1db43aa017449", // BUSD_b v2
-    "0xc67cF429b055D664c7Ba06c9F5D17d0692C554fC": "0x6fbcdc1169b5130c59e72e51ed68a84841c98cd1", // USDT v2
+    "0x8Af0EE5A98609fEdaf301Af74d3ca4Da614eaD43": ADDRESSES.iotex.BUSD_bsc, // BUSD_b
+    "0xF524F844216069b167d65DCe68B24F3358260BD5": ADDRESSES.iotex.ioUSDT, // USDT
+    // "0x206aAF608d1DD7eA9Db4b8460B2Bf8647522f90a": ADDRESSES.iotex.anyXIM, // any
+    "0x84724DAEC2943B1FDd5250ffcF64dfa290606250": ADDRESSES.iotex.BUSD_bsc, // BUSD_b v2
+    "0xc67cF429b055D664c7Ba06c9F5D17d0692C554fC": ADDRESSES.iotex.ioUSDT, // USDT v2
 }
 const ethStables = {
-    "0xC0eb7718fF1B5fBF11cd314CbC212c167bF341DB": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC
+    "0xC0eb7718fF1B5fBF11cd314CbC212c167bF341DB": ADDRESSES.ethereum.USDC, // USDC
 }
 // node test.js projects/xdollar-finance/index.js
 
@@ -124,15 +125,15 @@ module.exports = {
         ]) 
     },
     arbitrum: {
-        tvl: getLiquityTvl('0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',"0x561d2d58bdad7a723a2cf71e8909a409dc2112ec", "arbitrum"),
+        tvl: getLiquityTvl(ADDRESSES.arbitrum.WETH,"0x561d2d58bdad7a723a2cf71e8909a409dc2112ec", "arbitrum"),
         staking: staking('0xc3fbc4056689cfab3f23809aa25004899ff4d75a','0x9eF758aC000a354479e538B8b2f01b917b8e89e7', 'arbitrum'),
     },
     polygon: {
-        tvl: getLiquityTvl('0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',"0x68738A47d40C34d890168aB7B612A6f649f395e4", "polygon"),
+        tvl: getLiquityTvl(ADDRESSES.polygon.WMATIC_2,"0x68738A47d40C34d890168aB7B612A6f649f395e4", "polygon"),
         staking: staking('0x3509f19581afedeff07c53592bc0ca84e4855475','0x3dc7b06dd0b1f08ef9acbbd2564f8605b4868eea', 'polygon'),
     },
     avax: {
-        tvl: getLiquityTvl('0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7',"0x561d2d58bdad7a723a2cf71e8909a409dc2112ec", "avax"),
+        tvl: getLiquityTvl(ADDRESSES.avax.WAVAX,"0x561d2d58bdad7a723a2cf71e8909a409dc2112ec", "avax"),
         staking: staking('0x68738a47d40c34d890168ab7b612a6f649f395e4','0x9ef758ac000a354479e538b8b2f01b917b8e89e7', 'avax', 'polygon:0x3dc7b06dd0b1f08ef9acbbd2564f8605b4868eea'),
     },
     hallmarks: [

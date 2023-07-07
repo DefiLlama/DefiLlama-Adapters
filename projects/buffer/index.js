@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require("../helper/staking");
 const { sumTokensExport } = require("../helper/unwrapLPs");
 
 const tokens = {
   BFR: "0x1A5B0aaF478bf1FDA7b934c76E7692D722982a6D",
-  USDC_ARB: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
-  USDC_POLY: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+  USDC_ARB: ADDRESSES.arbitrum.USDC,
+  USDC_POLY: ADDRESSES.polygon.USDC,
   ARB: "0x912CE59144191C1204E64559FE8253a0e49E6548"
 };
 
@@ -46,9 +47,7 @@ module.exports = {
     ],
     [Math.floor(new Date("2023-02-22") / 1e3), "Added a USDC Pool on polygon"],
     [Math.floor(new Date("2023-03-22") / 1e3), "Added ARB Pool"],
-    [
-      Math.floor(new Date("2023-04-14") / 1e3),
-      "Added USDC Protocol owned liquidity Pool"
-    ]
+    [Math.floor(new Date("2023-04-14") / 1e3), "Added USDC Protocol owned liquidity Pool"],
+    [Math.floor(new Date("2023-06-14") / 1e3), "Added BFR Pool"]
   ]
 };

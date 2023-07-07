@@ -15,9 +15,7 @@ function fetchChain(chainId, staking) {
                 tvl += Number(chain[vault]);
             }
         }
-        if (tvl === 0 && !staking) {
-            throw new Error(`chain ${chainId} tvl is 0`)
-        }
+        
 
         return toUSDTBalances(tvl);
     }
