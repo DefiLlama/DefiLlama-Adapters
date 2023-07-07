@@ -1336,5 +1336,9 @@
     "USDT": "0xff276c6bca1f66fd54a8915e830735d6ab0c7b09",
     "BTC": "0x935765ad27a1af00f73097c998a9fb721d2d7790",
     "ETH": "0xb4373ebb073a4dcba47e567d075a9583fa3c763e"
+  },
+  "stacks": {
+    "WSTX": "SP1Z92MPDQEWZXW36VX71Q25HKF5K2EPCJ304F275.wstx-token-v4a",
+    "WBTC": "SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR.Wrapped-Bitcoin::wrapped-bitcoin"
   }
 }
