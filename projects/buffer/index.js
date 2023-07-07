@@ -22,7 +22,7 @@ module.exports = {
   arbitrum: {
     staking: staking(contracts.BFR_STAKING, tokens.BFR),
     tvl: sumTokensExport({
-      tokens: [tokens.USDC_ARB, tokens.ARB, tokens.BFR],
+      tokens: [tokens.USDC_ARB, tokens.ARB],
       owners: [
         contracts.USDC_POOL_V1,
         contracts.USDC_POOL_V2,
