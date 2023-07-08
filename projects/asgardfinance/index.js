@@ -56,6 +56,9 @@ async function ethTvl(timestamp, block) {
 }
 
 module.exports = {
+  hallmarks: [
+    [1643155200, "Token mint exploit"]
+  ],
   ethereum: {
     staking,
     tvl: ethTvl,
