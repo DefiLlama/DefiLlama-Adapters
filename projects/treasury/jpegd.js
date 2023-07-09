@@ -21,7 +21,7 @@ const treasuryTvl = treasuryExports({
       ADDRESSES.ethereum.DAI,
       ADDRESSES.ethereum.TUSD,
       ADDRESSES.ethereum.CVX,
-      "0x853d955aCEf822Db058eb8505911ED77F175b99e", // FRAX
+      ADDRESSES.ethereum.FRAX,
       ADDRESSES.ethereum.LINK,
       ADDRESSES.ethereum.cvxCRV,
       "0x5aFE3855358E112B5647B952709E6165e1c1eEEe", // SAFE

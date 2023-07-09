@@ -1,8 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
-const { sumTokens, sumTokens2, } = require('../helper/unwrapLPs')
+const { sumTokens2, } = require('../helper/unwrapLPs')
 const abi = require("../pendle/abi.json");
-const BigNumber = require('bignumber.js')
 const positions = require('./positions.json');
 
 const cvx_abi = {
@@ -16,7 +15,6 @@ const cvx_abi = {
   stkcvxFRAXBP_lockedStakesOf: "function lockedStakesOf(address account) view returns (tuple(bytes32 kek_id, uint256 start_timestamp, uint256 liquidity, uint256 ending_timestamp, uint256 lock_multiplier)[])",
 }
 
-const cvxBoosterAddress = "0xF403C135812408BFbE8713b5A23a04b3D48AAE31";
 const degenesisContract = "0xc803737D3E12CC4034Dde0B2457684322100Ac38";
 const wethPool = "0xD3D13a578a53685B4ac36A1Bab31912D2B2A2F36";
 const usdcPool = "0x04bda0cf6ad025948af830e75228ed420b0e860d";
@@ -39,7 +37,7 @@ const rtoke3 = "0xA374A62DdBd21e3d5716cB04821CB710897c0972";
 const sushiPool = "0xf49764c9C5d644ece6aE2d18Ffd9F1E902629777";
 const sushi = ADDRESSES.ethereum.SUSHI;
 const fraxPool = "0x94671A3ceE8C7A12Ea72602978D1Bb84E920eFB2";
-const frax = "0x853d955acef822db058eb8505911ed77f175b99e";
+const frax = ADDRESSES.ethereum.FRAX;
 const daiPool = "0x0CE34F4c26bA69158BC2eB8Bf513221e44FDfB75";
 const dai = ADDRESSES.ethereum.DAI;
 const feiPool = "0x03DccCd17CC36eE61f9004BCfD7a85F58B2D360D";

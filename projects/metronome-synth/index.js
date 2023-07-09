@@ -9,7 +9,7 @@ module.exports = {
         ADDRESSES.ethereum.USDC,
         ADDRESSES.ethereum.WETH,
         "0xd1C117319B3595fbc39b471AB1fd485629eb05F2",
-        "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+        ADDRESSES.ethereum.FRAX,
         ADDRESSES.ethereum.DAI,
         ADDRESSES.ethereum.WBTC,
         "0xa8b607Aa09B6A2E306F93e74c282Fb13f6A80452",
