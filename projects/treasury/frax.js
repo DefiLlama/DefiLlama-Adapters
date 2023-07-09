@@ -10,7 +10,7 @@ module.exports = treasuryExports({
   ethereum: {
     tokens: [
       nullAddress,
-      "0x5aFE3855358E112B5647B952709E6165e1c1eEEe", // SAFE
+      ADDRESSES.ethereum.SAFE,
     ],
     owners: [
       treasury, 
