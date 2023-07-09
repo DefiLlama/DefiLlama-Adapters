@@ -8,6 +8,7 @@ const config = {
       '1KVpuCfhftkzJ67ZUegaMuaYey7qni7pPj',
       //These 3 addresses has 48,555 #Bitcoin. This is only less than 3% of the total high value assets we have, including btc, usd, stablecoins, T-bills.. According to Justin Sun https://twitter.com/justinsuntron/status/1590311559242612743
       '14XKsv8tT6tt8P8mfDQZgNF8wtN5erNu5D',
+      '1LXzGrDQqKqVBqxfGDUyhC6rTRBN5s8Sbj'
     ],
   },
   ethereum: {
@@ -54,7 +55,10 @@ const config = {
   },
   eos: {
     owners: ['vuniyuoxoeub'],
-  }
+  },
+  ripple: {
+    owners: ['rKUDvXFJMFu65LqPTH3Yfpii4rbKT9bSQT'],
+  },
 }
 
 module.exports = cexExports(config)
