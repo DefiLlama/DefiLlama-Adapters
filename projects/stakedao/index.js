@@ -90,7 +90,7 @@ async function tvl(timestamp, block, _, { api }) {
   const angle_sanFRAX_V3 = {
     contract: angle_protocol.locker,
     sanFraxEurGauge: '0xb40432243E4F317cE287398e72Ab8f0312fc2FE8',
-    fraxToken: '0x853d955aCEf822Db058eb8505911ED77F175b99e',
+    fraxToken: ADDRESSES.ethereum.FRAX,
     abi: 'balanceOf',
   }
   const angle_sushi_agEUR_V3 = {

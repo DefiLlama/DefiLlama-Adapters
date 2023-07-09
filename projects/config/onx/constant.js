@@ -12,7 +12,7 @@ const tokenAddresses = {
   aethToken: "0xE95A203B1a91a908F9B9CE46459d101078c2c3cb",
   onsToken: "0xfC97C0c12438B6E4CF246cD831b02FeF4950DCAD",
   daiToken: ADDRESSES.ethereum.DAI,
-  fraxToken: "0x853d955acef822db058eb8505911ed77f175b99e",
+  fraxToken: ADDRESSES.ethereum.FRAX,
   usdcToken: ADDRESSES.ethereum.USDC,
   aethPairEth: "0x6147805e1011417B93e5D693424a62A70d09d0E5",
   aethPairOns: "0x5022BbC26B3Bc8c8d2F1F7dB9ee3A2B4631b9b18",
