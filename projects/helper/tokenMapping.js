@@ -16,7 +16,7 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 // carbon: https://api-insights.carbon.network/info/denom_gecko_map
 // orbit brige: https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList
 
-const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'stargaze', 'umee', 'orai', 'persistence', 'fxcore', 'neutron',]
+const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'stargaze', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', ]
 const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui']
 
 const distressedAssts = new Set(Object.values({
@@ -54,10 +54,13 @@ const fixBalancesTokens = {
   rpg: {
     '0x8e8816a1747fddc5f8b45d2e140a425d3788f659': { coingeckoId: "tether", decimals: 18 },
   },
-  filecoin: {
-    '0xce5805cf6c84f71d2897f632e0aa60d2430ccd2a': { coingeckoId: "filecoin", decimals: 18 },
-    '0x422849B355039bC58F2780cc4854919fC9cfaF94': { coingeckoId: "tether", decimals: 6 },
-  }
+  avax: {
+    '0x8fdcf51d1aaeb9f031838ebeb15884a0d5efcda3': { coingeckoId: "wrapped-bitcoin", decimals: 18 },
+    '0xaa44678304cc1a848bfc31dc013afcc6c9feae11': { coingeckoId: "benqi", decimals: 18 },
+  },
+  ozone: {
+    // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })

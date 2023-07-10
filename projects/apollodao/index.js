@@ -1,7 +1,6 @@
 // vaults are closed: https://articles.apollo.farm/apollo-dao-will-be-closing-vaults-on-terra-classic/
 const axios = require("axios");
 const { endPoints, queryContract } = require('../helper/chain/cosmos')
-const { transformBalances } = require('../helper/portedTokens')
 
 const chain = 'osmosis'
 
@@ -23,9 +22,8 @@ const contractAddresses = {
     akt_osmo: "osmo122ryl7pez7yjprtvjckltu2uvjxrq3kqt4nvclax2la7maj6757qg054ga",
 };
 
-async function tvl() {
-    let amounts = {}
-    if (chain != "osmosis") return transformBalances(chain, amounts)
+async function tvl(_, _1, _2,  { api }) {
+    if (api.chain != "osmosis") return {}
     for (const contractName in contractAddresses) {
         let contractAddress = contractAddresses[contractName];
         let vaultInfo = await queryContract({
@@ -46,14 +44,9 @@ async function tvl() {
 
         let amount = calculateTokenAmounts(poolData, totalAssets)
         for (const denom in amount) {
-            if (typeof amounts[denom] === "undefined") {
-                amounts[denom] = amount[denom];
-            } else {
-                amounts[denom] += amount[denom];
-            }
+            api.add(denom, amount[denom])
         }
     }
-    return transformBalances(chain, amounts)
 }
 
 function calculateTokenAmounts(poolData, gammAmount) {
@@ -99,5 +92,6 @@ module.exports = {
     hallmarks: [
         [1651881600, "UST depeg"],
         [Math.floor(new Date('2022-09-13') / 1e3), 'Stop supporting Terra Classic'],
+        [Math.floor(new Date('2023-02-16') / 1e3), 'Relaunch on Osmosis '],
     ],
 }
