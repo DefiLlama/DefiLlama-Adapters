@@ -5,6 +5,7 @@ module.exports = {
     tvl: index.bsc.tvl,
     staking: index.bsc.staking,
   },
+  /*
   moonriver: {
     tvl: () => 0,
     staking: index.moonriver.staking,
@@ -13,4 +14,5 @@ module.exports = {
     tvl: () => 0,
     staking: index.harmony.staking,
   },
+  */
 }
