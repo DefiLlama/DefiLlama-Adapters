@@ -1,48 +1,30 @@
-const { graphQuery } = require("../helper/http");
+const { getLogs } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
-const poolQuery = `
-    query pools($lastId: String) {
-      pools(first: 1000, where: {id_gt: $lastId} ) {
-        id
-        token0 {
-          id
-        }
-        token1 {
-          id
-        }
-      }
-    }`;
+const FACTORY = '0x91C94381a0F0B7F03d911676bD59d32Bb3410060'
+const CHAIN = 'era'
 
-async function fetchPools() {
-  const url = 'https://subgraph-mainnet.zk-swap.xyz/subgraphs/name/zkswap/zkswap-mainnet';
-
-  let length
-  let lastId = ''
-  let toa = [];
-  do {
-    const {pools} = await graphQuery(url, poolQuery, { lastId })
-    pools.forEach(({ id, token0, token1}) => {
-      toa.push([token0.id, id])
-      toa.push([token1.id, id])
-    })
-    lastId = pools[pools.length - 1].id
-    length = pools.length
-  } while (length === 1000)
-
-  return toa;
+async function getFactoryLogs(api) {
+  return getLogs({
+    api,
+    target: FACTORY,
+    fromBlock: 7891758,
+    topic: 'PoolCreated(address,address,uint24,int24,address)',
+    eventAbi: 'event PoolCreated(address indexed token0,address indexed token1,uint24 indexed swapFeeUnits,int24 tickDistance,address pool)',
+    onlyArgs: true,
+  })
 }
 
-function getTVL(chain) {
-  return async (_, block, chainBlocks) => {
-    block = chainBlocks[chain];
-    const pools = await fetchPools();
-    return sumTokens2({ chain, block, tokensAndOwners: pools })
-  }
+async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
+  const factoryLogs = await getFactoryLogs(api)
+  let balanceRequests = []
+  factoryLogs.forEach(({ token0, token1, pool}) => {
+    balanceRequests.push([token0, pool])
+    balanceRequests.push([token1, pool])
+  })
+  return sumTokens2({ chain: CHAIN, ethBlock, tokensAndOwners: balanceRequests })
 }
 
 module.exports = {
-  era: {
-    tvl: getTVL('era')
-  }
-};
+  era: { tvl, }
+}
