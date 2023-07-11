@@ -1,86 +1,49 @@
-const { nullAddress } = require('../helper/unwrapLPs')
-const { fetchURL } = require("../helper/utils")
+const { fetchURL } = require("../helper/utils");
 
-async function hbarTvl(timestamp) {
-  const res = await fetchURL("https://universe.staderlabs.com/common/tvl")
-  return {
-    "hedera-hashgraph": res.data.hedera.native
+let commonTvlData = null;
+
+async function fetchCommonTvlData() {
+  if (!commonTvlData) {
+    const res = await fetchURL("https://universe.staderlabs.com/common/tvl");
+    commonTvlData = res.data;
   }
+  return commonTvlData;
 }
 
-async function maticTvl() {
-  const res = await fetchURL("https://universe.staderlabs.com/common/tvl")
-  return {
-    "matic-network": res.data.polygon.native
-  }
-}
+const createTvlFunction = (network, key) => {
+  return async () => {
+    const data = await fetchCommonTvlData();
+    let result = { [network]: data[key].native };
+    // matic is locked on ethereum network for Stader
+    if (network === "ethereum") {
+      result["matic-network"] = data["polygon"].native;
+    }
 
-async function ftmTvl() {
-  const res = await fetchURL("https://universe.staderlabs.com/common/tvl")
-  return {
-    "fantom": res.data.fantom.native
-  }
-}
-
-async function terra2Tvl() {
-  const res = await fetchURL("https://universe.staderlabs.com/common/tvl")
-  return {
-    "terra-luna-2": res.data.terra.native
-  }
-}
-
-async function bscTvl() {
-  const res = await fetchURL("https://universe.staderlabs.com/common/tvl")
-  return {
-    "binancecoin": res.data.bnb.native
-  }
-}
-
-async function nearTvl() {
-  const res = await fetchURL("https://universe.staderlabs.com/common/tvl")
-  return {
-    "near": res.data.near.native
-  }
-}
+    return result;
+  };
+};
 
 module.exports = {
   timetravel: false,
-  methodology: 'We aggregated the assets staked across Stader staking protocols',
-  /*terra: {
-    tvl,
-  },*/
+  methodology:
+    "We aggregated the assets staked across Stader staking protocols",
   hedera: {
-    tvl: hbarTvl,
+    tvl: createTvlFunction("hedera-hashgraph", "hedera"),
   },
-  // its on ethereum because funds are locked there
-  /* ethereum: {
-    tvl: maticTvl
-  }, */
   fantom: {
-    tvl: ftmTvl
+    tvl: createTvlFunction("fantom", "fantom"),
   },
   terra2: {
-    tvl: terra2Tvl
+    tvl: createTvlFunction("terra-luna-2", "terra"),
   },
   bsc: {
-    tvl: bscTvl
+    tvl: createTvlFunction("binancecoin", "bnb"),
   },
   near: {
-    tvl: nearTvl
+    tvl: createTvlFunction("near", "near"),
   },
   ethereum: {
-    tvl: async (_, _1, _2, { api }) => {
-
-      const res = await fetchURL("https://universe.staderlabs.com/common/tvl")
-      return {
-        "matic-network": res.data.polygon.native,
-        [nullAddress]: await api.call({ abi: 'uint256:totalAssets', target: '0xcf5ea1b38380f6af39068375516daf40ed70d299' })
-        // [nullAddress]: await api.call({ abi: 'uint256:totalSupply', target: '0xa35b1b31ce002fbf2058d22f30f95d405200a15b' })
-      }
-    }
+    tvl: createTvlFunction("ethereum", "eth", "polygon"),
   },
-  hallmarks: [
-    [1651881600, "UST depeg"],
-  ]
-}
-
+  hallmarks: [[1651881600, "UST depeg"]],
+};
