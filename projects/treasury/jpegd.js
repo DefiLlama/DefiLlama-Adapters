@@ -19,7 +19,6 @@ const treasuryTvl = treasuryExports({
       ADDRESSES.ethereum.USDT,
       ADDRESSES.ethereum.WETH,
       ADDRESSES.ethereum.DAI,
-      ADDRESSES.ethereum.TUSD,
       ADDRESSES.ethereum.CVX,
       ADDRESSES.ethereum.FRAX,
       ADDRESSES.ethereum.LINK,
@@ -36,7 +35,6 @@ const treasuryTvl = treasuryExports({
       "0x34eD182D0812D119c92907852D2B429f095A9b07", // JPEGETH-f
       "0x9848482da3Ee3076165ce6497eDA906E66bB85C5", // pETH-ETH-f
       "0xdB06a76733528761Eda47d356647297bC35a98BD", // JPEGWETH SLP
-      "0xC36442b4a4522E871399CD717aBDD847Ab11FE88", // UniV3 positions
     ],
     owners: [multisig, donationEvent, usdcVault, usdtVault, pethVault],
     ownTokens: [jpegd],
