@@ -43,7 +43,7 @@ module.exports = {
     tvl: createTvlFunction("near", "near"),
   },
   ethereum: {
-    tvl: createTvlFunction("ethereum", "eth", "polygon"),
+    tvl: createTvlFunction("ethereum", "eth"),
   },
   hallmarks: [[1651881600, "UST depeg"]],
 };
