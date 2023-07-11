@@ -27,6 +27,7 @@ const config = {
   arbitrum: { factory: '0x9ff74eea1e7f0f8ee437b70d68f7cdc1a1030642', fromBlock: 91681087, },
   polygon: { factory: '0xab7dac1daf712693539d770a967a9bc7ba47470c', fromBlock: 37984740, },
   bsc: { factory: '0x08f65111cb9b517b10e5c1e63cb2224467e7988a', fromBlock: 25927093, },
+  era: { factory: '0x049D3809043d137591687170Fc323DBcDFe83283', fromBlock: 2714942, },
 }
 
 Object.keys(config).forEach(chain => {

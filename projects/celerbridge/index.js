@@ -117,7 +117,6 @@ const liquidityBridgeTokens = [
     xdai: ADDRESSES.xdai.USDC,
   },
   {
-    // BUSD
     ethereum: ADDRESSES.ethereum.BUSD,
     bsc: ADDRESSES.bsc.BUSD,
   },
@@ -319,7 +318,6 @@ const liquidityBridgeTokens = [
     polygon: "0x08648471B5AAd25fEEeb853d6829048f3Fc37786",
   },
   {
-    // iZi
     arbitrum: ADDRESSES.bsc.iZi,
     bsc: ADDRESSES.bsc.iZi,
     ethereum: "0x9ad37205d608B8b219e6a2573f922094CEc5c200",
@@ -365,12 +363,9 @@ const liquidityBridgeTokens = [
     ethereum: "0xcA37530E7c5968627BE470081d1C993eb1dEaf90",
   },
   {
-    // cUSD
     celo: ADDRESSES.celo.cUSD,
   },
   {
-    // WSYS
-    // origin: "syscoin:" + ADDRESSES.syscoin.WSYS,
     syscoin: ADDRESSES.syscoin.WSYS,
     bsc: "0x6822A778726CD2f0d4A1Cfaca2D04654e575cC82",
     ethereum: "0xF3C96924d85566C031ddc48DbC63B2d71da6D0f6",
@@ -385,8 +380,7 @@ const liquidityBridgeTokens = [
     ethereum: "0xa02120696c7b8fe16c09c749e4598819b2b0e915",
   },
   {
-    // FRAX
-    ethereum: "0x853d955acef822db058eb8505911ed77f175b99e",
+    ethereum: ADDRESSES.ethereum.FRAX,
   },
   {
     // FXS
@@ -401,15 +395,12 @@ const liquidityBridgeTokens = [
     bsc: "0x1fD991fb6c3102873ba68a4e6e6a87B3a5c10271",
   },
   {
-    // BNB
     bsc: ADDRESSES.bsc.WBNB,
   },
   {
-    // AVAX
     avax: ADDRESSES.avax.WAVAX,
   },
   {
-    // FTM
     fantom: ADDRESSES.fantom.WFTM,
   },
   {
@@ -437,8 +428,6 @@ const liquidityBridgeTokens = [
     heco: "0x4668e0E7cC545De886aBF038067F81cD4DC0924b",
   },
   {
-    // SDN
-    // origin: "shiden:" + ADDRESSES.shiden.WSDN,
     shiden: ADDRESSES.shiden.WSDN,
   },
   {
@@ -450,15 +439,12 @@ const liquidityBridgeTokens = [
     avax: "0x4fbf0429599460d327bd5f55625e30e4fc066095",
   },
   {
-    // MATIC
-    polygon: "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+    polygon: ADDRESSES.polygon.WMATIC_2,
   },
   {
-    // AAVE
     ethereum: ADDRESSES.ethereum.AAVE,
   },
   {
-    // CRV
     ethereum: ADDRESSES.ethereum.CRV,
   },
   {
@@ -486,8 +472,7 @@ const liquidityBridgeTokens = [
     boba: "0xCe055Ea4f29fFB8bf35E852522B96aB67Cbe8197",
   },
   {
-    // LUSD
-    ethereum: "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0",
+    ethereum: ADDRESSES.ethereum.LUSD,
   },
   {
     // JONES

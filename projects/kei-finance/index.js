@@ -25,13 +25,14 @@ const graphQuery = `
 module.exports = {
   ethereum: {
     tvl: () => 0,
-    staking: async () => {
+    staking: () => 0,
+    /* staking: async () => {
       const {  staking } = await request(
         config.ethereum.subgraph,
         graphQuery
       )
 
       return { [TOKEN_ADDRESS]: BigNumber(staking.totalPrincipal).plus(BigNumber(staking.totalRewards)) };
-    },
+    }, */
   }
 };
