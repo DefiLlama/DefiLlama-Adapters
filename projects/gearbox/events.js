@@ -1,12 +1,51 @@
-const { api, api2, } = require("@defillama/sdk");
+const { api, api2 } = require("@defillama/sdk");
 const { providers } = require("@defillama/sdk/build/general");
 const { Contract, BigNumber } = require("ethers");
 
 const abi = require("./abi.json");
 
-const getV2CAs = async (creditFacade, block) => {
+const getV2CAs = async (creditManager, block) => {
   const eventsByDate = [];
   const accounts = new Set();
+
+  const cm = new Contract(
+    creditManager,
+    abi["creditManagerV2"],
+    providers["ethereum"]
+  );
+  const creditFacade = await cm.creditFacade();
+
+  const ccAddrs = (
+    await cm.queryFilter(
+      {
+        address: creditManager,
+        topics: [cm.interface.getEventTopic("NewConfigurator")],
+      },
+      undefined
+    )
+  ).map((e) => e.args.newConfigurator);
+
+  const cfAddrs = [];
+
+  for (let cca of ccAddrs) {
+    const cc = new Contract(
+      cca,
+      abi["creditConfiguratorV2"],
+      providers["ethereum"]
+    );
+
+    const cfs = (
+      await cc.queryFilter(
+        {
+          address: cca,
+          topics: [cc.interface.getEventTopic("CreditFacadeUpgraded")],
+        },
+        undefined
+      )
+    ).map((e) => e.args.newCreditFacade);
+
+    cfAddrs.push(...cfs);
+  }
 
   const addToEvents = (e, address, operation) => {
     eventsByDate.push({
@@ -18,38 +57,38 @@ const getV2CAs = async (creditFacade, block) => {
     });
   };
 
-  const cf = new Contract(
-    creditFacade,
-    abi["filtersV2"],
-    providers["ethereum"]
-  );
+  const logs = [];
 
-  const topics = {
-    OpenCreditAccount: cf.interface.getEventTopic("OpenCreditAccount"),
-    CloseCreditAccount: cf.interface.getEventTopic("CloseCreditAccount"),
-    LiquidateCreditAccount: cf.interface.getEventTopic(
-      "LiquidateCreditAccount"
-    ),
-    LiquidateExpiredCreditAccount: cf.interface.getEventTopic(
-      "LiquidateExpiredCreditAccount"
-    ),
-    TransferAccount: cf.interface.getEventTopic("TransferAccount"),
-  };
+  for (let cfAddr of cfAddrs) {
+    const cf = new Contract(cfAddr, abi["filtersV2"], providers["ethereum"]);
 
-  const logs = (
-    await cf.queryFilter(
-      {
-        address: creditFacade,
-        topics: [Object.values(topics)],
-      },
-      undefined,
-      block
-    )
-  ).map((log) => ({
-    ...cf.interface.parseLog(log),
-    blockNumber: log.blockNumber,
-    logIndex: log.logIndex,
-  }));
+    const topics = {
+      OpenCreditAccount: cf.interface.getEventTopic("OpenCreditAccount"),
+      CloseCreditAccount: cf.interface.getEventTopic("CloseCreditAccount"),
+      LiquidateCreditAccount: cf.interface.getEventTopic(
+        "LiquidateCreditAccount"
+      ),
+      LiquidateExpiredCreditAccount: cf.interface.getEventTopic(
+        "LiquidateExpiredCreditAccount"
+      ),
+      TransferAccount: cf.interface.getEventTopic("TransferAccount"),
+    };
+    const l = (
+      await cf.queryFilter(
+        {
+          address: cfAddr,
+          topics: [Object.values(topics)],
+        },
+        undefined
+      )
+    ).map((log) => ({
+      ...cf.interface.parseLog(log),
+      blockNumber: log.blockNumber,
+      logIndex: log.logIndex,
+    }));
+
+    logs.push(...l);
+  }
 
   logs.forEach((log) => {
     switch (log.name) {
@@ -99,9 +138,9 @@ const getV2CAs = async (creditFacade, block) => {
 
   return totalValue[0]
     ? totalValue
-      .map((t) => t.output)
-      .reduce((a, c) => a.add(BigNumber.from(c)), BigNumber.from("0"))
-      .toString()
+        .map((t) => t.output)
+        .reduce((a, c) => a.add(BigNumber.from(c)), BigNumber.from("0"))
+        .toString()
     : "0";
 };
 
@@ -183,10 +222,12 @@ const getV1CAs = async (creditManager, block) => {
       ).args.creditAccount
   );
 
-  const totalValue= await api2.abi.multiCall({
+  const totalValue = await api2.abi.multiCall({
     abi: abi["calcTotalValue"],
     target: cf,
-    calls: openCAs.filter(i => i !== '0xaBBd655b3791175113c1f1146D3B369494A2b815'), // filtered out address throwing error
+    calls: openCAs.filter(
+      (i) => i !== "0xaBBd655b3791175113c1f1146D3B369494A2b815"
+    ), // filtered out address throwing error
     block,
   });
 

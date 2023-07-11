@@ -52,9 +52,9 @@ function isLP(symbol, token, chain) {
   // console.log(symbol, chain, token)
   if (!symbol) return false
   if (token && blacklisted_LPS.includes(token.toLowerCase()) || symbol.includes('HOP-LP-')) return false
-  if (chain === 'bsc' && ['OLP', 'DLP', 'MLP', 'LP'].includes(symbol)) return false
+  if (chain === 'bsc' && ['OLP', 'DLP', 'MLP', 'LP', 'Stable-LP'].includes(symbol)) return false
   if (chain === 'bsc' && ['WLP', 'FstLP', 'BLP',].includes(symbol)) return true
-  if (chain === 'pulse' && ['PLP',].includes(symbol)) return true
+  if (chain === 'pulse' && ['PLP', 'PLT'].includes(symbol)) return true
   if (chain === 'avax' && ['ELP', 'EPT', 'CRL', 'YSL', 'BGL', 'PLP'].includes(symbol)) return true
   if (chain === 'ethereum' && ['SSLP'].includes(symbol)) return true
   if (chain === 'polygon' && ['WLP', 'FLP'].includes(symbol)) return true
@@ -64,7 +64,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'dogechain' && ['DST-V2'].includes(symbol)) return true
   if (chain === 'harmony' && ['HLP'].includes(symbol)) return true
   if (chain === 'klaytn' && ['NLP'].includes(symbol)) return true
-  if (chain === 'fantom' && ['HLP'].includes(symbol)) return true
+  if (chain === 'fantom' && ['HLP', 'WLP'].includes(symbol)) return true
   if (chain === 'era' && /(cSLP|sSLP)$/.test(symbol)) return true // for syncswap
   if (chain === 'songbird' && ['FLRX', 'OLP'].includes(symbol)) return true
   if (chain === 'arbitrum' && ['DXS', 'ZLP',].includes(symbol)) return true

@@ -22,6 +22,9 @@ async function tvl(timestamp, _b, chainBlocks, { api }) {
 
 
 module.exports = {
+  hallmarks: [
+    [1673913600, "Rug Pull"]
+  ],
     ethereum: {
     tvl,
     // staking: sumTokensExport({ owners: [], tokens: ['0xF9C12B27cE5058ab98ce11BD53900f84E18C0650']})
