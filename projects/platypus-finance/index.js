@@ -32,13 +32,16 @@ async function getToa(pool, api) {
   return tokens.map((val, i) => [val, owners[i]]);
 }
 
+const blacklistedTokens = []
+
 async function tvl(timestamp, ethereumBlock, chainBlocks, { api }) {
+  if (timestamp > +new Date("2023-02-17") / 1e3) blacklistedTokens.push("0xdaCDe03d7Ab4D81fEDdc3a20fAA89aBAc9072CE2") // USP was hacked
   const toa = (await Promise.all(pools.map((i) => getToa(i, api)))).flat();
   toa.push([
     "0xb599c3590f42f8f995ecfa0f85d2980b76862fc1",
     "0xc7388d98fa86b6639d71a0a6d410d5cdfc63a1d0",
   ]);
-  return sumTokens2({ api, tokensAndOwners: toa });
+  return sumTokens2({ api, tokensAndOwners: toa, blacklistedTokens });
 }
 
 module.exports = {
@@ -47,7 +50,9 @@ module.exports = {
     staking: staking(
       "0x5857019c749147eee22b1fe63500f237f3c1b692",
       "0x22d4002028f537599be9f666d1c4fa138522f9c8",
-      "avax"
     ),
   },
+  hallmarks: [
+    [Math.floor(new Date('2023-02-17') / 1e3), 'Protocol was hacked for $8.5m'],
+  ],
 };
