@@ -54,6 +54,9 @@ const fixBalancesTokens = {
   rpg: {
     '0x8e8816a1747fddc5f8b45d2e140a425d3788f659': { coingeckoId: "tether", decimals: 18 },
   },
+  tenet: {
+    '0xd6cb8a253e12893b0cf39ca78f7d858652cca1fe': { coingeckoId: "tenet-1b000f7b-59cb-4e06-89ce-d62b32d362b9", decimals: 18 },
+  },
   avax: {
     '0x8fdcf51d1aaeb9f031838ebeb15884a0d5efcda3': { coingeckoId: "wrapped-bitcoin", decimals: 18 },
     '0xaa44678304cc1a848bfc31dc013afcc6c9feae11': { coingeckoId: "benqi", decimals: 18 },
