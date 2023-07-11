@@ -19,29 +19,18 @@ const pools = [
   "0xb3393f4e609c504da770ebc968540784cc4e016c",
 ];
 
-async function getToa(pool, api) {
-  const tokens = await api.call({
-    abi: "function getTokenAddresses() view returns (address[])",
-    target: pool,
-  });
-  const owners = await api.multiCall({
-    abi: "function assetOf(address) view returns (address)",
-    calls: tokens,
-    target: pool,
-  });
-  return tokens.map((val, i) => [val, owners[i]]);
-}
-
 const blacklistedTokens = []
 
 async function tvl(timestamp, ethereumBlock, chainBlocks, { api }) {
   if (timestamp > +new Date("2023-02-17") / 1e3) blacklistedTokens.push("0xdaCDe03d7Ab4D81fEDdc3a20fAA89aBAc9072CE2") // USP was hacked
-  const toa = (await Promise.all(pools.map((i) => getToa(i, api)))).flat();
-  toa.push([
-    "0xb599c3590f42f8f995ecfa0f85d2980b76862fc1",
-    "0xc7388d98fa86b6639d71a0a6d410d5cdfc63a1d0",
-  ]);
-  return sumTokens2({ api, tokensAndOwners: toa, blacklistedTokens });
+  const tokensArray = await api.multiCall({  abi: "function getTokenAddresses() view returns (address[])", calls: pools})
+  const tokens = tokensArray.flat()
+  const calls = tokensArray.map((t, i)=> t.map((token) => ({ target: pools[i], params: token }))).flat()
+  
+  const owners = await api.multiCall({  abi:"function assetOf(address) view returns (address)", calls})
+  tokens.push('0xb599c3590f42f8f995ecfa0f85d2980b76862fc1')
+  owners.push('0xc7388d98fa86b6639d71a0a6d410d5cdfc63a1d0')
+  return sumTokens2({ api, tokensAndOwners2: [tokens, owners], blacklistedTokens });
 }
 
 module.exports = {
