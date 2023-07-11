@@ -1,4 +1,7 @@
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
+const {
+  sumTokensAndLPsSharedOwners,
+  sumTokens2,
+} = require("../helper/unwrapLPs");
 const { getFixBalancesSync } = require("../helper/portedTokens");
 const lockerFactoryAbi = require("./lockerFactoryAbi.json");
 
@@ -53,15 +56,19 @@ function tvlByNetwork(network) {
 
     const [tokens, lockers] = splitTokens(pageTokens);
 
-    const balances = await api.multiCall({
-      calls: tokens.map((token, i) => ({
-        target: token,
-        params: [lockers[i]],
-      })),
-      abi: "erc20:balanceOf",
-    });
+    const chain = api.chain;
+    const block = api.block;
+    const b = {};
+    const transform = (addr) => `${chain}:${addr}`;
 
-    api.addTokens(tokens, balances);
+    return sumTokens2({
+      b,
+      tokens,
+      owners: lockers,
+      block,
+      chain,
+      transform,
+    });
   };
 }
 
