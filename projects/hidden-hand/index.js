@@ -1,5 +1,5 @@
-const { request, gql } = require("graphql-request");
-const sdk = require("@defillama/sdk");
+const { sumTokens2 } = require('../helper/unwrapLPs')
+const { cachedGraphQuery } = require('../helper/cache')
 
 const protocol_contracts = {
   ethereum: {
@@ -48,7 +48,7 @@ const subgraphs = {
 };
 
 async function getTokens(chain, version) {
-  const graphQuery = gql`
+  const graphQuery = `
     {
       tokens {
         address
@@ -56,51 +56,29 @@ async function getTokens(chain, version) {
     }
   `;
 
-  const { tokens } = await request(subgraphs[chain][version], graphQuery);
+  const { tokens } = await cachedGraphQuery(`hidden-hand/${chain}-${version}`, subgraphs[chain][version], graphQuery);
   const addresses = tokens.map((token) => token.address);
 
   return addresses;
 }
 
-async function get_tvl(ts, block, chain) {
-  const balances = {};
+async function tvl(ts, block, _, { api }) {
+  const { chain } = api
+  const ownerTokens = []
 
   for (const version of Object.keys(protocol_contracts[chain])) {
     const tokens = await getTokens(chain, version);
-    for (const contract of Object.keys(protocol_contracts[chain][version])) {
-      const tokensBalances = await sdk.api.abi.multiCall({
-        abi: "erc20:balanceOf",
-        calls: tokens.map((token) => ({
-          target: token,
-          params: protocol_contracts[chain][version][contract],
-        })),
-        permitFailure: true,
-        block,
-        chain,
-      });
-
-      sdk.util.sumMultiBalanceOf(balances, tokensBalances, false);
+    for (const owner of Object.values(protocol_contracts[chain][version])) {
+      ownerTokens.push([tokens, owner])
     }
   }
 
-  return balances;
-}
-
-async function getOptimismTvl(ts, block, chain) {
-  return get_tvl(ts, block, "optimism");
-}
-
-async function getArbitrumTvl(ts, block, chain) {
-  return get_tvl(ts, block, "arbitrum");
-}
-
-async function getEthereumTvl(ts, block, chain) {
-  return get_tvl(ts, block, "ethereum");
+  return sumTokens2({ api, ownerTokens, permitFailure: true, });
 }
 
 module.exports = {
   methodology: `Sums bribe tokens deposited on Hidden Hand Reward Distributors, Bribe Vaults and Harvester contracts.`,
-  ethereum: { tvl: getEthereumTvl },
-  optimism: { tvl: getOptimismTvl },
-  arbitrum: { tvl: getArbitrumTvl },
+  ethereum: { tvl },
+  optimism: { tvl },
+  arbitrum: { tvl },
 };
