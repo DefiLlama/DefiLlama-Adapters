@@ -33,7 +33,7 @@ async function xdaiTvl(timestamp, ethBlock, { xdai: block }) {
   })
 
   return {
-    "0x6810e776880c02933d47db1b9fc05908e5386b96": supply.output
+    [ADDRESSES.ethereum.GNO]: supply.output
   }
 }
 

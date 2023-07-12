@@ -64,7 +64,7 @@ const getRealBalance = (balance1, decimal) => {
   const real = balance.dividedBy(divider, 10);
   return real.toNumber();
 };
-const formatBalanceDolar = (token, price) => {
+const formatBalanceDolar = (token, price = 0) => {
   if (token && token.balance) {
     const strBalance = token.balance;
 
@@ -185,7 +185,7 @@ const tvl = async () => {
             (farm) =>
               mexPairs.findIndex(
                 (mexPair) => mexPair.id === farm.farm.stakingToken
-              ) !== -1 || farm.farm.stakingToken == "RAREWEGLD-b29251"
+              ) !== -1 || farm.farm.stakingToken == "RAREWEGLD-b29251" || farm.farm.stakingToken == "HYPELEGLD-d65493"
           )
         : [];
 
@@ -227,6 +227,7 @@ const tvl = async () => {
 
         if (stakingToken?.identifier != "BONEZ-ff9a73" 
         && stakingToken?.identifier != "RAREWEGLD-b29251"
+        && stakingToken?.identifier != "HYPELEGLD-d65493"
         && farm.farm.farmId != 36
         && farm.farm.farmId != 41) {
           tvlDollar += formatBalanceDolar(

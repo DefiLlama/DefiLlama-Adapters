@@ -6,9 +6,7 @@ const { getConnection, getTokenBalance } = require('../helper/solana')
 const { PublicKey } = require('@solana/web3.js')
 const { getLogs } = require('../helper/cache/getLogs')
 
-const MapleTreasury = "0xa9466EaBd096449d650D5AEB0dD3dA6F52FD0B19";
 const USDC = ADDRESSES.ethereum.USDC;
-const chain = 'ethereum'
 
 /*** Solana TVL Portions ***/
 const POOL_DISCRIMINATOR = "35K4P9PCU";
@@ -68,6 +66,7 @@ async function getPoolInfo(block, api) {
 
   async function _getPoolInfo() {
     const loanFactory = '0x1551717ae4fdcb65ed028f7fb7aba39908f6a7a6'
+    const openTermLoanManagerFactory = '0x90b14505221a24039A2D11Ad5862339db97Cc160'
 
     const logs = await getLogs({
       api,
@@ -75,7 +74,17 @@ async function getPoolInfo(block, api) {
       topic: "InstanceDeployed(uint256,address,bytes)",
       fromBlock: 16126995,
     });
-    const proxies = logs.map(s => "0x" + s.topics[2].slice(26, 66))
+    const logs2 = await getLogs({ // open term
+      api,
+      target: openTermLoanManagerFactory,
+      topic: "InstanceDeployed(uint256,address,bytes)",
+      fromBlock: 17372608,
+    });
+
+    let proxies = logs.map(s => "0x" + s.topics[2].slice(26, 66))
+    const proxiesOpenTerm = logs2.map(s => "0x" + s.topics[2].slice(26, 66))
+    proxies.push(...proxiesOpenTerm)
+    proxies = [...new Set(proxies.map(i => i.toLowerCase()))]
     const managers = await api.multiCall({ abi: 'address:poolManager', calls: proxies })
     const assets = await api.multiCall({ block, abi: abis.fundsAsset, calls: proxies, })
     return { proxies, assets, managers }

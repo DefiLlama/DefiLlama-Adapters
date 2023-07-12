@@ -12,18 +12,18 @@ module.exports = treasuryExports({
     tokens: [
       // Ethereum Assets
       nullAddress,
-      ADDRESSES.ethereum.WSTETH, // wstETH
-      ADDRESSES.ethereum.LIDO, // LDO
-      ADDRESSES.ethereum.WETH, // WETH
-      ADDRESSES.ethereum.WBTC, // WBTC
-      ADDRESSES.ethereum.USDC, // USDC
-      ADDRESSES.ethereum.RETH, // rETH
-      ADDRESSES.ethereum.STETH, // stETH
+      ADDRESSES.ethereum.WSTETH,
+      ADDRESSES.ethereum.LIDO,
+      ADDRESSES.ethereum.WETH,
+      ADDRESSES.ethereum.WBTC,
+      ADDRESSES.ethereum.USDC,
+      ADDRESSES.ethereum.RETH,
+      ADDRESSES.ethereum.STETH,
       "0xba100000625a3754423978a60c9317c58a424e3D", // BAL
       "0x4d224452801ACEd8B2F0aebE155379bb5D594381", // APE
       "0x090185f2135308BaD17527004364eBcC2D37e5F6", // SPELL
-      ADDRESSES.ethereum.UNI, // UNI
-      "0x5aFE3855358E112B5647B952709E6165e1c1eEEe", // SAFE
+      ADDRESSES.ethereum.UNI,
+      ADDRESSES.ethereum.SAFE,
       "0xa354F35829Ae975e850e23e9615b11Da1B3dC4DE", // yvUSDC
       "0x25751853Eab4D0eB3652B5eB6ecB102A2789644B", // rETH-THETA
     ],

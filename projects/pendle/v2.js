@@ -1,10 +1,12 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const contracts = require("./contracts");
 const { staking } = require('../helper/staking')
 const { getLogs } = require('../helper/cache/getLogs')
-const steth = "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84";
+const steth = ADDRESSES.ethereum.STETH;
 const config = {
   ethereum: { factory: '0x27b1dacd74688af24a64bd3c9c1b143118740784', fromBlock: 16032059 },
   arbitrum: { factory: '0xf5a7de2d276dbda3eef1b62a9e718eff4d29ddc8', fromBlock: 62979673 },
+  bsc: { factory: '0x2bEa6BfD8fbFF45aA2a893EB3B6d85D10EFcC70E', fromBlock: 29484286 },
 }
 
 module.exports = {}
@@ -37,7 +39,7 @@ Object.keys(config).forEach(chain => {
       ])
       data.forEach((v, i) => {
         let value = supply[i] * (10 ** (v.decimals - decimals[i]))
-        api.add(v.uAsset, value)
+        api.add(v.uAsset.toLowerCase(), value)
       })
       let balances = api.getBalances();
       const bridged = `arbitrum:${steth}`;

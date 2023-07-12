@@ -21,16 +21,17 @@ module.exports = {
   bsc: {
     pool2: pool2(lpVaultStakingContract_BNB, ALT_BUSD_CakeLP_BNB, "bsc"),
     staking: staking(vaultStakingContract_BNB, ATL, "bsc"),
-    ...compoundExports(comptroller,
-      "bsc",
-      "0x5A9A90983A369b6bB8F062f0AFe6219Ac01caF63",
-      ADDRESSES.bsc.WBNB
-    ),
+    // ...compoundExports(comptroller,
+    //   "bsc",
+    //   "0x5A9A90983A369b6bB8F062f0AFe6219Ac01caF63",
+    //   ADDRESSES.bsc.WBNB
+    // ),
+    tvl: async () => ({}),
   },
   polygon: compoundExports(polygonComptroller,
     "polygon",
     "0xa65722af4957cef481edb4cb255f804dd36e8adc",
-    "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"
+    ADDRESSES.polygon.WMATIC_2
   ),
   avax: compoundExports(avaxComptroller,
     "avax",
@@ -42,6 +43,10 @@ module.exports = {
     "0xbc46Dc817ce983CfD1B36cBc599031aCBEc2FDfe",
     ADDRESSES.dogechain.WWDOGE
   ),
+  hallmarks: [
+    [Math.floor(new Date('2023-04-01') / 1e3), 'Team stops all comms, stole funds (?)'],
+    [Math.floor(new Date('2023-06-10') / 1e3), 'Governance Attack'],
+  ],
   methodology:
     "TVL is comprised of tokens deposited to the protocol as collateral, similar to Compound Finance and other lending protocols the borrowed tokens are not counted as TVL.",
 };

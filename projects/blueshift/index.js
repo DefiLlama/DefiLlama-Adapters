@@ -1,66 +1,40 @@
-const sdk = require('@defillama/sdk');
-const { transformBalances } = require('../helper/portedTokens');
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const abi = require('./abi.json');
-const config = require("./config.json");
+const { registry, manualPool, blueschain, } = require("./config.json");
 
-
-async function staking(chain, chainBlocks) {
-  const balances = {};
-
-  const value = (await sdk.api.abi.call({
-    abi: abi.BlueshiftEarning.getAccDeposit,
-    chain: chain,
-    target: config.manualPool[chain],
-    params: [],
-    block: chainBlocks[chain],
-  })).output;
-
-  const tokenAddress = (await sdk.api.abi.call({
-    abi: abi.BlueshiftEarning.getToken,
-    chain: chain,
-    target: config.manualPool[chain],
-    params: [],
-    block: chainBlocks[chain],
-  })).output;
-
-  sdk.util.sumSingleBalance(balances, tokenAddress, value);
-  return transformBalances(chain, balances);
+async function staking(_, _1, _2, { api }) {
+  const chain = api.chain
+  if (!manualPool[chain]) return {}
+  const value = await api.call({ abi: abi.BlueshiftEarning.getAccDeposit, target: manualPool[chain], })
+  const tokenAddress = await api.call({ abi: abi.BlueshiftEarning.getToken, target: manualPool[chain], })
+  api.add(tokenAddress, value)
+  return api.getBalances()
 }
 
-async function tvl(chain, chainBlocks) {
-  const balances = {};
+async function tvl(_, _1, _2, { api }) {
+  const chain = api.chain
+  const { reserve, tokens } = blueschain[chain] ?? {}
 
-  const portfolios = (await sdk.api.abi.call({
-    abi: abi.BlueshiftRegistry.getPortfolios,
-    chain: chain,
-    target: config.registry[chain],
-    params: [],
-    block: chainBlocks[chain],
-  })).output;
+  // Blueschain reserves
+  if (reserve)
+    await sumTokens2({ api, owner: reserve, tokens, })
 
-  for (let portfolio of portfolios) {
-    const value = portfolio.totalValue;
-    sdk.util.sumSingleBalance(balances, portfolio.baseTokenAddress, value);
+  // Local reserves
+  if (registry[chain]) {
+    const portfolios = await api.call({ abi: abi.BlueshiftRegistry.getPortfolios, target: registry[chain], })
+
+    for (let i = 0; i < portfolios.contractAddress.length; ++i)
+      api.add(portfolios.baseTokenAddress[i], portfolios.totalValue[i])
   }
-  return transformBalances(chain, balances);
+  return api.getBalances()
 }
+
 
 module.exports = {
   methodology: 'Accumulates TVL of all Blueshift portfolios calculated in base tokens. Adds TVL of BLUES tokens staked in Blueshift yield pools.',
-  milkomeda: {
-    start: 2023331,
-    staking: (timestamp, block, chainBlocks) => staking('milkomeda', chainBlocks),
-    tvl: (timestamp, block, chainBlocks) => tvl('milkomeda', chainBlocks)
-  },
-  milkomeda_a1: {
-    start: 1300,
-    staking: (timestamp, block, chainBlocks) => staking('milkomeda_a1', chainBlocks),
-    tvl: (timestamp, block, chainBlocks) => tvl('milkomeda_a1', chainBlocks)
-  },
-  kava: {
-    start: 2499737,
-    staking: (timestamp, block, chainBlocks) => staking('kava', chainBlocks),
-    tvl: (timestamp, block, chainBlocks) => tvl('kava', chainBlocks)
-  }
 };
+
+Object.keys(registry).forEach(chain => {
+  module.exports[chain] = { tvl, staking }
+})

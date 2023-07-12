@@ -5,6 +5,7 @@ const coinGeckoIds = {
   uatom: "cosmos",
   uosmo: "osmosis",
   uregen: "regen",
+  ujuno: "juno-network",
   ustars: "stargaze"
 };
 

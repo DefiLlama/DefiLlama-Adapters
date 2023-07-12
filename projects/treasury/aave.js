@@ -38,54 +38,54 @@ module.exports = treasuryExports({
   ethereum: {
     tokens: [ 
         nullAddress,
-        ADDRESSES.ethereum.USDC, // USDC
+        ADDRESSES.ethereum.USDC,
         '0xBcca60bB61934080951369a648Fb03DF4F96263C', // aUSDC
         '0xd24946147829DEaA935bE2aD85A3291dbf109c80', // ammUSDC
         '0x98C23E9d8f34FEFb1B7BD6a91B7FF122F4e16F5c', // aEthUSDC
-        ADDRESSES.ethereum.DAI, // DAI
+        ADDRESSES.ethereum.DAI,
         '0x028171bca77440897b824ca71d1c56cac55b68a3', // aDAI
         '0x79bE75FFC64DD58e66787E4Eae470c8a1FD08ba4', // ammDAI
         '0x018008bfb33d285247A21d44E50697654f754e63', // aEthDAI
-        ADDRESSES.ethereum.USDT, // USDT
+        ADDRESSES.ethereum.USDT,
         '0x3ed3b47dd13ec9a98b44e6204a523e766b225811', // aUSDT
         '0x17a79792Fe6fE5C95dFE95Fe3fCEE3CAf4fE4Cb7', // ammUSDT
         '0xFFC97d72E13E01096502Cb8Eb52dEe56f74DAD7B', // aAAVE
         '0xA700b4eB416Be35b2911fd5Dee80678ff64fF6C9', // aEthAAVE
-        ADDRESSES.ethereum.WBTC, // WBTC
+        ADDRESSES.ethereum.WBTC,
         '0x9ff58f4fFB29fA2266Ab25e75e2A8b3503311656', // aWBTC
         '0x13B2f6928D7204328b0E8E4BCd0379aA06EA21FA', // ammWBTC
         '0x5Ee5bf7ae06D1Be5997A1A72006FE6C607eC6DE8', // aEthWBTC
-        ADDRESSES.ethereum.WSTETH, // wstETH
+        ADDRESSES.ethereum.WSTETH,
         '0x0B925eD163218f6662a35e0f0371Ac234f9E9371', // aEthwstETH
         '0xba100000625a3754423978a60c9317c58a424e3D', // BAL
-        ADDRESSES.ethereum.WETH, // WETH
+        ADDRESSES.ethereum.WETH,
         '0x030bA81f1c18d280636F32af80b9AAd02Cf0854e', // aWETH
         '0xf9Fb4AD91812b704Ba883B11d2B576E890a6730A', // ammWETH
         '0x4d5F47FA6A74757f35C14fD3a6Ef8E3C9BC514E8', // aEthWETH
-        ADDRESSES.ethereum.CRV, // CRV
+        ADDRESSES.ethereum.CRV,
         '0x8dAE6Cb04688C62d939ed9B68d32Bc62e49970b1', // aCRV
-        ADDRESSES.ethereum.SNX, // SNX
+        ADDRESSES.ethereum.SNX,
         '0x35f6B052C598d933D69A4EEC4D04c73A191fE6c2', // aSNX
-        ADDRESSES.ethereum.LINK, // LINK
+        ADDRESSES.ethereum.LINK,
         '0xa06bC25B5805d5F8d82847D191Cb4Af5A3e873E0', // aLINK
         '0x5E8C8A7243651DB1384C0dDfDbE39761E8e7E51a', // aEthLINK
         '0xba100000625a3754423978a60c9317c58a424e3d', // BAL
         '0x272F97b7a56a387aE942350bBC7Df5700f8a4576', // aBAL
-        ADDRESSES.ethereum.UNI, // UNI
+        ADDRESSES.ethereum.UNI,
         '0xB9D7CB55f463405CDfBe4E90a6D2Df01C2B92BF1', // aUNI
-        ADDRESSES.ethereum.MKR, // MKR
+        ADDRESSES.ethereum.MKR,
         '0xc713e5E149D5D0715DcD1c156a020976e7E56B88', // aMKR
-        ADDRESSES.ethereum.BUSD, // BUSD
+        ADDRESSES.ethereum.BUSD,
         '0xA361718326c15715591c299427c62086F69923D9', // aBUSD
-        '0x853d955acef822db058eb8505911ed77f175b99e', // FRAX
+        ADDRESSES.ethereum.FRAX,
         '0xd4937682df3C8aEF4FE912A96A74121C0829E664', // aFRAX
-        '0x57ab1ec28d129707052df4df418d58a2d46d5f51', // sUSD
+        ADDRESSES.ethereum.sUSD,
         '0x6C5024Cd4F8A59110119C56f8933403A539555EB', // aSUSD
-        '0x5f98805a4e8be255a32880fdec7f6728c6568ba0', // LUSD
+        ADDRESSES.ethereum.LUSD, // LUSD
         '0xce1871f791548600cb59efbefFC9c38719142079', // aLUSD
         '0x056fd409e1d7a124bd7017459dfea2f387b6d5cd', // GUSD
         '0xD37EE7e4f452C6638c96536e68090De8cBcdb583', // aGUSD
-        ADDRESSES.ethereum.TUSD, // TUSD
+        ADDRESSES.ethereum.TUSD,
         '0x101cc05f4A51C0319f570d5E146a8C625198e636', // aTUSD
         '0x8e870d67f660d95d5be530380d0ec0bd388289e1', // USDP
         '0x2e8F4bdbE3d47d7d7DE490437AeA9915D930F1A3', // aUSDP
@@ -95,7 +95,7 @@ module.exports = treasuryExports({
         '0x6F634c6135D2EBD550000ac92F494F9CB8183dAe', // aDPI
         '0xc18360217d8f7ab5e7c516566761ea12ce7f9d72', // ENS
         '0x9a14e23A58edf4EFDcB360f68cd1b95ce2081a2F', // aENS
-        ADDRESSES.ethereum.STETH, // stETH
+        ADDRESSES.ethereum.STETH,
         '0x1982b2F5814301d4e9a8b0201555376e62F82428', // aSTETH
         '0xd46ba6d942050d489dbd938a2c909a5d5039a161', // AMPL
         '0x1E6bb68Acec8fefBD87D192bE09bb274170a0548', // aAMPL
@@ -103,9 +103,9 @@ module.exports = treasuryExports({
         '0x683923dB55Fead99A79Fa01A27EeC3cB19679cC3', // aFEI
         '0xa693b19d2931d498c5b318df961919bb4aee87a5', // UST
         '0xc2e2152647F4C26028482Efaf64b2Aa28779EFC4', // aUST
-        ADDRESSES.ethereum.BAT, // BAT
+        ADDRESSES.ethereum.BAT,
         '0x05Ec93c0365baAeAbF7AefFb0972ea7ECdD39CF1', // aBAT
-        '0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b', // CVX
+        ADDRESSES.ethereum.CVX,
         '0x952749E07d7157bb9644A894dFAF3Bad5eF6D918', // aCVX
         '0xf629cbd94d3791c9250152bd8dfbdf380e2a3b9c', // ENJ
         '0xaC6Df26a590F08dcC95D5a4705ae8abbc88509Ef', // aENJ
@@ -121,7 +121,7 @@ module.exports = treasuryExports({
         '0x514cd6756CCBe28772d4Cb81bC3156BA9d1744aa', // aRENFIL
         '0xe41d2489571d322189246dafa5ebde1f4699f498', // ZRX
         '0xDf7FF54aAcAcbFf42dfe29DD6144A69b629f8C9e', // aZRX
-        ADDRESSES.ethereum.YFI, // YFI
+        ADDRESSES.ethereum.YFI,
         '0x5165d24277cD063F5ac44Efd447B27025e888f37', // aYFI
         '0x8798249c2E607446EfB7Ad49eC89dD1865Ff4272', // xSUSHI
         '0xF256CC7847E919FAc9B808cC216cAc87CCF2f47a', // aXSUSHI
@@ -132,24 +132,24 @@ module.exports = treasuryExports({
   polygon: {
     tokens: [
       nullAddress,
-      ADDRESSES.polygon.DAI, // DAI
+      ADDRESSES.polygon.DAI,
       '0x27F8D03b3a2196956ED754baDc28D73be8830A6e', // amDAI
       '0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE', // aPOLDAI
-      ADDRESSES.polygon.USDC, // USDC
+      ADDRESSES.polygon.USDC,
       '0x1a13F4Ca1d028320A707D99520AbFefca3998b7F', // amUSDC
       '0x625E7708f30cA75bfd92586e17077590C60eb4cD', // aPolUSDC
-      ADDRESSES.polygon.USDT, // USDT
+      ADDRESSES.polygon.USDT,
       '0x60D55F02A771d515e077c9C2403a1ef324885CeC', // amUSDT
       '0x6ab707Aca953eDAeFBc4fD23bA73294241490620', // aPolUSDT
       '0x1d2a0E5EC8E5bBDCA5CB219e649B565d8e5c3360', // amAAVE
       '0xf329e36C7bF6E5E86ce2150875a84Ce77f477375', // aPolAAVE
-      ADDRESSES.polygon.WBTC, // WBTC
+      ADDRESSES.polygon.WBTC,
       '0x5c2ed810328349100A66B82b78a1791B101C9D61', // amWBTC
       '0x078f358208685046a11C85e8ad32895DED33A249', // aPolWBTC
-      ADDRESSES.polygon.WETH_1, // WETH
+      ADDRESSES.polygon.WETH_1,
       '0x28424507fefb6f7f8E9D3860F56504E4e5f5f390', // amWETH
       '0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8', // aPolWETH
-      '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270', // WMATIC
+      ADDRESSES.polygon.WMATIC_2, // WMATIC
       '0x8dF3aad3a84da6b69A4DA8aeC3eA40d9091B2Ac4', // amWMATIC
       '0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97', // aPolWMATIC
       '0x9a71012B13CA4d3D0Cdc72A177DF3ef03b0E76A3', // BAL
@@ -174,7 +174,7 @@ module.exports = treasuryExports({
       '0x38d693cE1dF5AaDF7bC62595A37D667aD57922e5', // aPolEURS
       '0xa3fa99a148fa48d14ed51d610c367c61876997f1', // MAI
       '0xeBe517846d0F36eCEd99C735cbF6131e1fEB775D', // aPolMAI
-      '0xfa68fb4628dff1028cfec22b4162fccd0d45efb6', // MATICX
+      ADDRESSES.polygon.MATICX, // MATICX
       '0x80cA0d8C38d2e2BcbaB66aA1648Bd1C7160500FE', // aPolMATICX
       '0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4', // stMATIC
       '0xEA1132120ddcDDA2F119e99Fa7A27a0d036F7Ac9', // aPolSTMATIC
@@ -188,24 +188,24 @@ module.exports = treasuryExports({
   },
   avax: {
     tokens: [
-      ADDRESSES.avax.DAI, // DAI
+      ADDRESSES.avax.DAI,
       '0x47AFa96Cdc9fAb46904A55a6ad4bf6660B53c38a', // avDAI
       '0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE', // aAvaDAI
-      ADDRESSES.avax.USDC_e, // USDC
+      ADDRESSES.avax.USDC_e,
       '0x46A51127C3ce23fb7AB1DE06226147F446e4a857', // avUSDC
       '0x625E7708f30cA75bfd92586e17077590C60eb4cD', // aAvaUSDC
-      ADDRESSES.avax.USDT_e, // USDT
+      ADDRESSES.avax.USDT_e,
       '0x532E6537FEA298397212F09A61e03311686f548e', // avUSDT
       '0x6ab707Aca953eDAeFBc4fD23bA73294241490620', // aAvaUSDT
       '0xD45B7c061016102f9FA220502908f2c0f1add1D7', // avAAVE
       '0xf329e36C7bF6E5E86ce2150875a84Ce77f477375', // aAvaAAVE
-      ADDRESSES.avax.WAVAX, // WAVAX
+      ADDRESSES.avax.WAVAX,
       '0xDFE521292EcE2A4f44242efBcD66Bc594CA9714B', // avWAVAX
       '0x6d80113e533a2C0fe82EaBD35f1875DcEA89Ea97', // aAvaWAVAX
       '0x50b7545627a5162f82a992c33b87adc75187b218', // WBTC
       '0x686bEF2417b6Dc32C50a3cBfbCC3bb60E1e9a15D', // aWBTC
       '0x078f358208685046a11C85e8ad32895DED33A249', // aAvaWBTC
-      ADDRESSES.avax.WETH_e, // WETH
+      ADDRESSES.avax.WETH_e,
       '0x53f7c5869a859F0AeC3D334ee8B4Cf01E3492f21', // aWETH
       '0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8', // aAvaWETH
       '0x5947bb275c521040051d82396192181b413227a3', // LINK
@@ -216,7 +216,7 @@ module.exports = treasuryExports({
       '0x8Eb270e296023E9D92081fdF967dDd7878724424', // aAvaMAI
       '0x2b2c81e08f1af8835a78bb2a90ae924ace0ea4be', // sAVAX
       '0x513c7E3a9c69cA3e22550eF58AC1C0088e918FFf', // aAvaSAVAX
-      ADDRESSES.avax.BTC_b, // BTC.b
+      ADDRESSES.avax.BTC_b,
       '0x8ffDf2DE812095b1D19CB146E4c004587C0A0692', // aAvaBTC.b
     ],
     owners: treasuryContractsAvax,
