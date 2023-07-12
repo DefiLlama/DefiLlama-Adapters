@@ -11,14 +11,8 @@ module.exports = treasuryExports({
     tokens: [
       // Ethereum Assets
       nullAddress,
-      ADDRESSES.ethereum.WETH,
-      ADDRESSES.ethereum.WBTC,
-      ADDRESSES.ethereum.USDC,
-      ADDRESSES.ethereum.DAI,
-      ADDRESSES.ethereum.WSTETH,//wsteth
-      "0x2b591e99afE9f32eAA6214f7B7629768c40Eeb39" //hex
     ],
-    owners: [treasury],
+    owners: [treasury, '0x70a0a7be87deb51e1fab16d4f2bf00be1510e476'],
     ownTokens: [GLM]
   },
 })
