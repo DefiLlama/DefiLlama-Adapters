@@ -39,7 +39,7 @@ const subgraphs = {
     v2: "https://api.thegraph.com/subgraphs/name/albuquerque-rafael/hidden-hand-v2",
   },
   optimism: {
-    v1: "https://api.thegraph.com/subgraphs/name/albuquerque-rafael/hidden-hand-optimism",
+    v1: "https://api.thegraph.com/subgraphs/name/albuquerque-rafael/hidden-hand-v1-optimism",
     v2: "https://api.thegraph.com/subgraphs/name/albuquerque-rafael/hidden-hand-v2-optimism",
   },
   arbitrum: {
