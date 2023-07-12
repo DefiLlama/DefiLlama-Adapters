@@ -53,9 +53,9 @@ module.exports = {
     tvl: hbarTvl,
   },
   // its on ethereum because funds are locked there
-  ethereum: {
+  /* ethereum: {
     tvl: maticTvl
-  },
+  }, */
   fantom: {
     tvl: ftmTvl
   },
@@ -70,13 +70,16 @@ module.exports = {
   },
   ethereum: {
     tvl: async (_, _1, _2, { api }) => {
+
+      const res = await fetchURL("https://universe.staderlabs.com/common/tvl")
       return {
+        "matic-network": res.data.polygon.native,
         [nullAddress]: await api.call({ abi: 'uint256:totalAssets', target: '0xcf5ea1b38380f6af39068375516daf40ed70d299' })
         // [nullAddress]: await api.call({ abi: 'uint256:totalSupply', target: '0xa35b1b31ce002fbf2058d22f30f95d405200a15b' })
       }
     }
   },
-  hallmarks:[
+  hallmarks: [
     [1651881600, "UST depeg"],
   ]
 }
