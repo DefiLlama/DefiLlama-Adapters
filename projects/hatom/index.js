@@ -1,9 +1,8 @@
 const { cachedGraphQuery } = require('../helper/cache')
-// const { sumTokens, sumTokensExport } = require('../helper/sumTokens');
+
 const { fetchURL } = require('../helper/utils');
 
 const graphql = require('../helper/utils/graphql')
-
 
 const API_URL = 'https://devnet-develop-api.hatom.com/graphql'; // TODO: replace by https://mainnet-api.hatom.com/graphql
 
@@ -17,7 +16,6 @@ const TVLLiquidStakingQuery = `query QueryLiquidStaking {
 	}
 }`
 
-// esto te funciona en insomnia?
 const TVLLendingProtocolQuery = `query QueryMoneyMarket {
 	queryMoneyMarket {
 		address
@@ -70,8 +68,6 @@ async function tvl() {
 
    return totalLiquidity
 }
-
-
 
 module.exports = {
    misrepresentedTokens: true,
