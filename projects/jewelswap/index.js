@@ -30,7 +30,7 @@ async function computeTvl(tokensAndOwners) {
   return balances
 }
 
-async function pools() {
+async function pool2() {
   const tokensAndOwners = [
     ['FARM-e5ffde-a539', FARMS],
     ['FARM-9ed1f9-2fef', FARMS],
@@ -57,6 +57,6 @@ module.exports = {
   timetravel: false,
   elrond: {
     tvl,
-    pools
+    pool2
   },
 };
