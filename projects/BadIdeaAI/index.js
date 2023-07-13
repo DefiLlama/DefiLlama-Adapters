@@ -1,4 +1,4 @@
-const BADIDEAAI_TOKEN_CONTRACT = '0x32b86b99441480a7E5BD3A26c124ec2373e3F015';
+const BADIDEAAI_TOKEN_CONTRACT = '0x32b86b99441480a7E5BD3A26c124ec2373e3F015'; 
 const { sumTokensExport, nullAddress, } = require('../helper/unknownTokens')
 
 const chain = 'eth'
