@@ -16,7 +16,7 @@ module.exports = {
   methodology: "Total balances of the Uniswap V3 Pool plus protocol/user controlled balances (in WETH+ETH and CTLS)",
   ethereum: {
     tvl: sumTokensExport({ owners: [YIELD_VAULT_ADDRESS,], tokens: [ADDRESSES.ethereum.WETH, ADDRESSES.null, ], }),
-    staking: sumTokensExport({ owners: [YIELD_BOOSTER_ADDRESS,, YIELD_VAULT_ADDRESS,], tokens: [CTLS_ADDRESS,], }),
+    staking: sumTokensExport({ owners: [YIELD_BOOSTER_ADDRESS, YIELD_VAULT_ADDRESS,], tokens: [CTLS_ADDRESS,], }),
     treasury: sumTokensExport({ owners: [MULTISIG_ADDRESS,], tokens: [CTLS_ADDRESS, ADDRESSES.ethereum.WETH, ADDRESSES.null,  ADDRESSES.ethereum.USDC,], }),
   },
 };
