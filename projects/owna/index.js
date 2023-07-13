@@ -1,5 +1,4 @@
 const config = require("./config");
-const sdk = require("@defillama/sdk");
 const { sumTokensExport } = require('../helper/unwrapLPs')
 
 module.exports = {
@@ -7,41 +6,21 @@ module.exports = {
 };
 
 config.chains.forEach(async chainInfo => {
-  const {name: chain, tokens, lendingContract, nftContract} = chainInfo
+  const { name: chain, tokens, lendingContract, nftContract } = chainInfo
 
-  async function currentTokenId() {
-    return (await sdk.api.abi.call({
-      abi: "uint256:noOfTokenId",
-      target: nftContract,
-      chain
-    })).output
-  }
-
-  async function getBorrow(tokenId) {
-    return (await sdk.api.abi.call({
-      abi: "function borrow(uint256) view returns (bool nft, bool isEntryFeePaid, bool isSold, uint256 nftId, uint256 offerType, uint256 loanAmount, uint256 debtPaid, uint256 lastUpdate, uint256 borrowedStartTime)",
-      target: lendingContract,
-      chain,
-      params: [tokenId]
-    })).output
-  }
-
-  async function totalBorrowed() {
-    let total = 0;
-    for (let i = 0; i < await currentTokenId(); i++) {
-      const borrow = await getBorrow(i);
-      if (!borrow.isEntryFeePaid) {
-        total += parseInt(borrow.loanAmount);
-      }
-    }
-
-    return {
-      usd: total / 10 ** 6,
-    };
+  async function borrowed(_, _1, _2, { api }) {
+    const count = await api.call({ abi: 'uint256:noOfTokenId', target: nftContract })
+    let calls = []
+    for (let i = 0; i < count; i++) calls.push(i)
+    const borrows = await api.multiCall({ calls, abi: 'function borrow(uint256) view returns (bool nft, bool isEntryFeePaid, bool isSold, uint256 nftId, uint256 offerType, uint256 loanAmount, uint256 debtPaid, uint256 lastUpdate, uint256 borrowedStartTime)', target: lendingContract })
+    borrows.forEach(borrow => {
+      if (!borrow.isEntryFeePaid)
+        api.add(tokens[0], borrow.loanAmount - borrow.debtPaid)
+    })
   }
 
   module.exports[chain] = {
-    tvl: sumTokensExport({ chain, tokens, owners: [lendingContract] }),
-    borrowed: totalBorrowed,
+    tvl: sumTokensExport({ tokens, owners: [lendingContract] }),
+    borrowed,
   }
 })
