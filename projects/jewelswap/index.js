@@ -59,6 +59,7 @@ async function tvl() {
 
 
 module.exports = {
+  misrepresentedTokens: true,
   timetravel: false,
   elrond: {
     tvl,
