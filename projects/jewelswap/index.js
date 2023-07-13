@@ -61,7 +61,7 @@ async function tvl() {
 module.exports = {
   timetravel: false,
   elrond: {
-    tvl: tvl1,
-    pool2: pool2
+    tvl,
+    pool2
   },
 };
