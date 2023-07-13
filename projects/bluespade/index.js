@@ -12,11 +12,11 @@ const polygonBLU = '0x759d34685468604c695De301ad11A9418e2f1038'
 
 module.exports = {
   cronos: {
-    staking: staking(cronosStaking, cronosBLU, "cronos", "blu", 18),
+    staking: staking(cronosStaking, cronosBLU),
     tvl: gmxExports({ vault: cronosVault, })
   },
   polygon:{
-    staking: staking(polygonStaking, polygonBLU, "polygon", "blu", 18),
+    staking: staking(polygonStaking, polygonBLU),
     tvl: gmxExports({ vault: polygonVault, })
   }
 };
