@@ -30,7 +30,9 @@ config.chains.forEach(async chainInfo => {
     let total = 0;
     for (let i = 0; i < await currentTokenId(); i++) {
       const borrow = await getBorrow(i);
-      total += parseInt(borrow.loanAmount);
+      if (!borrow.isEntryFeePaid) {
+        total += parseInt(borrow.loanAmount);
+      }
     }
 
     return {
