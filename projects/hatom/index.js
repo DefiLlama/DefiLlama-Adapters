@@ -1,5 +1,7 @@
 const { cachedGraphQuery } = require('../helper/cache')
 
+const { sumTokensExport } = require('../helper/sumTokens')
+
 const { fetchURL } = require('../helper/utils');
 
 const graphql = require('../helper/utils/graphql')
@@ -41,7 +43,6 @@ async function tvl() {
    // const liquidStakingData = await cachedGraphQuery('hatom', API_URL, TVLLiquidStakingQuery);
    // const lendingProtocolData = await cachedGraphQuery('hatom', API_URL, TVLLendingProtocolQuery)
 
-   console.log(lendingProtocolData);
    //Total reserve of liquid staking protocol
    const liquidStakingElrndReserveInEgld = liquidStakingData.queryLiquidStaking[0].state.cashReserve
 
@@ -52,7 +53,7 @@ async function tvl() {
    const lendingProtocolCashReserveInUsd = lendingProtocolData.queryMoneyMarket.reduce((acc, item) => {
       const { cash, borrows } = item.stateHistory[0]
       const { id } = item.underlying
-      const total = cash + borrows
+      const total = Number(cash) + Number(borrows)
       if (id.toLowerCase().includes('usd')) {
          acc += total
       }
@@ -64,8 +65,9 @@ async function tvl() {
    }, 0)
 
 
-   const totalLiquidity = (liquidStakingElrndReserveInUsd + lendingProtocolCashReserveInUsd)
+   const totalLiquidity = liquidStakingElrndReserveInUsd + lendingProtocolCashReserveInUsd
 
+   console.log(totalLiquidity);
    return totalLiquidity
 }
 
@@ -74,6 +76,6 @@ module.exports = {
    timetravel: false,
    methodology: "The Total Value Locked (TVL) is computed as the aggregate sum of the EGLD reserve held within the liquid staking protocol, in conjunction with the USD reserve held within the lending protocol. This calculation encompasses not only the liquid balance but also takes into consideration the borrowing activity.",
    elrond: {
-      tvl
+      tvl: tvl
    },
 }
