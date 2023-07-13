@@ -41,6 +41,11 @@ async function pool2() {
   return computeTvl(tokensAndOwners)
 }
 
+async function tvl1(_, _b, _cb, { api, }) {
+  return sumTokensExport({ owners: [LENDING_POOL, LENDING_POOL_FARMS, FARMS, ASHSWAP_STAKE, LIQUID_STAKE]})
+
+}
+
 async function tvl() {
   const tokensAndOwners = [
     [ADDRESSES.null, LENDING_POOL],
@@ -56,7 +61,7 @@ async function tvl() {
 module.exports = {
   timetravel: false,
   elrond: {
-    tvl,
-    pool2
+    tvl: tvl1,
+    pool2: pool2
   },
 };
