@@ -1,5 +1,6 @@
 const config = require("./config");
 const sdk = require("@defillama/sdk");
+const { sumTokensExport } = require('../helper/unwrapLPs')
 
 module.exports = {
   methodology: 'Counts the amount of stables locked in Owna protocol contracts',
@@ -38,6 +39,7 @@ config.chains.forEach(async chainInfo => {
   }
 
   module.exports[chain] = {
-    tvl: totalBorrowed
+    tvl: sumTokensExport({ chain, tokens, owners: [lendingContract] }),
+    borrowed: totalBorrowed,
   }
 })
