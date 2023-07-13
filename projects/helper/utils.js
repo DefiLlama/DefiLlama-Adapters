@@ -3,7 +3,7 @@ const BigNumber = require("bignumber.js");
 const axios = require("axios");
 const sdk = require('@defillama/sdk')
 const http = require('./http')
-const env = require('./env')
+const { getEnv } = require('./env')
 const erc20 = require('./abis/erc20.json')
 
 async function returnBalance(token, address, block, chain) {
@@ -144,7 +144,7 @@ function getUniqueAddresses(addresses, isCaseSensitive = false) {
   return [...set]
 }
 
-const DEBUG_MODE = env.LLAMA_DEBUG_MODE
+const DEBUG_MODE = () => getEnv('LLAMA_DEBUG_MODE')
 const log = sdk.log
 
 function sliceIntoChunks(arr, chunkSize = 100) {
@@ -167,7 +167,7 @@ function stripTokenHeader(token) {
 }
 
 async function diplayUnknownTable({ tvlResults = {}, tvlBalances = {}, storedKey = 'ethereum', tableLabel = 'Unrecognized tokens' }) {
-  if (!DEBUG_MODE) return;
+  if (!DEBUG_MODE()) return;
   const balances = {}
   storedKey = storedKey.split('-')[0]
   Object.entries(tvlResults.tokenBalances).forEach(([label, balance]) => {
@@ -215,7 +215,7 @@ async function getDecimals(chain, tokens) {
 }
 
 async function debugBalances({ balances = {}, chain, log = false, tableLabel = '', withETH = true }) {
-  if (!DEBUG_MODE && !log) return;
+  if (!DEBUG_MODE() && !log) return;
   if (!Object.keys(balances).length) return;
 
   const labelMapping = {}
