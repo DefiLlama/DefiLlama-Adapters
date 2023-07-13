@@ -32,6 +32,7 @@ const REAL_YIELD_1INCH = "0xc7b69e15d86c5c1581dacce3cacaf5b68cd6596f";
 const REAL_YIELD_UNI = "0x6a6af5393dc23d7e3db28d28ef422db7c40932b6";
 const REAL_YIELD_SNX = "0xcbf2250f33c4161e18d4a2fa47464520af5216b5";
 const REAL_YIELD_ENS = "0x18ea937aba6053bc232d9ae2c42abe7a8a2be440";
+const REAL_YIELD_BTC = "0x0274a704a6d9129f90a62ddc6f6024b33ecdad36";
 const FRAXIMAL = "0xdbe19d1c3f21b1bb250ca7bdae0687a97b5f77e6";
 
 const cellarsV2 = [
@@ -43,6 +44,7 @@ const cellarsV2 = [
   { id: REAL_YIELD_UNI, startBlock: 17377190 },
   { id: REAL_YIELD_SNX, startBlock: 17377190 },
   { id: REAL_YIELD_ENS, startBlock: 17377190 },
+  { id: REAL_YIELD_BTC, startBlock: 17667535 },
   { id: FRAXIMAL, startBlock: 17589948 },
 ];
 
