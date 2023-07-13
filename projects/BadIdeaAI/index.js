@@ -1,7 +1,7 @@
 const BADIDEAAI_TOKEN_CONTRACT = '0x32b86b99441480a7E5BD3A26c124ec2373e3F015'; 
 const { sumTokensExport, nullAddress, } = require('../helper/unknownTokens')
 
-const chain = 'eth'
+const chain = 'ethereum'
 const TREASURY1 = '0xe5F6f7181EEc4C2A8ae59e5dE2aFeD32E9ea3250'
 const TREASURY2 = '0xA41f36D9F8c9eD352Ed80105C921D55559C2F8E9'
 const TREASURY3 = '0xBA07DbA88B9d3700c169cE82Ced3C1bF4791b3b6'
@@ -15,7 +15,7 @@ async function tvl(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
-  eth: {
+  ethereum: {
     tvl,
     treasury: sumTokensExport({
       chain,
