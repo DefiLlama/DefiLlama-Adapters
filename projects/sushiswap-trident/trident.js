@@ -1,6 +1,4 @@
-const sdk = require("@defillama/sdk");
-const { request, gql } = require("graphql-request");
-const { getChainTransform } = require("../helper/portedTokens");
+const { blockQuery } = require('../helper/http')
 
 const graphUrls = {
   polygon: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-polygon",
@@ -17,7 +15,7 @@ const graphUrls = {
   avax: "https://api.thegraph.com/subgraphs/name/sushi-v2/trident-avalanche",
 };
 
-const tridentQueryWithBlock = gql`
+const tridentQueryWithBlock = `
   query get_tokens($block: Int) {
     tokens(
       block: { number: $block }
@@ -33,7 +31,7 @@ const tridentQueryWithBlock = gql`
   }
 `;
 
-const tridentQuery = gql`
+const tridentQuery = `
   query get_tokens {
     tokens(
       first: 1000
@@ -49,43 +47,23 @@ const tridentQuery = gql`
 `;
 
 function trident(chain) {
-  return async (timestamp, ethBlock, chainBlocks) => {
-    const balances = {};
+  return async (timestamp, ethBlock, chainBlocks, { api }) => {
     const graphUrl = graphUrls[chain];
-    const block = chainBlocks[chain];
-    const transform = await getChainTransform(chain);
-
     // Query graphql endpoint
     let result;
-    if (block) {
-      result = await request(graphUrl, tridentQueryWithBlock, {
-        block: block - 50, //subgraphs can be late by few seconds/minutes
-      });
-    } else {
-      result = await request(graphUrl, tridentQuery);
-    }
+    result = await blockQuery(graphUrl, tridentQueryWithBlock, { api });
 
     if (chain == "polygon") {
       //add pools that haven't been migrated to the new router
       result.tokens.push(
-        ...(!block
-          ? await request(graphUrls["polygonOldRouter"], tridentQuery)
-          : await request(
-              graphUrls["polygonOldRouter"],
-              tridentQueryWithBlock,
-              {
-                block: block - 50, //subgraphs can be late by few seconds/minutes
-              }
-            )
-        ).tokens
+        ...(await blockQuery(graphUrls["polygonOldRouter"], tridentQuery, { api })).tokens
       );
     }
 
     result.tokens.forEach((token) => {
-      sdk.util.sumSingleBalance(balances, transform(token.id), token.liquidity);
+      api.add(token.id, token.liquidity);
     });
 
-    return balances;
   };
 }
 

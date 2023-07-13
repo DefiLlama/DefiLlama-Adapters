@@ -36,10 +36,8 @@ async function tvl(timestamp, block, chainBlocks){
         [AURA, false],
         // BTRFLY/ETH Curve LP
         ['0x7483Dd57f6488b0e194A151C57Df6Ec85C00aCE9', false],
-        // USDC
         [ADDRESSES.ethereum.USDC, false],
-        // FRAX
-        ['0x853d955aCEf822Db058eb8505911ED77F175b99e', false],
+        [ADDRESSES.ethereum.FRAX, false],
     ], treasuries, block)
     
     //Add UniswapV3 LPs

@@ -5,6 +5,9 @@ const factory = "0x7bbAB21475d99C09a92fc4B93Fa2DDa987DbA17c"
 
 module.exports = {
   misrepresentedTokens: true,
+  hallmarks: [
+    [1666656000, "Rug Pull"]
+  ],
   dogechain: {
     tvl: sdk.util.sumChainTvls([
       getUniTVL({ chain: 'dogechain', factory, useDefaultCoreAssets: true, }),
