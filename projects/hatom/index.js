@@ -1,4 +1,5 @@
 const BigNumber = require("bignumber.js");
+const { cachedGraphQuery } = require("../helper/cache");
 const ADDRESSES = require("../helper/coreAssets.json");
 const { gql, request } = require("graphql-request");
 
