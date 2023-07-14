@@ -1,4 +1,5 @@
 const { getLogs } = require("../helper/cache/getLogs");
+const fs = require("fs");
 
 const abi = require("./abi.js");
 const contracts = require("./contracts.js");
@@ -11,6 +12,7 @@ const { getCdpData, getCdpManagerData, getIlkRegistryData } = calls;
 
 const automationTvl = async ({ api }) => {
   const cdpIdList = new Set();
+  let positionsWithTriggersAndCollateral = 0;
 
   const [triggerAddedEvents, triggerRemovedEvents, triggerExecutedEvents] =
     await Promise.all(
@@ -26,17 +28,33 @@ const automationTvl = async ({ api }) => {
         })
       )
     );
+  const triggerEvents = [
+    ...triggerAddedEvents.map((event) => ({
+      cdp: event.cdpId.toString(),
+      trigger: event.triggerId.toString(),
+      action: "triggerAdded",
+    })),
+    ...triggerRemovedEvents.map((event) => ({
+      cdp: event.cdpId.toString(),
+      trigger: event.triggerId.toString(),
+      action: "triggerRemoved",
+    })),
+    ...triggerExecutedEvents.map((event) => ({
+      cdp: event.cdpId.toString(),
+      trigger: event.triggerId.toString(),
+      action: "triggerExecuted",
+    })),
+  ].sort((a, b) => a.trigger - b.trigger);
 
-  triggerAddedEvents.forEach((event) => {
-    cdpIdList.add(event.cdpId.toString());
+  triggerEvents.forEach((event) => {
+    const { cdp, action } = event;
+    if (action === "triggerAdded") {
+      cdpIdList.add(cdp);
+    } else if (action === "triggerRemoved" || action === "triggerExecuted") {
+      cdpIdList.delete(cdp);
+    }
   });
-  console.log("Got", triggerAddedEvents.length, " triggers added");
 
-  [...triggerRemovedEvents, ...triggerExecutedEvents].forEach((event) => {
-    cdpIdList.delete(event.cdpId.toString());
-  });
-
-  console.log("Got", cdpIdList.size, "active triggers");
   const cdpIds = [...cdpIdList];
   const ilkNames = await getCdpManagerData(cdpIds, api);
   const ilkIds = [...new Set(ilkNames)];
@@ -47,9 +65,25 @@ const automationTvl = async ({ api }) => {
   });
   const collData = await getCdpData(cdpIds, api);
   collData.forEach(({ collateralLocked }, i) => {
+    if (collateralLocked > 0) {
+      positionsWithTriggersAndCollateral++;
+    }
     const idx = ilkIds.indexOf(ilkNames[i]);
     api.add(tokens[idx], collateralLocked / 10 ** (18 - decimals[idx]));
   });
+  console.log(
+    JSON.stringify(
+      {
+        triggersAdded: triggerAddedEvents.length,
+        triggersRemovedandExecuted:
+          triggerRemovedEvents.length + triggerExecutedEvents.length,
+        triggersActive: cdpIdList.size,
+        positionsWithTriggersAndCollateral,
+      },
+      null,
+      2
+    )
+  );
 };
 
 module.exports = {
