@@ -39,5 +39,8 @@ module.exports={
     },
     hallmarks:[
         [1657915200, "OP Rewards Start"],
+        [1685073974, "V2 Upgrade"],
+        [1688184374, "OP Rewards for Makers"],
+        [1688616374, "Arbitrum Launch"]
       ]
 }
