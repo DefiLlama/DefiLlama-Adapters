@@ -19,7 +19,7 @@ async function safetyModuleStaking(timestamp, ethBlock, chainBlocks, { api }) {
 }
 
 module.exports = {
-  methodology: "PSP can be staked in staking pools, one pool per Private Market Maker, to signal and share the PMM benefits",
+  methodology: "PSP can be staked either on its single asset sePSP pool or 2x boosted sePSP2, an 80/20 balancer pool. Staking allows users to receive Revenue based on their boosted actions.",
   ethereum: {
     staking,
     pool2: safetyModuleStaking,

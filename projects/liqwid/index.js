@@ -63,9 +63,6 @@ const query = `{
     market {
       scripts {
         actionToken {
-          assetClass {
-            name
-          }
           script {
             value0 {
               value0

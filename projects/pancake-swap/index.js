@@ -82,6 +82,9 @@ module.exports = {
     staking: stakings(["0x556B9306565093C855AEA9AE92A594704c2Cd59e"], "0x152649ea73beab28c5b49b26eb48f7ead6d4c898", "ethereum"),
     tvl: getUniTVL({ chain: 'ethereum', factory: '0x1097053Fd2ea711dad45caCcc45EfF7548fCB362', useDefaultCoreAssets: true, })
   },
+  polygon_zkevm: {
+    tvl: getUniTVL({ chain: 'polygon_zkevm', factory: '0x02a84c1b3BBD7401a5f7fa98a384EBC70bB5749E', useDefaultCoreAssets: true, })
+  },
   aptos: dexExport({
     account: '0xc7efb4076dbe143cbcd98cfaaa929ecfc8f299203dfff63b95ccb6bfe19850fa',
     poolStr: 'swap::TokenPairReserve',

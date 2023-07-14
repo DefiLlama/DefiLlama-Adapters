@@ -5,6 +5,7 @@ const { userInfos } = require('./FairLaunch')
 
 const { getChainTransform, getFixBalances } = require('../helper/portedTokens')
 const { getTokenPrices } = require('../helper/unknownTokens')
+const kExports = require('../kleva-lend')
 
 const chain = 'klaytn'
 // const TOKEN_PRICE_QUERY_URL = "https://api.kltalchemy.com/klay/ksInfo"
@@ -59,6 +60,6 @@ async function fetchLiquidity() {
 }
 
 module.exports = {
-  klaytn: { tvl: fetchLiquidity },
+  klaytn: { tvl: sdk.util.sumChainTvls([fetchLiquidity, kExports.klaytn.tvl]) },
   doublecounted: true,
 }

@@ -6,6 +6,9 @@ const FACTORY = "0xeEAbe2F15266B19f3aCF743E69105016277756Fb"
 const WKAVA = ADDRESSES.kava.WKAVA
 
 module.exports = {
+  hallmarks: [
+    [1656806400, "Rug Pull"]
+  ],
   methodology: "Count TVL as liquidity on the dex",
   misrepresentedTokens: true,
   kava: {

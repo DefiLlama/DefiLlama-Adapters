@@ -16,7 +16,7 @@ module.exports = {
   arbitrum: {
     tvl: sumTokensExport({
       owners: [config.clearinghouse, config.endpoint],
-      tokens: [ADDRESSES.arbitrum.WBTC, ADDRESSES.arbitrum.WETH, ADDRESSES.arbitrum.USDC],
+      tokens: [ADDRESSES.arbitrum.WBTC, ADDRESSES.arbitrum.WETH, ADDRESSES.arbitrum.USDC, "0x912ce59144191c1204e64559fe8253a0e49e6548"],
     })
   }
 }
