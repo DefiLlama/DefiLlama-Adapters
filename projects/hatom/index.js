@@ -1,59 +1,63 @@
 const BigNumber = require("bignumber.js");
-const graphql = require("../helper/utils/graphql");
+const { cachedGraphQuery } = require("../helper/cache");
 const ADDRESSES = require("../helper/coreAssets.json");
+const { gql, request } = require("graphql-request");
 
 const INITIAL_EXCHANGE_RATE = "1000000000000000000";
 const WAD = BigNumber(1e18).toString();
 
 const API_URL = "https://mainnet-api.hatom.com/graphql";
 
-const TokenPricesQuery = `
-    query Common_QueryTokenPrices {
-      queryLiquidStaking {
-        state {
-          cashReserve
-          totalShares
-        }
+const TokenPricesQuery = gql`
+  query Common_QueryTokenPrices {
+    queryLiquidStaking {
+      state {
+        cashReserve
+        totalShares
       }
-      queryToken {
-        id
-        symbol
-        dailyPriceHistory(first: 1, order: { desc: day }) {
-          quote {
-            priceInEgld
-            timestamp
-          }
-          price {
-            price
-            timestamp
-          }
+    }
+    queryToken {
+      id
+      symbol
+      dailyPriceHistory(first: 1, order: { desc: day }) {
+        quote {
+          priceInEgld
+          timestamp
+        }
+        price {
+          price
+          timestamp
         }
       }
     }
-  `;
+  }
+`;
 
-const TVLLiquidStakingQuery = `query QueryLiquidStaking {
-	queryLiquidStaking {
-		state {
-      cashReserve
-  	   }
-	}
-}`;
+const TVLLiquidStakingQuery = gql`
+  query QueryLiquidStaking {
+    queryLiquidStaking {
+      state {
+        cashReserve
+      }
+    }
+  }
+`;
 
-const TVLLendingProtocolQuery = `query QueryMoneyMarket {
-	queryMoneyMarket {
-		address
-		underlying {
-			name
-         decimals
-			id
-		}
-		 stateHistory(first: 1, order: {desc: timestamp}) {
-			cash
-			borrows
-		}
-	}
-}
+const TVLLendingProtocolQuery = gql`
+  query QueryMoneyMarket {
+    queryMoneyMarket {
+      address
+      underlying {
+        name
+        decimals
+        id
+      }
+      stateHistory(first: 1, order: { desc: timestamp }) {
+        cash
+        borrows
+      }
+    }
+  }
 `;
 
 const calcLiquidStakingExchangeRate = (cashReserve, totalShares) => {
@@ -125,19 +129,13 @@ const formatTokenPrices = ({ queryToken = [], queryLiquidStaking = [] }) => {
 
 async function tvl() {
   // Getting token prices
-  const tokenPrices = await graphql.request(API_URL, TokenPricesQuery);
+  const tokenPrices = await request(API_URL, TokenPricesQuery);
   const formattedTokenPrices = formatTokenPrices(tokenPrices);
   const egldUsdcPrice = BigNumber(formattedTokenPrices.EGLD || 0);
 
   // Fetching TVL data from api
-  const liquidStakingData = await graphql.request(
-    API_URL,
-    TVLLiquidStakingQuery
-  );
-  const lendingProtocolData = await graphql.request(
-    API_URL,
-    TVLLendingProtocolQuery
-  );
+  const liquidStakingData = await request(API_URL, TVLLiquidStakingQuery);
+  const lendingProtocolData = await request(API_URL, TVLLendingProtocolQuery);
 
   //Total reserve of liquid staking protocol
   const liquidStakingElrndReserveInEgld =
