@@ -2,9 +2,7 @@ const BigNumber = require("bignumber.js");
 const graphql = require('../helper/utils/graphql')
 const ADDRESSES = require('../helper/coreAssets.json')
 
-const API_URL = 'https://devnet-develop-api.hatom.com/graphql'; // TODO: replace by https://mainnet-api.hatom.com/graphql
-// const API_URL = 'https://mainnet-api.hatom.com/graphql'
-// const API_URL = 'http://localhost:8080/graphql'
+const API_URL = 'https://mainnet-api.hatom.com/graphql'
 const TokenPricesQuery = `
     query Common_QueryTokenPrices {
       queryLiquidStaking {
@@ -132,7 +130,7 @@ async function tvl() {
    // Getting token prices
    const tokenPrices = await graphql.request(API_URL, TokenPricesQuery)
    const formattedTokenPrices = formatTokenPrices(tokenPrices)
-   const egldUsdcPrice = BigNumber(formattedTokenPrices.EGLD)
+   const egldUsdcPrice = BigNumber(formattedTokenPrices.EGLD || 0)
 
    // Fetching TVL data from api
    const liquidStakingData = await graphql.request(API_URL, TVLLiquidStakingQuery)
