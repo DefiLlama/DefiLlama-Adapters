@@ -1,97 +1,27 @@
-const sdk = require("@defillama/sdk");
+const { sumTokens2, sumTokensExport, } = require('../helper/unwrapLPs')
 const Helper = require("./Helper.js");
-const ethers = require("ethers");
+const { farms: { MasterChefAddress, LockStakingAddress }, abi, token: { XWIN }  } = require('./Helper.js');
 
-async function tvlBSC(_, _1, _2, { api }, block) {
-  var balances = {};
-  var collateralBalance;
-  var stratAddr;
-  var PublicVaultAddr;
-  var PrivateVaultAddr;
+async function tvl(_, _1, _2, { api }) {
+  const vaults = [
+    ...Object.values(Helper.Strategies),
+    ...Object.values(Helper.PublicVault),
+    ...Object.values(Helper.PrivateVault),
+  ]
+  const bals = await api.multiCall({  abi: 'uint256:getVaultValues', calls: vaults})
+  const tokens = await api.multiCall({  abi: 'address:baseToken', calls: vaults})
+  api.addTokens(tokens, bals)
+}
 
-  for (stratAddr in Helper.Strategies) {
-    collateralBalance = await api.call({
-      abi: Helper.abi.getVaultValues,
-      target: Helper.Strategies[stratAddr],
-      block: block,
-    });
-    sdk.util.sumSingleBalance(
-      balances,
-      "tether",
-      Number(ethers.utils.formatEther(collateralBalance))
-    );
-  }
-
-  for (PublicVaultAddr in Helper.PublicVault) {
-    collateralBalance = await api.call({
-      abi: Helper.abi.getVaultValues,
-      target: Helper.PublicVault[PublicVaultAddr],
-      block: block,
-    });
-    sdk.util.sumSingleBalance(
-      balances,
-      "tether",
-      Number(ethers.utils.formatEther(collateralBalance))
-    );
-  }
-
-  for (PrivateVaultAddr in Helper.PrivateVault) {
-    collateralBalance = await api.call({
-      abi: Helper.abi.getVaultValues,
-      target: Helper.PrivateVault[PrivateVaultAddr],
-      block: block,
-    });
-    sdk.util.sumSingleBalance(
-      balances,
-      "tether",
-      Number(ethers.utils.formatEther(collateralBalance))
-    );
-  }
-
-  //Calculate the Liqudity Pool TVL
-  var poolLength = await api.call({
-    abi: Helper.abi.poolLength,
-    target: Helper.farms.MasterChefAddress,
-    block: block,
-  });
-
-  for (let i = 0; i < poolLength; i++) {
-    var poolInfoMaster = await api.call({
-      abi: Helper.abi.poolInfoMaster,
-      params: [i],
-      target: Helper.farms.MasterChefAddress,
-      block: block,
-    });
-    if (poolInfoMaster[0] != Helper.farms.LockStakingAddress) {
-      var amount = await api.call({
-        abi: Helper.abi.balance,
-        params: [Helper.farms.MasterChefAddress],
-        target: poolInfoMaster[0],
-        block: block,
-      });
-      var decimals = await api.call({
-        abi: Helper.abi.decimals,
-        target: poolInfoMaster[0],
-        block: block,
-      });
-      var price = await api.call({
-        abi: Helper.abi.getPrice,
-        params: [poolInfoMaster[0], Helper.token.USDT],
-        target: Helper.farms.PriceMasterAddr,
-        block: block,
-      });
-      var LPamount =
-        Number(ethers.utils.formatUnits(price, decimals)) *
-        Number(ethers.utils.formatEther(amount));
-      sdk.util.sumSingleBalance(balances, "tether", LPamount);
-    }
-  }
-
-  return balances;
+async function pool2(_, _1, _2, { api }) {
+  const data = await api.fetchList({  lengthAbi: abi.poolLength, itemAbi: abi.poolInfoMaster, target: MasterChefAddress, })
+  return sumTokens2({ api, owner: MasterChefAddress, tokens: data.map(i => i[0]), resolveLP: true, blacklistedTokens: [XWIN, LockStakingAddress] })
 }
 
 module.exports = {
   bsc: {
-    tvl: tvlBSC,
+    tvl,
+    pool2,
+    staking: sumTokensExport({ owners: [MasterChefAddress, LockStakingAddress], tokens: [XWIN]})
   },
 };

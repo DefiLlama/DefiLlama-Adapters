@@ -1,5 +1,5 @@
 const token = {
-  USDT: "0x55d398326f99059fF775485246999027B3197955",
+  XWIN: '0xd88ca08d8eec1e9e09562213ae83a7853ebb5d28'
 };
 
 const Strategies = {
