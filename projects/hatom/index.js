@@ -1,15 +1,10 @@
-const { cachedGraphQuery } = require('../helper/cache')
-
-const { sumTokensExport } = require('../helper/sumTokens')
-
 const BigNumber = require("bignumber.js");
-
 const { fetchURL } = require('../helper/utils');
-
+const { toUSDTBalances } = require('../helper/balances')
+const { cachedGraphQuery } = require('../helper/cache')
 const graphql = require('../helper/utils/graphql')
 
 const API_URL = 'https://devnet-develop-api.hatom.com/graphql'; // TODO: replace by https://mainnet-api.hatom.com/graphql
-
 const PAIR_URL = `https://api.multiversx.com/mex/pairs`
 
 const TVLLiquidStakingQuery = `query QueryLiquidStaking {
@@ -37,7 +32,7 @@ const TVLLendingProtocolQuery = `query QueryMoneyMarket {
 
 async function tvl() {
    const result = await fetchURL(PAIR_URL)
-   const egldUsdcPrice = BigNumber(result.data.find(pair => pair.symbol === 'EGLDUSDC').basePrice)
+   const egldUsdcPrice = result.data.find(pair => pair.symbol === 'EGLDUSDC').basePrice
 
    const liquidStakingData = await graphql.request(API_URL, TVLLiquidStakingQuery)
    const lendingProtocolData = await graphql.request(API_URL, TVLLendingProtocolQuery)
@@ -69,7 +64,7 @@ async function tvl() {
 
    const totalLiquidity = liquidStakingElrndReserveInUsd.plus(lendingProtocolCashReserveInUsd)
 
-   return totalLiquidity.toNumber()
+   return toUSDTBalances(totalLiquidity)
 }
 
 module.exports = {
