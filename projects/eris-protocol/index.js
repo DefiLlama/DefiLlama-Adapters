@@ -50,6 +50,10 @@ const config = {
   kujira: {
     coinGeckoId: "kujira",
     hub: "kujira1n3fr5f56r2ce0s37wdvwrk98yhhq3unnxgcqus8nzsfxvllk0yxquurqty",
+    voteEscrow:
+      "kujira1mxzfcxpn6cjx4u9zln6ttxuc6fuw6g0cettd6nes74vrt2f22h4q3j5cdz",
+    ampToken:
+      "factory/kujira1n3fr5f56r2ce0s37wdvwrk98yhhq3unnxgcqus8nzsfxvllk0yxquurqty/ampKUJI",
   },
   juno: {
     coinGeckoId: "juno-network",
@@ -62,6 +66,24 @@ const config = {
       "migaloo1hntfu45etpkdf8prq6p6la9tsnk3u3muf5378kds73c7xd4qdzysuv567q",
     ampToken:
       "factory/migaloo1436kxs0w2es6xlqpp9rd35e3d0cjnw4sv8j3a7483sgks29jqwgshqdky4/ampWHALE",
+    // currently not running due to node simulation gas issues
+    arbVault:
+      "migaloo1ey4sn2mkmhew4pdrzk90l9acluvas25qlhuvsfgssw42ugz8yjlqx92j9l",
+  },
+  osmosis: {
+    coinGeckoId: "osmosis",
+    hub: "osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9",
+    voteEscrow:
+      "osmo1vcg9a7zwfeuqwtkya5l34tdgzxnafdzpe22ahphd02uwed43wnfs3wtf8a",
+    ampToken:
+      "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
+  },
+  injective: {
+    coinGeckoId: "injective-protocol",
+    hub: "inj1cdwt8g7nxgtg2k4fn8sj363mh9ahkw2qt0vrnc",
+    voteEscrow: "inj1yp0lgxq460ked0egtzyj2nck3mdhr8smfmteh5",
+    ampToken: "factory/inj1cdwt8g7nxgtg2k4fn8sj363mh9ahkw2qt0vrnc/ampINJ",
+    decimals: 18,
   },
 };
 
@@ -79,19 +101,29 @@ async function tvlHub(chain, state) {
 
   state ||= await getState(chain, chainConfig.hub);
 
-  let tvl = +(state.tvl_uluna ?? state.tvl_utoken ?? 0) / 1e6;
+  let tvl =
+    +(state.tvl_uluna ?? state.tvl_utoken ?? 0) / getDecimalFactor(chainConfig);
   return {
     [coinGeckoId]: tvl,
   };
+}
+
+function getDecimalFactor(chainConfig) {
+  let decimals = chainConfig.decimals ?? 6;
+  return Math.pow(10, decimals);
 }
 
 async function tvlArbVault(chain) {
   let chainConfig = config[chain];
   let coinGeckoId = chainConfig.coinGeckoId;
 
+  if (!chainConfig.arbVault) {
+    return {};
+  }
+
   const res = await getState(chain, chainConfig.arbVault);
 
-  let tvl = +(res.balances.tvl_utoken ?? 0) / 1e6;
+  let tvl = +(res.balances.tvl_utoken ?? 0) / getDecimalFactor(chainConfig);
   return {
     [coinGeckoId]: tvl,
   };
@@ -99,6 +131,10 @@ async function tvlArbVault(chain) {
 
 async function tvlAmpGovernance(chain, state) {
   let chainConfig = config[chain];
+
+  if (!chainConfig.ampToken) {
+    return {};
+  }
 
   let isTokenFactory = chainConfig.ampToken.startsWith("factory");
 
@@ -122,11 +158,12 @@ async function tvlAmpGovernance(chain, state) {
 
   if (chainConfig.coinGeckoIdAmp) {
     return {
-      [chainConfig.coinGeckoIdAmp]: ampAmount / 1e6,
+      [chainConfig.coinGeckoIdAmp]: ampAmount / getDecimalFactor(chainConfig),
     };
   } else {
     state ||= await getState(chain, chainConfig.hub);
-    let amount = (ampAmount / 1e6) * +state.exchange_rate;
+    let amount =
+      (ampAmount / getDecimalFactor(chainConfig)) * +state.exchange_rate;
     return {
       [chainConfig.coinGeckoId]: amount,
     };
@@ -135,7 +172,7 @@ async function tvlAmpGovernance(chain, state) {
 
 async function farm2Tvl(farm) {
   const res = await queryContractCosmos({
-    chain: 'terra2',
+    chain: "terra2",
     contract: farm,
     data: { state: {} },
   });
@@ -199,44 +236,34 @@ function merge(elements) {
   }, {});
 }
 
-function terraTvl() {
-  return mergePromises([tvlHub("terra")]);
-}
-
-function kujiraTvl() {
-  return mergePromises([tvlHub("kujira")]);
-}
-
-function junoTvl() {
-  return mergePromises([tvlHub("juno")]);
-}
-
-async function migalooTvl() {
-  let chain = "migaloo";
+async function productsTvl(chain) {
   let chainConfig = config[chain];
-  let state = await getState(chain, chainConfig.hub);
-  return await mergePromises([
-    tvlHub(chain, state),
-    tvlAmpGovernance(chain, state),
-  ]);
-}
-
-function terra2Tvl() {
-  return mergePromises([
-    tvlHub("terra2"),
-    tvlArbVault("terra2"),
-    tvlAmpGovernance("terra2"),
-    ...config.terra2.farms.map(farm2Tvl),
-  ]);
+  try {
+    let state = await getState(chain, chainConfig.hub);
+    return await mergePromises([
+      tvlHub(chain, state),
+      tvlAmpGovernance(chain, state),
+      tvlArbVault(chain).catch((a) => ({})),
+      ...(chainConfig.farms ?? []).map(farm2Tvl),
+    ]);
+  } catch (error) {
+    let url = error?.response?.config?.url;
+    if (url) {
+      console.log("Issue calling", error?.response?.config?.url);
+    }
+    throw error;
+  }
 }
 
 module.exports = {
   timetravel: false,
   misrepresentedTokens: false,
   methodology: "Liquid Staking and Arbitrage Protocol",
-  terra2: { tvl: terra2Tvl },
-  terra: { tvl: terraTvl },
-  kujira: { tvl: kujiraTvl },
-  juno: { tvl: junoTvl },
-  migaloo: { tvl: migalooTvl },
+  terra2: { tvl: () => productsTvl("terra2") },
+  terra: { tvl: () => productsTvl("terra") },
+  kujira: { tvl: () => productsTvl("kujira") },
+  juno: { tvl: () => productsTvl("juno") },
+  migaloo: { tvl: () => productsTvl("migaloo") },
+  injective: { tvl: () => productsTvl("injective") },
+  osmosis: { tvl: () => productsTvl("osmosis") },
 };
