@@ -5,6 +5,9 @@ const ethers = require("ethers");
 async function tvlBSC(_, _1, _2, { api }, block) {
   var balances = {};
   var collateralBalance;
+  var stratAddr;
+  var PublicVaultAddr;
+  var PrivateVaultAddr;
 
   for (stratAddr in Helper.Strategies) {
     collateralBalance = await api.call({
