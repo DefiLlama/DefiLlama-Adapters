@@ -3,6 +3,9 @@ const { ohmTvl } = require('../helper/ohm')
 const { getFixBalancesSync } = require('../helper/portedTokens')
 
 module.exports= {
+  hallmarks: [
+    [1670457600, "Rug Pull"]
+  ],
   ...ohmTvl("0xE0Fe9Af0208ba444F81eDF348F23bd1A91Dc395E", [
     ["0x11bbB41B3E8baf7f75773DB7428d5AcEe25FEC75", false], // USDC
     [ADDRESSES.ethereum.WETH, false], // WETH

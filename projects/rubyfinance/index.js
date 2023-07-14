@@ -89,6 +89,9 @@ async function KavaPool2(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
+  hallmarks: [
+    [1660521600, "incentives not given"]
+  ],
   methodology:
     "Pool2 deposits consist of RUBY/USDC, RUBY/KAVA, RSHARE/KAVA and RUBY/RSHARE LP deposits while the staking TVL consists of the RSHARE tokens locked within the Boardroom contract.",
   kava: {
