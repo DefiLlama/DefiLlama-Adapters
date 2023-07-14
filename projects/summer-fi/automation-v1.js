@@ -1,5 +1,4 @@
 const { getLogs } = require("../helper/cache/getLogs");
-const fs = require("fs");
 
 const abi = require("./abi.js");
 const contracts = require("./contracts.js");
