@@ -2,6 +2,8 @@ const { cachedGraphQuery } = require('../helper/cache')
 
 const { sumTokensExport } = require('../helper/sumTokens')
 
+const BigNumber = require("bignumber.js");
+
 const { fetchURL } = require('../helper/utils');
 
 const graphql = require('../helper/utils/graphql')
@@ -35,7 +37,7 @@ const TVLLendingProtocolQuery = `query QueryMoneyMarket {
 
 async function tvl() {
    const result = await fetchURL(PAIR_URL)
-   const egldUsdcPrice = result.data.find(pair => pair.symbol === 'EGLDUSDC').basePrice
+   const egldUsdcPrice = BigNumber(result.data.find(pair => pair.symbol === 'EGLDUSDC').basePrice)
 
    const liquidStakingData = await graphql.request(API_URL, TVLLiquidStakingQuery)
    const lendingProtocolData = await graphql.request(API_URL, TVLLendingProtocolQuery)
@@ -46,29 +48,28 @@ async function tvl() {
    //Total reserve of liquid staking protocol
    const liquidStakingElrndReserveInEgld = liquidStakingData.queryLiquidStaking[0].state.cashReserve
 
-   //TODO: Precission problem?
-   const liquidStakingElrndReserveInUsd = liquidStakingElrndReserveInEgld * egldUsdcPrice
+   const liquidStakingElrndReserveInUsd = BigNumber(liquidStakingElrndReserveInEgld).times(egldUsdcPrice)
 
    //Total reserve of lending protocol
    const lendingProtocolCashReserveInUsd = lendingProtocolData.queryMoneyMarket.reduce((acc, item) => {
       const { cash, borrows } = item.stateHistory[0]
       const { id } = item.underlying
-      const total = Number(cash) + Number(borrows)
+      const cashBigNumber = BigNumber(cash)
+      const borrowsBigNumber = BigNumber(borrows)
+      const total = cashBigNumber.plus(borrowsBigNumber)
+      // console.log(typeof total);
       if (id.toLowerCase().includes('usd')) {
-         acc += total
+         acc = acc.plus(total)
       }
       if (id.toLowerCase().includes('egld')) {
-         //TODO: Precission problem?
-         acc += total * egldUsdcPrice
+         acc = acc.plus(total.times(egldUsdcPrice))
       }
       return acc
-   }, 0)
+   }, BigNumber(0))
 
+   const totalLiquidity = liquidStakingElrndReserveInUsd.plus(lendingProtocolCashReserveInUsd)
 
-   const totalLiquidity = liquidStakingElrndReserveInUsd + lendingProtocolCashReserveInUsd
-
-   console.log(totalLiquidity);
-   return totalLiquidity
+   return totalLiquidity.toNumber()
 }
 
 module.exports = {
