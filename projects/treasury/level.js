@@ -7,6 +7,11 @@ module.exports = treasuryExports({
       "0xb5c42f84ab3f786bca9761240546aa9cec1f8821",
     ],
     owners: ['0x8BFf27E9Fa1C28934554e6B5239Fb52776573619'],
+    ownTokens: [
+      '0xb07953f23545796710957faec97f05b21146ac2d',
+      '0x92a0a11a57c28d4c86a629530fd59b83b1276003',
+      '0x712a2e08c67cd7153f04fdb3037d4696300921d0',
+    ],
   },
   arbitrum: {
     tokens: [
@@ -20,5 +25,9 @@ module.exports = treasuryExports({
       "0x5573405636F4b895E511C9C54aAfbefa0E7Ee458",
     ],
     owners: ['0x635aac65f37a6bbe06a2dde77b0fd2f1748674d4'],
+    ownTokens: [
+      '0x6442b001c5acce8cb71986ad65b22684821a927a',
+      '0x4b47ef68180ec46a0b6be4d34fd9d8680bee2b2c',
+    ],
   },
 })
