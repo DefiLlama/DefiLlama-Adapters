@@ -21,6 +21,9 @@ async function tvl(_, _b, _c, { api }) {
 }
 
 module.exports = {
+  hallmarks: [
+    [1675814400, "Rug Pull"]
+  ],
   arbitrum: {
     tvl,
   }

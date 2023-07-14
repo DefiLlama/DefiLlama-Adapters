@@ -5,6 +5,9 @@ const {
 const chain = 'dogechain'
 
 module.exports = {
+    hallmarks: [
+        [1663200000, "Rug Pull"]
+    ],
     dogechain: {
         tvl: getUniTVL({
             chain,
