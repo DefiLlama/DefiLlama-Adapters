@@ -7,18 +7,17 @@ const address = require("./address");
 async function tvl(chain, timestamp, chainBlocks, { api }) {
   const addressMap = address[api.chain];
 
-  const [simpleReservesData, bnftAssetList] =
-    await Promise.all([
-      api.call({
-        target: addressMap.UiPoolDataProvider,
-        params: [addressMap.LendPoolAddressProvider],
-        abi: abi.UiPoolDataProvider.getSimpleReservesData,
-      }),
-      api.call({
-        target: addressMap.BNFTRegistry,
-        abi: abi.BNFTRegistry.getBNFTAssetList,
-      }),
-    ]);
+  const [simpleReservesData, bnftAssetList] = await Promise.all([
+    api.call({
+      target: addressMap.UiPoolDataProvider,
+      params: [addressMap.LendPoolAddressProvider],
+      abi: abi.UiPoolDataProvider.getSimpleReservesData,
+    }),
+    api.call({
+      target: addressMap.BNFTRegistry,
+      abi: abi.BNFTRegistry.getBNFTAssetList,
+    }),
+  ]);
 
   const bnftProxyList = await api.multiCall({
     calls: bnftAssetList,
@@ -27,11 +26,34 @@ async function tvl(chain, timestamp, chainBlocks, { api }) {
   });
 
   const toa = [
-    ...bnftAssetList.map((i, idx) => [i, bnftProxyList[idx]]),
-    ...simpleReservesData.map((i) => [i.underlyingAsset, i.bTokenAddress]),
+    ...bnftAssetList.map((bnftAsset, idx) => {
+      const bnftProxy = bnftProxyList[idx];
+      return [bnftAsset, bnftProxy];
+    }),
+    ...simpleReservesData.map((reserve) => [
+      reserve.underlyingAsset,
+      reserve.bTokenAddress,
+    ]),
   ];
 
-  return sumTokens2({ api, tokensAndOwners: toa });
+  const balances = await sumTokens2({ api, tokensAndOwners: toa });
+
+  // cause stNFT do not have price, it should use the underlying asset price
+  const stNFTMap = {
+    [addressMap.StBAYC.toLowerCase()]: addressMap.BAYC.toLowerCase(),
+    [addressMap.StMAYC.toLowerCase()]: addressMap.MAYC.toLowerCase(),
+    [addressMap.StBAKC.toLowerCase()]: addressMap.BAKC.toLowerCase(),
+  };
+
+  for (const asset in balances) {
+    const underlyingAsset = stNFTMap[asset];
+    if (underlyingAsset) {
+      sdk.util.sumSingleBalance(balances, underlyingAsset, balances[asset]);
+      delete balances[asset];
+    }
+  }
+
+  return balances;
 }
 
 async function borrowed(chain, timestamp, chainBlocks, { api }) {

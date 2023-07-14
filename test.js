@@ -236,7 +236,7 @@ function checkExportKeys(module, filePath, chains) {
     || (filePath.length === 1 && !['.js', ''].includes(path.extname(filePath[0]))) // matches .../projects/projectXYZ.js or .../projects/projectXYZ
     || (filePath.length === 2 &&
       !(['api.js', 'index.js', 'apiCache.js',].includes(filePath[1])  // matches .../projects/projectXYZ/index.js
-        || ['treasury',].includes(filePath[0])  // matches .../projects/treasury/project.js
+        || ['treasury', 'entities'].includes(filePath[0])  // matches .../projects/treasury/project.js
       )))
     process.exit(0)
 
@@ -354,16 +354,14 @@ async function computeTVL(balances, timestamp) {
     })
     .filter((item) => item !== undefined);
 
-  const burl = "https://coins.llama.fi/prices/current/";
   const unknownTokens = {}
   let tokenData = []
   readKeys.forEach(i => unknownTokens[i] = true)
 
   const { errors } = await PromisePool.withConcurrency(5)
-    .for(sliceIntoChunks(readKeys, 40))
+    .for(sliceIntoChunks(readKeys, 100))
     .process(async (keys) => {
-      const coins = keys.join(',');
-      tokenData.push((await axios.get(`${burl}${coins}`)).data.coins)
+      tokenData.push((await axios.get(`https://coins.llama.fi/prices/current/${keys.join(',')}`)).data.coins)
     })
 
   if (errors && errors.length)
@@ -381,6 +379,10 @@ async function computeTVL(balances, timestamp) {
 
       if (data == undefined) tokenBalances[`UNKNOWN (${address})`] = balance
       if ('confidence' in data && data.confidence < confidenceThreshold) return
+      if (Math.abs(data.timestamp - Date.now() / 1e3) > (24 * 3600)) {
+        console.log(`Price for ${address} is stale, ignoring...`)
+        return
+      }
 
       let amount, usdAmount;
       if (address.includes(":") && !address.startsWith("coingecko:")) {

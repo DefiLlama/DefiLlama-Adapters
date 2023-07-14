@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport, nullAddress, } = require('../helper/unknownTokens')
 // const PULI_TOKEN_STAKING_CONTRACT = '0x864d434308997e9648838d23f3eedf5d0fd17bea';
 const chain = 'bsc'
@@ -11,14 +12,14 @@ module.exports = {
       tokensAndOwners: [
         [nullAddress, TREASURY1],
         [nullAddress, TREASURY2],
-        ['0xe9e7cea3dedca5984780bafc599bd69add087d56', TREASURY1],
+        [ADDRESSES.bsc.BUSD, TREASURY1],
         ['0xC17c30e98541188614dF99239cABD40280810cA3', TREASURY1],
-        ['0x55d398326f99059fF775485246999027B3197955', TREASURY1],
+        [ADDRESSES.bsc.USDT, TREASURY1],
         ['0x3FF5cbE338153063D8251d2B6a22A437EC09Eef3', TREASURY1],
         ['0x3FF5cbE338153063D8251d2B6a22A437EC09Eef3', TREASURY2],
-        ['0xe9e7cea3dedca5984780bafc599bd69add087d56', TREASURY2],
+        [ADDRESSES.bsc.BUSD, TREASURY2],
         ['0xC17c30e98541188614dF99239cABD40280810cA3', TREASURY2],
-        ['0x55d398326f99059fF775485246999027B3197955', TREASURY2],
+        [ADDRESSES.bsc.USDT, TREASURY2],
       ],
     })
   }

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { unwrapUniswapLPs, sumTokens2 } = require("../helper/unwrapLPs");
@@ -10,8 +11,8 @@ const BigNumber = require("bignumber.js");
 const MASTERCHEF = "0x742474dae70fa2ab063ab786b1fbe5704e861a0c";
 const MINICHEF = "0x6e2ad6527901c9664f016466b8DA1357a004db0f";
 const BSCMINICHEF = "0xD46db083De31c64AF3F680f139A31fF37bac004f";
-const usdcTokenAddress = "0x04068da6c83afcfa0e13ba15a6696662335d5b75";
-const wftmTokenAddress = "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83";
+const usdcTokenAddress = ADDRESSES.fantom.USDC;
+const wftmTokenAddress = ADDRESSES.fantom.WFTM;
 const beethovenVaultAddress = "0x20dd72Ed959b6147912C2e529F0a0C651c33c9ce";
 
 const LQDR = "0x10b620b2dbac4faa7d7ffd71da486f5d44cd86f9";
@@ -130,7 +131,7 @@ async function getMinichefTvl(api, minichef, balances = {}) {
   const calls = []
   const callTokens = []
   strategies.forEach((val, i) => {
-    if (val === '0x0000000000000000000000000000000000000000') return;
+    if (val === ADDRESSES.null) return;
     calls.push(val)
     callTokens.push(lpTokens[i].toLowerCase())
   } )
@@ -161,7 +162,7 @@ async function shadowChefTvl(_, _1, _2, { api, }) {
   const calls = []
   const callTokens = []
   strategies.forEach((val, i) => {
-    if (val === '0x0000000000000000000000000000000000000000') return;
+    if (val === ADDRESSES.null) return;
     calls.push(val)
     callTokens.push(lpTokens[i].toLowerCase())
   } )

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("../helper/abis/blindex.json");
 const { formatAddressChecksum } = require("../helper/formatAddressChecksum.js");
@@ -22,7 +23,7 @@ const chains = {
     coingeckoMapping: {
       prefix: "rsk",
       "0x542fda317318ebf1d3deaf76e0b632741a7e677d": "rootstock", // RSK's WRBTC
-      "0x1d931bf8656d795e50ef6d639562c5bd8ac2b78f": "ethereum", // RSK's ETHs
+      [ADDRESSES.rsk.ETHs]: "ethereum", // RSK's ETHs
       "0xb450ff06d950efa9a9c0ad63790c51971c1be885": "usd-coin", // RSK's BDUS - USD stable
       "0x99ac494badd0cba26143bd423e39a088591c7b09": "tether-eurt", // RSK's BDEU, - Euro stable
       "0xa4a8fb98a26e5314397170e5d12da8b73dc2ceb5": "pax-gold", // RSK's bXAU, - Gold stable

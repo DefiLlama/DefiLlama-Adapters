@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
-const USDC = "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8";
+const USDC = ADDRESSES.arbitrum.USDC;
 const chain = 'arbitrum'
 
 // Both v1 and v2 factories

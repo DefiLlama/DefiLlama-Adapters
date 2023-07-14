@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { stakings } = require("../helper/staking");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 
@@ -39,16 +40,12 @@ const poolContracts = [
 ];
 
 const tokenAddresses = [
-  //USDT
-  "0xdac17f958d2ee523a2206206994597c13d831ec7",
-  //USDC
-  "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-  //FRAX
-  "0x853d955acef822db058eb8505911ed77f175b99e",
+  ADDRESSES.ethereum.USDT,
+  ADDRESSES.ethereum.USDC,
+  ADDRESSES.ethereum.FRAX,
   //ESD
   "0x36F3FD68E7325a35EB768F1AedaAe9EA0689d723",
-  //DAI
-  "0x6b175474e89094c44da98b954eedeac495271d0f",
+  ADDRESSES.ethereum.DAI,
   //BAC
   "0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a",
   //AETH

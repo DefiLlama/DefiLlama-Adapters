@@ -11,7 +11,7 @@ const veAddress = "0xcBd8fEa77c2452255f59743f55A3Ea9d83b3c72b";
 const oxSolidAddress = "0xDA0053F0bEfCbcaC208A3f867BB243716734D809";
 const sanitize = require("./sanitizeWeb3Response.js");
 
-const { masterChefExports, standardPoolInfoAbi, addFundsInMasterChef } = require('../helper/masterchef')
+const { standardPoolInfoAbi, addFundsInMasterChef } = require('../helper/masterchef')
 const sdk = require('@defillama/sdk')
 const { default: BigNumber } = require('bignumber.js')
 
@@ -85,7 +85,7 @@ async function tvl(time, ethBlock, chainBlocks) {
 
     // Add pools
     const addPools = (pools, reservesData) => {
-        pools.forEach((pool, index) => {
+        pools.forEach((pool) => {
             const solidlyPoolAddress = pool.poolData.id;
             const reserveData = reservesData.find(
                 (data) => data.id === solidlyPoolAddress

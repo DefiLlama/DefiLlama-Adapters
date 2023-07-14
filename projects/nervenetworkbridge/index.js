@@ -1,5 +1,4 @@
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
-const { sumTokens: sumTronTokens } = require('../helper/chain/tron');
 const sdk = require("@defillama/sdk");
 const { getConfig } = require('../helper/cache')
 const { get } = require('../helper/http')
@@ -24,7 +23,9 @@ const getBridgeContract = {
   'smartbch': '0x3758AA66caD9F2606F1F501c9CB31b94b713A6d5',
   'enuls': '0x3758AA66caD9F2606F1F501c9CB31b94b713A6d5',
   'kava': '0x3758AA66caD9F2606F1F501c9CB31b94b713A6d5',
-  'ethpow': '0x67b3757f20DBFa114b593dfdAc2b3097Aa42133E'
+  'ethpow': '0x67b3757f20DBFa114b593dfdAc2b3097Aa42133E',
+  'rei': '0x3758AA66caD9F2606F1F501c9CB31b94b713A6d5',
+  'era': '0x54C4A99Ee277eFF14b378405b6600405790d5045'
 }
 const tronBridgeContract = 'TXeFBRKUW2x8ZYKPD13RuZDTd9qHbaPGEN';
 
@@ -36,15 +37,25 @@ async function getTokensConf() {
   return tokensConfTest
 }
 
+function getChain(chain) {
+  const chainMapping = {
+    era: 'zksync'
+  }
+
+  return chainMapping[chain] ?? chain
+}
+
 async function tvl(_, _b, _cb, { api, }) {
   let conf = await getTokensConf();
+
   const bridgeContract = getBridgeContract[api.chain];
-  const tokens = Object.values(conf[api.chain])
+  const tokens = Object.values(conf[getChain(api.chain)])
   const owners = [bridgeContract]
   return sumTokens2({ api, tokens, owners, })
 }
 
 async function tronTvl() {
+  const { api } = arguments[3]
   let conf = await getTokensConf();
   const tokens = conf['tron'];
   const tokenKeys = Object.keys(conf['tron'])
@@ -55,7 +66,7 @@ async function tronTvl() {
       tokens1.push(token)
     }
   }
-  return sumTronTokens({ owner: tronBridgeContract, tokens: [nullAddress, ...tokens1] })
+  return sumTokens2({ api, owner: tronBridgeContract, tokens: [nullAddress, ...tokens1] })
 }
 
 module.exports = {

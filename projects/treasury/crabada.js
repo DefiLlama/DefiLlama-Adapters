@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require("../helper/staking");
 
 const CRA = "0xa32608e873f9ddef944b24798db69d80bbb4d1ed";
@@ -19,7 +20,7 @@ const lpTokens = [
   "0x565d20BD591b00EAD0C927e4b6D7DD8A33b0B319", // WAVAX-TUS JLP
   "0x21889033414f652f0fD0e0f60a3fc0221d870eE4", // CRA-TUS JLP
   "0x134905461773eF228b66CEBd5E1FF06D7CC79B12", // TUS-CRAM JLP
-  "0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664" // USDC
+  ADDRESSES.avax.USDC_e // USDC
 ];
 
 module.exports = {
