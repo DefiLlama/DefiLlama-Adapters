@@ -1,10 +1,22 @@
 const { getLogs } = require('../helper/cache/getLogs')
 
 const config = {
-  xdai: { borrowFactory: '0xBeaa4b2cE11cc2F8a059341DaD422814B66d1aD0', borrowStartBlock: 28448319, },
-  arbitrum: { borrowFactory: '0x2855666fbc5f526269b1f5dc73dfc8e11acb67f1', borrowStartBlock: 101069692, },
-  optimism: { borrowFactory: '0xC377e6e13426739f14E411dD88Af8056e2DcabA4', borrowStartBlock: 105577184, },
-  polygon: { borrowFactory: '0x157A03942e4F88c0357e4Afc1da46E9Cc12DB1D5', borrowStartBlock: 43896122, },
+  xdai: [
+    { borrowFactory: '0xBeaa4b2cE11cc2F8a059341DaD422814B66d1aD0', borrowStartBlock: 28448319 },
+    { borrowFactory: '0xeAcb50131a46a7b8C750c03ba336f2632fDb0344', borrowStartBlock: 28911067 },
+  ],
+  arbitrum: [
+    { borrowFactory: '0x2855666fbc5f526269b1f5dc73dfc8e11acb67f1', borrowStartBlock: 101069692 },
+    { borrowFactory: '0x2bb069a248Ba1c62062143462AE7bDB5C4360E3d', borrowStartBlock: 110400709 },
+  ],
+  optimism: [
+    { borrowFactory: '0xC377e6e13426739f14E411dD88Af8056e2DcabA4', borrowStartBlock: 105577184 },
+    { borrowFactory: '0x1cbf7f06c04226488B4D5b2d5EA5C8B965130500', borrowStartBlock: 106780843 },
+  ],
+  polygon: [
+    { borrowFactory: '0x157A03942e4F88c0357e4Afc1da46E9Cc12DB1D5', borrowStartBlock: 43896122 },
+    { borrowFactory: '0x6Ed2428624da78cfE2daeC70BE171D1752cDEfF8', borrowStartBlock: 44986739 },
+  ],
 }
 
 module.exports = {
