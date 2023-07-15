@@ -1,6 +1,9 @@
 const { getLogs } = require('../helper/cache/getLogs')
 
 const config = {
+  // ethereum: [
+  //   { borrowFactory: '0x24E72207a078558BF9018dcF97D7f580E79B9221', borrowStartBlock: 17690796 },
+  // ],
   xdai: [
     { borrowFactory: '0xBeaa4b2cE11cc2F8a059341DaD422814B66d1aD0', borrowStartBlock: 28448319 },
     { borrowFactory: '0xeAcb50131a46a7b8C750c03ba336f2632fDb0344', borrowStartBlock: 28911067 },
@@ -24,7 +27,7 @@ module.exports = {
 };
 
 Object.keys(config).forEach(chain => {
-  const { borrowFactory, borrowStartBlock } = config[chain]
+  const factories = config[chain]
   module.exports[chain] = {
     tvl: async (_, _b, _cb, { api, }) => {
       let logs = [];
