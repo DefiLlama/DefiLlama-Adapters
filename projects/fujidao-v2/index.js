@@ -27,15 +27,22 @@ Object.keys(config).forEach(chain => {
   const { borrowFactory, borrowStartBlock } = config[chain]
   module.exports[chain] = {
     tvl: async (_, _b, _cb, { api, }) => {
-      const logs = await getLogs({
-        api,
-        target: borrowFactory,
-        topics: ['0x89d38637357ca536d5c3f7cfcf4738f465b8b6bf51af92d02cb9fa8eb093f368'],
-        eventAbi: 'event DeployBorrowingVault (address indexed vault, address indexed asset, address indexed debtAsset, string name, string symbol, bytes32 salt)',
-        onlyArgs: true,
-        fromBlock: borrowStartBlock,
-        extraKey: 'borrow-vault'
-      })
+      let logs = [];
+      for (let i = 0; i < factories.length; i++) {
+        const { borrowFactory, borrowStartBlock } = factories[i];
+        const interlogs = await getLogs({
+          api,
+          target: borrowFactory,
+          topics: ['0x89d38637357ca536d5c3f7cfcf4738f465b8b6bf51af92d02cb9fa8eb093f368'],
+          eventAbi: 'event DeployBorrowingVault (address indexed vault, address indexed asset, address indexed debtAsset, string name, string symbol, bytes32 salt)',
+          onlyArgs: true,
+          fromBlock: borrowStartBlock,
+          extraKey: 'borrow-vault'
+        })
+        interlogs.forEach(log => {
+          logs.push(log);
+        })
+      }
       const vaults = logs.map(log => log.vault)
       const assets = logs.map(log => log.asset)
       const debtAssets = logs.map(log => log.debtAsset)
@@ -51,17 +58,23 @@ Object.keys(config).forEach(chain => {
       })
     },
     borrowed: async (_, _b, _cb, { api, }) => {
-      const logs = await getLogs({
-        api,
-        target: borrowFactory,
-        topics: ['0x89d38637357ca536d5c3f7cfcf4738f465b8b6bf51af92d02cb9fa8eb093f368'],
-        eventAbi: 'event DeployBorrowingVault (address indexed vault, address indexed asset, address indexed debtAsset, string name, string symbol, bytes32 salt)',
-        onlyArgs: true,
-        fromBlock: borrowStartBlock,
-        extraKey: 'borrow-vault'
-      })
+      let logs = [];
+      for (let i = 0; i < factories.length; i++) {
+        const { borrowFactory, borrowStartBlock } = factories[i];
+        const interlogs = await getLogs({
+          api,
+          target: borrowFactory,
+          topics: ['0x89d38637357ca536d5c3f7cfcf4738f465b8b6bf51af92d02cb9fa8eb093f368'],
+          eventAbi: 'event DeployBorrowingVault (address indexed vault, address indexed asset, address indexed debtAsset, string name, string symbol, bytes32 salt)',
+          onlyArgs: true,
+          fromBlock: borrowStartBlock,
+          extraKey: 'borrow-vault'
+        })
+        interlogs.forEach(log => {
+          logs.push(log);
+        })
+      }
       const vaults = logs.map(log => log.vault)
-      const assets = logs.map(log => log.asset)
       const debtAssets = logs.map(log => log.debtAsset)
       const bals = await api.multiCall({ abi: 'uint256:totalAssets', calls: vaults })
       const debtBals = (await api.multiCall({ abi: 'uint256:totalDebt', calls: vaults, permitFailure: true, }))
