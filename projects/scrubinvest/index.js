@@ -15,6 +15,10 @@ async function tvl(_, _b, _cb, { api, }) {
     { target: '0x371d33963fb89ec9542a11ccf955b3a90391f99f', params: '0x43Ac7f627e41EBDa7515FEaCa425306AaB9cB602' },
     { target: '0x1E5573b2A7C1D08112d0Ff22e9F2D8EFc9583532', params: '0x9e890FBD4295D92c41fA12a2083b51C387699Fd8' },
     { target: '0x8fE243F8B47107c468537D74514d7c52Cd61E937', params: '0x56a9c9230d6D3b7bF147c10fdDBCD8F2eB1a2B6d' },
+    //NEW LPs 14/07 - GAUGE / CONTRACT
+    { target: '0x5383dEB37479599a33584f7Bbc346ab299e30FF0', params: '0x79eb3848B7B4630D1d883172f8e56B2e8fb18521' },
+    { target: '0x776d2Ae19FC4c5982D5b20d8c14BCDae09755796', params: '0x1C415Ce79D0A18A4aA835D3d9083d2aF4d7894FC' },
+    { target: '0x1f343A11b317EB54F08D80FD3cF9d706eDA5982c', params: '0xF35265f9713FD7ab6a27D387B2D02C1306FFB606' },
     
   ]
   const bals = await api.multiCall({    abi: 'erc20:balanceOf', calls  })
