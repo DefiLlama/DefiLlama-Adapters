@@ -1,17 +1,22 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const {staking} = require("../helper/staking");
+const { sumTokens2 } = require("../helper/unwrapLPs");
+
+const pools = [
+   "0xe59eA42466f3dD0ea620A622701085983A068863",
+  "0x33b4424A65cfE19CDf0Dff4E54e399782327a1b6",
+];
+
+const blacklistedTokens = []
+
+async function tvl(timestamp, ethereumBlock, chainBlocks, { api }) {
+  const tokensArray = await api.multiCall({  abi: "address[]:getTokens", calls: pools})
+  const tokens = tokensArray.flat()
+  const calls = tokensArray.map((t, i)=> t.map((token) => ({ target: pools[i], params: token }))).flat()
+  const owners = await api.multiCall({  abi:"function assetOf(address) view returns (address)", calls})
+  return sumTokens2({ api, tokensAndOwners2: [tokens, owners], blacklistedTokens });
+}
 
 module.exports = {
-    methodology: 'SkyDex counts the staking values as tvl',
-    start: 3744214,
-    era: {
-        tvl: staking(
-            ["0x68a2C99883643cCc531F009d97B152EbeAA99D5E", "0x65d533DD20a17aD25F509e5E1676E878117E0f22",
-            "0xCD6d16eDeB01DAC8BC4D5BB9927cC24b70b5DECB", "0x3bFc00098B77D9773d6A929eAF3C2c729d2Fa029",
-            "0x9ACe7C1687b01D9c53bf8EfAadAacf5d80BC0758"],
-            ["0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4", "0x493257fD37EDB34451f62EDf8D2a0C418852bA4C",
-            "0x2039bb4116B4EFc145Ec4f0e2eA75012D6C0f181", "0x5AEa5775959fBC2557Cc8789bC1bf90A239D9a91",
-            "0x32Fd44bB869620C0EF993754c8a00Be67C464806"]
-        )
-    }
+  era: {
+    tvl,
+  },
 };
