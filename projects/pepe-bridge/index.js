@@ -27,6 +27,16 @@ const config = {
   ],
   polygon: [
     [[nullAddress], '0xEa3cc73165748AD1Ca76b4d1bA9ebC43fb399018'],
+    [
+      [
+        ADDRESSES.polygon.USDT,
+        ADDRESSES.polygon.USDC,
+      ],
+      '0xF57dB884606a0ed589c06320d9004FBeD4f81e4A'
+    ]
+  ],
+  tron: [
+    [[nullAddress], 'TMsm33cUm8HuxyRqwG7xhV46cmx5NVPPGB']
   ]
 }
 module.exports = {};
