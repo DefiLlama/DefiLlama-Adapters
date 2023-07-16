@@ -62,7 +62,6 @@ module.exports = {
   bsc: getV2TvlObject('bsc'),
    hallmarks: [
     [1650082958, "Protocol is paused due to non-critical vulnerability"],
-    [1653366158, "V2 Relaunch"],
     [1654057358, "OP launch"],
     [1668006000, "Deployment on Arbitrum"],
     [1672099200, "Deployment on Ethereum"],
