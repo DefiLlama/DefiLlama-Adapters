@@ -59,6 +59,7 @@ Object.keys(config).forEach(chain => {
         api.add(assets[i], bal)
         api.add(debtAssets[i], debtBals[i] * -1)
       })
+      return api.getBalances()
     },
     borrowed: async (_, _b, _cb, { api, }) => {
       let logs = [];
@@ -88,6 +89,7 @@ Object.keys(config).forEach(chain => {
         }
         api.add(debtAssets[i], debtBals[i])
       })
+      return api.getBalances()
     }
   }
 })
