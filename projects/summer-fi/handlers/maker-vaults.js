@@ -8,6 +8,7 @@ const confirmedSummerFiMakerVaults = new Set(
   [
     30780, 30749, 30722, 30746, 30731, 30726, 30676, 30778, 30714, 30704, 30738,
     30711, 30675, 30701, 30753, 30782, 30763,
+    // this list needs to be updated with the latest/biggest confirmed vaults
   ].map((id) => id.toString())
 );
 
