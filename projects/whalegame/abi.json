@@ -1,0 +1,34 @@
+{
+  "vestingContractforRound": {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "vestingContractForRound",
+    "outputs": [
+      {
+        "internalType": "contract RewardsVesting",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "whaleToken": {
+    "inputs": [],
+    "name": "whaleToken",
+    "outputs": [
+      {
+        "internalType": "contract WhaleToken",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+}
