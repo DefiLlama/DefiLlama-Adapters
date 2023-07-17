@@ -64,6 +64,10 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
+  mantle: {
+    '0x201eba5cc46d216ce6dc03f6a759e8e766e956ae': { coingeckoId: "tether", decimals: 6 },
+    '0x78c1b0c915c4faa5fffa6cabf0219da63d7f4cb8': { coingeckoId: "mantle", decimals: 18 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
