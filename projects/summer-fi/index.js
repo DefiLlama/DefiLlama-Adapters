@@ -1,5 +1,5 @@
-const { automationTvl } = require("./automation-v1");
-const { dpmPositions } = require("./dpm-positions");
+const { automationTvl, dpmPositions, makerTvl } = require("./handlers");
+const { getAutomationCdpIdList } = require("./helpers");
 
 module.exports = {
   ethereum: {
@@ -14,6 +14,11 @@ async function tvl(
   { api }
 ) {
   const executionStart = Date.now() / 1000;
-  await Promise.all([automationTvl({ api }), dpmPositions({ api })]);
+  const cdpIdList = await getAutomationCdpIdList({ api });
+  await Promise.all([
+    dpmPositions({ api }),
+    automationTvl({ api, cdpIdList }),
+    makerTvl({ api, cdpIdList }),
+  ]);
   console.log("Execution time", Date.now() / 1000 - executionStart, "seconds");
 }

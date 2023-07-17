@@ -1,5 +1,5 @@
-const abi = require("./abi.js");
-const contracts = require("./contracts.js");
+const abi = require("../constants/abi.js");
+const contracts = require("../constants/contracts.js");
 
 const getCdpData = async (cdpIds, api) =>
   api.multiCall({
