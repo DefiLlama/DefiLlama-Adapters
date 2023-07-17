@@ -5,7 +5,7 @@ const sumatory = (array) =>
 
 const formatMoneyMarketsCash = (moneyMarketsData) => {
    return moneyMarketsData.map(
-      ({ underlying, exchangeRate, cash, priceUSD }) => {
+      ({ underlying, cash, priceUSD }) => {
          return (
             BigNumber(cash)
                .dividedBy(`1e${underlying.decimals}`)
