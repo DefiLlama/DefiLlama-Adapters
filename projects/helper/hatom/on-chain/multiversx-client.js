@@ -29,7 +29,8 @@ const query = async ({ address, method, args }) => {
       const bundle = parser.parseUntypedQueryResponse(queryResponse);
       return bundle;
    } catch (e) {
-      console.log(e.toString());
+      console.error(e);
+      if (e.message.includes('timeout of 5000ms exceeded')) return 0;
       return null;
    }
 };

@@ -69,8 +69,6 @@ const borrowed = async () => {
   const moneyMarketsData = await getMoneyMarketBorrowData(moneyMarkets, tokenPrices);
 
   // Formatting data
-  console.log(moneyMarketsData);
-
   const moneyMarketsBorrows = await formatMoneyMarketsBorrows(moneyMarketsData)
   const totalLendingBorrows = sumatory(moneyMarketsBorrows);
   return { [ADDRESSES.ethereum.USDC]: totalLendingBorrows.multipliedBy(1e6).toNumber() }

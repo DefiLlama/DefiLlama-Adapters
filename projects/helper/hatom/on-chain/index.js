@@ -7,7 +7,9 @@ const getMoneyMarketCash = async (moneyMarketAddress) => {
       address: moneyMarketAddress,
       method: "getCash",
    });
-
+   if (response === 0) {
+      return BigNumber(0).toString();
+   }
    const bigIntFromBuf = bigintConversion.bufToBigint(
       Uint8Array.from(response.values[0])
    );
@@ -20,6 +22,9 @@ const getMoneyMarketBorrows = async (moneyMarketAddress) => {
       address: moneyMarketAddress,
       method: "getTotalBorrows",
    });
+   if (response === 0) {
+      return BigNumber(0).toString();
+   }
    const bigIntFromBuf = bigintConversion.bufToBigint(
       Uint8Array.from(response.values[0])
    );
@@ -31,6 +36,9 @@ const getMoneyMarketTotalSupply = async (moneyMarketAddress) => {
       address: moneyMarketAddress,
       method: "getTotalSupply",
    });
+   if (response === 0) {
+      return BigNumber(0).toString();
+   }
    const bigIntFromBuf = bigintConversion.bufToBigint(
       Uint8Array.from(response.values[0])
    );
@@ -42,6 +50,9 @@ const getMoneyMarketTotalReserves = async (moneyMarketAddress) => {
       address: moneyMarketAddress,
       method: "getTotalReserves",
    });
+   if (response === 0) {
+      return BigNumber(0).toString();
+   }
    const bigIntFromBuf = bigintConversion.bufToBigint(
       Uint8Array.from(response.values[0])
    );
@@ -53,6 +64,9 @@ const getMoneyMarketSupplyRate = async (moneyMarketAddress) => {
       address: moneyMarketAddress,
       method: "getSupplyRate",
    });
+   if (response === 0) {
+      return BigNumber(0).toString();
+   }
    const bigIntFromBuf = bigintConversion.bufToBigint(
       Uint8Array.from(response.values[0])
    );
@@ -64,6 +78,9 @@ const getLiquidStakingCashReserve = async (liquidStakingAddress) => {
       address: liquidStakingAddress,
       method: "getCashReserve",
    });
+   if (response === 0) {
+      return BigNumber(0).toString();
+   }
    const bigIntFromBuf = bigintConversion.bufToBigint(
       Uint8Array.from(response.values[0])
    );
