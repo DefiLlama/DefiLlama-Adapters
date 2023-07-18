@@ -12,6 +12,7 @@ const { isLP, log, } = require('./utils')
 const { sumArtBlocks, whitelistedNFTs, } = require('./nft')
 const wildCreditABI = require('../wildcredit/abi.json');
 const { covalentGetTokens, get } = require("./http");
+const { sliceIntoChunks } = require('@defillama/sdk/build/util');
 
 const lpReservesAbi = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
 const lpSuppliesAbi = "uint256:totalSupply"
@@ -720,7 +721,14 @@ async function sumTokens2({
   tokensAndOwners = getUniqueToA(tokensAndOwners)
   log(chain, 'summing tokens', tokensAndOwners.length)
 
-  await sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveLP, unwrapAll, blacklistedLPs, skipFixBalances: true, abis, permitFailure, })
+  if (chain === 'tron') {
+    const tokensAndOwnersChunks = sliceIntoChunks(tokensAndOwners, 3)
+    for (const toa of tokensAndOwnersChunks) {
+      await sumTokens(balances, toa, block, chain, transformAddress, { resolveLP, unwrapAll, blacklistedLPs, skipFixBalances: true, abis, permitFailure, })
+    }
+  } else {
+    await sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveLP, unwrapAll, blacklistedLPs, skipFixBalances: true, abis, permitFailure, })
+  }
 
   if (!skipFixBalances) {
     const fixBalances = await getFixBalances(chain)
