@@ -45,17 +45,17 @@ const ibcMappings = {
 
 const fixBalancesTokens = {
   // Sample Code
-  // arbitrum_nova: {
-  //   [nullAddress]: { coingeckoId: "ethereum", decimals: 18 },
-  //   [ADDRESSES.arbitrum_nova.WETH]: { coingeckoId: "ethereum", decimals: 18 },
-  //   [ADDRESSES.arbitrum_nova.USDT]: { coingeckoId: "tether", decimals: 6 },
-  //   [ADDRESSES.arbitrum_nova.USDC]: { coingeckoId: "usd-coin", decimals: 6 },
-  // },
+  neon_evm: {
+    '0xb14760c064a1b9eaf9ec5a8a421971e40a51b59c': { coingeckoId: 'neon', decimals:18},
+  },
   rpg: {
     '0x8e8816a1747fddc5f8b45d2e140a425d3788f659': { coingeckoId: "tether", decimals: 18 },
   },
   tenet: {
     '0xd6cb8a253e12893b0cf39ca78f7d858652cca1fe': { coingeckoId: "tenet-1b000f7b-59cb-4e06-89ce-d62b32d362b9", decimals: 18 },
+  },
+  ultron: {
+    '0xb1183357745d3fd7d291e42a2c4b478cdb5710c6': { coingeckoId: "ultron", decimals: 18 },
   },
   avax: {
     '0x8fdcf51d1aaeb9f031838ebeb15884a0d5efcda3': { coingeckoId: "wrapped-bitcoin", decimals: 18 },
@@ -64,6 +64,11 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
+  mantle: {
+    '0x201eba5cc46d216ce6dc03f6a759e8e766e956ae': { coingeckoId: "tether", decimals: 6 },
+    '0x78c1b0c915c4faa5fffa6cabf0219da63d7f4cb8': { coingeckoId: "mantle", decimals: 18 },
+    '0xdeaddeaddeaddeaddeaddeaddeaddeaddead1111': { coingeckoId: "ethereum", decimals: 18 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
