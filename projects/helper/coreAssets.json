@@ -1215,28 +1215,7 @@
     "USDT": "USDT"
   },
   "elrond": {
-    "SUPER": "SUPER-507aa6",
-    "WEGLD": "WEGLD-bd4d79",
-    "LAND": "LAND-40f26f",
-    "CHECKR": "CHECKR-60108b",
-    "ITHEUM": "ITHEUM-df6f26",
-    "ISET": "ISET-84e55e",
-    "MEX": "MEX-455c57",
-    "ASH": "ASH-a642d1",
-    "RIDE": "RIDE-7d18e9",
-    "QWT": "QWT-46ac01",
-    "AERO": "AERO-458bbf",
-    "VITAL": "erd1qqqqqqqqqqqqqpgq3ahw8fctzfnwgvq2g4hjsqzkkvgl9ksr2jps646dnj",
-    "TLC": "TLC-1a2357",
-    "BHAT": "BHAT-c1fde3",
-    "CRT": "CRT-52decf",
-    "BSK": "BSK-baa025",
-    "UTK": "UTK-2f80e9",
-    "ZPAY": "ZPAY-247875",
-    "KRO": "KRO-df97ec",
-    "EGLD": "0x0000000000000000000000000000000000000000",
-    "KOSON": "KOSON-5dd4fa",
-    "CTP": "CTP-298075"
+    "WEGLD": "WEGLD-bd4d79"
   },
   "bitindi": {
     "WBNI": "0x15E162205421dc3A47b15A1A740FbF5EAbB77921"
