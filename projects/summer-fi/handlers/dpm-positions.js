@@ -1,13 +1,15 @@
 const BigNumber = require("bignumber.js");
 const { blockQuery } = require("../../helper/http");
 
+const NEGATIVE_WAD_PRECISION = -18;
 const WETH_ADDRESS = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 
 const subgraphs = {
-  aave: "https://graph.summer.fi/subgraphs/name/oasis/oasis-history",
+  aave: "",
+  ajna: "",
 };
 
-const getLatestBlockIndexed = `
+const aaveQuery = `
 query {
   positions(first: 10000, where: {
     and: [
@@ -19,32 +21,67 @@ query {
     collateralAddress
   }
 }`;
+const ajnaQuery = `
+query {
+  accounts(first: 10000, where: {
+    and: [
+      { isDPM: true },
+      { protocol: "Ajna" },
+    ]
+  }) {
+    collateralToken
+    borrowPositions {
+      collateral
+    }
+    pool {
+      address
+    }
+  }
+}`;
 
 const dpmPositions = async ({ api }) => {
-  const aave = (
-    await blockQuery(subgraphs.aave, getLatestBlockIndexed, { api })
-  ).positions.reduce(
+  const aave = await blockQuery(subgraphs.aave, aaveQuery, { api });
+  const ajna = await blockQuery(subgraphs.ajna, ajnaQuery, { api });
+
+  const aaveBorrowishPositions = aave.positions.map(
+    ({ collateral, collateralAddress }) => ({
+      collateral: new BigNumber(collateral),
+      collateralAddress,
+    })
+  );
+  const ajnaBorrowishPositions = ajna.accounts
+    .filter(({ borrowPositions }) => borrowPositions.length)
+    .map(({ borrowPositions: [{ collateral }], collateralToken }) => ({
+      collateral: new BigNumber(collateral).shiftedBy(NEGATIVE_WAD_PRECISION),
+      collateralAddress: collateralToken,
+    }));
+
+  const tokensWithAmounts = [
+    ...aaveBorrowishPositions,
+    ...ajnaBorrowishPositions,
+  ].reduce(
     (total, { collateral, collateralAddress }) => ({
       ...total,
       [collateralAddress]: total[collateralAddress]
-        ? total[collateralAddress].plus(new BigNumber(collateral))
-        : new BigNumber(collateral),
+        ? total[collateralAddress].plus(collateral)
+        : collateral,
     }),
     {}
   );
+
   const fallbackDecimal = await api.call({
     abi: "erc20:decimals",
     target: WETH_ADDRESS,
   });
   const decimals = await api.multiCall({
     abi: "erc20:decimals",
-    calls: Object.keys(aave),
+    calls: Object.keys(tokensWithAmounts),
   });
 
-  Object.keys(aave).forEach((collateralAddress, i) => {
+  Object.keys(tokensWithAmounts).forEach((collateralAddress, i) => {
     api.add(
       collateralAddress,
-      aave[collateralAddress].toNumber() *
+      tokensWithAmounts[collateralAddress].toNumber() *
         10 ** (decimals[i] || fallbackDecimal)
     );
   });
