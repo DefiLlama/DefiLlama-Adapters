@@ -78,6 +78,10 @@ const config = {
     newFactory: "0x406d3Dfcbe20b642c2262b29b960822975371502",
     fromBlock: 70785970,
   },
+  mantle: {
+    factory: "0xf8F5e4B7825d484FBDFDC36fc915E79f30b02f9E",
+    fromBlock: 3563,
+  }
 };
 
 module.exports = {};
