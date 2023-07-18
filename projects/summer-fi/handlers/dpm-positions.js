@@ -37,11 +37,21 @@ query {
       address
     }
   }
+  pools {
+    address
+    depositSize
+    debt
+    quoteTokenAddress
+  }
 }`;
 
 const dpmPositions = async ({ api }) => {
   const aave = await blockQuery(subgraphs.aave, aaveQuery, { api });
   const ajna = await blockQuery(subgraphs.ajna, ajnaQuery, { api });
+
+  const supportedAjnaPools = [
+    ...new Set(ajna.accounts.map(({ pool: { address } }) => address)),
+  ];
 
   const aaveBorrowishPositions = aave.positions.map(
     ({ collateral, collateralAddress }) => ({
@@ -55,10 +65,19 @@ const dpmPositions = async ({ api }) => {
       collateral: new BigNumber(collateral).shiftedBy(NEGATIVE_WAD_PRECISION),
       collateralAddress: collateralToken,
     }));
+  const ajnaEarnPositions = ajna.pools
+    .filter(({ address }) => supportedAjnaPools.includes(address))
+    .map(({ debt, depositSize, quoteTokenAddress }) => ({
+      collateral: new BigNumber(depositSize)
+        .minus(new BigNumber(debt))
+        .shiftedBy(NEGATIVE_WAD_PRECISION),
+      collateralAddress: quoteTokenAddress,
+    }));
 
   const tokensWithAmounts = [
     ...aaveBorrowishPositions,
     ...ajnaBorrowishPositions,
+    ...ajnaEarnPositions,
   ].reduce(
     (total, { collateral, collateralAddress }) => ({
       ...total,
