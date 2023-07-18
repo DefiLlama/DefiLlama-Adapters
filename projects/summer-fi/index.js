@@ -18,7 +18,7 @@ async function tvl(
   await Promise.all([
     dpmPositions({ api }),
     automationTvl({ api, cdpIdList }),
-    // makerTvl({ api, cdpIdList }), // this will be used once we get the maker positions list
+    makerTvl({ api, cdpIdList }),
   ]);
   console.log("Execution time", Date.now() / 1000 - executionStart, "seconds");
 }
