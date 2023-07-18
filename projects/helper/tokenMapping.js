@@ -54,6 +54,10 @@ const fixBalancesTokens = {
   tenet: {
     '0xd6cb8a253e12893b0cf39ca78f7d858652cca1fe': { coingeckoId: "tenet-1b000f7b-59cb-4e06-89ce-d62b32d362b9", decimals: 18 },
   },
+  bsc: {
+    '0x352cb5e19b12fc216548a2677bd0fce83bae434b': { coingeckoId: 'bittorrent', decimals: 18, },
+    '0xce7de646e7208a4ef112cb6ed5038fa6cc6b12e3': { coingeckoId: 'tron', decimals: 6, },
+  },
   ultron: {
     '0xb1183357745d3fd7d291e42a2c4b478cdb5710c6': { coingeckoId: "ultron", decimals: 18 },
   },
