@@ -52,7 +52,7 @@ async function getTokens({ address, balances = {}, tokens = [], blacklistedToken
         if (prices[token])
           return sdk.util.sumSingleBalance(balances, nullAddress, (prices[token] * i.balance).toFixed(0), chain)
       }
-      return sdk.util.sumSingleBalance(balances, token, i.balance / (10 ** i.decimals), chain)
+      return sdk.util.sumSingleBalance(balances, token, i.balance, chain)
     })
   return balances
 }
