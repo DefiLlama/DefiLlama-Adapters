@@ -14,7 +14,6 @@ module.exports = treasuryExports({
         ADDRESSES.arbitrum.USDC_CIRCLE,
         ADDRESSES.arbitrum.DAI,
         "0xAAA6C1E32C55A7Bfa8066A6FAE9b42650F262418",
-        "0xC36442b4a4522E871399CD717aBDD847Ab11FE88" //UNI V3
      ],
     owners: [multisig, treasury],
     ownTokens: [GNS],
@@ -25,7 +24,6 @@ module.exports = treasuryExports({
         nullAddress,
         ADDRESSES.polygon.DAI,
         ADDRESSES.polygon.USDT,
-        "0xC36442b4a4522E871399CD717aBDD847Ab11FE88" //UNI V3
      ],
     owners: [treasury],
     ownTokens: [gnspolygon],
