@@ -12,7 +12,6 @@ async function tvl(_, _b, _cb, { api }) {
     ],
     fromBlock,
   });
-  const block = await api.getBlock();
 
   let ownerTokens = logs.map((i) => {
     return [
