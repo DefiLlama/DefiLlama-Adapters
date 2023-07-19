@@ -47,9 +47,6 @@ const fixBalancesTokens = {
   // Sample Code
   neon_evm: {
     '0xb14760c064a1b9eaf9ec5a8a421971e40a51b59c': { coingeckoId: 'neon', decimals:18},
-    '0xEA6B04272f9f62F997F666F07D3a974134f7FFb9': { coingeckoId: 'usd-coin', decimals:6},
-    '0x5f38248f339bf4e84a2caf4e4c0552862dc9f82a': { coingeckoId: 'solana', decimals:9},
-    '0x202C35e517Fa803B537565c40F0a6965D7204609': { coingeckoId: 'neon', decimals:18},
   },
   rpg: {
     '0x8e8816a1747fddc5f8b45d2e140a425d3788f659': { coingeckoId: "tether", decimals: 18 },
