@@ -1,20 +1,49 @@
 const ADDRESSES = require('../coreAssets.json')
 const { get } = require('../http')
-const { getCoreAssets, } = require('../tokenMapping')
 const { transformBalances } = require('../portedTokens')
 const sdk = require('@defillama/sdk')
+const { post } = require('../http')
+const { getEnv } = require('../env')
+
+const call = async ({ target, abi, params = [], responseTypes = [] }) => {
+  const data = await post(getEnv('MULTIVERSX_RPC') + '/query', { scAddress: target, funcName: abi, args: params, })
+
+  const response = data.returnData.map(parseResponses)
+  return responseTypes.length === 1 ? response[0] : response
+
+  // https://github.com/multiversx/mx-sdk-js-core/blob/main/src/smartcontracts/resultsParser.ts
+  function parseResponses(item, idx) {
+    const buffer = Buffer.from(item || "", "base64")
+    switch (responseTypes[idx]) {
+      case 'number': return parseNumber(buffer)
+      default: throw new Error('Unknown/unsupported data type')
+    }
+  }
+
+  function parseNumber(buffer) {
+    // https://github.com/juanelas/bigint-conversion/blob/master/src/ts/index.ts#L63
+    buffer = new Uint8Array(buffer)
+    let bits = 8n
+
+    let ret = 0n
+    for (const i of buffer.values()) {
+      const bi = BigInt(i)
+      ret = (ret << bits) + bi
+    }
+    return ret.toString()
+  }
+};
+
 const chain = 'elrond'
 
-const API_HOST = 'https://api.multiversx.com'
-
 async function getElrondBalance(address) {
-  const { data: { account: { balance } } } = await get(`${API_HOST}/address/${address}`)
+  const { data: { account: { balance } } } = await get(`${getEnv('MULTIVERSX_RPC')}/address/${address}`)
   return balance
 }
 const nullAddress = ADDRESSES.null
 
 async function getTokens({ address, balances = {}, tokens = [], blacklistedTokens = [], whitelistedTokens = [], }) {
-  const res = await get(`${API_HOST}/accounts/${address}/tokens?size=1000`)
+  const res = await get(`${getEnv('MULTIVERSX_RPC')}/accounts/${address}/tokens?size=1000`)
   res.filter(i => i.type === 'FungibleESDT')
     .forEach(i => {
       const token = i.identifier
@@ -26,7 +55,7 @@ async function getTokens({ address, balances = {}, tokens = [], blacklistedToken
   return balances
 }
 
-async function sumTokens({ owners = [], tokens = [], balances = {}, blacklistedTokens = [], tokensAndOwners = [], whitelistedTokens = []}) {
+async function sumTokens({ owners = [], tokens = [], balances = {}, blacklistedTokens = [], tokensAndOwners = [], whitelistedTokens = [] }) {
   if (tokensAndOwners.length) {
     await Promise.all(tokensAndOwners.map(([token, owner]) => sumTokens({ owners: [owner], tokens: [token], balances, blacklistedTokens, whitelistedTokens, })))
     return balances
@@ -43,4 +72,5 @@ async function sumTokens({ owners = [], tokens = [], balances = {}, blacklistedT
 
 module.exports = {
   sumTokens,
+  call,
 }
