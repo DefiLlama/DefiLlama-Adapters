@@ -670,6 +670,7 @@
   },
   "ultron": {
     "wULX": "0x3a4f06431457de873b588846d139ec0d86275d54",
+    "wULX_1": "0xb1183357745d3fd7d291e42a2c4b478cdb5710c6",
     "wETH": "0x2318bf5809a72aabadd15a3453a18e50bbd651cd",
     "wBTC": "0xd2b86a80a8f30b83843e247a50ecdc8d843d87dd",
     "BUSD": "0xc7cac85c1779d2b8ada94effff49a4754865e2e4",
@@ -1235,7 +1236,8 @@
     "WLOOP": "0x3936D20a39eD4b0d44EaBfC91757B182f14A38d5"
   },
   "rpg": {
-    "WRPG": "0x71d9cfd1b7adb1e8eb4c193ce6ffbe19b4aee0db"
+    "WRPG": "0x71d9cfd1b7adb1e8eb4c193ce6ffbe19b4aee0db",
+    "USDT": "0x8e8816a1747fddc5f8b45d2e140a425d3788f659"
   },
   "map": {
     "BUSD": "0x35bf4004c3fc9f509259d4942da6bae3669e1db1",
@@ -1323,5 +1325,16 @@
   "stacks": {
     "WSTX": "SP1Z92MPDQEWZXW36VX71Q25HKF5K2EPCJ304F275.wstx-token-v4a",
     "WBTC": "SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR.Wrapped-Bitcoin::wrapped-bitcoin"
+  },
+  "neon_evm": {
+    "WNEON": "0xb14760c064a1b9eaf9ec5a8a421971e40a51b59c"
+  },
+  "tenet": {
+    "WTENET": "0xd6cb8a253e12893b0cf39ca78f7d858652cca1fe"
+  },
+  "mantle": {
+    "WMNT": "0x78c1b0c915c4faa5fffa6cabf0219da63d7f4cb8",
+    "WETH": "0xdeaddeaddeaddeaddeaddeaddeaddeaddead1111",
+    "USDT": "0x201eba5cc46d216ce6dc03f6a759e8e766e956ae"
   }
 }
