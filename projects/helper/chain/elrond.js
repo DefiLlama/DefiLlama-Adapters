@@ -67,6 +67,7 @@ async function sumTokens({ owners = [], tokens = [], balances = {}, blacklistedT
       const bal = await getElrondBalance(i)
       sdk.util.sumSingleBalance(balances, nullAddress, bal, chain)
     }))
+  console.log(balances)
   return transformBalances(chain, balances)
 }
 

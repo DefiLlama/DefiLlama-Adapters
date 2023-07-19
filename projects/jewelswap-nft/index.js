@@ -38,11 +38,11 @@ async function pool2() {
     ['ALP-afc922', ASHSWAP_STAKE],
   ]
 
-  return computeTvl(tokensAndOwners)
+  return sumTokens({tokensAndOwners})
 }
 
 async function tvl1(_, _b, _cb, { api, }) {
-  return sumTokensExport({ owners: [LENDING_POOL, LENDING_POOL_FARMS, FARMS, ASHSWAP_STAKE, LIQUID_STAKE]})
+  return sumTokens({ owners: [LENDING_POOL, LENDING_POOL_FARMS, FARMS, ASHSWAP_STAKE, LIQUID_STAKE]})
 
 }
 
@@ -54,7 +54,7 @@ async function tvl() {
     [ADDRESSES.null, ASHSWAP_STAKE],
     [ADDRESSES.null, LIQUID_STAKE]
   ]
-  return computeTvl(tokensAndOwners)
+  return sumTokens({tokensAndOwners})
 }
 
 
@@ -62,7 +62,7 @@ module.exports = {
   misrepresentedTokens: true,
   timetravel: false,
   elrond: {
-    tvl,
-    pool2
+    tvl: () => sumTokens({ owners: [LENDING_POOL]}),
+    // pool2
   },
 };
