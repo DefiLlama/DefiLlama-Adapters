@@ -37,7 +37,6 @@ const tvl = async (_, _1, _2, { api }) => {
   const allPoolMetas = []
 
   for(const manager of poolHelpers[chain]) {
-    console.info(manager)
     let i = 1
     let foundLastPool = false
     const poolMetaData = []
