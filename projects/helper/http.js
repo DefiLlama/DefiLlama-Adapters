@@ -1,9 +1,8 @@
 const axios = require("axios")
 const { request, GraphQLClient, } = require("graphql-request")
 const sdk = require('@defillama/sdk')
-const env = require('./env')
+const { getEnv } = require('./env')
 const { getCache: cGetCache, setCache } = require('./cache')
-const COVALENT_KEY = env.COVALENT_KEY ?? 'ckey_72cd3b74b4a048c9bc671f7c5a6'
 
 const chainIds = {
   'ethereum': 1,
@@ -23,7 +22,7 @@ async function getCache(endpoint) {
 }
 
 async function getBlock(timestamp, chain, chainBlocks, undefinedOk = false) {
-  if (chainBlocks[chain] || (!env.HISTORICAL && undefinedOk)) {
+  if (chainBlocks[chain] || (!getEnv('HISTORICAL') && undefinedOk)) {
     return chainBlocks[chain]
   } else {
     if (chain === "celo") {
@@ -74,7 +73,7 @@ async function covalentGetTokens(address, chain = 'ethereum') {
   async function _covalentGetTokens() {
     const {
       data: { items }
-    } = await get(`https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/?&key=${COVALENT_KEY}`)
+    } = await get(`https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/?&key=${getEnv('COVALENT_KEY')}`)
     let table = {}
     items
       .filter(i => +i.balance > 0)
@@ -105,9 +104,9 @@ async function blockQuery(endpoint, query, { api, blockCatchupLimit = 500, }) {
   }
 }
 
-async function graphFetchById({ endpoint, query, params = {}, options: { timestamp, chain, chainBlocks, useBlock = false } = {} }) {
+async function graphFetchById({  endpoint, query, params = {}, api, options: { useBlock = false } = {} }) {
   if (useBlock && !params.block)
-    params.block = await getBlock(timestamp, chain, chainBlocks) - 100
+    params.block = await api.getBlock() - 100
 
   let data = []
   let lastId = ""

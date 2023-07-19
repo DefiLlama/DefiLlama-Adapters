@@ -140,10 +140,12 @@ async function getChainTransform(chain) {
     if ([...ibcChains, 'ton', 'defichain', 'waves'].includes(chain)) return chainStr
     if (chain === 'cardano' && addr === 'ADA') return 'coingecko:cardano'
     if (chain === 'near' && addr.endsWith('.near')) return chainStr
+    if (chain === 'tron' && addr.startsWith('T')) return chainStr
+    if (chain === 'stacks' && addr.startsWith('SP')) return chainStr
     if (chain === 'tezos' && addr.startsWith('KT1')) return chainStr
     if (chain === 'terra2' && addr.startsWith('terra1')) return chainStr
     if (chain === 'algorand' && /^\d+$/.test(addr)) return chainStr
-    if (addr.startsWith('0x') || ['solana'].includes(chain)) return chainStr
+    if (addr.startsWith('0x') || ['solana', 'kava'].includes(chain)) return chainStr
     return addr
   };
 }
@@ -190,8 +192,8 @@ async function transformDexBalances({ chain, data, balances = {}, restrictTokenR
   }
 
   function addTokens({ token0, token0Bal, token1, token1Bal }) {
-    const isCoreToken0 = coreTokens.has(token0)
-    const isCoreToken1 = coreTokens.has(token1)
+    const isCoreToken0 = coreTokens.has(token0.replace('ibc/', ''))
+    const isCoreToken1 = coreTokens.has(token1.replace('ibc/', ''))
     if ((isCoreToken0 && isCoreToken1) || (!isCoreToken0 && !isCoreToken1)) {
       sdk.util.sumSingleBalance(balances, token0, token0Bal)
       sdk.util.sumSingleBalance(balances, token1, token1Bal)

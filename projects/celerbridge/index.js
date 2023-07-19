@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { chainExports } = require("../helper/exports");
 const { sumTokens } = require("../helper/unwrapLPs");
 const { getFixBalances } = require('../helper/portedTokens')
@@ -25,7 +26,7 @@ config.setProvider("syscoin", new ethers.providers.StaticJsonRpcProvider(
 const liquidityBridgeContractsV2 = {
   // NOTE: Some chains have addresses before and after the liquidity bridge upgrade / migration
   arbitrum: [
-    "0xdd90E5E87A2081Dcf0391920868eBc2FFB81a1aF",
+    ADDRESSES.astar.MATIC,
     "0x1619DE6B6B20eD217a58d00f37B9d47C7663feca",
     "0xFe31bFc4f7C9b69246a6dc0087D91a91Cb040f76",
     "0xEA4B1b0aa3C110c55f650d28159Ce4AD43a4a58b",
@@ -41,7 +42,7 @@ const liquidityBridgeContractsV2 = {
   boba: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C", '0x8db213bE5268a2b8B78Af08468ff1EA422073Da0', '0x4C882ec256823eE773B25b414d36F92ef58a7c0C'],
   bsc: [
     "0x5d96d4287D1ff115eE50faC0526cf43eCf79bFc6",
-    "0xdd90E5E87A2081Dcf0391920868eBc2FFB81a1aF",
+    ADDRESSES.astar.MATIC,
     "0x78bc5Ee9F11d133A08b331C2e18fE81BE0Ed02DC",
     "0x11a0c9270D88C99e221360BCA50c2f6Fda44A980",
   ],
@@ -55,7 +56,7 @@ const liquidityBridgeContractsV2 = {
     "0x7510792A3B1969F9307F3845CE88e39578f2bAE1",
   ],
   fantom: [
-    "0x3795C36e7D12A8c252A20C5a7B455f7c57b60283",
+    ADDRESSES.astar.USDT,
     "0x374B8a9f3eC5eB2D97ECA84Ea27aCa45aa1C57EF",
     "0x7D91603E79EA89149BAf73C9038c51669D8F03E9",
   ],
@@ -66,9 +67,9 @@ const liquidityBridgeContractsV2 = {
   moonbeam: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C"],
   moonriver: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C"],
   oasis: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C"],
-  okexchain: ["0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98"],
+  okexchain: [ADDRESSES.moonbeam.USDC],
   optimism: [
-    "0x6De33698e9e9b787e09d3Bd7771ef63557E148bb",
+    ADDRESSES.astar.DAI,
     "0x9D39Fc627A6d9d9F8C831c16995b209548cc3401",
     "0xbCfeF6Bb4597e724D720735d32A9249E0640aA11",
   ],
@@ -80,71 +81,70 @@ const liquidityBridgeContractsV2 = {
   rei: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C"],
   shiden: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C", "0xBB7684Cc5408F4DD0921E5c2Cadd547b8f1AD573",],
   syscoin: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C", "0x1E6b1ceAF75936f153ABB7B65FBa57AbaE14e6CE"],
-  xdai: ["0x3795C36e7D12A8c252A20C5a7B455f7c57b60283"],
+  xdai: [ADDRESSES.astar.USDT],
 };
 
 // Tokens added to the liquidity bridges, excluding Celer-Pegged tokens.
 const liquidityBridgeTokens = [
   {
     // USDT
-    arbitrum: "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
-    aurora: "0x4988a896b1227218e4A686fdE5EabdcAbd91571f",
-    avax: "0xc7198437980c041c805A1EDcbA50c1Ce5db95118",
-    bsc: "0x55d398326f99059ff775485246999027b3197955",
-    ethereum: "0xdac17f958d2ee523a2206206994597c13d831ec7",
-    fantom: "0x049d68029688eabf473097a2fc38ef61633a3c7a",
-    heco: "0xa71edc38d189767582c38a3145b5873052c3e47a",
-    okexchain: "0x382bb369d343125bfb2117af9c149795c6c65c50",
-    optimism: "0x94b008aa00579c1307b0ef2c499ad98a8ce58e58",
-    polygon: "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
-    xdai: "0x4ECaBa5870353805a9F068101A40E0f32ed605C6",
+    arbitrum: ADDRESSES.arbitrum.USDT,
+    aurora: ADDRESSES.aurora.USDT_e,
+    avax: ADDRESSES.avax.USDT_e,
+    bsc: ADDRESSES.bsc.USDT,
+    ethereum: ADDRESSES.ethereum.USDT,
+    fantom: ADDRESSES.fantom.fUSDT,
+    heco: ADDRESSES.heco.USDT,
+    okexchain: ADDRESSES.okexchain.USDT,
+    optimism: ADDRESSES.optimism.USDT,
+    polygon: ADDRESSES.polygon.USDT,
+    xdai: ADDRESSES.xdai.USDT,
   },
   {
     // USDC
-    arbitrum: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
-    aurora: "0xB12BFcA5A55806AaF64E99521918A4bf0fC40802",
-    avax: "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664",
-    boba: "0x66a2A913e447d6b4BF33EFbec43aAeF87890FBbc",
-    bsc: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
-    ethereum: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-    fantom: "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
+    arbitrum: ADDRESSES.arbitrum.USDC,
+    aurora: ADDRESSES.aurora.USDC_e,
+    avax: ADDRESSES.avax.USDC_e,
+    boba: ADDRESSES.boba.USDC,
+    bsc: ADDRESSES.bsc.USDC,
+    ethereum: ADDRESSES.ethereum.USDC,
+    fantom: ADDRESSES.fantom.USDC,
     harmony: "0x985458e523db3d53125813ed68c274899e9dfab4",
-    heco: "0x9362bbef4b8313a8aa9f0c9808b80577aa26b73b",
-    okexchain: "0xc946daf81b08146b1c7a8da2a851ddf2b3eaaf85",
-    optimism: "0x7f5c764cbc14f9669b88837ca1490cca17c31607",
-    polygon: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
-    xdai: "0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83",
+    heco: ADDRESSES.heco.USDC_HECO,
+    okexchain: ADDRESSES.okexchain.USDC,
+    optimism: ADDRESSES.optimism.USDC,
+    polygon: ADDRESSES.polygon.USDC,
+    xdai: ADDRESSES.xdai.USDC,
   },
   {
-    // BUSD
-    ethereum: "0x4fabb145d64652a948d72533023f6e7a623c7c53",
-    bsc: "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+    ethereum: ADDRESSES.ethereum.BUSD,
+    bsc: ADDRESSES.bsc.BUSD,
   },
   {
     // DAI
-    avax: "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70",
+    avax: ADDRESSES.avax.DAI,
     bsc: "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3",
-    ethereum: "0x6b175474e89094c44da98b954eedeac495271d0f",
-    optimism: "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1",
-    polygon: "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
+    ethereum: ADDRESSES.ethereum.DAI,
+    optimism: ADDRESSES.optimism.DAI,
+    polygon: ADDRESSES.polygon.DAI,
   },
   {
     // WETH
-    arbitrum: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
-    avax: "0x49D5c2BdFfac6CE2BFdB6640F4F80f226bc10bAB",
-    bsc: "0x2170ed0880ac9a755fd29b2688956bd959f933f8",
-    ethereum: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+    arbitrum: ADDRESSES.arbitrum.WETH,
+    avax: ADDRESSES.avax.WETH_e,
+    bsc: ADDRESSES.bsc.ETH,
+    ethereum: ADDRESSES.ethereum.WETH,
     fantom: "0x74b23882a30290451A17c44f4F05243b6b58C76d",
-    optimism: "0x4200000000000000000000000000000000000006",
-    polygon: "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+    optimism: ADDRESSES.tombchain.FTM,
+    polygon: ADDRESSES.polygon.WETH_1,
   },
   {
     // WBTC
-    arbitrum: "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+    arbitrum: ADDRESSES.arbitrum.WBTC,
     avax: "0x50b7545627a5162F82A992c33b87aDc75187B218",
-    ethereum: "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+    ethereum: ADDRESSES.ethereum.WBTC,
     fantom: "0x321162Cd933E2Be498Cd2267a90534A804051b11",
-    polygon: "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6",
+    polygon: ADDRESSES.polygon.WBTC,
   },
   {
     // DODO
@@ -188,7 +188,7 @@ const liquidityBridgeTokens = [
   },
   {
     // BOBA
-    boba: "0xa18bF3994C0Cc6E3b63ac420308E5383f53120D7",
+    boba: ADDRESSES.boba.BOBA,
     ethereum: "0x42bbfa2e77757c645eeaad1655e0911a7553efbc",
   },
   {
@@ -204,7 +204,7 @@ const liquidityBridgeTokens = [
   {
     // METIS
     ethereum: "0x9e32b13ce7f2e80a01932b42553652e053d6ed8e",
-    metis: "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000",
+    metis: ADDRESSES.metis.Metis,
   },
   {
     // CVP
@@ -242,7 +242,7 @@ const liquidityBridgeTokens = [
     // USX
     arbitrum: "0x641441c631e2F909700d2f41FD87F0aA6A6b4EDb",
     bsc: "0xb5102cee1528ce2c760893034a4603663495fd72",
-    ethereum: "0x0a5e677a6a24b2f1a2bf4f3bffc443231d2fdec8",
+    ethereum: ADDRESSES.ethereum.USX,
     optimism: "0xbfD291DA8A403DAAF7e5E9DC1ec0aCEaCd4848B9",
     polygon: "0xCf66EB3D546F0415b368d98A95EAF56DeD7aA752",
   },
@@ -318,9 +318,8 @@ const liquidityBridgeTokens = [
     polygon: "0x08648471B5AAd25fEEeb853d6829048f3Fc37786",
   },
   {
-    // iZi
-    arbitrum: "0x60D01EC2D5E98Ac51C8B4cF84DfCCE98D527c747",
-    bsc: "0x60D01EC2D5E98Ac51C8B4cF84DfCCE98D527c747",
+    arbitrum: ADDRESSES.bsc.iZi,
+    bsc: ADDRESSES.bsc.iZi,
     ethereum: "0x9ad37205d608B8b219e6a2573f922094CEc5c200",
   },
   {
@@ -364,13 +363,10 @@ const liquidityBridgeTokens = [
     ethereum: "0xcA37530E7c5968627BE470081d1C993eb1dEaf90",
   },
   {
-    // cUSD
-    celo: "0x765DE816845861e75A25fCA122bb6898B8B1282a",
+    celo: ADDRESSES.celo.cUSD,
   },
   {
-    // WSYS
-    // origin: "syscoin:0xd3e822f3ef011Ca5f17D82C956D952D8d7C3A1BB",
-    syscoin: "0xd3e822f3ef011Ca5f17D82C956D952D8d7C3A1BB",
+    syscoin: ADDRESSES.syscoin.WSYS,
     bsc: "0x6822A778726CD2f0d4A1Cfaca2D04654e575cC82",
     ethereum: "0xF3C96924d85566C031ddc48DbC63B2d71da6D0f6",
   },
@@ -384,8 +380,7 @@ const liquidityBridgeTokens = [
     ethereum: "0xa02120696c7b8fe16c09c749e4598819b2b0e915",
   },
   {
-    // FRAX
-    ethereum: "0x853d955acef822db058eb8505911ed77f175b99e",
+    ethereum: ADDRESSES.ethereum.FRAX,
   },
   {
     // FXS
@@ -400,16 +395,13 @@ const liquidityBridgeTokens = [
     bsc: "0x1fD991fb6c3102873ba68a4e6e6a87B3a5c10271",
   },
   {
-    // BNB
-    bsc: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    bsc: ADDRESSES.bsc.WBNB,
   },
   {
-    // AVAX
-    avax: "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+    avax: ADDRESSES.avax.WAVAX,
   },
   {
-    // FTM
-    fantom: "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
+    fantom: ADDRESSES.fantom.WFTM,
   },
   {
     // AMY
@@ -436,9 +428,7 @@ const liquidityBridgeTokens = [
     heco: "0x4668e0E7cC545De886aBF038067F81cD4DC0924b",
   },
   {
-    // SDN
-    // origin: "shiden:0x0f933dc137d21ca519ae4c7e93f87a4c8ef365ef",
-    shiden: "0x0f933dc137d21ca519ae4c7e93f87a4c8ef365ef",
+    shiden: ADDRESSES.shiden.WSDN,
   },
   {
     // CONV
@@ -449,16 +439,13 @@ const liquidityBridgeTokens = [
     avax: "0x4fbf0429599460d327bd5f55625e30e4fc066095",
   },
   {
-    // MATIC
-    polygon: "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+    polygon: ADDRESSES.polygon.WMATIC_2,
   },
   {
-    // AAVE
-    ethereum: "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9",
+    ethereum: ADDRESSES.ethereum.AAVE,
   },
   {
-    // CRV
-    ethereum: "0xD533a949740bb3306d119CC777fa900bA034cd52",
+    ethereum: ADDRESSES.ethereum.CRV,
   },
   {
     // AVG
@@ -485,8 +472,7 @@ const liquidityBridgeTokens = [
     boba: "0xCe055Ea4f29fFB8bf35E852522B96aB67Cbe8197",
   },
   {
-    // LUSD
-    ethereum: "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0",
+    ethereum: ADDRESSES.ethereum.LUSD,
   },
   {
     // JONES

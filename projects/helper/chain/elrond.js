@@ -1,75 +1,76 @@
-const { get, graphQuery } = require('../http')
-const { getCoreAssets, tokens: TOKENS } = require('../tokenMapping')
+const ADDRESSES = require('../coreAssets.json')
+const { get } = require('../http')
 const { transformBalances } = require('../portedTokens')
 const sdk = require('@defillama/sdk')
+const { post } = require('../http')
+const { getEnv } = require('../env')
+
+const call = async ({ target, abi, params = [], responseTypes = [] }) => {
+  const data = await post(getEnv('MULTIVERSX_RPC') + '/query', { scAddress: target, funcName: abi, args: params, })
+
+  const response = data.returnData.map(parseResponses)
+  return responseTypes.length === 1 ? response[0] : response
+
+  // https://github.com/multiversx/mx-sdk-js-core/blob/main/src/smartcontracts/resultsParser.ts
+  function parseResponses(item, idx) {
+    const buffer = Buffer.from(item || "", "base64")
+    switch (responseTypes[idx]) {
+      case 'number': return parseNumber(buffer)
+      default: throw new Error('Unknown/unsupported data type')
+    }
+  }
+
+  function parseNumber(buffer) {
+    // https://github.com/juanelas/bigint-conversion/blob/master/src/ts/index.ts#L63
+    buffer = new Uint8Array(buffer)
+    let bits = 8n
+
+    let ret = 0n
+    for (const i of buffer.values()) {
+      const bi = BigInt(i)
+      ret = (ret << bits) + bi
+    }
+    return ret.toString()
+  }
+};
+
 const chain = 'elrond'
 
-const API_HOST = 'https://api.multiversx.com'
-const MAIAR_GRAPH = 'http://graph.xexchange.com/graphql'
-const unknownTokenList = ["CYBER-489c1c", "CPA-97530a"]
-let prices
-
-async function getTokenPrices() {
-  if (!prices) prices = _getPrices()
-  return prices
-
-  async function _getPrices() {
-    const query = `{
-      tokens (identifiers: ${JSON.stringify(unknownTokenList)}){
-        price
-        decimals
-        derivedEGLD
-        identifier
-      }
-    }`
-    const { tokens } = await graphQuery(MAIAR_GRAPH, query)
-    const res = {}
-    tokens.forEach(i => res[i.identifier] = i.derivedEGLD * 1e18/(10 ** i.decimals))
-    return res
-  }
-}
-
 async function getElrondBalance(address) {
-  const { data: { account: { balance } } } = await get(`${API_HOST}/address/${address}`)
+  const { data: { account: { balance } } } = await get(`${getEnv('MULTIVERSX_RPC')}/address/${address}`)
   return balance
 }
+const nullAddress = ADDRESSES.null
 
-async function getTokens({ address, balances = {}, tokens = [], blacklistedTokens = [] }) {
-  const prices = await getTokenPrices()
-  const coreAssets = new Set(getCoreAssets('elrond'))
-  const res = await get(`${API_HOST}/accounts/${address}/tokens?size=1000`)
+async function getTokens({ address, balances = {}, tokens = [], blacklistedTokens = [], whitelistedTokens = [], }) {
+  const res = await get(`${getEnv('MULTIVERSX_RPC')}/accounts/${address}/tokens?size=1000`)
   res.filter(i => i.type === 'FungibleESDT')
     .forEach(i => {
       const token = i.identifier
       if (tokens.length && !tokens.includes(token)) return; // sum only whitelistedTokens
+      if (whitelistedTokens.length && !whitelistedTokens.includes(token)) return; // sum only whitelistedTokens
       if (blacklistedTokens.includes(token)) return; // skip blacklisted tokens
-      if (!coreAssets.has(token)) {
-        if (i.valueUsd)
-          return sdk.util.sumSingleBalance(balances, TOKENS.usdt, i.valueUsd * 1e6)
-
-        if (prices[token])
-          return sdk.util.sumSingleBalance(balances, TOKENS.null, (prices[token] * i.balance).toFixed(0), chain)
-      }
-      return sdk.util.sumSingleBalance(balances, token, i.balance / (10 ** i.decimals), chain)
+      return sdk.util.sumSingleBalance(balances, token, i.balance, chain)
     })
   return balances
 }
 
-async function sumTokens({ owners = [], tokens = [], balances = {}, blacklistedTokens = [], tokensAndOwners = []}) {
+async function sumTokens({ owners = [], tokens = [], balances = {}, blacklistedTokens = [], tokensAndOwners = [], whitelistedTokens = [] }) {
   if (tokensAndOwners.length) {
-    await Promise.all(tokensAndOwners.map(([token, owner]) => sumTokens({ owners: [owner], tokens: [token], balances, blacklistedTokens, })))
+    await Promise.all(tokensAndOwners.map(([token, owner]) => sumTokens({ owners: [owner], tokens: [token], balances, blacklistedTokens, whitelistedTokens, })))
     return balances
   }
 
-  await Promise.all(owners.map(i => getTokens({ address: i, balances, tokens, blacklistedTokens, })))
-  if (!tokens.length || tokens.includes(TOKENS.null))
+  await Promise.all(owners.map(i => getTokens({ address: i, balances, tokens, blacklistedTokens, whitelistedTokens, })))
+  if (!tokens.length || tokens.includes(nullAddress))
     await Promise.all(owners.map(async i => {
       const bal = await getElrondBalance(i)
-      sdk.util.sumSingleBalance(balances, TOKENS.null, bal, chain)
+      sdk.util.sumSingleBalance(balances, nullAddress, bal, chain)
     }))
   return transformBalances(chain, balances)
 }
 
 module.exports = {
   sumTokens,
+  call,
 }

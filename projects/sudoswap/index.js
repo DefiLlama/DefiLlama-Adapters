@@ -31,16 +31,14 @@ query get_pairs($lastId: String, $block: Int) {
 
 module.exports = {
   methodology: 'Sum up all the ETH in pools and count whitelisted NFT values as well (price fetched from chainlink)',
-  hallmarks: [
-    [Math.floor(new Date('2022-12-06') / 1e3), 'TVL includes whitelisted nft value as well'],
-  ],
   ethereum: {
     tvl: async (timestamp, block, chainBlocks, { api }) => {
       const data = await graphFetchById({
         endpoint: 'https://api.thegraph.com/subgraphs/name/zeframlou/sudoswap',
         query,
+        api,
         options: {
-          timestamp, chain: 'ethereum', chainBlocks, useBlock: true,
+          useBlock: true,
         }
       })
       const balances = {}

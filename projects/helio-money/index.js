@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport, } = require('../helper/unknownTokens')
 
 module.exports = {
@@ -7,8 +8,9 @@ module.exports = {
     //[1670544000,"aBNBc to AnkrBNB swap & HAY buyback"]
   ],
   bsc: {
-    tvl: sumTokensExport({ chain: 'bsc', owner: '0x25b21472c073095bebC681001Cbf165f849eEe5E', tokens: [
+    tvl: sumTokensExport({ owner: '0x25b21472c073095bebC681001Cbf165f849eEe5E', tokens: [
       '0x52F24a5e03aee338Da5fd9Df68D2b6FAe1178827', // ankrBNB
+      ADDRESSES.null,
     ] }),
   }
 }

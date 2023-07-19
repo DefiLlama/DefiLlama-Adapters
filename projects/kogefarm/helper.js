@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const BigNumber = require('bignumber.js')
 const sdk = require('@defillama/sdk')
 const abi = require('./abi.json')
@@ -5,15 +6,15 @@ const abi = require('./abi.json')
 function transformAddressKF(chain = 'polygon') {
   return (addr) => {
     // WETH
-    if (addr.toLowerCase() === '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619') {
-      return '0x0000000000000000000000000000000000000000'
+    if (addr.toLowerCase() === ADDRESSES.polygon.WETH_1) {
+      return ADDRESSES.null
     }
 
     // Special cases since coingecko doesn't find them
     if (
       // fUSDT
       (chain === 'fantom' &&
-        addr.toLowerCase() === '0x049d68029688eabf473097a2fc38ef61633a3c7a') ||
+        addr.toLowerCase() === ADDRESSES.fantom.fUSDT) ||
       (chain === 'moonriver' &&
         addr.toLowerCase() === '0xe936caa7f6d9f5c9e907111fcaf7c351c184cda7')
     ) {
@@ -23,7 +24,7 @@ function transformAddressKF(chain = 'polygon') {
     if (
       // renbtc on Fantom
       (chain === 'fantom' &&
-        addr.toLowerCase() === '0xdbf31df14b66535af65aac99c32e9ea844e14501')
+        addr.toLowerCase() === ADDRESSES.fantom.renBTC)
     ) {
       // renbtc on Polygon
       return `polygon:0xDBf31dF14B66535aF65AaC99C32e9eA844e14501`
@@ -39,7 +40,7 @@ function transformAddressKF(chain = 'polygon') {
     if (
       // Dai on Fantom
       (chain === 'fantom' &&
-        addr.toLowerCase() === '0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e')
+        addr.toLowerCase() === ADDRESSES.fantom.DAI)
     ) {
       // Dai on Eth
       return `ethereum:0x6b175474e89094c44da98b954eedeac495271d0f`
@@ -102,7 +103,7 @@ function transformAddressKF(chain = 'polygon') {
       return `avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7`
     }
     // Special case for MIM, since coingecko doesn't find
-    if (addr.toLowerCase() === '0x82f0b8b456c1a451378467398982d4834b6829c1') {
+    if (addr.toLowerCase() === ADDRESSES.fantom.MIM) {
       // MIM
       return `ethereum:0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3`
     }

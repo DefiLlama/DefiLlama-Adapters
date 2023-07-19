@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { aQuery } = require('../helper/chain/aptos')
 
 module.exports = {

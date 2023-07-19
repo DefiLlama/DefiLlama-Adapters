@@ -14,42 +14,23 @@ async function tvl(_, _b, _cb, { api, }) {
     onlyArgs: true,
     fromBlock: 13154136,
   })
-  const pairs = logs.map(i => i.exchange)
-  const tokens = logs.map(i => i.token)
-  const token0Res = []
-  const token1Res = []
+  const calls = logs.map(i => ({ target: i.token, params: i.exchange })).filter(i => i.target.toLowerCase() !== '0xcE393b11872EE5020828e443f6Ec9DE58CD8b6c5'.toLowerCase())
+  const allToken1Res = await api.multiCall({  abi: 'erc20:balanceOf', calls })
+  const tokenFilter = (_, i) => allToken1Res[i] && +allToken1Res[i] > 0
+  const token1s = calls.map(i => i.target).filter(tokenFilter)
+  const exchanges = calls.map(i => i.params).filter(tokenFilter)
+  const token1Res = allToken1Res.filter(tokenFilter)
+  let { output: token0Res } = await sdk.api.eth.getBalances({ ...api, targets: exchanges, })
+  token0Res = token0Res.map(i => i.balance)
 
-  await Promise.all([
-    getToken0Res(),
-    getToken1Res(),
-  ])
-  async function getToken0Res() {
-    const token0Chunks = sliceIntoChunks(pairs, 250)
-    let i = 0
-    for (const chunk of token0Chunks) {
-      sdk.log('fetching ', ++i, 'of ', token0Chunks.length)
-      const { output } = await sdk.api.eth.getBalances({ ...api, targets: pairs, })
-      token0Res.push(...output)
-    }
-  }
-  async function getToken1Res() {
-    const token1Chunks = sliceIntoChunks(pairs.map((v, i) => ({ target: tokens[i], params: v })), 50)
-    let i = 0
-    for (const calls of token1Chunks) {
-      sdk.log('fetching ', ++i, 'of ', token1Chunks.length, '(token1)')
-      const res = await api.multiCall({ abi: 'erc20:balanceOf', calls })
-      token1Res.push(...res)
-    }
-  }
+  sdk.log(token1s.length)
   const data = []
-  tokens.map((v, i) => {
-    // if (isNaN(token1Res[i])) sdk.log('bad response', tokens[i], pairs[i])
-    // if (isNaN(token0Res[i])) sdk.log('bad response 0', tokens[i], pairs[i])
+  token1s.map((v, i) => {
     data.push({
       token0: nullAddress,
       token1: v,
-      token0Bal: isNaN(token0Res[i]) ? 0 : token0Res[i],
-      token1Bal: isNaN(token1Res[i]) ? 0 : token1Res[i],
+      token0Bal: token0Res[i],
+      token1Bal: token1Res[i],
     })
   })
   // const pairs = (await api.fetchList({  lengthAbi: 'uint256:tokenCount', itemAbi: "function getTokenWithId(uint256 token_id) view returns (address out)", target: factory })).filter(i => i !== nullAddress)

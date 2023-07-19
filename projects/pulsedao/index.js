@@ -10,6 +10,9 @@ const lps = [
 ]
 
 module.exports = {
+    hallmarks: [
+        [1647216000, "Rug Pull"]
+    ],
     deadFrom: 1648765747,
     misrepresentedTokens: true,
     ...tombTvl(pld, pshare, rewardPool, boardroom, lps, "fantom", undefined, false, lps[1])

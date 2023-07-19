@@ -1,16 +1,19 @@
-const sdk = require("@defillama/sdk");
+const ADDRESSES = require('../helper/coreAssets.json')
 const { blockQuery } = require("../helper/http");
-const env= require("../helper/env");
-const BigNumber = require("bignumber.js");
+const { getEnv } = require("../helper/env");
+const { staking } = require('../helper/staking');
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const OlympusStakings = [
   // Old Staking Contract
   "0x0822F3C03dcc24d200AFF33493Dc08d0e1f274A2",
   // New Staking Contract
   "0xFd31c7d00Ca47653c6Ce64Af53c1571f9C36566a",
+  "0xb63cac384247597756545b500253ff8e607a8020",
 ];
 
-const OHM = "0x383518188c0c6d7730d91b2c03a03c837814a899";
+const OHM_V1 = "0x383518188c0c6d7730d91b2c03a03c837814a899" // this is OHM v1
+const OHM = "0x64aa3364f17a4d01c6f1751fd97c2bd3d7e7f1d5" // this is OHM v1
 
 /** Map any staked assets without price feeds to those with price feeds.
  * All balances are 1: 1 to their unstaked counterpart that has the price feed.
@@ -22,8 +25,8 @@ const addressMap = {
     "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0", // veFXS -> FXS
   "0x3fa73f1e5d8a792c80f426fc8f84fbf7ce9bbcac":
     "0xc0c293ce456ff0ed870add98a0828dd4d2903dbf", //vlAURA -> AURA
-  "0x72a19342e8f1838460ebfccef09f6585e32db86e":
-    "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b", //vlCVX -> CVX
+  [ADDRESSES.ethereum.vlCVX]:
+    ADDRESSES.ethereum.CVX, //vlCVX -> CVX
   "0xa02d8861fbfd0ba3d8ebafa447fe7680a3fa9a93":
     "0xd1ec5e215e8148d76f4460e4097fd3d5ae0a3558", //aura50OHM-50WETH -> 50OHM-50WETH
   "0x0ef97ef0e20f84e82ec2d79cbd9eda923c3daf09":
@@ -38,24 +41,6 @@ const addressMap = {
     "0xc55126051B22eBb829D00368f4B12Bde432de5Da", //rlBTRFLY -> BTRFLY V2
   "0xc0d4ceb216b3ba9c3701b291766fdcba977cec3a":
     "0xc55126051B22eBb829D00368f4B12Bde432de5Da", //BTRFLY -> BTRFLYV2
-};
-
-/*** Staking of native token (OHM) TVL Portion ***/
-const staking = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
-
-  for (const stakings of OlympusStakings) {
-    const stakingBalance = await sdk.api.abi.call({
-      abi: "erc20:balanceOf",
-      target: OHM,
-      params: stakings,
-      block: ethBlock,
-    });
-
-    sdk.util.sumSingleBalance(balances, OHM, stakingBalance.output);
-  }
-
-  return balances;
 };
 
 const protocolQuery = (block) => `
@@ -79,7 +64,7 @@ query {
 }`;
 
 const subgraphUrls = {
-  ethereum: `https://gateway.thegraph.com/api/${env.OLYMPUS_GRAPH_API_KEY}/subgraphs/id/DTcDcUSBRJjz9NeoK5VbXCVzYbRTyuBwdPUqMi8x32pY`,
+  ethereum: `https://gateway.thegraph.com/api/${getEnv('OLYMPUS_GRAPH_API_KEY')}/subgraphs/id/DTcDcUSBRJjz9NeoK5VbXCVzYbRTyuBwdPUqMi8x32pY`,
   arbitrum:
     "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-arbitrum",
   fantom:
@@ -112,7 +97,7 @@ function sumBalancesByTokenAddress(arr) {
  * #2. Call tokenRecords with block num from prev query
  * #3. Sum values returned
  ***/
-async function tvl(timestamp, block, _, { api }, poolsOnly = false) {
+async function tvl(timestamp, block, _, { api }, isOwnTokensMode = false) {
   const indexedBlockForEndpoint = await blockQuery(
     subgraphUrls[api.chain],
     getLatestBlockIndexed,
@@ -130,16 +115,16 @@ async function tvl(timestamp, block, _, { api }, poolsOnly = false) {
   if (now - blockNum[0].timestamp > 3 * aDay) {
     throw new Error("outdated");
   }
-  const filteredTokenRecords = poolsOnly
-    ? tokenRecords.filter((t) => t.category === "Protocol-Owned Liquidity")
-    : tokenRecords;
+  // const filteredTokenRecords = poolsOnly
+  //   ? tokenRecords.filter((t) => t.category === "Protocol-Owned Liquidity")
+  //   : tokenRecords;
 
   /**
    * iterates over filtered list from subgraph and returns any addresses
    * that need to be normalized for pricing .
    * See addressMap above
    **/
-  const normalizedFilteredTokenRecords = filteredTokenRecords.map((token) => {
+  const normalizedFilteredTokenRecords = tokenRecords.map((token) => {
     const normalizedAddress = addressMap[token.tokenAddress]
       ? addressMap[token.tokenAddress]
       : token.tokenAddress;
@@ -148,28 +133,28 @@ async function tvl(timestamp, block, _, { api }, poolsOnly = false) {
 
   const tokensToBalances = sumBalancesByTokenAddress(
     normalizedFilteredTokenRecords
-  );
-  const balances = await Promise.all(
-    tokensToBalances.map(async (token, index) => {
-      const decimals = await sdk.api.abi.call({
-        abi: "erc20:decimals",
-        target: token.tokenAddress,
-        chain: api.chain,
-      });
-      return [
-        `${api.chain}:${token.tokenAddress}`,
-        Number(
-          BigNumber(token.balance)
-            .times(10 ** decimals.output)
-            .toFixed(0)
-        ),
-      ];
-    })
-  );
-  return Object.fromEntries(balances);
+  ).filter(i => {
+    if (api.chain !== 'arbitrum') return true;
+    return !['0x89dc7e71e362faf88d92288fe2311d25c6a1b5e0000200000000000000000423', '0xce6195089b302633ed60f3f427d1380f6a2bfbc7000200000000000000000424'].includes(i.tokenAddress)
+  })
+  const tokens = tokensToBalances.map(i => i.tokenAddress)
+
+
+  const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: tokens })
+  const ownTokens = new Set([
+    '0x0ab87046fBb341D058F17CBC4c1133F25a20a52f', // GOHM
+    '0x64aa3364f17a4d01c6f1751fd97c2bd3d7e7f1d5', // OHM
+  ].map(i => i.toLowerCase()))
+  tokensToBalances.map(async (token, i) => {
+    if (ownTokens.has(token.tokenAddress.toLowerCase())) {
+      if (!isOwnTokensMode) return;
+    } else if (isOwnTokensMode) return;
+    api.add(token.tokenAddress, token.balance * 10 ** decimals[i])
+  })
+  return sumTokens2({ api, resolveLP: true, })
 }
 
-async function pool2(timestamp, block, _, { api }) {
+async function ownTokens(timestamp, block, _, { api }) {
   return tvl(timestamp, block, _, { api }, true);
 }
 
@@ -179,9 +164,9 @@ module.exports = {
   methodology:
     "TVL is the sum of the value of all assets held by the treasury (excluding pTokens). Please visit https://app.olympusdao.finance/#/dashboard for more info.",
   ethereum: {
-    staking,
+    staking: staking(OlympusStakings, [OHM, OHM_V1]),
     tvl,
-    // pool2,
+    ownTokens,
   },
   arbitrum: {
     tvl,

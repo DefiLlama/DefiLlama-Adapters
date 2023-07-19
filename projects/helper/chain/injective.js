@@ -32,7 +32,7 @@ async function getOrders({ type = TYPES.SPOT, marketIds }) {
   const chunks = sliceIntoChunks(marketIds, 20)
   const response = []
   for (const chunk of chunks)
-    response.push(...await getClient(type).fetchOrderbooks(chunk))
+    response.push(...await getClient(type).fetchOrderbooksV2(chunk))
   return response
 }
 

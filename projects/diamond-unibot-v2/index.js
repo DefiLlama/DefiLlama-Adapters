@@ -1,14 +1,15 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs, getAddress } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const config = {
   arbitrum: {
     lendingPools: [
       [
-        "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+        ADDRESSES.arbitrum.WETH,
         "0xedd1efa76fe59e9106067d824b89b59157c5223c",
       ], // WETH
       [
-        "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
+        ADDRESSES.arbitrum.USDC,
         "0xFEaDE428e2Fe0F547d560B540a7617087505538B",
       ], // USDC
       [
@@ -19,8 +20,8 @@ const config = {
     vaults: [
       [
         [
-          "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8", // USDC
-          "0xfc5a1a6eb076a2c7ad06ed22c90d7e710e35ad0a", // GMX
+          ADDRESSES.arbitrum.USDC, // USDC
+          ADDRESSES.arbitrum.GMX, // GMX
           "0x912ce59144191c1204e64559fe8253a0e49e6548", // ARB
         ],
         "0x8610D60f5329B0560c8F0CEb80175F342fe943F3", // vault
@@ -31,19 +32,19 @@ const config = {
   polygon: {
     lendingPools: [
       [
-        "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+        ADDRESSES.polygon.WETH_1,
         "0x8610D60f5329B0560c8F0CEb80175F342fe943F3",
       ], // WETH
       [
-        "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+        ADDRESSES.polygon.WMATIC_2,
         "0xEdD1efA76fe59e9106067D824b89B59157C5223C",
       ], // WMATIC
     ],
     vaults: [
       [
         [
-          "0x2791bca1f2de4661ed88a30c99a7a9449aa84174", // USDC
-          "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619", // WETH
+          ADDRESSES.polygon.USDC, // USDC
+          ADDRESSES.polygon.WETH_1, // WETH
         ],
         "0xD576bE0d3CC1c0184d1ea3F1778A4A9Dec523859", // vault
       ],
