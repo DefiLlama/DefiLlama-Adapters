@@ -45,34 +45,9 @@ const ibcMappings = {
 
 const fixBalancesTokens = {
   // Sample Code
-  neon_evm: {
-    '0xb14760c064a1b9eaf9ec5a8a421971e40a51b59c': { coingeckoId: 'neon', decimals:18},
-  },
-  rpg: {
-    '0x8e8816a1747fddc5f8b45d2e140a425d3788f659': { coingeckoId: "tether", decimals: 18 },
-  },
-  tenet: {
-    '0xd6cb8a253e12893b0cf39ca78f7d858652cca1fe': { coingeckoId: "tenet-1b000f7b-59cb-4e06-89ce-d62b32d362b9", decimals: 18 },
-  },
-  bsc: {
-    '0x352cb5e19b12fc216548a2677bd0fce83bae434b': { coingeckoId: 'bittorrent', decimals: 18, },
-    '0xce7de646e7208a4ef112cb6ed5038fa6cc6b12e3': { coingeckoId: 'tron', decimals: 6, },
-  },
-  ultron: {
-    '0xb1183357745d3fd7d291e42a2c4b478cdb5710c6': { coingeckoId: "ultron", decimals: 18 },
-  },
-  avax: {
-    '0x8fdcf51d1aaeb9f031838ebeb15884a0d5efcda3': { coingeckoId: "wrapped-bitcoin", decimals: 18 },
-    '0xaa44678304cc1a848bfc31dc013afcc6c9feae11': { coingeckoId: "benqi", decimals: 18 },
-  },
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
-  mantle: {
-    '0x201eba5cc46d216ce6dc03f6a759e8e766e956ae': { coingeckoId: "tether", decimals: 6 },
-    '0x78c1b0c915c4faa5fffa6cabf0219da63d7f4cb8': { coingeckoId: "mantle", decimals: 18 },
-    '0xdeaddeaddeaddeaddeaddeaddeaddeaddead1111': { coingeckoId: "ethereum", decimals: 18 },
-  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
