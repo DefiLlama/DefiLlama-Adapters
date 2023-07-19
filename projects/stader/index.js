@@ -17,6 +17,7 @@ const createTvlFunction = (network, key) => {
     // matic is locked on ethereum network for Stader
     if (network === "ethereum") {
       result["matic-network"] = data["polygon"].native;
+      result["ethereum"] = data["sd"].native + data["eth"].native;
     }
 
     return result;
