@@ -1,84 +1,42 @@
-const { getMoneyMarkets, getTokenPrices } = require("../helper/hatom/hatom-graph");
-const {
-  getMoneyMarketCash,
-  getMoneyMarketBorrows,
-} = require("../helper/hatom/on-chain");
-const {
-  formatMoneyMarketsCash,
-  formatMoneyMarketsBorrows,
-  sumatory,
-} = require("../helper/hatom/utils");
-const ADDRESSES = require('../helper/coreAssets.json');
-const BigNumber = require("bignumber.js");
+const { sumTokens, call, } = require('../helper/chain/elrond')
+const { cachedGraphQuery } = require('../helper/cache')
+const { nullAddress } = require('../helper/tokenMapping')
 
-const getMoneyMarketCashData = (moneyMarkets, tokenPrices) => {
-  return Promise.all(
-    moneyMarkets.map(async ({ address, underlying }) => {
-      const cash = await getMoneyMarketCash(address);
-      const priceUSD = tokenPrices?.[underlying.id] || "0";
-
-      return {
-        address,
-        cash,
-        priceUSD,
-        underlying,
-      };
-    })
-  );
-};
-
-const getMoneyMarketBorrowData = (moneyMarkets, tokenPrices) => {
-  return Promise.all(
-    moneyMarkets.map(async ({ address, underlying }) => {
-      const borrows = await getMoneyMarketBorrows(address);
-      const priceUSD = tokenPrices?.[underlying.id] || "0";
-
-      return {
-        address,
-        borrows,
-        priceUSD,
-        underlying,
-      };
-    })
-  );
-};
+async function getMoneyMarkets() {
+  const { queryMoneyMarket: res } = await cachedGraphQuery('hatom-TVLLendingProtocolQuery', 'https://mainnet-api.hatom.com/graphql', `
+    query QueryMoneyMarket {
+      queryMoneyMarket {
+        address
+        underlying {
+          name
+          decimals
+          id
+        }
+      }
+    }
+  `)
+  res.forEach(i => {
+    if (i.underlying.id === 'EGLD') i.underlying.id = nullAddress
+  })
+  return res
+}
 
 const tvl = async () => {
-  // Fetching data off chain
-  const [tokenPrices, moneyMarkets] = await Promise.all([
-    getTokenPrices(),
-    getMoneyMarkets(),
-  ]);
-  // Fetching data on chain
-  const moneyMarketsData = await getMoneyMarketCashData(moneyMarkets, tokenPrices);
-  // Formatting data
-  const moneyMarketsCash = formatMoneyMarketsCash(moneyMarketsData)
-  const totalLendingCash = sumatory(moneyMarketsCash);
-
-  return { [ADDRESSES.ethereum.USDC]: totalLendingCash.multipliedBy(1e6).toNumber() }
+  const moneyMarkets = await getMoneyMarkets()
+  return sumTokens({ owners: moneyMarkets.map(i => i.address), })
 };
 
-const borrowed = async () => {
-  // Fetching data off chain
-  const [tokenPrices, moneyMarkets] = await Promise.all([
-    getTokenPrices(),
-    getMoneyMarkets(),
-  ]);
-
-  // Fetching data on chain
-  const moneyMarketsData = await getMoneyMarketBorrowData(moneyMarkets, tokenPrices);
-
-  // Formatting data
-  const moneyMarketsBorrows = await formatMoneyMarketsBorrows(moneyMarketsData)
-  const totalLendingBorrows = sumatory(moneyMarketsBorrows);
-  return { [ADDRESSES.ethereum.USDC]: totalLendingBorrows.multipliedBy(1e6).toNumber() }
+const borrowed = async (_, _1, _2, { api }) => {
+  const moneyMarkets = await getMoneyMarkets()
+  const tokens = moneyMarkets.map(i => i.underlying.id)
+  const bals = await Promise.all(moneyMarkets.map(i => call({ target: i.address, abi: 'getTotalBorrows', responseTypes: ['number'] })))
+  api.addTokens(tokens, bals)
 };
 
 module.exports = {
-  misrepresentedTokens: true,
   timetravel: false,
   elrond: {
-    tvl: tvl,
-    borrowed: borrowed
+    tvl,
+    borrowed,
   },
 };

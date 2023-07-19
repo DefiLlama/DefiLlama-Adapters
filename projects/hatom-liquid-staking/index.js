@@ -1,34 +1,14 @@
-const { getTokenPrices, getLiquidStakingAddress } = require("../helper/hatom/hatom-graph");
-const {
-   getLiquidStakingCashReserve,
-} = require("../helper/hatom/on-chain");
+const { call, } = require("../helper/chain/elrond");
 
 const ADDRESSES = require('../helper/coreAssets.json');
-const BigNumber = require("bignumber.js");
 
-
-const tlv = async () => {
-   // Fetching data off chain
-   const [tokenPrices, liquidStakingAddress] = await Promise.all([
-      getTokenPrices(),
-      getLiquidStakingAddress()
-   ]);
-
-   // Fetching data on chain
-   const liquidStakingCashReserve = await getLiquidStakingCashReserve(liquidStakingAddress)
-
-   // Formatting data
-   const liquidStakingCashReserveUSD = BigNumber(liquidStakingCashReserve)
-      .dividedBy(1e18)
-      .multipliedBy(tokenPrices?.EGLD || 0)
-
-   return { [ADDRESSES.ethereum.USDC]: liquidStakingCashReserveUSD.multipliedBy(1e6).toNumber() }
+const tvl = async () => {
+  return { ['elrond:' + ADDRESSES.null]: await call({ target: 'erd1qqqqqqqqqqqqqpgq4gzfcw7kmkjy8zsf04ce6dl0auhtzjx078sslvrf4e', abi: 'getCashReserve', responseTypes: ['number'] }) }
 };
 
 module.exports = {
-   misrepresentedTokens: true,
-   timetravel: false,
-   elrond: {
-      tvl: tlv,
-   },
+  timetravel: false,
+  elrond: {
+    tvl,
+  },
 };
