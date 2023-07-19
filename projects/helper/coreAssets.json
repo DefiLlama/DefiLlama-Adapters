@@ -1335,6 +1335,10 @@
   "mantle": {
     "WMNT": "0x78c1b0c915c4faa5fffa6cabf0219da63d7f4cb8",
     "WETH": "0xdeaddeaddeaddeaddeaddeaddeaddeaddead1111",
-    "USDT": "0x201eba5cc46d216ce6dc03f6a759e8e766e956ae"
+    "USDT": "0x201eba5cc46d216ce6dc03f6a759e8e766e956ae",
+    "USDC": "0x09Bc4E0D864854c6aFB6eB9A9cdF58aC190D0dF9"
+  },
+  "linea": {
+    "WETH": "0xe5D7C2a44FfDDf6b295A15c148167daaAf5Cf34f"
   }
 }
