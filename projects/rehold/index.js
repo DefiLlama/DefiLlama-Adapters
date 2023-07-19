@@ -17,5 +17,4 @@ module.exports = {
   avax: { tvl },
   arbitrum: { tvl },
   optimism: { tvl },
-  fantom: { tvl },
 }
