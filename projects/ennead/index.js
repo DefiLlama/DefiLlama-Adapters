@@ -1,9 +1,8 @@
-const sdk = require("@defillama/sdk");
-const { staking, stakingUnknownPricedLP } = require("../helper/staking");
-const { unwrapUniswapLPs, unwrapUniswapV3NFTs } = require('../helper/unwrapLPs');
+const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
+const { sumTokensExport } = require('../helper/unknownTokens')
+const { staking, } = require("../helper/staking");
 const lensAbi = require("./ramsesLens.json");
 
-const emptyAddress = '0x0000000000000000000000000000000000000000';
 // Ramses contracts
 const ramsesLens = '0xAAA68f40515bCcd8e407EBB4dBdF5046D105621e';
 const nfpManager = '0xAA277CB7914b7e5514946Da92cb9De332Ce610EF';
@@ -21,116 +20,32 @@ const neadSnekLp = '0x82360748aC3D7045812c6783f355b41193d3492E';
 const snekView = '0xe99eadc22747c95c658f41a02F1c6C2CcAefA757';
 const booster = '0xe99ead683Dcf1eF0C7F6612be5098BC5fDF4998d';
 
-async function arbiTvl(timestamp, block, chainBlocks, { chain }) {
-    let balances = {};
-
-    let poolsAddresses = (await sdk.api.abi.call({
-        target: ramsesLens,
-        abi: lensAbi.allPools,
-        chain: chain
-    })).output;
-
-    let gauges = (await sdk.api.abi.multiCall({
-        target: ramsesLens,
-        calls: poolsAddresses.map(pool => ({ params: pool })),
-        abi: lensAbi.gaugeForPool,
-        chain: chain
-    })).output;
-
-    // Remove pools with no gauges
-    const toRemove = gauges.reduce((indices, gauge, index) => {
-        if (gauge.output == emptyAddress) {
-            indices.push(index);
-        }
-        return indices;
-    }, []);
-
-    if (toRemove.length > 0) {
-        toRemove.sort((a, b) => b - a);
-        toRemove.forEach(index => {
-            poolsAddresses.splice(index, 1);
-            gauges.splice(index, 1);
-        });
-    };
-
-    const lpBalances = (await sdk.api.abi.multiCall({
-        calls: gauges.map(gauge => ({ target: gauge.output, params: lpDepositor })),
-        abi: "function balanceOf(address) view returns (uint256)",
-        chain: chain
-    })).output;
-
-    await unwrapUniswapLPs(
-        balances,
-        poolsAddresses.map((pool, index) => ({ token: pool, balance: lpBalances[index].output })),
-        chainBlocks.arbitrum,
-        chain = chain,
-    );
-
-    await unwrapUniswapV3NFTs({
-        balances,
-        nftsAndOwners: [[nfpManager, neadNfpDepositor],],
-        block: chainBlocks.arbitrum,
-        chain: chain
-    });
-
-    return balances;
+async function arbiTvl(timestamp, block, chainBlocks, { api }) {
+    let poolsAddresses = await api.call({ target: ramsesLens, abi: lensAbi.allPools, })
+    let gauges = await api.multiCall({ target: ramsesLens, calls: poolsAddresses, abi: lensAbi.gaugeForPool, })
+    poolsAddresses = poolsAddresses.filter((_, i) => gauges[i] !== nullAddress)
+    gauges = gauges.filter(gauge => gauge !== nullAddress)
+    const bals = await api.multiCall({  abi: 'erc20:balanceOf', calls: gauges.map(i => ({ target: i, params: lpDepositor}))})
+    api.addTokens(poolsAddresses, bals)
+    await sumTokens2({ api, uniV3nftsAndOwners: [[nfpManager, neadNfpDepositor],], resolveLP: true, })
 }
 
-async function avaxTvl(timestamp, block, chainBlocks, { chain }) {
-    let balances = {};
-
-    const poolsAddresses = (await sdk.api.abi.call({
-        target: snekView,
-        abi: lensAbi.allActivePools,
-        chain: chain
-    })).output;
-
-    /*
-    const stakingPositions = (await sdk.api.abi.call({
-        target: snekView,
-        params: booster,
-        abi: lensAbi.allStakingPositionsOf,
-        chain: chain
-    })).output;
-    
-    const lpBalances = [];
-    for (let i = 0; i < stakingPositions.length; i++) {
-        lpBalances.push(stakingPositions[i].balance);
-    }
-    */
-
-    const gauges = (await sdk.api.abi.call({
-        target: snekView,
-        abi: lensAbi.allGauges,
-        chain: chain
-    })).output;
-
-
-    const lpBalances = (await sdk.api.abi.multiCall({
-        calls: gauges.map(gauge => ({ target: gauge, params: booster })),
-        abi: "function balanceOf(address) view returns (uint256)",
-        chain: chain
-    })).output;
-
-
-    await unwrapUniswapLPs(
-        balances,
-        poolsAddresses.map((pool, index) => ({ token: pool, balance: lpBalances[index].output })),
-        chainBlocks.avax,
-        chain = chain
-    );
-
-    return balances;
+async function avaxTvl(timestamp, block, chainBlocks, { api }) {
+    const poolsAddresses = await api.call({ target: snekView, abi: lensAbi.allActivePools, })
+    const gauges = await api.call({ target: snekView, abi: lensAbi.allGauges, })
+    const bals = await api.multiCall({  abi: 'erc20:balanceOf', calls: gauges.map(i => ({ target: i, params: booster}))})
+    api.addTokens(poolsAddresses, bals)
+    return sumTokens2({ api, resolveLP: true, })
 }
-
 
 module.exports = {
+    misrepresentedTokens: true,
     arbitrum: {
         staking: staking(neadStake, neadRam),
         tvl: arbiTvl,
     },
     avax: {
-        staking: stakingUnknownPricedLP(neadStake_avax, neadSnek, chain = 'avax', lpContract = neadSnekLp), //not accurate
+        staking: sumTokensExport({ owner: neadStake_avax, tokens: [neadSnek], lps: [neadSnekLp], useDefaultCoreAssets: true, }),
         tvl: avaxTvl
     }
 };
