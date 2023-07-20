@@ -1,6 +1,5 @@
 const { getLogs } = require('../helper/cache/getLogs')
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
 const { sumTokensSharedOwners, sumTokens2 } = require("../helper/unwrapLPs");
 const { staking } = require('../helper/staking')
 
@@ -61,39 +60,17 @@ async function optTvl(timestamp, block, chainBlocks) {
   return balances;
 }
 
-const treasuryAddress = "0xa54074b2cc0e96a43048d4a68472F7F046aC0DA8";
-const treasuryContents = [
-  ADDRESSES.ethereum.USDC
-]
-const optTreasury = "0x271901c3268D0959bbc9543DE4f073D3708C88F7";
-
-async function treasury(timestamp, block) {
-  let balances = {};
-  const ethBal = (await sdk.api.eth.getBalance({
-    target: treasuryAddress,
-    block,
-  })).output;
-  sdk.util.sumSingleBalance(balances, ADDRESSES.ethereum.WETH, ethBal);
-  await sumTokensSharedOwners(balances, treasuryContents, [treasuryAddress], block);
-  return balances;
-}
-
-
 module.exports = {
   methodology: "TVL includes collateral in vaults",
   ethereum: {
     tvl: ethTvl,
     pool2: staking(ethStakingContracts, ethPool2s),
     staking: staking_,
-    treasury
   },
   optimism: {
     tvl: optTvl
   }
 };
-
-
-
 
 async function staking_(_, _b, _cb, { api, }) {
   const logs = await getLogs({
