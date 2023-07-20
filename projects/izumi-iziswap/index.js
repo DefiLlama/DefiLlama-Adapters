@@ -20,7 +20,8 @@ const poolHelpers = {
   'mantle': ['0x611575eE1fbd4F7915D0eABCC518eD396fF78F0c'],
   'ethereum': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
   'ontology_evm': ['0x110dE362cc436D7f54210f96b8C7652C2617887D'],
-  'ultron' : ['0xcA7e21764CD8f7c1Ec40e651E25Da68AeD096037']
+  'ultron' : ['0xcA7e21764CD8f7c1Ec40e651E25Da68AeD096037'],
+  'linea': ['0x1CB60033F61e4fc171c963f0d2d3F63Ece24319c'],
 }
 
 const blacklistedTokens = [
