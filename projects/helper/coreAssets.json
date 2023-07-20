@@ -1216,7 +1216,8 @@
     "USDT": "USDT"
   },
   "elrond": {
-    "WEGLD": "WEGLD-bd4d79"
+    "WEGLD": "WEGLD-bd4d79",
+    "USDC": "USDC-c76f1f"
   },
   "bitindi": {
     "WBNI": "0x15E162205421dc3A47b15A1A740FbF5EAbB77921"
