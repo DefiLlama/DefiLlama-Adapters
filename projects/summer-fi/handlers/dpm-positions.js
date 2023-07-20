@@ -1,13 +1,9 @@
 const BigNumber = require("bignumber.js");
 const { blockQuery } = require("../../helper/http");
+const { endpoints } = require("../constants/endpoints");
 
 const NEGATIVE_WAD_PRECISION = -18;
 const WETH_ADDRESS = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-
-const subgraphs = {
-  aave: "",
-  ajna: "",
-};
 
 const aaveQuery = `
 query {
@@ -46,8 +42,8 @@ query {
 }`;
 
 const dpmPositions = async ({ api }) => {
-  const aave = await blockQuery(subgraphs.aave, aaveQuery, { api });
-  const ajna = await blockQuery(subgraphs.ajna, ajnaQuery, { api });
+  const aave = await blockQuery(endpoints.aave, aaveQuery, { api });
+  const ajna = await blockQuery(endpoints.ajna, ajnaQuery, { api });
 
   const supportedAjnaPools = [
     ...new Set(ajna.accounts.map(({ pool: { address } }) => address)),

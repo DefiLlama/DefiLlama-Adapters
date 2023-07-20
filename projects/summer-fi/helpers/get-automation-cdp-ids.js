@@ -2,7 +2,7 @@ const { getLogs } = require("../../helper/cache/getLogs");
 
 const { abi, contracts, logsTopic, creationBlocks } = require("../constants");
 
-const getAutomationCdpIdList = async ({ api }) => {
+const getAutomationCdpIdList = async ({ api, block }) => {
   const cdpIdList = new Set();
   const [triggerAddedEvents, triggerRemovedEvents, triggerExecutedEvents] =
     await Promise.all(
@@ -10,6 +10,7 @@ const getAutomationCdpIdList = async ({ api }) => {
         getLogs({
           api,
           fromBlock: creationBlocks.AutomationV1Contract,
+          toBlock: block,
           target: contracts.AutomationV1Contract,
           topics: [logsTopic[key]],
           eventAbi: abi[key],
