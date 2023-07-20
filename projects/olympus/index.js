@@ -1,7 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
 const { blockQuery } = require("../helper/http");
-const env = require("../helper/env");
+const { getEnv } = require("../helper/env");
 const { staking } = require('../helper/staking');
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
@@ -65,7 +64,7 @@ query {
 }`;
 
 const subgraphUrls = {
-  ethereum: `https://gateway.thegraph.com/api/${env.OLYMPUS_GRAPH_API_KEY}/subgraphs/id/DTcDcUSBRJjz9NeoK5VbXCVzYbRTyuBwdPUqMi8x32pY`,
+  ethereum: `https://gateway.thegraph.com/api/${getEnv('OLYMPUS_GRAPH_API_KEY')}/subgraphs/id/DTcDcUSBRJjz9NeoK5VbXCVzYbRTyuBwdPUqMi8x32pY`,
   arbitrum:
     "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-arbitrum",
   fantom:

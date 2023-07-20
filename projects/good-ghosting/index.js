@@ -33,7 +33,7 @@ async function tvl(_, _b, _cb, { api, }) {
   Object.values(gameData)
       .filter((game) => game.networkId == chainIdMap[api.chain])
       .map((game) => {
-        const tokens = [game.depositTokenAddress, game.liquidityTokenAddress].filter(i => i)
+        const tokens = [game.depositTokenAddress, game.liquidityTokenAddress, game.gaugeLiquidityTokenAddress].filter(i => i)
         ownerTokens.push([tokens, game.id])
 
         if (isV2Game(game.contractVersion))
