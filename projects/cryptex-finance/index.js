@@ -1,7 +1,8 @@
 const { getLogs } = require('../helper/cache/getLogs')
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokensSharedOwners, sumTokens2 } = require("../helper/unwrapLPs");
+const { sumTokens2, sumTokensExport, } = require("../helper/unwrapLPs");
 const { staking } = require('../helper/staking')
+const { pool2 } = require('../helper/pool2')
 
 const ctxToken = "0x321c2fe4446c7c963dc41dd58879af648838f98d";
 const factory = "0x70236b36f86AB4bd557Fe9934E1246537B472918";
@@ -48,27 +49,15 @@ const optCollaterals = [
   "0x6fd9d7AD17242c41f7131d257212c54A0e816691" // UNI
 ]
 
-async function ethTvl(timestamp, block) {
-  let balances = {};
-  await sumTokensSharedOwners(balances, ethCollaterals, ethVaults, block);
-  return balances;
-}
-
-async function optTvl(timestamp, block, chainBlocks) {
-  let balances = {};
-  await sumTokensSharedOwners(balances, optCollaterals, optVaults, chainBlocks.optimism, "optimism");
-  return balances;
-}
-
 module.exports = {
   methodology: "TVL includes collateral in vaults",
   ethereum: {
-    tvl: ethTvl,
-    pool2: staking(ethStakingContracts, ethPool2s),
+    tvl: sumTokensExport({ tokens: ethCollaterals, owners: ethVaults,}),
+    pool2: pool2(ethStakingContracts, ethPool2s),
     staking: staking_,
   },
   optimism: {
-    tvl: optTvl
+    tvl: sumTokensExport({ tokens: optCollaterals, owners: optVaults,})
   }
 };
 
