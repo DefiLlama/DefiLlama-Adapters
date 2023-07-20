@@ -26,6 +26,7 @@ const HYPE_REGISTRY = {
     "0xAeC731F69Fa39aD84c7749E913e3bC227427Adfd", // Quickswap
     "0xcAC19d43C9558753d7535978A370055614Ce832E", // Retro
     "0x97686103B3E7238Ca6c2C439146B30adBd84a593", // Sushiswap
+    "0x7b9c2f68f16c3618bb45616fb98d83f94fd7062e", // Ascent
   ],
   polygon_zkevm: [
     "0xD08B593eb3460B7aa5Ce76fFB0A3c5c938fd89b8", // Quickswap
@@ -50,6 +51,15 @@ const HYPE_REGISTRY = {
   ],
   celo: [
     "0x0F548d7AD1A0CB30D1872b8C18894484d76e1569", // Uniswap
+  ],
+  avax: [
+    "0x3FE6F25DA67DC6AD2a5117a691f9951eA14d6f15", // Glacier
+  ],
+  fantom: [
+    "0xf874d4957861e193aec9937223062679c14f9aca", // Spiritswap
+  ],
+  mantle: [
+    "0x683292172E2175bd08e3927a5e72FC301b161300", // FusionX
   ],
 };
 
@@ -158,6 +168,15 @@ module.exports = {
     tvl: tvlWrapper,
   },
   celo: {
+    tvl: tvlWrapper,
+  },
+  avax: {
+    tvl: tvlWrapper,
+  },
+  fantom: {
+    tvl: tvlWrapper,
+  },
+  mantle: {
     tvl: tvlWrapper,
   },
 };
