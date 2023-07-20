@@ -474,12 +474,15 @@
   },
   "telos": {
     "WTLOS": "0xd102ce6a4db07d247fcc28f366a623df0938ca9e",
+    "WTLOS": "0xdc2393dc10734bf153153038943a5deb42b209cd",
     "ETH": "0xfa9343c3897324496a05fc75abed6bac29f8a40f",
     "WBTC": "0xf390830df829cf22c53c8840554b98eafc5dcbc2",
     "USDC": "0x818ec0a7fe18ff94269904fced6ae3dae6d6dc0b",
     "USDT": "0xefaeee334f0fd1712f9a8cc375f427d9cdd40d73",
     "STLOS": "0xb4b01216a5bc8f1c8a33cd990a1239030e60c905",
-    "sBUSD": "0x017043607270ecbb440e20b0f0bc5e760818b3d8"
+    "sBUSD": "0x017043607270ecbb440e20b0f0bc5e760818b3d8",
+    "ICE": "0xb25cb6a275a8d6a613228fb161eb3627b50eb696",
+    "USDT": "0xc57f0eb99363e747d637b17bbdb4e1ab85e60631"
   },
   "reichain": {
     "BNB": "0xf8ab4aaf70cef3f3659d3f466e35dc7ea10d4a5d",
@@ -680,7 +683,10 @@
   "bitgert": {
     "WBRISE": "0x0eb9036cbe0f052386f36170c6b07ef0a0e3f710",
     "LUNG": "0xc3b730dd10a7e9a69204bdf6cb5a426e4f1f09e3",
-    "YPC": "0x11203a00a9134db8586381c4b2fca0816476b3fd"
+    "YPC": "0x11203a00a9134db8586381c4b2fca0816476b3fd",
+    "ICE": "0xb999ea90607a826a3e6e6646b404c3c7d11fa39d",
+    "USDTi": "0xc7e6d7e08a89209f02af47965337714153c529f0",
+    "USDCi": "0xaedd3ff7b9fc5fc4e44d140b80f0b1c7fdb6102c"
   },
   "echelon": {
     "WECH": "0xadee5159f4f82a35b9068a6c810bdc6c599ba6a8"
@@ -1224,7 +1230,13 @@
   "core": {
     "WCORE": "0x40375c92d9faf44d2f9db9bd9ba41a3317a2404f",
     "USDT": "0x900101d06a7426441ae63e9ab3b9b0f63be145f1",
-    "USDC": "0xa4151b2b3e269645181dccf2d426ce75fcbdeca9"
+    "USDC": "0xa4151b2b3e269645181dccf2d426ce75fcbdeca9",
+    "ICE": "0xc0e49f8c615d3d4c245970f6dc528e4a47d69a44",
+    "USDT": "0x81bcea03678d1cef4830942227720d542aa15817",
+    "SCORE": "0xa20b3b97df3a02f9185175760300a06b4e0a2c05",
+    "BNB": "0x12aa82525deff84777fa78578a68ceb854a85f43",
+    "ETH": "0xef6b7bc74c9354bcf2e3f2a068e4b0b5cdf08f29",
+    "USDC": "0xd2683b22287e63d22928cbe4514003a92507f474"
   },
   "crab": {
     "WCRAB": "0x2d2b97ea380b0185e9fdf8271d1afb5d2bf18329"
