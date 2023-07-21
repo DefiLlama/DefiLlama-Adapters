@@ -83,4 +83,10 @@ module.exports = {
       ADDRESSES.arbitrum.USDT,
     ]})
   },
+  zksync: {
+    tvl: sumTokensExport({ owner: '0xD6f4e33063C881cE9a98e07E13673B92a637D908', tokens: [
+      nullAddress,
+      '0x4bdb7a038fc7a3501e7da44dd1cde19ebe0dfa5e',
+    ]})
+  },
 };
