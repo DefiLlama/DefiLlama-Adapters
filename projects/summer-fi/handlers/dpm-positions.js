@@ -5,26 +5,27 @@ const { endpoints } = require("../constants/endpoints");
 const NEGATIVE_WAD_PRECISION = -18;
 const WETH_ADDRESS = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 
-const aaveQuery = `
+const aaveQuery = (block) => `
 query {
   positions(first: 10000, where: {
     and: [
       { collateral_gt: 0 },
       { or: [{ protocol: "AAVE" }, { protocol: "AAVE_V3" }] }
     ]
-  }) {
+  }, block: { number: ${block} }) {
     collateral
     collateralAddress
   }
 }`;
-const ajnaQuery = `
+
+const ajnaQuery = (block) => `
 query {
   accounts(first: 10000, where: {
     and: [
       { isDPM: true },
       { protocol: "Ajna" },
     ]
-  }) {
+  }, block: { number: ${block} }) {
     collateralToken
     borrowPositions {
       collateral
@@ -33,7 +34,7 @@ query {
       address
     }
   }
-  pools {
+  pools(block: { number: ${block} }) {
     address
     depositSize
     debt
@@ -41,9 +42,9 @@ query {
   }
 }`;
 
-const dpmPositions = async ({ api }) => {
-  const aave = await blockQuery(endpoints.aave, aaveQuery, { api });
-  const ajna = await blockQuery(endpoints.ajna, ajnaQuery, { api });
+const dpmPositions = async ({ api, block }) => {
+  const aave = await blockQuery(endpoints.aave, aaveQuery(block), { api });
+  const ajna = await blockQuery(endpoints.ajna, ajnaQuery(block), { api });
 
   const supportedAjnaPools = [
     ...new Set(ajna.accounts.map(({ pool: { address } }) => address)),

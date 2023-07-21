@@ -16,7 +16,7 @@ async function tvl(
   const executionStart = Date.now() / 1000;
   const cdpIdList = await getAutomationCdpIdList({ api, block });
   await Promise.all([
-    dpmPositions({ api }),
+    dpmPositions({ api, block }),
     automationTvl({ api, cdpIdList }),
     makerTvl({ api, cdpIdList, block }),
   ]);
