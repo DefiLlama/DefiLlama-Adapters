@@ -7,6 +7,7 @@ module.exports = {
         '0xf7dfe223e19701a514e78f3ce7ba98f2c5fbb5b2',
         '0xa84bdecd44e6cee1c588a3c97fcc4482831fde05',
         '0x62959ad021402f48d0d8067bc5c4c03f63fceaa4',
+        '0x8348b81b9ed72f29e52027c349f30703b42c0110'
       ]
     }),
   }
