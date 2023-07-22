@@ -273,7 +273,8 @@
     "WETH": "0x5842c5532b61acf3227679a8b1bd0242a41752f2",
     "WBTC": "0xf80699dc594e00ae7ba200c7533a07c1604a106d",
     "FRAX": "0xe03494d0033687543a80c9b1ca7d6237f2ea8bd8",
-    "DIFF": "0x3f75ceabcdfed1aca03257dc6bdc0408e2b4b026"
+    "DIFF": "0x3f75ceabcdfed1aca03257dc6bdc0408e2b4b026",
+    "AXL_USDC": "0x15c3eb3b621d1bff62cba1c9536b7c1ae9149b57"
   },
   "oasis": {
     "WETH": "0x3223f17957ba502cbe71401d55a0db26e5f7c68f",
