@@ -83,4 +83,10 @@ module.exports = {
       ADDRESSES.arbitrum.USDT,
     ]})
   },
+  era: {
+    tvl: sumTokensExport({ owner: '0xD6f4e33063C881cE9a98e07E13673B92a637D908', tokens: [
+      nullAddress,
+      ADDRESSES.era.USDC,
+    ]})
+  },
 };
