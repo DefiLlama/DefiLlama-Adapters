@@ -153,7 +153,7 @@ async function oneDexFarm() {
       lp_token_amount: value.lp_token_amount.toFixed(0),
       lp_token_supply: value.lp_token_supply.toFixed(0),
       first_token_reserve: value.first_token_reserve.toFixed(0),
-      second_token_reserve: value.second_token_reserve.toFixed(0),
+      second_token_reserve: value.second_token_reserve.toFixed(0)
     }));
     return decoded;
   } catch (e) {
@@ -198,9 +198,8 @@ async function getPriceFromXex(identifier) {
     const { data } = await axios.get(configUrl);
     return data;
   } catch (e) {
-
+    return null;
   }
-  return null;
 }
 
 function getTokenDecimal(tokenId) {
