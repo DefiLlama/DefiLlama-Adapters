@@ -90,7 +90,6 @@ async function calcPOLValue() {
                     );
 
                     let poolBalances;
-                    try {
 
                         poolBalances = await queryPoolContract({
                             contract: pool,
@@ -127,11 +126,8 @@ async function calcPOLValue() {
                         LPBalances[denom1] = `${parseInt(coin1Out)}`;
                         return LPBalances;
 
-                }
+                
 
-                    catch(e) {
-
-                    }
                 }
 
             }
