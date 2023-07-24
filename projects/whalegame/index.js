@@ -54,7 +54,7 @@ module.exports = {
   timetravel: false,
   misrepresentedTokens: false,
   methodology:
-    "Counts the amount of ETH in the Game Pot and WHALE Rewards Contract",
+    "Counts the amount of ETH in the Game Pot, WHALE Rewards Contract and unclaimed ETH in vesting contracts",
   ethereum: {
     tvl,
   },
