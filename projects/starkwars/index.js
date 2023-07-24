@@ -8,6 +8,3 @@ module.exports = {
     tvl,
   }
 }
-
-module.exports = {
-}
