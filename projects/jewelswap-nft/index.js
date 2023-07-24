@@ -66,7 +66,7 @@ const networkConfigs = {
     id: "mainnet",
     chainId: "1",
     apiUrl: "https://api.multiversx.com",
-    gatewayUrl: "https://proxy.jewelswap.io",
+    gatewayUrl: "https://gateway.multiversx.com",
     explorerUrl: "https://explorer.multiversx.com",
     apiTimeout: 10000
   }
