@@ -1,6 +1,7 @@
 const { sliceIntoChunks } = require("@defillama/sdk/build/util/index.js");
 const abi = require("../constants/abi.js");
 const contracts = require("../constants/contracts.js");
+const sdk = require('@defillama/sdk')
 
 const getCdpData = async (cdpIds, api) => {
   sdk.log(cdpIds.length, 'cdpIds')
