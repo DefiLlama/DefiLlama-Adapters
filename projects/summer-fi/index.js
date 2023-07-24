@@ -1,5 +1,8 @@
 const { automationTvl, dpmPositions, makerTvl } = require("./handlers");
 const { getAutomationCdpIdList } = require("./helpers");
+const sdk = require('@defillama/sdk')
+const { getConfig } = require("../helper/cache");
+const { endpoints } = require("./constants/endpoints");
 
 module.exports = {
   doublecounted: true,
@@ -14,12 +17,18 @@ async function tvl(
   { ethereum: ethereumBlockHeight }, // not used, but included for clarity
   { api }
 ) {
+  await api.getBlock()
   const executionStart = Date.now() / 1000;
-  const cdpIdList = await getAutomationCdpIdList({ api, block });
+  const confirmedSummerFiMakerVaults = await getConfig('summer-fi/maker-vaults', endpoints.makerVaults)
+  const cdpIdList = await getAutomationCdpIdList({ api });
+
+  sdk.log([...cdpIdList].length, 'cdpIdList')
+  
   await Promise.all([
-    dpmPositions({ api, block }),
+    dpmPositions({ api }),
     automationTvl({ api, cdpIdList }),
-    makerTvl({ api, cdpIdList, block }),
+    makerTvl({ api, cdpIdList, confirmedSummerFiMakerVaults, }),
   ]);
-  console.log("Execution time", Date.now() / 1000 - executionStart, "seconds");
+
+  sdk.log("Execution time", Date.now() / 1000 - executionStart, "seconds");
 }
