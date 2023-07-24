@@ -1,6 +1,7 @@
 const { toUSDTBalances } = require("../helper/balances");
 const { sumTokens } = require("../helper/chain/elrond");
-const { get } = require("../helper/http");
+const { get } = require("../helper/chain/elrond");
+const { getElrondBalance } = require("../helper/http");
 const { sumTokensExport } = require("../helper/chain/cardano");
 const { getPrices } = require("../algofi/utils");
 const sdk = require("@defillama/sdk");
@@ -11,6 +12,7 @@ const { ResultsParser, AbiRegistry, SmartContract, Address, OptionalValue } = re
 const { ProxyNetworkProvider } = require("@multiversx/sdk-network-providers/out");
 const JEWEL_ONEDEX_FARM_SC_ABI = require("../jewelswap-lev-farming/jewel-onedex-farm.abi.json");
 const NFT_LENDING_SC_ABI_JSON = require("./jewel-nft-lending.abi.json");
+const { sleep } = require("../helper/utils");
 
 const JEWEL_ONEDEX_FARM_SC_ADDRESS = "erd1qqqqqqqqqqqqqpgqm7exdla3rzshywy99pvlxzkr45wt9kjsdfys7qqpn0";
 
@@ -90,8 +92,19 @@ module.exports = {
 async function getNftsTvl() {
   const egldPrice = (await getPriceFromXex("WEGLD-bd4d79")).price;
   const commonSettings = await queryNFTDataFromSc();
-  const lendingTvl = convertWeiToEsdt(new BigNumber(commonSettings.total_lending_amount).plus(commonSettings.total_collateral_amount));
-  const lendingTvl1InUsd = lendingTvl.multipliedBy(new BigNumber(egldPrice));
+  let lendingTvl1InUsd = 0;
+  if (commonSettings) {
+    const lendingTvl = convertWeiToEsdt(new BigNumber(commonSettings.total_lending_amount).plus(commonSettings.total_collateral_amount));
+    lendingTvl1InUsd = lendingTvl.multipliedBy(new BigNumber(egldPrice));
+  } else {
+    // retrying once
+    await sleep(1000);
+    const commonSettings = await queryNFTDataFromSc();
+    if (commonSettings) {
+      const lendingTvl = convertWeiToEsdt(new BigNumber(commonSettings.total_lending_amount).plus(commonSettings.total_collateral_amount));
+      lendingTvl1InUsd = lendingTvl.multipliedBy(new BigNumber(egldPrice));
+    }
+  }
   return toUSDTBalances(lendingTvl1InUsd);
 }
 
