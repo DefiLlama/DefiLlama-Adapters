@@ -18,6 +18,19 @@
     "stateMutability": "view",
     "type": "function"
   },
+  "round": {
+    "inputs": [],
+    "name": "round",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
   "whaleToken": {
     "inputs": [],
     "name": "whaleToken",

@@ -22,6 +22,32 @@ async function tvl(_, _1, _2, { api }) {
     target: whaleTokenAddress,
     chain: "ethereum",
   });
+
+  const currentRound = await api.call({
+    abi: abi.round,
+    target: GAME_CONTRACT_ADDRESS,
+  });
+
+  const round = currentRound;
+  const roundsComplete = Array.from({ length: round - 1 }, () => 0);
+
+  //Account for balances in vesting contracts that have not yet been claimed
+  await Promise.all(
+    roundsComplete.map(async (_, i) => {
+      const vestingContract = await api.call({
+        abi: abi.vestingContractforRound,
+        target: GAME_CONTRACT_ADDRESS,
+        params: [i + 1],
+      });
+
+      const ethBalanceInVestingContract = await sdk.api.eth.getBalance({
+        target: vestingContract,
+        chain: "ethereum",
+      });
+      api.add(ADDRESSES.null, ethBalanceInVestingContract.output);
+    })
+  );
+
   api.add(ADDRESSES.null, ethBalanceInWhaleToken.output);
 }
 module.exports = {
