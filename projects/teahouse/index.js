@@ -17,6 +17,7 @@ async function getVaultContractsAddress(chain) {
   return htAddress;
 }
 
+
 const chains = ["ethereum", "optimism", "arbitrum"];
 
 chains.forEach((chain) => {
@@ -44,3 +45,5 @@ chains.forEach((chain) => {
     },
   };
 });
+
+module.exports.misrepresentedTokens = true

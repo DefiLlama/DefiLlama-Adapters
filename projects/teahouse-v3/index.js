@@ -29,12 +29,12 @@ chains.forEach((chain) => {
       });
       const bals = await api.multiCall({
         abi: abi.estimatedValueIntoken1,
-        calls: vaults.map((vault) => ({
-          target: vault,
-        })),
+        calls: vaults,
       });
       api.addTokens(tokens, bals);
       return api.getBalances();
     },
   };
 });
+
+module.exports.misrepresentedTokens = true
