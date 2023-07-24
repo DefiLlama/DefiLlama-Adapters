@@ -200,6 +200,7 @@ async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], block, c
         case 'optimism':
         case 'arbitrum': nftAddress = '0xC36442b4a4522E871399CD717aBDD847Ab11FE88'; break;
         case 'bsc': nftAddress = [PANCAKE_NFT_ADDRESS, '0x7b8a01b39d58278b5de7e48c8449c9f4f5170613']; break;
+        case 'evmos': nftAddress = '0x5fe5daaa011673289847da4f76d63246ddb2965d'; break;
         default: throw new Error('missing default uniswap nft address')
       }
 
@@ -671,6 +672,7 @@ async function sumTokens2({
   api,
   resolveUniV3 = false,
   uniV3WhitelistedTokens = [],
+  uniV3nftsAndOwners = [],
   resolveArtBlocks = false,
   resolveNFTs = false,
   permitFailure = false,
@@ -713,8 +715,8 @@ async function sumTokens2({
     }
   }
 
-  if (resolveUniV3)
-    await unwrapUniswapV3NFTs({ balances, chain, block, owner, owners, blacklistedTokens, whitelistedTokens: uniV3WhitelistedTokens, })
+  if (resolveUniV3 || uniV3nftsAndOwners.length)
+    await unwrapUniswapV3NFTs({ balances, chain, block, owner, owners, blacklistedTokens, whitelistedTokens: uniV3WhitelistedTokens, nftsAndOwners: uniV3nftsAndOwners, })
 
   blacklistedTokens = blacklistedTokens.map(t => normalizeAddress(t, chain))
   tokensAndOwners = tokensAndOwners.map(([t, o]) => [normalizeAddress(t, chain), o]).filter(([token]) => !blacklistedTokens.includes(token))
