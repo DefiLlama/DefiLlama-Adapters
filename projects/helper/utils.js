@@ -3,7 +3,7 @@ const BigNumber = require("bignumber.js");
 const axios = require("axios");
 const sdk = require('@defillama/sdk')
 const http = require('./http')
-const env = require('./env')
+const { getEnv } = require('./env')
 const erc20 = require('./abis/erc20.json')
 
 async function returnBalance(token, address, block, chain) {
@@ -52,19 +52,23 @@ function isLP(symbol, token, chain) {
   // console.log(symbol, chain, token)
   if (!symbol) return false
   if (token && blacklisted_LPS.includes(token.toLowerCase()) || symbol.includes('HOP-LP-')) return false
-  if (chain === 'bsc' && ['OLP', 'DLP', 'MLP', 'LP'].includes(symbol)) return false
-  if (chain === 'bsc' && ['WLP', 'FstLP', 'BLP',].includes(symbol)) return true
-  if (chain === 'pulse' && ['PLP',].includes(symbol)) return true
+  if (chain === 'bsc' && ['OLP', 'DLP', 'MLP', 'LP', 'Stable-LP'].includes(symbol)) return false
+  if (chain === 'bsc' && ['WLP', 'FstLP', 'BLP', 'DsgLP'].includes(symbol)) return true
+  if (chain === 'pulse' && ['PLP', 'PLT'].includes(symbol)) return true
   if (chain === 'avax' && ['ELP', 'EPT', 'CRL', 'YSL', 'BGL', 'PLP'].includes(symbol)) return true
   if (chain === 'ethereum' && ['SSLP'].includes(symbol)) return true
   if (chain === 'polygon' && ['WLP', 'FLP'].includes(symbol)) return true
   if (chain === 'moonriver' && ['HBLP'].includes(symbol)) return true
   if (chain === 'ethpow' && ['LFG_LP'].includes(symbol)) return true
+  if (chain === 'aurora' && ['wLP'].includes(symbol)) return true
+  if (chain === 'oasis' && ['LPT'].includes(symbol)) return true
+  if (chain === 'wan' && ['WSLP'].includes(symbol)) return true
+  if (chain === 'polygon' && ['MbtLP'].includes(symbol)) return true
   if (chain === 'ethereum' && ['SUDO-LP'].includes(symbol)) return false
   if (chain === 'dogechain' && ['DST-V2'].includes(symbol)) return true
   if (chain === 'harmony' && ['HLP'].includes(symbol)) return true
   if (chain === 'klaytn' && ['NLP'].includes(symbol)) return true
-  if (chain === 'fantom' && ['HLP'].includes(symbol)) return true
+  if (chain === 'fantom' && ['HLP', 'WLP'].includes(symbol)) return true
   if (chain === 'era' && /(cSLP|sSLP)$/.test(symbol)) return true // for syncswap
   if (chain === 'songbird' && ['FLRX', 'OLP'].includes(symbol)) return true
   if (chain === 'arbitrum' && ['DXS', 'ZLP',].includes(symbol)) return true
@@ -144,7 +148,7 @@ function getUniqueAddresses(addresses, isCaseSensitive = false) {
   return [...set]
 }
 
-const DEBUG_MODE = env.LLAMA_DEBUG_MODE
+const DEBUG_MODE = () => getEnv('LLAMA_DEBUG_MODE')
 const log = sdk.log
 
 function sliceIntoChunks(arr, chunkSize = 100) {
@@ -167,7 +171,7 @@ function stripTokenHeader(token) {
 }
 
 async function diplayUnknownTable({ tvlResults = {}, tvlBalances = {}, storedKey = 'ethereum', tableLabel = 'Unrecognized tokens' }) {
-  if (!DEBUG_MODE) return;
+  if (!DEBUG_MODE()) return;
   const balances = {}
   storedKey = storedKey.split('-')[0]
   Object.entries(tvlResults.tokenBalances).forEach(([label, balance]) => {
@@ -215,7 +219,7 @@ async function getDecimals(chain, tokens) {
 }
 
 async function debugBalances({ balances = {}, chain, log = false, tableLabel = '', withETH = true }) {
-  if (!DEBUG_MODE && !log) return;
+  if (!DEBUG_MODE() && !log) return;
   if (!Object.keys(balances).length) return;
 
   const labelMapping = {}

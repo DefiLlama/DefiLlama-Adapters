@@ -1,11 +1,14 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unwrapLPs');
-const ARBITRUM_USDT = ADDRESSES.arbitrum.USDT;
-const VAULT_CONTRACT = '0xa55D96B2EC5c5899fC69886CACfCba65b91bf8B6';
+const VAULT_ARBITRUM = '0x4a7c10780afdba628332e31c9e7d1675cfad594c';
+const VAULT_BSC = '0xedB6CD4fdd2F465d2234f978276F9Ed2EE02102c';
 
 module.exports = {
-    methodology: 'counts the number of USDT tokens in the RubyDex Vault contract.',
+    methodology: 'USDT tokens held by the RubyDex Vault contract.',
     arbitrum: {
-        tvl: sumTokensExport({ owner: VAULT_CONTRACT, tokens: [ARBITRUM_USDT] }),
+        tvl: sumTokensExport({ owner: VAULT_ARBITRUM, tokens: [ADDRESSES.arbitrum.USDT] }),
+    },
+    bsc: {
+        tvl: sumTokensExport({ owner: VAULT_BSC, tokens: [ADDRESSES.bsc.USDT] }),
     }
 }; 

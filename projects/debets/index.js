@@ -7,7 +7,7 @@ const getPoolInfo =
 const factory_address_polygon = "0xcE214f6a877747495106B5e55533f3e23D290DBd";
 
 const polygon_tokens = Object.values({
-  POLYGON_WMATIC: "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+  POLYGON_WMATIC: ADDRESSES.polygon.WMATIC_2,
   POLYGON_WETH: ADDRESSES.polygon.WETH_1,
   POLYGON_WBTC: ADDRESSES.polygon.WBTC,
   POLYGON_USDC: ADDRESSES.polygon.USDC,
