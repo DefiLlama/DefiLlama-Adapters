@@ -2,6 +2,7 @@ const { automationTvl, dpmPositions, makerTvl } = require("./handlers");
 const { getAutomationCdpIdList } = require("./helpers");
 
 module.exports = {
+  doublecounted: true,
   ethereum: {
     tvl,
   },
