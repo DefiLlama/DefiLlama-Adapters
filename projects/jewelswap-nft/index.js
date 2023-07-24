@@ -1,11 +1,6 @@
 const { toUSDTBalances } = require("../helper/balances");
 const { sumTokens } = require("../helper/chain/elrond");
 const { get } = require("../helper/chain/elrond");
-const { getElrondBalance } = require("../helper/http");
-const { sumTokensExport } = require("../helper/chain/cardano");
-const { getPrices } = require("../algofi/utils");
-const sdk = require("@defillama/sdk");
-const ADDRESSES = require("../helper/coreAssets.json");
 const axios = require("axios");
 const BigNumber = require("bignumber.js");
 const { ResultsParser, AbiRegistry, SmartContract, Address, OptionalValue } = require("@multiversx/sdk-core/out");

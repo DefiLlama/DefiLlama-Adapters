@@ -2,9 +2,6 @@ const { toUSDTBalances } = require("../helper/balances");
 const { sumTokens } = require("../helper/chain/elrond");
 const { get } = require("../helper/http");
 const { sumTokensExport } = require("../helper/chain/cardano");
-const { getPrices } = require("../algofi/utils");
-const sdk = require("@defillama/sdk");
-const ADDRESSES = require("../helper/coreAssets.json");
 const axios = require("axios");
 const BigNumber = require("bignumber.js");
 const { ResultsParser, AbiRegistry, SmartContract, Address, OptionalValue } = require("@multiversx/sdk-core/out");
@@ -58,7 +55,7 @@ const networkConfigs = {
     id: "mainnet",
     chainId: "1",
     apiUrl: "https://api.multiversx.com",
-    gatewayUrl: "https://proxy.jewelswap.io",
+    gatewayUrl: "https://gateway.multiversx.com",
     explorerUrl: "https://explorer.multiversx.com",
     apiTimeout: 10000
   }
