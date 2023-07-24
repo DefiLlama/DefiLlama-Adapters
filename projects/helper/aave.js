@@ -187,7 +187,7 @@ const oracleAbis = {
   getAssetsPrices: "function getAssetsPrices(address[] assets) view returns (uint256[])",
 }
 
-function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyUnit, } = {}) {
+function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyUnit, abis = {}} = {}) {
 
   async function tvl(_, _b, _c, { api }) {
     const data = await getReservesData(api)
@@ -226,7 +226,7 @@ function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyU
 
   async function getReservesData(api) {
     const tokens = await api.call({ abi: abiv2.getReservesList, target: registry })
-    const data = await api.multiCall({ abi: abiv2.getReserveData, calls: tokens, target: registry, })
+    const data = await api.multiCall({ abi: abis.getReserveData ?? abiv2.getReserveData, calls: tokens, target: registry, })
     data.forEach((v, i) => v.underlying = tokens[i])
     if (useOracle) {
       let currency = baseCurrency

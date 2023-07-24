@@ -61,13 +61,8 @@ module.exports = {
   arbitrum: getV2TvlObject('arbitrum'),
   bsc: getV2TvlObject('bsc'),
    hallmarks: [
-    [1638850958, "V2 Beta launch on Optimism"],
-    [1643602958, "V2 full launch"],
-    [1646367758, "Deployment on Polygon"],
-    [1650082958, "Protocol is paused because a non-critical vulnerability"],
-    [1653366158, "V2 Relaunch"],
-    [1654057358, "OP launch brings more users into Optimism and benefits Mean"],
-    [1666364400, "Yield-While-DCA launch"],
+    [1650082958, "Protocol is paused due to non-critical vulnerability"],
+    [1654057358, "OP launch"],
     [1668006000, "Deployment on Arbitrum"],
     [1672099200, "Deployment on Ethereum"],
   ]
