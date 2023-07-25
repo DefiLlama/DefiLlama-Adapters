@@ -13,7 +13,7 @@ async function tvl(_, _1, _2, { api }) {
   await api.getBlock();
   const executionStart = Date.now() / 1000;
   const [confirmedSummerFiMakerVaults, cdpIdList, cache] = await Promise.all([
-    getConfig("summer-fi/maker-vaults", endpoints.makerVaults),
+    await getConfig("summer-fi/maker-vaults", endpoints.makerVaults),
     getAutomationCdpIdList({ api }),
     getCache("summer-fi/cache", api.chain),
   ]);
@@ -23,8 +23,8 @@ async function tvl(_, _1, _2, { api }) {
   sdk.log([...cdpIdList].length, "cdpIdList");
 
   await Promise.all([
-    // dpmPositions({ api }),
-    // automationTvl({ api, cdpIdList }),
+    dpmPositions({ api }),
+    automationTvl({ api, cdpIdList }),
     makerTvl({ api, cdpIdList, confirmedSummerFiMakerVaults }),
   ]);
 
