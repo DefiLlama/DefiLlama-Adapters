@@ -75,8 +75,19 @@ async function getNFTs(address) {
   return res
 }
 
+async function getTokenData(token) {
+  const data = await get(`https://api.multiversx.com/tokens/${token}`)
+  return data
+}
+
+async function sumTokensExport(...args) {
+  return () => sumTokens(...args)
+}
+
 module.exports = {
   sumTokens,
   call,
   getNFTs,
+  getTokenData,
+  sumTokensExport,
 }
