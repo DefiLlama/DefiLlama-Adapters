@@ -11,9 +11,10 @@ const makerTvl = async ({ api, cdpIdList, confirmedSummerFiMakerVaults }) => {
   const confirmedSummerFiMakerVaultsSet = new Set(
     confirmedSummerFiMakerVaultsArray
   );
-  cdpIdList.forEach((cdpId) => {
+  ([...cdpIdList]).forEach((cdpId) => {
     confirmedSummerFiMakerVaultsSet.delete(cdpId);
   });
+
   const filteredVaultsList = [...confirmedSummerFiMakerVaultsSet].filter(
     (i) => api.block >= confirmedSummerFiMakerVaults[i]
   );
@@ -22,7 +23,7 @@ const makerTvl = async ({ api, cdpIdList, confirmedSummerFiMakerVaults }) => {
     api
   );
   const ilkIds = [...new Set(ilkNames)];
-  const tokens = (await getIlkRegistryData(ilkIds, api)).map((i) => i.gem);
+  const tokens = (await getIlkRegistryData(ilkIds, api)).map((i) => i[4]);
   const decimals = await api.multiCall({
     abi: "erc20:decimals",
     calls: tokens,
