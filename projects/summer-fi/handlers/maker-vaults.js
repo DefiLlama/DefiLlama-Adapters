@@ -16,7 +16,13 @@ const makerTvl = async ({ api, cdpIdList, confirmedSummerFiMakerVaults }) => {
   });
 
   const filteredVaultsList = [...confirmedSummerFiMakerVaultsSet].filter(
-    (i) => api.block >= confirmedSummerFiMakerVaults[i]
+    (i) => {
+      const [startBlock, endBlock] = confirmedSummerFiMakerVaults[i];
+      if (!endBlock) {
+        return api.block > startBlock;
+      }
+      return api.block > startBlock && api.block <= endBlock;
+    }
   );
   const ilkNames = await getCdpManagerData(
     [...new Set(filteredVaultsList)],
