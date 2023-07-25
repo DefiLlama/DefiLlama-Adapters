@@ -1,5 +1,8 @@
-const coreAssets = require('./coreAssets.json')
-const nullAddress = '0x0000000000000000000000000000000000000000'
+let coreAssets = require('./coreAssets.json')
+const ADDRESSES = coreAssets
+const nullAddress = ADDRESSES.null
+
+coreAssets = JSON.parse(JSON.stringify(coreAssets))
 
 // Multichain bridge info: https://bridgeapi.anyswap.exchange/v2/serverInfo/all
 // IBC info - https://github.com/PulsarDefi/IBC-Cosmos/blob/main/ibc_data.json
@@ -13,45 +16,25 @@ const nullAddress = '0x0000000000000000000000000000000000000000'
 // carbon: https://api-insights.carbon.network/info/denom_gecko_map
 // orbit brige: https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList
 
-const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'stargaze', 'umee', 'orai', 'persistence', ]
-const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks']
-
-const tokens = {
-  null: nullAddress,
-  aave: 'ethereum:0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9',
-  matic: 'ethereum:0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0',
-  bat: 'ethereum:0x0d8775f648430679a709e98d2b0cb6250d2887ef',
-  reth: 'ethereum:0xae78736cd615f374d3085123a210448e74fc6393',
-  steth: 'ethereum:0xae7ab96520de3a18e5e111b5eaab095312d7fe84',
-  solana: 'solana:So11111111111111111111111111111111111111112',
-  dai: 'ethereum:0x6b175474e89094c44da98b954eedeac495271d0f',
-  usdt: 'ethereum:0xdac17f958d2ee523a2206206994597c13d831ec7',
-  usdc: 'ethereum:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-  ethereum: 'ethereum:' + nullAddress,
-  weth: 'ethereum:0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-  busd: 'bsc:0xe9e7cea3dedca5984780bafc599bd69add087d56',
-  bsc: 'bsc:' + nullAddress,
-  bnb: 'bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
-  link: 'ethereum:0x514910771af9ca656af840dff83e8264ecf986ca',
-  wbtc: 'ethereum:0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
-  wsteth: 'ethereum:0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0',
-}
-const tokensBare = {}
-for (const [label, value] of Object.entries(tokens))
-  tokensBare[label] = value.split(':')[1]
+const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'stargaze', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua',]
+const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo',]
 
 const distressedAssts = new Set(Object.values({
   CRK: '0x065de42e28e42d90c2052a1b49e7f83806af0e1f',
-  aBNBc: '0xe85afccdafbe7f2b096f268e31cce3da8da2990a',
-  aBNBb: '0xbb1aa6e59e5163d8722a122cd66eba614b59df0d',
+  aBNBc: ADDRESSES.bsc.ankrBNB,
+  aBNBb: ADDRESSES.bsc.aBNBb,
   XRPC: '0xd4ca5c2aff1eefb0bea9e9eab16f88db2990c183',
 }).map(i => i.toLowerCase()))
 
 const transformTokens = {
+  ethereum: {
+    '0xe0b469cb3eda0ece9e425cfeda4df986a55ea9f8': ADDRESSES.ethereum.WETH,
+    [ADDRESSES.ethereum.vlCVX]: ADDRESSES.ethereum.CVX,
+  },
   // Sample Code
   // cronos: {
   //   "0x065de42e28e42d90c2052a1b49e7f83806af0e1f": "0x123", // CRK token is mispriced
-  //   "0x87EFB3ec1576Dec8ED47e58B832bEdCd86eE186e": "0x0000000000085d4780B73119b644AE5ecd22b376",
+  //   [ADDRESSES.cronos.TUSD]: ADDRESSES.ethereum.TUSD,
   // },
 }
 const ibcMappings = {
@@ -62,12 +45,12 @@ const ibcMappings = {
 
 const fixBalancesTokens = {
   // Sample Code
-  // arbitrum_nova: {
-  //   [nullAddress]: { coingeckoId: "ethereum", decimals: 18 },
-  //   '0x722E8BdD2ce80A4422E880164f2079488e115365': { coingeckoId: "ethereum", decimals: 18 },
-  //   '0x52484e1ab2e2b22420a25c20fa49e173a26202cd': { coingeckoId: "tether", decimals: 6 },
-  //   '0x750ba8b76187092b0d1e87e28daaf484d1b5273b': { coingeckoId: "usd-coin", decimals: 6 },
-  // },
+  ozone: {
+    // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
+  },
+  telos: {
+    '0xdc2393dc10734bf153153038943a5deb42b209cd': { coingeckoId: "telos", decimals: 18 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
@@ -93,7 +76,7 @@ for (const [chain, mapping] of Object.entries(fixBalancesTokens))
   normalizeMapping(mapping, chain)
 
 for (const [chain, mapping] of Object.entries(coreAssets))
-  coreAssets[chain] = mapping.map(i => stripTokenHeader(i, chain))
+  coreAssets[chain] = Object.values(mapping).map(i => stripTokenHeader(i, chain))
 
 function getCoreAssets(chain = 'ethereum') {
   const tokens = [
@@ -101,8 +84,9 @@ function getCoreAssets(chain = 'ethereum') {
     Object.keys(transformTokens[chain] || {}),
     Object.keys(fixBalancesTokens[chain] || {}),
   ].flat()
-  const addresses = getUniqueAddresses(tokens, chain)
+  let addresses = getUniqueAddresses(tokens, chain)
   if (ibcChains.includes(chain)) addresses.push(...coreAssets.ibc)
+  if (anyswapTokenBlacklist[chain]) addresses = addresses.filter(i => !anyswapTokenBlacklist[chain].includes(i))
   return addresses
 }
 
@@ -133,10 +117,96 @@ const eulerTokens = [
   "0xbd1bd5c956684f7eb79da40f582cbe1373a1d593",
 ]
 
+const anyswapTokenBlacklist = {
+  ethereum: ['0x4e15361fd6b4bb609fa63c81a2be19d873717870'],
+  fantom: [
+    '0x95bf7e307bc1ab0ba38ae10fc27084bc36fcd605',
+    '0x049d68029688eabf473097a2fc38ef61633a3c7a',
+    '0x04068da6c83afcfa0e13ba15a6696662335d5b75',
+    '0x049d68029688eabf473097a2fc38ef61633a3c7a',
+    '0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e',
+    '0x82f0b8b456c1a451378467398982d4834b6829c1',
+    '0x7f620d7d0b3479b1655cefb1b0bc67fb0ef4e443'
+  ],
+  harmony: ['0xb12c13e66ade1f72f71834f2fc5082db8c091358'],
+  kcc: [
+    '0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d',
+    '0x639a647fbe20b6c8ac19e48e2de44ea792c62c5c',
+    '0xc9baa8cfdde8e328787e29b4b078abf2dadc2055',
+    '0x218c3c3d49d0e7b37aff0d8bb079de36ae61a4c0'
+  ],
+  moonriver: [
+    '0xb44a9b6905af7c801311e8f4e76932ee959c663c',
+    '0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d',
+    '0x639a647fbe20b6c8ac19e48e2de44ea792c62c5c'
+  ],
+  arbitrum: ['0xfea7a6a0b346362bf88a9e4a88416b77a57d6c2a'],
+  shiden: [
+    '0xfa9343c3897324496a05fc75abed6bac29f8a40f',
+    '0x818ec0a7fe18ff94269904fced6ae3dae6d6dc0b',
+    '0x735abe48e8782948a37c7765ecb76b98cde97b0f',
+    '0x765277eebeca2e31912c9946eae1021199b39c61',
+    '0x332730a4f6e03d9c55829435f10360e13cfa41ff',
+    '0x65e66a61d0a8f1e686c2d6083ad611a10d84d97a'
+  ],
+  telos: [
+    '0xfa9343c3897324496a05fc75abed6bac29f8a40f',
+    '0xf390830df829cf22c53c8840554b98eafc5dcbc2',
+    '0x818ec0a7fe18ff94269904fced6ae3dae6d6dc0b',
+    '0xefaeee334f0fd1712f9a8cc375f427d9cdd40d73'
+  ],
+  syscoin: [
+    '0x2bf9b864cdc97b08b6d79ad4663e71b8ab65c45c',
+    '0x7c598c96d02398d89fbcb9d41eab3df0c16f227d',
+    '0x922d641a426dcffaef11680e5358f34d97d112e1'
+  ],
+  boba: ['0x461d52769884ca6235b685ef2040f47d30c94eb5'],
+  velas: [
+    '0x639a647fbe20b6c8ac19e48e2de44ea792c62c5c',
+    '0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d'
+  ],
+  dogechain: [
+    '0xb44a9b6905af7c801311e8f4e76932ee959c663c',
+    '0x332730a4f6e03d9c55829435f10360e13cfa41ff',
+    '0xdc42728b0ea910349ed3c6e1c9dc06b5fb591f98'
+  ],
+  kava: [
+    '0xfa9343c3897324496a05fc75abed6bac29f8a40f',
+    '0xb44a9b6905af7c801311e8f4e76932ee959c663c',
+    '0x818ec0a7fe18ff94269904fced6ae3dae6d6dc0b',
+    '0x765277eebeca2e31912c9946eae1021199b39c61',
+    '0x7c598c96d02398d89fbcb9d41eab3df0c16f227d',
+    '0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d',
+    '0x332730a4f6e03d9c55829435f10360e13cfa41ff'
+  ],
+  step: [
+    '0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d',
+    '0xfa9343c3897324496a05fc75abed6bac29f8a40f',
+    '0x818ec0a7fe18ff94269904fced6ae3dae6d6dc0b',
+    '0xefaeee334f0fd1712f9a8cc375f427d9cdd40d73'
+  ],
+  godwoken_v1: [
+    '0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d',
+    '0x765277eebeca2e31912c9946eae1021199b39c61',
+    '0xfa9343c3897324496a05fc75abed6bac29f8a40f',
+    '0xb44a9b6905af7c801311e8f4e76932ee959c663c'
+  ],
+  milkomeda_a1: ['0xfa9343c3897324496a05fc75abed6bac29f8a40f'],
+  wemix: [
+    '0x461d52769884ca6235b685ef2040f47d30c94eb5',
+    '0x765277eebeca2e31912c9946eae1021199b39c61',
+    '0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d'
+  ],
+  eos_evm: [
+    '0x922d641a426dcffaef11680e5358f34d97d112e1',
+    '0x765277eebeca2e31912c9946eae1021199b39c61',
+    '0xfa9343c3897324496a05fc75abed6bac29f8a40f',
+    '0xefaeee334f0fd1712f9a8cc375f427d9cdd40d73'
+  ]
+}
+
 module.exports = {
   nullAddress,
-  tokens,
-  tokensBare,
   caseSensitiveChains,
   transformTokens,
   fixBalancesTokens,

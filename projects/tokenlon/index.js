@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { covalentGetTokens } = require("../helper/http");
@@ -29,7 +30,7 @@ const STAGES_STAKING_CONTRACTS = [
 // Receives rewards/fee from AMM wrapper via reward distributor on WETH shape, some are sold for LON...
 const MULTISIG_ONE = "0x3557BD3d422300198719710Cc3f00194E1c20A46";
 
-const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+const WETH = ADDRESSES.ethereum.WETH;
 
 const ethTvl = async (timestamp, block) => {
   const amm_wrapper_addr = (

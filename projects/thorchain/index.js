@@ -1,4 +1,4 @@
-const { get } = require('../helper/http')
+const { getCache, get } = require('../helper/http')
 const sdk = require('@defillama/sdk')
 const { nullAddress } = require('../helper/tokenMapping')
 
@@ -18,6 +18,16 @@ const chainMapping = {
   LTC: 'litecoin',
   BCH: 'bitcoin-cash',
   DOGE: 'dogecoin',
+  GAIA: 'cosmos',
+}
+
+const defillamaChainMapping = {
+  'bitcoin-cash': 'bitcoincash',
+  'dogecoin': 'doge',
+}
+
+function getDChain(chain) {
+  return defillamaChainMapping[chainMapping[chain]] || chainMapping[chain]
 }
 
 const tokenGeckoMapping = {
@@ -32,8 +42,9 @@ const tokenGeckoMapping = {
 
 const blacklistedPools = []
 
-async function tvl() {
-  const pools = await get('https://midgard.ninerealms.com/v2/pools')
+async function tvl(_, _1, _2, { api }) {
+  const pools = await getCache('https://midgard.ninerealms.com/v2/pools')
+  const aChain = api.chain
 
   const balances = {}
   await Promise.all(pools.map(addPool))
@@ -41,10 +52,16 @@ async function tvl() {
 
   async function addPool({ asset: pool, assetDepth: totalDepth, nativeDecimal, runeDepth }) {
     if (blacklistedPools.includes(pool)) return;
-    sdk.util.sumSingleBalance(balances, 'thorchain', runeDepth/1e8)
+    if (aChain === 'thorchain') {
+      sdk.util.sumSingleBalance(balances, 'thorchain', runeDepth/1e8)
+      return;
+    }
     if (+totalDepth < 1) return;
     let [chainStr, token] = pool.split('.')
     let chain = chainMapping[chainStr]
+    const dChain = getDChain(chainStr)
+    if (dChain !== aChain) return;
+
     let [baseToken, address] = token.split('-')
     if (['ethereum', 'bsc', 'avax'].includes(chain)) {
       totalDepth = totalDepth * (10 ** (+nativeDecimal - 8))
@@ -81,3 +98,7 @@ module.exports = {
     staking
   },
 }
+
+Object.keys(chainMapping).map(getDChain).forEach(chain => {
+  module.exports[chain] = {tvl }
+})

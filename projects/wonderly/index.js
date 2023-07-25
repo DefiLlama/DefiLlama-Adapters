@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const Abis = require("./abi.json");
 const sdk = require("@defillama/sdk");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
@@ -5,7 +6,7 @@ const { staking } = require("../helper/staking");
 
 const Contracts = {
   fantom: {
-    wftm: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
+    wftm: ADDRESSES.fantom.WFTM,
     gfx: "0xB6d8Ff34968e0712c56DE561b2f9Debd526a348c",
     bank: "0xeE5b6F97faaEB7f56Df1B433CC46d69e5659dF0B",
     multiFeeDistribution: "0x29f3e86280014d703BCaE532b6751fFa9Fca0df9",
@@ -16,7 +17,7 @@ const Contracts = {
     ],
   },
   arbitrum: {
-    weth: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+    weth: ADDRESSES.arbitrum.WETH,
     afx: "0x42972EdecD94BDD19A622A6a419bDDed2de56E08",
     bank: "0xd73509D1B57bD99121AB30040227d51d295C159e",
     multiFeeDistribution: "0x564DdF4206994FA0Ad0d11947095cA3dfcb905e2",
@@ -157,3 +158,15 @@ module.exports = {
     staking: calcArbitrumStakingTvl
   }
 };
+
+module.exports = {
+  fantom: {
+    tvl: () => ({}),
+  },
+  arbitrum: {
+    tvl: () => ({}),
+  },
+  hallmarks: [
+    [Math.floor(new Date('2023-02-15')/1e3), 'Project rugged'],
+  ],
+}

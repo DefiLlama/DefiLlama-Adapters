@@ -7,6 +7,10 @@ const tokenChain = {
   ethereum: 2,
   algorand: 8,
   cronos: 20025,
+  polygon: 5,
+  avax: 6,
+  arbitrum: 23,
+  bsc: 4,
 };
 
 const fetchAssets = async () => {
@@ -34,4 +38,8 @@ module.exports = {
   ethereum: { tvl },
   algorand: { tvl },
   cronos: { tvl },
+  polygon: { tvl },
+  avax: { tvl },
+  arbitrum: { tvl },
+  bsc: { tvl },
 };

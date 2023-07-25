@@ -42,7 +42,24 @@ const tvl_onchain = async () => {
   };
 };
 
-async function tvl(
+async function tvl() {
+  const dataOffers = await get("https://api.fluidtokens.com/get-available-collection-offers");
+  let SC_offers_tvl = 0;
+  
+  dataOffers.forEach((i) => {
+      SC_offers_tvl += parseInt(i.offerData.loanAmnt);
+    });
+  
+  const repay_tvl = parseInt(await get("https://api.fluidtokens.com/get-total-available-repayments"));
+
+  const pools_tvl= parseInt(await get("https://api.fluidtokens.com/get-total-available-pools"));
+  return {
+    cardano: (SC_offers_tvl+repay_tvl+pools_tvl) / 1e6,
+  };
+}
+
+
+async function borrowed(
   ts //timestamp in seconds
 ) {
   const data = await get("https://api.fluidtokens.com/get-active-loans");
@@ -76,19 +93,29 @@ async function tvl(
     .forEach((x) => {
       SC2_tvl += parseInt(x.loanRequestData.loanAmnt);
     });
-
+    
+  const dataOffers = await get("https://api.fluidtokens.com/get-available-collection-offers");
+  let SC_offers_tvl = 0;
+  
+  dataOffers.forEach((i) => {
+      SC_offers_tvl += parseInt(i.offerData.loanAmnt);
+    });
+  
   return {
     cardano: (SC1_tvl + SC2_tvl) / 1e6,
   };
 }
+
 
 module.exports = {
   methodology: "Count active loaned out ADA as tvl",
   timetravel: false,
   cardano: {
     tvl,
+    borrowed,
   },
   hallmarks: [
     [Math.floor(new Date("2023-01-01") / 1e3), "Count only active loans"],
+    [Math.floor(new Date("2023-06-27") / 1e3), "ADA loaned out is counted under borrowed"],
   ],
 };

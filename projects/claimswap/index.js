@@ -1,28 +1,12 @@
-const { get } = require('../helper/http')
-const { toUSDTBalances } = require('../helper/balances');
+const { getUniTVL,  } = require('../helper/unknownTokens');
+const { staking,  } = require('../helper/staking');
 
-async function fetchLiquidity() {
-  const claimswapInfo = await get('https://data-api.claimswap.org/dashboard/allpool');
-  let totalValue = 0;
-  for (const pool of claimswapInfo) {
-    totalValue = totalValue + pool.liquidity;
-  }
-
-  return toUSDTBalances(totalValue.toFixed(2));
-}
-
-async function fetchCls() {
-  const claimswapInfo = await get('https://data-api.claimswap.org/dashboard/index');
-  const clsValue = claimswapInfo.claPrice * claimswapInfo.totalClaStaked;
-  return toUSDTBalances(clsValue.toFixed(2));
-}
 
 module.exports = {
-  methodology: `Tvl counts the tokens locked on AMM pools and staking counts the CLA that has been staked. Data is pulled from the 'dashboard.claimswap.org'`,
+  methodology: `Tvl counts the tokens locked on AMM pools and staking counts the CLA that has been staked`,
   klaytn: {
-    tvl: fetchLiquidity,
-    staking: fetchCls,
+    tvl: getUniTVL({ factory: '0x3679c3766E70133Ee4A7eb76031E49d3d1f2B50c', useDefaultCoreAssets: true, }),
+    staking: staking('0x5f5dec0d6402408ee81f52ab985a9c665b6e6010', '0xcf87f94fd8f6b6f0b479771f10df672f99eada63'),
   },
   misrepresentedTokens: true,
-  timetravel: false,
 }

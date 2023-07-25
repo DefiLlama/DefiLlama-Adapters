@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs');
 const { createIncrementArray } = require('../helper/utils');
@@ -15,7 +16,7 @@ const CONFIG = {
       },
     ],
     startBlock: 13234803,
-    gasToken: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+    gasToken: ADDRESSES.ethereum.WETH,
   },
   avax: {
     factories: [
@@ -25,7 +26,7 @@ const CONFIG = {
       },
     ],
     startBlock: 16037331,
-    gasToken: '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7',
+    gasToken: ADDRESSES.avax.WAVAX,
   },
   polygon: {
     factories: [
@@ -35,7 +36,7 @@ const CONFIG = {
       },
     ],
     startBlock: 32245577,
-    gasToken: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
+    gasToken: ADDRESSES.polygon.WMATIC_2,
   },
   bsc: {
     factories: [
@@ -45,7 +46,7 @@ const CONFIG = {
       },
     ],
     startBlock: 20928838,
-    gasToken: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
+    gasToken: ADDRESSES.bsc.WBNB,
   },
   fantom: {
     factories: [
@@ -55,7 +56,7 @@ const CONFIG = {
       },
     ],
     startBlock: 46604874,
-    gasToken: '0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83',
+    gasToken: ADDRESSES.fantom.WFTM,
   },
   optimism: {
     factories: [
@@ -69,7 +70,7 @@ const CONFIG = {
       },
     ],
     startBlock: 39240199,
-    gasToken: '0x4200000000000000000000000000000000000006',
+    gasToken: ADDRESSES.tombchain.FTM,
   },
   arbitrum: {
     factories: [
@@ -79,7 +80,7 @@ const CONFIG = {
       },
     ],
     startBlock: 33495774,
-    gasToken: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
+    gasToken: ADDRESSES.arbitrum.WETH,
   },
   aurora: {
     factories: [
@@ -130,6 +131,7 @@ Object.keys(CONFIG).forEach((chain) => {
             calls,
             chain,
             block,
+            permitFailure: true,
           });
 
           currentRes = res.map((i) => i.output).filter((i) => i);

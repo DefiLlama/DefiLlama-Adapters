@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, } = require('../helper/unwrapLPs')
 const sdk = require('@defillama/sdk')
 
@@ -13,9 +14,11 @@ async function tvl(_, _b, _cb, { api, }) {
 
   return sumTokens2({
     api, balances, tokensAndOwners: [
-      ['0xff970a61a04b1ca14834a43f5de4533ebddb5cc8', '0xc10b976c671ce9bff0723611f01422acbae100a5'], // LP
-      ['0xff970a61a04b1ca14834a43f5de4533ebddb5cc8', '0xb9F33349db1d0711d95c1198AcbA9511B8269626'],  // marginPool
-      ['0x82aF49447D8a07e3bd95BD0d56f35241523fBab1', '0xb9F33349db1d0711d95c1198AcbA9511B8269626'],  // marginPool
+      [ADDRESSES.arbitrum.USDC, '0xc10b976c671ce9bff0723611f01422acbae100a5'], // LP alpha
+      ["0xaf88d065e77c8cC2239327C5EDb3A432268e5831", '0x217749d9017cB87712654422a1F5856AAA147b80'], // LP beyond USDC native
+      [ADDRESSES.arbitrum.USDC, '0xb9F33349db1d0711d95c1198AcbA9511B8269626'],  // marginPool
+      ["0xaf88d065e77c8cC2239327C5EDb3A432268e5831", '0xb9F33349db1d0711d95c1198AcbA9511B8269626'],  // marginPool USDC native
+      [ADDRESSES.arbitrum.WETH, '0xb9F33349db1d0711d95c1198AcbA9511B8269626'],  // marginPool
     ]
   })
 }
