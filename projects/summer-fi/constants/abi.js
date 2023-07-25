@@ -11,7 +11,7 @@ module.exports = {
   serviceRegistry: "address:serviceRegistry",
   triggersCounter: "uint256:triggersCounter",
   getVaultInfo:
-    "function getVaultInfo(uint256 vaultId) view returns (uint256 collateralLocked, uint256)",
+    "function getCdpInfo(uint256 vaultId,bytes32) view returns (uint256 collateralLocked, uint256)",
   ilks: "function ilks(uint256) view returns (bytes32)",
   info: "function info(bytes32 ilk) view returns (string name, string symbol, uint256 class, uint256 dec, address gem, address pip, address join, address xlip)",
 };
