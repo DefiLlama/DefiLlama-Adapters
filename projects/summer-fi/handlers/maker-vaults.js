@@ -3,11 +3,8 @@ const {
   getCdpManagerData,
   getIlkRegistryData,
 } = require("../helpers");
-const { get } = require("../../helper/http");
-const { endpoints } = require("../constants/endpoints");
 
-const makerTvl = async ({ api, cdpIdList, block }) => {
-  const confirmedSummerFiMakerVaults = await get(endpoints.makerVaults);
+const makerTvl = async ({ api, cdpIdList, confirmedSummerFiMakerVaults }) => {
   const confirmedSummerFiMakerVaultsArray = [
     ...Object.keys(confirmedSummerFiMakerVaults),
   ];
@@ -18,7 +15,7 @@ const makerTvl = async ({ api, cdpIdList, block }) => {
     confirmedSummerFiMakerVaultsSet.delete(cdpId);
   });
   const filteredVaultsList = [...confirmedSummerFiMakerVaultsSet].filter(
-    (i) => block >= confirmedSummerFiMakerVaults[i]
+    (i) => api.block >= confirmedSummerFiMakerVaults[i]
   );
   const ilkNames = await getCdpManagerData(
     [...new Set(filteredVaultsList)],
