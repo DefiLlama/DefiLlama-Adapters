@@ -70,7 +70,13 @@ async function sumTokens({ owners = [], tokens = [], balances = {}, blacklistedT
   return transformBalances(chain, balances)
 }
 
+async function getNFTs(address) {
+  const res = await get(`${getEnv('MULTIVERSX_RPC')}/accounts/${address}/nfts?size=1000`)
+  return res
+}
+
 module.exports = {
   sumTokens,
   call,
+  getNFTs,
 }
