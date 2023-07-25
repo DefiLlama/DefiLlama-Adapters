@@ -4,15 +4,14 @@ const contracts = require("../constants/contracts.js");
 const sdk = require("@defillama/sdk");
 
 const getCdpData = async (cdpIds, api) => {
-  sdk.log(cdpIds.length, "cdpIds");
   const res = [];
-  const chunks = sliceIntoChunks(cdpIds, 25);
+  const chunks = sliceIntoChunks(cdpIds, 100);
   for (const chunk of chunks)
     res.push(
       ...(await api.multiCall({
         abi: abi.getVaultInfo,
         target: contracts.McdMonitorV2,
-        calls: chunk,
+        calls: chunk.map(i => ({ params: i})),
       }))
     );
 
