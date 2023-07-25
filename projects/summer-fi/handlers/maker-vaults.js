@@ -18,11 +18,8 @@ const makerTvl = async ({ api, cdpIdList, confirmedSummerFiMakerVaults }) => {
 
   const filteredVaultsList = [...confirmedSummerFiMakerVaultsSet].filter(
     (i) => {
-      const [startBlock, endBlock] = confirmedSummerFiMakerVaults[i];
-      if (!endBlock) {
-        return api.block > startBlock;
-      }
-      return api.block > startBlock && api.block <= endBlock;
+      const [startBlock] = confirmedSummerFiMakerVaults[i];
+      return api.block > startBlock;
     }
   );
   const cdpIds = [...new Set(filteredVaultsList)]
