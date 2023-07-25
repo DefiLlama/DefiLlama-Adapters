@@ -1,3 +1,5 @@
+const { getBalance2 } = require("../helper/chain/cosmos.js");
+
 const erc20Contracts = [
     
     "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // USDC
@@ -79,6 +81,8 @@ const erc20Contracts = [
   
           // Assign the balance directly without converting to decimal
           tvl[contractAddress] = balance.toString();
+
+          console.log("token:", contractAddress, balance.toString())
   
           // Log output
         } catch (err) {
@@ -107,12 +111,25 @@ const erc20Contracts = [
     return tvl;
   }
   
-  module.exports = {
+  async function getTVLandBalance(_, ethBlock, _2, { api }) {
+    let tvl = await getBridgeTVL(_, ethBlock, _2, { api });
+
+    const chain = "gravityBridge";
+    const owner = "gravity16n3lc7cywa68mg50qhp847034w88pntqzx3ksm";
+    const block = undefined;
+
+    let balances = await getBalance2({owner, chain, block});
+    console.log("Module account balances:", balances);
+
+    return tvl;
+}
+
+module.exports = {
     timetravel: true,
     misrepresentedTokens: false,
     methodology: 'Counts the tokens locked in the Gravity Bridge contract on Ethereum chain.',
     start:  13798211,
     ethereum: {
-      tvl: getBridgeTVL,
+      tvl: getTVLandBalance,
     },
-  };
+};
