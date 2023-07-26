@@ -2,6 +2,9 @@ const sdk = require('@defillama/sdk')
 
 module.exports = {
   doublecounted: true,
+  hallmarks: [
+    [1689937200,"ETH Omnipool Hacked"]
+  ],
   ethereum: {
     tvl: async (_, _b, _cb, { api, }) => {
       const balances = {}

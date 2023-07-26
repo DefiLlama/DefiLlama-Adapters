@@ -1,8 +1,13 @@
 const { api, api2 } = require("@defillama/sdk");
-const { providers } = require("@defillama/sdk/build/general");
 const { Contract, BigNumber } = require("ethers");
+const sdk = require('@defillama/sdk')
 
 const abi = require("./abi.json");
+
+function getProvider(network) {
+  const chainApi = new sdk.ChainApi(network)
+  return chainApi.provider
+}
 
 const getV2CAs = async (creditManager, block) => {
   const eventsByDate = [];
@@ -11,7 +16,7 @@ const getV2CAs = async (creditManager, block) => {
   const cm = new Contract(
     creditManager,
     abi["creditManagerV2"],
-    providers["ethereum"]
+    getProvider("ethereum")
   );
   const creditFacade = await cm.creditFacade();
 
@@ -31,7 +36,7 @@ const getV2CAs = async (creditManager, block) => {
     const cc = new Contract(
       cca,
       abi["creditConfiguratorV2"],
-      providers["ethereum"]
+      getProvider("ethereum")
     );
 
     const cfs = (
@@ -60,7 +65,7 @@ const getV2CAs = async (creditManager, block) => {
   const logs = [];
 
   for (let cfAddr of cfAddrs) {
-    const cf = new Contract(cfAddr, abi["filtersV2"], providers["ethereum"]);
+    const cf = new Contract(cfAddr, abi["filtersV2"], getProvider("ethereum"))
 
     const topics = {
       OpenCreditAccount: cf.interface.getEventTopic("OpenCreditAccount"),
@@ -159,7 +164,7 @@ const getV1CAs = async (creditManager, block) => {
   const cm = new Contract(
     creditManager,
     abi["filtersV1"],
-    providers["ethereum"]
+    getProvider("ethereum")
   );
   const cf = await cm.creditFilter();
 
