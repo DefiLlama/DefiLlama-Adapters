@@ -20,4 +20,7 @@ async function tvl(_, _b, _cb, { api, }) {
 module.exports = {
   arbitrum: { tvl, borrowed, },
   methodology: `The TVL shown is the result of subtracting the borrow from the supply for each Rodeo lending pool`,
+  hallmarks: [
+    [Math.floor(new Date('2023-07-11')/1e3), 'Protocol was exploited'],
+  ],
 };
