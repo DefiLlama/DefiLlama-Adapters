@@ -200,6 +200,7 @@ async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], block, c
         case 'optimism':
         case 'arbitrum': nftAddress = '0xC36442b4a4522E871399CD717aBDD847Ab11FE88'; break;
         case 'bsc': nftAddress = [PANCAKE_NFT_ADDRESS, '0x7b8a01b39d58278b5de7e48c8449c9f4f5170613']; break;
+        case 'evmos': nftAddress = '0x5fe5daaa011673289847da4f76d63246ddb2965d'; break;
         default: throw new Error('missing default uniswap nft address')
       }
 
@@ -671,9 +672,11 @@ async function sumTokens2({
   api,
   resolveUniV3 = false,
   uniV3WhitelistedTokens = [],
+  uniV3nftsAndOwners = [],
   resolveArtBlocks = false,
   resolveNFTs = false,
   permitFailure = false,
+  fetchCoValentTokens = false,
 }) {
   if (api) {
     chain = api.chain ?? chain
@@ -686,6 +689,14 @@ async function sumTokens2({
   if (resolveArtBlocks || resolveNFTs) {
     if (!api) throw new Error('Missing arg: api')
     await sumArtBlocks({ balances, api, owner, owners, })
+  }
+
+  if (fetchCoValentTokens) {
+    if (!api) throw new Error('Missing arg: api')
+    if (!owners || !owners.length) owners = [owner]
+    const cTokens = (await Promise.all(owners.map(i => covalentGetTokens(i, api.chain)))).flat()
+    tokens = [...cTokens, ...tokens]
+    console.log('cTokens', cTokens.length)
   }
 
   if (resolveNFTs) {
@@ -713,8 +724,8 @@ async function sumTokens2({
     }
   }
 
-  if (resolveUniV3)
-    await unwrapUniswapV3NFTs({ balances, chain, block, owner, owners, blacklistedTokens, whitelistedTokens: uniV3WhitelistedTokens, })
+  if (resolveUniV3 || uniV3nftsAndOwners.length)
+    await unwrapUniswapV3NFTs({ balances, chain, block, owner, owners, blacklistedTokens, whitelistedTokens: uniV3WhitelistedTokens, nftsAndOwners: uniV3nftsAndOwners, })
 
   blacklistedTokens = blacklistedTokens.map(t => normalizeAddress(t, chain))
   tokensAndOwners = tokensAndOwners.map(([t, o]) => [normalizeAddress(t, chain), o]).filter(([token]) => !blacklistedTokens.includes(token))
@@ -743,8 +754,8 @@ async function sumTokens2({
   }
 }
 
-function sumTokensExport({ balances, tokensAndOwners, tokensAndOwners2, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, resolveUniV3, resolveArtBlocks, resolveNFTs, }) {
-  return async (_, _b, _cb, { api }) => sumTokens2({ api, balances, tokensAndOwners, tokensAndOwners2, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, resolveUniV3, resolveArtBlocks, resolveNFTs, })
+function sumTokensExport({ balances, tokensAndOwners, tokensAndOwners2, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, resolveUniV3, resolveArtBlocks, resolveNFTs, fetchCoValentTokens, ...args }) {
+  return async (_, _b, _cb, { api }) => sumTokens2({ api, balances, tokensAndOwners, tokensAndOwners2, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, resolveUniV3, resolveArtBlocks, resolveNFTs, fetchCoValentTokens, ...args,})
 }
 
 async function unwrapBalancerToken({ api, chain, block, balancerToken, owner, balances = {}, isBPool = false, isV2 = true }) {
