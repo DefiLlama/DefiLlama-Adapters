@@ -1,5 +1,0 @@
-{
-  "totalShares": "uint256:totalShares",
-  "sharePrice": "uint256:sharePrice",
-  "getDust": "uint256:getDust"
-}

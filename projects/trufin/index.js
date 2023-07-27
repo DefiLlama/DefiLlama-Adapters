@@ -1,15 +1,19 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const abi = require('./abi.json')
+const abi = {
+  "totalSupply": "uint256:totalSupply",
+  "sharePrice": "function sharePrice() external view returns (uint256, uint256)",
+  "getDust": "uint256:getDust"
+}
 
-const TRUSTAKE_CONTRACT_ADDR = "0xcfab8530ccf1f9936daede537d6ebbc75289006d"
+const TRUSTAKE_CONTRACT_ADDR = "0xa43a7c62d56df036c187e1966c03e2799d8987ed"
 const MATIC_TOKEN_ADDR = ADDRESSES.ethereum.MATIC
 
 async function tvl(timestamp, block, chainBlocks, { api }) {
-  const totalShares = (await api.call({ abi: abi.totalShares, target: TRUSTAKE_CONTRACT_ADDR, }))
-  const sharePrice = (await api.call({ abi: abi.sharePrice, target: TRUSTAKE_CONTRACT_ADDR, }))
+  const totalSupply = (await api.call({ abi: abi.totalSupply, target: TRUSTAKE_CONTRACT_ADDR, }))
+  const sharePriceArray = (await api.call({ abi: abi.sharePrice, target: TRUSTAKE_CONTRACT_ADDR, }))
   const dust = (await api.call({ abi: abi.getDust, target: TRUSTAKE_CONTRACT_ADDR, }))
-
-  api.add(MATIC_TOKEN_ADDR, (totalShares * sharePrice / 1e18) + +dust)
+  const sharePrice = sharePriceArray[0] / sharePriceArray[1] / 1e18
+  api.add(MATIC_TOKEN_ADDR, (totalSupply * sharePrice) + +dust)
 }
 
 module.exports = {
