@@ -15,6 +15,7 @@ async function tvl(_, _b, _cb, { api, }) {
 }
 
 module.exports = {
+  ethereum: { tvl },
   bsc: { tvl },
   polygon: { tvl },
   avax: { tvl },
