@@ -36,7 +36,14 @@ const config = {
     ]
   ],
   tron: [
-    [[nullAddress], 'TMsm33cUm8HuxyRqwG7xhV46cmx5NVPPGB']
+    [[nullAddress], 'TMsm33cUm8HuxyRqwG7xhV46cmx5NVPPGB'],
+    [
+      [
+        ADDRESSES.tron.USDT,
+        ADDRESSES.tron.USDC
+      ],
+      'TNN42f7dXYksBsh8hjVo8XD8aYSKcSEhJF'
+    ]
   ]
 }
 module.exports = {};
