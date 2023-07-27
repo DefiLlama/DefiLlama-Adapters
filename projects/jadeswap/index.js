@@ -2,7 +2,7 @@ const ADDRESSES = require("../helper/coreAssets.json");
 const { getUniTVL, staking } = require("../helper/unknownTokens");
 const sdk = require("@defillama/sdk");
 const uniTvl = getUniTVL({
-  factory: "0x210D0c3d885C5D296e8F32Ad4B7a9a2Fe39E983b",
+  factory: "0xb20a6389cA872d094f3c7A8180fE5BAb431BD794",
   useDefaultCoreAssets: true,
   fetchBalances: true,
 });
