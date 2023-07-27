@@ -24,7 +24,7 @@ async function tvl(_, _1, _2, { api }) {
 
 module.exports = {
   avax: {
-    methodology: `Cables Finance is a hybrid DEX, which is utilizing team-provided liquidity to settle trades.  This token liquidity sits in the wallet "0x5aFF01E3A80790c75F15fc6AEBd615c8343d4126" and is therefore the majority of the platform's TVL.  Cables also allows users to create limit orders, which becomes part of the larger orderbook.  These limit order funds are stored in the escrow contract starting with "0x294ba5f8F1e54f586a9b0a419B189d7b9b9AE33E" and are the second portion of the platform's TVL.`,
+    methodology: `Cables Finance is a hybrid DEX, which is utilizing team-provided liquidity to settle trades. This token liquidity sits in the wallet "0x5aFF01E3A80790c75F15fc6AEBd615c8343d4126" and is used to settle market orders on the platform. Cables also allows users to create limit orders, which becomes part of the larger orderbook. These limit order funds are stored in the escrow contract starting with "0x294ba5f8F1e54f586a9b0a419B189d7b9b9AE33E" and are the second portion of the platform's TVL.`,
     tvl,
   },
 };
