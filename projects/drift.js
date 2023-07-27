@@ -16,7 +16,7 @@ async function tvl(_, _b, _cb, { api, }) {
 
   const legacyVaults = [
     '6W9yiHDCW9EpropkFV8R3rPiL8LVWUHSiys3YeW6AT6S', // legacy usdc vault
-    '2CqkQvYxp9Mq4PqLvAQ1eryYxebUh4Liyn5YMDtXsYci', // legacy usdc insurance fund
+    'Bzjkrm1bFwVXUaV9HTnwxFrPtNso7dnwPQamhqSxtuhZP', // legacy usdc insurance fund
   ];
   const getSpotMarketVaultPublicKey = marketIndex => getVaultPublicKey('spot_market_vault', marketIndex)
   const getInsuranceFundVaultPublicKey = marketIndex => getVaultPublicKey('insurance_fund_vault', marketIndex)
