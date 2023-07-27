@@ -1,3 +1,4 @@
+const { get } = require('../helper/http')
 const config = require("./config");
 const sdk = require("@defillama/sdk");
 const { sumTokensExport } = require('../helper/unwrapLPs')
@@ -44,14 +45,23 @@ config.chains.forEach(async chainInfo => {
     })).output
   }
 
+  async function getOffersCount(tokenId) {
+    return parseInt(await get('https://backend.owna.io/offer/getOffersCount?mintId=' + tokenId));
+  }
+
   async function totalOffers() {
     let total = 0;
     for (let i = 0; i < await currentTokenId(); i++) {
       const borrow = await getBorrow(i);
-      if (borrow.offerType > 1) {
-        var offer = await requestAgainstNft(i, 0);
-        if (offer.status == "Pending") {
-          total += parseInt(offer.maxLoan);
+      if (parseInt(borrow.offerType) === 0) {
+        var offerCount = await getOffersCount(i);
+        if (offerCount > 0) {
+          for (let j = 0; j < offerCount; j++) {
+            var offer = await requestAgainstNft(i, j);
+            if (offer.status == "Pending") {
+              total += parseInt(offer.maxLoan);
+            }
+          }
         }
       }
     }
@@ -59,12 +69,11 @@ config.chains.forEach(async chainInfo => {
       usd: total / 10 ** 6,
     };
   }
-      
-
+  
   async function totalBorrowed() {
     let total = 0;
     let totalInterest = 0;
-    for (let i = 0; i < await currentTokenId(); i++) {
+    for (let i = 0; i <= await currentTokenId(); i++) {
       const borrow = await getBorrow(i);
       if (!borrow.isEntryFeePaid) {
         total += parseInt(borrow.loanAmount);
