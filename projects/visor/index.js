@@ -89,15 +89,16 @@ async function tvlUniV3(api) {
   const targets = HYPE_REGISTRY[api.chain];
 
   // Bulk fetch lists for all registries the chain and flatten into one array
-  let hypervisors = await Promise.all(
-    targets.map((target) =>
-      api.fetchList({
-        lengthAbi: hypeRegistry.counter,
-        itemAbi: hypeRegistry.hypeByIndex,
-        target,
-      })
-    )
-  ).then((data) => data.flat());
+let hypervisors = await Promise.all(
+  targets.map(async (target) => {
+    const lengthAbi = await hypeRegistry.registry.length;
+    return api.fetchList({
+      lengthAbi,
+      itemAbi: hypeRegistry.hypeByIndex,
+      target,
+    });
+  })
+).then((data) => data.flat());
 
   // Filter out invalid hypervisors, valid hypervisors have hypeIndex > 0
   hypervisors = hypervisors
