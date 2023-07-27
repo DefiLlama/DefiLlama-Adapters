@@ -47,5 +47,22 @@ module.exports = {
     tvl,
     pool2,
   },
+  era: {
+    pool2: async (_, _1, _2, { api }) => {
+      const pool2s = [
+        '0x9FB6Ca27D20E569E5c8FeC359C9d33D468d2803C',
+        '0x3bd7a1D8c760d8be1bC57A3205cbFfBaDFB74D94'
+      ]
+      const infoABI = "function getMiningContractInfo() external view returns (address tokenX, address tokenY, uint24 fee_, address iziTokenAddr, uint256 lastTouchTime_, uint256 totalVLiquidity_, uint256 bal0, uint256 bal1, uint256 balIzi, uint256 startTime_, uint256 endTime_)"
+
+      const data = await api.multiCall({ abi: infoABI, calls: pool2s })
+      const transform = i => i.toLowerCase() === '0xb83cfb285fc8d936e8647fa9b1cc641dbaae92d9' ? 'ethereum:0xa91ac63d040deb1b7a5e4d4134ad23eb0ba07e14': 'era:'+i  
+      for (const { tokenX, tokenY, iziTokenAddr, bal0, bal1, balIzi } of data) {
+        api.add(transform(tokenX), bal0, { skipChain: true})
+        api.add(transform(tokenY), bal1, { skipChain: true})
+        api.add(iziTokenAddr, balIzi)
+      }
+    },
+  },
 }
 
