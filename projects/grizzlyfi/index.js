@@ -9,6 +9,7 @@ const abiStandard = "uint256:standardStrategyDeposits"
 const abiStable = "uint256:stablecoinStrategyDeposits"
 const abiFarm = "uint256:totalDeposits"
 const abiYearn = "uint256:totalAssets"
+const abiERC20Balance = "function balanceOf(address user) view returns (uint256)"
 const abiV3 = "function getUnderlyingBalances() view returns (uint256, uint256)"
 
 const lpReservesAbi = 'function balances(uint256 index) view returns (uint256)'
@@ -140,6 +141,17 @@ const pcsV3 = [
   }
 ]
 
+const gllPool = {
+  vault: "0x606E4922b259fe28c10e6731e8317705AA1e253B",
+  tokens: [
+    "0x55d398326f99059fF775485246999027B3197955",
+    "0x2170Ed0880ac9A755fd29B2688956BD959F933F8",
+    "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c",
+    "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
+    "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+  ]
+}
+
 async function tvl(timestamp, block, chainBlocks, { api }) {
   const balances = api.getBalances();
 
@@ -153,7 +165,8 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
     stableHiveBalancesStable,
     farmBalances,
     yearnBalances,
-    pcsV3Balances] = await Promise.all([
+    pcsV3Balances,
+    gllPoolBalances] = await Promise.all([
       api.multiCall({ calls: pcsHives.map(getHive), abi: abiGrizzly, }),
       api.multiCall({ calls: pcsHives.map(getHive), abi: abiStandard, }),
       api.multiCall({ calls: pcsHives.map(getHive), abi: abiStable, }),
@@ -163,6 +176,7 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
       api.multiCall({ calls: farms.map(getHive), abi: abiFarm, }),
       api.multiCall({ calls: yearnHives.map(getHive), abi: abiYearn, }),
       api.multiCall({ calls: pcsV3.map(getHive), abi: abiV3, }),
+      api.multiCall({ calls: gllPool.tokens.map(i => ({ target: i, params: gllPool.vault })), abi: abiERC20Balance, }),
     ]);
 
   hiveBalancesGrizzly.map((b, i) => {
@@ -192,8 +206,14 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
     api.add(pcsV3[i].token1, b[1])
   });
 
+  gllPool.tokens.forEach((t, i) => {
+    sdk.util.sumSingleBalance(balances, transformAddress(t), gllPoolBalances[i])
+  });
+
   await unwrapStablePcsLPs(balances, lpPositionsStable, api)
   await unwrapLPsAuto({ ...api, balances, })
+
+
   return balances;
 }
 
@@ -239,7 +259,8 @@ module.exports = {
         "0x6F42895f37291ec45f0A307b155229b923Ff83F1",
         "0xB80287c110a76e4BbF0315337Dbc8d98d7DE25DB"
       ],
-      "0xa045e37a0d1dd3a45fefb8803d22457abc0a728a",
+      "0xa045e37a0d1dd3a45fefb8803d22457abc0a728a"
+
     )
   }
 };
