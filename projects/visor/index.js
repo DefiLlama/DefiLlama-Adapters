@@ -92,7 +92,7 @@ async function tvlUniV3(api) {
   let hypervisors = await Promise.all(
     targets.map((target) =>
       api.fetchList({
-        lengthAbi: hypeRegistry.counter,
+        lengthAbi: hypeRegistry.registry.length,
         itemAbi: hypeRegistry.hypeByIndex,
         target,
       })
