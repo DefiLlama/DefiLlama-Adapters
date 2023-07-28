@@ -9,7 +9,6 @@ const DEFAULTS = {
   APTOS_RPC: 'https://aptos-mainnet.pontem.network',
   SUI_RPC: 'https://fullnode.mainnet.sui.io/',
   MULTIVERSX_RPC: 'https://api.multiversx.com',
-  LINEA_RPC: 'https://linea.rpc.thirdweb.com',
   PGN_RPC: 'https://rpc.publicgoods.network',
 }
 
