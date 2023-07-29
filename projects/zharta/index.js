@@ -1,4 +1,4 @@
-const { tokensBare } = require('../helper/tokenMapping');
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport, } = require('../helper/unwrapLPs')
 
 // Vaults
@@ -12,7 +12,7 @@ module.exports = {
   ethereum: {
     tvl: sumTokensExport({
       owners: [collateralVault, punkVault, appraisalVault, LP_CORE],
-      tokens: [tokensBare.weth],
+      tokens: [ADDRESSES.ethereum.WETH],
       resolveNFTs: true,
     }),
   }

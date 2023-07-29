@@ -1,6 +1,6 @@
 // https://www.starknetjs.com/docs/API/contract
 const { getUniqueAddresses} = require('../tokenMapping')
-const { Provider, Contract, validateAndParseAddress } = require('starknet')
+const { Provider, Contract, validateAndParseAddress, number, } = require('starknet')
 const { PromisePool } = require('@supercharge/promise-pool')
 
 let provider
@@ -96,4 +96,5 @@ module.exports = {
   multiCall,
   parseAddress: validateAndParseAddress,
   sumTokens,
+  number,
 }

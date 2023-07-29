@@ -1,5 +1,5 @@
-const sdk = require('@defillama/sdk')
-const { toUSDTBalances } = require('../helper/balances')
+const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokensExport } = require('../helper/unwrapLPs')
 
 // Ethereum Vaults
 const ethCallVault = '0x9014f8E90423766343Ed4fe41668563526dF6715'
@@ -13,13 +13,13 @@ const bitPutVault = '0x4Ca3e8bD2F471415b9131E35bdcEC0819a4E7a83'
 const bitCallVault = '0x9F639524db6DfD57613895b0abb49A53c11B3f0e'
 
 // Ethereum - Stronghold IndexUSDC vaults
-const indexUSDC_BTC_1wk     = "0x3BA337F3167eA35910E6979D5BC3b0AeE60E7d59"
-const indexUSDC_ETH_2wk_a   = "0xE1c93dE547cc85CBD568295f6CC322B1dbBCf8Ae"
-const indexUSDC_AVAX_2wk_b  = "0x248038fDb6F00f4B636812CA6A7F06b81a195AB8"
-const indexUSDC_FTM_2wk_a   = "0x182E7DAD39C8412ce1258B01f1a25afDC6c2294d"
-const indexUSDC_SOL_2wk_b   = "0xb466a23c77df358B8B1e86514411c5Fe0D613896"
+const indexUSDC_BTC_1wk = "0x3BA337F3167eA35910E6979D5BC3b0AeE60E7d59"
+const indexUSDC_ETH_2wk_a = "0xE1c93dE547cc85CBD568295f6CC322B1dbBCf8Ae"
+const indexUSDC_AVAX_2wk_b = "0x248038fDb6F00f4B636812CA6A7F06b81a195AB8"
+const indexUSDC_FTM_2wk_a = "0x182E7DAD39C8412ce1258B01f1a25afDC6c2294d"
+const indexUSDC_SOL_2wk_b = "0xb466a23c77df358B8B1e86514411c5Fe0D613896"
 const indexUSDC_MATIC_2wk_a = "0xAD57221ae9897DA08656aaaBd5B1D4673d4eDE71"
-const indexUSDC_BNB_2wk_b   = "0xE5e8caA04C4b9E1C9bd944A2a78a48b05c3ef3AF"
+const indexUSDC_BNB_2wk_b = "0xE5e8caA04C4b9E1C9bd944A2a78a48b05c3ef3AF"
 
 // Ethereum - Stronghold IndexETH vaults
 const indexETH_BiWeekly_A = "0xcb317b4b7CB45ef6D5Aa4e43171d16760dFE5eeA"
@@ -38,12 +38,15 @@ const ftmCallVault = '0x302ABD505757FD355C8ef3cF8b4918D6404f4996'
 const ftmPutVault = '0x7EDa4C29726355D0d8E85001B9152158b35Eae4f'
 
 //BSC Vaults
-const adaPutVault = '0xF98297A842f52Cd1f6c6f5f003Cd701813b1C461'
-const adaCallVault = '0x8BE731cB3b301b4a209C1A38ea14D6438e6913F6'
-const bchPutVault = '0xc879ecC0d2cdA26072e9049178a99B26C51eDF8a'
-const bchCallVault = '0xfe9B8054B947aCEeC01912Cf1811DB06fc804b69'
-const wbnbPutVault = '0x9EF72De1782431cf54518c42C06e26014E7201D1'
-const wbnbCallVault = '0xc75C3BE0Bc41857B9c1a675475F6E0a7c5Db63fC'
+//BSC Vaults
+const adaCallVault = '0xF98297A842f52Cd1f6c6f5f003Cd701813b1C461'
+const adaPutVault = '0x8BE731cB3b301b4a209C1A38ea14D6438e6913F6'
+const bchCallVault = '0xc879ecC0d2cdA26072e9049178a99B26C51eDF8a'
+const bchPutVault = '0xfe9B8054B947aCEeC01912Cf1811DB06fc804b69'
+const wbnbCallVault = '0x9EF72De1782431cf54518c42C06e26014E7201D1'
+const wbnbPutVault = '0xc75C3BE0Bc41857B9c1a675475F6E0a7c5Db63fC'
+
+//Woo Vaults
 const wooSynVault_Bi_10 = '0x74b9C75ee344cc6D323489906c571912980d03ac'
 const wooSynVault_Bi_25 = '0x91E3d1461B4655E48Be431895E483C3b17915DA5'
 const wooSynVault_Mo_10 = '0x68B727b3D2EC73026FD1c7B9f736604f1c09C541'
@@ -64,207 +67,154 @@ const nearCallVault = '0xfc7F11Bb0d97d9db1f701eEA0fDE611536F1EB5F'
 const bobaCallVault = '0x5a9f1D95C59365613B4224e690Bb4971DD246142'
 const bobaPutVault = '0xff5fe7909fc4d0d6643f1e8be8cba72610d0b485'
 
+//Arbitrum Vaults
+const arbCallVault = '0x0833EC3262Dcc417D88f85Ed5E1EBAf768080f41'
 
+//zkEVM vaults
+const stMaticCallVault = '0x7bF3c7C23501EA3E09B237D6F8AdcB7Ea3CeF41C'
 
 // Ethereum Assets
-const weth = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
-const usdc = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
-const wbtc = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599'
+const weth = ADDRESSES.ethereum.WETH
+const usdc = ADDRESSES.ethereum.USDC
+const wbtc = ADDRESSES.ethereum.WBTC
 const ust = '0xa693b19d2931d498c5b318df961919bb4aee87a5'
 const tUSDC = '0x9f238fae3d1f1982716f136836fc2c0d1c2928ab'
 const tAlgo = '0x0354762a3c01730d07d2f7098365d64dc81b565d'
 const bit = '0x1a4b46696b2bb4794eb3d4c26f1c55f9170fa4c5'
 
 // Avalanche Assets
-const wavax = '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7'
-const usdce = '0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664'
+const wavax = ADDRESSES.avax.WAVAX
+const usdce = ADDRESSES.avax.USDC_e
+const usdc_avax = ADDRESSES.avax.USDC
 
 // Fantom Assets
-const wftm = '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83'
-const fusdc = '0x04068da6c83afcfa0e13ba15a6696662335d5b75'
+const wftm = ADDRESSES.fantom.WFTM
+const fusdc = ADDRESSES.fantom.USDC
 
 // Binance Smart Chain Assets
-const busd = '0xe9e7cea3dedca5984780bafc599bd69add087d56'
+const busd = ADDRESSES.bsc.BUSD
 const ada = '0x3ee2200efb3400fabb9aacf31297cbdd1d435d47'
 const bch = '0x8ff795a6f4d97e7887c79bea79aba5cc76444adf'
-const wbnb = '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
+const wbnb = ADDRESSES.bsc.WBNB
 const woo = '0x4691937a7508860F876c9c0a2a617E7d9E945D4B'
 
 // Polygon Assets
-const wmatic = '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270'
-const pousdc = '0x2791bca1f2de4661ed88a30c99a7a9449aa84174'
+const wmatic = ADDRESSES.polygon.WMATIC_2
+const pousdc = ADDRESSES.polygon.USDC
 const ust_matic_wormhole = '0xE6469Ba6D2fD6130788E0eA9C0a0515900563b59'
 
 // Aurora Assets
-const near = '0xC42C30aC6Cc15faC9bD938618BcaA1a1FaE8501d'
+const near = ADDRESSES.aurora.NEAR
 
 // Boba Assets
-let boba = '0xa18bF3994C0Cc6E3b63ac420308E5383f53120D7'
-const bobaUSDC = '0x66a2A913e447d6b4BF33EFbec43aAeF87890FBbc'
+let boba = ADDRESSES.boba.BOBA
+const bobaUSDC = ADDRESSES.boba.USDC
 
+// Arbitrum assets
+let arb = '0x912ce59144191c1204e64559fe8253a0e49e6548'
 
-
-
-async function addVault(balances, vault, token, block, chain) {
-    const totalBalance = await sdk.api.erc20.balanceOf({
-      target: token,
-      owner: vault,
-      block: block,
-      chain: chain
-    })
-    if(chain == 'ethereum'){
-    sdk.util.sumSingleBalance(balances,token,totalBalance.output)
-  }
-    else if(chain == 'avax'){
-    sdk.util.sumSingleBalance(balances,`avax:${token}`,totalBalance.output)
-    }
-
-    else if(chain == 'fantom'){
-    sdk.util.sumSingleBalance(balances,`fantom:${token}`,totalBalance.output)
-    }
-
-    else if(chain == 'bsc'){
-    sdk.util.sumSingleBalance(balances,`bsc:${token}`,totalBalance.output)
-    }
-
-    else if(chain == 'polygon'){
-    sdk.util.sumSingleBalance(balances,`polygon:${token}`,totalBalance.output)
-    }
-
-    else if(chain == 'boba'){
-    sdk.util.sumSingleBalance(balances,`boba:${token}`,totalBalance.output,)
-    }
-
-    else if(chain == 'aurora'){
-    sdk.util.sumSingleBalance(balances,`aurora:${token}`,totalBalance.output)
-    }
-}
-
-async function ethTvl(timestamp, block) {
-    const balances = {}
-    await Promise.all([
-        addVault(balances, ethCallVault, weth, block, 'ethereum'),
-        addVault(balances, ethPutVault, usdc, block, 'ethereum'),
-        addVault(balances, wbtcCallVault, wbtc, block, 'ethereum'),
-        //addVault(balances, wbtcPutVault, usdc, block, 'ethereum'), //Consolidated with indexUSDC_BTC_1wk
-        addVault(balances, lunaPutVault, ust, block, 'ethereum'),
-        addVault(balances, algoPutVault, tUSDC, block, 'ethereum'),
-        addVault(balances, algoCallVault, tAlgo, block, 'ethereum'),
-        addVault(balances, bitPutVault, usdc, block, 'ethereum'),
-        addVault(balances, bitCallVault, bit, block, 'ethereum'),
-
-        addVault(balances, indexUSDC_BTC_1wk    , usdc, block, 'ethereum'),
-        addVault(balances, indexUSDC_ETH_2wk_a  , usdc, block, 'ethereum'),
-        addVault(balances, indexUSDC_AVAX_2wk_b , usdc, block, 'ethereum'),
-        addVault(balances, indexUSDC_FTM_2wk_a  , usdc, block, 'ethereum'),
-        addVault(balances, indexUSDC_SOL_2wk_b  , usdc, block, 'ethereum'),
-        addVault(balances, indexUSDC_MATIC_2wk_a, usdc, block, 'ethereum'),
-        addVault(balances, indexUSDC_BNB_2wk_b  , usdc, block, 'ethereum'),
-
-        addVault(balances, indexETH_BiWeekly_A, weth, block, 'ethereum'),
-        addVault(balances, indexETH_BiWeekly_B, weth, block, 'ethereum'),
-        addVault(balances, indexBTC_BiWeekly_A, wbtc, block, 'ethereum'),
-        addVault(balances, indexBTC_BiWeekly_B, wbtc, block, 'ethereum'),
-        
-    ])
-    return balances
-}
-
-
-async function avaxTvl(timestamp, ethblocks, chainBlocks) {
-    const balances = {}
-    await Promise.all([
-        addVault(balances, avaxCallVault, wavax, chainBlocks["avax"], 'avax'),
-        addVault(balances, avaxPutVault, usdce, chainBlocks["avax"], 'avax'),
-    ])
-    return balances
-}
-
-async function ftmTvl(timestamp, ethblocks, chainBlocks) {
-    const balances = {}
-    await Promise.all([
-        addVault(balances, ftmCallVault, wftm, chainBlocks["fantom"], 'fantom'),
-        addVault(balances, ftmPutVault, fusdc, chainBlocks["fantom"], 'fantom'),
-    ])
-    return balances
-}
-
-async function bscTvl(timestamp, ethblocks, chainBlocks) {
-    const balances = {}
-    await Promise.all([
-        addVault(balances, adaPutVault, busd, chainBlocks["bsc"], 'bsc'),
-        addVault(balances, adaCallVault, ada, chainBlocks["bsc"], 'bsc'),
-        addVault(balances, bchPutVault, busd, chainBlocks["bsc"], 'bsc'),
-        addVault(balances, bchCallVault, bch, chainBlocks["bsc"], 'bsc'),
-        addVault(balances, wbnbPutVault, busd, chainBlocks["bsc"], 'bsc'),
-        addVault(balances, wbnbCallVault, wbnb, chainBlocks["bsc"], 'bsc'),
-
-        addVault(balances, wooSynVault_Bi_10, woo, chainBlocks["bsc"], 'bsc'),
-        addVault(balances, wooSynVault_Bi_10, busd, chainBlocks["bsc"], 'bsc'),
-        addVault(balances, wooSynVault_Bi_25, woo, chainBlocks["bsc"], 'bsc'),
-        addVault(balances, wooSynVault_Bi_25, busd, chainBlocks["bsc"], 'bsc'),
-        addVault(balances, wooSynVault_Mo_10, woo, chainBlocks["bsc"], 'bsc'),
-        addVault(balances, wooSynVault_Mo_10, busd, chainBlocks["bsc"], 'bsc'),
-        addVault(balances, wooSynVault_Mo_25, woo, chainBlocks["bsc"], 'bsc'),
-        addVault(balances, wooSynVault_Mo_25, busd, chainBlocks["bsc"], 'bsc'),
-    ])
-    return balances
-}
-
-async function polygonTvl(timestamp, ethblocks, chainBlocks) {
-    const balances = {}
-    await Promise.all([
-        addVault(balances, wMaticCallVault, wmatic, chainBlocks["polygon"], 'polygon'),
-        addVault(balances, wMaticPutVault, pousdc, chainBlocks["polygon"], 'polygon'),
-        addVault(balances, indexUST_LUNA_2wk_a, ust_matic_wormhole, chainBlocks["polygon"], 'polygon'),
-        addVault(balances, indexUST_LUNA_2wk_b, ust_matic_wormhole, chainBlocks["polygon"], 'polygon'),
-    ])
-    return balances
-}
-
-async function bobaTvl(timestamp, ethblocks, chainBlocks) {
-    const balances = {}
-    await Promise.all([
-        addVault(balances, bobaCallVault, boba, chainBlocks["boba"], 'boba'),
-        addVault(balances, bobaPutVault, bobaUSDC, chainBlocks["boba"], 'boba'),
-    ])
-    return balances
-}
-
-async function auroraTvl(timestamp, ethblocks, chainBlocks) {
-    const balances = {}
-    await Promise.all([
-        addVault(balances, nearCallVault, near, chainBlocks["aurora"], 'aurora'),
-        
-    ])
-    return balances
-}
-
+// zkEVM assets
+const stMatic = '0x83b874c1e09D316059d929da402dcB1A98e92082';
 
 module.exports = {
-    methodology: `Only the funds deposited by the users into our vaults are calculated as TVL.`,
-    ethereum: {
-        tvl: ethTvl
-    },
-    avax: {
-        tvl: avaxTvl
-    },
-    fantom: {
-        tvl: ftmTvl
-    },
-    bsc: {
-        tvl: bscTvl
-    },
-    polygon: {
-        tvl: polygonTvl
-    },
-    boba: {
-        tvl: bobaTvl
-    },
-    aurora: {
-        tvl: auroraTvl
-    },
-    hallmarks: [
-      [Math.floor(new Date('2022-09-30')/1e3), 'Thetanuts migration V0 -> V1'],
-    ],
+  methodology: `Only the funds deposited by the users into our vaults are calculated as TVL.`,
+  hallmarks: [
+    [Math.floor(new Date('2022-09-30') / 1e3), 'Thetanuts migration V0 -> V1'],
+  ],
 }
+
+const config = {
+  ethereum: {
+    tokensAndOwners: [
+      [weth, ethCallVault,],
+      [usdc, ethPutVault,],
+      [wbtc, wbtcCallVault,],
+      [ust, lunaPutVault,],
+      [tUSDC, algoPutVault,],
+      [tAlgo, algoCallVault,],
+      [usdc, bitPutVault,],
+      [bit, bitCallVault,],
+
+      [usdc, indexUSDC_BTC_1wk,],
+      [usdc, indexUSDC_ETH_2wk_a,],
+      [usdc, indexUSDC_AVAX_2wk_b,],
+      [usdc, indexUSDC_FTM_2wk_a,],
+      [usdc, indexUSDC_SOL_2wk_b,],
+      [usdc, indexUSDC_MATIC_2wk_a,],
+      [usdc, indexUSDC_BNB_2wk_b,],
+
+      [weth, indexETH_BiWeekly_A,],
+      [weth, indexETH_BiWeekly_B,],
+      [wbtc, indexBTC_BiWeekly_A,],
+      [wbtc, indexBTC_BiWeekly_B,],
+
+    ]
+  },
+  avax: {
+    tokensAndOwners: [
+      [wavax, avaxCallVault,],
+      [usdc_avax, avaxPutVault,],
+    ]
+  },
+  arbitrum: {
+    tokensAndOwners: [
+      [arb, arbCallVault,],
+    ]
+  },
+  fantom: {
+    tokensAndOwners: [
+      [wftm, ftmCallVault,],
+      [fusdc, ftmPutVault,],
+    ]
+  },
+  bsc: {
+    tokensAndOwners: [
+      [busd, adaPutVault,],
+      [ada, adaCallVault,],
+      [busd, bchPutVault,],
+      [bch, bchCallVault,],
+      [busd, wbnbPutVault,],
+      [wbnb, wbnbCallVault,],
+
+      [woo, wooSynVault_Bi_10,],
+      [busd, wooSynVault_Bi_10,],
+      [woo, wooSynVault_Bi_25,],
+      [busd, wooSynVault_Bi_25,],
+      [woo, wooSynVault_Mo_10,],
+      [busd, wooSynVault_Mo_10,],
+      [woo, wooSynVault_Mo_25,],
+      [busd, wooSynVault_Mo_25,],
+    ]
+  },
+  polygon: {
+    tokensAndOwners: [
+      [wmatic, wMaticCallVault,],
+      [pousdc, wMaticPutVault,],
+      [ust_matic_wormhole, indexUST_LUNA_2wk_a,],
+      [ust_matic_wormhole, indexUST_LUNA_2wk_b,],
+    ]
+  },
+  boba: {
+    tokensAndOwners: [
+      [boba, bobaCallVault,],
+      [bobaUSDC, bobaPutVault,],
+    ]
+  },
+  aurora: {
+    tokensAndOwners: [
+      [near, nearCallVault,],
+    ]
+  },
+  polygon_zkevm: {
+    tokensAndOwners: [
+      [stMatic, stMaticCallVault,],
+    ]
+  }
+}
+
+Object.keys(config).forEach(chain => {
+  const { tokensAndOwners } = config[chain]
+  module.exports[chain] = {
+    tvl: sumTokensExport({ tokensAndOwners, })
+  }
+})

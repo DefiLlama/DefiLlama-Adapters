@@ -1,3 +1,4 @@
+const ADDRESSES = require('../../helper/coreAssets.json')
 const tokenAddresses = {
   onx: "0xe0ad1806fd3e7edf6ff52fdb822432e847411033",
   sOnx: "0xa99f0ad2a539b2867fcfea47f7e71f240940b47c",
@@ -10,14 +11,14 @@ const tokenAddresses = {
   pool: "0x47F3E6C1Ef0cBe69502167095b592e61de108BaA",
   aethToken: "0xE95A203B1a91a908F9B9CE46459d101078c2c3cb",
   onsToken: "0xfC97C0c12438B6E4CF246cD831b02FeF4950DCAD",
-  daiToken: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
-  fraxToken: "0x853d955acef822db058eb8505911ed77f175b99e",
-  usdcToken: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+  daiToken: ADDRESSES.ethereum.DAI,
+  fraxToken: ADDRESSES.ethereum.FRAX,
+  usdcToken: ADDRESSES.ethereum.USDC,
   aethPairEth: "0x6147805e1011417B93e5D693424a62A70d09d0E5",
   aethPairOns: "0x5022BbC26B3Bc8c8d2F1F7dB9ee3A2B4631b9b18",
   aethPairOne: "0x5BD4D1f8D46Ad6ae1e6b694eb64f7583C1cB1A74",
   oneVault: "0x3BdF1977d87EDAD8e0617efCEa958F6d43A4C30E",
-  wethToken: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+  wethToken: ADDRESSES.ethereum.WETH,
   bondPairEth: "0xb17b1342579e4bce6b6e9a426092ea57d33843d9",
   sushiPairEth: "0xce84867c3c02b05dc570d0135103d3fb9cc19433",
   fantom: {

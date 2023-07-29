@@ -1,0 +1,4 @@
+{
+  "strategyToId": "function strategyToId(address) view returns (uint256)",
+  "strategies": "function strategies(uint256) view returns (tuple fees, uint256 totalDeposited, uint256 totalStaked, uint256 lastCompoundTimestamp, uint256 cap, uint256 rewardPerBlock, uint256 rewardPerShare, uint256 lastUpdatedBlockNumber, address strategy, uint32 timelock, bool isActive, address rewardToken, uint256 usersCount)"
+}

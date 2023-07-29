@@ -1,16 +1,17 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { compoundExports } = require("../helper/compound");
 const { getUniTVL } = require('../helper/unknownTokens')
 
 const factory = '0x3c4063B964B1b3bF229315fCc4df61a694B0aE84'
-const metis = '0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000'
+const metis = ADDRESSES.metis.Metis
 const agora = '0x0Ed0Ca6872073E02cd3aE005BaF04bA43BE947fA'
 
 const whitelist = [
   agora, // AGORA
-  '0xEA32A96608495e54156Ae48931A7c20f0dcc1a21', // USDC
-  '0xbB06DCA3AE6887fAbF931640f67cab3e3a16F4dC', // USDT
-  '0x420000000000000000000000000000000000000A', // WETH
+  ADDRESSES.metis.m_USDC, // USDC
+  ADDRESSES.metis.m_USDT, // USDT
+  ADDRESSES.metis.WETH, // WETH
   '0x94e56c0c59433599ba857a9a7243b2826745cf91', //kWBTC
   '0x6d11f074131e3fc61c983cce538f5d0ca3553c0f', //kUSDC
   '0xcfd482dce13ca1d27834d381af1b570e9e6c6810', //kmetis
@@ -60,6 +61,6 @@ module.exports = {
   methodology: `As in Compound Finance, TVL counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are counted as "Borrowed" TVL and can be toggled towards the regular TVL.`,
   metis: {
     tvl: sdk.util.sumChainTvls([chainTvl, agoraTvl, agoraPlusTvl, agoraFarmTvl, agoraStakeTvl]),
-    borrowed: sdk.util.sumChainTvls([agoraBorrowed, agoraPlusBorrowed, agoraFarmBorrowed, agoraStakeBorrowed]),
+    borrowed: ()=>({}),
   },
 };

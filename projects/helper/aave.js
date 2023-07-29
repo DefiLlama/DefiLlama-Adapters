@@ -1,3 +1,5 @@
+const { getLogs } = require('./cache/getLogs')
+const ADDRESSES = require('./coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { default: BigNumber } = require('bignumber.js');
 const abi = require('./abis/aave.json');
@@ -30,7 +32,7 @@ async function getV2Reserves(block, addressesProviderRegistry, chain, dataHelper
 
     validProtocolDataHelpers = protocolDataHelpers.filter(
       (helper) =>
-        helper.output !== "0x0000000000000000000000000000000000000000"
+        helper.output !== ADDRESSES.null
     ).map(p => p.output);
   } else {
     validProtocolDataHelpers = dataHelperAddress
@@ -101,7 +103,7 @@ async function getBorrowed(balances, block, chain, v2ReserveTokens, dataHelper, 
   })
 }
 
-function aaveChainTvl(chain, addressesProviderRegistry, transformAddressRaw, dataHelperAddresses, borrowed, v3 = false, { abis = {}, oracle, } = {}) {
+function aaveChainTvl(chain, addressesProviderRegistry, transformAddressRaw, dataHelperAddresses, borrowed, v3 = false, { abis = {}, oracle, blacklistedTokens = [], } = {}) {
   return async (timestamp, ethBlock, { [chain]: block }) => {
     const balances = {}
     const { transformAddress, fixBalances, v2Atokens, v2ReserveTokens, dataHelper, updateBalances } = await getData({ oracle, chain, block, addressesProviderRegistry, dataHelperAddresses, transformAddressRaw, abis, })
@@ -112,13 +114,19 @@ function aaveChainTvl(chain, addressesProviderRegistry, transformAddressRaw, dat
     }
     if (updateBalances) updateBalances(balances)
     fixBalances(balances)
+    Object.keys(balances).forEach((key) => {
+      if (!blacklistedTokens.length) return;
+      if (blacklistedTokens.some(i => new RegExp(i, 'gi').test(key))) {
+        delete balances[key]
+      }
+    })
     return balances
   }
 }
-function aaveExports(chain, addressesProviderRegistry, transform = undefined, dataHelpers = undefined, { oracle, abis } = {}) {
+function aaveExports(chain, addressesProviderRegistry, transform = undefined, dataHelpers = undefined, { oracle, abis, v3 = false, blacklistedTokens = [] } = {}) {
   return {
-    tvl: aaveChainTvl(chain, addressesProviderRegistry, transform, dataHelpers, false, undefined, { oracle, abis, }),
-    borrowed: aaveChainTvl(chain, addressesProviderRegistry, transform, dataHelpers, true, undefined, { oracle, abis })
+    tvl: aaveChainTvl(chain, addressesProviderRegistry, transform, dataHelpers, false, v3, { oracle, abis, blacklistedTokens, }),
+    borrowed: aaveChainTvl(chain, addressesProviderRegistry, transform, dataHelpers, true, v3, { oracle, abis, })
   }
 }
 
@@ -180,7 +188,7 @@ const oracleAbis = {
   getAssetsPrices: "function getAssetsPrices(address[] assets) view returns (uint256[])",
 }
 
-function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyUnit, } = {}) {
+function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyUnit, abis = {}, fromBlock, } = {}) {
 
   async function tvl(_, _b, _c, { api }) {
     const data = await getReservesData(api)
@@ -218,8 +226,9 @@ function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyU
   }
 
   async function getReservesData(api) {
+    if (fromBlock) return getReservesDataFromBlock(api)
     const tokens = await api.call({ abi: abiv2.getReservesList, target: registry })
-    const data = await api.multiCall({ abi: abiv2.getReserveData, calls: tokens, target: registry, })
+    const data = await api.multiCall({ abi: abis.getReserveData ?? abiv2.getReserveData, calls: tokens, target: registry, })
     data.forEach((v, i) => v.underlying = tokens[i])
     if (useOracle) {
       let currency = baseCurrency
@@ -241,6 +250,18 @@ function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyU
       })
     }
     return data
+  }
+
+  async function getReservesDataFromBlock(api) {
+    const logs = await getLogs({
+      api,
+      target: registry,
+      topics: ['0x3a0ca721fc364424566385a1aa271ed508cc2c0949c2272575fb3013a163a45f'],
+      fromBlock,
+      eventAbi: 'event ReserveInitialized (address indexed underlying, address indexed aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress, address interestRateStrategyAddress)',
+      onlyArgs: true,
+    })
+    return logs
   }
 
   const abiv2 = {

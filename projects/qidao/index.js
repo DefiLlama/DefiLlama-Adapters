@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, nullAddress, } = require("../helper/unwrapLPs");
 const sdk = require("@defillama/sdk");
 
@@ -83,7 +84,7 @@ const config = {
   moonriver: {
     vaults: [
       // "0x97D811A7eb99Ef4Cb027ad59800cE27E68Ee1109",
-      "0x4a0474E3262d4DB3306Cea4F207B5d66eC8E0AA9",
+      //"0x4a0474E3262d4DB3306Cea4F207B5d66eC8E0AA9",
     ]
   },
   harmony: {
@@ -106,7 +107,8 @@ const config = {
       "0x8C45969aD19D297c9B85763e90D0344C6E2ac9d1",
       "0xcc61Ee649A95F2E2f0830838681f839BDb7CB823",
       "0x82E90EB7034C1DF646bD06aFb9E67281AAb5ed28",
-      "0xCA3EB45FB186Ed4e75B9B22A514fF1d4abAdD123"
+      "0xCA3EB45FB186Ed4e75B9B22A514fF1d4abAdD123",
+      "0x4ce4C542D96Ce1872fEA4fa3fbB2E7aE31862Bad"
     ]
   },
   bsc: {
@@ -186,15 +188,15 @@ const config = {
       ], // amWBTC
       // anchor
       [
-        "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+        ADDRESSES.polygon.USDC,
         "0x947D711C25220d8301C087b25BA111FE8Cbf6672",
       ], //USDC
       [
-        "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
+        ADDRESSES.polygon.USDT,
         "0xa4742A65f24291AA421497221AaF64c70b098d98",
       ], //USDT
       [
-        "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
+        ADDRESSES.polygon.DAI,
         "0x6062E92599a77E62e0cC9749261eb2eaC3aBD44F",
       ], //DAI
     ]
