@@ -1,12 +1,28 @@
 {
   "registry": {
-    "milkomeda": "0x83E384d119adA05195Caca26396B8f56fdDA1c91",
-    "milkomeda_a1": "0x93e9c79582cAd65627758bbdB067EAB1c79E005c",
-    "kava": "0xe46e53672B160a67faEdE644d4A339CDeC1f671c"
+    "milkomeda": "0xb42F2f37Dedf435F4916665d6B4c2cC643A17f14",
+    "milkomeda_a1": "0xa98C276d262Cc3Bf660189E2eBE74c4B8C18e50a",
+    "kava": "0x49399653f651A25924b3D8718276b5b4372577b1",
+    "polygon": "0x2080A319A4B11D097050722b6b65d09F754EdC83"
   },
   "manualPool": {
     "milkomeda": "0xA4f0e3C80C77b347250B9D3999478E305FF814A4",
     "milkomeda_a1": "0x589E3Edd93A22FB316cff53eABA6BB958ff601cd",
     "kava": "0x7A60918Bd5c83Ef7e2ABA87D13e3FD704f6A77E1"
+  },
+  "blueschain": {
+    "milkomeda": {
+      "reserve": "0xa2351AEA209ceB0ffeCd77149eC615335d7f513d",
+      "tokens": [
+        "0xAE83571000aF4499798d1e3b0fA0070EB3A3E3F9",
+        "0x8c008BBA2Dd56b99f4A6aB276bE3a478cB075F0C"
+      ]
+    },
+    "polygon": {
+      "reserve": "0x3abd79823C595C0778e51246c491126e77367b20",
+      "tokens": [
+        "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270"
+      ]
+    }
   }
 }

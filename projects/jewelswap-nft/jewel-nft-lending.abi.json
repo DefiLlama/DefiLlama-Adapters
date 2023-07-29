@@ -1,0 +1,183 @@
+{
+    "buildInfo": {
+    },
+    "name": "EpunksNftLending",
+    "constructor": {
+        "inputs": [],
+        "outputs": []
+    },
+    "endpoints": [
+        {
+            "name": "viewCommonSettings",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "opt_user_address",
+                    "type": "optional<Address>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "CommonSettings"
+                }
+            ]
+        }
+    ],
+    "hasCallback": true,
+    "types": {
+        "CommonSettings": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "rewards_pool_rate",
+                    "type": "u64"
+                },
+                {
+                    "name": "epunks_buyback_rate",
+                    "type": "u64"
+                },
+                {
+                    "name": "team_rate",
+                    "type": "u64"
+                },
+                {
+                    "name": "epunks_buyback_wallet",
+                    "type": "Address"
+                },
+                {
+                    "name": "team_wallet",
+                    "type": "Address"
+                },
+                {
+                    "name": "liquidation_wallet",
+                    "type": "Address"
+                },
+                {
+                    "name": "lend_epoch_length",
+                    "type": "u64"
+                },
+                {
+                    "name": "lend_lock_period",
+                    "type": "u64"
+                },
+                {
+                    "name": "liquidation_threshold",
+                    "type": "u64"
+                },
+                {
+                    "name": "lend_grace_period",
+                    "type": "u64"
+                },
+                {
+                    "name": "liquidation_fee",
+                    "type": "u64"
+                },
+                {
+                    "name": "total_lending_amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "lend_users",
+                    "type": "u32"
+                },
+                {
+                    "name": "current_lend_epoch_id",
+                    "type": "u32"
+                },
+                {
+                    "name": "lend_epoch_start_timestamp",
+                    "type": "u64"
+                },
+                {
+                    "name": "lend_rewards_pool_amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "global_liquidation_rate",
+                    "type": "u64"
+                },
+                {
+                    "name": "global_max_borrow_amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "global_collection_max_lend_cap_percent",
+                    "type": "u64"
+                },
+                {
+                    "name": "global_max_borrower_cap_percent",
+                    "type": "u64"
+                },
+                {
+                    "name": "borrow_plan_count",
+                    "type": "u32"
+                },
+                {
+                    "name": "max_borrow_periods",
+                    "type": "List<u64>"
+                },
+                {
+                    "name": "borrow_rates",
+                    "type": "List<u64>"
+                },
+                {
+                    "name": "accumulated_loan_amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "total_loan_amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "total_collateral_amount",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "opened_loan_count",
+                    "type": "u32"
+                },
+                {
+                    "name": "loan_owners",
+                    "type": "u32"
+                },
+                {
+                    "name": "last_loan_id",
+                    "type": "u32"
+                },
+                {
+                    "name": "collection_ids",
+                    "type": "List<TokenIdentifier>"
+                },
+                {
+                    "name": "collection_collateral_rates",
+                    "type": "List<u64>"
+                },
+                {
+                    "name": "collection_trait_counts",
+                    "type": "List<u32>"
+                },
+                {
+                    "name": "collection_supplies",
+                    "type": "List<u64>"
+                },
+                {
+                    "name": "collection_max_borrow_amounts",
+                    "type": "List<BigUint>"
+                },
+                {
+                    "name": "collection_borrow_amounts",
+                    "type": "List<BigUint>"
+                },
+                {
+                    "name": "collection_max_lend_cap_percents",
+                    "type": "List<u64>"
+                },
+                {
+                    "name": "user_borrow_status",
+                    "type": "bool"
+                }
+            ]
+        }
+    }
+}

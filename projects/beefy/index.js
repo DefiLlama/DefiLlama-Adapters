@@ -34,6 +34,7 @@ const chains = {
   fantom: 250,
   zksync: 324,
   metis: 1088,
+  polygon_zkevm: 1101,
   moonbeam: 1284,
   moonriver: 1285,
   kava: 2222,

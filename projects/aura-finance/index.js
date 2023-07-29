@@ -60,24 +60,33 @@ async function tvl(_, block, _1, { api }) {
   }
 }
 
+const config = {
+  arbitrum: { factory: '0x6817149cb753bf529565b4d023d7507ed2ff4bc0', fromBlock: 72942741, voterProxy: '0xc181edc719480bd089b94647c2dc504e2700a2b0'},
+  optimism: { factory: '0xa523f47A933D5020b23629dDf689695AA94612Dc', fromBlock: 83239534, voterProxy: '0xc181edc719480bd089b94647c2dc504e2700a2b0'},
+  polygon: { factory: '0x22625eedd92c81a219a83e1dc48f88d54786b017', fromBlock: 40687417, voterProxy: '0xC181Edc719480bd089b94647c2Dc504e2700a2B0'},
+}
+
 module.exports = {
   methodology: "TVL of Aura Finance consists of the total deposited assets, protocol-controlled value via veBAL and vote-locked AURA (staking)",
   ethereum: {
     tvl,
     staking: staking(addresses.auraLocker, addresses.aura)
-  },
-  arbitrum: {
-    tvl: async (_, _1, _2, { api }) => {
+  }
+}
+
+Object.keys(config).forEach(chain => {
+  const { factory, fromBlock, voterProxy, } = config[chain]
+  module.exports[chain] = {
+    tvl: async (_, _b, _cb, { api, }) => {
       const logs = await getLogs({
         api,
-        target: '0x6817149cb753bf529565b4d023d7507ed2ff4bc0',
+        target: factory,
         topics: ['0xaa98436d09d130af48de49867af8b723bbbebb0d737638b5fe8f1bf31bbb71c0'],
         eventAbi: 'event GaugeCreated (address indexed gauge)',
         onlyArgs: true,
-        fromBlock: 72942741,
+        fromBlock,
       })
 
-      const voterProxy = '0xc181edc719480bd089b94647c2dc504e2700a2b0'
       // const auraBalVault = '0x4EA9317D90b61fc28C418C247ad0CA8939Bbb0e9'
       // const asset = await api.call({  abi: 'address:asset', target: auraBalVault })
       // const bal = await api.call({  abi: 'uint256:totalAssets', target: auraBalVault })
@@ -88,4 +97,4 @@ module.exports = {
       api.addTokens(tokens, bals)
     }
   }
-}
+})

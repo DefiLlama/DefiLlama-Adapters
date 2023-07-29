@@ -5,12 +5,12 @@ const fundedContracts = [
     '0xd9184981bbab68e05eafd631dd2f8cbaf47e3e13'  //TransparentUpgradeableProxy
 ];
 const stable = [
-    ADDRESSES.ethereum.USDC, //'USDC' : 
-    ADDRESSES.ethereum.USDT, //'USDT' : 
-    ADDRESSES.ethereum.DAI, //'DAI' : 
+    ADDRESSES.ethereum.USDC,
+    ADDRESSES.ethereum.USDT,
+    ADDRESSES.ethereum.DAI,
     '0xa47c8bf37f92abed4a126bda807a7b7498661acd', //'wUST' : 
-    ADDRESSES.ethereum.BUSD, //'BUSD' : 
-    '0x853d955acef822db058eb8505911ed77f175b99e' //'FRAX' : 
+    ADDRESSES.ethereum.BUSD,
+    ADDRESSES.ethereum.FRAX,
 ];
 const anchor = [
     '0x94eAd8f528A3aF425de14cfdDA727B218915687C', //'aUSDC': 

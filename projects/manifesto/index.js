@@ -5,6 +5,9 @@ const lps = [
 ]
 
 module.exports = {
+  hallmarks: [
+    [1676332800, "Rug Pull"]
+  ],
   misrepresentedTokens: true,
   canto: {
     tvl: sumTokensExport({

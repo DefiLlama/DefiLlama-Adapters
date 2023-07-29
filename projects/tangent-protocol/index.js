@@ -1,14 +1,8 @@
-const { get } = require('../helper/http')
+const { sumTokensExport } = require('../helper/chain/cardano')
 
 module.exports = {
-  misrepresentedTokens: true,
   cardano: {
-    tvl: async () => {
-      const data = await get('https://tangent-staking-mainnet.herokuapp.com/pool/getTANGData')
-      return {
-        cardano: data.adaTvl,
-      }
-    }
+    tvl: () => 0,
+    staking: sumTokensExport({ owner: 'addr1q92f5qddkudgq6sna3qfsqrwnk9253gv4qwmfw735xvluhrsqycc2x23z60333ktgjrrufgv8xh2gnxr4m6av63jkassawurfj'}),
   },
-}
-
+};
