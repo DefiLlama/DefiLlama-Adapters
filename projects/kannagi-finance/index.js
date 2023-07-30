@@ -34,4 +34,4 @@ helperReturn.era.tvl = tvlFunWrapper
 return helperReturn;
 }
 
-module.exports = yieldHelperWrapper()
+module.exports = {...yieldHelperWrapper(), hallmarks:[[1690589340, "Rug"]]}
