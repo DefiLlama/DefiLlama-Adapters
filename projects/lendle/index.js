@@ -10,6 +10,6 @@ module.exports = {
     ...aaveV2Export(LPConfiguratorContract, {
       fromBlock: 56556,
     }),
-    staking: staking(StakingContract, TokenContract, "mantle"),
+    staking: staking(StakingContract, TokenContract),
   },
 };
