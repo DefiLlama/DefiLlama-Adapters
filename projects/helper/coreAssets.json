@@ -630,7 +630,6 @@
     "JUMBO": "token.jumbo_exchange.near",
     "PARAS": "token.paras.near",
     "LINA": "linear-protocol.near",
-    "hNEAR": "storage.herewallet.near",
     "PEMBROCK": "token.pembrock.near",
     "BURROW": "token.burrow.near"
   },
