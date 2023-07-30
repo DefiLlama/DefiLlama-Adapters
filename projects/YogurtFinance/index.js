@@ -7,5 +7,4 @@ module.exports = masterchefExports({
   useDefaultCoreAssets: true,
   poolInfoABI: "function poolInfo(uint256) view returns (address)",
   getToken: (i) => i,
-  blacklistedTokens: [''],
 });
