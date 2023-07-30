@@ -8,7 +8,7 @@ const tokens = [
 ]
 
 const getActiveMinersFromRPC = async () => {
-    const resp = await getConfig('sft-protocol', 'https://api.sftproject.io/api/v1/public/dashboard/info')
+    const resp = await getConfig('sft-protocol', 'https://ww8.sftproject.io/api/c/api/v1/public/dashboard/info')
     let nodes = []
     let node_i = []
     nodes = resp.data.combined
