@@ -2,6 +2,8 @@ const utils = require('../helper/utils');
 const { toUSDTBalances } = require('../helper/balances');
 let _response
 
+const distressedAssets = ['aleth']; // Add any distressed asset names here
+
 function fetchChain(chainId, staking) {
   return async () => {
     if (!_response) _response = utils.fetchURL('https://api.beefy.finance/tvl')
@@ -10,6 +12,11 @@ function fetchChain(chainId, staking) {
     let tvl = 0;
     const chain = response.data[chainId];
     for (const vault in chain) {
+      // Skip distressed assets
+      if (distressedAssets.some(asset => vault.includes(asset))) {
+        continue;
+      }
+
       const isBIFI = vault.includes("bifi")
       if ((isBIFI && staking) || (!isBIFI && !staking)) {
         tvl += Number(chain[vault]);
