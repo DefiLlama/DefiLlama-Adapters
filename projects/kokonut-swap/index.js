@@ -77,6 +77,19 @@ async function polygon_zkevm_tvl(_, _b, _cb, { api }) {
   return sumTokens2({ api, ownerTokens });
 }
 
+async function base_tvl(_, _b, _cb, { api }) {
+  const ownerTokens = [];
+  const poolList = (await sdk.api.abi.call({
+    target: "0x03173F638B3046e463Ab6966107534f56E82E1F3",
+    abi: abi.getRegisteredPools,
+    chain: 'base'
+  })).output;
+  for (const pool of poolList) {
+    ownerTokens.push([pool.liquidity.map(t => t.addr), pool.addr]);
+  }
+  return sumTokens2({ api, ownerTokens });
+}
+
 async function staking(timestamp, _, { klaytn: block }) {
   const info = (await sdk.api.abi.call({
     target: helper_addr,
@@ -96,6 +109,9 @@ module.exports = {
   },
   polygon_zkevm: {
     tvl: polygon_zkevm_tvl
+  },
+  base: {
+    tvl: base_tvl
   },
   methodology:
     "tvl is calculated using the total value of protocol's liquidity pool. Staked tokens include staked EYE values. Pool2 includes staked lp tokens eligible for KOKOS emissions"
