@@ -1,9 +1,10 @@
+const ADDRESSES = require('../../helper/coreAssets.json')
 const BigNumber = require("bignumber.js");
 const { blockQuery } = require("../../helper/http");
 const { endpoints } = require("../constants/endpoints");
 
 const NEGATIVE_WAD_PRECISION = -18;
-const WETH_ADDRESS = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+const WETH_ADDRESS = ADDRESSES.ethereum.WETH;
 
 const aaveQuery = (block) => `
 query {
