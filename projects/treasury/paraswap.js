@@ -26,7 +26,7 @@ module.exports = treasuryExports({
   },
   arbitrum: {
     tokens: [ 
-        "0x912ce59144191c1204e64559fe8253a0e49e6548"
+        ADDRESSES.arbitrum.ARB
      ],
     owners: ["0xfe98240ddAEDF78E278C28F1EdD690ee1a774e66"],
   },

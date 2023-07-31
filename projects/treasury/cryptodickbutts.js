@@ -11,10 +11,10 @@ module.exports = treasuryExports({
         nullAddress,
         ADDRESSES.ethereum.USDT,//TETHER
         ADDRESSES.ethereum.USDC,//USDC
-        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        ADDRESSES.ethereum.WETH,
         "0x6d3D490964205c8bC8DeD39e48e88E8Fde45b41f",
         "0x0000000000A39bb272e79075ade125fd351887Ac",
-        "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+        ADDRESSES.ethereum.DAI
      ],
     owners: [treasury],
     ownTokens: [dick],

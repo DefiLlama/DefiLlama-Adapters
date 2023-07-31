@@ -111,7 +111,7 @@ let boba = ADDRESSES.boba.BOBA
 const bobaUSDC = ADDRESSES.boba.USDC
 
 // Arbitrum assets
-let arb = '0x912ce59144191c1204e64559fe8253a0e49e6548'
+let arb = ADDRESSES.arbitrum.ARB
 
 // zkEVM assets
 const stMatic = '0x83b874c1e09D316059d929da402dcB1A98e92082';
