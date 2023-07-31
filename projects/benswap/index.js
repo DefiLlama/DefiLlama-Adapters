@@ -27,7 +27,7 @@ async function bchMasterChef(timestamp, ethBlock, {[CHAIN]: block}) {
     }
 }
 
-const bchDexTvl = getUniTVL({ chain: 'smartbch', factory: FACTORY, useDefaultCoreAssets: true, })
+const bchDexTvl = getUniTVL({ factory: FACTORY, useDefaultCoreAssets: true, })
 
 module.exports = {
     misrepresentedTokens: true,
@@ -38,7 +38,7 @@ module.exports = {
         staking: stakingPricedLP(MASTERBREEDER, EBEN, "smartbch", EBEN_WBCH_LP, COREASSETNAME),
     },
     bsc: {
-        tvl: getUniTVL({ factory: '0x4dC6048552e2DC6Eb1f82A783E859157d40FA193', chain: 'bsc', useDefaultCoreAssets: true }),
+        tvl: getUniTVL({ factory: '0x4dC6048552e2DC6Eb1f82A783E859157d40FA193', useDefaultCoreAssets: true }),
         staking: stakingPricedLP("0x03245d87295cd0783e1f10a2ea54f9e80b726af8", "0x8173dda13fd405e5bca84bd7f64e58caf4810a32", "bsc", "0x4558e53328cddd5877b7348702c991f521aa35c0", "binancecoin", true),
     },
 }

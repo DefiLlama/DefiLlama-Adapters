@@ -15,14 +15,14 @@ module.exports = {
   timetravel: true,
   avax:{
     tvl: getUniTVL({
-      chain: 'avax',
+      useDefaultCoreAssets: true,
       factory: factoryContract,
     }),
     staking: staking(thorusMaster_avax, THO_avax, "avax"),
   },
   moonbeam: {
     tvl: getUniTVL({
-      chain: 'moonbeam',
+      useDefaultCoreAssets: true, 
       factory: factoryContract,
     }),
     staking: staking(
