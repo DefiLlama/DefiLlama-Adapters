@@ -271,5 +271,6 @@ module.exports.hallmarks = [
   [1642374675, "MIM depeg"],
   [1651881600, "UST depeg"],
   [1654822801, "stETH depeg"],
-  [1667692800, "FTX collapse"]
+  [1667692800, "FTX collapse"],
+  [1690715622, "Reentrancy hack"]
 ];
