@@ -10,9 +10,11 @@ const DFL = "0xD675fF2B0ff139E14F86D87b7a6049ca7C66d76e";
 const DFL_Harmony = ADDRESSES.arbitrum.MIM;
 
 const fetch = async () => {
+  return 0
+  /* 
   const tvl = (await utils.fetchURL("https://api.defily.io/v1/statistics")).data
     .payload.totalValueLocked.total;
-  return tvl;
+  return tvl; */
 };
 
 module.exports = {

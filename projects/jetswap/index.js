@@ -31,15 +31,15 @@ function staking(masterchef, token, chain) {
 
 module.exports = {
   bsc: {
-    tvl: uniTvlExport(bscFactory, 'bsc'),
-    staking: staking(MASTER_BSC, WINGS_TOKEN_BSC, "bsc"),
+    tvl: uniTvlExport(bscFactory, 'bsc', true),
+    staking: staking(MASTER_BSC, WINGS_TOKEN_BSC),
   },
   polygon: {
-    tvl: uniTvlExport(polygonFactory, 'polygon'),
-    staking: staking(MASTER_POLYGON, WINGS_TOKEN_POLYGON, "polygon"),
+    tvl: uniTvlExport(polygonFactory, 'polygon', true),
+    staking: staking(MASTER_POLYGON, WINGS_TOKEN_POLYGON),
   },
   fantom: {
-    tvl: uniTvlExport(fantomFactory, 'fantom'),
-    staking: staking(MASTER_FANTOM, WINGS_TOKEN_FANTOM, "fantom"),
+    tvl: uniTvlExport(fantomFactory, 'fantom', true),
+    staking: staking(MASTER_FANTOM, WINGS_TOKEN_FANTOM),
   },
 };

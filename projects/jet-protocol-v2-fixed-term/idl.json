@@ -1,0 +1,209 @@
+{
+  "version": "0.1.0",
+  "name": "jet_fixed_term",
+  "constants": [
+    {
+      "name": "MARKET",
+      "type": "bytes",
+      "value": "[109, 97, 114, 107, 101, 116]"
+    },
+    {
+      "name": "TICKET_ACCOUNT",
+      "type": "bytes",
+      "value": "[116, 105, 99, 107, 101, 116, 95, 97, 99, 99, 111, 117, 110, 116]"
+    },
+    {
+      "name": "TICKET_MINT",
+      "type": "bytes",
+      "value": "[116, 105, 99, 107, 101, 116, 95, 109, 105, 110, 116]"
+    },
+    {
+      "name": "CRANK_AUTHORIZATION",
+      "type": "bytes",
+      "value": "[99, 114, 97, 110, 107, 95, 97, 117, 116, 104, 111, 114, 105, 122, 97, 116, 105, 111, 110]"
+    },
+    {
+      "name": "CLAIM_NOTES",
+      "type": "bytes",
+      "value": "[99, 108, 97, 105, 109, 95, 110, 111, 116, 101, 115]"
+    },
+    {
+      "name": "TICKET_COLLATERAL_NOTES",
+      "type": "bytes",
+      "value": "[116, 105, 99, 107, 101, 116, 95, 99, 111, 108, 108, 97, 116, 101, 114, 97, 108, 95, 110, 111, 116, 101, 115]"
+    },
+    {
+      "name": "UNDERLYING_COLLATERAL_NOTES",
+      "type": "bytes",
+      "value": "[117, 110, 100, 101, 114, 108, 121, 105, 110, 103, 95, 99, 111, 108, 108, 97, 116, 101, 114, 97, 108, 95, 110, 111, 116, 101, 115]"
+    },
+    {
+      "name": "EVENT_ADAPTER",
+      "type": "bytes",
+      "value": "[101, 118, 101, 110, 116, 95, 97, 100, 97, 112, 116, 101, 114]"
+    },
+    {
+      "name": "TERM_LOAN",
+      "type": "bytes",
+      "value": "[116, 101, 114, 109, 95, 108, 111, 97, 110]"
+    },
+    {
+      "name": "TERM_DEPOSIT",
+      "type": "bytes",
+      "value": "[116, 101, 114, 109, 95, 100, 101, 112, 111, 115, 105, 116]"
+    },
+    {
+      "name": "USER",
+      "type": "bytes",
+      "value": "[117, 115, 101, 114]"
+    },
+    {
+      "name": "ORDERBOOK_MARKET_STATE",
+      "type": "bytes",
+      "value": "[111, 114, 100, 101, 114, 98, 111, 111, 107, 95, 109, 97, 114, 107, 101, 116, 95, 115, 116, 97, 116, 101]"
+    },
+    {
+      "name": "MARGIN_USER",
+      "type": "bytes",
+      "value": "[109, 97, 114, 103, 105, 110, 95, 117, 115, 101, 114]"
+    },
+    {
+      "name": "UNDERLYING_TOKEN_VAULT",
+      "type": "bytes",
+      "value": "[117, 110, 100, 101, 114, 108, 121, 105, 110, 103, 95, 116, 111, 107, 101, 110, 95, 118, 97, 117, 108, 116]"
+    },
+    {
+      "name": "FEE_VAULT",
+      "type": "bytes",
+      "value": "[102, 101, 101, 95, 118, 97, 117, 108, 116]"
+    }
+  ],
+  "instructions": [],
+  "accounts": [
+    {
+      "name": "Market",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "versionTag",
+            "type": "u64"
+          },
+          {
+            "name": "airspace",
+            "type": "publicKey"
+          },
+          {
+            "name": "orderbookMarketState",
+            "type": "publicKey"
+          },
+          {
+            "name": "eventQueue",
+            "type": "publicKey"
+          },
+          {
+            "name": "asks",
+            "type": "publicKey"
+          },
+          {
+            "name": "bids",
+            "type": "publicKey"
+          },
+          {
+            "name": "underlyingTokenMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "underlyingTokenVault",
+            "type": "publicKey"
+          },
+          {
+            "name": "ticketMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "claimsMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "ticketCollateralMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "underlyingCollateralMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "underlyingOracle",
+            "type": "publicKey"
+          },
+          {
+            "name": "ticketOracle",
+            "type": "publicKey"
+          },
+          {
+            "name": "feeVault",
+            "type": "publicKey"
+          },
+          {
+            "name": "feeDestination",
+            "type": "publicKey"
+          },
+          {
+            "name": "seed",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "bump",
+            "type": {
+              "array": [
+                "u8",
+                1
+              ]
+            }
+          },
+          {
+            "name": "orderbookPaused",
+            "type": "bool"
+          },
+          {
+            "name": "ticketsPaused",
+            "type": "bool"
+          },
+          {
+            "name": "reserved",
+            "type": {
+              "array": [
+                "u8",
+                29
+              ]
+            }
+          },
+          {
+            "name": "borrowTenor",
+            "type": "u64"
+          },
+          {
+            "name": "lendTenor",
+            "type": "u64"
+          },
+          {
+            "name": "originationFee",
+            "type": "u64"
+          },
+          {
+            "name": "nonce",
+            "type": "u64"
+          }
+        ]
+      }
+    }
+  ],
+  "types": [],
+  "errors": []
+}
