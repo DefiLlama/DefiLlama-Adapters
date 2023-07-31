@@ -43,8 +43,8 @@ query {
 }`;
 
 const dpmPositions = async ({ api, }) => {
-  const aave = await blockQuery(endpoints.aave, aaveQuery(api.block), { api });
-  const ajna = await blockQuery(endpoints.ajna, ajnaQuery(api.block), { api });
+  const aave = await blockQuery(endpoints.aave(), aaveQuery(api.block), { api });
+  const ajna = await blockQuery(endpoints.ajna(), ajnaQuery(api.block), { api });
 
   const supportedAjnaPools = [
     ...new Set(ajna.accounts.map(({ pool: { address } }) => address)),
