@@ -51,9 +51,6 @@ const fixBalancesTokens = {
   telos: {
     '0xdc2393dc10734bf153153038943a5deb42b209cd': { coingeckoId: "telos", decimals: 18 },
   },
-  base: {
-    '0x4200000000000000000000000000000000000006': { coingeckoId: "ethereum", decimals: 18 },
-  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
