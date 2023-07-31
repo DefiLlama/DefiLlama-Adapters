@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const Abis = require("./abi.json");
 const { sumTokensExport, sumUnknownTokens, } = require('../helper/unknownTokens')
 
 const Contracts = {
   bsc: {
-    wbnb: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    wbnb: ADDRESSES.bsc.WBNB,
     brx: "0xe550c560a895d043E5EEd2bC7eC8A8e46c2408D6",
     fossil: "0xfE8FFB60a2B6d46102caa35739Be465E600D0f5E",
     bank: "0xF90c0b409001b97067c539693754008456f6C265",

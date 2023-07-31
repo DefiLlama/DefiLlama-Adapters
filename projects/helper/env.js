@@ -9,7 +9,7 @@ const DEFAULTS = {
   APTOS_RPC: 'https://aptos-mainnet.pontem.network',
   SUI_RPC: 'https://fullnode.mainnet.sui.io/',
   MULTIVERSX_RPC: 'https://api.multiversx.com',
-  LINEA_RPC: 'https://linea.rpc.thirdweb.com',
+  PGN_RPC: 'https://rpc.publicgoods.network',
 }
 
 const ENV_KEYS = [
@@ -18,6 +18,9 @@ const ENV_KEYS = [
   'GETBLOCK_KEY',
   'LOFTY_API',
   'OLYMPUS_GRAPH_API_KEY',
+  'SUMMER_HISTORY_ENDPOINT',
+  'SUMMER_AJNA_ENDPOINT',
+  'SUMMER_CONFIRMED_VAULTS_ENDPOINT',
 ]
 
 Object.keys(DEFAULTS).forEach(i => {

@@ -257,7 +257,7 @@
   "evmos": {
     "WEVMOS": "0xd4949664cd82660aae99bedc034a0dea8a0bd517",
     "STEVMOS": "0x2c68d1d6ab986ff4640b51e1f14c716a076e44c4",
-    "STATIM": "0xb5124fa2b2cf92b2d469b249433ba1c96bdf536d",
+    "STATOM": "0xb5124fa2b2cf92b2d469b249433ba1c96bdf536d",
     "ATOM": "0xc5e00d3b04563950941f7137b5afa3a534f0d6d6",
     "STRIDE": "0x8fa78ceb7f04118ec6d06aac37ca854691d8e963",
     "axlRETH": "0xe60ce2dfa6d4ad37ade1dcb7ac4d6c3a093b3a7e",
@@ -273,7 +273,8 @@
     "WETH": "0x5842c5532b61acf3227679a8b1bd0242a41752f2",
     "WBTC": "0xf80699dc594e00ae7ba200c7533a07c1604a106d",
     "FRAX": "0xe03494d0033687543a80c9b1ca7d6237f2ea8bd8",
-    "DIFF": "0x3f75ceabcdfed1aca03257dc6bdc0408e2b4b026"
+    "DIFF": "0x3f75ceabcdfed1aca03257dc6bdc0408e2b4b026",
+    "AXL_USDC": "0x15c3eb3b621d1bff62cba1c9536b7c1ae9149b57"
   },
   "oasis": {
     "WETH": "0x3223f17957ba502cbe71401d55a0db26e5f7c68f",
@@ -474,6 +475,7 @@
   },
   "telos": {
     "WTLOS": "0xd102ce6a4db07d247fcc28f366a623df0938ca9e",
+    "WTLOS_1": "0xdc2393dc10734bf153153038943a5deb42b209cd",
     "ETH": "0xfa9343c3897324496a05fc75abed6bac29f8a40f",
     "WBTC": "0xf390830df829cf22c53c8840554b98eafc5dcbc2",
     "USDC": "0x818ec0a7fe18ff94269904fced6ae3dae6d6dc0b",
@@ -1216,7 +1218,8 @@
     "USDT": "USDT"
   },
   "elrond": {
-    "WEGLD": "WEGLD-bd4d79"
+    "WEGLD": "WEGLD-bd4d79",
+    "USDC": "USDC-c76f1f"
   },
   "bitindi": {
     "WBNI": "0x15E162205421dc3A47b15A1A740FbF5EAbB77921"
@@ -1340,5 +1343,8 @@
   },
   "linea": {
     "WETH": "0xe5D7C2a44FfDDf6b295A15c148167daaAf5Cf34f"
+  },
+  "base": {
+    "WETH": "0x4200000000000000000000000000000000000006"
   }
 }
