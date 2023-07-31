@@ -8,6 +8,8 @@ const factories = {
 }
 
 async function tvl(_, _b, _cb, { api, }) {
+  let blacklistedTokens = []
+  if (api.chain === 'fantom') blacklistedTokens = ['0xdc6ff44d5d932cbd77b52e5612ba0529dc6226f1']
   const pools = await api.fetchList({
     target: factories[api.chain],
     itemAbi: 'function getLBPairAtIndex(uint256) view returns (address)',
@@ -26,7 +28,7 @@ async function tvl(_, _b, _cb, { api, }) {
     toa.push([tokenA[i], pools[i]])
     toa.push([tokenB[i], pools[i]])
   })
-  return sumTokens2({...api, tokensAndOwners: toa, })
+  return sumTokens2({...api, tokensAndOwners: toa, blacklistedTokens,})
 }
 
 module.exports = {
