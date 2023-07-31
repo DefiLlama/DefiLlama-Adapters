@@ -1,6 +1,3 @@
-const { formatUnits } = require("ethers/lib/utils");
-const { get } = require("../helper/http");
-
 const vaults = [
   {
     symbol: "ibETH",
@@ -48,6 +45,7 @@ const syncswapWorkers = [
 
 module.exports = {
   timetravel: false,
+  misrepresentedTokens: true,
   era: {
     async tvl(_, _1, _2, { api }) {
       const vaultBalances = await api.multiCall({
@@ -63,26 +61,19 @@ module.exports = {
         syncswapWorkerBalances,
         syncswapReserves,
         syncswapLpTotalSupplies,
+        token0s,
+        token1s,
       ] = await Promise.all([
-        api.multiCall({
-          abi: "uint256:totalStakedLpBalance",
-          calls: syncswapWorkers.map((v) => v.address),
-        }),
-        api.multiCall({
-          abi: "function getReserves() view returns (uint256, uint256)",
-          calls: syncswapWorkers.map((v) => v.lpToken),
-        }),
-        api.multiCall({
-          abi: "uint256:totalSupply",
-          calls: syncswapWorkers.map((v) => v.lpToken),
-        }),
+        api.multiCall({ abi: "uint256:totalStakedLpBalance", calls: syncswapWorkers.map((v) => v.address), }),
+        api.multiCall({ abi: "function getReserves() view returns (uint256, uint256)", calls: syncswapWorkers.map((v) => v.lpToken), }),
+        api.multiCall({ abi: "uint256:totalSupply", calls: syncswapWorkers.map((v) => v.lpToken), }),
+        api.multiCall({ abi: "address:token0", calls: syncswapWorkers.map((v) => v.lpToken), }),
+        api.multiCall({ abi: "address:token1", calls: syncswapWorkers.map((v) => v.lpToken), }),
       ]);
 
       syncswapWorkers.forEach((w, i) => {
-        const [token0, token1] =
-          w.baseTokenAddress.toLowerCase() < w.farmingTokenAddress.toLowerCase()
-            ? [w.baseTokenAddress, w.farmingTokenAddress]
-            : [w.farmingTokenAddress, w.baseTokenAddress];
+        const token0 = token0s[i]
+        const token1 = token1s[i]
         const lpBalance = BigInt(syncswapWorkerBalances[i])
         const totalSupply = BigInt(syncswapLpTotalSupplies[i])
         const [r0, r1] = syncswapReserves[i].map(BigInt);
