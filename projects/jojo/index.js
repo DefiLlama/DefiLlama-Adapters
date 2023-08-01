@@ -5,6 +5,12 @@ const { sumTokensExport } = require('../helper/unwrapLPs');
 
 //zkSync Era
 const ownerEra = '0x47eAD228547db8397398C1D3aAfd0847CBEbddeC'; // contract address
+const ownerArbitrum = '0xcDf9eED57Fe8dFaaCeCf40699E5861517143bcC7';
+
+const tokenArbitrum = [
+    ADDRESSES.arbitrum.USDC
+];
+
 const tokensEra = [
     ADDRESSES.era.USDC, // USDC
 ];
@@ -14,5 +20,8 @@ module.exports = {
     start: 1687017600,
     era: {
         tvl: sumTokensExport({ owner:ownerEra, tokens:tokensEra })
+    },
+    arbitrum:{
+        tvl: sumTokensExport({owner:ownerArbitrum, tokens:tokenArbitrum})
     }
 };
