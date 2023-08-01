@@ -1,5 +1,6 @@
 module.exports = {
   misrepresentedTokens: true,
+  hallmark: [1688342964, "Launch Sake Vault"],
   arbitrum: {
     tvl: async (_, _b, _cb, { api }) => {
       const vaults = [
