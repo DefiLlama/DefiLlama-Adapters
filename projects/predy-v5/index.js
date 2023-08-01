@@ -8,19 +8,19 @@ const abi = {
 }
 
 async function tvl(_, _b, _cb, { api, }) {
-  const { pairsCount } = await api.call({  abi: abi.v5.globalData, target: v5Address})
-  const data = await api.fetchList({  itemCount: pairsCount - 1, startFromOne: true, itemAbi: abi.v5.getAsset, target: v5Address})
+  const { pairsCount } = await api.call({ abi: abi.v5.globalData, target: v5Address })
+  const data = await api.fetchList({ itemCount: pairsCount - 1, startFromOne: true, itemAbi: abi.v5.getAsset, target: v5Address })
   const tokens = []
   data.forEach(({ stablePool, underlyingPool }) => {
     tokens.push(stablePool.token)
     tokens.push(underlyingPool.token)
   })
-  return api.sumTokens({ tokens, owner:v5Address,})
+  return api.sumTokens({ tokens, owner: v5Address, })
 }
 
 async function borrowed(_, _b, _cb, { api, }) {
-  const { pairsCount } = await api.call({  abi: abi.v5.globalData, target: v5Address})
-  const data = await api.fetchList({  itemCount: pairsCount - 1, startFromOne: true, itemAbi: abi.v5.getAsset, target: v5Address})
+  const { pairsCount } = await api.call({ abi: abi.v5.globalData, target: v5Address })
+  const data = await api.fetchList({ itemCount: pairsCount - 1, startFromOne: true, itemAbi: abi.v5.getAsset, target: v5Address })
   data.forEach(({ stablePool, underlyingPool }) => {
     api.add(stablePool.token, stablePool.tokenStatus.totalNormalBorrowed)
     api.add(underlyingPool.token, underlyingPool.tokenStatus.totalNormalBorrowed)
