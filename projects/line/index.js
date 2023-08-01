@@ -44,7 +44,7 @@ const staking = async (_, _1, { kava: block }, { api }) => {
 }
 
 module.exports = {
-  methodology: `The TVL is calculated as USD value of the collateral locked for issuing LINE tokens, staked LP tokens of incentivized pools, and the balances of pending orders on the options market.`,
+  methodology: 'The TVL is calculated as USD value of the collateral locked for issuing LINE tokens, staked LP tokens of incentivized pools, and the balances of pending orders on the options market.',
   kava: {
     tvl,
     staking
