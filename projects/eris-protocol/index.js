@@ -1,7 +1,7 @@
-const { queryContract } = require("../helper/chain/terra");
 const {
   queryContract: queryContractCosmos,
   getBalance,
+  getBalance2,
 } = require("../helper/chain/cosmos");
 
 // For testing run
@@ -50,64 +50,151 @@ const config = {
   kujira: {
     coinGeckoId: "kujira",
     hub: "kujira1n3fr5f56r2ce0s37wdvwrk98yhhq3unnxgcqus8nzsfxvllk0yxquurqty",
+    voteEscrow:
+      "kujira1mxzfcxpn6cjx4u9zln6ttxuc6fuw6g0cettd6nes74vrt2f22h4q3j5cdz",
+    ampToken:
+      "factory/kujira1n3fr5f56r2ce0s37wdvwrk98yhhq3unnxgcqus8nzsfxvllk0yxquurqty/ampKUJI",
   },
   juno: {
     coinGeckoId: "juno-network",
     hub: "juno17cya4sw72h4886zsm2lk3udxaw5m8ssgpsl6nd6xl6a4ukepdgkqeuv99x",
   },
+  migaloo: {
+    coinGeckoId: "white-whale",
+    hub: "migaloo1436kxs0w2es6xlqpp9rd35e3d0cjnw4sv8j3a7483sgks29jqwgshqdky4",
+    voteEscrow:
+      "migaloo1hntfu45etpkdf8prq6p6la9tsnk3u3muf5378kds73c7xd4qdzysuv567q",
+    ampToken:
+      "factory/migaloo1436kxs0w2es6xlqpp9rd35e3d0cjnw4sv8j3a7483sgks29jqwgshqdky4/ampWHALE",
+    // currently not running due to node simulation gas issues
+    arbVault:
+      "migaloo1ey4sn2mkmhew4pdrzk90l9acluvas25qlhuvsfgssw42ugz8yjlqx92j9l",
+  },
+  osmosis: {
+    coinGeckoId: "osmosis",
+    hub: "osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9",
+    voteEscrow:
+      "osmo1vcg9a7zwfeuqwtkya5l34tdgzxnafdzpe22ahphd02uwed43wnfs3wtf8a",
+    ampToken:
+      "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
+  },
+  injective: {
+    coinGeckoId: "injective-protocol",
+    hub: "inj1cdwt8g7nxgtg2k4fn8sj363mh9ahkw2qt0vrnc",
+    voteEscrow: "inj1yp0lgxq460ked0egtzyj2nck3mdhr8smfmteh5",
+    ampToken: "factory/inj1cdwt8g7nxgtg2k4fn8sj363mh9ahkw2qt0vrnc/ampINJ",
+    decimals: 18,
+  },
+  neutron: {
+    farms: [
+      "neutron1h4ehzx3j92jv4tkgjy3k2qphh5863l68cyep7vaf83fj6k89l4lqjfyh77",
+      "neutron1sfmpf84xacu2la88zzsgende2jjlczswdmhzn7jh6tuhn43jl86q6d0vhj",
+      "neutron1smam4j5cypw2vp7un3q8w68sg97zq9s2c95ukwsmpsl2jh4xwzdskxm6az",
+      "neutron188xz8cg4uqk4ssg9tcf3q2764ar8ev0jr8qpx2qspchul98ykzuqx58r50",
+    ],
+    coinGeckoMap: {
+      "ibc/F082B65C88E4B6D5EF1DB243CDA1D331D002759E938A0F5CD3FFDC5D53B3E349":
+        "usd-coin",
+      "ibc/57503D7852EF4E1899FE6D71C5E81D7C839F76580F86F21E39348FC2BC9D7CE2":
+        "tether",
+      "ibc/5751B8BCDA688FD0A8EC0B292EEF1CDEAB4B766B63EC632778B196D317C40C3A":
+        "astroport-fi",
+      untrn: "neutron-3",
+      "ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9":
+        "cosmos",
+    },
+  },
 };
 
-async function tvlHub(chain) {
-  let chainConfig = config[chain];
-  let coinGeckoId = chainConfig.coinGeckoId;
-
-  const res = await queryContractCosmos({
-    contract: chainConfig.hub,
+async function getState(chain, contract) {
+  if (!contract) {
+    return {};
+  }
+  return queryContractCosmos({
+    contract,
     chain,
     data: { state: {} },
   });
+}
 
-  let tvl = +(res.tvl_uluna ?? res.tvl_utoken ?? 0) / 1e6;
+async function tvlHub(chain, state) {
+  let chainConfig = config[chain];
+  let coinGeckoId = chainConfig.coinGeckoId;
+
+  state ||= await getState(chain, chainConfig.hub);
+
+  let tvl =
+    +(state.tvl_uluna ?? state.tvl_utoken ?? 0) / getDecimalFactor(chainConfig);
   return {
     [coinGeckoId]: tvl,
   };
+}
+
+function getDecimalFactor(chainConfig) {
+  let decimals = chainConfig.decimals ?? 6;
+  return Math.pow(10, decimals);
 }
 
 async function tvlArbVault(chain) {
   let chainConfig = config[chain];
   let coinGeckoId = chainConfig.coinGeckoId;
 
-  const res = await queryContractCosmos({
-    contract: chainConfig.arbVault,
-    chain,
-    data: { state: {} },
-  });
+  if (!chainConfig.arbVault) {
+    return {};
+  }
 
-  let tvl = +(res.balances.tvl_utoken ?? 0) / 1e6;
+  const res = await getState(chain, chainConfig.arbVault);
+
+  let tvl = +(res.balances.tvl_utoken ?? 0) / getDecimalFactor(chainConfig);
   return {
     [coinGeckoId]: tvl,
   };
 }
 
-async function tvlAmpGovernance(chain) {
+async function tvlAmpGovernance(chain, state) {
   let chainConfig = config[chain];
-  let coinGeckoId = chainConfig.coinGeckoIdAmp;
 
-  const res = await getBalance({
-    owner: chainConfig.voteEscrow,
-    token: chainConfig.ampToken,
-    chain,
-  });
+  if (!chainConfig.ampToken) {
+    return {};
+  }
 
-  let tvl = +(res.tvl_uluna ?? res.tvl_utoken ?? 0) / 1e6;
-  return {
-    [coinGeckoId]: tvl,
-  };
+  let isTokenFactory = chainConfig.ampToken.startsWith("factory");
+
+  let ampAmount = 0;
+
+  if (isTokenFactory) {
+    let balances = await getBalance2({
+      owner: chainConfig.voteEscrow,
+      token: isTokenFactory,
+      chain,
+    });
+
+    ampAmount = +(balances[chainConfig.ampToken] ?? 0);
+  } else {
+    ampAmount = await getBalance({
+      owner: chainConfig.voteEscrow,
+      token: chainConfig.ampToken,
+      chain,
+    });
+  }
+
+  if (chainConfig.coinGeckoIdAmp) {
+    return {
+      [chainConfig.coinGeckoIdAmp]: ampAmount / getDecimalFactor(chainConfig),
+    };
+  } else {
+    state ||= await getState(chain, chainConfig.hub);
+    let amount =
+      (ampAmount / getDecimalFactor(chainConfig)) * +state.exchange_rate;
+    return {
+      [chainConfig.coinGeckoId]: amount,
+    };
+  }
 }
 
-async function farm2Tvl(farm) {
-  const res = await queryContract({
-    isTerra2: true,
+async function farm2Tvl(chain, farm) {
+  const res = await queryContractCosmos({
+    chain: chain,
     contract: farm,
     data: { state: {} },
   });
@@ -126,8 +213,8 @@ async function farm2Tvl(farm) {
     amount: +res.locked_assets[1].amount,
   };
 
-  token1.coinGeckoId = getCoinGeckoId("terra2", token1.denom);
-  token2.coinGeckoId = getCoinGeckoId("terra2", token2.denom);
+  token1.coinGeckoId = getCoinGeckoId(chain, token1.denom);
+  token2.coinGeckoId = getCoinGeckoId(chain, token2.denom);
 
   let results = [];
   if (token1.coinGeckoId) {
@@ -171,33 +258,35 @@ function merge(elements) {
   }, {});
 }
 
-function terraTvl() {
-  return mergePromises([tvlHub("terra")]);
-}
-
-function kujiraTvl() {
-  return mergePromises([tvlHub("kujira")]);
-}
-
-function junoTvl() {
-  return mergePromises([tvlHub("juno")]);
-}
-
-function terra2Tvl() {
-  return mergePromises([
-    tvlHub("terra2"),
-    tvlArbVault("terra2"),
-    tvlAmpGovernance("terra2"),
-    ...config.terra2.farms.map(farm2Tvl),
-  ]);
+async function productsTvl(chain) {
+  let chainConfig = config[chain];
+  try {
+    let state = await getState(chain, chainConfig.hub);
+    return await mergePromises([
+      tvlHub(chain, state),
+      tvlAmpGovernance(chain, state),
+      tvlArbVault(chain).catch((a) => ({})),
+      ...(chainConfig.farms ?? []).map((farm) => farm2Tvl(chain, farm)),
+    ]);
+  } catch (error) {
+    let url = error?.response?.config?.url;
+    if (url) {
+      console.log("Issue calling", error?.response?.config?.url);
+    }
+    throw error;
+  }
 }
 
 module.exports = {
   timetravel: false,
   misrepresentedTokens: false,
   methodology: "Liquid Staking and Arbitrage Protocol",
-  terra2: { tvl: terra2Tvl },
-  terra: { tvl: terraTvl },
-  kujira: { tvl: kujiraTvl },
-  juno: { tvl: junoTvl },
+  terra2: { tvl: () => productsTvl("terra2") },
+  terra: { tvl: () => productsTvl("terra") },
+  kujira: { tvl: () => productsTvl("kujira") },
+  juno: { tvl: () => productsTvl("juno") },
+  migaloo: { tvl: () => productsTvl("migaloo") },
+  injective: { tvl: () => productsTvl("injective") },
+  osmosis: { tvl: () => productsTvl("osmosis") },
+  neutron: { tvl: () => productsTvl("neutron") },
 };

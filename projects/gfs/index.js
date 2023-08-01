@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const contracts = require("./contracts.json");
 const { sumLPWithOnlyOneToken } = require("./../helper/unwrapLPs");
 
 const iotx = "0x6fb3e0a217407efff7ca062d46c26e5d60a14d69";
-const wiotx = "0xA00744882684C3e4747faEFD68D283eA44099D03";
+const wiotx = ADDRESSES.iotex.WIOTX;
 
 function pool2(chain, gasToken) {
   return async (timestamp, _, {[chain]: block}) => {

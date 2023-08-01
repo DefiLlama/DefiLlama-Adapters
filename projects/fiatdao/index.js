@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk")
 const { default: BigNumber } = require("bignumber.js")
 const abi = require('./abi.json')
@@ -9,8 +10,8 @@ const { getConfig } = require('../helper/cache')
 const STAKING_CONTRACT = "0xe98ae8cD25CDC06562c29231Db339d17D02Fd486"
 const STAKING_NFT = "0xE9F9936a639809e766685a436511eac3Fb1C85bC"
 const RGT = "0xD291E7a03283640FDc51b121aC401383A46cC623"
-const YFI = "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e"
-const MKR = "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2"
+const YFI = ADDRESSES.ethereum.YFI
+const MKR = ADDRESSES.ethereum.MKR
 const BOND = "0x0391D2021f89DC339F60Fff84546EA23E337750f"
 const UMA = "0x04Fa0d235C4abf4BcF4787aF4CF447DE572eF828"
 const GOHM = "0x0ab87046fbb341d058f17cbc4c1133f25a20a52f"
@@ -18,7 +19,7 @@ const WSOHM = "0xca76543cf381ebbb277be79574059e32108e3e65"
 const WSOHM_FDT_SLP = "0x2e30e758b3950dd9afed2e21f5ab82156fbdbbba"
 const FDT_GOHM = "0x75b02b9889536B617d57D08c1Ccb929c523945C1"
 
-const LUSD = '0x5f98805a4e8be255a32880fdec7f6728c6568ba0'
+const LUSD = ADDRESSES.ethereum.LUSD
 const LUSD3CRV = '0xEd279fDD11cA84bEef15AF5D39BB4d4bEE23F0cA'
 
 function resolveUnderlier(underlier) {
@@ -66,7 +67,7 @@ async function tvl(timestamp, block) {
   const vaults = []
 
   tokensAll.forEach(({ output, input: { target } }) => {
-    if (output !== '0x0000000000000000000000000000000000000000') {
+    if (output !== ADDRESSES.null) {
       vaults.push(target)
       tokens.push(output)
     }

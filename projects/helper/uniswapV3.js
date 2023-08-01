@@ -16,7 +16,7 @@ function uniV3Export(config) {
   const exports = {}
 
   Object.keys(config).forEach(chain => {
-    let { factory: target, fromBlock, topics, eventAbi, isAlgebra } = config[chain]
+    let { factory: target, fromBlock, topics, eventAbi, isAlgebra, blacklistedTokens = [] } = config[chain]
     if (!topics) topics = isAlgebra ? algebraConfig.topics : uniswapConfig.topics
     if (!eventAbi) eventAbi = isAlgebra ? algebraConfig.eventAbi : uniswapConfig.eventAbi
 
@@ -31,7 +31,7 @@ function uniV3Export(config) {
           onlyArgs: true,
         })
 
-        return sumTokens2({ api, ownerTokens: logs.map(i => [[i.token0, i.token1], i.pool]), })
+        return sumTokens2({ api, ownerTokens: logs.map(i => [[i.token0, i.token1], i.pool]), blacklistedTokens, permitFailure: logs.length > 5000 })
       }
     }
   })

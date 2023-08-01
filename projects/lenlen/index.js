@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const { compoundV3Exports } = require('../helper/compoundV3')
 
@@ -6,7 +7,7 @@ const markets = [
 ]
 
 const collaterals = [
-  '0x1db6cdc620388a0b6046b20cd59503a0839adcff',
+  ADDRESSES.vision.USDT,
 ]
 
 module.exports = compoundV3Exports({

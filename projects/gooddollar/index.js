@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require('./abi.json');
 const BigNumber = require("bignumber.js");
@@ -5,7 +6,7 @@ const { sumTokens } = require("../helper/unwrapLPs");
 
 const tokens = {
     aUSDC: "0xbcca60bb61934080951369a648fb03df4f96263c",
-    DAI: "0x6b175474e89094c44da98b954eedeac495271d0f",
+    DAI: ADDRESSES.ethereum.DAI,
     cDAI: "0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643",
     Gfuse: "0x495d133B938596C9984d462F007B676bDc57eCEC", // GoodDollar on Fuse
     FUSE: "0x970b9bb2c0444f5e81e9d0efb84c8ccdcdcaf84d", // Fuse on Mainnet

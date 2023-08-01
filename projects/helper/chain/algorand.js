@@ -4,17 +4,18 @@ const axios = require('axios')
 const { getApplicationAddress } = require('./algorandUtils/address')
 const { RateLimiter } = require("limiter");
 const coreAssets = require('../coreAssets.json')
+const ADDRESSES = coreAssets
 const sdk = require('@defillama/sdk');
 const { default: BigNumber } = require('bignumber.js');
 const stateCache = {}
 const accountCache = {}
 const assetCache = {}
 
-const geckoMapping = coreAssets.algorand ?? {}
+const geckoMapping = Object.values(coreAssets.algorand)
 const axiosObj = axios.create({
-  baseURL: 'https://algoindexer.algoexplorerapi.io',
+  baseURL: "https://mainnet-idx.algonode.cloud",
   timeout: 300000,
-})
+});
 
 const indexerLimiter = new RateLimiter({ tokensPerInterval: 10, interval: "second" });
 
@@ -132,10 +133,18 @@ async function getAccountInfo(accountId) {
 
 const tokens = {
   usdc: 31566704,
+  usdt: 312769,
+  wBtc: 1058926737,
+  wEth: 887406851,
+  wBtcGoBtcLp: 1058934626,
+  wEthGoEthLp: 1058935051,
+  usdtGoUsdLp: 1081978679,
   goUsd: 672913181,
   usdcGoUsdLp: 885102318,
   gard: 684649988,
-}
+  gold$: 246516580,
+  silver$: 246519683,
+};
 
 // store all asset ids as string
 Object.keys(tokens).forEach(t => tokens[t] = '' + tokens[t])
@@ -163,10 +172,10 @@ async function getPriceFromAlgoFiLP(lpAssetId, unknownAssetId) {
   const unknownAssetQuantity = lpInfo.reserveInfo.assets.find(i => i['asset-id'] === '' + unknownAssetId).amount
   for (const i of lpInfo.reserveInfo.assets) {
     const id = i['asset-id']
-    if (geckoMapping[id]) {
+    if (geckoMapping.includes(id)) {
       return {
         price: i.amount / unknownAssetQuantity,
-        geckoId: geckoMapping[id],
+        geckoId: 'algorand:'+id,
         decimals: 0,
       }
     }

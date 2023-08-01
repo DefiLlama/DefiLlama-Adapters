@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { getChainTransform } = require('../helper/portedTokens')
 const abi = require('./abi.json')
@@ -21,7 +22,7 @@ const stakings = [
 ]
 
 const DONKEY_TOKEN = '0x4576E6825B462b6916D2a41E187626E9090A92c6'
-const ETH = "0x0000000000000000000000000000000000000000";
+const ETH = ADDRESSES.null;
 
 async function staking(timestamp, block) {
   const balances = {}

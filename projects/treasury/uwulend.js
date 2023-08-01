@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 const treasury = "0xc671a6b1415de6549b05775ee4156074731190c6";
@@ -7,10 +8,10 @@ module.exports = treasuryExports({
     tokens: [
       nullAddress,
       "0x29127fE04ffa4c32AcAC0fFe17280ABD74eAC313", // SIFU
-      "0xdAC17F958D2ee523a2206206994597C13D831ec7", // USDT
-      "0x6B175474E89094C44Da98b954EedeAC495271d0F", // DAI
+      ADDRESSES.ethereum.USDT, // USDT
+      ADDRESSES.ethereum.DAI, // DAI
       "0x99D8a9C45b2ecA8864373A26D1459e3Dff1e17F3", // MIM
-      "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", // WBTC
+      ADDRESSES.ethereum.WBTC, // WBTC
       "0xb95BD0793bCC5524AF358ffaae3e38c3903C7626", // uDAI
       "0x24959F75d7BDA1884f1Ec9861f644821Ce233c7D", // uUSDT
       "0x8C240C385305aeb2d5CeB60425AABcb3488fa93d", // uFRAX

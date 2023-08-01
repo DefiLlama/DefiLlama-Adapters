@@ -4,7 +4,7 @@ const { get } = require('./helper/http')
 const endpoint = "https://api.harvest.finance/vaults?key=41e90ced-d559-4433-b390-af424fdc76d6"
 const chains = {
   ethereum: 'eth',
-  bsc: 'bsc',
+  // bsc: 'bsc',
   arbitrum: 'arbitrum',
   polygon: 'matic'
 }
@@ -19,7 +19,10 @@ Object.keys(chains).forEach(chain => {
       if (!_response) _response = get(endpoint)
       const response = await _response
       var tvl = 0;
-      Object.values(response[chain]).map(async item => {
+      Object.values(response[chain]).map(item => {
+        if(item.id === "convex_pETH"){
+          return
+        }
         const poolTvl = parseFloat(item.totalValueLocked ?? 0)
         tvl += poolTvl
       })

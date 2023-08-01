@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { requery } = require("../helper/requery");
 const abi = require("./abi");
@@ -5,6 +6,8 @@ const { default: BigNumber } = require("bignumber.js");
 const { getCompoundV2Tvl } = require('../helper/compound')
 const { pool2 } = require('../helper/pool2');
 const { getBlock } = require("../helper/http");
+const { sliceIntoChunks } = require("../helper/utils");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const earnETHPoolFundControllerAddressesIncludingLegacy = [
   '0xD9F223A36C2e398B0886F945a7e556B41EF91A3C',
@@ -17,45 +20,51 @@ const earnDAIPoolControllerAddressesIncludingLegacy = [
 ]
 const earnStablePoolAddressesIncludingLegacy = [
   '0x4a785fa6fcd2e0845a24847beb7bddd26f996d4d',
-  '0x27C4E34163b5FD2122cE43a40e3eaa4d58eEbeaF',
-  '0x318cfd99b60a63d265d2291a4ab982073fbf245d',
-  '0xb6b79D857858004BF475e4A57D4A446DA4884866',
-  '0xD4be7E211680e12c08bbE9054F0dA0D646c45228',
-  '0xB202cAd3965997f2F5E67B349B2C5df036b9792e',
-  '0xe4deE94233dd4d7c2504744eE6d34f3875b3B439'
+  // '0x27C4E34163b5FD2122cE43a40e3eaa4d58eEbeaF',
+  // '0x318cfd99b60a63d265d2291a4ab982073fbf245d',
+  // '0xb6b79D857858004BF475e4A57D4A446DA4884866',
+  // '0xD4be7E211680e12c08bbE9054F0dA0D646c45228',
+  // '0xB202cAd3965997f2F5E67B349B2C5df036b9792e',
+  // '0xe4deE94233dd4d7c2504744eE6d34f3875b3B439'
 ]
 const fusePoolLensAddress = '0x8dA38681826f4ABBe089643D2B3fE4C6e4730493'
 const fusePoolDirectoryAddress = '0x835482FE0532f169024d5E9410199369aAD5C77E'
 const rariGovernanceTokenUniswapDistributorAddress = '0x1FA69a416bCF8572577d3949b742fBB0a9CD98c7'
-const sushiETHRGTPairAddress = '0x18a797c7c70c1bf22fdee1c09062aba709cacf04'
-const WETHTokenAddress = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
-const RGTTokenAddress = '0xD291E7a03283640FDc51b121aC401383A46cC623'
 const RGTETHSushiLPTokenAddress = '0x18a797c7c70c1bf22fdee1c09062aba709cacf04'
-const ETHAddress = '0x0000000000000000000000000000000000000000'
+const ETHAddress = ADDRESSES.null
 const bigNumZero = BigNumber('0')
 
 const tokenMapWithKeysAsSymbol = {
-  'DAI': '0x6b175474e89094c44da98b954eedeac495271d0f',
-  'USDC': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-  'USDT': '0xdac17f958d2ee523a2206206994597c13d831ec7',
-  'TUSD': '0x0000000000085d4780b73119b644ae5ecd22b376',
-  'BUSD': '0x4fabb145d64652a948d72533023f6e7a623c7c53',
-  'SUSD': '0x57ab1ec28d129707052df4df418d58a2d46d5f51',
+  'DAI': ADDRESSES.ethereum.DAI,
+  'USDC': ADDRESSES.ethereum.USDC,
+  'USDT': ADDRESSES.ethereum.USDT,
+  'TUSD': ADDRESSES.ethereum.TUSD,
+  'BUSD': ADDRESSES.ethereum.BUSD,
+  'SUSD': ADDRESSES.ethereum.sUSD,
   'MUSD': '0xe2f2a5c287993345a840db3b0845fbc70f5935a5'
 }
 
 const fusePoolData = {}
 
 async function getFusePoolData(pools, block) {
-  const data = await sdk.api.abi.multiCall({
+  console.log({
     target: fusePoolLensAddress,
     abi: abi['getPoolSummary'],
     block,
-    calls: pools.map((poolInfo) => ({
-      params: [poolInfo[2]]
-    }))
+    calls: pools.map(i => i.comptroller)
   })
-  requery(data, 'ethereum', block, abi['getPoolSummary'])
+  const data = { output: [] }
+  const chunks = sliceIntoChunks(pools.map(i => ({ params: i.comptroller })), 25)
+  for (const chunk of chunks) {
+    const items = await sdk.api2.abi.multiCall({
+      target: fusePoolLensAddress,
+      abi: abi['getPoolSummary'],
+      block,
+      calls: chunk
+    })
+    console.log(items)
+    data.output.push(...items.output)
+  }
   return data
 }
 
@@ -72,6 +81,7 @@ async function getFusePools(timestamp, block, balances, borrowed) {
     fusePoolData[block] = getFusePoolData(fusePools, block)
 
   const poolSummaries = await fusePoolData[block]
+  console.log(poolSummaries)
 
   for (let summaryResult of poolSummaries.output) {
     if (summaryResult.success) {
@@ -92,7 +102,7 @@ async function getFusePools(timestamp, block, balances, borrowed) {
 }
 
 async function borrowed(timestamp, block) {
-  if(block > 14684686){
+  if (block > 14684686) {
     return {} // after fei hack
   }
   const balances = {}
@@ -177,25 +187,41 @@ async function tvl(timestamp, block) {
   await getBalancesFromEarnPool(earnStablePoolAddressesIncludingLegacy)
 
   // Fuse
-  await getFusePools(timestamp, block, balances, false)
+  // await getFusePools(timestamp, block, balances, false)
 
   return balances
 }
 
+async function fuseTvl(__, _b, _cb, { api, }) {
+
+  const [_, pools] = (await api.call({ target: fusePoolDirectoryAddress, abi: abi['getPublicPools'] }))
+  const markets = (await api.multiCall({ abi: 'address[]:getAllMarkets', calls: pools.map(i => i.comptroller) })).flat()
+  const tokens = await api.multiCall({ abi: 'address:underlying', calls: markets })
+  return sumTokens2({api , tokensAndOwners2: [tokens, markets]})
+}
+async function fuseBorrowed(__, _b, _cb, { api, }) {
+
+  const [_, pools] = (await api.call({ target: fusePoolDirectoryAddress, abi: abi['getPublicPools'] }))
+  const markets = (await api.multiCall({ abi: 'address[]:getAllMarkets', calls: pools.map(i => i.comptroller) })).flat()
+  const tokens = await api.multiCall({ abi: 'address:underlying', calls: markets })
+  const bals = await api.multiCall({ abi: 'uint256:totalBorrows', calls: markets })
+  api.addTokens(tokens, bals)
+  return api.getBalances()
+}
+
 module.exports = {
-  timetravel: true,
   misrepresentedTokens: true,
   doublecounted: true,
   start: 1596236058,        // July 14, 2020
   ethereum: {
-    tvl,
+    tvl: sdk.util.sumChainTvls([tvl, fuseTvl]),
     pool2: pool2(rariGovernanceTokenUniswapDistributorAddress, RGTETHSushiLPTokenAddress),
     borrowed,
   },
   arbitrum: {
     // Borrowing is disabled, and Tetranode's locker is the only pool with significant tvl, so counting only that
-    tvl: getCompoundV2Tvl('0xC7D021BD813F3b4BB801A4361Fbcf3703ed61716', 'arbitrum', undefined,  undefined, undefined, false),
-    borrowed: getCompoundV2Tvl('0xC7D021BD813F3b4BB801A4361Fbcf3703ed61716', 'arbitrum', undefined,  undefined, undefined, true),
+    tvl: getCompoundV2Tvl('0xC7D021BD813F3b4BB801A4361Fbcf3703ed61716', 'arbitrum', undefined, undefined, undefined, false),
+    borrowed: getCompoundV2Tvl('0xC7D021BD813F3b4BB801A4361Fbcf3703ed61716', 'arbitrum', undefined, undefined, undefined, true),
   },
   hallmarks: [
     [1651276800, "FEI hack"],
