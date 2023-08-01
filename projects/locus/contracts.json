@@ -1,0 +1,22 @@
+{
+  "ethereum": {
+    "lvTokens": {
+      "lvETH": {
+        "poolAddress": "0x3edbE670D03C4A71367dedA78E73EA4f8d68F2E4",
+        "wantToken": "weth"
+      },
+      "lvDCI": {
+        "poolAddress": "0xf62A24EbE766d0dA04C9e2aeeCd5E86Fac049B7B",
+        "wantToken": "usd-coin"
+      }
+    }
+  },
+  "arbitrum": {
+    "lvTokens": {
+      "lvAYI": {
+        "poolAddress": "0xBE55f53aD3B48B3ca785299f763d39e8a12B1f98",
+        "wantToken": "usd-coin"
+      }
+    }
+  }
+}
