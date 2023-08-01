@@ -45,12 +45,6 @@ const ibcMappings = {
 
 const fixBalancesTokens = {
   // Sample Code
-  neon_evm: {
-    '0xb14760c064a1b9eaf9ec5a8a421971e40a51b59c': { coingeckoId: 'neon', decimals:18},
-  },
-  rpg: {
-    '0x8e8816a1747fddc5f8b45d2e140a425d3788f659': { coingeckoId: "tether", decimals: 18 },
-  },
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
