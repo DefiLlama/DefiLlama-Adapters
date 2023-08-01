@@ -6,6 +6,7 @@ const config = {
   ethereum: { reserves: ['0x231278edd38b00b07fbd52120cef685b9baebcc1'] },
   arbitrum: { reserves: ['0xfa104eb3925a27e6263e05acc88f2e983a890637'] },
   bsc: { reserves: ['0x0D29598EC01fa03665feEAD91d4Fb423F393886c'] },
+  polygon: { reserves: ['0xc22218406983bf88bb634bb4bf15fa4e0a1a8c84'] },
 }
 
 module.exports = {

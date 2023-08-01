@@ -26,7 +26,7 @@ module.exports = {
       owner: '0x4c6bf87b7fc1c8db85877151c6ede38ed27c34f6',
       tokens: [
         ADDRESSES.optimism.USDC,
-        ADDRESSES.optimism.WETH,
+        ADDRESSES.optimism.WETH_1,
         ADDRESSES.optimism.OP,
         "0xdd63ae655b388cd782681b7821be37fdb6d0e78d",
         "0xccf3d1acf799bae67f6e354d685295557cf64761",
