@@ -6,6 +6,7 @@ const BigNumber = require("bignumber.js");
 const v5Address = '0x06a61E55d4d4659b1A23C0F20AEdfc013C489829';
 
 const WETH_CONTRACT = ADDRESSES.arbitrum.WETH;
+const WBTC_CONTRACT = ADDRESSES.arbitrum.WBTC;
 const ARB_CONTRACT = '0x912CE59144191C1204E64559FE8253a0e49E6548';
 const USDC_CONTRACT = ADDRESSES.arbitrum.USDC;
 const GYEN_CONTRACT = '0x589d35656641d6aB57A545F08cf473eCD9B6D5F7';
@@ -84,7 +85,7 @@ async function borrowed(_time, _ethBlock, chainBlocks, { api }) {
 module.exports = {
     methodology: "USDC and WETH locked on predy contracts",
     arbitrum: {
-        tvl: sumTokensExport({ owners: [v5Address], tokens: [WETH_CONTRACT, ARB_CONTRACT, USDC_CONTRACT, GYEN_CONTRACT, LUSD_CONTRACT] }),
+        tvl: sumTokensExport({ owners: [v5Address], tokens: [WETH_CONTRACT, WBTC_CONTRACT, ARB_CONTRACT, USDC_CONTRACT, GYEN_CONTRACT, LUSD_CONTRACT] }),
         borrowed
     },
     hallmarks: [
