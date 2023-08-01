@@ -18,6 +18,7 @@ module.exports = {
     misrepresentedTokens: true,
     neon_evm: {
         tvl: dexTVL_neon,
+        staking: staking("0xa3da566fdE97c90c08052f612BdBed8F3B8004B7", "0x2043191e10a2A4b4601F5123D6C94E000b5d915F", "neon_evm"),
     }
 };
 
