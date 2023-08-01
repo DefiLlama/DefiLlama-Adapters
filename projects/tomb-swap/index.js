@@ -5,7 +5,6 @@ const { getUniTVL } = require("../helper/unknownTokens")
     fantom: {
       tvl: getUniTVL({
         factory: '0xE236f6890F1824fa0a7ffc39b1597A5A6077Cfe9',
-        chain: 'fantom',
         useDefaultCoreAssets: true,
       })
     },

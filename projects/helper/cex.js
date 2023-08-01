@@ -95,7 +95,8 @@ const defaultTokens = {
     nullAddress,
     ADDRESSES.tron.USDT, // USDT
     ADDRESSES.tron.USDC,  // USDC
-    'TFptbWaARrWTX5Yvy3gNG5Lm8BmhPx82Bt' //wbt
+    'TFptbWaARrWTX5Yvy3gNG5Lm8BmhPx82Bt', //wbt
+    ADDRESSES.tron.TUSD
   ],
   polygon: [
     nullAddress,
@@ -137,6 +138,7 @@ const defaultTokens = {
     '0x352Cb5E19b12FC216548a2677bD0fce83BaE434B', // BTT
     '0xAD29AbB318791D579433D831ed122aFeAf29dcfe', // FTM
     '0x02ff5065692783374947393723dba9599e59f591',// yoshi
+    ADDRESSES.bsc.TUSD, //TUSD
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],

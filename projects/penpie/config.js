@@ -13,4 +13,11 @@ module.exports = {
     PENDLE: "0x0c880f6761F1af8d9Aa9C466984b80DAb9a8c9e8",
     pendleStaking: "0x6DB96BBEB081d2a85E0954C252f2c1dC108b3f81",
   },
+  bsc: {
+    masterPenpie: "0xb35b3d118c0394e750b4b59d2a2f9307393cd5db",
+    vePENDLE: "0x8A09574b0401A856d89d1b583eE22E8cb0C5530B",
+    mPENDLE: "0x0465aad9da170798433f4ab7fa7ec8b9b9bf0bb1",
+    PENDLE: "0xb3Ed0A426155B79B898849803E3B36552f7ED507",
+    pendleStaking: "0x782d9d67feaa4d1cdf8222d9053c8cba1c3b7982",
+  },
 };

@@ -24,7 +24,7 @@ module.exports = {
   bsc: {
     staking: stakingUnknownPricedLP("0x81b71D0bC2De38e37978E6701C342d0b7AA67D59", "0xf96429A7aE52dA7d07E60BE95A3ece8B042016fB", "bsc", "0x315F25Cea80AC6c039B86e79Ffc46aE6b2e30922", addr=>`bsc:${addr}`),
 
-    tvl: uniTvlExport(KACFactory.bsc, 'bsc'),
+    tvl: uniTvlExport(KACFactory.bsc, 'bsc', true),
   },
   shiden: {
     staking: staking(
