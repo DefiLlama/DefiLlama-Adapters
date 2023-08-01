@@ -6,7 +6,8 @@ const GYRO_POOL_ADDRESSES = [
   "0x97469e6236bd467cd147065f77752b00efadce8a",
   "0xdac42eeb17758daa38caf9a3540c808247527ae3",
   "0xf0ad209e2e969eaaa8c882aac71f02d8a047d5c2",
-  "0xfa9ee04a5545d8e0a26b30f5ca5cbecd75ea645f"
+  "0xfa9ee04a5545d8e0a26b30f5ca5cbecd75ea645f",
+  "0xee278d943584dd8640eaf4cc6c7a5c80c0073e85"
 ]
 
 async function tvl(_, _b, _cb, { api, }) {

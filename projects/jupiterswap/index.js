@@ -9,7 +9,6 @@ module.exports = {
     kava: {
         tvl: getUniTVL({
             factory: '0xc08BAEA14C14f25bcafe3e3E05550715505eF3dE',
-            chain: 'kava',
             useDefaultCoreAssets: true,
         }),
     }

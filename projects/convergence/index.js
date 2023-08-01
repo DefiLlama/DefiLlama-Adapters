@@ -16,7 +16,6 @@ module.exports = {
     tvl: getUniTVL({
       factory: MOONBEAM_FACTORY,
       useDefaultCoreAssets: true,
-      chain: 'moonbeam',
     })
   }
 };
