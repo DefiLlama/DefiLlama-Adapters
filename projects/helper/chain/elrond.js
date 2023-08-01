@@ -70,7 +70,24 @@ async function sumTokens({ owners = [], tokens = [], balances = {}, blacklistedT
   return transformBalances(chain, balances)
 }
 
+async function getNFTs(address) {
+  const res = await get(`${getEnv('MULTIVERSX_RPC')}/accounts/${address}/nfts?size=1000`)
+  return res
+}
+
+async function getTokenData(token) {
+  const data = await get(`https://api.multiversx.com/tokens/${token}`)
+  return data
+}
+
+async function sumTokensExport(...args) {
+  return () => sumTokens(...args)
+}
+
 module.exports = {
   sumTokens,
   call,
+  getNFTs,
+  getTokenData,
+  sumTokensExport,
 }
