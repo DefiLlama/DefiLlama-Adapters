@@ -1,12 +1,15 @@
 const { sumTokens2, sumTokensExport } = require('../helper/unwrapLPs')
-const { getLogs } = require('../helper/cache/getLogs')
+const { getLogs } = require('../helper/cache/getLogs');
+const { getBlock } = require('../helper/http');
 
 const chain = 'arbitrum'
 
 async function tvl(timestamp, _b, chainBlocks, { api }) {
+  const block = await getBlock(timestamp, chain, chainBlocks)
   const logs = await getLogs({
     api,
     fromBlock: 33934273,
+    toBlock: block,
     eventAbi: 'event MarketCreated(uint256 indexed mIndex, address hedge, address risk, address token, string name, int256 strikePrice)',
     topics: ['0xf38f00404415af51ddd0dd57ce975d015de2f40ba8a087ac48cd7552b7580f32'],
     target: '0x984e0eb8fb687afa53fc8b33e12e04967560e092',
@@ -16,6 +19,7 @@ async function tvl(timestamp, _b, chainBlocks, { api }) {
   const tokens = await api.multiCall({
     abi: 'address:asset',
     calls: vaults,
+    block
   })
   const tokensAndOwners = tokens.map((token, i) => ([token, vaults[i]]))
 
