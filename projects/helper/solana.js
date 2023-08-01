@@ -1,7 +1,7 @@
 const ADDRESSES = require('./coreAssets.json')
 const axios = require("axios");
 const http = require('./http')
-const env = require('./env')
+const { getEnv } = require('./env')
 const { transformBalances: transformBalancesOrig, transformDexBalances, } = require('./portedTokens.js')
 const { getUniqueAddresses } = require('./tokenMapping')
 const { Connection, PublicKey, Keypair } = require("@solana/web3.js")
@@ -21,10 +21,10 @@ const blacklistedTokens_default = [
 
 let connection, provider
 
-const endpoint = env.SOLANA_RPC || "https://try-rpc.mainnet.solana.blockdaemon.tech"
+const endpoint = () => getEnv('SOLANA_RPC')
 
 function getConnection() {
-  if (!connection) connection = new Connection(endpoint)
+  if (!connection) connection = new Connection(endpoint())
   return connection
 }
 
@@ -46,7 +46,7 @@ async function getSolBalances(accounts) {
   const tokenBalances = []
   const chunks = sliceIntoChunks(accounts, 99)
   for (let chunk of chunks) {
-    const bal = await axios.post(endpoint, chunk.map(formBody))
+    const bal = await axios.post(endpoint(), chunk.map(formBody))
     tokenBalances.push(...bal.data)
   }
   return tokenBalances.reduce((a, i) => a + i.result.value, 0)
@@ -59,7 +59,7 @@ async function getSolBalance(account) {
 const TOKEN_LIST_URL = "https://cdn.jsdelivr.net/gh/solana-labs/token-list@main/src/tokens/solana.tokenlist.json"
 
 async function getTokenSupply(token) {
-  const tokenSupply = await axios.post(endpoint, {
+  const tokenSupply = await axios.post(endpoint(), {
     jsonrpc: "2.0",
     id: 1,
     method: "getTokenSupply",
@@ -88,7 +88,7 @@ async function getTokenDecimals(tokens) {
   const res = {}
   const chunks = sliceIntoChunks(tokens, 99)
   for (const chunk of chunks) {
-    const tokenSupply = await axios.post(endpoint, calls(chunk))
+    const tokenSupply = await axios.post(endpoint(), calls(chunk))
     tokenSupply.data.forEach(({ id, result }) => res[id] = result.value.decimals)
   }
   return res
@@ -107,7 +107,7 @@ function formTokenBalanceQuery(token, account) {
   }
 }
 async function getTokenBalance(token, account) {
-  const tokenBalance = await axios.post(endpoint, formTokenBalanceQuery(token, account));
+  const tokenBalance = await axios.post(endpoint(), formTokenBalanceQuery(token, account));
   return tokenBalance.data.result.value.reduce(
     (total, account) =>
       total + account.account.data.parsed.info.tokenAmount.uiAmount,
@@ -117,7 +117,7 @@ async function getTokenBalance(token, account) {
 
 async function getTokenBalances(tokensAndAccounts) {
   const body = tokensAndAccounts.map(([token, account]) => formTokenBalanceQuery(token, account))
-  const tokenBalances = await axios.post(endpoint, body);
+  const tokenBalances = await axios.post(endpoint(), body);
   const balances = {}
   tokenBalances.data.forEach((v, i )=> {
     if (!v.result) console.log(v, tokensAndAccounts[i])
@@ -138,7 +138,7 @@ async function getTokenAccountBalances(tokenAccounts, { individual = false, chun
   const chunks = sliceIntoChunks(tokenAccounts, chunkSize)
   for (const chunk of chunks) {
     const body = chunk.map(formBody)
-    const data = await axios.post(endpoint, body);
+    const data = await axios.post(endpoint(), body);
     data.data.forEach(({ result: { value } }, i) => {
       if (!value || !value.data.parsed) {
         if (tokenAccounts[i].toString() === '11111111111111111111111111111111') {
@@ -164,7 +164,7 @@ async function getTokenAccountBalances(tokenAccounts, { individual = false, chun
 
 async function getTokenAccountBalance(account) {
   const tokenBalance = await axios.post(
-    endpoint,
+    endpoint(),
     {
       jsonrpc: "2.0",
       id: 1,
@@ -210,7 +210,7 @@ async function getMultipleAccountsRaw(accountsArray) {
   const res = []
   const chunks = sliceIntoChunks(accountsArray, 99)
   for (const chunk of chunks) {
-    const accountsInfo = await axios.post(endpoint, {
+    const accountsInfo = await axios.post(endpoint(), {
       jsonrpc: "2.0",
       id: 1,
       method: "getMultipleAccounts",
@@ -391,7 +391,7 @@ function readBigUInt64LE(buffer, offset) {
 }
 
 module.exports = {
-  endpoint,
+  endpoint: endpoint(),
   getTokenSupply,
   getTokenBalance,
   getTokenAccountBalance,
