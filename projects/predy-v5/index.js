@@ -13,7 +13,7 @@ const LUSD_CONTRACT = '0x93b346b6BC2548dA6A1E7d98E9a421B42541425b';
 
 const abi = {
     v5: {
-        getAsset: 'function getAsset(uint256 _id) external view returns (tuple(uint256 id, address token, address supplyTokenAddress, tuple(uint256 riskRatio, int24 rangeSize, int24 rebalanceThreshold), tuple(uint256 totalCompoundDeposited, uint256 totalCompoundBorrowed, uint256 totalNormalDeposited, uint256 totalNormalBorrowed, uint256 assetScaler, uint256 debtScaler, uint256 assetGrowth, uint256 debtGrowth), tuple(address uniswapPool, int24 tickLower, int24 tickUpper, uint256 totalAmount, uint256 borrowedAmount, uint256 supplyPremiumGrowth, uint256 borrowPremiumGrowth, uint256 fee0Growth, uint256 fee1Growth, tuple(int256 positionAmount, uint256 lastFeeGrowth), tuple(int256 positionAmount, uint256 lastFeeGrowth), int256 rebalanceFeeGrowthUnderlying, int256 rebalanceFeeGrowthStable), bool isMarginZero, tuple(uint256 baseRate, uint256 kinkRate, uint256 slope1, uint256 slope2), tuple(uint256 baseRate, uint256 kinkRate, uint256 slope1, uint256 slope2), uint256 lastUpdateTimestamp, uint256 accumulatedProtocolRevenue))'
+        getAsset: 'function getAsset(uint256 _id) external view returns (uint256 id, uint256 pairGroupId, tuple( address token, address supplyTokenAddress, tuple(uint256 totalCompoundDeposited, uint256 totalNormalDeposited, uint256 totalNormalBorrowed, uint256 assetScaler, uint256 assetGrowth, uint256 debtGrowth), tuple(uint256 baseRate, uint256 kinkRate, uint256 slope1, uint256 slope2)), tuple(address token, address supplyTokenAddress, tuple(uint256 totalCompoundDeposited, uint256 totalNormalDeposited, uint256 totalNormalBorrowed, uint256 assetScaler, uint256 assetGrowth, uint256 debtGrowth), tuple(uint256 baseRate, uint256 kinkRate, uint256 slope1, uint256 slope2)), tuple(uint256 riskRatio, int24 rangeSize, int24 rebalanceThreshold), tuple(address uniswapPool, int24 tickLower, int24 tickUpper, uint64 numRebalance, uint256 totalAmount, uint256 borrowedAmount, uint256 lastRebalanceTotalSquartAmount, uint256 lastFee0Growth, uint256 lastFee1Growth, uint256 borrowPremium0Growth, uint256 borrowPremium1Growth, uint256 fee0Growth, uint256 fee1Growth, tuple(int256 positionAmount, uint256 lastFeeGrowth), tuple(int256 positionAmount, uint256 lastFeeGrowth), int256 rebalanceFeeGrowthUnderlying, int256 rebalanceFeeGrowthStable))'
     }
 }
 
@@ -21,7 +21,7 @@ const abi = {
 async function borrowed(_time, _ethBlock, chainBlocks, { api }) {
     let balances = {};
 
-    // pairGroupId = 1, USDC.e
+    // pairGroupId = 1, pair of USDC.e
     const WETH_ASSET_ID = 1;
     const ARB_ASSET_ID = 2;
     const WBTC_ASSET_ID = 3;
@@ -29,10 +29,10 @@ async function borrowed(_time, _ethBlock, chainBlocks, { api }) {
     const LUSD_ASSET_ID = 5;
     const WETHEX_ASSET_ID = 6;
 
-    // pairGroupId = 2, USDC
+    // pairGroupId = 2, pair of USDC
     // ID = 7,8,9
 
-    // pairGroupId = 3, WETH
+    // pairGroupId = 3, pair of WETH
     // ID = 10,11,12,13
 
     // V5
@@ -41,18 +41,41 @@ async function borrowed(_time, _ethBlock, chainBlocks, { api }) {
     const GYEN = await api.call({ abi: abi.v5.getAsset, target: v5Address, params: GYEN_ASSET_ID })
     const LUSD = await api.call({ abi: abi.v5.getAsset, target: v5Address, params: LUSD_ASSET_ID })
     const WETHEX = await api.call({ abi: abi.v5.getAsset, target: v5Address, params: WETHEX_ASSET_ID })
-    
-    const WETHBorrowed = (new BigNumber(WETH[5][4])).toNumber()
-    const ARBBorrowed = (new BigNumber(ARB[5][4])).toNumber()
-    const GYENBorrowed = (new BigNumber(GYEN[5][4])).toNumber()
-    const LUSDBorrowed = (new BigNumber(LUSD[5][4])).toNumber()
-    const WETHEXBorrowed = (new BigNumber(WETHEX[5][4])).toNumber()
 
-    await sdk.util.sumSingleBalance(balances, WETH_CONTRACT, WETHBorrowed, api.chain);
-    await sdk.util.sumSingleBalance(balances, ARB_CONTRACT, ARBBorrowed, api.chain);
-    await sdk.util.sumSingleBalance(balances, GYEN_CONTRACT, GYENBorrowed, api.chain);
-    await sdk.util.sumSingleBalance(balances, LUSD_CONTRACT, LUSDBorrowed, api.chain);
-    await sdk.util.sumSingleBalance(balances, WETH_CONTRACT, WETHEXBorrowed, api.chain);
+    // WETH pair
+    const usdcBorrowedForWETH = new BigNumber(WETH[2][2][2]).toNumber();
+    const wethBorrowedForWETH = new BigNumber(WETH[3][2][2]).toNumber();
+
+    await sdk.util.sumSingleBalance(balances, USDC_CONTRACT, usdcBorrowedForWETH, api.chain);
+    await sdk.util.sumSingleBalance(balances, WETH_CONTRACT, wethBorrowedForWETH, api.chain);
+
+    // ARB pair
+    const usdcBorrowedForARB = ARB[2][2][2]
+    const arbBorrowedForARB = ARB[3][2][2]
+    
+    await sdk.util.sumSingleBalance(balances, USDC_CONTRACT, usdcBorrowedForARB, api.chain);
+    await sdk.util.sumSingleBalance(balances, ARB_CONTRACT, arbBorrowedForARB, api.chain);
+
+    // GYEN pair
+    const usdcBorrowedForGYEN = GYEN[2][2][2]
+    const gyenBorrowedForGYEN = GYEN[3][2][2]
+
+    await sdk.util.sumSingleBalance(balances, USDC_CONTRACT, usdcBorrowedForGYEN, api.chain);
+    await sdk.util.sumSingleBalance(balances, GYEN_CONTRACT, gyenBorrowedForGYEN, api.chain);
+
+    // LUSD pair
+    const usdcBorrowedForLUSD = LUSD[2][2][2]
+    const lusdBorrowedForLUSD = LUSD[3][2][2]
+
+    await sdk.util.sumSingleBalance(balances, USDC_CONTRACT, usdcBorrowedForLUSD, api.chain);
+    await sdk.util.sumSingleBalance(balances, LUSD_CONTRACT, lusdBorrowedForLUSD, api.chain);
+
+    // WETHEX pair
+    const usdcBorrowedForWETHEX = WETHEX[2][2][2]
+    const wethexBorrowedForWETHEX = WETHEX[3][2][2]
+
+    await sdk.util.sumSingleBalance(balances, USDC_CONTRACT, usdcBorrowedForWETHEX, api.chain);
+    await sdk.util.sumSingleBalance(balances, WETH_CONTRACT, wethexBorrowedForWETHEX, api.chain);
     
     return balances;
 }
@@ -61,7 +84,7 @@ async function borrowed(_time, _ethBlock, chainBlocks, { api }) {
 module.exports = {
     methodology: "USDC and WETH locked on predy contracts",
     arbitrum: {
-        tvl: sumTokensExport({ owners: [v5Address], tokens: [USDC_CONTRACT, WETH_CONTRACT,] }),
+        tvl: sumTokensExport({ owners: [v5Address], tokens: [WETH_CONTRACT, ARB_CONTRACT, USDC_CONTRACT, GYEN_CONTRACT, LUSD_CONTRACT] }),
         borrowed
     },
     hallmarks: [
