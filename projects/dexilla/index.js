@@ -30,6 +30,11 @@ const config = {
       '0x5dD2a1C1Fb25E30928C901a28Ceaf53E59B606dD',
     ],
   },
+  base:{
+    exchanges: [
+      '0x3F7F51983fb95084a5cb73EB2F28757Bd8bb65E3',
+    ],
+  }
 }
 
 module.exports = {
