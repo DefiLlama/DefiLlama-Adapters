@@ -7,7 +7,7 @@ const wra = "0x4cf098d3775bd78a4508a13e126798da5911b6cd"
 
 module.exports = {
     fantom: {
-        tvl: uniTvlExport(factory, 'fantom'),
+        tvl: uniTvlExport(factory, 'fantom', true),
         staking: stakingUnknownPricedLP(masterchef, wra, "fantom", "0x6a80BD3eb550adcfF4f2f5f12a1bB213c1Ef57fA")
     }
 }

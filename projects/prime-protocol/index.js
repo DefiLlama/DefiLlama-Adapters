@@ -50,7 +50,7 @@ const MOONBEAM_MARKETS = {
   },
   whWBTC_v2_v1_10_2: {
     pTokenMarketAddress: '0x2A104E502480b4e3C1D13EA2EC657C08f4578a7a',
-    pTokenUnderlyingAddress: '0xE57eBd2d67B462E9926e04a8e33f01cD0D64346D',
+    pTokenUnderlyingAddress: ADDRESSES.moonbeam.WBTC,
   }
 };
 
@@ -81,11 +81,11 @@ const AVALANCHE_MARKETS = {
   },
   DAI_v2_v1_10_2: {
     pTokenMarketAddress: '0x05f2B8EAc42c9Cc771B8ECF6448481A3802e08c6',
-    pTokenUnderlyingAddress: '0xd586E7F844cEa2F87f50152665BCbc2C279D8d70',
+    pTokenUnderlyingAddress: ADDRESSES.avax.DAI,
   },
   bBTC_v2_v1_10_2: {
     pTokenMarketAddress: '0xA5c74A10B60f276F806468c6E2f83D490dCfA89A',
-    pTokenUnderlyingAddress: '0x152b9d0FdC40C096757F570A51E494bd4b943E50',
+    pTokenUnderlyingAddress: ADDRESSES.avax.BTC_b,
   },
 };
 
@@ -108,15 +108,15 @@ const ARBITRUM_MARKETS = {
   },
   DAI_v2_v1_10_2: {
     pTokenMarketAddress: '0x3e1C8203B8D36E8E427Ee181A65549fd86AE3907',
-    pTokenUnderlyingAddress: '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1',
+    pTokenUnderlyingAddress: ADDRESSES.optimism.DAI,
   },
   WBTC_v2_v1_10_2: {
     pTokenMarketAddress: '0x51Ff97d92683992AD091E04470069bB942219D71',
-    pTokenUnderlyingAddress: '0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f',
+    pTokenUnderlyingAddress: ADDRESSES.arbitrum.WBTC,
   },
   nativeUSDC_v1_v1_10_2: {
     pTokenMarketAddress: '0xA44C28Bd4Fd4fc307f23B2E6e9cC07BC03571798',
-    pTokenUnderlyingAddress: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
+    pTokenUnderlyingAddress: ADDRESSES.arbitrum.USDC_CIRCLE,
   },
 };
 
@@ -150,11 +150,11 @@ const ETHEREUM_MARKETS = {
 const BSC_MARKETS = {
     USDC_v2_v1_10_2: {
       pTokenMarketAddress: '0xc01683398fFCc86264ba17bC36977f51A1d25e06',
-      pTokenUnderlyingAddress: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
+      pTokenUnderlyingAddress: ADDRESSES.bsc.USDC,
     },
     USDT_v2_v1_10_2: {
       pTokenMarketAddress: '0xddC6Df52F9749ED80966Fb6a9D4C87264cC1e6C1',
-      pTokenUnderlyingAddress: '0x55d398326f99059fF775485246999027B3197955',
+      pTokenUnderlyingAddress: ADDRESSES.bsc.USDT,
     },
     BNB_v2_v1_10_2: {
       pTokenMarketAddress: '0xaCD7a2991f3514E215034Ace732Bafe005185C94',
@@ -162,26 +162,26 @@ const BSC_MARKETS = {
     },
     BTCB_v2_v1_10_2: {
       pTokenMarketAddress: '0xA7BCF4433e044e454c43fe596C9eE8DDAF5776aC',
-      pTokenUnderlyingAddress: '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c',
+      pTokenUnderlyingAddress: ADDRESSES.bsc.BTCB,
     },
     ETH_v2_v1_10_2: {
       pTokenMarketAddress: '0xBdDc67911C63f63e6720A8EEfCAF08a573Fd9AE4',
-      pTokenUnderlyingAddress: '0x2170Ed0880ac9A755fd29B2688956BD959F933F8',
+      pTokenUnderlyingAddress: ADDRESSES.bsc.ETH,
     },
 };
 
 const POLYGON_POS_MARKETS = {
     USDC_v1_v1_10_2: {
       pTokenMarketAddress: '0x45913B2088E2910C3Dd168c2f08eaf2274D7bf6c',
-      pTokenUnderlyingAddress: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+      pTokenUnderlyingAddress: ADDRESSES.polygon.USDC,
     },
     USDT_v1_v1_10_2: {
       pTokenMarketAddress: '0x2ce0Ac2FD666a93b70fbE731C9Fe6581f410F73B',
-      pTokenUnderlyingAddress: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
+      pTokenUnderlyingAddress: ADDRESSES.polygon.USDT,
     },
     WBTC_v1_v1_10_2: {
       pTokenMarketAddress: '0x786D8B5d16171f441BC5F2047bDf0Ea54268a735',
-      pTokenUnderlyingAddress: '0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6',
+      pTokenUnderlyingAddress: ADDRESSES.polygon.WBTC,
     },
 };
 
