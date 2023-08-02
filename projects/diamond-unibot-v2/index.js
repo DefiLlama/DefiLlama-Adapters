@@ -13,7 +13,7 @@ const config = {
         "0xFEaDE428e2Fe0F547d560B540a7617087505538B",
       ], // USDC
       [
-        "0x912ce59144191c1204e64559fe8253a0e49e6548",
+        ADDRESSES.arbitrum.ARB,
         "0x4d5043d90f13ac2E6318B3aF9C3423A5224b920C",
       ], // ARB
     ],
@@ -22,7 +22,7 @@ const config = {
         [
           ADDRESSES.arbitrum.USDC, // USDC
           ADDRESSES.arbitrum.GMX, // GMX
-          "0x912ce59144191c1204e64559fe8253a0e49e6548", // ARB
+          ADDRESSES.arbitrum.ARB, // ARB
         ],
         "0x8610D60f5329B0560c8F0CEb80175F342fe943F3", // vault
       ],

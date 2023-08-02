@@ -50,8 +50,9 @@ async function pool2() {
 module.exports = {
   timetravel: false,
   algorand: {
-    tvl,
-    staking,
-    pool2,
-  }
+    tvl: () => ({}),
+  },
+  hallmarks: [
+    [Math.floor(new Date('2023-08-02')/1e3), 'Project pivoted to be being a NFT marketplace.'],
+  ],
 };

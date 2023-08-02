@@ -104,9 +104,9 @@ async function blockQuery(endpoint, query, { api, blockCatchupLimit = 500, }) {
   }
 }
 
-async function graphFetchById({  endpoint, query, params = {}, api, options: { useBlock = false } = {} }) {
+async function graphFetchById({  endpoint, query, params = {}, api, options: { useBlock = false, safeBlockLimit = 100 } = {} }) {
   if (useBlock && !params.block)
-    params.block = await api.getBlock() - 100
+    params.block = await api.getBlock() - safeBlockLimit
 
   let data = []
   let lastId = ""

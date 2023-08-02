@@ -33,16 +33,16 @@ async function ArbitrumTvl(_time, _ethBlock, { arbitrum: block }) {
     "capPool": "0x99DDb3E66A592579B9D46a47824042F62D690a9e",
     "unshethPool": "0x5372Af9b4E9d4b9C016574Dad0f2406Dfe023D5F",
   };
-  const usdc = "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8";
-  const dai = "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1";
-  const usdt = "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9";
-  const wbtc = "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f";
-  const arb = "0x912ce59144191c1204e64559fe8253a0e49e6548";
-  const mim = "0xfea7a6a0b346362bf88a9e4a88416b77a57d6c2a";
+  const usdc = ADDRESSES.arbitrum.USDC;
+  const dai = ADDRESSES.optimism.DAI;
+  const usdt = ADDRESSES.arbitrum.USDT;
+  const wbtc = ADDRESSES.arbitrum.WBTC;
+  const arb = ADDRESSES.arbitrum.ARB;
+  const mim = ADDRESSES.arbitrum.MIM;
   const gdai = "0xd85e038593d7a098614721eae955ec2022b9b91b";
   const ram = "0xaaa6c1e32c55a7bfa8066a6fae9b42650f262418";
   const mai = "0x5979D7b546E38E414F7E9822514be443A4800529";
-  const gmx = "0xfc5a1a6eb076a2c7ad06ed22c90d7e710e35ad0a";
+  const gmx = ADDRESSES.arbitrum.GMX;
   const wsteth = "0x5979D7b546E38E414F7E9822514be443A4800529";
   const gns = "0x18c11FD286C5EC11c3b683Caa813B77f5163A122";
   const cap = "0x031d35296154279dc1984dcd93e392b1f946737b";

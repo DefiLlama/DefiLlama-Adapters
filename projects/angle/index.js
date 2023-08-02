@@ -104,6 +104,7 @@ If not, the API call defaults to mainnet and the blockchain calls fail and retur
 module.exports = {
   hallmarks: [
     [Math.floor(new Date('2023-03-13') / 1e3), 'Euler was hacked'],
+    [Math.floor(new Date('2023-08-02') / 1e3), 'Migration to v2 (Transmuter)'],
   ],
   ethereum: {
     staking: staking(veANGLE, ANGLE, "ethereum"),

@@ -1,4 +1,4 @@
-const { nullAddress } = require('../helper/unwrapLPs')
+const { nullAddress, sumTokens2 } = require('../helper/unwrapLPs')
 const { fetchURL } = require("../helper/utils")
 
 async function hbarTvl(timestamp) {
@@ -72,11 +72,12 @@ module.exports = {
     tvl: async (_, _1, _2, { api }) => {
 
       const res = await fetchURL("https://universe.staderlabs.com/common/tvl")
-      return {
+      const balances= {
         "matic-network": res.data.polygon.native,
         [nullAddress]: await api.call({ abi: 'uint256:totalAssets', target: '0xcf5ea1b38380f6af39068375516daf40ed70d299' })
         // [nullAddress]: await api.call({ abi: 'uint256:totalSupply', target: '0xa35b1b31ce002fbf2058d22f30f95d405200a15b' })
       }
+      return sumTokens2({ api, balances, owner: '0x4f4bfa0861f62309934a5551e0b2541ee82fdcf1', tokens: [nullAddress] })
     }
   },
   hallmarks: [

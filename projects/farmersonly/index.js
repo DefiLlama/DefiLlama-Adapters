@@ -11,7 +11,6 @@ const vaultChef = '0x2914646e782cc36297c6639734892927b3b6fe56'
 const chain = 'harmony'
 
 const dexTVL = getUniTVL({
-  chain: 'harmony',
   factory: '0xfa53b963a39621126bf45f647f813952cd3c5c66',
   useDefaultCoreAssets: true,
 })
