@@ -132,6 +132,43 @@ async function tangiblePOL(api) {
   })
 }
 
+async function tangiblePOL(_pearlPairApi, block) {
+  
+  const result = await axios.get("https://api.pearl.exchange/api/v15/pools");
+  const pools = result.data.data.filter(
+    (pool) =>
+      (["DAI", "USDC", "USDT"].includes(pool.token0.symbol) &&
+        pool.token1.symbol === "USDR") ||
+      (["DAI", "USDC", "USDT"].includes(pool.token1.symbol) &&
+        pool.token0.symbol === "USDR"),
+  );
+  const multisigAddress = "0x100fCC635acf0c22dCdceF49DD93cA94E55F0c71";
+  
+  const liquidity = await Promise.all(
+    pools.map(async (pool) => {
+      const pair = (await sdk.api.abi.call({
+        abi: getPair,
+        target: _pearlPairApi,
+        params: [pool.address, multisigAddress],
+        chain, block,
+      })).output
+  
+      const lpPrice =
+        pool.totalSupply === 0
+          ? 0
+          : Math.floor(pool.tvl / pool.totalSupply);
+  
+      return pair.account_gauge_balance * lpPrice;
+    }),
+  ).then((pools) =>
+    pools.reduce(
+      (acc, poolLiquidity) => acc + poolLiquidity,
+      0,
+    ),
+  );
+  return liquidity;
+}
+
 module.exports = {
   misrepresentedTokens: true,
   polygon: { tvl, },
