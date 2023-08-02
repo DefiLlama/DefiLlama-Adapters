@@ -25,6 +25,8 @@ const HYPE_REGISTRY = {
     "0x0Ac4C7b794f3D7e7bF1093A4f179bA792CF15055", // Uniswap
     "0xAeC731F69Fa39aD84c7749E913e3bC227427Adfd", // Quickswap
     "0xcAC19d43C9558753d7535978A370055614Ce832E", // Retro
+    "0x97686103B3E7238Ca6c2C439146B30adBd84a593", // Sushiswap
+    "0x7b9c2f68f16c3618bb45616fb98d83f94fd7062e", // Ascent
   ],
   polygon_zkevm: [
     "0xD08B593eb3460B7aa5Ce76fFB0A3c5c938fd89b8", // Quickswap
@@ -35,6 +37,9 @@ const HYPE_REGISTRY = {
   arbitrum: [
     "0x66CD859053c458688044d816117D5Bdf42A56813", // Uniswap
     "0x37595FCaF29E4fBAc0f7C1863E3dF2Fe6e2247e9", // Zyberswap
+    "0x0f867F14b39a5892A39841a03bA573426DE4b1d0", // Sushiswap
+    "0x34Ffbd9Db6B9bD8b095A0d156de69a2AD2944666", // Ramses
+    "0xa216C2b6554A0293f69A1555dd22f4b7e60Fe907", // Camelot
   ],
   bsc: [
     "0x0b4645179C1b668464Df01362fC6219a7ab3234c", // Uniswap
@@ -42,9 +47,19 @@ const HYPE_REGISTRY = {
   ],
   moonbeam: [
     "0xB7dfC304D9cd88D98A262cE5B6a39Bb9d6611063", // Beamswap
+    "0x6002D7714e8038f2058e8162b0b86c0b19c31908", // Stellaswap
   ],
   celo: [
     "0x0F548d7AD1A0CB30D1872b8C18894484d76e1569", // Uniswap
+  ],
+  avax: [
+    "0x3FE6F25DA67DC6AD2a5117a691f9951eA14d6f15", // Glacier
+  ],
+  fantom: [
+    "0xf874d4957861e193aec9937223062679c14f9aca", // Spiritswap
+  ],
+  mantle: [
+    "0x683292172E2175bd08e3927a5e72FC301b161300", // FusionX
   ],
 };
 
@@ -153,6 +168,15 @@ module.exports = {
     tvl: tvlWrapper,
   },
   celo: {
+    tvl: tvlWrapper,
+  },
+  avax: {
+    tvl: tvlWrapper,
+  },
+  fantom: {
+    tvl: tvlWrapper,
+  },
+  mantle: {
     tvl: tvlWrapper,
   },
 };

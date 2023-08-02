@@ -19,7 +19,7 @@ function tvl(chain) {
         alToken = alToken.toLowerCase()
         tokens.forEach((token, i) => {
           if (token.toLowerCase() !== alToken) {
-            api.add(token, tokenBalances[i] * ratio)
+            if (!isNaN(tokenBalances[i] * ratio))api.add(token, tokenBalances[i] * ratio)
           }
         })
       })

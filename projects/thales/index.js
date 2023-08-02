@@ -5,7 +5,6 @@ const { dodoPool2 } = require('../helper/pool2')
 const ADDRESSES = require('../helper/coreAssets.json')
 
 const ethMarketsManager = "0x5ed98Ebb66A929758C7Fe5Ac60c979aDF0F4040a"
-const ETH_SUSD = "0x57ab1ec28d129707052df4df418d58a2d46d5f51"
 
 const opMarketsManager = "0xBE086E0A2c588Ad64C8530048cE4356190D6a6F3"
 const OP_SUSD = ADDRESSES.optimism.sUSD
@@ -58,7 +57,7 @@ module.exports = {
   methodology: "sUSD/USDC locked on markets",
   ethereum: {
     tvl: async (_, _1, _2, { api }) => {
-      return sumTokens2({ api, owners: await getMarkets(api, ethMarketsManager), tokens: [ETH_SUSD] })
+      return sumTokens2({ api, owners: await getMarkets(api, ethMarketsManager), tokens: [ADDRESSES.ethereum.sUSD] })
     },
     pool2: dodoPool2("0x136829c258e31b3ab1975fe7d03d3870c3311651", "0x031816fd297228e4fd537c1789d51509247d0b43"),
   },

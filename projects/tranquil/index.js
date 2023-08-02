@@ -129,7 +129,7 @@ module.exports = {
   harmony: {
     tvl: sdk.util.sumChainTvls([
       tvl,
-      uniTvlExport('0xF166939E9130b03f721B0aE5352CCCa690a7726a', 'harmony'),
+      uniTvlExport('0xF166939E9130b03f721B0aE5352CCCa690a7726a', 'harmony', true),
     ]),
      borrowed: borrowed,
      pool2: pool2,

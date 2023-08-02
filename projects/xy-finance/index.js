@@ -231,7 +231,7 @@ const yPoolDepositContract = {
     },
     "USDC": {
       "contractAddress": "0x3243278E0F93cD6F88FC918E0714baF7169AFaB8",
-      "tokenAddress": "0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D"
+      "tokenAddress": ADDRESSES.moonriver.USDC
     }
   },
   "324": {
@@ -241,7 +241,7 @@ const yPoolDepositContract = {
     },
     "USDC": {
       "contractAddress": "0x75167284361c8D61Be7E4402f4953e2b112233cb",
-      "tokenAddress": "0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4"
+      "tokenAddress": ADDRESSES.era.USDC
     }
   },
   "1101": {
@@ -251,7 +251,7 @@ const yPoolDepositContract = {
     },
     "USDC": {
       "contractAddress": "0x1acCfC3a45313f8F862BE7fbe9aB25f20A93d598",
-      "tokenAddress": "0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035"
+      "tokenAddress": ADDRESSES.polygon_zkevm.USDC
     }
   },
 }

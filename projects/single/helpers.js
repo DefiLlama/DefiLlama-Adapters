@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const bn = require('bignumber.js');
 const abi = require('../helper/abis/masterchef.json');
@@ -81,7 +82,7 @@ async function getUserCamelotMasterBalances({ balances = {}, masterChefAddress, 
     const nitroPoolAddresses = (await sdk.api.abi.multiCall({ block, calls: nitroPoolAddressesCalls, abi: wCamelotSpNFTAbi.stakedNitroPool, chain, })).output
         .map(a => a.output)
     const nitroPoolUserLpBalanceCalls = nitroPoolAddresses
-        .filter((v) => v !== '0x0000000000000000000000000000000000000000')
+        .filter((v) => v !== ADDRESSES.null)
         .map((v, i) => ({ target: v, params: wCamelotSpNFT  }));
     const nitroPoolUserLpBalance = (await sdk.api.abi.multiCall({ block, calls: nitroPoolUserLpBalanceCalls, abi: camelotNitroPoolAbi.userInfo, chain, })).output
         .map((v, i) => {

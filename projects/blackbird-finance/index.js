@@ -11,7 +11,7 @@ const translate = {
     [ADDRESSES.shiden.ETH]: "avax:" + ADDRESSES.avax.WAVAX,
     [ADDRESSES.moonriver.USDT]: "fantom:" + ADDRESSES.fantom.WFTM,
     "0x9b8077c6590b560f1a9d60512648277d29b35a3b": "polygon:0x8a953cfe442c5e8855cc6c61b1293fa648bae472",
-    [ADDRESSES.kcc.DAI]: "polygon:0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+    [ADDRESSES.kcc.DAI]: "polygon:" + ADDRESSES.polygon.WMATIC_2,
 }
 
 async function tvl(timestamp, block, chainBlocks) {

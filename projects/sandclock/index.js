@@ -2,7 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
-const LUSD = '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0';
+const LUSD = ADDRESSES.ethereum.LUSD;
 const WETH = ADDRESSES.ethereum.WETH;
 const USDC = ADDRESSES.ethereum.USDC;
 const YEARN_VAULT = '0x4fe4bf4166744bcbc13c19d959722ed4540d3f6a';

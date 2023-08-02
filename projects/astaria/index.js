@@ -5,6 +5,7 @@ const config = {
   ethereum: { factory: '0x197Bb6Cd6cC9E9ABBFdaBff23DE7435c51d1B7BE', fromBlock: 16935232  , ACT: '0x455ad0f677628ed40e7397fb41818f474e0e5afe' },
 }
 
+/*
 Object.keys(config).forEach(chain => {
   const { factory, fromBlock, ACT } = config[chain]
   module.exports[chain] = {
@@ -53,3 +54,14 @@ Object.keys(config).forEach(chain => {
     }, 
   }
 })
+*/
+
+module.exports={
+  ethereum:{
+    tvl: ()=>({}),
+    borrowed: ()=>({}),
+  },
+  hallmarks:[
+    [1687301106, "White hack"]
+  ]
+}
