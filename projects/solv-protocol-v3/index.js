@@ -150,9 +150,6 @@ async function getGraphData(timestamp, chain) {
   };
 }
 
-// ['arbitrum'].forEach(chain => {
-//   module.exports[chain] = { tvl }
-// })
 ['ethereum', 'bsc', 'arbitrum'].forEach(chain => {
   module.exports[chain] = { tvl }
 })
