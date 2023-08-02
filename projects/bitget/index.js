@@ -60,6 +60,11 @@ const config = {
         '0x97b9d2102a9a65a26e1ee82d59e42d1b73b68689'
     ]
   },
+  era: {
+    owners: [
+      '0x97b9d2102a9a65a26e1ee82d59e42d1b73b68689'
+    ]
+  },
   fantom :{
     owners: ['0x5bdf85216ec1e38d6458c870992a69e38e03f7ef']
   },
