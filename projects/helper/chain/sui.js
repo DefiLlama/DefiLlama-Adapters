@@ -2,13 +2,13 @@
 const sdk = require('@defillama/sdk')
 
 const http = require('../http')
-const env = require('../env')
+const { getEnv } = require('../env')
 const { transformDexBalances } = require('../portedTokens')
 const { sliceIntoChunks } = require('../utils')
 
 //https://docs.sui.io/sui-jsonrpc
 
-const endpoint = env.SUI_RPC || "https://fullnode.mainnet.sui.io/"
+const endpoint = () => getEnv('SUI_RPC')
 
 async function getObject(objectId) {
   return (await call('sui_getObject', [objectId, {
@@ -40,7 +40,7 @@ async function getObjects(objectIds) {
   }
   const {
     result
-  } = await http.post(endpoint, {
+  } = await http.post(endpoint(), {
     jsonrpc: "2.0", id: 1, method: 'sui_multiGetObjects', params: [objectIds, {
       "showType": true,
       "showOwner": true,
@@ -60,7 +60,7 @@ async function getDynamicFieldObject(parent, id) {
 async function getDynamicFieldObjects({ parent, cursor = null, limit = 48, items = [], idFilter = i => i, addedIds = new Set() }) {
   const {
     result: { data, hasNextPage, nextCursor }
-  } = await http.post(endpoint, { jsonrpc: "2.0", id: 1, method: 'suix_getDynamicFields', params: [parent, cursor, limit], })
+  } = await http.post(endpoint(), { jsonrpc: "2.0", id: 1, method: 'suix_getDynamicFields', params: [parent, cursor, limit], })
   sdk.log('[sui] fetched items length', data.length, hasNextPage, nextCursor)
   const fetchIds = data.filter(idFilter).map(i => i.objectId).filter(i => !addedIds.has(i))
   fetchIds.forEach(i => addedIds.add(i))
@@ -74,7 +74,7 @@ async function call(method, params,  { withMetadata = false} = {}) {
   if (!Array.isArray(params)) params = [params]
   const {
     result
-  } = await http.post(endpoint, { jsonrpc: "2.0", id: 1, method, params, })
+  } = await http.post(endpoint(), { jsonrpc: "2.0", id: 1, method, params, })
   return withMetadata ? result : result.data
 }
 
@@ -131,7 +131,7 @@ function dexExport({
 }
 
 module.exports = {
-  endpoint,
+  endpoint: endpoint(),
   call,
   multiCall,
   getObject,

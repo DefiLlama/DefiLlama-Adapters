@@ -73,11 +73,12 @@ module.exports = {
     tvl: getUniTVL({ factory: '0x43eA90e2b786728520e4f930d2A71a477BF2737C', useDefaultCoreAssets: true, }),
   },
   arbitrum_nova: { tvl, },
+  base: { tvl, },
   //moved kava to trident adapter
   //kava: {  //  tvl: kavaTridentTvl,  //},
 }
 
 module.exports.polygon.tvl = getChainTVL('polygon')
 // module.exports.bsc.tvl = getChainTVL('bsc')
-module.exports.fantom.tvl = getChainTVL('fantom')
+// module.exports.fantom.tvl = getChainTVL('fantom')
 // module.exports.harmony.tvl = getChainTVL('harmony')
