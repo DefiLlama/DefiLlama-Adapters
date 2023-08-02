@@ -1,37 +1,17 @@
-const sdk = require("@defillama/sdk");
-const BigNumber = require("bignumber.js");
-const abi = require("./abi.json");
+const ADDRESSES = require("../helper/coreAssets.json");
+const {sumTokens2} = require("../helper/unwrapLPs");
 
-const usdtAddress = "0x55d398326f99059fF775485246999027B3197955";
-const vaultAddress = "0x1c3f35F7883fc4Ea8C4BCA1507144DC6087ad0fb";
-const marginAddress = "0xfE03be1b0504031e92eDA810374222c944351356";
-const ETHER = new BigNumber(10).pow(18);
+const contracts = ["0x1390f521A79BaBE99b69B37154D63D431da27A07"];
 
-async function bscTvl(timestamp, block, chainBlocks) {
-    const valueBalance = (await sdk.api.abi.call({
-        target: usdtAddress,
-        params: vaultAddress,
-        abi: abi.balanceOf,
-        block: chainBlocks['bsc'],
-        chain: "bsc"
-    })).output;
-    const vault = new BigNumber(valueBalance).dividedBy(ETHER).toNumber();
+const tokens = [
+    ADDRESSES.bsc.USDT,
+];
 
-    const marginBalance = (await sdk.api.abi.call({
-        target: usdtAddress,
-        params: marginAddress,
-        abi: abi.balanceOf,
-        block: chainBlocks['bsc'],
-        chain: "bsc"
-    })).output;
-    const margin = new BigNumber(marginBalance).dividedBy(ETHER).toNumber();
-    return vault + margin;
+async function tvl(timestamp, block) {
+    return sumTokens2({owner: contracts[0], tokens: tokens, chain: 'bsc', block});
 }
 
 module.exports = {
-    timetravel: false,
-    methodology: "Calculate kiloex vault tvl.",
-    bsc: {
-        tvl: bscTvl,
-    },
+    start: 1690971144,
+    ethereum: {tvl},
 };
