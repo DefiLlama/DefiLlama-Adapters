@@ -28,8 +28,7 @@ async function tvl() {
   objects.forEach(object => {
     const coin = '0x' + object.fields.value.fields.coin_type
     const total_supply = object.fields.value.fields.supply_balance.fields.total_supply
-    const borrowed = object.fields.value.fields.borrow_balance.fields.total_supply
-    const amount = (total_supply - borrowed) * (10 ** (decimalShift[coin] ?? 0))
+    const amount = total_supply  * (10 ** (decimalShift[coin] ?? 0))
     api.add(coin, amount)
   })
 }
