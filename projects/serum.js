@@ -7,6 +7,7 @@ const blacklistedTokens = new Set([
   'SNSNkV9zfG5ZKWQs6x4hxvBRV6s8SqMfSGCtECDvdMd', // SNS
   'A7rqejP8LKN8syXMr4tvcKjs2iJ4WtZjXNs1e6qP3m9g', // ZION
   'NGK3iHqqQkyRZUj4uhJDQqEyKKcZ7mdawWpqwMffM3s', //YAKU
+  'EP2aYBDD4WvdhnwWLUMyqU69g1ePtEjgYK6qyEAFCHTx', //KRILL
 ])
 
 async function tvl(_, _1, _2, { api }) {
