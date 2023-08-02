@@ -28,23 +28,8 @@ async function bscTvl(timestamp, block, chainBlocks) {
     return vault + margin;
 }
 
-async function run() {
-    try {
-        const timestamp = Math.floor(Date.now() / 1000);
-        const block = 0;
-        const chainBlocks = {bsc: 30495646};
-        const result = await bscTvl(timestamp, block, chainBlocks);
-        console.log(result);
-        return result;
-    } catch (error) {
-        console.error(error);
-    }
-}
-
-// run()
-
 module.exports = {
-    timetravel: true,
+    timetravel: false,
     methodology: "Calculate kiloex vault tvl.",
     bsc: {
         tvl: bscTvl,
