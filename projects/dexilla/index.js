@@ -22,6 +22,19 @@ const config = {
       '0x44F1C33ED3bf77A5883cBEce1c1b34E71425CE84',
     ],
   },
+  arbitrum: {
+    exchanges: [
+      '0x8ea13d1a455e5c5b425a6fc7260a01265d4c4673',
+      '0x8C9DBB80f12D0425eAf127FCC1D92FB21Cb4CE4C',
+      '0x66A724fa0CEB8adfa064afEf5102A2e04E4264c6',
+      '0x5dD2a1C1Fb25E30928C901a28Ceaf53E59B606dD',
+    ],
+  },
+  base:{
+    exchanges: [
+      '0x3F7F51983fb95084a5cb73EB2F28757Bd8bb65E3',
+    ],
+  }
 }
 
 module.exports = {

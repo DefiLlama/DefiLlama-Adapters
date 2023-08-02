@@ -15,6 +15,9 @@ async function tvl(timestamp, ethereumBlock, { bsc: block }) {
 }
 
 module.exports = {
+  hallmarks: [
+    [1667174400, "Rug Pull"]
+  ],
   bsc: {
     tvl,
   },

@@ -26,7 +26,7 @@ module.exports = treasuryExports({
   bsc: {
     tokens: [ 
         nullAddress,
-        "0x2170Ed0880ac9A755fd29B2688956BD959F933F8",
+        ADDRESSES.bsc.ETH,
         ADDRESSES.bsc.USDC,
         ADDRESSES.bsc.BUSD,
         ADDRESSES.bsc.BTCB

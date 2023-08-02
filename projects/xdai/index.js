@@ -3,8 +3,8 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 const { covalentGetTokens } = require('../helper/http');
 
 const tokenAddresses = [
-  '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359', // SAI
-  ADDRESSES.ethereum.DAI, // DAI
+  ADDRESSES.ethereum.SAI,
+  ADDRESSES.ethereum.DAI,
   //'0x06af07097c9eeb7fd685c692751d5C66db49c215'  // CHAI
   "0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643", // cDAI
 ];

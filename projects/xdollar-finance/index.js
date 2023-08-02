@@ -129,7 +129,7 @@ module.exports = {
         staking: staking('0xc3fbc4056689cfab3f23809aa25004899ff4d75a','0x9eF758aC000a354479e538B8b2f01b917b8e89e7', 'arbitrum'),
     },
     polygon: {
-        tvl: getLiquityTvl('0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',"0x68738A47d40C34d890168aB7B612A6f649f395e4", "polygon"),
+        tvl: getLiquityTvl(ADDRESSES.polygon.WMATIC_2,"0x68738A47d40C34d890168aB7B612A6f649f395e4", "polygon"),
         staking: staking('0x3509f19581afedeff07c53592bc0ca84e4855475','0x3dc7b06dd0b1f08ef9acbbd2564f8605b4868eea', 'polygon'),
     },
     avax: {

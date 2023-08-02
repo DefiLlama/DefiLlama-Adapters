@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const commonAbi = require("./abis/index.json")
 const config = require("./config")
+
 const lockCvxAddress = '0x96C68D861aDa016Ed98c30C810879F9df7c64154';
-const cvxAddress = "0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B";
 
 async function pool2(_, _1, _2, { api, balances = {}}) {
   const gaugeTotalSupplies = await api.multiCall({
@@ -37,7 +38,7 @@ async function tvl(timestamp, block, _, { api }) {
     }),
     getClevers(balances, api),
   ])
-  sdk.util.sumSingleBalance(balances, cvxAddress, totalLockedGlobal)
+  sdk.util.sumSingleBalance(balances, ADDRESSES.ethereum.CVX, totalLockedGlobal)
   return balances
 }
 

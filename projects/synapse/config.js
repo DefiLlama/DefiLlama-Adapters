@@ -6,9 +6,9 @@ module.exports = {
         {
           pool: '0x1116898dda4015ed8ddefb84b6e8bc24528af2d8',
           tokens: [
-            ADDRESSES.ethereum.DAI, // DAI
-            ADDRESSES.ethereum.USDC, // USDC
-            ADDRESSES.ethereum.USDT, // USDT
+            ADDRESSES.ethereum.DAI,
+            ADDRESSES.ethereum.USDC,
+            ADDRESSES.ethereum.USDT,
           ]
         },
       ],
@@ -16,17 +16,17 @@ module.exports = {
         address: '0x2796317b0fF8538F253012862c06787Adfb8cEb6',
         tokens: [
           '0x98585dfc8d9e7d48f0b1ae47ce33332cf4237d96', // NEWO
-          ADDRESSES.ethereum.WETH, // WETH
+          ADDRESSES.ethereum.WETH,
           '0x0ab87046fBb341D058F17CBC4c1133F25a20a52f', // gOHM
           '0x71ab77b7dbb4fa7e017bc15090b2163221420282', // HIGH
-          '0x853d955acef822db058eb8505911ed77f175b99e', // FRAX
+          ADDRESSES.ethereum.FRAX,
           '0xbaac2b4491727d78d2b78815144570b9f2fe8899', // DOG
           '0x73968b9a57c6e53d41345fd57a6e6ae27d6cdb2f', // SDT
-          ADDRESSES.ethereum.USDC, // USDC
-          ADDRESSES.ethereum.USDT, // USDT
+          ADDRESSES.ethereum.USDC,
+          ADDRESSES.ethereum.USDT,
           '0xb753428af26e81097e7fd17f40c88aaa3e04902c', // SFI
-          ADDRESSES.ethereum.DAI, // DAI
-          ADDRESSES.ethereum.WBTC, // wBTC
+          ADDRESSES.ethereum.DAI,
+          ADDRESSES.ethereum.WBTC,
           '0x1a7e4e63778B4f12a199C062f3eFdD288afCBce8', // agEUR
           '0x0642026E7f0B6cCaC5925b4E7Fa61384250e1701', // H2O
           '0x02B5453D92B730F29a86A0D5ef6e930c4Cf8860B', // USDB 
@@ -45,14 +45,14 @@ module.exports = {
           pool: '0xE27BFf97CE92C3e1Ff7AA9f86781FDd6D48F5eE9',
           tokens: [
             // '0x809DC529f07651bD43A172e8dB6f4a7a0d771036', // neth
-            ADDRESSES.optimism.WETH, // weth
+            ADDRESSES.optimism.WETH,
           ]
         },
         {
           pool: '0xF44938b0125A6662f9536281aD2CD6c499F22004',
           tokens: [
             // ADDRESSES.metis.SYN, // nusd
-            ADDRESSES.optimism.USDC, // usdc
+            ADDRESSES.optimism.USDC,
           ]
         },
       ],
@@ -63,10 +63,10 @@ module.exports = {
       bridge: {
         address: '0xC05e61d0E7a63D27546389B7aD62FdFf5A91aACE',
         tokens: [
-          ADDRESSES.avax.WAVAX, // WAVAX
+          ADDRESSES.avax.WAVAX,
           '0x1f1e7c893855525b303f99bdf5c3c05be09ca251', // SYN
           '0x321E7092a180BB43555132ec53AaA65a5bF84251', // gOHM
-          ADDRESSES.avax.BTC_b, // BTC.b
+          ADDRESSES.avax.BTC_b,
           '0x5aB7084CB9d270c2Cb052dd30dbecBCA42F8620c', // USDB
           '0x62edc0692BD897D2295872a9FFCac5425011c661', // GMX
         ]
@@ -75,9 +75,9 @@ module.exports = {
         {
           pool: '0xED2a7edd7413021d440b09D654f3b87712abAB66',
           tokens: [
-            ADDRESSES.avax.DAI, // DAI
-            ADDRESSES.avax.USDC_e, // USDC
-            ADDRESSES.avax.USDT_e, // USDT
+            ADDRESSES.avax.DAI,
+            ADDRESSES.avax.USDC_e,
+            ADDRESSES.avax.USDT_e,
             // "0xCFc37A6AB183dd4aED08C204D1c2773c0b1BDf46", // nusd
           ]
         },
@@ -101,7 +101,7 @@ module.exports = {
         {
           pool: '0xCb6674548586F20ca39C97A52A0ded86f48814De',
           tokens: [
-            ADDRESSES.cronos.USDC, // DAI
+            ADDRESSES.cronos.USDC,
             // "0x396c9c192dd323995346632581BEF92a31AC623b", // nusd
           ]
         },
@@ -115,7 +115,7 @@ module.exports = {
         tokens: [
           '0x5f4bde007dc06b867f86ebfe4802e34a1ffeed63', // HIGH
           '0xaA88C603d142C371eA0eAC8756123c5805EdeE03', // DOG
-          ADDRESSES.bsc.BUSD, // BUSD
+          ADDRESSES.bsc.BUSD,
           '0x0FE9778c005a5A6115cBE12b0568a2d50b765A51', // NFD
           '0x130025eE738A66E691E6A7a62381CB33c6d9Ae83', // JUMP
           '0xc8699AbBba90C7479dedcCEF19eF78969a2fc608', // USDB
@@ -125,9 +125,9 @@ module.exports = {
         {
           pool: '0x28ec0B36F0819ecB5005cAB836F4ED5a2eCa4D13',
           tokens: [
-            ADDRESSES.bsc.BUSD, // BUSD
-            ADDRESSES.bsc.USDC, // USDC
-            ADDRESSES.bsc.USDT, // USDT
+            ADDRESSES.bsc.BUSD,
+            ADDRESSES.bsc.USDC,
+            ADDRESSES.bsc.USDT,
             // "0x23b891e5c62e0955ae2bd185990103928ab817b3", // nusd
           ]
         },
@@ -140,16 +140,16 @@ module.exports = {
         address: '0x8f5bbb2bb8c2ee94639e55d5f41de9b4839c1280',
         tokens: [
             '0xd8cA34fd379d9ca3C6Ee3b3905678320F5b45195', // gOHM
-            '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270', // wMATIC
+            ADDRESSES.polygon.WMATIC_2,
         ]
       },
       pools: [
         {
           pool: '0x85fCD7Dd0a1e1A9FCD5FD886ED522dE8221C3EE5',
           tokens: [
-            ADDRESSES.polygon.DAI, // DAI
-            ADDRESSES.polygon.USDC, // USDC
-            ADDRESSES.polygon.USDT, // USDT
+            ADDRESSES.polygon.DAI,
+            ADDRESSES.polygon.USDC,
+            ADDRESSES.polygon.USDT,
             // "0xb6c473756050de474286bed418b77aeac39b02af", // nusd
           ]
         },
@@ -162,7 +162,7 @@ module.exports = {
         address: '0xAf41a65F786339e7911F4acDAD6BD49426F2Dc6b',
         tokens: [
           '0x91fa20244Fb509e8289CA630E5db3E9166233FDc', // gOHM
-          ADDRESSES.fantom.WFTM, // wFTM
+          ADDRESSES.fantom.WFTM,
           '0x6Fc9383486c163fA48becdEC79d6058f984f62cA', // USDB
         ]
       },
@@ -170,17 +170,17 @@ module.exports = {
         {
           pool: '0x85662fd123280827e11c59973ac9fcbe838dc3b4',
           tokens: [
-            ADDRESSES.fantom.USDC, // USDC
-            ADDRESSES.fantom.fUSDT, // fUSDT
+            ADDRESSES.fantom.USDC,
+            ADDRESSES.fantom.fUSDT,
             // "0xED2a7edd7413021d440b09D654f3b87712abAB66", // nusd
           ]
         },
         {
           pool: ADDRESSES.arbitrum.nUSD,
           tokens: [
-            ADDRESSES.fantom.MIM, // MIM
-            ADDRESSES.fantom.USDC, // USDC
-            ADDRESSES.fantom.fUSDT, // USDT
+            ADDRESSES.fantom.MIM,
+            ADDRESSES.fantom.USDC,
+            ADDRESSES.fantom.fUSDT,
             // "0xED2a7edd7413021d440b09D654f3b87712abAB66", // nusd
           ]
         },
@@ -205,16 +205,16 @@ module.exports = {
         {
           pool: '0x753bb855c8fe814233d26Bb23aF61cb3d2022bE5',
           tokens: [
-            ADDRESSES.boba.WETH, // weth
+            ADDRESSES.boba.WETH,
             // "0x96419929d7949D6A801A6909c145C8EEf6A40431", // neth
           ]
         },
         {
           pool: '0x75FF037256b36F15919369AC58695550bE72fead',
           tokens: [
-            ADDRESSES.boba.DAI, // DAI
-            ADDRESSES.boba.USDC, // USDC
-            ADDRESSES.boba.USDT, // USDT
+            ADDRESSES.boba.DAI,
+            ADDRESSES.boba.USDC,
+            ADDRESSES.boba.USDT,
             // "0x6B4712AE9797C199edd44F897cA09BC57628a1CF", // nusd
           ]
         },
@@ -233,14 +233,14 @@ module.exports = {
         {
           pool: '0x09fec30669d63a13c666d2129230dd5588e2e240',
           tokens: [
-            ADDRESSES.metis.WETH, // weth
+            ADDRESSES.metis.WETH,
             // "0x931b8f17764362a3325d30681009f0edd6211231", // neth
           ]
         },
         {
           pool: '0x555982d2E211745b96736665e19D9308B615F78e',
           tokens: [
-            ADDRESSES.metis.m_USDC, // USDC
+            ADDRESSES.metis.m_USDC,
             // "0x961318fc85475e125b99cc9215f62679ae5200ab", // nusd
           ]
         },
@@ -259,24 +259,24 @@ module.exports = {
         {
           pool: '0xa067668661C84476aFcDc6fA5D758C4c01C34352',
           tokens: [
-            ADDRESSES.arbitrum.WETH, // weth
+            ADDRESSES.arbitrum.WETH,
             // "0x3ea9b0ab55f34fb188824ee288ceaefc63cf908e", // neth
           ]
         },
         {
           pool: '0x9Dd329F5411466d9e0C488fF72519CA9fEf0cb40',
           tokens: [
-            ADDRESSES.arbitrum.USDT, // USDT
-            ADDRESSES.arbitrum.USDC, // USDC
+            ADDRESSES.arbitrum.USDT,
+            ADDRESSES.arbitrum.USDC,
             // ADDRESSES.arbitrum.nUSD, // nusd
           ]
         },
         {
           pool: '0x0Db3FE3B770c95A0B99D1Ed6F2627933466c0Dd8',
           tokens: [
-            ADDRESSES.arbitrum.USDT, // USDT
-            ADDRESSES.arbitrum.USDC, // USDC
-            ADDRESSES.arbitrum.MIM, // MIM
+            ADDRESSES.arbitrum.USDT,
+            ADDRESSES.arbitrum.USDC,
+            ADDRESSES.arbitrum.MIM,
             // ADDRESSES.arbitrum.nUSD, // nusd
           ]
         },
@@ -294,8 +294,8 @@ module.exports = {
         {
           pool: '0xcEf6C2e20898C2604886b888552CA6CcF66933B0',
           tokens: [
-            ADDRESSES.aurora.USDC_e, // USDC
-            ADDRESSES.aurora.USDT_e, // USDT
+            ADDRESSES.aurora.USDC_e,
+            ADDRESSES.aurora.USDT_e,
             // ADDRESSES.aurora.nUSD, // nusd
           ]
         },
@@ -307,8 +307,8 @@ module.exports = {
       bridge: {
         address: '0xAf41a65F786339e7911F4acDAD6BD49426F2Dc6b',
         tokens: [
-          ADDRESSES.harmony.JEWEL, // JEWEL
-          ADDRESSES.harmony.xJEWEL, // xJEWEL
+          ADDRESSES.harmony.JEWEL,
+          ADDRESSES.harmony.xJEWEL,
           '0x24eA0D436d3c2602fbfEfBe6a16bBc304C963D04', // DFKTEARS
         ]
       },
@@ -332,7 +332,7 @@ module.exports = {
         {
           pool: '0x00A4F57D926781f62D09bb05ec76e6D8aE4268da',
           tokens: [
-            ADDRESSES.harmony.AVAX, // avax
+            ADDRESSES.harmony.AVAX,
             // "???", // synAvax
           ]
         },
@@ -370,21 +370,21 @@ module.exports = {
         {
           pool: ADDRESSES.aurora.nUSD,
           tokens: [
-            ADDRESSES.canto.NOTE, // NOTE
+            ADDRESSES.canto.NOTE,
             // "0xd8836af2e565d3befce7d906af63ee45a57e8f80", // nUSD
           ]
         },
         {
           pool: '0x273508478e099Fdf953349e6B3704E7c3dEE91a5',
           tokens: [
-            ADDRESSES.functionx.WFX, // USDC
+            ADDRESSES.functionx.WFX,
             // "0xd8836af2e565d3befce7d906af63ee45a57e8f80", // nusd
           ]
         },
         {
           pool: '0xF60F88bA0CB381b8D8A662744fF93486273c22F9',
           tokens: [
-            ADDRESSES.functionx.PURSE, // cantoETH
+            ADDRESSES.functionx.PURSE,
             // "0x09fec30669d63a13c666d2129230dd5588e2e240", // nETH
           ]
         },
@@ -409,7 +409,7 @@ module.exports = {
           pool: '0xfdbad1699a550f933efebf652a735f2f89d3833c',
           tokens: [
             "0xd6dab4cff47df175349e6e7ee2bf7c40bb8c05a3", // USDT
-            ADDRESSES.klaytn.oUSDT, // o.USDT
+            ADDRESSES.klaytn.oUSDT,
           ]
         },
       ]

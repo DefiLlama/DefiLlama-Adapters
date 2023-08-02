@@ -12,7 +12,7 @@ const SCALLOP_PROGRAM_ID = new PublicKey("SCPv1LabixHirZbX6s7Zj3oiBogadWZvGUKRvX
 const COUPON_SEED = "coupon_seed";
 const POOL_AUTHORITY = "pool_authority_seed";
 
-const SCALLOP_SUI_MARKET_ID = "0xcdd65d04519aea065fdbd15315ab75ff41a65a4a39fd71e107dffc4a06c02f32"
+const SCALLOP_SUI_MARKET_ID = "0xa757975255146dc9686aa823b7838b507f315d704f428cbadad2f4ea061939d9"
 
 function getTokenGeckoId(mintAuthority) {
   for (let i = 0; i < activePoolBases.length; i++) {
@@ -58,19 +58,36 @@ async function solanaTvl() {
   return balances;
 }
 
+async function suiBorrowed() {
+  const { api } = arguments[3]
+  const object = await sui.getObject(SCALLOP_SUI_MARKET_ID)
+
+  const balanceSheetsFields = await sui.getDynamicFieldObjects({
+    parent: object.fields.vault.fields.balance_sheets.fields.table.fields.id.id,
+  });
+
+  const balanceSheets = await sui.getObjects(balanceSheetsFields.map((e) => e.fields.id.id))
+
+  balanceSheets.forEach((e) => {
+    const coinType = '0x' + e.fields.name.fields.name
+    const amount = new BigNumber(e.fields.value.fields.debt).toString()
+    api.add(coinType, amount)
+  })
+}
+
 async function suiTvl() {
   const { api } = arguments[3]
   const object = await sui.getObject(SCALLOP_SUI_MARKET_ID)
 
   const balanceSheetsFields = await sui.getDynamicFieldObjects({
-      parent: object.fields.vault.fields.balance_sheets.fields.table.fields.id.id,
-    });
+    parent: object.fields.vault.fields.balance_sheets.fields.table.fields.id.id,
+  });
 
   const balanceSheets = await sui.getObjects(balanceSheetsFields.map((e) => e.fields.id.id))
-  
+
   balanceSheets.forEach((e) => {
     const coinType = '0x' + e.fields.name.fields.name
-    const amount = new BigNumber(e.fields.value.fields.cash).plus(new BigNumber(e.fields.value.fields.debt)).toString()
+    const amount = new BigNumber(e.fields.value.fields.cash).toString()
     api.add(coinType, amount)
   })
 
@@ -93,5 +110,6 @@ module.exports = {
   },
   sui: {
     tvl: suiTvl,
+    borrowed: suiBorrowed,
   },
 }
