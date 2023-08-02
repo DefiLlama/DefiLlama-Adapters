@@ -1,17 +1,9 @@
 const ADDRESSES = require("../helper/coreAssets.json");
-const {sumTokens2} = require("../helper/unwrapLPs");
+const { sumTokensExport } = require("../helper/unwrapLPs");
 
-const contracts = ["0x1390f521A79BaBE99b69B37154D63D431da27A07"];
-
-const tokens = [
-    ADDRESSES.bsc.USDT,
-];
-
-async function tvl(timestamp, block) {
-    return sumTokens2({owner: contracts[0], tokens: tokens, chain: 'bsc', block});
-}
+const owners = ["0x1c3f35F7883fc4Ea8C4BCA1507144DC6087ad0fb", "0xfE03be1b0504031e92eDA810374222c944351356"];
 
 module.exports = {
-    start: 1690971144,
-    ethereum: {tvl},
+  start: 1690971144,
+  bsc: { tvl: sumTokensExport({ owners, tokens: [ADDRESSES.bsc.USDT], }) },
 };
