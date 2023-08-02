@@ -9,7 +9,7 @@ const AsgardTreasury = "0x9D5818af130705F95444d78A55B4F3d85cBfCC13";
 
 const DAI = ADDRESSES.ethereum.DAI;
 const ASG_DAI_SLP = "0x024cc95611d478dd367240e72c82662d9e390a6a";
-const FRAX = "0x853d955acef822db058eb8505911ed77f175b99e";
+const FRAX = ADDRESSES.ethereum.FRAX;
 const ASG_FRAX_SLP = "0x5696cd9054ce11625141f5ee2c65fc4d57c2a5ca";
 const WUST = "0xa47c8bf37f92abed4a126bda807a7b7498661acd";
 const ASG_UST_SLP = "0x5a1abc007f031aa58238f45941d965ce6892fdff";
@@ -56,6 +56,9 @@ async function ethTvl(timestamp, block) {
 }
 
 module.exports = {
+  hallmarks: [
+    [1643155200, "Token mint exploit"]
+  ],
   ethereum: {
     staking,
     tvl: ethTvl,
