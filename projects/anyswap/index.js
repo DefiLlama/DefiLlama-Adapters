@@ -1,4 +1,8 @@
-const { get } = require('../helper/http')
+const sdk = require('@defillama/sdk')
+const { sumTokens } = require('../helper/sumTokens')
+const { getConfig } = require('../helper/cache')
+const ADDRESSES = require('../helper/coreAssets.json')
+
 
 const chains = {
   '1': 'ethereum',
@@ -58,67 +62,45 @@ const chains = {
   '32520': 'bitgert'
 }
 
-
-
-const sleep = ms => new Promise(r => setTimeout(r, ms));
-
-let coingeckoMcapsPromise
-
-async function getCgMcaps() {
-    if (!coingeckoMcapsPromise) coingeckoMcapsPromise = _getData()
-  return coingeckoMcapsPromise
-
-  async function _getData() {
-    const protocolsInChain = await getChainData()
-    const protocolsWithRouters = Array.from(new Set(protocolsInChain.filter(p => p.type === "router" && p.label !== null).map(p => p.label.toLowerCase())));
-
-    const coingeckoMcaps = {}
-    const step = 200;
-    for (let i = 0; i < protocolsWithRouters.length; i += step) {
-      console.log(i / step)
-      const cgUrl = `https://api.coingecko.com/api/v3/simple/price?vs_currencies=usd&include_market_cap=true&ids=${protocolsWithRouters.slice(i, i + step).join(',')
-        }`
-      await sleep(1e3)
-      const partMcaps = await get(cgUrl)
-      Object.assign(coingeckoMcaps, partMcaps)
-    }
-    return coingeckoMcaps
-  }
-}
-
 let chainData
 async function getChainData() {
-  if (!chainData) chainData = get('https://netapi.anyswap.net/bridge/v2/info').then(i => i.bridgeList.filter(j => j.amount > 0))
+  if (!chainData) chainData = getConfig('anyswap-config', 'https://netapi.anyswap.net/bridge/v2/info').then(i => i.bridgeList.filter(j => j.amount > 0))
   return chainData
 }
 
+const blacklistedTokens = [
+  '0xc342774492b54ce5f8ac662113ed702fc1b34972' // BGEO
+]
+
+const EXECUTOR = '0x2A038e100F8B85DF21e4d44121bdBfE0c288A869'
+const NEW_ADDR = '0x1eed63efba5f81d95bfe37d82c8e736b974f477b'
+
 function fetchChain(chain) {
-  return async () => {
+  return async (_, _1, _2, { api }) => {
     const data = await getChainData()
     const protocolsInChain = chain === null ? data : data.filter(p => p.srcChainId.toString() === chain.toString())
-
-    const coingeckoMcaps = await getCgMcaps();
-    const counted = {}
-    let total = 0
+    const tokensAndOwners = []
     protocolsInChain.forEach((item) => {
-      const tvl = Number(item.tvl || 0)
-
       if (item.type === "bridge") {
-        total += tvl
-      } else if (item.type === "router") {
-        const label = item.label
-        const mcap = coingeckoMcaps[label]?.usd_market_cap
-        if (counted[label] === undefined) {
-          counted[label] = 0
+        let token = item.srcToken
+        let owner = item.depositAddr
+        if (owner.startsWith("0x") && !token.startsWith("0x")) {
+          sdk.log(chain, 'replace', token, 'with null')
+          token = ADDRESSES.null
         }
-        if (mcap !== undefined && mcap > counted[label]) {
-          const tvlToAdd = Math.min(tvl, mcap - counted[label])
-          total += tvlToAdd
-          counted[label] += tvlToAdd
+        tokensAndOwners.push([token, owner])
+        tokensAndOwners.push([token, EXECUTOR])
+        // tokensAndOwners.push([token, NEW_ADDR])
+      } else if (item.type === "router") {
+        if (item.token === item.srcToken && item.underlying) {
+          tokensAndOwners.push([item.underlying, item.token])
+          tokensAndOwners.push([item.underlying, EXECUTOR])
+          // tokensAndOwners.push([item.underlying, NEW_ADDR])
         }
       }
     })
-    return total
+
+    return sumTokens({ api, tokensAndOwners, blacklistedTokens, })
   }
 }
 
@@ -127,7 +109,7 @@ const chainTvls = {}
 Object.keys(chains).forEach((chain) => {
   const chainName = chains[chain]
   chainTvls[chainName] = {
-    fetch: fetchChain(chain)
+    tvl: fetchChain(chain)
   }
 })
 
@@ -135,8 +117,9 @@ module.exports = {
   misrepresentedTokens: true,
   timetravel: false,
   ...chainTvls,
-  fetch: fetchChain(null),
-  hallmarks:[
+  // fetch: fetchChain(null),
+  hallmarks: [
     [1651881600, "UST depeg"],
+    [1689202800,"Access to Wallets Lost"]
   ],
 }

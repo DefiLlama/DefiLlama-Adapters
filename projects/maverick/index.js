@@ -62,4 +62,12 @@ module.exports = maverickTVL({
       },
     ],
   },
+  bsc: {
+    factories: [
+      {
+        address: "0x76311728FF86054Ad4Ac52D2E9Ca005BC702f589",
+        startBlock: 29241050,
+      },
+    ],
+  },
 });

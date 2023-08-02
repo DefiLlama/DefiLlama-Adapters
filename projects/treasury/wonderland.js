@@ -111,7 +111,7 @@ async function uwuPositions(_, _b, _cb, { api, }) {
       { target: '0xaac1d67f1c17ec01593d76e831c51a4f458dc160', params: ethWallet },
     ]
   })
-  api.add('0x5f98805A4E8be255a32880FDeC7F6728C6568bA0', LUSDBal)
+  api.add(ADDRESSES.ethereum.LUSD, LUSDBal)
   api.add('0x3E04863DBa602713Bb5d0edbf7DB7C3A9A2B6027', uwuLPLocked.total)
   api.add('0xb95bd0793bcc5524af358ffaae3e38c3903c7626', +uDAI - vdDAI)
   api.add('0x24959f75d7bda1884f1ec9861f644821ce233c7d', +uUSDT - vdUSDT)

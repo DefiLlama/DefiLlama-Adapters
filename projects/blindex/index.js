@@ -216,7 +216,6 @@ const rsk = async function rskTvl(timestamp, ethBlock, chainblocks) {
 };
 
 const dexTVL = getUniTVL({
-  chain: 'rsk',
   factory: '0x5Af7cba7CDfE30664ab6E06D8D2210915Ef73c2E',
   useDefaultCoreAssets: true,
 })

@@ -1,8 +1,9 @@
+const ADDRESSES = require('./coreAssets.json')
 const { sumTokensExport, nullAddress, } = require('../helper/sumTokens')
 const { covalentGetTokens } = require('./http')
 const axios = require("axios")
 
-const ARB = "0x912CE59144191C1204E64559FE8253a0e49E6548";
+const ARB = ADDRESSES.arbitrum.ARB;
 
 function treasuryExports(config) {
   const chains = Object.keys(config)
@@ -27,7 +28,7 @@ function treasuryExports(config) {
       exportObj[chain] = { tvl: sumTokensExport(tvlConfig) }
     }
 
-    if (ownTokens) {
+    if (ownTokens.length > 0) {
       const { solOwners, ...otherOptions } = config[chain]
       const options = { ...otherOptions, owners: [...owners, ...ownTokenOwners], tokens: ownTokens, chain, uniV3WhitelistedTokens: ownTokens}
       exportObj[chain].ownTokens = sumTokensExport(options)
