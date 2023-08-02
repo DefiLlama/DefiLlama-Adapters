@@ -8,10 +8,13 @@ module.exports = {
         target: "0x2AB2398303B79884B8eC18A145EBd496145dfeEC",
         params: ["0x2AB2398303B79884B8eC18A145EBd496145dfeEC", 0, 1000]
       });
-      let tokens = new Set(a.map(g => g.poolData.listedTokens).reduce((l, g) => l.concat(g)))
-      tokens.delete("0x2441488a43e9F35289564c2c9f8c783F3c6bb596");
-      tokens.delete("0x226398c89a2BA3C30689939EF9c4984c4a4d314A");
-      return sumTokens2({ owner: "0x1d0188c4B276A09366D05d6Be06aF61a73bC7535", tokens: [...tokens].map(i => '0x' + i.slice(2 + 24)), api })
+      let tokens = a.map(g => g.poolData.listedTokens).flat().map(i => '0x' + i.slice(2 + 24))
+      return sumTokens2({
+        owner: "0x1d0188c4B276A09366D05d6Be06aF61a73bC7535", tokens, blacklistedTokens: [
+          '0x2441488a43e9F35289564c2c9f8c783F3c6bb596',
+          '0x226398c89a2BA3C30689939EF9c4984c4a4d314A',
+        ], api,
+      })
     },
   },
   methodology: "counts tokens in the vault.",
