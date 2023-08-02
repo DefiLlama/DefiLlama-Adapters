@@ -1,11 +1,16 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { getParamCalls } = require("../helper/utils");
+const { GraphQLClient, gql } = require("graphql-request");
+const { getBlock } = require("../helper/http");
 
+// exclude V1 platforms for avoid double counting
 const EXCLUDED_PLATFORMS = {
   "12": true, // TETU_SWAP
   "29": true // TETU self farm
 }
+
+// exclude V1 vaults for avoid double counting
 const EXCLUDED_VAULTS = {
   "ethereum": {
     "0xfe700d523094cc6c673d78f1446ae0743c89586e": true, // tetuBAL ethereum
@@ -26,6 +31,7 @@ const config = {
     contract_Reader: '0xCa9C8Fba773caafe19E6140eC0A7a54d996030Da',
     controllerV2: '0x33b27e0A2506a4A2FBc213a01C51d0451745343a',
     veTETU: '0x6FB29DD17fa6E27BD112Bc3A2D0b8dae597AeDA4',
+    pawnshopSubgraph: 'https://api.thegraph.com/subgraphs/name/tetu-io/pawnshop-polygon',
   },
   fantom: {
     bookkeeper: '0x00379dD90b2A337C4652E286e4FBceadef940a21',
@@ -41,10 +47,23 @@ const config = {
   },
 }
 
+function offset(chain) {
+  switch (chain) {
+    case 'ethereum':
+      return 110
+    case 'bsc':
+      return 600
+    case 'polygon':
+      return 750
+    case 'fantom':
+      return 1500
+  }
+}
+
 Object.keys(config).forEach(chain => {
-  const { bookkeeper, contract_Reader, controllerV2, veTETU } = config[chain]
+  const { bookkeeper, contract_Reader, controllerV2, veTETU, pawnshopSubgraph } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, { [chain]: block }, { api }) => {
+    tvl: async (timestamp, ethBlock, chainBlocks, { api }) => {
       const vaultAddresses = await api.fetchList({ lengthAbi: abi.vaultsLength, itemAbi: abi.vaults, target: bookkeeper })
       const strategies = await api.multiCall({ abi: abi.strategy, calls: vaultAddresses, })
       const platforms = await api.multiCall({ abi: abi.platform, calls: strategies, })
@@ -59,14 +78,14 @@ Object.keys(config).forEach(chain => {
         vaultsCall.push(vaultAddresses[i])
       }
 
-      // TetuV2 vaults
+      // ? ############### TetuV2 vaults
       let usdcsV2 = [];
       if (controllerV2) {
         const vaultsV2 = (await api.call({ abi: abi.vaultsList, target: controllerV2, }));
         usdcsV2 = await api.multiCall({ target: contract_Reader, abi: abi.vaultERC4626TvlUsdc, calls: vaultsV2, permitFailure: true, })
       }
 
-      // veTETU
+      // ? ############### veTETU
       let veTETU_USDC = 0;
       if (veTETU) {
         for (let i = 0; i < 100; i++) {
@@ -88,7 +107,28 @@ Object.keys(config).forEach(chain => {
         }
       }
 
-      let total = veTETU_USDC
+      // ? ############### pawnshop
+      let pawnshopTVL = 0;
+      if(pawnshopSubgraph) {
+        var graphQLClient = new GraphQLClient(pawnshopSubgraph)
+        const block = (await getBlock(timestamp, chain, chainBlocks)) - offset(chain)
+        var query = gql`
+            {
+                tvlEntities(block: {number: ${block}}) {
+                    value
+                    collateralValue
+                    depositTokenValue
+                }
+            }
+        `
+        const result = await graphQLClient.request(query)
+
+        for (const tvl of result.tvlEntities) {
+          pawnshopTVL += Number(tvl.value);
+        }
+      }
+
+      let total = veTETU_USDC + pawnshopTVL
       for (const vault of vaultsCall) {
         const usdcs = await api.call({ target: contract_Reader, abi: abi.totalTvlUsdc, params: [[vault]], })
         total += usdcs / 1e18
