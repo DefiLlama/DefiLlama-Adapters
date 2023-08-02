@@ -4,12 +4,22 @@ const axios = require('axios');
 const { endPoints, queryContract, sumTokens } = require('../helper/chain/cosmos');
 const { getChainTransform } = require('../helper/portedTokens');
 
-const redBankAddress = 'osmo1c3ljch9dfw5kf52nfwpxd2zmj2ese7agnx0p9tenkrryasrle5sqf3ftpg';
-const creditManagerAddress = 'osmo1f2m24wktq0sw3c0lexlg7fv4kngwyttvzws3a3r3al9ld2s2pvds87jqvf';
+const addresses = {
+  osmosis: {
+    redBank: 'osmo1c3ljch9dfw5kf52nfwpxd2zmj2ese7agnx0p9tenkrryasrle5sqf3ftpg',
+    creditManager: 'osmo1f2m24wktq0sw3c0lexlg7fv4kngwyttvzws3a3r3al9ld2s2pvds87jqvf',
+  },
+  neutron: {
+    redBank: 'neutron1n97wnm7q6d2hrcna3rqlnyqw2we6k0l8uqvmyqq6gsml92epdu7quugyph',
+  }
+}
+
+
+// OSMOSIS
 
 async function osmosisTVL() {
   let balances = {};
-  await sumTokens({balances, owners: [redBankAddress], chain: 'osmosis'});
+  await addRedBankTvl(balances, 'osmosis');
   await osmosisSumVaultsTVL(balances);
   return balances;
 }
@@ -23,7 +33,7 @@ async function osmosisSumVaultsTVL(balances) {
 
   while (vaultPagesRemaining) {
     const fieldsVaultsInfo = await queryContract({
-      contract: creditManagerAddress,
+      contract: addresses.osmosis.creditManager,
       chain: 'osmosis',
       data: { 'vaults_info': { limit: pageLimit, 'start_after': startAfter } } 
     });
@@ -60,7 +70,7 @@ async function osmosisAddCoinsForVaultsInfoPage(coins, fieldsVaultsInfoPage) {
     // get total vault shares owned by fields for each vault
     await Promise.all(vaultsMetadata.map(async vm => {
       let vaultShares = await queryContract({
-        contract: creditManagerAddress,
+        contract: addresses.osmosis.creditManager,
         chain: 'osmosis',
         data: { 'total_vault_coin_balance': { vault: vm.fieldsVaultInfo.vault } } 
       });
@@ -99,6 +109,20 @@ async function osmosisAddCoinsForVaultsInfoPage(coins, fieldsVaultsInfoPage) {
     }));
 }
 
+// NEUTRON
+
+async function neutronTVL() {
+  let balances = {};
+  await addRedBankTvl(balances, 'neutron');
+  return balances;
+}
+
+// HELPERS
+
+async function addRedBankTvl(balances, chain) {
+  await sumTokens({balances, owners: [addresses[chain].redBank], chain});
+}
+
 function getEndpoint(chain) {
   if (!endPoints[chain]) throw new Error('Chain not found: ' + chain);
   return endPoints[chain];
@@ -112,9 +136,12 @@ async function cosmosLCDQuery(url, chain) {
 
 module.exports = {
   timetravel: false,
-  methodology: 'Sum up token balances in Red Bank smart contract and vault underlying assets in Fields smart contract',
+  methodology: 'For each chain, sum up token balances in Red Bank smart contracts and vault underlying assets in Fields smart contracts',
   osmosis: {
     tvl: osmosisTVL,
+  },
+  neutron: {
+    tvl: neutronTVL,
   },
   terra: {
     tvl: () => 0,

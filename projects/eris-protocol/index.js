@@ -104,6 +104,10 @@ const config = {
         "cosmos",
     },
   },
+  chihuahua: {
+    coinGeckoId: "chihuahua-token",
+    hub: "chihuahua1nktfhalzvtx82kyn4dh6l8htcl0prfpnu380a39zj52nzu3j467qqg23ry",
+  },
 };
 
 async function getState(chain, contract) {
@@ -289,4 +293,5 @@ module.exports = {
   injective: { tvl: () => productsTvl("injective") },
   osmosis: { tvl: () => productsTvl("osmosis") },
   neutron: { tvl: () => productsTvl("neutron") },
+  chihuahua: { tvl: () => productsTvl("chihuahua") },
 };
