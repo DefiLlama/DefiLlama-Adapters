@@ -10,7 +10,7 @@ const Pool_Three = "0x8b3cC46943243E260E201ADd16F2ed15253f6702"
 
 module.exports = {
   core: {
-    tvl: sumTokensExport({ owners: [Pool_One,Pool_Two,Pool_Three], tokens: [IgnoreFUDToken], }),
+    tvl: () => ({}),
     staking: sumTokensExport({ owners: [Pool_One,Pool_Two,Pool_Three], tokens: [IgnoreFUDToken], useDefaultCoreAssets: true, lps: [LpAddress], }),
   }
 };
