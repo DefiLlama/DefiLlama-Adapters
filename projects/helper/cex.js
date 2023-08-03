@@ -138,7 +138,7 @@ const defaultTokens = {
     '0x352Cb5E19b12FC216548a2677bD0fce83BaE434B', // BTT
     '0xAD29AbB318791D579433D831ed122aFeAf29dcfe', // FTM
     '0x02ff5065692783374947393723dba9599e59f591',// yoshi
-    '0x40af3827f39d0eacbf4a168f8d4ee67c121d11c9', //TUSD
+    ADDRESSES.bsc.TUSD, //TUSD
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],
