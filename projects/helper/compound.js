@@ -172,7 +172,7 @@ function getCompoundV2Tvl(comptroller, chain, transformAdress,
       await unwrapUniswapLPs(balances, lpPositions, block, chain, transformAdress)
     }
 
-    if (resolveLPs) return unwrapLPsAuto({ balances, block, chain})
+    if (resolveLPs) return unwrapLPsAuto({ balances, block, chain, abis})
 
     return balances;
   }

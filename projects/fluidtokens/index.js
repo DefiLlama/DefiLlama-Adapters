@@ -52,8 +52,9 @@ async function tvl() {
   
   const repay_tvl = parseInt(await get("https://api.fluidtokens.com/get-total-available-repayments"));
 
+  const pools_tvl= parseInt(await get("https://api.fluidtokens.com/get-total-available-pools"));
   return {
-    cardano: (SC_offers_tvl+repay_tvl) / 1e6,
+    cardano: (SC_offers_tvl+repay_tvl+pools_tvl) / 1e6,
   };
 }
 

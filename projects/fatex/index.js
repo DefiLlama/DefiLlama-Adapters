@@ -11,7 +11,6 @@ module.exports = {
   polygon: {
     tvl: getUniTVL({
       factory: FACTORY_CONTRACT,
-      chain: 'polygon',
       useDefaultCoreAssets: true,
     }),
     staking: stakingUnknownPricedLP(X_FATE_TOKEN, FATE_TOKEN, 'polygon', FATE_USDC_PAIR_TOKEN)
