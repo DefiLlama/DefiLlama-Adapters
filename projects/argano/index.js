@@ -15,11 +15,11 @@ module.exports = {
     misrepresentedTokens: true,
     polygon: {
         tvl: sdk.util.sumChainTvls([
-            sumTokensExport({ chain: 'polygon', tokensAndOwners: [
+            sumTokensExport({ tokensAndOwners: [
                 [contracts.wbtc, contracts.wbtcPool],
                 [contracts.usdt, contracts.usdtPool],
             ]}),
-            getUniTVL({ chain: 'polygon', factory: contracts.factory, useDefaultCoreAssets: true, })
+            getUniTVL({ factory: contracts.factory, useDefaultCoreAssets: true, })
         ])
     }
 };

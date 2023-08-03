@@ -1,4 +1,3 @@
-const ADDRESSES = require('../helper/coreAssets.json')
 const { compoundV3Exports } = require('../helper/compoundV3')
 const markets = [
   "0xc3d688B66703497DAA19211EEdff47f25384cdc3", // USDC Market

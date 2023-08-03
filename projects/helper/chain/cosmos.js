@@ -29,6 +29,7 @@ const endPoints = {
   kava: "https://api2.kava.io",
   neutron: "https://rest-kralum.neutron-1.neutron.org",
   quasar: "https://quasar-api.polkachu.com",
+  gravitybridge: "https://rest.cosmos.directory/gravitybridge",
 };
 
 const chainSubpaths = {
