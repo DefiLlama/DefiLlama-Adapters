@@ -71,56 +71,8 @@ module.exports = {
 }
 
 const abi = {
-  depositToken: {
-    "inputs": [],
-    "name": "depositToken",
-    "outputs": [
-      {
-        "internalType": "contract IPair",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  totalDeposits: {
-    "inputs": [],
-    "name": "totalDeposits",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  stakedToken: {
-    "inputs": [],
-    "name": "stakedToken",
-    "outputs": [
-      {
-        "internalType": "contract IPair",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  totalSupply: {
-    "inputs": [],
-    "name": "totalSupply",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
+  depositToken: "address:depositToken",
+  totalDeposits: "uint256:totalDeposits",
+  stakedToken: "address:stakedToken",
+  totalSupply: "uint256:totalSupply",
 }

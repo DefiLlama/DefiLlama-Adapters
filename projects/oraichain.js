@@ -1,10 +1,11 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { unwrapUniswapLPs } = require("./helper/unwrapLPs")
 const { transformBscAddress } = require("./helper/portedTokens");
 const BigNumber = require('bignumber.js');
 const { sumSingleBalance } = require("@defillama/sdk/build/generalUtil");
 
-const usdtAddress = '0xdac17f958d2ee523a2206206994597c13d831ec7';
+const usdtAddress = ADDRESSES.ethereum.USDT;
 
 const oraichainToken = {
     'bsc': '0xa325ad6d9c92b55a3fc5ad7e412b1518f96441c0',
@@ -70,7 +71,7 @@ async function tvl(chainBlocks, chain, transform=a=>a) {
     }
 
     return balances;
-};
+}
 
 async function ethTvl(timestamp, ethBlock, chainBlocks) {
     let balances = await tvl(chainBlocks, 'ethereum');
@@ -83,11 +84,11 @@ async function ethTvl(timestamp, ethBlock, chainBlocks) {
     })).output;
     sdk.util.sumSingleBalance(balances, usdtAddress, usdtBalance);
     return balances;
-};
+}
 
 async function bscTvl(timestamp, ethBlock, chainBlocks) {
     return await tvl(chainBlocks, 'bsc', await transformBscAddress());
-};
+}
 
 module.exports = {
     ethereum: {

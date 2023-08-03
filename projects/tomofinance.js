@@ -11,7 +11,7 @@ async function taiSupply(timestamp, ethBlock, {tomochain: block}) {
     })).output;
 
     return { 'usd-coin': supply };
-};
+}
 
 module.exports = {
     timetravel: true,

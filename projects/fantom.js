@@ -1,12 +1,13 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const { get } = require('./helper/http')
-const { GraphQLClient, gql } = require("graphql-request");
+const { GraphQLClient,  } = require("graphql-request");
 const BigNumber = require("bignumber.js");
 
 async function fetch() {
   const endpoint = "https://xapi3.fantom.network/api";
   const graphQLClient = new GraphQLClient(endpoint);
 
-  const query = gql`
+  const query = `
     query getToken($token: Address!) {
       erc20Token(token: $token) {
         address
@@ -22,7 +23,7 @@ async function fetch() {
 
   var tokens = [
     {
-      address: "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
+      address: ADDRESSES.fantom.WFTM,
       symbol: "WFTM",
     },
     {

@@ -7,75 +7,15 @@ const swapFactory = '0x1b8e12f839bd4e73a47addf76cf7f0097d74c14c'
 const stableSwapFactory = '0xc6e111637440d1fe9c1ee45d5a1239771b267122'
 
 const abis = {
-  allPools: {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "allPools",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  allPoolsLength: {
-    "inputs": [],
-    "name": "allPoolsLength",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  getTokenLength: {
-    "inputs": [],
-    "name": "getTokenLength",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  getToken: {
-    "inputs": [
-      {
-        "internalType": "uint8",
-        "name": "index",
-        "type": "uint8"
-      }
-    ],
-    "name": "getToken",
-    "outputs": [
-      {
-        "internalType": "contract IERC20",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
+  allPools: "function allPools(uint256) view returns (address)",
+  allPoolsLength: "uint256:allPoolsLength",
+  getTokenLength: "uint256:getTokenLength",
+  getToken: "function getToken(uint8 index) view returns (address)",
 }
 
 const bscDexTVL = getUniTVL({
-  chain: 'bsc',
   factory: swapFactory,
+  useDefaultCoreAssets: true,
 })
 
 async function bscStableSwapTvl(_, _b, { bsc: block }) {

@@ -1,9 +1,9 @@
-const { GraphQLClient, gql } = require('graphql-request')
+const { GraphQLClient,  } = require('graphql-request')
 const utils = require('./helper/utils');
 const sdk = require('@defillama/sdk')
 
 async function tvl() {
-  var q2 =  gql`{
+  var q2 =  `{
   totalBondedECDSAKeeps {
       id
       totalAvailable
@@ -25,7 +25,7 @@ async function tvl() {
 }
 
 async function staking() {
-  var q1 =  gql`{
+  var q1 =  `{
       tokenStakings {
         contractAddress
         totalStaker
