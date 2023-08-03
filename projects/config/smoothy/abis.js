@@ -1,90 +1,46 @@
+const ADDRESSES = require('../../helper/coreAssets.json')
 let abis = {};
 
-abis.smoothy = [
-    {
-        "inputs": [],
-        "name": "_ntokens",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "bTokenIdx",
-                "type": "uint256"
-            }
-        ],
-        "name": "getTokenStats",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "softWeight",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "hardWeight",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "balance",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "decimals",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-];
+abis.smoothy = {
+    _ntokens: "uint256:_ntokens",
+    getTokenStats: "function getTokenStats(uint256 bTokenIdx) view returns (uint256 softWeight, uint256 hardWeight, uint256 balance, uint256 decimals)",
+  };
 
 
 abis.tokens = [
     {
         symbol: "USDT",
-        address: "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        address: ADDRESSES.ethereum.USDT,
         id: 0,
         decimals: 6,
     },
     {
         symbol: "USDC",
-        address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        address: ADDRESSES.ethereum.USDC,
         id: 1,
         decimals: 6,
     },
     {
         symbol: "DAI",
-        address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+        address: ADDRESSES.ethereum.DAI,
         id: 2,
         decimals: 18,
     },
     {
         symbol: "TUSD",
-        address: "0x0000000000085d4780B73119b644AE5ecd22b376",
+        address: ADDRESSES.ethereum.TUSD,
         id: 3,
         decimals: 18,
     },
     {
         symbol: "sUSD",
-        address: "0x57ab1ec28d129707052df4df418d58a2d46d5f51",
+        address: ADDRESSES.ethereum.sUSD,
         id: 4,
         decimals: 18,
     },
     {
         symbol: "BUSD",
-        address: "0x4fabb145d64652a948d72533023f6e7a623c7c53",
+        address: ADDRESSES.ethereum.BUSD,
         id: 5,
         decimals: 18,
     },

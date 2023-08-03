@@ -1,17 +1,19 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const utils = require('../helper/utils')
 const { getConnection } = require('../helper/solana')
 const BigNumber = require('bignumber.js')
 const { PublicKey } = require('@solana/web3.js')
+const sdk = require('@defillama/sdk')
 
 const poolInfoKey = new PublicKey('CsMSJ2wJAsQBNZU9LuL3FAx2Do9ndY4Ae15JAXhFMc1p')
 
 const decimals = {
   'Hero6s7zJXsw9hfCXLVR5stLqgCok3E7CCkpQEoLAk2g': 6, // HERO
-  'So11111111111111111111111111111111111111112': 9,  // SOL
+  [ADDRESSES.solana.SOL]: 9,  // SOL
   '4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R': 6, // RAY
   'mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So': 9,  // mSOL
-  'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v': 6, // USDC
-  'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB': 6, // USDT
+  [ADDRESSES.solana.USDC]: 6, // USDC
+  [ADDRESSES.solana.USDT]: 6, // USDT
   'rEmtKCiw6DQL8kAaGzhSryqnqNckYabPxTNXDdj2Jur': 6, // hero-usdc
   'Epm4KfTj4DMrvqn6Bwg2Tr2N8vhQuNbuK8bESFp4k33K': 9, // sol-usdt
   '8HoQnePLqPj4M7PUDzfw8e3Ymdwgc7NLGnaTUapubyvu': 9, // sol-usdc
@@ -50,7 +52,6 @@ function isLp(token) {
 var priceCache = new Map()
 
 async function getTokenSupplyUI(mintPubkey) {
-  //console.log('getTokenSupplyUi(' + mintPubkey.toString() + ')')
   const connection = getConnection()
   var supply = new BigNumber(0)
 
@@ -62,7 +63,6 @@ async function getTokenSupplyUI(mintPubkey) {
 }
 
 async function getLpPrice(tokenPubkey) {
-  //console.log('getLpPrice(' + tokenPubkey.toString() + ')')
 
   if (priceCache[tokenPubkey.toString()])
     return priceCache[tokenPubkey.toString()]
@@ -91,16 +91,14 @@ async function getLpPrice(tokenPubkey) {
 
     priceCache[tokenPubkey.toString()] = price
   } else {
-    console.log(res)
+    sdk.log(res)
   }
 
-  //console.log('lp ' + tokenAddress + '\' price is ' + price.toFixed(3))
   return price
 }
 
 
 async function getTokenPrice(tokenPubkey) {
-  //console.log('getTokenPrice(' + tokenPubkey.toString() + ')')
 
   if (priceCache[tokenPubkey.toString()])
     return priceCache[tokenPubkey.toString()]
@@ -120,7 +118,6 @@ async function getTokenPrice(tokenPubkey) {
 }
 
 async function getHeroPrice() {
-  //console.log('getHeroPrice')
 
   if (priceCache['Hero6s7zJXsw9hfCXLVR5stLqgCok3E7CCkpQEoLAk2g'])
     return priceCache['Hero6s7zJXsw9hfCXLVR5stLqgCok3E7CCkpQEoLAk2g']
@@ -192,7 +189,7 @@ async function staking() {
 
   var tvl = new BigNumber(0)
 
-  var solPrice = await getTokenPrice('So11111111111111111111111111111111111111112')
+  var solPrice = await getTokenPrice(ADDRESSES.solana.SOL)
 
   var amounts = []
 
@@ -241,7 +238,7 @@ async function farmPool() {
 
   var tvl = new BigNumber(0)
 
-  var solPrice = await getTokenPrice('So11111111111111111111111111111111111111112')
+  var solPrice = await getTokenPrice(ADDRESSES.solana.SOL)
 
   var amounts = []
 
@@ -287,7 +284,7 @@ async function lpTvl() {
 
   var tvl = new BigNumber(0)
 
-  var solPrice = await getTokenPrice('So11111111111111111111111111111111111111112')
+  var solPrice = await getTokenPrice(ADDRESSES.solana.SOL)
   var lpTvl = await getHeroLp()
 
   lpTvl = lpTvl.div(solPrice)

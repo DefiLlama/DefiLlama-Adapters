@@ -1,25 +1,30 @@
+const ADDRESSES = require('./coreAssets.json')
 const axios = require("axios");
 const http = require('./http')
+const { getEnv } = require('./env')
 const { transformBalances: transformBalancesOrig, transformDexBalances, } = require('./portedTokens.js')
-const { tokens } = require('./tokenMapping')
+const { getUniqueAddresses } = require('./tokenMapping')
 const { Connection, PublicKey, Keypair } = require("@solana/web3.js")
 const { AnchorProvider: Provider, Wallet, } = require("@project-serum/anchor");
 const { sleep, sliceIntoChunks, log, } = require('./utils')
 const { decodeAccount } = require('./utils/solana/layout')
 
 const sdk = require('@defillama/sdk')
-const tokenMapping = tokens
 
-const blacklistedTokens = [
+const blacklistedTokens_default = [
   'CowKesoLUaHSbAMaUxJUj7eodHHsaLsS65cy8NFyRDGP',
+  '674PmuiDtgKx3uKuJ1B16f9m5L84eFvNwj3xDMvHcbo7', // $WOOD
+  'SNSNkV9zfG5ZKWQs6x4hxvBRV6s8SqMfSGCtECDvdMd', // SNS
+  'A7rqejP8LKN8syXMr4tvcKjs2iJ4WtZjXNs1e6qP3m9g', // ZION
+  '2HeykdKjzHKGm2LKHw8pDYwjKPiFEoXAz74dirhUgQvq', // SAO
 ]
 
 let connection, provider
 
-const endpoint = process.env.SOLANA_RPC || "https://rpc.ankr.com/solana" // or "https://solana-api.projectserum.com/"
+const endpoint = () => getEnv('SOLANA_RPC')
 
 function getConnection() {
-  if (!connection) connection = new Connection(endpoint)
+  if (!connection) connection = new Connection(endpoint())
   return connection
 }
 
@@ -41,7 +46,7 @@ async function getSolBalances(accounts) {
   const tokenBalances = []
   const chunks = sliceIntoChunks(accounts, 99)
   for (let chunk of chunks) {
-    const bal = await axios.post(endpoint, chunk.map(formBody))
+    const bal = await axios.post(endpoint(), chunk.map(formBody))
     tokenBalances.push(...bal.data)
   }
   return tokenBalances.reduce((a, i) => a + i.result.value, 0)
@@ -54,7 +59,7 @@ async function getSolBalance(account) {
 const TOKEN_LIST_URL = "https://cdn.jsdelivr.net/gh/solana-labs/token-list@main/src/tokens/solana.tokenlist.json"
 
 async function getTokenSupply(token) {
-  const tokenSupply = await axios.post(endpoint, {
+  const tokenSupply = await axios.post(endpoint(), {
     jsonrpc: "2.0",
     id: 1,
     method: "getTokenSupply",
@@ -66,15 +71,16 @@ async function getTokenSupply(token) {
 async function getGeckoSolTokens() {
   const tokens = await getTokenList()
   const tokenSet = new Set()
-  tokens.filter(i => i.extensions?.coingeckoId).forEach(i => tokenSet.add(i.address))
+  tokens.filter(i => i.extensions?.coingeckoId && i.chainId === 101).forEach(i => tokenSet.add(i.address))
   return tokenSet
 }
 
-async function getSolTokenMap() {
-  const tokenList = await getTokenList()
-  let map = {}
-  tokenList.forEach(i => map[i.address] = i)
-  return map
+
+async function getValidGeckoSolTokens() {
+  const tokens = await getTokenList()
+  const tokenSet = new Set()
+  tokens.filter(i => i.extensions?.coingeckoId && i.chainId === 101 && !i.name.includes('(Wormhole v1)')).forEach(i => tokenSet.add(i.address))
+  return tokenSet
 }
 
 async function getTokenDecimals(tokens) {
@@ -82,7 +88,7 @@ async function getTokenDecimals(tokens) {
   const res = {}
   const chunks = sliceIntoChunks(tokens, 99)
   for (const chunk of chunks) {
-    const tokenSupply = await axios.post(endpoint, calls(chunk))
+    const tokenSupply = await axios.post(endpoint(), calls(chunk))
     tokenSupply.data.forEach(({ id, result }) => res[id] = result.value.decimals)
   }
   return res
@@ -101,7 +107,7 @@ function formTokenBalanceQuery(token, account) {
   }
 }
 async function getTokenBalance(token, account) {
-  const tokenBalance = await axios.post(endpoint, formTokenBalanceQuery(token, account));
+  const tokenBalance = await axios.post(endpoint(), formTokenBalanceQuery(token, account));
   return tokenBalance.data.result.value.reduce(
     (total, account) =>
       total + account.account.data.parsed.info.tokenAmount.uiAmount,
@@ -111,8 +117,11 @@ async function getTokenBalance(token, account) {
 
 async function getTokenBalances(tokensAndAccounts) {
   const body = tokensAndAccounts.map(([token, account]) => formTokenBalanceQuery(token, account))
-  const tokenBalances = await axios.post(endpoint, body);
+  const tokenBalances = await axios.post(endpoint(), body);
   const balances = {}
+  tokenBalances.data.forEach((v, i )=> {
+    if (!v.result) console.log(v, tokensAndAccounts[i])
+  } )
   tokenBalances.data.forEach(({ result: { value } }) => {
     value.forEach(({ account: { data: { parsed: { info: { mint, tokenAmount: { amount } } } } } }) => {
       sdk.util.sumSingleBalance(balances, mint, amount)
@@ -121,7 +130,7 @@ async function getTokenBalances(tokensAndAccounts) {
   return balances
 }
 
-async function getTokenAccountBalances(tokenAccounts, { individual = false, chunkSize = 99 } = {}) {
+async function getTokenAccountBalances(tokenAccounts, { individual = false, chunkSize = 99, allowError = false, } = {}) {
   log('total token accounts: ', tokenAccounts.length)
   const formBody = account => ({ method: "getAccountInfo", jsonrpc: "2.0", params: [account, { encoding: "jsonParsed", commitment: "confirmed" }], id: account })
   const balancesIndividual = []
@@ -129,7 +138,7 @@ async function getTokenAccountBalances(tokenAccounts, { individual = false, chun
   const chunks = sliceIntoChunks(tokenAccounts, chunkSize)
   for (const chunk of chunks) {
     const body = chunk.map(formBody)
-    const data = await axios.post(endpoint, body);
+    const data = await axios.post(endpoint(), body);
     data.data.forEach(({ result: { value } }, i) => {
       if (!value || !value.data.parsed) {
         if (tokenAccounts[i].toString() === '11111111111111111111111111111111') {
@@ -137,6 +146,7 @@ async function getTokenAccountBalances(tokenAccounts, { individual = false, chun
           return;
         }
         console.log(data.data.map(i => i.result.value)[i], tokenAccounts[i].toString())
+        if (allowError) return;
       }
       const { data: { parsed: { info: { mint, tokenAmount: { amount } } } } } = value
       sdk.util.sumSingleBalance(balances, mint, amount)
@@ -154,7 +164,7 @@ async function getTokenAccountBalances(tokenAccounts, { individual = false, chun
 
 async function getTokenAccountBalance(account) {
   const tokenBalance = await axios.post(
-    endpoint,
+    endpoint(),
     {
       jsonrpc: "2.0",
       id: 1,
@@ -200,7 +210,7 @@ async function getMultipleAccountsRaw(accountsArray) {
   const res = []
   const chunks = sliceIntoChunks(accountsArray, 99)
   for (const chunk of chunks) {
-    const accountsInfo = await axios.post(endpoint, {
+    const accountsInfo = await axios.post(endpoint(), {
       jsonrpc: "2.0",
       id: 1,
       method: "getMultipleAccounts",
@@ -280,7 +290,7 @@ function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts) {
     }
 
     const coreTokens = await getGeckoSolTokens()
-    return transformDexBalances({ chain: 'solana', data, blacklistedTokens, coreTokens, })
+    return transformDexBalances({ chain: 'solana', data, blacklistedTokens: blacklistedTokens_default, coreTokens, })
   }
 
   async function _getTokenAccounts() {
@@ -301,13 +311,6 @@ function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts) {
   }
 }
 
-async function getSaberPools() {
-  return http.get('https://registry.saber.so/data/llama.mainnet.json')
-}
-async function getQuarryData() {
-  return http.get('https://raw.githubusercontent.com/QuarryProtocol/rewarder-list-build/master/mainnet-beta/tvl.json')
-}
-
 async function sumTokens2({
   balances = {},
   tokensAndOwners = [],
@@ -317,15 +320,18 @@ async function sumTokens2({
   tokenAccounts = [],
   solOwners = [],
   blacklistedTokens = [],
+  allowError = false,
 }) {
   if (!tokensAndOwners.length) {
     if (owner) tokensAndOwners = tokens.map(t => [t, owner])
     if (owners.length) tokensAndOwners = tokens.map(t => owners.map(o => [t, o])).flat()
   }
+  blacklistedTokens.push(...blacklistedTokens_default)
 
   tokensAndOwners = tokensAndOwners.filter(([token]) => !blacklistedTokens.includes(token))
 
   if (tokensAndOwners.length) {
+    tokensAndOwners = getUnique(tokensAndOwners)
     log('total balance queries: ', tokensAndOwners.length)
     const chunks = sliceIntoChunks(tokensAndOwners, 99)
     for (const chunk of chunks) {
@@ -338,20 +344,31 @@ async function sumTokens2({
   }
 
   if (tokenAccounts.length) {
-    const tokenBalances = await getTokenAccountBalances(tokenAccounts)
-    return transformBalances({ tokenBalances, balances, })
+    tokenAccounts = getUniqueAddresses(tokenAccounts, 'solana')
+    const tokenBalances = await getTokenAccountBalances(tokenAccounts, { allowError })
+    await transformBalances({ tokenBalances, balances, })
   }
 
   if (solOwners.length) {
     const solBalance = await getSolBalances(solOwners)
-    sdk.util.sumSingleBalance(balances, tokenMapping.solana, solBalance)
+    sdk.util.sumSingleBalance(balances, 'solana:' + ADDRESSES.solana.SOL, solBalance)
   }
+
+  blacklistedTokens.forEach(i => delete balances['solana:'+i])
 
   return balances
 
   async function _sumTokens(tokensAndAccounts) {
     const tokenBalances = await getTokenBalances(tokensAndAccounts)
     return transformBalances({ tokenBalances, balances, })
+  }
+
+  function getUnique(tokensAndOwners) {
+    const set = new Set()
+    tokensAndOwners.forEach(i => {
+      set.add(i.join('$'))
+    })
+    return [...set].map(i => i.split('$'))
   }
 }
 
@@ -374,8 +391,7 @@ function readBigUInt64LE(buffer, offset) {
 }
 
 module.exports = {
-  endpoint,
-  tokens,
+  endpoint: endpoint(),
   getTokenSupply,
   getTokenBalance,
   getTokenAccountBalance,
@@ -388,8 +404,6 @@ module.exports = {
   exportDexTVL,
   getProvider,
   getConnection,
-  getSaberPools,
-  getQuarryData,
   sumTokens2,
   getTokenBalances,
   transformBalances,
@@ -398,7 +412,7 @@ module.exports = {
   getGeckoSolTokens,
   getTokenAccountBalances,
   getTokenList,
-  getSolTokenMap,
   readBigUInt64LE,
   decodeAccount,
+  getValidGeckoSolTokens,
 };

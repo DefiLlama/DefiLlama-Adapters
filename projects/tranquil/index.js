@@ -1,11 +1,12 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { BigNumber } = require("bignumber.js");
 const {compoundExports, getCompoundV2Tvl} = require('../helper/compound')
-const { calculateUniTvl } = require('../helper/calculateUniTvl.js');
+const { uniTvlExport } = require('../helper/calculateUniTvl.js');
 const { getFixBalancesSync } = require("../helper/portedTokens");
 
 const tqOne = "0x34B9aa82D89AE04f0f546Ca5eC9C93eFE1288940"; // tqONE
-const wOne = "0xcf664087a5bb0237a0bad6742852ec6c8d69a27a";
+const wOne = ADDRESSES.harmony.WONE;
 const stONEAddr = "0x22D62b19b7039333ad773b7185BB61294F3AdC19"; // stONE ERC20 contract
 const tranqToken = "0xcf1709ad76a79d5a60210f23e81ce2460542a836";
 
@@ -80,19 +81,6 @@ async function pool2(timestamp, chain, chainBlocks) {
   return balances;
 }
 
-async function swapTvl(timestamp, ethBlock, chainBlocks) {
-  let balances = await calculateUniTvl(
-      addr => { return `harmony:${addr}`; },
-      chainBlocks.harmony,
-      "harmony",
-      "0xF166939E9130b03f721B0aE5352CCCa690a7726a",
-      0,
-      true
-  );
-  getFixBalancesSync('harmony')(balances);
-  return balances;
-}
-
 async function tvl(timestamp, chain, chainBlocks) {
     const transformAddress = addr=>`harmony:${addr}`;
     const lendingMarketTvlFn = getCompoundV2Tvl("0x6a82A17B48EF6be278BBC56138F35d04594587E3", "harmony", transformAddress, tqOne, wOne, false);
@@ -140,8 +128,8 @@ module.exports = {
   methodology: "TVL includes values locked into TqTokens. Pool2 are the liquidity in the TRANQ-WONE SUSHI LPs. Staking TVL are the xTRANQ tokens locked into the staking contract.",
   harmony: {
     tvl: sdk.util.sumChainTvls([
-      swapTvl,
       tvl,
+      uniTvlExport('0xF166939E9130b03f721B0aE5352CCCa690a7726a', 'harmony', true),
     ]),
      borrowed: borrowed,
      pool2: pool2,

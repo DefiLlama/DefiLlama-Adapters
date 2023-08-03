@@ -1,0 +1,3 @@
+{
+    "totalAssets": "function totalAssets() view returns (uint256)"
+}

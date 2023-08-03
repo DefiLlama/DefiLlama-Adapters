@@ -1,15 +1,15 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
-const { pool2s } = require("../helper/pool2");
 const { transformPolygonAddress } = require("../helper/portedTokens");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const { request, gql } = require("graphql-request");
-const { getBlock } = require('../helper/getBlock')
+const { getBlock } = require('../helper/http')
 
 const vaultContractETH = "0xFFE6280ae4E864D9aF836B562359FD828EcE8020";
 const tokensETH = [
   "0x3F382DbD960E3a9bbCeaE22651E88158d2791550", // GHST
-  "0x6b175474e89094c44da98b954eedeac495271d0f", // DAI
+  ADDRESSES.ethereum.DAI, // DAI
 ];
 
 const vaultContractsPolygon = [
@@ -40,7 +40,7 @@ const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
 };
 
 
-const graphUrl = 'https://api.thegraph.com/subgraphs/name/aavegotchi/aavegotchi-core-matic'
+const graphUrl = 'https://subgraph.satsuma-prod.com/tWYl5n5y04oz/aavegotchi/aavegotchi-core-matic/api'
 const graphQuery = gql`
 query GET_SUMMONED_GOTCHIS ($minGotchiId: Int, $block: Int) {
   aavegotchis(
@@ -90,7 +90,7 @@ async function getGotchisCollateral(timestamp, block) {
 
 const polygonTvl = async (_, _block, chainBlocks) => {
   const balances = {};
-  const block = await getBlock(_, 'polygon', chainBlocks)
+  const block = await getBlock(_, 'polygon', chainBlocks) - 500
 
   let transformAddress = await transformPolygonAddress();
 

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { zombiTvl } = require("./zombi");
 
 const token = "0xda5db6c2a2fd53a2d3fc4246bbd8acce5f93bae1";
@@ -11,12 +12,15 @@ const pool2LPs = [
   "0x5db45a30732cf98fda72b9b91a0c554dc1f2e83b"
 ];
 const listedTokenGeneris = [
-  '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83',//wftm
+  ADDRESSES.fantom.WFTM,//wftm
   '0x74b23882a30290451A17c44f4F05243b6b58C76d',//weth
   '0x841FAD6EAe12c286d1Fd18d1d525DFfA75C7EFFE',//boo
   '0xaD996A45fd2373ed0B10Efa4A8eCB9de445A4302'//alpaca
 ]
 
 module.exports = {
+  hallmarks: [
+    [1646870400, "Rug Pull"]
+  ],
   ...zombiTvl(token, share, rewardPool, rewardPoolGeneris, masonry, pool2LPs, listedTokenGeneris, "fantom", undefined, false, "0xe577DF94b4Ea94399B7438e27EA1Ba81717464A0")
 }

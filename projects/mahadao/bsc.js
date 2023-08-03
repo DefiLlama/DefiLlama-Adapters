@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens } = require("../helper/unwrapLPs.js");
 
 const chain = "bsc";
 
 const bsc = {
-  busd: "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+  busd: ADDRESSES.bsc.BUSD,
   arth: "0x85daB10c3BA20148cA60C2eb955e1F8ffE9eAa79",
 
   arthBusdPool: "0x21de718bcb36f649e1a7a7874692b530aa6f986d",

@@ -1,4 +1,5 @@
-const { get } = require('../helper/http')
+const { getConfig } = require('../helper/cache')
+
 const { chainExports } = require('../helper/exports');
 const { sumTokens } = require("../helper/unwrapLPs");
 
@@ -18,7 +19,7 @@ function chainTvl(chain) {
     const transformAddress = id=>`${chain}:${id}`;
 
     const url = `${http_api_url}?chainId=${chainIds[chain]}`;
-    const debridge_response = await get(url);
+    const debridge_response = await getConfig('debridge/'+chain,url);
     // console.log(debridge_response)
     const tokensAndOwners = debridge_response
       .filter(t => !t.tokenName.startsWith('deBridge '))

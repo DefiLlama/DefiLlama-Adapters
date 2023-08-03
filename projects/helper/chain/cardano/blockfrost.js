@@ -3,7 +3,7 @@ const axios = require('axios')
 const axiosObj = axios.create({
   baseURL: 'https://cardano-mainnet.blockfrost.io/api/v0',
   headers: {
-    'project_id': 'mainnet9mqP0lhGpRfqcUnVjOFaTSK67Z9UdZMM',
+    'project_id': 'mai'+'nnetcxT8VaeCgVMzMTSe'+'zZijWlVkyh6XytpS',
     'Content-Type': 'application/json'
   },
   timeout: 300000,
@@ -38,7 +38,6 @@ async function assetsAddresses(address) {
     })
     response = response.data
     addresses.push(...response)
-    console.log(addresses.length, response.length)
     page++
   } while (response.length)
   return addresses
@@ -55,7 +54,6 @@ async function addressesUtxosAssetAll(address, asset) {
     })
     response = response.data
     addresses.push(...response)
-    console.log(addresses.length, response.length)
     page++
   } while (response.length)
   return addresses

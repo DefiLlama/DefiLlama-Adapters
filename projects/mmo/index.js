@@ -1,7 +1,11 @@
 const sdk = require("@defillama/sdk");
 
 const { gql } = require("graphql-request");
-const mEtherABI = require("./helper/abis/MEtherInterfaceFull.json");
+const mEtherABI = {
+  thisFungibleMToken: "function thisFungibleMToken() view returns (uint240)",
+  totalBorrows: "function totalBorrows(uint240) view returns (uint256)",
+  totalCashUnderlying: "function totalCashUnderlying(uint240) view returns (uint256)",
+};
 const { getTotalCash, getTotalCollateral, fetch } = require("./helper/helper");
 
 async function tvl(_, block) {
@@ -21,9 +25,7 @@ async function borrowed(_, block) {
     }
   `;
   const results = await fetch(getTotalBorrows);
-  const thisFungibleMTokenABI = mEtherABI.find(
-    (i) => i.name === "thisFungibleMToken"
-  );
+  const thisFungibleMTokenABI = mEtherABI.thisFungibleMToken
   const mEtherIDCalls = results.vaults.map((vaultObj) => ({
     target: vaultObj.id,
   }));
@@ -33,7 +35,7 @@ async function borrowed(_, block) {
     calls: mEtherIDCalls,
   });
 
-  const totalBorrowsABI = mEtherABI.find((i) => i.name === "totalBorrows");
+  const totalBorrowsABI = mEtherABI.totalBorrows
   const totalBorrowsCall = results.vaults.map((vaultObj, idx) => ({
     target: vaultObj.id,
     params: mEtherIDs.output[idx].output,

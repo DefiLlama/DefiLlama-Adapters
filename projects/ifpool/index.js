@@ -1,7 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
-const abis = require("./abis.json");
 
-const validatorContract = "0x0000000000000000000000000000000000001000";
+const validatorContract = ADDRESSES.findora.FRA;
 const validatorAddress = "0xb0dC7A676Ab09868eBef78E16e6AEA9e79F0f9Cf";
 const CHAIN = "csc";
 
@@ -11,7 +11,7 @@ async function coinexTVL(timestamp, _, chainBlocks) {
     chain: CHAIN,
     block: block,
     target: validatorContract,
-    abi: abis.find((abi) => abi.name === "getValidatorInfo"),
+    abi: 'function getValidatorInfo(address validator) view returns (address, uint8, uint256, uint256, uint256, uint256, address[])',
     params: [validatorAddress],
   });
 

@@ -1,121 +1,182 @@
-const sdk = require("@defillama/sdk");
+const { sumTokens2, nullAddress } = require("../../helper/unwrapLPs");
 const abi = require("./abis");
-const { sumTokens } = require("../../helper/unwrapLPs");
+const {
+  VAULTS_ADDRESSES,
+  BAYC_VAULTS,
+  MAYC_VAULTS,
+  BAYC_APE_STAKING_STRATEGY,
+  MAYC_APE_STAKING_STRATEGY,
+  APE_STAKING,
+  P2P_APE_STAKING,
+  STAKING_CONTRACT,
+  APE,
+  JPEG,
+  PETH_POOL,
+  USD_POOL,
+  PETH_ETH_F,
+  PUSD_USD_F,
+  artBlockOwners,
+  LP_STAKING,
+  helperToNftMapping,
+} = require("./addresses");
 
-// Treasury
-const TREASURY = "0x51C2cEF9efa48e08557A361B52DB34061c025a1B";
+/**
+ *
+ * @returns JPEG'd deposit addresses for APE Staking
+ */
+async function getApeDepositAddresses(api) {
+  const [baycPositionIndices, maycPositionIndices] = await Promise.all([
+    api.multiCall({
+      abi: abi.VAULT_ABI.openPositionIndices,
+      calls: BAYC_VAULTS,
+    }),
+    api.multiCall({
+      abi: abi.VAULT_ABI.openPositionIndices,
+      calls: MAYC_VAULTS,
+    }),
+  ]);
 
-// Tokens
-const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-const USDC = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
-const DAI = "0x6b175474e89094c44da98b954eedeac495271d0f";
-const USDT = "0xdac17f958d2ee523a2206206994597c13d831ec7";
-const TUSD = "0x0000000000085d4780B73119b644AE5ecd22b376";
+  const [baycOwners, maycOwners] = await Promise.all([
+    api.multiCall({
+      abi: abi.VAULT_ABI.positionOwner,
+      calls: baycPositionIndices
+        .map((vaultIndices, i) =>
+          vaultIndices.map((nftIndex) => ({
+            target: BAYC_VAULTS[i],
+            params: [nftIndex.toString()],
+          }))
+        )
+        .flat(),
+    }),
+    api.multiCall({
+      abi: abi.VAULT_ABI.positionOwner,
+      calls: maycPositionIndices
+        .map((vaultIndices, i) =>
+          vaultIndices.map((nftIndex) => ({
+            target: MAYC_VAULTS[i],
+            params: [nftIndex.toString()],
+          }))
+        )
+        .flat(),
+    }),
+  ]);
 
-// NFT pUSD vaults
-const CRYPTO_PUNK_PUSD_VAULT = "0xD636a2fC1C18A54dB4442c3249D5e620cf8fE98F";
-const ETHER_ROCKS_PUSD_VAULT = "0x6837a113aa7393ffbd5f7464e7313593cd2dd560";
-const BAYC_PUSD_VAULT = "0x271c7603aaf2bd8f68e8ca60f4a4f22c4920259f";
-const MAYC_PUSD_VAULT = "0x7b179f9bfbe50cfa401c1cdde3cb2c339c6635f3";
-const DOODLES_PUSD_VAULT = "0x0a36f4bf39ed7d4718bd1b8dd759c19986ccd1a7";
-const PUDGY_PENGUINS_PUSD_VAULT = "0xe793eaedc048b7441ed61b51acb5df107af996c2";
-const AZUKI_PUSD_VAULT = "0x2acd96c8db23978a3dd32448a2477b132b4436e4";
-const CLONEX_PUSD_VAULT = "0xc001f165f7d7542d22a1e82b4640512034a91c7d";
+  const [baycDepositAddresses, maycDepositAddresses] = await Promise.all([
+    api.multiCall({
+      abi: abi.STRATEGY_ABI.depositAddress,
+      calls: [...new Set(baycOwners)].map((owner) => ({
+        target: BAYC_APE_STAKING_STRATEGY,
+        params: [owner],
+      })),
+    }),
+    api.multiCall({
+      abi: abi.STRATEGY_ABI.depositAddress,
+      calls: [...new Set(maycOwners)].map((owner) => ({
+        target: MAYC_APE_STAKING_STRATEGY,
+        params: [owner],
+      })),
+    }),
+  ]);
 
-// NFT pETH vaults
-const CRYPTO_PUNK_PETH_VAULT = "0x4e5f305bfca77b17f804635a9ba669e187d51719";
-const ETHER_ROCKS_PETH_VAULT = "0x7Bc8c4D106f084304d6c224F48AC02e6854C7AC5";
-const BAYC_PETH_VAULT = "0xaf5e4c1bfac63e355cf093eea3d4aba138ea4089";
-const MAYC_PETH_VAULT = "0xc45775baa4a6040414f3e199767033257a2a91b9";
-const DOODLES_PETH_VAULT = "0x229e09d943a94c162a662ba0ffbcad21521b477a";
-const PUDGY_PENGUINS_PETH_VAULT = "0x4b94b38bec611a2c93188949f017806c22097e9f";
-const AZUKI_PETH_VAULT = "0x72695c2af4193029e0669f2c01d84b619d8c25e7";
-const CLONEX_PETH_VAULT = "0x46db8fda0be00e8912bc28357d1e28e39bb404e2";
-
-const VAULT_ARRAY = [
-    CRYPTO_PUNK_PUSD_VAULT,
-    BAYC_PUSD_VAULT,
-    MAYC_PUSD_VAULT,
-    DOODLES_PUSD_VAULT,
-    PUDGY_PENGUINS_PUSD_VAULT,
-    AZUKI_PUSD_VAULT,
-    ETHER_ROCKS_PUSD_VAULT,
-    CLONEX_PUSD_VAULT,
-    CRYPTO_PUNK_PETH_VAULT,
-    BAYC_PETH_VAULT,
-    MAYC_PETH_VAULT,
-    DOODLES_PETH_VAULT,
-    PUDGY_PENGUINS_PETH_VAULT,
-    AZUKI_PETH_VAULT,
-    ETHER_ROCKS_PETH_VAULT,
-    CLONEX_PETH_VAULT,
-];
-
-async function getTVL(balances, chain, timestamp, chainBlocks) {
-    // Fetch positions from vaults
-    const { output: positions } = await sdk.api.abi.multiCall({
-        calls: VAULT_ARRAY.map((address) => ({
-            target: address,
-        })),
-        abi: abi.VAULT_ABI.find(
-            (a) => a.name === "totalPositions"
-        ),
-        block: chainBlocks[chain],
-        chain,
-    })
-
-    const { output: valueProviders } = await sdk.api.abi.multiCall({
-        calls: VAULT_ARRAY.map((address) => ({
-            target: address,
-        })),
-        abi: abi.VAULT_ABI.find(
-            (a) => a.name === "nftValueProvider"
-        ),
-        block: chainBlocks[chain],
-        chain,
-    })
-
-    // Fetch floor prices from price feeds set in the vaults
-    const { output: floorPrices } = await sdk.api.abi.multiCall({
-        calls: valueProviders.map((item) => ({
-            target: item.output,
-        })),
-        abi: abi.VALUE_PROVIDER_ABI.find(
-            (a) => a.name === "getFloorETH"
-        ),
-        block: chainBlocks[chain],
-        chain,
-    })
-
-    // Calculate total TVL in ETH terms
-    let collateralValueETH = 0;
-    for (let i = 0; i < positions.length; i++) {
-        const floorPrice = floorPrices[i].output;
-        const position = positions[i].output;
-        collateralValueETH += position * floorPrice;
-    }
-
-    sdk.util.sumSingleBalance(balances, `${chain}:${WETH}`, collateralValueETH);
-    return balances;
+  return Array.from(new Set(baycDepositAddresses)).concat(
+    Array.from(new Set(maycDepositAddresses))
+  );
 }
 
-async function getTreasury(balances, chain, timestamp, chainBlocks) {
-    await sumTokens(
-        balances,
-        [
-            [WETH, TREASURY],
-            [USDC, TREASURY],
-            [DAI, TREASURY],
-            [USDT, TREASURY],
-            [TUSD, TREASURY],
-        ],
-        chainBlocks[chain]
-    );
+/**
+ * @returns the amount of JPEG locked on JPEG'd (trait or ltv boosts)
+ */
+async function stakingJPEGD(_, _1, _2, { api }) {
+  const providersAddresses = await api.multiCall({
+    abi: "address:nftValueProvider",
+    calls: VAULTS_ADDRESSES,
+  });
 
-    return balances;
+  providersAddresses.push(STAKING_CONTRACT);
+
+  return sumTokens2({ owners: providersAddresses, tokens: [JPEG], api });
 }
 
-module.exports = {
-    getTVL,
-    getTreasury,
-};
+/**
+ * @returns the amount of $APE tokens staked on JPEG'd
+ */
+async function getStakedApeAmount(api) {
+  const [apeDepositAddresses, lastNonce] = await Promise.all([
+    getApeDepositAddresses(api),
+    api.call({
+      target: P2P_APE_STAKING,
+      abi: abi.P2P_APE_STAKING_ABI.nextNonce,
+    }),
+  ]);
+
+  const [apeStakes, offers] = await Promise.all([
+    api.multiCall({
+      abi: abi.APE_STAKING.stakedTotal,
+      target: APE_STAKING,
+      calls: apeDepositAddresses,
+    }),
+    api.multiCall({
+      abi: abi.P2P_APE_STAKING_ABI.offers,
+      target: P2P_APE_STAKING,
+      calls: new Array(Number(lastNonce)).fill(null).map((_, i) => i),
+    }),
+  ]);
+
+  apeStakes.forEach((v) => api.add(APE, v));
+  offers.forEach((v) => api.add(APE, v.apeAmount));
+}
+
+async function vaultsTvl(api) {
+  // Fetch positions from vaults
+  const positions = await api.multiCall({
+    calls: VAULTS_ADDRESSES,
+    abi: abi.VAULT_ABI.totalPositions,
+  });
+  let tokens = await api.multiCall({
+    abi: "address:nftContract",
+    calls: VAULTS_ADDRESSES,
+  });
+  tokens = tokens.map((i) => i.toLowerCase());
+  const transform = (t) => helperToNftMapping[t.toLowerCase()] || t;
+
+  tokens.forEach((v, i) => {
+    if (artBlockOwners.has(v)) return;
+    api.add(transform(v), positions[i]);
+  });
+}
+
+async function autocompoundingTvl(api) {
+  const curveBalApi = "function balances(uint256) view returns (uint256)";
+  const [
+    ethInPETHFactory,
+    pethGaugeSupply,
+    pethGaugeBalance,
+    usdInPUSDFactory,
+    pusdGaugeSupply,
+    pusdGaugeBalance,
+  ] = await api.batchCall([
+    { target: PETH_POOL, abi: curveBalApi, params: [0] },
+    { target: PETH_POOL, abi: "erc20:totalSupply" },
+    { target: PETH_ETH_F, abi: "erc20:balanceOf", params: [LP_STAKING] },
+    { target: USD_POOL, abi: curveBalApi, params: [1] },
+    { target: USD_POOL, abi: "erc20:totalSupply" },
+    { target: PUSD_USD_F, abi: "erc20:balanceOf", params: [LP_STAKING] },
+  ]);
+
+  api.add(nullAddress, (ethInPETHFactory * pethGaugeSupply) / pethGaugeSupply);
+  api.add(
+    "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490",
+    (usdInPUSDFactory * pusdGaugeBalance) / pusdGaugeSupply
+  );
+}
+
+async function tvl(ts, b, cb, { api }) {
+  await Promise.all([
+    getStakedApeAmount(api),
+    vaultsTvl(api),
+    autocompoundingTvl(api),
+    sumTokens2({ api, resolveArtBlocks: true, owners: [...artBlockOwners] }),
+  ]);
+}
+
+module.exports = { tvl, stakingJPEGD };

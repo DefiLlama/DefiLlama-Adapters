@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { covalentGetTokens } = require("../helper/http");
@@ -29,7 +30,7 @@ const STAGES_STAKING_CONTRACTS = [
 // Receives rewards/fee from AMM wrapper via reward distributor on WETH shape, some are sold for LON...
 const MULTISIG_ONE = "0x3557BD3d422300198719710Cc3f00194E1c20A46";
 
-const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+const WETH = ADDRESSES.ethereum.WETH;
 
 const ethTvl = async (timestamp, block) => {
   const amm_wrapper_addr = (
@@ -51,8 +52,8 @@ const ethTvl = async (timestamp, block) => {
 
   const [ tokens_amm, tokens_pmm] = await Promise.all([covalentGetTokens(amm_wrapper_addr), covalentGetTokens(pmm_addr)])
   const toa = []
-  tokens_amm.forEach(t => toa.push([t.contract_address, amm_wrapper_addr]))
-  tokens_pmm.forEach(t => toa.push([t.contract_address, pmm_addr]))
+  tokens_amm.forEach(t => toa.push([t, amm_wrapper_addr]))
+  tokens_pmm.forEach(t => toa.push([t, pmm_addr]))
 
   return sumTokens2({ tokensAndOwners: toa, block, });
 };
@@ -62,15 +63,6 @@ module.exports = {
     tvl: ethTvl,
     staking: staking(CONTRACT_FOR_STAKING, LON_TOKEN),
     pool2: (_, block) => sumTokens2({ tokensAndOwners: STAGES_STAKING_CONTRACTS, block, resolveLP: true }),
-    treasury: (_, block) => sumTokens2({ owner: MULTISIG_ONE, tokens: [
-      '0xdac17f958d2ee523a2206206994597c13d831ec7',
-      '0x55d31f68975e446a40a2d02ffa4b0e1bfb233c2f',
-      '0x8E870D67F660D95d5be530380D0eC0bd388289E1', //USDP
-      '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', //USDC
-      '0x0000000000085d4780B73119b644AE5ecd22b376', //TUSD
-      '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984', //UNI
-
-    ], block, }),
   },
   
 };

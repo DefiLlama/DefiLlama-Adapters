@@ -1,18 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 /*==================================================
   Modules
 ==================================================*/
 const axios = require("axios");
 const BigNumber = require('bignumber.js');
 const sdk = require("@defillama/sdk")
-
-const scientistAbi = require('./abi/Scientist.json');
-const transmuteAbi = require('./abi/Transmuter.json');
-const transmuteAdapterAbi = require('./abi/YearnVaultAdapterWithIndirection.json');
-const stakingPoolsAbi = require('./abi/StakingPools.json');
-const scTokenAbi = require('./abi/ScToken.json');
-const votingEscrowAbi = require('./abi/VotingEscrow.json');
-const alpacaVaultAbi = require('./abi/AlpacaVault.json');
-
 
 /*==================================================
   Address
@@ -25,7 +17,7 @@ const Farm = '0x68145F3319F819b8E01Dfa3c094fa8205E9EfB9a';
 const VotingEscrow = '0xF92aBA2A79dC133278DE2CDDB38Db775A4b5B024';
 
 // Token
-const BUSD = "0xe9e7cea3dedca5984780bafc599bd69add087d56";
+const BUSD = ADDRESSES.bsc.BUSD;
 const ibALPACA = "0xf1be8ecc990cbcb90e166b71e368299f0116d421";
 const scUSD = "0x0E5C2b15666EEE4b66788E45CF4Da0392C070fa7";
 const SCIX = "0x2CFC48CdFea0678137854F010b5390c5144C0Aa5";
@@ -45,7 +37,7 @@ async function getTokenBalance(token, account) {
         chain: 'bsc',
         target: token,
         params: [account],
-        abi: scTokenAbi.find(i => i.name === 'balanceOf')
+        abi: 'function balanceOf(address account) view returns (uint256)'
     })
     return output
 }
@@ -54,7 +46,7 @@ async function getTokenTotalSupply(token) {
     const { output } = await sdk.api.abi.call({
         chain: 'bsc',
         target: token,
-        abi: scTokenAbi.find(i => i.name === 'totalSupply')
+        abi: "uint256:totalSupply"
     })
     return output
 }
@@ -64,7 +56,7 @@ async function totalDepositBUSD(vault) {
     const { output } = await sdk.api.abi.call({
         chain: 'bsc',
         target: vault,
-        abi: scientistAbi.find(i => i.name === 'totalDeposited')
+        abi: "uint256:totalDeposited"
     })
     return output
 }
@@ -74,7 +66,7 @@ async function getTotalStakedScTokens(transmute) {
     const { output } = await sdk.api.abi.call({
         chain: 'bsc',
         target: transmute,
-        abi: transmuteAbi.find(i => i.name === 'totalSupplyScTokens')
+        abi: "uint256:totalSupplyScTokens"
     })
     return output
 }
@@ -83,7 +75,7 @@ async function getAdapterTotalValue(transmuteAdapter) {
     const { output } = await sdk.api.abi.call({
         chain: 'bsc',
         target: transmuteAdapter,
-        abi: transmuteAdapterAbi.find(i => i.name === 'totalValue')
+        abi: "uint256:totalValue"
     })
     return output
 }
@@ -94,7 +86,7 @@ async function getPoolTotalDeposited(contract, poolID) {
         chain: 'bsc',
         params: [poolID],
         target: contract,
-        abi: stakingPoolsAbi.find(i => i.name === 'getPoolTotalDeposited')
+        abi: 'function getPoolTotalDeposited(uint256 _poolId) view returns (uint256)'
     })
     return output
 }
@@ -110,7 +102,7 @@ async function getBUSDLpPrice(lpTokenAddress, BUSDAddress, scUSDAddress) {
         return new BigNumber(BUSDBalance).plus(new BigNumber(scUSDBalance))
             .div(new BigNumber(totalSupply));
     } catch (e) {
-        console.log(e);
+        sdk.log(e);
     }
     return 0;
 }
@@ -119,7 +111,7 @@ async function getAalpacaTotal(vault) {
     const { output } = await sdk.api.abi.call({
         chain: 'bsc',
         target: vault,
-        abi: alpacaVaultAbi.find(i => i.name === 'totalToken')
+        abi: "uint256:totalToken"
     })
     return output
 }
@@ -128,7 +120,7 @@ async function getAalpacaTotalSupply(vault) {
     const { output } = await sdk.api.abi.call({
         chain: 'bsc',
         target: vault,
-        abi: alpacaVaultAbi.find(i => i.name === 'totalSupply')
+        abi: "uint256:totalSupply"
     })
     return output
 }
@@ -175,7 +167,7 @@ async function getSCIXTotalLocked(ve) {
     const { output } = await sdk.api.abi.call({
         chain: 'bsc',
         target: ve,
-        abi: votingEscrowAbi.find(i => i.name === '_totalLockedSCIX')
+        abi: "uint256:_totalLockedSCIX"
     })
     return output
 }

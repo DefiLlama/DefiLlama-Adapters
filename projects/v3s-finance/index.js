@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { addFundsInMasterChef } = require("../helper/masterchef");
 const { stakingUnknownPricedLP, stakingPricedLP } = require("../helper/staking");
 const farmUtils = require("./farm-utils");
@@ -14,7 +15,7 @@ const v3sVvspAddress = "0x57b975364140e4a8d1C96FAa00225b855BaB0E8E";
 const vShareCroAddress = "0xcb0704BC4E885384ac96F0ED22B9204C3adD91AD"
 const vShareRewardsAddr = "0x569608516A81C0B1247310A3E0CD001046dA0663";
 
-const usdc = "0xc21223249CA28397B4B6541dfFaEcC539BfF0c59".toLowerCase();
+const usdc = ADDRESSES.cronos.USDC.toLowerCase();
 
 async function tvl(timestamp, block, chainBlocks) {
   let balances = {};

@@ -1,7 +1,8 @@
 const sdk = require("@defillama/sdk");
 const { stakings } = require("../helper/staking");
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { get } = require('../helper/http')
+const { getConfig } = require('../helper/cache')
+
 const contracts = require("./contracts.json");
 
 const chainIds = {
@@ -17,7 +18,7 @@ let vestingData, stakingData
 
 async function getVestingData() {
   if (!vestingData)
-    vestingData = get('https://api.daomaker.com/get-all-vesting-contracts')
+    vestingData = getConfig('daomaker/vesting', 'https://api.daomaker.com/get-all-vesting-contracts')
   return vestingData
 }
 
@@ -28,7 +29,7 @@ function filterDuplicates(toa) {
 
 async function getStakingData() {
   if (!stakingData)
-    stakingData = get('https://api.daomaker.com/get-all-farms')
+    stakingData = getConfig('daomaker/staking', 'https://api.daomaker.com/get-all-farms')
   return stakingData
 }
 
@@ -40,7 +41,7 @@ function vesting(chain) {
       .forEach(i => toa.push([i.token_address, i.vesting_smart_contract_address]))
     return sumTokens2({ chain, block, tokensAndOwners: filterDuplicates(toa) })
   };
-};
+}
 function staking(chain) {
   return async (timestamp, _, { [chain]: block }) => {
     const toa = []
@@ -51,7 +52,7 @@ function staking(chain) {
     })
     return sumTokens2({ chain, block, tokensAndOwners: filterDuplicates(toa) })
   };
-};
+}
 
 const chainTVLObject = contracts.chains.reduce(
   (agg, chain) => ({

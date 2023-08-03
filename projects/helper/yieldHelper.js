@@ -1,8 +1,8 @@
+const ADDRESSES = require('./coreAssets.json')
 
 const abi = require("../tenfinance/abi.json")
-const { getParamCalls, getUniqueAddresses, log, } = require('../helper/utils')
-const { getLPData, } = require('../helper/unknownTokens')
-const { getChainTransform, getFixBalancesSync, } = require('../helper/portedTokens')
+const { getUniqueAddresses, } = require('../helper/utils')
+const { getLPData, getTokenPrices } = require('../helper/unknownTokens')
 const sdk = require('@defillama/sdk')
 const { unwrapLPsAuto } = require("./unwrapLPs")
 
@@ -19,85 +19,101 @@ function yieldHelper({
   poolFilter,
   getPoolIds,
   getTokens,
+  getTokenBalances,
+  useDefaultCoreAssets = false,
+  getPoolsFn,
 }) {
   blacklistedTokens = getUniqueAddresses(blacklistedTokens)
-  nativeTokens = getUniqueAddresses(blacklistedTokens)
+  if (nativeToken) nativeTokens.push(nativeToken)
+  nativeTokens = getUniqueAddresses(nativeTokens)
   if (!project) throw new Error('Missing project name')
-  if (nativeToken) nativeTokens = [nativeToken]
 
-  async function getAllTVL(block) {
-    const key = `${project}-${chain}-${block}`
+  async function getAllTVL(api) {
+    const key = `${project}-${chain}-${api.block}`
     if (!allData[key]) allData[key] = _getAllTVL()
     return allData[key]
 
     async function _getAllTVL() {
-      const transform = await getChainTransform(chain)
-      const fixBalances = getFixBalancesSync(chain)
+      const transform = i => `${chain}:${i.toLowerCase()}`
       const balances = {
         tvl: {},
         pool2: {},
+        staking: {},
       }
 
-      const { output: poolLength } = await sdk.api.abi.call({
-        target: masterchef,
-        abi: abis.poolLength || abi.poolLength,
-        chain, block,
-      })
+      let poolInfos
+      if (getPoolsFn) {
+        poolInfos = await getPoolsFn(api)
+      } else {
+        poolInfos = await api.fetchList({
+          lengthAbi: abis.poolLength || abi.poolLength,
+          itemAbi: abis.poolInfo || abi.poolInfo,
+          target: masterchef,
+        })
+      }
 
-      log('Pool length: ', poolLength)
-
-      let { output: poolInfos } = await sdk.api.abi.multiCall({
-        target: masterchef,
-        calls: getParamCalls(poolLength),
-        abi: abis.poolInfo || abi.poolInfo,
-        chain, block,
-      })
-
-      let _poolFilter = ({ output }) => !blacklistedTokens.includes(output.want.toLowerCase()) && !blacklistedTokens.includes(output.strat.toLowerCase())
-      let _getPoolIds = i => i.output.strat
+      let _poolFilter = i => !blacklistedTokens.includes(i.want.toLowerCase()) && !blacklistedTokens.includes(i.strat?.toLowerCase()) && i.strat !== ADDRESSES.null
+      let _getPoolIds = i => i.strat
 
       if (getPoolIds) _getPoolIds = getPoolIds
       if (poolFilter) _poolFilter = poolFilter
 
       poolInfos = poolInfos.filter(_poolFilter)
       const poolIds = poolInfos.map(_getPoolIds)
+      let lockedTotals
 
-      const { output: lockedTotals } = await sdk.api.abi.multiCall({
-        abi: abis.wantLockedTotal || abi.wantLockedTotal,
-        calls: poolIds.map(i => ({ target: i})),
-        chain, block,
-      })
+      if (getTokenBalances) {
+        lockedTotals = await getTokenBalances({ api, poolInfos, poolIds, })
+      } else {
+        lockedTotals = await api.multiCall({
+          abi: abis.wantLockedTotal || abi.wantLockedTotal,
+          calls: poolIds,
+        })
+      }
 
       let tokens
-      if (getTokens)  tokens = await getTokens({ poolInfos, chain, block, })
-      else tokens = poolInfos.map(i => i.output.want.toLowerCase())
-      const pairInfos = await getLPData({ chain, block, lps: tokens, })
+      if (getTokens) {
+        tokens = await getTokens({ poolInfos, api })
+      }
+      else tokens = poolInfos.map(i => i.want.toLowerCase())
+      const pairInfos = await getLPData({ lps: tokens, ...api, abis, })
+      const blacklistedSet = new Set(...(blacklistedTokens.map(i => i.toLowerCase())))
       tokens.forEach((token, i) => {
-        if (pairInfos[token] &&
+        if (nativeTokens.includes(token)) {
+          sdk.util.sumSingleBalance(balances.staking, transform(token), lockedTotals[i])
+        } else if (pairInfos[token] &&
           (nativeTokens.includes(pairInfos[token].token0Address) || nativeTokens.includes(pairInfos[token].token1Address))
         ) {
-          sdk.util.sumSingleBalance(balances.pool2, transform(token), lockedTotals[i].output)
+          sdk.util.sumSingleBalance(balances.pool2, transform(token), lockedTotals[i])
         } else {
-          sdk.util.sumSingleBalance(balances.tvl, transform(token), lockedTotals[i].output)
+          if (!blacklistedSet.has(token.toLowerCase()))
+            sdk.util.sumSingleBalance(balances.tvl, transform(token), lockedTotals[i])
         }
       })
 
       await Promise.all([
-        unwrapLPsAuto({ balances: balances.tvl, chain, block, transformAddress: transform, }),
-        unwrapLPsAuto({ balances: balances.pool2, chain, block, transformAddress: transform, }),
+        unwrapLPsAuto({ api, balances: balances.tvl, transformAddress: transform, abis, }),
+        unwrapLPsAuto({ api, balances: balances.pool2, transformAddress: transform, abis, }),
       ])
 
-      fixBalances(balances.tvl)
-      fixBalances(balances.pool2)
+      const lps = Object.keys(pairInfos)
+      if (lps.length && useDefaultCoreAssets) {
+        const { updateBalances } = await getTokenPrices({ lps, ...api, abis, useDefaultCoreAssets, })
+        balances.tvl = await updateBalances(balances.tvl)
+        balances.pool2 = await updateBalances(balances.pool2)
+        balances.staking = await updateBalances(balances.staking)
+      }
 
       return balances
     }
   }
 
   return {
+    misrepresentedTokens: useDefaultCoreAssets,
     [chain]: {
-      tvl: async (_, _b, { [chain]: block }) => (await getAllTVL(block)).tvl,
-      pool2: async (_, _b, { [chain]: block }) => (await getAllTVL(block)).pool2,
+      tvl: async (_, _b, _cb, { api }) => (await getAllTVL(api)).tvl,
+      pool2: async (_, _b, _cb, { api }) => (await getAllTVL(api)).pool2,
+      staking: async (_, _b, _cb, { api }) => (await getAllTVL(api)).staking,
     }
   }
 }

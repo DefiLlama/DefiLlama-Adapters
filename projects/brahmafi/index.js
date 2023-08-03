@@ -3,7 +3,7 @@ const {
   getTVLData,
   getVaultL1Funds,
   getERC4626VaultFundsByChain,
-  getL1VaultOnlyFunds,
+  getL1VaultOnlyFundsByChain,
 } = require("./helper");
 const { transformPolygonAddress } = require("../helper/portedTokens");
 const MAX_BPS = 1e3;
@@ -26,7 +26,7 @@ const ethTvl = async (_, block) => {
     sdk.util.sumSingleBalance(balances, wantToken, value.toFixed(0));
   }
 
-  const l1OnlyVaultFunds = await getL1VaultOnlyFunds(block);
+  const l1OnlyVaultFunds = await getL1VaultOnlyFundsByChain("ethereum", block);
 
   for (const [wantToken, totalFunds] of Object.entries(l1OnlyVaultFunds)) {
     sdk.util.sumSingleBalance(balances, wantToken, totalFunds);
@@ -40,8 +40,13 @@ const polygonTvl = async (_, _b, { polygon: block }) => {
   const transform = await transformPolygonAddress();
 
   const vaultFunds = await getERC4626VaultFundsByChain("polygon", block);
+  const l1OnlyVaultFunds = await getL1VaultOnlyFundsByChain("polygon", block);
+
   for (const { asset, funds } of vaultFunds) {
     sdk.util.sumSingleBalance(balances, transform(asset), funds);
+  }
+  for (const [wantToken, totalFunds] of Object.entries(l1OnlyVaultFunds)) {
+    sdk.util.sumSingleBalance(balances, transform(wantToken), totalFunds);
   }
 
   return balances;

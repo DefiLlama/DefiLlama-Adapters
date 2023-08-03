@@ -1,58 +1,41 @@
-const sdk = require("@defillama/sdk");
-const BN = require("bignumber.js");
-
 const { DHEDGE_FACTORY_ABI, TOROS_POOL_ABI } = require("./abis");
 const { CONFIG_DATA } = require("./config");
 
-const getCalculationMethod = (chain) => {
-  const { transformAddress, dhedgeFactory, torosMultisigManager, daiToken } =
-    CONFIG_DATA[chain];
+async function tvl(_, _b, _cb, { api, chain }) {
+  const { dhedgeFactory, torosMultisigManager } = CONFIG_DATA[chain];
 
-  return async (timestamp, block, chainBlocks) => {
-    const balances = {};
-    const transform = await transformAddress();
+  const pools = await api.call({
+    abi: DHEDGE_FACTORY_ABI,
+    target: dhedgeFactory,
+    params: [torosMultisigManager],
+  });
 
-    const pools = (
-      await sdk.api.abi.call({
-        abi: DHEDGE_FACTORY_ABI,
-        chain,
-        target: dhedgeFactory,
-        params: [torosMultisigManager],
-        block: chainBlocks[chain],
-      })
-    ).output;
+  const poolSummaries = await api.multiCall({
+    abi: TOROS_POOL_ABI,
+    calls: pools,
+  });
 
-    const poolSummaries = (
-      await sdk.api.abi.multiCall({
-        abi: TOROS_POOL_ABI,
-        calls: pools.map((target) => ({ target, params: [] })),
-        chain,
-        block: chainBlocks[chain],
-      })
-    ).output;
+  const totalValue = poolSummaries.reduce(
+    (acc, i) => acc + +i.totalFundValue,
+    0
+  );
 
-    const totalValue = poolSummaries
-      .reduce(
-        (acc, { output: { totalFundValue } }) => acc.plus(totalFundValue),
-        new BN(0)
-      )
-      .toFixed();
-
-    sdk.util.sumSingleBalance(balances, transform(daiToken), totalValue);
-
-    return balances;
+  return {
+    tether: totalValue / 1e18,
   };
-};
+}
 
 module.exports = {
   timetravel: true,
+  misrepresentedTokens: true,
   start: 1627776000, // Sunday, August 1, 2021 12:00:00 AM
   methodology:
-    "Aggregates total value of each Toros product both on Polygon and Optimism",
+    "Aggregates total value of each Toros vault both on Polygon and Optimism",
   polygon: {
-    tvl: getCalculationMethod("polygon"),
+    tvl,
   },
   optimism: {
-    tvl: getCalculationMethod("optimism"),
+    tvl,
   },
+  hallmarks: [[1674003600, "Optimism Incentives Start"]],
 };

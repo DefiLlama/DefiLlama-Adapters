@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const BigNumber = require("bignumber.js")
 const abi = require('./abi.json');
@@ -13,10 +14,10 @@ const VAULT_BSC = "0x7033A512639119C759A51b250BfA461AE100894b"
 const VAULT_POLYGON = "0xE95876787B055f1b9E4cfd5d3e32BDe302BF789d"
 const VAULT_OEC = "0xa8AF3199aCE72E47c1DEb56E58BEA1CD41C37c22"
 
-const USDT_HECO = "0xa71EdC38d189767582C38A3145b5873052c3e47a"
-const USDT_BSC = "0x55d398326f99059fF775485246999027B3197955"
-const USDT_POLYGON = "0xc2132D05D31c914a87C6611C10748AEb04B58e8F"
-const USDT_OEC = "0x382bB369d343125BfB2117af9c149795C6C65C50"
+const USDT_HECO = ADDRESSES.heco.USDT
+const USDT_BSC = ADDRESSES.bsc.USDT
+const USDT_POLYGON = ADDRESSES.polygon.USDT
+const USDT_OEC = ADDRESSES.okexchain.USDT
 
 const tvlHeco = async (timestamp, blockETH, chainBlocks) => {
     let block = chainBlocks[CHAIN_HECO];

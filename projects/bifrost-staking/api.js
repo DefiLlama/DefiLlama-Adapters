@@ -9,19 +9,17 @@ function formatTokenAmount(amount, tokenSymbol) {
 
   switch (tokenSymbol) {
     case "DOT":
-    case "RMRK":
       decimals = 10;
       break;
 
     case "BNC":
     case "KSM":
-    case "KAR":
-    case "KUSD":
       decimals = 12;
       break;
     case "ETH":
-    case "ZLK":
+    case "GLMR":
     case "MOVR":
+    case "FIL":
       decimals = 18;
       break;
   }
@@ -31,41 +29,51 @@ function formatTokenAmount(amount, tokenSymbol) {
 
 const tokenToCoingecko = {
   DOT: "polkadot",
-  BNC: "bifrost",
+  BNC: "bifrost-native-coin",
   KSM: "kusama",
-  KAR: "karura",
   MOVR: "moonriver",
-  KUSD: "tether",
-  ZLK: "zenlink-network-token",
-  RMRK: "rmrk",
-  ETH: "ethereum"
+  GLMR: "moonbeam",
+  ETH: "ethereum",
+  FIL: "filecoin"
 };
 
-async function tvl() {
-  const provider = new WsProvider("wss://bifrost-rpc.liebi.com/ws");
-  const api = await ApiPromise.create(({ provider }));
+function formatToken(token) {
+  switch (token) {
+    case '0':
+      return "DOT";
+    case '1':
+      return "GLMR";
+    case '4':
+      return "FIL";
+    default :
+      return null;
+  }
+}
 
-  // Get Salp tvl
-  const vsKSM = (await api.query.tokens.totalIssuance({ "vsToken": "KSM" })).toString();
-  const vsDOT = (await api.query.tokens.totalIssuance({ "vsToken": "DOT" })).toString();
+
+async function tvl() {
+  const kusamaProvider = new WsProvider("wss://bifrost-rpc.liebi.com/ws");
+  const kusamaApi = await ApiPromise.create(({ provider:kusamaProvider }));
+
+  const polkadotProvider = new WsProvider("wss://hk.p.bifrost-rpc.liebi.com/ws");
+  const polkadotApi = await ApiPromise.create(({ provider:polkadotProvider }));
 
   const totalLiquidity = {};
-  totalLiquidity.KSM = vsKSM;
-  totalLiquidity.DOT = vsDOT;
 
-  // Get vToken tvl (vKSM / vMOVR )
-  const tokenPool = await api.query.vtokenMinting.tokenPool.entries();
+  // Get kusama vToken tvl (vKSM / vMOVR / vBNC)
+  const kusamaTokenPool = await kusamaApi.query.vtokenMinting.tokenPool.entries();
+  // Get polkadot vToken tvl (vDOT / vGLMR )
+  const polkadotTokenPool = await polkadotApi.query.vtokenMinting.tokenPool.entries();
 
-  await Promise.all(tokenPool.map(async (pool) => {
+  await Promise.all(kusamaTokenPool.map(async (pool) => {
     const token=pool[0].toHuman()[0].Token||pool[0].toHuman()[0].Native
     totalLiquidity[token]=new BigNumber(totalLiquidity[token]||0).plus(pool[1].toString()).toString()
   }));
 
-  // Get vETH tvl
-  const { output: totalSupply } = await sdk.api.erc20.totalSupply({
-    target: '0xc3d088842dcf02c13699f936bb83dfbbc6f721ab'
-  })
-  totalLiquidity["ETH"] = totalSupply;
+  await Promise.all(polkadotTokenPool.map(async (pool) => {
+    const token=formatToken(pool[0].toHuman()[0].Token2)
+    totalLiquidity[token]=new BigNumber(totalLiquidity[token]||0).plus(pool[1].toString()).toString()
+  }));
 
   const totalLiquidityFormatted = {};
   for (const key in totalLiquidity) {

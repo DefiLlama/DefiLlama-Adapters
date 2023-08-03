@@ -1,25 +1,25 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { gql } = require("graphql-request");
-const { blockQuery } = require('../helper/graph')
+const { blockQuery } = require('../helper/http')
 const { getTokenPrices } = require('../helper/unknownTokens')
 const sdk = require('@defillama/sdk')
 const { getChainTransform } = require('../helper/portedTokens')
-const { getBlock } = require('../helper/getBlock')
 
 const config = {
   ethereum: {
-    weth: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-    graphUrl: 'https://graph-proxy.nftx.xyz/c/gateway/api/690cf8d6987a151008c2536454bd3d7a/subgraphs/id/4gZf3atMXjYDh4g48Zr83NFX3rkvZED86VqMNhgEXgLc'
+    weth: ADDRESSES.ethereum.WETH,
+    graphUrl: 'https://graph-proxy.nftx.xyz/c/shared/subgraphs/name/nftx-project/nftx-v2-1-mainnet'
   },
   arbitrum: {
-    weth: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
+    weth: ADDRESSES.arbitrum.WETH,
     graphUrl: 'https://graph-proxy.nftx.xyz/shared/subgraphs/name/nftx-project/nftx-v2-arbitrum'
   },
 }
 function getTvl(chain) {
   const { weth, graphUrl } = config[chain]
-  return async (timestamp, _, cb) => {
-    const block = await getBlock(timestamp, chain, cb)
-    const { vaults } = await blockQuery(graphUrl, graphQuery, block, 500)
+  return async (timestamp, _, cb, { api }) => {
+    const { vaults } = await blockQuery(graphUrl, graphQuery, { api })
+    const block = api.block
     const LPs = new Set(vaults.map(v => v.lpStakingPool.stakingToken.id))
     const tokens = new Set(vaults.map(v => v.token.id))
     const transform = await getChainTransform(chain)

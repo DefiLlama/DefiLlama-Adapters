@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
-const { sumTokensExport, sumTokens2 } = require("../helper/unwrapLPs.js");
-const { tokensBare: tokens } = require("../helper/tokenMapping");
+const { sumTokens2 } = require("../helper/unwrapLPs.js");
 const abi = require("./abi.json");
 
 const { getV2CAs, getV1CAs } = require("./events");
@@ -28,7 +27,9 @@ const getPoolAddrs = async (block) => {
 
   const { output: poolsUnderlying } = await sdk.api.abi.multiCall({
     abi: abi["underlyingToken"],
-    calls: pools.map((pool) => ({ target: pool })),
+    calls: pools
+      .filter((p) => p != "0xB8cf3Ed326bB0E51454361Fb37E9E8df6DC5C286") // RM wstETH pool
+      .map((pool) => ({ target: pool })),
     block,
   });
   const tokensAndOwners = poolsUnderlying.map((t) => [
@@ -36,18 +37,7 @@ const getPoolAddrs = async (block) => {
     t.input.target,
   ]);
 
-  // Fetch ba;anes of tokens available to fetch
-  // const { output: totalBorrowed } = await sdk.api.abi.multiCall({
-  //   abi: abi["availableLiquidity"],
-  //   calls: pools.map((pool) => ({ target: pool })),
-  //   block,
-  // });
-
-  const poolBalances = {};
-  // totalBorrowed.forEach(({ output }, i) =>
-  //   sdk.util.sumSingleBalance(poolBalances, poolsUnderlying[i].output, output)
-  // );
-
+  let poolBalances = {};
   return { tokensAndOwners, poolBalances };
 };
 
@@ -78,7 +68,7 @@ const getV2TVL = async (block) => {
 
   // Get all CA Balances
   const caValues = await Promise.all(
-    creditManagers.map((cm) => getV2CAs(cm.creditFacade, block))
+    creditManagers.map((cm) => getV2CAs(cm.addr, block))
   );
 
   return creditManagers.map((cm, i) => ({
@@ -112,16 +102,17 @@ const getV1TVL = async (block) => {
 const tvl = async (timestamp, block) => {
   // Pool TVL (Current token balances)
   const { poolBalances, tokensAndOwners } = await getPoolAddrs(block);
+  // V1 CreditAccounts TVL
+  const v1Balances = await getV1TVL(block);
 
   // V2 CreditAccounts TVL in USD
   const v2Balances = await getV2TVL(block);
 
-  // V1 CreditAccounts TVL
-  const v1Balances = await getV1TVL(block);
-  [...v1Balances, ...v2Balances].forEach(i => {
-    sdk.util.sumSingleBalance(poolBalances,i.token,i.bal)
-    tokensAndOwners.push([i.token, i.addr])
-  })
+  // Merge all balances for each token
+  [...v1Balances, ...v2Balances].forEach((i) => {
+    sdk.util.sumSingleBalance(poolBalances, i.token, i.bal);
+    tokensAndOwners.push([i.token, i.addr]);
+  });
 
   return sumTokens2({
     balances: poolBalances,
@@ -131,18 +122,9 @@ const tvl = async (timestamp, block) => {
 };
 
 module.exports = {
+  hallmarks: [[1666569600, "LM begins"]],
   ethereum: {
     tvl,
-    treasury: sumTokensExport({
-      owner: "0x7b065Fcb0760dF0CEA8CFd144e08554F3CeA73D1",
-      tokens: [
-        tokens.weth,
-        tokens.wbtc,
-        tokens.usdc,
-        tokens.dai,
-        "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0", // wseth
-      ],
-    }),
   },
   methodology: `Retrieves the tokens in each Gearbox pool (WETH/DAI/WBTC/USDC/wstETH) & value of all Credit Accounts (V1 & V2) denominated in the underlying token.`,
   misrepresentedTokens: true,

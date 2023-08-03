@@ -1,14 +1,14 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const { staking } = require("../helper/staking");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 
 const treasuryContract = "0x1420287565FD5Ebec8FbD720c17Cd911600449d3";
 
 const FundDAO = "0x3e1Aa19FA59c9B474f6d2F37976a84DeD64af4Bf";
-const USDT = "0x66e428c3f67a68878562e79a0234c1f83c208770";
-const USDC = "0xc21223249ca28397b4b6541dffaecc539bff0c59";
+const USDT = ADDRESSES.cronos.USDT;
+const USDC = ADDRESSES.cronos.USDC;
 const USDC_DSHARE_meerkatLP = "0xFe0F0d50175789C1F69B41dB797cc9ABd8Ab0120";
 
 const DShareRewardPool = "0x1A4bb8E03C35e2B672A0fcE18cab920aa023d7FC";
@@ -103,7 +103,6 @@ async function cronosTvl(timestamp, chainBlocks) {
 module.exports = {
   misrepresentedTokens: true,
   cronos: {
-    treasury: staking(treasuryContract, DNA, "cronos"),
     staking: Staking,
     pool2: pool2,
     tvl: cronosTvl,
