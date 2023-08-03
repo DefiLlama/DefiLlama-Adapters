@@ -8,25 +8,45 @@ const address = require("./helper/address");
 const chain = 'ethereum'
 
 async function tvl(_, _1, _2, { api }) {
+  const addressMap = address[api.chain];
+
   const balances = {}
-  const simpleReservesData = await api.call({
-    target: address.UiPoolDataProvider[chain],
-    params: [address.LendPoolAddressProvider[chain]],
-    abi: abi.getSimpleReservesData,
-  });
-  simpleReservesData.map(i => sdk.util.sumSingleBalance(balances, i.underlyingAsset, i.availableLiquidity, chain))
+  const simpleReservesData = await Promise.all([
+    api.call({
+      target: addressMap.UiPoolDataProvider,
+      params: [addressMap.LendPoolAddressProvider],
+      abi: abi.getSimpleReservesData,
+    })
+  ]);
+  simpleReservesData.map(
+    i => sdk.util.sumSingleBalance(
+      balances, 
+      i.underlyingAsset, 
+      i.availableLiquidity, 
+      chain
+    )
+  )
 
   return balances;
 }
 
-async function borrowed(_, _1, _2, { api }) {
+async function borrowed(chain, timestamp, chainBlocks, { api }) {
   const balances = {}
+  const addressMap = address[api.chain];
+
   const simpleReservesData = await api.call({
-    target: address.UiPoolDataProvider[chain],
-    params: [address.LendPoolAddressProvider[chain]],
+    target: addressMap.UiPoolDataProvider,
+    params: [addressMap.LendPoolAddressProvider],
     abi: abi.getSimpleReservesData,
   })
-  simpleReservesData.map(i => sdk.util.sumSingleBalance(balances, i.underlyingAsset, i.totalVariableDebt, chain))
+  simpleReservesData.map(
+    i => sdk.util.sumSingleBalance(
+      balances, 
+      i.underlyingAsset, 
+      i.totalVariableDebt, 
+      chain
+    )
+  )
 
   return balances;
 }
