@@ -1,10 +1,11 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const { sumTokensAndLPsSharedOwners } = require('./helper/unwrapLPs');
 const { transformPolygonAddress } = require('./helper/portedTokens');
 
 const tokens = [
-    ['0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270', false], //WMATIC
-    ['0x7ceb23fd6bc0add59e62ac25578270cff1b9f619', false], //WETH
-    ['0xc2132d05d31c914a87c6611c10748aeb04b58e8f', false], //USDT
+    [ADDRESSES.polygon.WMATIC_2, false], //WMATIC
+    [ADDRESSES.polygon.WETH_1, false], //WETH
+    [ADDRESSES.polygon.USDT, false], //USDT
     ['0x831753dd7087cac61ab5644b308642cc1c33dc13', false] //QUICK
 ];
 const fundedContracts = [
@@ -29,7 +30,7 @@ async function tvl(timestamp, block, chainBlocks) {
         );
 
     return balances;
-};
+}
 async function staking(timestamp, block, chainBlocks) {
     const transform = await transformPolygonAddress();
     const balances = {};
@@ -45,7 +46,7 @@ async function staking(timestamp, block, chainBlocks) {
         );
 
     return balances;
-};
+}
 // node test.js projects/polyroll.js
 module.exports={
     polygon: {

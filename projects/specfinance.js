@@ -1,9 +1,9 @@
 const axios = require('axios')
 
 async function tvl(){
-    const tvl = await axios.get('https://api.spec.finance/api/stat')
+    const tvl = await axios.get('https://spec-api-eeh8efcmd2b0fffh.z01.azurefd.net/api/data?type=lpVault')
     return {
-        'terrausd': tvl.data.tvl,
+        'terrausd': tvl.data.stat.tvl / 1e6,
     }
 }
 
@@ -18,7 +18,7 @@ module.exports = {
     misrepresentedTokens: true,
     timetravel: false,
     terra:{
-        tvl
+        tvl: () => ({}),
     },
     terra2:{
         tvl: terra2

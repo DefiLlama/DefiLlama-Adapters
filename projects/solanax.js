@@ -1,5 +1,5 @@
 const { get } = require('./helper/http')
-const { toUSDTBalances } = require('./helper/balances');;
+const { toUSDTBalances } = require('./helper/balances');
 
 async function fetch() {
   const response = (
@@ -15,7 +15,7 @@ module.exports = {
   misrepresentedTokens: true,
   methodology: `TVL is fetched by making calls to the Solanax API (https://solanax.org/api/data/)`,
   solana: {
-      tvl: fetch,
+      tvl: () => ({}),
   }
   
 };
