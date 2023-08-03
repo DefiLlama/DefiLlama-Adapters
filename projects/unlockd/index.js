@@ -7,7 +7,7 @@ const abi = {
 const address = require("./helper/address");
 const chain = 'ethereum'
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(chain, timestamp, chainBlocks, { api }) {
   const addressMap = address[api.chain];
 
   const balances = {}
