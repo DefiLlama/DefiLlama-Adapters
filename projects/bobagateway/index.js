@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const listTokens = require("./listTokens.json");
 const abi = require("./abi.json");
@@ -12,8 +13,8 @@ const L1StakingTokens = [
 
 const L2LiquidityPool = "0x3A92cA39476fF84Dc579C868D4D7dE125513B034";
 const L2StakingTokens = [
-  "0xe1E2ec9a85C607092668789581251115bCBD20de", //OMG on boba
-  "0xa18bF3994C0Cc6E3b63ac420308E5383f53120D7", //BOBA on boba
+  ADDRESSES.boba.OMG, //OMG on boba
+  ADDRESSES.boba.BOBA, //BOBA on boba
 ];
 
 const calcTvl = async (

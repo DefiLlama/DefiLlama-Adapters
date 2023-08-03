@@ -1,4 +1,4 @@
-const { get } = require('../helper/http')
+const { getConfig } = require('../helper/cache')
 const { sumTokens } = require('../helper/unwrapLPs')
 const cwADA_ETH = '0x64875aaa68d1d5521666c67d692ee0b926b08b2f'
 const cwADA_POLY = 'polygon:0x64875aaa68d1d5521666c67d692ee0b926b08b2f'
@@ -6,7 +6,7 @@ const cwDOGE_ETH = '0xf9e293d5d793ddc1ae4f778761e0b3e4aa7cf2dd'
 const cwDOGE_POLY = 'polygon:0x9bd9ad490dd3a52f096d229af4483b94d63be618'
 
 async function getData() {
-  return get('https://app.enzyme.finance/api/v1/network-asset-balances?network=ethereum')
+  return getConfig('enzyme', 'https://app.enzyme.finance/api/v1/network-asset-balances?network=ethereum')
 }
 
 async function tvl(ts, block) {

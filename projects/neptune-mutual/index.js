@@ -1,34 +1,42 @@
-const sdk = require('@defillama/sdk')
-const { ethers } = require("ethers");
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { getLogs } = require('../helper/cache/getLogs')
 
 const abi = {
-  sc: { "inputs": [], "name": "sc", "outputs": [{ "internalType": "contract IStore", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" },
+  sc: "address:sc",
 }
 
-async function tvl(_, block) {
-  const {output: logs} = await sdk.api.util.getLogs({
-    target: "0x0150b57aa8cc6fcbc110f07eef0c85731d8aacf4", // vault factory
+const vaultFactories = {
+  ethereum: "0x0150b57aa8cc6fcbc110f07eef0c85731d8aacf4",
+  arbitrum: "0x0150b57aa8cc6fcbc110f07eef0c85731d8aacf4",
+};
+
+const fromBlocks = {
+  ethereum: 15912005,
+  arbitrum: 54210090,
+};
+
+async function tvl(_, block, _1, { api, chain }) {
+  const logs = await getLogs({
+    api,
+    target: vaultFactories[chain], // vault factory
     topic: "VaultDeployed(address,bytes32,string,string)",
-    keys: [],
-    fromBlock: 15912005,
-    toBlock: block,
+    fromBlock: fromBlocks[chain],
+    eventAbi: 'event VaultDeployed (address vault, bytes32 coverKey, string name, string symbol)',
   });
 
-  let iface = new ethers.utils.Interface(['event VaultDeployed (address vault, bytes32 coverKey, string name, string symbol)'])
-  const vaults = logs.map((log) => iface.parseLog(log).args.vault)
-  const { output: tokens } = await sdk.api.abi.multiCall({
+  const vaults = logs.map((log) => log.args.vault)
+  const tokens = await api.multiCall({
     abi: abi.sc,
-    calls: vaults.map(i => ({ target: i})),
-    block,
+    calls: vaults,
   })
-  const toa = tokens.map(i => ([i.output, i.input.target]))
+  const toa = tokens.map((token, i) => ([token, vaults[i]]))
 
-  return sumTokens2({ tokensAndOwners: toa, block, })
+  return sumTokens2({ api, tokensAndOwners: toa, chain })
 }
 
 module.exports = {
   methodology: "TVL consists of the total liquidity available in the cover pools",
   start: 1667260800, // Nov 01 2022 @ 12:00am (UTC)
   ethereum: { tvl },
+  arbitrum: { tvl },
 };

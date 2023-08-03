@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
 const abi = require('./abi.json');
-const { getBlock } = require('../helper/getBlock');
+const { getBlock } = require('../helper/http');
 const { requery } = require('../helper/requery');
 const { sliceIntoChunks, } = require('../helper/utils');
 const { request, gql } = require("graphql-request");
@@ -21,7 +22,7 @@ const synthetixStates = {
   optimism: '0x8377b25B8564f6Be579865639776c5082CB37163' // It's Issuer, not SynthetixState but has the same issuanceRatio function
 }
 const synthetixs = {
-  ethereum: '0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F',
+  ethereum: ADDRESSES.ethereum.SNX,
   optimism: '0x8700daec35af8ff88c16bdf0418774cb3d7599b4'
 }
 const snxGraphEndpoints = {
@@ -29,7 +30,7 @@ const snxGraphEndpoints = {
   optimism: 'https://api.thegraph.com/subgraphs/name/0xngmi/snx-lite-optimism-regenesis'
 }
 const ethStaking = "0xc1aae9d18bbe386b102435a8632c8063d31e747c"
-const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+const weth = ADDRESSES.ethereum.WETH
 
 function chainTvl(chain) {
   return async (timestamp, ethBlock, chainBlocks) => {
@@ -41,7 +42,7 @@ function chainTvl(chain) {
     let totalTopStakersSNX = new BigNumber(0);
 
     const holdersAll = sliceIntoChunks(await SNXHolders(snxGraphEndpoint, block, chain), 5000)
-    console.log('holders count: ', holdersAll.flat().length, chain)
+    sdk.log('holders count: ', holdersAll.flat().length, chain)
 
     const issuanceRatio = (await sdk.api.abi.call({
       block,
@@ -53,7 +54,7 @@ function chainTvl(chain) {
     let i = 0
 
     for (const holders of holdersAll) {
-      console.log('fetching %s of %s', ++i, holdersAll.length)
+      sdk.log('fetching %s of %s', ++i, holdersAll.length)
 
       const calls = holders.map(holder => ({ target: synthetix, params: holder }))
       const [ratio, collateral] = await Promise.all([
@@ -98,7 +99,6 @@ function chainTvl(chain) {
       abi: abi['totalSupply']
     })).output;
 
-    //console.log(unformattedSnxTotalSupply, new BigNumber(unformattedSnxTotalSupply).div(Math.pow(10, 18)))
     const snxTotalSupply = parseInt(new BigNumber(unformattedSnxTotalSupply).div(Math.pow(10, 18)));
     const totalSNXLocked = percentLocked.times(snxTotalSupply);
 

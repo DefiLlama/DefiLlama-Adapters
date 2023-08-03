@@ -13,7 +13,6 @@ const POLYGON_BREW_ADDRESS = "0xb5106A3277718eCaD2F20aB6b86Ce0Fee7A21F09";
 module.exports = {
   bsc: {
     tvl: getUniTVL({
-      chain: 'bsc',
       useDefaultCoreAssets: true,
       factory: BSC_DEX_FACTORY,
     }),
@@ -21,7 +20,6 @@ module.exports = {
   },
   polygon: {
     tvl: getUniTVL({
-      chain: 'polygon',
       useDefaultCoreAssets: true,
       factory: POLYGON_DEX_FACTORY,
     }),

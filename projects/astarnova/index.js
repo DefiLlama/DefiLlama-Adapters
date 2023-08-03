@@ -1,5 +1,4 @@
 const sdk = require('@defillama/sdk')
-const abi = require('./abi.json')
 const BigNumber = require('bignumber.js')
 
 const dashboard = '0x63d3b2d066c1247245B31252441B3B6744e5BeB1'
@@ -28,7 +27,7 @@ async function astar(timestamp, ethBlock, chainBlock) {
             params: address
         })),
         block,
-        abi: abi,
+        abi: 'function tvlOfPool(address pool) view returns (uint256 tvl)',
         chain: 'astar'
     })).output.reduce((tvl, call) => tvl.plus(new BigNumber(call.output)), ZERO)
         

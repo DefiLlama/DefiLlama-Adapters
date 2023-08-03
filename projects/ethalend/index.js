@@ -1,12 +1,14 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
 const abi = require('./abi.json')
 const { unwrapUniswapLPs } = require('../helper/unwrapLPs')
 const { staking } = require('../helper/staking')
 const { pool2 } = require('../helper/pool2')
-const { fetchURL } = require('../helper/utils')
+const { getConfig } = require('../helper/cache')
+
 const { gql, request } = require('graphql-request')
 const { default: BigNumber } = require('bignumber.js')
-const { getBlock } = require('../helper/getBlock')
+const { getBlock } = require('../helper/http')
 
 /*
 const vaults = [
@@ -50,18 +52,19 @@ async function tvl(chain, block, chainId) {
     const globalData = (await request("https://api.thegraph.com/subgraphs/name/ethalend/etha-v1", globalDataQuery, { block: block - 100 })).globalDatas
     await Promise.all(globalData.filter(v => v.type === "lending").map(async v => {
       if (v.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee") {
-        v.address = "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"
+        v.address = ADDRESSES.polygon.WMATIC_2
       }
       const decimals = await sdk.api.erc20.decimals(v.address, chain)
       sdk.util.sumSingleBalance(balances, chain + ':' + v.address, BigNumber(v.totalUnderlying).times(10 ** decimals.output).toFixed(0))
     }))
   }
-  let vaults = (await fetchURL("https://ethalend.com/vaults/vaultInfo")).data.data.filter(i => i.chainId === chainId).map(v => v.strategyAddress).filter(i => i)
+  let vaults = (await getConfig('ethalend', "https://ethalend.com/vaults/vaultInfo")).data.filter(i => i.chainId === chainId).map(v => v.strategyAddress).filter(i => i)
   vaults = Array.from(new Set(vaults)) // remove duplicates
   const [underlyings, totals] = await Promise.all([abi.underlying, abi.calcTotalValue].map(abi => sdk.api.abi.multiCall({
     abi,
     block,
     chain,
+    permitFailure: true,
     calls: vaults.map(v => ({ target: v }))
   })))
   const lpPositions = []

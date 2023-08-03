@@ -4,24 +4,25 @@
 const sdk = require("@defillama/sdk");
 const { sumTokens } = require("../helper/unwrapLPs");
 const abi = require("./abi.json");
-const { get } = require('../helper/http')
+const { getConfig } = require('../helper/cache')
+
 const { stakings } = require('../helper/staking')
+const { getLogs } = require('../helper/cache/getLogs')
 
 const PoolFactory = "0xde204e5a060ba5d3b63c7a4099712959114c2d48";
 const START_BLOCK = 14443222;
 const polygonPoolURL = 'https://app.clearpool.finance/api/pools'
 
-const ethereumTVL = async (timestamp, block, chainBlocks) => {
+const ethereumTVL = async (timestamp, block, chainBlocks, { api }) => {
   const balances = {};
   const Logs = (
-    await sdk.api.util.getLogs({
+    await getLogs({
+      api,
       target: PoolFactory,
       topic: "PoolCreated(address,address,address)",
-      keys: [],
       fromBlock: START_BLOCK,
-      toBlock: block,
     })
-  ).output;
+  );
   const tokensAndOwners = [];
   for (let i = 0; i < Logs.length; i++) {
     const pool = "0x" + Logs[i].topics[1].substring(26, 66);
@@ -32,17 +33,16 @@ const ethereumTVL = async (timestamp, block, chainBlocks) => {
   return balances;
 };
 
-const ethereumBorrowed = async (timestamp, block, chainBlocks) => {
+const ethereumBorrowed = async (timestamp, block, _, { api }) => {
   const totalBorrowed = {};
   const Logs = (
-    await sdk.api.util.getLogs({
+    await getLogs({
+      api,
       target: PoolFactory,
       topic: "PoolCreated(address,address,address)",
-      keys: [],
       fromBlock: START_BLOCK,
-      toBlock: block,
     })
-  ).output;
+  );
 
   const pools = []
   const tokens = []
@@ -67,7 +67,7 @@ const ethereumBorrowed = async (timestamp, block, chainBlocks) => {
 const polygonTvl = async (timestamp, _,  { polygon: block }) => {
   const balances = {};
   const chain = 'polygon'
-  const poolAllData = await get(polygonPoolURL)
+  const poolAllData = await getConfig('clearpool-polygon',polygonPoolURL)
   const poolData = poolAllData["137"]
 
   const tokensAndOwners = [];
@@ -82,7 +82,7 @@ const polygonTvl = async (timestamp, _,  { polygon: block }) => {
 
 const polygonBorrowed = async (timestamp, _,  { polygon: block }) => {
   const chain = 'polygon'
-  const poolAllData = await get(polygonPoolURL)
+  const poolAllData = await getConfig('clearpool-polygon',polygonPoolURL)
   const poolData = poolAllData["137"]
   const totalBorrowed = {};
 

@@ -1,26 +1,26 @@
-const { request, gql } = require("graphql-request");
-const { toUSDTBalances } = require("../helper/balances");
+const { getLogs } = require("../helper/cache/getLogs");
+const { getUniqueAddresses } = require("../helper/utils");
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
-const backendGraphUrlBsc = "https://dex-backend-prod.herokuapp.com/graphql";
+const vault = '0xee1c8dbfbf958484c6a4571f5fb7b99b74a54aa7'
 
-const backendTvlGraphQuery = gql`
-  query get_tvl {
-    data: beetsGetProtocolData {
-      totalLiquidity
-    }
-  }`;
-
-async function bscTvl(timestamp, ...params) {
-  if (Math.abs(timestamp - Date.now() / 1000) < 3600 / 2) {
-    const { data } = await request(backendGraphUrlBsc, backendTvlGraphQuery);
-    return toUSDTBalances(data.totalLiquidity);
-  }}
+async function tvl(_, _b, _cb, { api, }) {
+  const data = await getLogs({
+    api,
+    target: vault,
+    topics: ['0xf5847d3f2197b16cdcd2098ec95d0905cd1abdaf415f07bb7cef2bba8ac5dec4'],
+    fromBlock: 20457369,
+    eventAbi: 'event TokensRegistered(bytes32 indexed poolId, address[] tokens, address[] assetManagers)'
+  })
+  let tokens = []
+  data.forEach(i => tokens.push(...i.args.tokens))
+  tokens = getUniqueAddresses(tokens)
+  return sumTokens2({ api, tokens, owner: vault, })
+}
 
 module.exports = {
-  misrepresentedTokens: true,
-  incentivized: true,
-  methodology: `Aequinox TVL is pulled from its subgraph. It includes deposits made to the liquidity pools.`,
+  methodology: `TVL is computed by summing up all the tokens in the vault: ${vault}`,
   bsc: {
-    tvl: bscTvl,    
+    tvl,    
   },
 };

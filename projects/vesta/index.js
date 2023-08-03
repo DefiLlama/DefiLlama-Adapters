@@ -1,15 +1,14 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
-const getEntireSystemCollAbi = require("./getEntireSystemColl.abi.json");
-const vestaFarmingAbi = require("./vestaFarming.abi.json");
-const { sumBalancerLps, unwrapCrv } = require("../helper/unwrapLPs.js");
+const { sumBalancerLps, } = require("../helper/unwrapLPs.js");
 const { transformArbitrumAddress } = require("../helper/portedTokens");
 
 const VaultTokens = {
   gOHM: "0x8d9ba570d6cb60c7e3e0f31343efe75ab8e65fb1",
-  ETH: "0x0000000000000000000000000000000000000000",
-  renBTC: "0xdbf31df14b66535af65aac99c32e9ea844e14501",
+  ETH: ADDRESSES.null,
+  renBTC: ADDRESSES.fantom.renBTC,
   DPX: "0x6c2c06790b3e3e3c38e12ee22f8183b37a13ee55",
-  GMX: "0xfc5a1a6eb076a2c7ad06ed22c90d7e710e35ad0a",
+  GMX: ADDRESSES.arbitrum.GMX,
   GLP: "0x2f546ad4edd93b956c8999be404cdcafde3e89ae"
 }
 
@@ -33,7 +32,8 @@ async function tvl(_, block, chainBlocks) {
   const balances = {}
   const calls = Object.values(VaultTokens).map(token => ({ params: [token] }))
   const { output } = await sdk.api.abi.multiCall({
-    calls, block, chain: 'arbitrum', target: TROVE_MANAGER_ADDRESS, abi: getEntireSystemCollAbi,
+    calls, block, chain: 'arbitrum', target: TROVE_MANAGER_ADDRESS, abi: "function getEntireSystemColl(address _asset) view returns (uint256 entireSystemColl)"
+    ,
   })
 
   output.forEach(({ input: { params: [token] }, output }) => {
@@ -45,21 +45,20 @@ async function tvl(_, block, chainBlocks) {
   })
 
   return balances;
-};
+}
 
-async function pool2(_timestamp, block, chainBlocks) {  
+async function pool2(_timestamp, block, chainBlocks, { api }) {  
   block = chainBlocks.arbitrum;
   const balances = {};
   const transform = await transformArbitrumAddress();
   await sumBalancerLps(balances, [[LP_VSTA_ETH_ADDRESS, VSTA_FARMING_ADDRESS]], chainBlocks.arbitrum, chain, transform);
 
   const curveBalances = (
-    await sdk.api.abi.call({ target: VST_FARMING_ADDRESS, abi: vestaFarmingAbi, block, params: [], chain, })
+    await sdk.api.abi.call({ target: VST_FARMING_ADDRESS, abi: "uint256:totalStaked", block, params: [], chain, })
   ).output;
-
-  await unwrapCrv(balances, LP_VST_FRAX_ADDRESS, curveBalances, block, chain, transform);
+  sdk.util.sumSingleBalance(balances,LP_VST_FRAX_ADDRESS,curveBalances, api.chain)
   return balances;
-};
+}
 
 module.exports = {
   arbitrum: {

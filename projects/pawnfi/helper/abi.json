@@ -1,0 +1,4 @@
+{
+    "cTokenMetadataAll": "function cTokenMetadataAll(address[] cTokens) view returns (tuple(address cToken,uint exchangeRateCurrent,uint supplyRatePerBlock,uint borrowRatePerBlock,uint reserveFactorMantissa,uint totalBorrows,uint totalReserves,uint totalSupply,uint totalCash,bool isListed,uint collateralFactorMantissa,address underlyingAssetAddress,uint cTokenDecimals,uint underlyingDecimals,uint compSupplySpeed,uint compBorrowSpeed,uint borrowCap)[])",
+    "stakedTotal": "function stakedTotal(address _address) external view returns (uint256)"
+}

@@ -94,15 +94,7 @@ const networkMapping = {
     pools: magikConfig.auroraPools,
   },
 };
-const balanceAbi = {
-  constant: true,
-  inputs: [],
-  name: "balance",
-  outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-  payable: false,
-  stateMutability: "view",
-  type: "function",
-};
+const balanceAbi = "uint256:balance"
 
 // Time-based cache buster
 const getApiCacheBuster = () => {

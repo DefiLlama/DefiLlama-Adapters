@@ -1,56 +1,5 @@
 {
-	"getVaultList": {
-		"inputs": [],
-		"name": "getVaultList",
-		"outputs": [
-			{
-				"internalType": "address[]",
-				"name": "",
-				"type": "address[]"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-    "balanceState": {
-		"inputs": [],
-		"name": "balanceState",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "totalCashBalance",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "totalLoanBalance",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "totalAdminFeeBalance",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "totalWithdrawalBalance",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	"currencyToken": {
-		"inputs": [],
-		"name": "currencyToken",
-		"outputs": [
-			{
-				"internalType": "contract IERC20",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	}
+  "getVaultList": "address[]:getVaultList",
+  "balanceState": "function balanceState() view returns (uint256 totalCashBalance, uint256 totalLoanBalance, uint256 totalAdminFeeBalance, uint256 totalWithdrawalBalance)",
+  "currencyToken": "address:currencyToken"
 }

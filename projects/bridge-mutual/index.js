@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { sumTokens2, sumTokensExport } = require('../helper/unwrapLPs')
@@ -8,7 +9,7 @@ const config = {
     staking: ["0x81d73999fabec7e8355d76d1010afbe3068f08fa", "0x55978a6f6a4cfa00d5a8b442e93e42c025d0890c"],
     PolicyBookRegistry: "0xff13c3d2c7931e86e13c993a8cb02d68848f9613",
     ShieldMining: "0x6d6fCf279a63129797def89dBA82a65b3386497e",
-    usdt: "0xdac17f958d2ee523a2206206994597c13d831ec7",
+    usdt: ADDRESSES.ethereum.USDT,
     bmi: "0x725c263e32c72ddc3a19bea12c5a0479a81ee688",
   },
   bsc: {
@@ -16,7 +17,7 @@ const config = {
     staking: ["0x8be37f9bb9b09cf89774c103c52d1e660398a7b3"],
     PolicyBookRegistry: "0xab7c7356f706954c3c926a690e96c7b65fa76116",
     ShieldMining: "0xcc75bf59969e8362d064536fd941a541f81abe56",
-    usdt: "0x55d398326f99059fF775485246999027B3197955",
+    usdt: ADDRESSES.bsc.USDT,
     bmi: "0xb371f0eb8dfb3b47fdfc23bbcbc797954d3d4f23",
   },
   polygon: {
@@ -24,7 +25,7 @@ const config = {
     staking: ["0xcfdb12299c2d0111ae1cee23337e9156deabfbf5"],
     PolicyBookRegistry: "0xab7c7356f706954c3c926a690e96c7b65fa76116",
     ShieldMining: "0xde52f95ea3373fab1deefde56d35fa1dacd83e99",
-    usdt: "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
+    usdt: ADDRESSES.polygon.USDT,
     bmi: "0xa10facae1abac4fae6312c615a9c3fd56075be1a",
   },
 }

@@ -6,6 +6,14 @@ const EXCLUDED_PLATFORMS = {
   "12": true, // TETU_SWAP
   "29": true // TETU self farm
 }
+const EXCLUDED_VAULTS = {
+  "ethereum": {
+    "0xfe700d523094cc6c673d78f1446ae0743c89586e": true, // tetuBAL ethereum
+  },
+  "fantom": {
+    "0x27c616838b8935c8a34011d0e88ba335040ac7b1": true // broken MAI on fantom
+  }
+}
 
 module.exports = {
   start: 1628024400,  //Tue Aug 03 2021 21:00:00 GMT+0000
@@ -16,6 +24,8 @@ const config = {
   polygon: {
     bookkeeper: '0x0A0846c978a56D6ea9D2602eeb8f977B21F3207F',
     contract_Reader: '0xCa9C8Fba773caafe19E6140eC0A7a54d996030Da',
+    controllerV2: '0x33b27e0A2506a4A2FBc213a01C51d0451745343a',
+    veTETU: '0x6FB29DD17fa6E27BD112Bc3A2D0b8dae597AeDA4',
   },
   fantom: {
     bookkeeper: '0x00379dD90b2A337C4652E286e4FBceadef940a21',
@@ -32,51 +42,59 @@ const config = {
 }
 
 Object.keys(config).forEach(chain => {
-  const { bookkeeper, contract_Reader, } = config[chain]
+  const { bookkeeper, contract_Reader, controllerV2, veTETU } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, { [chain]: block }) => {
-      const vaultLength = (
-        await sdk.api.abi.call({
-          abi: abi.vaultsLength,
-          target: bookkeeper,
-          block, chain,
-        })
-      ).output;
-      let calls = getParamCalls(vaultLength)
-      const { output: vaultAddresses } = await sdk.api.abi.multiCall({
-        target: bookkeeper,
-        abi: abi.vaults,
-        calls, chain, block,
-      })
+    tvl: async (_, _b, { [chain]: block }, { api }) => {
+      const vaultAddresses = await api.fetchList({ lengthAbi: abi.vaultsLength, itemAbi: abi.vaults, target: bookkeeper })
+      const strategies = await api.multiCall({ abi: abi.strategy, calls: vaultAddresses, })
+      const platforms = await api.multiCall({ abi: abi.platform, calls: strategies, })
+      const vaultsCall = []
 
-      calls = vaultAddresses.map(i => ({ target: i.output }))
-      const { output: strategies } = await sdk.api.abi.multiCall({
-        abi: abi.strategy,
-        calls,
-        chain, block,
-      })
-
-      calls = strategies.map(i => ({ target: i.output }))
-      const { output: platforms } = await sdk.api.abi.multiCall({
-        abi: abi.platform,
-        calls, chain, block,
-      })
-
-      calls = []
-      for (let i = 0; i < vaultLength; i++) {
-        if (EXCLUDED_PLATFORMS[platforms[i].output] === true)
+      for (let i = 0; i < vaultAddresses.length; i++) {
+        if (EXCLUDED_PLATFORMS[platforms[i]] === true)
           continue;
-        calls.push({ params: vaultAddresses[i].output })
+        // exclude duplication count or broken vaults
+        if (EXCLUDED_VAULTS[chain] && EXCLUDED_VAULTS[chain][vaultAddresses[i].toLowerCase()] === true)
+          continue;
+        vaultsCall.push(vaultAddresses[i])
       }
 
-      const { output: usdcs } = await sdk.api.abi.multiCall({
-        target: contract_Reader,
-        abi: abi.vaultTvlUsdc,
-        calls, chain, block,
-      })
+      // TetuV2 vaults
+      let usdcsV2 = [];
+      if (controllerV2) {
+        const vaultsV2 = (await api.call({ abi: abi.vaultsList, target: controllerV2, }));
+        usdcsV2 = await api.multiCall({ target: contract_Reader, abi: abi.vaultERC4626TvlUsdc, calls: vaultsV2, permitFailure: true, })
+      }
 
-      let total = 0
-      usdcs.forEach(i => total += i.output / 1e18)
+      // veTETU
+      let veTETU_USDC = 0;
+      if (veTETU) {
+        for (let i = 0; i < 100; i++) {
+          let token = '';
+          try {
+            token = (await api.call({ abi: abi.veTokens, target: veTETU, params: i, }));
+          } catch (e) {
+            // assume that tokens ended
+            // we don't have length for tokens so this workaround
+            break;
+          }
+
+          const amount = (await api.call({ abi: abi.balanceOf, target: token, params: veTETU, }));
+          const price = (await api.call({ abi: abi.getPrice, target: contract_Reader, params: token, }));
+
+          // assume all tokens inside with decimal 18
+          // if not need addtionial call with decimals
+          veTETU_USDC += amount * price / 1e36;
+        }
+      }
+
+      let total = veTETU_USDC
+      for (const vault of vaultsCall) {
+        const usdcs = await api.call({ target: contract_Reader, abi: abi.totalTvlUsdc, params: [[vault]], })
+        total += usdcs / 1e18
+      }
+
+      usdcsV2.forEach(i => total += i / 1e18)
       return {
         'usd-coin': total
       }

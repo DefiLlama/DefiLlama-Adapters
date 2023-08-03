@@ -1,7 +1,7 @@
 const { stakingUnknownPricedLP } = require("../helper/staking");
 const sdk = require("@defillama/sdk");
-const token0Abi = require("../helper/abis/token0.json");
-const token1Abi = require("../helper/abis/token1.json");
+const token0Abi = 'address:token0'
+const token1Abi = 'address:token1'
 const { default: BigNumber } = require("bignumber.js");
 
 function zombiTvl(token, share, rewardPool, rewardPool2, masonry, pool2LPs, listedTokenGeneris, chain = "ethereum", transform = undefined, tokensOnCoingecko = true, lpWithShare = undefined) {

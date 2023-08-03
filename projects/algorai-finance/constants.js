@@ -6,34 +6,52 @@ const vaults = [
     // v1.0
     {
         vaultID: 878144513,
-        depositAssetID: 0,
         assetDecimals: 6,
         coingecko: 'algorand',
-        stable: false
     },
     {
         vaultID: 878140320,
-        depositAssetID: 31566704,
         assetDecimals: 6,
         coingecko: 'usd-coin',
-        stable: true
     },
     // v1.1
     {
         vaultID: 919531421,
-        depositAssetID: 0,
         assetDecimals: 6,
         coingecko: 'algorand',
-        stable: false
     },
     {
         vaultID: 919539218,
-        depositAssetID: 31566704,
         assetDecimals: 6,
         coingecko: 'usd-coin',
-        stable: true
+    },
+    {
+        vaultID: 1004309470,
+        assetDecimals: 8,
+        coingecko: 'bitcoin',
+    },
+    {
+        vaultID: 1004325987,
+        assetDecimals: 6,
+        coingecko: 'usd-coin',
+    },
+    {
+        vaultID: 1004326861,
+        assetDecimals: 8,
+        coingecko: 'ethereum',
+    },
+    {
+        vaultID: 1004374058,
+        assetDecimals: 6,
+        coingecko: 'usd-coin',
+    },
+    {
+        vaultID: 1097368119,
+        assetDecimals: 4,
+        coingecko: 'pepe',
     },
 ];
+
 
 module.exports = {
     vaults,

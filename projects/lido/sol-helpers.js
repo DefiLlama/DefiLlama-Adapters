@@ -7,9 +7,11 @@ const RESERVE_ACCOUNT_ADDRESS = "3Kwv3pEAuoe4WevPB4rgMBTZndGDb53XT7qwQKnvHPfX";
 async function retrieveValidatorsBalance(connection) {
   const accountInfo = await connection.getAccountInfo(new PublicKey(SOLIDO_ADDRESS));
   const deserializedAccountInfo = decodeAccount('lido', accountInfo)
-  return deserializedAccountInfo.validators.entries
-    .map(pubKeyAndEntry => pubKeyAndEntry.entry)
-    .map(validator => validator.stake_accounts_balance.toNumber())
+  const validatorListAddress = new PublicKey(deserializedAccountInfo.validator_list)
+  const validatorsInfo = await connection.getAccountInfo(validatorListAddress);
+  const decodedValInfo = decodeAccount('lidoValidatorList', validatorsInfo)
+  return decodedValInfo.entries
+    .map(validator => validator.effective_stake_balance.toNumber())
     .reduce((prev, current) => prev + current, 0)
 }
 

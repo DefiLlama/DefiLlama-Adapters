@@ -1,48 +1,20 @@
-const { get } = require("../helper/http");
 const { chainExports } = require("../helper/exports");
 const { sumTokens2 } = require("../helper/unwrapLPs");
-
-// Includes some chains that are not yet live
-const chainNameToChainId = {
-  ethereum: 1,
-  bsc: 56,
-  boba: 288,
-  polygon: 137,
-  xdai: 100,
-  fantom: 250,
-  arbitrum: 42161,
-  avax: 43114,
-  optimism: 10,
-  fuse: 122,
-  moonbeam: 1284,
-  moonriver: 1285,
-  milkomeda: 2001,
-  celo: 42220,
-  aurora: 1313161554,
-  harmony: 1666600000,
-  cronos: 25,
-  evmos: 9001,
-  heco: 128,
-};
-
-let getContractsPromise
+const { getConfig } = require('../helper/cache')
 
 // Taken from @connext/nxtp-contracts
 async function getContracts() {
-  if (!getContractsPromise)
-    getContractsPromise = get('https://raw.githubusercontent.com/connext/nxtp/v0.1.40/packages/contracts/deployments.json')
-  return getContractsPromise
+  return getConfig('connect/contracts', 'https://raw.githubusercontent.com/connext/monorepo/main/packages/deployments/contracts/deployments.json')
 }
 
 async function getDeployedContractAddress(chainId) {
-  const contracts = await getContracts()
-  const record = contracts[String(chainId)] || {}
-  const name = Object.keys(record)[0];
-  if (!name) {
-    return undefined;
-  }
-  const contract = record[name]?.contracts?.TransactionManager;
-  return contract ? contract.address : undefined;
+  const allContracts = await getContracts()
+  const record = allContracts[chainId + ''] ?? []
+  const contracts =  (record ?? [])[0]?.contracts ?? {}
+  return [
+    contracts.Connext?.address,
+    contracts.Connext_DiamondProxy?.address,
+  ].filter(i => i)
 }
 
 let getAssetsPromise
@@ -50,21 +22,22 @@ let getAssetsPromise
 async function getAssetIds(chainId) {
   const url = "https://raw.githubusercontent.com/connext/chaindata/main/crossChain.json"
   if (!getAssetsPromise)
-    getAssetsPromise = get(url)
+    getAssetsPromise = getConfig('connect/assets/'+chainId, url)
   const data = await getAssetsPromise
   const chainData = data.find(item => item.chainId === chainId) || {}
-  return Object.keys(chainData.assetId || {}).map(id => id.toLowerCase())
+  return Object.entries(chainData.assetId || {}).filter(i => i[0].length && !i[1].symbol.startsWith('next')).map(i => i[0])
 }
 
 
 function chainTvl(chain) {
-  return async (time, ethBlock, { [chain]: block }) => {
-    const chainId = chainNameToChainId[chain]
-    const contractAddress = await getDeployedContractAddress(chainId)
-    if (!contractAddress)
+  return async (time, ethBlock,_, { api }) => {
+
+    const chainId = api.chainId
+    const owners = await getDeployedContractAddress(chainId)
+    if (!owners.length)
       return {}
     const tokens = await getAssetIds(chainId)
-    return sumTokens2({ owner: contractAddress, tokens, chain, block, })
+    return sumTokens2({ owners, tokens, api, })
   };
 }
 
@@ -72,12 +45,14 @@ const chains = [
   "ethereum",
   "bsc",
   "polygon",
-  "moonriver",
-  "fantom",
   "xdai",
-  "avax",
   "optimism",
   "arbitrum",
+
+  // deprecated?
+  "moonriver",
+  "fantom",
+  "avax",
   "moonbeam",
   "fuse",
   "cronos",

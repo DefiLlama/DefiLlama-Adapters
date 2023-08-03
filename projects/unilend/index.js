@@ -1,3 +1,4 @@
+const { getConfig } = require('../helper/cache')
 const { fetchURL } = require("../helper/utils");
 const {
   transformPolygonAddress,
@@ -10,7 +11,7 @@ const UnilendContract = "0x13A145D215182924c89F2aBc7D358DCc72F8F788";
 const API_URL = "https://unilend.finance/list.json";
 
 const calcTvl = async (balances, Id, block, chain, transformAddr) => {
-  const tokenList = (await fetchURL(API_URL)).data.tokens
+  const tokenList = (await getConfig('unilend', API_URL)).tokens
     .filter((CHAIN) => CHAIN.chainId == Id)
     .map((token) => token.address);
 

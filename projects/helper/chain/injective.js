@@ -1,5 +1,5 @@
 const { getNetworkInfo, Network } = require('@injectivelabs/networks')
-const { protoObjectToJson, IndexerGrpcSpotApi, IndexerGrpcDerivativesApi } = require('@injectivelabs/sdk-ts')
+const { protoObjectToJson, IndexerGrpcSpotApi, IndexerGrpcDerivativesApi, } = require('@injectivelabs/sdk-ts')
 const { sliceIntoChunks } = require('../utils')
 let clients = {}
 
@@ -14,9 +14,9 @@ function getClient(type = TYPES.SPOT) {
   if (!clients[type]) {
     const network = getNetworkInfo(Network.Mainnet)
     if (type === TYPES.SPOT)
-      clients[type] = new IndexerGrpcSpotApi(network.exchangeWeb3GatewayApi);
+      clients[type] = new IndexerGrpcSpotApi(network.indexerApi);
     else if (type === TYPES.DERIVATIVES)
-      clients[type] = new IndexerGrpcDerivativesApi(network.exchangeWeb3GatewayApi)
+      clients[type] = new IndexerGrpcDerivativesApi(network.indexerApi)
     else
       throw new Error('Unknown type')
   }
@@ -32,7 +32,7 @@ async function getOrders({ type = TYPES.SPOT, marketIds }) {
   const chunks = sliceIntoChunks(marketIds, 20)
   const response = []
   for (const chunk of chunks)
-    response.push(...await getClient(type).fetchOrderbooks(chunk))
+    response.push(...await getClient(type).fetchOrderbooksV2(chunk))
   return response
 }
 

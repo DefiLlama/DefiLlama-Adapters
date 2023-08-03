@@ -1,5 +1,5 @@
 const { request, gql } = require("graphql-request");
-const { getBlock } = require('../helper/getBlock');
+const { getBlock } = require('../helper/http');
 
 const graph_endpoint = 'https://api.thegraph.com/subgraphs/name/rout-horizon/bsc15-issuance'
 const graphQuery = gql`

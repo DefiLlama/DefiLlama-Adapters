@@ -1,19 +1,12 @@
-const { get } = require("../helper/http");
-const { sumTokens, endPoints } = require('../helper/chain/cosmos')
+const { sumTokens } = require('../helper/chain/cosmos')
+const { getConfig } = require("../helper/cache");
 
-const USK_MARKETS = [
-  "kujira1ecgazyd0waaj3g7l9cmy5gulhxkps2gmxu9ghducvuypjq68mq2smfdslf",
-];
+const chain = "kujira";
 
 async function tvl() {
-  const { pairs } = await get("https://api.kujira.app/api/coingecko/pairs");
-  const { contracts: blackWhaleVaults } = await get(endPoints.kujira + "/cosmwasm/wasm/v1/code/16/contracts?pagination.limit=100");
-  const owners = [
-    ...pairs.map((pair) => pair.pool_id),
-    ...USK_MARKETS,
-    ...blackWhaleVaults,
-  ]
-  return sumTokens({ owners, chain: 'kujira' })
+  const contracts = await getConfig("kujira/contracts", "https://raw.githubusercontent.com/Team-Kujira/kujira.js/master/src/resources/contracts.json");
+  const uskContracts = contracts["kaiyo-1"].uskMarket.map(x => x.address)
+  return sumTokens({ owners: uskContracts, chain })
 }
 
 module.exports = {

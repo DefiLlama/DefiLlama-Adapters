@@ -1,10 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { GraphQLClient, gql } = require("graphql-request");
 const sdk = require("@defillama/sdk")
-const { addDexPosition, getTokenBalances, resolveLPPosition, getStorage, convertBalances, usdtAddressTezos, } = require('../helper/chain/tezos')
-const { getFixBalances } = require('../helper/portedTokens')
+const { addDexPosition, resolveLPPosition, getStorage, usdtAddressTezos, } = require('../helper/chain/tezos')
 const { dexes, farms } = require('./data')
 const { PromisePool } = require('@supercharge/promise-pool');
-const { default: BigNumber } = require("bignumber.js");
 let graphQLClient
 
 const indexer = "https://youves-mainnet-indexer.prod.gke.papers.tech/v1/graphql"
@@ -27,7 +26,7 @@ const engines = {
 
 const uDEFI_LP = 'KT1H8sJY2VzrbiX4pYeUVsoMUd4iGw2DV7XH'
 const uDEFI_TOKEN = 'KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW-1'
-const tzBTC_TOKEN = 'KT1PWx2mnDueood7fEmfbBDKx1D9BAnnXitn'
+const tzBTC_TOKEN = ADDRESSES.tezos.tzBTC
 
 
 async function fetchBalance(balances, token, engineAddress, decimals = 0, sharePrice) {
@@ -49,12 +48,12 @@ async function fetchBalance(balances, token, engineAddress, decimals = 0, shareP
   if (token === 'tzbtc-lp') {
     const balancetZ = balance * sharePrice.xtzPool / sharePrice.lqtTotal
     const balanceBTC = balance * sharePrice.tokenPool / sharePrice.lqtTotal
-    sdk.util.sumSingleBalance(balances, 'tezos', balancetZ / 1e6)
-    sdk.util.sumSingleBalance(balances, sharePrice.tokenAddress, balanceBTC)
+    sdk.util.sumSingleBalance(balances, 'tezos', balancetZ / 1e6, 'tezos')
+    sdk.util.sumSingleBalance(balances, sharePrice.tokenAddress, balanceBTC, 'tezos')
     return;
   }
 
-  sdk.util.sumSingleBalance(balances, token, balance)
+  sdk.util.sumSingleBalance(balances, token, balance, 'tezos')
 }
 
 
@@ -67,7 +66,7 @@ async function tvl() {
   const balances = {}
   const sharePrice = await getTzBTCLPSharePrice()
   await Promise.all([
-    // fetchBalance(balances, 'KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW', engines.uDefiuUSDV2, 0),  // disabling this because backing of uUSD is already counted in tvl
+    // fetchBalance(balances, ADDRESSES.tezos.uUSD, engines.uDefiuUSDV2, 0),  // disabling this because backing of uUSD is already counted in tvl
     fetchBalance(balances, usdtAddressTezos, engines.uUSDUSDtV3, 0),
     fetchBalance(balances, tzBTC_TOKEN, engines.uUSDtzBTCV2, 0),
     fetchBalance(balances, tzBTC_TOKEN, engines.uUSDtzBTCV3, 0),
@@ -83,12 +82,11 @@ async function tvl() {
     fetchBalance(balances, 'tzbtc-lp', engines.uDefitzBTCLPV2, 0, sharePrice),
   ])
 
-  return convertBalances(balances)
+  return balances
 }
 
 async function pool2() {
   const balances = {}
-  const fixBalances = await getFixBalances('tezos')
 
   const youvesLPs = dexes.map(i => i.contractAddress).filter(i => i)
   let eligibleFarms = farms.filter(i => !youvesLPs.includes(i.lpToken)).map(({ farmContract, lpToken: { contractAddress } }) => ({ farmContract, contractAddress }))
@@ -103,19 +101,7 @@ async function pool2() {
     promises.push(resolveLPPosition({ balances, lpToken: contractAddress, owner: farmContract, ignoreList: youvesLPs }))
   await Promise.all(promises)
 
-  fixBalances(balances)
-  if (balances[`tezos:${uDEFI_TOKEN}`]) {
-    const uDefiPrice = await getUDefiPriceTEZ()
-
-    sdk.util.sumSingleBalance(balances, 'tezos', +BigNumber(balances[`tezos:${uDEFI_TOKEN}`]).multipliedBy(uDefiPrice).toFixed(0))
-    delete balances[`tezos:${uDEFI_TOKEN}`]
-  }
   return balances
-}
-
-async function getUDefiPriceTEZ() {
-  const poolTokens = await getTokenBalances(uDEFI_LP)
-  return BigNumber(poolTokens.tezos).dividedBy(poolTokens[uDEFI_TOKEN])
 }
 
 module.exports = {

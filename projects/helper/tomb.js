@@ -1,8 +1,8 @@
 const { staking, stakingUnknownPricedLP } = require("./staking");
 const { pool2Exports } = require("./pool2");
 const sdk = require("@defillama/sdk");
-const token0Abi = require("./abis/token0.json");
-const token1Abi = require("./abis/token1.json");
+const token0Abi = 'address:token0'
+const token1Abi = 'address:token1'
 const { default: BigNumber } = require("bignumber.js");
 
 function tombTvl(token, share, rewardPool, masonry, pool2LPs, chain = "ethereum", transform = undefined, tokensOnCoingecko = true, lpWithShare = undefined) {

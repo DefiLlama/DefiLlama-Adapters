@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const axios = require("axios");
+const { getConfig } = require('../helper/cache')
 const BigNumber = require("bignumber.js");
 
 module.exports = {
@@ -18,7 +19,7 @@ async function tvlV1Eth(timestamp, block) {
     return tvlV1("ethereum", block, "https://homora.alphafinance.io/static/contracts.json", "WETHAddress", "totalETH")
 }
 
-const wBNB = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'
+const wBNB = ADDRESSES.bsc.WBNB
 async function tvlV1Bsc(timestamp, block, chainBlocks) {
     const tvlBNB = await tvlV1("bsc", chainBlocks.bsc, "https://homora-bsc.alphafinance.io/static/contracts.json", "WBNBAddress", "totalBNB")
     return {
@@ -27,7 +28,7 @@ async function tvlV1Bsc(timestamp, block, chainBlocks) {
 }
 
 async function tvlV1(chain, block, contractsUrl, wrappedBaseName, totalEthMethodName) {
-    const { data } = await axios.get(
+    const data = await getConfig('alpha-hormora/v1/'+chain,
       contractsUrl
     );
   
@@ -49,10 +50,7 @@ async function tvlV1(chain, block, contractsUrl, wrappedBaseName, totalEthMethod
       target: bankAddress,
       block,
       chain,
-      abi: {
-          ...abi["totalETH"],
-          name: totalEthMethodName
-        },
+      abi: 'uint256:'+totalEthMethodName,
     });
   
     const totalETH = BigNumber(_totalETH);

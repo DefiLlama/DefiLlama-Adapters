@@ -1,7 +1,6 @@
 const BigNumber = require('bignumber.js');
 const { toUSDTBalances } = require('./../../../helper/balances');
 const sdk = require("@defillama/sdk");
-const onxContractAbi = require('../../../helper/ankr/abis/OnxPool.json');
 const tokenAddresses = require('../constant');
 const { getVautsTvl, getBalanceOf, getReserves } = require('../../../helper/ankr/utils');
 const { ZERO, vaults } = require('./vaults');
@@ -33,7 +32,7 @@ const getEthereumBorrows = async () => {
 
   let { output: borrowsTvl } = await sdk.api.abi.call({
     target: tokenAddresses.pool,
-    abi: onxContractAbi.find(i => i.name === 'totalBorrow')
+    abi: 'uint256:totalBorrow'
   })
   borrowsTvl = new BigNumber(borrowsTvl).div(1e18);
   return toUSDTBalances(wethPrice.times(borrowsTvl));
@@ -123,11 +122,11 @@ const getOneVaultTvl = async (wethPrice, aethPrice, onsPrice) => {
 const getLendingTvl = async (wethPrice) => {
   let { output: totalStake } = await sdk.api.abi.call({
     target: tokenAddresses.pool,
-    abi: onxContractAbi.find(i => i.name === 'totalStake')
+    abi: 'uint256:totalStake'
   })
   let { output: totalBorrow } = await sdk.api.abi.call({
     target: tokenAddresses.pool,
-    abi: onxContractAbi.find(i => i.name === 'totalPledge')
+    abi: 'uint256:totalPledge'
   })
   return new BigNumber(totalBorrow).plus(totalStake).times(wethPrice).div(1e18);
 }

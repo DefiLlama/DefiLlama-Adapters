@@ -8,13 +8,7 @@ async function tvl(timestamp, _ethBlock, {klaytn: block}) {
     block,
     chain,
     target: stKlayAddress,
-    abi: {
-      inputs: [],
-      name: "totalStaking",
-      outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-      stateMutability: "view",
-      type: "function",
-    },
+    abi: "uint256:totalStaking",
   });
 
   return {

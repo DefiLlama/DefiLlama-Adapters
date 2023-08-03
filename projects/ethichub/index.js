@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { transformCeloAddress } = require('../helper/portedTokens');
 const { pool2 } = require("../helper/pool2");
@@ -13,7 +14,7 @@ const MINIMICE_ETH = '0x21320683556BB718c8909080489F598120C554D9';
 const ORIGINATOR_BRAZIL = '0x3B61CD481Be3BA62a9a544c49d6C09FCb804d0e3';
 const ORIGINATOR_HONDURAS = '0x7435C0232A69270D19F8E4010571175c3f1dd955';
 // Celo
-const ETHIX_TOKEN_CELO = '0x9995cc8F20Db5896943Afc8eE0ba463259c931ed';
+const ETHIX_TOKEN_CELO = ADDRESSES.celo.ETHIX;
 const COLLATERAL_RESERVE_CELO = '0xA14B1D7E28C4F9518eb7757ddeE35a18423e1567';
 const STAKED_ETHIX_CELO = '0xCb16E29d0B667BaD7266E5d0Cd59b711b6273C6B';
 const MINIMICE_CELO = '0x0f497a790429685a3CfD43b841865Ee185378ff0';

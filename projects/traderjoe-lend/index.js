@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { getCompoundV2Tvl } = require('../helper/compound');
 
@@ -6,7 +7,6 @@ const comptroller = "0xdc13687554205E5b89Ac783db14bb5bba4A1eDaC";
 module.exports = {
   timetravel: true,
   doublecounted: false,
-  misrepresentedTokens: true,
   methodology: 'We count liquidity on the pairs and we get that information from the "traderjoe-xyz/exchange" subgraph. The staking portion of TVL includes the JoeTokens within the JoeBar contract.',
   avax:{
     tvl: getCompoundV2Tvl(
@@ -14,7 +14,7 @@ module.exports = {
         "avax", 
         addr => `avax:${addr}`, 
         "0xC22F01ddc8010Ee05574028528614634684EC29e", 
-        "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+        ADDRESSES.avax.WAVAX,
         false
     ),
     borrowed: getCompoundV2Tvl(
@@ -22,7 +22,7 @@ module.exports = {
       "avax", 
       addr => `avax:${addr}`, 
       "0xC22F01ddc8010Ee05574028528614634684EC29e", 
-      "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", 
+      ADDRESSES.avax.WAVAX, 
       true
       ),
   }

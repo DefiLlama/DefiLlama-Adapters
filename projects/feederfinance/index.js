@@ -1,25 +1,22 @@
 const { yieldHelper } = require('../helper/yieldHelper')
 const { pool2 } = require('../helper/pool2')
 const { staking } = require('../helper/staking')
-const sdk = require('@defillama/sdk')
 
 const abis = {
-  poolLength: {"inputs":[],"name":"vaultsLength","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  poolLength: "uint256:vaultsLength",
   poolInfo: {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"vaultInfo","outputs":[{"internalType":"address","name":"vault","type":"address"},{"internalType":"uint256","name":"blockNumber","type":"uint256"},{"internalType":"uint256","name":"createdAt","type":"uint256"}],"stateMutability":"view","type":"function"},
-  wantLockedTotal: {"inputs":[],"name":"tokenBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-  want: {"inputs":[],"name":"want","outputs":[{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+  wantLockedTotal: "uint256:tokenBalance",
+  want: "address:want",
 }
 
-const getPoolIds = i => i.output.vault
+const getPoolIds = i => i.vault
 
-async function getTokens({ chain, block, poolInfos, }) {
+async function getTokens({ api, poolInfos, }) {
   const poolIds = poolInfos.map(getPoolIds)
-  const { output: tokenRes } = await sdk.api.abi.multiCall({
+  return api.multiCall({
     abi: abis.want,
-    calls: poolIds.map(i => ({ target: i})),
-    chain, block,
+    calls: poolIds,
   })
-  return tokenRes.map(i => i.output)
 }
 
 module.exports = yieldHelper({

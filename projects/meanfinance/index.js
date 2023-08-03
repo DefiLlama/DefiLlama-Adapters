@@ -1,6 +1,6 @@
-const { fetchURL } = require("../helper/utils");
 const { V1_POOLS, TOKENS_IN_LEGACY_VERSIONS } = require("./addresses");
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { getConfig } = require('../helper/cache')
 
 const YIELD_VERSION = '0xA5AdC5484f9997fBF7D405b9AA62A7d88883C345'
 const YIELDLESS_VERSION = '0x059d306A25c4cE8D7437D25743a8B94520536BD5'
@@ -13,7 +13,7 @@ const LEGACY_VERSIONS = {
 }
 
 async function getTokensInChain(chain) {
-  const { data } = await fetchURL(`https://api.mean.finance/v1/dca/networks/${chain}/tokens?includeNotAllowed`)
+  const data = await getConfig('mean-finance/'+chain, `https://api.mean.finance/v1/dca/networks/${chain}/tokens?includeNotAllowed`)
   return data.map(({ address }) => address)
 }
 
@@ -59,14 +59,11 @@ module.exports = {
   optimism: getV2TvlObject('optimism'),
   polygon: getV2TvlObject('polygon'),
   arbitrum: getV2TvlObject('arbitrum'),
+  bsc: getV2TvlObject('bsc'),
    hallmarks: [
-    [1638850958, "V2 Beta launch on Optimism"],
-    [1643602958, "V2 full launch"],
-    [1646367758, "Deployment on Polygon"],
-    [1650082958, "Protocol is paused because a non-critical vulnerability"],
-    [1653366158, "V2 Relaunch"],
-    [1654057358, "OP launch brings more users into Optimism and benefits Mean"],
-    [1666364400, "Yield-While-DCA launch"],
+    [1650082958, "Protocol is paused due to non-critical vulnerability"],
+    [1654057358, "OP launch"],
     [1668006000, "Deployment on Arbitrum"],
+    [1672099200, "Deployment on Ethereum"],
   ]
 };

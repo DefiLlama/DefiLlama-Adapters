@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 
 const DCBToken = "0xEAc9873291dDAcA754EA5642114151f3035c67A2";
-const stakingPool = "0x22B551fE288c93A3Ac9172aD998A1D9ce1A882e5";
+const stakingPool = "0xD1748192aE1dB982be2FB8C3e6d893C75330884a";
 
 async function staking (timestamp, block, chainBlocks) {
     let balances = {};

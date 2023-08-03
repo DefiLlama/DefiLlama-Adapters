@@ -6,7 +6,7 @@ function tvl(type) {
 
     return { tether: response[type] };
   };
-};
+}
 
 module.exports = {
   misrepresentedTokens: true,
@@ -17,3 +17,5 @@ module.exports = {
     staking: tvl("native"),
   },
 };
+
+module.exports.fantom = { tvl: () => 0}

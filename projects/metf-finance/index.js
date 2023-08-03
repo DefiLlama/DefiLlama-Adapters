@@ -1,6 +1,6 @@
-const abi = require("./TreasuryContract.json");
-const pairPrice = require("./getPairPrice.json");
-const valueOfAsset = require("./valueOfAsset.json");
+const abi = 'function balanceOf(address token) view returns (uint256)'
+const pairPrice = 'function getPairPrice(address pair, uint256 amount) view returns (uint256 valueInMMF, uint256 valueInUSD)';
+const valueOfAsset = 'function valueOfAsset(address asset, uint256 amount) view returns (uint256 valueInCRO, uint256 valueInUSD)'
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const { pool2 } = require('../helper/pool2')

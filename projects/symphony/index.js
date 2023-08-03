@@ -1,10 +1,6 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
-const { fetchURL } = require("../helper/utils");
-const {
-    transformAvaxAddress,
-    transformPolygonAddress,
-    transformOptimismAddress,
-} = require("../helper/portedTokens");
+const { getConfig } = require('../helper/cache')
 const abi = require('./abi.json');
 
 const yoloAddress = {
@@ -12,11 +8,11 @@ const yoloAddress = {
     'polygon': "0x935b97586FE291750F46Bf4eD7BeB8E1c3d110A2",
     'optimism': "0x3Ff61F4d7e1d912CA3Cb342581B2e764aE24d017"
 }
-const zeroAddress = '0x0000000000000000000000000000000000000000';
+const zeroAddress = ADDRESSES.null;
 const TOKENLIST_URL = "https://raw.githubusercontent.com/symphony-finance/token-list/master/symphony.tokenlist.json";
 
 const calcTvl = async (balances, id, chain, block, transformAddress) => {
-    const tokenList = (await fetchURL(TOKENLIST_URL)).data.tokens
+    const tokenList = (await getConfig('symphony', TOKENLIST_URL)).tokens
         .filter((data) => data.chainId == id && !data.extensions.isNative)
         .map((token) => token);
 
@@ -60,7 +56,7 @@ const calcTvl = async (balances, id, chain, block, transformAddress) => {
 
 const avaxTVL = async (chainBlocks) => {
     const balances = {};
-    const transformAddress = await transformAvaxAddress();
+    const transformAddress = addr => 'avax:'+addr
     await calcTvl(
         balances,
         43114,
@@ -73,7 +69,7 @@ const avaxTVL = async (chainBlocks) => {
 
 const polygonTvl = async (chainBlocks) => {
     const balances = {};
-    const transformAddress = await transformPolygonAddress();
+    const transformAddress = addr => 'polygon:'+addr
     await calcTvl(
         balances,
         137,
@@ -86,7 +82,7 @@ const polygonTvl = async (chainBlocks) => {
 
 const optimismTvl = async (chainBlocks) => {
     const balances = {};
-    const transformAddress = await transformOptimismAddress();
+    const transformAddress = addr => 'optimism:'+addr
     await calcTvl(
         balances,
         10,
