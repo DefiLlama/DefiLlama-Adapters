@@ -14,7 +14,7 @@ function getClient(type = TYPES.SPOT) {
   if (!clients[type]) {
     const network = getNetworkInfo(Network.Mainnet)
     if (type === TYPES.SPOT)
-      clients[type] = new IndexerGrpcSpotApi(network.grpc);
+      clients[type] = new IndexerGrpcSpotApi(network.indexerApi);
     else if (type === TYPES.DERIVATIVES)
       clients[type] = new IndexerGrpcDerivativesApi(network.indexerApi)
     else

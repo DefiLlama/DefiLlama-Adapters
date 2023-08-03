@@ -14,7 +14,6 @@ module.exports = {
   bsc: {
     tvl: getUniTVL({
       factory: FACTORY,
-      chain: "bsc",
       useDefaultCoreAssets: true,
     }),
     staking: stakings([LOCKER], KSWAP, "bsc"),
