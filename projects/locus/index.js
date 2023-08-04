@@ -6,6 +6,7 @@ function tvl(chain) {
     for (const vaults1 of vaults) {
       const i = vaults.indexOf(vaults1);
       const lvTokenTotalAssets = await api.call({ target: vaults[i], abi: 'function totalAssets() view returns (uint256)' })
+      const dec = await api.call({ target: vaults[i], abi: 'function decimals() view returns (uint256)' })
       api.add(vaults1[i], lvTokenTotalAssets)
     }
   };
@@ -14,11 +15,11 @@ function tvl(chain) {
 module.exports = {
   timetravel: false,
   doublecounted: true,
-  misrepresentedTokens: true,
   ethereum: {
     tvl: tvl("ethereum"),
   },
-//  arbitrum: {
-//    tvl: tvl("arbitrum"),
-//  }
+
+  arbitrum: {
+    tvl: tvl("arbitrum"),
+  }
 };
