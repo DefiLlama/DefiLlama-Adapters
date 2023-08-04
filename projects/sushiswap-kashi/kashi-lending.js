@@ -1,7 +1,5 @@
-const sdk = require("@defillama/sdk");
-const { request, gql } = require("graphql-request");
-const { getBlock } = require("../helper/http");
-const { getChainTransform } = require("../helper/portedTokens");
+const ADDRESSES = require('../helper/coreAssets.json')
+const { blockQuery } = require("../helper/http");
 const { BigNumber } = require("ethers");
 
 const graphUrls = {
@@ -22,7 +20,7 @@ const bentoboxes = {
 
 const toAmountAbi ='function toAmount(address token, uint256 share, bool roundUp) view returns (uint256 amount)'
 
-const kashiQuery = gql`
+const kashiQuery = `
   query get_pairs($block: Int) {
     kashiPairs(block: { number: $block }, first: 1000) {
       id
@@ -44,23 +42,19 @@ const kashiQuery = gql`
 `;
 
 function kashiLending(chain, borrowed) {
-  return async (timestamp, ethBlock, chainBlocks) => {
-    const balances = {};
+  return async (timestamp, ethBlock, chainBlocks, {api}) => {
     const graphUrl = graphUrls[chain];
-    let block = await getBlock(timestamp, chain, chainBlocks)
-    block = block - 100; //subgraphs can be late by few seconds/minutes
-    const transform = await getChainTransform(chain);
 
     // Query graphql endpoint
-    const { kashiPairs } = await request(graphUrl, kashiQuery, {
-      block: block,
+    const { kashiPairs } = await blockQuery(graphUrl, kashiQuery, {
+      api
     });
     const calls = []
 
     kashiPairs.map(async (pair) => {
       if (
-        pair.asset.id === "0x0000000000000000000000000000000000000000" ||
-        pair.collateral.id === "0x0000000000000000000000000000000000000000"
+        pair.asset.id === ADDRESSES.null ||
+        pair.collateral.id === ADDRESSES.null
       ) {
         return;
       }
@@ -87,15 +81,13 @@ function kashiLending(chain, borrowed) {
       }
     })
 
-    const { output } = await sdk.api.abi.multiCall({
-      calls, chain, block, abi: toAmountAbi, target: bentoboxes[chain],
+    const output = await api.multiCall({
+      calls,abi: toAmountAbi, target: bentoboxes[chain],
     })
 
-    output.forEach(({ input: { params: [token]}, output: balance, success, }) => {
-      if(success) sdk.util.sumSingleBalance(balances, transform(token), balance)
+    output.forEach((balance, idx) => {
+      api.add(calls[idx].params[0], balance)
     })
-
-    return balances;
   };
 }
 

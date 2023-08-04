@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { sumTokensAndLPs, } = require('../helper/unwrapLPs');
 
 // addresses pools
 
-const usdc = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
+const usdc = ADDRESSES.ethereum.USDC;
 const insure = "0xd83AE04c9eD29d6D3E6Bf720C71bc7BeB424393E";
 
 const VotingEscrow = "0x3dc07E60ecB3d064d20c386217ceeF8e3905916b";

@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
 const stripsContract = '0xFC03E4A954B7FF631e4a32360CaebB27B6849457';
-const usdc = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
+const usdc = ADDRESSES.ethereum.USDC;
 const chain = 'arbitrum';
 
 async function getMarkets(block) {

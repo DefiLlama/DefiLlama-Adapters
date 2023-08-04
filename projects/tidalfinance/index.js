@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { transformPolygonAddress } = require("../helper/portedTokens");
@@ -9,7 +10,7 @@ const sellerContract = "0xc73C6C3e80C28dBc55F65bBdC895E828bb98C72d";
 const stakingContract = "0x21edB57A75ee69BCe0Fe3D0EfC5674bcF1D5BF93";
 
 // Tokens
-const USDC = "0x2791bca1f2de4661ed88a30c99a7a9449aa84174";
+const USDC = ADDRESSES.polygon.USDC;
 const TIDAL = "0xB41EC2c036f8a42DA384DDE6ADA79884F8b84b26";
 
 /*** Staking of native token (TIDAL) TVL portion ***/

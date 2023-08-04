@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
 const { pool2 } = require("../helper/pool2");
@@ -11,8 +12,8 @@ const TEDDY = "0x094bd7b2d99711a1486fb94d4395801c6d0fddcc";
 const stakingPool2Contract = "0x9717Ff7406Be065EA177bA9ab1bE704060Af8370";
 const WAVAX_TSD_PGL = "0x67E395B6ACd948931eeE8F52C7c1Fe537E7f1a7a";
 
-const NATIVE_ADDRESS = "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7";
-//const LUSD_TOKEN_ADDRESS = "0x5f98805a4e8be255a32880fdec7f6728c6568ba0";
+const NATIVE_ADDRESS = ADDRESSES.avax.WAVAX;
+//const LUSD_TOKEN_ADDRESS = ADDRESSES.ethereum.LUSD;
 
 const TROVE_MANAGER_ADDRESS = "0xd22b04395705144Fd12AfFD854248427A2776194";
 

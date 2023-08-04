@@ -16,10 +16,6 @@ module.exports = {
   doublecounted: true,
 };
 
-const ignored = [
-  '0x728fD7ec3cBB50D809735879318d04D8CbEb7157'
-]
-
 Object.keys(config).forEach(chain => {
   const { registry, fromBlock, } = config[chain]
   module.exports[chain] = {
@@ -46,9 +42,9 @@ Object.keys(config).forEach(chain => {
         extraKey: 'TokenLocked'
       })
       tokenLockedLogs.forEach(i => delete vaultKeys[i.nft])
-      let vaults = Object.values(vaultKeys).filter(i => !ignored.includes(i))
+      let vaults = Object.values(vaultKeys)
       const tokens = await api.multiCall({ abi: 'function vaultTokens() view returns (address[])', calls: vaults })
-      const bals = await api.multiCall({ abi: 'function tvl() view returns (uint256[] minTokenAmounts, uint256[] maxTokenAmounts)', calls: vaults })
+      const bals = await api.multiCall({ abi: 'function tvl() view returns (uint256[] minTokenAmounts, uint256[] maxTokenAmounts)', calls: vaults, permitFailure: true })
       tokens.forEach((tokens, i) => {
         if (!bals[i]) return;
         let balsInner = bals[i].minTokenAmounts

@@ -6,7 +6,11 @@ const config = {
   kava: '0xF28EFDEc09D15c6e206Ba15E7B4Ce13326d0ca90',
 }
 
-module.exports = {};
+module.exports = {
+  hallmarks: [
+    [1680134400, "Rugpull"]
+  ]
+};
 
 Object.keys(config).forEach(chain => { module.exports[chain] = {tvl} })
 

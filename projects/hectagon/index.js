@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require('../helper/staking');
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
-const BUSD_ADDRESS = "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56";
+const BUSD_ADDRESS = ADDRESSES.bsc.BUSD;
 const gHECTA = '0x7d31ed03c2442f9ffc4f22d90772ee1f32fa9b0d'
 const chain = 'bsc'
 const HECTA_ADDRESS = "0x343915085b919fbd4414F7046f903d194c6F60EE";

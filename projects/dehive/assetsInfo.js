@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 // Auto generated at 9-2-2022 16:14
 module.exports = {
   'ethereum' : [
@@ -16,7 +17,7 @@ module.exports = {
         dhvToken: '0x62Dc4817588d53a056cBbD18231d91ffCcd34b2A',
         underlying: [
           '0x62Dc4817588d53a056cBbD18231d91ffCcd34b2A', // DHV
-          '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // WETH
+          ADDRESSES.ethereum.WETH, // WETH
         ],
         isPool2: true,
         poolId: 0
@@ -72,8 +73,8 @@ module.exports = {
         lpAddress: '0x4A35582a710E1F4b2030A3F826DA20BfB6703C09', // QCK-WETH-DAI
         dhvToken: '0x5fCB9de282Af6122ce3518CDe28B7089c9F97b26',
         underlying: [
-          '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619', // WETH
-          '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063', // DAI
+          ADDRESSES.polygon.WETH_1, // WETH
+          ADDRESSES.polygon.DAI, // DAI
         ],
         poolId: 1
       },
@@ -86,7 +87,7 @@ module.exports = {
     //     lpAddress: '0x1F1E4c845183EF6d50E9609F16f6f9cAE43BC9Cb', // QCK-USDC-QUICK
     //     dhvToken: '0x5fCB9de282Af6122ce3518CDe28B7089c9F97b26',
     //     underlying: [
-    //       '0x2791bca1f2de4661ed88a30c99a7a9449aa84174', // USDC
+    //       ADDRESSES.polygon.USDC, // USDC
     //       '0x831753DD7087CaC61aB5644b308642cc1c33Dc13', // QUICK
     //     ],
     //     poolId: 2
@@ -100,7 +101,7 @@ module.exports = {
     //     lpAddress: '0xE89faE1B4AdA2c869f05a0C96C87022DaDC7709a', // QCK-MAI-USDT
     //     dhvToken: '0x5fCB9de282Af6122ce3518CDe28B7089c9F97b26',
     //     underlying: [
-    //       '0xc2132D05D31c914a87C6611C10748AEb04B58e8F', // USDT
+    //       ADDRESSES.polygon.USDT, // USDT
     //       '0xa3fa99a148fa48d14ed51d610c367c61876997f1', // MAI
     //     ],
     //     poolId: 4
@@ -114,7 +115,7 @@ module.exports = {
         dhvToken: '0x5fCB9de282Af6122ce3518CDe28B7089c9F97b26',
         underlying: [
           '0x2C89bbc92BD86F8075d1DEcc58C7F4E0107f286b', // AVAX
-          '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619', // WETH
+          ADDRESSES.polygon.WETH_1, // WETH
         ],
         poolId: 5
       },
@@ -126,8 +127,8 @@ module.exports = {
         lpAddress: '0xc4e595acDD7d12feC385E5dA5D43160e8A0bAC0E', // SUSHI-WMATIC-WETH
         dhvToken: '0x5fCB9de282Af6122ce3518CDe28B7089c9F97b26',
         underlying: [
-          '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270', // WMATIC
-          '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619', // WETH
+          ADDRESSES.polygon.WMATIC_2, // WMATIC
+          ADDRESSES.polygon.WETH_1, // WETH
         ],
         poolId: 6
       },
@@ -140,7 +141,7 @@ module.exports = {
         dhvToken: '0x5fCB9de282Af6122ce3518CDe28B7089c9F97b26',
         underlying: [
           '0x172370d5Cd63279eFa6d502DAB29171933a610AF', // CRV
-          '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619', // WETH
+          ADDRESSES.polygon.WETH_1, // WETH
         ],
         poolId: 7
       },
@@ -153,7 +154,7 @@ module.exports = {
         dhvToken: '0x5fCB9de282Af6122ce3518CDe28B7089c9F97b26',
         underlying: [
           '0x50B728D8D964fd00C2d0AAD81718b71311feF68a', // SNX
-          '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619', // WETH
+          ADDRESSES.polygon.WETH_1, // WETH
         ],
         poolId: 8
       },
@@ -165,7 +166,7 @@ module.exports = {
         lpAddress: '0xf69e93771F11AECd8E554aA165C3Fe7fd811530c', // SUSHI-WMATIC-GHST
         dhvToken: '0x5fCB9de282Af6122ce3518CDe28B7089c9F97b26',
         underlying: [
-          '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270', // WMATIC
+          ADDRESSES.polygon.WMATIC_2, // WMATIC
           '0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7', // GHST
         ],
         poolId: 9
@@ -201,7 +202,7 @@ module.exports = {
         dhvToken: '0x58759dd469ae5631c42cf8a473992335575b58d7',
         underlying: [
           '0x58759dd469ae5631c42cf8a473992335575b58d7', // DHV
-          '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56', // BUSD
+          ADDRESSES.bsc.BUSD, // BUSD
         ],
         isPool2: true,
         poolId: 0
@@ -215,7 +216,7 @@ module.exports = {
         dhvToken: '0x58759dd469ae5631c42cf8a473992335575b58d7',
         underlying: [
           '0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82', // CAKE
-          '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56', // BUSD
+          ADDRESSES.bsc.BUSD, // BUSD
         ],
         poolId: 0
       },
@@ -227,8 +228,8 @@ module.exports = {
         lpAddress: '0xEc6557348085Aa57C72514D67070dC863C0a5A8c', // PANCAKE-BUSDT-USDC
         dhvToken: '0x58759dd469ae5631c42cf8a473992335575b58d7',
         underlying: [
-          '0x55d398326f99059fF775485246999027B3197955', // BUSDT
-          '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d', // BUSDC
+          ADDRESSES.bsc.USDT, // BUSDT
+          ADDRESSES.bsc.USDC, // BUSDC
         ],
         poolId: 1
       },
@@ -240,8 +241,8 @@ module.exports = {
         lpAddress: '0x16b9a82891338f9bA80E2D6970FddA79D1eb0daE', // PANCAKE-BUSDT-WBNB
         dhvToken: '0x58759dd469ae5631c42cf8a473992335575b58d7',
         underlying: [
-          '0x55d398326f99059fF775485246999027B3197955', // BUSDT
-          '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // WBNB
+          ADDRESSES.bsc.USDT, // BUSDT
+          ADDRESSES.bsc.WBNB, // WBNB
         ],
         poolId: 2
       },
@@ -254,7 +255,7 @@ module.exports = {
         dhvToken: '0x58759dd469ae5631c42cf8a473992335575b58d7',
         underlying: [
           '0xcF6BB5389c92Bdda8a3747Ddb454cB7a64626C63', // XVS
-          '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // WBNB
+          ADDRESSES.bsc.WBNB, // WBNB
         ],
         poolId: 3
       },
@@ -267,7 +268,7 @@ module.exports = {
         dhvToken: '0x58759dd469ae5631c42cf8a473992335575b58d7',
         underlying: [
           '0x8F0528cE5eF7B51152A59745bEfDD91D97091d2F', // ALPACA
-          '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56', // BUSD
+          ADDRESSES.bsc.BUSD, // BUSD
         ],
         poolId: 4
       },
@@ -280,7 +281,7 @@ module.exports = {
         dhvToken: '0x58759dd469ae5631c42cf8a473992335575b58d7',
         underlying: [
           '0xF8A0BF9cF54Bb92F17374d9e9A321E6a111a51bD', // LINK
-          '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // WBNB
+          ADDRESSES.bsc.WBNB, // WBNB
         ],
         poolId: 5
       },
@@ -293,7 +294,7 @@ module.exports = {
         dhvToken: '0x58759dd469ae5631c42cf8a473992335575b58d7',
         underlying: [
           '0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82', // CAKE
-          '0x55d398326f99059fF775485246999027B3197955', // BUSDT
+          ADDRESSES.bsc.USDT, // BUSDT
         ],
         poolId: 6
       },
@@ -306,7 +307,7 @@ module.exports = {
         dhvToken: '0x58759dd469ae5631c42cf8a473992335575b58d7',
         underlying: [
           '0x67ee3Cb086F8a16f34beE3ca72FAD36F7Db929e2', // DODO
-          '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // WBNB
+          ADDRESSES.bsc.WBNB, // WBNB
         ],
         poolId: 7
       },
@@ -319,7 +320,7 @@ module.exports = {
         dhvToken: '0x58759dd469ae5631c42cf8a473992335575b58d7',
         underlying: [
           '0x603c7f932ED1fc6575303D8Fb018fDCBb0f39a95', // BANANA
-          '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // WBNB
+          ADDRESSES.bsc.WBNB, // WBNB
         ],
         poolId: 8
       },
@@ -332,7 +333,7 @@ module.exports = {
         dhvToken: '0x58759dd469ae5631c42cf8a473992335575b58d7',
         underlying: [
           '0x603c7f932ED1fc6575303D8Fb018fDCBb0f39a95', // BANANA
-          '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56', // BUSD
+          ADDRESSES.bsc.BUSD, // BUSD
         ],
         poolId: 9
       },
@@ -345,7 +346,7 @@ module.exports = {
         dhvToken: '0x58759dd469ae5631c42cf8a473992335575b58d7',
         underlying: [
           '0x4B0F1812e5Df2A09796481Ff14017e6005508003', // TWT
-          '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // WBNB
+          ADDRESSES.bsc.WBNB, // WBNB
         ],
         poolId: 10
       },
@@ -358,7 +359,7 @@ module.exports = {
         dhvToken: '0x58759dd469ae5631c42cf8a473992335575b58d7',
         underlying: [
           '0x1CE0c2827e2eF14D5C4f29a091d735A204794041', // AVAX
-          '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // WBNB
+          ADDRESSES.bsc.WBNB, // WBNB
         ],
         poolId: 11
       },
@@ -387,7 +388,7 @@ module.exports = {
         dhvToken: '0xFbdd194376de19a88118e84E279b977f165d01b8',
         underlying: [
           '0xFbdd194376de19a88118e84E279b977f165d01b8', // DHV
-          '0xe91d153e0b41518a2ce8dd3d7944fa863463a97d', // WXDAI
+          ADDRESSES.xdai.WXDAI, // WXDAI
         ],
         isPool2: true,
         poolId: 1

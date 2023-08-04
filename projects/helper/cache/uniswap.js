@@ -2,7 +2,7 @@
 const uniswapAbi = require('../abis/uniswap')
 const { getCache, setCache, } = require('../cache');
 const { transformBalances, transformDexBalances, } = require('../portedTokens')
-const { getCoreAssets, } = require('../tokenMapping')
+const { getCoreAssets, normalizeAddress, } = require('../tokenMapping')
 const { sliceIntoChunks, sleep } = require('../utils')
 const sdk = require('@defillama/sdk')
 
@@ -22,13 +22,13 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
   let updateCache = false
 
   const abi = { ...uniswapAbi, ...abis }
-  factory = factory.toLowerCase()
-  blacklist = (blacklistedTokens || blacklist).map(i => i.toLowerCase())
 
   return async (_, _b, cb, { api, chain } = {}) => {
 
     if (!chain)
       chain = _chain
+    factory = normalizeAddress(factory, chain)
+    blacklist = (blacklistedTokens || blacklist).map(i => normalizeAddress(i, chain))
     const key = `${factory}-${chain}`
 
     if (!coreAssets && useDefaultCoreAssets)
@@ -142,7 +142,8 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
       // if (cache.pairs.includes(null) || cache.token0s.includes(null) || cache.token1s.includes(null))
       //   cache.pairs = undefined
     }
-    if (!cache.pairs || (hasStablePools && !cache.symbols)) {
+
+    if (!cache.pairs || (hasStablePools && (!cache.symbols || !cache.symbols.length))) {
       cache = {
         pairs: [],
         token0s: [],

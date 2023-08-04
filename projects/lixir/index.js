@@ -67,6 +67,7 @@ async function vaultTvl(registry, block, balances, pool2 = false) {
 }
 
 module.exports={
+    doublecounted: true,
     ethereum:{
         tvl: ethTvl,
         staking: staking("0x29adccf67821e9236b401df02080bac67f84192d", lixirToken)

@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js')
 const { getLogs } = require('../helper/cache/getLogs')
 
-const wethAddress = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+const wethAddress = ADDRESSES.ethereum.WETH
 
 async function tvl(timestamp, block, _1, { api }) {
   const supply = await sdk.api.erc20.totalSupply({
@@ -32,7 +33,7 @@ async function xdaiTvl(timestamp, ethBlock, { xdai: block }) {
   })
 
   return {
-    "0x6810e776880c02933d47db1b9fc05908e5386b96": supply.output
+    [ADDRESSES.ethereum.GNO]: supply.output
   }
 }
 

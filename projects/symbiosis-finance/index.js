@@ -6,8 +6,8 @@ module.exports = {
 };
 
 config.chains.forEach(chainInfo => {
-  const {name: chain, stable, holders} = chainInfo
+  const {name: chain, tokens, holders} = chainInfo
   module.exports[chain] = {
-    tvl: sumTokensExport({ chain, tokens: [ stable ], owners: holders })
+    tvl: sumTokensExport({ chain, tokens, owners: holders })
   }
 })

@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport, nullAddress } = require("../helper/unwrapLPs");
-const USDTpolygon = "0xc2132D05D31c914a87C6611C10748AEb04B58e8F";
-const USDTbsc = "0x55d398326f99059fF775485246999027B3197955";
+const USDTpolygon = ADDRESSES.polygon.USDT;
+const USDTbsc = ADDRESSES.bsc.USDT;
 
 const config = {
   bsc: {

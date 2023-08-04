@@ -1,49 +1,22 @@
-const sdk = require("@defillama/sdk");
-const MINT_TOKEN_CONTRACT = "0x1f3Af095CDa17d63cad238358837321e95FC5915";
-const LSDVAULT_CONTRACT = "0xE76Ffee8722c21b390eebe71b67D95602f58237F";
-const LSD_REGISTRY_CONTRACT = "0xA857904691bbdEca2e768B318B5f6b9bfA698b7C";
+const { sumTokens2 } = require("../helper/unwrapLPs");
+const { getLogs } = require('../helper/cache/getLogs')
 
+// upgraded LSDVault V2
+const LSDVAULT_CONTRACT_V1 = "0xE76Ffee8722c21b390eebe71b67D95602f58237F";
+const LSDVAULT_CONTRACT_V2 = "0x51A80238B5738725128d3a3e06Ab41c1d4C05C74";
 
-const abi = {
-  regLsdAddress: "function lsdAddresses() returns (address[])",
-};
-
-async function getAllLSDAddresses() {
-  const lsds = (
-    await sdk.api.abi.call({
-      abi: abi.regLsdAddress,
-      target: LSD_REGISTRY_CONTRACT,
-      params: [],
-    })
-  ).output;
-  return lsds;
-}
-
-async function tvl(timestamp, block, chainBlocks) {
-  const balances = {};
-
-  // get list of supported lsds
-  const lsdAddresses = await getAllLSDAddresses();
-
-  const calls = lsdAddresses.map((i) => ({
-    target: i,
-    params: LSDVAULT_CONTRACT,
-  }));
-
-  // fetch balance of each lsd in vault contract
-  const bals = (
-    await sdk.api.abi.multiCall({
-      abi: "erc20:balanceOf",
-      calls: calls,
-    })
-  ).output;
-
-  bals.forEach((v, i) =>
-    sdk.util.sumSingleBalance(balances, lsdAddresses[i], v.output)
-  );
-
-
-  return balances;
+async function tvl(timestamp, block, chainBlocks, { api }) {
+  const logs = await getLogs({
+    api,
+    target: LSDVAULT_CONTRACT_V2,
+    topics: ['0xe5b3d6de4d7a3162af7ca9115e3e57964a3c605b53efa503cfcba6dd9ceb9e3c'],
+    eventAbi: 'event LSDAdded(address lsd)',
+    onlyArgs: true,
+    fromBlock: 16951456,
+  })
+  const lsdAddresses = logs.map(i => i.lsd)
+  const lsds_v1= await api.fetchList({  lengthAbi: 'uint256:tabs', itemAbi: 'function supportedLSDs(uint256) returns (address)', target: LSDVAULT_CONTRACT_V1}) 
+  return sumTokens2({ api, ownerTokens: [[lsdAddresses, LSDVAULT_CONTRACT_V2], [lsds_v1, LSDVAULT_CONTRACT_V1]]});
 }
 
 module.exports = {

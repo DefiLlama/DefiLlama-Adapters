@@ -10,20 +10,16 @@
 
 const { getAaStateVars, executeGetter } = require('../helper/chain/obyte')
 
-const PRESALE_AA_ADDRESS = "BBXAG2CZWC2IRH3UQF3O5A5USVDCSYTX";
 const AA_ADDRESS = "OSWAPWKOXZKJPYWATNK47LRDV4UN4K7H";
 
 const GBYTE_DECIMALS = 9;
 const OSWAP_TOKEN_DECIMALS = 9;
 
 async function tvl() {
-    const presaleReserveTVL = await getAaStateVars(PRESALE_AA_ADDRESS, "total").then(({ total }) => total || 0); // in GBYTE
     const state = await getAaStateVars(AA_ADDRESS, "state").then(({ state }) => state || {});
-
     const tokenReserveTVL = state?.reserve || 0;
-    const totalReserveTVL = presaleReserveTVL + tokenReserveTVL;
 
-    return { 'byteball': totalReserveTVL / 10 ** GBYTE_DECIMALS }
+    return { 'byteball': tokenReserveTVL / 10 ** GBYTE_DECIMALS }
 }
 
 async function staking() {

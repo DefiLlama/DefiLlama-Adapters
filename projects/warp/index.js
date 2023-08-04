@@ -2,19 +2,28 @@ const { sumTokens2, } = require('../helper/unwrapLPs')
 const { getLogs } = require('../helper/cache/getLogs')
 
 async function tvl(_timestamp, block, _1, { api }) {
-  const tokensAndOwners = []
+  const owners = []
+  const tokens = []
   for (const group of tokenHolderMap) {
-    const holders = await getLogs({
+    let holders = await getLogs({
       ...group.logConfig,
       api,
     }).then(logs => logs.map((poolLog) => `0x${poolLog.data.substr(26, 40)}`))
-    const tokens = await api.multiCall({
-      abi: group.abi,
-      calls: holders,
+    const _tokens = await api.multiCall({ abi: 'address:LPtoken', calls: holders, permitFailure: true, })
+    const failedHolders = holders.filter((holder, i) => {
+      if (_tokens[i]) {
+        owners.push(holder)
+        tokens.push(_tokens[i])
+        return false
+      }
+      return true
     })
-    holders.forEach(i => tokens.forEach(j => tokensAndOwners.push([j, i])))
+
+    const _tokens2 = await api.multiCall({ abi: 'address:stablecoin', calls: failedHolders })
+    owners.push(...failedHolders)
+    tokens.push(..._tokens2)
   }
-  return sumTokens2({ api, tokensAndOwners, })
+  return sumTokens2({ api, tokensAndOwners2: [tokens, owners], })
 }
 
 module.exports = {
@@ -29,7 +38,6 @@ const tokenHolderMap = [
       topic: "NewLPVault(address)",
       fromBlock: 11803584,
     },
-    abi: "address:LPtoken",
   },
   {
     logConfig: {
@@ -37,7 +45,6 @@ const tokenHolderMap = [
       topic: "NewSCVault(address,address)",
       fromBlock: 11803584,
     },
-    abi: "address:stablecoin",
   },
   {
     logConfig: {
@@ -45,7 +52,6 @@ const tokenHolderMap = [
       topic: "NewLPVault(address)",
       fromBlock: 11654924,
     },
-    abi: "address:LPtoken",
   },
   {
     logConfig: {
@@ -53,6 +59,5 @@ const tokenHolderMap = [
       topic: "NewSCVault(address,address)",
       fromBlock: 11654924,
     },
-    abi: "address:LPtoken",
   },
 ]

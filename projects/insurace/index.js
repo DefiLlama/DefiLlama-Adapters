@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
 
@@ -33,7 +34,7 @@ async function eth(timestamp, ethBlock) {
     _tvlList.forEach((element) => {
         let address = element.input.params[0].toLowerCase();
         if (address == "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee") {
-            address = "0x0000000000000000000000000000000000000000";
+            address = ADDRESSES.null;
         }
         let balance = element.output;
         if (BigNumber(balance).toNumber() <= 0) {
@@ -78,7 +79,7 @@ async function bsc(timestamp, ethBlock, chainBlocks){
     _tvlList.forEach((element) => {
         let address = element.input.params[0].toLowerCase();
         if (address == "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee") {
-            address = "bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c";
+            address = "bsc:" + ADDRESSES.bsc.WBNB;
         }else if (address == "0x3192ccddf1cdce4ff055ebc80f3f0231b86a7e30") {
             address = "0x544c42fbb96b39b21df61cf322b5edc285ee7429";
         }else{
@@ -110,7 +111,7 @@ async function polygon(timestamp, ethBlock, chainBlocks) {
     _tvlList.forEach((element) => {
         let address = element.input.params[0].toLowerCase();
         if(address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"){
-            address = "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"
+            address = ADDRESSES.polygon.WMATIC_2
         }
         let balance = element.output;
         sdk.util.sumSingleBalance(balances, 'polygon:'+address, balance)
@@ -136,7 +137,7 @@ async function avax(timestamp, ethBlock, chainBlocks) {
     _tvlList.forEach((element) => {
         let address = element.input.params[0].toLowerCase();
         if(address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"){
-            address = "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"
+            address = ADDRESSES.avax.WAVAX
         }
         let balance = element.output;
         sdk.util.sumSingleBalance(balances, address===INSUR?INSUR:'avax:'+address, balance)

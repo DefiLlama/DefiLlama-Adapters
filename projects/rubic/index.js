@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const solana = require('../helper/solana')
 const { stakings } = require('../helper/staking');
@@ -22,17 +23,17 @@ const pools = {
 };
 
 const usdcByChain = {
-  bsc: '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',
-  ethereum: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-  polygon: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-  fantom: '0x04068da6c83afcfa0e13ba15a6696662335d5b75',
-  avax: '0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664',
+  bsc: ADDRESSES.bsc.USDC,
+  ethereum: ADDRESSES.ethereum.USDC,
+  polygon: ADDRESSES.polygon.USDC,
+  fantom: ADDRESSES.fantom.USDC,
+  avax: ADDRESSES.avax.USDC_e,
   harmony: '0x985458e523db3d53125813ed68c274899e9dfab4',
-  moonriver: '0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d',
-  arbitrum: '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
-  aurora: '0xB12BFcA5A55806AaF64E99521918A4bf0fC40802',
-  solana: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
-  kava: '0xfA9343C3897324496A05fC75abeD6bAC29f8A40f'
+  moonriver: ADDRESSES.moonriver.USDC,
+  arbitrum: ADDRESSES.arbitrum.USDC,
+  aurora: ADDRESSES.aurora.USDC_e,
+  solana: ADDRESSES.solana.USDC,
+  kava: ADDRESSES.telos.ETH
 }
 
 function chainTvl(chain) {

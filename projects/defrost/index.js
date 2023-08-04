@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk');
-const { sumTokens2 } = require('../helper/unwrapLPs');
+const { sumTokens2, nullAddress } = require('../helper/unwrapLPs');
 
 
 async function tvl(_, _b, _cb, { api, }) {
@@ -8,10 +8,20 @@ async function tvl(_, _b, _cb, { api, }) {
 }
 
 async function tvlV1(api, balances = {}) {
-  const vaults = await api.call({ abi: 'function getAllVaults() view returns (address[])', target: '0xbaa97b771260cf74b52e721ffe0d461512199cf1' })
-  const collateralTokens = await api.multiCall({ abi: 'address:collateralToken', calls: vaults, })
-  const collateralNames = await api.multiCall({ abi: 'string:name', calls: collateralTokens, })
+  let vaults = await api.call({ abi: 'address[]:getAllVaults', target: '0xbaa97b771260cf74b52e721ffe0d461512199cf1' })
   const tokensAndOwners = []
+  let collateralTokens = await api.multiCall({ abi: 'address:collateralToken', calls: vaults, })
+  const updatedData = collateralTokens.reduce((acc, token, i) => {
+    if (token === nullAddress) tokensAndOwners.push([token, vaults[i]])
+    else {
+      acc.vaults.push(vaults[i])
+      acc.tokens.push(token)
+    }
+    return acc
+  }, { tokens: [], vaults: []})
+  collateralTokens = updatedData.tokens
+  vaults = updatedData.vaults
+  const collateralNames = await api.multiCall({ abi: 'string:name', calls: collateralTokens, })
   const sTokens = []
   const sTokens2 = []
   collateralNames.forEach((name, i) => {

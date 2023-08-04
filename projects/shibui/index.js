@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const { staking } = require("../helper/staking");
 const { pool2s } = require("../helper/pool2");
@@ -6,8 +7,8 @@ const CHAINS = ["boba"];
 
 const Boba_SHIBUI = "0xf08ad7c3f6b1c6843ba027ad54ed8ddb6d71169b";
 
-const Boba_BOBA = "0xa18bF3994C0Cc6E3b63ac420308E5383f53120D7";
-const Boba_USDT = "0x5de1677344d3cb0d7d465c10b72a8f60699c062d";
+const Boba_BOBA = ADDRESSES.boba.BOBA;
+const Boba_USDT = ADDRESSES.boba.USDT;
 const Boba_SHIBUI_WETH = "0xcE9F38532B3d1e00a88e1f3347601dBC632E7a82";
 const Boba_SHIBUI_USDT = "0x3f714fe1380ee2204ca499d1d8a171cbdfc39eaa";
 const Boba_4Koyo = "0xDAb3Fc342A242AdD09504bea790f9b026Aa1e709";

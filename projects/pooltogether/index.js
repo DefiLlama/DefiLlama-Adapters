@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { request, gql } = require("graphql-request");
 const abi = require('./abi.json')
@@ -89,11 +90,11 @@ async function eth(timestamp, block) {
 async function polygon(timestamp, block, chainBlocks) {
   return getChainBalances([{
     id: "0x887E17D791Dcb44BfdDa3023D26F7a04Ca9C7EF4",
-    underlyingCollateralToken: "0xdac17f958d2ee523a2206206994597c13d831ec7"
+    underlyingCollateralToken: ADDRESSES.ethereum.USDT
   },
   {
     id: "0xee06abe9e2af61cabcb13170e01266af2defa946",
-    underlyingCollateralToken: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+    underlyingCollateralToken: ADDRESSES.ethereum.USDC
   }], 'polygon', chainBlocks.polygon)
 }
 
@@ -146,6 +147,7 @@ module.exports = {
   },
   hallmarks:[
     [1658872800, "OP Rewards Start"],
+    [1669615200, "OP Rewards Start"],
   ],
   methodology: `TVL is the total quantity of tokens locked in PoolTogether pools on Ethereum, Polygon, Avalanche, Optimism, Celo, and BSC`
 }

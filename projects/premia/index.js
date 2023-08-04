@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { sumTokens } = require("../helper/unwrapLPs");
@@ -12,8 +13,8 @@ const PREMIA_OPTIONS_CONTRACT_ETH =
 const PREMIA_OPTIONS_CONTRACT_BSC =
   "0x8172aAC30046F74907a6b77ff7fC867A6aD214e4";
 
-const erc20DAI = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
-const erc20BUSD = "0xe9e7cea3dedca5984780bafc599bd69add087d56";
+const erc20DAI = ADDRESSES.ethereum.DAI;
+const erc20BUSD = ADDRESSES.bsc.BUSD;
 
 const calcTvl = async (balances, chain, block, premiaOptionsContract) => {
   const erc20TokensLength = (

@@ -1,4 +1,4 @@
-const { usdCompoundExports } = require('../helper/compound');
+const { compoundExports2 } = require('../helper/compound');
 const { staking, } = require("../helper/staking")
 
 const tokensAddress = {
@@ -8,12 +8,9 @@ const tokensAddress = {
   onyx: '0xA2cd3D43c775978A96BdBf12d733D5A1ED94fb18',
 };
 
-const {tvl, borrowed} = usdCompoundExports(tokensAddress.unitroller, "ethereum", tokensAddress.oEth)
-
 module.exports = {
   ethereum: {
-    tvl,
-    borrowed,
+    ...compoundExports2({ comptroller: tokensAddress.unitroller, cether: tokensAddress.oEth}),
     staking: staking(tokensAddress.stakingPool, tokensAddress.onyx),
   },
 };

@@ -1,7 +1,7 @@
-const { usdCompoundExports } = require("../helper/compound")
+const { compoundExports2 } = require("../helper/compound")
 const { mergeExports, } = require("../helper/utils")
 const { staking, } = require("../helper/staking")
-const { pool2, } = require("../helper/pool2")
+const { pool2, } = require("../helper/pool2");
 
 const tokensAddress = {
   masterchef: "0x8A78011bf2c42df82cC05F198109Ea024B554df9",
@@ -10,34 +10,27 @@ const tokensAddress = {
   lp: '0x00aa1c57e894c4010fe44cb840ae56432d7ea1d1',
 };
 
-module.exports = mergeExports([{
-  ethereum: {
-    staking: staking(tokensAddress.masterchef, tokensAddress.drop),
-    pool2: pool2(tokensAddress.masterchef, tokensAddress.lp),
-  }
-}, {
-  ethereum: {
-    staking: staking(tokensAddress.masterchef, tokensAddress.ndr),
-  }
-},
-{
-  ethereum: usdCompoundExports("0x7312a3bc8733b068989ef44bac6344f07cfcde7f", 'ethereum', '0x05231980914B702083B9Ac08002325654F6eb95B'),
-},
-{
-  ethereum: usdCompoundExports("0x79b56CB219901DBF42bB5951a0eDF27465F96206", 'ethereum', '0x4aE7413182849D062B72518928a4b2DE87F0e411'),
-},
-{
-  ethereum: usdCompoundExports("0xB70FB69a522ed8D4613C4C720F91F93a836EE2f5", 'ethereum', '0xD72929e284E8bc2f7458A6302bE961B91bccB339'),
-},
-{
-  ethereum: usdCompoundExports("0x9dEb56b9DD04822924B90ad15d01EE50415f8bC7", 'ethereum', '0x0a1EF7feD1B691253F9367daf682BA08A9D2fD9C'),
-},
-{
-  ethereum: usdCompoundExports("0x3903E6EcD8bc610D5a01061B1Dc31affD21F81C6", 'ethereum', '0x588C13e685e44B22DC6647937481C816E5FeE086'),
-},
-{
-  ethereum: usdCompoundExports("0x896b8019f5ea3caaAb23cDA0A09B405ed8361E8b", 'ethereum', '0x777ECcD3fCf4FfA3b12f45a384852608DF2619a0'),
-},
+const UniControllers = [
+  ["0x7312a3bc8733b068989ef44bac6344f07cfcde7f", '0x05231980914B702083B9Ac08002325654F6eb95B',],
+  ["0x79b56CB219901DBF42bB5951a0eDF27465F96206", '0x4aE7413182849D062B72518928a4b2DE87F0e411',],
+  ["0xB70FB69a522ed8D4613C4C720F91F93a836EE2f5", '0xD72929e284E8bc2f7458A6302bE961B91bccB339',],
+  ["0x9dEb56b9DD04822924B90ad15d01EE50415f8bC7", '0x0a1EF7feD1B691253F9367daf682BA08A9D2fD9C',],
+  ["0x3903E6EcD8bc610D5a01061B1Dc31affD21F81C6", '0x588C13e685e44B22DC6647937481C816E5FeE086',],
+  ["0x896b8019f5ea3caaAb23cDA0A09B405ed8361E8b", '0x777ECcD3fCf4FfA3b12f45a384852608DF2619a0',],
+].map(([comptroller, cether]) => ({ ethereum: compoundExports2({ comptroller, cether, blacklistedTokens: [tokensAddress.drop] }) }))
+
+module.exports = mergeExports([
+  ...UniControllers,
+  {
+    ethereum: {
+      staking: staking(tokensAddress.masterchef, tokensAddress.drop),
+      pool2: pool2(tokensAddress.masterchef, tokensAddress.lp),
+    }
+  }, {
+    ethereum: {
+      staking: staking(tokensAddress.masterchef, tokensAddress.ndr),
+    }
+  },
 ])
 
 module.exports.hallmarks = [

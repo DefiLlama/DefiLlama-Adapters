@@ -6,7 +6,7 @@ const { getFixBalances } = require("../helper/portedTokens");
 
 
 const masterChef = {
-	kava:"0xf17BBB9698b50156Ee437E01e22D7C2080184934"
+	kava: "0xf17BBB9698b50156Ee437E01e22D7C2080184934"
 };
 const abi = {
 	kava: kavaabi,
@@ -14,8 +14,8 @@ const abi = {
 
 async function getTokensInMasterChef(time, ethBlock, chainBlocks, chain) {
 	const block = chainBlocks[chain];
-	
-	const transformAddress = (addr) => `${chain}:${addr}`; 
+
+	const transformAddress = (addr) => `${chain}:${addr}`;
 	// const transformAddress=(addr)=>kavaFixMapping[addr];
 	const balances = {};
 	const poolLength = (
@@ -66,7 +66,7 @@ async function getTokensInMasterChef(time, ethBlock, chainBlocks, chain) {
 
 	await unwrapUniswapLPs(balances, lpPositions, block, chain, transformAddress);
 	// console.log(balances)
-	const fixbalances=await getFixBalances(chain);
+	const fixbalances = await getFixBalances(chain);
 	fixbalances(balances);
 	return balances;
 }
@@ -76,6 +76,9 @@ async function kavaTvl(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
+	hallmarks: [
+		[1660521600, "incentives not given"]
+	],
 	methodology:
 		"Staked LP is counted as TVL.",
 	kava: {
