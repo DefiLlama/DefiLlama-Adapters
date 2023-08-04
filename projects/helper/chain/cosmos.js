@@ -10,28 +10,37 @@ const { log } = require("../utils");
 // https://cosmos-chain.directory/chains/cosmoshub
 // https://cosmos-chain.directory/chains
 const endPoints = {
-
   crescent: "https://mainnet.crescent.network:1317",
   osmosis: "https://lcd.osmosis.zone",
   cosmos: "https://cosmoshub-lcd.stakely.io",
-  kujira: "https://lcd.kaiyo.kujira.setten.io",
+  kujira: "https://rest.cosmos.directory/kujira",
   comdex: "https://rest.comdex.one",
-  terra: "https://columbus-lcd.terra.dev",
-  terra2: "https://phoenix-lcd.terra.dev",
+  terra: "https://rest.cosmos.directory/terra",
+  terra2: "https://rest.cosmos.directory/terra2",
   umee: "https://umee-api.polkachu.com",
   orai: "https://lcd.orai.io",
   juno: "https://lcd-juno.cosmostation.io",
-  cronos: 'https://lcd-crypto-org.cosmostation.io',
-}
+  cronos: "https://lcd-crypto-org.cosmostation.io",
+  chihuahua: "https://rest.cosmos.directory/chihuahua",
+  injective: "https://lcd-injective.whispernode.com:443",
+  migaloo: "https://migaloo-api.polkachu.com",
+  fxcore: "https://fx-rest.functionx.io",
+  xpla: "https://dimension-lcd.xpla.dev",
+  kava: "https://api2.kava.io",
+  neutron: "https://rest-kralum.neutron-1.neutron.org",
+  quasar: "https://quasar-api.polkachu.com",
+  gravitybridge: "https://rest.cosmos.directory/gravitybridge",
+};
 
 const chainSubpaths = {
   crescent: "crescent",
   comdex: "comdex",
   umee: "umee",
+  kava: "kava",
 };
 
 function getEndpoint(chain) {
-  if (!endPoints[chain]) throw new Error("Chain not found: "+ chain);
+  if (!endPoints[chain]) throw new Error("Chain not found: " + chain);
   return endPoints[chain];
 }
 
@@ -41,6 +50,7 @@ async function query(url, block, chain) {
   if (block !== undefined) {
     endpoint += `&height=${block - (block % 100)}`;
   }
+  console.log(endpoint);
   return (await axios.get(endpoint)).data.result;
 }
 
@@ -63,24 +73,27 @@ async function queryV1Beta1({ chain, paginationKey, block, url } = {}) {
 }
 
 async function getTokenBalance({ token, owner, block, chain }) {
-  let denom = token.native_token?.denom
-  if (denom) return getDenomBalance({denom, owner, block, chain,})
-  token = token.token.contract_addr
-  return getBalance({ token, owner, block, chain, })
+  let denom = token.native_token?.denom;
+  if (denom) return getDenomBalance({ denom, owner, block, chain });
+  token = token.token.contract_addr;
+  return getBalance({ token, owner, block, chain });
 }
 
 function getToken(token) {
-  let denom = token.native_token?.denom
-  return denom ? denom : token.token.contract_addr
+  let denom = token.native_token?.denom;
+  return denom ? denom : token.token.contract_addr;
 }
 
-
 async function getBalance({ token, owner, block, chain } = {}) {
+  const data = await queryContract({
+    contract: token,
+    block,
+    chain,
+    data: {
+      balance: { address: owner },
+    },
+  });
 
-  const data = await queryContract({ contract: token, block, chain, data: {
-    balance: { address: owner }
-  }})
-  
   return Number(data.balance);
 }
 
@@ -133,19 +146,19 @@ async function lpMinter({ token, block, chain } = {}) {
 async function queryContract({ contract, chain, data }) {
   if (typeof data !== "string") data = JSON.stringify(data);
   data = Buffer.from(data).toString("base64");
-  if (chain === "terra") {
-    let path = `${getEndpoint(
-      chain
-    )}/terra/wasm/v1beta1/contracts/${contract}/store?query_msg=${data}`;
-    return (await axios.get(path)).data.query_result;
-  }
   return (
     await axios.get(
-      `${getEndpoint(
-        chain
-      )}/cosmwasm/wasm/v1/contract/${contract}/smart/${data}`
+      `${getEndpoint(chain)}/cosmwasm/wasm/v1/contract/${contract}/smart/${data}`
     )
   ).data.data;
+}
+
+async function queryContracts({ chain, codeId }) {
+  return (
+    await axios.get(
+      `${getEndpoint(chain)}/cosmwasm/wasm/v1/code/${codeId}/contracts`
+    )
+  ).data.contracts;
 }
 
 function getAssetInfo(asset) {
@@ -180,7 +193,8 @@ async function queryContractStore({
   return query(url, block, chain);
 }
 
-async function sumTokens({ balances = {}, owners = [], chain }) {
+async function sumTokens({ balances = {}, owners = [], chain, owner }) {
+  if (owner) owners = [owner]
   log(chain, "fetching balances for ", owners.length);
   let parallelLimit = 25;
 
@@ -196,12 +210,14 @@ module.exports = {
   endPoints,
   totalSupply,
   getBalance,
+  getBalance2,
   getDenomBalance,
   unwrapLp,
   query,
   queryV1Beta1,
   queryContractStore,
   queryContract,
+  queryContracts,
   sumTokens,
   getTokenBalance,
   getToken,

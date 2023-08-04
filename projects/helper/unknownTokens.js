@@ -71,11 +71,12 @@ function unknownTombs({ token = [], shares = [], rewardPool = [], masonry = [], 
   }
 }
 
-function pool2({ stakingContract, lpToken, chain = "ethereum", transformAddress, coreAssets = [], useDefaultCoreAssets = false, }) {
+function pool2({ stakingContract, lpToken, chain, transformAddress, coreAssets = [], useDefaultCoreAssets = false, }) {
   if (!coreAssets.length && useDefaultCoreAssets)
     coreAssets = getCoreAssets(chain)
 
-  return async (_timestamp, _ethBlock, chainBlocks) => {
+  return async (_timestamp, _ethBlock, chainBlocks, { api }) => {
+    if (!chain) chain = api.chain
     const block = chainBlocks[chain]
     if (!transformAddress)
       transformAddress = await getChainTransform(chain)
@@ -92,9 +93,9 @@ function pool2({ stakingContract, lpToken, chain = "ethereum", transformAddress,
 
 function sumTokensExport({ tokensAndOwners = [],
   coreAssets = [], owner, tokens, restrictTokenRatio, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
-  log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [], useDefaultCoreAssets = false,
+  log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [], useDefaultCoreAssets = false, abis,
 }) {
-  return (_, _b, _cb, { api }) => sumUnknownTokens({ api, tokensAndOwners, onlyLPs, minLPRatio, coreAssets, owner, tokens, restrictTokenRatio, blacklist, skipConversion, log_coreAssetPrices, log_minTokenValue, owners, lps, useDefaultCoreAssets, })
+  return (_, _b, _cb, { api }) => sumUnknownTokens({ api, tokensAndOwners, onlyLPs, minLPRatio, coreAssets, owner, tokens, restrictTokenRatio, blacklist, skipConversion, log_coreAssetPrices, log_minTokenValue, owners, lps, useDefaultCoreAssets, abis, })
 }
 
 function staking({ tokensAndOwners = [],

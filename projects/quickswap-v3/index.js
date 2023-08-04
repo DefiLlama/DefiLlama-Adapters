@@ -1,73 +1,25 @@
-const { request, gql } = require("graphql-request");
-const { getBlock } = require("../helper/http");
-const { sumTokens2 } = require("../helper/unwrapLPs");
-const { log } = require("../helper/utils");
+const { uniV3Export } = require('../helper/uniswapV3')
+const { cachedGraphQuery } = require('../helper/cache')
+module.exports = uniV3Export({
+  polygon: { factory: '0x411b0facc3489691f28ad58c47006af5e3ab3a28', fromBlock: 32610688, isAlgebra: true, },
+  dogechain: { factory: '0xd2480162aa7f02ead7bf4c127465446150d58452', fromBlock: 837574, isAlgebra: true, },
+  polygon_zkevm: { factory: '0x4B9f4d2435Ef65559567e5DbFC1BbB37abC43B57', fromBlock: 300, isAlgebra: true, },
+})
 
-const graphs = {
-  polygon: "https://api.thegraph.com/subgraphs/name/sameepsi/quickswap-v3",
-  dogechain:
-    "https://graph-node.dogechain.dog/subgraphs/name/quickswap/dogechain-info",
-};
-
-const blacklists = {
-  polygon: [],
-  dogechain: [],
-};
-
-function v3TvlPaged(chain) {
-  return async (_, _b, { [chain]: block }) => {
-    // block = await getBlock(_, chain, { [chain]: block });
-    log("Fetching data for block: ", chain, block);
-    const balances = {};
-    const size = 1000;
-    let lastId = "";
-    let pools;
-    const graphQueryPaged = gql`
-    query poolQuery($lastId: String) {
-      pools(first:${size} where: {id_gt: $lastId totalValueLockedUSD_gt: 100}) {
+async function tvl(_, _b, _cb, { api, }) {
+  const { pools }  = await cachedGraphQuery('quickswap-v3/'+api.chain, 'https://graph-node.dogechain.dog/subgraphs/name/quickswap/dogechain-info', `{
+    pools(first:1000) {
+      token0 {
         id
-        token0 { id }
-        token1 { id }
       }
+      token1 {
+        id
+      }
+      id
     }
-  `; // remove the bad pools
-    const blacklisted = blacklists[chain] || [];
-
-    do {
-      const res = await request(graphs[chain], graphQueryPaged, {
-        lastId,
-        // block: block - 500,
-      });
-      pools = res.pools;
-      const tokensAndOwners = pools
-        .map((i) => [
-          [i.token0.id, i.id],
-          [i.token1.id, i.id],
-        ])
-        .flat();
-      log(chain, block, lastId, pools.length);
-      await sumTokens2({
-        balances,
-        tokensAndOwners,
-        chain,
-        block,
-        blacklistedTokens: blacklisted,
-      });
-      lastId = pools[pools.length - 1].id;
-    } while (pools.length === size);
-
-    return balances;
-  };
+  }`)
+  const ownerTokens = pools.map(p=>[[p.token0.id, p.token1.id], p.id])
+  return api.sumTokens({ ownerTokens })
 }
 
-module.exports = {
-  timetravel: false,
-};
-
-const chains = ["polygon", "dogechain"];
-
-chains.forEach((chain) => {
-  module.exports[chain] = {
-    tvl: v3TvlPaged(chain),
-  };
-});
+module.exports.dogechain.tvl = tvl

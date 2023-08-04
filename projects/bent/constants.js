@@ -1,12 +1,13 @@
-const addressZero = "0x0000000000000000000000000000000000000000";
+const ADDRESSES = require('../helper/coreAssets.json')
+const addressZero = ADDRESSES.null;
 const ethAddress = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
-const wethAddress = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+const wethAddress = ADDRESSES.ethereum.WETH;
 const bentCVXAddress = "0x9E0441E084F5dB0606565737158aa6Ab6B970fE0";
-const CVXAddress = "0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B";
+const CVXAddress = ADDRESSES.ethereum.CVX;
 const pool2Address = "0xd564b2feec19df8f4d6cb52c0a4386d05a993583";
 const sushiLpAddress = "0x5fa4370164a2fabeef159b893299d59ff5dc1e6d";
 const bentAddress = "0x01597e397605bf280674bf292623460b4204c375";
-const daiAddress = "0x6b175474e89094c44da98b954eedeac495271d0f";
+const daiAddress = ADDRESSES.ethereum.DAI;
 const weBent = "0x04637d61F538911929ff96E755B589C014fD9ce2";
 
 const bentPools = {

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const abi = require('./clayABIs/clayMain.json');
 
@@ -6,7 +7,7 @@ const clayAddresses = {
 };
 
 const coinAddresses = {
-  matic: "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0",
+  matic: ADDRESSES.ethereum.MATIC,
 };
 
 async function getClayMaticTvl(_,block) {

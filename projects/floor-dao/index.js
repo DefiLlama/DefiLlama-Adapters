@@ -1,11 +1,14 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, sumTokensExport, } = require('../helper/unwrapLPs')
 const sdk = require("@defillama/sdk");
 // https://docs.floor.xyz/fundamentals/treasury
 
-const WETH = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+const WETH = ADDRESSES.ethereum.WETH
+const USDC = ADDRESSES.ethereum.USDC
 
 const NFTX_LP_STAKING = '0x688c3e4658b5367da06fd629e41879beab538e37'
 const treasury = '0x91E453f442d25523F42063E1695390e325076ca2'
+const floorTreasury2 = "0xa9d93a5cca9c98512c8c56547866b1db09090326";
 const stakingAddress = '0x759c6de5bca9ade8a1a2719a31553c4b7de02539'
 const FLOOR = '0xf59257E961883636290411c11ec5Ae622d19455e'
 
@@ -29,7 +32,7 @@ module.exports = {
       })
       const balances = {}
       stakingBalances.forEach((bal,i) => sdk.util.sumSingleBalance(balances,stakingInfo[i][0],bal))
-      return sumTokens2({ balances, block, owner: treasury, tokens: [WETH], resolveLP: true, })
+      return sumTokens2({ balances, block, owners: [treasury, floorTreasury2], tokens: [WETH, USDC], resolveLP: true, })
     },
     staking: sumTokensExport({owner: stakingAddress, tokens: [FLOOR]})
   }

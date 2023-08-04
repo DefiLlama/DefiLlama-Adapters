@@ -14,7 +14,7 @@ function getClient(type = TYPES.SPOT) {
   if (!clients[type]) {
     const network = getNetworkInfo(Network.Mainnet)
     if (type === TYPES.SPOT)
-      clients[type] = new IndexerGrpcSpotApi(network.grpc);
+      clients[type] = new IndexerGrpcSpotApi(network.indexerApi);
     else if (type === TYPES.DERIVATIVES)
       clients[type] = new IndexerGrpcDerivativesApi(network.indexerApi)
     else
@@ -32,7 +32,7 @@ async function getOrders({ type = TYPES.SPOT, marketIds }) {
   const chunks = sliceIntoChunks(marketIds, 20)
   const response = []
   for (const chunk of chunks)
-    response.push(...await getClient(type).fetchOrderbooks(chunk))
+    response.push(...await getClient(type).fetchOrderbooksV2(chunk))
   return response
 }
 

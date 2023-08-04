@@ -1,0 +1,26 @@
+{
+  "eth": {
+    "parallaxAddress": "0xd8935F1369E1dAc77CD37e664BC13ffdd741B962",
+    "strategyAddress": "0x9E6121e89dD50B5D02362A9fdb7EC1fAd3D15725",
+    "lpAddress": "0x5aee1e99fe86960377de9f88689616916d5dcabe",
+    "feedAddress": "0x5f4ec3df9cbd43714fe2740f5e3616155c5b8419",
+    "usdc": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+  },
+  "arbitrum": {
+    "mim": {
+      "parallaxCoreAddress": "0x07F78cC2668F9Bb152c4026E801df68Ed3AB9858",
+      "strategyAddress": "0xbf81Ba9D10F96ce0bb1206DE5F2d5B363f9796A9",
+      "parallaxCoreAddressOld": "0x74A819d4925dC9f473F398863666Ac787B48e1d0",
+      "strategyAddressOld": "0x7b8eFCd93ee71A0480Ad4dB06849B75573168AF4",
+      "lpAddresss": "0x30dF229cefa463e991e29D42DB0bae2e122B2AC7",
+      "usdc": "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8"
+    },
+    "sushi": {
+      "parallaxAddr": "0xDCBEA8b2142Fe5E97BE9545FCFB30af812685Fb6",
+      "strategyAddrSushi": "0xb53BbF686b600857B209B863c1Bce2C83acef123",
+      "strategyAddrGMX": "0xF7caD5Ec40b5980Bd741346eAeE019c6E2b5D373",
+      "parallaxBackendAddr": "0x1724623a721a094f8Ba9d271c9BE8be83e64f74f",
+      "usdc": "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8"
+    }
+  }
+}

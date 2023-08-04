@@ -13,6 +13,7 @@
     "inquirer-fuzzy-path": "^2.3.0"
   },
   "dependencies": {
-    "glob": "^8.0.3"
+    "glob": "^8.0.3",
+    "solc": "^0.8.20"
   }
 }

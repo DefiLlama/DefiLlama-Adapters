@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
 const { getChainTvl } = require('../helper/getUniSubgraphTvl')
 const {staking} = require('../helper/staking')
@@ -31,7 +32,7 @@ const subgraphChainTvls = Object.keys(subgraphs).reduce((obj, chain) => ({
 }), {})
 
 const xSUSHI = "0x8798249c2E607446EfB7Ad49eC89dD1865Ff4272"
-const SUSHI = "0x6b3595068778dd592e39a122f4f5a5cf09c90fe2"
+const SUSHI = ADDRESSES.ethereum.SUSHI
 
 subgraphChainTvls.ethereum.staking = staking(xSUSHI, SUSHI, 'ethereum');
 

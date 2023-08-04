@@ -104,10 +104,9 @@ const Staking = async (chainBlocks) => {
 };
 
 module.exports = {
-  timetravel: true,
   harmony: {
     staking: Staking,
-    tvl: sdk.util.sumChainTvls([uniTvlExport(factory, 'harmony'), Treasury]),
+    tvl: sdk.util.sumChainTvls([uniTvlExport(factory, 'harmony', true),]),
   },
   methodology: "Counts liquidity on the Farms through Factory Contract, and counts Treasury as it is determined by bonding of assets. Staking refers to the staked GMI tokens",
 };
