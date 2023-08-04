@@ -63,15 +63,6 @@ query {
   }
 }`;
 
-const subgraphUrls = {
-  ethereum: `https://gateway.thegraph.com/api/${getEnv('OLYMPUS_GRAPH_API_KEY')}/subgraphs/id/DTcDcUSBRJjz9NeoK5VbXCVzYbRTyuBwdPUqMi8x32pY`,
-  arbitrum:
-    "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-arbitrum",
-  fantom:
-    "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-fantom",
-  polygon:
-    "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-polygon",
-};
 
 //Subgraph returns balances in tokenAddress / allocator pairs. Need to return based on balance.
 function sumBalancesByTokenAddress(arr) {
@@ -98,6 +89,15 @@ function sumBalancesByTokenAddress(arr) {
  * #3. Sum values returned
  ***/
 async function tvl(timestamp, block, _, { api }, isOwnTokensMode = false) {
+const subgraphUrls = {
+  ethereum: `https://gateway.thegraph.com/api/${getEnv('OLYMPUS_GRAPH_API_KEY')}/subgraphs/id/DTcDcUSBRJjz9NeoK5VbXCVzYbRTyuBwdPUqMi8x32pY`,
+  arbitrum:
+    "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-arbitrum",
+  fantom:
+    "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-fantom",
+  polygon:
+    "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-polygon",
+};
   const indexedBlockForEndpoint = await blockQuery(
     subgraphUrls[api.chain],
     getLatestBlockIndexed,

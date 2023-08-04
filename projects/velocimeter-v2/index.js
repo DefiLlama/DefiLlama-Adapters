@@ -16,11 +16,11 @@ module.exports = {
       hasStablePools: true,
     })
   },
-  fantom: {
+  base: {
     tvl: getUniTVL({
-      factory: '0x472f3C3c9608fe0aE8d702f3f8A2d12c410C881A',
+      factory: '0xe21Aac7F113Bd5DC2389e4d8a8db854a87fD6951',
       useDefaultCoreAssets: true,
       hasStablePools: true,
     })
-  }
+  },
 }

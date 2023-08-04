@@ -1,6 +1,6 @@
 const { sumTokens2 } = require("../helper/unwrapLPs");
+const { sumTokensExport } = require("../helper/unknownTokens")
 const { staking } = require('../helper/staking')
-const { pool2 } = require('../helper/pool2')
 
 const config = {
   arbitrum: {
@@ -18,6 +18,14 @@ const config = {
     hash: '0x2e80259c9071b6176205ff5f5eb6f7ec8361b93f',
     isPool2: true,
   },
+  bsc: {
+    contract: '0x882105478F2193001f8Fed8399aF93f31CC42F85',
+    lp: '0xc970cdEBe5cF52eA416C5160Dc64A17Db134feE9',
+    chef: '0x2b9c8B76176957A0448279Da9B8cDEbE94Becd19',
+    vHash: '0xb557c071BAe7DC3aa2366Cd0FC0477B45Eb696f1',
+    hash: '0xb4e0E46cC733106F8f5B9845e2011B128A1EA39a',
+    isPool2: true,
+  },
 }
 
 Object.keys(config).forEach(chain => {
@@ -30,7 +38,7 @@ Object.keys(config).forEach(chain => {
     }
   }
   if (chef && lp)
-    module.exports[chain].pool2 = isPool2 ? pool2(chef, lp) : staking(chef, lp)
+    module.exports[chain].pool2 = isPool2 ? sumTokensExport({ owner: chef, tokens: [lp], useDefaultCoreAssets: true, }) : staking(chef, lp)
   
   if (hash && vHash)
     module.exports[chain].staking = staking(vHash, hash, undefined, 'arbitrum:'+config.arbitrum.hash)

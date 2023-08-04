@@ -22,7 +22,9 @@ async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
   return sumTokens2({ chain: CHAIN, ethBlock, tokensAndOwners: balanceRequests })
 }
 
+
 module.exports = {
   era: { tvl, },
   methodology: "TVL is total liquidity of all liquidity pools."
 }
+

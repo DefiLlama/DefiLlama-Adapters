@@ -19,37 +19,75 @@ const filterSlot = [
 async function tvl() {
   const { api } = arguments[3];
   const network = api.chain;
-  const slots = await getSlot(api.timestamp, network);
-  if (slots.length <= 0) {
-    return;
+  const graphData = await getGraphData(api.timestamp, network);
+  if (graphData.slots.length > 0) {
+    const slots = graphData.slots;
+    const closeConcretes = await concrete(slots, api);
+    const closeTotalValues = await api.multiCall({
+      abi: abi.slotTotalValue,
+      calls: slots.map((index) => ({
+        target: closeConcretes[index.contractAddress],
+        params: [index.slot]
+      })),
+    })
+
+    const closeBaseInfos = await api.multiCall({
+      abi: abi.slotBaseInfo,
+      calls: slots.map((index) => ({
+        target: closeConcretes[index.contractAddress],
+        params: [index.slot]
+      })),
+    })
+
+    const closeDecimalList = await api.multiCall({
+      abi: abi.decimals,
+      calls: closeBaseInfos.map(i => i[1]),
+    })
+
+    for (let i = 0; i < closeTotalValues.length; i++) {
+      const decimals = closeDecimalList[i];
+      const balance = BigNumber(closeTotalValues[i]).div(BigNumber(10).pow(18 - decimals)).toNumber();
+      api.add(closeBaseInfos[i][1], balance)
+    }
   }
-  const concretes = await concrete(slots, api);
 
-  const totalValues = await api.multiCall({
-    abi: abi.slotTotalValue,
-    calls: slots.map((index) => ({
-      target: concretes[index.contractAddress],
-      params: [index.slot]
-    })),
-  })
+  if (graphData.pools.length > 0) {
+    const pools = graphData.pools;
+    const poolConcretes = await concrete(pools, api);
+    const nav = await api.multiCall({
+      abi: abi.getSubscribeNav,
+      calls: pools.map((index) => ({
+        target: index.navOracle,
+        params: [index.poolId, api.timestamp]
+      })),
+    })
 
-  const baseInfos = await api.multiCall({
-    abi: abi.slotBaseInfo,
-    calls: slots.map((index) => ({
-      target: concretes[index.contractAddress],
-      params: [index.slot]
-    })),
-  })
+    const poolTotalValues = await api.multiCall({
+      abi: abi.slotTotalValue,
+      calls: pools.map((index) => ({
+        target: poolConcretes[index.contractAddress],
+        params: [index.openFundShareSlot]
+      })),
+    })
 
-  const decimalList = await api.multiCall({
-    abi: abi.decimals,
-    calls: baseInfos.map(i => i[1]),
-  })
+    const poolBaseInfos = await api.multiCall({
+      abi: abi.slotBaseInfo,
+      calls: pools.map((index) => ({
+        target: poolConcretes[index.contractAddress],
+        params: [index.openFundShareSlot]
+      })),
+    })
 
-  for (let i = 0; i < totalValues.length; i++) {
-    const decimals = decimalList[i];
-    const balance = BigNumber(totalValues[i]).div(BigNumber(10).pow(18 - decimals)).toNumber();
-    api.add(baseInfos[i][1], balance)
+    const poolDecimalList = await api.multiCall({
+      abi: abi.decimals,
+      calls: poolBaseInfos.map(i => i[1]),
+    })
+
+    for (let i = 0; i < poolTotalValues.length; i++) {
+      const decimals = poolDecimalList[i];
+      const balance = BigNumber(poolTotalValues[i]).div(BigNumber(10).pow(18 - decimals)).times(BigNumber(nav[i].nav_).div(BigNumber(10).pow(decimals))).toNumber();
+      api.add(poolBaseInfos[i][1], balance)
+    }
   }
 }
 
@@ -77,22 +115,39 @@ async function concrete(slots, api) {
 }
 
 
-async function getSlot(timestamp, chain) {
+async function getGraphData(timestamp, chain) {
   const slotDataQuery = `query BondSlotInfos {
             bondSlotInfos(first: 1000, where:{maturity_gt:${timestamp}}) {
                 contractAddress
                 slot
             }
+            poolOrderInfos(first: 1000, where:{fundraisingEndTime_gt:${timestamp}}) {
+              marketContractAddress
+              contractAddress
+              navOracle
+              poolId
+              openFundShareSlot
+          }
         }`;
-  const slots = (await cachedGraphQuery(`solv-protocol/graph-data/${chain}`, graphUrlList[chain], slotDataQuery)).bondSlotInfos;
+  const data = (await cachedGraphQuery(`solv-protocol/graph-data/${chain}`, graphUrlList[chain], slotDataQuery));
+
   let slotList = [];
-  for (let i = 0; i < slots.length; i++) {
-    const bondSlotInfo = slots[i];
-    if (filterSlot.indexOf(bondSlotInfo.slot) == -1) {
-      slotList.push(bondSlotInfo)
+  let poolList = [];
+  if (data != undefined && data.bondSlotInfos != undefined) {
+    for (let i = 0; i < data.bondSlotInfos.length; i++) {
+      const bondSlotInfo = data.bondSlotInfos[i];
+      if (filterSlot.indexOf(bondSlotInfo.slot) == -1) {
+        slotList.push(bondSlotInfo)
+      }
     }
   }
-  return slotList;
+  if (data != undefined && data.poolOrderInfos != undefined) {
+    poolList = data.poolOrderInfos;
+  }
+  return {
+    slots: slotList,
+    pools: poolList
+  };
 }
 
 ['ethereum', 'bsc', 'arbitrum'].forEach(chain => {
