@@ -7,7 +7,7 @@ const dexTVL = getUniTVL({ factory: FACTORY, useDefaultCoreAssets: true, fetchBa
 
 module.exports = {
     misrepresentedTokens: true,
-    methodology: `Uses factory(${FACTORY}) address and whitelisted tokens address to find and price Liquidity Pool pairs. We also have our native token $ARX staking.`,
+    methodology: `Uses factory(${FACTORY}) address and whitelisted tokens address to find and price Liquidity Pool pairs. We also have our native token $BSWAP staking.`,
     base: {
         tvl: dexTVL,
     }
