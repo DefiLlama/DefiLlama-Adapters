@@ -16,7 +16,6 @@ Object.keys(config).forEach(chain => {
       const tokens = posData.map(pos => ([pos.collateral.collateralToken, pos.acquired.acquiredToken, pos.depositToken])).flat()
       console.log(tokens)
       return sumTokens2({ api, owner: shop, tokens, resolveUniV3: true, blacklistedTokens: ['0xc36442b4a4522e871399cd717abdd847ab11fe88']})
-      return {}
     }
   }
 })
