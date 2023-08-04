@@ -51,6 +51,7 @@ module.exports = {
   },
   ethereum: {
     wom: "0xc0B314a8c08637685Fc3daFC477b92028c540CFB",
+    veWom: "0xEF0B4d9Dba6ea82B59437Fe5E37b16A2896aAF94",
     pools: {
       frax: "0x9c02eaf31EFE3FeE36ebE5AEBCa12Ca979dF25cC",
       agEUR: "0x0020A8890e723CD94660A5404C4BCCBB91680db6",
