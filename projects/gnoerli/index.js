@@ -53,8 +53,13 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 }
 
 module.exports = {
-    tvl,
+    methodology: '...', // Include an appropriate description of the methodology
+    ethereum: {
+        tvl: tvl, // Export the tvl function
+        // pool2: pool2, // If you have a pool2 function or object, include it here
+    }
 };
+
 
 // Call the tvl function for testing
 tvl('testTimestamp', 'testEthBlock', { goerli: 'testBlock' })
