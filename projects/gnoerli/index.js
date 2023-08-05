@@ -4,6 +4,7 @@ const sdk = require('@defillama/sdk');
 // Assuming you have the ABI for both contracts
 const fs = require('fs');
 
+// Read ABI from files
 const primaryIssueManagerData = JSON.parse(fs.readFileSync('./PrimaryIssueManager.json', 'utf8'));
 const primaryIssueManagerABI = primaryIssueManagerData.abi;
 const secondaryIssueManagerData = JSON.parse(fs.readFileSync('./SecondaryIssueManager.json', 'utf8'));
@@ -26,7 +27,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     const secondaryContract = new ethers.Contract(contracts.goerli.secondary, secondaryIssueManagerABI, infuraProvider);
 
     const filter = primaryContract.filters.subscribers();
-    const startBlock = 0; 
+    const startBlock = 0; // Adjust as needed
     const endBlock = 'latest'; 
 
     const primaryEvents = await primaryContract.queryFilter(filter, startBlock, endBlock);
@@ -44,7 +45,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
         totalTVL = totalTVL.add(amount);
         sdk.util.sumSingleBalance(balances, event.args.currencySettled, amount.toString());
     });
-    
+
     balances.totalTVL = totalTVL.toString();
     console.log('Primary events:', primaryEvents);
     console.log('Secondary events:', secondaryEvents);
