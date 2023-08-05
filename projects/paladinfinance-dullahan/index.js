@@ -21,7 +21,7 @@ async function ethTvl(timestamp, block, _, { api },) {
 }
 
 module.exports = {
-  methodology: "Counts the total locked tokens inside the lockers contracts",
+  methodology: "Amount of stkAAVE owned by the vault",
   ethereum: {
     tvl: ethTvl,
   },
