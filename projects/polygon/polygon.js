@@ -20,29 +20,34 @@ const contracts = {
 };
 
 async function tvl(timestamp, ethBlock, chainBlocks) {
+    let totalTVL = ethers.BigNumber.from(0);
     const balances = {};
     const block = chainBlocks.polygon;
    // Create a provider
    const infuraProvider = new ethers.providers.JsonRpcProvider('https://polygon-mainnet.infura.io/v3/99f0091064f341beab4912b1e970a067');
 
 
+
     const primaryContract = new ethers.Contract(contracts.polygon.primary, primaryIssueManagerABI, infuraProvider);
     const secondaryContract = new ethers.Contract(contracts.polygon.secondary, secondaryIssueManagerABI, infuraProvider);
   
     // Fetch the 'subscription' events from the contract and calculate TVL based on those
-    // Note: Replace 'eventName' with the correct event name
     const primaryEvents = await primaryContract.queryFilter('subscribers');
     primaryEvents.forEach(event => {
-        const cashSwapped = event.args.cashSwapped.toString();
-        sdk.util.sumSingleBalance(balances, event.args.currency, cashSwapped);
+        const cashSwapped = ethers.BigNumber.from(event.args.cashSwapped);
+        totalTVL =totalTVL.add(cashSwapped);
+        sdk.util.sumSingleBalance(balances, event.args.currency, cashSwapped.toString());
     });
-    console.log('Primary events:', primaryEvents);
+    
    
     const secondaryEvents = await secondaryContract.queryFilter('subscribers');
     secondaryEvents.forEach(event => {
-        const amount = event.args.amount.toString();
-        sdk.util.sumSingleBalance(balances, event.args.currencySettled, amount);
+        const amount = ethers.BigNumber.from(event.args.amount);
+        totalTVL = totalTVL.add(amount);
+        sdk.util.sumSingleBalance(balances, event.args.currencySettled, amount.toString());
     });
+    balances.totalTVL = totalTVL.toString();
+    console.log('Primary events:', primaryEvents);
     console.log('Secondary events:', secondaryEvents);
     return balances;
 }

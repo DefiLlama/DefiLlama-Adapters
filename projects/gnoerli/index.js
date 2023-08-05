@@ -20,7 +20,7 @@ const contracts = {
 };
 
 async function tvl(timestamp, ethBlock, chainBlocks) {
-    let totalTVL = 0;
+    let totalTVL = ethers.BigNumber.from(0);
     const balances = {};
     const block = chainBlocks.goerli;
    // Create a provider
@@ -31,20 +31,19 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     const secondaryContract = new ethers.Contract(contracts.goerli.secondary, secondaryIssueManagerABI, infuraProvider);
   
     // Fetch the 'subscription' events from the contract and calculate TVL based on those
-    // Note: Replace 'eventName' with the correct event name
     const primaryEvents = await primaryContract.queryFilter('subscribers');
     primaryEvents.forEach(event => {
-        const cashSwapped = event.args.cashSwapped.toString();
-        totalTVL += Number(cashSwapped); // Add to the total TVL
-        sdk.util.sumSingleBalance(balances, event.args.currency, cashSwapped);
+        const cashSwapped = ethers.BigNumber.from(event.args.cashSwapped);
+        totalTVL= totalTVL.add(cashSwapped);
+        sdk.util.sumSingleBalance(balances, event.args.settlements, cashSwapped.toString());
     });
     const secondaryEvents = await secondaryContract.queryFilter('subscribers');
     secondaryEvents.forEach(event => {
-        const amount = event.args.amount.toString();
-        totalTVL += Number(amount); // Add to the total TVL
-        sdk.util.sumSingleBalance(balances, event.args.currencySettled, amount);
+        const amount = ethers.BigNumber.from(event.args.amount);
+        totalTVL = totalTVL.add(amount);
+        sdk.util.sumSingleBalance(balances, event.args.settlements, amount.toString());
     });
-    balances.totalTVL = totalTVL;
+    balances.totalTVL = totalTVL.toString();
     console.log('Primary events:', primaryEvents);
     console.log('Secondary events:', secondaryEvents);
     return balances;
