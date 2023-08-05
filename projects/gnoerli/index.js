@@ -20,6 +20,7 @@ const contracts = {
 };
 
 async function tvl(timestamp, ethBlock, chainBlocks) {
+    let totalTVL = 0;
     const balances = {};
     const block = chainBlocks.goerli;
    // Create a provider
@@ -34,15 +35,17 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     const primaryEvents = await primaryContract.queryFilter('subscribers');
     primaryEvents.forEach(event => {
         const cashSwapped = event.args.cashSwapped.toString();
+        totalTVL += Number(cashSwapped); // Add to the total TVL
         sdk.util.sumSingleBalance(balances, event.args.currency, cashSwapped);
     });
-    console.log('Primary events:', primaryEvents);
-   
     const secondaryEvents = await secondaryContract.queryFilter('subscribers');
     secondaryEvents.forEach(event => {
         const amount = event.args.amount.toString();
+        totalTVL += Number(amount); // Add to the total TVL
         sdk.util.sumSingleBalance(balances, event.args.currencySettled, amount);
     });
+    balances.totalTVL = totalTVL;
+    console.log('Primary events:', primaryEvents);
     console.log('Secondary events:', secondaryEvents);
     return balances;
 }
