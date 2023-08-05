@@ -5,9 +5,9 @@ const sdk = require('@defillama/sdk');
 const fs = require('fs');
 
 // Read ABI from files
-const primaryIssueManagerData = JSON.parse(fs.readFileSync('./PrimaryIssueManager.json', 'utf8'));
+const primaryIssueManagerData = JSON.parse(fs.readFileSync('projects/gnoerli/PrimaryIssueManager.json', 'utf8'));
 const primaryIssueManagerABI = primaryIssueManagerData.abi;
-const secondaryIssueManagerData = JSON.parse(fs.readFileSync('./SecondaryIssueManager.json', 'utf8'));
+const secondaryIssueManagerData = JSON.parse(fs.readFileSync('projects/gnoerli/SecondaryIssueManager.json', 'utf8'));
 const secondaryIssueManagerABI = secondaryIssueManagerData.abi;
 
 const contracts = {
