@@ -23,7 +23,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     const balances = {};
     const block = chainBlocks.goerli;
    // Create a provider
-   const infuraProvider = new ethers.providers.JsonRpcProvider('https://mainnet.infura.io/v3/99f0091064f341beab4912b1e970a067');
+   const infuraProvider = new ethers.providers.JsonRpcProvider('https://goerli.infura.io/v3/324d7d968bb245e39b4edcda5a16c7a4');
 
 
     const primaryContract = new ethers.Contract(contracts.goerli.primary, primaryIssueManagerABI, infuraProvider);
