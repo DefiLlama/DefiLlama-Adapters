@@ -80,7 +80,7 @@ module.exports = {
    })
 }
 
-const chains = [ 'avax', ]
+const chains = [ 'ethereum', 'arbitrum', 'optimism', 'polygon', 'celo', 'bsc', 'avax', ]
 module.exports.chains = chains
 
 chains.forEach(chain => {
