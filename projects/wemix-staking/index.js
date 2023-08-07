@@ -8,6 +8,9 @@ const stakingContractGRAND = "0xBEd789c6008F788a28fc222C83082D67033Daf7F"
 
 
 module.exports = {
+  hallmarks: [
+    [1690070405,"WONDER Staking Live"]
+  ],
   wemix: {
     tvl: staking([stakingContractDIOS, stakingContractGRAND],[wwemix, nullAddress]),
   },
