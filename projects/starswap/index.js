@@ -20,7 +20,6 @@ module.exports = {
   astar: {
     tvl: getUniTVL({
       factory: FACTORIES,
-      chain,
       useDefaultCoreAssets: true,
     }),
     staking:  async (_, _b, { [chain]: block }) => {

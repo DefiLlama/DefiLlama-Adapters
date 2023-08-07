@@ -1,0 +1,7 @@
+{
+  "getTotalAmounts": "function getTotalAmounts() external view returns (uint256 total0, uint256 total1)",
+  "totalSupply": "uint256:totalSupply",
+  "balanceOf": "erc20:balanceOf",
+  "token0": "address:token0",
+  "token1": "address:token1"
+}

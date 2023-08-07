@@ -70,6 +70,9 @@ const bobaPutVault = '0xff5fe7909fc4d0d6643f1e8be8cba72610d0b485'
 //Arbitrum Vaults
 const arbCallVault = '0x0833EC3262Dcc417D88f85Ed5E1EBAf768080f41'
 
+//zkEVM vaults
+const stMaticCallVault = '0x7bF3c7C23501EA3E09B237D6F8AdcB7Ea3CeF41C'
+
 // Ethereum Assets
 const weth = ADDRESSES.ethereum.WETH
 const usdc = ADDRESSES.ethereum.USDC
@@ -108,7 +111,10 @@ let boba = ADDRESSES.boba.BOBA
 const bobaUSDC = ADDRESSES.boba.USDC
 
 // Arbitrum assets
-let arb = '0x912ce59144191c1204e64559fe8253a0e49e6548'
+let arb = ADDRESSES.arbitrum.ARB
+
+// zkEVM assets
+const stMatic = '0x83b874c1e09D316059d929da402dcB1A98e92082';
 
 module.exports = {
   methodology: `Only the funds deposited by the users into our vaults are calculated as TVL.`,
@@ -199,6 +205,11 @@ const config = {
       [near, nearCallVault,],
     ]
   },
+  polygon_zkevm: {
+    tokensAndOwners: [
+      [stMatic, stMaticCallVault,],
+    ]
+  }
 }
 
 Object.keys(config).forEach(chain => {

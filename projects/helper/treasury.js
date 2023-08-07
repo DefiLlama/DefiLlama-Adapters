@@ -1,8 +1,9 @@
+const ADDRESSES = require('./coreAssets.json')
 const { sumTokensExport, nullAddress, } = require('../helper/sumTokens')
 const { covalentGetTokens } = require('./http')
 const axios = require("axios")
 
-const ARB = "0x912CE59144191C1204E64559FE8253a0e49E6548";
+const ARB = ADDRESSES.arbitrum.ARB;
 
 function treasuryExports(config) {
   const chains = Object.keys(config)

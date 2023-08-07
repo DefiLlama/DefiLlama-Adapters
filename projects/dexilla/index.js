@@ -9,6 +9,7 @@ const config = {
       '0x16412BE389278B81594027E77FF9b61b2d200caa',
       '0xE0D2833D9ED879D16BfC1cEc3573293770b8abBB',
       '0x66831746E2F5a3CfC2A6E2b9eB5Ea8b7dd78Ee6A',
+      '0x795205f3D4C2132532a3a379cFA747c7A5B1aA90',
     ],
   },
   optimism: {
@@ -20,8 +21,23 @@ const config = {
       '0x2d10b03854e970d3772434FF1133BCb3E59Ca4b8',
       '0x2BF9D7e4173B882335b464e2fB38f5b57768ab61',
       '0x44F1C33ED3bf77A5883cBEce1c1b34E71425CE84',
+      '0x6f1D074bf170fcDDE7712Bb8da4C70C5Be86884A',
     ],
   },
+  arbitrum: {
+    exchanges: [
+      '0x8ea13d1a455e5c5b425a6fc7260a01265d4c4673',
+      '0x8C9DBB80f12D0425eAf127FCC1D92FB21Cb4CE4C',
+      '0x66A724fa0CEB8adfa064afEf5102A2e04E4264c6',
+      '0x5dD2a1C1Fb25E30928C901a28Ceaf53E59B606dD',
+      '0xb56F90d3038AAD5B5E8de9be3008C7CCEA2D6600',
+    ],
+  },
+  base:{
+    exchanges: [
+      '0x3F7F51983fb95084a5cb73EB2F28757Bd8bb65E3',
+    ],
+  }
 }
 
 module.exports = {
