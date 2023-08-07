@@ -81,7 +81,6 @@ module.exports = {
 }
 
 const chains = [ 'ethereum', 'arbitrum', 'optimism', 'polygon', 'celo', 'bsc', 'avax', ]
-module.exports.chains = chains
 
 chains.forEach(chain => {
   module.exports[chain] = {
