@@ -10,6 +10,7 @@ const graphs = {
   celo: "https://api.thegraph.com/subgraphs/name/jesse-sawa/uniswap-celo",
   bsc: "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v3-bsc",
   avax: "https://api.thegraph.com/subgraphs/name/lynnshaoyu/uniswap-v3-avax",
+  base: "https://api.studio.thegraph.com/query/48211/uniswap-v3-base/v0.0.1",
 }
 
 const blacklists = {
@@ -75,7 +76,7 @@ module.exports = {
   ]
 }
 
-const chains = ['ethereum', 'arbitrum', 'optimism', 'polygon', 'celo', 'bsc', 'avax']
+const chains = ['ethereum', 'arbitrum', 'optimism', 'polygon', 'celo', 'bsc', 'avax', 'base', ]
 
 chains.forEach(chain => {
   module.exports[chain] = {
