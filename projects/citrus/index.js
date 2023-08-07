@@ -26,10 +26,10 @@ async function getStats() {
     // const idl = await getConfig('citrus-idl', 'https://gist.githubusercontent.com/FoxyDev42/5f23cd03eab33e0d73f6f6227912451e/raw/03e68f7543dc4dd399d7b61e15881c1a6792eb4a/citrus-account.json');
     const program = new Program(idl, programId, provider)
     const loans = await program.account.loan.all()
-    const activeLoans = loans.filter(loan => Object.keys(loan.account.status)[0] === 'active');
+    const activeLoans = loans.filter(loan => ['active', 'onSale'].includes(Object.keys(loan.account.status)[0]));
     const openOffers = loans.filter(loan => Object.keys(loan.account.status)[0] === 'waitingForBorrower');
     const activeLoansTotal = activeLoans.map(loan => loan.account.loanTerms.principal).reduce((a, b) => a.add(b));
-    const openOffersTotal = openOffers.map(loan => loan.account.loanTerms.principal).reduce((a, b) => a.add(b));
+    const openOffersTotal = openOffers.map(loan => loan.account.ltvTerms ? loan.account.ltvTerms.maxOffer : loan.account.loanTerms.principal).reduce((a, b) => a.add(b));
     // const activeLoansNFTs = activeLoans.map(loan => loan.account.collectionConfig.toBase58()).reduce((a, b) => a + parseFloat(collectionsById[b]?.floor), 0);
     // const tvl = openOffersTotal.toNumber() + activeLoansNFTs * 1e9;
     const tvl = openOffersTotal.toNumber()
@@ -61,164 +61,256 @@ const idl =  {
   instructions: [],
   accounts: [
     {
-      name: 'loan',
-      type: {
-        kind: 'struct',
-        fields: [
+      "name": "collectionConfig",
+      "type": {
+        "kind": "struct",
+        "fields": [
           {
-            name: 'bump',
-            type: 'u8'
-          },
-          {
-            name: 'lender',
-            type: 'publicKey'
-          },
-          {
-            name: 'borrower',
-            type: 'publicKey'
-          },
-          {
-            name: 'mint',
-            type: 'publicKey'
-          },
-          {
-            name: 'collectionConfig',
-            type: 'publicKey'
-          },
-          {
-            name: 'status',
-            type: {
-              defined: 'LoanStatus'
+            "name": "collectionKey",
+            "type": {
+              "option": "publicKey"
             }
           },
           {
-            name: 'loanTerms',
-            type: {
-              defined: 'LoanTerms'
-            }
-          },
-          {
-            name: 'creationTime',
-            type: 'i64'
-          },
-          {
-            name: 'startTime',
-            type: 'i64'
-          },
-          {
-            name: 'endTime',
-            type: 'i64'
-          },
-          {
-            name: 'fox',
-            type: 'bool'
-          },
-          {
-            name: 'mortgage',
-            type: 'bool'
-          },
-          {
-            name: 'private',
-            type: 'bool'
-          },
-          {
-            name: 'offerType',
-            type: {
-              defined: 'OfferType'
-            }
-          },
-          {
-            name: 'listingPrice',
-            type: 'u64'
-          },
-          {
-            name: 'ltvTerms',
-            type: {
-              option: {
-                defined: 'LtvTerms'
+            "name": "creators",
+            "type": {
+              "option": {
+                "array": [
+                  "publicKey",
+                  3
+                ]
               }
+            }
+          },
+          {
+            "name": "merkleRoot",
+            "type": {
+              "option": {
+                "array": [
+                  "u8",
+                  32
+                ]
+              }
+            }
+          },
+          {
+            "name": "feeReduction",
+            "type": {
+              "option": "u16"
             }
           }
         ]
+      }
+    },
+    {
+      "name": "loan",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "lender",
+            "type": "publicKey"
+          },
+          {
+            "name": "borrower",
+            "type": "publicKey"
+          },
+          {
+            "name": "mint",
+            "type": "publicKey"
+          },
+          {
+            "name": "collectionConfig",
+            "type": "publicKey"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": "LoanStatus"
+            }
+          },
+          {
+            "name": "loanTerms",
+            "type": {
+              "defined": "LoanTerms"
+            }
+          },
+          {
+            "name": "creationTime",
+            "type": "i64"
+          },
+          {
+            "name": "startTime",
+            "type": "i64"
+          },
+          {
+            "name": "endTime",
+            "type": "i64"
+          },
+          {
+            "name": "fox",
+            "type": "bool"
+          },
+          {
+            "name": "mortgage",
+            "type": "bool"
+          },
+          {
+            "name": "private",
+            "type": "bool"
+          },
+          {
+            "name": "offerType",
+            "type": {
+              "defined": "OfferType"
+            }
+          },
+          {
+            "name": "listingPrice",
+            "type": "u64"
+          },
+          {
+            "name": "ltvTerms",
+            "type": {
+              "option": {
+                "defined": "LtvTerms"
+              }
+            }
+          },
+          {
+            "name": "pool",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "borrowAuthority",
+      "type": {
+        "kind": "struct",
+        "fields": []
       }
     }
   ],
   types: [
     {
-      name: 'LoanTerms',
-      type: {
-        kind: 'struct',
-        fields: [
+      "name": "LoanTerms",
+      "type": {
+        "kind": "struct",
+        "fields": [
           {
-            name: 'apyBps',
-            type: 'u64'
+            "name": "apyBps",
+            "type": "u64"
           },
           {
-            name: 'duration',
-            type: 'u64'
+            "name": "duration",
+            "type": "u64"
           },
           {
-            name: 'principal',
-            type: 'u64'
+            "name": "principal",
+            "type": "u64"
           }
         ]
       }
     },
     {
-      name: 'LtvTerms',
-      type: {
-        kind: 'struct',
-        fields: [
+      "name": "LtvTerms",
+      "type": {
+        "kind": "struct",
+        "fields": [
           {
-            name: 'ltvBps',
-            type: 'u64'
+            "name": "ltvBps",
+            "type": "u64"
           },
           {
-            name: 'maxOffer',
-            type: 'u64'
+            "name": "maxOffer",
+            "type": "u64"
           }
         ]
       }
     },
     {
-      name: 'LoanStatus',
-      type: {
-        kind: 'enum',
-        variants: [
+      "name": "MerkleData",
+      "type": {
+        "kind": "struct",
+        "fields": [
           {
-            name: 'WaitingForBorrower'
+            "name": "index",
+            "type": "u64"
           },
           {
-            name: 'WaitingForLender'
-          },
-          {
-            name: 'Active'
-          },
-          {
-            name: 'Repaid'
-          },
-          {
-            name: 'Defaulted'
-          },
-          {
-            name: 'OnSale'
+            "name": "proof",
+            "type": {
+              "vec": {
+                "array": [
+                  "u8",
+                  32
+                ]
+              }
+            }
           }
         ]
       }
     },
     {
-      name: 'OfferType',
-      type: {
-        kind: 'enum',
-        variants: [
+      "name": "Cpi",
+      "type": {
+        "kind": "struct",
+        "fields": [
           {
-            name: 'Global'
+            "name": "data",
+            "type": "bytes"
           },
           {
-            name: 'Mortgage'
+            "name": "numAccounts",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LoanStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "WaitingForBorrower"
           },
           {
-            name: 'Borrow'
+            "name": "WaitingForLender"
+          },
+          {
+            "name": "Active"
+          },
+          {
+            "name": "Repaid"
+          },
+          {
+            "name": "Defaulted"
+          },
+          {
+            "name": "OnSale"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OfferType",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Global"
+          },
+          {
+            "name": "Mortgage"
+          },
+          {
+            "name": "Borrow"
           }
         ]
       }
