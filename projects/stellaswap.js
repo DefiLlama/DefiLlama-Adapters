@@ -6,7 +6,6 @@ const { sumTokens2 } = require('./helper/unwrapLPs')
 
 const dexTVL = getUniTVL({
   factory: "0x68A384D826D3678f78BB9FB1533c7E9577dACc0E",
-  chain: "moonbeam",
   useDefaultCoreAssets: true,
 })
 

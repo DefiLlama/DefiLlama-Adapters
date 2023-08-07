@@ -1,4 +1,4 @@
-const { getConnection, sumTokens2, decodeAccount, getValidGeckoSolTokens, } = require("./helper/solana");
+const { getConnection, sumTokens2, decodeAccount, getValidGeckoSolTokens, sumTokens, } = require("./helper/solana");
 const { PublicKey, } = require("@solana/web3.js");
 const sdk = require('@defillama/sdk')
 
@@ -43,12 +43,11 @@ async function ammV4Tvl() {
   ]})
 }
 
-
-
 module.exports = {
   timetravel: false,
   hallmarks: [[1667865600, "FTX collapse"]],
   solana: {
     tvl: sdk.util.sumChainTvls([tvlCLMM, ammStableTvl, ammV4Tvl]),
+    staking: () => sumTokens2({ tokenAccounts: ['8tnpAECxAT9nHBqR1Ba494Ar5dQMPGhL31MmPJz1zZvY']})
   },
 };

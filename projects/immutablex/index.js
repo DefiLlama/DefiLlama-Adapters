@@ -14,4 +14,7 @@ const tokens = [
 
 module.exports = {
   ethereum: { tvl: sumTokensExport({ owners, tokens }) },
+  hallmarks: [
+    [1643241600, "OMI migration"],
+  ],
 };
