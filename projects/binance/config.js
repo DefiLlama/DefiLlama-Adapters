@@ -18,7 +18,12 @@ const assetList = [
   ["BTC", "BTC", "3JFJPpH8Chwo7CDbyYQ4XcfgcjEP1FGRMJ"],
   ["BTC", "BTC", "34HpHYiyQwg69gFmCq2BGHjF1DZnZnBeBP"],
   ["BTC", "BTC", "bc1qm34lsc65zpw79lxes69zkqmk6ee3ewf0j77s3h"],
- // ["BTC", "BTC", "38Xnrq8MZiKmYmwobbYdZQ5nnCbX1qvQfE"], old wallet that moved 3.1b to new one
+  ["BTC", "BTC", "38Xnrq8MZiKmYmwobbYdZQ5nnCbX1qvQfE"], // added again on 07/08/2023
+  ["BTC", "BTC", "34GUzCVLbdkMQ2UdVTaA4nxPwoovVS7y2J"], // add on 07/08/2023
+  ["BTC", "BTC", "3AtnehKDkFPC1bKvdrEVPSRGCtxQH8F1R8"], // add on 07/08/2023
+  ["BTC", "BTC", "3CySuFKbBS29M7rE5iJakZRNqb3msMeFoN"], // add on 07/08/2023
+  ["BTC", "BTC", "3Me9QACjioepv2L2oKTC9QQ87NH6vFe1Zj"], // add on 07/08/2023
+  ["BTC", "BTC", "3NXCvmLGz9SxYi6TnjbBQfQMcwiZ1iQETa"], // add on 07/08/2023
   ["BTC", "BTC", "3EbJfpmFgufYtzW9UFvf1GAfm2ted1Rwnr"],
   ["BTC", "BTC", "38DN2uFMZPiHLHJigfv4kWC9JWJrNnhLcn"],
   ["BTC", "BTC", "3Qxak1CZhLyZ7GVckKphLURdLBCjMfz9bA"],
@@ -46,6 +51,7 @@ const assetList = [
   ["USDT", "ETH", "0xdfd5293d8e347dfe59e90efd55b2956a1343963d"],
   ["USDT", "ETH", "0x9696f59e4d72e237be84ffd425dcad154bf96976"],
   ["USDT", "ETH", "0x4976a4a02f38326660d17bf34b431dc6e2eb2327"],
+  ["USDT", "ETH", "0xBE0eB53F46cd790Cd13851d5EFf43D12404d33E8"], // add on 07/08/2023
   ["USDT", "TRX", "TMuA6YqfCeX8EhbfYEg5y7S4DqzSJireY9"],
   ["USDT", "TRX", "TWd4WrZ9wn84f5x1hZhL4DHvk738ns5jwb"],
   ["USDC", "TRX", "TWd4WrZ9wn84f5x1hZhL4DHvk738ns5jwb"],
@@ -94,8 +100,9 @@ const assetList = [
  // ["BNB", "BEP2", "bnb1u70jtt2umum4ag3vcpw2h8v8levm47t0mtjwmh"],
   ["BNB", "BEP2", "bnb1xrfwzlu9c5208lhtn7ywt0mjrhjh4nt4fjyqxy"],
   ["BNB", "BEP20", "0xf977814e90da44bfa03b6295a0616a897441acec"],
- // ["BNB", "BEP20", "0xBE0eB53F46cd790Cd13851d5EFf43D12404d33E8"],
+  ["BNB", "BEP20", "0xBE0eB53F46cd790Cd13851d5EFf43D12404d33E8"], // ADD BACK 07/08/2023
   ["BNB", "BEP20", "0x5a52e96bacdabb82fd05763e25335261b270efcb"],
+  ["ETH", "BEP20", "0x5a52E96BAcdaBb82fd05763E25335261B270Efcb"], //add on 07/08/2023
   ["BNB", "BEP20", "0x3c783c21a0383057d128bae431894a5c19f9cf06"],
   ["BNB", "BEP20", "0xdccf3b77da55107280bd850ea519df3705d1a75a"],
   ["BNB", "BEP20", "0x8894e0a0c962cb723c1976a4421c95949be2d4e3"],
@@ -142,6 +149,7 @@ const assetList = [
   ["CHZ", "BEP2", "bnb1fnd0k5l4p3ck2j9x9dp36chk059w977pszdgdz"],
   ["WRX", "BEP2", "bnb1u2agwjat20494fmc6jnuau0ls937cfjn4pjwtn"],
   ["WRX", "BEP2", "bnb142q467df6jun6rt5u2ar58sp47hm5f9wvz2cvg"],
+  ["WRX", "ETH", "0xBE0eB53F46cd790Cd13851d5EFf43D12404d33E8"], // add on 07/08/2023
   ["BTC", "BEP2", "bnb1lsmt5a8vqqus5fwslx8pyyemgjtg4y6ugj308t"],
   ["LTC", "BEP2", "bnb1fnd0k5l4p3ck2j9x9dp36chk059w977pszdgdz"],
   ["USDT", "BEP2", "bnb1fnd0k5l4p3ck2j9x9dp36chk059w977pszdgdz"],
@@ -150,6 +158,7 @@ const assetList = [
   ["BUSD", "BEP20", "0x8894e0a0c962cb723c1976a4421c95949be2d4e3"],
   ["BTC", "BEP20", "0xf977814e90da44bfa03b6295a0616a897441acec"],
   ["LINK", "BEP20", "0x5a52e96bacdabb82fd05763e25335261b270efcb"],
+  ["BTC", "BEP20", "0x5a52E96BAcdaBb82fd05763E25335261B270Efcb"], //add on 07/08/2023
   ["BTC", "ETH", "0x21a31ee1afc51d94c2efccaa2092ad1028285549"],
   ["MASK", "BEP20", "0x5a52e96bacdabb82fd05763e25335261b270efcb"],
   ["BTC", "ETH", "0xdfd5293d8e347dfe59e90efd55b2956a1343963d"],
@@ -179,6 +188,7 @@ const assetList = [
   ["SHIB", "BEP20", "0xf977814e90da44bfa03b6295a0616a897441acec"],
   ["CHZ", "ETH", "0xbe0eb53f46cd790cd13851d5eff43d12404d33e8"],
   ["CHZ", "ETH", "0x28c6c06298d514db089934071355e5743bf21d60"],
+  ["ENJ", "ETH", "0xBE0eB53F46cd790Cd13851d5EFf43D12404d33E8"], // add on 07/08/2023
   ["CHZ", "ETH", "0x21a31ee1afc51d94c2efccaa2092ad1028285549"],
   ["1INCH", "BEP20", "0x8894e0a0c962cb723c1976a4421c95949be2d4e3"],
   ["CRV", "ETH", "0x28c6c06298d514db089934071355e5743bf21d60"],
@@ -270,6 +280,7 @@ const assetList = [
   ["USDT", "BEP20", "0xeb2d2f1b8c558a40207669291fda468e50c8a0bb"],
   ["CRV", "ETH", "0xf977814e90da44bfa03b6295a0616a897441acec"],
   ["BNB", "ETH", "0x28c6c06298d514db089934071355e5743bf21d60"],
+  ["USDT", "ETH", "0x5a52e96bacdabb82fd05763e25335261b270efcb"], //add on 07/08/2023
   ["CHR", "ETH", "0x5a52e96bacdabb82fd05763e25335261b270efcb"],
   ["CVP", "ETH", "0xf977814e90da44bfa03b6295a0616a897441acec"],
   ["XRP", "BEP20", "0xe2fc31f816a9b94326492132018c3aecc4a93ae1"],
@@ -284,6 +295,8 @@ const assetList = [
   ["LTC", "LTC", "MSeDRiNoH5Afr9b9rNo837hYzpxBXXqMZf"],
   ["LTC", "LTC", "M8T1B2Z97gVdvmfkQcAtYbEepune1tzGua"],
   ["LTC", "LTC", "LZEjckteAtWrugbsy9zU8VHEZ4iUiXo9Nm"],
+  ["LTC", "LTC", "MDwD5wYdeuoisfoaWKgeHK4Gq3YkbaCypJ"], //add on 07/08/2023
+  ["LTC", "LTC", "MVfJZDUEnPniCTYgidV7qW9EaPJoDMjb6b"], //add on 07/08/2023
   ["MATIC", "MATIC", "0xf977814e90da44bfa03b6295a0616a897441acec"],
   ["USDT", "MATIC", "0xe7804c37c13166ff0b37f5ae0bb07a3aebb6e245"],
   ["BUSD", "MATIC", "0xf977814e90da44bfa03b6295a0616a897441acec"],
@@ -429,5 +442,5 @@ module.exports = {
   },
   aptos: {
     owners: getOwners('APT')
-  },
+  }
 }
