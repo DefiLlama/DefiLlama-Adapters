@@ -33,14 +33,7 @@ async function tvlCLMM() {
 
 async function ammV4Tvl() {
   const owner = '5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1'
-  return sumTokens2({ owner, blacklistedTokens: [
-    '674PmuiDtgKx3uKuJ1B16f9m5L84eFvNwj3xDMvHcbo7', // $WOOD
-    'SNSNkV9zfG5ZKWQs6x4hxvBRV6s8SqMfSGCtECDvdMd', // SNS
-    'A7rqejP8LKN8syXMr4tvcKjs2iJ4WtZjXNs1e6qP3m9g', // ZION
-    'RdFHYW7mPJouuSpb5vEzUfbHeQedmQMuCoHN4VQkUDn', // LUCHOW
-    'RFn7mUjf24UFMBdDVmoggAii4gyHdRDDqmKzGVbkd8c', // FOUR
-    'FTD9EisrsMt5TW5wSTMqyXLh2o7xTb6KNuTiXgHhw8Q8', // POLYPLAY
-  ]})
+  return sumTokens2({ owner })
 }
 
 async function ammV2V3() {

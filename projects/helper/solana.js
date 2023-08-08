@@ -18,6 +18,8 @@ const blacklistedTokens_default = [
   'SNSNkV9zfG5ZKWQs6x4hxvBRV6s8SqMfSGCtECDvdMd', // SNS
   'A7rqejP8LKN8syXMr4tvcKjs2iJ4WtZjXNs1e6qP3m9g', // ZION
   '2HeykdKjzHKGm2LKHw8pDYwjKPiFEoXAz74dirhUgQvq', // SAO
+  'EP2aYBDD4WvdhnwWLUMyqU69g1ePtEjgYK6qyEAFCHTx', //KRILL
+  'C5xtJBKm24WTt3JiXrvguv7vHCe7CknDB7PNabp4eYX6', //TINY
 ]
 
 let connection, provider
@@ -346,18 +348,20 @@ async function sumTokens2({
   blacklistedTokens = [],
   allowError = false,
 }) {
+  blacklistedTokens.push(...blacklistedTokens_default)
   if (!tokensAndOwners.length) {
     if (owner) tokensAndOwners = tokens.map(t => [t, owner])
     if (owners.length) tokensAndOwners = tokens.map(t => owners.map(o => [t, o])).flat()
   }
   if (!tokensAndOwners.length && !tokens.length && (owner || owners.length > 0)) {
     for (const _owner of [...owners, owner]) {
-      for (const item of await getOwnerAllAccount(_owner)) {
-        if (item.amount !== '0') sdk.util.sumSingleBalance(balances, 'solana:' + item.mint, item.amount)
+      const data = await getOwnerAllAccount(_owner)
+      for (const item of data) {
+        if (blacklistedTokens.includes(item.mint) || +item.amount < 1e6) continue;
+        sdk.util.sumSingleBalance(balances, 'solana:' + item.mint, item.amount)
       }
     }
   }
-  blacklistedTokens.push(...blacklistedTokens_default)
 
   tokensAndOwners = tokensAndOwners.filter(([token]) => !blacklistedTokens.includes(token))
 
@@ -447,4 +451,5 @@ module.exports = {
   decodeAccount,
   getValidGeckoSolTokens,
   getOwnerAllAccount,
+  blacklistedTokens_default,
 };
