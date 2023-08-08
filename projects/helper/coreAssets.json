@@ -257,7 +257,7 @@
   "evmos": {
     "WEVMOS": "0xd4949664cd82660aae99bedc034a0dea8a0bd517",
     "STEVMOS": "0x2c68d1d6ab986ff4640b51e1f14c716a076e44c4",
-    "STATIM": "0xb5124fa2b2cf92b2d469b249433ba1c96bdf536d",
+    "STATOM": "0xb5124fa2b2cf92b2d469b249433ba1c96bdf536d",
     "ATOM": "0xc5e00d3b04563950941f7137b5afa3a534f0d6d6",
     "STRIDE": "0x8fa78ceb7f04118ec6d06aac37ca854691d8e963",
     "axlRETH": "0xe60ce2dfa6d4ad37ade1dcb7ac4d6c3a093b3a7e",
@@ -273,7 +273,8 @@
     "WETH": "0x5842c5532b61acf3227679a8b1bd0242a41752f2",
     "WBTC": "0xf80699dc594e00ae7ba200c7533a07c1604a106d",
     "FRAX": "0xe03494d0033687543a80c9b1ca7d6237f2ea8bd8",
-    "DIFF": "0x3f75ceabcdfed1aca03257dc6bdc0408e2b4b026"
+    "DIFF": "0x3f75ceabcdfed1aca03257dc6bdc0408e2b4b026",
+    "AXL_USDC": "0x15c3eb3b621d1bff62cba1c9536b7c1ae9149b57"
   },
   "oasis": {
     "WETH": "0x3223f17957ba502cbe71401d55a0db26e5f7c68f",
@@ -474,6 +475,7 @@
   },
   "telos": {
     "WTLOS": "0xd102ce6a4db07d247fcc28f366a623df0938ca9e",
+    "WTLOS_1": "0xdc2393dc10734bf153153038943a5deb42b209cd",
     "ETH": "0xfa9343c3897324496a05fc75abed6bac29f8a40f",
     "WBTC": "0xf390830df829cf22c53c8840554b98eafc5dcbc2",
     "USDC": "0x818ec0a7fe18ff94269904fced6ae3dae6d6dc0b",
@@ -670,6 +672,7 @@
   },
   "ultron": {
     "wULX": "0x3a4f06431457de873b588846d139ec0d86275d54",
+    "wULX_1": "0xb1183357745d3fd7d291e42a2c4b478cdb5710c6",
     "wETH": "0x2318bf5809a72aabadd15a3453a18e50bbd651cd",
     "wBTC": "0xd2b86a80a8f30b83843e247a50ecdc8d843d87dd",
     "BUSD": "0xc7cac85c1779d2b8ada94effff49a4754865e2e4",
@@ -1215,28 +1218,8 @@
     "USDT": "USDT"
   },
   "elrond": {
-    "SUPER": "SUPER-507aa6",
     "WEGLD": "WEGLD-bd4d79",
-    "LAND": "LAND-40f26f",
-    "CHECKR": "CHECKR-60108b",
-    "ITHEUM": "ITHEUM-df6f26",
-    "ISET": "ISET-84e55e",
-    "MEX": "MEX-455c57",
-    "ASH": "ASH-a642d1",
-    "RIDE": "RIDE-7d18e9",
-    "QWT": "QWT-46ac01",
-    "AERO": "AERO-458bbf",
-    "VITAL": "erd1qqqqqqqqqqqqqpgq3ahw8fctzfnwgvq2g4hjsqzkkvgl9ksr2jps646dnj",
-    "TLC": "TLC-1a2357",
-    "BHAT": "BHAT-c1fde3",
-    "CRT": "CRT-52decf",
-    "BSK": "BSK-baa025",
-    "UTK": "UTK-2f80e9",
-    "ZPAY": "ZPAY-247875",
-    "KRO": "KRO-df97ec",
-    "EGLD": "0x0000000000000000000000000000000000000000",
-    "KOSON": "KOSON-5dd4fa",
-    "CTP": "CTP-298075"
+    "USDC": "USDC-c76f1f"
   },
   "bitindi": {
     "WBNI": "0x15E162205421dc3A47b15A1A740FbF5EAbB77921"
@@ -1256,7 +1239,8 @@
     "WLOOP": "0x3936D20a39eD4b0d44EaBfC91757B182f14A38d5"
   },
   "rpg": {
-    "WRPG": "0x71d9cfd1b7adb1e8eb4c193ce6ffbe19b4aee0db"
+    "WRPG": "0x71d9cfd1b7adb1e8eb4c193ce6ffbe19b4aee0db",
+    "USDT": "0x8e8816a1747fddc5f8b45d2e140a425d3788f659"
   },
   "map": {
     "BUSD": "0x35bf4004c3fc9f509259d4942da6bae3669e1db1",
@@ -1330,6 +1314,7 @@
     "ETH": "0x02dcdd04e3f455d838cd1249292c58f3b79e3c3c",
     "USDC": "0x15D38573d2feeb82e7ad5187aB8c1D52810B1f07",
     "USDT": "0x0Cb6F5a34ad42ec934882A05265A7d5F59b51A2f",
+    "HEX": "0x2b591e99afe9f32eaa6214f7b7629768c40eeb39",
     "DAI": "0xefd766ccb38eaf1dfd701853bfce31359239f305"
   },
   "onus": {
@@ -1343,5 +1328,23 @@
   "stacks": {
     "WSTX": "SP1Z92MPDQEWZXW36VX71Q25HKF5K2EPCJ304F275.wstx-token-v4a",
     "WBTC": "SP3DX3H4FEYZJZ586MFBS25ZW3HZDMEW92260R2PR.Wrapped-Bitcoin::wrapped-bitcoin"
+  },
+  "neon_evm": {
+    "WNEON": "0xb14760c064a1b9eaf9ec5a8a421971e40a51b59c"
+  },
+  "tenet": {
+    "WTENET": "0xd6cb8a253e12893b0cf39ca78f7d858652cca1fe"
+  },
+  "mantle": {
+    "WMNT": "0x78c1b0c915c4faa5fffa6cabf0219da63d7f4cb8",
+    "WETH": "0xdeaddeaddeaddeaddeaddeaddeaddeaddead1111",
+    "USDT": "0x201eba5cc46d216ce6dc03f6a759e8e766e956ae",
+    "USDC": "0x09Bc4E0D864854c6aFB6eB9A9cdF58aC190D0dF9"
+  },
+  "linea": {
+    "WETH": "0xe5D7C2a44FfDDf6b295A15c148167daaAf5Cf34f"
+  },
+  "base": {
+    "WETH": "0x4200000000000000000000000000000000000006"
   }
 }
