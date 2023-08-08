@@ -73,7 +73,6 @@ module.exports = {
     tvl: getUniTVL({ factory: '0x43eA90e2b786728520e4f930d2A71a477BF2737C', useDefaultCoreAssets: true, }),
   },
   arbitrum_nova: { tvl, },
-  base: { tvl, },
   //moved kava to trident adapter
   //kava: {  //  tvl: kavaTridentTvl,  //},
 }
