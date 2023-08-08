@@ -9,7 +9,8 @@ const { AnchorProvider: Provider, Wallet, } = require("@project-serum/anchor");
 const { sleep, sliceIntoChunks, log, } = require('./utils')
 const { decodeAccount } = require('./utils/solana/layout')
 
-const sdk = require('@defillama/sdk')
+const sdk = require('@defillama/sdk');
+const { TOKEN_PROGRAM_ID } = require('@project-serum/anchor/dist/cjs/utils/token');
 
 const blacklistedTokens_default = [
   'CowKesoLUaHSbAMaUxJUj7eodHHsaLsS65cy8NFyRDGP',
@@ -17,6 +18,8 @@ const blacklistedTokens_default = [
   'SNSNkV9zfG5ZKWQs6x4hxvBRV6s8SqMfSGCtECDvdMd', // SNS
   'A7rqejP8LKN8syXMr4tvcKjs2iJ4WtZjXNs1e6qP3m9g', // ZION
   '2HeykdKjzHKGm2LKHw8pDYwjKPiFEoXAz74dirhUgQvq', // SAO
+  'EP2aYBDD4WvdhnwWLUMyqU69g1ePtEjgYK6qyEAFCHTx', //KRILL
+  'C5xtJBKm24WTt3JiXrvguv7vHCe7CknDB7PNabp4eYX6', //TINY
 ]
 
 let connection, provider
@@ -92,6 +95,29 @@ async function getTokenDecimals(tokens) {
     tokenSupply.data.forEach(({ id, result }) => res[id] = result.value.decimals)
   }
   return res
+}
+
+function formOwnerBalanceQuery(owner, programId = TOKEN_PROGRAM_ID) {
+  return {
+    jsonrpc: "2.0",
+    id: 1,
+    method: "getTokenAccountsByOwner",
+    params: [
+      owner,
+      { programId: String(programId) },
+      { encoding: "jsonParsed", },
+    ],
+  }
+}
+async function getOwnerAllAccount(owner) {
+  const tokenBalance = await axios.post(endpoint(), formOwnerBalanceQuery(owner));
+  return tokenBalance.data.result.value.map(i => ({
+    account: i.pubkey,
+    mint: i.account.data.parsed.info.mint,
+    amount: i.account.data.parsed.info.tokenAmount.amount,
+    uiAmount: i.account.data.parsed.info.tokenAmount.uiAmount,
+    decimals: i.account.data.parsed.info.tokenAmount.decimals,
+  }))
 }
 
 function formTokenBalanceQuery(token, account) {
@@ -322,11 +348,20 @@ async function sumTokens2({
   blacklistedTokens = [],
   allowError = false,
 }) {
+  blacklistedTokens.push(...blacklistedTokens_default)
   if (!tokensAndOwners.length) {
     if (owner) tokensAndOwners = tokens.map(t => [t, owner])
     if (owners.length) tokensAndOwners = tokens.map(t => owners.map(o => [t, o])).flat()
   }
-  blacklistedTokens.push(...blacklistedTokens_default)
+  if (!tokensAndOwners.length && !tokens.length && (owner || owners.length > 0)) {
+    for (const _owner of [...owners, owner]) {
+      const data = await getOwnerAllAccount(_owner)
+      for (const item of data) {
+        if (blacklistedTokens.includes(item.mint) || +item.amount < 1e6) continue;
+        sdk.util.sumSingleBalance(balances, 'solana:' + item.mint, item.amount)
+      }
+    }
+  }
 
   tokensAndOwners = tokensAndOwners.filter(([token]) => !blacklistedTokens.includes(token))
 
@@ -415,4 +450,6 @@ module.exports = {
   readBigUInt64LE,
   decodeAccount,
   getValidGeckoSolTokens,
+  getOwnerAllAccount,
+  blacklistedTokens_default,
 };
