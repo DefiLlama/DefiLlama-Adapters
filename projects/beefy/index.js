@@ -46,6 +46,7 @@ const chains = {
   moonriver: 1285,
   kava: 2222,
   canto: 7700,
+  base: 8453,
   arbitrum: 42161,
   celo: 42220,
   oasis: 42262,

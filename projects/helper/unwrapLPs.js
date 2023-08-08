@@ -733,7 +733,7 @@ async function sumTokens2({
   log(chain, 'summing tokens', tokensAndOwners.length)
 
   if (chain === 'tron') {
-    const tokensAndOwnersChunks = sliceIntoChunks(tokensAndOwners, 3)
+    const tokensAndOwnersChunks = sliceIntoChunks(tokensAndOwners, 1)
     for (const toa of tokensAndOwnersChunks) {
       await sumTokens(balances, toa, block, chain, transformAddress, { resolveLP, unwrapAll, blacklistedLPs, skipFixBalances: true, abis, permitFailure, })
     }
