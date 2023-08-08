@@ -6,7 +6,6 @@ const dexTVL = getUniTVL({
     factory: FACTORY,
     useDefaultCoreAssets: true,
     fetchBalances: true,
-    chain: 'base',
 })
 
 
