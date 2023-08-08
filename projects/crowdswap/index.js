@@ -25,7 +25,9 @@ async function tvl(_, _b, _cb, { api, }) {
 const config = {
   ethereum: { factory: '0xBeA843A2DC516c6F38F159a6a55e80Ec40Cf2286', fromBlock: 16882649, },
   arbitrum: { factory: '0x9ff74eea1e7f0f8ee437b70d68f7cdc1a1030642', fromBlock: 91681087, },
+  arbitrum: { factory: '0xd61B1c7974DFBC4eD60ea5625f0Ba08E7C80D99a', fromBlock: 114501051, },
   polygon: { factory: '0xab7dac1daf712693539d770a967a9bc7ba47470c', fromBlock: 37984740, },
+  polygon: { factory: '0x14Fb5ABeA0578B37D9E1A831Bb7e77Bd3d7684a6', fromBlock: 45261628, },
   bsc: { factory: '0x08f65111cb9b517b10e5c1e63cb2224467e7988a', fromBlock: 25927093, },
   era: { factory: '0x049D3809043d137591687170Fc323DBcDFe83283', fromBlock: 2714942, },
 }
