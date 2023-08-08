@@ -132,41 +132,43 @@ async function tangiblePOL(api) {
   })
 }
 
-async function tangiblePOL(_pearlPairApi, block) {
-  
-  const result = await axios.get("https://api.pearl.exchange/api/v15/pools");
-  const pools = result.data.data.filter(
+async function tangiblePOL(api) {
+
+  //pearl pair api address
+  const pearlPairApi = await api.call({
+    abi: apGetAddress,
+    target: ADDRESS_PROVIDER_ADDRESS,
+    params: ["0xd1e0c1a56a62f2e6553b45bde148c89c51a01f766c23f4bb2c612bd2c822f711"],//keccak of paerl api address
+  })
+
+  const { data } = await getConfig('tangible', "https://api.pearl.exchange/api/v15/pools");
+  const pools = data.filter(
     (pool) =>
       (["DAI", "USDC", "USDT"].includes(pool.token0.symbol) &&
         pool.token1.symbol === "USDR") ||
       (["DAI", "USDC", "USDT"].includes(pool.token1.symbol) &&
         pool.token0.symbol === "USDR"),
-  );
-  const multisigAddress = "0x100fCC635acf0c22dCdceF49DD93cA94E55F0c71";
-  
-  const liquidity = await Promise.all(
-    pools.map(async (pool) => {
-      const pair = (await sdk.api.abi.call({
-        abi: getPair,
-        target: _pearlPairApi,
-        params: [pool.address, multisigAddress],
-        chain, block,
-      })).output
-  
-      const lpPrice =
-        pool.totalSupply === 0
-          ? 0
-          : Math.floor(pool.tvl / pool.totalSupply);
-  
-      return pair.account_gauge_balance * lpPrice;
-    }),
-  ).then((pools) =>
-    pools.reduce(
-      (acc, poolLiquidity) => acc + poolLiquidity,
-      0,
-    ),
-  );
-  return liquidity;
+  ).map(i => i.address)
+
+  const multisigAddress = "0x100fCC635acf0c22dCdceF49DD93cA94E55F0c71"
+  const [lpBals, tokens0, tokens1, totalSupplies, reserves] = await Promise.all([
+    api.multiCall({ abi: getPair, target: pearlPairApi, calls: pools.map(p => ({ params: [p, multisigAddress]})) }),
+    api.multiCall({ abi: 'address:token0', calls: pools }),
+    api.multiCall({ abi: 'address:token1', calls: pools }),
+    api.multiCall({ abi: 'uint256:totalSupply', calls: pools }),
+    api.multiCall({ abi: "function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)", calls: pools }),
+  ])
+
+  const blacklist = [USDR, TNGBL]
+  lpBals.forEach((lpBal, i) => {
+    const ratio = lpBal.account_gauge_balance / totalSupplies[i]
+    if (!blacklist.includes(tokens0[i].toLowerCase()))
+      api.add(tokens0[i], reserves[i]._reserve0 * ratio)
+
+    if (!blacklist.includes(tokens1[i].toLowerCase()))
+      api.add(tokens1[i], reserves[i]._reserve1 * ratio)
+
+  })
 }
 
 module.exports = {
