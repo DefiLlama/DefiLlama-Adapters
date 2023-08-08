@@ -12,9 +12,10 @@ const chainIds = {
 
 function chainTvl(chain) {
   return async (timestamp, ethBlock, {[chain]: block}, { api }) => {
-    const url = `${http_api_url}?chainId=${api.getChainId()}`;
-    const neuron_response = await getConfig('neuron/'+chain, url);
-    return api.sumTokens({ owner: operator, tokens: neuron_response.map(i => i[0]) })
+    const urlTvl = `${http_api_url}?chainId=${api.getChainId()}`;
+    const neuron_response_tvl = await getConfig('neuron/'+chain, urlTvl);
+    var [address, tokensAndAmounts] = neuron_response_tvl;
+    return api.sumTokens({ owner: address, tokens: tokensAndAmounts.map(i => i[0]) })
   };
 }
 
