@@ -1,21 +1,12 @@
-const sdk = require("@defillama/sdk");
+const { nullAddress } = require("./tokenMapping")
 
-function getLiquityTvl(ETH_ADDRESS, TROVE_MANAGER_ADDRESS, chain) {
-  return async (_, ethBlock, chainBlocks) => {
-    const block = chainBlocks[chain]
-
-    const troveEthTvl = (
-      await sdk.api.abi.call({
-        target: TROVE_MANAGER_ADDRESS,
-        abi: "uint256:getEntireSystemColl",
-        block,
-        chain,
-      })
-    ).output;
-
-    return {
-      [chain+':'+ETH_ADDRESS]: troveEthTvl,
-    };
+function getLiquityTvl(TROVE_MANAGER_ADDRESS, { nonNativeCollateralToken = false, abis = {} } = {}) {
+  return async (_, ethBlock, chainBlocks, { api }) => {
+    const activePool = await api.call({ target: TROVE_MANAGER_ADDRESS, abi: abis.activePool ?? "address:activePool", })
+    const defaultPool = await api.call({ target: TROVE_MANAGER_ADDRESS, abi: "address:defaultPool", })
+    let token = nullAddress
+    if (nonNativeCollateralToken) token = await api.call({ target: TROVE_MANAGER_ADDRESS, abi: abis.collateralToken ?? "address:collateralToken", })
+    return api.sumTokens({ owners: [activePool, defaultPool], tokens: [token] })
   }
 }
 
