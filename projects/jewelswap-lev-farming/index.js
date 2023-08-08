@@ -47,12 +47,14 @@ async function tvl() {
       case "FARM-9ed1f9": lpToken = "ALP-5f9191"; break;
       case "FARM-ccefc2": lpToken = "ALP-0fe50a"; break;
       case "FARM-795466": lpToken = "ALP-afc922"; break;
+      case "FARM-b637f0": lpToken = "ALP-713ae8"; break;
+      case "FARM-83c131": lpToken = "ALP-f7dee1"; break;
       default: lpToken = null;
     }
     if (lpToken) api.add(lpToken, nft.balance)
   })
   await oneDexFarm(api)
-  return sumTokens({ owners: [LENDING_POOL_FARMS], balances: api.getBalances() }) 
+  return sumTokens({ owners: [LENDING_POOL_FARMS], balances: api.getBalances() })
 }
 
 async function oneDexFarm(api) {
