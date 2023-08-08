@@ -696,7 +696,6 @@ async function sumTokens2({
     if (!owners || !owners.length) owners = [owner]
     const cTokens = (await Promise.all(owners.map(i => covalentGetTokens(i, api.chain)))).flat()
     tokens = [...cTokens, ...tokens]
-    console.log('cTokens', cTokens.length)
   }
 
   if (resolveNFTs) {
