@@ -9,7 +9,8 @@ const { AnchorProvider: Provider, Wallet, } = require("@project-serum/anchor");
 const { sleep, sliceIntoChunks, log, } = require('./utils')
 const { decodeAccount } = require('./utils/solana/layout')
 
-const sdk = require('@defillama/sdk')
+const sdk = require('@defillama/sdk');
+const { TOKEN_PROGRAM_ID } = require('@project-serum/anchor/dist/cjs/utils/token');
 
 const blacklistedTokens_default = [
   'CowKesoLUaHSbAMaUxJUj7eodHHsaLsS65cy8NFyRDGP',
@@ -92,6 +93,29 @@ async function getTokenDecimals(tokens) {
     tokenSupply.data.forEach(({ id, result }) => res[id] = result.value.decimals)
   }
   return res
+}
+
+function formOwnerBalanceQuery(owner, programId = TOKEN_PROGRAM_ID) {
+  return {
+    jsonrpc: "2.0",
+    id: 1,
+    method: "getTokenAccountsByOwner",
+    params: [
+      owner,
+      { programId: String(programId) },
+      { encoding: "jsonParsed", },
+    ],
+  }
+}
+async function getOwnerAllAccount(owner) {
+  const tokenBalance = await axios.post(endpoint(), formOwnerBalanceQuery(owner));
+  return tokenBalance.data.result.value.map(i => ({
+    account: i.pubkey,
+    mint: i.account.data.parsed.info.mint,
+    amount: i.account.data.parsed.info.tokenAmount.amount,
+    uiAmount: i.account.data.parsed.info.tokenAmount.uiAmount,
+    decimals: i.account.data.parsed.info.tokenAmount.decimals,
+  }))
 }
 
 function formTokenBalanceQuery(token, account) {
@@ -326,6 +350,13 @@ async function sumTokens2({
     if (owner) tokensAndOwners = tokens.map(t => [t, owner])
     if (owners.length) tokensAndOwners = tokens.map(t => owners.map(o => [t, o])).flat()
   }
+  if (!tokensAndOwners.length && !tokens.length && (owner || owners.length > 0)) {
+    for (const _owner of [...owners, owner]) {
+      for (const item of await getOwnerAllAccount(_owner)) {
+        if (item.amount !== '0') sdk.util.sumSingleBalance(balances, 'solana:' + item.mint, item.amount)
+      }
+    }
+  }
   blacklistedTokens.push(...blacklistedTokens_default)
 
   tokensAndOwners = tokensAndOwners.filter(([token]) => !blacklistedTokens.includes(token))
@@ -415,4 +446,5 @@ module.exports = {
   readBigUInt64LE,
   decodeAccount,
   getValidGeckoSolTokens,
+  getOwnerAllAccount,
 };
