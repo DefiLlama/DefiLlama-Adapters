@@ -61,5 +61,9 @@ module.exports = uniV3Export({
   base: {
     factory: "0xc35DADB65012eC5796536bD9864eD8773aBc74C4",
     fromBlock: 1759510,
+    blacklistedTokens: [
+      '0xcfca86136af5611e4bd8f82d83c7800ca65d875b',
+      '0x0b0fd8317735dd9fe611fbc7e1d138149f8ebcea',
+    ]
   },
 });
