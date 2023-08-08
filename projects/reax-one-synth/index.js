@@ -9,7 +9,9 @@ module.exports = {
         ADDRESSES.mantle.WETH,
         ADDRESSES.mantle.USDT,
         '0xCAbAE6f6Ea1ecaB08Ad02fE02ce9A44F09aebfA2',
-        ADDRESSES.mantle.WMNT
+        ADDRESSES.mantle.WMNT,
+        ADDRESSES.mantle.USDC
+
       ]
     }),
   }
