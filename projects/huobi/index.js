@@ -45,6 +45,7 @@ const config = {
       'TF2fmSbg5HAD34KPUH7WtWCxxvgXHohzYM',
       'THZovMcKoZaV9zzFTWteQYd2f3NEvnzxAM',
       'TZ1SsapyhKNWaVLca6P2qgVzkHTdk6nkXa',
+      'TDvf1dSBhR7dEskJs17HxGHheJrjXhiFyM',
     ]
   },
   algorand: {
