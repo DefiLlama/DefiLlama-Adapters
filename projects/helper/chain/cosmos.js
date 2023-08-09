@@ -30,6 +30,7 @@ const endPoints = {
   neutron: "https://rest-kralum.neutron-1.neutron.org",
   quasar: "https://quasar-api.polkachu.com",
   gravitybridge: "https://rest.cosmos.directory/gravitybridge",
+  aura: "https://lcd.aura.network",
 };
 
 const chainSubpaths = {
