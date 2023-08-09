@@ -52,6 +52,9 @@ const fixBalancesTokens = {
   telos: {
     [ADDRESSES.telos.WTLOS_1]: { coingeckoId: "telos", decimals: 18 },
   },
+  aura: {
+    'uaura': { coingeckoId: 'aura-network', decimals: 6 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
