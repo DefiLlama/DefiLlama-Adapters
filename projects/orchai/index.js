@@ -25,6 +25,7 @@ async function oraiTVL() {
 
 module.exports = {
   timetravel: false,
+  methodology: "Staked tokens are counted as TVL",
   orai: {
     tvl: oraiTVL,
   },
