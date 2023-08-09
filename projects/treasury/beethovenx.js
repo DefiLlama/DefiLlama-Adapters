@@ -1,4 +1,4 @@
-const ADDRESSES = require('../helper/coreAssets.json')
+const ADDRESSES = require("../helper/coreAssets.json");
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 const ftm = "0xa1e849b1d6c2fd31c63eef7822e9e0632411ada7";
