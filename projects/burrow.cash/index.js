@@ -1,4 +1,5 @@
-const { call, sumSingleBalance } = require('../helper/near')
+const { call, sumSingleBalance } = require('../helper/chain/near')
+const { default: BigNumber } = require("bignumber.js")
 const BURROW_CONTRACT = 'contract.main.burrow.near'
 
 function tvl(borrowed = false) {
@@ -6,17 +7,18 @@ function tvl(borrowed = false) {
     const balances = {};
     const assetsCallResponse = await call(BURROW_CONTRACT, 'get_assets_paged', {});
 
-    const assets = assetsCallResponse.map(([asset]) => asset);
-    const amount = borrowed ? assetsCallResponse.map(a => a[1].borrowed.balance) 
-      : assetsCallResponse.map(a => a[1].supplied.balance - a[1].borrowed.balance);
-
-    for (let asset of assets) {
-      sumSingleBalance(balances, asset, amount[assets.indexOf(asset)]);
-    };
+    assetsCallResponse.forEach(([token, asset]) => {
+      const extraDecimals = asset.config.extra_decimals;
+      const amount = borrowed ?
+        BigNumber(asset.borrowed.balance) :
+        BigNumber(asset.supplied.balance).plus(BigNumber(asset.reserved)).minus(BigNumber(asset.borrowed.balance));
+      const adjustedAmount = amount.shiftedBy(-1 * extraDecimals);
+      sumSingleBalance(balances, token, adjustedAmount);
+    });
 
     return balances;
   }
-};
+}
 
 module.exports = {
   near: {
@@ -26,4 +28,4 @@ module.exports = {
   misrepresentedTokens: true,
   timetravel: false,
   methodology: 'Summed up all the tokens deposited in their main lending contract'
-};
+}

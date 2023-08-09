@@ -1,28 +1,11 @@
-const { request, gql } = require("graphql-request");
-var url = "https://thegraph.astroswap.app/subgraphs/name/astro";
-
-async function fetch(timestamp) {
-  var query = gql`
-    query overviewCharts {
-      pancakeDayDatas(
-        first: 1000
-        skip: 0
-        where: { 
-            date_gte: ${timestamp - 86400} 
-            date_lt: ${timestamp}
-        }
-        orderBy: date
-        orderDirection: asc
-      ) {
-        totalLiquidityUSD
-      }
-    }
-  `;
-  const response = await request(url, query);
-  return response.pancakeDayDatas[0].totalLiquidityUSD;
-}
+const { getUniTVL } = require('./helper/unknownTokens')
 
 module.exports = {
-  timetravel: false,
-  fetch,
+  misrepresentedTokens: true,
+  velas: {
+    tvl: getUniTVL({
+      factory: '0xe82d721A6CdeC2f86e9Fca074Ff671c8621F8459', useDefaultCoreAssets: true,
+      blacklist: ['0xcd7509b76281223f5b7d3ad5d47f8d7aa5c2b9bf', '0xd12f7a98c0d740e7ec82e8caf94eb79c56d1b623',],
+    })
+  },
 };

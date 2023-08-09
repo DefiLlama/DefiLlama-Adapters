@@ -1,24 +1,68 @@
-const BigNumber = require("bignumber.js");
+const ADDRESSES = require('./coreAssets.json')
 const axios = require("axios");
 const http = require('./http')
-const { Connection, PublicKey } = require("@solana/web3.js")
-const BufferLayout = require("@solana/buffer-layout")
-const { MintLayout, TOKEN_PROGRAM_ID } = require("@solana/spl-token")
-const { sleep, sliceIntoChunks } = require('./utils')
+const { getEnv } = require('./env')
+const { transformBalances: transformBalancesOrig, transformDexBalances, } = require('./portedTokens.js')
+const { getUniqueAddresses } = require('./tokenMapping')
+const { Connection, PublicKey, Keypair } = require("@solana/web3.js")
+const { AnchorProvider: Provider, Wallet, } = require("@project-serum/anchor");
+const { sleep, sliceIntoChunks, log, } = require('./utils')
+const { decodeAccount } = require('./utils/solana/layout')
 
-const solscan_base = "https://public-api.solscan.io/account/";
-async function getSolBalance(account) {
-  const solBalance = await axios
-    .get(solscan_base + account)
-    .then((r) => r.data.lamports);
-  return new BigNumber(solBalance).div(1e9).toString(10);
+const sdk = require('@defillama/sdk');
+const { TOKEN_PROGRAM_ID } = require('@project-serum/anchor/dist/cjs/utils/token');
+
+const blacklistedTokens_default = [
+  'CowKesoLUaHSbAMaUxJUj7eodHHsaLsS65cy8NFyRDGP',
+  '674PmuiDtgKx3uKuJ1B16f9m5L84eFvNwj3xDMvHcbo7', // $WOOD
+  'SNSNkV9zfG5ZKWQs6x4hxvBRV6s8SqMfSGCtECDvdMd', // SNS
+  'A7rqejP8LKN8syXMr4tvcKjs2iJ4WtZjXNs1e6qP3m9g', // ZION
+  '2HeykdKjzHKGm2LKHw8pDYwjKPiFEoXAz74dirhUgQvq', // SAO
+  'EP2aYBDD4WvdhnwWLUMyqU69g1ePtEjgYK6qyEAFCHTx', //KRILL
+  'C5xtJBKm24WTt3JiXrvguv7vHCe7CknDB7PNabp4eYX6', //TINY
+]
+
+let connection, provider
+
+const endpoint = () => getEnv('SOLANA_RPC')
+
+function getConnection() {
+  if (!connection) connection = new Connection(endpoint())
+  return connection
 }
 
-const endpoint = "https://solana-api.projectserum.com/";
+function getProvider() {
+  if (!provider) {
+    const dummy_keypair = Keypair.generate();
+    const wallet = new Wallet(dummy_keypair);
+
+    provider = new Provider(
+      getConnection(), wallet
+    );
+  }
+  return provider;
+}
+
+
+async function getSolBalances(accounts) {
+  const formBody = key => ({ "jsonrpc": "2.0", "id": 1, "method": "getBalance", "params": [key] })
+  const tokenBalances = []
+  const chunks = sliceIntoChunks(accounts, 99)
+  for (let chunk of chunks) {
+    const bal = await axios.post(endpoint(), chunk.map(formBody))
+    tokenBalances.push(...bal.data)
+  }
+  return tokenBalances.reduce((a, i) => a + i.result.value, 0)
+}
+
+async function getSolBalance(account) {
+  return getSolBalances([account])
+}
+
 const TOKEN_LIST_URL = "https://cdn.jsdelivr.net/gh/solana-labs/token-list@main/src/tokens/solana.tokenlist.json"
 
 async function getTokenSupply(token) {
-  const tokenSupply = await axios.post("https://api.mainnet-beta.solana.com", {
+  const tokenSupply = await axios.post(endpoint(), {
     jsonrpc: "2.0",
     id: 1,
     method: "getTokenSupply",
@@ -27,21 +71,69 @@ async function getTokenSupply(token) {
   return tokenSupply.data.result.value.uiAmount;
 }
 
-async function getTokenBalance(token, account) {
-  const tokenBalance = await axios.post(endpoint, {
+async function getGeckoSolTokens() {
+  const tokens = await getTokenList()
+  const tokenSet = new Set()
+  tokens.filter(i => i.extensions?.coingeckoId && i.chainId === 101).forEach(i => tokenSet.add(i.address))
+  return tokenSet
+}
+
+
+async function getValidGeckoSolTokens() {
+  const tokens = await getTokenList()
+  const tokenSet = new Set()
+  tokens.filter(i => i.extensions?.coingeckoId && i.chainId === 101 && !i.name.includes('(Wormhole v1)')).forEach(i => tokenSet.add(i.address))
+  return tokenSet
+}
+
+async function getTokenDecimals(tokens) {
+  const calls = tokens => tokens.map((t, i) => ({ jsonrpc: '2.0', id: t, method: 'getTokenSupply', params: [t] }))
+  const res = {}
+  const chunks = sliceIntoChunks(tokens, 99)
+  for (const chunk of chunks) {
+    const tokenSupply = await axios.post(endpoint(), calls(chunk))
+    tokenSupply.data.forEach(({ id, result }) => res[id] = result.value.decimals)
+  }
+  return res
+}
+
+function formOwnerBalanceQuery(owner, programId = TOKEN_PROGRAM_ID) {
+  return {
+    jsonrpc: "2.0",
+    id: 1,
+    method: "getTokenAccountsByOwner",
+    params: [
+      owner,
+      { programId: String(programId) },
+      { encoding: "jsonParsed", },
+    ],
+  }
+}
+async function getOwnerAllAccount(owner) {
+  const tokenBalance = await axios.post(endpoint(), formOwnerBalanceQuery(owner));
+  return tokenBalance.data.result.value.map(i => ({
+    account: i.pubkey,
+    mint: i.account.data.parsed.info.mint,
+    amount: i.account.data.parsed.info.tokenAmount.amount,
+    uiAmount: i.account.data.parsed.info.tokenAmount.uiAmount,
+    decimals: i.account.data.parsed.info.tokenAmount.decimals,
+  }))
+}
+
+function formTokenBalanceQuery(token, account) {
+  return {
     jsonrpc: "2.0",
     id: 1,
     method: "getTokenAccountsByOwner",
     params: [
       account,
-      {
-        mint: token,
-      },
-      {
-        encoding: "jsonParsed",
-      },
+      { mint: token, },
+      { encoding: "jsonParsed", },
     ],
-  });
+  }
+}
+async function getTokenBalance(token, account) {
+  const tokenBalance = await axios.post(endpoint(), formTokenBalanceQuery(token, account));
   return tokenBalance.data.result.value.reduce(
     (total, account) =>
       total + account.account.data.parsed.info.tokenAmount.uiAmount,
@@ -49,9 +141,56 @@ async function getTokenBalance(token, account) {
   );
 }
 
+async function getTokenBalances(tokensAndAccounts) {
+  const body = tokensAndAccounts.map(([token, account]) => formTokenBalanceQuery(token, account))
+  const tokenBalances = await axios.post(endpoint(), body);
+  const balances = {}
+  tokenBalances.data.forEach((v, i )=> {
+    if (!v.result) console.log(v, tokensAndAccounts[i])
+  } )
+  tokenBalances.data.forEach(({ result: { value } }) => {
+    value.forEach(({ account: { data: { parsed: { info: { mint, tokenAmount: { amount } } } } } }) => {
+      sdk.util.sumSingleBalance(balances, mint, amount)
+    })
+  })
+  return balances
+}
+
+async function getTokenAccountBalances(tokenAccounts, { individual = false, chunkSize = 99, allowError = false, } = {}) {
+  log('total token accounts: ', tokenAccounts.length)
+  const formBody = account => ({ method: "getAccountInfo", jsonrpc: "2.0", params: [account, { encoding: "jsonParsed", commitment: "confirmed" }], id: account })
+  const balancesIndividual = []
+  const balances = {}
+  const chunks = sliceIntoChunks(tokenAccounts, chunkSize)
+  for (const chunk of chunks) {
+    const body = chunk.map(formBody)
+    const data = await axios.post(endpoint(), body);
+    data.data.forEach(({ result: { value } }, i) => {
+      if (!value || !value.data.parsed) {
+        if (tokenAccounts[i].toString() === '11111111111111111111111111111111') {
+          log('Null account: skipping it')
+          return;
+        }
+        console.log(data.data.map(i => i.result.value)[i], tokenAccounts[i].toString())
+        if (allowError) return;
+      }
+      const { data: { parsed: { info: { mint, tokenAmount: { amount } } } } } = value
+      sdk.util.sumSingleBalance(balances, mint, amount)
+      balancesIndividual.push({ mint, amount })
+    })
+    if (chunks.length > 4) {
+      log('waiting before more calls')
+      await sleep(300)
+    }
+  }
+  if (individual) return balancesIndividual
+  return balances
+}
+
+
 async function getTokenAccountBalance(account) {
   const tokenBalance = await axios.post(
-    endpoint,
+    endpoint(),
     {
       jsonrpc: "2.0",
       id: 1,
@@ -75,77 +214,14 @@ async function getTokenList() {
   return tokenList
 }
 
-// tokenList is giant, Map lookups are more performant than object lookups so use a Map
-async function getTokenMap() {
-  return (await getTokenList()).reduce((map, token) => {
-    map.set(token.address, token);
-    return map;
-  }, new Map())
-}
-
-
-async function getCoingeckoId() {
-  const tokenlist = await getTokenList();
-  return address => tokenlist.find((t) => t.address === address)?.extensions
-    ?.coingeckoId;
+// Example: [[token1, account1], [token2, account2], ...]
+async function sumTokens(tokensAndOwners, balances = {}) {
+  return sumTokens2({ balances, tokensAndOwners, })
 }
 
 // Example: [[token1, account1], [token2, account2], ...]
-async function sumTokens(tokensAndAccounts) {
-  const tokenlist = await axios
-    .get(
-      "https://cdn.jsdelivr.net/gh/solana-labs/token-list@main/src/tokens/solana.tokenlist.json"
-    )
-    .then((r) => r.data.tokens);
-  const tokenBalances = await Promise.all(
-    tokensAndAccounts.map((t) => getTokenBalance(...t))
-  );
-  const balances = {};
-  for (let i = 0; i < tokensAndAccounts.length; i++) {
-    const token = tokensAndAccounts[i][0];
-    let coingeckoId = tokenlist.find((t) => t.address === token)?.extensions
-      ?.coingeckoId;
-    const replacementCoingeckoId = tokensAndAccounts[i][2];
-    if (coingeckoId === undefined) {
-      if (replacementCoingeckoId !== undefined) {
-        coingeckoId = replacementCoingeckoId;
-      } else {
-        throw new Error(`Solana token ${token} has no coingecko id`);
-      }
-    }
-    balances[coingeckoId] = (balances[coingeckoId] || 0) + tokenBalances[i];
-  }
-  return balances;
-}
-
-// Example: [[token1, account1], [token2, account2], ...]
-async function sumTokensUnknown(tokensAndAccounts) {
-  const tokenlist = await axios
-    .get(
-      "https://cdn.jsdelivr.net/gh/solana-labs/token-list@main/src/tokens/solana.tokenlist.json"
-    )
-    .then((r) => r.data.tokens);
-  const tokenBalances = await Promise.all(
-    tokensAndAccounts.map((t) => getTokenBalance(...t))
-  );
-  const balances = {};
-  for (let i = 0; i < tokensAndAccounts.length; i++) {
-    const token = tokensAndAccounts[i][0];
-    let coingeckoId = tokenlist.find((t) => t.address === token)?.extensions?.coingeckoId;
-    const replacementCoingeckoId = tokensAndAccounts[i][2];
-    if (coingeckoId === undefined) {
-      if (replacementCoingeckoId !== undefined) {
-        coingeckoId = replacementCoingeckoId;
-        balances[coingeckoId] = (balances[coingeckoId] || 0) + tokenBalances[i];
-      } else {
-        balances[token] = (balances[token] || 0) + tokenBalances[i];
-        console.log(`Solana token ${token} has no coingecko id`);
-      }
-    } else {
-      balances[coingeckoId] = (balances[coingeckoId] || 0) + tokenBalances[i];
-    }
-  }
-  return balances;
+async function sumTokensUnknown(tokensAndOwners) {
+  return sumTokens2({ tokensAndOwners, })
 }
 
 // accountsArray is an array of base58 address strings
@@ -157,13 +233,19 @@ async function getMultipleAccountsRaw(accountsArray) {
   ) {
     throw new Error("Expected accountsArray to be an array of strings");
   }
-  const accountsInfo = await axios.post("https://api.mainnet-beta.solana.com", {
-    jsonrpc: "2.0",
-    id: 1,
-    method: "getMultipleAccounts",
-    params: [accountsArray],
-  });
-  return accountsInfo.data.result.value;
+  const res = []
+  const chunks = sliceIntoChunks(accountsArray, 99)
+  for (const chunk of chunks) {
+    const accountsInfo = await axios.post(endpoint(), {
+      jsonrpc: "2.0",
+      id: 1,
+      method: "getMultipleAccounts",
+      params: [chunk],
+    })
+    res.push(...accountsInfo.data.result.value)
+  }
+
+  return res;
 }
 
 // Gets data in Buffers of all addresses, while preserving labels
@@ -196,11 +278,7 @@ async function getMultipleAccountBuffers(labeledAddresses) {
 // Example: [[token1, account1], [token2, account2], ...]
 async function sumOrcaLPs(tokensAndAccounts) {
   const [tokenlist, orcaPools] = await Promise.all([
-    axios
-      .get(
-        "https://cdn.jsdelivr.net/gh/solana-labs/token-list@main/src/tokens/solana.tokenlist.json"
-      )
-      .then((r) => r.data.tokens),
+    getTokenList(),
     axios.get("https://api.orca.so/pools").then((r) => r.data),
   ]);
   let totalUsdValue = 0;
@@ -219,113 +297,136 @@ async function sumOrcaLPs(tokensAndAccounts) {
   return totalUsdValue;
 }
 
-function exportDexTVL(DEX_PROGRAM_ID) {
+function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts) {
   return async () => {
-    const SOLANA_API_URL = "https://api.mainnet-beta.solana.com"
-    const connection = new Connection(SOLANA_API_URL)
+    if (!getTokenAccounts) getTokenAccounts = _getTokenAccounts
 
-    const TokenSwapLayout = BufferLayout.struct([
-      BufferLayout.u8("version"),
-      BufferLayout.u8("isInitialized"),
-      BufferLayout.u8("bumpSeed"),
-      BufferLayout.blob(32, "tokenProgramId"),
-      BufferLayout.blob(32, "tokenAccountA"),
-      BufferLayout.blob(32, "tokenAccountB"),
-      BufferLayout.blob(32, "tokenPool"),
-      BufferLayout.blob(32, "mintA"),
-      BufferLayout.blob(32, "mintB"),
-      BufferLayout.blob(32, "feeAccount"),
-      BufferLayout.blob(8, "tradeFeeNumerator"),
-      BufferLayout.blob(8, "tradeFeeDenominator"),
-      BufferLayout.blob(8, "ownerTradeFeeNumerator"),
-      BufferLayout.blob(8, "ownerTradeFeeDenominator"),
-      BufferLayout.blob(8, "ownerWithdrawFeeNumerator"),
-      BufferLayout.blob(8, "ownerWithdrawFeeDenominator"),
-      BufferLayout.blob(8, "hostFeeNumerator"),
-      BufferLayout.blob(8, "hostFeeDenominator"),
-      BufferLayout.u8("curveType"),
-      BufferLayout.blob(32, "curveParameters"),
-    ])
+    const tokenAccounts = await getTokenAccounts()
 
-    const tokenMap = await getTokenMap()
+    const chunks = sliceIntoChunks(tokenAccounts, 99)
+    const results = []
+    for (const chunk of chunks)
+      results.push(...await getTokenAccountBalances(chunk, { individual: true }))
+
+    const data = []
+    for (let i = 0; i < results.length; i = i + 2) {
+      const tokenA = results[i]
+      const tokenB = results[i + 1]
+      data.push({ token0: tokenA.mint, token0Bal: tokenA.amount, token1: tokenB.mint, token1Bal: tokenB.amount, })
+    }
+
+    const coreTokens = await getGeckoSolTokens()
+    return transformDexBalances({ chain: 'solana', data, blacklistedTokens: blacklistedTokens_default, coreTokens, })
+  }
+
+  async function _getTokenAccounts() {
+    const connection = getConnection()
+
 
     const programPublicKey = new PublicKey(DEX_PROGRAM_ID)
-
     const programAccounts = await connection.getParsedProgramAccounts(programPublicKey);
-
-    const validTokenAddresses = new Set();
+    const tokenAccounts = []
 
     programAccounts.forEach((account) => {
-      const tokenSwap = TokenSwapLayout.decode(account.account.data);
-      validTokenAddresses.add(new PublicKey(tokenSwap.mintA).toString());
-      validTokenAddresses.add(new PublicKey(tokenSwap.mintB).toString());
+      const tokenSwap = decodeAccount('tokenSwap', account.account);
+      tokenAccounts.push(tokenSwap.tokenAccountA.toString())
+      tokenAccounts.push(tokenSwap.tokenAccountB.toString())
     });
 
-    const tokenPoolMints = programAccounts.map(
-      (account) =>
-        new PublicKey(TokenSwapLayout.decode(account.account.data).tokenPool)
-    );
-
-    const poolAuthorityPubKeys = []
-    const chunks = sliceIntoChunks(tokenPoolMints, 99)
-    for (const chunk of chunks)
-      poolAuthorityPubKeys.push(...await connection
-        .getMultipleAccountsInfo(chunk)
-        .then((poolAccounts) =>
-          poolAccounts.map(
-            (account) =>
-              new PublicKey(MintLayout.decode(account.data).mintAuthority)
-          )
-        ))
-
-    const poolsTokenAccounts = []
-
-    for (const key of poolAuthorityPubKeys) {
-      poolsTokenAccounts.push(await connection.getParsedTokenAccountsByOwner(key, {
-        programId: TOKEN_PROGRAM_ID,
-      }))
-      await sleep(1000)
-    }
-    const balances = {};
-
-    poolsTokenAccounts.forEach((tokenAccounts) => {
-      const poolTokens = tokenAccounts.value.filter((account) =>
-        validTokenAddresses.has(account.account.data.parsed.info.mint)
-      );
-
-      const token1 = tokenMap.get(poolTokens[0].account.data.parsed.info.mint);
-      const token2 = tokenMap.get(poolTokens[1].account.data.parsed.info.mint);
-      const symbol1 = token1?.extensions?.coingeckoId;
-      const symbol2 = token2?.extensions?.coingeckoId;
-
-      let amount1 = poolTokens[0].account.data.parsed.info.tokenAmount.uiAmount;
-      let amount2 = poolTokens[1].account.data.parsed.info.tokenAmount.uiAmount;
-
-      // Future proofing - only add this pool's tokens to balances if one of the pool's tokens are listed on Coingecko
-      // As of March 23, 2022 all of Penguin Finance pools have at least one token listed on Coingecko
-      if (symbol1 || symbol2) {
-        // If one of the pool's tokens is not on Coingecko we will double the amount of the other token to get a pool TVL estimation
-        if (!symbol1 && symbol2) {
-          amount2 *= 2;
-          balances[symbol2] = (balances[symbol2] ?? 0) + amount2;
-        } else if (symbol1 && !symbol2) {
-          amount1 *= 2;
-          balances[symbol1] = (balances[symbol1] ?? 0) + amount1;
-        } else {
-          balances[symbol1] = (balances[symbol1] ?? 0) + amount1;
-          balances[symbol2] = (balances[symbol2] ?? 0) + amount2;
-        }
-      }
-    });
-
-    return balances;
+    return tokenAccounts
   }
 }
 
+async function sumTokens2({
+  balances = {},
+  tokensAndOwners = [],
+  tokens = [],
+  owners = [],
+  owner,
+  tokenAccounts = [],
+  solOwners = [],
+  blacklistedTokens = [],
+  allowError = false,
+}) {
+  blacklistedTokens.push(...blacklistedTokens_default)
+  if (!tokensAndOwners.length) {
+    if (owner) tokensAndOwners = tokens.map(t => [t, owner])
+    if (owners.length) tokensAndOwners = tokens.map(t => owners.map(o => [t, o])).flat()
+  }
+  if (!tokensAndOwners.length && !tokens.length && (owner || owners.length > 0)) {
+    for (const _owner of [...owners, owner]) {
+      const data = await getOwnerAllAccount(_owner)
+      for (const item of data) {
+        if (blacklistedTokens.includes(item.mint) || +item.amount < 1e6) continue;
+        sdk.util.sumSingleBalance(balances, 'solana:' + item.mint, item.amount)
+      }
+    }
+  }
+
+  tokensAndOwners = tokensAndOwners.filter(([token]) => !blacklistedTokens.includes(token))
+
+  if (tokensAndOwners.length) {
+    tokensAndOwners = getUnique(tokensAndOwners)
+    log('total balance queries: ', tokensAndOwners.length)
+    const chunks = sliceIntoChunks(tokensAndOwners, 99)
+    for (const chunk of chunks) {
+      await _sumTokens(chunk)
+      if (chunks.length > 2) {
+        log('waiting before more calls')
+        await sleep(300)
+      }
+    }
+  }
+
+  if (tokenAccounts.length) {
+    tokenAccounts = getUniqueAddresses(tokenAccounts, 'solana')
+    const tokenBalances = await getTokenAccountBalances(tokenAccounts, { allowError })
+    await transformBalances({ tokenBalances, balances, })
+  }
+
+  if (solOwners.length) {
+    const solBalance = await getSolBalances(solOwners)
+    sdk.util.sumSingleBalance(balances, 'solana:' + ADDRESSES.solana.SOL, solBalance)
+  }
+
+  blacklistedTokens.forEach(i => delete balances['solana:'+i])
+
+  return balances
+
+  async function _sumTokens(tokensAndAccounts) {
+    const tokenBalances = await getTokenBalances(tokensAndAccounts)
+    return transformBalances({ tokenBalances, balances, })
+  }
+
+  function getUnique(tokensAndOwners) {
+    const set = new Set()
+    tokensAndOwners.forEach(i => {
+      set.add(i.join('$'))
+    })
+    return [...set].map(i => i.split('$'))
+  }
+}
+
+async function transformBalances({ tokenBalances, balances = {}, }) {
+  await transformBalancesOrig('solana', tokenBalances)
+  for (const [token, balance] of Object.entries(tokenBalances))
+    sdk.util.sumSingleBalance(balances, token, balance)
+  return balances
+}
+
+function readBigUInt64LE(buffer, offset) {
+  const first = buffer[offset];
+  const last = buffer[offset + 7];
+  if (first === undefined || last === undefined) {
+    throw new Error();
+  }
+  const lo = first + buffer[++offset] * 2 ** 8 + buffer[++offset] * 2 ** 16 + buffer[++offset] * 2 ** 24;
+  const hi = buffer[++offset] + buffer[++offset] * 2 ** 8 + buffer[++offset] * 2 ** 16 + last * 2 ** 24;
+  return BigInt(lo) + (BigInt(hi) << BigInt(32));
+}
+
 module.exports = {
-  TOKEN_LIST_URL,
-  getTokenList,
-  getTokenMap,
+  endpoint: endpoint(),
   getTokenSupply,
   getTokenBalance,
   getTokenAccountBalance,
@@ -334,7 +435,21 @@ module.exports = {
   getMultipleAccountBuffers,
   sumOrcaLPs,
   getSolBalance,
-  getCoingeckoId,
   sumTokensUnknown,
   exportDexTVL,
+  getProvider,
+  getConnection,
+  sumTokens2,
+  getTokenBalances,
+  transformBalances,
+  getSolBalances,
+  getTokenDecimals,
+  getGeckoSolTokens,
+  getTokenAccountBalances,
+  getTokenList,
+  readBigUInt64LE,
+  decodeAccount,
+  getValidGeckoSolTokens,
+  getOwnerAllAccount,
+  blacklistedTokens_default,
 };

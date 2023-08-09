@@ -1,33 +1,12 @@
-const sdk = require("@defillama/sdk");
-const getEntireSystemCollAbi = require("./abis/getEntireSystemColl.abi.json");
+const { nullAddress } = require("./tokenMapping")
 
-const TUSD = "0x0000000000085d4780b73119b644ae5ecd22b376"
-
-function getLiquityTvl(ETH_ADDRESS, TROVE_MANAGER_ADDRESS, chain) {
-  return async (_, ethBlock, chainBlocks) => {
-    const block = chainBlocks[chain]
-    /*const stabilityPoolLusdTvl = (
-      await sdk.api.erc20.balanceOf({
-        target: LUSD_TOKEN_ADDRESS,
-        owner: STABILITY_POOL_ADDRESS,
-        block,
-        chain,
-      })
-    ).output;*/
-
-    const troveEthTvl = (
-      await sdk.api.abi.call({
-        target: TROVE_MANAGER_ADDRESS,
-        abi: getEntireSystemCollAbi,
-        block,
-        chain,
-      })
-    ).output;
-
-    return {
-      [chain+':'+ETH_ADDRESS]: troveEthTvl,
-      //[useTusd? TUSD : chain+':'+LUSD_TOKEN_ADDRESS]: stabilityPoolLusdTvl,
-    };
+function getLiquityTvl(TROVE_MANAGER_ADDRESS, { nonNativeCollateralToken = false, abis = {} } = {}) {
+  return async (_, ethBlock, chainBlocks, { api }) => {
+    const activePool = await api.call({ target: TROVE_MANAGER_ADDRESS, abi: abis.activePool ?? "address:activePool", })
+    const defaultPool = await api.call({ target: TROVE_MANAGER_ADDRESS, abi: "address:defaultPool", })
+    let token = nullAddress
+    if (nonNativeCollateralToken) token = await api.call({ target: TROVE_MANAGER_ADDRESS, abi: abis.collateralToken ?? "address:collateralToken", })
+    return api.sumTokens({ owners: [activePool, defaultPool], tokens: [token] })
   }
 }
 

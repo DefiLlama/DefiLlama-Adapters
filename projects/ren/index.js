@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { request, gql } = require("graphql-request");
 const sdk = require("@defillama/sdk");
-const {getTokenSupply} = require('../helper/solana')
+const { getTokenSupply } = require('../helper/solana')
 
 const ethGraphUrl = "https://api.thegraph.com/subgraphs/name/renproject/renvm";
 const bscGraphUrl =
@@ -23,8 +24,8 @@ const graphQuery = gql`
 const darknodeStakingContract = "0x60Ab11FE605D2A2C3cf351824816772a131f8782";
 const renToken = "0x408e41876cCCDC0F92210600ef50372656052a38";
 
-function symbol(s){
-    switch(s){
+function symbol(s) {
+    switch (s) {
         case "renDGB":
             return "digibyte"
         case "renLUNA":
@@ -96,9 +97,29 @@ async function polygon(timestamp, ethBlock, chainBlocks) {
 async function arbitrum(timestamp, ethBlock, chainBlocks) {
     return {
         "0xeb4c2781e4eba804ce9a9803c67d0893436bb27d": (await sdk.api.erc20.totalSupply({
-            target: "0xdbf31df14b66535af65aac99c32e9ea844e14501",
+            target: ADDRESSES.fantom.renBTC,
             chain: "arbitrum",
             block: chainBlocks.arbitrum
+        })).output
+    }
+}
+
+async function kava(timestamp, ethBlock, chainBlocks) {
+    return {
+        "0xeb4c2781e4eba804ce9a9803c67d0893436bb27d": (await sdk.api.erc20.totalSupply({
+            target: "0x85f6583762Bc76d775eAB9A7456db344f12409F7",
+            chain: "kava",
+            block: chainBlocks.kava
+        })).output
+    }
+}
+
+async function optimism(timestamp, ethBlock, chainBlocks) {
+    return {
+        "0xeb4c2781e4eba804ce9a9803c67d0893436bb27d": (await sdk.api.erc20.totalSupply({
+            target: "0x85f6583762Bc76d775eAB9A7456db344f12409F7",
+            chain: "optimism",
+            block: chainBlocks.optimism
         })).output
     }
 }
@@ -119,7 +140,7 @@ async function eth(timestamp, block) {
     return balances;
 }
 
-async function solana(){
+async function solana() {
     // https://renproject.github.io/ren-client-docs/contracts/deployments/
     const tokens = [
         ["renBTC", "CDJWUqTcYTVAKXAVXoQZFes5JUFc7owSeq7eMQcDSbo5"],
@@ -131,7 +152,7 @@ async function solana(){
         ["renLUNA", "8wv2KAykQstNAj2oW6AHANGBiFKVFhvMiyyzzjhkmGvE"],
     ]
     const balances = {}
-    await Promise.all(tokens.map(async token=>{
+    await Promise.all(tokens.map(async token => {
         balances[symbol(token[0])] = await getTokenSupply(token[1])
     }))
     return balances
@@ -139,13 +160,13 @@ async function solana(){
 
 module.exports = {
     timetravel: true,
-    solana:{
+    solana: {
         tvl: solana
     },
     ethereum: {
         tvl: eth,
     },
-    avalanche: {
+    avax:{
         tvl: avax,
     },
     bsc: {
@@ -157,7 +178,13 @@ module.exports = {
     polygon: {
         tvl: polygon,
     },
-    arbitrum:{
-        tvl:arbitrum
+    arbitrum: {
+        tvl: arbitrum
+    },
+    kava: {
+        tvl: kava
+    },
+    optimism: {
+        tvl: optimism
     },
 };

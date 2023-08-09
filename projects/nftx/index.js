@@ -1,68 +1,86 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { gql } = require("graphql-request");
-const { blockQuery } = require('../helper/graph')
+const { blockQuery } = require('../helper/http')
 const { getTokenPrices } = require('../helper/unknownTokens')
 const sdk = require('@defillama/sdk')
+const { getChainTransform } = require('../helper/portedTokens')
 
-const weth = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
-async function tvl(_timestamp, block) {
-  const { vaults } = await blockQuery(graphUrl, graphQuery, block, 100)
-  const LPs = new Set(vaults.map(v => v.lpStakingPool.stakingToken.id))
-  const tokens = new Set(vaults.map(v => v.token.id))
+const config = {
+  ethereum: {
+    weth: ADDRESSES.ethereum.WETH,
+    graphUrl: 'https://graph-proxy.nftx.xyz/c/shared/subgraphs/name/nftx-project/nftx-v2-1-mainnet'
+  },
+  arbitrum: {
+    weth: ADDRESSES.arbitrum.WETH,
+    graphUrl: 'https://graph-proxy.nftx.xyz/shared/subgraphs/name/nftx-project/nftx-v2-arbitrum'
+  },
+}
+function getTvl(chain) {
+  const { weth, graphUrl } = config[chain]
+  return async (timestamp, _, cb, { api }) => {
+    const { vaults } = await blockQuery(graphUrl, graphQuery, { api })
+    const block = api.block
+    const LPs = new Set(vaults.map(v => v.lpStakingPool.stakingToken.id))
+    const tokens = new Set(vaults.map(v => v.token.id))
+    const transform = await getChainTransform(chain)
 
-  const weth_balances = await sdk.api.abi.multiCall({
-    abi: 'erc20:balanceOf',
-    calls: Array.from(LPs).map(lp => ({
-      target: weth,
-      params: lp
-    })),
-    block
-  })
+    const weth_balances = await sdk.api.abi.multiCall({
+      abi: 'erc20:balanceOf',
+      calls: Array.from(LPs).map(lp => ({
+        target: weth,
+        params: lp
+      })),
+      block, chain,
+    })
 
-  const token_balances = await sdk.api.abi.multiCall({
-    abi: 'erc20:totalSupply',
-    calls: Array.from(tokens).map(token => ({
-      target: token,
-    })),
-    block
-  })
+    const token_balances = await sdk.api.abi.multiCall({
+      abi: 'erc20:totalSupply',
+      calls: Array.from(tokens).map(token => ({
+        target: token,
+      })),
+      block, chain,
+    })
 
-  const balances = {}
+    const balances = {}
 
-  sdk.util.sumMultiBalanceOf(balances, token_balances)
-  //sdk.util.sumMultiBalanceOf(balances, weth_balances)
+    sdk.util.sumMultiBalanceOf(balances, token_balances)
+    //sdk.util.sumMultiBalanceOf(balances, weth_balances)
 
-  const lps = weth_balances.output
-    .filter(({ output }) => +output > 2 * 1e18) // only pick pools with minimum 2 eth in it
-    .map(({ input }) => input.params[0])
+    const lps = weth_balances.output
+      .filter(({ output }) => +output > 2 * 1e18) // only pick pools with minimum 2 eth in it
+      .map(({ input }) => input.params[0])
 
-  const { updateBalances, prices } = await getTokenPrices({
-    block, coreAssets: [weth], lps, allLps: true,
-  })
+    const { updateBalances, prices } = await getTokenPrices({
+      block, useDefaultCoreAssets: true, lps, allLps: true, chain,
+    })
 
-  const print = []
-  vaults.forEach(vault => {
-    const price = prices[vault.token.id]
-    const balance = (balances[vault.token.id] || 0) / 1e18
-    if (!price || !balance) return;
-    const total = balance * price[1]
-    if (total < 50) return;
-    print.push({ id: vault.token.id, balance, name: vault.token.name, val: total })
-  })
-  print.sort((a, b) => b.val - a.val)
-  console.table(print)
-  console.log(print.reduce((a, i) => a + i.val, 0))
+    const print = []
+    vaults.forEach(vault => {
+      const price = prices[vault.token.id]
+      const balance = (balances[vault.token.id] || 0) / 1e18
+      if (!price || !balance) return;
+      const total = balance * price[1]
+      if (total < 50) return;
+      print.push({ id: vault.token.id, balance, name: vault.token.name, val: total })
+    })
+    print.sort((a, b) => b.val - a.val)
+    // console.table(print)
+    // console.log(print.reduce((a, i) => a + i.val, 0))
 
-  updateBalances(balances)
+    updateBalances(balances)
+    const transformedBalances = {}
+    Object.entries(balances).forEach(([token, balance]) => sdk.util.sumSingleBalance(transformedBalances, transform(token), balance))
 
-  return balances
+    return transformedBalances
+  }
 }
 
 module.exports = {
   methodology: "Counts total value of all vaults",
-  ethereum: { tvl }
+  ethereum: { tvl: getTvl('ethereum') },
+  arbitrum: { tvl: getTvl('arbitrum') },
 }
 
-const graphUrl = "https://api.thegraph.com/subgraphs/name/nftx-project/nftx-v2"
 const graphQuery = gql`
 query get_vaults($block: Int) {
   vaults(

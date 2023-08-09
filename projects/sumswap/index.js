@@ -1,14 +1,7 @@
-const { getChainTvl } = require('../helper/getUniSubgraphTvl');
-
-const chainTvl = getChainTvl({
-  ethereum: 'https://api.thegraph.com/subgraphs/name/sumswap/sumswap',
-}, "sumswapFactories")
+const { getUniTVL } = require('../helper/unknownTokens')
 
 module.exports = {
-  misrepresentedTokens: true,
   ethereum: {
-    tvl: chainTvl('ethereum')
+    tvl: getUniTVL({ useDefaultCoreAssets: true, factory: '0x96FF042f8c6757fCE515d171F194b5816CAFEe11', }), 
   },
-  methodology:
-    "TVL is equal to the liquidity on the AMM.",
-}
+};

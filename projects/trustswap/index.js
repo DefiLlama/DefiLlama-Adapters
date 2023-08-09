@@ -1,17 +1,17 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
-const erc20 = require("../helper/abis/erc20.json");
 const abi = require("./abi.json");
 
 const staking_contract = "0x5A753021CE28CBC5A7c51f732ba83873D673d8cC";
 
 const assets = [
   // other tokens which probably for some reason was sent to the contract accidentally
-  "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-  "0xdac17f958d2ee523a2206206994597c13d831ec7",
-  "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
+  ADDRESSES.ethereum.USDC,
+  ADDRESSES.ethereum.USDT,
+  ADDRESSES.ethereum.UNI,
 ];
 
-const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
+const stakingTvl = async (timestamp, ethBlock, chainBlocks) => {
   const balances = {};
 
   const token = (
@@ -32,10 +32,15 @@ const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
 
   sdk.util.sumSingleBalance(balances, token, currentTotalStake);
 
+  return balances;
+};
+
+async function ethTvl(timestamp, ethBlock, chainBlocks) {
+  let balances = {};
   for (let i = 0; i < assets.length; i++) {
     const assetsBalance = (
       await sdk.api.abi.call({
-        abi: erc20.balanceOf,
+        abi: 'erc20:balanceOf',
         target: assets[i],
         params: staking_contract,
         block: ethBlock,
@@ -45,11 +50,14 @@ const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
     sdk.util.sumSingleBalance(balances, assets[i], assetsBalance);
   }
 
-  return balances;
-};
+return balances
+}
+
 
 module.exports = {
+  methodology: `Counts SWAP tokens locked int the staking contract(0x5A753021CE28CBC5A7c51f732ba83873D673d8cC). Regular TVL counts UNI, USDT, and USDC that are also in the staking contract(these tokens may have been sent to the contract by accident).`,
   ethereum: {
     tvl: ethTvl,
+    staking: stakingTvl
   },
 };

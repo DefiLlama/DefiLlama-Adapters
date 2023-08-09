@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 /*==================================================
   Modules
   ==================================================*/
@@ -6,12 +7,13 @@
 
   const abi = require('./abi.json');
   const { default: BigNumber } = require('bignumber.js');
+  const { getLogs } = require('../helper/cache/getLogs')
 
   const START_BLOCK = 10104891;
   const FACTORY = '0x176b98ab38d1aE8fF3F30bF07f9B93E26F559C17';
   const POOLS_FACTORY = '0xe28520DDB1b419Ac37eCDBB2c0F97c8Cf079CCC3';
   const VAULTS = '0x2Ce43b4570Ad9DEAb8CFE6258B42DB7301e3b6C0';
-  const ETHER_ADDRESS = '0x0000000000000000000000000000000000000000';
+  const ETHER_ADDRESS = ADDRESSES.null;
 
 /*==================================================
   TVL
@@ -26,39 +28,35 @@
   const getUnderlyingAddressFromNewAcoPoolLogData = data => '0x' + data.substring(26, 66);
   const getStrikeAssetAddressFromNewAcoPoolLogData = data => '0x' + data.substring(26, 66);
 
-  async function tvl(timestamp, block) {
+  async function tvl(timestamp, block, _, { api }) {
     var logsPromises = await Promise.all([
-      sdk.api.util.getLogs({
-        keys: [],
-        toBlock: block,
+      getLogs({
+        api,
         target: FACTORY,
         fromBlock: START_BLOCK,
         topic: 'NewAcoToken(address,address,bool,uint256,uint256,address,address)',
       }),
-      sdk.api.util.getLogs({
-        keys: [],
-        toBlock: block,
+      getLogs({
+        api,
         target: FACTORY,
         fromBlock: START_BLOCK,
         topic: 'NewAcoTokenData(address,address,bool,uint256,uint256,address,address,address)',
       }),
-      sdk.api.util.getLogs({
-        keys: [],
-        toBlock: block,
+      getLogs({
+        api,
         target: POOLS_FACTORY,
         fromBlock: START_BLOCK,
         topic: 'NewAcoPool(address,address,bool,address,address)',
       }),
-      sdk.api.util.getLogs({
-        keys: [],
-        toBlock: block,
+      getLogs({
+        api,
         target: VAULTS,
         fromBlock: START_BLOCK,
         topic: 'AcoVault(address,bool)',
       })
     ])
 
-    const logs = logsPromises[0].output;
+    const logs = logsPromises[0];
 
     let acoOptionsAddresses = [];
     logs.forEach((log) => {
@@ -66,7 +64,7 @@
       acoOptionsAddresses.push(address)
     });
 
-    const logs2 = logsPromises[1].output;
+    const logs2 = logsPromises[1];
     logs2.forEach((log) => {
       const address = getTokenAddressFromNewAcoTokenLogData(log.data);
       acoOptionsAddresses.push(address)
@@ -106,7 +104,7 @@
         balances[colateralAddress] = existingBalance.plus(new BigNumber(result.output)).toFixed()
     });
 
-    const newAcoPoolLogs = logsPromises[2].output;
+    const newAcoPoolLogs = logsPromises[2];
 
     let acoPools = {};
     newAcoPoolLogs.forEach((log) => {
@@ -143,7 +141,7 @@
       }))
     );
 
-    const setVaultLog = logsPromises[3].output;
+    const setVaultLog = logsPromises[3];
 
     let acoVaultsAddresses = [];
     setVaultLog.forEach((log) => {

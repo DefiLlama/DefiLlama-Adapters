@@ -1,9 +1,5 @@
-const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
-const { transformAvaxAddress } = require("../helper/portedTokens");
+const abi = 'function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accCyfPerShare, uint16 depositFeeBP)';
 const {addFundsInMasterChef} = require('../helper/masterchef')
-const {staking} = require('../helper/staking')
-const {sumTokensAndLPsSharedOwners} = require('../helper/unwrapLPs')
 
 const STAKING_CONTRACT = "0xaB0141F81b3129f03996D0679b81C07F6A24c435";
 const cyf = "0x411491859864797792308723Fc417f11BbA18D1b"
@@ -17,7 +13,7 @@ const pool2s = [
 const avaxTvl = async (timestamp, ethBlock, chainBlocks) => {
   const balances = {};
 
-  const transformAddress = await transformAvaxAddress();
+  const transformAddress = addr => 'avax:'+addr;
   await addFundsInMasterChef(balances, STAKING_CONTRACT, chainBlocks.avax, 'avax', transformAddress, abi, [
     cyf,
     ...pool2s
@@ -26,20 +22,12 @@ const avaxTvl = async (timestamp, ethBlock, chainBlocks) => {
   return balances;
 };
 
-const pool2 = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
-
-  const transformAddress = await transformAvaxAddress();
-  await sumTokensAndLPsSharedOwners(balances, pool2s.map(p=>[p, true]), [STAKING_CONTRACT], chainBlocks.avax, 'avax', transformAddress)
-
-  return balances;
-};
-
 module.exports = {
-  avalanche: {
+  hallmarks: [
+    [1631318400, "Rug Pull"]
+  ],
+  avax:{
     tvl: avaxTvl,
-    pool2,
-    staking: staking(STAKING_CONTRACT, cyf, 'avax', `avax:${cyf}`)
   },
   methodology:
     "We add the tvl from the farming pools fetching from StakingContract",

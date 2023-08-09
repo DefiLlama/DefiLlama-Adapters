@@ -1,9 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { request, gql } = require("graphql-request");
 const abi = require('./abi.json')
-const { transformCeloAddress, transformBscAddress } = require("../helper/portedTokens");
-const { getBlock } = require("../helper/getBlock");
+const { getChainTransform } = require("../helper/portedTokens");
+const { getBlock } = require("../helper/http");
 const { sumTokens } = require("../helper/unwrapLPs");
+const { default: BigNumber } = require("bignumber.js");
 
 const graphUrls = ['https://api.thegraph.com/subgraphs/name/pooltogether/pooltogether-v3_1_0',
   'https://api.thegraph.com/subgraphs/name/pooltogether/pooltogether-v3_3_2',
@@ -34,6 +36,9 @@ const v4pools={
   ],
   avax:[
     ['0x46a51127c3ce23fb7ab1de06226147f446e4a857', '0x7437db21A0dEB844Fa64223e2d6Db569De9648Ff']
+  ],
+  optimism:[
+    ['0x625E7708f30cA75bfd92586e17077590C60eb4cD', '0x4ecB5300D9ec6BCA09d66bfd8Dcb532e3192dDA1']
   ]
 }
 
@@ -53,7 +58,7 @@ async function getChainBalances(allPrizePools, chain, block, transform) {
       pool.id === call.input.target).underlyingCollateralToken);
     const underlyingTokenBalance = ((underlyingToken.includes('0x')) ?
       call.output : call.output / 10 ** 18)
-    sdk.util.sumSingleBalance(balances, underlyingToken, underlyingTokenBalance)
+    sdk.util.sumSingleBalance(balances, underlyingToken, BigNumber(underlyingTokenBalance).toFixed(0))
   })
   if(v4pools[chain]!== undefined){
     await sumTokens(balances, v4pools[chain], block, chain, transform)
@@ -85,11 +90,11 @@ async function eth(timestamp, block) {
 async function polygon(timestamp, block, chainBlocks) {
   return getChainBalances([{
     id: "0x887E17D791Dcb44BfdDa3023D26F7a04Ca9C7EF4",
-    underlyingCollateralToken: "0xdac17f958d2ee523a2206206994597c13d831ec7"
+    underlyingCollateralToken: ADDRESSES.ethereum.USDT
   },
   {
     id: "0xee06abe9e2af61cabcb13170e01266af2defa946",
-    underlyingCollateralToken: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+    underlyingCollateralToken: ADDRESSES.ethereum.USDC
   }], 'polygon', chainBlocks.polygon)
 }
 
@@ -97,41 +102,52 @@ async function avax(timestamp, block, chainBlocks) {
   return getChainBalances([], 'avax', chainBlocks.avax, ()=>`avax:0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664`)
 }
 
+async function optimism(timestamp, block, chainBlocks) {
+  return getChainBalances([], 'optimism', chainBlocks.optimism, ()=>`optimism:0x7F5c764cBc14f9669B88837ca1490cCa17c31607`)
+}
+
 async function celo(timestamp, block, chainBlocks) {
-  const transform = await transformCeloAddress()
+  const transform = await getChainTransform('celo')
   let allPrizePools = []
-  block = await getBlock(timestamp, 'celo', chainBlocks)
+  block = chainBlocks.celo
   const { prizePools } = await request(
     celoGraphUrl, graphQuery, { block })
   allPrizePools = allPrizePools.concat(prizePools)
   return getChainBalances(allPrizePools, 'celo', block, transform)
 }
 
-async function bsc(timestamp, block, chainBlocks) {
-  const transform = await transformBscAddress()
+async function bsc(timestamp, _, chainBlocks) {
+  const transform = await getChainTransform('bsc')
   let allPrizePools = []
-  block = await getBlock(timestamp, 'bsc', chainBlocks) - 1000
-  const { prizePools } = await request(
-    bscGraphUrl, graphQuery, { block })
+  const blockG = await getBlock(timestamp, 'bsc', chainBlocks) - 1000
+  const { prizePools } = await request(bscGraphUrl, graphQuery, { block: blockG })
   allPrizePools = allPrizePools.concat(prizePools)
-  return getChainBalances(allPrizePools, 'bsc', block, transform)
+  return getChainBalances(allPrizePools, 'bsc', chainBlocks.bsc, transform)
 }
 
 module.exports = {
+  doublecounted: true,
   ethereum: {
     tvl: eth
   },
   polygon: {
     tvl: polygon
   },
+  avax:{
+    tvl: avax
+  },
+  optimism:{
+    tvl: optimism
+  },
   celo: {
     tvl: celo
   },
   bsc: {
-    tvl: bsc
+    tvl: bsc,
   },
-  avalanche:{
-    tvl: avax
-  },
-  methodology: `TVL is the total quantity of tokens locked in poolTogether pools, on Ethereum, Polygon, Celo, and BSC`
+  hallmarks:[
+    [1658872800, "OP Rewards Start"],
+    [1669615200, "OP Rewards Start"],
+  ],
+  methodology: `TVL is the total quantity of tokens locked in PoolTogether pools on Ethereum, Polygon, Avalanche, Optimism, Celo, and BSC`
 }

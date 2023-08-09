@@ -1,6 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const { pool2s } = require("../helper/pool2");
+const { staking } = require("../helper/staking");
+const { pool2 } = require("../helper/pool2");
 const { default: BigNumber } = require("bignumber.js");
 
 // ETH Addresses
@@ -36,9 +38,9 @@ const slpStakingRewards = [
 const ssovs = [
   ["0xbB741dC1A519995eac67Ec1f2bfEecbe5C02f46e", "0x6C2C06790b3E3E3c38e12Ee22F8183b37a13EE55"],
   ["0x6A1142681b74fbeA5dEA07258f573484D80e4435", "0x32eb7902d4134bf98a28b963d26de779af92a212"],
-  ["0x2c9C1E9b4BDf6Bf9CB59C77e0e8C0892cE3A9d5f", "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1"],
+  ["0x2c9C1E9b4BDf6Bf9CB59C77e0e8C0892cE3A9d5f", ADDRESSES.arbitrum.WETH],
   ["0x54552CB564F4675bCEda644e47dE3E35D1c88E1b", "0x8D9bA570D6cb60C7e3e0F31343Efe75AB8E65FB1"],
-  ["0x5bE3c77ED3Cd42fc2c702C9fcd665f515862B0AE", "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a"],
+  ["0x5bE3c77ED3Cd42fc2c702C9fcd665f515862B0AE", ADDRESSES.arbitrum.GMX],
 ];
 
 const crvPools = [
@@ -51,34 +53,6 @@ const crvPools = [
   "0xf8Ce3cF6371bDAe43a260445E6dE61575334391c",
   "0x85e1Aa4B34e772153ECB8969d991ceb8F1bC137e"
 ];
-
-async function staking(timestamp, block, chainBlocks) {
-  let balances = {};
-  const chain = "arbitrum";
-  block = chainBlocks.arbitrum;
-
-  const stakingBalances = (await sdk.api.abi.multiCall({
-    calls: [
-      {
-        target: arbDpx,
-        params: dpxStakingRewards
-      },
-      {
-        target: arbRdpx,
-        params: rdpxStakingRewards
-      }
-    ],
-    abi: "erc20:balanceOf",
-    block,
-    chain
-  })).output;
-
-  stakingBalances.forEach(p => {
-    sdk.util.sumSingleBalance(balances, `arbitrum:${p.input.target}`, p.output);
-  });
-
-  return balances;
-}
 
 async function ssovTvl(balances, ssov, block, chain) {
 
@@ -138,7 +112,7 @@ async function crvTvls(balances, crvPools, block, chain) {
 
   for (let i = 0; i < crvPools.length; i++) {
     const balance = BigNumber(Number(lpPrices) / 1e18).times(Number(totalEpochDeposits[i].output)).div(1e12).toFixed(0);
-    sdk.util.sumSingleBalance(balances, "0xdac17f958d2ee523a2206206994597c13d831ec7", balance);
+    sdk.util.sumSingleBalance(balances, ADDRESSES.ethereum.USDT, balance);
   }
 }
 
@@ -168,7 +142,7 @@ async function bscTvl(timestamp, block, chainBlocks) {
     chain: "bsc" 
   })).output;
 
-  sdk.util.sumSingleBalance(balances, "bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", bnbAmount);
+  sdk.util.sumSingleBalance(balances, "bsc:" + ADDRESSES.bsc.WBNB, bnbAmount);
   delete balances["bsc:0xa07c5b74c9b40447a954e1466938b865b6bbea36"];
 
   return balances;
@@ -176,7 +150,7 @@ async function bscTvl(timestamp, block, chainBlocks) {
 
 // AVAX Addresses
 const avaxSsovs = [
-  ["0x5540FEa353dF6302611DA1d57988104e43A4B6b6", "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"]
+  ["0x5540FEa353dF6302611DA1d57988104e43A4B6b6", ADDRESSES.avax.WAVAX]
 ];
 
 async function avaxTvl(timestamp, block, chainBlocks) {
@@ -191,17 +165,17 @@ module.exports = {
   misrepresentedTokens: true,
   ethereum: {
     tvl: async () => ({}),
-    pool2: pool2s(stakingRewards, univ2lps)
+    pool2: staking(stakingRewards, univ2lps)
   },
   arbitrum: {
     tvl: arbTvl,
-    pool2: pool2s(slpStakingRewards, slps, "arbitrum"),
-    staking
+    pool2: pool2(slpStakingRewards, slps, "arbitrum"),
+    staking: staking([dpxStakingRewards, rdpxStakingRewards], [arbRdpx, arbDpx,], 'arbitrum')
   },
   bsc: {
     tvl: bscTvl
   },
-  avalanche: {
+  avax:{
     tvl: avaxTvl
   }
 }

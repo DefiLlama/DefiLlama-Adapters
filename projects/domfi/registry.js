@@ -1,5 +1,6 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 
-const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+const ZERO_ADDRESS = ADDRESSES.null;
 
 const Chain = {
   ETHEREUM: 'ethereum',
@@ -8,9 +9,9 @@ const Chain = {
 }
 
 const usdc = {
-  [Chain.ETHEREUM]: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-  [Chain.POLYGON]: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
-  [Chain.BOBA]: "0x66a2A913e447d6b4BF33EFbec43aAeF87890FBbc",
+  [Chain.ETHEREUM]: ADDRESSES.ethereum.USDC,
+  [Chain.POLYGON]: ADDRESSES.polygon.USDC,
+  [Chain.BOBA]: ADDRESSES.boba.USDC,
 }
 
 const lsps = {
@@ -49,20 +50,19 @@ const lsps = {
   ],
   
   [Chain.BOBA]: [
-    // BTCDOM
-    {
-      address: "0x3C77d0130Eb6AfF1DED8C72fb7a5F383B7961c03",
-    },
+    // BTCDOM-JUN20
+    { address: "0x3C77d0130Eb6AfF1DED8C72fb7a5F383B7961c03" },
+    // ETHDOM-JUN20
+    { address: "0xCAB14a130cDB3143aD81657D552a7Cee1917a18e" },
+    // USDTDOM-JUN20
+    { address: "0x5B9f3B4648b1C7573d9c2A068020Bb34AEC67589" },
 
-    // ETHDOM
-    {
-      address: "0xCAB14a130cDB3143aD81657D552a7Cee1917a18e",
-    },
-
-    // USDTDOM
-    {
-      address: "0x5B9f3B4648b1C7573d9c2A068020Bb34AEC67589",
-    },
+    // BTCDOM-JUN40
+    { address: "0x156a4595b87cc204dc96d05f366ac3fcdff30bec" },
+    // ETHDOM-JUN40
+    { address: "0xF123b661d80e755ec26BC0C0CCaAFDD258a102d6" },
+    // USDTDOM-JUN40
+    { address: "0x6cafFBf5697c8744713956fdAf84d6a0613Ce20f" },
   ]
 }
 

@@ -1,6 +1,6 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { staking, stakings } = require("../helper/staking");
-const { pool2s, pool2 } = require("../helper/pool2");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const { transformPolygonAddress } = require("../helper/portedTokens");
 
@@ -35,9 +35,9 @@ const platformLiquidityContracts = [
   "0xe6e5220291CF78b6D93bd1d08D746ABbC115C64b",
 ];
 
-const USDT = "0xdac17f958d2ee523a2206206994597c13d831ec7";
-const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-const USDC = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
+const USDT = ADDRESSES.ethereum.USDT;
+const WETH = ADDRESSES.ethereum.WETH;
+const USDC = ADDRESSES.ethereum.USDC;
 const ETHVOL_USDC_UNIV2 = "0x197e99bD87F98DFde461afE3F706dE36c9635a5D";
 const WETH_COTI_UNIV2 = "0xA2b04F8133fC25887A436812eaE384e32A8A84F2";
 
@@ -61,8 +61,8 @@ const platformLiquidityContracts_polygon = [
   //liquidty Mining CVOL-USDC
   "0xEA7b8DC5615e049417C80C795eA652556971c423",
 ];
-const USDT_Polygon = "0xc2132d05d31c914a87c6611c10748aeb04b58e8f";
-const USDC_Polygon = "0x2791bca1f2de4661ed88a30c99a7a9449aa84174";
+const USDT_Polygon = ADDRESSES.polygon.USDT;
+const USDC_Polygon = ADDRESSES.polygon.USDC;
 const CVOL_USDC_QLP = "0x1dd0095a169e8398448A8e72f15A1868d99D9348";
 
 /*** Arbitrum Addresses ***/
@@ -115,17 +115,33 @@ async function polygonTvl(timestamp, block, chainBlocks) {
 
   return balances;
 }
+async function arbiTvl(_, _b, _cb, { api, }) {
+  const balances = {}
+  const vaults = [
+    '0xfdeb59a2b4891ea17610ee38665249acc9fcc506',
+  ]
+  const tokens = await api.multiCall({
+    abi: 'address:token',
+    calls: vaults,
+  })
+  const totalBalance = await api.multiCall({
+    abi: 'function totalBalance() view returns (uint256 balance, uint256 usdcPlatformLiquidity, uint256 intrinsicDEXVolTokenBalance, uint256 volTokenPositionBalance, uint256 dexUSDCAmount, uint256 dexVolTokensAmount)',
+    calls: vaults,
+  })
+  tokens.forEach((t, i) => sdk.util.sumSingleBalance(balances, t, totalBalance[i].balance, api.chain))
+  return balances
+}
 
 module.exports = {
   misrepresentedTokens: true,
   ethereum: {
     staking: staking(stakingContract, GOVI),
-    pool2: pool2s(stakingPool2Contracts, lpPool2Addresses),
+    pool2: staking(stakingPool2Contracts, lpPool2Addresses),
     tvl: ethTvl,
   },
   polygon: {
     staking: stakings(stakingContracts_polygon, GOVI_polygon, "polygon", GOVI),
-    pool2: pool2(
+    pool2: staking(
       stakingPool2Contract_polygon,
       lpPool2Address_polygon,
       "polygon"
@@ -134,6 +150,7 @@ module.exports = {
   },
   arbitrum: {
     staking: staking(stakingContract_arbitrum, GOVI_arbitrum, "arbitrum", GOVI),
+    tvl: arbiTvl,
   },
   methodology:
     "Counts liquidity on the Platforms and Staking seccions through Platfrom and Staking Contracts",

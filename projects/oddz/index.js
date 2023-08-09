@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 async function getTotalCollateral(pools, chain, block) {
   const balances = {};
@@ -21,8 +22,8 @@ const bscPools = [
   // pool, token, representation
   [
     "0x99f29c537c70897f60c9774d3f13bd081D423467",
-    "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
-    "bsc:0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+    ADDRESSES.bsc.USDC,
+    "bsc:" + ADDRESSES.bsc.USDC,
   ], // oUSD
 ];
 
@@ -42,8 +43,8 @@ const bscPool2 = [
   ], // sODDZ
   [
     "0x3c2c77353E2F6AC1578807b6b2336Bf3a3CbB014",
-    "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
-    "bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    ADDRESSES.bsc.WBNB,
+    "bsc:" + ADDRESSES.bsc.WBNB,
   ], // ODDZ-BNB
 ];
 
@@ -52,8 +53,8 @@ const avaxPools = [
   // pool, token, representation
   [
     "0x6a165bA195D9d331b2A1C9648328d409aA599465",
-    "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664",
-    "avax:0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664",
+    ADDRESSES.avax.USDC_e,
+    "avax:" + ADDRESSES.avax.USDC_e,
   ], // oUSD
 ];
 
@@ -73,8 +74,8 @@ const avaxPool2 = [
   ], // sODDZ
   [
     "0x3c2c77353E2F6AC1578807b6b2336Bf3a3CbB014",
-    "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
-    "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+    ADDRESSES.avax.WAVAX,
+    "avax:" + ADDRESSES.avax.WAVAX,
   ], // ODDZ-AVAX
 ];
 

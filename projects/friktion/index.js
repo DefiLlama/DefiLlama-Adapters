@@ -20,7 +20,7 @@ async function tvl() {
     throw new Error("Unexpected shape of friktionShapshot");
   }
 
-  if (!friktionSnapshot.totalTvlUSD || friktionSnapshot.totalTvlUSD < 1000000) {
+  if (!friktionSnapshot.totalTvlUSD || friktionSnapshot.totalTvlUSD < 1000) {
     console.log(friktionSnapshot);
     throw new Error("Unexpected totalTvlUSD");
   }
@@ -29,8 +29,11 @@ async function tvl() {
 }
 
 module.exports = {
+  hallmarks:[
+    [1674838800, "Sunset Protocol"]
+  ],
   timetravel: false,
   methodology:
     "TVL is scraped from the window.friktionSnapshot variable in app.friktion.fi and saved to the GitHub repo at Friktion-Labs/mainnet-tvl-snapshots. The data is the same as what is displayed on the app",
-  tvl,
+  solana: {tvl},
 };

@@ -1,39 +1,37 @@
 const sdk = require('@defillama/sdk');
-const { getBlock } = require('./getBlock');
-const getReserves = require('./abis/getReserves.json');
-const token0Abi = require('./abis/token0.json');
-const token1Abi = require('./abis/token1.json');
+const getReserves = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
+const token0Abi = 'address:token0'
+const token1Abi = 'address:token1'
 const { default: BigNumber } = require('bignumber.js');
 const { getChainTransform, getFixBalances, } = require('./portedTokens')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 
-function staking(stakingContract, stakingToken, chain = "ethereum", transformedTokenAddress = undefined, decimals = undefined) {
-    return stakings([stakingContract], stakingToken, chain, transformedTokenAddress, decimals)
+function staking(stakingContract, stakingToken, _chain = "ethereum", transformedTokenAddress = undefined, decimals = undefined) {
+    if (!Array.isArray(stakingContract))  stakingContract = [stakingContract]
+    if (!Array.isArray(stakingToken))  stakingToken = [stakingToken]
+    return stakings(stakingContract, stakingToken, _chain, transformedTokenAddress, decimals)
 }
 
-function stakings(stakingContracts, stakingToken, chain = "ethereum", transformedTokenAddress = undefined, decimals = undefined) {
-    return async (timestamp, _ethBlock, chainBlocks) => {
-        const block = await getBlock(timestamp, chain, chainBlocks)
-        const bal = (await sdk.api.abi.multiCall({
-            calls: stakingContracts.map(c => ({ target: stakingToken, params: [c] })),
-            chain,
-            block,
-            abi: "erc20:balanceOf"
-        })).output.reduce((total, call)=> BigNumber(total).plus(call.output).toFixed(0), "0")
-        let address = stakingToken;
-        if (transformedTokenAddress) {
-            address = transformedTokenAddress
-        } else {
-            address = (await getChainTransform(chain))(stakingToken)
+function stakings(stakingContracts, stakingToken, _chain = "ethereum", transformedTokenAddress = undefined, decimals = undefined) {
+    return async (_, _b, cb, { chain, block } = {}) => {
+
+        if (!chain) {
+          chain = _chain
+          block = cb[chain]
         }
-        if (decimals !== undefined) {
-            return {
-                [address]: Number(bal) / (10 ** decimals)
-            }
+
+        if (!Array.isArray(stakingToken))  stakingToken = [stakingToken]
+        let transformAddress = transformedTokenAddress
+        if (typeof transformedTokenAddress === 'string') transformAddress = i => transformedTokenAddress
+        const balances = await sumTokens2({ chain, block, tokens: stakingToken, owners: stakingContracts, transformAddress, })
+        
+        if (decimals) {
+            Object.keys(balances).forEach(key => {
+                balances[key] = BigNumber(balances[key]/ (10 ** decimals)).toFixed(0)
+            })
         }
-        return {
-            [address]: bal
-        }
+        return balances
     }
 }
 
@@ -42,10 +40,9 @@ function stakingPricedLP(stakingContract, stakingToken, chain, lpContract, coing
 }
 
 function stakingUnknownPricedLP(stakingContract, stakingToken, chain, lpContract, transform, decimals) {
-    return async (timestamp, _ethBlock, chainBlocks) => {
+    return async (timestamp, _ethBlock, {[chain]: block}) => {
         if (!transform)   transform = await getChainTransform(chain)
 
-        const block = await getBlock(timestamp, chain, chainBlocks, true)
         const [bal, reserveAmounts, token0, token1] = await Promise.all([
             sdk.api.erc20.balanceOf({
                 target: stakingToken,
@@ -76,10 +73,8 @@ function stakingUnknownPricedLP(stakingContract, stakingToken, chain, lpContract
             [transform(token)]: stakedBal
         }
 
-        if (['klaytn', 'kava'].includes(chain)) {
-            const fixBalances = await getFixBalances(chain)
-            fixBalances(balances)
-        }
+        const fixBalances = await getFixBalances(chain)
+        fixBalances(balances)
 
         return balances
     }

@@ -1,6 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const abi = require('./abi.json');
 const sdk = require('@defillama/sdk');
 const { sumTokens } = require('../helper/unwrapLPs');
+
+const ethAddress = ADDRESSES.null;
+const ethReserveAddresses = ['0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'];
 
 async function generateCallsByBlockchain(block) {
   const registryAddress = '0x52Ae12ABe5D8BD778BD5397F99cA900624CfADD4';
@@ -72,28 +76,6 @@ async function generateCallsByBlockchain(block) {
   return balanceCalls;
 }
 
-const ethAddress = '0x0000000000000000000000000000000000000000';
-const ethReserveAddresses = ['0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'];
-const bancor = '0x1f573d6fb3f13d689ff844b4ce37794d79a7ff1c'
-
-async function addV3Balance(balances, block) {
-  const masterVault = '0x649765821D9f64198c905eC0B2B037a4a52Bc373'
-  const networkSettings = '0xeEF417e1D5CC832e619ae18D2F140De2999dD4fB'
-  const { output: tokens } = await sdk.api.abi.call({
-    target: networkSettings, block, abi: abi.liquidityPools
-  })
-
-  tokens.push(bancor)
-
-  const toa = tokens
-    .filter(t => !ethReserveAddresses.includes(t.toLowerCase()))
-    .map(t => [t, masterVault])
-
-  const { output: balance } = await sdk.api.eth.getBalance({ target: masterVault, block })
-  sdk.util.sumSingleBalance(balances, ethAddress, balance)
-  return sumTokens(balances, toa, block)
-}
-
 /*==================================================
   TVL
   ==================================================*/
@@ -120,12 +102,16 @@ async function tvl(timestamp, block) {
 
   sdk.util.sumMultiBalanceOf(balances, result);
 
-  return addV3Balance(balances, block)
+  return balances;
 }
 
 module.exports = {
   start: 1501632000,  // 08/02/2017 @ 12:00am (UTC)
   ethereum: {
     tvl,
-  }
+  },
+  hallmarks:[
+    [1588114800, "V2.0 Launch"], // 29/04/2020 @ 12:00am (UTC)
+    [1602457200, "V2.1 Launch"]  // 12/10/2020 @ 12:00am (UTC)
+  ],
 };

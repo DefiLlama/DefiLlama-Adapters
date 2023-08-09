@@ -1,15 +1,15 @@
 const axios = require("axios");
-const BigNumber = require("bignumber.js");
+const sdk = require('@defillama/sdk')
+const { get } = require('../helper/http')
 
-const icxApiEndpoint = 'https://ctz.solidwallet.io/api/v3'
-const balancedDexContract = 'cxa0af3165c08318e988cb30993b3048335b94af6c'
-const balancedLoansContract = 'cx66d4d90f5f113eba575bf793570135f9b10cece1'
-const bandOracleContract = 'cx087b4164a87fdfb7b714f3bafe9dfb050fd6b132'
-const bnusdContract = 'cx88fd7df7ddff82f7cc735c871dc519838cb235bb'
-const sicxContract = 'cx2609b924e33ef00b648a409245c7ea394c467824'
+const icxApiEndpoint = 'https://ctz.solidwallet.io/api/v3';
+const balancedDexContract = 'cxa0af3165c08318e988cb30993b3048335b94af6c';
+const balancedLoansContract = 'cx66d4d90f5f113eba575bf793570135f9b10cece1';
+const balancedOracleContract = 'cx133c6015bb29f692b12e71c1792fddf8f7014652';
+const stabilityFundContract = 'cxa09dbb60dcb62fffbd232b6eae132d730a2aafa6';
 
 async function icxCall(address, method, params) {
-    let response = await axios.post(icxApiEndpoint, {
+    const response = await axios.post(icxApiEndpoint, {
         jsonrpc: '2.0',
         method: 'icx_call',
         id: 1234,
@@ -22,74 +22,54 @@ async function icxCall(address, method, params) {
             }
         }
     })
-    return response.data.result
-}
-
-async function getIcxUsdPrice() {
-    let response = await icxCall(bandOracleContract, 'get_ref_data', {'_symbol': 'ICX'})
-    let icxUsdPrice = parseInt(response.rate, 16) / 10 ** 9;
-    return icxUsdPrice
-}
-
-async function getSicxIcxPrice() {
-    let response = await icxCall(balancedDexContract, 'getPrice', {'_id': '1'})
-    let sicxIcxPrice = parseInt(response, 16) / 10 ** 18;
-    return sicxIcxPrice
+    return response.data.result;
 }
 
 async function getLoanTvl() {
-    let icxUsdPrice = await getIcxUsdPrice()
-    let sicxIcxPrice = await getSicxIcxPrice()
-    let response = await icxCall(balancedLoansContract, 'getTotalCollateral') // Fetch total sICX collateral.
-    let loanTvlSicx = parseInt(response, 16) / 10 ** 18;
-    let loanTvlUsd = loanTvlSicx * icxUsdPrice * sicxIcxPrice
-    return loanTvlUsd
-}
+    const totalCollateral = await icxCall(balancedLoansContract, 'getTotalCollateral');
+    const bnUSDinLOOP = await icxCall(balancedOracleContract, 'getLastPriceInLoop', { symbol: 'bnUSD' });
+    const collateralTvl = parseInt(totalCollateral, 16) / bnUSDinLOOP;
 
-async function getBnusdUsdPrice() {
-    let sicxUsdPrice = await getSicxUsdPrice()
-    let response = await icxCall(balancedDexContract, 'getSicxBnusdPrice')
-    let sicxBnusdPrice = parseInt(response, 16) / 10 ** 18
-    let bnusdSicxPrice = 1 / sicxBnusdPrice
-    let bnusdUsdPrice = bnusdSicxPrice * sicxUsdPrice
-    return bnusdUsdPrice
-}
-
-async function getSicxUsdPrice() {
-    let sicxIcxPrice = await getSicxIcxPrice()
-    let icxUsdPrice = await getIcxUsdPrice()
-    let sicxUsdPrice = sicxIcxPrice * icxUsdPrice
-    return sicxUsdPrice
+    return collateralTvl;
 }
 
 async function getDexTvl() {
-    let icxUsdPrice = await getIcxUsdPrice()
-    let sicxUsdPrice = await getSicxUsdPrice()
-    let bnusdUsdPrice = await getBnusdUsdPrice()
-
-    let sicxIcxPool = await icxCall(balancedDexContract, 'totalSupply', {'_id': '1'}); // Get sICX/ICX TVL in ICX.
-    let sicxBnusdPool = await icxCall(balancedDexContract, 'getPoolTotal', {'_id': '2', '_token': bnusdContract}); // Get sICX/bnUSD TVL in bnUSD.
-    let balnBnusdPool = await icxCall(balancedDexContract, 'getPoolTotal', {'_id': '3', '_token': bnusdContract}); // Get BALN/bnUSD TVL in bvnUSD.
-    let balnSicxPool = await icxCall(balancedDexContract, 'getPoolTotal', {'_id': '4', '_token': sicxContract}); // Get BALN/sICX TVL in sICX.
-
-    let sicxIcxTvlUsd = parseInt(sicxIcxPool, 16) * icxUsdPrice / 10 ** 18;
-    let sicxBnusdTvlUsd = parseInt(sicxBnusdPool, 16) * 2 * bnusdUsdPrice / 10 ** 18; // Multiply by 2 to get USD value of entire pool.
-    let balnBnusdTvlUsd = parseInt(balnBnusdPool, 16) * 2 * bnusdUsdPrice / 10 ** 18; // Multiply by 2 to get USD value of entire pool.
-    let balnSicxTvlUsd = parseInt(balnSicxPool, 16) * 2 * sicxUsdPrice / 10 ** 18; // Multiply by 2 to get USD value of entire pool.
-    
-    let dexTvlUsd = sicxIcxTvlUsd + sicxBnusdTvlUsd + balnBnusdTvlUsd + balnSicxTvlUsd
-    
-    return dexTvlUsd;
+    const balances = {}
+    const pools = await get('https://balanced.icon.community/api/v1/pools')
+    pools.forEach(({ quote_liquidity, base_liquidity }) => {
+        sdk.util.sumSingleBalance(balances, 'tether', base_liquidity)
+        sdk.util.sumSingleBalance(balances, 'tether', quote_liquidity)
+    })
+    return balances
 }
 
-async function fetch() {
-    let loanTvl = await getLoanTvl()
-    let dexTvl = await getDexTvl()
-    let tvl = new BigNumber(loanTvl + dexTvl).toFixed(2);
-    return tvl
+async function getStabilityFundTvl() {
+    const supportedTokens = await icxCall(stabilityFundContract, 'getAcceptedTokens');
+    const balances = await (supportedTokens && Promise.all(supportedTokens.map(async token => {
+        const hexBalance = await icxCall(token, 'balanceOf', { _owner: stabilityFundContract });
+        const tokenDecimals = await icxCall(token, 'decimals');
+        const balance = parseInt(hexBalance, 16) / 10 ** parseInt(tokenDecimals, 16);
+        return balance;
+    })));
+
+    return balances.reduce((sum, balance) => sum + balance, 0);
+}
+
+async function tvl() {
+    const [stabilityFundTvl, loanTvl, dexTvl] = await Promise.all([
+        getStabilityFundTvl(),
+        getLoanTvl(),
+        getDexTvl(),
+    ])
+    sdk.util.sumSingleBalance(dexTvl, 'tether', stabilityFundTvl)
+    sdk.util.sumSingleBalance(dexTvl, 'tether', loanTvl)
+    return dexTvl
 }
 
 module.exports = {
-    methodology: 'TVL consists of liquidty on the DEX and deposits made to the lending program. Data is pulled from the ICX API "https://ctz.solidwallet.io/api/v3"',
-    fetch,
-}
+    misrepresentedTokens: true,
+    methodology: 'TVL consists of liquidity on the DEX, deposits made to the lending program and the stability fund. Data is pulled from the ICX API "https://ctz.solidwallet.io/api/v3" and Balanced stats API "https://balanced.sudoblock.io/api/v1/docs',
+    icon: {
+        tvl
+    },
+};

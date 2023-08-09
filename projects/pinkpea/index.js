@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./lens.json");
 const { ethers } = require("ethers");
 
 const vaultLensAddress = "0x64958a77bE17f3B840d66260CB088f4C8dB1f47C";
-const zeroAddress = "0x0000000000000000000000000000000000000000";
+const zeroAddress = ADDRESSES.null;
 
 const tokenDecimals = {
   "0x53ff774ebE8Bf7E03df8D73D3E9915b2Ca4eC40E": 6,
@@ -35,7 +36,6 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
       block: chainBlocks.aurora,
     })
   ).output;
-  console.log(totalSupply);
 
   let totalTvl = 0;
   totalSupply.forEach((data) => {
@@ -43,19 +43,12 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     if (tokenDecimals[data.vaultAddress]) {
       decimal = tokenDecimals[data.vaultAddress];
     }
-    console.log(
-      decimal,
-      Number(ethers.utils.formatUnits(data.tvl, data.decimal)) *
-        Number(ethers.utils.formatUnits(data.tokenPrice, decimal)),
-      data.tokenPrice
-    );
     totalTvl +=
       Number(ethers.utils.formatUnits(data.tvl, data.decimal)) *
       Number(ethers.utils.formatUnits(data.tokenPrice, decimal));
   });
-  console.log(totalTvl);
   return {
-    "aurora:0x4988a896b1227218e4A686fdE5EabdcAbd91571f": totalTvl * 1000000,
+    ["aurora:" + ADDRESSES.aurora.USDT_e]: totalTvl * 1000000,
   };
 }
 module.exports = {

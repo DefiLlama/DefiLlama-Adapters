@@ -1,16 +1,17 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk")
-const BigNumber = require("bignumber.js")
-const { sumTokens, unwrapUniswapLPs } = require("../helper/unwrapLPs")
+const { sumTokens2 } = require("../helper/unwrapLPs")
 const {pool2 } = require("../helper/pool2")
-const { getBlock } = require("../helper/getBlock")
 const abi = require("./abi.json");
+
+const chain = 'arbitrum'
 
 // Arbitrum TVL
 const transformArbitrumAddress = addr => `arbitrum:${addr}`
 const treasuryContract = "0x5710B75A0aA37f4Da939A61bb53c519296627994"
-const WETH_arbitrum = "0x82af49447d8a07e3bd95bd0d56f35241523fbab1"
+const WETH_arbitrum = ADDRESSES.arbitrum.WETH
 const FOREX_arbitrum = "0xDb298285FE4C5410B05390cA80e8Fbe9DE1F259B"
-const treasuryTokens = [WETH_arbitrum,FOREX_arbitrum]
+const treasuryTokens = [WETH_arbitrum, ]
 const perpsVault = "0x1785e8491e7e9d771b2A6E9E389c25265F06326A"
 // Arbitrum Staking 
 const WETH_FOREX_sushi_LP = '0x9745e5cc0522827958ee3fc2c03247276d359186'
@@ -24,19 +25,11 @@ const fxTokens = {
   php: "0x3d147cD9aC957B2a5F968dE9d1c6B9d0872286a0",
 }
 
-
-// Arbitrum TVL: Retrieve tokens stored in treasury contract - only weth at the moment
-// https://arbiscan.io/address/0x5710B75A0aA37f4Da939A61bb53c519296627994
-async function arbitrum_tvl(timestamp, ethBlock, chainBlocks, chain) {
-  const block = await getBlock(timestamp, "arbitrum", chainBlocks)
-  const balances = {}
-  await sumTokens(
-    balances,
-    treasuryTokens.map(t => [t, treasuryContract]),
-    block,
-    "arbitrum",
-    transformArbitrumAddress
-  )
+async function tvl(_, _b, {[chain]: block }) {
+  const balances = await sumTokens2({ chain, block, tokensAndOwners: [
+    // [WETH_arbitrum, perpsVault],
+    [WETH_arbitrum, treasuryContract],
+  ] })
   return balances
 }
 
@@ -81,7 +74,7 @@ async function ethereum_tvl(timestamp, ethBlock, chainBlocks) {
     //console.log(`Rari Fuse pool #${fuse_pool_id}: balances of underlying of comptroller markets`, underlying.map((t, i) => t.output + ': ' + balance[i].output))
 
     underlying.forEach((t, i) => {
-      balances[t.output] = (new BigNumber(balances[t.output] || "0").plus(new BigNumber(balance[i].output)) ).toString(10)
+      sdk.util.sumSingleBalance(balances, t.output, balance[i].output)
     })
   }
 
@@ -94,11 +87,11 @@ async function ethereum_tvl(timestamp, ethBlock, chainBlocks) {
 
 module.exports = {
   arbitrum: {
-    tvl: arbitrum_tvl,
+    tvl,
     pool2: pool2(LP_staking_contract, WETH_FOREX_sushi_LP, "arbitrum")
   },
-  ethereum: {
-    tvl: ethereum_tvl,
-  },
+  // ethereum: {
+  //   tvl: ethereum_tvl,
+  // },
   methodology: `TVL on arbitrum is sum of all collateralTokens (weth only atm) provided in vaults to mint any fxTokens on arbitrum. TVL on mainnet is given by collateral provided to Rari Fuse pools #72 and #116 against WETH, FEI, DAI, USDC, USDT, FRAX for now.`,
 }

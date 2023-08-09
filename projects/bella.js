@@ -9,7 +9,7 @@ const bVaults = {
   bArpa: { address: '0x750d30A8259E63eD72a075f5b6630f08ce7996d0', },
   bWbtc: { address: '0x3fb6b07d77dace1BA6B5f6Ab1d8668643d15a2CC', },
   bHbtc: { address: '0x8D9A39706d3B66446a298f1ae735730257Ec6108', },
-  bBusd: { address: '0x378388aa69f3032FA46150221210C7FA70A35153', },
+  // bBusd: { address: '0x378388aa69f3032FA46150221210C7FA70A35153', },  // according to the team this is deprecated
 }
 
 const uniswapV2Pools = {
@@ -22,16 +22,16 @@ async function tvl(ts, block) {
   const tokenCalls = Object.values(bVaults).map(a => ({ target: a.address }))
 
   const { output: tokenResponse } = await sdk.api.abi.multiCall({
-    block, calls: tokenCalls, abi: bVaultAbi.find(i => i.name === 'token')
+    block, calls: tokenCalls, abi: bVaultAbi.token
   })
 
   const { output: underlyingBalances } = await sdk.api.abi.multiCall({
-    block, calls: tokenCalls, abi: bVaultAbi.find(i => i.name === 'underlyingBalance')
+    block, calls: tokenCalls, abi: bVaultAbi.underlyingBalance
   })
 
   const balances = {}
   tokenResponse.forEach(({ input, output }, i) => {
-    sdk.util.sumSingleBalance(balances, output, underlyingBalances[i].output)
+    sdk.util.sumSingleBalance(balances, output, underlyingBalances[i].output || 0)
   })
   return balances
 }
@@ -39,13 +39,30 @@ async function tvl(ts, block) {
 async function pool2(ts, block) {
   const toa = []
   Object.values(uniswapV2Pools).forEach(({ address, owner }) => toa.push([address, owner]))
-  return sumTokens({}, toa, block, undefined, undefined, { resolveLP: true })
+  return sumTokens({}, toa, block,)
 }
 
 module.exports = {
   ethereum: {
     tvl,
     pool2,
+  },
+  era: {
+    pool2: async (_, _1, _2, { api }) => {
+      const pool2s = [
+        '0x9FB6Ca27D20E569E5c8FeC359C9d33D468d2803C',
+        '0x3bd7a1D8c760d8be1bC57A3205cbFfBaDFB74D94'
+      ]
+      const infoABI = "function getMiningContractInfo() external view returns (address tokenX, address tokenY, uint24 fee_, address iziTokenAddr, uint256 lastTouchTime_, uint256 totalVLiquidity_, uint256 bal0, uint256 bal1, uint256 balIzi, uint256 startTime_, uint256 endTime_)"
+
+      const data = await api.multiCall({ abi: infoABI, calls: pool2s })
+      const transform = i => i.toLowerCase() === '0xb83cfb285fc8d936e8647fa9b1cc641dbaae92d9' ? 'ethereum:0xa91ac63d040deb1b7a5e4d4134ad23eb0ba07e14': 'era:'+i  
+      for (const { tokenX, tokenY, iziTokenAddr, bal0, bal1, balIzi } of data) {
+        api.add(transform(tokenX), bal0, { skipChain: true})
+        api.add(transform(tokenY), bal1, { skipChain: true})
+        api.add(iziTokenAddr, balIzi)
+      }
+    },
   },
 }
 

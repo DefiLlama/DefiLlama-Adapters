@@ -1,13 +1,11 @@
 const sdk = require('@defillama/sdk');
-const { getBlock } = require('../helper/getBlock')
 const { ADDRESSES } = require("./constants");
-const { getChainTransform } = require('../helper/portedTokens')
-const yearnVaultABI = require("./abi/yearnVaultABI.json")
-const curveMetapoolABI = require("./abi/curveMetapoolABI.json")
+const yearnVaultABI = "uint256:pricePerShare"
+const curveMetapoolABI = "uint256:get_virtual_price"
 const { ethers } = require("ethers")
 
 async function addButterV2TVL(balances, timestamp, chainBlocks, chain = "ethereum") {
-  const block = await getBlock(timestamp, chain, chainBlocks)
+  const block = chainBlocks[chain]
   const WAD = ethers.constants.WeiPerEther;
   const butterTokens = [
     ADDRESSES.ethereum.ycrvAlusd, ADDRESSES.ethereum.ycrvFRAX,
@@ -56,42 +54,56 @@ async function addButterV2TVL(balances, timestamp, chainBlocks, chain = "ethereu
   })
 }
 
-async function addButterTVL(balances, timestamp, chainBlocks, chain = "ethereum") {
-  const block = await getBlock(timestamp, chain, chainBlocks)
+async function addThreeXTVL(balances, timestamp, chainBlocks, chain = "ethereum") {
+  const block = chainBlocks[chain]
+  const WAD = ethers.constants.WeiPerEther;
+  const threeXTokens = [
+    ADDRESSES.ethereum.yCrv3Eur, ADDRESSES.ethereum.yCrvSUSD,
+  ];
+  const threeXUnderlyingTokens = [
+    ADDRESSES.ethereum.crv3EurMetapool, ADDRESSES.ethereum.crvSUSDMetapool,
+  ];
+  const threeX = ADDRESSES.ethereum.threeX;
 
-  const butter = ADDRESSES.ethereum.butter;
-  const setBasicIssuanceModule = ADDRESSES.ethereum.setBasicIssuanceModule
-  const butterBatch = ADDRESSES.ethereum.butterBatch
-
-  // get butter circulating supply
-  const butterSupply = (await sdk.api.abi.call({
-    abi: "erc20:totalSupply",
-    target: butter,
-    params: [],
+  const threeXComponentTokenBalances = (await sdk.api.abi.multiCall({
+    abi: "erc20:balanceOf",
+    calls: threeXTokens.map(token => ({
+      target: token,
+      params: [threeX]
+    })),
     block,
     chain
-  })).output
-  // multiply with value.
-  const [tokenAddresses, quantities] = (await sdk.api.abi.call({
-    abi: basicSetIssuanceModule,
-    target: setBasicIssuanceModule,
-    params: [butter, "1000000000000000000"],
+  }))
+  const pricePerShare = (await sdk.api.abi.multiCall({
+    abi: yearnVaultABI,
+    calls: threeXTokens.map(token => ({
+      target: token,
+      params: []
+    })),
     block,
     chain
-  })).output
-  const butterPrice = (await sdk.api.abi.call({
-    abi: butterBatchABI,
-    target: butterBatch,
-    params: [tokenAddresses, quantities],
+  }))
+  const virtualPrices = (await sdk.api.abi.multiCall({
+    abi: curveMetapoolABI,
+    calls: threeXUnderlyingTokens.map(token => ({
+      target: token,
+      params: []
+    })),
     block,
     chain
-  })).output
+  }))
 
-  const tvl = (ethers.BigNumber.from(butterPrice).div(ethers.constants.WeiPerEther)).mul(ethers.BigNumber.from(butterSupply))
-  sdk.util.sumSingleBalance(balances, ADDRESSES.ethereum.dai, tvl)
+  threeXComponentTokenBalances.output.forEach((tokenBalance, index) => {
+    const balanceToken = ethers.BigNumber.from(tokenBalance.output)
+    const pricePerShareToken = ethers.BigNumber.from(pricePerShare.output[index]?.output)
+    const virtualPriceToken = ethers.BigNumber.from(virtualPrices.output[index]?.output)
+    const tokenTvl = ((balanceToken.mul(pricePerShareToken).mul(virtualPriceToken)).div(WAD).div(WAD));
+    sdk.util.sumSingleBalance(balances, ADDRESSES.ethereum.dai, tokenTvl)
+  })
 }
 
+
 module.exports = {
-  addButterTVL,
+  addThreeXTVL,
   addButterV2TVL
 }

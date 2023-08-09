@@ -1,53 +1,55 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const erc20 = require("../helper/abis/erc20.json");
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
-const factoryPoolContract = "0x98C58c1cEb01E198F8356763d5CbA8EB7b11e4E2";
-const USDC = "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8";
+const USDC = ADDRESSES.arbitrum.USDC;
+const chain = 'arbitrum'
 
-const arbiTvl = async (chainBlocks) => {
-  const balances = {};
+// Both v1 and v2 factories
+const factoryPoolContractsConfig = [
+  {
+    fromBlock: 1009749,
+    contract: '0x98C58c1cEb01E198F8356763d5CbA8EB7b11e4E2',
+  },
+  {
+    fromBlock: 13387522,
+    contract: '0x3Feafee6b12C8d2E58c5B118e54C09F9273c6124',
+  },
+]
 
-  const numOfPools = (
-    await sdk.api.abi.call({
-      abi: abi.numPools,
-      target: factoryPoolContract,
-      chain: "arbitrum",
-      block: chainBlocks["arbitrum"],
-    })
-  ).output;
-
-  for (let index = 0; index < numOfPools; index++) {
-    const pool = (
-      await sdk.api.abi.call({
-        abi: abi.pools,
-        target: factoryPoolContract,
-        params: index,
-        chain: "arbitrum",
-        block: chainBlocks["arbitrum"],
-      })
-    ).output;
-
-    const poolBalance = (
-      await sdk.api.abi.call({
-        abi: erc20.balanceOf,
-        target: USDC,
-        params: pool,
-        chain: "arbitrum",
-        block: chainBlocks["arbitrum"],
-      })
-    ).output;
-
-    sdk.util.sumSingleBalance(balances, `arbitrum:${USDC}`, poolBalance);
+async function tvl(_, _b, { arbitrum: block }) {
+  let factories = []
+  if (!block) factories = factoryPoolContractsConfig.map(i => i.contract)
+  else {
+    factoryPoolContractsConfig.filter(i => block > i.fromBlock).forEach(i => factories.push(i.contract))
   }
+  const { output: numPools } = await sdk.api.abi.multiCall({
+    calls: factories.map(i => ({ target: i })),
+    abi: abi.numPools,
+    chain, block,
+  })
 
-  return balances;
-};
+  const calls = []
+  numPools.forEach(i => {
+    for (let j = 0; j < +i.output; j++)
+      calls.push({ target: i.input.target, params: j })
+  })
+
+  const { output: pools } = await sdk.api.abi.multiCall({
+    abi: abi.pools,
+    calls,
+    chain, block,
+  })
+
+  const owners = pools.map(i => i.output)
+  return sumTokens2({ owners, chain, block, tokens: [USDC] })
+}
 
 module.exports = {
   misrepresentedTokens: true,
   arbitrum: {
-    tvl: arbiTvl,
+    tvl,
   },
   methodology:
     "We count liquidity on the Leveraged Pools through PoolFactory contract",

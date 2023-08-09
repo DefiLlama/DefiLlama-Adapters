@@ -1,14 +1,13 @@
-const { getChainTransform } = require("../helper/portedTokens")
+const ADDRESSES = require('../helper/coreAssets.json')
 const { GraphQLClient, gql } = require('graphql-request')
-const { getBlock } = require('../helper/getBlock')
+const { getBlock } = require('../helper/http')
 const { staking } = require('../helper/staking')
-const utils = require('../helper/utils')
-const retry = require('async-retry')
 const sdk = require('@defillama/sdk')
+
 const CONFIG = {
   ethereum: {
     uri: 'https://api.thegraph.com/subgraphs/name/0xnodes/system11',
-    strategy_token: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', //wETH
+    strategy_token: ADDRESSES.ethereum.WETH, //wETH
     bios_token: '0xAACa86B876ca011844b5798ECA7a67591A9743C8',
     kernel_addr: '0xcfcff4eb4799cda732e5b27c3a36a9ce82dbabe0'
   },
@@ -20,13 +19,13 @@ const CONFIG = {
   },
   polygon: {
     uri: 'https://api.thegraph.com/subgraphs/name/0xnodes/system11-polygon',
-    strategy_token: '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0', //wMATIC
+    strategy_token: ADDRESSES.ethereum.MATIC, //wMATIC
     bios_token: '0xe20d2df5041f8ed06976846470f727295cdd4d23',
     kernel_addr: '0x267720b5d8dcbdb847fc333ccc68cb284648b816'
   },
   fantom: {
     uri: 'https://api.thegraph.com/subgraphs/name/0xnodes/system11-fantom',
-    strategy_token: '0x4e15361fd6b4bb609fa63c81a2be19d873717870', //wFTM
+    strategy_token: ADDRESSES.ethereum.FTM, //wFTM
     bios_token: '0x75e0eb8e6d92ab832bb11e46c041d06a89ac5f0d',
     kernel_addr: '0x9db0e84ea53c5a3c000a721bb4295a6053b3de78'
   },
@@ -57,16 +56,17 @@ function offset(chain) {
       return 500
     case 'avax':
       return 750
-  };
-};
+  }
+}
 function chainTvl(chain) {
     return async (timestamp, ethBlock, chainBlocks) => {
+      if (timestamp > 1659527340) return {}
         const { [chain]:{ uri }} = CONFIG
         const { [chain]:{ strategy_token }} = CONFIG
         var graphQLClient = new GraphQLClient(uri)
         const block = (await getBlock(timestamp, chain, chainBlocks)) - offset(chain)
         var query = gql`{strategyTokenBalances(block: {number: `+block+`}){amount}}`
-        const results = await retry(async bail => await graphQLClient.request(query))
+        const results =  await graphQLClient.request(query)
         let amount = 0
         for (let i = 0; i < results.strategyTokenBalances.length; i++) {  //loop through the array
           amount += Number(results.strategyTokenBalances[i].amount); //Do the math!
@@ -84,7 +84,7 @@ function stakingTvl(chain) {
 function chainExports(chainTvl, stakingTvl, chains){
   const chainTvls = chains.reduce((obj, chain) => ({
     ...obj,
-    [chain === 'avax' ? 'avalanche' : chain]: {
+    [chain]: {
       tvl:chainTvl(chain),
       staking: stakingTvl(chain)
     }
@@ -93,6 +93,9 @@ function chainExports(chainTvl, stakingTvl, chains){
 }
 const tvlExports = chainExports(chainTvl, stakingTvl , ['ethereum', 'bsc', 'polygon', 'fantom', 'metis', 'avax'])
 module.exports = {
+  hallmarks: [
+        [1659527340, "Protocol declared insolvent"],
+    ],
   methodology: ` Counts the number of wrapped native tokens in all yield strategies across all the chains the protocol is deployed on
   + staking counts the number of BIOS tokens staked in the kernels across all the chains (PFA: Protocol Fee Accruals by staking assets)`,
   start: 1633046400, // Friday 1. October 2021 00:00:00 GMT

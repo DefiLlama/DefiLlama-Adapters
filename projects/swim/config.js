@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 module.exports = {
     solana: {
       tvl: {
@@ -5,12 +6,12 @@ module.exports = {
           {
             pool: 'AfhhYsLMXXyDxQ1B7tNqLTXXDHYtDxCzPcnXWXzHAvDb', // Hexapool
             tokens: [
-              'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', // Solana-USDC
-              'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB', // Solana-USDT
+              ADDRESSES.solana.USDC, // Solana-USDC
+              ADDRESSES.solana.USDT, // Solana-USDT
               'A9mUU4qviSctJVPJdBJWkb28deg915LYJKrzQ19ji3FM', // Eth-USDC
               'Dn4noZ5jgGfkntzcQSUZ8czkreiZ1ForXYoV2H8Dm7S1', // Eth-USDT
-              '5RpUwQ8wtdPCZHhu6MERp2RGrpobsbZ6MH5dDHkUjs2', // Bsc-BUSD
-              '8qJSyQprMC57TWKaYEmetUR3UUiTP2M3hXdcvFhkZdmv', // Bsc-USDT
+              ADDRESSES.solana.BUSDbs, // Bsc-BUSD
+              ADDRESSES.solana.USDTbs, // Bsc-USDT
             ],
             symbols: [
               "usd-coin",
@@ -77,6 +78,42 @@ module.exports = {
             symbols: [
               "stepn",
               "stepn",
+            ],
+          },
+          {
+            pool: 'DqTF8aZu63iHF55tBz1ePuaBKJ3F2srNVha3B4PpCT4N', // Meta Aurora-USDC
+            tokens: [
+              '9Y8pJhF8AQGBGL5PTd12P4w82n2qAADTmWakkXSatdAu', // Aurora-USDC
+            ],
+            symbols: [
+              "usd-coin",
+            ],
+          },
+          {
+            pool: '23CU3bqMJoRTpvyti84CmPbkAyNJDnTZE7DYj6MnhGdK', // Meta Aurora-USDT
+            tokens: [
+              'GFhej2oJ1NPLbzSX3D3B9jzYaidff6NoBAUNmu6dLXwU', // Aurora-USDT
+            ],
+            symbols: [
+              "tether",
+            ],
+          },
+          {
+            pool: 'H7BkMwbJfLiWE9sSDATHTqXykm1xBjeRzzLDatW2QdEt', // Meta Fantom-USDC
+            tokens: [
+              'Dnr8fDaswHtYMSKbtR9e8D5EadyxqyJwE98xp17ZxE2E', // Fantom-USDC
+            ],
+            symbols: [
+              "usd-coin",
+            ],
+          },
+          {
+            pool: '4XQz1qHMMTkFETn5PSNyLVutYPyZ4han8RB8Mmw1G48Q', // Meta Karura-USDT
+            tokens: [
+              'E942z7FnS7GpswTvF5Vggvo7cMTbvZojjLbFgsrDVff1', // Karura-USDT
+            ],
+            symbols: [
+              "tether",
             ],
           },
         ],

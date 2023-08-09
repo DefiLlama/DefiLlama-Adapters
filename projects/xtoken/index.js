@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json');
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const terminal = require("./terminal");
@@ -13,7 +14,6 @@ const {
   xinchbAddr,
   xkncaAddr,
   xkncbAddr,
-  xsnxaAddr,
   xsnxaAdminAddr,
   xsnxaTradeAccountingAddr,
   xu3lpaAddr,
@@ -32,8 +32,6 @@ const {
   inchAddr,
   usdcAddr,
   aaveAddr,
-  usdtAddress,
-  xtkAddress
 } = require("./constants");
 const BigNumber = require('bignumber.js');
 const xu3lps = [
@@ -177,21 +175,14 @@ async function tvl(timestamp, block) {
     })).output;
   sdk.util.sumSingleBalance(
       balances,
-      "0x57ab1ec28d129707052df4df418d58a2d46d5f51",
+      ADDRESSES.ethereum.sUSD,
       xsnxaSusdRaw
   );
 
   Object.keys(balances).forEach(key => balances[key] = BigNumber(balances[key]).toFixed(0))
 
-  let terminalMainnetTvl = await terminal.getData("mainnet");
-  Object.keys(terminalMainnetTvl).forEach(token => sdk.util.sumSingleBalance(
-    balances,
-    token,
-    terminalMainnetTvl[token]
-))
-
-  return balances;
-};
+  return terminal.getData("mainnet", block, balances);
+}
 
 async function fetchOptimism() {
   return terminal.getData("optimism");
@@ -206,6 +197,7 @@ async function fetchPolygon() {
 }
 
 module.exports = {
+  doublecounted: true,
   timetravel: false,
   ethereum:{
     tvl,

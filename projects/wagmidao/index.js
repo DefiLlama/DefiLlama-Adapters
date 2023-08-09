@@ -1,13 +1,9 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const erc20 = require("../helper/abis/erc20.json");
-const { pool2BalanceFromMasterChefExports } = require("../helper/pool2");
-const { calculateUniTvl } = require("../helper/calculateUniTvl");
-const { getBlock } = require("../helper/getBlock");
+const { uniTvlExport } = require("../helper/calculateUniTvl");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const {
-  fixHarmonyBalances,
-  transformHarmonyAddress,
+  getFixBalancesSync,
 } = require("../helper/portedTokens");
 
 const factory = "0xfe33b03a49a1fcd095a8434dd625c2d2735e84b8";
@@ -28,7 +24,6 @@ const bondContracts = [
 ];
 
 const GMI = "0x8750f5651af49950b5419928fecefca7c82141e3";
-const FAM = "0x53cba17b4159461a8f9bc0ed5785654370549b7d";
 
 const Treasury = async (timesamp, ethBlock, chainBlocks) => {
   const balances = {};
@@ -68,17 +63,14 @@ const Treasury = async (timesamp, ethBlock, chainBlocks) => {
     }
   });
 
-  let transformAddress = await transformHarmonyAddress();
-
   await unwrapUniswapLPs(
     balances,
     lpPositions,
     chainBlocks["harmony"],
     "harmony",
-    transformAddress
   );
 
-  fixHarmonyBalances(balances);
+  getFixBalancesSync('harmony')(balances);
 
   return balances;
 };
@@ -97,7 +89,7 @@ const Staking = async (chainBlocks) => {
 
   const balanceOf = (
     await sdk.api.abi.call({
-      abi: erc20.balanceOf,
+      abi: 'erc20:balanceOf',
       target: GMI,
       params: masterChef,
       chain: "harmony",
@@ -111,29 +103,10 @@ const Staking = async (chainBlocks) => {
   return balances;
 };
 
-async function harmonyTvl(timestamp, _ethBlock, chainBlocks) {
-  const block = await getBlock(timestamp, "harmony", chainBlocks, true);
-
-  let transformAddress = await transformHarmonyAddress();
-  const balances = await calculateUniTvl(
-    transformAddress,
-    block,
-    "harmony",
-    factory,
-    0,
-    true
-  );
-
-  fixHarmonyBalances(balances);
-
-  return balances;
-}
-
 module.exports = {
-  timetravel: true,
   harmony: {
     staking: Staking,
-    tvl: sdk.util.sumChainTvls([harmonyTvl, Treasury]),
+    tvl: sdk.util.sumChainTvls([uniTvlExport(factory, 'harmony', true),]),
   },
   methodology: "Counts liquidity on the Farms through Factory Contract, and counts Treasury as it is determined by bonding of assets. Staking refers to the staked GMI tokens",
 };

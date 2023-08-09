@@ -32,4 +32,7 @@ module.exports = {
     staking: staking(stakingContract, GEIST, "fantom"),
     pool2: pool2(stakingContractPool2, GEIST_WFTM_spLP, "fantom"),
   },
+  hallmarks:[
+    [1665090175, "BSC Bridge hacker deposits coins"]
+  ],
 };

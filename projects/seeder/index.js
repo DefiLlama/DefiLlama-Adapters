@@ -1,13 +1,13 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const erc20 = require("../helper/abis/erc20.json");
 const { transformBscAddress } = require("../helper/portedTokens");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 
 const farmContract = "0x1aF28E7b1A03fA107961897a28449F4F9768ac75";
 const bankContract = "0x99dD1c7a2893931D209fA5C57FE65f34d4C11db8";
 const LEAF = "0x1cbddf83de068464eba3a4e319bd3197a7eea12c";
-const WBNB = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
+const WBNB = ADDRESSES.bsc.WBNB;
 
 const bscTvl = async (chainBlocks) => {
   const balances = {};
@@ -25,7 +25,7 @@ const bscTvl = async (chainBlocks) => {
 
   const farmBalance = (
     await sdk.api.abi.multiCall({
-      abi: erc20.balanceOf,
+      abi: 'erc20:balanceOf',
       calls: getAllFarms.map((f) => ({
         target: f,
         params: farmContract,

@@ -1,161 +1,73 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
+const { sumTokens2 } = require('../helper/unwrapLPs')
 const {lendingMarket} = require('../helper/methodologies')
 
 const VaultController = "0x4aaE9823Fb4C70490F1d802fC697F3ffF8D5CbE3"
 
-const vaultSummaryAbi = {
-  "inputs":
-  [
-    {
-      "internalType": "uint96",
-      "name": "start",
-      "type": "uint96"
-    },
-    {
-      "internalType": "uint96",
-      "name": "stop",
-      "type": "uint96"
-    }
-  ],
-  "name": "vaultSummaries",
-  "outputs":
-  [
-    {
-      "components":
-      [
-        {
-          "internalType": "uint96",
-          "name": "id",
-          "type": "uint96"
-        },
-        {
-          "internalType": "uint192",
-          "name": "borrowingPower",
-          "type": "uint192"
-        },
-        {
-          "internalType": "uint192",
-          "name": "vaultLiability",
-          "type": "uint192"
-        },
-        {
-          "internalType": "address[]",
-          "name": "tokenAddresses",
-          "type": "address[]"
-        },
-        {
-          "internalType": "uint256[]",
-          "name": "tokenBalances",
-          "type": "uint256[]"
-        }
-      ],
-      "internalType": "struct IVaultController.VaultSummary[]",
-      "name": "",
-      "type": "tuple[]"
-    }
-  ],
-  "stateMutability": "view",
-  "type": "function"
-}
+const vaultSummaryAbi = 'function vaultSummaries(uint96 start, uint96 stop) view returns (tuple(uint96 id, uint192 borrowingPower, uint192 vaultLiability, address[] tokenAddresses, uint256[] tokenBalances)[])'
 
-const tokens = {
-  "WETH": {
-    address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
-    symbol: 'WETH',
-    decimals: 18,
+const cappedTokens = {
+  "0x5aC39Ed42e14Cf330A864d7D1B82690B4D1B9E61": {
+    address: ADDRESSES.ethereum.MATIC,
+    symbol: 'MATIC',
   },
-  "USDC": {
-    address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
-    symbol: 'USDC',
-    decimals: 6,
+  "0xfb42f5AFb722d2b01548F77C31AC05bf80e03381": {
+    address: '0xc18360217d8f7ab5e7c516566761ea12ce7f9d72',
+    symbol: 'ENS',
   },
-  "WTC":{
-    address: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
-    symbol: 'WBTC',
-    decimals: 8,
+  "0x05498574BD0Fa99eeCB01e1241661E7eE58F8a85": {
+    address: '0xba100000625a3754423978a60c9317c58a424e3d',
+    symbol: 'BAL',
   },
-  "UNI":{
-    address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
-    symbol: 'UNI',
-    decimals: 18,
+  "0xd3bd7a8777c042De830965de1C1BCC9784135DD2": {
+    address: ADDRESSES.ethereum.AAVE,
+    symbol: 'AAVE',
   },
-  "USDI":{
-    address: "0x2A54bA2964C8Cd459Dc568853F79813a60761B58",
-    symbol: 'USDI',
-    decimals: 18,
+  "0x7C1Caa71943Ef43e9b203B02678000755a4eCdE9": {
+    address: ADDRESSES.ethereum.LIDO,
+    symbol: 'LDO',
+  },
+  "0xDDB3BCFe0304C970E263bf1366db8ed4DE0e357a": {
+    address: '0x92d6c1e31e14520e676a687f0a93788b716beff5',
+    symbol: 'DYDX',
+  },
+  "0x9d878eC06F628e883D2F9F1D793adbcfd52822A8": {
+    address: ADDRESSES.ethereum.CRV,
+    symbol: 'CRV',
+  },
+  "0x64eA012919FD9e53bDcCDc0Fc89201F484731f41": {
+    address: ADDRESSES.ethereum.RETH,
+    symbol: 'rETH',
+  },
+  "0x99bd1f28a5A7feCbE39a53463a916794Be798FC3": {
+    address: '0xBe9895146f7AF43049ca1c1AE358B0541Ea49704',
+    symbol: 'cbETH',
   },
 }
 
-const getVaultCount = async (block) => {
-  return (await sdk.api.abi.call({
-    block,
-    target: VaultController,
-    params: [],
-    abi: {name:"vaultsMinted", type:"function",stateMutability:"view",outputs:[{internalType:"uint96",type:"uint96"}]},
-  })).output;
-}
-
-const getVaults = async (block) => {
-  return getVaultCount()
-    .then(async (c)=>{
-      return (await sdk.api.abi.call({
-        block,
-        target: VaultController,
-        params: [1,c],
-        abi: vaultSummaryAbi,
-      })).output;
-    })
-}
-
-const getReserve = async (block) =>{
-  return (await sdk.api.abi.call({
-    block,
-    target: tokens.USDC.address,
-    params: [tokens.USDI.address],
-    abi: "erc20:balanceOf",
-  })).output;
-}
-
-const collateral = async (timestamp, block)=>{
+async function tvl(_, _b, _cb, { api, }) {
   const balances = {}
-  const vaults = await getVaults()
-  vaults.forEach(x=>{
-    x.tokenAddresses.forEach((token, i)=>{
-      sdk.util.sumSingleBalance(balances, token, x.tokenBalances[i])
+  const count = await api.call({  abi: " function vaultsMinted() view returns (uint96)", target: VaultController })
+  const vaults = await api.call({  abi: vaultSummaryAbi, target: VaultController, params: [1, count]})
+  vaults.map(vault => {
+    vault.tokenAddresses.map((token, i) => {
+      token = cappedTokens[token]?.address || token
+      sdk.util.sumSingleBalance(balances,token,vault.tokenBalances[i])
     })
   })
-  return balances
-}
-const borrowed = async (timestamp, block) => {
-  const balances = {}
-  const vaults = await getVaults()
-  vaults.forEach(x=>{
-      sdk.util.sumSingleBalance(balances, tokens.USDI.address, x.vaultLiability)
-  })
-  return balances
-}
-
-
-const tvl = async (timestamp, block) => {
-  const coll = await collateral(timestamp, block)
-  const reserve = await getReserve(block)
-  const balances  = {
-    [tokens.USDC.address]: reserve,
-    ...coll
-  }
-  return balances
+  return sumTokens2({ api, balances, owner: '0x2A54bA2964C8Cd459Dc568853F79813a60761B58', tokens: [ADDRESSES.ethereum.USDC]})
 }
 
 module.exports = {
-  timetravel: true,
   start: 14962974,
   ethereum: {
     tvl,
-    borrowed
   },
   methodology: `${lendingMarket}.
   For Interest Protocol, TVL is Reserve + Total Collateral Value
   Reserve is found through calling USDC.getBalances(USDI)
   Balances are found through VaultController.vaultSummaries(1,VaultController.vaultsMinted())
+  Capped tokens converted 1:1 to underlying
   `
 };

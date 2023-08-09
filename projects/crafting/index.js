@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 
 const contractStakingETH = "0x9353177049757A21f19a28C3055c03871e6428cf";
-const ETH = "0x0000000000000000000000000000000000000000";
+const ETH = ADDRESSES.null;
 
 const contractAddresses = [
   //Staking Contract wbtc
@@ -14,8 +15,8 @@ const contractAddresses = [
 ];
 
 const tokens = [
-  "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
-  "0xdac17f958d2ee523a2206206994597c13d831ec7",
+  ADDRESSES.ethereum.WBTC,
+  ADDRESSES.ethereum.USDT,
   "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D",
 ];
 
@@ -27,8 +28,8 @@ const contractAddresses_aurora = [
 ];
 
 const tokens_aurora = [
-  "0x8BEc47865aDe3B172A928df8f990Bc7f2A3b9f79",
-  "0xC42C30aC6Cc15faC9bD938618BcaA1a1FaE8501d",
+  ADDRESSES.aurora.AURORA,
+  ADDRESSES.aurora.NEAR,
 ];
 
 async function ethTvl(timestamp, block) {

@@ -1,5 +1,5 @@
-const retry = require('async-retry')
-const { GraphQLClient, gql } = require('graphql-request')
+const ADDRESSES = require('./helper/coreAssets.json')
+const { GraphQLClient, } = require('graphql-request')
 const sdk = require('@defillama/sdk')
 const { default: BigNumber } = require('bignumber.js')
 
@@ -10,12 +10,12 @@ const SMART_CREDIT = '0x72e9D9038cE484EE986FEa183f8d8Df93f9aDA13'.toLowerCase()
 var graphQLClient = new GraphQLClient(endPoint)
 
 async function getStats() {
-  return await retry(async bail => await graphQLClient.request(queryBody))
+  return await graphQLClient.request(queryBody)
 }
 
 function replaceEth(addr) {
   if (addr.toLowerCase() === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee')
-    return '0x0000000000000000000000000000000000000000'
+    return ADDRESSES.null
   return addr
 }
 
@@ -42,10 +42,21 @@ async function staking() {
   return balances
 }
 
+
+async function borrowed() {
+  const balances = {}
+  const stats = await getStats()
+  stats.underlyingsStatistics.forEach(item => {
+    sdk.util.sumSingleBalance(balances, replaceEth(item.currency.ethAddress), BigNumber(item.totalBorrowedAmount).toFixed(0))
+  })
+  return balances
+}
+
 module.exports = {
   timetravel: false,
   ethereum: {
     tvl,
     staking,
+    borrowed,
   }
 }

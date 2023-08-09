@@ -1,15 +1,3 @@
 {
-  "getCOL": {
-    "inputs": [],
-    "name": "getCOL",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
+  "getCOL": "uint256:getCOL"
 }

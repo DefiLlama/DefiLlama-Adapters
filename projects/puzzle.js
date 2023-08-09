@@ -1,15 +1,12 @@
-const retry = require('async-retry');
-const axios = require("axios");
 const { toUSDTBalances } = require("./helper/balances");
+const { get } = require("./helper/http");
 
-async function tvl(timestamp) {
-    const lockedAssets = (await retry(async bail => 
-        await axios.get(`http://51.158.191.108:8002/api/v1/history/puzzle?since=${(timestamp - 6000) * 1000}`)
-    )).data;
-    const current = lockedAssets.pop();
+async function tvl() {
+  const pools = await get('https://puzzle-js-back.herokuapp.com/api/v1/pools')
+  const tvl = pools.reduce((acc, { statistics: { liquidity } = {} }) => acc + +(liquidity || 0), 0)
 
-    return toUSDTBalances(current.totalLocked);
-};
+  return toUSDTBalances(tvl)
+}
 
 module.exports = {
   timetravel: false,

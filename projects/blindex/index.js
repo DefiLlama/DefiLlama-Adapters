@@ -1,9 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("../helper/abis/blindex.json");
-const { getBlock } = require("../helper/getBlock");
-const { calculateUniTvl } = require("../helper/calculateUniTvl.js");
 const { formatAddressChecksum } = require("../helper/formatAddressChecksum.js");
-
+const { getUniTVL, getTokenPrices, } = require("../helper/unknownTokens");
+const { getFixBalances } = require('../helper/portedTokens')
 //-------------------------------------------------------------------------------------------------------------
 // How to add a new chain?
 // 1. Add it to the chains global array
@@ -13,8 +13,8 @@ const { formatAddressChecksum } = require("../helper/formatAddressChecksum.js");
 //-------------------------------------------------------------------------------------------------------------
 
 // Test on the RSK network:
-// Go to @defilama/sdk/build/computetvl/blocks.js and add 'rsk' to the chainsForBlocks array
-
+const blindexBTCLP = '0x15f2f01159a73a56a7149096942ae4e2c019cbef'
+const wbtc = '0x542fda317318ebf1d3deaf76e0b632741a7e677d'
 const chains = {
   rsk: {
     uniswapFactoryAddress: "0x5Af7cba7CDfE30664ab6E06D8D2210915Ef73c2E",
@@ -23,7 +23,7 @@ const chains = {
     coingeckoMapping: {
       prefix: "rsk",
       "0x542fda317318ebf1d3deaf76e0b632741a7e677d": "rootstock", // RSK's WRBTC
-      "0x1d931bf8656d795e50ef6d639562c5bd8ac2b78f": "ethereum", // RSK's ETHs
+      [ADDRESSES.rsk.ETHs]: "ethereum", // RSK's ETHs
       "0xb450ff06d950efa9a9c0ad63790c51971c1be885": "usd-coin", // RSK's BDUS - USD stable
       "0x99ac494badd0cba26143bd423e39a088591c7b09": "tether-eurt", // RSK's BDEU, - Euro stable
       "0xa4a8fb98a26e5314397170e5d12da8b73dc2ceb5": "pax-gold", // RSK's bXAU, - Gold stable
@@ -155,39 +155,6 @@ function sumBalances(balancesArray) {
   }, {});
 }
 
-async function uniswapV2Tvl(block, chainName) {
-  const rawBalances = await calculateUniTvl(
-    (address) => formatAddressChecksum(address, chainName),
-    block,
-    chainName,
-    formatAddressChecksum(chains[chainName].uniswapFactoryAddress, chainName),
-    undefined,
-    true
-  );
-
-  const tokensAddresses = Object.keys(rawBalances);
-  const balances = {};
-
-  for (let index = 0; index < tokensAddresses.length; index++) {
-    const currentToken = tokensAddresses[index];
-    const decimals = (
-      await sdk.api.erc20.decimals(
-        formatAddressChecksum(currentToken, chainName),
-        chainName
-      )
-    ).output;
-
-    const mappedAddress = mapCoingeckoAddress(chainName, currentToken);
-    if (!balances[mappedAddress]) {
-      balances[mappedAddress] = 0;
-    }
-
-    balances[mappedAddress] += rawBalances[currentToken] / 10 ** decimals;
-  }
-
-  return balances;
-}
-
 async function getAllBDStables(block, bdxTokenAddress, chainName) {
   const bdStables = [];
   const bdstablesLength = (
@@ -216,47 +183,8 @@ async function getAllBDStables(block, bdxTokenAddress, chainName) {
   return bdStables;
 }
 
-async function getBdxPriceInUSD(block, chainName) {
-  const bdusAddress = formatAddressChecksum(
-    "0xb450ff06d950efa9a9c0ad63790c51971c1be885",
-    chainName
-  );
-
-  const bdxPriceInUsd_d12 = (
-    await sdk.api.abi.call({
-      target: bdusAddress,
-      abi: abi["getBDXPriceUsdD12"],
-      chain: chainName,
-      block,
-    })
-  ).output;
-
-  return bdxPriceInUsd_d12 / 10 ** 12;
-}
-
-// TODO: This is needed until BDX will be avilable on Coingecko
-async function convertBdxToUsdc(block, chainName, balances) {
-  const bdxTokenAddress = chains[chainName].bdxTokenAddress;
-  const coingeckoMapBdxAddress = mapCoingeckoAddress(
-    chainName,
-    bdxTokenAddress
-  );
-
-  balances["usd-coin"] +=
-    balances[coingeckoMapBdxAddress] *
-    (await getBdxPriceInUSD(block, chainName));
-  balances[coingeckoMapBdxAddress] = 0;
-
-  return balances;
-}
-
 async function tvl(chainName, block) {
-  const balancesArray = [];
-
-  //=======
-  // AMM
-  //=======
-  balancesArray.push(await uniswapV2Tvl(block, chainName));
+  const chain = chainName
 
   //===================
   // Collateral
@@ -266,28 +194,37 @@ async function tvl(chainName, block) {
     chains[chainName].bdxTokenAddress,
     chainName
   );
+  let promises = []
   for (let index = 0; index < bdstables.length; index++) {
-    balancesArray.push(
-      await getBDStableCollateralBalances(block, chainName, bdstables[index])
+    promises.push(
+      getBDStableCollateralBalances(block, chainName, bdstables[index])
     );
   }
 
-  const balances = sumBalances(balancesArray);
+  const balancesArray = await Promise.all(promises);
 
-  // TODO: This should be removed when BDX will be listed on Coingecko
-  return await convertBdxToUsdc(block, chainName, balances);
+  const balances = sumBalances(balancesArray);
+  const { updateBalances } = await getTokenPrices({ chain, block, useDefaultCoreAssets: true, lps: [blindexBTCLP] }) // get blindex price from LP
+  await updateBalances(balances)
+  const fixBalances = await getFixBalances(chain)
+  fixBalances(balances)
+  return balances
 }
 
 const rsk = async function rskTvl(timestamp, ethBlock, chainblocks) {
-  const block = await getBlock(timestamp, "rsk", chainblocks);
-  return tvl("rsk", block);
+  return tvl("rsk", chainblocks.rsk);
 };
+
+const dexTVL = getUniTVL({
+  factory: '0x5Af7cba7CDfE30664ab6E06D8D2210915Ef73c2E',
+  useDefaultCoreAssets: true,
+})
 
 module.exports = {
   misrepresentedTokens: true,
   methodology:
     "(1) AMM LP pairs - All the liquidity pools from the Factory address are used to find the LP pairs. (2) Collateral - All the collateral being used to support the stable coins - Bitcoin, Ethereum & BDX",
   rsk: {
-    tvl: rsk,
+    tvl: sdk.util.sumChainTvls([rsk, dexTVL]),
   },
 };

@@ -1,19 +1,14 @@
+const { sumTokens2, getStorage, getBigMapById, } = require('../helper/chain/tezos')
 
-const { getLPs, sumTokens, convertBalances, } = require('../helper/tezos')
-const { getFixBalances } = require('../helper/portedTokens')
 
-async function tvl() {
-  const tokenToTokenLPAddress = 'KT1VNEzpf631BLsdPJjt2ZhgUitR392x6cSi'
-  let balances = await sumTokens({ owners: [tokenToTokenLPAddress, ... await getLPs('Quipuswap')], includeTezos: true, })
-  const fixBalances = await getFixBalances('tezos')
-  balances = await convertBalances(balances)
-  fixBalances(balances)
-  return balances
-}
-
+const factory = 'KT1Lw8hCoaBrHeTeMXbqHPG4sS4K1xn7yKcD'
 module.exports = {
   timetravel: false,
   tezos: {
-    tvl,
+    tvl: async () => {
+      const data = await getStorage(factory)
+      const pools = await getBigMapById(data.token_to_exchange);
+      return sumTokens2({ owners: Object.values(pools), includeTezos: true, })
+    },
   }
 }

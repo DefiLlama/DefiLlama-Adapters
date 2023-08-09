@@ -1,6 +1,6 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi");
-const { getBlock } = require("../helper/getBlock.js");
 const {
   transformPolygonAddress,
   transformFantomAddress,
@@ -11,7 +11,7 @@ const fusePoolLensAddress = {
   fantom: "0x5aB6215AB8344C28B899efdE93BEe47B124200Fb",
 };
 
-const WETH = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
+const WETH = ADDRESSES.ethereum.WETH;
 
 async function getFusePools(
   timestamp,
@@ -50,28 +50,26 @@ async function getFusePools(
 async function polygonTvl(timestamp, block, chainBlocks) {
   const balances = {};
   const transform = await transformPolygonAddress();
-  block = getBlock(timestamp, "polygon", chainBlocks);
+  block = chainBlocks.polygon;
   await getFusePools(timestamp, block, balances, false, "polygon", transform);
   return balances;
 }
 async function polygonBorrowed(timestamp, block, chainBlocks) {
   const balances = {};
   const transform = await transformPolygonAddress();
-  block = getBlock(timestamp, "polygon", chainBlocks);
+  block = chainBlocks.polygon;
   await getFusePools(timestamp, block, balances, true, "polygon", transform);
   return balances;
 }
-async function fantomTvl(timestamp, block, chainBlocks) {
+async function fantomTvl(timestamp, _, {fantom: block}) {
   const balances = {};
   const transform = await transformFantomAddress();
-  block = getBlock(timestamp, "fantom", chainBlocks);
   await getFusePools(timestamp, block, balances, false, "fantom", transform);
   return balances;
 }
-async function fantomBorrowed(timestamp, block, chainBlocks) {
+async function fantomBorrowed(timestamp, _, {fantom: block}) {
   const balances = {};
   const transform = await transformFantomAddress();
-  block = getBlock(timestamp, "fantom", chainBlocks);
   await getFusePools(timestamp, block, balances, true, "fantom", transform);
   return balances;
 }
@@ -83,7 +81,7 @@ module.exports = {
     borrowed: polygonBorrowed,
   },
   fantom: {
-    tvl: fantomTvl,
-    borrowed: fantomBorrowed,
+    tvl: () => ({}),
+    borrowed: () => ({}),
   },
 };
