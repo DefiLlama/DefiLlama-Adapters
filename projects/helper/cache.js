@@ -58,7 +58,10 @@ async function getConfig(project, endpoint) {
   async function _getConfig() {
     try {
       const { data: json } = await axios.get(endpoint)
-      await setCache(key, project, json)
+      const strData = typeof json === 'string' ? json : JSON.stringify(json)
+      let isValidData = strData.length > 42
+      if (isValidData) // sometimes we get bad data/empty object, we dont overwrite cache with it
+        await setCache(key, project, json)
       return json
     } catch (e) {
       // sdk.log(e)
