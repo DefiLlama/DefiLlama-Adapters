@@ -1218,6 +1218,7 @@
     "USDT": "USDT"
   },
   "elrond": {
+    "EGLD": "0x0000000000000000000000000000000000000000",
     "WEGLD": "WEGLD-bd4d79",
     "USDC": "USDC-c76f1f"
   },
