@@ -14,7 +14,9 @@ const config = {
   arbitrum: { fsglp: ADDRESSES.arbitrum.fsGLP },
   avax: { fsglp: '0x9e295B5B976a184B14aD8cd72413aD846C299660' },
 }
-
+module.exports.hallmarks = [
+  [1691373600, "Steadefi exploited"],
+],
 module.exports = {
 };
 
