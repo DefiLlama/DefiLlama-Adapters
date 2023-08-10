@@ -98,6 +98,16 @@ async function getBalance({ token, owner, block, chain } = {}) {
   return Number(data.balance);
 }
 
+async function sumCW20Tokens({ balances = {}, tokens, owner, block, chain } = {}) {
+  await Promise.all(
+    tokens.map(async (token) => {
+      const balance = await getBalance({ token, owner, block, chain, });
+      sdk.util.sumSingleBalance(balances, token, balance, chain);
+    })
+  );
+  return balances;
+}
+
 async function getDenomBalance({ denom, owner, block, chain } = {}) {
   let endpoint = `${getEndpoint(chain)}/bank/balances/${owner}`;
   if (block !== undefined) {
@@ -222,4 +232,5 @@ module.exports = {
   sumTokens,
   getTokenBalance,
   getToken,
+  sumCW20Tokens,
 };
