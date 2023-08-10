@@ -33,7 +33,7 @@ async function tvlCLMM() {
 
 async function ammV4Tvl() {
   const owner = '5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1'
-  return sumTokens2({ owner })
+  return sumTokens2({ owner, getAllTokenAccounts: true })
 }
 
 async function ammV2V3() {
