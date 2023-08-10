@@ -347,13 +347,14 @@ async function sumTokens2({
   solOwners = [],
   blacklistedTokens = [],
   allowError = false,
+  getAllTokenAccounts = false,
 }) {
   blacklistedTokens.push(...blacklistedTokens_default)
   if (!tokensAndOwners.length) {
     if (owner) tokensAndOwners = tokens.map(t => [t, owner])
     if (owners.length) tokensAndOwners = tokens.map(t => owners.map(o => [t, o])).flat()
   }
-  if (!tokensAndOwners.length && !tokens.length && (owner || owners.length > 0)) {
+  if (!tokensAndOwners.length && !tokens.length && (owner || owners.length > 0) && getAllTokenAccounts) {
     for (const _owner of [...owners, owner]) {
       const data = await getOwnerAllAccount(_owner)
       for (const item of data) {
