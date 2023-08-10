@@ -1,4 +1,4 @@
-const { request, gql } = require("graphql-request");
+const { cachedGraphQuery } = require('../helper/cache')
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { staking } = require('../helper/staking.js');
 
@@ -6,7 +6,7 @@ const abi = require('./abi.json')
 
 const API_URL = `https://api.snowapi.net/graphql`
 
-const query = gql`
+const query = `
 query {
   SnowglobeContracts {
     pair
@@ -54,7 +54,7 @@ async function getSnowglobeBalances(snowglobes, api) {
 }
 
 async function tvl(_timestamp, _ethereumBlock, chainBlocks, { api }) {
-  let data = await request(API_URL, query);
+  const data = await cachedGraphQuery('snowball', API_URL, query)
   const deprecatedSnowglobes = data.DeprecatedContracts.filter(contract => contract.kind === "Snowglobe").map(contract => ({ pair: contract.pair, snowglobeAddress: contract.contractAddresses[0] }));
   const deprecatedStablevaults = data.DeprecatedContracts.filter(contract => contract.kind === "Stablevault").map(contract => ({ swapAddress: contract.contractAddresses[2] }));
 
