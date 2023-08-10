@@ -17,9 +17,5 @@ module.exports = {
   doublecounted: true,
   ethereum: {
     tvl: tvl("ethereum"),
-  },
-
-  arbitrum: {
-    tvl: tvl("arbitrum"),
   }
 };
