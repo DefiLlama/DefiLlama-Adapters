@@ -38,9 +38,9 @@ const wooPPConfig = {
 		ADDRESSES.arbitrum.WETH, // WETH
 		ADDRESSES.arbitrum.WBTC, // WBTC
 		'0xcAFcD85D8ca7Ad1e1C6F82F651fA15E33AEfD07b', // WOO
-		'0x912CE59144191C1204E64559FE8253a0e49E6548', // ARB
+		ADDRESSES.arbitrum.ARB, // ARB
 		ADDRESSES.arbitrum.USDC, // USDC
-		'0xaf88d065e77c8cC2239327C5EDb3A432268e5831', // native USDC
+		ADDRESSES.arbitrum.USDC_CIRCLE, // native USDC
 		ADDRESSES.arbitrum.USDT,
 	],
 	optimism: [

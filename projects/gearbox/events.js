@@ -150,6 +150,9 @@ const getV2CAs = async (creditManager, block) => {
 };
 
 const getV1CAs = async (creditManager, block) => {
+  if (creditManager === "0x4C6309fe2085EfE7A0Cfb426C16Ef3b41198cCE3") {
+    return "0";
+  }
   const eventsByDate = [];
   const accounts = new Set();
 

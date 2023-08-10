@@ -20,7 +20,7 @@ async function poolsTvl(timestamp, ethBlock, chainBlocks) {
 module.exports = {
   misrepresentedTokens: true,
   bsc:{
-    tvl: uniTvlExport(FACTORY_BSC, 'bsc'),
+    tvl: uniTvlExport(FACTORY_BSC, 'bsc', true),
     staking: poolsTvl
   },
   methodology: "TVL comes from the DEX liquidity pools, staking TVL is accounted as the TWX on 0x41171D5770C4c68686d1aF042Ada88a45B02f82b",

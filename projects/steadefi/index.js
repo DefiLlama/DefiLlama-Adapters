@@ -1,6 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { getConfig } = require('../helper/cache');
 const { sumTokens2 } = require('../helper/unwrapLPs');
+const { camelotNFTPoolAbi } = require('../single/abi');
 
 async function getProjectInfo() {
   return Promise.all([
@@ -13,7 +14,9 @@ const config = {
   arbitrum: { fsglp: ADDRESSES.arbitrum.fsGLP },
   avax: { fsglp: '0x9e295B5B976a184B14aD8cd72413aD846C299660' },
 }
-
+module.exports.hallmarks = [
+  [1691373600, "Steadefi exploited"],
+],
 module.exports = {
 };
 
@@ -24,7 +27,8 @@ Object.keys(config).forEach(chain => {
       const chainId = api.getChainId()
       let [lendingPools, vaults] = await getProjectInfo()
       lendingPools = lendingPools.filter(i => i.chainId === chainId).map(i => i.address)
-      vaults = vaults.filter(i => i.chainId === chainId).map(i => i.address)
+      const grailVaults = vaults.filter(i => i.chainId === chainId && i.protocol === 'Camelot').map(i => i.address)
+      vaults = vaults.filter(i => i.chainId === chainId && i.protocol !== 'Camelot').map(i => i.address)
       const lpAssets = await api.multiCall({ abi: 'address:asset', calls: lendingPools })
       const managers = await api.multiCall({ abi: 'address:manager', calls: vaults })
       let lpTokens = await api.multiCall({ abi: 'address:lpToken', calls: managers, permitFailure: true, })
@@ -38,6 +42,16 @@ Object.keys(config).forEach(chain => {
       const bals = await api.multiCall({ abi: 'uint256:lpTokenAmt', calls: lpPoolManagers })
       api.addTokens(lpTokens, bals)
       // api.add('tether', tokenValue.reduce((a, v) => a + v/1e13, 0), { skipChain: true})
+      if (grailVaults.length) {
+        const grailManagers = await api.multiCall({ abi: 'address:manager', calls: grailVaults })
+        const spNfts = await api.multiCall({ abi: 'address:spNft', calls: grailManagers })
+        const positionIds = await api.multiCall({ abi: 'uint256:positionId', calls: grailManagers })
+        const poolInfos = await api.multiCall({ abi: camelotNFTPoolAbi.getPoolInfo, calls: spNfts })
+        const stakedPositionInfo = await api.multiCall({ abi: camelotNFTPoolAbi.getStakingPosition, calls: spNfts.map((v, i) => ({ target: v, params: positionIds[i] })) })
+        const lpTokens = poolInfos.map(v => v.lpToken)
+        const lpBalances = stakedPositionInfo.map(v => v.amount)
+        api.addTokens(lpTokens, lpBalances)
+      }
       return sumTokens2({ api, tokensAndOwners2: [lpAssets, lendingPools] })
     }
   }
