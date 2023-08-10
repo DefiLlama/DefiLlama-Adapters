@@ -86,6 +86,9 @@ function getStaking(chain, configs) {
 }
 
 module.exports = {
+  hallmarks: [
+    [1675036800, "Winding down announced"]
+  ],
   timetravel: false,
   ethereum: {
     tvl: getStaking('ethereum', [
