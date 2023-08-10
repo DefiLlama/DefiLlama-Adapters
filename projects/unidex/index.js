@@ -64,6 +64,16 @@ async function BobaTvl(_time, _ethBlock, { boba: block }) {
   return sumTokens2({ chain, block, tokens, owners, })
 }
 
+async function BaseTvl(_time, _ethBlock, { base: block }) {
+  const contracts = {
+    "ethpool": "0x9Ba3db52BC401F4EF8ba23e56268C3AdE0290837",
+  };
+  const chain = 'base'
+  const tokens = [nullAddress]
+  const owners = Object.values(contracts)
+  return sumTokens2({ chain, block, tokens, owners, })
+}
+
 async function MetisTvl(_time, _ethBlock, { metis: block }) {
   const contracts = {
     "metisPool": "0x9Ba3db52BC401F4EF8ba23e56268C3AdE0290837",
@@ -116,6 +126,9 @@ module.exports = {
   },
   arbitrum: {
     tvl: ArbitrumTvl
+  },
+  base: {
+    tvl: BaseTvl
   },
   boba: {
     tvl: BobaTvl
