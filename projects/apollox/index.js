@@ -24,8 +24,8 @@ const TOKEN_BANANA = "0x603c7f932ED1fc6575303D8Fb018fDCBb0f39a95";
 const TOKEN_MDX = "0x9c65ab58d8d978db963e63f2bfb7121627e3a739";
 const TOKEN_HAY = "0x0782b6d8c4551B9760e74c0545a9bCD90bdc41E5";
 
-const TOKEN_BTC = "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c";
-const TOKEN_BNB = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
+const TOKEN_BTC = ADDRESSES.bsc.BTCB;
+const TOKEN_BNB = ADDRESSES.bsc.WBNB;
 
 const TreasureTokens = [
   // TOKEN_APX,
@@ -81,6 +81,12 @@ module.exports = {
       nullAddress,
       ADDRESSES.arbitrum.USDC,
       ADDRESSES.arbitrum.USDT,
+    ]})
+  },
+  era: {
+    tvl: sumTokensExport({ owner: '0xD6f4e33063C881cE9a98e07E13673B92a637D908', tokens: [
+      nullAddress,
+      ADDRESSES.era.USDC,
     ]})
   },
 };

@@ -13,5 +13,17 @@ module.exports = {
   arbitrum: {
     tvl,
     borrowed,
+  },
+  polygon: {
+    tvl,
+    borrowed,
+  },
+  era: {
+    tvl,
+    borrowed,
+  },
+  moonbeam: {
+    tvl,
+    borrowed,
   }
 };

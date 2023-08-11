@@ -18,7 +18,12 @@ async function tvl(ts, _, __, { api }) {
   return sumTokens2({
     api,
     owners: vaults,
-    tokens: [ADDRESSES.avax.BTC_b, ADDRESSES.avax.USDC, addresses.token.fsGlp],
+    tokens: [
+      ADDRESSES.avax.BTC_b,
+      ADDRESSES.avax.USDC,
+      ADDRESSES.avax.WETH_e,
+      addresses.token.fsGlp,
+    ],
   });
 }
 

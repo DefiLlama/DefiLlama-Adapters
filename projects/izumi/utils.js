@@ -3,7 +3,8 @@ const { unwrapUniswapV3NFTs } = require('../helper/unwrapLPs')
 const sdk = require("@defillama/sdk");
 const abi = require('./abi.json');
 const BigNumber = require('bignumber.js');
-const { get } = require('../helper/http')
+const { get } = require('../helper/http');
+const { nullAddress } = require('../helper/tokenMapping');
 
 function point2PoolPriceUndecimalSqrt(point) {
   return (1.0001 ** point) ** 0.5;
@@ -155,6 +156,7 @@ async function unwrapiZiswapFixNFT({ balances, owner, nftAddress, block, chain =
   const poolInfo = (await sdk.api.abi.call({
     target: factory, abi: abi.pool, block, chain, params: [miningInfo.tokenX_, miningInfo.tokenY_, miningInfo.fee_]
   })).output
+  if (poolInfo == nullAddress) return balances
   const state = (await sdk.api.abi.call({ target: poolInfo, abi: abi.state, block, chain })).output
 
   let params = {
