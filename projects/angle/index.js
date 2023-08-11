@@ -5,6 +5,8 @@ const { getConfig } = require("../helper/cache");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { getUniqueAddresses } = require("../helper/tokenMapping");
 
+const { TreasuryTokenAddresses, governorAddress, guardianAddress } = require("./addresses.js");
+
 const ANGLE = "0x31429d1856ad1377a8a0079410b297e1a9e214c2";
 const veANGLE = "0x0C462Dbb9EC8cD1630f1728B2CFD2769d09f0dd5";
 
@@ -17,17 +19,17 @@ const transmuter_abi = {
   getCollateralList: "address[]:getCollateralList",
 }
 
+const BorrowChainIds = {
+  ethereum: 1,
+  polygon: 137,
+  optimism: 10,
+  arbitrum: 42161,
+  avax: 43114,
+};
+
 // get Borrowing module vault managers list
 async function getVaultManagersFromAPI(chain) {
-  const chainIds = {
-    ethereum: 1,
-    polygon: 137,
-    optimism: 10,
-    arbitrum: 42161,
-    fantom: 250,
-    avax: 43114,
-  };
-  let chainId = chainIds[chain];
+  let chainId = BorrowChainIds[chain];
   let calls = [];
   let result = await getConfig(
     "angle/" + chain,
@@ -43,6 +45,8 @@ async function getVaultManagersFromAPI(chain) {
 
 async function tvl(_, _1, _2, { api }) {
   const chain = api.chain
+  const block = api.block
+
   const balances = {};
   const tokensAndOwners = [];
   if (chain === "ethereum") {
@@ -67,10 +71,12 @@ async function tvl(_, _1, _2, { api }) {
     let assets = await api.multiCall({
       calls: poolManagers,
       abi: poolManagers_abi["getTotalAsset"],
+      block,
     });
     let tokens = await api.multiCall({
       calls: poolManagers,
       abi: poolManagers_abi["token"],
+      block,
     });
 
     assets.forEach((output, i) =>
@@ -85,37 +91,45 @@ async function tvl(_, _1, _2, { api }) {
     const AngleagEUREUROCStaker = "0xC1e8Dba1cbF29f1CaA8343CAe96d5AdFD9bca736";
     // pool TVL
     const [agEurBal, eurocBal, totPoolTokenSupply, sdagEUREUROCTVL, cvxagEUREUROCstakerTVL] = await Promise.all([
-      api.call({ abi: 'erc20:balanceOf', target: agEUR.contract, params: curvePool }),
-      api.call({ abi: 'erc20:balanceOf', target: EUROC, params: curvePool }),
-      api.call({ abi: 'erc20:totalSupply', target: curvePool }),
+      api.call({ abi: 'erc20:balanceOf', target: agEUR.contract, params: curvePool, block }),
+      api.call({ abi: 'erc20:balanceOf', target: EUROC, params: curvePool, block }),
+      api.call({ abi: 'erc20:totalSupply', target: curvePool, block }),
       // Angle holdings of Curve agEUREUROC LP tokens (staked on Stake DAO and Convex)
-      api.call({ abi: 'erc20:balanceOf', target: sdagEUREUROC, params: AngleagEUREUROCStaker }),
-      api.call({ abi: 'erc20:balanceOf', target: cvxagEUREUROCstaker, params: AngleagEUREUROCStaker }),
+      api.call({ abi: 'erc20:balanceOf', target: sdagEUREUROC, params: AngleagEUREUROCStaker, block }),
+      api.call({ abi: 'erc20:balanceOf', target: cvxagEUREUROCstaker, params: AngleagEUREUROCStaker, block }),
     ])
     const eurocBalance = eurocBal * (+sdagEUREUROCTVL + +cvxagEUREUROCstakerTVL) / totPoolTokenSupply
     sdk.util.sumSingleBalance(balances, EUROC, eurocBalance);
 
     // Transmuter
-    let collaterals = await api.call({
-      abi: transmuter_abi["getCollateralList"],
-      target: agEUR.transmuter,
-    });
+    if (block > 17880000) {
+      let collaterals = await api.call({
+        abi: transmuter_abi["getCollateralList"],
+        target: agEUR.transmuter,
+        block,
+      });
 
-    let balancesOf = await api.multiCall({
-      calls: collaterals.map((collateral) => ({
-        target: collateral,
-        params: agEUR.transmuter,
-      })),
-      abi: "erc20:balanceOf",
-    });
-
-    collaterals.forEach((collateral, i) => {
-      sdk.util.sumSingleBalance(balances, collateral, balancesOf[i]);
-    });
+      collaterals.forEach((collateral, i) => {
+        tokensAndOwners.push([collateral, agEUR.transmuter]);
+      });
+    }
   }
 
   // Borrowing module
   tokensAndOwners.push(...(await getVaultManagersFromAPI(chain)));
+  
+  // Treasury - Governor
+  const governorTokens = TreasuryTokenAddresses['governor'][chain]
+  governorTokens.forEach((token) => {
+    tokensAndOwners.push([token, governorAddress[chain]]);
+  });
+
+  // Treasury - Guardian
+  const guardianTokens = TreasuryTokenAddresses['guardian'][chain]
+  guardianTokens.forEach((token) => {
+    tokensAndOwners.push([token, guardianAddress[chain]]);
+  });
+  
   return sumTokens2({ balances, api, tokensAndOwners });
 }
 
@@ -135,7 +149,7 @@ module.exports = {
   methodology: `TVL is retrieved on-chain by querying the total assets managed by the Core module, and the balances of the vaultManagers of the Borrowing module.`,
 };
 
-["ethereum", "polygon", "optimism", "arbitrum", "avax"].forEach((chain) => {
+["ethereum", "polygon", "optimism", "arbitrum", "avax", "celo", "bsc", "xdai"].forEach((chain) => {
   if (!module.exports[chain]) module.exports[chain] = {};
   module.exports[chain].tvl = tvl
 });
