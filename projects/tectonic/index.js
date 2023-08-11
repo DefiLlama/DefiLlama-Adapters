@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { sumTokens2, nullAddress } = require("../helper/unwrapLPs");
-const { getChainTransform, getFixBalances } = require("../helper/portedTokens");
+const { getChainTransform, } = require("../helper/portedTokens");
 
 const tcro = "0xeAdf7c01DA7E93FdB5f16B0aa9ee85f978e89E95";
 
@@ -30,7 +30,6 @@ async function tvl(ts, _, { [chain]: block }) {
 async function borrowed(timestamp, block, chainBlocks) {
   block = chainBlocks[chain]
   const transform = await getChainTransform(chain)
-  const fixBlances = await getFixBalances(chain)
   const calls = [...markets, tcro].map(i => ({ target: i }))
   const { output: tokens } = await sdk.api.abi.multiCall({
     abi: abi.underlying,
@@ -45,7 +44,6 @@ async function borrowed(timestamp, block, chainBlocks) {
     sdk.util.sumSingleBalance(balances, transform(data.output), borrowed[i].output)
   })
   sdk.util.sumSingleBalance(balances, transform(nullAddress), borrowed[markets.length].output)
-  fixBlances(balances)
   return balances
 }
 
