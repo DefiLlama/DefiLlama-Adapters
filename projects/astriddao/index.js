@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens } = require('../helper/unwrapLPs')
-const { getFixBalances } = require('../helper/portedTokens')
 
 const chain = 'astar'
 
@@ -195,8 +194,6 @@ async function tvl(ts, _block, chainBlocks ) {
   }
 
   balances = translateBalancesForBridgeToken(balances);
-
-  (await getFixBalances(chain))(balances)
 
   return balances
 }

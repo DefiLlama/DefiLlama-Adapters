@@ -1,8 +1,5 @@
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const config = require("./config");
-const { getFixBalances } = require("../helper/portedTokens");
-const sdk = require('@defillama/sdk')
-
 
 module.exports = {
   misrepresentedTokens: true,
@@ -27,8 +24,6 @@ Object.keys(config).forEach((chain) => {
         block,
         blacklistedTokens,
       });
-      const fixBalances = await getFixBalances(chain);
-      fixBalances(balances);
       return balances;
     },
   };

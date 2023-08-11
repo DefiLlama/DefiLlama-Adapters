@@ -53,10 +53,6 @@ async function harmonyPool2(timestamp, block, chainBlocks) {
     });
 
     await unwrapUniswapLPs(balances, lpPositions, block, chain, addr=>{
-        addr = addr.toLowerCase();
-        if (addr === "0x224e64ec1bdce3870a6a6c777edd450454068fec") {
-            return "0xa47c8bf37f92abed4a126bda807a7b7498661acd";
-        }
         return `harmony:${addr}`;
     });
 

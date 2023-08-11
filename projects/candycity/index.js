@@ -7,7 +7,6 @@ const { getUniTVL } = require('../helper/unknownTokens')
 
 const chainTvl = getUniTVL({
   factory: '0x84343b84EEd78228CCFB65EAdEe7659F246023bf',
-  chain: 'cronos',
   useDefaultCoreAssets: true
 })
 

@@ -676,6 +676,7 @@ async function sumTokens2({
   resolveArtBlocks = false,
   resolveNFTs = false,
   permitFailure = false,
+  fetchCoValentTokens = false,
 }) {
   if (api) {
     chain = api.chain ?? chain
@@ -688,6 +689,13 @@ async function sumTokens2({
   if (resolveArtBlocks || resolveNFTs) {
     if (!api) throw new Error('Missing arg: api')
     await sumArtBlocks({ balances, api, owner, owners, })
+  }
+
+  if (fetchCoValentTokens) {
+    if (!api) throw new Error('Missing arg: api')
+    if (!owners || !owners.length) owners = [owner]
+    const cTokens = (await Promise.all(owners.map(i => covalentGetTokens(i, api.chain)))).flat()
+    tokens = [...cTokens, ...tokens]
   }
 
   if (resolveNFTs) {
@@ -724,7 +732,7 @@ async function sumTokens2({
   log(chain, 'summing tokens', tokensAndOwners.length)
 
   if (chain === 'tron') {
-    const tokensAndOwnersChunks = sliceIntoChunks(tokensAndOwners, 3)
+    const tokensAndOwnersChunks = sliceIntoChunks(tokensAndOwners, 1)
     for (const toa of tokensAndOwnersChunks) {
       await sumTokens(balances, toa, block, chain, transformAddress, { resolveLP, unwrapAll, blacklistedLPs, skipFixBalances: true, abis, permitFailure, })
     }
@@ -745,8 +753,8 @@ async function sumTokens2({
   }
 }
 
-function sumTokensExport({ balances, tokensAndOwners, tokensAndOwners2, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, resolveUniV3, resolveArtBlocks, resolveNFTs, }) {
-  return async (_, _b, _cb, { api }) => sumTokens2({ api, balances, tokensAndOwners, tokensAndOwners2, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, resolveUniV3, resolveArtBlocks, resolveNFTs, })
+function sumTokensExport({ balances, tokensAndOwners, tokensAndOwners2, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, resolveUniV3, resolveArtBlocks, resolveNFTs, fetchCoValentTokens, ...args }) {
+  return async (_, _b, _cb, { api }) => sumTokens2({ api, balances, tokensAndOwners, tokensAndOwners2, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, resolveUniV3, resolveArtBlocks, resolveNFTs, fetchCoValentTokens, ...args,})
 }
 
 async function unwrapBalancerToken({ api, chain, block, balancerToken, owner, balances = {}, isBPool = false, isV2 = true }) {
