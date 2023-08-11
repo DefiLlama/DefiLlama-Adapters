@@ -1,3 +1,6 @@
 module.exports = {
-    harmony: { tvl: () => ({}) },
+  harmony: {
+    tvl: () => ({}),
+    staking: () => ({}),
+  },
 }
