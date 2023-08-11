@@ -13,6 +13,10 @@ const poolManagers_abi = {
   token: "address:token",
 };
 
+const transmuter_abi = {
+  getCollateralList: "address[]:getCollateralList",
+}
+
 // get Borrowing module vault managers list
 async function getVaultManagersFromAPI(chain) {
   const chainIds = {
@@ -53,6 +57,7 @@ async function tvl(_, _1, _2, { api }) {
         frax: "0x6b4eE7352406707003bC6f6b96595FD35925af48", // FRAX
         weth: "0x3f66867b4b6eCeBA0dBb6776be15619F73BC30A2", // WETH
       },
+      transmuter: "0x00253582b2a3FE112feEC532221d9708c64cEFAb",
     };
 
     // count the USDC in pool manager contract
@@ -89,6 +94,24 @@ async function tvl(_, _1, _2, { api }) {
     ])
     const eurocBalance = eurocBal * (+sdagEUREUROCTVL + +cvxagEUREUROCstakerTVL) / totPoolTokenSupply
     sdk.util.sumSingleBalance(balances, EUROC, eurocBalance);
+
+    // Transmuter
+    let collaterals = await api.call({
+      abi: transmuter_abi["getCollateralList"],
+      target: agEUR.transmuter,
+    });
+
+    let balancesOf = await api.multiCall({
+      calls: collaterals.map((collateral) => ({
+        target: collateral,
+        params: agEUR.transmuter,
+      })),
+      abi: "erc20:balanceOf",
+    });
+
+    collaterals.forEach((collateral, i) => {
+      sdk.util.sumSingleBalance(balances, collateral, balancesOf[i]);
+    });
   }
 
   // Borrowing module
