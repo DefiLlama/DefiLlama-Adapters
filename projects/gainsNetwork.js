@@ -23,11 +23,11 @@ async function polyTvl(_, _b, _cb, { api }) {
   ];
   return sumTokens2({ api, tokensAndOwners });
 }
-async function arbiTvl(_, _b, cb) {
+async function arbiTvl(_, _b, cb, { api}) {
   const tokensAndOwners = [
     [tokens.arbitrum.DAI, "0xd85E038593d7A098614721EaE955EC2022B9B91B"],
   ];
-  return sumTokens2({ chain: "arbitrum", tokensAndOwners });
+  return sumTokens2({ api, tokensAndOwners });
 }
 // node test.js projects/gainsNetwork.js
 module.exports = {
