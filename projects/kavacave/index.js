@@ -2,8 +2,6 @@ const sdk = require("@defillama/sdk");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const kavaabi = require("./kavaAbi.json");
 const abiGeneral = require("../helper/abis/masterchef.json");
-const { getFixBalances } = require("../helper/portedTokens");
-
 
 const masterChef = {
 	kava: "0xf17BBB9698b50156Ee437E01e22D7C2080184934"
@@ -65,9 +63,6 @@ async function getTokensInMasterChef(time, ethBlock, chainBlocks, chain) {
 	});
 
 	await unwrapUniswapLPs(balances, lpPositions, block, chain, transformAddress);
-	// console.log(balances)
-	const fixbalances = await getFixBalances(chain);
-	fixbalances(balances);
 	return balances;
 }
 

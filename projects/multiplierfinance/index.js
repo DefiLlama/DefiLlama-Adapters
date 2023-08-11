@@ -2,7 +2,6 @@ const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 const { getParamCalls } = require('../helper/utils')
-const { getFixBalancesSync } = require('../helper/portedTokens')
 
 const YieldContract = "0xE4Baf69B887843aB6A0e82E8BAeA49010fF619af";
 const LendingPool = "0xbc3534b076EDB8E8Ef254D81b81DC193c53057F7";
@@ -57,8 +56,7 @@ async function borrowed(_, _b, { bsc: block }) {
   const balances = {}
   const data = await getReservesData(block)
   data.forEach(i => sdk.util.sumSingleBalance(balances,'bsc:'+i.token,i.totalBorrowsVariable))
-  const fix = getFixBalancesSync(chain)
-  return fix(balances)
+  return balances
 }
 
 async function tvlV2(_, _b, { bsc: block }) {
@@ -84,8 +82,7 @@ async function borrowedV2(_, _b, { bsc: block }) {
     sdk.util.sumSingleBalance(balances,'bsc:'+i.token,supplyVariable[idx].output)
     sdk.util.sumSingleBalance(balances,'bsc:'+i.token,supplyStable[idx].output)
   })
-  const fix = getFixBalancesSync(chain)
-  return fix(balances)
+  return balances
 }
 
 

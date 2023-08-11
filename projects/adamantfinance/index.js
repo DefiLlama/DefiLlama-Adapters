@@ -7,7 +7,6 @@ const { unwrapUniswapLPs, unwrapLPsAuto, } = require("../helper/unwrapLPs");
 const {
   transformPolygonAddress,
   getChainTransform,
-  getFixBalances,
 } = require("../helper/portedTokens");
 const { staking: stakingUnknown, } = require("../helper/unknownTokens");
 
@@ -153,7 +152,6 @@ const tvl = async (timestamp, chain, chainBlocks, lpAddressesIgnored) => {
 
   const block = chainBlocks[chain];
   const transformAddress = await getChainTransform(chain)
-  const fixBalances = await getFixBalances(chain)
   let balances = {};
 
   let resp = await getConfig('adamant-fi/'+chain, vaultsUrl[chain]);
@@ -170,7 +168,6 @@ const tvl = async (timestamp, chain, chainBlocks, lpAddressesIgnored) => {
     }));
   balances = await uniTvl(balances, chain, block, uniVaults, lpAddressesIgnored, transformAddress);
 
-  fixBalances(balances)
   return balances;
 };
 
