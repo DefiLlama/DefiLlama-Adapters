@@ -17,6 +17,7 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
   waitBetweenCalls,
   hasStablePools = false,
   stablePoolSymbol = 'sAMM',
+  permitFailure = false,
 }) {
 
   let updateCache = false
@@ -83,9 +84,9 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
         calls.push({ target: cache.token0s[i], params: owner })
         calls.push({ target: cache.token1s[i], params: owner })
       })
-      const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls, })
+      const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls, permitFailure, })
       for (let i = 0; i < bals.length; i++) {
-        reserves.push({ _reserve0: bals[i], _reserve1: bals[i + 1] })
+        reserves.push({ _reserve0: bals[i] ?? 0, _reserve1: bals[i + 1] ?? 0 })
         i++
       }
     } else
