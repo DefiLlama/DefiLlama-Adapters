@@ -3,14 +3,14 @@ const { getTokensMinted } = require("../helper/chain/cardano/blockfrost");
 
 const cBTC = "4190b2941d9be04acc69c39739bd5acc66d60ccab480d8e20bc87e3763425443"
 
-async function tlv(){
+async function tvl(){
   return { bitcoin : await getTokensMinted(cBTC) }
 }
 
 module.exports = {
   timetravel: false,
   cardano: {
-    tlv,
+    tvl,
     staking: sumTokensExport({ tokens: ['b34b3ea80060ace9427bda98690a73d33840e27aaa8d6edb7f0c757a634e455441'], owner: 'addr1w8p79rekquuw5kmdg4z36y9gpnm88k5huddwqluk9mjjeqgc3xmss'})
   },
   ergo: {
