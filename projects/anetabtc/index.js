@@ -4,7 +4,7 @@ const { getTokensMinted } = require("../helper/chain/cardano/blockfrost");
 const cBTC = "4190b2941d9be04acc69c39739bd5acc66d60ccab480d8e20bc87e3763425443"
 
 async function tvl(){
-  return { bitcoin : await getTokensMinted(cBTC) }
+  return { bitcoin : (await getTokensMinted(cBTC)/100_000_000) }
 }
 
 module.exports = {
