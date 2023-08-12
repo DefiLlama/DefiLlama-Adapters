@@ -47,7 +47,10 @@ const config = {
         '0x42dc966b7ecc3c6cc73e7bc04862859d5bddce65', // add on 08/08/2023 (we defillama)
         '0xe8d8a02601f54acb6fb69537be1f1d7cc76ccd8c', // add on 08/08/2023 (we defillama)
         '0xf881bcb3705926cea9c598ab05a837cf41a833a9', // add on 08/08/2023 (we defillama) 
-    ] 
+    ], 
+    blacklistedTokens: [
+      '0x0316eb71485b0ab14103307bf65a021042c6d380', // HBTC , we already track their backed BTC (1btc wallet on the list)
+    ]
   },
   polygon: {
     owners: ['0xd70250731a72c33bfb93016e3d1f0ca160df7e42']
