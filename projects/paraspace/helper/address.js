@@ -25,4 +25,8 @@ module.exports = {
     UiPoolDataProvider: "0x451E3288a2dcD91b001cd831dD75109D524578b6",
     PoolAddressProvider: "0xc11B2F53E119634c8755855e56D323C4F6dfd23d",
   },
+  moonbeam: {
+    UiPoolDataProvider: "0x8CE5F6F4268A756b6656F576d0F9Cf4fD73CBb52",
+    PoolAddressProvider: "0x086C77cEc639bEBbfCC0a3467736636c3F755a96",
+  }
 };

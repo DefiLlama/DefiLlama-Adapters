@@ -90,13 +90,15 @@ const defaultTokens = {
     '0xd417144312dbf50465b1c641d016962017ef6240',// cqt
     '0xcb84d72e61e383767c4dfeb2d8ff7f4fb89abc6e', //VEGA
     '0xcccd1ba9f7acd6117834e0d28f25645decb1736a', //ecox
+    '0x25ec98773d7b4ced4cafab96a2a1c0945f145e10', // stUSDT
   ],
   tron: [
     nullAddress,
     ADDRESSES.tron.USDT, // USDT
     ADDRESSES.tron.USDC,  // USDC
-    'TFptbWaARrWTX5Yvy3gNG5Lm8BmhPx82Bt', //wbt
-    ADDRESSES.tron.TUSD
+    // 'TFptbWaARrWTX5Yvy3gNG5Lm8BmhPx82Bt', //wbt
+    ADDRESSES.tron.TUSD,
+    'TThzxNRLrW2Brp9DcTQU8i4Wd9udCWEdZ3', // stUSDT
   ],
   polygon: [
     nullAddress,

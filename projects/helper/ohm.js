@@ -1,6 +1,5 @@
 const { staking, stakingUnknownPricedLP } = require('./staking')
 const { sumTokensAndLPsSharedOwners, sumLPWithOnlyOneTokenOtherThanKnown } = require('./unwrapLPs')
-const { getFixBalances } = require('./portedTokens')
 
 function ohmTvl(treasury, treasuryTokens, chain = 'ethereum', stakingAddress, stakingToken, transformOriginal = undefined, fix, tokenOnCoingecko = true) {
     let transform = transformOriginal
@@ -13,8 +12,7 @@ function ohmTvl(treasury, treasuryTokens, chain = 'ethereum', stakingAddress, st
                 sumLPWithOnlyOneTokenOtherThanKnown(balances, t[0], treasury, stakingToken, block, chain, transform)
             ))
         }
-        if (!fix) fix = await getFixBalances(chain)
-        fix(balances)
+        if (fix) fix(balances)
         return balances
     }
     return {
