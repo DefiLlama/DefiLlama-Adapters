@@ -415,4 +415,24 @@ module.exports = {
       ]
     }
   },
+  base: {
+    tvl: {
+      bridge: {
+        address: '0xf07d1C752fAb503E47FEF309bf14fbDD3E867089',
+        tokens: [
+          // '0xb554A55358fF0382Fb21F0a478C3546d1106Be8c', // nETH
+          ADDRESSES.null,
+        ]
+      },
+      pools: [
+        {
+          pool: '0x6223bD82010E2fB69F329933De20897e7a4C225f',
+          tokens: [
+            // "0xb554A55358fF0382Fb21F0a478C3546d1106Be8c", // nETH
+            "0x4200000000000000000000000000000000000006", //base WETH
+          ]
+        },
+      ]
+    }
+  },
 }

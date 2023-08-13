@@ -21,5 +21,9 @@ module.exports = {
   era: {
     tvl,
     borrowed,
+  },
+  moonbeam: {
+    tvl,
+    borrowed,
   }
 };

@@ -10,6 +10,7 @@ const DEFAULTS = {
   SUI_RPC: 'https://fullnode.mainnet.sui.io/',
   MULTIVERSX_RPC: 'https://api.multiversx.com',
   PGN_RPC: 'https://rpc.publicgoods.network',
+  LACHAIN_RPC: 'https://rpc-mainnet.lachain.io',
 }
 
 const ENV_KEYS = [

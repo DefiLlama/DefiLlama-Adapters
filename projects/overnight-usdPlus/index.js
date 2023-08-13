@@ -7,6 +7,7 @@ const m2m = {
     optimism: "0x9Af655c4DBe940962F776b685d6700F538B90fcf",
     arbitrum: "0x9Af655c4DBe940962F776b685d6700F538B90fcf",
     era: "0x240aad990FFc5F04F11593fF4dCF1fF714d6fc80",
+    base: "0x1F4947Cd5A5c058DD5EA6Fd1CCd5c311aDa9E6Fb"
 }
 
 const assets = {
@@ -15,6 +16,7 @@ const assets = {
     optimism: ADDRESSES.optimism.USDC, //USDC
     arbitrum: ADDRESSES.arbitrum.USDC, //USDC
     era: ADDRESSES.era.USDC,
+    base: "0xd9aaec86b65d86f6a7b5b1b0c42ffa531710b6ca" //USDC
 }
 
 const abi = "uint256:totalNetAssets"
