@@ -7,6 +7,7 @@ module.exports = {
       factory: '0xcEFbebF0b85B1638C19b01cE2A02C262F421B07d',
       useDefaultCoreAssets: true,
       hasStablePools: true,
+      fetchBalances: true,
     })
   }
 };
