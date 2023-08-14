@@ -17,7 +17,7 @@ async function getVaultContractsAddress(chain) {
   return plAddress;
 }
 
-const chains = ["ethereum", "optimism", "arbitrum"];
+const chains = ["ethereum", "optimism", "arbitrum", 'polygon'];
 
 chains.forEach((chain) => {
   module.exports[chain] = {
