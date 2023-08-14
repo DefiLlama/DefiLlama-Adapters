@@ -20,7 +20,6 @@ module.exports = {
       ],
       resolveNFTs: true,
       resolveArtBlocks: true,
-      resolveLPs: true,
     }),
   },
   // resolveNFTs: true is currently unsupported on Polygon
@@ -28,6 +27,7 @@ module.exports = {
   polygon: {
     tvl: sumTokensExport({
       owners: [PWN_BETA_POLYGON, PWN_BUNDLER_POLYGON, PWN_V1_SIMPLE_LOAN],
+      fetchCoValentTokens: true,
     }),
   },
 };
