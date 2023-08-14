@@ -1,5 +1,16 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, sumTokensExport, } = require('../helper/unwrapLPs');
+const { data } = require("../helper/chain/waves");
+const sdk = require('@defillama/sdk')
+
+const wavesCoinBridgeContract = '3PFPuctNkdbwGKKUNymWw816jGPexHzGXW5';
+
+async function wavesTVL() {
+  const balances = {};
+  const contractTVLInWAVES = await data(wavesCoinBridgeContract, "BALANCE");
+  sdk.util.sumSingleBalance(balances, 'waves', contractTVLInWAVES.value/1e8)
+  return balances;
+}
 
 const config = {
   ethereum: [
@@ -51,3 +62,7 @@ module.exports = {};
 Object.keys(config).forEach(chain => {
   module.exports[chain] = { tvl: sumTokensExport({ ownerTokens: config[chain] }) }
 })
+module.exports.waves = { tvl: wavesTVL }
+
+module.exports.timetravel = false; // Waves blockchain
+module.exports.methodology = 'All tokens locked in PepeTeam Bridge.';

@@ -58,7 +58,10 @@ async function getConfig(project, endpoint) {
   async function _getConfig() {
     try {
       const { data: json } = await axios.get(endpoint)
-      await setCache(key, project, json)
+      const strData = typeof json === 'string' ? json : JSON.stringify(json)
+      let isValidData = strData.length > 42
+      if (isValidData) // sometimes we get bad data/empty object, we dont overwrite cache with it
+        await setCache(key, project, json)
       return json
     } catch (e) {
       // sdk.log(e)
@@ -89,7 +92,7 @@ async function configPost(project, endpoint, data) {
 }
 
 
-async function cachedGraphQuery(project, endpoint, query, { variables } = {}) {
+async function cachedGraphQuery(project, endpoint, query, { variables, fetchById } = {}) {
   if (!project || !endpoint) throw new Error('Missing parameters')
   const key = 'config-cache'
   const cacheKey = getKey(key, project)
@@ -98,7 +101,11 @@ async function cachedGraphQuery(project, endpoint, query, { variables } = {}) {
 
   async function _cachedGraphQuery() {
     try {
-      const json = await graphql.request(endpoint, query, { variables })
+      let json
+      if (!fetchById)
+        json = await graphql.request(endpoint, query, { variables })
+      else 
+        json = await graphFetchById({ endpoint, query, })
       await setCache(key, project, json)
       return json
     } catch (e) {
@@ -109,6 +116,25 @@ async function cachedGraphQuery(project, endpoint, query, { variables } = {}) {
   }
 }
 
+
+async function graphFetchById({  endpoint, query, params = {}, api, options: { useBlock = false, safeBlockLimit = 100 } = {} }) {
+  if (useBlock && !params.block)
+    params.block = await api.getBlock() - safeBlockLimit
+
+  let data = []
+  let lastId = ""
+  let response;
+  do {
+    const res = await graphql.request(endpoint, query, { variables: { ...params, lastId }})
+    Object.keys(res).forEach(key => response = res[key])
+    data.push(...response)
+    lastId = response[response.length - 1]?.id
+    sdk.log(data.length, response.length)
+  } while (lastId)
+  return data
+}
+
+
 module.exports = {
-  getCache, setCache, getConfig, configPost, cachedGraphQuery,
+  getCache, setCache, getConfig, configPost, cachedGraphQuery, graphFetchById,
 }
