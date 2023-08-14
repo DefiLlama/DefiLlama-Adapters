@@ -1,16 +1,14 @@
 const { transformBalances } = require('../helper/portedTokens')
 const sdk = require('@defillama/sdk')
-const axios = require("axios")
+const { getConfig } = require('../helper/cache')
 
 async function tvl(_, _b, _cb, { api, }) {
   const balances = {}
 
-  const poolIds = (
-    await axios.get(`https://app.gyro.finance/whitelist/${api.chain}.json`)
-  ).data
+  const poolIds = (await getConfig(`gyroscope/${api.chain}`, `https://app.gyro.finance/whitelist/${api.chain}.json`))
 
   const vault = await api.call({
-    target: poolIds[0].slice(0,42),
+    target: poolIds[0].slice(0, 42),
     abi: 'address:getVault',
   })
   const data = await api.multiCall({
@@ -20,9 +18,9 @@ async function tvl(_, _b, _cb, { api, }) {
   })
 
   data.forEach(i => {
-    i.tokens.forEach((t, j) => sdk.util.sumSingleBalance(balances,t,i.balances[j]))
+    i.tokens.forEach((t, j) => sdk.util.sumSingleBalance(balances, t, i.balances[j]))
   })
-  
+
   return transformBalances(api.chain, balances)
 }
 
