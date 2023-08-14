@@ -19,21 +19,12 @@ const transmuter_abi = {
   getCollateralList: "address[]:getCollateralList",
 }
 
-const BorrowChainIds = {
-  ethereum: 1,
-  polygon: 137,
-  optimism: 10,
-  arbitrum: 42161,
-  avax: 43114,
-};
-
 // get Borrowing module vault managers list
-async function getVaultManagersFromAPI(chain) {
-  let chainId = BorrowChainIds[chain];
+async function getVaultManagersFromAPI(api) {
   let calls = [];
   let result = await getConfig(
-    "angle/" + chain,
-    "https://api.angle.money/v1/vaultManagers?chainId=" + chainId
+    "angle/" + api.chain,
+    "https://api.angle.money/v1/vaultManagers?chainId=" + api.chainId
   );
 
   for (const data of Object.values(result)) {
@@ -43,9 +34,8 @@ async function getVaultManagersFromAPI(chain) {
   return calls;
 }
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(timestamp, _1, _2, { api }) {
   const chain = api.chain
-  const block = api.block
 
   const balances = {};
   const tokensAndOwners = [];
@@ -71,12 +61,10 @@ async function tvl(_, _1, _2, { api }) {
     let assets = await api.multiCall({
       calls: poolManagers,
       abi: poolManagers_abi["getTotalAsset"],
-      block,
     });
     let tokens = await api.multiCall({
       calls: poolManagers,
       abi: poolManagers_abi["token"],
-      block,
     });
 
     assets.forEach((output, i) =>
@@ -91,23 +79,19 @@ async function tvl(_, _1, _2, { api }) {
     const AngleagEUREUROCStaker = "0xC1e8Dba1cbF29f1CaA8343CAe96d5AdFD9bca736";
     // pool TVL
     const [agEurBal, eurocBal, totPoolTokenSupply, sdagEUREUROCTVL, cvxagEUREUROCstakerTVL] = await Promise.all([
-      api.call({ abi: 'erc20:balanceOf', target: agEUR.contract, params: curvePool, block }),
-      api.call({ abi: 'erc20:balanceOf', target: EUROC, params: curvePool, block }),
-      api.call({ abi: 'erc20:totalSupply', target: curvePool, block }),
+      api.call({ abi: 'erc20:balanceOf', target: agEUR.contract, params: curvePool }),
+      api.call({ abi: 'erc20:balanceOf', target: EUROC, params: curvePool }),
+      api.call({ abi: 'erc20:totalSupply', target: curvePool }),
       // Angle holdings of Curve agEUREUROC LP tokens (staked on Stake DAO and Convex)
-      api.call({ abi: 'erc20:balanceOf', target: sdagEUREUROC, params: AngleagEUREUROCStaker, block }),
-      api.call({ abi: 'erc20:balanceOf', target: cvxagEUREUROCstaker, params: AngleagEUREUROCStaker, block }),
+      api.call({ abi: 'erc20:balanceOf', target: sdagEUREUROC, params: AngleagEUREUROCStaker }),
+      api.call({ abi: 'erc20:balanceOf', target: cvxagEUREUROCstaker, params: AngleagEUREUROCStaker }),
     ])
     const eurocBalance = eurocBal * (+sdagEUREUROCTVL + +cvxagEUREUROCstakerTVL) / totPoolTokenSupply
     sdk.util.sumSingleBalance(balances, EUROC, eurocBalance);
 
     // Transmuter
-    if (block > 17880000) {
-      let collaterals = await api.call({
-        abi: transmuter_abi["getCollateralList"],
-        target: agEUR.transmuter,
-        block,
-      });
+    if (timestamp > 1691656362) {
+      let collaterals = await api.call({ abi: transmuter_abi["getCollateralList"], target: agEUR.transmuter, });
 
       collaterals.forEach((collateral, i) => {
         tokensAndOwners.push([collateral, agEUR.transmuter]);
@@ -117,7 +101,7 @@ async function tvl(_, _1, _2, { api }) {
 
   // Borrowing module
   tokensAndOwners.push(...(await getVaultManagersFromAPI(chain)));
-  
+
   // Treasury - Governor
   const governorTokens = TreasuryTokenAddresses['governor'][chain]
   governorTokens.forEach((token) => {
@@ -129,7 +113,7 @@ async function tvl(_, _1, _2, { api }) {
   guardianTokens.forEach((token) => {
     tokensAndOwners.push([token, guardianAddress[chain]]);
   });
-  
+
   return sumTokens2({ balances, api, tokensAndOwners });
 }
 
