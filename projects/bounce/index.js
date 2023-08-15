@@ -13,16 +13,13 @@ const BOUNCE_V1_PRO = '0x6fe40f415448d930166f9110D3bBe2146383bC66'
 
 const v1config = {
   ethereum: {
-    tokensAndOwners: [[ADDRESSES.ethereum.USDT,BOUNCE_V1],[ADDRESSES.ethereum.USDC,BOUNCE_V1],[ADDRESSES.ethereum.USDT,BOUNCE_V1_PRO]],
-    factory: "0x6fe40f415448d930166f9110D3bBe2146383bC66",
-    fromBlock: 11774020
+    tokensAndOwners: [[ADDRESSES.ethereum.USDT,BOUNCE_V1],[ADDRESSES.ethereum.USDC,BOUNCE_V1],[ADDRESSES.ethereum.USDT,BOUNCE_V1_PRO]]
   }
 }
 
 module.exports = {
   ethereum: {
     tvl: async (_, _b, _cb, { api, }) => {
-      console.log('tokensAndOwners', v1config.ethereum.tokensAndOwners)
       return api.sumTokens({ tokensAndOwners: v1config.ethereum.tokensAndOwners, blacklistedTokens: [] })
     },
     pool2: sumTokensExport({ owner: STAKING_LP_ADDRESS, tokens: [AUCTION_ETH_SLP] }),
