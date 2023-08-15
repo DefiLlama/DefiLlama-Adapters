@@ -54,7 +54,6 @@ const LAW_RIGHTS = "0xe24Ed1C92feab3Bb87cE7c97Df030f83E28d9667" // DAO address
 
 
 const lawSwapTVL = getUniTVL({
-  chain,
   factory: lawswapFactory,
   useDefaultCoreAssets: true,
 })

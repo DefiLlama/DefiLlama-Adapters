@@ -19,7 +19,7 @@ const WSOHM = "0xca76543cf381ebbb277be79574059e32108e3e65"
 const WSOHM_FDT_SLP = "0x2e30e758b3950dd9afed2e21f5ab82156fbdbbba"
 const FDT_GOHM = "0x75b02b9889536B617d57D08c1Ccb929c523945C1"
 
-const LUSD = '0x5f98805a4e8be255a32880fdec7f6728c6568ba0'
+const LUSD = ADDRESSES.ethereum.LUSD
 const LUSD3CRV = '0xEd279fDD11cA84bEef15AF5D39BB4d4bEE23F0cA'
 
 function resolveUnderlier(underlier) {

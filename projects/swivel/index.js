@@ -14,14 +14,14 @@ module.exports = {
       ],
       tokens: [
         "0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643", // cDAI
-        ADDRESSES.ethereum.DAI, // DAI
-        ADDRESSES.ethereum.USDC, // USDC
+        ADDRESSES.ethereum.DAI,
+        ADDRESSES.ethereum.USDC,
         "0x39AA39c021dfbaE8faC545936693aC917d5E7563", // cUSDC,
         // "0xEb91861f8A4e1C12333F42DCE8fB0Ecdc28dA716", // eUSDC
-        ADDRESSES.ethereum.STETH, // Lido stETH
-        ADDRESSES.ethereum.WSTETH, // Lido wstETH
+        ADDRESSES.ethereum.STETH,
+        ADDRESSES.ethereum.WSTETH,
         "0x5E8422345238F34275888049021821E8E08CAa1f", // frxETH
-        "0xac3E018457B222d93114458476f3E3416Abbe38F" // sfrxETH
+        ADDRESSES.ethereum.sfrxETH
       ]
     })
   }

@@ -23,13 +23,29 @@ const cellarsV0816 = [
   { id: STEADY_MATIC, startBlock: 16192732 },
 ];
 
+// v2 Cellars
+const DEFI_STARS = "0x03df2a53cbed19b824347d6a45d09016c2d1676a";
 const REAL_YIELD_USD = "0x97e6e0a40a3d02f12d1cec30ebfbae04e37c119e";
 const REAL_YIELD_ETH = "0xb5b29320d2dde5ba5bafa1ebcd270052070483ec";
-const DEFI_STARS = "0x03df2a53cbed19b824347d6a45d09016c2d1676a";
+const REAL_YIELD_LINK = "0x4068bdd217a45f8f668ef19f1e3a1f043e4c4934";
+const REAL_YIELD_1INCH = "0xc7b69e15d86c5c1581dacce3cacaf5b68cd6596f";
+const REAL_YIELD_UNI = "0x6a6af5393dc23d7e3db28d28ef422db7c40932b6";
+const REAL_YIELD_SNX = "0xcbf2250f33c4161e18d4a2fa47464520af5216b5";
+const REAL_YIELD_ENS = "0x18ea937aba6053bc232d9ae2c42abe7a8a2be440";
+const REAL_YIELD_BTC = "0x0274a704a6d9129f90a62ddc6f6024b33ecdad36";
+const FRAXIMAL = "0xdbe19d1c3f21b1bb250ca7bdae0687a97b5f77e6";
+
 const cellarsV2 = [
+  { id: DEFI_STARS, startBlock: 17181497 },
   { id: REAL_YIELD_USD, startBlock: 16431804 },
   { id: REAL_YIELD_ETH, startBlock: 16986127 },
-  { id: DEFI_STARS, startBlock: 17181497 },
+  { id: REAL_YIELD_LINK, startBlock: 17377190 },
+  { id: REAL_YIELD_1INCH, startBlock: 17377190 },
+  { id: REAL_YIELD_UNI, startBlock: 17377190 },
+  { id: REAL_YIELD_SNX, startBlock: 17377190 },
+  { id: REAL_YIELD_ENS, startBlock: 17377190 },
+  { id: REAL_YIELD_BTC, startBlock: 17667535 },
+  { id: FRAXIMAL, startBlock: 17589948 },
 ];
 
 async function tvl(timestamp, block, chainBlocks, { api }) {

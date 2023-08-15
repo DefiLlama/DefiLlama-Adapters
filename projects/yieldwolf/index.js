@@ -3,7 +3,6 @@ const abi = require("./abi.json");
 const { unwrapLPsAuto } = require("../helper/unwrapLPs");
 const {
   getChainTransform,
-  getFixBalances,
 } = require("../helper/portedTokens");
 
 const vaultsContractPolygon = "0xBF65023BcF48Ad0ab5537Ea39C9242de499386c9";
@@ -48,8 +47,6 @@ const calcTvl = async (chain, block, masterchef, ignoreAddresses = []) => {
   })
 
   await unwrapLPsAuto({ balances, block, chain, transformAddress })
-  const fixBalances = await getFixBalances(chain)
-  fixBalances(balances)
   return balances
 };
 

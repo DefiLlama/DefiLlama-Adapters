@@ -44,7 +44,7 @@ const tvl = async () => {
     data: { data: { poolsConsistingOf }}
   } = await axios(requestObject);
 
-  totalTVL = poolsConsistingOf.reduce((acc, pool) => (isNaN(+pool.tvl)) ? acc : acc + +pool.tvl, 0)
+  totalTVL = poolsConsistingOf.reduce((acc, pool) => (isNaN(+pool.tvl) || +pool.tvl > 1e8) ? acc : acc + +pool.tvl, 0)
 
   return { tether: totalTVL };
 };

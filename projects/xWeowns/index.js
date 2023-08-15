@@ -21,8 +21,7 @@ async function tvl(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
-    doublecounted: false,
     lachain: {
-        tvl
+        tvl: () => 0,
     }
 };

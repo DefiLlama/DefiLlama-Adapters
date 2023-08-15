@@ -32,10 +32,14 @@ module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
     kava: {
-        tvl: sumTokensExport({ owners: [Contracts.kava.perpV1Result, Contracts.kava.fundingResult, ], tokens: [Contracts.kava.wkava, Contracts.kava.usdc, nullAddress] }),
+      tvl: async () => ({}),
+        // tvl: sumTokensExport({ owners: [Contracts.kava.perpV1Result, Contracts.kava.fundingResult, ], tokens: [Contracts.kava.wkava, Contracts.kava.usdc, nullAddress] }),
     },
     zksync: {
-        offers,
+        // offers,
         tvl: async () => ({})
-    }
+    },
+    hallmarks: [
+      [Math.floor(new Date('2023-04-23')/1e3), 'Protocol shutdown'],
+    ],
 };

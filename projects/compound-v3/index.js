@@ -1,4 +1,3 @@
-const ADDRESSES = require('../helper/coreAssets.json')
 const { compoundV3Exports } = require('../helper/compoundV3')
 const markets = [
   "0xc3d688B66703497DAA19211EEdff47f25384cdc3", // USDC Market
@@ -13,6 +12,9 @@ module.exports = compoundV3Exports({
     markets: ['0xA5EDBDD9646f8dFF606d7448e414884C7d905dCA'],
   },
   polygon: {
-    markets:["0xF25212E676D1F7F89Cd72fFEe66158f541246445"],
+    markets: ["0xF25212E676D1F7F89Cd72fFEe66158f541246445"],
+  },
+  base: {
+    markets: ["0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf"],
   }
 })

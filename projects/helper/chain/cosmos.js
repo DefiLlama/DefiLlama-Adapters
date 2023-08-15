@@ -15,21 +15,29 @@ const endPoints = {
   cosmos: "https://cosmoshub-lcd.stakely.io",
   kujira: "https://rest.cosmos.directory/kujira",
   comdex: "https://rest.comdex.one",
-  terra: "https://terraclassic-lcd-server-01.stakely.io",
-  terra2: "https://phoenix-lcd.terra.dev",
+  terra: "https://rest.cosmos.directory/terra",
+  terra2: "https://rest.cosmos.directory/terra2",
   umee: "https://umee-api.polkachu.com",
   orai: "https://lcd.orai.io",
   juno: "https://lcd-juno.cosmostation.io",
   cronos: "https://lcd-crypto-org.cosmostation.io",
+  chihuahua: "https://rest.cosmos.directory/chihuahua",
   injective: "https://lcd-injective.whispernode.com:443",
   migaloo: "https://migaloo-api.polkachu.com",
   fxcore: "https://fx-rest.functionx.io",
+  xpla: "https://dimension-lcd.xpla.dev",
+  kava: "https://api2.kava.io",
+  neutron: "https://rest-kralum.neutron-1.neutron.org",
+  quasar: "https://quasar-api.polkachu.com",
+  gravitybridge: "https://rest.cosmos.directory/gravitybridge",
+  aura: "https://lcd.aura.network",
 };
 
 const chainSubpaths = {
   crescent: "crescent",
   comdex: "comdex",
   umee: "umee",
+  kava: "kava",
 };
 
 function getEndpoint(chain) {
@@ -43,6 +51,7 @@ async function query(url, block, chain) {
   if (block !== undefined) {
     endpoint += `&height=${block - (block % 100)}`;
   }
+  console.log(endpoint);
   return (await axios.get(endpoint)).data.result;
 }
 
@@ -87,6 +96,16 @@ async function getBalance({ token, owner, block, chain } = {}) {
   });
 
   return Number(data.balance);
+}
+
+async function sumCW20Tokens({ balances = {}, tokens, owner, block, chain } = {}) {
+  await Promise.all(
+    tokens.map(async (token) => {
+      const balance = await getBalance({ token, owner, block, chain, });
+      sdk.util.sumSingleBalance(balances, token, balance, chain);
+    })
+  );
+  return balances;
 }
 
 async function getDenomBalance({ denom, owner, block, chain } = {}) {
@@ -138,17 +157,9 @@ async function lpMinter({ token, block, chain } = {}) {
 async function queryContract({ contract, chain, data }) {
   if (typeof data !== "string") data = JSON.stringify(data);
   data = Buffer.from(data).toString("base64");
-  if (chain === "terra") {
-    let path = `${getEndpoint(
-      chain
-    )}/terra/wasm/v1beta1/contracts/${contract}/store?query_msg=${data}`;
-    return (await axios.get(path)).data.query_result;
-  }
   return (
     await axios.get(
-      `${getEndpoint(
-        chain
-      )}/cosmwasm/wasm/v1/contract/${contract}/smart/${data}`
+      `${getEndpoint(chain)}/cosmwasm/wasm/v1/contract/${contract}/smart/${data}`
     )
   ).data.data;
 }
@@ -193,7 +204,8 @@ async function queryContractStore({
   return query(url, block, chain);
 }
 
-async function sumTokens({ balances = {}, owners = [], chain }) {
+async function sumTokens({ balances = {}, owners = [], chain, owner }) {
+  if (owner) owners = [owner]
   log(chain, "fetching balances for ", owners.length);
   let parallelLimit = 25;
 
@@ -220,4 +232,5 @@ module.exports = {
   sumTokens,
   getTokenBalance,
   getToken,
+  sumCW20Tokens,
 };
