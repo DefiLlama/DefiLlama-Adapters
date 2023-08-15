@@ -24,6 +24,8 @@ module.exports = {
       staking: stakingPricedLP(spadechef, spade, "fantom", spadeFtmLP, "fantom"),
       pool2: pool2Exports(spadechef, [spadeFtmLP, spadeUsdcLP], "fantom"),
   },
-
+  hallmarks: [
+    [1647734400, "Rug Pull"]
+  ]
 } 
 

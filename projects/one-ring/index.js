@@ -59,6 +59,9 @@ async function tvlPolygon(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
+  hallmarks: [
+    [1647907200, "Rug Pull"]
+  ],
   fantom: {
     tvl: tvlFantom,
   },

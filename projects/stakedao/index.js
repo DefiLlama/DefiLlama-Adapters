@@ -90,7 +90,7 @@ async function tvl(timestamp, block, _, { api }) {
   const angle_sanFRAX_V3 = {
     contract: angle_protocol.locker,
     sanFraxEurGauge: '0xb40432243E4F317cE287398e72Ab8f0312fc2FE8',
-    fraxToken: '0x853d955aCEf822Db058eb8505911ED77F175b99e',
+    fraxToken: ADDRESSES.ethereum.FRAX,
     abi: 'balanceOf',
   }
   const angle_sushi_agEUR_V3 = {
@@ -113,13 +113,15 @@ async function tvl(timestamp, block, _, { api }) {
     sanFraxEurV3,
     angleSushiAgEurV3,
     angleGuniAgEurUSDCV3,
-  ] = await api.multiCall({  abi: abi[angle_sanUSDC_V3.abi], calls: [
-    angle_sanUSDC_V3.sanUsdcEurGauge,
-    angle_sanDAI_V3.sanDaiEurGauge,
-    angle_sanFRAX_V3.sanFraxEurGauge,
-    angle_sushi_agEUR_V3.sushiAgEURGauge,
-    angle_guni_agEUR_usdc_V3.guniAgEURUsdcGauge,
-  ].map(i => ({ target: i, params: angle_sanUSDC_V3.contract}))})
+  ] = await api.multiCall({
+    abi: abi[angle_sanUSDC_V3.abi], calls: [
+      angle_sanUSDC_V3.sanUsdcEurGauge,
+      angle_sanDAI_V3.sanDaiEurGauge,
+      angle_sanFRAX_V3.sanFraxEurGauge,
+      angle_sushi_agEUR_V3.sushiAgEURGauge,
+      angle_guni_agEUR_usdc_V3.guniAgEURUsdcGauge,
+    ].map(i => ({ target: i, params: angle_sanUSDC_V3.contract }))
+  })
 
   // ==== Calls Rate ==== //
   const [
@@ -159,16 +161,60 @@ async function tvl(timestamp, block, _, { api }) {
     lockersInfos.push({ contract: `${resp[i].infos.locker}`, veToken: `${resp[i].infos.ve}`, token: `${resp[i].infos.token}` })
   }
 
+  // To deal with special vePendle case
+  const vePendle = "0x4f30A9D41B80ecC5B94306AB4364951AE3170210"
+  const veMAV = "0x4949Ac21d5b2A0cCd303C20425eeb29DCcba66D8".toLowerCase()
   const calls = []
-  for (let i = 0; i < lockersInfos.length; ++i)
-    calls.push({
-      target: lockersInfos[i].veToken,
-      params: lockersInfos[i].contract
-    })
-  const lockerBals = await api.multiCall({ abi: abi.locked, calls })
-  lockerBals.forEach(({ amount }, i) => sdk.util.sumSingleBalance(balances, lockersInfos[i].token, amount))
+  const callsPendle = []
+  const callsMAV = []
+  for (let i = 0; i < lockersInfos.length; ++i) {
+    if (lockersInfos[i].veToken == vePendle) {
+      callsPendle.push({
+        target: lockersInfos[i].veToken,
+        params: lockersInfos[i].contract
+      })
+    } else if (lockersInfos[i].veToken.toLowerCase() == veMAV) {
+      callsMAV.push({
+        veToken: lockersInfos[i].veToken,
+        contract: lockersInfos[i].contract
+      })
+    } else {
+      calls.push({
+        target: lockersInfos[i].veToken,
+        params: lockersInfos[i].contract
+      })
+    }
+  }
 
-  return sumTokens2({ api, tokensAndOwners: strategies,  balances, })
+  let lockerBals = await api.multiCall({ abi: abi.locked, calls })
+  let lockerPendleBal = await api.multiCall({ abi: "function positionData(address arg0) view returns (uint128 amount, uint128 end)", calls: callsPendle })
+  let lockerMAVBal = []
+
+  for (const { contract, veToken } of callsMAV) {
+    const count = await api.call({  abi: 'function lockupCount(address) view returns (uint256)', target: veToken, params: contract })
+    let balance = 0
+    for (let i = 0; i < count; i++) {
+      const lockup = await api.call({ abi: 'function lockups(address,uint256) view returns (uint256 amount, uint256 end, uint256 points)', target: veToken, params: [contract, i] })
+      balance += +lockup.amount
+    }
+    lockerMAVBal.push({ amount: balance, end: 0 })
+  }
+
+  console.log(lockerBals, lockerPendleBal, lockerMAVBal)
+
+  for (let i = 0; i < lockersInfos.length; ++i) {
+    let amount;
+    if (lockersInfos[i].veToken == vePendle) {
+      amount = lockerPendleBal.shift().amount
+    } else if (lockersInfos[i].veToken.toLowerCase() == veMAV) {
+      amount = lockerMAVBal.shift().amount
+    }  else {
+      amount = lockerBals.shift().amount
+    }
+    sdk.util.sumSingleBalance(balances, lockersInfos[i].token, amount)
+  }
+
+  return sumTokens2({ api, tokensAndOwners: strategies, balances, })
 }
 
 async function staking(timestamp, block) {
@@ -227,7 +273,7 @@ async function bsc(timestamp, ethBlock, chainBlocks, { api }) {
     fusdt3EPS_vault_bsc
   ].map(i => i.contract)
 
-  const [bitcoin, usdc, tether] = (await api.multiCall({  abi: abi.balance, calls: vaultsBsc}) ).map(i => i/1e18)
+  const [bitcoin, usdc, tether] = (await api.multiCall({ abi: abi.balance, calls: vaultsBsc })).map(i => i / 1e18)
   return {
     bitcoin, tether, 'usd-coin': usdc
   }

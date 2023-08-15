@@ -81,7 +81,7 @@ module.exports = {
     borrowed: polygonBorrowed,
   },
   fantom: {
-    tvl: fantomTvl,
-    borrowed: fantomBorrowed,
+    tvl: () => ({}),
+    borrowed: () => ({}),
   },
 };

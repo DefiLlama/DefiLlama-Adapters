@@ -53,7 +53,10 @@ const config = {
   },
   optimism: {
     owners: ['0xf89d7b9c864f589bbF53a82105107622B35EaA40']
- }
+  },
+  era: {
+    owners: ['0xf89d7b9c864f589bbF53a82105107622B35EaA40']
+  },
 }
 
 module.exports = cexExports(config)

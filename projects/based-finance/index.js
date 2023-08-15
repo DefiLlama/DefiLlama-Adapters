@@ -31,7 +31,7 @@ module.exports = {
   fantom: {
     tvl: getUniTVL({
              factory: '0x407C47E3FDB7952Ee53aa232B5f28566A024A759',
-             chain: 'fantom',
+             useDefaultCoreAssets: true,
            }),
     staking: staking(acropolisAddress, bshareTokenAddress, "fantom"),
     treasury

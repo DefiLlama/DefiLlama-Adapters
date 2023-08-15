@@ -16,14 +16,15 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 // carbon: https://api-insights.carbon.network/info/denom_gecko_map
 // orbit brige: https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList
 
-const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'stargaze', 'umee', 'orai', 'persistence', 'fxcore',]
-const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui']
+const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'stargaze', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua',]
+const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo',]
 
 const distressedAssts = new Set(Object.values({
   CRK: '0x065de42e28e42d90c2052a1b49e7f83806af0e1f',
   aBNBc: ADDRESSES.bsc.ankrBNB,
   aBNBb: ADDRESSES.bsc.aBNBb,
   XRPC: '0xd4ca5c2aff1eefb0bea9e9eab16f88db2990c183',
+  YAKU: 'NGK3iHqqQkyRZUj4uhJDQqEyKKcZ7mdawWpqwMffM3s'
 }).map(i => i.toLowerCase()))
 
 const transformTokens = {
@@ -45,32 +46,14 @@ const ibcMappings = {
 
 const fixBalancesTokens = {
   // Sample Code
-  // arbitrum_nova: {
-  //   [nullAddress]: { coingeckoId: "ethereum", decimals: 18 },
-  //   [ADDRESSES.arbitrum_nova.WETH]: { coingeckoId: "ethereum", decimals: 18 },
-  //   [ADDRESSES.arbitrum_nova.USDT]: { coingeckoId: "tether", decimals: 6 },
-  //   [ADDRESSES.arbitrum_nova.USDC]: { coingeckoId: "usd-coin", decimals: 6 },
-  // },
-  pulse: {
-    '0xa1077a294dde1b09bb078844df40758a5d0f9a27': { coingeckoId: "pulsechain", decimals: 18 },
-    '0x02dcdd04e3f455d838cd1249292c58f3b79e3c3c': { coingeckoId: ADDRESSES.ethereum.WETH, decimals: 0, },
-    '0xefd766ccb38eaf1dfd701853bfce31359239f305': { coingeckoId: ADDRESSES.ethereum.DAI, decimals: 0, },
+  ozone: {
+    // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
-  evmos: {
-    '0x2c68d1d6ab986ff4640b51e1f14c716a076e44c4': { coingeckoId: "evmos", decimals: 18 },//stEVMOS
-    '0x50de24b3f0b3136c50fa8a3b8ebc8bd80a269ce5': { coingeckoId: "axlweth", decimals: 18 },//axlWETH
-    '0xb5124fa2b2cf92b2d469b249433ba1c96bdf536d': { coingeckoId: "stride-staked-atom", decimals: 6 },
-    '0xc5e00d3b04563950941f7137b5afa3a534f0d6d6': { coingeckoId: "cosmos", decimals: 6 },
-    '0x8fa78ceb7f04118ec6d06aac37ca854691d8e963': { coingeckoId: "stride", decimals: 6 },
-    '0xe60ce2dfa6d4ad37ade1dcb7ac4d6c3a093b3a7e': { coingeckoId: "rocket-pool-eth", decimals: 18 },//axlRETH
-    '0xb72a7567847aba28a2819b855d7fe679d4f59846': { coingeckoId: "tether-usd-celer", decimals: 6 },
+  telos: {
+    [ADDRESSES.telos.WTLOS_1]: { coingeckoId: "telos", decimals: 18 },
   },
-  era: {
-    '0x2039bb4116B4EFc145Ec4f0e2eA75012D6C0f181': { coingeckoId: "binance-usd", decimals: 18 },
-  },
-  fxcore: {
-    'FX': { coingeckoId: "fx-coin", decimals: 18 },
-    'usdt': { coingeckoId: "tether", decimals: 6 },
+  aura: {
+    'uaura': { coingeckoId: 'aura-network', decimals: 6 },
   },
 }
 
@@ -105,8 +88,9 @@ function getCoreAssets(chain = 'ethereum') {
     Object.keys(transformTokens[chain] || {}),
     Object.keys(fixBalancesTokens[chain] || {}),
   ].flat()
-  const addresses = getUniqueAddresses(tokens, chain)
+  let addresses = getUniqueAddresses(tokens, chain)
   if (ibcChains.includes(chain)) addresses.push(...coreAssets.ibc)
+  if (anyswapTokenBlacklist[chain]) addresses = addresses.filter(i => !anyswapTokenBlacklist[chain].includes(i))
   return addresses
 }
 
@@ -136,6 +120,94 @@ const eulerTokens = [
   "0x4169Df1B7820702f566cc10938DA51F6F597d264",
   "0xbd1bd5c956684f7eb79da40f582cbe1373a1d593",
 ]
+
+const anyswapTokenBlacklist = {
+  ethereum: [ADDRESSES.ethereum.FTM],
+  fantom: [
+    ADDRESSES.fantom.anyUSDC,
+    ADDRESSES.fantom.fUSDT,
+    ADDRESSES.fantom.USDC,
+    ADDRESSES.fantom.fUSDT,
+    ADDRESSES.fantom.DAI,
+    ADDRESSES.fantom.MIM,
+    ADDRESSES.fantom.nICE
+  ],
+  harmony: [ADDRESSES.harmony.AVAX],
+  kcc: [
+    ADDRESSES.moonriver.USDC,
+    ADDRESSES.moonriver.ETH,
+    ADDRESSES.kcc.DAI,
+    ADDRESSES.kcc.WBTC
+  ],
+  moonriver: [
+    ADDRESSES.moonriver.USDT,
+    ADDRESSES.moonriver.USDC,
+    ADDRESSES.moonriver.ETH
+  ],
+  arbitrum: [ADDRESSES.arbitrum.MIM],
+  shiden: [
+    ADDRESSES.telos.ETH,
+    ADDRESSES.telos.USDC,
+    ADDRESSES.shiden.JPYC,
+    ADDRESSES.shiden.ETH,
+    ADDRESSES.dogechain.BUSD,
+    ADDRESSES.shiden.BUSD
+  ],
+  telos: [
+    ADDRESSES.telos.ETH,
+    ADDRESSES.telos.WBTC,
+    ADDRESSES.telos.USDC,
+    ADDRESSES.telos.USDT
+  ],
+  syscoin: [
+    ADDRESSES.syscoin.USDC,
+    ADDRESSES.syscoin.ETH,
+    ADDRESSES.syscoin.USDT
+  ],
+  boba: [ADDRESSES.boba.BUSD],
+  velas: [
+    ADDRESSES.moonriver.ETH,
+    ADDRESSES.moonriver.USDC
+  ],
+  dogechain: [
+    ADDRESSES.moonriver.USDT,
+    ADDRESSES.dogechain.BUSD,
+    ADDRESSES.dogechain.MATIC
+  ],
+  kava: [
+    ADDRESSES.telos.ETH,
+    ADDRESSES.moonriver.USDT,
+    ADDRESSES.telos.USDC,
+    ADDRESSES.shiden.ETH,
+    ADDRESSES.syscoin.ETH,
+    ADDRESSES.moonriver.USDC,
+    ADDRESSES.dogechain.BUSD
+  ],
+  step: [
+    ADDRESSES.moonriver.USDC,
+    ADDRESSES.telos.ETH,
+    ADDRESSES.telos.USDC,
+    ADDRESSES.telos.USDT
+  ],
+  godwoken_v1: [
+    ADDRESSES.moonriver.USDC,
+    ADDRESSES.shiden.ETH,
+    ADDRESSES.telos.ETH,
+    ADDRESSES.moonriver.USDT
+  ],
+  milkomeda_a1: [ADDRESSES.telos.ETH],
+  wemix: [
+    ADDRESSES.boba.BUSD,
+    ADDRESSES.shiden.ETH,
+    ADDRESSES.moonriver.USDC
+  ],
+  eos_evm: [
+    ADDRESSES.syscoin.USDT,
+    ADDRESSES.shiden.ETH,
+    ADDRESSES.telos.ETH,
+    ADDRESSES.telos.USDT
+  ]
+}
 
 module.exports = {
   nullAddress,

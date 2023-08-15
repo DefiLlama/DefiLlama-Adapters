@@ -28,7 +28,6 @@ async function tvl(_, _1, _2, { api }) {
   const data = await getTokenData()
   data.tokens.forEach(({ mint }, i) => {
     const token = mint.toBase58()
-    if (token === '9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E') return; // skip soBTC
     const { balance: { depositTotal, borrowTotal } } = data.balances[i]
     const decimals = 10 ** (data.tokenDecimals[token] - INTERNAL_DECIMALS)
     api.add(token, depositTotal.toString() * decimals)

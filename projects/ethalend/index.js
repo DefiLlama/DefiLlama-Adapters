@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
 const abi = require('./abi.json')
 const { unwrapUniswapLPs } = require('../helper/unwrapLPs')
@@ -51,7 +52,7 @@ async function tvl(chain, block, chainId) {
     const globalData = (await request("https://api.thegraph.com/subgraphs/name/ethalend/etha-v1", globalDataQuery, { block: block - 100 })).globalDatas
     await Promise.all(globalData.filter(v => v.type === "lending").map(async v => {
       if (v.address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee") {
-        v.address = "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"
+        v.address = ADDRESSES.polygon.WMATIC_2
       }
       const decimals = await sdk.api.erc20.decimals(v.address, chain)
       sdk.util.sumSingleBalance(balances, chain + ':' + v.address, BigNumber(v.totalUnderlying).times(10 ** decimals.output).toFixed(0))

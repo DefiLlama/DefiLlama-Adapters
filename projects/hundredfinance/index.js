@@ -71,6 +71,6 @@ module.exports={
     harmony:compoundExportsWithAsyncTransform(comptroller, "harmony", "0xbb93C7F378B9b531216f9aD7b5748be189A55807", ADDRESSES.harmony.WONE),
     moonriver:compoundExportsWithAsyncTransform("0x7d166777bd19a916c2edf5f1fc1ec138b37e7391", "moonriver", "0xd6fcBCcfC375c2C61d7eE2952B329DcEbA2D4e10", "0x98878b06940ae243284ca214f92bb71a2b032b8a"),
     xdai:compoundExportsWithAsyncTransform("0x6bb6ebCf3aC808E26545d59EA60F27A202cE8586", "xdai", "0x6eDCB931168C9F7C20144f201537c0243b19dCA4", ADDRESSES.xdai.WXDAI),
-    polygon:compoundExportsWithAsyncTransform("0xedba32185baf7fef9a26ca567bc4a6cbe426e499", "polygon", "0xEbd7f3349AbA8bB15b897e03D6c1a4Ba95B55e31", "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"),
+    polygon:compoundExportsWithAsyncTransform("0xedba32185baf7fef9a26ca567bc4a6cbe426e499", "polygon", "0xEbd7f3349AbA8bB15b897e03D6c1a4Ba95B55e31", ADDRESSES.polygon.WMATIC_2),
     optimism:compoundExportsWithAsyncTransform("0x5a5755E1916F547D04eF43176d4cbe0de4503d5d", "optimism", "0x1A61A72F5Cf5e857f15ee502210b81f8B3a66263", ADDRESSES.tombchain.FTM),
 }

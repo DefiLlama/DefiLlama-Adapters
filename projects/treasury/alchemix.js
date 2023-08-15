@@ -23,7 +23,7 @@ module.exports = treasuryExports({
         ADDRESSES.ethereum.WETH,//WETH
         ADDRESSES.ethereum.USDT,//USDT
         "0xf16aEe6a71aF1A9Bc8F56975A4c2705ca7A782Bc", //20WETH-80ALC
-        "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0",
+        ADDRESSES.ethereum.LUSD,
         ADDRESSES.ethereum.CRV,
         ADDRESSES.ethereum.YFI,
         "0xa258C4606Ca8206D8aA700cE2143D7db854D168c",
