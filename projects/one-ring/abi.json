@@ -1,5 +1,0 @@
-{
-  "getSharePrice": "uint256:getSharePrice",
-  "totalSupply": "uint256:totalSupply",
-  "balanceWithInvested": "uint256:balanceWithInvested"
-}
