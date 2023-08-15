@@ -119,7 +119,7 @@ async function getDenomBalance({ denom, owner, block, chain } = {}) {
   return balance ? Number(balance.amount) : 0;
 }
 
-async function getBalance2({ balances = {}, owner, block, chain } = {}) {
+async function getBalance2({ balances = {}, owner, block, chain, tokens, blacklistedTokens, } = {}) {
   const subpath = chainSubpaths[chain] || "cosmos";
   let endpoint = `${getEndpoint(
     chain
@@ -130,8 +130,11 @@ async function getBalance2({ balances = {}, owner, block, chain } = {}) {
   const {
     data: { balances: data },
   } = await axios.get(endpoint);
-  for (const { denom, amount } of data)
+  for (const { denom, amount } of data) {
+    if (blacklistedTokens?.includes(denom)) continue;
+    if (tokens && !tokens.includes(denom)) continue;
     sdk.util.sumSingleBalance(balances, denom, amount);
+  }
   return balances;
 }
 
@@ -204,14 +207,14 @@ async function queryContractStore({
   return query(url, block, chain);
 }
 
-async function sumTokens({ balances = {}, owners = [], chain, owner }) {
+async function sumTokens({ balances = {}, owners = [], chain, owner, tokens, blacklistedTokens, }) {
   if (owner) owners = [owner]
   log(chain, "fetching balances for ", owners.length);
   let parallelLimit = 25;
 
   const { errors } = await PromisePool.withConcurrency(parallelLimit)
     .for(owners)
-    .process(async (owner) => getBalance2({ balances, owner, chain }));
+    .process(async (owner) => getBalance2({ balances, owner, chain, tokens, blacklistedTokens, }));
 
   if (errors && errors.length) throw errors[0];
   return transformBalances(chain, balances);
