@@ -17,7 +17,7 @@ module.exports = {
   base: {
     tvl: sumTokensExport({ owners: [stakingETHContract, stakeLpEarnWeth, stakeBryanEarnWeth], tokens: [ADDRESSES.base.WETH], }),
     pool2: sumTokensExport({ owners: [stakingPool2Contract, stakeLpEarnWeth, ], tokens: [BRYAN_WETH_SLP], useDefaultCoreAssets: true, }),
-    pool2: sumTokensExport({ owners: [stakingBRYANContract, stakeBryanEarnWeth], tokens: [BRYAN], lps: [BRYAN_WETH_SLP], useDefaultCoreAssets: true, }),
+    staking: sumTokensExport({ owners: [stakingBRYANContract, stakeBryanEarnWeth], tokens: [BRYAN], lps: [BRYAN_WETH_SLP], useDefaultCoreAssets: true, }),
   },
   methodology:
     "Counts as TVL the ETH asset deposited through StakingETH Contract, and we count Staking and Pool2 parts in the same way",
