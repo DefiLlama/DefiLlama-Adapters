@@ -1,5 +1,4 @@
 const axios = require("axios");
-const { default: BigNumber } = require("bignumber.js");
 const sdk = require("@defillama/sdk");
 const { transformBalances } = require("../portedTokens");
 const { PromisePool } = require("@supercharge/promise-pool");
@@ -30,6 +29,7 @@ const endPoints = {
   neutron: "https://rest-kralum.neutron-1.neutron.org",
   quasar: "https://quasar-api.polkachu.com",
   gravitybridge: "https://rest.cosmos.directory/gravitybridge",
+  sei: "https://api-sei-ia.cosmosia.notional.ventures",
   aura: "https://lcd.aura.network",
 };
 
