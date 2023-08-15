@@ -71,8 +71,8 @@ async function tvl(_, _1, _2, { api }) {
         (v * aflStakedList[index]) / lp_supply.fields.value / decimal_scalars[i]
       );
 
-      const token = "0x" + tokens[i]
-      if (token !== BUCK)  api.add(token, value);
+      const token = "0x" + tokens[i];
+      if (token !== BUCK) api.add(token, value);
     });
   }
 
