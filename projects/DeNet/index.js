@@ -13,7 +13,7 @@ module.exports = {
   start: 1691761595, // Friday, 11-Aug-23 13:46:35 UTC	
   methodology: "calculating TVL of DeNet file token $DE using on-chain method balanceOf on most popular liquidity pools",
 
-  timetraver: true,
+  timetravel: true,
   misrepresentedTokens: false,
 
   polygon: {
