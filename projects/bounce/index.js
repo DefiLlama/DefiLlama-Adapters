@@ -13,15 +13,14 @@ const BOUNCE_V1_PRO = '0x6fe40f415448d930166f9110D3bBe2146383bC66'
 
 const v1config = {
   ethereum: {
-    tokensAndOwners: [[ADDRESSES.ethereum.USDT,BOUNCE_V1],[ADDRESSES.ethereum.USDC,BOUNCE_V1],[ADDRESSES.ethereum.USDT,BOUNCE_V1_PRO]]
+    tokens: [ADDRESSES.ethereum.USDT, ADDRESSES.ethereum.USDC],
+    owners: [BOUNCE_V1, BOUNCE_V1_PRO],
   }
 }
 
 module.exports = {
   ethereum: {
-    tvl: async (_, _b, _cb, { api, }) => {
-      return api.sumTokens({ tokensAndOwners: v1config.ethereum.tokensAndOwners, blacklistedTokens: [] })
-    },
+    tvl: sumTokensExport({ ...v1config.ethereum }),
     pool2: sumTokensExport({ owner: STAKING_LP_ADDRESS, tokens: [AUCTION_ETH_SLP] }),
     staking: sumTokensExport({ owner: STAKING_ADDRESS, tokens: [AUCTION] }),
   },
