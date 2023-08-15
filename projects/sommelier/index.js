@@ -48,6 +48,10 @@ const cellarsV2 = [
   { id: FRAXIMAL, startBlock: 17589948 },
 ];
 
+// v2.5 Cellars
+const TURBO_SWETH = "0xd33dad974b938744dac81fe00ac67cb5aa13958e";
+const cellarsV2p5 = [{ id: TURBO_SWETH, startBlock: 17910374 }];
+
 async function tvl(timestamp, block, chainBlocks, { api }) {
   const balances = {};
   const baseOptions = { balances, chainBlocks };
@@ -68,6 +72,13 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
     ...baseOptions,
     api,
     cellars: filterActiveCellars(cellarsV2, block),
+  });
+
+  // no change in sumTvl implementation from v2 to v2.5
+  await v2.sumTvl({
+    ...baseOptions,
+    api,
+    cellars: filterActiveCellars(cellarsV2p5, block),
   });
 
   return balances;
