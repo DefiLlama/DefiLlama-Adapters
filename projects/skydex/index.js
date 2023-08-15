@@ -33,6 +33,6 @@ module.exports = {
     tvl,
   },
   base: {
-    baseTvl,
+    tvl: baseTvl,
   },
 };
