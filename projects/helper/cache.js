@@ -48,6 +48,13 @@ async function setCache(project, chain, cache, {
 
 const configCache = {}
 
+async function _setCache(project, chain, json) {
+  const strData = typeof json === 'string' ? json : JSON.stringify(json)
+  let isValidData = strData.length > 42
+  if (isValidData) // sometimes we get bad data/empty object, we dont overwrite cache with it
+    await setCache(key, project, json)
+}
+
 async function getConfig(project, endpoint) {
   if (!project || !endpoint) throw new Error('Missing parameters')
   const key = 'config-cache'
@@ -58,10 +65,8 @@ async function getConfig(project, endpoint) {
   async function _getConfig() {
     try {
       const { data: json } = await axios.get(endpoint)
-      const strData = typeof json === 'string' ? json : JSON.stringify(json)
-      let isValidData = strData.length > 42
-      if (isValidData) // sometimes we get bad data/empty object, we dont overwrite cache with it
-        await setCache(key, project, json)
+      if (!json) throw new Error('Invalid data')
+      await _setCache(key, project, json)
       return json
     } catch (e) {
       // sdk.log(e)
@@ -81,7 +86,7 @@ async function configPost(project, endpoint, data) {
   async function _configPost() {
     try {
       const { data: json } = await axios.post(endpoint, data)
-      await setCache(key, project, json)
+      await _setCache(key, project, json)
       return json
     } catch (e) {
       // sdk.log(e)
@@ -106,7 +111,7 @@ async function cachedGraphQuery(project, endpoint, query, { variables, fetchById
         json = await graphql.request(endpoint, query, { variables })
       else 
         json = await graphFetchById({ endpoint, query, })
-      await setCache(key, project, json)
+      await _setCache(key, project, json)
       return json
     } catch (e) {
       // sdk.log(e)
