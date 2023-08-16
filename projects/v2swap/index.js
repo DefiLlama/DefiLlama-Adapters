@@ -7,7 +7,7 @@ const dexTVL = getUniTVL({ factory: FACTORY, useDefaultCoreAssets: true, fetchBa
 module.exports = {
     misrepresentedTokens: true,
     methodology: `Uses factory(${FACTORY}) address to find and price Liquidity Pool pairs.`,
-    base: {
+    op_bnb: {
         tvl: dexTVL,
     }
 };
