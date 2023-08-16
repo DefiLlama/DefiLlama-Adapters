@@ -13,7 +13,7 @@ module.exports = {
     async tvl(_, _1, _2, { api }) {
       const data = await fetch();
       const vaults = data.vaults;
-      const syncswapWorkers = data.syncswapWorkers;
+      const syncswapWorkers = data.syncSwapWorkers;
       const vaultBalances = await api.multiCall({
         abi: "uint256:vaultBalance",
         calls: vaults.map((v) => v.address),
