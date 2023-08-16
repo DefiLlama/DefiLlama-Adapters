@@ -29,7 +29,7 @@ const endPoints = {
   neutron: "https://rest-kralum.neutron-1.neutron.org",
   quasar: "https://quasar-api.polkachu.com",
   gravitybridge: "https://rest.cosmos.directory/gravitybridge",
-  sei: "https://api-sei-ia.cosmosia.notional.ventures",
+  sei: "https://rest.sei-apis.com",
   aura: "https://lcd.aura.network",
 };
 
