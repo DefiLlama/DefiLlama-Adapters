@@ -52,7 +52,7 @@ async function _setCache(project, chain, json) {
   const strData = typeof json === 'string' ? json : JSON.stringify(json)
   let isValidData = strData.length > 42
   if (isValidData) // sometimes we get bad data/empty object, we dont overwrite cache with it
-    await setCache(key, project, json)
+    await setCache(project, chain, json)
 }
 
 async function getConfig(project, endpoint) {
