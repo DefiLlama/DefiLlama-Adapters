@@ -9,6 +9,7 @@ async function fetch() {
 
 module.exports = {
   timetravel: false,
+  misrepresentedTokens: true,
   era: {
     async tvl(_, _1, _2, { api }) {
       const data = await fetch();
@@ -34,11 +35,11 @@ module.exports = {
         }),
         api.multiCall({
           abi: "function getReserves() view returns (uint256, uint256)",
-          calls: syncswapWorkers.map((v) => ({ target: v.lpToken })),
+          calls: syncswapWorkers.map((v) => v.lpToken),
         }),
         api.multiCall({
           abi: "uint256:totalSupply",
-          calls: syncswapWorkers.map((v) => ({ target: v.lpToken })),
+          calls: syncswapWorkers.map((v) => v.lpToken),
         }),
       ]);
 
