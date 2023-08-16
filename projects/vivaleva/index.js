@@ -36,18 +36,18 @@ const syncswapWorkers = [
     lpToken: "0xd3D91634Cf4C04aD1B76cE2c06F7385A897F54D3",
   },
   {
-    name: "USDT-USDC Syncswap Farm",
-    address: "0xfbF4BcD3266Af20B72dc484F6D7Dc13855885ba0",
-    farmingTokenAddress: ADDRESSES.era.USDT,
-    baseTokenAddress: ADDRESSES.era.USDC,
-    lpToken: "0x0E595bfcAfb552F83E25d24e8a383F88c1Ab48A4",
-  },
-  {
     name: "BUSD-ETH Syncswap Farm",
     address: "0x8468AB9e88550f725439A7f128E2E31a5E6b753f",
     farmingTokenAddress: ADDRESSES.era.BUSD,
     baseTokenAddress: ADDRESSES.era.WETH,
     lpTokenAddress: "0xaD86486f1d225D624443e5DF4B2301d03bBe70f6",
+  },
+  {
+    name: "USDT-USDC Syncswap Farm",
+    address: "0xfbF4BcD3266Af20B72dc484F6D7Dc13855885ba0",
+    farmingTokenAddress: ADDRESSES.era.USDT,
+    baseTokenAddress: ADDRESSES.era.USDC,
+    lpToken: "0x0E595bfcAfb552F83E25d24e8a383F88c1Ab48A4",
   },
 ];
 
