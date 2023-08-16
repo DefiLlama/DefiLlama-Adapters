@@ -51,18 +51,25 @@ const syncswapWorkers = [
     baseTokenAddress: ADDRESSES.era.USDC,
     lpToken: "0x0E595bfcAfb552F83E25d24e8a383F88c1Ab48A4",
   },
+  {
+    name: "BUSD-ETH SyncSwap Farm",
+    address: "0x8468AB9e88550f725439A7f128E2E31a5E6b753f",
+    farmingTokenAddress: "0x2039bb4116B4EFc145Ec4f0e2eA75012D6C0f181",
+    baseTokenAddress: "0x5AEa5775959fBC2557Cc8789bC1bf90A239D9a91",
+    lpTokenAddress: "0xaD86486f1d225D624443e5DF4B2301d03bBe70f6"
+  },
 ];
 
 module.exports = {
   timetravel: false,
   era: {
     async tvl(_, _1, _2, { api }) {
-      // const data = await fetch();
-      // const vaults = data.vaults;
-      // const syncswapWorkers = data.syncSwapWorkers;
+      const data = await fetch();
+      const vaults = data.vaults;
+      const syncswapWorkers = data.syncSwapWorkers;
       const vaultBalances = await api.multiCall({
         abi: "uint256:vaultBalance",
-        calls: vaults.map((v) => v.address),
+        calls: vaults.map((v) => v['address']),
       });
 
       vaults.forEach((v, i) => {
@@ -76,15 +83,15 @@ module.exports = {
       ] = await Promise.all([
         api.multiCall({
           abi: "uint256:totalStakedLpBalance",
-          calls: syncswapWorkers.map((v) => v.address),
+          calls: syncswapWorkers.map((v) => v['address']),
         }),
         api.multiCall({
           abi: "function getReserves() view returns (uint256, uint256)",
-          calls: syncswapWorkers.map((v) => v.lpToken),
+          calls: syncswapWorkers.map((v) => v['lpToken']),
         }),
         api.multiCall({
           abi: "uint256:totalSupply",
-          calls: syncswapWorkers.map((v) => v.lpToken),
+          calls: syncswapWorkers.map((v) => v['lpToken']),
         }),
       ]);
 
