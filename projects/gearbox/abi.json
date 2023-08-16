@@ -22,5 +22,12 @@
     "event LiquidateCreditAccount(address indexed borrower, address indexed liquidator, address indexed to, uint256 remainingFunds)",
     "event TransferAccount(address indexed oldOwner, address indexed newOwner)",
     "event LiquidateExpiredCreditAccount(address indexed borrower, address indexed liquidator, address indexed to, uint256 remainingFunds)"
+  ],
+  "creditManagerV2": [
+    "function creditFacade() view returns (address addr)",
+    "event NewConfigurator(address indexed newConfigurator)"
+  ],
+  "creditConfiguratorV2": [
+    "event CreditFacadeUpgraded(address indexed newCreditFacade)"
   ]
 }

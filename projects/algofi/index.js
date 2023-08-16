@@ -90,6 +90,9 @@ async function staking() {
 }
 
 module.exports = {
+  hallmarks: [
+    [1688947200, "Winding down of protocol"]
+  ],
   timetravel: false,
   misrepresentedTokens: true,
   algorand: {

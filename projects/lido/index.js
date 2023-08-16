@@ -7,12 +7,13 @@ const { getConnection } = require('../helper/solana');
 const ethContract = ADDRESSES.ethereum.STETH;
 
 async function terra(timestamp, ethBlock, chainBlocks) {
-  const { total_bond_amount } = (
-    await axios.get(`https://lcd.terra.dev/wasm/contracts/terra1mtwph2juhj0rvjz7dy92gvl6xvukaxu8rfv8ts/store?query_msg=%7B%22state%22%3A%20%7B%7D%7D`)
-  ).data.result;
-  return {
-    'terra-luna': total_bond_amount / 1000000
-  }
+  return {}
+  // const { total_bond_amount } = (
+  //   await axios.get(`https://lcd.terra.dev/wasm/contracts/terra1mtwph2juhj0rvjz7dy92gvl6xvukaxu8rfv8ts/store?query_msg=%7B%22state%22%3A%20%7B%7D%7D`)
+  // ).data.result;
+  // return {
+  //   'terra-luna': total_bond_amount / 1000000
+  // }
 }
 
 async function eth(timestamp, ethBlock, chainBlocks) {

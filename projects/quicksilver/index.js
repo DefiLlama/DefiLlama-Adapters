@@ -4,7 +4,9 @@ const { get } = require("../helper/http");
 const coinGeckoIds = {
   uatom: "cosmos",
   uosmo: "osmosis",
+  usomm: "sommelier",
   uregen: "regen",
+  ujuno: "juno-network",
   ustars: "stargaze"
 };
 

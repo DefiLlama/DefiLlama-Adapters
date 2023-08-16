@@ -2,8 +2,18 @@ const { queryContract } = require('../helper/chain/cosmos')
 const { PromisePool } = require('@supercharge/promise-pool')
 const { transformDexBalances } = require('../helper/portedTokens')
 
+function extractTokenInfo(asset) {
+  const { native_token, token, native } = asset.info
+  for (const tObject of [native_token, token, native]) {
+    if (!tObject) continue
+    if (typeof tObject === 'string') return tObject
+    const token = tObject.denom || tObject.contract_addr
+    if (token) return token
+  }
+}
+
 function getAssetInfo(asset) {
-  return [asset.info.native_token?.denom ?? asset.info.token?.contract_addr, Number(asset.amount)]
+  return [extractTokenInfo(asset), Number(asset.amount)]
 }
 
 async function getAllPairs(factory, chain) {

@@ -31,7 +31,7 @@ function uniV3Export(config) {
           onlyArgs: true,
         })
 
-        return sumTokens2({ api, ownerTokens: logs.map(i => [[i.token0, i.token1], i.pool]), blacklistedTokens, })
+        return sumTokens2({ api, ownerTokens: logs.map(i => [[i.token0, i.token1], i.pool]), blacklistedTokens, permitFailure: logs.length > 5000 })
       }
     }
   })

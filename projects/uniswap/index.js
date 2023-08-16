@@ -1,6 +1,7 @@
 const { request, gql } = require('graphql-request');
 const { getBlock } = require('../helper/http');
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { uniV3Export } = require('../helper/uniswapV3')
 
 const graphs = {
   ethereum: "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3",
@@ -9,6 +10,8 @@ const graphs = {
   polygon: "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v3-polygon",
   celo: "https://api.thegraph.com/subgraphs/name/jesse-sawa/uniswap-celo",
   bsc: "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v3-bsc",
+  avax: "https://api.thegraph.com/subgraphs/name/lynnshaoyu/uniswap-v3-avax",
+  base: "https://api.studio.thegraph.com/query/48211/uniswap-v3-base/v0.0.1",
 }
 
 const blacklists = {
@@ -71,10 +74,13 @@ module.exports = {
     [1605583307, "LM ends"],
     [1617333707, "FEI launch"],
     [1620156420, "UNI V3 Launch"]
-  ]
+  ],
+  ...uniV3Export({ 
+    base: { factory: '0x33128a8fc17869897dce68ed026d694621f6fdfd', fromBlock:1371680, }
+   })
 }
 
-const chains = ['ethereum', 'arbitrum', 'optimism', 'polygon', 'celo', 'bsc']
+const chains = [ 'ethereum', 'arbitrum', 'optimism', 'polygon', 'celo', 'bsc', 'avax', ]
 
 chains.forEach(chain => {
   module.exports[chain] = {

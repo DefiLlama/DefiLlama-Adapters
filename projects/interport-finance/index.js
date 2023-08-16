@@ -12,7 +12,7 @@ module.exports = {
   methodology: 'Interport TVL is calculated by summing the USDT and USDC balance of the vaults contracts, ITP token balance in the ITP Revenue Share contract and LP token balance in the LP Revenue Share contract.',
 };
 
-['ethereum', 'avax', 'bsc', 'fantom', 'arbitrum', 'polygon', 'era'].forEach(chain => {
+['ethereum', 'avax', 'bsc', 'fantom', 'arbitrum', 'polygon', 'polygon_zkevm', 'era'].forEach(chain => {
   module.exports[chain] = {
     tvl: async (_, _1, _2, { api }) => {
       const vaults = config[chain]?.vaults || defaultVaults

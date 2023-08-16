@@ -4,7 +4,6 @@ module.exports = {
   misrepresentedTokens: true,
   xdai: {
     tvl: getUniTVL({
-      chain: 'xdai',
       factory: '0xa818b4f111ccac7aa31d0bcc0806d64f2e0737d7',
       useDefaultCoreAssets: true,
       blacklist: [
@@ -20,7 +19,6 @@ module.exports = {
   },
   polygon: {
     tvl: getUniTVL({
-      chain: 'polygon',
       factory: '0x03daa61d8007443a6584e3d8f85105096543c19c',
       useDefaultCoreAssets: true,
       blacklist: ['0x8db0a6d1b06950b4e81c4f67d1289fc7b9359c7f']

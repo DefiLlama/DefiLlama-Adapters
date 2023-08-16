@@ -19,7 +19,6 @@ module.exports = {
   nova: {
     tvl: getUniTVL({
       factory: dexFactory,
-      chain: "nova",
       useDefaultCoreAssets: true,
     }),
     staking: async (_, _b, { nova: block }) =>

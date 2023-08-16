@@ -15,10 +15,10 @@ const contracts = {
     KROM: "0x55ff62567f09906a85183b866df84bf599a4bf70",
     position: "0x02c282f60fb2f3299458c2b85eb7e303b25fc6f0",
   },
-  // polygon: {
-  //   KROM: "0x14Af1F2f02DCcB1e43402339099A05a5E363b83c",
-  //   position: "0xD1fDF0144be118C30a53E1d08Cc1E61d600E508e",
-  // },
+   polygon: {
+     KROM: "0x14Af1F2f02DCcB1e43402339099A05a5E363b83c",
+     position: "0x03F490aE5b59E428E6692059d0Dca1B87ED42aE1",
+   },
 };
 
 async function opTvl(api, position) {
