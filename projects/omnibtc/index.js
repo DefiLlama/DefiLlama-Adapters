@@ -72,6 +72,6 @@ module.exports = {
   timetravel: false,
   sui: {
     tvl,
-    borrow,
+    borrowed: borrow,
   },
 };
