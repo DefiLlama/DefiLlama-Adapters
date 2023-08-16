@@ -1,6 +1,6 @@
-const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { sumTokens2 } = require("../helper/unwrapLPs");
+const { sumTokensExport } = require('../helper/unknownTokens')
 
 const coreRewards = "0xF32c5c83e19640ad414dC5922C0F9182F4695D69";
 const plsRewards = "0xD7ba719d28079253e96b57A6518C41eeA2Be048d";
@@ -22,55 +22,25 @@ const vaults = [
 ];
 
 /*** Staking of native token IMPLS and IMPLS/PLS LP TVL Portion ***/
-const staking = async (timestamp, ethBlock, chainBlocks, { api }) => {
-  const staking_lpToken = 
-    await api.call({
-      abi: abi.stakingToken,
-      target: coreRewards,
-    })
-  return sumTokens2({ api, tokens: [IMPLS, staking_lpToken], owners: [coreRewards, plsRewards]})
+const pool2 = async (timestamp, ethBlock, chainBlocks, { api }) => {
+  const staking_lpToken = await api.call({ abi: abi.stakingToken, target: coreRewards, })
+  return sumTokens2({ api, tokens: [staking_lpToken], owners: [coreRewards, plsRewards] })
 };
 
 
 /*** vaults TVL portion ***/
-const plsTvl = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
-
-  const lpTokens = (
-    await sdk.api.abi.multiCall({
-      abi: abi.LPtoken,
-      calls: vaults.map((vault) => ({
-        target: vault,
-      })),
-      chain: "pulse",
-      block: chainBlocks["pulse"],
-    })
-  ).output.map((lp) => lp.output);
-
-  const lpTokens_bal = (
-    await sdk.api.abi.multiCall({
-      abi: abi.balanceLPinSystem,
-      calls: vaults.map((vault) => ({
-        target: vault,
-      })),
-      chain: "pulse",
-      block: chainBlocks["pulse"],
-    })
-  ).output.map((lpb) => lpb.output);
-
-  for (let index = 0; index < vaults.length; index++) {
-    sdk.util.sumSingleBalance(balances,lpTokens[index],lpTokens_bal[index], 'pulse')
-  }
-
-  return balances;
+const plsTvl = async (timestamp, ethBlock, chainBlocks, { api }) => {
+  const tokens = await api.multiCall({  abi: abi.LPtoken, calls: vaults})
+  const bals = await api.multiCall({  abi: abi.balanceLPinSystem, calls: vaults})
+  api.addTokens(tokens, bals)
 };
 
 module.exports = {
   doublecounted: true,
-  misrepresentedTokens: true,
-  pulse:{
+  pulse: {
     tvl: plsTvl,
-    staking
+    staking: sumTokensExport({ owners: [coreRewards, plsRewards], tokens: [IMPLS], useDefaultCoreAssets: true, lps: ['0xf121E6e093E2C070F2d982F85726084A776A963f'] }),
+    pool2,
   },
   methodology: `The TVL is made up of the core rewards yield farm and LP deposits in our auto compounding vault strategies.`,
 };
