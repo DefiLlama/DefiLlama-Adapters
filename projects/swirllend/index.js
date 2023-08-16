@@ -14,7 +14,7 @@ module.exports = {
   }),
 
   hallmarks: [
-    [Math.floor(new Date('2023-09-q6')/1e3), 'Project Rugged!'],
+    [Math.floor(new Date('2023-09-16')/1e3), 'Project Rugged!'],
   ],
 };
 
