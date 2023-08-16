@@ -56,7 +56,8 @@ const fixBalancesTokens = {
     'uaura': { coingeckoId: 'aura-network', decimals: 6 },
   },
   op_bnb: {
-    '0xa457653a7dbe1fdf314e30327d6ec0c5b2cfbd8a': { coingeckoId: 'binance-coin', decimals: 18 },
+    '0xa457653a7dbe1fdf314e30327d6ec0c5b2cfbd8a': { coingeckoId: 'binancecoin', decimals: 18 },
+    '0x4200000000000000000000000000000000000006': { coingeckoId: 'binancecoin', decimals: 18 },
   },
 }
 
