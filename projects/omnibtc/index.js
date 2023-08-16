@@ -26,7 +26,16 @@ const SUI_TOKENS = [
 async function fetchDataBasedOnPoolId() {
   return await Promise.all(
     SUI_TOKENS.map(({ poolId }) =>
-      sui.getDynamicFieldObject(RESERVE_DYNAMIC_TABLE, poolId.toString())
+      sui.call(
+        (method = "suix_getDynamicFieldObject"),
+        (params = [
+          RESERVE_DYNAMIC_TABLE,
+          {
+            type: "u16",
+            value: poolId.toString(),
+          },
+        ])
+      )
     )
   );
 }
@@ -35,22 +44,17 @@ async function fetchDataBasedOnPoolId() {
 function calculateAndAdd(objectsList, type, indexName, api) {
   objectsList.forEach((object, index) => {
     const { address } = SUI_TOKENS[index];
-    const {
-      fields: {
-        value: {
-          fields: {
-            otoken_scaled: { total_supply = 0 },
-            dtoken_scaled: { total_supply: total_borrow = 0 },
-            [indexName]: indexValue,
-          },
-        },
-      },
-    } = object;
+
+    const dataFields = object.content.fields.value.fields;
+
+    const total_supply = dataFields.otoken_scaled?.fields?.total_supply || 0;
+    const total_borrow = dataFields.dtoken_scaled?.fields?.total_supply || 0;
+    const indexValue = dataFields[indexName] || 0;
 
     const shiftValue = 10 ** (decimalShift[address] ?? 0);
     const mainValue = type === "tvl" ? total_supply : total_borrow;
 
-    const amount = mainValue * shiftValue * indexValue * Math.pow(10, 27);
+    const amount = (mainValue * shiftValue * indexValue) / Math.pow(10, 27);
 
     api.add(address, amount);
   });
