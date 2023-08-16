@@ -1,14 +1,3 @@
-const axios = require('axios');
-
-/*
-api 사용방식 잘안됨..
-*/
-async function fetch() {
-  const url = "https://sbb.sooho.io/api/v1/external/vivaleva/defiLlama";
-  var response = (await axios.get(url)).data;
-  return response;
-}
-
 const ADDRESSES = require('../helper/coreAssets.json')
 const vaults = [
   {
@@ -54,7 +43,7 @@ const syncswapWorkers = [
     lpToken: "0x0E595bfcAfb552F83E25d24e8a383F88c1Ab48A4",
   },
   {
-    name: "BUSD-ETH SyncSwap Farm",
+    name: "BUSD-ETH Syncswap Farm",
     address: "0x8468AB9e88550f725439A7f128E2E31a5E6b753f",
     farmingTokenAddress: ADDRESSES.era.BUSD,
     baseTokenAddress: ADDRESSES.era.WETH,
