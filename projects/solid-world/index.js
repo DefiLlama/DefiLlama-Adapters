@@ -2,17 +2,19 @@ const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const { config } = require("./config");
 const abi = require("./abi.json");
+const { fetchForwardContractBatchSupplies } = require("./forward-contract-batch-supply");
+const { fetchCategoriesAndBatches } = require("./categories-and-batches");
+const { valuateBatches } = require("./batch-valuation");
 
+// the value of the current on-chain forward credits, based on their exchange rate to CRISP tokens
 async function tvl(timestamp, ethBlock, _, { api }) {
-  const chainConfig = config[api.chain];
-  const crispSupplies = await api.multiCall({
-    calls: chainConfig.pools.map(pool => pool.crispToken),
-    abi: abi.totalSupply
-  });
+  const batchSupplies = await fetchForwardContractBatchSupplies(api);
+  const [categories, batches] = await fetchCategoriesAndBatches(api, Object.keys(batchSupplies));
+  const batchesValuation = await valuateBatches(batches, categories, batchSupplies);
 
   const TVL = {};
-  chainConfig.pools.forEach(({ crispToken }, i) => {
-    sdk.util.sumSingleBalance(TVL, crispToken, crispSupplies[i], api.chain);
+  batchesValuation.forEach(({ crispToken, amount }) => {
+    sdk.util.sumSingleBalance(TVL, crispToken, amount, api.chain);
   });
 
   return TVL;
@@ -57,7 +59,7 @@ function adjustAmount(amount, numerator, denominator) {
 
 module.exports = {
   start: 1684477800, // Fri May 19 2023 06:30:00 GMT+0000
-  methodology: "TVL is a measure of the health of the Solid World ecosystem. It's the total amount of value that is locked up in our staking contract, and it's calculated by adding up the value of all the LP tokens that are staked. The LP tokens represent the amount of liquidity that has been provided to the Solid World platform.",
+  methodology: `TVL is a measure of the health of the Solid World ecosystem. The TVL can be looked at from 2 perspectives. The 1st perspective, "RWA" valuation, represents the total value of the tokenized forward carbon credits, and is computed as the present value of the on-chain forward credits (ERC1155), based on their exchange rate to CRISP tokens (ERC20) and subsequent USDC value, summed-up.The 2nd perspective, "pool2", represents the total value locked up in our staking contract, and it's calculated by adding up the value of all the LP tokens that are staked. The LP tokens represent the amount of liquidity that has been provided to the Solid World platform.`,
   polygon: {
     tvl,
     pool2
