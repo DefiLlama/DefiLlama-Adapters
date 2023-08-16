@@ -50,6 +50,21 @@ const vaults = [
         assetDecimals: 4,
         coingecko: 'pepe',
     },
+    {
+        vaultID: 1146813039,
+        assetDecimals: 6,
+        coingecko: 'algorand',
+    },
+    {
+        vaultID: 1170260887,
+        assetDecimals: 6,
+        coingecko: 'usd-coin',
+    },
+    {
+        vaultID: 1170261298,
+        assetDecimals: 6,
+        coingecko: 'usd-coin',
+    }
 ];
 
 
