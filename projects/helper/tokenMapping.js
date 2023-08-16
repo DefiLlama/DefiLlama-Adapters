@@ -55,6 +55,9 @@ const fixBalancesTokens = {
   aura: {
     'uaura': { coingeckoId: 'aura-network', decimals: 6 },
   },
+  op_bnb: {
+    '0xa457653a7dbe1fdf314e30327d6ec0c5b2cfbd8a': { coingeckoId: 'binance-coin', decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
