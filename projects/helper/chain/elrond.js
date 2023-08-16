@@ -63,7 +63,7 @@ async function sumTokens({ owner, owners = [], tokens = [], balances = {}, black
   }
 
   await Promise.all(owners.map(i => getTokens({ address: i, balances, tokens, blacklistedTokens, whitelistedTokens, })))
-  if (!tokens.length || tokens.includes(nullAddress))
+  if ((!tokens.length || tokens.includes(nullAddress)) && (!whitelistedTokens.length || whitelistedTokens.includes(nullAddress)) && (!blacklistedTokens.length || !blacklistedTokens.includes(nullAddress)))
     await Promise.all(owners.map(async i => {
       const bal = await getElrondBalance(i)
       sdk.util.sumSingleBalance(balances, nullAddress, bal, chain)

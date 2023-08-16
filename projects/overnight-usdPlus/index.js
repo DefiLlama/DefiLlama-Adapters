@@ -16,7 +16,7 @@ const assets = {
     optimism: ADDRESSES.optimism.USDC, //USDC
     arbitrum: ADDRESSES.arbitrum.USDC, //USDC
     era: ADDRESSES.era.USDC,
-    base: "0xd9aaec86b65d86f6a7b5b1b0c42ffa531710b6ca" //USDC
+    base: ADDRESSES.base.USDbC //USDC
 }
 
 const abi = "uint256:totalNetAssets"
