@@ -23,4 +23,11 @@ module.exports = {
       hasStablePools: true,
     })
   },
+  mantle: {
+    tvl: getUniTVL({
+      factory: '0x99F9a4A96549342546f9DAE5B2738EDDcD43Bf4C',
+      useDefaultCoreAssets: true,
+      hasStablePools: true,
+    })
+  }
 }
