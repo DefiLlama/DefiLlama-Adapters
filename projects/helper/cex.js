@@ -90,13 +90,15 @@ const defaultTokens = {
     '0xd417144312dbf50465b1c641d016962017ef6240',// cqt
     '0xcb84d72e61e383767c4dfeb2d8ff7f4fb89abc6e', //VEGA
     '0xcccd1ba9f7acd6117834e0d28f25645decb1736a', //ecox
+    '0x25ec98773d7b4ced4cafab96a2a1c0945f145e10', // stUSDT
   ],
   tron: [
     nullAddress,
     ADDRESSES.tron.USDT, // USDT
     ADDRESSES.tron.USDC,  // USDC
-    'TFptbWaARrWTX5Yvy3gNG5Lm8BmhPx82Bt', //wbt
-    ADDRESSES.tron.TUSD
+    // 'TFptbWaARrWTX5Yvy3gNG5Lm8BmhPx82Bt', //wbt
+    ADDRESSES.tron.TUSD,
+    'TThzxNRLrW2Brp9DcTQU8i4Wd9udCWEdZ3', // stUSDT
   ],
   polygon: [
     nullAddress,
@@ -138,7 +140,7 @@ const defaultTokens = {
     '0x352Cb5E19b12FC216548a2677bD0fce83BaE434B', // BTT
     '0xAD29AbB318791D579433D831ed122aFeAf29dcfe', // FTM
     '0x02ff5065692783374947393723dba9599e59f591',// yoshi
-    '0x40af3827f39d0eacbf4a168f8d4ee67c121d11c9', //TUSD
+    ADDRESSES.bsc.TUSD, //TUSD
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],

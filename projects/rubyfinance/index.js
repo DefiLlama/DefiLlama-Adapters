@@ -1,7 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { getFixBalances } = require("../helper/portedTokens");
 const { getTokenPrices } = require("../helper/unknownTokens")
 const { stakingUnknownPricedLP } = require("../helper/staking")
 
@@ -53,7 +52,6 @@ async function calcPool2(genesisPool, rewardPool, lps, block, chain) {
   );
 
   await updateBalances(balances, { resolveLP: true  });
-  (await getFixBalances(chain))(balances);
   return balances;
 }
 
@@ -76,7 +74,6 @@ async function calcKava(rewardPool, block, chain) {
     wkavaRewardBalance
   );
 
-  (await getFixBalances(chain))(balances);
   return balances;
 }
 

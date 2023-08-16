@@ -10,7 +10,7 @@ module.exports = treasuryExports({
         ADDRESSES.arbitrum.USDC,
         ADDRESSES.arbitrum.WBTC,
         ADDRESSES.arbitrum.WETH,
-        '0xaf88d065e77c8cC2239327C5EDb3A432268e5831'
+        ADDRESSES.arbitrum.USDC_CIRCLE
      ],
     owners: [treasury,],
     ownTokens: [SVY],
