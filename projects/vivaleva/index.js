@@ -34,11 +34,11 @@ module.exports = {
         }),
         api.multiCall({
           abi: "function getReserves() view returns (uint256, uint256)",
-          calls: syncswapWorkers.map((v) => v.lpToken),
+          calls: syncswapWorkers.map((v) => ({ target: v.lpToken })),
         }),
         api.multiCall({
           abi: "uint256:totalSupply",
-          calls: syncswapWorkers.map((v) => v.lpToken),
+          calls: syncswapWorkers.map((v) => ({ target: v.lpToken })),
         }),
       ]);
 
