@@ -11,8 +11,7 @@ const owners = [
 
 module.exports = {
   start: 1691761595, // Friday, 11-Aug-23 13:46:35 UTC	
-  methodology: "calculating TVL of DeNet file token $DE using on-chain method balanceOf on most popular liquidity pools with token DE",
-
+  methodology: "Summarizing the DE balances of the most popular liquidity pools and adding up the total amount of DE tokens in the Payments contract used for opening TBY deposits.",
   timetravel: true,
   misrepresentedTokens: false,
 
