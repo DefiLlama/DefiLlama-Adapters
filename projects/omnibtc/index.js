@@ -16,7 +16,7 @@ const SUI_TOKENS = [
     address: ADDRESSES.sui.SUI,
   },
   {
-    symbol: "USDC_WH",
+    symbol: "USDC",
     poolId: 8,
     address: ADDRESSES.sui.USDC,
   },
@@ -26,16 +26,13 @@ const SUI_TOKENS = [
 async function fetchDataBasedOnPoolId() {
   return await Promise.all(
     SUI_TOKENS.map(({ poolId }) =>
-      sui.call(
-        (method = "suix_getDynamicFieldObject"),
-        (params = [
-          RESERVE_DYNAMIC_TABLE,
-          {
-            type: "u16",
-            value: poolId.toString(),
-          },
-        ])
-      )
+      sui.call("suix_getDynamicFieldObject", [
+        RESERVE_DYNAMIC_TABLE,
+        {
+          type: "u16",
+          value: poolId.toString(),
+        },
+      ])
     )
   );
 }
