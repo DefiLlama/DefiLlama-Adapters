@@ -37,7 +37,7 @@ async function getAllPairs(factory, chain) {
     dtos.push(pairDto)
   })
   await PromisePool
-    .withConcurrency(31)
+    .withConcurrency(25)
     .for(allPairs)
     .process(getPairPool)
   return dtos
