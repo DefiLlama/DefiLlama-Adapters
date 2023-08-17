@@ -1,4 +1,5 @@
 const { sumTokensExport } = require("./helper/chain/ergo");
+const { nullAddress } = require("../helper/tokenMapping");
 
 module.exports = {
   timetravel: false,
@@ -14,6 +15,7 @@ module.exports = {
         "03faf2cb329f2e90d6d23b58d91bbb6c046aa143261cc21f52fbe2824bfcbf04",
         "003bd19d0187117f130b62e1bcab0939929ff5c7709f843c5c4dd158949285d0",
         "089990451bb430f05a85f4ef3bcb6ebf852b3d6ee68d86d78658b9ccef20074f",
+        nullAddress,
       ],
     }),
   },
