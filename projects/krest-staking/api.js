@@ -25,24 +25,6 @@ function formatTokenAmount(amount, tokenSymbol) {
   return Number(amount / Number(10 ** decimals));
 }
 
-// const tokenToCoingecko = {
-//   DOT: "polkadot",
-//   ETH: "ethereum",
-//   KSM: "kusama",
-//   PEAQ: "peaq",
-//   KRST: "krest",
-// };
-
-// function formatToken(token) {
-//   switch (token) {
-//     case '0':
-//       return "DOT";
-//     default :
-//       return null;
-//   }
-// }
-
-
 async function tvl() {
   const provider = new WsProvider("wss://wss-krest.peaq.network");
   const api = new ApiPromise({ provider });
@@ -50,27 +32,16 @@ async function tvl() {
 
   // Get Krest Balances.locks.
   const balanceLocks = await api.query.balances.locks.entries();
-
-  // await Promise.all(balanceLocks.map(async (lock) => {
-  //   const token=pool[0].toHuman()[0].Token||pool[0].toHuman()[0].Native
-  //   totalLiquidity[token]=new BigNumber(totalLiquidity[token]||0).plus(pool[1].toString()).toString()
-  // }));
   const totalLocked = balanceLocks.reduce(function(pv, cv) { return cv + pv }, 0);
+  // const totalCollatorStake = await api.query.parachainStaking.totalCollatorStake.entries();
 
-  // const totalLiquidityFormatted = {};
-  // for (const key in totalLiquidity) {
-  //   totalLiquidityFormatted[tokenToCoingecko[key]] = formatTokenAmount(
-  //     totalLiquidity[key],
-  //     key
-  //   );
-  // }
-  const totalLockedFormatted = formatTokenAmount(totalLocked, "KRST");
-
-  return totalLiquidityFormatted;
+  return formatTokenAmount(totalLocked, "KRST");
 }
 
 module.exports = {
-    timetravel: false,
-    methodology: "Staked tokens on Krest parachain.",
-    krest: { tvl }
-};
+  timetravel: false,
+  methodology: "Staked KREST tokens on KREST parachain.",
+  krest: {
+    tvl,
+  },
+}; 
