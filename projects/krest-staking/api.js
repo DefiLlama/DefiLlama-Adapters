@@ -25,22 +25,22 @@ function formatTokenAmount(amount, tokenSymbol) {
   return Number(amount / Number(10 ** decimals));
 }
 
-const tokenToCoingecko = {
-  DOT: "polkadot",
-  ETH: "ethereum",
-  KSM: "kusama",
-  PEAQ: "peaq",
-  KRST: "krest",
-};
+// const tokenToCoingecko = {
+//   DOT: "polkadot",
+//   ETH: "ethereum",
+//   KSM: "kusama",
+//   PEAQ: "peaq",
+//   KRST: "krest",
+// };
 
-function formatToken(token) {
-  switch (token) {
-    case '0':
-      return "DOT";
-    default :
-      return null;
-  }
-}
+// function formatToken(token) {
+//   switch (token) {
+//     case '0':
+//       return "DOT";
+//     default :
+//       return null;
+//   }
+// }
 
 
 async function tvl() {

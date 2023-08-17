@@ -1,5 +1,3 @@
-
-
 module.exports = {
   timetravel: false,
   krest: {
