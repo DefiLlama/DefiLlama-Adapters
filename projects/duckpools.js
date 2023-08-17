@@ -1,3 +1,5 @@
+const { sumTokensExport } = require("./helper/chain/ergo");
+
 module.exports = {
   timetravel: false,
   ergo: {
