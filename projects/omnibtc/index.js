@@ -11,6 +11,7 @@ const POOLS = {
   optimism: "0x233DDEce6a96c49ecE6Ad9ae820690fE62a28975",
   polygon: "0xC3Eb696184b8927D677D8AB390A26563De4798c3",
 };
+const DEFAULT_TOKEN = "0x0000000000000000000000000000000000000000";
 
 const DECIMAL_SHIFTS = {
   [ADDRESSES.sui.USDC]: -2,
@@ -71,6 +72,7 @@ module.exports = {
     tvl: sumTokensExport({
       owner: POOLS.arbitrum,
       tokens: [
+        DEFAULT_TOKEN,
         ADDRESSES.arbitrum.ARB,
         ADDRESSES.arbitrum.USDC,
         ADDRESSES.arbitrum.USDT,
@@ -80,13 +82,14 @@ module.exports = {
   base: {
     tvl: sumTokensExport({
       owner: POOLS.base,
-      tokens: [ADDRESSES.base.USDbC],
+      tokens: [DEFAULT_TOKEN, ADDRESSES.base.USDbC],
     }),
   },
   optimism: {
     tvl: sumTokensExport({
       owner: POOLS.optimism,
       tokens: [
+        DEFAULT_TOKEN,
         ADDRESSES.optimism.OP,
         ADDRESSES.optimism.USDC,
         ADDRESSES.optimism.USDT,
@@ -96,7 +99,7 @@ module.exports = {
   polygon: {
     tvl: sumTokensExport({
       owner: POOLS.polygon,
-      tokens: [ADDRESSES.polygon.USDC, ADDRESSES.polygon.USDT],
+      tokens: [DEFAULT_TOKEN, ADDRESSES.polygon.USDC, ADDRESSES.polygon.USDT],
     }),
   },
   sui: {
