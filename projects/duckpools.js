@@ -1,5 +1,5 @@
 const { sumTokensExport } = require("./helper/chain/ergo");
-const { nullAddress } = require("../helper/tokenMapping");
+const { nullAddress } = require("./helper/tokenMapping");
 
 module.exports = {
   timetravel: false,
