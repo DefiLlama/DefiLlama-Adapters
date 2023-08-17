@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 
@@ -5,9 +6,9 @@ const staking_contract = "0x5A753021CE28CBC5A7c51f732ba83873D673d8cC";
 
 const assets = [
   // other tokens which probably for some reason was sent to the contract accidentally
-  "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-  "0xdac17f958d2ee523a2206206994597c13d831ec7",
-  "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
+  ADDRESSES.ethereum.USDC,
+  ADDRESSES.ethereum.USDT,
+  ADDRESSES.ethereum.UNI,
 ];
 
 const stakingTvl = async (timestamp, ethBlock, chainBlocks) => {

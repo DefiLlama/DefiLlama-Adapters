@@ -9,7 +9,7 @@ async function tvl(_, _b, _cb, { api, }) {
     '0x68955aad77823983cda98d047298e74a2fb5bea8',
     '0x6922E64BEe7CF22437eaC06A0063D138479e5cF8',
   ]
-  return sumTokens2({ ...api, owner, tokens, resolveLP: true, })
+  return sumTokens2({ api, owner, tokens, resolveLP: true, })
 }
 
 module.exports = {

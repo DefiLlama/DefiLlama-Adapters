@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { request, gql } = require("graphql-request");
 const { getBlock } = require('../helper/http')
 
@@ -7,7 +8,7 @@ const graphUrlMainnet = "https://api.thegraph.com/subgraphs/name/gysr-io/gysr";
 const graphUrlPolygon = "https://api.thegraph.com/subgraphs/name/gysr-io/gysr-polygon";
 const graphQuery = gql`
 query GET_TVL($block: Int) {
-  platform(id: "0x0000000000000000000000000000000000000000", block: { number: $block }) {
+  platform(id: "${ADDRESSES.null}", block: { number: $block }) {
     tvl
   }
 }
@@ -35,7 +36,7 @@ async function polygon(_, ethBlock, chainBlocks) {
     graphUrlPolygon,
     graphQuery,
     {
-      block
+      block: block - 200
     }
   );
 

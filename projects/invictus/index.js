@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getTokenAccountBalance, getTokenBalance } = require('../helper/solana')
 
 async function staking() {
@@ -10,7 +11,7 @@ async function staking() {
 const treasury = "6qfyGvoUqGB6AQ7xLc4pVwFNdgJSbAMkTtKkBXhLRiV1"
 async function tvl() {
   const [usdc,] = await Promise.all([
-    "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", //usdc
+    ADDRESSES.solana.USDC, //usdc
   ].map(t => getTokenBalance(t, treasury)))
   return {
     "usd-coin": usdc,

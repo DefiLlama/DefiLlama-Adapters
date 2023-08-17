@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const abi = require("./abi.json");
 const { getCompoundV2Tvl, compoundExports } = require("../helper/compound");
 const { transformBscAddress } = require("../helper/portedTokens");
@@ -5,7 +6,7 @@ const { addFundsInMasterChef } = require("../helper/masterchef");
 
 const comptroller = "0x44f2A790aCB1bE42d3F7864e9F73762556eb895E";
 const cBNB = "0xC819cCfA453C4b5D2B9c9fF7CF8017adE99CB9B1";
-const WBNBEquivalent = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
+const WBNBEquivalent = ADDRESSES.bsc.WBNB;
 
 const stakingChef = "0xbfcaB1627c4fB86A055DE4B8a56D46e625F51C0B";
 

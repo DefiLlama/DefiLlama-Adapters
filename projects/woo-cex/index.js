@@ -31,3 +31,4 @@ const config = {
 }
 
 module.exports = cexExports(config)
+module.exports.methodology = 'This wallets where provide by WOO team'

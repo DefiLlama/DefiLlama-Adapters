@@ -1,0 +1,4 @@
+{
+  "totalAssets": "uint256:totalAssets",
+  "totalSupply": "uint256:totalSupply"
+}

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { transformBscAddress } = require("../helper/portedTokens");
@@ -6,7 +7,7 @@ const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const farmContract = "0x1aF28E7b1A03fA107961897a28449F4F9768ac75";
 const bankContract = "0x99dD1c7a2893931D209fA5C57FE65f34d4C11db8";
 const LEAF = "0x1cbddf83de068464eba3a4e319bd3197a7eea12c";
-const WBNB = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
+const WBNB = ADDRESSES.bsc.WBNB;
 
 const bscTvl = async (chainBlocks) => {
   const balances = {};

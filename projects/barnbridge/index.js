@@ -1,65 +1,32 @@
-const sdk = require("@defillama/sdk");
-const { request, gql } = require("graphql-request");
+const { getLogs } = require('../helper/cache/getLogs')
+const { getUniqueAddresses } = require('../helper/utils')
 
-const CHAINS = [
-  {
-    id: 1,
-    name: "ethereum",
-    url: "https://api.thegraph.com/subgraphs/name/barnbridge/bb-sy-mainnet",
-    address: "0x8A897a3b2dd6756fF7c17E5cc560367a127CA11F",
-  },
-  {
-    id: 42161,
-    name: "arbitrum",
-    url: "https://api.thegraph.com/subgraphs/name/barnbridge/bb-sy-arbitrum",
-    address: "0x1ADDAbB3fAc49fC458f2D7cC24f53e53b290d09e",
-  },
-];
-
-const termsQuery = (timestamp) => gql`
-    {
-      terms(where: { end_gt: ${timestamp} }) {
-        depositedAmount
-      }
-    }
-  `;
-
-const _underlying = async (chain, api) =>
-  api.call({
-    abi: "address:underlying",
-    target: chain.address,
-  })
-
-const _liquidityProviderBalance = async (chain, api) =>
-  api.call({
-    abi: "uint256:liquidityProviderBalance",
-    target: chain.address,
-  })
-
-const tvl = (chain) => {
-  return async (timestamp, _1, _2, { api, }) => {
-    const balances = {}
-    const underlying = await _underlying(chain, api);
-    const liquidity = await _liquidityProviderBalance(chain, api);
-
-    const { terms } = await request(chain.url, termsQuery(timestamp));
-
-    const deposits = terms.reduce((acc, term) => acc + +term.depositedAmount, 0);
-    sdk.util.sumSingleBalance(balances, underlying, liquidity, api.chain)
-    sdk.util.sumSingleBalance(balances, underlying, deposits, api.chain)
-
-    return balances
-  };
-};
+const config = {
+  ethereum: { factory: '0xc67cb09d08521cD1dE6BAAC46824261eb1dB8800', fromBlock: 16828337, },
+  arbitrum: { factory: '0xf878a060D4d51704B14e8f68B51185bF5DbFE3A1', fromBlock: 69857947, },
+  optimism: { factory: '0x45c158E0ee76c76E525BaB941991268249e95331', fromBlock: 80641123, },
+}
 
 module.exports = {
-  timetravel: false,
-  methodology:
-    "BarnBridge TVL is an aggregated TVL (user liquidity + DAO deposits) of active Smart Yield pools across available networks.",
 };
 
-CHAINS.forEach((chain) => {
-  module.exports[chain.name] = {
-    tvl: tvl(chain),
-  };
-});
+Object.keys(config).forEach(chain => {
+  const { factory, fromBlock, } = config[chain]
+  module.exports[chain] = {
+    tvl: async (_, _b, _cb, { api, }) => {
+      const logs = await getLogs({
+        api,
+        target: factory,
+        topics: ['0x4f2ce4e40f623ca765fc0167a25cb7842ceaafb8d82d3dec26ca0d0e0d2d4896'],
+        eventAbi: 'event PoolCreated(address indexed controller, address provider)',
+        onlyArgs: true,
+        fromBlock,
+      })
+      const providers = getUniqueAddresses(logs.map(i => i.provider))
+      const tokens = await api.multiCall({  abi: 'address:underlying', calls: providers}) 
+      const balances = await api.multiCall({  abi: 'uint256:underlyingBalance', calls: providers}) 
+      api.addTokens(tokens, balances)
+      return api.getBalances()
+    }
+  }
+})

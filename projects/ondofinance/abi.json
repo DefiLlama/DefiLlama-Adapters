@@ -1,3 +1,0 @@
-{
-  "getVaults": "function getVaults(uint256 _from, uint256 _to) view returns (tuple(uint256 id, tuple(address token, address trancheToken, uint256 trancheCap, uint256 userCap, uint256 deposited, uint256 originalInvested, uint256 totalInvested, uint256 received, uint256 rolloverDeposited)[] assets, address strategy, address creator, address strategist, address rollover, uint256 hurdleRate, uint8 state, uint256 startAt, uint256 investAt, uint256 redeemAt)[] vaults)"
-}

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 
 const formalDeposit = {
@@ -326,7 +327,7 @@ async function getTokenPrice(contractAddress) {
         target: "0xED7d5F38C79115ca12fe6C0041abb22F0A06C300",
         abi: mdexRouter['getAmountsIn'],
         chain: "heco",
-        params: [1e8, ['0xa71edc38d189767582c38a3145b5873052c3e47a', underlyingCoinsAddress.output]],
+        params: [1e8, [ADDRESSES.heco.USDT, underlyingCoinsAddress.output]],
     });
 
     return getAmountsIn.output[0] / Math.pow(10, 26 - 18)
@@ -362,7 +363,7 @@ async function getPrice(contractAddress,dc) {
         target: "0xED7d5F38C79115ca12fe6C0041abb22F0A06C300",
         abi: mdexRouter['getAmountsOut'],
         chain: "heco",
-        params: [1e8, [contractAddress,'0xa71edc38d189767582c38a3145b5873052c3e47a']],
+        params: [1e8, [contractAddress,ADDRESSES.heco.USDT]],
     });
 
     return getAmountsIn.output[1] / Math.pow(10, 26 - dc)
@@ -419,7 +420,7 @@ async function getBnbPrice() {
         target: "0x10ed43c718714eb63d5aa57b78b54704e256024e",
         abi: mdexRouter['getAmountsOut'],
         chain: "bsc",
-        params: [1e8, ["0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c","0x55d398326f99059ff775485246999027b3197955"]],
+        params: [1e8, [ADDRESSES.bsc.WBNB,ADDRESSES.bsc.USDT]],
     });
     return getAmountsIn.output[1] / Math.pow(10, 26 - 18)
 }

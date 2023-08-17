@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
@@ -121,7 +122,7 @@ async function tvlV2Onchain(block, chain) {
     const balances = {}
     const transform = addr => {
         if (addr.toLowerCase() === '0x260bbf5698121eb85e7a74f2e45e16ce762ebe11') 
-          return 'avax:0xc7198437980c041c805a1edcba50c1ce5db95118' // Axelar wrapped UST -> USDT
+          return 'avax:' + ADDRESSES.avax.USDT_e // Axelar wrapped UST -> USDT
         if (addr.toLowerCase() === '0x2147efff675e4a4ee1c2f918d181cdbd7a8e208f') 
         return '0xa1faa113cbe53436df28ff0aee54275c13b40975' // Wrapped Alpha Finance -> ALPHA (erc20)
       return  `${chain}:${addr}`
@@ -271,12 +272,13 @@ async function getTokenPrices(tokens, block, chain, coreOracleAddress) {
         chain,
         abi: abi["getETHPx"],
         block,
+        permitFailure: true,
     });
 
     const tokenPrices = {};
     for (let i = 0; i < _ethPrices.length; i++) {
-        const price = BigNumber(_ethPrices[i].output).div(BigNumber(2).pow(112));
-        if (price.gte(0)) {
+        const price = _ethPrices[i].output / 2 ** 112;
+        if (price > 0) {
             tokenPrices[tokens[i]] = price;
         }
     }

@@ -1,28 +1,36 @@
-const { sumTokens2, nullAddress } = require('../helper/unwrapLPs');
+const ADDRESSES = require('../helper/coreAssets.json')
+const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 // Treasury
 const treasury = "0xDAEada3d210D2f45874724BeEa03C7d4BBD41674";
+const treasury2 = "0x42c1357aaa3243ea30c713cdfed115d09f10a71d"
+const treasury3 = "0x6adeb4fddb63f08e03d6f5b9f653be8b65341b35"
+const RBN = "0x6123B0049F904d730dB3C36a31167D9d4121fA6B";
 
-// Ethereum Assets
-const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-const wbtc = "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599";
-const usdc = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
-const aave = "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9";
-const bal = "0xba100000625a3754423978a60c9317c58a424e3D";
-const reth = "0xae78736Cd615f374D3085123A210448E74Fc6393";
-const wsteth = "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0";
-const ldo = "0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32";
-const rbnWeth = "0xdb44a4a457c87225b5ba45f27b7828a4cc03c112";
-
-async function getTreasury(timestamp, block, chainBlocks) {
-  return sumTokens2({
-    block, owner: treasury,
-    tokens: [ weth, wsteth, wbtc, usdc, aave, ldo, reth, bal, rbnWeth, nullAddress],
-  })
-}
-
-module.exports = {
+module.exports = treasuryExports({
   ethereum: {
-    tvl: getTreasury,
+    tokens: [
+      // Ethereum Assets
+      nullAddress,
+      ADDRESSES.ethereum.WSTETH,
+      ADDRESSES.ethereum.LIDO,
+      ADDRESSES.ethereum.WETH,
+      ADDRESSES.ethereum.WBTC,
+      ADDRESSES.ethereum.USDC,
+      ADDRESSES.ethereum.RETH,
+      ADDRESSES.ethereum.STETH,
+      "0xba100000625a3754423978a60c9317c58a424e3D", // BAL
+      "0x4d224452801ACEd8B2F0aebE155379bb5D594381", // APE
+      "0x090185f2135308BaD17527004364eBcC2D37e5F6", // SPELL
+      ADDRESSES.ethereum.UNI,
+      ADDRESSES.ethereum.SAFE,
+      "0xa354F35829Ae975e850e23e9615b11Da1B3dC4DE", // yvUSDC
+      "0x25751853Eab4D0eB3652B5eB6ecB102A2789644B", // rETH-THETA
+    ],
+    owners: [treasury, treasury2, treasury3],
+    ownTokens: [
+      RBN,
+      "0xd590931466cdD6d488A25da1E89dD0539723800c", // 50RBN-50USDC
+    ],
   },
-};
+});

@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { getParamCalls } = require('../helper/utils')
 
 const masterChefContract = "0x4fff737de45da4886f711b2d683fb6A6cf62C60C";
-const USDC = "0x04068da6c83afcfa0e13ba15a6696662335d5b75";
+const USDC = ADDRESSES.fantom.USDC;
 const chain = 'fantom'
 
 const ftmTvl = async (_, _b, { fantom: block }) => {

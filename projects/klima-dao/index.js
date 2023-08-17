@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require('../helper/staking')
 const { sumTokensAndLPsSharedOwners } = require('../helper/unwrapLPs')
 const { transformPolygonAddress } = require('../helper/portedTokens')
@@ -12,7 +13,7 @@ async function tvl(time, ethBlock, chainBlocks) {
   await sumTokensAndLPsSharedOwners(balances, [
     ["0x2f800db0fdb5223b3c3f354886d907a671414a7f", false],  // BCT
     ["0xD838290e877E0188a4A44700463419ED96c16107", false], // NCT
-    ["0x2791bca1f2de4661ed88a30c99a7a9449aa84174", false], // USDC
+    [ADDRESSES.polygon.USDC, false], // USDC
     ["0x03E3369af9390493CB7CC599Cd5233D50e674Da4", false], // MOSS
     ["0x6BCa3B77C1909Ce1a4Ba1A20d1103bDe8d222E48", false], // NBO
     ["0x1E67124681b402064CD0ABE8ed1B5c79D2e02f64", true], // USDC-BCT
@@ -25,7 +26,7 @@ async function tvl(time, ethBlock, chainBlocks) {
 
 module.exports = {
   polygon: {
-    tvl,
+    tvl: () => 0,
     staking: staking("0x25d28a24Ceb6F81015bB0b2007D795ACAc411b4d", "0x4e78011ce80ee02d2c3e649fb657e45898257815", "polygon")
   }
 }

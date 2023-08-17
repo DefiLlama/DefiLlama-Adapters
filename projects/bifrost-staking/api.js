@@ -19,6 +19,7 @@ function formatTokenAmount(amount, tokenSymbol) {
     case "ETH":
     case "GLMR":
     case "MOVR":
+    case "FIL":
       decimals = 18;
       break;
   }
@@ -32,7 +33,8 @@ const tokenToCoingecko = {
   KSM: "kusama",
   MOVR: "moonriver",
   GLMR: "moonbeam",
-  ETH: "ethereum"
+  ETH: "ethereum",
+  FIL: "filecoin"
 };
 
 function formatToken(token) {
@@ -41,6 +43,8 @@ function formatToken(token) {
       return "DOT";
     case '1':
       return "GLMR";
+    case '4':
+      return "FIL";
     default :
       return null;
   }

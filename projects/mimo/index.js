@@ -1,29 +1,30 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unwrapLPs');
 const config = {
   ethereum: {
     vaultCore: ['0x4026BdCD023331D52533e3374983ded99CcBB6d4'],
     collaterals: [
-    '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', //wETH
-    '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', //wBTC
-    '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', //USDC
+    ADDRESSES.ethereum.WETH, //wETH
+    ADDRESSES.ethereum.WBTC, //wBTC
+    ADDRESSES.ethereum.USDC, //USDC
     ],
   },
   polygon: {
     vaultCore: ['0x03175c19cb1d30fa6060331a9ec181e04cac6ab0'],
     collaterals: [
-      '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270', //wMATIC
-      '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619', //wETH
-      '0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6', //wBTC
-      '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174', //USDC
+      ADDRESSES.polygon.WMATIC_2, //wMATIC
+      ADDRESSES.polygon.WETH_1, //wETH
+      ADDRESSES.polygon.WBTC, //wBTC
+      ADDRESSES.polygon.USDC, //USDC
     ],
   },
   fantom: {
     vaultCore: ['0xB2b4feB22731Ae013344eF63B61f4A0e09fa370e'],
     collaterals:[
-      '0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83', //wFTM
+      ADDRESSES.fantom.WFTM, //wFTM
       '0x74b23882a30290451A17c44f4F05243b6b58C76d', //ETH
       '0x321162Cd933E2Be498Cd2267a90534A804051b11', //BTC
-      '0x04068DA6C83AFCFA0e13ba15A6696662335D5B75', //USDC
+      ADDRESSES.fantom.USDC, //USDC
     ],
   }
 }

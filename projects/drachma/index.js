@@ -13,20 +13,20 @@ const { tvl: drachmaTvl, borrowed: drachmaBorrowed } = compoundExports(
 
 //tvl for drachma app
 function tvl(chain) {
-  return async (timestamp, block, chainBlocks) => {
+  return async (timestamp, block, chainBlocks, { api }) => {
     const toa = []
     toa.push(...contracts[chain].map(c => ([c.token, c.address])))
     toa.push(...contracts[chain].map(c => ([contracts.usdc[chain], c.address])))
-    return sumTokens2({ chain, tokensAndOwners: toa, block: chainBlocks[chain], resolveLP: true, })
+    return sumTokens2({ chain, tokensAndOwners: toa, api, resolveLP: true, })
   };
 }
 
 module.exports = {
-  timetravel: true,
-  incentivized: true,
-  misrepresentedTokens: true,
   metis: {
     tvl: sdk.util.sumChainTvls([drachmaTvl, tvl("metis")]),
     borrowed: drachmaBorrowed,
   },
 };
+
+
+module.exports.metis = { tvl: tvl("metis") }

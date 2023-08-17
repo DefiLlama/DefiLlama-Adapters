@@ -88,7 +88,6 @@ module.exports = {
   },
   heco: {
     tvl: hecoTvl,
-    treasury: Treasury,
   },
   methodology: `We count TVL on the pools (LP tokens), that are staking in other protocolos as Booster, Mdex and Lava on Heco Network
    and SushiSwap  on Ethereum Network,threw their correspondent MasterChef contracts; and Treasury part separated`,

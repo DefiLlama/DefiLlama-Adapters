@@ -1,12 +1,13 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { transformOptimismAddress } = require('../helper/portedTokens');
 const perpV2VaultABI = require('./abis/perpV2Vault.json');
 const perpLemmaWrapperABI = require('./abis/perpLemmaWrapper.json');
-const USDC = "0x7F5c764cBc14f9669B88837ca1490cCa17c31607";
+const USDC = ADDRESSES.optimism.USDC;
 const PERP_V2_VAULT = "0xAD7b4C162707E0B2b5f6fdDbD3f8538A5fbA0d60";
 
 const tokens = [
-    "0x4200000000000000000000000000000000000006",
+    ADDRESSES.tombchain.FTM,
     "0x68f180fcce6836688e9084f035309e29bf0a2095",
     "0x350a791bfc2c21f9ed5d10980dad2e2638ffa7f6",
     "0x76FB31fb4af56892A25e32cFC43De717950c9278",

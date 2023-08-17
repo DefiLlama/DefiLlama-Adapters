@@ -1,9 +1,5 @@
 const { sumTokens2 } = require("../helper/unwrapLPs");
-const { toUSDTBalances } = require("../helper/balances");
-const { blockQuery } = require("../helper/http");
-
-const endpoint =
-  "https://api.thegraph.com/subgraphs/name/polarisfinance/polaris-dex";
+const { onChainTvl } = require("../helper/balancer");
 
 const xpolar = "0xeAf7665969f1DaA3726CEADa7c40Ab27B3245993";
 const xpolarRewardPool = "0x140e8a21d08cbb530929b012581a7c7e696145ef";
@@ -31,23 +27,6 @@ const singleStakeTokens = [
   "0x8200B4F47eDb608e36561495099a8caF3F806198", // TRIBOND
 ];
 
-const query = `
-query get_tvl($block: Int) {
-  balancers(
-    orderBy: totalLiquidity 
-    orderDirection: desc
-    block: { number: $block }
-  ) {
-    totalLiquidity
-  }
-}
-`
-
-async function dexTVL(timestamp, ethBlock, chainBlocks, { api }) {
-  const { balancers: [ { totalLiquidity }]} = await blockQuery(endpoint, query, { api })
-  return toUSDTBalances(totalLiquidity);
-}
-
 const staking = async (_timestamp, _ethBlock, { [chain]: block }) => {
   const tokensAndOwners = [];
   sunrises.forEach((o) => tokensAndOwners.push([xpolar, o]));
@@ -61,7 +40,7 @@ module.exports = {
   methodology:
     "Pool2 TVL accounts for all LPs staked in Dawn, Staking TVL accounts for all tokens staked in Sunrise.",
   aurora: {
-    tvl: dexTVL,
+    tvl: onChainTvl('0x6985436a0E5247A3E1dc29cdA9e1D89C5b59e26b', 71729132),
     staking,
   },
 };

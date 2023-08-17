@@ -1,8 +1,6 @@
 const sdk = require('@defillama/sdk')
 const abi = require('./abi.json')
-const utils = require('../helper/utils')
 const { unwrapUniswapLPs, } = require('../helper/unwrapLPs')
-const { getFixBalances } = require('../helper/portedTokens')
 const { getConfig } = require('../helper/cache')
 
 const {
@@ -630,9 +628,6 @@ const kavaTvl = async (timestamp, block, chainBlocks) => {
     'kava',
     transformAddress,
   )
-
-  const fixBalances = await getFixBalances('kava')
-  fixBalances(balances)
 
   await unwrapCrvLPs(
     balances,

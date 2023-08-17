@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const {unwrapUniswapLPs} = require('../helper/unwrapLPs')
 
-const wethAddress = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+const wethAddress = ADDRESSES.ethereum.WETH
 const sgtStakingPool = "0xc637dB981e417869814B2Ea2F1bD115d2D993597"
 const sgt = "0x84810bcF08744d5862B8181f12d17bfd57d3b078"
 const pool2StakingPool = "0x64A1DB33f68695df773924682D2EFb1161B329e8"

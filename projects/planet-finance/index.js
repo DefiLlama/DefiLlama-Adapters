@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
@@ -6,14 +7,14 @@ const { getPoolInfo } = require("../helper/masterchef.js");
 const { transformBscAddress } = require("../helper/portedTokens");
 
 const replacements = {
-  "0xa8Bb71facdd46445644C277F9499Dd22f6F0A30C":
-    "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c", //beltBNB -> wbnb
-  "0x9cb73F20164e399958261c289Eb5F9846f4D1404":
-    "0x55d398326f99059ff775485246999027b3197955", // 4belt -> usdt
-  "0x51bd63F240fB13870550423D208452cA87c44444":
-    "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c", //beltBTC->
-  "0xAA20E8Cb61299df2357561C2AC2e1172bC68bc25":
-    "0x2170ed0880ac9a755fd29b2688956bd959f933f8", //beltETH->
+  [ADDRESSES.bsc.beltBNB]:
+    ADDRESSES.bsc.WBNB, //beltBNB -> wbnb
+  [ADDRESSES.bsc.Belt4]:
+    ADDRESSES.bsc.USDT, // 4belt -> usdt
+  [ADDRESSES.bsc.beltBTC]:
+    ADDRESSES.bsc.BTCB, //beltBTC->
+  [ADDRESSES.bsc.beltETH]:
+    ADDRESSES.bsc.ETH, //beltETH->
 };
 
 // liquidity pools

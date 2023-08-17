@@ -107,6 +107,6 @@ const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
 
 module.exports = {
   bsc: {
-    tvl: bscTvl,
+    tvl: () =>  ({}), //Project is dead
   },
 };

@@ -1,33 +1,42 @@
-const sdk = require('@defillama/sdk');
-const { POOL_LIST } = require("./pool")
-const MasterMagpieAddress =  "0xa3B615667CBd33cfc69843Bf11Fbb2A1D926BD46";
-const WOMAddress = "0xAD6742A35fB341A9Cc6ad674738Dd8da98b94Fb1"
-const { transformBalances } = require('../helper/portedTokens')
-async function tvl(timestamp, block, chainBlocks) {
-  const balances = {};
-  for(let i = 0, l = POOL_LIST.length; i < l; i++) {
-    const pool = POOL_LIST[i];
-    const collateralBalance = (await sdk.api.abi.call({
-        abi: 'erc20:balanceOf',
-        chain: 'bsc',
-        target: pool.rawStakingToken,
-        params: [MasterMagpieAddress],
-        block: chainBlocks['bsc'],
-      })).output;
-      if (pool.type == "MAGPIE_WOM_POOL") {
-        await sdk.util.sumSingleBalance(balances, `bsc:${WOMAddress}`, collateralBalance)
-      }
-      else {
-        await sdk.util.sumSingleBalance(balances, `bsc:${pool.stakingToken}`, collateralBalance)
-      }
-      
-  }
-  return transformBalances('bsc', balances);
+const ADDRESSES = require('../helper/coreAssets.json')
+const sdk = require('@defillama/sdk')
+const { staking } = require('../helper/staking')
+const WombatPoolHelperAbi = require("./abis/wombatPoolHelper.json")
+const MasterMagpieAbi = require("./abis/masterMagpie.json");
+const config = require("./config")
+
+async function getPoolList(api, MasterMagpieAddress, VlMGPAddress, MWOMAddress, MWOMSVAddress) {
+  let poolTokens = await api.fetchList({ lengthAbi: MasterMagpieAbi.poolLength, itemAbi: MasterMagpieAbi.registeredToken, target: MasterMagpieAddress })
+  const customPools = new Set([MWOMAddress, VlMGPAddress, MWOMSVAddress, '0x2130Df9dba40AfeFcA4C9b145f5ed095335c5FA3'].map(i => i.toLowerCase()))
+  poolTokens = poolTokens.filter(i => !customPools.has(i.toLowerCase()))
+  const infos = await api.multiCall({ calls: poolTokens, abi: MasterMagpieAbi.tokenToPoolInfo, target: MasterMagpieAddress })
+  const depositTokens = await api.multiCall({ calls: infos.map(i => i.helper), abi: WombatPoolHelperAbi.depositToken, })
+  return [poolTokens, depositTokens]
 }
 
-module.exports = {
-  methodology: 'counts the number of MINT tokens in the Club Bonding contract.',
-  bsc: {
-    tvl,
+async function tvl(timestamp, block, chainBlocks, { api }) {
+  const { MasterMagpieAddress, VlMGPAddress, MWOMSVAddress, WOMAddress, MWOMAddress } = config[api.chain];
+  const [poolTokens, depositTokens] = await getPoolList(api, MasterMagpieAddress, VlMGPAddress, MWOMAddress, MWOMSVAddress);
+  const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: depositTokens })
+  const balances = {};
+  const womBal = await api.call({ abi: 'erc20:balanceOf', target: MWOMAddress, params: MasterMagpieAddress })
+  sdk.util.sumSingleBalance(balances, WOMAddress, womBal, api.chain)
+  if (MWOMSVAddress != ADDRESSES.null) {
+    const mWomSVBal = await api.call({ abi: 'erc20:balanceOf', target: MWOMAddress, params: MWOMSVAddress })
+    sdk.util.sumSingleBalance(balances, WOMAddress, mWomSVBal, api.chain)
   }
-}; 
+  const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: poolTokens.map(i => ({ target: i, params: MasterMagpieAddress })) })
+  bals.forEach((v, i) => {
+    v /= 10 ** (18 - decimals[i])
+    sdk.util.sumSingleBalance(balances, depositTokens[i], v, api.chain)
+  })
+  return balances
+}
+
+Object.keys(config).forEach((chain) => {
+  const { VlMGPAddress, MGPAddress, } = config[chain];
+  module.exports[chain] = {
+    tvl: tvl,
+    staking: staking(VlMGPAddress, MGPAddress)
+  }
+})

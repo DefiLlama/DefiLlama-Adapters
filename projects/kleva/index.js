@@ -3,9 +3,9 @@ const { getConfig } = require('../helper/cache')
 
 const { userInfos } = require('./FairLaunch')
 
-const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
-const { getChainTransform, getFixBalances } = require('../helper/portedTokens')
+const { getChainTransform } = require('../helper/portedTokens')
 const { getTokenPrices } = require('../helper/unknownTokens')
+const kExports = require('../kleva-lend')
 
 const chain = 'klaytn'
 // const TOKEN_PRICE_QUERY_URL = "https://api.kltalchemy.com/klay/ksInfo"
@@ -15,15 +15,10 @@ async function getWorkers() {
   return getConfig('kleva', WORKERS_QUERY_URL)
 }
 
-const klayPool = '0xa691c5891d8a98109663d07bcf3ed8d3edef820a'
-const wKlay = '0xf6f6b8bd0ac500639148f8ca5a590341a97de0de'
-
-
 // Fetch farm list
 // - multicall 'userInfos' on FairLaunch contract with lpPoolId & workerAddress
 async function getFarmingTVL(data, balances,) {
   const transform = await getChainTransform(chain)
-  const fixBalances = await getFixBalances(chain)
   const balancesTemp = {}
   const lps = []
 
@@ -51,31 +46,18 @@ async function getFarmingTVL(data, balances,) {
 
   await updateBalances(balancesTemp)
 
-  await fixBalances(balancesTemp)
   Object.entries(balancesTemp).forEach(([token, value]) => sdk.util.sumSingleBalance(balances, token, value))
 
   return balances
 }
 
-// Fetch lending pool(ibToken) list
-// - multicall 'getTotalToken' on ibToken contracts
-async function getLendingTVL(data) {
-  const tokensAndOwners = data.lendingPools.map(({ vaultAddress, ibToken: { originalToken }}) => {
-    if (vaultAddress.toLowerCase() === klayPool)
-      return [wKlay, klayPool]
-    return [originalToken.address, vaultAddress]
-  })
-  tokensAndOwners.push([nullAddress, klayPool])
-  return sumTokens2({ chain, tokensAndOwners })
-}
-
 async function fetchLiquidity() {
   const data = await getWorkers()
-  const balances = await getLendingTVL(data)
+  const balances = {}
   return getFarmingTVL(data, balances)
 }
 
 module.exports = {
-  klaytn: { tvl: fetchLiquidity },
-  timetravel: false,
+  klaytn: { tvl: sdk.util.sumChainTvls([fetchLiquidity, kExports.klaytn.tvl]) },
+  doublecounted: true,
 }

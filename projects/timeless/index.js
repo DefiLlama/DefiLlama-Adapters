@@ -3,7 +3,6 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 const abi = require('./abi.json')
 const { getLogs } = require('../helper/cache/getLogs')
 
-const chain = 'ethereum'
 const factory = '0xbd16088611054fce04711aa9509d1d86e04dce2c'
 const wl_stETH_token = '0xf9a98a9452485ed55cd3ce5260c2b71c9807b11a'
 
@@ -25,18 +24,11 @@ async function tvl(_, block, _1, { api }) {
     toa.push([vault, gate])
   })
   const balances = await sumTokens2({ api, tokensAndOwners: toa, })
-  const wl_stETH = 'ethereum:'+wl_stETH_token
+  const wl_stETH = wl_stETH_token
   const wl_stETH_balance = balances[wl_stETH]
   delete balances[wl_stETH]
-  const unwrappedAsset = await api.call({
-    target: wl_stETH_token,
-    abi: abi.asset,
-  })
-  const balance = await api.call({
-    target: wl_stETH_token,
-    abi: abi.convertToAssets,
-    params: wl_stETH_balance,
-  })
+  const unwrappedAsset = await api.call({ target: wl_stETH_token, abi: abi.asset, })
+  const balance = await api.call({ target: wl_stETH_token, abi: abi.convertToAssets, params: wl_stETH_balance, })
 
   sdk.util.sumSingleBalance(balances, unwrappedAsset, balance)
   return balances

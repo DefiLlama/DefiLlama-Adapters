@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
   const sdk = require('@defillama/sdk');
 
   const BigNumber = require('bignumber.js');
@@ -13,11 +14,11 @@
 /*==================================================
   Ethereum Settings
   ==================================================*/
-const DAI = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
+const DAI = ADDRESSES.ethereum.DAI;
 const PAX = "0x8E870D67F660D95d5be530380D0eC0bd388289E1";
-const TUSD = "0x0000000000085d4780B73119b644AE5ecd22b376";
-const USDC = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
-const USDT = "0xdAC17F958D2ee523a2206206994597C13D831ec7";
+const TUSD = ADDRESSES.ethereum.TUSD;
+const USDC = ADDRESSES.ethereum.USDC;
+const USDT = ADDRESSES.ethereum.USDT;
 const USDx = "0xeb269732ab75A6fD61Ea60b06fE994cD32a83549";
 
 /*==================================================
@@ -38,10 +39,10 @@ const goldxProtocol = "0x355C665e101B9DA58704A8fDDb5FeeF210eF20c0"; // GOLDx
 /*==================================================
   BSC Settings
   ==================================================*/
-const BSC_BUSD = "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56";
+const BSC_BUSD = ADDRESSES.bsc.BUSD;
 const BSC_DAI = "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3";
-const BSC_USDC = "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d";
-const BSC_USDT = "0x55d398326f99059fF775485246999027B3197955";
+const BSC_USDC = ADDRESSES.bsc.USDC;
+const BSC_USDT = ADDRESSES.bsc.USDT;
 
 
 let oracles = {
@@ -51,7 +52,8 @@ let oracles = {
   optimism: "0x4f9312A21F8853384E0f6141F3F9fB855d860161",
   polygon: "0x9E8B68E17441413b26C2f18e741EAba69894767c",
   avax: "0x5237d212F9BbC83d91c2cbd810D2b07808d94f08",
-  kava: "0xe04cea4d02261923769D79Dd24D188C2cB29dB4A"
+  kava: "0xe04cea4d02261923769D79Dd24D188C2cB29dB4A",
+  conflux: "0xfd3868B848B5D9eD3583938B4db4746415bD43a3"
 };
 
 let allControllers = {
@@ -72,6 +74,7 @@ let allControllers = {
   polygon: ["0x52eaCd19E38D501D006D2023C813d7E37F025f37"],
   avax: ["0x078ad8d6faeD9DAeE55f5d446C80E0C81230DE6b"],
   kava: ["0xFBf64A8cAEA1D641affa185f850dbBF90d5c84dC"],
+  conflux: ["0xA377eCF53253275125D0a150aF195186271f6a56"]
 };
 
 let yieldMarkets = {
@@ -140,6 +143,9 @@ const excludeAlliTokens = {
   ],
   kava: [
     "0x9787af345e765a3fbf0f881c49f8a6830d94a514" // iUSX
+  ],
+  conflux: [
+    "0x6f87b39a2e36F205706921d81a6861B655db6358" // iUSX
   ]
 };
 
@@ -147,12 +153,13 @@ const excludeAlliTokens = {
 const dfStakingPools = "0x41602ccf9b1F63ea1d0Ab0F0A1D2F4fd0da53f60";
 
 const USXs = {
-  "ethereum": "0x0a5e677a6a24b2f1a2bf4f3bffc443231d2fdec8",
+  "ethereum": ADDRESSES.ethereum.USX,
   "bsc": "0xb5102cee1528ce2c760893034a4603663495fd72",
   "arbitrum": "0x641441c631e2f909700d2f41fd87f0aa6a6b4edb",
   "polygon": "0xCf66EB3D546F0415b368d98A95EAF56DeD7aA752",
   "avax": "0x853ea32391AaA14c112C645FD20BA389aB25C5e0",
-  "kava": "0xDb0E1e86B01c4ad25241b1843E407Efc4D615248",
+  "kava": ADDRESSES.kava.USX,
+  "conflux": "0x422a86f57b6b6F1e557d406331c25EEeD075E7aA"
 };
 
 async function getDFStakingValue(block) {
@@ -273,6 +280,6 @@ module.exports = {
     ...chainTvl("ethereum"),
     staking,
   },
-  ...generalizedChainExports(chainTvl, ["bsc", "arbitrum", "optimism", "polygon", "avax", "kava"]),
+  ...generalizedChainExports(chainTvl, ["bsc", "arbitrum", "optimism", "polygon", "avax", "kava", "conflux"]),
   start: 1564165044, // Jul-27-2019 02:17:24 AM +UTC
 }
