@@ -24,8 +24,11 @@ const SUI_TOKENS = [
 
 // Helper function to retrieve data based on poolId
 async function fetchDataBasedOnPoolId() {
-  const getObject = ({ poolId }) => sui.getDynamicFieldObject(RESERVE_DYNAMIC_TABLE, poolId.toString(), { idType: 'u16' })
-  return Promise.all(SUI_TOKENS.map(getObject))
+  const getObject = ({ poolId }) =>
+    sui.getDynamicFieldObject(RESERVE_DYNAMIC_TABLE, poolId.toString(), {
+      idType: "u16",
+    });
+  return Promise.all(SUI_TOKENS.map(getObject));
 }
 
 // Calculate and add to API
@@ -40,7 +43,8 @@ function calculateAndAdd(objectsList, type, indexName, api) {
     const indexValue = dataFields[indexName] || 0;
 
     const shiftValue = 10 ** (decimalShift[address] ?? 0);
-    const mainValue = type === "tvl" ? (total_supply - total_borrow) : total_borrow;
+    const mainValue =
+      type === "tvl" ? total_supply - total_borrow : total_borrow;
 
     const amount = (mainValue * shiftValue * indexValue) / Math.pow(10, 27);
 
@@ -62,6 +66,9 @@ async function borrow() {
 
 module.exports = {
   timetravel: false,
+  arbitrum: {},
+  base: {},
+  optimism: {},
   sui: {
     tvl,
     borrowed: borrow,
