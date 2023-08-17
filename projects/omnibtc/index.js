@@ -1,3 +1,4 @@
+const { sumTokensExport } = require("../helper/sumTokens");
 const ADDRESSES = require("../helper/coreAssets.json");
 const sui = require("../helper/chain/sui");
 
@@ -72,16 +73,36 @@ async function suiBorrow() {
 module.exports = {
   timetravel: false,
   arbitrum: {
-    tvl: () => ({}),
+    tvl: sumTokensExport({
+      owner: ARBITRUM_POOL_ADDRESS,
+      tokens: [
+        ADDRESSES.arbitrum.ARB,
+        ADDRESSES.arbitrum.USDC,
+        ADDRESSES.arbitrum.USDT,
+      ],
+    }),
   },
   base: {
-    tvl: () => ({}),
+    tvl: sumTokensExport({
+      owner: BASE_POOL_ADDRESS,
+      tokens: [ADDRESSES.base.USDbC],
+    }),
   },
   optimism: {
-    tvl: () => ({}),
+    tvl: sumTokensExport({
+      owner: OPTIMISM_POOL_ADDRESS,
+      tokens: [
+        ADDRESSES.optimism.OP,
+        ADDRESSES.optimism.USDC,
+        ADDRESSES.optimism.USDT,
+      ],
+    }),
   },
   polygon: {
-    tvl: () => ({}),
+    tvl: sumTokensExport({
+      owner: POLYGON_POOL_ADDRESS,
+      tokens: [ADDRESSES.polygon.USDC, ADDRESSES.polygon.USDT],
+    }),
   },
   sui: {
     tvl: suiTvl,
