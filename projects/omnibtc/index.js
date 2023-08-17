@@ -84,7 +84,7 @@ module.exports = {
     tvl: () => ({}),
   },
   sui: {
-    suiTvl,
+    tvl: suiTvl,
     borrowed: suiBorrow,
   },
 };
