@@ -1,5 +1,3 @@
-const sdk = require("@defillama/sdk");
-const BigNumber = require("bignumber.js");
 const { config } = require("./config");
 const abi = require("./abi.json");
 const { fetchForwardContractBatchSupplies } = require("./forward-contract-batch-supply");
@@ -12,12 +10,9 @@ async function tvl(timestamp, ethBlock, _, { api }) {
   const [categories, batches] = await fetchCategoriesAndBatches(api, Object.keys(batchSupplies));
   const batchesValuation = await valuateBatches(batches, categories, batchSupplies);
 
-  const TVL = {};
   batchesValuation.forEach(({ crispToken, amount }) => {
-    sdk.util.sumSingleBalance(TVL, crispToken, amount, api.chain);
+    api.add(crispToken, amount)
   });
-
-  return TVL;
 }
 
 async function pool2(timestamp, ethBlock, _, { api }) {
@@ -44,17 +39,11 @@ async function pool2(timestamp, ethBlock, _, { api }) {
     stakedAmount: stakedAmounts[i]
   }));
 
-  const TVL = {};
   poolStats.forEach((e) => {
-    sdk.util.sumSingleBalance(TVL, e.token0, adjustAmount(e.totalAmount.total0, e.stakedAmount, e.totalSupply), api.chain);
-    sdk.util.sumSingleBalance(TVL, e.token1, adjustAmount(e.totalAmount.total1, e.stakedAmount, e.totalSupply), api.chain);
+    const ratio = e.stakedAmount /e.totalSupply
+    api.add(e.token0, e.totalAmount.total0 *ratio)
+    api.add(e.token1, e.totalAmount.total1 *ratio)
   });
-
-  return TVL;
-}
-
-function adjustAmount(amount, numerator, denominator) {
-  return BigNumber(amount).times(numerator).div(denominator).toFixed(0);
 }
 
 module.exports = {
