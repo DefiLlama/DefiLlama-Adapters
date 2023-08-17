@@ -1,6 +1,5 @@
 const { getConfig } = require("../helper/cache");
-const { sumTokens, queryContract, queryV1Beta1, getDenomBalance, getBalance2 } = require('../helper/chain/cosmos');
-const axios = require('axios');
+const { sumTokens, queryContract, queryV1Beta1, getBalance2 } = require('../helper/chain/cosmos');
 const owners = ["kujira15e682nq9jees29rm9j3h030af86lq2qtlejgphlspzqcvs9whf2q00nua5"]
 
 async function tvl(_, _1, _2, { api }) {
@@ -59,11 +58,9 @@ async function calcPOLValue(api) {
         if (lpDenomSupply) {
           const supply = lpDenomSupply.amount;
 
-          const poolQuery = JSON.stringify({ pool: {} });
-
           let poolBalances;
 
-          poolBalances = await queryPoolContract({ contract: pool, chain: 'kujira', data: poolQuery });
+          poolBalances = await queryContract({ contract: pool, chain: 'kujira', data: { pool: {}} });
 
           const balances = poolBalances.balances;
           const coin0OutRatio = parseInt(balances[0]) / parseInt(supply);
@@ -75,8 +72,7 @@ async function calcPOLValue(api) {
           const coin0Out = coin0OutRatio * treasuryLPBalance;
           const coin1Out = coin1OutRatio * treasuryLPBalance;
 
-          const configQuery = JSON.stringify({ config: {} })
-          const poolConfig = await queryContract({ contract: pool, chain: 'kujira', data: configQuery });
+          const poolConfig = await queryContract({ contract: pool, chain: 'kujira', data: { config:{}} });
 
 
           const denom0 = poolConfig.denoms[0];
@@ -95,19 +91,6 @@ async function calcPOLValue(api) {
   return treasuryLPDenomBalances;
 
 }
-
-
-// Need hardcoded endpoint as half the suggested ones don't support proper gas limit for Kujira
-async function queryPoolContract({ contract, chain, data }) {
-  if (typeof data !== "string") data = JSON.stringify(data);
-  data = Buffer.from(data).toString("base64");
-  return (
-    await axios.get(
-      `https://kuji-api.kleomedes.network/cosmwasm/wasm/v1/contract/${contract}/smart/${data}`
-    )
-  ).data.data;
-}
-
 
 async function ownTokens(_, _1, _2, { api }) {
   return sumTokens({
