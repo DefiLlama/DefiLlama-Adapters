@@ -48,23 +48,23 @@ async function tvl() {
   const api = new ApiPromise({ provider });
   await api.isReady;
 
-  const totalLiquidity = {};
-
   // Get Krest Balances.locks.
   const balanceLocks = await api.query.balances.locks.entries();
 
-  await Promise.all(balanceLocks.map(async (pool) => {
-    const token=pool[0].toHuman()[0].Token||pool[0].toHuman()[0].Native
-    totalLiquidity[token]=new BigNumber(totalLiquidity[token]||0).plus(pool[1].toString()).toString()
-  }));
+  // await Promise.all(balanceLocks.map(async (lock) => {
+  //   const token=pool[0].toHuman()[0].Token||pool[0].toHuman()[0].Native
+  //   totalLiquidity[token]=new BigNumber(totalLiquidity[token]||0).plus(pool[1].toString()).toString()
+  // }));
+  const totalLocked = balanceLocks.reduce(function(pv, cv) { return cv + pv }, 0);
 
-  const totalLiquidityFormatted = {};
-  for (const key in totalLiquidity) {
-    totalLiquidityFormatted[tokenToCoingecko[key]] = formatTokenAmount(
-      totalLiquidity[key],
-      key
-    );
-  }
+  // const totalLiquidityFormatted = {};
+  // for (const key in totalLiquidity) {
+  //   totalLiquidityFormatted[tokenToCoingecko[key]] = formatTokenAmount(
+  //     totalLiquidity[key],
+  //     key
+  //   );
+  // }
+  const totalLockedFormatted = formatTokenAmount(totalLocked, "KRST");
 
   return totalLiquidityFormatted;
 }
