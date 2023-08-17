@@ -9,6 +9,11 @@ const decimalShift = {
   [ADDRESSES.sui.SUI]: 1,
 };
 
+const BASE_POOL_ADDRESS = "0x68953027738216A63B39D55B18C02FeD5c329Dfa";
+const ARBITRUM_POOL_ADDRESS = "0x53eCC006a0073b3351E9e38d94f052E3864C7935";
+const OPTIMISM_POOL_ADDRESS = "0x233DDEce6a96c49ecE6Ad9ae820690fE62a28975";
+const POLYGON_POOL_ADDRESS = "0xC3Eb696184b8927D677D8AB390A26563De4798c3";
+
 const SUI_TOKENS = [
   {
     symbol: "SUI",
@@ -52,13 +57,13 @@ function calculateAndAdd(objectsList, type, indexName, api) {
   });
 }
 
-async function tvl() {
+async function suiTvl() {
   const { api } = arguments[3];
   const objectsList = await fetchDataBasedOnPoolId();
   calculateAndAdd(objectsList, "tvl", "current_liquidity_index", api);
 }
 
-async function borrow() {
+async function suiBorrow() {
   const { api } = arguments[3];
   const objectsList = await fetchDataBasedOnPoolId();
   calculateAndAdd(objectsList, "borrow", "current_borrow_index", api);
@@ -66,11 +71,20 @@ async function borrow() {
 
 module.exports = {
   timetravel: false,
-  arbitrum: {},
-  base: {},
-  optimism: {},
+  arbitrum: {
+    tvl: () => ({}),
+  },
+  base: {
+    tvl: () => ({}),
+  },
+  optimism: {
+    tvl: () => ({}),
+  },
+  polygon: {
+    tvl: () => ({}),
+  },
   sui: {
-    tvl,
-    borrowed: borrow,
+    suiTvl,
+    borrowed: suiBorrow,
   },
 };
