@@ -144,6 +144,7 @@ async function getChainTransform(chain) {
     if (chain === 'stacks' && addr.startsWith('SP')) return chainStr
     if (chain === 'tezos' && addr.startsWith('KT1')) return chainStr
     if (chain === 'terra2' && addr.startsWith('terra1')) return chainStr
+    if (chain === 'aura' && addr.startsWith('aura')) return chainStr
     if (chain === 'algorand' && /^\d+$/.test(addr)) return chainStr
     if (addr.startsWith('0x') || ['solana', 'kava'].includes(chain)) return chainStr
     return addr
@@ -184,7 +185,6 @@ async function transformDexBalances({ chain, data, balances = {}, restrictTokenR
 
   if (!withMetadata)
     return transformBalances(chain, balances)
-
   return {
     prices,
     updateBalances,

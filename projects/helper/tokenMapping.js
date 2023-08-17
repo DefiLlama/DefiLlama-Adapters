@@ -16,7 +16,7 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 // carbon: https://api-insights.carbon.network/info/denom_gecko_map
 // orbit brige: https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList
 
-const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'stargaze', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua',]
+const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'stargaze', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei']
 const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo',]
 
 const distressedAssts = new Set(Object.values({
@@ -24,6 +24,7 @@ const distressedAssts = new Set(Object.values({
   aBNBc: ADDRESSES.bsc.ankrBNB,
   aBNBb: ADDRESSES.bsc.aBNBb,
   XRPC: '0xd4ca5c2aff1eefb0bea9e9eab16f88db2990c183',
+  YAKU: 'NGK3iHqqQkyRZUj4uhJDQqEyKKcZ7mdawWpqwMffM3s'
 }).map(i => i.toLowerCase()))
 
 const transformTokens = {
@@ -50,6 +51,13 @@ const fixBalancesTokens = {
   },
   telos: {
     [ADDRESSES.telos.WTLOS_1]: { coingeckoId: "telos", decimals: 18 },
+  },
+  aura: {
+    'uaura': { coingeckoId: 'aura-network', decimals: 6 },
+  },
+  op_bnb: {
+    '0xa457653a7dbe1fdf314e30327d6ec0c5b2cfbd8a': { coingeckoId: 'binancecoin', decimals: 18 },
+    '0x4200000000000000000000000000000000000006': { coingeckoId: 'binancecoin', decimals: 18 },
   },
 }
 

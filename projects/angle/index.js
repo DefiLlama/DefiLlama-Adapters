@@ -5,6 +5,8 @@ const { getConfig } = require("../helper/cache");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { getUniqueAddresses } = require("../helper/tokenMapping");
 
+const { TreasuryTokenAddresses, governorAddress, guardianAddress } = require("./addresses.js");
+
 const ANGLE = "0x31429d1856ad1377a8a0079410b297e1a9e214c2";
 const veANGLE = "0x0C462Dbb9EC8cD1630f1728B2CFD2769d09f0dd5";
 
@@ -13,21 +15,16 @@ const poolManagers_abi = {
   token: "address:token",
 };
 
+const transmuter_abi = {
+  getCollateralList: "address[]:getCollateralList",
+}
+
 // get Borrowing module vault managers list
-async function getVaultManagersFromAPI(chain) {
-  const chainIds = {
-    ethereum: 1,
-    polygon: 137,
-    optimism: 10,
-    arbitrum: 42161,
-    fantom: 250,
-    avax: 43114,
-  };
-  let chainId = chainIds[chain];
+async function getVaultManagersFromAPI(api) {
   let calls = [];
   let result = await getConfig(
-    "angle/" + chain,
-    "https://api.angle.money/v1/vaultManagers?chainId=" + chainId
+    "angle/" + api.chain,
+    "https://api.angle.money/v1/vaultManagers?chainId=" + api.chainId
   );
 
   for (const data of Object.values(result)) {
@@ -37,8 +34,9 @@ async function getVaultManagersFromAPI(chain) {
   return calls;
 }
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(timestamp, _1, _2, { api }) {
   const chain = api.chain
+
   const balances = {};
   const tokensAndOwners = [];
   if (chain === "ethereum") {
@@ -53,6 +51,7 @@ async function tvl(_, _1, _2, { api }) {
         frax: "0x6b4eE7352406707003bC6f6b96595FD35925af48", // FRAX
         weth: "0x3f66867b4b6eCeBA0dBb6776be15619F73BC30A2", // WETH
       },
+      transmuter: "0x00253582b2a3FE112feEC532221d9708c64cEFAb",
     };
 
     // count the USDC in pool manager contract
@@ -89,10 +88,32 @@ async function tvl(_, _1, _2, { api }) {
     ])
     const eurocBalance = eurocBal * (+sdagEUREUROCTVL + +cvxagEUREUROCstakerTVL) / totPoolTokenSupply
     sdk.util.sumSingleBalance(balances, EUROC, eurocBalance);
+
+    // Transmuter
+    if (timestamp > 1691656362) {
+      let collaterals = await api.call({ abi: transmuter_abi["getCollateralList"], target: agEUR.transmuter, });
+
+      collaterals.forEach((collateral, i) => {
+        tokensAndOwners.push([collateral, agEUR.transmuter]);
+      });
+    }
   }
 
   // Borrowing module
   tokensAndOwners.push(...(await getVaultManagersFromAPI(chain)));
+
+  // Treasury - Governor
+  const governorTokens = TreasuryTokenAddresses['governor'][chain]
+  governorTokens.forEach((token) => {
+    tokensAndOwners.push([token, governorAddress[chain]]);
+  });
+
+  // Treasury - Guardian
+  const guardianTokens = TreasuryTokenAddresses['guardian'][chain]
+  guardianTokens.forEach((token) => {
+    tokensAndOwners.push([token, guardianAddress[chain]]);
+  });
+
   return sumTokens2({ balances, api, tokensAndOwners });
 }
 
@@ -104,6 +125,7 @@ If not, the API call defaults to mainnet and the blockchain calls fail and retur
 module.exports = {
   hallmarks: [
     [Math.floor(new Date('2023-03-13') / 1e3), 'Euler was hacked'],
+    [Math.floor(new Date('2023-08-02') / 1e3), 'Migration to v2 (Transmuter)'],
   ],
   ethereum: {
     staking: staking(veANGLE, ANGLE, "ethereum"),
@@ -111,7 +133,7 @@ module.exports = {
   methodology: `TVL is retrieved on-chain by querying the total assets managed by the Core module, and the balances of the vaultManagers of the Borrowing module.`,
 };
 
-["ethereum", "polygon", "optimism", "arbitrum", "avax"].forEach((chain) => {
+["ethereum", "polygon", "optimism", "arbitrum", "avax", "celo", "bsc", "xdai"].forEach((chain) => {
   if (!module.exports[chain]) module.exports[chain] = {};
   module.exports[chain].tvl = tvl
 });
