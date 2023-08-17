@@ -4,6 +4,6 @@ module.exports = {
   timetravel: false,
   methodology: "Liquidity on the DEX",
   sei: {
-    tvl: getSeiDexTvl(64),
+    tvl: getSeiDexTvl(86),
   },
-};
+}
