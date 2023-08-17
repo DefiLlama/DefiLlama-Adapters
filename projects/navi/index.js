@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sui = require("../helper/chain/sui")
 
 const reserves = [
@@ -6,7 +7,7 @@ const reserves = [
 ]
 
 const decimalShift = {
-  '0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN': -3, // USDC
+  [ADDRESSES.sui.USDC]: -3, // USDC
 }
 
 

@@ -23,6 +23,11 @@ async function getLogs({ target,
     iface = new ethers.utils.Interface([eventAbi])
     if (typeof eventAbi === 'object')
       sdk.log(iface.format(ethers.utils.FormatTypes.full))
+    if (!topics?.length) {
+      const fragment = iface.fragments[0]
+      topics = undefined
+      topic = `${fragment.name}(${fragment.inputs.map(i => i.type).join(',')})`
+    }
   }
 
   target = target.toLowerCase()
