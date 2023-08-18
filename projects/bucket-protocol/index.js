@@ -51,9 +51,9 @@ async function tvl(_, _1, _2, { api }) {
     api.add(coin, bucket.fields.collateral_vault);
   }
 
-  for (const tank of tankList) {
+  /* for (const tank of tankList) {
     api.add(BUCK, tank.fields.reserve);
-  }
+  } */
 
   for (const [
     index,
@@ -71,7 +71,8 @@ async function tvl(_, _1, _2, { api }) {
         (v * aflStakedList[index]) / lp_supply.fields.value / decimal_scalars[i]
       );
 
-      api.add("0x" + tokens[i], value);
+      const token = "0x" + tokens[i]
+      if (token !== BUCK)  api.add(token, value);
     });
   }
 
@@ -93,8 +94,9 @@ async function tvl(_, _1, _2, { api }) {
       (token_y * kriyaStakedList[index]) / lsp_supply.fields.value
     );
 
-    api.add(x, xVal);
-    api.add(y, yVal);
+    console.log(x, y)
+    if (x !== BUCK) api.add(x, xVal);
+    if (y !== BUCK) api.add(y, yVal);
   }
 }
 
