@@ -49,6 +49,7 @@ async function setCache(project, chain, cache, {
 const configCache = {}
 
 async function _setCache(project, chain, json) {
+  if (!json || json?.error?.message) return;
   const strData = typeof json === 'string' ? json : JSON.stringify(json)
   let isValidData = strData.length > 42
   if (isValidData) // sometimes we get bad data/empty object, we dont overwrite cache with it
@@ -111,6 +112,7 @@ async function cachedGraphQuery(project, endpoint, query, { variables, fetchById
         json = await graphql.request(endpoint, query, { variables })
       else 
         json = await graphFetchById({ endpoint, query, })
+      if (!json) throw new error('Empty JSON')
       await _setCache(key, project, json)
       return json
     } catch (e) {
