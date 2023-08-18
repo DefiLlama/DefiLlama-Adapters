@@ -19,26 +19,26 @@ module.exports = {
 };
 
 const config = {
-  // arbitrum: {
-  //   factory,
-  //   fromBlock: 64404349,
-  //   hasStaking: true,
-  // },
+  arbitrum: {
+    factory,
+    fromBlock: 64404349,
+    hasStaking: true,
+  },
   linea: {
     factory,
     fromBlock: 98996,
     hasStaking: false,
   },
-  // polygon: {
-  //   factory,
-  //   fromBlock: 44421440,
-  //   hasStaking: false,
-  // },
-  // optimism: {
-  //   factory,
-  //   fromBlock: 94046133,
-  //   hasStaking: false,
-  // },
+  polygon: {
+    factory,
+    fromBlock: 44421440,
+    hasStaking: false,
+  },
+  optimism: {
+    factory,
+    fromBlock: 94046133,
+    hasStaking: false,
+  },
   base: {
     factory,
     fromBlock: 2047839,
