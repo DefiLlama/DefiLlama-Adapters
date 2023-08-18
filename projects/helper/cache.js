@@ -112,6 +112,7 @@ async function cachedGraphQuery(project, endpoint, query, { variables, fetchById
         json = await graphql.request(endpoint, query, { variables })
       else 
         json = await graphFetchById({ endpoint, query, })
+      if (!json) throw new error('Empty JSON')
       await _setCache(key, project, json)
       return json
     } catch (e) {
