@@ -8,7 +8,7 @@ const weth = ADDRESSES.base.WETH
 
 module.exports = {
   misrepresentedTokens: true,
-  arbitrum: {
+  base: {
     tvl: sdk.util.sumChainTvls([uniTvl, staking({
       owners: [masterchef],
       tokens: [weth],
