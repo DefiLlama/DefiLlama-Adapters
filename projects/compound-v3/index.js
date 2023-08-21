@@ -10,7 +10,7 @@ const baseMarkets = [
 
 module.exports = compoundV3Exports({
   ethereum: {
-    ethereumMarkets,
+    markets: ethereumMarkets,
   },
   arbitrum: {
     markets: ['0xA5EDBDD9646f8dFF606d7448e414884C7d905dCA'],
@@ -19,6 +19,6 @@ module.exports = compoundV3Exports({
     markets: ['0xF25212E676D1F7F89Cd72fFEe66158f541246445'],
   },
   base: {
-    baseMarkets,
+    markets: baseMarkets,
   }
 })
