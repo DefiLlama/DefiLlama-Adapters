@@ -1,6 +1,7 @@
 const { sumTokensExport, nullAddress } = require("../helper/unwrapLPs");
 
 const ADMIN_ADDRESSES = {
+  ethereum: "0x233dc79F924c35AcB4524BaC4A883c8CE11A75B2",
   base: "0x233dc79F924c35AcB4524BaC4A883c8CE11A75B2",
   optimism: "0x233dc79F924c35AcB4524BaC4A883c8CE11A75B2",
   linea: "0x233dc79F924c35AcB4524BaC4A883c8CE11A75B2",
