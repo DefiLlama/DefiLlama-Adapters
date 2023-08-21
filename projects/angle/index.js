@@ -100,7 +100,7 @@ async function tvl(timestamp, _1, _2, { api }) {
   }
 
   // Borrowing module
-  tokensAndOwners.push(...(await getVaultManagersFromAPI(chain)));
+  tokensAndOwners.push(...(await getVaultManagersFromAPI(api)));
 
   // Treasury - Governor
   const governorTokens = TreasuryTokenAddresses['governor'][chain]
