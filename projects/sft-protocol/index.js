@@ -7,6 +7,9 @@ const tokens = [
     ADDRESSES.null, // FIL
 ]
 
+const LENDING_POOL_ADDRESS = "0x147122D1EBdA76E4910ccdC53aEb6a58605Eb58E";
+const TOTAL_SUPPLY_ABI = `function totalSupply() public view returns (uint256)`;
+
 const getActiveMinersFromRPC = async () => {
     const resp = await getConfig('sft-protocol', 'https://ww8.sftproject.io/api/c/api/v1/public/dashboard/info')
     let nodes = []
@@ -40,7 +43,9 @@ module.exports = {
     filecoin: {
         tvl: async (_, _1, _2, { api }) => {
 
-            let balances = {};
+            const lendingPoolTvl = await api.call({ target: LENDING_POOL_ADDRESS, abi: TOTAL_SUPPLY_ABI, params: [] });
+            api.add(ADDRESSES.null, lendingPoolTvl);
+            let balances = await sumTokens2({ owner: LENDING_POOL_ADDRESS, tokens, api});
 
             let minerAddrs = await getActiveMinersFromRPC();
             await sumTokens2({ balances, owners: minerAddrs, tokens, api, });
