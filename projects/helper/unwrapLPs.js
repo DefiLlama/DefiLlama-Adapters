@@ -376,6 +376,7 @@ async function sumBalancerLps(balances, tokensAndOwners, block, chain, transform
 }
 
 async function getTrxBalance(account) {
+  if (account === '0x2c7c9963111905d29eb8da37d28b0f53a7bb5c28') account = 'TE2RzoSV3wFK99w6J9UnnZ4vLfXYoxvRwP'
   const data = await get('https://apilist.tronscan.org/api/account?address=' + account)
   return data.balance + (data.totalFrozen || 0)
 }

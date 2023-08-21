@@ -1,10 +1,9 @@
 const { getUniTVL } = require("../helper/unknownTokens");
 
 module.exports = {
-  misrepresentedTokens: true,
   op_bnb: {
     tvl: getUniTVL({
-      factory: "0x4523A7f5414bAc9BfbDfc6eF0932Bf580C3cf9f1",
+      factory: "0x0f93649C2BA0F64fA939eCe899f1afD0b15C7Bd2",
       useDefaultCoreAssets: true,
       fetchBalances: true,
     }),
