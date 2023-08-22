@@ -52,8 +52,8 @@ async function graphQuery(endpoint, graphQuery, params = {}, { timestamp, chain,
   return request(endpoint, graphQuery, params)
 }
 
-async function covalentGetTokens(address, chain = 'ethereum') {
-  let chainId = chainIds[chain]
+async function covalentGetTokens(address, chain = 'ethereum', chainId) {
+  chainId = chainId ?? chainIds[chain]
   if (!chainId) throw new Error('Missing chain to chain id mapping:' + chain)
   if (!address) throw new Error('Missing adddress')
 
