@@ -1,11 +1,13 @@
-const { getUniTVL } = require('../helper/unknownTokens')
+const { getUniTVL } = require("../helper/unknownTokens");
+
+const chain = "coredao";
 
 module.exports = {
   misrepresentedTokens: true,
-  core: {
+  dogechain: {
     tvl: getUniTVL({
+      factory: "0x23556027Ad3C3e76160AcA51e8098C395a6d815C",
       useDefaultCoreAssets: true,
-      factory: '0x23556027Ad3C3e76160AcA51e8098C395a6d815C',
-    })
-  }
-}
+    }),
+  },
+};
