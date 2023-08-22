@@ -1,12 +1,11 @@
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
-const { transformBscAddress } = require("../helper/portedTokens");
 const CM_TOKEN_CONTRACT = "0x8A5d7FCD4c90421d21d30fCC4435948aC3618B2f";
 const CM_STAKING_CONTRACT = "0xF7CDDF60CD076d4d64c613489aA00dCCf1E518F6";
 
 async function staking(timestamp, block, chainBlocks) {
   const balances = {};
-  const transform = await transformBscAddress();
+  const transform = i => `bsc:${i}`;
 
   const stakingBalance = (
     await sdk.api.abi.call({
