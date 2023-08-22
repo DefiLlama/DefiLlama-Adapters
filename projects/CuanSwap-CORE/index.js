@@ -1,6 +1,6 @@
 const { getUniTVL } = require("../helper/unknownTokens");
 
-const chain = "coredao";
+const chain = "core";
 
 module.exports = {
   misrepresentedTokens: true,
