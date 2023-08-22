@@ -12,19 +12,19 @@
 7. No need to go to our discord and announce that you've created a PR, we monitor all PRs and will review it asap
 
 ---
-##### Name (to be shown on DefiLlama):
+##### Name (to be shown on DefiLlama): CuanSwap
 
 
-##### Twitter Link:
+##### Twitter Link: https://https://twitter.com/cuanswap
 
 
 ##### List of audit links if any:
 
 
-##### Website Link:
+##### Website Link: https://app.cuanswap.com
 
 
-##### Logo (High resolution, will be shown with rounded borders):
+##### Logo (High resolution, will be shown with rounded borders): https://avatars.githubusercontent.com/u/126179832?s=400&u=8cd38839f7191aa7703bdc14acc2c1a6e526e821&v=4
 
 
 ##### Current TVL:
@@ -33,7 +33,7 @@
 ##### Treasury Addresses (if the protocol has treasury)
 
 
-##### Chain:
+##### Chain: Core DAO
 
 
 ##### Coingecko ID (so your TVL can appear on Coingecko, leave empty if not listed): (https://api.coingecko.com/api/v3/coins/list)
@@ -42,22 +42,22 @@
 ##### Coinmarketcap ID (so your TVL can appear on Coinmarketcap, leave empty if not listed): (https://api.coinmarketcap.com/data-api/v3/map/all?listing_status=active,inactive,untracked&start=1&limit=10000)
 
 
-##### Short Description (to be shown on DefiLlama):
+##### Short Description (to be shown on DefiLlama): Trade CUAN token, and listed/swap any Core DAO tokens
 
 
 ##### Token address and ticker if any:
 
 
-##### Category (full list at https://defillama.com/categories) *Please choose only one:
+##### Category (full list at https://defillama.com/categories) *Please choose only one: Dexes
 
 
-##### Oracle used (Chainlink/Band/API3/TWAP or any other that you are using):
+##### Oracle used (Chainlink/Band/API3/TWAP or any other that you are using): https://coredao.org
 
 
-##### forkedFrom (Does your project originate from another project):
+##### forkedFrom (Does your project originate from another project): Pancakeswap V2
 
 
 ##### methodology (what is being counted as tvl, how is tvl being calculated):
 
 
-##### Github org/user (Optional, if your code is open source, we can track activity):
+##### Github org/user (Optional, if your code is open source, we can track activity): https://github.com/cuanswap
