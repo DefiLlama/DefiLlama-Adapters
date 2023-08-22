@@ -1,6 +1,5 @@
-const { getChainTvl } = require('../../helper/getUniSubgraphTvl');
 const sdk = require('@defillama/sdk')
-const {transformOptimismAddress, transformArbitrumAddress} = require('../../helper/portedTokens')
+const {transformOptimismAddress,} = require('../../helper/portedTokens')
 const oldOptPools = require('./oldUniPools.json')
 
 const graphUrls = {
@@ -93,7 +92,7 @@ function chainTvl(chain) {
     if(chain === "optimism"){
       transform = await transformOptimismAddress()
     } else if(chain === "arbitrum"){
-      transform = await transformArbitrumAddress()
+      transform = i => `arbitrum:${i}`
     }
 
     let balances = {};
