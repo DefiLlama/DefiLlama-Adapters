@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs");
 
 const PWN_ALPHA_MAINNET = "0x45DB28b2d4878Ad124c037d4558AcF5Db3bBa6A5";
@@ -42,12 +43,12 @@ module.exports = {
   },
   cronos: {
     tvl: sumTokensExport({
-      owners: [PWN_BUNDLER_CRONOS, PWN_V1_1_SIMPLE_LOAN_B],
+      owners: [PWN_BUNDLER_CRONOS, PWN_V1_1_SIMPLE_LOAN_B], fetchCoValentTokens: true,
     }),
   },
   base: {
     tvl: sumTokensExport({
-      owners: [PWN_BUNDLER_BASE, PWN_V1_1_SIMPLE_LOAN_B],
+      owners: [PWN_BUNDLER_BASE, PWN_V1_1_SIMPLE_LOAN_B], fetchCoValentTokens: true,
     }),
   },
 };
