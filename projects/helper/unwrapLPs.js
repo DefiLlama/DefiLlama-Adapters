@@ -695,7 +695,7 @@ async function sumTokens2({
   if (fetchCoValentTokens) {
     if (!api) throw new Error('Missing arg: api')
     if (!owners || !owners.length) owners = [owner]
-    const cTokens = (await Promise.all(owners.map(i => covalentGetTokens(i, api.chain)))).flat()
+    const cTokens = (await Promise.all(owners.map(i => covalentGetTokens(i, api.chain, api.chainId)))).flat()
     tokens = [...cTokens, ...tokens]
   }
 
