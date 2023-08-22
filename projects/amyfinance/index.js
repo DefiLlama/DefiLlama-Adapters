@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensAndLPsSharedOwners } = require('../helper/unwrapLPs');
-const { transformArbitrumAddress } = require('../helper/portedTokens');
 
 const tokens = [
     [ADDRESSES.arbitrum.USDC, false], //USDC
@@ -27,7 +26,7 @@ const aibContracts = [
 
 async function tvl(timestamp, ethBlock, {arbitrum: block}) {
     let balances = {};
-    const transformAdress = await transformArbitrumAddress();
+    const transformAdress = i => `arbitrum:${i}`
 
     await sumTokensAndLPsSharedOwners(balances, tokens, aibContracts, 
         block, "arbitrum", transformAdress);
