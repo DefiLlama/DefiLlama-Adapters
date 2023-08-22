@@ -30,10 +30,6 @@ async function transformOptimismAddress() {
   return transformChainAddress(transformTokens.optimism, "optimism")
 }
 
-async function transformArbitrumAddress() {
-  return transformChainAddress(transformTokens.arbitrum, "arbitrum")
-}
-
 async function transformInjectiveAddress() {
   return addr => {
     if (addr.includes('ibc/')) return addr.replace(/.*ibc\//, 'ibc/').replace(/\//g, ':')
@@ -266,7 +262,6 @@ module.exports = {
   transformBscAddress,
   transformPolygonAddress,
   transformOptimismAddress,
-  transformArbitrumAddress,
   transformCeloAddress,
   stripTokenHeader,
   getFixBalancesSync,
