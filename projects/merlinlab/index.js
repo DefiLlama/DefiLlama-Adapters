@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { transformBscAddress } = require("../helper/portedTokens");
 
 const stakingABI = require("./staking.json");
 const vaultABI = require("./vault.json");
@@ -75,7 +74,7 @@ const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
     balance: amount,
   }));
 
-  const transformAdress = await transformBscAddress();
+  const transformAdress = i => `bsc:${i}`;
 
   await unwrapUniswapLPs(
     balances,
