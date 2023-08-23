@@ -24,7 +24,7 @@ function v3TvlPaged(chain) {
 
     let graphQueryPaged = `
     query poolQuery($lastId: String, $block: Int) {
-      pools(block: { number: $block } first:1000 where: {id_gt: $lastId totalValueLockedUSD_gt: 100}) {
+      pools(block: { number: $block } first:1000 where: {id_gt: $lastId totalValueLockedUSD_gt: 100}   subgraphError: allow) {
         id
         token0 { id }
         token1 { id }
