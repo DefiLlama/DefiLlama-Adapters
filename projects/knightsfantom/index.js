@@ -1,5 +1,4 @@
 const abi = require("../helper/abis/masterchef.json")
-const { transformFantomAddress } = require("../helper/portedTokens");
 const { addFundsInMasterChef } = require("../helper/masterchef");
 const { staking } = require("../helper/staking");
 const { pool2Exports } = require('../helper/pool2')
@@ -11,7 +10,7 @@ const knightsFtmLP = "0x26ac59ee36965db597167c4a1b1b4367285aa4e3";
 
 async function tvl(timestamp, block, chainBlocks) {
   const balances = {}
-  const transformAddress = await transformFantomAddress();
+  const transformAddress = i => `fantom:${i}`;
   await addFundsInMasterChef(balances, chef, chainBlocks.fantom, "fantom", transformAddress, abi.poolInfo, [knights, knightsFtmLP]);
   return balances;
 }

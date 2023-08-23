@@ -1,7 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { chainExports } = require("../helper/exports");
 const { sumTokens } = require("../helper/unwrapLPs");
-const { getFixBalances } = require('../helper/portedTokens')
 const ethers = require("ethers")
 const { config } = require('@defillama/sdk/build/api');
 
@@ -528,8 +527,6 @@ function chainTvl(chain) {
           .forEach(owner => toa.push([token[chain], owner]))
     })
     const balances = await sumTokens({}, toa, block, chain)
-    const fixBalances = await getFixBalances(chain)
-    fixBalances(balances)
     return balances
   };
 }

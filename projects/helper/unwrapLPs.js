@@ -376,6 +376,7 @@ async function sumBalancerLps(balances, tokensAndOwners, block, chain, transform
 }
 
 async function getTrxBalance(account) {
+  if (account === '0x2c7c9963111905d29eb8da37d28b0f53a7bb5c28') account = 'TE2RzoSV3wFK99w6J9UnnZ4vLfXYoxvRwP'
   const data = await get('https://apilist.tronscan.org/api/account?address=' + account)
   return data.balance + (data.totalFrozen || 0)
 }
@@ -694,9 +695,8 @@ async function sumTokens2({
   if (fetchCoValentTokens) {
     if (!api) throw new Error('Missing arg: api')
     if (!owners || !owners.length) owners = [owner]
-    const cTokens = (await Promise.all(owners.map(i => covalentGetTokens(i, api.chain)))).flat()
+    const cTokens = (await Promise.all(owners.map(i => covalentGetTokens(i, api.chain, api.chainId)))).flat()
     tokens = [...cTokens, ...tokens]
-    console.log('cTokens', cTokens.length)
   }
 
   if (resolveNFTs) {
@@ -733,7 +733,7 @@ async function sumTokens2({
   log(chain, 'summing tokens', tokensAndOwners.length)
 
   if (chain === 'tron') {
-    const tokensAndOwnersChunks = sliceIntoChunks(tokensAndOwners, 3)
+    const tokensAndOwnersChunks = sliceIntoChunks(tokensAndOwners, 1)
     for (const toa of tokensAndOwnersChunks) {
       await sumTokens(balances, toa, block, chain, transformAddress, { resolveLP, unwrapAll, blacklistedLPs, skipFixBalances: true, abis, permitFailure, })
     }

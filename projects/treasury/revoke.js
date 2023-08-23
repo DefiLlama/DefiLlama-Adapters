@@ -40,7 +40,7 @@ module.exports = treasuryExports({
   bsc: {
     tokens: [ 
         nullAddress,
-        "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", //busd
+        ADDRESSES.bsc.BUSD, //busd
         "0xF68C9Df95a18B2A5a5fa1124d79EEEffBaD0B6Fa", //any
      ],
     owners: [treasury],
@@ -48,9 +48,9 @@ module.exports = treasuryExports({
   polygon: {
     tokens: [ 
         nullAddress,
-        "0xc2132D05D31c914a87C6611C10748AEb04B58e8F", //usdt
-        "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063", //dai
-        "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174", //usdc
+        ADDRESSES.polygon.USDT, //usdt
+        ADDRESSES.polygon.DAI, //dai
+        ADDRESSES.polygon.USDC, //usdc
         "0x8dF3aad3a84da6b69A4DA8aeC3eA40d9091B2Ac4", //ammatic
      ],
     owners: [treasury],
@@ -58,9 +58,9 @@ module.exports = treasuryExports({
   arbitrum: {
     tokens: [ 
         nullAddress,
-        "0x912CE59144191C1204E64559FE8253a0e49E6548", //arb
+        ADDRESSES.arbitrum.ARB, //arb
         "0x539bdE0d7Dbd336b79148AA742883198BBF60342", //magic
-        "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8", //usdc
+        ADDRESSES.arbitrum.USDC, //usdc
         "0x1F52145666C862eD3E2f1Da213d479E61b2892af", //fuc
      ],
     owners: [treasury],
@@ -68,7 +68,7 @@ module.exports = treasuryExports({
   arbitrum_nova: {
     tokens: [ 
         nullAddress,
-        "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1", //dai
+        ADDRESSES.optimism.DAI, //dai
      ],
     owners: [treasury],
   },
