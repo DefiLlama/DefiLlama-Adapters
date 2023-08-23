@@ -9,11 +9,9 @@ const assets = [
 ];
 const PY_SWAP = '0x2928CBA5b5e5B48113281263FC037c7a5d8E1EDf'
 
-const owners = [native_staking_contract, pys_staking_contract]
-
 module.exports = {
   op_bnb: {
-    tvl: sumTokensExport({ owners, tokens: assets }),
-    staking: sumTokensExport({ owners, tokens: [PY_SWAP] }),
+    tvl: sumTokensExport({ owner: native_staking_contract, tokens: assets }),
+    staking: sumTokensExport({ owner: pys_staking_contract, tokens: [PY_SWAP] }),
   },
 };
