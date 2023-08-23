@@ -8,33 +8,8 @@ const LOCKER = "0x4e4c89937f85bd101c7fcb273435ed89b49ad0b0"
 const dexTVL = getUniTVL({ factory: FACTORY, useDefaultCoreAssets: true, fetchBalances: true, permitFailure: true })
 
 async function getLocked(a, b, c, { api }) {
-    const lockers = await api.call({
-        target: LOCKER,
-        abi: abi["depositsCount"],
-        params: []
-    })
-
-    const calls = [];
-
-    for (let i = 1; i <= lockers; i++) {
-        calls.push({
-            target: LOCKER,
-            function: abi["lockedToken"],
-            params: [i]
-        });
-    }
-
-    const locks = await api.multiCall({ abi: abi["lockedToken"], calls: calls })
-
-    const balances = {};
-    locks.forEach(lock => {
-        const key = `base:${lock.token}`;
-        const value = lock.amount;
-        if (!lock.withdrawn) {
-            balances[key] = value;
-        }
-    });
-    return balances;
+    const locks = await api.fetchList({ lengthAbi: abi.depositsCount, itemAbi: abi.lockedToken, target: LOCKER })
+    locks.filter(i => !i.withdrawn).forEach(lock => api.add(lock.token, lock.amount))
 }
 
 module.exports = {
