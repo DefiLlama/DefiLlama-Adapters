@@ -2,7 +2,7 @@ const { cexExports } = require('../helper/cex')
 
 const config = {
   bitcoin: {
-    owners: [
+    owners: [ //source https://www.fbi.gov/news/press-releases/fbi-identifies-cryptocurrency-funds-stolen-by-dprk
         "3LU8wRu4ZnXP4UM8Yo6kkTiGHM9BubgyiG", 
         "39idqitN9tYNmq3wYanwg3MitFB5TZCjWu",
         "3AAUBbKJorvNhEUFhKnep9YTwmZECxE4Nk", 
