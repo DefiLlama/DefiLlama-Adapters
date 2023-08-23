@@ -40,6 +40,8 @@ async function tvl() {
     }
   }
 
+  return api.getBalances()
+
   function add(token, bal) {
     _api.add(token, bal, { skipChain: true })
   }
