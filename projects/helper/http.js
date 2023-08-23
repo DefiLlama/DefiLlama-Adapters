@@ -2,7 +2,7 @@ const axios = require("axios")
 const { request, GraphQLClient, } = require("graphql-request")
 const sdk = require('@defillama/sdk')
 const { getEnv } = require('./env')
-const { getCache: cGetCache, setCache } = require('./cache')
+const { getCache: cGetCache, setCache, graphFetchById, } = require('./cache')
 
 const chainIds = {
   'ethereum': 1,
@@ -52,8 +52,8 @@ async function graphQuery(endpoint, graphQuery, params = {}, { timestamp, chain,
   return request(endpoint, graphQuery, params)
 }
 
-async function covalentGetTokens(address, chain = 'ethereum') {
-  let chainId = chainIds[chain]
+async function covalentGetTokens(address, chain = 'ethereum', chainId) {
+  chainId = chainId ?? chainIds[chain]
   if (!chainId) throw new Error('Missing chain to chain id mapping:' + chain)
   if (!address) throw new Error('Missing adddress')
 
@@ -102,23 +102,6 @@ async function blockQuery(endpoint, query, { api, blockCatchupLimit = 500, }) {
       throw e
     return graphQLClient.request(query, { block: indexedBlockNumber })
   }
-}
-
-async function graphFetchById({  endpoint, query, params = {}, api, options: { useBlock = false, safeBlockLimit = 100 } = {} }) {
-  if (useBlock && !params.block)
-    params.block = await api.getBlock() - safeBlockLimit
-
-  let data = []
-  let lastId = ""
-  let response;
-  do {
-    const res = await request(endpoint, query, { ...params, lastId })
-    Object.keys(res).forEach(key => response = res[key])
-    data.push(...response)
-    lastId = response[response.length - 1]?.id
-    sdk.log(data.length, response.length)
-  } while (lastId)
-  return data
 }
 
 module.exports = {

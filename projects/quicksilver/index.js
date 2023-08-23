@@ -4,6 +4,7 @@ const { get } = require("../helper/http");
 const coinGeckoIds = {
   uatom: "cosmos",
   uosmo: "osmosis",
+  usomm: "sommelier",
   uregen: "regen",
   ujuno: "juno-network",
   ustars: "stargaze"
@@ -13,10 +14,10 @@ async function tvl() {
   const balances = {};
 
   const { zones } = await get(
-    "https://rest.cosmos.directory/quicksilver/quicksilver/interchainstaking/v1/zones"
+    "https://api-quicksilver.takeshi.team/quicksilver/interchainstaking/v1/zones"
   );
   const { supply } = await get(
-    "https://rest.cosmos.directory/quicksilver/cosmos/bank/v1beta1/supply"
+    "https://api-quicksilver.takeshi.team/cosmos/bank/v1beta1/supply"
   );
 
   zones.map((zone) => {

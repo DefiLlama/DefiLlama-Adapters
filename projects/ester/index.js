@@ -3,7 +3,6 @@ const abi = require("./abi.json");
 const { staking } = require("../helper/staking");
 const { pool2 } = require("../helper/pool2");
 const { addFundsInMasterChef } = require("../helper/masterchef");
-const { transformFantomAddress } = require("../helper/portedTokens");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 
 const esterStakingChefContract = "0x78e9D247541ff7c365b50D2eE0defdd622016498";
@@ -15,7 +14,7 @@ const esterVaultFarmContract = "0xA6151b608f49Feb960e951F1C87F4C766850de31";
 const ftmTvl = async (chainBlocks) => {
     const balances = {};
 
-    let transformAddress = await transformFantomAddress();
+    let transformAddress = i => `fantom:${i}`;
 
     await addFundsInMasterChef(
         balances,

@@ -44,7 +44,7 @@ const wooPPConfig = {
 		ADDRESSES.arbitrum.USDT,
 	],
 	optimism: [
-		ADDRESSES.tombchain.FTM, // WETH
+		ADDRESSES.optimism.WETH_1, // WETH
 		'0x68f180fcCe6836688e9084f035309E29Bf0A2095', // WBTC
 		ADDRESSES.optimism.OP, // OP
 		ADDRESSES.optimism.USDC, // USDC
@@ -59,6 +59,14 @@ const wooPPConfig = {
 	polygon_zkevm: [
 		ADDRESSES.polygon_zkevm.WETH,
 		ADDRESSES.polygon_zkevm.USDC,
+	],
+	linea: [
+		ADDRESSES.linea.WETH,
+		ADDRESSES.linea.USDC,
+	],
+	base: [
+		ADDRESSES.base.WETH,
+		ADDRESSES.base.USDbC,
 	],
 }
 
@@ -113,6 +121,18 @@ const chainConfig = {
 	},
 	polygon_zkevm: {
 		wooPPContract: '0xF5d215d9C84778F85746D15762DaF39B9E83a2d6',
+		woo: null,
+		stakingContract: null,
+		stakingContractV2: null,
+	},
+	linea: {
+		wooPPContract: '0xF5d215d9C84778F85746D15762DaF39B9E83a2d6',
+		woo: null,
+		stakingContract: null,
+		stakingContractV2: null,
+	},
+	base: {
+		wooPPContract: '0xb130a49065178465931d4f887056328CeA5D723f',
 		woo: null,
 		stakingContract: null,
 		stakingContractV2: null,
