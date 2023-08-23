@@ -10,6 +10,7 @@ const dexTVL = getUniTVL({ factory: FACTORY, useDefaultCoreAssets: true, fetchBa
 async function getLocked(a, b, c, { api }) {
     const locks = await api.fetchList({ lengthAbi: abi.depositsCount, itemAbi: abi.lockedToken, target: LOCKER })
     locks.filter(i => !i.withdrawn).forEach(lock => api.add(lock.token, lock.amount))
+    return api.getBalances()
 }
 
 module.exports = {
