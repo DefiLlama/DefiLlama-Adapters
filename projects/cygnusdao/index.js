@@ -4,7 +4,7 @@ const shuttleIds = [2, 3, 4];
 const FACTORY_CONTRACT = "0x94faE55669327e71E9EC579067ad6C3C3b84e574";
 const POLYGON_USDC_ADDRESS = "0x2791bca1f2de4661ed88a30c99a7a9449aa84174";
 
-function cygnalytics(category) {
+function cygnalytics(category) { // futuristic parameter
   return async (timestamp, block) => {
     let balances = {};
 
