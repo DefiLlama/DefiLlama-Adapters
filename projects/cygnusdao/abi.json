@@ -1,3 +1,5 @@
 {
-  "shuttleTvlUsd": "function shuttleTvlUsd(uint256) public view returns (uint256 totalUsd)"
+  "shuttleTvlUsd": "function shuttleTvlUsd(uint256) public view returns (uint256 totalUsd)",
+  "borrowableTvlUsd": "function borrowableTvlUsd(uint256) public view returns (uint256 totalUsd)",
+  "collateralTvlUsd": "function collateralTvlUsd(uint256) public view returns (uint256 totalUsd)"
 }

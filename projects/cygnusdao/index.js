@@ -2,33 +2,26 @@ const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const shuttleIds = [2, 3, 4];
 const FACTORY_CONTRACT = "0x94faE55669327e71E9EC579067ad6C3C3b84e574";
+const POLYGON_USDC_ADDRESS = "0x2791bca1f2de4661ed88a30c99a7a9449aa84174";
 
-async function tvl(_, _1, _2, { api }) {
-  let balances = {};
+function cygnalytics(category) {
+  return async (timestamp, block) => {
+    let balances = {};
 
-  for (let shuttleId of shuttleIds) {
-    let shuttleTvlUsd = (
-      await sdk.api.abi.multiCall({
-        abi: abi.shuttleTvlUsd,
-        calls: [
-          {
-            target: FACTORY_CONTRACT,
-            params: shuttleId,
-          },
-        ],
-        chain: "polygon",
-      })
-    ).output[0].output;
+    const shuttleTvlUsds = await sdk.api.abi.multiCall({
+      abi: abi.shuttleTvlUsd,
+      calls: shuttleIds.map((shuttleId, i) => ({
+        target: FACTORY_CONTRACT,
+        params: shuttleId,
+      })),
+      chain: "polygon",
+    });
 
-    sdk.util.sumSingleBalance(
-      balances,
-      "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
-      shuttleTvlUsd,
-      "polygon"
-    );
-  }
+    const transform = (address) => `polygon:${POLYGON_USDC_ADDRESS}`;
+    sdk.util.sumMultiBalanceOf(balances, shuttleTvlUsds, true, transform);
 
-  return balances;
+    return balances;
+  };
 }
 
 module.exports = {
@@ -36,6 +29,6 @@ module.exports = {
   misrepresentedTokens: false,
   methodology: "TVL of all shuttles (borrowable + collateral).",
   polygon: {
-    tvl,
+    tvl: cygnalytics(0),
   },
 };
