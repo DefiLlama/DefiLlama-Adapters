@@ -33,7 +33,7 @@ const endPoints = {
   gravitybridge: "https://gravitychain.io:1317",
   sei: "https://sei-api.polkachu.com",
   aura: "https://lcd.aura.network",
-  archway: "https://api.mainnet.archway.io",
+  archway: "https://api.mainnet.archway.io"
 };
 
 const chainSubpaths = {
