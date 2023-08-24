@@ -6,6 +6,7 @@ const config = {
   bsc: '0xA8EF6FEa013034E62E2C4A9Ec1CDb059fE23Af33',
   polygon: '0x9A1e1681f6D59Ca051776410465AfAda6384398f',
   arbitrum: '0x41A00e3FbE7F479A99bA6822704d9c5dEB611F22',
+  base: '0xdd4536dD9636564D891c919416880a3e250f975A',
 }
 
 Object.keys(config).forEach(chain => {
