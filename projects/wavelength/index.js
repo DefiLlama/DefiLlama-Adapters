@@ -14,9 +14,8 @@ async function fetch() {
 }
 
 module.exports = {
-  misrepresentedTokens: true,
   velas:{
-    // tvl: onChainTvl('0xa4a48dfcae6490afe9c779bf0f324b48683e488c', 56062385)
-    tvl: fetch,
+    tvl: onChainTvl('0xa4a48dfcae6490afe9c779bf0f324b48683e488c', 56062385, { onlyUseExistingCache: true, })
+    // tvl: fetch,
   },
 }
