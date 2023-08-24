@@ -1,4 +1,5 @@
 const sdk = require("@defillama/sdk");
+const abi = require("./abi.json");
 const shuttleIds = [2, 3, 4];
 const FACTORY_CONTRACT = "0x94faE55669327e71E9EC579067ad6C3C3b84e574";
 
@@ -8,7 +9,7 @@ async function tvl(_, _1, _2, { api }) {
   for (let shuttleId of shuttleIds) {
     let shuttleTvlUsd = (
       await sdk.api.abi.multiCall({
-        abi: "function shuttleTvlUsd(uint256 shuttleId) public view override returns (uint256 totalUsd)",
+        abi: abi.shuttleTvlUsd,
         calls: [
           {
             target: FACTORY_CONTRACT,
@@ -19,7 +20,12 @@ async function tvl(_, _1, _2, { api }) {
       })
     ).output[0].output;
 
-    sdk.util.sumSingleBalance(balances, "polygon", shuttleTvlUsd);
+    sdk.util.sumSingleBalance(
+      balances,
+      "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+      shuttleTvlUsd,
+      "polygon"
+    );
   }
 
   return balances;

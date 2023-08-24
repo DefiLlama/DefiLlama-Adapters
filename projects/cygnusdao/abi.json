@@ -1,0 +1,3 @@
+{
+  "shuttleTvlUsd": "function shuttleTvlUsd(uint256) public view returns (uint256 totalUsd)"
+}
