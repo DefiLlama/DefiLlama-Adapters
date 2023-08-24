@@ -19,7 +19,10 @@ Object.keys(chains).forEach(chain => {
       if (!_response) _response = get(endpoint)
       const response = await _response
       var tvl = 0;
-      Object.values(response[chain]).map(async item => {
+      Object.values(response[chain]).map(item => {
+        if(item.id === "convex_pETH"){
+          return
+        }
         const poolTvl = parseFloat(item.totalValueLocked ?? 0)
         tvl += poolTvl
       })

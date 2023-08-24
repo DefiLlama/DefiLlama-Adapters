@@ -62,6 +62,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'ethpow' && ['LFG_LP'].includes(symbol)) return true
   if (chain === 'aurora' && ['wLP'].includes(symbol)) return true
   if (chain === 'oasis' && ['LPT'].includes(symbol)) return true
+  if (chain === 'base' && ['RCKT-V2'].includes(symbol)) return true
   if (chain === 'wan' && ['WSLP'].includes(symbol)) return true
   if (chain === 'polygon' && ['MbtLP'].includes(symbol)) return true
   if (chain === 'ethereum' && ['SUDO-LP'].includes(symbol)) return false
@@ -250,7 +251,8 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
 
   const symbols = await api.multiCall({ abi: 'erc20:symbol', calls: tokens, permitFailure: true, })
   const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: tokens, permitFailure: true, })
-  const name = await api.multiCall({ abi: erc20.name, calls: tokens, permitFailure: true, })
+  let name = await api.multiCall({ abi: erc20.name, calls: tokens, permitFailure: true, })
+  name = name.map(i => i && i.length > 50 ? i.slice(0, 50) + '...' : i)
 
   let symbolsETH, nameETH
 

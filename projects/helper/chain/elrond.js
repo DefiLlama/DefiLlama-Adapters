@@ -55,14 +55,15 @@ async function getTokens({ address, balances = {}, tokens = [], blacklistedToken
   return balances
 }
 
-async function sumTokens({ owners = [], tokens = [], balances = {}, blacklistedTokens = [], tokensAndOwners = [], whitelistedTokens = [] }) {
+async function sumTokens({ owner, owners = [], tokens = [], balances = {}, blacklistedTokens = [], tokensAndOwners = [], whitelistedTokens = [] }) {
+  if (owner) owners.push(owner)
   if (tokensAndOwners.length) {
     await Promise.all(tokensAndOwners.map(([token, owner]) => sumTokens({ owners: [owner], tokens: [token], balances, blacklistedTokens, whitelistedTokens, })))
     return balances
   }
 
   await Promise.all(owners.map(i => getTokens({ address: i, balances, tokens, blacklistedTokens, whitelistedTokens, })))
-  if (!tokens.length || tokens.includes(nullAddress))
+  if ((!tokens.length || tokens.includes(nullAddress)) && (!whitelistedTokens.length || whitelistedTokens.includes(nullAddress)) && (!blacklistedTokens.length || !blacklistedTokens.includes(nullAddress)))
     await Promise.all(owners.map(async i => {
       const bal = await getElrondBalance(i)
       sdk.util.sumSingleBalance(balances, nullAddress, bal, chain)
@@ -70,7 +71,24 @@ async function sumTokens({ owners = [], tokens = [], balances = {}, blacklistedT
   return transformBalances(chain, balances)
 }
 
+async function getNFTs(address) {
+  const res = await get(`${getEnv('MULTIVERSX_RPC')}/accounts/${address}/nfts?size=1000`)
+  return res
+}
+
+async function getTokenData(token) {
+  const data = await get(`https://api.multiversx.com/tokens/${token}`)
+  return data
+}
+
+function sumTokensExport(...args) {
+  return () => sumTokens(...args)
+}
+
 module.exports = {
   sumTokens,
   call,
+  getNFTs,
+  getTokenData,
+  sumTokensExport,
 }

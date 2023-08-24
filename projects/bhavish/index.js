@@ -13,4 +13,11 @@ module.exports = {
       ]
     }),
   },
+  mantle: {
+    tvl: sumTokensExport({
+      tokensAndOwners: [
+        [nullAddress, '0xca0112597B795728d0aFC33dB2E3eD56D95F624d'],
+      ]
+    }),
+  }
 }
