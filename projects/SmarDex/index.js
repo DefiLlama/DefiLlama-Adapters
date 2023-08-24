@@ -21,6 +21,11 @@ const arbitrumPairsTvl = getUniTVL({
   chain: "arbitrum",
   fetchBalances: true,
 });
+const basePairsTvl = getUniTVL({
+  factory: "0xdd4536dD9636564D891c919416880a3e250f975A",
+  chain: "base",
+  fetchBalances: true,
+});
 
 module.exports = {
   ethereum: {
@@ -41,5 +46,8 @@ module.exports = {
   },
   bsc: {
     tvl: bscPairsTvl,
+  },
+  base: {
+    tvl: basePairsTvl,
   },
 };
