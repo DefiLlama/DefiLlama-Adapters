@@ -55,9 +55,4 @@ module.exports = {
       "comdex1gurgpv8savnfw66lckwzn4zk7fp394lpe667dhu7aw48u40lj6jswv4mft"
     ),
   },
-  stargaze: {
-    tvl: getFactoryTvl(
-      "stars13av7gw2mwejlkhsst8luva2q24kqql04afzpxmrrceuafehsg84q7pgtgu"
-    ),
-  },
 }; // node test.js projects/astroport/index.js
