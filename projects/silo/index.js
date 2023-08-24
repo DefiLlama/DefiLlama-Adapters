@@ -26,7 +26,7 @@ const config = {
     factories: [
       {
         START_BLOCK: 51894508,
-        SILO_FACTORY: '0x4166487056A922D784b073d4d928a516B074b719',
+        SILO_FACTORY: '0x4166487056A922D784b073d4d928a516B074b719', // Silo Arbitrum (Original)
       }
     ]
   },
