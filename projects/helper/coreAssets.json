@@ -1368,5 +1368,8 @@
   },
   "archway": {
     "ARCH": "aarch"
+  },
+  "migaloo": {
+    "WHALE": "uwhale"
   }
 }
