@@ -1,8 +1,4 @@
 const sdk = require('@defillama/sdk');
-const {
-  transformBscAddress,
-  transformPolygonAddress,
-} = require('../helper/portedTokens');
 const { covalentGetTokens } = require('../helper/http');
 
 // Delta.theta Factory ABI (for needed calls)
@@ -19,11 +15,7 @@ const range = (n) => Array.from({ length: n }, (_, i) => i);
 function tvl(chain) {
   return async (_, __, chainBlocks) => {
     // Prepare transform function for the selected chain
-    const transform = await (
-      chain === 'bsc'
-        ? transformBscAddress()
-        : transformPolygonAddress()
-    );
+    const transform = i => `${chain}:${i}`;
 
     // Parse factory's pairs length
     const pairsLength = (await sdk.api.abi.call({

@@ -142,6 +142,7 @@ async function addInvestorAMO(api, balances) {
       Synapse: '0x0f2d719407fdbeff09d87557abb7232601fd9f29',
       'Wrapped BTC': ADDRESSES.ethereum.WBTC,
       'USD Coin': ADDRESSES.ethereum.USDC,
+      'PAX': '0x8e870d67f660d95d5be530380d0ec0bd388289e1',
       ZigZag: '0xc91a71a1ffa3d8b22ba615ba1b9c01b2bbbf55ad',
       'Governance OHM': '0x0ab87046fbb341d058f17cbc4c1133f25a20a52f',
       'Aave interest bearing USDC': '0xbcca60bb61934080951369a648fb03df4f96263c',
