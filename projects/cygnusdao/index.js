@@ -18,7 +18,7 @@ function cygnalytics(category) {
     const tokens = await api.multiCall({ abi: 'address:underlying', calls: pools })
     const bals = await api.multiCall({ abi: 'address:totalBalance', calls: pools })
     const isHypervisor = await api.multiCall({ abi: 'address:pool', calls: tokens, permitFailure: true })
-    const hypervisorPools = { pools: [], bals: []}
+    const hypervisorPools = { pools: [], bals: [] }
     isHypervisor.forEach((i, idx) => {
       if (i) {
         hypervisorPools.pools.push(tokens[idx])
