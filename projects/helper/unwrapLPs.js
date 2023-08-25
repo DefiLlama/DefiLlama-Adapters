@@ -402,7 +402,6 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
   if (ethBalanceInputs.length) {
     if (chain === "tron") {
       const ethBalances = await Promise.all(ethBalanceInputs.map(getTrxBalance))
-      console.log(ethBalances)
       ethBalances.forEach(balance => sdk.util.sumSingleBalance(balances, transformAddress(nullAddress), balance))
     } else {
       const { output: ethBalances } = await sdk.api.eth.getBalances({ targets: ethBalanceInputs, chain, block })
