@@ -21,6 +21,7 @@ const endPoints = {
   juno: "https://lcd-juno.cosmostation.io",
   cronos: "https://lcd-crypto-org.cosmostation.io",
   chihuahua: "https://rest.cosmos.directory/chihuahua",
+  stargaze: "https://api-stargaze.ezstaking.dev",
   quicksilver: "https://rest.cosmos.directory/quicksilver",
   // chihuahua: "https://api.chihuahua.wtf",
   injective: "https://lcd-injective.whispernode.com:443",
