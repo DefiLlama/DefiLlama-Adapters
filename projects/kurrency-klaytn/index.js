@@ -19,5 +19,5 @@ const abi = {
   "getCollateralIds": "uint256[]:getCollateralIds",
   "getPSMTokenInfo": "function getPSMTokenInfo(address token) view returns (tuple(uint256 mintLimit, uint256 minReserve, uint256 balance, uint256 mintAmount, uint256 collateralId, address investor) tokenInfo)",
   "getPSMTokens": "address[]:getPSMTokens",
-  "getCollateralInfo": "function getCollateralInfo(uint256 collateralId) view returns (tuple(address token, address investor, uint256 balance, uint256 maxLTV, uint256 liquidationLTV, uint256 debtCeiling, uint256 interestRate, uint256 liquidationBonusRate, uint256 lastUpdateTime, uint256 lastVaultId, tuple(uint256 originalDebt, uint256 debt, uint256 debtShare) debtInfo) collateralInfo)",
+  "getCollateralInfo": "function getCollateralInfo(uint256 collateralId) view returns (tuple(address token, address investor, bool isLeverage, uint256 balance, uint256 maxLTV, uint256 liquidationLTV, uint256 debtCeiling, uint256 interestRate, uint256 liquidationBonusRate, uint256 lastUpdateTime, uint256 lastVaultId, tuple(uint256 originalDebt, uint256 debt, uint256 debtShare) debtInfo) collateralInfo)",
 }
