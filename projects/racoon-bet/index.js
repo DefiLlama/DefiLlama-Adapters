@@ -1,10 +1,31 @@
 const { getBalance2 } = require('../helper/chain/cosmos');
 
 async function tvl(chain, contract) {
-  return await getBalance2({
+  let balances = await getBalance2({
     owner: contract,
     chain
-  })
+  });
+  return rename_balance(balances)
+}
+
+function rename_balance(obj) {
+  const keyMappings = {
+    uwhale: 'white-whale',
+    ujuno: 'juno-network',
+    uhuahua: 'chihuahua-token'
+  };
+
+  const new_balance = {};
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      const newKey = keyMappings[key] || key;
+      const originalValue = parseFloat(obj[key]);
+      // All 6 decimals for juno migaloo and huahua
+      const to_big_denom = (originalValue / 1000000).toString();
+      new_balance[newKey] = to_big_denom;
+    }
+  }
+  return new_balance;
 }
 
 module.exports = {
