@@ -12,6 +12,7 @@ const { isLP, log, } = require('./utils')
 const { sumArtBlocks, whitelistedNFTs, } = require('./nft')
 const wildCreditABI = require('../wildcredit/abi.json');
 const { covalentGetTokens, get } = require("./http");
+const { getTrxBalance } = require("./chain/tron");
 const { sliceIntoChunks } = require('@defillama/sdk/build/util');
 
 const lpReservesAbi = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
@@ -375,12 +376,6 @@ async function sumBalancerLps(balances, tokensAndOwners, block, chain, transform
   })
 }
 
-async function getTrxBalance(account) {
-  if (account === '0x2c7c9963111905d29eb8da37d28b0f53a7bb5c28') account = 'TE2RzoSV3wFK99w6J9UnnZ4vLfXYoxvRwP'
-  const data = await get('https://apilist.tronscan.org/api/account?address=' + account)
-  return data.balance + (data.totalFrozen || 0)
-}
-
 const nullAddress = ADDRESSES.null
 const gasTokens = [nullAddress, '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb']
 /*
@@ -407,6 +402,7 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
   if (ethBalanceInputs.length) {
     if (chain === "tron") {
       const ethBalances = await Promise.all(ethBalanceInputs.map(getTrxBalance))
+      console.log(ethBalances)
       ethBalances.forEach(balance => sdk.util.sumSingleBalance(balances, transformAddress(nullAddress), balance))
     } else {
       const { output: ethBalances } = await sdk.api.eth.getBalances({ targets: ethBalanceInputs, chain, block })
