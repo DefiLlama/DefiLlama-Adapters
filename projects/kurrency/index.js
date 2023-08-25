@@ -8,7 +8,7 @@ async function tvl(_, _b, _cb, { api, }) {
   psmInfos.forEach((info, i) => api.add(psmTokens[i], info.balance))
 }
 
-config = {
+const config = {
   wemix: {
     cdpManager: '0x1B18d5a2f35B431aACa02B58eE9E4B7FBa9b098d',
     PSM: '0xbdd0b6212505bcD15C38839cf338E40aeCd95b13',
