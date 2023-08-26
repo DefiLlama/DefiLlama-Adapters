@@ -400,13 +400,13 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
   ethBalanceInputs = getUniqueAddresses(ethBalanceInputs, chain)
 
   if (ethBalanceInputs.length) {
-    if (chain === "tron") {
-      const ethBalances = await Promise.all(ethBalanceInputs.map(getTrxBalance))
-      ethBalances.forEach(balance => sdk.util.sumSingleBalance(balances, transformAddress(nullAddress), balance))
-    } else {
+    // if (chain === "tron") {
+    //   const ethBalances = await Promise.all(ethBalanceInputs.map(getTrxBalance))
+    //   ethBalances.forEach(balance => sdk.util.sumSingleBalance(balances, transformAddress(nullAddress), balance))
+    // } else {
       const { output: ethBalances } = await sdk.api.eth.getBalances({ targets: ethBalanceInputs, chain, block })
       ethBalances.forEach(({ balance }) => sdk.util.sumSingleBalance(balances, transformAddress(nullAddress), balance))
-    }
+    // }
   }
 
   const balanceOfTokens = await sdk.api.abi.multiCall({
