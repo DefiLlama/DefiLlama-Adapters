@@ -12,6 +12,7 @@ const { isLP, log, } = require('./utils')
 const { sumArtBlocks, whitelistedNFTs, } = require('./nft')
 const wildCreditABI = require('../wildcredit/abi.json');
 const { covalentGetTokens, get } = require("./http");
+const { getTrxBalance } = require("./chain/tron");
 const { sliceIntoChunks } = require('@defillama/sdk/build/util');
 
 const lpReservesAbi = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
@@ -375,11 +376,6 @@ async function sumBalancerLps(balances, tokensAndOwners, block, chain, transform
   })
 }
 
-async function getTrxBalance(account) {
-  const data = await get('https://apilist.tronscan.org/api/account?address=' + account)
-  return data.balance + (data.totalFrozen || 0)
-}
-
 const nullAddress = ADDRESSES.null
 const gasTokens = [nullAddress, '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb']
 /*
@@ -404,13 +400,13 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
   ethBalanceInputs = getUniqueAddresses(ethBalanceInputs, chain)
 
   if (ethBalanceInputs.length) {
-    if (chain === "tron") {
-      const ethBalances = await Promise.all(ethBalanceInputs.map(getTrxBalance))
-      ethBalances.forEach(balance => sdk.util.sumSingleBalance(balances, transformAddress(nullAddress), balance))
-    } else {
+    // if (chain === "tron") {
+    //   const ethBalances = await Promise.all(ethBalanceInputs.map(getTrxBalance))
+    //   ethBalances.forEach(balance => sdk.util.sumSingleBalance(balances, transformAddress(nullAddress), balance))
+    // } else {
       const { output: ethBalances } = await sdk.api.eth.getBalances({ targets: ethBalanceInputs, chain, block })
       ethBalances.forEach(({ balance }) => sdk.util.sumSingleBalance(balances, transformAddress(nullAddress), balance))
-    }
+    // }
   }
 
   const balanceOfTokens = await sdk.api.abi.multiCall({
@@ -694,7 +690,7 @@ async function sumTokens2({
   if (fetchCoValentTokens) {
     if (!api) throw new Error('Missing arg: api')
     if (!owners || !owners.length) owners = [owner]
-    const cTokens = (await Promise.all(owners.map(i => covalentGetTokens(i, api.chain)))).flat()
+    const cTokens = (await Promise.all(owners.map(i => covalentGetTokens(i, api.chain, api.chainId)))).flat()
     tokens = [...cTokens, ...tokens]
   }
 

@@ -9,6 +9,7 @@ const DEFAULTS = {
   APTOS_RPC: 'https://aptos-mainnet.pontem.network',
   SUI_RPC: 'https://fullnode.mainnet.sui.io/',
   MULTIVERSX_RPC: 'https://api.multiversx.com',
+  ETHEREUMCLASSIC_RPC: 'https://etc.etcdesktop.com,https://etc.rivet.link',
 }
 
 const ENV_KEYS = [

@@ -10,30 +10,6 @@ const {
   distressedAssts,
 } = require('./tokenMapping')
 
-async function transformFantomAddress() {
-  return transformChainAddress(transformTokens.fantom, "fantom")
-}
-
-async function transformBscAddress() {
-  return transformChainAddress(transformTokens.bsc, "bsc")
-}
-
-async function transformPolygonAddress() {
-  return transformChainAddress(transformTokens.polygon, "polygon")
-}
-
-async function transformCeloAddress() {
-  return transformChainAddress(transformTokens.celo, "celo")
-}
-
-async function transformOptimismAddress() {
-  return transformChainAddress(transformTokens.optimism, "optimism")
-}
-
-async function transformArbitrumAddress() {
-  return transformChainAddress(transformTokens.arbitrum, "arbitrum")
-}
-
 async function transformInjectiveAddress() {
   return addr => {
     if (addr.includes('ibc/')) return addr.replace(/.*ibc\//, 'ibc/').replace(/\//g, ':')
@@ -89,10 +65,6 @@ for (const chain of Object.keys(fixBalancesTokens)) {
 }
 
 const chainTransforms = {
-  fantom: transformFantomAddress,
-  bsc: transformBscAddress,
-  polygon: transformPolygonAddress,
-  optimism: transformOptimismAddress,
   injective: transformInjectiveAddress,
 };
 
@@ -262,12 +234,6 @@ async function transformDexBalances({ chain, data, balances = {}, restrictTokenR
 module.exports = {
   getChainTransform,
   getFixBalances,
-  transformFantomAddress,
-  transformBscAddress,
-  transformPolygonAddress,
-  transformOptimismAddress,
-  transformArbitrumAddress,
-  transformCeloAddress,
   stripTokenHeader,
   getFixBalancesSync,
   transformBalances,
