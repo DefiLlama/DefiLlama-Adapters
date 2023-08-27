@@ -67,6 +67,9 @@ const HYPE_REGISTRY = {
   linea: [
     "0xc27ddd78fc49875fe6f844b72bbf31dfbb099881", // Lynex
   ],
+  base: [
+    "0x1E86A593E55215957C4755f1BE19a229AF3286f6", // SynthSwap
+  ],
 };
 
 /* List of bad addresses added to registries that need to be excluded manually */
@@ -189,6 +192,9 @@ module.exports = {
     tvl: tvlWrapper,
   },
   linea: {
+    tvl: tvlWrapper,
+  },
+  base: {
     tvl: tvlWrapper,
   },
 };
