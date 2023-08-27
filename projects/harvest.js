@@ -30,3 +30,9 @@ Object.keys(chains).forEach(chain => {
     }
   }
 })
+
+module.exports.ethereum = {
+  tvl: () => {
+    throw new Error('Method not implemented')
+  }
+}
