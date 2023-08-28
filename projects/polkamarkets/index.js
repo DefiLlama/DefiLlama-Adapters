@@ -66,7 +66,7 @@ function chainStaking(chain) {
         "polkamarkets",
         Number(polkBalance) / 1e18
       );
-    };
+    }
 
     return balances;
   }

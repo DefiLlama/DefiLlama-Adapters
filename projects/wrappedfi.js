@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const { getBlock } = require("./helper/getBlock");
 
 const ethContracts = [
   /**

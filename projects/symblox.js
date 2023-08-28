@@ -66,10 +66,10 @@ async function tvl(timestamp, block, chainBlocks) {
         syxBalances[i].output / 10 ** 18
       ),
     ]);
-  };
+  }
 
   return balances;
-};
+}
 
 module.exports = {
   velas: {

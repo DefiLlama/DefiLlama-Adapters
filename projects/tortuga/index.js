@@ -1,4 +1,5 @@
-const { aQuery } = require('../helper/aptos')
+const ADDRESSES = require('../helper/coreAssets.json')
+const { aQuery } = require('../helper/chain/aptos')
 
 module.exports = {
   timetravel: false,

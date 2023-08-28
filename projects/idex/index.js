@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 /*==================================================
   Modules
   ==================================================*/
 
 const { covalentGetTokens, get } = require("../helper/http")
 const { sumTokens2 } = require("../helper/unwrapLPs")
-const { getUniqueAddresses } = require("../helper/utils")
+const { getConfig } = require('../helper/cache')
 
 const IDEX_ETHEREUM_CUSTODY_CONTRACT = "0xE5c405C5578d84c5231D3a9a29Ef4374423fA0c2";
 const IDEX_POLYGON_CUSTODY_CONTRACT = "0x3bcc4eca0a40358558ca8d1bcd2d1dbde63eb468";
@@ -14,12 +15,12 @@ const IDEX_POLYGON_CUSTODY_CONTRACT = "0x3bcc4eca0a40358558ca8d1bcd2d1dbde63eb46
   ==================================================*/
 
 async function tvl(_timestamp, block, chain) {
-  let tokens = ['0x0000000000000000000000000000000000000000']
+  let tokens = [ADDRESSES.null]
   let owner
 
   switch (chain) {
     case 'polygon':
-      const assets = await get('https://api-matic.idex.io/v1/assets')
+      const assets = await getConfig('idex/polygon','https://api-matic.idex.io/v1/assets')
       assets.forEach(t => tokens.push(t.contractAddress))
       owner = IDEX_POLYGON_CUSTODY_CONTRACT
       break;
@@ -27,7 +28,6 @@ async function tvl(_timestamp, block, chain) {
       owner = IDEX_ETHEREUM_CUSTODY_CONTRACT
       const ethAssets = await covalentGetTokens(owner)
       ethAssets
-        .map(t => t.contract_address.toLowerCase())
         .filter(t => t !== '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee' && t !== '0x7b0c06043468469967dba22d1af33d77d44056c8')
         .forEach(t => tokens.push(t))
       break;
@@ -35,9 +35,7 @@ async function tvl(_timestamp, block, chain) {
       throw new Error('Unknown chain ' + chain);
   }
 
-  tokens = getUniqueAddresses(tokens)
   const res = await sumTokens2({ chain, block, tokens, owner })
-  console.log(chain, res)
   return res
 }
 

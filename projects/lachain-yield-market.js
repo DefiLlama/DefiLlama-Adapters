@@ -9,12 +9,12 @@ async function fetch() {
     for (let i = 0; i < response.data.length; i++) {
         const f = response.data[i];
         tvl_sum += parseFloat(f['lachainTvl']);
-    };
+    }
 
     for (let i = 0; i < response_ladex.data.length; i++) {
       const f = response_ladex.data[i];
       tvl_sum += parseFloat(f['lachainTvl']);
-  };
+  }
 
     return tvl_sum;
 }

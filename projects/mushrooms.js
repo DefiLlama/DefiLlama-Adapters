@@ -2,32 +2,8 @@ const sdk = require('@defillama/sdk')
 const { getChainTransform } = require('./helper/portedTokens')
 const { unwrapLPsAuto, } = require('./helper/unwrapLPs')
 const abi = {
-  balance: {
-    "inputs": [],
-    "name": "balance",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  token: {
-    "inputs": [],
-    "name": "token",
-    "outputs": [
-      {
-        "internalType": "contract IERC20",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
+  balance: "uint256:balance",
+  token: "address:token",
 }
 
 const config = {

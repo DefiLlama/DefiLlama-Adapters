@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
-const { getChainTransform, getFixBalances } = require("../helper/portedTokens")
+const { getChainTransform, } = require("../helper/portedTokens")
 
-const KDAI = "0x5c74070fdea071359b86082bd9f9b3deaafbe32b";
-const KSD = "0x4fa62f1f404188ce860c8f0041d6ac3765a72e67";
+const KDAI = ADDRESSES.klaytn.KDAI;
+const KSD = ADDRESSES.klaytn.KSD;
 const wrappedKlay = '0xd7a4d10070a4f7bc2a015e78244ea137398c3b74'
 const TREASURY = "0x03c812eE50e244909efE72e8c729976ACc5C16bb";
 const token = "0xd676e57ca65b827feb112ad81ff738e7b6c1048d";
@@ -28,7 +29,7 @@ const LPs = [
   {
     address: '0x2febbaed702b9a1d9f6ffccd67701550ac546115',  // KRNO_KSP_LP
     tokens: [
-      '0xc6a2ad8cc6e4a7e08fc37cc5954be07d499e7654',
+      ADDRESSES.klaytn.KSP,
     ]
   }
 ]
@@ -70,7 +71,6 @@ async function getTvl(timestamp, ethBlock, chainBlocks) {
     tvl: {}
   }
   const transform = await getChainTransform(chain)
-  const fixBalances = await getFixBalances(chain)
 
   await Promise.all(LPs.map(lp => addToBalance({
     balances: balances.tvl,
@@ -94,10 +94,9 @@ async function getTvl(timestamp, ethBlock, chainBlocks) {
   const staking = stakingBalance * tokenPrice / 10 ** 18
 
   sdk.util.sumSingleBalance(balances.staking, 'tether', staking)
-  fixBalances(balances.tvl)
 
   return balances
-};
+}
 
 module.exports = {
   misrepresentedTokens: true,

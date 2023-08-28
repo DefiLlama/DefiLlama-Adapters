@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { unwrapUniswapLPs } = require('../helper/unwrapLPs');
 
 const BigNumber = require("bignumber.js");
@@ -35,7 +36,7 @@ const farms = [
 ]
 
 function transform(tokenAddress){
-  if(tokenAddress === "0x5545153ccfca01fbd7dd11c0b23ba694d9509a6f"){
+  if(tokenAddress === ADDRESSES.heco.WHT){
     return "0x6f259637dcd74c767781e37bc6133cd6a68aa161"
   } else {
     return `heco:${tokenAddress}`

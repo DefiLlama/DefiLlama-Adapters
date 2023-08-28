@@ -1,20 +1,7 @@
 {
-  "allPairs": {
-    "constant": true,
-    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "name": "allPairs",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "allPairsLength": {
-    "constant": true,
-    "inputs": [],
-    "name": "allPairsLength",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  }
+  "allPairs": "function allPairs(uint256) view returns (address)",
+  "token0": "address:token0",
+  "token1": "address:token1",
+  "getReserves": "function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)",
+  "allPairsLength": "uint256:allPairsLength"
 }

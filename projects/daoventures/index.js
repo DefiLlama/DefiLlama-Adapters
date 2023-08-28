@@ -65,7 +65,6 @@ async function tvl(timestamp, ethereumBlock, chainBlocks) {
   for (const prop in result) {
     balances += result[prop];
   }
-  //await unwrapYearn(balances);
   return { "usd-coin": balances };
 }
 

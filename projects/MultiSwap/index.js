@@ -2,42 +2,12 @@
 const sdk = require('@defillama/sdk')
 const { createIncrementArray } = require('../helper/utils')
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const token0ABI = require('../helper/abis/token0.json')
-const token1ABI = require('../helper/abis/token1.json')
+const token0ABI = 'address:token0'
+const token1ABI = 'address:token1'
 
 const abis = {
-  "poolsCount": {
-    "inputs": [],
-    "name": "poolsCount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "poolsAddresses": {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "poolsAddresses",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
+  poolsCount: "uint256:poolsCount",
+  poolsAddresses: "function poolsAddresses(uint256) view returns (address)",
 }
 
 const config = {

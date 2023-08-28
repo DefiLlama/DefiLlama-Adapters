@@ -1,4 +1,3 @@
-const utils = require("../helper/utils");
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const {
@@ -7,144 +6,14 @@ const {
   stripTokenHeader,
   transformTokens,
   fixBalancesTokens,
-  unsupportedGeckoChains,
   ibcChains,
+  distressedAssts,
 } = require('./tokenMapping')
-
-async function transformFantomAddress() {
-  return transformChainAddress(transformTokens.fantom, "fantom")
-}
-
-function compareAddresses(a, b) {
-  return a.toLowerCase() === b.toLowerCase();
-}
-
-async function transformAvaxAddress() {
-  const [
-    bridgeTokensOld,
-    bridgeTokensNew,
-    bridgeTokenDetails
-  ] = await Promise.all([
-    utils.fetchURL(
-      "https://raw.githubusercontent.com/0xngmi/bridge-tokens/main/data/penultimate.json"
-    ),
-    utils
-      .fetchURL(
-        "https://raw.githubusercontent.com/ava-labs/avalanche-bridge-resources/main/avalanche_contract_address.json"
-      )
-      .then(r => Object.entries(r.data)),
-    utils.fetchURL(
-      "https://raw.githubusercontent.com/ava-labs/avalanche-bridge-resources/main/token_list.json"
-    )
-  ]);
-  return addr => {
-    const map = transformTokens.avax;
-    if (map[addr.toLowerCase()]) return map[addr.toLowerCase()]
-    const srcToken = bridgeTokensOld.data.find(token =>
-      compareAddresses(token["Avalanche Token Address"], addr)
-    );
-    if (
-      srcToken !== undefined &&
-      srcToken["Ethereum Token Decimals"] ===
-      srcToken["Avalanche Token Decimals"]
-    ) {
-      return srcToken["Ethereum Token Address"];
-    }
-    const newBridgeToken = bridgeTokensNew.find(token =>
-      compareAddresses(addr, token[1])
-    );
-    if (newBridgeToken !== undefined) {
-      const tokenName = newBridgeToken[0].split(".")[0];
-      const tokenData = bridgeTokenDetails.data[tokenName];
-      if (tokenData !== undefined) {
-        return tokenData.nativeContractAddress;
-      }
-    }
-    return `avax:${addr}`;
-  };
-}
-
-async function transformBscAddress() {
-  return transformChainAddress(transformTokens.bsc, "bsc")
-}
-
-async function transformPolygonAddress() {
-  return transformChainAddress(transformTokens.polygon, "polygon")
-}
-
-async function transformCeloAddress() {
-  return transformChainAddress(transformTokens.celo, "celo")
-}
-
-async function transformHarmonyAddress() {
-  const bridge = (await utils.fetchURL(
-    "https://be4.bridge.hmny.io/tokens/?page=0&size=1000"
-  )).data.content;
-
-  const mapping = transformTokens.harmony
-
-  return addr => {
-    addr = addr.toLowerCase();
-    if (mapping[addr]) return mapping[addr];
-    const srcToken = bridge.find(token =>
-      compareAddresses(addr, token.hrc20Address)
-    );
-    if (srcToken !== undefined) {
-      const prefix = srcToken.network === "BINANCE" ? "bsc:" : "";
-      return prefix + srcToken.erc20Address;
-    }
-    return `harmony:${addr}`;
-  };
-}
-
-async function transformOptimismAddress() {
-  const bridge = (await utils.fetchURL(
-    "https://static.optimism.io/optimism.tokenlist.json"
-  )).data.tokens;
-
-  const mapping = transformTokens.optimism
-
-  return addr => {
-    addr = addr.toLowerCase();
-
-    if (mapping[addr]) return mapping[addr];
-
-    const dstToken = bridge.find(
-      token => compareAddresses(addr, token.address) && token.chainId === 10
-    );
-    if (dstToken !== undefined) {
-      const srcToken = bridge.find(
-        token => dstToken.logoURI === token.logoURI && token.chainId === 1
-      );
-      if (srcToken !== undefined) {
-        return srcToken.address;
-      }
-    }
-    return `optimism:${addr}`;
-  };
-}
-
-async function transformArbitrumAddress() {
-  const bridge = (await utils.fetchURL(
-    "https://bridge.arbitrum.io/token-list-42161.json"
-  )).data.tokens;
-  const mapping = transformTokens.arbitrum
-
-  return addr => {
-    addr = addr.toLowerCase();
-    if (mapping[addr]) return mapping[addr];
-    const dstToken = bridge.find(token =>
-      compareAddresses(addr, token.address)
-    );
-    if (dstToken && dstToken.extensions) {
-      return dstToken.extensions.bridgeInfo[1].tokenAddress;
-    }
-    return `arbitrum:${addr}`;
-  };
-}
 
 async function transformInjectiveAddress() {
   return addr => {
+    if (addr.includes('ibc/')) return addr.replace(/.*ibc\//, 'ibc/').replace(/\//g, ':')
+    addr = addr.replace(/\//g, ':')
     if (addr.startsWith('peggy0x'))
       return `ethereum:${addr.replace('peggy', '')}`
     return `injective:${addr}`;
@@ -152,7 +21,7 @@ async function transformInjectiveAddress() {
 }
 
 function fixBalances(balances, mapping, { chain, } = {}) {
-  const removeUnmapped = unsupportedGeckoChains.includes(chain)
+  const removeUnmapped = false
 
   Object.keys(balances).forEach(token => {
     let tokenKey = stripTokenHeader(token, chain)
@@ -196,13 +65,6 @@ for (const chain of Object.keys(fixBalancesTokens)) {
 }
 
 const chainTransforms = {
-  fantom: transformFantomAddress,
-  bsc: transformBscAddress,
-  polygon: transformPolygonAddress,
-  avax: transformAvaxAddress,
-  harmony: transformHarmonyAddress,
-  optimism: transformOptimismAddress,
-  arbitrum: transformArbitrumAddress,
   injective: transformInjectiveAddress,
 };
 
@@ -213,6 +75,7 @@ function transformChainAddress(
 ) {
 
   return addr => {
+    if (distressedAssts.has(addr.toLowerCase())) return 'ethereum:0xbad'
     if (['solana'].includes(chain)) {
       return mapping[addr] ? mapping[addr] : `${chain}:${addr}`
     }
@@ -239,14 +102,23 @@ async function getChainTransform(chain) {
     return transformChainAddress(transformTokens[chain], chain)
 
   return addr => {
-    addr = normalizeAddress(addr, chain)
+    if (addr.includes('ibc/')) return addr.replace(/.*ibc\//, 'ibc/').replace(/\//g, ':')
+    if (addr.startsWith('coingecko:')) return addr
+    if (addr.startsWith(chain + ':') || addr.startsWith('ibc:')) return addr
+    if (distressedAssts.has(addr.toLowerCase())) return 'ethereum:0xbad'
+
+    addr = normalizeAddress(addr, chain).replace(/\//g, ':')
     const chainStr = `${chain}:${addr}`
+    if ([...ibcChains, 'ton', 'defichain', 'waves'].includes(chain)) return chainStr
+    if (chain === 'cardano' && addr === 'ADA') return 'coingecko:cardano'
     if (chain === 'near' && addr.endsWith('.near')) return chainStr
+    if (chain === 'tron' && addr.startsWith('T')) return chainStr
+    if (chain === 'stacks' && addr.startsWith('SP')) return chainStr
     if (chain === 'tezos' && addr.startsWith('KT1')) return chainStr
-    if (ibcChains.includes(chain) && addr.startsWith('ibc/')) return chainStr
     if (chain === 'terra2' && addr.startsWith('terra1')) return chainStr
+    if (chain === 'aura' && addr.startsWith('aura')) return chainStr
     if (chain === 'algorand' && /^\d+$/.test(addr)) return chainStr
-    if (addr.startsWith('0x') || ['solana'].includes(chain)) return chainStr
+    if (addr.startsWith('0x') || ['solana', 'kava'].includes(chain)) return chainStr
     return addr
   };
 }
@@ -262,7 +134,7 @@ async function transformBalances(chain, balances) {
   return balances
 }
 
-async function transformDexBalances({ chain, data, balances = {}, restrictTokenRatio = 10, withMetadata = false, blacklistedTokens = [], coreTokens}) {
+async function transformDexBalances({ chain, data, balances = {}, restrictTokenRatio = 5, withMetadata = false, blacklistedTokens = [], coreTokens }) {
 
   if (!coreTokens)
     coreTokens = new Set(getCoreAssets(chain))
@@ -277,6 +149,7 @@ async function transformDexBalances({ chain, data, balances = {}, restrictTokenR
     i.token1Bal = +i.token1Bal
     priceToken(i)
   })
+  // sdk.log(prices) 
   data.forEach(addTokens)
   updateBalances(balances)
 
@@ -284,7 +157,6 @@ async function transformDexBalances({ chain, data, balances = {}, restrictTokenR
 
   if (!withMetadata)
     return transformBalances(chain, balances)
-
   return {
     prices,
     updateBalances,
@@ -292,8 +164,8 @@ async function transformDexBalances({ chain, data, balances = {}, restrictTokenR
   }
 
   function addTokens({ token0, token0Bal, token1, token1Bal }) {
-    const isCoreToken0 = coreTokens.has(token0)
-    const isCoreToken1 = coreTokens.has(token1)
+    const isCoreToken0 = coreTokens.has(token0.replace('ibc/', ''))
+    const isCoreToken1 = coreTokens.has(token1.replace('ibc/', ''))
     if ((isCoreToken0 && isCoreToken1) || (!isCoreToken0 && !isCoreToken1)) {
       sdk.util.sumSingleBalance(balances, token0, token0Bal)
       sdk.util.sumSingleBalance(balances, token1, token1Bal)
@@ -305,8 +177,8 @@ async function transformDexBalances({ chain, data, balances = {}, restrictTokenR
   }
 
   function updateBalances(balances) {
-    Object.entries(balances).forEach(([token, bal]) => {
-      bal = +bal
+    Object.entries(balances).forEach(([token]) => {
+      let bal = +balances[token] // this is safer as token balance might change while looping when two entries for same token exist
       const tokenKey = normalizeAddress(token, chain)
       if (!prices[tokenKey]) return;
       const priceObj = prices[tokenKey]
@@ -342,16 +214,16 @@ async function transformDexBalances({ chain, data, balances = {}, restrictTokenR
         coreToken,
         coreTokenBal,
         tokensInCorePool: tokenBal,
-        convertableTokenAmount: coreTokenBal * restrictTokenRatio,
+        convertableTokenAmount: tokenBal * restrictTokenRatio,
         price: coreTokenBal / tokenBal
       }
       return;
     }
 
     const priceObj = prices[token]
-    priceObj.convertableTokenAmount += coreTokenBal * restrictTokenRatio
+    priceObj.convertableTokenAmount += tokenBal * restrictTokenRatio
     if (tokenBal > priceObj.tokensInCorePool) { // i.e current pool has more liquidity
-      priceObj.tokensInCorePool = coreTokenBal
+      priceObj.tokensInCorePool = tokenBal
       priceObj.coreToken = coreToken
       priceObj.coreTokenBal = coreTokenBal
       priceObj.price = coreTokenBal / tokenBal
@@ -362,14 +234,6 @@ async function transformDexBalances({ chain, data, balances = {}, restrictTokenR
 module.exports = {
   getChainTransform,
   getFixBalances,
-  transformFantomAddress,
-  transformBscAddress,
-  transformPolygonAddress,
-  transformAvaxAddress,
-  transformHarmonyAddress,
-  transformOptimismAddress,
-  transformArbitrumAddress,
-  transformCeloAddress,
   stripTokenHeader,
   getFixBalancesSync,
   transformBalances,

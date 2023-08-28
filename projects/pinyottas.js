@@ -2,24 +2,9 @@ const sdk = require('@defillama/sdk');
 
 const pinyottasContract = '0x2861e4d8e26b10029e5cd1d236239f810c664b99'
 
-const abi = { 
-  "getTokenContractsInPinyotta": {
-    "inputs":[{"internalType":"uint256","name":"_id","type":"uint256"}],
-    "name":"getTokenContractsInPinyotta",
-    "outputs":[{"internalType":"address[]","name":"tokenContracts","type":"address[]"}],
-    "stateMutability":"view",
-    "type":"function"
-  },
-  "getTokenBalanceInPinyotta": {
-    "inputs":[
-      {"internalType":"uint256","name":"_id","type":"uint256"},
-      {"internalType":"address","name":"_tokenContract","type":"address"}
-    ],
-    "name":"getTokenBalanceInPinyotta",
-    "outputs":[{"internalType":"uint256","name":"balance","type":"uint256"}],
-    "stateMutability":"view",
-    "type":"function"
-  }
+const abi = {
+  getTokenContractsInPinyotta: "function getTokenContractsInPinyotta(uint256 _id) view returns (address[] tokenContracts)",
+  getTokenBalanceInPinyotta: "function getTokenBalanceInPinyotta(uint256 _id, address _tokenContract) view returns (uint256 balance)",
 }
 
 async function tvl(timestamp, block, chainBlocks) {
@@ -32,7 +17,7 @@ async function tvl(timestamp, block, chainBlocks) {
       chain: 'ethereum'
     })
   ).output
-  console.log('nPinyottas', nPinyottas)
+  sdk.log('nPinyottas', nPinyottas)
 
   // Get contract of tokens held within each pinyotta
   const pinyottasIndices = Array.from(Array(parseInt(nPinyottas)).keys());

@@ -70,6 +70,7 @@ const chainTvl = (chain, G_UNI_Factory) => async (timestamp, ethBlock, chainBloc
 };
 
 module.exports = {
+  doublecounted: true,
   ethereum: {
     tvl: chainTvl("ethereum", "0xEA1aFf9dbFfD1580F6b81A3ad3589E66652dB7D9"),
   },
@@ -81,4 +82,8 @@ module.exports = {
   },
   methodology:
     "Counts TVL that's on all the Pools through G-UNI Factory Contract",
+  hallmarks:[
+      [1632253540, "GUNI-DAIUSDC Added to Maker"],
+      [1643056020, "Maker GUNI Cap to 500M"],
+  ],
 };

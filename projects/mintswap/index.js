@@ -1,12 +1,11 @@
 const { addFundsInMasterChef } = require("../helper/masterchef");
-const { transformAvaxAddress } = require("../helper/portedTokens");
 
 const masterChefContract = "0xAdD22604caf79139450e9fb4851394fFCE1692Be";
 
 const avaxTvl = async (chainBlocks) => {
   const balances = {};
 
-  const transformAddress = await transformAvaxAddress();
+  const transformAddress = addr => 'avax:'+addr
   await addFundsInMasterChef(
     balances,
     masterChefContract,

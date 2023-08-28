@@ -5,7 +5,7 @@ const getTokenStats = async () => {
     return stats.data;
 }
 
-module.exports = (async () => {
+const getPrices = async () => {
     const tokenStats = await getTokenStats();
     const tokens = tokenStats.tokens;
 
@@ -22,4 +22,6 @@ module.exports = (async () => {
         'USDS': USDSPrice,
         'IUSDC': IUSDCPrice
     }
-})();
+}
+
+module.exports = { getPrices };

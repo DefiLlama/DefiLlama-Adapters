@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensAndLPsSharedOwners } = require('../helper/unwrapLPs')
 const { getChainTransform } = require('../helper/portedTokens')
 const sdk = require('@defillama/sdk')
-const retry = require('../helper/retry')
-const axios = require("axios")
+const { getConfig } = require('../helper/cache')
+
 const BigNumber = require('bignumber.js')
 
 const oldPools = {
@@ -14,21 +15,20 @@ const chainConfig = {
 	polygon: { chainId: 137, },
 	moonbeam: { chainId: 1284, },
 	optimism: { chainId: 10, },
+	arbitrum: { chainId: 42161, },
 }
-const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+const weth = ADDRESSES.ethereum.WETH
 const moonbeamGLMR = "moonbeam:0x0000000000000000000000000000000000000802"
 
 async function getChainData(chain) {
 	const { chainId } = chainConfig[chain]
 
 	const {
-		data: {
 			pool: {
 				address: poolAddress
 			},
 			assets
-		}
-	} = await retry(async () => await axios.get(`https://api.clipper.exchange/rfq/pool?chain_id=${chainId}`))
+	} = await getConfig('clipper/'+chain,`https://api.clipper.exchange/rfq/pool?chain_id=${chainId}`)
 	return {
 		poolAddress,
 		assets: assets.map(({ address }) => address)

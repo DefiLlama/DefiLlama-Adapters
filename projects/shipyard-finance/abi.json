@@ -1,30 +1,4 @@
 {
-  "balance": {
-    "name": "balance",
-    "type": "function",
-    "inputs": [
-    ],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  "want": {
-    "name": "want",
-    "type": "function",
-    "inputs": [
-    ],
-    "outputs": [
-      {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
-      }
-    ],
-    "stateMutability": "view"
-  }
+  "balance": "uint256:balance",
+  "want": "address:want"
 }

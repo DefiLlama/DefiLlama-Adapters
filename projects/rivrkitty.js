@@ -44,7 +44,7 @@ async function pool2(timestamp, _block, { moonriver: block }) {
     );
     const tokens1 = tokens.filter(t => t.isLP).map(i => i.address)
     return sumTokens2({ balances, chain, block, owner: stakingContract, tokens: tokens1, resolveLP: true, })
-};
+}
 
 module.exports = {
     moonriver: {

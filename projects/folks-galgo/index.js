@@ -1,12 +1,11 @@
 
-const { getAssetInfo } = require("../helper/algorand")
+const { getAssetInfo } = require("../helper/chain/algorand")
 
 const gAlgoAssetId = 793124631
 const gAlgo3Assetd = 694432641
 
 module.exports = {
   timetravel: false,
-  doublecounted: true,
   algorand: {
     tvl: async () => {
       const infos = await Promise.all([gAlgoAssetId, gAlgo3Assetd].map(getAssetInfo))

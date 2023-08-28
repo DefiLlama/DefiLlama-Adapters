@@ -1,4 +1,4 @@
-const { getTokenBalances } = require('../helper/tezos')
+const { getTokenBalances } = require('../helper/chain/tezos')
 const { transformBalances } = require('../helper/portedTokens')
 
 module.exports = {

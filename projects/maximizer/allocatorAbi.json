@@ -1,55 +1,5 @@
 {
-    "balanceOf":{
-        "inputs":[
-            {
-                "internalType":"address",
-                "name":"_token",
-                "type":"address"
-            }
-        ],
-        "name":"balanceOf",
-        "outputs":[
-            {
-                "internalType":"uint256",
-                "name":"",
-                "type":"uint256"
-            }
-        ],
-        "stateMutability":"view",
-        "type":"function"
-    },
-    "pending":{
-        "inputs":[
-            
-        ],
-        "name":"pending",
-        "outputs":[
-            {
-                "internalType":"uint256",
-                "name":"",
-                "type":"uint256"
-            }
-        ],
-        "stateMutability":"view",
-        "type":"function"
-    },
-    "pendingOf":{
-        "inputs":[
-            {
-                "internalType":"address",
-                "name":"_token",
-                "type":"address"
-            }
-        ],
-        "name":"pendingOf",
-        "outputs":[
-            {
-                "internalType":"uint256",
-                "name":"",
-                "type":"uint256"
-            }
-        ],
-        "stateMutability":"view",
-        "type":"function"
-    }
+  "balanceOf": "function balanceOf(address _token) view returns (uint256)",
+  "pending": "uint256:pending",
+  "pendingOf": "function pendingOf(address _token) view returns (uint256)"
 }

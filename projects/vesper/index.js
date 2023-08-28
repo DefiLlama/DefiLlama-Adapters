@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk")
 const abi = require('./abi.json')
 const { getChainTransform } = require('../helper/portedTokens')
-const http = require('../helper/http')
+const { getConfig } = require("../helper/cache")
 
 const chainConfig = {
   ethereum: {
@@ -14,6 +14,9 @@ const chainConfig = {
   },
   polygon: {
     api: ['https://api-polygon.vesper.finance/pools?stages=prod'],
+  },
+  optimism: {
+    api: ['https://api-optimism.vesper.finance/pools']
   },
 }
 
@@ -29,8 +32,11 @@ function getChainExports(chain) {
 
     const poolSet = new Set()
 
-    for (const url of api)
-      (await http.get(url)).forEach(pool => poolSet.add(pool.address)) // add pools from our contracts list
+    for (let i = 0;i< api.length;i++) {
+      const key = ['vesper', chain, i].join('/')
+      const data = await getConfig(key, api[i])
+      data.forEach(pool => poolSet.add(pool.address)) // add pools from our contracts list
+    }
     if (stakingPool)  poolSet.delete(stakingPool)
     const poolList = [...poolSet]
 
@@ -67,5 +73,5 @@ function getChainExports(chain) {
 
 module.exports = {
   start: 1608667205, // December 22 2020 at 8:00 PM UTC
-  ...['ethereum', 'avax', 'polygon'].reduce((acc, chain) => ({ ...acc, ...getChainExports(chain) }), {})
+  ...['ethereum', 'avax', 'polygon','optimism'].reduce((acc, chain) => ({ ...acc, ...getChainExports(chain) }), {})
 };

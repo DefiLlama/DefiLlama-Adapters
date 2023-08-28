@@ -1,4 +1,4 @@
-const { call, view_account, addTokenBalances, sumSingleBalance } = require('../helper/near');
+const { call, view_account, addTokenBalances, sumSingleBalance } = require('../helper/chain/near');
 
 const ASSET_MANAGER_CONTRACT = 'asset-manager.orderly-network.near';
 const GET_LISTED_TOKENS_METHOD = 'get_listed_tokens';

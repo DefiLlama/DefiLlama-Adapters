@@ -1,93 +1,49 @@
-const sdk = require("@defillama/sdk");
-const { getChainTransform } = require("../helper/portedTokens");
-const axios = require("axios");
+const { sumTokens2 } = require('../helper/unwrapLPs')
+const { getConfig } = require("../helper/cache");
+
 const apiUrl = "https://goodghosting-api.com/v1/games";
 
 const chainIdMap = {
   ethereum: 1,
   polygon: 137,
   celo: 42220,
+  base: 8453,
 };
 
 const contractVersions = {
-  v200: ["2.0.0", "2.0.1"],
+  v200: ["2.0"],
   v001: "0.0.1",
   v002: "0.0.2",
   v003: "0.0.3",
 };
 
-const isV2Game = (contractVersion) =>
-  contractVersions.v200.includes(contractVersion);
+const isV2Game = (contractVersion) => {
+   const baseContractVersion = contractVersion.slice(0, 3);
 
-function tvl(chain) {
-  return async (timestamp, ethBlock, chainBlocks) => {
-    const gameData = await axios.get(apiUrl).then((resp) => resp.data);
+   if (contractVersions.v200.indexOf(baseContractVersion) !== -1) {
+     return true;
+   }
+   return false;
+}
 
-    const balances = {};
-    const transform = await getChainTransform(chain);
-
-    const calls = Object.values(gameData)
-      .filter((game) => game.networkId == chainIdMap[chain])
+async function tvl(_, _b, _cb, { api, }) {
+  const gameData = await getConfig("good-ghosting", apiUrl)
+  const ownerTokens = []
+  Object.values(gameData)
+      .filter((game) => game.networkId == chainIdMap[api.chain])
       .map((game) => {
-        const gameParams = [
-          {
-            target: game.depositTokenAddress,
-            params: [game.id],
-          },
-          {
-            target: game.liquidityTokenAddress,
-            params: [game.id],
-          },
-        ];
+        const tokens = [game.depositTokenAddress, game.liquidityTokenAddress, game.gaugeLiquidityTokenAddress].filter(i => i)
+        ownerTokens.push([tokens, game.id])
 
-        if (isV2Game(game.contractVersion)) {
-          gameParams.push({
-            target: game.depositTokenAddress,
-            params: [game.strategyController.toLowerCase()],
-          });
-
-          gameParams.push({
-            target: game.liquidityTokenAddress,
-            params: [game.strategyController.toLowerCase()],
-          });
-        }
-        return gameParams;
+        if (isV2Game(game.contractVersion))
+          ownerTokens.push([tokens, game.strategyController])
       })
-      .flat();
-
-    const gameContractBalances = await sdk.api.abi.multiCall({
-      calls,
-      abi: "erc20:balanceOf",
-      chain,
-    });
-
-    sdk.util.sumMultiBalanceOf(
-      balances,
-      gameContractBalances,
-      false,
-      transform
-    );
-
-    //fix decimal issue with celo tokens
-    for (const representation of ["celo-dollar", "celo", "celo-euro"]) {
-      if (balances[representation] !== undefined) {
-        balances[representation] = Number(balances[representation]) / 1e18;
-      }
-    }
-
-    return balances;
-  };
+  return sumTokens2({ api, ownerTokens})
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
-  methodology:
-    "counts the amount of interest bearing tokens owned by the smart game contract",
-  polygon: {
-    tvl: tvl("polygon"),
-  },
-  celo: {
-    tvl: tvl("celo"),
-  },
+  methodology: "counts the amount of interest bearing tokens owned by the smart game contract",
+  polygon: { tvl },
+  celo: { tvl },
+  base: {tvl}
 };

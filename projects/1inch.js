@@ -1,57 +1,27 @@
 const { sumTokens2, } = require('./helper/unwrapLPs')
-const sdk = require('@defillama/sdk')
-const { createIncrementArray } = require('./helper/utils')
+const { getLogs } = require('./helper/cache/getLogs')
 
-const abi = require("./mooniswap/abi.json");
 const config = require("./1inch/config");
 
 module.exports = {}
-const minIndexes = {
-  ethereum: 30,
-  bsc: 136,
-}
 
 Object.keys(config).forEach(chain => {
-  const { MooniswapFactory, blacklistedTokens } = config[chain]
+  const { blacklistedTokens = [], factories } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, { [chain]: block }) => {
-      const toa = []
-      const pools = []
-      const length = 10
-      let i = minIndexes[chain]
-
-      const { output: data1 } = await sdk.api.abi.multiCall({
-        target: MooniswapFactory,
-        abi: abi.getPool,
-        calls: createIncrementArray(i * length).map(j => ({ params: j})),
-        chain, block,
-      })
-      pools.push(...data1.map(i => i.output))
-      let currentPools
-      do {
-
-        const { output: data } = await sdk.api.abi.multiCall({
+    tvl: async (_, _b, _2, { api }) => {
+      const ownerTokens = []
+      for (const { MooniswapFactory, fromBlock} of factories) {
+        const logs = await getLogs({
+          api,
           target: MooniswapFactory,
-          abi: abi.getPool,
-          calls: createIncrementArray(length).map(j => ({ params: j + i*length})),
-          chain, block,
+          topic: 'Deployed(address,address,address)',
+          eventAbi: 'event Deployed(address indexed mooniswap, address indexed token1, address indexed token2)',
+          onlyArgs: true,
+          fromBlock,
         })
-        currentPools = data.map(i => i.output).filter(i => i)
-        pools.push(...currentPools)
-        i++
-      } while(currentPools.length === length)
-
-      const calls = pools.map(i => ({ target: i }))
-      const { output: tokensAll } = await sdk.api.abi.multiCall({
-        abi: abi.getTokens,
-        calls, chain, block,
-      })
-
-      tokensAll.forEach(({ output: tokens, input: { target: pool } }) => {
-        tokens.forEach(i => toa.push([i, pool]))
-      })
-
-      return sumTokens2({ chain, block, tokensAndOwners: toa, blacklistedTokens, })
+        logs.forEach(i => ownerTokens.push([[i.token1, i.token2], i.mooniswap]))
+      }
+      return sumTokens2({ api, ownerTokens, blacklistedTokens, })
     }
   }
 })

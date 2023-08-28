@@ -1,60 +1,44 @@
-const { ohmTvl } = require('../helper/ohm')
+const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokens2, sumTokensExport, } = require('../helper/unwrapLPs')
 const sdk = require("@defillama/sdk");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const BigNumber = require('bignumber.js');
 // https://docs.floor.xyz/fundamentals/treasury
 
-// Tokens in treasury
-const WETH = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
-const PUNK = '0x269616d549d7e8eaa82dfb17028d0b212d11232a'
-const xPUNK = '0x08765c76c758da951dc73d3a8863b34752dd76fb'
-const PUNKWETH = '0x0463a06fbc8bf28b3f120cd1bfc59483f099d332'
-const xPUNKWETH = '0xfb2f1c0e0086bcef24757c3b9bfe91585b1a280f'
+const WETH = ADDRESSES.ethereum.WETH
+const USDC = ADDRESSES.ethereum.USDC
 
+const NFTX_LP_STAKING = '0x688c3e4658b5367da06fd629e41879beab538e37'
 const treasury = '0x91E453f442d25523F42063E1695390e325076ca2'
-const stakingAddress = '0x759c6de5bca9ade8a1a2719a31553c4b7de02539' 
-const FLOOR = '0xf59257E961883636290411c11ec5Ae622d19455e' 
-const treasuryTokens = [
-    [WETH, false], [PUNK, false], [xPUNK, false], // WETH, PUNK and xPUNK
-    [PUNKWETH, true],  // PUNK-ETH SLP
-]
-module.exports = ohmTvl(treasury, treasuryTokens, 'ethereum', stakingAddress, FLOOR)
+const floorTreasury2 = "0xa9d93a5cca9c98512c8c56547866b1db09090326";
+const stakingAddress = '0x759c6de5bca9ade8a1a2719a31553c4b7de02539'
+const FLOOR = '0xf59257E961883636290411c11ec5Ae622d19455e'
+
 module.exports.methodology = 'Using ohmTvl for staking and treasury core TVL, and adding xPUNK and xPUNKWETH balances using 1:1 mapping with PUNK and PUNK-WETH sushi LP'
 
-const tvl = module.exports.ethereum.tvl 
-const transform = a => `ethereum:${a}`
-module.exports.ethereum.tvl = async (time, ethBlock, chainBlocks) => {
-    // Get OHM default TVL balances
-    const balances = await tvl(time, ethBlock, chainBlocks)
-    
-    // Replace xPUNK by PUNK which is 1:1
-    balances[transform(PUNK)] = BigNumber(balances[transform(PUNK)]).plus(BigNumber(balances[transform(xPUNK)])).toFixed(0)
-    balances[transform(xPUNK)] = 0
-
-    // Unwrap xPUNKWETH which is 1:1 with PUNK-WETH Sushi LP
-    const {output: xPUNKWETH_bal} = await sdk.api.abi.call({
-        target: xPUNKWETH,
-        params: [treasury],
-        abi: 'erc20:balanceOf',
-        ethBlock,
-        chain: 'ethereum'
+module.exports = {
+  ethereum: {
+    tvl: async (_, block) => {
+      const vaults = [0, 24, 27, 298, 392,]
+      const stakingInfo = await sdk.api2.abi.multiCall({
+        target: NFTX_LP_STAKING,
+        abi: abis.vaultStakingInfo,
+        calls: vaults.map(i => ({ params: i})),
+        block,
       })
-    const lpPositions = [{
-        token: PUNKWETH,
-        balance: xPUNKWETH_bal,
-    }]
-    await unwrapUniswapLPs( balances, lpPositions, ethBlock, "ethereum", transform );
-    return balances
+      const stakingBalances = await sdk.api2.abi.multiCall({
+        target: NFTX_LP_STAKING,
+        abi: abis.balanceOf,
+        calls: vaults.map(i => ({ params: [i, treasury]})),
+        block,
+      })
+      const balances = {}
+      stakingBalances.forEach((bal,i) => sdk.util.sumSingleBalance(balances,stakingInfo[i][0],bal))
+      return sumTokens2({ balances, block, owners: [treasury, floorTreasury2], tokens: [WETH, USDC], resolveLP: true, })
+    },
+    staking: sumTokensExport({owner: stakingAddress, tokens: [FLOOR]})
+  }
 }
 
-
-/*
-const dao_treasury = '0xA9d93A5cCa9c98512C8C56547866b1db09090326'
-module.exports.ethereum.treasury = async (time, ethBlock, chainBlocks) => {
-    const balances = {}
-    await sumTokens(balances, [[FLOOR, dao_treasury]], ethBlock, "ethereum", transform)
-    // const univ3_Positions = []
-    // await unwrapUniswapV3LPs(balances, univ3_Positions, ethBlock, 'ethereum', transform)
-    return balances
+const abis = {
+  vaultStakingInfo: "function vaultStakingInfo(uint256) view returns (address stakingToken, address rewardToken)",
+  balanceOf: "function balanceOf(uint256 vaultId, address addr) view returns (uint256)",
 }
-*/

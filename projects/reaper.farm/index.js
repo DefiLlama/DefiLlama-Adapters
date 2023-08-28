@@ -15,6 +15,12 @@ function fetchTvl(chainName) {
       case 'optimism':
         tvlMsg = await client.get('/optimism/tvlTotal');
         break;
+      case 'arbitrum':
+        tvlMsg = await client.get('/arbitrum/tvlTotal');
+        break;
+      case 'bsc':
+        tvlMsg = await client.get('/bsc/tvlTotal');
+        break;
       default:
         tvlMsg = await client.get('/tvlTotal');
     }
@@ -32,6 +38,12 @@ module.exports = {
   },
   optimism: {
     tvl: fetchTvl('optimism')
+  },
+  arbitrum: {
+    tvl: fetchTvl('arbitrum')
+  },
+  bsc: {
+    tvl: fetchTvl('bsc')
   },
   hallmarks:[
     [1659441956, "$1.7m Exploit"],

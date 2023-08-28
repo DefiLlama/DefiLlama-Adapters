@@ -1,42 +1,30 @@
-const sdk = require('@defillama/sdk')
-const { getChainTransform } = require('../helper/portedTokens')
 const { chainExports } = require('../helper/exports')
 const { default: axios } = require('axios')
+const { sumTokens2 } = require('../helper/unwrapLPs')
+const { getConfig } = require('../helper/cache')
+
+const chainMapping = {
+    xdai: 'gnosis',
+    arbitrum_nova: 'nova'
+}
+const getChainKey = chain => chainMapping[chain] ?? chain
+
 // node test.js projects/hop/index.js
-const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
 function chainTvl(chain) {
-    return async (timestamp, ethBlock, {[chain]: block}) => {
-        const balances = {}
-        let transform = await getChainTransform(chain)
-        const tokens = await axios('https://raw.githubusercontent.com/hop-protocol/hop/develop/packages/core/build/addresses/mainnet.json')
-        for (const tokenConstants of Object.values(tokens.data.bridges)) {
-            const chainConstants = (chain == 'xdai' ? tokenConstants['gnosis'] : tokenConstants[chain])
-            if (chainConstants === undefined) {
+    return async (_, _b, {[chain]: block}) => {
+        const toa = []
+        const { bridges, bonders } = await getConfig('hop-protocol', 'https://raw.githubusercontent.com/hop-protocol/hop/develop/packages/core/build/addresses/mainnet.json')
+        for (const tokenConstants of Object.values(bridges)) {
+            const chainConstants = tokenConstants[getChainKey(chain)]
+            if (chainConstants === undefined)
                 continue
-            }
 
             let token = chainConstants.l2CanonicalToken ?? chainConstants.l1CanonicalToken;
             let bridge = chainConstants.l2SaddleSwap ?? chainConstants.l1Bridge;
-            let amount;
-            if (token === "0x0000000000000000000000000000000000000000" && chain === "ethereum") {
-                token = WETH
-                amount = await sdk.api.eth.getBalance({
-                    target: bridge,
-                    block,
-                    chain
-                })
-            } else {
-                amount = await sdk.api.erc20.balanceOf({
-                    target: token,
-                    owner: bridge,
-                    block,
-                    chain
-                })
-            }
-            sdk.util.sumSingleBalance(balances, transform(token), amount.output)
+            toa.push([token, bridge])
         }
         if (chain === "ethereum") {
-            for (const bonder of Object.entries(tokens.data.bonders)) {
+            for (const bonder of Object.entries(bonders)) {
                 const tokenName = bonder[0]
                 let contractList = []
                 for (let i of Object.values(bonder[1])) {
@@ -49,26 +37,13 @@ function chainTvl(chain) {
                     }
                 }
                 for (const contract of contractList) {
-                    if (tokenName === "ETH") {
-                        const amount = await sdk.api.eth.getBalance({
-                            target: contract,
-                            block,
-                        })
-                        sdk.util.sumSingleBalance(balances, WETH, amount.output)
-                    } else {
-                        const token = tokens.data.bridges[tokenName].ethereum.l1CanonicalToken
-                        const amount = await sdk.api.erc20.balanceOf({
-                            target: token,
-                            owner: contract,
-                            block,
-                        })
-                        sdk.util.sumSingleBalance(balances, token, amount.output)
-                    }
+                    const token = bridges[tokenName].ethereum.l1CanonicalToken
+                    toa.push([token, contract])
                 }
             }
         }
-        return balances
+        return sumTokens2({ chain, tokensAndOwners: toa, block, })
     }
 }
 
-module.exports = chainExports(chainTvl, ['ethereum', 'xdai', 'polygon', 'optimism', 'arbitrum'])
+module.exports = chainExports(chainTvl, ['ethereum', 'polygon', 'optimism', 'arbitrum', ...Object.keys(chainMapping)])

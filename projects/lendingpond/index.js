@@ -1,5 +1,5 @@
 const { PromisePool } = require('@supercharge/promise-pool')
-const { getAddressesUTXOs, getTxsMetadata } = require("../helper/cardano/blockfrost")
+const { getAddressesUTXOs, getTxsMetadata } = require("../helper/chain/cardano/blockfrost")
 
 const scriptAddress = "addr1wxwrp3hhg8xdddx7ecg6el2s2dj6h2c5g582yg2yxhupyns8feg4m"
 

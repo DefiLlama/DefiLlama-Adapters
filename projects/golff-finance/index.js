@@ -1,7 +1,4 @@
-const sdk = require('@defillama/sdk')
 const { default: axios } = require('axios')
-const { getBlock } = require('../helper/getBlock')
-const abi = require('./abi.json')
 const { toUSDTBalances } = require("../helper/balances");
 
 const chainIds = {

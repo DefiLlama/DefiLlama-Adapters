@@ -39,133 +39,135 @@ async function tvl(timestamp, block) {
   ).dividedBy(10 ** 18);
 
   // Fetch balances of each of the pools
-  for (let poolIndex = 0; poolIndex < poolAddresses.length; poolIndex++) {
-    const poolAddress = poolAddresses[poolIndex];
-    const masterChefPoolIndex = bentMasterChefPools.indexOf(poolAddress);
-    const isMasterChefPool = masterChefPoolIndex !== -1;
-    let poolSupply, poolLpToken;
+  await Promise.all(poolAddresses.map(async (_, poolIndex) => {
+    {
+      const poolAddress = poolAddresses[poolIndex];
+      const masterChefPoolIndex = bentMasterChefPools.indexOf(poolAddress);
+      const isMasterChefPool = masterChefPoolIndex !== -1;
+      let poolSupply, poolLpToken;
 
-    if (!isMasterChefPool) {
-      const results = (
-        await Promise.all([
-          sdk.api.erc20.totalSupply({
-            target: poolAddress,
+      if (!isMasterChefPool) {
+        const results = (
+          await Promise.all([
+            sdk.api.erc20.totalSupply({
+              target: poolAddress,
+              block,
+            }),
+            sdk.api.abi.call({
+              target: poolAddress,
+              abi: basePoolAbi.lpToken,
+              block,
+            }),
+          ])
+        ).map((p) => p.output.toLowerCase());
+        poolSupply = results[0];
+        poolLpToken = results[1];
+      } else {
+        poolLpToken = poolAddress;
+        poolSupply = (
+          await sdk.api.erc20.balanceOf({
+            target: poolLpToken,
+            owner: bentMasterChefAddress,
             block,
-          }),
-          sdk.api.abi.call({
-            target: poolAddress,
-            abi: basePoolAbi.lpToken,
-            block,
-          }),
-        ])
-      ).map((p) => p.output.toLowerCase());
-      poolSupply = results[0];
-      poolLpToken = results[1];
-    } else {
-      poolLpToken = poolAddress;
-      poolSupply = (
-        await sdk.api.erc20.balanceOf({
+          })
+        ).output;
+      }
+
+      const lpTokenTotalSupply = (
+        await sdk.api.erc20.totalSupply({
           target: poolLpToken,
-          owner: bentMasterChefAddress,
           block,
         })
       ).output;
-    }
 
-    const lpTokenTotalSupply = (
-      await sdk.api.erc20.totalSupply({
-        target: poolLpToken,
-        block,
-      })
-    ).output;
-
-    // Find the curve pool
-    let crvPoolAddr = (
-      await sdk.api.abi.call({
-        target: crvRegistry,
-        abi: curveRegistryAbi.get_pool_from_lp_token,
-        params: poolLpToken,
-        block,
-      })
-    ).output;
-
-    // Find the balance of the underlying coins in the curve pool
-    let coins = [];
-    if (crvPoolAddr !== addressZero) {
-      coins = (
+      // Find the curve pool
+      let crvPoolAddr = (
         await sdk.api.abi.call({
           target: crvRegistry,
-          abi: curveRegistryAbi.get_coins,
-          params: crvPoolAddr,
+          abi: curveRegistryAbi.get_pool_from_lp_token,
+          params: poolLpToken,
           block,
         })
-      ).output.filter((a) => a !== addressZero);
-    } else {
-      // Either use a manual mapping, or the pool is the lp token itself.
-      crvPoolAddr = crvPoolByLpTokenAddress[poolLpToken] || poolLpToken;
-      for (let i = 0, err = false; i < 8 && !err; i++) {
-        try {
-          let coin = (
-            await sdk.api.abi.call({
-              target: crvPoolAddr,
-              abi: curvePoolAbi.coins,
-              params: i,
-            })
-          ).output;
-          coins.push(coin);
-        } catch (e) {
-          err = true;
+      ).output;
+
+      // Find the balance of the underlying coins in the curve pool
+      let coins = [];
+      if (crvPoolAddr !== addressZero) {
+        coins = (
+          await sdk.api.abi.call({
+            target: crvRegistry,
+            abi: curveRegistryAbi.get_coins,
+            params: crvPoolAddr,
+            block,
+          })
+        ).output.filter((a) => a !== addressZero);
+      } else {
+        // Either use a manual mapping, or the pool is the lp token itself.
+        crvPoolAddr = crvPoolByLpTokenAddress[poolLpToken] || poolLpToken;
+        for (let i = 0, err = false; i < 8 && !err; i++) {
+          try {
+            let coin = (
+              await sdk.api.abi.call({
+                target: crvPoolAddr,
+                abi: curvePoolAbi.coins,
+                params: i,
+              })
+            ).output;
+            coins.push(coin);
+          } catch (e) {
+            err = true;
+          }
         }
       }
-    }
 
-    const includesEth =
-      coins.findIndex(
-        (addr) =>
-          addr.toLowerCase() === ethAddress ||
-          addr.toLowerCase() === wethAddress
-      ) !== -1;
+      const includesEth =
+        coins.findIndex(
+          (addr) =>
+            addr.toLowerCase() === ethAddress ||
+            addr.toLowerCase() === wethAddress
+        ) !== -1;
 
-    /**
-     * addr : balance for the curve pool
-     */
-    let curvePoolBalances = (
-      await sdk.api.abi.multiCall({
-        calls: coins
-          .filter((addr) => addr.toLowerCase() !== ethAddress)
-          .map((coinAddr) => ({
-            target: coinAddr,
-            params: crvPoolAddr,
-          })),
-        abi: "erc20:balanceOf",
-        block,
-      })
-    ).output.reduce((curvePoolBalances, { success, input, output }) => {
-      if (!success) return curvePoolBalances;
+      /**
+       * addr : balance for the curve pool
+       */
+      let curvePoolBalances = (
+        await sdk.api.abi.multiCall({
+          calls: coins
+            .filter((addr) => addr.toLowerCase() !== ethAddress)
+            .map((coinAddr) => ({
+              target: coinAddr,
+              params: crvPoolAddr,
+            })),
+          abi: "erc20:balanceOf",
+          block,
+        })
+      ).output.reduce((curvePoolBalances, { success, input, output }) => {
+        if (!success) return curvePoolBalances;
 
-      curvePoolBalances[input.target] = output;
-      return curvePoolBalances;
-    }, {});
+        curvePoolBalances[input.target] = output;
+        return curvePoolBalances;
+      }, {});
 
-    if (includesEth) {
-      var ethbal = await sdk.api.eth.getBalance({
-        target: crvPoolAddr,
-        block,
+      if (includesEth) {
+        var ethbal = await sdk.api.eth.getBalance({
+          target: crvPoolAddr,
+          block,
+        });
+        curvePoolBalances[addressZero] = ethbal.output;
+      }
+
+      // Calculate the share of the pool we have.
+      const poolShare = BigNumber(poolSupply).div(lpTokenTotalSupply);
+      const ourBalances = {};
+      Object.keys(curvePoolBalances).forEach((coinAddr) => {
+        let poolBalance = curvePoolBalances[coinAddr];
+        ourBalances[coinAddr] = new BigNumber(poolBalance)
+          .times(poolShare)
+          .toFixed(0);
       });
-      curvePoolBalances[addressZero] = ethbal.output;
+      poolBalances.push(ourBalances);
     }
-
-    // Calculate the share of the pool we have.
-    const poolShare = BigNumber(poolSupply).div(lpTokenTotalSupply);
-    const ourBalances = {};
-    Object.keys(curvePoolBalances).forEach((coinAddr) => {
-      let poolBalance = curvePoolBalances[coinAddr];
-      ourBalances[coinAddr] = new BigNumber(poolBalance)
-        .times(poolShare)
-        .toFixed(0);
-    });
-    poolBalances.push(ourBalances);
-  }
+  }))
 
   const balances = poolBalances.reduce((overallBalances, poolBalances) => {
     Object.keys(poolBalances).forEach((tokenAddress) => {

@@ -1,7 +1,7 @@
 const sdk = require('@defillama/sdk');
 const { ADDRESSES } = require("./constants");
-const yearnVaultABI = require("./abi/yearnVaultABI.json")
-const curveMetapoolABI = require("./abi/curveMetapoolABI.json")
+const yearnVaultABI = "uint256:pricePerShare"
+const curveMetapoolABI = "uint256:get_virtual_price"
 const { ethers } = require("ethers")
 
 async function addButterV2TVL(balances, timestamp, chainBlocks, chain = "ethereum") {

@@ -2,8 +2,6 @@ const sdk = require("@defillama/sdk");
 const { request, gql } = require("graphql-request"); 
 const { BigNumber } = require('bignumber.js');
 
-const {getBlock} = require('../helper/getBlock')
-
 // https://thegraph.com/hosted-service/subgraph/soulswapfantom/coffinbox
 const graphUrls = {
   'fantom': 'https://api.thegraph.com/subgraphs/name/soulswapfinance/fantom-coffinbox',

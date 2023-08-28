@@ -46,10 +46,11 @@ const ethTvl = async (ts, block) => {
   })
 
 
-  return sumTokens2({ block, tokensAndOwners, })
+  return sumTokens2({ block, tokensAndOwners, resolveLP: true, })
 };
 
 module.exports = {
+  misrepresentedTokens: true,
   ethereum: {
     staking: stakings(candyFarmsContracts, POP),
     tvl: ethTvl,

@@ -1,14 +1,13 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const sdk = require("@defillama/sdk")
-const retry = require('./helper/retry')
-const axios = require("axios")
 const BigNumber = require("bignumber.js")
+const { getConfig } = require('./helper/cache')
 
 // Loop through all RealT tokens listed by realt.community API and accumulate tokenprice * supply, where supply is biggest of xdai or mainnet
 // See https://api.realt.community/ for reference
-const xdai_usdc = 'xdai:0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83'
+const xdai_usdc = 'xdai:' + ADDRESSES.xdai.USDC
 async function xdaiTvl(timestamp, block, chainBlocks) {
-  let realt_tokens = await retry(async bail => await axios.get('https://api.realt.community/v1/token'))
-  realt_tokens = realt_tokens.data
+  let realt_tokens = await getConfig('realt', 'https://api.realt.community/v1/token')
 
   // Filter out deprecated contracts
   realt_tokens = realt_tokens.filter(t => !t['fullName'].startsWith('OLD-'))
@@ -44,7 +43,6 @@ async function xdaiTvl(timestamp, block, chainBlocks) {
     BigNumber(0)
   ) 
   tvl = tvl.times(1e6).toFixed(0)
-  console.log('Realt TVL:', tvl)
   return {[xdai_usdc]: tvl}
 }
 

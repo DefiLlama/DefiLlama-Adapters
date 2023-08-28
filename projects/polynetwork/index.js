@@ -150,6 +150,10 @@ async function bitgert() {
     const tvl = await utils.fetchURL('https://explorer.poly.network/api/v1/GetTVLBitgert')
     return Number(tvl.data);
 }
+async function dexit() {
+    const tvl = await utils.fetchURL('https://explorer.poly.network/api/v1/GetTVLDexit')
+    return Number(tvl.data);
+}
 
 async function fetch() {
     const tvl = await utils.fetchURL('https://explorer.poly.network/api/v1/getTVLTotal')
@@ -252,6 +256,9 @@ module.exports = {
     },
     bitgert: {
         fetch: bitgert
+    },
+    dexit: {
+        fetch: dexit
     },
     fetch
 }

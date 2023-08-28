@@ -1,0 +1,4 @@
+{
+  "allPools": "function allPools(uint256) view returns (address)",
+  "allPoolsLength": "uint256:allPoolsLength"
+}

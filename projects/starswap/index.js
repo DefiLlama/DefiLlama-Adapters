@@ -1,5 +1,4 @@
 const { getUniTVL, getTokenPrices, } = require('../helper/unknownTokens')
-const { getFixBalances } = require('../helper/portedTokens')
 const sdk = require('@defillama/sdk')
 
 const FACTORIES = "0x0b657e81a0C3E903cbe1228579fBd49AC5D81Ac1"
@@ -20,71 +19,20 @@ module.exports = {
   astar: {
     tvl: getUniTVL({
       factory: FACTORIES,
-      chain,
       useDefaultCoreAssets: true,
     }),
     staking:  async (_, _b, { [chain]: block }) => {
       const { output: { totalStakedTokens } } = await sdk.api.abi.call({
         target: STAKING_CONTRACT,
         params: 0,
-        abi: {
-          "type": "function",
-          "stateMutability": "view",
-          "outputs": [
-            {
-              "type": "address",
-              "name": "lpToken",
-              "internalType": "contract IERC20"
-            },
-            {
-              "type": "uint256",
-              "name": "allocPoint",
-              "internalType": "uint256"
-            },
-            {
-              "type": "uint256",
-              "name": "lastRewardBlock",
-              "internalType": "uint256"
-            },
-            {
-              "type": "uint256",
-              "name": "accStarPerShare",
-              "internalType": "uint256"
-            },
-            {
-              "type": "uint16",
-              "name": "depositFeeBP",
-              "internalType": "uint16"
-            },
-            {
-              "type": "uint256",
-              "name": "harvestInterval",
-              "internalType": "uint256"
-            },
-            {
-              "type": "uint256",
-              "name": "totalStakedTokens",
-              "internalType": "uint256"
-            }
-          ],
-          "name": "poolInfo",
-          "inputs": [
-            {
-              "type": "uint256",
-              "name": "",
-              "internalType": "uint256"
-            }
-          ]
-        },
+        abi: 'function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accStarPerShare, uint16 depositFeeBP, uint256 harvestInterval, uint256 totalStakedTokens)',
         chain, block,
       })
 
       const balances = { [chain + ':' + TOKENS.STAR] : totalStakedTokens }
-      const transform = await getFixBalances(chain)
       const { updateBalances } = await getTokenPrices({ chain, block, 
         useDefaultCoreAssets: true, lps: [ ASTAR_LP ], allLps: true })
       await updateBalances(balances)
-      transform(balances)
       return balances
     }
   }

@@ -1,39 +1,15 @@
 const sdk = require("@defillama/sdk");
-const axios = require("axios");
+const { getConfig } = require('../helper/cache')
 
 const optyfi_api = "https://api.opty.fi";
 const get_vaults_api = `${optyfi_api}/v1/yield/vaults`;
 const abi = {
-  totalSupply: {
-    inputs: [],
-    name: "totalSupply",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  getPricePerFullShare: {
-    inputs: [],
-    name: "getPricePerFullShare",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
+  totalSupply: "uint256:totalSupply",
+  getPricePerFullShare: "uint256:getPricePerFullShare",
 };
 
 async function getTVL(chain, block, chain_id) {
-  const vaults = (await axios.get(get_vaults_api)).data.items.filter(i => !i.is_staging && i.chain.chain_id === chain_id)
+  const vaults = (await getConfig('optyfi', get_vaults_api)).items.filter(i => !i.is_staging && i.chain.chain_id === chain_id)
   const calls = vaults.map(i => ({ target: i.vault_token.address }))
   const { output: supply } = await sdk.api.abi.multiCall({
     abi: abi.totalSupply,

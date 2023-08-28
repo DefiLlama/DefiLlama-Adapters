@@ -1,39 +1,10 @@
-const utils = require("../helper/utils");
-const sdk = require("@defillama/sdk");
+const { queryV1Beta1 } = require('../helper/chain/cosmos');
 
-async function tvl(timestamp) {
-  let balances = {};
-  let url = `https://api2.kava.io/kava/earn/v1beta1/total_supply`;
+const chain = 'kava'
 
-  // if (Math.abs(Date.now() / 1000 - timestamp) > 3600) {
-  //   const block = await sdk.api.util.lookupBlock(timestamp, { chain: "kava" });
-  //   url += `?height=${block.block}`;
-  // }
-
-  const response = await utils.fetchURL(url);
-
-  for (let coin of response.data.result) {
-    const tokenInfo = generic(coin.denom);
-    if (!tokenInfo) {
-      utils.log("unknown token", coin.denom);
-      continue;
-    }
-    const tokenName = tokenInfo[0];
-    sdk.util.sumSingleBalance(balances,tokenName,coin.amount / 10 ** tokenInfo[1])
-  }
-
-  return balances;
-}
-
-function generic(ticker) {
-  switch (ticker) {
-    case "bkava":
-      return ["kava", 6];
-    case "ukava":
-      return ["kava", 6];
-    case "erc20/multichain/usdc":
-      return ["usd-coin", 6];
-  }
+async function tvl(_, _1, _2, { api }) {
+  const { result: pools } = await queryV1Beta1({ chain, url: '/earn/v1beta1/total_supply' });
+  pools.forEach(({ denom, amount }) => api.add(denom, amount))
 }
 
 module.exports = {

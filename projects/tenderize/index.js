@@ -1,9 +1,6 @@
-const tenderSwapABI = require('./tenderSwapABI.json');
 const sdk = require('@defillama/sdk');
 const { GraphQLClient, gql } = require('graphql-request');
-const retry = require('../helper/retry');
 const BigNumber = require('bignumber.js');
-const { transformArbitrumAddress } = require('../helper/portedTokens');
 
 const ethereumEndpoint =
   'https://api.thegraph.com/subgraphs/name/tenderize/tenderize-ethereum';
@@ -35,9 +32,7 @@ const addBNstr = (a, b) => {
 
 async function fetchArbitrum(timestamp, ethBlock, chainBlocks) {
   const graphQLClient = new GraphQLClient(arbitrumEndpoint);
-  const configsResult = await retry(
-    async (bail) => await graphQLClient.request(configsQuery)
-  );
+  const configsResult = await graphQLClient.request(configsQuery)
 
   const deploymentConfigs = configsResult.configs;
   const tvlData = {};
@@ -49,11 +44,11 @@ async function fetchArbitrum(timestamp, ethBlock, chainBlocks) {
     const token1Balance = await sdk.api.abi.call({
       block: chainBlocks['arbitrum'],
       target: config.tenderSwap,
-      abi: tenderSwapABI.find((abi) => abi.name === 'getToken1Balance'),
+      abi: "uint256:getToken1Balance",
       chain: 'arbitrum'
     });
 
-    const tokenAddress = (await transformArbitrumAddress())(config.steak);
+    const tokenAddress = (i => `arbitrum:${i}`)(config.steak);
     tvlData[tokenAddress] = addBNstr(
       result.tenderizer.currentPrincipal,
       token1Balance.output
@@ -65,9 +60,7 @@ async function fetchArbitrum(timestamp, ethBlock, chainBlocks) {
 
 async function fetchEthereum(timestamp, ethBlock, chainBlocks) {
   const graphQLClient = new GraphQLClient(ethereumEndpoint);
-  const configsResult = await retry(
-    async (bail) => await graphQLClient.request(configsQuery)
-  );
+  const configsResult = await graphQLClient.request(configsQuery)
 
   const deploymentConfigs = configsResult.configs;
   const tvlData = {};
@@ -79,7 +72,7 @@ async function fetchEthereum(timestamp, ethBlock, chainBlocks) {
     const token1Balance = await sdk.api.abi.call({
       block: ethBlock,
       target: config.tenderSwap,
-      abi: tenderSwapABI.find((abi) => abi.name === 'getToken1Balance'),
+      abi: "uint256:getToken1Balance",
     });
 
     tvlData[config.steak] = addBNstr(

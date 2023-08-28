@@ -51,51 +51,9 @@ function getTridentTVL({ chain, factory}) {
 
 // taken from https://github.com/pangea-protocol/pangea-core/tree/main/deployments/abis
 const abis = {
-  totalPoolsCount: {
-    "inputs": [],
-    "name": "totalPoolsCount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "total",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  getPoolAddress: {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "idx",
-        "type": "uint256"
-      }
-    ],
-    "name": "getPoolAddress",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "pool",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  getAssets: {
-    "inputs": [],
-    "name": "getAssets",
-    "outputs": [
-      {
-        "internalType": "address[]",
-        "name": "assets",
-        "type": "address[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
+  totalPoolsCount: "uint256:totalPoolsCount",
+  getPoolAddress: "function getPoolAddress(uint256 idx) view returns (address pool)",
+  getAssets: "address[]:getAssets",
 }
 
 module.exports = {

@@ -1,10 +1,8 @@
 const sdk = require("@defillama/sdk");
-const getPair = require("./abis/getPair.json");
-const getReserves = require("./abis/getReserves.json");
-const token0 = require("./abis/token0.json");
+const getReserves = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)';
+const token0 = "address:token0";
 const contracts = require("./contracts.json");
 const { default: BigNumber } = require("bignumber.js");
-const { getBlock } = require("../helper/getBlock");
 
 const getETHPrice = async (block) => {
   const reserves = (
@@ -63,7 +61,7 @@ const getPrice = async (tokenAddress, block) => {
       : (
           await sdk.api.abi.call({
             target: contracts["sushiFactoryAddress"],
-            abi: getPair,
+            abi: 'function getPair(address, address) view returns (address)',
             params: [tokenAddress, contracts["weth"]],
             block: block,
             chain: "arbitrum",

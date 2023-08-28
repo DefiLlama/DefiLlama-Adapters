@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens, unwrapCreamTokens } = require("../helper/unwrapLPs");
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
@@ -18,12 +19,12 @@ const avaults = [
   "0x47a21F14794b6229cc2a1ddfe4498C9e48f1C16c",
 ];
 const avDAI = "0x47afa96cdc9fab46904a55a6ad4bf6660b53c38a";
-const DAI = "0xd586e7f844cea2f87f50152665bcbc2c279d8d70";
+const DAI = ADDRESSES.avax.DAI;
 const transforms = {
   "0x47afa96cdc9fab46904a55a6ad4bf6660b53c38a":
-    "0x6b175474e89094c44da98b954eedeac495271d0f", // avDAI
-  "0xd586e7f844cea2f87f50152665bcbc2c279d8d70":
-    "0x6b175474e89094c44da98b954eedeac495271d0f", // DAI
+    ADDRESSES.ethereum.DAI, // avDAI
+  [ADDRESSES.avax.DAI]:
+    ADDRESSES.ethereum.DAI, // DAI
 };
 
 async function polyTvl(time, ethBlock, chainBlocks) {

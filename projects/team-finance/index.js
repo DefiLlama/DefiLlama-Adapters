@@ -56,7 +56,7 @@ function getTvl(args) {
     }
     return totalBalances
   }
-};
+}
 
 module.exports = {
   methodology: `Counts each LP pair's native token and 

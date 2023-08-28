@@ -1,7 +1,3 @@
-const abi = require("./abi.json");
-const { masterChefExports } = require("../helper/masterchef");
+const { uniTvlExport } = require('../helper/unknownTokens')
 
-const masterChef = "0x9942cb4c6180820E6211183ab29831641F58577A";
-const PNDA = "0x47DcC83a14aD53Ed1f13d3CaE8AA4115f07557C0";
-
-module.exports = masterChefExports(masterChef, "bsc", PNDA, true, abi.poolInfo)
+module.exports = uniTvlExport('bsc', '0x9ad32bf5dafe152cbe027398219611db4e8753b3')

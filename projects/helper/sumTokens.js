@@ -1,53 +1,59 @@
 const { ibcChains, getUniqueAddresses} = require('./tokenMapping')
-const { log,  } = require('./utils')
-const { get } = require('./http')
-const { sumTokens2: sumTokensEVM, } = require('./unwrapLPs')
+const { get, post, } = require('./http')
+const { sumTokens2: sumTokensEVM, nullAddress, } = require('./unwrapLPs')
 const sdk = require('@defillama/sdk')
 
 const helpers = {
-  "tron": require("./tron"),
-  "eos": require("./eos"),
-  "cardano":require("./cardano"),
-  "algorand":require("./algorand"),
-  "cosmos":require("./cosmos"),
+  "eos": require("./chain/eos"),
+  "ergo": require("./chain/ergo"),
+  "elrond": require("./chain/elrond"),
+  "cardano":require("./chain/cardano"),
+  "algorand":require("./chain/algorand"),
+  "cosmos":require("./chain/cosmos"),
   "solana":require("./solana"),
-  "aptos":require("./aptos"),
-  "tezos":require("./tezos"),
-  "zilliqa":require("./zilliqa"),
-  "near":require("./near"),
-  "bitcoin":require("./bitcoin"),
-  "litecoin":require("./litecoin"),
-  "polkadot":require("./polkadot"),
+  "aptos":require("./chain/aptos"),
+  "tezos":require("./chain/tezos"),
+  "zilliqa":require("./chain/zilliqa"),
+  "near":require("./chain/near"),
+  "bitcoin":require("./chain/bitcoin"),
+  "litecoin":require("./chain/litecoin"),
+  "polkadot":require("./chain/polkadot"),
+  "hedera":require("./chain/hbar"),
+  "stacks":require("./chain/stacks"),
 }
 
 const geckoMapping = {
   bep2: 'binancecoin',
-  elrond: 'elrond-erd-2',
+  ripple: 'ripple',
 }
 
 const specialChains = Object.keys(geckoMapping)
 
 async function getBalance(chain, account) {
   switch (chain) {
-    case 'elrond':
-      return (await get(`https://gateway.elrond.com/address/${account}`)).data.account.balance / 1e18
+    case 'ripple': return getRippleBalance(account)
     case 'bep2':
-      const balObject = (await get(`https://api-binance-mainnet.cosmostation.io/v1/account/${account}`)).balances.find(i => i.symbol === 'BNB')
+      // info: https://docs.bnbchain.org/api-swagger/index.html
+      const balObject = (await get(`https://dex.binance.org/api/v1/account/${account}`)).balances.find(i => i.symbol === 'BNB')
       return +(balObject?.free ?? 0)
     default: throw new Error('Unsupported chain')
   }
 }
 
 function sumTokensExport(options) {
-  const {chain} = options
-  if (!chain) throw new Error('Missing chain info')
-  return async (_, _b, {[chain]: block}) => sumTokens({ block, ...options})
+  return async (_, _b, _cb, { api }) => sumTokens({ ...api, api, ...options})
 }
 
 async function sumTokens(options) {
-  let { chain, owner, owners = [], tokens = [], tokensAndOwners = [], blacklistedTokens = [], balances = {}, } = options 
+  let { chain, owner, owners = [], tokens = [], tokensAndOwners = [], blacklistedTokens = [], balances = {}, token, api } = options 
+  if (api && !specialChains.includes(chain)) {
+    chain = api.chain
+  }
 
-  if (!helpers[chain] && !specialChains.includes(chain))
+  if (token) tokens = [token]
+  if (owner) owners = [owner]
+
+  if (!ibcChains.includes(chain) && !helpers[chain] && !specialChains.includes(chain))
     return sumTokensEVM(options)
 
   owners = getUniqueAddresses(owners, chain)
@@ -72,6 +78,7 @@ async function sumTokens(options) {
 
   if(helper) {
     switch(chain) {
+      case 'cardano':
       case 'solana': return helper.sumTokens2(options)
       case 'eos': return helper.get_account_tvl(owners, tokens, 'eos')
       case 'tezos': options.includeTezos = true; break;
@@ -93,7 +100,14 @@ async function sumTokens(options) {
   }
 }
 
+async function getRippleBalance(account) {
+  const body = { "method": "account_info", "params": [{ account }] }
+  const res = await post('https://s1.ripple.com:51234', body)
+  return res.result.account_data.Balance / 1e6
+}
+
 module.exports = {
+  nullAddress,
   sumTokensExport,
   sumTokens,
 }

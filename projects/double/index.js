@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const { transformBscAddress } = require('../helper/portedTokens');
 const { unwrapUniswapLPs } = require('../helper/unwrapLPs');
 const abis = require("./abis.json");
 
@@ -19,12 +18,12 @@ async function staking(timestamp, block, chainBlocks) {
             chain: 'bsc'
         })).output.amount
     };
-};
+}
 
 function tvl(pool2 = false) {
     return async (timestamp, block, chainBlocks) => {
         const balances = {};
-        const transform = await transformBscAddress();
+        const transform = i => `bsc:${i}`;
 
         const noPairs = (await sdk.api.abi.call({
             target: '0xb5737A06c330c22056C77a4205D16fFD1436c81b', // BaseV1Factory
@@ -80,7 +79,7 @@ function tvl(pool2 = false) {
                 excludedTokens.includes(pairAddresses[i].output.toLowerCase())
             ) {
                 continue;
-            };
+            }
             if (excludedTokens.includes(token0s.output[i].output.toLowerCase()) ||
                 excludedTokens.includes(token1s.output[i].output.toLowerCase())) {
                 pool2Positions.push({
@@ -92,8 +91,8 @@ function tvl(pool2 = false) {
                     balance: pairBalances[i].output,
                     token: pairAddresses[i].output
                 });
-            };
-        };
+            }
+        }
 
         await unwrapUniswapLPs(
             balances,
@@ -105,7 +104,7 @@ function tvl(pool2 = false) {
 
         return balances;
     };
-};
+}
 
 module.exports = {
     doublecounted: true,

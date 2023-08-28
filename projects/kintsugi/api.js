@@ -3,7 +3,7 @@ const { getAPI } = require('../helper/acala/api')
 
 async function tvl(){
   const api = await getAPI('kintsugi');
-  kintsugiTVL = {}
+  const kintsugiTVL = {}
   
   // Fetch total BTC locked (= kBTC minted)
   const tokens = await api.query.tokens.totalIssuance.entries()

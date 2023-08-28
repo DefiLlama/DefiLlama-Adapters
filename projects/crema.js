@@ -1,17 +1,15 @@
-const retry = require("./helper/retry");
-const axios = require("axios");
+const { getConfig } = require('./helper/cache')
+const { sumTokens2 } = require('./helper/solana')
 
-async function fetch() {
-  const response = (
-    await retry(
-      async () => await axios.get("https://api.crema.finance/v1/swap/count")
-    )
-  ).data;
-  const tvl = response.data.tvl_in_usd;
-  return tvl;
+async function tvl() {
+  const { data } = await getConfig('crema-solana', "https://api.crema.finance/v1/swap/count")
+  const tokenAccounts = data.pools.map(i => ([i.token_a_reserves, i.token_b_reserves])).flat()
+  return sumTokens2({ tokenAccounts })
 }
 
 module.exports = {
   timetravel: false,
-  fetch,
+  solana: {
+    tvl
+  },
 };

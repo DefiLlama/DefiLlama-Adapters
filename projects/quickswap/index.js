@@ -5,7 +5,7 @@ module.exports = {
   timetravel: true,
   polygon:{
     tvl: getChainTvl({
-      polygon: 'https://polygon.furadao.org/subgraphs/name/quickswap'
+      polygon: 'https://api.thegraph.com/subgraphs/name/sameepsi/quickswap06'
     })('polygon')
   },
     hallmarks:[

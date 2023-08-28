@@ -136,12 +136,12 @@ module.exports = {
   ethereum: {
     liquidations: positions(Chain.ethereum),
   },
-  polygon: {
-    liquidations: positions(Chain.polygon),
-  },
-  optimism: {
-    liquidations: positions(Chain.optimism),
-  },
+  // polygon: {
+  //   liquidations: positions(Chain.polygon),
+  // },
+  // optimism: {
+  //   liquidations: positions(Chain.optimism),
+  // },
   arbitrum: {
     liquidations: positions(Chain.arbitrum),
   },

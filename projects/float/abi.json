@@ -1,15 +1,3 @@
 {
-  "stakeToken": {
-    "inputs": [],
-    "name": "stakeToken",
-    "outputs": [
-      {
-        "internalType": "contract IERC20",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  }
+  "stakeToken": "address:stakeToken"
 }

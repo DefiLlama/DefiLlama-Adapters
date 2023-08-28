@@ -33,6 +33,9 @@ async function tvl(_timestamp, block) {
 }
 
 module.exports = {
+  hallmarks: [
+    [1641600000, "Possible exploit, contracts paused"]
+  ],
   ethereum:{
     tvl
   },

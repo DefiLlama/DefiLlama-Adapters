@@ -7,7 +7,7 @@
  * @see https://v1.oswap.io/
  * @see https://v1-stats.oswap.io/
  */
-const {fetchBaseAABalances, fetchOswapExchangeRates, fetchOswapAssets, summingBaseAABalancesToTvl} = require('../helper/obyte')
+const {fetchBaseAABalances, fetchOswapExchangeRates, fetchOswapAssets, summingBaseAABalancesToTvl} = require('../helper/chain/obyte')
 
 // TODO support time travel for the exchange rate, currently it always returns the latest rates
 async function tvl(timestamp) {

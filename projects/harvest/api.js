@@ -7,3 +7,9 @@ module.exports = {
   misrepresentedTokens: true,
   ...getExports("harvest", chainKeys),
 }
+
+module.exports.ethereum = {
+  tvl: () => {
+    throw new Error('Method not implemented')
+  }
+}

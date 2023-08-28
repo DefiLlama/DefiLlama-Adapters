@@ -5,7 +5,6 @@ module.exports = {
   evmos: {
     tvl: getUniTVL({
       factory: '0x868A71EbfC46B86a676768C7b7aD65055CC293eE',
-      chain: 'evmos',
       useDefaultCoreAssets: true,
     })
   },

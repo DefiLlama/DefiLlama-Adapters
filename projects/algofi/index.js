@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk')
 const { log } = require('../helper/utils')
-const { getAppGlobalState, } = require("../helper/algorand")
+const { getAppGlobalState, } = require("../helper/chain/algorand")
 const { getPrices, appDictionary, marketStrings } = require('./utils')
 
 
@@ -87,6 +87,9 @@ async function staking() {
 }
 
 module.exports = {
+  hallmarks: [
+    [1688947200, "Winding down of protocol"]
+  ],
   timetravel: false,
   misrepresentedTokens: true,
   algorand: {

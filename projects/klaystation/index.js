@@ -1,14 +1,13 @@
-const retry = require('async-retry')
-const axios = require("axios");
+const { get } = require('../helper/http')
 const BigNumber = require("bignumber.js");
 
 //////////    KLAYSTATION   ////////////////
 //// TVL = OZYS stakedKlay * priceKlay ////
 //////////////////////////////////////////
 async function fetch() {
-	const klaystationInfo = await retry(async bail => await axios.get('https://s.klaystation.io/staking/status.json'))
-	const stakingAmount = klaystationInfo.data.stakingAmount;
-	const priceKlay = klaystationInfo.data.priceUsd;
+	const klaystationInfo = await get('https://s.klaystation.io/staking/status.json')
+	const stakingAmount = klaystationInfo.stakingAmount;
+	const priceKlay = klaystationInfo.priceUsd;
 	var totalLiquidity = new BigNumber('0');
 
 	const cnAddresses = ["0xe33337cb6fbb68954fe1c3fde2b21f56586632cd"];

@@ -1,6 +1,6 @@
 const axios = require('axios');
 const BigNumber = require("bignumber.js");
-const { RPC_ENDPOINT } = require('../helper/tezos');
+const { RPC_ENDPOINT } = require('../helper/chain/tezos');
 const { PromisePool } = require('@supercharge/promise-pool');
 
 const SPICY_URL = 'https://spicya.sdaotools.xyz/api/rest';

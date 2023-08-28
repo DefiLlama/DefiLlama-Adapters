@@ -16,9 +16,7 @@ async function getTVL(balances, chain, timestamp, chainBlocks) {
         target: PRICEORACLE,
         params: [address, "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"],
       })),
-      abi: abi.PRICEORACLE_ABI.find(
-        (a) => a.name === "prices"
-      ),
+      abi: abi.PRICEORACLE_ABI,
       block,
       chain,
     }),
@@ -27,9 +25,7 @@ async function getTVL(balances, chain, timestamp, chainBlocks) {
         target: address,
         params: [XNFT],
       })),
-      abi: abi.ERC721_ABI.find(
-        (a) => a.name === "balanceOf"
-      ),
+      abi: abi.ERC721_ABI,
       block,
       chain,
     })
@@ -51,9 +47,7 @@ async function getBorrowed(balances, chain, timestamp, chainBlocks) {
     sdk.api.abi.call({
       target: XETH,
       params: [],
-      abi: abi.XETH_ABI.find(
-        (a) => a.name === "totalBorrows"
-      ),
+      abi: abi.XETH_ABI,
       block,
       chain,
     }),

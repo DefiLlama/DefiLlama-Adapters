@@ -44,17 +44,17 @@ const pairTokens = {
       code: "mok.token",
     },
   },
-  "coin:lago.kwUSDC": {
-    name: "coin:lago.kwUSDC",
-    token0: {
-      name: "KDA",
-      code: "coin",
-    },
-    token1: {
-      name: "USDC",
-      code: "lago.kwUSDC",
-    },
-  },
+  // "coin:lago.kwUSDC": {
+  //   name: "coin:lago.kwUSDC",
+  //   token0: {
+  //     name: "KDA",
+  //     code: "coin",
+  //   },
+  //   token1: {
+  //     name: "USDC",
+  //     code: "lago.kwUSDC",
+  //   },
+  // },
   "coin:kaddex.kdx": {
     name: "coin:kaddex.kdx",
     token0: {

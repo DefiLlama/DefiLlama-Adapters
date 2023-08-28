@@ -1,5 +1,6 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 
-const nullAddress = '0x0000000000000000000000000000000000000000'
+const nullAddress = ADDRESSES.null
 const sdk = require("@defillama/sdk");
 const addresses = require("./addresses.json");
 
@@ -9,87 +10,7 @@ async function useParsedStakingMetadata(block) {
   const stratViewer = await sdk.api.abi.call({
     block,
     target: curAddresses.CurvePoolRewards,
-    abi: {
-      inputs: [
-        {
-          internalType: "address",
-          name: "account",
-          type: "address",
-        },
-      ],
-      name: "stakingMetadata",
-      outputs: [
-        {
-          components: [
-            {
-              internalType: "address",
-              name: "stakingToken",
-              type: "address",
-            },
-            {
-              internalType: "address",
-              name: "rewardsToken",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "totalSupply",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "tvl",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "aprPer10k",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "vestingCliff",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "periodFinish",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "stakedBalance",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "vestingStart",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "earned",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "rewards",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "vested",
-              type: "uint256",
-            },
-          ],
-          internalType: "struct VestingStakingRewards.StakingMetadata",
-          name: "",
-          type: "tuple",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
+    abi: 'function stakingMetadata(address account) view returns (tuple(address stakingToken, address rewardsToken, uint256 totalSupply, uint256 tvl, uint256 aprPer10k, uint256 vestingCliff, uint256 periodFinish, uint256 stakedBalance, uint256 vestingStart, uint256 earned, uint256 rewards, uint256 vested))',
     chain: "avax",
     params: [nullAddress],
   });

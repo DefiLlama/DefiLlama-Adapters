@@ -1,5 +1,5 @@
-const { blockQuery } = require('../helper/graph')
-const { getBlock } = require('../helper/getBlock')
+const ADDRESSES = require('../helper/coreAssets.json')
+const { blockQuery } = require('../helper/http')
 const sdk = require('@defillama/sdk')
 const { gql } = require('graphql-request')
 const CHAIN_POLYGON = 'polygon'
@@ -13,7 +13,7 @@ const THEGARPH_API = {
 function transform(str) {
   switch (str) {
     case "bsc:0xaf90e457f4359adcc8b37e8df8a27a1ff4c3f561": // SHIB
-      return "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE"
+      return ADDRESSES.ethereum.INU
     case "bsc:0xf218184af829cf2b0019f8e6f0b2423498a36983": // MATH
       return "0x08d967bb0134f2d07f7cfb6e246680c53927dd30"
     case "bsc:0xbd2949f67dcdc549c6ebe98696449fa79d988a9f":
@@ -24,8 +24,7 @@ function transform(str) {
 }
 
 function fetch(chain) {
-  return async (ts, _, chainBlocks) => {
-    const  block = await getBlock(ts, chain, chainBlocks)
+  return async (ts, _, chainBlocks, { api }) => {
     var endpoint = THEGARPH_API[chain]
     var query = gql`
     query tvl($block: Int){
@@ -41,7 +40,7 @@ function fetch(chain) {
       }
     }
     `;
-    const results = await blockQuery(endpoint, query, block, 1000)
+    const results = await blockQuery(endpoint, query, { api, blockCatchupLimit: 2000, })
     const { options } = results
 
     const data = options.flatMap(o => {

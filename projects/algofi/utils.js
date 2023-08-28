@@ -1,6 +1,6 @@
 
 const { get } = require('../helper/http')
-const { getAppGlobalState, getPriceFromAlgoFiLP, } = require("../helper/algorand")
+const { getAppGlobalState, getPriceFromAlgoFiLP, } = require("../helper/chain/algorand")
 
 let pricesCache
 let snapshotsCache

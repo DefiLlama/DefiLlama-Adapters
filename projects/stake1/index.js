@@ -12,7 +12,7 @@ async function vaultTvl(balances, block, abi, target, coin) {
   })).output);
 
   sdk.util.sumSingleBalance(balances, coin, ftmStaked);
-};
+}
 async function tvl(timestamp, block, chainBlocks) {
   const balances = {};
 
@@ -65,7 +65,7 @@ async function tvl(timestamp, block, chainBlocks) {
   sdk.util.sumSingleBalance(balances, contracts.DAI, daiBalances);
 
   return balances;
-};
+}
 
 module.exports = {
   fantom: {

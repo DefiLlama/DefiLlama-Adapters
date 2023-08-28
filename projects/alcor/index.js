@@ -1,4 +1,4 @@
-const { get_account_tvl } = require("../helper/eos");
+const { get_account_tvl } = require("../helper/chain/eos");
 
 // Alcor
 // https://eos.alcor.exchange/

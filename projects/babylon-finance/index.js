@@ -33,7 +33,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     })
 
     for (const gardenDetails of gardensDetails.output) {
-        if (gardensToIgnore.includes(gardenDetails.input.params[0])) { continue; };
+        if (gardensToIgnore.includes(gardenDetails.input.params[0])) { continue; }
         log(gardenDetails.input.params[0], !!gardenDetails.output)
         const [gardenName, symbol, creators, reserveAsset, arr1, strategies, finalizedStrategies, voteParams, capitalArr, profits] = gardenDetails.output
         // const garden_principal = capitalArr[0]

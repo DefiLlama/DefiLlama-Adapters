@@ -1,4 +1,3 @@
-const retry = require("async-retry");
 const { GraphQLClient, gql } = require("graphql-request");
 const { staking } = require("../helper/staking");
 
@@ -21,13 +20,10 @@ async function tvl(timestamp, block, chainBlocks) {
       }
     }
   `;
-  const results = await retry(
-    async (bail) =>
-      await graphQLClient.request(query, {
+  const results = await  graphQLClient.request(query, {
         start: timestamp - 2 * 60 * 60 * 1000,
         end: timestamp,
       })
-  );
   return {
     usd: parseFloat(results.protocolMetrics[0].treasuryMarketValue),
   };

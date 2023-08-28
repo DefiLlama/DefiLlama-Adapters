@@ -1,5 +1,4 @@
 const sdk = require('@defillama/sdk');
-const { transformBscAddress } = require('../helper/portedTokens');
 const REVA_CHEF = "0xd7550285532f1642511b16Df858546F2593d638B";
 const REVA_CHEF_ABI = require("./RevaChef.json");
 const { unwrapUniswapLPs } = require('../helper/unwrapLPs');
@@ -16,7 +15,7 @@ async function tvl(timestamp, _, { bsc: block }) {
   const tokenAddresses = Array.from(
     new Set(config.tokens.map((token) => token.address)));
 
-  const transform = await transformBscAddress();
+  const transform = i => `bsc:${i}`;
 
   const calls = tokenAddresses.map((tokenAddress) => ({
     params: tokenAddress,
@@ -47,8 +46,8 @@ async function tvl(timestamp, _, { bsc: block }) {
         transform(tokenInfos[i].input.params[0]), 
         tokenInfos[i].output.totalPrincipal
         );
-    };
-  };
+    }
+  }
 
   await unwrapUniswapLPs(
     balances, 
@@ -58,7 +57,7 @@ async function tvl(timestamp, _, { bsc: block }) {
     transform);
 
 	return balances;
-};
+}
 
 module.exports = {
   misrepresentedTokens: true,

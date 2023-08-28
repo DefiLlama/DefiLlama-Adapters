@@ -1,6 +1,7 @@
-const { getProvider, getSolBalances, tokens, } = require('../helper/solana')
+const ADDRESSES = require('../helper/coreAssets.json')
+const { getProvider, getSolBalances, } = require('../helper/solana')
 const { Program, } = require("@project-serum/anchor");
-const { get, } = require('../helper/http')
+const { getConfig } = require('../helper/cache')
 
 let data
 
@@ -12,7 +13,7 @@ async function getData() {
   async function getAllData() {
     const programId = 'A66HabVL3DzNzeJgcHYtRRNW1ZRMKwBfrdSR4kLsZ9DJ'
     const provider = getProvider()
-    const idl = await get('https://raw.githubusercontent.com/frakt-solana/frakt-sdk/master/src/loans/idl/nft_lending_v2.json')
+    const idl = await getConfig('frakt-idl', 'https://raw.githubusercontent.com/frakt-solana/frakt-sdk/master/src/loans/idl/nft_lending_v2.json')
     const program = new Program(idl, programId, provider)
     const pbPools = await program.account.priceBasedLiquidityPool.all()
     const liquidityPools = await program.account.liquidityPool.all()
@@ -31,11 +32,11 @@ async function getData() {
 }
 
 const tvl = async () => {
-  return { [tokens.solana]: (await getData()).tvl }
+  return { ['solana:' + ADDRESSES.solana.SOL]: (await getData()).tvl }
 };
 
 const borrowed = async () => {
-  return { [tokens.solana]: (await getData()).borrowed }
+  return { ['solana:' + ADDRESSES.solana.SOL]: (await getData()).borrowed }
 }
 
 module.exports = {
