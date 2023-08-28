@@ -14,4 +14,7 @@ module.exports = yieldHelper({
     getReservesABI: 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1)',
   },
   useDefaultCoreAssets: true,
-})
+}),
+module.exports.hallmarks = [
+  [1693180800, "Rug Pull"]
+]
