@@ -85,9 +85,35 @@ const config = {
     ampToken: "factory/inj1cdwt8g7nxgtg2k4fn8sj363mh9ahkw2qt0vrnc/ampINJ",
     decimals: 18,
   },
+  neutron: {
+    farms: [
+      "neutron1h4ehzx3j92jv4tkgjy3k2qphh5863l68cyep7vaf83fj6k89l4lqjfyh77",
+      "neutron1sfmpf84xacu2la88zzsgende2jjlczswdmhzn7jh6tuhn43jl86q6d0vhj",
+      "neutron1smam4j5cypw2vp7un3q8w68sg97zq9s2c95ukwsmpsl2jh4xwzdskxm6az",
+      "neutron188xz8cg4uqk4ssg9tcf3q2764ar8ev0jr8qpx2qspchul98ykzuqx58r50",
+    ],
+    coinGeckoMap: {
+      "ibc/F082B65C88E4B6D5EF1DB243CDA1D331D002759E938A0F5CD3FFDC5D53B3E349":
+        "usd-coin",
+      "ibc/57503D7852EF4E1899FE6D71C5E81D7C839F76580F86F21E39348FC2BC9D7CE2":
+        "tether",
+      "ibc/5751B8BCDA688FD0A8EC0B292EEF1CDEAB4B766B63EC632778B196D317C40C3A":
+        "astroport-fi",
+      untrn: "neutron-3",
+      "ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9":
+        "cosmos",
+    },
+  },
+  chihuahua: {
+    coinGeckoId: "chihuahua-token",
+    hub: "chihuahua1nktfhalzvtx82kyn4dh6l8htcl0prfpnu380a39zj52nzu3j467qqg23ry",
+  },
 };
 
 async function getState(chain, contract) {
+  if (!contract) {
+    return {};
+  }
   return queryContractCosmos({
     contract,
     chain,
@@ -170,9 +196,9 @@ async function tvlAmpGovernance(chain, state) {
   }
 }
 
-async function farm2Tvl(farm) {
+async function farm2Tvl(chain, farm) {
   const res = await queryContractCosmos({
-    chain: "terra2",
+    chain: chain,
     contract: farm,
     data: { state: {} },
   });
@@ -191,8 +217,8 @@ async function farm2Tvl(farm) {
     amount: +res.locked_assets[1].amount,
   };
 
-  token1.coinGeckoId = getCoinGeckoId("terra2", token1.denom);
-  token2.coinGeckoId = getCoinGeckoId("terra2", token2.denom);
+  token1.coinGeckoId = getCoinGeckoId(chain, token1.denom);
+  token2.coinGeckoId = getCoinGeckoId(chain, token2.denom);
 
   let results = [];
   if (token1.coinGeckoId) {
@@ -244,7 +270,7 @@ async function productsTvl(chain) {
       tvlHub(chain, state),
       tvlAmpGovernance(chain, state),
       tvlArbVault(chain).catch((a) => ({})),
-      ...(chainConfig.farms ?? []).map(farm2Tvl),
+      ...(chainConfig.farms ?? []).map((farm) => farm2Tvl(chain, farm)),
     ]);
   } catch (error) {
     let url = error?.response?.config?.url;
@@ -266,4 +292,6 @@ module.exports = {
   migaloo: { tvl: () => productsTvl("migaloo") },
   injective: { tvl: () => productsTvl("injective") },
   osmosis: { tvl: () => productsTvl("osmosis") },
+  neutron: { tvl: () => productsTvl("neutron") },
+  chihuahua: { tvl: () => productsTvl("chihuahua") },
 };
