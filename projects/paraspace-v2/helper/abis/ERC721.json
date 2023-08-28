@@ -1,0 +1,3 @@
+{
+  "tokenOfOwnerByIndex": "function tokenOfOwnerByIndex(address owner, uint256 index) view returns (uint256)"
+}
