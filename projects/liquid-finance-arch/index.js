@@ -29,7 +29,6 @@ module.exports = {
   methodology:
     "TVL equals the sum of ARCH staked in the Stake Pool and ARCH in the Instant Unstaking Queue, multiplied by the current ARCH price.",
   timetravel: false,
-  misrepresentedTokens: true,
   archway: {
     tvl,
   },
