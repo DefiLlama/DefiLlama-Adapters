@@ -34,6 +34,7 @@ const REAL_YIELD_SNX = "0xcbf2250f33c4161e18d4a2fa47464520af5216b5";
 const REAL_YIELD_ENS = "0x18ea937aba6053bc232d9ae2c42abe7a8a2be440";
 const REAL_YIELD_BTC = "0x0274a704a6d9129f90a62ddc6f6024b33ecdad36";
 const FRAXIMAL = "0xdbe19d1c3f21b1bb250ca7bdae0687a97b5f77e6";
+const Turbo_swETH = "0xd33dAd974b938744dAC81fE00ac67cb5AA13958E"
 
 const cellarsV2 = [
   { id: DEFI_STARS, startBlock: 17181497 },
@@ -46,6 +47,7 @@ const cellarsV2 = [
   { id: REAL_YIELD_ENS, startBlock: 17377190 },
   { id: REAL_YIELD_BTC, startBlock: 17667535 },
   { id: FRAXIMAL, startBlock: 17589948 },
+  { id: Turbo_swETH, startBlock: 17892468}
 ];
 
 // v2.5 Cellars
