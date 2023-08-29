@@ -1,0 +1,5 @@
+{
+    "getActiveTokens": "address[]:getActiveTokens",
+    "getInactiveTokens": "address[]:getInactiveTokens",
+    "totalSupply": "uint256:totalSupply"
+}
