@@ -50,6 +50,12 @@ const config = {
   polygon_zkevm: {
     chainId: '1101',
   },
+  linea: {
+    chainId: '59144',
+  },
+  base: {
+    chainId: '8453',
+  },
 }
 
 const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
@@ -252,6 +258,26 @@ const yPoolDepositContract = {
     "USDC": {
       "contractAddress": "0x1acCfC3a45313f8F862BE7fbe9aB25f20A93d598",
       "tokenAddress": ADDRESSES.polygon_zkevm.USDC
+    }
+  },
+  "59144": {
+    "ETH": {
+      "contractAddress": "0xA5Cb30E5d30A9843B6481fFd8D8D35DDED3a3251",
+      "tokenAddress": ethAddress
+    },
+    "USDC": {
+      "contractAddress": "0x9d90CFa17f3AFceE2505B3e9D75113e6f5c9E843",
+      "tokenAddress": ADDRESSES.linea.USDC
+    }
+  },
+  "8453": {
+    "ETH": {
+      "contractAddress": "0xD195070107d853e55Dad9A2e6e7E970c400E67b8",
+      "tokenAddress": ethAddress
+    },
+    "USDC": {
+      "contractAddress": "0xA5Cb30E5d30A9843B6481fFd8D8D35DDED3a3251",
+      "tokenAddress": ADDRESSES.base.USDbC
     }
   },
 }
