@@ -18,7 +18,6 @@ async function getIB01USD(chain) {
     const oracleAddresses = {
         [Chain.ethereum]: "0x32d1463eb53b73c095625719afa544d5426354cb",
     };
-    console.log("Getting iB01 USD price from Chainlink")
     const iB01USDRoundData = await sdk.api.abi.call({
         chain: chain,
         target: oracleAddresses[chain],
