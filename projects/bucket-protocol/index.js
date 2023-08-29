@@ -94,7 +94,6 @@ async function tvl(_, _1, _2, { api }) {
       (token_y * kriyaStakedList[index]) / lsp_supply.fields.value
     );
 
-    console.log(x, y)
     if (x !== BUCK) api.add(x, xVal);
     if (y !== BUCK) api.add(y, yVal);
   }
