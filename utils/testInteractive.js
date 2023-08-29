@@ -2,8 +2,12 @@ const inquirer = require('inquirer')
 const childProcess = require('child_process')
 inquirer.registerPrompt('fuzzypath', require('inquirer-fuzzy-path'))
 console.log('Starting directory: ' + process.cwd());
+const args = process.argv.slice(2); // The first two elements are 'node' and the script filename
+
+const NEW_DIR = './projects/' + args[0]
+
 try {
-  process.chdir('./projects/');
+  process.chdir(NEW_DIR);
   console.log('New directory: ' + process.cwd());
 }
 catch (err) {

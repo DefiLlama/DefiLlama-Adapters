@@ -43,7 +43,7 @@ module.exports = {
   },
   cronos: {
     tvl: sumTokensExport({
-      owners: [PWN_BUNDLER_CRONOS, PWN_V1_1_SIMPLE_LOAN_B], fetchCoValentTokens: true,
+      owners: [PWN_BUNDLER_CRONOS, PWN_V1_1_SIMPLE_LOAN_B], fetchCoValentTokens: true, tokenConfig: { useCovalent: true, },
     }),
   },
   base: {

@@ -1,4 +1,5 @@
 const { ApiPromise, WsProvider } = require("@polkadot/api");
+const sdk = require('@defillama/sdk')
 
 const omnipoolAccountId = "7L53bUTBbfuj14UpdCNPwmgzzHSsrsTWBHX5pys32mVWM3C1"
 
@@ -36,7 +37,7 @@ async function tvl() {
       const bal = await api.query.tokens.accounts(omnipoolAccountId, assetId)
       add(cgId, bal.free / (10 ** decimals))
     } else {
-      console.log(`No mapping for ${symbol}, skipping it`)
+      sdk.log(`No mapping for ${symbol}, skipping it`)
     }
   }
 

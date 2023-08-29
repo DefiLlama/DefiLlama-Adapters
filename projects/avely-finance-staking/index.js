@@ -44,7 +44,6 @@ function prepareQuery(fields) {
     });
   });
 
-  //console.log(query)
   return query;
 }
 

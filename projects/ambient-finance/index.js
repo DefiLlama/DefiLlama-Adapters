@@ -1,12 +1,7 @@
 const { sumTokens2 } = require('../helper/unwrapLPs');
-const { covalentGetTokens } = require("../helper/http");
 const { cachedGraphQuery } = require("../helper/cache");
 
 const vault = "0xAaAaAAAaA24eEeb8d57D431224f73832bC34f688"
-const tvlV1 = async (_, _1, _2, { api }) => {
-  const tokens = await covalentGetTokens(vault, api.chain)
-  return sumTokens2({ api, owner: vault, tokens, })
-}
 
 async function tvl(_, _b, _cb, { api, }) {
 

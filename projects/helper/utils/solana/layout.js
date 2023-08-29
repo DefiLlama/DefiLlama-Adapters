@@ -7,8 +7,6 @@ const { INVESTIN_FUND_DATA, } = require('./layouts/investin-layout')
 const { MARKET_STATE_LAYOUT_V3, } = require('./layouts/openbook-layout')
 const { ReserveLayout, ReserveLayoutLarix, MintLayout, AccountLayout, TokenSwapLayout, } = require('./layouts/mixed-layout')
 
-// console.log(RAYDIUM_LIQUIDITY_STATE_LAYOUT_CLMM.span, 'RAYDIUM_LIQUIDITY_STATE_LAYOUT_CLMM')
-
 const parseReserve = (info) => {
   const pubkey = PublicKey.default
   const { data } = info;

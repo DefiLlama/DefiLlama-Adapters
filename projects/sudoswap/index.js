@@ -1,4 +1,4 @@
-const { graphFetchById, } = require('../helper/http')
+const { graphFetchById, } = require('../helper/cache')
 const { ART_BLOCKS, sumArtBlocks } = require('../helper/nft')
 const sdk = require('@defillama/sdk')
 

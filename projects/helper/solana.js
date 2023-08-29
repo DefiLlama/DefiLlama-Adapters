@@ -145,9 +145,9 @@ async function getTokenBalances(tokensAndAccounts) {
   const body = tokensAndAccounts.map(([token, account]) => formTokenBalanceQuery(token, account))
   const tokenBalances = await axios.post(endpoint(), body);
   const balances = {}
-  tokenBalances.data.forEach((v, i )=> {
-    if (!v.result) console.log(v, tokensAndAccounts[i])
-  } )
+  // tokenBalances.data.forEach((v, i )=> {
+  //   if (!v.result) sdk.log(v, tokensAndAccounts[i])
+  // } )
   tokenBalances.data.forEach(({ result: { value } }) => {
     value.forEach(({ account: { data: { parsed: { info: { mint, tokenAmount: { amount } } } } } }) => {
       sdk.util.sumSingleBalance(balances, mint, amount)
@@ -171,7 +171,6 @@ async function getTokenAccountBalances(tokenAccounts, { individual = false, chun
           log('Null account: skipping it')
           return;
         }
-        console.log(data.data.map(i => i.result.value)[i], tokenAccounts[i].toString())
         if (allowError) return;
       }
       const { data: { parsed: { info: { mint, tokenAmount: { amount } } } } } = value
@@ -269,7 +268,6 @@ async function getMultipleAccountBuffers(labeledAddresses) {
     }
 
     // Uncomment and paste into a hex editor to do some reverse engineering
-    // console.log(`${labels[index]}: ${results[labels[index]].toString("hex")}`);
   });
 
   return results;
