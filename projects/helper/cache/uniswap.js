@@ -25,6 +25,7 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
   const abi = { ...uniswapAbi, ...abis }
 
   return async (_, _b, cb, { api, chain } = {}) => {
+    // console.log(await api.call({ abi: 'address:factory', target: factory }))
 
     if (!chain)
       chain = _chain
