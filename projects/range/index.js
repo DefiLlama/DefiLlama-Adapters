@@ -7,7 +7,7 @@ const config = {
   bsc: { factory: '0xad2b34a2245b5a7378964BC820e8F34D14adF312', fromBlock: 28026886, },
   polygon: { factory: '0xad2b34a2245b5a7378964BC820e8F34D14adF312', fromBlock: 42446548, },
   base: { factory: '0x4bF9CDcCE12924B559928623a5d23598ca19367B', fromBlock: 2733457, },
-  mantle: { factory: '0x4bF9CDcCE12924B559928623a5d23598ca19367B', fromBlock: 1364977, }
+  mantle: { factory: '0x4bF9CDcCE12924B559928623a5d23598ca19367B', fromBlock:  1364977 , }
 }
 
 module.exports = {
@@ -16,6 +16,8 @@ module.exports = {
   start: 1683965157,
 };
 
+// vaults that were deployed through factory but are uninitialized and unused
+const ignoreList  = {mantle : ["0xd1c0CB290BA214a79AC31B8B3FB3F3eD00B88612"]}
 Object.keys(config).forEach(chain => {
   const { factory, fromBlock } = config[chain]
   module.exports[chain] = {
@@ -28,7 +30,8 @@ Object.keys(config).forEach(chain => {
         onlyArgs: true,
         fromBlock,
       })
-      const vaults = logs.map(log => log.vault)
+      let vaults = logs.map(log => log.vault)
+      vaults = vaults.filter(vault => !ignoreList[chain] || !ignoreList[chain].includes(vault))
       const token0s = await api.multiCall({ abi: "address:token0", calls: vaults, })
       const token1s = await api.multiCall({ abi: "address:token1", calls: vaults, })
       const bals = await api.multiCall({ abi: ABI.underlyingBalance, calls: vaults, })
