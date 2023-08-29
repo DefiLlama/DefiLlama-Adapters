@@ -50,6 +50,12 @@ const config = {
   polygon_zkevm: {
     chainId: '1101',
   },
+  linea: {
+    chainId: '59144',
+  },
+  base: {
+    chainId: '8453',
+  },
 }
 
 const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
@@ -75,6 +81,10 @@ const yPoolDepositContract = {
       "contractAddress": "0x64d17beaE666cC435B9d40a21f058b379b2a0194",
       "tokenAddress": "0x3496B523e5C00a4b4150D6721320CdDb234c3079"
     },
+    "eYe": {
+      "contractAddress": "0xF0052C0B4F08078846aF48FE8C7bb365c9937c21",
+      "tokenAddress": "0x9A257C90Fa239fBA07771ef7da2d554D148c2E89"
+    }
   },
   "25": {
     "ETH": {
@@ -88,7 +98,35 @@ const yPoolDepositContract = {
     "USDC": {
       "contractAddress": "0x44a54941E572C526a599B0ebe27A14A5BF159333",
       "tokenAddress": ADDRESSES.cronos.USDC
-    }
+    },
+    "BLU": {
+      "contractAddress": "0x184cE49FdE76D4394795C76A91935862B7c30102",
+      "tokenAddress": "0x1542bA4CA0fb6D1B4476a933B292002fd1959A52"
+    },
+    "CANDY": {
+      "contractAddress": "0x85e363569531699EaEd1c1AC590d9f442A1299BA",
+      "tokenAddress": "0x06C04B0AD236e7Ca3B3189b1d049FE80109C7977"
+    },
+    "DBF": {
+      "contractAddress": "0xEC8476DCC72b4AB6Cbc3C2bD7f50A15891485fDB",
+      "tokenAddress": "0xA2ae6273Dd65F9fA76C3d383eDe9c1261e025DAC"
+    },
+    "DBX": {
+      "contractAddress": "0x812e9eE2437a3e4FE0A4A4A7f195536844301f07",
+      "tokenAddress": "0x061E31e7768b39a4282822b65569F8d814dC15f6"
+    },
+    "DBC": {
+      "contractAddress": "0xD99995b63F44fc500B702251262B7d9f35adA0BC",
+      "tokenAddress": "0x730B05d100EeFb92f04016C6c0cF6f2bBB2C3A57"
+    },
+    "SINGLE": {
+      "contractAddress": "0x9A4cC214782Fea5880394eFDE60187797a2FEF01",
+      "tokenAddress": "0x0804702a4E749d39A35FDe73d1DF0B1f1D6b8347"
+    },
+    "AutoS": {
+      "contractAddress": "0x58F29F7d759aef5B8e34C8e4152d6117893017aB",
+      "tokenAddress": "0xae620DC4B9b6e44FBeb4a949F63AC957Cc43b5dD"
+    },
   },
   "56": {
     "ETH": {
@@ -102,7 +140,11 @@ const yPoolDepositContract = {
     "USDC": {
       "contractAddress": "0x27C12BCb4538b12fdf29AcB968B71dF7867b3F64",
       "tokenAddress": ADDRESSES.bsc.USDC
-    }
+    },
+    "eYe": {
+      "contractAddress": "0x5Bd40e579Cb7D37784689044E6C7c333E2E300e6",
+      "tokenAddress": "0x9A257C90Fa239fBA07771ef7da2d554D148c2E89"
+    },
   },
   "108": {
     "USDT": {
@@ -126,7 +168,19 @@ const yPoolDepositContract = {
     "USDC": {
       "contractAddress": "0xf4137e5D07b476e5A30f907C3e31F9FAAB00716b",
       "tokenAddress": ADDRESSES.polygon.USDC
-    }
+    },
+    "BLU": {
+      "contractAddress": "0x7C1C974367Ee28D3d7aBb088f5FCd748B3759EA4",
+      "tokenAddress": "0x759d34685468604c695De301ad11A9418e2f1038",
+    },
+    "CANDY": {
+      "contractAddress": "0x5Bd40e579Cb7D37784689044E6C7c333E2E300e6",
+      "tokenAddress": "0x54E53ed24C12c1d3Df7D653587E2f27d3FbaE3d2",
+    },
+    "AutoS": {
+      "contractAddress": "0xF98bfE69d069B40668D4F6aaeA22E73d1DC21A93",
+      "tokenAddress": "0x925FAdb35B73720238cc78777d02ED4dD3100816",
+    },
   },
   "250": {
     "ETH": {
@@ -140,7 +194,11 @@ const yPoolDepositContract = {
     "USDC": {
       "contractAddress": "0x3A459695D49cD6B9637bC85B7ebbb04c5c3038c0",
       "tokenAddress": ADDRESSES.fantom.USDC
-    }
+    },
+    "SINGLE": {
+      "contractAddress": "0xe1C01c84EAc760389b2A080cfd6f3e874725c62a",
+      "tokenAddress": "0xbDA9DF2cff1d36Ffc05E8e76Ec821B25dB8F3348"
+    },
   },
   "321": {
     "USDT": {
@@ -164,7 +222,19 @@ const yPoolDepositContract = {
     "USDC": {
       "contractAddress": "0x680ab543ACd0e52035E9d409014dd57861FA1eDf",
       "tokenAddress": ADDRESSES.arbitrum.USDC
-    }
+    },
+    "DBF": {
+      "contractAddress": "0xa1fB1F1E5382844Ee2D1BD69Ef07D5A6Abcbd388",
+      "tokenAddress": "0x38A896c29Eb54c566A3fD593f559174520Dc6F75"
+    },
+    "DBX": {
+      "contractAddress": "0x156C04ca75f11817DdbF887692990F3E46e8982B",
+      "tokenAddress": "0x0b257fe969d8782fAcb4ec790682C1d4d3dF1551"
+    },
+    "DBC": {
+      "contractAddress": "0x98b5067949e0821a52Ec2aC9A3BaaCc9b315ec21",
+      "tokenAddress": "0x745f63CA36E0cfDFAc4bf0AFe07120dC7e1E0042"
+    },
   },
   "43114": {
     "ETH": {
@@ -252,6 +322,26 @@ const yPoolDepositContract = {
     "USDC": {
       "contractAddress": "0x1acCfC3a45313f8F862BE7fbe9aB25f20A93d598",
       "tokenAddress": ADDRESSES.polygon_zkevm.USDC
+    }
+  },
+  "59144": {
+    "ETH": {
+      "contractAddress": "0xA5Cb30E5d30A9843B6481fFd8D8D35DDED3a3251",
+      "tokenAddress": ethAddress
+    },
+    "USDC": {
+      "contractAddress": "0x9d90CFa17f3AFceE2505B3e9D75113e6f5c9E843",
+      "tokenAddress": ADDRESSES.linea.USDC
+    }
+  },
+  "8453": {
+    "ETH": {
+      "contractAddress": "0xD195070107d853e55Dad9A2e6e7E970c400E67b8",
+      "tokenAddress": ethAddress
+    },
+    "USDC": {
+      "contractAddress": "0xA5Cb30E5d30A9843B6481fFd8D8D35DDED3a3251",
+      "tokenAddress": ADDRESSES.base.USDbC
     }
   },
 }
