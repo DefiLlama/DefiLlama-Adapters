@@ -46,10 +46,11 @@ const blacklisted_LPS = [
   '0xCC8Fa225D80b9c7D42F96e9570156c65D6cAAa25',
   '0xaee4164c1ee46ed0bbc34790f1a3d1fc87796668',
   '0x93669cfce302c9971169f8106c850181a217b72b',
+  '0x253f67aacaf0213a750e3b1704e94ff9accee10b',
 ].map(i => i.toLowerCase())
 
 function isLP(symbol, token, chain) {
-  // console.log(symbol, chain, token)
+  // sdk.log(symbol, chain, token)
   if (!symbol) return false
   if (token && blacklisted_LPS.includes(token.toLowerCase()) || symbol.includes('HOP-LP-')) return false
   if (chain === 'bsc' && ['OLP', 'DLP', 'MLP', 'LP', 'Stable-LP'].includes(symbol)) return false
@@ -64,7 +65,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'oasis' && ['LPT'].includes(symbol)) return true
   if (chain === 'base' && ['RCKT-V2'].includes(symbol)) return true
   if (chain === 'wan' && ['WSLP'].includes(symbol)) return true
-  if (chain === 'polygon' && ['MbtLP'].includes(symbol)) return true
+  if (chain === 'polygon' && ['MbtLP', 'GLP', ].includes(symbol)) return true
   if (chain === 'ethereum' && ['SUDO-LP'].includes(symbol)) return false
   if (chain === 'dogechain' && ['DST-V2'].includes(symbol)) return true
   if (chain === 'harmony' && ['HLP'].includes(symbol)) return true
@@ -185,7 +186,7 @@ async function diplayUnknownTable({ tvlResults = {}, tvlBalances = {}, storedKey
   try {
     await debugBalances({ balances, chain: storedKey, log, tableLabel, withETH: false, })
   } catch (e) {
-    // console.log(e)
+    // sdk.log(e)
     log('failed to fetch prices for', balances)
   }
 }
@@ -243,7 +244,7 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
   })
 
   if (tokens.length > 100) {
-    console.log('too many unknowns')
+    sdk.log('too many unknowns')
     return;
   }
 
@@ -281,7 +282,7 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
     logObj.push({ name, symbol, balance, label, decimals: decimal })
   })
 
-  console.log('Balance table for [%s] %s', chain, tableLabel)
+  sdk.log('Balance table for [%s] %s', chain, tableLabel)
   console.table(logObj)
 }
 

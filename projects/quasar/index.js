@@ -36,21 +36,16 @@ async function tvl() {
     for (const poolID in lpStrategyContracts) {
         let lpContracts = lpStrategyContracts[poolID];
         for (const contractAddress of lpContracts) {
-            try {
-                let ica_balances = await queryContract({
-                    contract: contractAddress,
-                    chain: chain,
-                    data: { 'ica_balance': {} }
-                });
+            let ica_balances = await queryContract({
+                contract: contractAddress,
+                chain: chain,
+                data: { 'ica_balance': {} }
+            });
 
-                let denom = ica_balances.amount.denom;
-                let amount = Number(ica_balances.amount.amount);
+            let denom = ica_balances.amount.denom;
+            let amount = Number(ica_balances.amount.amount);
 
-                api.add(denom, amount)
-            } catch (e) {
-                console.log(e)
-                continue;
-            }
+            api.add(denom, amount)
         }
     }
 

@@ -3,6 +3,7 @@ const sdk = require("@defillama/sdk");
 const { transformBalances } = require("../portedTokens");
 const { PromisePool } = require("@supercharge/promise-pool");
 const { log } = require("../utils");
+const ADDRESSES = require('../coreAssets.json')
 
 // where to find chain info
 // https://proxy.atomscan.com/chains.json
@@ -10,18 +11,20 @@ const { log } = require("../utils");
 // https://cosmos-chain.directory/chains
 const endPoints = {
   crescent: "https://mainnet.crescent.network:1317",
-  osmosis: "https://lcd.osmosis.zone",
+  osmosis: "https://osmosis-api.polkachu.com",
   cosmos: "https://cosmoshub-lcd.stakely.io",
   kujira: "https://kuji-api.kleomedes.network",
   comdex: "https://rest.comdex.one",
-  terra: "https://terraclassic-lcd-server-01.stakely.io",
-  terra2: "https://lcd-terra2.whispernode.com:443",
+  terra: "https://rest.cosmos.directory/terra",
+  terra2: "https://terra-lcd.publicnode.com",
   umee: "https://umee-api.polkachu.com",
   orai: "https://lcd.orai.io",
   juno: "https://lcd-juno.cosmostation.io",
   cronos: "https://lcd-crypto-org.cosmostation.io",
-  // chihuahua: "https://rest.cosmos.directory/chihuahua",
-  chihuahua: "https://api.chihuahua.wtf",
+  chihuahua: "https://rest.cosmos.directory/chihuahua",
+  stargaze: "https://api-stargaze.ezstaking.dev",
+  quicksilver: "https://rest.cosmos.directory/quicksilver",
+  // chihuahua: "https://api.chihuahua.wtf",
   injective: "https://lcd-injective.whispernode.com:443",
   migaloo: "https://migaloo-api.polkachu.com",
   fxcore: "https://fx-rest.functionx.io",
@@ -32,6 +35,7 @@ const endPoints = {
   gravitybridge: "https://gravitychain.io:1317",
   sei: "https://sei-api.polkachu.com",
   aura: "https://lcd.aura.network",
+  archway: "https://api.mainnet.archway.io",
 };
 
 const chainSubpaths = {
@@ -219,6 +223,7 @@ async function queryContractStore({
 }
 
 async function sumTokens({ balances = {}, owners = [], chain, owner, tokens, blacklistedTokens, }) {
+  if (!tokens?.length || (tokens?.length === 1 && tokens[0] === ADDRESSES.null)) tokens = undefined;
   if (owner) owners = [owner]
   log(chain, "fetching balances for ", owners.length);
   let parallelLimit = 25;

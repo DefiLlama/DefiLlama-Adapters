@@ -66,4 +66,8 @@ module.exports = uniV3Export({
       '0x0b0fd8317735dd9fe611fbc7e1d138149f8ebcea',
     ]
   },
+  core: {
+    factory: "0xc35DADB65012eC5796536bD9864eD8773aBc74C4",
+    fromBlock: 5211850,
+  },
 });
