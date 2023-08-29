@@ -2,6 +2,7 @@ const { get } = require('./helper/http')
 const BigNumber = require("bignumber.js");
 const url = 'https://europe-west3-wormhole-message-db-mainnet.cloudfunctions.net/tvl'
 let _response
+const sdk = require('@defillama/sdk')
 
 function fetch(chainId) {
   return async () => {
@@ -11,7 +12,7 @@ function fetch(chainId) {
       const tvl = res.AllTime[chainId]["*"].Notional
       return new BigNumber(tvl).toFixed(2)
     } else {
-      console.log('Chain no longer supported: %s', chainId)
+      sdk.log('Chain no longer supported: %s', chainId)
       return BigNumber(0).toFixed(2)
     }
   }
