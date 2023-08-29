@@ -56,6 +56,13 @@ const fixBalancesTokens = {
   aura: {
     'uaura': { coingeckoId: 'aura-network', decimals: 6 },
   },
+  shibarium: {
+    '0x8ed7d143ef452316ab1123d28ab302dc3b80d3ce':  { coingeckoId: "ethereum", decimals: 18 },
+    '0x213c25900f365f1be338df478cd82bef7fd43f85':  { coingeckoId: "bone-shibaswap", decimals: 18 },
+    '0x6c19a35875217b134e963ca9e61b005b855cad21':  { coingeckoId: "bone-shibaswap", decimals: 18 },
+    '0x1b2f364032f12bd8a4c89e672e6272de03ae2680':  { coingeckoId: "bone-shibaswap", decimals: 18 },
+    '0xa2899c776baaf9925d432f83c950d5054a6cf59c':  { coingeckoId: "bone-shibaswap", decimals: 18 },
+  },
   arbitrum: {
     '0x1509706a6c66CA549ff0cB464de88231DDBe213B': { coingeckoId: 'aura-finance', decimals: 18 }
   },
