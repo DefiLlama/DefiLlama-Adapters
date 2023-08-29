@@ -3,6 +3,7 @@ const vaultAbi = require('../charmfinance/vaultAbi.json')
 const { getLogs } = require('../helper/cache/getLogs');
 const { getUniqueAddresses } = require("@defillama/sdk/build/generalUtil");
 const fromBlock = 46623778
+const ADDRESSES = require('../helper/coreAssets.json')
 
 function cygnalytics(category) {
   // futuristic parameter
@@ -41,10 +42,16 @@ function cygnalytics(category) {
   };
 }
 
+async function borrowed(_, _b, _cb, { api, }) {
+  api.add(ADDRESSES.polygon.USDC, await api.call({ abi: 'uint256:totalBorrowsUsd', target: FACTORY_CONTRACT}))
+  return api.getBalances()
+}
+
 module.exports = {
   doublecounted: true,
   methodology: "TVL of all shuttles (borrowable + collateral).",
   polygon: {
     tvl: cygnalytics(0),
+    borrowed,
   },
 };
