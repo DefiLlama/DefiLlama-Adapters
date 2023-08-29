@@ -41,7 +41,7 @@ async function tvl(timestamp, block, chainBlocks, {api}) {
 
     bIB01Balances.forEach((balance, i) => {
         const usdValue = balance * ib01usd / 1e12;  // Convert the balance of bIB01 to its USD value
-        sdk.util.sumSingleBalance(balances, ADDRESSES.ethereum.USDT, usdValue);
+        sdk.util.sumSingleBalance(balances, ADDRESSES.ethereum.USDC, usdValue);
     });
 
     const tokenBalances = await api.multiCall({ abi: abi.totalSupply, calls: allPools.map(pool => ({target: pool})) });
