@@ -5,7 +5,9 @@ const config = {
   ethereum: { factory: '0xf1e70677fb1f49471604c012e8B42BA11226336b', fromBlock: 17266660, },
   arbitrum: { factory: '0xB9084c75D361D1d4cfC7663ef31591DeAB1086d6', fromBlock: 88503603, },
   bsc: { factory: '0xad2b34a2245b5a7378964BC820e8F34D14adF312', fromBlock: 28026886, },
-  polygon: { factory: '0xad2b34a2245b5a7378964BC820e8F34D14adF312', fromBlock: 42446548, }
+  polygon: { factory: '0xad2b34a2245b5a7378964BC820e8F34D14adF312', fromBlock: 42446548, },
+  base: { factory: '0x4bF9CDcCE12924B559928623a5d23598ca19367B', fromBlock: 2733457, },
+  mantle: { factory: '0x4bF9CDcCE12924B559928623a5d23598ca19367B', fromBlock: 1364977, },
 }
 
 module.exports = {
