@@ -6,7 +6,6 @@ const { genericUnwrapCvx } = require("../helper/unwrapLPs");
 const { covalentGetTokens } = require('../helper/http')
 
 async function walletBalances(api) {
-  console.log(api.chain, api.chainId)
   const { owners = [], blacklistedTokens } = contracts.tokenHolders[api.chain]
   const tokens = await Promise.all(owners.map(i => covalentGetTokens(i, api.chain)))
   return sumTokens2({ api, ownerTokens: owners.map((v, i) => [tokens[i], v]), blacklistedTokens, resolveLP: false, })

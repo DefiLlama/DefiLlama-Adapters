@@ -10,30 +10,6 @@ const {
   distressedAssts,
 } = require('./tokenMapping')
 
-async function transformFantomAddress() {
-  return transformChainAddress(transformTokens.fantom, "fantom")
-}
-
-async function transformBscAddress() {
-  return transformChainAddress(transformTokens.bsc, "bsc")
-}
-
-async function transformPolygonAddress() {
-  return transformChainAddress(transformTokens.polygon, "polygon")
-}
-
-async function transformCeloAddress() {
-  return transformChainAddress(transformTokens.celo, "celo")
-}
-
-async function transformOptimismAddress() {
-  return transformChainAddress(transformTokens.optimism, "optimism")
-}
-
-async function transformArbitrumAddress() {
-  return transformChainAddress(transformTokens.arbitrum, "arbitrum")
-}
-
 async function transformInjectiveAddress() {
   return addr => {
     if (addr.includes('ibc/')) return addr.replace(/.*ibc\//, 'ibc/').replace(/\//g, ':')
@@ -89,10 +65,6 @@ for (const chain of Object.keys(fixBalancesTokens)) {
 }
 
 const chainTransforms = {
-  fantom: transformFantomAddress,
-  bsc: transformBscAddress,
-  polygon: transformPolygonAddress,
-  optimism: transformOptimismAddress,
   injective: transformInjectiveAddress,
 };
 
@@ -140,10 +112,13 @@ async function getChainTransform(chain) {
     if ([...ibcChains, 'ton', 'defichain', 'waves'].includes(chain)) return chainStr
     if (chain === 'cardano' && addr === 'ADA') return 'coingecko:cardano'
     if (chain === 'near' && addr.endsWith('.near')) return chainStr
+    if (chain === 'tron' && addr.startsWith('T')) return chainStr
+    if (chain === 'stacks' && addr.startsWith('SP')) return chainStr
     if (chain === 'tezos' && addr.startsWith('KT1')) return chainStr
     if (chain === 'terra2' && addr.startsWith('terra1')) return chainStr
+    if (chain === 'aura' && addr.startsWith('aura')) return chainStr
     if (chain === 'algorand' && /^\d+$/.test(addr)) return chainStr
-    if (addr.startsWith('0x') || ['solana'].includes(chain)) return chainStr
+    if (addr.startsWith('0x') || ['solana', 'kava'].includes(chain)) return chainStr
     return addr
   };
 }
@@ -182,7 +157,6 @@ async function transformDexBalances({ chain, data, balances = {}, restrictTokenR
 
   if (!withMetadata)
     return transformBalances(chain, balances)
-
   return {
     prices,
     updateBalances,
@@ -190,8 +164,8 @@ async function transformDexBalances({ chain, data, balances = {}, restrictTokenR
   }
 
   function addTokens({ token0, token0Bal, token1, token1Bal }) {
-    const isCoreToken0 = coreTokens.has(token0)
-    const isCoreToken1 = coreTokens.has(token1)
+    const isCoreToken0 = coreTokens.has(token0.replace('ibc/', ''))
+    const isCoreToken1 = coreTokens.has(token1.replace('ibc/', ''))
     if ((isCoreToken0 && isCoreToken1) || (!isCoreToken0 && !isCoreToken1)) {
       sdk.util.sumSingleBalance(balances, token0, token0Bal)
       sdk.util.sumSingleBalance(balances, token1, token1Bal)
@@ -260,12 +234,6 @@ async function transformDexBalances({ chain, data, balances = {}, restrictTokenR
 module.exports = {
   getChainTransform,
   getFixBalances,
-  transformFantomAddress,
-  transformBscAddress,
-  transformPolygonAddress,
-  transformOptimismAddress,
-  transformArbitrumAddress,
-  transformCeloAddress,
   stripTokenHeader,
   getFixBalancesSync,
   transformBalances,

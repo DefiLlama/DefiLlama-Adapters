@@ -4,22 +4,33 @@ const headers = {
   "Accept-Encoding": "gzip, deflate, br",
 };
 
-async function tvl() {
+/** @returns {Promise<{tvl: string, staking: string}>} */
+async function getTvlBreakdown() {
     const res = await axios.post(
         'https://api.mainnet.wingriders.com/graphql',
         {
-            query: '{tvl}'
+            query: '{tvlBreakdown {tvl, staking}}'
         },
         { headers }
     )
-    const tvl = Number(res.data.data.tvl)
-    return {cardano: tvl}
+    return res.data.data.tvlBreakdown
+}
+
+async function tvl() {
+  const tvlBreakdown = await getTvlBreakdown()
+  return {cardano: Number(tvlBreakdown.tvl)}
+}
+
+async function staking() {
+  const tvlBreakdown = await getTvlBreakdown()
+  return {cardano: Number(tvlBreakdown.staking)}
 }
 
 module.exports = {
   timetravel: false,
   cardano: {
     tvl,
+    staking,
   },
   hallmarks: [
     [1659312000,"Nomad Bridge Hack"]

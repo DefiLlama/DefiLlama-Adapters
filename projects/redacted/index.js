@@ -1,16 +1,16 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensAndLPsSharedOwners, unwrapUniswapV3NFTs, genericUnwrapCvx } = require('../helper/unwrapLPs')
 const sdk = require('@defillama/sdk')
 const { BigNumber } = require('ethers')
 
 const treasuries = ["0xa52fd396891e7a74b641a2cb1a6999fcf56b077e", "0x086c98855df3c78c6b481b6e1d47bef42e9ac36b"]
 
-const CVXLocker = '0x72a19342e8f1838460ebfccef09f6585e32db86e'
 const cvxCRVStaking = '0x3Fe65692bfCD0e6CF84cB1E7d24108E434A7587e'
-const CVX = '0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b'
-const cvxCRV = '0x62b9c7356a2dc64a1969e19c23e4f579f9810aa7'
+const CVX = ADDRESSES.ethereum.CVX
+const cvxCRV = ADDRESSES.ethereum.cvxCRV
 const FXS = '0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0'
 const veFXS = '0xc8418aF6358FFddA74e09Ca9CC3Fe03Ca6aDC5b0'
-const CRV = '0xD533a949740bb3306d119CC777fa900bA034cd52'
+const CRV = ADDRESSES.ethereum.CRV
 const veCRV = '0x5f3b5DfEb7B28CDbD7FAba78963EE202a494e2A2'
 const sOHM = '0x04906695D6D12CF5459975d7C3C03356E4Ccd460'
 const OHM = '0x64aa3364f17a4d01c6f1751fd97c2bd3d7e7f1d5'
@@ -19,7 +19,6 @@ const AURALocker = '0x3Fa73f1E5d8A792C80F426fc8F84FBF7Ce9bBCAC'
 const rlBTRFLY = '0x742B70151cd3Bc7ab598aAFF1d54B90c3ebC6027'
 const BTRFLYV2 = '0xc55126051B22eBb829D00368f4B12Bde432de5Da'
 const cvxCRVPool = '0x0392321e86F42C2F94FBb0c6853052487db521F0'
-const cvxFXSPool = '0xf27AFAD0142393e4b3E5510aBc5fe3743Ad669Cb'
 
 const rlBTRFLYAbi = {
     lockedSupply: "uint256:lockedSupply",
@@ -37,10 +36,8 @@ async function tvl(timestamp, block, chainBlocks){
         [AURA, false],
         // BTRFLY/ETH Curve LP
         ['0x7483Dd57f6488b0e194A151C57Df6Ec85C00aCE9', false],
-        // USDC
-        ['0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', false],
-        // FRAX
-        ['0x853d955aCEf822Db058eb8505911ED77F175b99e', false],
+        [ADDRESSES.ethereum.USDC, false],
+        [ADDRESSES.ethereum.FRAX, false],
     ], treasuries, block)
     
     //Add UniswapV3 LPs
@@ -54,7 +51,7 @@ async function tvl(timestamp, block, chainBlocks){
     
     //Add vlCVX as CVX
     const vlCVXBalance = await sdk.api.erc20.balanceOf({
-        target: CVXLocker,
+        target: ADDRESSES.ethereum.vlCVX,
         owner: treasuries[0],
         chain: 'ethereum',
         block: chainBlocks['ethereum']

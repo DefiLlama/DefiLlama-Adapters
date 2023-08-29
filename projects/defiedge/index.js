@@ -1,31 +1,40 @@
-const { GraphQLClient, gql } = require("graphql-request");
+const { graphQuery } = require('../helper/http')
 
-var endpoint = "https://api.defiedge.io/graphql";
-
-function tvl(network) {
-  return async (_timestamp, _block, _chainBlocks) => {
-    var graphQLClient = new GraphQLClient(endpoint);
-
-    var query = gql`
-      query Stats($network: [Network!]) {
-        stats(network: $network) {
-          totalValueManaged
-        }
+const endpoint = "https://api.defiedge.io/graphql";
+const query = `
+    query Stats($network: [Network!] $dex: [Dex!] = [Uniswap, Apeswap, Pancakeswap, Arbidex, Sushiswap]) {
+      stats(network: $network, dex: $dex) {
+        totalValueManaged
       }
-    `;
+    }
+  `;
 
-    var results = await graphQLClient.request(query, { network: [network] });
+async function tvl() {
+  const { api } = arguments[3]
+  let tvl = 0
+  const { dexes, network } = config[api.chain]
+  for (const dex of dexes) {
+    const results = await graphQuery(endpoint, query, { network: [network], dex: [dex] })
+    tvl += results.stats.totalValueManaged
+  }
 
-    return { "usd-coin": results.stats.totalValueManaged };
-  };
+  return { "usd-coin": tvl};
 }
 
 module.exports = {
   doublecounted: true,
   timetravel: false,
   misrepresentedTokens: true,
-  ethereum: { tvl: tvl("mainnet") },
-  polygon: { tvl: tvl("polygon") },
-  arbitrum: { tvl: tvl("arbitrum") },
-  optimism: { tvl: tvl("optimism") },
 };
+
+const config = {
+  ethereum: { dexes: ["Uniswap",], network: "mainnet",},
+  bsc: { dexes: ["Uniswap", "Apeswap", "Pancakeswap",], network: "bsc",},
+  arbitrum: { dexes: ["Uniswap", "Arbidex", "Sushiswap"], network: "arbitrum",},
+  optimism: { dexes: ["Uniswap",], network: "optimism",},
+  polygon: { dexes: ["Uniswap",], network: "polygon",},
+}
+
+Object.keys(config).forEach(chain => {
+  module.exports[chain] = { tvl }
+})

@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const abi = require('./abi.json');
 const sdk = require('@defillama/sdk');
 const { sumTokens } = require('../helper/unwrapLPs');
 
-const ethAddress = '0x0000000000000000000000000000000000000000';
+const ethAddress = ADDRESSES.null;
 const ethReserveAddresses = ['0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'];
 const bancor = '0x1f573d6fb3f13d689ff844b4ce37794d79a7ff1c'
 

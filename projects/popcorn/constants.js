@@ -1,4 +1,5 @@
-const ADDRESSES = {
+const ADDRESSES = require('../helper/coreAssets.json')
+const ADDRESSES_ = {
 
   ethereum: {
     popLocker: "0xeEE1d31297B042820349B03027aB3b13a9406184",  // done
@@ -12,8 +13,8 @@ const ADDRESSES = {
 
     pop: "0xd0cd466b34a24fcb2f87676278af2005ca8a78c4",
 
-    usdc: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-    dai: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+    usdc: ADDRESSES.ethereum.USDC,
+    dai: ADDRESSES.ethereum.DAI,
 
     // for butter
     setBasicIssuanceModule: "0xd8EF3cACe8b4907117a45B0b125c68560532F94D",
@@ -37,7 +38,10 @@ const ADDRESSES = {
     crv3EurMetapool: "0xb9446c4Ef5EBE66268dA6700D26f96273DE3d571",
     crvSUSDMetapool: "0xA5407eAE9Ba41422680e2e00537571bcC53efBfD",
     crvSUSD: "0xC25a3A3b969415c80451098fa907EC722572917F",
-    threeX: "0x8b97ADE5843c9BE7a1e8c95F32EC192E31A46cf3"
+    threeX: "0x8b97ADE5843c9BE7a1e8c95F32EC192E31A46cf3",
+    
+    vaultRegistry: '0x007318Dc89B314b47609C684260CfbfbcD412864',
+    
   },
   arbitrum: {
     rewardsEscrow: "0x0c0991cb6e1c8456660a49aa200b71de6158b85c",
@@ -46,14 +50,16 @@ const ADDRESSES = {
   },
   polygon: {
     pop: "0xc5b57e9a1e7914fda753a88f24e5703e617ee50c",
-    usdc: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+    usdc: ADDRESSES.polygon.USDC,
     popLocker: "0xe8af04AD759Ad790Aa5592f587D3cFB3ecC6A9dA",
     rewardsEscrow: "0xa82cAA79F35f7d6B6f1EC1971878F3474C894565",
 
     popUsdcGelatoLp: "0xe8654f2b0a038a01bc273a2a7b7c48a76c0e58c5",
 
     arrakisPool: "0x6dE0500211bc3140409B345Fa1a5289cb77Af1e4",
-    arrakisPoolStaking: "0xd3836EF639A74EA7398d34c66aa171b1564BE4bc"
+    arrakisPoolStaking: "0xd3836EF639A74EA7398d34c66aa171b1564BE4bc",
+
+    vaultRegistry: '0x2246c4c469735bCE95C120939b0C078EC37A08D0'
   },
   bsc: {
     rewardsEscrow: "0x0C0991CB6e1c8456660A49aa200B71de6158b85C",
@@ -62,5 +68,5 @@ const ADDRESSES = {
 }
 
 module.exports = {
-  ADDRESSES
+  ADDRESSES:ADDRESSES_
 }

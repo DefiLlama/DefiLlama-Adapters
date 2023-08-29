@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const SUNNY_POOLS = [{
   "poolName": "quarry_saber_usdc_usdt",
   "relevantAccounts": {
     "sunnyPool": "3Zk1PhVap6mwrB9jZktucoSaMBa2whYSq8jtLew3tXbp",
-    "tokenAMint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-    "tokenBMint": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+    "tokenAMint": ADDRESSES.solana.USDC,
+    "tokenBMint": ADDRESSES.solana.USDT,
     "tokenAReserve": "CfWX7o2TswwbxusJ4hCaPobu2jLCb1hfXuXJQjVq3jQF",
     "tokenBReserve": "EnTrdMMpdhugeH6Ban6gYZWXughWxKtVGfCwFn78ZmY3",
     "lpTokenSPL": "2poo1w1DL6yd2WNTCnNTzDqkC6MBXq7axo77P16yrBuf"

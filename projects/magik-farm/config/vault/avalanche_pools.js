@@ -1,3 +1,4 @@
+const ADDRESSES = require('../../../helper/coreAssets.json')
 const avalanchePools = [
   {
     id: "cham-avic-usdc",

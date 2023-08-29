@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { treasuryExports, nullAddress } = require("../helper/treasury");
 const {
   unwrapUniswapV3NFTs,
@@ -11,7 +12,7 @@ const ipor = "0x1e4746dC744503b53b4A082cB3607B169a289090";
 const univ3 = "0xC36442b4a4522E871399CD717aBDD847Ab11FE88";
 const tokens = [
   nullAddress,
-  "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", // WETH
+  ADDRESSES.ethereum.WETH, // WETH
 ];
 
 async function ownTokens(timestamp, block) {
@@ -31,7 +32,7 @@ async function ownTokens(timestamp, block) {
   return balances;
 }
 
-module.exports = treasuryExports({
+module.exports = {
   ethereum: {
     tvl: sumTokensExport({
       tokens,
@@ -39,4 +40,4 @@ module.exports = treasuryExports({
     }),
     ownTokens,
   },
-});
+};

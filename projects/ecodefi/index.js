@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
 const stakingAbi = require('./stakingAbi.json');
@@ -20,7 +21,7 @@ let BabySwapRouter = {
 }
 
 let USDT = {
-  "bsc": "0x55d398326f99059fF775485246999027B3197955", // USDT in BSC
+  "bsc": ADDRESSES.bsc.USDT, // USDT in BSC
 }
 /*==================================================
   TVL

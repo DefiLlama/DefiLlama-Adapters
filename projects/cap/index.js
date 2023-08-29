@@ -1,7 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport, nullAddress, } = require('../helper/unwrapLPs')
 
 const contracts = {
-    "treasury": "0x283C41b726634fBD6B72aA22741B202DB7E56aaC",
     "treasuryV2": "0x1058AFe66BB5b79C295CCCE51016586949Bc4e8d",
     "trading1": "0x9BC357bc5b312AaCD41a84F3C687F031B8786853",
     "trading2": "0xA55Eee92a46A50A4C65908F28A0BE966D3e71633",
@@ -14,14 +14,13 @@ const contracts = {
     "usdcPool2": "0xf16033d20adda47dc99ea291d0f4c4fef2ff47af",
 };
 const cap = "0x031d35296154279dc1984dcd93e392b1f946737b";
-const usdc = "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8";
+const usdc = ADDRESSES.arbitrum.USDC;
 
 module.exports = {
     methodology: "ETH locked on trading contracts",
     arbitrum: {
         staking: sumTokensExport({ owner: contracts.staking, tokens: [ cap ]}),
         tvl: sumTokensExport({ tokensAndOwners: [
-            [usdc, contracts.treasury], 
             [nullAddress, contracts.trading1], 
             [nullAddress, contracts.trading2], 
             [nullAddress, contracts.trading3], 

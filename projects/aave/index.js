@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { getV2Reserves, getTvl, getBorrowed, aaveChainTvl } = require('../helper/aave');
 const { staking } = require('../helper/staking');
@@ -28,10 +29,10 @@ function ethereum(borrowed) {
   }
 }
 
-const aaveTokenAddress = "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9";
+const aaveTokenAddress = ADDRESSES.ethereum.AAVE;
 
-async function stakingBalancerTvl(timestamp, block) {
-  return unwrapBalancerToken({ block, owner: '0xa1116930326d21fb917d5a27f1e9943a9595fb47', balancerToken: '0x41a08648c3766f9f9d85598ff102a08f4ef84f84' })
+async function stakingBalancerTvl(timestamp, block, _, { api }) {
+  return unwrapBalancerToken({ api, owner: '0xa1116930326d21fb917d5a27f1e9943a9595fb47', balancerToken: '0x41a08648c3766f9f9d85598ff102a08f4ef84f84', isV2: false, })
 }
 
 const aaveStakingContract = "0x4da27a545c0c5b758a6ba100e3a049001de870f5";

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const abi = require("./abi.json");
 const http = require("../helper/http");
 const sdk = require("@defillama/sdk");
@@ -47,6 +48,7 @@ async function tvl(_, block) {
     calls: dynasets.map((addr) => ({ target: addr })),
     abi: abi.getCurrentTokens,
     block,
+    permitFailure: true,
   });
   const tokensAndOwners = [];
   tokens
@@ -120,12 +122,12 @@ async function staking(ts, block) {
 
 async function tvlBNB(ts, EthBlock, { bsc: block }) {
   const tokensAndOwners = [
-    ["0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", DYNASETSBNB], // BNB
-    ["0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", DYNASETSBNB], // BUSD
+    [ADDRESSES.bsc.WBNB, DYNASETSBNB], // BNB
+    [ADDRESSES.bsc.BUSD, DYNASETSBNB], // BUSD
     ["0x7083609fCE4d1d8Dc0C979AAb8c869Ea2C873402", DYNASETSBNB], // BDOT
-    ["0x2170Ed0880ac9A755fd29B2688956BD959F933F8", DYNASETSBNB], // BETH
+    [ADDRESSES.bsc.ETH, DYNASETSBNB], // BETH
     ["0x1D2F0da169ceB9fC7B3144628dB156f3F6c60dBE", DYNASETSBNB], // BXRP
-    ["0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c", DYNASETSBNB], // WBTC
+    [ADDRESSES.bsc.BTCB, DYNASETSBNB], // WBTC
     ["0x1CE0c2827e2eF14D5C4f29a091d735A204794041", DYNASETSBNB], // BAVAX
     ["0x3EE2200Efb3400fAbB9AacF31297cBdD1d435D47", DYNASETSBNB], // BADA
     ["0xCC42724C6683B7E57334c4E856f4c9965ED682bD", DYNASETSBNB], // BMATIC

@@ -39,6 +39,7 @@ async function getStakingPools(chain, poolType) {
   async function _getPools() {
     const poolTypeStr = poolType === 'pool2' ? 'farms' : 'pools'
     const pools = await post(`${api_endpoint}/${poolTypeStr}`, { chainId: chains[chain]})
+    console.log(pools, `brewlabs ${chain} ${poolType} pools: ${pools.length}`)
     setCache(`brewlabs/pools`, chain, pools)
     return pools
   }
@@ -62,8 +63,7 @@ async function staking(_, _b, _cb, { api, }) {
 const poolInfoAbi = "function poolInfo(uint256) view returns (address lpToken,  uint256,  uint256,  uint256,  uint256,  uint256,  uint16,  uint16)"
 
 async function pool2(_, _b, _cb, { api, }) {
-  const pools = await getStakingPools(api.chain, 'pool2')
-  const infos = await api.multiCall({  abi: poolInfoAbi , calls: pools.map(i => ({ target: i.contractAddress, params: [0]}))})
-  const tokensAndOwners = pools.map((v, i) => ([infos[i].lpToken, v.contractAddress]))
+  const pools = (await getStakingPools(api.chain, 'pool2'))
+  const tokensAndOwners = pools.map((v, i) => ([v.lpAddress, v.contractAddress]))
   return sumUnknownTokens({ api, tokensAndOwners, blacklist})
 }

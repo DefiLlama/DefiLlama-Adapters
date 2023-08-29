@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const { getUniqueAddresses } = require('../helper/utils')
 
@@ -6,16 +7,27 @@ const assetList = [
   ["BTC", "BTC", "34xp4vRoCGJym3xR7yCVPFHoCNxv4Twseo"],
   //["BTC", "BTC", "3LYJfcfHPXYJreMsASk2jkn69LWEYKzexb"],
   ["BTC", "BTC", "3M219KR5vEneNb47ewrPfWyb5jQ2DjxRP6"],
+  ["BTC", "BTC", "3LcgLHzTvjLKBixBvkKGiadtiw2GBSKKqH"],
   ["BTC", "BTC", "3JJmF63ifcamPLiAmLgG96RA599yNtY3EQ"],
   ["BTC", "BTC", "3HdGoUTbcztBnS7UzY4vSPYhwr424CiWAA"],
   ["BTC", "BTC", "395vnFScKQ1ay695C6v7gf89UzoFpx3WuJ"],
-  ["BTC", "BTC", "3FrmCRcGKiTATfreBDM9F17yAUDoDsnWeA"],
+  //["BTC", "BTC", "3FrmCRcGKiTATfreBDM9F17yAUDoDsnWeA"],
   ["BTC", "BTC", "3FHNBLobJnbCTFTVakh5TXmEneyf5PT61B"],
   ["BTC", "BTC", "3LQUu4v9z6KNch71j7kbj8GPeAGUo1FW6a"],
   ["BTC", "BTC", "3AeUiDpPPUrUBS377584sFCpx8KLfpX9Ry"],
   ["BTC", "BTC", "3JFJPpH8Chwo7CDbyYQ4XcfgcjEP1FGRMJ"],
   ["BTC", "BTC", "34HpHYiyQwg69gFmCq2BGHjF1DZnZnBeBP"],
   ["BTC", "BTC", "bc1qm34lsc65zpw79lxes69zkqmk6ee3ewf0j77s3h"],
+  ["BTC", "BTC", "38Xnrq8MZiKmYmwobbYdZQ5nnCbX1qvQfE"], // added again on 07/08/2023
+  ["BTC", "BTC", "34GUzCVLbdkMQ2UdVTaA4nxPwoovVS7y2J"], // add on 07/08/2023
+  ["BTC", "BTC", "3AtnehKDkFPC1bKvdrEVPSRGCtxQH8F1R8"], // add on 07/08/2023
+  ["BTC", "BTC", "3CySuFKbBS29M7rE5iJakZRNqb3msMeFoN"], // add on 07/08/2023
+  ["BTC", "BTC", "3Me9QACjioepv2L2oKTC9QQ87NH6vFe1Zj"], // add on 07/08/2023
+  ["BTC", "BTC", "3NXCvmLGz9SxYi6TnjbBQfQMcwiZ1iQETa"], // add on 07/08/2023
+  ["BTC", "BTC", "3EbJfpmFgufYtzW9UFvf1GAfm2ted1Rwnr"],
+  ["BTC", "BTC", "38DN2uFMZPiHLHJigfv4kWC9JWJrNnhLcn"],
+  ["BTC", "BTC", "3Qxak1CZhLyZ7GVckKphLURdLBCjMfz9bA"],
+  ["BTC", "BTC", "36zSLdRv1jyewjaC12fqK5fptn7PqewunL"],
   ["ETH", "ETH", "0xbe0eb53f46cd790cd13851d5eff43d12404d33e8"],
   ["ETH", "ETH", "0xf977814e90da44bfa03b6295a0616a897441acec"],
   ["ETH", "ETH", "0x5a52e96bacdabb82fd05763e25335261b270efcb"],
@@ -39,6 +51,7 @@ const assetList = [
   ["USDT", "ETH", "0xdfd5293d8e347dfe59e90efd55b2956a1343963d"],
   ["USDT", "ETH", "0x9696f59e4d72e237be84ffd425dcad154bf96976"],
   ["USDT", "ETH", "0x4976a4a02f38326660d17bf34b431dc6e2eb2327"],
+  ["USDT", "ETH", "0xBE0eB53F46cd790Cd13851d5EFf43D12404d33E8"], // add on 07/08/2023
   ["USDT", "TRX", "TMuA6YqfCeX8EhbfYEg5y7S4DqzSJireY9"],
   ["USDT", "TRX", "TWd4WrZ9wn84f5x1hZhL4DHvk738ns5jwb"],
   ["USDC", "TRX", "TWd4WrZ9wn84f5x1hZhL4DHvk738ns5jwb"],
@@ -87,8 +100,9 @@ const assetList = [
  // ["BNB", "BEP2", "bnb1u70jtt2umum4ag3vcpw2h8v8levm47t0mtjwmh"],
   ["BNB", "BEP2", "bnb1xrfwzlu9c5208lhtn7ywt0mjrhjh4nt4fjyqxy"],
   ["BNB", "BEP20", "0xf977814e90da44bfa03b6295a0616a897441acec"],
- // ["BNB", "BEP20", "0xBE0eB53F46cd790Cd13851d5EFf43D12404d33E8"],
+  ["BNB", "BEP20", "0xBE0eB53F46cd790Cd13851d5EFf43D12404d33E8"], // ADD BACK 07/08/2023
   ["BNB", "BEP20", "0x5a52e96bacdabb82fd05763e25335261b270efcb"],
+  ["ETH", "BEP20", "0x5a52E96BAcdaBb82fd05763E25335261B270Efcb"], //add on 07/08/2023
   ["BNB", "BEP20", "0x3c783c21a0383057d128bae431894a5c19f9cf06"],
   ["BNB", "BEP20", "0xdccf3b77da55107280bd850ea519df3705d1a75a"],
   ["BNB", "BEP20", "0x8894e0a0c962cb723c1976a4421c95949be2d4e3"],
@@ -135,6 +149,7 @@ const assetList = [
   ["CHZ", "BEP2", "bnb1fnd0k5l4p3ck2j9x9dp36chk059w977pszdgdz"],
   ["WRX", "BEP2", "bnb1u2agwjat20494fmc6jnuau0ls937cfjn4pjwtn"],
   ["WRX", "BEP2", "bnb142q467df6jun6rt5u2ar58sp47hm5f9wvz2cvg"],
+  ["WRX", "ETH", "0xBE0eB53F46cd790Cd13851d5EFf43D12404d33E8"], // add on 07/08/2023
   ["BTC", "BEP2", "bnb1lsmt5a8vqqus5fwslx8pyyemgjtg4y6ugj308t"],
   ["LTC", "BEP2", "bnb1fnd0k5l4p3ck2j9x9dp36chk059w977pszdgdz"],
   ["USDT", "BEP2", "bnb1fnd0k5l4p3ck2j9x9dp36chk059w977pszdgdz"],
@@ -143,6 +158,7 @@ const assetList = [
   ["BUSD", "BEP20", "0x8894e0a0c962cb723c1976a4421c95949be2d4e3"],
   ["BTC", "BEP20", "0xf977814e90da44bfa03b6295a0616a897441acec"],
   ["LINK", "BEP20", "0x5a52e96bacdabb82fd05763e25335261b270efcb"],
+  ["BTC", "BEP20", "0x5a52E96BAcdaBb82fd05763E25335261B270Efcb"], //add on 07/08/2023
   ["BTC", "ETH", "0x21a31ee1afc51d94c2efccaa2092ad1028285549"],
   ["MASK", "BEP20", "0x5a52e96bacdabb82fd05763e25335261b270efcb"],
   ["BTC", "ETH", "0xdfd5293d8e347dfe59e90efd55b2956a1343963d"],
@@ -172,6 +188,7 @@ const assetList = [
   ["SHIB", "BEP20", "0xf977814e90da44bfa03b6295a0616a897441acec"],
   ["CHZ", "ETH", "0xbe0eb53f46cd790cd13851d5eff43d12404d33e8"],
   ["CHZ", "ETH", "0x28c6c06298d514db089934071355e5743bf21d60"],
+  ["ENJ", "ETH", "0xBE0eB53F46cd790Cd13851d5EFf43D12404d33E8"], // add on 07/08/2023
   ["CHZ", "ETH", "0x21a31ee1afc51d94c2efccaa2092ad1028285549"],
   ["1INCH", "BEP20", "0x8894e0a0c962cb723c1976a4421c95949be2d4e3"],
   ["CRV", "ETH", "0x28c6c06298d514db089934071355e5743bf21d60"],
@@ -263,6 +280,7 @@ const assetList = [
   ["USDT", "BEP20", "0xeb2d2f1b8c558a40207669291fda468e50c8a0bb"],
   ["CRV", "ETH", "0xf977814e90da44bfa03b6295a0616a897441acec"],
   ["BNB", "ETH", "0x28c6c06298d514db089934071355e5743bf21d60"],
+  ["USDT", "ETH", "0x5a52e96bacdabb82fd05763e25335261b270efcb"], //add on 07/08/2023
   ["CHR", "ETH", "0x5a52e96bacdabb82fd05763e25335261b270efcb"],
   ["CVP", "ETH", "0xf977814e90da44bfa03b6295a0616a897441acec"],
   ["XRP", "BEP20", "0xe2fc31f816a9b94326492132018c3aecc4a93ae1"],
@@ -270,13 +288,15 @@ const assetList = [
   ["ENJ", "ETH", "0xf977814e90da44bfa03b6295a0616a897441acec"],
   ["LTC", "LTC", "MWGTiJBNEQSfxTCrdC2VKEa55Lck27wr67"],
   ["LTC", "LTC", "MLkNzCps6cXou2DELVfxDuRC4uZGwr397o"],
-  ["LTC", "LTC", "MRwsBPhSteTreKQrNE6BXU1U33PMsn8jCS"],
+  //["LTC", "LTC", "MRwsBPhSteTreKQrNE6BXU1U33PMsn8jCS"],
   ["LTC", "LTC", "MBjKmoDwkuUbtnVd4vjymxjJx7Crca2s1z"],
   ["LTC", "LTC", "MJwFHGandYUFJTTHHSXg3q6u7ge4af1n4N"],
   ["LTC", "LTC", "MQd1fJwqBJvwLuyhr17PhEFx1swiqDbPQS"],
   ["LTC", "LTC", "MSeDRiNoH5Afr9b9rNo837hYzpxBXXqMZf"],
   ["LTC", "LTC", "M8T1B2Z97gVdvmfkQcAtYbEepune1tzGua"],
   ["LTC", "LTC", "LZEjckteAtWrugbsy9zU8VHEZ4iUiXo9Nm"],
+  ["LTC", "LTC", "MDwD5wYdeuoisfoaWKgeHK4Gq3YkbaCypJ"], //add on 07/08/2023
+  ["LTC", "LTC", "MVfJZDUEnPniCTYgidV7qW9EaPJoDMjb6b"], //add on 07/08/2023
   ["MATIC", "MATIC", "0xf977814e90da44bfa03b6295a0616a897441acec"],
   ["USDT", "MATIC", "0xe7804c37c13166ff0b37f5ae0bb07a3aebb6e245"],
   ["BUSD", "MATIC", "0xf977814e90da44bfa03b6295a0616a897441acec"],
@@ -289,6 +309,10 @@ const assetList = [
   ["ETH", "OP", "0xF977814e90dA44bFA03b6295A0616a897441aceC"],
   ["ETH", "OP", "0xacd03d601e5bb1b275bb94076ff46ed9d753435a"],
   ["BUSD", "OP", "0xacd03d601e5bb1b275bb94076ff46ed9d753435a"],
+  ["OP", "OP", "0xF977814e90dA44bFA03b6295A0616a897441aceC"],
+  ["OP", "OP", "0xacd03d601e5bb1b275bb94076ff46ed9d753435a"],
+  ["USDT", "OP", "0xacd03d601e5bb1b275bb94076ff46ed9d753435a"],
+  ["USDT", "OP", "0xF977814e90dA44bFA03b6295A0616a897441aceC"],
   ["XRP", "XRP", "rNU4eAowPuixS5ZCWaRL72UUeKgxcKExpK"],
   ["XRP", "XRP", "rs8ZPbYqgecRcDzQpJYAMhSxSi5htsjnza"],
   ["XRP", "XRP", "rBtttd61FExHC68vsZ8dqmS3DfjFEceA1A"],
@@ -305,13 +329,65 @@ const assetList = [
   ["DOT", "DOT", "1743nDTMZisPgBCYSAgkUn1kVG7MePc9rvMEjoRNf4ipVkF"],
   ["DOT", "DOT", "1qnJN7FViy3HZaxZK9tGAA71zxHSBeUweirKqCaox4t8GT7"],
   ["DOT", "DOT", "16ZL8yLyXv3V3L3z9ofR1ovFLziyXaN1DPq4yffMAZ9czzBD"],
+  //new chains
+  ["USDC", "ALGO", "MTCEM5YJJSYGW2RCXYXGE4SXLSPUUEJKQAWG2GUX6CNN72KQ3XPJCM6NOI"],
+  ["ALGO", "ALGO", "MTCEM5YJJSYGW2RCXYXGE4SXLSPUUEJKQAWG2GUX6CNN72KQ3XPJCM6NOI"],
+  ["USDC", "ALGO", "QYXDGS2XJJT7QNR6EJ2YHNZFONU6ROFM6BKTBNVT63ZXQ5OC6IYSPNDJ4U"],
+  ["ALGO", "ALGO", "QYXDGS2XJJT7QNR6EJ2YHNZFONU6ROFM6BKTBNVT63ZXQ5OC6IYSPNDJ4U"],
+  ["APT", "APT", "0xed8c46bec9dbc2b23c60568f822b95b87ea395f7e3fdb5e3adc0a30c55c0a60e"],
+  ["APT", "APT", "0xae1a6f3d3daccaf77b55044cea133379934bba04a11b9d0bbd643eae5e6e9c70"],
+  ["APT", "APT", "0xd91c64b777e51395c6ea9dec562ed79a4afa0cd6dad5a87b187c37198a1f855a"],
+  ["APT", "APT", "0x80174e0fe8cb2d32b038c6c888dd95c3e1560736f0d4a6e8bed6ae43b5c91f6f"],
+  ["APT", "APT", "0x5bd7de5c56d5691f32ea86c973c73fec7b1445e59736c97158020018c080bb00"],
+  //new tokens UNI
+  ["UNI", "BEP2", "bnb142q467df6jun6rt5u2ar58sp47hm5f9wvz2cvg"],
+  ["UNI", "BEP2", "bnb1u2agwjat20494fmc6jnuau0ls937cfjn4pjwtn"],
+  ["UNI", "BEP2", "bnb1fnd0k5l4p3ck2j9x9dp36chk059w977pszdgdz"],
+  ["UNI", "BEP2", "bnb1lsmt5a8vqqus5fwslx8pyyemgjtg4y6ugj308t"],
+  ["UNI", "ETH", "0xf977814e90da44bfa03b6295a0616a897441acec"],
+  ["UNI", "ETH", "0x21a31ee1afc51d94c2efccaa2092ad1028285549"],
+  ["UNI", "ETH", "0x5a52e96bacdabb82fd05763e25335261b270efcb"],
+  ["UNI", "ETH", "0xbe0eb53f46cd790cd13851d5eff43d12404d33e8"],
+  ["UNI", "ETH", "0xdfd5293d8e347dfe59e90efd55b2956a1343963d"],
+  ["UNI", "ETH", "0x28c6c06298d514db089934071355e5743bf21d60"],
+  //new token ARB
+  ["ARB", "ARB", "0xf977814e90da44bfa03b6295a0616a897441acec"],
+  ["ARB", "ARB", "0xb38e8c17e38363af6ebdcb3dae12e0243582891d"],
+  ["ARB", "ETH", "0x28c6c06298d514db089934071355e5743bf21d60"],
+  ["ARB", "ARB", "0xf92402bb795fd7cd08fb83839689db79099c8c9c"],
+ // ["USDC", "ETH", "0xf8d3e5fe8bb885325d98a751a30a1573e887a953"], removed 06/07/2023
+ // ["USDC", "ETH", "0xeae7380dd4cef6fbd1144f49e4d1e6964258a4f4"], removed 06/07/2023
+ // ["USDC", "ETH", "0x95e63f78bd2fd5ea8a0d58182f3d998558881fda"], removed 06/07/2023
+ // ["USDC", "ETH", "0x39e2d89f4b4708077a48d75c5cf2ab059a4b3e48"], removed 06/07/2023
+ // ["USDC", "ETH", "0x558a87a7c8b79ffb66a3d10a4a2de8c73a46707d"], removed 06/07/2023
+ // ["USDC", "ETH", "0xf033bce292bcaaf998ca13755104a4b23c04af5c"], removed 06/07/2023
+  ["LTC", "LTC", "LbmGksLBwtwRXyxeazCZqKiAHX6cWN2AzN"],
+  ["LTC", "LTC", "LhzEoDXHXASi4hSMxrKeVoSGrED9QsBpPq"],
+  ["LTC", "LTC", "MB8nnFMvR5cgvpzQ1QXTDVfUM91BcsLH3k"],
+ // ["USDC", "TRX", "TDjPeMNaRxoNMwENrdtNYmZt1YAfVVjp59"], removed 06/07/2023
+ // ["USDC", "TRX", "TL6VgVKo6natQb6hW5Hy2jcyX5EHgmwXLE"], removed 06/07/2023
+  ["BTC", "BTC", "1Pzaqw98PeRfyHypfqyEgg5yycJRsENrE7"], // new wallet https://twitter.com/binance/status/1670723088802283520
+  ["BTC", "BTC", "39884E3j6KZj82FK4vcCrkUvWYL5MQaS3v"], // new wallet that got 3.1b
+  ["TUSD", "BEP2", "bnb1fnd0k5l4p3ck2j9x9dp36chk059w977pszdgdz"],
+  ["TUSD", "BEP20", "0xf977814e90da44bfa03b6295a0616a897441acec"],
+  ["TUSD", "BEP20", "0x8894e0a0c962cb723c1976a4421c95949be2d4e3"],
+  ["TUSD", "BEP20", "0xe2fc31f816a9b94326492132018c3aecc4a93ae1"],
+  ["TUSD", "ETH", "0x21a31ee1afc51d94c2efccaa2092ad1028285549"],
+  ["TUSD", "ETH", "0x28c6c06298d514db089934071355e5743bf21d60"],
+  ["TUSD", "ETH", "0xdfd5293d8e347dfe59e90efd55b2956a1343963d"],
+  ["TUSD", "ETH", "0xf977814e90da44bfa03b6295a0616a897441acec"],
+  ["TUSD", "ETH", "0x5a52e96bacdabb82fd05763e25335261b270efcb"],
+  ["TUSD", "TRX", "TNXoiAJ3dct8Fjg4M9fkLFh9S2v9TXc32G"],
+  ["TUSD", "TRX", "TV6MuMXfmLbBqPZvBHdwFsDnQeVfnmiuSi"],
+  ["TUSD", "TRX", "TWd4WrZ9wn84f5x1hZhL4DHvk738ns5jwb"],
+  ["TUSD", "TRX", "TJCo98saj6WND61g1uuKwJ9GMWMT9WkJFo"],
 ]
 
 function getAddresses(chain) {
   return assetList.filter(i => i[1] === chain).map(i => i[2])
 }
 function getOwners(chain) {
-  const isCaseSensitive = ['BTC', 'TRX', 'SOL', 'XRP', 'LTC', 'DOT'].includes(chain)
+  const isCaseSensitive = ['BTC', 'TRX', 'SOL', 'XRP', 'LTC', 'DOT', 'ALGO'].includes(chain)
   return getUniqueAddresses(assetList.filter(i => i[1] === chain).map(i => i[2]), isCaseSensitive)
 }
 
@@ -323,12 +399,12 @@ module.exports = {
     owners: getOwners('ETH'),
     blacklistedTokens: [
       '0x9be89d2a4cd102d8fecc6bf9da793be995c22541', // BBTC
-      '0xB8c77482e45F1F44dE1745F52C74426C631bDD52', // WBNB
+      ADDRESSES.ethereum.BNB, // WBNB
     ]
   },
   bsc: {
     owners: getOwners('BEP20'),
-    tokens: ['0x0000000000000000000000000000000000000000',],
+    tokens: [ADDRESSES.null,],
   },
   bep2: {
     geckoId: 'binancecoin',
@@ -361,4 +437,10 @@ module.exports = {
   polkadot: {
     owners: getOwners('DOT')
   },
+  algorand: {
+    owners: getOwners('ALGO')
+  },
+  aptos: {
+    owners: getOwners('APT')
+  }
 }

@@ -15,6 +15,7 @@ const config = {
       '0x1D90fDAc4DD30c3ba38d53f52A884F6e75d0989e', // Tarot Opaline
       '0xD7cABeF2c1fD77a31c5ba97C724B82d3e25fC83C', // Tarot Velours
       '0x49DF1fe24cAf1a7dcBB2E2b1793b93b04eDb62bF', // Tarot Jupiter
+      '0xBA47316035E6C95b31cb55BfB93458Ad41E4Da04', // Tarot Velouté
     ]
   },
   arbitrum: {
@@ -56,6 +57,11 @@ const config = {
   polygon: {
     factories: [
       '0x36Df0A76a124d8b2205fA11766eC2eFF8Ce38A35', // Tarot Paprika
+    ]
+  },
+  era: {
+    factories: [
+      '0xf450b51fb2E1e4f05DAf9Cf7D9BB97714540B4f4', // Tarot Zeniths
     ]
   },
 }

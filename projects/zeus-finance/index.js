@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const {addFundsInMasterChef} = require("../helper/masterchef");
 const {stakingUnknownPricedLP} = require("../helper/staking");
 const {pool2BalanceFromMasterChefExports} = require("../helper/pool2")
@@ -9,7 +10,7 @@ async function tvl(timestamp, block, chainBlocks) {
     let balances = {};
     await addFundsInMasterChef(balances, masterchef, chainBlocks.cronos, "cronos", addr=>{
         if (addr.toLowerCase() === "0xf2001b145b43032aaf5ee2884e456ccd805f677d") {
-            return "0x6b175474e89094c44da98b954eedeac495271d0f"
+            return ADDRESSES.ethereum.DAI
         }
         return `cronos:${addr}`
     }, undefined, [token], true, true, token);

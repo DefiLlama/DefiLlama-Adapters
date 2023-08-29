@@ -1,37 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens } = require('../helper/chain/elrond')
-const { tokens } = require('../helper/tokenMapping')
-const { get } = require('../helper/http')
-const sdk = require('@defillama/sdk')
-
-let prices
-
-async function getPrices() {
-  if (!prices) prices = _getPrices()
-  return prices
-
-  async function _getPrices() {
-    const getApi = ({ token1, token2 }) => `https://api.multiversx.com/mex/pairs/${token1}/${token2}?fields=price`
-    const lps = [
-      // { lp: 'PROTEOEGLD-baf054', token1: 'PROTEO-0c7311', token2: 'WEGLD-bd4d79', },
-      { lp: 'ZPAYWEGLD-34e5c1', token1: 'ZPAY-247875', token2: 'WEGLD-bd4d79', },
-      { lp: 'AEROWEGLD-81cc37', token1: 'AERO-458bbf', token2: 'WEGLD-bd4d79', },
-      { lp: 'KROUSDC-7787ab', token1: 'USDC-c76f1f', token2: 'KRO-df97ec', },
-    ]
-
-    const prices = {}
-    await Promise.all(lps.map(async i => {
-      const { price } = await get(getApi(i))
-      prices['elrond:' + i.lp] = i.token1.startsWith('USDC') ? 1 / price : price
-    }))
-
-    return prices
-  }
-}
 
 async function tvl() {
   const tokensAndOwners = [
-    [tokens.null, 'erd1qqqqqqqqqqqqqpgqwqxfv48h9ssns5cc69yudvph297veqeeznyqr4l930'],
-    [tokens.null, 'erd1qqqqqqqqqqqqqpgqyhj3hk6kkw7405j42g20th3g2h5s8076znyqrpe2pr'],
+    [ADDRESSES.null, 'erd1qqqqqqqqqqqqqpgqwqxfv48h9ssns5cc69yudvph297veqeeznyqr4l930'],
+    [ADDRESSES.null, 'erd1qqqqqqqqqqqqqpgqyhj3hk6kkw7405j42g20th3g2h5s8076znyqrpe2pr'],
     ['USDC-c76f1f', 'erd1qqqqqqqqqqqqqpgq3lh80a92d49am3t2pfzheapdxtykzt5kznyqsjhfrx'],
     ['USDC-c76f1f', 'erd1qqqqqqqqqqqqqpgq25l7fgjdecaanxuuzxnquzs7k80q6mqaznyqzjclf5'],
     ['ZPAYWEGLD-34e5c1', 'erd1qqqqqqqqqqqqqpgqrpa6ezy0q4xuj6y9plgv85va43x7wy3dznyqr2rwcz'],
@@ -41,18 +14,7 @@ async function tvl() {
     ['AEROWEGLD-81cc37', 'erd1qqqqqqqqqqqqqpgqapmdgehzl22pu6m5pkvy2fhzm49uxkxhznyqhwhcx5'],
     ['AEROWEGLD-81cc37', 'erd1qqqqqqqqqqqqqpgqnedra5da464rkcektgzyv0qxcgqgyh26znyq8q4phx'],
   ]
-  return computeTvl(tokensAndOwners)
-}
-
-async function computeTvl(tokensAndOwners) {
-  const balances = await sumTokens({ chain: 'elrond', tokensAndOwners, })
-  const prices = await getPrices()
-  Object.entries(prices).forEach(([token, price]) => {
-    if (!balances[token]) return;
-    sdk.util.sumSingleBalance(balances, 'tether', balances[token] * price)
-    delete balances[token]
-  })
-  return balances
+  return sumTokens({tokensAndOwners})
 }
 
 async function pool2() {
@@ -61,11 +23,10 @@ async function pool2() {
     ['PROTEOEGLD-baf054', 'erd1qqqqqqqqqqqqqpgq6hzck3wac3ljmth7dkzk2wcw3c9lvcauznyq268sn6'],
   ]
 
-  return computeTvl(tokensAndOwners)
+  return sumTokens({tokensAndOwners})
 }
 
 module.exports = {
-  misrepresentedTokens: true,
   timetravel: false,
   elrond: {
     tvl,

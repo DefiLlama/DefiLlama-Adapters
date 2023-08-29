@@ -1,14 +1,15 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport, nullAddress, sumTokens2 } = require("../helper/unwrapLPs.js");
 const { staking } = require("../helper/staking");
 const activePoolAbi = "address:activePool"
 
 const eth = {
-  dai: "0x6b175474e89094c44da98b954eedeac495271d0f",
+  dai: ADDRESSES.ethereum.DAI,
   maha: "0x745407c86df8db893011912d3ab28e68b62e49b0",
-  weth: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+  weth: ADDRESSES.ethereum.WETH,
   arth: "0x8CC0F052fff7eaD7f2EdCCcaC895502E884a8a71",
   crv3: "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490",
-  usdc: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+  usdc: ADDRESSES.ethereum.USDC,
 
   mahax: "0xbdd8f4daf71c2cb16cce7e54bb81ef3cfcf5aacb",
 

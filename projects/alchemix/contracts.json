@@ -69,5 +69,25 @@
           "token": "0xdBdb4d16EdA451D0503b854CF79D55697F90c8DF",
           "holder": "0xAB8e74017a8Cc7c15FFcCd726603790d26d7DeCa"
       }
+    },
+    "cvxLPpools": {
+      "alUSD​+FRAXBP": {
+        "poolAddress":  "0x26598e3E511ADFadefD70ab2C3475Ff741741104",
+        "holder": "0x06378717d86b8cd2dba58c87383da1eda92d3495",
+        "tokenAddress": "0xb30da2376f63de30b42dc055c93fa474f31330a5",
+        "alToken": "0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9"
+      },
+      "alUSD-3CRV": {
+        "poolAddress":  "0x02E2151D4F351881017ABdF2DD2b51150841d5B3",
+        "holder": "0x9735f7d3ea56b454b24ffd74c58e9bd85cfad31b",
+        "tokenAddress": "0x43b4fdfd4ff969587185cdb6f0bd875c5fc83f8c",
+        "alToken": "0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9"
+      },
+      "alETH-ETH": {
+        "poolAddress":  "0x48Bc302d8295FeA1f8c3e7F57D4dDC9981FEE410",
+        "holder": "0xe761bf731a06fe8259fee05897b2687d56933110",
+        "tokenAddress": "0xc4c319e2d4d66cca4464c0c2b32c9bd23ebe784e",
+        "alToken": "0x0100546F2cD4C9D97f798fFC9755E47865FF7Ee6"
+      }
     }
   }

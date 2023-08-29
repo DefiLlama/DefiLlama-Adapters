@@ -1,6 +1,7 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { eulerTokens } = require('../helper/tokenMapping')
 const { getLogs } = require('../helper/cache/getLogs')
+const BigNumber = require("bignumber.js");
 
 const contracts = {
   ethereum: {
@@ -34,7 +35,8 @@ const contracts = {
       '0xa14ea0e11121e6e951e87c66afe460a00bcd6a16', // idleDAISafe
     ],
     cdos: [
-      '0xF87ec7e1Ee467d7d78862089B92dd40497cBa5B8',
+      "0xF87ec7e1Ee467d7d78862089B92dd40497cBa5B8", // MATIC
+      "0xDcE26B2c78609b983cF91cCcD43E238353653b0E", // IdleCDO_clearpool_DAI
     ]
   },
   polygon: {
@@ -55,7 +57,9 @@ const trancheConfig = {
 const getCurrentAllocationsABI = 'function getCurrentAllocations() returns (address[] tokenAddresses,  uint256[] amounts,  uint256 total)'
 async function tvl(time, ethBlock, chainBlocks, { api }) {
   const { v1 = [], v3 = [], safe = [], cdos = [] } = contracts[api.chain]
+  const balances = {}
   const ownerTokens = []
+
   const [tokenAllocations, allTokens, token, tokenV3, tokenSafe, allocations] = await Promise.all([
     api.multiCall({ abi: getCurrentAllocationsABI, calls: v3 }),
     api.multiCall({ abi: 'address[]:getAllAvailableTokens', calls: v1 }),
@@ -70,16 +74,18 @@ async function tvl(time, ethBlock, chainBlocks, { api }) {
   aSafeTokens.forEach((v, i) => ownerTokens.push([[v], calls[i].target]))
   tokenSafe.forEach((v, i) => ownerTokens.push([[v], safe[i]]))
 
-  allTokens.forEach((tokens, i) => {
-    tokens.push(token[i])
-    ownerTokens.push([tokens, v1[i]])
-  })
-  tokenAllocations.forEach((tokens, i) => {
-    tokens.tokenAddresses.push(tokenV3[i])
-    ownerTokens.push([tokens.tokenAddresses, v3[i]])
-  })
+  // Load tokens decimals
+  const callsDecimals = token.map( t => ({ target: t, params: [] }) )
+  const decimalsResults = await api.multiCall({abi: 'erc20:decimals', calls: callsDecimals})
+  const tokensDecimals = decimalsResults.reduce( (tokensDecimals, decimals, i) => {
+    const call = callsDecimals[i]
+    tokensDecimals[call.target] = decimals
+    return tokensDecimals
+  }, {})
 
-  let blacklistedTokens = [...eulerTokens]
+  const trancheTokensMapping = {}
+  const blacklistedTokens = [...eulerTokens]
+
   const { factory, fromBlock } = trancheConfig[api.chain] ?? {}
   if (factory) {
     const logs = await getLogs({
@@ -91,16 +97,60 @@ async function tvl(time, ethBlock, chainBlocks, { api }) {
       fromBlock,
     })
     cdos.push(...logs.map(i => i.proxy))
-    const [strategyToken, token, aatrances, bbtrances] = await Promise.all(['address:strategyToken', "address:token", "address:AATranche", "address:BBTranche"].map(abi => api.multiCall({ abi, calls: cdos })))
+
+    const [strategyToken, token, aatrances, bbtrances, aaprices, bbprices] = await Promise.all(['address:strategyToken', "address:token", "address:AATranche", "address:BBTranche", "uint256:priceAA", "uint256:priceBB"].map(abi => api.multiCall({ abi, calls: cdos })))
     blacklistedTokens.push(...cdos)
     blacklistedTokens.push(...aatrances)
     blacklistedTokens.push(...bbtrances)
+
+    // Get CDOs contract values
+    const contractValue = await api.multiCall({ abi: 'uint256:getContractValue', calls: cdos })
     cdos.forEach((cdo, i) => {
-      ownerTokens.push([[strategyToken[i], token[i]], cdo])
+      const tokenDecimals = tokensDecimals[token[i]] || 18
+      trancheTokensMapping[aatrances[i]] = {
+        token: token[i],
+        decimals: tokenDecimals,
+        price: BigNumber(aaprices[i]).div(`1e${tokenDecimals}`).toFixed()
+      }
+      trancheTokensMapping[bbtrances[i]] = {
+        token: token[i],
+        decimals: tokenDecimals,
+        price: BigNumber(bbprices[i]).div(`1e${tokenDecimals}`).toFixed()
+      }
+      // Get CDOs underlying tokens balances
+      balances[token[i]] = BigNumber(balances[token[i]] || 0).plus(BigNumber(contractValue[i] || 0))
     })
   }
 
-  return sumTokens2({ api, ownerTokens, blacklistedTokens, })
+  const trancheTokensBalancesCalls = []
+
+  allTokens.forEach((tokens, i) => {
+    tokens.push(token[i])
+    const blackListedTrancheTokens = tokens.filter( blacklistedToken => blacklistedTokens.includes(blacklistedToken) && trancheTokensMapping[blacklistedToken] ).forEach( trancheToken => {
+      trancheTokensBalancesCalls.push({ target: trancheToken, params: [v1[i]] })
+    })
+    ownerTokens.push([tokens, v1[i]])
+  })
+
+  tokenAllocations.forEach((tokens, i) => {
+    tokens.tokenAddresses.push(tokenV3[i])
+    ownerTokens.push([tokens.tokenAddresses, v3[i]])
+  })
+
+  // Process tranche tokens BY balances
+  if (trancheTokensBalancesCalls.length){
+    const trancheTokensBalancesResults = await api.multiCall({ abi: 'erc20:balanceOf', calls: trancheTokensBalancesCalls })
+    trancheTokensBalancesResults.forEach( (trancheTokenBalance, i) => {
+      const trancheToken = trancheTokensBalancesCalls[i].target
+      const decimals = trancheTokensMapping[trancheToken].decimals
+      const trancheTokenPrice = trancheTokensMapping[trancheToken].price || 1
+      const underlyingToken = trancheTokensMapping[trancheToken].token
+      const underlyingTokenBalance = BigNumber(trancheTokenBalance || 0).times(trancheTokenPrice).div(`1e18`).times(`1e${decimals}`).toFixed(0)
+      balances[underlyingToken] = BigNumber(balances[underlyingToken] || 0).plus(underlyingTokenBalance)
+    })
+  }
+
+  return sumTokens2({ api, balances, ownerTokens, blacklistedTokens, })
 }
 
 module.exports = {

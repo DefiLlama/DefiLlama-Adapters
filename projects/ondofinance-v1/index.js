@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
@@ -5,7 +6,7 @@ const { default: BigNumber } = require("bignumber.js");
 const { getBlock } = require("../helper/http");
 
 const NEAR_TOKEN = "0x85f17cf997934a597031b2e18a9ab6ebd4b9f6a4";
-const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+const WETH = ADDRESSES.ethereum.WETH;
 
 async function addEthBalances(addresses, block, balances) {
   await Promise.all(
@@ -44,7 +45,7 @@ const data = {
   supported_tokens: [
     "0x4Eb8b4C65D8430647586cf44af4Bf23dEd2Bb794",
     "0x36784d3B5aa8A807698475b3437a13fA20B7E9e1",
-    "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+    ADDRESSES.ethereum.FRAX,
     "0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0",
     "0x956F47F50A910163D8BF957Cf5846D573E7f87CA",
     "0x0f2D719407FdBeFF09D87557AbB7232601FD9F29",
@@ -52,7 +53,7 @@ const data = {
     "0x67B6D479c7bB412C54e03dCA8E1Bc6740ce6b99C",
     "0x0cEC1A9154Ff802e7934Fc916Ed7Ca50bDE6844e",
     "0x04Fa0d235C4abf4BcF4787aF4CF447DE572eF828",
-    "0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B",
+    ADDRESSES.ethereum.CVX,
     "0xff20817765cb7f73d4bde2e66e067e58d11095c2",
     "0xa3BeD4E1c75D00fa6f4E5E6922DB7261B5E9AcD2",
     "0x470ebf5f030ed85fc1ed4c2d36b9dd02e77cf1b7",
@@ -60,7 +61,7 @@ const data = {
     "0xc770eefad204b5180df6a14ee197d99d808ee52d",
     "0xc7283b66eb1eb5fb86327f08e1b5816b0720212b",
     "0xa693B19d2931d498c5B318dF961919BB4aee87a5",
-    "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+    ADDRESSES.ethereum.WETH,
     "0x85f17cf997934a597031b2e18a9ab6ebd4b9f6a4",
   ],
 };

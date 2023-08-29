@@ -217,3 +217,5 @@ module.exports = {
     tvl: getTVLTotal(bitgertArchives),
   }
 };
+
+module.exports.dexit.tvl = () => ({})
