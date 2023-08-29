@@ -7,7 +7,7 @@ const config = {
   bsc: { factory: '0xad2b34a2245b5a7378964BC820e8F34D14adF312', fromBlock: 28026886, },
   polygon: { factory: '0xad2b34a2245b5a7378964BC820e8F34D14adF312', fromBlock: 42446548, },
   base: { factory: '0x4bF9CDcCE12924B559928623a5d23598ca19367B', fromBlock: 2733457, },
-  mantle: { factory: '0x4bF9CDcCE12924B559928623a5d23598ca19367B', fromBlock: 1364977, },
+  mantle: { factory: '0x4bF9CDcCE12924B559928623a5d23598ca19367B', fromBlock: 1364977, }
 }
 
 module.exports = {
