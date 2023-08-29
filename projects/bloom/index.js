@@ -14,55 +14,36 @@ const Chain = {
     ethereum: "ethereum",
 };
 
-const latestRoundDataABI = {
-    inputs: [],
-    name: "latestRoundData",
-    outputs: [
-      { internalType: "uint80", name: "roundId", type: "uint80" },
-      { internalType: "int256", name: "answer", type: "int256" },
-      { internalType: "uint256", name: "startedAt", type: "uint256" },
-      { internalType: "uint256", name: "updatedAt", type: "uint256" },
-      { internalType: "uint80", name: "answeredInRound", type: "uint80" },
-    ],
-    stateMutability: "view",
-    type: "function",
-  };
-
 async function getIB01USD(chain) {
     const oracleAddresses = {
         [Chain.ethereum]: "0x32d1463eb53b73c095625719afa544d5426354cb",
     };
-
+    console.log("Getting iB01 USD price from Chainlink")
     const iB01USDRoundData = await sdk.api.abi.call({
         chain: chain,
         target: oracleAddresses[chain],
         params: [],
-        abi: latestRoundDataABI,
+        abi: abi['latestAnswer'],
     });
 
-    return iB01USDRoundData.output.answer / 1e8;
+    return iB01USDRoundData.output / 1e8;
 }
 
 async function tvl(timestamp, block, chainBlocks, {api}) {
-    const activePools = await api.call({ target: REGISTRY, abi: abi['getActivePools'] });
-    const inactivePools = await api.call({ target: REGISTRY, abi: abi['getInactivePools'] });
+    const activePools = await api.call({ target: REGISTRY, abi: abi['getActiveTokens'] });
+    const inactivePools = await api.call({ target: REGISTRY, abi: abi['getInactiveTokens'] });
     const allPools = [...activePools, ...inactivePools];
     const ib01usd = await getIB01USD(Chain.ethereum);
-    
     const balances = {};
-
     const bIB01Balances = await api.multiCall({
         abi: abi['balanceOf'],
         calls: allPools.map(pool => ({ target: '0xCA30c93B02514f86d5C86a6e375E3A330B435Fb5', params: [pool] })) 
     });
 
     bIB01Balances.forEach((balance, i) => {
-        if (balance.success) {
-            const usdValue = balance.output * ib01usd;  // Convert the balance of bIB01 to its USD value
-            sdk.util.sumSingleBalance(balances, ADDRESSES.ethereum.USDT, usdValue);
-        }
+        const usdValue = balance * ib01usd / 1e12;  // Convert the balance of bIB01 to its USD value
+        sdk.util.sumSingleBalance(balances, ADDRESSES.ethereum.USDT, usdValue);
     });
-
 
     const tokenBalances = await api.multiCall({ abi: abi.totalSupply, calls: allPools.map(pool => ({target: pool})) });
 
