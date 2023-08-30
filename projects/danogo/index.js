@@ -71,6 +71,7 @@ const fetch = async () => {
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   timetravel: false,
   cardano: {
     tvl: fetch
