@@ -1,7 +1,4 @@
 {
     "getActiveTokens": "address[]:getActiveTokens",
-    "getInactiveTokens": "address[]:getInactiveTokens",
-    "totalSupply": "uint256:totalSupply",
-    "latestAnswer": "int256:latestAnswer",
-    "balanceOf": "function balanceOf(address) view returns (uint256)"
+    "getInactiveTokens": "address[]:getInactiveTokens"
 }
