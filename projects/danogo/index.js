@@ -22,11 +22,15 @@ const fetchSmartContractUTXOs = async (address) => {
   return kupoResponse.data;
 }
 
-const fetchAssetValue = async (assetIds) => {
+const fetchAssetValue = async (assetsInfo) => {
+  const assetIds = Object.keys(assetsInfo)
+  let totalAssetsValue = 0;
   const gatewayResponse = await postURL(`${DANOGO_GATEWAY_ENDPOINT}/cardano-asset-value`, { assetIds: assetIds});
-  return gatewayResponse.data.data.assetValues
-    .map((asset) => Number(BigInt(asset.adaValue) * BigInt(100) / BigInt(ADA_TO_LOVELACE)) / 100)
-    .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+  gatewayResponse.data.data.assetValues.forEach((asset) => {
+    const assetValue = Number(BigInt(asset.adaValue) * BigInt(100) / BigInt(ADA_TO_LOVELACE)) / 100;
+    totalAssetsValue += assetValue * assetsInfo[asset.assetId];
+  });
+  return totalAssetsValue;
 }
 
 const fetch = async () => {
@@ -36,18 +40,16 @@ const fetch = async () => {
     return fetchSmartContractUTXOs(address)
   }));
 
-  let assetIds = [];
+  let assetInfos = {};
   let totalValueLocked = 0;
   smartContractsUtxos.forEach(async (smUtxos) => {
     smUtxos.forEach((utxo) => {
       totalValueLocked += utxo.value.coins / ADA_TO_LOVELACE;
-      Object.keys(utxo.value.assets).forEach((assetId) => {
-        assetIds.push(assetId);
-      })
+      assetInfos = {...assetInfos, ...utxo.value.assets}
     })
   });
 
-  const totalAssetsValues = await fetchAssetValue(assetIds);
+  const totalAssetsValues = await fetchAssetValue(assetInfos);
   totalValueLocked += totalAssetsValues;
 
   return { cardano: totalValueLocked };
