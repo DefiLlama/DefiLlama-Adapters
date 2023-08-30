@@ -2,7 +2,7 @@ const { cachedGraphQuery } = require('../helper/cache')
 
 const graphs = {
   ethereum:
-    "https://api.studio.thegraph.com/query/33765/term-finance-mainnet/version/latest",
+    "https://graph-node.mainnet.termfinance.io/subgraphs/name/term-finance-mainnet",
 };
 
 const query = `
