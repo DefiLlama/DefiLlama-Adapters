@@ -9,7 +9,8 @@ const assetToken = [
         "type": "felt"
       }
     ],
-    "stateMutability": "view"
+    "stateMutability": "view",
+    "customType": "address"
   },
   {
     "name": "totalSupply",
