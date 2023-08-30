@@ -12,29 +12,29 @@
 7. No need to go to our discord and announce that you've created a PR, we monitor all PRs and will review it asap
 
 ---
-##### Name (to be shown on DefiLlama): 
-Bloom
+##### Name (to be shown on DefiLlama):
+
 
 ##### Twitter Link:
-https://twitter.com/blueberryfdn
+
 
 ##### List of audit links if any:
-https://docs.bloom.garden/audit
+
 
 ##### Website Link:
-https://bloom.garden
+
 
 ##### Logo (High resolution, will be shown with rounded borders):
 
 
 ##### Current TVL:
-$1,446,349.08
+
 
 ##### Treasury Addresses (if the protocol has treasury)
-0xFdC004B6B92b45B224d37dc45dBA5cA82c1e08f2
+
 
 ##### Chain:
-Ethereum
+
 
 ##### Coingecko ID (so your TVL can appear on Coingecko, leave empty if not listed): (https://api.coingecko.com/api/v3/coins/list)
 
@@ -43,22 +43,21 @@ Ethereum
 
 
 ##### Short Description (to be shown on DefiLlama):
-Permissionless real world asset yields for the DeFi economy
+
 
 ##### Token address and ticker if any:
 
 
 ##### Category (full list at https://defillama.com/categories) *Please choose only one:
-RWA
+
 
 ##### Oracle used (Chainlink/Band/API3/TWAP or any other that you are using):
-Chainlink
+
 
 ##### forkedFrom (Does your project originate from another project):
 
 
 ##### methodology (what is being counted as tvl, how is tvl being calculated):
-Assets that are lent out on the Bloom protocol are counted as TVL. This includes the value of the underlying asset and the interest accrued.
+
 
 ##### Github org/user (Optional, if your code is open source, we can track activity):
-https://github.com/blueberryfi
