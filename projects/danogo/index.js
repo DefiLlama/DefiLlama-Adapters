@@ -33,6 +33,21 @@ const fetchAssetValue = async (assetsInfo) => {
   return totalAssetsValue;
 }
 
+function mergeObjectsWithSum(target, ...sources) {
+  for (const source of sources) {
+      for (const key in source) {
+          if (source.hasOwnProperty(key)) {
+              if (key in target) {
+                  target[key] += source[key];
+              } else {
+                  target[key] = source[key];
+              }
+          }
+      }
+  }
+  return target;
+}
+
 const fetch = async () => {
   const smartContracts = await fetchSmartContractAddresses();
   
@@ -45,7 +60,7 @@ const fetch = async () => {
   smartContractsUtxos.forEach(async (smUtxos) => {
     smUtxos.forEach((utxo) => {
       totalValueLocked += utxo.value.coins / ADA_TO_LOVELACE;
-      assetInfos = {...assetInfos, ...utxo.value.assets}
+      assetInfos = mergeObjectsWithSum(assetInfos, utxo.value.assets);
     })
   });
 
