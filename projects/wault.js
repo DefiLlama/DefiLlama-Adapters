@@ -6,4 +6,5 @@ module.exports = {
   polygon: {
     tvl: () => 0
   },
+  deadFrom: '2022-08-19',
 }

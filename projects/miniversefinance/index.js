@@ -14,3 +14,4 @@ const lps = [
 module.exports = {
     ...tombTvl(mvdollar, mshare, rewardPool, masonry, lps, "fantom")
 }
+module.exports.deadFrom = '2023-08-09'
