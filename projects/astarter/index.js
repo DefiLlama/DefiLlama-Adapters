@@ -46,7 +46,7 @@ async function getADAPrice() {
   const data = await axios.get(
     'https://api.coingecko.com/api/v3/simple/price?ids=cardano&vs_currencies=usd',
   );
-  price = data.data.cardano.usd;
+  const price = data.data.cardano.usd;
   return price;
 }
 
