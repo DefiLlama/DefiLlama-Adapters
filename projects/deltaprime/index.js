@@ -86,17 +86,14 @@ async function addVectorVaultBalancesAuto({ balances, accounts, api, token }) {
   const compounder = await api.call({
     abi: 'function compounder() view returns(address)',
     target: helper.helper,
-    params: []
   })
   const totalDeposits = await api.call({
     abi: 'function totalDeposits() view returns(uint256)',
     target: compounder,
-    params: []
   })
   const totalSupply = await api.call({
     abi: 'function totalSupply() view returns(uint256)',
     target: compounder,
-    params: []
   })
   const shareRatio = totalDeposits / totalSupply;
   let bals = await api.multiCall({ abi: VFDepositTokenBalanceAutoAbi, calls: accounts, target: compounder })
