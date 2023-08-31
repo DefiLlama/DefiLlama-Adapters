@@ -11,15 +11,18 @@ async function tvl() {
   const ISPOLocked = await getPoolStake(POOL_ID);
 
 
+  const adaPrice = await getADAPrice()
   const {list} = await getPairs();
 
-  let poolLocked = 0;
+  let poolLockedInUSD = 0;
   for (let i = 0; i < list.length; i++) {
     const item = list[i];
     const {amountInUSD} = item;
 
-    poolLocked += parseInt(amountInUSD)
+    poolLockedInUSD += parseInt(amountInUSD)
   }
+
+  const poolLocked = poolLockedInUSD / adaPrice;
 
   return {
     cardano: ISPOLocked + poolLocked + batchOrderLocked,
@@ -37,6 +40,14 @@ async function getPoolStake(poolId) {
 async function getPairs() {
   const response = await axios.get('https://api.dex.astarter.io/swap/pools?size=1000&order=amountInUSD&direction=desc');
   return response.data.data;
+}
+
+async function getADAPrice() {
+  const data = await axios.get(
+    'https://api.coingecko.com/api/v3/simple/price?ids=cardano&vs_currencies=usd',
+  );
+  price = data.data.cardano.usd;
+  return price;
 }
 
 module.exports = {
