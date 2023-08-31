@@ -8,3 +8,6 @@ module.exports = {
     timetravel: false,
     fetch: () => 0
 }
+
+
+module.exports.deadFrom = '2023-07-09'
