@@ -16,7 +16,7 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 // carbon: https://api-insights.carbon.network/info/denom_gecko_map
 // orbit brige: https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList
 
-const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', ]
+const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', ]
 const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc',]
 
 const distressedAssts = new Set(Object.values({
@@ -69,6 +69,13 @@ const fixBalancesTokens = {
   mvc: {
     [ADDRESSES.mvc.SPACE]: { coingeckoId: "microvisionchain", decimals: 8 },
   },
+  secret: {
+    'secret1k0jntykt7e4g3y88ltc60czgjuqdy4c9e8fzek': { coingeckoId: 'secret', decimals: 6 },
+    'secret14mzwd0ps5q277l20ly2q3aetqe3ev4m4260gf4': { coingeckoId: 'cosmos', decimals: 6 },
+    'secret1vnjck36ld45apf8u4fedxd5zy7f5l92y3w5qwq': { coingeckoId: 'dai', decimals: 18 },
+    'secret1h6z05y90gwm4sqxzhz4pkyp36cna9xtp7q0urv': { coingeckoId: 'usd-coin', decimals: 6 },
+    'secret18wpjn83dayu4meu6wnn29khfkwdxs7kyrz9c8f': { coingeckoId: 'tether', decimals: 6 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
