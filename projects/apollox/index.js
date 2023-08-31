@@ -50,9 +50,10 @@ const ALPTokens = [
   TOKEN_BTC,
   TOKEN_BNB,
   TOKEN_HAY,
+  TOKEN_CAKE,
 ]
 
-async function tvl(timestamp, _block, { bsc: block }) {
+async function bscTVL(timestamp, _block, { bsc: block }) {
   const toa = [
     ...TreasureTokens.map((t) => [t, treasureContract]),
     ...ALPTokens.map((t) => [t, ALPContract]),
@@ -63,7 +64,7 @@ async function tvl(timestamp, _block, { bsc: block }) {
 module.exports = {
   start: 1640100600, // 12/21/2021 @ 15:30pm (UTC)
   bsc: {
-    tvl,
+    tvl: bscTVL,
     staking: stakings([stakingContract_APX, daoContract], TOKEN_APX, "bsc"),
     pool2: pool2s([stakingContract, stakingContractV2], [poolContract, poolContractV2], "bsc"),
   },
@@ -77,10 +78,17 @@ module.exports = {
     ]})
   },
   arbitrum: {
-    tvl: sumTokensExport({ owner: '0xbad4ccc91ef0dfffbcab1402c519601fbaf244ef', tokens: [
+    tvl: sumTokensExport({ owners: 
+      [
+        '0xbad4ccc91ef0dfffbcab1402c519601fbaf244ef',
+        '0xb3879e95a4b8e3ee570c232b19d520821f540e48'
+    ], tokens: [
       nullAddress,
       ADDRESSES.arbitrum.USDC,
       ADDRESSES.arbitrum.USDT,
+      ADDRESSES.arbitrum.DAI,
+      ADDRESSES.arbitrum.WBTC,
+      ADDRESSES.arbitrum.WETH,
     ]})
   },
   era: {
