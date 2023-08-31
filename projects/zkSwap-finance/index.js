@@ -1,4 +1,3 @@
-const ADDRESSES = require('./helper/coreAssets.json')
 const { getUniTVL } = require('../helper/unknownTokens')
 const {stakingPricedLP} = require("../helper/staking")
 
@@ -11,7 +10,7 @@ module.exports = {
       factory: FACTORY,
       useDefaultCoreAssets: true,
     }),
-    staking: stakingPricedLP('0x9F9D043fB77A194b4216784Eb5985c471b979D67','0x31C2c031fDc9d33e974f327Ab0d9883Eae06cA4A', CHAIN, ADDRESSES.era.WETH, 'weth', false)
+    staking: stakingPricedLP('0x9F9D043fB77A194b4216784Eb5985c471b979D67','0x31C2c031fDc9d33e974f327Ab0d9883Eae06cA4A', CHAIN, '0xD33A17C883D5aA79470cd2522ABb213DC4017E01', 'weth', false)
   },
   methodology: "TVL is total liquidity of all liquidity pools."
 }
