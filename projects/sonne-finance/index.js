@@ -1,4 +1,4 @@
-const { CompoundExports } = require('../helper/compound')
+const { compoundExports } = require('../helper/compound')
 const { staking } = require('../helper/staking');
 
 const optimismConfig = {
