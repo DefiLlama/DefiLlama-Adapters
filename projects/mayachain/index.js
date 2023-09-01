@@ -19,8 +19,7 @@ const chainMapping = {
 const reverseChainMapping = Object.fromEntries(Object.entries(chainMapping).map(([a, b]) => [b, a]))
 
 const defillamaChainMapping = {
-  'bitcoin-cash': 'bitcoincash',
-  'dogecoin': 'doge',
+  'dash': 'dash',
 }
 
 const tokenGeckoMapping = {}
