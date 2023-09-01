@@ -18,7 +18,6 @@ const chainMapping = {
   LTC: 'litecoin',
   BCH: 'bitcoin-cash',
   DOGE: 'dogecoin',
-  GAIA: 'cosmos',
 }
 
 const defillamaChainMapping = {
@@ -33,7 +32,6 @@ function getDChain(chain) {
 const tokenGeckoMapping = {
   'BNB.TWT-8C2': 'trust-wallet-token',
   'BNB.BUSD-BD1': 'binance-usd',
-  'GAIA.ATOM': 'cosmos',
   'BNB.BTCB-1DE': 'bitcoin-bep2',
   'BNB.AVA-645': 'concierge-io',
   'BNB.ETH-1C9': 'ethereum',
