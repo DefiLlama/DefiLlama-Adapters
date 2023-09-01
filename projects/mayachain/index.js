@@ -36,7 +36,7 @@ async function tvl(_, _1, _2, { api }) {
   const decimals = {}
   if (evmChains.includes(aChain)) {
     const mayaChain = reverseChainMapping[aChain]
-    const tokens = pools.map(i => i.asset).filter(i => i.startsWith(mayaChain)).map(i => i.split('-')[1]?.toLowerCase()).filter(i => i?.startsWith('0X'))
+    const tokens = pools.map(i => i.asset).filter(i => i.startsWith(mayaChain)).map(i => i.split('-')[1]?.toLowerCase()).filter(i => i?.startsWith('0x'))
     const decimalsRes = await api.multiCall({ abi: 'erc20:decimals', calls: tokens })
     decimalsRes.forEach((i, index) => { decimals[tokens[index]] = i })
   }
