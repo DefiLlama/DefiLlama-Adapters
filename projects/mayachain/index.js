@@ -13,7 +13,7 @@ async function staking() {
 const chainMapping = {
   ETH: 'ethereum',
   BTC: 'bitcoin',
-  RUNE: 'thorchain',
+  THOR: 'thorchain',
   DASH: 'dash',
 }
 const reverseChainMapping = Object.fromEntries(Object.entries(chainMapping).map(([a, b]) => [b, a]))
