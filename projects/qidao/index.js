@@ -101,7 +101,7 @@ const config = {
   },
   base: {
     vaults: [
-      //"0x7333fd58d8d73a8e5fc1a16c8037ada4f580fa2b",
+      "0x7333fd58d8d73a8e5fc1a16c8037ada4f580fa2b",
       "0x8d6cebd76f18e1558d4db88138e2defb3909fad6"
     ]
   },
@@ -115,7 +115,7 @@ const config = {
       "0x82E90EB7034C1DF646bD06aFb9E67281AAb5ed28",
       "0xCA3EB45FB186Ed4e75B9B22A514fF1d4abAdD123",
       "0x4ce4C542D96Ce1872fEA4fa3fbB2E7aE31862Bad",
-      //"0x5773e8953cf60f495eb3c2db45dd753b5c4b7473",
+      "0x5773e8953cf60f495eb3c2db45dd753b5c4b7473",
       "0x954ac12c339c60eafbb32213b15af3f7c7a0dec2"
     ]
   },
