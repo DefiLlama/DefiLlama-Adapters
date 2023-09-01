@@ -79,6 +79,7 @@ const tokenMapping = {
   DJED: '8db269c3ec630e06ae29f74bc39edd1f87c819f1056206e879a1cd61446a65644d6963726f555344',
   SHEN: '8db269c3ec630e06ae29f74bc39edd1f87c819f1056206e879a1cd615368656e4d6963726f555344',
   IUSD: 'f66d78b4a3cb3d37afa0ec36461e51ecbde00f26c8f0a68f94b6988069555344',
+  USDC: '25c5de5f5b286073c593edfd77b48abc7a48e5a4f3d4cd9d428ff935',
 }
 const getToken = market => tokenMapping[market.marketId.toUpperCase()]
 
