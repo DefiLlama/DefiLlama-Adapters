@@ -11,7 +11,7 @@ const chainMapping = {
 const reverseChainMapping = Object.fromEntries(Object.entries(chainMapping).map(([a, b]) => [b, a]))
 
 const defillamaChainMapping = {
-  'DASH': 'DASH',
+  'DASH': 'dash',
 }
 
 const tokenGeckoMapping = {
@@ -57,13 +57,14 @@ async function tvl(_, _1, _2, { api }) {
     if (dChain !== aChain) return;
 
     let [baseToken, address] = token.split('-')
-    if (['ethereum'].includes(chain)) {
-      totalDepth = totalDepth * (10 ** (+nativeDecimal - 8))
+    if (evmChains.includes(chain)) {
       if (address && address.length > 8) {
         address = address.toLowerCase()
+        if (!decimals[address]) throw new Error('no decimals for ' + address)
+        totalDepth = totalDepth * (10 ** (decimals[address] - 10))
         sdk.util.sumSingleBalance(balances, address, totalDepth, chain)
       } else if (chainStr === baseToken) {
-        sdk.util.sumSingleBalance(balances, nullAddress, totalDepth, chain)
+        sdk.util.sumSingleBalance(balances, nullAddress, totalDepth * 1e10, chain)
       } else if (tokenGeckoMapping[pool]) {
         sdk.util.sumSingleBalance(balances, tokenGeckoMapping[pool], totalDepth / 1e10)
       } else {
