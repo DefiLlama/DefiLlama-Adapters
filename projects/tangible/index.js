@@ -5,13 +5,15 @@ const { getConfig } = require('../helper/cache')
 // doc: https://docs.tangible.store/real-usd/real-usd-v3-contracts-and-addresses
 const TNGBL = '0x49e6A20f1BBdfEeC2a8222E052000BbB14EE6007'.toLowerCase()
 const USDR = '0x40379a439d4f6795b6fc9aa5687db461677a2dba'.toLowerCase()
+const PEARL = '0x7238390d5f6F64e67c3211C343A410E2A3DEc142'.toLowerCase()
 
 const { apGetAddress, getPriceManager, getCategories,
   getTotalSupply, getTokenByIndex, getTnftCustody,
-  getItemPriceBatchTokenIds, getPair } = require("./abi.js");
+  getItemPriceBatchTokenIds, getPair, getPearlBalanceCaviar } = require("./abi.js");
 
 const ADDRESS_PROVIDER_ADDRESS = "0xE95BCf65478d6ba44C5F57740CfA50EA443619eA";
 const FACTORY_ADDRESS = "0xB0E54b88BB0043A938563fe8A77F4ddE2eB0cFc0";
+const CAVIAR_STRATEGY = "0x4626E247390c82FA3b72A913d3d8fe079FFb84Ff";
 
 const insuranceConfig = {
   ethereum: {
@@ -20,7 +22,11 @@ const insuranceConfig = {
   },
   polygon: {
     owner: '0xD1758fbABAE91c805BE76D56548A584EF68B81f0',
-    tokens: [ADDRESSES.polygon.DAI, ADDRESSES.polygon.USDC, ADDRESSES.polygon.USDT, ADDRESSES.null, ADDRESSES.polygon.WETH, ADDRESSES.polygon.WMATIC],
+    tokens: [ADDRESSES.polygon.DAI, ADDRESSES.polygon.USDC, ADDRESSES.polygon.USDT, ADDRESSES.null, ADDRESSES.polygon.WETH, ADDRESSES.polygon.WMATIC, PEARL, TNGBL],
+  },
+  polygon1: {
+    owner: '0x632572cfAa39330c8F0211b5B33BC86135E48b5f',
+    tokens: [ADDRESSES.polygon.DAI, ADDRESSES.polygon.USDC, ADDRESSES.polygon.USDT, ADDRESSES.null, ADDRESSES.polygon.WETH, ADDRESSES.polygon.WMATIC, PEARL, TNGBL],
   },
   optimism: {
     owner: '0x7f922242d919feF0da0e40e3Cb4B7f7D3c97a63e',
@@ -33,7 +39,8 @@ async function tvl(_, _b, _cb, { api }) {
     treasuryTvl,
     insuranceTvl,
     rwaTVL,
-    tangiblePOL
+    tangiblePOL,
+    tangibleCaviar
   ].map(fn => fn(api)))
 }
 
@@ -44,12 +51,13 @@ async function treasuryTvl(api) {
     target: ADDRESS_PROVIDER_ADDRESS,
     params: ["0xc83e4fd410f80be983b083c99898391186b0893751a26a9a1e5fdcb9d4129701"],//keccak of USDRTreasury
   })
-  await api.sumTokens({ owner: usdrTreasuryAddress, tokens: [ADDRESSES.polygon.DAI] })
+  await api.sumTokens({ owner: usdrTreasuryAddress, tokens: [ADDRESSES.polygon.DAI, TNGBL] }) // TNGBL should be part, same as for Tera/Luna, Synthetics/sUSD
 }
 
 async function insuranceTvl(api) {
   await unwrapBalancerToken(api)
-  return api.sumTokens(insuranceConfig.polygon)
+  await api.sumTokens(insuranceConfig.polygon)
+  return api.sumTokens(insuranceConfig.polygon1)
 }
 
 async function rwaTVL(api) {
@@ -93,6 +101,18 @@ async function rwaTVL(api) {
 
 }
 
+async function tangibleCaviar(api) {
+  // now fetch locked pearl in Caviar
+  const pearlAmountInCaviar = await api.call({
+    abi: getPearlBalanceCaviar,
+    target: CAVIAR_STRATEGY,
+    params: [],
+  })
+
+  api.add(PEARL, pearlAmountInCaviar);
+
+}
+
 async function tangiblePOL(api) {
 
   //pearl pair api address
@@ -100,6 +120,13 @@ async function tangiblePOL(api) {
     abi: apGetAddress,
     target: ADDRESS_PROVIDER_ADDRESS,
     params: ["0xd1e0c1a56a62f2e6553b45bde148c89c51a01f766c23f4bb2c612bd2c822f711"],//keccak of paerl api address
+  })
+
+  // liquidity manager
+  const liquidityManager = await api.call({
+    abi: apGetAddress,
+    target: ADDRESS_PROVIDER_ADDRESS,
+    params: ["0x6878742ff510854cb02c186504af5267007c4a6d33f490fc28ec83e83e1458e1"],//keccak of liquidity manager
   })
 
   const { data } = await getConfig('tangible', "https://api.pearl.exchange/api/v15/pools");
@@ -111,16 +138,15 @@ async function tangiblePOL(api) {
         pool.token0.symbol === "USDR"),
   ).map(i => i.address)
 
-  const multisigAddress = "0x100fCC635acf0c22dCdceF49DD93cA94E55F0c71"
   const [lpBals, tokens0, tokens1, totalSupplies, reserves] = await Promise.all([
-    api.multiCall({ abi: getPair, target: pearlPairApi, calls: pools.map(p => ({ params: [p, multisigAddress]})) }),
+    api.multiCall({ abi: getPair, target: pearlPairApi, calls: pools.map(p => ({ params: [p, liquidityManager]})) }),
     api.multiCall({ abi: 'address:token0', calls: pools }),
     api.multiCall({ abi: 'address:token1', calls: pools }),
     api.multiCall({ abi: 'uint256:totalSupply', calls: pools }),
     api.multiCall({ abi: "function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)", calls: pools }),
   ])
 
-  const blacklist = [USDR, TNGBL]
+  const blacklist = [USDR]
   lpBals.forEach((lpBal, i) => {
     const ratio = lpBal.account_gauge_balance / totalSupplies[i]
     if (!blacklist.includes(tokens0[i].toLowerCase()))
