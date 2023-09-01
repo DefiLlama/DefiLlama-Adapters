@@ -16,8 +16,6 @@ async function tvl() {
       }
     }),
   })
-  return  {}
-  return response;
 }
 
 module.exports = {
