@@ -178,7 +178,7 @@ async function diplayUnknownTable({ tvlResults = {}, tvlBalances = {}, storedKey
   storedKey = storedKey.split('-')[0]
   Object.entries(tvlResults.tokenBalances).forEach(([label, balance]) => {
     if (!label.startsWith('UNKNOWN')) return;
-    const token = label.split('(')[1].replace(')', '')
+    const token = label?.split('(')[1]?.replace(')', '')
     balances[token] = tvlBalances[token]
     if (balances[token] === '0') delete balances[token]
   })

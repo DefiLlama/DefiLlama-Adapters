@@ -1,17 +1,9 @@
 const axios = require("axios");
 
 const POOL_ID = "pool1drkls8s0zzjydyv3qpjsdj58w3sw02w9wg0pckrsnuazyef2hca";
-// TODO  Waiting for dex to deploy the main network
-// const DEX_BATHCER_SCRIPT = "";
-// const DEX_POOL_SCRIPT = "";
-
 async function tvl() {
-  // const batchOrderLocked = await getAdaInAddress(DEX_BATHCER_SCRIPT);
-  // const liquidityPoolLocked = await getAdaInAddress(DEX_POOL_SCRIPT);
-  const ISPOLocked = await getPoolStake(POOL_ID);
   return {
-    // cardano: ISPOLocked + (liquidityPoolLocked * 2) + batchOrderLocked,
-    cardano: ISPOLocked,
+    cardano: await getPoolStake(POOL_ID)
   };
 }
 
