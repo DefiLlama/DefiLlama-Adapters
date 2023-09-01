@@ -2,14 +2,6 @@ const { getCache, get } = require('../helper/http')
 const sdk = require('@defillama/sdk')
 const { nullAddress } = require('../helper/tokenMapping')
 
-async function staking() {
-  var res = await get('https://midgard.mayachain.info/v2/network')
-  const { totalActiveBond, totalStandbyBond } = res.bondMetrics
-  return {
-    "mayachain": (Number(totalActiveBond) + Number(totalStandbyBond)) / 1e10
-  }
-}
-
 const chainMapping = {
   ETH: 'ethereum',
   BTC: 'bitcoin',
@@ -94,8 +86,7 @@ async function tvl(_, _1, _2, { api }) {
 module.exports = {
   timetravel: false,
   mayachain: {
-    tvl,
-    staking
+    tvl
   },
 }
 
