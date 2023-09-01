@@ -1,7 +1,8 @@
 const axios = require("axios");
 const zlib = require("zlib");
-const { getLogs, getAddress } = require("../helper/cache/getLogs");
+const { getLogs, } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
+const { getCache, setCache, } = require("../helper/cache");
 
 const brotliDecode = (stream) => {
   return new Promise((resolve, reject) => {
@@ -43,12 +44,15 @@ const getContracts = async (chainId) => {
 };
 
 async function tvl(_, _b, _cb, { api }) {
-  const newVaultCreatedTopic =
-    "0xa2e0e739c28baba2e1a55e9e41fdba4a191517ff0e3fc6f04cb0ed24d3e73d96";
-
   const { fromBlock } = config[api.chain];
+  let contracts
 
-  const contracts = await getContracts(api.chainId);
+  try {
+    contracts = await getContracts(api.chainId)
+    await setCache('myso-v2', api.chain, contracts)
+  } catch (e) {
+    contracts = await getCache('myso-v2',api.chain)
+  }
 
   const vaultFactory = contracts?.find(
     (contract) => contract.type === "vault_factory"
@@ -57,7 +61,7 @@ async function tvl(_, _b, _cb, { api }) {
   const logs = await getLogs({
     api,
     target: vaultFactory,
-    topics: [newVaultCreatedTopic],
+    eventAbi: "event NewVaultCreated(address indexed newLenderVaultAddr, address vaultOwner, uint256 numRegisteredVaults)",
     onlyArgs: true,
     fromBlock,
   });
@@ -67,7 +71,7 @@ async function tvl(_, _b, _cb, { api }) {
       contracts
         .filter((contract) => contract.type === "token")
         .map((contract) => contract.contractAddr),
-      getAddress(i.topics[1]),
+      i.newLenderVaultAddr,
     ];
   });
 
@@ -82,8 +86,6 @@ const config = {
     fromBlock: 3471026,
   },
 };
-
-module.exports = {};
 
 Object.keys(config).forEach((chain) => {
   module.exports[chain] = { tvl };
