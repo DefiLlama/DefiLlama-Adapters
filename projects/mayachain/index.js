@@ -16,11 +16,17 @@ const chainMapping = {
   RUNE: 'thorchain',
   DASH: 'dash',
 }
+const reverseChainMapping = Object.fromEntries(Object.entries(chainMapping).map(([a, b]) => [b, a]))
 
 const defillamaChainMapping = {
   'bitcoin-cash': 'bitcoincash',
   'dogecoin': 'doge',
 }
+
+const tokenGeckoMapping = {}
+
+
+const evmChains = ['ethereum']
 
 function getDChain(chain) {
   return defillamaChainMapping[chainMapping[chain]] || chainMapping[chain]
@@ -32,14 +38,23 @@ async function tvl(_, _1, _2, { api }) {
   const pools = await getCache('https://midgard.mayachain.info/v2/pools')
   const aChain = api.chain
 
+
   const balances = {}
+  const decimals = {}
+  if (evmChains.includes(aChain)) {
+    const mayaChain = reverseChainMapping[aChain]
+    const tokens = pools.map(i => i.asset).filter(i => i.startsWith(mayaChain)).map(i => i.split('-')[1]?.toLowerCase()).filter(i => i?.startsWith('0x'))
+    const decimalsRes = await api.multiCall({ abi: 'erc20:decimals', calls: tokens })
+    decimalsRes.forEach((i, index) => { decimals[tokens[index]] = i })
+  }
   await Promise.all(pools.map(addPool))
   return balances
 
-  async function addPool({ asset: pool, assetDepth: totalDepth, nativeDecimal, runeDepth }) {
+
+  async function addPool({ asset: pool, assetDepth: totalDepth, runeDepth }) {
     if (blacklistedPools.includes(pool)) return;
     if (aChain === 'mayachain') {
-      sdk.util.sumSingleBalance(balances, 'mayachain', runeDepth/1e10)
+      sdk.util.sumSingleBalance(balances, 'mayachain', runeDepth / 1e10)
       return;
     }
     if (+totalDepth < 1) return;
@@ -49,13 +64,14 @@ async function tvl(_, _1, _2, { api }) {
     if (dChain !== aChain) return;
 
     let [baseToken, address] = token.split('-')
-    if (['ethereum'].includes(chain)) {
-      totalDepth = totalDepth * (10 ** (+nativeDecimal - 10))
+    if (evmChains.includes(chain)) {
       if (address && address.length > 8) {
         address = address.toLowerCase()
+        if (!decimals[address]) throw new Error('no decimals for ' + address)
+        totalDepth = totalDepth * (10 ** (decimals[address] - 10))
         sdk.util.sumSingleBalance(balances, address, totalDepth, chain)
       } else if (chainStr === baseToken) {
-        sdk.util.sumSingleBalance(balances, nullAddress, totalDepth, chain)
+        sdk.util.sumSingleBalance(balances, nullAddress, totalDepth * 1e8, chain)
       } else if (tokenGeckoMapping[pool]) {
         sdk.util.sumSingleBalance(balances, tokenGeckoMapping[pool], totalDepth / 1e10)
       } else {
@@ -83,5 +99,5 @@ module.exports = {
 }
 
 Object.keys(chainMapping).map(getDChain).forEach(chain => {
-  module.exports[chain] = {tvl }
+  module.exports[chain] = { tvl }
 })
