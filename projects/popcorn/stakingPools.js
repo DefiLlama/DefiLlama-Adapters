@@ -40,7 +40,7 @@ async function addStakingPoolsTVL(balances, timestamp, chainBlocks, chain = "eth
     })).output;
 
     const lpPositions = [{ token: pool.stakingToken, balance: stakingTokenBalance }]
-    await unwrapUniswapLPs(balances, lpPositions, block, chain, undefined, undefined, false, pool.isGelatoPoolToken ? 'gelato' : undefined,)
+    await unwrapUniswapLPs(balances, lpPositions, block, chain, undefined, undefined, pool.isGelatoPoolToken ? 'gelato' : undefined,)
     let tokens = Object.keys(balances);
     for (let i = 0; i < tokens.length; i++) {
       const token = tokens[i]
