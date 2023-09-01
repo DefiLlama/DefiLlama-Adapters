@@ -12,10 +12,10 @@ const baseConfig = {
 }
 
 // OPTIMISM CHAIN
-const optimismTVL = CompoundExports(optimismConfig.unitroller, optimismConfig.chain)
+const optimismTVL = compoundExports(optimismConfig.unitroller, optimismConfig.chain)
 
 // BASE CHAIN
-const baseTVL = CompoundExports(baseConfig.unitroller, baseConfig.chain)
+const baseTVL = compoundExports(baseConfig.unitroller, baseConfig.chain)
 
 module.exports = {
   optimism: { ...optimismTVL,
