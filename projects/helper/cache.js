@@ -8,38 +8,40 @@ function getKey(project, chain) {
   return `cache/${project}/${chain}.json`
 }
 
+function getFileKey(project, chain) {
+  return `${Bucket}/${getKey(project, chain)}`
+}
+
 function getLink(project, chain) {
   return `https://${Bucket}.s3.eu-central-1.amazonaws.com/${getKey(project, chain)}`
 }
 
 async function getCache(project, chain, { _ } = {}) {
   const Key = getKey(project, chain)
+  const fileKey = getFileKey(project, chain)
 
   try {
-    const { data: json } = await axios.get(getLink(project, chain))
+    const json = await sdk.cache.readCache(fileKey)
+    if (!json || Object.keys(json).length === 0) throw new Error('Invalid data')
     return json
   } catch (e) {
-    sdk.log('failed to fetch data from s3 bucket:', Key)
-    // sdk.log(e)
-    return {}
+    try {
+      const { data: json } = await axios.get(getLink(project, chain))
+      await sdk.cache.writeCache(fileKey, json)
+      return json
+    } catch (e) {
+      sdk.log('failed to fetch data from s3 bucket:', Key)
+      // sdk.log(e)
+      return {}
+    }
   }
 }
 
-async function setCache(project, chain, cache, {
-  ContentType = 'application/json',
-  ACL = 'public-read'
-} = {}) {
-
+async function setCache(project, chain, cache) {
   const Key = getKey(project, chain)
 
   try {
-    await new aws.S3()
-      .upload({
-        Bucket, Key,
-        Body: JSON.stringify(cache),
-        ACL, ContentType,
-      }).promise();
-
+    await sdk.cache.writeCache(getFileKey(project, chain), cache)
   } catch (e) {
     sdk.log('failed to write data to s3 bucket: ', Key)
     // sdk.log(e)

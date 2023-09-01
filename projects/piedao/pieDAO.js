@@ -135,7 +135,6 @@ module.exports = class PieDAO {
             target: poolAddress,
             abi: IStakingBalancer.uni
           })).output;
-          //console.log("calculatePools", stakingPool.type, underlyingAddress);
 
           underlyingBalance = new BigNumber((await sdk.api.erc20.balanceOf({ target: underlyingAddress, owner: poolAddress })).output);
           underlyingSupply = new BigNumber((await sdk.api.erc20.totalSupply({ target: underlyingAddress })).output);
