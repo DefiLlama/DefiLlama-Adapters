@@ -19,10 +19,12 @@ const chainMapping = {
 const reverseChainMapping = Object.fromEntries(Object.entries(chainMapping).map(([a, b]) => [b, a]))
 
 const defillamaChainMapping = {
-  'dash': 'dash',
+  'DASH': 'DASH',
 }
 
-const tokenGeckoMapping = {}
+const tokenGeckoMapping = {
+  'THOR.RUNE': 'thorchain',
+}
 
 
 const evmChains = ['ethereum']
@@ -70,7 +72,7 @@ async function tvl(_, _1, _2, { api }) {
         totalDepth = totalDepth * (10 ** (decimals[address] - 10))
         sdk.util.sumSingleBalance(balances, address, totalDepth, chain)
       } else if (chainStr === baseToken) {
-        sdk.util.sumSingleBalance(balances, nullAddress, totalDepth * 1e8, chain)
+        sdk.util.sumSingleBalance(balances, nullAddress, totalDepth * 1e10, chain)
       } else if (tokenGeckoMapping[pool]) {
         sdk.util.sumSingleBalance(balances, tokenGeckoMapping[pool], totalDepth / 1e10)
       } else {
@@ -78,7 +80,7 @@ async function tvl(_, _1, _2, { api }) {
       }
     } else {
       if (chainStr === baseToken) {
-        if (chain === 'dash') chain = 'dash'
+        if (chain === 'DASH') chain = 'dash'
         sdk.util.sumSingleBalance(balances, chain, totalDepth / 1e10)
       } else if (tokenGeckoMapping[pool]) {
         sdk.util.sumSingleBalance(balances, tokenGeckoMapping[pool], totalDepth / 1e10)
