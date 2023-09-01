@@ -52,6 +52,12 @@ const fixBalancesTokens = {
   telos: {
     [ADDRESSES.telos.WTLOS_1]: { coingeckoId: "telos", decimals: 18 },
   },
+  alv: {
+    ['0xcb3e9919c56eff1004e54175a01e39163a352129']: { coingeckoId: "alvey-chain", decimals: 18 },
+  },
+  dsc: {
+    ['0x1c5d8992da64c8d56ea413dd6f723061c29a7c0b']: { coingeckoId: "decimal", decimals: 18 },
+  },
   aura: {
     'uaura': { coingeckoId: 'aura-network', decimals: 6 },
   },
