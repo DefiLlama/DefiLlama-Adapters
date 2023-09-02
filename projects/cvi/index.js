@@ -2,7 +2,6 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { staking, stakings } = require("../helper/staking");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
-const { transformPolygonAddress } = require("../helper/portedTokens");
 
 /*** Ethereum Addresses ***/
 const stakingContract = "0xDb3130952eD9b5fa7108deDAAA921ae8f59beaCb";
@@ -99,7 +98,7 @@ async function ethTvl(timestamp, block) {
 async function polygonTvl(timestamp, block, chainBlocks) {
   const balances = {};
 
-  const transformAddress = await transformPolygonAddress();
+  const transformAddress = i => `polygon:${i}`;
   await sumTokensAndLPsSharedOwners(
     balances,
     [

@@ -16,7 +16,7 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 // carbon: https://api-insights.carbon.network/info/denom_gecko_map
 // orbit brige: https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList
 
-const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'stargaze', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei']
+const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', ]
 const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo',]
 
 const distressedAssts = new Set(Object.values({
@@ -32,6 +32,7 @@ const transformTokens = {
     '0xe0b469cb3eda0ece9e425cfeda4df986a55ea9f8': ADDRESSES.ethereum.WETH,
     [ADDRESSES.ethereum.vlCVX]: ADDRESSES.ethereum.CVX,
   },
+  
   // Sample Code
   // cronos: {
   //   "0x065de42e28e42d90c2052a1b49e7f83806af0e1f": "0x123", // CRK token is mispriced
@@ -55,9 +56,8 @@ const fixBalancesTokens = {
   aura: {
     'uaura': { coingeckoId: 'aura-network', decimals: 6 },
   },
-  op_bnb: {
-    '0xa457653a7dbe1fdf314e30327d6ec0c5b2cfbd8a': { coingeckoId: 'binancecoin', decimals: 18 },
-    '0x4200000000000000000000000000000000000006': { coingeckoId: 'binancecoin', decimals: 18 },
+  arbitrum: {
+    '0x1509706a6c66CA549ff0cB464de88231DDBe213B': { coingeckoId: 'aura-finance', decimals: 18 }
   },
 }
 
@@ -93,7 +93,7 @@ function getCoreAssets(chain = 'ethereum') {
     Object.keys(fixBalancesTokens[chain] || {}),
   ].flat()
   let addresses = getUniqueAddresses(tokens, chain)
-  if (ibcChains.includes(chain)) addresses.push(...coreAssets.ibc)
+  if (ibcChains.includes(chain)) addresses.push(...coreAssets.ibc.map(i => 'ibc/' + i))
   if (anyswapTokenBlacklist[chain]) addresses = addresses.filter(i => !anyswapTokenBlacklist[chain].includes(i))
   return addresses
 }
