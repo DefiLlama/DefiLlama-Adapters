@@ -7,7 +7,6 @@ const masterChef = '0xe981676633dCf0256Aa512f4923A7e8DA180C595'
 module.exports = {
   bsc: {
     tvl: getUniTVL({
-      chain: 'bsc',
       factory: FACTORY,
       useDefaultCoreAssets: true,
     }),

@@ -3,12 +3,14 @@ const { tokens } = require("../helper/chain/algorand");
 const { lpTokenPostion } = require("./utils");
 
 //Algomint Basket contracts where the liquidty is held
-const goUsdBasketAddress =
-  "B7GJK5XWIYRM7Y5ZBSLHYGQFOWMBRNCITBL37U6HMXETTA37BRJVLF7XRM";
+const goUsdcBasketAddress =
+  "S3VJZN4AXUP3IZKE4O7TUN6LRIEYNJCMXQSFP6DPGUKU6YYK2VLN2W7DXA";
+const goUsdtBasketAddress =
+  "CX7ICRT4HRKHZSSYYMW765AKSBDH3XJBQZ2DXN32DCWTD2732RVHR25Y5Q";
 const goBtcBasketAddress =
-  "OYJM6HVQESRPVFMMGPXA6AL6T4JP5U25J6IQ7UKA6I3NC7VRSH6H3F7KDI";
+  "MGGJI6CKRMIEN7CGXY2SK3KTPRCXW4SNPDPN4G7RWON4DB4262G4IRFHXE";
 const goEthBasketAddress =
-  "72BMR3TYPOLPNUEUL6FTY5ZE4SQQ7KZ2PE5QRTA4Z2M76IEFA72A24NXGQ";
+  "IUTNDPUTZ5MKFFIZ5L7MG35I5WXS64LLJKVXRTJNJISBRPOTOAM3DA65CY";
 
 //The following pool ID's are the PACT LP pool contracts
 const usdcPoolId = 885102197;
@@ -21,13 +23,13 @@ async function tvl() {
   const usdcPostion = await lpTokenPostion(
     tokens.usdcGoUsdLp,
     usdcPoolId,
-    goUsdBasketAddress
+    goUsdcBasketAddress
   );
 
   const usdtPosition = await lpTokenPostion(
     tokens.usdtGoUsdLp,
     usdtPoolId,
-    goUsdBasketAddress
+    goUsdtBasketAddress
   );
 
   const wBtcPosition = await lpTokenPostion(

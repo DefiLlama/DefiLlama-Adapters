@@ -3,17 +3,23 @@ const {
   getMarketTokenAddress,
   getMarketTotalPar,
 } = require("./dolomite-margin.json");
-const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const dolomiteMargin = "0x6bd780e7fdf01d77e4d475c821f1e7ae05409072";
 
 async function getTokensAndBalances(api, supplyOrBorrow) {
   const tokens = await api.fetchList({ lengthAbi: getNumMarkets, itemAbi: getMarketTokenAddress, target: dolomiteMargin })
-  if (supplyOrBorrow === 'supply')
-    return sumTokens2({ owner: dolomiteMargin, api, tokens })
+  const underlyingTokens = await api.multiCall({ abi: 'address:UNDERLYING_TOKEN', calls: tokens, permitFailure: true, })
+  let bals
+  if (supplyOrBorrow === 'supply') {
+    bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: tokens.map(i => ({ target: i, params: dolomiteMargin })), })
 
-  const res = await api.fetchList({ lengthAbi: getNumMarkets, itemAbi: getMarketTotalPar, target: dolomiteMargin })
-  res.forEach((v, i) => api.addToken(tokens[i], v.borrow))
+  } else {
+    const res = await api.fetchList({ lengthAbi: getNumMarkets, itemAbi: getMarketTotalPar, target: dolomiteMargin })
+    bals = res.map(i => i.borrow)
+  }
+  tokens.forEach((v, i) => {
+    api.add(underlyingTokens[i] ?? v, bals[i])
+  })
 }
 
 async function tvl(timestamp, ethereumBlock, blocksToKeys, { api }) {
