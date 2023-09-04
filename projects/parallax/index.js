@@ -6,6 +6,25 @@ const { getPriceMIM, getPriceAura, getPriceSushi } = require("./getPrice");
 const prllxERC20 = require("./abis/prllxERC20.json");
 const contracts = require("./contracts.json");
 
+const arbitrumPools = [
+  // pool, token, representation
+
+  [
+    "0x82FD636D7A28a20635572EB8ec0603ee264B8651",
+    "0xc8CCBd97b96834b976C995a67BF46e5754e2C48E",
+    "arbitrum:0xc8CCBd97b96834b976C995a67BF46e5754e2C48E",
+  ], // 3-Months Vault
+  [
+    "0xA3CE2c0d1cfB29F398f8f4800bA202Aba39dbbfe",
+    "0xc8CCBd97b96834b976C995a67BF46e5754e2C48E",
+    "arbitrum:0xc8CCBd97b96834b976C995a67BF46e5754e2C48E",
+  ], // 12-Months Vault
+  [
+    "0xEb370470Afd74d8a9BBC4fF0C94371C310fF9D3e",
+    "0xc8CCBd97b96834b976C995a67BF46e5754e2C48E",
+    "arbitrum:0xc8CCBd97b96834b976C995a67BF46e5754e2C48E",
+  ], // Farming Vault
+];
 async function ethTvl(time, _ethBlock, { ethereum: block }, { api }) {
   const strategyId = await api.call({
     target: contracts.eth.parallaxAddress,
@@ -141,6 +160,22 @@ async function arbitrumTvl(time, _ethBlock, { arbitrum: block }, { api }) {
     balances,
     `arbitrum:${contracts.arbitrum.sushi.usdc}`,
     totalStakedTVL
+  );
+
+  // Vaults
+  await Promise.all(
+    arbitrumPools.map((pool) =>
+      sdk.api.erc20
+        .balanceOf({
+          target: pool[1],
+          owner: pool[0],
+          chain: "arbitrum",
+          block,
+        })
+        .then((result) =>
+          sdk.util.sumSingleBalance(balances, pool[2], result.output)
+        )
+    )
   );
 
   return balances;
