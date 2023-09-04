@@ -1,11 +1,10 @@
 # Defillama Adapters
+Hello World,(https://docs.llama.fi/submit-a-project) to create an adapter and submit a PR with it.
 
-Follow [this guide](https://docs.llama.fi/submit-a-project) to create an adapter and submit a PR with it.
-
-Also, don't hesitate to send a message on [our discord](https://discord.defillama.com/) if we're late to merge your PR.
+Also, don't hesitate to send a message on (https://discord.defillama.com/) if we're late to merge your PR.
 
 > If you would like to add a `volume` adapter please submit the PR [here](https://github.com/DefiLlama/adapters)
-> - If you would like to add a `liquidations` adapter, please refer to [this readme document](https://github.com/DefiLlama/DefiLlama-Adapters/tree/main/liquidations) for details.
+> - If you would like to add a `liquidations` adapter, please refer to(https://github.com/DefiLlama/DefiLlama-Adapters/tree/main/liquidations) for details.
 
 1. Once your adapter has been merged, it takes time to show on the UI. If more than 24 hours have passed, please let us know in Discord.
 2. Please enable "Allow edits by maintainers" while putting up the PR.
@@ -22,7 +21,7 @@ Please send answers to questions there https://github.com/DefiLlama/DefiLlama-Ad
 
 This is a work in progress. The goal is to eventually handle historical data. DefiLlama aims to be transparent, accurate and open source.
 
-If you have any suggestions, want to contribute or want to chat, please join [our discord](https://discord.defillama.com/) and drop a message.
+If you have any suggestions, want to contribute or want to chat, please join (https://discord.defillama.com/) and drop a message.
 
 ## Testing adapters
 ```
