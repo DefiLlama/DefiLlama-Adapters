@@ -4,6 +4,7 @@ module.exports = {
     hallmarks: [
       [Math.floor(new Date('2023-06-01')/1e3), 'Chain is abandoned'],
     ],
+    deadFrom: '2023-06-01',
     polis: {
         tvl: () => 0
     },
