@@ -10,6 +10,9 @@
     "lint": "eslint .",
     "eslint:github-action": "eslint .",
     "test-interactive": "node utils/testInteractive",
+    "tvl": "cd utils;npm i; cd ..; node utils/testInteractive",
+    "treasury": "cd utils;npm i; cd ..; node utils/testInteractive treasury",
+    "entities": "cd utils;npm i; cd ..; node utils/testInteractive entities",
     "postinstall": "echo 'run \"npm update @defillama/sdk\" if you want lastest sdk changes' "
   },
   "author": "",
