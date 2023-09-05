@@ -65,6 +65,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'oasis' && ['LPT'].includes(symbol)) return true
   if (chain === 'base' && ['RCKT-V2'].includes(symbol)) return true
   if (chain === 'wan' && ['WSLP'].includes(symbol)) return true
+  if (chain === 'telos' && ['zLP'].includes(symbol)) return true
   if (chain === 'polygon' && ['MbtLP', 'GLP', ].includes(symbol)) return true
   if (chain === 'ethereum' && ['SUDO-LP'].includes(symbol)) return false
   if (chain === 'dogechain' && ['DST-V2'].includes(symbol)) return true
