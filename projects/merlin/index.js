@@ -1,6 +1,5 @@
 module.exports = {
   start: 1682899200,
-  methodology: "Counts liquidity in pools and MAGE token in the stMAGE contract",
   era: {
     tvl: () => 0,
   },
