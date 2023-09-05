@@ -70,6 +70,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'dogechain' && ['DST-V2'].includes(symbol)) return true
   if (chain === 'harmony' && ['HLP'].includes(symbol)) return true
   if (chain === 'klaytn' && ['NLP'].includes(symbol)) return true
+  if (chain === 'kardia' && ['KLP', 'KDXLP'].includes(symbol)) return true
   if (chain === 'fantom' && ['HLP', 'WLP'].includes(symbol)) return true
   if (chain === 'era' && /(cSLP|sSLP|ZFLP)$/.test(symbol)) return true // for syncswap
   if (chain === 'songbird' && ['FLRX', 'OLP'].includes(symbol)) return true
