@@ -30,10 +30,12 @@ const getTokenLockData = `function getTokenLockData(uint40 id_) view returns
     uint256 balance,
     uint256 totalSupply
 )`
+const getPair = `function getPair(address tokenA, address tokenB) view returns (address pair)`
 
 module.exports = {
     lpLockerCount,
     tokenLockerCount,
     getLpLockData,
     getTokenLockData,
+    getPair
 }
