@@ -2,6 +2,7 @@ const { sumUnknownTokens } = require('../helper/unknownTokens')
 const abi = require('./abi.js')
 
 module.exports = {
+  misrepresentedTokens: true,
   start: 17996063,
   methodology: `Counts liquidity in lp lock contracts`,
 }
