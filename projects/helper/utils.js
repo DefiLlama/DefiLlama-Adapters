@@ -53,7 +53,7 @@ function isLP(symbol, token, chain) {
   // sdk.log(symbol, chain, token)
   if (!symbol) return false
   if (token && blacklisted_LPS.includes(token.toLowerCase()) || symbol.includes('HOP-LP-')) return false
-  if (chain === 'bsc' && ['OLP', 'DLP', 'MLP', 'LP', 'Stable-LP'].includes(symbol)) return false
+  if (chain === 'bsc' && ['OLP', 'DLP', 'MLP', 'LP', 'Stable-LP', 'fCake-LP', 'fMDEX LP'].includes(symbol)) return false
   if (chain === 'bsc' && ['WLP', 'FstLP', 'BLP', 'DsgLP'].includes(symbol)) return true
   if (chain === 'pulse' && ['PLP', 'PLT'].includes(symbol)) return true
   if (chain === 'avax' && ['ELP', 'EPT', 'CRL', 'YSL', 'BGL', 'PLP'].includes(symbol)) return true
