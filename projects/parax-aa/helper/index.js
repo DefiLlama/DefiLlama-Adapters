@@ -15,7 +15,11 @@ async function tvl() {
     paraAccountsBalance: { totalInUSD },
   } = await request(
     "https://api.para.space/graphql/ethereum",
-    AABalanceTVLQuery
+    AABalanceTVLQuery,
+    undefined,
+    {
+      "X-Forwarded-For": "155.22.24.21"
+    }
   );
 
   return toUSDTBalances(totalInUSD);
