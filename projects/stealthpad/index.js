@@ -14,7 +14,7 @@ const factory = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"
 module.exports = {
   misrepresentedTokens: true,
   start: 17996063,
-  methodology: `Counts liquidity in lp lock contracts`,
+  methodology: `Counts liquidity in lp lock contracts and tokens in token lock contract`,
 }
 
 const config = {
