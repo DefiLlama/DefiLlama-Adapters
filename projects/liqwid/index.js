@@ -50,6 +50,7 @@ const query = `{
 const tokenMapping = {
   ADA: 'lovelace',
   DJED: '8db269c3ec630e06ae29f74bc39edd1f87c819f1056206e879a1cd61446a65644d6963726f555344',
+  USDC: '25c5de5f5b286073c593edfd77b48abc7a48e5a4f3d4cd9d428ff93555534443',
 }
 
 const getToken = market => tokenMapping[market.marketId.toUpperCase()] ?? base64ToHex(market.market.params.underlyingClass.value0.symbol)
