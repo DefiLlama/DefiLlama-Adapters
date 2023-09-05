@@ -10,6 +10,9 @@
     "lint": "eslint .",
     "eslint:github-action": "eslint .",
     "test-interactive": "node utils/testInteractive",
+    "tvl": "cd utils;npm i; cd ..; node utils/testInteractive",
+    "treasury": "cd utils;npm i; cd ..; node utils/testInteractive treasury",
+    "entities": "cd utils;npm i; cd ..; node utils/testInteractive entities",
     "postinstall": "echo 'run \"npm update @defillama/sdk\" if you want lastest sdk changes' "
   },
   "author": "",
@@ -33,6 +36,7 @@
     "hi-base32": "^0.5.1",
     "js-sha512": "^0.8.0",
     "limiter": "2.1.0",
+    "p-limit": "^3.1.0",
     "starknet": "^4.17.1",
     "tron-format-address": "^0.1.8",
     "typescript": "^4.7.4"

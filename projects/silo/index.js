@@ -7,12 +7,28 @@ const getAssetStateAbi = 'function getAssetsWithState() view returns (address[] 
 
 const config = {
   ethereum: {
-    START_BLOCK: 15307294,
-    SILO_FACTORY: '0x4D919CEcfD4793c0D47866C8d0a02a0950737589',
+    factories: [
+      {
+        START_BLOCK: 15307294,
+        SILO_FACTORY: '0x4D919CEcfD4793c0D47866C8d0a02a0950737589', // Silo Ethereum (Original)
+      },
+      {
+        START_BLOCK: 17391885,
+        SILO_FACTORY: '0x6d4A256695586F61b77B09bc3D28333A91114d5a' // Silo Ethereum (Convex Factory)
+      },
+      {
+        START_BLOCK: 17782576,
+        SILO_FACTORY: '0x2c0fA05281730EFd3ef71172d8992500B36b56eA' // Silo Ethereum (LLAMA Edition)
+      }
+    ]
   },
   arbitrum: {
-    START_BLOCK: 51894508,
-    SILO_FACTORY: '0x4166487056A922D784b073d4d928a516B074b719',
+    factories: [
+      {
+        START_BLOCK: 51894508,
+        SILO_FACTORY: '0x4166487056A922D784b073d4d928a516B074b719', // Silo Arbitrum (Original)
+      }
+    ]
   },
 }
 
@@ -47,15 +63,17 @@ async function borrowed(_, block, _1, { api }) {
 
 async function getSilos(api) {
   const chain = api.chain
-  const { SILO_FACTORY, START_BLOCK, } = config[chain]
-  const logs = (
-    await getLogs({
+  let logs = [];
+  for(let factory of config[chain].factories) {
+    const { SILO_FACTORY, START_BLOCK, } = factory;
+    let logChunk = await getLogs({
       api,
       target: SILO_FACTORY,
       fromBlock: START_BLOCK,
       topic: 'NewSiloCreated(address,address,uint128)',
     })
-  )
+    logs = [...logs, ...logChunk];
+  }
 
   return logs.map((log) => `0x${log.topics[1].substring(26)}`).filter((address) => fallbackBlacklist.indexOf(address.toLowerCase()) === -1);
 }
