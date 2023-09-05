@@ -1,20 +1,20 @@
-const USDbC = "0xd9aaec86b65d86f6a7b5b1b0c42ffa531710b6ca";
+const USDC = "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913";
 const FACTORY = "0x649b80892ef773bd64cc3c663950dea3a604f660";
 const VAULTS = [
-  "0x3ace8180D2Bae36Fe4a9a2B9272Bf1F5453F5eF4",
-  "0xECF1ce16589C4F0A352fAa2830c8A085AA9018CF",
-  "0x263743b1c9Eb8fc9556e7A8f2b18df5DEfbb5147",
-  "0x8e2D00E8dEE99753671c617F6Fa5241617eB4fbB",
+  "0x0959ccb9722Fd632E756c36d990fCF0cC44080a0",
+  "0x0B9BbACffEefD0179eE2eF706EF32c9258E8bEE3",
+  "0x40A74703bB0a69c6Dcc418035a3fDfE2fcFB1C1A",
+  "0xFd2126E715212fC9a9a587321D4C887C71D015a8",
 ]
 
 async function tvl(_, _1, _2, { api }) {
   for (var vault of VAULTS) {
     const vaultBalance = await api.call({
       abi: "erc20:balanceOf",
-      target: USDbC,
+      target: USDC,
       params: [vault],
     });
-    api.add(USDbC, vaultBalance);
+    api.add(USDC, vaultBalance);
   }
 }
 
