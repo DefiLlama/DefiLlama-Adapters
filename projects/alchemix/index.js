@@ -4,8 +4,8 @@ const contracts = require("./contracts");
 
 function tvl(chain) {
   return async (timestamp, block, chainBlocks, { api }) => {
-    // const tokens = Object.values(contracts[chain].underlyingTokens).concat(Object.values(contracts[chain].yvTokens))
-    // await sumTokens2({ tokens, api, owners: Object.values(contracts[chain].tokenHolders) })
+    const tokens = Object.values(contracts[chain].underlyingTokens).concat(Object.values(contracts[chain].yvTokens))
+    await sumTokens2({ tokens, api, owners: Object.values(contracts[chain].tokenHolders) })
     if (api.chain !== 'ethereum') return api.getBalances()
 
     await Promise.all(
