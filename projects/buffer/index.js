@@ -48,5 +48,6 @@ module.exports = {
     [Math.floor(new Date("2023-02-22") / 1e3), "Added a USDC Pool on polygon"],
     [Math.floor(new Date("2023-03-22") / 1e3), "Added ARB Pool"],
     [Math.floor(new Date("2023-04-14") / 1e3), "Added USDC Protocol owned liquidity Pool"],
+    [Math.floor(new Date("2023-09-01") / 1e3), "Debuted Version 2.5"],
   ]
 };
