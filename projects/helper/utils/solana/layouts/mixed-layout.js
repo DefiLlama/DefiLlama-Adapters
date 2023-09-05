@@ -1,6 +1,6 @@
 const {
   struct, s32, u8, u16, seq, blob, Layout, bits, u32, publicKey, uint64, u64, uint128, u128, BufferLayout,
-} = require('./layout-base')
+  option, } = require('./layout-base')
 
 const LastUpdateLayout = BufferLayout.struct(
   [uint64("slot"), BufferLayout.u8("stale")],
@@ -194,8 +194,49 @@ const TokenSwapLayout = BufferLayout.struct([
   publicKey("curveParameters"),
 ])
 
+const eSOL_feeFields = [u64('denominator'), u64('numerator')];
+const eSOL_rateOfExchangeFields = [u64('denominator'), u64('numerator')];
+
+const ESOLStakePoolLayout = BufferLayout.struct([
+  // rustEnum(AccountTypeKind, 'accountType'),
+  u8('accountType'),
+  publicKey('manager'),
+  publicKey('staker'),
+  publicKey('stakeDepositAuthority'),
+  u8('stakeWithdrawBumpSeed'),
+  publicKey('validatorList'),
+  publicKey('reserveStake'),
+  publicKey('poolMint'),
+  publicKey('managerFeeAccount'),
+  publicKey('tokenProgramId'),
+  u64('totalLamports'),
+  u64('poolTokenSupply'),
+  u64('lastUpdateEpoch'),
+  struct([u64('unixTimestamp'), u64('epoch'), publicKey('custodian')], 'lockup'),
+  struct(eSOL_feeFields, 'epochFee'),
+  option(struct(eSOL_feeFields), 'nextEpochFee'),
+  option(publicKey(), 'preferredDepositValidatorVoteAddress'),
+  option(publicKey(), 'preferredWithdrawValidatorVoteAddress'),
+  struct(eSOL_feeFields, 'stakeDepositFee'),
+  struct(eSOL_feeFields, 'stakeWithdrawalFee'),
+  option(struct(eSOL_feeFields), 'nextWithdrawalFee'),
+  u8('stakeReferralFee'),
+  option(publicKey(), 'solDepositAuthority'),
+  struct(eSOL_feeFields, 'solDepositFee'),
+  u8('solReferralFee'),
+  option(publicKey(), 'solWithdrawAuthority'),
+  struct(eSOL_feeFields, 'solWithdrawalFee'),
+  option(struct(eSOL_feeFields), 'nextSolWithdrawalFee'),
+  u64('lastEpochPoolTokenSupply'),
+  u64('lastEpochTotalLamports'),
+  option(struct(eSOL_rateOfExchangeFields), 'rateOfExchange'),
+  publicKey('treasuryFeeAccount'),
+  struct(eSOL_feeFields, 'treasuryFee'),
+  u64('totalLamportsLiquidity'),
+  u32("maxValidatorYieldPerEpochNumerator")
+]);
 
 module.exports = {
-  ReserveLayout, ReserveLayoutLarix, MintLayout, AccountLayout, TokenSwapLayout,
+  ReserveLayout, ReserveLayoutLarix, MintLayout, AccountLayout, TokenSwapLayout, ESOLStakePoolLayout,
 }
 

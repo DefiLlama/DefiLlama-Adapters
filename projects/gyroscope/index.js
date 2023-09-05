@@ -1,42 +1,36 @@
-const { transformBalances } = require('../helper/portedTokens')
-const sdk = require('@defillama/sdk')
-
-const GYRO_POOL_ADDRESSES = [
-  "0x17f1ef81707811ea15d9ee7c741179bbe2a63887",
-  "0x97469e6236bd467cd147065f77752b00efadce8a",
-  "0xdac42eeb17758daa38caf9a3540c808247527ae3",
-  "0xf0ad209e2e969eaaa8c882aac71f02d8a047d5c2",
-  "0xfa9ee04a5545d8e0a26b30f5ca5cbecd75ea645f"
-]
+const { getLogs } = require('../helper/cache/getLogs')
 
 async function tvl(_, _b, _cb, { api, }) {
-  const balances = {}
-
-  const poolIds = await api.multiCall({
-    abi: 'function getPoolId() view returns (bytes32)',
-    calls: GYRO_POOL_ADDRESSES,
+  const logs = await getLogs({
+    api,
+    target: config[api.chain].factory,
+    eventAbi: 'event PoolCreated (address indexed pool)',
+    onlyArgs: true,
+    fromBlock: config[api.chain].fromBlock,
   })
 
-  const vault = await api.call({
-    target: GYRO_POOL_ADDRESSES[0],
-    abi: 'address:getVault',
-  })
+  const pools = logs.map(i => i.pool)
+  const poolIds = await api.multiCall({ abi: 'function getPoolId() view returns (bytes32)', calls: pools })
+  const vaults = await api.multiCall({ abi: 'address:getVault', calls: pools })
+
   const data = await api.multiCall({
     abi: 'function getPoolTokens(bytes32 poolId) view returns (address[] tokens, uint256[] balances, uint256 lastChangeBlock)',
-    calls: poolIds,
-    target: vault
+    calls: poolIds.map((v, i) => ({ target: vaults[i], params: v })),
   })
 
-  data.forEach(i => {
-    i.tokens.forEach((t, j) => sdk.util.sumSingleBalance(balances,t,i.balances[j]))
-  })
-  
-  return transformBalances(api.chain, balances)
+  data.forEach(i => api.addTokens(i.tokens, i.balances))
 }
 
 module.exports = {
   methodology: 'sum of all the tokens locked in CLPs',
-  polygon: {
-    tvl
-  }
 }
+
+const config = {
+  polygon: { factory: '0x5d8545a7330245150bE0Ce88F8afB0EDc41dFc34', fromBlock: 31556084 },
+  optimism: { factory: '0x9b683cA24B0e013512E2566b68704dBe9677413c', fromBlock: 97253023 },
+  ethereum: { factory: '0x412a5B2e7a678471985542757A6855847D4931D5', fromBlock: 17672894 },
+}
+
+Object.keys(config).forEach(chain => {
+  module.exports[chain] = { tvl }
+})

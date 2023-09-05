@@ -13,10 +13,10 @@ module.exports = treasuryExports({
   ethereum: {
     tokens: [
       nullAddress,
-      ADDRESSES.ethereum.USDT, // USDT
+      ADDRESSES.ethereum.USDT,
       "0x2ba592F78dB6436527729929AAf6c908497cB200", // CREAM
-      ADDRESSES.ethereum.USDC, // USDC
-      "0x5aFE3855358E112B5647B952709E6165e1c1eEEe", // SAFE
+      ADDRESSES.ethereum.USDC,
+      ADDRESSES.ethereum.SAFE,
       "0xaa0C3f5F7DFD688C6E646F66CD2a6B66ACdbE434",
       ADDRESSES.ethereum.DAI,
       "0xaCe78D9BaB82b6B4783120Dba82aa10B040A14D9",
@@ -29,9 +29,9 @@ module.exports = treasuryExports({
   optimism: {
     tokens: [
       nullAddress,
-      ADDRESSES.optimism.OP, // USDT
+      ADDRESSES.optimism.OP,
       "0xaf9fe3b5ccdae78188b1f8b9a49da7ae9510f151", // DHT
-      ADDRESSES.optimism.USDC, // USDC
+      ADDRESSES.optimism.USDC,
       "0x3f56e0c36d275367b8c502090edf38289b3dea0d", // QI
       "0x97513e975a7fa9072c72c92d8000b0db90b163c5", //BEETS
       "0x39fde572a18448f8139b7788099f0a0740f51205", //OATH
@@ -44,7 +44,7 @@ module.exports = treasuryExports({
     tokens: [
       nullAddress,
       ADDRESSES.arbitrum.WETH,
-      ADDRESSES.arbitrum.USDC, // USDC
+      ADDRESSES.arbitrum.USDC,
       "0x10393c20975cf177a3513071bc110f7962cd67da", // JONES
     ],
     owners: [treasury6ARB],

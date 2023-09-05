@@ -3,7 +3,7 @@ const BigNumber = require("bignumber.js");
 const axios = require("axios");
 const sdk = require('@defillama/sdk')
 const http = require('./http')
-const env = require('./env')
+const { getEnv } = require('./env')
 const erc20 = require('./abis/erc20.json')
 
 async function returnBalance(token, address, block, chain) {
@@ -46,26 +46,33 @@ const blacklisted_LPS = [
   '0xCC8Fa225D80b9c7D42F96e9570156c65D6cAAa25',
   '0xaee4164c1ee46ed0bbc34790f1a3d1fc87796668',
   '0x93669cfce302c9971169f8106c850181a217b72b',
+  '0x253f67aacaf0213a750e3b1704e94ff9accee10b',
 ].map(i => i.toLowerCase())
 
 function isLP(symbol, token, chain) {
-  // console.log(symbol, chain, token)
+  // sdk.log(symbol, chain, token)
   if (!symbol) return false
   if (token && blacklisted_LPS.includes(token.toLowerCase()) || symbol.includes('HOP-LP-')) return false
-  if (chain === 'bsc' && ['OLP', 'DLP', 'MLP', 'LP', 'Stable-LP'].includes(symbol)) return false
-  if (chain === 'bsc' && ['WLP', 'FstLP', 'BLP',].includes(symbol)) return true
-  if (chain === 'pulse' && ['PLP',].includes(symbol)) return true
+  if (chain === 'bsc' && ['OLP', 'DLP', 'MLP', 'LP', 'Stable-LP', 'fCake-LP', 'fMDEX LP'].includes(symbol)) return false
+  if (chain === 'bsc' && ['WLP', 'FstLP', 'BLP', 'DsgLP'].includes(symbol)) return true
+  if (chain === 'pulse' && ['PLP', 'PLT'].includes(symbol)) return true
   if (chain === 'avax' && ['ELP', 'EPT', 'CRL', 'YSL', 'BGL', 'PLP'].includes(symbol)) return true
   if (chain === 'ethereum' && ['SSLP'].includes(symbol)) return true
   if (chain === 'polygon' && ['WLP', 'FLP'].includes(symbol)) return true
   if (chain === 'moonriver' && ['HBLP'].includes(symbol)) return true
   if (chain === 'ethpow' && ['LFG_LP'].includes(symbol)) return true
+  if (chain === 'aurora' && ['wLP'].includes(symbol)) return true
+  if (chain === 'oasis' && ['LPT'].includes(symbol)) return true
+  if (chain === 'base' && ['RCKT-V2'].includes(symbol)) return true
+  if (chain === 'wan' && ['WSLP'].includes(symbol)) return true
+  if (chain === 'polygon' && ['MbtLP', 'GLP', ].includes(symbol)) return true
   if (chain === 'ethereum' && ['SUDO-LP'].includes(symbol)) return false
   if (chain === 'dogechain' && ['DST-V2'].includes(symbol)) return true
   if (chain === 'harmony' && ['HLP'].includes(symbol)) return true
   if (chain === 'klaytn' && ['NLP'].includes(symbol)) return true
-  if (chain === 'fantom' && ['HLP'].includes(symbol)) return true
-  if (chain === 'era' && /(cSLP|sSLP)$/.test(symbol)) return true // for syncswap
+  if (chain === 'kardia' && ['KLP', 'KDXLP'].includes(symbol)) return true
+  if (chain === 'fantom' && ['HLP', 'WLP'].includes(symbol)) return true
+  if (chain === 'era' && /(cSLP|sSLP|ZFLP)$/.test(symbol)) return true // for syncswap
   if (chain === 'songbird' && ['FLRX', 'OLP'].includes(symbol)) return true
   if (chain === 'arbitrum' && ['DXS', 'ZLP',].includes(symbol)) return true
   if (chain === 'metis' && ['NLP', 'ALP'].includes(symbol)) return true // Netswap/Agora LP Token
@@ -144,7 +151,7 @@ function getUniqueAddresses(addresses, isCaseSensitive = false) {
   return [...set]
 }
 
-const DEBUG_MODE = env.LLAMA_DEBUG_MODE
+const DEBUG_MODE = () => getEnv('LLAMA_DEBUG_MODE')
 const log = sdk.log
 
 function sliceIntoChunks(arr, chunkSize = 100) {
@@ -167,12 +174,12 @@ function stripTokenHeader(token) {
 }
 
 async function diplayUnknownTable({ tvlResults = {}, tvlBalances = {}, storedKey = 'ethereum', tableLabel = 'Unrecognized tokens' }) {
-  if (!DEBUG_MODE) return;
+  if (!DEBUG_MODE()) return;
   const balances = {}
   storedKey = storedKey.split('-')[0]
   Object.entries(tvlResults.tokenBalances).forEach(([label, balance]) => {
     if (!label.startsWith('UNKNOWN')) return;
-    const token = label.split('(')[1].replace(')', '')
+    const token = label?.split('(')[1]?.replace(')', '')
     balances[token] = tvlBalances[token]
     if (balances[token] === '0') delete balances[token]
   })
@@ -180,7 +187,7 @@ async function diplayUnknownTable({ tvlResults = {}, tvlBalances = {}, storedKey
   try {
     await debugBalances({ balances, chain: storedKey, log, tableLabel, withETH: false, })
   } catch (e) {
-    // console.log(e)
+    // sdk.log(e)
     log('failed to fetch prices for', balances)
   }
 }
@@ -215,7 +222,7 @@ async function getDecimals(chain, tokens) {
 }
 
 async function debugBalances({ balances = {}, chain, log = false, tableLabel = '', withETH = true }) {
-  if (!DEBUG_MODE && !log) return;
+  if (!DEBUG_MODE() && !log) return;
   if (!Object.keys(balances).length) return;
 
   const labelMapping = {}
@@ -238,7 +245,7 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
   })
 
   if (tokens.length > 100) {
-    console.log('too many unknowns')
+    sdk.log('too many unknowns')
     return;
   }
 
@@ -246,7 +253,8 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
 
   const symbols = await api.multiCall({ abi: 'erc20:symbol', calls: tokens, permitFailure: true, })
   const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: tokens, permitFailure: true, })
-  const name = await api.multiCall({ abi: erc20.name, calls: tokens, permitFailure: true, })
+  let name = await api.multiCall({ abi: erc20.name, calls: tokens, permitFailure: true, })
+  name = name.map(i => i && i.length > 50 ? i.slice(0, 50) + '...' : i)
 
   let symbolsETH, nameETH
 
@@ -275,7 +283,7 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
     logObj.push({ name, symbol, balance, label, decimals: decimal })
   })
 
-  console.log('Balance table for [%s] %s', chain, tableLabel)
+  sdk.log('Balance table for [%s] %s', chain, tableLabel)
   console.table(logObj)
 }
 

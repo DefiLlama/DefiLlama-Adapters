@@ -1,6 +1,5 @@
 const ADDRESSES = require('./helper/coreAssets.json')
 const { sumTokensAndLPsSharedOwners } = require('./helper/unwrapLPs');
-const { transformPolygonAddress } = require('./helper/portedTokens');
 
 const tokens = [
     [ADDRESSES.polygon.WMATIC_2, false], //WMATIC
@@ -16,7 +15,7 @@ const fundedContracts = [
     '0xC96D9032770010f5f3D167cA4eeca84a0Bca0Fa2'  //miner
 ];
 async function tvl(timestamp, block, chainBlocks) {
-    const transform = await transformPolygonAddress();
+    const transform = i => `polygon:${i}`;
     const balances = {};
     block = chainBlocks.polygon;
 
@@ -32,7 +31,7 @@ async function tvl(timestamp, block, chainBlocks) {
     return balances;
 }
 async function staking(timestamp, block, chainBlocks) {
-    const transform = await transformPolygonAddress();
+    const transform = i => `polygon:${i}`;
     const balances = {};
     block = chainBlocks.polygon;
 
