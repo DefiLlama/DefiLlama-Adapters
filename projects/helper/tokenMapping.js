@@ -73,6 +73,9 @@ const fixBalancesTokens = {
   arbitrum: {
     '0x1509706a6c66CA549ff0cB464de88231DDBe213B': { coingeckoId: 'aura-finance', decimals: 18 }
   },
+  tezos: {
+    'KT1PnUZCp3u2KzWr93pn4DD7HAJnm3rWVrgn': { coingeckoId: 'tezos', decimals: 6 }
+  },
   mvc: {
     [ADDRESSES.mvc.SPACE]: { coingeckoId: "microvisionchain", decimals: 8 },
   },
