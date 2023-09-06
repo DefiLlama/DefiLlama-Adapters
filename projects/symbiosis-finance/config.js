@@ -57,7 +57,6 @@ module.exports = {
       name: 'telos',
       tokens: [
         ADDRESSES.telos.USDC,
-        ADDRESSES.telos.syUSDC,
       ],
       holders: [
         '0x17A0E3234f00b9D7028e2c78dB2caa777F11490F', // portal v1
