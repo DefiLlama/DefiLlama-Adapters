@@ -1,12 +1,3 @@
-const axios = require("axios");
-
-async function tvl() {
-  const tvlSnapshotResponse = await axios.get(
-    "https://raw.githubusercontent.com/zetamarkets/statistics/main/tvl.json"
-  );
-  return tvlSnapshotResponse.data;
-}
-
 module.exports = {
   doublecounted: true,
   timetravel: false,
