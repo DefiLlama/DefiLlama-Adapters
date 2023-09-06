@@ -101,9 +101,8 @@ module.exports = {
   [chain]: { tvl },
   hallmarks: [
     [1658419200, "aave2 Cellar Launch"],
-    [1666886400, "ETH-BTC Trend & Momentum Cellars Launch"],
-    [1669741200, "Steady ETH & BTC Cellars Launch"],
     [1674671068, "Real Yield USD Cellar Launch"],
     [1681233049, "Real Yield ETH Cellar Launch"],
+    [1689271200, "Real Yield BTC Cellar Launch"],
   ],
 };

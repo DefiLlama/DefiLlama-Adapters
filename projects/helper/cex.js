@@ -91,6 +91,7 @@ const defaultTokens = {
     '0xcb84d72e61e383767c4dfeb2d8ff7f4fb89abc6e', //VEGA
     '0xcccd1ba9f7acd6117834e0d28f25645decb1736a', //ecox
     '0x25ec98773d7b4ced4cafab96a2a1c0945f145e10', // stUSDT
+    '0x3c3a81e81dc49A522A592e7622A7E711c06bf354', // MNT
   ],
   tron: [
     nullAddress,
