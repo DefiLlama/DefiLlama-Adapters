@@ -3,7 +3,7 @@ const { getLogs } = require('../helper/cache/getLogs')
 async function tvl(_, _b, _cb, { api }) {
   const pools = config[api.chain]
 
-  pools.forEach(async ({ factory, fromBlock }) => {
+  const promises = pools.map(async ({ factory, fromBlock }) => {
     const logs = await getLogs({
       api,
       target: factory,
@@ -29,6 +29,8 @@ async function tvl(_, _b, _cb, { api }) {
 
     data.forEach((i) => api.addTokens(i.tokens, i.balances))
   })
+  await Promise.all(promises)
+  return api.getBalances()
 }
 
 module.exports = {
