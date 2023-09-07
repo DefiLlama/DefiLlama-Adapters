@@ -60,6 +60,7 @@ const assetList = [
   ["BTC", "BTC", "34xp4vRoCGJym3xR7yCVPFHoCNxv4Twseo"],
   ["BTC", "BTC", "36zSLdRv1jyewjaC12fqK5fptn7PqewunL"],
   ["BTC", "BTC", "38DN2uFMZPiHLHJigfv4kWC9JWJrNnhLcn"],
+  ["BTC", "BTC", "3LQUu4v9z6KNch71j7kbj8GPeAGUo1FW6a"],
   ["BTC", "BTC", "38Xnrq8MZiKmYmwobbYdZQ5nnCbX1qvQfE"],
   ["BTC", "BTC", "395vnFScKQ1ay695C6v7gf89UzoFpx3WuJ"],
   ["BTC", "BTC", "39884E3j6KZj82FK4vcCrkUvWYL5MQaS3v"],
@@ -76,6 +77,7 @@ const assetList = [
   ["BTC", "BTC", "3Me9QACjioepv2L2oKTC9QQ87NH6vFe1Zj"],
   ["BTC", "BTC", "3NXCvmLGz9SxYi6TnjbBQfQMcwiZ1iQETa"],
   ["BTC", "BTC", "3Qxak1CZhLyZ7GVckKphLURdLBCjMfz9bA"],
+  ["BTC", "ETH", "0x5a52e96bacdabb82fd05763e25335261b270efcb"],
   ["BTC", "BTC", "bc1qm34lsc65zpw79lxes69zkqmk6ee3ewf0j77s3h"], //---
   ["BTC", "ETH", "0x21a31ee1afc51d94c2efccaa2092ad1028285549"],
   ["BTC", "ETH", "0x28c6c06298d514db089934071355e5743bf21d60"],
