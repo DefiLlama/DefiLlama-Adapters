@@ -65,6 +65,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'oasis' && ['LPT'].includes(symbol)) return true
   if (chain === 'base' && ['RCKT-V2'].includes(symbol)) return true
   if (chain === 'wan' && ['WSLP'].includes(symbol)) return true
+  if (chain === 'telos' && ['zLP'].includes(symbol)) return true
   if (chain === 'polygon' && ['MbtLP', 'GLP', ].includes(symbol)) return true
   if (chain === 'ethereum' && ['SUDO-LP'].includes(symbol)) return false
   if (chain === 'dogechain' && ['DST-V2'].includes(symbol)) return true
@@ -73,6 +74,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'kardia' && ['KLP', 'KDXLP'].includes(symbol)) return true
   if (chain === 'fantom' && ['HLP', 'WLP'].includes(symbol)) return true
   if (chain === 'era' && /(cSLP|sSLP|ZFLP)$/.test(symbol)) return true // for syncswap
+  if (chain === 'flare' && symbol.endsWith('_LP')) return true // for enosys dex
   if (chain === 'songbird' && ['FLRX', 'OLP'].includes(symbol)) return true
   if (chain === 'arbitrum' && ['DXS', 'ZLP',].includes(symbol)) return true
   if (chain === 'metis' && ['NLP', 'ALP'].includes(symbol)) return true // Netswap/Agora LP Token
