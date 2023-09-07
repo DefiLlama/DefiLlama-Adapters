@@ -59,9 +59,9 @@ async function tvl(_, _b, _cb, { api, }) {
     const sslpTokens = await api.multiCall({ abi: 'address:want', calls: thenaPools })
     const sslpBals = await api.multiCall({ abi: 'uint256:balance', calls: thenaPools })
     const supplies = await api.multiCall({ abi: 'uint256:totalSupply', calls: sslpTokens })
-    const token0s = await api.multiCall({  abi: 'address:token0', calls: sslpTokens})
-    const token1s = await api.multiCall({  abi: 'address:token1', calls: sslpTokens})
-    const reserves = await api.multiCall({  abi: 'function getTotalAmounts() public view returns (uint256, uint256)', calls: sslpTokens})
+    const token0s = await api.multiCall({ abi: 'address:token0', calls: sslpTokens })
+    const token1s = await api.multiCall({ abi: 'address:token1', calls: sslpTokens })
+    const reserves = await api.multiCall({ abi: 'function getTotalAmounts() public view returns (uint256, uint256)', calls: sslpTokens })
     reserves.forEach(([token0Bal, token1Bal], i) => {
       const ratio = sslpBals[i] / supplies[i]
       api.add(token0s[i], token0Bal * ratio)
@@ -73,9 +73,9 @@ async function tvl(_, _b, _cb, { api, }) {
     const sslpTokens = await api.multiCall({ abi: 'address:lp', calls: sslpPools })
     const sslpBals = await api.multiCall({ abi: 'uint256:balance', calls: sslpPools })
     const supplies = await api.multiCall({ abi: 'uint256:totalSupply', calls: sslpTokens })
-    const token0s = await api.multiCall({  abi: 'address:token0', calls: sslpTokens})
-    const token1s = await api.multiCall({  abi: 'address:token1', calls: sslpTokens})
-    const reserves = await api.multiCall({  abi: 'function getReserves() public view returns (uint256, uint256)', calls: sslpTokens})
+    const token0s = await api.multiCall({ abi: 'address:token0', calls: sslpTokens })
+    const token1s = await api.multiCall({ abi: 'address:token1', calls: sslpTokens })
+    const reserves = await api.multiCall({ abi: 'function getReserves() public view returns (uint256, uint256)', calls: sslpTokens })
     reserves.forEach(([token0Bal, token1Bal], i) => {
       const ratio = sslpBals[i] / supplies[i]
       api.add(token0s[i], token0Bal * ratio)
