@@ -194,6 +194,7 @@ module.exports = {
        ],
        holders: [
          '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4', // portal v2
+         '0xEE981B2459331AD268cc63CE6167b446AF4161f8', // portal v2 new
        ]
      },
   ]
