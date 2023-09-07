@@ -1,9 +1,9 @@
 const axios = require("axios");
-const { default: BigNumber } = require("bignumber.js");
 const sdk = require("@defillama/sdk");
 const { transformBalances } = require("../portedTokens");
 const { PromisePool } = require("@supercharge/promise-pool");
 const { log } = require("../utils");
+const ADDRESSES = require('../coreAssets.json')
 
 // where to find chain info
 // https://proxy.atomscan.com/chains.json
@@ -11,17 +11,20 @@ const { log } = require("../utils");
 // https://cosmos-chain.directory/chains
 const endPoints = {
   crescent: "https://mainnet.crescent.network:1317",
-  osmosis: "https://lcd.osmosis.zone",
+  osmosis: "https://osmosis-api.polkachu.com",
   cosmos: "https://cosmoshub-lcd.stakely.io",
-  kujira: "https://rest.cosmos.directory/kujira",
+  kujira: "https://kuji-api.kleomedes.network",
   comdex: "https://rest.comdex.one",
   terra: "https://rest.cosmos.directory/terra",
-  terra2: "https://rest.cosmos.directory/terra2",
+  terra2: "https://terra-lcd.publicnode.com",
   umee: "https://umee-api.polkachu.com",
   orai: "https://lcd.orai.io",
   juno: "https://lcd-juno.cosmostation.io",
   cronos: "https://lcd-crypto-org.cosmostation.io",
   chihuahua: "https://rest.cosmos.directory/chihuahua",
+  stargaze: "https://api-stargaze.ezstaking.dev",
+  quicksilver: "https://rest.cosmos.directory/quicksilver",
+  // chihuahua: "https://api.chihuahua.wtf",
   injective: "https://lcd-injective.whispernode.com:443",
   migaloo: "https://migaloo-api.polkachu.com",
   fxcore: "https://fx-rest.functionx.io",
@@ -29,8 +32,10 @@ const endPoints = {
   kava: "https://api2.kava.io",
   neutron: "https://rest-kralum.neutron-1.neutron.org",
   quasar: "https://quasar-api.polkachu.com",
-  gravitybridge: "https://rest.cosmos.directory/gravitybridge",
+  gravitybridge: "https://gravitychain.io:1317",
+  sei: "https://sei-api.polkachu.com",
   aura: "https://lcd.aura.network",
+  archway: "https://api.mainnet.archway.io",
 };
 
 const chainSubpaths = {
@@ -40,7 +45,14 @@ const chainSubpaths = {
   kava: "kava",
 };
 
-function getEndpoint(chain) {
+// some contract calls need endpoint with higher gas limit
+const highGasLimitEndpoints = {
+  'sei1xr3rq8yvd7qplsw5yx90ftsr2zdhg4e9z60h5duusgxpv72hud3shh3qfl': "https://rest.sei-apis.com",
+}
+
+function getEndpoint(chain, { contract } = {}) {
+  const highGasEndpoint = highGasLimitEndpoints[contract]
+  if (contract && highGasEndpoint) return highGasEndpoint
   if (!endPoints[chain]) throw new Error("Chain not found: " + chain);
   return endPoints[chain];
 }
@@ -51,7 +63,6 @@ async function query(url, block, chain) {
   if (block !== undefined) {
     endpoint += `&height=${block - (block % 100)}`;
   }
-  console.log(endpoint);
   return (await axios.get(endpoint)).data.result;
 }
 
@@ -119,7 +130,7 @@ async function getDenomBalance({ denom, owner, block, chain } = {}) {
   return balance ? Number(balance.amount) : 0;
 }
 
-async function getBalance2({ balances = {}, owner, block, chain } = {}) {
+async function getBalance2({ balances = {}, owner, block, chain, tokens, blacklistedTokens, } = {}) {
   const subpath = chainSubpaths[chain] || "cosmos";
   let endpoint = `${getEndpoint(
     chain
@@ -130,8 +141,11 @@ async function getBalance2({ balances = {}, owner, block, chain } = {}) {
   const {
     data: { balances: data },
   } = await axios.get(endpoint);
-  for (const { denom, amount } of data)
+  for (const { denom, amount } of data) {
+    if (blacklistedTokens?.includes(denom)) continue;
+    if (tokens && !tokens.includes(denom)) continue;
     sdk.util.sumSingleBalance(balances, denom, amount);
+  }
   return balances;
 }
 
@@ -159,17 +173,21 @@ async function queryContract({ contract, chain, data }) {
   data = Buffer.from(data).toString("base64");
   return (
     await axios.get(
-      `${getEndpoint(chain)}/cosmwasm/wasm/v1/contract/${contract}/smart/${data}`
+      `${getEndpoint(chain, { contract })}/cosmwasm/wasm/v1/contract/${contract}/smart/${data}`
     )
   ).data.data;
 }
 
-async function queryContracts({ chain, codeId }) {
-  return (
-    await axios.get(
-      `${getEndpoint(chain)}/cosmwasm/wasm/v1/code/${codeId}/contracts`
-    )
-  ).data.contracts;
+async function queryContracts({ chain, codeId, }) {
+  let paginationKey = undefined
+  const res = []
+  do {
+    let endpoint = `${getEndpoint(chain)}/cosmwasm/wasm/v1/code/${codeId}/contracts?${paginationKey ? `pagination.key=${paginationKey}` : ""}`
+    const { data: { contracts, pagination } } = await axios.get(endpoint)
+    paginationKey = pagination.next_key
+    res.push(...contracts)
+  } while (paginationKey)
+  return res
 }
 
 function getAssetInfo(asset) {
@@ -204,14 +222,15 @@ async function queryContractStore({
   return query(url, block, chain);
 }
 
-async function sumTokens({ balances = {}, owners = [], chain, owner }) {
+async function sumTokens({ balances = {}, owners = [], chain, owner, tokens, blacklistedTokens, }) {
+  if (!tokens?.length || (tokens?.length === 1 && tokens[0] === ADDRESSES.null)) tokens = undefined;
   if (owner) owners = [owner]
   log(chain, "fetching balances for ", owners.length);
   let parallelLimit = 25;
 
   const { errors } = await PromisePool.withConcurrency(parallelLimit)
     .for(owners)
-    .process(async (owner) => getBalance2({ balances, owner, chain }));
+    .process(async (owner) => getBalance2({ balances, owner, chain, tokens, blacklistedTokens, }));
 
   if (errors && errors.length) throw errors[0];
   return transformBalances(chain, balances);

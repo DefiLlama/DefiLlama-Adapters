@@ -7,6 +7,7 @@ const graphUrlList = {
   ethereum: 'https://api.studio.thegraph.com/query/40045/solv-payable-factory-prod/version/latest',
   bsc: 'https://api.thegraph.com/subgraphs/name/slov-payable/solv-v3-earn-factory',
   arbitrum: 'https://api.studio.thegraph.com/query/40045/solv-payable-factory-arbitrum/version/latest',
+  mantle: 'https://graph.fusionx.finance/subgraphs/id/QmfV5npZ5X2tZ4qR9DCLAhrFum6wANF7cnJDrZMpkNLfMo',
 }
 
 const filterSlot = [
@@ -149,7 +150,7 @@ async function getGraphData(timestamp, chain) {
     pools: poolList
   };
 }
-
-['ethereum', 'bsc', 'arbitrum'].forEach(chain => {
+// node test.js projects/solv-protocol-v3
+['ethereum', 'bsc', 'arbitrum', 'mantle'].forEach(chain => {
   module.exports[chain] = { tvl }
 })

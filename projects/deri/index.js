@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
-const { transformPolygonAddress } = require("../helper/portedTokens");
 const abi = require("./abi");
 
 async function perpetualPool(
@@ -201,7 +200,7 @@ async function bsc(timestamp, ethBlock, chainBlocks) {
 }
 async function polygon(timestamp, ethBlock, chainBlocks) {
   let balances = {};
-  const transform = await transformPolygonAddress();
+  const transform = i => `polygon:${i}`;
   for (let [key, contract] of Object.entries(polygonContracts)) {
     if (contract.lite === true) {
       await perpetualPoolLite(

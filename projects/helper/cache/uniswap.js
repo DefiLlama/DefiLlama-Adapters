@@ -25,7 +25,9 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
   const abi = { ...uniswapAbi, ...abis }
 
   return async (_, _b, cb, { api, chain } = {}) => {
+    // console.log(await api.call({ abi: 'address:factory', target: factory }))
 
+    chain = chain ?? api?.chain
     if (!chain)
       chain = _chain
     factory = normalizeAddress(factory, chain)
@@ -39,6 +41,7 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
 
     const _oldPairInfoLength = cache.pairs.length
     const length = await api.call({ abi: abi.allPairsLength, target: factory, })
+    
     sdk.log(chain, ' No. of pairs: ', length)
     sdk.log('cached info', cache.pairs.length)
     const pairCalls = []
@@ -84,7 +87,7 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
         calls.push({ target: cache.token0s[i], params: owner })
         calls.push({ target: cache.token1s[i], params: owner })
       })
-      const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls, permitFailure, })
+      const bals = await api.multiCall({ abi: abi.balanceOf ?? 'erc20:balanceOf', calls, permitFailure, })
       for (let i = 0; i < bals.length; i++) {
         reserves.push({ _reserve0: bals[i] ?? 0, _reserve1: bals[i + 1] ?? 0 })
         i++
