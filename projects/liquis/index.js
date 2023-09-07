@@ -15,40 +15,14 @@ const addresses = {
 
 async function tvl(_, block, _1, { api }) {
   // Compute TVL of lps
-  let pools = await Promise.all([LIQUIS_BOOSTER].map(i => api.fetchList({ target: i, itemAbi: abi.poolInfo, lengthAbi: abi.poolLength, })))
-  pools = pools.filter((value, index, array) => array.indexOf(value) === index).flat()
+  let pools = await api.fetchList({ target: LIQUIS_BOOSTER, itemAbi: abi.poolInfo, lengthAbi: abi.poolLength, })
   const liqPools = pools.map(pool => pool.token);
   const poolInputs = pools.map(pool => pool.lptoken);
-  const poolUnis = await api.multiCall({
-    calls: poolInputs.map((pool) => ({
-      target: pool,
-    })),
-    abi: abi.pool,
-  });
-  const poolUpperTicks = await api.multiCall({
-    calls: poolInputs.map((pool) => ({
-      target: pool,
-    })),
-    abi: abi.tickUpper,
-  });
-  const poolLowerTicks = await api.multiCall({
-    calls: poolInputs.map((pool) => ({
-      target: pool,
-    })),
-    abi: abi.tickLower,
-  });
-  const liqBalances = await api.multiCall({
-    calls: liqPools.map((pool) => ({
-      target: pool,
-    })),
-    abi: 'erc20:totalSupply',
-  });
-  const bunniBalances = await api.multiCall({
-    calls: poolInputs.map((pool) => ({
-      target: pool,
-    })),
-    abi: 'erc20:totalSupply',
-  });
+  const poolUnis = await api.multiCall({ calls: poolInputs, abi: abi.pool, });
+  const poolUpperTicks = await api.multiCall({ calls: poolInputs, abi: abi.tickUpper, });
+  const poolLowerTicks = await api.multiCall({ calls: poolInputs, abi: abi.tickLower, });
+  const liqBalances = await api.multiCall({ calls: liqPools, abi: 'erc20:totalSupply', });
+  const bunniBalances = await api.multiCall({ calls: poolInputs, abi: 'erc20:totalSupply', });
   const calls = poolUnis.map((pool, i) => ({ params: [[pool, poolLowerTicks[i], poolUpperTicks[i]]] }))
   const res = await api.multiCall({ abi: abi.getReserves, calls, target: addresses.lens })
   let tokenCalls = []
