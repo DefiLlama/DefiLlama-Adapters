@@ -5,6 +5,7 @@ module.exports = {
       name: 'ethereum',
       tokens: [
         ADDRESSES.ethereum.USDC,
+        ADDRESSES.ethereum.USDT,
         ADDRESSES.ethereum.WETH,
       ],
       holders: [

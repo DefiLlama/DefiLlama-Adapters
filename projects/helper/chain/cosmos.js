@@ -24,6 +24,8 @@ const endPoints = {
   chihuahua: "https://rest.cosmos.directory/chihuahua",
   stargaze: "https://api-stargaze.ezstaking.dev",
   quicksilver: "https://rest.cosmos.directory/quicksilver",
+  persistence: "https://rest.cosmos.directory/persistence",
+  secret: "https://lcd.secret.express",
   // chihuahua: "https://api.chihuahua.wtf",
   injective: "https://lcd-injective.whispernode.com:443",
   migaloo: "https://migaloo-api.polkachu.com",
@@ -131,7 +133,7 @@ async function getDenomBalance({ denom, owner, block, chain } = {}) {
 }
 
 async function getBalance2({ balances = {}, owner, block, chain, tokens, blacklistedTokens, } = {}) {
-  const subpath = chainSubpaths[chain] || "cosmos";
+  const subpath = "cosmos";
   let endpoint = `${getEndpoint(
     chain
   )}/${subpath}/bank/v1beta1/balances/${owner}?pagination.limit=1000`;
