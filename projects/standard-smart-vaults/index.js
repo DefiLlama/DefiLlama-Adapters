@@ -17,7 +17,7 @@ async function getOwners(api) {
     target: SMART_VAULT_MANAGER_ADDRESS,
     topic: 'VaultDeployed(address,address,address,uint256)',
     eventAbi: 'event VaultDeployed(address indexed vaultAddress, address indexed owner, address vaultType, uint256 tokenId)',
-    fromBlock: 128909760,
+    fromBlock: 117059962,
     api
   });
 
