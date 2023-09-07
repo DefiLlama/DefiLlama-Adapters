@@ -1,173 +1,99 @@
-const axios = require("axios");
-const sdk = require("@defillama/sdk");
+const { sumTokens2 } = require('../helper/unwrapLPs')
+const { getConfig } = require('../helper/cache')
 
 const poolsUrl = "https://pc.leechprotocol.com/pool-data/lama";
 
-const chainIndexes = {
-  'bsc': 56,
-  'avax': 43114,
-  'optimism': 10,
+async function getPoolData(api) {
+  return getConfig('leech-protocol/' + api.chain, `${poolsUrl}/${api.chainId}`)
 }
 
-
-const baseToken = {
-  56: '0x55d398326f99059fF775485246999027B3197955',
-  10: '0x7F5c764cBc14f9669B88837ca1490cCa17c31607',
-  43114: '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E'
-}
-
-async function getPoolData(chainIndex) {
-  return axios.get(`${poolsUrl}/${chainIndex}`)
-}
-async function getCoingeckoPrice(coingeckoId) {
-  return axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=${coingeckoId}&vs_currencies=usd&precision=2`);
-}
-
-async function bscTvl(_, _1, _2, { api }) {
-  const CONTEXT_CHAIN_NAME = 'bsc'
-  const { data: pools } = await getPoolData(chainIndexes[CONTEXT_CHAIN_NAME]);
-
-  await Promise.all(
-    pools.items.map(async (pool) => {
-      if (pool.name === "strategy-thena") {
-
-      const [{ data: token0price }, { data: token1price }] = await Promise.all([
-          getCoingeckoPrice(pool?.token0CoingeckoId),
-          getCoingeckoPrice(pool?.token1CoingeckoId)
-        ]);
-
-      const [
-        { output: totalAmounts }, { output: totalSupply }, { output: balance }
-      ] = await Promise.all([
-        callGetTotalAmounts(pool.lpAddress, CONTEXT_CHAIN_NAME),
-        callTotalSupply(pool.lpAddress, CONTEXT_CHAIN_NAME),
-        callBalance(pool.address, CONTEXT_CHAIN_NAME)
-      ])
-
-      const lpPrice = (
-        ((totalAmounts[0] * token0price[pool?.token0CoingeckoId].usd * 1e18) / 1e18 +
-            totalAmounts[1] * token1price[pool?.token1CoingeckoId].usd * 1e9) /
-        totalSupply
-      ).toString();
-
-      api.add(baseToken[pool.chainIndex], lpPrice * balance);
-    }
-
-    if (pool.name === "strategy-biswap-farm") {
-      const [{ data: token0price }, { data: token1price }] =
-        await Promise.all([
-          getCoingeckoPrice(pool?.token0CoingeckoId),
-          getCoingeckoPrice(pool?.token1CoingeckoId)
-        ]);
-
-      const [
-        { output: totalAmounts }, { output: balance }, { output: totalSupply }
-      ] = await Promise.all([
-        callGetReserves(pool.lpAddress, CONTEXT_CHAIN_NAME),
-        callBalance(pool.address, CONTEXT_CHAIN_NAME),
-        callTotalSupply(pool.lpAddress, CONTEXT_CHAIN_NAME)
-      ])
-
-      const lpPrice = (
-        (totalAmounts[0] * token0price[pool.token0CoingeckoId].usd * 1e18) / 1e18 +
-        (totalAmounts[1] * token1price[pool.token1CoingeckoId].usd * 1e18) / 1e18
-      ) / totalSupply
-
-      await api.add(baseToken[pool.chainIndex], balance * lpPrice);
-    }
-    if (pool.name === "strategy-venus-supl") {
-      const { output: venusTvl } = await callBalanceOfUnderlying(pool.address, CONTEXT_CHAIN_NAME);
-
-      await api.add(baseToken[pool.chainIndex], venusTvl);
-    }
-  }));
-
-}
-
-async function avaxTvl(_, _1, _2, { api }) {
-  const CONTEXT_CHAIN_NAME = 'avax'
-  const { data: pools } = await getPoolData(chainIndexes[CONTEXT_CHAIN_NAME]);
-
-  await Promise.all(pools.items.map(async (pool) => {
-        if (pool.name === "strategy-yak") {
-          const { output: yakTvl } = await callBalanceOfUnderlying(pool.address, CONTEXT_CHAIN_NAME);
-
-          await api.add(baseToken[pool.chainIndex], yakTvl);
+async function tvl(_, _b, _cb, { api, }) {
+  const { items: pools } = await getPoolData(api);
+  const chain = api.chain
+  const wantPools = []
+  const lpPools = []
+  const sslpPools = []
+  const biswapPools = []
+  const thenaPools = []
+  pools.forEach(({ address, name }) => {
+    switch (chain) {
+      case 'avax':
+        if (name === 'strategy-yak') {
+          wantPools.push(address)
         }
-      }));
-}
-
-async function optimismTvl(_, _1, _2, { api }) {
-  const CONTEXT_CHAIN_NAME = 'optimism'
-  const { data: pools } = await getPoolData(chainIndexes[CONTEXT_CHAIN_NAME]);
-
-  await Promise.all(
-    pools.items.map(async (pool) => {
-        if (pool.name === "sushi-opt") {
-
-          const [{ data: token0price }, { data: token1price }] = await Promise.all([
-              getCoingeckoPrice(pool?.token0CoingeckoId),
-              getCoingeckoPrice(pool?.token1CoingeckoId)
-            ]);
-
-          const [{ output: reserves },{ output: balance }, { output: totalSupply }] = await Promise.all([
-            callGetReserves(pool.lpAddress, CONTEXT_CHAIN_NAME),
-            callBalance(pool.address, CONTEXT_CHAIN_NAME),
-            callTotalSupply(pool.lpAddress, CONTEXT_CHAIN_NAME)
-          ])
-
-          const lpPrice = (
-              (reserves[0] * token0price[pool.token0CoingeckoId].usd * 1e18) / 1e18 +
-              (reserves[1] * token1price[pool.token1CoingeckoId].usd * 1e18) / 1e18
-            )
-            / totalSupply
-
-          api.add(baseToken[pool.chainIndex], balance * lpPrice);
+        break;
+      case 'optimism':
+        if (name === 'sushi-opt') {
+          sslpPools.push(address)
+        } else if (name === 'velo-opt') {
+          lpPools.push(address)
         }
-      }));
-}
 
-async function callTotalSupply(target, chain) {
-  return sdk.api.abi.call({
-    target, chain,
-    abi: "function totalSupply() public view returns (uint256)",
+        break;
+      case 'bsc':
+        if (name === 'strategy-thena') {
+          thenaPools.push(address)
+        } else if (name === 'strategy-biswap-farm') {
+          biswapPools.push(address)
+        } else if (name === 'strategy-venus-supl') {
+          biswapPools.push(address)
+        }
+        break;
+    }
   })
-}
-async function callBalance(target, chain) {
-  return sdk.api.abi.call({
-    target, chain,
-    abi: "function balance() public view returns (uint256)",
-  })
-}
-async function callGetReserves(target, chain) {
-  return sdk.api.abi.call({
-    target, chain,
-    abi: "function getReserves() public view returns (uint256, uint256)",
-  })
-}
-async function callGetTotalAmounts(target, chain) {
-  return sdk.api.abi.call({
-    target, chain,
-    abi: "function getTotalAmounts() public view returns (uint256, uint256)"
-  })
-}
-async function callBalanceOfUnderlying(target, chain) {
-  return sdk.api.abi.call({
-    target, chain,
-    abi: "function balanceOfUnderlying() public view returns (uint256)",
-  })
+
+  if (wantPools.length > 0) {
+    const wTokens = await api.multiCall({ abi: 'address:want', calls: wantPools })
+    const wBals = await api.multiCall({ abi: 'uint256:balanceOfUnderlying', calls: wantPools })
+    api.addTokens(wTokens, wBals)
+  }
+
+  if (lpPools.length > 0) {
+    const wTokens = await api.multiCall({ abi: 'address:lp', calls: lpPools })
+    const wBals = await api.multiCall({ abi: 'uint256:balance', calls: lpPools })
+    api.addTokens(wTokens, wBals)
+    await sumTokens2({ api, resolveLP: true, })
+  }
+
+  if (thenaPools.length > 0) {
+    const sslpTokens = await api.multiCall({ abi: 'address:want', calls: thenaPools })
+    const sslpBals = await api.multiCall({ abi: 'uint256:balance', calls: thenaPools })
+    const supplies = await api.multiCall({ abi: 'uint256:totalSupply', calls: sslpTokens })
+    const token0s = await api.multiCall({  abi: 'address:token0', calls: sslpTokens})
+    const token1s = await api.multiCall({  abi: 'address:token1', calls: sslpTokens})
+    const reserves = await api.multiCall({  abi: 'function getTotalAmounts() public view returns (uint256, uint256)', calls: sslpTokens})
+    reserves.forEach(([token0Bal, token1Bal], i) => {
+      const ratio = sslpBals[i] / supplies[i]
+      api.add(token0s[i], token0Bal * ratio)
+      api.add(token1s[i], token1Bal * ratio)
+    })
+  }
+
+  if (sslpPools.length > 0) {
+    const sslpTokens = await api.multiCall({ abi: 'address:lp', calls: sslpPools })
+    const sslpBals = await api.multiCall({ abi: 'uint256:balance', calls: sslpPools })
+    const supplies = await api.multiCall({ abi: 'uint256:totalSupply', calls: sslpTokens })
+    const token0s = await api.multiCall({  abi: 'address:token0', calls: sslpTokens})
+    const token1s = await api.multiCall({  abi: 'address:token1', calls: sslpTokens})
+    const reserves = await api.multiCall({  abi: 'function getReserves() public view returns (uint256, uint256)', calls: sslpTokens})
+    reserves.forEach(([token0Bal, token1Bal], i) => {
+      const ratio = sslpBals[i] / supplies[i]
+      api.add(token0s[i], token0Bal * ratio)
+      api.add(token1s[i], token1Bal * ratio)
+    })
+  }
+
+  if (biswapPools.length > 0) {
+    const wTokens = await api.multiCall({ abi: 'address:want', calls: biswapPools })
+    const wBals = await api.multiCall({ abi: 'uint256:balance', calls: biswapPools })
+    api.addTokens(wTokens, wBals)
+    await sumTokens2({ api, resolveLP: true, })
+  }
+  return api.getBalances()
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
-  bsc: {
-    tvl: bscTvl
-  },
-  avax: {
-    tvl: avaxTvl
-  },
-  optimism: {
-    tvl: optimismTvl
-  }
+  bsc: { tvl },
+  avax: { tvl },
+  optimism: { tvl },
 };
