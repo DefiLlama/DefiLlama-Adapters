@@ -10,7 +10,7 @@ const addresses = {
   veLIT: "0xf17d23136B4FeAd139f54fB766c8795faae09660",
   lit80weth20: "0x9232a548DD9E81BaC65500b5e0d918F8Ba93675C",
   voterProxy: "0x37aeB332D6E57112f1BFE36923a7ee670Ee9278b",
-  lens: "0xb73f303472c4fd4ff3b9f59ce0f9b13e47fbfd19"
+  lens: "0xb73f303472c4fd4ff3b9f59ce0f9b13e47fbfd19",
 };
 
 async function tvl(_, block, _1, { api }) {
