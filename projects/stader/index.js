@@ -92,25 +92,22 @@ module.exports = {
         target: nodeOperatorRegistry,
       });
 
-      const SDPoolAddress = "0x7Af4730cc8EbAd1a050dcad5c03c33D2793EE91f";
+      const SDCollateralPoolAddress =
+        "0x7Af4730cc8EbAd1a050dcad5c03c33D2793EE91f";
       const SDTokenAddress = "0x30D20208d987713f46DFD34EF128Bb16C404D10f";
 
       const sdBalance = await api.call({
         abi: "erc20:balanceOf",
         target: SDTokenAddress,
-        params: SDPoolAddress,
+        params: SDCollateralPoolAddress,
       });
 
-      console.log("sdBalance", sdBalance);
-
       const SDToEth = await api.call({
-        // abi: "uint256:convertSDToETH",
         abi: "function convertSDToETH(uint256) view returns (uint256)",
-        target: SDPoolAddress,
+        target: SDCollateralPoolAddress,
         params: [sdBalance],
       });
 
-      console.log("SDToEth", SDToEth);
       const balances = {
         "matic-network": res.polygon.native,
         [nullAddress]:
