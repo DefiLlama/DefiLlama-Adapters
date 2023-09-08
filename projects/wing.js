@@ -43,7 +43,6 @@ Object.keys(config).forEach(chain => {
       if (!result.totalSupply) result.totalSupply = result.TotalSupply
       if (chain == "ethereum") {
         const result_nft  = await get(nft_url)
-        console.log("result_nft:", result_nft);
         if (result_nft.nftCollateralTVL !=undefined && !result_nft.nftCollateralTVL) result.totalSupply += result_nft.nftCollateralTVL
       }
       return {
