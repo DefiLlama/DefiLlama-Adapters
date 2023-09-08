@@ -24,6 +24,17 @@ async function getOwners(api) {
   return vaultEvents.map(event => event.args.vaultAddress);
 }
 
+async function getTokensAndOwners(api) {
+  const tokensAndOwners = [];
+  const owners = await getOwners(api);
+  for (let i = 0; i < tokens.length; i++) {
+    for (let j = 0; j < owners.length; j++) {
+      tokensAndOwners.push([tokens[i], owners[j]]);
+    }
+  }
+  return tokensAndOwners;
+}
+
 module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
@@ -31,7 +42,7 @@ module.exports = {
   start: START_TS,
   arbitrum: {
     tvl: async (_, _1, _2, { api }) => {
-      return sumTokens2({ owners: await getOwners(api), tokens, api})
+      return sumTokens2({ tokensAndOwners: await getTokensAndOwners(api), api})
     }
   }
 };
