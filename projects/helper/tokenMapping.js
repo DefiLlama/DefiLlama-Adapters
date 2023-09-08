@@ -48,6 +48,9 @@ const fixBalancesTokens = {
   mvc: {
     [ADDRESSES.mvc.SPACE]: { coingeckoId: "microvisionchain", decimals: 8 },
   },
+  darwinia: {
+    '0xe7578598aac020abfb918f33a20fad5b71d670b4': { coingeckoId: "darwinia-network-native-token", decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
