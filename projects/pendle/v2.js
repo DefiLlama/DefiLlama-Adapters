@@ -16,6 +16,10 @@ const config = {
     factory: "0x2bEa6BfD8fbFF45aA2a893EB3B6d85D10EFcC70E",
     fromBlock: 29484286,
   },
+  optimism: {
+    factory: '0x17F100fB4bE2707675c6439468d38249DD993d58',
+    fromBlock: 108061448,
+  }
 };
 
 module.exports = {};
@@ -71,7 +75,7 @@ Object.keys(config).forEach((chain) => {
         api.add(v.uAsset.toLowerCase(), value);
       });
       let balances = api.getBalances();
-      const bridged = `arbitrum:${steth}`;
+      const bridged = `${chain}:${steth}`;
       if (bridged in balances) {
         balances[steth] = balances[bridged];
         delete balances[bridged];

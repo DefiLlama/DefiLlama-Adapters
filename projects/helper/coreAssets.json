@@ -851,6 +851,7 @@
     "PAUL": "KT19DUSZw7mfeEATrbWVPHRrWNVbNnmfFAE6",
     "XTZ": "tezos",
     "XTZ_1": "KT1UpeXdK6AJbX58GJ92pLZVCucn2DR8Nu4b",
+    "XTZ_2": "KT1PnUZCp3u2KzWr93pn4DD7HAJnm3rWVrgn",
     "LINK": "KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-10",
     "AAVE": "KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ",
     "WBTC": "KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW-2",
@@ -1191,6 +1192,7 @@
     "OSMO_3": "0471F1C4E7AFD3F07702BEF6DC365268D64570F7C1FDC98EA6098DD6DE59817B",
     "UST_2": "B448C0CA358B958301D328CCDC5D5AD642FC30A6D3AE106FF721DB315F3DDE5C",
     "AXL_USDC_1": "F082B65C88E4B6D5EF1DB243CDA1D331D002759E938A0F5CD3FFDC5D53B3E349",
+    "AXL_USDC_2": "E21808AEBCB7E02F594897100186C126E3BC9A36B0974196AF116750A4573F06",
     "BLD": "11F940BCDFD7CFBFD7EDA13F25DA95D308286D441209D780C9863FD4271514EB"
   },
   "starknet": {
@@ -1218,6 +1220,7 @@
     "USDT": "USDT"
   },
   "elrond": {
+    "EGLD": "0x0000000000000000000000000000000000000000",
     "WEGLD": "WEGLD-bd4d79",
     "USDC": "USDC-c76f1f"
   },
@@ -1342,9 +1345,64 @@
     "USDC": "0x09Bc4E0D864854c6aFB6eB9A9cdF58aC190D0dF9"
   },
   "linea": {
-    "WETH": "0xe5D7C2a44FfDDf6b295A15c148167daaAf5Cf34f"
+    "WETH": "0xe5D7C2a44FfDDf6b295A15c148167daaAf5Cf34f",
+    "USDC": "0x176211869cA2b568f2A7D4EE941E073a821EE1ff",
+    "USDT": "0xA219439258ca9da29E9Cc4cE5596924745e12B93",
+    "DAI": "0x4AF15ec2A0BD43Db75dd04E62FAA3B8EF36b00d5"
   },
   "base": {
-    "WETH": "0x4200000000000000000000000000000000000006"
+    "WETH": "0x4200000000000000000000000000000000000006",
+    "USDbC": "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA",
+    "DAI": "0x50c5725949a6f0c72e6c4a641f24049a917db0cb"
+  },
+  "sei": {
+    "SEI": "usei",
+    "WETH": "factory/sei189adguawugk3e55zn63z8r9ll29xrjwca636ra7v7gxuzn98sxyqwzt47l/4tLQqCLaoKKfNFuPjA9o39YbKUwhR1F8N29Tz3hEbfP2",
+    "USDCet": "factory/sei189adguawugk3e55zn63z8r9ll29xrjwca636ra7v7gxuzn98sxyqwzt47l/Hq4tuDzhRBnxw3tFA5n6M52NVMVcC19XggbyDiJKCD6H",
+    "USDCso": "factory/sei189adguawugk3e55zn63z8r9ll29xrjwca636ra7v7gxuzn98sxyqwzt47l/9fELvUhFo6yWL34ZaLgPbCPzdk9MD1tAzMycgH45qShH",
+    "USDCar": "factory/sei189adguawugk3e55zn63z8r9ll29xrjwca636ra7v7gxuzn98sxyqwzt47l/7edDfnf4mku8So3t4Do215GNHwASEwCWrdhM5GqD51xZ",
+    "USDTet": "factory/sei189adguawugk3e55zn63z8r9ll29xrjwca636ra7v7gxuzn98sxyqwzt47l/HktfLoADCk9mnjv7XJiN4YXK9ayE6xinLzt8wzcsR2rY",
+    "USDTbs": "factory/sei189adguawugk3e55zn63z8r9ll29xrjwca636ra7v7gxuzn98sxyqwzt47l/871jbn9unTavWsAe83f2Ma9GJWSv6BKsyWYLiQ6z3Pva",
+    "WBTC": "factory/sei189adguawugk3e55zn63z8r9ll29xrjwca636ra7v7gxuzn98sxyqwzt47l/7omXa4gryZ5NiBmLep7JsTtTtANCVKXwT9vbN91aS1br"
+  },
+  "op_bnb": {
+    "WBNB": "0x4200000000000000000000000000000000000006"
+  },
+  "archway": {
+    "ARCH": "aarch"
+  },
+  "migaloo": {
+    "WHALE": "uwhale"
+  },
+  "mvc": {
+    "SPACE": "",
+    "USDT": "7d8706c7f657730201ff3334064f83deb2fdec8a",
+    "MSP": "b2d75931958114e48c9927160f80363eae78e2dc"
+  },
+  "alv": {
+    "WALV": "0xcb3e9919c56eff1004e54175a01e39163a352129"
+  },
+  "dsc": {
+    "WDSC": "0x1c5d8992da64c8d56ea413dd6f723061c29a7c0b"
+  },
+  "secret": {
+    "SECRET": "uscrt",
+    "WSCRT": "secret1k0jntykt7e4g3y88ltc60czgjuqdy4c9e8fzek",
+    "ATOM": "secret14mzwd0ps5q277l20ly2q3aetqe3ev4m4260gf4",
+    "DAI": "secret1vnjck36ld45apf8u4fedxd5zy7f5l92y3w5qwq",
+    "USDC": "secret1h6z05y90gwm4sqxzhz4pkyp36cna9xtp7q0urv",
+    "USDT": "secret18wpjn83dayu4meu6wnn29khfkwdxs7kyrz9c8f"
+  },
+  "aura": {
+    "AURA": "uaura"
+  },
+  "shibarium": {
+    "WETH": "0x8ed7d143ef452316ab1123d28ab302dc3b80d3ce",
+    "BONE_0": "0xc76f4c819d820369fb2d7c1531ab3bb18e6fe8d8",
+    "BONE_1": "0x213c25900f365f1be338df478cd82bef7fd43f85",
+    "BONE_2": "0x6c19a35875217b134e963ca9e61b005b855cad21",
+    "BONE_3": "0x1b2f364032f12bd8a4c89e672e6272de03ae2680",
+    "BONE_4": "0xa2899c776baaf9925d432f83c950d5054a6cf59c",
+    "DAI": "0x50c5725949a6f0c72e6c4a641f24049a917db0cb"
   }
 }

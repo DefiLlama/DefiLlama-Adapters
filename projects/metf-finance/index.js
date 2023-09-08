@@ -103,7 +103,6 @@ async function staking(timestamp, block, chainBlocks) {
     const balances = {
         ["cronos:0xb8df27c687c6af9afe845a2afad2d01e199f4878"]: staked
     }
-    // console.log(balances)
     return balances
 }
 

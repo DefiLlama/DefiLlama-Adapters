@@ -11,6 +11,7 @@ const coinGeckoIds = {
   inj: "injective-protocol",
   uumee: "umee",
   ucmdx: "comdex",
+  usomm: "sommelier",
 };
 
 function getCoinDenom(denom) {

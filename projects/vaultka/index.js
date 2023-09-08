@@ -1,5 +1,6 @@
 module.exports = {
   misrepresentedTokens: true,
+  hallmarks: [[1688342964, "Launch Sake Vault"]],
   arbitrum: {
     tvl: async (_, _b, _cb, { api }) => {
       const vaults = [
@@ -16,6 +17,8 @@ module.exports = {
         whiskeyWater: "0xa100E02e861132C4703ae96D6868664f27Eaa431",
         sake: "0x45BeC5Bb0EE87181A7Aa20402C66A6dC4A923758",
         sakeWater: "0x6b367F9EB22B2E6074E9548689cddaF9224FC0Ab",
+        sakeV2: "0xc53A53552191BeE184557A15f114a87a757e5b6F",
+        sakeWaterV2: "0x806e8538FC05774Ea83d9428F778E423F6492475",
       };
 
       const contractAbis = {
@@ -64,6 +67,21 @@ module.exports = {
         target: addresses.sake,
       });
 
+      const sakeWaterUSDCBalV2 = await api.call({
+        abi: contractAbis.waterUSDCBal,
+        target: addresses.sakeWaterV2,
+      });
+
+      const vlpBalV2 = await api.call({
+        abi: contractAbis.vlpBalance,
+        target: addresses.sakeV2,
+      });
+
+      const StakedVLPBalV2 = await api.call({
+        abi: contractAbis.stakedVlpBalance,
+        target: addresses.sakeV2,
+      });
+
       return {
         tether: bals.reduce((a, i) => a + i / 1e6, 0),
         dai:
@@ -71,7 +89,9 @@ module.exports = {
           whiskeyWaterDaiBal / 1e18,
         "usd-coin":
           ((vlpBal + StakedVLPBal) * sakeVLPPrice) / 1e18 / 1e5 +
-          sakeWaterUSDCBal / 1e6,
+          sakeWaterUSDCBal / 1e6 +
+          ((vlpBalV2 + StakedVLPBalV2) * sakeVLPPrice) / 1e18 / 1e5 +
+          sakeWaterUSDCBalV2 / 1e6,
       };
     },
   },

@@ -8,6 +8,9 @@ module.exports = {
 const config = {
   bsc: { factory: '0x85b0f66e83515ff4e825dfcaa58e040e08278ef9', fromBlock: 27103796, },
   ethereum: { factory: '0x85b0f66e83515ff4e825dfcaa58e040e08278ef9', fromBlock: 16995923, },
+  polygon: { factory: '0x6d2D10DC033751CA0485D1c2Bd463D5b87AfdE77', fromBlock: 44086415, },
+  arbitrum: { factory: '0x85b0F66E83515ff4e825DfCAa58E040E08278EF9', fromBlock: 123408816, },
+  avax: { factory: '0x85b0F66E83515ff4e825DfCAa58E040E08278EF9', fromBlock: 34309521, },
 }
 
 Object.keys(config).forEach(chain => {
