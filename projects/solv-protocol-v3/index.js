@@ -152,5 +152,5 @@ async function getGraphData(timestamp, chain) {
 }
 // node test.js projects/solv-protocol-v3
 ['ethereum', 'bsc', 'arbitrum', 'mantle'].forEach(chain => {
-  module.exports[chain] = { tvl }
+  module.exports[chain] = { tvl: () => ({}), borrowed: tvl, }
 })
