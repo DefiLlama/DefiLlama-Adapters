@@ -1,4 +1,4 @@
-const { multiCall, parseAddress, sumTokens, } = require('../helper/chain/starknet')
+const { multiCall, sumTokens, } = require('../helper/chain/starknet')
 const { assetTokenAbi } = require('./abi');
 
 const vault = '0x03d39f7248fb2bfb960275746470f7fb470317350ad8656249ec66067559e892'
@@ -12,15 +12,12 @@ const debtTokens = [
 
 async function tvl(_, _1, _2, { api }) {
   let underlyings = await multiCall({ calls: debtTokens, abi: assetTokenAbi.underlyingAsset })
-  underlyings = underlyings.map(parseAddress)
   return sumTokens({ api, owner: vault, tokens: underlyings})
 }
 
 async function borrowed(_, _1, _2, { api }) {
   let data = await multiCall({ calls: debtTokens, abi: assetTokenAbi.totalSupply });
   let underlyings = await multiCall({ calls: debtTokens, abi: assetTokenAbi.underlyingAsset })
-  underlyings = underlyings.map(parseAddress)
-  data = data.map(i => +i)
   api.addTokens(underlyings, data)
 }
 
