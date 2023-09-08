@@ -1,7 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
-const { transformPolygonAddress } = require("../helper/portedTokens");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const { request, gql } = require("graphql-request");
 const { getBlock } = require('../helper/http')
@@ -92,7 +91,7 @@ const polygonTvl = async (_, _block, chainBlocks) => {
   const balances = {};
   const block = await getBlock(_, 'polygon', chainBlocks) - 500
 
-  let transformAddress = await transformPolygonAddress();
+  let transformAddress = i => `polygon:${i}`;
 
   await sumTokensAndLPsSharedOwners(
     balances,

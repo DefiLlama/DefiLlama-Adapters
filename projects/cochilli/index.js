@@ -1,10 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unwrapLPs');
 
-const owner = "0x8D5b64b8D8904E4aEc79F10468F347534D2A1b79"; // vault address
-const tokens = ["0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA"]; // USDC
+const tokens = [ADDRESSES.base.USDbC]; // USDC
 
 module.exports = {
-  base: {
-    tvl: sumTokensExport({ owner, tokens }),
+  base: { // sum vault balances
+    tvl: sumTokensExport({ owners: ['0x8D5b64b8D8904E4aEc79F10468F347534D2A1b79', '0xcE42C112e617c9BB1Bd8238D6Bb83B89e112fDbc'], tokens }),
   },
 };

@@ -35,6 +35,7 @@ const REAL_YIELD_ENS = "0x18ea937aba6053bc232d9ae2c42abe7a8a2be440";
 const REAL_YIELD_BTC = "0x0274a704a6d9129f90a62ddc6f6024b33ecdad36";
 const FRAXIMAL = "0xdbe19d1c3f21b1bb250ca7bdae0687a97b5f77e6";
 
+
 const cellarsV2 = [
   { id: DEFI_STARS, startBlock: 17181497 },
   { id: REAL_YIELD_USD, startBlock: 16431804 },
@@ -47,6 +48,10 @@ const cellarsV2 = [
   { id: REAL_YIELD_BTC, startBlock: 17667535 },
   { id: FRAXIMAL, startBlock: 17589948 },
 ];
+
+// v2.5 Cellars
+const TURBO_SWETH = "0xd33dad974b938744dac81fe00ac67cb5aa13958e";
+const cellarsV2p5 = [{ id: TURBO_SWETH, startBlock: 17910374 }];
 
 async function tvl(timestamp, block, chainBlocks, { api }) {
   const balances = {};
@@ -70,6 +75,13 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
     cellars: filterActiveCellars(cellarsV2, block),
   });
 
+  // no change in sumTvl implementation from v2 to v2.5
+  await v2.sumTvl({
+    ...baseOptions,
+    api,
+    cellars: filterActiveCellars(cellarsV2p5, block),
+  });
+
   return balances;
 }
 
@@ -89,9 +101,8 @@ module.exports = {
   [chain]: { tvl },
   hallmarks: [
     [1658419200, "aave2 Cellar Launch"],
-    [1666886400, "ETH-BTC Trend & Momentum Cellars Launch"],
-    [1669741200, "Steady ETH & BTC Cellars Launch"],
     [1674671068, "Real Yield USD Cellar Launch"],
     [1681233049, "Real Yield ETH Cellar Launch"],
+    [1689271200, "Real Yield BTC Cellar Launch"],
   ],
 };
