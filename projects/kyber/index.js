@@ -28,6 +28,9 @@ const chains = {
   },
   linea: {
     graphId: 'linea'
+  },
+  base: {
+    graphId: 'base'
   }
 };
 
@@ -37,6 +40,7 @@ async function fetchPools(chain) {
   switch (chain) {
     case "linea": url = 'https://graph-query.linea.build/subgraphs/name/kybernetwork/kyberswap-elastic-linea'; break;
     case "cronos": url = 'https://cronos-graph.kyberengineering.io/subgraphs/name/kybernetwork/kyberswap-elastic-cronos'; break;
+    case "base": url = 'https://base-graph.kyberengineering.io/subgraphs/name/kybernetwork/kyberswap-elastic-base'; break;
     default: url = `https://api.thegraph.com/subgraphs/name/kybernetwork/kyberswap-elastic-${chain}`;
   }
   let length
