@@ -22,7 +22,6 @@ module.exports = treasuryExports({
      ],
     owners: [yearnTreasury,yearnTreasury1],
     ownTokens: [ADDRESSES.ethereum.YFI],
-    fetchTokens: true,
   },
   arbitrum: {
     tokens: [

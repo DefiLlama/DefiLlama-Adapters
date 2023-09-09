@@ -22,10 +22,8 @@ async function tvl() {
       [STZIL_CONTRACT_ADDRESS_LEGACY]
     ]
   });
-  //console.log(query)
 
   const data = await call(query)
-  //console.log(data)
 
   //(* POOL token -> Pair{zil_reserve, token_reserve} *)
   //https://github.com/avely-finance/avely-contracts/blob/main/contracts/source/aswap.scilla#L301
@@ -39,7 +37,6 @@ async function tvl() {
     // [STZIL_CONTRACT_ADDRESS]: BigNumber(token_reserve).shiftedBy(DECIMALS * -1),
     'zilliqa': zil_reserve / 1e12,
   }
-  //console.log(balances)
 
   return balances
 }

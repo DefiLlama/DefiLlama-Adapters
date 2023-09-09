@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
-const axios = require('axios');
 const { unwrapUniswapLPs } = require('../helper/unwrapLPs');
 const abi = require('./abi.json');
 const { getConfig } = require('../helper/cache')

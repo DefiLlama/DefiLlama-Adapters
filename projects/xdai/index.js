@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { covalentGetTokens } = require('../helper/http');
 
 const tokenAddresses = [
   ADDRESSES.ethereum.SAI,
@@ -17,11 +16,7 @@ async function eth(timestamp, block, _, { api }) {
     [tokenAddresses, xDaiBridge],
     [[owlToken], owlBridge],
   ]
-  if (!block || block > 10590093) {
-    const tokens = await covalentGetTokens(omniBridge, 'ethereum')
-    ownerTokens.push([tokens, omniBridge])
-  }
-  return sumTokens2({ api, ownerTokens });
+  return sumTokens2({ api, ownerTokens, owner: omniBridge, fetchCoValentTokens: true });
 }
 
 module.exports = {

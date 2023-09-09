@@ -1,86 +1,42 @@
-const { get } = require('../helper/http');
+const { getConfig } = require('../helper/cache')
+const { sumTokens } = require('../helper/sumTokens')
+
 const blacklistedAssets = ['uaxl'];
 
 const chainMapping = {
-    avax: 'avalanche',
-    cosmos: 'cosmoshub',
-    terra2: 'terra-2',
-    bsc: 'binance'
-  };
+  avax: 'avalanche',
+  cosmos: 'cosmoshub',
+  terra2: 'terra-2',
+  bsc: 'binance'
+};
 
-  const assetChainMap = {
-    'uusdc': 'ethereum',
-    'weth-wei': 'ethereum',
-    'wbtc-satoshi': 'ethereum',
-    'dai-wei': 'ethereum',
-    'uusdt': 'ethereum',
-    'wbnb-wei': 'binance', 
-    'dot-planck': 'moonbeam',
-    'wmatic-wei': 'polygon',
-    'uluna': 'terra',
-    'wavax-wei': 'avalanche',
-    'uusd': 'terra',
-    'wftm-wei': 'fantom',
-    'busd-wei': 'ethereum',
-    'uatom': 'cosmoshub',
-    'link-wei': 'ethereum',
-    'polygon-uusdc': 'polygon',
-    'mkr-wei': 'ethereum',
-    'frax-wei': 'ethereum',
-    'eth-wei': 'ethereum',
-    'shib-wei': 'ethereum',
-    'wglmr-wei': 'moonbeam',
-    'stuatom': 'stride',
-    'steth-wei': 'ethereum',
-    'aave-wei': 'ethereum',
-    'uni-wei': 'ethereum',
-    'ustrd': 'stride',
-    'rai-wei': 'ethereum',
-    'ape-wei': 'ethereum',
-    'ujuno': 'juno'
-  }
+const chainListSupply = ['juno', 'cosmos', 'comdex', 'carbon', 'crescent', 'injective', 'kujira', 'osmosis', 'persistence', 'stargaze', 'secret', 'stargaze', 'umee', 'evmos', 'terra2'];
+const chainListTotal = ['avax', 'bsc', 'moonbeam', 'polygon', 'fantom', 'arbitrum', 'aurora', 'celo', 'kava', 'mantle', 'ethereum',];
 
-const chainListSupply = ['juno', 'cosmos', 'comdex', 'carbon', 'crescent', 'injective', 'kujira', 'osmosis',
-'persistence', 'stargaze', 'secret', 'stargaze', 'umee', 'evmos', 'terra2'];
-const chainListTotal = [ 'avax', 'bsc', 'moonbeam', 'polygon', 'fantom', 'arbitrum', 'aurora', 'celo', 'kava',
-];
 
-  async function getTVL(chain) {
-    const { data } = await get('https://api.axelarscan.io/cross-chain/tvl');
+chainListSupply.concat(chainListTotal).forEach(chain => {
+  module.exports[chain] = { tvl };
+  async function tvl(_, _b, _cb, { api, }) {
+    const config = await getConfig('alexar', 'https://api.axelarscan.io/cross-chain/tvl')
+    const tokensAndOwners = []
+    const owners = []
     const mappedChain = chainMapping[chain] || chain;
-  
-    return data.reduce((tvl, asset) => {
-      // Skip the asset if it is on the blacklisted chain specified in the assetChainMap
-      if (assetChainMap[asset.asset] === mappedChain) return tvl;
-      if (blacklistedAssets.includes(asset.asset)) return tvl;
-      const chainData = asset.tvl[mappedChain];
-      if (!chainData) return tvl;
-  
-      let assetAmount;
-  
-      if (chainListSupply.includes(chain)) {
-        assetAmount = chainData.supply;
-      } else if (chainListTotal.includes(chain)) {
-        assetAmount = chainData.total;
+    config.data.forEach(({ tvl: { [mappedChain]: assetTvl } = {} }) => {
+      if (!assetTvl) return;
+
+      const isEVM = assetTvl.gateway_address?.startsWith('0x')
+      if (isEVM) {
+        if (assetTvl.contract_data.symbol.startsWith('axl')) return;
+        tokensAndOwners.push([assetTvl.contract_data.address, assetTvl.gateway_address])
       } else {
-        return tvl;
+        if (assetTvl.denom_data.symbol.startsWith('axl')) return;
+        owners.push(...assetTvl.source_escrow_addresses)
       }
-  
-      const assetPrice = asset.price;
-  
-      // Check if both assetAmount and assetPrice are numbers
-      if (isNaN(assetAmount) || isNaN(assetPrice)) return tvl;
-  
-      return tvl + (assetAmount * assetPrice);
-    }, 0);
+    })
+    if (tokensAndOwners.length > 0)
+      return api.sumTokens({ tokensAndOwners })
+    return sumTokens({ chain, owners })
   }
-  
-  const exportObj = {};
-  
-  chainListSupply.concat(chainListTotal).forEach(chain => {
-    exportObj[chain] = { tvl: () => getTVL(chain).then(tether => ({ tether })) };
-  });
-  
-  module.exports = exportObj;
-  module.exports.misrepresentedTokens = true;
-  module.exports.timetravel = false;
+});
+
+module.exports.timetravel = false;

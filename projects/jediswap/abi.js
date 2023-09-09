@@ -28,7 +28,8 @@ const pabis = [
           }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "customType": "address"
   },
   {
       "inputs": [],
@@ -40,7 +41,8 @@ const pabis = [
           }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "customType": "address"
   },
   {
       "inputs": [],

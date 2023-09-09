@@ -17,7 +17,6 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
         block: ethBlock,
         chain: 'ethereum'
     })
-    // console.log('gardens (public and private)', gardens)
 
     const gardensToIgnore = ["0xB0EE8C61c78aA9B7ED138bcC6bce7ABeC8470038", "0xF0AF08d7bc6e4aE42b84771aE3f9DA7D8e58b083", "0x4f5721Ce7F02586D67eA0CC6003e889E974DC9A0", "0xab051B83eecA40084855e289E2531D22F9AffD21"]
     gardens = gardens.filter(i => !gardensToIgnore.includes(i))

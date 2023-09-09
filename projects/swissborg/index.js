@@ -11,6 +11,8 @@ const config = {
       '0xcDE4c1b984F3F02f997ECfF9980B06316de2577d',
       '0x6cf9aa65ebad7028536e353393630e2340ca6049',
       '0x7153D2ef9F14a6b1Bb2Ed822745f65E58d836C3F',
+      '0xff4606bd3884554cdbdabd9b6e25e2fad4f6fc54',
+      '0x22bF0A4C4eff418b3306AbFeE20813D0b6E8Dc74',
     ],
   },
   bitcoin: {
@@ -34,12 +36,14 @@ const config = {
     owners: [
       'dc6b4c8821dbe652b763e3bfadfea548137b29b97408c8b411ad72acff94e63f',
       '1c0dc521827821f1695538ff9312df15f32837bbfe95bc937f9faaafd4125552',
+      '9b23bfd45a028e7a28326007b221cf8bd8b288630dde5ca714a0524f4865db89',
     ],
   },
   solana: {
     owners: [
       '2E1UKoiiZPwsp4vn6tUh5k61kG2UqYpT7oBrFaJUJXXd',
       '2XxP4kS2vfkiMvpLpGNxry3fPUYimsuAmSbqL1KnuwZ8',
+      'Cet3t77x2BBVSmiEFm8ZPoDSngbpso2RuWPL79Ky7SpA',
     ],
   },
   polkadot: {
@@ -61,9 +65,34 @@ const config = {
     ],
   },
   bsc: {
-    owners: ['0x5770815B0c2a09A43C9E5AEcb7e2f3886075B605']
+    owners: [
+      '0x5770815B0c2a09A43C9E5AEcb7e2f3886075B605',
+      '0x94596096320A6B4EaB43556AD1Ed8c4c3d51C9aA',
+      '0x87cbc48075d7aa1760Ac71C41e8Bc289b6A31F56',
+      '0xcDE4c1b984F3F02f997ECfF9980B06316de2577d',
+      '0x7153D2ef9F14a6b1Bb2Ed822745f65E58d836C3F',
+      '0xff4606bd3884554cdbdabd9b6e25e2fad4f6fc54',
+    ]
+  },
+  avax: {
+    owners: [
+      '0x87cbc48075d7aa1760Ac71C41e8Bc289b6A31F56',
+      '0xcDE4c1b984F3F02f997ECfF9980B06316de2577d',
+      '0x7153D2ef9F14a6b1Bb2Ed822745f65E58d836C3F',
+    ]
+  },
+  polygon: {
+    owners: [
+      '0x87cbc48075d7aa1760Ac71C41e8Bc289b6A31F56',
+      '0xcDE4c1b984F3F02f997ECfF9980B06316de2577d',
+    ]
+  },
+  moonbeam: {
+    owners: [
+      '0x87cbc48075d7aa1760Ac71C41e8Bc289b6A31F56',
+    ]
   }
 }
 
 module.exports = cexExports(config)
-module.exports.methodology = 'We are not counting money in defi Protocols. In this case around $47m in AAVE v3 (Avalanche chain), and around $3.43m in Stargate. We are also not counting around $19.2m in the Alpaca Finance protocol (bsc chain). We may also not counting a few small token balances. This data was collected on 20/11/22 ' 
+module.exports.methodology = 'The list of wallets can be found at https://github.com/SwissBorg/pub. We also publish monthly our Proof of Liabilities at https://swissborg.com/proof-of-liabilities/audits.'

@@ -29,9 +29,7 @@ function fixBalances(balances, mapping, { chain, } = {}) {
     const { coingeckoId, decimals } = mapping[tokenKey] || {};
     if (!coingeckoId) {
       if (removeUnmapped && (tokenKey.startsWith('0x') || token.startsWith(chain + ':'))) {
-        console.log(
-          `Removing token from balances, it is not part of whitelist: ${tokenKey}`
-        );
+        sdk.log(`Removing token from balances, it is not part of whitelist: ${tokenKey}`);
         delete balances[token];
       }
       return;
@@ -82,11 +80,7 @@ function transformChainAddress(
     if (!addr.startsWith('0x')) return addr
     addr = addr.toLowerCase();
     if (!mapping[addr] && skipUnmapped) {
-      console.log(
-        "Mapping for addr %s not found in chain %s, returning garbage address",
-        addr,
-        chain
-      );
+      sdk.log("Mapping for addr %s not found in chain %s, returning garbage address", addr, chain);
       return "0x1000000000000000000000000000000000000001";
     }
     if (chain === 'ethereum') return mapping[addr] ? mapping[addr] : addr
@@ -109,7 +103,7 @@ async function getChainTransform(chain) {
 
     addr = normalizeAddress(addr, chain).replace(/\//g, ':')
     const chainStr = `${chain}:${addr}`
-    if ([...ibcChains, 'ton', 'defichain', 'waves'].includes(chain)) return chainStr
+    if ([...ibcChains, 'ton', 'mvc', 'defichain', 'waves'].includes(chain)) return chainStr
     if (chain === 'cardano' && addr === 'ADA') return 'coingecko:cardano'
     if (chain === 'near' && addr.endsWith('.near')) return chainStr
     if (chain === 'tron' && addr.startsWith('T')) return chainStr

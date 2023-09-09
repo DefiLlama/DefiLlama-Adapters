@@ -47,12 +47,6 @@ const tokenMapWithKeysAsSymbol = {
 const fusePoolData = {}
 
 async function getFusePoolData(pools, block) {
-  console.log({
-    target: fusePoolLensAddress,
-    abi: abi['getPoolSummary'],
-    block,
-    calls: pools.map(i => i.comptroller)
-  })
   const data = { output: [] }
   const chunks = sliceIntoChunks(pools.map(i => ({ params: i.comptroller })), 25)
   for (const chunk of chunks) {
@@ -62,7 +56,6 @@ async function getFusePoolData(pools, block) {
       block,
       calls: chunk
     })
-    console.log(items)
     data.output.push(...items.output)
   }
   return data
@@ -81,7 +74,6 @@ async function getFusePools(timestamp, block, balances, borrowed) {
     fusePoolData[block] = getFusePoolData(fusePools, block)
 
   const poolSummaries = await fusePoolData[block]
-  console.log(poolSummaries)
 
   for (let summaryResult of poolSummaries.output) {
     if (summaryResult.success) {
