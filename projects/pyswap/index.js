@@ -14,7 +14,7 @@ const assets = [
 let owners = [native_staking_contract_pool1, native_staking_contract_pool2, pys_staking_contract]
 
 let TVL_STAKING = sumTokensExport({ owners, tokens: assets })
-let TVL_AMM_DEX = getUniTVL({factory: "0x1434575AbB43103cFb40fd8147FB1e0B2ec3e2A1", useDefaultCoreAssets: true,})
+let TVL_AMM_DEX = getUniTVL({factory: "0x1434575AbB43103cFb40fd8147FB1e0B2ec3e2A1", useDefaultCoreAssets: true, fetchBalances: true,})
 
 module.exports = {
   op_bnb: {
