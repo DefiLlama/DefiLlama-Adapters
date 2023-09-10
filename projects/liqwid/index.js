@@ -14,62 +14,81 @@ module.exports = {
 
 const endpoint = 'https://api.liqwiddev.net/graphql'
 
-const query = `{
-  markets {
-    asset {
-      marketId
-      name
+const query = `query ($page: Int) {
+  Page (page: $page) {
+    pageInfo {
+      currentPage
+      hasNextPage
     }
-    totalSupply
-    marketId
-    decimals
-    qTokenId
-    qTokenPolicyId
-    utilization
     market {
-      params {
-        underlyingClass {
-          value0 {
-            symbol
-            name
+      asset {
+        marketId
+        name
+        qTokenId
+        qTokenPolicyId
+      }
+      state {
+        totalSupply
+        utilization
+      }
+      marketId
+      decimals
+      info {
+        params {
+          underlyingClass {
+            value0 {
+              symbol
+              name
+            }
           }
         }
-      }
-      scripts {
-        actionToken {
-          script {
-            value0 {
-              value0
+        scripts {
+          actionToken {
+            script {
+              value0 {
+                value0
+              }
             }
           }
         }
       }
     }
   }
-}`
+}
+`
 const tokenMapping = {
   ADA: 'lovelace',
   DJED: '8db269c3ec630e06ae29f74bc39edd1f87c819f1056206e879a1cd61446a65644d6963726f555344',
-  USDC: '25c5de5f5b286073c593edfd77b48abc7a48e5a4f3d4cd9d428ff93555534443',
+  SHEN: '8db269c3ec630e06ae29f74bc39edd1f87c819f1056206e879a1cd615368656e4d6963726f555344',
+  USDC: 'usd-coin',
 }
 
-const getToken = market => tokenMapping[market.marketId.toUpperCase()] ?? base64ToHex(market.market.params.underlyingClass.value0.symbol)
+const getToken = market => tokenMapping[market.marketId.toUpperCase()] ?? base64ToHex(market.info.params.underlyingClass.value0.symbol)
 
 
 async function tvl(_, _b, _cb, { api, }) {
-  const { markets } = await graphQuery(endpoint, query)
+  
+  const { Page: { market: markets } } = await graphQuery(endpoint, query, { page: 0 })
 
-  markets.forEach(market => api.add(getToken(market), market.totalSupply))
+  markets.forEach(market => add(api, market, market.state.totalSupply))
+}
+
+function add(api, market, bal) {
+  const token = getToken(market)
+  if (token === 'usd-coin') bal /= 1e8
+  api.add(token, bal, {
+    skipChain: token === 'usd-coin'
+  })
 }
 
 async function borrowed(_, _b, _cb, { api, }) {
-  const { markets } = await graphQuery(endpoint, query)
+  const { Page: { market: markets } }  = await graphQuery(endpoint, query)
 
   markets.forEach(market => {
-    const utilization = market.utilization
+    const utilization = market.state.utilization
     const availability = 1 - utilization
-    const totalBorrowed = market.totalSupply * utilization / availability
-    api.add(getToken(market), totalBorrowed)
+    const totalBorrowed = market.state.totalSupply * utilization / availability
+    add(api, market, totalBorrowed)
   })
 }
 
