@@ -1,17 +1,24 @@
 const { sumTokensExport } = require("../helper/unwrapLPs");
+const {getUniTVL} = require("../helper/unknownTokens");
 
-const native_staking_contract = "0xFFD687B05E7178647d4Bb7734e93748dF4A3341a";
+const native_staking_contract_pool1 = "0xFFD687B05E7178647d4Bb7734e93748dF4A3341a";
+const native_staking_contract_pool2 = "0x659ea4563841C59Ec284679d35EDc5ed7025b7a9";
 const pys_staking_contract = "0x18E2fA8c010b56779285336D0920F1027f0bDBbb";
 
 const assets = [
-  "0x4200000000000000000000000000000000000006",
+  "0x9b5902C14B56eF2aa2cC1A2A0731a8F270Ee82f0", //WBNB
   "0x0000000000000000000000000000000000000000", // This is address of native token
+  "0x602aEe302B2703cD2BAC28e13192593228e0078C", // PYSWAP TOKEN
 ];
-const PY_SWAP = '0x2928CBA5b5e5B48113281263FC037c7a5d8E1EDf'
+
+let owners = [native_staking_contract_pool1, native_staking_contract_pool2, pys_staking_contract]
+
+let TVL_STAKING = sumTokensExport({ owners, tokens: assets })
+let TVL_AMM_DEX = getUniTVL({factory: "0x1434575AbB43103cFb40fd8147FB1e0B2ec3e2A1", useDefaultCoreAssets: true, fetchBalances: true,})
 
 module.exports = {
   op_bnb: {
-    tvl: sumTokensExport({ owner: native_staking_contract, tokens: assets }),
-    staking: sumTokensExport({ owner: pys_staking_contract, tokens: [PY_SWAP] }),
+    tvl: TVL_AMM_DEX,
+    staking: TVL_STAKING,
   },
 };
