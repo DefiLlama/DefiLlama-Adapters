@@ -36,7 +36,7 @@ async function tvl(_, _b, _cb, { api, }) {
         } else if (name === 'strategy-biswap-farm') {
           biswapPools.push(address)
         } else if (name === 'strategy-venus-supl') {
-          biswapPools.push(address)
+          wantPools.push(address)
         }
         break;
     }
