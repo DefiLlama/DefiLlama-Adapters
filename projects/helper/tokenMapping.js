@@ -16,7 +16,7 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 // carbon: https://api-insights.carbon.network/info/denom_gecko_map
 // orbit brige: https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList
 
-const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', ]
+const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret',]
 const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc',]
 
 const distressedAssts = new Set(Object.values({
@@ -28,11 +28,6 @@ const distressedAssts = new Set(Object.values({
 }).map(i => i.toLowerCase()))
 
 const transformTokens = {
-  ethereum: {
-    '0xe0b469cb3eda0ece9e425cfeda4df986a55ea9f8': ADDRESSES.ethereum.WETH,
-    [ADDRESSES.ethereum.vlCVX]: ADDRESSES.ethereum.CVX,
-  },
-  
   // Sample Code
   // cronos: {
   //   "0x065de42e28e42d90c2052a1b49e7f83806af0e1f": "0x123", // CRK token is mispriced
@@ -50,24 +45,11 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
-  telos: {
-    [ADDRESSES.telos.WTLOS_1]: { coingeckoId: "telos", decimals: 18 },
-  },
-  aura: {
-    'uaura': { coingeckoId: 'aura-network', decimals: 6 },
-  },
-  shibarium: {
-    '0x8ed7d143ef452316ab1123d28ab302dc3b80d3ce':  { coingeckoId: "ethereum", decimals: 18 },
-    '0x213c25900f365f1be338df478cd82bef7fd43f85':  { coingeckoId: "bone-shibaswap", decimals: 18 },
-    '0x6c19a35875217b134e963ca9e61b005b855cad21':  { coingeckoId: "bone-shibaswap", decimals: 18 },
-    '0x1b2f364032f12bd8a4c89e672e6272de03ae2680':  { coingeckoId: "bone-shibaswap", decimals: 18 },
-    '0xa2899c776baaf9925d432f83c950d5054a6cf59c':  { coingeckoId: "bone-shibaswap", decimals: 18 },
-  },
-  arbitrum: {
-    '0x1509706a6c66CA549ff0cB464de88231DDBe213B': { coingeckoId: 'aura-finance', decimals: 18 }
-  },
   mvc: {
     [ADDRESSES.mvc.SPACE]: { coingeckoId: "microvisionchain", decimals: 8 },
+  },
+  darwinia: {
+    '0xe7578598aac020abfb918f33a20fad5b71d670b4': { coingeckoId: "darwinia-network-native-token", decimals: 18 },
   },
 }
 

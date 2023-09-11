@@ -1,6 +1,7 @@
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const axios = require("axios");
 const zlib = require("zlib");
+const { getCache, setCache, } = require("../helper/cache");
 
 const mapChainToChainId = {
   ethereum: 1,
@@ -48,7 +49,13 @@ const getPools = async (chainId) => {
 
 async function tvl(_, _b, _cb, { api, chain }) {
   const chainId = mapChainToChainId[chain];
-  const pools = await getPools(chainId);
+  let pools
+  try {
+    pools = await getPools(chainId)
+    await setCache('myso', chainId, pools)
+  } catch (e) {
+    pools = await getCache('myso', chainId)
+  }
 
   const data = await api.multiCall({
     abi: "function getPoolInfo() view returns (address _loanCcyToken, address _collCcyToken, uint256 _maxLoanPerColl, uint256 _minLoan, uint256 _loanTenor, uint256 _totalLiquidity, uint256 _totalLpShares, uint256 _baseAggrBucketSize, uint256 _loanIdx)",
