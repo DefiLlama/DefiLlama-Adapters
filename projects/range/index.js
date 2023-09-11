@@ -7,7 +7,7 @@ const config = {
   bsc: { factory: '0xad2b34a2245b5a7378964BC820e8F34D14adF312', fromBlock: 28026886, },
   polygon: { factory: '0xad2b34a2245b5a7378964BC820e8F34D14adF312', fromBlock: 42446548, },
   base: { factory: '0x4bF9CDcCE12924B559928623a5d23598ca19367B', fromBlock: 2733457, },
-  mantle: { factory: '0x4bF9CDcCE12924B559928623a5d23598ca19367B', fromBlock:  1364977 , }
+  mantle: { factory: '0x3E89E72026DA6093DD6E4FED767f1f5db2fc0Fb4', fromBlock:  5345161 , }
 }
 
 module.exports = {
@@ -17,7 +17,7 @@ module.exports = {
 };
 
 // vaults that were deployed through factory but are uninitialized and unused
-const ignoreList  = {mantle : ["0xd1c0CB290BA214a79AC31B8B3FB3F3eD00B88612"]}
+const ignoreList  = {mantle : ["0x3f7a9ea2403F27Ce54624CE505D01B2204eDa030"]}
 Object.keys(config).forEach(chain => {
   const { factory, fromBlock } = config[chain]
   module.exports[chain] = {
