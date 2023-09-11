@@ -23,11 +23,10 @@ async function getPoolLiquidity() {
 }
 
 async function tvl() {
-  throw new Error('tvlresponse is wrong')
-  // const [ lend, overview ] = await Promise.all([getLendData(), getOverviewData()])
-  // return {
-  //   tether: lend.data.underlying_balance_usd + (await getPoolLiquidity())
-  // }
+  const [ lend, overview ] = await Promise.all([getLendData()])
+  return {
+    tether: lend.data.underlying_balance_usd 
+  }
 }
 
 async function staking() {
