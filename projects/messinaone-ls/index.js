@@ -15,6 +15,6 @@ async function tvl() {
 
 module.exports = {
   timetravel: false,
-  methodology: "Fetches ALGOs deposited in Messina.one's Liquid Staking Protocol",
+  methodology: "Fetches ALGOs deposited and the accumulated rewards in Messina.one's Liquid Staking Protocol",
   algorand: { tvl },
 };
