@@ -851,6 +851,7 @@
     "PAUL": "KT19DUSZw7mfeEATrbWVPHRrWNVbNnmfFAE6",
     "XTZ": "tezos",
     "XTZ_1": "KT1UpeXdK6AJbX58GJ92pLZVCucn2DR8Nu4b",
+    "XTZ_2": "KT1PnUZCp3u2KzWr93pn4DD7HAJnm3rWVrgn",
     "LINK": "KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-10",
     "AAVE": "KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ",
     "WBTC": "KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW-2",
@@ -1352,6 +1353,7 @@
   "base": {
     "WETH": "0x4200000000000000000000000000000000000006",
     "USDbC": "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA",
+    "USDC": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
     "DAI": "0x50c5725949a6f0c72e6c4a641f24049a917db0cb"
   },
   "sei": {
@@ -1375,7 +1377,33 @@
   },
   "mvc": {
     "SPACE": "",
-	"USDT": "7d8706c7f657730201ff3334064f83deb2fdec8a",
-	"MSP": "b2d75931958114e48c9927160f80363eae78e2dc"
+    "USDT": "7d8706c7f657730201ff3334064f83deb2fdec8a",
+    "MSP": "b2d75931958114e48c9927160f80363eae78e2dc"
+  },
+  "alv": {
+    "WALV": "0xcb3e9919c56eff1004e54175a01e39163a352129"
+  },
+  "dsc": {
+    "WDSC": "0x1c5d8992da64c8d56ea413dd6f723061c29a7c0b"
+  },
+  "secret": {
+    "SECRET": "uscrt",
+    "WSCRT": "secret1k0jntykt7e4g3y88ltc60czgjuqdy4c9e8fzek",
+    "ATOM": "secret14mzwd0ps5q277l20ly2q3aetqe3ev4m4260gf4",
+    "DAI": "secret1vnjck36ld45apf8u4fedxd5zy7f5l92y3w5qwq",
+    "USDC": "secret1h6z05y90gwm4sqxzhz4pkyp36cna9xtp7q0urv",
+    "USDT": "secret18wpjn83dayu4meu6wnn29khfkwdxs7kyrz9c8f"
+  },
+  "aura": {
+    "AURA": "uaura"
+  },
+  "shibarium": {
+    "WETH": "0x8ed7d143ef452316ab1123d28ab302dc3b80d3ce",
+    "BONE_0": "0xc76f4c819d820369fb2d7c1531ab3bb18e6fe8d8",
+    "BONE_1": "0x213c25900f365f1be338df478cd82bef7fd43f85",
+    "BONE_2": "0x6c19a35875217b134e963ca9e61b005b855cad21",
+    "BONE_3": "0x1b2f364032f12bd8a4c89e672e6272de03ae2680",
+    "BONE_4": "0xa2899c776baaf9925d432f83c950d5054a6cf59c",
+    "DAI": "0x50c5725949a6f0c72e6c4a641f24049a917db0cb"
   }
 }

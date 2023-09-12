@@ -1,4 +1,3 @@
-const aws = require('aws-sdk')
 const sdk = require('@defillama/sdk')
 const Bucket = "tvl-adapter-cache";
 const axios = require('axios')
@@ -100,7 +99,7 @@ async function configPost(project, endpoint, data) {
 }
 
 
-async function cachedGraphQuery(project, endpoint, query, { variables = {}, fetchById, } = {}) {
+async function cachedGraphQuery(project, endpoint, query, { api, useBlock = false, variables = {}, fetchById, } = {}) {
   if (!project || !endpoint) throw new Error('Missing parameters')
   const key = 'config-cache'
   const cacheKey = getKey(key, project)
@@ -110,6 +109,10 @@ async function cachedGraphQuery(project, endpoint, query, { variables = {}, fetc
   async function _cachedGraphQuery() {
     try {
       let json
+      if (useBlock && !variables.block) {
+        if (!api) throw new Error('Missing parameters')
+        variables.block = await api.getBlock()
+      }
       if (!fetchById)
         json = await graphql.request(endpoint, query, { variables })
       else 

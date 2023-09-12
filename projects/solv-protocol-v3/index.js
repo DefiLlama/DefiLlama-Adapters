@@ -7,7 +7,7 @@ const graphUrlList = {
   ethereum: 'https://api.studio.thegraph.com/query/40045/solv-payable-factory-prod/version/latest',
   bsc: 'https://api.thegraph.com/subgraphs/name/slov-payable/solv-v3-earn-factory',
   arbitrum: 'https://api.studio.thegraph.com/query/40045/solv-payable-factory-arbitrum/version/latest',
-  mantle: 'https://graph.fusionx.finance/subgraphs/id/QmfV5npZ5X2tZ4qR9DCLAhrFum6wANF7cnJDrZMpkNLfMo',
+  mantle: 'http://api.0xgraph.xyz/subgraphs/name/solv-payable-factory-mentle-0xgraph',
 }
 
 const filterSlot = [
@@ -20,7 +20,7 @@ const filterSlot = [
 async function tvl() {
   const { api } = arguments[3];
   const network = api.chain;
-  const graphData = await getGraphData(api.timestamp, network);
+  const graphData = await getGraphData(api.timestamp, network, api);
   if (graphData.slots.length > 0) {
     const slots = graphData.slots;
     const closeConcretes = await concrete(slots, api);
@@ -116,13 +116,13 @@ async function concrete(slots, api) {
 }
 
 
-async function getGraphData(timestamp, chain) {
-  const slotDataQuery = `query BondSlotInfos {
-            bondSlotInfos(first: 1000, where:{maturity_gt:${timestamp}}) {
+async function getGraphData(timestamp, chain, api) {
+  const slotDataQuery = `query BondSlotInfos ($block: Int){
+            bondSlotInfos(first: 1000, block: { number: $block }  where:{maturity_gt:${timestamp}}) {
                 contractAddress
                 slot
             }
-            poolOrderInfos(first: 1000, where:{fundraisingEndTime_gt:${timestamp}}) {
+            poolOrderInfos(first: 1000, block: { number: $block }  where:{fundraisingEndTime_gt:${timestamp}}) {
               marketContractAddress
               contractAddress
               navOracle
@@ -130,7 +130,7 @@ async function getGraphData(timestamp, chain) {
               openFundShareSlot
           }
         }`;
-  const data = (await cachedGraphQuery(`solv-protocol/graph-data/${chain}`, graphUrlList[chain], slotDataQuery));
+  const data = (await cachedGraphQuery(`solv-protocol/graph-data/${chain}`, graphUrlList[chain], slotDataQuery, { api, useBlock: true, }));
 
   let slotList = [];
   let poolList = [];
@@ -152,5 +152,5 @@ async function getGraphData(timestamp, chain) {
 }
 // node test.js projects/solv-protocol-v3
 ['ethereum', 'bsc', 'arbitrum', 'mantle'].forEach(chain => {
-  module.exports[chain] = { tvl }
+  module.exports[chain] = { tvl: () => ({}), borrowed: tvl, }
 })
