@@ -1,5 +1,5 @@
 const axios = require("axios");
-const REAPER_API = "http://api.reaper.farm/api";
+const REAPER_API = "https://2ch9hbg8hh.execute-api.us-east-1.amazonaws.com/dev/api/";
 
 const client = axios.create({
   baseURL: REAPER_API
@@ -7,31 +7,31 @@ const client = axios.create({
 
 function fetchTvl(chainName) {
   return async () => {
-    let tvlMsg;
+    let tvlMsg = await client.get('/tvls/chains');
+    let tvl = 0;
     switch (chainName) {
       case 'fantom':
-        tvlMsg = await client.get('/tvlTotal');
+        tvl = tvlMsg.data.data.find((item) => item.chain_hex === '0xfa').tvl;
         break;
       case 'optimism':
-        tvlMsg = await client.get('/optimism/tvlTotal');
+        tvl = tvlMsg.data.data.find((item) => item.chain_hex === '0xa').tvl;
         break;
       case 'arbitrum':
-        tvlMsg = await client.get('/arbitrum/tvlTotal');
+        tvl = tvlMsg.data.data.find((item) => item.chain_hex === '0xa4b1').tvl;
         break;
       case 'bsc':
-        tvlMsg = await client.get('/bsc/tvlTotal');
+        tvl = tvlMsg.data.data.find((item) => item.chain_hex === '0x38').tvl;
         break;
       default:
-        tvlMsg = await client.get('/tvlTotal');
+        break;
     }
-    const tvl = tvlMsg.data.data.tvlTotal;
     return { tether: +tvl };
   }
 }
 
 module.exports = {
   misrepresentedTokens: false,
-  methodology: `TVL is fetched from the Reaper API(http://api.reaper.farm/api)`,
+  methodology: `TVL is fetched from the Reaper API`,
   timetravel: false,
   fantom: {
     tvl: fetchTvl('fantom')
