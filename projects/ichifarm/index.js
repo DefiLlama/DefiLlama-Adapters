@@ -46,11 +46,6 @@ const config = {
       { factory: '0xbBB97d634460DACCA0d41E249510Bb741ef46ad3', fromBlock: 29702590, },
     ],
   },
-  bsc: {
-    vaultConfigs: [
-      { factory: '0xbBB97d634460DACCA0d41E249510Bb741ef46ad3', fromBlock: 29702590, },
-    ],
-  },
   polygon: {
     vaultConfigs: [
       { factory: '0x2d2c72c4dc71aa32d64e5142e336741131a73fc0', fromBlock: 25697834, },
