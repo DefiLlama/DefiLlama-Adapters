@@ -1,4 +1,3 @@
-const aws = require('aws-sdk')
 const sdk = require('@defillama/sdk')
 const Bucket = "tvl-adapter-cache";
 const axios = require('axios')
