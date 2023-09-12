@@ -54,7 +54,7 @@ const TURBO_GHO = "0x0c190ded9be5f512bd72827bdad4003e9cc7975c";
 
 const cellarsV2p5 = [
   { id: TURBO_SWETH, startBlock: 17910374 },
-  { id: TURBO_GHO, startBlock: 999999999 }, // TODO: UPDATE
+  { id: TURBO_GHO, startBlock: 18118614 },
 ];
 
 async function tvl(timestamp, block, chainBlocks, { api }) {
