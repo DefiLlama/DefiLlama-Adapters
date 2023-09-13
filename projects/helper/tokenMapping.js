@@ -24,6 +24,7 @@ const distressedAssts = new Set(Object.values({
   aBNBc: ADDRESSES.bsc.ankrBNB,
   aBNBb: ADDRESSES.bsc.aBNBb,
   XRPC: '0xd4ca5c2aff1eefb0bea9e9eab16f88db2990c183',
+  FLEET: '0xfd56a3dcfc0690881a466ae432d71bb2db588083',
   YAKU: 'NGK3iHqqQkyRZUj4uhJDQqEyKKcZ7mdawWpqwMffM3s'
 }).map(i => i.toLowerCase()))
 
