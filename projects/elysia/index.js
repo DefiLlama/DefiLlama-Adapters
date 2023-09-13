@@ -43,6 +43,12 @@ const v2BscMoneyPools = [
   [v2BscMoneyPoolsToken, "0x5a0154B76E8afe0ef3AA28fD6b4eA863458dB9EB"],
 ];
 
+const v2KlaytnMoneyPoolsToken = ADDRESSES.klaytn.oUSDT;
+const v2KlaytnMoneyPools = [
+  [v2KlaytnMoneyPoolsToken, "0x60961ca3A40BE41ddDEf708bf51ef2F8e9760A3b"],
+  [v2KlaytnMoneyPoolsToken, "0x7F97f905A8d6fe4C493D339F094232E3577b4DBd"],
+];
+
 function ethBorrowed() {
   return async (_, _b, { ["ethereum"]: block }) => {
     const pools = ethMoneyPools;
@@ -117,6 +123,29 @@ function bscBorrowed() {
   };
 }
 
+function klaytnBorrowed() {
+  return async (_, _b, { ["klaytn"]: block }) => {
+    const balances = {};
+    const { output: loansValues } = await sdk.api.abi.multiCall({
+      abi: abi.loansValue,
+      calls: v2KlaytnMoneyPools.map((pool) => ({ target: pool[1] })),
+      chain: "klaytn",
+      block,
+    });
+
+    loansValues.forEach(({ input: { target }, output }, i) => {
+      sdk.util.sumSingleBalance(
+        balances,
+        v2KlaytnMoneyPoolsToken,
+        Number(output),
+        "klaytn"
+      );
+    });
+
+    return balances;
+  };
+}
+
 const bscTokenAndOwners = [...v1BscMoneyPools, ...v2BscMoneyPools];
 
 module.exports = {
@@ -133,5 +162,9 @@ module.exports = {
     tvl: sumTokensExport({ tokensAndOwners: bscTokenAndOwners, chain: "bsc" }),
     borrowed: bscBorrowed(),
     staking: stakings(addresses.bscElfiStaking, addresses.bscElfi, "bsc"),
+  },
+  klaytn: {
+    tvl: sumTokensExport({ v2KlaytnMoneyPools }),
+    borrowed: klaytnBorrowed(),
   },
 };
