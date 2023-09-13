@@ -38,7 +38,7 @@ module.exports = {
   timetravel: true,
   misrepresentedTokens: true,
   methodology: "Counts the tokens locked on AMM pools. Data is getting from the 'satoshirock/w3infov2' subgraph.",
-  pego: {
+  pg: {
     tvl: pegoTvl
   },
   bsc: {
