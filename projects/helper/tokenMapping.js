@@ -51,6 +51,9 @@ const fixBalancesTokens = {
   darwinia: {
     '0xe7578598aac020abfb918f33a20fad5b71d670b4': { coingeckoId: "darwinia-network-native-token", decimals: 18 },
   },
+  pg: {
+    '0x0cf4071940782b640d0b595cb17bdf3e90869d70': { coingeckoId: 'pego-network-2', decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
