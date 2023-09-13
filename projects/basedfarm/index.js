@@ -34,6 +34,6 @@ async function pool2(timestamp, ethBlock, chainBlocks) {
 }
 
 module.exports = {
-  methodology: 'TVL is based on value of the single-sided staked tokens inside of the Genesis reward pool.',
+  methodology: 'TVL is based on value of the single-sided staked tokens inside of the Genesis reward pool. Pool2 TVL represents the value of specific LP tokens staked in designated pool2 staking contract(BasedRewardPool)',
   base: { tvl,pool2 },
 };
