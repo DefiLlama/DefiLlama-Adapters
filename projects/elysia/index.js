@@ -120,6 +120,7 @@ function bscBorrowed() {
 const bscTokenAndOwners = [...v1BscMoneyPools, ...v2BscMoneyPools];
 
 module.exports = {
+  timetravel: true,
   ethereum: {
     borrowed: ethBorrowed(),
     tvl: sumTokensExport({ tokensAndOwners: ethMoneyPools }),
