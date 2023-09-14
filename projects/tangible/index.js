@@ -1,12 +1,17 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unwrapLPs')
 const { getConfig } = require('../helper/cache')
-const { getInsuranceFundValue, insuranceTokens } = require("./insurance-fund");
+const { getInsuranceFundValue, insuranceTokens } = require("./insurance-fund-polygon");
+const { getInsuranceFundValueOp } = require("./insurance-fund-optimism");
+const { getInsuranceFundValueBase } = require("./insurance-fund-base");
+const { getInsuranceFundValueArb } = require("./insurance-fund-arbitrum");
 
 // doc: https://docs.tangible.store/real-usd/real-usd-v3-contracts-and-addresses
 const TNGBL = '0x49e6A20f1BBdfEeC2a8222E052000BbB14EE6007'.toLowerCase()
 const USDR = '0x40379a439d4f6795b6fc9aa5687db461677a2dba'.toLowerCase()
 const PEARL = '0x7238390d5f6F64e67c3211C343A410E2A3DEc142'.toLowerCase()
+const CVX_ETH = '0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b'.toLowerCase()
+const AERO = '0x940181a94a35a4569e4529a3cdfb74e38fd98631'.toLowerCase()
 
 const { apGetAddress, getPriceManager, getCategories,
   getTotalSupply, getTokenByIndex, getTnftCustody,
@@ -19,7 +24,7 @@ const CAVIAR_STRATEGY = "0x4626E247390c82FA3b72A913d3d8fe079FFb84Ff";
 const insuranceConfig = {
   ethereum: {
     owner: '0x5d35A37E5842F6b3072893A3f7Bf0e1d1FF80179',
-    tokens: [ADDRESSES.null],
+    tokens: [ADDRESSES.null, CVX_ETH],
   },
   polygon: {
     owner: '0xD1758fbABAE91c805BE76D56548A584EF68B81f0',
@@ -27,12 +32,20 @@ const insuranceConfig = {
   },
   polygon1: {
     owner: '0x632572cfAa39330c8F0211b5B33BC86135E48b5f',
-    tokens: [ADDRESSES.polygon.DAI, ADDRESSES.polygon.USDC, ADDRESSES.polygon.USDT, ADDRESSES.null, ADDRESSES.polygon.WETH, ADDRESSES.polygon.WMATIC, PEARL, TNGBL],
+    tokens: [...Object.values(insuranceTokens), ADDRESSES.null],
   },
   optimism: {
     owner: '0x7f922242d919feF0da0e40e3Cb4B7f7D3c97a63e',
-    tokens: [ADDRESSES.null, ADDRESSES.optimism.OP, ADDRESSES.optimism.USDC,],
+    tokens: [ADDRESSES.null, ADDRESSES.optimism.OP, ADDRESSES.optimism.USDC],
   },
+  base: {
+    owner: "0x17ee1f11aa0654bd4ab1af4b6b309c7f137c925e",
+    tokens: [ADDRESSES.null,],
+  },
+  arbitrum: {
+    owner: "0xe19848f158efd31d45a6975320365251c92040c1",
+    tokens: [ADDRESSES.null, ADDRESSES.arbitrum.USDT],
+  }
 }
 
 async function tvl(_, _b, _cb, { api }) {
@@ -41,8 +54,25 @@ async function tvl(_, _b, _cb, { api }) {
     insuranceTvl,
     rwaTVL,
     tangiblePOL,
-    tangibleCaviar,
-    getInsuranceFundValue
+    tangibleCaviar
+  ].map(fn => fn(api)))
+}
+
+async function tvlOp(_, _b, _cb, { api }) {
+  await Promise.all([
+    insuranceTvlOp,
+  ].map(fn => fn(api)))
+}
+
+async function tvlBase(_, _b, _cb, { api }) {
+  await Promise.all([
+    insuranceTvlBase,
+  ].map(fn => fn(api)))
+}
+
+async function tvlArb(_, _b, _cb, { api }) {
+  await Promise.all([
+    insuranceTvlArb,
   ].map(fn => fn(api)))
 }
 
@@ -57,9 +87,26 @@ async function treasuryTvl(api) {
 }
 
 async function insuranceTvl(api) {
-  await unwrapBalancerToken(api)
-  await api.sumTokens(insuranceConfig.polygon)
-  return api.sumTokens(insuranceConfig.polygon1)
+  await unwrapBalancerToken(api, insuranceConfig.polygon.owner);
+  await unwrapBalancerToken(api, insuranceConfig.polygon1.owner);
+  await getInsuranceFundValue(api, insuranceConfig.polygon.owner);
+  await getInsuranceFundValue(api, insuranceConfig.polygon1.owner);
+  
+}
+
+async function insuranceTvlOp(api) {
+  await getInsuranceFundValueOp(api, insuranceConfig.optimism.owner);
+  await api.sumTokens({ owner: insuranceConfig.optimism.owner, tokens: insuranceConfig.optimism.tokens })
+}
+
+async function insuranceTvlBase(api) {
+  await getInsuranceFundValueBase(api, insuranceConfig.base.owner);
+  await api.sumTokens({ owner: insuranceConfig.base.owner, tokens: insuranceConfig.base.tokens })
+}
+
+async function insuranceTvlArb(api) {
+  await getInsuranceFundValueArb(api, insuranceConfig.arbitrum.owner);
+  await api.sumTokens({ owner: insuranceConfig.arbitrum.owner, tokens: insuranceConfig.arbitrum.tokens })
 }
 
 async function rwaTVL(api) {
@@ -160,54 +207,16 @@ async function tangiblePOL(api) {
   })
 }
 
-async function tangiblePOL(api) {
-
-  //pearl pair api address
-  const pearlPairApi = await api.call({
-    abi: apGetAddress,
-    target: ADDRESS_PROVIDER_ADDRESS,
-    params: ["0xd1e0c1a56a62f2e6553b45bde148c89c51a01f766c23f4bb2c612bd2c822f711"],//keccak of paerl api address
-  })
-
-  const { data } = await getConfig('tangible', "https://api.pearl.exchange/api/v15/pools");
-  const pools = data.filter(
-    (pool) =>
-      (["DAI", "USDC", "USDT"].includes(pool.token0.symbol) &&
-        pool.token1.symbol === "USDR") ||
-      (["DAI", "USDC", "USDT"].includes(pool.token1.symbol) &&
-        pool.token0.symbol === "USDR"),
-  ).map(i => i.address)
-
-  const multisigAddress = "0x100fCC635acf0c22dCdceF49DD93cA94E55F0c71"
-  const [lpBals, tokens0, tokens1, totalSupplies, reserves] = await Promise.all([
-    api.multiCall({ abi: getPair, target: pearlPairApi, calls: pools.map(p => ({ params: [p, multisigAddress]})) }),
-    api.multiCall({ abi: 'address:token0', calls: pools }),
-    api.multiCall({ abi: 'address:token1', calls: pools }),
-    api.multiCall({ abi: 'uint256:totalSupply', calls: pools }),
-    api.multiCall({ abi: "function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)", calls: pools }),
-  ])
-
-  const blacklist = [USDR, TNGBL]
-  lpBals.forEach((lpBal, i) => {
-    const ratio = lpBal.account_gauge_balance / totalSupplies[i]
-    if (!blacklist.includes(tokens0[i].toLowerCase()))
-      api.add(tokens0[i], reserves[i]._reserve0 * ratio)
-
-    if (!blacklist.includes(tokens1[i].toLowerCase()))
-      api.add(tokens1[i], reserves[i]._reserve1 * ratio)
-
-  })
-}
-
 module.exports = {
   misrepresentedTokens: true,
   polygon: { tvl, },
   ethereum: { tvl: sumTokensExport(insuranceConfig.ethereum) },
-  optimism: { tvl: sumTokensExport(insuranceConfig.optimism) },
+  optimism: { tvl: tvlOp },
+  base: { tvl: tvlBase },
+  arbitrum: { tvl: tvlArb },
 }
 
-async function unwrapBalancerToken(api) {
-  const owner = insuranceConfig.polygon.owner
+async function unwrapBalancerToken(api, owner) {
   const gauge = '0x07222e30b751c1ab4a730745afe19810cfd762c0'
   const balancerToken = '0x9f9f548354b7c66dc9a9f3373077d86aaaccf8f2'
   const [lpSupply, lpTokens] = await api.batchCall([

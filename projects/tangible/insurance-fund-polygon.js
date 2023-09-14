@@ -1,8 +1,7 @@
 const ethers = require('ethers');
 
 const { default: axios } = require('axios');
-
-const INSURANCE_FUND = '0xD1758fbABAE91c805BE76D56548A584EF68B81f0';
+const { unwrapUniswapV3NFTs } = require('../helper/unwrapLPs')
 
 const BALANCER_POOL_ABI = require('./abi/BalancerPool.json');
 const CAVIAR_CHEF_ABI = require('./abi/CaviarChef.json');
@@ -51,13 +50,15 @@ const UTILITY_TOKENS = {
     VE_TETU: '0x6FB29DD17fa6E27BD112Bc3A2D0b8dae597AeDA4',
 }
 
+const TNGBL_UNIV3_LIQUIDITY = "0xDC8a5c5975726235402cFac9B28268EEccd42813";
+
 const BALANCER_VAULT = '0xBA12222222228d8Ba445958a75a0704d566BF2C8';
 const CAVIAR_STAKING_CHEF = '0x83C5022745B2511Bd199687a42D27BEFd025A9A9';
 const CAVIAR_REBASE_CHEF = '0xf5374d452697d9A5fa2D97Ffd05155C853F6c1c6';
 const PEARL_PAIR_FACTORY = '0xEaF188cdd22fEEBCb345DCb529Aa18CA9FcB4FBd';
 const PEARL_VOTER = '0xa26C2A6BfeC5512c13Ae9EacF41Cb4319d30cCF0';
 
-async function getInsuranceFundValue(api) {
+async function getInsuranceFundValue(api, INSURANCE_FUND) {
     const tokenAddresses = [...Object.values(insuranceTokens), ...Object.values(UTILITY_TOKENS)];
     const tokenBalances = tokenAddresses.map(() => ethers.constants.Zero);
 
@@ -276,18 +277,19 @@ async function getInsuranceFundValue(api) {
         prices[`polygon:${insuranceTokens.CAVIAR}`] = prices[`polygon:${insuranceTokens.PEARL}`];
     }
 
-    const insuranceFundValue = tokenBalances.map((balance, i) => {
-        if (i >= Object.keys(insuranceTokens).length) return 0;
-        const priceIndex = `polygon:${tokenAddresses[i]}`;
-        const formattedBalance = ethers.utils.formatUnits(balance, prices[priceIndex].decimals);
-        const price = prices[priceIndex].price;
-        console.log(`${Object.keys(insuranceTokens)[i]}: ${+formattedBalance * price}`);
-        return +formattedBalance * price;
-    }).reduce((a, b) => a + b, 0);
+    //uniswap lps
+    const uniBal = await unwrapUniswapV3NFTs({owner: INSURANCE_FUND, chain:"polygon"});
+    if (Object.keys(uniBal).length != 0) {    
+        const addresses = Object.keys(uniBal);
+        const values = Object.values(uniBal);
+        for(let i = 0; i < addresses.length; i++){
+            api.add(addresses[i].slice("polygon:".length), values[i]);
+        }
+    }
 
-    console.log(insuranceFundValue);
-
-    api.add(insuranceTokens.DAI,insuranceFundValue);
+    for(let i = 0; i < Object.keys(insuranceTokens).length; i++){
+        api.add(Object.values(insuranceTokens)[i],tokenBalances[i]);
+    }
 }
 
 module.exports = {
