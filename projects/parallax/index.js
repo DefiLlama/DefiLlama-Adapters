@@ -1,11 +1,21 @@
 const sdk = require("@defillama/sdk");
 const { default: BigNumber } = require("bignumber.js");
 
-const { staking } = require('../helper/staking')
-const { sumTokensExport } = require('../helper/unwrapLPs')
-const { getPriceMIM, getPriceAura, getPriceSushi } = require("./getPrice");
+const { Provider } = require("zksync-web3");
+const { ethers } = require("ethers");
+
+const { staking } = require("../helper/staking");
+const { sumTokensExport } = require("../helper/unwrapLPs");
+const {
+  getPriceMIM,
+  getPriceAura,
+  getPriceSushi,
+  getPriceZkSync,
+} = require("./getPrice");
 
 const prllxERC20 = require("./abis/prllxERC20.json");
+const parallaxOrbitalAbi = require("./abis/parallaxOrbital.json");
+const syncSwapClassicPoolAbi = require("./abis/syncSwapClassicPool.json");
 const contracts = require("./contracts.json");
 
 async function ethTvl(time, _ethBlock, { ethereum: block }, { api }) {
@@ -148,14 +158,62 @@ async function arbitrumTvl(time, _ethBlock, { arbitrum: block }, { api }) {
   return balances;
 }
 
+async function eraTvl(time, _ethBlock) {
+  const balances = {};
+  const rpcZkSyncEra = "https://mainnet.era.zksync.io/";
+
+  const provider = new Provider(rpcZkSyncEra);
+
+  const contract = new ethers.Contract(
+    contracts.era.parallaxAddress,
+    parallaxOrbitalAbi,
+    provider
+  );
+
+  const strategyId = await contract.strategyToId(contracts.era.strategyAddress);
+
+  const strategy = await contract.strategies(strategyId);
+
+  const price = await getPriceZkSync(
+    contracts.era.poolAddress,
+    contracts.era.zkss_weth,
+    syncSwapClassicPoolAbi,
+    provider
+  );
+
+  const totalStaked = new BigNumber(strategy.totalStaked.toString()).div(`1e6`);
+  const totalStakedTVL = price.times(totalStaked).toFixed(0);
+
+  sdk.util.sumSingleBalance(
+    balances,
+    `era:${contracts.era.usdc}`,
+    totalStakedTVL
+  );
+
+  return balances;
+}
+
 module.exports = {
   methodology: "TVL comes from the Staking Vaults",
   arbitrum: {
     tvl: arbitrumTvl,
-    staking: staking(['0x82FD636D7A28a20635572EB8ec0603ee264B8651', '0xA3CE2c0d1cfB29F398f8f4800bA202Aba39dbbfe', '0xEb370470Afd74d8a9BBC4fF0C94371C310fF9D3e', ], '0xc8CCBd97b96834b976C995a67BF46e5754e2C48E'),
-    pool2: sumTokensExport({ owner: '0xEb370470Afd74d8a9BBC4fF0C94371C310fF9D3e', resolveUniV3: true, })
+    staking: staking(
+      [
+        "0x82FD636D7A28a20635572EB8ec0603ee264B8651",
+        "0xA3CE2c0d1cfB29F398f8f4800bA202Aba39dbbfe",
+        "0xEb370470Afd74d8a9BBC4fF0C94371C310fF9D3e",
+      ],
+      "0xc8CCBd97b96834b976C995a67BF46e5754e2C48E"
+    ),
+    pool2: sumTokensExport({
+      owner: "0xEb370470Afd74d8a9BBC4fF0C94371C310fF9D3e",
+      resolveUniV3: true,
+    }),
   },
   ethereum: {
     tvl: ethTvl,
+  },
+  era: {
+    tvl: eraTvl,
   },
 };
