@@ -29,7 +29,7 @@ const PAIR_ABI = [
 
 const erc20 = new ethers.utils.Interface(ERC20_ABI);
 
-const ERC20_TOKENS = {
+const insuranceTokens = {
     CAVIAR: '0x6AE96Cc93331c19148541D4D2f31363684917092',
     DAI: '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063',
     PEARL: '0x7238390d5f6F64e67c3211C343A410E2A3DEc142',
@@ -57,8 +57,8 @@ const CAVIAR_REBASE_CHEF = '0xf5374d452697d9A5fa2D97Ffd05155C853F6c1c6';
 const PEARL_PAIR_FACTORY = '0xEaF188cdd22fEEBCb345DCb529Aa18CA9FcB4FBd';
 const PEARL_VOTER = '0xa26C2A6BfeC5512c13Ae9EacF41Cb4319d30cCF0';
 
-async function getInsuranceFundValue() {
-    const tokenAddresses = [...Object.values(ERC20_TOKENS), ...Object.values(UTILITY_TOKENS)];
+async function getInsuranceFundValue(api) {
+    const tokenAddresses = [...Object.values(insuranceTokens), ...Object.values(UTILITY_TOKENS)];
     const tokenBalances = tokenAddresses.map(() => ethers.constants.Zero);
 
     let calls = [];
@@ -109,7 +109,7 @@ async function getInsuranceFundValue() {
         .map((t) => t.amount)
         .reduce((a, b) => a.add(b), ethers.constants.Zero);
     
-    const pearlTokenIndex = tokenAddresses.indexOf(ERC20_TOKENS.PEARL);
+    const pearlTokenIndex = tokenAddresses.indexOf(insuranceTokens.PEARL);
     tokenBalances[pearlTokenIndex] = tokenBalances[pearlTokenIndex].add(pearlBalance);
 
     const veTETU = new ethers.utils.Interface(VE_TETU_ABI);
@@ -190,7 +190,7 @@ async function getInsuranceFundValue() {
     const [pendingRebaseReward] = caviarChef.decodeFunctionResult('pendingReward', caviarData[3]);
     const [rebaseRewardToken] = caviarChef.decodeFunctionResult('rewardToken', caviarData[4]);
 
-    const caviarTokenIndex = tokenAddresses.indexOf(ERC20_TOKENS.CAVIAR);
+    const caviarTokenIndex = tokenAddresses.indexOf(insuranceTokens.CAVIAR);
     const stakingRewardTokenIndex = tokenAddresses.indexOf(stakingRewardToken);
     const rebaseRewardTokenIndex = tokenAddresses.indexOf(rebaseRewardToken);
 
@@ -198,7 +198,7 @@ async function getInsuranceFundValue() {
     tokenBalances[stakingRewardTokenIndex] = tokenBalances[stakingRewardTokenIndex].add(pendingStakingReward);
     tokenBalances[rebaseRewardTokenIndex] = tokenBalances[rebaseRewardTokenIndex].add(pendingRebaseReward);
 
-    const coins = tokenAddresses.slice(0, Object.keys(ERC20_TOKENS).length).map((a) => `polygon:${a}`);
+    const coins = tokenAddresses.slice(0, Object.keys(insuranceTokens).length).map((a) => `polygon:${a}`);
     const prices = await axios.get(`https://coins.llama.fi/prices/current/${coins.join(',')}`).then((res) => res.data.coins);
 
     const pearlPairFactory = new ethers.Contract(PEARL_PAIR_FACTORY, PAIR_FACTORY_ABI, provider);
@@ -272,26 +272,25 @@ async function getInsuranceFundValue() {
         }
     }
 
-    if (prices[`polygon:${ERC20_TOKENS.CAVIAR}`] === undefined) {
-        prices[`polygon:${ERC20_TOKENS.CAVIAR}`] = prices[`polygon:${ERC20_TOKENS.PEARL}`];
+    if (prices[`polygon:${insuranceTokens.CAVIAR}`] === undefined) {
+        prices[`polygon:${insuranceTokens.CAVIAR}`] = prices[`polygon:${insuranceTokens.PEARL}`];
     }
 
     const insuranceFundValue = tokenBalances.map((balance, i) => {
-        if (i >= Object.keys(ERC20_TOKENS).length) return 0;
+        if (i >= Object.keys(insuranceTokens).length) return 0;
         const priceIndex = `polygon:${tokenAddresses[i]}`;
         const formattedBalance = ethers.utils.formatUnits(balance, prices[priceIndex].decimals);
         const price = prices[priceIndex].price;
-        console.log(`${Object.keys(ERC20_TOKENS)[i]}: ${+formattedBalance * price}`);
+        console.log(`${Object.keys(insuranceTokens)[i]}: ${+formattedBalance * price}`);
         return +formattedBalance * price;
     }).reduce((a, b) => a + b, 0);
 
     console.log(insuranceFundValue);
 
-    return insuranceFundValue;
+    api.add(insuranceTokens.DAI,insuranceFundValue);
 }
 
 module.exports = {
-    getInsuranceFundValue
+    getInsuranceFundValue,
+    insuranceTokens
 }
-
-getInsuranceFundValue()
