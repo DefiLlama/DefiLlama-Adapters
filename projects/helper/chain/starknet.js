@@ -19,6 +19,7 @@ function formCallBody({ abi, target, params = [], allAbi = [] }, id = 0) {
   const requestData = contract.populate(abi.name, params)
   requestData.entry_point_selector = hash.getSelectorFromName(requestData.entrypoint)
   requestData.contract_address = requestData.contractAddress
+  delete requestData.contractAddress
   delete requestData.entrypoint
   if (abi.customInput === 'address')  requestData.calldata = params.map(i => i.slice(2))
   return getCallBody(requestData, id)
