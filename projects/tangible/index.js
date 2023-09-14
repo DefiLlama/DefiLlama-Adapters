@@ -1,6 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unwrapLPs')
 const { getConfig } = require('../helper/cache')
+const { getInsuranceFundValue, insuranceTokens } = require("./insurance-fund");
 
 // doc: https://docs.tangible.store/real-usd/real-usd-v3-contracts-and-addresses
 const TNGBL = '0x49e6A20f1BBdfEeC2a8222E052000BbB14EE6007'.toLowerCase()
@@ -22,7 +23,7 @@ const insuranceConfig = {
   },
   polygon: {
     owner: '0xD1758fbABAE91c805BE76D56548A584EF68B81f0',
-    tokens: [ADDRESSES.polygon.DAI, ADDRESSES.polygon.USDC, ADDRESSES.polygon.USDT, ADDRESSES.null, ADDRESSES.polygon.WETH, ADDRESSES.polygon.WMATIC, PEARL, TNGBL],
+    tokens: Object.values(insuranceTokens),
   },
   polygon1: {
     owner: '0x632572cfAa39330c8F0211b5B33BC86135E48b5f',
@@ -40,7 +41,8 @@ async function tvl(_, _b, _cb, { api }) {
     insuranceTvl,
     rwaTVL,
     tangiblePOL,
-    tangibleCaviar
+    tangibleCaviar,
+    getInsuranceFundValue
   ].map(fn => fn(api)))
 }
 
