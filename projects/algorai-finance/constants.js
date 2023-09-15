@@ -61,9 +61,9 @@ const vaults = [
         coingecko: 'usd-coin',
     },
     {
-        vaultID: 1170261298,
-        assetDecimals: 6,
-        coingecko: 'usd-coin',
+        vaultID: 1190994349,
+        assetDecimals: 5,
+        coingecko: 'meld-gold',
     }
 ];
 
