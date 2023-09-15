@@ -1375,7 +1375,10 @@
   },
   "mvc": {
     "SPACE": "",
-	"USDT": "7d8706c7f657730201ff3334064f83deb2fdec8a",
-	"MSP": "b2d75931958114e48c9927160f80363eae78e2dc"
+    "USDT": "7d8706c7f657730201ff3334064f83deb2fdec8a",
+    "MSP": "b2d75931958114e48c9927160f80363eae78e2dc"
+  },
+  "wan": {
+    "WWAN": "0xdabD997aE5E4799BE47d6E69D9431615CBa28f48"
   }
 }
