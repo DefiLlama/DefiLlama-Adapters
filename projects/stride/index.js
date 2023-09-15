@@ -34,7 +34,6 @@ async function tvl() {
 
   const hostZonePromises = hostZones.map(async (hostZone) => {
     const stDenom = "st".concat(hostZone.host_denom);
-    console.log(stDenom)
     const { amount: assetBalances } = await get(
       "https://stride-fleet.main.stridenet.co/api/cosmos/bank/v1beta1/supply/by_denom?denom=".concat(stDenom)
     );
