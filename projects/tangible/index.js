@@ -11,7 +11,6 @@ const TNGBL = '0x49e6A20f1BBdfEeC2a8222E052000BbB14EE6007'.toLowerCase()
 const USDR = '0x40379a439d4f6795b6fc9aa5687db461677a2dba'.toLowerCase()
 const PEARL = '0x7238390d5f6F64e67c3211C343A410E2A3DEc142'.toLowerCase()
 const CVX_ETH = '0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b'.toLowerCase()
-const AERO = '0x940181a94a35a4569e4529a3cdfb74e38fd98631'.toLowerCase()
 
 const { apGetAddress, getPriceManager, getCategories,
   getTotalSupply, getTokenByIndex, getTnftCustody,
