@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokensExport } = require('../helper/unwrapLPs')
+const { sumTokensExport, sumTokens2, } = require('../helper/unwrapLPs')
 const { getConfig } = require('../helper/cache')
 const { getInsuranceFundValue, insuranceTokens } = require("./insurance-fund-polygon");
 const { getInsuranceFundValueOp } = require("./insurance-fund-optimism");
@@ -27,12 +27,8 @@ const insuranceConfig = {
     tokens: [ADDRESSES.null, CVX_ETH],
   },
   polygon: {
-    owner: '0xD1758fbABAE91c805BE76D56548A584EF68B81f0',
+    owners: ['0xD1758fbABAE91c805BE76D56548A584EF68B81f0', '0x632572cfAa39330c8F0211b5B33BC86135E48b5f'],
     tokens: Object.values(insuranceTokens),
-  },
-  polygon1: {
-    owner: '0x632572cfAa39330c8F0211b5B33BC86135E48b5f',
-    tokens: [...Object.values(insuranceTokens), ADDRESSES.null],
   },
   optimism: {
     owner: '0x7f922242d919feF0da0e40e3Cb4B7f7D3c97a63e',
@@ -51,10 +47,10 @@ const insuranceConfig = {
 async function tvl(_, _b, _cb, { api }) {
   await Promise.all([
     treasuryTvl,
-    insuranceTvl,
     rwaTVL,
     tangiblePOL,
-    tangibleCaviar
+    tangibleCaviar,
+    insuranceTvl,
   ].map(fn => fn(api)))
 }
 
@@ -83,20 +79,19 @@ async function treasuryTvl(api) {
     target: ADDRESS_PROVIDER_ADDRESS,
     params: ["0xc83e4fd410f80be983b083c99898391186b0893751a26a9a1e5fdcb9d4129701"],//keccak of USDRTreasury
   })
-  await api.sumTokens({ owner: usdrTreasuryAddress, tokens: [ADDRESSES.polygon.DAI, TNGBL] }) // TNGBL should be part, same as for Tera/Luna, Synthetics/sUSD
+  await api.sumTokens({ owner: usdrTreasuryAddress, tokens: [ADDRESSES.polygon.DAI,] })
 }
 
 async function insuranceTvl(api) {
-  await unwrapBalancerToken(api, insuranceConfig.polygon.owner);
-  await unwrapBalancerToken(api, insuranceConfig.polygon1.owner);
-  await getInsuranceFundValue(api, insuranceConfig.polygon.owner);
-  await getInsuranceFundValue(api, insuranceConfig.polygon1.owner);
-  
+  await Promise.all(insuranceConfig.polygon.owners.map(i => (async () => {
+    await unwrapBalancerToken(api, i);
+    await getInsuranceFundValue(api, i);
+  })()))
 }
 
 async function insuranceTvlOp(api) {
   await getInsuranceFundValueOp(api, insuranceConfig.optimism.owner);
-  await api.sumTokens({ owner: insuranceConfig.optimism.owner, tokens: insuranceConfig.optimism.tokens })
+  return sumTokens2({ api, ...insuranceConfig.optimism })
 }
 
 async function insuranceTvlBase(api) {
@@ -106,7 +101,7 @@ async function insuranceTvlBase(api) {
 
 async function insuranceTvlArb(api) {
   await getInsuranceFundValueArb(api, insuranceConfig.arbitrum.owner);
-  await api.sumTokens({ owner: insuranceConfig.arbitrum.owner, tokens: insuranceConfig.arbitrum.tokens })
+  return sumTokens2({ api, ...insuranceConfig.arbitrum })
 }
 
 async function rwaTVL(api) {
@@ -152,14 +147,9 @@ async function rwaTVL(api) {
 
 async function tangibleCaviar(api) {
   // now fetch locked pearl in Caviar
-  const pearlAmountInCaviar = await api.call({
-    abi: getPearlBalanceCaviar,
-    target: CAVIAR_STRATEGY,
-    params: [],
-  })
+  const pearlAmountInCaviar = await api.call({ abi: getPearlBalanceCaviar, target: CAVIAR_STRATEGY, })
 
   api.add(PEARL, pearlAmountInCaviar);
-
 }
 
 async function tangiblePOL(api) {
@@ -188,14 +178,14 @@ async function tangiblePOL(api) {
   ).map(i => i.address)
 
   const [lpBals, tokens0, tokens1, totalSupplies, reserves] = await Promise.all([
-    api.multiCall({ abi: getPair, target: pearlPairApi, calls: pools.map(p => ({ params: [p, liquidityManager]})) }),
+    api.multiCall({ abi: getPair, target: pearlPairApi, calls: pools.map(p => ({ params: [p, liquidityManager] })) }),
     api.multiCall({ abi: 'address:token0', calls: pools }),
     api.multiCall({ abi: 'address:token1', calls: pools }),
     api.multiCall({ abi: 'uint256:totalSupply', calls: pools }),
     api.multiCall({ abi: "function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)", calls: pools }),
   ])
 
-  const blacklist = [USDR]
+  const blacklist = [USDR, TNGBL]
   lpBals.forEach((lpBal, i) => {
     const ratio = lpBal.account_gauge_balance / totalSupplies[i]
     if (!blacklist.includes(tokens0[i].toLowerCase()))
@@ -211,9 +201,9 @@ module.exports = {
   misrepresentedTokens: true,
   polygon: { tvl, },
   ethereum: { tvl: sumTokensExport(insuranceConfig.ethereum) },
-  optimism: { tvl: tvlOp },
   base: { tvl: tvlBase },
   arbitrum: { tvl: tvlArb },
+  optimism: { tvl: tvlOp },
 }
 
 async function unwrapBalancerToken(api, owner) {
