@@ -201,7 +201,7 @@ async function chainTvl(chain, chainBlocks, exportType) {
                     calculateTvlFunction = impulseStakingTvl;
                     break;
                 default:
-                    console.log('unknown tvl type', JSON.stringify(staking, null, 4));
+                    sdk.log('unknown tvl type', JSON.stringify(staking, null, 4));
                     return;
             }
             if (

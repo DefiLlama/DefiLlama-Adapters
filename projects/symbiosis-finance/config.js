@@ -5,6 +5,8 @@ module.exports = {
       name: 'ethereum',
       tokens: [
         ADDRESSES.ethereum.USDC,
+        ADDRESSES.ethereum.USDT,
+        ADDRESSES.ethereum.WETH,
       ],
       holders: [
         '0xb80fDAA74dDA763a8A158ba85798d373A5E84d84', // portal v1
@@ -16,6 +18,7 @@ module.exports = {
       tokens: [
         ADDRESSES.bsc.BUSD,
         ADDRESSES.bsc.USDC,
+        ADDRESSES.bsc.ETH,
       ],
       holders: [
         '0xD7F9989bE0d15319d13d6FA5d468211C89F0b147', // portal v1
@@ -27,6 +30,7 @@ module.exports = {
       name: 'avax',
       tokens: [
         ADDRESSES.avax.USDC_e,
+        ADDRESSES.avax.USDC,
       ],
       holders: [
         '0xD7F9989bE0d15319d13d6FA5d468211C89F0b147', // portal v1
@@ -39,6 +43,7 @@ module.exports = {
       name: 'polygon',
       tokens: [
         ADDRESSES.polygon.USDC,
+        ADDRESSES.polygon.WETH_1,
       ],
       holders: [
         '0xD7F9989bE0d15319d13d6FA5d468211C89F0b147', // portal v1
@@ -103,7 +108,8 @@ module.exports = {
     {
       name: 'kava',
       tokens: [
-        ADDRESSES.telos.ETH,
+        ADDRESSES.kava.USDC,
+        ADDRESSES.kava.USDt,
       ],
       holders: [
         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
@@ -113,6 +119,7 @@ module.exports = {
       name: 'era',
       tokens: [
         ADDRESSES.era.USDC,
+        ADDRESSES.era.WETH,
       ],
       holders: [
         '0x39dE19C9fF25693A2311AAD1dc5C790194084A39', // portal v2
@@ -121,7 +128,9 @@ module.exports = {
     {
       name: 'arbitrum',
       tokens: [
-        ADDRESSES.arbitrum.USDC,
+        ADDRESSES.arbitrum.USDC, // USDC.e
+        ADDRESSES.arbitrum.USDC_CIRCLE,
+        ADDRESSES.arbitrum.WETH,
       ],
       holders: [
         '0x01A3c8E513B758EBB011F7AFaf6C37616c9C24d9', // portal v2
@@ -131,10 +140,62 @@ module.exports = {
       name: 'optimism',
       tokens: [
         ADDRESSES.optimism.USDC,
+        ADDRESSES.optimism.WETH_1,
       ],
       holders: [
         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
       ]
     },
+    {
+      name: 'arbitrum_nova',
+      tokens: [
+        ADDRESSES.arbitrum_nova.USDC,
+        ADDRESSES.arbitrum_nova.WETH,
+      ],
+      holders: [
+        '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
+      ]
+    },
+    {
+      name: 'polygon_zkevm',
+      tokens: [
+        ADDRESSES.polygon_zkevm.USDC,
+        ADDRESSES.polygon_zkevm.WETH,
+      ],
+      holders: [
+        '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
+      ]
+    },
+    {
+      name: 'mantle',
+      tokens: [
+        ADDRESSES.mantle.USDC,
+        ADDRESSES.mantle.WETH,
+      ],
+      holders: [
+        '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
+      ]
+    },
+    {
+       name: 'linea',
+       tokens: [
+         ADDRESSES.linea.WETH,
+         ADDRESSES.linea.USDC,
+       ],
+       holders: [
+         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
+       ]
+     },
+    {
+       name: 'base',
+       tokens: [
+         ADDRESSES.base.WETH,
+         ADDRESSES.base.USDbC,
+       ],
+       holders: [
+         '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4', // portal v2
+         '0xEE981B2459331AD268cc63CE6167b446AF4161f8', // portal v2 new
+       ]
+     },
   ]
 }

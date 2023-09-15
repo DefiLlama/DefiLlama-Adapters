@@ -1,7 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { getFixBalances } = require("../helper/portedTokens");
 const { getTokenPrices } = require("../helper/unknownTokens")
 const { stakingUnknownPricedLP } = require("../helper/staking")
 
@@ -53,7 +52,6 @@ async function calcPool2(genesisPool, rewardPool, lps, block, chain) {
   );
 
   await updateBalances(balances, { resolveLP: true  });
-  (await getFixBalances(chain))(balances);
   return balances;
 }
 
@@ -76,7 +74,6 @@ async function calcKava(rewardPool, block, chain) {
     wkavaRewardBalance
   );
 
-  (await getFixBalances(chain))(balances);
   return balances;
 }
 
@@ -89,6 +86,9 @@ async function KavaPool2(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
+  hallmarks: [
+    [1660521600, "incentives not given"]
+  ],
   methodology:
     "Pool2 deposits consist of RUBY/USDC, RUBY/KAVA, RSHARE/KAVA and RUBY/RSHARE LP deposits while the staking TVL consists of the RSHARE tokens locked within the Boardroom contract.",
   kava: {
