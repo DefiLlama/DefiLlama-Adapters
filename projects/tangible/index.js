@@ -9,16 +9,14 @@ const { getInsuranceFundValueArb } = require("./insurance-fund-arbitrum");
 // doc: https://docs.tangible.store/real-usd/real-usd-v3-contracts-and-addresses
 const TNGBL = '0x49e6A20f1BBdfEeC2a8222E052000BbB14EE6007'.toLowerCase()
 const USDR = '0x40379a439d4f6795b6fc9aa5687db461677a2dba'.toLowerCase()
-const PEARL = '0x7238390d5f6F64e67c3211C343A410E2A3DEc142'.toLowerCase()
 const CVX_ETH = '0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b'.toLowerCase()
 
 const { apGetAddress, getPriceManager, getCategories,
   getTotalSupply, getTokenByIndex, getTnftCustody,
-  getItemPriceBatchTokenIds, getPair, getPearlBalanceCaviar } = require("./abi.js");
+  getItemPriceBatchTokenIds, getPair, } = require("./abi.js");
 
 const ADDRESS_PROVIDER_ADDRESS = "0xE95BCf65478d6ba44C5F57740CfA50EA443619eA";
 const FACTORY_ADDRESS = "0xB0E54b88BB0043A938563fe8A77F4ddE2eB0cFc0";
-const CAVIAR_STRATEGY = "0x4626E247390c82FA3b72A913d3d8fe079FFb84Ff";
 
 const insuranceConfig = {
   ethereum: {
@@ -48,7 +46,6 @@ async function tvl(_, _b, _cb, { api }) {
     treasuryTvl,
     rwaTVL,
     tangiblePOL,
-    tangibleCaviar,
     insuranceTvl,
   ].map(fn => fn(api)))
 }
@@ -142,13 +139,6 @@ async function rwaTVL(api) {
     }
   }))
 
-}
-
-async function tangibleCaviar(api) {
-  // now fetch locked pearl in Caviar
-  const pearlAmountInCaviar = await api.call({ abi: getPearlBalanceCaviar, target: CAVIAR_STRATEGY, })
-
-  api.add(PEARL, pearlAmountInCaviar);
 }
 
 async function tangiblePOL(api) {
