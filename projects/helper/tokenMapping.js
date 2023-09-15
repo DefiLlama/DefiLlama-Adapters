@@ -24,6 +24,7 @@ const distressedAssts = new Set(Object.values({
   aBNBc: ADDRESSES.bsc.ankrBNB,
   aBNBb: ADDRESSES.bsc.aBNBb,
   XRPC: '0xd4ca5c2aff1eefb0bea9e9eab16f88db2990c183',
+  FLEET: '0xfd56a3dcfc0690881a466ae432d71bb2db588083',
   YAKU: 'NGK3iHqqQkyRZUj4uhJDQqEyKKcZ7mdawWpqwMffM3s'
 }).map(i => i.toLowerCase()))
 
@@ -47,6 +48,12 @@ const fixBalancesTokens = {
   },
   mvc: {
     [ADDRESSES.mvc.SPACE]: { coingeckoId: "microvisionchain", decimals: 8 },
+  },
+  darwinia: {
+    '0xe7578598aac020abfb918f33a20fad5b71d670b4': { coingeckoId: "darwinia-network-native-token", decimals: 18 },
+  },
+  pg: {
+    '0x0cf4071940782b640d0b595cb17bdf3e90869d70': { coingeckoId: 'pego-network-2', decimals: 18 },
   },
 }
 

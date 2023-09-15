@@ -10,6 +10,7 @@ const DEFAULTS = {
   SUI_RPC: 'https://fullnode.mainnet.sui.io/',
   MULTIVERSX_RPC: 'https://api.multiversx.com',
   ETHEREUMCLASSIC_RPC: 'https://etc.etcdesktop.com,https://etc.rivet.link',
+  CRAB_RPC: 'https://darwiniacrab-rpc.dwellir.com',
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
 }
 

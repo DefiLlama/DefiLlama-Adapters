@@ -35,7 +35,6 @@ const REAL_YIELD_ENS = "0x18ea937aba6053bc232d9ae2c42abe7a8a2be440";
 const REAL_YIELD_BTC = "0x0274a704a6d9129f90a62ddc6f6024b33ecdad36";
 const FRAXIMAL = "0xdbe19d1c3f21b1bb250ca7bdae0687a97b5f77e6";
 
-
 const cellarsV2 = [
   { id: DEFI_STARS, startBlock: 17181497 },
   { id: REAL_YIELD_USD, startBlock: 16431804 },
@@ -51,7 +50,12 @@ const cellarsV2 = [
 
 // v2.5 Cellars
 const TURBO_SWETH = "0xd33dad974b938744dac81fe00ac67cb5aa13958e";
-const cellarsV2p5 = [{ id: TURBO_SWETH, startBlock: 17910374 }];
+const TURBO_GHO = "0x0c190ded9be5f512bd72827bdad4003e9cc7975c";
+
+const cellarsV2p5 = [
+  { id: TURBO_SWETH, startBlock: 17910374 },
+  { id: TURBO_GHO, startBlock: 18118614 },
+];
 
 async function tvl(timestamp, block, chainBlocks, { api }) {
   const balances = {};

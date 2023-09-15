@@ -23,7 +23,6 @@
     "@solana/web3.js": "^1.36.0",
     "@solendprotocol/solend-sdk": "^0.6.2",
     "@supercharge/promise-pool": "^2.1.0",
-    "aws-sdk": "^2.1268.0",
     "axios": "^0.27.2",
     "bignumber.js": "^9.0.1",
     "blakejs": "^1.2.1",
