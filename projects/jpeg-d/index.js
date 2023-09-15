@@ -22,5 +22,7 @@ module.exports = {
     [1683662400, "P2P Ape Staking"],
     [1684108800, "Milady support"],
     [1690730000, "pETH-ETH Curve pool drained"],
+    [1692651600, "pETH-WETH relaunch"],
+    [1694680200, "pETH Citadel relaunch"],
   ],
 };
