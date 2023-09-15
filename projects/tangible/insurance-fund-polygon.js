@@ -1,29 +1,8 @@
-const ethers = require('ethers');
 const VE_VELO_ABI = require('./abi/VeVeloNFT.json');
 const { createIncrementArray } = require('../helper/utils');
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
-const BALANCER_POOL_ABI = require('./abi/BalancerPool.json');
 const CAVIAR_CHEF_ABI = require('./abi/CaviarChef.json');
-const PAIR_FACTORY_ABI = require('./abi/PairFactory.json');
-const VAULT_ABI = require('./abi/Vault.json');
-const VE_PEARL_ABI = require('./abi/vePEARL.json');
-const VE_TETU_ABI = require('./abi/veTETU.json');
-const VOTER_ABI = require('./abi/Voter.json');
-
-
-const ERC20_ABI = [
-  'function balanceOf(address) view returns (uint256)'
-];
-
-const PAIR_ABI = [
-  'function balanceOf(address) view returns (uint256)',
-  'function getReserves() view returns (uint256, uint256, uint256)',
-  'function tokens() view returns (address, address)',
-  'function totalSupply() view returns (uint256)',
-];
-
-const erc20 = new ethers.utils.Interface(ERC20_ABI);
 
 const insuranceTokens = {
   CAVIAR: '0x6AE96Cc93331c19148541D4D2f31363684917092',
@@ -47,9 +26,6 @@ const UTILITY_TOKENS = {
   VE_TETU: '0x6FB29DD17fa6E27BD112Bc3A2D0b8dae597AeDA4',
 }
 
-const TNGBL_UNIV3_LIQUIDITY = "0xDC8a5c5975726235402cFac9B28268EEccd42813";
-
-const BALANCER_VAULT = '0xBA12222222228d8Ba445958a75a0704d566BF2C8';
 const CAVIAR_STAKING_CHEF = '0x83C5022745B2511Bd199687a42D27BEFd025A9A9';
 const CAVIAR_REBASE_CHEF = '0xf5374d452697d9A5fa2D97Ffd05155C853F6c1c6';
 const PEARL_PAIR_FACTORY = '0xEaF188cdd22fEEBCb345DCb529Aa18CA9FcB4FBd';
