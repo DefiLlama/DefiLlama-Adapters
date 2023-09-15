@@ -10,4 +10,7 @@ module.exports = {
     staking: staking(bscStaking, bscKTC, "bsc"),
     tvl: gmxExports({ vault: bscVault }),
   },
+  mantle: {
+    tvl: gmxExports({ vault: '0x2e488D7ED78171793FA91fAd5352Be423A50Dae1' }),
+  }
 };
