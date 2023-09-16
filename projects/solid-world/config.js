@@ -1,5 +1,7 @@
 const config = {
   polygon: {
+    SolidWorldManager: "0xe967aEBdbf137C2ddD4aaF076E87177c4EBEB851",
+    ForwardContractBatchToken: "0x029090aC92b0BAAF20Ccef615BAfD268f08Db8fA",
     pools: [
       {
         crispToken: "0xEF6Ab48ef8dFe984FAB0d5c4cD6AFF2E54dfdA14",

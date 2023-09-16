@@ -1,7 +1,6 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { transformFantomAddress } = require("../helper/portedTokens");
 const { staking } = require("../helper/staking");
 const { pool2Exports } = require("../helper/pool2");
 
@@ -72,7 +71,7 @@ const omb3Tvl = async (chainBlocks) => {
 
   if (!Object.keys(balances).length)  throw new Error('Bad length, something is wrong')
 
-  const transformAddress = await transformFantomAddress();
+  const transformAddress = i => `fantom:${i}`
 
   await unwrapUniswapLPs(
     balances,

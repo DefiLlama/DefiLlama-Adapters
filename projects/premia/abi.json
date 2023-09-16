@@ -1,4 +1,0 @@
-{
-  "tokens": "function tokens(uint256) view returns (address)",
-  "tokensLength": "uint256:tokensLength"
-}

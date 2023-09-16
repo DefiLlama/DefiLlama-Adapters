@@ -3,7 +3,7 @@ const { getConfig } = require('../helper/cache')
 
 const { userInfos } = require('./FairLaunch')
 
-const { getChainTransform, getFixBalances } = require('../helper/portedTokens')
+const { getChainTransform } = require('../helper/portedTokens')
 const { getTokenPrices } = require('../helper/unknownTokens')
 const kExports = require('../kleva-lend')
 
@@ -19,7 +19,6 @@ async function getWorkers() {
 // - multicall 'userInfos' on FairLaunch contract with lpPoolId & workerAddress
 async function getFarmingTVL(data, balances,) {
   const transform = await getChainTransform(chain)
-  const fixBalances = await getFixBalances(chain)
   const balancesTemp = {}
   const lps = []
 
@@ -47,7 +46,6 @@ async function getFarmingTVL(data, balances,) {
 
   await updateBalances(balancesTemp)
 
-  await fixBalances(balancesTemp)
   Object.entries(balancesTemp).forEach(([token, value]) => sdk.util.sumSingleBalance(balances, token, value))
 
   return balances
