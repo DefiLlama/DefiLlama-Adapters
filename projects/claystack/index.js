@@ -8,10 +8,11 @@ const clayAddresses = {
 };
 
 const coinAddresses = {
+  ethereum: ADDRESSES.null,
   matic: ADDRESSES.ethereum.MATIC,
 };
 
-async function getClayTvlOnEthereum(_, block) {
+async function getTvlOnEthereum(_, block) {
   const maticDeposits = (
     await sdk.api.abi.call({
       target: clayAddresses.clayMatic,
@@ -31,7 +32,7 @@ async function getClayTvlOnEthereum(_, block) {
   ).output;
 
   return {
-    [ADDRESSES.null]: ethDeposits.currentDeposit,
+    [coinAddresses.ethereum]: ethDeposits.currentDeposit,
     [coinAddresses.matic]: maticDeposits.currentDeposit
   };
 }
@@ -39,7 +40,7 @@ async function getClayTvlOnEthereum(_, block) {
 module.exports = {
 
   ethereum: {
-    tvl: getClayTvlOnEthereum,
+    tvl: getTvlOnEthereum,
   },
   methodology: `We get the total token deposited in clay contracts and convert it to USD.`
 }
