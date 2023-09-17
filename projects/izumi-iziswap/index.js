@@ -22,6 +22,7 @@ const poolHelpers = {
   'ontology_evm': ['0x110dE362cc436D7f54210f96b8C7652C2617887D'],
   'ultron' : ['0xcA7e21764CD8f7c1Ec40e651E25Da68AeD096037'],
   'linea': ['0x1CB60033F61e4fc171c963f0d2d3F63Ece24319c'],
+  'kroma': ['0x8c7d3063579BdB0b90997e18A770eaE32E1eBb08']
 }
 
 const blacklistedTokens = [

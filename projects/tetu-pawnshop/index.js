@@ -14,7 +14,6 @@ Object.keys(config).forEach(chain => {
       const posIds = await api.fetchList({ itemAbi: abi.openPositions, lengthAbi: abi.openPositionsSize, target: shop })
       const posData = await api.multiCall({ abi: abi.positions, calls: posIds, target: shop })
       const tokens = posData.map(pos => ([pos.collateral.collateralToken, pos.acquired.acquiredToken, pos.depositToken])).flat()
-      console.log(tokens)
       return sumTokens2({ api, owner: shop, tokens, resolveUniV3: true, blacklistedTokens: ['0xc36442b4a4522e871399cd717abdd847ab11fe88']})
     }
   }
