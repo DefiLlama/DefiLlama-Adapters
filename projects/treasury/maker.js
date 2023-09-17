@@ -6,6 +6,7 @@ const {
 const ADDRESSES = require('../helper/coreAssets.json')
 
 const treasury = "0xBE8E3e3618f7474F8cB1d074A26afFef007E98FB";
+const daiMKRLP = "0x517F9dD285e75b599234F7221227339478d0FcC8";
 const MKR = ADDRESSES.ethereum.MKR;
 const DAI = ADDRESSES.ethereum.DAI
 
@@ -33,7 +34,7 @@ module.exports = {
   ethereum: {
     tvl,
     ownTokens: sumTokensExport({
-      tokens: [MKR],
+      tokens: [MKR,daiMKRLP],
       owners: [treasury],
     }),
   },

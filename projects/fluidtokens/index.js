@@ -62,38 +62,10 @@ async function tvl() {
 async function borrowed(
   ts //timestamp in seconds
 ) {
-  const data = await get("https://api.fluidtokens.com/get-active-loans");
-  let SC1_tvl = 0;
-  let SC2_tvl = 0;
+  const data = await get("https://api.fluidtokens.com/get-ft-stats");
+  let SC_tvl = parseInt(data.active_loans_volume);
 
-  const timeNow = ts * 1e3;
-  data
-    .filter((i) => {
-      //select SC1 active inputs
-      return i.SCversion == 1 && i.timeToEndLoan >= timeNow;
-    })
-    .forEach((i) => {
-      SC1_tvl += +i.loanData.AMOUNT;
-    });
-  data
-    .filter((i) => {
-      //select SC2 inputs
-      return i.SCversion == 2;
-    })
-    .filter((x) => {
-      return (
-        //filter by active loans
-        x.activeLoanData.lendDate +
-          x.loanRequestData.loanDuration *
-            3.6 *
-            1e6 /* hours in milliseconds */ >=
-        timeNow
-      );
-    })
-    .forEach((x) => {
-      SC2_tvl += parseInt(x.loanRequestData.loanAmnt);
-    });
-    
+ 
   const dataOffers = await get("https://api.fluidtokens.com/get-available-collection-offers");
   let SC_offers_tvl = 0;
   
@@ -102,7 +74,7 @@ async function borrowed(
     });
   
   return {
-    cardano: (SC1_tvl + SC2_tvl) / 1e6,
+    cardano: (SC_tvl) / 1e6,
   };
 }
 

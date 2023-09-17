@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const { transformFantomAddress } = require("../helper/portedTokens");
 const { addFundsInMasterChef } = require("../helper/masterchef");
 const { stakings } = require('../helper/staking')
 const poolInfo = 'function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accfSapphirePerShare, uint16 depositFeeBP, uint256 lpSupply)'
@@ -13,7 +12,7 @@ const sapphireWarFtmLP = "0x16d6A8A53195208f5038421091d5a9dEf9647250"
 
 async function tvl(timestamp, block, chainBlocks) {
   const balances = {}
-  const transformAddress = await transformFantomAddress()
+  const transformAddress = i => `fantom:${i}`
   await addFundsInMasterChef(balances, chef, chainBlocks.fantom, "fantom", transformAddress, poolInfo, [sapphire, sapphireFtmLP])
   await addFundsInMasterChef(balances, sapphireWarChef, chainBlocks.fantom, "fantom", transformAddress, poolInfo, [sapphireWar, sapphireWarFtmLP])
   return balances;

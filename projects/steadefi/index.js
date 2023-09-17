@@ -16,6 +16,9 @@ const config = {
 }
 
 module.exports = {
+  hallmarks : [
+    [1691373600, "Steadefi exploited"],
+  ],
 };
 
 Object.keys(config).forEach(chain => {
