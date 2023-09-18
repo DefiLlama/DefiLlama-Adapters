@@ -48,7 +48,6 @@ async function tvl(_, _1, _2, { api }) {
       delete balances[token]
     }
   })
-  console.log(prices, balances)
   return balances
 }
 

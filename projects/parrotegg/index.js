@@ -1,4 +1,4 @@
-const { transformPolygonAddress, getChainTransform, transformBalances, } = require("../helper/portedTokens");
+const { getChainTransform, transformBalances, } = require("../helper/portedTokens");
 const { addFundsInMasterChef } = require('../helper/masterchef');
 const STAKING_CONTRACT_ARBITRUM = "0x1cCf20F4eE3EFD291267c07268BEcbFDFd192311"; //MASTERCHEF ARBITRUM
 const STAKING_CONTRACT_IOTEX = "0x83E7e97C4e92D56c0653f92d9b0c0B70288119b8";  // MASTERCHEF IOTEX
@@ -19,7 +19,7 @@ const arbitrumTvl = async (timestamp, ethBlock, chainBlocks) => {
 
 const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
   const balances = {};
-  const transformAddress = await transformPolygonAddress();
+  const transformAddress = i => `polygon:${i}`;
 
   await addFundsInMasterChef(
       balances, STAKING_CONTRACT_POLYGON, chainBlocks.polygon, 'polygon', transformAddress);

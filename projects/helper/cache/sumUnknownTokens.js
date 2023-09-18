@@ -54,6 +54,7 @@ async function getLPList({ lps, chain, block, lpFilter = isLP, cache = {}, }) {
 }
 
 async function getTokenPrices({
+  api,
   block,
   chain = 'ethereum',
   abis = {},  // if some protocol uses custom abi instead of standard one
@@ -74,7 +75,12 @@ async function getTokenPrices({
   reservesCallFn,
   cache = {},
 }) {
-  const api = new sdk.ChainApi({ block, chain, })
+  if (!api)
+     api = new sdk.ChainApi({ block, chain, })
+  else {
+    chain = api.chain
+    block = api.block
+  }
   if (!cache.pairData) cache.pairData = {}
   let counter = 0
   if (!transformAddress)

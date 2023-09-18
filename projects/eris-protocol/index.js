@@ -3,6 +3,7 @@ const {
   getBalance,
   getBalance2,
 } = require("../helper/chain/cosmos");
+const sdk = require('@defillama/sdk')
 
 // For testing run
 // node test.js projects/eris-protocol/index.js
@@ -275,7 +276,7 @@ async function productsTvl(chain) {
   } catch (error) {
     let url = error?.response?.config?.url;
     if (url) {
-      console.log("Issue calling", error?.response?.config?.url);
+      sdk.log("Issue calling", error?.response?.config?.url);
     }
     throw error;
   }
