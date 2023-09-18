@@ -17,7 +17,7 @@ module.exports = {
         // we wrapped the locked miners collateral in a server that derives the information directly on-chain
         // but serves it in a more efficient manner to not overload defillama frontend
         // github repo: https://github.com/glifio/pools-metrics
-        get("https://pools-metrics.vercel.app/api/v0/miner-collaterals"),
+        get("https://events.glif.link/metrics"),
       ]);
 
       const totalAssetsBN = BigNumber.from(totalAssets);

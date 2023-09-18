@@ -20,6 +20,7 @@ const blacklistedTokens_default = [
   '2HeykdKjzHKGm2LKHw8pDYwjKPiFEoXAz74dirhUgQvq', // SAO
   'EP2aYBDD4WvdhnwWLUMyqU69g1ePtEjgYK6qyEAFCHTx', //KRILL
   'C5xtJBKm24WTt3JiXrvguv7vHCe7CknDB7PNabp4eYX6', //TINY
+  '5fTwKZP2AK39LtFN9Ayppu6hdCVKfMGVm79F2EgHCtsi', //WHEY
 ]
 
 let connection, provider
@@ -145,9 +146,9 @@ async function getTokenBalances(tokensAndAccounts) {
   const body = tokensAndAccounts.map(([token, account]) => formTokenBalanceQuery(token, account))
   const tokenBalances = await axios.post(endpoint(), body);
   const balances = {}
-  tokenBalances.data.forEach((v, i )=> {
-    if (!v.result) console.log(v, tokensAndAccounts[i])
-  } )
+  // tokenBalances.data.forEach((v, i )=> {
+  //   if (!v.result) sdk.log(v, tokensAndAccounts[i])
+  // } )
   tokenBalances.data.forEach(({ result: { value } }) => {
     value.forEach(({ account: { data: { parsed: { info: { mint, tokenAmount: { amount } } } } } }) => {
       sdk.util.sumSingleBalance(balances, mint, amount)
@@ -171,7 +172,6 @@ async function getTokenAccountBalances(tokenAccounts, { individual = false, chun
           log('Null account: skipping it')
           return;
         }
-        console.log(data.data.map(i => i.result.value)[i], tokenAccounts[i].toString())
         if (allowError) return;
       }
       const { data: { parsed: { info: { mint, tokenAmount: { amount } } } } } = value
@@ -269,7 +269,6 @@ async function getMultipleAccountBuffers(labeledAddresses) {
     }
 
     // Uncomment and paste into a hex editor to do some reverse engineering
-    // console.log(`${labels[index]}: ${results[labels[index]].toString("hex")}`);
   });
 
   return results;

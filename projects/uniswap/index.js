@@ -24,7 +24,7 @@ function v3TvlPaged(chain) {
 
     let graphQueryPaged = `
     query poolQuery($lastId: String, $block: Int) {
-      pools(block: { number: $block } first:1000 where: {id_gt: $lastId totalValueLockedUSD_gt: 100}) {
+      pools(block: { number: $block } first:1000 where: {id_gt: $lastId totalValueLockedUSD_gt: 100}   subgraphError: allow) {
         id
         token0 { id }
         token1 { id }
@@ -65,11 +65,12 @@ module.exports = {
     [1620156420, "UNI V3 Launch"]
   ],
   ...uniV3Export({
-    base: { factory: '0x33128a8fc17869897dce68ed026d694621f6fdfd', fromBlock: 1371680, }
+    base: { factory: '0x33128a8fc17869897dce68ed026d694621f6fdfd', fromBlock: 1371680, },
+    celo: { factory: '0xAfE208a311B21f13EF87E33A90049fC17A7acDEc', fromBlock: 13916355, },
   })
 }
 
-const chains = ['ethereum', 'arbitrum', 'optimism', 'polygon', 'celo', 'bsc', 'avax',]
+const chains = ['ethereum', 'arbitrum', 'optimism', 'polygon', 'bsc', 'avax',]
 
 chains.forEach(chain => {
   module.exports[chain] = {
