@@ -1,5 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require('@defillama/sdk');
 const abi = require('./clayABIs/clayMain.json');
 
 const clayAddresses = {
@@ -7,38 +6,15 @@ const clayAddresses = {
   clayEth: "0x331312DAbaf3d69138c047AaC278c9f9e0E8FFf8"
 };
 
-const coinAddresses = {
-  ethereum: ADDRESSES.null,
-  matic: ADDRESSES.ethereum.MATIC,
-};
+async function getTvlOnEthereum(_, block, _1, { api }) {
+  const maticDeposits = await api.call({ target: clayAddresses.clayMatic, abi: abi.funds, })
+  const ethDeposits = await api.call({ target: clayAddresses.clayEth, abi: abi.funds, })
 
-async function getTvlOnEthereum(_, block) {
-  const maticDeposits = (
-    await sdk.api.abi.call({
-      target: clayAddresses.clayMatic,
-      abi: abi.funds,
-      chain: "ethereum",
-      block
-    })
-  ).output;
-
-  const ethDeposits = (
-    await sdk.api.abi.call({
-      target: clayAddresses.clayEth,
-      abi: abi.funds,
-      chain: "ethereum",
-      block
-    })
-  ).output;
-
-  return {
-    [coinAddresses.ethereum]: ethDeposits.currentDeposit,
-    [coinAddresses.matic]: maticDeposits.currentDeposit
-  };
+  api.add(ADDRESSES.null, ethDeposits.currentDeposit)
+  api.add(ADDRESSES.ethereum.MATIC, maticDeposits.currentDeposit)
 }
 
 module.exports = {
-
   ethereum: {
     tvl: getTvlOnEthereum,
   },
