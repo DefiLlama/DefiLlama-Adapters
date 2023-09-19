@@ -151,7 +151,7 @@ const defaultTokens = {
     nullAddress,
     ADDRESSES.arbitrum.USDC, // USDC
     ADDRESSES.arbitrum.USDT, // USDT
-    ADDRESSES.optimism.DAI, // DAI
+    ADDRESSES.arbitrum.DAI, // DAI
     '0x09e18590e8f76b6cf471b3cd75fe1a1a9d2b2c2b' //aidoge
     
   ],
@@ -172,6 +172,20 @@ const defaultTokens = {
     ADDRESSES.optimism.USDT,  //USDT
     ADDRESSES.optimism.USDC,  //USDC
     ADDRESSES.optimism.DAI // DAI
+  ],
+  linea: [
+    nullAddress,
+   "0xa219439258ca9da29e9cc4ce5596924745e12b93", //bridge usdt
+   "0x176211869ca2b568f2a7d4ee941e073a821ee1ff", //usdc bridge
+   "0x4af15ec2a0bd43db75dd04e62faa3b8ef36b00d5" //dai bridge
+  ],
+  flare: [
+    nullAddress,
+    ADDRESSES.flare.WFLR,
+  ],
+  celo: [
+    nullAddress,
+    "0x471ece3750da237f93b8e339c536989b8978a438" //celo
   ],
 }
 
