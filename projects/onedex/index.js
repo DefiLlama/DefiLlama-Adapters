@@ -5,9 +5,8 @@ const ADDRESSES = require('../helper/coreAssets.json');
 const swapsSC = 'erd1qqqqqqqqqqqqqpgqqz6vp9y50ep867vnr296mqf3dduh6guvmvlsu3sujc';
 const boostedStakingSC = 'erd1qqqqqqqqqqqqqpgq8nlmvjm8gum6y2kqe0v296kgu8cm4jlemvlsays3ku';
 
-const tvl = async (_, _1, _2, { api }) => {
+const bStake = async (_, _1, _2, { api }) => {
   // Swaps SC
-  api.add(ADDRESSES.null, sumTokensExport({ owner: swapsSC, }));
   const oneTokenPrice = await call({ target: swapsSC, abi: 'getEquivalent', params: ['WEGLD-bd4d79', 'ONE-f9954f', 1e18], responseTypes: ['number']});
 
   // Boosted Staking SC
@@ -20,6 +19,7 @@ const tvl = async (_, _1, _2, { api }) => {
 module.exports = {
   timetravel: false,
   elrond: {
-    tvl,
+    tvl: sumTokensExport({ owner: swapsSC, }),
+    bStake,
   },
 };
