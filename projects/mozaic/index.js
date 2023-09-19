@@ -16,7 +16,7 @@ async function tvl(_, _1, _2, { api }) {
 }
 
 module.exports = {
-  methodology: 'TVL of the mozaic',
+  methodology: 'To calculate the TVL for the Mozaic project, we first identify the vault addresses for each supported chain (Arbitrum, BSC, AVAX, Polygon, Fantom, Kava). For each vault, we retrieve the list of accepted tokens using the `getAcceptingTokens` function. We then determine the staked amount for each token using the `getStakedAmountPerToken` function. The TVL is the sum of all these staked amounts across all tokens and chains.',
 };
 
 Object.keys(vaults).forEach(chain => {
