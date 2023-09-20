@@ -4,8 +4,7 @@ module.exports = {
     "Uses Uniswap-style factory address to find and price liquidity pairs.",
   base: {
     tvl: getUniTVL({
-      factory: "0xA4CB5E815cC3919C279869Dda058D72976085fee",
+      factory: "0xe396465A85deDB00FA8774162B106833dE51Ea41",
     }),
   },
 };
-
