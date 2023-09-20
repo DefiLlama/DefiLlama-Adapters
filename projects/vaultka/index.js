@@ -19,6 +19,9 @@ module.exports = {
         sakeWater: "0x6b367F9EB22B2E6074E9548689cddaF9224FC0Ab",
         sakeV2: "0xc53A53552191BeE184557A15f114a87a757e5b6F",
         sakeWaterV2: "0x806e8538FC05774Ea83d9428F778E423F6492475",
+        vodkaV1_Water: "0xC99C6427cB0B824207606dC2745A512C6b066E7C",
+        VodkaV1: "0x88D7500aF99f11fF52E9f185C7aAFBdF9acabD93",
+        fsGlp: "0x1aDDD80E6039594eE970E5872D247bf0414C8903",
       };
 
       const contractAbis = {
@@ -29,7 +32,9 @@ module.exports = {
         stakedVlpBalance:
           "function getStakedVlpBalance() public view returns (uint256)",
         vlpPrice: "function getVLPPrice() public view returns (uint256)",
+        glpPrice: "function getGLPPrice(bool) public view returns (uint256)",
         waterUSDCBal: "function balanceOfUSDC() public view returns (uint256)",
+        balanceOf: "function balanceOf(address) view returns (uint256)",
       };
 
       const whiskeyGainsBalance = await api.call({
@@ -82,6 +87,23 @@ module.exports = {
         target: addresses.sakeV2,
       });
 
+      const vodkaWaterUSDCBalV1 = await api.call({
+        abi: contractAbis.waterUSDCBal,
+        target: addresses.vodkaV1_Water,
+      });
+
+      const vodkaGLPPrice = await api.call({
+        abi: contractAbis.glpPrice,
+        target: addresses.VodkaV1,
+        params: [true],
+      });
+
+      const vodkaGLPBalV1 = await api.call({
+        abi: contractAbis.balanceOf,
+        target: addresses.fsGlp,
+        params: [addresses.VodkaV1],
+      });
+
       return {
         tether: bals.reduce((a, i) => a + i / 1e6, 0),
         dai:
@@ -91,7 +113,9 @@ module.exports = {
           ((vlpBal + StakedVLPBal) * sakeVLPPrice) / 1e18 / 1e5 +
           sakeWaterUSDCBal / 1e6 +
           ((vlpBalV2 + StakedVLPBalV2) * sakeVLPPrice) / 1e18 / 1e5 +
-          sakeWaterUSDCBalV2 / 1e6,
+          sakeWaterUSDCBalV2 / 1e6 +
+          vodkaWaterUSDCBalV1 / 1e6 +
+          (vodkaGLPBalV1 * vodkaGLPPrice) / 1e18 / 1e18,
       };
     },
   },
