@@ -36,6 +36,9 @@ async function avaxTvl(timestamp, chainBlocks) {
 }
 
 module.exports = {
+  hallmarks: [
+    [1642464000, "Rug Pull"]
+  ],
   misrepresentedTokens: true,
   avax: {
     staking: stakings(sashimidaoStakings, SASHI, "avax"),

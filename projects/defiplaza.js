@@ -1,22 +1,11 @@
-const { request,  } = require('graphql-request');
-const { toUSDTBalances } = require('./helper/balances');
+const { cachedGraphQuery } = require('./helper/cache')
 
 const graphUrl = 'https://api.thegraph.com/subgraphs/name/omegasyndicate/defiplaza';
-const graphQuery = `
-   query get_tvl($timestamp: Int) {
-      hourlies(first: 1, orderBy: date, orderDirection: desc, where:{date_lte: $timestamp}) {
-			totalValueLockedUSD
-		}
-   }
-`;
 
-async function tvl(timestamp, block) {
-   const { hourlies } = await request(graphUrl, graphQuery, {
-      timestamp,
-   });
-   const usdTvl = Number(hourlies[0].totalValueLockedUSD);
-
-   return toUSDTBalances(usdTvl);
+async function tvl(timestamp, block, _, { api }) {
+   const { pools } = await cachedGraphQuery('defiplaza', graphUrl, '{  pools {    id    tokens {      id    }  }}');
+   const ownerTokens = pools.map(pool => [pool.tokens.map(token => token.id), pool.id]);
+   return api.sumTokens({ ownerTokens})
 }
 
 module.exports = {

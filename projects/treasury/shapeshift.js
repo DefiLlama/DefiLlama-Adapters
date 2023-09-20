@@ -14,7 +14,7 @@ module.exports = treasuryExports({
         nullAddress,
         ADDRESSES.ethereum.USDC,//USDC
         ADDRESSES.ethereum.DAI,//DAI
-        '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0',//LUSD
+        ADDRESSES.ethereum.LUSD,//LUSD
         ADDRESSES.ethereum.WETH,//WETH
         ADDRESSES.ethereum.USDT,//USDT
         '0x6f80310CA7F2C654691D1383149Fa1A57d8AB1f8',//SILO

@@ -25,6 +25,13 @@ async function fetchArbitrum() {
   return toUSDTBalances(value);
 }
 
+async function fetchOptimism() {
+  const value = await get("https://data.cian.app/optimism/api/v1/tvl");
+
+  return toUSDTBalances(value);
+}
+
+
 module.exports = {
   misrepresentedTokens: true,
   doublecounted: true,
@@ -40,5 +47,8 @@ module.exports = {
   },
   arbitrum: {
     tvl: fetchArbitrum,
+  },
+  optimism: {
+    tvl: fetchOptimism,
   },
 };

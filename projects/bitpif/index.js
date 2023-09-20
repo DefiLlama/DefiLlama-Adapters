@@ -27,5 +27,6 @@ module.exports = {
     pool2: stakings(stakingContracts, [USDC_BPF_UNIV2]),
     tvl: (async) => ({}),
   },
+  deadFrom: "2022-05-01",
   methodology: "Counts liquidty on the staking and pool2s only",
 };

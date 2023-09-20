@@ -1,32 +1,16 @@
-const abi = require("./abi.json");
 const contracts = require("./contracts.json");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
-async function tvl(_, _1, _2, { api }) {
-  return await api.call({
-    abi: abi.totalValueLocked,
-    target: contracts.infoAggregator
-  });
-}
-
-async function staking() {
-  return await api.call({
-    abi: abi.totalStaked,
-    target: contracts.infoAggregator
-  });
-}
-
-async function borrowed() {
-  return await api.call({
-    abi: abi.totalDebt,
-    target: contracts.infoAggregator
-  });
+function tvl(chain) {
+  return async (timestamp, block, chainBlocks, { api }) => {
+    const tokens = Object.values(contracts.baseTokens).concat(Object.values(contracts.yieldTokens));
+    await sumTokens2({ tokens, api, owners: Object.values(contracts.tokenHolders) })
+  };
 }
 
 module.exports = {
-  methodology: 'The calculated TVL is the current USD sum of all user deposits and SVY tokens staked in veSVY.',
+  methodology: 'The calculated TVL is the current sum of all base tokens and yield tokens in our contracts.',
   arbitrum: {
-    tvl,
-    staking,
-    borrowed
+    tvl: tvl("arbitrum")
   }
 }

@@ -15,7 +15,7 @@ const knightUsdcLP = "0x68D47D67b893c44A72BCAC39b1b658D4Cbdf87CA";
 module.exports = {
   methodology: "TVL consists of pools created by the factory contract",
   bsc: {
-    tvl: uniTvlExport(bscFactory, 'bsc'),
+    tvl: uniTvlExport(bscFactory, 'bsc', true),
     staking: stakingUnknownPricedLP(
       bscStaking,
       bscKnight,
@@ -25,7 +25,7 @@ module.exports = {
     ),
   },
   fantom: {
-    tvl: uniTvlExport(ftmFactory, 'fantom'),
+    tvl: uniTvlExport(ftmFactory, 'fantom', true),
     staking: stakingUnknownPricedLP(
       ftmStaking,
       ftmKnight,

@@ -56,6 +56,7 @@ async function getBigMapById(id, limit = 1000, offset = 0, key, value) {
   let map_entry;
   const mapping = {};
   for (map_entry of response) {
+    if (typeof map_entry.key === 'object' && map_entry.hash) map_entry.key = map_entry.hash;
     mapping[map_entry.key] = map_entry.value;
   }
   return mapping;

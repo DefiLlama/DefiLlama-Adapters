@@ -41,7 +41,7 @@ module.exports = {
     staking: staking(contracts.bsc.staking.address, contracts.bsc.staking.token, "bsc", "cyclone-protocol", 18),
   },
   polygon: {
-    tvl: tvl("polygon", "polygon:0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"),
+    tvl: tvl("polygon", "polygon:" + ADDRESSES.polygon.WMATIC_2),
     pool2: pool2(contracts.polygon.pool2.address, contracts.polygon.pool2.token,),
   },
 };

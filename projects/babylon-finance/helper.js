@@ -38,7 +38,7 @@ async function unwrapUniswapV3LPs(balances, univ3_Positions, block, chain = 'eth
       });
 
     } catch (e) {
-      console.log(`Failed to get data for LP token vault at ${univ3_Position.vault} on chain ${chain}`)
+      sdk.log(`Failed to get data for LP token vault at ${univ3_Position.vault} on chain ${chain}`)
       throw e
     }
   }))

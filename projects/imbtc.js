@@ -9,5 +9,5 @@ async function tvl(ts, block) {
 
 module.exports = {
   ethereum: { tvl },
-  methodology: `TVL for WBTC consists of the BTC deposits in custody that were used to mint WBTC`
+  methodology: `TVL for imBTC consists of the BTC deposits in custody that were used to mint imBTC`
 }

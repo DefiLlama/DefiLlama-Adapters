@@ -6,3 +6,4 @@ module.exports={
     methodology: "Tokens in masterchef",
     ...masterChefExports("0x0a05f6022D6e051539b190Bff7E484068A7dd0a4", "fantom", GOBLIN)
 }
+module.exports.deadFrom = '2022-05-09'

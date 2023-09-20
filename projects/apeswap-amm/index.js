@@ -15,7 +15,6 @@ module.exports = {
   bsc: {
     tvl: getUniTVL({
       factory: FACTORY_BSC,
-      chain: "bsc",
       useDefaultCoreAssets: true,
     }),
     staking: staking([MASTER_APE, MASTER_APE_V2], BANANA_TOKEN, "bsc"),
@@ -23,7 +22,6 @@ module.exports = {
   polygon: {
     tvl: getUniTVL({
       factory: FACTORY_POLYGON,
-      chain: "polygon",
       useDefaultCoreAssets: true,
     }),
   },
@@ -33,14 +31,12 @@ module.exports = {
   telos: {
     tvl: getUniTVL({
       factory: FACTORY_TELOS,
-      chain: "telos",
       useDefaultCoreAssets: true,
     }),
   },
   arbitrum: {
     tvl: getUniTVL({
       factory: FACTORY_ARBITRUM,
-      chain: "arbitrum",
       useDefaultCoreAssets: true,
     }),
   },

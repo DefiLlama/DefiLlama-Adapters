@@ -1,24 +1,9 @@
-const sdk = require("@defillama/sdk");
-
-const ponyAddress = "0x0D97Fee619d955509e54B046c9992B6E9F5B0630";
-const tokens = [ponyAddress];
-
-async function tvl(timestamp, block) {
-  const calls = tokens.map((token) => ({
-    target: token,
-  }));
-  const totalSupplies = await sdk.api.abi.multiCall({
-    block,
-    calls,
-    abi: "erc20:totalSupply",
-  });
-  const balances = {};
-  sdk.util.sumMultiBalanceOf(balances, totalSupplies);
-  return balances;
-}
+const { sumTokensExport } = require("../helper/unwrapLPs");
 
 module.exports = {
   ethereum: {
-    tvl,
+    tvl: sumTokensExport({ owner: '0x0D97Fee619d955509e54B046c9992B6E9F5B0630', fetchCoValentTokens: true, tokenConfig: { onlyWhitelisted: false, }}),
   },
 };
+
+module.exports.deadFrom = '2023-07-09'

@@ -18,7 +18,6 @@ module.exports = {
   astar: {
     tvl: getUniTVL({
       factory: FACTORIES,
-      chain: 'astar',
       useDefaultCoreAssets: true,
     }),
     staking: stakingPricedLP(

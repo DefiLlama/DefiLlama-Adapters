@@ -1,7 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const { transformBscAddress } = require("../helper/portedTokens");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 
 const farmContract = "0x1aF28E7b1A03fA107961897a28449F4F9768ac75";
@@ -100,7 +99,7 @@ const bscTvl = async (chainBlocks) => {
     }
   });
 
-  const transformAddress = await transformBscAddress();
+  const transformAddress = i => `bsc:${i}`;
 
   await unwrapUniswapLPs(
     balances,
