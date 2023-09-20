@@ -41,7 +41,7 @@ const husdHeco = "0x0298c2b32eaE4da002a15f36fdf7615BEa3DA047";
 
 
 const miMatic = "0xa3Fa99A148fA48D14Ed51d610c367C61876997F1";
-const wmatic = "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270";
+const wmatic = ADDRESSES.polygon.WMATIC_2;
 const wethMatic = ADDRESSES.polygon.WETH_1;
 const wbtcMatic = ADDRESSES.polygon.WBTC;
 const usdcMatic = ADDRESSES.polygon.USDC;

@@ -1,7 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens } = require('../helper/unwrapLPs')
 const sdk = require('@defillama/sdk')
-const { transformBscAddress } = require('../helper/portedTokens');
 const { staking } = require("../helper/staking");
 
 const tokenHolderMap = [
@@ -31,7 +30,7 @@ function normalizeArray(arrayOrString){
 }
 
 async function tvl(timestamp, ethBlock, chainBlocks) {
-    const transform = await transformBscAddress();
+    const transform = i => `bsc:${i}`;
     const block = chainBlocks.bsc;
 
     const tokensAndHolders = []

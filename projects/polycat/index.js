@@ -9,6 +9,10 @@ module.exports = yieldHelper({
   masterchef: vaultchef,
   nativeToken: fish,
   blacklistedTokens: ['0xd76D74DE1EF47E6A390FA53b3b11ef095d0c738c'],
+  getTokenBalances: async ({ api, poolIds, }) => {
+    const lockedTotals = await api.multiCall({ abi: 'uint256:wantLockedTotal', calls: poolIds, permitFailure: true })
+    return lockedTotals.map(i => i ?? 0)
+  },
   abis: {
     poolInfo: abi.poolInfo
   }
