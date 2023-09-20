@@ -15,10 +15,28 @@ const getStrategyVaultsLpValue = async (api, vaultAddresses) => {
   api.addTokens(tokens, balances);
 }
 
+const fetchStrategyAddresses = async (api, vaultAddresses) => {
+  const addresses = await api.multiCall({
+    calls: vaultAddresses.map((vaultAddr) => ({
+      target: vaultAddr,
+      params: [],
+    })),
+    abi: 'address:strategy',
+  });
+  const uniqueAddr = addresses.reduce((acc, current) => {
+    if (acc[current]) return acc;
+    acc[current] = true;
+    return acc;
+  }, {});
+
+  return Object.keys(uniqueAddr);
+}
+
 const aggregateVaultTvl = async (api) => {
-  const { vaults, strategies } = contracts[api.chain];
+  const { vaults, } = contracts[api.chain];
+  const _strategies = await fetchStrategyAddresses(api, vaults);
   await getUnderlyingTokenBalance(api, vaults);
-  await getStrategyVaultsLpValue(api, strategies);
+  await getStrategyVaultsLpValue(api, _strategies);
 }
 
 const tvl = async (_, _1, _2, { api }) => {
