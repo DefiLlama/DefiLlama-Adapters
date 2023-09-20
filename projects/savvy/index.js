@@ -5,7 +5,7 @@ function tvl(chain) {
   return async (timestamp, block, chainBlocks, { api }) => {
     const tokens = Object.values(contracts.baseTokens).concat(Object.values(contracts.yieldTokens));
     await sumTokens2({ tokens, api, owners: Object.values(contracts.tokenHolders) })
-  };g
+  };
 }
 
 module.exports = {
