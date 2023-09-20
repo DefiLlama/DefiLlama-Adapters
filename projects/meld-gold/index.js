@@ -6,8 +6,8 @@ async function tvl() {
   const api = new sdk.ChainApi({})
   let totalMeldMarketCap = 0
 
-  // Gold is priced in oz, silver is priced in oz, but Meld Tokens are both priced in grams
-  const ozToGrams = 28.349523
+  // Gold is priced in tory oz, silver is priced in oz, but Meld Tokens are both priced in grams
+  const ozToGrams = 31.10347687
 
   // Meld tokens
   const assetInfo = [

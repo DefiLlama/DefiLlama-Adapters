@@ -26,14 +26,23 @@ const chains = {
   optimism: {
     graphId: "optimism",
   },
+  linea: {
+    graphId: 'linea'
+  },
+  base: {
+    graphId: 'base'
+  }
 };
 
 async function fetchPools(chain) {
-  const url =
-    chain == "cronos"
-      ? "https://cronos-graph.kyberengineering.io/subgraphs/name/kybernetwork/kyberswap-elastic-cronos"
-      : `https://api.thegraph.com/subgraphs/name/kybernetwork/kyberswap-elastic-${chain}`;
+  let url
 
+  switch (chain) {
+    case "linea": url = 'https://graph-query.linea.build/subgraphs/name/kybernetwork/kyberswap-elastic-linea'; break;
+    case "cronos": url = 'https://cronos-graph.kyberengineering.io/subgraphs/name/kybernetwork/kyberswap-elastic-cronos'; break;
+    case "base": url = 'https://base-graph.kyberengineering.io/subgraphs/name/kybernetwork/kyberswap-elastic-base'; break;
+    default: url = `https://api.thegraph.com/subgraphs/name/kybernetwork/kyberswap-elastic-${chain}`;
+  }
   let length
   let lastId = ''
   let toa = [];

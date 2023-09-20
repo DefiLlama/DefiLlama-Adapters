@@ -14,7 +14,8 @@ const market = [
           "type": "felt"
         }
       ],
-      "stateMutability": "view"
+      "stateMutability": "view",
+      "customInput": "address"
     },
 ]
 const marketAbi = {}

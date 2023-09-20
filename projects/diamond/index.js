@@ -77,7 +77,7 @@ async function getTotalPositionValue(block) {
 
       positionValues += +positionValue;
       } catch (e) {
-        console.log('trouble fetchng info for ', id)
+        sdk.log('trouble fetchng info for ', id)
         console.error(e)
       }
     })

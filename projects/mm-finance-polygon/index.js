@@ -11,7 +11,6 @@ module.exports = {
   polygon: {
     staking: staking(masterChef, mmfToken, 'polygon'),
     tvl: getUniTVL({ 
-      chain: 'polygon',
       factory,
       useDefaultCoreAssets: true,
     }),

@@ -1,7 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens } = require('../helper/unwrapLPs')
 const addresses = require('./contracts.json')
-const { transformFantomAddress } = require("../helper/portedTokens");
 const sdk = require('@defillama/sdk');
 const {staking} = require('../helper/staking');
 const {pool2} = require('../helper/pool2')
@@ -39,7 +38,7 @@ async function tvl(_, _ethBlock, chainBlocks) {
     await sumTokens(balances, calls, chainBlocks['fantom'], "fantom");
 
     // TRANSFORM ADDRESSES
-    let transformAddress = await transformFantomAddress();
+    let transformAddress = i => `fantom:${i}`;
     Object.keys(balances).map(k => {
         let transformed = transformAddress(k);
         if(k.toLowerCase() === tokens.xBOO.toLowerCase()){

@@ -64,7 +64,7 @@ class EnigmaUtils {
       return new Uint8Array();
     }
     const txEncryptionKey = await this.getTxEncryptionKey(nonce);
-    //console.log(`decrypt tx encryption key: ${Encoding.toHex(txEncryptionKey)}`);
+    //sdk.log(`decrypt tx encryption key: ${Encoding.toHex(txEncryptionKey)}`);
     const siv = await miscreant.SIV.importKey(txEncryptionKey, "AES-SIV", cryptoProvider);
     const plaintext = await siv.open(ciphertext, [new Uint8Array()]);
     return plaintext;

@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 const { queryContract, getTokenBalance, getToken, } = require("../helper/chain/cosmos");
 const { transformDexBalances } = require('../helper/portedTokens')
+const TS = require('../terraswap/factoryTvl')
 
 async function getPairs(chain, factory) {
   let data = { pairs: { limit: 30 } }
@@ -45,7 +46,7 @@ module.exports = {
   misrepresentedTokens: true,
   timetravel: false,
   terra: { tvl: sdk.util.sumChainTvls([getFactoryTvl(queries.factory0), getFactoryTvl(queries.factory1)]) },
-  juno: { tvl: getFactoryTvl('juno1p4dmvjtdf3qw9394k7zl65eg8g5ehzvdxnvm9hd3ju7a7aslrmdqaspeak') },
+  juno: { tvl: TS.getFactoryTvl('juno1p4dmvjtdf3qw9394k7zl65eg8g5ehzvdxnvm9hd3ju7a7aslrmdqaspeak') },
   hallmarks: [
     [1651881600, "UST depeg"],
   ]

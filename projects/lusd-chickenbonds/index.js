@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const BigNumber = require("bignumber.js");
 
 const CHICKEN_BOND_MANAGER_CONTRACT = '0x57619FE9C539f890b19c61812226F9703ce37137';
-const LUSD_ADDRESS = '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0';
+const LUSD_ADDRESS = ADDRESSES.ethereum.LUSD;
 
 async function tvl(_, block) {
   const bucketAmounts = (await sdk.api.abi.call({

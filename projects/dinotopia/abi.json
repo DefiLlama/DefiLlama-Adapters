@@ -1,0 +1,8 @@
+{
+  "bank": {
+    "usableBnbBalance": "uint256:usableCollateralBalance"
+  },
+  "multiFeeDistribution": {
+    "totalSupply": "uint256:totalSupply"
+  }
+}

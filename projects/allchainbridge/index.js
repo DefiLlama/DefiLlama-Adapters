@@ -70,7 +70,7 @@ const tokensConf = {
     MATIC: nullAddress,
     USDC: ADDRESSES.polygon.USDC,
     USDT: ADDRESSES.polygon.USDT,
-    WMATIC: "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+    WMATIC: ADDRESSES.polygon.WMATIC_2,
   },
   fantom: {
     FTM: nullAddress,

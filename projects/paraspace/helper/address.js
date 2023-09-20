@@ -1,6 +1,6 @@
 module.exports = {
   ethereum: {
-    UiPoolDataProvider: "0xcFcca0A2531069f16634beeD1C74d28ac1F7d271",
+    UiPoolDataProvider: "0x30E6C173Ff3958a6629258C71Bd161e70BEe0e6D",
     PoolAddressProvider: "0x6cD30e716ADbE47dADf7319f6F2FB83d507c857d",
     UniV3Pos: "0xC36442b4a4522E871399CD717aBDD847Ab11FE88",
     P2PPairStaking: "0xf090Eb4c2B63e7B26E8Bb09e6Fc0cC3A7586263B",
@@ -16,4 +16,17 @@ module.exports = {
     PoolAddressProvider: "0x45a35124749B061a29f91cc8ddf85606586dcf24",
     UniV3Pos: "0xC36442b4a4522E871399CD717aBDD847Ab11FE88",
   },
+  polygon: {
+    UiPoolDataProvider: "0xa2a9dD7079f05d17BE291D99048e671129DdDc83",
+    PoolAddressProvider: "0x42b0C49130162F949e82ba855C4eFF0C3Fd4C5cC",
+    UniV3Pos: "0xC36442b4a4522E871399CD717aBDD847Ab11FE88",
+  },
+  era: {
+    UiPoolDataProvider: "0x451E3288a2dcD91b001cd831dD75109D524578b6",
+    PoolAddressProvider: "0xc11B2F53E119634c8755855e56D323C4F6dfd23d",
+  },
+  moonbeam: {
+    UiPoolDataProvider: "0x8CE5F6F4268A756b6656F576d0F9Cf4fD73CBb52",
+    PoolAddressProvider: "0x086C77cEc639bEBbfCC0a3467736636c3F755a96",
+  }
 };

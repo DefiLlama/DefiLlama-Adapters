@@ -28,7 +28,7 @@ module.exports = {
       ADDRESSES.arbitrum.WETH,
       ADDRESSES.arbitrum.USDT,
       ADDRESSES.arbitrum.WBTC,
-      '0x912CE59144191C1204E64559FE8253a0e49E6548',
+      ADDRESSES.arbitrum.ARB,
       ADDRESSES.arbitrum.LINK,
     ]})
   }

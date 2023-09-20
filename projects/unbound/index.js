@@ -1,6 +1,5 @@
 const { GraphQLClient, gql } = require('graphql-request')
 const { staking } = require("../helper/staking");
-//const { transformPolygonAddress } = require('../helper/portedTokens');
 
 
 const ETH_STAKING_ADDR = '0x94515758819F4D5119f75EEeB7F6bfdCAdc5e835'

@@ -23,6 +23,9 @@ const avaxTvl = async (timestamp, ethBlock, chainBlocks) => {
 };
 
 module.exports = {
+  hallmarks: [
+    [1631318400, "Rug Pull"]
+  ],
   avax:{
     tvl: avaxTvl,
   },

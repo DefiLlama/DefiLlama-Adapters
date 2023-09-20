@@ -7,26 +7,26 @@ let keys =
     [ADDRESSES.ethereum.AAVE]: 'aave',
     [ADDRESSES.ethereum.USDC]: 'stable',
     [ADDRESSES.ethereum.TUSD]: 'stable',
-    [ADDRESSES.ethereum.YFI]: 'yearn-finance', //yfi
+    [ADDRESSES.ethereum.YFI]: 'yearn-finance',
     '0x408e41876cccdc0f92210600ef50372656052a38': 'republic-protocol', //ren
     '0x80fB784B7eD66730e8b1DBd9820aFD29931aab03': 'ethlend', //lend
-    [ADDRESSES.ethereum.BUSD]: 'stable', //busd
-    [ADDRESSES.ethereum.USDT]: 'stable', //USDT
-    [ADDRESSES.ethereum.DAI]: 'stable', //DAI
-    [ADDRESSES.ethereum.MKR]: 'maker', //makerdao
-    [ADDRESSES.ethereum.SNX]: 'havven', //SNX
+    [ADDRESSES.ethereum.BUSD]: 'stable',
+    [ADDRESSES.ethereum.USDT]: 'stable',
+    [ADDRESSES.ethereum.DAI]: 'stable',
+    [ADDRESSES.ethereum.MKR]: 'maker',
+    [ADDRESSES.ethereum.SNX]: 'havven',
     '0x0f5d2fb29fb7d3cfee444a200298f468908cc942': 'decentraland', //MANA
-    [ADDRESSES.ethereum.UNI]: 'uniswap', //uni
+    [ADDRESSES.ethereum.UNI]: 'uniswap',
     '0xdd974d5c2e2928dea5f71b9825b8b646686bd200': 'kyber-network', //knc
     '0xf629cbd94d3791c9250152bd8dfbdf380e2a3b9c': 'enjincoin', //ENJ
-    [ADDRESSES.ethereum.BAT]: 'basic-attention-token', //BAT
-    '0x57ab1ec28d129707052df4df418d58a2d46d5f51': 'stable', //susd
+    [ADDRESSES.ethereum.BAT]: 'basic-attention-token',
+    [ADDRESSES.ethereum.sUSD]: 'stable',
     '0xe41d2489571d322189246dafa5ebde1f4699f498': '0x', //0x
     [ADDRESSES.ethereum.CRV]: 'curve-dao-token',
     '0xc00e94cb662c3520282e6f5717214004a7f26888': 'compound-governance-token',
     '0x04fa0d235c4abf4bcf4787af4cf447de572ef828': 'uma',
     '0xd26114cd6ee289accf82350c8d8487fedb8a0c07': 'omisego',
-    '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359': 'sai',
+    [ADDRESSES.ethereum.SAI]: 'sai',
     [ADDRESSES.ethereum.WETH]: 'ethereum',
     '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643': 'cdai',
     '0xbc396689893d065f41bc2c6ecbee5e0085233447': 'perpetual-protocol',

@@ -1,4 +1,5 @@
 const axios = require("axios");
+const sdk = require('@defillama/sdk')
 async function tvl() {
   const friktionSnapshotResponse = await axios.get(
     "https://raw.githubusercontent.com/Friktion-Labs/mainnet-tvl-snapshots/main/friktionSnapshot.json"
@@ -16,12 +17,12 @@ async function tvl() {
       Object.keys(friktionSnapshot.coinsByCoingeckoId).length > 5
     )
   ) {
-    console.log(friktionSnapshot);
+    sdk.log(friktionSnapshot);
     throw new Error("Unexpected shape of friktionShapshot");
   }
 
   if (!friktionSnapshot.totalTvlUSD || friktionSnapshot.totalTvlUSD < 1000) {
-    console.log(friktionSnapshot);
+    sdk.log(friktionSnapshot);
     throw new Error("Unexpected totalTvlUSD");
   }
 

@@ -3,7 +3,6 @@ const sdk = require("@defillama/sdk");
 const abi = require("../helper/abis/blindex.json");
 const { formatAddressChecksum } = require("../helper/formatAddressChecksum.js");
 const { getUniTVL, getTokenPrices, } = require("../helper/unknownTokens");
-const { getFixBalances } = require('../helper/portedTokens')
 //-------------------------------------------------------------------------------------------------------------
 // How to add a new chain?
 // 1. Add it to the chains global array
@@ -206,8 +205,6 @@ async function tvl(chainName, block) {
   const balances = sumBalances(balancesArray);
   const { updateBalances } = await getTokenPrices({ chain, block, useDefaultCoreAssets: true, lps: [blindexBTCLP] }) // get blindex price from LP
   await updateBalances(balances)
-  const fixBalances = await getFixBalances(chain)
-  fixBalances(balances)
   return balances
 }
 
@@ -216,7 +213,6 @@ const rsk = async function rskTvl(timestamp, ethBlock, chainblocks) {
 };
 
 const dexTVL = getUniTVL({
-  chain: 'rsk',
   factory: '0x5Af7cba7CDfE30664ab6E06D8D2210915Ef73c2E',
   useDefaultCoreAssets: true,
 })

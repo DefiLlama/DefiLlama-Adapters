@@ -1,7 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const formatBytes32String = require('ethers').utils.formatBytes32String;
 const { sumTokens, } = require('../helper/unwrapLPs')
-const { transformPolygonAddress } = require('../helper/portedTokens')
 const ResolverAddr = "0x1E02cdbbA6729B6470de81Ad4D2cCA4c514521b9"
 
 const ResolverJson = {
@@ -20,7 +19,7 @@ async function tvl(ts, _block, { polygon: block }) {
   const stakeStr = formatBytes32String("Stake")
   const motStr = formatBytes32String("MOT")
   const balances = {}
-  const transform = await transformPolygonAddress()
+  const transform = i => `polygon:${i}`
 
   const [
     MobiusAddr,

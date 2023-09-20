@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const {sumTokens2} = require("../helper/unwrapLPs");
 
 const polly = "0x4C392822D4bE8494B798cEA17B43d48B2308109C";
@@ -44,7 +45,7 @@ const nDefiUnderLying = [
   "0xda537104d6a5edd53c6fbba9a898708e465260b6",
   "0x95c300e7740D2A88a44124B424bFC1cB2F9c3b89",
   "0xc81278a52AD0e1485B7C3cDF79079220Ddd68b7D",
-  "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+  ADDRESSES.polygon.WMATIC_2,
   "0x3066818837c5e6ed6601bd5a91b0762877a6b731",
   "0xb33eaad8d922b1083446dc23f610c2567fb5180f",
   "0x3AE490db48d74B1bC626400135d4616377D0109f"

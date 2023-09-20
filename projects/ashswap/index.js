@@ -1,32 +1,21 @@
-const { request } = require("graphql-request");
-const { toUSDTBalances } = require('../helper/balances')
+const { cachedGraphQuery } = require('../helper/cache')
+const { sumTokens, sumTokensExport } = require('../helper/sumTokens')
 
 const API_URL = 'https://api-v2.ashswap.io/graphql';
 
-const TVLQuery = `
-{
-  defillama {
-    totalValueLockedUSD
+const TVLQuery = `query ashBaseStateQuery {
+  pools {
+    address
   }
-}
-`
-
-const StakingQuery = `
-{
-  defillama {
-    totalValueStakedUSD
+  poolsV2 {
+    address
   }
-}
-`
+}`
 
 async function tvl() {
-  const results = await request(API_URL, TVLQuery)
-  return toUSDTBalances(results.defillama.totalValueLockedUSD)
-}
-
-async function staking() {
-  const results = await request(API_URL, StakingQuery)
-  return toUSDTBalances(results.defillama.totalValueStakedUSD)
+  const data = await cachedGraphQuery('ashswap', API_URL, TVLQuery)
+  const owners = Object.values(data).flat().map(i => i.address)
+  return sumTokens({ owners, chain: 'elrond'})
 }
 
 module.exports = {
@@ -34,6 +23,6 @@ module.exports = {
   timetravel: false,
   elrond: {
     tvl,
-    staking,
+    staking: sumTokensExport({ owner: 'erd1qqqqqqqqqqqqqpgq58elfqng8edp0z83pywy3825vzhawfqp4fvsaldek8'}),
   },
 }
