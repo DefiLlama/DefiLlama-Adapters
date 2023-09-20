@@ -11,7 +11,7 @@ module.exports = {
                 "method": "get_pool_full_data",
                 "stack": []
             }
-            const response = await post('https://tonapi.com/api/v2/runGetMethod', requestBody)
+            const response = await post('https://toncenter.com/api/v2/runGetMethod', requestBody)
             if (! response.ok)  {
                 throw new Error("Unknown");
             }
