@@ -29,12 +29,7 @@ module.exports = {
     tvl: async () => {
       let tvl = await contract?.totalCollateral();
       return parseInt(ethers.utils.formatUnits(tvl, 0))/10**18;
-    },
-
-    treasury: async () => {
-      const balance = await tokenContract?.balanceOf(treasury);
-      return +ethers.utils.formatEther(balance);
-    },
+    }
   },
  
 };
