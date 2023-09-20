@@ -4,9 +4,6 @@ const contracts = {
             // eth
             '0x62beB192eBF4790777a084ED482AE1A501b74D65',
         ],
-        strategies: [
-            '0xf1633e53140a6c9c898d2c82Dabf93D3289724cb', // stargate-eth
-        ],
     },
     optimism: {
         vaults: [
@@ -17,19 +14,12 @@ const contracts = {
             // eth
             '0x38B2023e7fF7Fe9a33dFF14350d94F017e538768',
         ],
-        strategies: [
-            '0xe6ab63FbDFec016357da536201139cCf5b6c1059', // stargate-usdc
-            '0x45B29Ac9F509C6484457d80b66484FC5f2Acd888', // stargate-eth
-        ],
     },
     polygon: {
         vaults: [
             '0xFABea2117d95b780077ca8dDf268BcC8c29589ED', // entry
             '0x98266478600d4Cae5082d2A185cc6533684dA108', // arbitrum satellite
             '0x4a307418cEd78A3f2348FD84e66453Efe0BDD16a', // optimisim satellite
-        ],
-        strategies: [
-            '0x283D67CAAFc1AA4A2D54c62Be0A44EdFb8099099', // stargate-usdc
         ],
     },
     arbitrum: {
@@ -41,10 +31,6 @@ const contracts = {
             // eth
             '0xD7Aac4989D82361b3b4917DA9D51266E66edBe0a',
         ],
-        strategies: [
-            '0x0Dba32cFaE7C7edf59603f1BC450DC15E0f46Ddf', // stargate-usdc
-            '0x5efD42C28D86F2628CE0629F2e5B05037252070a' // stargate-eth
-        ]
     },
 }
 
