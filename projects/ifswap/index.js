@@ -11,6 +11,6 @@ module.exports = {
     "We count liquidity of all paris through Factory Contract and Pools (single tokens) seccions through MasterChef Contract.",
   csc: {
     tvl: getUniTVL({ factory: FACTORY, useDefaultCoreAssets: true, }),
-    staking: staking(MASTERCHEF, IFS,),
+    // staking: staking(MASTERCHEF, IFS,),
   },
 };
