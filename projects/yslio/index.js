@@ -1,7 +1,6 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { transformBscAddress } = require("../helper/portedTokens");
 
 const masterChefContract = "0xEE7Bc7727436D839634845766f567fa354ba8C56";
 
@@ -68,7 +67,7 @@ const bscTvl = async (chainBlocks) => {
       sdk.util.sumSingleBalance(balances, `bsc:${lpToken}`, strat_bal);
     }
   }
-  const transformAddress = await transformBscAddress();
+  const transformAddress = i => `bsc:${i}`;
   await unwrapUniswapLPs(
     balances,
     lpPositions,

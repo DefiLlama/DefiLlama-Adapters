@@ -11,8 +11,8 @@ const looks = "0xf4d2888d29D722226FafA5d9B24F9164c092421E";
 
 const tokens = [
   nullAddress,
-  ADDRESSES.ethereum.USDC, // USDC
-  "0x5aFE3855358E112B5647B952709E6165e1c1eEEe", // SAFE
+  ADDRESSES.ethereum.USDC,
+  ADDRESSES.ethereum.SAFE,
 ];
 
 async function ownTokens(timestamp, block) {

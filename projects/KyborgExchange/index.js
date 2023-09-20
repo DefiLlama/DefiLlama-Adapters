@@ -6,6 +6,9 @@ const config = {
 }
 
 module.exports = {
+  hallmarks: [
+    [1684108800, "Rug Pull"]
+  ],
   methodology: `Counts the tokens balances of the KyborgHub contract`,
 };
 
