@@ -220,4 +220,5 @@ function cexExports(config) {
 
 module.exports = {
   cexExports,
+  defaultTokens,
 }
