@@ -24,7 +24,7 @@ const contract = new ethers.Contract(bakiAddress, contractABI, provider);
 const tokenContract = new ethers.Contract(usdc, tokenABI, provider);
 
 module.exports = {
-  methodology: "Baki is an infinite liquidity FX exchange, built on Avalanche providing the first on-chain implementation of African stable coins.",
+  methodology: "The baki protocol keeps track of the total collateral locked in the vault",
   avax:{
     tvl: async () => {
       let tvl = await contract?.totalCollateral();
