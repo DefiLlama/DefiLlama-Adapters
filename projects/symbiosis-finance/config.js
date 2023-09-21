@@ -7,10 +7,12 @@ module.exports = {
         ADDRESSES.ethereum.USDC,
         ADDRESSES.ethereum.USDT,
         ADDRESSES.ethereum.WETH,
+        ADDRESSES.ethereum.XDAO,
       ],
       holders: [
         '0xb80fDAA74dDA763a8A158ba85798d373A5E84d84', // portal v1
         '0xb8f275fBf7A959F4BCE59999A2EF122A099e81A8', // portal v2
+        '0x42Cd64f48496dDdfEfF8F3704df9175dbe20d325', // portal v2 BaaS
       ]
     },
     {
@@ -19,10 +21,12 @@ module.exports = {
         ADDRESSES.bsc.BUSD,
         ADDRESSES.bsc.USDC,
         ADDRESSES.bsc.ETH,
+        ADDRESSES.bsc.XDAO,
       ],
       holders: [
         '0xD7F9989bE0d15319d13d6FA5d468211C89F0b147', // portal v1
         '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4', // portal v2
+        '0xb91d3060C90aac7c4c706aef2B37997b3b2a1DcF', // portal v2 BaaS
         '0xab0738320A21741f12797Ee921461C691673E276', // v1 pool with Ethereum
       ]
     },
@@ -44,10 +48,12 @@ module.exports = {
       tokens: [
         ADDRESSES.polygon.USDC,
         ADDRESSES.polygon.WETH_1,
+        ADDRESSES.polygon.XDAO,
       ],
       holders: [
         '0xD7F9989bE0d15319d13d6FA5d468211C89F0b147', // portal v1
         '0xb8f275fBf7A959F4BCE59999A2EF122A099e81A8', // portal v2
+        '0x3338BE49A5f60e2593337919F9aD7098e9a7Dd7E', // portal v2 BaaS
         '0xab0738320A21741f12797Ee921461C691673E276', // v1 pool with Ethereum
         '0xF4BFF06E02cdF55918e0ec98082bDE1DA85d33Db', // v1 pool with BNB chain
         '0x3F1bfa6FA3B6D03202538Bf0cdE92BbE551104ac', // v1 pool with Avalanche
