@@ -1,4 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
+const XDAO = '0x71eebA415A523F5C952Cc2f06361D5443545Ad28'
+
 module.exports = {
   chains: [
     {
@@ -7,7 +9,7 @@ module.exports = {
         ADDRESSES.ethereum.USDC,
         ADDRESSES.ethereum.USDT,
         ADDRESSES.ethereum.WETH,
-        ADDRESSES.ethereum.XDAO,
+        XDAO,
       ],
       holders: [
         '0xb80fDAA74dDA763a8A158ba85798d373A5E84d84', // portal v1
@@ -21,7 +23,7 @@ module.exports = {
         ADDRESSES.bsc.BUSD,
         ADDRESSES.bsc.USDC,
         ADDRESSES.bsc.ETH,
-        ADDRESSES.bsc.XDAO,
+        XDAO,
       ],
       holders: [
         '0xD7F9989bE0d15319d13d6FA5d468211C89F0b147', // portal v1
@@ -48,7 +50,7 @@ module.exports = {
       tokens: [
         ADDRESSES.polygon.USDC,
         ADDRESSES.polygon.WETH_1,
-        ADDRESSES.polygon.XDAO,
+        XDAO,
       ],
       holders: [
         '0xD7F9989bE0d15319d13d6FA5d468211C89F0b147', // portal v1
