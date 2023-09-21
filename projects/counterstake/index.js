@@ -14,8 +14,8 @@ const {
 const utils = require('../helper/utils');
 const sdk = require('@defillama/sdk')
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { getConfig } = require('../helper/cache');
-const { formatUnits } = require('ethers/lib/utils');
+const { getConfig } = require('../helper/cache')
+const { formatUnits } = require('ethers/lib/utils')
 
 async function bridgeTvl(timestamp, assetMetadata, exchangeRates) {
     const baseAABalances = await Promise.all([

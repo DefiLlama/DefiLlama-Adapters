@@ -9,10 +9,11 @@
  *
  */
 
+const { formatUnits } = require('ethers/lib/utils');
 const { sumUnknownTokens } = require('../helper/unknownTokens');
 
-const LINE_CONTRACT_ADDRESS = "0x31f8d38df6514b6cc3C360ACE3a2EFA7496214f6";
-const COLLATERAL_TOKEN_ADDRESS = "0x0b93109d05Ef330acD2c75148891cc61D20C3EF1";
+export const LINE_CONTRACT_ADDRESS = "0x31f8d38df6514b6cc3C360ACE3a2EFA7496214f6";
+export const COLLATERAL_TOKEN_ADDRESS = "0x0b93109d05Ef330acD2c75148891cc61D20C3EF1";
 
 const tvl = async (_, _1, { kava: block }, { api }) => {
   const LOAN_NFT_CONTRACT_ADDRESS = await api.call({
@@ -20,10 +21,39 @@ const tvl = async (_, _1, { kava: block }, { api }) => {
     target: LINE_CONTRACT_ADDRESS,
   });
 
-  return api.sumTokens({
+  const ORACLE_CONTRACT_ADDRESS = await api.call({
+    abi: "address:oracle",
+    target: LINE_CONTRACT_ADDRESS,
+  });
+
+  const lineTotalSupply = await api.call({
+    abi: "uint256:totalSupply",
+    target: LINE_CONTRACT_ADDRESS,
+  });
+
+  const linePriceInCollateral = await api.call({
+    abi: "uint256:getPrice",
+    target: ORACLE_CONTRACT_ADDRESS,
+  });
+
+
+  // const price = BigInt(linePriceInCollateral) / 10n ** 18n;
+  // console.log('price', formatUnits(linePriceInCollateral, 18));
+  // console.error('line price', typeof linePriceInCollateral, linePriceInCollateral * lineTotalSupply / 1e18);
+
+  const lineTVL = formatUnits(BigInt(lineTotalSupply) * BigInt(linePriceInCollateral), 18);
+
+  const result = await api.sumTokens({
     owners: [LINE_CONTRACT_ADDRESS, LOAN_NFT_CONTRACT_ADDRESS],
     tokens: [COLLATERAL_TOKEN_ADDRESS],
   });
+
+  console.log('api', api._network);
+  
+  const key = `${api.chain}:${COLLATERAL_TOKEN_ADDRESS}`;
+  result[key] = (BigInt(result[key]) + BigInt(Math.trunc(lineTVL))).toString();
+
+  return result;
 }
 
 
@@ -37,7 +67,7 @@ const staking = async (_, _1, { kava: block }, { api }) => {
     owners: [LINE_CONTRACT_ADDRESS],
     tokens: poolAddresses,
     api, resolveLP: true,
-    coreAssets: [COLLATERAL_TOKEN_ADDRESS ]
+    coreAssets: [COLLATERAL_TOKEN_ADDRESS]
   });
 }
 
