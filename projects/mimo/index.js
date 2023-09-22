@@ -12,7 +12,7 @@ const config = {
   polygon: {
     vaultCore: ['0x03175c19cb1d30fa6060331a9ec181e04cac6ab0'],
     collaterals: [
-      '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270', //wMATIC
+      ADDRESSES.polygon.WMATIC_2, //wMATIC
       ADDRESSES.polygon.WETH_1, //wETH
       ADDRESSES.polygon.WBTC, //wBTC
       ADDRESSES.polygon.USDC, //USDC

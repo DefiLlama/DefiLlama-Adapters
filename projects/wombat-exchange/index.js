@@ -8,10 +8,7 @@ Object.keys(config).forEach((chain) => {
     tvl: async (_, _b, { [chain]: block }, { api }) => {
       const pools = Object.values(arg["pools"]);
 
-      let allUnderlying = await api.multiCall({
-        abi: "address[]:getTokens",
-        calls: pools,
-      });
+      let allUnderlying = await api.multiCall({ abi: "address[]:getTokens", calls: pools, });
 
       const tokens = [];
       const calls = [];
@@ -21,16 +18,10 @@ Object.keys(config).forEach((chain) => {
           calls.push({ target: v, params: t });
         });
       });
-      const wTokens = await api.multiCall({
-        abi: "function addressOfAsset(address) view returns (address)",
-        calls,
-      });
-      return sumTokens2({
-        api,
-        tokensAndOwners: tokens.map((v, i) => [v, wTokens[i]]),
-      });
+      const wTokens = await api.multiCall({ abi: "function addressOfAsset(address) view returns (address)", calls, });
+      return sumTokens2({ api, tokensAndOwners2: [tokens, wTokens], });
     },
-    staking: staking(arg["veWom"], arg["wom"], chain),
+    staking: staking(arg["veWom"], arg["wom"],),
   };
 });
 

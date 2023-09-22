@@ -1,35 +1,50 @@
-const { staking } = require("../helper/staking");
+const { sumTokensExport, nullAddress } = require('../helper/unwrapLPs')
+const ADDRESSES = require('../helper/coreAssets.json')
+const ASSETS = require('./assets.json')
 
-const AJP_CONTRACT_ADDRESS = "0x9DBC0Ad09184226313FbDe094E7c3DD75c94f997"
-const KAVA_STAKING_CONTRACT = "0xD1cAf204721A02016993796663EDb00E6Ad9dac4"
-const BSC_STAKING_CONTRACT = '0xEbD5a0bAED48747ea10feEB61a09a93550Fddcef'
+const KAVA_STREAM_VAULT  = '0xd8FDE1F90895AB64E74efD376129Ae3e79F1B9f9'
 
-const ammLpData = {
-  arbitrum: {
-    poolAddress: '0x0C36cB133CFF5D36313eFF3FF1761F9d391DF8Fc',
-  },
-  bsc: {
-    poolAddress: '0x808A234665c7684A5e0Ed5e6BB551dBA1cc9d3e4',
-  },
-  polygon: {
-    poolAddress: '0x2aDA82d11f6bC2bd357E7F3A6674983C372a50A3',
-  }
-}
+const KAVA_ASSETS = [
+  ADDRESSES.kava.SUSHI,
+  ASSETS.kava.VARA,
+  ASSETS.kava.PINKAV,
+  ASSETS.kava.MARE,
+  ASSETS.kava.TAROT,
+  ASSETS.kava.YFX,
+  ASSETS.kava.GMD,
+  ASSETS.kava.acsVARA,
+  ASSETS.kava.QI,
+  ASSETS.kava.CHAM,
+  ASSETS.kava.LION
+]
+
+const KAVA_ASSETS_STABLE = [
+  nullAddress,
+  ADDRESSES.kava.WKAVA,
+  ADDRESSES.kava.DAI,
+  ADDRESSES.kava.USDT,
+  ADDRESSES.kava.USDt,
+  ADDRESSES.kava.BUSD,
+  ADDRESSES.kava.USDC,
+  ADDRESSES.kava.ETH,
+  ADDRESSES.kava.axlUSDC,
+  ADDRESSES.kava.axlUSDT,
+  ADDRESSES.kava.axlDAI,
+  ASSETS.kava.axlWBTC,
+  ASSETS.kava.axlWETH,
+  ASSETS.kava.axlATOM,
+  ADDRESSES.kava.WETH,
+  ADDRESSES.kava.WBTC,
+  ADDRESSES.kava.USX,
+  ASSETS.kava.ATOM,
+  ASSETS.kava.MIM,
+  ASSETS.kava.BNB,
+]
 
 module.exports = {
-  methodology: "Ajira Pay Finance TVL Calculations are based on AJP Staking pool and Liquidity pool balances respectively on the AMMs",
+  methodology: "TVL is based on the active balances of assets deposited at the stream vault for token streaming.",
   kava: {
-    staking: staking(KAVA_STAKING_CONTRACT, AJP_CONTRACT_ADDRESS),
-    tvl: () => ({})
-  },
-  bsc: {
-    staking: staking(BSC_STAKING_CONTRACT, AJP_CONTRACT_ADDRESS),
-    tvl: () => ({})
-  },
-  polygon: {
-    tvl: () => ({}),
-  },
-  arbitrum: {
-    tvl: () => ({}),
+    tvl: sumTokensExport({ owners: [KAVA_STREAM_VAULT], tokens: KAVA_ASSETS_STABLE}),
+    vesting: sumTokensExport({ owners: [KAVA_STREAM_VAULT], tokens: KAVA_ASSETS}),
   }
 };

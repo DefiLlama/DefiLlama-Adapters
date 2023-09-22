@@ -2,7 +2,6 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { staking } = require("../helper/staking");
-// const { covalentGetTokens } = require("../helper/http");
 const { getChainTransform } = require("../helper/portedTokens");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 
@@ -22,10 +21,6 @@ const bscTvl = async (timestamp, ethBlock, { [chain]: block }) => {
   const balances = {};
 
   const transformAddress = await getChainTransform(chain)
-  /*** Rabbit Farm TVL Portion ***/
-  // let poolsInfo = (
-  //   await covalentGetTokens(BANK_CONTRACT, chain)
-  // ).map((addr) => addr.contract_address);
 
   const poolsInfo = [
     ADDRESSES.bsc.USDT,

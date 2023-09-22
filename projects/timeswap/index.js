@@ -1,5 +1,5 @@
-const { request, gql } = require("graphql-request");
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { cachedGraphQuery } = require('../helper/cache')
 
 const GRAPH_URLS = {
   polygon:
@@ -8,7 +8,7 @@ const GRAPH_URLS = {
 
 function chainTvl(chain) {
   return async (timestamp, _ethBlock, chainBlocks, { api }) => {
-    const query = gql`
+    const query = `
       {
         pairs {
           id
@@ -23,7 +23,7 @@ function chainTvl(chain) {
     `;
 
     const pairs = (
-      await request(GRAPH_URLS[chain], query)
+      await cachedGraphQuery('timeswap/'+api.chain, GRAPH_URLS[chain], query)
     ).pairs.map((pair) => ({
       address: pair.id,
       asset: pair.asset.id,

@@ -87,8 +87,6 @@ async function tvl() {
 		return acc;
 	}, {});
 
-	console.log(JSON.stringify(result));
-
 	return result;
 }
 

@@ -5,3 +5,5 @@ module.exports = {
     ],
     fetch: () => 0
 }
+
+module.exports.deadFrom = '2023-01-09'

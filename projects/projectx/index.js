@@ -6,8 +6,10 @@ const WAVAX_PXT2_JPL = "0x326238CfAf10Fc6f536791b548441D03B80dacA8";
 
 module.exports = {
   avax: {
-    pool2: pool2(stakingContract, WAVAX_PXT2_JPL, "avax"),
+    pool2: pool2(stakingContract, WAVAX_PXT2_JPL),
     tvl: (async) => ({}),
   },
   methodology: "Counts liquidty on the Pool2 only",
 };
+
+module.exports.deadFrom = '2022-04-09'

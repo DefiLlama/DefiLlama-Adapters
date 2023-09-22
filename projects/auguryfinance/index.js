@@ -1,7 +1,6 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { transformPolygonAddress } = require("../helper/portedTokens");
 
 const MasterAugur = "0x6ad70613d14c34aa69E1604af91c39e0591a132e";
 
@@ -62,7 +61,7 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
     }
   }
 
-  const transformAddress = await transformPolygonAddress();
+  const transformAddress = i => `polygon:${i}`;
 
   await unwrapUniswapLPs(
     balances,

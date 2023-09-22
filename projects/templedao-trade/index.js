@@ -1,12 +1,10 @@
 const sdk = require("@defillama/sdk");
-
-
-const FRAX = "0x853d955aCEf822Db058eb8505911ED77F175b99e";
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const tvlContracts = [
     {
         address: '0x98257C876ACe5009e7B97843F8c71b3AE795c71E', // AMMrouter
-        token: FRAX
+        token: ADDRESSES.ethereum.FRAX
     }
 ];
 

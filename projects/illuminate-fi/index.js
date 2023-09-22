@@ -24,7 +24,14 @@ async function tvl(_, _b, _cb, { api, }) {
   const principalTokens = await api.multiCall({ abi: 'address:fyToken', calls: pools })
   const principalTokenDecimals = await api.multiCall({ abi: 'uint256:decimals', calls: pools })
   const oneCalls = principalTokenDecimals.map((v, i) => ({ params: 10 ** v, target: pools[i] }))
-  const principalTokenPrices = await api.multiCall({ abi: 'function sellFYTokenPreview(uint128) view returns (uint128)', calls: oneCalls })
+  let principalTokenPrices = await api.multiCall({ abi: 'function sellFYTokenPreview(uint128) view returns (uint128)', calls: oneCalls, permitFailure: true })
+  let i = 0
+  for (const pt of principalTokenPrices) {
+    if (!pt) {
+      principalTokenPrices[i] = await api.call({ abi: 'function unwrapPreview(uint256) view returns (uint256)', ...oneCalls[i] })
+    }
+    i++
+  }
   const principalTokenSupplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: principalTokens })
 
   principalTokenSupplies.forEach((supply, i) => api.add(baseTokens[i], supply * +principalTokenPrices[i] / 10 ** principalTokenDecimals[i]))

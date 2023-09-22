@@ -14,13 +14,21 @@ const glpUSDC = "0x2e2153fd13459eba1f277ab9acd624f045d676ce";
 const glpInitBlock = 18703806;
 const USDC = ADDRESSES.arbitrum.USDC;
 
+const v2Vaults = [
+  "0x727eD4eF04bB2a96Ec77e44C1a91dbB01B605e42",
+  "0xbb84D79159D6bBE1DE148Dc82640CaA677e06126",
+  "0x6a89FaF99587a12E6bB0351F2fA9006c6Cd12257",
+  "0xe0A21a475f8DA0ee7FA5af8C1809D8AC5257607d",
+  "0x37c0705A65948EA5e0Ae1aDd13552BCaD7711A23",
+];
+
 module.exports = {
   doublecounted: true,
   timetravel: true,
   start: 1657027865, // UMAMI deployment block ts
   arbitrum: {
     staking: stakings([mUMAMI, OHM_STAKING_sUMAMI], UMAMI, "arbitrum"),
-    tvl: async (_, _b, { arbitrum: block }) => {
+    tvl: async (_, _b, { arbitrum: block }, { api }) => {
       const balances = {};
 
       if (!block || block > glpInitBlock + 10) {
@@ -34,6 +42,16 @@ module.exports = {
           balances,
           `arbitrum:${USDC}`,
           totalAssets.output
+        );
+      }
+
+      const assets = await api.multiCall({ abi: 'address:asset', calls: v2Vaults });
+      const bals = await api.multiCall({ abi: 'uint256:totalAssets', calls: v2Vaults });
+      for (let i = 0; i < assets.length; i++) {
+        sdk.util.sumSingleBalance(
+          balances,
+          `arbitrum:${assets[i]}`,
+          bals[i]
         );
       }
 

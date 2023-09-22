@@ -70,6 +70,11 @@ async function getTxsMetadata(utxo) {
   return data
 }
 
+async function getTokensMinted(tokenId){
+  const {data} = await axiosObj.get(`assets/${tokenId}`)
+  return Number(data.quantity)
+}
+
 module.exports = {
   getAssets,
   getAddressesUTXOs,
@@ -77,4 +82,5 @@ module.exports = {
   getTxsMetadata,
   assetsAddresses,
   addressesUtxosAssetAll,
+  getTokensMinted,
 }

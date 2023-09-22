@@ -8,14 +8,14 @@ const AladdinCRVABI = require('./abis/AladdinCRV.json')
 const AladdinAFXSABI = require('./abis/AladdinAFXS.json')
 const AladdinCVXABI = require('./abis/AladdinCVX.json')
 const AladdinSdCRVABI = require('./abis/AladdinSdCRV.json')
-const { farmConfig, vaultConfig: configPools, afrxETHConfig } = require('./config.js');
+const { farmConfig } = require('./config.js');
 
 
 const concentratorVault = '0xc8fF37F7d057dF1BB9Ad681b53Fa4726f268E0e8';
 const concentratorAcrv = '0x2b95A1Dcc3D405535f9ed33c219ab38E8d7e0884';
 const concentratorAFXS = '0xDAF03D70Fe637b91bA6E521A32E1Fb39256d3EC9';
 const concentratorAFrxETH = "0xb15Ad6113264094Fd9BF2238729410A07EBE5ABa";
-const cvxcrvAddress = '0x62b9c7356a2dc64a1969e19c23e4f579f9810aa7';
+const cvxcrvAddress = ADDRESSES.ethereum.cvxCRV;
 const concentratorAbcCVXAddress = '0xDEC800C2b17c9673570FDF54450dc1bd79c8E359';
 const concentratorAsdCRVAddress = "0x43E54C2E7b3e294De3A155785F52AB49d87B9922"
 

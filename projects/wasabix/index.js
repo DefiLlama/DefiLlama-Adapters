@@ -26,7 +26,7 @@ const tokens = {
   },
   lusd: {
     token:'LUSD',
-    address:'0x5f98805a4e8be255a32880fdec7f6728c6568ba0',
+    address:ADDRESSES.ethereum.LUSD,
     decimals:18,
     correspondingMintableToken: 'waLUSD'
   },
