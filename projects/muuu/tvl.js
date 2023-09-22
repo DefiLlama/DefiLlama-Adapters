@@ -47,7 +47,6 @@ async function addTokensInPool(api, lpToken, tokenBal) {
     const { pool , tokenCount } = mappingPool
     bals = await api.multiCall({ abi: "function balances(uint256) view returns (uint256)", target: pool, calls: Array(tokenCount).fill(0).map((_, i) => i)})
     tokens = await api.multiCall({ abi: ABI.coins, target: pool, calls: Array(tokenCount).fill(0).map((_, i) => i)})
-    console.log(bals, tokens)
   } else {
     tokens = await api.call({  abi: ABI.get_coins, target: REGISTRY_ADDRESS, params: pool })
     bals = await api.call({  abi: ABI.get_balances, target: REGISTRY_ADDRESS, params: pool })

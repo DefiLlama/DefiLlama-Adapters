@@ -34,7 +34,6 @@ module.exports = {
   },
   arbitrum: {
     tvl: getUniTVL({
-      chain: 'arbitrum',
       factory: '0x9e343Bea27a12B23523ad88333a1B0f68cc1F05E',
       useDefaultCoreAssets: true,
     }),

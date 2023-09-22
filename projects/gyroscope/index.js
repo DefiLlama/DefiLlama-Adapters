@@ -1,42 +1,81 @@
-const { transformBalances } = require('../helper/portedTokens')
-const sdk = require('@defillama/sdk')
+const { getLogs } = require('../helper/cache/getLogs')
 
-const GYRO_POOL_ADDRESSES = [
-  "0x17f1ef81707811ea15d9ee7c741179bbe2a63887",
-  "0x97469e6236bd467cd147065f77752b00efadce8a",
-  "0xdac42eeb17758daa38caf9a3540c808247527ae3",
-  "0xf0ad209e2e969eaaa8c882aac71f02d8a047d5c2",
-  "0xfa9ee04a5545d8e0a26b30f5ca5cbecd75ea645f"
-]
+async function tvl(_, _b, _cb, { api }) {
+  const pools = config[api.chain]
 
-async function tvl(_, _b, _cb, { api, }) {
-  const balances = {}
+  const promises = pools.map(async ({ factory, fromBlock }) => {
+    const logs = await getLogs({
+      api,
+      target: factory,
+      eventAbi: 'event PoolCreated (address indexed pool)',
+      onlyArgs: true,
+      fromBlock,
+    })
 
-  const poolIds = await api.multiCall({
-    abi: 'function getPoolId() view returns (bytes32)',
-    calls: GYRO_POOL_ADDRESSES,
+    const pools = logs.map((i) => i.pool)
+    const poolIds = await api.multiCall({
+      abi: 'function getPoolId() view returns (bytes32)',
+      calls: pools,
+    })
+    const vaults = await api.multiCall({
+      abi: 'address:getVault',
+      calls: pools,
+    })
+
+    const data = await api.multiCall({
+      abi: 'function getPoolTokens(bytes32 poolId) view returns (address[] tokens, uint256[] balances, uint256 lastChangeBlock)',
+      calls: poolIds.map((v, i) => ({ target: vaults[i], params: v })),
+    })
+
+    data.forEach((i) => api.addTokens(i.tokens, i.balances))
   })
-
-  const vault = await api.call({
-    target: GYRO_POOL_ADDRESSES[0],
-    abi: 'address:getVault',
-  })
-  const data = await api.multiCall({
-    abi: 'function getPoolTokens(bytes32 poolId) view returns (address[] tokens, uint256[] balances, uint256 lastChangeBlock)',
-    calls: poolIds,
-    target: vault
-  })
-
-  data.forEach(i => {
-    i.tokens.forEach((t, j) => sdk.util.sumSingleBalance(balances,t,i.balances[j]))
-  })
-  
-  return transformBalances(api.chain, balances)
+  await Promise.all(promises)
+  return api.getBalances()
 }
 
 module.exports = {
   methodology: 'sum of all the tokens locked in CLPs',
-  polygon: {
-    tvl
-  }
 }
+
+const config = {
+  polygon: [
+    {
+      name: 'Gyro 2-CLP Factory',
+      factory: '0x5d8545a7330245150bE0Ce88F8afB0EDc41dFc34',
+      fromBlock: 31556084,
+    },
+    {
+      name: 'Gyro 3-CLP Factory',
+      factory: '0x90f08B3705208E41DbEEB37A42Fb628dD483AdDa',
+      fromBlock: 31556094,
+    },
+    {
+      name: 'Gyro E-CLP Factory',
+      factory: '0xD4204551BC5397455f8897745d50Ac4F6beE0EF6',
+      fromBlock: 35414865,
+    },
+    {
+      name: 'Gyro E-CLP V2 Factory',
+      factory: '0x1a79A24Db0F73e9087205287761fC9C5C305926b',
+      fromBlock: 41209677,
+    },
+  ],
+  optimism: [
+    {
+      name: 'Gyro E-CLP V2 Factory',
+      factory: '0x9b683ca24b0e013512e2566b68704dbe9677413c',
+      fromBlock: 97253023,
+    },
+  ],
+  ethereum: [
+    {
+      name: 'Gyro E-CLP V2 Factory',
+      factory: '0x412a5B2e7a678471985542757A6855847D4931D5',
+      fromBlock: 17672894,
+    },
+  ],
+}
+
+Object.keys(config).forEach((chain) => {
+  module.exports[chain] = { tvl }
+})

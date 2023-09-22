@@ -3,10 +3,6 @@ const abi = require("./abi.json");
 const { staking } = require("../helper/staking");
 const { pool2s } = require("../helper/pool2");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const {
-  transformBscAddress,
-  transformPolygonAddress,
-} = require("../helper/portedTokens");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 
 // --- BSC Addresses ---
@@ -143,7 +139,7 @@ const calcTvl = async (
 const bscStaking = async (chainBlocks) => {
   const balances = {};
 
-  const transformAddress = await transformBscAddress();
+  const transformAddress = i => `bsc:${i}`;
   for (const token of stakingTokensBsc) {
     await sumTokensAndLPsSharedOwners(
       balances,
@@ -167,7 +163,7 @@ const polygonStaking = async (...params) => {
 const bscTvl = async (chainBlocks) => {
   const balances = {};
 
-  const transformAddress = await transformBscAddress();
+  const transformAddress = i => `bsc:${i}`;
 
   await calcTvl(
     balances,
@@ -184,7 +180,7 @@ const bscTvl = async (chainBlocks) => {
 const polygonTvl = async (chainBlocks) => {
   const balances = {};
 
-  const transformAddress = await transformPolygonAddress();
+  const transformAddress = i => `polygon:${i}`;
 
   await calcTvl(
     balances,
