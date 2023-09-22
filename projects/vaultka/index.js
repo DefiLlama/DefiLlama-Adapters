@@ -3,7 +3,14 @@ const getGmPrice = require("./utils");
 
 module.exports = {
   misrepresentedTokens: true,
-  hallmarks: [[1688342964, "Launch Sake Vault"]],
+  hallmarks: [
+    [1688342964, "VLP Leverage Vault"],
+    [1692164391, "GLP Leverage Vault"],
+    [1695274791, "GMXV2 Leverage Vault "],
+    [1682314791, "GLP Delta Natural Vault"],
+    [1683178791, "GDAI Leverage Vault"],
+  ],
+
   arbitrum: {
     tvl: async (_, _b, _cb, { api }) => {
       const vaults = [
