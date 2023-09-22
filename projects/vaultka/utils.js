@@ -1,7 +1,7 @@
 const axios = require("axios");
 const sdk = require("@defillama/sdk");
-const ethers = require("ethers");
 const gmReader = require("./abi.json");
+const ethers = require("ethers");
 
 const gmMarket = {
   eth: {
