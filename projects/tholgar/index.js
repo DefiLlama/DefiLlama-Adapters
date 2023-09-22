@@ -43,7 +43,7 @@ async function ethTvl(timestamp, block, _, { api },) {
 }
 
 module.exports = {
-  methodology: "Counts the total locked tokens inside the lockers contracts",
+  methodology: "Counts the total number of cvx and aura Locked inside Warlord and compare it to the balance of Tholgar Vault",
   ethereum: {
     tvl: ethTvl,
   },
