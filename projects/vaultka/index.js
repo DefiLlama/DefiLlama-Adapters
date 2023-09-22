@@ -1,3 +1,6 @@
+//import utils
+const getGmPrice = require("./utils");
+
 module.exports = {
   misrepresentedTokens: true,
   hallmarks: [[1688342964, "Launch Sake Vault"]],
@@ -22,6 +25,10 @@ module.exports = {
         vodkaV1_Water: "0xC99C6427cB0B824207606dC2745A512C6b066E7C",
         VodkaV1: "0x88D7500aF99f11fF52E9f185C7aAFBdF9acabD93",
         fsGlp: "0x1aDDD80E6039594eE970E5872D247bf0414C8903",
+        vodkaV2: "0x9198989a85E35adeC46309E06684dCA444c9cF27",
+        vodkaV2_Water: "0x9045ae36f963b7184861BDce205ea8B08913B48c",
+        gmWeth: "0x70d95587d40A2caf56bd97485aB3Eec10Bee6336", // weth/usdc.e
+        gmArb: "0xC25cEf6061Cf5dE5eb761b50E4743c1F5D7E5407", // arb/usdc.e
       };
 
       const contractAbis = {
@@ -104,6 +111,28 @@ module.exports = {
         params: [addresses.VodkaV1],
       });
 
+      //gmxV2 Vaults
+
+      const vodkaWaterUSDCBalV2 = await api.call({
+        abi: contractAbis.waterUSDCBal,
+        target: addresses.vodkaV2_Water,
+      });
+
+      const vodkaGmArbBal = await api.call({
+        abi: contractAbis.balanceOf,
+        target: addresses.gmArb,
+        params: [addresses.vodkaV2],
+      });
+
+      const vodkaGmEthBal = await api.call({
+        abi: contractAbis.balanceOf,
+        target: addresses.gmWeth,
+        params: [addresses.vodkaV2],
+      });
+
+      const vodkaGmArbPrice = await getGmPrice("arb");
+      const vodkaGmEthPrice = await getGmPrice("eth");
+
       return {
         tether: bals.reduce((a, i) => a + i / 1e6, 0),
         dai:
@@ -115,7 +144,10 @@ module.exports = {
           ((vlpBalV2 + StakedVLPBalV2) * sakeVLPPrice) / 1e18 / 1e5 +
           sakeWaterUSDCBalV2 / 1e6 +
           vodkaWaterUSDCBalV1 / 1e6 +
-          (vodkaGLPBalV1 * vodkaGLPPrice) / 1e18 / 1e18,
+          (vodkaGLPBalV1 * vodkaGLPPrice) / 1e18 / 1e18 +
+          vodkaWaterUSDCBalV2 / 1e6 +
+          (vodkaGmArbBal * vodkaGmArbPrice) / 1e36 +
+          (vodkaGmEthBal * vodkaGmEthPrice) / 1e36,
       };
     },
   },
