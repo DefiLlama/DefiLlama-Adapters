@@ -55,6 +55,9 @@ const fixBalancesTokens = {
   pg: {
     '0x0cf4071940782b640d0b595cb17bdf3e90869d70': { coingeckoId: 'pego-network-2', decimals: 18 },
   },
+  manta: {
+    '0x0Dc808adcE2099A9F62AA87D9670745AbA741746': { coingeckoId: 'ethereum', decimals: 18 },
+  },
   ton: {
     'EQBq4d4GPyBoh-Pjnf3wxUyQSS28WY2Yt-7cPAG8FHpWpNRX': { coingeckoId: 'matic-network', decimals: 18 },
     'EQDCIEo0HUUYsAV-lTMviOd-GkSXfVPsNZMGjRaNOA_6--FD': { coingeckoId: 'orbit-chain', decimals: 18 },
