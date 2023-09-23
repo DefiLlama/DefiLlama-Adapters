@@ -1,7 +1,21 @@
-const axios = require("axios");
+// const axios = require("axios");
 const sdk = require("@defillama/sdk");
 const gmReader = require("./abi.json");
 const ethers = require("ethers");
+const chainlinkEthUsd = "0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612";
+
+const chainlinkArbUsd = "0xb2a824043730fe05f3da2efafa1cbbe83fa548d6";
+
+const chainlinkUsd = "0x8fffffd4afb6115b954bd326cbe7b4ba576818f6";
+
+//for chainlink
+const latestAnswer = {
+  inputs: [],
+  name: "latestAnswer",
+  outputs: [{ internalType: "int256", name: "", type: "int256" }],
+  stateMutability: "view",
+  type: "function",
+};
 
 const gmMarket = {
   eth: {
@@ -19,13 +33,46 @@ const gmMarket = {
 };
 
 async function getGmPrice(token) {
-  const data = await axios.get("https://arbitrum.gmx-oracle.io/prices/tickers");
-  const price = data.data.filter(
-    (ticker) => ticker.tokenSymbol === token.toUpperCase()
-  )[0];
+  //   const data = await axios.get("https://arbitrum.gmx-oracle.io/prices/tickers");
+  //   const price = data.data.filter(
+  //     (ticker) => ticker.tokenSymbol === token.toUpperCase()
+  //   )[0];
+  //
+  //   const minPrice = Number(price.minPrice) * 10 ** price.oracleDecimals;
+  //   const maxPrice = Number(price.maxPrice) * 10 ** price.oracleDecimals;
 
-  const minPrice = Number(price.minPrice) * 10 ** price.oracleDecimals;
-  const maxPrice = Number(price.maxPrice) * 10 ** price.oracleDecimals;
+  let ethPrice = await sdk.api2.abi.call({
+    abi: latestAnswer,
+    target: chainlinkEthUsd,
+    chain: "arbitrum",
+  });
+
+  let arbPrice = await sdk.api2.abi.call({
+    abi: latestAnswer,
+    target: chainlinkArbUsd,
+    chain: "arbitrum",
+  });
+
+  let usdcPrice = await sdk.api2.abi.call({
+    abi: latestAnswer,
+    target: chainlinkArbUsd,
+    chain: "arbitrum",
+  });
+
+  arbPrice = Number(arbPrice) * 1e4;
+  usdcPrice = Number(usdcPrice) * 1e4;
+  let price;
+  if (token === "eth") {
+    price = Number(ethPrice) * 1e4;
+  } else if (token === "arb") {
+    price = Number(arbPrice) * 1e4;
+  } else if (token === "usdc") {
+    price = Number(usdcPrice) * 1e4;
+  }
+
+  console.log("ethPrice", ethPrice);
+  console.log("arbPrice", arbPrice);
+  console.log("usdcPrice", usdcPrice);
 
   const result = await sdk.api2.abi.call({
     //get the abi of getMarketTokenPrice from gmReader abi.json
@@ -43,13 +90,13 @@ async function getGmPrice(token) {
       },
       // index token price
       {
-        min: minPrice,
-        max: maxPrice,
+        min: price / 1e4,
+        max: price / 1e4,
       },
       // long token price
       {
-        min: minPrice,
-        max: maxPrice,
+        min: price / 1e4,
+        max: price / 1e4,
       },
       // short token price
       {
