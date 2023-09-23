@@ -24,7 +24,7 @@ async function tvl(_, _1, _2, { api }) {
 
   const tokenBalanceMapping = {}
 
-  for (snapshot of PairSnapshots) {
+  for (const snapshot of PairSnapshots) {
     if (!tokenBalanceMapping[snapshot.pair.token0]) tokenBalanceMapping[snapshot.pair.token0] = 0n;
     if (!tokenBalanceMapping[snapshot.pair.token1]) tokenBalanceMapping[snapshot.pair.token1] = 0n;
 
@@ -40,7 +40,7 @@ async function tvl(_, _1, _2, { api }) {
 module.exports = {
   timetravel: false,
   misrepresentedTokens: false,
-  methodology: 'queries the current balances in the LP. Excludes tokens managed by the asset manager as they are in another protocol',
+  methodology: 'Returns the current balances in the LP. Excludes tokens managed by the asset manager as they are in another protocol',
   avax: {
     tvl
    },
