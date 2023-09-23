@@ -21,7 +21,8 @@ const chains = [
   "xdai", //G
   "moonbeam",
   "celo",
-  "kava"
+  "kava",
+  "base"
 ]; // Object.keys(contracts);
 const registryIds = {
   stableswap: 0,
@@ -152,7 +153,7 @@ async function unwrapPools({ poolList, registry, chain, block }) {
   const callParams = { target: registryAddress, calls: poolList.map(i => ({ params: i.output })), chain, block, }
   const { output: coins } = await sdk.api.abi.multiCall({ ...callParams, abi: abi.get_coins[registry] })
   let nCoins = {}
-  if (registry !== 'cryptoFactory')
+  if (!['cryptoFactory', 'triCryptoFactory'].includes(registry) )
     nCoins = (await sdk.api.abi.multiCall({ ...callParams, abi: abi.get_n_coins[registry] })).output
 
   let { wrapped = '', metapoolBases = {}, blacklist = [] } = contracts[chain]
@@ -236,7 +237,6 @@ const chainTypeExports = chains => {
 
 module.exports = chainTypeExports(chains);
 
-
 module.exports.ethereum["staking"] = staking(
   contracts.ethereum.veCRV,
   contracts.ethereum.CRV
@@ -271,5 +271,6 @@ module.exports.hallmarks = [
   [1642374675, "MIM depeg"],
   [1651881600, "UST depeg"],
   [1654822801, "stETH depeg"],
-  [1667692800, "FTX collapse"]
+  [1667692800, "FTX collapse"],
+  [1690715622, "Reentrancy hack"]
 ];

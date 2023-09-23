@@ -33,7 +33,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
   const usdtEth = ADDRESSES.ethereum.USDT
   const usdtArbitrum = ADDRESSES.arbitrum.USDT
 
-  const fraxEth = "0x853d955aCEf822Db058eb8505911ED77F175b99e"
+  const fraxEth = ADDRESSES.ethereum.FRAX
   
   const usdcFantomBAMM = "0xEDC7905a491fF335685e2F2F1552541705138A3D"
   const daiFantomBAMM = "0x6d62d6Af9b82CDfA3A7d16601DDbCF8970634d22"

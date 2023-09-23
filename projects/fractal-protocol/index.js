@@ -55,6 +55,7 @@ const abis = {
 async function getLoanDebt(loans, api) {
   const loanDebts = await api.multiCall({ abi: abis.getDebt, calls: loans })
   loanDebts.map((loanDebt) => api.add(USDC_ETH, loanDebt.principalDebtAmount, { skipChain: true }))
+  return api.getBalances()
 }
 
 const getEthTvl = async (_, ethBlock, __, { api }) => {

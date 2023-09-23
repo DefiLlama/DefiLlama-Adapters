@@ -1,0 +1,109 @@
+{
+  "inputs": [
+    {
+      "internalType": "contract DataStore",
+      "name": "dataStore",
+      "type": "address"
+    },
+    {
+      "components": [
+        {
+          "internalType": "address",
+          "name": "marketToken",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "indexToken",
+          "type": "address"
+        },
+        { "internalType": "address", "name": "longToken", "type": "address" },
+        { "internalType": "address", "name": "shortToken", "type": "address" }
+      ],
+      "internalType": "struct Market.Props",
+      "name": "market",
+      "type": "tuple"
+    },
+    {
+      "components": [
+        { "internalType": "uint256", "name": "min", "type": "uint256" },
+        { "internalType": "uint256", "name": "max", "type": "uint256" }
+      ],
+      "internalType": "struct Price.Props",
+      "name": "indexTokenPrice",
+      "type": "tuple"
+    },
+    {
+      "components": [
+        { "internalType": "uint256", "name": "min", "type": "uint256" },
+        { "internalType": "uint256", "name": "max", "type": "uint256" }
+      ],
+      "internalType": "struct Price.Props",
+      "name": "longTokenPrice",
+      "type": "tuple"
+    },
+    {
+      "components": [
+        { "internalType": "uint256", "name": "min", "type": "uint256" },
+        { "internalType": "uint256", "name": "max", "type": "uint256" }
+      ],
+      "internalType": "struct Price.Props",
+      "name": "shortTokenPrice",
+      "type": "tuple"
+    },
+    { "internalType": "bytes32", "name": "pnlFactorType", "type": "bytes32" },
+    { "internalType": "bool", "name": "maximize", "type": "bool" }
+  ],
+  "name": "getMarketTokenPrice",
+  "outputs": [
+    { "internalType": "int256", "name": "", "type": "int256" },
+    {
+      "components": [
+        { "internalType": "int256", "name": "poolValue", "type": "int256" },
+        { "internalType": "int256", "name": "longPnl", "type": "int256" },
+        { "internalType": "int256", "name": "shortPnl", "type": "int256" },
+        { "internalType": "int256", "name": "netPnl", "type": "int256" },
+        {
+          "internalType": "uint256",
+          "name": "longTokenAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "shortTokenAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "longTokenUsd",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "shortTokenUsd",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalBorrowingFees",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "borrowingFeePoolFactor",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "impactPoolAmount",
+          "type": "uint256"
+        }
+      ],
+      "internalType": "struct MarketPoolValueInfo.Props",
+      "name": "",
+      "type": "tuple"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+}
