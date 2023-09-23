@@ -10,6 +10,8 @@ const config = {
   polygon_zkevm: { registry: '0x9f5b097AD23e2CF4F34e502A3E41D941678877Dc', fromBlock: 1022413, },
   celo: { registry: '0x116Dba5DcE9CcDA828218b7eB46406810632014C', fromBlock: 19813127, },
   thundercore: { registry: '0xa1Dd21fbd9e1F0BF28d41F18bDC22326e50C02e9', fromBlock: 135181847, },
+  kava: {registry: '0xe240B9a2936f6Fb8860219bC059349e50F03492e', fromBlock: 5915232, },
+
 }
 
 module.exports = {};
@@ -22,6 +24,7 @@ Object.keys(config).forEach(chain => {
         api,
         target: registry,
         topic: "VaultCreated(address,address,string,uint256,address)",
+        // topics: ["0x3910bed511b4ecc0d6ae24498d585722a54c6ce9ab5e65b4be534cec981f7f6f"],
         eventAbi: 'event VaultCreated(address deployer, address vault, string beaconName, uint256 indexed tokenId, address vaultManager)',
         onlyArgs: true,
         fromBlock,
