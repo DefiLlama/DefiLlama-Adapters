@@ -5,11 +5,6 @@ const { getProvider, sumTokens2 } = require("../helper/solana");
 const { Program } = require("@project-serum/anchor");
 const { PublicKey } = require("@solana/web3.js");
 
-/** Need the following from Orca's SDK
- * PriceMath.tickIndexToSqrtPriceX64
- * PoolUtil.getTokenAmountsFromLiquidity
- * */
-
 async function tvl() {
   const anchorProvider = getProvider();
   const programId = new PublicKey(
