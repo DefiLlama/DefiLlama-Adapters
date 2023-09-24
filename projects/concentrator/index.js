@@ -103,7 +103,7 @@ async function getVaultInfo(type, balances, block) {
   }
   let poolInfo = await sdk.api2.abi.fetchList({ chain, block, lengthAbi: abi.poolLength, itemAbi: _abi, target: _target })
   poolInfo.forEach((item) => {
-    if (type == 'afrxETH') {
+    if (type == 'afrxETH' || type == 'asdCRV') {
       sdk.util.sumSingleBalance(balances, item.strategy.token, item.supply.totalUnderlying, chain)
     } else {
       sdk.util.sumSingleBalance(balances, item.lpToken, item.totalUnderlying, chain)
