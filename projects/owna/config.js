@@ -6,9 +6,8 @@ module.exports = {
       tokens: [
         ADDRESSES.polygon_zkevm.USDC,
       ],
-      holders: [
-        '0x27Ca3D6c64398FF9BcF2E66896EC4B3BEc5e1959',
-      ]
+      nftContract: '0xa0db7ef54eeffb7a3a5d9e7a95fb853392573b90',
+      lendingContract: '0x27Ca3D6c64398FF9BcF2E66896EC4B3BEc5e1959',
     },
   ]
 }

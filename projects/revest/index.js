@@ -1,7 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, } = require("../helper/unwrapLPs")
-const { covalentGetTokens, } = require("../helper/http")
-const { getUniqueAddresses } = require('../helper/utils')
 const sdk = require("@defillama/sdk");
 
 const CutoffABI = "function FNFT_CUTOFF() external view returns (uint256)"
@@ -49,12 +47,12 @@ const config = {
 module.exports = {
   hallmarks: [
     [1648339200, "Reentrancy attack"]
-],
+  ],
   methodology: "We list all tokens in our vault and sum them together",
 };
 
 Object.keys(config).forEach(chain => {
-  const { holder, revest, tokenVaultV2, fnftHandler} = config[chain]
+  const { holder, revest, tokenVaultV2, fnftHandler } = config[chain]
   module.exports[chain] = {
     tvl: async (_, _b, _1, { api }) => {
       let balances = {}
@@ -68,16 +66,8 @@ Object.keys(config).forEach(chain => {
       if (tokenVaultV2 != null) {
 
         let info = await api.batchCall([
-          {
-            target: tokenVaultV2,
-            abi: CutoffABI,
-            chain: chain
-          },
-          {
-            target: fnftHandler,
-            abi: numFNFTSABI,
-            chain: chain
-          }
+          { target: tokenVaultV2, abi: CutoffABI, },
+          { target: fnftHandler, abi: numFNFTSABI, }
         ])
 
         let cutoff = Number(info[0])
@@ -85,7 +75,7 @@ Object.keys(config).forEach(chain => {
 
         //Build the Multicall to get the supply of each FNFT to check for ones that still exist
         let fnftSupplyCalls = []
-        for(let x = cutoff; x < numFNFTS; x++) {
+        for (let x = cutoff; x < numFNFTS; x++) {
           fnftSupplyCalls.push({
             target: fnftHandler,
             params: x,
@@ -133,7 +123,7 @@ Object.keys(config).forEach(chain => {
         fnftConfigs.output.forEach(config => {
           if (!blacklist.includes(config.output[0].toLowerCase())) {
             tokenAddressesPerFNFT[config.input.params[0]] = config.output[0]
-          
+
             walletCalls.push({
               target: tokenVaultV2,
               params: [config.input.params[0]],
@@ -177,23 +167,12 @@ Object.keys(config).forEach(chain => {
           balances[balance.input.target] = (Number(balances[balance.input.target]) + Number(balance.output))
 
         })
-        
+
       }
 
       //Get values in tokenVaultV1
       owners.push(holder);
-      let tokens = await covalentGetTokens(holder, api.chain)
-      tokens = getUniqueAddresses(tokens).filter(t => !blacklist.includes(t)) // filter out staking and LP tokens
-      let tokenVaultV1Balances = await sumTokens2({ api, owners: owners, tokens, })
-
-      //For each key in V1 Balances append to regular balances and return
-      Object.keys(balances).forEach(key => {
-        if (tokenVaultV1Balances[key] == undefined) {
-          tokenVaultV1Balances[`${chain}:${key}`] = 0
-        }
-        tokenVaultV1Balances[`${chain}:${key}`] += balances[key]
-      })
-      return tokenVaultV1Balances;
+      return sumTokens2({ balances, api, owners, fetchCoValentTokens: true, blacklistedTokens: blacklist, tokenConfig: { onlyWhitelisted: false, } })
     },
   }
 
@@ -201,47 +180,46 @@ Object.keys(config).forEach(chain => {
     module.exports[chain].staking = async (_, _b, _1, { api }) => {
       //Get the number of FNFTS for the TokenVaultV2
       let info = await api.batchCall([
-          {
-            target: config[chain].tokenVaultV2,
-            abi: CutoffABI,
-            chain: chain
-          },
-          {
-            target: config[chain].fnftHandler,
-            abi: numFNFTSABI,
-            chain: chain
-          }
-        ])
-
-        let cutoff = Number(info[0])
-        let numFNFTS = Number(info[1])
-
-        //Build Multicall Data
-        let calls = []
-        for(let x = cutoff; x < numFNFTS; x++) {
-          calls.push({
-            target: config[chain].tokenVaultV2,
-            params: [x]
-          })
+        {
+          target: config[chain].tokenVaultV2,
+          abi: CutoffABI,
+          chain: chain
+        },
+        {
+          target: config[chain].fnftHandler,
+          abi: numFNFTSABI,
+          chain: chain
         }
+      ])
 
-        //Get the wallet address for each FNFT via multicall
-        let walletMultiCallList = await sdk.api.abi.multiCall({
-          abi: getWalletABI,
-          calls: calls,
-          chain: chain,
-          requery: true,
-          permitFailure: false 
+      let cutoff = Number(info[0])
+      let numFNFTS = Number(info[1])
+
+      //Build Multicall Data
+      let calls = []
+      for (let x = cutoff; x < numFNFTS; x++) {
+        calls.push({
+          target: config[chain].tokenVaultV2,
+          params: [x]
         })
-        let wallets = []
-        walletMultiCallList.output.forEach(wallet => {
-          // console.log(`output: ${JSON.stringify(wallet)}`)
-          wallets.push(wallet.output)
-        })
+      }
 
-        wallets.push(holder);
+      //Get the wallet address for each FNFT via multicall
+      let walletMultiCallList = await sdk.api.abi.multiCall({
+        abi: getWalletABI,
+        calls: calls,
+        chain: chain,
+        requery: true,
+        permitFailure: false
+      })
+      let wallets = []
+      walletMultiCallList.output.forEach(wallet => {
+        wallets.push(wallet.output)
+      })
 
-        //Return the balance of revest in every wallet.
-        return sumTokens2({ api, owners: wallets, tokens: [revest] })
+      wallets.push(holder);
+
+      //Return the balance of revest in every wallet.
+      return sumTokens2({ api, owners: wallets, tokens: [revest] })
     }
 })

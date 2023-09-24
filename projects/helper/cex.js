@@ -90,13 +90,16 @@ const defaultTokens = {
     '0xd417144312dbf50465b1c641d016962017ef6240',// cqt
     '0xcb84d72e61e383767c4dfeb2d8ff7f4fb89abc6e', //VEGA
     '0xcccd1ba9f7acd6117834e0d28f25645decb1736a', //ecox
+    '0x25ec98773d7b4ced4cafab96a2a1c0945f145e10', // stUSDT
+    '0x3c3a81e81dc49A522A592e7622A7E711c06bf354', // MNT
   ],
   tron: [
     nullAddress,
     ADDRESSES.tron.USDT, // USDT
     ADDRESSES.tron.USDC,  // USDC
-    'TFptbWaARrWTX5Yvy3gNG5Lm8BmhPx82Bt', //wbt
-    ADDRESSES.tron.TUSD
+    // 'TFptbWaARrWTX5Yvy3gNG5Lm8BmhPx82Bt', //wbt
+    ADDRESSES.tron.TUSD,
+    'TThzxNRLrW2Brp9DcTQU8i4Wd9udCWEdZ3', // stUSDT
   ],
   polygon: [
     nullAddress,
@@ -138,7 +141,7 @@ const defaultTokens = {
     '0x352Cb5E19b12FC216548a2677bD0fce83BaE434B', // BTT
     '0xAD29AbB318791D579433D831ed122aFeAf29dcfe', // FTM
     '0x02ff5065692783374947393723dba9599e59f591',// yoshi
-    '0x40af3827f39d0eacbf4a168f8d4ee67c121d11c9', //TUSD
+    ADDRESSES.bsc.TUSD, //TUSD
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],
@@ -148,7 +151,7 @@ const defaultTokens = {
     nullAddress,
     ADDRESSES.arbitrum.USDC, // USDC
     ADDRESSES.arbitrum.USDT, // USDT
-    ADDRESSES.optimism.DAI, // DAI
+    ADDRESSES.arbitrum.DAI, // DAI
     '0x09e18590e8f76b6cf471b3cd75fe1a1a9d2b2c2b' //aidoge
     
   ],
@@ -169,6 +172,20 @@ const defaultTokens = {
     ADDRESSES.optimism.USDT,  //USDT
     ADDRESSES.optimism.USDC,  //USDC
     ADDRESSES.optimism.DAI // DAI
+  ],
+  linea: [
+    nullAddress,
+   "0xa219439258ca9da29e9cc4ce5596924745e12b93", //bridge usdt
+   "0x176211869ca2b568f2a7d4ee941e073a821ee1ff", //usdc bridge
+   "0x4af15ec2a0bd43db75dd04e62faa3b8ef36b00d5" //dai bridge
+  ],
+  flare: [
+    nullAddress,
+    ADDRESSES.flare.WFLR,
+  ],
+  celo: [
+    nullAddress,
+    "0x471ece3750da237f93b8e339c536989b8978a438" //celo
   ],
 }
 
@@ -203,4 +220,5 @@ function cexExports(config) {
 
 module.exports = {
   cexExports,
+  defaultTokens,
 }
