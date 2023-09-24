@@ -1,22 +1,33 @@
+const { getUniqueAddresses } = require("../helper/tokenMapping");
 const { contracts } = require("./constants");
 const { get4626VaultToken, getStrategyVaultValues, getVaultToken } = require("./helper");
 
 /** find balance of vault's underlying assets (excl. lp & positions)  */
 const getUnderlyingTokenBalance = async (api, vaultAddresses) => {
   const vaultTokens = await getVaultToken(api, vaultAddresses);
-  return api.sumTokens({ tokensAndOwners2: [vaultTokens, vaultAddresses]})
+  return api.sumTokens({ tokensAndOwners2: [vaultTokens, vaultAddresses] })
 }
 
 // find the strategy's vault's lp value
 const getStrategyVaultsLpValue = async (api, vaultAddresses) => {
   const vaultTokens = await get4626VaultToken(api, vaultAddresses);
-  await api.sumTokens({ tokensAndOwners2: [vaultTokens, vaultAddresses]})
+  await api.sumTokens({ tokensAndOwners2: [vaultTokens, vaultAddresses] })
   const [tokens, balances] = await getStrategyVaultValues(api, vaultAddresses);
   api.addTokens(tokens, balances);
 }
 
+const fetchStrategyAddresses = async (api, vaultAddresses) => {
+  const addresses = await api.multiCall({
+    calls: vaultAddresses,
+    abi: 'address:strategy',
+  });
+
+  return getUniqueAddresses(addresses);
+}
+
 const aggregateVaultTvl = async (api) => {
-  const { vaults, strategies } = contracts[api.chain];
+  const { vaults, } = contracts[api.chain];
+  const strategies = await fetchStrategyAddresses(api, vaults);
   await getUnderlyingTokenBalance(api, vaults);
   await getStrategyVaultsLpValue(api, strategies);
 }
@@ -30,8 +41,8 @@ module.exports = {
   doublecounted: true,
   start: 1693929600, // Tue Sep 05 2023 16:00:00 GMT+0000
   methodology: 'Hodlify TVL including total values of assets deposited in other protocols, and the petty cash in our earning vaults.',
-  ethereum: { tvl},
-  arbitrum: { tvl},
-  optimism: { tvl},
-  polygon: { tvl},
+  ethereum: { tvl },
+  arbitrum: { tvl },
+  optimism: { tvl },
+  polygon: { tvl },
 }
