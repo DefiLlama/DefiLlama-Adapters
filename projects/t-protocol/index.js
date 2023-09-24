@@ -15,7 +15,7 @@ module.exports = {
   start: 1677913260,
   ethereum: {
     tvl: sumTokensExport({
-      owner: [
+      owners: [
         V1_TREASURY_CONTRACT,
         V2_RUSTPOOL_CONTRACT,
         UNISWAP_V3_USTP_USDC_POOL_CONTRACT,
