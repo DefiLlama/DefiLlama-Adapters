@@ -1,6 +1,6 @@
 const BN = require("bn.js");
 const BigNumber = require("bignumber.js");
-const { ArmadaIDL } = require("./idl");
+const { ArmadaIDL, WhirpoolIDL } = require("./idl");
 const { getProvider, sumTokens2 } = require("../helper/solana");
 const { Program } = require("@project-serum/anchor");
 const { PublicKey } = require("@solana/web3.js");
@@ -15,21 +15,42 @@ async function tvl() {
   const programId = new PublicKey(
     "ArmN3Av2boBg8pkkeCK9UuCN9zSUVc2UQg1qR2sKwm8d"
   );
-  const program = new Program(ArmadaIDL, programId, anchorProvider);
+  const armadaProgram = new Program(ArmadaIDL, programId, anchorProvider);
+
+  const whirlpoolProgram = new Program(
+    WhirpoolIDL,
+    new PublicKey("whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc"),
+    anchorProvider
+  );
+
   // Load all the vaults in the program
-  const vaults = await program.account.clpVault.all();
+  const vaults = await armadaProgram.account.clpVault.all();
   console.log(`Retrieved ${vaults.length} vaults`);
   // Load all the TokenAccounts for the vaults
   const vaultTokenAccounts = [];
   vaults.forEach((vault) => {
     vaultTokenAccounts.push(vault.account.tokenVaultA);
-    vaultTokenAccounts.push(vault.account.tokenVaultA);
-  })
-return sumTokens2({
-  tokenAccounts: vaultTokenAccounts
-})
-  // TODO: Load all the Positions for the vaults
+    vaultTokenAccounts.push(vault.account.tokenVaultB);
+  });
+  // Load all the Positions for the vaults
+  const positionKeys = vaults
+    .map((vault) =>
+      vault.account.positions
+        .filter(
+          (position) =>
+            position.positionKey.toString() !== PublicKey.default.toString()
+        )
+        .map((position) => position.positionKey)
+    )
+    .flat();
+  const positions = await whirlpoolProgram.account.position.fetchMultiple(
+    positionKeys
+  );
+  console.log(`${positions.length} retrieved positions`);
   // TODO: Convert Positions to token amounts
+  return sumTokens2({
+    tokenAccounts: vaultTokenAccounts,
+  });
 }
 
 const tickIndexToSqrtPriceX64 = (tickIndex) => {
