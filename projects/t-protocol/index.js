@@ -11,7 +11,8 @@ const UNISWAP_V3_USTP_USDC_POOL_CONTRACT =
   "0x15EFa9e8ffd147f8de6639b06DbECbD433789B39";
 
 module.exports = {
-  methodology: "counts value of assets in the Treasury",
+  methodology:
+    "counts value of assets in the V1 Treasury, V2 Rustpool, and Uniswap V3 USTP-USDC pool",
   start: 1677913260,
   ethereum: {
     tvl: sumTokensExport({
