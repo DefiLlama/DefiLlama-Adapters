@@ -3,7 +3,7 @@ const { post } = require('../http')
 function getNameFromMetadata(metadata) {
   for(const item of metadata.items) {
     if (item.key == "name") {
-      return item.value.typed.value
+      return item.value.typed.value.replace(/ /g, "-")
     }
   }
   return ""
