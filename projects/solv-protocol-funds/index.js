@@ -17,6 +17,10 @@ const filterSlot = [
   "94855382073997775269187449187472275689000980913702165029893305070390069014119"
 ];
 
+const rwaSlot = [
+  "77406646563329984090609229456139833989531434162860778120489803664660566620495"
+]
+
 async function tvl() {
   const { api } = arguments[3];
   const network = api.chain;
@@ -122,7 +126,7 @@ async function getGraphData(timestamp, chain, api) {
                 contractAddress
                 slot
             }
-            poolOrderInfos(first: 1000, block: { number: $block }  where:{fundraisingEndTime_gt:${timestamp}}) {
+            poolOrderInfos(first: 1000, block: { number: $block }  where:{fundraisingEndTime_gt:${timestamp}, openFundShareSlot_not_in: ${JSON.stringify(rwaSlot)}}) {
               marketContractAddress
               contractAddress
               navOracle
@@ -151,6 +155,7 @@ async function getGraphData(timestamp, chain, api) {
   };
 }
 // node test.js projects/solv-protocol-v3
-['ethereum', 'bsc', 'arbitrum', 'mantle'].forEach(chain => {
+// ['ethereum', 'bsc', 'arbitrum', 'mantle'].forEach(chain => {
+['mantle'].forEach(chain => {
   module.exports[chain] = { tvl: () => ({}), borrowed: tvl, }
 })

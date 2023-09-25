@@ -1,0 +1,95 @@
+const { default: BigNumber } = require("bignumber.js");
+const abi = require("./abi.json");
+const { cachedGraphQuery } = require("../helper/cache");
+
+// The Graph
+const graphUrlList = {
+  mantle: 'http://api.0xgraph.xyz/subgraphs/name/solv-payable-factory-mentle-0xgraph',
+}
+
+const rwaSlot = [
+  "77406646563329984090609229456139833989531434162860778120489803664660566620495"
+]
+
+async function tvl() {
+  const { api } = arguments[3];
+  const network = api.chain;
+  const pools = await getGraphData(api.timestamp, network, api);
+  if (pools == undefined || pools.length === 0) return
+  const poolConcretes = await concrete(pools, api);
+  const nav = await api.multiCall({
+    abi: abi.getSubscribeNav,
+    calls: pools.map((index) => ({
+      target: index.navOracle,
+      params: [index.poolId, api.timestamp]
+    })),
+  })
+
+  const poolTotalValues = await api.multiCall({
+    abi: abi.slotTotalValue,
+    calls: pools.map((index) => ({
+      target: poolConcretes[index.contractAddress],
+      params: [index.openFundShareSlot]
+    })),
+  })
+
+  const poolBaseInfos = await api.multiCall({
+    abi: abi.slotBaseInfo,
+    calls: pools.map((index) => ({
+      target: poolConcretes[index.contractAddress],
+      params: [index.openFundShareSlot]
+    })),
+  })
+
+  const poolDecimalList = await api.multiCall({
+    abi: abi.decimals,
+    calls: poolBaseInfos.map(i => i[1]),
+  })
+
+  for (let i = 0; i < poolTotalValues.length; i++) {
+    const decimals = poolDecimalList[i];
+    const balance = BigNumber(poolTotalValues[i]).div(BigNumber(10).pow(18 - decimals)).times(BigNumber(nav[i].nav_).div(BigNumber(10).pow(decimals))).toNumber();
+    api.add(poolBaseInfos[i][1], balance)
+  }
+}
+
+async function concrete(slots, api) {
+  var slotsList = [];
+  var only = {};
+  for (var i = 0; i < slots.length; i++) {
+    if (!only[slots[i].contractAddress]) {
+      slotsList.push(slots[i]);
+      only[slots[i].contractAddress] = true;
+    }
+  }
+
+  const concreteLists = await api.multiCall({
+    calls: slotsList.map((index) => index.contractAddress),
+    abi: abi.concrete,
+  })
+
+  let concretes = {};
+  for (var k = 0; k < concreteLists.length; k++) {
+    concretes[slotsList[k].contractAddress] = concreteLists[k];
+  }
+
+  return concretes;
+}
+
+async function getGraphData(timestamp, chain, api) {
+  const slotDataQuery = `query BondSlotInfos ($block: Int){
+            poolOrderInfos(first: 1000, block: { number: $block }  where:{fundraisingEndTime_gt:${timestamp}, openFundShareSlot_in:${JSON.stringify(rwaSlot)}}) {
+              marketContractAddress
+              contractAddress
+              navOracle
+              poolId
+              openFundShareSlot
+          }
+        }`;
+  const data = (await cachedGraphQuery(`solv-protocol/graph-data/${chain}`, graphUrlList[chain], slotDataQuery, { api, useBlock: true, }));
+  return data.poolOrderInfos;
+}
+// node test.js projects/solv-protocol-rwa
+['mantle'].forEach(chain => {
+  module.exports[chain] = { tvl }
+})
