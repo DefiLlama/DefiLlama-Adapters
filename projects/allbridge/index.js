@@ -2,7 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 
 const sdk = require('@defillama/sdk')
 const solana = require('../helper/solana')
-const terra = require('../helper/chain/terra')
+const cosmos = require('../helper/chain/cosmos')
 const { staking } = require('../helper/staking');
 const near = require('../helper/chain/near');
 const { default: BigNumber } = require('bignumber.js');
@@ -231,19 +231,13 @@ async function solanaStaking() {
 }
 
 async function terraTvl() {
-    const balances = {}
-    for (const token of terraData.tokens) {
-        const balance = token.address.length > 5
-          ? await terra.getBalance(token.address, terraData.contractAddress)
-          : await terra.getDenomBalance(token.address, terraData.contractAddress);
-        sdk.util.sumSingleBalance(balances, token.name, toNumber(token.decimals, balance));
-    }
-    return balances
+    return cosmos.sumTokens({ chain: "terra", owner: terraData.contractAddress })
 }
 
 
+
 async function terraStaking() {
-    const balance = await terra.getBalance(terraData.staking.abrAddress, terraData.staking.contractAddress);
+    const balance = await cosmos.getBalance({ token: terraData.staking.abrAddress, owner: terraData.staking.contractAddress, chain: "terra"});
     return { allbridge: toNumber(terraData.staking.decimals, balance) }
 }
 

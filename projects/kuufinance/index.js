@@ -6,6 +6,9 @@ const JITU_CONTRACT_ADDRESS = "0x037BB12721A8876386411dAE5E31ff0c5bA991A8";
 
 module.exports = {
   deadFrom: 1648765747,
+  hallmarks: [
+    [1633737600, "pausing liquidations program indefinitely"]
+  ],
   avax:{
     tvl: sumTokensExport({
       owner: JITU_CONTRACT_ADDRESS,

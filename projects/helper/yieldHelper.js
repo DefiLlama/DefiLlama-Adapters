@@ -1,9 +1,8 @@
 const ADDRESSES = require('./coreAssets.json')
 
 const abi = require("../tenfinance/abi.json")
-const { getUniqueAddresses, log, } = require('../helper/utils')
-const { getLPData, } = require('../helper/unknownTokens')
-const { getChainTransform, getFixBalancesSync, } = require('../helper/portedTokens')
+const { getUniqueAddresses, } = require('../helper/utils')
+const { getLPData, getTokenPrices } = require('../helper/unknownTokens')
 const sdk = require('@defillama/sdk')
 const { unwrapLPsAuto } = require("./unwrapLPs")
 
@@ -21,11 +20,13 @@ function yieldHelper({
   getPoolIds,
   getTokens,
   getTokenBalances,
+  useDefaultCoreAssets = false,
+  getPoolsFn,
 }) {
   blacklistedTokens = getUniqueAddresses(blacklistedTokens)
-  nativeTokens = getUniqueAddresses(blacklistedTokens)
+  if (nativeToken) nativeTokens.push(nativeToken)
+  nativeTokens = getUniqueAddresses(nativeTokens)
   if (!project) throw new Error('Missing project name')
-  if (nativeToken) nativeTokens = [nativeToken]
 
   async function getAllTVL(api) {
     const key = `${project}-${chain}-${api.block}`
@@ -33,21 +34,25 @@ function yieldHelper({
     return allData[key]
 
     async function _getAllTVL() {
-      const transform = await getChainTransform(chain)
-      const fixBalances = getFixBalancesSync(chain)
+      const transform = i => `${chain}:${i.toLowerCase()}`
       const balances = {
         tvl: {},
         pool2: {},
         staking: {},
       }
 
-      let poolInfos = await api.fetchList({
-        lengthAbi: abis.poolLength || abi.poolLength,
-        itemAbi: abis.poolInfo || abi.poolInfo,
-        target: masterchef,
-      })
+      let poolInfos
+      if (getPoolsFn) {
+        poolInfos = await getPoolsFn(api)
+      } else {
+        poolInfos = await api.fetchList({
+          lengthAbi: abis.poolLength || abi.poolLength,
+          itemAbi: abis.poolInfo || abi.poolInfo,
+          target: masterchef,
+        })
+      }
 
-      let _poolFilter = i => !blacklistedTokens.includes(i.want.toLowerCase()) && !blacklistedTokens.includes(i.strat.toLowerCase()) && i.strat !== ADDRESSES.null
+      let _poolFilter = i => !blacklistedTokens.includes(i.want.toLowerCase()) && !blacklistedTokens.includes(i.strat?.toLowerCase()) && i.strat !== ADDRESSES.null
       let _getPoolIds = i => i.strat
 
       if (getPoolIds) _getPoolIds = getPoolIds
@@ -71,7 +76,7 @@ function yieldHelper({
         tokens = await getTokens({ poolInfos, api })
       }
       else tokens = poolInfos.map(i => i.want.toLowerCase())
-      const pairInfos = await getLPData({ lps: tokens, ...api })
+      const pairInfos = await getLPData({ lps: tokens, ...api, abis, })
       const blacklistedSet = new Set(...(blacklistedTokens.map(i => i.toLowerCase())))
       tokens.forEach((token, i) => {
         if (nativeTokens.includes(token)) {
@@ -87,19 +92,24 @@ function yieldHelper({
       })
 
       await Promise.all([
-        unwrapLPsAuto({  api, balances: balances.tvl, transformAddress: transform, }),
-        unwrapLPsAuto({  api, balances: balances.pool2, transformAddress: transform, }),
+        unwrapLPsAuto({ api, balances: balances.tvl, transformAddress: transform, abis, }),
+        unwrapLPsAuto({ api, balances: balances.pool2, transformAddress: transform, abis, }),
       ])
 
-      fixBalances(balances.tvl)
-      fixBalances(balances.pool2)
-      fixBalances(balances.staking)
+      const lps = Object.keys(pairInfos)
+      if (lps.length && useDefaultCoreAssets) {
+        const { updateBalances } = await getTokenPrices({ lps, ...api, abis, useDefaultCoreAssets, })
+        balances.tvl = await updateBalances(balances.tvl)
+        balances.pool2 = await updateBalances(balances.pool2)
+        balances.staking = await updateBalances(balances.staking)
+      }
 
       return balances
     }
   }
 
   return {
+    misrepresentedTokens: useDefaultCoreAssets,
     [chain]: {
       tvl: async (_, _b, _cb, { api }) => (await getAllTVL(api)).tvl,
       pool2: async (_, _b, _cb, { api }) => (await getAllTVL(api)).pool2,

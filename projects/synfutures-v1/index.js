@@ -1,62 +1,29 @@
-// SynFutures-v1 TVL from chain
-const { request, gql } = require("graphql-request");
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { getLogs, getAddress } = require('../helper/cache/getLogs');
 
-const QUERY_PAIRS = gql`{
-  pairs(first: 1000, where: {state_: {status_not_in: [CREATED]}}) {
-    id
-    symbol
-    ammProxy
-    futuresProxy
-    quote {
-      id
-      symbol
-      decimals
-    }
-    state{
-      status
+const config = {
+  ethereum: { factory: '0x6e893ddfa75d67febb853e00f81c913c151bf9a9', fromBlock: 12599579 },
+  bsc: { factory: '0x6e893ddfa75d67febb853e00f81c913c151bf9a9', fromBlock: 8142455 },
+  arbitrum: { factory: '0x1e7db497d664e77fc96321a1ad0bf018e55cbff8', fromBlock: 218877 },
+  polygon: { factory: '0x6e893ddfa75d67febb853e00f81c913c151bf9a9', fromBlock: 15508720 },
+}
+
+Object.keys(config).forEach(chain => {
+  const { factory, fromBlock, } = config[chain]
+  module.exports[chain] = {
+    tvl: async (_, _b, _cb, { api, }) => {
+      const logs = await getLogs({
+        api,
+        target: factory,
+        topics: ['0xee193dabd87eb415480c4b61fae32c09068f2348d08b811bbf3a004404eae51b'],
+        fromBlock,
+      })
+      const tokensAndOwners = logs.map((i) => {
+        const token = getAddress(i.data.slice(64, 64 * 2 + 2));
+        const pool = getAddress(i.data.slice(64 * 5, 64 * 6 + 2));
+        return [token, pool];
+      });
+      return sumTokens2({ tokensAndOwners, api, })
     }
   }
-}`;
-
-const info = {
-  ethereum: {
-    subgraph: 'https://api.thegraph.com/subgraphs/name/synfutures/ethereum-v1',
-  },
-  bsc: {
-    subgraph: 'https://api.thegraph.com/subgraphs/name/synfutures/bsc-v1',
-  },
-  polygon: {
-    subgraph: 'https://api.thegraph.com/subgraphs/name/synfutures/polygon-v1',
-  },
-  arbitrum: {
-    subgraph: 'https://api.thegraph.com/subgraphs/name/synfutures/arbitrum-one-v1',
-  },
-}
-
-function chainTvl(chain) {
-  return async (_, _b, {[chain]: block}) => {
-    const pairsData = await request(info[chain].subgraph,QUERY_PAIRS,{ block });
-    const toa = []
-
-    for (let pair of pairsData.pairs)
-      toa.push([pair.quote.id, pair.id])
-    return sumTokens2({ chain, block, tokensAndOwners: toa, })
-  }
-}
-
-module.exports = {
-  timetravel: false,
-  polygon: {
-    tvl: chainTvl('polygon'),
-  },
-  bsc: {
-    tvl: chainTvl('bsc'),
-  },  
-  ethereum: {
-    tvl: chainTvl('ethereum'),
-  },
-  arbitrum: {
-    tvl: chainTvl('arbitrum'),
-  },
-}
+})

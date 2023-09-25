@@ -6,8 +6,6 @@ const savingsPlusPoolAbi = require("./savingsPlusPoolAbi.json");
 
 const { staking } = require("../helper/staking");
 const { pool2 } = require("../helper/pool2");
-const { transformPolygonAddress } = require('../helper/portedTokens');
-
 
 const treasuryContract = "0x94F748BfD1483750a7dF01aCD993213Ab64C960F";
 const MOVER = "0x3FA729B4548beCBAd4EaB6EF18413470e6D5324C";
@@ -44,7 +42,7 @@ async function tvlEth(timestamp, block) {
 
 async function tvlPolygon(timestamp, block, chainBlocks) {
   const balances = {};
-  const transform = await transformPolygonAddress();
+  const transform = i => `polygon:${i}`;
 
   let savingsPlusStakedUSDC = (await sdk.api.abi.call({
     chain: "polygon",

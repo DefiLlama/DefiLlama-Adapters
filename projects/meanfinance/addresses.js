@@ -37,7 +37,7 @@ const TOKENS_IN_LEGACY_VERSIONS = {
   ],
   polygon: [
     '0x0b3f868e0be5597d5db7feb59e1cadbb0fdda50a', // SUSHI
-    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270', // WMATIC
+    ADDRESSES.polygon.WMATIC_2, // WMATIC
     '0x172370d5cd63279efa6d502dab29171933a610af', // CRV
     ADDRESSES.polygon.WBTC, // WBTC
     ADDRESSES.polygon.USDC, // USDC

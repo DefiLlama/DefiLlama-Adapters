@@ -68,7 +68,7 @@ const getV2TVL = async (block) => {
 
   // Get all CA Balances
   const caValues = await Promise.all(
-    creditManagers.map((cm) => getV2CAs(cm.creditFacade, block))
+    creditManagers.map((cm) => getV2CAs(cm.addr, block))
   );
 
   return creditManagers.map((cm, i) => ({
@@ -122,6 +122,7 @@ const tvl = async (timestamp, block) => {
 };
 
 module.exports = {
+  hallmarks: [[1666569600, "LM begins"]],
   ethereum: {
     tvl,
   },

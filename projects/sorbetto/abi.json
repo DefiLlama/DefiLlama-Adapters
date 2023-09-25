@@ -1,6 +1,0 @@
-{
-  "token0": "address:token0",
-  "token0PerShareStored": "uint256:token0PerShareStored",
-  "token1": "address:token1",
-  "token1PerShareStored": "uint256:token1PerShareStored"
-}

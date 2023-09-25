@@ -108,6 +108,17 @@
       "stableFactory": "0x5277a0226d10392295e8d383e9724d6e416d6e6c"
     }
   },
+  "base": {
+    "wrapped": "0x4200000000000000000000000000000000000006",
+    "registriesMapping": {
+      "triCryptoFactory": "0xa5961898870943c68037f6848d2d866ed2016bcb",
+      "stableFactory": "0x3093f9B57A428F3EB6285a589cb35bEA6e78c336",
+      "cryptoFactory": "0x5EF72230578b3e399E6C6F4F6360edF95e83BBfd"
+    },
+    "blacklist": [
+      "0x417Ac0e078398C154EdFadD9Ef675d30Be60Af93"
+    ]
+  },
   "optimism": {
     "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
     "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",

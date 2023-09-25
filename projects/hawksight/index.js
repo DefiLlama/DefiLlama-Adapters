@@ -1,4 +1,5 @@
 const { fetchURL } = require('../helper/utils')
+const { sumTokens2 } = require('../helper/solana')
 
 
 async function tvl() {
@@ -11,5 +12,6 @@ module.exports = {
   methodology: 'Sums the total value locked of all strategies in Hawksight',
   solana: {
     tvl,
+    staking: () => sumTokens2({ tokenAccounts: ['2eFeetCpZJprr67F2dToT52BbSkdeqKZT6hmVdVG14eU']})
   }
 }

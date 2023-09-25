@@ -27,31 +27,17 @@ const ARNXM_VAULT = {
   address: "0x1337DEF1FC06783D4b03CB8C1Bf3EBf7D0593FC4",
 }
 
-async function tvl(_, block) {
+async function tvl(_, block, _1, { api }) {
   //get TVL of Uninsurance vaults
   let resp = await getConfig('ease', VAULT_LIST_URL);
-  let vaults = resp
-  const balances = {};
-  const { output: bal } = await sdk.api.abi.multiCall({
-    abi: RCA_SHIELD.abis.uBalance,
-    calls: vaults.map(i => ({ target: i.address })),
-    block,
-  })
-  bal.forEach(({ output}, i) => {
-    const { decimals, token, address } = vaults[i]
-    const fixDecimals = 10 ** (decimals - token.decimals)
-    sdk.util.sumSingleBalance(balances, token.address, BigNumber( output / fixDecimals).toFixed(0));
-  })
-
+  let vaults = resp.map(i => i.address.toLowerCase()).filter(i => i !== '0x8f247eb2d71beeacdf212f8bc748f09cdf7144c0')
+  const bals = await api.multiCall({  abi: 'uint256:uBalance', calls: vaults })
+  const tokens = await api.multiCall({  abi: 'address:uToken', calls: vaults })
+  const decimals = await api.multiCall({  abi: 'erc20:decimals', calls: tokens })
+  api.addTokens(tokens, bals.map((v, i) => v / 10 ** (18 - decimals[i])))
   //get TVL of arNXM vault
-  const { output: balNXM } = await sdk.api.abi.call({
-    target: ARNXM_VAULT.address, 
-    abi: ARNXM_VAULT.abis.aum,
-    block,
-  });
-  sdk.util.sumSingleBalance(balances, NXM, balNXM)
-
-  return balances;
+  const balNXM = await api.call({    target: ARNXM_VAULT.address,     abi: ARNXM_VAULT.abis.aum,  });
+  api.add(NXM, balNXM)
 }
 
 module.exports = {

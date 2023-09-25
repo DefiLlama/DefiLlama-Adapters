@@ -34,3 +34,5 @@ chainExports.misrepresentedTokens = true;
 chainExports.timetravel = true
 
 module.exports = chainExports
+
+module.exports.hoo.tvl = () => ({})

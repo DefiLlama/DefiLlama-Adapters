@@ -8,7 +8,7 @@ const tendie = "0x9853A30C69474BeD37595F9B149ad634b5c323d9"
 module.exports = {
   bsc: {
     tvl: getUniTVL({
-      chain: 'bsc', useDefaultCoreAssets: true,
+       useDefaultCoreAssets: true,
       factory: factoryBSC,
     }),
     staking: staking(masterchef, tendie, "bsc")

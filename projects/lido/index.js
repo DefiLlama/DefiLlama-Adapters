@@ -7,12 +7,13 @@ const { getConnection } = require('../helper/solana');
 const ethContract = ADDRESSES.ethereum.STETH;
 
 async function terra(timestamp, ethBlock, chainBlocks) {
-  const { total_bond_amount } = (
-    await axios.get(`https://lcd.terra.dev/wasm/contracts/terra1mtwph2juhj0rvjz7dy92gvl6xvukaxu8rfv8ts/store?query_msg=%7B%22state%22%3A%20%7B%7D%7D`)
-  ).data.result;
-  return {
-    'terra-luna': total_bond_amount / 1000000
-  }
+  return {}
+  // const { total_bond_amount } = (
+  //   await axios.get(`https://lcd.terra.dev/wasm/contracts/terra1mtwph2juhj0rvjz7dy92gvl6xvukaxu8rfv8ts/store?query_msg=%7B%22state%22%3A%20%7B%7D%7D`)
+  // ).data.result;
+  // return {
+  //   'terra-luna': total_bond_amount / 1000000
+  // }
 }
 
 async function eth(timestamp, ethBlock, chainBlocks) {
@@ -77,7 +78,8 @@ module.exports = {
   hallmarks: [
     [1610496000, "Start of incentives for curve pool"],
     [1651881600,"UST depeg"],
-    [1667865600, "FTX collapse"]
+    [1667865600, "FTX collapse"],
+    [1684108800, "ETH Withdrawal Activation"]
   ],
   methodology: 'Staked tokens are counted as TVL based on the chain that they are staked on and where the liquidity tokens are issued, stMATIC is counted as Ethereum TVL since MATIC is staked in Ethereum and the liquidity token is also issued on Ethereum',
   timetravel: false, // solana

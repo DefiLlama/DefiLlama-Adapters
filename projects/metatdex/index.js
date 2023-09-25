@@ -29,8 +29,9 @@ Object.keys(config).forEach(chain => {
         params: [0, 301],
         chain, block,
       })
-      if (chain === 'heco')
-        tokens.push(ADDRESSES.heco.USDT)
+      if (chain === 'bsc') tokens.push(ADDRESSES.bsc.USDT)
+      if (chain === 'heco') tokens.push(ADDRESSES.heco.USDT)
+      if (chain === 'polygon') tokens.push(ADDRESSES.polygon.USDT)
       return sumTokens2({ tokens, owner, chain, block, })
     }
   }

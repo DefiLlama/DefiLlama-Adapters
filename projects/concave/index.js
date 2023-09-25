@@ -35,6 +35,6 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 
 
 module.exports = ohmTvl(treasury, treasuryTokens, 'ethereum', stakingAddress, cnv_token, undefined, undefined, true)
-module.exports.ethereum.tvl = sdk.util.sumChainTvls([tvl, module.exports.ethereum.tvl, uniTvlExport(gemSwap_factory)])
+module.exports.ethereum.tvl = sdk.util.sumChainTvls([tvl, module.exports.ethereum.tvl, uniTvlExport(gemSwap_factory, undefined, true)])
 delete module.exports.ethereum.staking
 module.exports.methodology = 'Count the treasury assets backing the CNV price + LP assets in the AMM Gemswap'

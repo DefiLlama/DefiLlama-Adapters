@@ -11,7 +11,6 @@ module.exports = {
     staking: staking(cheStaking, che, "okexchain", "okexchain:" + che),
     tvl: getUniTVL({
       factory: '0x709102921812b3276a65092fe79edfc76c4d4afe',
-      chain: 'okexchain',
       useDefaultCoreAssets: true,
     })
   },

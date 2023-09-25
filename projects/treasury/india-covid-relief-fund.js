@@ -15,7 +15,7 @@ module.exports = treasuryExports({
         ADDRESSES.ethereum.USDT,//usdt
         ADDRESSES.ethereum.MATIC,//matic
         ADDRESSES.ethereum.MKR,//mkr
-        '0x6810e776880C02933D47DB1b9fc05908e5386b96',//gno
+        ADDRESSES.ethereum.GNO,//gno
         ADDRESSES.ethereum.DAI,//dai
      ],
     owners: [Treasury],

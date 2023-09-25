@@ -9,11 +9,19 @@ async function tvl(_timestamp, block, _1, { api }) {
       ...group.logConfig,
       api,
     }).then(logs => logs.map((poolLog) => `0x${poolLog.data.substr(26, 40)}`))
-    if (group.abi === 'address:LPtoken')
-      holders = holders.filter(i => i .toLowerCase() !==  '0xac6f575fda9b5009993f783845dac63c079f3de7')
-    const _tokens = await api.multiCall({ abi: group.abi, calls: holders, })
-    owners.push(...holders)
-    tokens.push(..._tokens)
+    const _tokens = await api.multiCall({ abi: 'address:LPtoken', calls: holders, permitFailure: true, })
+    const failedHolders = holders.filter((holder, i) => {
+      if (_tokens[i]) {
+        owners.push(holder)
+        tokens.push(_tokens[i])
+        return false
+      }
+      return true
+    })
+
+    const _tokens2 = await api.multiCall({ abi: 'address:stablecoin', calls: failedHolders })
+    owners.push(...failedHolders)
+    tokens.push(..._tokens2)
   }
   return sumTokens2({ api, tokensAndOwners2: [tokens, owners], })
 }
@@ -30,7 +38,6 @@ const tokenHolderMap = [
       topic: "NewLPVault(address)",
       fromBlock: 11803584,
     },
-    abi: "address:LPtoken",
   },
   {
     logConfig: {
@@ -38,7 +45,6 @@ const tokenHolderMap = [
       topic: "NewSCVault(address,address)",
       fromBlock: 11803584,
     },
-    abi: "address:stablecoin",
   },
   {
     logConfig: {
@@ -46,7 +52,6 @@ const tokenHolderMap = [
       topic: "NewLPVault(address)",
       fromBlock: 11654924,
     },
-    abi: "address:LPtoken",
   },
   {
     logConfig: {
@@ -54,6 +59,5 @@ const tokenHolderMap = [
       topic: "NewSCVault(address,address)",
       fromBlock: 11654924,
     },
-    abi: "address:LPtoken",
   },
 ]

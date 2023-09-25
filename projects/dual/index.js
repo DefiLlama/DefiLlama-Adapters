@@ -26,7 +26,8 @@ async function tvl() {
 
   const soTokenAccounts = stakingOptionsAccounts
     .map(i => parseSoState(i.account.data))
-    .map(i => i.vault)
+    .map(i => [i.vault, i.reverseVault])
+    .flat()
 
   const gsoProgramID = new PublicKey("DuALd6fooWzVDkaTsQzDAxPGYCnLrnWamdNNTNxicdX8");
   let gsoAccounts = await connection.getProgramAccounts(gsoProgramID, {
@@ -87,10 +88,21 @@ function parseSoState(buf) {
     new PublicKey("4yx1NJ4Vqf2zT1oVLk4SySBhhDJXmXFt88ncm4gPxtL7")
   )[0].toBase58();
 
+  // TODO: If the reverse vault does not exist, do not include.
+  const reverseVault = PublicKey.findProgramAddressSync(
+    [
+      Buffer.from(anchor.utils.bytes.utf8.encode("so-reverse-vault")),
+      Buffer.from(anchor.utils.bytes.utf8.encode(soName)),
+      baseMint.toBuffer(),
+    ],
+    new PublicKey("4yx1NJ4Vqf2zT1oVLk4SySBhhDJXmXFt88ncm4gPxtL7")
+  )[0].toBase58();
+
   return {
     soName,
     baseMint,
     vault,
+    reverseVault,
   };
 }
 

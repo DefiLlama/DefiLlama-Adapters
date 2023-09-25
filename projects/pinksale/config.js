@@ -32,6 +32,9 @@ module.exports = {
       '0x33d4cC8716Beb13F814F538Ad3b2de3b036f5e2A',
       '0x71B5759d73262FBb223956913ecF4ecC51057641',
     ],
+    blacklist: [
+      '0xd626661e2d4f93a1c4122d386fa9ea0f62b5ab0b',
+    ],
   },
   polygon: {
     vaults: [
