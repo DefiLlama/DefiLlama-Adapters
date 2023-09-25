@@ -5,7 +5,7 @@ const TRON_FACTORY_V2 = 'TPvaMEL5oY2gWsJv7MDjNQh2dohwvwwVwx'
 const TRON_FACTORY_V1 = 'TJL9Tj2rf5WPUkaYMzbvWErn6M8wYRiHG7'
 const factories = {
   bsc: "0xFa51B0746eb96deBC619Fd2EA88d5D8B43BD8230",
-  bittorrent: "0x5f4f1a36b7c141a12817580bc35277955c0afd78",
+  bittorrent: "0x0cEE0dFb5C680e3CcAA46FA28D5057f204E24F0a",
 }
 
 function chainTvl(chain) {

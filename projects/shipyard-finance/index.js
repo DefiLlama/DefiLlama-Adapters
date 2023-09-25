@@ -1,7 +1,7 @@
 const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
 const {usdtAddress} = require("../helper/balances");
-const { post } = require('../helper/http')
+const { get } = require('../helper/http')
 
 const USDT_DECIMALS = 6;
 
@@ -37,9 +37,7 @@ function chainTvl(chain, config) {
       coins.push(`${chain}:${want}`.toLowerCase());
     }
 
-    const getCoins = post("https://coins.llama.fi/prices", {
-      "coins": coins
-    })
+    const getCoins = get(`https://coins.llama.fi/prices/current/${coins.join(',')}`)
 
     const coinsData = (await getCoins).coins;
 

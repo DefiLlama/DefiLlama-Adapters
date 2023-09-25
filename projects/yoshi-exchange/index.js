@@ -10,8 +10,11 @@ const factoryData = {
 };
 
 let tvls = {};
-Object.entries(factoryData).forEach(([chain, data]) => tvls[chain] = {tvl: uniTvlExport(data.factory, chain)}); 
+Object.entries(factoryData).forEach(([chain, data]) => tvls[chain] = {tvl: uniTvlExport(data.factory, chain, undefined, undefined, {
+  useDefaultCoreAssets: true,
+})}); 
 
 module.exports = {
-  ...tvls
+  ...tvls,
+  misrepresentedTokens: true,
 }

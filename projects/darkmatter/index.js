@@ -1,4 +1,3 @@
-const { transformFantomAddress } = require("../helper/portedTokens");
 const { addFundsInMasterChef } = require("../helper/masterchef");
 const { unwrapLPsAuto } = require("../helper/unwrapLPs");
 const { staking } = require("../helper/staking");
@@ -11,7 +10,7 @@ const dmdFtmLP = "0xF10F0EeB144Eb223DD8Ae7d5dd7f3327E63A3C94"
 
 async function tvl(timestamp, block, chainBlocks) {
   const balances = {}
-  const transformAddress = await transformFantomAddress();
+  const transformAddress = i => `fantom:${i}`;
   await addFundsInMasterChef(balances, chef, chainBlocks.fantom, "fantom", transformAddress, undefined, [dmd, dmdFtmLP])
   await unwrapLPsAuto({ balances, block: chainBlocks.fantom, chain: 'fantom', transformAddress})
   return balances;

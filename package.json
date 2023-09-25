@@ -10,6 +10,9 @@
     "lint": "eslint .",
     "eslint:github-action": "eslint .",
     "test-interactive": "node utils/testInteractive",
+    "tvl": "cd utils;npm i; cd ..; node utils/testInteractive",
+    "treasury": "cd utils;npm i; cd ..; node utils/testInteractive treasury",
+    "entities": "cd utils;npm i; cd ..; node utils/testInteractive entities",
     "postinstall": "echo 'run \"npm update @defillama/sdk\" if you want lastest sdk changes' "
   },
   "author": "",
@@ -20,7 +23,6 @@
     "@solana/web3.js": "^1.36.0",
     "@solendprotocol/solend-sdk": "^0.6.2",
     "@supercharge/promise-pool": "^2.1.0",
-    "aws-sdk": "^2.1268.0",
     "axios": "^0.27.2",
     "bignumber.js": "^9.0.1",
     "blakejs": "^1.2.1",
@@ -33,6 +35,7 @@
     "hi-base32": "^0.5.1",
     "js-sha512": "^0.8.0",
     "limiter": "2.1.0",
+    "p-limit": "^3.1.0",
     "starknet": "^4.17.1",
     "tron-format-address": "^0.1.8",
     "typescript": "^4.7.4"
