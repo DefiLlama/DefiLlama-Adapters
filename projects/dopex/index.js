@@ -4,6 +4,7 @@ const abi = require("./abi.json");
 const { staking } = require("../helper/staking");
 const { pool2 } = require("../helper/pool2");
 const { default: BigNumber } = require("bignumber.js");
+const { sumTokens } = require('../helper/unwrapLPs');
 
 // ETH Addresses
 const dpx = "0xeec2be5c91ae7f8a338e1e5f3b5de49d07afdc81";
@@ -65,6 +66,16 @@ async function ssovTvl(balances, ssov, block, chain) {
     chain
   })).output;
 
+  const isExpired = (await sdk.api.abi.multiCall({
+    chain,
+    block,
+    abi: "function isEpochExpired(uint256) view returns (bool)",
+    calls: currentEpochs.map(p => ({
+      target: p.input.target,
+      params: p.output
+    })),
+  })).output
+
   const totalEpochDeposits = (await sdk.api.abi.multiCall({
     calls: currentEpochs.map(p => ({
       target: p.input.target,
@@ -77,7 +88,7 @@ async function ssovTvl(balances, ssov, block, chain) {
 
   for (let i = 0; i < ssov.length; i++) {
     const token = `${chain}:${ssov[i][1]}`;
-    const balance = totalEpochDeposits[i].output;
+    const balance = isExpired[i].output?"1":totalEpochDeposits[i].output;
     sdk.util.sumSingleBalance(balances, token, balance);
   }
 }
@@ -121,6 +132,11 @@ async function arbTvl(timestamp, block, chainBlocks) {
 
   await ssovTvl(balances, ssovs, chainBlocks.arbitrum, "arbitrum");
   await crvTvls(balances, crvPools, chainBlocks.arbitrum, "arbitrum");
+  await sumTokens(balances, [
+    ["0x912ce59144191c1204e64559fe8253a0e49e6548", "0xDF3d96299275E2Fb40124b8Ad9d270acFDcc6148"],
+    ["0x6c2c06790b3e3e3c38e12ee22f8183b37a13ee55", "0x05E7ACeD3b7727f9129E6d302B488cd8a1e0C817"],
+    ["0x32eb7902d4134bf98a28b963d26de779af92a212", "0xd74c61ca8917Be73377D74A007E6f002c25Efb4e"]
+  ], chainBlocks.arbitrum, "arbitrum")
   return balances;
 }
 
