@@ -12,29 +12,37 @@ function getNameFromMetadata(metadata) {
 // TODO: update the url below with the final url after babylon
 const ENTITY_DETAILS_URL = `https://rcnet-v3.radixdlt.com/state/entity/details`
 
-async function getBalances(component) {
+async function getBalances(components) {
   const body = {
-    "addresses": [component]
+    "addresses": components
   }
   const data = await post(ENTITY_DETAILS_URL, body)
-  const fungibleResources =  data["items"][0]["fungible_resources"]["items"]
 
-  const balancesByName = {}
-  const balancesByResource = {}
-  const resourceAddresses = []
-  fungibleResources.forEach(resource => {
-    resourceAddresses.push(resource.resource_address)
-    balancesByResource[resource.resource_address] = resource.amount
+  const resourceAmounts = {}
+  data.items.forEach((item) => {
+    item.fungible_resources.items.forEach((resource) => {
+      const resourceAddress = resource.resource_address;
+      const amount = parseFloat(resource.amount);
+
+      if (resourceAmounts.hasOwnProperty(resourceAddress)) {
+        resourceAmounts[resourceAddress] += amount;
+      } else {
+        resourceAmounts[resourceAddress] = amount;
+      }
+    });
   });
 
-  body["addresses"] = resourceAddresses
+  console.log(resourceAmounts)
 
+  const balancesByName = {}
+  body["addresses"] = Object.keys(resourceAmounts);
   const resourcesDetails = await post(ENTITY_DETAILS_URL, body)
   resourcesDetails.items.forEach(resource => {
     const resourceName = getNameFromMetadata(resource.metadata)
-    balancesByName[resourceName] = parseFloat(balancesByResource[resource.address])
+    balancesByName[resourceName] = parseFloat(resourceAmounts[resource.address])
   });
 
+  console.log(balancesByName)
   return balancesByName
 }
 
