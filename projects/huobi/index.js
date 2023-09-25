@@ -13,6 +13,7 @@ const config = {
       '1L15W6b9vkxV81xW5HDtmMBycrdiettHEL', // add on 08/08/2023 (we defillama)
       '14o5ywJJmLPJe8egNo7a5fSdtEgarkus33', // add on 08/08/2023 (we defillama)
       '1BuiWj9wPbQwNY97xU53LRPhzqNQccSquM', // add on 08/08/2023 (we defillama)
+      '1ENWYLQZJRAZGtwBmoWrhmTtDUtJ5LseVj',
     ],
   },
   ethereum: {
@@ -46,7 +47,8 @@ const config = {
         '0xadb2b42f6bd96f5c65920b9ac88619dce4166f94', // add on 08/08/2023 (we defillama)
         '0x42dc966b7ecc3c6cc73e7bc04862859d5bddce65', // add on 08/08/2023 (we defillama)
         '0xe8d8a02601f54acb6fb69537be1f1d7cc76ccd8c', // add on 08/08/2023 (we defillama)
-        '0xf881bcb3705926cea9c598ab05a837cf41a833a9', // add on 08/08/2023 (we defillama) 
+        '0xf881bcb3705926cea9c598ab05a837cf41a833a9', // add on 08/08/2023 (we defillama)
+        '0xb9F775179bcC7FcF4534700a48F09C590E390eAd',
     ], 
     blacklistedTokens: [
       '0x0316eb71485b0ab14103307bf65a021042c6d380', // HBTC , we already track their backed BTC (1btc wallet on the list)
@@ -76,7 +78,8 @@ const config = {
       'TZ1SsapyhKNWaVLca6P2qgVzkHTdk6nkXa',
       'TDvf1dSBhR7dEskJs17HxGHheJrjXhiFyM',
       'TUJGLHo3rq4EAUY1LHRhNkHPX8qmrv9WFs', // add on 08/08/2023 (we defillama)
-      'TRSXRWudzfzY4jH7AaMowdMNUXDkHisbcd' // add on 08/08/2023 (we defillama)
+      'TRSXRWudzfzY4jH7AaMowdMNUXDkHisbcd', // add on 08/08/2023 (we defillama)
+      'TU1ZA8T2g8PvLK8BfM7N94xpmSSpyfxZoK',
     ]
   },
   algorand: {
@@ -89,7 +92,7 @@ const config = {
     owners: ['vuniyuoxoeub'],
   },
   ripple: {
-    owners: ['rKUDvXFJMFu65LqPTH3Yfpii4rbKT9bSQT'],
+    owners: ['rKUDvXFJMFu65LqPTH3Yfpii4rbKT9bSQT', 'raC4udvEeeni6aLPHbz9RKjHTQiWxKPfom'],
   },
   arbitrum: {
     owners: ['0xf2dbc42875e7764edbd89732a15214a9a0deb085'],
