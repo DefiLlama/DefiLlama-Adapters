@@ -38,7 +38,7 @@ module.exports = {
     [1689037200,"Launch on Arbitrum"],
     [1690848000,"Launch on Base"]
   ],
-  methodology: 'We count the token balances in in different liquidity book contracts',
+  methodology: 'We count the token balances in different liquidity book contracts',
   fantom:{
     tvl,
   },
