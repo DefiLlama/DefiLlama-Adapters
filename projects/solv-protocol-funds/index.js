@@ -154,8 +154,7 @@ async function getGraphData(timestamp, chain, api) {
     pools: poolList
   };
 }
-// node test.js projects/solv-protocol-v3
-// ['ethereum', 'bsc', 'arbitrum', 'mantle'].forEach(chain => {
-['mantle'].forEach(chain => {
+// node test.js projects/solv-protocol-funds
+['ethereum', 'bsc', 'arbitrum', 'mantle'].forEach(chain => {
   module.exports[chain] = { tvl: () => ({}), borrowed: tvl, }
 })
