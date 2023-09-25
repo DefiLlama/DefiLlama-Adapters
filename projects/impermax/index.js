@@ -56,6 +56,7 @@ const blacklistedPools = {
     '0x46af8ac1b82f73db6aacc1645d40c56191ab787b', // NDX-ETH
     '0x8dcba0b75c1038c4babbdc0ff3bd9a8f6979dd13', // DEFI5-ETH
     '0x08650bb9dc722c9c8c62e79c2bafa2d3fc5b3293', // AMP-ETH
+    '0xdf5096804705d135656b50b62f9ee13041253d97', // YPIE-ETH
   ],
   polygon: [
     '0x76483d4ba1177f69fa1448db58d2f1dbe0fb65fa', // IMX-WETH
