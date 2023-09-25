@@ -44,5 +44,5 @@ function sumTokensExport(...args) {
 module.exports = {
   queryAddresses,
   sumTokens,
-  sumTokensExport
+  sumTokensExport,
 }
