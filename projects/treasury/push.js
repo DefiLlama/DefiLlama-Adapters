@@ -15,7 +15,7 @@ module.exports = treasuryExports({
       "0xAf31Fd9C3B0350424BF96e551d2D1264d8466205",
       ADDRESSES.ethereum.DAI,
       ADDRESSES.ethereum.WBTC,
-      "0x5aFE3855358E112B5647B952709E6165e1c1eEEe"
+      ADDRESSES.ethereum.SAFE,
     ],
   },
 });

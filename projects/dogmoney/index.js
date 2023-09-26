@@ -8,10 +8,9 @@ module.exports = {
   misrepresentedTokens: true,
   dogechain: {
     tvl: getUniTVL({
-      chain: 'dogechain',
       useDefaultCoreAssets: true,
       factory: FACTORY,
     }),
-    staking: staking({ owner: xDOGMONEY, tokens: [ DOGMONEY ], chain: 'dogechain', lps: ['0x9ab710cd0bfbee60e14115d19c76213c4d4b1687'], useDefaultCoreAssets: true, })
+    staking: staking({ owner: xDOGMONEY, tokens: [ DOGMONEY ], lps: ['0x9ab710cd0bfbee60e14115d19c76213c4d4b1687'], useDefaultCoreAssets: true, })
   }
 }

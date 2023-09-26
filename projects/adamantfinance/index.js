@@ -5,9 +5,7 @@ const { stakings } = require("../helper/staking");
 const { getConfig } = require('../helper/cache')
 const { unwrapUniswapLPs, unwrapLPsAuto, } = require("../helper/unwrapLPs");
 const {
-  transformPolygonAddress,
   getChainTransform,
-  getFixBalances,
 } = require("../helper/portedTokens");
 const { staking: stakingUnknown, } = require("../helper/unknownTokens");
 
@@ -100,7 +98,7 @@ async function calcPool2_staking_rewards(
 async function pool2Polygon(timestamp, block, chainBlocks) {
   const balances = {};
 
-  const transformAddress = await transformPolygonAddress();
+  const transformAddress = i => `polygon:${i}`;
   await calcPool2_staking_rewards(
     balances,
     vaultAddresses_polygon,
@@ -153,7 +151,6 @@ const tvl = async (timestamp, chain, chainBlocks, lpAddressesIgnored) => {
 
   const block = chainBlocks[chain];
   const transformAddress = await getChainTransform(chain)
-  const fixBalances = await getFixBalances(chain)
   let balances = {};
 
   let resp = await getConfig('adamant-fi/'+chain, vaultsUrl[chain]);
@@ -170,7 +167,6 @@ const tvl = async (timestamp, chain, chainBlocks, lpAddressesIgnored) => {
     }));
   balances = await uniTvl(balances, chain, block, uniVaults, lpAddressesIgnored, transformAddress);
 
-  fixBalances(balances)
   return balances;
 };
 

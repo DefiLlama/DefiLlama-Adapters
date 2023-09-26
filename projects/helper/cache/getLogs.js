@@ -7,11 +7,14 @@ const cacheFolder = 'logs'
 
 async function getLogs({ target,
   topic, keys = [], fromBlock, toBlock, topics,
-  api, eventAbi, onlyArgs = false, extraKey, skipCache = false, }) {
+  api, eventAbi, onlyArgs = false, extraKey, skipCache = false, onlyUseExistingCache = false, }) {
   if (!api) throw new Error('Missing sdk api object!')
   if (!target) throw new Error('Missing target!')
   if (!fromBlock) throw new Error('Missing fromBlock!')
-  await api.getBlock()
+  if (onlyUseExistingCache)
+    toBlock = 1e11
+  else
+    await api.getBlock()
   const block = api.block
   const chain = api.chain ?? 'ethereum'
   if (!toBlock) toBlock = block
@@ -23,6 +26,11 @@ async function getLogs({ target,
     iface = new ethers.utils.Interface([eventAbi])
     if (typeof eventAbi === 'object')
       sdk.log(iface.format(ethers.utils.FormatTypes.full))
+    if (!topics?.length) {
+      const fragment = iface.fragments[0]
+      topics = undefined
+      topic = `${fragment.name}(${fragment.inputs.map(i => i.type).join(',')})`
+    }
   }
 
   target = target.toLowerCase()
@@ -32,7 +40,7 @@ async function getLogs({ target,
   let response
 
   // if no new data nees to be fetched
-  if (cache.fromBlock && cache.toBlock > toBlock)
+  if ((cache.fromBlock && cache.toBlock > toBlock) || onlyUseExistingCache)
     response = cache.logs.filter(i => i.blockNumber < toBlock && i.blockNumber >= fromBlock)
   else
     response = await fetchLogs()

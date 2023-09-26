@@ -54,6 +54,7 @@ async function getLPList({ lps, chain, block, lpFilter = isLP, cache = {}, }) {
 }
 
 async function getTokenPrices({
+  api,
   block,
   chain = 'ethereum',
   abis = {},  // if some protocol uses custom abi instead of standard one
@@ -74,7 +75,12 @@ async function getTokenPrices({
   reservesCallFn,
   cache = {},
 }) {
-  const api = new sdk.ChainApi({ block, chain, })
+  if (!api)
+     api = new sdk.ChainApi({ block, chain, })
+  else {
+    chain = api.chain
+    block = api.block
+  }
   if (!cache.pairData) cache.pairData = {}
   let counter = 0
   if (!transformAddress)
@@ -358,7 +364,7 @@ async function getTokenPrices({
 
 async function sumUnknownTokens({ api, tokensAndOwners = [], balances,
   coreAssets = [], owner, tokens, chain = 'ethereum', block, restrictTokenRatio, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
-  log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [], useDefaultCoreAssets = false, cache = {}, resolveLP = false,
+  log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [], useDefaultCoreAssets = false, cache = {}, resolveLP = false, abis,
 }) {
   if (api) {
     chain = api.chain ?? chain
@@ -377,7 +383,7 @@ async function sumUnknownTokens({ api, tokensAndOwners = [], balances,
       tokensAndOwners = tokens.map(t => [t, owner])
   tokensAndOwners = tokensAndOwners.filter(t => !blacklist.includes(t[0]))
   await sumTokens2({ api, balances, chain, block, tokensAndOwners, skipFixBalances: true, resolveLP, })
-  const { updateBalances, } = await getTokenPrices({ cache, coreAssets, lps: [...tokensAndOwners.map(t => t[0]), ...lps,], chain, block, restrictTokenRatio, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio })
+  const { updateBalances, } = await getTokenPrices({ cache, coreAssets, lps: [...tokensAndOwners.map(t => t[0]), ...lps,], chain, block, restrictTokenRatio, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio, abis, })
   await updateBalances(balances, { skipConversion, onlyLPs })
   const fixBalances = await getFixBalances(chain)
   fixBalances(balances)

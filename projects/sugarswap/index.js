@@ -7,6 +7,9 @@ const sugar = '0xd3ccBF3867FF0204730173eB4cad3C4B5fd07c69'
 const weth = ADDRESSES.arbitrum.WETH
 
 module.exports = {
+  hallmarks: [
+    [1673827200, "Rug Pull"]
+  ],
   misrepresentedTokens: true,
   arbitrum: {
     tvl: sdk.util.sumChainTvls([uniTvl, staking({

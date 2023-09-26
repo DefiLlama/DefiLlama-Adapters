@@ -27,7 +27,6 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
   // get col balances returned from the colBalance method
   const colOutput = await api.multiCall({ abi: abi.colBalance, calls: logs.map(i => i.poolAddress), });
 
-  console.log(lendOutput, colOutput)
   lendOutput.forEach((res, i) => {
     // extract collateral and lend tokens
     const lendToken = logs[i][4].lendToken;

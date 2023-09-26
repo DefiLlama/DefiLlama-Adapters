@@ -12,4 +12,7 @@ module.exports = {
             ]
         })
     },
+    hallmarks: [
+        [1688695200, "v1 shutdown"],
+    ],
 };

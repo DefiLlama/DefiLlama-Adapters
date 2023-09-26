@@ -9,6 +9,14 @@ const config = {
   polygon: {
     registry: '0xd3d0e85f225348a2006270daf624d8c46cae4e1f',
     fromBlock: 31243728,
+  },
+  polygon_zkevm: {
+    registry: '0xc02a7B4658861108f9837007b2DF2007d6977116',
+    fromBlock: 2665891,
+  },
+  base: {
+    registry: '0xc02a7B4658861108f9837007b2DF2007d6977116',
+    fromBlock: 2785683,
   }
 }
 

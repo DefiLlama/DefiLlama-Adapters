@@ -111,7 +111,7 @@ async function polygon(timestamp, ethBlock, chainBlocks) {
     _tvlList.forEach((element) => {
         let address = element.input.params[0].toLowerCase();
         if(address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"){
-            address = "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"
+            address = ADDRESSES.polygon.WMATIC_2
         }
         let balance = element.output;
         sdk.util.sumSingleBalance(balances, 'polygon:'+address, balance)

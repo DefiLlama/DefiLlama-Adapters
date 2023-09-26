@@ -43,7 +43,7 @@ const stableTokenAddresses = [
   ADDRESSES.ethereum.DAI,
   ADDRESSES.ethereum.USDC,
   ADDRESSES.ethereum.USDT,
-  '0x853d955aCEf822Db058eb8505911ED77F175b99e',
+  ADDRESSES.ethereum.FRAX,
   '0xe2f2a5C287993345a840Db3B0845fbC70f5935a5',
   ADDRESSES.ethereum.WETH,
 

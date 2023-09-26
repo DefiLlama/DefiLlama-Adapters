@@ -14,8 +14,8 @@ const abis = {
 }
 
 const bscDexTVL = getUniTVL({
-  chain: 'bsc',
   factory: swapFactory,
+  useDefaultCoreAssets: true,
 })
 
 async function bscStableSwapTvl(_, _b, { bsc: block }) {

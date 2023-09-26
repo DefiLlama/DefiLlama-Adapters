@@ -161,7 +161,7 @@ async function bscBorrowed(timestamp, block, chainBlocks) {
 
 const polygonUnitroller = "0xdff18ac4146d67bf2ccbe98e7db1e4fa32b96881";
 const kmatic = "0xf186a66c2bd0509beaafca2a16d6c39ba02425f9";
-const wmatic = "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270";
+const wmatic = ADDRESSES.polygon.WMATIC_2;
 const polygonXKine = "0x66a782c9a077f5adc988cc0b5fb1cdcc9d7adeda";
 const polygonKine = "0xa9c1740fa56e4c0f6ce5a792fd27095c8b6ccd87";
 const polygonkMcd = "0xcd6b46443becad4996a70ee3d8665c0b86a0c54c";
