@@ -59,6 +59,7 @@ const supportedChains = [
     }
 ]
 
+
 // Fetch active vaults and associated data @todo limited to 1000 per chain
 const query = `
 {
@@ -90,3 +91,4 @@ module.exports[chain.identifier] = {
   }
 }
 })
+
