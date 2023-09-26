@@ -18,4 +18,5 @@ module.exports = uniV3Export({
   era: { factory: '0x1BB72E0CbbEA93c08f535fc7856E0338D7F7a8aB', fromBlock: 9413438, },
   arbitrum: { factory, fromBlock: 101028949, },
   base: { factory, fromBlock: 2912007, },
+  op_bnb: { factory, fromBlock: 1721753, },
 })
