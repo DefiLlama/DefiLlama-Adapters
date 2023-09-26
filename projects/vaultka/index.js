@@ -1,5 +1,4 @@
 //import utils
-const getGmPrice = require("./utils");
 const ADDRESSES = require("../helper/coreAssets.json");
 
 module.exports = {
