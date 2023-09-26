@@ -37,12 +37,13 @@ async function borrowedARB(_, _1, _2, { api }) {
   })
   const vaultContracts = await api.multiCall({  abi: "function getLoanVault (string loanVaultId) external view returns (address)", target: CONTRACT_ARB_VAULTS, calls: vaultIds })
   const loans = await api.multiCall({  abi: "function loansOutstanding() external view returns (uint256)", calls: vaultContracts})
-  // Take the sum of all vault tokens in terms of EURS (1 Loan Vault Token = 1 EURS Statis) on the platform | 18-2 = 16 atomic units (LV-EURS
+
+  // Take the sum of all vault tokens in terms of EURS (1 Loan Vault Token = 1 EURS Statis) on the platform | 18-2 = 16 atomic units (LV-EURS)
   loans.forEach((val, i) => api.add(CONTRACT_ARB_EURS, val / 1e16))
 }
 
 module.exports = {
   methodology: "Data is retrieved on-chain by taking the total sum of all loans outstanding (dominated in EURS Statis) from all platform vaults. Florence Finance is currently migrating from Ethereum to Arbitrum.",
   ethereum: { start: 16077400, borrowed: borrowedETH, tvl: () => ({}) },
-  arbitrum: { start: 126183410, borrowed: borrowedARB, tvl: () => ({}) },
+  //arbitrum: { start: 126183410, borrowed: borrowedARB, tvl: () => ({}) },
 }
