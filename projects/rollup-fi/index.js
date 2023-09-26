@@ -2,7 +2,7 @@
 const { gmxExports } = require('../helper/gmx')
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
-const { sumTokens2, sumTokensExport } = require('../helper/unwrapLPs')
+const { sumTokensExport } = require('../helper/unwrapLPs')
 
 module.exports = {
   era:{
