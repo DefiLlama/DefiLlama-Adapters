@@ -8,4 +8,5 @@ module.exports = {
   shibarium: { tvl: getUniTVL({ factory: '0xd3Ea3BC1F5A3F881bD6cE9761cbA5A0833a5d737', useDefaultCoreAssets: true,  }), },
   op_bnb: { tvl: getUniTVL({ factory: '0xa2899c776bAAF9925d432F83C950D5054A6CF59C', useDefaultCoreAssets: true,  }), },
   base: { tvl: getUniTVL({ factory: '0x169C06b4cfB09bFD73A81e6f2Bb1eB514D75bB19', useDefaultCoreAssets: true, hasStablePools: true, stablePoolSymbol: 'sLS2', }), },
+  manta: { tvl: getUniTVL({ factory: '0xa2899c776bAAF9925d432F83C950D5054A6CF59C', useDefaultCoreAssets: true,  }), },
 }
