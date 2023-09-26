@@ -6,7 +6,6 @@ const chain = 'aurora'
 
 const dexTVL = getUniTVL({
   factory: '0xc66F594268041dB60507F00703b152492fb176E7',
-  chain: 'aurora',
   useDefaultCoreAssets: true,
 })
 
