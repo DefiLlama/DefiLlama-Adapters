@@ -15,7 +15,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@defisaver/positions-sdk": "^0.0.1",
+    "@defisaver/positions-sdk": "^0.0.2",
     "@defillama/sdk": "latest",
     "@defisaver/automation-sdk": "^2.0.2",
     "@project-serum/anchor": "^0.25.0",
