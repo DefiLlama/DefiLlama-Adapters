@@ -34,6 +34,9 @@ const CONFIG = {
     router: '0x45f1A95A4D3f3836523F5c83673c797f4d4d263B',
     etherToken: '0x224d8fd7ab6ad4c6eb4611ce56ef35dec2277f03',
   },
+  kava:{
+    router: '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590',
+  },
 }
 
 module.exports = {
