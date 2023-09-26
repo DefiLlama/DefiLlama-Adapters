@@ -76,7 +76,7 @@ async function getGmPrice(token) {
 
   const result = await sdk.api2.abi.call({
     //get the abi of getMarketTokenPrice from gmReader abi.json
-    abi: gmReader,
+    abi: gmReader.getMarketTokenPrice,
     target: "0x38d91ED96283d62182Fc6d990C24097A918a4d9b",
     chain: "arbitrum",
     params: [
