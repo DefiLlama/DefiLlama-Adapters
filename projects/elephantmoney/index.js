@@ -1,6 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { stakings } = require("../helper/staking");
+const { pool2 } = require("../helper/pool2");
 
 const contracts = {
   BUSD: ADDRESSES.bsc.BUSD,
@@ -26,7 +27,7 @@ async function tvl(timestamp, block, chainBlocks) {
 
 module.exports = {
   bsc: {
-    pool2: stakings([contracts.TRUNK, contracts.ELEPHANT], LPs, "bsc"),
+    pool2: pool2([contracts.TRUNK, contracts.ELEPHANT], LPs, "bsc"),
     tvl: tvl,
     staking: stakings([contracts.staking], contracts.ELEPHANT, 'bsc')
   }

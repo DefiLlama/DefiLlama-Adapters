@@ -1,8 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokens2, sumTokensExport } = require('../helper/unwrapLPs')
-const { covalentGetTokens } = require('../helper/http')
 const { isWhitelistedToken } = require('../helper/streamingHelper')
-const { getUniqueAddresses } = require('../helper/utils')
 const { cachedGraphQuery } = require('../helper/cache')
 
 const blacklistedTokens = [

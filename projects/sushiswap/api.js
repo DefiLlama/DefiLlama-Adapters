@@ -59,7 +59,7 @@ module.exports = {
   okexchain: { tvl, },
   arbitrum: { tvl, },
   xdai: { tvl, },
-  harmony: { tvl, },
+  //harmony: { tvl, },
   ethereum: { tvl: eth, },
   polygon: { tvl, },
   fantom: { tvl, },

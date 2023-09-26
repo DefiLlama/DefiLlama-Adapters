@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const { transformBscAddress } = require("../helper/portedTokens");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { pool2Exports } = require("../helper/pool2");
 const { staking } = require("../helper/staking");
@@ -19,7 +18,7 @@ const staticBUSDFarmStrategyAddress = "0x53eE388f037876850D4fd60307FBA02e203A1C0
 async function tvl(timestamp, block, chainBlocks) {
   const balances = {};
   let lpPositions = [];
-  let transformAddress = await transformBscAddress();
+  let transformAddress = i => `bsc:${i}`;
 
   // Static-BUSD Boardroom TVL
   const staticBUSDBoardroomBalance = sdk.api.erc20

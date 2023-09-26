@@ -17,7 +17,6 @@ async function tvl(_, _b, _cb, { api, }) {
   for (let i = cache.pairData.length +1; i <= pairCount; i++) {
     const pair = await call({ target: factory, abi: 'get-pair-contracts', inputArgs: [{ type: 'number', value: i }] })
     cache.pairData.push(pair)
-    console.log('pair count: ', cache.pairData.length)
   }
 
   await setCache('stackswap', 'stacks-config', cache)
@@ -32,7 +31,6 @@ async function tvl(_, _b, _cb, { api, }) {
       token0Bal: +pairData.value['balance-x'].value + +pairData.value['fee-balance-x'].value,
       token1Bal: +pairData.value['balance-y'].value + +pairData.value['fee-balance-y'].value,
     })
-    console.log('pair data: ',++j)
   }
   return transformDexBalances({ chain: 'stacks', data})
 }

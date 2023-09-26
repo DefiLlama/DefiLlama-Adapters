@@ -2,7 +2,6 @@ const abi = require("./abi.json");
 const { staking } = require("../helper/staking");
 const { pool2BalanceFromMasterChefExports } = require("../helper/pool2");
 const { addFundsInMasterChef } = require("../helper/masterchef");
-const { transformBscAddress } = require("../helper/portedTokens");
 
 const farmContract = "0xdA842fad0BDb105c88399e845aD4D00dE3AEb911";
 const TEN = "0x74159651a992952e2bf340d7628459aa4593fc05";
@@ -32,7 +31,7 @@ const ethTvl = async (chainBlocks) => {
 const bscTvl = async (chainBlocks) => {
   const balances = {};
 
-  let transformAddress = await transformBscAddress();
+  let transformAddress = i => `bsc:${i}`;
   await addFundsInMasterChef(
     balances,
     farmContract_bsc,

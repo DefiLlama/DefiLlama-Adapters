@@ -92,7 +92,7 @@ function pool2TVL(chain) {
         }
       ]
       // Unwrao Gelato pools
-      await unwrapUniswapLPs(balances, lpBalances, block, chain, transformAddress, [], false, 'gelato')
+      await unwrapUniswapLPs(balances, lpBalances, block, chain, transformAddress, [], 'gelato')
       return balances
     }
   }

@@ -1,14 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { BigNumber } = require("bignumber.js");
 const { multiCall, sumTokens } = require('../helper/chain/starknet')
 const { marketAbi } = require('./abi');
 
-const valueToBigNumber = (amount) => {
-    if (amount instanceof BigNumber) {
-        return amount;
-    }
-    return new BigNumber(amount);
-}
 const market = '0x4c0a5193d58f74fbace4b74dcf65481e734ed1714121bdc571da345540efa05'
 
 const assets = [
@@ -25,7 +18,7 @@ async function tvl(_, _1, _2, { api }) {
 
 async function borrowed(_, _1, _2, { api }) {
     let data = await multiCall({ calls: assets, target: market, abi: marketAbi.get_total_debt_for_token });
-    data = data.map(i => valueToBigNumber(i).toNumber())
+    data = data.map(i => +i)
     api.addTokens(assets, data)
 }
 

@@ -7,12 +7,14 @@
     "stableswap": "function get_n_coins(address _pool) view returns (uint256[2]) @1521",
     "stableFactory": "function get_n_coins(address _pool) view returns (uint256) @2699",
     "crypto": "function get_n_coins(address _pool) view returns (uint256) @2834",
-    "cryptoFactory": "function get_n_coins(address _pool) view returns (uint256) @2834"
+    "cryptoFactory": "function get_n_coins(address _pool) view returns (uint256) @2834",
+    "triCryptoFactory": "function get_coins(address _pool) view returns (address[3])"
   },
   "get_coins": {
     "stableswap": "function get_coins(address _pool) view returns (address[8]) @12102",
     "stableFactory": "function get_coins(address _pool) view returns (address[4]) @9164",
     "crypto": "function get_coins(address _pool) view returns (address[8]) @22975",
-    "cryptoFactory": "function get_coins(address _pool) view returns (address[2])"
+    "cryptoFactory": "function get_coins(address _pool) view returns (address[2])",
+    "triCryptoFactory": "function get_coins(address _pool) view returns (address[3])"
   }
 }

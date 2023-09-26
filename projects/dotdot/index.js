@@ -113,13 +113,11 @@ async function resolveEpsLP({
   try {
     factory = (await sdk.api.abi.call({ target: token, abi: abis.factory, chain, block })).output
   } catch {
-    console.log('TRYING OTHER ABI')
     factory = (await sdk.api.abi.call({ target: token, abi: abis.factory2, chain, block })).output
   }
   try {
     minter = (await sdk.api.abi.call({ target: token, abi: abis.minter, chain, block })).output
   } catch {
-    console.log('no minter')
     return
   }
  // node test.js projects/dotdot/index.js
