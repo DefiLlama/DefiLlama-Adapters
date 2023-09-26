@@ -1,151 +1,122 @@
-const ADDRESSES = require('./helper/coreAssets.json')
-const defisaverABIs = require("./config/defisaver/abis");
-const utils = require("./helper/utils");
-const { nullAddress, } = require("./helper/tokenMapping");
-const sdk = require('@defillama/sdk')
+const Web3 = require('web3');
+const DefiLlamaSdk = require('@defillama/sdk');
+const DfsAutomationSdk = require('@defisaver/automation-sdk');
+const DfsPositionsSdk = require('@defisaver/positions-sdk');
 
-const dai = ADDRESSES.ethereum.DAI
+const { sliceIntoChunks } = require('./helper/utils');
 
-const {
-  CompoundSubscriptions,
-  CompoundLoanInfo,
-  McdSubscriptions,
-  MCDSaverProxy,
-  AaveSubscriptionsV2,
-  AaveLoanInfoV2,
-} = defisaverABIs;
+const providers = {
+  1: new Web3(process.env.ETHEREUM_RPC),
+  10: new Web3(process.env.OPTIMISM_RPC),
+  42161: new Web3(process.env.ARBITRUM_RPC),
+};
 
-function getAddress(defisaverConfig) {
-  return defisaverConfig.networks['1'].address
+function strategiesMapping(chainId) {
+  return ({
+    1: new DfsAutomationSdk.EthereumStrategies({ provider: providers[1] }),
+    10: new DfsAutomationSdk.OptimismStrategies({ provider: providers[10] }),
+    42161: new DfsAutomationSdk.ArbitrumStrategies({ provider: providers[42161] }),
+  })[chainId];
 }
 
-function getAbi(defisaverConfig, abiName) {
-  return defisaverConfig.abi[abiName]
+async function getStrategies(chainId, fromBlock) {
+  const strategies = strategiesMapping(chainId).getSubscriptions({ mergeWithSameId: true, fromBlock });
+
+  if (chainId === 1) {
+    return (await Promise.all([
+      strategies,
+      new DfsAutomationSdk.LegacyMakerAutomation({ provider: providers[1] }).getSubscriptions({ fromBlock }),
+      new DfsAutomationSdk.LegacyCompoundAutomation({ provider: providers[1] }).getSubscriptions({ fromBlock }),
+      new DfsAutomationSdk.LegacyAaveAutomation({ provider: providers[1] }).getSubscriptions({ fromBlock }),
+    ])).flat();
+  }
+
+  return strategies;
 }
 
-// Utils
-const bytesToString = (hex) =>
-  Buffer.from(hex.replace(/^0x/, ""), "hex").toString().replace(/\x00/g, ""); // eslint-disable-line
+function accountBalancesMapping(protocolIdentifier) {
+  return ({
+    [DfsAutomationSdk.enums.ProtocolIdentifiers.StrategiesAutomation.AaveV2]: DfsPositionsSdk.aaveV2.getAaveV2AccountBalances,
+    [DfsAutomationSdk.enums.ProtocolIdentifiers.StrategiesAutomation.AaveV3]: DfsPositionsSdk.aaveV3.getAaveV3AccountBalances,
+    [DfsAutomationSdk.enums.ProtocolIdentifiers.StrategiesAutomation.Spark]: DfsPositionsSdk.spark.getSparkAccountBalances,
+    [DfsAutomationSdk.enums.ProtocolIdentifiers.StrategiesAutomation.MorphoAaveV2]: DfsPositionsSdk.morphoAaveV2.getMorphoAaveV2AccountBalances,
+    [DfsAutomationSdk.enums.ProtocolIdentifiers.StrategiesAutomation.CompoundV2]: DfsPositionsSdk.compoundV2.getCompoundV2AccountBalances,
+    [DfsAutomationSdk.enums.ProtocolIdentifiers.StrategiesAutomation.CompoundV3]: DfsPositionsSdk.compoundV3.getCompoundV3AccountBalances,
+    [DfsAutomationSdk.enums.ProtocolIdentifiers.StrategiesAutomation.Liquity]: DfsPositionsSdk.liquity.getLiquityAccountBalances,
+    [DfsAutomationSdk.enums.ProtocolIdentifiers.StrategiesAutomation.MakerDAO]: DfsPositionsSdk.maker.getMakerAccountBalances,
+    [DfsAutomationSdk.enums.ProtocolIdentifiers.StrategiesAutomation.ChickenBonds]: DfsPositionsSdk.chickenBonds.getChickenBondsAccountBalances,
+    [DfsAutomationSdk.enums.ProtocolIdentifiers.StrategiesAutomation.Exchange]: DfsPositionsSdk.exchange.getExchangeAccountBalances,
+  })[protocolIdentifier];
+}
 
-const ilkToAsset = (ilk) =>
-  (ilk.substr(0, 2) === "0x" ? bytesToString(ilk) : ilk).replace(/-.*/, "");
+async function tvl(_0, _1, _2, obj) {
+  const balances = {};
 
-async function tvl(ts, block, _, { api }) {
-  const balances = {}
-  await Promise.all([
-    getCompoundData,
-    getAaveV2Data,
-    getMakerData,
-  ].map(i => i()))
-  return balances
+  const block = obj.block || 'latest';
 
-  async function getCompoundData() {
-    let compoundSubs = await api.call({
-      target: getAddress(CompoundSubscriptions),
-      abi: getAbi(CompoundSubscriptions, 'getSubscribers'),
-    })
-    let subData = await api.call({
-      target: getAddress(CompoundLoanInfo),
-      abi: getAbi(CompoundLoanInfo, 'getLoanDataArr'),
-      params: [compoundSubs.map((s) => s.user)],
-    })
-    subData.map((sub) => {
-      const { collAmounts, collAddr, borrowAddr, borrowAmounts } = sub
-
-      let borrowAmountTotal = 0
-      borrowAddr.forEach((value, i) => {
-        if (value === nullAddress) return;
-        borrowAmountTotal += +borrowAmounts[i]
-      })
-
-      if (borrowAmountTotal <= 0) return;
-      collAddr.forEach((value, i) => {
-        if (value === nullAddress) return;
-        sdk.util.sumSingleBalance(balances, dai, collAmounts[i], api.chain)
-      })
-    })
-  }
-
-  async function getAaveV2Data() {
-    const defaultMarket = "0xB53C1a33016B2DC2fF3653530bfF1848a515c8c5";
-    let aaveSubs = await api.call({
-      target: getAddress(AaveSubscriptionsV2),
-      abi: getAbi(AaveSubscriptionsV2, 'getSubscribers'),
-    })
-
-    const chunks = utils.sliceIntoChunks(aaveSubs, 30)
-    await Promise.all(chunks.map(async aaveSubs => {
-      const subData = await api.call({
-        target: getAddress(AaveLoanInfoV2),
-        abi: getAbi(AaveLoanInfoV2, 'getLoanDataArr'),
-        params: [defaultMarket, aaveSubs.map(i => i.user)],
-      })
-      subData.map((sub) => {
-        const { collAmounts, collAddr, borrowAddr, borrowStableAmounts, borrowVariableAmounts, } = sub
-
-        let borrowAmountTotal = 0
-        borrowAddr.forEach((value, i) => {
-          if (value === nullAddress) return;
-          borrowAmountTotal += +borrowStableAmounts[i]
-          borrowAmountTotal += +borrowVariableAmounts[i]
-        })
-
-        if (borrowAmountTotal <= 0) return;
-        collAddr.forEach((value, i) => {
-          if (value === nullAddress) return;
-          sdk.util.sumSingleBalance(balances, nullAddress, collAmounts[i], api.chain)
-        })
-
-      })
-    }))
-  }
-
-  async function getMakerData() {
-    let makerSubs = await api.call({
-      target: getAddress(McdSubscriptions),
-      abi: getAbi(McdSubscriptions, 'getSubscribers'),
-    })
-
-    const getCdpDetailedInfoABI = getAbi(MCDSaverProxy, 'getCdpDetailedInfo')
-
-    const calls = [];
-    for (const cdp of makerSubs) {
-      calls.push({
-        target: getAddress(MCDSaverProxy),
-        params: [cdp.cdpId,],
-      });
+  const subscriptions = (await getStrategies(obj.api.chainId, block)).filter(subscription => {
+    if (
+      subscription.protocol.id === DfsAutomationSdk.enums.ProtocolIdentifiers.StrategiesAutomation.Exchange
+      && subscription.strategy.strategyId === DfsAutomationSdk.enums.Strategies.Identifiers.LimitOrder
+    ) {
+      return subscription.isEnabled && (subscription.strategyData.decoded.triggerData.goodUntil > (Date.now() / 1000));
     }
-    const callResults = await api.multiCall({
-      abi: getCdpDetailedInfoABI,
-      calls,
-    })
+    return subscription.isEnabled;
+  });
 
-    callResults.forEach((cdp, i) => {
-      const asset = ilkToAsset(cdp.ilk)
-      if (+cdp.debt <= 0 || asset === 'RENBTC' ) return;
-      let balance = cdp.collateral
-      if (asset === 'WBTC')
-        balance /= 1e10
+  const subChunks = sliceIntoChunks(subscriptions, 30);
 
-      sdk.util.sumSingleBalance(balances, assetMapping[asset] || asset, balance)
-    });
+  for (const chunk of subChunks) {
+
+    await Promise.all(chunk.map(async (subscription) => {
+
+      const accountBalanceGetter = accountBalancesMapping(subscription.protocol.id);
+
+      let params;
+
+      if (subscription.strategy.strategyId !== 'legacy') {
+        params = [subscription.strategyData.decoded.triggerData.owner];
+
+        if (subscription.protocol.id === DfsAutomationSdk.enums.ProtocolIdentifiers.StrategiesAutomation.CompoundV3) {
+          params.push(subscription.strategyData.decoded.triggerData.market.toLowerCase());
+        }
+        if (subscription.protocol.id === DfsAutomationSdk.enums.ProtocolIdentifiers.StrategiesAutomation.MakerDAO) {
+          params = [subscription.strategyData.decoded.triggerData.vaultId];
+        }
+        if (subscription.protocol.id === DfsAutomationSdk.enums.ProtocolIdentifiers.StrategiesAutomation.Liquity) {
+          params = [subscription.owner];
+        }
+        if (subscription.protocol.id === DfsAutomationSdk.enums.ProtocolIdentifiers.StrategiesAutomation.ChickenBonds) {
+          params = [subscription.strategyData.decoded.triggerData.bondId];
+        }
+        if (subscription.protocol.id === DfsAutomationSdk.enums.ProtocolIdentifiers.StrategiesAutomation.Exchange) {
+          params = [subscription.strategyData.decoded.subData];
+        }
+      } else {
+        params = [subscription.specific.user]
+
+        if (subscription.protocol.id === DfsAutomationSdk.enums.ProtocolIdentifiers.StrategiesAutomation.MakerDAO) {
+          params = [subscription.specific.cdpId];
+        }
+      }
+
+      const currentBalances = await accountBalanceGetter(providers[obj.api.chainId], obj.api.chainId, block, true, ...params);
+
+      Object.entries(currentBalances).forEach(([poperty, values]) => {
+        if (poperty !== 'debt') {
+          DefiLlamaSdk.util.mergeBalances(balances, values);
+        }
+      });
+    }));
   }
-}
 
-const assetMapping = {
-  ETH: nullAddress,
-  DAI: ADDRESSES.ethereum.DAI,
-  BAT: ADDRESSES.ethereum.BAT,
-  RETH: ADDRESSES.ethereum.RETH,
-  LINK: ADDRESSES.ethereum.LINK,
-  WBTC: ADDRESSES.ethereum.WBTC,
-  MATIC: ADDRESSES.ethereum.MATIC,
-  WSTETH: ADDRESSES.ethereum.WSTETH
+  return balances;
 }
 
 module.exports = {
   doublecounted: true,
-  ethereum: {
-    tvl
-  },
+  methodology: 'TVL accounts for all assets deposited into the automated strategies.',
+  ethereum: { tvl },
+  arbitrum: { tvl },
+  optimism: { tvl },
 };
