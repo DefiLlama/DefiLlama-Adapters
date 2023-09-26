@@ -5,29 +5,23 @@ const DfsPositionsSdk = require('@defisaver/positions-sdk');
 
 const { sliceIntoChunks } = require('./helper/utils');
 
-const providers = {
-  1: new Web3(process.env.ETHEREUM_RPC),
-  10: new Web3(process.env.OPTIMISM_RPC),
-  42161: new Web3(process.env.ARBITRUM_RPC),
-};
-
-function strategiesMapping(chainId) {
+function strategiesMapping(chainId, provider) {
   return ({
-    1: new DfsAutomationSdk.EthereumStrategies({ provider: providers[1] }),
-    10: new DfsAutomationSdk.OptimismStrategies({ provider: providers[10] }),
-    42161: new DfsAutomationSdk.ArbitrumStrategies({ provider: providers[42161] }),
+    1: new DfsAutomationSdk.EthereumStrategies({ provider }),
+    10: new DfsAutomationSdk.OptimismStrategies({ provider }),
+    42161: new DfsAutomationSdk.ArbitrumStrategies({ provider }),
   })[chainId];
 }
 
-async function getStrategies(chainId, fromBlock) {
-  const strategies = strategiesMapping(chainId).getSubscriptions({ mergeWithSameId: true, fromBlock });
+async function getStrategies(chainId, fromBlock, provider) {
+  const strategies = strategiesMapping(chainId, provider).getSubscriptions({ mergeWithSameId: true, fromBlock });
 
   if (chainId === 1) {
     return (await Promise.all([
       strategies,
-      new DfsAutomationSdk.LegacyMakerAutomation({ provider: providers[1] }).getSubscriptions({ fromBlock }),
-      new DfsAutomationSdk.LegacyCompoundAutomation({ provider: providers[1] }).getSubscriptions({ fromBlock }),
-      new DfsAutomationSdk.LegacyAaveAutomation({ provider: providers[1] }).getSubscriptions({ fromBlock }),
+      new DfsAutomationSdk.LegacyMakerAutomation({ provider }).getSubscriptions({ fromBlock }),
+      new DfsAutomationSdk.LegacyCompoundAutomation({ provider }).getSubscriptions({ fromBlock }),
+      new DfsAutomationSdk.LegacyAaveAutomation({ provider }).getSubscriptions({ fromBlock }),
     ])).flat();
   }
 
@@ -49,12 +43,14 @@ function accountBalancesMapping(protocolIdentifier) {
   })[protocolIdentifier];
 }
 
-async function tvl(_0, _1, _2, obj) {
+async function tvl(timestamp, ethBlock, networkBlockMapping, chainApi) {
   const balances = {};
 
-  const block = obj.block || 'latest';
+  const rpcUrl = chainApi.api.provider.providerConfigs[0].provider.connection.url;
+  const provider = new Web3(rpcUrl);
+  const block = networkBlockMapping[chainApi.chain];
 
-  const subscriptions = (await getStrategies(obj.api.chainId, block)).filter(subscription => {
+  const subscriptions = (await getStrategies(chainApi.api.chainId, block, provider)).filter(subscription => {
     if (
       subscription.protocol.id === DfsAutomationSdk.enums.ProtocolIdentifiers.StrategiesAutomation.Exchange
       && subscription.strategy.strategyId === DfsAutomationSdk.enums.Strategies.Identifiers.LimitOrder
@@ -100,10 +96,10 @@ async function tvl(_0, _1, _2, obj) {
         }
       }
 
-      const currentBalances = await accountBalanceGetter(providers[obj.api.chainId], obj.api.chainId, block, true, ...params);
+      const currentBalances = await accountBalanceGetter(provider, chainApi.api.chainId, block, true, ...params);
 
-      Object.entries(currentBalances).forEach(([poperty, values]) => {
-        if (poperty !== 'debt') {
+      Object.entries(currentBalances).forEach(([property, values]) => {
+        if (property !== 'debt') {
           DefiLlamaSdk.util.mergeBalances(balances, values);
         }
       });
