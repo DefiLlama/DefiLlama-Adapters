@@ -1,5 +1,7 @@
 const { Program } = require("@project-serum/anchor");
-const { getProvider, sumTokens2, } = require("../helper/solana");
+const { getProvider, sumTokens2, getConnection, } = require("../helper/solana");
+const { PublicKey } = require("@solana/web3.js");
+
 const idl = require('./idl')
 
 async function tvl() {
