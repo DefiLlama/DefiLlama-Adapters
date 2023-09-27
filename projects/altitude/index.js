@@ -1,6 +1,6 @@
 const contract = '0xF80E51AFb613D764FA61751Affd3313C190A86BB'
 
-const CHAINS = ["ethereum", "bsc", "polygon", "arbitrum", "avax", "optimism", "fantom"]
+const CHAINS = ["ethereum", "bsc", "polygon", "arbitrum", "avax", "optimism", "fantom", "linea"]
 const chainPathsAbi = "function chainPaths(uint256) view returns (bool ready, address srcToken, uint16 dstChainId, address dstToken, uint256 remoteLiquidity, uint256 localLiquidity, uint256 rewardPoolSize, address lpToken, bool stopSwap)"
 
 CHAINS.forEach(chain => {
