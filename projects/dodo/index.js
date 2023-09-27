@@ -5,7 +5,7 @@ const sdk = require('@defillama/sdk')
 const graphEndpoints = {
   'ethereum': "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2",
   "bsc": "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-bsc",
-  "heco": "https://q.hg.network/subgraphs/name/dodoex/heco",
+  //"heco": "https://q.hg.network/subgraphs/name/dodoex/heco",
   "polygon": "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-polygon",
   "arbitrum": "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-arbitrum",
   "aurora": "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-aurora",
