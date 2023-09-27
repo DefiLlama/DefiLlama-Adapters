@@ -23,7 +23,7 @@ async function tvl() {
 
   tvl.solana += lstTvlSolana;
   
-  return 
+  return tvl
 }
 
 module.exports = {
