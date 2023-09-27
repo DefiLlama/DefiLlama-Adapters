@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk');
 const ADDRESSES = require('../helper/coreAssets.json')
-const LETSFIL_CONTRACT = "0x74a37AC5f124d25284ffEc0107cB93a6f9A2E433";
+const LETSFIL_CONTRACT = "0x02F0C30Eb92e89912371242Ee86Fe98050D040A5";
 
 
 async function tvl(_, _1, _2, { api }) {
