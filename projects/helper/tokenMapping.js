@@ -55,6 +55,9 @@ const fixBalancesTokens = {
   pg: {
     '0x0cf4071940782b640d0b595cb17bdf3e90869d70': { coingeckoId: 'pego-network-2', decimals: 18 },
   },
+  shimmer_evm: {
+    '0x1074010000000000000000000000000000000000': { coingeckoId: 'shimmer', decimals: 6 },
+  },
   manta: {
     '0x0Dc808adcE2099A9F62AA87D9670745AbA741746': { coingeckoId: 'ethereum', decimals: 18 },
     '0xb73603c5d87fa094b7314c74ace2e64d165016fb': { coingeckoId: 'usd-coin', decimals: 6 },
