@@ -37,8 +37,6 @@ async function getBalances(components) {
     });
   });
 
-  console.log(resourceAmounts)
-
   const balancesByName = {}
   body["addresses"] = Object.keys(resourceAmounts);
   const resourcesDetails = await post(ENTITY_DETAILS_URL, body)
@@ -47,7 +45,6 @@ async function getBalances(components) {
     balancesByName[resourceName] = parseFloat(resourceAmounts[resource.address])
   });
 
-  console.log(balancesByName)
   return balancesByName
 }
 
