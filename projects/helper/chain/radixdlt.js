@@ -14,7 +14,12 @@ const ENTITY_DETAILS_URL = `https://rcnet-v3.radixdlt.com/state/entity/details`
 
 async function getBalances(components) {
   const body = {
-    "addresses": components
+    "addresses": components,
+    "opt_ins": {
+      "explicit_metadata": [
+        "name"
+      ]
+    }
   }
   const data = await post(ENTITY_DETAILS_URL, body)
 
@@ -22,7 +27,7 @@ async function getBalances(components) {
   data.items.forEach((item) => {
     item.fungible_resources.items.forEach((resource) => {
       const resourceAddress = resource.resource_address;
-      const amount = parseFloat(resource.amount);
+      const amount = resource.amount;
 
       if (resourceAmounts.hasOwnProperty(resourceAddress)) {
         resourceAmounts[resourceAddress] += amount;
@@ -38,7 +43,7 @@ async function getBalances(components) {
   body["addresses"] = Object.keys(resourceAmounts);
   const resourcesDetails = await post(ENTITY_DETAILS_URL, body)
   resourcesDetails.items.forEach(resource => {
-    const resourceName = getNameFromMetadata(resource.metadata)
+    const resourceName = getNameFromMetadata(resource.explicit_metadata)
     balancesByName[resourceName] = parseFloat(resourceAmounts[resource.address])
   });
 
