@@ -1,13 +1,3 @@
-const { getChainTvl } = require('../helper/getUniSubgraphTvl');
+const { uniTvlExport } = require('../helper/unknownTokens');
 
-const v2graph = getChainTvl({
-  shimmer_evm: 'https://graph.shimmersea.finance/subgraphs/name/shimmersea/shimmer-dex'
-})
-
-module.exports = {
-  misrepresentedTokens: true,
-  methodology: `Counts the tokens locked on AMM pools, pulling the data from subgraph`,
-  shimmer_evm: {
-    tvl: v2graph('shimmer_evm'),
-  },
-}
+module.exports = uniTvlExport('shimmer_evm', '0x4fb5d3a06f5de2e88ce490e2e11d22b840d5ac47')
