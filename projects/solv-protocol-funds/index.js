@@ -10,47 +10,14 @@ const graphUrlList = {
   mantle: 'http://api.0xgraph.xyz/subgraphs/name/solv-payable-factory-mentle-0xgraph',
 }
 
-const filterSlot = [
-  "24463698369598535545979799361840946803505909684060624549876546521811809090281",
-  "35721610559268442584760110830641808857798079704888818123868248602816498531758",
-  "71384167217207433357665203528199852676074195415546219658272700694805764131696",
-  "94855382073997775269187449187472275689000980913702165029893305070390069014119"
-];
+const rwaSlot = [
+  "77406646563329984090609229456139833989531434162860778120489803664660566620495"
+]
 
-async function tvl() {
+async function tvl(ts) {
   const { api } = arguments[3];
   const network = api.chain;
-  const graphData = await getGraphData(api.timestamp, network, api);
-  if (graphData.slots.length > 0) {
-    const slots = graphData.slots;
-    const closeConcretes = await concrete(slots, api);
-    const closeTotalValues = await api.multiCall({
-      abi: abi.slotTotalValue,
-      calls: slots.map((index) => ({
-        target: closeConcretes[index.contractAddress],
-        params: [index.slot]
-      })),
-    })
-
-    const closeBaseInfos = await api.multiCall({
-      abi: abi.slotBaseInfo,
-      calls: slots.map((index) => ({
-        target: closeConcretes[index.contractAddress],
-        params: [index.slot]
-      })),
-    })
-
-    const closeDecimalList = await api.multiCall({
-      abi: abi.decimals,
-      calls: closeBaseInfos.map(i => i[1]),
-    })
-
-    for (let i = 0; i < closeTotalValues.length; i++) {
-      const decimals = closeDecimalList[i];
-      const balance = BigNumber(closeTotalValues[i]).div(BigNumber(10).pow(18 - decimals)).toNumber();
-      api.add(closeBaseInfos[i][1], balance)
-    }
-  }
+  const graphData = await getGraphData(ts, network, api);
 
   if (graphData.pools.length > 0) {
     const pools = graphData.pools;
@@ -59,7 +26,7 @@ async function tvl() {
       abi: abi.getSubscribeNav,
       calls: pools.map((index) => ({
         target: index.navOracle,
-        params: [index.poolId, api.timestamp]
+        params: [index.poolId, ts]
       })),
     })
 
@@ -90,6 +57,7 @@ async function tvl() {
       api.add(poolBaseInfos[i][1], balance)
     }
   }
+  return api.getBalances()
 }
 
 async function concrete(slots, api) {
@@ -117,12 +85,8 @@ async function concrete(slots, api) {
 
 
 async function getGraphData(timestamp, chain, api) {
-  const slotDataQuery = `query BondSlotInfos ($block: Int){
-            bondSlotInfos(first: 1000, block: { number: $block }  where:{maturity_gt:${timestamp}}) {
-                contractAddress
-                slot
-            }
-            poolOrderInfos(first: 1000, block: { number: $block }  where:{fundraisingEndTime_gt:${timestamp}}) {
+  const slotDataQuery = `query BondSlotInfos {
+            poolOrderInfos(first: 1000  where:{fundraisingEndTime_gt:${timestamp}, openFundShareSlot_not_in: ${JSON.stringify(rwaSlot)}}) {
               marketContractAddress
               contractAddress
               navOracle
@@ -130,27 +94,18 @@ async function getGraphData(timestamp, chain, api) {
               openFundShareSlot
           }
         }`;
-  const data = (await cachedGraphQuery(`solv-protocol/graph-data/${chain}`, graphUrlList[chain], slotDataQuery, { api, useBlock: true, }));
+  const data = (await cachedGraphQuery(`solv-protocol/funds-graph-data/${chain}`, graphUrlList[chain], slotDataQuery, { api, }));
 
-  let slotList = [];
   let poolList = [];
-  if (data != undefined && data.bondSlotInfos != undefined) {
-    for (let i = 0; i < data.bondSlotInfos.length; i++) {
-      const bondSlotInfo = data.bondSlotInfos[i];
-      if (filterSlot.indexOf(bondSlotInfo.slot) == -1) {
-        slotList.push(bondSlotInfo)
-      }
-    }
-  }
   if (data != undefined && data.poolOrderInfos != undefined) {
     poolList = data.poolOrderInfos;
   }
+
   return {
-    slots: slotList,
     pools: poolList
   };
 }
-// node test.js projects/solv-protocol-v3
+// node test.js projects/solv-protocol-funds
 ['ethereum', 'bsc', 'arbitrum', 'mantle'].forEach(chain => {
   module.exports[chain] = { tvl: () => ({}), borrowed: tvl, }
 })
