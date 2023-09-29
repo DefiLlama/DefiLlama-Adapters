@@ -3,8 +3,6 @@
  * on Polygon, Georli and Gnosis chain/network.
  * } **/
 
-//import defillma sdk
-const sdk = require("@defillama/sdk");
 //import prewritten getLogs from helper
 const { getLogs } = require("../helper/cache/getLogs");
 
@@ -43,28 +41,25 @@ const chainConfig = {
   //   },
 };
 
-//sums up and return the total of all array hex elements in decimal(human readable number)
-const sumTvls = (tvls) => {
-  return tvls.reduce((a, b) => {
-    return Number(a) + Number(b);
-  }, 0x0);
+//gets and record total tvl for each token
+const getTokensTvl = async (tokens, tvls) => {
+  let table = {};
+  tokens.forEach((token, idx) => {
+    if (!table[token]) {
+      table[token] = tvls[idx];
+    } else {
+      table[token] = table[token] + tvls[idx];
+    }
+  });
+  return table;
 };
 
 //customise table indicating the address, tvl and total tvl of each tokens
-const customiseTable = async (api, tokens, tvls, totalTvl) => {
+const customiseTable = async (tokens, tvls) => {
   let table = [];
-  if (tokens.length > 0) {
-    const names = await api.multiCall({
-      abi: "string:name",
-      calls: tokens,
-    });
-    names.forEach((name, idx) => {
-      table.push({ Token: name, Tvl: Number(tvls[idx]) });
-    });
-    table.push({ TotalTvl: totalTvl });
-  } else {
-    table.push({ Token: null, Tvl: null, TotalTvl: 0 });
-  }
+  tokens.forEach((token, idx) => {
+    table.push({ Token: token, Tvl: tvls[idx] });
+  });
   return table;
 };
 
@@ -95,7 +90,7 @@ const getChainTvls = (chain) => {
       onlyArgs: true,
     });
     if (primaryLogs.length > 0) {
-      const primaryTvls = primaryLogs.map((i) => i.cashSwapped).flat();
+      const primaryTvls = primaryLogs.map((i) => Number(i.cashSwapped)).flat();
       const primaryCurrencies = primaryLogs.map((i) => i.currency).flat();
       primaryTvls.forEach((tvl) => {
         allTvls.push(tvl);
@@ -103,21 +98,24 @@ const getChainTvls = (chain) => {
       primaryCurrencies.forEach((curr) => {
         allCurrencies.push(curr);
       });
-      sdk.log("---------", chain, "TVL Details For Primary Manager ---------");
-      console.table(
-        await customiseTable(
-          api,
-          primaryCurrencies,
-          primaryTvls,
-          sumTvls(primaryTvls)
-        )
+      const names = await api.multiCall({
+        abi: "string:name",
+        calls: primaryCurrencies,
+      });
+      const currencyTvls = await getTokensTvl(names, primaryTvls);
+      const tabl = await customiseTable(
+        Object.keys(currencyTvls),
+        Object.values(currencyTvls)
       );
-    } else {
-      sdk.log("---------", chain, "TVL Details For Primary Manager ---------");
-      console.table(await customiseTable(api, [], [], sumTvls([])));
+      console.log(
+        "---------",
+        chain,
+        "TVL Details For Primary Manager ---------"
+      );
+      console.table(tabl);
     }
     if (secondaryLogs.length > 0) {
-      const secondaryTvls = secondaryLogs.map((i) => i.amount).flat();
+      const secondaryTvls = secondaryLogs.map((i) => Number(i.amount)).flat();
       const secondaryCurrencies = secondaryLogs
         .map((i) => i.currencySettled)
         .flat();
@@ -127,27 +125,31 @@ const getChainTvls = (chain) => {
       secondaryCurrencies.forEach((curr) => {
         allCurrencies.push(curr);
       });
-      sdk.log("---------", chain, "TVL Details For Secondary Manager---------");
-      console.table(
-        await customiseTable(
-          api,
-          secondaryCurrencies,
-          secondaryTvls,
-          sumTvls(secondaryTvls)
-        )
+      const names = await api.multiCall({
+        abi: "string:name",
+        calls: secondaryCurrencies,
+      });
+      const currencyTvls = await getTokensTvl(names, secondaryTvls);
+      const tabl = await customiseTable(
+        Object.keys(currencyTvls),
+        Object.values(currencyTvls)
       );
-    } else {
-      sdk.log("---------", chain, "TVL Details For Secondary Manager---------");
-      console.table(await customiseTable(api, [], [], sumTvls([])));
+      console.log(
+        "---------",
+        chain,
+        "TVL Details For Secondary Manager ---------"
+      );
+      console.table(tabl);
     }
     if (allCurrencies.length > 0) {
       const decimals = await api.multiCall({
         abi: "uint256:decimals",
         calls: allCurrencies,
       });
+      console.log("=============== Total", chain, "TVL  ===============");
       return api.addTokens(
         allCurrencies,
-        allTvls.map((tvl, idx) => Number(tvl) * 10 ** decimals[idx]).flat()
+        allTvls.map((tvl, idx) => tvl * 10 ** decimals[idx]).flat()
       );
     } else {
       return 0;
