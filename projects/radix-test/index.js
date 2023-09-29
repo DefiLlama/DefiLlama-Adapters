@@ -19,8 +19,8 @@ module.exports = {
   radixdlt: {
     tvl: async () => {
       return await getBalances([
-        "component_tdx_e_1cradfzdmp76t0gu4ssqpvfx0dj76gv7laskt0ty09wa3kcdfxn279l",
-        "component_tdx_e_1cqf0xl4u58wdpxs7juf42w4he2gucks3ptrhhntthg5288hhvsetgd"])
+        "component_rdx1cptxxxxxxxxxgenssxxxxxxxxxx000977302539xxxxxxxxxgenssx",
+        "component_rdx1cptxxxxxxxxxfaucetxxxxxxxxx000527798379xxxxxxxxxfaucet"])
     },
   },
   timetravel: false
