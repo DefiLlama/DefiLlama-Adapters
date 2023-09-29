@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const abi = require('./abi.json')
 const { nullAddress, sumTokens2 } = require('../helper/unwrapLPs')
-const { stakings } = require('../helper/staking')
+const { staking } = require('../helper/staking')
 
 const CONFIG = {
   ethereum: {
@@ -89,5 +89,5 @@ Object.keys(CONFIG).forEach((chain) => {
   }
 
   if (stakingContract && stg)
-    module.exports[chain].staking = stakings(stakingContract, stg)
+    module.exports[chain].staking = staking(stakingContract, stg)
 })
