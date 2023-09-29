@@ -22,7 +22,7 @@ const endPoints = {
   juno: "https://lcd-juno.cosmostation.io",
   cronos: "https://lcd-crypto-org.cosmostation.io",
   chihuahua: "https://rest.cosmos.directory/chihuahua",
-  stargaze: "https://api-stargaze.ezstaking.dev",
+  stargaze: "https://rest.stargaze-apis.com",
   quicksilver: "https://rest.cosmos.directory/quicksilver",
   persistence: "https://rest.cosmos.directory/persistence",
   secret: "https://lcd.secret.express",
