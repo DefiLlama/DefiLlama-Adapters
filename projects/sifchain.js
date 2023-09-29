@@ -2,7 +2,7 @@ const { get } = require('./helper/http')
 
 async function tvl() {
   // const getPoolsRes = await get('https://api.sifchain.finance/clp/getPools')
-  const getPoolsRes = await get('https://lcd-sifchain.cosmostation.io/clp/getPools')
+  const getPoolsRes = await get('https://sifchain-api.polkachu.com/clp/getPools')
 
   const total = getPoolsRes.result.pools
     .map(pool => +pool.native_asset_balance)
