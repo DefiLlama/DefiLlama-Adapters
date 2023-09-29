@@ -32,17 +32,6 @@ function v3TvlPaged(chain) {
     }
   `
 
-    if (chain === 'celo') // we dont care about block
-      graphQueryPaged = `
-    query poolQuery($lastId: String) {
-      pools(first:1000 where: {id_gt: $lastId totalValueLockedUSD_gt: 100}) {
-        id
-        token0 { id }
-        token1 { id }
-      }
-    }
-  `
-
     const pools = await cachedGraphQuery('uniswap-v3/' + api.chain, graphs[chain], graphQueryPaged, { variables: { block: block - 500 }, fetchById: true })
     const blacklisted = blacklists[chain] || []
 
@@ -67,7 +56,7 @@ module.exports = {
   ...uniV3Export({
     base: { factory: '0x33128a8fc17869897dce68ed026d694621f6fdfd', fromBlock: 1371680, },
     celo: { factory: '0xAfE208a311B21f13EF87E33A90049fC17A7acDEc', fromBlock: 13916355, },
-    moonbeam: { factory: '0x28f1158795a3585caaa3cd6469cd65382b89bb70', fromBlock: 3340452 }
+    moonbeam: { factory: '0x28f1158795a3585caaa3cd6469cd65382b89bb70', fromBlock: 4313505 }
   })
 }
 
