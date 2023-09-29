@@ -14,10 +14,10 @@ const rwaSlot = [
   "77406646563329984090609229456139833989531434162860778120489803664660566620495"
 ]
 
-async function tvl() {
+async function tvl(ts) {
   const { api } = arguments[3];
   const network = api.chain;
-  const graphData = await getGraphData(api.timestamp, network, api);
+  const graphData = await getGraphData(ts, network, api);
 
   if (graphData.pools.length > 0) {
     const pools = graphData.pools;
@@ -26,7 +26,7 @@ async function tvl() {
       abi: abi.getSubscribeNav,
       calls: pools.map((index) => ({
         target: index.navOracle,
-        params: [index.poolId, api.timestamp]
+        params: [index.poolId, ts]
       })),
     })
 
@@ -57,6 +57,7 @@ async function tvl() {
       api.add(poolBaseInfos[i][1], balance)
     }
   }
+  return api.getBalances()
 }
 
 async function concrete(slots, api) {
@@ -84,8 +85,8 @@ async function concrete(slots, api) {
 
 
 async function getGraphData(timestamp, chain, api) {
-  const slotDataQuery = `query BondSlotInfos ($block: Int){
-            poolOrderInfos(first: 1000, block: { number: $block }  where:{fundraisingEndTime_gt:${timestamp}, openFundShareSlot_not_in: ${JSON.stringify(rwaSlot)}}) {
+  const slotDataQuery = `query BondSlotInfos {
+            poolOrderInfos(first: 1000  where:{fundraisingEndTime_gt:${timestamp}, openFundShareSlot_not_in: ${JSON.stringify(rwaSlot)}}) {
               marketContractAddress
               contractAddress
               navOracle
@@ -93,7 +94,7 @@ async function getGraphData(timestamp, chain, api) {
               openFundShareSlot
           }
         }`;
-  const data = (await cachedGraphQuery(`solv-protocol/graph-data/${chain}`, graphUrlList[chain], slotDataQuery, { api, useBlock: true, }));
+  const data = (await cachedGraphQuery(`solv-protocol/funds-graph-data/${chain}`, graphUrlList[chain], slotDataQuery, { api, }));
 
   let poolList = [];
   if (data != undefined && data.poolOrderInfos != undefined) {

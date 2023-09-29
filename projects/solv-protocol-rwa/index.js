@@ -11,17 +11,16 @@ const rwaSlot = [
   "77406646563329984090609229456139833989531434162860778120489803664660566620495"
 ]
 
-async function tvl() {
-  const { api } = arguments[3];
+async function tvl(ts, _, _1, { api }) {
   const network = api.chain;
-  const pools = await getGraphData(api.timestamp, network, api);
-  if (pools == undefined || pools.length === 0) return
+  const pools = await getGraphData(ts, network, api);
+  if (pools == undefined || pools.length === 0) return {}
   const poolConcretes = await concrete(pools, api);
   const nav = await api.multiCall({
     abi: abi.getSubscribeNav,
     calls: pools.map((index) => ({
       target: index.navOracle,
-      params: [index.poolId, api.timestamp]
+      params: [index.poolId, ts]
     })),
   })
 
@@ -51,6 +50,7 @@ async function tvl() {
     const balance = BigNumber(poolTotalValues[i]).div(BigNumber(10).pow(18 - decimals)).times(BigNumber(nav[i].nav_).div(BigNumber(10).pow(decimals))).toNumber();
     api.add(poolBaseInfos[i][1], balance)
   }
+  return api.getBalances()
 }
 
 async function concrete(slots, api) {
@@ -77,8 +77,8 @@ async function concrete(slots, api) {
 }
 
 async function getGraphData(timestamp, chain, api) {
-  const slotDataQuery = `query BondSlotInfos ($block: Int){
-            poolOrderInfos(first: 1000, block: { number: $block }  where:{fundraisingEndTime_gt:${timestamp}, openFundShareSlot_in:${JSON.stringify(rwaSlot)}}) {
+  const slotDataQuery = `query BondSlotInfos {
+            poolOrderInfos(first: 1000,  where:{fundraisingEndTime_gt:${timestamp}, openFundShareSlot_in:${JSON.stringify(rwaSlot)}}) {
               marketContractAddress
               contractAddress
               navOracle
@@ -86,7 +86,7 @@ async function getGraphData(timestamp, chain, api) {
               openFundShareSlot
           }
         }`;
-  const data = (await cachedGraphQuery(`solv-protocol/graph-data/${chain}`, graphUrlList[chain], slotDataQuery, { api, useBlock: true, }));
+  const data = (await cachedGraphQuery(`solv-protocol/rwa-graph-data/${chain}`, graphUrlList[chain], slotDataQuery, { api,  }));
   return data.poolOrderInfos;
 }
 // node test.js projects/solv-protocol-rwa
