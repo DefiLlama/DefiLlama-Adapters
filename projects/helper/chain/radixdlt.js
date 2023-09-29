@@ -10,7 +10,7 @@ function getNameFromMetadata(metadata) {
 }
 
 // TODO: update the url below with the final url after babylon
-const ENTITY_DETAILS_URL = `https://rcnet-v3.radixdlt.com/state/entity/details`
+const ENTITY_DETAILS_URL = `https://mainnet.radixdlt.com/state/entity/details`
 
 async function getBalances(components) {
   const body = {
