@@ -38,4 +38,16 @@ module.exports = {
       useDefaultCoreAssets: true,
     })
   },
+  shimmer: {
+    tvl: getUniTVL({
+      factory: '0x24cb308a4e2F3a4352F513681Bd0c31a0bd3BA31',
+      useDefaultCoreAssets: true,
+    })
+  },
+  base: {
+    tvl: getUniTVL({
+      factory: '0x9e6d21e759a7a288b80eef94e4737d313d31c13f',
+      useDefaultCoreAssets: true,
+    })
+  },
 };
