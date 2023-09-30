@@ -38,7 +38,7 @@ module.exports = {
       useDefaultCoreAssets: true,
     })
   },
-  shimmer: {
+  shimmer_evm: {
     tvl: getUniTVL({
       factory: '0x24cb308a4e2F3a4352F513681Bd0c31a0bd3BA31',
       useDefaultCoreAssets: true,
