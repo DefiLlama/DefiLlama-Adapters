@@ -8,6 +8,7 @@ module.exports = yieldHelper({
   chain: 'base',
   masterchef: AutoFarmV2,
   nativeToken: Laari,
+  useDefaultCoreAssets: true,
   abis: {
     poolInfo: 'function poolInfo(uint256) view returns (address want, uint256, uint256, uint256, uint256, uint256, uint256, uint256 amount, uint256, address strat)',
   },
