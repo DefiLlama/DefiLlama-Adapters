@@ -15,14 +15,14 @@ const endPoints = {
   cosmos: "https://cosmoshub-lcd.stakely.io",
   kujira: "https://kuji-api.kleomedes.network",
   comdex: "https://rest.comdex.one",
-  terra: "https://rest.cosmos.directory/terra",
+  terra: "https://terra-classic-lcd.publicnode.com",
   terra2: "https://terra-lcd.publicnode.com",
   umee: "https://umee-api.polkachu.com",
   orai: "https://lcd.orai.io",
   juno: "https://lcd-juno.cosmostation.io",
   cronos: "https://lcd-crypto-org.cosmostation.io",
   chihuahua: "https://rest.cosmos.directory/chihuahua",
-  stargaze: "https://api-stargaze.ezstaking.dev",
+  stargaze: "https://rest.stargaze-apis.com",
   quicksilver: "https://rest.cosmos.directory/quicksilver",
   persistence: "https://rest.cosmos.directory/persistence",
   secret: "https://lcd.secret.express",
@@ -126,8 +126,8 @@ async function getDenomBalance({ denom, owner, block, chain } = {}) {
   if (block !== undefined) {
     endpoint += `?height=${block - (block % 100)}`;
   }
-  const data = (await axios.get(endpoint)).data.result;
-
+  let { data } = await axios.get(endpoint)
+  data = chain === 'terra' ? data.balances : data.result
   const balance = data.find((balance) => balance.denom === denom);
   return balance ? Number(balance.amount) : 0;
 }

@@ -13,7 +13,7 @@ const graphs = {
 }
 
 const blacklists = {
-  ethereum: ['0xa850478adaace4c08fc61de44d8cf3b64f359bec', '0x055284a4ca6532ecc219ac06b577d540c686669d', '0x8c0411f2ad5470a66cb2e9c64536cfb8dcd54d51', '0x277667eb3e34f134adf870be9550e9f323d0dc24', '0x4c83a7f819a5c37d64b4c5a2f8238ea082fa1f4e', '0x290a6a7460b308ee3f19023d2d00de604bcf5b42', '0x4b5ab61593a2401b1075b90c04cbcdd3f87ce011', '0x582d23c7ec6b59afd041a522ff64ff081e8c0d2d', '0x1f98431c8ad98523631ae4a59f267346ea31f984', '0xaf44e10ed87d90f28bff2d1fbef1f64b090f5ebb',],
+  ethereum: ['0xa850478adaace4c08fc61de44d8cf3b64f359bec', '0x055284a4ca6532ecc219ac06b577d540c686669d', '0x8c0411f2ad5470a66cb2e9c64536cfb8dcd54d51', '0x277667eb3e34f134adf870be9550e9f323d0dc24', '0x4c83a7f819a5c37d64b4c5a2f8238ea082fa1f4e', '0x290a6a7460b308ee3f19023d2d00de604bcf5b42', '0x4b5ab61593a2401b1075b90c04cbcdd3f87ce011', '0x582d23c7ec6b59afd041a522ff64ff081e8c0d2d', '0x1f98431c8ad98523631ae4a59f267346ea31f984', '0xaf44e10ed87d90f28bff2d1fbef1f64b090f5ebb', '0xdfef6416ea3e6ce587ed42aa7cb2e586362cbbfa'],
   arbitrum: ['0xd4d2f4110878a33ea5b97f0665e518253446161a', '0xB50721BCf8d664c30412Cfbc6cf7a15145234ad1',],
   polygon: ['0x8d52c2d70a7c28a9daac2ff12ad9bfbf041cd318', '0x1f98431c8ad98523631ae4a59f267346ea31f984', '0xd5302a8ead77b85ea3326b45f4714e0b3432b233', '0xc951ab482ff11d8df636742e1f1c3fc8037427a9',],
 }
@@ -25,17 +25,6 @@ function v3TvlPaged(chain) {
     let graphQueryPaged = `
     query poolQuery($lastId: String, $block: Int) {
       pools(block: { number: $block } first:1000 where: {id_gt: $lastId totalValueLockedUSD_gt: 100}   subgraphError: allow) {
-        id
-        token0 { id }
-        token1 { id }
-      }
-    }
-  `
-
-    if (chain === 'celo') // we dont care about block
-      graphQueryPaged = `
-    query poolQuery($lastId: String) {
-      pools(first:1000 where: {id_gt: $lastId totalValueLockedUSD_gt: 100}) {
         id
         token0 { id }
         token1 { id }
@@ -67,10 +56,11 @@ module.exports = {
   ...uniV3Export({
     base: { factory: '0x33128a8fc17869897dce68ed026d694621f6fdfd', fromBlock: 1371680, },
     celo: { factory: '0xAfE208a311B21f13EF87E33A90049fC17A7acDEc', fromBlock: 13916355, },
+    moonbeam: { factory: '0x28f1158795a3585caaa3cd6469cd65382b89bb70', fromBlock: 4313505 }
   })
 }
 
-const chains = ['ethereum', 'arbitrum', 'optimism', 'polygon', 'bsc', 'avax',]
+const chains = ['ethereum', 'arbitrum', 'optimism', 'polygon', 'bsc', 'avax']
 
 chains.forEach(chain => {
   module.exports[chain] = {
