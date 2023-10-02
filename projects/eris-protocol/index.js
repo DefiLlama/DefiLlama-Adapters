@@ -3,6 +3,7 @@ const {
   getBalance,
   getBalance2,
 } = require("../helper/chain/cosmos");
+const sdk = require('@defillama/sdk')
 
 // For testing run
 // node test.js projects/eris-protocol/index.js
@@ -103,6 +104,10 @@ const config = {
       "ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9":
         "cosmos",
     },
+  },
+  chihuahua: {
+    coinGeckoId: "chihuahua-token",
+    hub: "chihuahua1nktfhalzvtx82kyn4dh6l8htcl0prfpnu380a39zj52nzu3j467qqg23ry",
   },
 };
 
@@ -271,7 +276,7 @@ async function productsTvl(chain) {
   } catch (error) {
     let url = error?.response?.config?.url;
     if (url) {
-      console.log("Issue calling", error?.response?.config?.url);
+      sdk.log("Issue calling", error?.response?.config?.url);
     }
     throw error;
   }
@@ -289,4 +294,5 @@ module.exports = {
   injective: { tvl: () => productsTvl("injective") },
   osmosis: { tvl: () => productsTvl("osmosis") },
   neutron: { tvl: () => productsTvl("neutron") },
+  chihuahua: { tvl: () => productsTvl("chihuahua") },
 };
