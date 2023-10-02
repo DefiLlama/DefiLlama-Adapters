@@ -1,4 +1,4 @@
-const sdk = require('@defillama/sdk')
+const sdk = require('@defillama/sdk');
 
 module.exports = {
   methodology: "Sums Ondo's fund supplies.",
@@ -15,12 +15,13 @@ const config = {
   polygon: {
     OUSG: '0xbA11C5effA33c4D6F8f593CFA394241CfE925811',
   }
-}
+};
 
 Object.keys(config).forEach((chain) => {
   let funds = config[chain];
-  const fundKeys = Object.keys(funds); // Capture the keys (OUSG, USDYc, etc.)
+  const fundKeys = Object.keys(funds);
   funds = Object.values(funds);
+
   module.exports[chain] = {
     tvl: async (_, _b, _cb, { api }) => {
       const ethApi = new sdk.ChainApi({ chain: 'ethereum', block: _b });
@@ -36,21 +37,24 @@ Object.keys(config).forEach((chain) => {
         target: '0x7fb0228c6338da4EC948Df7b6a8E22aD2Bb2bfB5',
       })) / 1e18;
 
-      let totalTvl = 0;
+      const balances = {};
 
       supplies.forEach((supply, index) => {
         const key = fundKeys[index];
-
+        let tokenPrice;
+        
         if (key === 'USDYc' || key === 'USDY') {
-          // Use the specific price for USDYc
-          totalTvl += (supply / 1e18) * usdyTokenPrice;
+          tokenPrice = usdyTokenPrice;
         } else {
-          // Use the general token price
-          totalTvl += (supply / 1e18) * ousgTokenPrice;
+          tokenPrice = ousgTokenPrice;
         }
-      });
 
-      return { 'usd-coin': totalTvl };
+        const tokenTvl = (supply/1e18 * tokenPrice);
+
+        balances[`${chain}:${funds[index]}`] = tokenTvl; 
+      });
+      
+      return balances;  // Return the balances object
     },
   };
 });
