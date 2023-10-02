@@ -38,6 +38,7 @@ const endPoints = {
   sei: "https://sei-api.polkachu.com",
   aura: "https://lcd.aura.network",
   archway: "https://api.mainnet.archway.io",
+  sifchain: "https://sifchain-api.polkachu.com",
 };
 
 const chainSubpaths = {
