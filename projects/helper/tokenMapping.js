@@ -59,6 +59,8 @@ const fixBalancesTokens = {
     '0x1074010000000000000000000000000000000000': { coingeckoId: 'shimmer', decimals: 6 },
     '0xBEb654A116aeEf764988DF0C6B4bf67CC869D01b': { coingeckoId: 'shimmer', decimals: 18 },
     '0xc0e49f8c615d3d4c245970f6dc528e4a47d69a44': { coingeckoId: 'tether', decimals: 18 },
+    '0xa158a39d00c79019a01a6e86c56e96c461334eb0': { coingeckoId: 'ethereum', decimals: 18 },
+    '0x1cdf3f46dbf8cf099d218cf96a769cea82f75316': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
   },
   manta: {
     '0x0Dc808adcE2099A9F62AA87D9670745AbA741746': { coingeckoId: 'ethereum', decimals: 18 },

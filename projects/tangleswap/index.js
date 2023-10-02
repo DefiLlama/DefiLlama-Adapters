@@ -1,8 +1,32 @@
-const { uniV3Export } = require("../helper/uniswapV3");
+const { cachedGraphQuery } = require('../helper/cache')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
-module.exports = uniV3Export({
-  shimmer_evm: {
-    factory: "0xdf7bA717FB0D5ce579252f05167cD96d0fA77bCb",
-    fromBlock: 32598,
-  },
-});
+const config = {
+  shimmer_evm: { endpoint: 'https://shimmer.subgraph.tangleswap.space/subgraphs/name/tangleswap/shimmer' },
+}
+const query = `query getPools($lastId: String!) {
+  pools(
+    first: 1000
+    where: {id_gt: $lastId}
+  ) {
+    id
+    token0 {      id    }
+    token1 {      id    }
+  }
+}`
+
+async function tvl(ts, block, _, { api }) {
+  const { endpoint } = config[api.chain]
+  const pools = await cachedGraphQuery('tangleswap/' + api.chain, endpoint, query, { fetchById: true, })
+  return sumTokens2({
+    api,
+    ownerTokens: pools.map(i => {
+      return [[i.token0.id, i.token1.id], i.id]
+    })
+  })
+}
+
+
+Object.keys(config).forEach(chain => {
+  module.exports[chain] = { tvl }
+})
