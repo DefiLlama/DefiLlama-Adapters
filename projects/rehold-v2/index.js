@@ -11,4 +11,11 @@ module.exports = {
   avax: { tvl },
   arbitrum: { tvl },
   optimism: { tvl },
+  base: { tvl },
+
+  hallmarks: [
+    [1688688480, "ReHold V2 Launch"],
+    [1689743327, "Ethereum Deployment"],
+    [1690898169, "Limit Orders Launch"],
+  ],
 };
