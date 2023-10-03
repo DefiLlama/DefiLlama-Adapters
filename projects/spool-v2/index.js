@@ -7,7 +7,7 @@ const { staking } = require("../helper/staking.js");
 const config = {
   ethereum: {
     subgraphUrl:
-      "https://api.studio.thegraph.com/query/41372/spool-v2_mainnet/2ab767b",
+      "https://api.studio.thegraph.com/query/41372/spool-v2_mainnet/version/latest",
   },
 };
 
