@@ -31,8 +31,6 @@ async function tvl(_, _1, _2, { api }) {
       target: managers[i],
     });
 
-    console.log(currentTokenId)
-
     // 2 get liquidity values
     const liquiValues = await api.call({
       abi: abi.getPositions,
