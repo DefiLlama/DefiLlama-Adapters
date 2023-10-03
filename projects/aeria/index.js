@@ -9,8 +9,7 @@ async function tvl(timestamp, _1, _2, { api }) {
   
   const tokens = await api.multiCall({ abi: 'address:depositToken', calls: vaults })
 
-  // needs to move funds to Multisig in under a month
-  if (timestamp * 1e3 < +new Date('10-10-2023')) await api.sumTokens({ owner: '0x8C8bA29f177CDEC445F4B5451B57946268D044Fa', tokens: [ADDRESSES.base.USDC]})
+  await api.sumTokens({ owner: '0xe7C5e2D6E99f91Ec161B128702011D6E8f91570F', tokens: [ADDRESSES.base.USDC]})
   return api.sumTokens({ tokensAndOwners2: [tokens, vaults]})
   // const bals = await api.multiCall({ abi: 'uint256:totalSupply', calls: vaults })
   // api.addTokens(tokens, bals)
