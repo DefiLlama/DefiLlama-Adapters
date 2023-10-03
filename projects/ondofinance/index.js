@@ -19,8 +19,7 @@ const config = {
 
 Object.keys(config).forEach((chain) => {
   let fundsMap = config[chain];
-  const fundAddresses = Object.values(fundsMap); 
-  const fundKeys = Object.keys(fundsMap);
+  const fundAddresses = Object.values(fundsMap);
 
   module.exports[chain] = {
     tvl: async (_, _b, _cb, { api }) => {
@@ -28,9 +27,9 @@ Object.keys(config).forEach((chain) => {
       const supplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: fundAddresses });
 
       supplies.forEach((supply, index) => {
-        const tokenName = fundKeys[index];
-        const adjustedSupply = supply / 10**18;
-        balances[tokenName] = adjustedSupply; 
+        const tokenAddress = fundAddresses[index];
+        const key = `${chain}:${tokenAddress}`; 
+        balances[key] = supply; 
       });
 
       return balances;
