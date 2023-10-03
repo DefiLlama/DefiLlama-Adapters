@@ -2,7 +2,6 @@ const sdk = require('@defillama/sdk');
 
 module.exports = {
   methodology: "Sums Ondo's fund supplies.",
-  misrepresentedTokens: true,
   doublecounted: true,
 };
 
