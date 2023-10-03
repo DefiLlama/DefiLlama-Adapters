@@ -1,27 +1,11 @@
-
-
-RPMMiniAbi =  [{
-  "inputs": [],
-  "name": "currentTokenId",
-  "outputs": [
-    {
-      "internalType": "uint256",
-      "name": "",
-      "type": "uint256"
-    }
-  ],
-  "stateMutability": "view",
-  "type": "function"
-}]
-
 const abi = {
   "getCurrentTokenId": "function currentTokenId() view returns (uint)",
   "getPositions": "function positions(uint256 tokenId) view returns (uint96 nonce,address operator,address token0,address token1,uint24 fee,int24 tickLower,int24 tickUpper,uint128 liquidity,uint256 feeGrowthInside0LastX128,uint256 feeGrowthInside1LastX128,uint128 tokensOwed0,uint128 tokensOwed1)",
-  "getPool": "function getPool(address,address,uint24) view returns (address)"
+  "getPool": "function getPool(address,address,uint24) view returns (address)",
+  "getAmountsForTicks": "function getAmountsForTicks(int24,int24,uint128) view returns (uint256,uint256)"
 }
 
 const positionManager = '0xc36442b4a4522e871399cd717abdd847ab11fe88';
-const uniV3Factory = '0x1F98431c8aD98523631AE4a59f267346ea31F984';
 
 const managers = [
   '0x69a3e2f167B35c88C9778F59Ce8C1fFc546c8078',
@@ -56,28 +40,28 @@ async function tvl(_, _1, _2, { api }) {
       params: [currentTokenId],
     });
 
-    console.log(liquiValues)
     const liquidity = liquiValues["liquidity"]
     const token0 = liquiValues["token0"]
     const token1 = liquiValues["token1"]
-    const fee = liquiValues["fee"]
-    const tickLower = liquiValues["tickLower:"]
-    const tickUpper = liquiValues["tickUpper:"]
+    const tickLower = liquiValues["tickLower"]
+    const tickUpper = liquiValues["tickUpper"]
 
-    // 3 get pool
-    const poolAddress = await api.call({
-      abi: abi.getPool,
-      target: uniV3Factory,
-      params: [token0, token1, fee],
+    // 3 get amounts in liquidity
+    const tokenAmounts = await api.call({
+      abi: abi.getAmountsForTicks,
+      target: managers[i],
+      params: [tickLower, tickUpper, liquidity],
     });
 
-    console.log(poolAddress)
+    const amount0 = tokenAmounts[0]
+    const amount1 = tokenAmounts[1]
 
+    api.add(token0, amount0)
+    api.add(token1, amount1)
   }
 
 
 }
-
 
 module.exports = {
   doublecounted: true,
