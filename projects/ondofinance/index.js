@@ -1,4 +1,4 @@
-const sdk = require('@defillama/sdk')
+const sdk = require('@defillama/sdk');
 
 module.exports = {
   methodology: "Sums Ondo's fund supplies.",
@@ -18,39 +18,21 @@ const config = {
 }
 
 Object.keys(config).forEach((chain) => {
-  let funds = config[chain];
-  const fundKeys = Object.keys(funds); // Capture the keys (OUSG, USDYc, etc.)
-  funds = Object.values(funds);
+  let fundsMap = config[chain];
+  const fundAddresses = Object.values(fundsMap);
+
   module.exports[chain] = {
     tvl: async (_, _b, _cb, { api }) => {
-      const ethApi = new sdk.ChainApi({ chain: 'ethereum', block: _b });
-      const supplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: funds });
-
-      const ousgTokenPrice = (await ethApi.call({
-        abi: 'uint256:rwaPrice',
-        target: '0xc53e6824480d976180A65415c19A6931D17265BA',
-      })) / 1e18;
-
-      const usdyTokenPrice = (await ethApi.call({
-        abi: 'uint256:getLatestPrice',
-        target: '0x7fb0228c6338da4EC948Df7b6a8E22aD2Bb2bfB5',
-      })) / 1e18;
-
-      let totalTvl = 0;
+      const balances = {};
+      const supplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: fundAddresses });
 
       supplies.forEach((supply, index) => {
-        const key = fundKeys[index];
-
-        if (key === 'USDYc' || key === 'USDY') {
-          // Use the specific price for USDYc
-          totalTvl += (supply / 1e18) * usdyTokenPrice;
-        } else {
-          // Use the general token price
-          totalTvl += (supply / 1e18) * ousgTokenPrice;
-        }
+        const tokenAddress = fundAddresses[index];
+        const key = `${chain}:${tokenAddress}`; 
+        balances[key] = supply; 
       });
 
-      return { 'usd-coin': totalTvl };
+      return balances;
     },
   };
 });
