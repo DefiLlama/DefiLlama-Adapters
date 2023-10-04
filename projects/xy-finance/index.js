@@ -56,6 +56,9 @@ const config = {
   base: {
     chainId: '8453',
   },
+  mantle: {
+    chainId: '5000',
+  },
 }
 
 const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
@@ -342,6 +345,20 @@ const yPoolDepositContract = {
     "USDC": {
       "contractAddress": "0xA5Cb30E5d30A9843B6481fFd8D8D35DDED3a3251",
       "tokenAddress": ADDRESSES.base.USDbC
+    }
+  },
+  "5000": {
+    "ETH": {
+      "contractAddress": "0xdD8B0995Cc92c7377c7bce2A097EC70f45A192D5",
+      "tokenAddress": ADDRESSES.mantle.WETH
+    },
+    "USDC": {
+      "contractAddress": "0xA5Cb30E5d30A9843B6481fFd8D8D35DDED3a3251",
+      "tokenAddress": ADDRESSES.mantle.USDC
+    },
+    "USDT": {
+      "contractAddress": "0x0241fb446d6793866245b936F2C3418F818bDcD3",
+      "tokenAddress": ADDRESSES.mantle.USDT
     }
   },
 }
