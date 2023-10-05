@@ -273,6 +273,7 @@ const assetList = [
   ["LTC", "LTC", "MSeDRiNoH5Afr9b9rNo837hYzpxBXXqMZf"],
   ["LTC", "LTC", "MWGTiJBNEQSfxTCrdC2VKEa55Lck27wr67"],
   ["LTC", "LTC", "MWkX1ZaFbrRPtcQvVpjvigxWU17JoinePy"],
+  ["LTC", "LTC", "MGvUTN1PuWgBxuoFgTfkk4eJDzYgRivR8F"],
   ["MASK", "BEP20", "0x5a52e96bacdabb82fd05763e25335261b270efcb"],
   ["MASK", "BEP20", "0x8894e0a0c962cb723c1976a4421c95949be2d4e3"],
   ["MASK", "BEP20", "0xe2fc31f816a9b94326492132018c3aecc4a93ae1"],
