@@ -6,10 +6,10 @@ async function tvl(time, ethBlock, _b, { api }) {
   return sumTokens2({ tokens: [nullAddress], owner: contract, api });
 }
 
+//not sure on methodology 
 module.exports = {
   methodology: `We count the eth on ${contract}`,
   eth: {
-    tvl,
     volume,
   },
 };
