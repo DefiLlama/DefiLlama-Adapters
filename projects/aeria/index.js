@@ -7,13 +7,22 @@ async function tvl(timestamp, _1, _2, { api }) {
   vaults = vaults.filter(i => i !== nullAddress)
   const isPaused = await api.multiCall({ abi: 'bool:paused', calls: vaults })
   vaults = vaults.filter((_, i) => !isPaused[i])
-  const tokens = await api.multiCall({ abi: 'address:depositToken', calls: vaults })  
+  const tokens = await api.multiCall({ abi: 'address:depositToken', calls: vaults })
 
-  await api.sumTokens({ owner: '0xe7C5e2D6E99f91Ec161B128702011D6E8f91570F', tokens })
-  return api.sumTokens({ tokensAndOwners2: [tokens, vaults] })
+  const last_epochs = await api.multiCall({ abi: 'uint:currentEpochNumber', calls: vaults })
+  const epochs = await api.multiCall({
+    abi: 'function epochs(uint) public view returns ( (uint8, uint256, uint256, uint256, uint256, uint256, uint256, uint256) )',
+    calls: vaults.map((vault, index) => { return { target: vault, params: [last_epochs[index] - 1 || 1] } })
+  })
+
+  epochs.forEach((epoch, index) => {
+    api.add(tokens[index], parseInt(epoch[4]) || parseInt(epoch[2]))
+  })
+  return api.getBalances()
 }
 
 module.exports = {
+  doublecouted: true,
   base: {
     tvl,
   },
