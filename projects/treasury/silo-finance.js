@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { simulateTransaction } = require("@project-serum/anchor/dist/cjs/utils/rpc");
-const {  nullAddress,treasuryExports } = require("../helper/treasury");
+const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 const ETHEREUM_MAINNET_TREASURIES = [
   "0xE8e8041cB5E3158A0829A19E014CA1cf91098554",
@@ -24,7 +23,7 @@ const SILO_ARBITRUM_MAINNET = "0x0341C0C0ec423328621788d4854119B97f44E391";
 
 module.exports = treasuryExports({
   ethereum: {
-    tokens: [ 
+    tokens: [
       nullAddress,
       ADDRESSES.ethereum.USDC,//USDC
       ADDRESSES.ethereum.DAI,//DAI
@@ -41,9 +40,10 @@ module.exports = treasuryExports({
     ],
     owners: ETHEREUM_MAINNET_TREASURIES,
     ownTokens: [SILO_ETHEREUM_MAINNET, XAI_ETHEREUM_MAINNET],
+    resolveUniV3: true,
   },
   arbitrum: {
-    tokens: [ 
+    tokens: [
       nullAddress,
       ADDRESSES.arbitrum.ARB, // ARB
       ADDRESSES.arbitrum.GMX, // GMX
