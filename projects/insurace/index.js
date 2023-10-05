@@ -4,8 +4,6 @@ const abi = require('./abi.json');
 
 const BigNumber = require('bignumber.js');
 const axios = require("axios");
-const polygonPools = require('./polygonPools.json')
-const avalanchePools = require('./avalanchePools.json')
 const { getConfig } = require('../helper/cache')
 
 
@@ -17,10 +15,10 @@ async function eth(timestamp, ethBlock) {
     if (ethBlock < 12301500) {
         throw new Error("Not yet deployed")
     }
-    const data = await getConfig('insurace/ethereum', "https://files.insurace.io/public/defipulse/pools.json");
+    const data = await getConfig('insurace/ethereum', "https://files.insurace.io/public/defipulse/ethPools.json");
     const pools = data.pools;
 
-    const { output: _tvlList } = await sdk.api.abi.multiCall({
+    const { output: _tvlList0 } = await sdk.api.abi.multiCall({
         calls: pools.map((pool) => ({
             target: pool.StakersPool,
             params: pool.PoolToken,
@@ -29,6 +27,24 @@ async function eth(timestamp, ethBlock) {
         ethBlock,
     }
     );
+
+    const daoPoolsCalls = data.daoPools.map((pool) => ({
+        target: pool.INSUR,
+        params: pool.VeINSURToken,
+    }))
+
+    const bridgePools1Calls = data.bridgePools.map((pool) => ({
+        target: pool.Token,
+        params: pool.TokenPool,
+    }))
+
+    const { output: _tvlList1 } = await sdk.api.abi.multiCall({
+        calls: [...daoPoolsCalls, ...bridgePools1Calls],
+        abi: 'erc20:balanceOf',
+        ethBlock,
+    })
+
+    const _tvlList = [..._tvlList0, ..._tvlList1]
 
     const balances = {};
     _tvlList.forEach((element) => {
@@ -64,7 +80,7 @@ async function bsc(timestamp, ethBlock, chainBlocks){
     const data = await getConfig('insurace/bsc', "https://files.insurace.io/public/defipulse/bscPools.json");
     const pools = data.pools;
 
-    const { output: _tvlList } = await sdk.api.abi.multiCall({
+    const { output: _tvlList0 } = await sdk.api.abi.multiCall({
         calls: pools.map((pool) => ({
             target: pool.StakersPool,
             params: pool.PoolToken,
@@ -74,6 +90,25 @@ async function bsc(timestamp, ethBlock, chainBlocks){
         chain: "bsc"
     }
     );
+
+    const daoPoolsCalls = data.daoPools.map((pool) => ({
+        target: pool.INSUR,
+        params: pool.VeINSURToken,
+    }))
+
+    const bridgePools1Calls = data.bridgePools.map((pool) => ({
+        target: pool.Token,
+        params: pool.TokenPool,
+    }))
+
+    const { output: _tvlList1 } = await sdk.api.abi.multiCall({
+        calls: [...daoPoolsCalls, ...bridgePools1Calls],
+        abi: 'erc20:balanceOf',
+        bscBlock,
+        chain: "bsc"
+    })
+
+    const _tvlList = [..._tvlList0, ..._tvlList1]
 
     const balances = {};
     _tvlList.forEach((element) => {
@@ -95,9 +130,10 @@ async function bsc(timestamp, ethBlock, chainBlocks){
 }
 
 async function polygon(timestamp, ethBlock, chainBlocks) {
-    const pools = polygonPools.pools;
+    const data = await getConfig('insurace/polygon', "https://files.insurace.io/public/defipulse/polygonPools.json");
+    const pools = data.pools;
 
-    const { output: _tvlList } = await sdk.api.abi.multiCall({
+    const { output: _tvlList0 } = await sdk.api.abi.multiCall({
         calls: pools.map((pool) => ({
             target: pool.StakersPool,
             params: pool.PoolToken,
@@ -106,6 +142,25 @@ async function polygon(timestamp, ethBlock, chainBlocks) {
         block: chainBlocks.polygon,
         chain: 'polygon'
     });
+
+    const daoPoolsCalls = data.daoPools.map((pool) => ({
+        target: pool.INSUR,
+        params: pool.VeINSURToken,
+    }))
+
+    const bridgePools1Calls = data.bridgePools.map((pool) => ({
+        target: pool.Token,
+        params: pool.TokenPool,
+    }))
+
+    const { output: _tvlList1 } = await sdk.api.abi.multiCall({
+        calls: [...daoPoolsCalls, ...bridgePools1Calls],
+        abi: 'erc20:balanceOf',
+        block: chainBlocks.polygon,
+        chain: 'polygon'
+    })
+
+    const _tvlList = [..._tvlList0, ..._tvlList1]
 
     const balances = {};
     _tvlList.forEach((element) => {
@@ -121,9 +176,10 @@ async function polygon(timestamp, ethBlock, chainBlocks) {
 
 const INSUR = "0x544c42fbb96b39b21df61cf322b5edc285ee7429"
 async function avax(timestamp, ethBlock, chainBlocks) {
-    const pools = avalanchePools.pools;
+    const data = await getConfig('insurace/avax', "https://files.insurace.io/public/defipulse/avalanchePools.json");
+    const pools = data.pools;
 
-    const { output: _tvlList } = await sdk.api.abi.multiCall({
+    const { output: _tvlList0 } = await sdk.api.abi.multiCall({
         calls: pools.map((pool) => ({
             target: pool.StakersPool,
             params: pool.PoolToken,
@@ -132,6 +188,25 @@ async function avax(timestamp, ethBlock, chainBlocks) {
         block: chainBlocks.avax,
         chain: 'avax'
     });
+
+    const daoPoolsCalls = data.daoPools.map((pool) => ({
+        target: pool.INSUR,
+        params: pool.VeINSURToken,
+    }))
+
+    const bridgePools1Calls = data.bridgePools.map((pool) => ({
+        target: pool.Token,
+        params: pool.TokenPool,
+    }))
+
+    const { output: _tvlList1 } = await sdk.api.abi.multiCall({
+        calls: [...daoPoolsCalls, ...bridgePools1Calls],
+        abi: 'erc20:balanceOf',
+        block: chainBlocks.avax,
+        chain: 'avax'
+    })
+
+    const _tvlList = [..._tvlList0, ..._tvlList1]
 
     const balances = {};
     _tvlList.forEach((element) => {
