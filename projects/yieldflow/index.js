@@ -1,11 +1,8 @@
 const abi = {
   "getCurrentTokenId": "function currentTokenId() view returns (uint)",
   "getPositions": "function positions(uint256 tokenId) view returns (uint96 nonce,address operator,address token0,address token1,uint24 fee,int24 tickLower,int24 tickUpper,uint128 liquidity,uint256 feeGrowthInside0LastX128,uint256 feeGrowthInside1LastX128,uint128 tokensOwed0,uint128 tokensOwed1)",
-  "getPool": "function getPool(address,address,uint24) view returns (address)",
   "getAmountsForTicks": "function getAmountsForTicks(int24,int24,uint128) view returns (uint256,uint256)"
 }
-
-const positionManager = '0xc36442b4a4522e871399cd717abdd847ab11fe88';
 
 const managers = [
   '0x69a3e2f167B35c88C9778F59Ce8C1fFc546c8078',
@@ -22,48 +19,19 @@ const managers = [
 ]
 
 async function tvl(_, _1, _2, { api }) {
-
-  for (let i =0; i < managers.length; i++) {
-
-    // 1 get current liquidity token ID
-    const currentTokenId = await api.call({
-      abi: abi.getCurrentTokenId,
-      target: managers[i],
-    });
-
-    // 2 get liquidity values
-    const liquiValues = await api.call({
-      abi: abi.getPositions,
-      target: positionManager,
-      params: [currentTokenId],
-    });
-
-    const liquidity = liquiValues["liquidity"]
-    const token0 = liquiValues["token0"]
-    const token1 = liquiValues["token1"]
-    const tickLower = liquiValues["tickLower"]
-    const tickUpper = liquiValues["tickUpper"]
-
-    // 3 get amounts in liquidity
-    const tokenAmounts = await api.call({
-      abi: abi.getAmountsForTicks,
-      target: managers[i],
-      params: [tickLower, tickUpper, liquidity],
-    });
-
-    const amount0 = tokenAmounts[0]
-    const amount1 = tokenAmounts[1]
-
-    api.add(token0, amount0)
-    api.add(token1, amount1)
-  }
-
-
+  const positionManagers = await api.multiCall({  abi: 'address:positionManager', calls: managers})
+  const tokenIds = await api.multiCall({  abi: abi.getCurrentTokenId, calls: managers})
+  const liquidities = await api.multiCall({  abi: abi.getPositions, calls: positionManagers.map((v, i) => ({ target: v, params: tokenIds[i]})) })
+  const tokenAmounts = await api.multiCall({  abi: abi.getAmountsForTicks, calls: liquidities.map((v, i) => ({ target: managers[i], params: [v.tickLower, v.tickUpper, v.liquidity]})) })
+  
+  liquidities.forEach((v, i) => {
+    api.add(v.token0, tokenAmounts[i][0])
+    api.add(v.token1, tokenAmounts[i][1])
+  })
+  return api.getBalances()
 }
 
 module.exports = {
   doublecounted: true,
-  misrepresentedTokens: true,
-  timetravel: false,
   arbitrum: { tvl },
 };
