@@ -8,24 +8,24 @@ const config = {
   ethereum: { 
     endpoint: "https://files.insurace.io/public/defipulse/ethPools.json",
     INSUR: '0x544c42fBB96B39B21DF61cf322b5EDC285EE7429',
-    stakingPool: ['0x136D841d4beCe3Fc0E4dEbb94356D8b6B4b93209', '0xaFc3A52BF951c3540883e7156EaBA030E444328b', '0x7b768385022c4b8e0E2C1aC651793Ddf323eaa2A'],
+    stakingPool: ['0x136D841d4beCe3Fc0E4dEbb94356D8b6B4b93209', '0xaFc3A52BF951c3540883e7156EaBA030E444328b'],
     pool2Pool: '0x136D841d4beCe3Fc0E4dEbb94356D8b6B4b93209',
     pool2Token: '0x169BF778A5eADAB0209C0524EA5Ce8e7a616E33b',
   },
   bsc: { 
     endpoint: "https://files.insurace.io/public/defipulse/bscPools.json",
     INSUR: '0x3192CCDdf1CDcE4Ff055EbC80f3F0231b86A7E30',
-    stakingPool: ['0xd50E8Ce9D5c1f5228BCC77E318907bB4960578eF', '0x8937f826526076c74401edDCd19a41DE3d09D76d', '0x7b768385022c4b8e0E2C1aC651793Ddf323eaa2A'],
+    stakingPool: ['0xd50E8Ce9D5c1f5228BCC77E318907bB4960578eF', '0x8937f826526076c74401edDCd19a41DE3d09D76d'],
   },
   polygon: { 
     endpoint: "https://files.insurace.io/public/defipulse/polygonPools.json",
     INSUR: '0x8a0e8b4b0903929f47C3ea30973940D4a9702067',
-    stakingPool: ['0xD2171aBb60D2994CF9aCB767F2116Cf47BBF596F', '0xE8DBB5F68DE0aC5d4015737a27977db809cAC27D', '0x3FafFD846ba6d438d3346C92461C8B999D65024D'],
+    stakingPool: ['0xD2171aBb60D2994CF9aCB767F2116Cf47BBF596F', '0xE8DBB5F68DE0aC5d4015737a27977db809cAC27D'],
   },
   avax: { 
     endpoint: "https://files.insurace.io/public/defipulse/avalanchePools.json",
     INSUR: '0x544c42fBB96B39B21DF61cf322b5EDC285EE7429',
-    stakingPool: ['0xF851cBB9940F8bAebd1D0EaF259335c108E9E893', '0x645844f595309deB4637e184B366360807a2D986', '0x7b768385022c4b8e0E2C1aC651793Ddf323eaa2A'],
+    stakingPool: ['0xF851cBB9940F8bAebd1D0EaF259335c108E9E893', '0x645844f595309deB4637e184B366360807a2D986'],
   },
 }
 
