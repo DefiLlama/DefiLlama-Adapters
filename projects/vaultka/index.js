@@ -39,7 +39,7 @@ module.exports = {
         gmArb: "0xC25cEf6061Cf5dE5eb761b50E4743c1F5D7E5407", // arb/usdc.e
         VLP: "0xc5b2d9fda8a82e8dcecd5e9e6e99b78a9188eb05",
         gDAI: "0xd85e038593d7a098614721eae955ec2022b9b91b",
-        rum: "0x3CC5d01F9191e72082E00A4E8002b718B4C4218a",
+        rum: "0x739fe1BE8CbBeaeA96fEA55c4052Cd87796c0a89",
         hlpStaking: "0xbE8f8AF5953869222eA8D39F1Be9d03766010B1C",
         hlp: "0x4307fbDCD9Ec7AEA5a1c2958deCaa6f316952bAb",
       };
@@ -66,6 +66,8 @@ module.exports = {
           "function getStakedVlpBalance() public view returns (uint256)",
         stakedHlpBalance:
           "function userTokenAmount(address user) public view returns (uint256)",
+        hlpPrice:
+          "function getHLPPrice(bool maximize) public view returns (uint256)",
       };
 
       const StakedVLPBal = await api.call({
@@ -82,9 +84,17 @@ module.exports = {
         params: addresses.rum,
       });
 
+      //12 decimals
+      const hlpPrice = await api.call({
+        abi: contractAbis.hlpPrice,
+        target: addresses.rum,
+        params: true,
+      });
+      console.log(StakedHLPBal);
+
       api.add(addresses.VLP, StakedVLPBal);
       api.add(addresses.VLP, StakedVLPBalV2);
-      api.add(addresses.hlp, StakedHLPBal);
+      api.add(ADDRESSES.arbitrum.USDC, (StakedHLPBal * hlpPrice) / 1e12 / 1e18 * 1e6);
     },
   },
 };
