@@ -286,7 +286,7 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
   })
 
   sdk.log('Balance table for [%s] %s', chain, tableLabel)
-  console.table(logObj.filter(i => !/\.(com|net|org|xyz)\s/.test(i.symbol)))
+  console.table(logObj.filter(i => !/\.(com|net|org|xyz|site)\s/.test(i.symbol)))
 }
 
 function once(func) {
