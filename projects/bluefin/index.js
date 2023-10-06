@@ -14,7 +14,7 @@ async function suiTvl() {
   const object = await sui.getObject(SUI_BANK_ID);
 
   // div by 1e6 as usdc coin has 6 precision
-  const tvl = object.fields.coinBalance / 1e6;
+  const tvl = object.fields.coinBalance;
   api.add(ADDRESSES.sui.USDC, tvl);
 }
 
