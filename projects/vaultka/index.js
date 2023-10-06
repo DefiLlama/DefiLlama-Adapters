@@ -66,7 +66,6 @@ module.exports = {
           "function getStakedVlpBalance() public view returns (uint256)",
         stakedHlpBalance:
           "function userTokenAmount(address user) public view returns (uint256)",
-          "function getHLPPrice(bool maximize) public view returns (uint256)",
       };
 
       const StakedVLPBal = await api.call({
