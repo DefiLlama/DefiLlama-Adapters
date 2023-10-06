@@ -6,9 +6,10 @@ module.exports = {
   hallmarks: [
     [1688342964, "VLP Leverage Vault"],
     [1692164391, "GLP Leverage Vault"],
-    [1695274791, "GMXV2 Leverage Vault "],
+    [1695274791, "GMXV2 Leverage Vault"],
     [1682314791, "GLP Delta Neutral Vault"],
     [1683178791, "GDAI Leverage Vault"],
+    [1696389409, "HLP Leverage Vault"],
   ],
 
   arbitrum: {
@@ -81,7 +82,6 @@ module.exports = {
         target: addresses.hlpStaking,
         params: addresses.rum,
       });
-
 
       api.add(addresses.VLP, StakedVLPBal);
       api.add(addresses.VLP, StakedVLPBalV2);
