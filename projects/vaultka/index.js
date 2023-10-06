@@ -66,7 +66,6 @@ module.exports = {
           "function getStakedVlpBalance() public view returns (uint256)",
         stakedHlpBalance:
           "function userTokenAmount(address user) public view returns (uint256)",
-        hlpPrice:
           "function getHLPPrice(bool maximize) public view returns (uint256)",
       };
 
@@ -84,19 +83,10 @@ module.exports = {
         params: addresses.rum,
       });
 
-      //12 decimals
-      const hlpPrice = await api.call({
-        abi: contractAbis.hlpPrice,
-        target: addresses.rum,
-        params: true,
-      });
-      console.log(StakedHLPBal);
 
       api.add(addresses.VLP, StakedVLPBal);
       api.add(addresses.VLP, StakedVLPBalV2);
-      //calculation before the update
-      api.add(ADDRESSES.arbitrum.USDC, (StakedHLPBal * hlpPrice) / 1e12 / 1e18 * 1e6);
-      // api.add(addresses.hlp, StakedHLPBal);
+      api.add(addresses.hlp, StakedHLPBal);
     },
   },
 };
