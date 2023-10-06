@@ -94,7 +94,9 @@ module.exports = {
 
       api.add(addresses.VLP, StakedVLPBal);
       api.add(addresses.VLP, StakedVLPBalV2);
+      //calculation before the update
       api.add(ADDRESSES.arbitrum.USDC, (StakedHLPBal * hlpPrice) / 1e12 / 1e18 * 1e6);
+      // api.add(addresses.hlp, StakedHLPBal);
     },
   },
 };
