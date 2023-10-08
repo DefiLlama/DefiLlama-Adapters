@@ -5,10 +5,14 @@ const sdk = require('@defillama/sdk')
 const graphEndpoints = {
   'ethereum': "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2",
   "bsc": "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-bsc",
-  // "heco": "https://q.hg.network/subgraphs/name/dodoex/heco",
+  //"heco": "https://q.hg.network/subgraphs/name/dodoex/heco",
   "polygon": "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-polygon",
   "arbitrum": "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-arbitrum",
-  "aurora": "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-aurora"
+  "aurora": "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-aurora",
+  "avax": "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-avax",
+  "optimism": "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-optimism",
+ // "base": "https://api.dodoex.io/frontend-graphql?chainId=84531&schemaName=dodoex", //different query
+ // "linea": "https://api.dodoex.io/frontend-graphql?chainId=534351&schemaName=dodoex" //different query
 }
 const graphQuery = gql`
 query get_pairs($lastId: String, $block: Int) {

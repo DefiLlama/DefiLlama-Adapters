@@ -672,6 +672,7 @@ async function sumTokens2({
   uniV3nftsAndOwners = [],
   resolveArtBlocks = false,
   resolveNFTs = false,
+  resolveVlCVX = false,
   permitFailure = false,
   fetchCoValentTokens = false,
   tokenConfig = {}, 
@@ -682,6 +683,7 @@ async function sumTokens2({
     if (!balances) balances = api.getBalances()
   } else if (!balances) {
     balances = {}
+    api = new sdk.ChainApi({ chain, block })
   }
 
   if (owner) owners.push(owner)
@@ -692,6 +694,11 @@ async function sumTokens2({
   if (resolveArtBlocks || resolveNFTs) {
     if (!api) throw new Error('Missing arg: api')
     await sumArtBlocks({ balances, api, owner, owners, })
+  }
+
+  if (resolveVlCVX && owners.length && chain === 'ethereum') {
+    const vlCVXBals  = await api.multiCall({  abi: 'erc20:balanceOf', calls: owners, target: ADDRESSES.ethereum.vlCVX })
+    vlCVXBals.forEach((v) => sdk.util.sumSingleBalance(balances, ADDRESSES.ethereum.vlCVX, v, chain))
   }
 
   if (fetchCoValentTokens) {
