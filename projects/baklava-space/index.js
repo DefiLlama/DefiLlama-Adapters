@@ -26,6 +26,14 @@ const config = {
       '0x5cBD2724A4398748615a2ad62ff80607dAC233fC',
     ],
   },
+  functionx: [
+    '0x1c1e54d8bffb02f261814ca8f06f03efed25ab8d',
+    '0x76f2f94429155e4e6e4c126ac9b7165ed347c9d6',
+    '0x610629af1cc8543c0e0348f62559801dc4099a76',
+    '0xefb5a32735390d01e37b620407892e35acc998c3',
+    '0x0fe1ead49b97fbd65875ad8a9da0b869552d0caa'
+  ]
+
 }
 
 const bavaStakingRewards = "0x2F445C4cC8E114893279fa515C291A3d02160b02"
@@ -34,20 +42,21 @@ const bavaToken = "0xe19A1684873faB5Fb694CfD06607100A632fF21c"
 module.exports = {
   doublecounted: true,
   methodology: `Counts liquidty on the bava staking and lptoken staking on Avalanche and fx token staking on FunctionX`,
-  functionx: { tvl: sumERC4626VaultsExport({ vaults: ['0x5c24B402b4b4550CF94227813f3547B94774c1CB'] }) }
+  // we have added the other functionx erc4626 vaults, but the token is an LP token and this function is unable to get the price
+  functionx: { tvl: sumERC4626VaultsExport({ vaults: ['0x5c24B402b4b4550CF94227813f3547B94774c1CB', ...config.functionx] }) }
 };
 
-Object.keys(config).forEach(chain => {
-  const { vaults, pgVaults, tjVaults, } = config[chain]
-  module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
-      const vInfo = await api.multiCall({ abi: 'function vaultInfo() view returns (address token, uint256 bal)', calls: vaults })
-      vInfo.forEach(i => api.add(i.token, i.bal))
-      const pgInfos = await api.multiCall({ abi: 'function vaultInfo() view returns (address token, address, uint256 bal, uint256, bool, bool)', calls: [pgVaults, tjVaults].flat() })
-      pgInfos.forEach(i => api.add(i.token, i.bal))
-    }
+
+const { vaults, pgVaults, tjVaults, } = config.avax
+module.exports.avax = {
+  tvl: async (_, _b, _cb, { api, }) => {
+    const vInfo = await api.multiCall({ abi: 'function vaultInfo() view returns (address token, uint256 bal)', calls: vaults })
+    vInfo.forEach(i => api.add(i.token, i.bal))
+    const pgInfos = await api.multiCall({ abi: 'function vaultInfo() view returns (address token, address, uint256 bal, uint256, bool, bool)', calls: [pgVaults, tjVaults].flat() })
+    pgInfos.forEach(i => api.add(i.token, i.bal))
   }
-})
+}
+
 
 
 module.exports.avax.staking = staking(bavaStakingRewards, bavaToken)
