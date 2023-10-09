@@ -1,4 +1,5 @@
-const { getMarkets, getOrders, formatTokenAmounts, TYPES } = require('../helper/chain/injective')
+const { getMarkets, getOrders, TYPES } = require('../helper/chain/injectve')
+const { transformBalances } = require('../helper/portedTokens')
 const sdk = require('@defillama/sdk')
 const { default: BigNumber } = require('bignumber.js')
 
@@ -26,26 +27,16 @@ function getOrderBookTvl(typeStr) {
         }
       }
     }
-    return formatTokenAmounts(balances)
+    return transformBalances('injective', balances)
   }
-}
-
-async function mergeAndSumAmounts() {
-  const spotAmounts = await getOrderBookTvl(TYPES.SPOT)()
-  const derivativesAmounts = await getOrderBookTvl(TYPES.DERIVATIVES)()
-  const coinGeckoIdList = new Set([...Object.keys(spotAmounts), ...Object.keys(derivativesAmounts)])
-
-  return Array.from(coinGeckoIdList).reduce((tvlMap, coinGeckoId) => {
-    const spotAmount = new BigNumber(spotAmounts[coinGeckoId] || 0)
-    const derivativesAmount = new BigNumber(derivativesAmounts[coinGeckoId] || 0);
-    tvlMap[coinGeckoId] = spotAmount.plus(derivativesAmount).toFixed(2)
-    return tvlMap
-  }, {})
 }
 
 module.exports = {
   timetravel: false,
   injective: {
-    tvl: () => mergeAndSumAmounts()
+    tvl: sdk.util.sumChainTvls([
+      getOrderBookTvl(TYPES.SPOT),
+      getOrderBookTvl(TYPES.DERIVATIVES),
+    ])
   }
 }

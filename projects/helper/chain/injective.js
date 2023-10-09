@@ -1,7 +1,5 @@
 const { getNetworkInfo, Network } = require('@injectivelabs/networks')
-const { protoObjectToJson, DenomClient, IndexerGrpcSpotApi, IndexerGrpcDerivativesApi, ChainGrpcBankApi } = require('@injectivelabs/sdk-ts')
-const { TokenType } = require('@injectivelabs/token-metadata')
-const { default: BigNumber } = require('bignumber.js')
+const { protoObjectToJson, IndexerGrpcSpotApi, IndexerGrpcDerivativesApi, ChainGrpcBankApi } = require('@injectivelabs/sdk-ts')
 
 const { sliceIntoChunks } = require('../utils')
 let clients = {}
@@ -29,11 +27,6 @@ function getClient(type = TYPES.SPOT) {
   return clients[type]
 }
 
-function getDenomClient() {
-  const network = getNetworkInfo(Network.Mainnet)
-  return new DenomClient(network.grpc)
-}
-
 async function getMarkets({ type = TYPES.SPOT, marketStatus = 'active' } = {}) {
   const markets = await getClient(type).fetchMarkets({ marketStatus, })
   return p2j(markets)
@@ -47,41 +40,10 @@ async function getOrders({ type = TYPES.SPOT, marketIds }) {
   return response
 }
 
-async function getAssets(type = TYPES.BANK) {
-  const denomClient = getDenomClient();
-  const { supply } = await getClient(type).fetchAllTotalSupply();
-  const supplyWithTokensOrUnknown = supply.map((coin) =>
-    denomClient.getDenomToken(coin.denom)
-  ).filter(token => token);
-  const supplyWithToken = supplyWithTokensOrUnknown.filter(
-    (token) => token.tokenType !== TokenType.Unknown
-  );
-  const assets = supplyWithToken.map((token) => ({
-    token,
-    ...supply.find((coin) => coin.denom === token.denom)
-  }));
-  return assets
-}
-
-function formatTokenAmounts(balances) {
-  const denomClient = getDenomClient();
-  return Object.entries(balances).reduce((formattedAmounts, [denom, amount]) => {
-    const token = denomClient.getDenomToken(denom)
-    if(!token || !token.decimals || !token.coinGeckoId) {
-      return formattedAmounts
-    }
-    const formattedAmount = new BigNumber(amount).div(10 ** token.decimals).toFixed(2)
-    formattedAmounts[token.coinGeckoId] = formattedAmount;
-    return formattedAmounts
-  }, {});
-}
-
 module.exports = {
   TYPES,
   getClient,
   p2j,
   getMarkets,
   getOrders,
-  getAssets,
-  formatTokenAmounts
 }

@@ -1,18 +1,6 @@
-const { getAssets } = require('../helper/chain/injective')
-const BigNumber = require("bignumber.js");
-
-async function fetchTvl() {
-  const chainAssets = await getAssets()
-  return chainAssets.reduce((tvlMap, { token, amount }) => {
-    const formattedAmount = new BigNumber(amount).div(10 ** token.decimals).toFixed(2)
-      tvlMap[token.coinGeckoId] = formattedAmount
-      return tvlMap
-    }, {})
-}
+const { sumTokensExport } = require('../helper/unwrapLPs')
 
 module.exports = {
-  timetravel: false,
-  misrepresentedTokens: true,
   methodology: 'TVL accounts for all liquidity on the Injective chain, using the chain\'s bank module as the source.',
-  injective: { tvl: () => fetchTvl() },
+  ethereum: { tvl: sumTokensExport({ owner: '0xf955c57f9ea9dc8781965feae0b6a2ace2bad6f3', fetchCoValentTokens: true, blacklistedTokens: ['0xe28b3B32B6c345A34Ff64674606124Dd5Aceca30'] }) },
 };
