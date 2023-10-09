@@ -1,4 +1,4 @@
-const { getMarkets, getOrders, TYPES } = require('../helper/chain/injective')
+const { getMarkets, getOrders, TYPES } = require('../helper/chain/injectve')
 const { transformBalances } = require('../helper/portedTokens')
 const sdk = require('@defillama/sdk')
 const { default: BigNumber } = require('bignumber.js')
@@ -36,7 +36,7 @@ module.exports = {
   injective: {
     tvl: sdk.util.sumChainTvls([
       getOrderBookTvl(TYPES.SPOT),
-      getOrderBookTvl(TYPES.DERIVATIVES)
+      getOrderBookTvl(TYPES.DERIVATIVES),
     ])
   }
 }
