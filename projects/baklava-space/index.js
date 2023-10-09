@@ -1,6 +1,6 @@
 const { staking } = require('../helper/staking');
-const { sumERC4626VaultsExport } = require('../helper/erc4626');
-const { pool2 } = require('../helper/pool2')
+const { pool2 } = require('../helper/pool2');
+const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const config = {
   avax: {
@@ -43,9 +43,16 @@ module.exports = {
   doublecounted: true,
   methodology: `Counts liquidty on the bava staking and lptoken staking on Avalanche and fx token staking on FunctionX`,
   // we have added the other functionx erc4626 vaults, but the token is an LP token and this function is unable to get the price
-  functionx: { tvl: sumERC4626VaultsExport({ vaults: ['0x5c24B402b4b4550CF94227813f3547B94774c1CB', ...config.functionx] }) }
+  functionx: { tvl: fxTvl }
 };
 
+async function fxTvl(_, _1, _2, { api }) {
+  const vaults = ['0x5c24B402b4b4550CF94227813f3547B94774c1CB', ...config.functionx]
+  const tokens = await api.multiCall({ abi: 'address:asset', calls: vaults })
+  const bals = await api.multiCall({ abi: 'uint256:totalAssets', calls: vaults })
+  api.addTokens(tokens, bals)
+  return sumTokens2({ api, resolveLP: true, })
+}
 
 const { vaults, pgVaults, tjVaults, } = config.avax
 module.exports.avax = {
@@ -56,8 +63,6 @@ module.exports.avax = {
     pgInfos.forEach(i => api.add(i.token, i.bal))
   }
 }
-
-
 
 module.exports.avax.staking = staking(bavaStakingRewards, bavaToken)
 module.exports.avax.pool2 = pool2('0xdcedb18047945de1f05f649569b3d2b0e648d9c8', '0x2c3601fe09c23df8beb8216298d1502c985e376f')
