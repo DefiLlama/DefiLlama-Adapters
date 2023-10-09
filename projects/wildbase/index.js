@@ -7,8 +7,10 @@ const treasury = "0x576182b7a1b0bC67701ead28a087228c50Aa0982";
 
 module.exports = {
     misrepresentedTokens: true,
-    tvl: sumTokensExport({ tokens: [wildx_weth_lp], owner: masterchefAddress, useDefaultCoreAssets: true }),
-    pool2: sumTokensExport({ tokens: [wildx_weth_lp], owner: masterchefAddress, useDefaultCoreAssets: true }),
-    staking: sumTokensExport({ tokens: [wildxToken], owner: masterchefAddress, useDefaultCoreAssets: true, lps: [alyx_bsc_lp] }),
+    base: {
+        tvl: sumTokensExport({ tokens: [wildxToken], owner: masterchefAddress, useDefaultCoreAssets: true, lps: [wildx_weth_lp] }),
+        pool2: sumTokensExport({ tokens: [wildx_weth_lp], owner: masterchefAddress, useDefaultCoreAssets: true }),
+        staking: sumTokensExport({ tokens: [wildxToken], owner: masterchefAddress, useDefaultCoreAssets: true, lps: [wildx_weth_lp] }),
+    },
     methodology: `Total amount of tokens in masterchef contract`,
 };
