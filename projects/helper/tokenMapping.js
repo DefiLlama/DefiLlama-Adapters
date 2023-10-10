@@ -70,6 +70,9 @@ const fixBalancesTokens = {
     '0xb73603c5d87fa094b7314c74ace2e64d165016fb': { coingeckoId: 'usd-coin', decimals: 6 },
     '0xf417f5a458ec102b90352f697d6e2ac3a3d2851f': { coingeckoId: 'tether', decimals: 6 },
   },
+  nos: {
+    '0x111808AbE352c8003e0eFfcc04998EaB26Cebe3c': { coingeckoId: 'bitcoin', decimals: 18 },
+  },
   ton: {
     'EQBq4d4GPyBoh-Pjnf3wxUyQSS28WY2Yt-7cPAG8FHpWpNRX': { coingeckoId: 'matic-network', decimals: 18 },
     'EQDCIEo0HUUYsAV-lTMviOd-GkSXfVPsNZMGjRaNOA_6--FD': { coingeckoId: 'orbit-chain', decimals: 18 },
