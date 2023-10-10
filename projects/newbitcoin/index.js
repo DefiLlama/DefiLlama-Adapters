@@ -1,12 +1,18 @@
-const fetch = require("node-fetch");
+const WBTC = "0x111808AbE352c8003e0eFfcc04998EaB26Cebe3c";
+const NEW_BITCOIN_CONTRACT = "0xea21fbBB923E553d7b98D14106A104665BA57eCd";
+async function tvl(time, ethBlock, _b, { api }) {
+  const wBal = await api.call({
+    abi: 'erc20:balanceOf',
+    target: WBTC,
+    params: [NEW_BITCOIN_CONTRACT],
+  });
 
-const tvl = async () => {
-  const resp = await fetch("https://perp-api.fprotocol.io/api/tvl");
-  const rs = await resp.json();
-  return rs.result
+  api.add(WBTC, wBal)
 }
 
 module.exports = {
-  methodology: "New Bitcoin's Total Value Locked (TVL) can be calculated as the sum of the BTC amount locked in all creators' smart contracts. Every content creator has their own smart contract (this is similar to Uniswap's pool structure). Once a key holder buys key(s) of a creator, their purchased BTC is locked in the creator's contract.",
-  fetch: tvl
-} 
+  methodology: `We count the BTC on ${NEW_BITCOIN_CONTRACT}`,
+  nos: {
+    tvl
+  }
+}
