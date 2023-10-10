@@ -148,7 +148,7 @@ async function cosmosDenomBalanceStr(chain, denom, owner) {
 
 module.exports = {
   timetravel: false,
-  methodology: 'For each chain, sum up token balances in Red Bank smart contracts and vault underlying assets in Fields smart contracts',
+  methodology: 'For each chain, sum token balances in Red Bank/Credit Manager smart contracts to approximate net deposits, plus vault underlying assets held in Rover',
   osmosis: {
     tvl: osmosisTVL,
   },
