@@ -25,7 +25,8 @@ const distressedAssts = new Set(Object.values({
   aBNBb: ADDRESSES.bsc.aBNBb,
   XRPC: '0xd4ca5c2aff1eefb0bea9e9eab16f88db2990c183',
   FLEET: '0xfd56a3dcfc0690881a466ae432d71bb2db588083',
-  YAKU: 'NGK3iHqqQkyRZUj4uhJDQqEyKKcZ7mdawWpqwMffM3s'
+  YAKU: 'NGK3iHqqQkyRZUj4uhJDQqEyKKcZ7mdawWpqwMffM3s',
+  JEFI: '0x80fa6d5384bdde296a28a321f73ab70977575129'
 }).map(i => i.toLowerCase()))
 
 const transformTokens = {
@@ -75,6 +76,11 @@ const fixBalancesTokens = {
     'EQBf6-YoR9xylol_NwjHrLkrTFAZJCX-bsd-Xx_902OaPaBf': { coingeckoId: 'megaton-finance', decimals: 9 },
     'EQCajaUU1XXSAjTD-xOV7pE49fGtg4q8kF3ELCOJtGvQFQ2C': { coingeckoId: 'the-open-network', decimals: 9 },
     'EQCf7Nb341dxOE3N0jimngRxGEV8T3zo-eU2EZVs_nchNhhZ': { coingeckoId: 'wemix-token', decimals: 18 }
+  },
+  beam: {
+    '0xd51bfa777609213a653a2cd067c9a0132a2d316a': { coingeckoId: 'merit-circle', decimals: 18 },
+    '0x76bf5e7d2bcb06b1444c0a2742780051d8d0e304': { coingeckoId: 'usd-coin', decimals: 6 },
+    '0x999f90f25a2922ae1b21A06066F7EDEbedad42a9': { coingeckoId: 'tether', decimals: 18 },
   }
 }
 
