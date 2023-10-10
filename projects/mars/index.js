@@ -21,6 +21,7 @@ const addresses = {
 async function osmosisTVL() {
   let balances = {};
   await addRedBankTvl(balances, 'osmosis');
+  await addCreditManagerTvl(balances, 'osmosis');
   await osmosisSumVaultsTVL(balances);
   return balances;
 }
@@ -55,7 +56,6 @@ async function osmosisSumVaultsTVL(balances) {
 }
 
 async function osmosisAddCoinsForVaultsInfoPage(coins, roverVaultConfigsPage) {
-  console.log(roverVaultConfigsPage);
     let vaultsMetadata = roverVaultConfigsPage.map(rvi => ({ fieldsVaultInfo: rvi }));
 
     // query the vault info for the vault contract itself to get the vault's
@@ -78,7 +78,6 @@ async function osmosisAddCoinsForVaultsInfoPage(coins, roverVaultConfigsPage) {
       );
       vm.vaultShares = vaultShares;
     }));
-    console.log(vaultsMetadata);
 
     // convert vault shares to vault base asset
     await Promise.all(vaultsMetadata.map( async vm => {
@@ -124,6 +123,10 @@ async function neutronTVL() {
 
 async function addRedBankTvl(balances, chain) {
   await sumTokens({balances, owners: [addresses[chain].redBank], chain});
+}
+
+async function addCreditManagerTvl(balances, chain) {
+  await sumTokens({balances, owners: [addresses[chain].creditManager], chain});
 }
 
 function getEndpoint(chain) {
