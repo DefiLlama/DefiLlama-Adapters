@@ -161,5 +161,7 @@ module.exports = {
    hallmarks:[
     [1651881600, 'UST depeg'],
     [1675774800, 'Relaunch on Osmosis'],
+    [1690945200, 'Red Bank launch on Neutron'],
+    [1696906800, 'Mars V2 launch on Osmosis'],
   ]
 };
