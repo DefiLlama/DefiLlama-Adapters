@@ -79,6 +79,7 @@ module.exports = {
         ADDRESSES.arbitrum.ARB,
         ADDRESSES.arbitrum.USDC,
         ADDRESSES.arbitrum.USDT,
+        ADDRESSES.arbitrum.WBTC,
       ],
     }),
   },
@@ -96,13 +97,19 @@ module.exports = {
         ADDRESSES.optimism.OP,
         ADDRESSES.optimism.USDC,
         ADDRESSES.optimism.USDT,
+        ADDRESSES.optimism.WBTC,
       ],
     }),
   },
   polygon: {
     tvl: sumTokensExport({
       owner: POOLS.polygon,
-      tokens: [DEFAULT_TOKEN, ADDRESSES.polygon.USDC, ADDRESSES.polygon.USDT],
+      tokens: [
+        DEFAULT_TOKEN,
+        ADDRESSES.polygon.USDC,
+        ADDRESSES.polygon.USDT,
+        ADDRESSES.polygon.WBTC,
+      ],
     }),
   },
   bsc: {
