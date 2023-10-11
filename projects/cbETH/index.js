@@ -1,5 +1,6 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { default: axios } = require("axios")
-const token = '0xbe9895146f7af43049ca1c1ae358b0541ea49704'
+const token = ADDRESSES.ethereum.cbETH
 
 module.exports = {
   ethereum: {
