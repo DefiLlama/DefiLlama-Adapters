@@ -1,13 +1,14 @@
 const sdk = require('@defillama/sdk');
 const axios = require('axios');
 
-const { endPoints, queryContract, sumTokens } = require('../helper/chain/cosmos');
+const { endPoints, queryContract, sumTokens} = require('../helper/chain/cosmos');
 const { getChainTransform } = require('../helper/portedTokens');
 
 const addresses = {
   osmosis: {
     redBank: 'osmo1c3ljch9dfw5kf52nfwpxd2zmj2ese7agnx0p9tenkrryasrle5sqf3ftpg',
     creditManager: 'osmo1f2m24wktq0sw3c0lexlg7fv4kngwyttvzws3a3r3al9ld2s2pvds87jqvf',
+    params: 'osmo1nlmdxt9ctql2jr47qd4fpgzg84cjswxyw6q99u4y4u4q6c2f5ksq7ysent'
   },
   neutron: {
     redBank: 'neutron1n97wnm7q6d2hrcna3rqlnyqw2we6k0l8uqvmyqq6gsml92epdu7quugyph',
@@ -20,6 +21,7 @@ const addresses = {
 async function osmosisTVL() {
   let balances = {};
   await addRedBankTvl(balances, 'osmosis');
+  await addCreditManagerTvl(balances, 'osmosis');
   await osmosisSumVaultsTVL(balances);
   return balances;
 }
@@ -32,20 +34,20 @@ async function osmosisSumVaultsTVL(balances) {
   const osmosisDenomTransform = await getChainTransform('osmosis');
 
   while (vaultPagesRemaining) {
-    const fieldsVaultsInfo = await queryContract({
-      contract: addresses.osmosis.creditManager,
+    const roverVaultConfigs = await queryContract({
+      contract: addresses.osmosis.params,
       chain: 'osmosis',
-      data: { 'vaults_info': { limit: pageLimit, 'start_after': startAfter } } 
+      data: { 'all_vault_configs': { limit: pageLimit, 'start_after': startAfter } } 
     });
 
-    if(fieldsVaultsInfo.length === pageLimit) {
-      startAfter = fieldsVaultsInfo[fieldsVaultsInfo.length - 1].vault;
+    if(roverVaultConfigs.length === pageLimit) {
+      startAfter = roverVaultConfigs[roverVaultConfigs.length - 1].vault;
       vaultPagesRemaining = true
     } else {
       vaultPagesRemaining = false;
     }
 
-    await osmosisAddCoinsForVaultsInfoPage(coins, fieldsVaultsInfo);
+    await osmosisAddCoinsForVaultsInfoPage(coins, roverVaultConfigs);
   }
 
   coins.forEach(coin =>  {
@@ -53,14 +55,14 @@ async function osmosisSumVaultsTVL(balances) {
   })
 }
 
-async function osmosisAddCoinsForVaultsInfoPage(coins, fieldsVaultsInfoPage) {
-    let vaultsMetadata = fieldsVaultsInfoPage.map(rvi => ({ fieldsVaultInfo: rvi }));
+async function osmosisAddCoinsForVaultsInfoPage(coins, roverVaultConfigsPage) {
+    let vaultsMetadata = roverVaultConfigsPage.map(rvi => ({ fieldsVaultInfo: rvi }));
 
     // query the vault info for the vault contract itself to get the vault's
     // base token
     await Promise.all(vaultsMetadata.map(async vm => {
       let vaultInfo = await queryContract({
-        contract: vm.fieldsVaultInfo.vault.address,
+        contract: vm.fieldsVaultInfo.addr,
         chain: 'osmosis',
         data: { 'info': {} } 
       });
@@ -69,18 +71,18 @@ async function osmosisAddCoinsForVaultsInfoPage(coins, fieldsVaultsInfoPage) {
 
     // get total vault shares owned by fields for each vault
     await Promise.all(vaultsMetadata.map(async vm => {
-      let vaultShares = await queryContract({
-        contract: addresses.osmosis.creditManager,
-        chain: 'osmosis',
-        data: { 'total_vault_coin_balance': { vault: vm.fieldsVaultInfo.vault } } 
-      });
+      let vaultShares = await cosmosDenomBalanceStr(
+        'osmosis',
+        vm.vaultInfo.vault_token,
+        addresses.osmosis.creditManager
+      );
       vm.vaultShares = vaultShares;
     }));
 
     // convert vault shares to vault base asset
     await Promise.all(vaultsMetadata.map( async vm => {
       let query = {
-        contract: vm.fieldsVaultInfo.vault.address,
+        contract: vm.fieldsVaultInfo.addr,
         chain: 'osmosis',
         data: { 'convert_to_assets': { amount: vm.vaultShares } } 
       };
@@ -123,6 +125,10 @@ async function addRedBankTvl(balances, chain) {
   await sumTokens({balances, owners: [addresses[chain].redBank], chain});
 }
 
+async function addCreditManagerTvl(balances, chain) {
+  await sumTokens({balances, owners: [addresses[chain].creditManager], chain});
+}
+
 function getEndpoint(chain) {
   if (!endPoints[chain]) throw new Error('Chain not found: ' + chain);
   return endPoints[chain];
@@ -134,9 +140,15 @@ async function cosmosLCDQuery(url, chain) {
   return request.data;
 }
 
+async function cosmosDenomBalanceStr(chain, denom, owner) {
+  let url = `cosmos/bank/v1beta1/balances/${owner}/by_denom?denom=${denom}`;
+  let balance = await cosmosLCDQuery(url, chain);
+  return balance.balance.amount;
+}
+
 module.exports = {
   timetravel: false,
-  methodology: 'For each chain, sum up token balances in Red Bank smart contracts and vault underlying assets in Fields smart contracts',
+  methodology: 'For each chain, sum token balances in Red Bank/Credit Manager smart contracts to approximate net deposits, plus vault underlying assets held in Rover',
   osmosis: {
     tvl: osmosisTVL,
   },
@@ -149,5 +161,7 @@ module.exports = {
    hallmarks:[
     [1651881600, 'UST depeg'],
     [1675774800, 'Relaunch on Osmosis'],
+    [1690945200, 'Red Bank launch on Neutron'],
+    [1696906800, 'Mars V2 launch on Osmosis'],
   ]
 };
