@@ -6,9 +6,10 @@ module.exports = {
   hallmarks: [
     [1688342964, "VLP Leverage Vault"],
     [1692164391, "GLP Leverage Vault"],
-    [1695274791, "GMXV2 Leverage Vault "],
+    [1695274791, "GMXV2 Leverage Vault"],
     [1682314791, "GLP Delta Neutral Vault"],
     [1683178791, "GDAI Leverage Vault"],
+    [1696389409, "HLP Leverage Vault"],
   ],
 
   arbitrum: {
@@ -17,8 +18,11 @@ module.exports = {
         "0x0081772FD29E4838372CbcCdD020f53954f5ECDE", // VodkaVault
         "0x6df0018b0449bB4468BfAE8507E13021a7aa0583", // WaterVault
       ];
-      const bals = await api.multiCall({ abi: "int256:getVaultMarketValue", calls: vaults, });
-      bals.forEach(i => api.add(ADDRESSES.arbitrum.USDC, i))
+      const bals = await api.multiCall({
+        abi: "int256:getVaultMarketValue",
+        calls: vaults,
+      });
+      bals.forEach((i) => api.add(ADDRESSES.arbitrum.USDC, i));
 
       const addresses = {
         whiskey: "0x6532eFCC1d617e094957247d188Ae6d54093718A",
@@ -36,6 +40,9 @@ module.exports = {
         gmArb: "0xC25cEf6061Cf5dE5eb761b50E4743c1F5D7E5407", // arb/usdc.e
         VLP: "0xc5b2d9fda8a82e8dcecd5e9e6e99b78a9188eb05",
         gDAI: "0xd85e038593d7a098614721eae955ec2022b9b91b",
+        rum: "0x739fe1BE8CbBeaeA96fEA55c4052Cd87796c0a89",
+        hlpStaking: "0xbE8f8AF5953869222eA8D39F1Be9d03766010B1C",
+        hlp: "0x4307fbDCD9Ec7AEA5a1c2958deCaa6f316952bAb",
       };
 
       await api.sumTokens({
@@ -51,20 +58,34 @@ module.exports = {
           [addresses.fsGlp, addresses.VodkaV1],
           [addresses.gmArb, addresses.vodkaV2],
           [addresses.gmWeth, addresses.vodkaV2],
-        ]
-      })
-
+          [addresses.hlp, addresses.rum],
+        ],
+      });
 
       const contractAbis = {
         stakedVlpBalance:
           "function getStakedVlpBalance() public view returns (uint256)",
+        stakedHlpBalance:
+          "function userTokenAmount(address user) public view returns (uint256)",
       };
 
+      const StakedVLPBal = await api.call({
+        abi: contractAbis.stakedVlpBalance,
+        target: addresses.sake,
+      });
+      const StakedVLPBalV2 = await api.call({
+        abi: contractAbis.stakedVlpBalance,
+        target: addresses.sakeV2,
+      });
+      const StakedHLPBal = await api.call({
+        abi: contractAbis.stakedHlpBalance,
+        target: addresses.hlpStaking,
+        params: addresses.rum,
+      });
 
-      const StakedVLPBal = await api.call({ abi: contractAbis.stakedVlpBalance, target: addresses.sake, });
-      const StakedVLPBalV2 = await api.call({ abi: contractAbis.stakedVlpBalance, target: addresses.sakeV2, });
-      api.add(addresses.VLP, StakedVLPBal)
-      api.add(addresses.VLP, StakedVLPBalV2)
+      api.add(addresses.VLP, StakedVLPBal);
+      api.add(addresses.VLP, StakedVLPBalV2);
+      api.add(addresses.hlp, StakedHLPBal);
     },
   },
 };
