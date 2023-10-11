@@ -70,6 +70,10 @@ const fixBalancesTokens = {
     '0xb73603c5d87fa094b7314c74ace2e64d165016fb': { coingeckoId: 'usd-coin', decimals: 6 },
     '0xf417f5a458ec102b90352f697d6e2ac3a3d2851f': { coingeckoId: 'tether', decimals: 6 },
   },
+  scroll: {
+    '0x5300000000000000000000000000000000000004': { coingeckoId: 'ethereum', decimals: 18 },
+    [ADDRESSES.null]: { coingeckoId: 'ethereum', decimals: 18 },
+  },
   nos: {
     [ADDRESSES.nos.BTC]: { coingeckoId: 'bitcoin', decimals: 18 },
   },
