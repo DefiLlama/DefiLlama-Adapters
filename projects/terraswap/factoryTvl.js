@@ -1,4 +1,4 @@
-const { queryContract } = require('../helper/chain/cosmos')
+const { queryContract, queryContracts, sumTokens } = require('../helper/chain/cosmos')
 const { PromisePool } = require('@supercharge/promise-pool')
 const { transformDexBalances } = require('../helper/portedTokens')
 
@@ -57,6 +57,16 @@ function getFactoryTvl(factory) {
   }
 }
 
+
+function getSeiDexTvl(codeId) {
+  return async (_, _1, _2, { api }) => {
+    const chain = api.chain
+    const contracts = await queryContracts({ chain, codeId, })
+    return sumTokens({ chain, owners: contracts })
+  }
+}
+
 module.exports = {
-  getFactoryTvl
+  getFactoryTvl,
+  getSeiDexTvl,
 }
