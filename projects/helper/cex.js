@@ -151,7 +151,7 @@ const defaultTokens = {
     nullAddress,
     ADDRESSES.arbitrum.USDC, // USDC
     ADDRESSES.arbitrum.USDT, // USDT
-    ADDRESSES.optimism.DAI, // DAI
+    ADDRESSES.arbitrum.DAI, // DAI
     '0x09e18590e8f76b6cf471b3cd75fe1a1a9d2b2c2b' //aidoge
     
   ],
@@ -172,6 +172,20 @@ const defaultTokens = {
     ADDRESSES.optimism.USDT,  //USDT
     ADDRESSES.optimism.USDC,  //USDC
     ADDRESSES.optimism.DAI // DAI
+  ],
+  linea: [
+    nullAddress,
+   ADDRESSES.linea.USDT, //bridge usdt
+   ADDRESSES.linea.USDC, //usdc bridge
+   ADDRESSES.linea.DAI //dai bridge
+  ],
+  flare: [
+    nullAddress,
+    ADDRESSES.flare.WFLR,
+  ],
+  celo: [
+    nullAddress,
+    ADDRESSES.celo.CELO //celo
   ],
 }
 
@@ -206,4 +220,5 @@ function cexExports(config) {
 
 module.exports = {
   cexExports,
+  defaultTokens,
 }

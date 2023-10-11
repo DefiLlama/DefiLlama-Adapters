@@ -170,7 +170,7 @@ const liquidityBridgeTokens = [
   {
     // LYRA
     ethereum: "0x01ba67aac7f75f647d94220cc98fb30fcc5105bf",
-    optimism: "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb",
+    optimism: ADDRESSES.base.DAI,
   },
   {
     // IMX

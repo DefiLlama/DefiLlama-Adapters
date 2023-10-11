@@ -61,6 +61,7 @@ const tokenMapping = {
   DJED: '8db269c3ec630e06ae29f74bc39edd1f87c819f1056206e879a1cd61446a65644d6963726f555344',
   SHEN: '8db269c3ec630e06ae29f74bc39edd1f87c819f1056206e879a1cd615368656e4d6963726f555344',
   USDC: 'usd-coin',
+  USDT: 'tether',
 }
 
 const getToken = market => tokenMapping[market.marketId.toUpperCase()] ?? base64ToHex(market.info.params.underlyingClass.value0.symbol)
@@ -76,8 +77,9 @@ async function tvl(_, _b, _cb, { api, }) {
 function add(api, market, bal) {
   const token = getToken(market)
   if (token === 'usd-coin') bal /= 1e8
+  if (token === 'tether') bal /= 1e8
   api.add(token, bal, {
-    skipChain: token === 'usd-coin'
+    skipChain: token === 'usd-coin' || token === 'tether'
   })
 }
 
