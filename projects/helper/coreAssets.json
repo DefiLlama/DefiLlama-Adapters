@@ -1422,6 +1422,10 @@
   "shimmer_evm": {
     "WSMR": "0xBEb654A116aeEf764988DF0C6B4bf67CC869D01b",
     "USDT": "0xc0E49f8C615d3d4c245970F6Dc528E4A47d69a44"
+  },
+  "renec": {
+    "RENEC": "So11111111111111111111111111111111111111112",
+    "REUSD": "4Q89182juiadeFgGw3fupnrwnnDmBhf7e7fHWxnUP3S3"
   }
   ,
   "beam": {
