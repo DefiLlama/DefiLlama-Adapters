@@ -1,4 +1,4 @@
-const { getConnection, exportDexTVL } = require("../helper/chain/renec");
+const { getConnection, exportDexTVL } = require("../helper/solana");
 const { PublicKey } = require('@solana/web3.js')
 
 // State: https://github.com/renec-chain/nemo-swap/blob/master/programs/whirlpool/src/state/whirlpool.rs
@@ -8,9 +8,9 @@ const TOKEN_ACCOUNT_A_OFFSET = 8 + 1 + 32 + 1 + 2 * 4 + 16 * 2 + 4 + 8 * 2 + 32;
 const TOKEN_ACCOUNT_B_OFFSET = TOKEN_ACCOUNT_A_OFFSET + 32 + 16 + 32;
 const PUBKEY_LENGTH=32;
 
-async function getTokenAccounts() {
+async function getTokenAccounts(chain) {
   const programId = new PublicKey(NEMOSWAP_PROGRAM_ID);
-  const connection = getConnection();
+  const connection = getConnection(chain);
   const accounts = await connection.getProgramAccounts(programId, {
     filters: [{
       dataSize: WHIRLPOOL_DATA_SIZE
@@ -29,6 +29,6 @@ async function getTokenAccounts() {
 
 module.exports = {
   renec: {
-    tvl: exportDexTVL(NEMOSWAP_PROGRAM_ID, getTokenAccounts)
+    tvl: exportDexTVL(NEMOSWAP_PROGRAM_ID, getTokenAccounts, 'renec')
   },
 };
