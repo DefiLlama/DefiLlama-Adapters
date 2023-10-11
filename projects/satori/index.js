@@ -1,10 +1,11 @@
 const sdk = require("@defillama/sdk");
 const { sumTokensExport } = require("../helper/unwrapLPs");
+
 module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
   methodology:
-      "TVL includes the total token value inside the protocol's liquidity pools",
+    "TVL includes the total token value inside the protocol's liquidity pools.",
   polygon_zkevm: {
     tvl: sumTokensExport({
       chain: "polygon_zkevm",
@@ -23,6 +24,16 @@ module.exports = {
         "0x48756b37Fd643bB40F669804730024F02900C476",
       ],
       tokens: ["0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4"],
+    }),
+  },
+  linea: {
+    tvl: sumTokensExport({
+      chain: "linea",
+      owners: [
+        "0xfb371E70eEB32f4054F40514924e77213ca18425",
+        "0xF96116e124eB3F62Ddc6a9cfbdc58d7F8A37c50A",
+      ],
+      tokens: ["0x176211869cA2b568f2A7D4EE941E073a821EE1ff"],
     }),
   },
 };
