@@ -304,8 +304,7 @@ function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts) {
       data.push({ token0: tokenA.mint, token0Bal: tokenA.amount, token1: tokenB.mint, token1Bal: tokenB.amount, })
     }
 
-    const coreTokens = await getGeckoSolTokens()
-    return transformDexBalances({ chain: 'renec', data, blacklistedTokens: blacklistedTokens_default, coreTokens, })
+    return transformDexBalances({ chain: 'renec', data, blacklistedTokens: blacklistedTokens_default, })
   }
 
   async function _getTokenAccounts() {
