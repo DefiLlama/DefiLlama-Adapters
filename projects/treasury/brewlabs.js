@@ -12,9 +12,9 @@ module.exports = treasuryExports({
   bsc: {
     tokens: [ 
         nullAddress,
-        '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',//busd
-        '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',//wbnb
-        '0x55d398326f99059fF775485246999027B3197955',//bsc-usd
+        ADDRESSES.bsc.BUSD,//busd
+        ADDRESSES.bsc.WBNB,//wbnb
+        ADDRESSES.bsc.USDT,//bsc-usd
         '0x9d7107c8E30617CAdc11f9692A19C82ae8bbA938',//roo
         '0xF14D3692B0055Db9Ca4c04065165d59B87E763f1',//mbc
         '0xe91a8D2c584Ca93C7405F15c22CdFE53C29896E3',//dext
