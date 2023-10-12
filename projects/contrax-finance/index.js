@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const Vaults = [
   "0x5cc3543656EfA30144965C6c538F4d8379F83138",
@@ -17,7 +18,7 @@ const Vaults = [
 ];
 const HOP_MAGIC_VAULT = "0x2d79B76841191c9c22238535a93Ee8169096A5Cc";
 const GMX_VAULT = "0x8CdF8d10ea6Cd3492e67C4250481A695c2a75C4a";
-const GMX = "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a";
+const GMX = ADDRESSES.arbitrum.GMX;
 
 async function getHopMagicData(api) {
   const tokenAddress = await api.call({
@@ -62,8 +63,6 @@ async function tvl(_, _1, _2, { api }) {
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
   methodology: "gets the lp balance of all vaults/controller/treasuries",
   arbitrum: {
     tvl,
