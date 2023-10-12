@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unwrapLPs')
-const ARBI_CONTRACT = '0xfc2f1678f7c0d78c3911090c92b86bca7cc3a8b7';
+const ARBI_CONTRACT = '0xB1947d7596840D0a14D30cCA91be69ddC24ab75d';
 const ASSETS_CONTRACTS = [
     ADDRESSES.arbitrum.GMX,
     '0x11cdb42b0eb46d95f990bedd4695a6e3fa034978',
@@ -14,6 +14,6 @@ module.exports = {
     methodology: 'counts the quantities of all tokens in multipool contracts.',
     start: 1000235,
     arbitrum: {
-        tvl: sumTokensExport({ owner: ARBI_CONTRACT, tokens: ASSETS_CONTRACTS}),
+        tvl: sumTokensExport({ owner: ARBI_CONTRACT, tokens: ASSETS_CONTRACTS }),
     }
 }; 
