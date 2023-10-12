@@ -1,15 +1,13 @@
 const sdk = require('@defillama/sdk');
-const { default: BigNumber } = require('bignumber.js');
-const { abi } = require("./abi");
+const {default: BigNumber} = require('bignumber.js');
+const {abi} = require("./abi");
 
-const miltonAddresses = [
-    '0x28BC58e600eF718B9E97d294098abecb8c96b687', // USDT
+const miltonAddresses = ['0x28BC58e600eF718B9E97d294098abecb8c96b687', // USDT
     '0x137000352B4ed784e8fa8815d225c713AB2e7Dc9', // USDC
     '0xEd7d74AA7eB1f12F83dA36DFaC1de2257b4e7523', // DAI
 ]
 
-const assets = [
-    '0xdAC17F958D2ee523a2206206994597C13D831ec7', // USDT
+const assets = ['0xdAC17F958D2ee523a2206206994597C13D831ec7', // USDT
     '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
     '0x6B175474E89094C44Da98b954EedeAC495271d0F', // DAI
 ]
@@ -23,8 +21,6 @@ const ammTreasuryEth = '0x63395EDAF74a80aa1155dB7Cd9BBA976a88DeE4E'
 const V2DeploymentBlockNumber = 18333744
 
 async function tvl(_, block) {
-    const balances = {};
-
     if (block >= V2DeploymentBlockNumber) {
         return await calculateTvlForV2(block);
     } else {
@@ -85,9 +81,9 @@ async function calculateTvlForV1(block) {
 }
 
 module.exports = {
-  timetravel: true,
-  methodology: `Counts the tokens locked in the AMM contracts to be used as collateral to Interest Rate Swaps derivatives, counts tokens provided as a liquidity to Liquidity Pool, counts interest gathered via Asset Manager in external protocols.`,
-  ethereum: {
-    tvl
-  }
+    timetravel: true,
+    methodology: `Counts the tokens locked in the AMM contracts to be used as collateral to Interest Rate Swaps derivatives, counts tokens provided as a liquidity to Liquidity Pool, counts interest gathered via Asset Manager in external protocols.`,
+    ethereum: {
+        tvl
+    }
 };
