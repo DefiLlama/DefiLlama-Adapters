@@ -71,11 +71,6 @@ async function vaultGenesisTvl(timestamp, ethBlock, chainBlocks) {
         block: chainBlocks[CHAIN],
       });
 
-      console.log({
-        vaultGenesisAddress,
-        underlyingAssetsBalance: underlyingAssetsBalance,
-      });
-
       for (let i = 0; i < underlyingAssetsBalance.length; i++) {
         const {
           output: { tokenAddress },
