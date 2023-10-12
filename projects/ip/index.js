@@ -41,7 +41,7 @@ const cappedTokens = {
     symbol: 'rETH',
   },
   "0x99bd1f28a5A7feCbE39a53463a916794Be798FC3": {
-    address: '0xBe9895146f7AF43049ca1c1AE358B0541Ea49704',
+    address: ADDRESSES.ethereum.cbETH,
     symbol: 'cbETH',
   },
 }
