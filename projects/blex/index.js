@@ -12,7 +12,7 @@ const contracts = [
 const tokens = [ADDRESSES.arbitrum.USDT];
 
 module.exports = {
-  start: 1691193600,
+  start: 1691240820,
   arbitrum: { tvl: sumTokensExport({ tokens, owners: contracts }) },
-  hallmarks: [[1691193600, "Blex Protocol Deployed on Arbitrum"]],
+  hallmarks: [[1691240820, "Blex Protocol Deployed on Arbitrum"]],
 };
