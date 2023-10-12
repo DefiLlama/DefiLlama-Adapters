@@ -11,7 +11,7 @@ const POOLS = {
   optimism: "0x233DDEce6a96c49ecE6Ad9ae820690fE62a28975",
   polygon: "0xC3Eb696184b8927D677D8AB390A26563De4798c3",
   ethereum: "0xAA8b23B45cb51ce8f49D7757fF27BA397D05B6fC",
-  avax: "0xc44C290e66e79aE208D998635F6Fc24837F3C554 ",
+  avax: "0xc44C290e66e79aE208D998635F6Fc24837F3C554",
   bsc: "0x0519147E1A604F764C0Dca833671F5283C618f23",
 };
 const DEFAULT_TOKEN = "0x0000000000000000000000000000000000000000";
@@ -97,7 +97,7 @@ module.exports = {
         ADDRESSES.optimism.OP,
         ADDRESSES.optimism.USDC,
         ADDRESSES.optimism.USDT,
-        ADDRESSES.optimism.WBTC,
+        //ADDRESSES.optimism.WBTC,
       ],
     }),
   },
@@ -121,7 +121,7 @@ module.exports = {
   avax: {
     tvl: sumTokensExport({
       owner: POOLS.avax,
-      tokens: [DEFAULT_TOKEN, ADDRESSES.avax.USDC, ADDRESSES.avax.USDT],
+      tokens: [DEFAULT_TOKEN, ADDRESSES.avax.USDC],
     }),
   },
   ethereum: {
