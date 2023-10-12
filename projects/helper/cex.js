@@ -185,7 +185,7 @@ const defaultTokens = {
   ],
   celo: [
     nullAddress,
-    "0x471ece3750da237f93b8e339c536989b8978a438", //celo
+    ADDRESSES.celo.CELO //celo
   ],
 }
 
