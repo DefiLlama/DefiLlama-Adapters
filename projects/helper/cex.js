@@ -141,7 +141,8 @@ const defaultTokens = {
     '0x352Cb5E19b12FC216548a2677bD0fce83BaE434B', // BTT
     '0xAD29AbB318791D579433D831ed122aFeAf29dcfe', // FTM
     '0x02ff5065692783374947393723dba9599e59f591',// yoshi
-    ADDRESSES.bsc.TUSD, //TUSD
+     ADDRESSES.bsc.TUSD, //TUSD
+
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],
@@ -152,8 +153,7 @@ const defaultTokens = {
     ADDRESSES.arbitrum.USDC, // USDC
     ADDRESSES.arbitrum.USDT, // USDT
     ADDRESSES.arbitrum.DAI, // DAI
-    '0x09e18590e8f76b6cf471b3cd75fe1a1a9d2b2c2b' //aidoge
-    
+    '0x09e18590e8f76b6cf471b3cd75fe1a1a9d2b2c2b', //aidoge
   ],
   avax: [
     nullAddress,
@@ -171,7 +171,7 @@ const defaultTokens = {
     ADDRESSES.optimism.OP, //OP
     ADDRESSES.optimism.USDT,  //USDT
     ADDRESSES.optimism.USDC,  //USDC
-    ADDRESSES.optimism.DAI // DAI
+    ADDRESSES.optimism.DAI, // DAI
   ],
   linea: [
     nullAddress,
