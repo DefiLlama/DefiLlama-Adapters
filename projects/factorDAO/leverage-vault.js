@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const { request, gql } = require("graphql-request");
 
-// ████ Subgraph Queries ██████████████████████████████████████████████████
+// ████ Constants █████████████████████████████████████████████████████████
 
 const queryBlock = gql`
   {

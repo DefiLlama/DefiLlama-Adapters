@@ -87,19 +87,6 @@ const VAULT = [
   },
 ];
 
-// ████ Helpers ███████████████████████████████████████████████████████████
-
-async function getAssetBalance(block, vaultAddress, assetAddress) {
-  const { output: assetBalance } = await sdk.api.abi.call({
-    abi: singleVaultABI.assetBalance,
-    chain: "arbitrum",
-    target: vaultAddress,
-    block: block,
-  });
-
-  return assetBalance;
-}
-
 // ████ TVL Handler ███████████████████████████████████████████████████████
 
 async function singleVaultTvl(timestamp, ethBlock, chainBlocks) {
@@ -109,18 +96,17 @@ async function singleVaultTvl(timestamp, ethBlock, chainBlocks) {
     const block = chainBlocks["arbitrum"];
 
     for (let { vaultAddress, assetAddress } of VAULT) {
-      // const tvl = assetPrice * assetBalance;
-      const collateralBalance = await getAssetBalance(
-        block,
-        vaultAddress,
-        assetAddress
-      );
-      const underlyingAssetAddress = assetAddress;
+      const { output: assetBalance } = await sdk.api.abi.call({
+        abi: singleVaultABI.assetBalance,
+        chain: "arbitrum",
+        target: vaultAddress,
+        block: block,
+      });
 
       sdk.util.sumSingleBalance(
         balances,
-        `arbitrum:${underlyingAssetAddress}`,
-        collateralBalance
+        `arbitrum:${assetAddress}`,
+        assetBalance
       );
     }
 
