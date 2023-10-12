@@ -1,3 +1,4 @@
+const { sumTokens2 } = require("../helper/unwrapLPs");
 const Vaults = [
   "0x5cc3543656EfA30144965C6c538F4d8379F83138",
   "0x3C0c76ceb491Cb0Bacb31F8e7dc6407A25FD87C0",
@@ -42,35 +43,28 @@ async function getGMXData(api) {
 }
 
 async function tvl(_, _1, _2, { api }) {
-  let promises = [];
-  promises = Vaults.map(async (vaultAddr) => {
-    const tokenAddress = await api.call({
-      abi: "function token() view returns (address token)",
-      target: vaultAddr,
-      params: [],
-    });
-    const controllerAddress = await api.call({
-      abi: "function controller() view returns (address controller)",
-      target: vaultAddr,
-      params: [],
-    });
-    const balance = await api.call({
-      abi: "erc20:balanceOf",
-      target: controllerAddress,
-      params: [tokenAddress],
-    });
-    api.add(tokenAddress, balance);
+  let tokens = await api.multiCall({ abi: "address:token", calls: Vaults });
+  // Controllers
+  let targets = await api.multiCall({
+    abi: "address:controller",
+    calls: Vaults,
   });
-  promises.push(getGMXData(api));
-  promises.push(getHopMagicData(api));
 
-  await Promise.all(promises);
+  const bals = await api.multiCall({
+    abi: "erc20:balanceOf",
+    calls: tokens.map((t, i) => ({ target: targets[i], params: [t] })),
+  });
+  await getHopMagicData(api);
+  await getGMXData(api);
+  
+  api.addTokens(tokens, bals);
+  return sumTokens2({ api, resolveLP: true });
 }
 
 module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
-  methodology: "gets the lp balance of all vaults",
+  methodology: "gets the lp balance of all vaults/controller/treasuries",
   arbitrum: {
     tvl,
   },
