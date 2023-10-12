@@ -1,5 +1,5 @@
 const ADDRESSES = require("../helper/coreAssets.json");
-const { sumTokensExport } = require('../helper/unwrapLPs')
+const { sumTokensExport } = require("../helper/unwrapLPs");
 
 const contracts = [
   "0x4d377340a2875b875e1C104B9905F74FD716F59e", //CoreVault
@@ -12,6 +12,7 @@ const contracts = [
 const tokens = [ADDRESSES.arbitrum.USDT];
 
 module.exports = {
-  start: 118461883,
-  arbitrum: { tvl: sumTokensExport({ tokens, owners: contracts, }) },
+  start: 1691240820,
+  arbitrum: { tvl: sumTokensExport({ tokens, owners: contracts }) },
+  hallmarks: [[1691240820, "Blex Protocol Deployed on Arbitrum"]],
 };
