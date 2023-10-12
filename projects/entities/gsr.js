@@ -8,42 +8,42 @@ const config = {
   },
   bsc: {
     owners: [
-        "0xEaf3B28A87D498530cDC7f0700E70502CF896D3f",
+        "0xD8D6fFE342210057BF4DCc31DA28D006f253cEF0",
     ],
   },
   arbitrum: {
     owners: [
-        "0xEaf3B28A87D498530cDC7f0700E70502CF896D3f",
+        "0xD8D6fFE342210057BF4DCc31DA28D006f253cEF0",
     ],
   },
   celo: {
     owners: [
-        "0xEaf3B28A87D498530cDC7f0700E70502CF896D3f",
+        "0xD8D6fFE342210057BF4DCc31DA28D006f253cEF0",
     ],
   },
   optimism: {
     owners: [
-        "0xEaf3B28A87D498530cDC7f0700E70502CF896D3f",
+        "0xD8D6fFE342210057BF4DCc31DA28D006f253cEF0",
     ],
   },
   polygon: {
     owners: [
-        "0xEaf3B28A87D498530cDC7f0700E70502CF896D3f",
+        "0xD8D6fFE342210057BF4DCc31DA28D006f253cEF0",
     ],
   },
   avax: {
     owners: [
-        "0xEaf3B28A87D498530cDC7f0700E70502CF896D3f",
+        "0xD8D6fFE342210057BF4DCc31DA28D006f253cEF0",
     ],
   },
   moonriver: {
     owners: [
-        "0xEaf3B28A87D498530cDC7f0700E70502CF896D3f",
+        "0xD8D6fFE342210057BF4DCc31DA28D006f253cEF0",
     ],
   },
   aurora: {
     owners: [
-        "0xEaf3B28A87D498530cDC7f0700E70502CF896D3f",
+        "0xD8D6fFE342210057BF4DCc31DA28D006f253cEF0",
     ],
   },
 }
