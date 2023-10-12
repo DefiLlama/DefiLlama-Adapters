@@ -112,6 +112,7 @@ const defaultTokens = {
     ADDRESSES.polygon.DAI, //DAI
     '0x2AB0e9e4eE70FFf1fB9D67031E44F6410170d00e', //xen
     '0x0169ec1f8f639b32eec6d923e24c2a2ff45b9dd6', //ALGB
+    '0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f', //voxel
   ],
   algorand: [],
   solana: [
@@ -141,7 +142,11 @@ const defaultTokens = {
     '0x352Cb5E19b12FC216548a2677bD0fce83BaE434B', // BTT
     '0xAD29AbB318791D579433D831ed122aFeAf29dcfe', // FTM
     '0x02ff5065692783374947393723dba9599e59f591',// yoshi
-    ADDRESSES.bsc.TUSD, //TUSD
+     ADDRESSES.bsc.TUSD, //TUSD
+     '0x965f527d9159dce6288a2219db51fc6eef120dd1', //BSW
+     '0xa2120b9e674d3fc3875f415a7df52e382f141225', //ata
+     '0x44ec807ce2f4a6f2737a92e985f318d035883e47', //HFT
+
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],
@@ -152,8 +157,11 @@ const defaultTokens = {
     ADDRESSES.arbitrum.USDC, // USDC
     ADDRESSES.arbitrum.USDT, // USDT
     ADDRESSES.arbitrum.DAI, // DAI
-    '0x09e18590e8f76b6cf471b3cd75fe1a1a9d2b2c2b' //aidoge
-    
+    '0x09e18590e8f76b6cf471b3cd75fe1a1a9d2b2c2b', //aidoge
+    '0x3082cc23568ea640225c2467653db90e9250aaa0', //rdnt
+    '0x088cd8f5ef3652623c22d48b1605dcfe860cd704', //vela
+    '0x289ba1701c2f088cf0faf8b3705246331cb8a839', //lpt
+    '0x51fc0f6660482ea73330e414efd7808811a57fa2', //premia
   ],
   avax: [
     nullAddress,
@@ -171,7 +179,8 @@ const defaultTokens = {
     ADDRESSES.optimism.OP, //OP
     ADDRESSES.optimism.USDT,  //USDT
     ADDRESSES.optimism.USDC,  //USDC
-    ADDRESSES.optimism.DAI // DAI
+    ADDRESSES.optimism.DAI, // DAI
+    '0x217d47011b23bb961eb6d93ca9945b7501a5bb11' //thales
   ],
   linea: [
     nullAddress,
@@ -185,7 +194,11 @@ const defaultTokens = {
   ],
   celo: [
     nullAddress,
-    "0x471ece3750da237f93b8e339c536989b8978a438" //celo
+    "0x471ece3750da237f93b8e339c536989b8978a438", //celo
+    "0x765de816845861e75a25fca122bb6898b8b1282a", //cUSD
+  ],
+  aurora: [
+    nullAddress,
   ],
 }
 
