@@ -1,3 +1,7 @@
+// https://docs.llama.fi/list-your-project/how-to-write-an-sdk-adapter
+// npm install
+// export LLAMA_DEBUG_MODE="true" 
+// node test.js projects/gambit/index.js 
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { staking } = require("../helper/staking");
