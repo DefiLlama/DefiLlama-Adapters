@@ -1,5 +1,5 @@
 const { get } = require('../helper/http')
-const MATRIX_API = "https://api.matrix.farm/statistics/tvl";
+const MATRIX_API = "https://api-v2.matrix.farm/statistics/latest";
 let _response
 
 function fetch(key) {
@@ -28,6 +28,9 @@ module.exports = {
   },
   bsc: {
     fetch: fetch('binance'),
+  },
+  base: {
+    fetch: fetch('base'),
   },
   fetch: fetch('tvl')
 }
