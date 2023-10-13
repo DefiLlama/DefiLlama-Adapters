@@ -50,8 +50,8 @@ module.exports = mergeExports([
         nullAddress,
         ADDRESSES.arbitrum.ARB, // ARB
         ADDRESSES.arbitrum.GMX, // GMX
-        "0xaf88d065e77c8cC2239327C5EDb3A432268e5831", // USDC Native
-        "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8", // USDC.e (Bridged)
+        ADDRESSES.arbitrum.USDC_CIRCLE, // USDC Native
+        ADDRESSES.arbitrum.USDC, // USDC.e (Bridged)
         "0x6C2C06790b3E3E3c38e12Ee22F8183b37a13EE55", // DPX
         "0x18c11FD286C5EC11c3b683Caa813B77f5163A122", // GNS
         "0x51fC0f6660482Ea73330E414eFd7808811a57Fa2", // PREMIA

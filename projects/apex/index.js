@@ -20,12 +20,12 @@ const walletAddresses = {
 };
 
 const tokenAddress = {
-  bsc: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
-  polygon: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
-  arbitrum: '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
-  avax: '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E',
-  optimism: '0x7F5c764cBc14f9669B88837ca1490cCa17c31607',
-  mantle: '0x09Bc4E0D864854c6aFB6eB9A9cdF58aC190D0dF9',
+  bsc: ADDRESSES.bsc.USDC,
+  polygon: ADDRESSES.polygon.USDC,
+  arbitrum: ADDRESSES.arbitrum.USDC,
+  avax: ADDRESSES.avax.USDC,
+  optimism: ADDRESSES.optimism.USDC,
+  mantle: ADDRESSES.mantle.USDC,
 }
 
 module.exports = {
