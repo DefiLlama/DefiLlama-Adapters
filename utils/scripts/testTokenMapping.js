@@ -18,7 +18,7 @@ async function main() {
     .for(chunks)
     .process(async chunk => {
       const str = chunk.join(',')
-      const { data } = await axios.get('https://coins.llama.fi/prices/current/'+str)
+      const { data } = await axios.get('https://coins2.llama.fi/prices/current/'+str)
       missing.push(...chunk.filter(i => !data.coins[i]))
     })
 
