@@ -33,7 +33,7 @@ module.exports = {
         sakeWaterV2: "0x806e8538FC05774Ea83d9428F778E423F6492475",
         vodkaV1_Water: "0xC99C6427cB0B824207606dC2745A512C6b066E7C",
         VodkaV1: "0x88D7500aF99f11fF52E9f185C7aAFBdF9acabD93",
-        fsGlp: "0x1aDDD80E6039594eE970E5872D247bf0414C8903",
+        fsGlp: ADDRESSES.arbitrum.fsGLP,
         vodkaV2: "0x9198989a85E35adeC46309E06684dCA444c9cF27",
         vodkaV2_Water: "0x9045ae36f963b7184861BDce205ea8B08913B48c",
         gmWeth: "0x70d95587d40A2caf56bd97485aB3Eec10Bee6336", // weth/usdc.e
