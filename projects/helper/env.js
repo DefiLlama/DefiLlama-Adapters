@@ -12,6 +12,9 @@ const DEFAULTS = {
   ETHEREUMCLASSIC_RPC: 'https://etc.etcdesktop.com,https://etc.rivet.link',
   CRAB_RPC: 'https://darwiniacrab-rpc.dwellir.com',
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
+  RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
+  EVMOS_RPC: "https://evmos-evm.publicnode.com",
+  NOVA_RPC: "https://connect.novanetwork.io",
 }
 
 const ENV_KEYS = [

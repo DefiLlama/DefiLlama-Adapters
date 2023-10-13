@@ -21,4 +21,13 @@ module.exports = {
       tokens: [ADDRESSES.era.USDC],
     }),
   },
+  linea: {
+    tvl: sumTokensExport({
+      owners: [
+        "0xfb371E70eEB32f4054F40514924e77213ca18425",
+        "0xF96116e124eB3F62Ddc6a9cfbdc58d7F8A37c50A",
+      ],
+      tokens: [ADDRESSES.linea.USDC],
+    }),
+  }
 };
