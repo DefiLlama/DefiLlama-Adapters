@@ -25,7 +25,10 @@ module.exports = {
   start: 17243078,
   ethereum: {
     tvl,
-    pool2: sumTokensExport({ owner: ASTRA_STAKING_CONTRACT, resolveUniV3: true, }),
-    staking: sumTokensExport({ owner: ASTRA_STAKING_CONTRACT, tokens: [ASTRA_TOKEN_CONTRACT], })
-  }
+    // pool2: sumTokensExport({ owner: ASTRA_STAKING_CONTRACT, resolveUniV3: true, }),
+    // staking: sumTokensExport({ owner: ASTRA_STAKING_CONTRACT, tokens: [ASTRA_TOKEN_CONTRACT], })
+  },
+  hallmarks: [
+    [Math.floor(new Date('2023-09-14')/1e3), 'Security Incident'],
+  ],
 }; 
