@@ -24,6 +24,9 @@ async function tvl() {
 }
 
 module.exports = {
+  hallmarks: [
+    [1667779200, "Sunsetting announced"]
+  ],
   timetravel: false,
   solana: {
     tvl
