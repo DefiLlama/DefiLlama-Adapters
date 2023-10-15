@@ -187,6 +187,9 @@ async function tangiblePOL(api) {
 }
 
 module.exports = {
+  hallmarks: [
+    [1697032800,"USDR Depeg"]
+  ],
   misrepresentedTokens: true,
   polygon: { tvl, },
   ethereum: { tvl: sumTokensExport(insuranceConfig.ethereum) },
