@@ -81,7 +81,7 @@ async function tvl(timestamp, block, _, { api }) {
 
     const failedCalls = dogRes.filter(i => !i.success)
     if (failedCalls.length) {
-      failedCalls.forEach(i => console.log('Failed both gem and dog calls', i.input.target))
+      failedCalls.forEach(i => sdk.log('Failed both gem and dog calls', i.input.target))
       throw new Error('Failed both gem and dog calls')
     }
   }

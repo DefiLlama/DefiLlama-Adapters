@@ -1,4 +1,0 @@
-{
-  "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accCakePerShare)",
-  "totalAllocPoint": "uint256:totalAllocPoint"
-}

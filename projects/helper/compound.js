@@ -161,10 +161,6 @@ function getCompoundV2Tvl(comptroller, chain, transformAdress,
         sdk.util.sumSingleBalance(balances, transformAdress(underlying), getCash.output)
       }
     });
-    if (["harmony", 'oasis', 'bsc', 'findora', 'dogechain', 'godwoken_v1', 'ethpow', 'cronos', 'kcc'].includes(chain)) {
-      const fixBalances = await getFixBalances(chain)
-      fixBalances(balances);
-    }
 
     if (comptroller == "0x92DcecEaF4c0fDA373899FEea00032E8E8Da58Da") {
       await unwrapPuffTokens(balances, lpPositions, block)
@@ -172,7 +168,7 @@ function getCompoundV2Tvl(comptroller, chain, transformAdress,
       await unwrapUniswapLPs(balances, lpPositions, block, chain, transformAdress)
     }
 
-    if (resolveLPs) return unwrapLPsAuto({ balances, block, chain})
+    if (resolveLPs) return unwrapLPsAuto({ balances, block, chain, abis})
 
     return balances;
   }

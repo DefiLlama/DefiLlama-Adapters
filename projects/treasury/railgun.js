@@ -29,7 +29,7 @@ module.exports = treasuryExports({
         ADDRESSES.ethereum.cvxCRV,
         "0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0",//wbtc
         "0x99D8a9C45b2ecA8864373A26D1459e3Dff1e17F3",//mim
-        ADDRESSES.ethereum.LUSD,//lusd
+        ADDRESSES.ethereum.LUSD,
         "0x090185f2135308BaD17527004364eBcC2D37e5F6",//spell
         ADDRESSES.ethereum.BUSD,
         "0x00a8b738E453fFd858a7edf03bcCfe20412f0Eb0",//albt
@@ -42,7 +42,7 @@ module.exports = treasuryExports({
         "0x767FE9EDC9E0dF98E07454847909b5E959D7ca0E",//ilv
         ADDRESSES.ethereum.MKR,
         "0xc5fb36dd2fb59d3b98deff88425a3f425ee469ed",//tsuka
-        "0x853d955acef822db058eb8505911ed77f175b99e",//frax
+        ADDRESSES.ethereum.FRAX,
         "0x2223bF1D7c19EF7C06DAB88938EC7B85952cCd89",//kxa
         "0x0f2d719407fdbeff09d87557abb7232601fd9f29",//syn
         "0x7aE1D57b58fA6411F32948314BadD83583eE0e8C",//paper
@@ -96,7 +96,7 @@ module.exports = treasuryExports({
         "0x2C89bbc92BD86F8075d1DEcc58C7F4E0107f286b",//avax
         "0x53E0bca35eC356BD5ddDFebbD1Fc0fD03FaBad39",//link
         "0xfe712251173A2cd5F5bE2B46Bb528328EA3565E1",//mvi
-        ADDRESSES.polygon.WMATIC_2,//wmatic
+        ADDRESSES.polygon.WMATIC_2,
         "0x752d59604d72b6DC44196f4A39A3f07779417407",//methmoon
         "0x8f006D1e1D9dC6C98996F50a4c810F17a47fBF19",//nsfw
         ADDRESSES.fantom.renBTC,

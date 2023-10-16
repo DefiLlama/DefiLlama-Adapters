@@ -2,16 +2,19 @@ const { get } = require("../helper/http");
 const { toUSDTBalances } = require("../helper/balances");
 
 const endpoint =
-  "https://mainnet-dev.wvservices.exchange/api/v1/investments/tvl";
+  "https://waves.exchange/api/v1/investments/tvl";
 
 function tvl(isStaking) {
-  return async () =>
-    toUSDTBalances(
+  let key = isStaking ? "wx_staking" : "liquidity_pools"
+  return async () => {
+    throw new Error('Getting wrong tvl from api')
+    /* return toUSDTBalances(
       (await get(endpoint)).products
-        .filter(p => p.product_id == "wx_staking" == isStaking)
+        .filter(p => p.product_id === key)
         .map(p => p.tvl)
         .reduce((p, c) => Number(p) + Number(c), 0),
-    );
+    ); */
+  }
 }
 
 module.exports = {
