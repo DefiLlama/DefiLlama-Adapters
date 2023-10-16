@@ -1,7 +1,9 @@
 const sdk = require("@defillama/sdk");
 const { request, gql } = require("graphql-request");
 
-// ████ Constants █████████████████████████████████████████████████████████
+/*//////////////////////////////////////////////////////////////////////////////
+                                   Constants                                             
+//////////////////////////////////////////////////////////////////////////////*/
 
 const queryBlock = gql`
   {
@@ -24,7 +26,9 @@ const queryLatest = gql`
 const SUBGRAPH_URL =
   "https://api.thegraph.com/subgraphs/name/dimasriat/factor-leverage-vault";
 
-// ████ Helper ████████████████████████████████████████████████████████████
+/*//////////////////////////////////////////////////////////////////////////////
+                                    Helpers                                            
+//////////////////////////////////////////////////////////////////////////////*/
 
 async function subgraphCall(url, query, queryFail, variable) {
   let result;
@@ -38,7 +42,9 @@ async function subgraphCall(url, query, queryFail, variable) {
   return result;
 }
 
-// ████ TVL Handler ███████████████████████████████████████████████████████
+/*//////////////////////////////////////////////////////////////////////////////
+                                  TVL Handler                                              
+//////////////////////////////////////////////////////////////////////////////*/
 
 async function leverageVaulTvl(timestamp, ethBlock, chainBlocks) {
   try {
@@ -67,6 +73,8 @@ async function leverageVaulTvl(timestamp, ethBlock, chainBlocks) {
   }
 }
 
-// ████ Module Exports ████████████████████████████████████████████████████
+/*//////////////////////////////////////////////////////////////////////////////
+                                 Module Exports                                               
+//////////////////////////////////////////////////////////////////////////////*/
 
 module.exports = leverageVaulTvl;
