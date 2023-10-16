@@ -92,6 +92,7 @@ const defaultTokens = {
     '0xcccd1ba9f7acd6117834e0d28f25645decb1736a', //ecox
     '0x25ec98773d7b4ced4cafab96a2a1c0945f145e10', // stUSDT
     '0x3c3a81e81dc49A522A592e7622A7E711c06bf354', // MNT
+    '0x61e90a50137e1f645c9ef4a0d3a4f01477738406', // LOKA
   ],
   tron: [
     nullAddress,
@@ -196,6 +197,15 @@ const defaultTokens = {
     nullAddress,
     ADDRESSES.celo.CELO, //celo
     "0x765de816845861e75a25fca122bb6898b8b1282a", //cUSD
+  ],
+  moonbeam: [
+    nullAddress,
+    "0xefaeee334f0fd1712f9a8cc375f427d9cdd40d73", //usdt
+    "0x8f552a71efe5eefc207bf75485b356a0b3f01ec9", //usdc
+  ],
+  moonriver: [
+    nullAddress,
+    "0xb44a9b6905af7c801311e8f4e76932ee959c663c", //usdt
   ],
 }
 
