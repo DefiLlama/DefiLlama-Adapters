@@ -1,3 +1,5 @@
+/* eslint-disable no-useless-catch */
+
 const sdk = require("@defillama/sdk");
 const { request, gql } = require("graphql-request");
 
