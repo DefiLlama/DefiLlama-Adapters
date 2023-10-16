@@ -46,7 +46,7 @@ async function subgraphCall(url, query, queryFail, variable) {
                                   TVL Handler                                              
 //////////////////////////////////////////////////////////////////////////////*/
 
-async function leverageVaulTvl(timestamp, ethBlock, chainBlocks) {
+async function tvl(timestamp, ethBlock, chainBlocks) {
   try {
     const balances = {};
 
@@ -77,4 +77,4 @@ async function leverageVaulTvl(timestamp, ethBlock, chainBlocks) {
                                  Module Exports                                               
 //////////////////////////////////////////////////////////////////////////////*/
 
-module.exports = leverageVaulTvl;
+module.exports = { arbitrum: { tvl } };
