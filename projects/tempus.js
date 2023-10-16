@@ -8,4 +8,5 @@ module.exports = {
     tvl: () => 0,
     staking: staking(STAKING, TEMP),
   },
+  fantom: { tvl: () => 0, }
 };
