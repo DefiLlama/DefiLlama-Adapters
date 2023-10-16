@@ -119,7 +119,7 @@ const INVESTIN_FUND_DATA = struct([
     seq(u8('padding'), 6),
   ], 'friktion_vault'),
 
-  seq(u8(), 1864, 'migration_additonal_padding'),
+  seq(u8(), 1864, 'migration_additional_padding'),
 ])
 
 

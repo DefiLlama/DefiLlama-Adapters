@@ -68,7 +68,7 @@ async function getTokenPrices({
   minLPRatio = 0.5, // if a token pool has less that this percent of core asset tokens compared to a token pool with max tokens for a given core asset, this token pool is not used for price calculation
   restrictTokenRatio = 10, // while computing tvl, an unknown token value can max be x times the pool value, default 100 times pool value
   log_coreAssetPrices = [],
-  log_minTokenValue = 1e6, // log only if token value is higer than this value, now minimum is set as 1 million
+  log_minTokenValue = 1e6, // log only if token value is higher than this value, now minimum is set as 1 million
   lpFilter,   // override the default logic for checking if an address is LP based on it's symbol
   token0CallFn,
   token1CallFn,
@@ -319,7 +319,7 @@ async function getTokenPrices({
     }
     Object.entries(balances).forEach(([address, amount = 0]) => {
       const price = prices[address];
-      // const price =  undefined; // NOTE: this is disabled till, we add a safeguard to limit LP manipulation to inflate token price, like mimimum core asset liquidity to be 10k
+      // const price =  undefined; // NOTE: this is disabled till, we add a safeguard to limit LP manipulation to inflate token price, like minimum core asset liquidity to be 10k
       if (price && !skipConversion) {
         const coreTokenAmountInLP = price[0]
         const coreAsset = price[2]

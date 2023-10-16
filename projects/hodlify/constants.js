@@ -19,7 +19,7 @@ const contracts = {
         vaults: [
             '0xFABea2117d95b780077ca8dDf268BcC8c29589ED', // entry
             '0x98266478600d4Cae5082d2A185cc6533684dA108', // arbitrum satellite
-            '0x4a307418cEd78A3f2348FD84e66453Efe0BDD16a', // optimisim satellite
+            '0x4a307418cEd78A3f2348FD84e66453Efe0BDD16a', // optimism satellite
         ],
     },
     arbitrum: {
@@ -27,7 +27,7 @@ const contracts = {
             // usdc
             '0x98fCBbfb97B61e2DA167A69345c58e4126A5167B', // entry
             '0x801E78C94d5fffDD6F37684ad5ac68EF3b15E559', // polygon satellite
-            '0x680924B3B81d918B01D43E80C092CF75C6063681', // optimisim satellite
+            '0x680924B3B81d918B01D43E80C092CF75C6063681', // optimism satellite
             // eth
             '0xD7Aac4989D82361b3b4917DA9D51266E66edBe0a',
         ],

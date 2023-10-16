@@ -137,5 +137,5 @@ module.exports = {
     staking
   },
   methodology: `We add liquidity that is on the VAULTS threw their contracts and the portion of staking the native token (CYCLE) 
-    && CYCLE/AVAX LP by coreRewards and avaxRewards contracts respectivly`,
+    && CYCLE/AVAX LP by coreRewards and avaxRewards contracts respectively`,
 };

@@ -152,5 +152,5 @@ module.exports = {
     tvl: arbiTvl,
   },
   methodology:
-    "Counts liquidity on the Platforms and Staking seccions through Platfrom and Staking Contracts",
+    "Counts liquidity on the Platforms and Staking seccions through Platform and Staking Contracts",
 };
