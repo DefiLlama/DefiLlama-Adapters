@@ -76,6 +76,7 @@ const fixBalancesTokens = {
   scroll: {
     '0x5300000000000000000000000000000000000004': { coingeckoId: 'ethereum', decimals: 18 },
     [ADDRESSES.null]: { coingeckoId: 'ethereum', decimals: 18 },
+    '0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4': { coingeckoId: 'usd-coin', decimals: 6 }
   },
   nos: {
     [ADDRESSES.nos.BTC]: { coingeckoId: 'bitcoin', decimals: 18 },
