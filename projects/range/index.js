@@ -52,10 +52,10 @@ Object.keys(config).forEach(chain => {
         })
         logs.forEach((log) => allLogs.push({ factory, log }));
       }
-      let vaults = allLogs.map(({ log }) => log.vault);
+      const izumiFactory = '0xCCA961F89a03997F834eB5a0104efd9ba1f5800E';
+      let vaults = allLogs.filter(({ factory }) => factory !== izumiFactory).map(({ log }) => log.vault);
       vaults = vaults.filter(vault => !ignoreList[chain] || !ignoreList[chain].includes(vault));
 
-      const izumiFactory = '0xCCA961F89a03997F834eB5a0104efd9ba1f5800E';
       let izumiVaults = allLogs.filter(({ factory }) => factory === izumiFactory).map(({ log }) => log.vault);
       izumiVaults = izumiVaults.filter(vault => !ignoreList[chain] || !ignoreList[chain].includes(vault));
 
