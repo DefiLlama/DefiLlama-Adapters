@@ -12,8 +12,20 @@ async function sumTokens({ owner, owners = [], api, }) {
   if (owner) owners.push(owner)
   owners = getUniqueAddresses(owners)
   if (!owners.length) return api.getBalances()
+  console.log('fetching tokens for ', owners.length, 'addresses')
+
+  let items = await queryAddresses({ addresses: owners })
+  items.forEach((item) => {
+    item.fungible_resources.items.forEach(({ resource_address, amount }) => {
+      api.add(resource_address, +amount)
+    });
+  });
+  return fixBalances(api.getBalances())
+}
+
+async function queryAddresses({ addresses = [], }) {
   let items = []
-  const chunks  = sliceIntoChunks(owners, 20)
+  const chunks  = sliceIntoChunks(addresses, 20)
   for (const chunk of chunks) {
     const body = {
       "addresses": chunk,
@@ -22,12 +34,7 @@ async function sumTokens({ owner, owners = [], api, }) {
     let data = await post(ENTITY_DETAILS_URL, body)
     items.push(...data.items)
   }
-  items.forEach((item) => {
-    item.fungible_resources.items.forEach(({ resource_address, amount }) => {
-      api.add(resource_address, +amount)
-    });
-  });
-  fixBalances(api.getBalances())
+  return items
 }
 
 function sumTokensExport(...args) {
@@ -35,6 +42,7 @@ function sumTokensExport(...args) {
 }
 
 module.exports = {
+  queryAddresses,
   sumTokens,
   sumTokensExport,
 }
