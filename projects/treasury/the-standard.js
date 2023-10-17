@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 const treasuryARB = "0x99d5D7C8F40Deba9d0075E8Fff2fB13Da787996a";
@@ -11,7 +12,7 @@ module.exports = treasuryExports({
     tokens: [ 
         nullAddress,
         "0x643b34980E635719C15a2D4ce69571a258F940E9",
-        "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"
+        ADDRESSES.arbitrum.USDC_CIRCLE
      ],
     owners: [treasuryARB],
     ownTokens: [TST],
@@ -19,8 +20,8 @@ module.exports = treasuryExports({
   ethereum: {
     tokens: [ 
         nullAddress,
-        "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-        "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+        ADDRESSES.ethereum.USDC,
+        ADDRESSES.ethereum.USDT
      ],
     owners: [treasuryETH],
     ownTokens: [TSTETH],
