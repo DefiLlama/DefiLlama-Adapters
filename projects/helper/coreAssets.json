@@ -1414,5 +1414,9 @@
     "WETH": "0x4200000000000000000000000000000000000001",
     "USDC": "0x49A5010110a358d9069282873F3e7eCf6B41DC10",
     "USDT": "0x0Cf7c2A584988871b654Bd79f96899e4cd6C41C0"
+  },
+  "radixdlt": {
+    "XRD": "resource_rdx1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxradxrd",
+    "WETH": "resource_rdx1th88qcj5syl9ghka2g9l7tw497vy5x6zaatyvgfkwcfe8n9jt2npww"
   }
 }
