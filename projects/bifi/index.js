@@ -111,6 +111,34 @@ const klaytnTokenPools = {
     },
 }
 
+const bfcPool = '0x4bAE7ba39E4e71660307dcE780f1Ec9b7B7666Ee';
+const bfcTokenPools = {
+    'UnifiedETH': {
+        'pool': '0xCbf6065954fC17d07b28102c84902F20FFaC0A33',
+        'token': ADDRESSES.bifrost_mainnet.UnifiedETH
+    },
+    'UnifiedBNB': {
+        'pool': '0x942A9bF629d1E17D87294B0f20898eEb8316cDd6',
+        'token': ADDRESSES.bifrost_mainnet.UnifiedBNB
+    },
+    'UnifiedUSDC': {
+        'pool': '0x168b2D7dd6b9812392f99bA01A14db03ED06dedc',
+        'token': ADDRESSES.bifrost_mainnet.UnifiedUSDC
+    },
+    'UnifiedMATIC': {
+        'pool': '0xA1Bd1d501aF7d0B146951fDFF49BD4C0bD25e220',
+        'token': ADDRESSES.bifrost_mainnet.UnifiedMATIC
+    },
+    'UnifiedUSDT': {
+        'pool': '0xeD7B0974dC5d98B9e7C83695C415d68b8781B0F8',
+        'token': ADDRESSES.bifrost_mainnet.UnifiedUSDT
+    },
+    'UnifiedDAI': {
+        'pool': '0x2168dAb12A6A93181bbAD9C9dc769307C36fB45C',
+        'token': ADDRESSES.bifrost_mainnet.UnifiedDAI
+    }
+}
+
 async function eth(timestamp, block) {
     const toa = Object.values(ethTokenPools).map(({ pool, token}) => ([ token, pool, ]))
     toa.push([nullAddress, ethPool])
@@ -151,6 +179,12 @@ async function klaytn(_, _b, { klaytn: block}) {
     return sumTokens2({ block, tokensAndOwners: toa, chain: 'klaytn' })
 }
 
+async function bifrost_mainnet(_, _b, { bifrost_mainnet: block}) {
+    const toa = Object.values(bfcTokenPools).map(({ pool, token}) => ([ token, pool, ]))
+    toa.push([nullAddress, bfcPool])
+    return sumTokens2({ block, tokensAndOwners: toa, chain: 'bifrost_mainnet' })
+}
+
 module.exports = {
     ethereum: {
         tvl: eth,
@@ -167,5 +201,8 @@ module.exports = {
     },
     klaytn: {
         tvl: klaytn
+    },
+    bifrost_mainnet: {
+        tvl: bifrost_mainnet
     }
 }
