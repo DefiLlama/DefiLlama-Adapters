@@ -19,6 +19,7 @@ const config = {
 const HYPE_REGISTRY = {
   ethereum: [
     ["0x31ccdb5bd6322483bebd0787e1dabd1bf1f14946", 13659998], // Uniswap
+    ["0x2E18B825b049c4994370b0DB6C35d0100295b96C", 18319961], // Pancakeswap
   ],
   polygon: [
     ["0x0Ac4C7b794f3D7e7bF1093A4f179bA792CF15055", 25305922], // Uniswap
@@ -28,7 +29,7 @@ const HYPE_REGISTRY = {
     ["0x7b9c2f68f16c3618bb45616fb98d83f94fd7062e", 44933860], // Ascent
   ],
   polygon_zkevm: [
-    ["0xD08B593eb3460B7aa5Ce76fFB0A3c5c938fd89b8", 152596,], // Quickswap
+    ["0xD08B593eb3460B7aa5Ce76fFB0A3c5c938fd89b8", 152596], // Quickswap
   ],
   optimism: [
     ["0xF5BFA20F4A77933fEE0C7bB7F39E7642A070d599", 6538026], // Uniswap
@@ -42,9 +43,11 @@ const HYPE_REGISTRY = {
   ],
   bsc: [
     ["0x0b4645179C1b668464Df01362fC6219a7ab3234c", 26520492], // Uniswap
+    ["0x8d7884666C056555fDD423Cd37846968040651b3", 32490558], // Pancakeswap
     ["0xd4bcFC023736Db5617E5638748E127581d5929bd", 26097149], // Thena
   ],
   moonbeam: [
+    ["0x688cb9492bd2C72016f1765d813B2D713aa1F4C7", 4485966], // Uniswap
     ["0xB7dfC304D9cd88D98A262cE5B6a39Bb9d6611063", 3591244], // Beamswap
     ["0x6002D7714e8038f2058e8162b0b86c0b19c31908", 3569487], // Stellaswap
   ],
@@ -67,8 +70,16 @@ const HYPE_REGISTRY = {
     ["0xc27ddd78fc49875fe6f844b72bbf31dfbb099881", 163300], // Lynex
   ],
   base: [
-    ["0x1E86A593E55215957C4755f1BE19a229AF3286f6", 2798768], // SynthSwap
     ["0x6d5c54F535b073B9C2206Baf721Af2856E5cD683", 3785552], // Sushiswap
+    ["0x1E86A593E55215957C4755f1BE19a229AF3286f6", 2798768], // SynthSwap
+    ["0xB24DC81f8Be7284C76C7cF865b803807B3C2EF55", 4249062], // BaseX
+    ["0x62F88FB208Df717B035325D065C6919D7913B937", 4470111], // Swapbased
+  ],
+  kava: [
+    ["0x683292172E2175bd08e3927a5e72FC301b161300", 6384272], // Kinetix
+  ],
+  op_bnb: [
+    ["0x683292172E2175bd08e3927a5e72FC301b161300", 5150910], // Pancakeswap
   ],
 };
 

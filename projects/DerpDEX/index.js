@@ -8,5 +8,9 @@ module.exports = uniV3Export({
   base: {
     factory: "0xeddef4273518b137cdbcb3a7fa1c6a688303dfe2",
     fromBlock: 2753388
+  },
+  op_bnb: {
+    factory: "0xb91331Ea9539ee881e3A45191076c454E482dAc7",
+    fromBlock: 3521514
   }
 });
