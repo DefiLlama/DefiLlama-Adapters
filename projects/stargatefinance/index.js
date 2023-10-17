@@ -75,7 +75,6 @@ Object.keys(CONFIG).forEach((chain) => {
 
   module.exports[chain] = {
     tvl: async (_, _b, _cb, { api }) => {
-      if (api.chain === 'kava') api.block = undefined
       const factory = await api.call({ abi: abi.factory, target: router })
       const pools = await api.fetchList({ lengthAbi: abi.allPoolsLength, itemAbi: abi.allPools, target: factory, })
       const tokens = await api.multiCall({ abi: abi.token, calls: pools })
@@ -92,6 +91,3 @@ Object.keys(CONFIG).forEach((chain) => {
   if (stakingContract && stg)
     module.exports[chain].staking = staking(stakingContract, stg)
 })
-
-// kava has some issues with archival node
-module.exports.timetravel =  false
