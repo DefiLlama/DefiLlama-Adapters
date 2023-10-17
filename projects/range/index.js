@@ -15,6 +15,7 @@ const config ={
   ],
   polygon: [
     { factory: '0xad2b34a2245b5a7378964BC820e8F34D14adF312', fromBlock: 42446548 }, // quickswap
+    {factory: '0x9eD6C646b4A57e48DFE7AE04FBA4c857AD71d162', fromBlock: 	45889702} // retro
   ],
   base: [
     { factory: '0x4bF9CDcCE12924B559928623a5d23598ca19367B', fromBlock: 2733457 }, // uniswap
@@ -49,22 +50,20 @@ Object.keys(config).forEach(chain => {
           onlyArgs: true,
           fromBlock,
         })
-        allLogs.push(...logs);
+        logs.forEach((log) => allLogs.push({ factory, log }));
       }
-      let vaults = allLogs.map(log => log.vault);
+      let vaults = allLogs.map(({ log }) => log.vault);
       vaults = vaults.filter(vault => !ignoreList[chain] || !ignoreList[chain].includes(vault));
 
-      const isIzumiFactory = factories.some(({ factory }) => factory === '0xCCA961F89a03997F834eB5a0104efd9ba1f5800E');
-      let token0Abi, token1Abi;
-      if(isIzumiFactory) {
-        token0Abi = "address:tokenX"
-        token1Abi = "address:tokenY"
-      } else {
-        token0Abi = "address:token0"
-        token1Abi = "address:token1"
-      }
-      const token0s = await api.multiCall({ abi: token0Abi, calls: vaults })
-      const token1s = await api.multiCall({ abi: token1Abi, calls: vaults })
+      const izumiFactory = '0xCCA961F89a03997F834eB5a0104efd9ba1f5800E';
+      let izumiVaults = allLogs.filter(({ factory }) => factory === izumiFactory).map(({ log }) => log.vault);
+      izumiVaults = izumiVaults.filter(vault => !ignoreList[chain] || !ignoreList[chain].includes(vault));
+
+      let token0s = await api.multiCall({ abi: "address:token0", calls: vaults })
+      let token1s = await api.multiCall({ abi: "address:token1", calls: vaults })
+      token0s.push(...(await api.multiCall({ abi: "address:tokenX", calls: izumiVaults })))
+      token1s.push(...(await api.multiCall({ abi: "address:tokenY", calls: izumiVaults })))
+
       const bals = await api.multiCall({ abi: ABI.underlyingBalance, calls: vaults })
       bals.forEach(({ amount0Current, amount1Current }, i) => {
         api.add(token0s[i], amount0Current)
