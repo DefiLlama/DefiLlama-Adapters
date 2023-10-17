@@ -35,6 +35,9 @@ const transformTokens = {
   //   "0x065de42e28e42d90c2052a1b49e7f83806af0e1f": "0x123", // CRK token is mispriced
   //   [ADDRESSES.cronos.TUSD]: ADDRESSES.ethereum.TUSD,
   // },
+  ronin: {
+    [ADDRESSES.null]: 'ronin:'+ADDRESSES.ronin.WRON,
+  }
 }
 const ibcMappings = {
   // Sample Code
@@ -73,6 +76,7 @@ const fixBalancesTokens = {
   scroll: {
     '0x5300000000000000000000000000000000000004': { coingeckoId: 'ethereum', decimals: 18 },
     [ADDRESSES.null]: { coingeckoId: 'ethereum', decimals: 18 },
+    '0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4': { coingeckoId: 'usd-coin', decimals: 6 }
   },
   nos: {
     [ADDRESSES.nos.BTC]: { coingeckoId: 'bitcoin', decimals: 18 },

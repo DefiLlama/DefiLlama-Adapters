@@ -1,5 +1,8 @@
 const ADDRESSES = require("../helper/coreAssets.json");
+const { staking } = require("../helper/staking.js");
 
+const RAFT_BPT = "0xe91888a1D08E37598867d213a4ACB5692071BB3a";
+const VERAFT = "0x45D117011da1D49bA86aF6CEd94126488084186f";
 const RAFT_POSITION_MANAGER = "0x5f59b322eb3e16a0c78846195af1f588b77403fc";
 const INTEREST_RATE_POSITION_MANAGER_ADDRESS = '0x9AB6b21cDF116f611110b048987E58894786C244';
 const RAFT_PSM = "0xa03342feb2e1d4690b60ef556509ec3b76c97ee7";
@@ -17,7 +20,7 @@ async function tvl(_, ethBlock, _1, { api }) {
 
   api.add(ADDRESSES.ethereum.DAI, daiBalance)
   api.add(ADDRESSES.ethereum.RETH, rEthBalanceV1)
-  
+
   return api.sumTokens({ ownerTokens: [
     [[ADDRESSES.ethereum.RETH, ADDRESSES.ethereum.WETH, ADDRESSES.ethereum.WSTETH, ADDRESSES.ethereum.cbETH, SWETH], INTEREST_RATE_POSITION_MANAGER_ADDRESS],
     [[ADDRESSES.ethereum.RETH, ADDRESSES.ethereum.WETH, ADDRESSES.ethereum.WSTETH, ], RAFT_POSITION_MANAGER],
@@ -27,5 +30,6 @@ async function tvl(_, ethBlock, _1, { api }) {
 module.exports = {
   ethereum: {
     tvl,
+    staking: staking(VERAFT, RAFT_BPT)
   },
 };
