@@ -34,7 +34,16 @@ async function calculateTvlOnUltraswapLoan(loanAppId, poolManagerInfo, prices) {
   return { totalCollateralUsd, totalBorrowUsd };
 }
 
+let data
+
 async function getUltraswapData() {
+  if (!data) {
+    data = _getUltraswapData();
+  }
+  return data;
+}
+
+async function _getUltraswapData() {
   const prices = await getCachedPrices();
   const poolManagerInfo = await retrievePoolManagerInfo();
 
@@ -70,6 +79,7 @@ async function borrowed() {
 }
 
 module.exports = {
+  timetravel: false,
   doublecounted: true,
   misrepresentedTokens: true,
   algorand: { tvl, borrowed },

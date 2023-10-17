@@ -49,7 +49,7 @@ function decodeUint64(data, decodingMode = "safe") {
 let pricesCache;
 
 async function getCachedPrices() {
-  if (!pricesCache) pricesCache = await getPrices();
+  if (!pricesCache) pricesCache = getPrices();
   return pricesCache;
 }
 
