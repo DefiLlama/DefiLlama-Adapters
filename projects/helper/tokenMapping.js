@@ -36,7 +36,16 @@ const transformTokens = {
   //   [ADDRESSES.cronos.TUSD]: ADDRESSES.ethereum.TUSD,
   // },
   ronin: {
-    [ADDRESSES.null]: 'ronin:'+ADDRESSES.ronin.WRON,
+    [ADDRESSES.null]: 'ronin:' + ADDRESSES.ronin.WRON,
+  },
+
+  bfc: {
+    "0x6c9944674C1D2cF6c4c4999FC7290Ba105dcd70e": ADDRESSES.null,
+    "0xB800EaF843F962DFe5e145A8c9D07A3e70b11d7F": 'bsc:' + ADDRESSES.null,
+    "0x640952E7984f2ECedeAd8Fd97aA618Ab1210A21C": ADDRESSES.ethereum.USDC,
+    "0x21ad243b81eff53482F6F6E7C76539f2CfC0B734": 'polygon:' + ADDRESSES.null,
+    "0x3eA8654d5755e673599473ab37d92788B5bA12aE": ADDRESSES.ethereum.USDT,
+    "0xcDB9579Db96EB5C8298dF889D915D0FF668AfF2a": ADDRESSES.ethereum.DAI,
   }
 }
 const ibcMappings = {
@@ -93,9 +102,12 @@ const fixBalancesTokens = {
     [ADDRESSES.beam.USDC]: { coingeckoId: 'usd-coin', decimals: 6 },
     [ADDRESSES.beam.USDT]: { coingeckoId: 'tether', decimals: 18 },
   },
+  bfc: {
+    [ADDRESSES.null]: { coingeckoId: 'bifrost', decimals: 18 },
+  },
   renec: {
-    [ADDRESSES.renec.RENEC] : { coingeckoId: "renec", decimals: 9 },
-    [ADDRESSES.renec.REUSD] :  {coingeckoId: "tether", decimals: 9 }, // reUSD pegged USDT || bridge: https://remitano.com/swap/vn/usdt_reusd
+    [ADDRESSES.renec.RENEC]: { coingeckoId: "renec", decimals: 9 },
+    [ADDRESSES.renec.REUSD]: { coingeckoId: "tether", decimals: 9 }, // reUSD pegged USDT || bridge: https://remitano.com/swap/vn/usdt_reusd
   }
 }
 
