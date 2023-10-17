@@ -57,8 +57,8 @@ async function _setCache(project, chain, json) {
     await setCache(project, chain, json)
 }
 
-async function getConfig(project, endpoint) {
-  if (!project || !endpoint) throw new Error('Missing parameters')
+async function getConfig(project, endpoint, { fetcher } = {}) {
+  if (!project || (!endpoint && !fetcher)) throw new Error('Missing parameters')
   const key = 'config-cache'
   const cacheKey = getKey(key, project)
   if (!configCache[cacheKey]) configCache[cacheKey] = _getConfig()
@@ -66,7 +66,12 @@ async function getConfig(project, endpoint) {
 
   async function _getConfig() {
     try {
-      const { data: json } = await axios.get(endpoint)
+      let json
+      if (endpoint) {
+        json = (await axios.get(endpoint)).data
+      } else {
+        json = await fetcher()
+      }
       if (!json) throw new Error('Invalid data')
       await _setCache(key, project, json)
       return json
