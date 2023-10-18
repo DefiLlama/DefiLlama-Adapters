@@ -10,23 +10,28 @@ const graphUrl = 'https://api.thegraph.com/subgraphs/name/omegasyndicate/defipla
 module.exports = {
    ethereum: {
       tvl: async (timestamp, block, _, { api }) => {
-         const { pools } = await cachedGraphQuery('defiplaza', graphUrl, '{  pools {    id    tokens {      id    }  }}');
+         const { pools } = await cachedGraphQuery('defiplaza-ethereum', graphUrl, '{  pools {    id    tokens {      id    }  }}');
          const ownerTokens = pools.map((pool) => [pool.tokens.map((token) => token.id), pool.id]);
          return api.sumTokens({ ownerTokens });
       },
    },
    radixdlt: {
       tvl: async (_, _1, _2, { api }) => {
-         let items = [];
-         let cursor = 0;
-         do {
-            const { data, next_cursor } = await get(`https://radix.defiplaza.net/api/pairs?cursor=${cursor}&limit=100`);
-            items.push(...data);
-            sdk.log(`Fetched ${items.length} pools`, data.length, next_cursor);
-            cursor = next_cursor;
-         } while (items.length % 100 === 0);
+         const pools = await getConfig('defiplaza-radixdlt', null, {
+            fetcher: async () => {
+               let items = [];
+               let cursor = 0;
+               do {
+                  const { data, next_cursor } = await get(`https://radix.defiplaza.net/api/pairs?cursor=${cursor}&limit=100`);
+                  items.push(...data);
+                  sdk.log(`Fetched ${items.length} pools`, data.length, next_cursor);
+                  cursor = next_cursor;
+               } while (items.length % 100 === 0);
 
-         const data = await queryAddresses({ addresses: items.map((i) => i.address) });
+               return items;
+            }
+         });
+         const data = await queryAddresses({ addresses: pools.map((i) => i.address) });
          const owners = [];
          data.forEach((c) => {
             owners.push(c.details.state.fields.find((i) => i.field_name === 'base_pool').value);
