@@ -3,7 +3,7 @@ const {
   getBalance,
   getBalance2,
 } = require("../helper/chain/cosmos");
-const sdk = require('@defillama/sdk')
+const sdk = require("@defillama/sdk");
 
 // For testing run
 // node test.js projects/eris-protocol/index.js
@@ -43,6 +43,22 @@ const config = {
       terra1ecgazyd0waaj3g7l9cmy5gulhxkps2gmxu9ghducvuypjq68mq2s5lvsct:
         "eris-amplified-luna",
     },
+    tassets: [
+      {
+        contract:
+          "terra1j35ta0llaxcf55auv2cjqau5a7aee6g8fz7md7my7005cvh23jfsaw83dy",
+        exchangeRate:
+          "migaloo1436kxs0w2es6xlqpp9rd35e3d0cjnw4sv8j3a7483sgks29jqwgshqdky4",
+        origChain: "migaloo",
+      },
+      {
+        contract:
+          "terra10j3zrymfrkta2pxe0gklc79gu06tqyuy8c3kh6tqdsrrprsjqkrqzfl4df",
+        exchangeRate:
+          "migaloo1mf6ptkssddfmxvhdx0ech0k03ktp6kf9yk59renau2gvht3nq2gqdhts4u",
+        origChain: "migaloo",
+      },
+    ],
   },
   terra: {
     coinGeckoId: "terra-luna",
@@ -132,6 +148,28 @@ async function tvlHub(chain, state) {
     +(state.tvl_uluna ?? state.tvl_utoken ?? 0) / getDecimalFactor(chainConfig);
   return {
     [coinGeckoId]: tvl,
+  };
+}
+
+async function tasset2Tvl(chain, tasset) {
+  let otherChain = tasset.origChain;
+  let otherConfig = config[otherChain];
+  let otherCoinGeckoId = otherConfig.coinGeckoId;
+
+  let state = await getState(chain, tasset.contract);
+  let stateOther = await getState(otherChain, tasset.exchangeRate);
+
+  let chainConfig = config[chain];
+
+  // Example
+  // tvl_utoken (amount deposited of ampWHALE on Terra) * exchange_rate of ampWHALE (queried on Migaloo chain) = TVL of WHALE
+
+  let tvl =
+    (+(state.tvl_utoken ?? 0) * +stateOther.exchange_rate) /
+    getDecimalFactor(chainConfig);
+
+  return {
+    [otherCoinGeckoId]: tvl,
   };
 }
 
@@ -271,6 +309,7 @@ async function productsTvl(chain) {
       tvlHub(chain, state),
       tvlAmpGovernance(chain, state),
       tvlArbVault(chain).catch((a) => ({})),
+      ...(chainConfig.tassets ?? []).map((tasset) => tasset2Tvl(chain, tasset)),
       ...(chainConfig.farms ?? []).map((farm) => farm2Tvl(chain, farm)),
     ]);
   } catch (error) {
