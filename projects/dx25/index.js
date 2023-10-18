@@ -11,5 +11,5 @@ async function tvl(_, _b, _cb, { api, }) {
 module.exports = {
   misrepresentedTokens: true,
   timetravel: false,
-  multiversx: { tvl },
+  elrond: { tvl },
 }
