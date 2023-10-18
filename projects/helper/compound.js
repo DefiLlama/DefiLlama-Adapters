@@ -4,7 +4,7 @@ const sdk = require('@defillama/sdk');
 const abi = require('./abis/compound.json');
 const { unwrapUniswapLPs } = require('./unwrapLPs');
 const { requery } = require("./requery");
-const { getChainTransform, getFixBalances, } = require('./portedTokens');
+const { getChainTransform, transformBalances } = require('./portedTokens');
 const { usdtAddress } = require('./balances');
 const agoraAbi = require("./../agora/abi.json");
 const { sumTokens2, nullAddress, unwrapLPsAuto, } = require('./unwrapLPs')
@@ -168,9 +168,9 @@ function getCompoundV2Tvl(comptroller, chain, transformAdress,
       await unwrapUniswapLPs(balances, lpPositions, block, chain, transformAdress)
     }
 
-    if (resolveLPs) return unwrapLPsAuto({ balances, block, chain, abis})
+    if (resolveLPs) await unwrapLPsAuto({ balances, block, chain, abis})
 
-    return balances;
+    return transformBalances(chain, balances);
   }
 }
 
