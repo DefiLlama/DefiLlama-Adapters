@@ -4,6 +4,7 @@ const { transformBalances } = require('../portedTokens')
 const sdk = require('@defillama/sdk')
 const { post } = require('../http')
 const { getEnv } = require('../env')
+const { getUniqueAddresses } = require('../utils')
 
 const call = async ({ target, abi, params = [], responseTypes = [] }) => {
   const data = await post(getEnv('MULTIVERSX_RPC') + '/query', { scAddress: target, funcName: abi, args: params, })
@@ -57,6 +58,7 @@ async function getTokens({ address, balances = {}, tokens = [], blacklistedToken
 
 async function sumTokens({ owner, owners = [], tokens = [], balances = {}, blacklistedTokens = [], tokensAndOwners = [], whitelistedTokens = [] }) {
   if (owner) owners.push(owner)
+  owners = getUniqueAddresses(owners, true)
   if (tokensAndOwners.length) {
     await Promise.all(tokensAndOwners.map(([token, owner]) => sumTokens({ owners: [owner], tokens: [token], balances, blacklistedTokens, whitelistedTokens, })))
     return balances
