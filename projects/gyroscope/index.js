@@ -74,6 +74,13 @@ const config = {
       fromBlock: 17672894,
     },
   ],
+  arbitrum: [
+    {
+      name: 'Gyro E-CLP V2 Factory',
+      factory: '0xdca5f1f0d7994a32bc511e7dba0259946653eaf6',
+      fromBlock: 124858976,
+    },
+  ]
 }
 
 Object.keys(config).forEach((chain) => {
