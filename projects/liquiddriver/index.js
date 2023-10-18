@@ -1,8 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const { unwrapUniswapLPs, sumTokens2 } = require("../helper/unwrapLPs");
-const { transformFantomAddress, transformBscAddress } = require("../helper/portedTokens");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 const { addFundsInMasterChef } = require("../helper/masterchef");
 const { staking } = require("../helper/staking");
 const BigNumber = require("bignumber.js");
@@ -58,7 +57,7 @@ const shadowChefAddresses = [
 const masterchefTvl = async (timestamp, ethBlock, chainBlocks) => {
   const balances = {};
 
-  const transformAddress = await transformFantomAddress();
+  const transformAddress = i => `fantom:${i}`;
 
   await addFundsInMasterChef(
     balances,
@@ -74,7 +73,7 @@ const masterchefTvl = async (timestamp, ethBlock, chainBlocks) => {
 
 const hundredchefTvl = async (timestamp, ethBlock, chainBlocks, { api }) => {
   const balances = {};
-  const transformAddress = await transformFantomAddress();
+  const transformAddress = i => `fantom:${i}`;
 
   const hdaiChefAddress = "0x79364E45648Db09eE9314E47b2fD31c199Eb03B9";
   const husdcChefAddress = "0x9A07fB107b9d8eA8B82ECF453Efb7cFb85A66Ce9";
