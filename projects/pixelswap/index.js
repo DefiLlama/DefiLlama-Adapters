@@ -29,5 +29,8 @@ module.exports = {
             useDefaultCoreAssets: true,
             fetchBalances: true,
         })
+    },
+    scroll: {
+        tvl: dexTVL,
     }
 };
