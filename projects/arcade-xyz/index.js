@@ -1,4 +1,5 @@
 const sdk = require("@defillama/sdk");
+const { BigNumber } = require('ethers');
 
 const { fetchVaults, fetchLoans } = require('./queries');
 const { sumTokens2 } = require('../helper/unwrapLPs');
@@ -6,6 +7,7 @@ const { sumArtBlocks, isArtBlocks, } = require('../helper/nft');
 
 const {
   LOAN_CORE,
+  LOAN_CORE_V3,
   START_BLOCKS,
   VAULT_FACTORY_A,
 } = require('./constants');
@@ -37,7 +39,7 @@ async function tvl(_, block, _cb, { api }) {
   // Initialize balances with tokens held by the escrow contract, Loan Core
   return sumTokens2({
     balances,
-    owners: [LOAN_CORE],
+    owners: [LOAN_CORE, LOAN_CORE_V3],
     resolveNFTs: true,
     api,
   });
@@ -50,15 +52,34 @@ async function borrowed(_, block, _cb, { api }) {
 
   // Iterate over each loan to sum up principal by currency
   for (const loan of loans) {
-    const { payableCurrency, principal } = loan;
-    sdk.util.sumSingleBalance(balances,payableCurrency,principal, api.chain)
+    const { payableCurrency, principal, interestRate } = loan;
+    const fullRepayment = getRepayment(principal, interestRate)
+
+    sdk.util.sumSingleBalance(balances, payableCurrency, fullRepayment, api.chain);
   }
 
   return balances;
+}
+
+const decimals18 = BigNumber.from(10).pow(18);
+function getRepayment(principalStr, interestRateStr) {
+  const principal = BigNumber.from(principalStr);
+  const interestRate = BigNumber.from(interestRateStr);
+
+  const interest = principal
+    .mul(interestRate)
+    .div(decimals18)
+    .div(1000);
+
+  return principal.add(interest);
 }
 
 module.exports = {
   methodology: `Sums up the floor value of all vaulted and escrowed NFTs with Chainlink price feeds. Borrowed coins are not counted towards the TVL`,
   start: START_BLOCKS[VAULT_FACTORY_A],
   ethereum: { tvl, borrowed },
+  hallmarks: [
+    [1660762840, 'V2 Protocol Launch'],
+    [1694026811, 'V3 Protocol Launch'],
+  ],
 }

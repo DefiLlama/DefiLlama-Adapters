@@ -6,7 +6,6 @@ module.exports={
     methodology: "Factory address (0x73A48f8f521EB31c55c0e1274dB0898dE599Cb11) is used to find the LP pairs. TVL is equal to the liquidity on the AMM, while staking is the amount of CRONA tokens found in the Masterchef(0x77ea4a4cF9F77A034E4291E8f457Af7772c2B254).",
     cronos: {
       tvl: getUniTVL({
-        chain: 'cronos',
         factory: '0x73A48f8f521EB31c55c0e1274dB0898dE599Cb11',
         useDefaultCoreAssets: true,
         blacklist: [
