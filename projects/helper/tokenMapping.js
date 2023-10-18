@@ -16,7 +16,7 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 // carbon: https://api-insights.carbon.network/info/denom_gecko_map
 // orbit brige: https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList
 
-const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret',]
+const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura']
 const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc',]
 
 const distressedAssts = new Set(Object.values({
@@ -35,6 +35,18 @@ const transformTokens = {
   //   "0x065de42e28e42d90c2052a1b49e7f83806af0e1f": "0x123", // CRK token is mispriced
   //   [ADDRESSES.cronos.TUSD]: ADDRESSES.ethereum.TUSD,
   // },
+  ronin: {
+    [ADDRESSES.null]: 'ronin:' + ADDRESSES.ronin.WRON,
+  },
+
+  bfc: {
+    "0x6c9944674C1D2cF6c4c4999FC7290Ba105dcd70e": ADDRESSES.null,
+    "0xB800EaF843F962DFe5e145A8c9D07A3e70b11d7F": 'bsc:' + ADDRESSES.null,
+    "0x640952E7984f2ECedeAd8Fd97aA618Ab1210A21C": ADDRESSES.ethereum.USDC,
+    "0x21ad243b81eff53482F6F6E7C76539f2CfC0B734": 'polygon:' + ADDRESSES.null,
+    "0x3eA8654d5755e673599473ab37d92788B5bA12aE": ADDRESSES.ethereum.USDT,
+    "0xcDB9579Db96EB5C8298dF889D915D0FF668AfF2a": ADDRESSES.ethereum.DAI,
+  }
 }
 const ibcMappings = {
   // Sample Code
@@ -47,6 +59,10 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
+  radixdlt: {
+    [ADDRESSES.radixdlt.XRD]: { coingeckoId: 'radix', decimals: 0},
+    [ADDRESSES.radixdlt.WETH]: { coingeckoId: 'ethereum', decimals: 0},
+  },
   mvc: {
     [ADDRESSES.mvc.SPACE]: { coingeckoId: "microvisionchain", decimals: 8 },
   },
@@ -58,10 +74,10 @@ const fixBalancesTokens = {
   },
   shimmer_evm: {
     '0x1074010000000000000000000000000000000000': { coingeckoId: 'shimmer', decimals: 6 },
-    '0xBEb654A116aeEf764988DF0C6B4bf67CC869D01b': { coingeckoId: 'shimmer', decimals: 18 },
+    [ADDRESSES.shimmer_evm.WSMR]: { coingeckoId: 'shimmer', decimals: 18 },
     '0x6c890075406c5df08b427609e3a2ead1851ad68d': { coingeckoId: 'shimmer', decimals: 18 },
     '0x3C844FB5AD27A078d945dDDA8076A4084A76E513': { coingeckoId: 'soonaverse', decimals: 6 },
-    '0xc0e49f8c615d3d4c245970f6dc528e4a47d69a44': { coingeckoId: 'tether', decimals: 18 },
+    [ADDRESSES.shimmer_evm.USDT]: { coingeckoId: 'tether', decimals: 18 },
     '0xa158a39d00c79019a01a6e86c56e96c461334eb0': { coingeckoId: 'ethereum', decimals: 18 },
     '0x1cdf3f46dbf8cf099d218cf96a769cea82f75316': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
   },
@@ -70,8 +86,13 @@ const fixBalancesTokens = {
     '0xb73603c5d87fa094b7314c74ace2e64d165016fb': { coingeckoId: 'usd-coin', decimals: 6 },
     '0xf417f5a458ec102b90352f697d6e2ac3a3d2851f': { coingeckoId: 'tether', decimals: 6 },
   },
+  scroll: {
+    '0x5300000000000000000000000000000000000004': { coingeckoId: 'ethereum', decimals: 18 },
+    [ADDRESSES.null]: { coingeckoId: 'ethereum', decimals: 18 },
+    '0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4': { coingeckoId: 'usd-coin', decimals: 6 }
+  },
   nos: {
-    '0x111808AbE352c8003e0eFfcc04998EaB26Cebe3c': { coingeckoId: 'bitcoin', decimals: 18 },
+    [ADDRESSES.nos.BTC]: { coingeckoId: 'bitcoin', decimals: 18 },
   },
   ton: {
     'EQBq4d4GPyBoh-Pjnf3wxUyQSS28WY2Yt-7cPAG8FHpWpNRX': { coingeckoId: 'matic-network', decimals: 18 },
@@ -81,9 +102,16 @@ const fixBalancesTokens = {
     'EQCf7Nb341dxOE3N0jimngRxGEV8T3zo-eU2EZVs_nchNhhZ': { coingeckoId: 'wemix-token', decimals: 18 }
   },
   beam: {
-    '0xd51bfa777609213a653a2cd067c9a0132a2d316a': { coingeckoId: 'merit-circle', decimals: 18 },
-    '0x76bf5e7d2bcb06b1444c0a2742780051d8d0e304': { coingeckoId: 'usd-coin', decimals: 6 },
-    '0x999f90f25a2922ae1b21A06066F7EDEbedad42a9': { coingeckoId: 'tether', decimals: 18 },
+    [ADDRESSES.beam.WMC]: { coingeckoId: 'merit-circle', decimals: 18 },
+    [ADDRESSES.beam.USDC]: { coingeckoId: 'usd-coin', decimals: 6 },
+    [ADDRESSES.beam.USDT]: { coingeckoId: 'tether', decimals: 18 },
+  },
+  bfc: {
+    [ADDRESSES.null]: { coingeckoId: 'bifrost', decimals: 18 },
+  },
+  renec: {
+    [ADDRESSES.renec.RENEC]: { coingeckoId: "renec", decimals: 9 },
+    [ADDRESSES.renec.REUSD]: { coingeckoId: "tether", decimals: 9 }, // reUSD pegged USDT || bridge: https://remitano.com/swap/vn/usdt_reusd
   }
 }
 

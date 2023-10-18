@@ -26,9 +26,14 @@ const blacklistedTokens_default = [
 let connection, provider
 
 const endpoint = () => getEnv('SOLANA_RPC')
+const renecEndpoint = () => getEnv('RENEC_RPC')
+const endpointMap = {
+  solana: endpoint,
+  renec: renecEndpoint,
+}
 
-function getConnection() {
-  if (!connection) connection = new Connection(endpoint())
+function getConnection(chain = 'solana') {
+  if (!connection) connection = new Connection(endpointMap[chain]())
   return connection
 }
 
@@ -157,7 +162,7 @@ async function getTokenBalances(tokensAndAccounts) {
   return balances
 }
 
-async function getTokenAccountBalances(tokenAccounts, { individual = false, chunkSize = 99, allowError = false, } = {}) {
+async function getTokenAccountBalances(tokenAccounts, { individual = false, chunkSize = 99, allowError = false, chain = 'solana' } = {}) {
   log('total token accounts: ', tokenAccounts.length)
   const formBody = account => ({ method: "getAccountInfo", jsonrpc: "2.0", params: [account, { encoding: "jsonParsed", commitment: "confirmed" }], id: account })
   const balancesIndividual = []
@@ -165,7 +170,7 @@ async function getTokenAccountBalances(tokenAccounts, { individual = false, chun
   const chunks = sliceIntoChunks(tokenAccounts, chunkSize)
   for (const chunk of chunks) {
     const body = chunk.map(formBody)
-    const data = await axios.post(endpoint(), body);
+    const data = await axios.post(endpointMap[chain](), body);
     data.data.forEach(({ result: { value } }, i) => {
       if (!value || !value.data.parsed) {
         if (tokenAccounts[i].toString() === '11111111111111111111111111111111') {
@@ -296,16 +301,16 @@ async function sumOrcaLPs(tokensAndAccounts) {
   return totalUsdValue;
 }
 
-function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts) {
+function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts, chain = 'solana') {
   return async () => {
     if (!getTokenAccounts) getTokenAccounts = _getTokenAccounts
 
-    const tokenAccounts = await getTokenAccounts()
+    const tokenAccounts = await getTokenAccounts(chain)
 
     const chunks = sliceIntoChunks(tokenAccounts, 99)
     const results = []
     for (const chunk of chunks)
-      results.push(...await getTokenAccountBalances(chunk, { individual: true }))
+      results.push(...await getTokenAccountBalances(chunk, { individual: true, chain, }))
 
     const data = []
     for (let i = 0; i < results.length; i = i + 2) {
@@ -314,8 +319,8 @@ function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts) {
       data.push({ token0: tokenA.mint, token0Bal: tokenA.amount, token1: tokenB.mint, token1Bal: tokenB.amount, })
     }
 
-    const coreTokens = await getGeckoSolTokens()
-    return transformDexBalances({ chain: 'solana', data, blacklistedTokens: blacklistedTokens_default, coreTokens, })
+    const coreTokens = chain === 'solana' ? await getGeckoSolTokens() : null
+    return transformDexBalances({ chain, data, blacklistedTokens: blacklistedTokens_default, coreTokens,  })
   }
 
   async function _getTokenAccounts() {

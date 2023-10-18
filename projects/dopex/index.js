@@ -133,7 +133,7 @@ async function arbTvl(timestamp, block, chainBlocks) {
   await ssovTvl(balances, ssovs, chainBlocks.arbitrum, "arbitrum");
   await crvTvls(balances, crvPools, chainBlocks.arbitrum, "arbitrum");
   await sumTokens(balances, [
-    ["0x912ce59144191c1204e64559fe8253a0e49e6548", "0xDF3d96299275E2Fb40124b8Ad9d270acFDcc6148"],
+    [ADDRESSES.arbitrum.ARB, "0xDF3d96299275E2Fb40124b8Ad9d270acFDcc6148"],
     ["0x6c2c06790b3e3e3c38e12ee22f8183b37a13ee55", "0x05E7ACeD3b7727f9129E6d302B488cd8a1e0C817"],
     ["0x32eb7902d4134bf98a28b963d26de779af92a212", "0xd74c61ca8917Be73377D74A007E6f002c25Efb4e"]
   ], chainBlocks.arbitrum, "arbitrum")
