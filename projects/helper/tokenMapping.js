@@ -112,6 +112,9 @@ const fixBalancesTokens = {
   renec: {
     [ADDRESSES.renec.RENEC]: { coingeckoId: "renec", decimals: 9 },
     [ADDRESSES.renec.REUSD]: { coingeckoId: "tether", decimals: 9 }, // reUSD pegged USDT || bridge: https://remitano.com/swap/vn/usdt_reusd
+  },
+  op_bnb: {
+    '0x9e5aac1ba1a2e6aed6b32689dfcf62a509ca96f3': { coingeckoId: 'tether', decimals: 18 }
   }
 }
 
