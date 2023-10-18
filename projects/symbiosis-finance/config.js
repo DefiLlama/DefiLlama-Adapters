@@ -214,5 +214,14 @@ module.exports = {
          'TGsN2VVJRXLbNe33QbWeaMtpb6xxC7SUeq', // portal v2
        ]
      },
+     {
+       name: 'scroll',
+       tokens: [
+         ADDRESSES.scroll.WETH,
+       ],
+       holders: [
+         '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4', // portal v2
+       ]
+     },
   ]
 }
