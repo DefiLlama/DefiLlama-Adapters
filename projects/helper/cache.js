@@ -98,7 +98,7 @@ async function configPost(project, endpoint, data) {
 }
 
 
-async function cachedGraphQuery(project, endpoint, query, { variables, fetchById } = {}) {
+async function cachedGraphQuery(project, endpoint, query, { variables = {}, fetchById, } = {}) {
   if (!project || !endpoint) throw new Error('Missing parameters')
   const key = 'config-cache'
   const cacheKey = getKey(key, project)
@@ -111,7 +111,8 @@ async function cachedGraphQuery(project, endpoint, query, { variables, fetchById
       if (!fetchById)
         json = await graphql.request(endpoint, query, { variables })
       else 
-        json = await graphFetchById({ endpoint, query, })
+        json = await graphFetchById({ endpoint, query, params: variables })
+      if (!json) throw new Error('Empty JSON')
       await _setCache(key, project, json)
       return json
     } catch (e) {
