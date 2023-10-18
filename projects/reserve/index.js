@@ -176,5 +176,5 @@ module.exports = {
     tvl: (...args) => tvl(...args, { chain: "base" }),
     staking: (...args) => staking(...args, { chain: "base" }),
   },
-  methodology: `TVL accounts for the tokens in the vaults. Staked tokens are also accounted for.`,
+  methodology: `TVL accounts for the underlying ERC20 collateral which back RTokens.`,
 };
