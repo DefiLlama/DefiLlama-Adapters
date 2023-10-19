@@ -316,7 +316,7 @@ function fixBalances(balances) {
     else if (!token.includes(':')) newKey = `coingecko:${token}`
     if (newKey) {
       delete balances[token]
-      sdk.util.sumSingleBalance(balances, newKey, BigNumber(value).toFixed(0))
+      sdk.util.sumSingleBalance(balances, newKey, value.includes('e') ? BigNumber(value).toFixed(0) : value)
     }
   })
 }
