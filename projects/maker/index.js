@@ -89,17 +89,10 @@ async function tvl(timestamp, block, _, { api }) {
   toa = toa.filter(i => i[0].toLowerCase() !== ADDRESSES.ethereum.SAI.toLowerCase())
   const symbols = await api.multiCall({ abi: 'erc20:symbol', calls: toa.map(t => t[0]) })
   const gUNIToa = toa.filter((_, i) => symbols[i] === 'G-UNI')
-  toa = toa.filter((_, i) => symbols[i] !== 'G-UNI')
+  toa = toa.filter((_, i) => symbols[i] !== 'G-UNI' && !symbols[i].startsWith('RWA'))
 
   const balances = await sumTokens2({ api, tokensAndOwners: toa, resolveLP: true, })
   await unwrapGunis({ api, toa: gUNIToa, balances, })
-
-  // remove RWAs
-  const tokens = Object.keys(balances).filter(i => i.startsWith('ethereum:')).map(i => i.split(':')[1])
-  const tSymbols = await api.multiCall({  abi: 'string:symbol', calls: tokens, permitFailure: true, })
-  tSymbols.forEach((v, i) => {
-    if (v && v.startsWith('RWA')) sdk.util.removeTokenBalance(balances, tokens[i])
-  })
   return balances
 }
 
