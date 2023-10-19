@@ -1,5 +1,4 @@
-//import utils
-const ADDRESSES = require("../helper/coreAssets.json");
+const getGmPrice = require("./utils");
 
 module.exports = {
   misrepresentedTokens: true,
@@ -11,7 +10,6 @@ module.exports = {
     [1683178791, "GDAI Leverage Vault"],
     [1696389409, "HLP Leverage Vault"],
   ],
-
   arbitrum: {
     tvl: async (_, _b, _cb, { api }) => {
       const vaults = [
@@ -22,7 +20,6 @@ module.exports = {
         abi: "int256:getVaultMarketValue",
         calls: vaults,
       });
-      bals.forEach((i) => api.add(ADDRESSES.arbitrum.USDC, i));
 
       const addresses = {
         whiskey: "0x6532eFCC1d617e094957247d188Ae6d54093718A",
@@ -33,59 +30,147 @@ module.exports = {
         sakeWaterV2: "0x806e8538FC05774Ea83d9428F778E423F6492475",
         vodkaV1_Water: "0xC99C6427cB0B824207606dC2745A512C6b066E7C",
         VodkaV1: "0x88D7500aF99f11fF52E9f185C7aAFBdF9acabD93",
-        fsGlp: ADDRESSES.arbitrum.fsGLP,
+        fsGlp: "0x1aDDD80E6039594eE970E5872D247bf0414C8903",
+        rum: "0x739fe1BE8CbBeaeA96fEA55c4052Cd87796c0a89",
+        hlpStaking: "0xbE8f8AF5953869222eA8D39F1Be9d03766010B1C",
         vodkaV2: "0x9198989a85E35adeC46309E06684dCA444c9cF27",
         vodkaV2_Water: "0x9045ae36f963b7184861BDce205ea8B08913B48c",
         gmWeth: "0x70d95587d40A2caf56bd97485aB3Eec10Bee6336", // weth/usdc.e
-        gmArb: "0xC25cEf6061Cf5dE5eb761b50E4743c1F5D7E5407", // arb/usdc.e
-        VLP: "0xc5b2d9fda8a82e8dcecd5e9e6e99b78a9188eb05",
-        gDAI: "0xd85e038593d7a098614721eae955ec2022b9b91b",
-        rum: "0x739fe1BE8CbBeaeA96fEA55c4052Cd87796c0a89",
-        hlpStaking: "0xbE8f8AF5953869222eA8D39F1Be9d03766010B1C",
-        hlp: "0x4307fbDCD9Ec7AEA5a1c2958deCaa6f316952bAb",
+        gmArb: "0xC25cEf6061Cf5dE5eb761b50E4743c1F5D7E5407",
       };
 
-      await api.sumTokens({
-        tokensAndOwners: [
-          [ADDRESSES.arbitrum.USDC, addresses.vodkaV1_Water],
-          [ADDRESSES.arbitrum.USDC_CIRCLE, addresses.vodkaV2_Water],
-          [ADDRESSES.arbitrum.USDC, addresses.sakeWater],
-          [ADDRESSES.arbitrum.USDC, addresses.sakeWaterV2],
-          [ADDRESSES.arbitrum.DAI, addresses.whiskeyWater],
-          [addresses.gDAI, addresses.whiskey],
-          [addresses.VLP, addresses.sake],
-          [addresses.VLP, addresses.sakeV2],
-          [addresses.fsGlp, addresses.VodkaV1],
-          [addresses.gmArb, addresses.vodkaV2],
-          [addresses.gmWeth, addresses.vodkaV2],
-          [addresses.hlp, addresses.rum],
-        ],
-      });
-
       const contractAbis = {
+        gainsBalance: "function getGainsBalance() view returns (uint256)",
+        gTokenPrice: "function gTokenPrice() view returns (uint256)",
+        wWaterBalance: "function balanceOfDAI() public view returns (uint256)",
+        vlpBalance: "function getVlpBalance() public view returns (uint256)",
         stakedVlpBalance:
           "function getStakedVlpBalance() public view returns (uint256)",
+        vlpPrice: "function getVLPPrice() public view returns (uint256)",
+        glpPrice: "function getGLPPrice(bool) public view returns (uint256)",
+        waterUSDCBal: "function balanceOfUSDC() public view returns (uint256)",
+        balanceOf: "function balanceOf(address) view returns (uint256)",
+        hlpPrice:
+          "function getHLPPrice(bool maximize) public view returns (uint256)",
         stakedHlpBalance:
           "function userTokenAmount(address user) public view returns (uint256)",
       };
+      const hlpPrice = await api.call({
+        abi: contractAbis.hlpPrice,
+        target: addresses.rum,
+        params: true,
+      });
 
-      const StakedVLPBal = await api.call({
-        abi: contractAbis.stakedVlpBalance,
-        target: addresses.sake,
-      });
-      const StakedVLPBalV2 = await api.call({
-        abi: contractAbis.stakedVlpBalance,
-        target: addresses.sakeV2,
-      });
       const StakedHLPBal = await api.call({
         abi: contractAbis.stakedHlpBalance,
         target: addresses.hlpStaking,
         params: addresses.rum,
       });
 
-      api.add(addresses.VLP, StakedVLPBal);
-      api.add(addresses.VLP, StakedVLPBalV2);
-      api.add(addresses.hlp, StakedHLPBal);
+      const whiskeyGainsBalance = await api.call({
+        abi: contractAbis.gainsBalance,
+        target: addresses.whiskey,
+      });
+
+      const whiskeyGTokenPrice = await api.call({
+        abi: contractAbis.gTokenPrice,
+        target: addresses.whiskey,
+      });
+
+      const whiskeyWaterDaiBal = await api.call({
+        abi: contractAbis.wWaterBalance,
+        target: addresses.whiskeyWater,
+      });
+
+      const sakeWaterUSDCBal = await api.call({
+        abi: contractAbis.waterUSDCBal,
+        target: addresses.sakeWater,
+      });
+
+      const vlpBal = await api.call({
+        abi: contractAbis.vlpBalance,
+        target: addresses.sake,
+      });
+
+      const StakedVLPBal = await api.call({
+        abi: contractAbis.stakedVlpBalance,
+        target: addresses.sake,
+      });
+
+      const sakeVLPPrice = await api.call({
+        abi: contractAbis.vlpPrice,
+        target: addresses.sake,
+      });
+
+      const sakeWaterUSDCBalV2 = await api.call({
+        abi: contractAbis.waterUSDCBal,
+        target: addresses.sakeWaterV2,
+      });
+
+      const vlpBalV2 = await api.call({
+        abi: contractAbis.vlpBalance,
+        target: addresses.sakeV2,
+      });
+
+      const StakedVLPBalV2 = await api.call({
+        abi: contractAbis.stakedVlpBalance,
+        target: addresses.sakeV2,
+      });
+
+      const vodkaWaterUSDCBalV1 = await api.call({
+        abi: contractAbis.waterUSDCBal,
+        target: addresses.vodkaV1_Water,
+      });
+
+      const vodkaGLPPrice = await api.call({
+        abi: contractAbis.glpPrice,
+        target: addresses.VodkaV1,
+        params: [true],
+      });
+
+      const vodkaGLPBalV1 = await api.call({
+        abi: contractAbis.balanceOf,
+        target: addresses.fsGlp,
+        params: [addresses.VodkaV1],
+      });
+
+      const vodkaWaterUSDCBalV2 = await api.call({
+        abi: contractAbis.waterUSDCBal,
+        target: addresses.vodkaV2_Water,
+      });
+
+      const vodkaGmArbBal = await api.call({
+        abi: contractAbis.balanceOf,
+        target: addresses.gmArb,
+        params: [addresses.vodkaV2],
+      });
+
+      const vodkaGmEthBal = await api.call({
+        abi: contractAbis.balanceOf,
+        target: addresses.gmWeth,
+        params: [addresses.vodkaV2],
+      });
+
+      const vodkaGmArbPrice = await getGmPrice("arb");
+      const vodkaGmEthPrice = await getGmPrice("eth");
+
+      return {
+        tether: bals.reduce((a, i) => a + i / 1e6, 0),
+        dai:
+          (whiskeyGainsBalance * whiskeyGTokenPrice) / 1e36 +
+          whiskeyWaterDaiBal / 1e18,
+        "usd-coin":
+          ((vlpBal + StakedVLPBal) * sakeVLPPrice) / 1e18 / 1e5 +
+          sakeWaterUSDCBal / 1e6 +
+          ((vlpBalV2 + StakedVLPBalV2) * sakeVLPPrice) / 1e18 / 1e5 +
+          sakeWaterUSDCBalV2 / 1e6 +
+          vodkaWaterUSDCBalV1 / 1e6 +
+          (vodkaGLPBalV1 * vodkaGLPPrice) / 1e18 / 1e18 +
+          (StakedHLPBal * hlpPrice) / 10 ** 30 +
+          vodkaWaterUSDCBalV2 / 1e6 +
+          (vodkaGmArbBal * vodkaGmArbPrice) / 1e36 +
+          (vodkaGmEthBal * vodkaGmEthPrice) / 1e36,
+      };
     },
   },
 };
