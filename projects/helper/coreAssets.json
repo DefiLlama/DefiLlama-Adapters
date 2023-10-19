@@ -1423,7 +1423,8 @@
   },
   "radixdlt": {
     "XRD": "resource_rdx1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxradxrd",
-    "WETH": "resource_rdx1th88qcj5syl9ghka2g9l7tw497vy5x6zaatyvgfkwcfe8n9jt2npww"
+    "WETH": "resource_rdx1th88qcj5syl9ghka2g9l7tw497vy5x6zaatyvgfkwcfe8n9jt2npww",
+    "CVR": "resource_rdx1t4km4k306ul40s3zr8zwwrm25xfmx7w8ytjvdwqh0u3kkch0eph9rn"
   },
   "shimmer_evm": {
     "WSMR": "0xBEb654A116aeEf764988DF0C6B4bf67CC869D01b",
