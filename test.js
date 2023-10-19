@@ -308,8 +308,8 @@ const axios = require("axios");
 
 const ethereumAddress = "0x0000000000000000000000000000000000000000";
 const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-
 function fixBalances(balances) {
+  
   Object.entries(balances).forEach(([token, value]) => {
     let newKey
     if (token.startsWith("0x")) newKey = `ethereum:${token}`
@@ -361,7 +361,7 @@ async function computeTVL(balances, timestamp) {
   const { errors } = await PromisePool.withConcurrency(5)
     .for(sliceIntoChunks(readKeys, 100))
     .process(async (keys) => {
-      tokenData.push((await axios.get(`https://coins.llama.fi/prices/current/${keys.join(',')}`)).data.coins)
+      tokenData.push((await axios.get(`https://coins2.llama.fi/prices/current/${keys.join(',')}`)).data.coins)
     })
 
   if (errors && errors.length)
