@@ -1,33 +1,23 @@
-// const retry = require('async-retry')
-const { GraphQLClient, gql } = require('graphql-request')
+const { cachedGraphQuery } = require('../helper/cache')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
-async function fetch() {
-  var endpoint = 'https://api.thegraph.com/subgraphs/name/prasad-kumkar/zksynth-mainnet';
-  var graphQLClient = new GraphQLClient(endpoint)
-
-  var query = gql`
-  {
-    pools(first: 10) {
-      collaterals{
-        totalDeposits
-        priceUSD
-        token{
-          decimals
-        }
-      }
+const query = `{
+  pools(first: 1000) {
+    collaterals{
+      pool { id }
+      token { id }
     }
   }
-  `;
-  const results = await graphQLClient.request(query);
-  let tvl = 0;
-  for(let i = 0; i < results.pools.length; i++){
-    for(let j = 0; j < results.pools[i].collaterals.length; j++){
-      tvl += results.pools[i].collaterals[j].totalDeposits * results.pools[i].collaterals[j].priceUSD / Math.pow(10, results.pools[i].collaterals[j].token.decimals);
-    }
-  }
-  return tvl;
+}`
+
+async function tvl(_, _b, _cb, { api, }) {
+  const { pools } = await cachedGraphQuery('zksynth', 'https://api.thegraph.com/subgraphs/name/prasad-kumkar/zksynth-mainnet', query)
+  const tokensAndOwners = pools.map(i => i.collaterals).flat().map(i => [i.token.id, i.pool.id])
+  return sumTokens2({ api, tokensAndOwners })
 }
 
 module.exports = {
-  fetch
+  scroll: {
+    tvl
+  }
 }
