@@ -62,7 +62,6 @@ const fixBalancesTokens = {
   radixdlt: {
     [ADDRESSES.radixdlt.XRD]: { coingeckoId: 'radix', decimals: 0},
     [ADDRESSES.radixdlt.WETH]: { coingeckoId: 'ethereum', decimals: 0},
-    [ADDRESSES.radixdlt.CVR]: { coingeckoId: 'caviar', decimals: 0},
   },
   mvc: {
     [ADDRESSES.mvc.SPACE]: { coingeckoId: "microvisionchain", decimals: 8 },
