@@ -1,4 +1,4 @@
-const { GraphQLClient } = require('graphql-request')
+const { GraphQLClient } = require('graphql-request');
 
 const graphURL = "https://api.thegraph.com/subgraphs/name/waleed-shafiq/hydt-protocol";
 
