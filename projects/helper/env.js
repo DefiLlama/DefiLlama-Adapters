@@ -15,6 +15,7 @@ const DEFAULTS = {
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
   EVMOS_RPC: "https://evmos-evm.publicnode.com",
   NOVA_RPC: "https://connect.novanetwork.io",
+  SCROLL_RPC: "https://rpc-scroll.icecreamswap.com",
 }
 
 const ENV_KEYS = [

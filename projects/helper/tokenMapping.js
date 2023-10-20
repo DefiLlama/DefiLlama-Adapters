@@ -62,6 +62,7 @@ const fixBalancesTokens = {
   radixdlt: {
     [ADDRESSES.radixdlt.XRD]: { coingeckoId: 'radix', decimals: 0},
     [ADDRESSES.radixdlt.WETH]: { coingeckoId: 'ethereum', decimals: 0},
+    [ADDRESSES.radixdlt.CVR]: { coingeckoId: 'caviar', decimals: 0},
   },
   mvc: {
     [ADDRESSES.mvc.SPACE]: { coingeckoId: "microvisionchain", decimals: 8 },
@@ -87,7 +88,7 @@ const fixBalancesTokens = {
     '0xf417f5a458ec102b90352f697d6e2ac3a3d2851f': { coingeckoId: 'tether', decimals: 6 },
   },
   scroll: {
-    '0x5300000000000000000000000000000000000004': { coingeckoId: 'ethereum', decimals: 18 },
+    '0x5300000000000000000000000000000000000004': { coingeckoId: 'coingecko:ethereum', decimals: 18 },
     [ADDRESSES.null]: { coingeckoId: 'ethereum', decimals: 18 },
     '0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4': { coingeckoId: 'usd-coin', decimals: 6 }
   },
@@ -112,6 +113,9 @@ const fixBalancesTokens = {
   renec: {
     [ADDRESSES.renec.RENEC]: { coingeckoId: "renec", decimals: 9 },
     [ADDRESSES.renec.REUSD]: { coingeckoId: "tether", decimals: 9 }, // reUSD pegged USDT || bridge: https://remitano.com/swap/vn/usdt_reusd
+  },
+  op_bnb: {
+    '0x9e5aac1ba1a2e6aed6b32689dfcf62a509ca96f3': { coingeckoId: 'tether', decimals: 18 }
   }
 }
 

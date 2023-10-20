@@ -1,8 +1,8 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 // const utils = require('web3-utils');
 const sdk = require('@defillama/sdk');
-const MakerSCDConstants = require("./abis/makerdao.js");
-const MakerMCDConstants = require("./abis/maker-mcd.js");
+const MakerSCDConstants = require("../maker/abis/makerdao.js");
+const MakerMCDConstants = require("../maker/abis/maker-mcd.js");
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getLogs } = require('../helper/cache/getLogs')
 
@@ -43,9 +43,7 @@ async function getJoins(block, api) {
 }
 
 async function tvl(timestamp, block, _, { api }) {
-  let toa = [
-    [MakerSCDConstants.WETH_ADDRESS, MakerSCDConstants.TUB_ADDRESS,],
-  ]
+  let toa = []
 
   const blacklistedJoins = [
     '0x7b3799b30f268ba55f926d7f714a3001af89d359',
@@ -88,42 +86,24 @@ async function tvl(timestamp, block, _, { api }) {
 
   toa = toa.filter(i => i[0].toLowerCase() !== ADDRESSES.ethereum.SAI.toLowerCase())
   const symbols = await api.multiCall({ abi: 'erc20:symbol', calls: toa.map(t => t[0]) })
-  const gUNIToa = toa.filter((_, i) => symbols[i] === 'G-UNI')
-  toa = toa.filter((_, i) => symbols[i] !== 'G-UNI' && !symbols[i].startsWith('RWA'))
 
-  const balances = await sumTokens2({ api, tokensAndOwners: toa, resolveLP: true, })
-  await unwrapGunis({ api, toa: gUNIToa, balances, })
-  return balances
-}
-
-async function unwrapGunis({ api, toa, balances = {} }) {
-  const lps = toa.map(i => i[0])
-  const balanceOfCalls = toa.map(t => ({ params: t[1], target: t[0] }))
-  const [
-    token0s, token1s, supplies, uBalances, tokenBalances
-  ] = await Promise.all([
-    api.multiCall({ abi: 'address:token0', calls: lps }),
-    api.multiCall({ abi: 'address:token1', calls: lps }),
-    api.multiCall({ abi: 'uint256:totalSupply', calls: lps }),
-    api.multiCall({ abi: 'function getUnderlyingBalances() view returns (uint256 token0Bal, uint256 token1Bal)', calls: lps }),
-    api.multiCall({ abi: 'erc20:balanceOf', calls: balanceOfCalls }),
-  ])
-
-  tokenBalances.forEach((bal, i) => {
-    const ratio = bal / supplies[i]
-    const token0Bal = uBalances[i][0] * ratio
-    const token1Bal = uBalances[i][1] * ratio
-    sdk.util.sumSingleBalance(balances, token0s[i], token0Bal)
-    sdk.util.sumSingleBalance(balances, token1s[i], token1Bal)
+  const owners = []
+  toa.map((_, i) => {
+    if (!symbols[i].startsWith('RWA')) return;
+    // console.log(symbols[i], toa[i])
+    owners.push(toa[i][1])
   })
-  sdk.util.removeTokenBalance(balances, ADDRESSES.ethereum.DAI) // remove dai balances
-  return balances
+  const ilks = await api.multiCall({ abi: 'function ilk() view returns (bytes32)', calls: owners })
+  const res = await api.multiCall({ abi: 'function ilks (bytes32) view returns (uint256 art, uint256 rate, uint256 spot, uint256 line,uint256 dust)', calls:ilks, target:'0x35D1b3F3D7966A1DFe207aa4514C12a259A0492B' })
+  res.forEach(i => api.add(ADDRESSES.ethereum.DAI, i.art))
+
+  return api.getBalances()
 }
 
 module.exports = {
   timetravel: true,
   methodology: `Counts all the tokens being used as collateral of CDPs.
-  
+
   On the technical level, we get all the collateral tokens by fetching events, get the amounts locked by calling balanceOf() directly, unwrap any uniswap LP tokens and then get the price of each token from coingecko`,
   start: 1513566671, // 12/18/2017 @ 12:00am (UTC)
   ethereum: {
