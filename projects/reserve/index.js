@@ -35,16 +35,16 @@ async function tvl(_time, block, _, { api, chain }) {
   // Common logic for calculating TVL (only mainnet has vault)
   const ownerTokens = config.vault
     ? [
+      [
         [
-          [
-            "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", //usdc
-            "0x8e870d67f660d95d5be530380d0ec0bd388289e1", //pax
-            "0x0000000000085d4780B73119b644AE5ecd22b376", //tusd
-            "0x4Fabb145d64652a948d72533023f6E7A623C7C53", //busd
-          ],
-          config.vault,
+          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", //usdc
+          "0x8e870d67f660d95d5be530380d0ec0bd388289e1", //pax
+          "0x0000000000085d4780B73119b644AE5ecd22b376", //tusd
+          "0x4Fabb145d64652a948d72533023f6E7A623C7C53", //busd
         ],
-      ]
+        config.vault,
+      ],
+    ]
     : [];
   const blacklistedTokens = [config.rsr];
   const fluxListWithOwner = [];
@@ -68,94 +68,52 @@ async function tvl(_time, block, _, { api, chain }) {
 
   let processedWrappers = new Set();
   let wrapperBalances = {};
-  await Promise.all(
-    basketRes.map(async ([tokens], idx) => {
-      const rToken = rTokens[idx];
-      const manager = backingManagers[idx];
-      const names = await api.multiCall({ abi: "string:name", calls: tokens });
+  const allTokens = basketRes.flatMap(([tokens], i) => {
+    ownerTokens.push([tokens, rTokens[i]]);
+    ownerTokens.push([tokens, backingManagers[i]]);
+    return tokens
+  });
+  const allRTokens = basketRes.flatMap(([tokens], i) => tokens.map(() => rTokens[i]))
+  const allManagers = basketRes.flatMap(([tokens], i) => tokens.map(() => backingManagers[i]))
+  const allNames = await api.multiCall({ abi: "string:name", calls: allTokens });
 
-      const aTokenWrappers = tokens.filter((_, i) =>
-        names[i].startsWith("Static Aave")
-      );
-      let aTokens;
-      // There are different possible "atoken" capitalizations
-      try {
-        aTokens = await api.multiCall({
-          abi: "address:ATOKEN",
-          calls: aTokenWrappers,
-        });
-      } catch {
-        aTokens = await api.multiCall({
-          abi: "address:aToken",
-          calls: aTokenWrappers,
-        });
-      }
-      blacklistedTokens.push(...aTokenWrappers);
-      aTokens.forEach((v, i) => ownerTokens.push([[v], aTokenWrappers[i]]));
+  const aTokenWrappers = allTokens.filter((_, i) => allNames[i].startsWith("Static Aave"));
+  const cUsdcV3Wrapper = allTokens.find((_, i) => allNames[i].startsWith("Wrapped cUSDCv3"));
+  const stargateLpWrappers = allTokens.filter((_, i) => allNames[i].startsWith("Wrapped Stargate"));
+  const convexTokensAndOwners = []
 
-      // handle flux and convex deposit tokens
-      const convexTokens = tokens.filter((_, i) =>
-        names[i].endsWith("Convex Deposit")
-      );
-      const fluxTokens = tokens.filter((_, i) => names[i].startsWith("Flux "));
+  allTokens.forEach((token, i) => {
+    if (!allNames[i].startsWith("Flux ")) return;
+    fluxListWithOwner.push([token, allRTokens[i]]);
+    fluxListWithOwner.push([token, allManagers[i]]);
+    blacklistedTokens.push(token);
+    return true;
+  });
 
-      const stargateLpWrappers = tokens.filter((_, i) =>
-        names[i].startsWith("Wrapped Stargate")
-      );
-      if (stargateLpWrappers.length)
-        await getStargateLpValues(
-          api,
-          stargateLpWrappers,
-          processedWrappers,
-          wrapperBalances
-        );
+  allTokens.forEach((token, i) => {
+    if (!allNames[i].endsWith("Convex Deposit")) return;
+    blacklistedTokens.push(token);
+    convexTokensAndOwners.push([token, allRTokens[i]]);
+    convexTokensAndOwners.push([token, allManagers[i]]);
+  });
 
-      const cUsdcV3Wrapper = tokens.find((_, i) =>
-        names[i].startsWith("Wrapped cUSDCv3")
-      );
+  let aTokens = await api.multiCall({ abi: api.chain === 'base' ? "address:aToken" : "address:ATOKEN", calls: aTokenWrappers, });
+  blacklistedTokens.push(...aTokenWrappers, ...stargateLpWrappers);
+  aTokens.forEach((v, i) => ownerTokens.push([[v], aTokenWrappers[i]]));
 
-      if (cUsdcV3Wrapper)
-        await getCompoundUsdcValues(
-          api,
-          cUsdcV3Wrapper,
-          processedWrappers,
-          wrapperBalances
-        );
 
-      blacklistedTokens.push(...convexTokens, ...fluxTokens);
+  if (stargateLpWrappers.length)
+    await getStargateLpValues(api, stargateLpWrappers, processedWrappers, wrapperBalances);
 
-      tokens = tokens.filter(
-        (x) =>
-          !convexTokens.includes(x) ||
-          !fluxTokens.includes(x) ||
-          !stargateLpWrappers.includes(x) ||
-          !aTokenWrappers.includes(x)
-      );
-      fluxTokens.forEach((token) => {
-        fluxListWithOwner.push([token, rToken]);
-        fluxListWithOwner.push([token, manager]);
-      });
+  if (cUsdcV3Wrapper) {
+    blacklistedTokens.push(cUsdcV3Wrapper);
+    await getCompoundUsdcValues(api, cUsdcV3Wrapper, processedWrappers, wrapperBalances);
+  }
 
-      // Update lpBalances for Curve tokens
-      await Promise.all(
-        convexTokens.map((token) =>
-          genericUnwrapCvxDeposit({ api, token, owner: rToken })
-        )
-      );
-      await Promise.all(
-        convexTokens.map((token) =>
-          genericUnwrapCvxDeposit({ api, token, owner: manager })
-        )
-      );
 
-      ownerTokens.push([tokens, rToken]);
-      ownerTokens.push([tokens, manager]);
-    })
-  );
+  await Promise.all(convexTokensAndOwners.map(([token, owner]) => genericUnwrapCvxDeposit({ api, token, owner, })));
 
-  Object.entries(wrapperBalances).forEach(([k, v]) => api.addTokens([k], [v]));
-
-  await unwrapCreamTokens(api.getBalances(), fluxListWithOwner, block);
+  await unwrapCreamTokens(api.getBalances(), fluxListWithOwner, api.block);
 
   await sumTokens2({ api, ownerTokens, blacklistedTokens });
 }
@@ -169,12 +127,10 @@ async function staking(_time, block, _, { api, chain }) {
 
 module.exports = {
   ethereum: {
-    tvl: (...args) => tvl(...args, { chain: "ethereum" }),
-    staking: (...args) => staking(...args, { chain: "ethereum" }),
+    tvl, staking,
   },
   base: {
-    tvl: (...args) => tvl(...args, { chain: "base" }),
-    staking: (...args) => staking(...args, { chain: "base" }),
+    tvl, staking,
   },
   methodology: `TVL accounts for the underlying ERC20 collateral which back RTokens.`,
 };

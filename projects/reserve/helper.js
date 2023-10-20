@@ -11,12 +11,7 @@ const stargatePoolAbi = {
   token: "function token() external view returns (address)",
 };
 
-const getStargateLpValues = async (
-  api,
-  stargateLpWrappers,
-  processedWrappers,
-  wrapperBalances
-) => {
+const getStargateLpValues = async (api, stargateLpWrappers, processedWrappers) => {
   const stargateLpPools = await api.multiCall({
     abi: "address:underlying",
     calls: stargateLpWrappers,
@@ -58,23 +53,13 @@ const getStargateLpValues = async (
 
   baseStargateAssets.forEach((asset, i) => {
     if (processedWrappers.has(stargateLpWrappers[i])) return;
-
-    if (!wrapperBalances[asset]) {
-      wrapperBalances[asset] = +convertedAmounts[i];
-    } else {
-      wrapperBalances[asset] += +convertedAmounts[i];
-    }
+    api.add(asset, convertedAmounts[i])
     // Mark this wrapper as processed
     processedWrappers.add(stargateLpWrappers[i]);
   });
 };
 
-const getCompoundUsdcValues = async (
-  api,
-  cUsdcV3Wrapper,
-  processedWrappers,
-  wrapperBalances
-) => {
+const getCompoundUsdcValues = async (api, cUsdcV3Wrapper, processedWrappers) => {
   const cUsdcV3 = await api.call({
     abi: "address:underlyingComet",
     target: cUsdcV3Wrapper,
@@ -94,12 +79,7 @@ const getCompoundUsdcValues = async (
   });
 
   if (!processedWrappers.has(cUsdcV3Wrapper)) {
-    if (!wrapperBalances[baseToken]) {
-      wrapperBalances[baseToken] = +wrapperBalance;
-    } else {
-      wrapperBalances[baseToken] += +wrapperBalance;
-    }
-
+    api.add(baseToken, wrapperBalance)
     processedWrappers.add(cUsdcV3Wrapper);
   }
 };
