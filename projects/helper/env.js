@@ -16,6 +16,7 @@ const DEFAULTS = {
   EVMOS_RPC: "https://evmos-evm.publicnode.com",
   NOVA_RPC: "https://connect.novanetwork.io",
   SCROLL_RPC: "https://rpc-scroll.icecreamswap.com",
+  HECO_RPC: "https://http-mainnet-node.huobichain.com",
 }
 
 const ENV_KEYS = [
