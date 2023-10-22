@@ -396,10 +396,6 @@ async function sumTokens2({
 
   blacklistedTokens.forEach(i => delete balances['solana:'+i])
 
-  if(Object.keys(balances).length == 0){
-    throw new Error("0 tvl")
-  }
-
   return balances
 
   async function _sumTokens(tokensAndAccounts) {
