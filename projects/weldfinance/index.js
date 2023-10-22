@@ -59,4 +59,4 @@ module.exports = masterchefExports({
   blacklistedTokens: [USDk, kBRISE],
 })
 
-module.exports.kava.tvl = sdk.util.sumChainTvls([module.exports.kava.tvl, verifyTvl])
+// module.exports.kava.tvl = sdk.util.sumChainTvls([module.exports.kava.tvl, verifyTvl])
