@@ -6,7 +6,7 @@ async function tvl(_, _b, _cb, { api, }) {
     ADDRESSES.arbitrum.WETH,
     ADDRESSES.arbitrum.USDC,
     '0x17FC002b466eEc40DaE837Fc4bE5c67993ddBd6F',
-    '0xaf88d065e77c8cC2239327C5EDb3A432268e5831'
+    ADDRESSES.arbitrum.USDC_CIRCLE
   ] })
 }
 
