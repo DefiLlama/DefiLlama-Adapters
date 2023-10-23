@@ -65,6 +65,8 @@ Object.keys(config).forEach(chain => {
       token1s.push(...(await api.multiCall({ abi: "address:tokenY", calls: izumiVaults })))
 
       const bals = await api.multiCall({ abi: ABI.underlyingBalance, calls: vaults })
+      bals.push(...(await api.multiCall({ abi: ABI.underlyingBalance, calls: izumiVaults })))
+
       bals.forEach(({ amount0Current, amount1Current }, i) => {
         api.add(token0s[i], amount0Current)
         api.add(token1s[i], amount1Current)

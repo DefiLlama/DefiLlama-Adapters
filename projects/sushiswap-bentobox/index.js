@@ -11,7 +11,7 @@ const bentobox_chains = [
   "xdai",
   // "harmony",
   "moonbeam",
-  "moonriver",
+  "moonriver", 
   //"kava",
   //"metis",
   "celo",

@@ -161,7 +161,7 @@ const defaultTokens = {
     '0x09e18590e8f76b6cf471b3cd75fe1a1a9d2b2c2b', //aidoge
     '0x3082cc23568ea640225c2467653db90e9250aaa0', //rdnt
     '0x088cd8f5ef3652623c22d48b1605dcfe860cd704', //vela
-    '0x289ba1701c2f088cf0faf8b3705246331cb8a839', //lpt
+    ADDRESSES.arbitrum.LPT, //lpt
     '0x51fc0f6660482ea73330e414efd7808811a57fa2', //premia
   ],
   avax: [
@@ -196,16 +196,16 @@ const defaultTokens = {
   celo: [
     nullAddress,
     ADDRESSES.celo.CELO, //celo
-    "0x765de816845861e75a25fca122bb6898b8b1282a", //cUSD
+    ADDRESSES.celo.cUSD, //cUSD
   ],
   moonbeam: [
     nullAddress,
-    "0xefaeee334f0fd1712f9a8cc375f427d9cdd40d73", //usdt
+    ADDRESSES.telos.USDT, //usdt
     "0x8f552a71efe5eefc207bf75485b356a0b3f01ec9", //usdc
   ],
   moonriver: [
     nullAddress,
-    "0xb44a9b6905af7c801311e8f4e76932ee959c663c", //usdt
+    ADDRESSES.moonriver.USDT, //usdt
   ],
 }
 
