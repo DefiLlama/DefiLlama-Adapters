@@ -23,6 +23,7 @@ const config = {
         ADDRESSES.ethereum.CRV,
         ADDRESSES.ethereum.UNI,
         ADDRESSES.ethereum.MKR,
+        ADDRESSES.ethereum.LINK,
       ],
       '0x0de7b091A21BD439bdB2DfbB63146D9cEa21Ea83'
     ]
