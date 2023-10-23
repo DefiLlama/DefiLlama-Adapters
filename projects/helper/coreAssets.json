@@ -1467,5 +1467,8 @@
   },
   "pg": {
     "WPG": "0x0cf4071940782b640d0b595cb17bdf3e90869d70"
+  },
+  "ethf": {
+    "WETH": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
   }
 }
