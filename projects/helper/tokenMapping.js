@@ -16,8 +16,8 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 // carbon: https://api-insights.carbon.network/info/denom_gecko_map
 // orbit brige: https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList
 
-const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret',]
-const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc',]
+const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla']
+const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec',]
 
 const distressedAssts = new Set(Object.values({
   CRK: '0x065de42e28e42d90c2052a1b49e7f83806af0e1f',
@@ -43,48 +43,18 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  ethf: {
+    [ADDRESSES.ethf.WETH]: { coingeckoId: 'ethereumfair', decimals: 18 },
+    [ADDRESSES.null]: { coingeckoId: 'ethereumfair', decimals: 18 },
+  },
   // Sample Code
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
-  mvc: {
-    [ADDRESSES.mvc.SPACE]: { coingeckoId: "microvisionchain", decimals: 8 },
+  radixdlt: {
+    [ADDRESSES.radixdlt.XRD]: { coingeckoId: 'radix', decimals: 0},
+    [ADDRESSES.radixdlt.WETH]: { coingeckoId: 'ethereum', decimals: 0},
   },
-  darwinia: {
-    '0xe7578598aac020abfb918f33a20fad5b71d670b4': { coingeckoId: "darwinia-network-native-token", decimals: 18 },
-  },
-  pg: {
-    '0x0cf4071940782b640d0b595cb17bdf3e90869d70': { coingeckoId: 'pego-network-2', decimals: 18 },
-  },
-  shimmer_evm: {
-    '0x1074010000000000000000000000000000000000': { coingeckoId: 'shimmer', decimals: 6 },
-    '0xBEb654A116aeEf764988DF0C6B4bf67CC869D01b': { coingeckoId: 'shimmer', decimals: 18 },
-    '0x6c890075406c5df08b427609e3a2ead1851ad68d': { coingeckoId: 'shimmer', decimals: 18 },
-    '0x3C844FB5AD27A078d945dDDA8076A4084A76E513': { coingeckoId: 'soonaverse', decimals: 6 },
-    '0xc0e49f8c615d3d4c245970f6dc528e4a47d69a44': { coingeckoId: 'tether', decimals: 18 },
-    '0xa158a39d00c79019a01a6e86c56e96c461334eb0': { coingeckoId: 'ethereum', decimals: 18 },
-    '0x1cdf3f46dbf8cf099d218cf96a769cea82f75316': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
-  },
-  manta: {
-    '0x0Dc808adcE2099A9F62AA87D9670745AbA741746': { coingeckoId: 'ethereum', decimals: 18 },
-    '0xb73603c5d87fa094b7314c74ace2e64d165016fb': { coingeckoId: 'usd-coin', decimals: 6 },
-    '0xf417f5a458ec102b90352f697d6e2ac3a3d2851f': { coingeckoId: 'tether', decimals: 6 },
-  },
-  nos: {
-    '0x111808AbE352c8003e0eFfcc04998EaB26Cebe3c': { coingeckoId: 'bitcoin', decimals: 18 },
-  },
-  ton: {
-    'EQBq4d4GPyBoh-Pjnf3wxUyQSS28WY2Yt-7cPAG8FHpWpNRX': { coingeckoId: 'matic-network', decimals: 18 },
-    'EQDCIEo0HUUYsAV-lTMviOd-GkSXfVPsNZMGjRaNOA_6--FD': { coingeckoId: 'orbit-chain', decimals: 18 },
-    'EQBf6-YoR9xylol_NwjHrLkrTFAZJCX-bsd-Xx_902OaPaBf': { coingeckoId: 'megaton-finance', decimals: 9 },
-    'EQCajaUU1XXSAjTD-xOV7pE49fGtg4q8kF3ELCOJtGvQFQ2C': { coingeckoId: 'the-open-network', decimals: 9 },
-    'EQCf7Nb341dxOE3N0jimngRxGEV8T3zo-eU2EZVs_nchNhhZ': { coingeckoId: 'wemix-token', decimals: 18 }
-  },
-  beam: {
-    '0xd51bfa777609213a653a2cd067c9a0132a2d316a': { coingeckoId: 'merit-circle', decimals: 18 },
-    '0x76bf5e7d2bcb06b1444c0a2742780051d8d0e304': { coingeckoId: 'usd-coin', decimals: 6 },
-    '0x999f90f25a2922ae1b21A06066F7EDEbedad42a9': { coingeckoId: 'tether', decimals: 18 },
-  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
