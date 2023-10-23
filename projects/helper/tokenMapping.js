@@ -52,8 +52,8 @@ const fixBalancesTokens = {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
   radixdlt: {
-    [ADDRESSES.radixdlt.XRD]: { coingeckoId: 'radix', decimals: 0},
-    [ADDRESSES.radixdlt.WETH]: { coingeckoId: 'ethereum', decimals: 0},
+    [ADDRESSES.radixdlt.XRD]: { coingeckoId: 'radix', decimals: 0 },
+    [ADDRESSES.radixdlt.WETH]: { coingeckoId: 'ethereum', decimals: 0 },
   },
   meer: {
     [ADDRESSES.null]: { coingeckoId: 'qitmeer-network', decimals: 18 },
@@ -63,6 +63,9 @@ const fixBalancesTokens = {
   edg: {
     [ADDRESSES.null]: { coingeckoId: 'edgeware', decimals: 18 },
     '0x457dE4e275A6b3C0D3750519221dD1dF19d54f01': { coingeckoId: 'edgeware', decimals: 18 },
+  },
+  elsm: {
+    '0xa801b1a7846156d4c81bd188f96bfcb621517611': { coingeckoId: 'vulcan-forged', decimals: 18 },
   }
 }
 
