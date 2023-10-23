@@ -172,7 +172,7 @@ async function getTokenAccountBalances(tokenAccounts, { individual = false, chun
     const body = chunk.map(formBody)
     const data = await axios.post(endpointMap[chain](), body);
     data.data.forEach(({ result: { value } }, i) => {
-      if (!value || !value.data.parsed) {
+      if (!value || !value.data?.parsed) {
         if (tokenAccounts[i].toString() === '11111111111111111111111111111111') {
           log('Null account: skipping it')
           return;
