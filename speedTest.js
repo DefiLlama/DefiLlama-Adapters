@@ -19,6 +19,7 @@ function createProvider(name, url, chainId) {
 (async () => {
 
   const providers = {
+    elysium: createProvider("elysium", " https://rpc.elysiumchain.us/", 1339),
     ethereum: createProvider("ethereum", "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161", 1),
     bsc: createProvider("bsc", "https://bsc-dataseed4.binance.org", 56),
     polygon: createProvider("polygon", "https://rpc-mainnet.maticvigil.com/", 137),
@@ -36,6 +37,9 @@ function createProvider(name, url, chainId) {
     arbitrum: createProvider("arbitrum", "https://arb1.arbitrum.io/rpc", 42161),
     kcc: createProvider("kcc", "https://rpc-mainnet.kcc.network", 321),
     celo: createProvider("celo", "https://forno.celo.org", 42220),
+   
+
+   
   }
 
   for (var name in providers) {

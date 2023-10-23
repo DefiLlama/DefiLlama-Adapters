@@ -69,7 +69,6 @@
   "ergo",
   "ethereum",
   "ethereumclassic",
-  "ethf",
   "ethpow",
   "everscale",
   "evmos",
@@ -247,5 +246,5 @@
   "zilliqa",
   "zksync",
   "zyx",
-  "nolus"
+  "elysium"
 ]
