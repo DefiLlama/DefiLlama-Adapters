@@ -46,7 +46,7 @@ const transformTokens = {
     "0x21ad243b81eff53482F6F6E7C76539f2CfC0B734": 'polygon:' + ADDRESSES.null,
     "0x3eA8654d5755e673599473ab37d92788B5bA12aE": ADDRESSES.ethereum.USDT,
     "0xcDB9579Db96EB5C8298dF889D915D0FF668AfF2a": ADDRESSES.ethereum.DAI,
-  }
+  },
 }
 const ibcMappings = {
   // Sample Code
@@ -55,6 +55,10 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  ethf: {
+    [ADDRESSES.ethf.WETH]: { coingeckoId: 'ethereumfair', decimals: 18 },
+    [ADDRESSES.null]: { coingeckoId: 'ethereumfair', decimals: 18 },
+  },
   // Sample Code
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
