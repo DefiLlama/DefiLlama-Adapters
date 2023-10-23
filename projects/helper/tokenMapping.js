@@ -55,6 +55,15 @@ const fixBalancesTokens = {
     [ADDRESSES.radixdlt.XRD]: { coingeckoId: 'radix', decimals: 0},
     [ADDRESSES.radixdlt.WETH]: { coingeckoId: 'ethereum', decimals: 0},
   },
+  meer: {
+    [ADDRESSES.null]: { coingeckoId: 'qitmeer-network', decimals: 18 },
+    '0x470cBFB236860eb5257bBF78715FB5bd77119C2F': { coingeckoId: 'qitmeer-network', decimals: 18 },
+    '0x457dE4e275A6b3C0D3750519221dD1dF19d54f01': { coingeckoId: 'qitmeer-network', decimals: 18 },
+  },
+  edg: {
+    [ADDRESSES.null]: { coingeckoId: 'edgeware', decimals: 18 },
+    '0x457dE4e275A6b3C0D3750519221dD1dF19d54f01': { coingeckoId: 'edgeware', decimals: 18 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
