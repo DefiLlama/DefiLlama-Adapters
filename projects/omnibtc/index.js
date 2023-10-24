@@ -80,6 +80,7 @@ module.exports = {
         ADDRESSES.arbitrum.USDC,
         ADDRESSES.arbitrum.USDT,
         ADDRESSES.arbitrum.WBTC,
+        ADDRESSES.arbitrum.USDC, //Bridge USDC
       ],
     }),
   },
@@ -97,7 +98,8 @@ module.exports = {
         ADDRESSES.optimism.OP,
         ADDRESSES.optimism.USDC,
         ADDRESSES.optimism.USDT,
-        //ADDRESSES.optimism.WBTC,
+        ADDRESSES.optimism.USDC, // Bridge USDC
+        "0x68f180fcCe6836688e9084f035309E29Bf0A2095", // WBTC
       ],
     }),
   },

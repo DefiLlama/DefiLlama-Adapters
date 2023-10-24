@@ -77,7 +77,6 @@ async function tvl(_, _b, _cb, { api, }) {
 function add(api, market, bal) {
   const token = getToken(market)
   if ([
-      "f66d78b4a3cb3d37afa0ec36461e51ecbde00f26c8f0a68f94b69880",
       "usd-coin",
       "tether",
     ].includes(token)) bal /= 1e8

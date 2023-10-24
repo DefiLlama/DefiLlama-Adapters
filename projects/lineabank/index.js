@@ -9,4 +9,12 @@ module.exports = {
       totalBorrows: "uint256:totalBorrow",
     },
   }),
+  scroll: compoundExports2({
+    comptroller: "0xEC53c830f4444a8A56455c6836b5D2aA794289Aa",
+    fetchBalances: true,
+    abis: {
+      getAllMarkets: "address[]:allMarkets",
+      totalBorrows: "uint256:totalBorrow",
+    },
+  }),
 };

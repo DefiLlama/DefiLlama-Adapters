@@ -1,13 +1,5 @@
-const ADDRESSES = require('../helper/coreAssets.json')
 const { isWhitelistedToken } = require('../helper/streamingHelper')
 const { cachedGraphQuery } = require('../helper/cache')
-
-const blacklistedTokens = [
-  ADDRESSES.ethereum.sUSD_OLD,
-  // TODO: We shouldn't need to lowercase here
-  ADDRESSES.ethereum.SAI.toLowerCase(),
-  ADDRESSES.ethereum.MKR,
-]
 
 async function getTokensConfig(api, isVesting) {
   const ownerTokens = []
@@ -47,6 +39,7 @@ const config = {
   optimism: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2-optimism'], },
   polygon: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2-polygon'], },
   avax: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2-avalanche'], },
+  base: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2-base'], },
 }
 
 Object.keys(config).forEach(chain => {
