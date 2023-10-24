@@ -1,6 +1,7 @@
 const { default: BigNumber } = require('bignumber.js')
 const v3 = require('./v3.js')
 const v4 = require('./v4.js')
+const v5 = require('./v5.js')
 
 function mergeVersionTvls(tvls) {
   if (tvls.length === 0) return {}
@@ -41,7 +42,8 @@ async function avax(timestamp, block, chainBlocks) {
 
 async function optimism(timestamp, block, chainBlocks) {
   const tvl_v4 = await v4.optimism(timestamp, block, chainBlocks)
-  return tvl_v4
+  const tvl_v5 = await v5.optimism(timestamp, block, chainBlocks)
+  return mergeVersionTvls([tvl_v4, tvl_v5])
 }
 
 async function celo(timestamp, block, chainBlocks) {
@@ -63,8 +65,10 @@ module.exports = {
   celo: { tvl: celo },
   bsc: { tvl: bsc },
   hallmarks: [
+    [1_634_320_800, 'V4 Launch'],
     [1_658_872_800, 'V4 OP Rewards Begin'],
-    [1_669_615_200, 'V4 OP Rewards Extended']
+    [1_669_615_200, 'V4 OP Rewards Extended'],
+    [1_697_738_400, 'V5 Launch']
   ],
   methodology: `TVL is the total tokens deposited in PoolTogether amongst V3, V4 and V5 on Ethereum, Polygon, Avalanche, Optimism, Celo and BSC`
 }
