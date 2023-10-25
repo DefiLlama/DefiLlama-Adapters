@@ -1,69 +1,16 @@
-const { default: BigNumber } = require('bignumber.js')
-const v3 = require('./v3.js')
-const v4 = require('./v4.js')
-const v5 = require('./v5.js')
-
-function mergeVersionTvls(tvls) {
-  if (tvls.length === 0) return {}
-  if (tvls.length === 1) return tvls[0]
-
-  const result = { ...tvls[0] }
-
-  for (let i = 1; i < tvls.length; i++) {
-    Object.entries(tvls[i]).forEach(([address, balance]) => {
-      if (result[address] === undefined) {
-        result[address] = balance
-      } else {
-        const newBalance = BigNumber.sum(BigNumber(result[address]), BigNumber(balance))
-        result[address] = newBalance.toString()
-      }
-    })
-  }
-
-  return result
-}
-
-async function ethereum(timestamp, block, chainBlocks) {
-  const tvl_v3 = await v3.ethereum(timestamp, block, chainBlocks)
-  const tvl_v4 = await v4.ethereum(timestamp, block, chainBlocks)
-  return mergeVersionTvls([tvl_v3, tvl_v4])
-}
-
-async function polygon(timestamp, block, chainBlocks) {
-  const tvl_v3 = await v3.polygon(timestamp, block, chainBlocks)
-  const tvl_v4 = await v4.polygon(timestamp, block, chainBlocks)
-  return mergeVersionTvls([tvl_v3, tvl_v4])
-}
-
-async function avax(timestamp, block, chainBlocks) {
-  const tvl_v4 = await v4.avax(timestamp, block, chainBlocks)
-  return tvl_v4
-}
-
-async function optimism(timestamp, block, chainBlocks) {
-  const tvl_v4 = await v4.optimism(timestamp, block, chainBlocks)
-  const tvl_v5 = await v5.optimism(timestamp, block, chainBlocks)
-  return mergeVersionTvls([tvl_v4, tvl_v5])
-}
-
-async function celo(timestamp, block, chainBlocks) {
-  const tvl_v3 = await v3.celo(timestamp, block, chainBlocks)
-  return tvl_v3
-}
-
-async function bsc(timestamp, block, chainBlocks) {
-  const tvl_v3 = await v3.bsc(timestamp, block, chainBlocks)
-  return tvl_v3
-}
+const v3 = require('./v3.js').tvl
+const v4 = require('./v4.js').tvl
+const v5 = require('./v5.js').tvl
+const sdk = require('@defillama/sdk')
 
 module.exports = {
   doublecounted: true,
-  ethereum: { tvl: ethereum },
-  polygon: { tvl: polygon },
-  avax: { tvl: avax },
-  optimism: { tvl: optimism },
-  celo: { tvl: celo },
-  bsc: { tvl: bsc },
+  ethereum: { tvl: sdk.util.sumChainTvls([v3, v4]) },
+  avax: { tvl: sdk.util.sumChainTvls([ v4]) },
+  polygon: { tvl: sdk.util.sumChainTvls([v3, v4]) },
+  optimism: { tvl: sdk.util.sumChainTvls([v4, v5]) },
+  bsc: { tvl: sdk.util.sumChainTvls([v3]) },
+  celo: { tvl: sdk.util.sumChainTvls([v3]) },
   hallmarks: [
     [1_634_320_800, 'V4 Launch'],
     [1_658_872_800, 'V4 OP Rewards Begin'],

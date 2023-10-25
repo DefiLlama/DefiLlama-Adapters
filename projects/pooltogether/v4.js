@@ -1,4 +1,4 @@
-const { sumTokens } = require('../helper/unwrapLPs')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const V4_POOLS = {
   ethereum: [
@@ -15,43 +15,10 @@ const V4_POOLS = {
   ]
 }
 
-async function getChainBalances(chain, block, transform) {
-  const balances = {}
-
-  transform = transform || ((addr) => `${chain}:${addr}`)
-
-  await sumTokens(balances, V4_POOLS[chain], block, chain, transform)
-
-  return balances
-}
-
-async function ethereum(timestamp, block) {
-  return getChainBalances('ethereum', block)
-}
-
-async function polygon(timestamp, block, chainBlocks) {
-  return getChainBalances('polygon', chainBlocks.polygon)
-}
-
-async function avax(timestamp, block, chainBlocks) {
-  return getChainBalances(
-    'avax',
-    chainBlocks.avax,
-    () => `avax:0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664`
-  )
-}
-
-async function optimism(timestamp, block, chainBlocks) {
-  return getChainBalances(
-    'optimism',
-    chainBlocks.optimism,
-    () => `optimism:0x7F5c764cBc14f9669B88837ca1490cCa17c31607`
-  )
+async function tvl(_, _b, _cb, { api, }) {
+  return sumTokens2({ api, tokensAndOwners: V4_POOLS[api.chain] })
 }
 
 module.exports = {
-  ethereum,
-  polygon,
-  avax,
-  optimism
+  tvl
 }
