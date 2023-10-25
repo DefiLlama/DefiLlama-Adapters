@@ -11,7 +11,7 @@ const PRIME_SATELLITE_NETWORKS = {
   ethereum: 1,
   bsc: 56,
   polygon: 137,
-//   base: 8453,
+  base: 8453,
   optimism: 10,
 //   filecoin: 314
 };
