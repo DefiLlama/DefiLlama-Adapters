@@ -1,18 +1,15 @@
 const { get } = require('../helper/http')
+const { sumTokensExport } = require('../helper/chain/cardano')
 
 module.exports = {
   timetravel: false,
   cardano: {
     tvl: async () => {
-      const cdpData = await get('https://analytics.indigoprotocol.io/api/cdps')
-      const cdpTvl = cdpData.reduce((a, i) => a + (i.collateralAmount/1e6), 0);
-      const stakingManagerData = await get('https://analytics.indigoprotocol.io/api/staking-manager')
-      const totalIndyStaked = stakingManagerData.total_stake / 10 ** 6;
-      const indyPriceData = await get('https://analytics.indigoprotocol.io/api/indy-price')
-      const totalIndyStakedTvl = indyPriceData.ada_price * totalIndyStaked;
+      const data = await get('https://analytics.indigoprotocol.io/api/cdps')
       return {
-        cardano: cdpTvl + totalIndyStakedTvl
+        cardano: data.reduce((a, i) => a + (i.collateralAmount/1e6), 0)
       }
-    }
+    },
+    staking: sumTokensExport({ owner: 'addr1w92w34pys9h4h02zxdfsp8lhcvdd5t9aaln9z96szsgh73scty4aj', tokens: ['533bb94a8850ee3ccbe483106489399112b74c905342cb1792a797a0494e4459']})
   },
 }
