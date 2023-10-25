@@ -17,7 +17,7 @@ async function tvl() {
     return sumTokens2({ tokensAndOwners, chain });
 }
 
-const uniTVL = getUniTVL({ factory: '0x19f21b0AB98EC10d734E314356Ad562ae349177d', useDefaultCoreAssets: true});
+const uniTVL = getUniTVL({ factory: '0x19f21b0AB98EC10d734E314356Ad562ae349177d', useDefaultCoreAssets: true, chain});
 
 
 module.exports = {
