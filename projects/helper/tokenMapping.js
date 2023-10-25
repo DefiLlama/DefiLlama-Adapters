@@ -66,6 +66,12 @@ const fixBalancesTokens = {
   },
   elsm: {
     '0xa801b1a7846156d4c81bd188f96bfcb621517611': { coingeckoId: 'vulcan-forged', decimals: 18 },
+  },
+  bfc: {
+    [ADDRESSES.bfc.WBFC]: { coingeckoId: 'bifrost', decimals: 18},
+    [ADDRESSES.bfc.BIFI]: { coingeckoId: 'bifi', decimals: 18},
+    '0xB1f3A83597Bce2AD842c29bD750AE17afc474137': {coingeckoId: 'witch-token', decimals: 18},
+    '0x17102AC78a02a98fC78B0c29B7b0506f035A99E5': {coingeckoId: 'super-athletes-token', decimals: 18}
   }
 }
 
