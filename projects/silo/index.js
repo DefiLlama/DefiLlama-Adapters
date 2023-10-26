@@ -83,6 +83,6 @@ module.exports = {
   ethereum: { tvl, borrowed, },
   arbitrum: { tvl, borrowed, },
   hallmarks: [
-    [1668816000, "XAI Genesis"]
+    [1692968400, "Launch CRV market"]
   ]
 }
