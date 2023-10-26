@@ -43,14 +43,36 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  ethf: {
+    [ADDRESSES.ethf.WETH]: { coingeckoId: 'ethereumfair', decimals: 18 },
+    [ADDRESSES.null]: { coingeckoId: 'ethereumfair', decimals: 18 },
+  },
   // Sample Code
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
   radixdlt: {
-    [ADDRESSES.radixdlt.XRD]: { coingeckoId: 'radix', decimals: 0},
-    [ADDRESSES.radixdlt.WETH]: { coingeckoId: 'ethereum', decimals: 0},
+    [ADDRESSES.radixdlt.XRD]: { coingeckoId: 'radix', decimals: 0 },
+    [ADDRESSES.radixdlt.WETH]: { coingeckoId: 'ethereum', decimals: 0 },
   },
+  meer: {
+    [ADDRESSES.null]: { coingeckoId: 'qitmeer-network', decimals: 18 },
+    '0x470cBFB236860eb5257bBF78715FB5bd77119C2F': { coingeckoId: 'qitmeer-network', decimals: 18 },
+    '0x457dE4e275A6b3C0D3750519221dD1dF19d54f01': { coingeckoId: 'qitmeer-network', decimals: 18 },
+  },
+  edg: {
+    [ADDRESSES.null]: { coingeckoId: 'edgeware', decimals: 18 },
+    '0x457dE4e275A6b3C0D3750519221dD1dF19d54f01': { coingeckoId: 'edgeware', decimals: 18 },
+  },
+  elsm: {
+    '0xa801b1a7846156d4c81bd188f96bfcb621517611': { coingeckoId: 'vulcan-forged', decimals: 18 },
+  },
+  bfc: {
+    [ADDRESSES.bfc.WBFC]: { coingeckoId: 'bifrost', decimals: 18},
+    [ADDRESSES.bfc.BIFI]: { coingeckoId: 'bifi', decimals: 18},
+    '0xB1f3A83597Bce2AD842c29bD750AE17afc474137': {coingeckoId: 'witch-token', decimals: 18},
+    '0x17102AC78a02a98fC78B0c29B7b0506f035A99E5': {coingeckoId: 'super-athletes-token', decimals: 18}
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })

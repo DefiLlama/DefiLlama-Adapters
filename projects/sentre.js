@@ -6,7 +6,7 @@ async function tvl() {
   const programId = 'D3BBjqUdCYuP18fNvvMbPAZ8DpcRi4io2EsYHQawJDag'
   const program = new Program(idl, programId, provider)
   const data = await program.account.pool.all()
-  return sumTokens2({ tokenAccounts: data.map(i => i.account.treasuries).flat() })
+  return sumTokens2({ tokenAccounts: data.map(i => i.account.treasuries).flat(), allowError: true, })
 }
 
 module.exports = {
