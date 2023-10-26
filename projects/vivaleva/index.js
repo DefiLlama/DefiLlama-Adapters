@@ -7,10 +7,14 @@ module.exports = {
       const data = await getConfig('vivaleva', "https://sbb.sooho.io/api/v1/external/vivaleva/defiLlama")
       const vaults = data.vaults;
       const syncswapWorkers = data.syncSwapWorkers;
+      const pancakeSwapV3TvlInfo = data.pancakeSwapV3TvlInfo;
       const vaultBalances = await api.multiCall({ abi: "uint256:vaultBalance", calls: vaults.map((v) => v.address), });
 
       vaults.forEach((v, i) => {
         api.add(v.baseTokenAddress, vaultBalances[i]);
+      });
+      pancakeSwapV3TvlInfo.forEach((v) => {
+        api.add(v.tokenAddress, v.amount);
       });
 
       const [
