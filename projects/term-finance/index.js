@@ -1,4 +1,5 @@
 const { cachedGraphQuery } = require('../helper/cache')
+const { getLogs } = require('../helper/cache/getLogs')
 
 const graphs = {
   ethereum:
@@ -19,6 +20,28 @@ query poolQuery($lastId: ID) {
   }
 }`
 
+const borrowedQuery = `
+query auctionsQuery($lastId: ID) {
+  termAuctions(
+    first: 1000,
+    where: {
+      id_gt: $lastId,
+    }
+  ) {
+    id
+    auction
+    term {
+      purchaseToken
+    }
+  }
+}`
+
+const startBlock = 16380765;
+const emitters = [
+  "0x9D6a563cf79d47f32cE46CD7b1fb926eCd0f6160",  // 0.2.4
+  "0xf268E547BC77719734e83d0649ffbC25a8Ff4DB3",  // 0.4.1
+];
+
 module.exports = {
   methodology: `Counts the collateral tokens locked in Term Finance's term repos.`,
   // hallmarks: [[1588610042, "TermFinance Launch"]],
@@ -30,6 +53,29 @@ Object.keys(graphs).forEach(chain => {
     tvl: async (_, _b, _cb, { api, }) => {
       const data = await cachedGraphQuery(`term-finance-${chain}`, host, query, { fetchById: true })
       return api.sumTokens( { tokensAndOwners: data.map(i => [i.collateralToken, i.term.termRepoLocker])})
+    },
+    borrowed: async (_, _b, _cb, { api, }) => {
+      const data = await cachedGraphQuery(`term-finance-borrowed-${chain}`, host, borrowedQuery, { fetchById: true })
+
+      const tokenBalances = {};
+      for (const eventEmitter of emitters) {
+        console.log(`Getting logs for ${eventEmitter}`)
+        const logs = await getLogs({
+          api,
+          target: eventEmitter,
+          topic: 'BidAssigned(bytes32,bytes32,uint256)',
+          eventAbi: 'event BidAssigned(bytes32 termAuctionId, bytes32 id, uint256 amount)',
+          onlyArgs: true,
+          fromBlock: startBlock,
+        })
+        for (const { termAuctionId, amount } of logs) {
+          console.log(`Processing assignment of ${amount} (${typeof amount}) during auction ${termAuctionId}`)
+          const { term: { purchaseToken } } = data.find(i => i.id === termAuctionId)
+          tokenBalances[purchaseToken] = (BigInt(tokenBalances[purchaseToken] || 0) + BigInt(amount)).toString()
+        }
+      }
+
+      return api.addBalances(tokenBalances)
     }
   }
 })
