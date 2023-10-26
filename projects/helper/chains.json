@@ -146,6 +146,7 @@
   "neutron",
   "nos",
   "nova",
+  "nolus",
   "nuls",
   "oasis",
   "oas",
@@ -245,6 +246,5 @@
   "zeniq",
   "zilliqa",
   "zksync",
-  "zyx",
-  "nolus"
+  "zyx"
 ]
