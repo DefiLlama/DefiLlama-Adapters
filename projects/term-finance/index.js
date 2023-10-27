@@ -37,10 +37,12 @@ query auctionsQuery($lastId: ID) {
 }`
 
 const startBlock = 16380765;
-const emitters = [
-  "0x9D6a563cf79d47f32cE46CD7b1fb926eCd0f6160",  // 0.2.4
-  "0xf268E547BC77719734e83d0649ffbC25a8Ff4DB3",  // 0.4.1
-];
+const emitters = {
+  "ethereum": [
+    "0x9D6a563cf79d47f32cE46CD7b1fb926eCd0f6160",  // 0.2.4
+    "0xf268E547BC77719734e83d0649ffbC25a8Ff4DB3",  // 0.4.1
+  ],
+};
 
 module.exports = {
   methodology: `Counts the collateral tokens locked in Term Finance's term repos.`,
@@ -58,7 +60,7 @@ Object.keys(graphs).forEach(chain => {
       const data = await cachedGraphQuery(`term-finance-borrowed-${chain}`, host, borrowedQuery, { fetchById: true })
 
       const tokenBalances = {};
-      for (const eventEmitter of emitters) {
+      for (const eventEmitter of emitters[chain] ?? []) {
         const logs = await getLogs({
           api,
           target: eventEmitter,
