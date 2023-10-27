@@ -17,4 +17,12 @@ module.exports = {
       totalBorrows: "uint256:totalBorrow",
     },
   }),
+  manta: compoundExports2({
+    comptroller: "0xB7A23Fc0b066051dE58B922dC1a08f33DF748bbf",
+    fetchBalances: true,
+    abis: {
+      getAllMarkets: "address[]:allMarkets",
+      totalBorrows: "uint256:totalBorrow",
+    },
+  }),
 };
