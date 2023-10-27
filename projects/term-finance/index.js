@@ -59,7 +59,6 @@ Object.keys(graphs).forEach(chain => {
 
       const tokenBalances = {};
       for (const eventEmitter of emitters) {
-        console.log(`Getting logs for ${eventEmitter}`)
         const logs = await getLogs({
           api,
           target: eventEmitter,
@@ -69,7 +68,6 @@ Object.keys(graphs).forEach(chain => {
           fromBlock: startBlock,
         })
         for (const { termAuctionId, amount } of logs) {
-          console.log(`Processing assignment of ${amount} (${typeof amount}) during auction ${termAuctionId}`)
           const { term: { purchaseToken } } = data.find(i => i.id === termAuctionId)
           tokenBalances[purchaseToken] = (BigInt(tokenBalances[purchaseToken] || 0) + BigInt(amount)).toString()
         }
