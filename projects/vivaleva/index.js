@@ -45,12 +45,17 @@ module.exports = {
       // from pancakeSwapV3Worker
       const pancakeSwapV3Workers = data.pancakeSwapV3Worker;
       const commonCalculator = data.commonCalculator;
+      const calls = []
       for (const [i, v] of vaults.entries()) {
         const positionLength = positionLengths[i];
         const positions = Array.from(Array(Number(positionLength)).keys());
+        calls.push({ params: [v.address, positions] })
+      }
 
-        const positionIngredients = await api.call({ abi: getAllPositionsByIdsABI, params: [v.address, positions], target: commonCalculator });
-        // => using multiCall
+      const pancakeRes = await api.multiCall({ abi: getAllPositionsByIdsABI, calls, target: commonCalculator });
+
+      for (const [i, v] of vaults.entries()) {
+        const positionIngredients = pancakeRes[i]
         for (const cur of positionIngredients) {
           const poolAddress = cur.worker.toLowerCase();
           const baseAmount = cur.positionIngredients[0];
