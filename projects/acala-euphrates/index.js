@@ -32,8 +32,6 @@ function getDotTVL(_dotTvlData, timestamp) {
 async function tvl(timestamp, _1, _2, { api }) {
     const response = await axios.get('https://api.dune.com/api/v1/query/3132389/results?api_key=ItzgVHuqp1idtYFmDAzo15kEDILs1qXb');
     const dotTvlData = response.data?.result?.rows
-    console.log(response.data?.result)
-
     const dotTvl = getDotTVL(dotTvlData, timestamp)
     if (!dotTvl) {
         throw new Error('Failed to fetch Ehphrates DOT TVL!');
