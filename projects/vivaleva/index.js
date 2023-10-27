@@ -166,6 +166,8 @@ module.exports = {
         syncswapWorkerBalances,
         syncswapReserves,
         syncswapLpTotalSupplies,
+        token0s,
+        token1s,
       ] = await Promise.all([
         api.multiCall({ abi: "uint256:totalStakedLpBalance", calls: syncswapWorkers.map((v) => v.address), }),
         api.multiCall({ abi: "function getReserves() view returns (uint256, uint256)", calls: syncswapWorkers.map((v) => v.lpTokenAddress), }),
@@ -175,10 +177,8 @@ module.exports = {
       ]);
 
       syncswapWorkers.forEach((w, i) => {
-        const [token0, token1] =
-          w.baseTokenAddress.toLowerCase() < w.farmingTokenAddress.toLowerCase()
-            ? [w.baseTokenAddress, w.farmingTokenAddress]
-            : [w.farmingTokenAddress, w.baseTokenAddress];
+        const token0 = token0s[i]
+        const token1 = token1s[i]
         const lpBalance = BigInt(syncswapWorkerBalances[i])
         const totalSupply = BigInt(syncswapLpTotalSupplies[i])
         const [r0, r1] = syncswapReserves[i].map(BigInt);
