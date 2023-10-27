@@ -40,9 +40,10 @@ async function queryAddresses({ addresses = [], }) {
   return items
 }
 
-async function queryValidators({ addresses = [], }) {
-  // TODO: do we want to make sure all addresses start with validator_ ?
-  let items = []
+async function queryLsus(addresses = []) {
+  // Receives a list of lsu addresses and returns the redemption value in XRD
+
+  let lsuRedemptionValues = {}
   const chunks  = sliceIntoChunks(addresses, 20)
   for (const chunk of chunks) {
     let body = {
@@ -51,30 +52,36 @@ async function queryValidators({ addresses = [], }) {
     }
     let data = await post(ENTITY_DETAILS_URL, body)
 
-    for (const validator of data.items) {
+    let validators = []
+    for (const lsuResource of data.items) {
+      let validator = lsuResource.metadata.items.filter(metadataItem => metadataItem.key === "validator")[0]
+      lsuRedemptionValues[lsuResource.address] = {
+        "totalSupplyOfStakeUnits": lsuResource.details.total_supply,
+        "validatorAddress": validator.value.typed.value
+      }
+
+      validators.push(validator.value.typed.value)
+    }
+
+    let validatorsDetailsBody = {
+      "addresses": validators,
+      "aggregation_level": "Vault"
+    }
+    let validatorsData = await post(ENTITY_DETAILS_URL, validatorsDetailsBody)
+    for (const validator of validatorsData.items) {
       let stakeUnitResourceAddress = validator.details.state.stake_unit_resource_address
       let stakeXrdVaultAddress = validator.details.state.stake_xrd_vault.entity_address
 
-      // XrdRedemptionValue = StakeUnitsBalance * XrdStakeVaultBalance / TotalSupplyOfStakeUnits
-      let stakeUnitsResource = validator.fungible_resources.items.filter(item => item.resource_address === stakeUnitResourceAddress)
-      let stakeUnitsBalance = stakeUnitsResource[0].vaults.items.reduce((total, vault) => new BigNumber(total).plus(new BigNumber(vault.amount)), 0);
       let xrdStakeResource = validator.fungible_resources.items.filter(item => item.resource_address === XRD_RESOURCE_ADDRESS)
       let xrdStakeVault = xrdStakeResource[0].vaults.items.filter(vault => vault.vault_address === stakeXrdVaultAddress)
       let xrdStakeVaultBalance = new BigNumber(xrdStakeVault[0].amount)
 
-      body = {
-        "addresses": [validator.details.state.stake_unit_resource_address],
-      }
-      let lsu_data = await post(ENTITY_DETAILS_URL, body)
-      let totalSupplyOfStakeUnits = new BigNumber(lsu_data.items[0].details.total_supply)
-
-      let xrdRedemptionValue = stakeUnitsBalance * xrdStakeVaultBalance / totalSupplyOfStakeUnits
-      console.log(`${validator.details.state.stake_unit_resource_address}: ${xrdRedemptionValue}`)
+      let totalSupplyOfStakeUnits = new BigNumber(lsuRedemptionValues[stakeUnitResourceAddress]["totalSupplyOfStakeUnits"])
+      let xrdRedemptionValue =  xrdStakeVaultBalance / totalSupplyOfStakeUnits
+      lsuRedemptionValues[stakeUnitResourceAddress]["xrdRedemptionValue"] = xrdRedemptionValue
     }
-
-    items.push(...data.items)
   }
-  return items
+  return lsuRedemptionValues
 }
 
 function sumTokensExport(...args) {
@@ -83,7 +90,7 @@ function sumTokensExport(...args) {
 
 module.exports = {
   queryAddresses,
-  queryValidators,
+  queryLsus,
   sumTokens,
   sumTokensExport,
 }
