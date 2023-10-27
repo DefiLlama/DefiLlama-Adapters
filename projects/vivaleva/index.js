@@ -82,6 +82,7 @@ module.exports = {
       const vaults = data.vaults;
       const syncswapWorkers = data.syncSwapWorkers;
       const vaultBalances = await api.multiCall({ abi: "uint256:vaultBalance", calls: vaults.map((v) => v.address), });
+      const positionLengths = await api.multiCall({ abi: "uint256:positionsLength", calls: vaults.map((v) => v.address), });
       vaults.forEach((v, i) => {
         api.add(v.baseTokenAddress, vaultBalances[i]);
       });
@@ -89,8 +90,8 @@ module.exports = {
       // from pancakeSwapV3Worker
       const pancakeSwapV3Workers = data.pancakeSwapV3Worker;
       const commonCalculator = data.commonCalculator;
-      for (const v of vaults) {
-        const positionLength = await api.call({ abi: "function positionsLength() view returns (uint256)", target: v.address, });
+      for (const [i, v] of vaults.entries()) {
+        const positionLength = positionLengths[i];
         const positions = Array.from(Array(Number(positionLength)).keys());
         const getAllPositionsByIdsABI = {
           "inputs": [
@@ -149,6 +150,7 @@ module.exports = {
           "type": "function"
         };
         const positionIngredients = await api.call({ abi: getAllPositionsByIdsABI, params: [v.address, positions], target: commonCalculator });
+        // => using multiCall
         for (const cur of positionIngredients) {
           const poolAddress = cur.worker.toLowerCase();
           const baseAmount = cur.positionIngredients[0];
