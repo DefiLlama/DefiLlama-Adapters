@@ -59,23 +59,21 @@ Object.keys(graphs).forEach(chain => {
     borrowed: async (_, _b, _cb, { api, }) => {
       const data = await cachedGraphQuery(`term-finance-borrowed-${chain}`, host, borrowedQuery, { fetchById: true })
 
-      const tokenBalances = {};
       for (const eventEmitter of emitters[chain] ?? []) {
         const logs = await getLogs({
           api,
           target: eventEmitter,
-          topic: 'BidAssigned(bytes32,bytes32,uint256)',
           eventAbi: 'event BidAssigned(bytes32 termAuctionId, bytes32 id, uint256 amount)',
           onlyArgs: true,
           fromBlock: startBlock,
         })
         for (const { termAuctionId, amount } of logs) {
           const { term: { purchaseToken } } = data.find(i => i.id === termAuctionId)
-          tokenBalances[purchaseToken] = (BigInt(tokenBalances[purchaseToken] || 0) + BigInt(amount)).toString()
+          api.add(purchaseToken, amount)
         }
       }
 
-      return api.addBalances(tokenBalances)
+      return api.getBalances()
     }
   }
 })
