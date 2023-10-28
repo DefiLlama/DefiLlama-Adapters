@@ -9,7 +9,7 @@ async function tvl(time, ethBlock, _b, {api}) {
 }
 
 module.exports = {
-  methodology: `We count the Matic on the ${contract}`,
+  methodology: `We count the Matic on the ${contract}, ${contract2}, and ${contract3}`,
   polygon: {
     tvl
   }
