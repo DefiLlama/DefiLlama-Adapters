@@ -22,7 +22,7 @@ function fetchChain(chainId) {
 }
 
 const chains = {
-  shimmer: 148,
+  shimmer_evm: 148,
 };
 
 module.exports = {
