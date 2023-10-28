@@ -1,27 +1,18 @@
 const ADDRESSES = require("../helper/coreAssets.json");
-const sdk = require("@defillama/sdk");
 
-const ethContract = ADDRESSES.ethereum.mevETH;
-const getFraction =
-  "function fraction() view returns (uint128 base, uint128 elastic)";
-async function eth(timestamp, ethBlock, chainBlocks) {
-  const fraction = await sdk.api.abi.call({
-    block: ethBlock,
-    target: ethContract,
-    abi: getFraction,
-  });
-  return {
-    [ADDRESSES.null]: fraction.output.elastic,
-  };
+const getFraction = "function fraction() view returns (uint128 base, uint128 elastic)";
+
+async function tvl(_, _b, _cb, { api, }) {
+  const { elastic } = await api.call({ abi: getFraction, target: '0x24ae2da0f361aa4be46b48eb19c91e02c5e4f27e' })
+  api.add(ADDRESSES.null, elastic)
+  return api.getBalances()
 }
 
 module.exports = {
-  hallmarks: [],
   methodology:
     "Staked tokens are counted as TVL based on the chain that they are staked on and where the liquidity tokens are issued",
-  timetravel: false,
   doublecounted: true,
   ethereum: {
-    tvl: eth,
+    tvl,
   },
 };
