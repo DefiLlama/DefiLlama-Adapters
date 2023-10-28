@@ -13,11 +13,13 @@ async function bsctvl(time, ethBlock, _b, {api}) {
   }
 
 module.exports = {
-  methodology: `We count the ETH on ${contract}`,
+  methodology: `We count the FLOKI on ${contract}`,
   ethereum: {
-    tvl: ethtvl
+    tvl:  ()=>({}) ,
+    staking: ethtvl
   },
   bsc: {
-    tvl: bsctvl
+    tvl: ()=>({}) ,
+    staking: bsctvl
   }
 }
