@@ -35,7 +35,7 @@ module.exports = {
         tvl: sumTokensExport({ owner: VAULT_MANTLE, tokens: [ADDRESSES.mantle.USDT] }),
     },
     avax: {
-        tvl: sumTokensExport({ owner: VAULT_AVALANCHE, tokens: [ADDRESSES.avax.USDT] }),
+        tvl: sumTokensExport({ owner: VAULT_AVALANCHE, tokens: [ADDRESSES.avax.USDt] }),
     },
     linea: {
         tvl: sumTokensExport({ owner: VAULT_LINEA, tokens: [ADDRESSES.linea.USDT] }),
