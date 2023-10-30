@@ -33,11 +33,11 @@ module.exports = treasuryExports({
     tokens: [ 
         nullAddress,
         //"0x080F6AEd32Fc474DD5717105Dba5ea57268F46eb",//syn
-        ADDRESSES.arbitrum.WETH,//weth
-        ADDRESSES.optimism.DAI,//dai
-        ADDRESSES.arbitrum.nUSD,//nusd
-        ADDRESSES.arbitrum.USDT,//tether
-        ADDRESSES.arbitrum.USDC,//usdc
+        ADDRESSES.arbitrum.WETH,
+        ADDRESSES.optimism.DAI,
+        ADDRESSES.arbitrum.nUSD,
+        ADDRESSES.arbitrum.USDT,
+        ADDRESSES.arbitrum.USDC,
      ],
     owners: [arbtreasury, arbtreasury2],
     ownTokens: [arbSYN]
@@ -46,10 +46,10 @@ module.exports = treasuryExports({
     tokens: [
       nullAddress,
       //"0x1f1E7c893855525b303f99bDF5c3c05Be09ca251",//syn
-      ADDRESSES.avax.WAVAX,//wavax
-      ADDRESSES.avax.DAI,//dai
-      ADDRESSES.avax.USDC_e,//usdc
-      ADDRESSES.avax.USDT_e,//tether
+      ADDRESSES.avax.WAVAX,
+      ADDRESSES.avax.DAI,
+      ADDRESSES.avax.USDC_e,
+      ADDRESSES.avax.USDT_e,
 
     ],
     owners: [avaxTreasury],
@@ -58,13 +58,13 @@ module.exports = treasuryExports({
   bsc: {
     tokens: [
       nullAddress,
-      ADDRESSES.bsc.USDC,//usdc
-      ADDRESSES.bsc.BUSD,//busd
-      ADDRESSES.fantom.fUSDT,//fusdt
-      ADDRESSES.bsc.BTCB,//btcb
+      ADDRESSES.bsc.USDC,
+      ADDRESSES.bsc.BUSD,
+      ADDRESSES.fantom.fUSDT,
+      ADDRESSES.bsc.BTCB,
       "0x54261774905f3e6E9718f2ABb10ed6555cae308a",//anybtc
       "0x42F6f551ae042cBe50C739158b4f0CAC0Edb9096",//nrv
-      ADDRESSES.bsc.USDT,//bsc-usd
+      ADDRESSES.bsc.USDT,
       "0x23396cF899Ca06c4472205fC903bDB4de249D6fC",//ustc
     ],
     owners: [bscTreasury]
@@ -74,8 +74,8 @@ module.exports = treasuryExports({
       nullAddress,
       //"0xE55e19Fb4F2D85af758950957714292DAC1e25B2",//syn
       "0x74b23882a30290451A17c44f4F05243b6b58C76d",//eth
-      ADDRESSES.fantom.USDC,//usdc
-      ADDRESSES.fantom.WFTM,//wftm
+      ADDRESSES.fantom.USDC,
+      ADDRESSES.fantom.WFTM,
     ],
     owners: [FantomTreasury],
     ownTokens: [fantomSYN]
@@ -90,22 +90,22 @@ module.exports = treasuryExports({
     tokens: [
       nullAddress,
       //"0x0f2D719407FdBeFF09D87557AbB7232601FD9F29",//syn
-      ADDRESSES.ethereum.USDC,//usdc
+      ADDRESSES.ethereum.USDC,
       "0x0ab87046fBb341D058F17CBC4c1133F25a20a52f",//gohm
-      "0x853d955aCEf822Db058eb8505911ED77F175b99e",//frax
-      ADDRESSES.ethereum.WETH,//weth
-      ADDRESSES.ethereum.DAI,//dai
-      ADDRESSES.ethereum.USDT,//tether
+      ADDRESSES.ethereum.FRAX,
+      ADDRESSES.ethereum.WETH,
+      ADDRESSES.ethereum.DAI,
+      ADDRESSES.ethereum.USDT,
       "0x98585dFc8d9e7D48F0b1aE47ce33332CF4237D96",//newo
       "0x71Ab77b7dbB4fa7e017BC15090b2163221420282",//high
-      ADDRESSES.ethereum.WBTC,//wbtc
+      ADDRESSES.ethereum.WBTC,
       "0x73968b9a57c6E53d41345FD57a6E6ae27d6CDB2F",//sdt
       "0xBAac2B4491727D78D2b78815144570b9f2Fe8899",//dog
       "0x02B5453D92B730F29a86A0D5ef6e930c4Cf8860B",//usdb
       "0x1a7e4e63778B4f12a199C062f3eFdD288afCBce8",//ageur
       "0x0642026E7f0B6cCaC5925b4E7Fa61384250e1701",//h2o
       "0xb753428af26E81097e7fD17f40c88aaA3E04902c",//sfi
-      ADDRESSES.ethereum.LINK,//link
+      ADDRESSES.ethereum.LINK,
     ],
     owners: [MainnetTreasury],
     ownTokens: [mainnetSYN, mainnetsynethLP]
@@ -113,9 +113,9 @@ module.exports = treasuryExports({
   metis: {
     tokens: [
       nullAddress,
-      //ADDRESSES.metis.SYN,//syn
+      //ADDRESSES.metis.SYN,
       "0xFB21B70922B9f6e3C6274BcD6CB1aa8A0fe20B80",//gohm
-      ADDRESSES.metis.m_USDC,//usdc
+      ADDRESSES.metis.m_USDC,
     ],
     owners: [MetisTreasury],
     ownTokens: [metisSYN]
@@ -123,7 +123,7 @@ module.exports = treasuryExports({
   optimism: {
     tokens: [
       nullAddress,
-      ADDRESSES.optimism.OP,//op
+      ADDRESSES.optimism.OP,
       "0x809DC529f07651bD43A172e8dB6f4a7a0d771036",//neth
     ],
     owners: [OptimismTreasury]
@@ -131,10 +131,10 @@ module.exports = treasuryExports({
   polygon: {
     tokens: [
       nullAddress,
-      ADDRESSES.polygon.USDC,//usdc
-      ADDRESSES.polygon.USDT,//usdt
-      ADDRESSES.polygon.WMATIC_2,//wmatic
-      ADDRESSES.polygon.DAI,//dai
+      ADDRESSES.polygon.USDC,
+      ADDRESSES.polygon.USDT,
+      ADDRESSES.polygon.WMATIC_2,
+      ADDRESSES.polygon.DAI,
       "0xd8cA34fd379d9ca3C6Ee3b3905678320F5b45195",//gohm
       //"0xf8F9efC0db77d8881500bb06FF5D6ABc3070E695",//syn
     ],

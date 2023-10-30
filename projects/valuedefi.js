@@ -14,8 +14,8 @@ const abis = {
 }
 
 const bscDexTVL = getUniTVL({
-  chain: 'bsc',
   factory: swapFactory,
+  useDefaultCoreAssets: true,
 })
 
 async function bscStableSwapTvl(_, _b, { bsc: block }) {
@@ -57,6 +57,7 @@ async function bscStableSwapTvl(_, _b, { bsc: block }) {
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   bsc: {
     tvl: sdk.util.sumChainTvls([bscDexTVL, bscStableSwapTvl]),
   }
