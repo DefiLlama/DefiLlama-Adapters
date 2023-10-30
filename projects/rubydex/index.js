@@ -42,5 +42,5 @@ module.exports = {
     },
     manta: {
         tvl: sumTokensExport({ owner: VAULT_MANTA, tokens: [ADDRESSES.manta.USDT] }),
-    },
+    }
 }; 
