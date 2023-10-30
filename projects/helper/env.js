@@ -13,6 +13,7 @@ const DEFAULTS = {
   CRAB_RPC: 'https://darwiniacrab-rpc.dwellir.com',
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
+  ZYX_RPC: "https://rpc-1.zyx.network",
   EVMOS_RPC: "https://evmos-evm.publicnode.com",
   NOVA_RPC: "https://connect.novanetwork.io",
   ETHF_RPC: "https://rpc.etherfair.org",
