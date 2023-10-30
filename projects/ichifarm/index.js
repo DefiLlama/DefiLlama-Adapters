@@ -43,7 +43,7 @@ const config = {
   },
   bsc: {
     vaultConfigs: [
-      { factory: '0xbBB97d634460DACCA0d41E249510Bb741ef46ad3', fromBlock: 29702590, },
+      { factory: '0x131c03ca881B7cC66d7a5120A9273ebf675C241D', fromBlock: 29702590, },
     ],
   },
   polygon: {
