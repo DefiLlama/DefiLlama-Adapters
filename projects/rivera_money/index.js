@@ -19,6 +19,7 @@ const vaultsManta = [
 ];
 
 module.exports = {
+  doublecounted: true,  
   mantle: {
     tvl: sumERC4626VaultsExport({
       vaults: vaultsMantle,
