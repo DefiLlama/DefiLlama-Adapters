@@ -34,5 +34,11 @@ module.exports = {
       factory: '0x6dd434082EAB5Cd134B33719ec1FF05fE985B97b',
       useDefaultCoreAssets: true,
     })
+  },
+  manta: {
+    tvl: getUniTVL({
+      factory: '0x2B5F704aB7061FB4DBfc5876B024F4BDB2f5E8b6',
+      useDefaultCoreAssets: true,
+    })
   }
 }
