@@ -12,6 +12,7 @@ module.exports = {
       useDefaultCoreAssets: true,
       hasStablePools: true,
       fetchBalances: true,
+      chain: 'bsc'
     }),
     staking: staking(aitechStakingContract, aitechTokenContract, "aitech")
   }
