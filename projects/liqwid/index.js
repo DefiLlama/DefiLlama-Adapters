@@ -76,8 +76,10 @@ async function tvl(_, _b, _cb, { api, }) {
 
 function add(api, market, bal) {
   const token = getToken(market)
-  if (token === 'usd-coin') bal /= 1e8
-  if (token === 'tether') bal /= 1e8
+  if ([
+      "usd-coin",
+      "tether",
+    ].includes(token)) bal /= 1e8
   api.add(token, bal, {
     skipChain: token === 'usd-coin' || token === 'tether'
   })
@@ -95,7 +97,8 @@ async function borrowed(_, _b, _cb, { api, }) {
 }
 
 function base64ToHex(base64) {
-  // Step 1: Decode the Base64 string to a byte array
+  return base64
+  /* // Step 1: Decode the Base64 string to a byte array
   const binaryData = atob(base64);
 
   // Step 2: Convert each byte to its hexadecimal representation
@@ -106,5 +109,5 @@ function base64ToHex(base64) {
   }
 
   // Step 3: Concatenate the hexadecimal values to form the final hexadecimal string
-  return hexArray.join('');
+  return hexArray.join(''); */
 }

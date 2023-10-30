@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 // https://www.starknetjs.com/docs/API/contract
 
 const { call, multiCall, } = require('../helper/chain/starknet')
