@@ -20,8 +20,7 @@ async function staking (timestamp, block, chainBlocks) {
 
 module.exports = {
     bsc: {
-        tvl: async () => ({}), 
-        staking
+        tvl: staking
     },
     
 }
