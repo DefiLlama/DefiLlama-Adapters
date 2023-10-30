@@ -12,7 +12,7 @@ module.exports = {
       useDefaultCoreAssets: true,
       hasStablePools: true,
       fetchBalances: true,
-    })
-  },
-  staking: staking(aitechStakingContract, aitechTokenContract, "aitech")
+    }),
+    staking: staking(aitechStakingContract, aitechTokenContract, "aitech")
+  }
 }
