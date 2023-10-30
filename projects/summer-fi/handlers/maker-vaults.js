@@ -2,35 +2,34 @@ const {
   getCdpData,
   getCdpManagerData,
   getIlkRegistryData,
+  getDecimalsData,
 } = require("../helpers");
-const { get } = require("../../helper/http");
-const { endpoints } = require("../constants/endpoints");
 
-const makerTvl = async ({ api, cdpIdList, block }) => {
-  const confirmedSummerFiMakerVaults = await get(endpoints.makerVaults);
+const makerTvl = async ({ api, cdpIdList, confirmedSummerFiMakerVaults }) => {
   const confirmedSummerFiMakerVaultsArray = [
     ...Object.keys(confirmedSummerFiMakerVaults),
   ];
   const confirmedSummerFiMakerVaultsSet = new Set(
     confirmedSummerFiMakerVaultsArray
   );
-  cdpIdList.forEach((cdpId) => {
+  ([...cdpIdList]).forEach((cdpId) => {
     confirmedSummerFiMakerVaultsSet.delete(cdpId);
   });
+
   const filteredVaultsList = [...confirmedSummerFiMakerVaultsSet].filter(
-    (i) => block >= confirmedSummerFiMakerVaults[i]
+    (i) => {
+      const [startBlock] = confirmedSummerFiMakerVaults[i];
+      return api.block > startBlock;
+    }
   );
-  const ilkNames = await getCdpManagerData(
-    [...new Set(filteredVaultsList)],
-    api
-  );
+  const cdpIds = [...new Set(filteredVaultsList)]
+  const ilkNames = await getCdpManagerData(cdpIds, api);
+  const cdpIlkIds = {}
+  ilkNames.forEach((val, idx) => cdpIlkIds[cdpIds[idx]] = val)
   const ilkIds = [...new Set(ilkNames)];
-  const tokens = (await getIlkRegistryData(ilkIds, api)).map((i) => i.gem);
-  const decimals = await api.multiCall({
-    abi: "erc20:decimals",
-    calls: tokens,
-  });
-  const collData = await getCdpData(filteredVaultsList, api);
+  const tokens = (await getIlkRegistryData(ilkIds, api)).map((i) => i[4]);
+  const decimals = await getDecimalsData(tokens, api);
+  const collData = await getCdpData(filteredVaultsList.map(i => [i, cdpIlkIds[i]]), api);
   collData.forEach(({ collateralLocked }, i) => {
     const idx = ilkIds.indexOf(ilkNames[i]);
     if (idx === -1) {

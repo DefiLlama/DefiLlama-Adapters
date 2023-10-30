@@ -2,6 +2,7 @@ const {
   getCdpData,
   getCdpManagerData,
   getIlkRegistryData,
+  getDecimalsData,
 } = require("../helpers");
 
 const automationTvl = async ({ api, cdpIdList }) => {
@@ -9,13 +10,12 @@ const automationTvl = async ({ api, cdpIdList }) => {
 
   const cdpIds = [...cdpIdList];
   const ilkNames = await getCdpManagerData(cdpIds, api);
+  const cdpIlkIds = {}
+  ilkNames.forEach((val, idx) => cdpIlkIds[cdpIds[idx]] = val)
   const ilkIds = [...new Set(ilkNames)];
-  const tokens = (await getIlkRegistryData(ilkIds, api)).map((i) => i.gem);
-  const decimals = await api.multiCall({
-    abi: "erc20:decimals",
-    calls: tokens,
-  });
-  const collData = await getCdpData(cdpIds, api);
+  const tokens = (await getIlkRegistryData(ilkIds, api)).map((i) => i[4]);
+  const decimals = await getDecimalsData(tokens, api);
+  const collData = await getCdpData(cdpIds.map(i => [i, cdpIlkIds[i]]), api);
   collData.forEach(({ collateralLocked }, i) => {
     if (collateralLocked > 0) {
       positionsWithTriggersAndCollateral++;

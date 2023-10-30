@@ -1,5 +1,4 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const axios = require('axios')
 const { getConfig } = require('../helper/cache')
 const { sumERC4626Vaults } = require('../helper/erc4626')
 
@@ -65,6 +64,7 @@ module.exports = {
   ethereum: { tvl },
   arbitrum: { tvl },
   optimism: { tvl },
+  base: { tvl },
   hallmarks: [
     [1594944000, "YFI token Launch"],
   ]

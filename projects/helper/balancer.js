@@ -1,7 +1,7 @@
 const { sumTokens2 } = require('./unwrapLPs');
 const { getLogs } = require('./cache/getLogs')
 
-function onChainTvl(vault, fromBlock, { blacklistedTokens = [], preLogTokens = [] } = {}) {
+function onChainTvl(vault, fromBlock, { blacklistedTokens = [], preLogTokens = [], onlyUseExistingCache } = {}) {
   return async (_, _1, _2, { api }) => {
     const logs = await getLogs({
       api,
@@ -11,6 +11,7 @@ function onChainTvl(vault, fromBlock, { blacklistedTokens = [], preLogTokens = [
       eventAbi: 'event PoolRegistered(bytes32 indexed poolId, address indexed poolAddress, uint8 specialization)',
       onlyArgs: true,
       extraKey: 'PoolRegistered',
+      onlyUseExistingCache,
     })
     const logs2 = await getLogs({
       api,
@@ -20,6 +21,7 @@ function onChainTvl(vault, fromBlock, { blacklistedTokens = [], preLogTokens = [
       eventAbi: 'event TokensRegistered(bytes32 indexed poolId, address[] tokens, address[] assetManagers)',
       onlyArgs: true,
       extraKey: 'TokensRegistered',
+      onlyUseExistingCache,
     })
 
     const tokens = logs2.map(i => i.tokens).flat()
