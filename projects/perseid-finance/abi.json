@@ -1,0 +1,4 @@
+{
+  "getPoolTotalTvl": "function getPoolTotalTvl() view returns (tuple(uint256 pid, address assets, uint256 tvl)[])",
+  "getReserves": "function getReserves() external view returns (uint _reserve0, uint _reserve1)"
+}
