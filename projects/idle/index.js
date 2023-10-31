@@ -37,6 +37,9 @@ const contracts = {
     cdos: [
       "0xF87ec7e1Ee467d7d78862089B92dd40497cBa5B8", // MATIC
       "0xDcE26B2c78609b983cF91cCcD43E238353653b0E", // IdleCDO_clearpool_DAI
+      // "0xd0DbcD556cA22d3f3c142e9a3220053FD7a247BC",
+      // "0x1f5A97fB665e295303D2F7215bA2160cc5313c8E", // 
+      "0x8E0A8A5c1e5B3ac0670Ea5a613bB15724D51Fc37" // Instadapp stETH
     ]
   },
   polygon: {
@@ -45,7 +48,22 @@ const contracts = {
       "0x1ee6470CD75D5686d0b2b90C0305Fa46fb0C89A1", // idleUSDCYield
       "0xfdA25D931258Df948ffecb66b5518299Df6527C4" // idleWETHYield
     ]
+  },
+  polygon_zkevm: {
+    cdos: [
+      "0x6b8A1e78Ac707F9b0b5eB4f34B02D9af84D2b689" // IdleCDO_clearpool_portofino_USDT
+    ]
+  },
+  optimism: {
+    
   }
+}
+
+const underlyingMapping = {
+  '0x94b008aA00579c1307B0EF2c499aD98a8ce58e58': '0xdac17f958d2ee523a2206206994597c13d831ec7', // USDT Optimism
+  '0x7F5c764cBc14f9669B88837ca1490cCa17c31607': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC Optimism
+  '0x1E4a5963aBFD975d8c9021ce480b42188849D41d': '0xdac17f958d2ee523a2206206994597c13d831ec7', // USDT zkEVM
+  '0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48' // USDC zkEVM
 }
 
 const trancheConfig = {
@@ -53,8 +71,17 @@ const trancheConfig = {
     factory: '0x3c9916bb9498f637e2fa86c2028e26275dc9a631',
     fromBlock: 13244388,
   },
+  polygon_zkevm: {
+    factory: '0xba43DE746840eD16eE53D26af0675d8E6c24FE38',
+    fromBlock: 2812767,
+  },
+  optimism: {
+    factory: '0x8aA1379e46A8C1e9B7BB2160254813316b5F35B8',
+    fromBlock: 110449062,
+  }
 }
 const getCurrentAllocationsABI = 'function getCurrentAllocations() returns (address[] tokenAddresses,  uint256[] amounts,  uint256 total)'
+
 async function tvl(time, ethBlock, chainBlocks, { api }) {
   const { v1 = [], v3 = [], safe = [], cdos = [] } = contracts[api.chain]
   const balances = {}
@@ -117,8 +144,10 @@ async function tvl(time, ethBlock, chainBlocks, { api }) {
         decimals: tokenDecimals,
         price: BigNumber(bbprices[i]).div(`1e${tokenDecimals}`).toFixed()
       }
+
       // Get CDOs underlying tokens balances
-      balances[token[i]] = BigNumber(balances[token[i]] || 0).plus(BigNumber(contractValue[i] || 0))
+      const mappedToken = underlyingMapping[token[i]] || token[i]
+      balances[mappedToken] = BigNumber(balances[mappedToken] || 0).plus(BigNumber(contractValue[i] || 0))
     })
   }
 
