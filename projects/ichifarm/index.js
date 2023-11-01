@@ -38,12 +38,12 @@ const config = {
   arbitrum: {
     vaultConfigs: [
       { factory: '0xfBf38920cCbCFF7268Ad714ae5F9Fad6dF607065', fromBlock: 102858581, },
-      { factory: '0x7984d3ad2DE4Dd54D1FD6b4D89112eBF7c0DF151', fromBlock: 137087766, }, // Ramses
+      { factory: '0xedAc86bc526557c422AB1F6BF848bF0da9fB44A6', fromBlock: 137087766, }, // Ramses
     ],
   },
   bsc: {
     vaultConfigs: [
-      { factory: '0xbBB97d634460DACCA0d41E249510Bb741ef46ad3', fromBlock: 29702590, },
+      { factory: '0x131c03ca881B7cC66d7a5120A9273ebf675C241D', fromBlock: 29702590, },
     ],
   },
   polygon: {
