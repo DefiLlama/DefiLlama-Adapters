@@ -1,14 +1,8 @@
-const { getConnection, decodeAccount, } = require('./helper/solana')
+const { getConnection, decodeAccount, blacklistedTokens_default } = require('./helper/solana')
 const sdk = require('@defillama/sdk')
 const { PublicKey } = require("@solana/web3.js")
 
-const blacklistedTokens = new Set([
-  '674PmuiDtgKx3uKuJ1B16f9m5L84eFvNwj3xDMvHcbo7', // $WOOD
-  'SNSNkV9zfG5ZKWQs6x4hxvBRV6s8SqMfSGCtECDvdMd', // SNS
-  'A7rqejP8LKN8syXMr4tvcKjs2iJ4WtZjXNs1e6qP3m9g', // ZION
-  'NGK3iHqqQkyRZUj4uhJDQqEyKKcZ7mdawWpqwMffM3s', //YAKU
-  'EP2aYBDD4WvdhnwWLUMyqU69g1ePtEjgYK6qyEAFCHTx', //KRILL
-])
+const blacklistedTokens = new Set(blacklistedTokens_default)
 
 async function tvl(_, _1, _2, { api }) {
   const connection = getConnection()
