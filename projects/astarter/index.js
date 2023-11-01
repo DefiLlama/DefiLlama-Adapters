@@ -1,25 +1,17 @@
 const axios = require("axios");
 
-const POOL_ID = "pool1drkls8s0zzjydyv3qpjsdj58w3sw02w9wg0pckrsnuazyef2hca";
-// TODO  Waiting for dex to deploy the main network
-// const DEX_BATHCER_SCRIPT = "";
-// const DEX_POOL_SCRIPT = "";
-
+const POOL_ID = ["pool1drkls8s0zzjydyv3qpjsdj58w3sw02w9wg0pckrsnuazyef2hca","pool1yemdr25t4g3ev038yn433dt58d8p52nee7kmcykjlhye6hshu9m"];
 async function tvl() {
-  // const batchOrderLocked = await getAdaInAddress(DEX_BATHCER_SCRIPT);
-  // const liquidityPoolLocked = await getAdaInAddress(DEX_POOL_SCRIPT);
-  const ISPOLocked = await getPoolStake(POOL_ID);
   return {
-    // cardano: ISPOLocked + (liquidityPoolLocked * 2) + batchOrderLocked,
-    cardano: ISPOLocked,
+    cardano: await getPoolStake(POOL_ID)
   };
 }
 
-async function getPoolStake(poolId) {
+async function getPoolStake(poolIds) {
   const response = await axios.post('https://api.koios.rest/api/v0/pool_info', {
-    "_pool_bech32_ids": [poolId]
+    "_pool_bech32_ids": poolIds
   });
-  return response.data[0].live_stake / 1e6;
+  return response.data.reduce((a, b) => a + b.live_stake / 1e6, 0);
 }
 
 module.exports = {

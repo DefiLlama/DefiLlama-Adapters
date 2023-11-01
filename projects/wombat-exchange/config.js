@@ -27,6 +27,7 @@ module.exports = {
       rbnb: "0x0592083B285aa75B9c8BaD2485C6cCCF93cCC348",
       SnBNB: "0xF1e604e9A31c3b575f91CF008445B7ce06BF3fef",
       USDS: "0x0c735f84BD7EDA8F8176236091AF8068Bb6C41dE",
+      crossChainPool: "0x1ee15673e07105Bcf360139fa8CafeBDd7754BeF",
     },
   },
   arbitrum: {
@@ -47,6 +48,7 @@ module.exports = {
       wstETH: "0xe14302040c0A1eb6fB5A4A79EfA46D60029358d9",
       pendle: "0xe7159f15e7b1d6045506B228A1ed2136dcc56F48",
       fUSD: "0x956454C7BE9318863297309183C79b793D370401",
+      crossChainPool: "0xe78876C360716f2225F55A6726B32324FE1B1145",
     },
   },
   ethereum: {
@@ -58,6 +60,7 @@ module.exports = {
       frxETH: "0x3161f40EA6c0C4cC8b2433d6D530EF255816E854",
       wstETH: "0xF8E32cA46AC28799c8FB7DCe1Ac11A4541160734",
       ETHx: "0x647CC8816C2d60A5fF4d1ffeF27a5b3637d5ac81",
+      crossChainPool: "0xA45C0ABeef67C363364E0e73832df9986aBa3800",
     },
   },
   hallmarks: [
