@@ -28,11 +28,9 @@ Object.keys(config).forEach(chain => {
             return sumTokens2({ api, ownerTokens, })
         },
         pool2: async (_, _a, _ca, { api, }) => {
-            let ownerTokens = new Array()
-            V3Pool.forEach((v,i)=>{
-                ownerTokens.push([[EQU], v])
-            })
-            return sumTokens2({ api, ownerTokens, })
+            let owners = new Array()
+            owners.push(stakingContract)
+            return sumTokens2({ api, resolveUniV3:true, owners:owners })
         },
     }
 })
