@@ -228,9 +228,6 @@ async function dao2Tvl(chain, dao) {
 
   let chainConfig = config[chain];
 
-  // Example
-  // tvl_utoken (amount deposited of ampWHALE on Terra) * exchange_rate of ampWHALE (queried on Migaloo chain) = TVL of WHALE
-
   let tvl = +(state.tvl_utoken ?? 0) / getDecimalFactor(chainConfig);
 
   return {
