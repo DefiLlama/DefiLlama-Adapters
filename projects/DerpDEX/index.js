@@ -1,29 +1,16 @@
-const { getUniTVL } = require('../helper/unknownTokens')
+const { uniV3Export } = require("../helper/uniswapV3");
 
-module.exports = {
-  misrepresentedTokens: true,
+module.exports = uniV3Export({
   era: {
-    tvl: getUniTVL({
-      factory: "0x52a1865eb6903bc777a02ae93159105015ca1517",
-      useDefaultCoreAssets: true, 
-      fetchBalances: true, 
-      permitFailure: true
-    })
+    factory: "0x52a1865eb6903bc777a02ae93159105015ca1517",
+    fromBlock: 7790768,
   },
   base: {
-    tvl: getUniTVL({
-      factory: "0xeddef4273518b137cdbcb3a7fa1c6a688303dfe2",
-      useDefaultCoreAssets: true, 
-      fetchBalances: true, 
-      permitFailure: true
-    })
+    factory: "0xeddef4273518b137cdbcb3a7fa1c6a688303dfe2",
+    fromBlock: 2753388
   },
   op_bnb: {
-    tvl: getUniTVL({
-      factory: "0xb91331Ea9539ee881e3A45191076c454E482dAc7",
-      useDefaultCoreAssets: true, 
-      fetchBalances: true, 
-      permitFailure: true
-    })
+    factory: "0xb91331Ea9539ee881e3A45191076c454E482dAc7",
+    fromBlock: 3521514
   }
-};
+});
