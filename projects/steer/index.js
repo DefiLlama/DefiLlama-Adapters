@@ -1,5 +1,6 @@
-const { GraphQLClient } = require("graphql-request");
+// const { GraphQLClient } = require("graphql-request");
 const { staking } = require("../helper/staking");
+const { cachedGraphQuery } = require('../helper/cache')
 
 const supportedChains = [
     {   
@@ -114,26 +115,27 @@ const query = `{vaults(first: 1000, where: {totalLPTokensIssued_not: "0", lastSn
   
 module.exports = {};
   
+
 supportedChains.forEach(chain => {
-module.exports[chain.identifier] = {
-  tvl: async (_, _b, _cb, { api, }) => {
-    const graphQLClient = new GraphQLClient(chain.subgraphEndpoint);
-    const data = await graphQLClient.request(query);
-    
-    const vaults =  data.vaults.map((vault) => vault.id)
-    const bals = await api.multiCall({ abi: "function getTotalAmounts() view returns (uint256 total0, uint256 total1)", calls: vaults, permitFailure: true, })
-    const token0s = await api.multiCall({ abi: "address:token0", calls: vaults, permitFailure: true, })
-    const token1s = await api.multiCall({ abi: "address:token1", calls: vaults, permitFailure: true, })
-    bals.forEach((bal, i) => {
-      const token0 = token0s[i]
-      const token1 = token1s[i]
-      if (!bal || !token0 || !token1) return // skip failures
-      api.add(token0, bal.total0)
-      api.add(token1, bal.total1)
-    })
-    return api.getBalances()
+  module.exports[chain.identifier] = {
+    tvl: async (_, _b, _cb, { api, }) => {
+      const data = await cachedGraphQuery('steer/' + chain.identifier, chain.subgraphEndpoint, query,)
+
+      const vaults = data.vaults.map((vault) => vault.id)
+      const bals = await api.multiCall({ abi: "function getTotalAmounts() view returns (uint256 total0, uint256 total1)", calls: vaults, permitFailure: true, })
+      const token0s = await api.multiCall({ abi: "address:token0", calls: vaults, permitFailure: true, })
+      const token1s = await api.multiCall({ abi: "address:token1", calls: vaults, permitFailure: true, })
+      bals.forEach((bal, i) => {
+        const token0 = token0s[i]
+        const token1 = token1s[i]
+        if (!bal || !token0 || !token1) return // skip failures
+        api.add(token0, bal.total0)
+        api.add(token1, bal.total1)
+      })
+      return api.getBalances()
+    }
   }
-}
 })
+
 
 module.exports.arbitrum.staking = staking("0xB10aB1a1C0E3E9697928F05dA842a292310b37f1", "0x1C43D05be7E5b54D506e3DdB6f0305e8A66CD04e", "arbitrum")

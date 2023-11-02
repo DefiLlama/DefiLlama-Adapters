@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { ethers } = require('ethers');
 const { getLogs } = require('../helper/cache/getLogs')
 const SMART_VAULT_MANAGER_ADDRESS = '0xba169cceCCF7aC51dA223e04654Cf16ef41A68CC'
@@ -6,9 +7,9 @@ const START_TS = 1693206000;
 
 const tokens = [
   ethers.constants.AddressZero,
-  '0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f',
-  '0x912CE59144191C1204E64559FE8253a0e49E6548',
-  '0xf97f4df75117a78c1A5a0DBb814Af92458539FB4',
+  ADDRESSES.arbitrum.WBTC,
+  ADDRESSES.arbitrum.ARB,
+  ADDRESSES.arbitrum.LINK,
   '0xfEb4DfC8C4Cf7Ed305bb08065D08eC6ee6728429'
 ]
 
