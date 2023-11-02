@@ -93,6 +93,11 @@ const config = {
       '0x87cbc48075d7aa1760Ac71C41e8Bc289b6A31F56',
       '0xFF4606bd3884554CDbDabd9B6e25E2faD4f6fc54',
     ]
+  },
+  cosmos: {
+    owners: [
+        'cosmos10dfzd2wpnpeuy2lgan35ah8dg5p4l298v0n8e8',
+    ]
   }
 }
 

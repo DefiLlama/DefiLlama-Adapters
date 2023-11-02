@@ -81,7 +81,7 @@ const tokenToCoingecko = {
   KSM: "kusama",
   MOVR: "moonriver",
   GLMR: "moonbeam",
-  KUSD: "acala-dollar",
+  // KUSD: "acala-dollar",
   ZLK: "zenlink-network-token",
   USDT: "tether",
   FIL: "filecoin",

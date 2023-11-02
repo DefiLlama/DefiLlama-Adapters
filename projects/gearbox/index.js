@@ -3,18 +3,19 @@ const { sumTokens2 } = require("../helper/unwrapLPs.js");
 const abi = require("./abi.json");
 
 const { getV2CAs, getV1CAs } = require("./events");
+const { BigNumber } = require("ethers");
 
-const addressProvider = "0xcf64698aff7e5f27a11dff868af228653ba53be0";
+const addressProviderV3 = "0x9ea7b04da02a5373317d745c1571c84aad03321d";
 //// Gearbox TVL
 /// Sum of 2 Sources:
-/// 1. Pool TVL                  - Derived using availableLiquidity()
-/// 2. Credit Account v1 & v2    - Derived by getting balances on all open Credit Accounts
+/// 1. Pool TVL                   - Derived using availableLiquidity()
+/// 2. Credit Account v1/v2/v3    - Derived by getting balances on all open Credit Accounts
 
 const getPoolAddrs = async (block) => {
-  // Get contractsRegister from Gearbox addressProvider
+  // Get contractsRegister from Gearbox addressProvider. This is backwards compatible v3->v2
   const { output: contractsRegister } = await sdk.api.abi.call({
     abi: abi["getContractsRegister"],
-    target: addressProvider,
+    target: addressProviderV3,
     block,
   });
 
@@ -41,48 +42,44 @@ const getPoolAddrs = async (block) => {
   return { tokensAndOwners, poolBalances };
 };
 
-const getCreditManagers = async (block) => {
-  // Get DataCompressor from Gearbox addressProvider
-  const { output: DataCompressor } = await sdk.api.abi.call({
-    abi: abi["getDataCompressor"],
-    target: addressProvider,
+const getCreditManagersV1 = async (block) => {
+  const { output: contractsRegister } = await sdk.api.abi.call({
+    abi: abi["getContractsRegister"],
+    target: addressProviderV3,
     block,
   });
-  // Get gearbox pools from the contractsRegister, and underlyingToken for each pool
+  // Modern data compressors do not return v1 managers
   const { output: creditManagers } = await sdk.api.abi.call({
-    abi: abi["getCreditManagersList"],
-    target: DataCompressor,
+    abi: abi["getCreditManagers"],
+    target: contractsRegister,
     block,
   });
-
-  return creditManagers;
-};
-
-const getV2TVL = async (block) => {
-  // Get Current CMs
-  const creditManagers = (await getCreditManagers(block)).filter(
-    (cm) => cm.version != 1
-  );
-  // Silently throw if no V2 CAs available
-  if (!creditManagers[0]) return [];
-
-  // Get all CA Balances
-  const caValues = await Promise.all(
-    creditManagers.map((cm) => getV2CAs(cm.addr, block))
-  );
-
-  return creditManagers.map((cm, i) => ({
-    addr: cm.addr,
-    token: cm.underlying,
-    bal: caValues[i],
-  }));
+  const { output: versions } = await sdk.api.abi.multiCall({
+    abi: abi["version"],
+    calls: creditManagers.map((target) => ({ target })),
+    block,
+  });
+  const v1Managers = [];
+  for (let i = 0; i < creditManagers.length; i++) {
+    const addr = creditManagers[i];
+    const version = versions[i].output;
+    if (version === "1") {
+      v1Managers.push({ addr });
+    }
+  }
+  const { output: underlyings } = await sdk.api.abi.multiCall({
+    abi: abi["underlyingToken"],
+    calls: v1Managers.map(({ addr }) => ({ target: addr })),
+    block,
+  });
+  for (let i = 0; i < underlyings.length; i++) {
+    v1Managers[i].underlying = underlyings[i].output;
+  }
+  return v1Managers;
 };
 
 const getV1TVL = async (block) => {
-  // Get Current CMs
-  const creditManagers = (await getCreditManagers(block)).filter(
-    (cm) => cm.version != 2
-  );
+  const creditManagers = await getCreditManagersV1(block);
 
   // Silently throw if no V2 CAs available
   if (!creditManagers[0]) return [];
@@ -99,17 +96,133 @@ const getV1TVL = async (block) => {
   }));
 };
 
+const getCreditManagersV210 = async (block) => {
+  // Get DataCompressor from Gearbox addressProvider
+  const { output: DataCompressor210 } = await sdk.api.abi.call({
+    abi: abi["getAddressOrRevert"],
+    target: addressProviderV3,
+    params: [
+      // cast format-bytes32-string "DATA_COMPRESSOR"
+      "0x444154415f434f4d50524553534f520000000000000000000000000000000000",
+      210,
+    ],
+    block,
+  });
+  // Get gearbox pools from the contractsRegister, and underlyingToken for each pool
+  const { output: creditManagers } = await sdk.api.abi.call({
+    // IDataCompressorV2_10__factory.createInterface().getFunction("getCreditManagersV2List").format(ethers.utils.FormatTypes.full)
+    abi: abi["getCreditManagersV2List"],
+    target: DataCompressor210,
+    block,
+  });
+
+  return creditManagers;
+};
+
+const getV2TVL = async (block) => {
+  // Get Current CMs
+  const creditManagers = await getCreditManagersV210(block);
+  // Silently throw if no V2 CAs available
+  if (!creditManagers[0]) return [];
+
+  // Get all CA Balances
+  const caValues = await Promise.all(
+    creditManagers.map((cm) => getV2CAs(cm.addr, block))
+  );
+
+  return creditManagers.map((cm, i) => ({
+    addr: cm.addr,
+    token: cm.underlying,
+    bal: caValues[i],
+  }));
+};
+
+const getCreditManagersV3 = async (block) => {
+  try {
+    // Get DataCompressor V3 from Gearbox addressProvider
+    // Currently reverts, because DC V3 is not deployed
+    const { output: DataCompressor300 } = await sdk.api.abi.call({
+      abi: abi["getAddressOrRevert"],
+      target: addressProviderV3,
+      params: [
+        // cast format-bytes32-string "DATA_COMPRESSOR"
+        "0x444154415f434f4d50524553534f520000000000000000000000000000000000",
+        300,
+      ],
+      block,
+    });
+    // Get gearbox pools from the contractsRegister, and underlyingToken for each pool
+    const { output: creditManagers } = await sdk.api.abi.call({
+      // IDataCompressorV3_00__factory.createInterface().getFunction("getCreditManagersV3List").format(ethers.utils.FormatTypes.full)
+      abi: abi["getCreditManagersV3List"],
+      target: DataCompressor300,
+      block,
+    });
+
+    return creditManagers;
+  } catch (e) {
+    // console.warn(e);
+    return [];
+  }
+};
+
+const getV3CAs = async (creditManager, block) => {
+  const { output: caAddrs } = await sdk.api.abi.call({
+    abi: abi["creditAccounts"],
+    target: creditManager,
+    block,
+  });
+
+  const { output: totalValue } = await sdk.api.abi.multiCall({
+    // ICreditManagerV3__factory.createInterface().getFunction("calcDebtAndCollateral").format(ethers.utils.FormatTypes.full)
+    abi: abi["calcDebtAndCollateral"],
+    calls: caAddrs.map((addr) => ({
+      target: creditManager,
+      params: [addr, 2], // DEBT_COLLATERAL_WITHOUT_WITHDRAWALS
+    })),
+    block,
+  });
+
+  return totalValue[0]
+    ? totalValue
+        .map((t) => t.output)
+        .reduce(
+          (a, c) => a.add(BigNumber.from(c.totalValue)),
+          BigNumber.from("0")
+        )
+        .toString()
+    : "0";
+};
+
+const getV3TVL = async (block) => {
+  // Get Current CMs
+  const creditManagers = await getCreditManagersV3(block);
+  // Silently throw if no CAs available
+  if (!creditManagers[0]) return [];
+
+  // Get all CA Balances
+  const caValues = await Promise.all(
+    creditManagers.map((cm) => getV3CAs(cm.addr, block))
+  );
+
+  return creditManagers.map((cm, i) => ({
+    addr: cm.addr,
+    token: cm.underlying,
+    bal: caValues[i],
+  }));
+};
+
 const tvl = async (timestamp, block) => {
   // Pool TVL (Current token balances)
   const { poolBalances, tokensAndOwners } = await getPoolAddrs(block);
-  // V1 CreditAccounts TVL
-  const v1Balances = await getV1TVL(block);
 
-  // V2 CreditAccounts TVL in USD
+  // CreditAccounts TVL
+  const v1Balances = await getV1TVL(block);
   const v2Balances = await getV2TVL(block);
+  const v3Balances = await getV3TVL(block);
 
   // Merge all balances for each token
-  [...v1Balances, ...v2Balances].forEach((i) => {
+  [...v1Balances, ...v2Balances, ...v3Balances].forEach((i) => {
     sdk.util.sumSingleBalance(poolBalances, i.token, i.bal);
     tokensAndOwners.push([i.token, i.addr]);
   });
@@ -126,6 +239,6 @@ module.exports = {
   ethereum: {
     tvl,
   },
-  methodology: `Retrieves the tokens in each Gearbox pool (WETH/DAI/WBTC/USDC/wstETH) & value of all Credit Accounts (V1 & V2) denominated in the underlying token.`,
+  methodology: `Retrieves the tokens in each Gearbox pool (WETH/DAI/WBTC/USDC/wstETH) & value of all Credit Accounts (V1/V2/V3) denominated in the underlying token.`,
   misrepresentedTokens: true,
 };

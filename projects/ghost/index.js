@@ -20,6 +20,7 @@ async function tvl(_, _1, _2, { api }) {
     const { collateral_denom } = await queryContract({ contract, chain, data: { config: {}  } })
     api.add(collateral_denom, deposited)
   }
+  return api.getBalances()
 }
 
 async function borrowed(_, _1, _2, { api }) {
@@ -30,6 +31,7 @@ async function borrowed(_, _1, _2, { api }) {
     const { denom } = await queryContract({ contract, chain, data: { config: {}  } })
     api.add(denom, borrowed)
   }
+  return api.getBalances()
 }
 
 module.exports = {
