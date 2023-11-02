@@ -13,7 +13,7 @@ const endPoints = {
   crescent: "https://mainnet.crescent.network:1317",
   osmosis: "https://osmosis-api.polkachu.com",
   cosmos: "https://cosmoshub-lcd.stakely.io",
-  kujira: "https://lcd-kujira.whispernode.com:443",
+  kujira: "https://kuji-api.kleomedes.network",
   comdex: "https://rest.comdex.one",
   terra: "https://terra-classic-lcd.publicnode.com",
   terra2: "https://terra-lcd.publicnode.com",
