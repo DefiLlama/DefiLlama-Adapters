@@ -1,4 +1,5 @@
 const { getLogs } = require('../helper/cache/getLogs')
+module.exports.doublecounted = true
 
 async function tvl(_, _b, _cb, { api }) {
   const pools = config[api.chain]
