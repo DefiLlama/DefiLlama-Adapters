@@ -18,4 +18,4 @@ module.exports = {
   ],
 };
 
-delete module.exports.ethereum.borrowed
+module.exports.ethereum.borrowed = () => ({})
