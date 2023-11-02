@@ -1,7 +1,6 @@
 const { getLogs } = require('../helper/cache/getLogs')
 
 async function tvl(_, _b, _cb, { api }) {
-  if (!api.block) return {}
   const factories = config[api.chain]
 
   const promises = factories.map(async ({ factory, fromBlock }) => {
@@ -36,6 +35,7 @@ async function tvl(_, _b, _cb, { api }) {
 
 module.exports = {
   methodology: 'sum of all the tokens locked in FX Pools',
+  doublecounted: true, // tokens are stored in balancer vaults
 }
 
 const config = {
