@@ -76,7 +76,7 @@ async function tvl(networkName, networkBlockNumber) {
     // const totalTvl = 1234500000000000;
     // return totalTvl;
     return {
-        [`kava:${pegs[0].address}`]: totalTvl,
+        kava: totalTvl,
     };
 }
 

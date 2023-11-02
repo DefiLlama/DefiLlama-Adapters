@@ -60,10 +60,9 @@ function getChainTvl(chain) {
     return async (_timestamp, _ethBlock, chainBlocks) => {
         const tvlValue = await tvl(chain, chainBlocks[chain]);
         console.log(`Returned TVL value: ${tvlValue['token1']}`);
-        return { "SPYs": tvlValue['token1'] };
+        return { ["kava"]: 2 };
     };
 }
-
 
 module.exports = {
     kava: {
