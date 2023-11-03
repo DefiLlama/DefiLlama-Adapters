@@ -8,7 +8,10 @@ const manta_owners = ["0xA2E2F3726DF754C1848C8fd1CbeA6aAFF84FC5B2", "0x1EbEd4024
 module.exports = {
   start: 1690971144,
   bsc: { tvl: sumTokensExport({ owners, tokens: [ADDRESSES.bsc.USDT], }) },
-  op_bnb: { tvl: sumTokensExport({ opbnb_owners, tokens: [ADDRESSES.op_bnb.USDC], }) },
-  manta: { tvl: sumTokensExport({ manta_owners, tokens: [ADDRESSES.manta.USDT], }) },
-
+  op_bnb: {
+    tvl: sumTokensExport({ opbnb_owners, tokens: [ADDRESSES.op_bnb.USDC]})
+  },
+  manta: {
+    tvl: sumTokensExport({ manta_owners, tokens: [ADDRESSES.manta.USDT]})
+  },
 };
