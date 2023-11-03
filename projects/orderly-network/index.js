@@ -30,8 +30,8 @@ module.exports = {
   near: {
     tvl,
   },
-  arbitrum: {
+  /* arbitrum: {
     tvl: arbi_tvl,
-  },
+  }, */
   methodology: 'Summed up all the tokens deposited into Orderly Network'
 }
