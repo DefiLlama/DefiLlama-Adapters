@@ -9,11 +9,11 @@ const qiji = '0x4b9aE621E54BF1ecFe39366BCA0018d97A2D510b';
 
 module.exports = {
   fuse: {
-    staking: staking(fuseStaking, qiji, "fuse", "Qiji", 18),
+    staking: staking(fuseStaking, qiji, "fuse", "qiji", 18),
     tvl: gmxExports({ vault: fuseVault, })
   },
   hallmarks: [
-    [1698985360, "Mirakle Launch"]
+    [1691036559, "Mirakle Launch"]
   ],
 
 };
