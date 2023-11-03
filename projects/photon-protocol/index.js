@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { stakingUnknownPricedLP } = require("../helper/staking");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 
@@ -6,7 +7,7 @@ const stakingContract = "0x81177472Ce36A9b1AB573804CD215C72cEb76F36";
 const photonbusd = "0xEBAa17dA7D5C616441290669E9D2c982c8B1Da25"; //PHOTON-BUSD
 const treasury = "0x0f90591b01DE6F832e8B8E4ec3525efD423BCaD1";
 const treasuryTokens = [
-    ["0xe9e7cea3dedca5984780bafc599bd69add087d56", false], // BUSD
+    [ADDRESSES.bsc.BUSD, false], // BUSD
 ];
 
 async function tvl (timestamp, block, chainBlocks) {

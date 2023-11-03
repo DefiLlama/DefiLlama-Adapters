@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
 const { nullAddress, sumTokensExport } = require('../helper/unwrapLPs')
-const USDC = "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+const USDC = ADDRESSES.telos.ETH
 const mUSDC = "0x79568bEfa9bF339e76bE12813cf7430018E1AB58"
 const MortgagePool = "0xA6d5df932FFE35810389e00D1A3a698a44A14E85"
 const InsurancePool = "0x587Abb291379Ea84AcE583aB07A13109b9B3F347"

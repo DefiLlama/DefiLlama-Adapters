@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unwrapLPs')
 
 /** BEPRO Protocol is available on Moonbeam and Moonriver */
@@ -7,11 +8,11 @@ const config = {
         bountyNetworks: []
     },
     "moonriver": {
-        token: "0xCb4a593ce512D78162C58384f0b2Fd6e802c2c47",
+        token: ADDRESSES.moonriver.BEPRO,
         bountyNetworks: ["0x85dE589aDc4bC5F17075fcd603E8A0f7561d90C9"]
     },
     "moonbeam": {
-        token: "0x4EdF8E0778967012D46968ceadb75436d0426f88",
+        token: ADDRESSES.moonbeam.BEPRO,
         registry: "0x34DD5F63437FdC20557a8C6dDAeA056d3661c5e0",
         bountyNetworks: ["0xa9938c8712552Fe0b5312547fA96Ad9f14d58d3C"]
     }

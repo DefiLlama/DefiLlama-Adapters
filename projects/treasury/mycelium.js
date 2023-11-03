@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const {  nullAddress,treasuryExports } = require("../helper/treasury");
 
 module.exports = treasuryExports({
   arbitrum: {
     tokens: [ 
         nullAddress,
-        '0x82af49447d8a07e3bd95bd0d56f35241523fbab1', //  WETH
+        ADDRESSES.arbitrum.WETH, //  WETH
         '0x432502a764abec914f940916652ce55885323cda',
      ],
     owners: ['0x9f59e27fd6c8d96dfb89da58c0c98bac07e7a21a'],

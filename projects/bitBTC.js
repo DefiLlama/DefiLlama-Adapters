@@ -1,8 +1,8 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
-const { transformOptimismAddress } = require('./helper/portedTokens');
 
 const WBTC = "0x68f180fcce6836688e9084f035309e29bf0a2095";
-const bitANT = "0x5029c236320b8f15ef0a657054b84d90bfbeded3";
+const bitANT = ADDRESSES.optimism.BitANT;
 const bitBTC = "0xc98b98d17435aa00830c87ea02474c5007e1f272";
 
 const tvlContracts = [
@@ -32,7 +32,7 @@ const stakingContracts = [
 ];
 
 async function findBalances(contracts, block) {
-    const transform = await transformOptimismAddress();
+    const transform = i => `optimism:${i}`;
     const balances = {};
 
     const balanceOfs = (await sdk.api.abi.multiCall({

@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require("../helper/staking");
 
-const AURORA = "0x8bec47865ade3b172a928df8f990bc7f2a3b9f79";
+const AURORA = ADDRESSES.aurora.AURORA;
 const stakingContract = "0xf075c896cbbb625e7911e284cd23ee19bdccf299";
 
 module.exports = {

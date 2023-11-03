@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const {  nullAddress,treasuryExports } = require("../helper/treasury");
 
 const klimaTreasury1 = "0x7dd4f0b986f032a44f913bf92c9e8b7c17d77ad7";
@@ -10,7 +11,7 @@ module.exports = treasuryExports({
     tokens: [ 
         nullAddress,
         '0x2F800Db0fdb5223b3C3f354886d907A671414A7F', // BCT
-        '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174', // USDC
+        ADDRESSES.polygon.USDC, // USDC
         '0xD838290e877E0188a4A44700463419ED96c16107', // NCT
         '0xAa7DbD1598251f856C12f63557A4C4397c253Cea', // MCO2
         '0x2B3eCb0991AF0498ECE9135bcD04013d7993110c', // UBO

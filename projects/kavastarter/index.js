@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unknownTokens');
 
 const KAST_LP = "0x821dd423c744cAa452C0Ae1651a9388009efbE5b";
 
-const WKAVA = "0xc86c7C0eFbd6A49B35E8714C5f59D99De09A225b";
+const WKAVA = ADDRESSES.kava.WKAVA;
 const KAVASTARTER = "0x32a57dCa514Cc601d3DDEe974f57Db9Dc2CfE83b";
 
 const POL_Pool_One = "0x12450E12A7eC069b51b46C92Ac122D90DbD9A99D";

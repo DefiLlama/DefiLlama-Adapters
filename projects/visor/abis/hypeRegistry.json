@@ -1,4 +1,0 @@
-{
-    "counter": "int256:counter",
-    "hypeByIndex": "function hypeByIndex(uint256 index) view returns (address, uint256)"
-}

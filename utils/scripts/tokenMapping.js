@@ -1,6 +1,5 @@
 const fs = require('fs')
 const { getUniqueAddresses, } = require('../../projects/helper/utils')
-const { tokens, tokensBare, } = require('../../projects/helper/tokenMapping')
 const cacheFile = '../../../server/coins/src/adapters/tokenMapping.json'
 const coreAssetsFile = '../../projects/helper/coreAssets.json'
 const sdk = require('@defillama/sdk')
@@ -23,12 +22,12 @@ const ibcMappings = {}
 
 const fixBalancesTokens = {}
 
-run()
+// run()
 
-function writeToCache() {
-  fs.writeFileSync(cacheFile, JSON.stringify(cache, null, 2))
-  fs.writeFileSync(coreAssetsFile, JSON.stringify(coreAssets, null, 2))
-}
+// function writeToCache() {
+//   fs.writeFileSync(cacheFile, JSON.stringify(cache, null, 2))
+//   fs.writeFileSync(coreAssetsFile, JSON.stringify(coreAssets, null, 2))
+// }
 
 function transformTo(address) {
   if (address.startsWith('0x')) return 'ethereum:' + address
@@ -129,5 +128,5 @@ async function run() {
   })
 
   await Promise.all(promises)
-  writeToCache()
+  // writeToCache()
 }

@@ -1,8 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { staking } = require("../helper/staking");
 const { pool2 } = require("../helper/pool2");
 const { default: BigNumber } = require("bignumber.js");
+const { sumTokens } = require('../helper/unwrapLPs');
 
 // ETH Addresses
 const dpx = "0xeec2be5c91ae7f8a338e1e5f3b5de49d07afdc81";
@@ -37,9 +39,9 @@ const slpStakingRewards = [
 const ssovs = [
   ["0xbB741dC1A519995eac67Ec1f2bfEecbe5C02f46e", "0x6C2C06790b3E3E3c38e12Ee22F8183b37a13EE55"],
   ["0x6A1142681b74fbeA5dEA07258f573484D80e4435", "0x32eb7902d4134bf98a28b963d26de779af92a212"],
-  ["0x2c9C1E9b4BDf6Bf9CB59C77e0e8C0892cE3A9d5f", "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1"],
+  ["0x2c9C1E9b4BDf6Bf9CB59C77e0e8C0892cE3A9d5f", ADDRESSES.arbitrum.WETH],
   ["0x54552CB564F4675bCEda644e47dE3E35D1c88E1b", "0x8D9bA570D6cb60C7e3e0F31343Efe75AB8E65FB1"],
-  ["0x5bE3c77ED3Cd42fc2c702C9fcd665f515862B0AE", "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a"],
+  ["0x5bE3c77ED3Cd42fc2c702C9fcd665f515862B0AE", ADDRESSES.arbitrum.GMX],
 ];
 
 const crvPools = [
@@ -64,6 +66,16 @@ async function ssovTvl(balances, ssov, block, chain) {
     chain
   })).output;
 
+  const isExpired = (await sdk.api.abi.multiCall({
+    chain,
+    block,
+    abi: "function isEpochExpired(uint256) view returns (bool)",
+    calls: currentEpochs.map(p => ({
+      target: p.input.target,
+      params: p.output
+    })),
+  })).output
+
   const totalEpochDeposits = (await sdk.api.abi.multiCall({
     calls: currentEpochs.map(p => ({
       target: p.input.target,
@@ -76,7 +88,7 @@ async function ssovTvl(balances, ssov, block, chain) {
 
   for (let i = 0; i < ssov.length; i++) {
     const token = `${chain}:${ssov[i][1]}`;
-    const balance = totalEpochDeposits[i].output;
+    const balance = isExpired[i].output?"1":totalEpochDeposits[i].output;
     sdk.util.sumSingleBalance(balances, token, balance);
   }
 }
@@ -111,7 +123,7 @@ async function crvTvls(balances, crvPools, block, chain) {
 
   for (let i = 0; i < crvPools.length; i++) {
     const balance = BigNumber(Number(lpPrices) / 1e18).times(Number(totalEpochDeposits[i].output)).div(1e12).toFixed(0);
-    sdk.util.sumSingleBalance(balances, "0xdac17f958d2ee523a2206206994597c13d831ec7", balance);
+    sdk.util.sumSingleBalance(balances, ADDRESSES.ethereum.USDT, balance);
   }
 }
 
@@ -120,6 +132,11 @@ async function arbTvl(timestamp, block, chainBlocks) {
 
   await ssovTvl(balances, ssovs, chainBlocks.arbitrum, "arbitrum");
   await crvTvls(balances, crvPools, chainBlocks.arbitrum, "arbitrum");
+  await sumTokens(balances, [
+    [ADDRESSES.arbitrum.ARB, "0xDF3d96299275E2Fb40124b8Ad9d270acFDcc6148"],
+    ["0x6c2c06790b3e3e3c38e12ee22f8183b37a13ee55", "0x05E7ACeD3b7727f9129E6d302B488cd8a1e0C817"],
+    ["0x32eb7902d4134bf98a28b963d26de779af92a212", "0xd74c61ca8917Be73377D74A007E6f002c25Efb4e"]
+  ], chainBlocks.arbitrum, "arbitrum")
   return balances;
 }
 
@@ -141,7 +158,7 @@ async function bscTvl(timestamp, block, chainBlocks) {
     chain: "bsc" 
   })).output;
 
-  sdk.util.sumSingleBalance(balances, "bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", bnbAmount);
+  sdk.util.sumSingleBalance(balances, "bsc:" + ADDRESSES.bsc.WBNB, bnbAmount);
   delete balances["bsc:0xa07c5b74c9b40447a954e1466938b865b6bbea36"];
 
   return balances;
@@ -149,7 +166,7 @@ async function bscTvl(timestamp, block, chainBlocks) {
 
 // AVAX Addresses
 const avaxSsovs = [
-  ["0x5540FEa353dF6302611DA1d57988104e43A4B6b6", "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"]
+  ["0x5540FEa353dF6302611DA1d57988104e43A4B6b6", ADDRESSES.avax.WAVAX]
 ];
 
 async function avaxTvl(timestamp, block, chainBlocks) {
