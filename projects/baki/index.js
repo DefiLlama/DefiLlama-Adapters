@@ -3,7 +3,7 @@ const { sumTokensExport } = require('../helper/unwrapLPs')
 const ADDRESSES = require('../helper/coreAssets.json')
 
 module.exports = {
-  methodology: "TVL: Total collateral deposited on Baki",
+  methodology: "TVL: Total collateral deposited on Baki ",
   avax: {
     tvl: sumTokensExport({ owner: bakiAddress, tokens: [ADDRESSES.avax.USDC] })
   },
