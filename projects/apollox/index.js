@@ -97,4 +97,11 @@ module.exports = {
       ADDRESSES.era.USDC,
     ]})
   },
+  manta: {
+    tvl: sumTokensExport({ owner: '0xbad4ccc91ef0dfffbcab1402c519601fbaf244ef', tokens: [
+      nullAddress,
+      ADDRESSES.manta.USDC,
+      ADDRESSES.manta.USDC,
+    ]})
+  },
 };
