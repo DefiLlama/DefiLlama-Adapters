@@ -245,15 +245,18 @@
     "fsGLP": "0x1addd80e6039594ee970e5872d247bf0414c8903",
     "fGLP": "0x4e971a87900b931ff39d1aad67697f49835400b6",
     "GMX": "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a",
+    "WSTETH": "0x5979D7b546E38E414F7E9822514be443A4800529",
     "plvGLP": "0x5326e71ff593ecc2cf7acae5fe57582d6e74cff1"
   },
   "fuse": {
     "WFUSE": "0x0be9e53fd7edac9f859882afdda116645287c629",
     "USDC": "0x620fd5fa44be6af63715ef4e65ddfa0387ad13f5",
     "WETH": "0xa722c13135930332eb3d749b2f0906559d2c5b99",
+    "WBTC": "0x33284f95ccb7B948d9D352e1439561CF83d8d00d",
     "DAI": "0x94ba7a27c7a95863d1bdc7645ac2951e0cca06ba",
     "USDT": "0xfadbbf8ce7d5b7041be672561bba99f79c532e10",
     "KNC": "0x43b17749b246fd2a96de25d9e4184e27e09765b0",
+    "BUSD": "0x6a5f6a8121592becd6747a38d67451b310f7f156",
     "null": "0x0000000000000000000000000000000000000000"
   },
   "evmos": {
@@ -985,13 +988,10 @@
     "BUSD": "0x332730a4f6e03d9c55829435f10360e13cfa41ff",
     "BNB": "0x65e66a61d0a8f1e686c2d6083ad611a10d84d97a",
     "WETH": "0xc13791da84f43525189456cfe2026c60d3b7f706",
-    "USDk": "0x472402d47da0587c1cf515dafbafc7bce6223106",
     "axlUSDC": "0xeb466342c4d449bc9f53a865d5cb90586f405215",
     "axlUSDT": "0x7f5373ae26c3e8ffc4c77b7255df7ec1a9af52a6",
     "axlDAI": "0x5c7e299cf531eb66f2a1df637d37abb78e6200c7",
-    "KFT": "0xa0eeda2e3075092d66384fe8c91a1da4bca21788",
-    "USX": "0xdb0e1e86b01c4ad25241b1843e407efc4d615248",
-    "kBRISE": "0xea616011e5ac9a5b91e22cac59b4ec6f562b83f9"
+    "USX": "0xdb0e1e86b01c4ad25241b1843e407efc4d615248"
   },
   "sx": {
     "WSX": "0xaa99be3356a11ee92c3f099bd7a038399633566f",
@@ -1209,9 +1209,14 @@
     "TON_1": "EQDQoc5M3Bh8eWFephi9bClhevelbZZvWhkqdo80XuY_0qXv",
     "TON_2": "Ef8zMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzM0vF",
     "TON_3": "EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c",
+    "TON_4": "EQCajaUU1XXSAjTD-xOV7pE49fGtg4q8kF3ELCOJtGvQFQ2C",
     "USDC": "EQC61IQRl0_la95t27xhIpjxZt32vl1QQVF2UgTNuvD18W-4",
     "USDT": "EQC_1YoM8RBixN95lz7odcF3Vrkc_N8Ne7gQi7Abtlet_Efi",
-    "ETH": "EQAW42HutyDem98Be1f27PoXobghh81umTQ-cGgaKVmRLS7-"
+    "ETH": "EQAW42HutyDem98Be1f27PoXobghh81umTQ-cGgaKVmRLS7-",
+    "MATIC": "EQBq4d4GPyBoh-Pjnf3wxUyQSS28WY2Yt-7cPAG8FHpWpNRX",
+    "ORC": "EQDCIEo0HUUYsAV-lTMviOd-GkSXfVPsNZMGjRaNOA_6--FD",
+    "MEGA": "EQBf6-YoR9xylol_NwjHrLkrTFAZJCX-bsd-Xx_902OaPaBf",
+    "WEMIX": "EQCf7Nb341dxOE3N0jimngRxGEV8T3zo-eU2EZVs_nchNhhZ"
   },
   "defichain": {
     "DFI": "DFI",
@@ -1340,6 +1345,12 @@
   "tenet": {
     "WTENET": "0xd6cb8a253e12893b0cf39ca78f7d858652cca1fe"
   },
+  "manta": {
+    "WETH": "0x0Dc808adcE2099A9F62AA87D9670745AbA741746",
+    "USDC": "0xb73603c5d87fa094b7314c74ace2e64d165016fb",
+    "USDT": "0xf417f5a458ec102b90352f697d6e2ac3a3d2851f",
+    "WBTC": "0x305E88d809c9DC03179554BFbf85Ac05Ce8F18d6"
+  },
   "mantle": {
     "WMNT": "0x78c1b0c915c4faa5fffa6cabf0219da63d7f4cb8",
     "WETH": "0xdeaddeaddeaddeaddeaddeaddeaddeaddead1111",
@@ -1369,7 +1380,8 @@
     "WBTC": "factory/sei189adguawugk3e55zn63z8r9ll29xrjwca636ra7v7gxuzn98sxyqwzt47l/7omXa4gryZ5NiBmLep7JsTtTtANCVKXwT9vbN91aS1br"
   },
   "op_bnb": {
-    "WBNB": "0x4200000000000000000000000000000000000006"
+    "WBNB": "0x4200000000000000000000000000000000000006",
+    "USDC": "0x9e5aac1ba1a2e6aed6b32689dfcf62a509ca96f3"
   },
   "archway": {
     "ARCH": "aarch"
@@ -1378,7 +1390,7 @@
     "WHALE": "uwhale"
   },
   "mvc": {
-    "SPACE": "",
+    "SPACE": "0x0000000000000000000000000000000000000000",
     "USDT": "7d8706c7f657730201ff3334064f83deb2fdec8a",
     "MSP": "b2d75931958114e48c9927160f80363eae78e2dc"
   },
@@ -1419,14 +1431,49 @@
     "USDC": "0x49A5010110a358d9069282873F3e7eCf6B41DC10",
     "USDT": "0x0Cf7c2A584988871b654Bd79f96899e4cd6C41C0"
   },
+  "radixdlt": {
+    "XRD": "resource_rdx1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxradxrd",
+    "WETH": "resource_rdx1th88qcj5syl9ghka2g9l7tw497vy5x6zaatyvgfkwcfe8n9jt2npww"
+  },
   "shimmer_evm": {
     "WSMR": "0xBEb654A116aeEf764988DF0C6B4bf67CC869D01b",
+    "WSMR1": "0x1074010000000000000000000000000000000000",
+    "WSMR2": "0x6c890075406c5df08b427609e3a2ead1851ad68d",
+    "ETH": "0xa158a39d00c79019a01a6e86c56e96c461334eb0",
+    "WBTC": "0x1cdf3f46dbf8cf099d218cf96a769cea82f75316",
     "USDT": "0xc0E49f8C615d3d4c245970F6Dc528E4A47d69a44"
-  }
-  ,
+  },
+  "renec": {
+    "RENEC": "So11111111111111111111111111111111111111112",
+    "REUSD": "4Q89182juiadeFgGw3fupnrwnnDmBhf7e7fHWxnUP3S3"
+  },
   "beam": {
     "WMC": "0xD51BFa777609213A653a2CD067c9A0132a2D316A",
     "USDC": "0x76BF5E7d2Bcb06b1444C0a2742780051D8D0E304",
     "USDT": "0x999f90f25a2922ae1b21A06066F7EDEbedad42a9"
+  },
+  "bfc": {
+    "WBFC": "0x1c1b06405058AbE02e4748753aeD1458BEFEE3B9",
+    "UnifiedETH": "0x6c9944674C1D2cF6c4c4999FC7290Ba105dcd70e",
+    "UnifiedBNB": "0xB800EaF843F962DFe5e145A8c9D07A3e70b11d7F",
+    "UnifiedUSDC": "0x640952E7984f2ECedeAd8Fd97aA618Ab1210A21C",
+    "UnifiedMATIC": "0x21ad243b81eff53482F6F6E7C76539f2CfC0B734",
+    "UnifiedUSDT": "0x3eA8654d5755e673599473ab37d92788B5bA12aE",
+    "UnifiedDAI": "0xcDB9579Db96EB5C8298dF889D915D0FF668AfF2a",
+    "BIFI": "0x047938C3aD13c1eB821C8e310B2B6F889b6d0003"
+  },
+  "scroll": {
+    "WETH": "0x5300000000000000000000000000000000000004",
+    "USDT": "0xf55bec9cafdbe8730f096aa55dad6d22d44099df",
+    "USDC": "0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4"
+  },
+  "darwinia": {
+    "RING": "0xe7578598aac020abfb918f33a20fad5b71d670b4"
+  },
+  "pg": {
+    "WPG": "0x0cf4071940782b640d0b595cb17bdf3e90869d70"
+  },
+  "ethf": {
+    "WETH": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
   }
 }

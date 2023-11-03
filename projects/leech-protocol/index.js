@@ -15,6 +15,7 @@ async function tvl(_, _b, _cb, { api, }) {
   const sslpPools = []
   const biswapPools = []
   const thenaPools = []
+  const veloPools = []
   pools.forEach(({ address, name }) => {
     switch (chain) {
       case 'avax':
@@ -26,7 +27,7 @@ async function tvl(_, _b, _cb, { api, }) {
         if (name === 'sushi-opt') {
           sslpPools.push(address)
         } else if (name === 'velo-opt') {
-          lpPools.push(address)
+          veloPools.push(address)
         }
 
         break;
@@ -83,17 +84,32 @@ async function tvl(_, _b, _cb, { api, }) {
     })
   }
 
+  if (veloPools.length > 0) {
+    const sslpTokens = await api.multiCall({ abi: 'address:LP', calls: veloPools })
+    const sslpBals = await api.multiCall({ abi: 'uint256:balance', calls: veloPools })
+    const supplies = await api.multiCall({ abi: 'uint256:totalSupply', calls: sslpTokens })
+    const token0s = await api.multiCall({ abi: 'address:token0', calls: sslpTokens })
+    const token1s = await api.multiCall({ abi: 'address:token1', calls: sslpTokens })
+    const reserves = await api.multiCall({ abi: 'function getReserves() public view returns (uint256, uint256)', calls: sslpTokens })
+    reserves.forEach(([token0Bal, token1Bal], i) => {
+      const ratio = sslpBals[i] / supplies[i]
+      api.add(token0s[i], token0Bal * ratio)
+      api.add(token1s[i], token1Bal * ratio)
+    })
+  }
+
   if (biswapPools.length > 0) {
     const wTokens = await api.multiCall({ abi: 'address:want', calls: biswapPools })
     const wBals = await api.multiCall({ abi: 'uint256:balance', calls: biswapPools })
     api.addTokens(wTokens, wBals)
     await sumTokens2({ api, resolveLP: true, })
   }
+
   return api.getBalances()
 }
 
 module.exports = {
   bsc: { tvl },
   avax: { tvl },
- // optimism: { tvl },
+  optimism: { tvl },
 };

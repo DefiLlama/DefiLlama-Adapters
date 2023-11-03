@@ -6,7 +6,7 @@ const { PromisePool } = require('@supercharge/promise-pool')
 const RPC_ENDPOINT = 'https://api.tzkt.io'
 
 const usdtAddressTezos = ADDRESSES.tezos.USDt
-const transformAddressDefault = t => 'tezos:' + t
+const transformAddressDefault = t => t == "tezos" ? "coingecko:tezos" : 'tezos:' + t
 
 const tokenBlacklist = [
   'KT18quSVkqhbJS38d5sbRAEkXd5GoNqmAoro',

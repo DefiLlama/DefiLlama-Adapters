@@ -194,7 +194,7 @@ module.exports = {
          '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
        ]
      },
-    {
+     {
        name: 'base',
        tokens: [
          ADDRESSES.base.WETH,
@@ -203,6 +203,33 @@ module.exports = {
        holders: [
          '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4', // portal v2
          '0xEE981B2459331AD268cc63CE6167b446AF4161f8', // portal v2 new
+       ]
+     },
+     {
+       name: 'tron',
+       tokens: [
+         ADDRESSES.tron.USDT,
+       ],
+       holders: [
+         'TGsN2VVJRXLbNe33QbWeaMtpb6xxC7SUeq', // portal v2
+       ]
+     },
+     {
+       name: 'scroll',
+       tokens: [
+         ADDRESSES.scroll.WETH,
+       ],
+       holders: [
+         '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4', // portal v2
+       ]
+     },
+     {
+       name: 'manta',
+       tokens: [
+         ADDRESSES.manta.WETH,
+       ],
+       holders: [
+         '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4', // portal v2
        ]
      },
   ]

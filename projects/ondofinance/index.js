@@ -13,6 +13,9 @@ const config = {
   },
   polygon: {
     OUSG: '0xbA11C5effA33c4D6F8f593CFA394241CfE925811',
+  },
+  mantle: {
+    USDY: "0x5bE26527e817998A7206475496fDE1E68957c5A6",
   }
 }
 
