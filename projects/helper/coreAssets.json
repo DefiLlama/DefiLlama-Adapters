@@ -617,7 +617,8 @@
     "JUNO": "ujuno"
   },
   "osmosis": {
-    "ION": "uion"
+    "ION": "uion",
+    "OSMO": "uosmo"
   },
   "kujira": {
     "KUJI": "ukuji",
