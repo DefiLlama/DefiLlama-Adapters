@@ -610,7 +610,6 @@ async function unwrapLPsAuto({ api, balances, block, chain = "ethereum", transfo
         const token0_ = tokens0.find(call => call.input.target === lpToken)
         const token1_ = tokens1.find(call => call.input.target === lpToken)
         const supply_ = lpSupplies.find(call => call.input.target === lpToken)
-        logArray.push(...[{ token: token0_, holder: lpToken}, {token: token1_, holder: lpToken}])
         try {
           token0 = token0_.output.toLowerCase()
           token1 = token1_.output.toLowerCase()
