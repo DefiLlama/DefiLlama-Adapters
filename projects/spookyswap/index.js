@@ -4,4 +4,7 @@ module.exports={
   fantom:{
       tvl: getUniTVL({ useDefaultCoreAssets: true, factory: '0x152eE697f2E276fA89E96742e9bB9aB1F2E61bE3' }),
   },
+  eon:{
+    tvl: getUniTVL({ useDefaultCoreAssets: true, factory: '0xa6AD18C2aC47803E193F75c3677b14BF19B94883' }),
+},
 }  
