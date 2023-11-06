@@ -1,4 +1,5 @@
 const { cachedGraphQuery } = require('../helper/cache')
+const { staking } = require("../helper/staking");
 
 const supportedChains = [
   {
@@ -56,7 +57,56 @@ const supportedChains = [
     chainId: 2222,
     merkle: false,
     identifier: 'kava'
-  }
+  },
+  {
+    name: 'Base',
+    subgraphEndpoint: 'https://subgraph.satsuma-prod.com/769a117cc018/steer/steer-protocol-base/api',
+    chainId: 8453,
+    merkle: false,
+    identifier: 'base'
+  },
+  // {
+  //   name: 'Linea',
+  //   subgraphEndpoint: 'https://subgraph.steer.finance/linea/subgraphs/name/steerprotocol/steer-linea/graphql',
+  //   chainId: 59144,
+  //   merkle: false,
+  //   identifier: 'linea'
+  // },
+  {
+    name: 'Metis',
+    subgraphEndpoint: 'https://subgraph.satsuma-prod.com/769a117cc018/steer/steer-protocol-metis/api',
+    chainId: 1088,
+    merkle: false,
+    identifier: 'metis'
+  },
+  // {
+  //   name: 'Manta',
+  //   subgraphEndpoint: 'https://subgraph.steer.finance/manta/subgraphs/name/steerprotocol/steer-manta/graphql',
+  //   chainId: 169,
+  //   merkle: false,
+  //   identifier: 'manta'
+  // },
+  // {
+  //   name: 'PolygonZKEVM',
+  //   subgraphEndpoint: 'https://subgraph.steer.finance/zkevm/subgraphs/name/steerprotocol/steer-zkevm',
+  //   chainId: 1101,
+  //   merkle: false,
+  //   identifier: 'polyzkevm'
+  // },
+  // {
+  //   name: 'Scroll',
+  //   subgraphEndpoint: 'https://subgraph.steer.finance/scroll/subgraphs/name/steerprotocol/steer-scroll/graphql',
+  //   chainId: 534352,
+  //   merkle: false,
+  //   identifier: 'scroll'
+  // },
+  // {
+  //   name: 'Celo',
+  //   subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/rakeshbhatt10/steer-test-celo',
+  //   chainId: 42220,
+  //   merkle: false,
+  //   identifier: 'celo'
+  // },
 ]
 
 
@@ -88,3 +138,5 @@ supportedChains.forEach(chain => {
     }
   }
 })
+
+module.exports.arbitrum.staking = staking("0xB10aB1a1C0E3E9697928F05dA842a292310b37f1", "0x1C43D05be7E5b54D506e3DdB6f0305e8A66CD04e", "arbitrum")
