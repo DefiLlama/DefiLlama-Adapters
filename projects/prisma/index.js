@@ -4,6 +4,9 @@ const config = {
   ethereum: { factory: '0x70b66e20766b775b2e9ce5b718bbd285af59b7e1', fromBlock: 18029801, },
 }
 
+module.exports.hallmarks = [
+  [1698922200,"Justin Sun Deposited"]
+],
 Object.keys(config).forEach(chain => {
   const { factory, fromBlock, } = config[chain]
   module.exports[chain] = {
