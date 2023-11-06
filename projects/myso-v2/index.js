@@ -89,6 +89,12 @@ const config = {
   ethereum: {
     fromBlock: 18213104,
   },
+  arbitrum: {
+    fromBlock: 143181867,
+  },
+  base: {
+    fromBlock: 6239916,
+  },
 };
 
 Object.keys(config).forEach((chain) => {
