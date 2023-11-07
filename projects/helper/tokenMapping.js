@@ -71,6 +71,9 @@ const fixBalancesTokens = {
   elsm: {
     '0xa801b1a7846156d4c81bd188f96bfcb621517611': { coingeckoId: 'vulcan-forged', decimals: 18 },
   },
+  bostrom: {
+    'boot': { coingeckoId: 'bostrom', decimals: 6 },
+  },
   bfc: {
     [ADDRESSES.bfc.WBFC]: { coingeckoId: 'bifrost', decimals: 18},
     [ADDRESSES.bfc.BIFI]: { coingeckoId: 'bifi', decimals: 18},
