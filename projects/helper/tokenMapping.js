@@ -37,9 +37,13 @@ const transformTokens = {
   // },
 }
 const ibcMappings = {
-  // Sample Code
-  // 'ibc/CA1261224952DF089EFD363D8DBB30A8AB6D8CD181E60EE9E68E432F8DE14FE3': { coingeckoId: 'inter-stable-token', decimals: 6, },
-  // 'ibc/5A76568E079A31FA12165E4559BA9F1E9D4C97F9C2060B538C84DCD503815E30': { coingeckoId: 'injective-protocol', decimals: 18, },
+  bostrom: {
+    "boot": { coingeckoId: "bostrom", decimals: 0, },
+    "hydrogen": { coingeckoId: "", decimals: 0, },
+    "milliampere": { coingeckoId: "", decimals: 3, },
+    "millivolt": { coingeckoId: "", decimals: 3, },
+    "ibc/15E9C5CF5969080539DB395FA7D9C0868265217EFC528433671AAF9B1912D159": { coingeckoId: "cosmos", decimals: 6, },
+  }
 }
 
 const fixBalancesTokens = {

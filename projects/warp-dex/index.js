@@ -15,8 +15,8 @@ async function tvl() {
 
     paginationKey = data.pagination.next_key;
     for (const pool of data.pools) {
-      base_coin_amount = await getDenomBalance({denom: pool.reserve_coin_denoms[0], owner: pool.reserve_account_address, chain: chain})
-      quote_coin_amount = await getDenomBalance({denom: pool.reserve_coin_denoms[1], owner: pool.reserve_account_address, chain: chain})
+      const base_coin_amount = await getDenomBalance({denom: pool.reserve_coin_denoms[0], owner: pool.reserve_account_address, chain: chain})
+      const quote_coin_amount = await getDenomBalance({denom: pool.reserve_coin_denoms[1], owner: pool.reserve_account_address, chain: chain})
       sdk.util.sumSingleBalance(balances, pool.reserve_coin_denoms[0], base_coin_amount)
       sdk.util.sumSingleBalance(balances,pool.reserve_coin_denoms[1], quote_coin_amount)
     }
