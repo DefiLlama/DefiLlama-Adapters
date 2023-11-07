@@ -93,6 +93,7 @@ const defaultTokens = {
     '0x25ec98773d7b4ced4cafab96a2a1c0945f145e10', // stUSDT
     '0x3c3a81e81dc49A522A592e7622A7E711c06bf354', // MNT
     '0x61e90a50137e1f645c9ef4a0d3a4f01477738406', // LOKA
+    '0x64d0f55Cd8C7133a9D7102b13987235F486F2224', // BORG
   ],
   tron: [
     nullAddress,

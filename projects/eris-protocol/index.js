@@ -76,6 +76,11 @@ const config = {
           "terra1vklefn7n6cchn0u962w3gaszr4vf52wjvd4y95t2sydwpmpdtszsqvk9wy",
         coinGeckoId: "lion-dao",
       },
+      {
+        contract:
+          "terra186rpfczl7l2kugdsqqedegl4es4hp624phfc7ddy8my02a4e8lgq5rlx7y",
+        coinGeckoId: "capapult",
+      },
     ],
   },
   terra: {
