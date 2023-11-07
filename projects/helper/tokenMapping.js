@@ -78,6 +78,10 @@ const fixBalancesTokens = {
     [ADDRESSES.bfc.BIFI]: { coingeckoId: 'bifi', decimals: 18},
     '0xB1f3A83597Bce2AD842c29bD750AE17afc474137': {coingeckoId: 'witch-token', decimals: 18},
     '0x17102AC78a02a98fC78B0c29B7b0506f035A99E5': {coingeckoId: 'super-athletes-token', decimals: 18}
+  },
+  eon: {
+    '0xF5cB8652a84329A2016A386206761f455bCEDab6': {coingeckoId: 'zencash', decimals: 18},
+    '0x1d7fb99AED3C365B4DEf061B7978CE5055Dfc1e7': {coingeckoId: 'wrapped-bitcoin', decimals: 8},
   }
 }
 
