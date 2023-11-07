@@ -19,7 +19,6 @@ async function tvl() {
       quote_coin_amount = await getDenomBalance({denom: pool.reserve_coin_denoms[1], owner: pool.reserve_account_address, chain: chain})
       sdk.util.sumSingleBalance(balances, pool.reserve_coin_denoms[0], base_coin_amount)
       sdk.util.sumSingleBalance(balances,pool.reserve_coin_denoms[1], quote_coin_amount)
-      transformed_balances = await transformBalances(chain, balances)
     }
   } while (paginationKey)
   return transformBalances(chain, balances)
