@@ -10,6 +10,7 @@ module.exports = {
     [1682314791, "GLP Delta Neutral Vault"],
     [1683178791, "GDAI Leverage Vault"],
     [1696389409, "HLP Leverage Vault"],
+    [1697716800, "VKA TGE"],
   ],
 
   arbitrum: {

@@ -13,7 +13,7 @@ const endPoints = {
   crescent: "https://mainnet.crescent.network:1317",
   osmosis: "https://osmosis-api.polkachu.com",
   cosmos: "https://cosmoshub-lcd.stakely.io",
-  kujira: "https://lcd-kujira.whispernode.com:443",
+  kujira: "https://kuji-api.kleomedes.network",
   comdex: "https://rest.comdex.one",
   terra: "https://terra-classic-lcd.publicnode.com",
   terra2: "https://terra-lcd.publicnode.com",
@@ -39,6 +39,7 @@ const endPoints = {
   aura: "https://lcd.aura.network",
   archway: "https://api.mainnet.archway.io",
   sifchain: "https://sifchain-api.polkachu.com",
+  nolus: "https://pirin-cl.nolus.network:1317"
 };
 
 const chainSubpaths = {
@@ -181,6 +182,19 @@ async function queryContract({ contract, chain, data }) {
   ).data.data;
 }
 
+async function queryManyContracts({ contracts = [], chain, data }) {
+  const parallelLimit = 25
+  const { results, errors } = await PromisePool
+    .withConcurrency(parallelLimit)
+    .for(contracts)
+    .process(async (contract) =>  queryContract({ contract, chain, data }))
+
+  if (errors && errors.length) throw errors[0]
+
+  return results
+}
+
+
 async function queryContracts({ chain, codeId, }) {
   const res = []
   const limit = 1000
@@ -255,6 +269,7 @@ module.exports = {
   queryV1Beta1,
   queryContractStore,
   queryContract,
+  queryManyContracts,
   queryContracts,
   sumTokens,
   getTokenBalance,
