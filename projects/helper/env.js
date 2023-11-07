@@ -12,6 +12,7 @@ const DEFAULTS = {
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
   CHZ_RPC: "https://chiliz.publicnode.com,https://rpc.ankr.com/chiliz",
+  MANTLE_RPC:"https://mantle.publicnode.com,https://rpc.ankr.com/mantle,https://mantle.drpc.org,https://1rpc.io/mantle,https://mantle-mainnet.public.blastapi.io",
 }
 
 const ENV_KEYS = [
