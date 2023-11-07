@@ -1,4 +1,4 @@
-const { fetchURL } = require("../helper/utils");
+const { fetchURL } = require("../helper/utils")
 
 async function hedera() {
   const response = await fetchURL(
