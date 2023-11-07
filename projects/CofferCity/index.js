@@ -1,18 +1,24 @@
-const { config } = require('./config')
-const abi = require('./abi.json')
-const { sumUnknownTokens, } = require('../helper/unknownTokens')
+const abi = {
+  "getSupportedTokens": "function getSupportedTokens() view returns (address[] supportedTokens)"
+}
+
+const config = {
+  kava: {
+    CofferCityKAVA: '0x860880862Ee1B74D00E2F94B1C81A67C2c58117E'
+  }
+}
 
 module.exports = {
   methodology: 'Counts TVL of all the assets supported by the Coffer City smart contracts'
 };
 
-Object.values(config).forEach(({ chain, vault, startBlock }) => {
+Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: async (_, _b, _cb, { api, }) => {
-      const data = await api.fetchList({  lengthAbi: abi.getSupportedTokens, itemAbi: abi.getSupportedTokens, target: vault, startFromOne: true, })
-      const tokensAndOwners = data
-        .map((i) => [i.tokenAddress, vault])
-      return sumUnknownTokens({ api, tokensAndOwners, useDefaultCoreAssets: true, resolveLP: false, })
+      const vaults = Object.values(config[chain])
+      const tokens = await api.multiCall({ abi: abi.getSupportedTokens, calls: vaults })
+      const ownerTokens = vaults.map((v, i) => [tokens[i], v])
+      return api.sumTokens({ ownerTokens })
     }
   }
 })

@@ -1,3 +1,0 @@
-{
-  "getSupportedTokens": "function getSupportedTokens() view returns (address[] supportedTokens)"
-}
