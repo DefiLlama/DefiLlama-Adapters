@@ -9,6 +9,6 @@ module.exports = {
       "https://davincigraph.network/api/v1/locks/statistics"
     );
 
-    return response.data.tvl.locked;
+    return response.data.tvl.locked.liquidity;
   },
 };
