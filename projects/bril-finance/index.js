@@ -25,7 +25,7 @@ async function tvl(_, _1, _2, { api }) {
     params: [],
   });
 
-  for (i=0; i <balances.length; i++){
+  for (let i=0; i <balances.length; i++){
     api.add(summaries[i].baseToken_, balances[i].baseTotal_);
     api.add(summaries[i].scarceToken_, balances[i].scarceTotal_);
   }
