@@ -1,0 +1,4 @@
+{
+    "vaultAmounts": "function vaultAmounts() view returns (uint256 baseTotal_, uint256 scarceTotal_ )",
+    "vaultSummary": "function vaultSummary() view returns (address vault_, address baseToken_, address scarceToken_, bool inverted_, int24 tickSpacing_)"
+}
