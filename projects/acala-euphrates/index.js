@@ -1,51 +1,66 @@
-const axios = require('axios');
+const { ethers } = require('ethers');
+const { getBlock } = require('../helper/http');
 
-const ONE_DAY = 86400;     // 86400000s = 1 day
+const chain = 'acala';
+const euphrates = '0x7Fe92EC600F15cD25253b421bc151c51b0276b7D';
+const ldotAddr = '0x0000000000000000000100000000000000000003';
+const wtdotAddr = '0xe1bD4306A178f86a9214c39ABCD53D021bEDb0f9';
 
-function getDotTVL(_dotTvlData, timestamp) {
-    // convert day_timestamp to unix timestamp in seconds
-    const dotTvlData = _dotTvlData.map(d => ({
-        ...d,
-        day_timestamp: new Date(d.day_timestamp).getTime() / 1000,
-    }))
+const ETH_RPC_ACALA = 'https://eth-rpc-acala.aca-api.network';
+const erc20Abi = [
+    "function balanceOf(address owner) view returns (uint256)",
+    "function decimals() view returns (uint8)",
+];
+const wtdotAbi = [
+    "function withdrawRate() view returns (uint256)",
+];
 
-    const firstDate = dotTvlData[0].day_timestamp
-    if (timestamp < firstDate - ONE_DAY) {
-        throw new Error(`Timestamp is more than 1 day earlier than the first date in the data. Timestamp: ${timestamp}, First date: ${firstDate}`);
+const provider = new ethers.providers.JsonRpcProvider(ETH_RPC_ACALA);
+
+const getErc20Balances = async (address, tokenAddrs, blockTag) => {
+    let balances = {};
+    for (const tokenAddr of tokenAddrs) {
+        const token = new ethers.Contract(tokenAddr, erc20Abi, provider);
+        const [balance, decimals] = await Promise.all([
+            token.balanceOf(address, { blockTag }),
+            token.decimals({ blockTag })
+        ]);
+
+        balances[tokenAddr] = ethers.utils.formatUnits(balance, decimals);
     }
 
-    let smallestDiff = Infinity;
-    let targetDotTVL = null;
-    dotTvlData.forEach(entry => {
-        const entryDate = entry.day_timestamp
-        const diff = Math.abs(entryDate - timestamp);
+    return balances;
+};
 
-        if (diff < smallestDiff) {
-            smallestDiff = diff;
-            targetDotTVL = entry.dot_tvl;
-        }
-    });
+const getWtdotRate = async (blockTag) => {
+    const wtdot = new ethers.Contract(wtdotAddr, wtdotAbi, provider);
+    const rate = await wtdot.withdrawRate({ blockTag });
 
-    return targetDotTVL;
+    return rate / 1e18;
 }
 
-async function tvl(timestamp, _1, _2, { api }) {
-    const response = await axios.get('https://api.dune.com/api/v1/query/3132389/results?api_key=ItzgVHuqp1idtYFmDAzo15kEDILs1qXb');
-    const dotTvlData = response.data?.result?.rows
-    const dotTvl = getDotTVL(dotTvlData, timestamp)
-    if (!dotTvl) {
-        throw new Error('Failed to fetch Ehphrates DOT TVL!');
+async function tvl(timestamp) {
+    const block = await getBlock(timestamp, chain, {});
+
+    const [balances, exchangeRate] = await Promise.all([
+        getErc20Balances(euphrates, [ldotAddr, wtdotAddr], block),
+        getWtdotRate(block),
+    ]);
+
+    const dotAmount = balances[wtdotAddr] * exchangeRate;
+
+    const res = {
+        "liquid-staking-dot": balances[ldotAddr],
+        polkadot: dotAmount,
     }
 
-    return {
-        polkadot: dotTvl
-    }
+    return res;
 }
 
 module.exports = {
     timetravel: true,
     start: 1695657600,
-    methodology: 'total dot/lcdot staked - total dot/lcdot unstaked',
+    methodology: 'total ldot and tdot locked in the euphrates contract',
     acala: {
         tvl,
     }
