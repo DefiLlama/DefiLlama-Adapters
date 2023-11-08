@@ -67,7 +67,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'wan' && ['WSLP'].includes(symbol)) return true
   if (chain === 'telos' && ['zLP'].includes(symbol)) return true
   if (chain === 'polygon' && ['MbtLP', 'GLP', ].includes(symbol)) return true
-  if (chain === 'ethereum' && ['SUDO-LP'].includes(symbol)) return false
+  if (chain === 'ethereum' && (['SUDO-LP'].includes(symbol) || symbol.endsWith('LP-f'))) return false
   if (chain === 'dogechain' && ['DST-V2'].includes(symbol)) return true
   if (chain === 'harmony' && ['HLP'].includes(symbol)) return true
   if (chain === 'klaytn' && ['NLP'].includes(symbol)) return true
@@ -81,7 +81,9 @@ function isLP(symbol, token, chain) {
   if (chain === 'metis' && ['NLP', 'ALP'].includes(symbol)) return true // Netswap/Agora LP Token
   if (chain === 'optimism' && /(-ZS)/.test(symbol)) return true
   if (chain === 'arbitrum' && /^(crAMM|vrAMM)-/.test(symbol)) return true // ramses LP
+  if (chain === 'base' && /^(v|s)-/.test(symbol)) return true // Equalizer LP
   if (chain === 'bsc' && /(-APE-LP-S)/.test(symbol)) return false
+  if (chain === 'scroll' && /(cSLP|sSLP)$/.test(symbol)) return true //syncswap LP
   if (['fantom', 'nova',].includes(chain) && ['NLT'].includes(symbol)) return true
   let label
 

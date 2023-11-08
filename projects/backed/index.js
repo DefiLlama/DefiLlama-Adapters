@@ -9,6 +9,8 @@ const contracts = [
   "0x52d134c6DB5889FaD3542A09eAf7Aa90C0fdf9E4", // bIBTA
   "0x1e2c4fb7ede391d116e6b41cd0608260e8801d59", // bCSPX
   "0x20C64dEE8FdA5269A78f2D5BDBa861CA1d83DF7a", // bHIGH
+  "0x3f95AA88dDbB7D9D484aa3D482bf0a80009c52c9", // bERNX
+  "0xAde6057FcAfa57d6d51FFa341C64ce4814995995", // bZPR1
 ].map(i => i.toLowerCase())
 
 const blacklistedOwners = [
