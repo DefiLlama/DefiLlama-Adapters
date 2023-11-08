@@ -65,12 +65,12 @@ async function useLegacyIsolatedStrategyMetadata(block) {
       curAddresses.YieldYakStrategy,
     ["0xeD8CBD9F0cE3C6986b22002F03c6475CEb7a6256"]:
       curAddresses.YieldYakStrategy,
-    ["0x454E67025631C065d3cFAD6d71E6892f74487a15"]:
-      curAddresses.TraderJoeMasterChefStrategy,
     ["0x2148D1B21Faa7eb251789a51B404fc063cA6AAd6"]:
       curAddresses.SimpleHoldingStrategy,
+    /*["0x454E67025631C065d3cFAD6d71E6892f74487a15"]:
+      curAddresses.TraderJoeMasterChefStrategy,
     ["0xCDFD91eEa657cc2701117fe9711C9a4F61FEED23"]:
-      curAddresses.MultiTraderJoeMasterChef3Strategy,
+      curAddresses.MultiTraderJoeMasterChef3Strategy, */
   };
   // const masterChef2Tokens = [
   //   ADDRESSES.avax.xJOE,
