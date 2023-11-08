@@ -69,6 +69,8 @@ const fixBalancesTokens = {
     '0x457dE4e275A6b3C0D3750519221dD1dF19d54f01': { coingeckoId: 'edgeware', decimals: 18 },
   },
   elsm: {
+    [ADDRESSES.null]: { coingeckoId: 'lava', decimals: 18 },
+    '0xd80Ef77B0289732e13D1769850B5A70eCC196777': { coingeckoId: 'lava', decimals: 18 },
     '0xa801b1a7846156d4c81bd188f96bfcb621517611': { coingeckoId: 'vulcan-forged', decimals: 18 },
   },
   arbitrum: {
