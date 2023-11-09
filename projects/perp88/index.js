@@ -28,7 +28,8 @@ module.exports = {
         ADDRESSES.arbitrum.WBTC,
         ADDRESSES.arbitrum.USDT,
         ADDRESSES.arbitrum.fsGLP,
-      ]
+      ],
+      fetchCoValentTokens: true,
     })
   }
 }
