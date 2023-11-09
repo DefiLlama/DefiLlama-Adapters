@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { unknownTombs, sumTokensExport, } = require('../helper/unknownTokens')
 
 const chain = 'dogechain'
@@ -24,9 +25,9 @@ module.exports = unknownTombs({
 })
 
 module.exports[chain].tvl = sumTokensExport({ chain, owner: genesisPool, tokens: [
-  '0x7B4328c127B85369D9f82ca0503B000D09CF9180',
+  ADDRESSES.dogechain.DC,
   '0x68609eA0b8393258d0d7EF21401E1Cd3B00A714e',
-  '0x765277EebeCA2e31912C9946eAe1021199B39C61',
-  '0xB7ddC6414bf4F5515b52D8BdD69973Ae205ff101',
+  ADDRESSES.shiden.ETH,
+  ADDRESSES.dogechain.WWDOGE,
 ], useDefaultCoreAssets: true, })
 module.exports.misrepresentedTokens = true

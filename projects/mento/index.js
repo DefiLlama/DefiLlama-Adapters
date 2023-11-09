@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, } = require('../helper/unwrapLPs')
 const { sumTokensExport, } = require('../helper/sumTokens')
 
@@ -13,7 +14,7 @@ module.exports = {
   ethereum: {
     tvl: sumTokensExport({
       owners: ['0xe1955eA2D14e60414eBF5D649699356D8baE98eE', '0x8331C987D9Af7b649055fa9ea7731d2edbD58E6B', '0x26ac3A7b8a675b741560098fff54F94909bE5E73', '0x16B34Ce9A6a6F7FC2DD25Ba59bf7308E7B38E186', ],
-      tokens: [nullAddress, '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', '0x6b175474e89094c44da98b954eedeac495271d0f', ],
+      tokens: [nullAddress, ADDRESSES.ethereum.USDC, ADDRESSES.ethereum.DAI, ],
       chain: 'ethereum',
     })
   },

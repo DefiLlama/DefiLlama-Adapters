@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const {sumTokens} = require('../helper/unwrapLPs');
 const abi = require('./abi.json');
 const sdk = require('@defillama/sdk');
@@ -8,11 +9,11 @@ const {polygonContracts} = require('./polygon');
 const {arbitrumContracts} = require('./arbitrum');
 const {optimismContracts} = require('./optimism');
 
-const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-const wbtc = "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599";
-const ftm = "0x4E15361FD6b4BB609Fa63C81A2be19d873717870";
-const matic = '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0';
-const usdc= "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
+const weth = ADDRESSES.ethereum.WETH;
+const wbtc = ADDRESSES.ethereum.WBTC;
+const ftm = ADDRESSES.ethereum.FTM;
+const matic = ADDRESSES.ethereum.MATIC;
+const usdc= ADDRESSES.ethereum.USDC;
 
 const marketsupply = async (contract, block, chain) => {
     return await sdk.api.abi.multiCall(

@@ -9,4 +9,11 @@ module.exports = {
       hasStablePools: true,
     })
   },
+  arbitrum: {
+    tvl: getUniTVL({
+      factory: '0x6ef065573cd3fff4c375d4d36e6ca93cd6e3d499',
+      useDefaultCoreAssets: true,
+      hasStablePools: true,
+    })
+  },
 }

@@ -1,4 +1,3 @@
-const { covalentGetTokens } = require('../helper/http');
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { staking } = require('../helper/staking')
 
@@ -31,9 +30,8 @@ const blacklistedTokens = [
 
 function getTVLFunc(contractAddress, chain) {
   return async function (timestamp, _, { [chain]: block }, { api }) {
-    const tokens = await covalentGetTokens(contractAddress, chain);
     if (CONTRACTS[chain].RAIL) blacklistedTokens.push(CONTRACTS[chain].RAIL)
-    return sumTokens2({ owner: contractAddress, tokens, blacklistedTokens, api })
+    return sumTokens2({ owner: contractAddress, fetchCoValentTokens: true, blacklistedTokens, api })
   }
 }
 
@@ -43,9 +41,6 @@ function getChainTVL(chain) {
     tvl: getTVLFunc(CONTRACTS[chain].PROXY, chain),
   };
 }
-
-module.exports = {
-};
 
 Object.keys(CONTRACTS).forEach(chain => {
   module.exports[chain] = getChainTVL(chain)

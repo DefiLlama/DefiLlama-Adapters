@@ -1,16 +1,13 @@
-const { stakingPricedLP } = require('../helper/staking')
+const ADDRESSES = require('../helper/coreAssets.json')
 const {sumTokensAndLPsSharedOwners} = require('../helper/unwrapLPs')
-const { transformArbitrumAddress } = require("../helper/portedTokens");
-
-
 
 const treasury = "0xB5de3f06aF62D8428a8BF7b4400Ea42aD2E0bc53"
 
 async function tvl(time, ethBlock, chainBlocks){
     const balances = {};
-    const transformAddress = await transformArbitrumAddress();
+    const transformAddress = i => `arbitrum:${i}`
     await sumTokensAndLPsSharedOwners(balances, [
-        ["0xda10009cbd5d07dd0cecc66161fc93d7c9000da1", false], //dai
+        [ADDRESSES.optimism.DAI, false], //dai
         
     ], [treasury], chainBlocks.arbitrum, "arbitrum", transformAddress)
     return balances

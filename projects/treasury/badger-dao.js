@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 const treasury_vault = "0xD0A7A8B98957b9CD3cFB9c0425AbE44551158e9e";
@@ -31,14 +32,14 @@ module.exports = treasuryExports({
   ethereum: {
     tokens: [
         nullAddress,
-        "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",//WBTC
-        "0x6B175474E89094C44Da98b954EedeAC495271d0F",//DAI
-        "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",//USDC
-        "0xdAC17F958D2ee523a2206206994597C13D831ec7",//USDT
-        "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0",//LUSD
+        ADDRESSES.ethereum.WBTC,//WBTC
+        ADDRESSES.ethereum.DAI,//DAI
+        ADDRESSES.ethereum.USDC,//USDC
+        ADDRESSES.ethereum.USDT,//USDT
+        ADDRESSES.ethereum.LUSD,//LUSD
         "0x9ff58f4fFB29fA2266Ab25e75e2A8b3503311656",//aWBTC
-        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",//WETH
-        "0xae78736Cd615f374D3085123A210448E74Fc6393",//rETH
+        ADDRESSES.ethereum.WETH,//WETH
+        ADDRESSES.ethereum.RETH,//rETH
         "0x25f0b7c3A7A43b409634a5759526560cC3313d75", // cvxBADGERFRAX-f
         "0xaad4ee162dbc9c25cca26ba4340b36e3ef7c1a80", // aura50rETH-50BADGER-vault
         "0x4efc8ded860bc472fa8d938dc3fd4946bc1a0a18", // aura20WBTC-80BADGER-vault
@@ -46,6 +47,7 @@ module.exports = treasuryExports({
      ],
     owners: [treasury_vault, treasury_ops, treasury_voter, treasury_dev, treasury_tech, treasury_pay, treasury_drip1, treasury_drip2, treasury_bfraxbp],
     ownTokens: [BADGER, DIGG],
+    blacklistedTokens: ['0x7491989cfbc6da74141bc8cd187e480c21ece169'],
     resolveUniV3: true,
     transformAddress,
   },

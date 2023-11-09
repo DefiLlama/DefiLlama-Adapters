@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { staking } = require("../helper/staking");
@@ -37,26 +38,26 @@ const pauserAvax = "0xf08d6a9c2C5a2Dc9B8645c5Ac0b529D4046D19aa";
 const rearnUSDC = "0x84c2b16FA6877a8fF4F3271db7ea837233DFd6f0";
 
 // Ethereum Assets
-const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-const wbtc = "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599";
-const usdc = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
-const aave = "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9";
+const weth = ADDRESSES.ethereum.WETH;
+const wbtc = ADDRESSES.ethereum.WBTC;
+const usdc = ADDRESSES.ethereum.USDC;
+const aave = ADDRESSES.ethereum.AAVE;
 const perp = "0xbC396689893D065F41bc2C6EcbeE5e0085233447";
 const ape = "0x4d224452801ACEd8B2F0aebE155379bb5D594381";
 const bal = "0xba100000625a3754423978a60c9317c58a424e3D";
-const reth = "0xae78736Cd615f374D3085123A210448E74Fc6393";
-const steth = "0xae7ab96520de3a18e5e111b5eaab095312d7fe84";
+const reth = ADDRESSES.ethereum.RETH;
+const steth = ADDRESSES.ethereum.STETH;
 const spell = "0x090185f2135308BaD17527004364eBcC2D37e5F6";
 const badger = "0x3472A5A71965499acd81997a54BBA8D852C6E53d";
-const wsteth = "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0";
-const ldo = "0x5A98FcBEA516Cf06857215779Fd812CA3beF1B32";
+const wsteth = ADDRESSES.ethereum.WSTETH;
+const ldo = ADDRESSES.ethereum.LIDO;
 const rbnWeth = "0xdb44a4a457c87225b5ba45f27b7828a4cc03c112";
-const uni = "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984";
+const uni = ADDRESSES.ethereum.UNI;
 
 // Avalanche Assets
-const wavax = "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7";
+const wavax = ADDRESSES.avax.WAVAX;
 const savax = "0x2b2C81e08f1Af8835a78Bb2A90AE924ACE0eA4bE";
-const usdce = "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664";
+const usdce = ADDRESSES.avax.USDC_e;
 
 async function addVaults({ balances, chain, vaults, block, transformAddress = a => a }) {
   const { output: balanceRes } = await sdk.api.abi.multiCall({
@@ -130,7 +131,7 @@ module.exports = {
   bsc: {
     tvl: sumTokensExport({
       tokensAndOwners: [
-        ['0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', '0xC56d5a5BE96B5fB51C2bA5cBC59AfE77198838F7'],  // BNB Theta vault
+        [ADDRESSES.bsc.WBNB, '0xC56d5a5BE96B5fB51C2bA5cBC59AfE77198838F7'],  // BNB Theta vault
       ]
     })
   }

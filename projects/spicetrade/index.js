@@ -36,7 +36,6 @@ const tvl = (chain, type) => {
 const chainTypeExports = (chains) => {
     return chains.reduce((obj, chain) => {
         const uniTVL = getUniTVL({
-            chain, 
             factory: contracts[chain].factory,
             useDefaultCoreAssets: true,
         })

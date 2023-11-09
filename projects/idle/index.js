@@ -179,7 +179,7 @@ async function tvl(time, ethBlock, chainBlocks, { api }) {
     })
   }
 
-  return sumTokens2({ api, balances, ownerTokens, })
+  return sumTokens2({ api, balances, ownerTokens, blacklistedTokens, })
 }
 
 module.exports = {
