@@ -20,6 +20,7 @@ const helpers = {
   "polkadot":require("./chain/polkadot"),
   "hedera":require("./chain/hbar"),
   "stacks":require("./chain/stacks"),
+  "starknet":require("./chain/starknet"),
 }
 
 const geckoMapping = {
