@@ -30,7 +30,10 @@ module.exports = {
         ADDRESSES.arbitrum.USDT,
         ADDRESSES.arbitrum.fsGLP,
         "0x70d95587d40A2caf56bd97485aB3Eec10Bee6336",
-        "0x47c031236e19d024b42f8AE6780E44A573170703"
+        "0x47c031236e19d024b42f8AE6780E44A573170703",
+        ADDRESSES.arbitrum.WSTETH,
+        ADDRESSES.arbitrum.ARB,
+        ADDRESSES.arbitrum.DAI
       ]
     })
   }
