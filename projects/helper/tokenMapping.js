@@ -76,6 +76,9 @@ const fixBalancesTokens = {
   arbitrum: {
     '0x4e7e5023656863E26f50E2E6E59489A852C212c1': { coingeckoId: 'changer', decimals: 18 },
   },
+  xdai: {
+    '0xD4fdec44DB9D44B8f2b6d529620f9C0C7066A2c1': { coingeckoId: 'xdai:0xD057604A14982FE8D88c5fC25Aac3267eA142a08', decimals: 0 },
+  },
   bfc: {
     [ADDRESSES.bfc.WBFC]: { coingeckoId: 'bifrost', decimals: 18},
     [ADDRESSES.bfc.BIFI]: { coingeckoId: 'bifi', decimals: 18},
