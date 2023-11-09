@@ -6,8 +6,9 @@ const tokens = {
   "WBTC": ADDRESSES.polygon.WBTC,
   "DAI": ADDRESSES.polygon.DAI,
   "USDC": ADDRESSES.polygon.USDC,
-  "USDT": ADDRESSES.polygon.USDT
+  "USDT": ADDRESSES.polygon.USDT,
 }
+
 const POOL_DIAMOND_CONTRACT = '0xE7D96684A56e60ffBAAe0fC0683879da48daB383';
 
 module.exports = {
@@ -28,6 +29,8 @@ module.exports = {
         ADDRESSES.arbitrum.WBTC,
         ADDRESSES.arbitrum.USDT,
         ADDRESSES.arbitrum.fsGLP,
+        "0x70d95587d40A2caf56bd97485aB3Eec10Bee6336",
+        "0x47c031236e19d024b42f8AE6780E44A573170703"
       ]
     })
   }
