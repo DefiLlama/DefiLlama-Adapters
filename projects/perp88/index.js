@@ -28,6 +28,8 @@ module.exports = {
         ADDRESSES.arbitrum.WBTC,
         ADDRESSES.arbitrum.USDT,
         ADDRESSES.arbitrum.fsGLP,
+        ADDRESSES.arbitrum.GM_BTCUSDC,
+        ADDRESSES.arbitrum.GM_ETHUSDC,
       ]
     })
   }
