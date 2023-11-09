@@ -22,7 +22,11 @@ const poolHelpers = {
   'ontology_evm': ['0x110dE362cc436D7f54210f96b8C7652C2617887D'],
   'ultron' : ['0xcA7e21764CD8f7c1Ec40e651E25Da68AeD096037'],
   'linea': ['0x1CB60033F61e4fc171c963f0d2d3F63Ece24319c'],
-}
+  'kroma': ['0x110dE362cc436D7f54210f96b8C7652C2617887D'],  
+  'manta': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],  
+  'scroll': ['0x1502d025BfA624469892289D45C0352997251728'],
+  'base': ['0x110dE362cc436D7f54210f96b8C7652C2617887D'],
+} // iziswap liquidityManager contracts
 
 const blacklistedTokens = [
   ADDRESSES.bsc.iUSD,

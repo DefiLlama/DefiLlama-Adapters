@@ -38,3 +38,6 @@ POLYGON_RPC="..."
 ```
 
 The name of each rpc is `{CHAIN-NAME}_RPC`, and the name we use for each chain can be found [here](https://github.com/DefiLlama/defillama-sdk/blob/master/src/providers.json)
+
+## Adapter rules
+- Never add extra npm packages, if you need a chain-level package for your chain, ask us and we'll consider it, but we can't accept any npm package that is project-specific
