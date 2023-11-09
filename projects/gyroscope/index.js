@@ -82,6 +82,13 @@ const config = {
       fromBlock: 124858976,
     },
   ],
+  polygonZKEvm: [
+    {
+      name: "Gyro E-CLP V2 Factory",
+      factory: "0x5D56EA1B2595d2dbe4f5014b967c78ce75324f0c",
+      fromBlock: 5147666,
+    },
+  ],
 };
 
 Object.keys(config).forEach((chain) => {
