@@ -2,7 +2,6 @@ const { PublicKey, Keypair } = require('@solana/web3.js');
 const { getConnection, sumTokens } = require('../helper/solana');
 const { Program } = require('@project-serum/anchor');
 const kaminoIdl = require('./kamino-lending-idl.json');
-const { Scope } = require('@hubbleprotocol/scope-sdk');
 const { Token, TOKEN_PROGRAM_ID } = require('@solana/spl-token');
 
 async function tvl() {
@@ -10,8 +9,8 @@ async function tvl() {
   const programId = new PublicKey('KLend2g3cP87fffoy8q1mQqGKjrxjC8boSyAYavgmjD');
   const markets = ['7u3HeHxYDLhnCoErrtycNokbQYbWGzLs6JSDqGAv5PfF'];
   const lendingMarketAuthSeed = 'lma';
-  const scope = new Scope('mainnet-beta', connection);
-  const oraclePrices = await scope.getOraclePrices();
+  // const scope = new Scope('mainnet-beta', connection);
+  // const oraclePrices = await scope.getOraclePrices();
   const tokensAndOwners = [];
   const ktokens = {};
 
@@ -29,14 +28,14 @@ async function tvl() {
         ktokens[reserve.liquidity.mintPubkey] ||
         (await isKToken(new PublicKey(reserve.liquidity.mintPubkey), connection))
       ) {
-        ktokens[reserve.liquidity.mintPubkey] = true;
+        /* ktokens[reserve.liquidity.mintPubkey] = true;
         const liq = Number(reserve.liquidity.availableAmount.toString()) / 10 ** Number(reserve.liquidity.mintDecimals);
         const oracle = reserve.config.tokenInfo.scopeConfiguration.priceFeed;
         const chain = reserve.config.tokenInfo.scopeConfiguration.priceChain;
         if (oracle && chain && Scope.isScopeChainValid(chain)) {
           const price = await scope.getPriceFromChain(chain, oraclePrices);
           tvl += liq * price.toNumber();
-        }
+        } */
       } else {
         ktokens[reserve.liquidity.mintPubkey] = false;
         const [authority] = PublicKey.findProgramAddressSync(
@@ -47,7 +46,8 @@ async function tvl() {
       }
     }
   }
-  return { tether: tvl, ...(await sumTokens(tokensAndOwners)) };
+  // return { tether: tvl, ...(await sumTokens(tokensAndOwners)) };
+  return sumTokens(tokensAndOwners)
 }
 
 async function isKToken(mint, connection) {
