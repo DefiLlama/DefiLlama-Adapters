@@ -2,7 +2,7 @@ const { PublicKey, Keypair } = require('@solana/web3.js');
 const { getConnection, sumTokens } = require('../helper/solana');
 const { Program } = require('@project-serum/anchor');
 const kaminoIdl = require('./kamino-lending-idl.json');
-const { Token, TOKEN_PROGRAM_ID } = require('@solana/spl-token');
+const { MintLayout } = require("../helper/utils/solana/layouts/mixed-layout");
 
 async function tvl() {
   const connection = getConnection();
@@ -51,14 +51,14 @@ async function tvl() {
 }
 
 async function isKToken(mint, connection) {
-  const mintAcc = new Token(connection, mint, TOKEN_PROGRAM_ID, Keypair.generate());
-  const mintInfo = await mintAcc.getMintInfo();
+  const mintInfo = await connection.getAccountInfo(new PublicKey(mint.toString()));
+  const rawMint = MintLayout.decode(mintInfo.data.slice(0, MintLayout.span));
   const KAMINO_PROGRAM_ID = new PublicKey('6LtLpnUFNByNXLyCoK9wA2MykKAmQNZKBdY8s47dehDc');
   const [expectedMintAuthority] = PublicKey.findProgramAddressSync(
     [Buffer.from('authority'), mint.toBuffer()],
     KAMINO_PROGRAM_ID
   );
-  return mintInfo.mintAuthority !== null && mintInfo.mintAuthority.equals(expectedMintAuthority);
+  return rawMint.mintAuthority !== null && rawMint.mintAuthority.equals(expectedMintAuthority);
 }
 
 module.exports = {
