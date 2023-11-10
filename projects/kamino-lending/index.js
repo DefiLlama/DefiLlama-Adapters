@@ -67,5 +67,4 @@ module.exports = {
     tvl,
   },
   methodology: 'TVL consists of deposits made to the protocol, borrowed tokens are not counted.',
-  misrepresentedTokens: true,
 };
