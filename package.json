@@ -19,7 +19,6 @@
   "license": "ISC",
   "dependencies": {
     "@defillama/sdk": "latest",
-    "@coral-xyz/borsh": "^0.29.0",
     "@project-serum/anchor": "^0.26.0",
     "@solana/web3.js": "^1.36.0",
     "@solendprotocol/solend-sdk": "^0.6.2",
