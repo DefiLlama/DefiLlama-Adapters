@@ -1,4 +1,4 @@
-const { PublicKey, Keypair } = require('@solana/web3.js');
+const { PublicKey } = require('@solana/web3.js');
 const { getConnection, sumTokens } = require('../helper/solana');
 const { Program } = require('@project-serum/anchor');
 const kaminoIdl = require('./kamino-lending-idl.json');
@@ -9,13 +9,10 @@ async function tvl() {
   const programId = new PublicKey('KLend2g3cP87fffoy8q1mQqGKjrxjC8boSyAYavgmjD');
   const markets = ['7u3HeHxYDLhnCoErrtycNokbQYbWGzLs6JSDqGAv5PfF'];
   const lendingMarketAuthSeed = 'lma';
-  // const scope = new Scope('mainnet-beta', connection);
-  // const oraclePrices = await scope.getOraclePrices();
   const tokensAndOwners = [];
   const ktokens = {};
 
   const kaminoLendProgram = new Program(kaminoIdl, programId, { connection, publicKey: PublicKey.unique() });
-  let tvl = 0;
   for (const market of markets) {
     const reserves = await kaminoLendProgram.account.reserve.all([
       { dataSize: 8624 },
@@ -28,14 +25,7 @@ async function tvl() {
         ktokens[reserve.liquidity.mintPubkey] ||
         (await isKToken(new PublicKey(reserve.liquidity.mintPubkey), connection))
       ) {
-        /* ktokens[reserve.liquidity.mintPubkey] = true;
-        const liq = Number(reserve.liquidity.availableAmount.toString()) / 10 ** Number(reserve.liquidity.mintDecimals);
-        const oracle = reserve.config.tokenInfo.scopeConfiguration.priceFeed;
-        const chain = reserve.config.tokenInfo.scopeConfiguration.priceChain;
-        if (oracle && chain && Scope.isScopeChainValid(chain)) {
-          const price = await scope.getPriceFromChain(chain, oraclePrices);
-          tvl += liq * price.toNumber();
-        } */
+        ktokens[reserve.liquidity.mintPubkey] = true;
       } else {
         ktokens[reserve.liquidity.mintPubkey] = false;
         const [authority] = PublicKey.findProgramAddressSync(
@@ -46,7 +36,6 @@ async function tvl() {
       }
     }
   }
-  // return { tether: tvl, ...(await sumTokens(tokensAndOwners)) };
   return sumTokens(tokensAndOwners)
 }
 
@@ -66,5 +55,5 @@ module.exports = {
   solana: {
     tvl,
   },
-  methodology: 'TVL consists of deposits made to the protocol, borrowed tokens are not counted.',
+  methodology: 'TVL consists of deposits made to the protocol, borrowed tokens and kTokens are not counted.',
 };
