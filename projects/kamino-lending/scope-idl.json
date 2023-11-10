@@ -1,0 +1,1755 @@
+{
+  "version": "0.1.0",
+  "name": "scope",
+  "instructions": [
+    {
+      "name": "initialize",
+      "accounts": [
+        {
+          "name": "admin",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "configuration",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "oraclePrices",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "oracleMappings",
+          "isMut": true,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "feedName",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "refreshOnePrice",
+      "accounts": [
+        {
+          "name": "oraclePrices",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "oracleMappings",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "priceInfo",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "clock",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "instructionSysvarAccountInfo",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "token",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "refreshPriceList",
+      "accounts": [
+        {
+          "name": "oraclePrices",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "oracleMappings",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "clock",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "instructionSysvarAccountInfo",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "tokens",
+          "type": {
+            "vec": "u16"
+          }
+        }
+      ]
+    },
+    {
+      "name": "updateMapping",
+      "accounts": [
+        {
+          "name": "admin",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "configuration",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "oracleMappings",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "priceInfo",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "token",
+          "type": "u64"
+        },
+        {
+          "name": "priceType",
+          "type": "u8"
+        },
+        {
+          "name": "feedName",
+          "type": "string"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "WhirlpoolStrategy",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "adminAuthority",
+            "type": "publicKey"
+          },
+          {
+            "name": "globalConfig",
+            "type": "publicKey"
+          },
+          {
+            "name": "baseVaultAuthority",
+            "type": "publicKey"
+          },
+          {
+            "name": "baseVaultAuthorityBump",
+            "type": "u64"
+          },
+          {
+            "name": "pool",
+            "type": "publicKey"
+          },
+          {
+            "name": "poolTokenVaultA",
+            "type": "publicKey"
+          },
+          {
+            "name": "poolTokenVaultB",
+            "type": "publicKey"
+          },
+          {
+            "name": "tickArrayLower",
+            "type": "publicKey"
+          },
+          {
+            "name": "tickArrayUpper",
+            "type": "publicKey"
+          },
+          {
+            "name": "position",
+            "type": "publicKey"
+          },
+          {
+            "name": "positionMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "positionMetadata",
+            "type": "publicKey"
+          },
+          {
+            "name": "positionTokenAccount",
+            "type": "publicKey"
+          },
+          {
+            "name": "tokenAVault",
+            "type": "publicKey"
+          },
+          {
+            "name": "tokenBVault",
+            "type": "publicKey"
+          },
+          {
+            "name": "tokenAVaultAuthority",
+            "type": "publicKey"
+          },
+          {
+            "name": "tokenBVaultAuthority",
+            "type": "publicKey"
+          },
+          {
+            "name": "tokenAVaultAuthorityBump",
+            "type": "u64"
+          },
+          {
+            "name": "tokenBVaultAuthorityBump",
+            "type": "u64"
+          },
+          {
+            "name": "tokenAMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "tokenBMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "tokenAMintDecimals",
+            "type": "u64"
+          },
+          {
+            "name": "tokenBMintDecimals",
+            "type": "u64"
+          },
+          {
+            "name": "tokenAAmounts",
+            "type": "u64"
+          },
+          {
+            "name": "tokenBAmounts",
+            "type": "u64"
+          },
+          {
+            "name": "tokenACollateralId",
+            "type": "u64"
+          },
+          {
+            "name": "tokenBCollateralId",
+            "type": "u64"
+          },
+          {
+            "name": "scopePrices",
+            "type": "publicKey"
+          },
+          {
+            "name": "scopeProgram",
+            "type": "publicKey"
+          },
+          {
+            "name": "sharesMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "sharesMintDecimals",
+            "type": "u64"
+          },
+          {
+            "name": "sharesMintAuthority",
+            "type": "publicKey"
+          },
+          {
+            "name": "sharesMintAuthorityBump",
+            "type": "u64"
+          },
+          {
+            "name": "sharesIssued",
+            "type": "u64"
+          },
+          {
+            "name": "status",
+            "type": "u64"
+          },
+          {
+            "name": "reward0Amount",
+            "type": "u64"
+          },
+          {
+            "name": "reward0Vault",
+            "type": "publicKey"
+          },
+          {
+            "name": "reward0CollateralId",
+            "type": "u64"
+          },
+          {
+            "name": "reward0Decimals",
+            "type": "u64"
+          },
+          {
+            "name": "reward1Amount",
+            "type": "u64"
+          },
+          {
+            "name": "reward1Vault",
+            "type": "publicKey"
+          },
+          {
+            "name": "reward1CollateralId",
+            "type": "u64"
+          },
+          {
+            "name": "reward1Decimals",
+            "type": "u64"
+          },
+          {
+            "name": "reward2Amount",
+            "type": "u64"
+          },
+          {
+            "name": "reward2Vault",
+            "type": "publicKey"
+          },
+          {
+            "name": "reward2CollateralId",
+            "type": "u64"
+          },
+          {
+            "name": "reward2Decimals",
+            "type": "u64"
+          },
+          {
+            "name": "depositCapUsd",
+            "type": "u64"
+          },
+          {
+            "name": "feesACumulative",
+            "type": "u64"
+          },
+          {
+            "name": "feesBCumulative",
+            "type": "u64"
+          },
+          {
+            "name": "reward0AmountCumulative",
+            "type": "u64"
+          },
+          {
+            "name": "reward1AmountCumulative",
+            "type": "u64"
+          },
+          {
+            "name": "reward2AmountCumulative",
+            "type": "u64"
+          },
+          {
+            "name": "depositCapUsdPerIxn",
+            "type": "u64"
+          },
+          {
+            "name": "withdrawalCapA",
+            "type": {
+              "defined": "WithdrawalCaps"
+            }
+          },
+          {
+            "name": "withdrawalCapB",
+            "type": {
+              "defined": "WithdrawalCaps"
+            }
+          },
+          {
+            "name": "maxPriceDeviationBps",
+            "type": "u64"
+          },
+          {
+            "name": "swapVaultMaxSlippageBps",
+            "type": "u32"
+          },
+          {
+            "name": "swapVaultMaxSlippageFromReferenceBps",
+            "type": "u32"
+          },
+          {
+            "name": "strategyType",
+            "type": "u64"
+          },
+          {
+            "name": "depositFee",
+            "type": "u64"
+          },
+          {
+            "name": "withdrawFee",
+            "type": "u64"
+          },
+          {
+            "name": "feesFee",
+            "type": "u64"
+          },
+          {
+            "name": "reward0Fee",
+            "type": "u64"
+          },
+          {
+            "name": "reward1Fee",
+            "type": "u64"
+          },
+          {
+            "name": "reward2Fee",
+            "type": "u64"
+          },
+          {
+            "name": "positionTimestamp",
+            "type": "u64"
+          },
+          {
+            "name": "kaminoRewards",
+            "type": {
+              "array": [
+                {
+                  "defined": "KaminoRewardInfo"
+                },
+                3
+              ]
+            }
+          },
+          {
+            "name": "strategyDex",
+            "type": "u64"
+          },
+          {
+            "name": "raydiumProtocolPositionOrBaseVaultAuthority",
+            "type": "publicKey"
+          },
+          {
+            "name": "allowDepositWithoutInvest",
+            "type": "u64"
+          },
+          {
+            "name": "raydiumPoolConfigOrBaseVaultAuthority",
+            "type": "publicKey"
+          },
+          {
+            "name": "depositBlocked",
+            "type": "u8"
+          },
+          {
+            "name": "creationStatus",
+            "type": "u8"
+          },
+          {
+            "name": "investBlocked",
+            "type": "u8"
+          },
+          {
+            "name": "shareCalculationMethod",
+            "docs": [
+              "share_calculation_method can be either DOLAR_BASED=0 or PROPORTION_BASED=1"
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "withdrawBlocked",
+            "type": "u8"
+          },
+          {
+            "name": "reservedFlag2",
+            "type": "u8"
+          },
+          {
+            "name": "localAdminBlocked",
+            "type": "u8"
+          },
+          {
+            "name": "flashVaultSwapAllowed",
+            "type": "u8"
+          },
+          {
+            "name": "referenceSwapPriceA",
+            "type": {
+              "defined": "KaminoPrice"
+            }
+          },
+          {
+            "name": "referenceSwapPriceB",
+            "type": {
+              "defined": "KaminoPrice"
+            }
+          },
+          {
+            "name": "isCommunity",
+            "type": "u8"
+          },
+          {
+            "name": "rebalanceType",
+            "type": "u8"
+          },
+          {
+            "name": "padding0",
+            "type": {
+              "array": [
+                "u8",
+                6
+              ]
+            }
+          },
+          {
+            "name": "rebalanceRaw",
+            "type": {
+              "defined": "RebalanceRaw"
+            }
+          },
+          {
+            "name": "padding1",
+            "type": {
+              "array": [
+                "u8",
+                7
+              ]
+            }
+          },
+          {
+            "name": "tokenAFeesFromRewardsCumulative",
+            "type": "u64"
+          },
+          {
+            "name": "tokenBFeesFromRewardsCumulative",
+            "type": "u64"
+          },
+          {
+            "name": "strategyLookupTable",
+            "type": "publicKey"
+          },
+          {
+            "name": "padding3",
+            "type": {
+              "array": [
+                "u128",
+                26
+              ]
+            }
+          },
+          {
+            "name": "padding4",
+            "type": {
+              "array": [
+                "u128",
+                32
+              ]
+            }
+          },
+          {
+            "name": "padding5",
+            "type": {
+              "array": [
+                "u128",
+                32
+              ]
+            }
+          },
+          {
+            "name": "padding6",
+            "type": {
+              "array": [
+                "u128",
+                32
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "GlobalConfig",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "emergencyMode",
+            "type": "u64"
+          },
+          {
+            "name": "blockDeposit",
+            "type": "u64"
+          },
+          {
+            "name": "blockInvest",
+            "type": "u64"
+          },
+          {
+            "name": "blockWithdraw",
+            "type": "u64"
+          },
+          {
+            "name": "blockCollectFees",
+            "type": "u64"
+          },
+          {
+            "name": "blockCollectRewards",
+            "type": "u64"
+          },
+          {
+            "name": "blockSwapRewards",
+            "type": "u64"
+          },
+          {
+            "name": "blockSwapUnevenVaults",
+            "type": "u32"
+          },
+          {
+            "name": "blockEmergencySwap",
+            "type": "u32"
+          },
+          {
+            "name": "feesBps",
+            "type": "u64"
+          },
+          {
+            "name": "scopeProgramId",
+            "type": "publicKey"
+          },
+          {
+            "name": "scopePriceId",
+            "type": "publicKey"
+          },
+          {
+            "name": "swapRewardsDiscountBps",
+            "type": {
+              "array": [
+                "u64",
+                256
+              ]
+            }
+          },
+          {
+            "name": "actionsAuthority",
+            "type": "publicKey"
+          },
+          {
+            "name": "adminAuthority",
+            "type": "publicKey"
+          },
+          {
+            "name": "treasuryFeeVaults",
+            "type": {
+              "array": [
+                "publicKey",
+                256
+              ]
+            }
+          },
+          {
+            "name": "tokenInfos",
+            "type": "publicKey"
+          },
+          {
+            "name": "blockLocalAdmin",
+            "type": "u64"
+          },
+          {
+            "name": "minPerformanceFeeBps",
+            "type": "u64"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u64",
+                2042
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "CollateralInfos",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "infos",
+            "type": {
+              "array": [
+                {
+                  "defined": "CollateralInfo"
+                },
+                256
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Whirlpool",
+      "docs": [
+        "External types"
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "whirlpoolsConfig",
+            "type": "publicKey"
+          },
+          {
+            "name": "whirlpoolBump",
+            "type": {
+              "array": [
+                "u8",
+                1
+              ]
+            }
+          },
+          {
+            "name": "tickSpacing",
+            "type": "u16"
+          },
+          {
+            "name": "tickSpacingSeed",
+            "type": {
+              "array": [
+                "u8",
+                2
+              ]
+            }
+          },
+          {
+            "name": "feeRate",
+            "type": "u16"
+          },
+          {
+            "name": "protocolFeeRate",
+            "type": "u16"
+          },
+          {
+            "name": "liquidity",
+            "type": "u128"
+          },
+          {
+            "name": "sqrtPrice",
+            "type": "u128"
+          },
+          {
+            "name": "tickCurrentIndex",
+            "type": "i32"
+          },
+          {
+            "name": "protocolFeeOwedA",
+            "type": "u64"
+          },
+          {
+            "name": "protocolFeeOwedB",
+            "type": "u64"
+          },
+          {
+            "name": "tokenMintA",
+            "type": "publicKey"
+          },
+          {
+            "name": "tokenVaultA",
+            "type": "publicKey"
+          },
+          {
+            "name": "feeGrowthGlobalA",
+            "type": "u128"
+          },
+          {
+            "name": "tokenMintB",
+            "type": "publicKey"
+          },
+          {
+            "name": "tokenVaultB",
+            "type": "publicKey"
+          },
+          {
+            "name": "feeGrowthGlobalB",
+            "type": "u128"
+          },
+          {
+            "name": "rewardLastUpdatedTimestamp",
+            "type": "u64"
+          },
+          {
+            "name": "rewardInfos",
+            "type": {
+              "array": [
+                {
+                  "defined": "WhirlpoolRewardInfo"
+                },
+                3
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Position",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "whirlpool",
+            "type": "publicKey"
+          },
+          {
+            "name": "positionMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "liquidity",
+            "type": "u128"
+          },
+          {
+            "name": "tickLowerIndex",
+            "type": "i32"
+          },
+          {
+            "name": "tickUpperIndex",
+            "type": "i32"
+          },
+          {
+            "name": "feeGrowthCheckpointA",
+            "type": "u128"
+          },
+          {
+            "name": "feeOwedA",
+            "type": "u64"
+          },
+          {
+            "name": "feeGrowthCheckpointB",
+            "type": "u128"
+          },
+          {
+            "name": "feeOwedB",
+            "type": "u64"
+          },
+          {
+            "name": "rewardInfos",
+            "type": {
+              "array": [
+                {
+                  "defined": "PositionRewardInfo"
+                },
+                3
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "TickArray",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "startTickIndex",
+            "type": "i32"
+          },
+          {
+            "name": "ticks",
+            "type": {
+              "array": [
+                {
+                  "defined": "Tick"
+                },
+                88
+              ]
+            }
+          },
+          {
+            "name": "whirlpool",
+            "type": "publicKey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OraclePrices",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "oracleMappings",
+            "type": "publicKey"
+          },
+          {
+            "name": "prices",
+            "type": {
+              "array": [
+                {
+                  "defined": "DatedPrice"
+                },
+                512
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "OracleMappings",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "priceInfoAccounts",
+            "type": {
+              "array": [
+                "publicKey",
+                512
+              ]
+            }
+          },
+          {
+            "name": "priceTypes",
+            "type": {
+              "array": [
+                "u8",
+                512
+              ]
+            }
+          },
+          {
+            "name": "reserved2",
+            "type": {
+              "array": [
+                "u64",
+                512
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Configuration",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "type": "publicKey"
+          },
+          {
+            "name": "oracleMappings",
+            "type": "publicKey"
+          },
+          {
+            "name": "oraclePrices",
+            "type": "publicKey"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u64",
+                1267
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "RebalanceRaw",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "params",
+            "type": {
+              "array": [
+                "u8",
+                128
+              ]
+            }
+          },
+          {
+            "name": "state",
+            "type": {
+              "array": [
+                "u8",
+                256
+              ]
+            }
+          },
+          {
+            "name": "referencePriceType",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "KaminoRewardInfo",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "decimals",
+            "type": "u64"
+          },
+          {
+            "name": "rewardVault",
+            "type": "publicKey"
+          },
+          {
+            "name": "rewardMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "rewardCollateralId",
+            "type": "u64"
+          },
+          {
+            "name": "lastIssuanceTs",
+            "type": "u64"
+          },
+          {
+            "name": "rewardPerSecond",
+            "type": "u64"
+          },
+          {
+            "name": "amountUncollected",
+            "type": "u64"
+          },
+          {
+            "name": "amountIssuedCumulative",
+            "type": "u64"
+          },
+          {
+            "name": "amountAvailable",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CollateralInfo",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "publicKey"
+          },
+          {
+            "name": "lowerHeuristic",
+            "type": "u64"
+          },
+          {
+            "name": "upperHeuristic",
+            "type": "u64"
+          },
+          {
+            "name": "expHeuristic",
+            "type": "u64"
+          },
+          {
+            "name": "maxTwapDivergenceBps",
+            "type": "u64"
+          },
+          {
+            "name": "scopePriceIdTwap",
+            "type": "u64"
+          },
+          {
+            "name": "scopePriceChain",
+            "type": {
+              "array": [
+                "u16",
+                4
+              ]
+            }
+          },
+          {
+            "name": "name",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "maxAgePriceSeconds",
+            "type": "u64"
+          },
+          {
+            "name": "maxAgeTwapSeconds",
+            "type": "u64"
+          },
+          {
+            "name": "maxIgnorableAmountAsReward",
+            "type": "u64"
+          },
+          {
+            "name": "disabled",
+            "type": "u8"
+          },
+          {
+            "name": "padding0",
+            "type": {
+              "array": [
+                "u8",
+                7
+              ]
+            }
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u64",
+                9
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "KaminoPrice",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "value",
+            "type": "u64"
+          },
+          {
+            "name": "exp",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "WithdrawalCaps",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "configCapacity",
+            "type": "i64"
+          },
+          {
+            "name": "currentTotal",
+            "type": "i64"
+          },
+          {
+            "name": "lastIntervalStartTimestamp",
+            "type": "u64"
+          },
+          {
+            "name": "configIntervalLengthSeconds",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PositionRewardInfo",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "growthInsideCheckpoint",
+            "type": "u128"
+          },
+          {
+            "name": "amountOwed",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "WhirlpoolRewardInfo",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "docs": [
+              "Reward token mint."
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "vault",
+            "docs": [
+              "Reward vault token account."
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "authority",
+            "docs": [
+              "Authority account that has permission to initialize the reward and set emissions."
+            ],
+            "type": "publicKey"
+          },
+          {
+            "name": "emissionsPerSecondX64",
+            "docs": [
+              "Q64.64 number that indicates how many tokens per second are earned per unit of liquidity."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "growthGlobalX64",
+            "docs": [
+              "Q64.64 number that tracks the total tokens earned per unit of liquidity since the reward",
+              "emissions were turned on."
+            ],
+            "type": "u128"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Tick",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "initialized",
+            "type": "bool"
+          },
+          {
+            "name": "liquidityNet",
+            "type": "i128"
+          },
+          {
+            "name": "liquidityGross",
+            "type": "u128"
+          },
+          {
+            "name": "feeGrowthOutsideA",
+            "type": "u128"
+          },
+          {
+            "name": "feeGrowthOutsideB",
+            "type": "u128"
+          },
+          {
+            "name": "rewardGrowthsOutside",
+            "type": {
+              "array": [
+                "u128",
+                3
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "SwitchboardDecimal",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mantissa",
+            "type": "i128"
+          },
+          {
+            "name": "scale",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AggregatorAccountData",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "name",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "metadata",
+            "type": {
+              "array": [
+                "u8",
+                128
+              ]
+            }
+          },
+          {
+            "name": "authorWallet",
+            "type": "publicKey"
+          },
+          {
+            "name": "queuePubkey",
+            "type": "publicKey"
+          },
+          {
+            "name": "oracleRequestBatchSize",
+            "type": "u32"
+          },
+          {
+            "name": "minOracleResults",
+            "type": "u32"
+          },
+          {
+            "name": "minJobResults",
+            "type": "u32"
+          },
+          {
+            "name": "minUpdateDelaySeconds",
+            "type": "u32"
+          },
+          {
+            "name": "startAfter",
+            "type": "i64"
+          },
+          {
+            "name": "varianceThreshold",
+            "type": {
+              "defined": "SwitchboardDecimal"
+            }
+          },
+          {
+            "name": "forceReportPeriod",
+            "type": "i64"
+          },
+          {
+            "name": "expiration",
+            "type": "i64"
+          },
+          {
+            "name": "consecutiveFailureCount",
+            "type": "u64"
+          },
+          {
+            "name": "nextAllowedUpdateTime",
+            "type": "i64"
+          },
+          {
+            "name": "isLocked",
+            "type": "bool"
+          },
+          {
+            "name": "schedule",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "latestConfirmedRound",
+            "type": {
+              "defined": "AggregatorRound"
+            }
+          },
+          {
+            "name": "currentRound",
+            "type": {
+              "defined": "AggregatorRound"
+            }
+          },
+          {
+            "name": "jobPubkeysData",
+            "type": {
+              "array": [
+                "publicKey",
+                16
+              ]
+            }
+          },
+          {
+            "name": "jobHashes",
+            "type": {
+              "array": [
+                {
+                  "defined": "Hash"
+                },
+                16
+              ]
+            }
+          },
+          {
+            "name": "jobPubkeysSize",
+            "type": "u32"
+          },
+          {
+            "name": "jobsChecksum",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "authority",
+            "type": "publicKey"
+          },
+          {
+            "name": "ebuf",
+            "type": {
+              "array": [
+                "u8",
+                224
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "AggregatorRound",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "numSuccess",
+            "type": "u32"
+          },
+          {
+            "name": "numError",
+            "type": "u32"
+          },
+          {
+            "name": "isClosed",
+            "type": "bool"
+          },
+          {
+            "name": "roundOpenSlot",
+            "type": "u64"
+          },
+          {
+            "name": "roundOpenTimestamp",
+            "type": "i64"
+          },
+          {
+            "name": "result",
+            "type": {
+              "defined": "SwitchboardDecimal"
+            }
+          },
+          {
+            "name": "stdDeviation",
+            "type": {
+              "defined": "SwitchboardDecimal"
+            }
+          },
+          {
+            "name": "minResponse",
+            "type": {
+              "defined": "SwitchboardDecimal"
+            }
+          },
+          {
+            "name": "maxResponse",
+            "type": {
+              "defined": "SwitchboardDecimal"
+            }
+          },
+          {
+            "name": "oraclePubkeysData",
+            "type": {
+              "array": [
+                "publicKey",
+                16
+              ]
+            }
+          },
+          {
+            "name": "mediansData",
+            "type": {
+              "array": [
+                {
+                  "defined": "SwitchboardDecimal"
+                },
+                16
+              ]
+            }
+          },
+          {
+            "name": "currentPayout",
+            "type": {
+              "array": [
+                "i64",
+                16
+              ]
+            }
+          },
+          {
+            "name": "mediansFulfilled",
+            "type": {
+              "array": [
+                "bool",
+                16
+              ]
+            }
+          },
+          {
+            "name": "errorsFulfilled",
+            "type": {
+              "array": [
+                "bool",
+                16
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Hash",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "data",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Price",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "value",
+            "type": "u64"
+          },
+          {
+            "name": "exp",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DatedPrice",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "price",
+            "type": {
+              "defined": "Price"
+            }
+          },
+          {
+            "name": "lastUpdatedSlot",
+            "type": "u64"
+          },
+          {
+            "name": "unixTimestamp",
+            "type": "u64"
+          },
+          {
+            "name": "reserved",
+            "type": {
+              "array": [
+                "u64",
+                2
+              ]
+            }
+          },
+          {
+            "name": "reserved2",
+            "type": {
+              "array": [
+                "u16",
+                3
+              ]
+            }
+          },
+          {
+            "name": "index",
+            "type": "u16"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OracleType",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Pyth"
+          },
+          {
+            "name": "SwitchboardV1"
+          },
+          {
+            "name": "SwitchboardV2"
+          },
+          {
+            "name": "DeprecatedPlaceholder"
+          },
+          {
+            "name": "CToken"
+          },
+          {
+            "name": "SplStake"
+          },
+          {
+            "name": "KToken"
+          },
+          {
+            "name": "PythEMA"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ScopeChainError",
+      "docs": [
+        "Errors that can be raised while creating or manipulating a scope chain"
+      ],
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "PriceChainTooLong"
+          },
+          {
+            "name": "PriceChainConversionFailure"
+          },
+          {
+            "name": "NoChainForToken"
+          },
+          {
+            "name": "InvalidPricesInChain"
+          },
+          {
+            "name": "MathOverflow"
+          },
+          {
+            "name": "IntegerConversionOverflow"
+          }
+        ]
+      }
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "IntegerOverflow",
+      "msg": "Integer overflow"
+    },
+    {
+      "code": 6001,
+      "name": "ConversionFailure",
+      "msg": "Conversion failure"
+    },
+    {
+      "code": 6002,
+      "name": "MathOverflow",
+      "msg": "Mathematical operation with overflow"
+    },
+    {
+      "code": 6003,
+      "name": "OutOfRangeIntegralConversion",
+      "msg": "Out of range integral conversion attempted"
+    },
+    {
+      "code": 6004,
+      "name": "UnexpectedAccount",
+      "msg": "Unexpected account in instruction"
+    },
+    {
+      "code": 6005,
+      "name": "PriceNotValid",
+      "msg": "Price is not valid"
+    },
+    {
+      "code": 6006,
+      "name": "AccountsAndTokenMismatch",
+      "msg": "The number of tokens is different from the number of received accounts"
+    },
+    {
+      "code": 6007,
+      "name": "BadTokenNb",
+      "msg": "The token index received is out of range"
+    },
+    {
+      "code": 6008,
+      "name": "BadTokenType",
+      "msg": "The token type received is invalid"
+    },
+    {
+      "code": 6009,
+      "name": "SwitchboardV2Error",
+      "msg": "There was an error with the Switchboard V2 retrieval"
+    },
+    {
+      "code": 6010,
+      "name": "InvalidAccountDiscriminator",
+      "msg": "Invalid account discriminator"
+    },
+    {
+      "code": 6011,
+      "name": "UnableToDeserializeAccount",
+      "msg": "Unable to deserialize account"
+    },
+    {
+      "code": 6012,
+      "name": "BadScopeChainOrPrices",
+      "msg": "Error while computing price with ScopeChain"
+    },
+    {
+      "code": 6013,
+      "name": "RefreshInCPI",
+      "msg": "Refresh price instruction called in a CPI"
+    },
+    {
+      "code": 6014,
+      "name": "RefreshWithUnexpectedIxs",
+      "msg": "Refresh price instruction preceded by unexpected ixs"
+    }
+  ]
+}
