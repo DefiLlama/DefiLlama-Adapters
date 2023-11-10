@@ -123,6 +123,8 @@ async function addVectorVaultBalancesAuto({ balances, accounts, api, token }) {
     target: VF_MAINSTAKING_CONTRACT,
     params: [token],
   })
+  if (helper.helper.toLowerCase() === '0xDacb0d2c73c47CaEc4FA8DfD58a7d6d25aB071cE'.toLowerCase()) return balances;
+  if (helper.helper.toLowerCase() === '0x6D6E858c6103D63123780fa9Ca92EEEAce21414C'.toLowerCase()) return balances;
   const compounder = await api.call({
     abi: 'function compounder() view returns(address)',
     target: helper.helper,
@@ -153,6 +155,7 @@ async function addVectorVaultBalances({ balances, accounts, api, token }) {
     params: [token],
   })
   if (helper.helper.toLowerCase() === '0x9AB2B763798124F81E95419aC9b77a4fB480742D'.toLowerCase()) return balances;
+  if (helper.helper.toLowerCase() === '0x6D6E858c6103D63123780fa9Ca92EEEAce21414C'.toLowerCase()) return balances;
   const bals = await api.multiCall({ abi: VFDepositTokenBalanceAbi, calls: accounts, target: helper.helper })
 
   bals.forEach(i => sdk.util.sumSingleBalance(balances, token, i, api.chain))
