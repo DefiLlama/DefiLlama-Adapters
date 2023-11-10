@@ -66,6 +66,6 @@ module.exports = {
   solana: {
     tvl,
   },
-  methodology:
-    'TVL consists of deposits made to the protocol and like other lending protocols, borrowed tokens are not counted.',
+  methodology: 'TVL consists of deposits made to the protocol, borrowed tokens are not counted.',
+  misrepresentedTokens: true,
 };
