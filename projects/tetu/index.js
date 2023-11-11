@@ -67,9 +67,11 @@ function offset(chain) {
 }
 
 Object.keys(config).forEach(chain => {
-  const { bookkeeper, contract_Reader, controllerV2, veTETU, pawnshopSubgraph } = config[chain]
+  const { bookkeeper, contract_Reader, controllerV2, veTETU } = config[chain]
   module.exports[chain] = {
     tvl: async (timestamp, ethBlock, chainBlocks, { api }) => {
+
+      // ? ############### Tetu V1 vaults
       const vaultsCall = [];
       if (bookkeeper) {
         const vaultAddresses = await api.fetchList({
@@ -94,7 +96,7 @@ Object.keys(config).forEach(chain => {
         }
       }
 
-      // ? ############### TetuV2 vaults
+      // ? ############### Tetu V2 vaults
       let usdcsV2 = [];
       if (controllerV2) {
         const vaultsV2 = (await api.call({ abi: abi.vaultsList, target: controllerV2, }));
