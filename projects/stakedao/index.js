@@ -200,8 +200,6 @@ async function tvl(timestamp, block, _, { api }) {
     lockerMAVBal.push({ amount: balance, end: 0 })
   }
 
-  console.log(lockerBals, lockerPendleBal, lockerMAVBal)
-
   for (let i = 0; i < lockersInfos.length; ++i) {
     let amount;
     if (lockersInfos[i].veToken == vePendle) {

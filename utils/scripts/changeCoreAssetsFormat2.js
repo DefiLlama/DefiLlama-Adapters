@@ -26,7 +26,7 @@ async function getSymbols([chain, mapping]) {
     return key2
   }).filter(i => i)
   if (!tokens.length) return;
-  const { data: { coins } } = await axios.get('https://coins.llama.fi/prices/current/' + tokens.join(','))
+  const { data: { coins } } = await axios.get('https://coins2.llama.fi/prices/current/' + tokens.join(','))
   const symbolSet = new Set()
   Object.entries(coins).forEach(([key, { symbol }]) => {
     const key2 = reverseMapping[key]
@@ -55,7 +55,7 @@ async function checkSymbols([chain, mapping]) {
       return chain + ':' + value
     })
     if (!tokens.length) return;
-    const { data: { coins } } = await axios.get('https://coins.llama.fi/prices/current/' + tokens.join(','))
+    const { data: { coins } } = await axios.get('https://coins2.llama.fi/prices/current/' + tokens.join(','))
     Object.entries(coins).forEach(([key, { symbol }]) => {
       tokens = tokens.filter(i => i !== key)
     })
