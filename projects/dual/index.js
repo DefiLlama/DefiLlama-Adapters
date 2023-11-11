@@ -119,7 +119,6 @@ function gsoVault(pubkey) {
 }
 
 module.exports = {
-  misrepresentedTokens: true,
   timetravel: false,
   solana: {
     tvl,
