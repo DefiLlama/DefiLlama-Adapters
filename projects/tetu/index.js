@@ -31,7 +31,6 @@ const config = {
     contract_Reader: '0xCa9C8Fba773caafe19E6140eC0A7a54d996030Da',
     controllerV2: '0x33b27e0A2506a4A2FBc213a01C51d0451745343a',
     veTETU: '0x6FB29DD17fa6E27BD112Bc3A2D0b8dae597AeDA4',
-    pawnshopSubgraph: 'https://api.thegraph.com/subgraphs/name/tetu-io/pawnshop-polygon',
   },
   fantom: {
     bookkeeper: '0x00379dD90b2A337C4652E286e4FBceadef940a21',
@@ -124,28 +123,7 @@ Object.keys(config).forEach(chain => {
         }
       }
 
-      // ? ############### pawnshop
-      let pawnshopTVL = 0;
-      if(pawnshopSubgraph) {
-        var graphQLClient = new GraphQLClient(pawnshopSubgraph)
-        const block = (await getBlock(timestamp, chain, chainBlocks)) - offset(chain)
-        var query = gql`
-            {
-                tvlEntities(block: {number: ${block}}) {
-                    value
-                    collateralValue
-                    depositTokenValue
-                }
-            }
-        `
-        const result = await graphQLClient.request(query)
-
-        for (const tvl of result.tvlEntities) {
-          pawnshopTVL += Number(tvl.value);
-        }
-      }
-
-      let total = veTETU_USDC + pawnshopTVL
+      let total = veTETU_USDC
       for (const vault of vaultsCall) {
         const usdcs = await api.call({ target: contract_Reader, abi: abi.totalTvlUsdc, params: [[vault]], })
         total += usdcs / 1e18
