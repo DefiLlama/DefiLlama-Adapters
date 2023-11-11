@@ -4,7 +4,7 @@ const bentobox_chains = [
   "ethereum",
   "polygon",
   "fantom",
-  "bsc",
+//  "bsc",
   "avax",
   "arbitrum",
   "optimism",
