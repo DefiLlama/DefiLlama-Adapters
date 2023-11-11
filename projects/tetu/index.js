@@ -45,6 +45,11 @@ const config = {
     bookkeeper: '0xb8bA82F19A9Be6CbF6DAF9BF4FBCC5bDfCF8bEe6',
     contract_Reader: '0x6E4D8CAc827B52E7E67Ae8f68531fafa36eaEf0B',
   },
+  base: {
+    contract_Reader: '0xC80807F075Cb76139678De3954D4F7f159829Bf9',
+    controllerV2: '0x255707B70BF90aa112006E1b07B9AeA6De021424',
+    veTETU: '0xb8bA82F19A9Be6CbF6DAF9BF4FBCC5bDfCF8bEe6',
+  },
 }
 
 function offset(chain) {
@@ -57,6 +62,8 @@ function offset(chain) {
       return 750
     case 'fantom':
       return 1500
+    case 'base':
+      return 8453
   }
 }
 
@@ -64,18 +71,28 @@ Object.keys(config).forEach(chain => {
   const { bookkeeper, contract_Reader, controllerV2, veTETU, pawnshopSubgraph } = config[chain]
   module.exports[chain] = {
     tvl: async (timestamp, ethBlock, chainBlocks, { api }) => {
-      const vaultAddresses = await api.fetchList({ lengthAbi: abi.vaultsLength, itemAbi: abi.vaults, target: bookkeeper })
-      const strategies = await api.multiCall({ abi: abi.strategy, calls: vaultAddresses, })
-      const platforms = await api.multiCall({ abi: abi.platform, calls: strategies, })
-      const vaultsCall = []
+      const vaultsCall = [];
+      if (bookkeeper) {
+        const vaultAddresses = await api.fetchList({
+          lengthAbi: abi.vaultsLength,
+          itemAbi: abi.vaults,
+          target: bookkeeper
+        });
+        const strategies = await api.multiCall(
+          { abi: abi.strategy, calls: vaultAddresses });
+        const platforms = await api.multiCall(
+          { abi: abi.platform, calls: strategies });
 
-      for (let i = 0; i < vaultAddresses.length; i++) {
-        if (EXCLUDED_PLATFORMS[platforms[i]] === true)
-          continue;
-        // exclude duplication count or broken vaults
-        if (EXCLUDED_VAULTS[chain] && EXCLUDED_VAULTS[chain][vaultAddresses[i].toLowerCase()] === true)
-          continue;
-        vaultsCall.push(vaultAddresses[i])
+        for (let i = 0; i < vaultAddresses.length; i++) {
+          if (EXCLUDED_PLATFORMS[platforms[i]] === true) {
+            continue;
+          }
+          // exclude duplication count or broken vaults
+          if (EXCLUDED_VAULTS[chain] && EXCLUDED_VAULTS[chain][vaultAddresses[i].toLowerCase()] === true) {
+            continue;
+          }
+          vaultsCall.push(vaultAddresses[i])
+        }
       }
 
       // ? ############### TetuV2 vaults
