@@ -7,11 +7,9 @@ const getTokenAddressPolygon = "0xdb725f82818De83e99F1dAc22A9b5B51d3d04DD4";
 
 module.exports = {
   ethereum: {
-    tvl: () => ({}),
-    staking: staking(stakingContractEthereum, getTokenAddressEthereum),
+    tvl: staking(stakingContractEthereum, getTokenAddressEthereum),
   },
   polygon: {
-    tvl: () => ({}),
-    staking: staking(stakingContractPolygon, getTokenAddressPolygon),
+    tvl: staking(stakingContractPolygon, getTokenAddressPolygon),
   },
 };
