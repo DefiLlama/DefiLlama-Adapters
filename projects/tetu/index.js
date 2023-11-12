@@ -51,27 +51,12 @@ const config = {
   },
 }
 
-function offset(chain) {
-  switch (chain) {
-    case 'ethereum':
-      return 110
-    case 'bsc':
-      return 600
-    case 'polygon':
-      return 750
-    case 'fantom':
-      return 1500
-    case 'base':
-      return 8453
-  }
-}
-
 Object.keys(config).forEach(chain => {
   const { bookkeeper, contract_Reader, controllerV2, veTETU } = config[chain]
   module.exports[chain] = {
     tvl: async (timestamp, ethBlock, chainBlocks, { api }) => {
 
-      // ? ############### Tetu V1 vaults
+      // * ############### Tetu V1 vaults
       const vaultsCall = [];
       if (bookkeeper) {
         const vaultAddresses = await api.fetchList({
@@ -96,14 +81,14 @@ Object.keys(config).forEach(chain => {
         }
       }
 
-      // ? ############### Tetu V2 vaults
+      // * ############### Tetu V2 vaults
       let usdcsV2 = [];
       if (controllerV2) {
         const vaultsV2 = (await api.call({ abi: abi.vaultsList, target: controllerV2, }));
         usdcsV2 = await api.multiCall({ target: contract_Reader, abi: abi.vaultERC4626TvlUsdc, calls: vaultsV2, permitFailure: true, })
       }
 
-      // ? ############### veTETU
+      // * ############### veTETU
       let veTETU_USDC = 0;
       if (veTETU) {
         for (let i = 0; i < 100; i++) {
@@ -124,6 +109,8 @@ Object.keys(config).forEach(chain => {
           veTETU_USDC += amount * price / 1e36;
         }
       }
+
+      // * ############### TOTALS
 
       let total = veTETU_USDC
       for (const vault of vaultsCall) {
