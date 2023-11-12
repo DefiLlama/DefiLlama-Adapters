@@ -1,8 +1,4 @@
-const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const { getParamCalls } = require("../helper/utils");
-const { GraphQLClient, gql } = require("graphql-request");
-const { getBlock } = require("../helper/http");
 
 // exclude V1 platforms for avoid double counting
 const EXCLUDED_PLATFORMS = {
@@ -54,20 +50,14 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { bookkeeper, contract_Reader, controllerV2, veTETU } = config[chain]
   module.exports[chain] = {
-    tvl: async (timestamp, ethBlock, chainBlocks, { api }) => {
+    tvl: async (_, _b, { [chain]: block }, { api }) => {
 
       // * ############### Tetu V1 vaults
       const vaultsCall = [];
       if (bookkeeper) {
-        const vaultAddresses = await api.fetchList({
-          lengthAbi: abi.vaultsLength,
-          itemAbi: abi.vaults,
-          target: bookkeeper
-        });
-        const strategies = await api.multiCall(
-          { abi: abi.strategy, calls: vaultAddresses });
-        const platforms = await api.multiCall(
-          { abi: abi.platform, calls: strategies });
+        const vaultAddresses = await api.fetchList({ lengthAbi: abi.vaultsLength, itemAbi: abi.vaults, target: bookkeeper })
+        const strategies = await api.multiCall({ abi: abi.strategy, calls: vaultAddresses, })
+        const platforms = await api.multiCall({ abi: abi.platform, calls: strategies, })
 
         for (let i = 0; i < vaultAddresses.length; i++) {
           if (EXCLUDED_PLATFORMS[platforms[i]] === true) {
