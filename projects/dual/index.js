@@ -40,7 +40,8 @@ async function tvl() {
 
   const tokenAccounts = dipTokenAccounts.concat(soTokenAccounts).concat(gsoTokenAccounts);
 
-  return sumTokens2({ tokenAccounts, allowError: true, })
+  const DUAL = 'DUALa4FC2yREwZ59PHeu1un4wis36vHRv5hWVBmzykCJ'
+  return sumTokens2({ tokenAccounts, allowError: true,  blacklistedTokens: [DUAL]})
 }
 
 function parseDipState(buf) {
@@ -118,7 +119,6 @@ function gsoVault(pubkey) {
 }
 
 module.exports = {
-  misrepresentedTokens: true,
   timetravel: false,
   solana: {
     tvl,
