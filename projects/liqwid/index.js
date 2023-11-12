@@ -76,8 +76,10 @@ async function tvl(_, _b, _cb, { api, }) {
 
 function add(api, market, bal) {
   const token = getToken(market)
-  if (token === 'usd-coin') bal /= 1e8
-  if (token === 'tether') bal /= 1e8
+  if ([
+      "usd-coin",
+      "tether",
+    ].includes(token)) bal /= 1e8
   api.add(token, bal, {
     skipChain: token === 'usd-coin' || token === 'tether'
   })

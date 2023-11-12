@@ -45,6 +45,7 @@ const config = {
       '2XxP4kS2vfkiMvpLpGNxry3fPUYimsuAmSbqL1KnuwZ8',
       'Cet3t77x2BBVSmiEFm8ZPoDSngbpso2RuWPL79Ky7SpA',
       '9qoUcyhKSWMbk6tqGUYQUpeosPcdUnJszG4eQKwfe4gL',
+      'Fe7SEekiKygziaEGKxsDsgLVzrCfNvVBvAYsaJBwFA8s',
     ],
   },
   polkadot: {
@@ -92,6 +93,11 @@ const config = {
     owners: [
       '0x87cbc48075d7aa1760Ac71C41e8Bc289b6A31F56',
       '0xFF4606bd3884554CDbDabd9B6e25E2faD4f6fc54',
+    ]
+  },
+  cosmos: {
+    owners: [
+        'cosmos10dfzd2wpnpeuy2lgan35ah8dg5p4l298v0n8e8',
     ]
   }
 }

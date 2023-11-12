@@ -4,6 +4,7 @@ const ABI = require('./abi.json');
 const config ={
   ethereum: [
     { factory: '0xf1e70677fb1f49471604c012e8B42BA11226336b', fromBlock: 17266660 }, // uniswap
+    { factory: '0x3edeA0E6E94F75F86c62E1170a66f4e3bD7d77fE', fromBlock: 18460401 } // pancakeswap
   ],
   arbitrum: [
     { factory: '0xB9084c75D361D1d4cfC7663ef31591DeAB1086d6', fromBlock: 88503603 }, // uniswap
@@ -24,6 +25,7 @@ const config ={
     { factory: '0x3E89E72026DA6093DD6E4FED767f1f5db2fc0Fb4', fromBlock: 5345161 }, // agni
     { factory: '0xCCA961F89a03997F834eB5a0104efd9ba1f5800E', fromBlock: 14374189 }, // izumi
     { factory: '0xD22D1271d108Cd09C38b8E5Be8536E0E366DCd23', fromBlock: 14063599 }, // fusionX
+    { factory: '0xbf3CC27B036C01A4482d07De191F18F1d8e7B00c', fromBlock: 18309127 } // swapsicle
   ]
 }
 
@@ -65,6 +67,8 @@ Object.keys(config).forEach(chain => {
       token1s.push(...(await api.multiCall({ abi: "address:tokenY", calls: izumiVaults })))
 
       const bals = await api.multiCall({ abi: ABI.underlyingBalance, calls: vaults })
+      bals.push(...(await api.multiCall({ abi: ABI.underlyingBalance, calls: izumiVaults })))
+
       bals.forEach(({ amount0Current, amount1Current }, i) => {
         api.add(token0s[i], amount0Current)
         api.add(token1s[i], amount1Current)
