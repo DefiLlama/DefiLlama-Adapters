@@ -43,13 +43,14 @@ async function tvl(timestamp, chainBlocks, chain, transformAddress=addr=>addr) {
         chain: chain
     })).output.map(t => t.output);
 
-    for (let index = 0; index < marketsArray.length; index++) {
+    for (let index = 0; index < bentoBoxAddresses[chain].length * marketsArray.length; ++index) {
+        const marketIndex = index % marketsArray.length;
         sdk.util.sumSingleBalance(
           balances,
-          transformAddress(marketsArray[index][0]),
+          transformAddress(marketsArray[marketIndex][0]),
           tokenBalances[index]
         );
-      }
+    }
     
     return balances;
 }
