@@ -3,7 +3,7 @@ const { getUniqueAddresses, } = require('../tokenMapping')
 const { getFixBalancesSync } = require('../portedTokens')
 const { sliceIntoChunks } = require('../utils')
 const BigNumber = require('bignumber.js')
-const axios = require('axios')
+const { post } = require('../http')
 const chain = 'radixdlt'
 const XRD_RESOURCE_ADDRESS = 'resource_rdx1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxradxrd'
 
@@ -73,7 +73,7 @@ async function queryLiquidStakeUnitDetails(addresses = []) {
       "explicit_metadata": ["validator"]
     }
     try {
-      let data = await axios.post(ENTITY_DETAILS_URL, body)
+      let data = await post(ENTITY_DETAILS_URL, body)
       let validators = []
       for (const lsuResource of data.items) {
         let validators = lsuResource.metadata.items.filter(metadataItem => metadataItem.key === "validator")
