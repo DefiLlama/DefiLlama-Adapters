@@ -15,5 +15,6 @@ module.exports = {
     [1688688480, "ReHold V2 Launch"],
     [1689743327, "Ethereum Deployment"],
     [1690898169, "Limit Orders Launch"],
+    [1698624000, "ReHold Swaps Launch"],
   ],
 }
