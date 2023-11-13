@@ -1,4 +1,4 @@
-const ADDRESSES = require('../helper/coreAssets.json')
+const sdk = require('@defillama/sdk')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { eulerTokens } = require('../helper/tokenMapping')
 const { getLogs } = require('../helper/cache/getLogs')
@@ -58,13 +58,6 @@ const contracts = {
   optimism: {
     
   }
-}
-
-const underlyingMapping = {
-  [ADDRESSES.optimism.USDT]: ADDRESSES.ethereum.USDT, // USDT Optimism
-  [ADDRESSES.optimism.USDC]: ADDRESSES.ethereum.USDC, // USDC Optimism
-  '0x1E4a5963aBFD975d8c9021ce480b42188849D41d': ADDRESSES.ethereum.USDT, // USDT zkEVM
-  [ADDRESSES.polygon_zkevm.USDC]: ADDRESSES.ethereum.USDC // USDC zkEVM
 }
 
 const trancheConfig = {
@@ -147,8 +140,7 @@ async function tvl(time, ethBlock, chainBlocks, { api }) {
       }
 
       // Get CDOs underlying tokens balances
-      const mappedToken = underlyingMapping[token[i]] || token[i]
-      balances[mappedToken] = BigNumber(balances[mappedToken] || 0).plus(BigNumber(contractValue[i] || 0))
+      sdk.util.sumSingleBalance(balances, token[i], contractValue[i], api.chain)
     })
   }
 
