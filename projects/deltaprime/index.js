@@ -26,6 +26,8 @@ const VF_MAINSTAKING_CONTRACT = "0x8B3d9F0017FA369cD8C164D0Cc078bf4cA588aE5";
 // Arbitrum
 const USDC_POOL_TUP_ARBI_CONTRACT = '0x8FE3842e0B7472a57f2A2D56cF6bCe08517A1De0';
 const ETH_POOL_TUP_ARBI_CONTRACT = '0x0BeBEB5679115f143772CfD97359BBcc393d46b3';
+const BTC_POOL_TUP_ARBI_CONTRACT = '0x5CdE36c23f0909960BA4D6E8713257C6191f8C35';
+const ARB_POOL_TUP_ARBI_CONTRACT = '0x2B8C610F3fC6F883817637d15514293565C3d08A';
 
 const SMART_LOANS_FACTORY_TUP_ARBITRUM = '0xFf5e3dDaefF411a1dC6CcE00014e4Bca39265c20';
 
@@ -88,6 +90,8 @@ async function tvlArbitrum(timestamp, block, chainBlocks, { api }) {
   const tokensAndOwners = [
     [assetToAddressMappingArbitrum.USDC, USDC_POOL_TUP_ARBI_CONTRACT],
     [assetToAddressMappingArbitrum.ETH, ETH_POOL_TUP_ARBI_CONTRACT],
+    [assetToAddressMappingArbitrum.BTC, BTC_POOL_TUP_ARBI_CONTRACT],
+    [assetToAddressMappingArbitrum.ARB, ARB_POOL_TUP_ARBI_CONTRACT],
   ]
 
   const accounts = logs.map(i => `0x${i.topics[1].slice(26)}`)
@@ -119,6 +123,8 @@ async function addVectorVaultBalancesAuto({ balances, accounts, api, token }) {
     target: VF_MAINSTAKING_CONTRACT,
     params: [token],
   })
+  if (helper.helper.toLowerCase() === '0xDacb0d2c73c47CaEc4FA8DfD58a7d6d25aB071cE'.toLowerCase()) return balances;
+  if (helper.helper.toLowerCase() === '0x6D6E858c6103D63123780fa9Ca92EEEAce21414C'.toLowerCase()) return balances;
   const compounder = await api.call({
     abi: 'function compounder() view returns(address)',
     target: helper.helper,
@@ -149,6 +155,7 @@ async function addVectorVaultBalances({ balances, accounts, api, token }) {
     params: [token],
   })
   if (helper.helper.toLowerCase() === '0x9AB2B763798124F81E95419aC9b77a4fB480742D'.toLowerCase()) return balances;
+  if (helper.helper.toLowerCase() === '0x6D6E858c6103D63123780fa9Ca92EEEAce21414C'.toLowerCase()) return balances;
   const bals = await api.multiCall({ abi: VFDepositTokenBalanceAbi, calls: accounts, target: helper.helper })
 
   bals.forEach(i => sdk.util.sumSingleBalance(balances, token, i, api.chain))

@@ -1,6 +1,8 @@
 const { default: BigNumber } = require("bignumber.js");
+const { getConfig } = require("../helper/cache");
 const abi = require("./abi.json");
 const { cachedGraphQuery } = require("../helper/cache");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
 // The Graph
 const graphUrlList = {
@@ -10,17 +12,32 @@ const graphUrlList = {
   mantle: 'http://api.0xgraph.xyz/subgraphs/name/solv-payable-factory-mentle-0xgraph',
 }
 
-const rwaSlot = [
-  "77406646563329984090609229456139833989531434162860778120489803664660566620495"
+const slotListUrl = 'https://cdn.jsdelivr.net/gh/solv-finance-dev/solv-protocol-rwa-slot/slot.json';
+
+const depositAddress = [
+  "0x9f6478a876d7765f44bda712573820eb3ae389fb",
+  "0xcac14cd2f18dcf54032bd51d0a116fe18770b87c"
 ]
 
-async function tvl(ts) {
+const gmTokens = [
+  "0x70d95587d40a2caf56bd97485ab3eec10bee6336",
+  "0x47c031236e19d024b42f8AE6780E44A573170703",
+  "0xC25cEf6061Cf5dE5eb761b50E4743c1F5D7E5407",
+  "0x7f1fa204bb700853D36994DA19F830b6Ad18455C",
+  "0x09400D9DB990D5ed3f35D7be61DfAEB900Af03C9",
+  "0xc7Abb2C5f3BF3CEB389dF0Eecd6120D451170B50",
+]
+
+async function borrowed(ts) {
   const { api } = arguments[3];
   const network = api.chain;
   const graphData = await getGraphData(ts, network, api);
-
   if (graphData.pools.length > 0) {
-    const pools = graphData.pools;
+    const poolLists = graphData.pools;
+    var pools = poolLists.filter((value) => {
+      return depositAddress.indexOf(value.vault) == -1;
+    });
+
     const poolConcretes = await concrete(pools, api);
     const nav = await api.multiCall({
       abi: abi.getSubscribeNav,
@@ -60,6 +77,19 @@ async function tvl(ts) {
   return api.getBalances()
 }
 
+async function tvl() {
+  const { api } = arguments[3];
+
+  let tokens = []
+  for (const pool of depositAddress) {
+    for (const address of gmTokens) {
+      tokens.push({ address, pool })
+    }
+  }
+
+  await sumTokens2({ api, tokensAndOwners: tokens.map(i => [i.address, i.pool]), permitFailure: true })
+}
+
 async function concrete(slots, api) {
   var slotsList = [];
   var only = {};
@@ -85,12 +115,15 @@ async function concrete(slots, api) {
 
 
 async function getGraphData(timestamp, chain, api) {
+  let rwaSlot = (await getConfig('solv-protocol', slotListUrl));
+
   const slotDataQuery = `query BondSlotInfos {
             poolOrderInfos(first: 1000  where:{fundraisingEndTime_gt:${timestamp}, openFundShareSlot_not_in: ${JSON.stringify(rwaSlot)}}) {
               marketContractAddress
               contractAddress
               navOracle
               poolId
+              vault
               openFundShareSlot
           }
         }`;
@@ -106,6 +139,12 @@ async function getGraphData(timestamp, chain, api) {
   };
 }
 // node test.js projects/solv-protocol-funds
-['ethereum', 'bsc', 'arbitrum', 'mantle'].forEach(chain => {
-  module.exports[chain] = { tvl: () => ({}), borrowed: tvl, }
-})
+module.exports = {
+  arbitrum: {
+    tvl,
+    borrowed: borrowed,
+  },
+  mantle: {
+    borrowed: borrowed,
+  }
+};
