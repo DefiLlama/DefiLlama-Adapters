@@ -5,7 +5,10 @@ module.exports = {
     tvl: (_, _b, _c, { api, logArray }) =>
       sumTokens2({
         api,
-        owner: "0x8EB8a3b98659Cce290402893d0123abb75E3ab28",
+        owners: [
+          "0x3154Cf16ccdb4C6d922629664174b904d80F2C35",
+          "0x49048044D57e1C92A77f79988d21Fa8fAF74E97e",
+        ],
         fetchCoValentTokens: true,
       }),
   },
