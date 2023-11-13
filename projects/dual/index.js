@@ -122,6 +122,6 @@ module.exports = {
   timetravel: false,
   solana: {
     tvl,
+    staking: () => sumTokens2({ tokenAccounts, allowError: true, })
   },
-  staking: () => sumTokens2({ tokenAccounts, allowError: true, })
 };
