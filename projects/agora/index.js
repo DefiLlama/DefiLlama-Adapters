@@ -50,7 +50,7 @@ const { tvl: agoraFarmTvl, borrowed: agoraFarmBorrowed } = compoundExports(
   undefined,
 );
 
-const chainTvl = getUniTVL({ factory, chain: 'metis', useDefaultCoreAssets: true, })
+const chainTvl = getUniTVL({ factory, useDefaultCoreAssets: true, })
 
 module.exports = {
   hallmarks: [

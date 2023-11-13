@@ -24,7 +24,7 @@ const config = {
     tokens: [ADDRESSES.fantom.USDC, nullAddress,]
   },
   arbitrum: {
-    tokens: [ADDRESSES.arbitrum.USDT, ADDRESSES.arbitrum.USDC, '0xADA42bb73b42e0472A994218fb3799dFCDA21237', '0x912CE59144191C1204E64559FE8253a0e49E6548', nullAddress,]
+    tokens: [ADDRESSES.arbitrum.USDT, ADDRESSES.arbitrum.USDC, '0xADA42bb73b42e0472A994218fb3799dFCDA21237', ADDRESSES.arbitrum.ARB, nullAddress,]
   }
 }
 

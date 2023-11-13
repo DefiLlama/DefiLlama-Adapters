@@ -50,9 +50,9 @@ async function getObjects(objectIds) {
   return objectIds.map(i => result.find(j => j.data.objectId === i)?.data?.content)
 }
 
-async function getDynamicFieldObject(parent, id) {
+async function getDynamicFieldObject(parent, id, { idType = '0x2::object::ID' } = {}) {
   return (await call('suix_getDynamicFieldObject', [parent, {
-    "type": "0x2::object::ID",
+    "type": idType,
     "value": id
   }])).content
 }
