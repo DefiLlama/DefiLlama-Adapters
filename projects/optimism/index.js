@@ -27,6 +27,7 @@ Object.keys(chains).map((chain) => {
         api,
         tokens,
         owners,
+        fetchCoValentTokens: true,
       });
     },
   };
