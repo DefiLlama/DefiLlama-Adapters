@@ -1,8 +1,9 @@
-const { post } = require('../http')
+
 const { getUniqueAddresses, } = require('../tokenMapping')
 const { getFixBalancesSync } = require('../portedTokens')
 const { sliceIntoChunks } = require('../utils')
 const BigNumber = require('bignumber.js')
+const axios = require('axios')
 const chain = 'radixdlt'
 const XRD_RESOURCE_ADDRESS = 'resource_rdx1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxradxrd'
 
@@ -40,26 +41,30 @@ async function queryAddresses({ addresses = [], }) {
   return items
 }
 
-async function queryLiquidStakeUnitDetails(addresses = []) {
-  /**
-   * queryLsus takes a list of addresses as argument.
-   * The return value is a dictionary with the lsu address and it's valuation in xrd.
-   * Example response:
-   *
-   * {
-      resource_rdxabc1: {
-        totalSupplyOfStakeUnits: '48921317.41255863564527699',
-        validatorAddress: 'validator_rdx11234',
-        xrdRedemptionValue: 1.0087202808923446
-      },
-      resource_rdx1cde1: {
-        totalSupplyOfStakeUnits: '27022271.985429161792201709',
-        validatorAddress: 'validator_rdx15678',
-        xrdRedemptionValue: 1.0087163411719327
-      }
+
+/**
+ * queryLsus takes a list of addresses as argument.
+ * The return value is a dictionary with the lsu address and it's valuation in xrd.
+ * Example response:
+ *
+ * {
+    resource_rdxabc1: {
+      totalSupplyOfStakeUnits: '48921317.41255863564527699',
+      validatorAddress: 'validator_rdx1s0lz5v68gtqwswu7lrx9yrjte4ts0l2saphmplsz68nsv2aux0xvfq',
+      xrdRedemptionValue: 1.0087202808923446
+    },
+    resource_rdx1cde1: {
+      totalSupplyOfStakeUnits: '27022271.985429161792201709',
+      validatorAddress: 'validator_rdx1s0g5uuw3a7ad7akueetzq5lpejzp9uw5glv2qnflvymgendvepgduj',
+      xrdRedemptionValue: 1.0087163411719327
     }
-  */
+  }
+  This function does not validate that list received is a proper LSU resources list,
+  If no LSU resources used, this call could result in empty or partial returns.
+**/
+async function queryLiquidStakeUnitDetails(addresses = []) {
   let lsuRedemptionValues = {}
+
   const chunks  = sliceIntoChunks(addresses, 20)
   for (const chunk of chunks) {
     let body = {
@@ -68,12 +73,12 @@ async function queryLiquidStakeUnitDetails(addresses = []) {
       "explicit_metadata": ["validator"]
     }
     try {
-      let data = await post(ENTITY_DETAILS_URL, body)
-
+      let data = await axios.post(ENTITY_DETAILS_URL, body)
       let validators = []
       for (const lsuResource of data.items) {
-        let validator = lsuResource.metadata.items.filter(metadataItem => metadataItem.key === "validator")[0]
-        if (validator !== undefined) {
+        let validators = lsuResource.metadata.items.filter(metadataItem => metadataItem.key === "validator")
+        if (validators !== undefined) {
+          let validator = validators[0]
           if (validator.value.typed.type === "GlobalAddress" && validator.value.typed.value.startsWith("validator_")) {
             lsuRedemptionValues[lsuResource.address] = {
               "totalSupplyOfStakeUnits": lsuResource.details.total_supply,
@@ -105,7 +110,7 @@ async function queryLiquidStakeUnitDetails(addresses = []) {
         let xrdRedemptionValue =  xrdStakeVaultBalance / totalSupplyOfStakeUnits
         lsuRedemptionValues[stakeUnitResourceAddress]["xrdRedemptionValue"] = xrdRedemptionValue
       }
-    } catch(e) {
+    } catch(error) {
       console.log("There was an error getting the xrd redemption value. Check that all addressed used are LSU resource addresses")
       return {}
     }
