@@ -123,4 +123,5 @@ module.exports = {
   solana: {
     tvl,
   },
+  staking: () => sumTokens2({ tokenAccounts, allowError: true, })
 };
