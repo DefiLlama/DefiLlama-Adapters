@@ -44,6 +44,46 @@ async function tvl() {
   return sumTokens2({ tokenAccounts, allowError: true,  blacklistedTokens: [DUAL]})
 }
 
+async function staking() {
+  const connection = getConnection();
+  const dualProgramID = new PublicKey("DiPbvUUJkDhV9jFtQsDFnMEMRJyjW5iS6NMwoySiW8ki");
+  let programAccounts = await connection.getProgramAccounts(dualProgramID, {
+    filters: [{
+      dataSize: 260
+    }]
+  });
+
+  const dipTokenAccounts = programAccounts
+    .map(i => parseDipState(i.account.data))
+    .map(i => [i.vaultSpl, i.vaultUsdc])
+    .flat()
+
+  const stakingOptionsProgramID = new PublicKey("4yx1NJ4Vqf2zT1oVLk4SySBhhDJXmXFt88ncm4gPxtL7");
+  let stakingOptionsAccounts = await connection.getProgramAccounts(stakingOptionsProgramID, {
+    filters: [{
+      dataSize: 1150
+    }]
+  });
+
+  const soTokenAccounts = stakingOptionsAccounts
+    .map(i => parseSoState(i.account.data))
+    .map(i => [i.vault, i.reverseVault])
+    .flat()
+
+  const gsoProgramID = new PublicKey("DuALd6fooWzVDkaTsQzDAxPGYCnLrnWamdNNTNxicdX8");
+  let gsoAccounts = await connection.getProgramAccounts(gsoProgramID, {
+    filters: [{
+      dataSize: 1000
+    }]
+  });
+  const gsoTokenAccounts = gsoAccounts
+    .map(i => gsoVault(i.pubkey))
+
+  const tokenAccounts = dipTokenAccounts.concat(soTokenAccounts).concat(gsoTokenAccounts);
+
+  return sumTokens2({ tokenAccounts, allowError: true, })
+}
+
 function parseDipState(buf) {
   const strike = Number(readBigUInt64LE(buf, 8));
   const expiration = Number(readBigUInt64LE(buf, 16));
@@ -122,5 +162,6 @@ module.exports = {
   timetravel: false,
   solana: {
     tvl,
+    staking,
   },
 };
