@@ -100,6 +100,7 @@ async function tvlArbitrum(timestamp, block, chainBlocks, { api }) {
     ownedAssets[i].forEach(tokenStr => {
       tokenStr = ethers.utils.parseBytes32String(tokenStr)
       const token = assetToAddressMappingArbitrum[tokenStr]
+      if (!token) return;
       if (!token) throw new Error('Missing asset mapping for: ' + tokenStr)
       tokensAndOwners.push([token, o])
     })
