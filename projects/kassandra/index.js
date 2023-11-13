@@ -29,7 +29,7 @@ Object.keys(config).forEach(chain => {
       await sumTokens2({ api, ownerTokens: pools.map((pool, i) => [tokens[i], pool]) })
       if (chain === 'avax') {
         const balances = api.getBalances()
-        const allTokens = tokens.flat().map(i => i.toLowerCase())
+        const allTokens = tokens.flat().map(i => i.toLowerCase()).filter(i => i !== '0xd0f41b1c9338eb9d374c83cc76b684ba3bb71557')
         const symbols = await api.multiCall({  abi: 'string:symbol', calls: allTokens, })
         const yrtTokens = allTokens.filter((token, i) => symbols[i] === 'YRT')
         const depositTokens = await api.multiCall({  abi: 'address:depositToken', calls: yrtTokens})
