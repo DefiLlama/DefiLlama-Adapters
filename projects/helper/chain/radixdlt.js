@@ -76,9 +76,9 @@ async function queryLiquidStakeUnitDetails(addresses = []) {
       let data = await post(ENTITY_DETAILS_URL, body)
       let validators = []
       for (const lsuResource of data.items) {
-        let validators = lsuResource.metadata.items.filter(metadataItem => metadataItem.key === "validator")
-        if (validators !== undefined) {
-          let validator = validators[0]
+        let v = lsuResource.metadata.items.filter(metadataItem => metadataItem.key === "validator")
+        if (v !== undefined) {
+          let validator = v[0]
           if (validator.value.typed.type === "GlobalAddress" && validator.value.typed.value.startsWith("validator_")) {
             lsuRedemptionValues[lsuResource.address] = {
               "totalSupplyOfStakeUnits": lsuResource.details.total_supply,
