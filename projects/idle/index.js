@@ -68,13 +68,6 @@ const contracts = {
   }
 }
 
-const underlyingMapping = {
-  [ADDRESSES.optimism.USDT.toLowerCase()]: ADDRESSES.ethereum.USDT, // USDT Optimism
-  [ADDRESSES.optimism.USDC.toLowerCase()]: ADDRESSES.ethereum.USDC, // USDC Optimism
-  '0x1e4a5963abfd975d8c9021ce480b42188849d41d': ADDRESSES.ethereum.USDT, // USDT zkEVM
-  [ADDRESSES.polygon_zkevm.USDC.toLowerCase()]: ADDRESSES.ethereum.USDC // USDC zkEVM
-}
-
 const trancheConfig = {
   ethereum: {
     factory: '0x3c9916bb9498f637e2fa86c2028e26275dc9a631',
