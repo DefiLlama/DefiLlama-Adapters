@@ -1,7 +1,5 @@
-const {
-  queryContracts,
-  queryContract,
-} = require("../helper/chain/cosmos");
+const { queryContract } = require("../helper/chain/cosmos");
+const { getConfig } = require("../helper/cache");
 
 async function tvl(_, _1, _2, { api }) {
   const chain = api.chain
