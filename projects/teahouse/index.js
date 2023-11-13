@@ -4,6 +4,7 @@ const { getConfig } = require("../helper/cache");
 // teahouse public api for vault
 const teahouseVaultAPI = "https://vault-content-api.teahouse.finance/vaults";
 
+
 // get vault contract addresses from teahouse api
 async function getVaultContractsAddress(chain) {
   let htAddress = [];
