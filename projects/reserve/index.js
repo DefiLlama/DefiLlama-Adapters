@@ -1,4 +1,4 @@
-const ADDRESSES = require('../helper/coreAssets.json')
+const ADDRESSES = require("../helper/coreAssets.json");
 const {
   sumTokens2,
   genericUnwrapCvxDeposit,
@@ -36,16 +36,16 @@ async function tvl(_time, block, _, { api, chain }) {
   // Common logic for calculating TVL (only mainnet has vault)
   const ownerTokens = config.vault
     ? [
-      [
         [
-          ADDRESSES.ethereum.USDC, //usdc
-          "0x8e870d67f660d95d5be530380d0ec0bd388289e1", //pax
-          ADDRESSES.ethereum.TUSD, //tusd
-          ADDRESSES.ethereum.BUSD, //busd
+          [
+            ADDRESSES.ethereum.USDC, //usdc
+            "0x8e870d67f660d95d5be530380d0ec0bd388289e1", //pax
+            ADDRESSES.ethereum.TUSD, //tusd
+            ADDRESSES.ethereum.BUSD, //busd
+          ],
+          config.vault,
         ],
-        config.vault,
-      ],
-    ]
+      ]
     : [];
   const blacklistedTokens = [config.rsr];
   const fluxListWithOwner = [];
@@ -72,16 +72,32 @@ async function tvl(_time, block, _, { api, chain }) {
   const allTokens = basketRes.flatMap(([tokens], i) => {
     ownerTokens.push([tokens, rTokens[i]]);
     ownerTokens.push([tokens, backingManagers[i]]);
-    return tokens
+    return tokens;
   });
-  const allRTokens = basketRes.flatMap(([tokens], i) => tokens.map(() => rTokens[i]))
-  const allManagers = basketRes.flatMap(([tokens], i) => tokens.map(() => backingManagers[i]))
-  const allNames = await api.multiCall({ abi: "string:name", calls: allTokens });
+  const allRTokens = basketRes.flatMap(([tokens], i) =>
+    tokens.map(() => rTokens[i])
+  );
+  const allManagers = basketRes.flatMap(([tokens], i) =>
+    tokens.map(() => backingManagers[i])
+  );
+  const allNames = await api.multiCall({
+    abi: "string:name",
+    calls: allTokens,
+  });
 
-  const aTokenWrappers = allTokens.filter((_, i) => allNames[i].startsWith("Static Aave"));
-  const cUsdcV3Wrapper = allTokens.find((_, i) => allNames[i].startsWith("Wrapped cUSDCv3"));
-  const stargateLpWrappers = allTokens.filter((_, i) => allNames[i].startsWith("Wrapped Stargate"));
-  const convexTokensAndOwners = []
+  const aTokenWrappers = allTokens.filter((_, i) =>
+    allNames[i].startsWith("Static Aave")
+  );
+  const cUsdcV3Wrapper = allTokens.find((_, i) =>
+    allNames[i].startsWith("Wrapped cUSDCv3")
+  );
+  const stargateLpWrappers = allTokens.filter((_, i) =>
+    allNames[i].startsWith("Wrapped Stargate")
+  );
+  const cTokenWrappers = allTokens.filter(
+    (_, i) => /^Compound.*Vault$/.test(allNames[i]) // Starts with Compound, ends with Vault
+  );
+  const convexTokensAndOwners = [];
 
   allTokens.forEach((token, i) => {
     if (!allNames[i].startsWith("Flux ")) return;
@@ -98,21 +114,46 @@ async function tvl(_time, block, _, { api, chain }) {
     convexTokensAndOwners.push([token, allManagers[i]]);
   });
 
-  let aTokens = await api.multiCall({ abi: api.chain === 'base' ? "address:aToken" : "address:ATOKEN", calls: aTokenWrappers, });
-  blacklistedTokens.push(...aTokenWrappers, ...stargateLpWrappers);
+  let cTokens = await api.multiCall({
+    abi: "address:underlying",
+    calls: cTokenWrappers,
+  });
+
+  let aTokens = await api.multiCall({
+    abi: api.chain === "base" ? "address:aToken" : "address:ATOKEN",
+    calls: aTokenWrappers,
+  });
+  blacklistedTokens.push(
+    ...aTokenWrappers,
+    ...stargateLpWrappers,
+    ...cTokenWrappers
+  );
+  cTokens.forEach((v, i) => ownerTokens.push([[v], cTokenWrappers[i]]));
   aTokens.forEach((v, i) => ownerTokens.push([[v], aTokenWrappers[i]]));
 
-
   if (stargateLpWrappers.length)
-    await getStargateLpValues(api, stargateLpWrappers, processedWrappers, wrapperBalances);
+    await getStargateLpValues(
+      api,
+      stargateLpWrappers,
+      processedWrappers,
+      wrapperBalances
+    );
 
   if (cUsdcV3Wrapper) {
     blacklistedTokens.push(cUsdcV3Wrapper);
-    await getCompoundUsdcValues(api, cUsdcV3Wrapper, processedWrappers, wrapperBalances);
+    await getCompoundUsdcValues(
+      api,
+      cUsdcV3Wrapper,
+      processedWrappers,
+      wrapperBalances
+    );
   }
 
-
-  await Promise.all(convexTokensAndOwners.map(([token, owner]) => genericUnwrapCvxDeposit({ api, token, owner, })));
+  await Promise.all(
+    convexTokensAndOwners.map(([token, owner]) =>
+      genericUnwrapCvxDeposit({ api, token, owner })
+    )
+  );
 
   await unwrapCreamTokens(api.getBalances(), fluxListWithOwner, api.block);
 
@@ -128,10 +169,12 @@ async function staking(_time, block, _, { api, chain }) {
 
 module.exports = {
   ethereum: {
-    tvl, staking,
+    tvl,
+    staking,
   },
   base: {
-    tvl, staking,
+    tvl,
+    staking,
   },
   methodology: `TVL accounts for the underlying ERC20 collateral which back RTokens.`,
 };
