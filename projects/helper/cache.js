@@ -12,6 +12,7 @@ function getFileKey(project, chain) {
 }
 
 function getLink(project, chain) {
+  
   return `https://${Bucket}.s3.eu-central-1.amazonaws.com/${getKey(project, chain)}`
 }
 
