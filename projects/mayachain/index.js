@@ -94,21 +94,12 @@ async function tvl(_, _1, _2, { api }) {
   }
 }
 
-async function staking() {
-  var res = await get("https://midgard.mayachain.info/v2/network");
-  const { totalActiveBond, totalStandbyBond } = res.bondMetrics;
-  return {
-    cacao: (Number(totalActiveBond) + Number(totalStandbyBond)) / 1e10,
-  };
-}
-
 module.exports = {
   timetravel: false,
   methodology:
-    "Counts bonded CACAO on Mayachain + assets locked in Asgard vaults on other chains + CACAO in LPs on Mayachain",
+    "Counts assets locked in Asgard vaults on other chains + CACAO in LPs on Mayachain",
   mayachain: {
     tvl,
-    staking,
   },
 };
 
