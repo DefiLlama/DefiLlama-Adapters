@@ -8,7 +8,7 @@ Object.keys(addresses).forEach(chain => {
   const { ERC20Handler: owner, Tokens } = addresses[chain]
 
   module.exports[chain] = {
-    tvl: sumTokensExport({ chain, owner, tokens: [nullAddress, ...Tokens] })
+    tvl: sumTokensExport({ chain, owner, tokens: [nullAddress, ...Tokens], logCalls: true })
   }
 
   if (chain === 'ethereum') {
@@ -17,7 +17,8 @@ Object.keys(addresses).forEach(chain => {
       sumTokensExport({
         tokensAndOwners: [
           ['0xd46ba6d942050d489dbd938a2c909a5d5039a161', '0x805c7ecba41f9321bb098ec1cf31d86d9407de2f',],
-        ]
+        ], 
+        logCalls: true
       })
     ])
   }

@@ -63,7 +63,7 @@ const config = {
 module.exports = {};
 
 Object.keys(config).forEach(chain => {
-  module.exports[chain] = { tvl: sumTokensExport({ ownerTokens: config[chain] }) }
+  module.exports[chain] = { tvl: sumTokensExport({ ownerTokens: config[chain], logCalls: true }) }
 })
 module.exports.waves = { tvl: wavesTVL }
 
