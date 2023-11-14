@@ -27,7 +27,7 @@ const distressedAssts = new Set(Object.values({
   FLEET: '0xfd56a3dcfc0690881a466ae432d71bb2db588083',
   YAKU: 'NGK3iHqqQkyRZUj4uhJDQqEyKKcZ7mdawWpqwMffM3s',
   JEFE: '0x80fa6d5384bdde296a28a321f73ab70977575129',
-  BONK: 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263'
+  BONK: ADDRESSES.solana.BONK
 }).map(i => i.toLowerCase()))
 
 const transformTokens = {
@@ -36,6 +36,13 @@ const transformTokens = {
   //   "0x065de42e28e42d90c2052a1b49e7f83806af0e1f": "0x123", // CRK token is mispriced
   //   [ADDRESSES.cronos.TUSD]: ADDRESSES.ethereum.TUSD,
   // },
+
+  lightlink_phoenix: {
+    [ADDRESSES.lightlink_phoenix.USDC]: ADDRESSES.ethereum.USDC,
+    [ADDRESSES.lightlink_phoenix.USDT]: ADDRESSES.ethereum.USDT,
+    [ADDRESSES.lightlink_phoenix.WBTC]: ADDRESSES.ethereum.WBTC,
+    [ADDRESSES.lightlink_phoenix.WETH]: ADDRESSES.ethereum.WETH,
+  }
 }
 const ibcMappings = {
   // Sample Code
@@ -75,6 +82,9 @@ const fixBalancesTokens = {
   },
   arbitrum: {
     '0x4e7e5023656863E26f50E2E6E59489A852C212c1': { coingeckoId: 'changer', decimals: 18 },
+  },
+  xdai: {
+    '0xD4fdec44DB9D44B8f2b6d529620f9C0C7066A2c1': { coingeckoId: 'xdai:0xD057604A14982FE8D88c5fC25Aac3267eA142a08', decimals: 0 },
   },
   bfc: {
     [ADDRESSES.bfc.WBFC]: { coingeckoId: 'bifrost', decimals: 18},
