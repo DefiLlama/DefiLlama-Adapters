@@ -93,6 +93,13 @@ module.exports = {
       USDS: "0x20d7B9Ed2c4E2DCC55F9B463975b21bBf2A6eCd1",
     },
   },
+  avax: {
+    wom: "0xa15E4544D141aa98C4581a1EA10Eb9048c3b3382",
+    pools: {
+      crossChainPool: "0xC9bFC3eFeFe4CF96877009F75a61F5c1937e5d1a",
+      sAVAX: "0xE3Abc29B035874a9f6dCDB06f8F20d9975069D87",
+    },
+  },
   hallmarks: [
     [1662417125, "Liquidity Mining Start"],
     [1680674400, "Arbitrum Launching"],
