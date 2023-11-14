@@ -3,7 +3,7 @@ const abi = require('./abi');
 
 const v2Contract = "0x1344A36A1B56144C3Bc62E7757377D288fDE0369"
 
-async function v2_tvl(timestamp, block, _, { api }) {
+async function tvl(timestamp, block, _, { api }) {
   let tokens = await api.fetchList({ lengthAbi: abi.getMaxCurrencyId, itemAbi: abi.getCurrency, target: v2Contract, startFromOne: true, })
   tokens = tokens.flat().map(i => i[0])
   const tokenNames = await api.multiCall({  abi: 'string:name', calls: tokens, permitFailure: true, })
@@ -16,15 +16,6 @@ async function v2_tvl(timestamp, block, _, { api }) {
   return sumTokens2({ api, owner: v2Contract, tokens, blacklistedTokens: nwTokens })
 }
 
-async function v3_tvl(timestamp, block, _, { api }) {
-  let oracles = await api.fetchList({ lengthAbi: abi.getMaxCurrencyId, itemAbi: abi.getPrimeCashHoldingsOracle, target: v2Contract, startFromOne: true, })
-  let underlying = await api.multiCall({ abi: 'address:underlying', calls: oracles.map((o) => ({ target: o})) })
-  let holdings = await api.multiCall({ abi: 'address[]:holdings', calls: oracles.map((o) => ({ target: o})) })
-  let tokens = underlying.concat(holdings.flatMap((_) => _))
-  return sumTokens2({ tokens, owner: v2Contract, api })
-}
-
 module.exports = {
-  ethereum: { tvl: v2_tvl },
-  arbitrum: { tvl: v3_tvl }
+  ethereum: { tvl },
 };
