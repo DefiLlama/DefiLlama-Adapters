@@ -33,6 +33,7 @@
   "carbon",
   "cardano",
   "celo",
+  "chz",
   "chihuahua",
   "clover",
   "clv",
@@ -66,6 +67,7 @@
   "enuls",
   "eos",
   "eos_evm",
+  "eon",
   "equilibrium",
   "era",
   "ergo",
@@ -120,6 +122,7 @@
   "lamden",
   "lbry",
   "libre",
+  "lightlink_phoenix",
   "linea",
   "liquidchain",
   "litecoin",
@@ -150,6 +153,7 @@
   "neutron",
   "nos",
   "nova",
+  "nolus",
   "nuls",
   "oasis",
   "oas",
@@ -250,6 +254,5 @@
   "zeniq",
   "zilliqa",
   "zksync",
-  "zyx",
-  "nolus"
+  "zyx"
 ]
