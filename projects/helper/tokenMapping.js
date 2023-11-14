@@ -36,6 +36,13 @@ const transformTokens = {
   //   "0x065de42e28e42d90c2052a1b49e7f83806af0e1f": "0x123", // CRK token is mispriced
   //   [ADDRESSES.cronos.TUSD]: ADDRESSES.ethereum.TUSD,
   // },
+
+  lightlink_phoenix: {
+    [ADDRESSES.lightlink_phoenix.USDC]: ADDRESSES.ethereum.USDC,
+    [ADDRESSES.lightlink_phoenix.USDT]: ADDRESSES.ethereum.USDT,
+    [ADDRESSES.lightlink_phoenix.WBTC]: ADDRESSES.ethereum.WBTC,
+    [ADDRESSES.lightlink_phoenix.WETH]: ADDRESSES.ethereum.WETH,
+  }
 }
 const ibcMappings = {
   // Sample Code
