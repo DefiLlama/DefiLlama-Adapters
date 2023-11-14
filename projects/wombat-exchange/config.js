@@ -65,6 +65,7 @@ module.exports = {
       crossChainPool: "0xA45C0ABeef67C363364E0e73832df9986aBa3800",
     },
   },
+  // does not have wom yet
   scroll: {
     pools: {
       crossChainPool: "0x80f088ae72DB6d1AC337340cd6Aa0EB1F67337CE",
