@@ -7,7 +7,7 @@ async function tvl(time, ethBlock, _b, {api}) {
 }
 
 module.exports = {
-  methodology: `We count the ETH on ${contract},
+  methodology: `We count the ETH on ${contract}`,
   base: {
     tvl
   }
