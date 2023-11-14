@@ -19,6 +19,9 @@ const chainConfigs = {
     rsr: "0x320623b8E4fF03373931769A31Fc52A4E78B5d70",
     vault: "0xaedcfcdd80573c2a312d15d6bb9d921a01e4fb0f",
     fromBlock: 16680995,
+    erc4626Wrapped: [
+      '0xaa91d24c2f7dbb6487f61869cd8cd8afd5c5cab2',
+    ]
   },
   base: {
     deployerAddresses: [
@@ -32,20 +35,21 @@ const chainConfigs = {
 
 async function tvl(_time, block, _, { api, chain }) {
   const config = chainConfigs[chain];
-
+  let { erc4626Wrapped = [] } = config;
+  erc4626Wrapped = erc4626Wrapped.map(i => i.toLowerCase())
   // Common logic for calculating TVL (only mainnet has vault)
   const ownerTokens = config.vault
     ? [
+      [
         [
-          [
-            ADDRESSES.ethereum.USDC, //usdc
-            "0x8e870d67f660d95d5be530380d0ec0bd388289e1", //pax
-            ADDRESSES.ethereum.TUSD, //tusd
-            ADDRESSES.ethereum.BUSD, //busd
-          ],
-          config.vault,
+          ADDRESSES.ethereum.USDC, //usdc
+          "0x8e870d67f660d95d5be530380d0ec0bd388289e1", //pax
+          ADDRESSES.ethereum.TUSD, //tusd
+          ADDRESSES.ethereum.BUSD, //busd
         ],
-      ]
+        config.vault,
+      ],
+    ]
     : [];
   const blacklistedTokens = [config.rsr];
   const fluxListWithOwner = [];
@@ -68,7 +72,6 @@ async function tvl(_time, block, _, { api, chain }) {
   });
 
   let processedWrappers = new Set();
-  let wrapperBalances = {};
   const allTokens = basketRes.flatMap(([tokens], i) => {
     ownerTokens.push([tokens, rTokens[i]]);
     ownerTokens.push([tokens, backingManagers[i]]);
@@ -98,6 +101,7 @@ async function tvl(_time, block, _, { api, chain }) {
     (_, i) => /^Compound.*Vault$/.test(allNames[i]) // Starts with Compound, ends with Vault
   );
   const convexTokensAndOwners = [];
+  const erc4626TokensAndOwners = []
 
   allTokens.forEach((token, i) => {
     if (!allNames[i].startsWith("Flux ")) return;
@@ -112,6 +116,14 @@ async function tvl(_time, block, _, { api, chain }) {
     blacklistedTokens.push(token);
     convexTokensAndOwners.push([token, allRTokens[i]]);
     convexTokensAndOwners.push([token, allManagers[i]]);
+  });
+
+  allTokens.forEach((token, i) => {
+    token = token.toLowerCase()
+    if (!erc4626Wrapped.includes(token)) return;
+    blacklistedTokens.push(token);
+    erc4626TokensAndOwners.push([token, allRTokens[i]]);
+    erc4626TokensAndOwners.push([token, allManagers[i]]);
   });
 
   let cTokens = await api.multiCall({
@@ -135,8 +147,7 @@ async function tvl(_time, block, _, { api, chain }) {
     await getStargateLpValues(
       api,
       stargateLpWrappers,
-      processedWrappers,
-      wrapperBalances
+      processedWrappers
     );
 
   if (cUsdcV3Wrapper) {
@@ -144,8 +155,7 @@ async function tvl(_time, block, _, { api, chain }) {
     await getCompoundUsdcValues(
       api,
       cUsdcV3Wrapper,
-      processedWrappers,
-      wrapperBalances
+      processedWrappers
     );
   }
 
@@ -156,6 +166,15 @@ async function tvl(_time, block, _, { api, chain }) {
   );
 
   await unwrapCreamTokens(api.getBalances(), fluxListWithOwner, api.block);
+
+  if (erc4626TokensAndOwners.length) {
+    const erc4626Tokens = erc4626TokensAndOwners.map(([token]) => token)
+    const assets = await api.multiCall({ abi: "address:asset", calls: erc4626Tokens })
+    const bals = await api.multiCall({ abi: 'uint256:totalAssets', calls: erc4626Tokens })
+    const totalSupplies = await api.multiCall({ abi: 'uint256:totalSupply', calls: erc4626Tokens })
+    const balances = await api.multiCall({ abi: 'erc20:balanceOf', calls: erc4626TokensAndOwners.map(i => ({ target: i[0], params: i[1] })) })
+    balances.forEach((bal, i) => api.add(assets[i], bal * bals[i] / totalSupplies[i]))
+  }
 
   await sumTokens2({ api, ownerTokens, blacklistedTokens });
 }
