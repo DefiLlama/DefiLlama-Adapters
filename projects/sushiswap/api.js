@@ -52,6 +52,8 @@ const tvl = getUniTVL({
 })
 
 module.exports = {
+  ethereum: { tvl: eth, },
+  polygon: { tvl, },
   telos: { tvl, },
   palm: { tvl, },
   moonriver: { tvl, },
@@ -59,9 +61,7 @@ module.exports = {
   okexchain: { tvl, },
   arbitrum: { tvl, },
   xdai: { tvl, },
-  harmony: { tvl, },
-  ethereum: { tvl: eth, },
-  polygon: { tvl, },
+  harmony: { tvl: getUniTVL({ factory, useDefaultCoreAssets: true, queryBatched: 200}), },
   fantom: { tvl, },
   bsc: { tvl, },
   heco: { tvl, },
@@ -73,9 +73,26 @@ module.exports = {
     tvl: getUniTVL({ factory: '0x43eA90e2b786728520e4f930d2A71a477BF2737C', useDefaultCoreAssets: true, }),
   },
   arbitrum_nova: { tvl, },
-  base: { tvl, },
   //moved kava to trident adapter
   //kava: {  //  tvl: kavaTridentTvl,  //},
+  base: {
+    tvl: getUniTVL({ factory: '0x71524B4f93c58fcbF659783284E38825f0622859', useDefaultCoreAssets: true, }),
+  },
+  scroll: {
+    tvl: getUniTVL({ factory: '0xB45e53277a7e0F1D35f2a77160e91e25507f1763', useDefaultCoreAssets: true, }),
+  },
+  kava: {
+    tvl: getUniTVL({ factory: '0xD408a20f1213286fB3158a2bfBf5bFfAca8bF269', useDefaultCoreAssets: true, }),
+  },
+  metis: {
+    tvl: getUniTVL({ factory: '0x580ED43F3BBa06555785C81c2957efCCa71f7483', useDefaultCoreAssets: true, }),
+  },
+  bittorrent: {
+    tvl: getUniTVL({ factory: '0xB45e53277a7e0F1D35f2a77160e91e25507f1763', useDefaultCoreAssets: true, }),
+  },
+  filecoin: {
+    tvl: getUniTVL({ factory: '0x9B3336186a38E1b6c21955d112dbb0343Ee061eE', useDefaultCoreAssets: true, }),
+  },
 }
 
 module.exports.polygon.tvl = getChainTVL('polygon')
