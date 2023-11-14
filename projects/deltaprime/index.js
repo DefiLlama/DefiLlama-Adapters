@@ -49,6 +49,7 @@ async function tvlAvalanche(timestamp, block, chainBlocks, { api }) {
   ]
 
   const accounts = logs.map(i => `0x${i.topics[1].slice(26)}`)
+  await addTraderJoeLPs({ api, accounts })
   const positions = await api.multiCall({ abi: getStakingPositionsAbi, calls: accounts })
   const ownedAssets = await api.multiCall({ abi: getAllOwnedAssetsAbi, calls: accounts })
   const vectorTokens = {}
@@ -62,10 +63,10 @@ async function tvlAvalanche(timestamp, block, chainBlocks, { api }) {
     })
     positions[i].forEach(({ asset, identifier }) => {
       asset = asset.toLowerCase()
-      if(ethers.utils.parseBytes32String(identifier).toLowerCase().includes("auto")){
+      if (ethers.utils.parseBytes32String(identifier).toLowerCase().includes("auto")) {
         if (!vectorAutoTokens[asset]) vectorAutoTokens[asset] = []
         vectorAutoTokens[asset].push(o)
-      }else{
+      } else {
         if (!vectorTokens[asset]) vectorTokens[asset] = []
         vectorTokens[asset].push(o)
       }
@@ -73,6 +74,7 @@ async function tvlAvalanche(timestamp, block, chainBlocks, { api }) {
   })
 
   const balances = await sumTokens2({ api, tokensAndOwners: tokensAndOwners })
+  console.log(Object.entries(vectorAutoTokens).length, Object.entries(vectorTokens).length)
   await Promise.all(Object.entries(vectorTokens).map(([token, accounts]) => addVectorVaultBalances({ api, balances, accounts, token })))
   await Promise.all(Object.entries(vectorAutoTokens).map(([token, accounts]) => addVectorVaultBalancesAuto({ api, balances, accounts, token })))
   return balances;
@@ -95,7 +97,9 @@ async function tvlArbitrum(timestamp, block, chainBlocks, { api }) {
   ]
 
   const accounts = logs.map(i => `0x${i.topics[1].slice(26)}`)
-  const ownedAssets = await api.multiCall({ abi: getAllOwnedAssetsAbi, calls: accounts })
+  const ownedAssets = await api.multiCall({ abi: getAllOwnedAssetsAbi, calls: accounts, })
+  await addTraderJoeLPs({ api, accounts })
+
   accounts.forEach((o, i) => {
     ownedAssets[i].forEach(tokenStr => {
       tokenStr = ethers.utils.parseBytes32String(tokenStr)
@@ -106,12 +110,46 @@ async function tvlArbitrum(timestamp, block, chainBlocks, { api }) {
     })
   })
 
-  return await sumTokens2({ api, tokensAndOwners: tokensAndOwners });
+  return sumTokens2({ api, tokensAndOwners: tokensAndOwners });
 }
 
-function translatePlatypusLPToBaseToken(token){
+async function addTraderJoeLPs({ api, accounts }) {
+  const pairSet = new Set()
+  const bins = await api.multiCall({ abi: 'function getOwnedTraderJoeV2Bins() public view returns (tuple(address pair, uint24 bin)[])', calls: accounts })
+  const calls = []
+  bins.forEach((res, i) => {
+    const account = accounts[i]
+    res.forEach(({ pair, bin }) => {
+      pair = pair.toLowerCase()
+      pairSet.add(pair)
+      calls.push({ target: pair, bin, account })
+    })
+  })
+  const pairs = [...pairSet]
+  const tokenXs = await api.multiCall({ abi: 'function getTokenX() view returns (address)', calls: pairs })
+  const tokenYs = await api.multiCall({ abi: 'function getTokenY() view returns (address)', calls: pairs })
+  const pairInfos = {}
+  pairs.forEach((pair, i) => {
+    pairInfos[pair] = {
+      tokenX: tokenXs[i],
+      tokenY: tokenYs[i],
+    }
+  })
+  const bals = await api.multiCall({ abi: 'function balanceOf(address, uint256) view returns (uint256)', calls: calls.map(({ target, account, bin }) => ({ target, params: [account, bin] })) })
+  const binBals = await api.multiCall({ abi: 'function getBin(uint24) view returns (uint128 tokenXbal,uint128 tokenYBal)', calls: calls.map(({ target, account, bin }) => ({ target, params: [bin] })) })
+  const binSupplies = await api.multiCall({ abi: 'function totalSupply(uint256) view returns (uint256)', calls: calls.map(({ target, account, bin }) => ({ target, params: [bin] })) })
+  binBals.forEach(({tokenXbal, tokenYBal}, i) => {
+    const { tokenX, tokenY } = pairInfos[calls[i].target]
+    const ratio = bals[i] / binSupplies[i]
+    api.add(tokenX, tokenXbal * ratio)
+    api.add(tokenY, tokenYBal * ratio)
+  })
+
+}
+
+function translatePlatypusLPToBaseToken(token) {
   // Platypus USDC Asset (LP-USDC) -> USDC
-  if(token === "0x06f01502327de1c37076bea4689a7e44279155e9"){
+  if (token === "0x06f01502327de1c37076bea4689a7e44279155e9") {
     token = ADDRESSES.avax.USDC;
   }
   return token;
