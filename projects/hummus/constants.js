@@ -11,6 +11,8 @@ const USD1_DAI_LP = "0xd5A0760D55ad46B6A1C46D28725e4C117312a7aD"; // deprecated
 // USD2 - MAI
 const USD2_mUSDC_LP = "0x8a19e755610aECB3c55BdE4eCfb9185ef0267400";
 const USD2_MAI_LP = "0x3Eaa426861a283F0E46b6411aeB3C3608B090E0e";
+// Balancer Vault
+const BAL_VAULT = "0x95B4F64c2a96F770C1b4216e18ED692C01506437";
 
 /**
  * token addresses
@@ -20,7 +22,11 @@ const mUSDT = ADDRESSES.metis.m_USDT;
 const mDAI = "0x4c078361FC9BbB78DF910800A991C7c3DD2F6ce0";
 const mBUSD = "0xb809cda0c2f79f43248C32b5DcB09d5cD26BbF10"
 const DAI = ADDRESSES.metis.DAI; // deprecated
-const MAI = ADDRESSES.moonbeam.MAI
+const MAI = ADDRESSES.moonbeam.MAI;
+const mWBTC = ADDRESSES.metis.m_WBTC;
+const WETH = ADDRESSES.metis.WETH;
+const METIS = ADDRESSES.metis.Metis;
+
 
 module.exports = {
   mBUSD: {
@@ -37,7 +43,10 @@ module.exports = {
     addresses: [
       {
         token: mDAI,
-        lpTokens: [USD1_mDAI_LP],
+        lpTokens: [
+          USD1_mDAI_LP,
+          BAL_VAULT
+        ],
       },
     ],
   },
@@ -48,7 +57,8 @@ module.exports = {
         token: mUSDC,
         lpTokens: [
           USD1_mUSDC_LP,
-          USD2_mUSDC_LP
+          USD2_mUSDC_LP,
+          BAL_VAULT
         ],
       },
     ],
@@ -58,7 +68,10 @@ module.exports = {
     addresses: [
       {
         token: mUSDT,
-        lpTokens: [USD1_mUSDT_LP],
+        lpTokens: [
+          USD1_mUSDT_LP,
+          BAL_VAULT
+        ],
       },
     ],
   },
@@ -68,6 +81,33 @@ module.exports = {
       {
         token: MAI,
         lpTokens: [USD2_MAI_LP]
+      }
+    ]
+  },
+  mWBTC: {
+    id: "wrapped-bitcoin",
+    addresses: [
+      {
+        token: mWBTC,
+        lpTokens: [BAL_VAULT]
+      }
+    ]
+  },
+  WETH: {
+    id: "weth",
+    addresses: [
+      {
+        token: WETH,
+        lpTokens: [BAL_VAULT]
+      }
+    ]
+  },
+  METIS: {
+    id: "metis-token",
+    addresses: [
+      {
+        token: METIS,
+        lpTokens: [BAL_VAULT]
       }
     ]
   }

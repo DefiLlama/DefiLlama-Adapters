@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
 const constants = require("./constants");
+const { onChainTvl } = require("../helper/balancer");
 
 async function balanceOf(owner, target, block) {
   const chain = "metis";
