@@ -1,13 +1,23 @@
 const { staking } = require('../helper/staking');
-const { cachedGraphQuery } = require('../helper/cache')
+const { cachedGraphQuery, getConfig } = require('../helper/cache')
 
 const graphUrl = 'https://api.thegraph.com/subgraphs/name/yieldyak/reinvest-tracker'
 const graphQuery = `{ farms(first: 1000) { id }}`;
 
 async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
-  const { farms } = await cachedGraphQuery('yieldyak', graphUrl, graphQuery)
-  const tokens = await api.multiCall({  abi: 'address:depositToken', calls: farms.map(i => i.id), permitFailure: true, })
-  const vals = await api.multiCall({  abi: 'uint256:totalDeposits', calls: farms.map(i => i.id), permitFailure: true, })
+  const { farms } = await cachedGraphQuery('yieldyak/avax', graphUrl, graphQuery)
+  console.log(farms.length)
+  const tokens = await api.multiCall({ abi: 'address:depositToken', calls: farms.map(i => i.id), permitFailure: true, })
+  const vals = await api.multiCall({ abi: 'uint256:totalDeposits', calls: farms.map(i => i.id), permitFailure: true, })
+  tokens.forEach((token, i) => {
+    if (!token || !vals[i]) return;
+    api.add(token, vals[i])
+  })
+}
+async function arbiTvl(timestamp, ethBlock, chainBlocks, { api }) {
+  const farms = await getConfig('yieldyak/arbi', 'https://staging-api.yieldyak.com/42161/farms')
+  const tokens = await api.multiCall({ abi: 'address:depositToken', calls: farms.map(i => i.address), permitFailure: true, })
+  const vals = await api.multiCall({ abi: 'uint256:totalDeposits', calls: farms.map(i => i.address), permitFailure: true, })
   tokens.forEach((token, i) => {
     if (!token || !vals[i]) return;
     api.add(token, vals[i])
@@ -21,5 +31,6 @@ module.exports = {
   avax: {
     tvl,
     staking: staking(masterYak, yakToken),
-  }
+  },
+  arbitrum: { tvl: arbiTvl },
 }

@@ -73,6 +73,9 @@ const arbCallVault = '0x0833EC3262Dcc417D88f85Ed5E1EBAf768080f41'
 //zkEVM vaults
 const stMaticCallVault = '0x7bF3c7C23501EA3E09B237D6F8AdcB7Ea3CeF41C'
 
+//cronos vaults
+const cronosCallVault = '0x99F05418967d3596CAfd260913b682Fd9b0CBB40'
+
 // Ethereum Assets
 const weth = ADDRESSES.ethereum.WETH
 const usdc = ADDRESSES.ethereum.USDC
@@ -115,6 +118,9 @@ let arb = ADDRESSES.arbitrum.ARB
 
 // zkEVM assets
 const stMatic = '0x83b874c1e09D316059d929da402dcB1A98e92082';
+
+// cronos assets
+const wcro = '0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23'
 
 module.exports = {
   methodology: `Only the funds deposited by the users into our vaults are calculated as TVL.`,
@@ -208,6 +214,11 @@ const config = {
   polygon_zkevm: {
     tokensAndOwners: [
       [stMatic, stMaticCallVault,],
+    ]
+  },
+  cronos: {
+    tokensAndOwners: [
+      [wcro, cronosCallVault]
     ]
   }
 }
