@@ -58,6 +58,8 @@ const config = {
     owners: [
       'addr1qxqut96hxv5zxmhcgspmnq9tuaf6xglvq6tdv8jm5zltatv5hnm8tps2jw73pherd4l9yuuetxlp6gkeufq5p6ftjswssk33fx',
       'addr1q9vrcmu4sr7yrspknu8gwrzgrs6wuh0e6pkk9tyz2clg9llt77jyl7422xv72h9mc9kmsgvajssj4a4cpsv07n4e5lpqkfe9ft',
+      'addr1qy9ffv7zmqtmenskcnvsxszhv6zsls8gkl339tc5d2c5davhg2p4nekj924whmlmczq3jkf22yt5wh3ml7f8g3mxud4ss6mwyd',
+      'addr1qx2tzwkx4fjg8cg0htw27cje4029cmf2plsm3nws5qyky45njhmrzd25840eesfu6q33tzaqxtrqarfuqe9wpsc9ks0qea4lcq',
     ],
   },
   hedera: {
@@ -81,6 +83,7 @@ const config = {
       '0x87cbc48075d7aa1760Ac71C41e8Bc289b6A31F56',
       '0xcDE4c1b984F3F02f997ECfF9980B06316de2577d',
       '0x7153D2ef9F14a6b1Bb2Ed822745f65E58d836C3F',
+      '0xFF4606bd3884554CDbDabd9B6e25E2faD4f6fc54',
     ]
   },
   polygon: {
