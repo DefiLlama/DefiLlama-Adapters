@@ -5,8 +5,11 @@ const config = {
   base: '0xE173A25C522385BB117b3044C79F534cD0a895EC'
 }
 
-Object.keys(config).forEach(chain => {
-  module.exports[chain] = {
-    tvl: sumTokensExport({ tokens: [nullAddress], owner: config[chain] })
+module.exports = {
+  ethereum: {
+    tvl: sumTokensExport({ owner: config.ethereum, fetchCoValentTokens: true })
+  },
+  base: {
+    tvl: sumTokensExport({ owner: config.base, tokens: [nullAddress] })
   }
-})
+}
