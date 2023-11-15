@@ -8,6 +8,7 @@ module.exports = {
         api,
         owner: "0x8EB8a3b98659Cce290402893d0123abb75E3ab28",
         fetchCoValentTokens: true,
+        logArray,
       }),
   },
   bitcoin: {
@@ -18,6 +19,7 @@ module.exports = {
           abi: "erc20:totalSupply",
           target: "0x152b9d0FdC40C096757F570A51E494bd4b943E50",
           block: chainBlocks.avax,
+          logArray,
         })) /
         10 ** 8,
     }),

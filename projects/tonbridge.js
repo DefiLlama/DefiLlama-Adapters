@@ -35,12 +35,13 @@ async function tvl() {
 }
 
 function evm(chain, target) {
-    return async (timestamp, block, chainBlocks) => {
+    return async (timestamp, block, chainBlocks, { logArray }) => {
         return { everscale: (await sdk.api.abi.call({
             target,
             abi: 'erc20:totalSupply',
             block: chainBlocks[chain],
-            chain
+            chain,
+            logArray
         })).output / 10 ** 9 };
     };
 }
