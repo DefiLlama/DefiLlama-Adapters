@@ -61,6 +61,6 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const { mosContract, tokens } = config[chain]
   module.exports[chain] = {
-    tvl:sumTokensExport({ owner: mosContract, tokens: Object.values(tokens), })
+    tvl:sumTokensExport({ owner: mosContract, tokens: Object.values(tokens), logCalls: true })
   }
 })
