@@ -31,6 +31,7 @@ const gmTokens = [
 
 const getAumUsdAbi = 'function getAumInUsdg(bool maximise) view returns (uint256)';
 const balanceOfABI = 'function balanceOf(address _account) view returns (uint256)';
+const stakedAmountsAbi = 'function stakedAmounts(address) external view returns (uint256)';
 const totalSupplyAbi = 'erc20:totalSupply';
 
 const klpManager = "0x3C4DE8fB37055500BB3D18eAE8dD0DffF527090e";
@@ -99,8 +100,7 @@ async function tvl() {
 }
 
 
-async function mantleTvl() {
-  const { api } = arguments[3]
+async function mantleTvl(ts, _, _1, { api }) {
   const chain = api.chain;
   const block = api.block;
 
@@ -110,18 +110,19 @@ async function mantleTvl() {
   ] = await getKlpPrice(chain, api.block)
 
   const klpPrice = BigNumber(aumUsd).div(totalSupply).toNumber();
-  const { output: balance } = await sdk.api.abi.call({
-    abi: balanceOfABI,
+
+  const { output: amount } = await sdk.api.abi.call({
+    abi: stakedAmountsAbi,
     target: klp,
     params: [klpPool],
     chain,
     block,
   })
 
-  const tvl = BigNumber(balance).div(1e18).times(klpPrice).toNumber();
+  const tvl = BigNumber(amount).div(1e18).times(klpPrice).toNumber();
 
   return {
-    "usd-coin": tvl,
+    "tether": tvl,
   };
 }
 
