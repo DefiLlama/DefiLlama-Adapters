@@ -4,7 +4,6 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getLogs } = require('../helper/cache/getLogs')
 
 const getAllOwnedAssetsAbi = require('./abis/getAllOwnedAssetsAbi.json');
-const getStakingPositionsAbi = "function getStakedPositions() view returns (tuple(address asset, bytes32 symbol, bytes32 identifier, bytes4 balanceSelector, bytes4 unstakeSelector)[])"
 
 const assetToAddressMappingAvalanche = require('./mappings/assetToAddressMappingAvalanche.json')
 const assetToAddressMappingArbitrum = require('./mappings/assetToAddressMappingArbitrum.json')
@@ -78,7 +77,6 @@ async function tvlArbitrum(timestamp, block, chainBlocks, { api }) {
   const accounts = logs.map(i => `0x${i.topics[1].slice(26)}`)
   const ownedAssets = await api.multiCall({ abi: getAllOwnedAssetsAbi, calls: accounts, })
   await addTraderJoeLPs({ api, accounts })
-  const positions = await api.multiCall({ abi: getStakingPositionsAbi, calls: accounts })
 
   accounts.forEach((o, i) => {
     ownedAssets[i].forEach(tokenStr => {
