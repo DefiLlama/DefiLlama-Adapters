@@ -1,60 +1,32 @@
 const { getLogs } = require("../helper/cache/getLogs");
-const { Contract } = require("ethers");
-const ZCB_Issuer_V1 = require("./ZCB_V1.json");
-const { getProvider } = require("@defillama/sdk");
 
-const Chains = {
-  Manta: "manta"
-};
-
-const configByChain = {
-  [Chains.Manta]: {
+const config = {
+  manta: {
     issuer: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
     fromBlock: 574206,
-    issuerEventABI: "event Create(address indexed issuer, address indexed contractAddress);"
+    issuerEventABI: "event Create(address indexed issuer, address indexed contractAddress)"
   }
 };
 
 async function tvl(_, _1, _2, { api }) {
+  const { issuer, fromBlock, issuerEventABI } = config[api.chain];
 
-  const createdContracts = [];
-  const config = configByChain[api.chain];
-
-  const logs = await getLogs({
-    api,
-    target: config.issuer,
-    fromBlock: config.fromBlock,
-    eventAbi: config.issuerEventABI
-  });
-
-  logs.forEach(item => createdContracts.push(item.args.contractAddress));
-
-  for (const contractAddress of createdContracts) {
-    const contract = new Contract(contractAddress, ZCB_Issuer_V1, getProvider(api.chain));
-    const info = await contract.functions.getInfo();
-
-    const purchased = info[2];
-    const investmentToken = info[5];
-    const investmentTokenAmount = info[6];
-    const interestToken = info[7];
-
-
-    const balance = await api.call({
-      abi: "erc20:balanceOf",
-      target: interestToken,
-      params: contractAddress
-    });
-
-    api.add(interestToken, balance);
-    api.add(investmentToken, investmentTokenAmount.mul(purchased));
-  }
+  const logs = await getLogs({ api, target: issuer, fromBlock, eventAbi: issuerEventABI, onlyArgs: true });
+  const calls = logs.map(item => item.contractAddress)
+  const res = await api.multiCall({  abi: ZCB_Issuer_V1.getInfo, calls})
+  const ownerTokens = res.map((v, i) => [[v.investmentToken, v.interestToken], calls[i]])
+  return api.sumTokens({ ownerTokens })
 }
-
 
 module.exports = {
   start: 1700036718369,
   methodology: "get the logs of the issuer contract to understand what bonds were issued and summing what is locked in the contract and adding the purchased amount",
-  [Chains.Manta]: {
-    tvl
-  }
-};
+}
+
+Object.keys(config).forEach(chain => {
+  module.exports[chain] = { tvl }
+})
+
+const ZCB_Issuer_V1 = {
+  getInfo: "function getInfo() view returns (address, uint256, uint256 purchased, uint256, uint256, address investmentToken, uint256 investmentTokenAmount, address interestToken, uint256, uint16, uint256)",
+}
