@@ -10,6 +10,7 @@ module.exports = {
           "0x57891966931Eb4Bb6FB81430E6cE0A03AAbDe063",
         ],
         fetchCoValentTokens: true,
+        logArray,
       }),
   },
 };

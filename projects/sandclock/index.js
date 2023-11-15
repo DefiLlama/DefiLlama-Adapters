@@ -11,7 +11,8 @@ const WETH_VAULT = '0x1Fc623b96c8024067142Ec9c15D669E5c99c5e9D';
 const USDC_VAULT = '0x1038Ff057b7092f17807358c6f68b42661d15caB';
 
 const v1Vaults = [YEARN_VAULT, LIQUITY_VAULT];
-const v2Vaults = [WETH_VAULT, USDC_VAULT, "0x4c406C068106375724275Cbff028770C544a1333"];
+const v2Vaults = [WETH_VAULT, USDC_VAULT, "0x4c406C068106375724275Cbff028770C544a1333",
+  "0x096697720056886b905D0DEB0f06AfFB8e4665E5", "0xdb369eEB33fcfDCd1557E354dDeE7d6cF3146A11"];
 
 async function tvl(_, _b, _cb, { api, chain, block, }) {
   const balances = {}
@@ -27,6 +28,8 @@ async function tvl(_, _b, _cb, { api, chain, block, }) {
   sdk.util.sumSingleBalance(balances, WETH, v2VaultBalances[0], chain)
   sdk.util.sumSingleBalance(balances, USDC, v2VaultBalances[1], chain)
   sdk.util.sumSingleBalance(balances, WETH, v2VaultBalances[2], chain)
+  sdk.util.sumSingleBalance(balances, USDC, v2VaultBalances[3], chain)
+  sdk.util.sumSingleBalance(balances, LUSD, v2VaultBalances[4], chain)
   return sumTokens2({ balances, chain, block, })
 }
 

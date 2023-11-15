@@ -31,6 +31,11 @@ async function fetchOptimism() {
   return toUSDTBalances(value);
 }
 
+async function fetchBsc() {
+  const value = await get("https://data.cian.app/bsc/api/v1/tvl");
+
+  return toUSDTBalances(value);
+}
 
 module.exports = {
   misrepresentedTokens: true,
@@ -50,5 +55,8 @@ module.exports = {
   },
   optimism: {
     tvl: fetchOptimism,
+  },
+  bsc: {
+    tvl: fetchBsc,
   },
 };
