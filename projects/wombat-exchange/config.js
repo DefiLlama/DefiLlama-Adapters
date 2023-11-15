@@ -28,6 +28,8 @@ module.exports = {
       SnBNB: "0xF1e604e9A31c3b575f91CF008445B7ce06BF3fef",
       USDS: "0x0c735f84BD7EDA8F8176236091AF8068Bb6C41dE",
       crossChainPool: "0x1ee15673e07105Bcf360139fa8CafeBDd7754BeF",
+      zBNB: "0x9a39f4AB3f52026432835dEe6D3DB721D95f3D28",
+      zUSD: "0xC26b7Cbe7e695a0d11a8cB96140D1Cd502945A2C",
     },
   },
   arbitrum: {
@@ -61,6 +63,19 @@ module.exports = {
       wstETH: "0xF8E32cA46AC28799c8FB7DCe1Ac11A4541160734",
       ETHx: "0x647CC8816C2d60A5fF4d1ffeF27a5b3637d5ac81",
       crossChainPool: "0xA45C0ABeef67C363364E0e73832df9986aBa3800",
+    },
+  },
+  // does not have wom yet
+  scroll: {
+    pools: {
+      crossChainPool: "0x80f088ae72DB6d1AC337340cd6Aa0EB1F67337CE",
+    },
+  },
+  avax: {
+    wom: "0xa15E4544D141aa98C4581a1EA10Eb9048c3b3382",
+    pools: {
+      crossChainPool: "0xC9bFC3eFeFe4CF96877009F75a61F5c1937e5d1a",
+      sAVAX: "0xE3Abc29B035874a9f6dCDB06f8F20d9975069D87",
     },
   },
   hallmarks: [
