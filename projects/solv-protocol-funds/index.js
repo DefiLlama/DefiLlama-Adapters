@@ -1,6 +1,7 @@
+const abi = require("./abi.json");
+const sdk = require("@defillama/sdk");
 const { default: BigNumber } = require("bignumber.js");
 const { getConfig } = require("../helper/cache");
-const abi = require("./abi.json");
 const { cachedGraphQuery } = require("../helper/cache");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
@@ -17,7 +18,7 @@ const slotListUrl = 'https://cdn.jsdelivr.net/gh/solv-finance-dev/solv-protocol-
 const depositAddress = [
   "0x9f6478a876d7765f44bda712573820eb3ae389fb",
   "0xcac14cd2f18dcf54032bd51d0a116fe18770b87c"
-]
+];
 
 const gmTokens = [
   "0x70d95587d40a2caf56bd97485ab3eec10bee6336",
@@ -26,7 +27,15 @@ const gmTokens = [
   "0x7f1fa204bb700853D36994DA19F830b6Ad18455C",
   "0x09400D9DB990D5ed3f35D7be61DfAEB900Af03C9",
   "0xc7Abb2C5f3BF3CEB389dF0Eecd6120D451170B50",
-]
+];
+
+const getAumUsdAbi = 'function getAumInUsdg(bool maximise) view returns (uint256)';
+const balanceOfABI = 'function balanceOf(address _account) view returns (uint256)';
+const totalSupplyAbi = 'erc20:totalSupply';
+
+const klpManager = "0x3C4DE8fB37055500BB3D18eAE8dD0DffF527090e";
+const klp = "0xb3a5eeBf23530165c3A6785400ff5d1700D5c0b3";
+const klpPool = "0xf9ddb49175037b4fd2580fc825b40707d4781531";
 
 async function borrowed(ts) {
   const { api } = arguments[3];
@@ -37,7 +46,6 @@ async function borrowed(ts) {
     var pools = poolLists.filter((value) => {
       return depositAddress.indexOf(value.vault) == -1;
     });
-
     const poolConcretes = await concrete(pools, api);
     const nav = await api.multiCall({
       abi: abi.getSubscribeNav,
@@ -88,6 +96,51 @@ async function tvl() {
   }
 
   await sumTokens2({ api, tokensAndOwners: tokens.map(i => [i.address, i.pool]), permitFailure: true })
+}
+
+
+async function mantleTvl() {
+  const { api } = arguments[3]
+  const chain = api.chain;
+  const block = api.block;
+
+  const [
+    { output: aumUsd },
+    { output: totalSupply }
+  ] = await getKlpPrice(chain, api.block)
+
+  const klpPrice = BigNumber(aumUsd).div(totalSupply).toNumber();
+  const { output: balance } = await sdk.api.abi.call({
+    abi: balanceOfABI,
+    target: klp,
+    params: [klpPool],
+    chain,
+    block,
+  })
+
+  const tvl = BigNumber(balance).div(1e18).times(klpPrice).toNumber();
+
+  return {
+    "usd-coin": tvl,
+  };
+}
+
+async function getKlpPrice(chain, block) {
+  return await Promise.all([
+    sdk.api.abi.call({
+      abi: getAumUsdAbi,
+      target: klpManager,
+      params: [true],
+      chain,
+      block,
+    }),
+    sdk.api.abi.call({
+      abi: totalSupplyAbi,
+      target: klp,
+      chain,
+      block,
+    })
+  ])
 }
 
 async function concrete(slots, api) {
@@ -145,6 +198,7 @@ module.exports = {
     borrowed: borrowed,
   },
   mantle: {
+    tvl: mantleTvl,
     borrowed: borrowed,
   }
 };
