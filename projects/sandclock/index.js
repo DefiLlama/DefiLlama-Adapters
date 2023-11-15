@@ -28,6 +28,8 @@ async function tvl(_, _b, _cb, { api, chain, block, }) {
   sdk.util.sumSingleBalance(balances, WETH, v2VaultBalances[0], chain)
   sdk.util.sumSingleBalance(balances, USDC, v2VaultBalances[1], chain)
   sdk.util.sumSingleBalance(balances, WETH, v2VaultBalances[2], chain)
+  sdk.util.sumSingleBalance(balances, USDC, v2VaultBalances[3], chain)
+  sdk.util.sumSingleBalance(balances, LUSD, v2VaultBalances[4], chain)
   return sumTokens2({ balances, chain, block, })
 }
 
