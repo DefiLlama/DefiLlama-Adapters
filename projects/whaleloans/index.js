@@ -5,3 +5,4 @@ module.exports = {
         staking: () => ({}),
     }
 }
+module.exports.deadFrom = '2022-07-09'

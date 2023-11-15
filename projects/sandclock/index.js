@@ -2,7 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
-const LUSD = '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0';
+const LUSD = ADDRESSES.ethereum.LUSD;
 const WETH = ADDRESSES.ethereum.WETH;
 const USDC = ADDRESSES.ethereum.USDC;
 const YEARN_VAULT = '0x4fe4bf4166744bcbc13c19d959722ed4540d3f6a';
@@ -11,7 +11,7 @@ const WETH_VAULT = '0x1Fc623b96c8024067142Ec9c15D669E5c99c5e9D';
 const USDC_VAULT = '0x1038Ff057b7092f17807358c6f68b42661d15caB';
 
 const v1Vaults = [YEARN_VAULT, LIQUITY_VAULT];
-const v2Vaults = [WETH_VAULT, USDC_VAULT];
+const v2Vaults = [WETH_VAULT, USDC_VAULT, "0x4c406C068106375724275Cbff028770C544a1333"];
 
 async function tvl(_, _b, _cb, { api, chain, block, }) {
   const balances = {}
@@ -26,6 +26,7 @@ async function tvl(_, _b, _cb, { api, chain, block, }) {
   })
   sdk.util.sumSingleBalance(balances, WETH, v2VaultBalances[0], chain)
   sdk.util.sumSingleBalance(balances, USDC, v2VaultBalances[1], chain)
+  sdk.util.sumSingleBalance(balances, WETH, v2VaultBalances[2], chain)
   return sumTokens2({ balances, chain, block, })
 }
 

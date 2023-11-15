@@ -52,7 +52,8 @@ let oracles = {
   optimism: "0x4f9312A21F8853384E0f6141F3F9fB855d860161",
   polygon: "0x9E8B68E17441413b26C2f18e741EAba69894767c",
   avax: "0x5237d212F9BbC83d91c2cbd810D2b07808d94f08",
-  kava: "0xe04cea4d02261923769D79Dd24D188C2cB29dB4A"
+  kava: "0xe04cea4d02261923769D79Dd24D188C2cB29dB4A",
+  conflux: "0xfd3868B848B5D9eD3583938B4db4746415bD43a3"
 };
 
 let allControllers = {
@@ -73,6 +74,7 @@ let allControllers = {
   polygon: ["0x52eaCd19E38D501D006D2023C813d7E37F025f37"],
   avax: ["0x078ad8d6faeD9DAeE55f5d446C80E0C81230DE6b"],
   kava: ["0xFBf64A8cAEA1D641affa185f850dbBF90d5c84dC"],
+  conflux: ["0xA377eCF53253275125D0a150aF195186271f6a56"]
 };
 
 let yieldMarkets = {
@@ -141,6 +143,9 @@ const excludeAlliTokens = {
   ],
   kava: [
     "0x9787af345e765a3fbf0f881c49f8a6830d94a514" // iUSX
+  ],
+  conflux: [
+    "0x6f87b39a2e36F205706921d81a6861B655db6358" // iUSX
   ]
 };
 
@@ -154,6 +159,7 @@ const USXs = {
   "polygon": "0xCf66EB3D546F0415b368d98A95EAF56DeD7aA752",
   "avax": "0x853ea32391AaA14c112C645FD20BA389aB25C5e0",
   "kava": ADDRESSES.kava.USX,
+  "conflux": "0x422a86f57b6b6F1e557d406331c25EEeD075E7aA"
 };
 
 async function getDFStakingValue(block) {
@@ -274,6 +280,6 @@ module.exports = {
     ...chainTvl("ethereum"),
     staking,
   },
-  ...generalizedChainExports(chainTvl, ["bsc", "arbitrum", "optimism", "polygon", "avax", "kava"]),
+  ...generalizedChainExports(chainTvl, ["bsc", "arbitrum", "optimism", "polygon", "avax", "kava", "conflux"]),
   start: 1564165044, // Jul-27-2019 02:17:24 AM +UTC
 }
