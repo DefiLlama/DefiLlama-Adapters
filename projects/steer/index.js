@@ -1,6 +1,7 @@
 // const { GraphQLClient } = require("graphql-request");
 const { staking } = require("../helper/staking");
 const { cachedGraphQuery } = require('../helper/cache')
+const { staking } = require("../helper/staking");
 
 const supportedChains = [
     {   
@@ -121,6 +122,5 @@ supportedChains.forEach(chain => {
     }
   }
 })
-
 
 module.exports.arbitrum.staking = staking("0xB10aB1a1C0E3E9697928F05dA842a292310b37f1", "0x1C43D05be7E5b54D506e3DdB6f0305e8A66CD04e", "arbitrum")
