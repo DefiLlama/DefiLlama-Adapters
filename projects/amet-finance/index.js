@@ -1,5 +1,4 @@
 const { getLogs } = require("../helper/cache/getLogs");
-const BN = require("bn.js");
 
 const config = {
   manta: {
@@ -15,10 +14,7 @@ async function tvl(_, _1, _2, { api }) {
   const logs = await getLogs({ api, target: issuer, fromBlock, eventAbi: issuerEventABI, onlyArgs: true });
   const calls = logs.map(item => item.contractAddress);
   const res = await api.multiCall({ abi: ZCB_Issuer_V1.getInfo, calls });
-  const ownerTokens = res.map((v, i) => {
-    api.add(v.interestToken, new BN(v.purchased).mul(new BN(v.investmentTokenAmount)));
-    return [[v.investmentToken], calls[i]];
-  });
+  const ownerTokens = res.map((v, i) =>      [[v.investmentToken], calls[i]])
   return api.sumTokens({ ownerTokens });
 }
 
