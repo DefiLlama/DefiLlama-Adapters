@@ -14,7 +14,7 @@ async function getMarketIds(chain, factory) {
   const markets = await queryContract({
     contract: factory,
     chain: chain,
-    data: { 'markets': {} }
+    data: { markets: {} }
   });
 
   return markets.markets
@@ -24,7 +24,7 @@ async function getMarketAddr(chain, factory, marketId) {
   const marketInfo = await queryContract({
     contract: factory,
     chain: chain,
-    data: { 'market_info': { 'market_id': marketId } }
+    data: { market_info: { market_id: marketId } }
   });
 
   return marketInfo.market_addr;
@@ -38,9 +38,10 @@ module.exports = {
 const config = {
   osmosis: { factory: 'osmo1ssw6x553kzqher0earlkwlxasfm2stnl3ms3ma2zz4tnajxyyaaqlucd45' },
   sei: { factory: 'sei18rdj3asllguwr6lnyu2sw8p8nut0shuj3sme27ndvvw4gakjnjqqper95h' },
+  injective: { factory: 'inj1vdu3s39dl8t5l88tyqwuhzklsx9587adv8cnn9' },
 }
 
 
-Object.keys(config).forEach(chain => {
+for(const chain of Object.keys(config)) {
   module.exports[chain] = { tvl }
-})
+}
