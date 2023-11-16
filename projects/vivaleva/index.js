@@ -1,3 +1,4 @@
+const getAllPositionsByIdsABI = "function getAllPositionsByIds(address vaultAddress, uint256[] positionIds) view returns (tuple(address worker, uint256 positionId, uint256 positionDebtAmount, uint256 positionHealth, uint256[] positionIngredients, uint16 positionKillFactorBps)[] positionInfos)"
 module.exports = {
   timetravel: false,
   era: {
@@ -93,62 +94,6 @@ module.exports = {
       for (const [i, v] of vaults.entries()) {
         const positionLength = positionLengths[i];
         const positions = Array.from(Array(Number(positionLength)).keys());
-        const getAllPositionsByIdsABI = {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "vaultAddress",
-              "type": "address"
-            },
-            {
-              "internalType": "uint256[]",
-              "name": "positionIds",
-              "type": "uint256[]"
-            }
-          ],
-          "name": "getAllPositionsByIds",
-          "outputs": [
-            {
-              "components": [
-                {
-                  "internalType": "address",
-                  "name": "worker",
-                  "type": "address"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "positionId",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "positionDebtAmount",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "positionHealth",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256[]",
-                  "name": "positionIngredients",
-                  "type": "uint256[]"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "positionKillFactorBps",
-                  "type": "uint16"
-                }
-              ],
-              "internalType": "struct CommonCalculator.PositionInfo[]",
-              "name": "positionInfos",
-              "type": "tuple[]"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        };
         const positionIngredients = await api.call({ abi: getAllPositionsByIdsABI, params: [v.address, positions], target: commonCalculator });
         // => using multiCall
         for (const cur of positionIngredients) {
