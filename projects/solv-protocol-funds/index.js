@@ -1,8 +1,8 @@
+const abi = require("./abi.json");
 const { default: BigNumber } = require("bignumber.js");
 const { getConfig } = require("../helper/cache");
-const abi = require("./abi.json");
 const { cachedGraphQuery } = require("../helper/cache");
-const { sumTokens2 } = require("../helper/unwrapLPs");
+const { sumTokens2, } = require("../helper/unwrapLPs");
 
 // The Graph
 const graphUrlList = {
@@ -17,7 +17,7 @@ const slotListUrl = 'https://cdn.jsdelivr.net/gh/solv-finance-dev/solv-protocol-
 const depositAddress = [
   "0x9f6478a876d7765f44bda712573820eb3ae389fb",
   "0xcac14cd2f18dcf54032bd51d0a116fe18770b87c"
-]
+];
 
 const gmTokens = [
   "0x70d95587d40a2caf56bd97485ab3eec10bee6336",
@@ -26,7 +26,12 @@ const gmTokens = [
   "0x7f1fa204bb700853D36994DA19F830b6Ad18455C",
   "0x09400D9DB990D5ed3f35D7be61DfAEB900Af03C9",
   "0xc7Abb2C5f3BF3CEB389dF0Eecd6120D451170B50",
-]
+];
+
+const stakedAmountsAbi = 'function stakedAmounts(address) external view returns (uint256)';
+
+const klp = "0xb3a5eeBf23530165c3A6785400ff5d1700D5c0b3";
+const klpPool = "0xf9ddb49175037b4fd2580fc825b40707d4781531";
 
 async function borrowed(ts) {
   const { api } = arguments[3];
@@ -37,7 +42,6 @@ async function borrowed(ts) {
     var pools = poolLists.filter((value) => {
       return depositAddress.indexOf(value.vault) == -1;
     });
-
     const poolConcretes = await concrete(pools, api);
     const nav = await api.multiCall({
       abi: abi.getSubscribeNav,
@@ -88,6 +92,11 @@ async function tvl() {
   }
 
   await sumTokens2({ api, tokensAndOwners: tokens.map(i => [i.address, i.pool]), permitFailure: true })
+}
+
+async function mantleTvl(ts, _, _1, { api }) {
+  api.add(klp, await api.call({ abi: stakedAmountsAbi, target: klp, params: [klpPool], }))
+  return api.getBalances()
 }
 
 async function concrete(slots, api) {
@@ -145,6 +154,7 @@ module.exports = {
     borrowed: borrowed,
   },
   mantle: {
+    tvl: mantleTvl,
     borrowed: borrowed,
   }
 };
