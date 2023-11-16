@@ -4,7 +4,7 @@ const SOUL_NFT_CONTRACT = '0x0eB18e650E0363011eE94E4Be9952B5C53e2d90B';
 async function tvl(_, _1, _2, { api }) {
   const collateralBalance = await api.call({
     abi: 'erc20:balanceOf',
-    target: ERC20_TOKEN_CONTENT,
+    target: ERC20_TOKEN_CONTRACT,
     params: [SOUL_NFT_CONTRACT],
   });
 
@@ -14,9 +14,9 @@ async function tvl(_, _1, _2, { api }) {
 module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
-  methodology: 'counts the number of ERC20 tokens in the Club Bonding contract.',
+  methodology: 'counts the total wan deposited in the SoulNFT contract.',
   start: 1000235,
-  bsc: {
+  wanchain: {
     tvl,
   }
-}; 
+};
