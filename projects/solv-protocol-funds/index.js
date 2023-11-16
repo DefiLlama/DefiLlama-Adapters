@@ -1,9 +1,8 @@
 const abi = require("./abi.json");
-const sdk = require("@defillama/sdk");
 const { default: BigNumber } = require("bignumber.js");
 const { getConfig } = require("../helper/cache");
 const { cachedGraphQuery } = require("../helper/cache");
-const { sumTokens2 } = require("../helper/unwrapLPs");
+const { sumTokens2, } = require("../helper/unwrapLPs");
 
 // The Graph
 const graphUrlList = {
@@ -29,12 +28,8 @@ const gmTokens = [
   "0xc7Abb2C5f3BF3CEB389dF0Eecd6120D451170B50",
 ];
 
-const getAumUsdAbi = 'function getAumInUsdg(bool maximise) view returns (uint256)';
-const balanceOfABI = 'function balanceOf(address _account) view returns (uint256)';
 const stakedAmountsAbi = 'function stakedAmounts(address) external view returns (uint256)';
-const totalSupplyAbi = 'erc20:totalSupply';
 
-const klpManager = "0x3C4DE8fB37055500BB3D18eAE8dD0DffF527090e";
 const klp = "0xb3a5eeBf23530165c3A6785400ff5d1700D5c0b3";
 const klpPool = "0xf9ddb49175037b4fd2580fc825b40707d4781531";
 
@@ -99,49 +94,9 @@ async function tvl() {
   await sumTokens2({ api, tokensAndOwners: tokens.map(i => [i.address, i.pool]), permitFailure: true })
 }
 
-
 async function mantleTvl(ts, _, _1, { api }) {
-  const chain = api.chain;
-  const block = api.block;
-
-  const [
-    { output: aumUsd },
-    { output: totalSupply }
-  ] = await getKlpPrice(chain, api.block)
-
-  const klpPrice = BigNumber(aumUsd).div(totalSupply).toNumber();
-
-  const { output: amount } = await sdk.api.abi.call({
-    abi: stakedAmountsAbi,
-    target: klp,
-    params: [klpPool],
-    chain,
-    block,
-  })
-
-  const tvl = BigNumber(amount).div(1e18).times(klpPrice).toNumber();
-
-  return {
-    "tether": tvl,
-  };
-}
-
-async function getKlpPrice(chain, block) {
-  return await Promise.all([
-    sdk.api.abi.call({
-      abi: getAumUsdAbi,
-      target: klpManager,
-      params: [true],
-      chain,
-      block,
-    }),
-    sdk.api.abi.call({
-      abi: totalSupplyAbi,
-      target: klp,
-      chain,
-      block,
-    })
-  ])
+  api.add(klp, await api.call({ abi: stakedAmountsAbi, target: klp, params: [klpPool], }))
+  return api.getBalances()
 }
 
 async function concrete(slots, api) {
