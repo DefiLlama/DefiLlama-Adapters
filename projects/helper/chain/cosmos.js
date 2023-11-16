@@ -48,7 +48,6 @@ const chainSubpaths = {
   comdex: "comdex",
   umee: "umee",
   kava: "kava",
-  bostrom: "cosmos"
 };
 
 // some contract calls need endpoint with higher gas limit
