@@ -22,6 +22,27 @@ module.exports = {
       })
     },
   },
+  telos: {
+    tvl: async (_, _1, _2, { api }) => {
+      const a = (await Promise.all([...Array(5).keys()].map(i => api.call({
+        abi: "function canonicalPools(address user, uint256 begin, uint256 maxLength) returns (tuple(address gauge, tuple(address pool, string poolType, bytes32[] lpTokens, uint256[] mintedLPTokens, bytes32[] listedTokens, uint256[] reserves, bytes poolParams) poolData, bool killed, uint256 totalVotes, uint256 userVotes, uint256 userClaimable, uint256 emissionRate, uint256 userEmissionRate, uint256 stakedValueInHubToken, uint256 userStakedValueInHubToken, uint256 averageInterestRatePerSecond, uint256 userInterestRatePerSecond, bytes32[] stakeableTokens, uint256[] stakedAmounts, uint256[] userStakedAmounts, bytes32[] underlyingTokens, uint256[] stakedUnderlying, uint256[] userUnderlying, tuple(bytes32[] tokens, uint256[] rates, uint256[] userClaimable, uint256[] userRates)[] bribes)[] gaugeDataArray)",
+        target: "0x5123EE9A02b7435988D4B120633d045EF6a0159B",
+        params: ["0x5123EE9A02b7435988D4B120633d045EF6a0159B", i, 2]
+      })))).flat();
+      const b = await api.call({
+        abi: "function wombatGauges(address user) returns (tuple(address gauge, tuple(address pool, string poolType, bytes32[] lpTokens, uint256[] mintedLPTokens, bytes32[] listedTokens, uint256[] reserves, bytes poolParams) poolData, bool killed, uint256 totalVotes, uint256 userVotes, uint256 userClaimable, uint256 emissionRate, uint256 userEmissionRate, uint256 stakedValueInHubToken, uint256 userStakedValueInHubToken, uint256 averageInterestRatePerSecond, uint256 userInterestRatePerSecond, bytes32[] stakeableTokens, uint256[] stakedAmounts, uint256[] userStakedAmounts, bytes32[] underlyingTokens, uint256[] stakedUnderlying, uint256[] userUnderlying, tuple(bytes32[] tokens, uint256[] rates, uint256[] userClaimable, uint256[] userRates)[] bribes)[] gaugeDataArray)",
+        target: "0x5123EE9A02b7435988D4B120633d045EF6a0159B",
+        params: ["0x5123EE9A02b7435988D4B120633d045EF6a0159B"]
+      });
+      let tokens = a.concat(b).map(g => g.poolData.listedTokens).flat().map(i => '0x' + i.slice(2 + 24))
+      return sumTokens2({
+        owner: "0x0117A9094c29e5A3D24ae608264Ce63B15b631d9", tokens, blacklistedTokens: [
+          '0xe65B77F52d8645EcaD3EdfDf4D3E5b1A9D31f988',
+          '0x68B1e7eFee0b4ffEC938DD131458567157B4D45d',
+        ], api,
+      })
+    },
+  },
   era: {
     tvl: async (_, _1, _2, { api }) => {
       const a = await api.call({
