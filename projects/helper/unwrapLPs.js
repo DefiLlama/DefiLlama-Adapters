@@ -410,7 +410,7 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
     // }
   }
 
-  let chunks = tokensAndOwners
+  let chunks = [tokensAndOwners]
   if (sumChunkSize)
     chunks = sliceIntoChunks(tokensAndOwners, sumChunkSize)
 
