@@ -65,8 +65,8 @@ function chainTvl(chain) {
         calls: substituteTokens.map(token => ({ target: token })),
       }),
       api.multiCall({
-        abi: 'erc20:balanceOf',
-        calls: substituteTokens.map(token => ({ target: token, params: [CONTRACT_INFO.assetPoolContract.address] })),
+        abi: 'erc20:totalSupply',
+        calls: substituteTokens.map(token => ({ target: token })),
       })
     ])
     api.addTokens(underlyingTokens, balances)
