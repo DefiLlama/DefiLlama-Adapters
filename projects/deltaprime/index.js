@@ -87,6 +87,7 @@ async function tvlArbitrum(timestamp, block, chainBlocks, { api }) {
       tokensAndOwners.push([token, o])
     })
   })
+
   return sumTokens2({ api, tokensAndOwners: tokensAndOwners });
 }
 
