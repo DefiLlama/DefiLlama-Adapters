@@ -31,6 +31,10 @@ function uniV3Export(config) {
           onlyArgs: true,
         })
 
+        if (config[chain].filterFn) {
+          blacklistedTokens.push(... await config[chain].filterFn(api, logs))
+        }
+
         return sumTokens2({ api, ownerTokens: logs.map(i => [[i.token0, i.token1], i.pool]), blacklistedTokens, permitFailure: permitFailure || logs.length > 2000 })
       }
     }
