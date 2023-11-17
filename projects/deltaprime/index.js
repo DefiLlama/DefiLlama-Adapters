@@ -87,7 +87,7 @@ async function tvlArbitrum(timestamp, block, chainBlocks, { api }) {
       tokensAndOwners.push([token, o])
     })
   })
-
+  console.log("Llamamaster run the adapter, please.")
   return sumTokens2({ api, tokensAndOwners: tokensAndOwners });
 }
 
