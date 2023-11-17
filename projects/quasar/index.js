@@ -1,21 +1,29 @@
-const { queryContract } = require('../helper/chain/cosmos')
-const { getConfig } = require('../helper/cache')
+const sdk = require("@defillama/sdk")
+const {getConfig} = require('../helper/cache')
 
 async function tvl() {
-  const { api } = arguments[3]
-  const data = await getConfig('quasar-vaults', 'https://api.quasar.fi/vaults')
-  const vaults = data.filter(i => i.chainId === 'osmosis-1').map(i => i.address)
-  for (const vault of vaults) {
-    const total_assets = await queryContract({ chain: 'osmosis', contract: vault, data: { total_assets: {} }, })
-    Object.values(total_assets).forEach(({ denom, amount }) => api.add(denom, amount))
-  }
-  return api.getBalances()
+    const data = await getConfig('quasar-vaults', 'https://api.quasar.fi/vaults')
+    const vaults = data.filter(i => i.chainId === 'osmosis-1').map(i => i.address)
+    let balances = {}
+    for (const vault of vaults) {
+        let tvl_api = "https://api.quasar.fi/vaults/" + vault + "/tvl?time_resolution=day"
+        let tvl_data = await getConfig('quasar-vaults-tvl' + vault, tvl_api)
+        let usdAmounts = tvl_data.map(entry => entry.tvl.usd);
+        if (usdAmounts.length > 0) {
+            sdk.util.sumSingleBalance(
+                balances,
+                "usd",
+                usdAmounts[0],
+            )
+        }
+    }
+    return balances
 }
 
 module.exports = {
-  timetravel: false,
-  methodology: 'Total TVL on vaults',
-  osmosis: {
-    tvl,
-  },
+    timetravel: false,
+    methodology: 'Total TVL on vaults',
+    osmosis: {
+        tvl,
+    },
 }
