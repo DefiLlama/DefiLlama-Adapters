@@ -13,7 +13,7 @@ async function tvl(_, _1, _2, { api }) {
 
 module.exports = {
   methodology:
-    "Adds up the total value locked as collateral on the Gravita platform",
+    "Adds up the total value locked as collateral on the Lyve platform",
   start: 1699459200, 
 };
 
