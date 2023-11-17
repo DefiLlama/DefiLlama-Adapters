@@ -85,8 +85,8 @@ module.exports = {
 }
 
 Object.keys(config).forEach(chain => module.exports[chain] = {
-  tvl: async (time, _, { [chain]: block }) => {
+  tvl: async (time, _, { [chain]: block }, { logArray }) => {
     const { bridges, tokens, } = config[chain]
-    return sumTokens2({ chain, block, owners: bridges, tokens, });
+    return sumTokens2({ chain, block, owners: bridges, tokens, logArray });
   }
 })

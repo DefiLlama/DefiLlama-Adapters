@@ -29,7 +29,7 @@ chains.forEach(chain => {
   async function staking(_, _b, _cb, { api, }) {
     const chainId = api.chainId
     let { farms } = await getConfig('tokensfarm', 'https://api.tokensfarm.com/farm/list')
-    farms = farms.filter(i => i.type !== 'LP' && i.network.networkId === chainId)
+    farms = farms.filter(i => i.type !== 'LP' && i.network.networkId === chainId && i.type !== 'UNIV3')
     const tokensAndOwners = []
 
     farms.forEach(farm => {
