@@ -1,6 +1,6 @@
 {
   "currentEpoch": "uint256:currentEpoch",
-  "totalEpochDeposits": "function totalEpochDeposits(uint256) view returns (uint256)",
-  "getLpPrice": "uint256:getLpPrice",
-  "vbnbToBnb": "function vbnbToBnb(uint256 vbnbAmount) view returns (uint256)"
+  "getCollateralPrice": "uint256:getCollateralPrice",
+  "getEpochData": "function getEpochData(uint256) view returns (bool,uint256,uint256,uint256,uint256,uint256 totalCollateralBalance)",
+  "getEpochTimes": "function getEpochTimes(uint256) view returns (uint256,uint256)"
 }
