@@ -95,6 +95,7 @@ async function addTraderJoeLPs({ api, accounts }) {
   const pairSet = new Set()
   const bins = await api.multiCall({ abi: 'function getOwnedTraderJoeV2Bins() public view returns (tuple(address pair, uint24 bin)[])', calls: accounts })
   const calls = []
+
   bins.forEach((res, i) => {
     const account = accounts[i]
     res.forEach(({ pair, bin }) => {
