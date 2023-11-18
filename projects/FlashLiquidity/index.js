@@ -18,6 +18,20 @@ module.exports = {
       fetchBalances: true,
     }),
   },
+  avax: {
+    tvl: getUniTVL({
+      factory: factory,
+      useDefaultCoreAssets: true,
+      fetchBalances: true,
+    }),
+  },
+  base: {
+    tvl: getUniTVL({
+      factory: factory,
+      useDefaultCoreAssets: true,
+      fetchBalances: true,
+    }),
+  },
   methodology:
     "TVL comes from the DEX liquidity pools"
 };
