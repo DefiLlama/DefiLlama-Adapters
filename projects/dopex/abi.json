@@ -2,5 +2,6 @@
   "currentEpoch": "uint256:currentEpoch",
   "getCollateralPrice": "uint256:getCollateralPrice",
   "getEpochData": "function getEpochData(uint256) view returns (bool,uint256,uint256,uint256,uint256,uint256 totalCollateralBalance)",
-  "getEpochTimes": "function getEpochTimes(uint256) view returns (uint256,uint256)"
+  "getEpochTimes": "function getEpochTimes(uint256) view returns (uint256,uint256)",
+  "slot0": "function slot0() view returns (uint160 sqrtPriceX96,int24,uint16,uint16,uint16,uint8,bool)"
 }
