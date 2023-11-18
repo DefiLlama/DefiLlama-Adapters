@@ -22,3 +22,6 @@ module.exports = {
       },
     methodology: "We count all RING deposited into wRING contract",
 };
+
+
+module.exports.deadFrom = '2023-05-09'

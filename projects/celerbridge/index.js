@@ -1,7 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { chainExports } = require("../helper/exports");
 const { sumTokens } = require("../helper/unwrapLPs");
-const { getFixBalances } = require('../helper/portedTokens')
 const ethers = require("ethers")
 const { config } = require('@defillama/sdk/build/api');
 
@@ -117,7 +116,6 @@ const liquidityBridgeTokens = [
     xdai: ADDRESSES.xdai.USDC,
   },
   {
-    // BUSD
     ethereum: ADDRESSES.ethereum.BUSD,
     bsc: ADDRESSES.bsc.BUSD,
   },
@@ -172,7 +170,7 @@ const liquidityBridgeTokens = [
   {
     // LYRA
     ethereum: "0x01ba67aac7f75f647d94220cc98fb30fcc5105bf",
-    optimism: "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb",
+    optimism: ADDRESSES.base.DAI,
   },
   {
     // IMX
@@ -236,7 +234,7 @@ const liquidityBridgeTokens = [
     arbitrum: "0xaE6aab43C4f3E0cea4Ab83752C278f8dEbabA689",
     bsc: "0x4a9a2b2b04549c3927dd2c9668a5ef3fca473623",
     ethereum: "0x431ad2ff6a9c365805ebad47ee021148d6f7dbe0",
-    optimism: "0x9e5AAC1Ba1a2e6aEd6b32689DFcF62A509Ca96f3",
+    optimism: ADDRESSES.op_bnb.USDC,
     polygon: "0x08C15FA26E519A78a666D19CE5C646D55047e0a3",
   },
   {
@@ -319,7 +317,6 @@ const liquidityBridgeTokens = [
     polygon: "0x08648471B5AAd25fEEeb853d6829048f3Fc37786",
   },
   {
-    // iZi
     arbitrum: ADDRESSES.bsc.iZi,
     bsc: ADDRESSES.bsc.iZi,
     ethereum: "0x9ad37205d608B8b219e6a2573f922094CEc5c200",
@@ -365,12 +362,9 @@ const liquidityBridgeTokens = [
     ethereum: "0xcA37530E7c5968627BE470081d1C993eb1dEaf90",
   },
   {
-    // cUSD
     celo: ADDRESSES.celo.cUSD,
   },
   {
-    // WSYS
-    // origin: "syscoin:" + ADDRESSES.syscoin.WSYS,
     syscoin: ADDRESSES.syscoin.WSYS,
     bsc: "0x6822A778726CD2f0d4A1Cfaca2D04654e575cC82",
     ethereum: "0xF3C96924d85566C031ddc48DbC63B2d71da6D0f6",
@@ -385,8 +379,7 @@ const liquidityBridgeTokens = [
     ethereum: "0xa02120696c7b8fe16c09c749e4598819b2b0e915",
   },
   {
-    // FRAX
-    ethereum: "0x853d955acef822db058eb8505911ed77f175b99e",
+    ethereum: ADDRESSES.ethereum.FRAX,
   },
   {
     // FXS
@@ -401,15 +394,12 @@ const liquidityBridgeTokens = [
     bsc: "0x1fD991fb6c3102873ba68a4e6e6a87B3a5c10271",
   },
   {
-    // BNB
     bsc: ADDRESSES.bsc.WBNB,
   },
   {
-    // AVAX
     avax: ADDRESSES.avax.WAVAX,
   },
   {
-    // FTM
     fantom: ADDRESSES.fantom.WFTM,
   },
   {
@@ -437,8 +427,6 @@ const liquidityBridgeTokens = [
     heco: "0x4668e0E7cC545De886aBF038067F81cD4DC0924b",
   },
   {
-    // SDN
-    // origin: "shiden:" + ADDRESSES.shiden.WSDN,
     shiden: ADDRESSES.shiden.WSDN,
   },
   {
@@ -450,15 +438,12 @@ const liquidityBridgeTokens = [
     avax: "0x4fbf0429599460d327bd5f55625e30e4fc066095",
   },
   {
-    // MATIC
-    polygon: "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+    polygon: ADDRESSES.polygon.WMATIC_2,
   },
   {
-    // AAVE
     ethereum: ADDRESSES.ethereum.AAVE,
   },
   {
-    // CRV
     ethereum: ADDRESSES.ethereum.CRV,
   },
   {
@@ -486,8 +471,7 @@ const liquidityBridgeTokens = [
     boba: "0xCe055Ea4f29fFB8bf35E852522B96aB67Cbe8197",
   },
   {
-    // LUSD
-    ethereum: "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0",
+    ethereum: ADDRESSES.ethereum.LUSD,
   },
   {
     // JONES
@@ -532,7 +516,7 @@ const liquidityBridgeTokens = [
 ];
 
 function chainTvl(chain) {
-  return async (time, _, {[chain]: block}) => {
+  return async (time, _, {[chain]: block}, { logArray }) => {
     const toa = []
     liquidityBridgeTokens.forEach(token => {
       if (!token[chain])
@@ -542,9 +526,7 @@ function chainTvl(chain) {
         liquidityBridgeContractsV2[chain].filter(owner => owner.toLowerCase() !== bridgeContractV1.toLowerCase())
           .forEach(owner => toa.push([token[chain], owner]))
     })
-    const balances = await sumTokens({}, toa, block, chain)
-    const fixBalances = await getFixBalances(chain)
-    fixBalances(balances)
+    const balances = await sumTokens({}, toa, block, chain, logArray)
     return balances
   };
 }

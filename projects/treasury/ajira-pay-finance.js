@@ -6,7 +6,7 @@ const arb_tokens = [
     ADDRESSES.arbitrum.USDC, ADDRESSES.arbitrum.WETH,
     ADDRESSES.arbitrum.WBTC, ADDRESSES.arbitrum.USDT, 
     ADDRESSES.optimism.DAI, '0x9DBC0Ad09184226313FbDe094E7c3DD75c94f997',
-    '0x912CE59144191C1204E64559FE8253a0e49E6548',
+    ADDRESSES.arbitrum.ARB,
     nullAddress
 ]
 

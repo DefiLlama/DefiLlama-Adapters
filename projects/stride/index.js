@@ -9,6 +9,9 @@ const coinGeckoIds = {
   uluna: "terra-luna-2",
   aevmos: "evmos",
   inj: "injective-protocol",
+  uumee: "umee",
+  ucmdx: "comdex",
+  usomm: "sommelier",
 };
 
 function getCoinDenom(denom) {
@@ -26,21 +29,19 @@ async function tvl() {
   const balances = {};
 
   const { host_zone: hostZones } = await get(
-    "https://stride-library.main.stridenet.co/api/Stride-Labs/stride/stakeibc/host_zone"
+    "https://stride-fleet.main.stridenet.co/api/Stride-Labs/stride/stakeibc/host_zone"
   );
 
-  const { supply: assetBalances } = await get(
-    "https://stride-fleet.main.stridenet.co/api/cosmos/bank/v1beta1/supply"
-  );
-
-  hostZones.map((hostZone) => {
-    const assetBalance = assetBalances.find((asset) => {
-      return asset.denom === `st${hostZone.host_denom}`;
-    });
+  const hostZonePromises = hostZones.map(async (hostZone) => {
+    const stDenom = "st".concat(hostZone.host_denom);
+    const { amount: assetBalances } = await get(
+      "https://stride-fleet.main.stridenet.co/api/cosmos/bank/v1beta1/supply/by_denom?denom=".concat(stDenom)
+    );
+    const assetBalance = assetBalances['amount']
 
     const coinDecimals = getCoinDenom(hostZone.host_denom);
 
-    const amount = assetBalance.amount / coinDecimals;
+    const amount = assetBalance / coinDecimals;
 
     const geckoId = coinGeckoIds[hostZone.host_denom];
 
@@ -54,6 +55,8 @@ async function tvl() {
       amount * hostZone.redemption_rate
     );
   });
+
+  await Promise.all(hostZonePromises);
 
   return balances;
 }

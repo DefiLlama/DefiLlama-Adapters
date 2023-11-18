@@ -2,7 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 
 const sdk = require('@defillama/sdk')
 const solana = require('../helper/solana')
-const terra = require('../helper/chain/terra')
+const cosmos = require('../helper/chain/cosmos')
 const { staking } = require('../helper/staking');
 const near = require('../helper/chain/near');
 const { default: BigNumber } = require('bignumber.js');
@@ -205,11 +205,11 @@ const nearData = {
 const toNumber = (decimals, n) => BigNumber(n/(10 ** decimals)).toFixed(0)
 
 function getTVLFunction(chain) {
-    return async function tvl(timestamp, ethBlock, {[chain]: block }) {
+    return async function tvl(timestamp, ethBlock, {[chain]: block }, { logArray }) {
         const balances = {}
         const chainData = data[chain];
         const tokens = chainData.tokens.map(i => i.address)
-        return sumTokens2({ chain, block, tokens, owner: chainData.contractAddress })
+        return sumTokens2({ chain, block, tokens, owner: chainData.contractAddress, logArray })
     }
 }
 
@@ -231,19 +231,13 @@ async function solanaStaking() {
 }
 
 async function terraTvl() {
-    const balances = {}
-    for (const token of terraData.tokens) {
-        const balance = token.address.length > 5
-          ? await terra.getBalance(token.address, terraData.contractAddress)
-          : await terra.getDenomBalance(token.address, terraData.contractAddress);
-        sdk.util.sumSingleBalance(balances, token.name, toNumber(token.decimals, balance));
-    }
-    return balances
+    return cosmos.sumTokens({ chain: "terra", owner: terraData.contractAddress })
 }
 
 
+
 async function terraStaking() {
-    const balance = await terra.getBalance(terraData.staking.abrAddress, terraData.staking.contractAddress);
+    const balance = await cosmos.getBalance({ token: terraData.staking.abrAddress, owner: terraData.staking.contractAddress, chain: "terra"});
     return { allbridge: toNumber(terraData.staking.decimals, balance) }
 }
 

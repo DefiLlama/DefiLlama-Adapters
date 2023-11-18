@@ -16,19 +16,15 @@ const HOME_CHAINS = {
 
 const TOKEN_ADDRESSES = [
   {
-    // FRAX
-    'ethereum': '0x853d955aCEf822Db058eb8505911ED77F175b99e'
+    'ethereum': ADDRESSES.ethereum.FRAX
   },
   {
-    // USDC
     'ethereum': ADDRESSES.ethereum.USDC
   },
   {
-    // DAI
     'ethereum': ADDRESSES.ethereum.DAI
   },
   {
-    // USDT
     'ethereum': ADDRESSES.ethereum.USDT
   },
   {
@@ -36,11 +32,9 @@ const TOKEN_ADDRESSES = [
     'ethereum': '0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0'
   },
   {
-    // WETH
     'ethereum': ADDRESSES.ethereum.WETH
   },
   {
-    // WBTC
     'ethereum': ADDRESSES.ethereum.WBTC
   },
   {
@@ -78,13 +72,13 @@ const TOKEN_ADDRESSES = [
 ];
 
 function tvl(chain) {
-  return async (time, _, { [chain]: block }) => {
+  return async (time, _, { [chain]: block }, { logArray }) => {
     const toa = []
     const owner = HOME_CHAINS[chain]
     TOKEN_ADDRESSES.forEach(t => {
       if (t[chain]) toa.push([t[chain], owner])
     })
-    return sumTokens({}, toa, block, chain)
+    return sumTokens({}, toa, block, chain, undefined, { logArray })
   }
 }
 

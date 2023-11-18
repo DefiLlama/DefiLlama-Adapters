@@ -49,7 +49,8 @@ async function getTvl(
     const chain = storedKey.split('-')[0]
     const block = chainBlocks[chain]
     const api = new sdk.ChainApi({ chain, block: chainBlocks[chain], timestamp: unixTimestamp, })
-    let tvlBalances = await tvlFunction(unixTimestamp, ethBlock, chainBlocks, { api, chain, block, storedKey });
+    const logArray = []
+    let tvlBalances = await tvlFunction(unixTimestamp, ethBlock, chainBlocks, { api, chain, block, storedKey, logArray });
     if (!tvlBalances && Object.keys(api.getBalances()).length) tvlBalances = api.getBalances()
     const tvlResults = await computeTVL(
       tvlBalances,
@@ -308,8 +309,8 @@ const axios = require("axios");
 
 const ethereumAddress = "0x0000000000000000000000000000000000000000";
 const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-
 function fixBalances(balances) {
+  
   Object.entries(balances).forEach(([token, value]) => {
     let newKey
     if (token.startsWith("0x")) newKey = `ethereum:${token}`

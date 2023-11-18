@@ -4,28 +4,29 @@ const { treasuryExports, nullAddress } = require("../helper/treasury");
 const eth = "0xF930EBBd05eF8b25B1797b9b2109DDC9B0d43063";
 const poly = "0xdA2D2f638D6fcbE306236583845e5822554c02EA";
 const avax = "0x69D6C2ACb2485D629E184BC4E1DD972D8DDD8669";
+const arbitrumTreasury = "0xfdb1157ac847d334b8912df1cd24a93ee22ff3d0"
 
 const ethTokens = [
   nullAddress,
-  ADDRESSES.ethereum.USDC, // USDC
+  ADDRESSES.ethereum.USDC,
   "0x31429d1856aD1377A8A0079410B297e1a9e214c2", // ANGLE
-  ADDRESSES.ethereum.CRV, // CRV
+  ADDRESSES.ethereum.CRV,
   "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490", // 3CRV
   "0xc2544A32872A91F4A553b404C6950e89De901fdb", // FPIS
   "0xba100000625a3754423978a60c9317c58a424e3D", // BAL
   "0xdBdb4d16EdA451D0503b854CF79D55697F90c8DF", // ALCX
-  ADDRESSES.ethereum.WETH, // WETH
+  ADDRESSES.ethereum.WETH,
   "0x65Ef703f5594D2573eb71Aaf55BC0CB548492df4", // MULTI
   "0x1a7e4e63778B4f12a199C062f3eFdD288afCBce8", // agEUR
   "0xcAfE001067cDEF266AfB7Eb5A286dCFD277f3dE5", // PSP
   "0x4104b135DBC9609Fc1A9490E61369036497660c8", // APW
-  ADDRESSES.ethereum.LINK, // LINK
+  ADDRESSES.ethereum.LINK,
   "0x579CEa1889991f68aCc35Ff5c3dd0621fF29b0C9", // IQ
-  ADDRESSES.ethereum.AAVE, // AAVE
+  ADDRESSES.ethereum.AAVE,
   "0x1b40183EFB4Dd766f11bDa7A7c3AD8982e998421", // VSP
   "0x6f80310CA7F2C654691D1383149Fa1A57d8AB1f8", // SILO
   "0xd632f22692FaC7611d2AA1C0D552930D43CAEd3B", // FRAX3CRV-f
-  "0x5aFE3855358E112B5647B952709E6165e1c1eEEe", // SAFE
+  ADDRESSES.ethereum.SAFE,
   "0x318C3a9373419aA57c7C8aa53Eef92814e975F51", // 90D-StakeDAO-sdFRAX3CRV-f-0
   "0x43E54C2E7b3e294De3A155785F52AB49d87B9922", // asdCRV
   "0xA13a9247ea42D743238089903570127DdA72fE44", // bb-a-USD
@@ -78,6 +79,12 @@ const polyTokens = [
   "0x5aa0197D0d3E05c4aA070dfA2f54Cd67A447173A", // fagEUR-1
 ];
 
+const arbTokens = [
+  nullAddress,
+  ADDRESSES.arbitrum.ARB, //arb
+  "0x11cDb42B0EB46D95f990BeDD4695A6e3fA034978", //crv
+]
+
 const avaxTokens = [nullAddress];
 
 module.exports = treasuryExports({
@@ -98,5 +105,9 @@ module.exports = treasuryExports({
     ownTokens: [],
     ownTokenOwners: [avax],
     owners: [avax],
+  },
+  arbitrum: {
+    tokens: arbTokens,
+    owners: [arbitrumTreasury,],
   },
 });
