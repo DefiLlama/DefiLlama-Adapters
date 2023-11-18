@@ -14,7 +14,7 @@ async function tvl() {
 }
 
 module.exports = {
-  doublecounted: false,
+  doublecounted: true,
   kujira: {
     tvl,
   },
