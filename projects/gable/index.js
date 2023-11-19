@@ -1,18 +1,44 @@
-const { get } = require('../helper/http')
-
-async function tvl(_, _b, _cb, { api, }) {
-  const response = await get('https://www.sundaefinance.net:8443/api/tvl_data');
-
-    // Check if lsu_locked and xrd_locked are valid numbers before parsing
-    const lsuLocked = parseFloat(response.lsu_locked)
-    const xrdLocked = parseFloat(response.xrd_locked)
-
-  return {
-    'radix': xrdLocked + lsuLocked
-  }
-}
+// const { get } = require('../helper/http')
+const { queryAddresses } = require('../helper/chain/radixdlt');
+const { getFixBalancesSync } = require('../helper/portedTokens');
+const { getUniqueAddresses, } = require('../helper/tokenMapping');
+const chain = 'radixdlt'
 
 module.exports = {
+  radixdlt: {
+    tvl: async (_, _b, _cb, { api, }) => {
+
+      const data = await queryAddresses({
+        addresses: ["component_rdx1cpmh7lyg0hx6efv5q79lv6rqxdqpuh27y99nzm0jpwu2u44ne243ws"]
+      });
+
+      let owners = [];
+
+      data.forEach((c) => {
+         owners.push(c.details.state.fields.find((i) => i.field_name === 'liquidity_pool_vault').value);
+         owners.push(c.details.state.fields.find((i) => i.field_name === 'lsu_vault').value);
+      });
+
+      console.log("owners:", owners);
+
+      const fixBalances = getFixBalancesSync(chain)
+
+      owners = getUniqueAddresses(owners)
+
+      if (!owners.length) return api.getBalances()
+
+      console.log('fetching tokens for ', owners.length, 'addresses')
+    
+      let items = await queryAddresses({ addresses: owners })
+
+      items.forEach((item) => {
+        const { resource_address, balance } = item.details;
+        api.add(resource_address, +balance.amount);
+      });
+      
+      return fixBalances(api.getBalances())
+
+    },
+  },
   timetravel: false,
-  radixdlt: { tvl }
 }
