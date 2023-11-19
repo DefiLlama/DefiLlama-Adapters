@@ -5,6 +5,7 @@ const config = {
 }
 
 module.exports = {
+  doublecounted: true,
   methodology: 'Count tokens managed by Bril automated liquidity management stratagies',
   start: 30131926,
 };
