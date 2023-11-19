@@ -87,14 +87,18 @@ const fixBalancesTokens = {
     '0xD4fdec44DB9D44B8f2b6d529620f9C0C7066A2c1': { coingeckoId: 'xdai:0xD057604A14982FE8D88c5fC25Aac3267eA142a08', decimals: 0 },
   },
   bfc: {
-    [ADDRESSES.bfc.WBFC]: { coingeckoId: 'bifrost', decimals: 18},
-    [ADDRESSES.bfc.BIFI]: { coingeckoId: 'bifi', decimals: 18},
-    '0xB1f3A83597Bce2AD842c29bD750AE17afc474137': {coingeckoId: 'witch-token', decimals: 18},
-    '0x17102AC78a02a98fC78B0c29B7b0506f035A99E5': {coingeckoId: 'super-athletes-token', decimals: 18}
+    [ADDRESSES.bfc.WBFC]: { coingeckoId: 'bifrost', decimals: 18 },
+    [ADDRESSES.bfc.BIFI]: { coingeckoId: 'bifi', decimals: 18 },
+    '0xB1f3A83597Bce2AD842c29bD750AE17afc474137': { coingeckoId: 'witch-token', decimals: 18 },
+    '0x17102AC78a02a98fC78B0c29B7b0506f035A99E5': { coingeckoId: 'super-athletes-token', decimals: 18 }
   },
   eon: {
-    '0xF5cB8652a84329A2016A386206761f455bCEDab6': {coingeckoId: 'zencash', decimals: 18},
-    '0x1d7fb99AED3C365B4DEf061B7978CE5055Dfc1e7': {coingeckoId: 'wrapped-bitcoin', decimals: 8},
+    '0xF5cB8652a84329A2016A386206761f455bCEDab6': { coingeckoId: 'zencash', decimals: 18 },
+    '0x1d7fb99AED3C365B4DEf061B7978CE5055Dfc1e7': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
+  },
+  nos: {
+    '0x43bDa480DE297A14cec95bFb1C6A313615f809Ef': { coingeckoId: 'ethereum', decimals: 18 },
+    '0xf1612388D43A6b00316CA05ca358BC1a2e7b8E97': { coingeckoId: 'tether', decimals: 18 },
   }
 }
 
