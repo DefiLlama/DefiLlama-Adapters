@@ -128,8 +128,10 @@ async function ssovTvl(balances, vaults, block, chain) {
         .toFixed(0);
     } else {
       token = `${chain}:${vaults[i].underlying}`;
-      balance = isExpired ? "1" : epochData[i].output.totalCollateralBalance;
+      balance = epochData[i].output.totalCollateralBalance;
     }
+
+    balance = isExpired ? "1" : balance;
 
     sdk.util.sumSingleBalance(balances, token, balance);
   }
