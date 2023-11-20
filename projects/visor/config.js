@@ -36,6 +36,7 @@ const HYPE_REGISTRY = {
   ],
   arbitrum: [
     ["0x66CD859053c458688044d816117D5Bdf42A56813", 10617223], // Uniswap
+    ["0x166cD995F9301590e381c488FFD4f18C3ca38A27", 144400180], // Pancakeswap
     ["0x0f867F14b39a5892A39841a03bA573426DE4b1d0", 102240553], // Sushiswap
     ["0x37595FCaF29E4fBAc0f7C1863E3dF2Fe6e2247e9", 63562888], // Zyberswap
     ["0x34Ffbd9Db6B9bD8b095A0d156de69a2AD2944666", 99952729], // Ramses
@@ -80,6 +81,12 @@ const HYPE_REGISTRY = {
   ],
   op_bnb: [
     ["0x683292172E2175bd08e3927a5e72FC301b161300", 5150910], // Pancakeswap
+  ],
+  manta: [
+    ["0x683292172E2175bd08e3927a5e72FC301b161300", 394949], // Apertureswap
+  ],
+  metis: [
+    ["0xFc13Ebe7FEB9595D70195E9168aA7F3acE153621", 9080358], // Hercules
   ],
 };
 
