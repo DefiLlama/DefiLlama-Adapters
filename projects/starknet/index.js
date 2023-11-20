@@ -14,6 +14,7 @@ async function tvl(_, _b, _c, { api, logArray }) {
   return sumTokens2({
     api,
     tokensAndOwners,
+    logArray,
   });
 }
 
