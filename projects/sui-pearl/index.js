@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { default: BigNumber } = require("bignumber.js");
 const sui = require("../helper/chain/sui");
 
@@ -109,7 +110,7 @@ async function suiTVL() {
 
   setPropertyPriceMap(
     totalResult,
-    "0x2::sui::SUI",
+    ADDRESSES.sui.SUI,
     new BigNumber(scallopPool.fields.total_tvl)
   );
 

@@ -100,6 +100,8 @@ async function tvl(timestamp, ethBlock, chainBlocks, { api, }) {
     const blacklistedPools = [
       '0x63B5891895A57C31d5Ec2a8A5521b6EE67700f9F',
       '0x1493607042C5725cEf277A83CFC94caA4fc6278F',
+      '0xBC988A0146178825C26c255989cfd5083Bae672C',
+      '0x8FEceC5629EED60D18Fd3438aae4a8E69723D190',
     ].map(i => i.toLowerCase())
     const calls = liquidityPools.filter(i => !blacklistedPools.includes(i.toLowerCase())).map(a => ({ target: a }))
     const collateralTokens = await api.multiCall({
