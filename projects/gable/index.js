@@ -1,10 +1,10 @@
-// const { get } = require('../helper/http')
 const { queryAddresses } = require('../helper/chain/radixdlt');
 const { getFixBalancesSync } = require('../helper/portedTokens');
 const { getUniqueAddresses, } = require('../helper/tokenMapping');
 const chain = 'radixdlt'
 
 module.exports = {
+  misrepresentedTokens: true,
   radixdlt: {
     tvl: async (_, _b, _cb, { api, }) => {
 
@@ -19,16 +19,12 @@ module.exports = {
          owners.push(c.details.state.fields.find((i) => i.field_name === 'lsu_vault').value);
       });
 
-      console.log("owners:", owners);
-
       const fixBalances = getFixBalancesSync(chain)
 
       owners = getUniqueAddresses(owners)
 
       if (!owners.length) return api.getBalances()
 
-      console.log('fetching tokens for ', owners.length, 'addresses')
-    
       let items = await queryAddresses({ addresses: owners })
 
       items.forEach((item) => {
