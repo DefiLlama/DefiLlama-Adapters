@@ -18,6 +18,9 @@ async function tvl(timestamp, ethereumBlock, chainBlocks, { api }) {
 }
 
 module.exports = {
+  hallmarks: [
+    [1698969600,"Rug Pull"]
+  ],
   base: {
     tvl,
     staking: stakings(stakingContracts, bass),
