@@ -11,11 +11,14 @@ const graphEndpoints = {
   "aurora": "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-aurora",
   "avax": "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-avax",
   "optimism": "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-optimism",
- // "base": "https://api.dodoex.io/frontend-graphql?chainId=84531&schemaName=dodoex", //different query
- // "linea": "https://api.dodoex.io/frontend-graphql?chainId=534351&schemaName=dodoex" //different query
+  "base": "https://api.studio.thegraph.com/query/2860/dodoex_v2_base/v0.0.5", 
+  "linea": "https://api.dodoex.io/graphql?chainId=59144&schemaName=dodoex&apikey=graphqldefiLlamadodoYzj5giof",
+  "scroll": "https://api.dodoex.io/graphql?chain=src&schemaName=dodoex&apikey=graphqldefiLlamadodoYzj5giof", // ChainId mapping error, so using chain 
+  "manta": "https://api.dodoex.io/graphql?chainId=169&schemaName=dodoex&apikey=graphqldefiLlamadodoYzj5giof",
+  "mantle": "https://api.dodoex.io/graphql?chainId=5000&schemaName=dodoex&apikey=graphqldefiLlamadodoYzj5giof"
 }
 const graphQuery = gql`
-query get_pairs($lastId: String, $block: Int) {
+query get_pairs($lastId: ID, $block: Int!) {
     pairs(
       first: 1000,
       block: { number: $block }
