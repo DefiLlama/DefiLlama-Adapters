@@ -1,12 +1,16 @@
 const { sumTokens, queryContracts } = require('../helper/chain/cosmos')
 
-
-async function tvl() {
+async function getContracts() {
   let vaultContracts = await queryContracts({ codeId: 181, chain: 'injective' });
   let incentiveContracts = await queryContracts({ codeId: 132, chain: 'injective' });
 
   let combinedContracts = vaultContracts.concat(incentiveContracts);
-  return sumTokens({ owners: combinedContracts, chain: 'injective' })
+  return combinedContracts
+}
+
+async function tvl() {
+
+  return sumTokens({ owners: await getContracts(), chain: 'injective' })
 }
 
 module.exports = {
