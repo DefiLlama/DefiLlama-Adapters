@@ -1,5 +1,4 @@
 const { sumTokens2 } = require("../helper/unwrapLPs")
-const {pool2 } = require("../helper/pool2")
 
 const chain = 'arbitrum'
 
