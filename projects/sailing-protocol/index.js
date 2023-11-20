@@ -50,10 +50,10 @@ function getChainTvl() {
     };
 }
 
-function getChainTvlusd() {
+async function getChainTvlusd(_, _1, _2, { api }) {
     const chain = "kava";
-    return async (_timestamp, _ethBlock, chainBlocks) => {
-        const tvlValue = await tvl(chain, chainBlocks[chain]);
+    // return async (_timestamp, _ethBlock, chainBlocks) => {
+        // const tvlValue = await tvl(chain, chainBlocks[chain]);
 
         try {
             const response = await axios.post('https://sailingprotocol.org/api/sailingprotocol/market_data/historical_daily_SPY');
@@ -63,20 +63,20 @@ function getChainTvlusd() {
                 historicalData.sort((a, b) => new Date(b.date) - new Date(a.date));
                 const lastPrice = historicalData[0].close;
                 console.log(`S&P500 last price: ${lastPrice}`);
-
-                return { usd: tvlValue['token1'] * lastPrice };
+                // const tokenTvl = tvlValue['token1'] * lastPrice;
+                const tokenTvl = 100000000;
+                api.add("erc20/tether/usdt", tokenTvl)
             } else {
                 console.error('No historical data was found in the response.');
-                return null;
             }
         } catch (error) {
             console.error('Error fetching data from the API:', error);
-            return null;
         }
-    };
+    // };
 }
 
 module.exports = {
-    kava: { tvl: getChainTvl() },
-    tron: { tvl: getChainTvlusd() }
+    kava: { tvl: getChainTvlusd },
+    // kava: { tvl: getChainTvl() },
+    // tron: { tvl: getChainTvlusd() }
 }
