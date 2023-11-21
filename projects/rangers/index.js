@@ -37,6 +37,7 @@ async function tvl(_, _b, _cb, { api, }) {
 }
 module.exports = {
   misrepresentedTokens: true,
+  methodology: "Count the sum of the five tokens (RPG, USDT, MIX, AMG, COIN) of the dapp platform (bridge, nodeManager) and Dehero contract on the rangers blockchain.",
   rpg: {
     tvl
   }
