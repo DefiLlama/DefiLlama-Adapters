@@ -1,7 +1,7 @@
 const utils = require('../helper/utils');
 
 async function getData() {
-  const res = await utils.fetchURL('https://vite-api.thomiz.dev/tvl/beefstake')
+  const res = await utils.fetchURL('https://api.xbanking.org/info')
   return res.data;
 }
 
