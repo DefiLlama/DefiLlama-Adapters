@@ -1,14 +1,12 @@
-const { sumTokens2, nullAddress } = require("../helper/unwrapLPs");
+const { nullAddress, sumTokensExport } = require("../helper/unwrapLPs");
 
-const contract = "0x1e70972EC6c8a3FAe3aC34C9F3818eC46Eb3BD5D";
-
-async function tvl(time, ethBlock, _b, { api }) {
-  return sumTokens2({ tokens: [nullAddress], owner: contract, api });
+const config = {
+  bsc: '0x1e70972EC6c8a3FAe3aC34C9F3818eC46Eb3BD5D',
+  op_bnb: '0x2C5bF6f0953ffcDE678A35AB7d6CaEBC8B6b29F0',
 }
 
-module.exports = {
-  methodology: `We count the ETH on ${contract}`,
-  bsc: {
-    tvl,
-  },
-};
+Object.keys(config).forEach(chain => {
+  module.exports[chain] = {
+    tvl: sumTokensExport({ tokens: [nullAddress], owner: config[chain] })
+  }
+})
