@@ -64,7 +64,6 @@ const fixBalancesTokens = {
   },
   radixdlt: {
     [ADDRESSES.radixdlt.XRD]: { coingeckoId: 'radix', decimals: 0 },
-    'resource_rdx1thrz4g8g83802lumrtrdsrhjd6k5uxhxhgkrwjg0jn75cvxfc99nap': { coingeckoId: 'radix', decimals: 0 }, // temp solution for radix LSU
     [ADDRESSES.radixdlt.WETH]: { coingeckoId: 'ethereum', decimals: 0 },
   },
   meer: {
