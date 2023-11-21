@@ -21,10 +21,12 @@ Object.keys(config).forEach(chain => {
         onlyArgs: true,
         fromBlock,
       })
-      const strategies = logs.map(log => log.strategyInstance).filter(i => i !== '0x06Fc93C05614e711b4842B83E3e83C6da5c8547e')
-      const balances = await api.multiCall({ abi: abi.vaultAmounts, calls: strategies, });
+      const strategies = logs.map(log => log.strategyInstance);
+      const areStrategiesEnabled = await api.multiCall({ abi: factory_abi.isStrategyEnabled, calls: strategies, target: factory });
+      const enabledStrategies = strategies.filter((s, index) => areStrategiesEnabled[index]);
 
-      const summaries = await api.multiCall({ abi: abi.vaultSummary, calls: strategies, });
+      const balances = await api.multiCall({ abi: abi.vaultAmounts, calls: enabledStrategies, });
+      const summaries = await api.multiCall({ abi: abi.vaultSummary, calls: enabledStrategies, });
 
       for (let i = 0; i < balances.length; i++) {
         api.add(summaries[i].baseToken_, balances[i].baseTotal_);
@@ -37,4 +39,7 @@ Object.keys(config).forEach(chain => {
 const abi = {
   "vaultAmounts": "function vaultAmounts() view returns (uint256 baseTotal_, uint256 scarceTotal_ )",
   "vaultSummary": "function vaultSummary() view returns (address vault_, address baseToken_, address scarceToken_, bool inverted_, int24 tickSpacing_)"
+}
+const factory_abi = {
+  "isStrategyEnabled": "function isStrategyEnabled(address) view returns (bool enabled_ )",
 }
