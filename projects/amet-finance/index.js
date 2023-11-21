@@ -1,25 +1,23 @@
 const { getLogs } = require("../helper/cache/getLogs");
+const issuerEventABI = "event Create(address indexed issuer, address indexed contractAddress)"
 
 const config = {
   manta: {
     issuer: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
     fromBlock: 574206,
-    issuerEventABI: "event Create(address indexed issuer, address indexed contractAddress)"
   },
   polygon: {
     issuer: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
     fromBlock: 50204821,
-    issuerEventABI: "event Create(address indexed issuer, address indexed contractAddress)"
   },
   polygon_zkevm: {
     issuer: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
     fromBlock: 7860004,
-    issuerEventABI: "event Create(address indexed issuer, address indexed contractAddress)"
   }
 };
 
 async function tvl(_, _1, _2, { api }) {
-  const { issuer, fromBlock, issuerEventABI } = config[api.chain];
+  const { issuer, fromBlock, } = config[api.chain];
 
   const logs = await getLogs({ api, target: issuer, fromBlock, eventAbi: issuerEventABI, onlyArgs: true });
   const calls = logs.map(item => item.contractAddress);
