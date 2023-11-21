@@ -59,7 +59,7 @@ module.exports = {
     celo: { factory: '0xAfE208a311B21f13EF87E33A90049fC17A7acDEc', fromBlock: 13916355, },
     moonbeam: { factory: '0x28f1158795a3585caaa3cd6469cd65382b89bb70', fromBlock: 4313505 },
     era: { factory: '0x8FdA5a7a8dCA67BBcDd10F02Fa0649A937215422', fromBlock: 12637080 },
-    boba: { factory: "0xFAa5F5F4a3c6ed4446F7B6014322C954d218690C", fromBlock: 2523289, },
+    boba: { factory: "0xFFCd7Aed9C627E82A765c3247d562239507f6f1B", fromBlock: 2523289, },
   })
 }
 
