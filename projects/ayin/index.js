@@ -10,10 +10,23 @@ const Addresses = {
   ayin: 'vT49PY8ksoUL6NcXiZ1t2wAmC7tTPRfFfER8n3UCLvXy'
 }
 
+const XAyinAddress = 'zst5zMzizEeFYFis6DNSknY5GCYTpM85D3yXeRLe2ug3'
+
 const TokenIds = {
   usdt: alephium.contractIdFromAddress(Addresses.usdt),
   weth: alephium.contractIdFromAddress(Addresses.weth),
   ayin: alephium.contractIdFromAddress(Addresses.ayin)
+}
+
+async function ayinTvlForXAyin() {
+  const results = await alephium.contractMultiCall([
+    { group: 0, address: XAyinAddress, methodIndex: 3 },
+    { group: 0, address: XAyinAddress, methodIndex: 11}
+  ])
+
+  const totalSupply = results[0].returns[0].value
+  const currentPrice = results[1].returns[0].value
+  return (Number(totalSupply) / 1e18) * (Number(currentPrice) / 1e18)
 }
 
 async function tvl() {
@@ -32,9 +45,10 @@ async function tvl() {
     });
     return res
   }, {[TokenIds.ayin]: 0, [TokenIds.usdt]: 0, [TokenIds.weth]: 0})
+  const xAyinTvl = await ayinTvlForXAyin()
   return {
     alephium: alphTvl  / 1e18,
-    ayin: tokensTvl[TokenIds.ayin] / 1e18,
+    ayin: tokensTvl[TokenIds.ayin] / 1e18 + xAyinTvl,
     weth: tokensTvl[TokenIds.weth] / 1e18,
     tether: tokensTvl[TokenIds.usdt] / 1e6
   }

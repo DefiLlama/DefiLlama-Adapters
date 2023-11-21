@@ -4,14 +4,27 @@ const basex = require('base-x')
 const ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 const bs58 = basex(ALPHABET)
 
-const API_HOST = 'https://backend-v115.mainnet.alephium.org'
+const EXPLORER_API_HOST = 'https://backend-v115.mainnet.alephium.org'
+const NODE_API_HOST = ''
 
 async function getAlphBalance(address) {
-  return (await axios.get(`${API_HOST}/addresses/${address}/balance`)).data
+  return (await axios.get(`${EXPLORER_API_HOST}/addresses/${address}/balance`)).data
 }
 
 async function getTokensBalance(address) {
-  return (await axios.get(`${API_HOST}/addresses/${address}/tokens-balance`)).data
+  return (await axios.get(`${EXPLORER_API_HOST}/addresses/${address}/tokens-balance`)).data
+}
+
+async function contractMultiCall(payload) {
+  const result = (await axios.post(`${NODE_API_HOST}/contracts/multicall-contract`, {calls: payload})).data
+  return result.results.map((r) => tryGetCallResult(r))
+}
+
+function tryGetCallResult(result) {
+  if (result.type === 'CallContractFailed') {
+    throw new Error(`Failed to call contract, error: ${result.error}`)
+  }
+  return result
 }
 
 function contractIdFromAddress(address) {
@@ -31,5 +44,6 @@ function contractIdFromAddress(address) {
 module.exports = {
    getAlphBalance,
    getTokensBalance,
-   contractIdFromAddress
+   contractIdFromAddress,
+   contractMultiCall
 }
