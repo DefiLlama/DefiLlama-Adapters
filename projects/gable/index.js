@@ -1,7 +1,5 @@
-const { queryAddresses } = require('../helper/chain/radixdlt');
-const { getFixBalancesSync } = require('../helper/portedTokens');
+const { queryAddresses, transformLSUs, } = require('../helper/chain/radixdlt');
 const { getUniqueAddresses, } = require('../helper/tokenMapping');
-const chain = 'radixdlt'
 
 module.exports = {
   misrepresentedTokens: true,
@@ -15,11 +13,9 @@ module.exports = {
       let owners = [];
 
       data.forEach((c) => {
-         owners.push(c.details.state.fields.find((i) => i.field_name === 'liquidity_pool_vault').value);
-         owners.push(c.details.state.fields.find((i) => i.field_name === 'lsu_vault').value);
+        owners.push(c.details.state.fields.find((i) => i.field_name === 'liquidity_pool_vault').value);
+        owners.push(c.details.state.fields.find((i) => i.field_name === 'lsu_vault').value);
       });
-
-      const fixBalances = getFixBalancesSync(chain)
 
       owners = getUniqueAddresses(owners)
 
@@ -31,9 +27,8 @@ module.exports = {
         const { resource_address, balance } = item.details;
         api.add(resource_address, +balance.amount);
       });
-      
-      return fixBalances(api.getBalances())
 
+      return transformLSUs(api)
     },
   },
   timetravel: false,

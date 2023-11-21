@@ -4,8 +4,10 @@ const { getFixBalancesSync } = require('../portedTokens')
 const { sliceIntoChunks } = require('../utils')
 const BigNumber = require('bignumber.js')
 const { post } = require('../http')
+const sdk = require('@defillama/sdk')
+const ADDRESSES = require('../coreAssets.json')
+
 const chain = 'radixdlt'
-const XRD_RESOURCE_ADDRESS = 'resource_rdx1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxradxrd'
 
 
 const ENTITY_DETAILS_URL = `https://mainnet.radixdlt.com/state/entity/details`
@@ -16,7 +18,7 @@ async function sumTokens({ owner, owners = [], api, }) {
   if (owner) owners.push(owner)
   owners = getUniqueAddresses(owners)
   if (!owners.length) return api.getBalances()
-  console.log('fetching tokens for ', owners.length, 'addresses')
+  sdk.log('fetching tokens for ', owners.length, 'addresses')
 
   let items = await queryAddresses({ addresses: owners })
   items.forEach((item) => {
@@ -63,6 +65,7 @@ async function queryAddresses({ addresses = [], }) {
   If no LSU resources used, this call could result in empty or partial returns.
 **/
 async function queryLiquidStakeUnitDetails(addresses = []) {
+  addresses = addresses.filter(i => i !== ADDRESSES.radixdlt.XRD)
   let lsuRedemptionValues = {}
 
   const chunks  = sliceIntoChunks(addresses, 20)
@@ -102,7 +105,7 @@ async function queryLiquidStakeUnitDetails(addresses = []) {
         let stakeUnitResourceAddress = validator.details.state.stake_unit_resource_address
         let stakeXrdVaultAddress = validator.details.state.stake_xrd_vault.entity_address
 
-        let xrdStakeResource = validator.fungible_resources.items.filter(item => item.resource_address === XRD_RESOURCE_ADDRESS)
+        let xrdStakeResource = validator.fungible_resources.items.filter(item => item.resource_address === ADDRESSES.radixdlt.XRD)
         let xrdStakeVault = xrdStakeResource[0].vaults.items.filter(vault => vault.vault_address === stakeXrdVaultAddress)
         let xrdStakeVaultBalance = new BigNumber(xrdStakeVault[0].amount)
 
@@ -122,9 +125,24 @@ function sumTokensExport(...args) {
   return async (_, _1, _2, { api }) => sumTokens({ ...args, api, })
 }
 
+async function transformLSUs(api) {
+  const balances = api.getBalances()
+  const tokens = Object.keys(balances).filter(i => i.startsWith('radixdlt:resource_')).map(i => i.replace('radixdlt:', ''))
+  if (tokens.length) {
+    const lsuRedemptionValues = await queryLiquidStakeUnitDetails(tokens)
+    Object.entries(lsuRedemptionValues).forEach(([lsuResourceAddress, { xrdRedemptionValue }]) => {
+      const bals = balances[`radixdlt:${lsuResourceAddress}`] * xrdRedemptionValue
+      api.add(ADDRESSES.radixdlt.XRD, bals)
+      delete balances[`radixdlt:${lsuResourceAddress}`]
+    })
+  }
+  return api.getBalances()
+}
+
 module.exports = {
   queryAddresses,
   queryLiquidStakeUnitDetails,
   sumTokens,
   sumTokensExport,
+  transformLSUs,
 }
