@@ -97,8 +97,7 @@ const config = {
     ]
   },
   polygon: {
-    fromBlock:
-      20094984, dppFactory: '0xd24153244066F0afA9415563bFC7Ba248bfB7a51', dvmFactory: '0x79887f65f83bdf15Bcc8736b5e5BcDB48fb8fE13', fromBlock:
+    dppFactory: '0xd24153244066F0afA9415563bFC7Ba248bfB7a51', dvmFactory: '0x79887f65f83bdf15Bcc8736b5e5BcDB48fb8fE13', fromBlock:
       14604330, dspFactory: '0x43C49f8DD240e1545F147211Ec9f917376Ac1e87', blacklistedTokens: [
         '0xd79d32a4722129a4d9b90d52d44bf5e91bed430c',
         '0xa88c5693c9c2549a75acd2b44f052f6a5568e918',
