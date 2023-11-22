@@ -45,17 +45,23 @@ async function tvl() {
     });
     return res
   }, {[TokenIds.ayin]: 0, [TokenIds.usdt]: 0, [TokenIds.weth]: 0})
-  const xAyinTvl = await ayinTvlForXAyin()
   return {
     alephium: alphTvl  / 1e18,
-    ayin: tokensTvl[TokenIds.ayin] / 1e18 + xAyinTvl,
+    ayin: tokensTvl[TokenIds.ayin] / 1e18,
     weth: tokensTvl[TokenIds.weth] / 1e18,
     tether: tokensTvl[TokenIds.usdt] / 1e6
+  }
+}
+
+async function staking() {
+  const xAyinTvl = await ayinTvlForXAyin()
+  return {
+    ayin: xAyinTvl,
   }
 }
 
 module.exports = {
   timetravel: false,
   methodology: 'TVL locked in the Ayin pools on Alephium',
-  alephium: { tvl }
+  alephium: { tvl, staking, }
 }
