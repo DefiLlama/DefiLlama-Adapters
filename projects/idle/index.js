@@ -1,3 +1,4 @@
+const sdk = require('@defillama/sdk')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { eulerTokens } = require('../helper/tokenMapping')
 const { getLogs } = require('../helper/cache/getLogs')
@@ -57,13 +58,6 @@ const contracts = {
   optimism: {
     
   }
-}
-
-const underlyingMapping = {
-  '0x94b008aA00579c1307B0EF2c499aD98a8ce58e58': '0xdac17f958d2ee523a2206206994597c13d831ec7', // USDT Optimism
-  '0x7F5c764cBc14f9669B88837ca1490cCa17c31607': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC Optimism
-  '0x1E4a5963aBFD975d8c9021ce480b42188849D41d': '0xdac17f958d2ee523a2206206994597c13d831ec7', // USDT zkEVM
-  '0xA8CE8aee21bC2A48a5EF670afCc9274C7bbbC035': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48' // USDC zkEVM
 }
 
 const trancheConfig = {
@@ -146,8 +140,7 @@ async function tvl(time, ethBlock, chainBlocks, { api }) {
       }
 
       // Get CDOs underlying tokens balances
-      const mappedToken = underlyingMapping[token[i]] || token[i]
-      balances[mappedToken] = BigNumber(balances[mappedToken] || 0).plus(BigNumber(contractValue[i] || 0))
+      sdk.util.sumSingleBalance(balances, token[i], contractValue[i], api.chain)
     })
   }
 
