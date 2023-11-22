@@ -10,6 +10,7 @@ module.exports = {
     [1682314791, "GLP Delta Neutral Vault"],
     [1683178791, "GDAI Leverage Vault"],
     [1696389409, "HLP Leverage Vault"],
+    [1697716800, "VKA TGE"],
   ],
 
   arbitrum: {
@@ -43,6 +44,7 @@ module.exports = {
         rum: "0x739fe1BE8CbBeaeA96fEA55c4052Cd87796c0a89",
         hlpStaking: "0xbE8f8AF5953869222eA8D39F1Be9d03766010B1C",
         hlp: "0x4307fbDCD9Ec7AEA5a1c2958deCaa6f316952bAb",
+        agedVodka: "0x9566db22DC32E54234d2D0Ae7B72f44e05158239",
       };
 
       await api.sumTokens({
@@ -59,6 +61,7 @@ module.exports = {
           [addresses.gmArb, addresses.vodkaV2],
           [addresses.gmWeth, addresses.vodkaV2],
           [addresses.hlp, addresses.rum],
+          [addresses.fsGlp, addresses.agedVodka],
         ],
       });
 
