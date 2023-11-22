@@ -6,19 +6,21 @@ const tvl = async (_, _1, _2, { api }) => {
     queryV1Beta1({ chain, url: 'hard/v1beta1/total-deposited' }),
     queryV1Beta1({ chain, url: 'hard/v1beta1/total-borrowed' })
   ])
-  deposited.supplied_coins.forEach(({ denom, amount }) => {
-    console.log("denom", denom, "amount", amount)
-    api.add(denom, amount)
-  })
-  borrowed.borrowed_coins.forEach(({ denom, amount }) => {
-    console.log("denom", denom, "amount", amount * -1)
-    api.add(denom, amount * -1)
-  })
+  deposited.supplied_coins.forEach(({ denom, amount }) => api.add(denom, amount))
+  borrowed.borrowed_coins.forEach(({ denom, amount }) => api.add(denom, amount * -1))
+}
+
+
+
+const borrowed = async (_, _1, _2, { api }) => {
+  const borrowed = await queryV1Beta1({ chain, url: 'hard/v1beta1/total-borrowed' })
+  borrowed.borrowed_coins.forEach(({ denom, amount }) => api.add(denom, amount))
 }
 
 module.exports = {
   timetravel: false,
   kava: {
     tvl,
+    borrowed
   }
 }

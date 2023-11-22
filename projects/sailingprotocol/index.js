@@ -1,4 +1,3 @@
-const sdk = require('@defillama/sdk');
 const axios = require('axios');
 
 const PEGS_API_URL = 'https://sailingprotocol.org/api/sailingprotocol/public_analytics/get_onchain_instruments';
