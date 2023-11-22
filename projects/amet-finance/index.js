@@ -1,28 +1,28 @@
 const { getLogs } = require("../helper/cache/getLogs");
-const issuerEventABI = "event Create(address indexed issuer, address indexed contractAddress)"
+const issuerEventABI = "event Create(address indexed issuer, address indexed contractAddress)";
 
 const config = {
   manta: {
     issuer: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
-    fromBlock: 574206,
+    fromBlock: 574206
   },
   polygon: {
     issuer: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
-    fromBlock: 50204821,
+    fromBlock: 50204821
   },
   polygon_zkevm: {
     issuer: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
-    fromBlock: 7860004,
+    fromBlock: 7860004
   }
 };
 
 async function tvl(_, _1, _2, { api }) {
-  const { issuer, fromBlock, } = config[api.chain];
+  const { issuer, fromBlock } = config[api.chain];
 
   const logs = await getLogs({ api, target: issuer, fromBlock, eventAbi: issuerEventABI, onlyArgs: true });
   const calls = logs.map(item => item.contractAddress);
   const res = await api.multiCall({ abi: ZCB_Issuer_V1.getInfo, calls });
-  const ownerTokens = res.map((v, i) => [[v.investmentToken], calls[i]]);
+  const ownerTokens = res.map((v, i) => [[v.interestToken], calls[i]]);
   return api.sumTokens({ ownerTokens });
 }
 
