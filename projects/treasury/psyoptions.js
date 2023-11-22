@@ -8,7 +8,7 @@ module.exports = treasuryExports({
       'E4tuwwYvmB9XWKTmhxeRmywhMmttyDLtMok6jQVAbDLG'
     ],
     ownTokens: [
-      '2v6gYajLxSd2xdfRMz8LCUJrc79Z26PTGmVzqLA5g6KW', // PSY
+      'PsyFiqqjiv41G7o5SMRzDJCu4psptThNR2GtfeGHfSq', // PSY
     ]
   },
 })
