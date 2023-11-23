@@ -82,7 +82,6 @@ module.exports = {
   mixin: {
     tvl: async (_, _1, _2, { api }) => {
       const tvlData = await fetchURL(filetAPI)
-      console.log("tvlData:",tvlData.data.data.mixinTvl)
       return {
         ["filecoin"]: new BigNumber(tvlData.data.data.mixinTvl),
       }

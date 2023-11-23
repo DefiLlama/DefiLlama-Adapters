@@ -11,7 +11,7 @@ async function tvl(_, _b, _cb, { api, }) {
     fromBlock: 17082136,
   })
   const ownerTokens = logs.map(i => [[i.nftAddress, nullAddress], i.poolAddress])
-  return sumTokens2({ api, ownerTokens, })
+  return sumTokens2({ api, ownerTokens, blacklistedTokens: ['0xedb61f74b0d09b2558f1eeb79b247c1f363ae452'] })
 }
 
 module.exports = {

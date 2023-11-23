@@ -22,5 +22,31 @@
       "parallaxBackendAddr": "0x1724623a721a094f8Ba9d271c9BE8be83e64f74f",
       "usdc": "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8"
     }
-  }
+  },
+  "era": [
+    {
+      "parallaxAddress": "0xF3D6B2418395b7441B17f39EF79fF8Ead5C0E61C",
+      "strategyAddress": "0x4d737487C5A398F761A4D8bE53cEB8f42e84a094",
+      "lpAddress": "0x80115c708E12eDd42E504c1cD52Aea96C547c05c",
+      "poolAddress": "0x80115c708E12eDd42E504c1cD52Aea96C547c05c",
+      "zkss_weth": "0x5AEa5775959fBC2557Cc8789bC1bf90A239D9a91",
+      "usdc": "0x3355df6d4c9c3035724fd0e3914de96a5a83aaf4"
+    },
+    {
+      "parallaxAddress": "0xF3D6B2418395b7441B17f39EF79fF8Ead5C0E61C",
+      "strategyAddress": "0x94CA8B763ea7De772f0B2102A8E4738e25EdCDA2",
+      "lpAddress": "0xd3D91634Cf4C04aD1B76cE2c06F7385A897F54D3",
+      "poolAddress": "0xd3D91634Cf4C04aD1B76cE2c06F7385A897F54D3",
+      "zkss_weth": "0x5AEa5775959fBC2557Cc8789bC1bf90A239D9a91",
+      "usdc": "0x3355df6d4c9c3035724fd0e3914de96a5a83aaf4"
+    },
+    {
+      "parallaxAddress": "0xF3D6B2418395b7441B17f39EF79fF8Ead5C0E61C",
+      "strategyAddress": "0x53e27f89658a9Da5Fc585d2fF3f657D6Cb1E22d5",
+      "lpAddress": "0x0E595bfcAfb552F83E25d24e8a383F88c1Ab48A4",
+      "poolAddress": "0x0E595bfcAfb552F83E25d24e8a383F88c1Ab48A4",
+      "zkss_weth": "0x5AEa5775959fBC2557Cc8789bC1bf90A239D9a91",
+      "usdc": "0x3355df6d4c9c3035724fd0e3914de96a5a83aaf4"
+    }
+  ]
 }

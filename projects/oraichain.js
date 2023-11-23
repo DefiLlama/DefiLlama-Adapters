@@ -1,8 +1,6 @@
 const ADDRESSES = require('./helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { unwrapUniswapLPs } = require("./helper/unwrapLPs")
-const { transformBscAddress } = require("./helper/portedTokens");
-const BigNumber = require('bignumber.js');
 const { sumSingleBalance } = require("@defillama/sdk/build/generalUtil");
 
 const usdtAddress = ADDRESSES.ethereum.USDT;
@@ -87,7 +85,7 @@ async function ethTvl(timestamp, ethBlock, chainBlocks) {
 }
 
 async function bscTvl(timestamp, ethBlock, chainBlocks) {
-    return await tvl(chainBlocks, 'bsc', await transformBscAddress());
+    return await tvl(chainBlocks, 'bsc', i => `bsc:${i}`);
 }
 
 module.exports = {

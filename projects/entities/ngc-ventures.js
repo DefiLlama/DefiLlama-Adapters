@@ -1,4 +1,4 @@
-const { cexExports } = require('../helper/cex')
+const { treasuryExports } = require("../helper/treasury")
 
 const config = {
   ethereum: {
@@ -28,4 +28,4 @@ const config = {
   },
 }
 
-module.exports = cexExports(config)
+module.exports = treasuryExports(config)

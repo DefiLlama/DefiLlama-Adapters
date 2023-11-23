@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const { transformPolygonAddress } = require("../helper/portedTokens");
 const { addFundsInMasterChef } = require("../helper/masterchef");
 const { pool2 } = require("../helper/pool2");
 
@@ -10,7 +9,7 @@ const krillUsdcLP = "0x6405Ebc22cB0899FC21f414085Ac4044B4721a0d";
 async function tvl(timestamp, chain, chainBlocks) {
   let balances = {};
 
-  const transformAddress = await transformPolygonAddress();
+  const transformAddress = i => `polygon:${i}`;
   await addFundsInMasterChef(
     balances,
     masterchef,

@@ -46,6 +46,9 @@ module.exports = treasuryExports({
     ],
     resolveUniV3: true,
     resolveLP: true,
+    blacklistedTokens: [
+      '0x21e83dbfd8f11d885eba9f9ba126da11ae0671b7'
+    ]
   },
   optimism: {
     tokens: [

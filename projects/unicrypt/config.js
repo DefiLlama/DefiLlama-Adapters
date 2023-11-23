@@ -223,6 +223,16 @@ const gnosisContractData = [
   }
 
 ]
+const arbitrumContractData = [
+  {
+    chain: 'arbitrum',
+    contract: '0x275720567E5955F5f2D53A7A1Ab8a0Fc643dE50E', 
+    getNumLockedTokensABI: getNumLockedTokens,
+    getLockedTokenAtIndexABI: getLockedTokenAtIndex,
+    pool2: [],
+  }
+
+]
 
 
 module.exports = {
@@ -231,6 +241,7 @@ module.exports = {
   polygonContractData,
   avalancheContractData,
   gnosisContractData,
+  arbitrumContractData,
   governanceTokens,
   stakingContracts,
   protocolPairs,

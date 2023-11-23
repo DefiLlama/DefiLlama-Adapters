@@ -44,11 +44,11 @@ query {
 }`;
 
 const dpmPositions = async ({ api, }) => {
-  const aave = await blockQuery(endpoints.aave(), aaveQuery(api.block), { api });
-  const ajna = await blockQuery(endpoints.ajna(), ajnaQuery(api.block), { api });
+  const aave = await blockQuery(endpoints.aave(), aaveQuery(api.block - 500), { api,  });
+  // const ajna = await blockQuery(endpoints.ajna(), ajnaQuery(api.block - 500), { api, });
 
   const supportedAjnaPools = [
-    ...new Set(ajna.accounts.map(({ pool: { address } }) => address)),
+    // ...new Set(ajna.accounts.map(({ pool: { address } }) => address)),
   ];
 
   const aaveBorrowishPositions = aave.positions.map(
@@ -57,7 +57,7 @@ const dpmPositions = async ({ api, }) => {
       collateralAddress,
     })
   );
-  const ajnaBorrowishPositions = ajna.accounts
+  /* const ajnaBorrowishPositions = ajna.accounts
     .filter(({ borrowPositions }) => borrowPositions.length)
     .map(({ borrowPositions: [{ collateral }], collateralToken }) => ({
       collateral: new BigNumber(collateral).shiftedBy(NEGATIVE_WAD_PRECISION),
@@ -71,11 +71,11 @@ const dpmPositions = async ({ api, }) => {
         .shiftedBy(NEGATIVE_WAD_PRECISION),
       collateralAddress: quoteTokenAddress,
     }));
-
+ */
   const tokensWithAmounts = [
     ...aaveBorrowishPositions,
-    ...ajnaBorrowishPositions,
-    ...ajnaEarnPositions,
+    // ...ajnaBorrowishPositions,
+    // ...ajnaEarnPositions,
   ].reduce(
     (total, { collateral, collateralAddress }) => ({
       ...total,

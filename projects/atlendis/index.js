@@ -1,5 +1,4 @@
 const { GraphQLClient, gql } = require('graphql-request')
-const { transformPolygonAddress } = require('../helper/portedTokens');
 const { getBlock } = require('../helper/http')
 const sdk = require('@defillama/sdk')
 
@@ -60,14 +59,14 @@ async function fetchData(block, balances, transform, borrowed = false) {
 async function tvl(timestamp, _, chainBlocks) {
   const balances = {};
   const block = await getBlock(timestamp, 'polygon', chainBlocks)
-  const transform = await transformPolygonAddress();
+  const transform = i => `polygon:${i}`;
   await fetchData(block, balances, transform);
   return balances;
 }
 
 async function borrowed(timestamp, _, chainBlocks) {
   const balances = {};
-  const transform = await transformPolygonAddress();
+  const transform = i => `polygon:${i}`;
   const block = await getBlock(timestamp, 'polygon', chainBlocks)
   await fetchData(block, balances, transform, true);
   return balances;

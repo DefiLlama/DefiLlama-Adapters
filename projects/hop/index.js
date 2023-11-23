@@ -46,4 +46,4 @@ function chainTvl(chain) {
     }
 }
 
-module.exports = chainExports(chainTvl, ['ethereum', 'polygon', 'optimism', 'arbitrum', ...Object.keys(chainMapping)])
+module.exports = chainExports(chainTvl, ['base', 'ethereum', 'polygon', 'optimism', 'arbitrum', ...Object.keys(chainMapping)])

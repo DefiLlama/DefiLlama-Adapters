@@ -71,9 +71,9 @@
       }
     },
     "cvxLPpools": {
-      "alUSD​+FRAXBP": {
+      "alUSD+FRAXBP": {
         "poolAddress":  "0x26598e3E511ADFadefD70ab2C3475Ff741741104",
-        "holder": "0x06378717d86b8cd2dba58c87383da1eda92d3495",
+        "holder": "0xBE1C919cA137299715e9c929BC7126Af14f76091",
         "tokenAddress": "0xb30da2376f63de30b42dc055c93fa474f31330a5",
         "alToken": "0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9"
       },

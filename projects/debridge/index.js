@@ -14,18 +14,17 @@ const chainIds = {
 };
 
 function chainTvl(chain) {
-  return async (timestamp, ethBlock, {[chain]: block}) => {
+  return async (timestamp, ethBlock, {[chain]: block}, { logArray }) => {
     const balances = {};
     const transformAddress = id=>`${chain}:${id}`;
 
     const url = `${http_api_url}?chainId=${chainIds[chain]}`;
     const debridge_response = await getConfig('debridge/'+chain,url);
-    // console.log(debridge_response)
     const tokensAndOwners = debridge_response
       .filter(t => !t.tokenName.startsWith('deBridge '))
       .map(t => [t.tokenAddress, debridgeGate]);
 
-    await sumTokens(balances, tokensAndOwners, block, chain, transformAddress);
+    await sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { logArray });
     
     return balances
   };

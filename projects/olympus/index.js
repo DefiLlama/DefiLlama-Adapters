@@ -90,7 +90,7 @@ function sumBalancesByTokenAddress(arr) {
  ***/
 async function tvl(timestamp, block, _, { api }, isOwnTokensMode = false) {
 const subgraphUrls = {
-  ethereum: `https://gateway.thegraph.com/api/${getEnv('OLYMPUS_GRAPH_API_KEY')}/subgraphs/id/DTcDcUSBRJjz9NeoK5VbXCVzYbRTyuBwdPUqMi8x32pY`,
+  ethereum: `https://gateway-arbitrum.network.thegraph.com/api/${getEnv("OLYMPUS_GRAPH_API_KEY")}/subgraphs/id/7jeChfyUTWRyp2JxPGuuzxvGt3fDKMkC9rLjm7sfLcNp`,
   arbitrum:
     "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-arbitrum",
   fantom:
@@ -98,6 +98,10 @@ const subgraphUrls = {
   polygon:
     "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-polygon",
 };
+  
+  //filter out problematic pools that dont have a decimals function.
+  const poolsWithoutDecimals = ["0x88051b0eea095007d3bef21ab287be961f3d8598"];
+  
   const indexedBlockForEndpoint = await blockQuery(
     subgraphUrls[api.chain],
     getLatestBlockIndexed,
@@ -108,6 +112,10 @@ const subgraphUrls = {
     subgraphUrls[api.chain],
     protocolQuery(blockNum),
     { api }
+  );
+
+  const filteredTokenRecords = tokenRecords.filter(
+    (t) => !poolsWithoutDecimals.includes(t.tokenAddress)
   );
 
   const aDay = 24 * 3600;
@@ -124,7 +132,7 @@ const subgraphUrls = {
    * that need to be normalized for pricing .
    * See addressMap above
    **/
-  const normalizedFilteredTokenRecords = tokenRecords.map((token) => {
+  const normalizedFilteredTokenRecords = filteredTokenRecords.map((token) => {
     const normalizedAddress = addressMap[token.tokenAddress]
       ? addressMap[token.tokenAddress]
       : token.tokenAddress;
