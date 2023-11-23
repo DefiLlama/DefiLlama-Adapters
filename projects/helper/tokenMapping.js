@@ -102,6 +102,10 @@ const fixBalancesTokens = {
   },
   mode: {
     '0x4200000000000000000000000000000000000006': { coingeckoId: 'ethereum', decimals: 18 },
+  },
+  zilliqa: {
+    '0x94e18ae7dd5ee57b55f30c4b63e2760c09efb192': { coingeckoId: 'zilliqa', decimals: 18 },
+    '0x2274005778063684fbb1bfa96a2b725dc37d75f9': { coingeckoId: 'tether', decimals: 6 },
   }
 }
 
