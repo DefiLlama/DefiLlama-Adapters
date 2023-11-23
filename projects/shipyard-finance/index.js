@@ -37,7 +37,7 @@ function chainTvl(chain, config) {
       coins.push(`${chain}:${want}`.toLowerCase());
     }
 
-    const getCoins = get(`https://coins.llama.fi/prices/current/${coins.join(',')}`)
+    const getCoins = get(`https://coins2.llama.fi/prices/current/${coins.join(',')}`)
 
     const coinsData = (await getCoins).coins;
 

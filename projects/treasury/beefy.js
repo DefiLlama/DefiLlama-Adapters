@@ -1,6 +1,5 @@
 const { getConfig } = require('../helper/cache')
 const { sumTokens2, nullAddress, } = require('../helper/unwrapLPs')
-const sdk = require('@defillama/sdk')
 
 const chains = [
   "fuse",
@@ -40,9 +39,6 @@ async function _getConfig() {
   return config
 }
 
-module.exports = {
-};
-
 chains.forEach(chain => {
   module.exports[chain] = {
     tvl: async (_, _b, _cb, { api, }) => {
@@ -51,15 +47,13 @@ chains.forEach(chain => {
       const uniV3Owners = []
       const ownerTokens = Object.entries(data)
         .filter(i => {
-          if (i[0] !== 'validator') return true
-          api.add(nullAddress, i[1].balances.validator.balance)
+          if (!i[0] || !i[0].includes('validator') ) return true
+          api.add(nullAddress, i[1].balances[i[0]].balance)
         })
         .map(([owner, { balances }]) => {
 
-          const tokens = Object.entries(balances).filter(([_, info]) => info.name !== 'BIFI').map(i => i[0] === 'native' ? nullAddress : i[0])
-          if (Object.keys(balances).some(i => i.toLowerCase() === '0x8e295789c9465487074a65b1ae9ce0351172393f'))
-            uniV3Owners.push(owner)
-
+          const tokens = Object.entries(balances).filter(([_, info]) => info.name !== 'BIFI' && info.assetType !== 'concLiquidity').map(i => i[0] === 'native' ? nullAddress : i[0])
+          Object.values(balances).filter(info => info.assetType === 'concLiquidity').map(i=> uniV3Owners.push(i.address))
           return [tokens, owner]
         })
       if (uniV3Owners.length) await sumTokens2({ api, owners: uniV3Owners, resolveUniV3: true, })
