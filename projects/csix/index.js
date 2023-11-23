@@ -36,6 +36,10 @@ async function staking(_, _1, _2, { api }) {
 module.exports = {
   timetravel: false,
   misrepresentedTokens: false,
+  hallmarks: [
+    [1676338485, "Staking V1"],
+    [1700652398, "Staking V2"],
+  ],
   bsc: {
     tvl: staking,
     staking,
