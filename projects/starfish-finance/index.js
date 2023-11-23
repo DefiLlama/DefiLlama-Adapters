@@ -11,7 +11,7 @@ const addresses = {
 
 module.exports = {
   astar: {
-    tvl: onChainTvl('0x496F6125E1cd31f268032bd4cfaA121D203639b7', 3258352, {
+    tvl: onChainTvl('0x496F6125E1cd31f268032bd4cfaA121D203639b7', 4939904, {
       preLogTokens: [
         '0xEa093b81ca103585FC8Df82CB3D5D7F2e394AB70',
         ADDRESSES.astar.SDN,
