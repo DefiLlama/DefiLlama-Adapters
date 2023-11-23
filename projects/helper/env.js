@@ -5,16 +5,15 @@ const BOOL_KEYS = [
 
 const DEFAULTS = {
   COVALENT_KEY: 'ckey_72cd3b74b4a048c9bc671f7c5a6',
-  SOLANA_RPC: 'https://try-rpc.mainnet.solana.blockdaemon.tech',
+  SOLANA_RPC: 'https://api.mainnet-beta.solana.com',
   APTOS_RPC: 'https://aptos-mainnet.pontem.network',
   SUI_RPC: 'https://fullnode.mainnet.sui.io/',
   MULTIVERSX_RPC: 'https://api.multiversx.com',
-  ETHEREUMCLASSIC_RPC: 'https://etc.etcdesktop.com,https://etc.rivet.link',
-  CRAB_RPC: 'https://darwiniacrab-rpc.dwellir.com',
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
+  ACALA_RPC: "https://eth-rpc-acala.aca-api.network",
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
-  EVMOS_RPC: "https://evmos-evm.publicnode.com",
-  NOVA_RPC: "https://connect.novanetwork.io",
+  CHZ_RPC: "https://chiliz.publicnode.com,https://rpc.ankr.com/chiliz",
+  MANTLE_RPC:"https://mantle.publicnode.com,https://rpc.ankr.com/mantle,https://mantle.drpc.org,https://1rpc.io/mantle,https://mantle-mainnet.public.blastapi.io",
 }
 
 const ENV_KEYS = [

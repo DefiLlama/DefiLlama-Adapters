@@ -11,7 +11,6 @@ const CHAI = "0x06af07097c9eeb7fd685c692751d5c66db49c215";
 const SWETH = '0xf951E335afb289353dc249e82926178EaC7DEd78'
 
 async function tvl(_, ethBlock, _1, { api }) {
-
   const rEthBalanceV1 = await api.call({ target: WRAPPED_RETH, abi: "erc20:balanceOf", params: RAFT_POSITION_MANAGER, });
   const chaiBalance = await api.call({ target: CHAI, abi: "erc20:balanceOf", params: RAFT_PSM, });
   const potAddress = await api.call({ target: CHAI, abi: "address:pot", });
@@ -22,8 +21,18 @@ async function tvl(_, ethBlock, _1, { api }) {
   api.add(ADDRESSES.ethereum.RETH, rEthBalanceV1)
 
   return api.sumTokens({ ownerTokens: [
-    [[ADDRESSES.ethereum.RETH, ADDRESSES.ethereum.WETH, ADDRESSES.ethereum.WSTETH, ADDRESSES.ethereum.cbETH, SWETH], INTEREST_RATE_POSITION_MANAGER_ADDRESS],
-    [[ADDRESSES.ethereum.RETH, ADDRESSES.ethereum.WETH, ADDRESSES.ethereum.WSTETH, ], RAFT_POSITION_MANAGER],
+    [
+      [
+        ADDRESSES.ethereum.RETH,
+        ADDRESSES.ethereum.WETH,
+        ADDRESSES.ethereum.WSTETH,
+        ADDRESSES.ethereum.cbETH,
+        ADDRESSES.ethereum.WBTC,
+        SWETH,
+      ],
+      INTEREST_RATE_POSITION_MANAGER_ADDRESS,
+    ],
+    [[ADDRESSES.ethereum.WSTETH], RAFT_POSITION_MANAGER],
   ]})
 }
 
