@@ -24,6 +24,7 @@ const query = gql`
   }
 `;
 
+
 async function getTVL(toTimestamp) {
   const { dailyHistories } = await request(graphUrl, query, {
     from: BETA_START.toString(),
