@@ -18,12 +18,12 @@ const outpostAddresses = {
 };
 
 function chainTvl(chain) {
-  return async (timestamp, ethBlock, {[chain]: block}, { api }) => {
+  return async (timestamp, ethBlock, {[chain]: block}, { api, logArray }) => {
     const urlTvl = `${http_api_url}?chainId=${api.getChainId()}`;
     const neuron_response_tvl = await getConfig('neuron/'+chain, urlTvl);
     var [address, tokensAndAmounts] = neuron_response_tvl;
     const outpostAddress = outpostAddresses[api.getChainId()];
-    return api.sumTokens({ owner: outpostAddress, tokens: tokensAndAmounts.map(i => i[0]) })
+    return api.sumTokens({ owner: outpostAddress, tokens: tokensAndAmounts.map(i => i[0]), logArray })
   };
 }
 

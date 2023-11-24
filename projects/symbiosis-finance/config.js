@@ -227,6 +227,7 @@ module.exports = {
        name: 'manta',
        tokens: [
          ADDRESSES.manta.WETH,
+         ADDRESSES.manta.USDC,
        ],
        holders: [
          '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4', // portal v2

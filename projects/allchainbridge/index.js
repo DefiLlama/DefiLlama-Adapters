@@ -88,11 +88,11 @@ const tokensConf = {
  * END OF CONFIGURATION
  */
 
-const createTvlFunction = (chain) => async (timestamp, block, chainBlocks) => {
+const createTvlFunction = (chain) => async (timestamp, block, chainBlocks, { logArray }) => {
   const bridgeContract = getBridgeContract(chain);
   const tokens = Object.values(tokensConf[chain])
   const owners = [bridgeContract]
-  return sumTokens2({ chain, block:chainBlocks[chain], tokens, owners, })
+  return sumTokens2({ chain, block:chainBlocks[chain], tokens, owners, logArray })
 };
 
 module.exports = {
