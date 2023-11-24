@@ -17,7 +17,7 @@ const btcbBtcuLpAddress = "0x70E3eEaacC553dA549fbD734475f61e00A40AA28"
 
 module.exports = {
   bsc: {
-    tvl: sumTokensExport({ owners: [btcbStakingContract1, btcbStakingContract2, troveContract, btcuStakingContract,], tokens: [ADDRESSES.bsc.BTCB, btcuAddress,] }),
+    tvl: sumTokensExport({ owners: [btcbStakingContract1, btcbStakingContract2, troveContract,], tokens: [ADDRESSES.bsc.BTCB,] }),
     pool2: sumTokensExport({ owners: [b2bLpStakingContract, btcbBtcuLpStakingContract], tokens: [b2bLpAddress, btcbBtcuLpAddress,], resolveLP: true, }),
   }
 }
