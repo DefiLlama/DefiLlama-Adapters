@@ -35,6 +35,9 @@ const getTvl = isStaking => async (_, _1, _2, { api }) => {
 
 module.exports = {
   misrepresentedTokens: true,
+  hallmarks: [
+    [1699578000,"Rug Pull"]
+  ],
   scroll: {
     tvl: getTvl(false),
     staking: getTvl(true),
