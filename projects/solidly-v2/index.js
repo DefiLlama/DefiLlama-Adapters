@@ -8,6 +8,6 @@ module.exports = {
   },
   hallmarks:[
     [1678410000, "USDC depeg (90% TVL in USDC-USDT)"],
-    [1678842000, "Solidly v2 sunset"],
+    [1678842000, "Solidly V2 sunset"],
   ]
 };
