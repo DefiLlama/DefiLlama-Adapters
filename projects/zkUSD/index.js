@@ -18,7 +18,6 @@ async function tvl(_, block, _2, { api }) {
       block,
     })
   );
-  console.log(troveEthTvl)
   return {
     [ETH_ADDRESS]: Number(troveEthTvl),
   };
