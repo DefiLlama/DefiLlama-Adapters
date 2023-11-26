@@ -4,10 +4,8 @@ const { parseLido, parseLidoValidatorList } = require('./layouts/lido')
 const { parsePhoenix } = require('./layouts/phoenix-dex')
 const { RAYDIUM_LIQUIDITY_STATE_LAYOUT_CLMM, RAYDIUM_STABLE_STATE_LAYOUT_V1, } = require('./layouts/raydium-layout')
 const { INVESTIN_FUND_DATA, } = require('./layouts/investin-layout')
-const { MARKET_STATE_LAYOUT_V3, } = require('./layouts/openbook-layout')
-const { ReserveLayout, ReserveLayoutLarix, MintLayout, AccountLayout, TokenSwapLayout, } = require('./layouts/mixed-layout')
-
-// console.log(RAYDIUM_LIQUIDITY_STATE_LAYOUT_CLMM.span, 'RAYDIUM_LIQUIDITY_STATE_LAYOUT_CLMM')
+const { MARKET_STATE_LAYOUT_V3, OPEN_ORDERS_LAYOUT_V2 } = require('./layouts/openbook-layout')
+const { ReserveLayout, ReserveLayoutLarix, MintLayout, AccountLayout, TokenSwapLayout, ESOLStakePoolLayout, } = require('./layouts/mixed-layout')
 
 const parseReserve = (info) => {
   const pubkey = PublicKey.default
@@ -44,8 +42,10 @@ const customDecoders = {
   account: defaultParseLayout(AccountLayout),
   tokenSwap: defaultParseLayout(TokenSwapLayout),
   larixReserve: defaultParseLayout(ReserveLayoutLarix),
+  ESOLStakePool: defaultParseLayout(ESOLStakePoolLayout),
   investinFund: defaultParseLayout(INVESTIN_FUND_DATA),
   openbook: defaultParseLayout(MARKET_STATE_LAYOUT_V3),
+  openbookOpenOrders: defaultParseLayout(OPEN_ORDERS_LAYOUT_V2),
   // raydiumLPv4: defaultParseLayout(RAYDIUM_LIQUIDITY_STATE_LAYOUT_V4),
   raydiumCLMM: defaultParseLayout(RAYDIUM_LIQUIDITY_STATE_LAYOUT_CLMM),
   raydiumLPStable: defaultParseLayout(RAYDIUM_STABLE_STATE_LAYOUT_V1),
