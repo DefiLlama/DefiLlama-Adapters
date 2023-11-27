@@ -17,11 +17,21 @@ async function tvl() {
   return balances;
 }
 
+async function arbi_tvl(_, _b, _cb, { api, }) {
+  const contract = '0x816f722424B49Cf1275cc86DA9840Fbd5a6167e9'
+  const hashes = await api.call({  abi: 'function getAllAllowedToken() view returns (bytes32[])', target: contract })
+  const tokens = await api.multiCall({  abi: 'function getAllowedToken(bytes32) view returns (address)', calls: hashes, target: contract })
+  return api.sumTokens({ owner: contract, tokens })  
+}
+
 
 module.exports = {
   timetravel: false,
   near: {
     tvl,
   },
+  /* arbitrum: {
+    tvl: arbi_tvl,
+  }, */
   methodology: 'Summed up all the tokens deposited into Orderly Network'
 }
