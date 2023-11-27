@@ -1,11 +1,9 @@
-const sdk = require('@defillama/sdk');
 const { ethers } = require("ethers");
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { getLogs } = require('../helper/cache/getLogs')
 
-const getAllOwnedAssetsAbi = require('./abis/getAllOwnedAssetsAbi.json');
-const getLoansAbi = require('./abis/getLoansAbi.json');
-const getPrimeAccountsLengthAbi = require('./abis/getPrimeAccountsLength.json');
+const getAllOwnedAssetsAbi = "function getAllOwnedAssets() view returns (bytes32[] result)"
+const getLoansAbi = "function getLoans(uint256 _from, uint256 _count) view returns (address[] _loans)"
+const getPrimeAccountsLengthAbi = 'uint256:getLoansLength';
 
 const assetToAddressMappingAvalanche = require('./mappings/assetToAddressMappingAvalanche.json')
 const assetToAddressMappingArbitrum = require('./mappings/assetToAddressMappingArbitrum.json')
@@ -37,14 +35,10 @@ async function tvlAvalanche(timestamp, block, chainBlocks, { api }) {
   ]
 
   let accounts = [];
-  const numberOfAccounts = await api.call({
-    abi: getPrimeAccountsLengthAbi,
-    target: SMART_LOANS_FACTORY_TUP_AVALANCHE,
-    params: [],
-  });
+  const numberOfAccounts = await api.call({ abi: getPrimeAccountsLengthAbi, target: SMART_LOANS_FACTORY_TUP_AVALANCHE, });
   const batchSize = 500;
   let batchIndex = 0;
-  while(batchIndex * batchSize < numberOfAccounts){
+  while (batchIndex * batchSize < numberOfAccounts) {
     let batchPrimeAccounts = await api.call({
       abi: getLoansAbi,
       target: SMART_LOANS_FACTORY_TUP_AVALANCHE,
@@ -84,14 +78,10 @@ async function tvlArbitrum(timestamp, block, chainBlocks, { api }) {
   ]
 
   let accounts = [];
-  const numberOfAccounts = await api.call({
-    abi: getPrimeAccountsLengthAbi,
-    target: SMART_LOANS_FACTORY_TUP_ARBITRUM,
-    params: [],
-  });
+  const numberOfAccounts = await api.call({ abi: getPrimeAccountsLengthAbi, target: SMART_LOANS_FACTORY_TUP_ARBITRUM, });
   const batchSize = 500;
   let batchIndex = 0;
-  while(batchIndex * batchSize < numberOfAccounts){
+  while (batchIndex * batchSize < numberOfAccounts) {
     let batchPrimeAccounts = await api.call({
       abi: getLoansAbi,
       target: SMART_LOANS_FACTORY_TUP_ARBITRUM,
@@ -147,7 +137,7 @@ async function addTraderJoeLPs({ api, accounts }) {
   const bals = await api.multiCall({ abi: 'function balanceOf(address, uint256) view returns (uint256)', calls: calls.map(({ target, account, bin }) => ({ target, params: [account, bin] })) })
   const binBals = await api.multiCall({ abi: 'function getBin(uint24) view returns (uint128 tokenXbal,uint128 tokenYBal)', calls: calls.map(({ target, account, bin }) => ({ target, params: [bin] })) })
   const binSupplies = await api.multiCall({ abi: 'function totalSupply(uint256) view returns (uint256)', calls: calls.map(({ target, account, bin }) => ({ target, params: [bin] })) })
-  binBals.forEach(({tokenXbal, tokenYBal}, i) => {
+  binBals.forEach(({ tokenXbal, tokenYBal }, i) => {
     const { tokenX, tokenY } = pairInfos[calls[i].target]
     const ratio = bals[i] / binSupplies[i]
     api.add(tokenX, tokenXbal * ratio)
