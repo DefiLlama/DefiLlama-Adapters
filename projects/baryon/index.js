@@ -8,7 +8,7 @@ module.exports = {
       useDefaultCoreAssets: true,
     })
   },
-  tomochain: {
+  tomo: {
     misrepresentedTokens: true,
     tvl: getUniTVL({
       factory: '0xFe48A2E66EE2f90334d3565E56E0c9d0081447e8',
