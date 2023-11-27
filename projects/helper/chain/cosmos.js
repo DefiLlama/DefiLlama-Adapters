@@ -45,6 +45,7 @@ const endPoints = {
 
 const chainSubpaths = {
   crescent: "crescent",
+  osmosis: "osmosis",
   comdex: "comdex",
   umee: "umee",
   kava: "kava",
