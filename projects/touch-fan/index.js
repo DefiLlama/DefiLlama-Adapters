@@ -1,6 +1,6 @@
-const { nullAddress } = require('../helper/tokenMapping')
 const { sumTokensExport } = require('../helper/unknownTokens')
 const fan_contract = "0x9842114F1d9c5286A6b8e23cF0D8142DAb2B3E9b"
+const { nullAddress } = require('../helper/unwrapLPs')
 
 const touch_contract = "0xC612eD7a1FC5ED084C967bD71F1e0F0a338Cf816"
 const tft_address = "0x14acccd04393f26ba155e5402aa6fddbb8e2254a"
