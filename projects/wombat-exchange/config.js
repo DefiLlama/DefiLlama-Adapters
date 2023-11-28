@@ -93,23 +93,6 @@ module.exports = {
       USDS: "0x20d7B9Ed2c4E2DCC55F9B463975b21bBf2A6eCd1",
     },
   },
-  avax: {
-    wom: "0xa15E4544D141aa98C4581a1EA10Eb9048c3b3382",
-    veWom: "0x34E2F923bBa206358EcE221af73E8d121837F873",
-    pools: {
-      crossChainPool: "0xC9bFC3eFeFe4CF96877009F75a61F5c1937e5d1a",
-      sAVAX: "0xE3Abc29B035874a9f6dCDB06f8F20d9975069D87",
-      USDV: "0x108c990c93Fa8E3cD88DDb13594D39f09D9B3C02",
-    },
-  },
-  base: {
-    wom: "0xD9541B08B375D58ae104EC247d7443D2D7235D64",
-    veWom: "0x34E2F923bBa206358EcE221af73E8d121837F873",
-    pools: {
-      crossChainPool: "0xC9bFC3eFeFe4CF96877009F75a61F5c1937e5d1a",
-      USDS: "0x20d7B9Ed2c4E2DCC55F9B463975b21bBf2A6eCd1",
-    },
-  },
   optimism: {
     wom: "0xd2612b256f6f76fea8c6fbca0bf3166d0d13a668",
     veWom: "0xE91cfd7f8e5A5a1EA4803FcF781e1C8d6FfCa279",
