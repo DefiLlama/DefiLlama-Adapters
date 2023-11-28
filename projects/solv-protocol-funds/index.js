@@ -22,7 +22,7 @@ async function borrowed(ts) {
   const { api } = arguments[3];
   const network = api.chain;
 
-  let address = (await getConfig('solv-protocol', addressUrl));
+  let address = (await getConfig('solv-protocol/funds', addressUrl));
   let gm = address[api.chain]["gm"];
 
   const graphData = await getGraphData(ts, network, api);
@@ -73,7 +73,7 @@ async function borrowed(ts) {
 async function tvl() {
   const { api } = arguments[3];
 
-  let address = (await getConfig('solv-protocol', addressUrl));
+  let address = (await getConfig('solv-protocol/funds', addressUrl));
   let gm = address[api.chain]["gm"];
 
   let tokens = []
@@ -88,7 +88,7 @@ async function tvl() {
 
 
 async function mantleTvl(ts, _, _1, { api }) {
-  let address = (await getConfig('solv-protocol', addressUrl));
+  let address = (await getConfig('solv-protocol/funds', addressUrl));
   let klp = address[api.chain]["klp"];
 
   api.add(klp["address"], await api.call({ abi: stakedAmountsAbi, target: klp["address"], params: klp["klpPool"], }))
@@ -120,7 +120,7 @@ async function concrete(slots, api) {
 
 
 async function getGraphData(timestamp, chain, api) {
-  let rwaSlot = (await getConfig('solv-protocol', slotListUrl));
+  let rwaSlot = (await getConfig('solv-protocol/slots', slotListUrl));
 
   const slotDataQuery = `query BondSlotInfos {
             poolOrderInfos(first: 1000  where:{fundraisingEndTime_gt:${timestamp}, openFundShareSlot_not_in: ${JSON.stringify(rwaSlot)}}) {
