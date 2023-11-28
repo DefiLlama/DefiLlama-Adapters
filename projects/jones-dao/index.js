@@ -5,13 +5,13 @@ const { stakings } = require("../helper/staking");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const lockerABI = require("./aura-locker-abi.json");
-const addresses = require("./addresses.json");
+const addresses = require("./addresses");
 
 const jAssetToAsset = {
   "0x662d0f9ff837a51cf89a1fe7e0882a906dac08a3": ADDRESSES.arbitrum.WETH, // jETH
-  "0x5375616bb6c52a90439ff96882a986d8fcdce421": addresses.gohm, // jgOHM,
-  "0xf018865b26ffab9cd1735dcca549d95b0cb9ea19": addresses.dpx, // jDPX
-  "0x1f6fa7a58701b3773b08a1a16d06b656b0eccb23": addresses.rdpx, // jrdpx
+  "0x5375616bb6c52a90439ff96882a986d8fcdce421": addresses.tokens.gohm, // jgOHM,
+  "0xf018865b26ffab9cd1735dcca549d95b0cb9ea19": addresses.tokens.dpx, // jDPX
+  "0x1f6fa7a58701b3773b08a1a16d06b656b0eccb23": addresses.tokens.rdpx, // jrdpx
 };
 
 async function tvl(_timestamp, _block, _chainBlocks, { api }) {
@@ -81,7 +81,16 @@ module.exports = {
       addr = addr.toLowerCase();
       return `arbitrum:${jAssetToAsset[addr] ?? addr}`;
     }),
-    staking: stakings(addresses.jonesStaking, addresses.tokens.jones),
+    staking: stakings(
+      addresses.stakingContracts,
+      [
+        addresses.tokens.jones,
+        addresses.tokens.jglp,
+        addresses.tokens.jusdc,
+        addresses.tokens.wjaura,
+      ],
+      "arbitrum"
+    ),
   },
 
   ethereum: {
