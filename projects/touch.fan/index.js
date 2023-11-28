@@ -1,3 +1,4 @@
+const { nullAddress } = require('../helper/tokenMapping')
 const { sumTokensExport } = require('../helper/unknownTokens')
 const fan_contract = "0x9842114F1d9c5286A6b8e23cF0D8142DAb2B3E9b"
 
