@@ -13,39 +13,27 @@ const graphUrlList = {
   mantle: 'http://api.0xgraph.xyz/subgraphs/name/solv-payable-factory-mentle-0xgraph',
 }
 
-const slotListUrl = 'https://cdn.jsdelivr.net/gh/solv-finance-dev/solv-protocol-rwa-slot/slot.json';
+const slotListUrl = 'https://raw.githubusercontent.com/solv-finance-dev/solv-protocol-rwa-slot/main/slot.json';
 
-const depositAddress = [
-  "0x9f6478a876d7765f44bda712573820eb3ae389fb",
-  "0xcac14cd2f18dcf54032bd51d0a116fe18770b87c"
-];
-
-const gmTokens = [
-  "0x70d95587d40a2caf56bd97485ab3eec10bee6336",
-  "0x47c031236e19d024b42f8AE6780E44A573170703",
-  "0xC25cEf6061Cf5dE5eb761b50E4743c1F5D7E5407",
-  "0x7f1fa204bb700853D36994DA19F830b6Ad18455C",
-  "0x09400D9DB990D5ed3f35D7be61DfAEB900Af03C9",
-  "0xc7Abb2C5f3BF3CEB389dF0Eecd6120D451170B50",
-];
+const addressUrl = 'https://raw.githubusercontent.com/solv-finance-dev/slov-protocol-defillama/main/solv-funds.json';
 
 const getAumUsdAbi = 'function getAumInUsdg(bool maximise) view returns (uint256)';
 const balanceOfABI = 'function balanceOf(address _account) view returns (uint256)';
 const stakedAmountsAbi = 'function stakedAmounts(address) external view returns (uint256)';
 const totalSupplyAbi = 'erc20:totalSupply';
 
-const klpManager = "0x3C4DE8fB37055500BB3D18eAE8dD0DffF527090e";
-const klp = "0xb3a5eeBf23530165c3A6785400ff5d1700D5c0b3";
-const klpPool = "0xf9ddb49175037b4fd2580fc825b40707d4781531";
-
 async function borrowed(ts) {
   const { api } = arguments[3];
   const network = api.chain;
+
+  let address = (await getConfig('solv-protocol', addressUrl));
+  let gm = address[api.chain]["gm"];
+
   const graphData = await getGraphData(ts, network, api);
   if (graphData.pools.length > 0) {
     const poolLists = graphData.pools;
     var pools = poolLists.filter((value) => {
-      return depositAddress.indexOf(value.vault) == -1;
+      return gm == undefined && gm["depositAddress"].indexOf(value.vault) == -1;
     });
     const poolConcretes = await concrete(pools, api);
     const nav = await api.multiCall({
@@ -89,9 +77,12 @@ async function borrowed(ts) {
 async function tvl() {
   const { api } = arguments[3];
 
+  let address = (await getConfig('solv-protocol', addressUrl));
+  let gm = address[api.chain]["gm"];
+
   let tokens = []
-  for (const pool of depositAddress) {
-    for (const address of gmTokens) {
+  for (const pool of gm["depositAddress"]) {
+    for (const address of gm["gmTokens"]) {
       tokens.push({ address, pool })
     }
   }
@@ -104,17 +95,20 @@ async function mantleTvl(ts, _, _1, { api }) {
   const chain = api.chain;
   const block = api.block;
 
+  let address = (await getConfig('solv-protocol', addressUrl));
+  let klp = address[api.chain]["klp"];
+  console.log(JSON.stringify(klp))
   const [
     { output: aumUsd },
     { output: totalSupply }
-  ] = await getKlpPrice(chain, api.block)
+  ] = await getKlpPrice(chain, api.block, klp)
 
   const klpPrice = BigNumber(aumUsd).div(totalSupply).toNumber();
 
   const { output: amount } = await sdk.api.abi.call({
     abi: stakedAmountsAbi,
-    target: klp,
-    params: [klpPool],
+    target: klp["address"],
+    params: klp["klpPool"],
     chain,
     block,
   })
@@ -126,18 +120,18 @@ async function mantleTvl(ts, _, _1, { api }) {
   };
 }
 
-async function getKlpPrice(chain, block) {
+async function getKlpPrice(chain, block, klp) {
   return await Promise.all([
     sdk.api.abi.call({
       abi: getAumUsdAbi,
-      target: klpManager,
+      target: klp["klpManager"],
       params: [true],
       chain,
       block,
     }),
     sdk.api.abi.call({
       abi: totalSupplyAbi,
-      target: klp,
+      target: klp["address"],
       chain,
       block,
     })
