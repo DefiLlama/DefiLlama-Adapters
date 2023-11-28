@@ -30,6 +30,7 @@ module.exports = {
       crossChainPool: "0x1ee15673e07105Bcf360139fa8CafeBDd7754BeF",
       zBNB: "0x9a39f4AB3f52026432835dEe6D3DB721D95f3D28",
       zUSD: "0xC26b7Cbe7e695a0d11a8cB96140D1Cd502945A2C",
+      USDV: "0xC897a2Ae2E45f0D7ba8cbE397208C3e9f8914A9f",
     },
   },
   arbitrum: {
@@ -51,6 +52,7 @@ module.exports = {
       pendle: "0xe7159f15e7b1d6045506B228A1ed2136dcc56F48",
       fUSD: "0x956454C7BE9318863297309183C79b793D370401",
       crossChainPool: "0xe78876C360716f2225F55A6726B32324FE1B1145",
+      USDV: "0xa6eF6C45EbFDBc13f6D032fbDFeC9b389C1603E5",
     },
   },
   ethereum: {
@@ -63,19 +65,32 @@ module.exports = {
       wstETH: "0xF8E32cA46AC28799c8FB7DCe1Ac11A4541160734",
       ETHx: "0x647CC8816C2d60A5fF4d1ffeF27a5b3637d5ac81",
       crossChainPool: "0xA45C0ABeef67C363364E0e73832df9986aBa3800",
+      USDV: "0x05A33c0eaf81367Ce953d2dCd4ea1BE8758f4D32",
     },
   },
   // does not have wom yet
   scroll: {
+    wom: "",
+    veWom: "",
     pools: {
       crossChainPool: "0x80f088ae72DB6d1AC337340cd6Aa0EB1F67337CE",
     },
   },
   avax: {
     wom: "0xa15E4544D141aa98C4581a1EA10Eb9048c3b3382",
+    veWom: "0x34E2F923bBa206358EcE221af73E8d121837F873",
     pools: {
       crossChainPool: "0xC9bFC3eFeFe4CF96877009F75a61F5c1937e5d1a",
       sAVAX: "0xE3Abc29B035874a9f6dCDB06f8F20d9975069D87",
+      USDV: "0x108c990c93Fa8E3cD88DDb13594D39f09D9B3C02",
+    },
+  },
+  base: {
+    wom: "0xD9541B08B375D58ae104EC247d7443D2D7235D64",
+    veWom: "0x34E2F923bBa206358EcE221af73E8d121837F873",
+    pools: {
+      crossChainPool: "0xC9bFC3eFeFe4CF96877009F75a61F5c1937e5d1a",
+      USDS: "0x20d7B9Ed2c4E2DCC55F9B463975b21bBf2A6eCd1",
     },
   },
   hallmarks: [

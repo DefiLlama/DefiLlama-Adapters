@@ -363,7 +363,8 @@ async function sumTokens2({
     if (owners.length) tokensAndOwners = tokens.map(t => owners.map(o => [t, o])).flat()
   }
   if (!tokensAndOwners.length && !tokens.length && (owner || owners.length > 0) && getAllTokenAccounts) {
-    for (const _owner of [...owners, owner]) {
+    const _owners = getUniqueAddresses([...owners, owner].filter(i => i), 'solana')
+    for (const _owner of _owners) {
       const data = await getOwnerAllAccount(_owner)
       for (const item of data) {
         if (blacklistedTokens.includes(item.mint) || +item.amount < 1e6) continue;
