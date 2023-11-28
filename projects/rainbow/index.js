@@ -1,7 +1,8 @@
-const { view_account } = require("../helper/chain/near");
+const { view_account, getTokenBalance } = require("../helper/chain/near");
 const { sumTokensExport } = require("../helper/unwrapLPs");
 
 module.exports = {
+  timetravel: false,
   ethereum: {
     tvl: sumTokensExport({
       owner: "0x6BFaD42cFC4EfC96f529D786D643Ff4A8B89FA52",
@@ -18,7 +19,16 @@ module.exports = {
   },
   near: {
     tvl: async () => ({
-      near: (await view_account("factory.bridge.near")).amount / 1e24,
+      near:
+        (Number((await view_account("factory.bridge.near")).amount) +
+          Number((await view_account("fast.bridge.near")).amount)) /
+        1e24,
+      ethereum: (await getTokenBalance("aurora", "fast.bridge.near")) / 1e18,
+      "usd-coin":
+        (await getTokenBalance(
+          "a0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.factory.bridge.near",
+          "fast.bridge.near"
+        )) / 1e6,
     }),
   },
 };
