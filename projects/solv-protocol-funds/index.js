@@ -97,7 +97,7 @@ async function mantleTvl(ts, _, _1, { api }) {
 
   let address = (await getConfig('solv-protocol', addressUrl));
   let klp = address[api.chain]["klp"];
-  console.log(JSON.stringify(klp))
+
   const [
     { output: aumUsd },
     { output: totalSupply }
