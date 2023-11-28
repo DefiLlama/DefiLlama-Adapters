@@ -1,7 +1,7 @@
 const { masterchefExports } = require("../helper/unknownTokens");
 
 const boomTokenAddress = "0xe88Ac56C4dedc973a0a26C062F0F07568dfb23FA"
-const boomChefAddress = "0x153b536dB217fD92685833466C51DB91fE4Cd9ab"
+const boomChefAddress = "0x5102697d717793a071bc188773dd401d0b5c5f0b"
 
 module.exports = masterchefExports({ 
   chain: 'polygon', 

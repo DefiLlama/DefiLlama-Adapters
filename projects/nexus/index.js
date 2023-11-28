@@ -1,7 +1,7 @@
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const pools = [
-  '0xcafea112Db32436c2390F5EC988f3aDB96870627'   // current pool
+  '0xcafeaBED7e0653aFe9674A3ad862b78DB3F36e60'   // current pool
 ];
 const yieldPools = [
   '0x27f23c710dd3d878fe9393d93465fed1302f2ebd'

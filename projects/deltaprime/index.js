@@ -1,9 +1,9 @@
-const sdk = require('@defillama/sdk');
 const { ethers } = require("ethers");
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { getLogs } = require('../helper/cache/getLogs')
 
-const getAllOwnedAssetsAbi = require('./abis/getAllOwnedAssetsAbi.json');
+const getAllOwnedAssetsAbi = "function getAllOwnedAssets() view returns (bytes32[] result)"
+const getLoansAbi = "function getLoans(uint256 _from, uint256 _count) view returns (address[] _loans)"
+const getPrimeAccountsLengthAbi = 'uint256:getLoansLength';
 
 const assetToAddressMappingAvalanche = require('./mappings/assetToAddressMappingAvalanche.json')
 const assetToAddressMappingArbitrum = require('./mappings/assetToAddressMappingArbitrum.json')
@@ -26,14 +26,6 @@ const ARB_POOL_TUP_ARBI_CONTRACT = '0x2B8C610F3fC6F883817637d15514293565C3d08A';
 const SMART_LOANS_FACTORY_TUP_ARBITRUM = '0xFf5e3dDaefF411a1dC6CcE00014e4Bca39265c20';
 
 async function tvlAvalanche(timestamp, block, chainBlocks, { api }) {
-  const logs = await getLogs({
-    api,
-    target: SMART_LOANS_FACTORY_TUP_AVALANCHE,
-    topics: ['0x3c5330cb261eae74426865a348927ace59eae441485c71a110df598f825b6369'],
-    fromBlock: 23431194,
-  })
-  sdk.log('#accounts', logs.length)
-
   const tokensAndOwners = [
     [assetToAddressMappingAvalanche.USDC, USDC_POOL_TUP_CONTRACT],
     [assetToAddressMappingAvalanche.USDT, USDT_POOL_TUP_CONTRACT],
@@ -42,13 +34,32 @@ async function tvlAvalanche(timestamp, block, chainBlocks, { api }) {
     [assetToAddressMappingAvalanche.ETH, ETH_POOL_TUP_CONTRACT],
   ]
 
-  const accounts = logs.map(i => `0x${i.topics[1].slice(26)}`)
+  let accounts = [];
+  const numberOfAccounts = await api.call({ abi: getPrimeAccountsLengthAbi, target: SMART_LOANS_FACTORY_TUP_AVALANCHE, });
+  const batchSize = 500;
+  let batchIndex = 0;
+  while (batchIndex * batchSize < numberOfAccounts) {
+    let batchPrimeAccounts = await api.call({
+      abi: getLoansAbi,
+      target: SMART_LOANS_FACTORY_TUP_AVALANCHE,
+      params: [batchIndex * batchSize, batchSize]
+    })
+    accounts = accounts.concat(batchPrimeAccounts);
+    batchIndex++;
+  }
+
+  console.log(accounts.length)
+
   await addTraderJoeLPs({ api, accounts })
   const ownedAssets = await api.multiCall({ abi: getAllOwnedAssetsAbi, calls: accounts })
   accounts.forEach((o, i) => {
     ownedAssets[i].forEach(tokenStr => {
       tokenStr = ethers.utils.parseBytes32String(tokenStr)
       const token = assetToAddressMappingAvalanche[tokenStr]
+      if (!token) {
+        console.log('Missing asset mapping for: ' + tokenStr)
+        return;
+      }
       if (!token) throw new Error('Missing asset mapping for: ' + tokenStr)
       tokensAndOwners.push([token, o])
     })
@@ -59,14 +70,6 @@ async function tvlAvalanche(timestamp, block, chainBlocks, { api }) {
 }
 
 async function tvlArbitrum(timestamp, block, chainBlocks, { api }) {
-  const logs = await getLogs({
-    api,
-    target: SMART_LOANS_FACTORY_TUP_ARBITRUM,
-    topics: ['0x3c5330cb261eae74426865a348927ace59eae441485c71a110df598f825b6369'],
-    fromBlock: 119102502,
-  })
-  sdk.log('#accounts', logs.length)
-
   const tokensAndOwners = [
     [assetToAddressMappingArbitrum.USDC, USDC_POOL_TUP_ARBI_CONTRACT],
     [assetToAddressMappingArbitrum.ETH, ETH_POOL_TUP_ARBI_CONTRACT],
@@ -74,7 +77,21 @@ async function tvlArbitrum(timestamp, block, chainBlocks, { api }) {
     [assetToAddressMappingArbitrum.ARB, ARB_POOL_TUP_ARBI_CONTRACT],
   ]
 
-  const accounts = logs.map(i => `0x${i.topics[1].slice(26)}`)
+  let accounts = [];
+  const numberOfAccounts = await api.call({ abi: getPrimeAccountsLengthAbi, target: SMART_LOANS_FACTORY_TUP_ARBITRUM, });
+  const batchSize = 500;
+  let batchIndex = 0;
+  while (batchIndex * batchSize < numberOfAccounts) {
+    let batchPrimeAccounts = await api.call({
+      abi: getLoansAbi,
+      target: SMART_LOANS_FACTORY_TUP_ARBITRUM,
+      params: [batchIndex * batchSize, batchSize]
+    })
+    accounts = accounts.concat(batchPrimeAccounts);
+    batchIndex++;
+  }
+
+  console.log(accounts.length)
   const ownedAssets = await api.multiCall({ abi: getAllOwnedAssetsAbi, calls: accounts, })
   await addTraderJoeLPs({ api, accounts })
 
@@ -82,7 +99,11 @@ async function tvlArbitrum(timestamp, block, chainBlocks, { api }) {
     ownedAssets[i].forEach(tokenStr => {
       tokenStr = ethers.utils.parseBytes32String(tokenStr)
       const token = assetToAddressMappingArbitrum[tokenStr]
-      // if (!token) return;
+      if (!token) return;
+      if (!token) {
+        console.log('Missing asset mapping for: ' + tokenStr)
+        return;
+      }
       if (!token) throw new Error('Missing asset mapping for: ' + tokenStr)
       tokensAndOwners.push([token, o])
     })
@@ -116,7 +137,7 @@ async function addTraderJoeLPs({ api, accounts }) {
   const bals = await api.multiCall({ abi: 'function balanceOf(address, uint256) view returns (uint256)', calls: calls.map(({ target, account, bin }) => ({ target, params: [account, bin] })) })
   const binBals = await api.multiCall({ abi: 'function getBin(uint24) view returns (uint128 tokenXbal,uint128 tokenYBal)', calls: calls.map(({ target, account, bin }) => ({ target, params: [bin] })) })
   const binSupplies = await api.multiCall({ abi: 'function totalSupply(uint256) view returns (uint256)', calls: calls.map(({ target, account, bin }) => ({ target, params: [bin] })) })
-  binBals.forEach(({tokenXbal, tokenYBal}, i) => {
+  binBals.forEach(({ tokenXbal, tokenYBal }, i) => {
     const { tokenX, tokenY } = pairInfos[calls[i].target]
     const ratio = bals[i] / binSupplies[i]
     api.add(tokenX, tokenXbal * ratio)
