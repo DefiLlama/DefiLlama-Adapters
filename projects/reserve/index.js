@@ -15,6 +15,8 @@ const chainConfigs = {
     deployerAddresses: [
       "0xFd6CC4F251eaE6d02f9F7B41D1e80464D3d2F377",
       "0x5c46b718Cd79F2BBA6869A3BeC13401b9a4B69bB",
+      "0x15480f5b5ed98a94e1d36b52dd20e9a35453a38e",
+      "0x43587CAA7dE69C3c2aD0fb73D4C9da67A8E35b0b",
     ],
     rsr: "0x320623b8E4fF03373931769A31Fc52A4E78B5d70",
     vault: "0xaedcfcdd80573c2a312d15d6bb9d921a01e4fb0f",
@@ -88,9 +90,15 @@ async function tvl(_time, block, _, { api, chain }) {
   const aTokenWrappers = allTokens.filter((_, i) =>
     allNames[i].startsWith("Static Aave")
   );
-  const cUsdcV3Wrapper = allTokens.find((_, i) =>
+
+  const cUsdcV3Wrappers = allTokens.filter((_, i) =>
     allNames[i].startsWith("Wrapped cUSDCv3")
   );
+
+  const morphoWrappers = allTokens.filter((_, i) =>
+    allNames[i].startsWith("Tokenised Morpho")
+  );
+
   const stargateLpWrappers = allTokens.filter((_, i) =>
     allNames[i].startsWith("Wrapped Stargate")
   );
@@ -123,13 +131,29 @@ async function tvl(_time, block, _, { api, chain }) {
     abi: api.chain === "base" ? "address:aToken" : "address:ATOKEN",
     calls: aTokenWrappers,
   });
+
+  let morphoUnderlyingTokens = await api.multiCall({
+    abi: "address:asset",
+    calls: morphoWrappers,
+  });
+
+  let morphoUnderlyingBalances = await api.multiCall({
+    abi: "uint256:totalAssets",
+    calls: morphoWrappers,
+  });
+
   blacklistedTokens.push(
     ...aTokenWrappers,
     ...stargateLpWrappers,
-    ...cTokenWrappers
+    ...cTokenWrappers,
+    ...cUsdcV3Wrappers,
+    ...morphoWrappers
   );
   cTokens.forEach((v, i) => ownerTokens.push([[v], cTokenWrappers[i]]));
   aTokens.forEach((v, i) => ownerTokens.push([[v], aTokenWrappers[i]]));
+  morphoUnderlyingTokens.forEach((v, i) =>
+    api.add(v, morphoUnderlyingBalances[i])
+  );
 
   if (stargateLpWrappers.length)
     await getStargateLpValues(
@@ -139,11 +163,10 @@ async function tvl(_time, block, _, { api, chain }) {
       wrapperBalances
     );
 
-  if (cUsdcV3Wrapper) {
-    blacklistedTokens.push(cUsdcV3Wrapper);
+  if (cUsdcV3Wrappers) {
     await getCompoundUsdcValues(
       api,
-      cUsdcV3Wrapper,
+      cUsdcV3Wrappers,
       processedWrappers,
       wrapperBalances
     );
