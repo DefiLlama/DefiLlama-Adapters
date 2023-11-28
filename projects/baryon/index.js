@@ -1,9 +1,10 @@
 const utils = require('../helper/utils');
 const { stakings, staking } = require('../helper/staking');
 const { getUniTVL } = require('../helper/unknownTokens')
+const { getConfig } = require('../helper/cache')
 
 async function fetchData(chain) {
-  const { data } = await utils.fetchURL('https://rapid.coin98.com/baryon-stake.json')
+  const data = await getConfig('baryon/staking', 'https://rapid.coin98.com/baryon-stake.json')
 
   return data[chain]
 }
