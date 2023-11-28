@@ -1,59 +1,64 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
-const { getConfig } = require('../helper/cache')
-const { sumTokens } = require("../helper/unwrapLPs");
+const { getConfig } = require("../helper/cache");
 
-const config = {
-  ethereum: {
-    bank: '0x972a785b390D05123497169a04c72dE652493BE1',
-    collaterals: [
-      ADDRESSES.ethereum.USDT,
-      ADDRESSES.ethereum.USDC,
-      ADDRESSES.ethereum.DAI,
-      ADDRESSES.ethereum.WETH,
-    ],
-    poolURL: 'https://beta-reward-xvn33y7hlq-uc.a.run.app/beta_active_eth/reward_infos'
-  },
-  avax: {
-    bank: '0xf3a82ddd4fbf49a35eccf264997f82d40510f36b',
-    collaterals: [
-      ADDRESSES.avax.USDT_e,
-      ADDRESSES.avax.USDC_e,
-      ADDRESSES.avax.DAI,
-      ADDRESSES.avax.WETH_e,
-      ADDRESSES.avax.WAVAX,
-    ],
-    poolURL: 'https://beta-reward-xvn33y7hlq-uc.a.run.app/beta_active_avax/reward_infos'
-  }
+const OMNI_LENS_ADDRESS = "0x4F003a858644E085186dfbC991E872b8B4Aac507";
+
+const GET_MARKET_ADDRESS_URL =
+  "https://omni-api-2sjjqcgcja-ew.a.run.app/market-addresses";
+
+async function getMarketAddresses(chainId = 1) {
+  const url = GET_MARKET_ADDRESS_URL + `?chainId=${chainId}`;
+  return await getConfig("beta-finance/" + chainId, url);
 }
 
-const underlyingABI = "address:underlying"
-
-async function getPools(chain) {
-  const url = config[chain].poolURL
-  return (await getConfig('beta-finance/'+chain, url)).pool_infos
-    .filter(i => i.kind === 'BetaLendHandler')
-    .map(i => i.address)
+function marketTrancheOverviewFor(output) {
+  const [
+    _trancheIndex,
+    _totalDeposit,
+    _totalBorrow,
+    _totalDepositShare,
+    _totalBorrowShare,
+    cumulativeTotalDeposit,
+    _cumulativeTotalBorrow,
+    _interestRate,
+  ] = output;
+  return { cumulativeTotalDeposit };
 }
 
-function setChainTVL(chain) {
-  module.exports[chain] = {
-    tvl: async (ts, _block, chainBlocks) => {
-      const block = chainBlocks[chain]
-      const pools = await getPools(chain)
-      const { bank, collaterals } = config[chain]
-      const calls = pools.map(i => ({ target: i }))
-      const underlyings = await sdk.api.abi.multiCall({ abi: underlyingABI, calls, block, chain })
-      const toa = underlyings.output.map(({ output, input: { target }}) => [output, target])
-      collaterals.forEach(token => toa.push([token, bank]))
-      return sumTokens({}, toa, block, chain)
-    }
-  }
+async function tvl(_, block, _2, { api }) {
+  const addresses = await getMarketAddresses();
+
+  const borrowableMarkets = await api.multiCall({
+    calls: addresses.borrowableMarkets.map((marketAddress) => ({
+      target: OMNI_LENS_ADDRESS,
+      params: [marketAddress],
+    })),
+    abi: "function getOmniMarketOverview(address) view returns (tuple(uint8, uint256, uint256, uint256, uint256, uint256, uint256, uint256)[])",
+    block,
+  });
+
+  const noBorrowMarket = await api.multiCall({
+    calls: addresses.noBorrowMarkets.map((marketAddress) => ({
+      target: OMNI_LENS_ADDRESS,
+      params: [marketAddress],
+    })),
+    abi: "function getOmniMarketNoBorrowOverview(address) view returns (tuple(uint8, uint256, uint256, uint256, uint256, uint256, uint256, uint256))",
+    block,
+  });
+
+  const cumulativeTotalDeposits = [
+    ...borrowableMarkets.map((market) => market[0]),
+    ...noBorrowMarket,
+  ].map((market) => marketTrancheOverviewFor(market).cumulativeTotalDeposit);
+
+  cumulativeTotalDeposits.map((balance, i) => {
+    api.add(addresses.underlyings[i], balance);
+  });
 }
 
 module.exports = {
   methodology:
     "TVL is comprised of tokens deposited to the protocol as collateral, similar to Compound Finance and other lending protocols the borrowed tokens are not counted as TVL.",
+  ethereum: {
+    tvl,
+  },
 };
-
-Object.keys(config).forEach(setChainTVL)
