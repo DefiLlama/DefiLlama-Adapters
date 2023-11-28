@@ -2,6 +2,8 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport, nullAddress } = require("../helper/unwrapLPs");
 const USDTpolygon = ADDRESSES.polygon.USDT;
 const USDTbsc = ADDRESSES.bsc.USDT;
+const USDCpolygon = ADDRESSES.polygon.USDC;
+const USDCbsc = ADDRESSES.bsc.USDC;
 
 const config = {
   bsc: {
@@ -28,8 +30,8 @@ const config = {
 module.exports = {};
 
 module.exports = {
-  bsc: { tvl: sumTokensExport({ chain: "bsc", owners: config.bsc.owners, tokens: [nullAddress, USDTbsc] }) },
+  bsc: { tvl: sumTokensExport({ chain: "bsc", owners: config.bsc.owners, tokens: [nullAddress, USDTbsc, USDCbsc] }) },
   polygon: {
-    tvl: sumTokensExport({ chain: "polygon", owners: config.polygon.owners, tokens: [nullAddress, USDTpolygon] }),
+    tvl: sumTokensExport({ chain: "polygon", owners: config.polygon.owners, tokens: [nullAddress, USDTpolygon, USDCpolygon] }),
   },
 };

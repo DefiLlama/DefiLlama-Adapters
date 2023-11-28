@@ -21,6 +21,7 @@ const chainConfigs = {
     rsr: "0x320623b8E4fF03373931769A31Fc52A4E78B5d70",
     vault: "0xaedcfcdd80573c2a312d15d6bb9d921a01e4fb0f",
     fromBlock: 16680995,
+    erc4626Wrapped: ["0xaa91d24c2f7dbb6487f61869cd8cd8afd5c5cab2"],
   },
   base: {
     deployerAddresses: [
@@ -34,7 +35,8 @@ const chainConfigs = {
 
 async function tvl(_time, block, _, { api, chain }) {
   const config = chainConfigs[chain];
-
+  let { erc4626Wrapped = [] } = config;
+  erc4626Wrapped = erc4626Wrapped.map((i) => i.toLowerCase());
   // Common logic for calculating TVL (only mainnet has vault)
   const ownerTokens = config.vault
     ? [
