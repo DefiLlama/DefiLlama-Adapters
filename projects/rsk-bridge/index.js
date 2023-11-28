@@ -31,6 +31,7 @@ module.exports = {
         "0x2aCc95758f8b5F583470bA265Eb685a8f45fC9D5",
       ],
       logCalls: true,
+      permitFailure: true,
     }),
   },
 };
