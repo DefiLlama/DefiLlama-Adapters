@@ -33,7 +33,7 @@ async function borrowed(ts) {
   if (graphData.pools.length > 0) {
     const poolLists = graphData.pools;
     var pools = poolLists.filter((value) => {
-      return gm == undefined && gm["depositAddress"].indexOf(value.vault) == -1;
+      return gm == undefined || gm["depositAddress"].indexOf(value.vault) == -1;
     });
     const poolConcretes = await concrete(pools, api);
     const nav = await api.multiCall({
