@@ -15,21 +15,7 @@ const vester_address = "0x13B8C03990b7d782cB9c3ebF7E2aA5Dc28f6133B"
 const lock_tft_address = "0x9b470d1d40F437cAb76ea8fC80BC3b761e96D44D"
 const lock_lp_address = "0x26854C6A28864D7E84893F45EDf366eE2494B09a"
 
-async function getSwapPool({ api }) {
-    const reserves = await api.call({ abi: getReserves_abi, target: zk_sync_swap_pool })
-    const [tft, usdc] = reserves
-    const tftAmout = BigNumber(tft)
-    const usdcAmount = BigNumber(usdc)
-    const tftPrice = usdcAmount.times(10 ** 12).div(tftAmout)
-    return [tftPrice, BigNumber(usdc).times(2), tftAmout]
-}
 
-async function pool2(_t, _, _b, { api }) {
-    const [price, usdc, tftAmout] = await getSwapPool({ api })
-    let balances = {}
-    balances = { [`era:${usdc_address}`]: usdc.toFixed(0) }
-    return balances
-}
 module.exports = {
     methodology: `We count the ETH on ${fan_contract} and ${touch_contract}`,
     misrepresentedTokens: true,
@@ -43,6 +29,8 @@ module.exports = {
             },
             coreAssets: [usdc_address]
         }),
-        pool2
+        pool2:sumTokensExport({
+            owners:[lock_lp_address],tokens:[zk_sync_swap_pool],resolveLP:true
+        })
     }
 }
