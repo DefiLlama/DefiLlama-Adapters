@@ -10,7 +10,6 @@ Object.keys(config).forEach((chain) => {
 
       let allUnderlying = await api.multiCall({
         abi: "address[]:getTokens",
-
         calls: pools,
       });
 
