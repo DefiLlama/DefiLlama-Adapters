@@ -110,6 +110,12 @@ const fixBalancesTokens = {
     '0x94e18ae7dd5ee57b55f30c4b63e2760c09efb192': { coingeckoId: 'zilliqa', decimals: 18 },
     '0x2274005778063684fbb1bfa96a2b725dc37d75f9': { coingeckoId: 'tether', decimals: 6 },
   },
+  arbitrum: {
+    '0x0000000000000000000000000000000000000001': { coingeckoId: 'ethereum', decimals: 18 },
+  },
+  linea: {
+    '0x0000000000000000000000000000000000000001': { coingeckoId: 'ethereum', decimals: 18 },
+  },
   fsc: {
     [ADDRESSES.null]: { coingeckoId: 'fonsmartchain', decimals: 18 },
     '0xb582fD9d0D5C3515EEB6b02fF2d6eE0b6E45E7A7': { coingeckoId: 'fonsmartchain', decimals: 18 },
