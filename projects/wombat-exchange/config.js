@@ -93,6 +93,17 @@ module.exports = {
       USDS: "0x20d7B9Ed2c4E2DCC55F9B463975b21bBf2A6eCd1",
     },
   },
+  optimism: {
+    wom: "0xd2612b256f6f76fea8c6fbca0bf3166d0d13a668",
+    veWom: "0xE91cfd7f8e5A5a1EA4803FcF781e1C8d6FfCa279",
+    pools: {
+      crossChainPool: "0x50a39b94B1Dc8472faa08c36a3Ef5b0A01c5BD10",
+      USDV: "0x1a023186eF2994249120CC7fAEdBEA07F40C6fbd",
+      frax: "0x6BB82A9b0b9b9716B885baeEfDBE47b685a0F919",
+      dola: "0x489818F2eeAef737105887710F7C5b9323Ad3d01",
+      frxETH: "0xB86BA65b75D34402bf377cF83b184554a18Fcafa",
+    },
+  },
   hallmarks: [
     [1662417125, "Liquidity Mining Start"],
     [1680674400, "Arbitrum Launching"],
