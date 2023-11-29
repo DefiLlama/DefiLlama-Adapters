@@ -24,7 +24,7 @@ async function getMoneyMarkets() {
    return res
 }
 
-const tvl = async (_, _1, _2, { api }) => {
+const staking = async (_, _1, _2, { api }) => {
    const moneyMarkets = await getMoneyMarkets()
    const htmTokenId = moneyMarkets.find(i => i.underlying.symbol === 'HTM').underlying.id
    const totalStaked = await call({
@@ -38,6 +38,7 @@ const tvl = async (_, _1, _2, { api }) => {
 module.exports = {
    timetravel: false,
    elrond: {
-      tvl
+      tvl: staking,
+      staking
    },
 };
