@@ -6,5 +6,6 @@ blocks.js
 historical-data.js
 /.idea
 yarn.lock
+package-lock.json
 .DS_Store
 .vscode
