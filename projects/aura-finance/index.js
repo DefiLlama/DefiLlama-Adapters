@@ -61,10 +61,11 @@ async function tvl(_, block, _1, { api }) {
 }
 
 const config = {
-  arbitrum: { factory: '0x6817149cb753bf529565b4d023d7507ed2ff4bc0', fromBlock: 72942741, voterProxy: '0xc181edc719480bd089b94647c2dc504e2700a2b0'},
-  optimism: { factory: '0xa523f47A933D5020b23629dDf689695AA94612Dc', fromBlock: 83239534, voterProxy: '0xc181edc719480bd089b94647c2dc504e2700a2b0'},
-  polygon: { factory: '0x22625eedd92c81a219a83e1dc48f88d54786b017', fromBlock: 40687417, voterProxy: '0xC181Edc719480bd089b94647c2Dc504e2700a2B0'},
-  xdai: { factory: '0x83E443EF4f9963C77bd860f94500075556668cb8', fromBlock: 27088527, voterProxy: '0xC181Edc719480bd089b94647c2Dc504e2700a2B0'},
+  base: { factory: '0xb1a4fe1c6d25a0ddab47431a92a723dd71d9021f', fromBlock: 2555348, voterProxy: '0xC181Edc719480bd089b94647c2Dc504e2700a2B0' },
+  arbitrum: { factory: '0x6817149cb753bf529565b4d023d7507ed2ff4bc0', fromBlock: 72942741, voterProxy: '0xc181edc719480bd089b94647c2dc504e2700a2b0' },
+  optimism: { factory: '0xa523f47A933D5020b23629dDf689695AA94612Dc', fromBlock: 83239534, voterProxy: '0xc181edc719480bd089b94647c2dc504e2700a2b0' },
+  polygon: { factory: '0x22625eedd92c81a219a83e1dc48f88d54786b017', fromBlock: 40687417, voterProxy: '0xC181Edc719480bd089b94647c2Dc504e2700a2B0' },
+  xdai: { factory: '0x83E443EF4f9963C77bd860f94500075556668cb8', fromBlock: 27088527, voterProxy: '0xC181Edc719480bd089b94647c2Dc504e2700a2B0' },
 }
 
 module.exports = {

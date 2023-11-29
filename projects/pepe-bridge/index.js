@@ -23,6 +23,7 @@ const config = {
         ADDRESSES.ethereum.CRV,
         ADDRESSES.ethereum.UNI,
         ADDRESSES.ethereum.MKR,
+        ADDRESSES.ethereum.LINK,
       ],
       '0x0de7b091A21BD439bdB2DfbB63146D9cEa21Ea83'
     ]
@@ -62,7 +63,7 @@ const config = {
 module.exports = {};
 
 Object.keys(config).forEach(chain => {
-  module.exports[chain] = { tvl: sumTokensExport({ ownerTokens: config[chain] }) }
+  module.exports[chain] = { tvl: sumTokensExport({ ownerTokens: config[chain], logCalls: true }) }
 })
 module.exports.waves = { tvl: wavesTVL }
 
