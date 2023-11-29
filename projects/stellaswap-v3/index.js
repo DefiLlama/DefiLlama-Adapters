@@ -1,9 +1,19 @@
-const { uniV3Export } = require("../helper/uniswapV3");
+const { cachedGraphQuery } = require('../helper/cache')
+const { toUSDTBalances } = require('../helper/balances')
 
-module.exports = uniV3Export({
+const SUBGRAPH_URL = "https://api.thegraph.com/subgraphs/name/stellaswap/pulsar"
+
+async function tvl(_, _b, _cb, { api, }) {
+  const { factories } = await cachedGraphQuery('stellaswap-v3/' + api.chain, SUBGRAPH_URL, `{
+    factories {
+      totalValueLockedUSD
+    },
+  }`)
+  return toUSDTBalances(factories?.[0]?.totalValueLockedUSD)
+}
+
+module.exports = {
   moonbeam: {
-    factory: "0xabe1655110112d0e45ef91e94f8d757e4ddba59c",
-    fromBlock: 2649801,
-    isAlgebra: true,
-  },
-});
+    tvl: tvl
+  }
+}
