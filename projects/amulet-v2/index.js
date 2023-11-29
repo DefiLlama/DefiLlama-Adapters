@@ -95,7 +95,6 @@ const getERC4626IdleVaultFundsByChain = async (api, chain, block) => {
         }
     })
 
-    trancheTokensMapping
     const vaults = erc4626VaultsIdle[chain];
     const vaultCalls = vaults.map((v) => ({ target: v.Vault }));
     const [_vaultAssets, _totalVaultFunds] = await Promise.all([
