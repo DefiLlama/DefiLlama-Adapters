@@ -21,8 +21,14 @@ const COLLATERALS = {
 }
 
 const GAI_TOKEN_ADDRESS = "0xcd91716ef98798A85E79048B78287B13ae6b99b2"
-const GOK_TOKEN_ADDRESS = "0x387660bc95682587efc12c543c987abf0fb9778f"
+const GAI_STAKES = {
+  USDC: "0xC5392Be704A4654444CcEE4A8407cbF4A0ed5F2A",
+  USDT: "0x000aF1623BeCcd809c51cD2440cc8E1B55D191b4",
+  TIA: "0x333E6492B5c2eAfAFCB709c5914D53b01C640b33",
+  WETH: "0x5E9924f545Ed8116b1Ae4315653e1b0E52a2bfc4",
+}
 
+const GOK_TOKEN_ADDRESS = "0x387660bc95682587efc12c543c987abf0fb9778f"
 const GOK_STAKES = {
   USDC: "0x60e47C06E3999c1Ef8bC5A424FCd665925CB0FB1",
   USDT: "0x1343804D5936EA6E98988F27870b913b1c93081e",
@@ -45,6 +51,6 @@ module.exports = {
   methodology: "Total locked collateral assets (in ERC-20 form) in ActivePool and DefaultPool, plus total staked GAI in StabilityPool",
   manta: {
     tvl,
-    staking: sumTokensExport({ owners: Object.values(GOK_STAKES), tokens: [GOK_TOKEN_ADDRESS], }),
+    staking: sumTokensExport({ owners: [...Object.values(GOK_STAKES), ...(Object.values(GAI_STAKES))],  tokens: [GOK_TOKEN_ADDRESS, GAI_TOKEN_ADDRESS]}),
   },
 };
