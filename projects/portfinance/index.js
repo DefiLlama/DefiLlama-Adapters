@@ -1,18 +1,19 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/solana')
 
 async function tvl() {
 
   const tokensAndOwners = [
     /// Main Pool
-    ["EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "8x2uay8UgrLiX8AAYyF6AkK9z91nNtN6aLwfqPkf6TAQ"],
-    ["Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", "8x2uay8UgrLiX8AAYyF6AkK9z91nNtN6aLwfqPkf6TAQ"],
-    ["So11111111111111111111111111111111111111112", "8x2uay8UgrLiX8AAYyF6AkK9z91nNtN6aLwfqPkf6TAQ"],
+    [ADDRESSES.solana.USDC, "8x2uay8UgrLiX8AAYyF6AkK9z91nNtN6aLwfqPkf6TAQ"],
+    [ADDRESSES.solana.USDT, "8x2uay8UgrLiX8AAYyF6AkK9z91nNtN6aLwfqPkf6TAQ"],
+    [ADDRESSES.solana.SOL, "8x2uay8UgrLiX8AAYyF6AkK9z91nNtN6aLwfqPkf6TAQ"],
     ["Ea5SjE2Y6yvCeW5dYTn7PYMuW5ikXkvbGdcmSnXeaLjS", "8x2uay8UgrLiX8AAYyF6AkK9z91nNtN6aLwfqPkf6TAQ"],
     ["MERt85fc5boKw3BW1eYdxonEuJNvXbiMbs6hvheau5K", "8x2uay8UgrLiX8AAYyF6AkK9z91nNtN6aLwfqPkf6TAQ"],
     ["9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E", "8x2uay8UgrLiX8AAYyF6AkK9z91nNtN6aLwfqPkf6TAQ"],
     ["SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt", "8x2uay8UgrLiX8AAYyF6AkK9z91nNtN6aLwfqPkf6TAQ"],
     ["mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So", "8x2uay8UgrLiX8AAYyF6AkK9z91nNtN6aLwfqPkf6TAQ"],
-    ["9EaLkQrbjmbbuZG9Wdpo8qfNUEjHATJFSycEmw6f1rGX", "8x2uay8UgrLiX8AAYyF6AkK9z91nNtN6aLwfqPkf6TAQ"],
+    [ADDRESSES.solana.pSOL, "8x2uay8UgrLiX8AAYyF6AkK9z91nNtN6aLwfqPkf6TAQ"],
     ["Saber2gLauYim4Mvftnrasomsv6NvAuncvMEZwcLpD1", "8x2uay8UgrLiX8AAYyF6AkK9z91nNtN6aLwfqPkf6TAQ"],
     ["2poo1w1DL6yd2WNTCnNTzDqkC6MBXq7axo77P16yrBuf", "8x2uay8UgrLiX8AAYyF6AkK9z91nNtN6aLwfqPkf6TAQ"],
     ["9vMJfxuKxXBoEa7rM12mYLMwTacLMLDJqHozw96WQL8i", "8x2uay8UgrLiX8AAYyF6AkK9z91nNtN6aLwfqPkf6TAQ"],
@@ -25,19 +26,19 @@ async function tvl() {
     ["mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So", "GU1nCjN7mcLiSX1dtBw2t9agYCw3ybXfu1me41Q2tGT3"],
     ["Ea5SjE2Y6yvCeW5dYTn7PYMuW5ikXkvbGdcmSnXeaLjS", "GU1nCjN7mcLiSX1dtBw2t9agYCw3ybXfu1me41Q2tGT3"],
     ["9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E", "GU1nCjN7mcLiSX1dtBw2t9agYCw3ybXfu1me41Q2tGT3"],
-    ["So11111111111111111111111111111111111111112", "GU1nCjN7mcLiSX1dtBw2t9agYCw3ybXfu1me41Q2tGT3"],
+    [ADDRESSES.solana.SOL, "GU1nCjN7mcLiSX1dtBw2t9agYCw3ybXfu1me41Q2tGT3"],
 
     /// UXD Innovation Zone
     ["7kbnvuGBxxj8AG9qp8Scn56muWGaRaFqxg1FsRp3PaFT", "Hy6gCkJyMmWMaoxLyzELRReLzdBdZ1YEjNGjQzF9LDPa"],
-    ["EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "Hy6gCkJyMmWMaoxLyzELRReLzdBdZ1YEjNGjQzF9LDPa"],
-    ["Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", "Hy6gCkJyMmWMaoxLyzELRReLzdBdZ1YEjNGjQzF9LDPa"],
-    ["So11111111111111111111111111111111111111112", "Hy6gCkJyMmWMaoxLyzELRReLzdBdZ1YEjNGjQzF9LDPa"],
+    [ADDRESSES.solana.USDC, "Hy6gCkJyMmWMaoxLyzELRReLzdBdZ1YEjNGjQzF9LDPa"],
+    [ADDRESSES.solana.USDT, "Hy6gCkJyMmWMaoxLyzELRReLzdBdZ1YEjNGjQzF9LDPa"],
+    [ADDRESSES.solana.SOL, "Hy6gCkJyMmWMaoxLyzELRReLzdBdZ1YEjNGjQzF9LDPa"],
     ["mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So", "Hy6gCkJyMmWMaoxLyzELRReLzdBdZ1YEjNGjQzF9LDPa"],
 
     /// Hedge Innovation Zone
     ["9iLH8T7zoWhY7sBmj1WK9ENbWdS1nL8n9wAxaeRitTa6", "4bf5HQQZ9qtGGCuxYNnhiTrKpTMTX6HSoLy5a7wUjCEb"],
     ["9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E", "4bf5HQQZ9qtGGCuxYNnhiTrKpTMTX6HSoLy5a7wUjCEb"],
-    ["So11111111111111111111111111111111111111112", "4bf5HQQZ9qtGGCuxYNnhiTrKpTMTX6HSoLy5a7wUjCEb"],
+    [ADDRESSES.solana.SOL, "4bf5HQQZ9qtGGCuxYNnhiTrKpTMTX6HSoLy5a7wUjCEb"],
     ["mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So", "4bf5HQQZ9qtGGCuxYNnhiTrKpTMTX6HSoLy5a7wUjCEb"],
 
   ]

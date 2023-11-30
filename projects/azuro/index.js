@@ -1,12 +1,15 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const config = {
   polygon: {
     owners: [
       '0x2a838ab9b037db117576db8d0dcc3b686748ef7c',
+      '0x7043E4e1c4045424858ECBCED80989FeAfC11B36',
     ],
     tokens: [
-      '0x2791bca1f2de4661ed88a30c99a7a9449aa84174', // USDC
+      ADDRESSES.polygon.USDC,
+      ADDRESSES.polygon.USDT,
     ],
   },
   xdai: {
@@ -15,7 +18,7 @@ const config = {
       '0x204e7371Ade792c5C006fb52711c50a7efC843ed', // v2
     ],
     tokens: [
-      '0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d', // WXDAI
+      ADDRESSES.xdai.WXDAI, // WXDAI
     ],
   },
 }

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress } = require("../helper/treasury");
 const {
   unwrapUniswapV3NFTs,
@@ -13,15 +14,15 @@ const POOL = "0x0cEC1A9154Ff802e7934Fc916Ed7Ca50bDE6844e";
 
 const tokens = [
   nullAddress,
-  "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", //USDC
-  "0x6B175474E89094C44Da98b954EedeAC495271d0F", //DAI
+  ADDRESSES.ethereum.USDC, //USDC
+  ADDRESSES.ethereum.DAI, //DAI
   "0x028171bCA77440897B824Ca71D1c56caC55b68A3", //aDAI
-  "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", //WETH
-  "0xdAC17F958D2ee523a2206206994597C13D831ec7", //USDT
+  ADDRESSES.ethereum.WETH, //WETH
+  ADDRESSES.ethereum.USDT, //USDT
   "0xDe30da39c46104798bB5aA3fe8B9e0e1F348163F", //GTC
   "0x4da27a545c0c5B758a6BA100e3a049001de870f5", //stkAAVE
   "0xdd4d117723C257CEe402285D3aCF218E9A8236E1", // ptausdc
-  "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84", // stETH
+  ADDRESSES.ethereum.STETH, // stETH
   "0xD5f60154BEf3564EbFBe9bB236595f0da548a742", // spethwin
 ];
 
@@ -51,7 +52,7 @@ module.exports = {
     tvl: sumTokensExport({
       tokens: [
         nullAddress,
-        "0x4200000000000000000000000000000000000042", // OP
+        ADDRESSES.optimism.OP, // OP
       ],
       owners: [optreasury],
     }),

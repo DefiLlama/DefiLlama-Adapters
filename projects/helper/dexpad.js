@@ -1,3 +1,4 @@
+const ADDRESSES = require('./coreAssets.json')
 const BigNumber = require("bignumber.js");
 const sdk = require("@defillama/sdk");
 
@@ -102,7 +103,7 @@ async function generateWhitelistedPairs(trackedTokens, factory, block, chain) {
     basePairs.forEach(pair => {
       if (pair.success) {
         const basePair = pair.output.toLowerCase();
-        if (basePair != "0x0000000000000000000000000000000000000000")
+        if (basePair != ADDRESSES.null)
           whitelistedBasePairs.add(basePair);
       }
     });

@@ -122,6 +122,9 @@ const tvl = async (timestamp, block) => {
 };
 
 module.exports = {
+  hallmarks:[
+    [1666569600, "LM begins"],
+  ],
   ethereum: {
     tvl,
   },

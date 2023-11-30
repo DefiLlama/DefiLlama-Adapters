@@ -1,3 +1,4 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const { getUniTVL } = require('./helper/unknownTokens')
 const { staking } = require('./helper/staking')
 const sdk = require('@defillama/sdk')
@@ -49,7 +50,7 @@ module.exports = {
   misrepresentedTokens: true,
   moonbeam: {
     tvl: sdk.util.sumChainTvls([dexTVL, stablePoolTVL]),
-    staking: staking('0x06A3b410b681c82417A906993aCeFb91bAB6A080', '0x0E358838ce72d5e61E0018a2ffaC4bEC5F4c88d2', 'moonbeam')
+    staking: staking('0x06A3b410b681c82417A906993aCeFb91bAB6A080', ADDRESSES.moonbeam.STELLA, 'moonbeam')
   }
 }
 

@@ -22,11 +22,11 @@ function tvl(chain) {
 }
 
 module.exports = {
-  timetravel: true,
-  incentivized: true,
-  misrepresentedTokens: true,
   metis: {
     tvl: sdk.util.sumChainTvls([drachmaTvl, tvl("metis")]),
     borrowed: drachmaBorrowed,
   },
 };
+
+
+module.exports.metis = { tvl: tvl("metis") }

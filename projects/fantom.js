@@ -1,3 +1,4 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const { get } = require('./helper/http')
 const { GraphQLClient,  } = require("graphql-request");
 const BigNumber = require("bignumber.js");
@@ -22,7 +23,7 @@ async function fetch() {
 
   var tokens = [
     {
-      address: "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
+      address: ADDRESSES.fantom.WFTM,
       symbol: "WFTM",
     },
     {

@@ -1,13 +1,14 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { ohmTvl } = require('../helper/ohm')
 
 const transforms = {
-    "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e": "0x6b175474e89094c44da98b954eedeac495271d0f", // DAI
+    [ADDRESSES.fantom.DAI]: ADDRESSES.ethereum.DAI, // DAI
 }
 
 const treasury = "0x6e273a49Ba8F77d03C0CF5a190f226DcA7D46E9F"
 module.exports = ohmTvl(treasury, [
     //DAI
-    ["0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e", false],
+    [ADDRESSES.fantom.DAI, false],
     //spirit LP
     ["0x9026711a2097252a198e6602a052117eaa5f3cab", true],
     //spirit LP 

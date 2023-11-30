@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getUniTVL } = require('../helper/unknownTokens')
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
@@ -51,13 +52,13 @@ const stableSwapPools = {
 
 const stableSwapTokens = {
   USDC: {
-    address: '0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D',
+    address: ADDRESSES.moonriver.USDC,
     decimals: 6,
     symbol: 'USDC',
     gecko: 'usd-coin'
   },
   USDT: {
-    address: '0xB44a9B6905aF7c801311e8F4E76932ee959c663C',
+    address: ADDRESSES.moonriver.USDT,
     decimals: 6,
     symbol: 'USDT',
     gecko: 'tether'
@@ -113,7 +114,7 @@ const stableSwapTokens = {
   WBTC: {
     symbol: 'WBTC',
     name: 'Wrapped BTC',
-    address: '0x6aB6d61428fde76768D7b45D8BFeec19c6eF91A8',
+    address: ADDRESSES.oasis.USDT,
     decimals: 8,
     gecko: 'bitcoin'
   }
@@ -168,9 +169,9 @@ const dexTVL = getUniTVL({
   coreAssets: [
     '0xf50225a84382c74CbdeA10b0c176f71fc3DE0C4d', // moonriver
     "0x98878B06940aE243284CA214f92Bb71a2b032B8A", // WMOVR
-    // "0xb44a9b6905af7c801311e8f4e76932ee959c663c", // usdt
-    "0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d", // usdc
-    "0x639a647fbe20b6c8ac19e48e2de44ea792c62c5c", // eth
+    // ADDRESSES.moonriver.USDT, // usdt
+    ADDRESSES.moonriver.USDC, // usdc
+    ADDRESSES.moonriver.ETH, // eth
   ]
 })
 

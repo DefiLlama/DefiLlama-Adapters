@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require('../helper/staking');
 const { pool2s } = require('../helper/pool2');
 const {sumTokensAndLPsSharedOwners} = require('../helper/unwrapLPs');
@@ -20,12 +21,12 @@ const luchaMustStk = "0xe11f861dD5cE8407bb24dFD13b9710c0295276D6";
 
 // ERC20
 const LUCHA_polygon = "0x6749441Fdc8650b5b5a854ed255C82EF361f1596";
-const MATIC_polygon = "0x0000000000000000000000000000000000001010";
+const MATIC_polygon = ADDRESSES.polygon.WMATIC_1;
 const QI_polygon = "0x580A84C73811E1839F75d86d75d88cCa0c241fF4";
 const MUST_polygon = "0x9C78EE466D6Cb57A4d01Fd887D2b5dFb2D46288f";
 const PSP_polygon = "0x42d61D766B85431666B39B89C43011f24451bFf6";
 const LINK_polygon = "0x53e0bca35ec356bd5dddfebbd1fc0fd03fabad39";
-const WETH_polygon = "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619";
+const WETH_polygon = ADDRESSES.polygon.WETH_1;
 const WMATIC_LUCHA_Balancer_polygon = "0x924EC7ed38080E40396c46F6206A6d77D0B9f72d";
 
 async function tvl(time, ethBlock, chainBlocks){

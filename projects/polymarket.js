@@ -1,3 +1,4 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { request,  } = require("graphql-request");
 const { BigNumber } = require("bignumber.js");
@@ -75,7 +76,7 @@ async function getMarketsLiquidity_graphql(timestamp, block, chainBlocks) {
 // const polymarket_api_url = 'https://strapi-matic.poly.market/markets?_limit=-1&_sort=closed_time:desc' // &active=true
 
 const conditionalTokensContract = '0x4D97DCd97eC945f40cF65F87097ACe5EA0476045'
-const polygonUsdcContract = '0x2791bca1f2de4661ed88a30c99a7a9449aa84174'
+const polygonUsdcContract = ADDRESSES.polygon.USDC
 
 async function polygon(timestamp, block, chainBlocks) {
   // Get markets liquidity using API

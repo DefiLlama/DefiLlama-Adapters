@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 // proxy contract:
 //     https://github.com/nomad-xyz/config/blob/main/production.json
 // token holdings:
@@ -20,15 +21,15 @@ const TOKEN_ADDRESSES = [
   },
   {
     // USDC
-    'ethereum': '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
+    'ethereum': ADDRESSES.ethereum.USDC
   },
   {
     // DAI
-    'ethereum': '0x6B175474E89094C44Da98b954EedeAC495271d0F'
+    'ethereum': ADDRESSES.ethereum.DAI
   },
   {
     // USDT
-    'ethereum': '0xdAC17F958D2ee523a2206206994597C13D831ec7'
+    'ethereum': ADDRESSES.ethereum.USDT
   },
   {
     // FXS
@@ -36,11 +37,11 @@ const TOKEN_ADDRESSES = [
   },
   {
     // WETH
-    'ethereum': '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
+    'ethereum': ADDRESSES.ethereum.WETH
   },
   {
     // WBTC
-    'ethereum': '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599'
+    'ethereum': ADDRESSES.ethereum.WBTC
   },
   {
     // IAG

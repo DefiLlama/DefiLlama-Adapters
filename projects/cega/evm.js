@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const abi = require("./abi.json");
 
 const maxLeverage = 5;
 const LOV_SUFFIX = "-lov";
 const CEGA_STATE = "0x0730AA138062D8Cc54510aa939b533ba7c30f26B";
 const CEGA_PRODUCT_VIEWER = "0x31C73c07Dbd8d026684950b17dD6131eA9BAf2C4";
-const usdcAddress = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
+const usdcAddress = ADDRESSES.ethereum.USDC;
 
 // Funds are not lent out 
 const FCN_PURE_OPTIONS_ADDRESSES = [

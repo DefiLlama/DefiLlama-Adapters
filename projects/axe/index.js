@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const { staking } = require("../helper/staking.js");
 
 const treasuryAddresses = ["0xa2039621Cc042567092fAaee89B03Ef959F89712"];
-const DAI = "0x6b175474e89094c44da98b954eedeac495271d0f";
-const USDC = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
+const DAI = ADDRESSES.ethereum.DAI;
+const USDC = ADDRESSES.ethereum.USDC;
 const AXEStaking = "0x7f4d186b76a39a2da32804a8c35b3d04e0e174fd";
 const AXE = "0x30AC8317DfB0ab4263CD8dB1C4F10749911B126C";
 

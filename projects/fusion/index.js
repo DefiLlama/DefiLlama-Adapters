@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 // Set Helpers
 
 const { stakings } = require("../helper/staking");
@@ -7,7 +8,7 @@ const { mergeExports } = require("../helper/utils");
 
 // Set NULL, Factories
 
-const nullAddress = "0x0000000000000000000000000000000000000000";
+const nullAddress = ADDRESSES.null;
 const dexFactory = "0x9550b0c83AD5a58898cD4267987Af67e7E52bF55"; // 87, 250
 const dexFactoryClassic = "0x9fAEd210e14F95a15b89C0D09D1a55519aC2F26d"; // 61
 
@@ -19,8 +20,8 @@ const sntClassic = "0x5D33f65Cc32CAB4065074E8fb1c08Df727e7F7cB"; // 61
 
 // Set NUSD Addresses
 
-const nusdNovaNetwork = "0x1F5396f254EE25377A5C1b9c6BfF5f44e9294fFF"; // 87
-const nusdFantom = "0xC5cd01e988cD0794E05ab80F2BCdbDF13cE08BD3"; // 250
+const nusdNovaNetwork = ADDRESSES.nova.NUSD; // 87
+const nusdFantom = ADDRESSES.fantom.nUSD; // 250
 const nusdClassic = "0xab1E9D7551c1B161cedf96AeaC66b95bc5cCd7d4"; // 61
 
 // Set Staking Protocols

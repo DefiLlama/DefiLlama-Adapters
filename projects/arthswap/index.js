@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getUniTVL } = require("../helper/unknownTokens");
 const { stakingPricedLP } = require("../helper/staking");
 
 const FACTORIES = "0xA9473608514457b4bF083f9045fA63ae5810A03E";
 
 const TOKENS = {
-  ARSW: "0xDe2578Edec4669BA7F41c5d5D2386300bcEA4678",
+  ARSW: ADDRESSES.astar.ARSW,
 };
 
 const STAKING_CONTRACTS = {

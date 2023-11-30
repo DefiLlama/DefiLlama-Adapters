@@ -1,7 +1,7 @@
 const contracts = require("./contracts");
 const { staking } = require('../helper/staking')
 const { getLogs } = require('../helper/cache/getLogs')
-
+const steth = "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84";
 const config = {
   ethereum: { factory: '0x27b1dacd74688af24a64bd3c9c1b143118740784', fromBlock: 16032059 },
   arbitrum: { factory: '0xf5a7de2d276dbda3eef1b62a9e718eff4d29ddc8', fromBlock: 62979673 },
@@ -39,7 +39,13 @@ Object.keys(config).forEach(chain => {
         let value = supply[i] * (10 ** (v.decimals - decimals[i]))
         api.add(v.uAsset, value)
       })
-      return api.getBalances()
+      let balances = api.getBalances();
+      const bridged = `arbitrum:${steth}`;
+      if (bridged in balances) {
+        balances[steth] = balances[bridged];
+        delete balances[bridged];
+      }
+      return balances;
     }
   }
 })

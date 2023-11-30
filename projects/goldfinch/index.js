@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { sumTokens } = require("../helper/unwrapLPs");
 const abi = require("./abi.json");
@@ -8,7 +9,7 @@ const seniorPoolAddress = "0x8481a6EbAf5c7DABc3F7e09e44A89531fd31F822";
 const gfFactoryAddress = "0xd20508E1E971b80EE172c73517905bfFfcBD87f9";
 const poolTokensAddress = "0x57686612C601Cb5213b01AA8e80AfEb24BBd01df";
 const V2_START = 13097274;
-const USDC = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
+const USDC = ADDRESSES.ethereum.USDC;
 let _trancheAddresses
 
 const getTranchedPoolAddresses = async (api) => {

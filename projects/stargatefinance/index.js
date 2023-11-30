@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const abi = require("./abi.json")
 const { nullAddress, sumTokens2, } = require('../helper/unwrapLPs')
 
@@ -35,7 +36,7 @@ module.exports = {
   goerli:{
     tvl: async (_, _b, _cb, { api, })=>{
       return {
-        "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2": await api.call({ abi: 'erc20:balanceOf', target: "0xdD69DB25F6D620A7baD3023c5d32761D353D3De9", params:["0x88124ef4a9ec47e691f254f2e8e348fd1e341e9b"] }) 
+        [ADDRESSES.ethereum.WETH]: await api.call({ abi: 'erc20:balanceOf', target: "0xdD69DB25F6D620A7baD3023c5d32761D353D3De9", params:["0x88124ef4a9ec47e691f254f2e8e348fd1e341e9b"] }) 
       }
     }
   }

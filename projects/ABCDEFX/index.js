@@ -7,5 +7,5 @@ module.exports = {
 };
 
 chains.forEach(chain => {
-  module.exports[chain] = { tvl: getUniTVL({ factory: '0x01F43D2A7F4554468f77e06757e707150e39130c', useDefaultCoreAssets: true, }) }
+  module.exports[chain] = { tvl: getUniTVL({ factory: '0x01F43D2A7F4554468f77e06757e707150e39130c', useDefaultCoreAssets: true, hasStablePools: true, stablePoolSymbol: 'ABcDeFx.LP' }) }
 })

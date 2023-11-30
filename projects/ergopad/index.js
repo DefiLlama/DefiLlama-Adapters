@@ -9,7 +9,7 @@ async function staking() {
 }
 
 async function getErgopadPrice() {
-  const { data: { lockedX, lockedY, } } = await utils.fetchURL('https://api.ergodex.io/v1/amm/pool/d7868533f26db1b1728c1f85c2326a3c0327b57ddab14e41a2b77a5d4c20f4b2/stats');
+  const { data: { lockedX, lockedY, } } = await utils.fetchURL('https://api.spectrum.fi/v1/amm/pool/d7868533f26db1b1728c1f85c2326a3c0327b57ddab14e41a2b77a5d4c20f4b2/stats');
   let ergQuantity, padQunatity
 
   const ergId = '0000000000000000000000000000000000000000000000000000000000000000'

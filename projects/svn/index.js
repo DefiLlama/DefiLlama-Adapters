@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { stakingPricedLP } = require("../helper/staking");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
@@ -5,7 +6,7 @@ const token0Abi = 'address:token0'
 const token1Abi = 'address:token1'
 const { default: BigNumber } = require("bignumber.js");
 
-let token = "0x654bAc3eC77d6dB497892478f854cF6e8245DcA9";
+let token = ADDRESSES.cronos.SVN;
 let share = "0xf8b9facB7B4410F5703Eb29093302f2933D6E1Aa";
 const rewardPool = "0xA51054BDf0910E3cE9B233e6B5BdDc0931b2E2ED";
 const masonry = "0x2CcbFD9598116cdF9B94fF734ece9dCaF4c9d471";
@@ -93,7 +94,7 @@ async function tvl(timestamp, block, chainBlocks) {
 		"cronos",
 		(addr) => `cronos:${addr}`
 	);
-    delete balances['cronos:0x654bac3ec77d6db497892478f854cf6e8245dca9'];
+    delete balances['cronos:' + ADDRESSES.cronos.SVN];
 
     return balances;
 }

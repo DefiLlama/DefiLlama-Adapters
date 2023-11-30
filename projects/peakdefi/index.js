@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { staking } = require('../helper/staking');
@@ -5,7 +6,7 @@ const { staking } = require('../helper/staking');
 const peakAddress = '0x630d98424eFe0Ea27fB1b3Ab7741907DFFEaAd78'
 
 const tokens = [
-  '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+  ADDRESSES.ethereum.USDC,
 ]
 
 const funds = {

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const gatewayAbi = require("./gateway.abi.json");
@@ -91,7 +92,7 @@ async function tvl(_, block) {
   const combinedETHBalances =
     parseInt(ethBalanceGateway) + parseInt(ethBalanceOrderbook);
 
-  balances["0x0000000000000000000000000000000000000000"] = combinedETHBalances.toFixed(0);
+  balances[ADDRESSES.null] = combinedETHBalances.toFixed(0);
   
   return balances;
 }

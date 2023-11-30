@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi");
 const {
@@ -10,7 +11,7 @@ const fusePoolLensAddress = {
   fantom: "0x5aB6215AB8344C28B899efdE93BEe47B124200Fb",
 };
 
-const WETH = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
+const WETH = ADDRESSES.ethereum.WETH;
 
 async function getFusePools(
   timestamp,
@@ -80,7 +81,7 @@ module.exports = {
     borrowed: polygonBorrowed,
   },
   fantom: {
-    tvl: fantomTvl,
-    borrowed: fantomBorrowed,
+    tvl: () => ({}),
+    borrowed: () => ({}),
   },
 };

@@ -1,25 +1,24 @@
-
-const { getLogs, getAddress } = require('../helper/cache/getLogs')
 const { transformBalances } = require('../helper/portedTokens')
 const sdk = require('@defillama/sdk')
 
+const GYRO_POOL_ADDRESSES = [
+  "0x17f1ef81707811ea15d9ee7c741179bbe2a63887",
+  "0x97469e6236bd467cd147065f77752b00efadce8a",
+  "0xdac42eeb17758daa38caf9a3540c808247527ae3",
+  "0xf0ad209e2e969eaaa8c882aac71f02d8a047d5c2",
+  "0xfa9ee04a5545d8e0a26b30f5ca5cbecd75ea645f"
+]
+
 async function tvl(_, _b, _cb, { api, }) {
   const balances = {}
-  const logs = await getLogs({
-    api,
-    target: '0x90f08b3705208e41dbeeb37a42fb628dd483adda',
-    topics: ['0x83a48fbcfc991335314e74d0496aab6a1987e992ddc85dddbcc4d6dd6ef2e9fc'],
-    fromBlock: 31556094,
-  })
 
-  const pools = logs.map(i => getAddress(i.topics[1]))
   const poolIds = await api.multiCall({
     abi: 'function getPoolId() view returns (bytes32)',
-    calls: pools,
+    calls: GYRO_POOL_ADDRESSES,
   })
 
   const vault = await api.call({
-    target: pools[0],
+    target: GYRO_POOL_ADDRESSES[0],
     abi: 'address:getVault',
   })
   const data = await api.multiCall({

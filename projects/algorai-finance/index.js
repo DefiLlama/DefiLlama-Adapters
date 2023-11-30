@@ -22,7 +22,6 @@ async function tvl() {
   return balances
 }
 
-
 module.exports = {
   timetravel: false,
   algorand: {

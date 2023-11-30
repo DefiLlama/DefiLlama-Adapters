@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, treasuryExports, } = require("../helper/treasury");
 const sdk = require('@defillama/sdk')
 
@@ -16,14 +17,14 @@ module.exports = treasuryExports({
   ethereum: {
     tokens: [
       nullAddress,
-      '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',//USDC
+      ADDRESSES.ethereum.USDC,//USDC
       '0x55c08ca52497e2f1534b59e2917bf524d4765257', // uwu
-      '0xFEEf77d3f69374f66429C91d732A244f074bdf74', // cvxFXS
+      ADDRESSES.ethereum.cvxFXS, // cvxFXS
       '0x3E04863DBa602713Bb5d0edbf7DB7C3A9A2B6027', // SLP
-      '0x6B175474E89094C44Da98b954EedeAC495271d0F',//DAI
+      ADDRESSES.ethereum.DAI,//DAI
       '0x028171bCA77440897B824Ca71D1c56caC55b68A3',//aDAI
-      '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',//WETH
-      '0xdAC17F958D2ee523a2206206994597C13D831ec7',//USDT
+      ADDRESSES.ethereum.WETH,//WETH
+      ADDRESSES.ethereum.USDT,//USDT
       '0xFcF8eda095e37A41e002E266DaAD7efC1579bc0A',//flex
       '0xdB25f211AB05b1c97D595516F45794528a807ad8',//eurs
       '0xAf5191B0De278C7286d6C7CC6ab6BB8A73bA2Cd6',//stg
@@ -46,11 +47,11 @@ module.exports = treasuryExports({
   avax: {
     tokens: [
       nullAddress,
-      "0xc7198437980c041c805A1EDcbA50c1Ce5db95118",//usdte
+      ADDRESSES.avax.USDT_e,//usdte
       "0x39fC9e94Caeacb435842FADeDeCB783589F50f5f",//knc
       "0x63682bdc5f875e9bf69e201550658492c9763f89",//bsgg
-      "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",//USDC
-      "0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664",//USDC.e
+      ADDRESSES.avax.USDC,//USDC
+      ADDRESSES.avax.USDC_e,//USDC.e
       "0x9e295b5b976a184b14ad8cd72413ad846c299660",//fsGLP
     ],
     owners: treasuries,
@@ -59,8 +60,8 @@ module.exports = treasuryExports({
   arbitrum: {
     tokens: [
       nullAddress,
-      "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",//weth
-      "0xfc5A1A6EB076a2C7aD06eD22C90d7E710E35ad0a",//gmx
+      ADDRESSES.arbitrum.WETH,//weth
+      ADDRESSES.arbitrum.GMX,//gmx
       "0xd2D1162512F927a7e282Ef43a362659E4F2a728F",//sbfGMX
     ],
     owners: treasuries
@@ -75,7 +76,7 @@ module.exports = treasuryExports({
   bsc: {
     tokens: [
       nullAddress,
-      "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",//USDC
+      ADDRESSES.bsc.USDC,//USDC
     ],
     owners: treasuries
   },
@@ -88,9 +89,9 @@ module.exports = treasuryExports({
   optimism: {
     tokens: [
       nullAddress,
-      "0xdfa46478f9e5ea86d57387849598dbfb2e964b02",//MAI
-      "0x4200000000000000000000000000000000000006",//WETH
-      "0x94b008aa00579c1307b0ef2c499ad98a8ce58e58",//USDT
+      ADDRESSES.moonbeam.MAI,//MAI
+      ADDRESSES.tombchain.FTM,//WETH
+      ADDRESSES.optimism.USDT,//USDT
     ],
     owners: treasuries
   }

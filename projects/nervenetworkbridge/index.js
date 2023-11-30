@@ -1,5 +1,4 @@
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
-const { sumTokens: sumTronTokens } = require('../helper/chain/tron');
 const sdk = require("@defillama/sdk");
 const { getConfig } = require('../helper/cache')
 const { get } = require('../helper/http')
@@ -56,6 +55,7 @@ async function tvl(_, _b, _cb, { api, }) {
 }
 
 async function tronTvl() {
+  const { api } = arguments[3]
   let conf = await getTokensConf();
   const tokens = conf['tron'];
   const tokenKeys = Object.keys(conf['tron'])
@@ -66,7 +66,7 @@ async function tronTvl() {
       tokens1.push(token)
     }
   }
-  return sumTronTokens({ owner: tronBridgeContract, tokens: [nullAddress, ...tokens1] })
+  return sumTokens2({ api, owner: tronBridgeContract, tokens: [nullAddress, ...tokens1] })
 }
 
 module.exports = {

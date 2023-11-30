@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const axios = require('axios');
 const { unwrapUniswapLPs } = require('../helper/unwrapLPs');
@@ -11,9 +12,9 @@ function getBSCAddress(address) {
 
 // list of missing tokens
 const replaceable = {
-  "0x049d68029688eAbF473097a2fC38ef61633A3C7A": "0xdac17f958d2ee523a2206206994597c13d831ec7", //fUSDT -> USDT
+  [ADDRESSES.fantom.fUSDT]: ADDRESSES.ethereum.USDT, //fUSDT -> USDT
   '0xeD28A457A5A76596ac48d87C0f577020F6Ea1c4C': '0x5228a22e72ccc52d415ecfd199f99d0665e7733b', //pBTC -> pBTC on ETH
-  '0x54261774905f3e6E9718f2ABb10ed6555cae308a': '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', //anyBTC -> WBTC
+  '0x54261774905f3e6E9718f2ABb10ed6555cae308a': ADDRESSES.ethereum.WBTC, //anyBTC -> WBTC
   '0x03ab98f5dc94996f8c33e15cd4468794d12d41f9': '0x674c6ad92fd080e4004b2312b45f796a192d27a0', //USDN -> USDN on ETH
 };
 

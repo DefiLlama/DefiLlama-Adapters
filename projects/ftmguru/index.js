@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const ITVL = {
   pool2: "uint256:pool2",
   staking: "uint256:staking",
@@ -5,7 +6,7 @@ const ITVL = {
 }
 
 const tvlGuru = "0x0786c3a78f5133F08C1c70953B8B10376bC6dCad";   //On-Chain Universal TVL Finder
-const USD = "fantom:0x04068DA6C83AFCFA0e13ba15A6696662335D5B75";   //same as abi.call({target:tvlGuru,abi:ITVL[3]})
+const USD = "fantom:" + ADDRESSES.fantom.USDC;   //same as abi.call({target:tvlGuru,abi:ITVL[3]})
 //NOTE: USD===fantom:USDC is used explicitly to reduce EVM calls by this adapter. It makes this process faster.
 
 function tvl(abi) {

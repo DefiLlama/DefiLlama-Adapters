@@ -2,12 +2,13 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 const { staking } = require('../helper/staking')
 const abi = require('./abi.json')
 const { dodoPool2 } = require('../helper/pool2')
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const ethMarketsManager = "0x5ed98Ebb66A929758C7Fe5Ac60c979aDF0F4040a"
 const ETH_SUSD = "0x57ab1ec28d129707052df4df418d58a2d46d5f51"
 
 const opMarketsManager = "0xBE086E0A2c588Ad64C8530048cE4356190D6a6F3"
-const OP_SUSD = "0x8c6f28f2f1a3c87f0f938b96d27520d9751ec8d9"
+const OP_SUSD = ADDRESSES.optimism.sUSD
 const opThalesStaking = "0xc392133eea695603b51a5d5de73655d571c2ce51"
 const opThalesAmm = "0x278b5a44397c9d8e52743fedec263c4760dc1a1a"
 const opRangedAmm = "0x2d356b114cbCA8DEFf2d8783EAc2a5A5324fE1dF"
@@ -20,12 +21,12 @@ const opThalesToken = "0x217d47011b23bb961eb6d93ca9945b7501a5bb11"
 const opSportsMarketsManager = "0xFBffEbfA2bF2cF84fdCf77917b358fC59Ff5771e"
 
 const polygonMarketsManager = "0x85f1B57A1D3Ac7605de3Df8AdA056b3dB9676eCE"
-const polygon_USDC = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"
+const polygon_USDC = ADDRESSES.polygon.USDC
 const polygonThalesAmm = "0xd52B865584c25FEBfcB676B9A87F32683356A063"
 const polygonRangedAMM = "0xe8e022405505a9F2b0B7452C844F1e64423849fC"
 
 const arbitrumMarketsManager = "0x95d93c88c1b5190fA7FA4350844e0663e5a11fF0"
-const arbitrum_USDC = "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8"
+const arbitrum_USDC = ADDRESSES.arbitrum.USDC
 const arbThalesStaking = "0x160Ca569999601bca06109D42d561D85D6Bb4b57"
 const arbitrumThalesAMM = "0x2b89275efB9509c33d9AD92A4586bdf8c4d21505"
 const arbSportsMarketsManager = "0x72ca0765d4bE0529377d656c9645600606214610"

@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { ohmTvl } = require('../helper/ohm')
 
 const treasury = "0x8c7290399cecbbbf31e471951cc4c2ce91f5073c" 
 const vsq_token = "0x29f1e986fca02b7e54138c04c4f503dddd250558"
 const stakingAddress = "0x2f3e9e54bd4513d1b49a6d915f9a83310638cfc2"
 const treasuryTokens = [
-    ["0x8f3cf7ad23cd3cadbd9735aff958023239c6a063", false], //DAI
+    [ADDRESSES.polygon.DAI, false], //DAI
     ["0x2e1ad108ff1d8c782fcbbb89aad783ac49586756", false], //TUSD
     ["0xa3fa99a148fa48d14ed51d610c367c61876997f1", false], //MAI
     ["0x45c32fa6df82ead1e2ef74d17b76547eddfaff89", false], //FRAX

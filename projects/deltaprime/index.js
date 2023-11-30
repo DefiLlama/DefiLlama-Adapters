@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { ethers } = require("ethers");
 const { sumTokens2 } = require('../helper/unwrapLPs')
@@ -70,7 +71,7 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
 function translatePlatypusLPToBaseToken(token){
   // Platypus USDC Asset (LP-USDC) -> USDC
   if(token === "0x06f01502327de1c37076bea4689a7e44279155e9"){
-    token = "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e";
+    token = ADDRESSES.avax.USDC;
   }
   return token;
 }

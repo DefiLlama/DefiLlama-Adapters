@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport, nullAddress } = require('../helper/unwrapLPs')
 
 const vault = "0xba9736a3fc948f8c489a7e975114eaf2b7f1c3fc";
@@ -8,7 +9,7 @@ module.exports = {
   arbitrum: {
     tvl: sumTokensExport({ owners: [vault, fundStore], tokens: [
       nullAddress,
-      '0xff970a61a04b1ca14834a43f5de4533ebddb5cc8',//USDC
+      ADDRESSES.arbitrum.USDC,//USDC
     ]}),
     staking: sumTokensExport({ owners: [vault, fundStore], tokens: [cap]})
   },

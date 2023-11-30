@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens } = require('../helper/unwrapLPs')
 const { getFixBalances } = require('../helper/portedTokens')
 
@@ -12,54 +13,54 @@ const COLLATERALS = {
     }
   },
   BUSD: {
-    tokenAddress: "0x4Bf769b05E832FCdc9053fFFBC78Ca889aCb5E1E",
-    bridgeTokenMapping: "0x4fabb145d64652a948d72533023f6e7a623c7c53",
+    tokenAddress: ADDRESSES.oasis.ceUSDT,
+    bridgeTokenMapping: ADDRESSES.ethereum.BUSD,
     contracts: {
       activePool: "0x892af684Afd5fCee1023f7811C35fd695Bf0cd6f",
       defaultPool: "0xe487b9066A8fFde840b29892f1052CBEdccc3073",
     }
   },
   DAI: {
-    tokenAddress: "0x6De33698e9e9b787e09d3Bd7771ef63557E148bb",
-    bridgeTokenMapping: "0x6b175474e89094c44da98b954eedeac495271d0f",
+    tokenAddress: ADDRESSES.astar.DAI,
+    bridgeTokenMapping: ADDRESSES.ethereum.DAI,
     contracts: {
       activePool: "0xCE90059FbCEc696634981945600d642A79e262aD",
       defaultPool: "0x3aD8FE12674B4c9481d5C7585ed5bDC4E35025b9",
     }
   },
   DOT: {
-    tokenAddress: "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF",
+    tokenAddress: ADDRESSES.astar.DOT,
     contracts: {
       activePool: "0x8cd0b101838b082133e25eEb76C916Ae2AC56f36",
       defaultPool: "0x4e8B4867899A69bB05EFa6A16e68363C2BBeB02f",
     }
   },
   USDC: {
-    tokenAddress: "0x6a2d262d56735dba19dd70682b39f6be9a931d98",
-    bridgeTokenMapping: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    tokenAddress: ADDRESSES.moonbeam.USDC,
+    bridgeTokenMapping: ADDRESSES.ethereum.USDC,
     contracts: {
       activePool: "0x5070d543654D866964C44E610a3b7f85fcAf2859",
       defaultPool: "0xEb80f1a9ede36412cF26E1e35ae74dbA30cCfF02",
     }
   },
   WETH: {
-    tokenAddress: "0x81ECac0D6Be0550A00FF064a4f9dd2400585FE9c",
+    tokenAddress: ADDRESSES.moonbeam.USDT,
     contracts: {
       activePool: "0x5Ec419F08602caE5e4C591dE65bD640d66673035",
       defaultPool: "0x2eE0F3daa042af6Fdd56f0194d5aBfdA0A723D95",
     }
   },
   WBTC: {
-    tokenAddress: "0xad543f18cFf85c77E140E3E5E3c3392f6Ba9d5CA",
-    bridgeTokenMapping: "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+    tokenAddress: ADDRESSES.astar.WBTC,
+    bridgeTokenMapping: ADDRESSES.ethereum.WBTC,
     contracts: {
       activePool: "0x1685E4f68FD9A50246ce92F0eb07a977591F5Ba2",
       defaultPool: "0xD69eB04d9ff456A31Da6D2a20538512C433ac1Ca",
     }
   },
   USDT: {
-    tokenAddress: "0x3795c36e7d12a8c252a20c5a7b455f7c57b60283",
-    bridgeTokenMapping: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+    tokenAddress: ADDRESSES.astar.USDT,
+    bridgeTokenMapping: ADDRESSES.ethereum.USDT,
     contracts: {
       activePool: "0x74dFF63491B39E5fFE0Be44Ee3B23F674C27DB7c",
       defaultPool: "0x8EE2f5403246b86d7493ddCeED19f9347bc4DF1D",
@@ -67,7 +68,7 @@ const COLLATERALS = {
   },
 }
 
-const BAI_TOKEN_ADDRESS = "0x733ebcC6DF85f8266349DEFD0980f8Ced9B45f35"
+const BAI_TOKEN_ADDRESS = ADDRESSES.astar.BAI
 const STAKES = {
   WASTAR: {
     contracts: {
@@ -111,7 +112,7 @@ const STAKES = {
   },
 }
 
-const ATID_TOKEN_ADDRESS = "0x5271D85CE4241b310C0B34b7C2f1f036686A6d7C";
+const ATID_TOKEN_ADDRESS = ADDRESSES.astar.ATID;
 const ATID_STAKES = {
   WASTAR: {
     contracts: {

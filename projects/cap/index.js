@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport, nullAddress, } = require('../helper/unwrapLPs')
 
 const contracts = {
@@ -13,7 +14,7 @@ const contracts = {
     "usdcPool2": "0xf16033d20adda47dc99ea291d0f4c4fef2ff47af",
 };
 const cap = "0x031d35296154279dc1984dcd93e392b1f946737b";
-const usdc = "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8";
+const usdc = ADDRESSES.arbitrum.USDC;
 
 module.exports = {
     methodology: "ETH locked on trading contracts",

@@ -8,10 +8,15 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
   const tokens = await api.multiCall({ abi: abi.collateralContract, calls: pairs })
   return sumTokens2({ api, tokensAndOwners: tokens.map((v, i) => [v, pairs[i]]) })
 }
+async function borrowed(timestamp, block, chainBlocks, { api }) {
+  const pairs = await api.call({ target: REGISTRY_ADDR, abi: abi['getAllPairAddresses'], })
+  const bals = await api.multiCall({ abi: 'function totalBorrow() view returns (uint128 amount, uint128 shares)', calls: pairs })
+  bals.forEach(bal => api.add('0x853d955acef822db058eb8505911ed77f175b99e', bal.amount))
+}
 
 module.exports = {
   methodology: 'Gets the pairs from the REGISTRY_ADDRESS and adds the collateral amounts from each pair',
   ethereum: {
-    tvl
+    tvl, borrowed,
   },
 }

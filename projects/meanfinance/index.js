@@ -59,6 +59,7 @@ module.exports = {
   optimism: getV2TvlObject('optimism'),
   polygon: getV2TvlObject('polygon'),
   arbitrum: getV2TvlObject('arbitrum'),
+  bsc: getV2TvlObject('bsc'),
    hallmarks: [
     [1638850958, "V2 Beta launch on Optimism"],
     [1643602958, "V2 full launch"],
