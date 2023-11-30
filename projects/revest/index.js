@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokens2, } = require("../helper/unwrapLPs")
+const { sumTokens2, unwrapUniswapLPs } = require("../helper/unwrapLPs")
 const sdk = require("@defillama/sdk");
 
 const CutoffABI = "function FNFT_CUTOFF() external view returns (uint256)"
@@ -16,7 +16,8 @@ const config = {
     holder: '0xA81bd16Aa6F6B25e66965A2f842e9C806c0AA11F',
     revest: '0x120a3879da835a5af037bb2d1456bebd6b54d4ba',
     tokenVaultV2: '0xD672f1E3411c23Edbb49e8EB6C6b1564b2BF8E17',
-    fnftHandler: '0xa07E6a51420EcfCB081917f40423D29529705e8a'
+    fnftHandler: '0xa07E6a51420EcfCB081917f40423D29529705e8a',
+    revest_lp: '0x6490828Bd87Be38279A36F029f3b9Af8b4E14B49'
   },
   polygon: {
     holder: '0x3cCc20d960e185E863885913596b54ea666b2fe7',
@@ -52,7 +53,7 @@ module.exports = {
 };
 
 Object.keys(config).forEach(chain => {
-  const { holder, revest, tokenVaultV2, fnftHandler } = config[chain]
+  const { holder, revest, tokenVaultV2, fnftHandler, revest_lp } = config[chain]
   module.exports[chain] = {
     tvl: async (_, _b, _1, { api }) => {
       let balances = {}
@@ -170,9 +171,28 @@ Object.keys(config).forEach(chain => {
 
       }
 
+      if (revest_lp) {
+        //Get balance of legacy token vault LP Tokens
+        let lpBalances = await sdk.api.erc20.balanceOf({
+          target: revest_lp,
+          owner: holder,
+          chain: chain,
+          block: _b,
+        })
+
+        //store the balance
+        balances[revest_lp] += Number(lpBalances.output)
+
+        //Unwrap the LP tokens not normally tracked by covalent
+        await unwrapUniswapLPs(balances, [{'balance': balances[revest_lp], 'token': revest_lp}], _b)
+      }
+
       //Get values in tokenVaultV1
       owners.push(holder);
       return sumTokens2({ balances, api, owners, fetchCoValentTokens: true, blacklistedTokens: blacklist, tokenConfig: { onlyWhitelisted: false, } })
+      
+    
+
     },
   }
 
