@@ -91,7 +91,18 @@ async function mantleTvl(ts, _, _1, { api }) {
   let address = (await getConfig('solv-protocol/funds', addressUrl));
   let klp = address[api.chain]["klp"];
 
-  api.add(klp["address"], await api.call({ abi: stakedAmountsAbi, target: klp["address"], params: klp["klpPool"], }))
+  const stakedAmounts = await api.multiCall({
+    abi: stakedAmountsAbi,
+    calls: klp["klpPool"].map((pool) => ({
+      target: klp["address"],
+      params: [pool]
+    })),
+  })
+
+  stakedAmounts.forEach(amount => {
+    api.add(klp["address"], amount)
+  })
+
   return api.getBalances()
 }
 
