@@ -36,9 +36,9 @@ module.exports = {
 
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {
-    tvl: (_, _b, {[chain]: block}) => {
+    tvl: (_, _b, {[chain]: block, logArray }) => {
       const { bridges: owners, tokens } = config[chain]
-      return sumTokens2({ tokens: Object.values(tokens), owners, chain, block, })
+      return sumTokens2({ tokens: Object.values(tokens), owners, chain, block, logArray })
     }
   }
 })
