@@ -56,6 +56,15 @@ const POLYGON_ASSET_STABLES = [
   ASSETS.polygon.USDC
 ]
 
+const LINEA_ASSET_STABLES = [
+  nullAddress,
+  ADDRESSES.linea.DAI,
+  ADDRESSES.linea.USDC,
+  ADDRESSES.linea.USDT,
+  ASSETS.linea.WBTC,
+  ASSETS.linea.WETH
+]
+
 module.exports = {
   methodology: "TVL is based on the active balances of assets deposited at the stream and vesting vaults for token streaming and vesting.",
   kava: {
