@@ -526,7 +526,7 @@ function chainTvl(chain) {
         liquidityBridgeContractsV2[chain].filter(owner => owner.toLowerCase() !== bridgeContractV1.toLowerCase())
           .forEach(owner => toa.push([token[chain], owner]))
     })
-    const balances = await sumTokens({}, toa, block, chain, logArray)
+    const balances = await sumTokens({}, toa, block, chain, undefined, { logArray })
     return balances
   };
 }

@@ -7,7 +7,7 @@ const config = {
   polygon: { factory: '0x76888a882a4ff57455b5e74b791dd19df3ba51bb', fromBlock: 38446227, tellerV2: '0xD3D79A066F2cD471841C047D372F218252Dbf8Ed', },
 }
 
-const blacklistedTokens = ['0x8f9bbbb0282699921372a134b63799a48c7d17fc']
+const blacklistedTokens = ['0x8f9bbbb0282699921372a134b63799a48c7d17fc', '0xd4416b13d2b3a9abae7acd5d6c2bbdbe25686401']
 
 const data = {}
 
@@ -80,7 +80,7 @@ async function getData(api) {
 
 async function tvl(_, _b, _cb, { api, }) {
   const data = await getData(api)
-  return sumTokens2({ api, ownerTokens: Object.values(data).map(i => [i.tokens, i.owner]), blacklistedTokens })
+  return sumTokens2({ api, ownerTokens: Object.values(data).map(i => [i.tokens, i.owner]), blacklistedTokens, permitFailure: true, })
 }
 
 async function borrowed(_, _b, _cb, { api, }) {
