@@ -1,25 +1,108 @@
-const { getLogs } = require('../helper/cache/getLogs')
-const config = {
-  polygon: { registry: '0x24825b3c44742600d3995d1d3760ccee999a7f0b', fromBlock: 41535540, },
-  arbitrum: { registry: '0x9f5b097AD23e2CF4F34e502A3E41D941678877Dc', fromBlock: 88698956, },
-  optimism: { registry: '0xC1Ecd10398A6D7036CceE1f50551ff169715081c', fromBlock: 96971465, },
-}
+const { cachedGraphQuery } = require('../helper/cache')
+const { staking } = require("../helper/staking");
 
-module.exports = {};
+const supportedChains = [
+  {
+    name: 'Polygon',
+    subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/steerprotocol/steer-protocol-polygon',
+    chainId: 137,
+    identifier: 'polygon'
+  },
+  {
+    name: 'Arbitrum',
+    subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/steerprotocol/steer-protocol-arbitrum',
+    chainId: 42161,
+    identifier: 'arbitrum'
+  },
+  {
+    name: 'Optimism',
+    subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/steerprotocol/steer-protocol-optimism',
+    chainId: 10,
+    identifier: 'optimism'
+  },
+  {
+    name: 'Binance',
+    subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/steerprotocol/steer-protocol-bsc',
+    chainId: 56,
+    identifier: 'bsc'
+  },
+  {
+    name: 'Evmos',
+    subgraphEndpoint: 'https://subgraph.satsuma-prod.com/769a117cc018/steer/steer-protocol-evmos/api',
+    chainId: 9001,
+    identifier: 'evmos'
+  },
+  {
+    name: 'Avalanche',
+    subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/rakeshbhatt10/avalance-test-subgraph',
+    chainId: 43114,
+    identifier: 'avax'
+  },
+  {
+    name: 'Thundercore',
+    subgraphEndpoint: 'http://52.77.49.1:8000/subgraphs/name/steerprotocol/steer-thundercore',
+    chainId: 108,
+    identifier: 'thundercore'
+  },
+  {
+    name: 'Kava',
+    subgraphEndpoint: 'https://subgraph.steer.finance/kava/subgraphs/name/steerprotocol/steer-kava-evm',
+    chainId: 2222,
+    identifier: 'kava'
+  },
+  {
+    name: 'Base',
+    subgraphEndpoint: 'https://subgraph.satsuma-prod.com/769a117cc018/steer/steer-protocol-base/api',
+    chainId: 8453,
+    identifier: 'base'
+  },
+  {
+    name: 'Linea',
+    subgraphEndpoint: 'https://subgraph.steer.finance/linea/subgraphs/name/steerprotocol/steer-linea',
+    chainId: 59144,
+    identifier: 'linea'
+  },
+  {
+    name: 'Metis',
+    subgraphEndpoint: 'https://subgraph.satsuma-prod.com/769a117cc018/steer/steer-protocol-metis/api',
+    chainId: 1088,
+    identifier: 'metis'
+  },
+  {
+    name: 'Manta',
+    subgraphEndpoint: 'https://subgraph.steer.finance/manta/subgraphs/name/steerprotocol/steer-manta',
+    chainId: 169,
+    identifier: 'manta'
+  },
+  // {
+  //   name: 'PolygonZKEVM',
+  //   subgraphEndpoint: 'https://subgraph.steer.finance/zkevm/subgraphs/name/steerprotocol/steer-zkevm',
+  //   chainId: 1101,
+  //   identifier: 'polyzkevm'
+  // },
+  // {
+  //   name: 'Scroll',
+  //   subgraphEndpoint: 'https://subgraph.steer.finance/scroll/subgraphs/name/steerprotocol/steer-scroll/graphql',
+  //   chainId: 534352,
+  //   identifier: 'scroll'
+  // },
+  // {
+  //   name: 'Celo',
+  //   subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/rakeshbhatt10/steer-test-celo',
+  //   chainId: 42220,
+  //   identifier: 'celo'
+  // },
+]
 
-Object.keys(config).forEach(chain => {
-  const { registry, fromBlock, } = config[chain]
-  module.exports[chain] = {
+// Fetch active vaults and associated data @todo limited to 1000 per chain
+const query = `{vaults(first: 1000, where: {totalLPTokensIssued_not: "0", lastSnapshot_not: "0"}) {id}}`
+
+supportedChains.forEach(chain => {
+  module.exports[chain.identifier] = {
     tvl: async (_, _b, _cb, { api, }) => {
-      const logs = await getLogs({
-        api,
-        target: registry,
-        topic: "VaultCreated(address,address,string,uint256,address)",
-        eventAbi: 'event VaultCreated(address deployer, address vault, string beaconName, uint256 indexed tokenId, address vaultManager)',
-        onlyArgs: true,
-        fromBlock,
-      })
-      const vaults = logs.map(log => log.vault)
+      const data = await cachedGraphQuery('steer/' + chain.identifier, chain.subgraphEndpoint, query,)
+
+      const vaults = data.vaults.map((vault) => vault.id)
       const bals = await api.multiCall({ abi: "function getTotalAmounts() view returns (uint256 total0, uint256 total1)", calls: vaults, permitFailure: true, })
       const token0s = await api.multiCall({ abi: "address:token0", calls: vaults, permitFailure: true, })
       const token1s = await api.multiCall({ abi: "address:token1", calls: vaults, permitFailure: true, })
@@ -30,6 +113,9 @@ Object.keys(config).forEach(chain => {
         api.add(token0, bal.total0)
         api.add(token1, bal.total1)
       })
+      return api.getBalances()
     }
   }
 })
+
+module.exports.arbitrum.staking = staking("0xB10aB1a1C0E3E9697928F05dA842a292310b37f1", "0x1C43D05be7E5b54D506e3DdB6f0305e8A66CD04e", "arbitrum")
