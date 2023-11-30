@@ -120,7 +120,7 @@ Object.keys(config).forEach(chain => {
 
       if (revest_lp)
         tokens.push(revest_lp)
-      return sumTokens2({ api, owner: holder, tokens, fetchCoValentTokens: true, blacklistedTokens, tokens, resolveLP: true, })
+      return sumTokens2({ api, owner: holder, fetchCoValentTokens: true, blacklistedTokens, tokens, resolveLP: true, })
     },
   }
 
