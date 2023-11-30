@@ -80,12 +80,12 @@ const supportedChains = [
   //   chainId: 1101,
   //   identifier: 'polyzkevm'
   // },
-  // {
-  //   name: 'Scroll',
-  //   subgraphEndpoint: 'https://subgraph.steer.finance/scroll/subgraphs/name/steerprotocol/steer-scroll/graphql',
-  //   chainId: 534352,
-  //   identifier: 'scroll'
-  // },
+  {
+    name: 'Scroll',
+    subgraphEndpoint: 'https://subgraph.steer.finance/scroll/subgraphs/name/steerprotocol/steer-scroll',
+    chainId: 534352,
+    identifier: 'scroll'
+  },
   // {
   //   name: 'Celo',
   //   subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/rakeshbhatt10/steer-test-celo',
