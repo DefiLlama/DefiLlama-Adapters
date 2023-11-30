@@ -2,18 +2,16 @@ const sdk = require('@defillama/sdk')
 const ADDRESSES = require('./helper/coreAssets.json')
 const { getUniTVL } = require('./helper/unknownTokens')
 const { staking } = require('./helper/staking')
-const { sumTokens2 } = require('./helper/unwrapLPs')
 
 const V2_FACTORY_ADDRESS = '0x68A384D826D3678f78BB9FB1533c7E9577dACc0E'
 const xSTELLA_ADDRESS = '0x06A3b410b681c82417A906993aCeFb91bAB6A080'
-const chain = 'moonbeam'
 
 const dexTVL = getUniTVL({
   factory: V2_FACTORY_ADDRESS,
   useDefaultCoreAssets: true,
 })
 
-async function stablePoolTVL(_, _b, { [chain]: block }) {
+async function stablePoolTVL(_, _b, _c, { api }) {
   const pools = [
     // Legacy
     '0x422b5b7a15fb12c518aa29f9def640b4773427f8', // SFL - 4pool V1 (nomad)
@@ -31,39 +29,20 @@ async function stablePoolTVL(_, _b, { [chain]: block }) {
     '0x63Ba230fb281A44CB778Ea67a8caE538459c1d0b', // SFL - MAI - 3pool V1 (wormhole)
   ]
 
-  let { output: lpTokens } = await sdk.api.abi.multiCall({
-    abi: abi.getLpToken,
-    calls: pools.map(i => ({ target: i })),
-    chain, block,
-  })
+  let lpTokens = await api.multiCall({ abi: abi.getLpToken, calls: pools, })
+  const tokens = await api.multiCall({ abi: abi.getTokens, calls: pools, })
+  const ownerTokens = pools.map((v, i) => [tokens[i], v])
 
-  lpTokens = lpTokens.map(i => i.output.toLowerCase())
-
-  const { output: tokens } = await sdk.api.abi.multiCall({
-    abi: abi.getTokens,
-    calls: pools.map(i => ({ target: i })),
-    chain, block,
-  })
-
-  const toa = []
-  tokens.forEach(res => {
-    res.output.forEach(t => {
-      if (lpTokens.includes(t.toLowerCase())) return;
-      toa.push([t, res.input.target])
-    })
-  })
-
-  return sumTokens2({ tokensAndOwners: toa, chain, block, })
+  return api.sumTokens({ ownerTokens, blacklistedTokens: lpTokens, })
 }
 
 module.exports = {
   misrepresentedTokens: true,
   moonbeam: {
     tvl: sdk.util.sumChainTvls([dexTVL, stablePoolTVL]),
-    staking: staking(xSTELLA_ADDRESS, ADDRESSES.moonbeam.STELLA, chain)
+    staking: staking(xSTELLA_ADDRESS, ADDRESSES.moonbeam.STELLA)
   }
 }
-
 
 const abi = {
   getTokens: "address[]:getTokens",
