@@ -1,46 +1,27 @@
-
-const abi = {
-  "getMarketsCount": "uint256:getMarketsCount",
-  "getPaginatedMarketsData": "function getPaginatedMarketsData(uint256 start, uint256 end) view returns (tuple(tuple(address token, string name, string symbol, uint256 decimals, bool isMock) marketToken, tuple(address token, string name, string symbol, uint256 decimals, bool isMock) underlyingToken, address borrower, address controller, address feeRecipient, uint256 protocolFeeBips, uint256 delinquencyFeeBips, uint256 delinquencyGracePeriod, uint256 withdrawalBatchDuration, uint256 reserveRatioBips, uint256 annualInterestBips, bool temporaryReserveRatio, uint256 originalAnnualInterestBips, uint256 originalReserveRatioBips, uint256 temporaryReserveRatioExpiry, bool isClosed, uint256 scaleFactor, uint256 totalSupply, uint256 maxTotalSupply, uint256 scaledTotalSupply, uint256 totalAssets, uint256 lastAccruedProtocolFees, uint256 normalizedUnclaimedWithdrawals, uint256 scaledPendingWithdrawals, uint256 pendingWithdrawalExpiry, bool isDelinquent, uint256 timeDelinquent, uint256 lastInterestAccruedTimestamp, uint32[] unpaidWithdrawalBatchExpiries, uint256 coverageLiquidity, uint256 borrowableAssets, uint256 delinquentDebt)[] data)",
-}
-
 // https://wildcat-protocol.gitbook.io/wildcat/technical-deep-dive/contract-deployments
 const config = {
-  ethereum: { lens: '0xf1D516954f96c1363f8b0aE48D79c8ddE6237847', },
+  ethereum: { archController: '0xfEB516d9D946dD487A9346F6fee11f40C6945eE4', },
+  // sepolia: { archController: '0xC003f20F2642c76B81e5e1620c6D8cdEE826408f', },
 }
 
 Object.keys(config).forEach(chain => {
-  const { lens } = config[chain]
+  const { archController } = config[chain]
   module.exports[chain] = {
     tvl: async (_, _b, _cb, { api, }) => {
-      const markets = await getMarkets(api)
-      markets.forEach(market => {
-        api.add(market.underlyingToken.token, market.borrowableAssets)
-      })
-      return api.getBalances()
+      const { markets, tokens} = await getMarkets(api)
+      return api.sumTokens({ tokensAndOwners2: [tokens, markets]})
     },
     borrowed: async (_, _b, _cb, { api, }) => {
-      const markets = await getMarkets(api)
-      markets.forEach(market => {
-        api.add(market.underlyingToken.token, market.borrowableAssets * -1)
-        api.add(market.underlyingToken.token, market.totalAssets)
-      })
+      const { markets, tokens} = await getMarkets(api)
+      const debts = await api.multiCall({  abi: 'uint256:delinquentDebt', calls: markets})
+      api.addTokens(tokens, debts)
       return api.getBalances()
     }
   }
 
   async function getMarkets(api) {
-    const count = await api.call({  abi: abi.getMarketsCount, target: lens})
-    let length = 42
-    let start = 0
-    const allMarkets = []
-    while (start < count) {
-      const end = start + length
-      const markets = await api.call({ abi: abi.getPaginatedMarketsData, target: lens, params: [start, end] })
-      allMarkets.push(...markets)
-      start = end
-    }
-    console.log(allMarkets)
-    return allMarkets
+    const markets = await api.call({  abi: 'address[]:getRegisteredMarkets', target: archController})
+    const tokens = await api.multiCall({  abi: 'address:asset', calls: markets})
+    return { markets, tokens }
   }
 })
