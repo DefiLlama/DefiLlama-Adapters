@@ -14,6 +14,9 @@ const DEFAULTS = {
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
   CHZ_RPC: "https://chiliz.publicnode.com,https://rpc.ankr.com/chiliz",
   MANTLE_RPC:"https://mantle.publicnode.com,https://rpc.ankr.com/mantle,https://mantle.drpc.org,https://1rpc.io/mantle,https://mantle-mainnet.public.blastapi.io",
+  MODE_RPC: 'https://mainnet.mode.network',
+  ZILLIQA_RPC: 'https://api.zilliqa.com',
+  FSC_RPC: 'https://fsc-dataseed1.fonscan.io',
 }
 
 const ENV_KEYS = [
