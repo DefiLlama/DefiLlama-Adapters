@@ -8,7 +8,7 @@ const config = {
 
 Object.keys(config).forEach(chain => {
   const { bank, fromBlock, } = config[chain]
-  const _getLogs = api => getLogs({ api, target: bank, eventAbi: 'event Create (address indexed underlying, address bToken)', onlyArgs: true, fromBlock, onlyUseExistingCache: true, })
+  const _getLogs = api => getLogs({ api, target: bank, eventAbi: 'event Create (address indexed underlying, address bToken)', onlyArgs: true, fromBlock, })
   module.exports[chain] = {
     tvl: async (_, _b, _cb, { api, }) => {
       const logs = await _getLogs(api)
