@@ -14,7 +14,6 @@ async function cardanoTVL() {
 
 module.exports = {
     timetravel: false,
-    misrepresentedTokens: true,
     cardano: {
         tvl: cardanoTVL
     }
