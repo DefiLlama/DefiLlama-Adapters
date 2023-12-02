@@ -27,6 +27,7 @@ const distressedAssts = new Set(Object.values({
   FLEET: '0xfd56a3dcfc0690881a466ae432d71bb2db588083',
   YAKU: 'NGK3iHqqQkyRZUj4uhJDQqEyKKcZ7mdawWpqwMffM3s',
   JEFE: '0x80fa6d5384bdde296a28a321f73ab70977575129',
+  BONK: ADDRESSES.solana.BONK
 }).map(i => i.toLowerCase()))
 
 const transformTokens = {
