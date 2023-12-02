@@ -3,6 +3,8 @@ const { getProvider, getSolBalances, } = require('../helper/solana')
 const { Program, } = require("@project-serum/anchor");
 const { getConfig } = require('../helper/cache')
 const { bs58 } = require('@project-serum/anchor/dist/cjs/utils/bytes');
+const { Connection, Keypair } = require('@solana/web3.js');
+const { AnchorProvider: Provider, Wallet, } = require("@project-serum/anchor");
 
 let data
 
@@ -13,7 +15,7 @@ async function getData() {
 
     async function getAllData() {
         const programId = '4tdmkuY6EStxbS6Y8s5ueznL3VPMSugrvQuDeAHGZhSt'
-        const provider = getProvider()
+        const provider = getBanxProvider()
         const idl = await getConfig('banx-idl', 'https://raw.githubusercontent.com/frakt-solana/banx-public-sdk/master/src/fbond-protocol/idl/bonds.json')
         const program = new Program(idl, programId, provider)
 
@@ -40,6 +42,18 @@ async function getData() {
 const tvl = async () => {
     return { ['solana:' + ADDRESSES.solana.SOL]: (await getData()).tvl }
 };
+
+function getBanxProvider() {
+    const dummy_keypair = Keypair.generate();
+    const wallet = new Wallet(dummy_keypair);
+  
+    const provider = new Provider(
+        new Connection("https://mainnet.helius-rpc.com/?api-key=edc01bc7-f50a-4750-bb57-0faab1c50800"), wallet
+      );
+    return provider;
+}
+
+
 
 const getFilteredAccounts = async (
     program,
