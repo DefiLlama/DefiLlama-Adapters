@@ -40,19 +40,18 @@ function parseOutput(result, abi, allAbi, method) {
       result,
     )
     return response
-  } else {
-    const contract = new Contract([abi,...allAbi], null, null)
-    let response = contract.parseResponse(abi.name, result)
-      if (abi.outputs.length === 1) {
-        response = response[0]
-        if (abi.outputs[0].type === 'Uint256') return +response
-        switch (abi.customType) {
-          case 'address': return validateAndParseAddress(response)
-          case 'Uint256': return +response
-        }
+  } 
+  const contract = new Contract([abi,...allAbi], null, null)
+  let response = contract.parseResponse(abi.name, result)
+    if (abi.outputs.length === 1) {
+      response = response[0]
+      if (abi.outputs[0].type === 'Uint256') return +response
+      switch (abi.customType) {
+        case 'address': return validateAndParseAddress(response)
+        case 'Uint256': return +response
       }
-    return response
-  }
+    }
+  return response
   
  
 }
