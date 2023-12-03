@@ -1,6 +1,7 @@
 // https://www.starknetjs.com/docs/API/contract
 const { getUniqueAddresses } = require('../tokenMapping')
 const { Contract, validateAndParseAddress, number, hash, } = require('starknet')
+const {Contract: Contract_v5, CallData} = require('starknet-5')
 const abi = require('../../10kswap/abi')
 const axios = require('axios')
 const plimit = require('p-limit')
@@ -29,23 +30,36 @@ function formCallBody({ abi, target, params = [], allAbi = [] }, id = 0) {
   }
 }
 
-function parseOutput(result, abi, allAbi) {
-  const contract = new Contract([abi,...allAbi], null, null)
-  let response = contract.parseResponse(abi.name, result)
-  if (abi.outputs.length === 1) {
-    response = response[0]
-    if (abi.outputs[0].type === 'Uint256') return +response
-    switch (abi.customType) {
-      case 'address': return validateAndParseAddress(response)
-      case 'Uint256': return +response
-    }
+function parseOutput(result, abi, allAbi, method) {
+  const contract_v5 = new Contract_v5([abi,...allAbi], null, null)
+  const isCairo1 = contract_v5.isCairo1()
+
+  if (isCairo1) {
+  let response = new CallData([abi,...allAbi]).parse(
+      method,
+      result,
+    )
+    return response
+  } else {
+    const contract = new Contract([abi,...allAbi], null, null)
+    let response = contract.parseResponse(abi.name, result)
+      if (abi.outputs.length === 1) {
+        response = response[0]
+        if (abi.outputs[0].type === 'Uint256') return +response
+        switch (abi.customType) {
+          case 'address': return validateAndParseAddress(response)
+          case 'Uint256': return +response
+        }
+      }
+    return response
   }
-  return response
+  
+ 
 }
 
 async function call({ abi, target, params = [], allAbi = [] } = {}, ...rest) {
   const { data: { result } } = await axios.post(STARKNET_RPC, formCallBody({ abi, target, params, allAbi }))
-  return parseOutput(result, abi, allAbi)
+  return parseOutput(result, abi, allAbi, abi.name)
 }
 
 async function multiCall({ abi: rootAbi, target: rootTarget, calls = [], allAbi = [] }) {
@@ -71,7 +85,7 @@ async function multiCall({ abi: rootAbi, target: rootTarget, calls = [], allAbi 
   allData.forEach((i) => {
     const { result, id } = i
     const abi = calls[id].abi ?? rootAbi
-    response[id] = parseOutput(result, abi, allAbi)
+    response[id] = parseOutput(result, abi, allAbi, abi.name)
   })
   return response
 }
