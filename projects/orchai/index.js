@@ -12,7 +12,7 @@ async function oraiTVL() {
   let tokensDelegated = await queryContract({
     contract: addresses.orai.tvlContract,
     chain: "orai",
-    data: { liquid_stake_tvl: {} },
+    data: { total_tvl: {} },
   });
 
   let balances = {};
@@ -25,7 +25,8 @@ async function oraiTVL() {
 
 module.exports = {
   timetravel: false,
-  methodology: "Staked tokens are counted as TVL",
+  methodology:
+    "Token from Liquid Staking, Money Market, Orchestrator are counted as TVL",
   orai: {
     tvl: oraiTVL,
   },
