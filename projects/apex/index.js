@@ -3,6 +3,7 @@ const { sumTokensExport } = require('../helper/unwrapLPs');
 
 const tokens = [
   ADDRESSES.ethereum.USDC,
+  ADDRESSES.ethereum.USDT
 ];
 
 const owners = [
