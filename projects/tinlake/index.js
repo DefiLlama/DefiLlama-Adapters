@@ -3,7 +3,7 @@ const BigNumber = require("bignumber.js");
 const { graphQuery } = require('../helper/http')
 const data = {}
 
-const subgraphUrl = 'https://graph.centrifuge.io/tinlake/subgraphs/name/allow-null-maturity-date';
+const subgraphUrl = 'https://api.goldsky.com/api/public/project_clhi43ef5g4rw49zwftsvd2ks/subgraphs/main/prod/gn';
 const graphTotalTokenTVLQuery = `
 query GET_TOTAL_TOKEN_TVL {
   pools(
