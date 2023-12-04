@@ -1,6 +1,6 @@
 // https://www.starknetjs.com/docs/API/contract
 const { getUniqueAddresses } = require('../tokenMapping')
-const { Contract, validateAndParseAddress, number, hash, } = require('starknet')
+const { Contract, validateAndParseAddress, number, hash, CallData } = require('starknet')
 const abi = require('../../10kswap/abi')
 const axios = require('axios')
 const plimit = require('p-limit')
@@ -21,7 +21,7 @@ function formCallBody({ abi, target, params = [], allAbi = [] }, id = 0) {
   requestData.contract_address = requestData.contractAddress
   delete requestData.contractAddress
   delete requestData.entrypoint
-  if (abi.customInput === 'address')  requestData.calldata = params.map(i => i.slice(2))
+  if (abi.customInput === 'address') requestData.calldata = params.map(i => i.slice(2))
   return getCallBody(requestData, id)
 
   function getCallBody(i) {
@@ -30,10 +30,14 @@ function formCallBody({ abi, target, params = [], allAbi = [] }, id = 0) {
 }
 
 function parseOutput(result, abi, allAbi) {
-  const contract = new Contract([abi,...allAbi], null, null)
-  let response = contract.parseResponse(abi.name, result)
-  if (abi.outputs.length === 1) {
-    response = response[0]
+  let response = new CallData([abi, ...allAbi]).parse(abi.name, result)
+  // convert BigInt to string
+  for (const key in response) {
+    if (typeof response[key] === 'bigint') response[key] = response[key].toString()
+  }
+
+  if (abi.outputs.length === 1 && !abi.outputs[0].type.includes('::')) {
+    response = response[abi.outputs[0].name]
     if (abi.outputs[0].type === 'Uint256') return +response
     switch (abi.customType) {
       case 'address': return validateAndParseAddress(response)
@@ -136,7 +140,7 @@ const defaultAbis = {
 }
 
 function dexExport({ factory, abis = {}, fetchBalances = false }) {
-  return () => getUniTVL({ factory, abis: { ...defaultAbis, ...abis}, fetchBalances })(undefined, undefined, undefined, { api, chain: 'starknet' })
+  return () => getUniTVL({ factory, abis: { ...defaultAbis, ...abis }, fetchBalances })(undefined, undefined, undefined, { api, chain: 'starknet' })
 }
 
 module.exports = {
