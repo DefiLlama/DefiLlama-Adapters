@@ -5,6 +5,7 @@ const sdk = require('@defillama/sdk')
 
 const helpers = {
   "eos": require("./chain/eos"),
+  "ton": require("./chain/ton"),
   "ergo": require("./chain/ergo"),
   "elrond": require("./chain/elrond"),
   "cardano":require("./chain/cardano"),
