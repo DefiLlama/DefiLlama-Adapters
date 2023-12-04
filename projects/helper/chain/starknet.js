@@ -30,13 +30,13 @@ function formCallBody({ abi, target, params = [], allAbi = [] }, id = 0) {
   }
 }
 
-function parseOutput(result, abi, allAbi, method) {
+function parseOutput(result, abi, allAbi) {
   const contract_v5 = new Contract_v5([abi,...allAbi], null, null)
   const isCairo1 = contract_v5.isCairo1()
 
   if (isCairo1) {
   let response = new CallData([abi,...allAbi]).parse(
-      method,
+      abi.name,
       result,
     )
     return response
@@ -58,7 +58,7 @@ function parseOutput(result, abi, allAbi, method) {
 
 async function call({ abi, target, params = [], allAbi = [] } = {}, ...rest) {
   const { data: { result } } = await axios.post(STARKNET_RPC, formCallBody({ abi, target, params, allAbi }))
-  return parseOutput(result, abi, allAbi, abi.name)
+  return parseOutput(result, abi, allAbi)
 }
 
 async function multiCall({ abi: rootAbi, target: rootTarget, calls = [], allAbi = [] }) {
@@ -84,7 +84,7 @@ async function multiCall({ abi: rootAbi, target: rootTarget, calls = [], allAbi 
   allData.forEach((i) => {
     const { result, id } = i
     const abi = calls[id].abi ?? rootAbi
-    response[id] = parseOutput(result, abi, allAbi, abi.name)
+    response[id] = parseOutput(result, abi, allAbi)
   })
   return response
 }
