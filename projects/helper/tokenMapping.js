@@ -117,6 +117,9 @@ const fixBalancesTokens = {
   fsc: {
     [ADDRESSES.null]: { coingeckoId: 'fonsmartchain', decimals: 18 },
     [ADDRESSES.fsc.WFSC]: { coingeckoId: 'fonsmartchain', decimals: 18 },
+  },
+  new: {
+    '0xf4905b9bc02ce21c98eac1803693a9357d5253bf': { coingeckoId: 'newton-project', decimals: 18 },
   }
 }
 
