@@ -28,7 +28,7 @@ const tokens = {
 //the owners of rangers (dapp)
 const ownersRPG = {
   bridge: "0x9c1CbFE5328DFB1733d59a7652D0A49228c7E12C",
-  nodeManager: "0x74448149F549CD819b7173b6D67DbBEAFd2909a7"
+  // nodeManager: "0x74448149F549CD819b7173b6D67DbBEAFd2909a7"
 }
 const owners = [...Object.values(ownersRPG)]
 
