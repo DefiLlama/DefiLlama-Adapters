@@ -4,43 +4,13 @@
     "OracleRouter": "0x4CD5ecD5E0Dabb0b933657F4162dE4376326A536",
     "SCOMP": "",
     "wrapped": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-    "vaults": [
-      {
-        "name": "Usdp3Crv",
-        "address": "0x1df2933B9c8815CC8990AFb4A079A717bC369185",
-        "token": "0xc270b3B858c335B6BA5D5b10e2Da8a09976005ad",
-        "strategy": "0xD174BDbBD9BfA273335708Ccf024d841BA796B0B"
-      },
-      {
-        "name": "Tusd3Crv",
-        "address": "0x0a1da14519309eCEa6E19DC940D95A7Fc850a911",
-        "token": "0xEcd5e75AFb02eFa118AF914515D6521aaBd189F1",
-        "strategy": "0x1aB1a94FD3887D868b523B1ed25d483C6d85D79f"
-      },
-      {
-        "name": "Mim3Crv",
-        "address": "0x5073383c90cFBcc666227a67F301dcF910C3971e",
-        "token": "0x5a6A4D54456819380173272A5E8E9B9904BdF41B",
-        "strategy": "0x05bc871D6BB506A3cD2Ab05A1336ef50B5a75500"
-      },
-      {
-        "name": "AlUsd3Crv",
-        "address": "0x494d51A38ACEEBcc1D6b8e6A1EE8D8d489052033",
-        "token": "0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c",
-        "strategy": "0xd76108c47f7ab8aab4226cF3eE996fa178A09b55"
-      },
-      {
-        "name": "AlUsdFraxBp",
-        "address": "0xe87A72E170f7ab225b39f3Ba8d0E407e37F29B8A",
-        "token": "0xB30dA2376F63De30b42dC055C93fa474F31330A5",
-        "strategy": "0xB3205D7254618c6FD94Bbb2694269f120C675d21"
-      },
-      {
-        "name": "Usdd3Crv",
-        "address": "0xA918c6B097569B6584014257CE89cB546f85fe33",
-        "token": "0xe6b5CC1B4b47305c58392CE3D359B10282FC36Ea",
-        "strategy": "0x5375ad765103792b14AAD1b1dAd9e836fa2ad9c0"
-      }
-    ]
+    "vaults": {
+      "Usdp3Crv": "0x1df2933B9c8815CC8990AFb4A079A717bC369185",
+      "Tusd3Crv": "0x0a1da14519309eCEa6E19DC940D95A7Fc850a911",
+      "Mim3Crv": "0x5073383c90cFBcc666227a67F301dcF910C3971e",
+      "AlUsd3Crv": "0x494d51A38ACEEBcc1D6b8e6A1EE8D8d489052033",
+      "AlUsdFraxBp": "0xe87A72E170f7ab225b39f3Ba8d0E407e37F29B8A",
+      "Usdd3Crv": "0xA918c6B097569B6584014257CE89cB546f85fe33"
+    }
   }
 }

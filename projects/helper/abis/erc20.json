@@ -1,5 +1,4 @@
 {
-  "totalSupply": "function totalSupply() public view returns (uint256)",
   "balanceOf": "function balanceOf(address account) view returns (uint256)",
   "symbol": "string:symbol",
   "name": "string:name"
