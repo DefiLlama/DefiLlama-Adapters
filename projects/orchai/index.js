@@ -26,7 +26,7 @@ async function oraiTVL() {
 module.exports = {
   timetravel: false,
   methodology:
-    "Token from Liquid Staking, Money Market, Orchestrator are counted as TVL",
+    "Tokens from Liquid Staking, Money Market, Orchestrator are counted as TVL",
   orai: {
     tvl: oraiTVL,
   },
