@@ -36,7 +36,7 @@ function parseOutput(result, abi, allAbi) {
     if (typeof response[key] === 'bigint') response[key] = response[key].toString()
   }
 
-  if (abi.outputs.length === 1) {
+  if (abi.outputs.length === 1 && !abi.outputs[0].type.includes('::')) {
     response = response[abi.outputs[0].name]
     if (abi.outputs[0].type === 'Uint256') return +response
     switch (abi.customType) {
