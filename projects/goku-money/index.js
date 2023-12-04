@@ -43,6 +43,14 @@ async function tvl(ts, _block, chainBlocks, { api }) {
     tokensAndOwners.push([collateral, activePool])
     tokensAndOwners.push([collateral, defaultPool])
   }
+
+  for(const owner of Object.values(GAI_STAKES)) {
+    tokensAndOwners.push([GAI_TOKEN_ADDRESS, owner])
+  }
+
+  for(const owner of Object.values(GOK_STAKES)) {
+    tokensAndOwners.push([GOK_TOKEN_ADDRESS, owner])
+  }
   return sumTokens2({ api, tokensAndOwners, })
 }
 
