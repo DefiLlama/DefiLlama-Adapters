@@ -1,10 +1,9 @@
 const { toUSDTBalances } = require("../helper/balances");
 const { get } = require("../helper/http");
-const axios = require("axios");
 
 async function tvl(ts) {
-  const { data } = await axios.get(
-    "https://kx58j6x5me.execute-api.us-east-1.amazonaws.com/sui/deepbook?interval=hour&timeFrame=all&dataType=tvl"
+  const data = await get(
+    "https://kx58j6x5me.execute-api.us-east-1.amazonaws.com/sui/deepbook?interval=day&timeFrame=all&dataType=tvl"
   );
   return toUSDTBalances(findClosestTvl(data, ts));
 }
@@ -29,17 +28,12 @@ function findClosestTvl(data, ts) {
 
   let aggregatedTvl = {};
   data.forEach((item) => {
-    if (!aggregatedTvl[item.alias]) {
-      aggregatedTvl[item.alias] = 0;
-    }
-    aggregatedTvl[item.alias] += item.value;
+    // there should be no duplicate alias, if they are, the latest one will be used
+    aggregatedTvl[item.alias] = item.value;
   });
 
   // Sum all unique values together
-  let totalTvl = Object.values(aggregatedTvl).reduce(
-    (acc, current) => acc + current,
-    0
-  );
+  let totalTvl = Object.values(aggregatedTvl).reduce((acc, current) => acc + current, 0);
 
   return totalTvl;
 }
