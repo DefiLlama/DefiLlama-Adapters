@@ -5,7 +5,7 @@ const BOOL_KEYS = [
 
 const DEFAULTS = {
   COVALENT_KEY: 'ckey_72cd3b74b4a048c9bc671f7c5a6',
-  SOLANA_RPC: 'https://mainnet.helius-rpc.com/?api-key=edc01bc7-f50a-4750-bb57-0faab1c50800',
+  SOLANA_RPC: 'https://api.mainnet-beta.solana.com',
   APTOS_RPC: 'https://aptos-mainnet.pontem.network',
   SUI_RPC: 'https://fullnode.mainnet.sui.io/',
   MULTIVERSX_RPC: 'https://api.multiversx.com',
