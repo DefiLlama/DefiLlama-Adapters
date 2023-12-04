@@ -1,7 +1,6 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 
-const { transformBscAddress } = require("../helper/portedTokens");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 
 const TimeWarpPool_LP_UNISWAP_ETH =
@@ -22,7 +21,7 @@ const calcTvl = async (balances, chain, block, TimeWarpPool) => {
     })
   ).output;
 
-  const transformAddress = await transformBscAddress();
+  const transformAddress = i => `bsc:${i}`;
 
   await sumTokensAndLPsSharedOwners(
     balances,

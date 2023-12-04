@@ -160,7 +160,7 @@ let optimismTokenAddress=[usdtOptimism,daiOptimism,wbtcOptimism]
 let arbitrumTokenAddress=[wbtcArbitrum,usdtArbitrum,daiArbitrum]
 
 
-async function ethTvl(timestamp, ethBlock) {
+async function ethTvl(timestamp, ethBlock, _, { logArray }) {
   let balances = {};
   let tokenBalance;
   const toa = []
@@ -170,14 +170,14 @@ async function ethTvl(timestamp, ethBlock) {
     toa.push([t, BRIDGE_ADDRESS])
   })
 
-  tokenBalance = (await sdk.api.eth.getBalance({ target: eth1Addr })).output;
+  tokenBalance = (await sdk.api.eth.getBalance({ target: eth1Addr, logArray })).output;
   sdk.util.sumSingleBalance(balances, "ethereum:" + ADDRESSES.ethereum.WETH, tokenBalance)
 
   return sumTokens(balances, toa, ethBlock)
 }
 
 
-async function bscTvl(timestamp, ethBlock, chainBlocks) {
+async function bscTvl(timestamp, ethBlock, chainBlocks, { logArray }) {
   const chain = 'bsc'
   const toa = []
   let balances = {};
@@ -187,10 +187,10 @@ async function bscTvl(timestamp, ethBlock, chainBlocks) {
   })
 
 
-  return sumTokens(balances, toa, chainBlocks[chain], chain)
+  return sumTokens(balances, toa, chainBlocks[chain], chain, undefined, { logArray })
 }
 
-async function avaxTvl(timestamp, ethBlock, chainBlocks) {
+async function avaxTvl(timestamp, ethBlock, chainBlocks, { logArray }) {
   const chain = 'avax'
   const toa = []
   let balances = {};
@@ -199,10 +199,10 @@ async function avaxTvl(timestamp, ethBlock, chainBlocks) {
     toa.push([t, BRIDGE_ADDRESS])
   })
 
-  return sumTokens(balances, toa, chainBlocks[chain], chain)
+  return sumTokens(balances, toa, chainBlocks[chain], chain, undefined, { logArray })
 }
 
-async function hecoTvl(timestamp, ethBlock, chainBlocks) {
+async function hecoTvl(timestamp, ethBlock, chainBlocks, { logArray }) {
   const chain = 'heco'
   const toa = []
   let balances = {};
@@ -211,10 +211,10 @@ async function hecoTvl(timestamp, ethBlock, chainBlocks) {
     toa.push([t, BRIDGE_ADDRESS])
   })
 
-  return sumTokens(balances, toa, chainBlocks[chain], chain)
+  return sumTokens(balances, toa, chainBlocks[chain], chain, undefined, { logArray })
 }
 
-async function polygonTvl(timestamp, ethBlock, chainBlocks) {
+async function polygonTvl(timestamp, ethBlock, chainBlocks, { logArray }) {
   const chain = 'polygon'
   const toa = []
   let balances = {};
@@ -223,10 +223,10 @@ async function polygonTvl(timestamp, ethBlock, chainBlocks) {
     toa.push([t, BRIDGE_ADDRESS])
   })
 
-  return sumTokens(balances, toa, chainBlocks[chain], chain)
+  return sumTokens(balances, toa, chainBlocks[chain], chain, undefined, { logArray })
 }
 
-async function fantomTvl(unixTimestamp, ethBlock, chainBlocks) {
+async function fantomTvl(unixTimestamp, ethBlock, chainBlocks, { logArray }) {
   const chain = 'fantom'
   const toa = []
   let balances = {};
@@ -235,10 +235,10 @@ async function fantomTvl(unixTimestamp, ethBlock, chainBlocks) {
     toa.push([t, BRIDGE_ADDRESS])
   })
 
-  return sumTokens(balances, toa, chainBlocks[chain], chain)
+  return sumTokens(balances, toa, chainBlocks[chain], chain, undefined, { logArray })
 }
 
-async function harmonyTvl(unixTimestamp, ethBlock, chainBlocks) {
+async function harmonyTvl(unixTimestamp, ethBlock, chainBlocks, { logArray }) {
   const chain = 'harmony'
   const toa = []
   let balances = {};
@@ -247,10 +247,10 @@ async function harmonyTvl(unixTimestamp, ethBlock, chainBlocks) {
     toa.push([t, BRIDGE_ADDRESS])
   })
 
-  return sumTokens(balances, toa, chainBlocks[chain], chain)
+  return sumTokens(balances, toa, chainBlocks[chain], chain, undefined, { logArray })
 }
 
-async function metisTvl(unixTimestamp, ethBlock, chainBlocks) {
+async function metisTvl(unixTimestamp, ethBlock, chainBlocks, { logArray }) {
   const chain = 'metis'
   const toa = []
   let balances = {};
@@ -259,10 +259,10 @@ async function metisTvl(unixTimestamp, ethBlock, chainBlocks) {
     toa.push([t, BRIDGE_ADDRESS])
   })
 
-  return sumTokens(balances, toa, chainBlocks[chain], chain)
+  return sumTokens(balances, toa, chainBlocks[chain], chain, undefined, { logArray })
 }
 
-async function cronosTvl(timestamp, ethBlock, chainBlocks) {
+async function cronosTvl(timestamp, ethBlock, chainBlocks, { logArray }) {
   const chain = 'cronos'
   const toa = []
   let balances = {};
@@ -271,10 +271,10 @@ async function cronosTvl(timestamp, ethBlock, chainBlocks) {
     toa.push([t, BRIDGE_ADDRESS])
   })
 
-  return sumTokens(balances, toa, chainBlocks[chain], chain)
+  return sumTokens(balances, toa, chainBlocks[chain], chain, undefined, { logArray })
 }
 
-async function ioTexTvl(timestamp, ethBlock, chainBlocks) {
+async function ioTexTvl(timestamp, ethBlock, chainBlocks, { logArray }) {
   const chain = 'iotex'
   const toa = []
   let balances = {};
@@ -283,10 +283,10 @@ async function ioTexTvl(timestamp, ethBlock, chainBlocks) {
     toa.push([t, BRIDGE_ADDRESS])
   })
 
-  return sumTokens(balances, toa, chainBlocks[chain], chain)
+  return sumTokens(balances, toa, chainBlocks[chain], chain, undefined, { logArray })
 }
 
-async function moonriverTvl(timestamp, ethBlock, chainBlocks) {
+async function moonriverTvl(timestamp, ethBlock, chainBlocks, { logArray }) {
   const chain = 'moonriver'
   const toa = []
   let balances = {};
@@ -295,10 +295,10 @@ async function moonriverTvl(timestamp, ethBlock, chainBlocks) {
     toa.push([t, BRIDGE_ADDRESS])
   })
 
-  return sumTokens(balances, toa, chainBlocks[chain], chain)
+  return sumTokens(balances, toa, chainBlocks[chain], chain, undefined, { logArray })
 }
 
-async function optimismTvl(timestamp, ethBlock, chainBlocks) {
+async function optimismTvl(timestamp, ethBlock, chainBlocks, { logArray }) {
   const chain = 'optimism'
   const toa = []
   let balances = {};
@@ -306,10 +306,10 @@ async function optimismTvl(timestamp, ethBlock, chainBlocks) {
     toa.push([t, BRIDGE_ADDRESS])
   })
 
-  return sumTokens(balances, toa, chainBlocks[chain], chain)
+  return sumTokens(balances, toa, chainBlocks[chain], chain, undefined, { logArray })
 }
 
-async function arbitrumTvl(timestamp, ethBlock, chainBlocks) {
+async function arbitrumTvl(timestamp, ethBlock, chainBlocks, { logArray }) {
   const chain = 'arbitrum'
   const toa = []
   let balances = {};
@@ -317,7 +317,7 @@ async function arbitrumTvl(timestamp, ethBlock, chainBlocks) {
     toa.push([t, BRIDGE_ADDRESS])
   })
 
-  return sumTokens(balances, toa, chainBlocks[chain], chain)
+  return sumTokens(balances, toa, chainBlocks[chain], chain, undefined, { logArray })
 }
 
 

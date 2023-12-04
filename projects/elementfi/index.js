@@ -62,7 +62,7 @@ async function tvl(timestamp, block, _, { api }) {
         balances[token.toLowerCase()] = balances[token.toLowerCase()] ? new bn(balances[token.toLowerCase()]).plus(poolTokens.balances[i]) : poolTokens.balances[i];
       }
     } catch (e) {
-      console.log(e)
+      sdk.log(e)
     }
 
   }))
