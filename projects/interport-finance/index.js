@@ -7,13 +7,14 @@ const defaultVaults = [usdtVault, usdcVault];
 const config = {
   era: { vaults: ['0xc724832c5ed81599aE3E4EBC0eC4f87A285B5838'] },
   base: { vaults: [usdcVault] },
+  op_bnb: { vaults: [usdtVault] },
 }
 
 module.exports = {
   methodology: 'Interport TVL is calculated by summing the USDT and USDC balance of the vaults contracts, ITP token balance in the ITP Revenue Share contract and LP token balance in the LP Revenue Share contract.',
 };
 
-['ethereum', 'avax', 'bsc', 'fantom', 'arbitrum', 'polygon', 'polygon_zkevm', 'base', 'era', 'optimism', 'linea'].forEach(chain => {
+['ethereum', 'avax', 'bsc', 'fantom', 'arbitrum', 'polygon', 'polygon_zkevm', 'base', 'era', 'optimism', 'linea', 'eon', 'op_bnb', 'scroll'].forEach(chain => {
   module.exports[chain] = {
     tvl: async (_, _1, _2, { api }) => {
       const vaults = config[chain]?.vaults || defaultVaults
