@@ -12,6 +12,8 @@ module.exports = {
   arbitrum: { tvl },
   optimism: { tvl },
   base: { tvl },
+  linea: { tvl },
+  manta: { tvl },
 
   hallmarks: [
     [1688688480, "ReHold V2 Launch"],
