@@ -13,12 +13,6 @@ const tvl = async (_, _1, _2, { api }) => {
 }
 
 module.exports = {
-    methodology: "Fortunafi is a leading onchain financial institution \
-spearheading advancements in the Real World Assets (RWA) sector. Through key \
-partnerships and integrations, Fortunafi delivers the tokenization of RWAs \
-onchain to bring DeFi-structured yield products, alternative lending, and \
-all-in-one liquidity solutions to financial institutions, startups, and \
-investors.",
     canto: {
         tvl
     }
