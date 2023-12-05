@@ -238,5 +238,14 @@ module.exports = {
          '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4', // portal v2
        ]
      },
+     {
+       name: 'metis',
+       tokens: [
+         ADDRESSES.metis.WETH,
+       ],
+       holders: [
+         '0xd8db4fb1fEf63045A443202d506Bcf30ef404160', // portal v2
+       ]
+     },
   ]
 }
