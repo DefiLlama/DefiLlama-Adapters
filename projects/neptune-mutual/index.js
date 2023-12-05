@@ -5,6 +5,20 @@ const abi = {
   sc: "address:sc",
 }
 
+const npm = {
+  ethereum: "0x57f12fe6a4e5fe819eec699fadf9db2d06606bb4",
+  arbitrum: "0x57f12fe6a4e5fe819eec699fadf9db2d06606bb4",
+  bsc: "0x57f12fe6a4e5fe819eec699fadf9db2d06606bb4",
+};
+
+const usdc = {
+  arbitrum: "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+};
+
+const treasury = {
+  arbitrum: "0x808ca06eec8d8645386be4293a7f4428d4994f5b",
+};
+
 const vaultFactories = {
   ethereum: "0x0150b57aa8cc6fcbc110f07eef0c85731d8aacf4",
   arbitrum: "0x0150b57aa8cc6fcbc110f07eef0c85731d8aacf4",
@@ -31,9 +45,30 @@ async function tvl(_, block, _1, { api, chain }) {
     abi: abi.sc,
     calls: vaults,
   })
-  const toa = tokens.map((token, i) => ([token, vaults[i]]))
 
-  return sumTokens2({ api, tokensAndOwners: toa, chain })
+  const toa = []
+
+  // stablecoin, vault
+  toa.push(...tokens.map((token, i) => ([token, vaults[i]])))
+
+  // npm, vault
+  if (npm[chain]) {
+    toa.push(...vaults.map((vault, i) => ([npm[chain], vault])))
+  }
+
+  if (usdc[chain] && treasury[chain]) {
+    toa.push([usdc[chain], treasury[chain]])
+  }
+
+  if (npm[chain] && treasury[chain]) {
+    toa.push([npm[chain], treasury[chain]])
+  }
+
+  const vaultTvl = await sumTokens2({ api, tokensAndOwners: toa, chain, resolveLP: true })
+
+  console.log(vaultTvl);
+
+  return vaultTvl
 }
 
 module.exports = {
