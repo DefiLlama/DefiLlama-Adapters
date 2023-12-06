@@ -77,17 +77,17 @@ Object.keys(CONFIG).forEach((chain) => {
 
 
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api }) => {
+    tvl: async (_, _b, _cb, { api, logArray }) => {
       const factory = await api.call({ abi: abi.factory, target: router })
       const pools = await api.fetchList({ lengthAbi: abi.allPoolsLength, itemAbi: abi.allPools, target: factory, })
-      const tokens = await api.multiCall({ abi: abi.token, calls: pools })
+      const tokens = await api.multiCall({ abi: abi.token, calls: pools, logArray })
       const toa = []
       tokens.forEach((t, i) => {
         t = t.toLowerCase()
         if (t === etherToken) toa.push([nullAddress, t])
         else toa.push([t, pools[i]])
       })
-      return sumTokens2({ api, tokensAndOwners: toa })
+      return sumTokens2({ api, tokensAndOwners: toa, logArray })
     },
   }
 
