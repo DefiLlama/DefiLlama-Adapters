@@ -26,25 +26,25 @@ const baseMMY = "0x0d8393CEa30df4fAFA7f00f333A62DeE451935C1";
 let tvlExports = mergeExports([
   {
     fantom: {
-      staking: staking(fantomV2Staking, fantomMMY, "fantom"),
+      staking: staking(fantomV2Staking, fantomMMY),
       tvl: gmxExports({ vault: fantomV2Vault })
     }
   },
   {
   fantom: {
-    staking: staking(fantomStaking, fantomMMY, "fantom"),
+    staking: staking(fantomStaking, fantomMMY),
     tvl: gmxExports({ vault: fantomVault })
   },
   optimism: {
-    staking: staking(opStaking, opMMY, "optimism"),
+    staking: staking(opStaking, opMMY),
     tvl: gmxExports({ vault: opVault })
   },
   arbitrum: {
-    staking: staking(arbStaking, arbMMY, "arbitrum"),
+    staking: staking(arbStaking, arbMMY),
     tvl: gmxExports({ vault: arbVault })
   },
   base: {
-    staking: staking(baseStaking, baseMMY, "base"),
+    staking: staking(baseStaking, baseMMY),
     tvl: gmxExports({ vault: baseVault })
   },
 }]);
