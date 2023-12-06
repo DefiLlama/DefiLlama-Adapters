@@ -11,7 +11,7 @@ async function tvl(_, _a, _b, {api}){
         params: [farm]
     })
     const balances = {
-        "0x6b175474e89094c44da98b954eedeac495271d0f": dsr
+        [ADDRESSES.ethereum.DAI]: dsr
     }
     await sumTokens({
         api,
