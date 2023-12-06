@@ -61,6 +61,12 @@ const ankrChainMapping = {
   polygon_zkevm: 'polygon_zkevm',
   era: 'zksync_era',
   avax: 'avalanche',
+  flare: 'flare',
+  xdai: 'gnosis',
+  linea: 'linea',
+  rollux: 'rollux',
+  scroll: 'scroll',
+  syscoin: 'syscoin',
 }
 
 async function ankrGetTokens(address, { onlyWhitelisted = true } = {}) {
