@@ -48,12 +48,16 @@ const TURBO_SWETH = "0xd33dad974b938744dac81fe00ac67cb5aa13958e";
 const TURBO_GHO = "0x0c190ded9be5f512bd72827bdad4003e9cc7975c";
 const ETH_GROWTH = "0x6c51041a91c91c86f3f08a72cb4d3f67f1208897";
 const TURBO_STETH = "0xfd6db5011b171b05e1ea3b92f9eacaeeb055e971";
+const TURBO_SOMM = "0x5195222f69c5821f8095ec565e71e18ab6a2298f";
+const TURBO_EETH = "0x9a7b4980C6F0FCaa50CD5f288Ad7038f434c692e";
 
 const cellarsV2p5 = [
   { id: TURBO_SWETH, startBlock: 17910374 },
   { id: TURBO_GHO, startBlock: 18118614 },
   { id: ETH_GROWTH, startBlock: 18144591 },
   { id: TURBO_STETH, startBlock: 18330620 },
+  { id: TURBO_SOMM, startBlock: 18516369 },
+  { id: TURBO_EETH, startBlock: 18622910 },
 ];
 
 module.exports = {

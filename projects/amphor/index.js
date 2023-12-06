@@ -4,6 +4,7 @@ const config = {
   ethereum: {
     lvTokens: {
       "ampr-LP-USD": "0x3b022EdECD65b63288704a6fa33A8B9185b5096b",
+      "ampr-LP-ETH": "0x2791EB5807D69Fe10C02eED6B4DC12baC0701744"
     }
   }
 }
