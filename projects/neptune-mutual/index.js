@@ -15,10 +15,6 @@ const usdc = {
   arbitrum: "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
 };
 
-const treasury = {
-  arbitrum: "0x808ca06eec8d8645386be4293a7f4428d4994f5b",
-};
-
 const vaultFactories = {
   ethereum: "0x0150b57aa8cc6fcbc110f07eef0c85731d8aacf4",
   arbitrum: "0x0150b57aa8cc6fcbc110f07eef0c85731d8aacf4",
@@ -54,14 +50,6 @@ async function tvl(_, block, _1, { api, chain }) {
   // npm, vault
   if (npm[chain]) {
     toa.push(...vaults.map((vault, i) => ([npm[chain], vault])))
-  }
-
-  if (usdc[chain] && treasury[chain]) {
-    toa.push([usdc[chain], treasury[chain]])
-  }
-
-  if (npm[chain] && treasury[chain]) {
-    toa.push([npm[chain], treasury[chain]])
   }
 
   const vaultTvl = await sumTokens2({ api, tokensAndOwners: toa, chain, resolveLP: true })
