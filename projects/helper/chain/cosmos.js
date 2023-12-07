@@ -27,7 +27,7 @@ const endPoints = {
   persistence: "https://rest.cosmos.directory/persistence",
   secret: "https://lcd.secret.express",
   // chihuahua: "https://api.chihuahua.wtf",
-  injective: "https://lcd-injective.whispernode.com:443",
+  injective: "https://sentry.lcd.injective.network:443",
   migaloo: "https://migaloo-api.polkachu.com",
   fxcore: "https://fx-rest.functionx.io",
   xpla: "https://dimension-lcd.xpla.dev",
@@ -39,11 +39,13 @@ const endPoints = {
   aura: "https://lcd.aura.network",
   archway: "https://api.mainnet.archway.io",
   sifchain: "https://sifchain-api.polkachu.com",
-  nolus: "https://pirin-cl.nolus.network:1317"
+  nolus: "https://pirin-cl.nolus.network:1317",
+  bostrom: "https://lcd.bostrom.cybernode.ai"
 };
 
 const chainSubpaths = {
   crescent: "crescent",
+  osmosis: "osmosis",
   comdex: "comdex",
   umee: "umee",
   kava: "kava",

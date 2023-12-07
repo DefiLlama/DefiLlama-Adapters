@@ -35,7 +35,14 @@ async function post(endpoint, body) {
   return (await axios.post(endpoint, body)).data
 }
 
-async function graphQuery(endpoint, graphQuery, params = {}, { timestamp, chain, chainBlocks, useBlock = false } = {}) {
+async function graphQuery(endpoint, graphQuery, params = {}, { api, timestamp, chain, chainBlocks, useBlock = false } = {}) {
+  if (api) {
+    if (!timestamp) timestamp = api.timestamp
+    if (!chain) chain = api.chain
+    if (useBlock && !params.block)
+      params.block = (await api.getBlock()) - 200
+
+  }
   if (useBlock && !params.block)
     params.block = await getBlock(timestamp, chain, chainBlocks)
   return request(endpoint, graphQuery, params)

@@ -23,12 +23,10 @@ module.exports = {
     tvl: sumTokensExport({
       owner: '0x56CC5A9c0788e674f17F7555dC8D3e2F1C0313C0',
       tokens: [
-        ADDRESSES.arbitrum.USDC,
-        ADDRESSES.arbitrum.WETH,
-        ADDRESSES.arbitrum.WBTC,
-        ADDRESSES.arbitrum.USDT,
-        ADDRESSES.arbitrum.fsGLP,
-      ]
+        "0x70d95587d40A2caf56bd97485aB3Eec10Bee6336",
+        "0x47c031236e19d024b42f8AE6780E44A573170703",
+      ],
+      fetchCoValentTokens: true,
     })
   }
 }

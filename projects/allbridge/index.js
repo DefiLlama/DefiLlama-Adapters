@@ -205,11 +205,11 @@ const nearData = {
 const toNumber = (decimals, n) => BigNumber(n/(10 ** decimals)).toFixed(0)
 
 function getTVLFunction(chain) {
-    return async function tvl(timestamp, ethBlock, {[chain]: block }) {
+    return async function tvl(timestamp, ethBlock, {[chain]: block }, { logArray }) {
         const balances = {}
         const chainData = data[chain];
         const tokens = chainData.tokens.map(i => i.address)
-        return sumTokens2({ chain, block, tokens, owner: chainData.contractAddress })
+        return sumTokens2({ chain, block, tokens, owner: chainData.contractAddress, logArray })
     }
 }
 

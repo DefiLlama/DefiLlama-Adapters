@@ -24,17 +24,20 @@ const getTvl = isStaking => async (_, _1, _2, { api }) => {
 
   if (!pools) return {}
   const pedBal = pools[2]
-  const [usdtLPBal, pedLPBal] = await api.multiCall({  abi: 'erc20:balanceOf', calls: [
-    { target: ADDRESSES.scroll.USDT, params: NATIVE_LP_ADDRESS },
-    { target: NATIVE_ADDRES, params: NATIVE_LP_ADDRESS },
-  ]})
+  const {sqrtPrice_96} = await api.call({abi:abi.state,target:NATIVE_LP_ADDRESS})
+  let price = (sqrtPrice_96/2**96)**2
+  let pedPrice = 1/price*10**12
+  let pedAmount = pedPrice*(pedBal/10**18)
 
-  api.add(ADDRESSES.scroll.USDT, pedBal * usdtLPBal / pedLPBal)
+  api.add(ADDRESSES.scroll.USDT, pedAmount*10**6)
   return api.getBalances()
 }
 
 module.exports = {
   misrepresentedTokens: true,
+  hallmarks: [
+    [1699578000,"Rug Pull"]
+  ],
   scroll: {
     tvl: getTvl(false),
     staking: getTvl(true),
@@ -43,5 +46,6 @@ module.exports = {
 
 const abi = {
   "getPoolTotalTvl": "function getPoolTotalTvl() view returns (tuple(uint256 pid, address assets, uint256 tvl)[])",
-  "getReserves": "function getReserves() external view returns (uint _reserve0, uint _reserve1)"
+  "getReserves": "function getReserves() external view returns (uint _reserve0, uint _reserve1)",
+  "state":'function state() external view returns(uint160 sqrtPrice_96,int24 currentPoint,uint16 observationCurrentIndex,uint16 observationQueueLen,uint16 observationNextQueueLen,bool locked,uint128 liquidity,uint128 liquidityX)'
 }
