@@ -69,4 +69,5 @@ function getSeiDexTvl(codeId) {
 module.exports = {
   getFactoryTvl,
   getSeiDexTvl,
+  getAssetInfo,
 }
