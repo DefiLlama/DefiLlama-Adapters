@@ -4,12 +4,14 @@ const ABI = require('./abi.json');
 const config ={
   ethereum: [
     { factory: '0xf1e70677fb1f49471604c012e8B42BA11226336b', fromBlock: 17266660 }, // uniswap
-    { factory: '0x3edeA0E6E94F75F86c62E1170a66f4e3bD7d77fE', fromBlock: 18460401 } // pancakeswap
+    { factory: '0x3edeA0E6E94F75F86c62E1170a66f4e3bD7d77fE', fromBlock: 18460401 }, // pancakeswap
+    { factory: '0xDE07a0D5C9CA371E41a869451141AcE84BCAd119', fromBlock: 18375548 }, // GHO
   ],
   arbitrum: [
     { factory: '0xB9084c75D361D1d4cfC7663ef31591DeAB1086d6', fromBlock: 88503603 }, // uniswap
     { factory: '0x42f2dBb72964ac2854bF1C781E525C5CE1e19d52', fromBlock: 136696158 }, // sushiswap
     { factory: '0x2274AC83290eB9355f851b447D3046b32A5B4f52', fromBlock: 138961230 }, // camelot
+    { factory: '0xCCA961F89a03997F834eB5a0104efd9ba1f5800E', fromBlock: 153518527 }, // pancakeswap
   ],
   bsc: [
     { factory: '0xad2b34a2245b5a7378964BC820e8F34D14adF312', fromBlock: 28026886 }, // pancakeswap
