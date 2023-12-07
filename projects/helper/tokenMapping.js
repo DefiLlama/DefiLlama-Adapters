@@ -98,6 +98,7 @@ const fixBalancesTokens = {
   },
   eon: {
     [ADDRESSES.eon.ZEN]: { coingeckoId: 'zencash', decimals: 18 },
+    '0x38c2a6953f86a7453622b1e7103b738239728754': { coingeckoId: 'dai', decimals: 18 },
     [ADDRESSES.eon.WBTC]: { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
   },
   nos: {
