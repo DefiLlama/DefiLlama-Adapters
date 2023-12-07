@@ -13,6 +13,7 @@ const PRIME_SATELLITE_NETWORKS = {
   polygon: 137,
   base: 8453,
   optimism: 10,
+  celo: 42220,
 //   filecoin: 314
 };
 
