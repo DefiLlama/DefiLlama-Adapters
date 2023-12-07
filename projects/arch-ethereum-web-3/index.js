@@ -8,6 +8,8 @@ const sets = [
 const chambers = [
   '0xE15A66b7B8e385CAa6F69FD0d55984B96D7263CF',
   '0x103bb3EBc6F61b3DB2d6e01e54eF7D9899A2E16B',
+  '0x8F0d5660929cA6ac394c5c41f59497629b1dbc23',
+  '0x89c53B02558E4D1c24b9Bf3beD1279871187EF0B'
 ]
 
 const setAbi = 'address[]:getComponents'
