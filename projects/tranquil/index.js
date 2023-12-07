@@ -1,9 +1,8 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { BigNumber } = require("bignumber.js");
-const {compoundExports, getCompoundV2Tvl} = require('../helper/compound')
+const { getCompoundV2Tvl} = require('../helper/compound')
 const { uniTvlExport } = require('../helper/calculateUniTvl.js');
-const { getFixBalancesSync } = require("../helper/portedTokens");
 
 const tqOne = "0x34B9aa82D89AE04f0f546Ca5eC9C93eFE1288940"; // tqONE
 const wOne = ADDRESSES.harmony.WONE;
@@ -129,7 +128,7 @@ module.exports = {
   harmony: {
     tvl: sdk.util.sumChainTvls([
       tvl,
-      uniTvlExport('0xF166939E9130b03f721B0aE5352CCCa690a7726a', 'harmony'),
+      uniTvlExport('0xF166939E9130b03f721B0aE5352CCCa690a7726a', 'harmony', true),
     ]),
      borrowed: borrowed,
      pool2: pool2,

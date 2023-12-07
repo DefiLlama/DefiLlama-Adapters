@@ -41,7 +41,6 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
       abi: "function getPoolId(address) view returns (uint256)",
     })
   );
-  //console.log("platypusPIDS:", platypusPIDs);
   const platypusBalancesOutputs = (
     await api.multiCall({
       calls: platypusPIDs.map((pool) => ({
@@ -51,13 +50,11 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
       abi: "function userInfo(uint256,address) view returns (uint256,uint256,uint256,uint256)",
     })
   );
-  //console.log("platypusBalancesOutputs:", platypusBalancesOutputs);
   const platypusBalances = Object.values(platypusPoolsInfo).map((pool, i) => ({
     balance: platypusBalancesOutputs[i][0],
     token: pool.token.address,
     isLP: false,
   }));
-  //console.log("platypusBalances:", platypusBalances);
   //GET JOE BALANCES
   const joeBalancesOutputs = (
     await api.multiCall({
@@ -68,13 +65,11 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
       abi: "function getPoolInfo(address) view returns (uint256,uint256,uint256,uint256)",
     })
   );
-  //console.log("joeBalancesOutputs:", joeBalancesOutputs);
   const joeBalances = Object.values(JoePoolsInfo).map((pool, i) => ({
     balance: joeBalancesOutputs[i][2], //balance
     token: pool.token.address, //underlying lp token
     isLP: true,
   }));
-  //console.log("joeBalances:", joeBalances);
   //GET VECTOR CORE BALANCES
   const masterChefBalancesOutput = (
     await api.multiCall({
@@ -85,7 +80,6 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
       abi: "erc20:balanceOf",
     })
   );
-  //console.log("masterChefBalancesOutput:", masterChefBalancesOutput);
   const masterChefBalances = [...VectorStakingPools, ...VectorLPPools].map(
     (pool, i) => ({
       balance: masterChefBalancesOutput[i],
@@ -93,7 +87,6 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
       isLP: pool.token.contract === "IJoePair",
     })
   );
-  //console.log("masterChefBalances:", masterChefBalances);
   //GET OLD LOCKER BALANCES
   const oldLockerBalancesOutput = (
     await api.multiCall({
@@ -106,7 +99,6 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
       abi: "function totalSupply() view returns (uint256)",
     })
   );
-  //console.log("oldLockerBalancesOutput:", oldLockerBalancesOutput);
   //GET NEW LOCKER BALANCES
   const newLockerBalancesOutput = (
     await api.multiCall({
@@ -119,7 +111,6 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
       abi: "function totalLocked() view returns (uint256)",
     })
   );
-  //console.log("newLockerBalancesOutput:", newLockerBalancesOutput);
   const lockerBalances = [
     {
       balance: oldLockerBalancesOutput[0],
@@ -132,7 +123,6 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
       isLP: false,
     },
   ];
-  //console.log("lockerBalances:", lockerBalances);
   const AllBalances = [
     ...platypusBalances,
     ...joeBalances,

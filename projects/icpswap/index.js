@@ -10,7 +10,8 @@ module.exports = {
 
 async function tvl() {
   let tvl = 0
-  const pairs = await get('https://uvevg-iyaaa-aaaak-ac27q-cai.raw.ic0.app/pairs')
+  let pairs = await get('https://uvevg-iyaaa-aaaak-ac27q-cai.raw.ic0.app/pairs')
+  if (typeof pairs === 'string') pairs = JSON.parse(pairs.replace('},]', '}]'))
 
   const { errors } = await PromisePool.withConcurrency(15)
     .for(pairs)

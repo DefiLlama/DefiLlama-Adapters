@@ -26,6 +26,6 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const { owner, tokens, } = config[chain]
   module.exports[chain] = {
-    tvl: sumTokensExport({ tokens, owner, })
+    tvl: sumTokensExport({ tokens, owner, logCalls: true })
   }
 })

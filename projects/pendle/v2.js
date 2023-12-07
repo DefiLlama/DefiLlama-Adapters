@@ -14,14 +14,23 @@ const config = {
   },
   bsc: {
     factory: "0x2bEa6BfD8fbFF45aA2a893EB3B6d85D10EFcC70E",
-    fromBlock: 29484286,
+    fromBlock: 34060741,
+    pts: [
+      "0x5eC2ae0AFDEc891E7702344dc2A31C636B3627Eb",
+      "0x70c1138B54ba212776d3A9d29b6160C54C31cd5d",
+      "0x04eb6B56ff53f457c8E857ca8D4fbC8d9a531c0C",
+    ],
+  },
+  optimism: {
+    factory: "0x17F100fB4bE2707675c6439468d38249DD993d58",
+    fromBlock: 108061448,
   },
 };
 
 module.exports = {};
 
 Object.keys(config).forEach((chain) => {
-  const { factory, fromBlock } = config[chain];
+  const { factory, fromBlock, pts } = config[chain];
   module.exports[chain] = {
     tvl: async (_, _b, _cb, { api }) => {
       const logs = await getLogs({
@@ -36,6 +45,7 @@ Object.keys(config).forEach((chain) => {
         fromBlock,
       });
       const pt = logs.map((i) => i.PT);
+      if (pts) pt.push(...pts);
       let sy = [
         ...new Set(
           (
@@ -71,7 +81,7 @@ Object.keys(config).forEach((chain) => {
         api.add(v.uAsset.toLowerCase(), value);
       });
       let balances = api.getBalances();
-      const bridged = `arbitrum:${steth}`;
+      const bridged = `${chain}:${steth}`;
       if (bridged in balances) {
         balances[steth] = balances[bridged];
         delete balances[bridged];

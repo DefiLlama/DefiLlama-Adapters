@@ -7,3 +7,5 @@ module.exports = {
     [Math.floor(new Date('2023-02-01')/1e3), 'Product is winding down'],
   ],
 }
+
+module.exports.deadFrom = '2023-02-01'
