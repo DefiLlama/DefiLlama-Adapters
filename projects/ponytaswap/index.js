@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getUniTVL } = require('../helper/unknownTokens')
 const {staking} = require("../helper/staking");
 
@@ -6,7 +7,7 @@ const pool = [
   '0xE32C24CA6AddEb28F28e6361c88Ca41FB24a62Bc',
   '0x177b396560cDDB3876a32BEDA1887476566C1f1a'
 ];
-const contractAddr = '0x71d9cfd1b7adb1e8eb4c193ce6ffbe19b4aee0db';
+const contractAddr = ADDRESSES.rpg.WRPG;
 module.exports = {
   misrepresentedTokens: true,
   rpg: {

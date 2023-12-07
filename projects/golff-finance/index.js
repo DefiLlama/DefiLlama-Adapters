@@ -1,32 +1,14 @@
-const { default: axios } = require('axios')
-const { toUSDTBalances } = require("../helper/balances");
-
-const chainIds = {
-    ethereum: 1,
-    bsc: 56,
-    heco: 128
+const { compoundExports2 } = require('../helper/compound')
+const config = {
+  ethereum: { comptroller: '0xf22874F4aC836f23379f5dbd08dCA79afC523396', cether: '0x1b658a5804ee3985723114eeed6a9a22d18caa42' },
+  bsc: { comptroller: '0x75fc5839108DAf601431801Ce960bbF44c476d1a', cether: '0x3920923abe2852a62e5e88a2651d192dda5709a4' },
+  heco: { comptroller: '0x8bB3e552968ba906F19C217DFE98341AD9F03230', cether: '0x571fc95e14424aceb040bf68e23f92eec280042c' },
 }
 
-// https://golff.finance/api/v2/product/list?chain_id=56&biz_type=2
-function chainTvl(chain, filterFunction) {
-    return async (timestamp, ethBlock, chainBlocks) => {
-        const api = `https://golff.finance/api/v2/product/list?chain_id=${chainIds[chain]}&biz_type=1`
-        const pools = (await axios.get(api)).data.data.filter(filterFunction)
-        return toUSDTBalances(pools.reduce((t,p)=>t+p.tvl, 0)/1e18)
-    }
-}
 
-function chainExports(chain){
-    return {
-        tvl: chainTvl(chain, p=>!p.name.includes("GOF")),
-        staking: chainTvl(chain, p=>p.token_name==="GOF" || p.token_name=== "G-GOF"),
-        pool2: chainTvl(chain, p=>p.name.includes("GOF-")),
-    }
-}
+Object.keys(config).forEach(chain => {
+  module.exports[chain] = compoundExports2(config[chain])
+  // delete module.exports[chain].borrowed // removed because it is higher than deposited, probably will never be repaid
+})
 
-module.exports={
-    misrepresentedTokens: false,
-    ethereum:chainExports("ethereum"),
-    bsc:chainExports("bsc"),
-    heco:chainExports("heco"),
-}
+// TODO: mark it as dead from december 2022
