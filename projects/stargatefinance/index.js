@@ -41,6 +41,9 @@ const CONFIG = {
   metis: {
     router: '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590',
   },
+  mantle: {
+    router: '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590',
+  },
   base: {
     router: '0x45f1A95A4D3f3836523F5c83673c797f4d4d263B',
     etherToken: '0x224d8fd7ab6ad4c6eb4611ce56ef35dec2277f03',
@@ -74,17 +77,17 @@ Object.keys(CONFIG).forEach((chain) => {
 
 
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api }) => {
+    tvl: async (_, _b, _cb, { api, logArray }) => {
       const factory = await api.call({ abi: abi.factory, target: router })
       const pools = await api.fetchList({ lengthAbi: abi.allPoolsLength, itemAbi: abi.allPools, target: factory, })
-      const tokens = await api.multiCall({ abi: abi.token, calls: pools })
+      const tokens = await api.multiCall({ abi: abi.token, calls: pools, logArray })
       const toa = []
       tokens.forEach((t, i) => {
         t = t.toLowerCase()
         if (t === etherToken) toa.push([nullAddress, t])
         else toa.push([t, pools[i]])
       })
-      return sumTokens2({ api, tokensAndOwners: toa })
+      return sumTokens2({ api, tokensAndOwners: toa, logArray })
     },
   }
 

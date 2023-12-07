@@ -497,6 +497,19 @@ const assetList = [
   ["XRP", "XRP", "rEy8TFcrAPvhpKrwyrscNYyqBGUkE9hKaJ"],
   ["XRP", "XRP", "rNU4eAowPuixS5ZCWaRL72UUeKgxcKExpK"],
   ["XRP", "XRP", "rs8ZPbYqgecRcDzQpJYAMhSxSi5htsjnza"],
+  //missing wallets from last update + add FDUSD token to cex helper
+  ["USDT", "ARB", "0xf977814e90da44bfa03b6295a0616a897441acec"],
+  ["USDC", "ETH", "0xf977814e90da44bfa03b6295a0616a897441acec"],
+  ["USDC", "BSC", "0xf977814e90da44bfa03b6295a0616a897441acec"],
+  ["TUSD", "BSC", "0xe2fc31f816a9b94326492132018c3aecc4a93ae1"],
+  ["USDC", "BSC", "0xe2fc31f816a9b94326492132018c3aecc4a93ae1"],
+  ["USDC", "BSC", "0x8894e0a0c962cb723c1976a4421c95949be2d4e3"],
+  ["USDC", "BSC", "0x73f5ebe90f27b46ea12e5795d16c4b408b19cc6f"],
+  ["USDC", "BSC", "0x5a52e96bacdabb82fd05763e25335261b270efcb"],
+  ["USDC", "BSC", "0x3c783c21a0383057d128bae431894a5c19f9cf06"],
+  ["USDC", "BSC", "0x1fbe2acee135d991592f167ac371f3dd893a508b"],
+  ["TUSD", "BSC", "0xf977814e90da44bfa03b6295a0616a897441acec"],
+  ["TUSD", "BSC", "0x8894e0a0c962cb723c1976a4421c95949be2d4e3"],
 ]
 
 function getAddresses(chain) {
@@ -520,7 +533,10 @@ module.exports = {
   },
   bsc: {
     owners: getOwners('BEP20'),
-    tokens: [ADDRESSES.null,],
+    tokens: [
+      ADDRESSES.null,
+      '0x40af3827f39d0eacbf4a168f8d4ee67c121d11c9'
+    ],
   },
   bep2: {
     geckoId: 'binancecoin',

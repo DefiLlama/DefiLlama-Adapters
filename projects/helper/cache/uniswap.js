@@ -26,6 +26,7 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
 
   return async (_, _b, cb, { api, chain } = {}) => {
     // console.log(await api.call({ abi: 'address:factory', target: factory }))
+    // console.log(await api.call({ abi: 'address:factory', target: '0x5f0776386926e554cb088df5848ffd7c5f02ebfa' }))
 
     chain = chain ?? api?.chain
     if (!chain)
@@ -41,7 +42,7 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
 
     const _oldPairInfoLength = cache.pairs.length
     const length = await api.call({ abi: abi.allPairsLength, target: factory, })
-    
+
     sdk.log(chain, ' No. of pairs: ', length)
     sdk.log('cached info', cache.pairs.length)
     const pairCalls = []

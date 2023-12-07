@@ -1,10 +1,7 @@
-const ADDRESSES = require('../helper/coreAssets.json')
 const {compoundExports2} = require('../helper/compound')
 
 const master0vix = "0x8849f1a0cB6b5D6076aB150546EddEe193754F1C";
 const oMATIC = "0xE554E874c9c60E45F1Debd479389C76230ae25A8";
-const matic = ADDRESSES.polygon.WMATIC_2;
-const chain = "polygon";
 
 module.exports = {
   hallmarks: [

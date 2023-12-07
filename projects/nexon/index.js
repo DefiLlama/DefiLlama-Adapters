@@ -19,5 +19,5 @@ module.exports = {
     tvl: lendingMarket.tvl,
     borrowed: ()=>({})
   },
-  telos: compoundExports2({ comptroller: '0x5D2f22856DfEB4b5d6A4422FE0182B70D49cAFCa'})
+  telos: compoundExports2({ comptroller: '0x5D2f22856DfEB4b5d6A4422FE0182B70D49cAFCa', blacklistedTokens: ['0xdd11532eb81df5229ce85aaa9fc9ff0e9ca63b81']})
 }; 

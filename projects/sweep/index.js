@@ -6,6 +6,8 @@ const config = {
   ethereum: {},
   arbitrum: {},
   optimism: {},
+  base: {},
+  avax: {},
 };
 
 async function tvl(_a, _b, _c, { api }) {
@@ -15,7 +17,10 @@ async function tvl(_a, _b, _c, { api }) {
   const names = await api.multiCall({ abi: 'string:name', calls: minters })
   const uniswapMinters = minters.filter((_, i) => /uniswap/i.test(names[i]))
   const otherMinters = minters.filter((_, i) => !/uniswap/i.test(names[i]))
-  await sumTokens2({ api, owners: uniswapMinters, resolveUniV3: true, blacklistedTokens: [SWEEP_ADDRESS], tokens: [USDC_ADDRESS], })
+
+  if(uniswapMinters.length > 0)
+    await sumTokens2({ api, owners: uniswapMinters, resolveUniV3: true, blacklistedTokens: [SWEEP_ADDRESS], tokens: [USDC_ADDRESS], })
+
   const bals = await api.multiCall({ abi: 'uint256:assetValue', calls: otherMinters })
   bals.forEach(bal => api.add(USDC_ADDRESS, bal))
   return api.getBalances()

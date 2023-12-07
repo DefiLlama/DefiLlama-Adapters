@@ -84,6 +84,7 @@ const HYPE_REGISTRY = {
   ],
   manta: [
     ["0x683292172E2175bd08e3927a5e72FC301b161300", 394949], // Apertureswap
+    ["0x8a9570ec97534277Ade6e46d100939FbCE4968f0", 689622], // Quickswap
   ],
   metis: [
     ["0xFc13Ebe7FEB9595D70195E9168aA7F3acE153621", 9080358], // Hercules

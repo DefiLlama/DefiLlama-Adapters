@@ -8,7 +8,7 @@ const palmToken = "0x29745314B4D294B7C77cDB411B8AAa95923aae38"; //PALM token add
 
 module.exports = {
   bsc: {
-    tvl: gmxExports({ vault: palmswapVault, blacklistedTokens: ['0xaeeff2e9388a578c02754cd08699652fb76035c7'] }),
+    tvl: gmxExports({ vault: palmswapVault, permitFailure: true, }),
     staking: staking(palmTokenStakingContract, palmToken),
   },
 };
