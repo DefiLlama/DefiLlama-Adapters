@@ -4,8 +4,15 @@ const USDTpolygon = ADDRESSES.polygon.USDT;
 const USDTbsc = ADDRESSES.bsc.USDT;
 const USDCpolygon = ADDRESSES.polygon.USDC;
 const USDCbsc = ADDRESSES.bsc.USDC;
+const USDTeth = ADDRESSES.ethereum.USDT;
+const USDCeth = ADDRESSES.ethereum.USDC;
 
 const config = {
+  ethereum: {
+    owners: Object.values({
+      predictionPROV2: "0x062EB9830D1f1f0C64ac598eC7921f0cbD6d4841",
+    }),
+  },
   bsc: {
     owners: Object.values({
       predictionBNB: "0x31B8A8Ee92961524fD7839DC438fd631D34b49C6",
@@ -27,9 +34,10 @@ const config = {
   },
 };
 
-module.exports = {};
-
 module.exports = {
+  ethereum: {
+    tvl: sumTokensExport({ chain: "ethereum", owners: config.ethereum.owners, tokens: [nullAddress, USDTeth, USDCeth] }),
+  },
   bsc: { tvl: sumTokensExport({ chain: "bsc", owners: config.bsc.owners, tokens: [nullAddress, USDTbsc, USDCbsc] }) },
   polygon: {
     tvl: sumTokensExport({ chain: "polygon", owners: config.polygon.owners, tokens: [nullAddress, USDTpolygon, USDCpolygon] }),
