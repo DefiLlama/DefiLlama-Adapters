@@ -158,7 +158,7 @@ const assetList = [
   ["DOGE", "DOGE", "D7dm1b8DEqaCxcgaPuBXz9FqjAQ7UTK6sz"],
   ["DOGE", "DOGE", "DAYthKnkrWUHRENvtBwjemi6kFzk4K9SMr"],
   ["DOGE", "DOGE", "DCxFJEWsYJFnC3HP7YfZdsd3X43ttQA79Z"],
-  ["DOGE", "DOGE", "DD1h9ojoyAdAGLXaqgqZP3j86AtxZs6jCn"],
+  ["DOGE", "DOGE", "DD1h9ojoyAdAGLXaqgqZP3j86AtxZs6jCn"], // we dont track doge chain, but we added all wallets here in case someone wants to take a look.
   ["DOGE", "DOGE", "DE5opaXjFgDhFBqL6tBDxTAQ56zkX6EToX"],
   ["DOGE", "DOGE", "DEvUEF9VrXbKf5rdaQCUzeh4MvZxd3Zx5T"],
   ["DOGE", "DOGE", "DFyohYD3bMXCEg1TdMfdy1J7dYfK4shhPf"],
