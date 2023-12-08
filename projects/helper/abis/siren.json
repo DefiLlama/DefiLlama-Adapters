@@ -1,0 +1,5 @@
+{
+    "pricePerShareCached": "function pricePerShareCached() view returns (uint256)",
+    "totalSupply": "function totalSupply() view returns (uint256)",
+    "collateralToken": "function collateralToken() view returns (address)"
+}
