@@ -5,8 +5,8 @@ module.exports = {
   ethereum: {
     tvl: sumTokensExport({
       owners: [
-        '0x4082C9647c098a6493fb499EaE63b5ce3259c574',
-        '0x426d1F3866BfcDF4d0efEfeD1Ba3c5E06CaECbE6',
+        '0x4082C9647c098a6493fb499EaE63b5ce3259c574', // L1ChugSplashProxy
+        '0x426d1F3866BfcDF4d0efEfeD1Ba3c5E06CaECbE6', // L1SwapVault
       ],
       tokens: [
         ADDRESSES.null,
