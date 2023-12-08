@@ -1,7 +1,6 @@
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 
-
 const utils = require('./helper/utils');
 const { unwrapUniswapLPs } = require('./helper/unwrapLPs');
 
@@ -13,7 +12,8 @@ const CHAINS = {
 }
 
 const SUB_TOKENS = {
-  'polygon:0x1d2a0E5EC8E5bBDCA5CB219e649B565d8e5c3360': 'polygon:0xd6df932a45c0f255f85145f286ea0b292b21c90b' // amAAVE -> AAVE
+  'polygon:0x1d2a0e5ec8e5bbdca5cb219e649b565d8e5c3360': 'polygon:0xd6df932a45c0f255f85145f286ea0b292b21c90b', // amAAVE -> AAVE
+  'ethereum:0xf1c9acdc66974dfb6decb12aa385b9cd01190e38': 'ethereum:0xfe2e637202056d30016725477c5da089ab0a043a' // osETH -> sETH2
 }
 
 const LP_TOKENS = [
@@ -48,10 +48,12 @@ const tvl = (url, chain) => async (timestamp, blockETH, chainBlocks) => {
 
   // Sum all balances
   balanceOfResults.output.forEach((balanceOf) => {
-      const address = balanceOf.input.target;
-      const balance = balances[address] ? BigNumber(balanceOf.output).plus(BigNumber(balances[address])).toFixed().toString(): balanceOf.output;
+    const address = balanceOf.input.target.toLowerCase();
+    const balance = balances[address]
+      ? BigNumber(balanceOf.output).plus(BigNumber(balances[address])).toFixed().toString()
+      : BigNumber(balanceOf.output).toFixed().toString();
 
-      balances[address] = balance;
+    balances[address] = balance;
   });
 
   // Iterate over final balances
@@ -59,17 +61,17 @@ const tvl = (url, chain) => async (timestamp, blockETH, chainBlocks) => {
   // - Substitute unrecognized tokens
   // - Extract LP tokens
   for (let token in balances) {
-    // Add chain prefix if non ETHEREUM
-    if (chain !== CHAINS.ETHEREUM) {
-      balances[`${chain}:${token}`] = balances[token]
-      delete balances[token]
-      token = `${chain}:${token}`
-    }
+    // Add chain prefix
+    balances[`${chain}:${token}`] = balances[token]
+    delete balances[token]
+    token = `${chain}:${token}`
 
     // Substitute unrecognized tokens
     const subToken = SUB_TOKENS[token]
     if (subToken) {
-      balances[subToken] = balances[token]
+      balances[subToken] = balances[subToken]
+        ? BigNumber(balances[subToken]).plus(balances[token]).toFixed().toString()
+        : BigNumber(balances[token]).toFixed().toString()
       delete balances[token]
     }
 
