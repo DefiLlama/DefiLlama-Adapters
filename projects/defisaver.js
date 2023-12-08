@@ -1,6 +1,6 @@
-async function tvl(_0, _1, _2, obj) {
-  const block = obj.block;
-  const chainId = obj.api.chainId;
+async function tvl(_0, _1, _2, { api }) {
+  const block = (await api.getBlock()) - 200;
+  const chainId = api.chainId;
 
   // Endpoint returns data calculated by these two packages:
   //
