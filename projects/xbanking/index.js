@@ -1,20 +1,13 @@
-const utils = require('../helper/utils');
-
-async function getData() {
-  const res = await utils.fetchURL('https://api.xbanking.org/info')
-  return res.data;
-}
-
-async function fetch() {
-  const data = await getData()
-  return data.tvl
-}
+const ADDRESSES = require('../helper/coreAssets.json')
+const { call } = require("@defillama/sdk/build/abi/abi2");
+const { sumTokensAccount } = require("../helper/chain/ton.js");
 
 module.exports = {
-  timetravel: false,
-  misrepresentedTokens: true,
-  vite:{
-    fetch: fetch
+  ton: {
+    tvl: (_, _b, _c, { api, logArray }) =>
+        sumTokensAccount({
+            api,
+            addr: "Ef-WMmizoLk4CvqTKs-mDrGJwW4fiH5zVd4SaHih7PObxP_0",
+      }),
   },
-  fetch: fetch
-}
+};
