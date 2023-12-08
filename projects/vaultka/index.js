@@ -50,6 +50,8 @@ module.exports = {
         vodkaV2DN_ARB_Water: "0x175995159ca4F833794C88f7873B3e7fB12Bb1b6",
         vodkaV2DN_BTC_Water: "0x4e9e41Bbf099fE0ef960017861d181a9aF6DDa07",
         vodkaV1A: "0x0E8A12e59C2c528333e84a12b0fA4B817A35909A",
+        agedVodkaV2_ETH: "0x9AF58F6348dff4E93368aa67e0d1A191040bf969",
+        agedVodkaV2_BTC: "0x6866FAB3379Bc328Bf44081e6b32BD991E7313bd",
       };
 
       await api.sumTokens({
@@ -75,6 +77,9 @@ module.exports = {
           [ADDRESSES.arbitrum.WETH, addresses.vodkaV2DN_ETH_Water],
           [ADDRESSES.arbitrum.ARB, addresses.vodkaV2DN_ARB_Water],
           [ADDRESSES.arbitrum.fsGLP, addresses.vodkaV1A],
+          //GmVault
+          [addresses.gmWeth, addresses.agedVodkaV2_ETH],
+          [addresses.gmBtc, addresses.agedVodkaV2_BTC],
         ],
       });
 
