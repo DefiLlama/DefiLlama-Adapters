@@ -19,15 +19,15 @@ const endPoints = {
   terra2: "https://terra-lcd.publicnode.com",
   umee: "https://umee-api.polkachu.com",
   orai: "https://lcd.orai.io",
-  juno: "https://lcd-juno.cosmostation.io",
-  cronos: "https://lcd-crypto-org.cosmostation.io",
+  juno: "https://juno.api.m.stavr.tech",
+  cronos: "https://rest.mainnet.crypto.org",
   chihuahua: "https://rest.cosmos.directory/chihuahua",
   stargaze: "https://rest.stargaze-apis.com",
   quicksilver: "https://rest.cosmos.directory/quicksilver",
   persistence: "https://rest.cosmos.directory/persistence",
   secret: "https://lcd.secret.express",
   // chihuahua: "https://api.chihuahua.wtf",
-  injective: "https://lcd-injective.whispernode.com:443",
+  injective: "https://sentry.lcd.injective.network:443",
   migaloo: "https://migaloo-api.polkachu.com",
   fxcore: "https://fx-rest.functionx.io",
   xpla: "https://dimension-lcd.xpla.dev",
@@ -39,10 +39,13 @@ const endPoints = {
   aura: "https://lcd.aura.network",
   archway: "https://api.mainnet.archway.io",
   sifchain: "https://sifchain-api.polkachu.com",
+  nolus: "https://pirin-cl.nolus.network:1317",
+  bostrom: "https://lcd.bostrom.cybernode.ai"
 };
 
 const chainSubpaths = {
   crescent: "crescent",
+  osmosis: "osmosis",
   comdex: "comdex",
   umee: "umee",
   kava: "kava",
@@ -181,6 +184,19 @@ async function queryContract({ contract, chain, data }) {
   ).data.data;
 }
 
+async function queryManyContracts({ contracts = [], chain, data }) {
+  const parallelLimit = 25
+  const { results, errors } = await PromisePool
+    .withConcurrency(parallelLimit)
+    .for(contracts)
+    .process(async (contract) =>  queryContract({ contract, chain, data }))
+
+  if (errors && errors.length) throw errors[0]
+
+  return results
+}
+
+
 async function queryContracts({ chain, codeId, }) {
   const res = []
   const limit = 1000
@@ -255,6 +271,7 @@ module.exports = {
   queryV1Beta1,
   queryContractStore,
   queryContract,
+  queryManyContracts,
   queryContracts,
   sumTokens,
   getTokenBalance,

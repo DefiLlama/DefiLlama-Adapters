@@ -17,6 +17,7 @@ const config = {
   ethereum: { factory: '0xde204e5a060ba5d3b63c7a4099712959114c2d48', fromBlock: 14443222 },
   polygon_zkevm: { factory: '0xCE3Fec90A05992dF1357651FEF6D143FeeC7Ca16', fromBlock: 302970 },
   polygon: { factory: '0x215CCa938dF02c9814BE2D39A285B941FbdA79bA', fromBlock: 31128013 },
+  optimism: { factory: '0x99C10A7aBd93b2db6d1a2271e69F268a2c356b80', fromBlock: 107128813 },
 }
 
 Object.keys(config).forEach(chain => {

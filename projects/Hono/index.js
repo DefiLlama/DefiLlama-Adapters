@@ -10,7 +10,7 @@ async function tvl(timestamp, block, _, { api }) {
 
 }
 module.exports = {
-  methodology: 'TVL will be the sum of 1- total value ofETH backing HONO price and 2- Amount of LP managing by our LP Manager contract minus HONO in LP',
+  methodology: 'The combined value of two components: the total value of ETH supporting the HONO price and the amount of liquidity being managed by our income strategies.',
   ethereum: {
     tvl,
   },

@@ -10,6 +10,7 @@ module.exports = {
     [1682314791, "GLP Delta Neutral Vault"],
     [1683178791, "GDAI Leverage Vault"],
     [1696389409, "HLP Leverage Vault"],
+    [1697716800, "VKA TGE"],
   ],
 
   arbitrum: {
@@ -33,16 +34,24 @@ module.exports = {
         sakeWaterV2: "0x806e8538FC05774Ea83d9428F778E423F6492475",
         vodkaV1_Water: "0xC99C6427cB0B824207606dC2745A512C6b066E7C",
         VodkaV1: "0x88D7500aF99f11fF52E9f185C7aAFBdF9acabD93",
-        fsGlp: ADDRESSES.arbitrum.fsGLP,
         vodkaV2: "0x9198989a85E35adeC46309E06684dCA444c9cF27",
         vodkaV2_Water: "0x9045ae36f963b7184861BDce205ea8B08913B48c",
         gmWeth: "0x70d95587d40A2caf56bd97485aB3Eec10Bee6336", // weth/usdc.e
         gmArb: "0xC25cEf6061Cf5dE5eb761b50E4743c1F5D7E5407", // arb/usdc.e
+        gmBtc: "0x47c031236e19d024b42f8AE6780E44A573170703", // btc/usdc.e
         VLP: "0xc5b2d9fda8a82e8dcecd5e9e6e99b78a9188eb05",
         gDAI: "0xd85e038593d7a098614721eae955ec2022b9b91b",
         rum: "0x739fe1BE8CbBeaeA96fEA55c4052Cd87796c0a89",
         hlpStaking: "0xbE8f8AF5953869222eA8D39F1Be9d03766010B1C",
         hlp: "0x4307fbDCD9Ec7AEA5a1c2958deCaa6f316952bAb",
+        agedVodka: "0x9566db22DC32E54234d2D0Ae7B72f44e05158239",
+        vodkaV2DN: "0x316142C166AdA230D0aFAD9493ef4bF053289269",
+        vodkaV2DN_ETH_Water: "0x8A98929750e6709Af765F976c6bddb5BfFE6C06c",
+        vodkaV2DN_ARB_Water: "0x175995159ca4F833794C88f7873B3e7fB12Bb1b6",
+        vodkaV2DN_BTC_Water: "0x4e9e41Bbf099fE0ef960017861d181a9aF6DDa07",
+        vodkaV1A: "0x0E8A12e59C2c528333e84a12b0fA4B817A35909A",
+        agedVodkaV2_ETH: "0x9AF58F6348dff4E93368aa67e0d1A191040bf969",
+        agedVodkaV2_BTC: "0x6866FAB3379Bc328Bf44081e6b32BD991E7313bd",
       };
 
       await api.sumTokens({
@@ -55,10 +64,22 @@ module.exports = {
           [addresses.gDAI, addresses.whiskey],
           [addresses.VLP, addresses.sake],
           [addresses.VLP, addresses.sakeV2],
-          [addresses.fsGlp, addresses.VodkaV1],
+          [ADDRESSES.arbitrum.fsGLP, addresses.VodkaV1],
           [addresses.gmArb, addresses.vodkaV2],
           [addresses.gmWeth, addresses.vodkaV2],
+          [addresses.gmBtc, addresses.vodkaV2],
+          [addresses.gmArb, addresses.vodkaV2DN],
+          [addresses.gmWeth, addresses.vodkaV2DN],
+          [addresses.gmBtc, addresses.vodkaV2DN],
           [addresses.hlp, addresses.rum],
+          [ADDRESSES.arbitrum.fsGLP, addresses.agedVodka],
+          //new water vault
+          [ADDRESSES.arbitrum.WETH, addresses.vodkaV2DN_ETH_Water],
+          [ADDRESSES.arbitrum.ARB, addresses.vodkaV2DN_ARB_Water],
+          [ADDRESSES.arbitrum.fsGLP, addresses.vodkaV1A],
+          //GmVault
+          [addresses.gmWeth, addresses.agedVodkaV2_ETH],
+          [addresses.gmBtc, addresses.agedVodkaV2_BTC],
         ],
       });
 
