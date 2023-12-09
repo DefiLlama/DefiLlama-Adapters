@@ -29,8 +29,9 @@ async function lineatvl(_, _1, _2, { api }) {
 }
 
 module.exports = {
-  methodology: 'To get TVL we call the getAumInUsdl function from contract address: 0xf024541569796286d58fFF4b5898A3C3f1635bd1',
-  linea: {
-      tvl: lineatvl,
+    misrepresentedTokens: true,
+    methodology: 'To get TVL we call the getAumInUsdl function from contract address: 0xf024541569796286d58fFF4b5898A3C3f1635bd1',
+    linea: {
+        tvl: lineatvl,
   },
 };
