@@ -243,7 +243,8 @@ module.exports = {
         fetch: celo
     },
     clv: {
-        fetch: clv
+        fetch: () => 0,
+        // fetch: clv
     },
     conflux: {
         fetch: conflux
