@@ -1,7 +1,9 @@
 const BigNumber = require('bignumber.js')
 const axios = require('axios');
+const fetch = require('node-fetch');
+
 async function EthereumTvl() {
-  const myHeaders = new Headers();
+  const myHeaders = new fetch.Headers();
   myHeaders.append("accept", "application/json");
   const requestOptions = {
     method: 'GET',
@@ -19,6 +21,6 @@ async function EthereumTvl() {
 module.exports = {
   methodology: 'Counts total value in usd ethereum staked',
   ethereum: {
-    tvl: EthereumTvl,
+    EthereumTvl,
   },
 }
