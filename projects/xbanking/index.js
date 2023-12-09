@@ -16,7 +16,7 @@ module.exports = {
                 throw new Error("Unknown");
             }
             const result = response.result
-            console.log(response.result);
+            const tonTotalSupply = parseInt(result.stack[0][1], 16)
             return {"coingecko:the-open-network":  BigNumber(tonTotalSupply).div(1e9).toFixed(0)};
         }
     }
