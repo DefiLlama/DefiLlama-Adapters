@@ -54,26 +54,52 @@ Object.keys(config).forEach(chain => {
           onlyArgs: true,
           fromBlock,
         })
-        logs.forEach((log) => allLogs.push({ factory, log }));
+        logs.forEach((log) => allLogs.push({ factory, log, chain }));
       }
-      const izumiFactory = '0xCCA961F89a03997F834eB5a0104efd9ba1f5800E';
-      let vaults = allLogs.filter(({ factory }) => factory !== izumiFactory).map(({ log }) => log.vault);
-      vaults = vaults.filter(vault => !ignoreList[chain] || !ignoreList[chain].includes(vault));
+      const izumiFactory = '0xCCA961F89a03997F834eB5a0104efd9ba1f5800E'; // Differentiate between izumi & pancakeswap factory
+      const ghoFactory = '0xDE07a0D5C9CA371E41a869451141AcE84BCAd119';
+      let vaults = allLogs.filter(({ factory, chain }) => {
+         if (factory === izumiFactory && chain === 'mantle') {
+          return false;
+         } else if (factory === ghoFactory && chain === 'ethereum') {
+          return false;
+         } else {
+          return true;
+         }
+      }).map(({ log }) => log.vault);
+      
+      vaults = vaults.filter(vault => !ignoreList[chain] || !ignoreList[chain].includes(vault)); // Remove excluded vaults
 
-      let izumiVaults = allLogs.filter(({ factory }) => factory === izumiFactory).map(({ log }) => log.vault);
+      // Collect Izumi Vaults Separately
+      let izumiVaults = allLogs.filter(({ factory, chain }) => factory === izumiFactory && chain === 'mantle').map(({ log }) => log.vault); 
       izumiVaults = izumiVaults.filter(vault => !ignoreList[chain] || !ignoreList[chain].includes(vault));
 
+      // Collect GHO Vaults Separately
+      let ghoVaults = allLogs.filter(({ factory, chain }) => factory === ghoFactory && chain === 'ethereum').map(({ log }) => log.vault);
+      ghoVaults = ghoVaults.filter(vault => !ignoreList[chain] || !ignoreList[chain].includes(vault));
+
+      // ===== Non Izumi & Non GHO vaults only =====
       let token0s = await api.multiCall({ abi: "address:token0", calls: vaults })
       let token1s = await api.multiCall({ abi: "address:token1", calls: vaults })
+      // ===== Izumi vaults only =====
       token0s.push(...(await api.multiCall({ abi: "address:tokenX", calls: izumiVaults })))
       token1s.push(...(await api.multiCall({ abi: "address:tokenY", calls: izumiVaults })))
 
       const bals = await api.multiCall({ abi: ABI.underlyingBalance, calls: vaults })
       bals.push(...(await api.multiCall({ abi: ABI.underlyingBalance, calls: izumiVaults })))
-
+      
+      // All non-GHO vaults
       bals.forEach(({ amount0Current, amount1Current }, i) => {
         api.add(token0s[i], amount0Current)
         api.add(token1s[i], amount1Current)
+      })
+
+      // ===== GHO Vaults Only =====
+      let ghoToken0s = await api.multiCall({ abi: "address:token0", calls: ghoVaults })
+      let ghoToken1s = await api.multiCall({ abi: "address:token1", calls: ghoVaults })
+      const ghoBals = await api.multiCall({ abi: ABI.getBalanceInCollateralToken, calls: ghoVaults })
+      ghoBals.forEach((amount, i) => {
+        api.add(ghoToken1s[i], amount);
       })
     }
   }
