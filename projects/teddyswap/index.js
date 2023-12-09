@@ -1,15 +1,11 @@
-const utils = require('../helper/utils');
+const { getAdaInAddress } = require("../helper/chain/cardano");
+
+const POOL_VALIDATOR_HASH = 'script19zaaraawhvaut8snt9lnxwhwlw844duwm2tzmcwkqkecs3njjz6';
 
 async function cardanoTVL() {
-    let response = await utils.fetchURL('https://analytics.teddyswap.org/v1/pools/overview?after=0')
-    let data = response.data;
-
-    let totalTvl = 0;
-    for (let i = 0; i < data.length; i++) {
-        totalTvl += data[i].tvl;
-    }
-
-    return { cardano: totalTvl };
+    return {
+        cardano: await getAdaInAddress(POOL_VALIDATOR_HASH) * 2
+    };
 }
 
 module.exports = {
