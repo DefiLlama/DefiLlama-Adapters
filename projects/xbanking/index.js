@@ -44,6 +44,7 @@ async function borrowed(_, _b, _cb, { api, }) {
 module.exports = {
   fantom: {
     tvl,
+    borrowed,
     pool2: pool2(
       [contracts.pool2, contracts.pool2],
       [contracts.daiPool2, contracts.ftmPool2],
