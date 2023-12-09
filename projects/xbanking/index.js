@@ -1,80 +1,52 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const contracts = require("./contracts.json");
-const { staking } = require("../helper/staking");
+const { pool2 } = require("../helper/pool2");
+const vaults = [
+  contracts.ftmVault,
+  contracts.ethVault,
+  contracts.avaxVault,
+  contracts.tombVault,
+]
 
-async function vaultTvl(balances, block, abi, target, coin) {
-  const ftmStaked = ((await sdk.api.abi.call({
-    chain: 'fantom',
-    block,
-    target,
-    abi,
-  })).output);
+const tokens = [
+  contracts.FTM,
+  contracts.WETH,
+  contracts.AVAX,
+  contracts.TOMB,
+]
 
-  sdk.util.sumSingleBalance(balances, coin, ftmStaked);
+async function tvl(_, _b, _cb, { api, }) {
+  const _tokens = [...tokens]
+  const owners = [...vaults, ...vaults]
+  vaults.forEach(v => _tokens.push(contracts.Collateral))
+  return api.sumTokens({ tokensAndOwners2: [_tokens, owners] })
 }
-async function tvl(timestamp, block, chainBlocks) {
-  const balances = {};
 
-  await vaultTvl(
-    balances, 
-    chainBlocks.fantom, 
-    abi.see_s1ftm_circ, 
-    contracts.ftmVault, 
-    contracts.FTM
-    );
-  await vaultTvl(
-    balances, 
-    chainBlocks.fantom, 
-    abi.see_s1ftm_circ, 
-    contracts.ethVault, 
-    contracts.WETH
-    );
-  await vaultTvl(
-    balances, 
-    chainBlocks.fantom, 
-    abi.see_s1tomb_circ, 
-    contracts.avaxVault, 
-    contracts.AVAX
-    );
-  await vaultTvl(
-    balances, 
-    chainBlocks.fantom, 
-    abi.see_s1tomb_circ, 
-    contracts.tombVault, 
-    contracts.TOMB
-    );
+async function borrowed(_, _b, _cb, { api, }) {
+  const vaults0 = vaults.slice(0, 2);
+  const vaults1 = vaults.slice(2);
+  const tokens0 = tokens.slice(0, 2);
+  const tokens1 = tokens.slice(2);
+  const balances = await api.multiCall({ abi: abi.see_s1ftm_circ, calls: vaults0 })
+  const balances1 = await api.multiCall({ abi: abi.see_s1tomb_circ, calls: vaults1 })
+  api.addTokens(tokens0, balances)
+  api.addTokens(tokens1, balances1)
 
-  const daiBalances = (await sdk.api.abi.multiCall({
-    chain: 'fantom',
-    block: chainBlocks.fantom,
-    calls: [
-        contracts.ftmVault, 
-        contracts.ethVault, 
-        contracts.avaxVault, 
-        contracts.tombVault
-      ].map((v) => ({
-        target: contracts.Collateral,
-        params: [v],
-    })),
-    abi: 'erc20:balanceOf'
-  })).output
-  .map(b => b.output)
-  .reduce((acc, el) => Number(acc) + Number(el), 0);
-
-  sdk.util.sumSingleBalance(balances, contracts.DAI, daiBalances);
-
-  return balances;
+  const chainApi = new sdk.ChainApi({ chain: api.chain, block: api.block })
+  chainApi.sumTokens({ tokensAndOwners2: [tokens, vaults] })
+  Object.entries(chainApi.getBalances()).forEach(([token, balance]) => {
+    api.add(token, balance * -1, { skipChain: true })
+  })
+  return api.getBalances()
 }
 
 module.exports = {
   fantom: {
     tvl,
-    // hitting pool2 staking contract twice while stake1 isnt on coingecko
-    pool2: staking(
-      [contracts.pool2, contracts.pool2], 
-      [contracts.daiPool2, contracts.ftmPool2], 
-      'fantom'
-      )
+    pool2: pool2(
+      [contracts.pool2, contracts.pool2],
+      [contracts.daiPool2, contracts.ftmPool2],
+    )
   }
-}; // node test.js projects/stake1/index.js
+}
