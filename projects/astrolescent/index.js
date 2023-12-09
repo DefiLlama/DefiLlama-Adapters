@@ -4,6 +4,7 @@ const POOL_COMPONENT_ADDRESS = 'component_rdx1cqg95d25q8sa26k6996yxl3qg95edwqn4a
 const STAKING_COMPONENT_ADDRESS = 'component_rdx1cz6ed6wksa2u4a3da5qfeg4tg453tczexulcf0z7vs885rkr6r6363';
 
 module.exports = {
+   methodology: `TVL consists of combining the liquidity pools and the staking portion is made up of ASTRL deposited to receive a yield`,
    radixdlt: {
       tvl: async (_, _1, _2, { api }) => {
          const data = await queryAddresses({ addresses: [POOL_COMPONENT_ADDRESS] });
