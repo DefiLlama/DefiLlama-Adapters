@@ -28,7 +28,9 @@ const distressedAssts = new Set(Object.values({
   YAKU: 'NGK3iHqqQkyRZUj4uhJDQqEyKKcZ7mdawWpqwMffM3s',
   JEFE: '0x80fa6d5384bdde296a28a321f73ab70977575129',
   BONK: ADDRESSES.solana.BONK,
-  SNS: 'SNSNkV9zfG5ZKWQs6x4hxvBRV6s8SqMfSGCtECDvdMd'
+  SNS: 'SNSNkV9zfG5ZKWQs6x4hxvBRV6s8SqMfSGCtECDvdMd',
+  BASED: 'fantom:0x8d7d3409881b51466b483b11ea1b8a03cded89ae',
+  BSHARE: '0x49C290Ff692149A4E16611c694fdED42C954ab7a'
 }).map(i => i.toLowerCase()))
 
 const transformTokens = {
