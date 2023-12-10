@@ -2,6 +2,9 @@
 const sdk = require('@defillama/sdk')
 const { sumTokens } = require('./helper/unwrapLPs')
 const bVaultAbi = require('./config/bella/abis/bVault')
+const ADDRESSES = require('./helper/coreAssets.json');
+const { getPoolLiquidityAmount } = require('./config/bella/izi');
+const iziABI = require('./config/bella/abis/izi');
 
 const bVaults = {
   bUsdt: { address: '0x2c23276107b45E64c8c59482f4a24f4f2E568ea6', },
@@ -46,6 +49,48 @@ module.exports = {
   ethereum: {
     tvl,
     pool2,
+  },
+  mantle: {
+    pool2: async (_, _1, _2, { api }) => {
+      const swapPool = '0xC865dd3421a6DD706688955fe727C802A98c1df9';
+      const miningPool = '0xBF2b951Ae6af066A03Dbfa52b1329704D923980c';
+
+      const { rewardUpperTick_, rewardLowerTick_, totalVLiquidity_ } =
+        await api.call({
+          abi: iziABI.mantleMiningABI,
+          target: miningPool,
+          chain: 'mantle',
+        });
+
+      const totalNizi = await api.call({
+        abi: iziABI.mantleTotalNiZiABI,
+        target: miningPool,
+        chain: 'mantle',
+      });
+
+      const { liquidity, liquidityX, currentPoint } = await api.call({
+        abi: iziABI.mantlePoolABI,
+        target: swapPool,
+        chain: 'mantle',
+      });
+
+      const { amountX, amountY } = getPoolLiquidityAmount(
+        {
+          rewardUpperTick_,
+          rewardLowerTick_,
+          totalVLiquidity_,
+        },
+        currentPoint,
+        liquidity,
+        liquidityX
+      );
+
+      return {
+        [`ethereum:${ADDRESSES.ethereum.USDC}`]: amountX,
+        [`ethereum:${ADDRESSES.ethereum.USDT}`]: amountY,
+        [`bsc:${ADDRESSES.bsc.iZi}`]: totalNizi,
+      };
+    },
   },
   era: {
     pool2: async (_, _1, _2, { api }) => {
