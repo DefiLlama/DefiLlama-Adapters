@@ -1,5 +1,5 @@
 
-export const IDL = {
+module.exports = {
     "version": "0.1.0",
     "name": "rain",
     "instructions": [],
