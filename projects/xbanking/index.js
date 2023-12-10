@@ -1,53 +1,23 @@
-const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
-const contracts = require("./contracts.json");
-const { pool2 } = require("../helper/pool2");
-const vaults = [
-  contracts.ftmVault,
-  contracts.ethVault,
-  contracts.avaxVault,
-  contracts.tombVault,
-]
+const sdk = require('@defillama/sdk');
+const ADDRESSES = require('../helper/coreAssets.json')
+const ETHEREUM_CONTRACT = "0xC4356aF40cc379b15925Fc8C21e52c00F474e8e9";
 
-const tokens = [
-  contracts.FTM,
-  contracts.WETH,
-  contracts.AVAX,
-  contracts.TOMB,
-]
 
-async function tvl(_, _b, _cb, { api, }) {
-  const _tokens = [...tokens]
-  const owners = [...vaults, ...vaults]
-  vaults.forEach(v => _tokens.push(contracts.Collateral))
-  return api.sumTokens({ tokensAndOwners2: [_tokens, owners] })
+async function tvl(_, _1, _2, { api }) {
+  const bal = await api.call({
+    abi: 'function getTvl() external view returns (uint256)',
+    target: ETHEREUM_CONTRACT,
+  });
+  api.add(ADDRESSES.null, bal)
 }
 
-async function borrowed(_, _b, _cb, { api, }) {
-  const vaults0 = vaults.slice(0, 2);
-  const vaults1 = vaults.slice(2);
-  const tokens0 = tokens.slice(0, 2);
-  const tokens1 = tokens.slice(2);
-  const balances = await api.multiCall({ abi: abi.see_s1ftm_circ, calls: vaults0 })
-  const balances1 = await api.multiCall({ abi: abi.see_s1tomb_circ, calls: vaults1 })
-  api.addTokens(tokens0, balances)
-  api.addTokens(tokens1, balances1)
 
-  const chainApi = new sdk.ChainApi({ chain: api.chain, block: api.block })
-  chainApi.sumTokens({ tokensAndOwners2: [tokens, vaults] })
-  Object.entries(chainApi.getBalances()).forEach(([token, balance]) => {
-    api.add(token, balance * -1, { skipChain: true })
-  })
-  return api.getBalances()
-}
 
 module.exports = {
-  fantom: {
-    tvl,
-    borrowed,
-    pool2: pool2(
-      [contracts.pool2, contracts.pool2],
-      [contracts.daiPool2, contracts.ftmPool2],
-    )
+  timetravel: false,
+  misrepresentedTokens: false,
+  methodology: 'h1test',
+  ethereum: {
+    tvl
   }
-}
+};
