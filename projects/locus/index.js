@@ -17,7 +17,8 @@ const config = {
   arbitrum: {
     lvTokens: {
       lvAYI: "0x0f094f6deb056af1fa1299168188fd8c78542a07",
-      lvAYI_v1: "0xBE55f53aD3B48B3ca785299f763d39e8a12B1f98"
+      lvAYI_v1: "0xBE55f53aD3B48B3ca785299f763d39e8a12B1f98",
+      lyUSD: "0x6c090e79a9399c0003a310e219b2d5ed4e6b0428",
     },
   }
 }
