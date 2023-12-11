@@ -1,4 +1,3 @@
-const ADDRESSES = require('../helper/coreAssets.json');
 const sdk = require('@defillama/sdk');
 const config = require('./config.json');
 const { call } = require('@defillama/sdk/build/abi');
