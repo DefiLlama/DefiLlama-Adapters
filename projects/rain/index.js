@@ -11,7 +11,7 @@ async function tvl(_, _b, _cb, { api, }) {
   const assetManagers = await tokenizerProgram.account.assetManager.all()
 
   for (const assetManager of assetManagers) {
-    api.add(assetManager.account.currencyIn, assetManager.account.currentAmountTokenized)
+    api.add(assetManager.account.currencyIn.toString(), assetManager.account.currentAmountTokenized)
   }
 
   for (const pool of pools)
