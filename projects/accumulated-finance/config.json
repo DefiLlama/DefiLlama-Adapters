@@ -1,0 +1,17 @@
+{
+  "lsdPools": [
+      {
+          "code": "WACME",
+          "chainID": 1,
+          "baseToken": "0xdf4ef6ee483953fe3b84abd08c6a060445c01170",
+          "stAddress": "0x7AC168c81F4F3820Fa3F22603ce5864D6aB3C547"
+      },
+      {
+          "code": "WACME",
+          "chainID": 42161,
+          "baseToken": "0xdf4ef6ee483953fe3b84abd08c6a060445c01170",
+          "stAddress": "0x7AC168c81F4F3820Fa3F22603ce5864D6aB3C547"
+      }
+  ]
+  
+}

@@ -1,15 +1,42 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require('@defillama/sdk')
+const ADDRESSES = require('../helper/coreAssets.json');
+const sdk = require('@defillama/sdk');
+const config = require('./config.json');
+const { call } = require('@defillama/sdk/build/abi');
+const BigNumber = require("bignumber.js");
 
 
-async function tvl(timestamp, block, chainBlocks , { api }) {
-  // Get number of minted stACME
-  const stacme = await sdk.api.abi.call({
-    target: '0x7AC168c81F4F3820Fa3F22603ce5864D6aB3C547',
-    abi: 'uint256:totalSupply',
-    chain: api.chain
+const chains = {
+  'ethereum': 1,
+  'arbitrum': 42161,
+  // 'velas': 106
+};
+
+
+async function getLsdPoolsTvl(timestamp, block, chainBlocks, { api }) {
+  const chainId = chains[api.chain];
+
+  const balances = {};
+
+  const calls = []
+
+  const filteredLsdPools = config.lsdPools.filter(item => item.chainID === chainId);
+  filteredLsdPools.forEach((pool) => {
+    calls.push({
+      target: pool.stAddress
+    })
   })
-  return { [ADDRESSES.ethereum.WACME]: stacme.output }
+
+
+  const balanceOfResults = await sdk.api.abi.multiCall({
+    abi: 'uint256:totalSupply',
+    chain: api.chain,
+    calls
+  });
+  balanceOfResults.output.forEach((balanceOf) => {
+    balances[filteredLsdPools.filter(item => item.stAddress === balanceOf.input.target)[0].baseToken] = balanceOf.output;
+  });
+  return balances;
+
 }
 
 // module.exports = {
@@ -25,10 +52,11 @@ async function tvl(timestamp, block, chainBlocks , { api }) {
 // }
 
 
-[
-  "ethereum",
-  "arbitrum"
-].forEach((chain) => {
-  if (!module.exports[chain]) module.exports[chain] = {};
-  module.exports[chain].tvl = tvl;
+Object.keys(chains).forEach(chain => {
+  module.exports[chain] = {
+    tvl: getLsdPoolsTvl
+  }
 });
+
+
+
