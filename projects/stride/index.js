@@ -98,8 +98,6 @@ function makeTvlFn(chain) {
   };
 }
 
-async function strideTvl() {}
-
 module.exports = {
   timetravel: false,
   methodology: "Sum of all the tokens that are liquid staked on Stride",
