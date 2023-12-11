@@ -1,4 +1,4 @@
-const lendingContract = '0x84524baa1951247b3a2617a843e6ece915bb9674'
+const lendingContract = '0x37e49bf3749513A02FA535F0CbC383796E8107E4'
 const feeManager = '0x0bc24e61daad6293a1b3b53a7d01086bff0ea6e5'
 
 async function tvl(_, _b, _cb, { api, }) {
