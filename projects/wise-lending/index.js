@@ -7,9 +7,7 @@ async function tvl(_, _b, _cb, { api, }) {
   const aTokens = pools.filter((_, i) => isATokens[i])
   const otherTokens = pools.filter((_, i) => !isATokens[i])
   const uaTokens = await api.multiCall({ abi: 'function underlyingToken(address) view returns (address)', calls: aTokens, target: feeManager })
-  const aBals = await api.multiCall({ abi: 'erc20:balanceOf', calls: aTokens.map(i => ({ target: i, params: lendingContract })) })
-  api.addTokens(uaTokens, aBals)
-  return api.sumTokens({ owner: lendingContract, tokens: otherTokens })
+  return api.sumTokens({ owner: lendingContract, tokens: [...otherTokens, ...uaTokens] })
 }
 
 module.exports = {
