@@ -46,7 +46,6 @@ function tvl(chain) {
       if (!tokens.includes(token))
         tokens.push(token)
     })
-    console.log("tokens : ", tokens);
     await sumTokens2({ tokens, api, owners: Object.values(contracts.tokenHolders) })
   };
 }
