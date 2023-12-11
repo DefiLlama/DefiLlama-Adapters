@@ -12,6 +12,7 @@ const DEFAULTS = {
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   ACALA_RPC: "https://eth-rpc-acala.aca-api.network",
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
+  CORE_RPC: "https://rpc.ankr.com/core,https://1rpc.io/core,https://rpc-core.icecreamswap.com",
 }
 
 const ENV_KEYS = [
