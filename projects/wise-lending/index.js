@@ -11,8 +11,6 @@ async function tvl(_, _b, _cb, { api, }) {
 }
 
 module.exports = {
-  misrepresentedTokens: true,
-  doublecounted: true,
   ethereum: {
     tvl
   }
