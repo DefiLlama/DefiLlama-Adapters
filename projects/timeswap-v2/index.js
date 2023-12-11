@@ -89,6 +89,10 @@ const config = {
   base: {
     factory: "0x406d3Dfcbe20b642c2262b29b960822975371502",
     fromBlock: 2493999,
+  },
+  optimism: {
+    factory: "0x406d3Dfcbe20b642c2262b29b960822975371502",
+    fromBlock: 112818437,
   }
 };
 
