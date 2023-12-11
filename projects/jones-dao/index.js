@@ -83,12 +83,7 @@ module.exports = {
     }),
     staking: stakings(
       addresses.stakingContracts,
-      [
-        addresses.tokens.jones,
-        addresses.tokens.jglp,
-        addresses.tokens.jusdc,
-        addresses.tokens.wjaura,
-      ],
+      addresses.tokens.jones,
       "arbitrum"
     ),
   },
