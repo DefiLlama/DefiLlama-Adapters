@@ -4,8 +4,15 @@ const idl = require('./idl')
 
 async function tvl(_, _b, _cb, { api, }) {
   const provider = getProvider()
-  const program = new Program(idl, 'RainEraPU5yDoJmTrHdYynK9739GkEfDsE4ffqce2BR', provider)
-  const pools = await program.account.pool.all()
+  const rainProgram = new Program(idl, 'RainEraPU5yDoJmTrHdYynK9739GkEfDsE4ffqce2BR', provider)
+  const tokenizerProgram = new Program(idl, 'RtokEFPPbXqDrzAHJHt16fwN6hZmepfPpSvW7y47g5r', provider)
+
+  const pools = await rainProgram.account.pool.all()
+  const assetManagers = await tokenizerProgram.account.assetManager.all()
+
+  for (const assetManager of assetManagers) {
+    api.add(assetManager.account.currencyIn.toString(), assetManager.account.currentAmountTokenized)
+  }
 
   for (const pool of pools)
     api.add(pool.account.currency.toString(), pool.account.availableAmount)
