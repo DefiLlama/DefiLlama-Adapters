@@ -1,4 +1,0 @@
-{
-    "getTotalPoolValueCached": "function getTotalPoolValueCached() view returns (uint256)",
-    "collateralToken": "function collateralToken() view returns (address)"
-}
