@@ -1,7 +1,7 @@
 const { getLogs } = require('../helper/cache/getLogs')
 
 const config = {
-  arbitrum: { limitPoolFactory: '0x9F479560cd8A531E6C0fe04521Cb246264fE6b71', limitPoolFromBlock: 158133516 },
+  arbitrum: { limitPoolFactory: '0xd28d620853af6837d76f1360dc65229d57ba5435', limitPoolFromBlock: 158864748 },
 }
 
 Object.keys(config).forEach(chain => {
