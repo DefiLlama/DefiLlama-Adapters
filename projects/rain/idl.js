@@ -193,26 +193,6 @@ module.exports = {
         }
       },
       {
-        "name": "UserInputPoolCollection",
-        "type": {
-          "kind": "struct",
-          "fields": [
-            {
-              "name": "collection",
-              "type": "u32"
-            },
-            {
-              "name": "collectionLtv",
-              "type": "u16"
-            },
-            {
-              "name": "exposure",
-              "type": "u16"
-            }
-          ]
-        }
-      },
-      {
         "name": "PoolCollection",
         "type": {
           "kind": "struct",
@@ -301,57 +281,6 @@ module.exports = {
         }
       },
       {
-        "name": "TokenProgramVersion",
-        "type": {
-          "kind": "enum",
-          "variants": [
-            {
-              "name": "Original"
-            },
-            {
-              "name": "Token2022"
-            }
-          ]
-        }
-      },
-      {
-        "name": "TokenStandard",
-        "type": {
-          "kind": "enum",
-          "variants": [
-            {
-              "name": "NonFungible"
-            },
-            {
-              "name": "FungibleAsset"
-            },
-            {
-              "name": "Fungible"
-            },
-            {
-              "name": "NonFungibleEdition"
-            }
-          ]
-        }
-      },
-      {
-        "name": "UseMethod",
-        "type": {
-          "kind": "enum",
-          "variants": [
-            {
-              "name": "Burn"
-            },
-            {
-              "name": "Multiple"
-            },
-            {
-              "name": "Single"
-            }
-          ]
-        }
-      },
-      {
         "name": "PoolStatus",
         "docs": [
           "Pool status enum"
@@ -364,20 +293,6 @@ module.exports = {
             },
             {
               "name": "Disabled"
-            }
-          ]
-        }
-      },
-      {
-        "name": "RequestStatus",
-        "type": {
-          "kind": "enum",
-          "variants": [
-            {
-              "name": "Pending"
-            },
-            {
-              "name": "Accepted"
             }
           ]
         }
