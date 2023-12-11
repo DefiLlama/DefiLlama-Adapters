@@ -1,5 +1,6 @@
 const { getLogs } = require('../helper/cache/getLogs')
 
+// https://github.com/poolshark-protocol/limit/blob/master/scripts/autogen/contract-deployments.json
 const config = {
   arbitrum: { limitPoolFactory: '0xd28d620853af6837d76f1360dc65229d57ba5435', limitPoolFromBlock: 158864748 },
 }
