@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { call } = require("@defillama/sdk/build/abi/abi2");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
@@ -8,6 +9,7 @@ module.exports = {
         api,
         owner: "0x8EB8a3b98659Cce290402893d0123abb75E3ab28",
         fetchCoValentTokens: true,
+        logArray,
       }),
   },
   bitcoin: {
@@ -16,8 +18,9 @@ module.exports = {
         (await call({
           chain: "avax",
           abi: "erc20:totalSupply",
-          target: "0x152b9d0FdC40C096757F570A51E494bd4b943E50",
+          target: ADDRESSES.avax.BTC_b,
           block: chainBlocks.avax,
+          logArray,
         })) /
         10 ** 8,
     }),

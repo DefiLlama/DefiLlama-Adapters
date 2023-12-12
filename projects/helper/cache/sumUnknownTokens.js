@@ -76,7 +76,7 @@ async function getTokenPrices({
   cache = {},
 }) {
   if (!api)
-     api = new sdk.ChainApi({ block, chain, })
+    api = new sdk.ChainApi({ block, chain, })
   else {
     chain = api.chain
     block = api.block
@@ -94,7 +94,7 @@ async function getTokenPrices({
   whitelist = whitelist.map(i => i.toLowerCase())
   lps = getUniqueAddresses(lps)
   const pairAddresses = allLps ? lps : await getLPList({ lps, chain, block, lpFilter, cache })
-  const toCall  = (pairAddress) => ({ target: pairAddress, })
+  const toCall = (pairAddress) => ({ target: pairAddress, })
   const pairCalls = pairAddresses.map(toCall)
   const pairs = cache.pairData;
   const token0Calls = pairAddresses.filter(i => !pairs[i] || !pairs[i].token0Address).map(toCall)
@@ -390,7 +390,16 @@ async function sumUnknownTokens({ api, tokensAndOwners = [], balances,
   return balances
 }
 
+// sushi constant product LP
+const SCPLP = {
+  lpFilter: (symbol, addr, chain) => symbol === 'SCPLP',
+  abis: {
+    getReservesABI: "function getAssets() external view returns (uint _reserve0, uint _reserve1)",
+  },
+}
+
 const customLPHandlers = {
+  kava: { SCPLP, },
   klaytn: {
     kslp: {
       lpFilter: (symbol, addr, chain) => chain === 'klaytn' && symbol === 'KSLP',
@@ -403,7 +412,7 @@ const customLPHandlers = {
   },
   scroll: {
     syncswap: {
-      lpFilter: (symbol, addr, chain) => chain === 'scroll' &&  /(sCLP|sSLP)$/.test(symbol),
+      lpFilter: (symbol, addr, chain) => chain === 'scroll' && /(sCLP|sSLP)$/.test(symbol),
       abis: {
         getReservesABI: "function getReserves() external view returns (uint _reserve0, uint _reserve1)",
       },

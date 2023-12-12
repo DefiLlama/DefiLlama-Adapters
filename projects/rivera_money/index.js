@@ -9,6 +9,8 @@ const vaultsMantle = [
   "0x713C1300f82009162cC908dC9D82304A51F05A3E",
   "0xDc63179CC57783493DD8a4Ffd7367DF489Ae93BF",
   "0x5f247B216E46fD86A09dfAB377d9DBe62E9dECDA",
+  "0xCbb95e8a63cd37D09c2948A22c12632469fb0BC7",
+  "0x907a942ce79ca4Cf063d2e987024dc9E88C5ac98",
 ];
 
 const vaultsManta = [
@@ -16,10 +18,12 @@ const vaultsManta = [
   "0x0DB2BA00bCcf4F5e20b950bF954CAdF768D158Aa",
   "0xDc63179CC57783493DD8a4Ffd7367DF489Ae93BF",
   "0x5f247B216E46fD86A09dfAB377d9DBe62E9dECDA",
+  "0x45C3BB1a0f0827bF03C089842334B861474e7714",
+  "0x241d09eC72809C4C390BC81b81dEF4d1E0e88626",
 ];
 
 module.exports = {
-  doublecounted: true,  
+  doublecounted: true,
   mantle: {
     tvl: sumERC4626VaultsExport({
       vaults: vaultsMantle,

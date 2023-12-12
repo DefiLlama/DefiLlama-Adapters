@@ -32,8 +32,12 @@ const config = {
     '0x610629af1cc8543c0e0348f62559801dc4099a76',
     '0xefb5a32735390d01e37b620407892e35acc998c3',
     '0x0fe1ead49b97fbd65875ad8a9da0b869552d0caa'
-  ]
-
+  ],
+  base: [
+        '0x37f716f6693EB2681879642e38BbD9e922A53CDf',
+        '0x49AF8CAf88CFc8394FcF08Cf997f69Cee2105f2b',
+        '0x83B2D994A1d16E6A3A44281D12542E2bc0d5EBFD'
+      ]
 }
 
 const bavaStakingRewards = "0x2F445C4cC8E114893279fa515C291A3d02160b02"
@@ -43,11 +47,20 @@ module.exports = {
   doublecounted: true,
   methodology: `Counts liquidty on the bava staking and lptoken staking on Avalanche and fx token staking on FunctionX`,
   // we have added the other functionx erc4626 vaults, but the token is an LP token and this function is unable to get the price
-  functionx: { tvl: fxTvl }
+  functionx: { tvl: fxTvl },
+  base: { tvl: baseTvl }
 };
 
 async function fxTvl(_, _1, _2, { api }) {
   const vaults = ['0x5c24B402b4b4550CF94227813f3547B94774c1CB', ...config.functionx]
+  const tokens = await api.multiCall({ abi: 'address:asset', calls: vaults })
+  const bals = await api.multiCall({ abi: 'uint256:totalAssets', calls: vaults })
+  api.addTokens(tokens, bals)
+  return sumTokens2({ api, resolveLP: true, })
+}
+
+async function baseTvl(_, _1, _2, { api }) {
+  const vaults = [...config.base]
   const tokens = await api.multiCall({ abi: 'address:asset', calls: vaults })
   const bals = await api.multiCall({ abi: 'uint256:totalAssets', calls: vaults })
   api.addTokens(tokens, bals)
