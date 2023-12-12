@@ -1,13 +1,32 @@
-const { sumTokensExport, } = require('../helper/chain/radixdlt');
+const { queryAddresses } = require('../helper/chain/radixdlt');
+
+const pools = [
+  'component_rdx1cq8mm5z49x6lyet44a0jd7zq52flrmykwwxszq65uzfn6pk3mvm0k4',
+  'component_rdx1cq7qd9vnmmu5sjlnarye09rwep2fhnq9ghj6eafj6tj08y7358z5pu',
+]
+
+async function tvl(_, _b, _cb, { api, }) {
+  const data = await queryAddresses({ addresses: pools })
+
+  data.forEach((item) => {
+    console.log(JSON.stringify(item, null, 2))
+    api.add(item.fungible_resources.items[0].resource_address, +item.fungible_resources.items[0].amount)
+  })
+
+  return api.getBalances()
+}
+
+async function borrowed(_, _b, _cb, { api, }) {
+  const data = await queryAddresses({ addresses: pools })
+
+  data.forEach((item) => {
+    api.add(item.fungible_resources.items[0].resource_address, +item.details.state.fields[1].value)
+  })
+
+  return api.getBalances()
+}
 
 module.exports = {
-    radixdlt: {
-        tvl: sumTokensExport({
-            owners: [
-                'component_rdx1cpuzsp2aqkjzg504s8h8hxg57wnaqpcp9r802jjcly5x3j5nape40l',
-                'component_rdx1cq8mm5z49x6lyet44a0jd7zq52flrmykwwxszq65uzfn6pk3mvm0k4',
-                'component_rdx1cq7qd9vnmmu5sjlnarye09rwep2fhnq9ghj6eafj6tj08y7358z5pu'
-            ],
-        })
-    },
+  radixdlt: { tvl, borrowed },
+  timetravel: false
 }
