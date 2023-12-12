@@ -43,7 +43,7 @@ module.exports = treasuryExports({
       '0x1509706a6c66CA549ff0cB464de88231DDBe213B',//AURA
       '0x040d1EdC9569d4Bab2D15287Dc5A4F10F56a56B8',//BAL
       '0xf0cb2dc0db5e6c66B9a70Ac27B06b878da017028',//OHM
-      '0x912CE59144191C1204E64559FE8253a0e49E6548',//ARB
+      ADDRESSES.arbitrum.ARB,//ARB
     ],
     owners: [treasuryarb]
   }
