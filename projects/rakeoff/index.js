@@ -1,6 +1,6 @@
 const axios = require("axios")
 
-const url = "https://jgvzt-eiaaa-aaaak-ae5kq-cai.raw.icp0.io/v1/rakeoff-stats";
+const url = "https://jgvzt-eiaaa-aaaak-ae5kq-cai.icp0.io/v1/rakeoff-stats";
 
 async function tvl() {
   const { data: { icp_stats } } = await axios.get(url)
