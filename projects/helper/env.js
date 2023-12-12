@@ -13,6 +13,7 @@ const DEFAULTS = {
   ACALA_RPC: "https://eth-rpc-acala.aca-api.network",
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
   CORE_RPC: "https://rpc.ankr.com/core,https://1rpc.io/core,https://rpc-core.icecreamswap.com",
+  BITGERT_RPC: "https://flux-rpc2.brisescan.com,https://mainnet-rpc.brisescan.com,https://chainrpc.com,https://serverrpc.com,https://flux-rpc.brisescan.com",
 }
 
 const ENV_KEYS = [
