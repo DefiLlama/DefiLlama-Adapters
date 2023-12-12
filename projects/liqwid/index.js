@@ -61,6 +61,8 @@ const tokenMapping = {
   DJED: '8db269c3ec630e06ae29f74bc39edd1f87c819f1056206e879a1cd61446a65644d6963726f555344',
   SHEN: '8db269c3ec630e06ae29f74bc39edd1f87c819f1056206e879a1cd615368656e4d6963726f555344',
   USDC: 'usd-coin',
+  DAI: 'dai',
+  USDT: 'tether',
 }
 
 const getToken = market => tokenMapping[market.marketId.toUpperCase()] ?? base64ToHex(market.info.params.underlyingClass.value0.symbol)
@@ -75,9 +77,15 @@ async function tvl(_, _b, _cb, { api, }) {
 
 function add(api, market, bal) {
   const token = getToken(market)
-  if (token === 'usd-coin') bal /= 1e8
+  if ([
+      "usd-coin",
+      "tether",
+    ].includes(token)) bal /= 1e8
+    if ([
+        "dai",
+      ].includes(token)) bal /= 1e6
   api.add(token, bal, {
-    skipChain: token === 'usd-coin'
+    skipChain: ['usd-coin', 'tether', 'dai'].includes(token)
   })
 }
 
@@ -93,7 +101,8 @@ async function borrowed(_, _b, _cb, { api, }) {
 }
 
 function base64ToHex(base64) {
-  // Step 1: Decode the Base64 string to a byte array
+  return base64
+  /* // Step 1: Decode the Base64 string to a byte array
   const binaryData = atob(base64);
 
   // Step 2: Convert each byte to its hexadecimal representation
@@ -104,5 +113,5 @@ function base64ToHex(base64) {
   }
 
   // Step 3: Concatenate the hexadecimal values to form the final hexadecimal string
-  return hexArray.join('');
+  return hexArray.join(''); */
 }

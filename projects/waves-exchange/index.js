@@ -6,13 +6,14 @@ const endpoint =
 
 function tvl(isStaking) {
   let key = isStaking ? "wx_staking" : "liquidity_pools"
-  return async () =>
-    toUSDTBalances(
+  return async () => {
+    return toUSDTBalances(
       (await get(endpoint)).products
         .filter(p => p.product_id === key)
         .map(p => p.tvl)
         .reduce((p, c) => Number(p) + Number(c), 0),
     );
+  }
 }
 
 module.exports = {
