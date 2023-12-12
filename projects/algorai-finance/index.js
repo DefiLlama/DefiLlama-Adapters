@@ -12,7 +12,7 @@ async function fetchMAlgoToAlgoBalance() {
  * @returns {Promise<{"[usdtAddress]": *}>}
  */
 async function tvl() {
-  return sumTokens({ owners: vaults, blacklistedTokens: ['1145958888', '1145959061', ''] })
+  return sumTokens({ owners: vaults, blacklistedTokens: ['1145958888', '1145959061',] })
 }
 
 module.exports = {
