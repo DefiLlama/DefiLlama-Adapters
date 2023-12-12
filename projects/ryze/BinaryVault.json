@@ -1,3 +1,0 @@
-{
-    "totalDepositedAmount": "function totalDepositedAmount() view returns (uint256 amount)"
-}
