@@ -1,7 +1,3 @@
-/**
- *
- * @type {[{vaultID: number, stable: boolean, assetDecimals: number, depositAssetID: number},{vaultID: number, stable: boolean, assetDecimals: number, depositAssetID: number},{vaultID: number, stable: boolean, assetDecimals: number, depositAssetID: number, originCoin: string}]}
- */
 const vaults = [
   // v1.0
   878144513,
