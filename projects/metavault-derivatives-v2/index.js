@@ -1,13 +1,11 @@
 const ADDRESSES = require("../helper/coreAssets.json");
 
-const { sumTokens2, nullAddress } = require("../helper/unwrapLPs");
+const { nullAddress } = require("../helper/unwrapLPs");
 
-async function LineaTvl(_time, _ethBlock, { linea: block }) {
-  const chain = "linea";
+async function LineaTvl(_time, _ethBlock, _cb, { api}) {
   const tokens = [nullAddress, ADDRESSES.linea.USDC];
   const owners = ["0xf3Ef1c95aecf5B5025815014890dC14488599883"];
-
-  return sumTokens2({ chain, block, tokens, owners });
+  return api.sumTokens({ owners, tokens})
 }
 
 module.exports = {
