@@ -62,12 +62,12 @@ async function borrowed(_, _b, _cb, { api, }) {
 module.exports = {
   doublecounted: true,
   methodology: "TVL of all shuttles (borrowable + collateral).",
-  polygon: {
-    tvl: cygnalytics('polygon'),
-    borrowed,
-  },
   arbitrum: {
     tvl: cygnalytics('arbitrum'),
+    borrowed,
+  },
+  polygon: {
+    tvl: cygnalytics('polygon'),
     borrowed,
   },
 };
