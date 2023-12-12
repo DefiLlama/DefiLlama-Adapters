@@ -1,11 +1,22 @@
-const FACTORY_CONTRACT = "0x94faE55669327e71E9EC579067ad6C3C3b84e574";
+const FACTORY_CONTRACT = "0x8796747946871B6b8ea495CCE8d7814b17959296";
 const vaultAbi = require('../charmfinance/vaultAbi.json')
 const { getLogs } = require('../helper/cache/getLogs');
 const { getUniqueAddresses } = require("@defillama/sdk/build/generalUtil");
-const fromBlock = 46623778
 const ADDRESSES = require('../helper/coreAssets.json')
 
+let fromBlock = 0;
+
 function cygnalytics(category) {
+
+  switch(category) { 
+    case 'polygon': 
+      fromBlock = 49831226;
+      break
+    case 'arbitrum':
+      fromBlock = 150521724;
+      break;
+  }
+  
   // futuristic parameter
   return async (timestamp, block, _, { api }) => {
     const logs = await getLogs({
@@ -43,7 +54,8 @@ function cygnalytics(category) {
 }
 
 async function borrowed(_, _b, _cb, { api, }) {
-  api.add(ADDRESSES.polygon.USDC, await api.call({ abi: 'uint256:totalBorrowsUsd', target: FACTORY_CONTRACT}))
+  api.add(ADDRESSES.polygon.USDC, await api.call({ abi: 'uint256:cygnusTotalBorrows', target: FACTORY_CONTRACT}))
+  api.add(ADDRESSES.arbitrum.USDC, await api.call({ abi: 'uint256:cygnusTotalBorrows', target: FACTORY_CONTRACT}))
   return api.getBalances()
 }
 
@@ -51,7 +63,12 @@ module.exports = {
   doublecounted: true,
   methodology: "TVL of all shuttles (borrowable + collateral).",
   polygon: {
-    tvl: cygnalytics(0),
+    tvl: cygnalytics('polygon'),
+    borrowed,
+  },
+  arbitrum: {
+    tvl: cygnalytics('arbitrum'),
     borrowed,
   },
 };
+
