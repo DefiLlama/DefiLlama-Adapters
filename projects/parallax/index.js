@@ -3,6 +3,7 @@ const { default: BigNumber } = require("bignumber.js");
 
 const { staking } = require("../helper/staking");
 const { sumTokensExport } = require("../helper/unwrapLPs");
+const { sumUnknownTokens } = require("../helper/unknownTokens");
 const { getPriceMIM, getPriceAura, getPriceSushi } = require("./getPrice");
 
 const prllxERC20 = require("./abis/prllxERC20.json");
@@ -164,20 +165,9 @@ async function eraTvl(_, _b, _cb, { api }) {
         abi: prllxERC20.strategiesERA,
       });
       const pair = strItem.lpAddress;
-      const [token0, token1, reserves, totalSupply] = await Promise.all([
-        api.call({ target: pair, abi: "address:token0" }),
-        api.call({ target: pair, abi: "address:token1" }),
-        api.call({
-          target: pair,
-          abi: "function getReserves() view returns (uint256 _reserve0, uint256 _reserve1)",
-        }),
-        api.call({ target: pair, abi: "uint256:totalSupply" }),
-      ]);
-      const ratio = strategy.totalStaked / totalSupply;
-      api.add(token0, reserves._reserve0 * ratio);
-      api.add(token1, reserves._reserve1 * ratio);
+      api.add(pair, strategy.totalStaked);
     }
-    return api.getBalances();
+    return sumUnknownTokens({ api, resolveLP: true, lps: contracts.era.map((strItem) => strItem.lpAddress), });
   }
 }
 
@@ -189,13 +179,13 @@ module.exports = {
       [
         "0x82FD636D7A28a20635572EB8ec0603ee264B8651",
         "0xA3CE2c0d1cfB29F398f8f4800bA202Aba39dbbfe",
-        "0xEb370470Afd74d8a9BBC4fF0C94371C310fF9D3e",
+        "0x9d02A989B34aB9Af9bb4fE59604392829ddD16f5",
         "0x9f35e7c711224c704d5999b859F17A2E7CF35A16",
       ],
       "0xc8CCBd97b96834b976C995a67BF46e5754e2C48E"
     ),
     pool2: sumTokensExport({
-      owner: "0xEb370470Afd74d8a9BBC4fF0C94371C310fF9D3e",
+      owner: "0x9d02A989B34aB9Af9bb4fE59604392829ddD16f5",
       resolveUniV3: true,
     }),
   },
