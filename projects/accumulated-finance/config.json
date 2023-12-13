@@ -1,22 +1,36 @@
 {
     "lsdPools": [
-        {
+        {   "name": "Accumulate",
             "code": "WACME",
             "chainID": 1,
             "baseToken": "0xdf4ef6ee483953fe3b84abd08c6a060445c01170",
-            "stAddress": "0x7AC168c81F4F3820Fa3F22603ce5864D6aB3C547"
+            "stToken": "0x7AC168c81F4F3820Fa3F22603ce5864D6aB3C547"
         },
         {
+            "name": "Accumulate",
             "code": "WACME",
             "chainID": 42161,
             "baseToken": "0xdf4ef6ee483953fe3b84abd08c6a060445c01170",
-            "stAddress": "0x7AC168c81F4F3820Fa3F22603ce5864D6aB3C547"
+            "stToken": "0x7AC168c81F4F3820Fa3F22603ce5864D6aB3C547"
         },
         {
+            "name": "Velas",
             "code": "VLX",
             "chainID": 106,
             "baseToken": "0x8c543aed163909142695f2d2acd0d55791a9edb9",
-            "stAddress": "0x3557371afed82dd683de278924bd0e1a790a3c49"
+            "stToken": "0x3557371afed82dd683de278924bd0e1a790a3c49"
+        }
+    ],
+    "defiPools": [
+        {   "name": "stACME/WACME",
+            "code": "WACME",
+            "chainID": 1,
+            "platform": "crv",
+            "address": "0x4424b4a37ba0088d8a718b8fc2ab7952c7e695f5",
+            "tokens": [
+                "0xdf4ef6ee483953fe3b84abd08c6a060445c01170",
+                "0x7AC168c81F4F3820Fa3F22603ce5864D6aB3C547"
+            ]
         }
     ]
 }
