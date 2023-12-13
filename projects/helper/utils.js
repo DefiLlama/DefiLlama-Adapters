@@ -60,7 +60,6 @@ function isLP(symbol, token, chain) {
   if (chain === 'ethereum' && ['SSLP'].includes(symbol)) return true
   if (chain === 'polygon' && ['WLP', 'FLP'].includes(symbol)) return true
   if (chain === 'moonriver' && ['HBLP'].includes(symbol)) return true
-  if (chain === 'kava' && ['SCPLP'].includes(symbol)) return true
   if (chain === 'ethpow' && ['LFG_LP'].includes(symbol)) return true
   if (chain === 'aurora' && ['wLP'].includes(symbol)) return true
   if (chain === 'oasis' && ['LPT'].includes(symbol)) return true
@@ -75,7 +74,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'kardia' && ['KLP', 'KDXLP'].includes(symbol)) return true
   if (chain === 'fantom' && ['HLP', 'WLP'].includes(symbol)) return true
   if (chain === 'functionx' && ['FX-V2'].includes(symbol)) return true
-  if (chain === 'era' && /(cSLP|sSLP|ZFLP)$/.test(symbol)) return true // for syncswap
+  if (chain === 'era' && /(ZFLP)$/.test(symbol)) return true // for syncswap
   if (chain === 'flare' && symbol.endsWith('_LP')) return true // for enosys dex
   if (chain === 'songbird' && ['FLRX', 'OLP'].includes(symbol)) return true
   if (chain === 'arbitrum' && ['DXS', 'ZLP',].includes(symbol)) return true
