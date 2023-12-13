@@ -2,7 +2,7 @@
   "ethereum": {
     "SCompController": "0x753fB727B2487fd22c8860167aCf01E20B69FbeA",
     "OracleRouter": "0x4CD5ecD5E0Dabb0b933657F4162dE4376326A536",
-    "SCOMP": "",
+    "SCOMP": "0xd94A8f9caeD25E63eCc90EDfefAf3635eA1e182a",
     "wrapped": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
     "vaults": {
       "Usdp3Crv": "0x1df2933B9c8815CC8990AFb4A079A717bC369185",
