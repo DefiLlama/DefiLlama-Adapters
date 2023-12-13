@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const tokens = {
-  RPG: '0x71d9cfd1b7adb1e8eb4c193ce6ffbe19b4aee0db',
-  // USDT: '0x8e8816a1747fddc5f8b45d2e140a425d3788f659',
+  RPG: ADDRESSES.rpg.WRPG,
+  // USDT: ADDRESSES.rpg.USDT,
   MIX: '0x36426b7bf5709e5c2160411c6e8b1832e3404fe1',
   AMG: '0xdaa6a6919c9543d8787490f5e9ad532c4d7ce9e8',
   COIN: '0x3978e3cAB1c503eFaD75cB929C7076B7f4f3b6F2',

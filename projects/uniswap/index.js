@@ -60,6 +60,7 @@ module.exports = {
     moonbeam: { factory: '0x28f1158795a3585caaa3cd6469cd65382b89bb70', fromBlock: 4313505 },
     era: { factory: '0x8FdA5a7a8dCA67BBcDd10F02Fa0649A937215422', fromBlock: 12637080 },
     boba: { factory: "0xFFCd7Aed9C627E82A765c3247d562239507f6f1B", fromBlock: 2523289, },
+    rsk: { factory: "0xAf37Ec98A00fD63689cF3060Bf3b6784e00CaD82", fromBlock: 5829207, },
   })
 }
 

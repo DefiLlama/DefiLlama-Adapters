@@ -118,7 +118,7 @@ async function arbiTvl(_, _b, _cb, { api, }) {
   const vaults = [
     '0xfdeb59a2b4891ea17610ee38665249acc9fcc506',
   ]
-  const tokens = ['0xff970a61a04b1ca14834a43f5de4533ebddb5cc8']
+  const tokens = [ADDRESSES.arbitrum.USDC]
   return api.sumTokens({ tokens, owners: vaults})
 }
 
