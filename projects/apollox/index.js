@@ -28,7 +28,7 @@ const TOKEN_BTC = ADDRESSES.bsc.BTCB;
 const TOKEN_BNB = ADDRESSES.bsc.WBNB;
 
 const TreasureTokens = [
-  TOKEN_APX,
+  // TOKEN_APX,
   nullAddress,
   TOKEN_BSC_USD,
   TOKEN_BUSD,
