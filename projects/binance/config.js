@@ -487,7 +487,7 @@ module.exports = {
     owners: getOwners('BEP20'),
     tokens: [
       ADDRESSES.null,
-      '0x40af3827f39d0eacbf4a168f8d4ee67c121d11c9'
+      ADDRESSES.bsc.TUSD
     ],
   },
   bep2: {

@@ -5,7 +5,7 @@ const config = {
 
   polygon: {
     bridges: [
-      '0xa801b1A7846156d4C81bD188F96bfcb621517611',
+      ADDRESSES.elsm.PYR,
     ],
     tokens: {
       PYR: '0x430ef9263e76dae63c84292c3409d61c598e9682',

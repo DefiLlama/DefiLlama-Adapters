@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { view_account, getTokenBalance } = require("../helper/chain/near");
 const { sumTokensExport } = require("../helper/unwrapLPs");
 
@@ -13,7 +14,7 @@ module.exports = {
   aurora: {
     tvl: sumTokensExport({
       owner: "0xb0bD02F6a392aF548bDf1CfAeE5dFa0EefcC8EaB",
-      tokens: ["0x0000000000000000000000000000000000000000"],
+      tokens: [ADDRESSES.null],
       logCalls: true,
     }),
   },

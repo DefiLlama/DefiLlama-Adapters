@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const axios = require("axios");
 
@@ -19,7 +20,7 @@ Object.keys(chains).map((chain) => {
       );
 
       const tokens = [
-        "0x0000000000000000000000000000000000000000",
+        ADDRESSES.null,
         ...tokenData.map((t) => t.address),
       ];
       const owners = [
