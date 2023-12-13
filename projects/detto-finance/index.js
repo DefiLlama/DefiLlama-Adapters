@@ -5,6 +5,7 @@ const DETTO_TOKEN_ADDRESS = "0x7BC401227777F173Ff871993b198A8632741B9Bb".toLower
 
 async function getTvl(api, isStaking = false) {
   let pools = await api.call({ abi: abiInfo.poolTvls, target: DETTO_FARM_ADDRESS, })
+
   pools
     .filter(i => (i.assets.toLowerCase() === DETTO_TOKEN_ADDRESS) === isStaking)
     .forEach(i => api.add(i.assets, i.tvl))
