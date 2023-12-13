@@ -1,6 +1,8 @@
-const { default: BigNumber } = require("bignumber.js");
 const abi = require("./abi.json");
+const { default: BigNumber } = require("bignumber.js");
+const { getConfig } = require("../helper/cache");
 const { cachedGraphQuery } = require("../helper/cache");
+const { sumTokens2, } = require("../helper/unwrapLPs");
 
 // The Graph
 const graphUrlList = {
@@ -10,17 +12,25 @@ const graphUrlList = {
   mantle: 'http://api.0xgraph.xyz/subgraphs/name/solv-payable-factory-mentle-0xgraph',
 }
 
-const rwaSlot = [
-  "77406646563329984090609229456139833989531434162860778120489803664660566620495"
-]
+const slotListUrl = 'https://raw.githubusercontent.com/solv-finance-dev/solv-protocol-rwa-slot/main/slot.json';
 
-async function tvl(ts) {
+const addressUrl = 'https://raw.githubusercontent.com/solv-finance-dev/slov-protocol-defillama/main/solv-funds.json';
+
+const stakedAmountsAbi = 'function stakedAmounts(address) external view returns (uint256)';
+
+async function borrowed(ts) {
   const { api } = arguments[3];
   const network = api.chain;
-  const graphData = await getGraphData(ts, network, api);
 
+  let address = (await getConfig('solv-protocol/funds', addressUrl));
+  let gm = address[api.chain]["gm"];
+
+  const graphData = await getGraphData(ts, network, api);
   if (graphData.pools.length > 0) {
-    const pools = graphData.pools;
+    const poolLists = graphData.pools;
+    var pools = poolLists.filter((value) => {
+      return gm == undefined || gm["depositAddress"].indexOf(value.vault) == -1;
+    });
     const poolConcretes = await concrete(pools, api);
     const nav = await api.multiCall({
       abi: abi.getSubscribeNav,
@@ -60,6 +70,42 @@ async function tvl(ts) {
   return api.getBalances()
 }
 
+async function tvl() {
+  const { api } = arguments[3];
+
+  let address = (await getConfig('solv-protocol/funds', addressUrl));
+  let gm = address[api.chain]["gm"];
+
+  let tokens = []
+  for (const pool of gm["depositAddress"]) {
+    for (const address of gm["gmTokens"]) {
+      tokens.push({ address, pool })
+    }
+  }
+
+  await sumTokens2({ api, tokensAndOwners: tokens.map(i => [i.address, i.pool]), permitFailure: true })
+}
+
+
+async function mantleTvl(ts, _, _1, { api }) {
+  let address = (await getConfig('solv-protocol/funds', addressUrl));
+  let klp = address[api.chain]["klp"];
+
+  const stakedAmounts = await api.multiCall({
+    abi: stakedAmountsAbi,
+    calls: klp["klpPool"].map((pool) => ({
+      target: klp["address"],
+      params: [pool]
+    })),
+  })
+
+  stakedAmounts.forEach(amount => {
+    api.add(klp["address"], amount)
+  })
+
+  return api.getBalances()
+}
+
 async function concrete(slots, api) {
   var slotsList = [];
   var only = {};
@@ -85,12 +131,15 @@ async function concrete(slots, api) {
 
 
 async function getGraphData(timestamp, chain, api) {
+  let rwaSlot = (await getConfig('solv-protocol/slots', slotListUrl));
+
   const slotDataQuery = `query BondSlotInfos {
             poolOrderInfos(first: 1000  where:{fundraisingEndTime_gt:${timestamp}, openFundShareSlot_not_in: ${JSON.stringify(rwaSlot)}}) {
               marketContractAddress
               contractAddress
               navOracle
               poolId
+              vault
               openFundShareSlot
           }
         }`;
@@ -106,6 +155,13 @@ async function getGraphData(timestamp, chain, api) {
   };
 }
 // node test.js projects/solv-protocol-funds
-['ethereum', 'bsc', 'arbitrum', 'mantle'].forEach(chain => {
-  module.exports[chain] = { tvl: () => ({}), borrowed: tvl, }
-})
+module.exports = {
+  arbitrum: {
+    tvl,
+    borrowed: borrowed,
+  },
+  mantle: {
+    tvl: mantleTvl,
+    borrowed: borrowed,
+  }
+};
