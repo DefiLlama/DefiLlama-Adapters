@@ -9,7 +9,6 @@ async function tvl(_, _b, _cb, { api, }) {
   const data = await queryAddresses({ addresses: pools })
 
   data.forEach((item) => {
-    console.log(JSON.stringify(item, null, 2))
     api.add(item.fungible_resources.items[0].resource_address, +item.fungible_resources.items[0].amount)
   })
 

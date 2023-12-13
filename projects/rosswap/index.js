@@ -11,7 +11,6 @@ async function tvl(_, _b, _cb, { api, }) {
   })
   const getReservesABI = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
 
-  console.log(logs.length)
   const pairs = logs.map(log => log.pair)
   const res = await api.multiCall({ abi: getReservesABI, calls: pairs, permitFailure: true })
   const data = []

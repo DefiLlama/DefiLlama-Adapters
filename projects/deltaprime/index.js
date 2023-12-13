@@ -1,5 +1,6 @@
 const { ethers } = require("ethers");
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const sdk = require('@defillama/sdk')
 
 const getAllOwnedAssetsAbi = "function getAllOwnedAssets() view returns (bytes32[] result)"
 const getLoansAbi = "function getLoans(uint256 _from, uint256 _count) view returns (address[] _loans)"
@@ -48,7 +49,7 @@ async function tvlAvalanche(timestamp, block, chainBlocks, { api }) {
     batchIndex++;
   }
 
-  console.log(accounts.length)
+  sdk.log(accounts.length)
 
   await addTraderJoeLPs({ api, accounts })
   const ownedAssets = await api.multiCall({ abi: getAllOwnedAssetsAbi, calls: accounts })
@@ -57,7 +58,7 @@ async function tvlAvalanche(timestamp, block, chainBlocks, { api }) {
       tokenStr = ethers.utils.parseBytes32String(tokenStr)
       const token = assetToAddressMappingAvalanche[tokenStr]
       if (!token) {
-        console.log('Missing asset mapping for: ' + tokenStr)
+        sdk.log('Missing asset mapping for: ' + tokenStr)
         return;
       }
       if (!token) throw new Error('Missing asset mapping for: ' + tokenStr)
@@ -91,7 +92,7 @@ async function tvlArbitrum(timestamp, block, chainBlocks, { api }) {
     batchIndex++;
   }
 
-  console.log(accounts.length)
+  sdk.log(accounts.length)
   const ownedAssets = await api.multiCall({ abi: getAllOwnedAssetsAbi, calls: accounts, })
   await addTraderJoeLPs({ api, accounts })
 
@@ -101,7 +102,7 @@ async function tvlArbitrum(timestamp, block, chainBlocks, { api }) {
       const token = assetToAddressMappingArbitrum[tokenStr]
       if (!token) return;
       if (!token) {
-        console.log('Missing asset mapping for: ' + tokenStr)
+        sdk.log('Missing asset mapping for: ' + tokenStr)
         return;
       }
       if (!token) throw new Error('Missing asset mapping for: ' + tokenStr)
