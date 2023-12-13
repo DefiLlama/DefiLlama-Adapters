@@ -9,7 +9,7 @@ module.exports = {
     staking: sumTokensExport({
       owner: "erd1qqqqqqqqqqqqqpgql9z9vm8d599ya2r9seklpkcas6qmude4mvlsgrj7hv",
     }),
-    staking2: sumTokensExport({
+    pool2: sumTokensExport({
       owner: "erd1qqqqqqqqqqqqqpgq8nlmvjm8gum6y2kqe0v296kgu8cm4jlemvlsays3ku",
     }),
   },
