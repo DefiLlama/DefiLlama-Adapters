@@ -3,8 +3,11 @@ const config = require('./config.json');
 
 async function getLsdPoolsTvl(api, filteredPools) {
 
+  // baseToken - a token staked into Accumulated Finance liquid staking
+  // stToken - a liquid staking token
   const calls = filteredPools.map(pool => ({ target: pool.stToken }));
 
+  // calculate total supply of existing LST tokens
   const balanceOfResults = await sdk.api.abi.multiCall({
     abi: 'erc20:totalSupply',
     chain: api.chain,
@@ -15,8 +18,6 @@ async function getLsdPoolsTvl(api, filteredPools) {
   balanceOfResults.output.forEach(balanceOf => {
     const pool = filteredPools.find(item => item.stToken === balanceOf.input.target);
     if (pool) {
-      // baseToken - a wrapped token that can be obtained from coingecko.
-      // stToken - a staked token. The price of stToken is equal to the price of baseToken
       balances[pool.baseToken] = balanceOf.output;
     }
   });
@@ -28,7 +29,7 @@ const chains = config.chains;
 module.exports = {
   timetravel: false,
   methodology:
-    "We aggregated the assets staked across Accumulate finance protocol",
+    "We aggregated liquid staking tokens issued by Accumulated Finance",
 }
 
 Object.keys(config.chains).forEach(chain => {
