@@ -135,9 +135,9 @@ const stMatic = '0x83b874c1e09D316059d929da402dcB1A98e92082'
 module.exports = {
   methodology: `Funds deposited into Thetanuts Finance via the Basic Vaults, Lending Market, and AMM are calculated as TVL.`,
   hallmarks: [
-    [Math.floor(new Date('2022-03-08') / 1e3), 'Migration from v0 to v1'],
-    [Math.floor(new Date('2022-09-30') / 1e3), 'Migration from v1 to v2'],
-    [Math.floor(new Date('2023-23-13') / 1e3), 'Launch of Thetanuts Finance v3'],
+    [1646658000, 'Migration from v0 to v1'],
+    [1664460000, 'Migration from v1 to v2'],
+    [1702472400, 'Launch of Thetanuts Finance v3'],
   ],
 }
 
