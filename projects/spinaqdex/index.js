@@ -7,7 +7,7 @@ const FACTORY = "0x36E0F99A19481976C42CC45Aec7205B10807E275"
 module.exports = {
     misrepresentedTokens: true,
     methodology: `Uses Uniswap-style factory address to find and price liquidity pairs.`,
-    base: {
+    arbitrum: {
         tvl: getUniTVL({ factory: FACTORY, useDefaultCoreAssets: true, fetchBalances: true, chain: 'arbitrum' }),
     },
 };
