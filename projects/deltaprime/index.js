@@ -1,10 +1,13 @@
 const { ethers } = require("ethers");
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const sdk = require('@defillama/sdk')
+const sdk = require('@defillama/sdk');
 
 const getAllOwnedAssetsAbi = "function getAllOwnedAssets() view returns (bytes32[] result)"
 const getLoansAbi = "function getLoans(uint256 _from, uint256 _count) view returns (address[] _loans)"
 const getPrimeAccountsLengthAbi = 'uint256:getLoansLength';
+const ggAVAXBalancerBalanceAbi = "function balancerGgAvaxBalance() view returns (uint256)"
+const yyAVAXBalancerBalanceAbi = "function balancerYyAvaxBalance() view returns (uint256)"
+const sAVAXBalancerBalanceAbi = "function balancerSAvaxBalance() view returns (uint256)"
 
 const assetToAddressMappingAvalanche = require('./mappings/assetToAddressMappingAvalanche.json')
 const assetToAddressMappingArbitrum = require('./mappings/assetToAddressMappingArbitrum.json')
@@ -49,7 +52,23 @@ async function tvlAvalanche(timestamp, block, chainBlocks, { api }) {
     batchIndex++;
   }
 
-  sdk.log(accounts.length)
+  console.log(accounts.length)
+
+  // const positions = await api.multiCall({ abi: getStakingPositionsAbi, calls: accounts })
+  //
+  // let identifiers = [];
+  //
+  // accounts.forEach((o, i) => {
+  //   positions[i].forEach(({ asset, identifier }) => {
+  //     if(!identifiers.includes(identifier)){
+  //       identifiers.push(identifier);
+  //     }
+  //
+  //   })
+  // })
+  //
+  // identifiers = identifiers.map(el => ethers.utils.parseBytes32String(el));
+  // console.log(`Identifiers: ${identifiers}`)
 
   await addTraderJoeLPs({ api, accounts })
   const ownedAssets = await api.multiCall({ abi: getAllOwnedAssetsAbi, calls: accounts })
@@ -58,7 +77,7 @@ async function tvlAvalanche(timestamp, block, chainBlocks, { api }) {
       tokenStr = ethers.utils.parseBytes32String(tokenStr)
       const token = assetToAddressMappingAvalanche[tokenStr]
       if (!token) {
-        sdk.log('Missing asset mapping for: ' + tokenStr)
+        console.log('Missing asset mapping for: ' + tokenStr)
         return;
       }
       if (!token) throw new Error('Missing asset mapping for: ' + tokenStr)
@@ -67,6 +86,14 @@ async function tvlAvalanche(timestamp, block, chainBlocks, { api }) {
   })
 
   const balances = await sumTokens2({ api, tokensAndOwners: tokensAndOwners })
+
+  let ggAvaxBalancerBalances = await api.multiCall({ abi: ggAVAXBalancerBalanceAbi, calls: accounts })
+  let yyAvaxBalancerBalances = await api.multiCall({ abi: yyAVAXBalancerBalanceAbi, calls: accounts })
+  let sAvaxBalancerBalances = await api.multiCall({ abi: sAVAXBalancerBalanceAbi, calls: accounts })
+
+  ggAvaxBalancerBalances.forEach(i => sdk.util.sumSingleBalance(balances, assetToAddressMappingAvalanche["BAL_ggAVAX_AVAX"], i, api.chain))
+  yyAvaxBalancerBalances.forEach(i => sdk.util.sumSingleBalance(balances, assetToAddressMappingAvalanche["BAL_yyAVAX_AVAX"], i, api.chain))
+  sAvaxBalancerBalances.forEach(i => sdk.util.sumSingleBalance(balances, assetToAddressMappingAvalanche["BAL_sAVAX_AVAX"], i, api.chain))
   return balances;
 }
 
@@ -92,7 +119,7 @@ async function tvlArbitrum(timestamp, block, chainBlocks, { api }) {
     batchIndex++;
   }
 
-  sdk.log(accounts.length)
+  console.log(accounts.length)
   const ownedAssets = await api.multiCall({ abi: getAllOwnedAssetsAbi, calls: accounts, })
   await addTraderJoeLPs({ api, accounts })
 
@@ -102,7 +129,7 @@ async function tvlArbitrum(timestamp, block, chainBlocks, { api }) {
       const token = assetToAddressMappingArbitrum[tokenStr]
       if (!token) return;
       if (!token) {
-        sdk.log('Missing asset mapping for: ' + tokenStr)
+        console.log('Missing asset mapping for: ' + tokenStr)
         return;
       }
       if (!token) throw new Error('Missing asset mapping for: ' + tokenStr)
