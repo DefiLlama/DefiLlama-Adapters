@@ -25,12 +25,18 @@ async function getLsdPoolsTvl(api, filteredPools) {
 
 const chains = config.chains;
 
+module.exports = {
+  timetravel: false,
+  methodology:
+    "We aggregated the assets staked across Accumulate finance protocol",
+}
+
 Object.keys(config.chains).forEach(chain => {
   module.exports[chain] = {
-     tvl: async (timestamp, block, chainBlocks, { api }) => {
-       const chainId = chains[api.chain];
-       const filteredPools = config.lsdPools.filter(item => item.chainID === chainId);
-       return await getLsdPoolsTvl(api, filteredPools);
-     }
+    tvl: async (timestamp, block, chainBlocks, { api }) => {
+      const chainId = chains[api.chain];
+      const filteredPools = config.lsdPools.filter(item => item.chainID === chainId);
+      return await getLsdPoolsTvl(api, filteredPools);
+    }
   }
 });
