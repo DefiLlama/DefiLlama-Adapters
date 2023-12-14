@@ -66,6 +66,10 @@ const indexUST_LUNA_2wk_b = "0x112AdEC687FA605CE3221943C301Ed99B7C33Ed7"
 //Aurora Vaults
 const nearCallVault = '0xfc7F11Bb0d97d9db1f701eEA0fDE611536F1EB5F'
 
+//cronos vaults
+const cronosCallVault = '0x99F05418967d3596CAfd260913b682Fd9b0CBB40'
+
+
 //Boba Vaults
 const bobaCallVault = '0x5a9f1D95C59365613B4224e690Bb4971DD246142'
 const bobaPutVault = '0xff5fe7909fc4d0d6643f1e8be8cba72610d0b485'
@@ -117,6 +121,9 @@ const near = ADDRESSES.aurora.NEAR
 // Boba Assets
 let boba = ADDRESSES.boba.BOBA
 const bobaUSDC = ADDRESSES.boba.USDC
+
+// cronos assets
+const wcro = '0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23'
 
 // Arbitrum assets
 const arb = ADDRESSES.arbitrum.ARB
@@ -221,6 +228,11 @@ const config = {
   aurora: {
     tokensAndOwners: [
       [near, nearCallVault,],
+    ]
+  },
+  cronos: {
+    tokensAndOwners: [
+      [wcro, cronosCallVault]
     ]
   },
   polygon_zkevm: {
