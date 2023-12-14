@@ -55,22 +55,6 @@ async function tvlAvalanche(timestamp, block, chainBlocks, { api }) {
 
   console.log(accounts.length)
 
-  // const positions = await api.multiCall({ abi: getStakingPositionsAbi, calls: accounts })
-  //
-  // let identifiers = [];
-  //
-  // accounts.forEach((o, i) => {
-  //   positions[i].forEach(({ asset, identifier }) => {
-  //     if(!identifiers.includes(identifier)){
-  //       identifiers.push(identifier);
-  //     }
-  //
-  //   })
-  // })
-  //
-  // identifiers = identifiers.map(el => ethers.utils.parseBytes32String(el));
-  // console.log(`Identifiers: ${identifiers}`)
-
   await addTraderJoeLPs({ api, accounts })
   const ownedAssets = await api.multiCall({ abi: getAllOwnedAssetsAbi, calls: accounts })
   accounts.forEach((o, i) => {
