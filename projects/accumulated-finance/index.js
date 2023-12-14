@@ -15,8 +15,8 @@ async function getLsdPoolsTvl(api, filteredPools) {
   balanceOfResults.output.forEach(balanceOf => {
     const pool = filteredPools.find(item => item.stToken === balanceOf.input.target);
     if (pool) {
-      // baseToken - wrapped token that can be received from coingecko.
-      // stToken - staked token. The price of stToken is equal the price of baseToken
+      // baseToken - a wrapped token that can be obtained from coingecko.
+      // stToken - a staked token. The price of stToken is equal to the price of baseToken
       balances[pool.baseToken] = balanceOf.output;
     }
   });
