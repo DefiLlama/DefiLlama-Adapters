@@ -462,6 +462,10 @@ const assetList = [
   ["XRP", "XRP", "rEy8TFcrAPvhpKrwyrscNYyqBGUkE9hKaJ"],
   ["XRP", "XRP", "rNU4eAowPuixS5ZCWaRL72UUeKgxcKExpK"],
   ["XRP", "XRP", "rs8ZPbYqgecRcDzQpJYAMhSxSi5htsjnza"],
+  // From 15dec binance will be moving some wallets/funds as mention here https://twitter.com/binance/status/1735610874579071466
+  // In order to be as clear as possible, those new wallet will be added under this comments with the respective timestamp
+  ["USDT", "TRX", "TPtW5TEHhouj6KGshVu5ZQSKZA48QPBnXG"], // 1702638336 Fri, 15 Dec 2023 11:05:36 GMT
+  ["TRX", "TRX", "TPtW5TEHhouj6KGshVu5ZQSKZA48QPBnXG"], //  1702638336 Fri, 15 Dec 2023 11:05:36 GMT
 ]
 
 function getAddresses(chain) {
