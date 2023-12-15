@@ -8,22 +8,12 @@ async function tvl(_, _1, _2, { api }) {
     target: D8X_PERPETUALS_CONTRACT,
     params: [1, 255],
   });
+
   const marginTokens = exchangeInfo[2];
-
-  const poolBalances = await api.multiCall({
-    abi: "erc20:balanceOf",
-    calls: marginTokens.map((token) => ({
-      target: token,
-      params: D8X_PERPETUALS_CONTRACT,
-    })),
-  });
-
-  api.add(marginTokens, poolBalances);
+  return api.sumTokens({ owner: D8X_PERPETUALS_CONTRACT, tokens: marginTokens });
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
   methodology:
     "adds up the balances of all liquidity pools in the D8X exchange",
   start: 6182628,
