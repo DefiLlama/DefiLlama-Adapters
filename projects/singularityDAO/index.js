@@ -4,6 +4,7 @@ const http = require("../helper/http");
 const sdk = require("@defillama/sdk");
 
 const { sumTokens2 } = require("../helper/unwrapLPs");
+const { sumTokensExport} = require("../helper/chain/cardano");
 const { getParamCalls } = require("../helper/utils");
 
 const AGIX_TOKEN = "0x5B7533812759B45C2B44C19e320ba2cD2681b542";
@@ -178,6 +179,9 @@ module.exports = {
     staking: stakingBNB,
     pool2: pool2BNB,
   },
+  cardano: {
+    staking: sumTokensExport({ owner: 'addr1wxqv435zesjj290fdv7d3ckzxh66pdxpuf9hx3gexf56u6gegh8zj' }),
+  }
 };
 
 const abis = {
