@@ -34,6 +34,7 @@ const config = {
   ethereum: {
     vaultConfigs: [
       { factory: '0x5a40DFaF8C1115196A1CDF529F97122030F26112', fromBlock: 13671610, isAlgebra: false, },
+      { factory: '0x8Dd50926e12BD71904bCCc6D86DFA55D42715094', fromBlock: 18754139, isAlgebra: false, }, //PancakeSwap
     ],
     oneFactory: '0xD0092632B9Ac5A7856664eeC1abb6E3403a6A36a',
   },
@@ -53,6 +54,11 @@ const config = {
   eon: {
     vaultConfigs: [
       { factory: '0x242cd12579467983dc521D8aC46EB13936ab65De', fromBlock: 638510, isAlgebra: false, }, // Ascent
+    ]
+  },
+  era: {
+    vaultConfigs: [
+      { factory: '0x8a76c26E0089111989C14EF56b9733aa38B94148', fromBlock: 20999423, isAlgebra: false, }, // zkSync Era
     ]
   },
   polygon: {
