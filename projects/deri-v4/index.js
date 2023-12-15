@@ -23,6 +23,7 @@ const config = {
   arbitrum: { fromBlock: 152219576, factory: '0xccacf05a3cb1770f9a5b5a8aa219af1ac0c5e26b', },
   era: { fromBlock: 19529699, factory: '0x34FD72D2053339EA4EB1a8836CF50Ebce91962D0', },
   linea: { fromBlock: 926110, factory: '0xe840Bb03fE58540841e6eBee94264d5317B88866', },
+  scroll: { fromBlock: 1384607, factory: '0x7B56Af65Da221A40B48bEDcCb67410D6C0bE771D', },
 }
 
 Object.keys(config).forEach(chain => {
