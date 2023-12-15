@@ -28,4 +28,7 @@ module.exports = {
       },
     ])
   },
+  hallmarks: [
+    [Math.floor(new Date('2023-05-30')/1e3), 'Protocol was hacked!'],
+  ],
 }

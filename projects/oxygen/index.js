@@ -1,52 +1,9 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const { getProvider } = require('../helper/solana')
-const BigNumber = require('bignumber.js')
+const { getProvider, getTokenDecimals } = require('../helper/solana')
 const { PublicKey } = require('@solana/web3.js')
 const { Program, } = require("@project-serum/anchor");
-const idl = require('./idl')
-const MINTS = [
-  {
-    name: 'Bitcoin',
-    mintAddress: '9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E',
-    decimals: 6,
-  },
-  {
-    name: 'Ethereum',
-    mintAddress: '2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk',
-    decimals: 6,
-  },
-  {
-    symbol: 'SOL',
-    mintAddress: ADDRESSES.solana.SOL,
-    decimals: 9,
-  },
-  {
-    symbol: 'USDC',
-    mintAddress: ADDRESSES.solana.USDC,
-    decimals: 6,
-  },
-  {
-    symbol: 'SRM',
-    mintAddress: 'SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt',
-    decimals: 6,
-  },
-  {
-    symbol: 'USDT',
-    mintAddress: ADDRESSES.solana.USDT,
-    decimals: 6,
-  },
-];
+const idl = require('./idl');
+
 const INTERNAL_DECIMALS = 12;
-
-const convertFromBN = (amount, decimals) => {
-  const amountStr = new BigNumber(amount.toString());
-  const toDivAmount = `1${'0'.repeat(decimals)}`;
-  return amountStr.dividedBy(toDivAmount).toNumber();
-};
-
-const numberToFixed = (amount, fixed = 2) => {
-  return new BigNumber(amount).decimalPlaces(fixed).toNumber();
-};
 
 let tokenData
 
@@ -56,39 +13,10 @@ async function _getTokenData() {
   const provider = getProvider()
   const program = new Program(idl, programId, provider)
   const data = await program.account.mainAccount.fetch(mainAccountAddress)
-
-  const { balancesMap, pricesMap, } = data.tokens.reduce((acc, { mint }, i) => {
-    acc.pricesMap[mint.toBase58()] = data.prices[i]?.price || new BigNumber(0);
-    acc.balancesMap[mint.toBase58()] = data.balances[i]?.balance || {
-      borrowTotal: new BigNumber(0),
-      depositTotal: new BigNumber(0),
-    };
-    return acc;
-  }, { balancesMap: {}, pricesMap: {}});
-
-  data.balancesMap = balancesMap;
-  data.pricesMap = pricesMap;
-
-
-  const tokens = MINTS.reduce((acc, token, i) => {
-    const { mintAddress, decimals } = token;
-    const depositTotal = numberToFixed(convertFromBN(data.balancesMap[mintAddress].depositTotal, INTERNAL_DECIMALS), decimals);
-    const borrowTotal = numberToFixed(convertFromBN(data.balancesMap[mintAddress].borrowTotal, INTERNAL_DECIMALS), decimals);
-    const available = BigNumber.maximum(new BigNumber(depositTotal).minus(borrowTotal), 0);
-    const price = convertFromBN(data.pricesMap[mintAddress], INTERNAL_DECIMALS);
-
-    acc[mintAddress] = {
-      borrowed: {
-        usd: numberToFixed((borrowTotal * price)),
-      },
-      available: {
-        usd: numberToFixed(available * price),
-      },
-    };
-    return acc;
-  }, {});
-
-  return tokens
+  data.tokens = data.tokens.slice(0, 6)
+  data.balances = data.balances.slice(0, 6)
+  data.tokenDecimals = await getTokenDecimals(data.tokens.map(({ mint }) => mint.toBase58()))
+  return data
 }
 
 async function getTokenData() {
@@ -96,25 +24,31 @@ async function getTokenData() {
   return tokenData
 }
 
-async function tvl() {
+async function tvl(_, _1, _2, { api }) {
   const data = await getTokenData()
-  return {
-    tether: Object.values(data).reduce((a, i) => a + i.available.usd, 0)
-  }
+  data.tokens.forEach(({ mint }, i) => {
+    const token = mint.toBase58()
+    const { balance: { depositTotal, borrowTotal } } = data.balances[i]
+    const decimals = 10 ** (data.tokenDecimals[token] - INTERNAL_DECIMALS)
+    api.add(token, depositTotal.toString() * decimals)
+    api.add(token, borrowTotal.toString() * -1 * decimals)
+  })
 }
 
-async function borrowed() {
+async function borrowed(_, _1, _2, { api }) {
   const data = await getTokenData()
-  return {
-    tether: Object.values(data).reduce((a, i) => a + i.borrowed.usd, 0)
-  }
+  data.tokens.forEach(({ mint }, i) => {
+    const token = mint.toBase58()
+    const { balance: { borrowTotal } } = data.balances[i]
+    const decimals = 10 ** (data.tokenDecimals[token] - INTERNAL_DECIMALS)
+    api.add(token, borrowTotal.toString()* decimals)
+  })
 }
 
 module.exports = {
   timetravel: false,
-  misrepresentedTokens: true,
   solana: {
     tvl,
-    borrowed,
+    borrowed: () => 0,
   },
 }

@@ -34,7 +34,7 @@ abis.tokens = [
     },
     {
         symbol: "sUSD",
-        address: "0x57ab1ec28d129707052df4df418d58a2d46d5f51",
+        address: ADDRESSES.ethereum.sUSD,
         id: 4,
         decimals: 18,
     },

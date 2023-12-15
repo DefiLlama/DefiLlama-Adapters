@@ -2,24 +2,24 @@
 const sdk = require('@defillama/sdk')
 
 const http = require('../http')
-const env = require('../env')
+const { getEnv } = require('../env')
 const coreTokensAll = require('../coreAssets.json')
 const { transformBalances } = require('../portedTokens')
 const { log, getUniqueAddresses } = require('../utils')
 
 const coreTokens = Object.values(coreTokensAll.aptos)
 
-const endpoint = env.APTOS_RPC || "https://aptos-mainnet.pontem.network"
+const endpoint = () => getEnv('APTOS_RPC')
 
 async function aQuery(api) {
-  return http.get(`${endpoint}${api}`)
+  return http.get(`${endpoint()}${api}`)
 }
 async function getResources(account) {
   const data = []
   let lastData
   let cursor
   do {
-    let url = `${endpoint}/v1/accounts/${account}/resources?limit=9999`
+    let url = `${endpoint()}/v1/accounts/${account}/resources?limit=9999`
     if (cursor) url += '&start=' + cursor
     const res = await http.getWithMetadata(url)
     lastData = res.data
@@ -31,14 +31,14 @@ async function getResources(account) {
 }
 
 async function getResource(account, key) {
-  let url = `${endpoint}/v1/accounts/${account}/resource/${key}`
+  let url = `${endpoint()}/v1/accounts/${account}/resource/${key}`
   const { data } = await http.get(url)
   return data
 }
 
 async function getCoinInfo(address) {
   if (address === '0x1') return { data: { decimals: 8, name: 'Aptos' } }
-  return http.get(`${endpoint}/v1/accounts/${address}/resource/0x1::coin::CoinInfo%3C${address}::coin::T%3E`)
+  return http.get(`${endpoint()}/v1/accounts/${address}/resource/0x1::coin::CoinInfo%3C${address}::coin::T%3E`)
 }
 
 function dexExport({
@@ -95,12 +95,12 @@ async function sumTokens({ balances = {}, owners = [] }) {
 }
 
 async function getTableData({ table, data }) {
-  const response = await http.post(`${endpoint}/v1/tables/${table}/item`, data)
+  const response = await http.post(`${endpoint()}/v1/tables/${table}/item`, data)
   return response
 }
 
 async function function_view({ functionStr, type_arguments = [], args = [] }) {
-  const response = await http.post(`${endpoint}/v1/view`, { "function": functionStr, "type_arguments": type_arguments, arguments:args })
+  const response = await http.post(`${endpoint()}/v1/view`, { "function": functionStr, "type_arguments": type_arguments, arguments:args })
   return response
 }
 
@@ -121,7 +121,7 @@ function hexToString(hexString) {
 }
 
 module.exports = {
-  endpoint,
+  endpoint: endpoint(),
   dexExport,
   aQuery,
   getCoinInfo,
