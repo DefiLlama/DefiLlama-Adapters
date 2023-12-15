@@ -43,7 +43,7 @@ async function setCache(project, chain, cache) {
     await sdk.cache.writeCache(getFileKey(project, chain), cache)
   } catch (e) {
     sdk.log('failed to write data to s3 bucket: ', Key)
-    // sdk.log(e)
+    sdk.log(e)
   }
 }
 
