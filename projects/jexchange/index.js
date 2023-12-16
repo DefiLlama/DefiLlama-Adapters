@@ -7,7 +7,6 @@ async function tvl() {
     ...pools.map(pool => pool.sc_address),
     "erd1qqqqqqqqqqqqqpgqmmxzmktd09gq0hldtczerlv444ykt3pz6avsnys6m9",
     "erd1qqqqqqqqqqqqqpgqdh6jeeyamfhq66u7rmkyc48q037kk8n26avs400gg8",
-    "erd1qqqqqqqqqqqqqpgq05whpg29ggrrm9ww3ufsf9ud23f66msv6avs5s5xxy",
   ];
   return sumTokens({ owners });
 }
