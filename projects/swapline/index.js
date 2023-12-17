@@ -1,4 +1,5 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { getChainTvl } = require("../helper/getUniSubgraphTvl");
 
 const factories = {
   fantom: '0x640801a6983c109805E928dc7d9794080C21C88E',
@@ -31,12 +32,17 @@ async function tvl(_, _b, _cb, { api, }) {
   return sumTokens2({...api, tokensAndOwners: toa, blacklistedTokens,})
 }
 
+const v2graph = getChainTvl({
+  shimmer_evm: 'https://graph.shimmersea.finance/subgraphs/name/shimmersea/shimmer-dex'
+})
+
 module.exports = {
   hallmarks: [
     [1682298000,"Launch on Optimism"],
     [1687827600,"Launch on Polygon zkEVM"],
     [1689037200,"Launch on Arbitrum"],
-    [1690848000,"Launch on Base"]
+    [1690848000,"Launch on Base"],
+    [1702857600,"Launch on ShimmerEVM"]
   ],
   methodology: 'We count the token balances in different liquidity book contracts',
   fantom:{
@@ -53,5 +59,8 @@ module.exports = {
   },
   base:{
     tvl,
+  },
+  shimmer_evm: {
+    tvl: v2graph('shimmer_evm'),
   },
 };
