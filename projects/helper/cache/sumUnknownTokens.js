@@ -76,7 +76,7 @@ async function getTokenPrices({
   cache = {},
 }) {
   if (!api)
-     api = new sdk.ChainApi({ block, chain, })
+    api = new sdk.ChainApi({ block, chain, })
   else {
     chain = api.chain
     block = api.block
@@ -93,8 +93,8 @@ async function getTokenPrices({
   blacklist = blacklist.map(i => i.toLowerCase())
   whitelist = whitelist.map(i => i.toLowerCase())
   lps = getUniqueAddresses(lps)
-  const pairAddresses = allLps ? lps : await getLPList({ lps, chain, block, lpFilter, cache })
-  const toCall  = (pairAddress) => ({ target: pairAddress, })
+  const pairAddresses = (allLps && !lpFilter) ? lps : await getLPList({ lps, chain, block, lpFilter, cache })
+  const toCall = (pairAddress) => ({ target: pairAddress, })
   const pairCalls = pairAddresses.map(toCall)
   const pairs = cache.pairData;
   const token0Calls = pairAddresses.filter(i => !pairs[i] || !pairs[i].token0Address).map(toCall)
@@ -382,7 +382,7 @@ async function sumUnknownTokens({ api, tokensAndOwners = [], balances,
     else if (owner)
       tokensAndOwners = tokens.map(t => [t, owner])
   tokensAndOwners = tokensAndOwners.filter(t => !blacklist.includes(t[0]))
-  await sumTokens2({ api, balances, chain, block, tokensAndOwners, skipFixBalances: true, resolveLP, })
+  await sumTokens2({ api, balances, chain, block, tokensAndOwners, skipFixBalances: true, resolveLP, abis })
   const { updateBalances, } = await getTokenPrices({ cache, coreAssets, lps: [...tokensAndOwners.map(t => t[0]), ...lps,], chain, block, restrictTokenRatio, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio, abis, })
   await updateBalances(balances, { skipConversion, onlyLPs })
   const fixBalances = await getFixBalances(chain)
@@ -390,7 +390,21 @@ async function sumUnknownTokens({ api, tokensAndOwners = [], balances,
   return balances
 }
 
+// sushi constant product LP
+const SCPLP = {
+  lpFilter: (symbol, addr, chain) => symbol === 'SCPLP',
+  abis: {
+    getReservesABI: "function getAssets() external view returns (uint _reserve0, uint _reserve1)",
+  },
+}
+const syncswap = {
+  lpFilter: (symbol, addr, chain) => ['scroll', 'era'].includes(chain) && /(cSLP|sSLP)$/.test(symbol),
+  abis: {
+    getReservesABI: "function getReserves() external view returns (uint _reserve0, uint _reserve1)",
+  },
+}
 const customLPHandlers = {
+  kava: { SCPLP, },
   klaytn: {
     kslp: {
       lpFilter: (symbol, addr, chain) => chain === 'klaytn' && symbol === 'KSLP',
@@ -400,7 +414,9 @@ const customLPHandlers = {
         token1ABI: kslpABI.tokenB,
       },
     }
-  }
+  },
+  scroll: { syncswap, },
+  era: { syncswap, },
 }
 
 module.exports = {

@@ -1,6 +1,7 @@
 const { default: axios } = require('axios');
 const { transformDexBalances } = require('../helper/portedTokens')
 async function tvl() {
+  // addr1w9a3urry4uuwjp2hjawlqfu9lqgvzead3mz3pt7kle5rwng6gu8yl
   const Pairs = (await axios.post('https://api.meowswap.fi/?method=Info.Pairs', { "jsonrpc": "2.0", "method": "Info.Pairs", "id": 3, "params": {} })).data.result.data
 
   let totalLiquid = 0;
@@ -25,6 +26,6 @@ module.exports = {
   methodology: "Data is retrieved from the api at https://api.meowswap.fi/",
   timetravel: false,
   cardano: {
-    tvl
+    tvl: () => ({})
   }
 }

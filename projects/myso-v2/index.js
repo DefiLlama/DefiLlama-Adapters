@@ -1,8 +1,8 @@
 const axios = require("axios");
 const zlib = require("zlib");
-const { getLogs, } = require("../helper/cache/getLogs");
+const { getLogs } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
-const { getCache, setCache, } = require("../helper/cache");
+const { getCache, setCache } = require("../helper/cache");
 
 const brotliDecode = (stream) => {
   return new Promise((resolve, reject) => {
@@ -45,13 +45,13 @@ const getContracts = async (chainId) => {
 
 async function tvl(_, _b, _cb, { api }) {
   const { fromBlock } = config[api.chain];
-  let contracts
+  let contracts;
 
   try {
-    contracts = await getContracts(api.chainId)
-    await setCache('myso-v2', api.chain, contracts)
+    contracts = await getContracts(api.chainId);
+    await setCache("myso-v2", api.chain, contracts);
   } catch (e) {
-    contracts = await getCache('myso-v2',api.chain)
+    contracts = await getCache("myso-v2", api.chain);
   }
 
   const vaultFactory = contracts?.find(
@@ -61,7 +61,8 @@ async function tvl(_, _b, _cb, { api }) {
   const logs = await getLogs({
     api,
     target: vaultFactory,
-    eventAbi: "event NewVaultCreated(address indexed newLenderVaultAddr, address vaultOwner, uint256 numRegisteredVaults)",
+    eventAbi:
+      "event NewVaultCreated(address indexed newLenderVaultAddr, address vaultOwner, uint256 numRegisteredVaults)",
     onlyArgs: true,
     fromBlock,
   });
@@ -84,6 +85,15 @@ async function tvl(_, _b, _cb, { api }) {
 const config = {
   mantle: {
     fromBlock: 3471026,
+  },
+  ethereum: {
+    fromBlock: 18213104,
+  },
+  arbitrum: {
+    fromBlock: 143181867,
+  },
+  base: {
+    fromBlock: 6239916,
   },
 };
 
