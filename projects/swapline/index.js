@@ -1,5 +1,4 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { getChainTvl } = require("../helper/getUniSubgraphTvl");
 
 const factories = {
   fantom: '0x640801a6983c109805E928dc7d9794080C21C88E',
@@ -7,6 +6,7 @@ const factories = {
   polygon_zkevm: '0x5A5c0C4832828FF878CE3ab4fEc44d21200b1496',
   arbitrum: '0xEE0616a2DEAa5331e2047Bc61E0b588195A49cEa',
   base: '0x5A5c0C4832828FF878CE3ab4fEc44d21200b1496',
+  shimmer_evm: '0xEE0616a2DEAa5331e2047Bc61E0b588195A49cEa',
 }
 async function tvl(_, _b, _cb, { api, }) {
   let blacklistedTokens = []
@@ -31,10 +31,6 @@ async function tvl(_, _b, _cb, { api, }) {
   })
   return sumTokens2({...api, tokensAndOwners: toa, blacklistedTokens,})
 }
-
-const v2graph = getChainTvl({
-  shimmer_evm: 'https://graph.shimmersea.finance/subgraphs/name/shimmersea/shimmer-dex'
-})
 
 module.exports = {
   hallmarks: [
@@ -61,6 +57,6 @@ module.exports = {
     tvl,
   },
   shimmer_evm: {
-    tvl: v2graph('shimmer_evm'),
+    tvl,
   },
 };
