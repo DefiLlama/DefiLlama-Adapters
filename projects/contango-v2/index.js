@@ -1,4 +1,3 @@
-const { getLogs } = require("../helper/cache/getLogs");
 const { blockQuery } = require("../helper/http");
 
 const CONTANGO_PROXY = "0x6Cae28b3D09D8f8Fc74ccD496AC986FC84C0C24E";
@@ -39,24 +38,27 @@ const config = {
 };
 
 Object.keys(config).forEach((chain) => {
-  const { contango, contango_lens, grapUrl } = config[chain];
   module.exports[chain] = {
-    tvl: async (_1, _2, _3, { api }) => {
-      await Promise.all([
-        positionsTvl(api, chain, contango_lens, grapUrl),
-        vaultTvl(api, contango, grapUrl),
-      ]);
-
-      return api.getBalances();
-    },
+    tvl: async (_1, _2, _3, { api }) => section(api, chain, false),
+    borrowed: async (_1, _2, _3, { api }) => section(api, chain, true),
   };
 });
+
+async function section(api, chain, borrowed) {
+  const { contango, contango_lens, grapUrl } = config[chain];
+  await Promise.all([
+    positionsTvl(api, chain, contango_lens, grapUrl, borrowed),
+    vaultTvl(api, contango, grapUrl),
+  ]);
+  return api.getBalances();
+}
 
 async function positionsTvl(
   api,
   chain,
   contangoLens,
   grapUrl,
+  borrowed,
   first = 1000,
   skip = 0
 ) {
@@ -79,7 +81,13 @@ async function positionsTvl(
   });
 
   balances.forEach(([collateral, debt], i) => {
-    api.addTokens(parts[i][1], [collateral, -debt]);
+    const [base, quote] = parts[i][1];
+    if (borrowed) {
+      api.add(quote, debt);
+    } else {
+      api.add(quote, -debt);
+      api.add(base, collateral);
+    }
   });
 
   if (positions.length === first) {
