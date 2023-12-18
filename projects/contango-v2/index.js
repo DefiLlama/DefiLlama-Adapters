@@ -39,6 +39,8 @@ const config = {
 
 Object.keys(config).forEach((chain) => {
   module.exports[chain] = {
+    doublecounted: true,
+    methodology: `Counts the tokens locked in the positions to be used as margin + user's tokens locked in the protocol's vault. Borrowed coins are discounted from the TVL, so only the position margins are counted. The reason behind this is that the protocol only added the user's margin to the underlying money market. Adding the borrowed coins to the TVL can be used as a proxy for the protocol's open interest.`,
     tvl: async (_1, _2, _3, { api }) => section(api, chain, false),
     borrowed: async (_1, _2, _3, { api }) => section(api, chain, true),
   };
