@@ -8,49 +8,43 @@ const config = {
   arbitrum: {
     contango: CONTANGO_PROXY,
     contango_lens: CONTANGO_LENS_PROXY,
-    fromBlock: 137136154,
     grapUrl: "https://api.thegraph.com/subgraphs/name/contango-xyz/v2-arbitrum",
   },
   optimism: {
     contango: CONTANGO_PROXY,
     contango_lens: CONTANGO_LENS_PROXY,
-    fromBlock: 110323085,
     grapUrl: "https://api.thegraph.com/subgraphs/name/contango-xyz/v2-optimism",
   },
   ethereum: {
     contango: CONTANGO_PROXY,
     contango_lens: CONTANGO_LENS_PROXY,
-    fromBlock: 18269652,
     grapUrl: "https://api.thegraph.com/subgraphs/name/contango-xyz/v2-mainnet",
   },
   polygon: {
     contango: CONTANGO_PROXY,
     contango_lens: CONTANGO_LENS_PROXY,
-    fromBlock: 48665181,
     grapUrl: "https://api.thegraph.com/subgraphs/name/contango-xyz/v2-polygon",
   },
   xdai: {
     contango: CONTANGO_PROXY,
     contango_lens: CONTANGO_LENS_PROXY,
-    fromBlock: 30822347,
     grapUrl: "https://api.thegraph.com/subgraphs/name/contango-xyz/v2-gnosis",
   },
   base: {
     contango: CONTANGO_PROXY,
     contango_lens: CONTANGO_LENS_PROXY,
-    fromBlock: 6373860,
     grapUrl:
       "https://graph.contango.xyz:18000/subgraphs/name/contango-xyz/v2-base",
   },
 };
 
 Object.keys(config).forEach((chain) => {
-  const { contango, fromBlock, contango_lens, grapUrl } = config[chain];
+  const { contango, contango_lens, grapUrl } = config[chain];
   module.exports[chain] = {
     tvl: async (_1, _2, _3, { api }) => {
       await Promise.all([
         positionsTvl(api, chain, contango_lens, grapUrl),
-        // vaultTvl(api, contango, fromBlock),
+        vaultTvl(api, contango, grapUrl),
       ]);
 
       return api.getBalances();
@@ -93,24 +87,18 @@ async function positionsTvl(
   }
 }
 
-async function vaultTvl(api, contango, fromBlock) {
-  const logs = await getLogs({
-    api,
-    target: contango,
-    eventAbi: abis.InstrumentCreated,
-    onlyArgs: true,
-    fromBlock,
-  });
+async function vaultTvl(api, contango, grapUrl, first = 1000, skip = 0) {
+  const { assets } = await blockQuery(
+    grapUrl,
+    graphQueries.assets(first, skip),
+    { api }
+  );
   const vault = await api.call({ abi: "address:vault", target: contango });
-  await api.sumTokens({
-    owner: vault,
-    tokens: logs.flatMap((log) => [log.base, log.quote]),
-  });
+
+  await api.sumTokens({ owner: vault, tokens: assets.map(({ id }) => id) });
 }
 
 const abis = {
-  InstrumentCreated:
-    "event InstrumentCreated(bytes16 indexed symbol, address base, address quote)",
   balances:
     "function balances(bytes32 positionId) view returns (uint256 collateral, uint256 debt)",
 };
@@ -134,6 +122,12 @@ const graphQueries = {
             id
           }
         }
+      }
+    }`,
+  assets: (first = 1000, skip = 0) => `
+    query MyQuery {
+      assets(first: ${first} skip: ${skip}) {
+        id
       }
     }`,
 };
