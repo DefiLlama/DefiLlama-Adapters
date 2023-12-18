@@ -127,7 +127,10 @@ const fixBalancesTokens = {
   },
   new: {
     '0xf4905b9bc02ce21c98eac1803693a9357d5253bf': { coingeckoId: 'newton-project', decimals: 18 },
-  }
+  },
+  conflux: {
+    [ADDRESSES.null]: { coingeckoId: 'conflux-token', decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
