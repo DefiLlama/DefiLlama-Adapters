@@ -104,6 +104,10 @@ async function vaultTvl(api, contango, grapUrl, first = 1000, skip = 0) {
   const vault = await api.call({ abi: "address:vault", target: contango });
 
   await api.sumTokens({ owner: vault, tokens: assets.map(({ id }) => id) });
+
+  if (assets.length === first) {
+    await vaultTvl(api, contango, grapUrl, first, skip + first);
+  }
 }
 
 const abis = {
