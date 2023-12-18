@@ -49,6 +49,13 @@ const config = {
     ],
     token: '0x3E5D9D8a63CC8a88748f229999CF59487e90721e',
   },
+  linea: {
+    toa: [
+      ['0xB5beDd42000b71FddE22D3eE8a79Bd49A568fC8F', '0x65feA8341264E5fB0a26E16307c9E4d58e25E1fd'],  // WSTETH pool 
+      [ADDRESSES.linea.USDC, '0xC5fb6ED4417dd75D5c3fA3fd550ec12059fD03D2'], //usdt pool new 
+    ],
+    token: '0x3E5D9D8a63CC8a88748f229999CF59487e90721e',
+  },
 }
 
 module.exports = {

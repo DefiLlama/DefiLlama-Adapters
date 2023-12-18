@@ -5,6 +5,9 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 const config = {
   ethereum: { factory: '0x2551a099129ad9b0b1fec16f34d9cb73c237be8b', fromBlock: 16472616, tellerV2: '0x00182FdB0B880eE24D428e3Cc39383717677C37e', },
   polygon: { factory: '0x76888a882a4ff57455b5e74b791dd19df3ba51bb', fromBlock: 38446227, tellerV2: '0xD3D79A066F2cD471841C047D372F218252Dbf8Ed', },
+  arbitrum: { factory: '0x71B04a8569914bCb99D5F95644CF6b089c826024', fromBlock: 108629315, tellerV2: '0x5cfD3aeD08a444Be32839bD911Ebecd688861164', },
+  base: { factory: '0x71B04a8569914bCb99D5F95644CF6b089c826024', fromBlock: 2935376, tellerV2: '0x5cfD3aeD08a444Be32839bD911Ebecd688861164', },
+  mantle: { factory: '0x6eB9b34913Bd96CA2695519eD0F8B8752d43FD2b', fromBlock: 3480394, tellerV2: '0xe6774DAAEdf6e95b222CD3dE09456ec0a46672C4', },
 }
 
 const blacklistedTokens = ['0x8f9bbbb0282699921372a134b63799a48c7d17fc', '0xd4416b13d2b3a9abae7acd5d6c2bbdbe25686401']
@@ -92,8 +95,6 @@ async function borrowed(_, _b, _cb, { api, }) {
     api.add(i.loanDetails.lendingToken, i.loanDetails.principal - i.loanDetails.totalRepaid.principal)
   })
 }
-
-module.exports = {}
 
 Object.keys(config).forEach(chain => {
   module.exports[chain] = { tvl, borrowed, }

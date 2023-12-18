@@ -27,29 +27,45 @@ module.exports = {
 
 const defaultEvent = 'event ICHIVaultCreated (address indexed sender, address ichiVault, address tokenA, bool allowTokenA, address tokenB, bool allowTokenB, uint24 fee, uint256 count)'
 const defaultTopic = '0xde147f43b6837f282eee187234c866cf001806167325f3ea883e36bed0c16a20'
+const algebraEvent = 'event ICHIVaultCreated (address indexed sender, address ichiVault, address tokenA, bool allowTokenA, address tokenB, bool allowTokenB, uint256 count)'
+const algebraTopic = '0xc40564e4b61a849e6f9fd666c2109aa6ceffc5a019f87d4d3e0eaaf807b0783e'
 
 const config = {
   ethereum: {
     vaultConfigs: [
-      { factory: '0x5a40DFaF8C1115196A1CDF529F97122030F26112', fromBlock: 13671610, },
+      { factory: '0x5a40DFaF8C1115196A1CDF529F97122030F26112', fromBlock: 13671610, isAlgebra: false, },
+      { factory: '0x8Dd50926e12BD71904bCCc6D86DFA55D42715094', fromBlock: 18754139, isAlgebra: false, }, //PancakeSwap
     ],
     oneFactory: '0xD0092632B9Ac5A7856664eeC1abb6E3403a6A36a',
   },
   arbitrum: {
     vaultConfigs: [
-      { factory: '0xfBf38920cCbCFF7268Ad714ae5F9Fad6dF607065', fromBlock: 102858581, },
-      { factory: '0xedAc86bc526557c422AB1F6BF848bF0da9fB44A6', fromBlock: 137087766, }, // Ramses
+      { factory: '0xfBf38920cCbCFF7268Ad714ae5F9Fad6dF607065', fromBlock: 102858581, isAlgebra: false, },
+      { factory: '0xedAc86bc526557c422AB1F6BF848bF0da9fB44A6', fromBlock: 140300509, isAlgebra: false, }, // Ramses
+      { factory: '0x1Cc05B01f2e52ae3bb29F7A0059Fe112C60aA3f4', fromBlock: 147199960, isAlgebra: false, }, // Horiza
     ],
   },
   bsc: {
     vaultConfigs: [
-      { factory: '0x131c03ca881B7cC66d7a5120A9273ebf675C241D', fromBlock: 29702590, },
+      { factory: '0x131c03ca881B7cC66d7a5120A9273ebf675C241D', fromBlock: 29702590, isAlgebra: false, },
+      { factory: '0xAc93148e93d1C49D89b1166BFd74942E80F5D501', fromBlock: 32489803, isAlgebra: true, }, // Thena
     ],
+  },
+  eon: {
+    vaultConfigs: [
+      { factory: '0x242cd12579467983dc521D8aC46EB13936ab65De', fromBlock: 638510, isAlgebra: false, }, // Ascent
+    ]
+  },
+  era: {
+    vaultConfigs: [
+      { factory: '0x8a76c26E0089111989C14EF56b9733aa38B94148', fromBlock: 20999423, isAlgebra: false, }, // zkSync Era
+    ]
   },
   polygon: {
     vaultConfigs: [
-      { factory: '0x2d2c72c4dc71aa32d64e5142e336741131a73fc0', fromBlock: 25697834, },
-      { factory: '0xb2f44D8545315cDd0bAaB4AC7233218b932a5dA7', fromBlock: 44370370, }, // v2-retro
+      { factory: '0x2d2c72c4dc71aa32d64e5142e336741131a73fc0', fromBlock: 25697834, isAlgebra: false, },
+      { factory: '0xb2f44D8545315cDd0bAaB4AC7233218b932a5dA7', fromBlock: 44370370, isAlgebra: false, }, // v2-retro
+      { factory: '0x11700544C577Cb543a498B27B4F0f7018BDb6E8a', fromBlock: 49227783, isAlgebra: true, }, // QuickSwap
     ],
     oneFactory: '0x101eB16BdbA37979a771c86e1CAAfbaDbABfc879',
   },
@@ -84,7 +100,13 @@ Object.keys(config).forEach(chain => {
         await sumTokens2({ api, owners: uniV3NFTHolders, resolveUniV3: true, blacklistedTokens, })
       }
 
-      for (const { factory, fromBlock, topic = defaultTopic, eventAbi = defaultEvent } of vaultConfigs) {
+      for (const { 
+        factory, 
+        fromBlock, 
+        isAlgebra, 
+      } of vaultConfigs) {
+        const topic = isAlgebra ? algebraTopic : defaultTopic 
+        const eventAbi = isAlgebra ? algebraEvent : defaultEvent 
         const logs = await getLogs({
           api,
           target: factory,

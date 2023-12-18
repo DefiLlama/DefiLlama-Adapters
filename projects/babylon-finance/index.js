@@ -33,7 +33,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 
     for (const gardenDetails of gardensDetails.output) {
         if (gardensToIgnore.includes(gardenDetails.input.params[0])) { continue; }
-        log(gardenDetails.input.params[0], !!gardenDetails.output)
+        // log(gardenDetails.input.params[0], !!gardenDetails.output)
         const [gardenName, symbol, creators, reserveAsset, arr1, strategies, finalizedStrategies, voteParams, capitalArr, profits] = gardenDetails.output
         // const garden_principal = capitalArr[0]
         const garden_idle = capitalArr[9]
@@ -57,8 +57,8 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 
         const garden_tvl = strategies_tvl.reduce((acc, el) => acc.plus(BigNumber(el)), BigNumber(garden_idle))
         balances[reserveAsset] = balances[reserveAsset] ? BigNumber(balances[reserveAsset]).plus(garden_tvl) : garden_tvl
-        if (garden_tvl / 1e18 > 10)
-            log(`Garden with name "${gardenName}" TVL: ${garden_tvl / 1e18} of reserveAsset: ${reserveAsset} locked\n${strategy_str}-----------------------------`)
+        // if (garden_tvl / 1e18 > 10)
+        //     log(`Garden with name "${gardenName}" TVL: ${garden_tvl / 1e18} of reserveAsset: ${reserveAsset} locked\n${strategy_str}-----------------------------`)
     }
     return Object.fromEntries(Object.entries(balances).map(b => [b[0], b[1].toFixed(0)]))
 }
@@ -73,7 +73,7 @@ async function staking(timestamp, ethBlock, chainBlocks) {
         pool: harvest_pool
     }]
     await unwrapUniswapV3LPs(balances, univ3_Positions, ethBlock, 'ethereum')
-    log('balances:', balances)
+    // log('balances:', balances)
     return balances
 }
 

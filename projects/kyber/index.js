@@ -88,6 +88,7 @@ module.exports = {
   timetravel: false,
   hallmarks: [
     [Math.floor(new Date('2023-04-17')/1e3), 'Kyber team identified a vuln'],
+    [1700611200,'Protocol exploit'],
   ],
 };
 Object.keys(chains).forEach(chain => {

@@ -9,6 +9,7 @@ const tokens = [
 const owners = [
   '0xA1D5443F2FB80A5A55ac804C948B45ce4C52DCbb',
   '0xe95b3Dc78c0881dEa17A69BaFC6cFeB8d891e9DE',
+  "0xe53A6eD882Eb3f90cCe0390DDB04c876C5482E6b"
 ];
 
 const walletAddresses = {

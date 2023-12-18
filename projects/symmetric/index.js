@@ -15,7 +15,7 @@ module.exports = {
     ])
   },
   kava: {
-    tvl: onChainTvl('0xA18808989E7EB0FcF0932fd00D007F3C118B78E7', 551649),
+    tvl: onChainTvl('0xA18808989E7EB0FcF0932fd00D007F3C118B78E7', 551649, { onlyUseExistingCache: true} ),
   },
   telos: {
     tvl: onChainTvl('0xbccc4b4c6530F82FE309c5E845E50b5E9C89f2AD', 308572378),

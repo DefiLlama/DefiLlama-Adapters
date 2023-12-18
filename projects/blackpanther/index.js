@@ -15,6 +15,11 @@ const config = {
       "inj1jtvgvktz7vx7yvk04ahwg54h0rd6llfknns20m",
       "inj1u22ygdfu4vq5yvcqlum7u77ac20re7hz4uxc6h",
       "inj1mrfsm3c8psn6vaznxh7ewgsp4zn5vldaq54lqu",
+      "inj1l75lklg7znu96mr2lmnp87e3s2c49xkj9urjh8",
+      "inj1v7eqzhdz94gydprspmdyegjwfzw94re3rpfvap",
+      "inj1wf0n4jr5hz8962xszgt9s479h80zh722kp40ky",
+      "inj1u8llm9l24s54e4hk7ac5wswggfr8w8nkn0ae9f",
+      "inj1kepxjx47dh87ytws2fkl6j99gnhu65rzrl9m4q",
     ],
   },
 };
