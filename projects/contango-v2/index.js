@@ -11,6 +11,37 @@ const config = {
     fromBlock: 137136154,
     grapUrl: "https://api.thegraph.com/subgraphs/name/contango-xyz/v2-arbitrum",
   },
+  optimism: {
+    contango: CONTANGO_PROXY,
+    contango_lens: CONTANGO_LENS_PROXY,
+    fromBlock: 110323085,
+    grapUrl: "https://api.thegraph.com/subgraphs/name/contango-xyz/v2-optimism",
+  },
+  ethereum: {
+    contango: CONTANGO_PROXY,
+    contango_lens: CONTANGO_LENS_PROXY,
+    fromBlock: 18269652,
+    grapUrl: "https://api.thegraph.com/subgraphs/name/contango-xyz/v2-mainnet",
+  },
+  polygon: {
+    contango: CONTANGO_PROXY,
+    contango_lens: CONTANGO_LENS_PROXY,
+    fromBlock: 48665181,
+    grapUrl: "https://api.thegraph.com/subgraphs/name/contango-xyz/v2-polygon",
+  },
+  xdai: {
+    contango: CONTANGO_PROXY,
+    contango_lens: CONTANGO_LENS_PROXY,
+    fromBlock: 30822347,
+    grapUrl: "https://api.thegraph.com/subgraphs/name/contango-xyz/v2-gnosis",
+  },
+  base: {
+    contango: CONTANGO_PROXY,
+    contango_lens: CONTANGO_LENS_PROXY,
+    fromBlock: 6373860,
+    grapUrl:
+      "https://graph.contango.xyz:18000/subgraphs/name/contango-xyz/v2-base",
+  },
 };
 
 Object.keys(config).forEach((chain) => {
@@ -19,7 +50,7 @@ Object.keys(config).forEach((chain) => {
     tvl: async (_1, _2, _3, { api }) => {
       await Promise.all([
         positionsTvl(api, chain, contango_lens, grapUrl),
-        vaultTvl(api, contango, fromBlock),
+        // vaultTvl(api, contango, fromBlock),
       ]);
 
       return api.getBalances();
@@ -45,6 +76,7 @@ async function positionsTvl(
     id,
     [base.id, quote.id],
   ]);
+
   const balances = await api.multiCall({
     target: contangoLens,
     calls: parts.map(([id]) => id),
