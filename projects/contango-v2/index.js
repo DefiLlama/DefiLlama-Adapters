@@ -38,22 +38,21 @@ const config = {
 };
 
 Object.keys(config).forEach((chain) => {
+  const { contango, contango_lens, grapUrl } = config[chain];
   module.exports[chain] = {
     doublecounted: true,
     methodology: `Counts the tokens locked in the positions to be used as margin + user's tokens locked in the protocol's vault. Borrowed coins are discounted from the TVL, so only the position margins are counted. The reason behind this is that the protocol only added the user's margin to the underlying money market. Adding the borrowed coins to the TVL can be used as a proxy for the protocol's open interest.`,
-    tvl: async (_1, _2, _3, { api }) => section(api, chain, false),
-    borrowed: async (_1, _2, _3, { api }) => section(api, chain, true),
+    tvl: async (_1, _2, _3, { api }) => {
+      await Promise.all([
+        positionsTvl(api, chain, contango_lens, grapUrl, false),
+        vaultTvl(api, contango, grapUrl),
+      ]);
+      return api.getBalances();
+    },
+    borrowed: async (_1, _2, _3, { api }) =>
+      positionsTvl(api, chain, contango_lens, grapUrl, true),
   };
 });
-
-async function section(api, chain, borrowed) {
-  const { contango, contango_lens, grapUrl } = config[chain];
-  await Promise.all([
-    positionsTvl(api, chain, contango_lens, grapUrl, borrowed),
-    vaultTvl(api, contango, grapUrl),
-  ]);
-  return api.getBalances();
-}
 
 async function positionsTvl(
   api,
