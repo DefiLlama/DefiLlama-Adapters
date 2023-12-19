@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
-const { sumTokens2 } = require("../helper/solana");
 
+const { getTokenSupply } = require("../helper/solana");
 module.exports = {
   methodology: "Sums Ondo's fund supplies.",
   doublecounted: true,
@@ -24,41 +24,36 @@ const config = {
   },
 };
 
-Object.keys(config).forEach((chain) => {
+const getTvlForChain = (chain) => {
   let fundsMap = config[chain];
   const fundAddresses = Object.values(fundsMap);
   if (chain === "solana") {
-    module.exports[chain] = {
-      tvl: sumTokens2({
-        tokenAccounts: [
-          {
-            name: "OUSG",
-            tokenAccount: "i7u4r16TcsJTgq1kAG8opmVZyVnAKBwLKu6ZPMwzxNc",
-          },
-          {
-            name: "USDY",
-            tokenAccount: "A1KLoBrKBde8Ty9qtNQUtq3C2ortoC3u7twggz7sEto6",
-          },
-        ],
-      }),
-    };
-  } else {
-    module.exports[chain] = {
-      tvl: async (_, _b, _cb, { api }) => {
-        const balances = {};
-        const supplies = await api.multiCall({
-          abi: "erc20:totalSupply",
-          calls: fundAddresses,
-        });
+    return async () => {
+      const OUSG = await getTokenSupply(config.solana.OUSG);
+      const USDY = await getTokenSupply(config.solana.USDY);
 
-        supplies.forEach((supply, index) => {
-          const tokenAddress = fundAddresses[index];
-          const key = `${chain}:${tokenAddress}`;
-          balances[key] = supply;
-        });
-
-        return balances;
-      },
+      return { OUSG, USDY };
     };
   }
+  return async (_, _b, _cb, { api }) => {
+    const balances = {};
+    const supplies = await api.multiCall({
+      abi: "erc20:totalSupply",
+      calls: fundAddresses,
+    });
+
+    supplies.forEach((supply, index) => {
+      const tokenAddress = fundAddresses[index];
+      const key = `${chain}:${tokenAddress}`;
+      balances[key] = supply;
+    });
+
+    return balances;
+  };
+};
+
+Object.keys(config).forEach((chain) => {
+  module.exports[chain] = {
+    tvl: getTvlForChain(chain),
+  };
 });
