@@ -6,8 +6,8 @@ module.exports = {
       sumTokens2({
         api,
         owners: [
-          "0xd19d4B5d358258f05D7B411E21A1460D11B0876F",
-          "0x051F1D88f0aF5763fB888eC4378b4D8B29ea3319",
+          "0xdc1664458d2f0B6090bEa60A8793A4E66c2F1c00",
+          "0x1A26ef6575B7BBB864d984D9255C069F6c361a14",
         ],
         fetchCoValentTokens: true,
       }),

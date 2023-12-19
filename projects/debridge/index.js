@@ -14,7 +14,7 @@ const chainIds = {
 };
 
 function chainTvl(chain) {
-  return async (timestamp, ethBlock, {[chain]: block}, { logArray }) => {
+  return async (timestamp, ethBlock, {[chain]: block}) => {
     const balances = {};
     const transformAddress = id=>`${chain}:${id}`;
 
@@ -24,7 +24,7 @@ function chainTvl(chain) {
       .filter(t => !t.tokenName.startsWith('deBridge '))
       .map(t => [t.tokenAddress, debridgeGate]);
 
-    await sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { logArray });
+    await sumTokens(balances, tokensAndOwners, block, chain, transformAddress);
     
     return balances
   };
