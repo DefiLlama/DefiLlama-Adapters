@@ -10,6 +10,10 @@ const config = {
   },
   "velas": {
     "LST": "0x3557371afed82dd683de278924bd0e1a790a3c49"
+  },
+  "bsc": {
+    "baseToken": "0x8c543aed163909142695f2d2acd0d55791a9edb9",
+    "LST": "0xcba2aeEc821b0B119857a9aB39E09b034249681A"
   }
 }
 
