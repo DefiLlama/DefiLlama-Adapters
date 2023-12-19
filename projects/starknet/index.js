@@ -1,7 +1,7 @@
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const axios = require("axios");
 
-async function tvl(_, _b, _c, { api, logArray }) {
+async function tvl(_, _b, _c, { api }) {
   const mapping = await axios.get(
     `https://raw.githubusercontent.com/starknet-io/starknet-addresses/master/bridged_tokens/mainnet.json`
   );
@@ -18,7 +18,6 @@ async function tvl(_, _b, _c, { api, logArray }) {
   return sumTokens2({
     api,
     tokensAndOwners,
-    logArray,
   });
 }
 
