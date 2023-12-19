@@ -14,7 +14,7 @@ async function tvl(_, _1, _2, { api }) {
 module.exports = {
     timetravel: true,
     misrepresentedTokens: false,
-    methodology: 'the amount of Note tokens that are in the 1155Tech contract',
+    methodology: 'Value of all Keys across all art markets is TVL in the protocol',
     start: 7280880,
     canto: {
         tvl
