@@ -111,7 +111,6 @@ const data = {
         tokens: [
             {name: "apyswap", address: "0xf7413489c474ca4399eeE604716c72879Eea3615", decimals: 18},
             {name: "hapi", address: "0xD9c2D319Cd7e6177336b0a9c93c21cb48d84Fb54", decimals: 18},
-            // {name: "allbridge", address: "0xa11bD36801d8fa4448F0ac4ea7A62e3634cE8C7C", decimals: 18},
             {name: "ariadne", address: "0xb1c9bc94aCd2fAE6aABf4ffae4429B93512a81D2", decimals: 18},
             {name: "ethereum", address: NATIVE_ADDRESS, decimals: 18},
             {name: "usd-coin", address: ADDRESSES.ethereum.USDC, decimals: 6},
