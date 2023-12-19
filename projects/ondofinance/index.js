@@ -1,4 +1,5 @@
 const sdk = require("@defillama/sdk");
+const { sumTokens2 } = require("../helper/solana");
 
 module.exports = {
   methodology: "Sums Ondo's fund supplies.",
@@ -26,22 +27,38 @@ const config = {
 Object.keys(config).forEach((chain) => {
   let fundsMap = config[chain];
   const fundAddresses = Object.values(fundsMap);
+  if (chain === "solana") {
+    module.exports[chain] = {
+      tvl: sumTokens2({
+        tokenAccounts: [
+          {
+            name: "OUSG",
+            tokenAccount: "i7u4r16TcsJTgq1kAG8opmVZyVnAKBwLKu6ZPMwzxNc",
+          },
+          {
+            name: "USDY",
+            tokenAccount: "A1KLoBrKBde8Ty9qtNQUtq3C2ortoC3u7twggz7sEto6",
+          },
+        ],
+      }),
+    };
+  } else {
+    module.exports[chain] = {
+      tvl: async (_, _b, _cb, { api }) => {
+        const balances = {};
+        const supplies = await api.multiCall({
+          abi: "erc20:totalSupply",
+          calls: fundAddresses,
+        });
 
-  module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api }) => {
-      const balances = {};
-      const supplies = await api.multiCall({
-        abi: "erc20:totalSupply",
-        calls: fundAddresses,
-      });
+        supplies.forEach((supply, index) => {
+          const tokenAddress = fundAddresses[index];
+          const key = `${chain}:${tokenAddress}`;
+          balances[key] = supply;
+        });
 
-      supplies.forEach((supply, index) => {
-        const tokenAddress = fundAddresses[index];
-        const key = `${chain}:${tokenAddress}`;
-        balances[key] = supply;
-      });
-
-      return balances;
-    },
-  };
+        return balances;
+      },
+    };
+  }
 });
