@@ -53,13 +53,13 @@ function getChain(chain) {
   return chainMapping[chain] ?? chain
 }
 
-async function tvl(_, _b, _cb, { api, logArray }) {
+async function tvl(_, _b, _cb, { api }) {
   let conf = await getTokensConf();
 
   const bridgeContract = getBridgeContract[api.chain];
   const tokens = Object.values(conf[getChain(api.chain)])
   const owners = [bridgeContract]
-  return sumTokens2({ api, tokens, owners, logArray })
+  return sumTokens2({ api, tokens, owners })
 }
 
 async function tronTvl() {
