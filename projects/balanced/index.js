@@ -27,8 +27,7 @@ async function icxCall(address, method, params) {
 
 async function getLoanTvl() {
     const totalCollateral = await icxCall(balancedLoansContract, 'getTotalCollateral');
-    const bnUSDinLOOP = await icxCall(balancedOracleContract, 'getLastPriceInLoop', { symbol: 'bnUSD' });
-    const collateralTvl = parseInt(totalCollateral, 16) / bnUSDinLOOP;
+    const collateralTvl = parseInt(totalCollateral, 16) / (10 ** 18);
 
     return collateralTvl;
 }
