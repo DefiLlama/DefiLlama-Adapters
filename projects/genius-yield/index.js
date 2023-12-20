@@ -44,13 +44,13 @@ const VYFI = '804f5544c1962a40546827cab750a88404dc7108c0f588b72964754f' + '56594
 const WMT = '1d7f33bd23d85e1a25d87d86fac4f199c3197a2f7afeb662a0f34e1e' + '776f726c646d6f62696c65746f6b656e'
 const WRT = 'c0ee29a85b13209423b10447d3c2e6a50641a15c57770e27cb9d5073' + '57696e67526964657273'
 
-const stakingAddr = 'addr1w8r99sv75y9tqfdzkzyqdqhedgnef47w4x7y0qnyts8pznq87e4wh'
-const paymentCredentialOfOrderContract = 'edfff663d37fc5f9753bc4222e0da2bfe08aa48db0837d2c329adeb3'
+const owner = 'addr1w8r99sv75y9tqfdzkzyqdqhedgnef47w4x7y0qnyts8pznq87e4wh'
+const orders = 'edfff663d37fc5f9753bc4222e0da2bfe08aa48db0837d2c329adeb3'
 
 module.exports = {
   timetravel: false,
   cardano: {
-    staking: sumTokensExport({ stakingAddr, tokens: [GENS, NMKR, NTX, EMP, GENSX]}),
-    tvl: sumTokensExport({ paymentCredentialOfOrderContract, tokens: ['lovelace', AGIX, BOOK, CGV, CHRY, cNETA, COPI, DJED, EMP, ENCS, FACT, FLAC, GENS, GENSX, GXLA, HOSKY, HUNT, IAG, iBTC, iETH, INDY, iUSD, JELLY, JPG, LENFI, LIFI, LQ, MELD, MILK, MIN, NEWM, NINJAZ, NMKR, NTX, OPT, OPTIM, RJV, SHEN, SNEK, SOC, SUNDAE, VYFI, WMT, WRT]})
+    staking: sumTokensExport({ owner: owner, tokens: [GENS, NMKR, NTX, EMP, GENSX]}),
+    tvl: sumTokensExport({ owner: orders, tokens: ['lovelace', AGIX, BOOK, CGV, CHRY, cNETA, COPI, DJED, EMP, ENCS, FACT, FLAC, GENS, GENSX, GXLA, HOSKY, HUNT, IAG, iBTC, iETH, INDY, iUSD, JELLY, JPG, LENFI, LIFI, LQ, MELD, MILK, MIN, NEWM, NINJAZ, NMKR, NTX, OPT, OPTIM, RJV, SHEN, SNEK, SOC, SUNDAE, VYFI, WMT, WRT]})
   }
 };
