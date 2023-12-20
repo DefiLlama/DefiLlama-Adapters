@@ -61,6 +61,7 @@ const tokenMapping = {
   DJED: '8db269c3ec630e06ae29f74bc39edd1f87c819f1056206e879a1cd61446a65644d6963726f555344',
   SHEN: '8db269c3ec630e06ae29f74bc39edd1f87c819f1056206e879a1cd615368656e4d6963726f555344',
   USDC: 'usd-coin',
+  DAI: 'dai',
   USDT: 'tether',
 }
 
@@ -76,10 +77,15 @@ async function tvl(_, _b, _cb, { api, }) {
 
 function add(api, market, bal) {
   const token = getToken(market)
-  if (token === 'usd-coin') bal /= 1e8
-  if (token === 'tether') bal /= 1e8
+  if ([
+      "usd-coin",
+      "tether",
+    ].includes(token)) bal /= 1e8
+    if ([
+        "dai",
+      ].includes(token)) bal /= 1e6
   api.add(token, bal, {
-    skipChain: token === 'usd-coin' || token === 'tether'
+    skipChain: ['usd-coin', 'tether', 'dai'].includes(token)
   })
 }
 
