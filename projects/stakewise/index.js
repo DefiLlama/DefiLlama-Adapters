@@ -6,7 +6,7 @@ const axios = require("axios");
 const wethAddress = ADDRESSES.ethereum.WETH;
 
 async function ethereumTvl(timestamp, block, _1, _2) {
-  const tvl = await axios.get("https://mainnet-api.stakewise.io/api/tvl");
+  const tvl = (await axios.get("https://mainnet-api.stakewise.io/api/tvl")).data;
   return {
     [wethAddress]: new BigNumber(tvl)
   };
