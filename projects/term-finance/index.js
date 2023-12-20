@@ -41,6 +41,7 @@ const emitters = {
   "ethereum": [
     "0x9D6a563cf79d47f32cE46CD7b1fb926eCd0f6160",  // 0.2.4
     "0xf268E547BC77719734e83d0649ffbC25a8Ff4DB3",  // 0.4.1
+    "0xc60e0f5cD9EE7ACd22dB42F7f56A67611ab6429F",  // 0.6.0
   ],
 };
 

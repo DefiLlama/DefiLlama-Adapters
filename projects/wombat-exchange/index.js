@@ -27,7 +27,7 @@ Object.keys(config).forEach((chain) => {
       });
       return sumTokens2({ api, tokensAndOwners2: [tokens, wTokens] });
     },
-    staking: (wom && veWom) ? staking(veWom, wom) : undefined,
+    staking: wom && veWom ? staking(veWom, wom) : undefined,
   };
 });
 

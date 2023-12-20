@@ -1,5 +1,5 @@
 const { cachedGraphQuery } = require('../helper/cache')
-const { staking } = require("../helper/staking");
+const { staking, stakings } = require("../helper/staking");
 
 const supportedChains = [
   {
@@ -40,7 +40,7 @@ const supportedChains = [
   },
   {
     name: 'Thundercore',
-    subgraphEndpoint: 'http://52.77.49.1:8000/subgraphs/name/steerprotocol/steer-thundercore',
+    subgraphEndpoint: 'https://subgraph.steer.finance/thundercore/subgraphs/name/steerprotocol/steer-thundercore',
     chainId: 108,
     identifier: 'thundercore'
   },
@@ -80,12 +80,12 @@ const supportedChains = [
   //   chainId: 1101,
   //   identifier: 'polyzkevm'
   // },
-  // {
-  //   name: 'Scroll',
-  //   subgraphEndpoint: 'https://subgraph.steer.finance/scroll/subgraphs/name/steerprotocol/steer-scroll/graphql',
-  //   chainId: 534352,
-  //   identifier: 'scroll'
-  // },
+  {
+    name: 'Scroll',
+    subgraphEndpoint: 'https://subgraph.steer.finance/scroll/subgraphs/name/steerprotocol/steer-scroll',
+    chainId: 534352,
+    identifier: 'scroll'
+  },
   // {
   //   name: 'Celo',
   //   subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/rakeshbhatt10/steer-test-celo',
@@ -118,4 +118,4 @@ supportedChains.forEach(chain => {
   }
 })
 
-module.exports.arbitrum.staking = staking("0xB10aB1a1C0E3E9697928F05dA842a292310b37f1", "0x1C43D05be7E5b54D506e3DdB6f0305e8A66CD04e", "arbitrum")
+module.exports.arbitrum.staking = stakings(["0xB10aB1a1C0E3E9697928F05dA842a292310b37f1", "0x0b619438d1E8b8c205656502de59Af2Af71C43e0"], "0x1C43D05be7E5b54D506e3DdB6f0305e8A66CD04e", "arbitrum")

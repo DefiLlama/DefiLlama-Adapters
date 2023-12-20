@@ -77,7 +77,7 @@ async function concrete(slots, api) {
 }
 
 async function getGraphData(timestamp, chain, api) {
-  let rwaSlot = (await getConfig('solv-protocol', slotListUrl));
+  let rwaSlot = (await getConfig('solv-protocol/slots', slotListUrl));
 
   const slotDataQuery = `query BondSlotInfos {
             poolOrderInfos(first: 1000,  where:{fundraisingEndTime_gt:${timestamp}, openFundShareSlot_in:${JSON.stringify(rwaSlot)}}) {
