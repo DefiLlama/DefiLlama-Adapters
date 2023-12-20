@@ -18,9 +18,19 @@ async function tvl(timestamp, block, _1, { api }) {
     api
   })
   const ethOnValidators = BigNumber(solosValidators.length).times(32e18)
+  const vaults = await getLogs({
+    target: '0x3a0008a588772446f6e656133c2d5029cc4fc20e',
+    topic: 'VaultAdded(address,address)',
+    fromBlock: 18470078,
+    api
+  })
+  const assets = await api.multiCall({
+    calls: vaults.map(v=>({target:"0x"+v.topics[2].slice(26)})),
+    abi: "uint256:totalAssets"
+  })
 
   return {
-    [wethAddress]: ethOnValidators.plus(supply.output).toFixed(0)
+    [wethAddress]: ethOnValidators.plus(supply.output).plus(assets.reduce((sum, b)=>sum.plus(b), BigNumber(0))).toFixed(0)
   }
 }
 
