@@ -1,27 +1,13 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require('@defillama/sdk')
 
-const bahamutContract = ADDRESSES.bahamut.stFTN;
-
-async function ftn(timestamp, bahamutBlock, chainBlocks) {
-  const pooledFTN = await sdk.api.abi.call({
-    block: bahamutBlock,
-    target: bahamutContract,
-    abi: "uint256:getTotalPooledFtn"
-  })
+async function tvl(timestamp, bahamutBlock, chainBlocks, { api }) {
+  const pooledFTN = await api.call({ target: '0x780Fb5AcA83F2e3F57EE18cc3094988Ef49D8c3d', abi: "uint256:getTotalPooledFtn" })
 
   return {
-    [ADDRESSES.null]: pooledFTN.output,
+    'coingecko:fasttoken': pooledFTN / 1e18,
   }
 }
 
 module.exports = {
-  hallmarks: [
-  ],
   methodology: 'Staked tokens are counted as TVL based on the chain that they are staked on and where the liquidity tokens are issued',
-  timetravel: false,
-  doublecounted: true,
-  bahamut: {
-    tvl: ftn
-  },
+  ftn: { tvl },
 }
