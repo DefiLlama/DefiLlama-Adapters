@@ -18,7 +18,7 @@ const getLogsCache = {}
 Object.keys(config).forEach(chain => {
   const { v3Wrapper, factory, fromBlock, } = config[chain]
   function _getLogs(api) {
-    block = api.block ?? 'unknown'
+    const block = api.block ?? 'unknown'
     const key = `${chain}:${block}`
     if (!getLogsCache[key]) getLogsCache[key] = getLogs({ api, target: factory, eventAbi, onlyArgs: true, fromBlock, })
     return getLogsCache[key]
