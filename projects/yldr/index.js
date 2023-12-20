@@ -1,53 +1,42 @@
-const { abi } = require('./abi');
-const { unwrapUniswapV3NFTs } = require("../helper/unwrapLPs");
-
-const UI_POOL_DATA_PROVIDERS = { "ethereum": '0x6Ab39f4e9F494733893Ca90212558e55C7196012', "arbitrum": '0x775f2616557824bbcf2ea619cA2BacaBd930F2BD' };
-const ADDRESSES_PROVIDERS = { "ethereum": '0x16085E000eAC286aa503326cBcEe4564268a7F8f', "arbitrum": '0x66d2eaD9cbE6754985a9Be7B829502228Ef8b49B' };
-const ERC1155_UNISWAP_V3_WRAPPER = { "ethereum": '0x13f4dc963ddd2ec0160f6473c69b704b0e8674fc', "arbitrum": '0x07B99965dBEdf38322ADFe48623e042Aa0656283' };
-
-function stripTokenHeader(token) {
-    return token.indexOf(':') > -1 ? token.split(':')[1] : token
-}
-
-async function borrowed(_, _1, _2, { api }) {
-    const uiPoolDataProviderAddress = UI_POOL_DATA_PROVIDERS[api.chain];
-    const addressesProviderAddress = ADDRESSES_PROVIDERS[api.chain];
-
-    const reservesData = await api.call({
-        abi: abi,
-        target: uiPoolDataProviderAddress,
-        params: [addressesProviderAddress],
-    });
-    reservesData.reservesData.forEach(reserveData => {
-        api.add(reserveData.underlyingAsset, reserveData.totalScaledVariableDebt);
-    });
-}
-
-async function tvl(_, _1, _2, { api }) {
-    const uiPoolDataProviderAddress = UI_POOL_DATA_PROVIDERS[api.chain];
-    const addressesProviderAddress = ADDRESSES_PROVIDERS[api.chain];
-    const erc1155UniswapV3Wrapper = ERC1155_UNISWAP_V3_WRAPPER[api.chain];
-
-    const reservesData = await api.call({
-        abi: abi,
-        target: uiPoolDataProviderAddress,
-        params: [addressesProviderAddress],
-    });
-    reservesData.reservesData.forEach(reserveData => {
-        api.add(reserveData.underlyingAsset, reserveData.availableLiquidity);
-    });
-
-    let balances = await unwrapUniswapV3NFTs({ owner: erc1155UniswapV3Wrapper, chain: api.chain, block: api.block, });
-    Object.entries(balances).forEach(balance => {
-        api.add(stripTokenHeader(balance[0]), balance[1]);
-    });
-}
+const { sumTokens2 } = require("../helper/unwrapLPs");
+const { getLogs } = require('../helper/cache/getLogs')
 
 module.exports = {
-    timetravel: true,
-    misrepresentedTokens: false,
-    methodology: 'Get available liquidity for all reserves and include Uniswap V3 positions',
-    start: 1702931986,
-    ethereum: { tvl, borrowed },
-    arbitrum: { tvl, borrowed }
-}; 
+  methodology: 'Get available liquidity for all reserves and include Uniswap V3 positions',
+  start: 1702931986,
+};
+
+const config = {
+  ethereum: { v3Wrapper: '0x13f4dc963ddd2ec0160f6473c69b704b0e8674fc', factory: '0xd7b1C5afc105e0E70F78B66CdFE977aEf80540bA', fromBlock: 18808612, },
+  arbitrum: { v3Wrapper: '0x07B99965dBEdf38322ADFe48623e042Aa0656283', factory: '0x88959bebbce33d75227633d5114e3c3fd0fb9a6d', fromBlock: 155897900, },
+}
+
+const eventAbi = 'event ReserveInitialized (address indexed asset, address indexed yToken, address variableDebtToken, address interestRateStrategyAddress)'
+
+const getLogsCache = {}
+
+Object.keys(config).forEach(chain => {
+  const { v3Wrapper, factory, fromBlock, } = config[chain]
+  function _getLogs(api) {
+    block = api.block ?? 'unknown'
+    const key = `${chain}:${block}`
+    if (!getLogsCache[key]) getLogsCache[key] = getLogs({ api, target: factory, eventAbi, onlyArgs: true, fromBlock, })
+    return getLogsCache[key]
+  }
+
+  module.exports[chain] = {
+    tvl: async (_, _b, _cb, { api, }) => {
+      const logs = await _getLogs(api)
+      const tokensAndOwners = logs.map(log => [log.asset, log.yToken])
+      await api.sumTokens({ tokensAndOwners })
+      return sumTokens2({ api, owner: v3Wrapper, resolveUniV3: true, })
+    },
+    borrowed: async (_, _b, _cb, { api, }) => {
+      const logs = await _getLogs(api)
+      const tokens = logs.map(log => log.asset)
+      const bals = await api.multiCall({ abi: 'erc20:totalSupply', calls: logs.map(log => log.variableDebtToken) })
+      api.addTokens(tokens, bals)
+      return api.getBalances()
+    },
+  }
+})
