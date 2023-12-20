@@ -1,6 +1,4 @@
-const ADDRESSES = require("../helper/coreAssets.json");
 const { chainExports } = require("../helper/exports");
-const { sumTokens2 } = require("../helper/unwrapLPs");
 const sdk = require("@defillama/sdk");
 const { fetchURL } = require("../helper/utils");
 
