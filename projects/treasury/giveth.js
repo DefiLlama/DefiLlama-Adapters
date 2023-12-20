@@ -30,8 +30,8 @@ module.exports = treasuryExports({
         "0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72", //ens
         "0x2d94AA3e47d9D5024503Ca8491fcE9A2fB4DA198", //bank
         "0xDe30da39c46104798bB5aA3fe8B9e0e1F348163F", //gtc
-        "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e", //yfi
-        "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0", //matic
+        ADDRESSES.ethereum.YFI, //yfi
+        ADDRESSES.ethereum.MATIC, //matic
         "0xDd1Ad9A21Ce722C151A836373baBe42c868cE9a4", //ubi
       ],
       owners: [treasury],
@@ -57,11 +57,11 @@ module.exports = treasuryExports({
     tokens: [
         nullAddress,
         "0x71850b7E9Ee3f13Ab46d67167341E4bDc905Eef9", //hny
-        "0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83", //usdc
+        ADDRESSES.xdai.USDC, //usdc
         "0x21a42669643f45Bc0e086b8Fc2ed70c23D67509d", //fox
         "0x83FF60E2f93F8eDD0637Ef669C69D5Fb4f64cA8E", //bright
-        "0x6A023CCd1ff6F2045C3309768eAd9E68F978f6e1", //weth
-        "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d", //wxdai
+        ADDRESSES.xdai.WETH, //weth
+        ADDRESSES.xdai.WXDAI, //wxdai
         "0x177127622c4A00F3d409B75571e12cB3c8973d3c", //cow
       ],
       owners: [treasury],
