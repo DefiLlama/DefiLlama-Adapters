@@ -4,7 +4,7 @@ const ARCHLY_V2_FACTORY = "0x12508dd9108Abab2c5fD8fC6E4984E46a3CF7824"
 const ARCHLY_V2_VE_TOKEN = "0x6ACa098fa93DAD7A872F6dcb989F8b4A3aFC3342"
 const ARCHLY_V2_ARC_TOKEN = "0xe8876189A80B2079D8C0a7867e46c50361D972c1"
 
-const tvl = getUniTVL({ factory: ARCHLY_V2_FACTORY, useDefaultCoreAssets: true, hasStablePools: true, fetchBalances: true })
+const tvl = getUniTVL({ factory: ARCHLY_V2_FACTORY, useDefaultCoreAssets: true, hasStablePools: true, })
 
 const config = {
   telos: { lp: '0xe7F2AED9670933eDdc71634aAC0A13a187D4fE8f' },
