@@ -15,7 +15,6 @@ module.exports = {
   },
   ethereum: {
     tvl: async () => ({}),
-    pool2: pool2(POLY_MASTERCHEF, POLY_LP),
     pool2: async (ts, block, chainBlocks, { api }) => {
       const { output: LPbalance } = await sdk.api.erc20.balanceOf({ target: ETH_LP_BRIDGED, owner: POLY_ETH_MASTERCHEF, block: chainBlocks.polygon, chain: 'polygon' })
       api.add(ETH_LP, LPbalance)
