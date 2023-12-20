@@ -51,6 +51,6 @@ module.exports = {
   timetravel: false,
   cardano: {
     staking: sumTokensExport({ stakingAddr, tokens: [GENS, NMKR, NTX, EMP, GENSX]}),
-    tvl: sumTokensExport({ dexPaymentCredential, tokens: [AGIX, BOOK, CGV, CHRY, cNETA, COPI, DJED, EMP, ENCS, FACT, FLAC, GENS, GENSX, GXLA, HOSKY, HUNT, IAG, iBTC, iETH, INDY, iUSD, JELLY, JPG, LENFI, LIFI, LQ, MELD, MILK, MIN, NEWM, NINJAZ, NMKR, NTX, OPT, OPTIM, RJV, SHEN, SNEK, SOC, SUNDAE, VYFI, WMT, WRT]})
+    tvl: sumTokensExport({ dexPaymentCredential, tokens: ['lovelace', AGIX, BOOK, CGV, CHRY, cNETA, COPI, DJED, EMP, ENCS, FACT, FLAC, GENS, GENSX, GXLA, HOSKY, HUNT, IAG, iBTC, iETH, INDY, iUSD, JELLY, JPG, LENFI, LIFI, LQ, MELD, MILK, MIN, NEWM, NINJAZ, NMKR, NTX, OPT, OPTIM, RJV, SHEN, SNEK, SOC, SUNDAE, VYFI, WMT, WRT]})
   }
 };
