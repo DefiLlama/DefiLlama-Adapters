@@ -38,9 +38,9 @@ async function getLogs({ target,
 
   let cache = await _getCache(key)
   let response
-  const fetchNewData = (cache.fromBlock && cache.toBlock > toBlock) || onlyUseExistingCache
+  const fetchNewData = (cache.fromBlock && (cache.toBlock + 200) > toBlock) || onlyUseExistingCache
 
-  // if no new data nees to be fetched
+  // if no new data nees to be fetched if the last fetched block is within 200 blocks of the current block
   if (!customCacheFunction && fetchNewData)
     response = cache.logs.filter(i => i.blockNumber < toBlock && i.blockNumber >= fromBlock)
   else
