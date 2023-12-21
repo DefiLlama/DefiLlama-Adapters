@@ -7,10 +7,11 @@ const STAKING_CONTRACT_SEASON_3 = "0xAb6aD663b42c7031b52737cbcBF9f70cb88fD9FC";
 
 module.exports = {
     ethereum: {
-        tvl: stakings([
+        tvl: () => ({}),
+        staking: stakings([
             STAKING_CONTRACT_SEASON_1,
             STAKING_CONTRACT_SEASON_2,
             STAKING_CONTRACT_SEASON_3,
-        ], GRACY_TOKEN, "ethereum"),
+        ], GRACY_TOKEN),
     },
 };
