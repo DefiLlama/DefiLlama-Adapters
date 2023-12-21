@@ -1,24 +1,18 @@
 const axios = require('axios')
-const { sumTokensExport } = require("../helper/unwrapLPs");
-
 
 const pools_url = 'https://api.desyn.io/etf/defillama/pools'
 
 async function tvl() {
     const pools = await getStbtItem()
-    const owners = [];
-    const lpPositions = [];
+    let totals = 0;
     for (let i = 0; i < pools.length; i++) {
-      let tokens =  pools[i].tokens;
-      owners.push(pools[i].pool_id)
+      let tokens =  pools[i].tokens;     
       for(let j = 0; j< tokens.length; j++) {
-        lpPositions.push(tokens[j].address);
+        totals += Number(tokens[j].balance) 
       }
     }
-    return sumTokensExport({ 
-        owners: owners,
-        tokens: lpPositions,
-      })
+
+    return totals
 }
 
 async function getStbtItem() {
@@ -32,7 +26,6 @@ async function getStbtItem() {
 
     return dstbt
 }
-
 
 module.exports = {
     methodology: 'RWA STBT is an investment portfolio that focuses on US short-term treasury bond digital assets and operates in a fully decentralized manner.',
