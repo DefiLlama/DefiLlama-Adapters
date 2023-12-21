@@ -14,7 +14,6 @@ module.exports = {
     dogechain: {
         tvl: getUniTVL({
           factory: '0xc7c86B4f940Ff1C13c736b697e3FbA5a6Bc979F9',
-          chain,
           useDefaultCoreAssets: true,
         }),
         staking: staking({

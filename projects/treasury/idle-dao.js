@@ -22,19 +22,19 @@ module.exports = treasuryExports({
   ethereum: {
     tokens: [ 
         nullAddress,
-        ADDRESSES.ethereum.USDC, //USDC
+        ADDRESSES.ethereum.USDC,
         "0x4da27a545c0c5B758a6BA100e3a049001de870f5", //stkAAVE
-        ADDRESSES.ethereum.BNB, //BNB
+        ADDRESSES.ethereum.BNB,
         "0xc00e94Cb662C3520282E6f5717214004A7f26888",//comp
-        "0x57Ab1ec28D129707052df4dF418D58a2D46d5f51",//sUSD
+        ADDRESSES.ethereum.sUSD,
         "0x03ab458634910AaD20eF5f1C8ee96F1D6ac54919",//RAI
-        ADDRESSES.ethereum.SUSHI,//sushi
-        ADDRESSES.ethereum.MATIC,//matic
-        ADDRESSES.ethereum.LIDO,//ldo
+        ADDRESSES.ethereum.SUSHI,
+        ADDRESSES.ethereum.MATIC,
+        ADDRESSES.ethereum.LIDO,
         "0xdBdb4d16EdA451D0503b854CF79D55697F90c8DF",//alcx
-        ADDRESSES.ethereum.DAI,//dai
-        ADDRESSES.ethereum.STETH,//steth
-        ADDRESSES.ethereum.LINK,//link
+        ADDRESSES.ethereum.DAI,
+        ADDRESSES.ethereum.STETH,
+        ADDRESSES.ethereum.LINK,
      ],
     owners: [treasury, treasury1, treasury2, treasury3, treasury4, treasury5],
     ownTokens: [IDLE],
@@ -43,10 +43,10 @@ module.exports = treasuryExports({
     tokens: [
         nullAddress,
         "0xf28164A485B0B2C90639E47b0f377b4a438a16B1",//dquick
-        ADDRESSES.polygon.DAI,//dai
-        "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",//wmatic
-        ADDRESSES.polygon.WETH_1,//weth
-        ADDRESSES.polygon.USDC,//usdc
+        ADDRESSES.polygon.DAI,
+        ADDRESSES.polygon.WMATIC_2,//wmatic
+        ADDRESSES.polygon.WETH_1,
+        ADDRESSES.polygon.USDC,
         "0x580A84C73811E1839F75d86d75d88cCa0c241fF4",//QI
     ],
     owners: [treasuryPolygon, treasuryPolygon1],

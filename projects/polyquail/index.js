@@ -3,7 +3,6 @@ const abi = require("./abi.json");
 const { staking } = require("../helper/staking");
 const { pool2BalanceFromMasterChefExports } = require("../helper/pool2");
 const { addFundsInMasterChef } = require("../helper/masterchef");
-const { transformPolygonAddress } = require("../helper/portedTokens");
 
 const masterChefKWIL = "0xeA038416Ed234593960704ddeD73B78f7D578AA0";
 const KWIL = "0x252656AdC9E22C697Ce6c08cA9065FBEe5E394e7";
@@ -17,7 +16,7 @@ const CHK = "0x6116A2A8Ea71890Cf749823Ee9DEC991930a9eEa";
 async function polygonTvl(timestamp, block, chainBlocks) {
   const balances = {};
 
-  const transformAddress = await transformPolygonAddress();
+  const transformAddress = i => `polygon:${i}`;
 
   await addFundsInMasterChef(
     balances,

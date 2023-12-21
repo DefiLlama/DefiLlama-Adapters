@@ -6,13 +6,13 @@ module.exports = {
     methodology: 'The Factory address is used to find the liquidity in each of the LP pairs',
     bsc: {
       tvl: getUniTVL({
-        chain: 'bsc', useDefaultCoreAssets: true,
+         useDefaultCoreAssets: true,
         factory: '0xE52cCf7B6cE4817449F2E6fA7efD7B567803E4b4',
       }),
     },
     ethereum: {
         tvl: getUniTVL({
-          chain: 'ethereum', useDefaultCoreAssets: true,
+           useDefaultCoreAssets: true,
           factory: ethFactory,
         }),
     },

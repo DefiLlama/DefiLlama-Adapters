@@ -13,7 +13,7 @@ const {
   JPEG,
   PETH_POOL,
   USD_POOL,
-  PETH_ETH_F,
+  PETH_WETH_F,
   PUSD_USD_F,
   artBlockOwners,
   LP_STAKING,
@@ -157,7 +157,7 @@ async function autocompoundingTvl(api) {
   ] = await api.batchCall([
     { target: PETH_POOL, abi: curveBalApi, params: [0] },
     { target: PETH_POOL, abi: "erc20:totalSupply" },
-    { target: PETH_ETH_F, abi: "erc20:balanceOf", params: [LP_STAKING] },
+    { target: PETH_WETH_F, abi: "erc20:balanceOf", params: [LP_STAKING] },
     { target: USD_POOL, abi: curveBalApi, params: [1] },
     { target: USD_POOL, abi: "erc20:totalSupply" },
     { target: PUSD_USD_F, abi: "erc20:balanceOf", params: [LP_STAKING] },

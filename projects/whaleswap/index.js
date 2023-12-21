@@ -4,12 +4,10 @@ const pod = '0xdded222297b3d08dafdac8f65eeb799b2674c78f'
 module.exports = {
   bsc: {
     tvl: getUniTVL({
-      chain: 'bsc',
       factory: '0xabc26f8364cc0dd728ac5c23fa40886fda3dd121',
       useDefaultCoreAssets: true,
     }),
     staking: staking( {
-      chain: 'bsc',
       owners: ["0xdEe627eaaB378ec57ECfB94b389B718ef3687c0D", "0xdc8715aCFB63cd0BD01a2C3e7De514845FdbcDF7"],
       tokens: [pod],
       useDefaultCoreAssets: true,
@@ -18,12 +16,10 @@ module.exports = {
   },
   fantom: {
     tvl: getUniTVL({
-      chain: 'fantom',
       factory: '0xabc26f8364cc0dd728ac5c23fa40886fda3dd121',
       useDefaultCoreAssets: true,
     }),
     staking: staking( {
-      chain: 'fantom',
       owners: ["0xdEe627eaaB378ec57ECfB94b389B718ef3687c0D", "0xdc8715aCFB63cd0BD01a2C3e7De514845FdbcDF7"],
       tokens: [pod],
       useDefaultCoreAssets: true,
@@ -32,12 +28,10 @@ module.exports = {
   },
   arbitrum: {
     tvl: getUniTVL({
-      chain: 'arbitrum',
       factory: '0xabc26f8364cc0dd728ac5c23fa40886fda3dd121',
       useDefaultCoreAssets: true,
     }),
     staking: staking( {
-      chain: 'arbitrum',
       owners: ["0xdEe627eaaB378ec57ECfB94b389B718ef3687c0D", "0xdc8715aCFB63cd0BD01a2C3e7De514845FdbcDF7"],
       tokens: [pod],
       useDefaultCoreAssets: true,
@@ -46,12 +40,10 @@ module.exports = {
   },
   optimism: {
     tvl: getUniTVL({
-      chain: 'optimism',
       factory: '0xabc26f8364cc0dd728ac5c23fa40886fda3dd121',
       useDefaultCoreAssets: true,
     }),
     staking: staking( {
-      chain: 'optimism',
       owners: ["0xdEe627eaaB378ec57ECfB94b389B718ef3687c0D", "0xdc8715aCFB63cd0BD01a2C3e7De514845FdbcDF7"],
       tokens: [pod],
       useDefaultCoreAssets: true,
@@ -60,12 +52,10 @@ module.exports = {
   },
   avax: {
     tvl: getUniTVL({
-      chain: 'avax',
       factory: '0xabc26f8364cc0dd728ac5c23fa40886fda3dd121',
       useDefaultCoreAssets: true,
     }),
     staking: staking( {
-      chain: 'avax',
       owners: ["0xdEe627eaaB378ec57ECfB94b389B718ef3687c0D", "0xdc8715aCFB63cd0BD01a2C3e7De514845FdbcDF7"],
       tokens: [pod],
       useDefaultCoreAssets: true,
@@ -74,12 +64,10 @@ module.exports = {
   },
   polygon: {
     tvl: getUniTVL({
-      chain: 'polygon',
       factory: '0xabc26f8364cc0dd728ac5c23fa40886fda3dd121',
       useDefaultCoreAssets: true,
     }),
     staking: staking( {
-      chain: 'polygon',
       owners: ["0xdEe627eaaB378ec57ECfB94b389B718ef3687c0D", "0xdc8715aCFB63cd0BD01a2C3e7De514845FdbcDF7"],
       tokens: [pod],
       useDefaultCoreAssets: true,
@@ -88,7 +76,6 @@ module.exports = {
   },
   kava: {
     tvl: getUniTVL({
-      chain: 'kava',
       factory: '0xabc26f8364cc0dd728ac5c23fa40886fda3dd121',
       useDefaultCoreAssets: true,
     })

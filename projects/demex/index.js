@@ -1,6 +1,20 @@
 const { get } = require("../helper/http")
 const sdk = require('@defillama/sdk')
 
+async function getPerpPools() {
+  const pools = []
+  let skip = 0
+  let data
+  const size = 100
+  const url = () => `https://api.carbon.network/carbon/perpspool/v1/pools/pool_info?pagination.limit=${size}&pagination.offset=${skip}`
+  do {
+    data = await get(url())
+    skip += size
+    pools.push(...data.pools)
+  } while (data.pools.length)
+  return pools
+}
+
 async function getPools() {
   const pools = []
   let skip = 0
@@ -37,9 +51,10 @@ async function getTokenInfo() {
 
 async function tvl() {
   const balances = {}
-  const [tokenData, pools] = await Promise.all([
+  const [tokenData, pools, perpPools] = await Promise.all([
     getTokenInfo(),
-    getPools()
+    getPools(),
+    getPerpPools(),
   ])
   for (const { pool: { denom_a, amount_a, denom_b, amount_b } } of pools) {
     if (tokenData[denom_a]) {
@@ -49,6 +64,14 @@ async function tvl() {
       addBalance(denom_b, amount_b)
     }
   }
+
+  const perpPoolDenom = 'cgt/1' // Carbon USD
+  for (const { total_nav_amount } of perpPools) {
+    if (tokenData[perpPoolDenom]) {
+      addBalance(perpPoolDenom, total_nav_amount)
+    }
+  }
+
   return balances
 
   function addBalance(id, amount) {

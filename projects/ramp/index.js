@@ -1,7 +1,7 @@
 const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
 const axios = require("axios");
-const { getChainTransform, getFixBalances } = require('../helper/portedTokens')
+const { getChainTransform, } = require('../helper/portedTokens')
 
 async function getConfig(network) {
   return await axios.get('https://config.rampdefi.com/config/appv2/priceInfo').then(response => response.data[network]);
@@ -15,7 +15,6 @@ function getChainTVL(chain) {
     delete tokens.RUSD
     delete tokens.RAMP
     const transform = await getChainTransform(chain)
-    const fixBalances = await getFixBalances(chain)
 
     const calls = []
 
@@ -37,7 +36,6 @@ function getChainTVL(chain) {
       sdk.util.sumSingleBalance(balances, token, balance)
     })
 
-    fixBalances(balances)
     return balances
   }
 }

@@ -9,7 +9,7 @@ const subgraphs = {
     'polygon': 'sushiswap/matic-exchange',
     'fantom': 'sushiswap/fantom-exchange',
     'bsc': 'sushiswap/bsc-exchange',
-    'harmony': 'https://sushi.graph.t.hmny.io/subgraphs/name/sushiswap/harmony-exchange',
+    //'harmony': 'https://sushi.graph.t.hmny.io/subgraphs/name/sushiswap/harmony-exchange',
     //'okexchain': 'https://q.hg.network/subgraphs/name/sushiswap/okex-exchange',
     'avax': 'sushiswap/avalanche-exchange',
     'celo': 'sushiswap/celo-exchange',

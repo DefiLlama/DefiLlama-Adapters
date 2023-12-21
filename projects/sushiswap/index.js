@@ -18,3 +18,5 @@ module.exports.misrepresentedTokens = true
 
 module.exports.ethereum.staking = staking(xSUSHI, SUSHI, 'ethereum')
 // node test.js projects/sushiswap/index.js
+
+module.exports.boba_avax.tvl = () => ({}) // boba avax is sunset

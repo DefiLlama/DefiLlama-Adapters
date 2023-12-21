@@ -40,15 +40,11 @@ const poolContracts = [
 ];
 
 const tokenAddresses = [
-  //USDT
   ADDRESSES.ethereum.USDT,
-  //USDC
   ADDRESSES.ethereum.USDC,
-  //FRAX
-  "0x853d955acef822db058eb8505911ed77f175b99e",
+  ADDRESSES.ethereum.FRAX,
   //ESD
   "0x36F3FD68E7325a35EB768F1AedaAe9EA0689d723",
-  //DAI
   ADDRESSES.ethereum.DAI,
   //BAC
   "0x3449fc1cd036255ba1eb19d65ff4ba2b8903a69a",

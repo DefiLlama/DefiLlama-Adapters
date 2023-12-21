@@ -2,7 +2,6 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { staking, stakings } = require("../helper/staking");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
-const { transformPolygonAddress } = require("../helper/portedTokens");
 
 /*** Ethereum Addresses ***/
 const stakingContract = "0xDb3130952eD9b5fa7108deDAAA921ae8f59beaCb";
@@ -99,7 +98,7 @@ async function ethTvl(timestamp, block) {
 async function polygonTvl(timestamp, block, chainBlocks) {
   const balances = {};
 
-  const transformAddress = await transformPolygonAddress();
+  const transformAddress = i => `polygon:${i}`;
   await sumTokensAndLPsSharedOwners(
     balances,
     [
@@ -116,20 +115,11 @@ async function polygonTvl(timestamp, block, chainBlocks) {
   return balances;
 }
 async function arbiTvl(_, _b, _cb, { api, }) {
-  const balances = {}
   const vaults = [
     '0xfdeb59a2b4891ea17610ee38665249acc9fcc506',
   ]
-  const tokens = await api.multiCall({
-    abi: 'address:token',
-    calls: vaults,
-  })
-  const totalBalance = await api.multiCall({
-    abi: 'function totalBalance() view returns (uint256 balance, uint256 usdcPlatformLiquidity, uint256 intrinsicDEXVolTokenBalance, uint256 volTokenPositionBalance, uint256 dexUSDCAmount, uint256 dexVolTokensAmount)',
-    calls: vaults,
-  })
-  tokens.forEach((t, i) => sdk.util.sumSingleBalance(balances, t, totalBalance[i].balance, api.chain))
-  return balances
+  const tokens = [ADDRESSES.arbitrum.USDC]
+  return api.sumTokens({ tokens, owners: vaults})
 }
 
 module.exports = {

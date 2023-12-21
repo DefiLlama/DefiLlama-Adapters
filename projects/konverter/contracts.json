@@ -1,0 +1,31 @@
+{
+  "wemix": {
+    "priceCalculator": "0xdc9cd9f7a3b962857854120dC3a8c75ed8A48b9e",
+    "stableSwapHelper": "0x164056263dBB527D06B008F263780fC8f1Bd22F5",
+    "pools": {
+      "0xa60448B0621335905a65753173D7e6FDFe494Da2": {
+        "name": "k3Pool",
+        "isMetaPool": false,
+        "n_coins": 3,
+        "poolToken": "0x7D57CeF121AC2371472214d100FF01eC6ddD5fAa",
+        "underlyingTokens": [
+          "0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D",
+          "0xA649325Aa7C5093d12D6F98EB4378deAe68CE23F",
+          "0x8E81fCc2d4A3bAa0eE9044E0D7E36F59C9BbA9c1"
+        ]
+      },
+      "0xDacaD9ddF713496012748D35496c0FB09c8d8c15": {
+        "name": "wcd-k3Pool",
+        "isMetaPool": true,
+        "n_coins": 2,
+        "poolToken": "0xf7FA632AbeEDAD21E59089c5174C47735903506F",
+        "underlyingTokens": [
+          "0x2ec6Fc5c495aF0C439E17268d595286d5f897dD0",
+          "0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D",
+          "0xA649325Aa7C5093d12D6F98EB4378deAe68CE23F",
+          "0x8E81fCc2d4A3bAa0eE9044E0D7E36F59C9BbA9c1"
+        ]
+      }
+    }
+  }
+}

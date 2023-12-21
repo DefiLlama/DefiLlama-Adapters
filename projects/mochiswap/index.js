@@ -39,7 +39,6 @@ async function harmonyStaking(timestamp, block, chainBlocks) {
 module.exports = {
  bsc: {
    tvl: getUniTVL({
-     chain: 'bsc',
      factory: bscFactory,
      useDefaultCoreAssets: true,
    }),
@@ -47,7 +46,6 @@ module.exports = {
  },
   harmony: {
     tvl: getUniTVL({
-      chain: 'harmony',
       factory: harmonyFactory,
       useDefaultCoreAssets: true,
     }),

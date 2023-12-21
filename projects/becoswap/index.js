@@ -10,7 +10,6 @@ module.exports = {
   kardia: {
     staking: staking(masterChef, becoToken, "kardia"),
     tvl: getUniTVL({
-      chain: 'kardia',
       useDefaultCoreAssets: true,
       factory: '0x58b54BCDF2aF8a70dD6433EB39b308148261bB49',
     })

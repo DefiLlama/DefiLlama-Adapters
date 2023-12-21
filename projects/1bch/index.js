@@ -26,7 +26,7 @@ async function bchMasterChef(timestamp, ethBlock, {[CHAIN]: block}) {
     }
 }
 
-const bchDexTvl = getUniTVL({ factory: FACTORY, chain: CHAIN, useDefaultCoreAssets: true, })
+const bchDexTvl = getUniTVL({ factory: FACTORY, useDefaultCoreAssets: true, })
 
 module.exports = {
     misrepresentedTokens: true,

@@ -14,9 +14,9 @@ module.exports = treasuryExports({
   polygon: {
     tokens: [ 
         nullAddress,
-        "0x0000000000000000000000000000000000001010",
+        ADDRESSES.polygon.WMATIC_1,
         "0x236eeC6359fb44CCe8f97E99387aa7F8cd5cdE1f",
-        "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619",
+        ADDRESSES.polygon.WETH_1,
         ADDRESSES.polygon.WMATIC,
         ADDRESSES.polygon.USDC
 
@@ -29,7 +29,7 @@ module.exports = treasuryExports({
         nullAddress,
         "0xe80772Eaf6e2E18B651F160Bc9158b2A5caFCA65",
         "0x52F24a5e03aee338Da5fd9Df68D2b6FAe1178827",
-        "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+        ADDRESSES.bsc.BUSD,
         "0xF4C8E32EaDEC4BFe97E0F595AdD0f4450a863a11"
      ],
     owners: [treasuryBSC],

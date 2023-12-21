@@ -15,7 +15,7 @@ const TEMPLE = "0x470ebf5f030ed85fc1ed4c2d36b9dd02e77cf1b7";
 const auraLocker = '0x3Fa73f1E5d8A792C80F426fc8F84FBF7Ce9bBCAC';
 
 const templeTreasuryContract = "0x5c8898f8e0f9468d4a677887bc03ee2659321012";
-const FRAX = "0x853d955acef822db058eb8505911ed77f175b99e";
+const FRAX = ADDRESSES.ethereum.FRAX;
 const FXS = "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0";
 const CVX_FXS = ADDRESSES.ethereum.cvxFXS;
 const AURA = '0xC0c293ce456fF0ED870ADd98a0828Dd4d2903DBF'

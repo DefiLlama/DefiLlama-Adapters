@@ -32,7 +32,7 @@ async function borrowed(_, _b, _cb, { api, }) {
 
 const config = {
   ethereum: { factory: '0x19c56cb20e6e9598fc4d22318436f34981e481f9', fromBlock: 16423090, wrapped: ADDRESSES.ethereum.WETH, },
-  polygon: { factory: '0x85b609f4724860fead57e16175e66cf1f51bf72d', fromBlock: 40378130, wrapped: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270', },
+  polygon: { factory: '0x85b609f4724860fead57e16175e66cf1f51bf72d', fromBlock: 40378130, wrapped: ADDRESSES.polygon.WMATIC_2, },
 }
 
 module.exports = {

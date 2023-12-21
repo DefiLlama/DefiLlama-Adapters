@@ -1,7 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { sumBalancerLps, } = require("../helper/unwrapLPs.js");
-const { transformArbitrumAddress } = require("../helper/portedTokens");
 
 const VaultTokens = {
   gOHM: "0x8d9ba570d6cb60c7e3e0f31343efe75ab8e65fb1",
@@ -28,7 +27,7 @@ const chain = "arbitrum";
 
 async function tvl(_, block, chainBlocks) {
   block = chainBlocks.arbitrum;
-  const transform = await transformArbitrumAddress()
+  const transform = i => `arbitrum:${i}`
   const balances = {}
   const calls = Object.values(VaultTokens).map(token => ({ params: [token] }))
   const { output } = await sdk.api.abi.multiCall({
@@ -50,7 +49,7 @@ async function tvl(_, block, chainBlocks) {
 async function pool2(_timestamp, block, chainBlocks, { api }) {  
   block = chainBlocks.arbitrum;
   const balances = {};
-  const transform = await transformArbitrumAddress();
+  const transform = i => `arbitrum:${i}`
   await sumBalancerLps(balances, [[LP_VSTA_ETH_ADDRESS, VSTA_FARMING_ADDRESS]], chainBlocks.arbitrum, chain, transform);
 
   const curveBalances = (

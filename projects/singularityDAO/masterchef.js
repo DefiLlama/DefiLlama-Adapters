@@ -1,7 +1,6 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { sumTokens } = require("../helper/unwrapLPs");
-const { transformBscAddress } = require("../helper/portedTokens");
 
 async function addFundsInMasterChef({
   balances,
@@ -30,7 +29,7 @@ async function addFundsInMasterChef({
       chain,
     })
   ).output;
-  const transform = await transformBscAddress();
+  const transform = i => `bsc:${i}`;
   const tokensAndOwners = response
     .map((r) => [r.output, masterchef])
     .filter(([token]) => !skipTokens.includes(token));

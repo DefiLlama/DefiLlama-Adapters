@@ -52,3 +52,5 @@ module.exports={
       tvl: () => ({})
     }
 }
+module.exports.deadFrom = '2022-08-09'
+

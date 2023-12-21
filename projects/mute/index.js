@@ -2,7 +2,7 @@ const { getUniTVL } = require('../helper/unknownTokens');
 const { sumTokensExport } = require("../helper/unwrapLPs");
 const sdk = require("@defillama/sdk");
 
-const dMUTE_staking_contract = "0xd9Ee4c1e04059D4B0dd02b747282511bEE4E5fB5"
+const dMUTE_staking_contract = "0x4336e06Be4F62bD757c4248c48D4C0b32615A2Df"
 const MUTE = "0x0e97C7a0F8B2C9885C8ac9fC6136e829CbC21d42"
 
 async function stakingTVL(timestamp, chain, chainBlocks) {

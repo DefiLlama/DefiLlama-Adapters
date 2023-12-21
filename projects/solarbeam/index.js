@@ -164,8 +164,8 @@ async function stableDexTVL(timestamp, _block, chainBlocks) {
 }
 
 const dexTVL = getUniTVL({
+  useDefaultCoreAssets: true,
   factory: '0x049581aEB6Fe262727f290165C29BDAB065a1B68',
-  chain: 'moonriver',
   coreAssets: [
     '0xf50225a84382c74CbdeA10b0c176f71fc3DE0C4d', // moonriver
     "0x98878B06940aE243284CA214f92Bb71a2b032B8A", // WMOVR

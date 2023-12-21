@@ -96,6 +96,21 @@ const config = {
     owners:[
       "0xebe80f029b1c02862b9e8a70a7e5317c06f62cae",
     ]
+  },
+  era:{
+    owners: [
+        "0xebe80f029b1c02862b9e8a70a7e5317c06f62cae",
+        "0x539c92186f7c6cc4cbf443f26ef84c595babbca1",
+        "0xbfbbfaccd1126a11b8f84c60b09859f80f3bd10f",
+        "0x461249076b88189f8ac9418de28b365859e46bfd",
+        "0x4e7b110335511f662fdbb01bf958a7844118c0d4",
+        "0x65a0947ba5175359bb457d3b34491edf4cbf7997",
+        "0x868dab0b8e21ec0a48b726a1ccf25826c78c6d7f",
+        "0xa7efae728d2936e78bda97dc267687568dd593f3",
+        "0xc708a1c712ba26dc618f972ad7a187f76c8596fd",
+        "0xf59869753f41db720127ceb8dbb8afaf89030de4",
+        "0xf7858da8a6617f7c6d0ff2bcafdb6d2eedf64840",
+    ]
   }
 }
 

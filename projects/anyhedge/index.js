@@ -61,6 +61,11 @@ module.exports = {
     [1663106400, "AnyHedge Alpha is live and available"],
     [1666585080, "The BCH Bull (Beta) goes live"],
     [1666785960, "Paytaca wallet's product live"],
+    [1680356040, "BCH Bull trials P2P contracts"],
+    [1681725240, "BCH Bull is released"],
+    [1683634380, "BCH Bull adds Achievements"],
+    [1686651480, "BCH Bull raise max contract to $100k"],
+    [1687330080, "BCH Bull raise max leverage to 7.77x"],
   ]
 };
 

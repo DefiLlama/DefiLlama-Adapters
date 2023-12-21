@@ -46,7 +46,7 @@ const ceUSDT = ADDRESSES.evmos.ceUSDT;
 
 // Bridged Axelar Stablecoins
 const axlDAI = "0x4A2a90D444DbB7163B5861b772f882BbA394Ca67";
-const axlUSDC = "0x15C3Eb3B621d1Bff62CbA1c9536B7c1AE9149b57";
+const axlUSDC = ADDRESSES.evmos.AXL_USDC;
 const axlUSDT = "0xe01C6D4987Fc8dCE22988DADa92d56dA701d0Fe0";
 
 // Bridged Gravity Stablecoins

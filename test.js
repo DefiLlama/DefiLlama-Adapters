@@ -308,8 +308,8 @@ const axios = require("axios");
 
 const ethereumAddress = "0x0000000000000000000000000000000000000000";
 const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-
 function fixBalances(balances) {
+  
   Object.entries(balances).forEach(([token, value]) => {
     let newKey
     if (token.startsWith("0x")) newKey = `ethereum:${token}`
@@ -378,7 +378,7 @@ async function computeTVL(balances, timestamp) {
       const balance = balances[address];
 
       if (data == undefined) tokenBalances[`UNKNOWN (${address})`] = balance
-      if ('confidence' in data && data.confidence < confidenceThreshold) return
+      if ('confidence' in data && data.confidence < confidenceThreshold || !data.price) return
       if (Math.abs(data.timestamp - Date.now() / 1e3) > (24 * 3600)) {
         console.log(`Price for ${address} is stale, ignoring...`)
         return
@@ -402,6 +402,9 @@ Warning: `)
       tokenBalances[data.symbol] = (tokenBalances[data.symbol] ?? 0) + amount;
       usdTokenBalances[data.symbol] = (usdTokenBalances[data.symbol] ?? 0) + usdAmount;
       usdTvl += usdAmount;
+      if (isNaN(usdTvl)) {
+        throw new Error(`NaN usdTvl for ${address} with balance ${balance} and price ${data.price}`)
+      }
     })
   });
 

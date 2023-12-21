@@ -6,7 +6,7 @@ module.exports = {
     misrepresentedTokens: true,
     methodology: "AGS Finance Tvl Calculation",
     astar: {
-        tvl: getUniTVL({ factory: FACTORIES, chain: 'astar', useDefaultCoreAssets: true }),
+        tvl: getUniTVL({ factory: FACTORIES, useDefaultCoreAssets: true }),
     }
 };
 

@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const {unwrapUniswapLPs} = require('../helper/unwrapLPs')
-const {transformPolygonAddress} = require('../helper/portedTokens')
 const axios = require('axios')
 
 const maitFarm = '0x539618aa29c95c28c0b04abb9025815c014a9db9'
@@ -9,7 +8,7 @@ const treasury = '0xe444a7d44065b06ac551623d56ba610a44a20013'
 async function tvl(timestamp, block, chainBlocks) {
     let balances = {}
     let lpPositions = []
-    let transformAddress = await transformPolygonAddress()
+    let transformAddress = i => `polygon:${i}`
     let maitFarmTokens = (await axios.get(`https://api.covalenthq.com/v1/137/address/${maitFarm}/balances_v2/?&key=ckey_72cd3b74b4a048c9bc671f7c5a6`)).data.data.items
     let treasuryTokens = (await axios.get(`https://api.covalenthq.com/v1/137/address/${treasury}/balances_v2/?&key=ckey_72cd3b74b4a048c9bc671f7c5a6`)).data.data.items
 
