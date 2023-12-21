@@ -36,6 +36,3 @@ module.exports = {
     tvl,
   }
 }
-
-
-
