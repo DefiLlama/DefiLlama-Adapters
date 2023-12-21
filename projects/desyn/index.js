@@ -36,7 +36,6 @@ async function getStbtItem() {
 
 module.exports = {
     methodology: 'RWA STBT is an investment portfolio that focuses on US short-term treasury bond digital assets and operates in a fully decentralized manner.',
-    resolveLP: true, 
     ethereum: {
       tvl:  tvl
     }
