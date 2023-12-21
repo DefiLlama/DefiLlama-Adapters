@@ -1,42 +1,27 @@
-const axios = require('axios')
-const { sumTokensExport } = require("../helper/unwrapLPs");
-
-
-const pools_url = 'https://api.desyn.io/etf/defillama/pools'
-
-async function tvl() {
-    const pools = await getStbtItem()
-    const owners = [];
-    const lpPositions = [];
-    for (let i = 0; i < pools.length; i++) {
-      let tokens =  pools[i].tokens;
-      owners.push(pools[i].pool_id)
-      for(let j = 0; j< tokens.length; j++) {
-        lpPositions.push(tokens[j]);
-      }
-    }
-    return sumTokensExport({ 
-        owners: owners,
-        tokens: lpPositions,
-      })
-}
-
-async function getStbtItem() {
-    let dstbt = [];
-    const poolLists  = (await axios.get(pools_url)).data.data.pools
-    poolLists.map((pool) => {    
-      if(pool.pool_type == 1) {
-        dstbt.push(pool)
-      }
-    })
-
-    return dstbt
-}
-
+const { getLogs } = require('../helper/cache/getLogs')
 
 module.exports = {
-    methodology: 'RWA STBT is an investment portfolio that focuses on US short-term treasury bond digital assets and operates in a fully decentralized manner.',
-    ethereum: {
-      tvl:  tvl
-    }
+  methodology: 'RWA STBT is an investment portfolio that focuses on US short-term treasury bond digital assets and operates in a fully decentralized manner.',
 }
+
+const config = {
+  ethereum: { factory: '0x01a38B39BEddCD6bFEedBA14057E053cBF529cD2', fromBlock: 17335174},
+}
+
+Object.keys(config).forEach(chain => {
+  const {factory, fromBlock, } = config[chain]
+  module.exports[chain] = {
+    tvl: async (_, _b, _cb, { api, }) => {
+      const logs = await getLogs({
+        api,
+        target: factory,
+        eventAbi: 'event LOG_NEW_POOL (address indexed caller, address indexed pool)',
+        onlyArgs: true,
+        fromBlock,
+      })
+      const pools = logs.map(i=>i.pool)
+      const tokens = await api.multiCall({  abi: 'address[]:getCurrentTokens', calls: pools})
+      return api.sumTokens({ ownerTokens: tokens.map((tokens, i) => [tokens, pools[i]])})
+    }
+  }
+})
