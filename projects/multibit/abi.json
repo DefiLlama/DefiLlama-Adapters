@@ -1,0 +1,77 @@
+{
+  "pools": {
+    "type": "function",
+    "name": "pools",
+    "inputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "stakeToken",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "rewardToken",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "totalReward",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "openAt",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "closeAt",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "lockTime",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "rewardReleased",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "rewardPerSecond",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "totalStakedAmount",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "accTokenPerShare",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "lastRewardTimestamp",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "paused",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  "poolLength": "uint256:poolLength"
+}
