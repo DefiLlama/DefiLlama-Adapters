@@ -35,19 +35,34 @@ const v1_3_arb_LiquidityPool = [
     '0xec6f3ef9481e7b8484290edbae2cedcdb0ce790e', //WBTC
     ]
 
-const op_pools = [...new Set([...v1_0_Pools, ...v1_1_LiquidityPool, ...v1_1_ShortCollateral, ...v1_2_LiquidityPool, ...v1_2_ShortCollateral].map(t=>t.toLowerCase()))]
+const v2_op_ShortCollateral = [
+    '0x8512028339bb67aee47c06a298031d91bb7d15ba', //WETH
+    '0xa95c6d6a2765627a854960e9ee96f607b857385a', //WBTC
+    '0x292a5929bd150d28eda3c17d9b7c754968b2899d', //OP
+    '0xa49f2ea43b445f9a2467b7279cfa1f6a0c2e3f4f', //ARB
+    ]
+const v2_op_LiquidityPool = [
+    '0xb8e90fd247700de65450aacd4a47b2948dc59fc1', //WETH
+    '0xacacff03241256304e841e89c13319eae09f14b3', //WBTC
+    '0x12a4fd54aa321eb16b45310ccb177bd87c6ae447', //OP
+    '0xdd0d125475453767e65f1a4dd30b62699fdcc9f5', //ARB
+    ]
+
+const op_pools = [...new Set([...v1_0_Pools, ...v1_1_LiquidityPool, ...v1_1_ShortCollateral, ...v1_2_LiquidityPool, ...v1_2_ShortCollateral, ...v2_op_ShortCollateral, ...v2_op_LiquidityPool].map(t=>t.toLowerCase()))]
 
 const arb_pools = [...new Set([...v1_3_arb_ShortCollateral, ...v1_3_arb_LiquidityPool].map(t=>t.toLowerCase()))]
 
 const op_tokens = [ADDRESSES.optimism.sUSD, ADDRESSES.optimism.sETH,
-    '0xc5db22719a06418028a40a9b5e9a7c02959d0d08', '0x298b9b95708152ff6968aafd889c6586e9169f1d']
+    '0xc5db22719a06418028a40a9b5e9a7c02959d0d08', '0x298b9b95708152ff6968aafd889c6586e9169f1d', 
+    ADDRESSES.optimism.OP, '0x68f180fcce6836688e9084f035309e29bf0a2095', 
+    ADDRESSES.optimism.WETH, ADDRESSES.optimism.USDC]
 
 const arb_tokens = [ADDRESSES.arbitrum.USDC, ADDRESSES.arbitrum.WETH,
     ADDRESSES.arbitrum.WBTC]
 
 const L2toL1Synths = {
     [ADDRESSES.optimism.sETH]: '0x5e74c9036fb86bd7ecdcb084a0673efc32ea31cb',
-    [ADDRESSES.optimism.sUSD]: '0x57ab1ec28d129707052df4df418d58a2d46d5f51',
+    [ADDRESSES.optimism.sUSD]: ADDRESSES.ethereum.sUSD,
     '0x298b9b95708152ff6968aafd889c6586e9169f1d': '0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6',
     '0xc5db22719a06418028a40a9b5e9a7c02959d0d08': '0xbbc455cb4f1b9e4bfc4b73970d360c8f032efee6'
 }
@@ -57,7 +72,7 @@ async function tvlOptimism(ttimestamp, _b, {optimism: block}){
     const transform = (addr)=>{
         return L2toL1Synths[addr] || addr;
     }
-    await sumTokens(balances, op_tokens.map(t=>op_pools.map(p=>[t,p])).flat(), block, 'optimism', transform)
+    await sumTokens(balances, op_tokens.map(t=>op_pools.map(p=>[t,p])).flat(), block, 'optimism')
     return balances
 }
 

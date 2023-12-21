@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const { transformFantomAddress } = require("../helper/portedTokens");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const MST_TOKEN_CONTRACT = "0x152888854378201e173490956085c711f1DeD565";
 const VE_CONTRACT = "0xc8034b3dF18Ea4d607E86D6b6Bf23E2A8Ed70F89";
@@ -10,7 +9,7 @@ const LP_STAKING_2 = "0xc13926C5CB2636a29381Da874b1e2686163DC226";
 
 async function staking(timestamp, block, chainBlocks) {
   const balances = {};
-  const transform = await transformFantomAddress();
+  const transform = i => `fantom:${i}`;
 
   const collateralBalance = (
     await sdk.api.abi.call({
@@ -33,7 +32,7 @@ async function staking(timestamp, block, chainBlocks) {
 
 async function pool2(timestamp, block, chainBlocks) {
   const balances = {};
-  const transform = await transformFantomAddress();
+  const transform = i => `fantom:${i}`;
 
   const balance1 = (
     await sdk.api.abi.call({

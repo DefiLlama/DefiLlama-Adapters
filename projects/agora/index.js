@@ -50,7 +50,7 @@ const { tvl: agoraFarmTvl, borrowed: agoraFarmBorrowed } = compoundExports(
   undefined,
 );
 
-const chainTvl = getUniTVL({ factory, chain: 'metis', useDefaultCoreAssets: true, })
+const chainTvl = getUniTVL({ factory, useDefaultCoreAssets: true, })
 
 module.exports = {
   hallmarks: [
@@ -61,6 +61,6 @@ module.exports = {
   methodology: `As in Compound Finance, TVL counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are counted as "Borrowed" TVL and can be toggled towards the regular TVL.`,
   metis: {
     tvl: sdk.util.sumChainTvls([chainTvl, agoraTvl, agoraPlusTvl, agoraFarmTvl, agoraStakeTvl]),
-    borrowed: sdk.util.sumChainTvls([agoraBorrowed, agoraPlusBorrowed, agoraFarmBorrowed, agoraStakeBorrowed]),
+    borrowed: ()=>({}),
   },
 };
