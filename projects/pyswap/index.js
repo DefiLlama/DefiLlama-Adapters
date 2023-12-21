@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs");
 const {getUniTVL} = require("../helper/unknownTokens");
 
@@ -7,7 +8,7 @@ const pys_staking_contract = "0x18E2fA8c010b56779285336D0920F1027f0bDBbb";
 
 const assets = [
   "0x9b5902C14B56eF2aa2cC1A2A0731a8F270Ee82f0", //WBNB
-  "0x0000000000000000000000000000000000000000", // This is address of native token
+  ADDRESSES.null, // This is address of native token
   "0x602aEe302B2703cD2BAC28e13192593228e0078C", // PYSWAP TOKEN
 ];
 

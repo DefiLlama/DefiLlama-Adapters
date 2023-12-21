@@ -10,7 +10,7 @@ const m2m = {
 const assets = {
   optimism: ADDRESSES.optimism.DAI, //DAI
   arbitrum: ADDRESSES.optimism.DAI, //DAI
-  base: "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb" //DAI
+  base: ADDRESSES.base.DAI //DAI
 }
 
 const abi = "uint256:totalNetAssets"

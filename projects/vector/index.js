@@ -1,9 +1,6 @@
 const sdk = require("@defillama/sdk");
-const { unwrapUniswapLPs, unwrapLPsAuto } = require("../helper/unwrapLPs");
-const { pool2 } = require("../helper/pool2");
-const { staking, stakings } = require("../helper/staking.js");
-const abi =
-  "function getDepositTokensForShares(uint256 amount, address token) view returns (uint256)";
+const { unwrapLPsAuto } = require("../helper/unwrapLPs");
+const { staking, } = require("../helper/staking.js");
 const contracts = require("./contracts.json");
 const vectorContracts = require("./vectorContracts.json");
 ////Platypus info
@@ -11,11 +8,9 @@ const platypusPoolsInfo = vectorContracts.PTP.pools;
 const PtpMainStakingAddress = vectorContracts.PTP.main_staking.address;
 const MasterPlatypusAddress = vectorContracts.PTP.master_platypus.address;
 ///Joe Info
-const JoeMainStakingAddress = vectorContracts.JOE.main_staking.address;
 const JoePoolsInfo = vectorContracts.JOE.pools;
 ///Vector Info
 const masterchefAddress = vectorContracts.PROTOCOL.masterchief.address;
-const OldLockerAddress = vectorContracts.PTP.old_locker.address;
 const LockerAddress = vectorContracts.PTP.locker.address;
 const VectorPoolsInfo = vectorContracts.PROTOCOL.pools;
 const VectorStakingPools = [

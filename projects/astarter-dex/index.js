@@ -1,7 +1,7 @@
 const { sumTokens2 } = require("../helper/chain/cardano");
 
-const DEX_BATHCER_SCRIPT = "addr1wxvf6xqa3jkq9cnyjnf7t4v6aku75rn3l3mlhe9udp4dnwcjscuah";
-const DEX_POOL_SCRIPT = "addr1wxe4dwl0jmmchjnd049t5ur7lc4jmhcjax8ht393evxcjsgeccdeu";
+const DEX_BATHCER_SCRIPT = "addr1wxz9n9rwqfld9ahctdjl3ldhsck22vsuuwmmv8mpsll74lgue5r6h";
+const DEX_POOL_SCRIPT = "addr1w896t3nhplnmxr4ur73j7qvn3s2s2yepzdsda536cahrdvcq37n5x";
 
 async function tvl() {
   return sumTokens2({ scripts: [DEX_BATHCER_SCRIPT, DEX_POOL_SCRIPT], blacklistedTokens: [

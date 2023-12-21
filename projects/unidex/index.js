@@ -41,9 +41,9 @@ async function ArbitrumTvl(_time, _ethBlock, { arbitrum: block }) {
   const mim = ADDRESSES.arbitrum.MIM;
   const gdai = "0xd85e038593d7a098614721eae955ec2022b9b91b";
   const ram = "0xaaa6c1e32c55a7bfa8066a6fae9b42650f262418";
-  const mai = "0x5979D7b546E38E414F7E9822514be443A4800529";
+  const mai = ADDRESSES.arbitrum.WSTETH;
   const gmx = ADDRESSES.arbitrum.GMX;
-  const wsteth = "0x5979D7b546E38E414F7E9822514be443A4800529";
+  const wsteth = ADDRESSES.arbitrum.WSTETH;
   const gns = "0x18c11FD286C5EC11c3b683Caa813B77f5163A122";
   const cap = "0x031d35296154279dc1984dcd93e392b1f946737b";
   const unsheth = "0x0Ae38f7E10A43B5b2fB064B42a2f4514cbA909ef";

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs } = require("../helper/cache/getLogs");
 const { config } = require("./config");
 const BigNumber = require("bignumber.js");

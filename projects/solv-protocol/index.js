@@ -14,7 +14,7 @@ async function tvl() {
 
 async function tokenList(chainId) {
   let tokens = [];
-  const allTokens = (await getConfig('solv-protocol', tokenListsApiEndpoint)).tokens;
+  const allTokens = (await getConfig('solv-protocol/token-list', tokenListsApiEndpoint)).tokens;
   for (let token of allTokens) {
     if (chainId == token.chainId) {
       if (token.extensions.voucher.underlyingToken != undefined) {

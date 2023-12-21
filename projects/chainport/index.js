@@ -100,6 +100,6 @@ const config = {
 Object.keys(config).forEach(chain => {
   const {owners, tokens} = config[chain]
   module.exports[chain] = {
-    tvl: sumTokensExport({ owners, tokens })
+    tvl: sumTokensExport({ owners, tokens, logCalls: true })
   }
 })

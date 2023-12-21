@@ -7,6 +7,7 @@ const { sumArtBlocks, isArtBlocks, } = require('../helper/nft');
 
 const {
   LOAN_CORE,
+  LOAN_CORE_V3,
   START_BLOCKS,
   VAULT_FACTORY_A,
 } = require('./constants');
@@ -38,7 +39,7 @@ async function tvl(_, block, _cb, { api }) {
   // Initialize balances with tokens held by the escrow contract, Loan Core
   return sumTokens2({
     balances,
-    owners: [LOAN_CORE],
+    owners: [LOAN_CORE, LOAN_CORE_V3],
     resolveNFTs: true,
     api,
   });
@@ -77,4 +78,8 @@ module.exports = {
   methodology: `Sums up the floor value of all vaulted and escrowed NFTs with Chainlink price feeds. Borrowed coins are not counted towards the TVL`,
   start: START_BLOCKS[VAULT_FACTORY_A],
   ethereum: { tvl, borrowed },
+  hallmarks: [
+    [1660762840, 'V2 Protocol Launch'],
+    [1694026811, 'V3 Protocol Launch'],
+  ],
 }

@@ -1,4 +1,6 @@
 const { uniV3Export } = require("../helper/uniswapV3");
+const { cachedGraphQuery } = require('../helper/cache')
+const factory = "0xc35dadb65012ec5796536bd9864ed8773abc74c4"
 
 module.exports = uniV3Export({
   ethereum: {
@@ -54,20 +56,42 @@ module.exports = uniV3Export({
     factory: "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506",
     fromBlock: 80860,
   },
-  thundercore: {
-    factory: "0xc35dadb65012ec5796536bd9864ed8773abc74c4",
-    fromBlock: 132536332,
-  },
+  thundercore: { factory, fromBlock: 132536332, },
   base: {
-    factory: "0xc35DADB65012eC5796536bD9864eD8773aBc74C4",
+    factory,
     fromBlock: 1759510,
     blacklistedTokens: [
       '0xcfca86136af5611e4bd8f82d83c7800ca65d875b',
       '0x0b0fd8317735dd9fe611fbc7e1d138149f8ebcea',
     ]
   },
-  core: {
-    factory: "0xc35DADB65012eC5796536bD9864eD8773aBc74C4",
-    fromBlock: 5211850,
-  },
+  core: { factory, fromBlock: 5211850, },
+  linea: { factory, fromBlock: 53256, },
+  scroll: { factory: '0x46B3fDF7b5CDe91Ac049936bF0bDb12c5d22202e', fromBlock: 82522, },
+  kava: { factory: '0x1e9B24073183d5c6B7aE5FB4b8f0b1dd83FDC77a', fromBlock: 7251753, },
+  metis: { factory: '0x145d82bCa93cCa2AE057D1c6f26245d1b9522E6F', fromBlock: 9077930, },
+  bittorrent: { factory: '0xBBDe1d67297329148Fe1ED5e6B00114842728e65', fromBlock: 29265724, },
 });
+
+const config = {
+  filecoin: { endpoint: 'https://sushi.laconic.com/subgraphs/name/sushiswap/v3-filecoin' },
+}
+
+const query = `{
+  pools {
+    id
+    token0 { id }
+    token1 { id }
+  }
+}`
+
+Object.keys(config).forEach(chain => {
+  const { endpoint } = config[chain]
+  module.exports[chain] = {
+    tvl: async (_, _b, _cb, { api, }) => {
+      const { pools } = await cachedGraphQuery('sushiswap-v3/' + chain, endpoint, query, { api, })
+      const ownerTokens = pools.map(i => [[i.token0.id, i.token1.id], i.id])
+      return api.sumTokens({ ownerTokens })
+    }
+  }
+})

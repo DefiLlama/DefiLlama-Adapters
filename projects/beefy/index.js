@@ -35,6 +35,7 @@ const chains = {
   optimism: 10,
   cronos: 25,
   bsc: 56,
+  xdai: 100,
   fuse: 122,
   heco: 128,
   polygon: 137,

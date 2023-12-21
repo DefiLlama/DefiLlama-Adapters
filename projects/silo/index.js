@@ -80,9 +80,10 @@ async function getSilos(api) {
 
 
 module.exports = {
+  methodology: `We calculate TVL by interacting with Silo Factory smart contracts on Ethereum and Arbitrum. For Ethereum, it queries Silo(Original)(0x4D919CEcfD4793c0D47866C8d0a02a0950737589), (Convex Factory)(0x6d4A256695586F61b77B09bc3D28333A91114d5a), and (LLAMA Edition)(0x2c0fA05281730EFd3ef71172d8992500B36b56eA). On Arbitrum, we query the Silo Arbitrum factory(0x4166487056A922D784b073d4d928a516B074b719) to obtain the addresses of Silos, retrieve the assets of each Silo, and then calculates the sum of the deposited tokens, borrowed amount are exported separately`,
   ethereum: { tvl, borrowed, },
   arbitrum: { tvl, borrowed, },
   hallmarks: [
-    [1668816000, "XAI Genesis"]
+    [1692968400, "Launch CRV market"]
   ]
 }

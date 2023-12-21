@@ -11,3 +11,5 @@ config.chains.forEach(chainInfo => {
     tvl: sumTokensExport({ chain, tokens, owners: holders })
   }
 })
+
+module.exports.boba_avax.tvl = () => ({})

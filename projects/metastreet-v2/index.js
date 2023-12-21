@@ -1,11 +1,11 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const { sumTokens2 } = require('../helper/unwrapLPs')
-const { blockQuery } = require('../helper/http')
+const { sumTokens2 } = require("../helper/unwrapLPs");
+const { blockQuery } = require("../helper/http");
 
-const query = `
+const query = (skip) => `
 query nfts($block: Int) {
-  loans(where: { or: [{ status: "Active" }, { status: "Liquidated" }] } block: { number: $block }) {
+  loans(first: 1000, skip: ${skip}, where: { or: [{ status: "Active" }, { status: "Liquidated" }] } block: { number: $block }) {
     collateralTokenIds
     collateralToken {
       id
@@ -15,12 +15,14 @@ query nfts($block: Int) {
     }
   }
 }
-`
-const endpoint = 'https://api.studio.thegraph.com/query/49216/metastreet-v2-mainnet-devel/version/latest'
+`;
+
+const endpoint =
+  "https://api.studio.thegraph.com/query/49216/metastreet-v2-mainnet-devel/version/latest";
 
 // Constants
 const METASTREET_POOL_FACTORY = "0x1c91c822F6C5e117A2abe2B33B0E64b850e67095";
-const MAX_UINT_128 = "0xffffffffffffffffffffffffffffffff"
+const MAX_UINT_128 = "0xffffffffffffffffffffffffffffffff";
 
 // Gets all MetaStreet V2 pools created by PoolFactory and their
 // corresponding currency token
@@ -87,16 +89,39 @@ module.exports = {
     tvl,
     borrowed: getMetaStreetBorrowedValue(),
   },
-  methodology: "TVL is calculated by summing the value of token balances and NFTs across all MetaStreet pools. Total borrowed is calculated by subtracting the tokens available from the total value of all liquidity nodes across all pools.",
+  methodology:
+    "TVL is calculated by summing the value of token balances and NFTs across all MetaStreet pools. Total borrowed is calculated by subtracting the tokens available from the total value of all liquidity nodes across all pools.",
   start: 17497132, // Block number of PoolFactory creation
 };
 
-async function tvl(_, _b, _cb, { api, }) {
-  const pools = await api.call({ target: METASTREET_POOL_FACTORY, abi: abi.getPools, })
-  const tokens = await api.multiCall({ abi: abi.currencyToken, calls: pools })
-  // const collateralTokens = await api.multiCall({ abi: abi.collateralToken, calls: pools })
-  const ownerTokens = pools.map((pool, i) => [[tokens[i]], pool,])
-  const { loans } = await blockQuery(endpoint, query, { api, blockCatchupLimit: 600, })
-  loans.forEach(loan => api.add(loan.collateralToken.id, loan.collateralTokenIds.length))
-  return sumTokens2({ api, ownerTokens, })
+async function tvl(_, _b, _cb, { api }) {
+  const pools = await api.call({
+    target: METASTREET_POOL_FACTORY,
+    abi: abi.getPools,
+  });
+  const tokens = await api.multiCall({ abi: abi.currencyToken, calls: pools });
+  const ownerTokens = pools.map((pool, i) => [[tokens[i]], pool]);
+
+  let skip = 0;
+  let allLoans = [];
+
+  /* Maximum subgraph queries: 100000 / 1000 = 100 */
+  while (skip <= 100000) {
+    const { loans } = await blockQuery(endpoint, query(skip), {
+      api,
+      blockCatchupLimit: 600,
+    });
+    if (loans.length === 0) {
+      break;
+    }
+
+    allLoans = allLoans.concat(loans);
+    skip += 1000;
+  }
+
+  allLoans.forEach(async (loan) =>
+    api.add(loan.collateralToken.id, loan.collateralTokenIds.length)
+  );
+
+  return sumTokens2({ api, ownerTokens });
 }

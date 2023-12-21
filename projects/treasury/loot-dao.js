@@ -12,7 +12,7 @@ module.exports = treasuryExports({
     ownTokens: [loot] // loot
   },
   polygon: {
-    tokens: [nullAddress, "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"], //weth
+    tokens: [nullAddress, ADDRESSES.polygon.WETH_1], //weth
     owners: [treasury],
   },
 });

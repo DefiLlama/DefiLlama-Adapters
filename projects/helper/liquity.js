@@ -1,4 +1,4 @@
-const { nullAddress } = require("./tokenMapping")
+const { nullAddress, sumTokens2 } = require('../helper/unwrapLPs')
 
 function getLiquityTvl(TROVE_MANAGER_ADDRESS, { nonNativeCollateralToken = false, abis = {}, collateralToken, } = {}) {
   return async (_, ethBlock, chainBlocks, { api }) => {
@@ -7,7 +7,7 @@ function getLiquityTvl(TROVE_MANAGER_ADDRESS, { nonNativeCollateralToken = false
     let token = nullAddress
     if (collateralToken) token = collateralToken
     else if (nonNativeCollateralToken) token = await api.call({ target: TROVE_MANAGER_ADDRESS, abi: abis.collateralToken ?? "address:collateralToken", })
-    return api.sumTokens({ owners: [activePool, defaultPool], tokens: [token] })
+    return sumTokens2({ api, owners: [activePool, defaultPool], tokens: [token] })
   }
 }
 

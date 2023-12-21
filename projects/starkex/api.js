@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const { call, multiCall, parseAddress } = require('../helper/chain/starknet')
 const abi = require('./abi')

@@ -2,6 +2,7 @@ const { ApiPromise, WsProvider } = require("@polkadot/api");
 const sdk = require('@defillama/sdk')
 
 const omnipoolAccountId = "7L53bUTBbfuj14UpdCNPwmgzzHSsrsTWBHX5pys32mVWM3C1"
+const stablepoolAccountId = "7JP6TvcH5x31TsbC6qVJHEhsW7UNmpREMZuLBpK2bG1goJRS"
 
 async function tvl() {
   const { api: _api } = arguments[3]
@@ -34,8 +35,9 @@ async function tvl() {
   for (const { decimals, assetId, symbol } of assetMetadata) {
     const cgId = cgMapping[symbol]
     if (cgId) {
-      const bal = await api.query.tokens.accounts(omnipoolAccountId, assetId)
+      const [bal, bal2] = await Promise.all([omnipoolAccountId, stablepoolAccountId].map(accountId => api.query.tokens.accounts(accountId, assetId)))
       add(cgId, bal.free / (10 ** decimals))
+      add(cgId, bal2.free / (10 ** decimals))
     } else {
       sdk.log(`No mapping for ${symbol}, skipping it`)
     }
