@@ -14,6 +14,11 @@ const { log, diplayUnknownTable, sliceIntoChunks } = require('./projects/helper/
 const { normalizeAddress } = require('./projects/helper/tokenMapping')
 const { PromisePool } = require('@supercharge/promise-pool')
 
+Object.keys(process.env).forEach((key) => {
+  if(key.endsWith('_RPC'))  return;
+  process.env[key] = '******'
+})
+
 const locks = [];
 function getCoingeckoLock() {
   return new Promise((resolve) => {
