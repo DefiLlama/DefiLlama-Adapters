@@ -1,3 +1,4 @@
+const ADDRESSES = require('../../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { sumTokens2, } = require('../../helper/unwrapLPs')
 
@@ -24,7 +25,7 @@ async function tvl(_, _1, _cb, { api, }) {
   if (api.chain === "ethereum") {
     toa.push(...[[Bayc, P2PPairStaking], [Mayc, P2PPairStaking], [Bakc, P2PPairStaking]])
   }
-  return sumTokens2({ chain: api.chain, balances, tokensAndOwners: toa, blacklistedTokens: ['0x0000000000000000000000000000000000000001'] })
+  return sumTokens2({ chain: api.chain, balances, tokensAndOwners: toa, blacklistedTokens: [ADDRESSES.linea.WETH_1] })
 }
 
 async function borrowed(_, _1, _cb, { api, }) {

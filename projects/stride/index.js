@@ -1,70 +1,108 @@
 const sdk = require("@defillama/sdk");
 const { get } = require("../helper/http");
 
-const coinGeckoIds = {
-  uatom: "cosmos",
-  ustars: "stargaze",
-  ujuno: "juno-network",
-  uosmo: "osmosis",
-  uluna: "terra-luna-2",
-  aevmos: "evmos",
-  inj: "injective-protocol",
-  uumee: "umee",
-  ucmdx: "comdex",
-  usomm: "sommelier",
+const chains = {
+  cosmos: {
+    chainId: "cosmoshub-4",
+    denom: "uatom",
+    coinGeckoId: "cosmos",
+  },
+
+  stargaze: {
+    chainId: "stargaze-1",
+    denom: "ustars",
+    coinGeckoId: "stargaze",
+  },
+
+  juno: {
+    chainId: "juno-1",
+    denom: "ujuno",
+    coinGeckoId: "juno-network",
+  },
+
+  osmosis: {
+    chainId: "osmosis-1",
+    denom: "uosmo",
+    coinGeckoId: "osmosis",
+  },
+
+  terra: {
+    chainId: "phoenix-1",
+    denom: "uluna",
+    coinGeckoId: "terra-luna-2",
+  },
+
+  evmos: {
+    chainId: "evmos_9001-2",
+    denom: "aevmos",
+    coinGeckoId: "evmos",
+  },
+
+  injective: {
+    chainId: "injective-1",
+    denom: "inj",
+    coinGeckoId: "injective-protocol",
+  },
+
+  umee: {
+    chainId: "injective-1",
+    denom: "uumee",
+    coinGeckoId: "umee",
+  },
+
+  comdex: {
+    chainId: "comdex-1",
+    denom: "ucmdx",
+    coinGeckoId: "comdex",
+  },
+
+  sommelier: {
+    chainId: "sommelier-3",
+    denom: "usomm",
+    coinGeckoId: "sommelier",
+  },
 };
 
-function getCoinDenom(denom) {
-  // inj uses 1e18 - https://docs.injective.network/learn/basic-concepts/inj_coin#base-denomination
-  const idArray = ['aevmos', 'inj'];
-
-  if (idArray.includes(denom)) {
-    return 1e18;
-  } else {
-    return 1e6;
-  }
+// inj uses 1e18 - https://docs.injective.network/learn/basic-concepts/inj_coin#base-denomination
+function getCoinDenimals(denom) {
+  return ["aevmos", "inj"].includes(denom) ? 1e18 : 1e6;
 }
 
-async function tvl() {
-  const balances = {};
+function makeTvlFn(chain) {
+  return async () => {
+    const [{ amount: assetBalances }, { host_zone: hostZone }] =
+      await Promise.all([
+        await get(
+          `https://stride-fleet.main.stridenet.co/api/cosmos/bank/v1beta1/supply/by_denom?denom=st${chain.denom}`
+        ),
+        await get(
+          `https://stride-fleet.main.stridenet.co/api/Stride-Labs/stride/stakeibc/host_zone/${chain.chainId}`
+        ),
+      ]);
 
-  const { host_zone: hostZones } = await get(
-    "https://stride-fleet.main.stridenet.co/api/Stride-Labs/stride/stakeibc/host_zone"
-  );
+    const assetBalance = assetBalances["amount"];
 
-  const hostZonePromises = hostZones.map(async (hostZone) => {
-    const stDenom = "st".concat(hostZone.host_denom);
-    const { amount: assetBalances } = await get(
-      "https://stride-fleet.main.stridenet.co/api/cosmos/bank/v1beta1/supply/by_denom?denom=".concat(stDenom)
-    );
-    const assetBalance = assetBalances['amount']
-
-    const coinDecimals = getCoinDenom(hostZone.host_denom);
+    const coinDecimals = getCoinDenimals(chain.denom);
 
     const amount = assetBalance / coinDecimals;
 
-    const geckoId = coinGeckoIds[hostZone.host_denom];
-
-    if (!geckoId) {
-      throw new Error("Missing gecko mapping: " + hostZone.host_denom);
-    }
+    const balances = {};
 
     sdk.util.sumSingleBalance(
       balances,
-      geckoId,
+      chain.coinGeckoId,
       amount * hostZone.redemption_rate
     );
-  });
 
-  await Promise.all(hostZonePromises);
-
-  return balances;
+    return balances;
+  };
 }
 
 module.exports = {
   timetravel: false,
   methodology: "Sum of all the tokens that are liquid staked on Stride",
-  stride: {
-    tvl,
-  },
 }; // node test.js projects/stride/index.js
+
+for (const chainName of Object.keys(chains)) {
+  module.exports[chainName] = { tvl: makeTvlFn(chains[chainName]) };
+}
