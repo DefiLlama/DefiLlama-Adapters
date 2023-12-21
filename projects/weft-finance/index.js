@@ -67,5 +67,6 @@ async function borrowed(_, _b, _cb, { api, }) {
 
 module.exports = {
   radixdlt: { tvl, borrowed },
-  timetravel: false
+  timetravel: false,
+  misrepresentedTokens: true,
 };
