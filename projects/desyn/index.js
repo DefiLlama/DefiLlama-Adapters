@@ -12,7 +12,7 @@ async function tvl() {
       let tokens =  pools[i].tokens;
       owners.push(pools[i].pool_id)
       for(let j = 0; j< tokens.length; j++) {
-        lpPositions.push(tokens[j]);
+        lpPositions.push(tokens[j].address);
       }
     }
     return sumTokensExport({ 
