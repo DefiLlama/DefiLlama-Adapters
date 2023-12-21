@@ -13,7 +13,7 @@ const VAULTS = {
   },
 };
 
-const HELPER = "0xC3E29b0FaE1C239f68639b67a42cAed726a86bF6"
+const HELPER = "0x8A2dD0eabE8b1A1066731C43AaC08dCDd50fcA63"
 const SUSD = '0x8c6f28f2F1A3C87F0f938b96d27520d9751ec8d9'
 
 module.exports = {
