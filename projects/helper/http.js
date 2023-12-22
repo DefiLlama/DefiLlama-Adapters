@@ -23,9 +23,9 @@ async function getBlock(timestamp, chain, chainBlocks, undefinedOk = false) {
   }
 }
 
-async function get(endpoint) {
+async function get(endpoint, axiosParams) {
   try {
-    const data = (await axios.get(endpoint)).data
+    const data = (await axios.get(endpoint, axiosParams)).data
     return data
   } catch (e) {
     sdk.log(e.message)
