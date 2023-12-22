@@ -5,7 +5,7 @@ const btcpx = "0x9C32185b81766a051E08dE671207b34466DD1021";
 async function tvl(timestamp, _, _1, { api }) {
   const bal = await api.call({ abi: 'erc20:totalSupply', target: btcpx })
   api.add(btcpx, bal)
-};
+}
 
 module.exports = {
   polygon: { tvl, staking: staking('0x015CEe3aB6d03267B1B2c05D2Ac9e2250AF5268d', prxy), },
