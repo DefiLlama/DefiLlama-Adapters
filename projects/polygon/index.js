@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
-async function tvl(_, block, _c, { logArray }) {
+async function tvl(_, block, _c) {
     const etherAddress = ADDRESSES.null
 
     const posEtherPredicate = '0x8484Ef722627bf18ca5Ae6BcF031c23E6e922B30'
@@ -86,7 +86,7 @@ async function tvl(_, block, _c, { logArray }) {
     })
     toa.push([maticToken, plasmaDepositManager])
     toa.push([maticToken, stakeManager])
-    return sumTokens2({ block, tokensAndOwners: toa, logArray })
+    return sumTokens2({ block, tokensAndOwners: toa })
 }
 
 module.exports = {

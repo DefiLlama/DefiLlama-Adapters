@@ -22,7 +22,7 @@ module.exports = {
     ethereum: {
         tvl: ethTvl
     },
-    manta: {
-        tvl: mantaTvl
-    }
+    // manta: {
+    //     tvl: mantaTvl
+    // }
 }

@@ -15,7 +15,6 @@ module.exports = {
       factory: '0x529Bd7Fc43285B96f1e8d5158626d1F15bb8A834',
       useDefaultCoreAssets: true,
       hasStablePools: true,
-      fetchBalances: true,
     }),
     staking: async (_, _b, cb, { api } = {}) => {
       const vsBalance = await api.call({ target: VS, abi: 'erc20:balanceOf', params: VOTING_ESCROW, })

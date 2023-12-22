@@ -44,6 +44,11 @@ const config = {
       name: 'FX Pool Factory',
       factory: '0x627D759314D5c4007b461A74eBaFA7EBC5dFeD71',
       fromBlock: 32054794,
+    },
+    {
+      name: 'FX Pool Deployer',
+      factory: '0xF169c1Ae8De24Da43a3dC5c5F05De412b4848bD3',
+      fromBlock: 49368321,
     }
   ],
   ethereum: [
@@ -52,6 +57,11 @@ const config = {
       factory: '0x81fE9e5B28dA92aE949b705DfDB225f7a7cc5134',
       fromBlock: 15981805,
     },
+    {
+      name: 'FX Pool Deployer',
+      factory: '0xfb23Bc0D2629268442CD6521CF4170698967105f',
+      fromBlock: 18469425,
+    }
   ],
   avax: [
     {
@@ -59,6 +69,11 @@ const config = {
       factory: '0x81fE9e5B28dA92aE949b705DfDB225f7a7cc5134',
       fromBlock: 32585313,
     },
+    {
+      name: 'FX Pool Deployer',
+      factory: '0x4042dC4110Ea9500338737605A60065c3de152C6',
+      fromBlock: 37150792,
+    }
   ]
 }
 
