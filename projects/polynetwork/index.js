@@ -225,7 +225,7 @@ module.exports = {
         fetch: harmony
     },
     hoo: {
-        fetch: hsc
+        fetch: () => 0,
     },
     bytomsidechain: {
         fetch: bytomSideChain

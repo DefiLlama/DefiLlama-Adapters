@@ -42,7 +42,7 @@ Object.keys(config).forEach(chain => {
   const factory = config[chain]
   const sConfig = staking[chain]
   module.exports[chain] = {
-    tvl: getUniTVL({ factory, useDefaultCoreAssets: true, fetchBalances: true }),
+    tvl: getUniTVL({ factory, useDefaultCoreAssets: true, }),
     staking: sConfig ? sumTokensExport(sConfig) : undefined
   }
 })
