@@ -19,7 +19,7 @@ const currentCacheVersion = sdk.cache.currentVersion // load env for cache
 
 Object.keys(process.env).forEach((key) => {
   if(key.endsWith('_RPC'))  return;
-  if (['TVL_LOCAL_CACHE_ROOT_FOLDER'].includes(key) || key.includes('SDK')) return;
+  if (['TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_MODE'].includes(key) || key.includes('SDK')) return;
   delete process.env[key]
 })
 
