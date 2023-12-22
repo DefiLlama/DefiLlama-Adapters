@@ -8,7 +8,7 @@ async function tvl(time, ethBlock, _b, { api }) {
 
 module.exports = {
   methodology: `We count the ETH on ${contract} as the collateral for the ckETH`,
-  ethereum: {
+  icp: {
     tvl,
   },
 };
