@@ -1,11 +1,11 @@
-const axios = require("axios")
+const { post } = require("../helper/http")
 
 const icxApiEndpoint = 'https://ctz.solidwallet.io/api/v3'
 const stakingContract = "cx43e2eec79eb76293c298f2b17aec06097be606e0"
 const sIcxTokenContract = "cx2609b924e33ef00b648a409245c7ea394c467824"
 
 async function icxCall(address, method, params) {
-    let response = await axios.post(icxApiEndpoint, {
+    let response = await post(icxApiEndpoint, {
         jsonrpc: '2.0',
         method: 'icx_call',
         id: 1234,
@@ -18,7 +18,7 @@ async function icxCall(address, method, params) {
             }
         }
     })
-    return response.data.result
+    return response.result
 }
 
 async function getTotalClaimableIcx() {
