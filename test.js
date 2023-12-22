@@ -14,6 +14,9 @@ const { log, diplayUnknownTable, sliceIntoChunks } = require('./projects/helper/
 const { normalizeAddress } = require('./projects/helper/tokenMapping')
 const { PromisePool } = require('@supercharge/promise-pool')
 
+const currentCacheVersion = sdk.cache.currentVersion // load env for cache
+// console.log(`Using cache version ${currentCacheVersion}`)
+
 Object.keys(process.env).forEach((key) => {
   if(key.endsWith('_RPC'))  return;
   if (['TVL_LOCAL_CACHE_ROOT_FOLDER'].includes(key) || key.includes('SDK')) return;
