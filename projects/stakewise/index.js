@@ -1,43 +1,64 @@
-const ADDRESSES = require("../helper/coreAssets.json");
-const sdk = require("@defillama/sdk");
-const BigNumber = require("bignumber.js");
-const axios = require("axios");
+const ADDRESSES = require('../helper/coreAssets.json')
+const sdk = require('@defillama/sdk');
+const BigNumber = require('bignumber.js')
+const { getLogs } = require('../helper/cache/getLogs')
 
-const wethAddress = ADDRESSES.ethereum.WETH;
+const wethAddress = ADDRESSES.ethereum.WETH
 
-async function ethereumTvl(timestamp, block, _1, _2) {
-  const tvl = (await axios.get("https://mainnet-api.stakewise.io/api/tvl")).data;
+async function tvl(timestamp, block, _1, { api }) {
+  const sEthSupply = await sdk.api.erc20.totalSupply({
+    target: '0xFe2e637202056d30016725477c5da089Ab0A043A',
+    block
+  })
+  const rEthSupply = await sdk.api.erc20.totalSupply({
+    target: '0x20BC832ca081b91433ff6c17f85701B6e92486c5',
+    block
+  })
+
+  const solosValidators = await getLogs({
+    target: '0xEadCBA8BF9ACA93F627F31fB05470F5A0686CEca',
+    topic: 'ValidatorRegistered(bytes32,bytes,uint256,address)',
+    fromBlock: 11726299,
+    api
+  })
+  const ethOnValidators = BigNumber(solosValidators.length).times(32e18)
+  const vaults = await getLogs({
+    target: '0x3a0008a588772446f6e656133c2d5029cc4fc20e',
+    topic: 'VaultAdded(address,address)',
+    fromBlock: 18470078,
+    api
+  })
+  const assets = await api.multiCall({
+    calls: vaults.map(v=>({target:"0x"+v.topics[2].slice(26)})),
+    abi: "uint256:totalAssets"
+  })
+
   return {
-    [wethAddress]: new BigNumber(tvl)
-  };
+    [wethAddress]: ethOnValidators.plus(sEthSupply.output).plus(rEthSupply.output).plus(assets.reduce((sum, b)=>sum.plus(b), BigNumber(0))).toFixed(0)
+  }
 }
 
-async function gnoTvl(timestamp, ethBlock, { xdai: block }) {
-  const chain = "xdai";
-  const sGNO = await sdk.api.erc20.totalSupply({
-    target: "0xA4eF9Da5BA71Cc0D2e5E877a910A37eC43420445",
+async function xdaiTvl(timestamp, ethBlock, { xdai: block }) {
+  const chain = "xdai"
+  const supply = await sdk.api.erc20.totalSupply({
+    target: '0xA4eF9Da5BA71Cc0D2e5E877a910A37eC43420445',
     block,
     chain
-  });
-
-  const rGNO = await sdk.api.erc20.totalSupply({
-    target: "0x6aC78efae880282396a335CA2F79863A1e6831D4",
-    block,
-    chain
-  });
+  })
 
   return {
-    [ADDRESSES.ethereum.GNO]: new BigNumber(sGNO.output).plus(new BigNumber(rGNO.output))
-  };
+    [ADDRESSES.ethereum.GNO]: supply.output
+  }
 }
+
 
 
 module.exports = {
-  methodology: "Counts ETH and GNO staked",
+  methodology: 'Counts ETH staked',
   ethereum: {
-    tvl: ethereumTvl
+    tvl,
   },
-  xdai: {
-    tvl: gnoTvl
+  xdai:{
+    tvl: xdaiTvl
   }
-};
+}
