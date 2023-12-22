@@ -14,6 +14,12 @@ const { log, diplayUnknownTable, sliceIntoChunks } = require('./projects/helper/
 const { normalizeAddress } = require('./projects/helper/tokenMapping')
 const { PromisePool } = require('@supercharge/promise-pool')
 
+Object.keys(process.env).forEach((key) => {
+  if(key.endsWith('_RPC'))  return;
+  if (['TVL_LOCAL_CACHE_ROOT_FOLDER'].includes(key) || key.includes('SDK')) return;
+  delete process.env[key]
+})
+
 const locks = [];
 function getCoingeckoLock() {
   return new Promise((resolve) => {
@@ -49,8 +55,7 @@ async function getTvl(
     const chain = storedKey.split('-')[0]
     const block = chainBlocks[chain]
     const api = new sdk.ChainApi({ chain, block: chainBlocks[chain], timestamp: unixTimestamp, })
-    const logArray = []
-    let tvlBalances = await tvlFunction(unixTimestamp, ethBlock, chainBlocks, { api, chain, block, storedKey, logArray });
+    let tvlBalances = await tvlFunction(unixTimestamp, ethBlock, chainBlocks, { api, chain, block, storedKey });
     if (!tvlBalances && Object.keys(api.getBalances()).length) tvlBalances = api.getBalances()
     const tvlResults = await computeTVL(
       tvlBalances,

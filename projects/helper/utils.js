@@ -74,13 +74,14 @@ function isLP(symbol, token, chain) {
   if (chain === 'kardia' && ['KLP', 'KDXLP'].includes(symbol)) return true
   if (chain === 'fantom' && ['HLP', 'WLP'].includes(symbol)) return true
   if (chain === 'functionx' && ['FX-V2'].includes(symbol)) return true
-  if (chain === 'era' && /(cSLP|sSLP|ZFLP)$/.test(symbol)) return true // for syncswap
+  if (chain === 'era' && /(ZFLP)$/.test(symbol)) return true // for syncswap
   if (chain === 'flare' && symbol.endsWith('_LP')) return true // for enosys dex
   if (chain === 'songbird' && ['FLRX', 'OLP'].includes(symbol)) return true
   if (chain === 'arbitrum' && ['DXS', 'ZLP',].includes(symbol)) return true
   if (chain === 'metis' && ['NLP', 'ALP'].includes(symbol)) return true // Netswap/Agora LP Token
   if (chain === 'optimism' && /(-ZS)/.test(symbol)) return true
   if (chain === 'arbitrum' && /^(crAMM|vrAMM)-/.test(symbol)) return true // ramses LP
+  if (chain === 'arbitrum' && /^DLP/.test(symbol)) return false // DODO?
   if (chain === 'base' && /^(v|s)-/.test(symbol)) return true // Equalizer LP
   if (chain === 'bsc' && /(-APE-LP-S)/.test(symbol)) return false
   if (chain === 'scroll' && /(cSLP|sSLP)$/.test(symbol)) return true //syncswap LP

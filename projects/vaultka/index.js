@@ -1,6 +1,10 @@
 //import utils
 const ADDRESSES = require("../helper/coreAssets.json");
 
+// 19/12/2023 ALP Leverage Vault
+// 29/11/2023 GMXV2 Leverage(Neutral) Vault
+// 12/11/2023 GLP Compound Vault
+
 module.exports = {
   misrepresentedTokens: true,
   hallmarks: [
@@ -11,6 +15,9 @@ module.exports = {
     [1683178791, "GDAI Leverage Vault"],
     [1696389409, "HLP Leverage Vault"],
     [1697716800, "VKA TGE"],
+    [1699750000, "GLP Compound Vault"],
+    [1701187200, "GMXV2 Leverage (Neutral) Vault"],
+    [1702915200, "ALP Leverage Vault"],
   ],
 
   arbitrum: {
@@ -50,6 +57,11 @@ module.exports = {
         vodkaV2DN_ARB_Water: "0x175995159ca4F833794C88f7873B3e7fB12Bb1b6",
         vodkaV2DN_BTC_Water: "0x4e9e41Bbf099fE0ef960017861d181a9aF6DDa07",
         vodkaV1A: "0x0E8A12e59C2c528333e84a12b0fA4B817A35909A",
+        agedVodkaV2_ETH: "0xE502474DfC23Cd11C28c379819Ea97A69aF7E10F",
+        agedVodkaV2_BTC: "0x83C8A6B6867A3706a99573d39dc65a6805D26770",
+        gin: "0x482368a8E701a913Aa53CB2ECe40F370C074fC7b",
+        alpStaking: "0x85146C0c5968d9640121eebd13030c99298f87b3",
+        alpAddresses: "0xBc76B3FD0D18C7496C0B04aeA0Fe7C3Ed0e4d9C9",
       };
 
       await api.sumTokens({
@@ -75,6 +87,9 @@ module.exports = {
           [ADDRESSES.arbitrum.WETH, addresses.vodkaV2DN_ETH_Water],
           [ADDRESSES.arbitrum.ARB, addresses.vodkaV2DN_ARB_Water],
           [ADDRESSES.arbitrum.fsGLP, addresses.vodkaV1A],
+          //GmVault
+          [addresses.gmWeth, addresses.agedVodkaV2_ETH],
+          [addresses.gmBtc, addresses.agedVodkaV2_BTC],
         ],
       });
 
@@ -83,6 +98,9 @@ module.exports = {
           "function getStakedVlpBalance() public view returns (uint256)",
         stakedHlpBalance:
           "function userTokenAmount(address user) public view returns (uint256)",
+        stakedAlpBalance:
+          "function userInfo(address account) external view returns (, uint256)",
+        alpPrice: "function getAlpPrice() external view returns (uint256)", //
       };
 
       const StakedVLPBal = await api.call({
@@ -99,9 +117,23 @@ module.exports = {
         params: addresses.rum,
       });
 
+      const stakedAlpBal = await api.call({
+        abi: contractAbis.stakedAlpBalance,
+        target: addresses.alpStaking,
+        params: addresses.gin,
+      });
+
+      const alpPrice = await api.call({
+        abi: contractAbis.alpPrice,
+        target: addresses.gin,
+      });
+
+      const alpValue = ((stakedAlpBal * alpPrice) / 1e18 / 1e8) * 1e6;
+
       api.add(addresses.VLP, StakedVLPBal);
       api.add(addresses.VLP, StakedVLPBalV2);
       api.add(addresses.hlp, StakedHLPBal);
+      api.add(ADDRESSES.arbitrum.USDC, alpValue);
     },
   },
 };

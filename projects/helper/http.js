@@ -24,7 +24,13 @@ async function getBlock(timestamp, chain, chainBlocks, undefinedOk = false) {
 }
 
 async function get(endpoint) {
-  return (await axios.get(endpoint)).data
+  try {
+    const data = (await axios.get(endpoint)).data
+    return data
+  } catch (e) {
+    sdk.log(e.message)
+    throw new Error(`Failed to get ${endpoint}`)
+  }
 }
 
 async function getWithMetadata(endpoint) {
@@ -32,10 +38,23 @@ async function getWithMetadata(endpoint) {
 }
 
 async function post(endpoint, body) {
-  return (await axios.post(endpoint, body)).data
+  try {
+    const data = (await axios.post(endpoint, body)).data
+    return data
+  } catch (e) {
+    sdk.log(e.message)
+    throw new Error(`Failed to post ${endpoint}`)
+  }
 }
 
-async function graphQuery(endpoint, graphQuery, params = {}, { timestamp, chain, chainBlocks, useBlock = false } = {}) {
+async function graphQuery(endpoint, graphQuery, params = {}, { api, timestamp, chain, chainBlocks, useBlock = false } = {}) {
+  if (api) {
+    if (!timestamp) timestamp = api.timestamp
+    if (!chain) chain = api.chain
+    if (useBlock && !params.block)
+      params.block = (await api.getBlock()) - 200
+
+  }
   if (useBlock && !params.block)
     params.block = await getBlock(timestamp, chain, chainBlocks)
   return request(endpoint, graphQuery, params)
