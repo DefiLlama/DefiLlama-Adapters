@@ -1,127 +1,47 @@
-const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const { fetchURL } = require("../helper/utils");
-const { chainExports } = require("../helper/exports");
+const { getConfig } = require('../helper/cache')
+const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokensExport } = require('../helper/chain/brc20')
 
 const BRIDGE_TOKENS = "https://api.multibit.exchange/support/token";
-const chains = {
-  ethereum: {
-    staking: {
-      // https://app.multibit.exchange/staking
-      pool: "0x2EDfFbc62C3dfFD2a8FbAE3cd83A986B5bbB5495",
-    },
-    tvl: true,
-  },
-  bsc: {
-    staking: false,
-    tvl: true,
-  },
-  polygon: {
-    staking: false,
-    tvl: true,
-  },
-  // TODO: BRC20 assets are not supported.
+
+const config = {
+  // https://app.multibit.exchange/staking
+  ethereum: { stakingPool: "0x2EDfFbc62C3dfFD2a8FbAE3cd83A986B5bbB5495", tokens: [ADDRESSES.null, ADDRESSES.ethereum.USDT] },
+  bsc: {},
+  polygon: {},
+}
+module.exports = {
+  methodology: `Tokens bridged via MultiBit are counted as TVL`,
   bitcoin: {
-    staking: false,
-    tvl: false,
+    tvl: sumTokensExport({
+      owners: [
+        'bc1p6r6hx759e3ulvggvd9x3df0rqh27jz59nvfjd2fzmh3wqyt6walq82u38z', // hot wallet
+        'bc1pyyms2ssr0hagy5j50r5n689e6ye0626v3c98j5fw0jk6tz3vrgts7nt56g',  // cold wallet
+        'bc1qmcrpqanjnrw58y0fvq08fqchgxv5aylctew7vxlkalfns3rpedxsx4hxpu',  // cold wallet
+      ],
+      blacklistedTokens: ['MUBI', 'BSSB']
+    }),
+
   },
-};
-
-const chainMappings = {
-  eth: "ethereum",
-  bsc: "bsc",
-  polygon: "polygon",
-};
-
-const getTvlAndStaking = (chain) => {
-  const transform = (v) => `${chain}:${v}`;
-
-  const getTvl = async (timestamp, block) => {
-    const balances = {};
-
-    if (!chains[chain].tvl) {
-      return balances;
+}
+Object.keys(config).forEach(chain => {
+  const { stakingPool, tokens = [ADDRESSES.null] } = config[chain]
+  module.exports[chain] = {
+    tvl: async (_, _b, _cb, { api, }) => {
+      const data = await getConfig('multibit', BRIDGE_TOKENS)
+      const key = chain === 'ethereum' ? 'eth': chain
+      const owner = data.find(v => v.chain === key)?.real?.contract
+      if (!owner) return {}
+      return api.sumTokens({ owner, tokens, })
     }
-    const { data } = await fetchURL(BRIDGE_TOKENS);
-    const [config] = data.filter((v) => chain === chainMappings[v.chain]);
-    if (!config) return {};
-    const { real, wrap } = config;
-    // balanceof
-    const tokenA = Object.values(real.data);
-    const resultA = await sdk.api.abi.multiCall({
-      abi: "erc20:balanceOf",
-      chain,
-      calls: tokenA.map((target) => ({
-        target,
-        params: real.contract,
-      })),
-    });
-    sdk.util.sumMultiBalanceOf(balances, resultA, true, transform);
+  }
 
-    // totalSupply
-    const tokenB = Object.values(wrap.data);
-    const resultB = await sdk.api.abi.multiCall({
-      abi: "uint256:totalSupply",
-      chain,
-      calls: tokenB.map((target) => ({ target })),
-    });
-
-    sdk.util.sumMultiBalanceOf(balances, resultB, true, transform);
-    return balances;
-  };
-
-  const getStaking = async (timestamp, block, _, { api }) => {
-    const balances = {};
-
-    if (!chains[chain].staking) {
-      return balances;
+  if (stakingPool) {
+    module.exports[chain].staking = async (_, _b, _cb, { api, }) => {
+      const data = await api.fetchList({ lengthAbi: abi.poolLength, itemAbi: abi.pools, target: stakingPool })
+      const tokens = data.map(v => v.stakeToken)
+      return api.sumTokens({ owner: stakingPool, tokens, })
     }
-
-    const poolContract = chains[chain].staking.pool;
-
-    const { output: poolCount } = await sdk.api.abi.call({
-      block,
-      chain,
-      target: poolContract,
-      abi: abi.poolLength,
-    });
-
-    const { output: pools } = await sdk.api.abi.multiCall({
-      chain,
-      abi: abi.pools,
-      calls: new Array(Number(poolCount)).fill().map((v, i) => ({
-        target: poolContract,
-        params: i,
-      })),
-    });
-
-    pools.forEach((v) => {
-      const stakeToken = v.output[0];
-      const totalStakedAmount = v.output[8];
-      sdk.util.sumSingleBalance(
-        balances,
-        transform(stakeToken),
-        totalStakedAmount
-      );
-    });
-
-    return balances;
-  };
-
-  return {
-    tvl: getTvl,
-    staking: getStaking,
-  };
-};
-
-module.exports = Object.keys(chains).reduce((prev, chain) => {
-  const config = getTvlAndStaking(chain);
-  return {
-    ...prev,
-    [chain]: config,
-  };
-}, {});
-
-module.exports.methodology = `Tokens bridged via MultiBit are counted as TVL`;
-module.exports.misrepresentedTokens = true;
-module.exports.hallmarks = [[1651881600, "UST depeg"]];
+  }
+})
