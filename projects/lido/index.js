@@ -71,6 +71,7 @@ module.exports = {
   hallmarks: [
     [1610496000, "Start of incentives for curve pool"],
     [1651881600,"UST depeg"],
+    [1654822801, "stETH depeg"],
     [1667865600, "FTX collapse"],
     [1684108800, "ETH Withdrawal Activation"]
   ],
