@@ -1,11 +1,10 @@
-const sdk = require('@defillama/sdk');
-const { get } = require("../helper/http");
+const { queryContract } = require("../helper/chain/cosmos");
+const ADDRESSES = require('../helper/coreAssets.json')
 
 //  using this lcd due to these differences at time of writing
 //  https://osmosis-api.polkachu.com/cosmwasm/wasm/v1/contract/osmo1f5vfcph2dvfeqcqkhetwv75fda69z7e5c2dldm3kvgj23crkv6wqcn47a0/smart/eyJzdGF0ZSI6e319
 //  ^ is currently returning `codespace undefined code 111222: panic`
 //  https://lcd.osmosis.zone/cosmwasm/wasm/v1/contract/osmo1f5vfcph2dvfeqcqkhetwv75fda69z7e5c2dldm3kvgj23crkv6wqcn47a0/smart/eyJzdGF0ZSI6e319
-const lcdOsmosis = `https://lcd.osmosis.zone`;
 
 const consts = {
   MILKYWAY_CONTRACT: 'osmo1f5vfcph2dvfeqcqkhetwv75fda69z7e5c2dldm3kvgj23crkv6wqcn47a0',
@@ -66,43 +65,17 @@ const consts = {
  * }
  */
 
-const chainInfo = {
-  osmosis: {
-    chainId: 'osmosis-1',
-    denom: 'factory/osmo1f5vfcph2dvfeqcqkhetwv75fda69z7e5c2dldm3kvgj23crkv6wqcn47a0/umilkTIA',
-    coinGeckoId: 'milkyway-staked-tia'
-  }
-}
-
-function makeTvlFn() {
-  return async () => {
-    const res = await Promise.all([
-      osmosisLcdQuery(`cosmwasm/wasm/v1/contract/${consts.MILKYWAY_CONTRACT}/smart/${consts.base64.state}`),
-      osmosisLcdQuery(`cosmwasm/wasm/v1/contract/${consts.MILKYWAY_CONTRACT}/smart/${consts.base64.config}`)
-    ]);
-    const [state, config] = [res[0].data, res[1].data];
-
-    const totalLiquidStaked = Number(state.total_liquid_stake_token);
-
-    const balance = {};
-
-    sdk.util.sumSingleBalance(balance, chainInfo.osmosis.coinGeckoId, totalLiquidStaked);
-
-    return balance
-  }
-}
-
-
-async function osmosisLcdQuery(route) {
-  let endpoint = `${lcdOsmosis}/${route}`;
-  let request =  await get(endpoint);
-  return request
+async function tvl() {
+  const { api } = arguments[3]
+  const data = await queryContract({ contract: consts.MILKYWAY_CONTRACT, chain: api.chain, data: { state: {} } });
+  api.add('ibc/'+ADDRESSES.ibc.TIA, data.total_native_token)
+  return api.getBalances()
 }
 
 module.exports = {
   timetravel: false,
   methodology: 'TVL counts the tokens that are locked in the Milky Way contract',
   osmosis: {
-    tvl: makeTvlFn(),
+    tvl,
   }
 } // node test.js projects/milky-way/index.js
