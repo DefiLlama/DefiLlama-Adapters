@@ -32,6 +32,6 @@ module.exports = {
     staking: staking(rabbitStaking, RS),
     tvl: bscTvl,
   },
-  // deadFrom: "2023-20-20",
+  deadFrom: "2023-20-20",
   methodology: "Counts TVL on all the Farms through Bank Contract; and the Treasury portion on the Rabbit DAO product",
 };
