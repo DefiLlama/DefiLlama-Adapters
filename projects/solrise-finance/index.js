@@ -4,5 +4,5 @@ module.exports = {
     tvl: () => ({}),
     staking: () => ({}),
   },
-  // deadFrom: '2023-01-01',
+  deadFrom: '2023-01-01',
 }

@@ -4,5 +4,5 @@ module.exports = {
     staking: () => ({}),
     pool2: () => ({}),
   },
-  // deadFrom: "2023-12-01",
+  deadFrom: "2023-12-01",
 }
