@@ -13,51 +13,55 @@
 
 ---
 ##### Name (to be shown on DefiLlama):
-
+Cerra
 
 ##### Twitter Link:
-
+https://twitter.com/Cerra_io
 
 ##### List of audit links if any:
-
+None
 
 ##### Website Link:
-
+https://cerra.io/
 
 ##### Logo (High resolution, will be shown with rounded borders):
-
+https://i.ibb.co/2qHV1s4/cerra-icon.png
 
 ##### Current TVL:
-
+229.524306
 
 ##### Treasury Addresses (if the protocol has treasury)
-
+None
 
 ##### Chain:
-
+Cardano
 
 ##### Coingecko ID (so your TVL can appear on Coingecko, leave empty if not listed): (https://api.coingecko.com/api/v3/coins/list)
+No Coingecko ID
 
 
 ##### Coinmarketcap ID (so your TVL can appear on Coinmarketcap, leave empty if not listed): (https://api.coinmarketcap.com/data-api/v3/map/all?listing_status=active,inactive,untracked&start=1&limit=10000)
-
+No Coinmarketcap ID
 
 ##### Short Description (to be shown on DefiLlama):
-
+Decentralized Profit-Sharing Finance Hub on Cardano
 
 ##### Token address and ticker if any:
-
+https://cardanoscan.io/token/4342a3d3c15545a592bf38294dc75c7a1dd3550388303e3a06f4416d4345525241
+Policy ID: 4342a3d3c15545a592bf38294dc75c7a1dd3550388303e3a06f4416d
 
 ##### Category (full list at https://defillama.com/categories) *Please choose only one:
-
+Lending
 
 ##### Oracle used (Chainlink/Band/API3/TWAP or any other that you are using):
-
+Orcfax Oracle - https://orcfax.io/ 
 
 ##### forkedFrom (Does your project originate from another project):
-
+Original Code
 
 ##### methodology (what is being counted as tvl, how is tvl being calculated):
+Locked value of borrowable assets that goes into a smart contract.
 
 
 ##### Github org/user (Optional, if your code is open source, we can track activity):
+https://github.com/cerraio
