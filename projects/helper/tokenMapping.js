@@ -131,6 +131,12 @@ const fixBalancesTokens = {
   conflux: {
     [ADDRESSES.null]: { coingeckoId: 'conflux-token', decimals: 18 },
   },
+  icon: {
+    [ADDRESSES.null]: { coingeckoId: 'icon', decimals: 18 },
+    'cxb49d82c46be6b61cab62aaf9824b597c6cf8a25d': { coingeckoId: 'binance-usd', decimals: 18 },
+    'cx5b5a03cb525a1845d0af3a872d525b18a810acb0': { coingeckoId: 'bitcoin-bep2', decimals: 18 },
+    'cx288d13e1b63563459a2ac6179f237711f6851cb5': { coingeckoId: 'ethereum', decimals: 18 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
