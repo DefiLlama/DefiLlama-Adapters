@@ -29,6 +29,6 @@ module.exports = {
   near: {
     tvl: sumTokensExport({ owner: 'v3.oin_finance.near', })
   },
-  // deadFrom: 1675036800,
+  deadFrom: 1675036800,
   methodology: "Counts TVL on multi-chain of OIN-Finance",
 };
