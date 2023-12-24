@@ -1,5 +1,5 @@
-const axios = require("axios");
 const BigNumber = require("bignumber.js");
+const { post } = require("../helper/http");
 
 const icxApiEndpoint = 'https://ctz.solidwallet.io/api/v3'
 
@@ -10,7 +10,7 @@ async function toInt(s) {
 }
 
 async function icxCall(address, method, params) {
-    let response = await axios.post(icxApiEndpoint, {
+    let response = await post(icxApiEndpoint, {
         jsonrpc: '2.0',
         method: 'icx_call',
         id: 1234,
@@ -23,7 +23,7 @@ async function icxCall(address, method, params) {
             }
         }
     })
-    return response.data.result
+    return response.result
 }
 
 async function calculateOmmTvl() {
