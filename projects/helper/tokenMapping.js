@@ -121,6 +121,10 @@ const fixBalancesTokens = {
   linea: {
     [ADDRESSES.linea.WETH_1]: { coingeckoId: 'ethereum', decimals: 18 },
   },
+  bitcoin: {
+    BSSB: { coingeckoId: 'bitstable-finance', decimals: 0 },
+    MUBI: { coingeckoId: 'multibit', decimals: 0 },
+  },
   fsc: {
     [ADDRESSES.null]: { coingeckoId: 'fonsmartchain', decimals: 18 },
     [ADDRESSES.fsc.WFSC]: { coingeckoId: 'fonsmartchain', decimals: 18 },

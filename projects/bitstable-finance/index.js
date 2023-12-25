@@ -18,12 +18,14 @@ module.exports = {
       owners: [
         "bc1p0uw83vg0h32v7kypyvjn9nextku2h7axjdeefy2ewstevnqffaksjzhrdf",
       ],
+      blacklistedTokens: ['BSSB', 'DAII'],
     }),
     staking: sumBRC20TokensExport({
       // Farm Address
       owners: [
         "bc1pvngqf24g3hhr5s4ptv472prz576uye8qmagy880ydq5gzpd30pdqtua3rd",
       ],
+      blacklistedTokens: ['DAII'],
     }),
   },
 };
