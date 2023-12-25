@@ -139,6 +139,12 @@ const fixBalancesTokens = {
   },
   jbc: {
     [ADDRESSES.jbc.USDT]: { coingeckoId: 'tether', decimals: 18 },
+    [ADDRESSES.jbc.USDC]: { coingeckoId: 'usd-coin', decimals: 18 },
+    [ADDRESSES.jbc.ETH]: { coingeckoId: 'ethereum', decimals: 18 },
+    [ADDRESSES.jbc.OP]: { coingeckoId: 'optimism', decimals: 18 },
+    [ADDRESSES.jbc.BNB]: { coingeckoId: 'binancecoin', decimals: 18 },
+    [ADDRESSES.jbc.JFIN]: { coingeckoId: 'jfin-coin', decimals: 18 },
+    [ADDRESSES.jbc.KUB]: { coingeckoId: 'bitkub-coin', decimals: 18 },
   },
 }
 
