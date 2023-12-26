@@ -1,8 +1,8 @@
 const sdk = require('@defillama/sdk');
-const axios = require('axios');
 
 const { endPoints, queryContract, sumTokens} = require('../helper/chain/cosmos');
 const { getChainTransform } = require('../helper/portedTokens');
+const { get } = require('../helper/http');
 
 const addresses = {
   osmosis: {
@@ -136,8 +136,8 @@ function getEndpoint(chain) {
 
 async function cosmosLCDQuery(url, chain) {
   let endpoint = `${getEndpoint(chain)}/${url}`;
-  let request =  await axios.get(endpoint);
-  return request.data;
+  let request =  await get(endpoint);
+  return request;
 }
 
 async function cosmosDenomBalanceStr(chain, denom, owner) {
