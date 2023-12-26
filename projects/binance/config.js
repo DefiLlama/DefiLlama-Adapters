@@ -484,7 +484,7 @@ function getAddresses(chain) {
   return assetList.filter(i => i[1] === chain).map(i => i[2])
 }
 function getOwners(chain) {
-  const isCaseSensitive = ['BTC', 'TRX', 'SOL', 'XRP', 'LTC', 'DOT', 'ALGO', 'FTM'].includes(chain)
+  const isCaseSensitive = ['BTC', 'TRX', 'SOL', 'XRP', 'LTC', 'DOT', 'ALGO'].includes(chain)
   return getUniqueAddresses(assetList.filter(i => i[1] === chain).map(i => i[2]), isCaseSensitive)
 }
 
