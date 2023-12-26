@@ -9,9 +9,8 @@ module.exports = {
   ton: {
     tvl: async () => {
       const result = await call({ target: 'EQBNo5qAG8I8J6IxGaz15SfQVB-kX98YhKV_mT36Xo5vYxUa', abi: 'get_treasury_state' })
-      const currentlyStakedNano = BigInt(result.stack[0][1])
       return {
-        'coingecko:the-open-network': currentlyStakedNano / 1e9,
+        'coingecko:the-open-network': result[0] / 1e9,
       }
     },
   },

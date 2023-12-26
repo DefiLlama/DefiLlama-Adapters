@@ -35,21 +35,27 @@ function sumTokensExport({ ...args }) {
   return (_, _1, _2, { api }) => sumTokens({ api, ...args })
 }
 
-async function call({ target, abi, params = []}) {
+async function call({ target, abi, params = [] }) {
   const requestBody = {
     "address": target,
     "method": abi,
     "stack": params
   }
-  const response = await post('https://toncenter.com/api/v2/runGetMethod', requestBody)
-  if (!response.ok) {
+  const { ok, result } = await post('https://toncenter.com/api/v2/runGetMethod', requestBody)
+  if (!ok) {
     throw new Error("Unknown");
   }
-  if (response.result.exit_code !== 0) {
-      throw new Error('Expected a zero exit code, but got ' + result.exit_code)
+  const { exit_code, stack } = result
+  if (exit_code !== 0) {
+    throw new Error('Expected a zero exit code, but got ' + exit_code)
   }
-  return response.result
+  stack.forEach((i, idx) => {
+    if (i[0] === 'num') {
+      stack[idx] = parseInt(i[1], 16)
+    }
+  })
 
+  return stack
 }
 
 module.exports = {
