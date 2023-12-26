@@ -8,8 +8,7 @@ const contracts = {
 
 module.exports = {
   bsc: {
-    tvl: () => 0,
-    staking: staking(contracts["Sakai-SP"], contracts.SAKAI),
-    dao: dao(contracts["SakaiDAO"], contracts.SAKAI),
+    tvl: () => ({}),
+    staking: staking([contracts["Sakai-SP"], contracts["SakaiDAO"]], contracts.SAKAI),
   },
 };
