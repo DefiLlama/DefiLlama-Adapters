@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
 const abi = require('./abi.json')
 const { get } = require('../helper/http')
@@ -6,9 +7,9 @@ const { toUSDTBalances } = require('../helper/balances');
 
 // https://docs.belt.fi/contracts/contract-deployed-info
 const bscVaults = [
-    '0x51bd63F240fB13870550423D208452cA87c44444',
-    '0xAA20E8Cb61299df2357561C2AC2e1172bC68bc25',
-    '0xa8Bb71facdd46445644C277F9499Dd22f6F0A30C',
+    ADDRESSES.bsc.beltBTC,
+    ADDRESSES.bsc.beltETH,
+    ADDRESSES.bsc.beltBNB,
     '0x9171Bf7c050aC8B4cf7835e51F7b4841DFB2cCD0',
     '0x55E1B1e49B969C018F2722445Cd2dD9818dDCC25',
     '0x7a59bf07D529A5FdBab67D597d63d7D5a83E61E5',

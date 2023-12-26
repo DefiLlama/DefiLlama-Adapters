@@ -55,11 +55,17 @@ module.exports = {
   kava: {
     tvl: fetchallchain(2222),
   },
+  canto: {
+    tvl: fetchallchain(7700),
+  },
   arbitrum:{
     tvl: fetchallchain(42161),
   },
   avax:{
     tvl: fetchallchain(43114),
+  },
+  base:{
+    tvl: fetchallchain(8453),
   },
   harmony: {
     tvl: fetchallchain(1666600000),

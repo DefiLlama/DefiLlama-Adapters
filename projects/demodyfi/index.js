@@ -1,9 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getUniTVL } = require('../helper/unknownTokens')
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
-const wGLMR = "0x5f6c5C2fB289dB2228d159C69621215e354218d7";
+const wGLMR = ADDRESSES.moonbeam.WGLMR;
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { transformBscAddress } = require("../helper/portedTokens");
 
 async function dmodBscStakingPool(timestamp, block, chainBlocks) {
   const stakingBalance = new BigNumber(
@@ -38,7 +38,7 @@ async function dmodEthereumStakingPool(timestamp, block, chainBlocks) {
       await sdk.api.abi.call({
         abi: "erc20:balanceOf",
         chain: "ethereum",
-        target: "0x5f6c5c2fb289db2228d159c69621215e354218d7",
+        target: ADDRESSES.moonbeam.WGLMR,
         params: ["0x024D59Ac0Bb03dEd28B9A16cd50B3d242B43a683"],
         block
       })
@@ -50,7 +50,7 @@ async function dmodEthereumStakingPool(timestamp, block, chainBlocks) {
       await sdk.api.abi.call({
         abi: "erc20:decimals",
         chain: "ethereum",
-        target: "0x5f6c5c2fb289db2228d159c69621215e354218d7",
+        target: ADDRESSES.moonbeam.WGLMR,
         params: [],
         block
       })
@@ -60,7 +60,7 @@ async function dmodEthereumStakingPool(timestamp, block, chainBlocks) {
   return { 'demodyfi': stakingBalance.div(new BigNumber(10).pow(decimals)).toFixed(0) };
 }
 async function dmodBscLPPool(timestamp, block, chainBlocks) {
-  const transform = await transformBscAddress();
+  const transform = i => `bsc:${i}`;
   const balances = {};
 
   const lpTokenbalance = new BigNumber(

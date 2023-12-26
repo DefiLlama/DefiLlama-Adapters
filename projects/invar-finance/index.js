@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abis = require("./abis.js");
 const BigNumber = require("bignumber.js");
 
-const USDC_ADDRESS = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
+const USDC_ADDRESS = ADDRESSES.ethereum.USDC;
 const RE_NFT = "0x502818ec5767570F7fdEe5a568443dc792c4496b";
 const INVARIA2222 = "0x10a92B12Da3DEE9a3916Dbaa8F0e141a75F07126";
 

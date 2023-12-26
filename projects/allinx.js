@@ -1,17 +1,7 @@
-const utils = require('./helper/utils');
-
-/* * * * * * * *
-* ==> Correct adapter needs to be created.
-*
-*****************/
-async function fetch() {
-  let staked = await utils.fetchURL('https://api.allinx.io/api/stats')
-  return staked.data.data.totalLockedValue;
-}
-
 module.exports = {
+  methodology: 'Project is abandoned',
   bsc: {
-    fetch
+    tvl: () => 0
   },
-  fetch
+  deadFrom: 1680328420,
 }

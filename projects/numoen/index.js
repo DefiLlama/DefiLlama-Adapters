@@ -11,6 +11,7 @@ const config = {
 const blocks = {
   celo: 17976668,
   arbitrum: 65269032,
+  polygon: 40648569,
 }
 
 async function tvl(_, _b, _cb, { api, }) {

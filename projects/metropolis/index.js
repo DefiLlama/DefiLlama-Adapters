@@ -26,8 +26,12 @@ async function tvl(_, _b, _cb, { api, }) {
 }
 
 module.exports = {
+  hallmarks: [
+    [1680097334,"Acquired by Swapline"]
+  ],
   methodology: 'We count the token balances in in different liquidity book contracts',
   fantom:{
-    tvl,
+    tvl: () => 0
   },
+  deadFrom: 1680097334,
 };

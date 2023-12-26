@@ -1,4 +1,5 @@
-const { getProvider, getSolBalances, tokens, } = require('../helper/solana')
+const ADDRESSES = require('../helper/coreAssets.json')
+const { getProvider, getSolBalances, } = require('../helper/solana')
 const { Program, } = require("@project-serum/anchor");
 const { getConfig } = require('../helper/cache')
 
@@ -31,11 +32,11 @@ async function getData() {
 }
 
 const tvl = async () => {
-  return { [tokens.solana]: (await getData()).tvl }
+  return { ['solana:' + ADDRESSES.solana.SOL]: (await getData()).tvl }
 };
 
 const borrowed = async () => {
-  return { [tokens.solana]: (await getData()).borrowed }
+  return { ['solana:' + ADDRESSES.solana.SOL]: (await getData()).borrowed }
 }
 
 module.exports = {

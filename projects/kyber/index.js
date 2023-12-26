@@ -26,14 +26,27 @@ const chains = {
   optimism: {
     graphId: "optimism",
   },
+  linea: {
+    graphId: 'linea'
+  },
+  base: {
+    graphId: 'base'
+  },
+  scroll: {
+    graphId: 'scroll'
+  }
 };
 
 async function fetchPools(chain) {
-  const url =
-    chain == "cronos"
-      ? "https://cronos-graph.kyberengineering.io/subgraphs/name/kybernetwork/kyberswap-elastic-cronos"
-      : `https://api.thegraph.com/subgraphs/name/kybernetwork/kyberswap-elastic-${chain}`;
+  let url
 
+  switch (chain) {
+    case "linea": url = 'https://graph-query.linea.build/subgraphs/name/kybernetwork/kyberswap-elastic-linea'; break;
+    case "cronos": url = 'https://cronos-graph.kyberengineering.io/subgraphs/name/kybernetwork/kyberswap-elastic-cronos'; break;
+    case "base": url = 'https://base-graph.kyberengineering.io/subgraphs/name/kybernetwork/kyberswap-elastic-base'; break;
+    case "scroll": url = 'https://scroll-graph.kyberengineering.io/subgraphs/name/kybernetwork/kyberswap-elastic-scroll'; break;
+    default: url = `https://api.thegraph.com/subgraphs/name/kybernetwork/kyberswap-elastic-${chain}`;
+  }
   let length
   let lastId = ''
   let toa = [];
@@ -73,6 +86,10 @@ function elastic(chain) {
 
 module.exports = {
   timetravel: false,
+  hallmarks: [
+    [Math.floor(new Date('2023-04-17')/1e3), 'Kyber team identified a vuln'],
+    [1700611200,'Protocol exploit'],
+  ],
 };
 Object.keys(chains).forEach(chain => {
   module.exports[chain] = {

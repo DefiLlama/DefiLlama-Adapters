@@ -10,7 +10,7 @@ module.exports = {
   misrepresentedTokens: true,
   methodology: "TVL consists of pools created by the factory contract",
   arbitrum: {
-    tvl: getUniTVL({ factory: arbiFactory, fetchBalances: true, useDefaultCoreAssets: true, }),
+    tvl: getUniTVL({ factory: arbiFactory,  useDefaultCoreAssets: true, }),
     staking: staking({ tokensAndOwners: [[arbiAlien, arbiStaking]], lps: [AlienUsdcLP] })
   },
 };

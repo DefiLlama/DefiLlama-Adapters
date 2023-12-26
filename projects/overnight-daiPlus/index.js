@@ -1,13 +1,16 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 
 const m2m = {
   optimism: "0x8416d215b71a5C91b04E326140bbbDcDa82C01da",
   arbitrum: "0xF04124F4226389d1Bf3ad7AcB54da05fF4078c8b",
+  base: "0x7a62315519A39d562c1E49EB35b300d2E6742f86"
 }
 
 const assets = {
-  optimism: "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1", //DAI
-  arbitrum: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1", //DAI
+  optimism: ADDRESSES.optimism.DAI, //DAI
+  arbitrum: ADDRESSES.optimism.DAI, //DAI
+  base: ADDRESSES.base.DAI //DAI
 }
 
 const abi = "uint256:totalNetAssets"

@@ -8,13 +8,13 @@ const FACTORY_BSC = "0x0841BD0B734E4F5853f0dD8d7Ea041c241fb0Da6";
 const FACTORY_POLYGON = "0xcf083be4164828f00cae704ec15a36d711491284";
 const FACTORY_ETHEREUM = "0xBAe5dc9B19004883d0377419FeF3c2C8832d7d7B";
 const FACTORY_TELOS = "0x411172Dfcd5f68307656A1ff35520841C2F7fAec";
+const FACTORY_ARBITRUM = "0xCf083Be4164828f00cAE704EC15a36D711491284"
 
 module.exports = {
   misrepresentedTokens: true,
   bsc: {
     tvl: getUniTVL({
       factory: FACTORY_BSC,
-      chain: "bsc",
       useDefaultCoreAssets: true,
     }),
     staking: staking([MASTER_APE, MASTER_APE_V2], BANANA_TOKEN, "bsc"),
@@ -22,7 +22,6 @@ module.exports = {
   polygon: {
     tvl: getUniTVL({
       factory: FACTORY_POLYGON,
-      chain: "polygon",
       useDefaultCoreAssets: true,
     }),
   },
@@ -32,7 +31,12 @@ module.exports = {
   telos: {
     tvl: getUniTVL({
       factory: FACTORY_TELOS,
-      chain: "telos",
+      useDefaultCoreAssets: true,
+    }),
+  },
+  arbitrum: {
+    tvl: getUniTVL({
+      factory: FACTORY_ARBITRUM,
       useDefaultCoreAssets: true,
     }),
   },

@@ -13,7 +13,7 @@ module.exports = {
       methodology: `${lendingMarket}. TVL is calculated by getting the market addresses from comptroller and calling the totalsCollaterals() on-chain method to get the amount of tokens locked in each of these addresses, then we get the price of each token from coingecko.`,
     };
     Object.keys(config).forEach(chain => {
-      const { markets, collaterals } = config[chain]
+      const { markets } = config[chain]
 
       async function borrowed(timestamp, block, _, { api }) {
         const balances = {}
@@ -28,7 +28,8 @@ module.exports = {
         await Promise.all(markets.map(async (m, i) => {
           const items = await api.fetchList({ lengthAbi: abi.numAssets, itemAbi: abi.getAssetInfo, target: m })
           const tokens = items.map(i => i.asset)
-          tokens.push(collaterals[i])
+          const baseToken = await api.call({ abi: 'address:baseToken', target: m })
+          tokens.push(baseToken)
           toa.push([tokens, m])
         }))
         return sumTokens2({ api, ownerTokens: toa })

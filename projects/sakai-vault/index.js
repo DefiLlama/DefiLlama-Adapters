@@ -11,4 +11,4 @@ module.exports = {
     tvl: () => ({}),
     staking: staking([contracts["Sakai-SP"], contracts["SakaiDAO"]], contracts.SAKAI),
   },
-};
+}
