@@ -8,12 +8,18 @@ async function tvl() {
     "erd1qqqqqqqqqqqqqpgqmmxzmktd09gq0hldtczerlv444ykt3pz6avsnys6m9",
     "erd1qqqqqqqqqqqqqpgqdh6jeeyamfhq66u7rmkyc48q037kk8n26avs400gg8",
   ];
-  return sumTokens({ owners, blacklistedTokens: ['JEX-9040ca'] });
+  return sumTokens({ owners });
+}
+
+async function staking() {
+  const owner = "erd1qqqqqqqqqqqqqpgq05whpg29ggrrm9ww3ufsf9ud23f66msv6avs5s5xxy";
+  return sumTokens({ owner });
 }
 
 module.exports = {
   timetravel: false,
   elrond: {
+    staking,
     tvl,
   },
 };

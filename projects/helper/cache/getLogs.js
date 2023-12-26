@@ -7,7 +7,7 @@ const cacheFolder = 'logs'
 
 async function getLogs({ target,
   topic, keys = [], fromBlock, toBlock, topics,
-  api, eventAbi, onlyArgs = false, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, }) {
+  api, eventAbi, onlyArgs = false, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction,  skipCacheRead = false}) {
   if (!api) throw new Error('Missing sdk api object!')
   if (!target) throw new Error('Missing target!')
   if (!fromBlock) throw new Error('Missing fromBlock!')
@@ -38,9 +38,9 @@ async function getLogs({ target,
 
   let cache = await _getCache(key)
   let response
-  const fetchNewData = (cache.fromBlock && cache.toBlock > toBlock) || onlyUseExistingCache
+  const fetchNewData = (cache.fromBlock && (cache.toBlock + 200) > toBlock) || onlyUseExistingCache
 
-  // if no new data nees to be fetched
+  // if no new data nees to be fetched if the last fetched block is within 200 blocks of the current block
   if (!customCacheFunction && fetchNewData)
     response = cache.logs.filter(i => i.blockNumber < toBlock && i.blockNumber >= fromBlock)
   else
@@ -99,7 +99,7 @@ async function getLogs({ target,
       logs: []
     }
 
-    if (skipCache) return defaultRes
+    if (skipCache || skipCacheRead) return defaultRes
 
     let cache = await getCache(cacheFolder, key)
     // set initial structure if it is missing / reset if from block is moved to something older

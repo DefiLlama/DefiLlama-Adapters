@@ -50,6 +50,7 @@ const ETH_GROWTH = "0x6c51041a91c91c86f3f08a72cb4d3f67f1208897";
 const TURBO_STETH = "0xfd6db5011b171b05e1ea3b92f9eacaeeb055e971";
 const TURBO_SOMM = "0x5195222f69c5821f8095ec565e71e18ab6a2298f";
 const TURBO_EETH = "0x9a7b4980C6F0FCaa50CD5f288Ad7038f434c692e";
+const TURBO_STETH_STETH_DEPOSIT = "0xc7372Ab5dd315606dB799246E8aA112405abAeFf";
 
 const cellarsV2p5 = [
   { id: TURBO_SWETH, startBlock: 17910374 },
@@ -58,6 +59,7 @@ const cellarsV2p5 = [
   { id: TURBO_STETH, startBlock: 18330620 },
   { id: TURBO_SOMM, startBlock: 18516369 },
   { id: TURBO_EETH, startBlock: 18622910 },
+  { id: TURBO_STETH_STETH_DEPOSIT, startBlock: 18717675 },
 ];
 
 module.exports = {
