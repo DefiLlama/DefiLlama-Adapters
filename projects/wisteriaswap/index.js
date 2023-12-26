@@ -6,3 +6,4 @@ const masterchef = "0x5865C60C05C28C597b3CEB6a84809251101E5204";
 module.exports = {
   ...masterChefExports(masterchef, "bsc", wst),
 };
+module.exports.deadFrom = '2023-02-13'

@@ -1,5 +1,4 @@
 const { chainExports } = require('../helper/exports')
-const { default: axios } = require('axios')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getConfig } = require('../helper/cache')
 
@@ -46,4 +45,4 @@ function chainTvl(chain) {
     }
 }
 
-module.exports = chainExports(chainTvl, ['ethereum', 'polygon', 'optimism', 'arbitrum', ...Object.keys(chainMapping)])
+module.exports = chainExports(chainTvl, ['base', 'ethereum', 'polygon', 'optimism', 'arbitrum', ...Object.keys(chainMapping)])

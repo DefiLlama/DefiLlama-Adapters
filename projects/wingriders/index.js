@@ -1,4 +1,4 @@
-const axios = require("axios");
+const { post } = require('../helper/http')
 
 const headers = {
   "Accept-Encoding": "gzip, deflate, br",
@@ -6,14 +6,14 @@ const headers = {
 
 /** @returns {Promise<{tvl: string, staking: string}>} */
 async function getTvlBreakdown() {
-    const res = await axios.post(
+    const res = await post(
         'https://api.mainnet.wingriders.com/graphql',
         {
             query: '{tvlBreakdown {tvl, staking}}'
         },
         { headers }
     )
-    return res.data.data.tvlBreakdown
+    return res.data.tvlBreakdown
 }
 
 async function tvl() {
