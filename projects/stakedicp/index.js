@@ -1,7 +1,7 @@
 const BigNumber = require("bignumber.js");
 const { get } = require("../helper/http");
 
-const url = 'https://h6uvl-xiaaa-aaaap-qaawa-cai.ic0.app/tvl';
+const url = 'https://h6uvl-xiaaa-aaaap-qaawa-cai.raw.ic0.app/tvl';
 
 async function tvl(_timestamp, _block) {
   const tvl = (await get(url)).tvl;
