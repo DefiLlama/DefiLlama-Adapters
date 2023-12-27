@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { gql } = require("graphql-request");
 const { blockQuery } = require('../helper/http')
 const { getTokenPrices } = require('../helper/unknownTokens')
@@ -6,11 +7,11 @@ const { getChainTransform } = require('../helper/portedTokens')
 
 const config = {
   ethereum: {
-    weth: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+    weth: ADDRESSES.ethereum.WETH,
     graphUrl: 'https://graph-proxy.nftx.xyz/c/shared/subgraphs/name/nftx-project/nftx-v2-1-mainnet'
   },
   arbitrum: {
-    weth: '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
+    weth: ADDRESSES.arbitrum.WETH,
     graphUrl: 'https://graph-proxy.nftx.xyz/shared/subgraphs/name/nftx-project/nftx-v2-arbitrum'
   },
 }
@@ -63,8 +64,6 @@ function getTvl(chain) {
       print.push({ id: vault.token.id, balance, name: vault.token.name, val: total })
     })
     print.sort((a, b) => b.val - a.val)
-    // console.table(print)
-    // console.log(print.reduce((a, i) => a + i.val, 0))
 
     updateBalances(balances)
     const transformedBalances = {}

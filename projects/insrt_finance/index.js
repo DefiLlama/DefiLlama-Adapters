@@ -1,14 +1,17 @@
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 
 const fidenzavault = '0xfCEed70c8E9f38A0c3A0062D40d0Ab06493063a1' 
 const rockvault = '0x185B6B13Be7cEfa99262AF1F78ae87213E4DDD3d' 
 const baycvault2 = '0x417c53C3B63a03aeb614b7b625ae84Cfc7eecD1c'
 const squigglevault = '0x5D40A087cec071cd3b8A7AF4B45b3D56D6c3f952'
-const insrtVaults = [ fidenzavault, rockvault, baycvault2, squigglevault ]
+const penguvault = '0x8facab18b9f4cd1a9f90876290c9bfa238cd4e45'
+const miladyvault = '0x861ff455dcd810895cb4050460e4b6a47fec3304'
+const insrtVaults = [ fidenzavault, rockvault, baycvault2, squigglevault, penguvault, miladyvault ]
+const vaulttokens = [nullAddress, '0xa3f5998047579334607c47a6a2889bf87a17fc02', '0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d', '0xbd3531da5cf5857e7cfaa92426877b022e612cf8', '0x524cab2ec69124574082676e6f654a18df49a048', '0x062e691c2054de82f28008a8ccc6d7a1c8ce060d', '0x5Af0D9827E0c53E4799BB226655A1de152A425a5' ]
 
 async function tvl(_, _b, _cb, { api, }) {
   await vaultTvl(api, [punkvault, baycvault, ])
-  return sumTokens2({ api, owners: insrtVaults , tokens: ['0xa3f5998047579334607c47a6a2889bf87a17fc02', '0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d'], resolveArtBlocks: true, })
+  return sumTokens2({ api, owners: insrtVaults , tokens: vaulttokens, resolveArtBlocks: true, })
 }
 
 // ERC721 Vaults

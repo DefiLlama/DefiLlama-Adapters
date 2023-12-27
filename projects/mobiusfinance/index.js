@@ -1,6 +1,6 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const formatBytes32String = require('ethers').utils.formatBytes32String;
 const { sumTokens, } = require('../helper/unwrapLPs')
-const { transformPolygonAddress } = require('../helper/portedTokens')
 const ResolverAddr = "0x1E02cdbbA6729B6470de81Ad4D2cCA4c514521b9"
 
 const ResolverJson = {
@@ -11,7 +11,7 @@ const ResolverJson = {
 
 const sdk = require('@defillama/sdk')
 const chain = 'polygon'
-const nullAddr = "0x0000000000000000000000000000000000000000"
+const nullAddr = ADDRESSES.null
 const motToken = '0x2db0Db271a10661e7090b6758350E18F6798a49D'
 
 async function tvl(ts, _block, { polygon: block }) {
@@ -19,7 +19,7 @@ async function tvl(ts, _block, { polygon: block }) {
   const stakeStr = formatBytes32String("Stake")
   const motStr = formatBytes32String("MOT")
   const balances = {}
-  const transform = await transformPolygonAddress()
+  const transform = i => `polygon:${i}`
 
   const [
     MobiusAddr,

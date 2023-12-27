@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
@@ -9,11 +10,11 @@ const anchorStart = 11915867;
 const comptroller = "0x4dcf7407ae5c07f8681e1659f626e114a7667339";
 const ignore = ["0x7Fcb7DAC61eE35b3D4a51117A7c58D53f0a8a670"]; // anDOLA will be counted through the stabilizer
 const anETH = "0x697b4acAa24430F254224eB794d2a85ba1Fa1FB8";
-const wETH = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
+const wETH = ADDRESSES.ethereum.WETH;
 
 // Stabilizer
 const stabilizer = "0x7eC0D931AFFBa01b77711C2cD07c76B970795CDd";
-const dai = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
+const dai = ADDRESSES.ethereum.DAI;
 
 // Vaults
 const vaults = [
@@ -48,6 +49,7 @@ async function getAllUnderlying(block, tokens) {
         })
       ),
       abi: abi["underlying"],
+      permitFailure: true,
     })
   ).output;
 

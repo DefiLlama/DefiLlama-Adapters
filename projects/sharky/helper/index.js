@@ -27,7 +27,7 @@ async function borrowed(timestamp, _, _1, { api }) {
     return +time.start + +time.duration > timestamp
   })
   api.log('active loans count: ',loans.length)
-  loans.forEach(i => api.add(i.valueTokenMint, i.principalLamports.toString()))
+  loans.forEach(i => api.add(i.valueTokenMint.toString(), i.principalLamports.toString()))
 }
 
 async function tvl(timestamp, _, _1, { api }) {
@@ -38,7 +38,7 @@ async function tvl(timestamp, _, _1, { api }) {
     return !i.loanState.taken
   })
   api.log('Loans yet to be taken: ',loans.length)
-  loans.forEach(i => api.add(i.valueTokenMint, i.principalLamports.toString()))
+  loans.forEach(i => api.add(i.valueTokenMint.toString(), i.principalLamports.toString()))
 }
 
 module.exports = {

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { sumSingleBalance } = require("@defillama/sdk/build/generalUtil");
 const abi = require("./abi.json");
@@ -48,7 +49,7 @@ async function ethTvl(timestamp, block) {
     
     //If stkAAVE address then change token address to AAVE address
     if (token === "0x4da27a545c0c5B758a6BA100e3a049001de870f5") {
-      token = "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9";
+      token = ADDRESSES.ethereum.AAVE;
     }
     let tvl = BigNumber(underlyingBalances.output[i].output).plus(totalBorrowed.output[i].output).minus(totalReserve.output[i].output).toFixed(0);
     sumSingleBalance(balances, token, tvl)

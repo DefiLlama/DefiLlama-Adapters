@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const vaults_bsc = [
   {
     "sousId": 0,
@@ -558,7 +559,7 @@ const choco_pools_bsc = [
     "earningToken": {
       "symbol": "wBNB",
       "address": {
-        "56": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+        "56": ADDRESSES.bsc.WBNB,
         "97": "0xae13d989dac2f0debff460ac112a837c89baa7cd"
       },
       "decimals": 18,
@@ -950,7 +951,7 @@ const choco_pools_polygon = [
     "earningToken": {
       "symbol": "wMATIC",
       "address": {
-        "137": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+        "137": ADDRESSES.polygon.WMATIC_2,
         "80001": ""
       },
       "decimals": 18,

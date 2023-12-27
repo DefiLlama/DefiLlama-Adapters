@@ -1,9 +1,13 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require('../helper/unwrapLPs')
 
 // Ethereum Vaults
 const ethCallVault = '0x9014f8E90423766343Ed4fe41668563526dF6715'
 const ethPutVault = '0x6d2Cdb589BE6037Df1AeA5dC433829aD5aF30013'
 const wbtcCallVault = '0x60a4422B6B52aEF50647c67F29D6a7e6DAc3CCBC'
+
+// Ethereum - Wheel
+const synWethBi = '0x3567e2A6E161f3623307Aa4e59ceab6dEFf6291f'
 
 const lunaPutVault = '0x49d8cde90cefdd4f8568f7d895e686fdb76b146e'
 const algoPutVault = '0xC2DD9C7F526C7465D14bbBb25991DaB35f8Ea2B4'
@@ -62,57 +66,78 @@ const indexUST_LUNA_2wk_b = "0x112AdEC687FA605CE3221943C301Ed99B7C33Ed7"
 //Aurora Vaults
 const nearCallVault = '0xfc7F11Bb0d97d9db1f701eEA0fDE611536F1EB5F'
 
+//cronos vaults
+const cronosCallVault = '0x99F05418967d3596CAfd260913b682Fd9b0CBB40'
+
+
 //Boba Vaults
 const bobaCallVault = '0x5a9f1D95C59365613B4224e690Bb4971DD246142'
 const bobaPutVault = '0xff5fe7909fc4d0d6643f1e8be8cba72610d0b485'
 
 //Arbitrum Vaults
 const arbCallVault = '0x0833EC3262Dcc417D88f85Ed5E1EBAf768080f41'
+const arbPutVault = '0xf94ea5B18401821BE07FBfF535B8211B061A7F70'
+const ethCallVaultArb = '0x1D1CD4abe0F2AF9d79b5e3149BF4A503f97C1EAd'
+const ethPutVaulArb = '0xA8459eC6DF0D9a61058C43a308dD8A2CEc9d550E'
+const aArb = '0x116a7f52556a57F807CEACe228242C3c91D2C7E5'
+const aUsdc = '0xBEe683e6e5CE1e7Ea07c6f11DF240AcD92c33632'
+
+// Polygon zkEVM vaults
+const stMaticCallVault = '0x7bF3c7C23501EA3E09B237D6F8AdcB7Ea3CeF41C'
 
 // Ethereum Assets
-const weth = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
-const usdc = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
-const wbtc = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599'
+const weth = ADDRESSES.ethereum.WETH
+const usdc = ADDRESSES.ethereum.USDC
+const wbtc = ADDRESSES.ethereum.WBTC
 const ust = '0xa693b19d2931d498c5b318df961919bb4aee87a5'
 const tUSDC = '0x9f238fae3d1f1982716f136836fc2c0d1c2928ab'
 const tAlgo = '0x0354762a3c01730d07d2f7098365d64dc81b565d'
 const bit = '0x1a4b46696b2bb4794eb3d4c26f1c55f9170fa4c5'
 
 // Avalanche Assets
-const wavax = '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7'
-const usdce = '0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664'
-const usdc_avax = '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E'
+const wavax = ADDRESSES.avax.WAVAX
+const usdce = ADDRESSES.avax.USDC_e
+const usdc_avax = ADDRESSES.avax.USDC
 
 // Fantom Assets
-const wftm = '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83'
-const fusdc = '0x04068da6c83afcfa0e13ba15a6696662335d5b75'
+const wftm = ADDRESSES.fantom.WFTM
+const fusdc = ADDRESSES.fantom.USDC
 
 // Binance Smart Chain Assets
-const busd = '0xe9e7cea3dedca5984780bafc599bd69add087d56'
+const busd = ADDRESSES.bsc.BUSD
 const ada = '0x3ee2200efb3400fabb9aacf31297cbdd1d435d47'
 const bch = '0x8ff795a6f4d97e7887c79bea79aba5cc76444adf'
-const wbnb = '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
+const wbnb = ADDRESSES.bsc.WBNB
 const woo = '0x4691937a7508860F876c9c0a2a617E7d9E945D4B'
 
 // Polygon Assets
-const wmatic = '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270'
-const pousdc = '0x2791bca1f2de4661ed88a30c99a7a9449aa84174'
+const wmatic = ADDRESSES.polygon.WMATIC_2
+const pousdc = ADDRESSES.polygon.USDC
 const ust_matic_wormhole = '0xE6469Ba6D2fD6130788E0eA9C0a0515900563b59'
 
 // Aurora Assets
-const near = '0xC42C30aC6Cc15faC9bD938618BcaA1a1FaE8501d'
+const near = ADDRESSES.aurora.NEAR
 
 // Boba Assets
-let boba = '0xa18bF3994C0Cc6E3b63ac420308E5383f53120D7'
-const bobaUSDC = '0x66a2A913e447d6b4BF33EFbec43aAeF87890FBbc'
+let boba = ADDRESSES.boba.BOBA
+const bobaUSDC = ADDRESSES.boba.USDC
+
+// cronos assets
+const wcro = '0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23'
 
 // Arbitrum assets
-let arb = '0x912ce59144191c1204e64559fe8253a0e49e6548'
+const arb = ADDRESSES.arbitrum.ARB
+const usdc_arb = ADDRESSES.arbitrum.USDC_CIRCLE
+
+// Polygon zkEVM assets
+const stMatic = '0x83b874c1e09D316059d929da402dcB1A98e92082'
 
 module.exports = {
-  methodology: `Only the funds deposited by the users into our vaults are calculated as TVL.`,
+  methodology: `Funds deposited into Thetanuts Finance via the Basic Vaults, Lending Market, and AMM are calculated as TVL.`,
   hallmarks: [
-    [Math.floor(new Date('2022-09-30') / 1e3), 'Thetanuts migration V0 -> V1'],
+    [1646658000, 'Migration from v0 to v1'],
+    [1664460000, 'Migration from v1 to v2'],
+    [1702472400, 'Launch of Thetanuts Finance v3'],
   ],
 }
 
@@ -127,6 +152,8 @@ const config = {
       [tAlgo, algoCallVault,],
       [usdc, bitPutVault,],
       [bit, bitCallVault,],
+
+      [usdc, synWethBi,],
 
       [usdc, indexUSDC_BTC_1wk,],
       [usdc, indexUSDC_ETH_2wk_a,],
@@ -152,6 +179,11 @@ const config = {
   arbitrum: {
     tokensAndOwners: [
       [arb, arbCallVault,],
+      [usdc_arb, arbPutVault,],
+      [arb, ethCallVaultArb,],
+      [usdc_arb, ethPutVaulArb,],
+      [arb, aArb,],
+      [usdc_arb, aUsdc,],
     ]
   },
   fantom: {
@@ -196,6 +228,16 @@ const config = {
   aurora: {
     tokensAndOwners: [
       [near, nearCallVault,],
+    ]
+  },
+  cronos: {
+    tokensAndOwners: [
+      [wcro, cronosCallVault]
+    ]
+  },
+  polygon_zkevm: {
+    tokensAndOwners: [
+      [stMatic, stMaticCallVault,],
     ]
   },
 }

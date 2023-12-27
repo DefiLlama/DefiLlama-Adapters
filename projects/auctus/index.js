@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 /*==================================================
   Modules
   ==================================================*/
@@ -12,7 +13,7 @@
   const FACTORY = '0x176b98ab38d1aE8fF3F30bF07f9B93E26F559C17';
   const POOLS_FACTORY = '0xe28520DDB1b419Ac37eCDBB2c0F97c8Cf079CCC3';
   const VAULTS = '0x2Ce43b4570Ad9DEAb8CFE6258B42DB7301e3b6C0';
-  const ETHER_ADDRESS = '0x0000000000000000000000000000000000000000';
+  const ETHER_ADDRESS = ADDRESSES.null;
 
 /*==================================================
   TVL

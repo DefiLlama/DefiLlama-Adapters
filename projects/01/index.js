@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/solana')
 
 async function tvl() {
   const tokens = [
-    "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-    "So11111111111111111111111111111111111111112",
-    "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+    ADDRESSES.solana.USDC,
+    ADDRESSES.solana.SOL,
+    ADDRESSES.solana.USDT,
     "7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs",
     "9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E",
     "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So",

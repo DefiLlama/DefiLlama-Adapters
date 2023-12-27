@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk")
 const abi = require('./abi.json')
 
-const HEX = "0x2b591e99afe9f32eaa6214f7b7629768c40eeb39"
+const HEX = ADDRESSES.pulse.HEX
 async function staking(timestamp, block){
     const globalInfo = await sdk.api.abi.call({
         target: HEX,

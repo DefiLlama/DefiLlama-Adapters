@@ -1,3 +1,4 @@
+const ADDRESSES = require('./coreAssets.json')
 const BigNumber = require("bignumber.js");
 const sdk = require("@defillama/sdk");
 
@@ -5,7 +6,7 @@ const { unwrapUniswapLPs } = require("./unwrapLPs");
 const getPairFactory = 'function getPair(address, address) view returns (address)'
 
 const { isLP } = require("./utils");
-const { getChainTransform, getFixBalances } = require("./portedTokens");
+const { getChainTransform, } = require("./portedTokens");
 
 async function getDexPadLpsCoreValue(
   block,
@@ -102,7 +103,7 @@ async function generateWhitelistedPairs(trackedTokens, factory, block, chain) {
     basePairs.forEach(pair => {
       if (pair.success) {
         const basePair = pair.output.toLowerCase();
-        if (basePair != "0x0000000000000000000000000000000000000000")
+        if (basePair != ADDRESSES.null)
           whitelistedBasePairs.add(basePair);
       }
     });
@@ -263,17 +264,12 @@ async function getLPsTrackedValue(
   );
   let formattedWhitelist = trackedTokens.map(addr => `${chain}:${addr}`);
 
-  // console.log("before", balances)
   balances = Object.keys(balances)
     .filter(balance => formattedWhitelist.includes(balance))
     .reduce((obj, balance) => {
       obj[balance] = balances[balance];
       return obj;
     }, {});
-    // console.log("after",balances)
-    if(chain === 'kava'){
-      return (await getFixBalances(chain))(balances)
-    }
   return balances;
 }
 

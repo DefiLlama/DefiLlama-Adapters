@@ -1,11 +1,12 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs")
 const { sumUnknownTokens } = require("../helper/unknownTokens")
 
 const FindoraStableCoins = {
-  BNB_BUSD: "0xE80EB4a234f718eDc5B76Bb442653827D20Ebb2d",
-  BNB_USDT: "0x93EDFa31D7ac69999E964DAC9c25Cd6402c75DB3",
-  ETHEREUM_USDC: "0x2e8079E0fE49626AF8716fC38aDEa6799065D7f7",
-  ETHEREUM_USDT: "0x0632baa26299C9972eD4D9AfFa3FD057A72252Ff",
+  BNB_BUSD: ADDRESSES.findora.BUSD_b,
+  BNB_USDT: ADDRESSES.findora.USDT_b,
+  ETHEREUM_USDC: ADDRESSES.findora.USDC_e,
+  ETHEREUM_USDT: ADDRESSES.findora.USDT_e,
 };
 
 const FutureSwapContracts = {

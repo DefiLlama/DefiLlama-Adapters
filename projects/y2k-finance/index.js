@@ -26,6 +26,7 @@ async function tvl(timestamp, _b, chainBlocks, { api }) {
 module.exports = {
   arbitrum: {
     tvl,
-    staking: sumTokensExport({ chain, owners: [], tokens: ['0x65c936f008BC34fE819bce9Fa5afD9dc2d49977f']})
+    // staking: sumTokensExport({ chain, owners: [], tokens: ['0x65c936f008BC34fE819bce9Fa5afD9dc2d49977f']}),
+    pool2: sumTokensExport({ chain, owners: ['0xaefd22d0153e69f3316dca9095e7279b3a2f8af2', '0xbDAA858Fd7b0DC05F8256330fAcB35de86283cA0',], tokens: ['0x569061e2d807881f4a33e1cbe1063bc614cb75a4']})
   }
 }

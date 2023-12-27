@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const abi = require("./abi.json");
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { staking } = require('../helper/staking')
@@ -5,20 +6,20 @@ const { staking } = require('../helper/staking')
 const antimatterStakingContract = "0xCB8429f22541E8F5cd8ea6c20BFFdcE7cDA65227";
 const dualInvestContract = "0x7E45149820Fa33B66DCD3fd57158A0E755A67a16";
 const dualInvestManagerAddress = "0x32275702f5A47Dcd89705c1ea4d47E99517b0e1a";
-const bscBTCContract = "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c";
-const bscUSDTContract = "0x55d398326f99059fF775485246999027B3197955";
-const bscETHContract = "0x2170Ed0880ac9A755fd29B2688956BD959F933F8";
-const kavaUSDTContract = "0xB44a9B6905aF7c801311e8F4E76932ee959c663C";
-const kavaBTCContract = "0xB44a9B6905aF7c801311e8F4E76932ee959c663C";
+const bscBTCContract = ADDRESSES.bsc.BTCB;
+const bscUSDTContract = ADDRESSES.bsc.USDT;
+const bscETHContract = ADDRESSES.bsc.ETH;
+const kavaUSDTContract = ADDRESSES.moonriver.USDT;
+const kavaBTCContract = ADDRESSES.moonriver.USDT;
 const kavaDualinvertContract = "0x626B5c394542960faa9495e64E812d17D5B605F9";
 
 const factory = "0x90183C741CC13195884B6E332Aa0ac1F7c1E67Fa";
 
 const usdTokens = {
-  bsc: '0xe9e7cea3dedca5984780bafc599bd69add087d56',
-  ethereum: '0xdac17f958d2ee523a2206206994597c13d831ec7',
-  arbitrum: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
-  avax: '0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664',
+  bsc: ADDRESSES.bsc.BUSD,
+  ethereum: ADDRESSES.ethereum.USDT,
+  arbitrum: ADDRESSES.arbitrum.USDT,
+  avax: ADDRESSES.avax.USDC_e,
 }
 
 const dualInvest = {
