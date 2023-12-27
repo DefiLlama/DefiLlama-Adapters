@@ -8,6 +8,7 @@ const config = {
   optimism: {},
   base: {},
   avax: {},
+  polygon: {},
 };
 
 async function tvl(_a, _b, _c, { api }) {
