@@ -6,8 +6,6 @@ async function tvl(timestamp, block, chainBlock, { api }) {
   const data = await api.call({ abi: abi.getAllPools, target: factoryContract })
   const ownerTokens = data.map(i => [[i.baseToken], i.pool])
   ownerTokens.push([[ADDRESSES.base.USDC, ADDRESSES.base.WETH], positionContract])
-
-  // Sum all tokens (including USDC and WETH) to calculate the TVL
   return api.sumTokens({ ownerTokens, });
 }
 
