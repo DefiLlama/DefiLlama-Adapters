@@ -12,7 +12,6 @@ module.exports = {
     [1687478400,"WONDER Staking Live"]
   ],
   wemix: {
-    tvl: () => ({}),
-    staking:staking([stakingContractDIOS, stakingContractGRAND],[wwemix, nullAddress]),
+    tvl: staking([stakingContractDIOS, stakingContractGRAND],[wwemix, nullAddress]),
   },
 };
