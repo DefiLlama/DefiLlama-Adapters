@@ -15,7 +15,6 @@ const DEFAULTS = {
   CORE_RPC: "https://rpc.coredao.org,https://rpc.ankr.com/core,https://1rpc.io/core,https://rpc-core.icecreamswap.com",
   BITGERT_RPC: "https://flux-rpc2.brisescan.com,https://mainnet-rpc.brisescan.com,https://chainrpc.com,https://serverrpc.com,https://flux-rpc.brisescan.com",
   LYRA_RPC: "https://rpc.lyra.finance",
-  NOVA_RPC: "https://connect.novanetwork.io",
   BITCHAIN_RPC: "https://rpc.bitchain.biz/"
 }
 
