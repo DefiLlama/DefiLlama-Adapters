@@ -168,7 +168,6 @@ async function liquidity(api, iziswap, owner) {
   })
 
   let poolList = await Promise.all(pools);
-
   let state = await api.multiCall({
     abi: abi.state,
     calls: poolList.map((pool) => ({
