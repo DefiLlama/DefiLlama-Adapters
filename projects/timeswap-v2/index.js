@@ -70,6 +70,7 @@ const config = {
   },
   ethereum: {
     factory: "0xcf0aca5c5b7e1bF63514D362243b6c50d5761FE8",
+    newFactory: "0x17385e95cb74A20150E4fA092Aa72D57330896C4",
     fromBlock: 16778358,
   },
   arbitrum: {
@@ -89,7 +90,11 @@ const config = {
   base: {
     factory: "0x406d3Dfcbe20b642c2262b29b960822975371502",
     fromBlock: 2493999,
-  }
+  },
+  optimism: {
+    factory: "0x406d3Dfcbe20b642c2262b29b960822975371502",
+    fromBlock: 112818437,
+  },
 };
 
 module.exports = {};

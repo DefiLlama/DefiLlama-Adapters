@@ -50,6 +50,7 @@ const ALPTokens = [
   TOKEN_BTC,
   TOKEN_BNB,
   TOKEN_HAY,
+  ADDRESSES.bsc.ETH,
   TOKEN_CAKE,
 ]
 
@@ -69,39 +70,65 @@ module.exports = {
     pool2: pool2s([stakingContract, stakingContractV2], [poolContract, poolContractV2], "bsc"),
   },
   ethereum: {
-    tvl: sumTokensExport({ owner: '0xb40EEd68d7d6B3b6d6f4E93DE6239B7C53EFc786', tokens: [
-      nullAddress,
-      ADDRESSES.ethereum.USDT,
-      ADDRESSES.ethereum.USDC,
-      ADDRESSES.ethereum.BUSD,
-      '0xf650c3d88d12db855b8bf7d11be6c55a4e07dcc9',
-    ]})
+    tvl: sumTokensExport({
+      owner: '0xb40EEd68d7d6B3b6d6f4E93DE6239B7C53EFc786', tokens: [
+        nullAddress,
+        ADDRESSES.ethereum.USDT,
+        ADDRESSES.ethereum.USDC,
+        ADDRESSES.ethereum.BUSD,
+        '0xf650c3d88d12db855b8bf7d11be6c55a4e07dcc9',
+      ]
+    })
   },
   arbitrum: {
-    tvl: sumTokensExport({ owners: 
-      [
-        '0xbad4ccc91ef0dfffbcab1402c519601fbaf244ef',
-        '0xb3879e95a4b8e3ee570c232b19d520821f540e48'
-    ], tokens: [
-      nullAddress,
-      ADDRESSES.arbitrum.USDC,
-      ADDRESSES.arbitrum.USDT,
-      ADDRESSES.arbitrum.DAI,
-      ADDRESSES.arbitrum.WBTC,
-      ADDRESSES.arbitrum.WETH,
-    ]})
+    tvl: sumTokensExport({
+      owners:
+        [
+          '0xbad4ccc91ef0dfffbcab1402c519601fbaf244ef',
+          '0xb3879e95a4b8e3ee570c232b19d520821f540e48'
+        ], tokens: [
+          nullAddress,
+          ADDRESSES.arbitrum.USDC,
+          ADDRESSES.arbitrum.USDT,
+          ADDRESSES.arbitrum.DAI,
+          ADDRESSES.arbitrum.WBTC,
+          ADDRESSES.arbitrum.WETH,
+        ]
+    })
   },
   era: {
-    tvl: sumTokensExport({ owner: '0xD6f4e33063C881cE9a98e07E13673B92a637D908', tokens: [
-      nullAddress,
-      ADDRESSES.era.USDC,
-    ]})
+    tvl: sumTokensExport({
+      owner: '0xD6f4e33063C881cE9a98e07E13673B92a637D908', tokens: [
+        nullAddress,
+        ADDRESSES.era.USDC,
+      ]
+    })
   },
   manta: {
-    tvl: sumTokensExport({ owner: '0xbad4ccc91ef0dfffbcab1402c519601fbaf244ef', tokens: [
-      nullAddress,
-      ADDRESSES.manta.USDC,
-      ADDRESSES.manta.USDT,
-    ]})
+    tvl: sumTokensExport({
+      owner: '0xbad4ccc91ef0dfffbcab1402c519601fbaf244ef', tokens: [
+        nullAddress,
+        ADDRESSES.manta.USDC,
+        ADDRESSES.manta.USDT,
+      ]
+    })
+  },
+  op_bnb: {
+    tvl: sumTokensExport({
+      owner: '0x5A5454A6030FB50ceb3eb78977D140198A27be5e', tokens: [
+        nullAddress,
+        ADDRESSES.op_bnb.USDC,
+        ADDRESSES.op_bnb.WBNB,
+      ]
+    })
+  },
+  base: {
+    tvl: sumTokensExport({
+      owner: '0x9D93e5B2364070bC9837e91833F162430246DD57', tokens: [
+        nullAddress,
+        ADDRESSES.base.USDbC,
+        ADDRESSES.base.WETH,
+      ]
+    })
   },
 };

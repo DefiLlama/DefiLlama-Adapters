@@ -8,6 +8,7 @@ async function fetch() {
 
 module.exports = {
   timetravel: false,
+  doublecounted: true,
   methodology:
     "The displayed value represents the Total Value Locked (TVL) in USD of all assets secured within the davincigraph token locker smart contracts, accessible at https://davincigraph.io/devs/locks/contracts",
   hedera: {
