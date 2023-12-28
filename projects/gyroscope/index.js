@@ -1,6 +1,11 @@
 const { getLogs } = require("../helper/cache/getLogs");
 module.exports.doublecounted = true;
 
+const BOOTSTRAPPING_POOL_ID =
+  "0x2191df821c198600499aa1f0031b1a7514d7a7d9000200000000000000000639";
+
+const GYD_ADDRESS = "0xe07f9d810a48ab5c3c914ba3ca53af14e4491e8a";
+
 async function tvl(_, _b, _cb, { api }) {
   const pools = config[api.chain];
 
@@ -18,6 +23,9 @@ async function tvl(_, _b, _cb, { api }) {
       abi: "function getPoolId() view returns (bytes32)",
       calls: pools,
     });
+
+    const bootstrappingPoolIndex = poolIds.indexOf(BOOTSTRAPPING_POOL_ID);
+
     const vaults = await api.multiCall({
       abi: "address:getVault",
       calls: pools,
@@ -27,6 +35,19 @@ async function tvl(_, _b, _cb, { api }) {
       abi: "function getPoolTokens(bytes32 poolId) view returns (address[] tokens, uint256[] balances, uint256 lastChangeBlock)",
       calls: poolIds.map((v, i) => ({ target: vaults[i], params: v })),
     });
+
+    // For bootstrapping pool, only add non-GYD assets to TVL (sDAI)
+    if (bootstrappingPoolIndex > -1) {
+      const bootstrappingPoolData = data.splice(bootstrappingPoolIndex, 1);
+      const filteredTokens = bootstrappingPoolData[0].tokens.filter(
+        (token) => token.toLowerCase() !== GYD_ADDRESS
+      );
+      const filteredBalances = bootstrappingPoolData[0].balances.filter(
+        (_, index) =>
+          bootstrappingPoolData[0].tokens[index].toLowerCase() !== GYD_ADDRESS
+      );
+      api.addTokens(filteredTokens, filteredBalances);
+    }
 
     data.forEach((i) => api.addTokens(i.tokens, i.balances));
   });
