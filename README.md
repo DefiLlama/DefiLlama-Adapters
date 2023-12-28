@@ -26,7 +26,12 @@ If you have any suggestions, want to contribute or want to chat, please join [ou
 
 ## Testing adapters
 ```
-node test.js projects/pangolin/index.js
+node test-magma.js projects/magma/index.js
+```
+or
+
+```
+npm run tvl
 ```
 
 ## Changing RPC providers

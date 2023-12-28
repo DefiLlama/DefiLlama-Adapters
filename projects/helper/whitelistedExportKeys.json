@@ -16,5 +16,7 @@
   "deadFrom",
   "broken",
   "ownTokens",
-  "vesting"
+  "vesting",
+  "stabilityPool",
+  "borrowing"
 ]

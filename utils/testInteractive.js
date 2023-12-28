@@ -53,7 +53,8 @@ async function runAdapter(adapterPath, debugMode) {
 
     const startTime = Date.now()
 
-    const child = childProcess.fork(__dirname +'/../test.js', [adapterPath], {
+    console.debug(__dirname +'/../test.js')
+    const child = childProcess.fork(__dirname +'/../test-magma.js', [adapterPath], {
       env,
     })
 

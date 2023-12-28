@@ -1070,7 +1070,8 @@
     "BNB_bsc": "0x97e6c48867fdc391a8dfe9d169ecd005d1d90283",
     "ZOOM": "0x86702a7f8898b172de396eb304d7d81207127915",
     "WMATIC": "0x8e66c0d6b70c0b23d39f4b21a1eac52bba8ed89a",
-    "CIOTX": "0x99b2b0efb56e62e36960c20cd5ca8ec6abd5557a"
+    "CIOTX": "0x99b2b0efb56e62e36960c20cd5ca8ec6abd5557a",
+    "WEN": "0x20143c45c2ce7984799079f256d8a68a918eeee6"
   },
   "ronin": {
     "WRON": "0xe514d9deb7966c8be0ca922de8a064264ea6bcd4",
