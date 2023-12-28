@@ -27,6 +27,7 @@ const ENV_KEYS = [
   'SUMMER_HISTORY_ENDPOINT',
   'SUMMER_AJNA_ENDPOINT',
   'SUMMER_CONFIRMED_VAULTS_ENDPOINT',
+  'UNISAT_AUTH'
 ]
 
 Object.keys(DEFAULTS).forEach(i => {
@@ -41,5 +42,6 @@ function getEnv(key) {
 }
 
 module.exports = {
+  ENV_KEYS,
   getEnv,
 }
