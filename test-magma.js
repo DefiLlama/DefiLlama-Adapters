@@ -176,11 +176,11 @@ sdk.api.abi.call = async (...args) => {
         if (tvlType === "tvl" || tvlType === "fetch") {
           keyToAddChainBalances = "tvl";
         }
-        // if (chainTvlsToAdd[keyToAddChainBalances] === undefined) {
-        //   chainTvlsToAdd[keyToAddChainBalances] = [storedKey];
-        // } else {
-        //   chainTvlsToAdd[keyToAddChainBalances].push(storedKey);
-        // }
+        if (chainTvlsToAdd[keyToAddChainBalances] === undefined) {
+          chainTvlsToAdd[keyToAddChainBalances] = [storedKey];
+        } else {
+          chainTvlsToAdd[keyToAddChainBalances].push(storedKey);
+        }
       })
     );
   });
@@ -234,13 +234,16 @@ sdk.api.abi.call = async (...args) => {
   });
 
   console.log(`------ TVL ------`);
+  let sum = 0
   Object.entries(usdTvls).forEach(([chain, usdTvl]) => {
-    // if (chain !== "tvl") {
-    console.log(chain.padEnd(25, " "), humanizeNumber(usdTvl));
-    // }
+    if (chain !== "tvl") {
+      console.log(chain.padEnd(25, " "), humanizeNumber(usdTvl));
+      sum += usdTvl;
+    }
   });
   // console.log("\ntotal".padEnd(25, " "), humanizeNumber(usdTvls.tvl), "\n");
-  console.log("\TOTAL".padEnd(25, " "), humanizeNumber(Object.values(usdTvls).reduce((a, b) => a + b)), "\n");
+  // console.log("\ntotal".padEnd(25, " "), humanizeNumber(Object.values(usdTvls).reduce((a, b) => a + b)), "\n");
+  console.log("\ntotal".padEnd(25, " "), humanizeNumber(sum), "\n");
 
   process.exit(0);
 })();

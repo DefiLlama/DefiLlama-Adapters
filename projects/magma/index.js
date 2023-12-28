@@ -45,9 +45,9 @@ module.exports = {
   timetravel: true,
   start: 1702360765,
   iotex: {
-    borrowing: tvl,
+    tvl,
     // staking: staking(STAKING_ADDRESS, LQTY_ADDRESS, "iotex")
-    stabilityPool: staking
+    staking
   }
 
 };
