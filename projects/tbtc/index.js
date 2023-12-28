@@ -1,9 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
 
-async function tvl(ts, block, _, { logArray }) {
+async function tvl(ts, block, _) {
   return {
-    [ADDRESSES.ethereum.tBTC]: (await sdk.api.erc20.totalSupply({ target: ADDRESSES.ethereum.tBTC, block, logArray })).output
+    [ADDRESSES.ethereum.tBTC]: (await sdk.api.erc20.totalSupply({ target: ADDRESSES.ethereum.tBTC, block })).output
   }
 }
 

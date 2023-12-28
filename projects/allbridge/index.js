@@ -37,7 +37,7 @@ const data = {
             {name: "usd-coin", address: ADDRESSES.avax.USDC_e, decimals: 6},
             {name: "tether", address: ADDRESSES.avax.USDT_e, decimals: 6},
             {name: "bitcoin", address: "0x50b7545627a5162F82A992c33b87aDc75187B218", decimals: 8},
-            {name: "dai", address: ADDRESSES.avax.DAI, decimals: 18}
+            {name: "apyswap", address: "0x4b0093a44802bD870FC20E811862875f0F1E5970", decimals: 18}
         ]
     },
     fantom: {
@@ -51,8 +51,6 @@ const data = {
             {name: "bitcoin", address: "0x321162Cd933E2Be498Cd2267a90534A804051b11", decimals: 8},
             {name: "ethereum", address: "0x74b23882a30290451A17c44f4F05243b6b58C76d", decimals: 18},
             {name: "usd-coin", address: ADDRESSES.fantom.USDC, decimals: 6},
-            {name: "dai", address: ADDRESSES.fantom.DAI, decimals: 18},
-            {name: "chainlink", address: "0xb3654dc3D10Ea7645f8319668E8F54d2574FBdC8", decimals: 18},
             {name: "fantom", address: NATIVE_ADDRESS, decimals: 18},
         ]
     },
@@ -84,7 +82,6 @@ const data = {
             {name: "matic-network", address: NATIVE_ADDRESS, decimals: 18},
             {name: "ethereum", address: ADDRESSES.polygon.WETH_1, decimals: 18},
             {name: "bitcoin", address: ADDRESSES.polygon.WBTC, decimals: 8},
-            {name: "dai", address: ADDRESSES.polygon.DAI, decimals: 18},
             {name: "apyswap", address: "0x14743E1c6f812154F7ecc980D890F0F5234103e7", decimals: 18},
         ]
     },
@@ -97,7 +94,6 @@ const data = {
         },
         tokens: [
             {name: "impossible-finance", address: "0xB0e1fc65C1a741b4662B813eB787d369b8614Af1", decimals: 18},
-            {name: "krown", address: "0x1446f3CEdf4d86a9399E49f7937766E6De2A3AAB", decimals: 18},
             {name: "binance-usd", address: ADDRESSES.bsc.BUSD, decimals: 18},
             {name: "investin", address: ADDRESSES.bsc.IVN, decimals: 18},
             {name: "tether", address: ADDRESSES.bsc.USDT, decimals: 18},
@@ -105,13 +101,9 @@ const data = {
             {name: "bitcoin", address: ADDRESSES.bsc.BTCB, decimals: 18},
             {name: "ethereum", address: ADDRESSES.bsc.ETH, decimals: 18},
             {name: "binancecoin", address: NATIVE_ADDRESS, decimals: 18},
-            {name: "uniswap", address: "0xBf5140A22578168FD562DCcF235E5D43A02ce9B1", decimals: 18},
-            {name: "chainlink", address: "0xF8A0BF9cF54Bb92F17374d9e9A321E6a111a51bD", decimals: 18},
-            {name: "dai", address: "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3", decimals: 18},
             {name: "hapi", address: "0xD9c2D319Cd7e6177336b0a9c93c21cb48d84Fb54", decimals: 18},
-            {name: "1million-nfts", address: "0xa4eF4b0B23C1fc81d3f9ecF93510e64f58A4A016", decimals: 18},
             {name: "apyswap", address: "0x37dfACfaeDA801437Ff648A1559d73f4C40aAcb7", decimals: 18},
-            {name: "hedget", address: "0xC7d8D35EBA58a0935ff2D5a33Df105DD9f071731", decimals: 6},
+            {name: "solo-coin", address: "0xc2c28b58db223DA89b567A0A98197Fc17C115148", decimals: 15},
         ]
     },
     ethereum: {
@@ -119,22 +111,14 @@ const data = {
         tokens: [
             {name: "apyswap", address: "0xf7413489c474ca4399eeE604716c72879Eea3615", decimals: 18},
             {name: "hapi", address: "0xD9c2D319Cd7e6177336b0a9c93c21cb48d84Fb54", decimals: 18},
-            {name: "hedget", address: "0x7968bc6a03017eA2de509AAA816F163Db0f35148", decimals: 6},
-            {name: "1million-nfts", address: "0xa4eF4b0B23C1fc81d3f9ecF93510e64f58A4A016", decimals: 18},
-            // {name: "allbridge", address: "0xa11bD36801d8fa4448F0ac4ea7A62e3634cE8C7C", decimals: 18},
             {name: "ariadne", address: "0xb1c9bc94aCd2fAE6aABf4ffae4429B93512a81D2", decimals: 18},
-            {name: "cyberfi", address: "0x63b4f3e3fa4e438698CE330e365E831F7cCD1eF4", decimals: 18},
             {name: "ethereum", address: NATIVE_ADDRESS, decimals: 18},
             {name: "usd-coin", address: ADDRESSES.ethereum.USDC, decimals: 6},
             {name: "tether", address: ADDRESSES.ethereum.USDT, decimals: 6},
             {name: "ftx-token", address: "0x50D1c9771902476076eCFc8B2A83Ad6b9355a4c9", decimals: 18},
-            {name: "dai", address: ADDRESSES.ethereum.DAI, decimals: 18},
-            {name: "bitcoin", address: ADDRESSES.ethereum.WBTC, decimals: 8},
             {name: "magic-internet-money", address: "0x99D8a9C45b2ecA8864373A26D1459e3Dff1e17F3", decimals: 18},
             {name: "fei-usd", address: "0x956F47F50A910163D8BF957Cf5846D573E7f87CA", decimals: 18},
             {name: "thorstarter", address: "0x69fa0feE221AD11012BAb0FdB45d444D3D2Ce71c", decimals: 18},
-            {name: "uniswap", address: ADDRESSES.ethereum.UNI, decimals: 18},
-            {name: "chainlink", address: ADDRESSES.ethereum.LINK, decimals: 18},
             {name: "smartpad", address: "0x5067006f830224960fb419d7f25a3a53e9919bb0", decimals: 18},
         ]
     },
@@ -171,6 +155,8 @@ const solanaData = {
     },
     tokens: [
         {name: "apyswap", tokenAccount: '8fdkYq4XWb1LfkNcAByZUHspyvasyqH7CmFBCkoqSK5d'},
+        {name: "genopets", tokenAccount: 'Cko5gjsiFMaqoBFF7bEUZZ7neqNtJd7VJpYvfBcxYjQX'},
+        {name: "mimatic", tokenAccount: '3xxvGGE3StCEHwJbrYXWv6jsYgTbEWhcCN166Bx8kfJL'},
         {name: "solana", tokenAccount: 'HHC3niNsTB3hNN1kZH9BHMLiwLvCSegKBLu82tAT2iG8'},
         {name: "usd-coin", tokenAccount: 'AxsSzB2JvyHZr6uDjV3Prmak2JEqYUoaSQh9rPMSUvf2'},
         {name: "saber", tokenAccount: '7KkMhrF9Hv7dfaX5xXFtTTrfJfVjHYZ5ymwAuXVgJ6Kf'},
@@ -205,11 +191,11 @@ const nearData = {
 const toNumber = (decimals, n) => BigNumber(n/(10 ** decimals)).toFixed(0)
 
 function getTVLFunction(chain) {
-    return async function tvl(timestamp, ethBlock, {[chain]: block }, { logArray }) {
+    return async function tvl(timestamp, ethBlock, {[chain]: block }) {
         const balances = {}
         const chainData = data[chain];
         const tokens = chainData.tokens.map(i => i.address)
-        return sumTokens2({ chain, block, tokens, owner: chainData.contractAddress, logArray })
+        return sumTokens2({ chain, block, tokens, owner: chainData.contractAddress })
     }
 }
 
@@ -256,7 +242,7 @@ async function nearStaking() {
 }
 
 module.exports={
-    methodology: "All tokens locked in Allbridge contracts.",
+    methodology: "All tokens locked in Allbridge Classic contracts.",
     timetravel: false,
     solana: {
         tvl: solanaTvl,

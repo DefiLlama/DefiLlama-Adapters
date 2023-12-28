@@ -216,7 +216,7 @@ module.exports = {
          ADDRESSES.tron.USDT,
        ],
        holders: [
-         'TGsN2VVJRXLbNe33QbWeaMtpb6xxC7SUeq', // portal v2
+         'TSzujXog95iHUoYBHCJtXK1XFKYjJwN7Vr', // portal v2
        ]
      },
      {

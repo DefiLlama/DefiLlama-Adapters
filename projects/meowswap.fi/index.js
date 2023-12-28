@@ -1,8 +1,8 @@
-const { default: axios } = require('axios');
-const { transformDexBalances } = require('../helper/portedTokens')
+const { transformDexBalances } = require('../helper/portedTokens');
+const { post } = require('../helper/http');
 async function tvl() {
   // addr1w9a3urry4uuwjp2hjawlqfu9lqgvzead3mz3pt7kle5rwng6gu8yl
-  const Pairs = (await axios.post('https://api.meowswap.fi/?method=Info.Pairs', { "jsonrpc": "2.0", "method": "Info.Pairs", "id": 3, "params": {} })).data.result.data
+  const Pairs = (await post('https://api.meowswap.fi/?method=Info.Pairs', { "jsonrpc": "2.0", "method": "Info.Pairs", "id": 3, "params": {} })).result.data
 
   let totalLiquid = 0;
   const data = []

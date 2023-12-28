@@ -6,6 +6,9 @@ const ethCallVault = '0x9014f8E90423766343Ed4fe41668563526dF6715'
 const ethPutVault = '0x6d2Cdb589BE6037Df1AeA5dC433829aD5aF30013'
 const wbtcCallVault = '0x60a4422B6B52aEF50647c67F29D6a7e6DAc3CCBC'
 
+// Ethereum - Wheel
+const synWethBi = '0x3567e2A6E161f3623307Aa4e59ceab6dEFf6291f'
+
 const lunaPutVault = '0x49d8cde90cefdd4f8568f7d895e686fdb76b146e'
 const algoPutVault = '0xC2DD9C7F526C7465D14bbBb25991DaB35f8Ea2B4'
 const algoCallVault = '0xb8b5A6E1F300b023e9CdCa31AA94B0D66badd982'
@@ -63,18 +66,24 @@ const indexUST_LUNA_2wk_b = "0x112AdEC687FA605CE3221943C301Ed99B7C33Ed7"
 //Aurora Vaults
 const nearCallVault = '0xfc7F11Bb0d97d9db1f701eEA0fDE611536F1EB5F'
 
+//cronos vaults
+const cronosCallVault = '0x99F05418967d3596CAfd260913b682Fd9b0CBB40'
+
+
 //Boba Vaults
 const bobaCallVault = '0x5a9f1D95C59365613B4224e690Bb4971DD246142'
 const bobaPutVault = '0xff5fe7909fc4d0d6643f1e8be8cba72610d0b485'
 
 //Arbitrum Vaults
 const arbCallVault = '0x0833EC3262Dcc417D88f85Ed5E1EBAf768080f41'
+const arbPutVault = '0xf94ea5B18401821BE07FBfF535B8211B061A7F70'
+const ethCallVaultArb = '0x1D1CD4abe0F2AF9d79b5e3149BF4A503f97C1EAd'
+const ethPutVaulArb = '0xA8459eC6DF0D9a61058C43a308dD8A2CEc9d550E'
+const aArb = '0x116a7f52556a57F807CEACe228242C3c91D2C7E5'
+const aUsdc = '0xBEe683e6e5CE1e7Ea07c6f11DF240AcD92c33632'
 
-//zkEVM vaults
+// Polygon zkEVM vaults
 const stMaticCallVault = '0x7bF3c7C23501EA3E09B237D6F8AdcB7Ea3CeF41C'
-
-//cronos vaults
-const cronosCallVault = '0x99F05418967d3596CAfd260913b682Fd9b0CBB40'
 
 // Ethereum Assets
 const weth = ADDRESSES.ethereum.WETH
@@ -113,19 +122,22 @@ const near = ADDRESSES.aurora.NEAR
 let boba = ADDRESSES.boba.BOBA
 const bobaUSDC = ADDRESSES.boba.USDC
 
-// Arbitrum assets
-let arb = ADDRESSES.arbitrum.ARB
-
-// zkEVM assets
-const stMatic = '0x83b874c1e09D316059d929da402dcB1A98e92082';
-
 // cronos assets
 const wcro = '0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23'
 
+// Arbitrum assets
+const arb = ADDRESSES.arbitrum.ARB
+const usdc_arb = ADDRESSES.arbitrum.USDC_CIRCLE
+
+// Polygon zkEVM assets
+const stMatic = '0x83b874c1e09D316059d929da402dcB1A98e92082'
+
 module.exports = {
-  methodology: `Only the funds deposited by the users into our vaults are calculated as TVL.`,
+  methodology: `Funds deposited into Thetanuts Finance via the Basic Vaults, Lending Market, and AMM are calculated as TVL.`,
   hallmarks: [
-    [Math.floor(new Date('2022-09-30') / 1e3), 'Thetanuts migration V0 -> V1'],
+    [1646658000, 'Migration from v0 to v1'],
+    [1664460000, 'Migration from v1 to v2'],
+    [1702472400, 'Launch of Thetanuts Finance v3'],
   ],
 }
 
@@ -140,6 +152,8 @@ const config = {
       [tAlgo, algoCallVault,],
       [usdc, bitPutVault,],
       [bit, bitCallVault,],
+
+      [usdc, synWethBi,],
 
       [usdc, indexUSDC_BTC_1wk,],
       [usdc, indexUSDC_ETH_2wk_a,],
@@ -165,6 +179,11 @@ const config = {
   arbitrum: {
     tokensAndOwners: [
       [arb, arbCallVault,],
+      [usdc_arb, arbPutVault,],
+      [arb, ethCallVaultArb,],
+      [usdc_arb, ethPutVaulArb,],
+      [arb, aArb,],
+      [usdc_arb, aUsdc,],
     ]
   },
   fantom: {
@@ -211,16 +230,16 @@ const config = {
       [near, nearCallVault,],
     ]
   },
+  cronos: {
+    tokensAndOwners: [
+      [wcro, cronosCallVault]
+    ]
+  },
   polygon_zkevm: {
     tokensAndOwners: [
       [stMatic, stMaticCallVault,],
     ]
   },
-  cronos: {
-    tokensAndOwners: [
-      [wcro, cronosCallVault]
-    ]
-  }
 }
 
 Object.keys(config).forEach(chain => {
