@@ -18,5 +18,5 @@ module.exports = {
 };
 
 Object.keys(ADMIN_ADDRESSES).forEach(chain => {
-  module.exports[chain] = { tvl }
+  module.exports[chain] = { tvl } 
 })
