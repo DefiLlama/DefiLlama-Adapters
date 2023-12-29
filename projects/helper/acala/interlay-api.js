@@ -72,9 +72,9 @@ function addTokenBalance({ balances, atomicAmount, chain, ccyArg }) {
         return;
     }
 
-    const amount = FixedPointNumber.fromInner(atomicAmount.toString(), ccy.decimals);
+    const amount = atomicAmount.toJSON().free / (10 ** ccy.decimals)
 
-    return sdk.util.sumSingleBalance(balances, ccy.geckoId, amount.toNumber());
+    return sdk.util.sumSingleBalance(balances, ccy.geckoId, amount);
 }
 
 module.exports = {
