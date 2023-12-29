@@ -3,7 +3,7 @@ const { default: BigNumber } = require("bignumber.js");
 const { getConfig } = require("../helper/cache");
 const { cachedGraphQuery } = require("../helper/cache");
 const { sumTokens2, } = require("../helper/unwrapLPs");
-const { point2PoolPriceUndecimalSqrt, _getAmountY, _liquidity2AmountYAtPoint, _getAmountX, _liquidity2AmountXAtPoint, getAmounts } = require("./iziswap")
+const { getAmounts } = require("./iziswap")
 
 // The Graph
 const graphUrlList = {
@@ -104,12 +104,12 @@ async function mantleTvl(ts, _, _1, { api }) {
     api.add(klp["address"], amount)
   })
 
-  await iziswap(ts, _, _1, { api });
+  await iziswap(api);
 
   return api.getBalances()
 }
 
-async function iziswap(ts, _, _1, { api }) {
+async function iziswap(api) {
   let address = (await getConfig('solv-protocol/funds', addressUrl));
   let iziswapData = address[api.chain]["iziswap"];
 
@@ -156,18 +156,15 @@ async function liquidity(api, iziswap, owner) {
     }))
   })
 
-  let pools = [];
-  let tokenList = [];
-  poolMetas.forEach((poolMeta) => {
-    pools.push(api.call({
-      abi: abi.pool,
-      target: iziswap,
-      params: [poolMeta[0], poolMeta[1], poolMeta[2]]
-    }))
-    tokenList.push(poolMeta)
-  })
+  let tokenList = [...poolMetas]
 
-  let poolList = await Promise.all(pools);
+  let poolList = await api.multiCall({
+    abi: abi.pool,
+    target: iziswap,
+    calls: poolMetas.map((pool) => ({
+      params: [pool[0], pool[1], pool[2]]
+    }))
+  })
   let state = await api.multiCall({
     abi: abi.state,
     calls: poolList.map((pool) => ({
@@ -177,8 +174,8 @@ async function liquidity(api, iziswap, owner) {
 
   tokenList.forEach((token, index) => {
     const amounts = getAmounts(state[index], liquidities[index])
-    api.add(token[0], amounts.amountX.toNumber())
-    api.add(token[1], amounts.amountY.toNumber())
+    api.add(token[0], amounts.amountX)
+    api.add(token[1], amounts.amountY)
   })
 }
 
