@@ -169,6 +169,6 @@ const positions = async () => {
 
 module.exports = {
   linea: {
-    liquidations: positions,
+    liquidations: positions, 
   },
 };
