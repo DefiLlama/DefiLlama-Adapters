@@ -41,7 +41,10 @@ async function farmTvl(timestamp, ethblock, { [chain]: block }) {
 
 // farms where APS is one part of the pair
 async function pool2(timestamp, ethblock, { [chain]: block }) {
-  const tokens = []
+  const tokens = [
+    ['0xef24D5155818d4bD16AF0Cea1148A147eb620743', "0x3DA590b357Cf17a413ec8db70FeB02119AfE707f"], 
+    ['0x87E0E33558c8e8EAE3c1E9EB276e05574190b48a', "0x2de4bC38f012DC90478f570083d3Da45B05659A9"],
+  ]
   return sumUnknownTokens({ tokensAndOwners: tokens, chain, block, useDefaultCoreAssets: true, })
 }
 
