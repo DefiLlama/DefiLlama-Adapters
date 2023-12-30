@@ -9,8 +9,8 @@ const xviper = "0xe064a68994e9380250cfee3e8c0e2ac5c0924548";
 
 module.exports = {
   harmony: {
-    tvl: uniTvlExport(factory, 'harmony'),
-    staking: staking(xviper, viper, "harmony")
+    tvl: uniTvlExport(factory, 'harmony', true),
+    staking: staking(xviper, viper)
   },
   hallmarks:[
     [1655991120, "Horizon bridge Hack $100m"],

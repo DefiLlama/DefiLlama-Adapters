@@ -1,7 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens } = require('../helper/unwrapLPs')
 const { getTokenPrices } = require('../helper/unknownTokens')
-const { getFixBalances } = require('../helper/portedTokens')
 const { createIncrementArray } = require('../helper/utils')
 const masterChefABI = require('../helper/abis/masterchef.json')
 const abi = require('./abi')
@@ -21,7 +20,6 @@ async function getTVL(chainBlocks) {
   const balances = {}
   const pool2Balances = {}
   const stakeBalances = {}
-  const fixBalances = await getFixBalances(chain)
   const block = chainBlocks[chain]
 
   // resolve masterchef
@@ -34,19 +32,16 @@ async function getTVL(chainBlocks) {
   } = await getTokenPrices({ block, chain, lps: pools, 
     useDefaultCoreAssets: true, })
   await updateBalances(pool2Balances)
-  await fixBalances(pool2Balances)
 
 
   // resolve pool2
   await sumTokens(stakeBalances, [[ORU, STAKE_ADDRESS]], block, chain)
   await updateBalances(stakeBalances)
-  await fixBalances(stakeBalances)
 
 
   // resolve bank
   await sumTokens(balances, [[USDC, BANK_SAFE], [ibUSDC, BANK_SAFE]], block, chain)
   await updateBalances(balances)
-  await fixBalances(balances)
 
   return {
     tvl: balances,

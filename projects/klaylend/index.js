@@ -10,3 +10,6 @@ module.exports = masterchefExports({
     nativeToken: kld,
     useDefaultCoreAssets: true,
 })
+module.exports.hallmarks = [
+    [1662336000, "Rug Pull"]
+]

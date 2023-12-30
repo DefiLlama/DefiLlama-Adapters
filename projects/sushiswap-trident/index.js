@@ -4,7 +4,7 @@ const modulesToExport = {};
 const trident_chains = [
   "polygon",
   "optimism",
-  "kava",
+  // "kava",
   "metis",
   "bittorrent",
   "arbitrum",
@@ -22,3 +22,5 @@ module.exports = {
   misrepresentedTokens: false,
   ...modulesToExport,
 };
+
+module.exports.kava = { tvl: () => 0}

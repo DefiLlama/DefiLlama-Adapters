@@ -19,7 +19,7 @@ module.exports = treasuryExports({
     tokens: [ 
         nullAddress,
         ADDRESSES.ethereum.DAI,//DAI
-        '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0',//LUSD
+        ADDRESSES.ethereum.LUSD,//LUSD
         ADDRESSES.ethereum.USDC,//usdc
         '0xc944E90C64B2c07662A292be6244BDf05Cda44a7',//grt
         '0x41545f8b9472D758bB669ed8EaEEEcD7a9C4Ec29',//fort

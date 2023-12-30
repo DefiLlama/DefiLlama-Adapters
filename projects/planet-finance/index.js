@@ -4,7 +4,6 @@ const abi = require("./abi.json");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { staking } = require("../helper/staking.js");
 const { getPoolInfo } = require("../helper/masterchef.js");
-const { transformBscAddress } = require("../helper/portedTokens");
 
 const replacements = {
   [ADDRESSES.bsc.beltBNB]:
@@ -21,7 +20,7 @@ const replacements = {
 async function tvl(timestamp, ethBlock, chainBlocks) {
   let balances = {};
   const lps = [];
-  const transform = await transformBscAddress();
+  const transform = i => `bsc:${i}`;
 
   const [poolInfo1, poolInfo2] = await Promise.all([
     await getPoolInfo(

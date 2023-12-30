@@ -1,9 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const farmUtils = require('./farm-utils');
-const BigNumber = require('bignumber.js');
-const url = "https://api.safedollar.fi/api/public/getAllCollateral";
-const utils = require('../helper/utils');
 /**
  * calculate collateral locked in safedollar 
  */
@@ -13,7 +10,7 @@ const Contracts = {
     address: ADDRESSES.polygon.USDC
   },{
     collateralAddress: "0xbd75b2a992ea83abed729e60022c9fe8fe539e54",
-    address: "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"
+    address: ADDRESSES.polygon.WMATIC_2
   }],
 
   boardRoom: "0x46C6a9b8E3243FB0dfB069119D5Fc6a75EEc8604",
@@ -48,9 +45,7 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
         block: chainBlocks['polygon'],
         params: [item.collateralAddress],
       }).then(x => {
-        balances[`polygon:${item.address}`] = new BigNumber(balances[`polygon:${item.address}`] || 0)
-          .plus(x.output || 0)
-          .toFixed(0);
+        sdk.util.sumSingleBalance(balances, `polygon:${item.address}`, x.output)
       })
   });
   const collateralBalance = await Promise.all(promises$)

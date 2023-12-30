@@ -76,13 +76,13 @@ const fixMapping = {
   parallel: {
     101: { geckoId: 'polkadot', decimals: 10, },
     108: { geckoId: 'acala', decimals: 12, },
-    104: { geckoId: 'acala-dollar', decimals: 12, },
+    // 104: { geckoId: 'acala-dollar', decimals: 12, },
     114: { geckoId: 'moonbeam', decimals: 18, },
   },
   heiko: {
     113: { geckoId: 'moonriver', decimals: 18, },
     100: { geckoId: 'kusama', decimals: 12, },
-    103: { geckoId: 'acala-dollar', decimals: 12, },
+    // 103: { geckoId: 'acala-dollar', decimals: 12, },
     102: { geckoId: 'tether', decimals: 6, },
     107: { geckoId: 'karura', decimals: 12, },
     119: { geckoId: 'kintsugi', decimals: 12, },
@@ -203,7 +203,7 @@ const geckoMappings = {
     token: {
       ACA: 'acala',
       DOT: 'polkadot',
-      AUSD: 'acala-dollar',
+      // AUSD: 'acala-dollar',
       // LDOT: 'liquid-staking-dot',  // coingecko delisted it
     },
     liquidCrowdloan: {

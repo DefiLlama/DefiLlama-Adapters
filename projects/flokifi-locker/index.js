@@ -16,7 +16,9 @@ const chains = {
   'kcc': 321,
   'cronos': 25,
   'evmos': 9001,
-  'dogechain': 2000
+  'op_bnb': 204,
+  'base': 8453,
+  'dogechain': 2000,
 }
 
 async function fetch(chainId) {

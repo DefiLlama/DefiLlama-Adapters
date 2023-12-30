@@ -12,9 +12,6 @@ const config = {
   polygon: '0x4Ac2735652944FE5C3dD95807287643502e5dE51',
 }
 
-module.exports = {
-};
-
 Object.keys(config).forEach(chain => {
   const owner = config[chain]
   module.exports[chain] = {

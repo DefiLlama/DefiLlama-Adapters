@@ -20,14 +20,16 @@ async function polyTvl(_, _b, _cb, { api }) {
     [tokens.polygon.DAI, "0xaee4d11a16B2bc65EDD6416Fb626EB404a6D65BD"],
     [tokens.polygon.DAI, "0xd7052EC0Fe1fe25b20B7D65F6f3d490fCE58804f"],
     [tokens.polygon.DAI, "0x91993f2101cc758D0dEB7279d41e880F7dEFe827"],
+    [tokens.polygon.DAI, "0xaee4d11a16B2bc65EDD6416Fb626EB404a6D65BD"],
   ];
   return sumTokens2({ api, tokensAndOwners });
 }
-async function arbiTvl(_, _b, cb) {
+async function arbiTvl(_, _b, cb, { api}) {
   const tokensAndOwners = [
     [tokens.arbitrum.DAI, "0xd85E038593d7A098614721EaE955EC2022B9B91B"],
+    [tokens.arbitrum.DAI, "0xcFa6ebD475d89dB04cAd5A756fff1cb2BC5bE33c"],
   ];
-  return sumTokens2({ chain: "arbitrum", tokensAndOwners });
+  return sumTokens2({ api, tokensAndOwners });
 }
 // node test.js projects/gainsNetwork.js
 module.exports = {
@@ -45,6 +47,6 @@ module.exports = {
   },
   arbitrum: {
     tvl: arbiTvl,
-    staking: staking('0x6b8d3c08072a020ac065c467ce922e3a36d3f9d6', '0x18c11fd286c5ec11c3b683caa813b77f5163a122'),
+    staking: staking(['0x6b8d3c08072a020ac065c467ce922e3a36d3f9d6', '0x7edDE7e5900633F698EaB0Dbc97DE640fC5dC015'], '0x18c11fd286c5ec11c3b683caa813b77f5163a122'),
   },
 };

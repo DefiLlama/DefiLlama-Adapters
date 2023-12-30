@@ -127,7 +127,7 @@ module.exports = {
         lpAddress: '0xc4e595acDD7d12feC385E5dA5D43160e8A0bAC0E', // SUSHI-WMATIC-WETH
         dhvToken: '0x5fCB9de282Af6122ce3518CDe28B7089c9F97b26',
         underlying: [
-          '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270', // WMATIC
+          ADDRESSES.polygon.WMATIC_2, // WMATIC
           ADDRESSES.polygon.WETH_1, // WETH
         ],
         poolId: 6
@@ -166,7 +166,7 @@ module.exports = {
         lpAddress: '0xf69e93771F11AECd8E554aA165C3Fe7fd811530c', // SUSHI-WMATIC-GHST
         dhvToken: '0x5fCB9de282Af6122ce3518CDe28B7089c9F97b26',
         underlying: [
-          '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270', // WMATIC
+          ADDRESSES.polygon.WMATIC_2, // WMATIC
           '0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7', // GHST
         ],
         poolId: 9

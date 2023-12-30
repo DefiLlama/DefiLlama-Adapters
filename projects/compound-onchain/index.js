@@ -57,7 +57,7 @@ const markets = [
     cToken: '0xB3319f5D18Bc0D84dD1b4825Dcde5d5f7266d407',
   },
   {
-    underlying: '0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359',
+    underlying: ADDRESSES.ethereum.SAI,
     symbol: 'SAI',
     decimals: 18,
     cToken: '0xF5DCe57282A584D2746FaF1593d3121Fcac444dC',

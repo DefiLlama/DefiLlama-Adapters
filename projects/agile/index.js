@@ -18,7 +18,6 @@ module.exports = {
     tvl: sdk.util.sumChainTvls([
       getUniTVL({
         factory: '0xb89E86701C4Fe4a22a16914e3b0Df53eA4BE771b',
-        chain: 'cronos',
         useDefaultCoreAssets: true,
       }),
       lendingMarket.tvl

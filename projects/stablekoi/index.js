@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens } = require("../helper/unwrapLPs");
-const { getFixBalances } = require("../helper/portedTokens");
 const { GraphQLClient, gql } = require("graphql-request");
 const abi = require("./abi.json");
 const sdk = require("@defillama/sdk");
@@ -12,27 +11,25 @@ const chain = "godwoken";
 
 async function tvl(ts, _block, chainBlocks) {
   const balances = {};
-  const fixBalances = await getFixBalances(chain);
   const tokensAndOwners = [];
   const poolInfo = await getConfig('stable-koi-v0', "https://app.stablekoi.com/lists/poollist.json");
   poolInfo.forEach((pool) => {
     pool.tokens.forEach((token) => tokensAndOwners.push([token, pool.address]));
   });
   await sumTokens(balances, tokensAndOwners, chainBlocks[chain], chain);
-  return fixBalances(balances);
+  return balances
 }
 
 async function tvl_v1(ts, _block, chainBlocks) {
   const balances = {};
   const chain = "godwoken_v1";
-  const fixBalances = await getFixBalances(chain);
   const tokensAndOwners = [];
   // const poolInfo = await get('https://app-v1.stablekoi.com/api/pools');
   v1Pools.forEach((pool) => {
     pool.tokens.forEach((token) => tokensAndOwners.push([token.address, pool.address]));
   });
   await sumTokens(balances, tokensAndOwners, chainBlocks[chain], chain);
-  return fixBalances(balances);
+  return balances
 }
 
 const yokaiInfoAPI =

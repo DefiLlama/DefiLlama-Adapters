@@ -20,7 +20,6 @@ async function tvl(_, _1, _2, { api }) {
     target: adminContract,
   });
   const balances = await sumTokens2({ api, tokens: collAddresses, owner: activePool });
-  console.log(balances)
   return balances
 }
 

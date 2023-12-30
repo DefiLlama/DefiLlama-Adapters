@@ -1,12 +1,11 @@
 const ADDRESSES = require('./helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
-const { getChainTransform,
-  getFixBalances } = require("./helper/portedTokens");
+const { getChainTransform, } = require("./helper/portedTokens");
 
 const minedTokens = {
   'cake': '0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82',
   'busd': ADDRESSES.bsc.BUSD,
-  'matic': '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+  'matic': ADDRESSES.polygon.WMATIC_2,
   'ftm': ADDRESSES.fantom.WFTM,
   'avax': ADDRESSES.avax.WAVAX,
   'usdc': ADDRESSES.polygon.USDC, // polygon
@@ -48,13 +47,11 @@ Object.keys(config).forEach(chain => {
     tvl: async (_, _b, { [chain]: block }) => {
       const balances = {}
       const transform = await getChainTransform(chain)
-      const fixBalances = await getFixBalances(chain)
       const calls = keys.map(i => ({ target: minerContracts[i] }))
       const { output: bals } = await sdk.api.abi.multiCall({
         abi, calls, chain, block,
       })
       bals.forEach((data, i) => sdk.util.sumSingleBalance(balances, transform(minedTokens[keys[i]]), data.output))
-      fixBalances(balances)
       return balances
     }
   }

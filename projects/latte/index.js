@@ -34,7 +34,7 @@ async function staking(timestamp, block, chainBlocks) {
 
 module.exports = {
   bsc: {
-    tvl: uniTvlExport(factory, 'bsc'),
+    tvl: uniTvlExport(factory, 'bsc', true),
     staking,
   },
 };

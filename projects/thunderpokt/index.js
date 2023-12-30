@@ -21,7 +21,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 
 module.exports = {
 	methodology: 'tPOKT is backed 1:1 by POKT. Total supply of tPOKT is pulled and multiplied by POKT price to get the TVL',
-	polygon: {
+	pokt: {
         tvl
     }
 }

@@ -3,7 +3,6 @@ const { getUniTVL } = require('../helper/unknownTokens')
 
 const dexTVL = getUniTVL({
     factory: '0x017603C8f29F7f6394737628a93c57ffBA1b7256',
-    chain: 'moonriver',
     useDefaultCoreAssets: true,
 })
 
@@ -15,6 +14,7 @@ module.exports = {
         tvl: dexTVL, 
     },
     clv: {
-        tvl: getUniTVL({ factory: '0x4531e148b55d89212E219F612A459fC65f657d7d', chain: 'clv', useDefaultCoreAssets: true }),
+        // tvl: getUniTVL({ factory: '0x4531e148b55d89212E219F612A459fC65f657d7d',  useDefaultCoreAssets: true }),
+        tvl: () => ({}),
       },
 }

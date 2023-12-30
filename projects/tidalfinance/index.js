@@ -1,7 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const { transformPolygonAddress } = require("../helper/portedTokens");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 
 // Contracts
@@ -17,7 +16,7 @@ const TIDAL = "0xB41EC2c036f8a42DA384DDE6ADA79884F8b84b26";
 const staking = async (timestamp, ethBlock, chainBlocks) => {
   const balances = {};
 
-  const transformAddress = await transformPolygonAddress();
+  const transformAddress = i => `polygon:${i}`;
 
   await sumTokensAndLPsSharedOwners(
     balances,

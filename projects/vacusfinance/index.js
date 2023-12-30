@@ -85,6 +85,9 @@ async function staking(_, _b, { [chain]: block }) {
 
 
 module.exports = {
+  hallmarks: [
+    [1665187200, "Rug Pull"]
+  ],
   misrepresentedTokens: true,
   avax: {
     tvl, 

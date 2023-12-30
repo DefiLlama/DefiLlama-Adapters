@@ -15,6 +15,7 @@ const utils = require('../helper/utils');
 const sdk = require('@defillama/sdk')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getConfig } = require('../helper/cache')
+const { formatUnits } = require('ethers/lib/utils')
 
 async function bridgeTvl(timestamp, assetMetadata, exchangeRates) {
     const baseAABalances = await Promise.all([
@@ -124,7 +125,40 @@ const totalTVLByEVMNetwork = async (_, _1, _2, { api }) => {
         tokensAndOwners.push([voteTokenAddress, governanceAddress ])
     });
 
-    return sumTokens2({ api, tokensAndOwners})
+    const sum = await sumTokens2({ api, tokensAndOwners });
+
+    return tryToGetUSDPriceOfUnknownTokens(sum, api);
+};
+
+const tryToGetUSDPriceOfUnknownTokens = async (sum, api) => {
+    const LINE_CONTRACT = '0x31f8d38df6514b6cc3c360ace3a2efa7496214f6';
+    const LINE_TOKEN_KEY = `kava:${LINE_CONTRACT}`;
+
+    const transformedSumObject = { ...sum };
+
+    if (LINE_TOKEN_KEY in sum) { // support LINE token on Kava Network
+
+        const ORACLE_CONTRACT_ADDRESS = await api.call({
+            abi: "address:oracle",
+            target: LINE_CONTRACT,
+        });
+
+        const totalLocked = BigInt(transformedSumObject[LINE_TOKEN_KEY]);
+
+        const linePriceInCollateral = await api.call({
+            abi: "uint256:getPrice",
+            target: ORACLE_CONTRACT_ADDRESS,
+        });
+
+        const priceInCollateral = formatUnits(totalLocked * BigInt(linePriceInCollateral), 36);
+        const exchangeRates = await fetchOswapExchangeRates();
+
+        transformedSumObject['usd'] = exchangeRates['GBYTE_USD'] * priceInCollateral;
+
+        delete transformedSumObject[LINE_TOKEN_KEY];
+    }
+
+    return transformedSumObject;
 }
 
 module.exports = {

@@ -1,0 +1,8 @@
+{
+  "totalRealisedLiquidity": "uint128:totalRealisedLiquidity",
+  "totalUnrealisedLiquidity": "uint256:calcUnrealisedDebt",
+  "vaultLength": "uint256:allVaultsLength",
+  "vaultAddress": "function allVaults(uint256) view returns (address)",
+  "assetData": "function generateAssetData() view returns (address[], uint256[], uint256[])",
+  "assetsInPricingModule": "function assetsInPricingModule(uint256) view returns (address)"
+}
