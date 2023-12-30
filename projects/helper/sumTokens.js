@@ -4,8 +4,9 @@ const { sumTokens2: sumTokensEVM, nullAddress, } = require('./unwrapLPs')
 const sdk = require('@defillama/sdk')
 
 const helpers = {
-  "tron": require("./chain/tron"),
   "eos": require("./chain/eos"),
+  "ton": require("./chain/ton"),
+  "ergo": require("./chain/ergo"),
   "elrond": require("./chain/elrond"),
   "cardano":require("./chain/cardano"),
   "algorand":require("./chain/algorand"),
@@ -20,6 +21,7 @@ const helpers = {
   "polkadot":require("./chain/polkadot"),
   "hedera":require("./chain/hbar"),
   "stacks":require("./chain/stacks"),
+  "starknet":require("./chain/starknet"),
 }
 
 const geckoMapping = {
@@ -41,11 +43,16 @@ async function getBalance(chain, account) {
 }
 
 function sumTokensExport(options) {
-  return async (_, _b, _cb, { api }) => sumTokens({ ...api, api, ...options})
+  return async (_, _b, _cb, { api }) => sumTokens(
+    { ...api, api, ...options }
+  )
 }
 
 async function sumTokens(options) {
-  let { chain, owner, owners = [], tokens = [], tokensAndOwners = [], blacklistedTokens = [], balances = {}, token, } = options 
+  let { chain, owner, owners = [], tokens = [], tokensAndOwners = [], blacklistedTokens = [], balances = {}, token, api } = options 
+  if (api && !specialChains.includes(chain)) {
+    chain = api.chain
+  }
 
   if (token) tokens = [token]
   if (owner) owners = [owner]

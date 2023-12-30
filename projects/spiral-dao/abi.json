@@ -1,0 +1,6 @@
+{
+  "poolCount": "function poolCount() external view returns (uint256)",
+  "poolInfo": "function poolInfo(uint256 poolId) external view returns (tuple(address target, address adapter, uint256 targetPoolId, uint256 rewardableDeposits) memory)",
+  "lockableToken": "function lockableToken(uint256) external view returns (address)"
+}
+

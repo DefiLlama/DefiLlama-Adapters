@@ -1,26 +1,44 @@
-const { request,  } = require('graphql-request');
-const { toUSDTBalances } = require('./helper/balances');
+const { cachedGraphQuery } = require('./helper/cache');
+
+const { sumTokens, queryAddresses } = require('./helper/chain/radixdlt');
+const { getConfig } = require('./helper/cache');
+const { get } = require('./helper/http');
+const sdk = require('@defillama/sdk');
 
 const graphUrl = 'https://api.thegraph.com/subgraphs/name/omegasyndicate/defiplaza';
-const graphQuery = `
-   query get_tvl($timestamp: Int) {
-      hourlies(first: 1, orderBy: date, orderDirection: desc, where:{date_lte: $timestamp}) {
-			totalValueLockedUSD
-		}
-   }
-`;
-
-async function tvl(timestamp, block) {
-   const { hourlies } = await request(graphUrl, graphQuery, {
-      timestamp,
-   });
-   const usdTvl = Number(hourlies[0].totalValueLockedUSD);
-
-   return toUSDTBalances(usdTvl);
-}
 
 module.exports = {
    ethereum: {
-      tvl,
+      tvl: async (timestamp, block, _, { api }) => {
+         const { pools } = await cachedGraphQuery('defiplaza-ethereum', graphUrl, '{  pools {    id    tokens {      id    }  }}');
+         const ownerTokens = pools.map((pool) => [pool.tokens.map((token) => token.id), pool.id]);
+         return api.sumTokens({ ownerTokens });
+      },
    },
+   radixdlt: {
+      tvl: async (_, _1, _2, { api }) => {
+         const pools = await getConfig('defiplaza-radixdlt', null, {
+            fetcher: async () => {
+               let items = [];
+               let cursor = 0;
+               do {
+                  const { data, next_cursor } = await get(`https://radix.defiplaza.net/api/pairs?cursor=${cursor}&limit=100`);
+                  items.push(...data);
+                  sdk.log(`Fetched ${items.length} pools`, data.length, next_cursor);
+                  cursor = next_cursor;
+               } while (items.length % 100 === 0 && cursor !== 0);
+
+               return items;
+            }
+         });
+         const data = await queryAddresses({ addresses: pools.map((i) => i.address) });
+         const owners = [];
+         data.forEach((c) => {
+            owners.push(c.details.state.fields.find((i) => i.field_name === 'base_pool').value);
+            owners.push(c.details.state.fields.find((i) => i.field_name === 'quote_pool').value);
+         });
+         return sumTokens({ owners, api });
+      },
+   },
+   timetravel: false,
 };

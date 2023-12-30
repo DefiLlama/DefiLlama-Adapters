@@ -4,10 +4,10 @@ const sdk = require('@defillama/sdk');
 const abi = require('./abis/compound.json');
 const { unwrapUniswapLPs } = require('./unwrapLPs');
 const { requery } = require("./requery");
-const { getChainTransform, getFixBalances, } = require('./portedTokens');
+const { getChainTransform, transformBalances } = require('./portedTokens');
 const { usdtAddress } = require('./balances');
 const agoraAbi = require("./../agora/abi.json");
-const { sumTokens2, nullAddress } = require('./unwrapLPs')
+const { sumTokens2, nullAddress, unwrapLPsAuto, } = require('./unwrapLPs')
 // ask comptroller for all markets array
 async function getAllCTokens(comptroller, block, chain, allMarketsAbi = abi['getAllMarkets']) {
   return (await sdk.api.abi.call({
@@ -109,7 +109,8 @@ function getCompoundV2Tvl(comptroller, chain, transformAdress,
   {
     fetchBalances = false,
     blacklistedTokens = [],
-    abis = {}
+    abis = {},
+    resolveLPs = true,
   } = {}) {
   abis = { ...abi, ...abis }
   blacklistedTokens = blacklistedTokens.map(i => i.toLowerCase())
@@ -160,17 +161,16 @@ function getCompoundV2Tvl(comptroller, chain, transformAdress,
         sdk.util.sumSingleBalance(balances, transformAdress(underlying), getCash.output)
       }
     });
-    if (["harmony", 'oasis', 'bsc', 'findora', 'dogechain', 'godwoken_v1', 'ethpow', 'cronos', 'kcc'].includes(chain)) {
-      const fixBalances = await getFixBalances(chain)
-      fixBalances(balances);
-    }
 
     if (comptroller == "0x92DcecEaF4c0fDA373899FEea00032E8E8Da58Da") {
       await unwrapPuffTokens(balances, lpPositions, block)
     } else if (lpPositions.length > 0) {
       await unwrapUniswapLPs(balances, lpPositions, block, chain, transformAdress)
     }
-    return balances;
+
+    if (resolveLPs) await unwrapLPsAuto({ balances, block, chain, abis})
+
+    return transformBalances(chain, balances);
   }
 }
 
@@ -266,25 +266,25 @@ function getCompoundUsdTvl(comptroller, chain, cether, borrowed, abis = {
   }
 }
 
-function compoundExports(comptroller, chain, cether, cetheEquivalent, transformAdressRaw, checkForLPTokens, { blacklistedTokens = [], fetchBalances, abis = {} } = {}) {
+function compoundExports(comptroller, chain, cether, cetheEquivalent, transformAdressRaw, checkForLPTokens, { blacklistedTokens = [], fetchBalances, abis = {}, resolveLPs=true } = {}) {
   if (cether !== undefined && cetheEquivalent === undefined) {
     throw new Error("You need to define the underlying for native cAsset")
   }
   return {
-    tvl: getCompoundV2Tvl(comptroller, chain, transformAdressRaw, cether, cetheEquivalent, false, checkForLPTokens, { blacklistedTokens, fetchBalances, abis }),
-    borrowed: getCompoundV2Tvl(comptroller, chain, transformAdressRaw, cether, cetheEquivalent, true, checkForLPTokens, { blacklistedTokens, fetchBalances, abis })
+    tvl: getCompoundV2Tvl(comptroller, chain, transformAdressRaw, cether, cetheEquivalent, false, checkForLPTokens, { blacklistedTokens, fetchBalances, abis, resolveLPs }),
+    borrowed: getCompoundV2Tvl(comptroller, chain, transformAdressRaw, cether, cetheEquivalent, true, checkForLPTokens, { blacklistedTokens, fetchBalances, abis, resolveLPs })
   }
 }
 
-function compoundExportsWithAsyncTransform(comptroller, chain, cether, cetheEquivalent, transformAdressConstructor) {
+function compoundExportsWithAsyncTransform(comptroller, chain, cether, cetheEquivalent, options) {
   return {
     tvl: async (...args) => {
       const transformAddress = await getChainTransform(chain)
-      return getCompoundV2Tvl(comptroller, chain, transformAddress, cether, cetheEquivalent)(...args)
+      return getCompoundV2Tvl(comptroller, chain, transformAddress, cether, cetheEquivalent, false, undefined, options)(...args)
     },
     borrowed: async (...args) => {
       const transformAddress = await getChainTransform(chain)
-      return getCompoundV2Tvl(comptroller, chain, transformAddress, cether, cetheEquivalent, true)(...args)
+      return getCompoundV2Tvl(comptroller, chain, transformAddress, cether, cetheEquivalent, true, undefined, options)(...args)
     },
   }
 }

@@ -33,7 +33,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
   const usdtEth = ADDRESSES.ethereum.USDT
   const usdtArbitrum = ADDRESSES.arbitrum.USDT
 
-  const fraxEth = "0x853d955aCEf822Db058eb8505911ED77F175b99e"
+  const fraxEth = ADDRESSES.ethereum.FRAX
   
   const usdcFantomBAMM = "0xEDC7905a491fF335685e2F2F1552541705138A3D"
   const daiFantomBAMM = "0x6d62d6Af9b82CDfA3A7d16601DDbCF8970634d22"
@@ -173,7 +173,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
   }
 
   async function liquityTvl(timestamp, block) {
-    if (block < lFirstBlock) return { '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0': '0' };
+    if (block < lFirstBlock) return { [ADDRESSES.ethereum.LUSD]: '0' };
 
     let totalBalance = new BigNumber(0);
 
@@ -202,7 +202,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
     }
 
     // all balance is lusd
-    return {'0x5f98805A4E8be255a32880FDeC7F6728C6568bA0' : totalBalance.toString(10)}
+    return {[ADDRESSES.ethereum.LUSD]: totalBalance.toString(10)}
   }
 
   async function tvlEth(timestamp, block) {
