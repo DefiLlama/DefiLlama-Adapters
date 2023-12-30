@@ -1,7 +1,6 @@
 const { cexExports } = require('../helper/cex')
 
 const config = {
-   /*
   bitcoin: {
     owners: [
       '1LnoZawVFFQihU8d8ntxLMpYheZUfyeVAK',
@@ -369,7 +368,6 @@ const config = {
         "0xf7858da8a6617f7c6d0ff2bcafdb6d2eedf64840",
     ]
   },
-  */
   solana:{
     owners: [
       'CeGyfZdtbjzC5FeVXCBdYE1v397yxxqYgmMcUwtouJUu',
