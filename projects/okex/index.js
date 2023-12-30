@@ -370,7 +370,6 @@ const config = {
         "0xf7858da8a6617f7c6d0ff2bcafdb6d2eedf64840",
     ]
   },
-  /*
   solana:{
     owners: [
       'CeGyfZdtbjzC5FeVXCBdYE1v397yxxqYgmMcUwtouJUu',
@@ -399,7 +398,6 @@ const config = {
       'HnLezgQkNVWMp2AV6mcHM1Ljst32kfsoVnYUkvXuQpjg',
     ]
   },//SOL DONE
-  */
   ripple:{
     owners: [
       'r4G3oDV1FJu1TtTv5M2u1cGbMDHnZzZpdn',
@@ -499,7 +497,7 @@ const config = {
       'MGDWrDaowmFZXaB2BkDf544Y7xvgNbA2n1',
       'MVx47taWrfuz4SjmP1NxENKsV9HFVBWYxf',
       'MRrzg8LyuNxxKPBSYcZCYXDtx2JWsXhC31',
-      'M9Ru88MgyxaWzQD5rmFZ5nXLwb1Su6KhM8',
+    //  'M9Ru88MgyxaWzQD5rmFZ5nXLwb1Su6KhM8',
       'MNqEQhjQekp6aPwrxo5CocGiZUojE7FRVV',
       'MHSrpK7ANdTcdYov3r4D23ga4CX8qQ8Ldz',
       'MEcmipRZAFTU3PKTCtYqqGgptLfaze4xxW',
