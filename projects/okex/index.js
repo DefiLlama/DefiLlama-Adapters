@@ -300,6 +300,7 @@ const config = {
       '0x8c3cb9665833fd9f79eb14cba16d82bbab6f22d8',
     ],//ETH DONE
   },
+  /*
   tron:{
     owners: [
         "TCz47XgC9TjCeF4UzfB6qZbM9LTF9s1tG7",
@@ -315,6 +316,7 @@ const config = {
         "TDq3zUoRN2z4UktF7yKaQqejfwa9qjnYdM"
     ]//TRON DONE
   },
+  */
   arbitrum:{
     owners:[
       "0x62383739d68dd0f844103db8dfb05a7eded5bbe6",
@@ -368,6 +370,7 @@ const config = {
         "0xf7858da8a6617f7c6d0ff2bcafdb6d2eedf64840",
     ]
   },
+  /*
   solana:{
     owners: [
       'CeGyfZdtbjzC5FeVXCBdYE1v397yxxqYgmMcUwtouJUu',
@@ -396,6 +399,7 @@ const config = {
       'HnLezgQkNVWMp2AV6mcHM1Ljst32kfsoVnYUkvXuQpjg',
     ]
   },//SOL DONE
+  */
   ripple:{
     owners: [
       'r4G3oDV1FJu1TtTv5M2u1cGbMDHnZzZpdn',
@@ -560,6 +564,11 @@ const config = {
       '1xpD24SQ9UgeFPQ2P9eRc7dppjgU9hiHDULqvWNfH3g3U54',
       '16hp43x8DUZtU8L3cJy9Z8JMwTzuu8ZZRWqDZnpMhp464oEd',
       '1Dkx7zjy4pRMwLQwWkbhb9Jxy7EXLfkdHVRXufwvdLV73QV',
+    ]
+  },//polkadot DONE
+  aptos:{
+    owners: [
+      '0x834d639b10d20dcb894728aa4b9b572b2ea2d97073b10eacb111f338b20ea5d7'
     ]
   }//polkadot DONE
 }
