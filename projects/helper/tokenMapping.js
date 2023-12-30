@@ -121,12 +121,38 @@ const fixBalancesTokens = {
   linea: {
     [ADDRESSES.linea.WETH_1]: { coingeckoId: 'ethereum', decimals: 18 },
   },
+  bitcoin: {
+    BSSB: { coingeckoId: 'bitstable-finance', decimals: 0 },
+    MUBI: { coingeckoId: 'multibit', decimals: 0 },
+  },
   fsc: {
     [ADDRESSES.null]: { coingeckoId: 'fonsmartchain', decimals: 18 },
     [ADDRESSES.fsc.WFSC]: { coingeckoId: 'fonsmartchain', decimals: 18 },
   },
   new: {
     '0xf4905b9bc02ce21c98eac1803693a9357d5253bf': { coingeckoId: 'newton-project', decimals: 18 },
+  },
+  conflux: {
+    [ADDRESSES.null]: { coingeckoId: 'conflux-token', decimals: 18 },
+  },
+  icon: {
+    [ADDRESSES.null]: { coingeckoId: 'icon', decimals: 18 },
+    'cxb49d82c46be6b61cab62aaf9824b597c6cf8a25d': { coingeckoId: 'binance-usd', decimals: 18 },
+    'cx5b5a03cb525a1845d0af3a872d525b18a810acb0': { coingeckoId: 'bitcoin-bep2', decimals: 18 },
+    'cx288d13e1b63563459a2ac6179f237711f6851cb5': { coingeckoId: 'ethereum', decimals: 18 },
+  },
+  jbc: {
+    [ADDRESSES.jbc.USDT]: { coingeckoId: 'tether', decimals: 18 },
+    [ADDRESSES.jbc.USDC]: { coingeckoId: 'usd-coin', decimals: 18 },
+    [ADDRESSES.jbc.ETH]: { coingeckoId: 'ethereum', decimals: 18 },
+    [ADDRESSES.jbc.OP]: { coingeckoId: 'optimism', decimals: 18 },
+    [ADDRESSES.jbc.BNB]: { coingeckoId: 'binancecoin', decimals: 18 },
+    [ADDRESSES.jbc.JFIN]: { coingeckoId: 'jfin-coin', decimals: 18 },
+    [ADDRESSES.jbc.KUB]: { coingeckoId: 'bitkub-coin', decimals: 18 },
+  },
+  zkfair: {
+    [ADDRESSES.null]: { coingeckoId: 'usd-coin', decimals: 18 },
+    '0xD33Db7EC50A98164cC865dfaa64666906d79319C': { coingeckoId: 'usd-coin', decimals: 18 },
   }
 }
 
