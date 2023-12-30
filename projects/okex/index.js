@@ -300,7 +300,6 @@ const config = {
       '0x8c3cb9665833fd9f79eb14cba16d82bbab6f22d8',
     ],//ETH DONE
   },
-  /*
   tron:{
     owners: [
         "TCz47XgC9TjCeF4UzfB6qZbM9LTF9s1tG7",
@@ -316,7 +315,6 @@ const config = {
         "TDq3zUoRN2z4UktF7yKaQqejfwa9qjnYdM"
     ]//TRON DONE
   },
-  */
   arbitrum:{
     owners:[
       "0x62383739d68dd0f844103db8dfb05a7eded5bbe6",
