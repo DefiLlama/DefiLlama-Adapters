@@ -149,6 +149,7 @@ const fixBalancesTokens = {
     [ADDRESSES.jbc.BNB]: { coingeckoId: 'binancecoin', decimals: 18 },
     [ADDRESSES.jbc.JFIN]: { coingeckoId: 'jfin-coin', decimals: 18 },
     [ADDRESSES.jbc.KUB]: { coingeckoId: 'bitkub-coin', decimals: 18 },
+    [ADDRESSES.jbc.JUSDT]: { coingeckoId: 'tether', decimals: 18 },
   },
   zkfair: {
     [ADDRESSES.null]: { coingeckoId: 'usd-coin', decimals: 18 },
