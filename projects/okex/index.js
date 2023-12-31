@@ -566,7 +566,7 @@ const config = {
     owners: [
       '0x834d639b10d20dcb894728aa4b9b572b2ea2d97073b10eacb111f338b20ea5d7'
     ]
-  }//polkadot DONE
+  }//
 }
 
 module.exports = cexExports(config)
