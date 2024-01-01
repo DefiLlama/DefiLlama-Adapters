@@ -368,7 +368,6 @@ const config = {
         "0xf7858da8a6617f7c6d0ff2bcafdb6d2eedf64840",
     ]
   },
-  /*
   solana:{
     owners: [
       'CeGyfZdtbjzC5FeVXCBdYE1v397yxxqYgmMcUwtouJUu',
@@ -396,8 +395,7 @@ const config = {
       'EBVigEhxvkWUwreG98kTh5FbZEjnXTXC5ANZtLz4YpHQ',
       'HnLezgQkNVWMp2AV6mcHM1Ljst32kfsoVnYUkvXuQpjg',
     ]
-  },//SOL DONE
-  */
+  },//SOL DONE//
   ripple:{
     owners: [
       'r4G3oDV1FJu1TtTv5M2u1cGbMDHnZzZpdn',
