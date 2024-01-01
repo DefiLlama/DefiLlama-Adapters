@@ -395,7 +395,7 @@ const config = {
       'EBVigEhxvkWUwreG98kTh5FbZEjnXTXC5ANZtLz4YpHQ',
       'HnLezgQkNVWMp2AV6mcHM1Ljst32kfsoVnYUkvXuQpjg',
     ]
-  },//SOL DONE//
+  },//SOL DONE
   ripple:{
     owners: [
       'r4G3oDV1FJu1TtTv5M2u1cGbMDHnZzZpdn',
