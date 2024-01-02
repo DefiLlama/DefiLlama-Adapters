@@ -10,7 +10,6 @@ async function tvl() {
   
   const data = (await api.query.loans.markets.entries());
 
-  const markets = [];
   for (let i = 0; i < data.length; i++) {
     const [underlyingId, marketData] = data[i];
 
