@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { getChainTransform, getFixBalances } = require("../helper/portedTokens");
+const { getChainTransform, } = require("../helper/portedTokens");
 const { getConfig } = require('../helper/cache')
 
 const { vaultsBase } = require("./avault-vault-utils");
@@ -11,7 +11,6 @@ async function tvl(_, _b, chainBlocks) {
   const chainArr = Object.keys(vaultsInfo);
   const chain = "astar";
   const chainLocal = chain;
-  const fixBalances = await getFixBalances(chainLocal);
   const vaultAddressArr = Object.values(vaultsInfo[chainLocal]);
   const transformAddress = await getChainTransform(chainLocal);
   const { wantedLocked, wantedAddresses, vaultName } = await vaultsBase(
@@ -42,7 +41,6 @@ async function tvl(_, _b, chainBlocks) {
     chainLocal,
     transformAddress
   );
-  fixBalances(balances);
 
   return balances;
 }

@@ -1,6 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { ohmTvl } = require('../helper/ohm')
 
+module.exports.hallmarks=[
+    [1637798400,"Rug Pull"]
+],
 module.exports=ohmTvl("0xC0E7DA06e56727F3B55B24F58e9503FdaAfb2a68", [
     //mim
     ["0x130966628846bfd36ff31a822705796e8cb8c18d", false],

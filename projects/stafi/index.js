@@ -25,6 +25,9 @@ const chainToParams={
   kusama: ["RKSM", "kusama"],
   solana: ["RSOL", "solana"],
   cosmos: ["RATOM", "cosmos"],
+  carbon: ["RSWTH", "switcheo"],
+  chihuahua: ["RHUAHUA", "chihuahua-token"],
+  irisnet:["RIRIS","iris-network"]
 }
 
 function getTvlFunction(token, cgId){
@@ -54,17 +57,17 @@ function chainTvl(chain){
 module.exports = {
   timetravel: true,
   ethereum: {
-    tvl: ethereum,
+    tvl: sdk.util.sumChainTvls([chainTvl('polygon'), ethereum]),
     staking:  getTvlFunction("RFIS", "stafi")
   },
   bsc: {
     tvl: chainTvl('bsc')
-  },
+  },/*
   polygon: {
-    tvl: chainTvl('polygon')
-  },
+    tvl: chainTvl('polygon') //exported along with ethereum tvl since MATIC's are staked on the Ethereum Mainnet
+  },*/
   cosmos: {
-    tvl: chainTvl('cosmos')
+    tvl: sdk.util.sumChainTvls([chainTvl('cosmos'), chainTvl('carbon'), chainTvl('chihuahua'), chainTvl('irisnet')])
   },
   solana: {
     tvl: chainTvl('solana')
