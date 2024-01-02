@@ -1,4 +1,8 @@
 const { sumERC4626VaultsExport } = require('../helper/erc4626')
+const { staking } = require('../helper/staking')
+
+const Locus_Token = "0xe1d3495717f9534db67a6a8d4940dd17435b6a9e"
+const stLocus = "0xEcc5e0c19806Cf47531F307140e8b042D5Afb952"
 
 module.exports = {
   doublecounted: true,
@@ -17,7 +21,8 @@ const config = {
   arbitrum: {
     lvTokens: {
       lvAYI: "0x0f094f6deb056af1fa1299168188fd8c78542a07",
-      lvAYI_v1: "0xBE55f53aD3B48B3ca785299f763d39e8a12B1f98"
+      lvAYI_v1: "0xBE55f53aD3B48B3ca785299f763d39e8a12B1f98",
+      lyUSD: "0x6c090e79a9399c0003a310e219b2d5ed4e6b0428",
     },
   }
 }
@@ -28,3 +33,5 @@ Object.keys(config).forEach(chain => {
     tvl: sumERC4626VaultsExport({ vaults: Object.values(lvTokens), abi: { asset: 'address:token' } })
   }
 })
+
+module.exports.arbitrum.staking = staking(stLocus, Locus_Token)

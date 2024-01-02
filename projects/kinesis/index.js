@@ -1,18 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-/*==================================================
-  Modules
-  ==================================================*/
-const axios = require("axios");
-const sdk = require("@defillama/sdk");
-const BigNumber = require("bignumber.js");
 
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
-// const {
-//   transformEvmosAddress
-// } = require("../helper/portedTokens");
-const { getChainTransform } = require("../helper/portedTokens");
+const { sumTokensExport } = require("../helper/unwrapLPs");
 
-/*** Arbitrum Addresses ***/
 const poolAddresses_evmos = [
   //NomadBasePoolAddress
   "0x49b97224655AaD13832296b8f6185231AFB8aaCc",
@@ -54,41 +43,12 @@ const gravDAI = ADDRESSES.functionx.PUNDIX;
 const gravUSDC = ADDRESSES.functionx.PURSE;
 const gravUSDT = ADDRESSES.functionx.USDT;
 
-async function tvl(timestamp, chainBlocks) {
-  const balances = {};
-  const transformAddress = await getChainTransform("evmos");
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [
-      [madUSDC, false],
-      [madUSDT, false],
-      [axlDAI, false],
-      [axlUSDC, false],
-      [axlUSDT, false],
-      [ceDAI, false],
-      [ceUSDC, false],
-      [ceUSDT, false],
-      [gravDAI, false],
-      [gravUSDC, false],
-      [gravUSDT, false],
-      [FRAX, false],
-    ],
-    poolAddresses_evmos,
-    chainBlocks["evmos"],
-    "evmos",
-    transformAddress
-  );
-  return balances;
-}
-
-/*==================================================
-  Exports
-  ==================================================*/
-
 module.exports = {
-  misrepresentedTokens: true,
   evmos: {
-    tvl,
+    tvl: sumTokensExport({
+      owners: poolAddresses_evmos, 
+      tokens: [madUSDC, madUSDT, axlDAI, axlUSDC, axlUSDT, ceDAI, ceUSDC, ceUSDT, gravDAI, gravUSDC, gravUSDT, FRAX],
+    }),
   },
   methodology:
     "Counts as TVL all the Assets deposited on EVMOS through different Pool Contracts",
