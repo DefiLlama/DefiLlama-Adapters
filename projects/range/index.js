@@ -28,6 +28,9 @@ const config ={
     { factory: '0xCCA961F89a03997F834eB5a0104efd9ba1f5800E', fromBlock: 14374189 }, // izumi
     { factory: '0xD22D1271d108Cd09C38b8E5Be8536E0E366DCd23', fromBlock: 14063599 }, // fusionX
     { factory: '0xbf3CC27B036C01A4482d07De191F18F1d8e7B00c', fromBlock: 18309127 } // swapsicle
+  ],
+  manta: [
+    { factory: '0x52B29C6154Ad0f5C02416B8cB1cEB76E082fC9C7', fromBlock: 899433 } // izumi
   ]
 }
 
@@ -56,22 +59,22 @@ Object.keys(config).forEach(chain => {
         })
         logs.forEach((log) => allLogs.push({ factory, log, chain }));
       }
-      const izumiFactory = '0xCCA961F89a03997F834eB5a0104efd9ba1f5800E'; // Differentiate between izumi & pancakeswap factory
+      const izumiFactoryMantle = '0xCCA961F89a03997F834eB5a0104efd9ba1f5800E'; // Differentiate between izumi & pancakeswap factory
+      const izumiFactoryManta = '0x52B29C6154Ad0f5C02416B8cB1cEB76E082fC9C7';
       const ghoFactory = '0xDE07a0D5C9CA371E41a869451141AcE84BCAd119';
       let vaults = allLogs.filter(({ factory, chain }) => {
-         if (factory === izumiFactory && chain === 'mantle') {
+         if (factory === izumiFactoryMantle && chain === 'mantle') {
           return false;
-         } else if (factory === ghoFactory && chain === 'ethereum') {
-          return false;
-         } else {
-          return true;
+         } else if(factory === izumiFactoryManta && chain === 'manta') {
+           return false;
          }
+         else return !(factory === ghoFactory && chain === 'ethereum');
       }).map(({ log }) => log.vault);
       
       vaults = vaults.filter(vault => !ignoreList[chain] || !ignoreList[chain].includes(vault)); // Remove excluded vaults
 
       // Collect Izumi Vaults Separately
-      let izumiVaults = allLogs.filter(({ factory, chain }) => factory === izumiFactory && chain === 'mantle').map(({ log }) => log.vault); 
+      let izumiVaults = allLogs.filter(({ factory, chain }) => (factory === izumiFactoryMantle && chain === 'mantle') || (factory === izumiFactoryManta && chain === 'manta') ).map(({ log }) => log.vault);
       izumiVaults = izumiVaults.filter(vault => !ignoreList[chain] || !ignoreList[chain].includes(vault));
 
       // Collect GHO Vaults Separately
@@ -95,7 +98,6 @@ Object.keys(config).forEach(chain => {
       })
 
       // ===== GHO Vaults Only =====
-      let ghoToken0s = await api.multiCall({ abi: "address:token0", calls: ghoVaults })
       let ghoToken1s = await api.multiCall({ abi: "address:token1", calls: ghoVaults })
       const ghoBals = await api.multiCall({ abi: ABI.getBalanceInCollateralToken, calls: ghoVaults })
       ghoBals.forEach((amount, i) => {
