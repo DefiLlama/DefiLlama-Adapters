@@ -1,4 +1,3 @@
-const { transformArbitrumAddress } = require("./helper/portedTokens");
 const { addFundsInMasterChef } = require('./helper/masterchef');
 const { staking } = require("./helper/staking");
 const STAKING_CONTRACT = "0xAd60A8cb60e052196F5B968B4bd4328A67Df27d3";
@@ -6,7 +5,7 @@ const JAGUAR = '0x31535F7A83083E3f34899F356ECC7246FBF2E82D'
 
 const arbitrumTvl = async (timestamp, ethBlock, { arbitrum: block }) => {
   const balances = {};
-  const transformAddress = await transformArbitrumAddress();
+  const transformAddress = i => `arbitrum:${i}`
   await addFundsInMasterChef(
     balances, STAKING_CONTRACT, block, 'arbitrum', transformAddress, undefined, [JAGUAR]);
   return balances;

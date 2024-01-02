@@ -40,7 +40,7 @@ function evm(chain, target) {
             target,
             abi: 'erc20:totalSupply',
             block: chainBlocks[chain],
-            chain
+            chain,
         })).output / 10 ** 9 };
     };
 }

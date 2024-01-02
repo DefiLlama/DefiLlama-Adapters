@@ -17,3 +17,5 @@ module.exports = {
     staking: tvl("native"),
   },
 };
+
+module.exports.fantom = { tvl: () => 0}

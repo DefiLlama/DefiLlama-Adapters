@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const abi = require("./abi.json");
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
@@ -8,10 +9,15 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
   const tokens = await api.multiCall({ abi: abi.collateralContract, calls: pairs })
   return sumTokens2({ api, tokensAndOwners: tokens.map((v, i) => [v, pairs[i]]) })
 }
+async function borrowed(timestamp, block, chainBlocks, { api }) {
+  const pairs = await api.call({ target: REGISTRY_ADDR, abi: abi['getAllPairAddresses'], })
+  const bals = await api.multiCall({ abi: 'function totalBorrow() view returns (uint128 amount, uint128 shares)', calls: pairs })
+  bals.forEach(bal => api.add(ADDRESSES.ethereum.FRAX, bal.amount))
+}
 
 module.exports = {
   methodology: 'Gets the pairs from the REGISTRY_ADDRESS and adds the collateral amounts from each pair',
   ethereum: {
-    tvl
+    tvl, borrowed,
   },
 }

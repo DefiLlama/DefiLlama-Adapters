@@ -12,6 +12,7 @@ async function _getResources() {
 }
 const extractVaultType = resource => resource.type.split('<')[1].replace('>', '').split(', ');
 const vaultsFilter = resource => resource.type.includes(`${moveDollarAddress}::vault::Vaults<`)
+const psmsFilter = resource => resource.type.includes(`${moveDollarAddress}::psm::PSM<`)
 
 module.exports = {
   timetravel: false,
@@ -25,10 +26,16 @@ module.exports = {
           total_collateral: vault.data.total_collateral,
           asset_type: extractVaultType(vault),
         }));
-
+      const psms = resources.filter(psmsFilter).map(psm => ({
+          total_collateral: psm.data.coin.value,
+          asset_type: extractVaultType(psm),
+      }));
       vaults.forEach(({ asset_type, total_collateral }) => {
           sdk.util.sumSingleBalance(balances, asset_type, total_collateral);
       });
+      psms.forEach(({ asset_type, total_collateral }) => {
+        sdk.util.sumSingleBalance(balances, asset_type, total_collateral);
+    });
 
       return transformBalances("aptos", balances);
     },
