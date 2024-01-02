@@ -21,25 +21,25 @@ module.exports = {
 
 Object.keys(config).forEach(chain => {
   const { coingeckoId, hub, seilorLps } = config[chain];
+  
   module.exports[chain] = {
     tvl: async (_, _b, _cb, { api }) => {
-      // 1.add stsei
+      // Logic for calculating TVL excluding staked LP tokens
       const { total_bond_stsei_amount } = await queryContract({ contract: hub, chain, data: { state: {} } });
       api.add(coingeckoId, total_bond_stsei_amount / 10 ** 6, { skipChain: true });
-
-      // 2. add seilor lps
-      for (const { lp, pair, staking, } of seilorLps) {
+      return api.getBalances();
+    },
+    pool2: async (_, _b, _cb, { api }) => {
+      // Logic for calculating the value of staked LP tokens
+      for (const { lp, pair, staking } of seilorLps) {
         const lpUseiBalance = await getDenomBalance({ denom: "usei", owner: pair, chain });
         const lpTokenInfo = await queryContract({ contract: lp, chain, data: { token_info: {} } });
         const stakingState = await queryContract({ contract: staking, chain, data: { query_staking_state: {} } });
 
-        // lp value = 2 times that of usei balance
         const lpTotalValue = 2 * lpUseiBalance / 10 ** 6;
         const staked = stakingState.total_supply / lpTokenInfo.total_supply * lpTotalValue;
-
         api.add(coingeckoId, staked, { skipChain: true });
       }
-
       return api.getBalances();
     }
   };
