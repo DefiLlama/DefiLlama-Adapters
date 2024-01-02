@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const axios = require('axios');
-const BigNumber = require("bignumber.js");
 const burl = 'https://token-indexer.broxus.com/v1/root_contract/root_address/0:';
 const tokenMap = {
     'eb2ccad2020d9af9cec137d3146dde067039965c13a27d97293c931dae22b2b9': 'dai',
@@ -29,7 +28,7 @@ async function tvl() {
     const tokenAddresses = Object.keys(tokenMap);
     for (let i = 0; i < tokenAddresses.length; i++) {
         const supply = (await axios.get(burl + tokenAddresses[i])).data.totalSupply;
-        balances[tokenMap[tokenAddresses[i]]] = new BigNumber(supply);
+        balances[tokenMap[tokenAddresses[i]]] = supply
     }
     return balances;
 }

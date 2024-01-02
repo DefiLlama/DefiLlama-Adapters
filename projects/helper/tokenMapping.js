@@ -121,6 +121,10 @@ const fixBalancesTokens = {
   linea: {
     [ADDRESSES.linea.WETH_1]: { coingeckoId: 'ethereum', decimals: 18 },
   },
+  bitcoin: {
+    BSSB: { coingeckoId: 'bitstable-finance', decimals: 0 },
+    MUBI: { coingeckoId: 'multibit', decimals: 0 },
+  },
   fsc: {
     [ADDRESSES.null]: { coingeckoId: 'fonsmartchain', decimals: 18 },
     [ADDRESSES.fsc.WFSC]: { coingeckoId: 'fonsmartchain', decimals: 18 },
@@ -146,6 +150,10 @@ const fixBalancesTokens = {
     [ADDRESSES.jbc.JFIN]: { coingeckoId: 'jfin-coin', decimals: 18 },
     [ADDRESSES.jbc.KUB]: { coingeckoId: 'bitkub-coin', decimals: 18 },
   },
+  zkfair: {
+    [ADDRESSES.null]: { coingeckoId: 'usd-coin', decimals: 18 },
+    '0xD33Db7EC50A98164cC865dfaa64666906d79319C': { coingeckoId: 'usd-coin', decimals: 18 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })

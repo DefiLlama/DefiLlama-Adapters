@@ -1,5 +1,3 @@
-const sdk = require('@defillama/sdk');
-const BigNumber = require("bignumber.js");
 const abi = require('../helper/abis/aave.json');
 
 async function ammMarket(api, borrowed) {
@@ -29,7 +27,7 @@ async function ammMarket(api, borrowed) {
       })
     ));
     supplyStabledebt.map((ssd, i) => {
-      balanceOfTokens[i] = BigNumber(ssd).plus(supplyVariableDebt[i]).toFixed(0)
+      balanceOfTokens[i] = Number(BigInt(ssd) + BigInt(supplyVariableDebt[i]))
     })
   }
 
