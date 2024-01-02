@@ -10,29 +10,29 @@ const PARIMUTUEL_WALLET = 'DCa1Xir4zDEtz78beFcXCHUNXdeBnrxBiRuuapHrBE3F';
 const PARIMUTUEL_ACCOUNT = 'mD62sAqPAiVbHGPTTeEianTYa1AytkKqqcxMvQxF3S3';
 
 const predictionTokens = [
-	DROP,
-	PYTH
+    DROP,
+    PYTH
 ]
 async function tvl(_, _1, _2, { api }) {
 
-  // get the total tokens deposited in the games
-  const tokensInAccount = await getOwnerAllAccount(PARIMUTUEL_WALLET);
-  tokensInAccount.forEach((pToken) => {
-	total = pToken.uiAmount;
-	tokenMint = pToken.mint;
-	// check to make sure it's one of the tokens used for predicting
-	if (predictionTokens.includes(tokenMint))
-	{
-  	//	sdk.log('#found',tokenMint)
-  		api.add(tokenMint,total);
+    // get the total tokens deposited in the games
+    const tokensInAccount = await getOwnerAllAccount(PARIMUTUEL_WALLET);
+    tokensInAccount.forEach((pToken) => {
+        const total = pToken.uiAmount;
+        const tokenMint = pToken.mint;
+        // check to make sure it's one of the tokens used for predicting
+        if (predictionTokens.includes(tokenMint))
+        {
+            //sdk.log('#found',tokenMint)
+            api.add(tokenMint,total);
 	}
-  });
-  const sols = await getSolBalance(PARIMUTUEL_WALLET);
-  api.add(ADDRESSES.solana.SOL,sols);
+    });
+    const sols = await getSolBalance(PARIMUTUEL_WALLET);
+    api.add(ADDRESSES.solana.SOL,sols);
 }
 
 module.exports = {
-  timetravel: false,
-  methodology: 'Count the number of tokens that are currently deposited in all the live prediction games',
-  solana: { tvl, },
+    timetravel: false,
+    methodology: 'Count the number of tokens that are currently deposited in all the live prediction games',
+    solana: { tvl, },
 }
