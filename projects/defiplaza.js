@@ -26,7 +26,7 @@ module.exports = {
                   items.push(...data);
                   sdk.log(`Fetched ${items.length} pools`, data.length, next_cursor);
                   cursor = next_cursor;
-               } while (items.length % 100 === 0);
+               } while (items.length % 100 === 0 && cursor !== 0);
 
                return items;
             }
