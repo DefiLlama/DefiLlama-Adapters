@@ -24,6 +24,7 @@ const config = {
       "inj1enh7ulash5gj0098qlcfltw5w8uyygavc8r4el",
       "inj140crz68lje9chnlyl4ewtgpcmvnnlns39t5tf0",
       "inj1z274paln0lwdl5erfcdzsmgwkt4gtv7fx39326",
+      "inj19hd0sx8qf3vwzd35q9a9jnx0rnwv0vzsd99k7p",
       "inj1xd5w08ezq4c6eq6cjsy5zqrvtvqf7hpkp3swcw",
       "inj1ugrn0wulnukysaj9srd2zsw4jhw4ghg485z39g",
       "inj1spfggvc974kxfsf25eha8myjrukdgdszq34p7m",
