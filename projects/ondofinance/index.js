@@ -1,4 +1,5 @@
-const { getTokenSupply } = require('../helper/solana')
+const { getTokenSupply } = require('../helper/solana');
+
 module.exports = {
   methodology: "Sums Ondo's fund supplies.",
 };
@@ -27,13 +28,21 @@ Object.keys(config).forEach((chain) => {
 
   module.exports[chain] = {
     tvl: async (_, _b, _cb, { api }) => {
-      let supplies
-      if (chain === 'solana')
-        supplies = await Promise.all(fundAddresses.map(getTokenSupply))
-      else
+      let supplies;
+      if (chain === 'solana') {
+        try {
+          supplies = await Promise.all(fundAddresses.map(getTokenSupply));
+          const scaledSupplies = supplies.map(supply => supply * 1_000_000);
+          api.addTokens(fundAddresses, scaledSupplies);
+        } catch (error) {
+          api.addTokens(fundAddresses, Array(fundAddresses.length).fill(0));
+        }
+      } else {
         supplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: fundAddresses });
-      api.addTokens(fundAddresses, supplies)
-      return api.getBalances()
+        api.addTokens(fundAddresses, supplies);
+      }
+      return api.getBalances();
     },
   };
 });
+
