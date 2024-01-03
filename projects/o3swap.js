@@ -1,4 +1,3 @@
-const { default: BigNumber } = require('bignumber.js');
 const { get } = require('./helper/http')
 
 let data
@@ -10,11 +9,11 @@ async function getData() {
 
 async function fetch() {
     const tvl = await getData()
-    let totalTvl = new BigNumber(0)
+    let totalTvl = 0
     tvl.data.tvls.forEach(item => {
-        totalTvl = totalTvl.plus(new BigNumber(item.tvl))
+        totalTvl += +item.tvl
     });
-    return totalTvl.toFixed();
+    return totalTvl
 }
 
 const chains = {
