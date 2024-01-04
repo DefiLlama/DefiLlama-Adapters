@@ -9,6 +9,7 @@ const config = {
       "0x71868d38ea3b3eb5e4db9a45ee355548b46c82e0",
       "0x72799ffd1f4ccf92ea2b1ee0cada16a5461c4d96",
       "0xfc74f7b04c620dad6a750d4f60f13586e2b1ef54",
+      "0x17550f48c61915A67F216a083ced89E04d91fD54",
     ],
     fromBlock: 13779573
   },

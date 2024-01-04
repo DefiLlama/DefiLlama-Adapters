@@ -42,7 +42,7 @@ const farms = {
 let tokenData
 
 function chainTvls(chain) {
-  return async (timestamp, ethBlock, {[chain]: block}, { logArray }) => {
+  return async (timestamp, ethBlock, {[chain]: block}) => {
     const vault = vaults[chain]
     let targetChain = chain
     if (chain === 'ethereum') targetChain = 'eth'
@@ -58,7 +58,7 @@ function chainTvls(chain) {
       '0x662b67d00a13faf93254714dd601f5ed49ef2f51' // ORC, blacklist project's own token
       // reason for skipping, most of the tvl comes from this transaction which is about 25% of ORU supply on ETH
       // https://etherscan.io/tx/0x0a556fcef2a867421ec3941251ad3c10ae1402a23ddd9ad4b1097b686ced89f7
-    ], logArray })
+    ] })
 
     if (farms[chain]) {
       const calls = farms[chain].map(i => ({ params: i }))
@@ -66,13 +66,11 @@ function chainTvls(chain) {
         target: vault,
         abi: ABI.farms,
         calls, chain, block,
-        logArray
       })
       const { output: farmBalance } = await sdk.api.abi.multiCall({
         abi: ABI.wantLockedTotal,
         calls: farmData.map(i => ({ target: i.output})), 
         chain, block,
-        logArray
       })
       farmBalance.forEach((data, i) => sdk.util.sumSingleBalance(balances, chain + ':' + farms[chain][i], data.output))
     }
