@@ -196,12 +196,12 @@ const multipleEndpoints={
 }
 
 async function queryContractWithRetries({ contract, chain, data }) {
-  if (typeof data !== "string") data = JSON.stringify(data);
-  data = Buffer.from(data).toString("base64");
   const rpcs = multipleEndpoints[chain]
   if(rpcs === undefined){
     return queryContract({contract, chain, data})
   }
+  if (typeof data !== "string") data = JSON.stringify(data);
+  data = Buffer.from(data).toString("base64");
   for(let i=0; i<rpcs.length; i++){
     try{
       return (
