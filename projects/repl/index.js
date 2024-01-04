@@ -93,7 +93,6 @@ const SqrtToPrice = (sqrt96) => {
 };
 
 module.exports = {
-  methodology: "Repl",
   filecoin: {
     tvl: async (_, _1, _2, { api }) => {
       const [
@@ -129,24 +128,6 @@ module.exports = {
       const tvl = totalEligibleAssetsValue
         .add(poolWFILBal)
         .add(totalSupplyValue);
-
-      // console.log(
-      //   `totalEligibleAssetsValue format: ${ethers.utils.formatEther(
-      //     totalEligibleAssetsValue.toString()
-      //   )}`
-      // );
-
-      // console.log(
-      //   `poolWFILBal format: ${ethers.utils.formatEther(
-      //     poolWFILBal.toString()
-      //   )}`
-      // );
-
-      // console.log(
-      //   `totalSupplyValue format: ${ethers.utils.formatEther(
-      //     totalSupplyValue.toString()
-      //   )}`
-      // );
 
       api.add(nullAddress, tvl);
     },
