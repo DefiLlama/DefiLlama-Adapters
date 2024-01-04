@@ -40,8 +40,8 @@ async function getAllPairs(factory, chain) {
     .withConcurrency(10)
     .for(allPairs)
     .process(getPairPool)
-  if(errors?.length){
-    throw new Error()
+  if((errors?.length ?? 0) > 50){
+    throw new Error(`Too many errors: ${errors.length}/${allPairs.length} on ${chain}`)
   }
   return dtos
 }
