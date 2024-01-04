@@ -34,6 +34,7 @@ async function farm2Tvl(chain, contract, api) {
 }
 
 module.exports = {
+  timetravel: false,
   doublecounted: false,
 };
 
