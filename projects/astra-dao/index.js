@@ -23,11 +23,11 @@ async function tvl(_, _b, _cb, { api, }) {
 
 module.exports = {
   start: 17243078,
-  ethereum: {
-    tvl,
-    // pool2: sumTokensExport({ owner: ASTRA_STAKING_CONTRACT, resolveUniV3: true, }),
-    // staking: sumTokensExport({ owner: ASTRA_STAKING_CONTRACT, tokens: [ASTRA_TOKEN_CONTRACT], })
-  },
+  // ethereum: {
+  //   tvl,
+  //   // pool2: sumTokensExport({ owner: ASTRA_STAKING_CONTRACT, resolveUniV3: true, }),
+  //   // staking: sumTokensExport({ owner: ASTRA_STAKING_CONTRACT, tokens: [ASTRA_TOKEN_CONTRACT], })
+  // },
   arbitrum: {
     tvl,
      pool2: sumTokensExport({ owner: ASTRA_STAKING_CONTRACT, resolveUniV3: true, }),
