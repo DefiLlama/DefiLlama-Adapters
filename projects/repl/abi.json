@@ -1,0 +1,158 @@
+{
+  "getAllAgents": {
+    "inputs": [],
+    "name": "getAllAgents",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "agent",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "internalType": "uint64",
+            "name": "originOwnerID",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "curOwnerID",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "actorID",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "agentID",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint256",
+            "name": "targetPledge",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "safePledge",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "lastSafePledgeUpdateTime",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "recoveredPledge",
+            "type": "uint256"
+          },
+          {
+            "internalType": "enum AgentStatus",
+            "name": "status",
+            "type": "uint8"
+          },
+          {
+            "components": [
+              {
+                "internalType": "bytes",
+                "name": "val",
+                "type": "bytes"
+              },
+              {
+                "internalType": "bool",
+                "name": "neg",
+                "type": "bool"
+              }
+            ],
+            "internalType": "struct CommonTypes.BigInt",
+            "name": "availableBalance",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct AgentReturns[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "getSlot0": {
+    "inputs": [],
+    "name": "slot0",
+    "outputs": [
+      {
+        "internalType": "uint160",
+        "name": "sqrtPriceX96",
+        "type": "uint160"
+      },
+      {
+        "internalType": "int24",
+        "name": "tick",
+        "type": "int24"
+      },
+      {
+        "internalType": "uint16",
+        "name": "observationIndex",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "observationCardinality",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "observationCardinalityNext",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint8",
+        "name": "feeProtocol",
+        "type": "uint8"
+      },
+      {
+        "internalType": "bool",
+        "name": "unlocked",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "getTotalSupply": {
+    "inputs": [],
+    "name": "totalSupply",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "PFILperToken": {
+    "inputs": [],
+    "name": "PFILPerToken",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+}
