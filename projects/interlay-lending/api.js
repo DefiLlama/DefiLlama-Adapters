@@ -3,10 +3,11 @@ const { getAPI, addTokenBalance } = require('../helper/acala/interlay-api');
 // for exchange rate decoding
 const FIXEDI128_SCALING_FACTOR = 18;
 
-async function tvl() {
+async function getBalances() {
   const chain = "interlay";
   const api = await getAPI(chain);
-  const balances = {};
+  const tvlBalances = {};
+  const borrowedBalances = {};
   
   const data = (await api.query.loans.markets.entries());
 
@@ -20,23 +21,31 @@ async function tvl() {
 
     const lendTokenId = marketData.toJSON().lendTokenId;
 
-    const [exchangeRate, totalIssuance] = Promise.all([
+    const [issuanceExchangeRate, totalIssuance, totalBorrows] = Promise.all([
       api.query.loans.exchangeRate(underlyingId).then((rawExchangeRate) => {
         parseInt(rawExchangeRate) / (10 ** FIXEDI128_SCALING_FACTOR);
       }),
-      api.query.tokens.totalIssuance(lendTokenId)
+      api.query.tokens.totalIssuance(lendTokenId),
+      api.query.loans.totalBorrows(underlyingId),
     ]);
 
-    const atomicAmount = totalIssuance * exchangeRate;
-    addTokenBalance({ balances, chain, atomicAmount, ccyArg: underlyingId });
+    const totalTvl = (totalIssuance * issuanceExchangeRate) - totalBorrows;
+    addTokenBalance({ balances: tvlBalances, chain, atomicAmount: totalTvl, ccyArg: underlyingId });
+
+    addTokenBalance({ balances: borrowedBalances, chain, atomicAmount: totalBorrows, ccyArg: underlyingId });
   }
 
-  return balances;
+  return {
+    tvl: tvlBalances,
+    borrowed: borrowedBalances,
+  };
 }
-
 
 module.exports = {
   timetravel: false,
-  methodology: "Tracks TVL for Interlay's lending protocol.",
-  interlay: { tvl }
+  methodology: "Tracks TVL and borrowed amounts for Interlay's lending protocol.",
+  interlay: {
+    tvl: async () => (await getBalances()).tvl,
+    borrowed: async () => (await getBalances()).borrowed,
+  },
 };
