@@ -45,6 +45,7 @@ const indexTVL = async (_, __, ___, { api, chain }) => {
   //add UNI pool to owners
   ownersArray.push(...stakingTokens);
 
+  //get tokens from pair
   allToken0 = await api.multiCall({  abi: stakingTokenABI.token0, calls: stakingTokens});
   allToken1 = await api.multiCall({  abi: stakingTokenABI.token1, calls: stakingTokens});
 
