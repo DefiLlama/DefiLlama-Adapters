@@ -12,7 +12,7 @@ const contracts = {
   }
 };
 
-blacklistedTokens = [];
+const blacklistedTokens = [];
 
 function getTVLFunc(contractAddress, chain) {
   return async function (timestamp, _, { [chain]: block }, { api }) {
