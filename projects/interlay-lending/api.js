@@ -20,19 +20,19 @@ async function getBalances() {
     }
 
     const lendTokenId = marketData.toJSON().lendTokenId;
-
-    const [issuanceExchangeRate, totalIssuance, totalBorrows] = Promise.all([
-      api.query.loans.exchangeRate(underlyingId).then((rawExchangeRate) => {
-        parseInt(rawExchangeRate) / (10 ** FIXEDI128_SCALING_FACTOR);
-      }),
+    
+    const [issuanceExchangeRate, totalIssuance, totalBorrows]  = await Promise.all([
+      api.query.loans.exchangeRate(underlyingId.toHuman()[0]).then((rawExchangeRate) => 
+        parseInt(rawExchangeRate) / (10 ** FIXEDI128_SCALING_FACTOR)
+      ),
       api.query.tokens.totalIssuance(lendTokenId),
-      api.query.loans.totalBorrows(underlyingId),
+      api.query.loans.totalBorrows(underlyingId.toHuman()[0]),
     ]);
 
     const totalTvl = (totalIssuance * issuanceExchangeRate) - totalBorrows;
-    addTokenBalance({ balances: tvlBalances, chain, atomicAmount: totalTvl, ccyArg: underlyingId });
+    addTokenBalance({ balances: tvlBalances, chain, atomicAmount: totalTvl, ccyArg: underlyingId.__internal__args[0] });
 
-    addTokenBalance({ balances: borrowedBalances, chain, atomicAmount: totalBorrows, ccyArg: underlyingId });
+    addTokenBalance({ balances: borrowedBalances, chain, atomicAmount: totalBorrows, ccyArg: underlyingId.__internal__args[0] });
   }
 
   return {
