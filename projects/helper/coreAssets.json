@@ -1098,12 +1098,10 @@
     "BUSD": "0xf61eb8999f2f222f425d41da4c2ff4b6d8320c87"
   },
   "xdc": {
-    "xUSDT": "0xd4b5f10d61916bd6e0860144a91ac658de8a1437",
     "WXDC": "0x951857744785e80e2de051c32ee7b25f9c458c42",
     "XSP": "0x36726235dadbdb4658d33e62a249dca7c4b2bc68",
-    "SRX": "0x5d5f074837f5d4618b3916ba74de1bf9662a3fed",
-    "USNOTA": "0xd04275e2fd2875beaade6a80b39a75d4fe267df6",
-    "PLI": "0xff7412ea7c8445c46a8254dfb557ac1e48094391"
+    "FXD": "0x49d3f7543335cf38Fa10889CCFF10207e22110B5",
+    "xUSDT": "0xd4b5f10d61916bd6e0860144a91ac658de8a1437"
   },
   "kardia": {
     "WKAI": "0xaf984e23eaa3e7967f3c5e007fbe397d8566d23d",
