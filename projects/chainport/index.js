@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json');
-const { sumTokensExport, nullAddress } = require("../helper/unwrapLPs");
+const { sumTokensExport, nullAddress } = require("../helper/sumTokens");
 
 //ETH
 
@@ -88,11 +88,18 @@ const config = {
      ],
     owners: [vault1ftm, vault2ftm],
   },
+  cardano: {
+    owners: [
+      'addr1xxcqzje930yw0hykwhf0a89l62dmjwqqpfzdsppf8rhv9rg2czf3yffs8ar450sw50w4xn3pxxwvkz25s4ygh7pjq23ql4slcu', // multi sig cold storage
+      'addr1v9nygflpcedeg004tfghu9hdxhg29sv9550sdyvvu4gxepq5ps9ra', // hot bridge address 1
+      'addr1vxku68zc6wrewfkrdaduw2t8yj7nsh0z6mg8vwuxh7pwjxckzjkjq' // hot bridge address 2
+    ],
+  }
 }
 
 Object.keys(config).forEach(chain => {
   const {owners, tokens} = config[chain]
   module.exports[chain] = {
-    tvl: sumTokensExport({ owners, tokens })
+    tvl: sumTokensExport({ owners, tokens, logCalls: true })
   }
 })

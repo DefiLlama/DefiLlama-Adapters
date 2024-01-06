@@ -4,9 +4,6 @@ module.exports = {
     timetravel: false,
     misrepresentedTokens: true,
     methodology: "Liquidity on the DEX",
-    terra: {
-        tvl: getFactoryTvl("terra1fnywlw4edny3vw44x04xd67uzkdqluymgreu7g",)
-    },
     injective: {
         tvl: getFactoryTvl("inj19aenkaj6qhymmt746av8ck4r8euthq3zmxr2r6",)
     },
@@ -16,8 +13,7 @@ module.exports = {
     neutron: {
         tvl: getFactoryTvl("neutron1hptk0k5kng7hjy35vmh009qd5m6l33609nypgf2yc6nqnewduqasxplt4e")
     },
-    hallmarks: [
-        [1651881600, "UST depeg"],
-    ]
-
+    sei: {
+        tvl: getFactoryTvl("sei1xr3rq8yvd7qplsw5yx90ftsr2zdhg4e9z60h5duusgxpv72hud3shh3qfl")
+    },
 } // node test.js projects/astroport/index.js
