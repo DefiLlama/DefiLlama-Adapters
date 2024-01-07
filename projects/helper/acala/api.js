@@ -37,10 +37,12 @@ const providers = {
     "wss://acala.polkawallet.io",
   ],
   heiko: [
+    "wss://heiko-rpc.dwellir.com",
     "wss://heiko-rpc.parallel.fi",
     "wss://parallel-heiko.api.onfinality.io/public-ws",
   ],
   parallel: [
+    "wss://parallel-rpc.dwellir.com",
     "wss://rpc.parallel.fi",
     "wss://parallel.api.onfinality.io/public-ws",
   ],
