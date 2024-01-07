@@ -17,6 +17,7 @@ const DEFAULTS = {
   LYRA_RPC: "https://rpc.lyra.finance",
   BITCHAIN_RPC: "https://rpc.bitchain.biz/",
   ZKFAIR_RPC: "https://rpc.zkfair.io/",
+  ALV_RPC: "https://elves-core3.alvey.io/",
 }
 
 const ENV_KEYS = [
