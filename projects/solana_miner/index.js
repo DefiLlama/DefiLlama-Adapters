@@ -1,11 +1,7 @@
-const { getTokenAccountBalance } = require("../helper/solana");
+const { sumTokens2 } = require("../helper/solana");
 
 async function tvl() {
-  return {
-    solana: await getTokenAccountBalance(
-      "HitZJAWpuxC86WnxG64r7dntfo1eK4Aj8KRCnttqcB2Y"
-    ),
-  };
+  return sumTokens2({ solOwners: ['HitZJAWpuxC86WnxG64r7dntfo1eK4Aj8KRCnttqcB2Y']})
 }
 
 module.exports = {
