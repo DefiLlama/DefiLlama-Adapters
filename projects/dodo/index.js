@@ -110,7 +110,7 @@ const config = {
   linea: { dvmFactory: '0xc0F9553Df63De5a97Fe64422c8578D0657C360f7', fromBlock: 91468, dspFactory: '0x2933c0374089D7D98BA0C71c5E02E1A0e09deBEE', dppFactory: '0x97bBF5BB1dcfC93A8c67e97E50Bea19DB3416A83' },
   scroll: { dvmFactory: '0x5a0C840a7089aa222c4458b3BE0947fe5a5006DE', fromBlock: 83070, dspFactory: '0x7E9c460d0A10bd0605B15F0d0388e307d34a62E6', dppFactory: '0x31AC053c31a77055b2ae2d3899091C0A9c19cE3a' },
   manta: { dvmFactory: '0x97bBF5BB1dcfC93A8c67e97E50Bea19DB3416A83', fromBlock: 384137, dspFactory: '0x29C7718e8B606cEF1c44Fe6e43e07aF9D0875DE1', dppFactory: '0xa71415675F68f29259ddD63215E5518d2735bf0a' },
-  mantle: { dvmFactory: '0x29C7718e8B606cEF1c44Fe6e43e07aF9D0875DE1', fromBlock: 21054048, dspFactory: '0x7dB214f2D46d94846936a0f8Bd9044c5C5Bd2b93', dppFactory: '0x46AF6b152F2cb02a3cFcc74014C2617BC4F6cD5C'  },
+  mantle: { dvmFactory: '0x29C7718e8B606cEF1c44Fe6e43e07aF9D0875DE1', fromBlock: 21054048, dspFactory: '0x7dB214f2D46d94846936a0f8Bd9044c5C5Bd2b93', dppFactory: '0x46AF6b152F2cb02a3cFcc74014C2617BC4F6cD5C' },
   // okexchain: { dvmFactory: '0x9aE501385Bc7996A2A4a1FBb00c8d3820611BCB5', fromBlock: 4701083, dspFactory: '0x44D5dF24d5Ef52A791D6436Fa45A8D426f6de34e' },
 }
 
@@ -122,26 +122,40 @@ Object.keys(config).forEach(chain => {
       const funcs = [];
       const builder = (factorys, event) => {
         if (Array.isArray(factorys)) {
-            factorys.forEach(factory => funcs.push(addLogs(factory, event)));
+          factorys.forEach(factory => funcs.push(addLogs(factory, event)));
         } else {
-            funcs.push(addLogs(factorys, event));
+          funcs.push(addLogs(factorys, event));
         }
       }
       builder(dvmFactory, 'event NewDVM (address baseToken, address quoteToken, address creator, address pool)');
       builder(dspFactory, 'event NewDSP(address baseToken, address quoteToken, address creator, address pool)');
       builder(dppFactory, 'event NewDPP (address baseToken, address quoteToken, address creator, address pool)');
       builder(dodoBirthFactory, 'event DODOBirth (address pool, address baseToken, address quoteToken)');
-            
+
       await Promise.all(funcs)
       if (chain === 'ethereum')
         ownerTokens.push([['0x43Dfc4159D86F3A37A5A4B3D4580b888ad7d4DDd', ADDRESSES.ethereum.USDT], '0x8876819535b48b551C9e97EBc07332C7482b4b2d'])
-      console.log(ownerTokens.length * 2, api.chain)
+      api.log(ownerTokens.length * 2, api.chain)
+      if (chain === 'base')
+        ownerTokens.push(...[
+          [['0x4200000000000000000000000000000000000006', '0xd9aaec86b65d86f6a7b5b1b0c42ffa531710b6ca'], '0x1172035a744ea18161497e94f0bbce244d51de9f'],
+          [['0x4200000000000000000000000000000000000006', '0x2ae3f1ec7f1f5012cfeab0185bfc7aa3cf0dec22'], '0xce670438dadb080d7aae65fdaff51355aa30535e'],
+          [['0x4200000000000000000000000000000000000006', '0x78a087d713be963bf307b18f2ff8122ef9a63ae9'], '0x3c388c812dada10e597f802a766e7ce898bc7751'],
+          [['0xd9aaec86b65d86f6a7b5b1b0c42ffa531710b6ca', '0x4200000000000000000000000000000000000006'], '0xd804cf0ac2a4b6dd6d375504a27874f5db073625'],
+          [['0x4200000000000000000000000000000000000006', '0xd9aaec86b65d86f6a7b5b1b0c42ffa531710b6ca'], '0x72e663c4e8fd50184c8b8135315c20326cc4ad75'],
+          [['0x833589fcd6edb6e08f4c7c32d4f71b54bda02913', '0xd9aaec86b65d86f6a7b5b1b0c42ffa531710b6ca'], '0xe8ef69e4dd7f6ed2d84f256e97469bca22b78a8b'],
+        ])
+
       return api.sumTokens({ ownerTokens, blacklistedTokens, permitFailure: true, })
 
       async function addLogs(target, eventAbi) {
         if (!target) return;
         const convert = i => [[i.baseToken, i.quoteToken], i.pool]
-        const logs = await getLogs({ api, target, eventAbi, onlyArgs: true, fromBlock, })
+        let logs = await getLogs({ api, target, eventAbi, onlyArgs: true, fromBlock, })
+        if (chain === 'base' && target === '0xc0F9553Df63De5a97Fe64422c8578D0657C360f7')
+          logs = await getLogs({ api, target, eventAbi, onlyArgs: true, fromBlock: 8964122, }) // hard to get old logs, too far back in time, manually added missing pairs
+        else
+          logs = await getLogs({ api, target, eventAbi, onlyArgs: true, fromBlock, })
         ownerTokens.push(...logs.map(convert))
       }
     }
