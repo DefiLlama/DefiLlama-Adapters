@@ -1,4 +1,3 @@
-const { staking } = require('../helper/staking');
 const { sumTokensExport } = require('../helper/unknownTokens');
 
 const TOKEN_ADDRESS = '0x652000ba3c230d83279AEC84A49d41d706AFB0F1';
