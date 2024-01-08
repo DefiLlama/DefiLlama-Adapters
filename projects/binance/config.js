@@ -481,7 +481,7 @@ const assetList = [
   ["BNB", "BEP2", "bnb17jky4rwhu9rzgrx7exrfc3pcd5z290ga8qfm0j"], // until this wallet where added on the Tuesday, 26 December 2023 07:00:00
   ["BTC", "BTC", "3LtrsjtyLsHoG8WQMe2RFw3de4pLTQZNcY"],
   ["FDUSD", "BEP20", "0x835678a611B28684005a5e2233695fB6cbbB0007"],
-  ["FDUSD", "ETH", "0x835678a611B28684005a5e2233695fB6cbbB000"],
+  ["FDUSD", "ETH", "0x835678a611B28684005a5e2233695fB6cbbB0007"],
   ["SOL", "SOL", "3gd3dqgtJ4jWfBfLYTX67DALFetjc5iS72sCgRhCkW2u"],
   ["TUSD", "ETH", "0xf977814e90da44bfa03b6295a0616a897441acec"],
   ["USDC", "BEP20", "0xeb2d2f1b8c558a40207669291fda468e50c8a0bb"],
