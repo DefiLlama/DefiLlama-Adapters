@@ -1,10 +1,6 @@
-const { BigNumber } = require("@ethersproject/bignumber");
 const { nullAddress } = require("../helper/tokenMapping");
 const { get } = require("../helper/http");
 const abi = require("./abi.json");
-const { json } = require("starknet");
-const { ethers } = require("ethers");
-const http = require("../helper/http");
 
 // const REPL_CONTRACT = "0xD51Cb0FA9A91f156a80188a18f039140704b8df7";
 // const REPL_HELPER_CONTRACT = "0x07047192D4492d32eE117a9588576896e50975E3";
@@ -13,12 +9,6 @@ const WFIL_WPFIL_POOL_ADDRESS = "0x443A6243A36Ef0ae1C46523d563c15abD787F4E9";
 const PFIL_CONTRACT = "0xAaa93ac72bECfbBc9149f293466bbdAa4b5Ef68C";
 const WPFIL_CONTRACT = "0x57E3BB9F790185Cfe70Cc2C15Ed5d6B84dCf4aDb";
 const WFIL_CONTRACT = "0x60E1773636CF5E4A227d9AC24F20fEca034ee25A";
-
-const filecoinCoinGeckoAPI =
-  "https://api.coingecko.com/api/v3/simple/price?ids=filecoin&vs_currencies=usd";
-async function query(api) {
-  return http.get(`${api}`);
-}
 
 // Obtain information of miners delegated to the protocol
 const getAllDelegatedMiners = (agents) => {
@@ -50,86 +40,50 @@ const getTotalEligibleAssets = async (agents) => {
   for (let i = 0; i < delegatedMiners.length; i++) {
     const miner = delegatedMiners[i];
     try {
-      const actualMinerInfo = await getActualMinerInfo(
-        miner.agentAddress,
-        miner.actorID
-      );
-      if (actualMinerInfo.error !== "") {
+      const actualMinerInfo = await getActualMinerInfo(miner.agentAddress, miner.actorID);
+      if (actualMinerInfo.error !== "")
         continue;
-      }
+
       minerInfos.push(actualMinerInfo);
     } catch (e) {
       console.log(`Error fetching miner info for ${miner.agentAddress}: ${e}`);
     }
   }
 
-  return minerInfos.reduce(
-    (sum, minerInfo) => sum.add(BigNumber.from(minerInfo.eligible_asset)),
-    BigNumber.from(0)
-  );
+  return minerInfos.reduce((sum, minerInfo) => sum + +minerInfo.eligible_asset, 0);
 };
 
 // Calculate total PFIL supply value in terms of FIL
-const calculateTotalPFILSupply = (
-  totalPFILSupply,
-  wpFILprice,
-  PFILByWPFIL,
-  FILprice
-) => {
-  const pFILpriceInFIL = wpFILprice / PFILByWPFIL;
-
-  // totalSupplyValue = totalPFILSupply * pFILpriceInFIL
-  const totalSupplyValue = BigNumber.from(totalPFILSupply)
-    .mul(ethers.utils.parseEther(pFILpriceInFIL.toString()))
-    .div(ethers.utils.parseEther("1"));
-
+const calculateTotalPFILSupply = (totalPFILSupply, wpFILprice, PFILByWPFIL) => {
+  const totalSupplyValue = totalPFILSupply * wpFILprice * PFILByWPFIL
   return totalSupplyValue;
 };
 
 // Convert sqrt96price to pool price
 const SqrtToPrice = (sqrt96) => {
   const price = Number(sqrt96) ** 2 / 2 ** 192;
-  return price.toFixed(5);
+  return price
 };
 
 module.exports = {
   filecoin: {
     tvl: async (_, _1, _2, { api }) => {
-      const [
-        agents,
-        slot0,
-        totalPFILSupply,
-        PFILperToken,
-        poolWFILBal,
-        FILpriceData,
-      ] = await Promise.all([
+      const [agents, slot0, totalPFILSupply, PFILperToken, poolWFILBal,] = await Promise.all([
         api.call({ abi: abi.getAllAgents, target: AGENT_HELPER_CONTRACT }),
-        api.call({ abi: abi.getSlot0, target: WFIL_WPFIL_POOL_ADDRESS }),
-        api.call({ abi: abi.getTotalSupply, target: PFIL_CONTRACT }),
-        api.call({ abi: abi.PFILperToken, target: WPFIL_CONTRACT }),
-        api.call({
-          abi: "erc20:balanceOf",
-          target: WFIL_CONTRACT,
-          params: WFIL_WPFIL_POOL_ADDRESS,
-        }),
-        query(filecoinCoinGeckoAPI),
+        api.call({ abi: abi.slot0, target: WFIL_WPFIL_POOL_ADDRESS }),
+        api.call({ abi: abi.totalSupply, target: PFIL_CONTRACT }),
+        api.call({ abi: abi.PFILPerToken, target: WPFIL_CONTRACT }),
+        api.call({ abi: "erc20:balanceOf", target: WFIL_CONTRACT, params: WFIL_WPFIL_POOL_ADDRESS, }),
       ]);
 
       const wpFILprice = SqrtToPrice(slot0.sqrtPriceX96);
-      const FILprice = FILpriceData.filecoin.usd;
 
       const totalEligibleAssetsValue = await getTotalEligibleAssets(agents);
-      const totalSupplyValue = calculateTotalPFILSupply(
-        totalPFILSupply,
-        wpFILprice,
-        Number(ethers.utils.formatEther(PFILperToken)),
-        FILprice
-      );
-      const tvl = totalEligibleAssetsValue
-        .add(poolWFILBal)
-        .add(totalSupplyValue);
+      // const totalSupplyValue = calculateTotalPFILSupply(totalPFILSupply, wpFILprice, PFILperToken / 1e18);
 
-      api.add(nullAddress, tvl);
+      api.add(nullAddress, totalEligibleAssetsValue);
+      api.add(nullAddress, poolWFILBal);
+      // api.add(nullAddress, totalSupplyValue);
     },
   },
 };
