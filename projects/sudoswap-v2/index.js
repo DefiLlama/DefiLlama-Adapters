@@ -26,7 +26,7 @@ async function tvl(_, _b, _cb, { api, }) {
   const nfts = await api.multiCall({  abi: 'address:nft', calls: pools})
   const ethBals = await api.multiCall({  abi: 'function getEthBalance(address) view returns (uint256)', calls: allPools, target: multicallAddy})
   ethBals.forEach(i => api.add(nullAddress, i))
-  await sumTokens2({ api, tokensAndOwners2: [nfts, pools], permitFailure: true, })
+  await sumTokens2({ api, tokensAndOwners2: [nfts, pools], permitFailure: true, sumChunkSize: 22 })
 }
 
 module.exports = {

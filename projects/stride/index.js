@@ -101,6 +101,9 @@ function makeTvlFn(chain) {
 module.exports = {
   timetravel: false,
   methodology: "Sum of all the tokens that are liquid staked on Stride",
+  stride: {
+    tvl: async () => ({}), // kept so tvl history doesnt disappear
+  },
 }; // node test.js projects/stride/index.js
 
 for (const chainName of Object.keys(chains)) {
