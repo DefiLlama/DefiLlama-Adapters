@@ -7,7 +7,7 @@ async function staking(time, ethBlock, _b, { api }) {
 }
 
 module.exports = {
-  methodology: "TVL counted from the vesting contract",
+  methodology: "TVL counted from the staking contract",
   bsc: {
     tvl: () => ({}),
     staking,
