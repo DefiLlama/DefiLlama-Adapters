@@ -1,4 +1,3 @@
-const sdk = require('@defillama/sdk')
 const abi = require('./abi.json')
 const { staking } = require('../helper/staking')
 
@@ -14,110 +13,46 @@ const pools = [
   '0x1Ed460D149D48FA7d91703bf4890F97220C09437', // BUSD
 ]
 
-let tvlPromise  = {}
-async function getAllTvl(block) {
-  if (!tvlPromise[block]) tvlPromise[block] = _getAll(block)
-  return tvlPromise[block]
+async function getAllTvl(api, isBorrowed) {
 
-  async function _getAll(block) {
+  const tokens = await api.multiCall({ calls: pools, abi: abi.token, })
+  const currencyBalance = await api.multiCall({ calls: pools, abi: abi.currencyBalance, })
+  const loansValue = await api.multiCall({ calls: pools, abi: abi.loansValue, })
 
-    const tokens = (await sdk.api.abi.multiCall({
-      calls: pools.map(target => ({ target })),
-      abi: abi.token,
-      block
-    })).output
-  
-    const currencyBalance = (await sdk.api.abi.multiCall({
-      calls: pools.map(target => ({ target })),
-      abi: abi.currencyBalance,
-      block
-    })).output
+  const portfolios = await api.call({ target: managedPortfolioFactory, abi: abi.getPortfolios, })
+  const underlyingToken = await api.multiCall({ calls: portfolios, abi: abi.underlyingToken, })
+  const liquidValue = await api.multiCall({ calls: portfolios, abi: abi.liquidValue, })
+  const illiquidValue = await api.multiCall({ calls: portfolios, abi: abi.illiquidValue, })
 
-    const loansValue = (await sdk.api.abi.multiCall({
-      calls: pools.map(target => ({ target })),
-      abi: abi.loansValue,
-      block
-    })).output
-  
-    const portfolios = (await sdk.api.abi.call({
-      target: managedPortfolioFactory,
-      abi: abi.getPortfolios,
-      block
-    })).output
-    const pCalls = portfolios.map(i => ({ target: i}))
-  
-    const underlyingToken = (await sdk.api.abi.multiCall({
-      calls: pCalls,
-      abi: abi.underlyingToken,
-      block
-    })).output
-    
-    const liquidValue = (await sdk.api.abi.multiCall({
-      calls: pCalls,
-      abi: abi.liquidValue,
-      block
-    })).output
-  
-    const illiquidValue = (await sdk.api.abi.multiCall({
-      calls: pCalls,
-      abi: abi.illiquidValue,
-      block
-    })).output
+  const assetVaults = await api.call({ target: assetVaultFactory, abi: abi.getAssetVaults, })
+  const avUnderlyingTokens = await api.multiCall({ calls: assetVaults, abi: abi.asset, })
+  const avLiquidAssets = await api.multiCall({ calls: assetVaults, abi: abi.liquidAssets, })
+  const avIlliquidAssets = await api.multiCall({ calls: assetVaults, abi: abi.outstandingAssets, })
 
-    const assetVaults = (await sdk.api.abi.call({
-      target: assetVaultFactory,
-      abi: abi.getAssetVaults,
-      block
-    })).output
-    const avCalls = assetVaults.map(i => ({ target: i}))
-
-    const avUnderlyingTokens = (await sdk.api.abi.multiCall({
-      calls: avCalls,
-      abi: abi.asset,
-      block
-    })).output
-
-    const avLiquidAssets = (await sdk.api.abi.multiCall({
-      calls: avCalls,
-      abi: abi.liquidAssets,
-      block
-    })).output
-
-    const avIlliquidAssets = (await sdk.api.abi.multiCall({
-      calls: avCalls,
-      abi: abi.outstandingAssets,
-      block
-    })).output
-  
-    const balances = {
-      tvl: {},
-      borrowed: {},
-    }
-  
-    tokens.forEach(({ output }, i) => sdk.util.sumSingleBalance(balances.tvl, output, currencyBalance[i].output))
-    tokens.forEach(({ output }, i) => sdk.util.sumSingleBalance(balances.borrowed, output, loansValue[i].output))
-    underlyingToken.forEach(({ output }, i) => sdk.util.sumSingleBalance(balances.tvl, output, liquidValue[i].output))
-    underlyingToken.forEach(({ output }, i) => sdk.util.sumSingleBalance(balances.borrowed, output, illiquidValue[i].output))
-    avUnderlyingTokens.forEach(({ output }, i) => sdk.util.sumSingleBalance(balances.tvl, output, avLiquidAssets[i].output))
-    avUnderlyingTokens.forEach(({ output }, i) => sdk.util.sumSingleBalance(balances.borrowed, output, avIlliquidAssets[i].output))
-
-    return balances
+  if (!isBorrowed) {
+    api.addTokens(tokens, currencyBalance)
+    api.addTokens(underlyingToken, liquidValue)
+    api.addTokens(avUnderlyingTokens, avLiquidAssets)
+  } else {
+    api.addTokens(tokens, loansValue)
+    api.addTokens(underlyingToken, illiquidValue)
+    api.addTokens(avUnderlyingTokens, avIlliquidAssets)
   }
-} 
-
-async function borrowed(ts, block) {
-  return (await getAllTvl(block)).borrowed
 }
 
-async function tvl(ts, block) {
-  return (await getAllTvl(block)).tvl
+async function borrowed(ts, block, _, { api }) {
+  return getAllTvl(api, true)
+}
+
+async function tvl(ts, block, _, { api }) {
+  return getAllTvl(api, false)
 }
 
 module.exports = {
   start: 1605830400,            // 11/20/2020 @ 12:00am (UTC)
   ethereum: {
     tvl,
-    staking: staking(stkTRU, TRU, 'ethereum'),
+    staking: staking(stkTRU, TRU),
     borrowed,
   }
 }
