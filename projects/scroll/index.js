@@ -14,6 +14,7 @@ module.exports = {
           "0x6260aF48e8948617b8FA17F4e5CEa2d21D21554B",
         ],
         fetchCoValentTokens: true,
+        logArray,
       }),
   },
 };
