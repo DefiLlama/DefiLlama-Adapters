@@ -15,6 +15,6 @@ module.exports = uniV3Export({
   },
   metis: {
     factory: "0x8112E18a34b63964388a3B2984037d6a2EFE5B8A",
-    fromBlock: 9740222,
+    fromBlock: 1702888970,
   },
 });
