@@ -11,9 +11,15 @@ async function tvl() {
   return sumTokens({ owners });
 }
 
+async function staking() {
+  const owner = "erd1qqqqqqqqqqqqqpgq05whpg29ggrrm9ww3ufsf9ud23f66msv6avs5s5xxy";
+  return sumTokens({ owner });
+}
+
 module.exports = {
   timetravel: false,
   elrond: {
+    staking,
     tvl,
   },
 };

@@ -11,6 +11,10 @@ const vaultsMantle = [
   "0x5f247B216E46fD86A09dfAB377d9DBe62E9dECDA",
   "0xCbb95e8a63cd37D09c2948A22c12632469fb0BC7",
   "0x907a942ce79ca4Cf063d2e987024dc9E88C5ac98",
+  "0xB2b593Ab057e99edbAA33258b5613227F64c80C6",
+  "0x38B73D78c45b39B7658635fA753EfBE2d4077A33",
+  "0x0ca817970d1Bf8789CCB26aC0a6b69d02b6dF34e",
+  "0x16d6e3B2979C61D3fa399Cc7D65EFFaadd46682c",
 ];
 
 const vaultsManta = [
@@ -20,6 +24,13 @@ const vaultsManta = [
   "0x5f247B216E46fD86A09dfAB377d9DBe62E9dECDA",
   "0x45C3BB1a0f0827bF03C089842334B861474e7714",
   "0x241d09eC72809C4C390BC81b81dEF4d1E0e88626",
+];
+
+const vaultsTelos = [
+  "0x67e07BFfce318ADbA7b08618CBf4B8E271499197",
+  "0x70527810CB658FaDBe16845485fC79EC7722c860",
+  "0xA0dD02ef78570a4d93b7eE334EA9c593F7A0ebc4",
+  "0x4778CAAa0E52F0B58eAF5e947Ae81A0a10cDe707",
 ];
 
 module.exports = {
@@ -32,6 +43,11 @@ module.exports = {
   manta: {
     tvl: sumERC4626VaultsExport({
       vaults: vaultsManta,
+    }),
+  },
+  telos: {
+    tvl: sumERC4626VaultsExport({
+      vaults: vaultsTelos,
     }),
   },
 };

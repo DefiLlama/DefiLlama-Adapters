@@ -5,5 +5,6 @@ const zks = "";
 
 module.exports = {
   misrepresentedTokens: true,
-  era: { tvl: getUniTVL({ factory, useDefaultCoreAssets: true, fetchBalances: true }) },
+  era: { tvl: getUniTVL({ factory, useDefaultCoreAssets: true, }) },
+  zkfair: { tvl: getUniTVL({ factory: '0x028e8aB8C7556C7F42315f5afe08bB7392aA6878', useDefaultCoreAssets: true, }) },
 };
