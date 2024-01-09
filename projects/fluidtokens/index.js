@@ -63,7 +63,7 @@ async function borrowed(
   ts //timestamp in seconds
 ) {
   const data = await get("https://api.fluidtokens.com/get-ft-stats");
-  let SC_tvl = parseInt(data.active_loans_volume);
+  let SC_tvl = parseInt(data.active_loans_volume)+parseInt(data.bs_available_volume)+parseInt(data.bs_active_volume);
 
  
   const dataOffers = await get("https://api.fluidtokens.com/get-available-collection-offers");
