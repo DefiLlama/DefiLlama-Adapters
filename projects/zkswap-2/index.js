@@ -5,7 +5,7 @@ const zks = "";
 
 module.exports = {
   hallmarks: [
-    [1702166400,"Project Exploited"]
+    [1733788800,"Project Exploited"]
   ],
   misrepresentedTokens: true,
   era: { tvl: getUniTVL({ factory, useDefaultCoreAssets: true, }) },
