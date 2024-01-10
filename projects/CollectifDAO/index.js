@@ -1,4 +1,3 @@
-const {BigNumber} = require("@ethersproject/bignumber");
 const {nullAddress} = require("../helper/tokenMapping");
 const {get} = require("../helper/http");
 
@@ -32,19 +31,18 @@ module.exports = {
 			const minersOwners = await getMinersOwners();
 			const totalStaked = await api.call({abi: totalAssetsABI, target: COLLECTIF_LIQUID_STAKING_POOL_CONTRACT});
 
-			let totalCollateral = BigNumber.from(0);
+			let totalCollateral = 0
 
 			if (minersOwners && minersOwners.length > 0) {
 				const collaterals = await Promise.all(minersOwners.map(fetchCollateral));
 				totalCollateral = collaterals.reduce((acc, cur) => {
 					const [available, locked] = cur;
-					return acc.add(available).add(locked);
-				}, BigNumber.from(0));
+					return acc + +available + +locked
+				}, 0);
 			}
 
-			const tvl = BigNumber.from(totalStaked).add(totalCollateral).toString();
-
-			api.add(nullAddress, tvl)
+			api.add(nullAddress, totalStaked)
+			api.add(nullAddress, totalCollateral)
 		},
 	},
 };

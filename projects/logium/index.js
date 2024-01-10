@@ -3,7 +3,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 
 const { getBlock } = require('../helper/http')
 const sdk = require('@defillama/sdk')
-const { Contract } = require('ethers')
+// const { Contract } = require('ethers')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getLogs } = require('../helper/cache/getLogs')
 const USDC = ADDRESSES.ethereum.USDC
@@ -18,26 +18,26 @@ function getProvider(network) {
 }
 
 async function tvl(ts, block, _, { api}) {
-  const fromBlock = await getBlock(ts - (15 * ONE_DAY), 'ethereum', {}, false) //33 days ago
-  const usdcContract = new Contract(USDC, [usdcABI], getProvider('ethereum'))
-  const eventFilter = usdcContract.filters.Transfer(LOGIUM_CORE);
+  // const fromBlock = await getBlock(ts - (15 * ONE_DAY), 'ethereum', {}, false) //33 days ago
+  // const usdcContract = new Contract(USDC, [usdcABI], getProvider('ethereum'))
+  // const eventFilter = usdcContract.filters.Transfer(LOGIUM_CORE);
 
-  // TODO: fix this so it works
-  const events = await getLogs({
-    target: USDC,
-    topics: eventFilter.topics,
-    fromBlock,
-    toBlock: block,
-    api,
-    eventAbi: usdcABI,
-    skipCache: true,
-  })
+  // // TODO: fix this so it works
+  // const events = await getLogs({
+  //   target: USDC,
+  //   topics: eventFilter.topics,
+  //   fromBlock,
+  //   toBlock: block,
+  //   api,
+  //   eventAbi: usdcABI,
+  //   skipCache: true,
+  // })
 
   const owners = [LOGIUM_CORE]
-  events.forEach(e => {
-    if (e.args.from.toLowerCase() !== LOGIUM_CORE)  return;
-    owners.push(e.args.to)
-  })
+  // events.forEach(e => {
+  //   if (e.args.from.toLowerCase() !== LOGIUM_CORE)  return;
+  //   owners.push(e.args.to)
+  // })
   return sumTokens2({ owners, tokens: [USDC] })
 }
 
