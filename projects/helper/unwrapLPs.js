@@ -737,7 +737,7 @@ async function sumTokens2({
     _tokens.forEach((v, i) => tokensAndOwners.push([v, _owners[i]]))
   }
 
-  if (resolveUniV3 || uniV3nftsAndOwners.length || uniV3ExtraConfig)
+  if (resolveUniV3 || uniV3nftsAndOwners.length || Object.keys(uniV3ExtraConfig).length)
     await unwrapUniswapV3NFTs({ balances, chain, block, owner, owners, blacklistedTokens, whitelistedTokens: uniV3WhitelistedTokens, nftsAndOwners: uniV3nftsAndOwners, uniV3ExtraConfig, })
 
   blacklistedTokens = blacklistedTokens.map(t => normalizeAddress(t, chain))
