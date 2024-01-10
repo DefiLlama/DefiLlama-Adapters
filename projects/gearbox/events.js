@@ -1,5 +1,5 @@
-const { api, api2 } = require("@defillama/sdk");
-const { Contract, BigNumber } = require("ethers");
+const { api2 } = require("@defillama/sdk");
+const { Contract, ethers } = require("ethers");
 const sdk = require('@defillama/sdk')
 const { getLogs } = require('../helper/cache/getLogs')
 
@@ -60,23 +60,12 @@ const getV2CAs = async (creditManager, block, api) => {
   for (let cfAddr of cfAddrs) {
     const cf = new Contract(cfAddr, abi["filtersV2"], getProvider("ethereum"))
 
-    const topics = {
-      OpenCreditAccount: cf.interface.getEventTopic("OpenCreditAccount"),
-      CloseCreditAccount: cf.interface.getEventTopic("CloseCreditAccount"),
-      LiquidateCreditAccount: cf.interface.getEventTopic(
-        "LiquidateCreditAccount"
-      ),
-      LiquidateExpiredCreditAccount: cf.interface.getEventTopic(
-        "LiquidateExpiredCreditAccount"
-      ),
-      TransferAccount: cf.interface.getEventTopic("TransferAccount"),
-    };
     const l = (
       await getLogs({
         target: cfAddr,
         fromBlock,
         api,
-        topics: [Object.values(topics)],
+        topics: abi["filtersV2"].map(i => ethers.id(i)),
       })
     ).map((log) => ({
       ...cf.interface.parseLog(log),
@@ -132,7 +121,7 @@ const getV2CAs = async (creditManager, block, api) => {
 
   return totalValue[0]
     ? totalValue
-      .reduce((a, c) => a.add(BigNumber.from(c)), BigNumber.from("0"))
+      .reduce((a, c) => a + BigInt(c), BigInt(0))
       .toString()
     : "0";
 };
@@ -159,22 +148,13 @@ const getV1CAs = async (creditManager, block, api) => {
   );
   const cf = await cm.creditFilter();
 
-  const topics = {
-    OpenCreditAccount: cm.interface.getEventTopic("OpenCreditAccount"),
-    CloseCreditAccount: cm.interface.getEventTopic("CloseCreditAccount"),
-    RepayCreditAccount: cm.interface.getEventTopic("RepayCreditAccount"),
-    LiquidateCreditAccount: cm.interface.getEventTopic(
-      "LiquidateCreditAccount"
-    ),
-    TransferAccount: cm.interface.getEventTopic("TransferAccount"),
-  };
 
   const logs = (
     await getLogs({
       target: creditManager,
       fromBlock,
       api,
-      topics: [Object.values(topics)],
+      topics: abi["filtersV1"].map(i => ethers.id(i)),
     })
   ).map((log) => ({
     ...cm.interface.parseLog(log),
@@ -227,7 +207,7 @@ const getV1CAs = async (creditManager, block, api) => {
   });
 
   return totalValue
-    .reduce((a, c) => a.add(BigNumber.from(c)), BigNumber.from("0"))
+    .reduce((a, c) => a + BigInt(c), BigInt(0))
     .toString();
 };
 

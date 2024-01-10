@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const { BigNumber } = require('ethers');
 
 const { fetchVaults, fetchLoans } = require('./queries');
 const { sumTokens2 } = require('../helper/unwrapLPs');
@@ -48,30 +47,16 @@ async function tvl(_, block, _cb, { api }) {
 // Fetches all active loans, their payable curency and amount borrowed then sums it up.
 async function borrowed(_, block, _cb, { api }) {
   const loans = await fetchLoans(block);
-  const balances = {}
 
   // Iterate over each loan to sum up principal by currency
   for (const loan of loans) {
     const { payableCurrency, principal, interestRate } = loan;
-    const fullRepayment = getRepayment(principal, interestRate)
-
-    sdk.util.sumSingleBalance(balances, payableCurrency, fullRepayment, api.chain);
+    api.add(payableCurrency, principal)
+    const interest = principal * interestRate / 1e21
+    api.add(payableCurrency, interest)
   }
 
-  return balances;
-}
-
-const decimals18 = BigNumber.from(10).pow(18);
-function getRepayment(principalStr, interestRateStr) {
-  const principal = BigNumber.from(principalStr);
-  const interestRate = BigNumber.from(interestRateStr);
-
-  const interest = principal
-    .mul(interestRate)
-    .div(decimals18)
-    .div(1000);
-
-  return principal.add(interest);
+  return api.getBalances();
 }
 
 module.exports = {
