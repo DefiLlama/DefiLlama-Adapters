@@ -19,8 +19,6 @@
   "license": "ISC",
   "dependencies": {
     "@defillama/sdk": "latest",
-    "@pancakeswap/sdk": "^5.7.4",
-    "@pancakeswap/v3-sdk": "^3.7.2",
     "@project-serum/anchor": "^0.26.0",
     "@solana/web3.js": "^1.87.6",
     "@solendprotocol/solend-sdk": "^0.6.2",
