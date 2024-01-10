@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokensAndLPsSharedOwners, unwrapUniswapV3NFTs, genericUnwrapCvx } = require('../helper/unwrapLPs')
+const { sumTokensAndLPsSharedOwners, sumTokens2, genericUnwrapCvx } = require('../helper/unwrapLPs')
 const sdk = require('@defillama/sdk')
 
 const treasuries = ["0xa52fd396891e7a74b641a2cb1a6999fcf56b077e", "0x086c98855df3c78c6b481b6e1d47bef42e9ac36b"]
@@ -40,7 +40,7 @@ async function tvl(timestamp, block, chainBlocks){
     ], treasuries, block)
     
     //Add UniswapV3 LPs
-    await unwrapUniswapV3NFTs({ balances, owners: treasuries, block})
+    await sumTokens2({ balances, owners: treasuries, block, resolveUniV3: true, })
 
     //Add convex deposited curve LPs
     await genericUnwrapCvx(balances, treasuries[0], cvxCRVPool, block, 'ethereum')

@@ -203,7 +203,7 @@ async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], block, c
         case 'evmos': nftAddress = '0x5fe5daaa011673289847da4f76d63246ddb2965d'; break;
         case 'celo': nftAddress = '0x3d79EdAaBC0EaB6F08ED885C05Fc0B014290D95A'; break;
         case 'base': nftAddress = '0x03a520b32C04BF3bEEf7BEb72E919cf822Ed34f1'; break;
-        default: throw new Error('missing default uniswap nft address')
+        default: throw new Error('missing default uniswap nft address chain: ' + chain)
       }
 
     if ((!owners || !owners.length) && owner)
@@ -218,7 +218,7 @@ async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], block, c
   return balances
 }
 
-async function unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain = 'ethereum', blacklistedTokens = [], whitelistedTokens = [],  uniV3ExtraConfig = {}, }) {
+async function unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain = 'ethereum', blacklistedTokens = [], whitelistedTokens = [], uniV3ExtraConfig = {}, }) {
 
   blacklistedTokens = getUniqueAddresses(blacklistedTokens, chain)
   whitelistedTokens = getUniqueAddresses(whitelistedTokens, chain)
@@ -589,7 +589,7 @@ async function unwrapLPsAuto({ api, balances, block, chain = "ethereum", transfo
 
   async function _addTokensAndLPs(balances, tokens, amounts) {
     const symbols = (await sdk.api.abi.multiCall({
-      calls: tokens.map(t => ({ target: t.output })), abi: symbol, block, chain, permitFailure: true, 
+      calls: tokens.map(t => ({ target: t.output })), abi: symbol, block, chain, permitFailure: true,
     })).output
     const lpBalances = []
     symbols.forEach(({ output }, idx) => {
@@ -854,7 +854,6 @@ async function unwrapConvexRewardPools({ api, tokensAndOwners }) {
 module.exports = {
   PANCAKE_NFT_ADDRESS,
   unwrapUniswapLPs,
-  unwrapUniswapV3NFTs,
   addTokensAndLPs,
   sumTokensAndLPsSharedOwners,
   sumTokensAndLPs,

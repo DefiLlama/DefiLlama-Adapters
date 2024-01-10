@@ -6,9 +6,6 @@ const bitdaoTreasury1 = "0x78605Df79524164911C144801f41e9811B7DB73D";
 const BIT = "0x1A4b46696b2bB4794Eb3D4c26f1c55F9170fa4C5";
 const MNT = "0x3c3a81e81dc49a522a592e7622a7e711c06bf354"
 
-const LP = "0xC36442b4a4522E871399CD717aBDD847Ab11FE88"
-
-
 module.exports = treasuryExports({
   ethereum: {
     tokens: [ 
@@ -22,7 +19,7 @@ module.exports = treasuryExports({
         "0x52A8845DF664D76C69d2EEa607CD793565aF42B8",
      ],
     owners: [bitdaoTreasury1],
-    ownTokens: [BIT, LP, MNT],
+    ownTokens: [BIT, MNT],
     resolveLP: true,
     resolveUniV3: true,
   },
