@@ -5,8 +5,8 @@ const { PromisePool } = require('@supercharge/promise-pool')
 const { getConfig } = require('../helper/cache')
 
 const abis = {
-  wrapped_coins: 'function wrapped_coins(uint256 arg0) view returns (address) @3345',
-  coins: 'function coins(uint256 arg0) view returns (address) @3375'
+  wrapped_coins: 'function wrapped_coins(uint256 arg0) view returns (address)',
+  coins: 'function coins(uint256 arg0) view returns (address)'
 }
 
 async function tvl(_, _b, { [chain]: block }) {
