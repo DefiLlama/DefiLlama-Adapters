@@ -1,6 +1,5 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getConfig } = require('../helper/cache')
-const { sumERC4626Vaults } = require('../helper/erc4626')
 
 const v1Vaults = [
   '0x597aD1e0c13Bfe8025993D9e79C69E1c0233522e',
@@ -45,7 +44,7 @@ const blacklist = [
 async function tvl(timestamp, _, _1, { api }) {
   const data = await getConfig('yearn/' + api.chain, `https://api.yearn.finance/v1/chains/${api.chainId}/vaults/all`)
   const vaults = data.map(i => i.address).filter(i => !blacklist.includes(i))
-  await sumERC4626Vaults({ api, vaults, abi: { asset: 'address:token', } })
+  await api.erc4626Sum({ calls: vaults,  balanceAbi: 'totalAssets', })
   if (api.chain === 'ethereum') {
     const tokens = await api.multiCall({ abi: 'address:token', calls: v1Vaults })
     let bals = await api.multiCall({ abi: 'erc20:totalSupply', calls: v1Vaults })

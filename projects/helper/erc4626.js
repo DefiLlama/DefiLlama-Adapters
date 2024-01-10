@@ -1,8 +1,6 @@
 
-async function sumERC4626Vaults({ api, vaults, abi = {} }) {
-  const tokens = await api.multiCall({  abi: abi.asset ?? 'address:asset', calls: vaults})
-  const bals = await api.multiCall({  abi: abi.balance ?? 'uint256:totalAssets', calls: vaults})
-  api.addTokens(tokens, bals)
+async function sumERC4626Vaults({ api, vaults, options = {} }) {
+  await api.erc4626Sum({ calls: vaults, permitFailiure: true })
   return api.getBalances()
 }
 
