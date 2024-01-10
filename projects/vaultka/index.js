@@ -102,7 +102,7 @@ module.exports = {
         stakedHlpBalance:
           "function userTokenAmount(address user) public view returns (uint256)",
         stakedAlpBalance:
-          "function userInfo(address account) external view returns (, uint256)",
+          "function userInfo(address account) external view returns (uint256, uint256)",
         alpPrice: "function getAlpPrice() external view returns (uint256)", //
       };
 
