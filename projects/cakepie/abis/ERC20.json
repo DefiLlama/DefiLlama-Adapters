@@ -1,5 +1,0 @@
-{
-    "decimals": "function decimals() view returns (uint256)",
-    "balanceOf": "function balanceOf(address) view returns (uint256)",
-    "allowance": "function allowance(address,address) view returns (uint256)"
-}

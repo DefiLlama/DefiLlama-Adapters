@@ -190,7 +190,7 @@ async function sumLPWithOnlyOneTokenOtherThanKnown(balances, lpToken, owner, tok
 }
 
 const PANCAKE_NFT_ADDRESS = '0x46A15B0b27311cedF172AB29E4f4766fbE7F4364'
-async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], block, chain = 'ethereum', owner, nftAddress, owners, blacklistedTokens = [], whitelistedTokens = [], }) {
+async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], block, chain = 'ethereum', owner, nftAddress, owners, blacklistedTokens = [], whitelistedTokens = [], uniV3ExtraConfig = {} }) {
   // https://docs.uniswap.org/contracts/v3/reference/deployments
   if (!nftsAndOwners.length) {
     if (!nftAddress)
@@ -214,19 +214,21 @@ async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], block, c
     else
       nftsAndOwners = owners.map(o => [nftAddress, o])
   }
-  await Promise.all(nftsAndOwners.map(([nftAddress, owner]) => unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain, blacklistedTokens, whitelistedTokens, })))
+  await Promise.all(nftsAndOwners.map(([nftAddress, owner]) => unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain, blacklistedTokens, whitelistedTokens, uniV3ExtraConfig, })))
   return balances
 }
 
-async function unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain = 'ethereum', blacklistedTokens = [], whitelistedTokens = [], }) {
+async function unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain = 'ethereum', blacklistedTokens = [], whitelistedTokens = [],  uniV3ExtraConfig = {}, }) {
+
   blacklistedTokens = getUniqueAddresses(blacklistedTokens, chain)
   whitelistedTokens = getUniqueAddresses(whitelistedTokens, chain)
+  let nftIdFetcher = uniV3ExtraConfig.nftIdFetcher ?? nftAddress
 
-  const nftPositions = (await sdk.api.erc20.balanceOf({ target: nftAddress, owner, block, chain })).output
+  const nftPositions = (await sdk.api.erc20.balanceOf({ target: nftIdFetcher, owner, block, chain })).output
   const factory = (await sdk.api.abi.call({ target: nftAddress, abi: wildCreditABI.factory, block, chain })).output
 
   const positionIds = (await sdk.api.abi.multiCall({
-    block, chain, abi: wildCreditABI.tokenOfOwnerByIndex, target: nftAddress,
+    block, chain, abi: wildCreditABI.tokenOfOwnerByIndex, target: nftIdFetcher,
     calls: Array(Number(nftPositions)).fill(0).map((_, index) => ({ params: [owner, index] })),
   })).output.map(positionIdCall => positionIdCall.output)
 
@@ -684,6 +686,7 @@ async function sumTokens2({
   fetchCoValentTokens = false,
   tokenConfig = {},
   sumChunkSize = undefined,
+  uniV3ExtraConfig = {},
 }) {
   if (api) {
     chain = api.chain ?? chain
@@ -734,8 +737,8 @@ async function sumTokens2({
     _tokens.forEach((v, i) => tokensAndOwners.push([v, _owners[i]]))
   }
 
-  if (resolveUniV3 || uniV3nftsAndOwners.length)
-    await unwrapUniswapV3NFTs({ balances, chain, block, owner, owners, blacklistedTokens, whitelistedTokens: uniV3WhitelistedTokens, nftsAndOwners: uniV3nftsAndOwners, })
+  if (resolveUniV3 || uniV3nftsAndOwners.length || uniV3ExtraConfig)
+    await unwrapUniswapV3NFTs({ balances, chain, block, owner, owners, blacklistedTokens, whitelistedTokens: uniV3WhitelistedTokens, nftsAndOwners: uniV3nftsAndOwners, uniV3ExtraConfig, })
 
   blacklistedTokens = blacklistedTokens.map(t => normalizeAddress(t, chain))
   tokensAndOwners = tokensAndOwners.map(([t, o]) => [normalizeAddress(t, chain), o]).filter(([token]) => !blacklistedTokens.includes(token))
@@ -849,6 +852,7 @@ async function unwrapConvexRewardPools({ api, tokensAndOwners }) {
 }
 
 module.exports = {
+  PANCAKE_NFT_ADDRESS,
   unwrapUniswapLPs,
   unwrapUniswapV3NFTs,
   addTokensAndLPs,

@@ -1,4 +1,3 @@
-const ADDRESSES = require('../helper/coreAssets.json')
 module.exports = {
     bsc: {
         MasterCakepieAddress: "0x74165b89fd8E9b91A109a4e71662f27EeBA61E98",
