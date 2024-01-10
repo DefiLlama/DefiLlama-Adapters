@@ -59,7 +59,7 @@ async function tvlAvalanche(timestamp, block, chainBlocks, { api }) {
   const ownedAssets = await api.multiCall({ abi: getAllOwnedAssetsAbi, calls: accounts })
   accounts.forEach((o, i) => {
     ownedAssets[i].forEach(tokenStr => {
-      tokenStr = ethers.utils.parseBytes32String(tokenStr)
+      tokenStr = ethers.decodeBytes32String(tokenStr)
       const token = assetToAddressMappingAvalanche[tokenStr]
       if (!token) {
         sdk.log('Missing asset mapping for: ' + tokenStr)
@@ -111,7 +111,7 @@ async function tvlArbitrum(timestamp, block, chainBlocks, { api }) {
 
   accounts.forEach((o, i) => {
     ownedAssets[i].forEach(tokenStr => {
-      tokenStr = ethers.utils.parseBytes32String(tokenStr)
+      tokenStr = ethers.decodeBytes32String(tokenStr)
       const token = assetToAddressMappingArbitrum[tokenStr]
       if (!token) return;
       if (!token) {
