@@ -2,7 +2,7 @@ const ADDRESSES = require("../helper/coreAssets.json");
 const { treasuryExports, nullAddress } = require("../helper/treasury");
 
 const treasury = [
-  "0x46488d2D36D8983de980Ff3b9f046DCd0a9DC2ae",
+  "0x46488d2D36D8983de980Ff3b9f046DCd0a9DC2ae",//multisig
   "0xAb461d4Bfd54785DEe8fc3fD79994962A09582dA",
   "0xA7f8B0DA0073ff91a30B6682aBB13416aAD7d30c",
   "0x7f4C824dF0767a5e4eb420Ef816F45F8324E2024",
