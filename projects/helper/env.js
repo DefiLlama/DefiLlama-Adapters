@@ -18,6 +18,7 @@ const DEFAULTS = {
   BITCHAIN_RPC: "https://rpc.bitchain.biz/",
   ZKFAIR_RPC: "https://rpc.zkfair.io/",
   ALV_RPC: "https://elves-core3.alvey.io/",
+  EVMOS_RPC: "https://evmos.lava.build/",
 }
 
 const ENV_KEYS = [
