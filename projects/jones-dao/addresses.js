@@ -5,7 +5,7 @@ module.exports = {
     strategy: "0x7629fc134e5a7feBEf6340438D96881C8D121f2c",
   },
   glp: {
-    leverageStrategy: "0x15df56a82c194FeFEC9337C37A41964B69b584d5",
+    leverageStrategy: "0x64ECc55a4F5D61ead9B966bcB59D777593afBd6f",
     router: "0x2F43c6475f1ecBD051cE486A9f3Ccc4b03F3d713",
     stableRewardTracker: "0xEB23C7e19DB72F9a728fD64E1CAA459E457cfaca",
   },
