@@ -14,6 +14,6 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { lvTokens } = config[chain]
   module.exports[chain] = {
-    tvl: sumERC4626VaultsExport({ vaults: Object.values(lvTokens)})
+    tvl: sumERC4626VaultsExport({ vaults: Object.values(lvTokens), tokenAbi: 'asset', balanceAbi: 'totalAssets'})
   }
 })
