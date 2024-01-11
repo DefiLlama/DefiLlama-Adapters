@@ -154,7 +154,10 @@ const fixBalancesTokens = {
   zkfair: {
     [ADDRESSES.null]: { coingeckoId: 'usd-coin', decimals: 18 },
     '0xD33Db7EC50A98164cC865dfaa64666906d79319C': { coingeckoId: 'usd-coin', decimals: 18 },
-  }
+  },
+  chainx: {
+    [ADDRESSES.chainx.WBTC]: { coingeckoId: 'wrapped-bitcoin', decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
