@@ -73,12 +73,14 @@ async function BaseTvl(_time, _ethBlock, { base: block }) {
   const owners = Object.values(contracts)
   return sumTokens2({ chain, block, tokens, owners, })
 }
+
 async function EvmosTvl(_time, _ethBlock, { evmos: block }) {
   const contracts = {
     "stevmosPool": "0x21708707f03A19C3a4ea5E1a132B5cF96b86F294",
   };
+  const stevmos = ADDRESSES.evmos.STEVMOS;
   const chain = 'evmos'
-  const tokens = [nullAddress]
+  const tokens = [stevmos, nullAddress]
   const owners = Object.values(contracts)
   return sumTokens2({ chain, block, tokens, owners, })
 }
