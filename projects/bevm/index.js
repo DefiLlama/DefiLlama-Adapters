@@ -2,7 +2,7 @@ const { sumTokensExport } = require("../helper/sumTokens");
 const ADDRESSES = require("../helper/coreAssets.json");
 
 module.exports = {
-  methodology: "TVL counts tokens deposited in Bitcoin Multisig Wallet",
+  methodology: "TVL counts tokens deposited in BEVM",
   //doublecounted: true,
   bitcoin: {
     tvl: sumTokensExport({
