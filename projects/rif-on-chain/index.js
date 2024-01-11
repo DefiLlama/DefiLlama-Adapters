@@ -1,12 +1,7 @@
-const { get } = require('../helper/http')
+const { sumTokensExport } = require('../helper/unwrapLPs')
 
 module.exports = {
-  timetravel: false,
   rsk: {
-    tvl: async () => {
-      return {
-        'rootstock': (await get('https://api.moneyonchain.com/api/calculated/TVL')).btc_in_roc
-      }
-    }
+    tvl: sumTokensExport({ owner: '0xCff3FCaEc2352C672C38d77cB1A064B7d50CE7e1', tokens: ['0x2aCc95758f8b5F583470bA265Eb685a8f45fC9D5']})
   }
 }
