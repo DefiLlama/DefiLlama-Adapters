@@ -5,14 +5,11 @@ const ASSET_MANAGER_CONTRACT = 'asset-manager.orderly-network.near';
 const GET_LISTED_TOKENS_METHOD = 'get_listed_tokens';
 const FT_NEAR = 'wrap.near';
 
-const walletAddresses = {
-  arbitrum: '0x816f722424b49cf1275cc86da9840fbd5a6167e9',
-  optimism: '0x816f722424b49cf1275cc86da9840fbd5a6167e9',
-};
+const owner = '0x816f722424b49cf1275cc86da9840fbd5a6167e9'
 
 const tokenAddress = {
-  arbitrum: ADDRESSES.arbitrum.USDC,
-  optimism: ADDRESSES.optimism.USDC,
+  arbitrum: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
+  optimism: '0x0b2c639c533813f4aa9d7837caf62653d097ff85',
 }
 
 async function tvl() {
@@ -34,10 +31,10 @@ module.exports = {
     tvl,
   },
   arbitrum: {
-    tvl: sumTokensExport({ owner: [walletAddresses.arbitrum], tokens: [tokenAddress.arbitrum] }),
+    tvl: sumTokensExport({ owner, tokens: [tokenAddress.arbitrum] }),
   },
   optimism: {
-    tvl: sumTokensExport({ owner: [walletAddresses.optimism], tokens: [tokenAddress.optimism] }),
+    tvl: sumTokensExport({ owner, tokens: [tokenAddress.optimism] }),
   },
   methodology: 'All the tokens deposited into Orderly Network by chain'
 };
