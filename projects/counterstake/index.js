@@ -11,11 +11,8 @@ const {
     fetchOswapExchangeRates,
     summingBaseAABalancesToTvl,
 } = require('../helper/chain/obyte');
-const utils = require('../helper/utils');
-const sdk = require('@defillama/sdk')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getConfig } = require('../helper/cache')
-const { formatUnits } = require('ethers/lib/utils')
 
 async function bridgeTvl(timestamp, assetMetadata, exchangeRates) {
     const baseAABalances = await Promise.all([
@@ -143,14 +140,14 @@ const tryToGetUSDPriceOfUnknownTokens = async (sum, api) => {
             target: LINE_CONTRACT,
         });
 
-        const totalLocked = BigInt(transformedSumObject[LINE_TOKEN_KEY]);
+        const totalLocked = transformedSumObject[LINE_TOKEN_KEY]
 
         const linePriceInCollateral = await api.call({
             abi: "uint256:getPrice",
             target: ORACLE_CONTRACT_ADDRESS,
         });
 
-        const priceInCollateral = formatUnits(totalLocked * BigInt(linePriceInCollateral), 36);
+        const priceInCollateral = totalLocked * linePriceInCollateral / 1e36
         const exchangeRates = await fetchOswapExchangeRates();
 
         transformedSumObject['usd'] = exchangeRates['GBYTE_USD'] * priceInCollateral;

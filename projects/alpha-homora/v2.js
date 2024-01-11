@@ -3,7 +3,7 @@ const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
 const { request, gql } = require("graphql-request");
-const { unwrapCreamTokens, unwrapUniswapLPs, unwrapUniswapV3NFTs } = require('../helper/unwrapLPs')
+const { unwrapCreamTokens, unwrapUniswapLPs, sumTokens2 } = require('../helper/unwrapLPs')
 const { getConfig } = require('../helper/cache')
 
 
@@ -167,7 +167,7 @@ async function tvlV2Onchain(block, chain) {
     const blacklisted = ['0xf3a602d30dcb723a74a0198313a7551feaca7dac', '0x2a8a315e82f85d1f0658c5d66a452bbdd9356783',].map(i => i.toLowerCase())
     lpPools = lpPools.filter(p => !blacklisted.includes(p.token.toLowerCase()))
     await unwrapUniswapLPs(balances, lpPools, block, chain, transform)
-    if (owners.length) await unwrapUniswapV3NFTs({ balances, owners, chain, block, })
+    if (owners.length) await sumTokens2({ balances, chain, block, owners, resolveUniV3: true, })
 
     return balances
 }
