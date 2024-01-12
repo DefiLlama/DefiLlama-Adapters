@@ -3,15 +3,15 @@ const { chainExports } = require("../helper/exports");
 
 const lendingPoolCore = "0xA238Dd80C259a72e81d7e4664a9801593F98d1c5";
 
-async function tvl(_, _1, _2,{api}) {
-    abi={"getUserAccountData": "function getUserAccountData(address user) view returns (uint256 totalCollateralBase, uint256 totalDebtBase)"}
-
+async function tvl(_,_1,_2,{api}) {
+    abi={"getUserAccountData": "function getUserAccountData(address user) view returns (uint256 totalCollateralBase, uint256 totalDebtBase)"} //"totalDebt"
+    blockNumber = await sdk.api.util.getLatestBlock("base")
     const reserves = await sdk.api.abi.call({
         target: lendingPoolCore,
         params: ["0x01ae5e1e0fed8369aef5c4e6ff1ab62bd0381b9b"],
         abi: abi["getUserAccountData"],
         chain: "base",
-       // block: block,
+        //block: blockNumber,
         skipCache: true
     });
 
@@ -22,17 +22,15 @@ async function tvl(_, _1, _2,{api}) {
     const balances = {
         '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913': totalCollateralBase
     };
-console.log(tvlOk)
-  //return  tvlOk;
-  api.add("0x01ae5e1e0fed8369aef5c4e6ff1ab62bd0381b9b", tvlOk)
-  /* blockNumber = sdk.api.util.getLatestBlock(base)
-  sdk. */
-}
+console.log(balances)
+  //return  balances; //if not, return balances
+  api.add("0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", totalCollateralBase)
+ }
 
 module.exports = {
     methodology: "Counts assets (ETH and USDC) deposited",
     base: {
-        tvl,
+        tvl:tvl,
     },      
     
 };
