@@ -12,5 +12,6 @@ module.exports = {
     "Sum of each liquidity pool's value",
   wemix: {
     tvl
-  }
+  },
+  deadFrom: "2023-12-31", // https://medium.com/@konverter/konverter-service-is-set-to-be-phased-out-bd65dcf6dc34
 };

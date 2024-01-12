@@ -30,7 +30,7 @@ const distressedAssts = new Set(Object.values({
   SNS: 'SNSNkV9zfG5ZKWQs6x4hxvBRV6s8SqMfSGCtECDvdMd',
   BASED: 'fantom:0x8d7d3409881b51466b483b11ea1b8a03cded89ae',
   LORT: 'bsc:0xd24616870ca41bc01074446988faeb0085a71190',
-  BSHARE: '0x49C290Ff692149A4E16611c694fdED42C954ab7a',
+  // BSHARE: '0x49C290Ff692149A4E16611c694fdED42C954ab7a',
   PEEP: 'n54ZwXEcLnc3o7zK48nhrLV4KTU5wWD4iq7Gvdt5tik',
   WIF: 'EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm',
   GUAC: 'AZsHEMXd36Bj1EMNXhowJajpUXzrKcK57wW4ZGXVa7yR',
@@ -149,11 +149,15 @@ const fixBalancesTokens = {
     [ADDRESSES.jbc.BNB]: { coingeckoId: 'binancecoin', decimals: 18 },
     [ADDRESSES.jbc.JFIN]: { coingeckoId: 'jfin-coin', decimals: 18 },
     [ADDRESSES.jbc.KUB]: { coingeckoId: 'bitkub-coin', decimals: 18 },
+    [ADDRESSES.jbc.JUSDT]: { coingeckoId: 'tether', decimals: 18 },
   },
   zkfair: {
     [ADDRESSES.null]: { coingeckoId: 'usd-coin', decimals: 18 },
     '0xD33Db7EC50A98164cC865dfaa64666906d79319C': { coingeckoId: 'usd-coin', decimals: 18 },
-  }
+  },
+  chainx: {
+    [ADDRESSES.chainx.WBTC]: { coingeckoId: 'wrapped-bitcoin', decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })

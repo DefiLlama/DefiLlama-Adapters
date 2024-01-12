@@ -1,6 +1,5 @@
 const { nullAddress, sumTokens2 } = require("../helper/unwrapLPs");
 const { get } = require("../helper/http");
-const { ethers } = require("ethers");
 let _res;
 
 async function getData() {

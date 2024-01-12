@@ -1,6 +1,4 @@
 
-const { sumERC4626Vaults } = require("../helper/erc4626");
-
 const erc4626Abi = {
   "totalAssets": "uint256:totalAssets",
   "asset": "address:asset"
@@ -78,7 +76,7 @@ const getERC4626IdleVaultFundsByChain = async (api) => {
 }
 
 async function tvl(_, block, _cb, { api, }) {
-  await sumERC4626Vaults({ api, vaults: erc4626Vaults[api.chain] ?? [] })
+  await api.erc4626Sum({ calls: erc4626Vaults[api.chain] ?? [], tokenAbi: 'asset', balanceAbi: 'totalAssets', })
   await getERC4626IdleVaultFundsByChain(api)
   return api.getBalances()
 }
