@@ -4,10 +4,10 @@ const sdk = require("@defillama/sdk");
 
 const ETH_ADDRESS = ADDRESSES.null;
 // TroveManager holds total system collateral (deposited ETH)
-const TROVE_MANAGER_ADDRESS = "0xAeB0B38040aDdc4a2b520919f13944D9bC944435";
-const STAKING_ADDRESS = "0x109e342FE7132585abFa785887E2c05c85Fbcf71";
+const TROVE_MANAGER_ADDRESS = "0x21d81DABF6985587CE64C2E8EB12F69DF2178fe2";
+const STAKING_ADDRESS = "0x037a2e9a464fbA409D0E55600836864B410d6Dd8";
 const LQTY_ADDRESS = "";
-const WEN = "0x20143c45c2ce7984799079f256d8a68a918eeee6";
+const WEN = "0x6C0bf4b53696b5434A0D21C7D13Aa3cbF754913E";
 
 async function tvl(_, block) {
   const troveEthTvl = (

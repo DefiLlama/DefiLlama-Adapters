@@ -383,16 +383,16 @@ async function computeTVL(balances, timestamp) {
   const { errors } = await PromisePool.withConcurrency(5)
     .for(sliceIntoChunks(readKeys, 100))
     .process(async (keys) => {
-      if (keys[0] === "iotex:0x20143c45c2ce7984799079f256d8a68a918eeee6") {
-        tokenData.push({
-          "iotex:0x20143c45c2ce7984799079f256d8a68a918eeee6": {
-            decimals: 18,
-            symbol: "WEN",
-            price: 1,
-            timestamp: Math.floor(Date.now() / 1e3) - 23 * 3600,
-            confidence: 0.99
-          }
-        });
+      if (keys[0] !== "iotex:0x0000000000000000000000000000000000000000") {
+        const to = {};
+        to[keys[0]] = {
+          decimals: 18,
+          symbol: "WEN",
+          price: 1,
+          timestamp: Math.floor(Date.now() / 1e3) - 23 * 3600,
+          confidence: 0.99
+        };
+        tokenData.push(to);
       } else {
         tokenData.push((await axios.get(`https://coins.llama.fi/prices/current/${keys.join(',')}`)).data.coins)
       }
