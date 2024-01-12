@@ -48,10 +48,16 @@ module.exports = {
         ],
 
         // cewBETH
-        // [
-        //   "0x6C813D1d114d0caBf3F82f9E910BC29fE7f96451",
-        //   "0x5aEfa6309e8Da3eaBd32745aD5B2c9C1EBE54bef",
-        // ],
+        // eth
+        [
+          "0x2170Ed0880ac9A755fd29B2688956BD959F933F8",
+          "0xA230805C28121cc97B348f8209c79BEBEa3839C0",
+        ],
+        // wbeth
+        [
+          "0xa2E3356610840701BDf5611a53974510Ae27E2e1",
+          "0xA230805C28121cc97B348f8209c79BEBEa3839C0",
+        ],
       ],
     }),
   },
