@@ -10,12 +10,13 @@ module.exports = {
   bsc: {
     tvl: sumTokensExport({
       tokensAndOwners: [
-        // ceaBNBc
+        // BNB
+        [ADDRESSES.null, "0x986b40C2618fF295a49AC442c5ec40febB26CC54"],
 
         //ankrBNB
         [
           "0x52F24a5e03aee338Da5fd9Df68D2b6FAe1178827",
-          "0x00D8697D73216278de8f97BBEaE6ca90cf0a5CB0",
+          "0x25b21472c073095bebc681001cbf165f849eee5e",
         ],
 
         //stkBNB
@@ -40,18 +41,18 @@ module.exports = {
           "0x91e49983598685DD5ACAc90CEb4061A772f6E5Ae",
         ],
 
-        // wbeth
-        [
-          "0xa2E3356610840701BDf5611a53974510Ae27E2e1",
-          "0xf45C3b619Ee86F653805E007fE211B7e930E0b3B",
-        ],
-
-        // cewBETH
         // eth
         [
           "0x2170Ed0880ac9A755fd29B2688956BD959F933F8",
           "0xA230805C28121cc97B348f8209c79BEBEa3839C0",
         ],
+
+        // eth => wBETH
+        [
+          "0xa2E3356610840701BDf5611a53974510Ae27E2e1",
+          "0xf45C3b619Ee86F653805E007fE211B7e930E0b3B",
+        ],
+
         // wbeth
         [
           "0xa2E3356610840701BDf5611a53974510Ae27E2e1",
