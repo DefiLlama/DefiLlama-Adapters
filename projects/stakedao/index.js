@@ -195,7 +195,7 @@ async function tvl(timestamp, block, _, { api }) {
     let balance = 0
     for (let i = 0; i < count; i++) {
       const lockup = await api.call({ abi: 'function lockups(address,uint256) view returns (uint256 amount, uint256 end, uint256 points)', target: veToken, params: [contract, i] })
-      balance += +lockup.amount
+      balance += +lockup.amount.toString()
     }
     lockerMAVBal.push({ amount: balance, end: 0 })
   }

@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const {sumTokens2} = require('../helper/unwrapLPs');
-const {utils} = require("ethers");
 const {get} = require('../helper/http');
 
 const poolAddr = '0xC8E4EF1148D11F8C557f677eE3C73901CD796Bf6' // pool address
@@ -14,7 +13,7 @@ const getActiveMinersFromRPC = async () => {
         let bytes = Buffer.alloc(20);
         bytes.writeUint8(0xff, 0);
         bytes.writeBigUint64BE(BigInt(node), 12);
-        return utils.getAddress('0x' + bytes.toString('hex'));
+        return '0x' + bytes.toString('hex')
     });
 }
 

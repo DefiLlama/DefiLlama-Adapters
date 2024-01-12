@@ -1,10 +1,7 @@
-
 const sdk = require("@defillama/sdk");
-const { sumTokens2 } = require("../helper/unwrapLPs.js");
 const abi = require("./abi.json");
 
 const { getV2CAs, getV1CAs } = require("./events");
-const { BigNumber } = require("ethers");
 
 const addressProviderV3 = "0x9ea7b04da02a5373317d745c1571c84aad03321d";
 //// Gearbox TVL
@@ -39,7 +36,7 @@ const getPoolAddrs = async (block) => {
     t.input.target,
   ]);
 
-  return { tokensAndOwners, };
+  return { tokensAndOwners };
 };
 
 const getCreditManagersV1 = async (block) => {
@@ -167,26 +164,30 @@ const getCreditManagersV3 = async (block) => {
 };
 
 const getV3CAs = async (creditManager, block, api) => {
-  const caAddrs = await api.call({ abi: abi["creditAccounts"], target: creditManager, });
+  const caAddrs = await api.call({
+    abi: abi["creditAccounts"],
+    target: creditManager,
+  });
 
-  if (!caAddrs) return BigNumber.from("0").toString();
+  if (!caAddrs) return "0"
 
   const totalValue = await api.multiCall({
     // ICreditManagerV3__factory.createInterface().getFunction("calcDebtAndCollateral").format(ethers.utils.FormatTypes.full)
     abi: abi["calcDebtAndCollateral"],
     target: creditManager,
     calls: caAddrs.map((addr) => ({
-      params: [addr, 2], // DEBT_COLLATERAL_WITHOUT_WITHDRAWALS
+      target: creditManager,
+      params: [addr, 3], // DEBT_COLLATERAL
     })),
     permitFailure: true,
   });
 
   return totalValue
     .reduce(
-      (a, c) => a.add(BigNumber.from(c?.totalValue ?? '0')),
-      BigNumber.from("0")
+      (a, c) => a + BigInt(c?.totalValue ?? '0'),
+      BigInt(0)
     )
-    .toString()
+    .toString();
 };
 
 const getV3TVL = async (block, api) => {
@@ -222,7 +223,7 @@ const tvl = async (timestamp, block, _, { api }) => {
     tokensAndOwners.push([i.token, i.addr]);
   });
 
-  return api.sumTokens({ tokensAndOwners, });
+  return api.sumTokens({ tokensAndOwners });
 };
 
 module.exports = {

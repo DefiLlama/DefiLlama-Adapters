@@ -23,9 +23,7 @@ async function getLogs({ target,
   let iface
 
   if (eventAbi) {
-    iface = new ethers.utils.Interface([eventAbi])
-    if (typeof eventAbi === 'object')
-      sdk.log(iface.format(ethers.utils.FormatTypes.full))
+    iface = new ethers.Interface([eventAbi])
     if (!topics?.length) {
       const fragment = iface.fragments[0]
       topics = undefined
@@ -78,9 +76,9 @@ async function getLogs({ target,
     // remove possible duplicates
     if (!customCacheFunction)
       cache.logs = cache.logs.filter(i => {
-        let key = i.transactionHash + i.logIndex
-        if (!i.hasOwnProperty('logIndex') || !i.hasOwnProperty('transactionHash')) {
-          sdk.log(i)
+        let key = i.transactionHash + (i.logIndex ?? i.index)
+        if (!(i.hasOwnProperty('logIndex') || i.hasOwnProperty('index')) || !i.hasOwnProperty('transactionHash')) {
+          sdk.log(i, i.logIndex, i.index, i.transactionHash)
           throw new Error('Missing crucial field')
         }
         if (logIndices.has(key)) return false
