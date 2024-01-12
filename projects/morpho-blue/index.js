@@ -58,22 +58,11 @@ const addCollateralTokenMetrics = async (
   aggregatedMetrics,
   collateralAmounts
 ) => {
-  let tokenToAdd = collateralToken;
-
-  // Handle edge case: wBIB01 which is 1-1 with bIB01
-  if (
-    collateralToken === "0xABC56186c2Df63C338E04C9C9B9814E27983a5a9" &&
-    !aggregatedMetrics[collateralToken]
-  ) {
-    const result = await api.call({
-      target: collateralToken,
-      abi: abi.morphoBlueFunctions.underlying,
-    });
-    tokenToAdd = result || collateralToken;
+  if (!aggregatedMetrics[collateralToken]) {
+    const collateralBalance =
+      collateralAmounts[collateralToken] || new BigNumber(0);
+    api.add(collateralToken, collateralBalance.toFixed(0));
   }
-
-  const collateralBalance = collateralAmounts[tokenToAdd] || new BigNumber(0);
-  api.add(tokenToAdd, collateralBalance.toFixed(0));
 };
 
 // Main function to get metrics
