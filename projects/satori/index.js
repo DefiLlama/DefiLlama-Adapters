@@ -1,4 +1,3 @@
-
 const ADDRESSES = require("../helper/coreAssets.json");
 const { sumTokensExport } = require("../helper/unwrapLPs");
 
@@ -41,6 +40,15 @@ module.exports = {
         "0xF96116e124eB3F62Ddc6a9cfbdc58d7F8A37c50A",
       ],
       tokens: [ADDRESSES.scroll.USDC],
+    }),
+  },
+  base: {
+    tvl: sumTokensExport({
+      owners: [
+        "0x668a9711b8d04362876dc5b6177ed362084d5aed",
+        "0x5f075a6a11B2e25DF664Ce7419c274943017B595",
+      ],
+      tokens: [ADDRESSES.base.USDC],
     }),
   },
 };
