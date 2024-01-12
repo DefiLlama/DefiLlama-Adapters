@@ -1,0 +1,9 @@
+The reported TVL does not reflect the proper value locked, even considering only one of the biggest DeFi protocols like WAGMI, MaiaDAO, NETSWAP, Tethys.
+
+The daily inflow reported also does not reflect the one that can be estimated via value locked in escrow contracts.
+
+Please verify considering the main bridge contract:
+
+0x3980c9ed79d2c191A89E02Fa3529C60eD6e9c04b
+
+
