@@ -11,7 +11,7 @@ module.exports = uniV3Export({
   cmp: { factory: '0x9c3afddea87a726891a44c037242393d524cacfe', fromBlock: 14933939, },
   conflux: { factory: '0x9c3afddea87a726891a44c037242393d524cacfe', fromBlock: 81225485, },
   core: { factory: '0x9c3afddea87a726891a44c037242393d524cacfe', fromBlock: 8098971, },
-  dogechain: { factory: '0x9c3afddea87a726891a44c037242393d524cacfe', fromBlock: 18142711, },
+  // dogechain: { factory: '0x9c3afddea87a726891a44c037242393d524cacfe', fromBlock: 18142711, },
   ethereum: { factory: '0x9c3afddea87a726891a44c037242393d524cacfe', fromBlock: 18244533, },
   fantom: { factory: '0x9c3afddea87a726891a44c037242393d524cacfe', fromBlock: 68867215, },
   flare: { factory: '0x9c3afddea87a726891a44c037242393d524cacfe', fromBlock: 18244533, },
