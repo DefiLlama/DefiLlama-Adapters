@@ -15,9 +15,8 @@ module.exports = {
         //ankrBNB
         [
           "0x52F24a5e03aee338Da5fd9Df68D2b6FAe1178827",
-          "0x25b21472c073095bebC681001Cbf165f849eEe5E",
+          "0x00D8697D73216278de8f97BBEaE6ca90cf0a5CB0",
         ],
-        [ADDRESSES.null, "0x25b21472c073095bebC681001Cbf165f849eEe5E"],
 
         //stkBNB
         [
