@@ -16,7 +16,6 @@ const DEFAULTS = {
   BITGERT_RPC: "https://flux-rpc2.brisescan.com,https://mainnet-rpc.brisescan.com,https://chainrpc.com,https://serverrpc.com,https://flux-rpc.brisescan.com",
   LYRA_RPC: "https://rpc.lyra.finance",
   BITCHAIN_RPC: "https://rpc.bitchain.biz/",
-  ZKFAIR_RPC: "https://rpc.zkfair.io/",
   ALV_RPC: "https://elves-core3.alvey.io/",
   OZONE_RPC: "https://node1.ozonechain.io",
 }
