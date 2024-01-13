@@ -29,4 +29,7 @@ module.exports = {
   sui: {
     tvl: suiTvl
   },
+  hallmarks: [
+    [Math.floor(new Date('2023-12-22')/1e3), 'Decomission Arbitrum support'],
+  ],
 }

@@ -39,7 +39,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     abi: 'function wBTSToBTS(uint256 _amount) view returns (uint256)',
     chain: "cronos",
     block: chainBlocks.cronos,
-    params: [balances[wbetslipAddress]],
+    params: [sdk.util.convertToBigInt(balances[wbetslipAddress])],
   });
   balances[transform(betify)] = betslip.output;
   delete balances[wbetslipAddress];

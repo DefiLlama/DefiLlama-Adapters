@@ -35,7 +35,6 @@ module.exports = treasuryExports({
       "0xAD038Eb671c44b853887A7E32528FaB35dC5D710", // DBR
       "0x0a6B1d9F920019BAbc4De3F10c94ECB822106104",
       "0x73E02EAAb68a41Ea63bdae9Dbd4b7678827B2352",
-      "0xC36442b4a4522E871399CD717aBDD847Ab11FE88"
     ],
     owners: [anchorTreasury, multisig, treasury1, treasury2],
     ownTokens: [
@@ -46,6 +45,9 @@ module.exports = treasuryExports({
     ],
     resolveUniV3: true,
     resolveLP: true,
+    blacklistedTokens: [
+      '0x21e83dbfd8f11d885eba9f9ba126da11ae0671b7'
+    ]
   },
   optimism: {
     tokens: [

@@ -51,4 +51,4 @@ module.exports = {
       tokens: [ADDRESSES.base.USDC],
     }),
   },
-};
+}

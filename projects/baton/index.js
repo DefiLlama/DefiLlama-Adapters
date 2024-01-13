@@ -29,6 +29,7 @@ async function tvl(timestamp, blockHeight, _2, { api }) {
   const rewardBalances = (await api.multiCall({ abi: "erc20:balanceOf", calls: rewardTokens.map((v, i) => ({ target: v, params: [farms[i]] })) }))
   baseTokenAmounts.forEach(i => api.add(nullAddress, i * 2));
   rewardBalances.forEach((v, i) => api.add(nullAddress, (prices[i] * v) / 1e18));
+  return api.getBalances()
 }
 
 module.exports = {
