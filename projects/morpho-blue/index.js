@@ -1,125 +1,41 @@
-const erc20 = require("../helper/abis/erc20.json");
+const { getLogs } = require('../helper/cache/getLogs')
 const abi = require("../helper/abis/morpho.json");
 const { morphoBlue, whitelistedIds } = require("./addresses");
-const BigNumber = require("bignumber.js");
-const fetchMarketsData = require("./markets");
-
-// Function to get balances of collateral tokens
-const getCollateralTokensBalanceOf = async (api, collateralTokens) => {
-  const balances = await api.multiCall({
-    calls: collateralTokens.map((token) => ({
-      target: token,
-      params: [morphoBlue],
-    })),
-    abi: erc20.balanceOf,
-  });
-  return balances.reduce((acc, balance, index) => {
-    acc[collateralTokens[index]] = new BigNumber(balance);
-    return acc;
-  }, {});
-};
-
-// Function to process market data and compute metrics
-const processMarketData = (market) => {
-  return {
-    loanToken: market.loanToken,
-    collateralToken: market.collateralToken,
-    totalSupply: new BigNumber(market.totalSupplyAssets),
-    totalBorrow: new BigNumber(market.totalBorrowAssets),
-  };
-};
-
-// Function to compute TVL and borrowed metrics
-const computeMetrics = (
-  aggregatedMetrics,
-  loanToken,
-  collateralAmounts,
-  borrowed
-) => {
-  const { totalSupply, totalBorrow } = aggregatedMetrics[loanToken];
-  let tvl = totalSupply.minus(totalBorrow);
-
-  if (collateralAmounts[loanToken]) {
-    const collateralBalance = collateralAmounts[loanToken];
-    const adjustedCollateral = collateralBalance
-      .minus(totalSupply)
-      .plus(totalBorrow)
-      .toFixed(0);
-    tvl = tvl.plus(adjustedCollateral);
-  }
-
-  return borrowed ? totalBorrow.toFixed(0) : tvl.toFixed(0);
-};
-
-// Function to add collateral token metrics
-const addCollateralTokenMetrics = async (
-  api,
-  collateralToken,
-  aggregatedMetrics,
-  collateralAmounts
-) => {
-  if (!aggregatedMetrics[collateralToken]) {
-    const collateralBalance =
-      collateralAmounts[collateralToken] || new BigNumber(0);
-    api.add(collateralToken, collateralBalance.toFixed(0));
-  }
-};
-
-// Main function to get metrics
-const getMetrics = async (api, borrowed) => {
-  const marketsData = await fetchMarketsData(whitelistedIds, api);
-  const collateralTokens = new Set();
-  const aggregatedMetrics = marketsData.reduce((acc, market) => {
-    const { loanToken, collateralToken, totalSupply, totalBorrow } =
-      processMarketData(market);
-    collateralTokens.add(collateralToken);
-
-    acc[loanToken] = acc[loanToken] || {
-      totalSupply: new BigNumber(0),
-      totalBorrow: new BigNumber(0),
-    };
-    acc[loanToken].totalSupply = acc[loanToken].totalSupply.plus(totalSupply);
-    acc[loanToken].totalBorrow = acc[loanToken].totalBorrow.plus(totalBorrow);
-
-    return acc;
-  }, {});
-
-  const collateralAmounts = await getCollateralTokensBalanceOf(
-    api,
-    Array.from(collateralTokens)
-  );
-
-  for (const loanToken of Object.keys(aggregatedMetrics)) {
-    const metric = computeMetrics(
-      aggregatedMetrics,
-      loanToken,
-      collateralAmounts,
-      borrowed
-    );
-    api.add(loanToken, metric);
-  }
-
-  if (!borrowed) {
-    for (const collateralToken of collateralTokens) {
-      await addCollateralTokenMetrics(
-        api,
-        collateralToken,
-        aggregatedMetrics,
-        collateralAmounts
-      );
-    }
-  }
-};
-
-const ethereum = (borrowed) => {
-  return async (timestamp, block, _, { api }) => getMetrics(api, borrowed);
-};
 
 module.exports = {
   methodology: `Collateral (supply minus borrows) in the balance of the Morpho contracts`,
   doublecounted: true,
-  ethereum: {
-    tvl: ethereum(false),
-    borrowed: ethereum(true),
-  },
 };
+
+const config = {
+  ethereum: { morphoBlue, fromBlock: 18883124 }
+}
+
+Object.keys(config).forEach(chain => {
+  const { morphoBlue, fromBlock } = config[chain]
+  module.exports[chain] = {
+    tvl: async (_, _b, _cb, { api, }) => {
+      const marketIds = await getMarkets(api)
+      const tokens = (await api.multiCall({ target: morphoBlue, calls: marketIds, abi: abi.morphoBlueFunctions.idToMarketParams })).map(i => [i.collateralToken, i.loanToken]).flat()
+      return api.sumTokens({ owner: morphoBlue, tokens })
+    },
+    borrowed: async (_, _b, _cb, { api, }) => {
+      const marketIds = await getMarkets(api)
+      const marketInfo = await api.multiCall({ target: morphoBlue, calls: marketIds, abi: abi.morphoBlueFunctions.idToMarketParams })
+      const marketData = await api.multiCall({ target: morphoBlue, calls: marketIds, abi: abi.morphoBlueFunctions.market })
+      marketData.forEach((i, idx) => {
+        api.add(marketInfo[idx].loanToken, i.totalBorrowAssets)
+      })
+      return api.getBalances()
+    },
+  }
+
+  async function getMarkets(api) {
+    const logs = await getLogs({
+      api, target: morphoBlue,
+      eventAbi: 'event CreateMarket(bytes32 indexed id, (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv) marketParams)',
+      onlyArgs: true, fromBlock,
+    })
+    return logs.map(i => i.id).concat(whitelistedIds)
+  }
+})
