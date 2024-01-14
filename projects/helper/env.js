@@ -18,6 +18,7 @@ const DEFAULTS = {
   BITCHAIN_RPC: "https://rpc.bitchain.biz/",
   ALV_RPC: "https://elves-core3.alvey.io/",
   OZONE_RPC: "https://node1.ozonechain.io",
+  XDC_RPC: "https://erpc.xinfin.network",
 }
 
 const ENV_KEYS = [
