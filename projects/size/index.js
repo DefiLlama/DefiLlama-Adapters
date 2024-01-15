@@ -49,7 +49,7 @@ async function tvl(_, _1, _2, { api }) {
 } 
 
 module.exports = {
-  methodology: "Counts assets (ETH and USDC) deposited",
+  methodology: "Counts assets ETH collateral deposited + USDC deposited and available to borrow",
   base: {
     tvl: tvl
   }
