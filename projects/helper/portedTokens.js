@@ -128,8 +128,12 @@ async function transformBalances(chain, balances) {
   return balances
 }
 
-async function transformDexBalances({ chain, data, balances = {}, restrictTokenRatio = 5, withMetadata = false, blacklistedTokens = [], coreTokens }) {
+async function transformDexBalances({ api, chain, data, balances, restrictTokenRatio = 5, withMetadata = false, blacklistedTokens = [], coreTokens }) {
 
+  if (api) {
+    balances = api.getBalances()
+    chain = api.chain
+  } else if (!balances) balances = {}
   if (!coreTokens)
     coreTokens = new Set(getCoreAssets(chain))
 
