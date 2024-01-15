@@ -1,5 +1,6 @@
 const { getLiquityTvl } = require('../helper/liquity')
 // const { staking } = require('../helper/staking')
+const sdk = require('@defillama/sdk')
 
 module.exports = {
   iotex: {
