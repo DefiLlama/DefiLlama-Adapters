@@ -24,18 +24,9 @@ async function tvl(_, _1, _2, { api }) {
       const collateralBalance = await fetchURL(
         `https://kujira.api.kjnodes.com/cosmos/bank/v1beta1/balances/${contract.address}/by_denom?denom=${denomString}`
       );
-      api.add(
-        contract.config.denoms[0].denom,
-        (BigInt(collateralBalance.data.balance.amount) *
-          BigInt(pool.balances[0])) /
-          BigInt(lpSupply.data.amount.amount)
-      );
-      api.add(
-        contract.config.denoms[1].denom,
-        (BigInt(collateralBalance.data.balance.amount) *
-          BigInt(pool.balances[1])) /
-          BigInt(lpSupply.data.amount.amount)
-      );
+      const ratio = collateralBalance.data.balance.amount / lpSupply.data.amount.amount;
+      api.add(contract.config.denoms[0].denom, pool.balances[0] * ratio)
+      api.add(contract.config.denoms[1].denom, pool.balances[1] * ratio)
     } catch (error) {
       continue;
     }
