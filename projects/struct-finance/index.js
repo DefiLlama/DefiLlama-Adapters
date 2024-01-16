@@ -33,7 +33,7 @@ async function tvl(ts, _, __, { api }) {
 
   // then take the amount and pass it to previewAmounts on each respective TJAP Autovault contract, which will give
   // back the amounts redeemable by the yield source in token X and token Y
-  const tokenXYCalls = Object.values(addresses.token.tjap).map(
+  const amountsXYCalls = Object.values(addresses.token.tjap).map(
     (autovaultAddress, i) => {
       return {
         target: autovaultAddress,
@@ -45,7 +45,7 @@ async function tvl(ts, _, __, { api }) {
 
   const { output: responsesAmountsXY } = await sdk.api.abi.multiCall({
     target: "", // @note - not used, but must be supplied
-    calls: tokenXYCalls,
+    calls: amountsXYCalls,
     chain: "avax",
     abi: autoPoolABI,
   });
