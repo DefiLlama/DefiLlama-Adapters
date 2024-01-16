@@ -99,6 +99,7 @@ async function tvl(_, _b, _cb, { api }) {
   return sumTokens2({
     api,
     ownerTokens,
+    permitFailure: true,
   });
 }
 
