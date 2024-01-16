@@ -771,10 +771,11 @@ function sumTokensExport({ balances, tokensAndOwners, tokensAndOwners2, tokens, 
   return async (_, _b, _cb, { api }) => sumTokens2({ api, balances, tokensAndOwners, tokensAndOwners2, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, resolveUniV3, resolveArtBlocks, resolveNFTs, fetchCoValentTokens, ...args, })
 }
 
-async function unwrapBalancerToken({ api, chain, block, balancerToken, owner, balances = {}, isBPool = false, isV2 = true }) {
+async function unwrapBalancerToken({ api, chain, block, balancerToken, owner, balances, isBPool = false, isV2 = true }) {
   if (!api) {
     api = new sdk.ChainApi({ chain, block, })
   }
+  balances = balances || api.getBalances()
   const [lpSupply, lpTokens] = await api.batchCall([
     { abi: 'erc20:totalSupply', target: balancerToken },
     { abi: 'erc20:balanceOf', target: balancerToken, params: owner },
