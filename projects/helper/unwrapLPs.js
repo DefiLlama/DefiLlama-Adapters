@@ -218,6 +218,10 @@ async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], block, c
   return balances
 }
 
+const factories = {}
+
+const getFactoryKey = (chain, nftAddress) => `${chain}:${nftAddress}`.toLowerCase()
+
 async function unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain = 'ethereum', blacklistedTokens = [], whitelistedTokens = [], uniV3ExtraConfig = {}, }) {
 
   blacklistedTokens = getUniqueAddresses(blacklistedTokens, chain)
@@ -225,7 +229,9 @@ async function unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain = 
   let nftIdFetcher = uniV3ExtraConfig.nftIdFetcher ?? nftAddress
 
   const nftPositions = (await sdk.api.erc20.balanceOf({ target: nftIdFetcher, owner, block, chain })).output
-  const factory = (await sdk.api.abi.call({ target: nftAddress, abi: wildCreditABI.factory, block, chain })).output
+  const factoryKey = getFactoryKey(chain, nftAddress)
+  if (!factories[factoryKey]) factories[factoryKey] = sdk.api.abi.call({ target: nftAddress, abi: wildCreditABI.factory, block, chain })
+  const factory = (await factories[factoryKey]).output
 
   const positionIds = (await sdk.api.abi.multiCall({
     block, chain, abi: wildCreditABI.tokenOfOwnerByIndex, target: nftIdFetcher,
