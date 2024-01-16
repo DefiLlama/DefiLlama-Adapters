@@ -1,7 +1,10 @@
 const ADDRESSES = require("../helper/coreAssets.json");
 
+const aptFarmAddress = "0x57FF9d1a7cf23fD1A9fd9DC07823F950a22a718C";
 const autoPoolABI =
   "function previewAmounts(uint256 shares) external view returns (uint256 amountX, uint256 amountY)";
+const aptFarmABI =
+  "function userInfo(uint256 pid, address user) external view returns (uint256 amount, uint256 rewardDebt, uint256 unpaidRewards)";
 
 const addresses = {
   struct: {
@@ -10,8 +13,7 @@ const addresses = {
       factory: "0x46f8765781ac36e5e8f9937658fa311af9d735d7",
     },
     tjap: {
-      // yieldSourceAvaxUsdc: "0xdf9d9Bca881484574e719bd9d016B9AFD41a7e33",
-      yieldSourceAvaxUsdc: "0xF70690037BAE18e3AEfA4825f86A399356d90b8c", // @todo - delete this and uncomment the above
+      yieldSourceAvaxUsdc: "0xdf9d9Bca881484574e719bd9d016B9AFD41a7e33",
       yieldSourceAvaxBtcb: "0x736A826cF94dA966EE8ea924c5F0D079Bb25691d",
       yieldSourceAvaxWeth: "0x3BAf708e49669d54753366Bec0e77f112CF76662",
       yieldSourceEurcUsdc: "0xB35C3e0A1B889f6eC4e8e2bFFC8fE792FCF85884",
@@ -58,13 +60,8 @@ const autopoolsMetaData = {
   },
 };
 
-
-const aptFarmAddress = "0x57FF9d1a7cf23fD1A9fd9DC07823F950a22a718C";
-const aptFarmABI =
-  "function userInfo(uint256 pid, address user) external view returns (uint256 amount, uint256 rewardDebt, uint256 unpaidRewards)";
-
-const aptFarmUserInfoCalls = Object.entries(autopoolsMetaData).map(
-  ([, value]) => {
+const aptFarmUserInfoCalls = Object.values(autopoolsMetaData).map(
+  (value) => {
     return {
       target: aptFarmAddress,
       params: [value.farmId, value.yieldSource],

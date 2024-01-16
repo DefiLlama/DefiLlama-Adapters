@@ -1,6 +1,6 @@
 const ADDRESSES = require("../helper/coreAssets.json");
 const { sumTokens2 } = require("../helper/unwrapLPs");
-const { mergeAndSum, sumTokens } = require("./utils");
+const { mergeAndSum, sumTokenXY } = require("./utils");
 const {
   addresses,
   autoPoolABI,
@@ -50,7 +50,7 @@ async function tvl(ts, _, __, { api }) {
     abi: autoPoolABI,
   });
 
-  const tjapYieldSourcesTokenSums = responsesAmountsXY.reduce(sumTokens, {});
+  const tjapYieldSourcesTokenSums = responsesAmountsXY.reduce(sumTokenXY, {});
 
   vaultsGmx.push(addresses.struct.gmx.yieldSource);
 
