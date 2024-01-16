@@ -1546,5 +1546,12 @@
   },
   "chainx": {
     "WBTC": "0x09Ff8E49D0EA411A3422ed95E8f5497D4241F532"
+  },
+  "airdao": {
+    "SAMB": "0x2b2d892c3fe2b4113dd7ac0d2c1882af202fb28f",
+    "USDC": "0xd8dd0273d31c1cd9dba104daca7c1dfee4f7b805",
+    "BUSD": "0x7a477aa8ed4884509387dba81ba6f2b7c97597e2",
+    "AINU": "0x618220b06e8e30a972ffbe66fe56588fe4d5044a",
+    "BOND": "0x096b5914c95c34df19500daff77470c845ec749d"
   }
 }
