@@ -49,3 +49,5 @@ Object.keys(config).forEach(chain => {
 
   }
 })
+
+// Being lazy to test what coin is causing stupid TVL 
