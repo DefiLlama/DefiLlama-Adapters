@@ -35,6 +35,7 @@ const distressedAssts = new Set(Object.values({
   WIF: 'EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm',
   GUAC: 'AZsHEMXd36Bj1EMNXhowJajpUXzrKcK57wW4ZGXVa7yR',
   OVOL: '4v3UTV9jibkhPfHi5amevropw6vFKVWo7BmxwQzwEwq6',
+  SHIB2_0: '0xdfef6416ea3e6ce587ed42aa7cb2e586362cbbfa'
 }).map(i => i.toLowerCase()))
 
 const transformTokens = {
