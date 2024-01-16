@@ -52,37 +52,24 @@ async function tvl(ts, _, __, { api }) {
 
   const tjapYieldSourcesTokenSums = responsesAmountsXY.reduce(sumTokens, {});
 
-  vaultsGmx.push(addresses.struct.yieldSource);
-  // @todo - figure out why calling this throws an error
-  // const gmxSumTokens = sumTokens2({
-  //   api,
-  //   owners: vaultsGmx,
-  //   tokens: [
-  //     ADDRESSES.avax.BTC_b,
-  //     ADDRESSES.avax.USDC,
-  //     ADDRESSES.avax.WETH_e,
-  //     addresses.token.gmx.fsGlp,
-  //   ],
-  // });
+  vaultsGmx.push(addresses.struct.gmx.yieldSource);
 
-  const tjapVaultsTokenSums = sumTokens2({
+  const vaultTokenSums = await sumTokens2({
     api,
-    owners: vaultsTjap,
+    owners: [vaultsTjap, vaultsGmx].flat(),
     tokens: [
       ADDRESSES.avax.BTC_b,
       ADDRESSES.avax.USDC,
       ADDRESSES.avax.WETH_e,
       ADDRESSES.avax.EURC,
       ADDRESSES.avax.WAVAX,
+      addresses.token.gmx.fsGlp,
     ],
   });
 
-  const tjapTokenSums = mergeAndSum(
-    tjapVaultsTokenSums,
-    tjapYieldSourcesTokenSums
-  );
+  const allTokenSums = mergeAndSum(vaultTokenSums, tjapYieldSourcesTokenSums);
 
-  return tjapTokenSums;
+  return allTokenSums;
 }
 
 module.exports = {
