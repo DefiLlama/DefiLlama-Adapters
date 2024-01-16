@@ -1533,11 +1533,7 @@
     "USDT": "0x6308fa9545126237158778e74ae1b6b89022c5c0",
     "WBTC": "0x46a5e3fa4a02b9ae43d9df9408c86ed643144a67"
   },
-  "airdao": {
-    "SAMB": "0x2b2d892c3fe2b4113dd7ac0d2c1882af202fb28f",
-    "USDC": "0xd8dd0273d31c1cd9dba104daca7c1dfee4f7b805",
-    "BUSD": "0x7a477aa8ed4884509387dba81ba6f2b7c97597e2",
-    "AINU": "0x618220b06e8e30a972ffbe66fe56588fe4d5044a",
-    "BOND": "0x096b5914c95c34df19500daff77470c845ec749d"
+  "jbc": {
+    "WJBC": "0x99999999990fc47611b74827486218f3398a4abd"
   }
 }
