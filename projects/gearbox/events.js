@@ -1,6 +1,7 @@
-const { api, api2 } = require("@defillama/sdk");
-const { Contract, BigNumber } = require("ethers");
+const { api2 } = require("@defillama/sdk");
+const { Contract, ethers } = require("ethers");
 const sdk = require('@defillama/sdk')
+const { getLogs } = require('../helper/cache/getLogs')
 
 const abi = require("./abi.json");
 
@@ -9,7 +10,9 @@ function getProvider(network) {
   return chainApi.provider
 }
 
-const getV2CAs = async (creditManager, block) => {
+const fromBlock = 13854983
+
+const getV2CAs = async (creditManager, block, api) => {
   const eventsByDate = [];
   const accounts = new Set();
 
@@ -20,34 +23,24 @@ const getV2CAs = async (creditManager, block) => {
   );
   const creditFacade = await cm.creditFacade();
 
-  const ccAddrs = (
-    await cm.queryFilter(
-      {
-        address: creditManager,
-        topics: [cm.interface.getEventTopic("NewConfigurator")],
-      },
-      undefined
-    )
-  ).map((e) => e.args.newConfigurator);
+  const ccAddrs = (await getLogs({
+    target: creditManager,
+    fromBlock,
+    api,
+    onlyArgs: true,
+    eventAbi: "event NewConfigurator(address indexed newConfigurator)"
+  })).map(e => e.newConfigurator)
 
   const cfAddrs = [];
 
   for (let cca of ccAddrs) {
-    const cc = new Contract(
-      cca,
-      abi["creditConfiguratorV2"],
-      getProvider("ethereum")
-    );
-
-    const cfs = (
-      await cc.queryFilter(
-        {
-          address: cca,
-          topics: [cc.interface.getEventTopic("CreditFacadeUpgraded")],
-        },
-        undefined
-      )
-    ).map((e) => e.args.newCreditFacade);
+    const cfs = (await getLogs({
+      target: cca,
+      fromBlock,
+      api,
+      onlyArgs: true,
+      eventAbi: "event CreditFacadeUpgraded(address indexed newCreditFacade)"
+    })).map(e => e.newCreditFacade)
 
     cfAddrs.push(...cfs);
   }
@@ -67,25 +60,13 @@ const getV2CAs = async (creditManager, block) => {
   for (let cfAddr of cfAddrs) {
     const cf = new Contract(cfAddr, abi["filtersV2"], getProvider("ethereum"))
 
-    const topics = {
-      OpenCreditAccount: cf.interface.getEventTopic("OpenCreditAccount"),
-      CloseCreditAccount: cf.interface.getEventTopic("CloseCreditAccount"),
-      LiquidateCreditAccount: cf.interface.getEventTopic(
-        "LiquidateCreditAccount"
-      ),
-      LiquidateExpiredCreditAccount: cf.interface.getEventTopic(
-        "LiquidateExpiredCreditAccount"
-      ),
-      TransferAccount: cf.interface.getEventTopic("TransferAccount"),
-    };
     const l = (
-      await cf.queryFilter(
-        {
-          address: cfAddr,
-          topics: [Object.values(topics)],
-        },
-        undefined
-      )
+      await getLogs({
+        target: cfAddr,
+        fromBlock,
+        api,
+        topics: abi["filtersV2"].map(i => ethers.id(i)),
+      })
     ).map((log) => ({
       ...cf.interface.parseLog(log),
       blockNumber: log.blockNumber,
@@ -132,24 +113,20 @@ const getV2CAs = async (creditManager, block) => {
         .args.creditAccount
   );
 
-  const { output: totalValue } = await api.abi.multiCall({
+  const totalValue  = await api.multiCall({
     abi: abi["calcTotalValue"],
-    calls: openCAs.map((addr) => ({
-      target: creditFacade,
-      params: [addr],
-    })),
-    block,
+    target: creditFacade,
+    calls: openCAs,
   });
 
   return totalValue[0]
     ? totalValue
-        .map((t) => t.output)
-        .reduce((a, c) => a.add(BigNumber.from(c)), BigNumber.from("0"))
-        .toString()
+      .reduce((a, c) => a + BigInt(c), BigInt(0))
+      .toString()
     : "0";
 };
 
-const getV1CAs = async (creditManager, block) => {
+const getV1CAs = async (creditManager, block, api) => {
   if (creditManager === "0x4C6309fe2085EfE7A0Cfb426C16Ef3b41198cCE3") {
     return "0";
   }
@@ -171,24 +148,14 @@ const getV1CAs = async (creditManager, block) => {
   );
   const cf = await cm.creditFilter();
 
-  const topics = {
-    OpenCreditAccount: cm.interface.getEventTopic("OpenCreditAccount"),
-    CloseCreditAccount: cm.interface.getEventTopic("CloseCreditAccount"),
-    RepayCreditAccount: cm.interface.getEventTopic("RepayCreditAccount"),
-    LiquidateCreditAccount: cm.interface.getEventTopic(
-      "LiquidateCreditAccount"
-    ),
-    TransferAccount: cm.interface.getEventTopic("TransferAccount"),
-  };
 
   const logs = (
-    await cm.queryFilter(
-      {
-        address: creditManager,
-        topics: [Object.values(topics)],
-      },
-      undefined
-    )
+    await getLogs({
+      target: creditManager,
+      fromBlock,
+      api,
+      topics: abi["filtersV1"].map(i => ethers.id(i)),
+    })
   ).map((log) => ({
     ...cm.interface.parseLog(log),
     blockNumber: log.blockNumber,
@@ -240,7 +207,7 @@ const getV1CAs = async (creditManager, block) => {
   });
 
   return totalValue
-    .reduce((a, c) => a.add(BigNumber.from(c)), BigNumber.from("0"))
+    .reduce((a, c) => a + BigInt(c), BigInt(0))
     .toString();
 };
 

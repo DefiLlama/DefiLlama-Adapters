@@ -8,6 +8,7 @@ const config = {
   optimism: {},
   base: {},
   avax: {},
+  polygon: {},
 };
 
 async function tvl(_a, _b, _c, { api }) {
@@ -21,7 +22,7 @@ async function tvl(_a, _b, _c, { api }) {
   if(uniswapMinters.length > 0)
     await sumTokens2({ api, owners: uniswapMinters, resolveUniV3: true, blacklistedTokens: [SWEEP_ADDRESS], tokens: [USDC_ADDRESS], })
 
-  const bals = await api.multiCall({ abi: 'uint256:assetValue', calls: otherMinters })
+  const bals = (await api.multiCall({ abi: 'uint256:assetValue', calls: otherMinters, permitFailure: true })).filter(i => i)
   bals.forEach(bal => api.add(USDC_ADDRESS, bal))
   return api.getBalances()
 }

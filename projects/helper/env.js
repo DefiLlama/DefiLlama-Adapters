@@ -10,12 +10,14 @@ const DEFAULTS = {
   SUI_RPC: 'https://fullnode.mainnet.sui.io/',
   MULTIVERSX_RPC: 'https://api.multiversx.com',
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
-  ACALA_RPC: "https://eth-rpc-acala.aca-api.network",
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
   CORE_RPC: "https://rpc.coredao.org,https://rpc.ankr.com/core,https://1rpc.io/core,https://rpc-core.icecreamswap.com",
   BITGERT_RPC: "https://flux-rpc2.brisescan.com,https://mainnet-rpc.brisescan.com,https://chainrpc.com,https://serverrpc.com,https://flux-rpc.brisescan.com",
   LYRA_RPC: "https://rpc.lyra.finance",
-  BITCHAIN_RPC: "https://rpc.bitchain.biz/"
+  BITCHAIN_RPC: "https://rpc.bitchain.biz/",
+  ALV_RPC: "https://elves-core3.alvey.io/",
+  OZONE_RPC: "https://node1.ozonechain.io",
+  XDC_RPC: "https://erpc.xinfin.network",
 }
 
 const ENV_KEYS = [
@@ -27,6 +29,7 @@ const ENV_KEYS = [
   'SUMMER_HISTORY_ENDPOINT',
   'SUMMER_AJNA_ENDPOINT',
   'SUMMER_CONFIRMED_VAULTS_ENDPOINT',
+  'UNISAT_AUTH'
 ]
 
 Object.keys(DEFAULTS).forEach(i => {
@@ -41,5 +44,6 @@ function getEnv(key) {
 }
 
 module.exports = {
+  ENV_KEYS,
   getEnv,
 }

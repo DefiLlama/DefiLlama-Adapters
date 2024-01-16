@@ -466,6 +466,26 @@ const assetList = [
   // In order to be as clear as possible, those new wallet will be added under this comments with the respective timestamp
   ["USDT", "TRX", "TPtW5TEHhouj6KGshVu5ZQSKZA48QPBnXG"], // 1702638336 Fri, 15 Dec 2023 11:05:36 GMT
   ["TRX", "TRX", "TPtW5TEHhouj6KGshVu5ZQSKZA48QPBnXG"], //  1702638336 Fri, 15 Dec 2023 11:05:36 GMT
+  ["BNB", "BSC", "0x835678a611b28684005a5e2233695fb6cbbb0007"], // from this one until 
+  ["ETH", "ETH", "0x835678a611b28684005a5e2233695fb6cbbb0007"],
+  ["AVAX", "AVAX", "0x835678a611b28684005a5e2233695fb6cbbb0007"],
+  ["FTM", "FTM", "0x835678a611b28684005a5e2233695fb6cbbb0007"],
+  ["MATIC", "MATIC", "0x835678a611b28684005a5e2233695fb6cbbb0007"],
+  ["MATIC", "ETH", "0x835678a611b28684005a5e2233695fb6cbbb0007"],
+  ["TRX", "TRX", "TMwf7KT8CCdUKuZfKNPTTjbYkFb3eGRbzY"],
+  ["USDT", "TRX", "TMwf7KT8CCdUKuZfKNPTTjbYkFb3eGRbzY"],
+  ["XRP", "XRP", "rPJ5GFpyDLv7gqeB1uZVUBwDwi41kaXN5A"],
+  ["SOL", "SOL", "6QJzieMYfp7yr3EdrePaQoG3Ghxs2wM98xSLRu8Xh56U"],
+  ["DOGE", "DOGE", "DTSop4ycWkpmDqpncVZ3jwKp3z7B4kW4T3"],
+  ["BTC", "BTC", "1PJiGp2yDLvUgqeBsuZVCBADArNsk6XEiw"],
+  ["BNB", "BEP2", "bnb17jky4rwhu9rzgrx7exrfc3pcd5z290ga8qfm0j"], // until this wallet where added on the Tuesday, 26 December 2023 07:00:00
+  ["BTC", "BTC", "3LtrsjtyLsHoG8WQMe2RFw3de4pLTQZNcY"],
+  ["FDUSD", "BEP20", "0x835678a611B28684005a5e2233695fB6cbbB0007"],
+  ["FDUSD", "ETH", "0x835678a611B28684005a5e2233695fB6cbbB0007"],
+  ["SOL", "SOL", "3gd3dqgtJ4jWfBfLYTX67DALFetjc5iS72sCgRhCkW2u"],
+  ["TUSD", "ETH", "0xf977814e90da44bfa03b6295a0616a897441acec"],
+  ["USDC", "BEP20", "0xeb2d2f1b8c558a40207669291fda468e50c8a0bb"],
+  ["XRP", "XRP", "rPz2qA93PeRCyHyFCqyNggnyycJR1N4iNf"],
 ]
 
 function getAddresses(chain) {
@@ -530,5 +550,8 @@ module.exports = {
   },
   aptos: {
     owners: getOwners('APT')
+  },
+  fantom: {
+    owners: getOwners('FTM')
   }
 }

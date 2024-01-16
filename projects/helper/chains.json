@@ -36,10 +36,12 @@
   "carbon",
   "cardano",
   "celo",
+  "chainx",
   "chz",
   "chihuahua",
   "clover",
   "clv",
+  "cmp",
   "comdex",
   "concordium",
   "conflux",
@@ -85,6 +87,7 @@
   "fantom",
   "findora",
   "filecoin",
+  "firechain",
   "flare",
   "flow",
   "fsc",
@@ -264,6 +267,7 @@
   "xpla",
   "zeniq",
   "zilliqa",
+  "zkfair",
   "zksync",
   "zyx"
 ]

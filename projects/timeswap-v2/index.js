@@ -2,7 +2,7 @@ const { getLogs, getAddress } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 async function tvl(_, _b, _cb, { api }) {
-  const { factory, oldFactory, fromBlock, newFactory } = config[api.chain];
+  const { factory, oldFactory, fromBlock, newFactory, oldEthFactory } = config[api.chain];
 
   const logs = await getLogs({
     api,
@@ -20,7 +20,7 @@ async function tvl(_, _b, _cb, { api }) {
     ];
   });
   if (newFactory) {
-    const newLogs = await getLogs({
+        const newLogs = await getLogs({
       api,
       target: newFactory,
       topics: [
@@ -54,6 +54,27 @@ async function tvl(_, _b, _cb, { api }) {
     });
     ownerTokens = [...ownerTokens, ...oldOwnerTokens];
   }
+  if (oldEthFactory) {
+    
+    let oldEthOwnerTokens;
+    let oldEthLogs = await getLogs({
+      api,
+      target : oldEthFactory,
+      topics: [
+        "0x68ff1cfcdcf76864161555fc0de1878d8f83ec6949bf351df74d8a4a1a2679ab",
+      ],
+      fromBlock: 0x1000476,
+      toBlock: 0x103f839,
+    });
+
+    oldEthOwnerTokens = oldEthLogs.map((i) => {
+      return [
+        [getAddress(i.topics[2]), getAddress(i.topics[3])],
+        getAddress(i.data),
+      ];
+    });
+    ownerTokens = [...ownerTokens, ...oldEthOwnerTokens];
+  }
 
   return sumTokens2({
     api,
@@ -69,8 +90,9 @@ const config = {
     fromBlock: 39476334,
   },
   ethereum: {
-    factory: "0xcf0aca5c5b7e1bF63514D362243b6c50d5761FE8",
-    fromBlock: 16778358,
+    oldEthFactory: "0xcf0aca5c5b7e1bF63514D362243b6c50d5761FE8",
+    factory: "0x17385e95cb74A20150E4fA092Aa72D57330896C4",
+    fromBlock: 18883057,
   },
   arbitrum: {
     factory: "0xcf0aca5c5b7e1bF63514D362243b6c50d5761FE8",

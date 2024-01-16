@@ -1,5 +1,4 @@
 const sdk = require('@defillama/sdk');
-const BigNumber = require('bignumber.js');
 const farmPolygon = require('./farms-polygon.json');
 
 const farmLPBalance = async (
@@ -94,9 +93,7 @@ const polygonFarmLocked = async (block) => {
   const data = await Promise.all(promises);
   data.forEach((farm) => {
     farm.forEach((item) => {
-      balances[item.token] = new BigNumber(balances[item.token] || 0)
-        .plus(item.locked || 0)
-        .toFixed(0);
+      sdk.util.sumSingleBalance(balances, item.token, item.locked);
     });
   });
 

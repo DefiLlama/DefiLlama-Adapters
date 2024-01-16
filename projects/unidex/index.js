@@ -74,6 +74,17 @@ async function BaseTvl(_time, _ethBlock, { base: block }) {
   return sumTokens2({ chain, block, tokens, owners, })
 }
 
+async function EvmosTvl(_time, _ethBlock, { evmos: block }) {
+  const contracts = {
+    "stevmosPool": "0x21708707f03A19C3a4ea5E1a132B5cF96b86F294",
+  };
+  const stevmos = ADDRESSES.evmos.STEVMOS;
+  const chain = 'evmos'
+  const tokens = [stevmos, nullAddress]
+  const owners = Object.values(contracts)
+  return sumTokens2({ chain, block, tokens, owners, })
+}
+
 async function MetisTvl(_time, _ethBlock, { metis: block }) {
   const contracts = {
     "metisPool": "0x9Ba3db52BC401F4EF8ba23e56268C3AdE0290837",
@@ -132,6 +143,9 @@ module.exports = {
   },
   boba: {
     tvl: BobaTvl
+  },
+  evmos: {
+    tvl: EvmosTvl
   },
   metis: {
     tvl: MetisTvl

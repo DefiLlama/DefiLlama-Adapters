@@ -33,6 +33,14 @@ jobs:
           npm ci
           # npm update @defillama/sdk
 
+          # fail if package.json or package-lock.json is changed
+          FILES_MODIFIED=${{ steps.file_changes.outputs.files_modified }}
+          if [[ $FILES_MODIFIED == *"package.json"* || $FILES_MODIFIED == *"package-lock.json"* ]]; then
+            echo "------ ERROR ------ > Please revert changes to package.json / package-lock.json" > /home/runner/work/DefiLlama-Adapters/DefiLlama-Adapters/output.txt
+            node ${{ github.workspace }}/.github/workflows/commentResult.js /home/runner/work/DefiLlama-Adapters/DefiLlama-Adapters/output.txt "${{ github.repository_owner }}" "${{ github.event.repository.name }}" "${{ github.event.number }}"
+            exit 1
+          fi
+
           for i in $(echo $RUN_FILES | tr  -d '"[]' | tr "," "\n")
           do 
             { 
