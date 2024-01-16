@@ -159,6 +159,11 @@ const fixBalancesTokens = {
   chainx: {
     [ADDRESSES.chainx.WBTC]: { coingeckoId: 'wrapped-bitcoin', decimals: 18 },
   },
+  airdao: {
+    [ADDRESSES.airdao.SAMB]: { coingeckoId: 'amber', decimals: 18 },
+    [ADDRESSES.airdao.USDC]: { coingeckoId: 'usd-coin', decimals: 18 },
+    [ADDRESSES.airdao.BUSD]: { coingeckoId: 'binance-usd', decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
