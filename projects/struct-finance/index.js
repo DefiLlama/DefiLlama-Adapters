@@ -27,7 +27,7 @@ async function tvl(ts, _, __, { api }) {
   const { output: responsesFarmUserInfo } = await sdk.api.abi.multiCall({
     target: aptFarmAddress,
     calls: aptFarmUserInfoCalls,
-    chain: "avax",
+    chain: api.chain,
     abi: aptFarmABI,
   });
 
@@ -44,9 +44,9 @@ async function tvl(ts, _, __, { api }) {
   );
 
   const { output: responsesAmountsXY } = await sdk.api.abi.multiCall({
-    target: "", // @note - not used, but must be supplied
+    target: "", // not used, but must be supplied
     calls: amountsXYCalls,
-    chain: "avax",
+    chain: api.chain,
     abi: autoPoolABI,
   });
 
