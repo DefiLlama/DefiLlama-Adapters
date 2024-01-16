@@ -154,7 +154,7 @@ const config = {
       [usdc, bitPutVault,],
       [bit, bitCallVault,],
       
-      [weth, synWethBi,].
+      [weth, synWethBi,],
       [usdc, synWethBi,],
 
       [usdc, indexUSDC_BTC_1wk,],
