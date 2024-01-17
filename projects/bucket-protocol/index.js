@@ -1,14 +1,12 @@
-const ADDRESSES = require('../helper/coreAssets.json')
+const ADDRESSES = require("../helper/coreAssets.json");
 const sui = require("../helper/chain/sui");
 
 const MAINNET_PROTOCOL_ID =
   "0x9e3dab13212b27f5434416939db5dec6a319d15b89a84fd074d03ece6350d3df";
 const BUCK =
   "0xce7ff77a83ea0cb6fd39bd8748e2ec89a3f41e8efdc3f4eb123e0ca37b184db2::buck::BUCK";
-const USDC =
-  ADDRESSES.sui.USDC;
-const USDT =
-  ADDRESSES.sui.USDT;
+const USDC = ADDRESSES.sui.USDC;
+const USDT = ADDRESSES.sui.USDT;
 
 const AF_LP_IDs = [
   "0xe2569ee20149c2909f0f6527c210bc9d97047fe948d34737de5420fab2db7062",
@@ -36,9 +34,6 @@ const CETUS_LP_ID =
 const USDC_PSM =
   "0x0c2e5fbfeb5caa4c2f7c8645ffe9eca7e3c783536efef859be03146b235f9e04";
 
-const USDT_PSM =
-  "0x607e7d386e29066b964934e0eb1daa084538a79b5707c34f38e190d64e24923e";
-
 const BUCKETUS_PSM =
   "0xba86a0f37377844f38060a9f62b5c5cd3f8ba13901fa6c4ee5777c1cc535306b";
 
@@ -62,9 +57,6 @@ async function tvl(_, _1, _2, { api }) {
 
   const usdcPSMObj = await sui.getObject(USDC_PSM);
   const usdcPSMAmount = usdcPSMObj.fields.pool;
-
-  const usdtPSMObj = await sui.getObject(USDT_PSM);
-  const usdtPSMAmount = usdtPSMObj.fields.pool;
 
   const bucketusPSMObj = await sui.getObject(BUCKETUS_PSM);
   const bucketusPSMAmount = bucketusPSMObj.fields.pool;
@@ -129,15 +121,15 @@ async function tvl(_, _1, _2, { api }) {
 
   // Cetus USDC-BUCK LP
   // 1 Bucketus = 0.5 BUCK + 0.5 USDC
+  // Bucketus doesn't include USDT, and of course not equal to USDT
   const halfStakedBucketus = Math.floor(stakedBucketus / 2);
-  // api.add(BUCK, halfStakedBucketus);
+  api.add(BUCK, halfStakedBucketus);
   api.add(USDC, Math.floor(halfStakedBucketus / 1000));
 
   api.add(USDC, Math.floor(usdcPSMAmount));
-  api.add(USDT, Math.floor(usdtPSMAmount));
 
   const halfBucketusAmount = Math.floor(bucketusPSMAmount / 2);
-  // api.add(BUCK, halfBucketusAmount);
+  api.add(BUCK, halfBucketusAmount);
   api.add(USDC, Math.floor(halfBucketusAmount / 1000));
 }
 
