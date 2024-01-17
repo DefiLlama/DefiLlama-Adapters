@@ -34,6 +34,9 @@ const CETUS_LP_ID =
 const USDC_PSM =
   "0x0c2e5fbfeb5caa4c2f7c8645ffe9eca7e3c783536efef859be03146b235f9e04";
 
+const USDT_PSM =
+  "0x607e7d386e29066b964934e0eb1daa084538a79b5707c34f38e190d64e24923e";
+
 const BUCKETUS_PSM =
   "0xba86a0f37377844f38060a9f62b5c5cd3f8ba13901fa6c4ee5777c1cc535306b";
 
@@ -60,6 +63,9 @@ async function tvl(_, _1, _2, { api }) {
 
   const usdcPSMObj = await sui.getObject(USDC_PSM);
   const usdcPSMAmount = usdcPSMObj.fields.pool;
+
+  const usdtPSMObj = await sui.getObject(USDT_PSM);
+  const usdtPSMAmount = usdtPSMObj.fields.pool;
 
   const bucketusPSMObj = await sui.getObject(BUCKETUS_PSM);
   const bucketusPSMAmount = bucketusPSMObj.fields.pool;
@@ -132,6 +138,7 @@ async function tvl(_, _1, _2, { api }) {
   api.add(USDC, Math.floor(halfStakedBucketus / 1000));
 
   api.add(USDC, Math.floor(usdcPSMAmount));
+  api.add(USDT, Math.floor(usdtPSMAmount));
 
   // 1 Cetable = 0.5 USDC + 0.5 USDT
   const halfCetableAmount = Math.floor(cetablePSMAmount / 2);
