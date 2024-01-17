@@ -34,6 +34,15 @@ async function suiTVL() {
   const { fields: { list: { fields: listObject } } } = await sui.getObject(poolObjectID)
   const items = (await sui.getDynamicFieldObjects({ parent: listObject.id.id })).map(i => i.fields.value.fields.value)
   const poolInfo = await sui.getObjects(items.map(i => i.fields.pool_id))
+  poolInfo.forEach(({ type: typeStr, fields }) => {
+    const [coinA, coinB] = typeStr.replace('>', '').split('<')[1].split(', ')
+    api.add(coinA, fields.coin_a)
+    api.add(coinB, fields.coin_b)
+  })
+}
+
+async function staking() {
+  const { api } = arguments[3]
   const xCetusManager = '0x838b3dbade12b1e602efcaf8c8b818fae643e43176462bf14fd196afa59d1d9d'
   const xCetusManagerInfo  = await sui.getObject(xCetusManager)
   const xCetusPool = {
@@ -43,12 +52,8 @@ async function suiTVL() {
       coin_b: '0',
     }
   }
-  poolInfo.push(xCetusPool)
-  poolInfo.forEach(({ type: typeStr, fields }) => {
-    const [coinA, coinB] = typeStr.replace('>', '').split('<')[1].split(', ')
-    api.add(coinA, fields.coin_a)
-    api.add(coinB, fields.coin_b)
-  })
+  api.add('0x06864a6f921804860930db6ddbe2e16acdf8504495ea7481637a1c8b9a8fe54b::cetus::CETUS', xCetusPool.fields.coin_a)
+  return api.getBalances()
 }
 
 module.exports = dexExport({
@@ -64,5 +69,6 @@ module.exports = {
   },
   sui: {
     tvl: suiTVL,
+    staking,
   }
 }
