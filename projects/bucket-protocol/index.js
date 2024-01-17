@@ -129,14 +129,14 @@ async function tvl(_, _1, _2, { api }) {
   // Cetus USDC-BUCK LP
   // 1 Bucketus = 0.5 BUCK + 0.5 USDC
   const halfStakedBucketus = Math.floor(stakedBucketus / 2);
-  api.add(BUCK, halfStakedBucketus);
+  // api.add(BUCK, halfStakedBucketus);
   api.add(USDC, Math.floor(halfStakedBucketus / 1000));
 
   api.add(USDC, Math.floor(usdcPSMAmount));
   api.add(USDT, Math.floor(usdtPSMAmount));
 
   const halfBucketusAmount = Math.floor(bucketusPSMAmount / 2);
-  api.add(BUCK, halfBucketusAmount);
+  // api.add(BUCK, halfBucketusAmount);
   api.add(USDC, Math.floor(halfBucketusAmount / 1000));
 }
 
