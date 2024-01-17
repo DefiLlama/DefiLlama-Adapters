@@ -34,6 +34,16 @@ async function suiTVL() {
   const { fields: { list: { fields: listObject } } } = await sui.getObject(poolObjectID)
   const items = (await sui.getDynamicFieldObjects({ parent: listObject.id.id })).map(i => i.fields.value.fields.value)
   const poolInfo = await sui.getObjects(items.map(i => i.fields.pool_id))
+  const xCetusManager = '0x838b3dbade12b1e602efcaf8c8b818fae643e43176462bf14fd196afa59d1d9d'
+  const xCetusManagerInfo  = await sui.getObject(xCetusManager)
+  const xCetusPool = {
+    type: '0x9e69acc50ca03bc943c4f7c5304c2a6002d507b51c11913b247159c60422c606::xcetus::XcetusManager<0x06864a6f921804860930db6ddbe2e16acdf8504495ea7481637a1c8b9a8fe54b::cetus::CETUS, 0x2::sui::SUI>',
+    fields: {
+      coin_a: xCetusManagerInfo.fields.treasury.fields.total_supply.fields.value,
+      coin_b: '0',
+    }
+  }
+  poolInfo.push(xCetusPool)
   poolInfo.forEach(({ type: typeStr, fields }) => {
     const [coinA, coinB] = typeStr.replace('>', '').split('<')[1].split(', ')
     api.add(coinA, fields.coin_a)
