@@ -98,14 +98,12 @@ const config = {
         'TVYH5Y4KstUfRNx1ZQbqgdtX1Jw3bMTKtJ'
     ]
   },
-  /*
   cardano: {
     owners: [
         'addr1qy7f98r5ar2ayyst7lmm90tl630tsetygecz36vq33qmvevngs3w3w3mt4l3em80z5f9e64j0jj37hazql87nfmzrfqs3f7gum',
         'addr1qy5dqjx4mtegqu6kx5gu6upkk96c8haf38eksj5tr8g5dae2z9j36evkf2ek7zej3exgls6czmr4vz3ff8h952f3933sw25zf4',
         'addr1q90372c396d7w0cw3agseaj8vf4t8m9e3lwwc752jd30hyt4pthja5v60hfjesrayhrc7tnasnsev0uka3c0vpukazms5uw76h',
         'addr1qyu9n5wtyufnp6vuhcak38tx4lw37znzkulat7s987xtv86xx265k42gtvuvkt4vyjjxgqn9wat2zmda3f7ns2pl2y2qwtgdav',
-        'addr1q9ke6g5v6y0emptrkmussphrcq50zhyj2x9nx8fhnxmef0f99manerpcjk4qsf4u5cy0xyh9lcglq0vh5qncxud0l6lsu0476x',
         'addr1q9h690lw5hpd37r4ngmlhf0y8wms394y4dlm0wa6nmann9pm8fwxgvusmpkhsgtl3gdlj988mllq7teadjlk3eld3c6qyc3yf6',
         'addr1qx47g9mejkukkspsp6jdjdzf2lmektye8w7n0cm9ukxvewdljr2awtjh5r9kgt5evrkk6j4fe2pe33etuvazrg3flnnsg0jlex',
         'addr1q8m3qp920cljg5g079909xrvhngfln5u9n8xug6jtz44rfsm9sj09fksz42yhj3gfcukrlfarty39dac26wd5wp2gsrqc6cuxk',
@@ -115,7 +113,6 @@ const config = {
         'addr1qyzrghamkktczv3wujrdqt243emzu49zu0z3vxw768kpy0fknd8whx6gnzwtg78yxfuxwu4z8k4zsk9rvx34sxalet5sgjcn56',
     ]
   },
-  */
   ripple: {
     owners: [
         'rGcT3Dpz9Dk3oV7hsDT7Q1s6NRPo9a8iDt',
