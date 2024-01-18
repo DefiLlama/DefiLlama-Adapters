@@ -5,6 +5,9 @@ async function tvl() {
 }
 
 module.exports = {
+  hallmarks: [
+    [1704834000, "Rug Pull"]
+  ],
   timetravel: false,
   methodology:
     "Solana Miner is designed to provide a user-friendly mining experience, minimizing technical barriers and facilitating newcomers. Our product focuses not only on building a community but also on delivering passive income for investors. See more: https://solanaminer.xyz",

@@ -1,3 +1,0 @@
-{
-  "balanceInfoViews": "function balanceInfoViews(address[] vaults, address account) view returns (tuple(uint8 decimal, uint256 balance, uint256 allowance, uint256 deposited, uint256 vaultPerShare, address vaultAddress, uint256 tvl, uint256 tokenPrice)[])"
-}
