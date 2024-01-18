@@ -31,7 +31,6 @@ class SecretClient {
   }
 
   async getContracts(codeId) {
-    console.log('getContracts', codeId)
     const path = `/compute/v1beta1/contracts/${codeId}`;
     const { contract_infos } = (await this.get(path));
     return contract_infos.map(({ contract_address, ContractInfo: { code_id, creator, label } }) => ({

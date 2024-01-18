@@ -29,7 +29,7 @@ const tvl = async (_, _1, { kava: block }, { api }) => {
 
 const staking = async (_, _1, { kava: block }, { api }) => {
   const poolAddresses = await api.call({
-    abi: "function getAllPools() view returns (tuple[](tuple(bool, uint16, uint256, uint256, uint256), address))",
+    abi: "function getAllPools() view returns ((tuple(bool, uint16, uint256, uint256, uint256), address)[])",
     target: LINE_CONTRACT_ADDRESS,
   }).then(allPools => allPools.map(([_, address]) => address));
 

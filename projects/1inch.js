@@ -21,7 +21,7 @@ Object.keys(config).forEach(chain => {
         })
         logs.forEach(i => ownerTokens.push([[i.token1, i.token2], i.mooniswap]))
       }
-      return sumTokens2({ api, ownerTokens, blacklistedTokens, })
+      return sumTokens2({ api, ownerTokens, blacklistedTokens, sumChunkSize: 50, })
     }
   }
 })

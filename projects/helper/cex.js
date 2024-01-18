@@ -95,7 +95,7 @@ const defaultTokens = {
     '0x61e90a50137e1f645c9ef4a0d3a4f01477738406', // LOKA
     '0x64d0f55Cd8C7133a9D7102b13987235F486F2224', // BORG
     '0x925206b8a707096Ed26ae47C84747fE0bb734F59', //WBT
-    '0xc5f0f7b66764f6ec8c8dff7ba683102295e16409', // FDUSD
+    ADDRESSES.ethereum.FDUSD, // FDUSD
   ],
   tron: [
     nullAddress,
@@ -150,7 +150,7 @@ const defaultTokens = {
      '0x965f527d9159dce6288a2219db51fc6eef120dd1', //BSW
      '0xa2120b9e674d3fc3875f415a7df52e382f141225', //ata
      '0x44ec807ce2f4a6f2737a92e985f318d035883e47', //HFT
-     '0xc5f0f7b66764f6ec8c8dff7ba683102295e16409', //FDUSD
+     ADDRESSES.ethereum.FDUSD, //FDUSD
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],
@@ -209,6 +209,12 @@ const defaultTokens = {
   moonriver: [
     nullAddress,
     ADDRESSES.moonriver.USDT, //usdt
+  ],
+  kava: [
+    nullAddress,
+    ADDRESSES.kava.USDT,
+    ADDRESSES.kava.USDt,
+    ADDRESSES.kava.USDC
   ],
 }
 
