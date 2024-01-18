@@ -9,10 +9,13 @@ const config = {
   base: {},
   avax: {},
   polygon: {},
+  bsc: {}
 };
 
 async function tvl(_a, _b, _c, { api }) {
-  const USDC_ADDRESS = ADDRESSES[api.chain].USDC;
+  const TOKEN = api.chain === "bsc" ? "USDT" : "USDC";
+  const TOKEN_ADDRESS = ADDRESSES[api.chain][TOKEN];
+
   const [minters] = await api.multiCall({ abi: 'address[]:getMinters', calls: [SWEEP_ADDRESS] })
   // await sumTokens2({ api, owners: minters, tokens: [USDC_ADDRESS]})
   const names = await api.multiCall({ abi: 'string:name', calls: minters })
@@ -20,10 +23,10 @@ async function tvl(_a, _b, _c, { api }) {
   const otherMinters = minters.filter((_, i) => !/uniswap/i.test(names[i]))
 
   if(uniswapMinters.length > 0)
-    await sumTokens2({ api, owners: uniswapMinters, resolveUniV3: true, blacklistedTokens: [SWEEP_ADDRESS], tokens: [USDC_ADDRESS], })
+    await sumTokens2({ api, owners: uniswapMinters, resolveUniV3: true, blacklistedTokens: [SWEEP_ADDRESS], tokens: [TOKEN_ADDRESS], })
 
   const bals = (await api.multiCall({ abi: 'uint256:assetValue', calls: otherMinters, permitFailure: true })).filter(i => i)
-  bals.forEach(bal => api.add(USDC_ADDRESS, bal))
+  bals.forEach(bal => api.add(TOKEN_ADDRESS, bal))
   return api.getBalances()
 }
 

@@ -93,6 +93,7 @@ const ust = '0xa693b19d2931d498c5b318df961919bb4aee87a5'
 const tUSDC = '0x9f238fae3d1f1982716f136836fc2c0d1c2928ab'
 const tAlgo = '0x0354762a3c01730d07d2f7098365d64dc81b565d'
 const bit = '0x1a4b46696b2bb4794eb3d4c26f1c55f9170fa4c5'
+const ausdc = '0xBcca60bB61934080951369a648Fb03DF4F96263C' // Aave V2 USDC
 
 // Avalanche Assets
 const wavax = ADDRESSES.avax.WAVAX
@@ -152,7 +153,8 @@ const config = {
       [tAlgo, algoCallVault,],
       [usdc, bitPutVault,],
       [bit, bitCallVault,],
-
+      
+      [weth, synWethBi,],
       [usdc, synWethBi,],
 
       [usdc, indexUSDC_BTC_1wk,],
@@ -168,6 +170,12 @@ const config = {
       [wbtc, indexBTC_BiWeekly_A,],
       [wbtc, indexBTC_BiWeekly_B,],
 
+      [ausdc, indexUSDC_BTC_1wk,],
+      [ausdc, indexUSDC_ETH_2wk_a,],
+      [ausdc, indexUSDC_AVAX_2wk_b,],
+      [ausdc, indexUSDC_MATIC_2wk_a,],
+      [ausdc, indexUSDC_BNB_2wk_b,],
+      [ausdc, ethPutVault,],
     ]
   },
   avax: {
