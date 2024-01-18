@@ -79,7 +79,7 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
     if (queryBatched) {
       const batchedCalls = sliceIntoChunks(cache.pairs, queryBatched)
       for (const calls of batchedCalls) {
-        reserves.push(...await api.multiCall({ abi: abi.getReserves, calls }))
+        reserves.push(...await api.multiCall({ abi: abi.getReserves, calls, permitFailure, }))
         if (waitBetweenCalls) await sleep(waitBetweenCalls)
       }
     } else if (fetchBalances) {
@@ -94,15 +94,18 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
         i++
       }
     } else
-      reserves = await api.multiCall({ abi: abi.getReserves, calls: cache.pairs })
+      reserves = await api.multiCall({ abi: abi.getReserves, calls: cache.pairs, permitFailure })
 
 
     const balances = {}
     if (coreAssets) {
       const data = []
-      reserves.forEach(({ _reserve0, _reserve1 }, i) => {
+      reserves.forEach((dat, i) => {
+        if (!dat) return;
+        const { _reserve0, _reserve1 } = dat
         if (hasStablePools && cache.symbols[i].startsWith(stablePoolSymbol)) {
           sdk.log('found stable pool: ', stablePoolSymbol)
+          sdk.util.sumSingleBalance(balances, cache.token0s[i], _reserve0)
           sdk.util.sumSingleBalance(balances, cache.token0s[i], _reserve0)
           sdk.util.sumSingleBalance(balances, cache.token1s[i], _reserve1)
         } else {

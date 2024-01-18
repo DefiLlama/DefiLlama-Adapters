@@ -1,12 +1,11 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { ethers } = require('ethers');
 const { getLogs } = require('../helper/cache/getLogs')
 const SMART_VAULT_MANAGER_ADDRESS = '0xba169cceCCF7aC51dA223e04654Cf16ef41A68CC'
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const START_TS = 1693206000;
 
 const tokens = [
-  ethers.constants.AddressZero,
+  ADDRESSES.null,
   ADDRESSES.arbitrum.WBTC,
   ADDRESSES.arbitrum.ARB,
   ADDRESSES.arbitrum.LINK,

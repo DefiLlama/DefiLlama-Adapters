@@ -72,13 +72,13 @@ const TOKEN_ADDRESSES = [
 ];
 
 function tvl(chain) {
-  return async (time, _, { [chain]: block }, { logArray }) => {
+  return async (time, _, { [chain]: block }) => {
     const toa = []
     const owner = HOME_CHAINS[chain]
     TOKEN_ADDRESSES.forEach(t => {
       if (t[chain]) toa.push([t[chain], owner])
     })
-    return sumTokens({}, toa, block, chain, undefined, { logArray })
+    return sumTokens({}, toa, block, chain, undefined)
   }
 }
 

@@ -225,7 +225,7 @@ module.exports = {
         fetch: harmony
     },
     hoo: {
-        fetch: hsc
+        fetch: () => 0,
     },
     bytomsidechain: {
         fetch: bytomSideChain
@@ -243,7 +243,8 @@ module.exports = {
         fetch: celo
     },
     clv: {
-        fetch: clv
+        fetch: () => 0,
+        // fetch: clv
     },
     conflux: {
         fetch: conflux

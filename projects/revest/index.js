@@ -1,10 +1,9 @@
 const { sumTokens2, } = require("../helper/unwrapLPs")
 
-
 const CutoffABI = "function FNFT_CUTOFF() external view returns (uint256)"
 const numFNFTSABI = "function fnftsCreated() external view returns (uint256)"
 const getFNFTSupplyABI = "function getSupply(uint256 fnftId) external view returns (uint256)"
-const getFNFTConfigABI = "function getFNFT(uint256 fnftId) external view returns (tuple(address asset,,,,,,,) memory)"
+const getFNFTConfigABI = "function getFNFT(uint256 fnftId) view returns ((address asset, address pipeToContract, uint256 depositAmount, uint256 depositMul, uint256 split, uint256 depositStopTime, bool maturityExtension, bool isMulti, bool nontransferrable))"
 const getWalletABI = "function getFNFTAddress(uint256 fnftId) external view returns (address)"
 
 const config = {
