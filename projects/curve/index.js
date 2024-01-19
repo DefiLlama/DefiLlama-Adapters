@@ -75,6 +75,18 @@ async function getNames(chain, tokens) {
 const registryIdsReverse = Object.fromEntries(Object.entries(registryIds).map(i => i.reverse()))
 
 async function getPool({ chain, block, registry }) {
+  if(chain === "fantom"){
+    return ["0x27E611FD27b276ACbd5Ffd632E5eAEBEC9761E40", "0x92D5ebF3593a92888C25C0AbEF126583d4b5312E", "0x3eF6A01A0f81D6046290f3e2A8c5b843e738E604",
+  "0x0fa949783947Bf6c1b171DB13AEACBB488845B3f", "0x4FC8D635c3cB1d0aa123859e2B2587d0FF2707b1"].map((t, i)=>({
+      input: {
+        params: [i],
+        target: registry
+      },
+      success: true,
+      output: t
+    }
+  ))
+  }
   const data = await sdk.api2.abi.fetchList({ chain, block, target: registry, itemAbi: abi.pool_list, lengthAbi: abi.pool_count, withMetadata: true, })
   return data.filter(i => i.output)
 }
