@@ -19,24 +19,6 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom']
 const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec',]
 
-const distressedAssts = new Set(Object.values({
-  CRK: '0x065de42e28e42d90c2052a1b49e7f83806af0e1f',
-  aBNBc: ADDRESSES.bsc.ankrBNB,
-  aBNBb: ADDRESSES.bsc.aBNBb,
-  XRPC: '0xd4ca5c2aff1eefb0bea9e9eab16f88db2990c183',
-  FLEET: '0xfd56a3dcfc0690881a466ae432d71bb2db588083',
-  YAKU: 'NGK3iHqqQkyRZUj4uhJDQqEyKKcZ7mdawWpqwMffM3s',
-  JEFE: '0x80fa6d5384bdde296a28a321f73ab70977575129',
-  SNS: 'SNSNkV9zfG5ZKWQs6x4hxvBRV6s8SqMfSGCtECDvdMd',
-  BASED: 'fantom:0x8d7d3409881b51466b483b11ea1b8a03cded89ae',
-  LORT: 'bsc:0xd24616870ca41bc01074446988faeb0085a71190',
-  BSHARE: '0x49C290Ff692149A4E16611c694fdED42C954ab7a',
-  PEEP: 'n54ZwXEcLnc3o7zK48nhrLV4KTU5wWD4iq7Gvdt5tik',
-  WIF: 'EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm',
-  GUAC: 'AZsHEMXd36Bj1EMNXhowJajpUXzrKcK57wW4ZGXVa7yR',
-  OVOL: '4v3UTV9jibkhPfHi5amevropw6vFKVWo7BmxwQzwEwq6'
-}).map(i => i.toLowerCase()))
-
 const transformTokens = {
   // Sample Code
   // cronos: {
@@ -121,13 +103,48 @@ const fixBalancesTokens = {
   linea: {
     [ADDRESSES.linea.WETH_1]: { coingeckoId: 'ethereum', decimals: 18 },
   },
+  bitcoin: {
+    BSSB: { coingeckoId: 'bitstable-finance', decimals: 0 },
+    MUBI: { coingeckoId: 'multibit', decimals: 0 },
+  },
   fsc: {
     [ADDRESSES.null]: { coingeckoId: 'fonsmartchain', decimals: 18 },
     [ADDRESSES.fsc.WFSC]: { coingeckoId: 'fonsmartchain', decimals: 18 },
   },
   new: {
     '0xf4905b9bc02ce21c98eac1803693a9357d5253bf': { coingeckoId: 'newton-project', decimals: 18 },
-  }
+  },
+  conflux: {
+    [ADDRESSES.null]: { coingeckoId: 'conflux-token', decimals: 18 },
+  },
+  icon: {
+    [ADDRESSES.null]: { coingeckoId: 'icon', decimals: 18 },
+    'cxb49d82c46be6b61cab62aaf9824b597c6cf8a25d': { coingeckoId: 'binance-usd', decimals: 18 },
+    'cx5b5a03cb525a1845d0af3a872d525b18a810acb0': { coingeckoId: 'bitcoin-bep2', decimals: 18 },
+    'cx288d13e1b63563459a2ac6179f237711f6851cb5': { coingeckoId: 'ethereum', decimals: 18 },
+  },
+  jbc: {
+    [ADDRESSES.jbc.USDT]: { coingeckoId: 'tether', decimals: 18 },
+    [ADDRESSES.jbc.USDC]: { coingeckoId: 'usd-coin', decimals: 18 },
+    [ADDRESSES.jbc.ETH]: { coingeckoId: 'ethereum', decimals: 18 },
+    [ADDRESSES.jbc.OP]: { coingeckoId: 'optimism', decimals: 18 },
+    [ADDRESSES.jbc.BNB]: { coingeckoId: 'binancecoin', decimals: 18 },
+    [ADDRESSES.jbc.JFIN]: { coingeckoId: 'jfin-coin', decimals: 18 },
+    [ADDRESSES.jbc.KUB]: { coingeckoId: 'bitkub-coin', decimals: 18 },
+    [ADDRESSES.jbc.JUSDT]: { coingeckoId: 'tether', decimals: 18 },
+  },
+  zkfair: {
+    [ADDRESSES.null]: { coingeckoId: 'usd-coin', decimals: 18 },
+    '0xD33Db7EC50A98164cC865dfaa64666906d79319C': { coingeckoId: 'usd-coin', decimals: 18 },
+  },
+  chainx: {
+    [ADDRESSES.chainx.WBTC]: { coingeckoId: 'wrapped-bitcoin', decimals: 18 },
+  },
+  airdao: {
+    [ADDRESSES.airdao.SAMB]: { coingeckoId: 'amber', decimals: 18 },
+    [ADDRESSES.airdao.USDC]: { coingeckoId: 'usd-coin', decimals: 18 },
+    [ADDRESSES.airdao.BUSD]: { coingeckoId: 'binance-usd', decimals: 18 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
@@ -292,6 +309,5 @@ module.exports = {
   ibcChains,
   stripTokenHeader,
   getUniqueAddresses,
-  distressedAssts,
   eulerTokens,
 }

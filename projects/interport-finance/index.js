@@ -8,6 +8,7 @@ const config = {
   era: { vaults: ['0xc724832c5ed81599aE3E4EBC0eC4f87A285B5838'] },
   base: { vaults: [usdcVault] },
   op_bnb: { vaults: [usdtVault] },
+  fantom: { vaults: ['0xd0Adc0cdE959616666c4691985df91C60ca3C0F7', '0xb6AB8EeFAE1a2c22Ca6338E143cb7dE544800c6e'] },
 }
 
 module.exports = {
