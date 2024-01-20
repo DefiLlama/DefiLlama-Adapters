@@ -34,7 +34,7 @@ const supportedChains = [
   },
   {
     name: 'Avalanche',
-    subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/rakeshbhatt10/avalance-test-subgraph',
+    subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/steerprotocol/steer-protocol-avalanche',
     chainId: 43114,
     identifier: 'avax'
   },
