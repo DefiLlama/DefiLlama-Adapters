@@ -4,10 +4,8 @@ const { fetchURL } = require('../helper/utils')
 
 
 const BigNumber = require("bignumber.js")
-const { getExports } = require('../helper/heroku-api')
 const { nullAddress } = require("../helper/tokenMapping");
 const { get } = require("../helper/http");
-const {utils} = require("ethers");
 
 //bsc staking con
 const filetStakingCon_BSC = "0x9c821defD3BBb07C5c786C3bB039051364Fa6F39";
@@ -36,7 +34,7 @@ const getMinersList = async () => {
       let bytes = Buffer.alloc(20);
       bytes.writeUint8(0xff, 0);
       bytes.writeBigUint64BE(BigInt(minerId), 12);
-      return utils.getAddress('0x' + bytes.toString('hex'));
+      return '0x' + bytes.toString('hex')
   });
 }
 

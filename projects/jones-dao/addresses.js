@@ -1,10 +1,11 @@
+const ADDRESSES = require("../helper/coreAssets.json");
 module.exports = {
   aura: {
     locker: "0x3Fa73f1E5d8A792C80F426fc8F84FBF7Ce9bBCAC",
     strategy: "0x7629fc134e5a7feBEf6340438D96881C8D121f2c",
   },
   glp: {
-    leverageStrategy: "0x15df56a82c194FeFEC9337C37A41964B69b584d5",
+    leverageStrategy: "0x64ECc55a4F5D61ead9B966bcB59D777593afBd6f",
     router: "0x2F43c6475f1ecBD051cE486A9f3Ccc4b03F3d713",
     stableRewardTracker: "0xEB23C7e19DB72F9a728fD64E1CAA459E457cfaca",
   },
@@ -41,11 +42,11 @@ module.exports = {
     "0x42448fDDCec02124cf6dB19a9f91Dea7bB0e88e5",
   ],
   tokens: {
-    arb: "0x912CE59144191C1204E64559FE8253a0e49E6548",
+    arb: ADDRESSES.arbitrum.ARB,
     aura: "0xC0c293ce456fF0ED870ADd98a0828Dd4d2903DBF",
     dpx: "0x6C2C06790b3E3E3c38e12Ee22F8183b37a13EE55",
     dpx_eth: "0x0C1Cf6883efA1B496B01f654E247B9b419873054",
-    glp: "0x1aDDD80E6039594eE970E5872D247bf0414C8903",
+    glp: ADDRESSES.arbitrum.fsGLP,
     gohm: "0x8D9bA570D6cb60C7e3e0F31343Efe75AB8E65FB1",
     jones: "0x10393c20975cf177a3513071bc110f7962cd67da",
     jglp: "0x7241bC8035b65865156DDb5EdEf3eB32874a3AF6",
@@ -53,7 +54,7 @@ module.exports = {
     rdpx: "0x32Eb7902D4134bf98A28b963D26de779AF92A212",
     rdpx_eth: "0x7418F5A2621E13c05d1EFBd71ec922070794b90a",
     uvrt: "0xa485a0bc44988B95245D5F20497CCaFF58a73E99",
-    weth: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+    weth: ADDRESSES.arbitrum.WETH,
     wjaura: "0xcB9295ac65De60373A25C18d2044D517ed5da8A9",
   },
 };

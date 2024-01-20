@@ -5,8 +5,13 @@ async function tvl(_, _b, _cb, { api, }) {
   return api.sumTokens({ owner: VAULT_CONTRACT_ADDRESS, tokens: [
     ADDRESSES.arbitrum.WETH,
     ADDRESSES.arbitrum.USDC,
-    '0x17FC002b466eEc40DaE837Fc4bE5c67993ddBd6F',
-    ADDRESSES.arbitrum.USDC_CIRCLE
+    '0x17FC002b466eEc40DaE837Fc4bE5c67993ddBd6F', //FRAX
+    ADDRESSES.arbitrum.USDC_CIRCLE,
+    ADDRESSES.arbitrum.WSTETH,
+    ADDRESSES.arbitrum.DAI,
+    ADDRESSES.arbitrum.ARB,
+    ADDRESSES.arbitrum.USDT
+
   ] })
 }
 

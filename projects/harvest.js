@@ -25,7 +25,7 @@ Object.keys(chains).forEach(chain => {
         if (!token) token = tokensV[idx]
         if (token) api.add(token, bals2[idx])
       })
-      return sumTokens2({ api, resolveLP: true, owners: vaults, resolveUniV3: true })
+      return sumTokens2({ api, resolveLP: true, owners: vaults, resolveUniV3: chain !== 'base', permitFailure: true })
     }
   }
 })

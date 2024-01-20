@@ -184,6 +184,39 @@ async function queryContract({ contract, chain, data }) {
   ).data.data;
 }
 
+const multipleEndpoints={
+  sei: [
+    "https://sei-api.polkachu.com",
+    "https://sei-rest.brocha.in",
+    "https://rest.sei-apis.com",
+    "https://sei-m.api.n0ok.net",
+    "https://sei-api.lavenderfive.com",
+    "https://api-sei.stingray.plus"
+  ]
+}
+
+async function queryContractWithRetries({ contract, chain, data }) {
+  const rpcs = multipleEndpoints[chain]
+  if(rpcs === undefined){
+    return queryContract({contract, chain, data})
+  }
+  if (typeof data !== "string") data = JSON.stringify(data);
+  data = Buffer.from(data).toString("base64");
+  for(let i=0; i<rpcs.length; i++){
+    try{
+      return (
+        await axios.get(
+          `${rpcs[i]}/cosmwasm/wasm/v1/contract/${contract}/smart/${data}`
+        )
+      ).data.data;
+    } catch(e){
+      if(i >= rpcs.length - 1){
+        throw e
+      }
+    }
+  }
+}
+
 async function queryManyContracts({ contracts = [], chain, data }) {
   const parallelLimit = 25
   const { results, errors } = await PromisePool
@@ -277,4 +310,5 @@ module.exports = {
   getTokenBalance,
   getToken,
   sumCW20Tokens,
+  queryContractWithRetries
 };

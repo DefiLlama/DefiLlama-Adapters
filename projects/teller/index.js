@@ -59,11 +59,11 @@ async function getData(api) {
       fromBlock,
     })
     let closedBidSet = new Set()
-    repaidLogs.forEach(i => closedBidSet.add(+i.bidId))
-    liquidatedLogs.forEach(i => closedBidSet.add(+i.bidId))
+    repaidLogs.forEach(i => closedBidSet.add(Number(i.bidId)))
+    liquidatedLogs.forEach(i => closedBidSet.add(Number(i.bidId)))
     const escrowMap = {}
     escrowLogs.forEach(i => {
-      const bidId = +i._bidId
+      const bidId = Number(i._bidId)
       if (closedBidSet.has(bidId)) return;
       if (escrowMap[bidId]) throw new Error('Escrow address already found for ' + bidId)
       escrowMap[bidId] = {
@@ -72,7 +72,7 @@ async function getData(api) {
       }
     })
     collateralDepositedLogs.forEach(i => {
-      const bidId = +i._bidId
+      const bidId = Number(i._bidId)
       if (closedBidSet.has(bidId)) return;
       if (!escrowMap[bidId]) throw new Error('Escrow address missing for ' + bidId)
       escrowMap[bidId].tokens.push(i._collateralAddress)
