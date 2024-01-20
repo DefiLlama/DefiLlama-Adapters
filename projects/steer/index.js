@@ -40,7 +40,7 @@ const supportedChains = [
   },
   {
     name: 'Thundercore',
-    subgraphEndpoint: 'https://subgraph.steer.finance/thundercore/subgraphs/name/steerprotocol/steer-thundercore',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-thundercore/1.0.0/gn',
     chainId: 108,
     identifier: 'thundercore'
   },
