@@ -11,7 +11,7 @@ const ADDRESSES = require('../coreAssets.json')
 // https://cosmos-chain.directory/chains
 const endPoints = {
   crescent: "https://mainnet.crescent.network:1317",
-  osmosis: "https://osmosis-api.polkachu.com",
+  osmosis: "https://rest.cosmos.directory/osmosis",
   cosmos: "https://cosmoshub-lcd.stakely.io",
   kujira: "https://kuji-api.kleomedes.network",
   comdex: "https://rest.comdex.one",
