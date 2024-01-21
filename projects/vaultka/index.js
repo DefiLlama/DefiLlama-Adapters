@@ -131,7 +131,7 @@ module.exports = {
         target: addresses.gin,
       });
 
-      const alpValue = ((stakedAlpBal * alpPrice) / 1e18 / 1e8) * 1e6;
+      const alpValue = ((stakedAlpBal[0] * alpPrice) / 1e18 / 1e8) * 1e6;
 
       api.add(addresses.VLP, StakedVLPBal);
       api.add(addresses.VLP, StakedVLPBalV2);

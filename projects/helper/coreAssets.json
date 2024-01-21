@@ -720,6 +720,7 @@
   },
   "rsk": {
     "WRBTC": "0x967f8799af07df1534d48a95a5c9febe92c53ae0",
+    "WRBTC1": "0x542fDA317318eBF1d3DEAf76E0b632741A7e677d",
     "ETHs": "0x1d931bf8656d795e50ef6d639562c5bd8ac2b78f"
   },
   "polis": {
@@ -1542,5 +1543,15 @@
     "JFIN": "0x2cd11cdBeD000B5a680C015F2825569Bc5d8CF88",
     "KUB": "0x28953231bc533bE90f5FDf9CE62Ac259018ee847",
     "JUSDT": "0x24599b658b57f91E7643f4F154B16bcd2884f9ac"
+  },
+  "chainx": {
+    "WBTC": "0x09Ff8E49D0EA411A3422ed95E8f5497D4241F532"
+  },
+  "airdao": {
+    "SAMB": "0x2b2d892c3fe2b4113dd7ac0d2c1882af202fb28f",
+    "USDC": "0xd8dd0273d31c1cd9dba104daca7c1dfee4f7b805",
+    "BUSD": "0x7a477aa8ed4884509387dba81ba6f2b7c97597e2",
+    "AINU": "0x618220b06e8e30a972ffbe66fe56588fe4d5044a",
+    "BOND": "0x096b5914c95c34df19500daff77470c845ec749d"
   }
 }
