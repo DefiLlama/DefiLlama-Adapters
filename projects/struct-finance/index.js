@@ -1,6 +1,6 @@
 const ADDRESSES = require("../helper/coreAssets.json");
 const { sumTokens2 } = require("../helper/unwrapLPs");
-const { mergeAndSum, sumTokenXY } = require("./utils");
+const { mergeAndSum, sumAutoPoolTokenXY } = require("./utils");
 const {
   addresses,
   autoPoolABI,
@@ -23,7 +23,7 @@ async function tvl(ts, _, __, { api }) {
   });
 
   // call userInfo on APT farm, passing in the farm ID and the yield source address
-  // first value returned in the array is the amount of AP tokens owned by the yield source contract
+  // first value returned in the array is the amount of AP tokens staked by the yield source contract
   const { output: responsesFarmUserInfo } = await sdk.api.abi.multiCall({
     target: aptFarmAddress,
     calls: aptFarmUserInfoCalls,
@@ -50,7 +50,10 @@ async function tvl(ts, _, __, { api }) {
     abi: autoPoolABI,
   });
 
-  const tjapYieldSourcesTokenSums = responsesAmountsXY.reduce(sumTokenXY, {});
+  const tjapYieldSourcesTokenSums = responsesAmountsXY.reduce(
+    sumAutoPoolTokenXY,
+    {}
+  );
 
   vaultsGmx.push(addresses.struct.gmx.yieldSource);
 

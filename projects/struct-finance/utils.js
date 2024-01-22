@@ -10,7 +10,7 @@ function mergeAndSum(obj1, obj2) {
   return result;
 }
 
-function sumTokenXY(sums, response) {
+function sumAutoPoolTokenXY(sums, response) {
   const { tokenX, tokenY } = autopoolsMetaData[response.input.target];
   const autopoolTokenXWithAvax = `avax:${tokenX.toLowerCase()}`;
   const autopoolTokenYWithAvax = `avax:${tokenY.toLowerCase()}`;
@@ -24,5 +24,5 @@ function sumTokenXY(sums, response) {
 
 module.exports = {
   mergeAndSum,
-  sumTokenXY,
+  sumAutoPoolTokenXY,
 };
