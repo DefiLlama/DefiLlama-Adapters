@@ -1,6 +1,9 @@
 const sdk = require("@defillama/sdk");
 const erc4626Abi = require("./erc4626.json");
 const BigNumber = require("bignumber.js");
+const BN = require("bn.js");
+const { PublicKey } = require("@solana/web3.js")
+const { getConnection, sumTokens2 } = require("../helper/solana");
 
 const erc4626Vaults = {
     "ethereum": [
@@ -18,6 +21,20 @@ const erc4626Vaults = {
         },
         {
             "Vault": "0xfCB69E5E535e04A809dC8Af7eba59c2FED4b2868",
+        },
+    ]
+}
+
+const solanaVaults = {
+    "solana": [
+        {
+            "account": "JA6yX1tzsrCTMbFKaT1VrLKzBNuEHuT8SNYVZpYrmxkC",
+        },
+        {
+            "account": "CXMwkuWvjNF6HhR8Kze3z3exheoE2xgQtJfmnLtRYeWX",
+        },
+        {
+            "account": "CXMwkuWvjNF6HhR8Kze3z3exheoE2xgQtJfmnLtRYeWX",
         },
     ]
 }
@@ -59,6 +76,26 @@ const erc4626VaultsIdle = {
         {
             "Vault": "0x53DAC8d715350AFb3443D346aa3Abd73dA4534F0",
         }
+    ],
+    "optimism": [
+        {
+            "Vault": "0x923917304012C7E14d122eb1D6A8f49f608bC06B",
+        },
+        {
+            "Vault": "0x53DAC8d715350AFb3443D346aa3Abd73dA4534F0",
+        },
+        {
+            "Vault": "0x07E7d45bC488dE9eeD94AA5f9bb8C845F4b21aFa",
+        },
+        {
+            "Vault": "0xE92B7a8eb449AbA20DA0B2f5b2a4f5f25F95F3C4",
+        },
+        {
+            "Vault": "0xfCB69E5E535e04A809dC8Af7eba59c2FED4b2868",
+        },
+        {
+            "Vault": "0xf06e004caB43F326AA3668C8723A8bDBCF5bD165",
+        }
     ]
 }
 
@@ -69,6 +106,11 @@ const idleCdos = {
     ],
     "polygon_zkevm": [
         "0x6b8A1e78Ac707F9b0b5eB4f34B02D9af84D2b689"
+    ],
+    "optimism": [
+        "0xe49174F0935F088509cca50e54024F6f8a6E08Dd",
+        "0x94e399Af25b676e7783fDcd62854221e67566b7f",
+        "0x8771128e9E386DC8E4663118BB11EA3DE910e528"
     ]
 }
 
@@ -128,10 +170,27 @@ async function tvl(_, block, _cb, { api, }) {
             sdk.util.sumSingleBalance(balances, api.chain + ':' + asset, funds)
         }
     }
+    if (solanaVaults[api.chain]) {
+        return SolanaTvl()
+    }
     return balances
+}
+
+async function SolanaTvl() {
+    const tokensAndOwners = [
+  
+      ['mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So', 'AkkGFKVJY8o5MRqBf2St4Q8NQnfTTi2bSssMMk9zXAMr'],
+      ['J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn', '86vJYeZiXc9Uq1wmtLzERDfQzAnpoJgs2oF5Y4BirKkn'],
+      ['bSo13r4TkiE4KumL71LsHTPpL2euBYLFx6h9HP3piy1', '8HpEPmkKb6T7xNDzhheWhK2P6BEdp2nGv7JbcEoDmDST']
+  
+    ]
+
+    return sumTokens2({ tokensAndOwners })
 }
 
 module.exports = {
     ethereum: { tvl },
-    polygon_zkevm: { tvl }
+    polygon_zkevm: { tvl },
+    optimism: { tvl },
+    solana: { tvl }
 }
