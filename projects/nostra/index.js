@@ -83,5 +83,6 @@ module.exports = {
   },
   hallmarks: [
     [1697634000, "Nostra Mainnet launch"],
+    [1701863400, "Nostra Points launch"]
   ]
 };

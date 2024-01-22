@@ -1,5 +1,5 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const LEND_LORD_VAULT_CONTRACT = "0x05c576786B1B96C69917eDc4E8162D39aFe03cD0";
+const LEND_LORD_VAULT_CONTRACT = "0xC6A6fB7238457277E913665e194BA1f041B210f5";
 
 async function tvl(_, _b, _cb, { api, }) {
   const tokens = await api.call({ abi: abi.getAssets, target: LEND_LORD_VAULT_CONTRACT })

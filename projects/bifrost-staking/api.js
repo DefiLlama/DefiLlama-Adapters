@@ -20,6 +20,7 @@ function formatTokenAmount(amount, tokenSymbol) {
     case "GLMR":
     case "MOVR":
     case "FIL":
+    case "ASTR":
       decimals = 18;
       break;
   }
@@ -34,7 +35,8 @@ const tokenToCoingecko = {
   MOVR: "moonriver",
   GLMR: "moonbeam",
   ETH: "ethereum",
-  FIL: "filecoin"
+  FIL: "filecoin",
+  ASTR: "astar"
 };
 
 function formatToken(token) {
@@ -45,6 +47,8 @@ function formatToken(token) {
       return "GLMR";
     case '4':
       return "FIL";
+    case '3':
+      return "ASTR";
     default :
       return null;
   }
@@ -52,7 +56,7 @@ function formatToken(token) {
 
 
 async function tvl() {
-  const kusamaProvider = new WsProvider("wss://bifrost-rpc.liebi.com/ws");
+  const kusamaProvider = new WsProvider("wss://hk.bifrost-rpc.liebi.com/ws");
   const kusamaApi = await ApiPromise.create(({ provider:kusamaProvider }));
 
   const polkadotProvider = new WsProvider("wss://hk.p.bifrost-rpc.liebi.com/ws");
@@ -62,7 +66,7 @@ async function tvl() {
 
   // Get kusama vToken tvl (vKSM / vMOVR / vBNC)
   const kusamaTokenPool = await kusamaApi.query.vtokenMinting.tokenPool.entries();
-  // Get polkadot vToken tvl (vDOT / vGLMR )
+  // Get polkadot vToken tvl (vDOT / vGLMR / vASTR)
   const polkadotTokenPool = await polkadotApi.query.vtokenMinting.tokenPool.entries();
 
   await Promise.all(kusamaTokenPool.map(async (pool) => {

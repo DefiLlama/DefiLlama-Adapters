@@ -1,5 +1,4 @@
 const { chainExports } = require('../helper/exports')
-const { default: axios } = require('axios')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getConfig } = require('../helper/cache')
 

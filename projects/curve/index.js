@@ -172,7 +172,7 @@ async function unwrapPools({ poolList, registry, chain, block }) {
 }
 
 const blacklists = {
-  ethereum: ['0x6b8734ad31d42f5c05a86594314837c416ada984', '0x95ECDC6caAf7E4805FCeF2679A92338351D24297', '0x5aa00dce91409b58b6a1338639b9daa63eb22be7', '0xEf1385D2b5dc6D14d5fecB86D53CdBefeCA20fcC', '0xf939E0A03FB07F59A73314E73794Be0E57ac1b4E', '0x29b41fe7d754b8b43d4060bb43734e436b0b9a33'],
+  ethereum: ['0x6b8734ad31d42f5c05a86594314837c416ada984', '0x95ECDC6caAf7E4805FCeF2679A92338351D24297', '0x5aa00dce91409b58b6a1338639b9daa63eb22be7', '0xEf1385D2b5dc6D14d5fecB86D53CdBefeCA20fcC', ADDRESSES.ethereum.CRVUSD, '0x29b41fe7d754b8b43d4060bb43734e436b0b9a33'],
   arbitrum: ['0x3aef260cb6a5b469f970fae7a1e233dbd5939378'],
 }
 
@@ -181,6 +181,7 @@ const config = {
     plainFactoryConfig: [
       { plainFactory: '0x528baca578523855a64ee9c276826f934c86a54c', fromBlock: 17182168 },
       { plainFactory: '0x0145fd99f1dd6e2491e44fca608c481c9c5b97a9', fromBlock: 17182168 },
+      { plainFactory: '0x6a8cbed756804b16e05e741edabd5cb544ae21bf', fromBlock: 17182168 },
     ]
   },
 }
