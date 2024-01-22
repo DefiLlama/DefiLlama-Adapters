@@ -97,6 +97,9 @@ async function getPools(block, chain) {
       .filter(r => r.output.addr !== nullAddress)
       .forEach(({ input: { params: [registryId] }, output: { addr } }) => registriesMapping[getRegistryType(registryId)] = addr)
   }
+  if(contracts[chain].CurveStableswapFactoryNG){
+    registriesMapping.CurveStableswapFactoryNG = contracts[chain].CurveStableswapFactoryNG
+  }
   const poolList = {}
   await Promise.all(Object.entries(registriesMapping).map(async ([registry, addr]) => {
     poolList[registry] = await getPool({ chain, block, registry: addr })
