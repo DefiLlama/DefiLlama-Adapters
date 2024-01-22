@@ -1,6 +1,4 @@
-const sdk = require("@defillama/sdk");
 const { getResources, getTableData } = require("../helper/chain/aptos");
-const { transformBalances } = require("../helper/portedTokens");
 
 const extractCoinAddress = (str) =>
   str.slice(str.indexOf("<") + 1, str.lastIndexOf(">"));
@@ -26,7 +24,7 @@ const MOVE_USDT_LP =
 const SLT =
   "0x8b2df69c9766e18486c37e3cfc53c6ce6e9aa58bbc606a8a0a219f24cf9eafc1::sui_launch_token::SuiLaunchToken";
 
-const altLockBond = async () => {
+const altLockBond = async (api) => {
   let pools = [
     "0xb9c61f47e66ca6f718eb54f4c602dc4b47635311737e2735fa4e2fc70d91ad1b", // 3m pool
     "0xd754841a8ec527e45b5ba13cf36ecd352210c181ed17662e4b05c879574cabd9", // 6m pool
@@ -40,39 +38,27 @@ const altLockBond = async () => {
     (e) => poolResources.push(...e)
   );
 
-  let poolLocks = poolResources
+  poolResources
     .filter((i) => i.type.includes("PoolInfo"))
-    .map((e) => ({
-      lamports: Math.round(
-        e.data.total_bond_in_amount -
-          e.data.distributed_reward /
-            (e.data.conversion_rate / e.data.conversion_precision) /
-            (e.data.bonus_rate / e.data.bonus_precision)
-      ).toString(),
-      tokenAddress: ALT,
-    }));
-
-  return poolLocks;
+    .map((e) => api.add(ALT,
+      e.data.total_bond_in_amount -
+      e.data.distributed_reward /
+      (e.data.conversion_rate / e.data.conversion_precision) /
+      (e.data.bonus_rate / e.data.bonus_precision)))
 };
 
-altLockBond();
-
-const cakeLPsltStaking = async () => {
+const cakeLPsltStaking = async (api) => {
   let resources = await getResources(
     "0xd156fba6722a47b79c0884ed13b03ba5238e47b94ead837d5fba045feae4a4f9"
   );
 
-  const coinLock = resources
+  resources
     .filter((i) => i.type.includes("0x1::coin::CoinStore"))
-    .map((i) => ({
-      lamports: i.data.coin.value,
-      tokenAddress: extractCoinAddress(i.type),
-    }));
+    .map((i) => api.add(extractCoinAddress(i.type), i.data.coin.value));
 
-  return coinLock;
 };
 
-const moveStaking = async () => {
+const moveStaking = async (api) => {
   let resources = await getResources(
     "0x15ff26488572ac5183e27dad6cae1cfd36d2e82350fd85f58a85537279e0c3d"
   );
@@ -83,10 +69,7 @@ const moveStaking = async () => {
       "0xc2551e38e8d2aaf71b6f8b69458e6ebe5d649d4014fb90e546c95a394ca1f2f7::move_staking_v1::PoolInfo"
   );
 
-  let lamports = stakeInfo.data.amount;
-
-  let moveLocked = { lamports, tokenAddress: MOVE };
-  return moveLocked;
+  api.add(MOVE, stakeInfo.data.amount)
 };
 
 const getCoinInfo = async (coinType) => {
@@ -102,7 +85,7 @@ const getCoinInfo = async (coinType) => {
   return coinResources.total_amount;
 };
 
-const moveIbo = async () => {
+const moveIbo = async (api, tvlType) => {
   let resources = await getResources(
     "0xffc234602dfd2f44613a886d293775c8de5400f91a5d3d554a037125544e1aae"
   );
@@ -110,38 +93,44 @@ const moveIbo = async () => {
   let iboInfo = resources.find(
     (r) => r.type === `0x1::coin::CoinStore<${MOVE}>`
   );
-  const acceptCoinArr = [APT, ALT, lzUSDC, lzUSDT, MOVE_APT_LP, MOVE_USDT_LP];
 
-  let acceptCoinInfo = await Promise.all(
-    acceptCoinArr.map(async (i) => ({
-      lamports: await getCoinInfo(i),
-      tokenAddress: i,
-    }))
-  );
-  let moveLocked = { lamports: iboInfo.data.coin.value, tokenAddress: MOVE };
+  const acceptCoinArr = [];
 
-  acceptCoinInfo.push(moveLocked);
+  switch (tvlType) {
+    case 'tvl':
+      acceptCoinArr.push(APT, lzUSDC, lzUSDT,);
+      break;
+    case 'pool2':
+      acceptCoinArr.push(MOVE_APT_LP, MOVE_USDT_LP);
+      break;
+    case 'staking':
+      acceptCoinArr.push(ALT);
+      break;
+    default:
+      break;
+  }
 
-  return acceptCoinInfo;
+  let bals = await Promise.all(acceptCoinArr.map(getCoinInfo));
+  if (tvlType === 'staking')
+    api.add(MOVE, iboInfo.data.coin.value)
+  api.addTokens(acceptCoinArr, bals)
 };
 
-const tvl = async () => {
-  let balances = {};
-  let coinContainers = await moveIbo();
-  let moveStakingPool = await moveStaking();
-  let altLockBondPool = await altLockBond();
+const tvl = async (_, _1, _2, { api }) => {
+  await moveIbo(api, 'tvl');
+  return api.getBalances()
+};
+const pool2 = async (_, _1, _2, { api }) => {
+  await moveIbo(api, 'pool2');
+  await cakeLPsltStaking(api);
+  return api.getBalances()
+};
 
-  let cakeLPsltStakingPool = await cakeLPsltStaking();
-  coinContainers.push(
-    moveStakingPool,
-    ...altLockBondPool,
-    ...cakeLPsltStakingPool
-  );
-  coinContainers.forEach(({ lamports, tokenAddress }) => {
-    sdk.util.sumSingleBalance(balances, tokenAddress, lamports);
-  });
-
-  return transformBalances("aptos", balances);
+const staking = async (_, _1, _2, { api }) => {
+  await moveIbo(api, 'staking');
+  await moveStaking(api);
+  await altLockBond(api)
+  return api.getBalances()
 };
 
 module.exports = {
@@ -149,6 +138,6 @@ module.exports = {
   methodology:
     "Counts the lamports for each coins in every pools of AptosLaunch.",
   aptos: {
-    tvl,
+    tvl, staking, pool2,
   },
 };
