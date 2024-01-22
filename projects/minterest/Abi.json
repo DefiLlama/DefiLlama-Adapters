@@ -1,6 +1,0 @@
-{
-  "totalBorrows": "uint256:totalBorrows",
-  "underlying": "address:underlying",
-  "getCash": "uint256:getCash",
-  "getAllMarkets": "address[]:getAllMarkets"
-}
