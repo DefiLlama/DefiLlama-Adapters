@@ -7,7 +7,6 @@ const {
   transformTokens,
   fixBalancesTokens,
   ibcChains,
-  distressedAssts,
 } = require('./tokenMapping')
 
 async function transformInjectiveAddress() {
@@ -73,7 +72,6 @@ function transformChainAddress(
 ) {
 
   return addr => {
-    if (distressedAssts.has(addr.toLowerCase())) return 'ethereum:0xbad'
     if (['solana'].includes(chain)) {
       return mapping[addr] ? mapping[addr] : `${chain}:${addr}`
     }
@@ -99,7 +97,6 @@ async function getChainTransform(chain) {
     if (addr.includes('ibc/')) return addr.replace(/.*ibc\//, 'ibc/').replace(/\//g, ':')
     if (addr.startsWith('coingecko:')) return addr
     if (addr.startsWith(chain + ':') || addr.startsWith('ibc:')) return addr
-    if (distressedAssts.has(addr.toLowerCase())) return 'ethereum:0xbad'
 
     addr = normalizeAddress(addr, chain).replace(/\//g, ':')
     const chainStr = `${chain}:${addr}`
