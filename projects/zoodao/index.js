@@ -37,11 +37,16 @@ const stakingContracts = [
 
 async function tvl(_, _1, _2, { api }) {
   const vaultStablecoinStaked = await api.call({ abi: 'erc20:balanceOf', target: VAULT_CONTRACT, params: [BATTLE_ARENA_CONTRACT] });
-  console.log("🚀 ~ tvl ~ vaultStablecoinStaked:", vaultStablecoinStaked)
-
+  let arenaZooTokens = await api.call({ abi: 'erc20:balanceOf', target: ZOODAO_TOKEN, params: [BATTLE_ARENA_CONTRACT] });
+  arenaZooTokens = ethers.toBigInt(arenaZooTokens)
+  let veZooTokens = await api.call({ abi: 'erc20:balanceOf', target: ZOODAO_TOKEN, params: [VE_ZOO_CONTRACT] });
+  veZooTokens = ethers.toBigInt(veZooTokens)
+  let xZooTokens = await api.call({ abi: 'erc20:balanceOf', target: ZOODAO_TOKEN, params: [X_ZOO_CONTRACT] });
+  xZooTokens = ethers.toBigInt(xZooTokens)
   // convert m.FRAX to FRAX
   const totalFRAX = await api.call({ abi: battleArenaAbi.sharesToTokens, target: BATTLE_ARENA_CONTRACT, params: [vaultStablecoinStaked] });
   api.add(FRAX_TOKEN, totalFRAX)
+  api.add(ZOODAO_TOKEN, arenaZooTokens + veZooTokens + xZooTokens)
 }
 
 async function tvlArbitrum(_, _1, _2, { api }) {
@@ -71,7 +76,6 @@ module.exports = {
   methodology: "Counts the supplied value of FRAX and ZOO through ZooDAO's contracts",
   moonbeam: {
     tvl,
-    staking: stakings(stakingContracts, ZOODAO_TOKEN)
   },
   arbitrum: {
     tvl: tvlArbitrum
