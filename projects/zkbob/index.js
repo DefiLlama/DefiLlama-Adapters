@@ -21,4 +21,10 @@ module.exports = {
       owners: ['0x1ca8c2b9b20e18e86d5b9a72370fc6c91814c97c', '0x58320A55bbc5F89E5D0c92108F762Ac0172C5992']
     }),
   },
+  tron: {
+    tvl: sumTokensExport({
+      tokens: [ADDRESSES.tron.USDT,],
+      owners: ['TXViaNRhEugXpAZApviBqBnbTSKUgejnR9'],
+    }),
+  }
 }

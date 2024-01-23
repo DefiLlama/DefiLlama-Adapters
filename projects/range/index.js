@@ -6,6 +6,7 @@ const config ={
     { factory: '0xf1e70677fb1f49471604c012e8B42BA11226336b', fromBlock: 17266660 }, // uniswap
     { factory: '0x3edeA0E6E94F75F86c62E1170a66f4e3bD7d77fE', fromBlock: 18460401 }, // pancakeswap
     { factory: '0xDE07a0D5C9CA371E41a869451141AcE84BCAd119', fromBlock: 18375548 }, // GHO
+    { factory: '0x06D38cFA75FE0E9C41B0C58F102bCb2Df2577732', fromBlock: 10000835 } // uniswap
   ],
   arbitrum: [
     { factory: '0xB9084c75D361D1d4cfC7663ef31591DeAB1086d6', fromBlock: 88503603 }, // uniswap

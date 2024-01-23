@@ -223,6 +223,7 @@ module.exports = {
        name: 'scroll',
        tokens: [
          ADDRESSES.scroll.WETH,
+         ADDRESSES.scroll.USDC,
        ],
        holders: [
          '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4', // portal v2

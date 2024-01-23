@@ -30,13 +30,13 @@ Object.keys(config).forEach((chain) => {
     tvl: async (_, _b, _cb, { api }) => {
       let supplies;
       if (chain === 'solana') {
-        try {
-          supplies = await Promise.all(fundAddresses.map(getTokenSupply));
-          const scaledSupplies = supplies.map(supply => supply * 1_000_000);
-          api.addTokens(fundAddresses, scaledSupplies);
-        } catch (error) {
-          api.addTokens(fundAddresses, Array(fundAddresses.length).fill(0));
-        }
+        supplies = await Promise.all(fundAddresses.map(getTokenSupply))
+          .catch(error => {
+            throw error;
+          });
+
+        const scaledSupplies = supplies.map(supply => supply * 1_000_000);
+        api.addTokens(fundAddresses, scaledSupplies);
       } else {
         supplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: fundAddresses });
         api.addTokens(fundAddresses, supplies);
