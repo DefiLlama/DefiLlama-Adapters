@@ -20,6 +20,6 @@ async function staking() {
 
 module.exports = {
   misrepresentedTokens: true,
-  methodology: "Liquidity on LSD staking",
+  methodology: "Liquidity on the DEX",
   injective: { tvl: getFactoryTvl(factory.classic), staking: staking },
 };

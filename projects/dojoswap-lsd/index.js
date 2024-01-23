@@ -64,6 +64,6 @@ async function staking() {
 
 module.exports = {
   misrepresentedTokens: true,
-  methodology: "Liquidity on the DEX",
+  methodology: "Liquidity on LSD staking",
   injective: { tvl: staking },
 };
