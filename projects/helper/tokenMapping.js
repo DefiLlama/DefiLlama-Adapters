@@ -19,24 +19,6 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom']
 const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec',]
 
-const distressedAssts = new Set(Object.values({
-  CRK: '0x065de42e28e42d90c2052a1b49e7f83806af0e1f',
-  aBNBc: ADDRESSES.bsc.ankrBNB,
-  aBNBb: ADDRESSES.bsc.aBNBb,
-  XRPC: '0xd4ca5c2aff1eefb0bea9e9eab16f88db2990c183',
-  FLEET: '0xfd56a3dcfc0690881a466ae432d71bb2db588083',
-  YAKU: 'NGK3iHqqQkyRZUj4uhJDQqEyKKcZ7mdawWpqwMffM3s',
-  JEFE: '0x80fa6d5384bdde296a28a321f73ab70977575129',
-  SNS: 'SNSNkV9zfG5ZKWQs6x4hxvBRV6s8SqMfSGCtECDvdMd',
-  BASED: 'fantom:0x8d7d3409881b51466b483b11ea1b8a03cded89ae',
-  LORT: 'bsc:0xd24616870ca41bc01074446988faeb0085a71190',
-  // BSHARE: '0x49C290Ff692149A4E16611c694fdED42C954ab7a',
-  PEEP: 'n54ZwXEcLnc3o7zK48nhrLV4KTU5wWD4iq7Gvdt5tik',
-  WIF: 'EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm',
-  GUAC: 'AZsHEMXd36Bj1EMNXhowJajpUXzrKcK57wW4ZGXVa7yR',
-  OVOL: '4v3UTV9jibkhPfHi5amevropw6vFKVWo7BmxwQzwEwq6',
-}).map(i => i.toLowerCase()))
-
 const transformTokens = {
   // Sample Code
   // cronos: {
@@ -157,6 +139,11 @@ const fixBalancesTokens = {
   },
   chainx: {
     [ADDRESSES.chainx.WBTC]: { coingeckoId: 'wrapped-bitcoin', decimals: 18 },
+  },
+  airdao: {
+    [ADDRESSES.airdao.SAMB]: { coingeckoId: 'amber', decimals: 18 },
+    [ADDRESSES.airdao.USDC]: { coingeckoId: 'usd-coin', decimals: 18 },
+    [ADDRESSES.airdao.BUSD]: { coingeckoId: 'binance-usd', decimals: 18 },
   },
 }
 
@@ -322,6 +309,5 @@ module.exports = {
   ibcChains,
   stripTokenHeader,
   getUniqueAddresses,
-  distressedAssts,
   eulerTokens,
 }
