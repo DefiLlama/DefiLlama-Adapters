@@ -13,6 +13,7 @@ const config = {
 
 Object.keys(config).forEach((chain) => {
   module.exports[chain] = {
+    start: 1675962000, //Fri Feb 10 2023
     tvl: sumTokensExport(config[chain]),
   };
 });
