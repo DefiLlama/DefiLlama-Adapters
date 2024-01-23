@@ -24,6 +24,7 @@ async function ethTVL(_, _1, _2, {api}) {
   let escrowAddress;
   let totalSupply;
   let latestPublicPrice;
+  let latestOfferingIndex;
   let paymentToken;
   let totalTVL = BigNumber(0);
 
