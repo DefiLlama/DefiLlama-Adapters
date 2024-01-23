@@ -55,4 +55,11 @@ module.exports = {
 			return { astar };
 		},
 	},
+	manta: {
+		tvl: async () => {
+			const { bifrost } = getExports("bifrost-staking", ["bifrost"]);
+			const { manta } = await bifrost.tvl();
+			return { manta };
+		},
+	},
 };
