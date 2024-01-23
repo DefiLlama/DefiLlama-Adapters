@@ -5,7 +5,10 @@ async function tvl(_, _b, _cb, { api, }) {
   data = data.filter(i => i.strategy !== '0x0000000000000000000000000000000000000000')
   const aTokens = await api.multiCall({  abi: 'address:aToken', calls: data.map(i => i.strategy)})
   const ownerTokens = data.map((i, idx) => [[i.asset, aTokens[idx]], i.strategy])
-  return api.sumTokens({ ownerTokens })
+  const aTokenSum  = await api.sumTokens({ ownerTokens });
+  const TrueTokenSum = {};
+  ownerTokens.forEach(([[a, b], _]) => { TrueTokenSum['arbitrum:'+a] = aTokenSum['arbitrum:'+b.toLowerCase()]; });
+  return TrueTokenSum
 }
 
 module.exports = {
