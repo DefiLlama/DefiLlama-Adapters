@@ -11,6 +11,7 @@ const config = {
   polygon: { factory: '0x6d2D10DC033751CA0485D1c2Bd463D5b87AfdE77', fromBlock: 44086415, },
   arbitrum: { factory: '0x85b0F66E83515ff4e825DfCAa58E040E08278EF9', fromBlock: 123408816, },
   avax: { factory: '0x85b0F66E83515ff4e825DfCAa58E040E08278EF9', fromBlock: 34309521, },
+  mantle: { factory: '0x4c34BA0103b8417e1Fc4D0F6645828B2d6d207F9', fromBlock: 10250349, },
 }
 
 Object.keys(config).forEach(chain => {

@@ -11,7 +11,11 @@ const stargatePoolAbi = {
   token: "function token() external view returns (address)",
 };
 
-const getStargateLpValues = async (api, stargateLpWrappers, processedWrappers) => {
+const getStargateLpValues = async (
+  api,
+  stargateLpWrappers,
+  processedWrappers
+) => {
   const stargateLpPools = await api.multiCall({
     abi: "address:underlying",
     calls: stargateLpWrappers,
@@ -53,35 +57,38 @@ const getStargateLpValues = async (api, stargateLpWrappers, processedWrappers) =
 
   baseStargateAssets.forEach((asset, i) => {
     if (processedWrappers.has(stargateLpWrappers[i])) return;
-    api.add(asset, convertedAmounts[i])
+    api.add(asset, convertedAmounts[i]);
     // Mark this wrapper as processed
     processedWrappers.add(stargateLpWrappers[i]);
   });
 };
 
-const getCompoundUsdcValues = async (api, cUsdcV3Wrapper, processedWrappers) => {
-  const cUsdcV3 = await api.call({
+const getCompoundUsdcValues = async (
+  api,
+  cUsdcV3Wrappers,
+  processedWrappers
+) => {
+  const comets = await api.multiCall({
     abi: "address:underlyingComet",
-    target: cUsdcV3Wrapper,
+    calls: cUsdcV3Wrappers,
   });
 
-  const baseToken = (
-    await api.multiCall({
-      abi: "address:baseToken",
-      calls: [cUsdcV3],
-    })
-  )[0];
+  const baseTokens = await api.multiCall({
+    abi: "address:baseToken",
+    calls: comets,
+  });
 
-  const wrapperBalance = await api.call({
+  const wrapperBalances = await api.multiCall({
     abi: "erc20:balanceOf",
-    target: cUsdcV3,
-    params: [cUsdcV3Wrapper],
+    calls: comets.map((x, i) => ({ target: x, params: [cUsdcV3Wrappers[i]] })),
   });
 
-  if (!processedWrappers.has(cUsdcV3Wrapper)) {
-    api.add(baseToken, wrapperBalance)
-    processedWrappers.add(cUsdcV3Wrapper);
-  }
+  cUsdcV3Wrappers.forEach((wrapper, i) => {
+    if (!processedWrappers.has(wrapper)) {
+      api.add(baseTokens[i], wrapperBalances[i]);
+      processedWrappers.add(cUsdcV3Wrappers[i]);
+    }
+  });
 };
 
 const _getLogs = async (api, config) => {

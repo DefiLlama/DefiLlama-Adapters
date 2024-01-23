@@ -1,5 +1,5 @@
 const { pool2 } = require("../helper/pool2");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 const sdk = require('@defillama/sdk')
 const POLY_LP = '0xfe8bacb45a5ce5cf0746f33d3a792c98fbd358e0'
 const POLY_MASTERCHEF = '0xabc4250b8813D40c8C42290384C3C8c8BA33dBE6'
@@ -11,15 +11,14 @@ module.exports = {
   timetravel: true,
   polygon: {
     tvl: async () => ({}),
-    pool2: pool2(POLY_MASTERCHEF, POLY_LP, 'polygon'),
+    pool2: pool2(POLY_MASTERCHEF, POLY_LP),
   },
   ethereum: {
     tvl: async () => ({}),
-    pool2: async (ts, block, chainBlocks) => {
+    pool2: async (ts, block, chainBlocks, { api }) => {
       const { output: LPbalance } = await sdk.api.erc20.balanceOf({ target: ETH_LP_BRIDGED, owner: POLY_ETH_MASTERCHEF, block: chainBlocks.polygon, chain: 'polygon' })
-      const balances = {}
-      await unwrapUniswapLPs(balances, [{ balance: LPbalance, token: ETH_LP }])
-      return balances
+      api.add(ETH_LP, LPbalance)
+      return sumTokens2({ api, resolveLP: true })
     }
   },
 };

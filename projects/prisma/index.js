@@ -5,7 +5,7 @@ const config = {
 }
 
 module.exports.hallmarks = [
-  [1698922200,"Justin Sun Deposited"]
+  [1698883200,"PRISMA token launch"]
 ],
 Object.keys(config).forEach(chain => {
   const { factory, fromBlock, } = config[chain]
