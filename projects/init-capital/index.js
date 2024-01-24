@@ -1,54 +1,25 @@
-const axios = require("axios");
+const { getConfig } = require('../helper/cache')
 
 const POOL_DATA_URI = "https://app.init.capital/static/json/pools.json";
-const MANTLE_CHAIN_ID = 5000;
 
 const tvl = async (timestamp, block, _, { api }) => {
-  const allPoolData = await axios.get(POOL_DATA_URI);
-  const mantlePoolData = allPoolData.data[MANTLE_CHAIN_ID];
-
-  const poolAddresses = Object.keys(mantlePoolData);
-  const underlyingAddresses = poolAddresses.map(
-    (pool) => mantlePoolData[pool].underlyingToken
-  );
-
-  const cashes = await api.multiCall({
-    abi: "uint256:cash",
-    calls: poolAddresses,
-    block,
-  });
-
-  api.addTokens(underlyingAddresses, cashes);
-
-  return api.getBalances();
+  const allPoolData = await getConfig('init-capital', POOL_DATA_URI);
+  const pools = Object.keys(allPoolData[api.getChainId()]);
+  const tokens = await api.multiCall({ calls: pools, abi: 'address:underlyingToken' })
+  return api.sumTokens({ tokensAndOwners2: [tokens, pools] })
 };
 
 const borrowed = async (timestamp, block, _, { api }) => {
-  const allPoolData = await axios.get(POOL_DATA_URI);
-  const mantlePoolData = allPoolData.data[MANTLE_CHAIN_ID];
-
-  const poolAddresses = Object.keys(mantlePoolData);
-  const underlyingAddresses = poolAddresses.map(
-    (pool) => mantlePoolData[pool].underlyingToken
-  );
-
-  const debts = await api.multiCall({
-    abi: "uint256:totalDebt",
-    calls: poolAddresses,
-    block,
-  });
-
-  api.addTokens(underlyingAddresses, debts);
-
-  return api.getBalances();
+  const allPoolData = await getConfig('init-capital', POOL_DATA_URI);
+  const pools = Object.keys(allPoolData[api.getChainId()]);
+  const tokens = await api.multiCall({ calls: pools, abi: 'address:underlyingToken' })
+  const debts = await api.multiCall({ abi: "uint256:totalDebt", calls: pools, });
+  api.addTokens(tokens, debts);
 };
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
   methodology:
     "Count all the underlying locked and borrowed under every INIT Lending Pools",
-  start: 41409518,
   mantle: {
     tvl,
     borrowed,
