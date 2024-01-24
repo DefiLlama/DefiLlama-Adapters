@@ -245,7 +245,7 @@ function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyU
       const currencyDecimal = 18
       const prices = await api.call({ abi: abiv2.getAssetsPrices, target: oracle, params: [tokens] })
       prices.forEach((v, i) => {
-        data[i].price = (v / unit )/ (10 ** (decimals[i] - currencyDecimal))
+        data[i].price = (v / unit) / (10 ** (decimals[i] - currencyDecimal))
         data[i].currency = currency
       })
     }
