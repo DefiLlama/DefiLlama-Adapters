@@ -218,6 +218,10 @@ async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], block, c
   return balances
 }
 
+const factories = {}
+
+const getFactoryKey = (chain, nftAddress) => `${chain}:${nftAddress}`.toLowerCase()
+
 async function unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain = 'ethereum', blacklistedTokens = [], whitelistedTokens = [], uniV3ExtraConfig = {}, }) {
 
   blacklistedTokens = getUniqueAddresses(blacklistedTokens, chain)
@@ -225,7 +229,9 @@ async function unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain = 
   let nftIdFetcher = uniV3ExtraConfig.nftIdFetcher ?? nftAddress
 
   const nftPositions = (await sdk.api.erc20.balanceOf({ target: nftIdFetcher, owner, block, chain })).output
-  const factory = (await sdk.api.abi.call({ target: nftAddress, abi: wildCreditABI.factory, block, chain })).output
+  const factoryKey = getFactoryKey(chain, nftAddress)
+  if (!factories[factoryKey]) factories[factoryKey] = sdk.api.abi.call({ target: nftAddress, abi: wildCreditABI.factory, block, chain })
+  const factory = (await factories[factoryKey]).output
 
   const positionIds = (await sdk.api.abi.multiCall({
     block, chain, abi: wildCreditABI.tokenOfOwnerByIndex, target: nftIdFetcher,
@@ -765,10 +771,11 @@ function sumTokensExport({ balances, tokensAndOwners, tokensAndOwners2, tokens, 
   return async (_, _b, _cb, { api }) => sumTokens2({ api, balances, tokensAndOwners, tokensAndOwners2, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, resolveUniV3, resolveArtBlocks, resolveNFTs, fetchCoValentTokens, ...args, })
 }
 
-async function unwrapBalancerToken({ api, chain, block, balancerToken, owner, balances = {}, isBPool = false, isV2 = true }) {
+async function unwrapBalancerToken({ api, chain, block, balancerToken, owner, balances, isBPool = false, isV2 = true }) {
   if (!api) {
     api = new sdk.ChainApi({ chain, block, })
   }
+  balances = balances || api.getBalances()
   const [lpSupply, lpTokens] = await api.batchCall([
     { abi: 'erc20:totalSupply', target: balancerToken },
     { abi: 'erc20:balanceOf', target: balancerToken, params: owner },

@@ -1,12 +1,8 @@
-const { get } = require('../helper/http')
+const { sumTokensExport, nullAddress } = require('../helper/unwrapLPs')
 
 module.exports = {
   timetravel: false,
   rsk: {
-    tvl: async () => {
-      return {
-        'bitcoin': (await get('https://backend.sovryn.app/tvl')).tvlZero.BTC_Zero.balance
-      }
-    }
+    tvl: sumTokensExport({ owner: '0xf294ea272d6f8fedc08acf8e93ff50fe99e1f7e8', tokens: [nullAddress] })
   }
 }
