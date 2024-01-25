@@ -58,8 +58,8 @@ module.exports = {
 	manta: {
 		tvl: async () => {
 			const { bifrost } = getExports("bifrost-staking", ["bifrost"]);
-			const { manta } = await bifrost.tvl();
-			return { manta };
+			const tvl = await bifrost.tvl();
+			return { 'manta-network': tvl['manta-network'] };
 		},
 	},
 };
