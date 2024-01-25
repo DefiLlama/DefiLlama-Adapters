@@ -36,7 +36,9 @@ async function calcTVLperChain(chain) {
     for (let i = 0; i < lendingTokensCount; i++) {
         const underlyingTokenAddy = (await plpContract.methods.lendingTokens(i).call()).toLowerCase();        
         const lendingTokenPoolAddy = (await plpContract.methods.lendingTokenInfo(underlyingTokenAddy).call()).bLendingToken.toLowerCase();
-       
+        
+        // Pause for half a second to avoid rate limiting
+        await new Promise(r => setTimeout(r, 500));
         const underlyingTokenContract = new web3.eth.Contract(erc20abi, underlyingTokenAddy); 
         const tokenLenderDeposits = await underlyingTokenContract.methods.balanceOf(lendingTokenPoolAddy).call();
 
@@ -50,6 +52,9 @@ async function calcTVLperChain(chain) {
 
     for (let i = 0; i < projectTokensCount; i++) {
         const projectTokenAddy = (await plpContract.methods.projectTokens(i).call()).toLowerCase();
+        // Pause for half a second to avoid rate limiting
+        await new Promise(r => setTimeout(r, 500));
+
         const tokenCollateralDeposits = await plpContract.methods.totalDepositedProjectToken(projectTokenAddy).call();
 
         let chainAndAddress = `${chain}:${projectTokenAddy}`
@@ -77,6 +82,9 @@ async function calcLoansPerChain(chain) {
     for (let i = 0; i < lendingTokensCount; i++) {
         const underlyingTokenAddy = (await plpContract.methods.lendingTokens(i).call()).toLowerCase();        
         const lendingTokenPoolAddy = (await plpContract.methods.lendingTokenInfo(underlyingTokenAddy).call()).bLendingToken.toLowerCase();
+
+        // Pause for half a second to avoid rate limiting
+        await new Promise(r => setTimeout(r, 500));
        
         const lendingPoolContract = new web3.eth.Contract(lendingPoolsabi, lendingTokenPoolAddy);
         
