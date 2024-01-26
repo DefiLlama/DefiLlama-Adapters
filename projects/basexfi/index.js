@@ -5,7 +5,7 @@ module.exports = {
   base: {
     tvl: getUniTVL({
       useDefaultCoreAssets: true,
-      factory: '0xdC323d16C451819890805737997F4Ede96b95e3e',
+      factory: '0xdC323d16C451819890805737997F4Ede96b95e3e'
     })
   }
 };
