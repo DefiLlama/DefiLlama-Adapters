@@ -23,7 +23,7 @@ async function tvl(_, _1, _2, { api }) {
 }
 
 
-module.exports[arbitrum] = {
+module.exports = {
     timetravel: true,
     misrepresentedTokens: false,
     methodology: 'Get the number of HLP tokens staked and HLP price to calculate USD TVL.',
