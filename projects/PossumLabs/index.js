@@ -27,7 +27,7 @@ module.exports = {
     timetravel: true,
     misrepresentedTokens: false,
     methodology: 'Get the number of HLP tokens staked and HLP price to calculate USD TVL.',
-    start: 155591158,
+    start: 1701313010,
     arbitrum: {
         tvl,
     }
@@ -35,9 +35,9 @@ module.exports = {
 
 module.exports = {
     doublecounted: true,
-    start: 155591158,
+    start: 1701313010,
     hallmarks: [
-        [155591158, "HLP Portal Launch"],
-        [166728446, "Time Rift Launch"]
+        [1701313010, "HLP Portal Launch"],
+        [1704270118, "Time Rift Launch"]
     ]
 };
