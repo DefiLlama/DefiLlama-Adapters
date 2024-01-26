@@ -210,6 +210,12 @@ const defaultTokens = {
     nullAddress,
     ADDRESSES.moonriver.USDT, //usdt
   ],
+  kava: [
+    nullAddress,
+    ADDRESSES.kava.USDT,
+    ADDRESSES.kava.USDt,
+    ADDRESSES.kava.USDC
+  ],
 }
 
 function cexExports(config) {
