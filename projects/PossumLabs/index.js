@@ -9,17 +9,17 @@ async function tvl(_, _1, _2, { api }) {
         target: HLP_Portal,
     });
 
-    // const PrincipalPrice = await api.call({
-    //     abi: 'uint256:getPrice',
-    //     target: HLP_PRICE_ADAPTER,
-    // });
+    const PrincipalPrice = await api.call({
+        abi: 'uint256:getPrice',
+        target: HLP_PRICE_ADAPTER,
+    });
 
     // const TimeRiftStakedFLASH = await api.call({
     //     abi: 'uint256:stakedTokensTotal',
     //     target: TIME_RIFT,
     // });
 
-    api.add(HLP_Portal, stakeBalanceHLP)
+    api.add(HLP_Portal, stakeBalanceHLP * PrincipalPrice)
 }
 
 
