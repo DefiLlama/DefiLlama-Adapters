@@ -9,24 +9,24 @@ async function tvl(_, _1, _2, { api }) {
         target: HLP_Portal,
     });
 
-    const PrincipalPrice = await api.call({
-        abi: 'uint256:getPrice',
-        target: HLP_PRICE_ADAPTER,
-    });
+    // const PrincipalPrice = await api.call({
+    //     abi: 'uint256:getPrice',
+    //     target: HLP_PRICE_ADAPTER,
+    // });
 
     // const TimeRiftStakedFLASH = await api.call({
     //     abi: 'uint256:stakedTokensTotal',
     //     target: TIME_RIFT,
     // });
 
-    api.add(HLP_Portal, stakeBalanceHLP * PrincipalPrice)
+    api.add(HLP_Portal, stakeBalanceHLP)
 }
 
 
 module.exports = {
     timetravel: true,
     misrepresentedTokens: false,
-    methodology: 'Get the number of HLP tokens staked and HLP price to calculate USD TVL.',
+    methodology: 'Get the number of HLP tokens staked.',
     start: 1701313010,
     arbitrum: {
         tvl,
