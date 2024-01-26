@@ -27,6 +27,7 @@ module.exports = {
   stakingContracts: [
     "0xf1a26cf6309a59794da29b5b2e6fabd3070d470f", // v1 staking rewards
     "0xb94d1959084081c5a11C460012Ab522F5a0FD756", // milliner (masterchef)
+    "0x8127FFC32A596F9beDE144912F7bfAD6e1C72690", // milliner v3 (masterchef)
     "0x0aEfaD19aA454bCc1B1Dd86e18A7d58D0a6FAC38", // minichef (stip rewards)
   ],
   metaVaultsAddresses: [
