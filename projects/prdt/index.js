@@ -8,6 +8,12 @@ const config = {
     }),
     tokens: [ADDRESSES.null, ADDRESSES.ethereum.USDT, ADDRESSES.ethereum.USDC],
   },
+  arbitrum: {
+    owners: Object.values({
+      predictionPROV2: "0x062EB9830D1f1f0C64ac598eC7921f0cbD6d4841",
+    }),
+    tokens: [ADDRESSES.null, ADDRESSES.arbitrum.USDT, ADDRESSES.arbitrum.USDC],
+  },
   bsc: {
     owners: Object.values({
       predictionBNB: "0x31B8A8Ee92961524fD7839DC438fd631D34b49C6",

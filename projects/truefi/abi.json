@@ -1,9 +1,13 @@
 {
   "token": "address:token",
+  "asset": "address:asset",
   "getPortfolios": "address[]:getPortfolios",
   "loansValue": "uint256:loansValue",
   "currencyBalance": "uint256:currencyBalance",
   "underlyingToken": "address:underlyingToken",
   "illiquidValue": "uint256:illiquidValue",
-  "liquidValue": "uint256:liquidValue"
+  "liquidValue": "uint256:liquidValue",
+  "getAssetVaults": "address[]:getAssetVaults",
+  "liquidAssets": "uint256:liquidAssets",
+  "outstandingAssets": "uint256:outstandingAssets"
 }

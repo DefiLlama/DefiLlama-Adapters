@@ -1,5 +1,4 @@
 const { getLogs } = require('../helper/cache/getLogs')
-const { BigNumber, constants } = require('ethers')
 const { getBlock } = require('../helper/http')
 
 const GmxkeyToken = '0xc5369c88440AB1FC842bCc60d3d087Bd459f20e4'
@@ -21,32 +20,32 @@ function getMarketPrice(api, fromBlock) {
       skipCache: true,
       fromBlock,
     })
-  
+
     const targetLogs = logs
       .map(({ timestamp, price }) => ({ timestamp, price }))
       .sort((a, b) => a.timestamp > b.timestamp ? -1 : 1)
       .slice(0, 5)
-  
+
     const sum = targetLogs.reduce((prev, curr) => {
-      return prev.add(curr.price)
-    }, constants.Zero)
-  
-    if (sum.eq(constants.Zero)) {
+      return prev + curr.price
+    }, 0)
+
+    if (sum === 0) {
       return defaultPrice
     }
-  
-    return sum.div(targetLogs.length).toNumber() / 10**4
+
+    return sum.div(targetLogs.length).toNumber() / 10 ** 4
   }
 }
 
-function getTvl(gmxPrice, tokenPrice, totalSupply){
-  const tokenSupply = totalSupply / 10**18
+function getTvl(gmxPrice, tokenPrice, totalSupply) {
+  const tokenSupply = totalSupply / 10 ** 18
   return gmxPrice * tokenPrice * tokenSupply
 }
 
 async function getGmxPrice(slot0) {
-  const priceSqrt = BigNumber.from(slot0[0])
-  const gmxPriceInEth = priceSqrt.pow(2).mul(1000).div(BigNumber.from(2).pow(192)).toNumber() / 1000
+  const priceSqrt = slot0[0] ** 2
+  const gmxPriceInEth = priceSqrt / 2 ** 192
 
   return 1 / gmxPriceInEth
 }
@@ -77,7 +76,7 @@ async function tvl(timestamp, _, chainBlocks, { api }) {
   const mpkeyPrice = await marketPrice(MPkeyGmxMarket, 0.1)
   const mpkeyTvl = getTvl(gmxPrice, mpkeyPrice, totalSupplyOfMpkey)
 
-  return { 
+  return {
     ethereum: gmxkeyTvl + esGmxkeyTvl + mpkeyTvl,
   }
 }

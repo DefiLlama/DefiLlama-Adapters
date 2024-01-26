@@ -1,10 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
-const { get } = require('../helper/http')
 const { getConfig } = require('../helper/cache')
 const { sumTokensExport } = require('../helper/sumTokens')
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { transformBalances } = require('../helper/portedTokens')
+const { sumTokensExport: tonExport } = require('../helper/chain/ton')
 const { nullAddress } = require('../helper/tokenMapping');
 
 const ABI = {
@@ -109,10 +108,6 @@ module.exports = {
     tvl: sumTokensExport({ chain: 'ripple', owner: 'rLcxBUrZESqHnruY4fX7GQthRjDCDSAWia'})
   },
   ton: {
-    tvl: async () => {
-      let ton_vault = "EQAtkbV8ysI75e7faO8Ihu0mFtmsg-osj7gmrTg_mljVRccy"
-      const res = await get(`https://tonapi.io/v1/account/getInfo?account=${ton_vault}`)
-      return await transformBalances('ton', {[ADDRESSES.null]: res.balance})
-    }
+    tvl: tonExport({ owner: "EQAtkbV8ysI75e7faO8Ihu0mFtmsg-osj7gmrTg_mljVRccy", tokens: [ADDRESSES.null], onlyWhitelistedTokens: true }),
   },
 }

@@ -56,7 +56,7 @@ async function tvl(time, ethBlock, chainBlocks) {
         ...calldata,
         target: xTAROT,
         abi: shareTarot,
-        params: balances[transform(xTAROT)]
+        params: sdk.util.convertToBigInt(balances[transform(xTAROT)])
     })
     sdk.util.sumSingleBalance(balances, transform("0xc5e2b037d30a390e62180970b3aa4e91868764cd"),
         tarotShare.output)

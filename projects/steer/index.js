@@ -34,13 +34,13 @@ const supportedChains = [
   },
   {
     name: 'Avalanche',
-    subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/rakeshbhatt10/avalance-test-subgraph',
+    subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/steerprotocol/steer-protocol-avalanche',
     chainId: 43114,
     identifier: 'avax'
   },
   {
     name: 'Thundercore',
-    subgraphEndpoint: 'https://subgraph.steer.finance/thundercore/subgraphs/name/steerprotocol/steer-thundercore',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-thundercore/1.0.0/gn',
     chainId: 108,
     identifier: 'thundercore'
   },
@@ -118,4 +118,4 @@ supportedChains.forEach(chain => {
   }
 })
 
-module.exports.arbitrum.staking = stakings(["0xB10aB1a1C0E3E9697928F05dA842a292310b37f1", "0x0b619438d1E8b8c205656502de59Af2Af71C43e0"], "0x1C43D05be7E5b54D506e3DdB6f0305e8A66CD04e", "arbitrum")
+module.exports.arbitrum.staking = stakings(["0xB10aB1a1C0E3E9697928F05dA842a292310b37f1", "0x0b619438d1E8b8c205656502de59Af2Af71C43e0", "0x25Ef108B328Cf752F0E0b0169D499Db164173763"], "0x1C43D05be7E5b54D506e3DdB6f0305e8A66CD04e", "arbitrum")

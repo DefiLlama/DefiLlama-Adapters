@@ -54,6 +54,10 @@ async function farmTvl(timestamp, ethblock, { [chain]: block }) {
     [LPs.SGB_ExUSDT_LP,"0xf2773bb7aa49FE3da03D327Abc0C49dB296133f3"],
     [LPs.SFIN_ExXDC_LP,"0x9E7d575014489B3557D3c53E837b772E7A1EB27c"],
     [LPs.SGB_ExETH_LP,"0xa26e3420adbBAB053657D0b732A61B386576cC7D"],
+    [EXFI, '0xb78EBd4B13A2202068618BF98F952C0271159107'],
+    [LPs.SGB_CAND_LP, '0x6734b6e84195Df55E171c305D021101b5601B112'],
+    [LPs.EXFI_CAND_LP, '0x646262202Ffe1dE7d429802087F24D075121Ed8c'],
+    [LPs.EXFI_SGB_LP, '0xa3Eb6580bA9A0D6104EAAc63c077A185b6084b5f'],
   ];
 
   return sumUnknownTokens({ tokensAndOwners: tokens, chain, block, useDefaultCoreAssets: true, })
@@ -70,7 +74,10 @@ async function pool2(timestamp, ethblock, { [chain]: block }) {
     [LPs.EXFI_SFIN_LP, "0xD262AFf2Bb76f05cf470a7D935E717eEbA8ef799"],
     [LPs.SFIN_SGB_LP, "0x2379FD47f100828382fFeaF26381Ba6608f7Bf73"],
     [LPs.SFIN_SGB_LP, "0xC1ecfEA1148f9506FF10E9Ecf76F40884b4987Cc"], 
-    [LPs.EXFI_SFIN_LP, "0xDa78E41813Cc2468bAA74ad3E84b35b7FedF42bD"]
+    [LPs.EXFI_SFIN_LP, "0xDa78E41813Cc2468bAA74ad3E84b35b7FedF42bD"],
+    [LPs.EXFI_SFIN_LP, '0x696E746d34703c9d640438Cc466eF58bCb7ce7c7'],
+    [LPs.SFIN_CAND_LP, '0x53828fF47a6d110416a884668566c6E7806d0613'],
+    [LPs.SFIN_SGB_LP, '0x0CC30B8D3d0246f691B35Ef3dA5Bf2A71CBdbceF'],
   ]
   return sumUnknownTokens({ tokensAndOwners: tokens, chain, block, useDefaultCoreAssets: true, })
 }
@@ -78,5 +85,5 @@ async function pool2(timestamp, ethblock, { [chain]: block }) {
 module.exports =  {
     tvl: farmTvl,
     pool2,
-    staking: staking(['0x554742076743b366504972F86609d64fd18BDC34', '0xd0dbAFF52224C0882cfaf1765f347Cb5e4364FA1'], SFIN),
+    staking: staking(['0x554742076743b366504972F86609d64fd18BDC34', '0xd0dbAFF52224C0882cfaf1765f347Cb5e4364FA1','0xfe21dE68CbFB3dcBda28Ee8aB465dbA2039bc1f6'], SFIN),
 };
