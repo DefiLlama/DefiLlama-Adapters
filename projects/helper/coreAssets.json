@@ -501,6 +501,11 @@
     "BNB": "0xf8ab4aaf70cef3f3659d3f466e35dc7ea10d4a5d",
     "kBUSD": "0xdd2bb4e845bd97580020d8f9f58ec95bf549c3d9"
   },
+  "bitnet": {
+    "WBTN": "0x8148b71232162ea7a0b1c8bfe2b8f023934bfb58",
+    "ReUSDT": "0xd9b4225b1872a008870bae4797ec6ebabf5e2e2f",
+    "STRAT": "0x738f255b9d3386e49e1c4392a9c7d850c6c7c86d"
+  },
   "solana": {
     "SOL": "So11111111111111111111111111111111111111112",
     "BONK": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
