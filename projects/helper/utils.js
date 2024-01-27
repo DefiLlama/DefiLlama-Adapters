@@ -86,7 +86,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'base' && /^(v|s)-/.test(symbol)) return true // Equalizer LP
   if (chain === 'bsc' && /(-APE-LP-S)/.test(symbol)) return false
   if (chain === 'scroll' && /(cSLP|sSLP)$/.test(symbol)) return true //syncswap LP
-  if (chain === 'bitnet' && /(XLT|XLT)$/.test(symbol)) return true //xenwave LP
+  if (chain === 'btn' && /(XLT)$/.test(symbol)) return true //xenwave LP
   if (['fantom', 'nova',].includes(chain) && ['NLT'].includes(symbol)) return true
   let label
 
