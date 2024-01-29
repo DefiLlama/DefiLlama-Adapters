@@ -1,12 +1,11 @@
 const { get } = require("../helper/http")
 const sdk = require('@defillama/sdk')
-const { default: axios } = require('axios');
 const BigNumber = require('bignumber.js')
 
 async function getTotalSupplied() { 
   const modAddress = 'swth1wq9ts6l7atfn45ryxrtg4a2gwegsh3xh7w83xl'
-  const debtInfos = (await axios.get('https://api.carbon.network/carbon/cdp/v1/token_debt')).data.debt_infos_all
-  const modBalances = (await axios.get(`https://api.carbon.network/carbon/coin/v1/balances/${modAddress}`)).data.token_balances
+  const debtInfos = (await get('https://api.carbon.network/carbon/cdp/v1/token_debt')).debt_infos_all
+  const modBalances = (await get(`https://api.carbon.network/carbon/coin/v1/balances/${modAddress}`)).token_balances
   const allAssets = []
   for (const debt of debtInfos){
     const {denom,total_principal} = debt

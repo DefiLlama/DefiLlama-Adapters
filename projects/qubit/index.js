@@ -1,7 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const BigNumber = require("bignumber.js");
 
 const qBnb = "0xbE1B5D17777565D67A5D2793f879aBF59Ae5D351"; // qBNB
 const wBnb = ADDRESSES.bsc.WBNB; //wBNB
@@ -18,9 +17,6 @@ const qTokensKlaytn = [
   "0x99dac5dF97eB189Cd244c5bfC8984f916f0eb4B0", // qWEMIX
   "0x3dB032090A06e3dEaC905543C0AcC92B8f827a70", // qKQBT
 ];
-
-const ZERO = new BigNumber(0);
-const ETHER = new BigNumber(10).pow(18);
 
 function tvl(borrowed) {
   return async (timestamp, ethBlock, chainBlocks) => {
@@ -72,7 +68,7 @@ function tvlKlaytn() {
     });
 
     return {
-      tether: new BigNumber(data.output).dividedBy(ETHER).toNumber(),
+      tether: data.output/ 1e18,
     };
   };
 }
