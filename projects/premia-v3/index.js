@@ -13,7 +13,7 @@ const getAddresses = `
 `
 
 const config = {
-  arbitrum: { poolFactory: '0xae4fb6622f25f397587f11638da8ce88c27b5645', poolFromBlock: 119998935, vaultGraph: 'https://api.thegraph.com/subgraphs/name/premian-labs/premia-blue' },
+  arbitrum: { poolFactory: '0xae4fb6622f25f397587f11638da8ce88c27b5645', poolFromBlock: 119998935, vaultGraph: 'https://subgraph.satsuma-prod.com/5d8f840fce6d/premia/premia-v3-arbitrum/api' },
 }
 
 Object.keys(config).forEach(chain => {

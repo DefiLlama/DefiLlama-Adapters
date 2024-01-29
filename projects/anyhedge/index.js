@@ -66,6 +66,7 @@ module.exports = {
     [1683634380, "BCH Bull adds Achievements"],
     [1686651480, "BCH Bull raise max contract to $100k"],
     [1687330080, "BCH Bull raise max leverage to 7.77x"],
+    [1703054100, "BCH Bull enables Early Settlements"],
   ]
 };
 

@@ -43,7 +43,7 @@ async function setCache(project, chain, cache) {
     await sdk.cache.writeCache(getFileKey(project, chain), cache)
   } catch (e) {
     sdk.log('failed to write data to s3 bucket: ', Key)
-    // sdk.log(e)
+    sdk.log(e)
   }
 }
 
@@ -104,7 +104,7 @@ async function configPost(project, endpoint, data) {
 }
 
 
-async function cachedGraphQuery(project, endpoint, query, { api, useBlock = false, variables = {}, fetchById, } = {}) {
+async function cachedGraphQuery(project, endpoint, query, { api, useBlock = false, variables = {}, fetchById, safeBlockLimit, } = {}) {
   if (!project || !endpoint) throw new Error('Missing parameters')
   const key = 'config-cache'
   const cacheKey = getKey(key, project)
@@ -114,14 +114,14 @@ async function cachedGraphQuery(project, endpoint, query, { api, useBlock = fals
   async function _cachedGraphQuery() {
     try {
       let json
-      if (useBlock && !variables.block) {
+      if (useBlock && !variables.block  && !fetchById) {
         if (!api) throw new Error('Missing parameters')
         variables.block = await api.getBlock()
       }
       if (!fetchById)
         json = await graphql.request(endpoint, query, { variables })
       else 
-        json = await graphFetchById({ endpoint, query, params: variables })
+        json = await graphFetchById({ endpoint, query, params: variables, api, options: { useBlock, safeBlockLimit } })
       if (!json) throw new Error('Empty JSON')
       await _setCache(key, project, json)
       return json

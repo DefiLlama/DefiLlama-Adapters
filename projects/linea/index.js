@@ -2,7 +2,7 @@ const { sumTokens2 } = require("../helper/unwrapLPs");
 
 module.exports = {
   ethereum: {
-    tvl: (_, _b, _c, { api, logArray }) =>
+    tvl: (_, _b, _c, { api }) =>
       sumTokens2({
         api,
         owners: [
@@ -10,7 +10,6 @@ module.exports = {
           "0x051F1D88f0aF5763fB888eC4378b4D8B29ea3319",
         ],
         fetchCoValentTokens: true,
-        logArray,
       }),
   },
 };
