@@ -61,11 +61,17 @@ const chains = {
     denom: "usomm",
     coinGeckoId: "sommelier",
   },
+
+  dydx: {
+    chainId: "dydx-mainnet-1",
+    denom: "adydx",
+    coinGeckoId: "dydx-chain",
+  },
 };
 
 // inj uses 1e18 - https://docs.injective.network/learn/basic-concepts/inj_coin#base-denomination
 function getCoinDenimals(denom) {
-  return ["aevmos", "inj"].includes(denom) ? 1e18 : 1e6;
+  return ["aevmos", "inj", "adydx"].includes(denom) ? 1e18 : 1e6;
 }
 
 function makeTvlFn(chain) {
