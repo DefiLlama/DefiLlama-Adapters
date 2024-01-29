@@ -90,6 +90,15 @@ async function tvl() {
 
 async function mantleTvl(ts, _, _1, { api }) {
   let address = (await getConfig('solv-protocol/funds', addressUrl));
+
+  await klp(api, address);
+  await iziswap(api, address);
+  await lendle(api, address);
+
+  return api.getBalances();
+}
+
+async function klp(api, address) {
   let klp = address[api.chain]["klp"];
 
   const stakedAmounts = await api.multiCall({
@@ -103,14 +112,9 @@ async function mantleTvl(ts, _, _1, { api }) {
   stakedAmounts.forEach(amount => {
     api.add(klp["address"], amount)
   })
-
-  await iziswap(api);
-
-  return api.getBalances()
 }
 
-async function iziswap(api) {
-  let address = (await getConfig('solv-protocol/funds', addressUrl));
+async function iziswap(api, address) {
   let iziswapData = address[api.chain]["iziswap"];
 
   const iziswap = iziswapData.liquidityManager;
@@ -200,6 +204,14 @@ async function concrete(slots, api) {
   }
 
   return concretes;
+}
+
+async function lendle(api, address) {
+  let lendleData = address[api.chain]["lendle"];
+
+  const balance = await api.call({ abi: abi.balanceOf, target: lendleData.aToken, params: lendleData.account.user });
+
+  api.add(lendleData.account.ethAddress, balance)
 }
 
 
