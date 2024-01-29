@@ -2,9 +2,10 @@ const CakepieReaderAbi = require("./abis/CakepieReader.json");
 const MasterCakepieAbi = require("./abis/MasterCakepie.json");
 const config = require("./config")
 const { sumTokens2, PANCAKE_NFT_ADDRESS } = require('../helper/unwrapLPs')
+const { staking } = require('../helper/staking')
 
 async function tvl(timestamp, block, chainBlocks, { api }) {
-  const { PancakeStaking, CakepieReader, MasterCakepieAddress, CakeAddress } = config[api.chain];
+  const { PancakeStaking, CakepieReader, MasterCakepieAddress, CakeAddress, } = config[api.chain];
   const masterChefV3 = await api.call({ abi: CakepieReaderAbi.masterChefv3, target: CakepieReader })
   const mCake = await api.call({ abi: CakepieReaderAbi.mCake, target: CakepieReader })
   const mCakeSV = await api.call({ abi: CakepieReaderAbi.mCakeSV, target: CakepieReader })
@@ -16,8 +17,11 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
 }
 
 Object.keys(config).forEach((chain) => {
+  const { vlCKPAddress, CKPAddress } = config[chain];
   module.exports[chain] = {
     tvl,
-    // staking: staking(CakepieReader)
+  }
+  if (vlCKPAddress && CKPAddress) {
+    module.exports[chain].staking = staking(vlCKPAddress, CKPAddress)
   }
 })
