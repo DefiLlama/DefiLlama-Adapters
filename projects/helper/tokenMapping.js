@@ -42,6 +42,9 @@ const fixBalancesTokens = {
     BSSB: { coingeckoId: 'bitstable-finance', decimals: 0 },
     MUBI: { coingeckoId: 'multibit', decimals: 0 },
   },
+  btn: {
+    '0x8148b71232162ea7a0b1c8bfe2b8f023934bfb58': { coingeckoId: 'bitnet', decimals: 18 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
