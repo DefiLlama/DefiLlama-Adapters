@@ -232,16 +232,14 @@ async function queryManyContracts({ contracts = [], chain, data }) {
 
 async function queryContracts({ chain, codeId, }) {
   const res = []
-  const limit = 1000
-  let offset = 0
-  let paginationKey = undefined
+  const limit = 100
+  let paginationKey
 
   do {
-    let endpoint = `${getEndpoint(chain)}/cosmwasm/wasm/v1/code/${codeId}/contracts?pagination.limit=${limit}&pagination.offset=${offset}`
+    let endpoint = `${getEndpoint(chain)}/cosmwasm/wasm/v1/code/${codeId}/contracts?pagination.limit=${limit}${paginationKey ? `&pagination.key=${encodeURIComponent(paginationKey)}` : ''}`
     const { data: { contracts, pagination } } = await axios.get(endpoint)
     paginationKey =  pagination.next_key
       res.push(...contracts)
-    offset += limit
   } while (paginationKey)
 
   return res
