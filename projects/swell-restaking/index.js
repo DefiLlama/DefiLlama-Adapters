@@ -2,8 +2,8 @@ const { nullAddress } = require("../helper/tokenMapping")
 
 async function tvl(_, _b, _cb, { api, }) {
     const tvl = await api.call({
-        target: "0xfae103dc9cf190ed75350761e95403b7b8afa6c0",
-        abi: "erc20:totalSupply"
+        target: "0xFAe103DC9cf190eD75350761e95403b7b8aFa6c0",
+        abi: "uint256:totalETHDeposited"
     })
     return {
         [nullAddress]: tvl
