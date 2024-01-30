@@ -16,6 +16,7 @@ const config = {
     "LST": "0xcba2aeEc821b0B119857a9aB39E09b034249681A"
   },
   "manta": {
+    token: '0x95cef13441be50d20ca4558cc0a27b601ac544e5',
     "LST": "0x7ac168c81f4f3820fa3f22603ce5864d6ab3c547"
   }
 }
@@ -26,11 +27,11 @@ module.exports = {
 }
 
 Object.keys(config).forEach(chain => {
-  const { LST, baseToken } = config[chain]
+  const { LST, baseToken, token } = config[chain]
   module.exports[chain] = {
     tvl: async (_, _b, _cb, { api, }) => {
       const supply = await api.call({ abi: 'uint256:totalSupply', target: LST })
-            api.add(baseToken ?? ADDRESSES.null, supply, { skipChain: !!baseToken })
+      api.add(token ?? baseToken ?? ADDRESSES.null, supply, { skipChain: !!baseToken })
       return api.getBalances()
     },
   }
