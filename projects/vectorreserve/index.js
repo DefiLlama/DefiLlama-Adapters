@@ -1,6 +1,7 @@
 // Token Contracts
 const WETH_CONTRACT = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
 const VETH_CONTRACT = '0x38D64ce1Bdf1A9f24E0Ec469C9cAde61236fB4a0';
+const VEC_CONTRACT = '0x1BB9b64927e0C5e207C9DB4093b3738Eef5D8447';
 const SVEC_CONTRACT = '0x66d5c66E7C83E0682d947176534242c9f19b3365';
 
 // Bond Contracts
@@ -31,7 +32,7 @@ async function tvl(_, _1, _2, { api }) {
         target: SVEC_CONTRACT,
         params: [],
     });
-    tokens.push(SVEC_CONTRACT);
+    tokens.push(VEC_CONTRACT);
     balances.push(sVECSupply);
 
     // Bonds
