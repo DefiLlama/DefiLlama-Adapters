@@ -1,66 +1,15 @@
-const sdk = require('@defillama/sdk');
 const REVA_CHEF = "0xd7550285532f1642511b16Df858546F2593d638B";
 const REVA_CHEF_ABI = require("./RevaChef.json");
-const { unwrapUniswapLPs } = require('../helper/unwrapLPs');
-const config = require("./mainnet.json");
-// node test.js projects/revault/index.js
+const { sumTokens2 } = require('../helper/unwrapLPs');
 
-const lpAddresses = [
-  '0x0ed7e52944161450477ee417de9cd3a859b14fd0',
-  '0x58f876857a02d6762e0101bb5c46a8c1ed44dc16',
-  '0x804678fa97d91b974ec2af3c843270886528a9e6'
-]
-
-async function tvl(timestamp, _, { bsc: block }) {
-  const tokenAddresses = Array.from(
-    new Set(config.tokens.map((token) => token.address)));
-
-  const transform = i => `bsc:${i}`;
-
-  const calls = tokenAddresses.map((tokenAddress) => ({
-    params: tokenAddress,
-    target: REVA_CHEF,
-  }));
-
-	const tokenInfos = (await sdk.api.abi.multiCall({
-		abi: REVA_CHEF_ABI['tokens'],
-    calls,
-		block: block,
-    chain: "bsc",
-	})).output;
-
-  let balances = {};
-  let lpPositions = [];
-
-  for (let i = 0; i < tokenInfos.length; i++) {
-    
-    if (lpAddresses.indexOf(tokenInfos[i].input.params[0].toLowerCase()) > -1) {
-      lpPositions.push({
-        balance: tokenInfos[i].output.totalPrincipal,
-        token: tokenInfos[i].input.params[0]
-      });
-
-    } else {
-      sdk.util.sumSingleBalance(
-        balances, 
-        transform(tokenInfos[i].input.params[0]), 
-        tokenInfos[i].output.totalPrincipal
-        );
-    }
-  }
-
-  await unwrapUniswapLPs(
-    balances, 
-    lpPositions,
-    block,
-    'bsc',
-    transform);
-
-	return balances;
+async function tvl(timestamp, _, _1, { api }) {
+  const tokens = await api.fetchList({  lengthAbi: 'uint256:getSupportedTokensCount', itemAbi: 'function supportedTokens(uint256) view returns (address)', target: REVA_CHEF})
+  const bals = await api.multiCall({  abi: REVA_CHEF_ABI.tokens, calls: tokens, target: REVA_CHEF})
+  api.addTokens(tokens, bals.map(i => i.totalPrincipal))
+  return sumTokens2({ api, resolveLP: true })
 }
 
 module.exports = {
-  misrepresentedTokens: true,
   start: 1634150000,        // 13th of October, 2021
 	bsc: {
 		tvl,

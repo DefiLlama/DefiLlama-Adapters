@@ -172,7 +172,6 @@ async function getTokenAccountBalances(tokenAccounts, { individual = false, chun
     const body = chunk.map(formBody)
     const data = await axios.post(endpointMap[chain](), body);
     if(data.data.length !== chunk.length){
-      console.log(tokenAccounts, data)
       throw new Error(`Mismatched returned for getTokenAccountBalances()`)
     }
     data.data.forEach(({ result: { value } }, i) => {

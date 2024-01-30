@@ -102,7 +102,8 @@ const config = {
   base: {
     vaults: [
       "0x7333fd58d8d73a8e5fc1a16c8037ada4f580fa2b",
-      "0x8d6cebd76f18e1558d4db88138e2defb3909fad6"
+      "0x8d6cebd76f18e1558d4db88138e2defb3909fad6",
+      "0x654a31ba7d714cfcab19b17d0066171c1a292349"
     ]
   },
   ethereum: {

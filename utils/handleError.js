@@ -19,6 +19,7 @@ function handleError(error){
 }
 
 function getStackMessage(stack) {
+  if (!stack) return []
   if (/ at (checkExportKeys)/.test(stack)) return []
 
   const isNodeMolule = m => /node_modules/.test(m)
