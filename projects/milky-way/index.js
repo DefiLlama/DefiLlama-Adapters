@@ -20,17 +20,15 @@ const consts = {
 async function tvl() {
   const { api } = arguments[3]
   const data = await queryContract({ contract: consts.MILKYWAY_CONTRACT, chain: api.chain, data: { state: {} } });
-  const batchData = await queryContract({ contract: consts.MILKYWAY_CONTRACT, chain: api.chain, data: { batches: {} } });
-  const {batches} = batchData
-
+  const  {batches} = await queryContract({ contract: consts.MILKYWAY_CONTRACT, chain: api.chain, data: { batches: {} } });
+  const token = 'ibc/'+ADDRESSES.ibc.TIA
   //  when calculating TVL, current unbonding batches with TIA should be added since they are 'locked' inside the contract at that current point in time
-  const batchTVL = batches.filter(b => b.status !== 'received').reduce((acc, b) => acc + Number(b.expected_native_unstaked), 0)
-  api.add('ibc/'+ADDRESSES.ibc.TIA, (Number(data.total_native_token) + batchTVL).toString())
+  batches.filter(b => b.status !== 'received').forEach((b) => api.add(token, b.expected_native_unstaked))
+  api.add(token, data.total_native_token)
   return api.getBalances()
 }
 
 module.exports = {
-  timetravel: false,
   methodology: 'TVL counts the tokens that are locked in the Milky Way contract',
   osmosis: {
     tvl,
