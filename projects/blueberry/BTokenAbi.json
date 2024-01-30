@@ -1,0 +1,5 @@
+{
+    "internalCash": "uint256:internalCash",
+    "underlying": "address:underlying",
+    "decimals": "uint8:decimals"
+}
