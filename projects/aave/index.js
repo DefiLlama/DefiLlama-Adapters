@@ -9,8 +9,8 @@ const { unwrapBalancerToken } = require('../helper/unwrapLPs');
 const addressesProviderRegistryETH = "0x52D306e36E3B6B02c153d0266ff0f85d18BCD413";
 
 function ethereum(borrowed) {
-  return async (timestamp, block)=> {
-    const balances = {}
+  return async (timestamp, block, _, { api })=> {
+    const balances = api.getBalances()
 
     // V2 TVLs
     if (block >= 11360925) {
@@ -22,7 +22,7 @@ function ethereum(borrowed) {
       }
     }
     if (block >= 11998773) {
-      await ammMarket(balances, block, borrowed)
+      await ammMarket(api, borrowed)
     }
 
     return balances;

@@ -1,10 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
-const { get } = require('../helper/http')
 const { getConfig } = require('../helper/cache')
 const { sumTokensExport } = require('../helper/sumTokens')
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { transformBalances } = require('../helper/portedTokens')
+const { sumTokensExport: tonExport } = require('../helper/chain/ton')
 const { nullAddress } = require('../helper/tokenMapping');
 
 const ABI = {
@@ -42,7 +41,7 @@ const farms = {
 let tokenData
 
 function chainTvls(chain) {
-  return async (timestamp, ethBlock, {[chain]: block}, { logArray }) => {
+  return async (timestamp, ethBlock, {[chain]: block}) => {
     const vault = vaults[chain]
     let targetChain = chain
     if (chain === 'ethereum') targetChain = 'eth'
@@ -58,7 +57,7 @@ function chainTvls(chain) {
       '0x662b67d00a13faf93254714dd601f5ed49ef2f51' // ORC, blacklist project's own token
       // reason for skipping, most of the tvl comes from this transaction which is about 25% of ORU supply on ETH
       // https://etherscan.io/tx/0x0a556fcef2a867421ec3941251ad3c10ae1402a23ddd9ad4b1097b686ced89f7
-    ], logArray })
+    ] })
 
     if (farms[chain]) {
       const calls = farms[chain].map(i => ({ params: i }))
@@ -66,13 +65,11 @@ function chainTvls(chain) {
         target: vault,
         abi: ABI.farms,
         calls, chain, block,
-        logArray
       })
       const { output: farmBalance } = await sdk.api.abi.multiCall({
         abi: ABI.wantLockedTotal,
         calls: farmData.map(i => ({ target: i.output})), 
         chain, block,
-        logArray
       })
       farmBalance.forEach((data, i) => sdk.util.sumSingleBalance(balances, chain + ':' + farms[chain][i], data.output))
     }
@@ -111,10 +108,6 @@ module.exports = {
     tvl: sumTokensExport({ chain: 'ripple', owner: 'rLcxBUrZESqHnruY4fX7GQthRjDCDSAWia'})
   },
   ton: {
-    tvl: async () => {
-      let ton_vault = "EQAtkbV8ysI75e7faO8Ihu0mFtmsg-osj7gmrTg_mljVRccy"
-      const res = await get(`https://tonapi.io/v1/account/getInfo?account=${ton_vault}`)
-      return await transformBalances('ton', {[ADDRESSES.null]: res.balance})
-    }
+    tvl: tonExport({ owner: "EQAtkbV8ysI75e7faO8Ihu0mFtmsg-osj7gmrTg_mljVRccy", tokens: [ADDRESSES.null], onlyWhitelistedTokens: true }),
   },
 }

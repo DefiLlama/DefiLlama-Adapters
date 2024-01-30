@@ -124,6 +124,9 @@ async function resolveTinymanLp({ balances, lpId, unknownAsset, blacklistedToken
 }
 
 async function getAccountInfo(accountId) {
+  if (typeof accountId === 'number') { // it is an application id
+    accountId = getApplicationAddress(accountId)
+  }
   if (!accountCache[accountId]) accountCache[accountId] = _getAccountInfo()
   return accountCache[accountId]
 

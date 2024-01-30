@@ -1,4 +1,3 @@
-const { BigNumber } = require("@ethersproject/bignumber");
 const { nullAddress } = require("../helper/tokenMapping");
 const { get } = require("../helper/http");
 
@@ -20,15 +19,11 @@ module.exports = {
         get("https://events.glif.link/metrics"),
       ]);
 
-      const totalAssetsBN = BigNumber.from(totalAssets);
-      const totalLockedByMinersBN = BigNumber.from(
-        totalLockedByMiners.totalMinerCollaterals
-      );
+      const totalAssetsBN = +totalAssets
+      const totalLockedByMinersBN = +totalLockedByMiners.totalMinerCollaterals
       // then we add the totalLockedByMiners to the totalAssets, to account for the FIL locked by miners as borrow collateral
       // this gets our tvl in attoFIL (wei denominated) without double counting
-      const tvl = totalAssetsBN.add(totalLockedByMinersBN).toString();
-
-      api.add(nullAddress, tvl);
+      api.add(nullAddress, totalAssetsBN+totalLockedByMinersBN);
     },
   },
 };

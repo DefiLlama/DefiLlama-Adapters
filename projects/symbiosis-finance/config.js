@@ -131,6 +131,7 @@ module.exports = {
       ],
       holders: [
         '0x39dE19C9fF25693A2311AAD1dc5C790194084A39', // portal v2
+        '0x4f5456d4d0764473DfCA1ffBB8524C151c4F19b9', // new portal v2
         '0x97b99f47b086a074f214f4A62A3b041599726DC2', // portal Teleport
       ]
     },
@@ -215,13 +216,14 @@ module.exports = {
          ADDRESSES.tron.USDT,
        ],
        holders: [
-         'TGsN2VVJRXLbNe33QbWeaMtpb6xxC7SUeq', // portal v2
+         'TSzujXog95iHUoYBHCJtXK1XFKYjJwN7Vr', // portal v2
        ]
      },
      {
        name: 'scroll',
        tokens: [
          ADDRESSES.scroll.WETH,
+         ADDRESSES.scroll.USDC,
        ],
        holders: [
          '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4', // portal v2
@@ -236,6 +238,15 @@ module.exports = {
        ],
        holders: [
          '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4', // portal v2
+       ]
+     },
+     {
+       name: 'metis',
+       tokens: [
+         ADDRESSES.metis.WETH,
+       ],
+       holders: [
+         '0xd8db4fb1fEf63045A443202d506Bcf30ef404160', // portal v2
        ]
      },
   ]

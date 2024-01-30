@@ -35,18 +35,10 @@ const borrowed = async (_, _1, _2, { api }) => {
   api.addTokens(tokens, bals)
 };
 
-const staking = async (_, _1, _2, { api }) => {
-  const hatomBooster = 'erd1qqqqqqqqqqqqqpgqw4dsh8j9xafw45uwr2f6a48ajvcqey8s78sstvn7xd'
-  const bals = await call({ target: hatomBooster, abi: 'getTotalStake', responseTypes: ['number'] })
-  api.add(hatom, bals.toString())
-  return api.getBalances()
-};
-
 module.exports = {
   timetravel: false,
   elrond: {
     tvl,
     borrowed,
-    staking,
   },
 };
