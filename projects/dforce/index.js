@@ -27,23 +27,20 @@ const goldxProtocol = "0x355C665e101B9DA58704A8fDDb5FeeF210eF20c0"; // GOLDx
 
 let allControllers = {
   ethereum: [
-    "0x8B53Ab2c0Df3230EA327017C91Eb909f815Ad113", // dForce general pool
     "0x1E96e916A64199069CcEA2E6Cf4D63d30a61b93d", // dForce vault pool: USX/3CRV
     "0x8f1f15DCf4c70873fAF1707973f6029DEc4164b3", // liqee general pool
   ],
   bsc: [
-    "0x0b53E608bD058Bb54748C35148484fD627E6dc0A", // dForce general pool
     "0x6d290f45A280A688Ff58d095de480364069af110" // liqee general pool
   ],
   arbitrum: [
-    "0x8E7e9eA9023B81457Ae7E6D2a51b003D421E5408", // dForce general pool
     "0x50210A88217d1dD9e7FBc3E4a927Cc55829a38eB", // dForce vault pool: USX/2CRV
   ],
-  optimism: ["0xA300A84D8970718Dac32f54F61Bd568142d8BCF4"],
-  polygon: ["0x52eaCd19E38D501D006D2023C813d7E37F025f37"],
+  optimism: [],
+  polygon: [],
   avax: ["0x078ad8d6faeD9DAeE55f5d446C80E0C81230DE6b"],
   kava: ["0xFBf64A8cAEA1D641affa185f850dbBF90d5c84dC"],
-  conflux: ["0xA377eCF53253275125D0a150aF195186271f6a56"]
+  conflux: []
 };
 
 let yieldMarkets = {
@@ -198,6 +195,9 @@ async function staking(timestamp, ethBlock, chainBlocks) {
 module.exports = {
   ...generalizedChainExports(chainTvl, ['ethereum', "bsc", "arbitrum", "optimism", "polygon", "avax", "kava", "conflux"]),
   start: 1564165044, // Jul-27-2019 02:17:24 AM +UTC
+  hallmarks: [
+    [Math.floor(new Date('2023-12-19')/1e3), 'Unitus spin-off'],
+  ],
 }
 
 module.exports.ethereum.staking = staking
