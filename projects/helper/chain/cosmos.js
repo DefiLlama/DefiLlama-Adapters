@@ -150,7 +150,7 @@ async function getBalance2({ balances = {}, owner, block, chain, tokens, blackli
   for (const { denom, amount } of data) {
     if (blacklistedTokens?.includes(denom)) continue;
     if (tokens && !tokens.includes(denom)) continue;
-    sdk.util.sumSingleBalance(balances, denom, amount);
+    sdk.util.sumSingleBalance(balances, denom.replaceAll('/', ':'), amount);
   }
   return balances;
 }
