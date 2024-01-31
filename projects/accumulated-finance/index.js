@@ -1,4 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
+
 const config = {
   "ethereum": {
     "baseToken": "0xdf4ef6ee483953fe3b84abd08c6a060445c01170",
