@@ -1,9 +1,9 @@
-const FACTORY_ETH_CONTRACT = '0x91af681C85Ca98Efc5D69C1B62E6F435030969Db';
 const ESCROW_LATEST_PRICE_ABI = "function issuances(uint256) view returns(uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256)";
 
 async function tvl(_, _1, _2, { api }) {
-  const tokens = await api.fetchList({  lengthAbi: 'idSTOs', itemAbi: 'stoTokens', target: FACTORY_ETH_CONTRACT, startFromOne: true })
-  const escrows = await api.fetchList({  lengthAbi: 'idSTOs', itemAbi: 'stoEscrows', target: FACTORY_ETH_CONTRACT, startFromOne: true })
+  const { factory } = config[api.chain]
+  const tokens = await api.fetchList({  lengthAbi: 'idSTOs', itemAbi: 'stoTokens', target: factory, startFromOne: true })
+  const escrows = await api.fetchList({  lengthAbi: 'idSTOs', itemAbi: 'stoEscrows', target: factory, startFromOne: true })
   const supplies = await api.multiCall({  abi: 'erc20:totalSupply', calls: tokens})
   // const names = await api.multiCall({  abi: 'string:name', calls: tokens})
   const issuanceIndex = await api.multiCall({  abi: 'uint256:issuanceIndex', calls: escrows})
@@ -20,8 +20,15 @@ async function tvl(_, _1, _2, { api }) {
 }
 
 module.exports = {
-  ethereum: {
-    tvl,
-  },
+  misrepresentedTokens: true,
   methodology: `We get the TVL as the sum of all total supplies of all tokens issued by our factory multiplied by the price of their latest public price.`
-}; 
+}
+
+const config = {
+  ethereum: { factory: '0x91af681C85Ca98Efc5D69C1B62E6F435030969Db', },
+  bsc: { factory: '0xCe4529Fe88df480BD777d3e32dfD7032e6C685ff', },
+}
+
+Object.keys(config).forEach(chain => {
+  module.exports[chain] = { tvl  }
+})
