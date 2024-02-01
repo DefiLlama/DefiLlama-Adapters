@@ -76,6 +76,7 @@ const tokenMapping = {
   ADA: 'lovelace',
   DJED: '8db269c3ec630e06ae29f74bc39edd1f87c819f1056206e879a1cd61446a65644d6963726f555344',
   SHEN: '8db269c3ec630e06ae29f74bc39edd1f87c819f1056206e879a1cd615368656e4d6963726f555344',
+  ERG: '04b95368393c821f180deee8229fbd941baaf9bd748ebcdbf7adbb147273455247',
   USDC: 'usd-coin',
   DAI: 'dai',
   USDT: 'tether',
