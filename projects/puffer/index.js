@@ -12,8 +12,8 @@ async function tvl(_, _1, _2, { api }) {
         params: [],
     });
 
-    // The vault holds stETH which which has 1:1 exchange rate with ETH, WETH, ETH
-    // Meaning all of the assets held by the vault are ETH
+    // The vault holds stETH which which has a 1:1 exchange rate with ETH, WETH, ETH
+    // This means all of the assets held by the vault are ETH
     api.add(ETH, totalAssets)
 }
 
