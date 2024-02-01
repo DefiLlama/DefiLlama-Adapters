@@ -20,9 +20,13 @@ test();
 
 module.exports = {
     methodology: 'Calculates the cumulative value of locked collateral across all assets within the protocol.',
-    EURO3: {
-        totalSupply: EURO3.totalSupply(Provider),
-        price: EURO3.price(Provider)
-    },
-    tvl: protocol.tvl(Provider)
+    polygon: {
+        tvl: protocol.tvl(Provider),
+        ownTokens: {
+            EURO3: {
+                totalSupply: EURO3.totalSupply(Provider),
+                price: EURO3.price(Provider)
+            },
+        },
+    }
 };
