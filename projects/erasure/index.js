@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 /*==================================================
   Modules
   ==================================================*/
 
   const sdk = require("@defillama/sdk");
-  const _ = require("underscore");
+
   const BigNumber = require("bignumber.js");
 
   const abi = require('./abi.json');
@@ -22,7 +23,7 @@
 
   const tokenAddresses = [
     '0x1776e1F26f98b1A5dF9cD347953a26dd3Cb46671', // NMR
-    '0x6B175474E89094C44Da98b954EedeAC495271d0F' // DAI
+    ADDRESSES.ethereum.DAI // DAI
   ]
 
 /*==================================================
@@ -35,7 +36,7 @@
     // instances count for each registry
     const instanceCounts = (
       await sdk.api.abi.multiCall({
-        calls: _.map(registryAddresses, (registryAddress) => {
+        calls: registryAddresses.map((registryAddress) => {
           return {
             target: registryAddress
           }
@@ -46,7 +47,7 @@
 
     let paginatedInstancesCalls = [];
 
-    _.each(instanceCounts, (instanceCount) => {
+    instanceCounts.forEach((instanceCount) => {
       const registryAddress = instanceCount.input.target;
       const count = Number(instanceCount.output);
 
@@ -75,19 +76,19 @@
 
     let instanceAddresses = [];
 
-    _.each(paginatedInstances, (instances) => {
+    paginatedInstances.forEach((instances) => {
       instanceAddresses = [
         ...instanceAddresses,
         ...instances.output
       ]
     });
 
-    instanceAddresses = _.uniq(instanceAddresses);
+    instanceAddresses = [... new Set(instanceAddresses)]
 
     let balanceOfCalls = [];
 
-    _.each(instanceAddresses, (instanceAddress) => {
-      _.each(tokenAddresses, (tokenAddress) => {
+    instanceAddresses.forEach((instanceAddress) => {
+      tokenAddresses.forEach((tokenAddress) => {
         balanceOfCalls.push({
           target: tokenAddress,
           params: [instanceAddress]
@@ -103,19 +104,13 @@
     });
 
     // sum token balances across contracts
-    _.each(balanceOfResults.output, balanceOf => {
-      if (balanceOf.success) {
+    balanceOfResults.output.forEach(balanceOf => {
         let balance = balanceOf.output;
         let address = balanceOf.input.target;
-
-        if (BigNumber(balance).toNumber() <= 0) {
-          return;
-        }
 
         balances[address] = BigNumber(balances[address] || 0)
           .plus(balance)
           .toFixed();
-      }
     });
 
     return balances;
@@ -126,9 +121,6 @@
   ==================================================*/
 
   module.exports = {
-    name: "Erasure",
-    token: "NMR",
-    category: "derivatives",
     start: 1566518400, // 08/23/2019 @ 12:00am (UTC)
-    tvl
+    ethereum: { tvl }
   };

@@ -1,0 +1,7 @@
+{
+  "balancesBasePool": "function balances(uint256 arg0) view returns (uint256)",
+  "balancesMetaPool": "function balances(uint256 arg0) view returns (uint256)",
+  "lockedSupply": "uint256:lockedSupply",
+  "totalSupply": "uint256:totalSupply",
+  "totalSupplyLP": "uint256:totalSupply"
+}

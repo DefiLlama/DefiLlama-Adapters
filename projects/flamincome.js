@@ -1,41 +1,38 @@
-const web3 = require('./config/web3.js');
-const BigNumber = require("bignumber.js");
-const retry = require('./helper/retry')
-const axios = require("axios");
-const abis = require('./config/flamincome/abis.js');
+const { sumTokens2 } = require('./helper/unwrapLPs')
 
-async function fetch() {
-    var price_feed = await retry(async bail => await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,tether,wrapped-bitcoin&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true'))
+const abis = {
+  balance: "uint256:balance",
+  token: "address:token",
+}
 
-    async function returnUnderlyingBalance(address) {
-        let contract = new web3.eth.Contract(abis['VaultBaseline'], address);
-        let decimals = await contract.methods.decimals().call();
-        let balance = await contract.methods.balance().call();
-        balance = await new BigNumber(balance).div(10 ** decimals).toFixed(2);
-        return parseFloat(balance);
-    }
+const vaults = {
+  "VaultBaselineUSDT": "0x54bE9254ADf8D5c8867a91E44f44c27f0c88e88A",
+  "VaultBaselinewBTC": "0x1a389c381a8242B7acFf0eB989173Cd5d0EFc3e3",
+  "VaultBaselinewETH": "0x1E9DC5d843731D333544e63B2B2082D21EF78ed3",
+  "VaultBaselineDAI": "0x163D457fA8247f1A9279B9fa8eF513de116e4327",
+  "VaultBaselineUNI-V2[WBTC]": "0x743BC5cc8F52a84fF6e06E47Bc2af5324f5463D6",
+  /* "VaultBaselinerenBTC": "0xB0B3442b632175B0b7d9521291c51060722C4e8C",
+  "VaultBaselineTUSD": "0xa322AEa77769666453377CC697fbE4C6390b9942",
+  "VaultBaselineyCRV": "0x5e7B4de4aC8e319fB2ec4bF9Fa98192346f8C99B",
+  "VaultBaselinesBTC": "0x681D3261CC6d2A18b59f8B53219b96F06BcEeB69",
+  "VaultBaselineUSDC": "0x3f7E3d82bdDc28d3Eb04F0d0A51e9Fc82db581f0",
+  "VaultBaselineyDAI": "0x79A2e8C1120d6B5fBfaBD3f7a39CF8473A635742",
+  "VaultBaselinecrvBTC": "0x483A47247d5cBd420A9c5d2838Ec89776ba8B56B",
+  "VaultBaselineOKB": "0x272C8dF3E8068952606046c1389fc1e2320FCCfd",
+  "VaultBaselinecrvRenWBTC": "0x10d0A001EeDC62b2A483EB9DFA0bb021aC61d55b",
+  "VaultBaselinecrvRenWSBTC": "0x483A47247d5cBd420A9c5d2838Ec89776ba8B56B", */
+}
 
-    var tvl = 0;
-
-    // Staking and pool assets
-    const stakingAssets = [
-        { contract: '0x54bE9254ADf8D5c8867a91E44f44c27f0c88e88A', slug: 'tether' },
-        { contract: '0x1a389c381a8242B7acFf0eB989173Cd5d0EFc3e3', slug: 'wrapped-bitcoin' },
-        { contract: '0x1E9DC5d843731D333544e63B2B2082D21EF78ed3', slug: 'ethereum' },
-    ]
-
-    await Promise.all(stakingAssets.map(async (asset) => {
-        let balance = await returnUnderlyingBalance(asset.contract);
-        tvl += (parseFloat(balance) * price_feed.data[asset.slug].usd)
-    }))
-
-    return tvl
+async function tvl(ts, block, _, { api }) {
+  const contracts =Object.values(vaults)
+  const tokens = await api.multiCall({  abi: abis.token, calls: contracts})
+  const bals = await api.multiCall({  abi: abis.balance, calls: contracts})
+  api.addTokens(tokens, bals)
 }
 
 module.exports = {
-    fetch
+  doublecounted: true,
+  ethereum: {
+    tvl,
+  }
 }
-
-
-
-

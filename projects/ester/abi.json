@@ -1,0 +1,7 @@
+{
+  "poolInfoStaking": "function poolInfo(uint256) view returns (address token, uint256 allocPoint, uint256 lastRewardTime, uint256 accESTPerShare)",
+  "poolInfo": "function poolInfo(uint256) view returns (address want, uint256 allocPoint, uint256 lastRewardTime, uint256 accESTPerShare, address strat)",
+  "poolLength": "uint256:poolLength",
+  "wantLockedTotal": "uint256:wantLockedTotal",
+  "symbol": "string:symbol"
+}

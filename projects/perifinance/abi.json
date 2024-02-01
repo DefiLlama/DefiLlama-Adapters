@@ -1,0 +1,3 @@
+{
+  "totalIssuedPynths": "function totalIssuedPynths(bytes32 currencyKey) view returns (uint256 totalIssued)"
+}

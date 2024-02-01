@@ -1,0 +1,4 @@
+{
+  "basicLockedSupply": "function basicLockedSupply() view returns (uint256)",
+  "advLockedSupply": "function advLockedSupply() view returns (uint256)"
+}

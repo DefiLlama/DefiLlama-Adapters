@@ -1,0 +1,4 @@
+{
+  "totalUnderlying": "uint256:totalUnderlying",
+  "totalSupply": "uint256:totalSupply"
+}

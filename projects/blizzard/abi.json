@@ -1,0 +1,5 @@
+{
+  "token": "address:token",
+  "balance": "uint256:balance",
+  "want": "address:want"
+}

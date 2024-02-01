@@ -1,50 +1,69 @@
 const utils = require('../helper/utils');
+const { toUSDTBalances } = require('../helper/balances');
+let _response
 
-function fetchChain(chainId) {
+const distressedAssets = ['aleth']; // Add any distressed asset names here
+
+function fetchChain(chainId, staking) {
   return async () => {
-    const response = await utils.fetchURL('https://api.beefy.finance/tvl');
+    if (!_response) _response = utils.fetchURL('https://api.beefy.finance/tvl')
+    const response = await _response;
 
     let tvl = 0;
     const chain = response.data[chainId];
-    for (vault in chain) {
-      tvl += chain[vault];
+    for (const vault in chain) {
+      // Skip distressed assets
+      if (distressedAssets.some(asset => vault.includes(asset))) {
+        continue;
+      }
+
+      const isBIFI = vault.includes("bifi")
+      if ((isBIFI && staking) || (!isBIFI && !staking)) {
+        tvl += Number(chain[vault]);
+      }
+    }
+    if (tvl === 0 && !staking) {
+      throw new Error(`chain ${chainId} tvl is 0`)
     }
 
-    return tvl;
+    return toUSDTBalances(tvl);
   }
 }
 
-
-async function fetch() {
-  const response = await utils.fetchURL('https://api.beefy.finance/tvl');
-
-  let tvl = 0;
-  for (chainId in response.data) {
-    const chain = response.data[chainId];
-
-    for (vault in chain) {
-      tvl += chain[vault];
-    }
-  }
-
-  return tvl;
+const chains = {
+  ethereum: 1,
+  optimism: 10,
+  cronos: 25,
+  bsc: 56,
+  xdai: 100,
+  fuse: 122,
+  heco: 128,
+  polygon: 137,
+  fantom: 250,
+  zksync: 324,
+  metis: 1088,
+  polygon_zkevm: 1101,
+  moonbeam: 1284,
+  moonriver: 1285,
+  kava: 2222,
+  mantle: 5000,
+  canto: 7700,
+  base: 8453,
+  arbitrum: 42161,
+  celo: 42220,
+  oasis: 42262,
+  avax: 43114,
+  linea: 59144,
+  aurora: 1313161554,
+  harmony: 1666600000
 }
 
 module.exports = {
-  bsc:{
-    fetch: fetchChain(56)
-  },
-  heco:{
-    fetch: fetchChain(128)
-  },
-  polygon:{
-    fetch: fetchChain(137)
-  },
-  fantom:{
-    fetch: fetchChain(250)
-  },
-  avalanche:{
-    fetch: fetchChain(43114)
-  },
-  fetch
+  timetravel: false,
+  misrepresentedTokens: true,
+  doublecounted: true,
+  ...Object.fromEntries(Object.entries(chains).map(chain => [chain[0], {
+    tvl: fetchChain(chain[1], false),
+    staking: fetchChain(chain[1], true),
+  }]))
 }

@@ -1,0 +1,7 @@
+{
+  "totalSupply": "uint256:totalSupply",
+  "balances": "function balances(int128 arg0) view returns (uint256 out)",
+  "coins": "function coins(int128 arg0) view returns (address out)",
+  "sharesToAmount": "function sharesToAmount(uint256 _shares) view returns (uint256)",
+  "token": "address:token"
+}

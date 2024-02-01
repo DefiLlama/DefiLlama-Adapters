@@ -1,0 +1,4 @@
+{
+  "getPool": "function getPool(address token) view returns (address pool)",
+  "getTokenAssets": "address[]:getTokenAssets"
+}

@@ -1,0 +1,11 @@
+{
+  "bank": {
+    "usableFtmBalance": "uint256:usableCollateralBalance"
+  },
+  "bankV1": {
+    "usableFtmBalance": "uint256:usableFtmBalance"
+  },
+  "multiFeeDistribution": {
+    "totalSupply": "uint256:totalSupply"
+  }
+}

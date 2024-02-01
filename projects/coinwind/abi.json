@@ -1,0 +1,10 @@
+{
+  "poolLength": "uint256:poolLength",
+  "poolInfo": "function poolInfo(uint256) view returns (address token, uint256, uint256, uint256, uint256, uint256 totalAmount, uint256, uint256, uint256, uint256, uint256)",
+  "ethPoolInfo": "function poolInfo(uint256) view returns (address token, uint256, uint256, uint256, uint256 totalAmount, uint256, uint256, uint256, uint256, uint256, uint256)",
+  "daoPoolInfo": "function poolInfo(uint256) view returns (address token, uint256, uint256, uint256, uint256 totalAmount, uint256, uint256, uint256, uint256, uint256, uint256)",
+  "totalSupply": "uint256:totalSupply",
+  "getReserves": "function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)",
+  "token0": "address:token0",
+  "token1": "address:token1"
+}

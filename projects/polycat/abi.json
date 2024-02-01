@@ -1,34 +1,7 @@
 {
-  "poolInfo": {
-    "type": "function",
-    "stateMutability": "view",
-    "outputs": [
-      {
-        "type": "address",
-        "name": "lpToken",
-        "internalType": "contract IERC20"
-      },
-      { "type": "uint256", "name": "allocPoint", "internalType": "uint256" },
-      {
-        "type": "uint256",
-        "name": "lastRewardBlock",
-        "internalType": "uint256"
-      },
-      {
-        "type": "uint256",
-        "name": "accFishPerShare",
-        "internalType": "uint256"
-      },
-      { "type": "uint16", "name": "depositFeeBP", "internalType": "uint16" }
-    ],
-    "name": "poolInfo",
-    "inputs": [{ "type": "uint256", "name": "", "internalType": "uint256" }]
-  },
-  "poolLength": {
-    "type": "function",
-    "stateMutability": "view",
-    "outputs": [{ "type": "uint256", "name": "", "internalType": "uint256" }],
-    "name": "poolLength",
-    "inputs": []
-  }
+  "poolLength": "uint256:poolLength",
+  "poolInfo": "function poolInfo(uint256) view returns (address want, address strat)",
+  "wantLockedTotal": "uint256:wantLockedTotal",
+  "token0": "address:token0",
+  "token1": "address:token1"
 }

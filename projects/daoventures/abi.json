@@ -1,0 +1,5 @@
+{
+  "getAllPoolInUSD": "uint256:getAllPoolInUSD",
+  "getAllPoolInUSDProxy": "function getAllPoolInUSD(bool includeVestedILV) view returns (uint256)",
+  "getTotalValueInPool": "uint256:getTotalValueInPool"
+}

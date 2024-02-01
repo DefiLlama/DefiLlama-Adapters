@@ -1,52 +1,33 @@
-/*==================================================
-  Modules
-  ==================================================*/
+const ADDRESSES = require('../helper/coreAssets.json')
 
-const sdk = require("@defillama/sdk");
-const { getAssets } = require("./api");
+const { sumTokens2 } = require("../helper/unwrapLPs")
+const { getConfig } = require('../helper/cache')
 
-const IDEX_CUSTODY_CONTRACT = "0xE5c405C5578d84c5231D3a9a29Ef4374423fA0c2";
+const IDEX_ETHEREUM_CUSTODY_CONTRACT = "0xE5c405C5578d84c5231D3a9a29Ef4374423fA0c2";
+const IDEX_POLYGON_CUSTODY_CONTRACT = "0x3bcc4eca0a40358558ca8d1bcd2d1dbde63eb468";
 
-/*==================================================
-  TVL
-  ==================================================*/
+async function tvl(_timestamp, block, chain, { api }) {
+  chain = api.chain
+  let tokens = [ADDRESSES.null]
+  let owner
 
-async function tvl(timestamp, block) {
-  const assets = await getAssets();
+  switch (chain) {
+    case 'polygon':
+      const assets = await getConfig('idex/polygon', 'https://api-matic.idex.io/v1/assets')
+      assets.forEach(t => tokens.push(t.contractAddress))
+      owner = IDEX_POLYGON_CUSTODY_CONTRACT
+      break;
+    case 'ethereum':
+      owner = IDEX_ETHEREUM_CUSTODY_CONTRACT
+      break;
+    default:
+      throw new Error('Unknown chain ' + chain);
+  }
 
-  const balances = {
-    "0x0000000000000000000000000000000000000000": (
-      await sdk.api.eth.getBalance({ target: IDEX_CUSTODY_CONTRACT, block })
-    ).output
-  };
-
-  const assetBalancesResult = await sdk.api.abi.multiCall({
-    abi: "erc20:balanceOf",
-    block,
-    calls: assets.reduce((arr, asset) => {
-      if (asset.symbol !== "ETH") {
-        arr.push({
-          target: asset.contractAddress,
-          params: IDEX_CUSTODY_CONTRACT,
-        });
-      }
-      return arr;
-    }, []),
-  });
-
-  sdk.util.sumMultiBalanceOf(balances, assetBalancesResult);
-
-  return balances;
+  return sumTokens2({ api, tokens, owner, fetchCoValentTokens: chain === 'ethereum' })
 }
 
-/*==================================================
-  Exports
-  ==================================================*/
-
 module.exports = {
-  name: "IDEX", // project name
-  token: "IDEX", // null, or token symbol if project has a custom token
-  category: "dexes", // allowed values as shown on DefiPulse: 'Derivatives', 'DEXes', 'Lending', 'Payments', 'Assets'
-  start: 1603166400, // unix timestamp (utc 0) specifying when the project began, 10-20-2020 UTC 0:00:00
-  tvl, // tvl adapter
+  ethereum: { tvl, },
+  polygon: { tvl, },
 };

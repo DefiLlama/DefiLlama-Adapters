@@ -1,0 +1,5 @@
+{
+  "holdingPosition": "address:holdingPosition",
+  "getPositions": "address[]:getPositions",
+  "totalAssets": "uint256:totalAssets"
+}

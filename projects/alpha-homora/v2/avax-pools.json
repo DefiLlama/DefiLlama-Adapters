@@ -1,0 +1,286 @@
+[
+    {
+        "exchange": {
+            "name": "Trader Joe",
+            "spellAddress": "0xdbc2aa11aa01baa22892de745c661db9f204b2cd",
+            "stakingAddress": "0xd6a4f121ca35509af06a0be99093d08462f53052",
+            "logo": "/static/tokens/uni.png",
+            "reward": {
+                "tokenName": "JOE",
+                "rewardTokenAddress": "0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd"
+            }
+        },
+        "name": "AVAX/USDT.e",
+        "tokens": [
+            "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+            "0xc7198437980c041c805a1edcba50c1ce5db95118"
+        ],
+        "lpTokenAddress": "0xed8cbd9f0ce3c6986b22002f03c6475ceb7a6256",
+        "type": "Yield Farming",
+        "color": "#4d9979",
+        "wTokenAddress": "0xb41de9c1f50697cc3fd63f24ede2b40f6269cbcb",
+        "wTokenType": "WMasterChef",
+        "pid": 28,
+        "key": "wchef-0xb41de9c1f50697cc3fd63f24ede2b40f6269cbcb-28"
+    },
+    {
+        "exchange": {
+            "name": "Trader Joe",
+            "spellAddress": "0xdbc2aa11aa01baa22892de745c661db9f204b2cd",
+            "stakingAddress": "0xd6a4f121ca35509af06a0be99093d08462f53052",
+            "logo": "/static/tokens/uni.png",
+            "reward": {
+                "tokenName": "JOE",
+                "rewardTokenAddress": "0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd"
+            }
+        },
+        "name": "USDC.e/AVAX",
+        "tokens": [
+            "0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664",
+            "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"
+        ],
+        "lpTokenAddress": "0xa389f9430876455c36478deea9769b7ca4e3ddb1",
+        "type": "Yield Farming",
+        "color": "#3a71be",
+        "wTokenAddress": "0xb41de9c1f50697cc3fd63f24ede2b40f6269cbcb",
+        "wTokenType": "WMasterChef",
+        "pid": 39,
+        "key": "wchef-0xb41de9c1f50697cc3fd63f24ede2b40f6269cbcb-39"
+    },
+    {
+        "exchange": {
+            "name": "Trader Joe",
+            "spellAddress": "0xdbc2aa11aa01baa22892de745c661db9f204b2cd",
+            "stakingAddress": "0xd6a4f121ca35509af06a0be99093d08462f53052",
+            "logo": "/static/tokens/uni.png",
+            "reward": {
+                "tokenName": "JOE",
+                "rewardTokenAddress": "0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd"
+            }
+        },
+        "name": "WETH.e/AVAX",
+        "tokens": [
+            "0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab",
+            "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"
+        ],
+        "lpTokenAddress": "0xfe15c2695f1f920da45c30aae47d11de51007af9",
+        "type": "Yield Farming",
+        "color": "#3a71be",
+        "wTokenAddress": "0xb41de9c1f50697cc3fd63f24ede2b40f6269cbcb",
+        "wTokenType": "WMasterChef",
+        "pid": 26,
+        "key": "wchef-0xb41de9c1f50697cc3fd63f24ede2b40f6269cbcb-26"
+    },
+    {
+        "exchange": {
+            "name": "Trader Joe",
+            "spellAddress": "0xdbc2aa11aa01baa22892de745c661db9f204b2cd",
+            "stakingAddress": "0xd6a4f121ca35509af06a0be99093d08462f53052",
+            "logo": "/static/tokens/uni.png",
+            "reward": {
+                "tokenName": "JOE",
+                "rewardTokenAddress": "0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd"
+            }
+        },
+        "name": "AVAX/DAI.e",
+        "tokens": [
+            "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+            "0xd586e7f844cea2f87f50152665bcbc2c279d8d70"
+        ],
+        "lpTokenAddress": "0x87dee1cc9ffd464b79e058ba20387c1984aed86a",
+        "type": "Yield Farming",
+        "color": "#3a71be",
+        "wTokenAddress": "0xb41de9c1f50697cc3fd63f24ede2b40f6269cbcb",
+        "wTokenType": "WMasterChef",
+        "pid": 37,
+        "key": "wchef-0xb41de9c1f50697cc3fd63f24ede2b40f6269cbcb-37"
+    },
+    {
+        "exchange": {
+            "name": "Trader Joe",
+            "spellAddress": "0xdbc2aa11aa01baa22892de745c661db9f204b2cd",
+            "stakingAddress": "0xd6a4f121ca35509af06a0be99093d08462f53052",
+            "logo": "/static/tokens/uni.png",
+            "reward": {
+                "tokenName": "JOE",
+                "rewardTokenAddress": "0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd"
+            }
+        },
+        "name": "USDC.e/USDT.e",
+        "tokens": [
+            "0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664",
+            "0xc7198437980c041c805a1edcba50c1ce5db95118"
+        ],
+        "lpTokenAddress": "0x2e02539203256c83c7a9f6fa6f8608a32a2b1ca2",
+        "type": "Yield Farming",
+        "color": "#3a71be",
+        "wTokenAddress": "0xb41de9c1f50697cc3fd63f24ede2b40f6269cbcb",
+        "wTokenType": "WMasterChef",
+        "pid": 49,
+        "key": "wchef-0xb41de9c1f50697cc3fd63f24ede2b40f6269cbcb-49"
+    },
+    {
+        "exchange": {
+            "name": "Trader Joe",
+            "spellAddress": "0xdbc2aa11aa01baa22892de745c661db9f204b2cd",
+            "stakingAddress": "0xd6a4f121ca35509af06a0be99093d08462f53052",
+            "logo": "/static/tokens/uni.png",
+            "reward": {
+                "tokenName": "JOE",
+                "rewardTokenAddress": "0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd"
+            }
+        },
+        "name": "WBTC.e/AVAX",
+        "tokens": [
+            "0x50b7545627a5162f82a992c33b87adc75187b218",
+            "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"
+        ],
+        "lpTokenAddress": "0xd5a37dc5c9a396a03dd1136fc76a1a02b1c88ffa",
+        "type": "Yield Farming",
+        "color": "#3a71be",
+        "wTokenAddress": "0xb41de9c1f50697cc3fd63f24ede2b40f6269cbcb",
+        "wTokenType": "WMasterChef",
+        "pid": 27,
+        "key": "wchef-0xb41de9c1f50697cc3fd63f24ede2b40f6269cbcb-27"
+    },
+    {
+        "exchange": {
+            "name": "Trader Joe",
+            "spellAddress": "0xdbc2aa11aa01baa22892de745c661db9f204b2cd",
+            "stakingAddress": "0xd6a4f121ca35509af06a0be99093d08462f53052",
+            "logo": "/static/tokens/uni.png",
+            "reward": {
+                "tokenName": "JOE",
+                "rewardTokenAddress": "0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd"
+            }
+        },
+        "name": "USDC.e/DAI.e",
+        "tokens": [
+            "0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664",
+            "0xd586e7f844cea2f87f50152665bcbc2c279d8d70"
+        ],
+        "lpTokenAddress": "0x63abe32d0ee76c05a11838722a63e012008416e6",
+        "type": "Yield Farming",
+        "color": "#3a71be",
+        "wTokenAddress": "0xb41de9c1f50697cc3fd63f24ede2b40f6269cbcb",
+        "wTokenType": "WMasterChef",
+        "pid": 40,
+        "key": "wchef-0xb41de9c1f50697cc3fd63f24ede2b40f6269cbcb-40"
+    },
+    {
+        "exchange": {
+            "name": "Trader Joe",
+            "spellAddress": "0xdbc2aa11aa01baa22892de745c661db9f204b2cd",
+            "stakingAddress": "0xd6a4f121ca35509af06a0be99093d08462f53052",
+            "logo": "/static/tokens/uni.png",
+            "reward": {
+                "tokenName": "JOE",
+                "rewardTokenAddress": "0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd"
+            }
+        },
+        "name": "USDT.e/DAI.e",
+        "tokens": [
+            "0xc7198437980c041c805a1edcba50c1ce5db95118",
+            "0xd586e7f844cea2f87f50152665bcbc2c279d8d70"
+        ],
+        "lpTokenAddress": "0xa6908c7e3be8f4cd2eb704b5cb73583ebf56ee62",
+        "type": "Yield Farming",
+        "color": "#3a71be",
+        "wTokenAddress": "0xb41de9c1f50697cc3fd63f24ede2b40f6269cbcb",
+        "wTokenType": "WMasterChef",
+        "pid": 31,
+        "key": "wchef-0xb41de9c1f50697cc3fd63f24ede2b40f6269cbcb-31"
+    },
+    {
+        "exchange": {
+            "name": "Pangolin",
+            "spellAddress": "0x7723993c1baa141f5decfc8bf5dbad47aaddec86",
+            "logo": "/static/tokens/uni.png",
+            "reward": {
+                "tokenName": "PNG",
+                "rewardTokenAddress": "0x60781c2586d68229fde47564546784ab3faca982"
+            }
+        },
+        "name": "AVAX/USDT.e",
+        "tokens": [
+            "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+            "0xc7198437980c041c805a1edcba50c1ce5db95118"
+        ],
+        "lpTokenAddress": "0xe28984e1ee8d431346d32bec9ec800efb643eef4",
+        "type": "Yield Farming",
+        "color": "#4d9979",
+        "wTokenAddress": "0x0b8f60be035cc5b1982ed2145c6bfc05f863ddc1",
+        "wTokenType": "WStakingRewards",
+        "stakingAddress": "0x006cc053bdb84c2d6380b3c4a573d84636378a47",
+        "key": "wstaking-0x0b8f60be035cc5b1982ed2145c6bfc05f863ddc1"
+    },
+    {
+        "exchange": {
+            "name": "Pangolin",
+            "spellAddress": "0x7723993c1baa141f5decfc8bf5dbad47aaddec86",
+            "logo": "/static/tokens/uni.png",
+            "reward": {
+                "tokenName": "PNG",
+                "rewardTokenAddress": "0x60781c2586d68229fde47564546784ab3faca982"
+            }
+        },
+        "name": "USDC.e/AVAX",
+        "tokens": [
+            "0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664",
+            "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"
+        ],
+        "lpTokenAddress": "0xbd918ed441767fe7924e99f6a0e0b568ac1970d9",
+        "type": "Yield Farming",
+        "color": "#3a71be",
+        "wTokenAddress": "0xc681cad10f227ef506a352b3dc5ff6c676b8636f",
+        "wTokenType": "WStakingRewards",
+        "stakingAddress": "0x84b536da1a2d9b0609f9da73139674cc2d75af2d",
+        "key": "wstaking-0xc681cad10f227ef506a352b3dc5ff6c676b8636f"
+    },
+    {
+        "exchange": {
+            "name": "Pangolin",
+            "spellAddress": "0x7723993c1baa141f5decfc8bf5dbad47aaddec86",
+            "logo": "/static/tokens/uni.png",
+            "reward": {
+                "tokenName": "PNG",
+                "rewardTokenAddress": "0x60781c2586d68229fde47564546784ab3faca982"
+            }
+        },
+        "name": "WETH.e/AVAX",
+        "tokens": [
+            "0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab",
+            "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"
+        ],
+        "lpTokenAddress": "0x7c05d54fc5cb6e4ad87c6f5db3b807c94bb89c52",
+        "type": "Yield Farming",
+        "color": "#3a71be",
+        "wTokenAddress": "0xfcd7ebc3a42d65fe77988171999cfbb7c4a85523",
+        "wTokenType": "WStakingRewards",
+        "stakingAddress": "0x830a966b9b447c9b15ab24c0369c4018e75f31c9",
+        "key": "wstaking-0xfcd7ebc3a42d65fe77988171999cfbb7c4a85523"
+    },
+    {
+        "exchange": {
+            "name": "Pangolin",
+            "spellAddress": "0x7723993c1baa141f5decfc8bf5dbad47aaddec86",
+            "logo": "/static/tokens/uni.png",
+            "reward": {
+                "tokenName": "PNG",
+                "rewardTokenAddress": "0x60781c2586d68229fde47564546784ab3faca982"
+            }
+        },
+        "name": "AVAX/DAI.e",
+        "tokens": [
+            "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+            "0xd586e7f844cea2f87f50152665bcbc2c279d8d70"
+        ],
+        "lpTokenAddress": "0xba09679ab223c6bdaf44d45ba2d7279959289ab0",
+        "type": "Yield Farming",
+        "color": "#3a71be",
+        "wTokenAddress": "0x7f7c811c889108c89f539a21d150b5d5fc616545",
+        "wTokenType": "WStakingRewards",
+        "stakingAddress": "0x63a84f66b8c90841cb930f2dc3d28799f0c6657b",
+        "key": "wstaking-0x7f7c811c889108c89f539a21d150b5d5fc616545"
+    }
+]

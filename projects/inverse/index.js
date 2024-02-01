@@ -1,18 +1,20 @@
-const _ = require("underscore");
+const ADDRESSES = require('../helper/coreAssets.json')
+
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
+const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 
 // Anchor
 const anchorStart = 11915867;
 const comptroller = "0x4dcf7407ae5c07f8681e1659f626e114a7667339";
 const ignore = ["0x7Fcb7DAC61eE35b3D4a51117A7c58D53f0a8a670"]; // anDOLA will be counted through the stabilizer
 const anETH = "0x697b4acAa24430F254224eB794d2a85ba1Fa1FB8";
-const wETH = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
+const wETH = ADDRESSES.ethereum.WETH;
 
 // Stabilizer
 const stabilizer = "0x7eC0D931AFFBa01b77711C2cD07c76B970795CDd";
-const dai = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
+const dai = ADDRESSES.ethereum.DAI;
 
 // Vaults
 const vaults = [
@@ -41,13 +43,13 @@ async function getAllUnderlying(block, tokens) {
   let allUnderlying = (
     await sdk.api.abi.multiCall({
       block,
-      calls: _.map(
-        tokens.filter((token) => token !== anETH),
+      calls: tokens.filter((token) => token !== anETH).map(
         (token) => ({
           target: token,
         })
       ),
       abi: abi["underlying"],
+      permitFailure: true,
     })
   ).output;
 
@@ -65,7 +67,7 @@ async function getCashes(block, tokens) {
   return (
     await sdk.api.abi.multiCall({
       block,
-      calls: _.map(tokens, (token) => ({
+      calls: tokens.map((token) => ({
         target: token,
       })),
       abi: abi["getCash"],
@@ -77,7 +79,7 @@ async function getTotalSupplies(block, tokens) {
   return (
     await sdk.api.abi.multiCall({
       block,
-      calls: _.map(tokens, (token) => ({
+      calls: tokens.map((token) => ({
         target: token,
       })),
       abi: abi["totalSupply"],
@@ -97,13 +99,11 @@ async function anchorTVL(block) {
     getCashes(block, tokens),
   ]);
 
-  _.each(tokens, (token) => {
-    let cash = _.find(
-      cashes,
+  tokens.forEach((token) => {
+    let cash = cashes.find(
       (result) => result.input.target === token
     );
-    let underlying = _.find(
-      allUnderlying,
+    let underlying = allUnderlying.find(
       (result) => result.input.target === token
     );
     if (cash && underlying) {
@@ -124,13 +124,11 @@ async function vaultsTVL(block) {
     getTotalSupplies(block, vaults),
   ]);
 
-  _.each(vaults, (token) => {
-    let totalSupply = _.find(
-      totalSupplies,
+  vaults.forEach((token) => {
+    let totalSupply = totalSupplies.find(
       (result) => result.input.target === token
     );
-    let underlying = _.find(
-      allUnderlying,
+    let underlying = allUnderlying.find(
       (result) => result.input.target === token
     );
     if (totalSupply && underlying) {
@@ -174,25 +172,42 @@ async function tvl(timestamp, block) {
     stabilizerTVL(block),
   ]);
 
-  _.each(_.pairs(anchorBalances), ([token, value]) => {
+  const lps = []
+  Object.entries(anchorBalances).forEach(([token, value]) => {
+    const balance = BigNumber(balances[token] || 0);
+    if(token === '0xAA5A67c256e27A5d80712c51971408db3370927D'){
+      token = "0x865377367054516e17014ccded1e7d814edc9ce4"
+    }
+    if(token === "0x5BA61c0a8c4DccCc200cd0ccC40a5725a426d002"){
+      lps.push({
+        token,
+        balance: value.toFixed(0)
+      })
+    } else {
+      balances[token] = balance.plus(BigNumber(value)).toFixed();
+    }
+  });
+
+  Object.entries(vaultBalances).forEach(([token, value]) => {
     const balance = BigNumber(balances[token] || 0);
     balances[token] = balance.plus(BigNumber(value)).toFixed();
   });
 
-  _.each(_.pairs(vaultBalances), ([token, value]) => {
+  Object.entries(stabilizerBalances).forEach(([token, value]) => {
     const balance = BigNumber(balances[token] || 0);
     balances[token] = balance.plus(BigNumber(value)).toFixed();
   });
-
-  _.each(_.pairs(stabilizerBalances), ([token, value]) => {
-    const balance = BigNumber(balances[token] || 0);
-    balances[token] = balance.plus(BigNumber(value)).toFixed();
-  });
+  await unwrapUniswapLPs(balances, lps, block)
 
   return balances;
 }
 
 module.exports = {
+  methodology: "DOLA curve metapool replaced by DOLA",
+  hallmarks: [
+     [1648771200, "INV price hack"],
+     [1655380800, "Inverse Frontier Deprecated",]
+],
   start: 1607731200, // Dec 12 2020 00:00:00 GMT+0000
-  tvl,
+  ethereum: { tvl }
 };

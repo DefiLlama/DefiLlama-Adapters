@@ -1,0 +1,3 @@
+{
+  "totalSupply": "function totalSupply(uint256 _assetID) view returns (uint256)"
+}

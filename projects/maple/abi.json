@@ -1,0 +1,8 @@
+{
+  "pools": "function pools(uint256) view returns (address)",
+  "poolsCreated": "uint256:poolsCreated",
+  "liquidityAsset": "address:liquidityAsset",
+  "totalSupply": "uint256:totalSupply",
+  "liquidityLocker": "address:liquidityLocker",
+  "principalOut": "uint256:principalOut"
+}

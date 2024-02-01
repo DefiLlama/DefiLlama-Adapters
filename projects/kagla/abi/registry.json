@@ -1,0 +1,6 @@
+{
+  "pool_count": "uint256:pool_count",
+  "pool_list": "function pool_list(uint256 arg0) view returns (address)",
+  "get_coins": "function get_coins(address _pool) view returns (address[8])",
+  "get_balances": "function get_balances(address _pool) view returns (uint256[8])"
+}

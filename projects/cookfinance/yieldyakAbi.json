@@ -1,0 +1,4 @@
+{
+  "depositToken": "address:depositToken",
+  "getDepositTokensForShares": "function getDepositTokensForShares(uint256 amount) view returns (uint256)"
+}

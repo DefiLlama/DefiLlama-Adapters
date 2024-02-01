@@ -1,0 +1,4 @@
+{
+  "coins": "function coins(uint256 arg0) view returns (address)",
+  "get_dy": "function get_dy(int128 i, int128 j, uint256 dx) view returns (uint256)"
+}

@@ -1,33 +1,17 @@
-const sdk = require('@defillama/sdk');
-const abi = require('./abi.json')
+const solana = require('../helper/solana');
 
-const DFI_ADDRESS = '0xA9536B9c75A9E0faE3B56a96AC8EdF76AbC91978';
-const DMX_ADDRESS = '0x1660F10B4D610cF482194356eCe8eFD65B15bA83';
-
-async function tvl(timestamp, block) {
-    let balances = {};
-    for (const address of [DFI_ADDRESS, DMX_ADDRESS]) {
-        const underlyings = await sdk.api.abi.call({
-            block,
-            target: address,
-            abi: abi.getTokens
-        });
-        for (const token of underlyings.output) {
-            const held = await sdk.api.erc20.balanceOf({
-                block,
-                target: token,
-                owner: address
-            });
-            sdk.util.sumSingleBalance(balances, token, held.output)
-        };
-    }
-
-    return balances;
+async function tvl(_, _b, _cb, { api, }) {
+  return solana.sumTokens2({ tokenAccounts: ['GprM9vgGpUbNU4N5SbDAigL1JYCvQiDop28cmEQ7Bw2w'] })
 }
 
 module.exports = {
-    ethereum: {
-        tvl
-    },
-    tvl,
+  timetravel: false,
+  ethereum: { tvl: () => ({}), },
+  polygon: { tvl: () => ({}), },
+  solana: { tvl, },
+  hallmarks: [
+    [Math.floor(new Date('2023-03-22') / 1e3), 'Project is sunset!'],
+    [Math.floor(new Date('2022-12-26') / 1e3), 'Hacked for 300k!'],
+  ],
+  methodology: `Amun Tokens has three investment strategies available, which are the Defi Token Index(DFI), the Polygon Ecosystem Index (PECO) and Solana Ecosystem Index (SOLI). Each strategy has its own address where the underlying tokens are held. To get the TVL for the DFI and PECO, first of all, an on-chain call is made using the function 'tvl()', which first retrieves each token that is held within the strategy addresses and then calls 'balanceOf()' to get the balances of these tokens which are added and used as TVL. For SOLI, getTokenSupply helper method is called to get the total supply of the token, and then multiplied at the current market rate of the token, retrieved from our API endpoint.`,
 };

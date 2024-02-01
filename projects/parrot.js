@@ -1,20 +1,16 @@
-const {getTokenBalance} = require('./helper/solana')
+
+const { Program } = require("@project-serum/anchor");
+const { getProvider, sumTokens2,  } = require("./helper/solana");
 
 async function tvl() {
-    const [usdcAmount, usdtAmount, solAmount, srmAmount] = await Promise.all([
-        getTokenBalance("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "DefDiDiauGqS8ZUiHHuRCpmt8XZPGTTp6DY7UQP5NkkP"),
-        getTokenBalance("Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", "DGi3TxcKUq3E5t1mL33n9jRgdWWKngeRkP3fUppG4inn"),
-        getTokenBalance("So11111111111111111111111111111111111111112", "62Xb5ydBN1vrkg85SuKEL6aPv4bsy6iTiH3Jvki8NfNr"),
-        getTokenBalance("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt", "q96RZiNkec9PAfLtgrJaGLvXSK9fxs4DQ1g6RbiSvJg"),
-    ])
-    return {
-        'usd-coin': usdcAmount,
-        'tether': usdtAmount,
-        'solana': solAmount,
-        'serum': srmAmount
-    }
+  const provider = getProvider()
+  const idl = await Program.fetchIdl('HajXYaDXmohtq2ZxZ6QVNEpqNn1T53Zc9FnR1CnaNnUf', provider)
+  const program = new Program(idl, 'HajXYaDXmohtq2ZxZ6QVNEpqNn1T53Zc9FnR1CnaNnUf', provider)
+  const pools = await program.account.vaultType.all()
+  return sumTokens2({ tokenAccounts: pools.map(i => i.account.collateralTokenHolder.toString()), blacklistedTokens: ['PRT88RkA4Kg5z7pKnezeNH4mafTvtQdfFgpQTGRjz44'], })
 }
 
 module.exports = {
-    tvl
+  timetravel: false,
+  solana: { tvl, staking: async () => sumTokens2({ tokenAccounts: ['CJM5Un8AhMgLJv2mcj3o5z2z8H3deDzLA1TH7E3WhZQG']})  },
 }

@@ -1,0 +1,7 @@
+{
+  "getPoolTokens": "function getPoolTokens(bytes32 poolId) view returns (address[] tokens, uint256[] balances, uint256 lastChangeBlock)",
+  "getPoolId": "function getPoolId() view returns (bytes32)",
+  "getVault": "address:getVault",
+  "bPool": "address:bPool",
+  "getCurrentTokens": "address[]:getCurrentTokens"
+}

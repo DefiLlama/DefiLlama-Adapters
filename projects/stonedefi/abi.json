@@ -1,0 +1,5 @@
+{
+  "token": "address:token",
+  "totalAssets": "uint256:totalAssets",
+  "stbnbMarketCapacityCountByBNB": "uint256:stbnbMarketCapacityCountByBNB"
+}

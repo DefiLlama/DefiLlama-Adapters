@@ -1,55 +1,37 @@
-const sdk = require("@defillama/sdk");
-const axios = require('axios')
-
-const poolCadc = '0xa6c0cbcaebd93ad3c6c94412ec06aaa37870216d'
-const poolEuro = '0x1a4Ffe0DCbDB4d551cfcA61A5626aFD190731347'
-const poolXsgd = '0x2baB29a12a9527a179Da88F422cDaaA223A90bD5'
-async function tvl(timestamp, block) {
-    let balances = {}
-
-    const euroTokens = (await axios.get(`https://api.covalenthq.com/v1/1/address/${poolEuro}/balances_v2/?&key=ckey_72cd3b74b4a048c9bc671f7c5a6`)).data.data.items
-    const xsgdTokens = (await axios.get(`https://api.covalenthq.com/v1/1/address/${poolXsgd}/balances_v2/?&key=ckey_72cd3b74b4a048c9bc671f7c5a6`)).data.data.items
-    const cadcTokens = (await axios.get(`https://api.covalenthq.com/v1/1/address/${poolCadc}/balances_v2/?&key=ckey_72cd3b74b4a048c9bc671f7c5a6`)).data.data.items
-
-    await Promise.all(
-        euroTokens.map( async (token) => {
-            if(token.supports_erc) {
-                const singleTokenLocked = sdk.api.erc20.balanceOf({
-                    target: token.contract_address,
-                    owner: poolEuro,
-                    block,
-                })
-                sdk.util.sumSingleBalance(balances, token.contract_address, (await singleTokenLocked).output)
-            }
-        }),
-        cadcTokens.map( async (token) => {
-            if(token.supports_erc) {
-                const singleTokenLocked = sdk.api.erc20.balanceOf({
-                    target: token.contract_address,
-                    owner: poolCadc,
-                    block,
-                })
-                sdk.util.sumSingleBalance(balances, token.contract_address, (await singleTokenLocked).output)
-            }
-        }),
-        xsgdTokens.map( async (token) => {
-            if(token.supports_erc) {
-                const singleTokenLocked = sdk.api.erc20.balanceOf({
-                    target: token.contract_address,
-                    owner: poolXsgd,
-                    block,
-                })
-                sdk.util.sumSingleBalance(balances, token.contract_address, (await singleTokenLocked).output)
-            }
-        }),
-    )
-
-    return balances
-}
+const { getLogs } = require('../helper/cache/getLogs')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 module.exports = {
-    ethereum: {
-        tvl
-    },
-    tvl
+  hallmarks: [[1667955600, "Hack"]],
+};
+
+const config = {
+  arbitrum: [{ factory: "0x9544995B5312B26acDf09e66E699c34310b7c856", fromBlock: 65832059 }],
+  ethereum: [{ factory: "0x9adeac3b6d29d9d5e543b8579e803a7cce72c9cd", fromBlock: 16607851 }, { factory: "0xd3C1bF5582b5f3029b15bE04a49C65d3226dFB0C", fromBlock: 12459107 }],
+  polygon: [{ factory: "0x3591040cE5dF8828b3Ed4Ec39D030F832d43fD53", fromBlock: 39183403 }],
 }
+
+Object.keys(config).forEach(chain => {
+  const configs = config[chain]
+  module.exports[chain] = {
+    tvl: async (_, _b, _cb, { api, }) => {
+      const logs = []
+      for (const { factory, fromBlock } of configs) {
+        logs.push(await getLogs({
+          api,
+          target: factory,
+          topics: ['0xe7a19de9e8788cc07c144818f2945144acd6234f790b541aa1010371c8b2a73b'],
+          eventAbi: 'event NewCurve (address indexed caller, bytes32 indexed id, address indexed curve)',
+          onlyArgs: true,
+          fromBlock,
+        }))
+      }
+      let pools = logs.flat().map(log => log.curve)
+      if (chain === 'arbitrum') pools = pools.slice(1)
+      const calls = pools.map(pool => [{ target: pool, params: 0 }, { target: pool, params: 1 }]).flat()
+      const tokens = await api.multiCall({ abi: 'function numeraires(uint256) view returns (address)', calls })
+      const tokensAndOwners = tokens.map((token, i) => [token, pools[Math.floor(i / 2)]])
+      return sumTokens2({ api, tokensAndOwners, })
+    }
+  }
+})

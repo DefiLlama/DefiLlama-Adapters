@@ -1,0 +1,93 @@
+{
+    "fantom": {
+      "tokenHolders": {
+        "alUSDAlchemist": "0x76b2E3c5a183970AAAD2A48cF6Ae79E3e16D3A0E",
+        "alUSDTransmuterBuffer": "0x5a07d36D1f543960EE7806d35827E995539Fe5CF"
+      },
+      "underlyingTokens": {
+        "DAI": "0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E",
+        "USDC": "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75",
+        "fUSDT": "0x049d68029688eAbF473097a2fC38ef61633A3C7A"
+      },
+      "yvTokens": {
+        "yvDAI": "0x637ec617c86d24e421328e6caea1d92114892439",
+        "yvUSDC": "0xef0210eb96c7eb36af8ed1c20306462764935607", 
+        "yvUSDT": "0x148c05caf1bb09b5670f00d511718f733c54bc4c"
+      }
+    },
+    "optimism": {
+      "tokenHolders": {
+        "alUSDAlchemist": "0x10294d57a419c8eb78c648372c5baa27fd1484af",
+        "alUSDTransmuterBuffer": "0xe99a9a717c60f9639b235ede422c27d60fbeb3b9",
+        "alETHAlchemist": "0xe04Bb5B4de60FA2fBa69a93adE13A8B3B569d5B4",
+        "alETHTransmuter": "0x7f50923ee8e2bc3596a63998495baf2948a28f68"
+      },
+      "underlyingTokens": {
+        "DAI": "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
+        "USDC": "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
+        "USDT": "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58",
+        "WETH": "0x4200000000000000000000000000000000000006"
+      },
+      "yvTokens": {
+        "aDAI": "0x43A502D7e947c8A2eBBaf7627E104Ddcc253aBc6",
+        "aUSDC": "0x4186Eb285b1efdf372AC5896a08C346c7E373cC4", 
+        "aUSDT": "0x2680b58945A31602E4B6122C965c2849Eb76Dd3B",
+        "aWETH": "0x337B4B933d60F40CB57DD19AE834Af103F049810"
+      }
+    },
+    "ethereum": {
+      "tokenHolders": {
+        "alUSDAlchemist": "0x5C6374a2ac4EBC38DeA0Fc1F8716e5Ea1AdD94dd",
+        "alETHAlchemist": "0x062Bf725dC4cDF947aa79Ca2aaCCD4F385b13b5c",
+        "alUSDAMO": "0x9735f7d3ea56b454b24ffd74c58e9bd85cfad31b",
+        "alETHAMO": "0xe761bf731a06fe8259fee05897b2687d56933110",
+        "USDTransmuterB": "0xeE69BD81Bd056339368c97c4B2837B4Dc4b796E7",
+        "USDYearnVaultAdapter": "0xb039eA6153c827e59b620bDCd974F7bbFe68214A",
+        "USDYearnVaultAdapterTransmuterB": "0x6Fe02BE0EC79dCF582cBDB936D7037d2eB17F661",
+        "ETHTransmuter": "0x9FD9946E526357B35D95Bcb4b388614be4cFd4AC",
+        "ETHAlchemist": "0xf8317BD5F48B6fE608a52B48C856D3367540B73B",
+        "ETHYearnVaultAdapter": "0x546E6711032Ec744A7708D4b7b283A210a85B3BC",
+        "ETHYearnVaultAdapterB": "0x6d75657771256C7a8CB4d475fDf5047B70160132",
+        "WETHMigration": "0xb4E7cc74e004F95AEe7565a97Dbfdea9c1761b24",
+        "DAIMigration": "0x72A7cb4d5daB8E9Ba23f30DBE8E72Bc854a9945A"
+      },
+      "underlyingTokens": {
+        "DAI": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+        "USDC": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        "USDT": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+        "wstETH": "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0",
+        "rETH": "0xae78736Cd615f374D3085123A210448E74Fc6393",
+        "WETH": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+      },
+      "yvTokens": {
+        "yvDAI": "0xda816459f1ab5631232fe5e97a05bbbb94970c95",
+        "yvUSDC": "0xa354f35829ae975e850e23e9615b11da1b3dc4de", 
+        "yvUSDT": "0x7da96a3891add058ada2e826306d812c638d87a7",
+        "yvWETH": "0xa258c4606ca8206d8aa700ce2143d7db854d168c"
+      },
+      "staking": {
+          "token": "0xdBdb4d16EdA451D0503b854CF79D55697F90c8DF",
+          "holder": "0xAB8e74017a8Cc7c15FFcCd726603790d26d7DeCa"
+      }
+    },
+    "cvxLPpools": {
+      "alUSD+FRAXBP": {
+        "poolAddress":  "0x26598e3E511ADFadefD70ab2C3475Ff741741104",
+        "holder": "0xBE1C919cA137299715e9c929BC7126Af14f76091",
+        "tokenAddress": "0xb30da2376f63de30b42dc055c93fa474f31330a5",
+        "alToken": "0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9"
+      },
+      "alUSD-3CRV": {
+        "poolAddress":  "0x02E2151D4F351881017ABdF2DD2b51150841d5B3",
+        "holder": "0x9735f7d3ea56b454b24ffd74c58e9bd85cfad31b",
+        "tokenAddress": "0x43b4fdfd4ff969587185cdb6f0bd875c5fc83f8c",
+        "alToken": "0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9"
+      },
+      "alETH-ETH": {
+        "poolAddress":  "0x48Bc302d8295FeA1f8c3e7F57D4dDC9981FEE410",
+        "holder": "0xe761bf731a06fe8259fee05897b2687d56933110",
+        "tokenAddress": "0xc4c319e2d4d66cca4464c0c2b32c9bd23ebe784e",
+        "alToken": "0x0100546F2cD4C9D97f798fFC9755E47865FF7Ee6"
+      }
+    }
+  }

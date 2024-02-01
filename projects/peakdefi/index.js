@@ -1,65 +1,34 @@
-/*==================================================
-  Modules
-  ==================================================*/
+const ADDRESSES = require('../helper/coreAssets.json')
 
-  const _ = require('underscore');
-  const sdk = require('@defillama/sdk');
-  const BigNumber = require("bignumber.js");
+const { sumTokens2 } = require('../helper/unwrapLPs')
+const { staking } = require('../helper/staking');
 
-/*==================================================
-  Settings
-  ==================================================*/
+const peakAddress = '0x630d98424eFe0Ea27fB1b3Ab7741907DFFEaAd78'
 
-  const zeroAddress = '0x0000000000000000000000000000000000000000'
-  const fundContract = '0xaf5a490c02efd2dbc6c5d1af0c61d1470b5ed478'
-  const acceptableTokens = [
-    '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC
-    '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', // WBTC
-  ]
+const tokens = [
+  ADDRESSES.ethereum.USDC,
+]
 
-/*==================================================
-  TVL
-  ==================================================*/
+const funds = {
+  globalFund: '0x07cDB44fA1E7eCEb638c12A3451A3Dc9CE1400e4',
+  nftFund: '0xC120C7dB0804ae3AbEB1d5f9c9C70402347B4685',
+}
 
-  async function getFundBalances(block) {
-    let calls = [];
-    let balances = {};
+const stakingContracts = {
+  ethereum: '0x9733f49D577dA2b6705cA173382C0e3CdFff2A48',
+  bsc: '0xe9428B8acaA6b9d7C3314D093975c291Ec59A009',
+}
 
-    _.each(acceptableTokens, (tokenAddress) => {
-      calls.push({
-        target: tokenAddress,
-        params: fundContract
-      })
-    });
-
-    const balanceOfResults = await sdk.api.abi.multiCall({
-      block,
-      calls,
-      abi: 'erc20:balanceOf'
-    });
-
-    sdk.util.sumMultiBalanceOf(balances, balanceOfResults);
-
-    // Fetch ETH balance
-    let balance = (await sdk.api.eth.getBalance({target: fundContract, block})).output;
-    balances[zeroAddress] = BigNumber(balances[zeroAddress] || 0).plus(balance).toFixed();
-
-    return balances;
-  }
-
-  async function tvl(timestamp, block) {
-    const balances = await getFundBalances(block);
-    return balances;
-  }
-
-/*==================================================
-  Exports
-  ==================================================*/
-
-  module.exports = {
-    name: 'PEAKDEFI',         // Peakdefi
-    token: 'PEAK',            // PEAK token
-    category: 'assets',       // Allowed values as shown on DefiPulse: 'Derivatives', 'DEXes', 'Lending', 'Payments', 'Assets'
-    start: 1607405152,        // Dec-08-2020 05:25:52 PM +UTC
-    tvl                       // Tvl adapter
-  }
+async function tvl(timestamp, block, _, { api }) {
+  return sumTokens2({ api, owners: Object.values(funds), tokens })
+}
+module.exports = {
+  start: 1607405152,        // Dec-08-2020 05:25:52 PM +UTC
+  bsc: {
+    staking: staking(stakingContracts.bsc, peakAddress, "bsc", peakAddress),
+  },
+  ethereum: {
+    staking: staking(stakingContracts.ethereum, peakAddress),
+    tvl
+  },
+}

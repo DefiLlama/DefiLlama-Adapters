@@ -1,112 +1,69 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
-const axios = require('axios')
-const {transformFantomAddress} = require("../helper/portedTokens")
-const {unwrapUniswapLPs} = require('../helper/unwrapLPs')
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
-const masonryAddress = "0x8764DE60236C5843D9faEB1B638fbCE962773B67"
-const tombRewardAddress = "0xa7b9123f4b15fE0fF01F469ff5Eab2b41296dC0E"
-const tshareRewardAddress = "0xcc0a87f7e7c693042a9cc703661f5060c80acb43"
-const daoFundAddress = "0x0fa5a3b6f8e26a7c2c67bd205ffcfa9f89b0e8d1"
-const devWalletAdd = "0x32439F5A7Dc35590e83AAc0a80762dE27Ab76046"
-const tokensDao = ['0x04068da6c83afcfa0e13ba15a6696662335d5b75','0x4733bc45ef91cf7ccecaeedb794727075fb209f2','0x6c021ae822bea943b2e66552bde1d2696a53fbb7','0x4cdf39285d7ca8eb3f090fda0c069ba5f4145b37']
-async function tvl(timestamp, block, chainBlocks) {
 
-    const balances = {}
-    let lpPositions = []
-    let transformAddress = await transformFantomAddress()
-    let masonryTokens = (await axios.get(`https://api.covalenthq.com/v1/250/address/${masonryAddress}/balances_v2/?&key=ckey_72cd3b74b4a048c9bc671f7c5a6`)).data.data.items
-    let tombTokens = (await axios.get(`https://api.covalenthq.com/v1/250/address/${tombRewardAddress}/balances_v2/?&key=ckey_72cd3b74b4a048c9bc671f7c5a6`)).data.data.items
-    let tshareTokens = (await axios.get(`https://api.covalenthq.com/v1/250/address/${tshareRewardAddress}/balances_v2/?&key=ckey_72cd3b74b4a048c9bc671f7c5a6`)).data.data.items
-    let devWallet =  (await axios.get(`https://api.covalenthq.com/v1/250/address/${devWalletAdd}/balances_v2/?&key=ckey_72cd3b74b4a048c9bc671f7c5a6`)).data.data.items
+const tombTokenAddress = "0x6c021ae822bea943b2e66552bde1d2696a53fbb7";
+const tshareTokenAddress = "0x4cdf39285d7ca8eb3f090fda0c069ba5f4145b37";
+const tshareRewardPoolAddress = "0xcc0a87f7e7c693042a9cc703661f5060c80acb43";
+const masonryAddress = "0x8764de60236c5843d9faeb1b638fbce962773b67";
+const treasuryAddress = "0xF50c6dAAAEC271B56FCddFBC38F0b56cA45E6f0d";
+const lif3GenesisAddress = '0x072f35cfa85af2793348ccc0eaa0e16e898946a8'
+const chain = 'fantom'
 
-    const tokenBalances = (await sdk.api.abi.multiCall({
-        calls: tokensDao.map(token=>({
-            target: token,
-            params: [daoFundAddress]
-        })),
-        abi: 'erc20:balanceOf',
-        block: chainBlocks['fantom'],
-        chain: 'fantom'
-    })).output.map((bal) => bal.output);
+const ftmLPs = [
+  "0x2a651563c9d3af67ae0388a5c8f89b867038089e", // tombFtmLpAddress
+  "0x4733bc45ef91cf7ccecaeedb794727075fb209f2", //tshareFtmLpAddress
+];
 
-    tokenBalances.forEach((bal, idx) => {
-        if(tokensDao[idx] === '0x4733bc45ef91cf7ccecaeedb794727075fb209f2') {
-            lpPositions.push({
-                token: tokensDao[idx],
-                balance: bal
-            })
-        } else {
-            sdk.util.sumSingleBalance(balances, transformAddress( tokensDao[idx]), bal)
-        }
-    });
-
-    await Promise.all(
-        tombTokens.map( async (token) => {
-            if(token.contract_ticker_symbol === 'spLP')
-            {
-                const uniLocked = sdk.api.erc20.balanceOf({
-                    target: token.contract_address,
-                    owner: tombRewardAddress,
-                    block: chainBlocks['fantom'],
-                    chain: 'fantom'
-                })
-
-                lpPositions.push({
-                    token: token.contract_address,
-                    balance: (await uniLocked).output
-                })
-            }
-        }),
-        masonryTokens.map( async (token) => {
-            if(token.supports_erc) {
-                const singleTokenLocked = sdk.api.erc20.balanceOf({
-                    target: token.contract_address,
-                    owner: masonryAddress,
-                    block: chainBlocks['fantom'],
-                    chain: 'fantom'
-
-                })
-                sdk.util.sumSingleBalance(balances, transformAddress(token.contract_address), (await singleTokenLocked).output)
-            }
-        }),
-        tshareTokens.map( async (token) => {
-            if(token.contract_ticker_symbol === 'spLP')
-            {
-                const uniLocked = sdk.api.erc20.balanceOf({
-                    target: token.contract_address,
-                    owner: tshareRewardAddress,
-                    block: chainBlocks['fantom'],
-                    chain: 'fantom'
-                })
-
-                lpPositions.push({
-                    token: token.contract_address,
-                    balance: (await uniLocked).output
-                })
-            }
-        }),
-        devWallet.map( async (token) => {
-            if(token.supports_erc) {
-                const singleTokenLocked = sdk.api.erc20.balanceOf({
-                    target: token.contract_address,
-                    owner: devWalletAdd,
-                    block: chainBlocks['fantom'],
-                    chain: 'fantom'
-
-                })
-                sdk.util.sumSingleBalance(balances, transformAddress(token.contract_address), (await singleTokenLocked).output)
-            }
-        })
-    )
-
-    await unwrapUniswapLPs(balances, lpPositions, chainBlocks['fantom'], 'fantom', transformAddress)
-    return balances
+async function pool2(timestamp, _b, { [chain]: block }) {
+  return sumTokens2({
+    chain, block, owner: tshareRewardPoolAddress, tokens: ftmLPs,
+  })
 }
+
+async function staking(timestamp, _b, { [chain]: block }) {
+  const toa = [
+    [tshareTokenAddress, masonryAddress, ],
+  ]
+
+  const lif3Tokens = [
+    '0x4cdf39285d7ca8eb3f090fda0c069ba5f4145b37', // TSHARE
+    '0x6c021ae822bea943b2e66552bde1d2696a53fbb7', // TOMB
+    '0xcbe0ca46399af916784cadf5bcc3aed2052d6c45', // LSHARE
+  ]
+
+  lif3Tokens.forEach(t => toa.push([t, lif3GenesisAddress]))
+  
+  return sumTokens2({
+    chain, block, tokensAndOwners: toa,
+  })
+}
+
+async function lif3GenesisTVL(timestamp, _b, { [chain]: block }) {
+  const tokens = [
+    ADDRESSES.fantom.WFTM, // WFTM
+    ADDRESSES.fantom.USDC, // USDC
+    '0x321162Cd933E2Be498Cd2267a90534A804051b11', // BTC
+    '0x74b23882a30290451A17c44f4F05243b6b58C76d', // ETH
+    ADDRESSES.fantom.DAI, // DAI
+    ADDRESSES.fantom.MIM, // MIM
+    '0x8d7d3409881b51466b483b11ea1b8a03cded89ae', // BASED
+    '0x49c290ff692149a4e16611c694fded42c954ab7a', // BSHARE
+    '0x09e145a1d53c0045f41aeef25d8ff982ae74dd56', // Zoo
+  ]
+  
+  return sumTokens2({
+    chain, block, tokens, owner: lif3GenesisAddress,
+  })
+}
+
 
 module.exports = {
-    fantom: {
-        tvl
-    },
-    tvl
-}
-
+  methodology: "Pool2 deposits consist of TOMB/FTM and TSHARE/FTM LP tokens deposits while the staking TVL consists of the TSHARES tokens locked within the Masonry contract(0x8764de60236c5843d9faeb1b638fbce962773b67).",
+  fantom: {
+    tvl: lif3GenesisTVL,
+    pool2,
+    staking,
+  },
+};

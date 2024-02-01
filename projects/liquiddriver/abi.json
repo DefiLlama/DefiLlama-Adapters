@@ -1,54 +1,15 @@
 {
-    "poolInfo": {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "name": "poolInfo",
-        "outputs": [
-            {
-                "internalType": "contract IBEP20",
-                "name": "lpToken",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "allocPoint",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "lastRewardBlock",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "accLqdrPerShare",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint16",
-                "name": "depositFeeBP",
-                "type": "uint16"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    "poolLength": {
-        "inputs": [],
-        "name": "poolLength",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    }
+  "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardBlock, uint256 accLqdrPerShare, uint16 depositFeeBP)",
+  "poolLength": "uint256:poolLength",
+  "balanceOf": "uint256:balanceOf",
+  "lpToken": "function lpToken(uint256) view returns (address)",
+  "strategies": "function strategies(uint256) view returns (address)",
+  "get_virtual_price": "uint256:get_virtual_price",
+  "getPoolTokens": "function getPoolTokens(bytes32 poolId) view returns (address[] tokens, uint256[] balances, uint256 lastChangeBlock)",
+  "getReserves": "function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)",
+  "totalSupply": "uint256:totalSupply",
+  "exchangeRateStored": "uint256:exchangeRateStored",
+  "shadowLpToken": "address:lpToken",
+  "shadowStrategy": "address:strategy",
+  "getVirtualSupply": "uint256:getVirtualSupply"
 }

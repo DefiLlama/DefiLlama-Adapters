@@ -1,0 +1,6 @@
+{
+  "balance": "uint:balance",
+  "collateral": "address:collateral",
+  "CreateEscrow": "event CreateEscrow(address indexed user, address escrow)",
+  "AddMarket": "event AddMarket(address indexed market)"
+}

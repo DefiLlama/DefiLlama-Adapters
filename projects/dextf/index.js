@@ -1,43 +1,10 @@
-/*==================================================
-  Modules
-  ==================================================*/
+const TVLV1 = require('./v1');
+const tvlV2 = require('./v2');
+const sdk = require('@defillama/sdk');
 
-  const TVLV1 = require('./v1');
-
-  const BigNumber = require('bignumber.js');
-
-/*==================================================
-  TVL
-  ==================================================*/
-
-  async function tvl(timestamp, block) {
-    const v1 = await TVLV1(timestamp, block);
-
-    const tokenAddresses = new Set(Object.keys(v1));
-
-    const balances = (
-      Array
-        .from(tokenAddresses)
-        .reduce((accumulator, tokenAddress) => {
-          const v1Balance = new BigNumber(v1[tokenAddress] || '0');
-          accumulator[tokenAddress] = v1Balance.toFixed();
-
-          return accumulator
-        }, {})
-    );
-
-    return balances;
-  }
-
-/*==================================================
-  Exports
-  ==================================================*/
-
-  module.exports = {
-    name: 'dextf',
-    website: "https://dextf.com",
-    token: "DEXTF",
-    category: 'assets',
-    start: 1595853825,  // 27/07/2020 @ 12:43:45am (UTC)
-    tvl
-  }
+module.exports = {
+  start: 1595853825, // 27/07/2020 @ 12:43:45am (UTC)
+  ethereum: { tvl: sdk.util.sumChainTvls([TVLV1, tvlV2]) },
+  avax: { tvl: tvlV2 },
+  era: { tvl: tvlV2 }
+}

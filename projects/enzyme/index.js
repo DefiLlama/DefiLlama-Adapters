@@ -1,32 +1,32 @@
-const BigNumber = require('bignumber.js')
+const { cachedGraphQuery } = require('../helper/cache')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
-const v1TVL = require('./v1');
-const v2TVL = require('./v2');
+const config = {
+  polygon: { endpoint: 'https://api.thegraph.com/subgraphs/name/enzymefinance/enzyme-core-polygon' },
+  ethereum: { endpoint: 'https://api.thegraph.com/subgraphs/name/enzymefinance/enzyme-core' },
+}
+const query = `query get_accounts($lastId: String!) {
+  vaults(
+    first: 1000
+    where: {id_gt: $lastId}
+  ) { id trackedAssets { id } }
+}`
 
-async function tvl(timestamp, block) {
-  const [v1, v2] = await Promise.all([v1TVL(timestamp, block), v2TVL(timestamp, block)]);
-
-  const tokenAddresses = new Set(Object.keys(v1).concat(Object.keys(v2)));
-
-  const balances = (
-    Array
-      .from(tokenAddresses)
-      .reduce((accumulator, tokenAddress) => {
-        const v1Balance = new BigNumber(v1[tokenAddress] || '0');
-        const v2Balance = new BigNumber(v2[tokenAddress] || '0');
-        accumulator[tokenAddress] = v1Balance.plus(v2Balance).toFixed();
-
-        return accumulator
-      }, {})
-  );
-
-  return balances;
+async function tvl(ts, block, _, { api }) {
+  const { endpoint } = config[api.chain]
+  const vaults = await cachedGraphQuery('enzyme/' + api.chain, endpoint, query, { fetchById: true, })
+  return sumTokens2({
+    api, ownerTokens: vaults.map(i => {
+      return [i.trackedAssets.map(i => i.id), i.id]
+    })
+  })
 }
 
+
 module.exports = {
-  name: "Enzyme Finance",
-  token: "MLN",
-  category: "assets",
-  start: 1551398400, // 03/01/2019 @ 12:00am (UTC)
-  tvl
+  timetravel: false,
 };
+
+Object.keys(config).forEach(chain => {
+  module.exports[chain] = { tvl }
+})

@@ -1,35 +1,19 @@
-const { request, gql } = require("graphql-request");
-const { toUSDTBalances } = require('../helper/balances');
-
-const graphUrl = 'https://api.thegraph.com/subgraphs/name/sameepsi/quickswap'
-const graphQuery = gql`
-query get_tvl($block: Int) {
-  uniswapFactory(
-    id: "0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32",
-    block: { number: $block }
-  ) {
-    totalVolumeUSD
-    totalLiquidityUSD
-  }
-}
-`;
-
-async function tvl(timestamp, block, chainBlocks) {
-  const {uniswapFactory} = await request(
-    graphUrl,
-    graphQuery,
-    {
-      block: chainBlocks['polygon'],
-    }
-  );
-  const usdTvl = Number(uniswapFactory.totalLiquidityUSD)
-
-  return toUSDTBalances(usdTvl)
-}
+const { getChainTvl } = require('../helper/getUniSubgraphTvl');
 
 module.exports = {
+  misrepresentedTokens: true,
+  timetravel: true,
   polygon:{
-    tvl,
+    tvl: getChainTvl({
+      polygon: 'https://api.thegraph.com/subgraphs/name/sameepsi/quickswap06'
+    })('polygon')
   },
-  tvl
+    hallmarks:[
+    [1611917218, "Aavegotchi LM"],
+    [1619095618, "QUICK staking - Dragon's Liar launch"],
+    [1619611200, "DeFi season on Polygon PoS begun"],
+    [1623851400, "Iron Finance V1 collapse"],
+    [1651668418, "QUICK split by 1:1000"],
+    [1652481840, "QuickSwap’s GoDaddy Domain Hijack"]
+   ]
 }

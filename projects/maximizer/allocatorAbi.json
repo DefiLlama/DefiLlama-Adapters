@@ -1,0 +1,5 @@
+{
+  "balanceOf": "function balanceOf(address _token) view returns (uint256)",
+  "pending": "uint256:pending",
+  "pendingOf": "function pendingOf(address _token) view returns (uint256)"
+}

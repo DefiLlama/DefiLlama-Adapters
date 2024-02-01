@@ -1,0 +1,4 @@
+{
+  "virtualBalance": "uint256:virtualBalance",
+  "underlying": "address:underlying"
+}

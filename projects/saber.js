@@ -1,55 +1,56 @@
-const {getTokenBalance} = require('./helper/solana')
+const { sumTokens2, } = require("./helper/solana");
+const { getConfig } = require('./helper/cache')
+
+// The data here comes directly from
+// https://registry.saber.so/data/llama.mainnet.json
+const blacklistedTokens = new Set([
+  'JEFFSQ3s8T3wKsvp4tnRAsUBW7Cqgnf8ukBZC4C8XBm1',
+  'AEUT5uFm1D575FVCoQd5Yq891FJEqkncZUbBFoFcAhTV',
+  'FACTQhZBfRzC7A76antnpAoZtiwYmUfdAN8wz7e8rxC5',
+  'KNVfdSJyq1pRQk9AKKv1g5uyGuk6wpm4WG16Bjuwdma',
+  'EU9aLffrTckFCs16da6CppHy63fAxMPF9ih1erQTuuRt',
+  'C9xqJe3gMTUDKidZsZ6jJ7tL9zSLimDUKVpgUbLZnNbi',
+  'LUNGEjUXyP48nrC1GYY5o4eTAkwm4RdX8BxFUxWJBLB',
+  'SBTCB6pWqeDo6zGi9WVRMLCsKsN6JiR1RMUqvLtgSRv',
+  '88881Hu2jGMfCs9tMu5Rr7Ah7WBNBuXqde4nR5ZmKYYy',
+  'UST98bfV6EASdTFQrRwCBczpehdMFwYCUdLT5tEbhpW',
+  'CASHedBw9NfhsLBXq1WNVfueVznx255j8LLTScto3S6s',
+  'UST8SCn7jrqsq51odVLqcmvnC658HkqrKrPL3w2hHQ7',
+  'FTT9rBBrYwcHam4qLvkzzzhrsihYMbZ3k6wJbdoahxAt',
+  '9999j2A8sXUtHtDoQdk528oVzhaKBsXyRGZ67FKGoi7H',
+  'KUANeD8EQvwpT1W7QZDtDqctLEh2FfSTy5pThE9CogT',
+  'FTT8cGNp3rfTC6c44uPTuEFLqmsVDhjd2BhH65v2uppr',
+  'T8KdT8hDzNhbGx5sjpEUxepnbDB1TZoCa7vtC5JjsMw',
+  'FTT9GrHBVHvDeUTgLU8FxVJouGqg9uiWGmmjETdm32Sx',
+  'SL819j8K9FuFPL84UepVcFkEZqDUUvVzwDmJjCHySYj',
+  'BtX7AfzEJLnU8KQR1AgHrhGH5s2AHUTbfjhUQP8BhPvi',
+])
 
 async function tvl() {
-    const [usdcAmount, usdtAmount, paiAmount, usdcAmount_2,
-          btcAmount, renBtcAmount, pbtcAmount, renBtcAmount_2, hbtcAmount, renBtcAmount_3,
-          ustAmount, daiAmount, busdAmount, fraxAmount, usdcAmount_3,
-          wlunaAmount, renLunaAmount, husdAmount, usdcAmount_4] = await Promise.all([
-        //usdc-usdt
-        getTokenBalance("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "5C1k9yV7y4CjMnKv8eGYDgWND8P89Pdfj79Trk2qmfGo"),
-        getTokenBalance("Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", "5C1k9yV7y4CjMnKv8eGYDgWND8P89Pdfj79Trk2qmfGo"),
-        //pai-usdc pool
-        getTokenBalance("Ea5SjE2Y6yvCeW5dYTn7PYMuW5ikXkvbGdcmSnXeaLjS", "7W9KMACQT6UmjRPEUQKXyVf4NjZ9Ux4PHs1e1P5PxDtA"),
-        getTokenBalance("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "7W9KMACQT6UmjRPEUQKXyVf4NjZ9Ux4PHs1e1P5PxDtA"),
-        //BTC-renBTC & pBTC-renBTC & hBTC-renBTC pool
-        getTokenBalance("SBTCB6pWqeDo6zGi9WVRMLCsKsN6JiR1RMUqvLtgSRv", "Fekck54VF2MdesR74trJteZbiKj1TD5AVQisXr8E7fjG"),
-        getTokenBalance("CDJWUqTcYTVAKXAVXoQZFes5JUFc7owSeq7eMQcDSbo5", "Fekck54VF2MdesR74trJteZbiKj1TD5AVQisXr8E7fjG"),
-        getTokenBalance("DYDWu4hE4MN3aH897xQ3sRTs5EAjJDmQsKLNhbpUiKun", "2wszCpUdVDFrJcP79wpV3FdBmU38UC1YKuoSUBA5mhWu"),
-        getTokenBalance("CDJWUqTcYTVAKXAVXoQZFes5JUFc7owSeq7eMQcDSbo5", "2wszCpUdVDFrJcP79wpV3FdBmU38UC1YKuoSUBA5mhWu"),
-        getTokenBalance("8pBc4v9GAwCBNWPB5XKA93APexMGAS4qMr37vNke9Ref", "G4cRef4AxEjaSV32xqQzDmHqi3iz8112LQwx8oPbZhYb"),
-        getTokenBalance("CDJWUqTcYTVAKXAVXoQZFes5JUFc7owSeq7eMQcDSbo5", "D231Uoh24bXtUtWN51ZbFAFSBmGT3zuuEAHZNuCmtRjN"),
-        //UST,wDAI,BUSD,FRAX and the USDC that corresponds
-        getTokenBalance("CXLBjMMcwkc17GfJtBos6rQCo1ypeH6eDbB82Kby4MRm", "ASpJBf8HtyrNxaMqFNpjYCqi8SsJC5h56hd3HQUNk6M7"),
-        getTokenBalance("FYpdBuyAHSbdaAyD1sKkxyLWbAP8uUW9h6uvdhK74ij1", "2hAy2ubWi3PWrgxSoamzonLy1bUL3BfoqW7u7791Qpj9"),
-        getTokenBalance("AJ1W9A9N9dEMdVyoDiam2rV44gnBm2csrPDP7xqcapgX", "FDndRkBVpFoNBHY6Jhx7PgNpysvZjt3P2MZ95vmkSfWa"),
-        getTokenBalance("8L8pDf3jutdpdr4m3np68CL9ZroLActrqwxi6s9Ah5xU", "GUotxHmyJVsJYWYoL8Vo6SKQweNRUZMRQcoqDe5PswHt"),
-        getTokenBalance("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "AnKLLfpMcceM6YXtJ9nGxYekVXqfWy8WNsMZXoQTCVQk"),
-        //wLUNA-renLUNA pool
-        getTokenBalance("2Xf2yAXJfg82sWwdLUo2x9mZXy6JCdszdMZkcF1Hf4KV", "4HP9xSxLcEK64zALBCP36GdfDLrMXorVk4X6DyLrBjbp"),
-        getTokenBalance("KUANeD8EQvwpT1W7QZDtDqctLEh2FfSTy5pThE9CogT", "4HP9xSxLcEK64zALBCP36GdfDLrMXorVk4X6DyLrBjbp"),
-        //HUSD-USDC pool
-        getTokenBalance("BybpSTBoZHsmKnfxYG47GDhVPKrnEKX31CScShbrzUhX", "ELnY6YAb1oSPGuARAV8rBJq44AXgT69GJhvWNfuabq9B"),
-        getTokenBalance("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "G4gRGymKo7MGzGZup12JS39YVCvy8YMM6KY9AmcKi5iw"),
+  const saberPools = await getConfig('saber', "https://registry.saber.so/data/llama.mainnet.json");
 
+  function isValidToken(token) {
+    return !blacklistedTokens.has(token)
+  }
 
-    ])
-    return {
-        'usd-coin': usdcAmount + usdcAmount_2 + usdcAmount_3 + usdcAmount_4,
-        'renbtc': renBtcAmount + renBtcAmount_2 + renBtcAmount_3,
-        'terra-luna': wlunaAmount + renLunaAmount,
-        'tether': usdtAmount,
-        'terrausd': ustAmount,
-        'dai': daiAmount,
-        'busd': busdAmount,
-        'frax': fraxAmount,
-        'usdp': paiAmount,
-        'ptokens-btc': pbtcAmount,
-        'bitcoin': btcAmount,
-        'huobi-btc': hbtcAmount,
-        'husd': husdAmount
-    }
+  const tokenAccounts = saberPools.map(i => {
+    // filter out cashio dollars
+    const res = []
+    if (isValidToken(i.tokenA))
+      res.push(i.reserveA)
+    if (isValidToken(i.tokenB))
+      res.push(i.reserveB)
+    return res
+  }).flat()
+  return sumTokens2({ tokenAccounts, })
 }
 
 module.exports = {
-    tvl
-}
+  hallmarks: [
+    [1667865600, "FTX collapse"]
+  ],
+  timetravel: false,
+  solana: { tvl },
+  methodology:
+    'To obtain the TVL of Saber we make on-chain calls using the function getTokenBalance() that uses the address of the token and the address of the contract where the tokens are found. TVL is calculated using the list of pool addresses found under the "Pools" button of the Saber App. These pools addresses are hard-coded. Making these calls returns the amount of tokens held in each contract. We then use Coingecko to get the price of each token in USD and export the sum of all tokens. "USDP" is used to price the stablecoin "PAI" since it has not been listed on Coingecko.',
+};

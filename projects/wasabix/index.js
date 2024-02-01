@@ -1,16 +1,14 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const BigNumber = require("bignumber.js");
-const _ = require("lodash");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs")
-const utils = require('../helper/utils');
-const getReserves = require('../helper/abis/getReserves.json');
-const { transformBscAddress } = require('../helper/portedTokens');
+const { sumTokens } = require("../helper/unwrapLPs")
+const { stakings } = require('../helper/staking')
+const { pool2s } = require('../helper/pool2')
 
 const tokens = {
   dai: {
     token:'DAI',
-    address:'0x6b175474e89094c44da98b954eedeac495271d0f',
+    address:ADDRESSES.ethereum.DAI,
     decimals:18,
     correspondingMintableToken: 'waUSD'
   },
@@ -22,13 +20,13 @@ const tokens = {
   },
   wbtc: {
     token:'wBTC',
-    address:'0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
+    address:ADDRESSES.ethereum.WBTC,
     decimals:8,
     correspondingMintableToken: 'waBTC'
   },
   lusd: {
     token:'LUSD',
-    address:'0x5f98805a4e8be255a32880fdec7f6728c6568ba0',
+    address:ADDRESSES.ethereum.LUSD,
     decimals:18,
     correspondingMintableToken: 'waLUSD'
   },
@@ -51,7 +49,7 @@ const tokens = {
   },
   weth: {
     token:'WETH',
-    address:'0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+    address:ADDRESSES.ethereum.WETH,
     decimals:18,
     correspondingMintableToken: 'waETH'
   },
@@ -65,6 +63,11 @@ const tokens = {
     token:'crv',
     address:'0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490',
     decimals:18
+  },
+  usdc: {
+    token: 'usdc',
+    address: ADDRESSES.ethereum.USDC,
+    decimals: 6
   }
 }
 
@@ -110,6 +113,9 @@ const contracts = {
     waeth: {
       address: '0x7Ee64F74792c307446CD92D23E551EfAE3172A28'
     }
+  },
+  stakingPoolsV4: {
+    address: '0x47e3492439528fEF29bc5Da55Aa49ED0EFA15c6E'
   },
   stakingPools: {
     address: '0x0EdA8090E9A86668484915e5E1856E83480FA010'
@@ -181,62 +187,96 @@ const collectors = [
   }
 ]
 
+const contractsPolygon = {
+  vault: {
+    pusd: {
+      polyquity: {
+        address: '0x4A8086416c824b03D682D6bA117f2eC759c4a085'
+      }
+    }
+  },
+  transmuter: {
+    wapusd: {
+      address: '0xBBB26ccd60d1444280875c2f9F22bD8c910ec2Eb'
+    }
+  },
+  stakingPools: {
+    address: '0x0EdA8090E9A86668484915e5E1856E83480FA010'
+  },
+  votingEscrow: {
+    address: '0x896e145568624a498c5a909187363AE947631503',
+  },
+  wasabiUSDCLp: {
+    address: '0x89e110150fb7df2f20cf79201b81877baffc3797'
+  },
+  wapusdPusdSLp: {
+    address: '0xa982a2a9EbE0623de7350c228fc5335a413AD5C4'
+  }
+}
+
+const tokensPolygon = {
+  wasabi: {
+    token: 'WASABI',
+    address: '0xc2db4c131ADaF01c15a1DB654c040c8578929D55',
+    decimals: 18
+  },
+  usdc: {
+    token: 'USDC',
+    address: ADDRESSES.polygon.USDC,
+    decimals: 6,
+  },
+  pusd: {
+    token: 'PUSD',
+    address: '0x9af3b7dc29d3c4b1a5731408b6a9656fa7ac3b72',
+    decimals: 18,
+  },
+  wapusd: {
+    token: 'waPUSD',
+    address: '0x3d244d67D680CaDcccf34F8F996CEA777B6d9FFE',
+    decimals: 18,
+  }
+}
+
+const vaultsPolygon = [
+  { 
+    name: 'pusd',
+    token: tokensPolygon.pusd.address,
+    pools: [
+      {name: 'polyquity', address: contractsPolygon.vault.pusd.polyquity.address},
+    ]
+  }
+]
+
+const collectorsPolygon = [
+  {
+    name: 'wapusd',
+    token: tokensPolygon['pusd'].address,
+    pool: contractsPolygon.transmuter['wapusd'].address
+  },
+]
+
 async function eth(timestamp, block) {
     let balances = {};
 
     const ethBlock = block
 
-    // locker
-    const wasabiAddr = tokens.wasabi.address
-    let tokenStaked = await sdk.api.erc20.balanceOf({
-        owner: contracts.votingEscrow.address,
-        target: wasabiAddr,
-        ethBlock
-    });
-    sdk.util.sumSingleBalance(balances, wasabiAddr, tokenStaked.output);
+    await sumTokens(balances, [
+      tokens.dai.address,
+      tokens.crv.address,
+      tokens.wbtc.address,
+      tokens.lusd.address,
+      tokens.weth.address
+    ].map(t => [t, contracts.stakingPools.address]), block)
 
-    // farm pools
-    // 0: wasabi
-    // 1: wausd
-    // 4: lp
-    // 5: 3crv
-    // 7: wabtc
-    // 8: waLUSD
-    // 9: waETH
 
-    const poolIds = [0,1,4,5,7,8,9]
-    const poolMapping = {
-      0: tokens.wasabi.address,
-      1: tokens.dai.address,
-      4: contracts.wasabiWETHLp.address,
-      5: tokens.crv.address,
-      7: tokens.wbtc.address,
-      8: tokens.lusd.address,
-      9: tokens.weth.address
-    } 
-    const calls = _.map(poolIds, function(pid) {
-      return {target: contracts.stakingPools.address, params: [pid]}
-    });
-    const { output: poolsInfo } = await sdk.api.abi.multiCall({
-      calls: calls,
-      abi: abi['getPoolTotalDeposited'],
-    })
-
-    for(let pool of poolsInfo) {
-      let pid = pool.input.params[0];
-      let totalDeposited = pool.output
-      
-      if(pid != 4) {
-        sdk.util.sumSingleBalance(balances, poolMapping[pid], totalDeposited);  
-      } 
-      else {
-        await unwrapUniswapLPs(balances, [{
-          token: poolMapping[pid],
-          balance: totalDeposited
-        }], block)
-      }
-    }
-    
+    await sumTokens(balances, [
+      tokens.dai.address,
+      tokens.crv.address,
+      tokens.wbtc.address,
+      tokens.lusd.address,
+      tokens.weth.address
+    ].map(t => [t, contracts.stakingPoolsV4.address]), block)
+   
     // vaults
 
     let vaultCalls = []
@@ -246,32 +286,19 @@ async function eth(timestamp, block) {
         let pools = vault.pools
 
         for(let pool of pools) {
-          let address = pool.address
           vaultCalls.push({target: pool.address, token: token})
         }
     }
 
-    const { output: vaultsInfo } = await sdk.api.abi.multiCall({
+    const vaultsInfo = await sdk.api.abi.multiCall({
       calls: vaultCalls,
       abi: abi['totalDeposited']
     })
 
-    for(let vault of vaultsInfo) {
-      let totalDeposited = vault.output
-      let poolAddr = vault.input.target
-      sdk.util.sumSingleBalance(balances, _.find(vaultCalls, {target: poolAddr}).token, totalDeposited); 
-    }
+    sdk.util.sumMultiBalanceOf(balances, vaultsInfo)
 
-    //collectors
-    for(let collector of collectors) {
-      let tokenLocked = await sdk.api.erc20.balanceOf({
-          owner: collector.pool,
-          target: collector.token,
-          ethBlock
-      });
-      sdk.util.sumSingleBalance(balances, collector.token, tokenLocked.output);
-    }
-    return balances
+    const toa = collectors.map(c => [c.token, c.pool])
+    return sumTokens(balances, toa, ethBlock)
 }
 
 const contractsBSC = {
@@ -309,7 +336,7 @@ const tokensBSC = {
   },
   wbnb: {
     token:'WBNB',
-    address:'0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
+    address:ADDRESSES.bsc.WBNB,
     decimals:18,
     correspondingMintableToken: 'waBNB'
   },
@@ -321,7 +348,7 @@ const tokensBSC = {
   },
   busd: {
     token: 'BUSD',
-    address: '0xe9e7cea3dedca5984780bafc599bd69add087d56',
+    address: ADDRESSES.bsc.BUSD,
     decimals: 18,
     correspondingMintableToken: 'waBUSD'
   }
@@ -345,111 +372,16 @@ const collectorsBSC = [
   },
 ]
 
-function getBSCAddress(address) {
-    return `bsc:${address}`
-}
-
-async function getPrices() {
-  const priceTokens = ['wbnb']
-  const prices = await utils.getPricesfromString(priceTokens.toString());
-  return prices
-}
-
-async function getWasabiPrice(wbnbPrice, chainBlocks) {
-  return new Promise(async (resolve, reject) => {
-    let reserves = await sdk.api.abi.call({
-      abi: getReserves,
-      target: contractsBSC.wasabiWBNBLp.address,
-      chain: "bsc",
-      block: chainBlocks["bsc"],
-    })
-
-    const wasabiPrice = BigNumber(reserves.output._reserve1).div(BigNumber(reserves.output._reserve0)).times(BigNumber(wbnbPrice))
-    resolve(wasabiPrice)
-  });
-}
+const busd = 'bsc:' + ADDRESSES.bsc.BUSD
 
 async function bsc(timestamp, block, chainBlocks) {
     let balances = {};
-    let tvl = 0;
 
-    //locker
-    const wasabiAddr = tokensBSC.wasabi.address
-    const tokenStaked = await sdk.api.erc20.balanceOf({
-        owner: contractsBSC.votingEscrow.address,
-        target: wasabiAddr,
-        chain: 'bsc',
-        block: chainBlocks["bsc"],
-    });
-    
-    // sdk.util.sumSingleBalance(balances, getBSCAddress(wasabiAddr), tokenStaked.output);
+    await sumTokens(balances, [
+      tokensBSC.busd.address,
+    ].map(t => [t, contractsBSC.stakingPools.address]), chainBlocks.bsc, 'bsc')
+   
 
-    const prices = await getPrices()
-    const wasabiPrice = await getWasabiPrice(prices.data.wbnb.usd, chainBlocks)
-    const lockerTvl = BigNumber(tokenStaked.output).div(Math.pow(10, 18)) * wasabiPrice
-
-    tvl += lockerTvl
-
-    // farm pools
-    // pool 0 (WASABI-BNB PLP)
-    // pool 1 (waBUSD)
-    // pool 2 (waBUSD-BUSD PLP)
-
-    const poolIds = [0,1,2]
-    const poolMapping = {
-      0: contractsBSC.wasabiWBNBLp.address,
-      1: tokensBSC.busd.address,
-      2: tokensBSC.busd.address,
-    } 
-    const calls = _.map(poolIds, function(pid) {
-      return {target: contractsBSC.stakingPools.address, params: [pid]}
-    });
-    const { output: poolsInfo } = await sdk.api.abi.multiCall({
-      calls: calls,
-      abi: abi['poolInfo'],
-      chain: 'bsc',
-      block: chainBlocks["bsc"],
-    })
-
-    const transformAdress = await transformBscAddress()
-
-    let poolTvl = 0
-    for(let pool of poolsInfo) {
-      let pid = pool.input.params[0];
-      let totalDeposited = pool.output[5]
-
-      // if(pid != 0) {
-      //   sdk.util.sumSingleBalance(balances, transformAdress(poolMapping[pid]), totalDeposited);  
-      // } 
-      // else {
-      //   await unwrapUniswapLPs(balances, [{
-      //     token: poolMapping[pid],
-      //     balance: totalDeposited
-      //   }], chainBlocks["bsc"], 'bsc', transformAdress)
-      // }
-
-      if(pid == 0) {
-        let lpBalances = {}
-        await unwrapUniswapLPs(lpBalances, [{
-          token: poolMapping[pid],
-          balance: totalDeposited
-        }], chainBlocks["bsc"], 'bsc', transformAdress)
-
-        const wbnbDeposited = lpBalances[getBSCAddress(tokensBSC.wbnb.address)]
-        
-        poolTvl += BigNumber(wbnbDeposited).div(Math.pow(10, 18)).toNumber() * prices.data.wbnb.usd * 2
-      }
-      else if (pid == 1) {
-        poolTvl += BigNumber(totalDeposited).div(Math.pow(10, 18)).toNumber()
-      }
-      else if (pid == 2){
-        poolTvl += BigNumber(totalDeposited*2).div(Math.pow(10, 18)).toNumber()
-      }
-    }
-
-    // console.log('poolTvl', poolTvl)
-    tvl += poolTvl
-    
     // vaults
     let vaultTvl = 0
     let vaultCalls = []
@@ -469,50 +401,98 @@ async function bsc(timestamp, block, chainBlocks) {
       chain: 'bsc',
       block: chainBlocks["bsc"],
     })
-
     for(let vault of vaultsInfo) {
       let totalDeposited = vault.output
-      vaultTvl += BigNumber(totalDeposited).div(Math.pow(10, 18)).toNumber()
-      // let poolAddr = vault.input.target
-      // sdk.util.sumSingleBalance(balances, _.find(vaultCalls, {target: poolAddr}).token, totalDeposited); 
+      sdk.util.sumSingleBalance(balances, busd, totalDeposited)
     }
 
-    // console.log('vaultTvl', vaultTvl)
-    tvl += vaultTvl
-
     //collectors
-    let collectorTvl = 0
-
     for(let collector of collectorsBSC) {
       let tokenLocked = await sdk.api.erc20.balanceOf({
           owner: collector.pool,
           target: collector.token,
           chain: 'bsc',
           block: chainBlocks["bsc"],
-          // ethBlock
       });
       let totalDeposited = tokenLocked.output
-      collectorTvl += BigNumber(totalDeposited).div(Math.pow(10, 18)).toNumber()
-      // sdk.util.sumSingleBalance(balances, collector.token, tokenLocked.output);
+      sdk.util.sumSingleBalance(balances, busd, totalDeposited)
     }
-    // console.log('collectorTvl', collectorTvl)
-    tvl += collectorTvl
 
-    console.log('bsc tvl', tvl)
+    return balances
+}
 
-    return {
-      [getBSCAddress(tokensBSC.busd.address)]: BigNumber(tvl)
-        .multipliedBy(10 ** 18)
-        .toFixed(0),
-    };
+async function polygon(timestamp, block, chainBlocks) {
+  let balances = {};
+
+  await sumTokens(balances, [
+    tokensPolygon.pusd.address,
+  ].map(t => [t, contractsPolygon.stakingPools.address]), chainBlocks.polygon, 'polygon')
+ 
+  // vaults
+  let vaultCalls = []
+
+  for (let vault of vaultsPolygon) {
+      let token = vault.token
+      let pools = vault.pools
+
+      for(let pool of pools) {
+        vaultCalls.push({target: pool.address, token: token})
+      }
+  }
+
+  const { output: vaultsInfo } = await sdk.api.abi.multiCall({
+    calls: vaultCalls,
+    abi: abi['totalDeposited'],
+    chain: 'polygon',
+    block: chainBlocks["polygon"],
+  })
+
+  for(let vault of vaultsInfo) {
+    let totalDeposited = vault.output
+    sdk.util.sumSingleBalance(balances, busd, totalDeposited)
+    // let poolAddr = vault.input.target
+    // sdk.util.sumSingleBalance(balances, _.find(vaultCalls, {target: poolAddr}).token, totalDeposited); 
+  }
+
+  //collectors
+
+  for(let collector of collectorsPolygon) {
+    let tokenLocked = await sdk.api.erc20.balanceOf({
+        owner: collector.pool,
+        target: collector.token,
+        chain: 'polygon',
+        block: chainBlocks["polygon"],
+        // ethBlock
+    });
+    let totalDeposited = tokenLocked.output
+    sdk.util.sumSingleBalance(balances, busd, totalDeposited)
+  }
+
+  return balances
 }
 
 module.exports = {
     ethereum:{
-        tvl: eth
+        tvl: eth,
+        // locker    
+        staking: stakings([contracts.votingEscrow.address, contracts.stakingPools.address], tokens.wasabi.address),
+        pool2: pool2s([
+          contracts.stakingPools.address,
+          contracts.stakingPoolsV4.address,
+        ], [contracts.wasabiWETHLp.address]),
     },
     bsc:{
-        tvl: bsc
+        tvl: bsc,
+        staking: stakings([contractsBSC.votingEscrow.address], tokensBSC.wasabi.address, 'bsc'),
+        pool2: pool2s([
+          contractsBSC.stakingPools.address,
+        ], [contractsBSC.wasabiWBNBLp.address, contractsBSC.wabusdBusdLp.address], 'bsc'),
     },
-    tvl: sdk.util.sumChainTvls([eth,bsc])
+    polygon:{
+        tvl: polygon,
+        staking: stakings([contractsPolygon.votingEscrow.address], tokensPolygon.wasabi.address, 'polygon'),
+        pool2: pool2s([
+          contractsPolygon.stakingPools.address,
+        ], [contractsPolygon.wasabiUSDCLp.address, contractsPolygon.wapusdPusdSLp.address], 'polygon'),
+    },
 }

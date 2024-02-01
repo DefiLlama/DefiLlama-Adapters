@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
-const _ = require("underscore");
-const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+
+const ZERO_ADDRESS = ADDRESSES.null;
 const contracts = [
   "0xE446158503d0F5c70579FCCE774C00E8Db544559", // aggregator1
   "0x5F3b6405dfcF8b21f8dEB4eb6DA44a89a652aCb0", // aggregator2
@@ -19,16 +20,13 @@ async function tvl(timestamp, block) {
     block: block,
   });
   let balance = new BigNumber(0);
-  _.forEach(ethBalances.output, (ethBalance) => {
+  ethBalances.output.forEach((ethBalance) => {
     balance = balance.plus(ethBalance.balance);
   });
   return { [ZERO_ADDRESS]: balance.toFixed() };
 }
 
 module.exports = {
-  name: "Lien",
-  token: "LIEN",
-  category: "Derivatives",
   start: 1619798400, // 30/4/2021 @ 04:00PM (UTC)
-  tvl,
+  ethereum: { tvl }
 };

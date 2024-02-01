@@ -1,0 +1,3 @@
+{
+  "stakeableTokens": "function stakeableTokens(address) view returns (uint256 totalValueLocked, uint256 weight, bool active)"
+}

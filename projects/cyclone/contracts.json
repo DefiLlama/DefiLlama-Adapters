@@ -1,0 +1,87 @@
+{
+    "ethereum": {
+        "pool2": {
+            "address": "0xdc71bc29d12960a3ee5452fac6f033a1b8e756fb",
+            "token": "0x37d9c7f451e5c619a7d4ca01e06761eb7dae6f89"
+        },
+        "latte": {
+            "address": "0xd619c8da0a58b63be7fa69b4cc648916fe95fa1b",
+            "token": ""
+        },
+        "doppio": {
+            "address": "0x52609307f2f6c43b7df63364ef65718d299ac246",
+            "token": ""
+        },
+        "arabica": {
+            "address": "0xb6e9ea062a7719846bc9e3e3ae8712e74faad376",
+            "token": ""
+        },
+        "espresso": {
+            "address": "0xa38b6742cef9573f7f97c387278fa31482539c3d",
+            "token": "0xdac17f958d2ee523a2206206994597c13d831ec7"
+        },
+        "coldbrew": {
+            "address": "0x09f03488291063a8f3c67d2aab7002419d11c113",
+            "token": "0x77777feddddffc19ff86db637967013e6c6a116c"
+        }
+    }, 
+    "bsc": {
+        "pool2": {
+            "address": "0x92a737097d711bec4c31351997254e98e5f0d430",
+            "token": "0xecf30fbecfa642012f54212a3be92eef1e48edac"
+        },
+        "staking": {
+            "address": "0xD90a6BF8439EF7214cF00Da83E926068b6a507eC",
+            "token": "0x810ee35443639348adbbc467b33310d2ab43c168"
+        },"C3PO": {
+            "address": "0x66b5e322dc31f8c7a33ffd23975163795f8d16c7",
+            "token": ""
+        },"BB8": {
+            "address": "0x79459751F6882868D1299Bfa412428488b434541",
+            "token": "0x9678e42cebeb63f23197d726b29b1cb20d0064e5"
+        },"R2D2": {
+            "address": "0xbe19d541389c9d3e03efc08f3d5008e8c9cc42a5",
+            "token": "0xe9e7cea3dedca5984780bafc599bd69add087d56"
+        }
+    }, 
+    "iotex": {
+        "pool2": {
+            "address": "0xacf00a84559f536ba64064a4c73b74698013ef36",
+            "token": "0x1381b170681074fedaf1c4e35be1880bc4e85c4a"
+        },
+        "staking": {
+            "address": "0xb80d026a7faa8c35def0e430f9b36163ac949c19",
+            "token": "0x4d7b88403aa2f502bf289584160db01ca442426c"
+        },
+        "zm": {
+            "address": "0xfa886fe8d27b284525974ddc6e2c0cb858a57251",
+            "token": "0xf87aed04889a1dd0159d9c22b0d57b345ab16ddd"
+        },
+        "mcn": {
+            "address": "0x0ad3bee1ee270339c921fb20686bfd90245ee5d8",
+            "token": "0x3fe04320885e6124231254c802004871be681218"
+        },
+        "busd": {
+            "address": "0xdfbdf24b8019ef44f321de54d456ddd216e73163",
+            "token": "0x84abcb2832be606341a50128aeb1db43aa017449"
+        }
+    },
+    "polygon": {
+        "pool2": {
+            "address": "0xa8c187d8773bc9e49a10554715ff49bdcf39d55d",
+            "token": "0x6eA88502BC127EF1a7f45fAC6B7168fc0633Ba51"
+        },
+        "octagon": {
+            "address": "0x3E2c1b4dfA868A6ffD8CdC20D7BFa9Abb4462284",
+            "token": "0x831753dd7087cac61ab5644b308642cc1c33dc13"
+        },
+        "pentagon": {
+            "address": "0x87059fDff1dC655ACf8652bA530d89f38de22f16",
+            "token": ""
+        },
+        "hexagon": {
+            "address": "0xb5AEE5f2743A9f4abcE9C964d1530e3E96725Be7",
+            "token": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174"
+        }
+    }
+}

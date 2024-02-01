@@ -1,0 +1,4 @@
+{
+  "getPrice": "function getPrice(address asset) view returns (uint256)",
+  "getTotal": "uint256:getTotalCollateral"
+}

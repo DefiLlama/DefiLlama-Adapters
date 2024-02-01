@@ -1,11 +1,13 @@
 const sdk = require('@defillama/sdk')
-const abi = require('./abi.json')
-const potABI = require('./pot_abi.json')
+const abi = 'function tvlOfPool(address pool) view returns (uint256 tvl)'
+const potABI = "uint256:totalValueInUSD"
+const leverageABI = 'function getVaultState() view returns (tuple(uint256 balance, uint256 tvl, uint256 debtRatioLimit))'
 const BigNumber = require('bignumber.js')
 
 const dashboard = '0xb3C96d3C3d643c2318E4CDD0a9A48aF53131F5f4'
 const pools = [
     '0xb037581cF0cE10b04C4735443d95e0C93db5d940',
+    '0x4fd0143a3DA1E4BA762D42fF53BE5Fab633e014D',
     //'0x69FF781Cf86d42af9Bf93c06B8bE0F16a2905cBC', // pool2
     '0xCADc8CB26c8C7cB46500E61171b5F27e9bd7889D',
     '0xEDfcB78e73f7bA6aD2D829bf5D462a0924da28eD',
@@ -49,13 +51,41 @@ const pools = [
     '0xc1d9Ead28Fc4CB9658C62594A695a53bfD306f77',
     '0xf92f12b505594EedF65CB8B973819dfA242c61D7',
     '0xFeED0bb79035c61CF6519795a02a6a2A69A11aAC',
-    '0xD2220455E760Fb27ED8aaA6F9C7E143A687BB0aD'
-    
+    '0xD2220455E760Fb27ED8aaA6F9C7E143A687BB0aD',
+    '0xBdd478cF8313240EfDC54108A2ed389d450cD702',
+
+    // // qSAV - disabling these vaults because qubit was hacked and these tokens are no longer there
+    // '0xDe80CE223C9f1D1db0BC8D5bDD88E03f6882eEA3',   // CAKE
+    // '0x67c42b3dAC9526efCBFeeb2FC1C56Cf77F494e46',   // BNB
+    // '0x4FC359E39A99acFDF44c794eF702fab93067B2A6',   // BUSD
+    // '0x53fd20bc5D4d222764B70817810494F1D06f3403',   // USDT
+    // '0x401c22395200Caaae87f8aB9f9446636Dde38c9A',   // DAI
+    // '0xEe3Ee0BEb7919eDD31a4506d7d4C93940f2ACED6',   // USDC
+    // '0xB9Cf0d36e82C2a1b46eD51e44dC0a4B0100D6d74',   // BTCB
+    // '0x4b107b794c9Bbfd83E5Ac9E8Dd59F918510C5729',   // ETH
+    // '0x33F93897e914a7482A262Ef10A94319840EB8D05',   // bQBT
+    // '0xE6b3fb8E6c7B9d7fBf3BFD1a50ac8201c2fa5a8F',   // bQBT-BNB
+
+    // vSAV v2
+    '0xA555443A5eE77f334648eF4F557C0B5070fcb4de',
+    '0xf70e331AcDDfC2a5cd169B8B3D1cC02951E8dE85',
+    '0xa08a2664BD2124dD011224E1cb4fd6E263E3A208',
+    '0x7cD22bd5B7a45F952a4f375AA6d5bf08538ed03C',
+    '0x7d2De1362dc32c1974d3A7CBBbd6Ad898E7B3EE7',
 ]
 
 const pots = [
     '0xa9b005d891414E0d6E0353490e099D0CA4C778Fc',
     '0xD601966588E812218a45f3ec06D3A89602348183'
+]
+
+const leveragedPools = [
+    '0xfb8358f34133c275B0393E3883BDd8764Cb610DE',
+    '0xD75f3E4e8ed51ec98ED57386Cb47DF457308Ad08',
+    '0xb04D1A8266Ff97Ee9f48d48Ad2F2868b77F1C668',
+    '0x12B7b4BEc740A7F438367ff3117253507eF605A7',
+    '0xe0fB5Cd342BCA2229F413DA7a2684506b0397fF3',
+    '0x8626Af388F0B69BB15C36422cE67f9638BA2B800'
 ]
 
 const dashboardPolygon = '0xFA71FD547A6654b80c47DC0CE16EA46cECf93C02'
@@ -64,6 +94,7 @@ const poolsPolygon = [
     '0x10C8CFCa4953Bc554e71ddE3Fa19c335e163D7Ac',
     '0x7a526d4679cDe16641411cA813eAf7B33422501D',
     '0x6b86aB330F18E8FcC4FB214C91b1080577df3513',
+    '0xe167Cf12a60f606C4C83bc34F09C4f9D9453690e',
     // qPool
     '0x4beB900C3a642c054CA57EfCA7090464082e904F',
     '0x54E1feE2182d0d96D0D8e592CbFd4debC8EEf7Df',
@@ -86,7 +117,7 @@ const poolsPolygon = [
     '0xdF0BE663C84322f55aD7b40A4120CdECBa4C4B45',
     '0x51C30ee94052baAABA60Db6b931c1f4657FFe174',
     '0x39D28Db6742a457BCfB927D4539bEea55Dc5Dd87',
-    
+
 ]
 
 const ZERO = new BigNumber(0)
@@ -103,7 +134,7 @@ async function bsc(timestamp, ethBlock, chainBlock) {
         abi: abi,
         chain: 'bsc'
     })).output.reduce((tvl, call) => tvl.plus(new BigNumber(call.output)), ZERO)
-    
+
     const pot_total = (await sdk.api.abi.multiCall({
         calls: pots.map( address => ({
             target: address
@@ -112,11 +143,18 @@ async function bsc(timestamp, ethBlock, chainBlock) {
         abi: potABI,
         chain: 'bsc'
     })).output.reduce((tvl, call) => tvl.plus(new BigNumber(call.output)), ZERO)
-    
 
-        
+    const leverage_total = (await sdk.api.abi.multiCall({
+        calls: leveragedPools.map( address => ({
+            target: address
+        })),
+        block,
+        abi: leverageABI,
+        chain: 'bsc'
+    })).output.reduce((tvl, call) => tvl.plus(new BigNumber(call.output[1])), ZERO)
+
     return {
-        'tether': total.plus(pot_total).dividedBy(ETHER).toNumber()
+        'tether': total.plus(pot_total).plus(leverage_total).dividedBy(ETHER).toNumber()
     }
 }
 
@@ -139,11 +177,14 @@ async function polygon(timestamp, ethBlock, chainBlock) {
 
 
 module.exports = {
+    misrepresentedTokens: true,
     bsc:{
         tvl: bsc
     },
     polygon:{
         tvl:polygon
     },
-    tvl: sdk.util.sumChainTvls([bsc, polygon])
+    hallmarks: [
+        [1621395248, 'Flash Loan Attack'],
+    ],
 }

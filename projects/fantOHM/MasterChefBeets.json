@@ -1,0 +1,4 @@
+{
+  "userInfo": "function userInfo(uint256, address) view returns (uint256 amount, uint256 rewardDebt)",
+  "pendingBeets": "function pendingBeets(uint256 _pid, address _user) view returns (uint256 pending)"
+}

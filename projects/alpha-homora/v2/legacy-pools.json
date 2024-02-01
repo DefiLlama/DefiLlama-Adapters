@@ -1,0 +1,67 @@
+[
+    {
+      "exchange": "Uniswap",
+      "name": "UNI/ETH",
+      "tokens": [
+        "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
+        "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+      ],
+      "lpTokenAddress": "0xd3d2e2692501a5c9ca623199d38826e513033a17",
+      "type": "Liquidity Providing",
+      "color": "#f9eaf4",
+      "wTokenAddress": "0xe28d9df7718b0b5ba69e01073fe82254a9ed2f98"
+    },
+    {
+      "exchange": "Sushiswap",
+      "name": "SUSHI/ETH",
+      "tokens": [
+        "0x6b3595068778dd592e39a122f4f5a5cf09c90fe2",
+        "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+      ],
+      "lpTokenAddress": "0x795065dcc9f64b5614c407a6efdc400da6221fb0",
+      "type": "Yield Farming",
+      "color": "#e75aa5",
+      "wTokenAddress": "0x373ae78a14577682591e088f2e78ef1417612c68",
+      "pid": 12,
+      "rewardSymbol": "SUSHI",
+      "rewardAddress": "0x6b3595068778dd592e39a122f4f5a5cf09c90fe2"
+    },
+    {
+      "key": "wstaking-0xc4635854480fff80f742645da0310e9e59795c63",
+      "exchange": "Balancer",
+      "name": "PERP/USDC (80-20)",
+      "tokens": [
+        "0xbc396689893d065f41bc2c6ecbee5e0085233447",
+        "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+      ],
+      "lpTokenAddress": "0xf54025af2dc86809be1153c1f20d77adb7e8ecf4",
+      "type": "Yield Farming",
+      "color": "#195D72",
+      "wTokenAddress": "0xc4635854480fff80f742645da0310e9e59795c63",
+      "rewardSymbol": "PERP",
+      "rewardAddress": "0xbc396689893d065f41bc2c6ecbee5e0085233447",
+      "isPoolAvailableV1": false,
+      "isFarmingDisabled": true
+    },
+    {
+      "exchange": "Curve",
+      "name": "3pool",
+      "logo": "/static/tokens/3crv.png",
+      "tokens": [
+        "0x6b175474e89094c44da98b954eedeac495271d0f",
+        "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        "0xdac17f958d2ee523a2206206994597c13d831ec7"
+      ],
+      "lpTokenAddress": "0x6c3f90f043a72fa612cbac8115ee7e52bde6e490",
+      "poolAddress": "0xbebc44782c7db0a1a60cb6fe97d0b483032ff1c7",
+      "type": "Yield Farming",
+      "color": "#cd5d7d",
+      "wTokenAddress": "0xfdb4f97953150e47c8606758c13e70b5a789a7ec",
+      "pid": 0,
+      "gid": 0,
+      "curveGaugeAddress": "0xbfcf63294ad7105dea65aa58f8ae5be2d9d0952a",
+      "curveGaugeControllerAddress": "0x2f50d538606fa9edd2b11e2446beb18c9d5846bb",
+      "curveRawStatsApiUrl": "https://stats.curve.fi/raw-stats/3pool-1440m.json",
+      "isPoolAvailableV1": false
+    }
+  ]

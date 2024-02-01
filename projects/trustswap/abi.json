@@ -1,0 +1,4 @@
+{
+  "token": "address:token",
+  "currentTotalStake": "uint256:currentTotalStake"
+}

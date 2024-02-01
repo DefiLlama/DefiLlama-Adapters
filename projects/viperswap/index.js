@@ -1,39 +1,18 @@
-const { request, gql } = require("graphql-request");
-const sdk = require('@defillama/sdk');
-const { toUSDTBalances } = require('../helper/balances');
+const ADDRESSES = require('../helper/coreAssets.json')
+const { uniTvlExport } = require("../helper/calculateUniTvl");
+const { staking } = require("../helper/staking");
 
-const graphUrl = 'https://graph.viper.exchange/subgraphs/name/venomprotocol/venomswap'
-const graphQuery = gql`
-query get_tvl($block: Int) {
-  uniswapFactory(
-    id: "0x7d02c116b98d0965ba7b642ace0183ad8b8d2196",
-    block: { number: $block }
-  ) {
-    totalLiquidityUSD
-  },
-}
-`;
+const factory = "0x7d02c116b98d0965ba7b642ace0183ad8b8d2196";
+const viper = ADDRESSES.harmony.VIPER;
+const xviper = "0xe064a68994e9380250cfee3e8c0e2ac5c0924548";
 
-async function tvl(timestamp) {
-  const {block} = await sdk.api.util.lookupBlock(timestamp,{
-    chain: 'harmony'
-  })
-  const response = await request(
-    graphUrl,
-    graphQuery,
-    {
-      block,
-    }
-  );
-
-  const usdTvl = Number(response.uniswapFactory.totalLiquidityUSD)
-
-  return toUSDTBalances(usdTvl)
-}
 
 module.exports = {
-  harmony:{
-    tvl,
+  harmony: {
+    tvl: uniTvlExport(factory, 'harmony', true),
+    staking: staking(xviper, viper)
   },
-  tvl
+  hallmarks:[
+    [1655991120, "Horizon bridge Hack $100m"],
+  ],
 }

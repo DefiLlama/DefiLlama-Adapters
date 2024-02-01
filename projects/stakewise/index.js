@@ -1,31 +1,52 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
-const BigNumber = require('bignumber.js')
+const { getLogs } = require('../helper/cache/getLogs')
 
-const wethAddress = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+async function tvl(timestamp, block, _1, { api }) {
+  const lsBals = await api.multiCall({  abi: 'erc20:totalSupply', calls: ['0x20BC832ca081b91433ff6c17f85701B6e92486c5', '0xFe2e637202056d30016725477c5da089Ab0A043A']})
 
-async function tvl(timestamp, block) {
-  const supply = await sdk.api.erc20.totalSupply({
-    target: '0xFe2e637202056d30016725477c5da089Ab0A043A',
-    block
-  })
-
-  const solosValidators = await sdk.api.util.getLogs({
+  const solosValidators = await getLogs({
     target: '0xEadCBA8BF9ACA93F627F31fB05470F5A0686CEca',
     topic: 'ValidatorRegistered(bytes32,bytes,uint256,address)',
-    fromBlock: 0,
-    toBlock: block,
-    keys:[]
+    fromBlock: 11726299,
+    api
   })
-  const ethOnValidators = BigNumber(solosValidators.output.length).times(32e18)
+  lsBals.push(solosValidators.length * 32e18)
+  const vaults = await getLogs({
+    target: '0x3a0008a588772446f6e656133c2d5029cc4fc20e',
+    topic: 'VaultAdded(address,address)',
+    fromBlock: 18470078,
+    api
+  })
+  const assets = await api.multiCall({
+    calls: vaults.map(v=>({target:"0x"+v.topics[2].slice(26)})),
+    abi: "uint256:totalAssets"
+  })
+
+  api.add(ADDRESSES.ethereum.WETH, assets.concat(lsBals))
+}
+
+async function xdaiTvl(timestamp, ethBlock, { xdai: block }) {
+  const chain = "xdai"
+  const supply = await sdk.api.erc20.totalSupply({
+    target: '0xA4eF9Da5BA71Cc0D2e5E877a910A37eC43420445',
+    block,
+    chain
+  })
 
   return {
-    [wethAddress]: ethOnValidators.plus(supply.output).toFixed(0)
+    [ADDRESSES.ethereum.GNO]: supply.output
   }
 }
 
+
+
 module.exports = {
+  methodology: 'Counts ETH staked',
   ethereum: {
     tvl,
   },
-  tvl
+  xdai:{
+    tvl: xdaiTvl
+  }
 }
