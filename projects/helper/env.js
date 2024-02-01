@@ -18,6 +18,7 @@ const DEFAULTS = {
   ALV_RPC: "https://elves-core3.alvey.io/",
   OZONE_RPC: "https://node1.ozonechain.io",
   XDC_RPC: "https://erpc.xinfin.network",
+  ZETA_RPC: "https://zetachain-evm.blockpi.network/v1/rpc/public"
 }
 
 const ENV_KEYS = [
