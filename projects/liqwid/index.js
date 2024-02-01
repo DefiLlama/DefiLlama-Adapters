@@ -12,7 +12,23 @@ module.exports = {
 };
 
 
-const endpoint = 'https://api.liqwiddev.net/graphql'
+const endpoint = 'https://api.liqwid.finance/graphql'
+
+const queryAdaLoans = `query ($page: Int) {
+  Page (page: $page) {
+    pageInfo {
+      currentPage
+      hasNextPage
+    }
+    loan(marketId: "Ada") {
+      collaterals {
+        id
+        amount
+      }
+    }
+  }
+}
+`
 
 const query = `query ($page: Int) {
   Page (page: $page) {
@@ -60,6 +76,7 @@ const tokenMapping = {
   ADA: 'lovelace',
   DJED: '8db269c3ec630e06ae29f74bc39edd1f87c819f1056206e879a1cd61446a65644d6963726f555344',
   SHEN: '8db269c3ec630e06ae29f74bc39edd1f87c819f1056206e879a1cd615368656e4d6963726f555344',
+  ERG: '04b95368393c821f180deee8229fbd941baaf9bd748ebcdbf7adbb147273455247',
   USDC: 'usd-coin',
   DAI: 'dai',
   USDT: 'tether',
@@ -67,16 +84,35 @@ const tokenMapping = {
 
 const getToken = market => tokenMapping[market.marketId.toUpperCase()] ?? base64ToHex(market.info.params.underlyingClass.value0.symbol)
 
+const getOptimBondTVL = async () => {
+  const getLoans = async (pageIndex) => {
+    const { Page: { pageInfo, loan: loans } } = await graphQuery(endpoint, queryAdaLoans, { page: pageIndex })
+
+    if (!pageInfo.hasNextPage) {
+      return loans
+    }
+    return [...loans, ...(await getLoans(pageIndex + 1))]
+  }
+  const loans = await getLoans(0)
+  const relevantLoans =
+    loans.filter(l => (l.collaterals.filter(c => c.id === "OptimBond1")).length != 0)
+  const bonds =
+    relevantLoans.map(l => l.collaterals[0].amount).reduce((acc, amount) =>
+      acc + Number(amount), 0)
+
+  return bonds
+}
 
 async function tvl(_, _b, _cb, { api, }) {
   
   const { Page: { market: markets } } = await graphQuery(endpoint, query, { page: 0 })
 
   markets.forEach(market => add(api, market, market.state.totalSupply))
+  add(api, "OptimBond1", await getOptimBondTVL())
 }
 
 function add(api, market, bal) {
-  const token = getToken(market)
+  const token = market === "OptimBond1" ? "OptimBond1" : getToken(market)
   if ([
       "usd-coin",
       "tether",
