@@ -26,7 +26,7 @@ async function tvl(_, _1, _2, { api }) {
 
   // get all collaterals
   collaterals.map(collateral => {
-    //if (collateral[1].collateral_details.collateral_type == 'regular') {
+    if (collateral[1].collateral_details.collateral_type == 'regular') {
       let denom = undefined
       if (collateral[0].hasOwnProperty('native_token')) {
         denom = collateral[0].native_token.denom
@@ -34,9 +34,9 @@ async function tvl(_, _1, _2, { api }) {
       else if (collateral[0].hasOwnProperty('token')) {
         denom = collateral[0].token.contract_addr
       }
-      console.log("%s : %s@", denom, collateral[1].collateral_pool.balance)
+
       api.add(denom, collateral[1].collateral_pool.balance)
-    //}
+    }
   })
 }
 
