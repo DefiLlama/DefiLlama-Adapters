@@ -1,18 +1,24 @@
-const ethers = require("ethers");
-const EURO3 = require("./EURO3Price");
-const protocol = require("./protocolTVL");
-const Provider = new ethers.JsonRpcProvider("https://polygon-rpc.com");
+const { getLogs } = require('../helper/cache/getLogs')
 
+const config = {
+  polygon: { factory: '0x4760847023fa0833221ae76E01Db1E483A5D20e0', fromBlock: 49852705 },
+}
 
-module.exports = {
-    methodology: 'Calculates the cumulative value of locked collateral across all assets within the protocol.',
-    polygon: {
-        tvl: protocol.tvl(Provider),
-        ownTokens: {
-            EURO3: {
-                totalSupply: EURO3.totalSupply(Provider),
-                price: EURO3.price(Provider)
-            },
-        },
+Object.keys(config).forEach(chain => {
+  const { factory, fromBlock, } = config[chain]
+  module.exports[chain] = {
+    tvl: async (_, _b, _cb, { api, }) => {
+      const logs = await getLogs({
+        api,
+        target: factory,
+        eventAbi: 'event NewVault(address indexed vault, string name, address indexed owner)',
+        onlyArgs: true,
+        fromBlock,
+      })
+      const vaults = logs.map(log => log.vault)
+      const tokens = await api.multiCall({  abi: 'address[]:collaterals', calls: vaults})
+      const ownerTokens = tokens.map((token, i) => [token, vaults[i]])
+      return api.sumTokens({ ownerTokens })
     }
-};
+  }
+})
