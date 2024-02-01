@@ -73,6 +73,11 @@ const config = {
       { factory: '0xbBB97d634460DACCA0d41E249510Bb741ef46ad3', fromBlock: 39366721, isAlgebra: false, }, // Cleo
     ]
   },
+  op_bnb: {
+    vaultConfigs: [
+      { factory: '0xADDA3A15EA71c223a82Af86d4578EF2B076035F1', fromBlock: 13911597, isAlgebra: true, }, // Thena
+    ]
+  },
   polygon: {
     vaultConfigs: [
       { factory: '0x2d2c72c4dc71aa32d64e5142e336741131a73fc0', fromBlock: 25697834, isAlgebra: false, },
