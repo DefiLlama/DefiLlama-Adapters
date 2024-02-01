@@ -63,6 +63,7 @@ module.exports = {
         gin: "0x482368a8E701a913Aa53CB2ECe40F370C074fC7b",
         alpStaking: "0x85146C0c5968d9640121eebd13030c99298f87b3",
         alpAddresses: "0xBc76B3FD0D18C7496C0B04aeA0Fe7C3Ed0e4d9C9",
+        vodkaV2DN_LINK_Water: "0xFF614Dd6fC857e4daDa196d75DaC51D522a2ccf7",
       };
 
       await api.sumTokens({
@@ -93,6 +94,7 @@ module.exports = {
           //GmVault
           [addresses.gmWeth, addresses.agedVodkaV2_ETH],
           [addresses.gmBtc, addresses.agedVodkaV2_BTC],
+          [ADDRESSES.arbitrum.LINK, addresses.vodkaV2DN_LINK_Water],
         ],
       });
 
