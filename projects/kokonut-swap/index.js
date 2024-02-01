@@ -1,6 +1,5 @@
 const abi = require("./abi.json");
 const sdk = require("@defillama/sdk");
-const { requery } = require('../helper/requery.js');
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { getUniTVL } = require("../helper/unknownTokens");
 
@@ -33,7 +32,7 @@ async function klaytn_tvl(timestamp, _, { klaytn: block }) {
   for (const data of info.output) {
     const { output: poolInfo, input: { params } } = data
     if (!poolInfo) {
-      console.log('pool info missing for ', params)
+      sdk.log('pool info missing for ', params)
       continue;
     }
     for (let token of poolInfo.tokens) {

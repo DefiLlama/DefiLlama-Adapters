@@ -1,9 +1,11 @@
 const sdk = require("@defillama/sdk");
 const { get } = require("../helper/http");
+const { endPoints } = require("../helper/chain/cosmos");
 
 const coinGeckoIds = {
   uatom: "cosmos",
   uosmo: "osmosis",
+  usomm: "sommelier",
   uregen: "regen",
   ujuno: "juno-network",
   ustars: "stargaze"
@@ -13,10 +15,10 @@ async function tvl() {
   const balances = {};
 
   const { zones } = await get(
-    "https://rest.cosmos.directory/quicksilver/quicksilver/interchainstaking/v1/zones"
+    endPoints.quicksilver + "/quicksilver/interchainstaking/v1/zones"
   );
   const { supply } = await get(
-    "https://rest.cosmos.directory/quicksilver/cosmos/bank/v1beta1/supply"
+    endPoints.quicksilver + "/cosmos/bank/v1beta1/supply"
   );
 
   zones.map((zone) => {

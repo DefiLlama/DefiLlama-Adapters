@@ -71,7 +71,6 @@ async function ethereum_tvl(timestamp, ethBlock, chainBlocks) {
         chain: "ethereum",
       }),
     ])
-    //console.log(`Rari Fuse pool #${fuse_pool_id}: balances of underlying of comptroller markets`, underlying.map((t, i) => t.output + ': ' + balance[i].output))
 
     underlying.forEach((t, i) => {
       sdk.util.sumSingleBalance(balances, t.output, balance[i].output)

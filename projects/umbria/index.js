@@ -1,10 +1,7 @@
 const abi = require("./abi.json");
-const utils = require("../helper/utils");
-const { fetchChainExports } = require("../helper/exports");
 const { staking } = require("../helper/staking");
 const { pool2BalanceFromMasterChefExports } = require("../helper/pool2");
 const { addFundsInMasterChef } = require("../helper/masterchef");
-const { transformPolygonAddress } = require("../helper/portedTokens");
 
 const farmContract = "0xdF9401225cC62d474C559E9c4558Fb193137bCEB";
 const UMBR = "0xa4bbe66f151b22b167127c770016b15ff97dd35c";
@@ -34,7 +31,7 @@ const ethTvl = async (chainBlocks) => {
 const polygonTvl = async (chainBlocks) => {
   const balances = {};
 
-  const transformAddress = await transformPolygonAddress();
+  const transformAddress = i => `polygon:${i}`;
   await addFundsInMasterChef(
     balances,
     farmContract_polygon,

@@ -10,4 +10,5 @@ module.exports = {
   arbitrum: { tvl: sumTokensExport({ owners, tokens: [ADDRESSES.arbitrum.USDT] }) },
   polygon: { tvl: sumTokensExport({ owners, tokens: [ADDRESSES.polygon.USDT] }) },
   bsc: { tvl: sumTokensExport({ owners, tokens: [ADDRESSES.bsc.USDT] }) },
+  mantle: { tvl: sumTokensExport({ owners, tokens: [ADDRESSES.mantle.USDT] }) },
 };

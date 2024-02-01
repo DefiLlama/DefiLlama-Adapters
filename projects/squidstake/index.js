@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
-const { transformBscAddress } = require("../helper/portedTokens");
 const { addFundsInMasterChef } = require("../helper/masterchef");
 const { BigNumber } = require("bignumber.js");
 const { stakingPricedLP } = require("../helper/staking");
@@ -20,7 +19,7 @@ const getReserves = 'function getReserves() view returns (uint112 _reserve0, uin
 async function tvl(timestamp, chain, chainBlocks) {
   let balances = {};
 
-  const transformedAddress = await transformBscAddress();
+  const transformedAddress = i => `bsc:${i}`;
 
   await addFundsInMasterChef(
     balances,

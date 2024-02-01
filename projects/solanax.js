@@ -1,15 +1,3 @@
-const { get } = require('./helper/http')
-const { toUSDTBalances } = require('./helper/balances');
-
-async function fetch() {
-  const response = (
-    await get("https://solanax.org/api/data/")
-    )
-
-  const tvl = response.total_locked;
-
-  return toUSDTBalances(tvl);
-}
 
 module.exports = {
   misrepresentedTokens: true,
@@ -17,5 +5,6 @@ module.exports = {
   solana: {
       tvl: () => ({}),
   }
-  
 };
+
+module.exports.deadFrom = '2023-02-09'

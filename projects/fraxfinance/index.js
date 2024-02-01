@@ -113,27 +113,6 @@ async function addUSDCPools(api, balances) {
   })
 }
 
-async function addAMOMinter(api, balances) {
-  const amoMinter = '0xcf37B62109b537fa0Cb9A90Af4CA72f6fb85E241'
-  let allAMOAddresses = await api.call({ target: amoMinter, abi: 'address[]:allAMOAddresses' })
-  const amos = allAMOAddresses.filter(i => i !== nullAddress)
-  const blacklist = new Set([
-    '0x66635DC1EdEfF19e839f152a67278151Aa6e1B61', // aave AMO
-    INVESTOR_AMO,
-  ].map(i => i.toLowerCase()))
-  const dollBallAbi = 'function dollarBalances() view returns (uint256 frax_val_e18, uint256 collat_val_e18)'
-  const res = await api.multiCall({ abi: dollBallAbi, calls: amos.filter(i => blacklist.has(i.toLowerCase())) })
-  const table = []
-  res.forEach((v, i) => {
-    table.push([amos[i], Number(v.collat_val_e18 / 1e24).toFixed(3)])
-    sdk.util.sumSingleBalance(balances, USDC, v.collat_val_e18 / 1e12, api.chain)
-  })
-  table.sort((a, b) => +b[1] - +a[1])
-  console.log(amos.length)
-  console.table(table)
-
-}
-
 async function addInvestorAMO(api, balances) {
   return sumTokens2({
     balances,

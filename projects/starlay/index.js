@@ -12,5 +12,12 @@ module.exports = {
       }
     }),
     staking: staking(VOTING_ESCROW_ADDRESS, ADDRESSES.astar.LAY),
+  },
+  acala: {
+    ...aaveExports("acala", '0xA666dD28059deF0B45505c1f1a5f49fAd2e03c11', undefined, undefined, {
+      abis: {
+        getAllATokens: "function getAllLTokens() view returns (tuple(string symbol, address tokenAddress)[])"
+      },
+    })
   }
 };

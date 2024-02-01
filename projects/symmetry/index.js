@@ -3,7 +3,7 @@ const { PublicKey } = require('@solana/web3.js')
 const FUNDS_VAULT = 'BLBYiq48WcLQ5SxiftyKmPtmsZPUBEnDEjqEnKGAR4zx'
 const TOKEN_PROGRAM_ID = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
 
-async function fetch() {
+async function tvl() {
   const connection = getConnection();
   const filters = [
     {
@@ -36,6 +36,6 @@ async function fetch() {
 module.exports = {
   timetravel: false,
   solana: {
-    tvl: fetch
+    tvl
   },
 };

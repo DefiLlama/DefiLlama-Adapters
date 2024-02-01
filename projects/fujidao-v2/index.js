@@ -91,8 +91,9 @@ Object.keys(config).forEach(chain => {
 
       debtAssets.forEach((bal, i) => {
         if (!debtBals[i]) {
-          if (+bal === 0) return;
-          throw new Error(`No debt balance for ${bvaults[i]}`)
+          return;
+          // if (+bal === 0) return;
+          // throw new Error(`No debt balance for ${bvaults[i]}`)
         }
         api.add(debtAssets[i], debtBals[i] * -1)
       })
@@ -122,8 +123,9 @@ Object.keys(config).forEach(chain => {
       const debtBals = (await api.multiCall({ abi: 'uint256:totalDebt', calls: vaults, permitFailure: true, }))
       bals.forEach((bal, i) => {
         if (!debtBals[i]) {
-          if (+bal === 0) return;
-          throw new Error(`No debt balance for ${vaults[i]}`)
+          return;
+          // if (+bal === 0) return;
+          // throw new Error(`No debt balance for ${vaults[i]}`)
         }
         api.add(debtAssets[i], debtBals[i])
       })

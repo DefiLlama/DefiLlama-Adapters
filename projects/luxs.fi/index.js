@@ -9,7 +9,7 @@ const facades = {
 
 async function tvl(_, _b, _cb, { api }) {
   const vaults = await api.call({
-    abi: " function getVaults() external view returns (address[] memory) ",
+    abi: "function getVaults() external view returns (address[] memory)",
     target: facades[api.chain],
   });
 

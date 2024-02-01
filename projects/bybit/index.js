@@ -15,7 +15,8 @@ const config = {
         'bc1q2qqqt87kh33s0er58akh7v9cwjgd83z5smh9rp',
         'bc1q9w4g79ndel72lygvwtqzem67z6uqv4yncvqjz3yn8my9swnwflxsutg4cx',
         'bc1qjysjfd9t9aspttpjqzv68k0ydpe7pvyd5vlyn37868473lell5tqkz456m',
-        '1GrwDkr33gT6LuumniYjKEGjTLhsL5kmqC'
+        '1GrwDkr33gT6LuumniYjKEGjTLhsL5kmqC',
+        'bc1qs5vdqkusz4v7qac8ynx0vt9jrekwuupx2fl5udp9jql3sr03z3gsr2mf0f'
            ]
   },
   bsc: {
@@ -49,6 +50,7 @@ const config = {
     owners: [
         'rMvCasZ9cohYrSZRNYPTZfoaaSUQMfgQ8G',
         'rwBHqnCgNRnk3Kyoc6zon6Wt4Wujj3HNGe',
+        'raQxZLtqurEXvH5sgijrif7yXMNwvFRkJN'
     ]
   },
   optimism: {
@@ -57,6 +59,15 @@ const config = {
   era: {
     owners: ['0xf89d7b9c864f589bbF53a82105107622B35EaA40']
   },
+  solana: {
+    owners: [
+      'AC5RDfQFmDS1deWZos921JfqscXdByf8BKHs5ACWjtW2',
+      '42brAgAVNzMBP7aaktPvAmBSPEkehnFQejiZc53EpJFd'
+     ]
+  },
+  cardano: {
+    owners: ['addr1v8mn6dmk7tf9u26kr09a05lmvc9j4k9d940a88ta3hdczqgyt7whl']
+   }
 }
 
 module.exports = cexExports(config)

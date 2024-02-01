@@ -3,7 +3,6 @@ const sdk = require("@defillama/sdk");
 const utils = require("../helper/utils");
 const { unwrapUniswapLPs, nullAddress } = require("../helper/unwrapLPs");
 const { getCompoundV2Tvl, compoundExports } = require("../helper/compound");
-const { transformBscAddress } = require('../helper/portedTokens')
 const { getConfig } = require('../helper/cache')
 
 const abiCerc20 = require("./cerc20.json");
@@ -111,7 +110,7 @@ async function lending(block, chain, borrowed) {
     })
   ).output;
 
-  const transformAdress = await transformBscAddress()
+  const transformAdress = i => `bsc:${i}`
   const lpPositions = [];
   cashValues.map((cashVal, idx) => {
     if (tokens_bsc[idx].underlying_symbol === "Cake-LP") {

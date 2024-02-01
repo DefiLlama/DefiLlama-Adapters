@@ -35,6 +35,7 @@ const chains = {
   optimism: 10,
   cronos: 25,
   bsc: 56,
+  xdai: 100,
   fuse: 122,
   heco: 128,
   polygon: 137,
@@ -45,12 +46,14 @@ const chains = {
   moonbeam: 1284,
   moonriver: 1285,
   kava: 2222,
+  mantle: 5000,
   canto: 7700,
   base: 8453,
   arbitrum: 42161,
   celo: 42220,
   oasis: 42262,
   avax: 43114,
+  linea: 59144,
   aurora: 1313161554,
   harmony: 1666600000
 }

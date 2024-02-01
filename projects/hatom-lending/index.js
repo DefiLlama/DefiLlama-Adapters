@@ -2,6 +2,8 @@ const { sumTokens, call, } = require('../helper/chain/elrond')
 const { cachedGraphQuery } = require('../helper/cache')
 const { nullAddress } = require('../helper/tokenMapping')
 
+const hatom = 'HTM-f51d55'
+
 async function getMoneyMarkets() {
   const { queryMoneyMarket: res } = await cachedGraphQuery('hatom-TVLLendingProtocolQuery', 'https://mainnet-api.hatom.com/graphql', `
     query QueryMoneyMarket {

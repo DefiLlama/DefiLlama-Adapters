@@ -60,16 +60,13 @@ async function getLendingData(api, chain) {
     const supply = totalSupplyMapping[token]
     const rate = exchangeRateMapping[token] / 1e18
     const borrowed = totalBorrowMapping[token] || 0
-    // console.log(token, supply, rate, borrowed, (supply * rate) - borrowed )
     balances[token] = (supply * rate) - borrowed
   })
   // underlyingIds.forEach((id, i) => {
   //   const token = +id.toString()
-  //   console.log(token, totalReserves[i])
   //   if (totalReserves[i] > 0)
   //     balances[token] = totalReserves[token] * exchangeRateMapping[token] / 1e18
   // })
-  // console.log('lendo', balances)
   const { updateBalances } = await getTokenPrices({ api, chain })
   return updateBalances(balances)
 }
@@ -92,7 +89,6 @@ async function getBorrowedData(api, chain) {
   //   if (totalBorrows[i] > 0)
   //     balances[token] = totalBorrows[i]
   // })
-  // console.log('brooro', balances)
   const { updateBalances } = await getTokenPrices({ api, chain })
   return updateBalances(balances)
 }

@@ -15,6 +15,7 @@ module.exports = {
     tvl: () => 0,
     staking: staking(bscStaking, bscGG, "bsc", `avax:${gg}`)
   },
+  deadFrom: "2022-01-11",
   methodology:
     "Counts tokens on the treasury for tvl and staked GG for staking",
 };

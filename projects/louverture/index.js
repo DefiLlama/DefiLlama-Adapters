@@ -27,3 +27,5 @@ module.exports = {
       tvl: async()=>({})
   }
 }
+
+module.exports.deadFrom = '2022-03-29'

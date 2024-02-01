@@ -5,5 +5,6 @@ module.exports = {
 	// ...getExports("genshiro", ['genshiro']),
 	genshiro: {
 		tvl: async () => ({}),
-	}
+	},
+	deadFrom: '2023-05-26',
 }
