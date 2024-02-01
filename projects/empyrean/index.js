@@ -39,3 +39,6 @@ module.exports = {
   methodology:
     "Counts USDC and TLP (EMPYR-USDC) on the treasury",
 };
+
+
+module.exports.deadFrom = '2022-05-09'

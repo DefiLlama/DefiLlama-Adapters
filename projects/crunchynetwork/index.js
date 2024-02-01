@@ -7,7 +7,6 @@ const { PromisePool } = require('@supercharge/promise-pool')
 async function fetchFarmsTvl() {
     const farms = await get(RPC_ENDPOINT + '/v1/contracts/KT1KnuE87q1EKjPozJ5sRAjQA24FPsP57CE3/bigmaps/farms/keys?limit=1000')
     const items = farms.map(farm => [farm.value.poolToken.address, farm.value.poolBalance]).filter(item => item[1] !== "0")
-    console.log("items", items)
     return getAllLPToTez(items);
 }
 

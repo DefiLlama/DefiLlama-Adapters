@@ -1,7 +1,6 @@
 const abi = require("./abi.json");
 const { staking } = require("../helper/staking");
 const { pool2s } = require("../helper/pool2");
-const { transformBscAddress } = require("../helper/portedTokens");
 const { addFundsInMasterChef } = require("../helper/masterchef");
 
 // --- Farms Addresses ---
@@ -52,7 +51,7 @@ const Pool2 = async (...params) => {
 const bscTvl = async (chainBlocks) => {
   const balances = {};
 
-  let transformAddress = await transformBscAddress();
+  let transformAddress = i => `bsc:${i}`;
   await addFundsInMasterChef(
     balances,
     masterChefFarms,

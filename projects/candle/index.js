@@ -26,3 +26,5 @@ module.exports = {
   methodology: "Counts liquidty on the staking and pool2s only",
 
 };
+
+module.exports.deadFrom = '2022-05-25'

@@ -1,7 +1,6 @@
 const sdk = require('@defillama/sdk');
 const { GraphQLClient, gql } = require('graphql-request');
 const BigNumber = require('bignumber.js');
-const { transformArbitrumAddress } = require('../helper/portedTokens');
 
 const ethereumEndpoint =
   'https://api.thegraph.com/subgraphs/name/tenderize/tenderize-ethereum';
@@ -49,7 +48,7 @@ async function fetchArbitrum(timestamp, ethBlock, chainBlocks) {
       chain: 'arbitrum'
     });
 
-    const tokenAddress = (await transformArbitrumAddress())(config.steak);
+    const tokenAddress = (i => `arbitrum:${i}`)(config.steak);
     tvlData[tokenAddress] = addBNstr(
       result.tenderizer.currentPrincipal,
       token1Balance.output

@@ -1,6 +1,7 @@
 const axios = require("axios");
 const utils = require("../helper/utils");
 const {lendingMarket} = require("../helper/methodologies")
+const { getUniTVL } = require('../helper/unknownTokens')
 
 const endpoint = (chain) => `https://${chain}.defibox.io/api/`
 
@@ -64,6 +65,6 @@ module.exports = {
     tvl: wax
   },
   bsc: {
-    tvl: bsc
+    tvl: getUniTVL({ factory: '0xDB984fd8371d07db9cBf4A48Eb9676b09B12161D'})
   }
 }

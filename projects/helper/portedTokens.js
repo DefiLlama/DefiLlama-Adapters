@@ -7,32 +7,7 @@ const {
   transformTokens,
   fixBalancesTokens,
   ibcChains,
-  distressedAssts,
 } = require('./tokenMapping')
-
-async function transformFantomAddress() {
-  return transformChainAddress(transformTokens.fantom, "fantom")
-}
-
-async function transformBscAddress() {
-  return transformChainAddress(transformTokens.bsc, "bsc")
-}
-
-async function transformPolygonAddress() {
-  return transformChainAddress(transformTokens.polygon, "polygon")
-}
-
-async function transformCeloAddress() {
-  return transformChainAddress(transformTokens.celo, "celo")
-}
-
-async function transformOptimismAddress() {
-  return transformChainAddress(transformTokens.optimism, "optimism")
-}
-
-async function transformArbitrumAddress() {
-  return transformChainAddress(transformTokens.arbitrum, "arbitrum")
-}
 
 async function transformInjectiveAddress() {
   return addr => {
@@ -53,9 +28,7 @@ function fixBalances(balances, mapping, { chain, } = {}) {
     const { coingeckoId, decimals } = mapping[tokenKey] || {};
     if (!coingeckoId) {
       if (removeUnmapped && (tokenKey.startsWith('0x') || token.startsWith(chain + ':'))) {
-        console.log(
-          `Removing token from balances, it is not part of whitelist: ${tokenKey}`
-        );
+        sdk.log(`Removing token from balances, it is not part of whitelist: ${tokenKey}`);
         delete balances[token];
       }
       return;
@@ -89,10 +62,6 @@ for (const chain of Object.keys(fixBalancesTokens)) {
 }
 
 const chainTransforms = {
-  fantom: transformFantomAddress,
-  bsc: transformBscAddress,
-  polygon: transformPolygonAddress,
-  optimism: transformOptimismAddress,
   injective: transformInjectiveAddress,
 };
 
@@ -103,18 +72,13 @@ function transformChainAddress(
 ) {
 
   return addr => {
-    if (distressedAssts.has(addr.toLowerCase())) return 'ethereum:0xbad'
     if (['solana'].includes(chain)) {
       return mapping[addr] ? mapping[addr] : `${chain}:${addr}`
     }
     if (!addr.startsWith('0x')) return addr
     addr = addr.toLowerCase();
     if (!mapping[addr] && skipUnmapped) {
-      console.log(
-        "Mapping for addr %s not found in chain %s, returning garbage address",
-        addr,
-        chain
-      );
+      sdk.log("Mapping for addr %s not found in chain %s, returning garbage address", addr, chain);
       return "0x1000000000000000000000000000000000000001";
     }
     if (chain === 'ethereum') return mapping[addr] ? mapping[addr] : addr
@@ -133,11 +97,10 @@ async function getChainTransform(chain) {
     if (addr.includes('ibc/')) return addr.replace(/.*ibc\//, 'ibc/').replace(/\//g, ':')
     if (addr.startsWith('coingecko:')) return addr
     if (addr.startsWith(chain + ':') || addr.startsWith('ibc:')) return addr
-    if (distressedAssts.has(addr.toLowerCase())) return 'ethereum:0xbad'
 
     addr = normalizeAddress(addr, chain).replace(/\//g, ':')
     const chainStr = `${chain}:${addr}`
-    if ([...ibcChains, 'ton', 'defichain', 'waves'].includes(chain)) return chainStr
+    if ([...ibcChains, 'ton', 'mvc', 'defichain', 'waves'].includes(chain)) return chainStr
     if (chain === 'cardano' && addr === 'ADA') return 'coingecko:cardano'
     if (chain === 'near' && addr.endsWith('.near')) return chainStr
     if (chain === 'tron' && addr.startsWith('T')) return chainStr
@@ -146,7 +109,7 @@ async function getChainTransform(chain) {
     if (chain === 'terra2' && addr.startsWith('terra1')) return chainStr
     if (chain === 'aura' && addr.startsWith('aura')) return chainStr
     if (chain === 'algorand' && /^\d+$/.test(addr)) return chainStr
-    if (addr.startsWith('0x') || ['solana', 'kava'].includes(chain)) return chainStr
+    if (addr.startsWith('0x') || ['solana', 'kava', 'renec'].includes(chain)) return chainStr
     return addr
   };
 }
@@ -162,8 +125,12 @@ async function transformBalances(chain, balances) {
   return balances
 }
 
-async function transformDexBalances({ chain, data, balances = {}, restrictTokenRatio = 5, withMetadata = false, blacklistedTokens = [], coreTokens }) {
+async function transformDexBalances({ api, chain, data, balances, restrictTokenRatio = 5, withMetadata = false, blacklistedTokens = [], coreTokens }) {
 
+  if (api) {
+    balances = api.getBalances()
+    chain = api.chain
+  } else if (!balances) balances = {}
   if (!coreTokens)
     coreTokens = new Set(getCoreAssets(chain))
 
@@ -262,12 +229,6 @@ async function transformDexBalances({ chain, data, balances = {}, restrictTokenR
 module.exports = {
   getChainTransform,
   getFixBalances,
-  transformFantomAddress,
-  transformBscAddress,
-  transformPolygonAddress,
-  transformOptimismAddress,
-  transformArbitrumAddress,
-  transformCeloAddress,
   stripTokenHeader,
   getFixBalancesSync,
   transformBalances,

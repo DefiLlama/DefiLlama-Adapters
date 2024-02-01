@@ -33,4 +33,5 @@ module.exports = {
   fantom:{
     tvl: () => 0
   },
+  deadFrom: 1680097334,
 };

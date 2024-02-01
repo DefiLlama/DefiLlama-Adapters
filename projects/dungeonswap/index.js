@@ -1,13 +1,12 @@
 const sdk = require("@defillama/sdk");
 const { addFundsInMasterChef } = require("../helper/masterchef");
-const { transformBscAddress } = require("../helper/portedTokens");
 
 const MasterChefContract = "0x3720F1F9a02BFB4dD6afb9030eB826B4392D321F";
 
 const bscTvl = async (chainBlocks) => {
   const balances = {};
 
-  let transformAddress = await transformBscAddress();
+  let transformAddress = i => `bsc:${i}`;
 
   await addFundsInMasterChef(
     balances,
