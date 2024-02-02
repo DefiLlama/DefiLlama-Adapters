@@ -39,13 +39,13 @@ const config = {
   "zeta": [
   {
     "zeta": {
-      baseToken: '0xf091867ec603a6628ed83d274e835539d82e9cc8',
+      "baseToken": '0xf091867ec603a6628ed83d274e835539d82e9cc8',
       "LST": '0x7ac168c81f4f3820fa3f22603ce5864d6ab3c547'
     }
   },
   {
     "bsc": {
-      baseToken: "0xf091867ec603a6628ed83d274e835539d82e9cc8",
+      "baseToken": "0xf091867ec603a6628ed83d274e835539d82e9cc8",
       "LST": "0xcf123d8638266629fb02fc415ad47bd47de01a6b"
     },
   },
