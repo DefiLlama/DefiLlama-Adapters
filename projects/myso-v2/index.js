@@ -95,6 +95,12 @@ const config = {
   base: {
     fromBlock: 6239916,
   },
+  evmos: {
+    fromBlock: 18112793,
+  },
+  neon_evm: {
+    fromBlock: 237206849,
+  },
 };
 
 Object.keys(config).forEach((chain) => {

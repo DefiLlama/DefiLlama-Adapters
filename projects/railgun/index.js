@@ -44,4 +44,4 @@ function getChainTVL(chain) {
 
 Object.keys(CONTRACTS).forEach(chain => {
   module.exports[chain] = getChainTVL(chain)
-})
+}) 

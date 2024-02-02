@@ -1,5 +1,4 @@
 const { ApiPromise, WsProvider } = require("@polkadot/api");
-const { FixedPointNumber } = require("@acala-network/sdk-core");
 const sdk = require('@defillama/sdk');
 
 const api = {};
@@ -72,7 +71,7 @@ function addTokenBalance({ balances, atomicAmount, chain, ccyArg }) {
         return;
     }
 
-    const amount = atomicAmount.toJSON().free / (10 ** ccy.decimals)
+    const amount = atomicAmount / (10 ** ccy.decimals)
 
     return sdk.util.sumSingleBalance(balances, ccy.geckoId, amount);
 }
