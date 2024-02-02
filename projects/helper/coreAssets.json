@@ -1404,7 +1404,7 @@
   },
   "op_bnb": {
     "WBNB": "0x4200000000000000000000000000000000000006",
-    "USDC": "0x9e5aac1ba1a2e6aed6b32689dfcf62a509ca96f3"
+    "USDT": "0x9e5aac1ba1a2e6aed6b32689dfcf62a509ca96f3"
   },
   "archway": {
     "ARCH": "aarch"
