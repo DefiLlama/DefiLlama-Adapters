@@ -75,14 +75,11 @@ const query = `query ($page: Int) {
 const tokenMapping = {
   ADA: 'lovelace',
   DJED: '8db269c3ec630e06ae29f74bc39edd1f87c819f1056206e879a1cd61446a65644d6963726f555344',
-  SHEN: '8db269c3ec630e06ae29f74bc39edd1f87c819f1056206e879a1cd615368656e4d6963726f555344',
-  ERG: '04b95368393c821f180deee8229fbd941baaf9bd748ebcdbf7adbb147273455247',
-  USDC: 'usd-coin',
   DAI: 'dai',
-  USDT: 'tether',
+
 }
 
-const getToken = market => tokenMapping[market.marketId.toUpperCase()] ?? base64ToHex(market.info.params.underlyingClass.value0.symbol)
+const getToken = market => tokenMapping[market.marketId.toUpperCase()] ?? market.info.params.underlyingClass.value0.symbol + toHex(market.info.params.underlyingClass.value0.name)
 
 const getOptimBondTVL = async () => {
   const getLoans = async (pageIndex) => {
@@ -104,7 +101,6 @@ const getOptimBondTVL = async () => {
 }
 
 async function tvl(_, _b, _cb, { api, }) {
-  
   const { Page: { market: markets } } = await graphQuery(endpoint, query, { page: 0 })
 
   markets.forEach(market => add(api, market, market.state.totalSupply))
@@ -113,20 +109,15 @@ async function tvl(_, _b, _cb, { api, }) {
 
 function add(api, market, bal) {
   const token = market === "OptimBond1" ? "OptimBond1" : getToken(market)
-  if ([
-      "usd-coin",
-      "tether",
-    ].includes(token)) bal /= 1e8
-    if ([
-        "dai",
-      ].includes(token)) bal /= 1e6
+  if (["usd-coin", "tether",].includes(token)) bal /= 1e8
+  if (["dai",].includes(token)) bal /= 1e6
   api.add(token, bal, {
     skipChain: ['usd-coin', 'tether', 'dai'].includes(token)
   })
 }
 
 async function borrowed(_, _b, _cb, { api, }) {
-  const { Page: { market: markets } }  = await graphQuery(endpoint, query)
+  const { Page: { market: markets } } = await graphQuery(endpoint, query)
 
   markets.forEach(market => {
     const utilization = market.state.utilization
@@ -150,4 +141,12 @@ function base64ToHex(base64) {
 
   // Step 3: Concatenate the hexadecimal values to form the final hexadecimal string
   return hexArray.join(''); */
+}
+
+function toHex(str) {
+  let hex = ''
+  for (let i = 0; i < str.length; i++) {
+    hex += str.charCodeAt(i).toString(16);
+  }
+  return hex
 }
