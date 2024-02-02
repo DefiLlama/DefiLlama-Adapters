@@ -13,6 +13,8 @@ const FCN_PURE_OPTIONS_ADDRESSES = [
   '0x042021d59731d3fFA908c7c4211177137Ba362Ea', // supercharger
   '0x56F00A399151EC74cf7bE8DC38225363E84975E6', // go fast
   '0x784e3C592A6231D92046bd73508B3aAe3A7cc815', // insanic
+  '0x2aAE28E495626F587677ca779838266DB9bD6Cd1', // puppy
+  '0x98b872604F36807169c096241ECD4646021de133', // l2
 ];
 
 // Funds are lent out 100%
@@ -42,7 +44,7 @@ async function getSumFCNProductQueuedDeposits(fcnProducts, api) {
 function getLOVCalls(lovProducts) {
   const calls = []
   for (const product of lovProducts)
-    for (let i = 2; i < maxLeverage; i++)
+    for (let i = 1; i < maxLeverage; i++)
       calls.push([product, i])
   return calls.map(i => ({ params: i }))
 }
