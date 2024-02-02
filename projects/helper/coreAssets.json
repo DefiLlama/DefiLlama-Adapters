@@ -1404,7 +1404,7 @@
   },
   "op_bnb": {
     "WBNB": "0x4200000000000000000000000000000000000006",
-    "USDC": "0x9e5aac1ba1a2e6aed6b32689dfcf62a509ca96f3"
+    "USDT": "0x9e5aac1ba1a2e6aed6b32689dfcf62a509ca96f3"
   },
   "archway": {
     "ARCH": "aarch"
@@ -1562,5 +1562,8 @@
   },
   "new": {
     "NEW": "0xf4905b9bc02ce21c98eac1803693a9357d5253bf"
+  },
+  "zeta": {
+    "WZETA": "0x5f0b1a82749cb4e2278ec87f8bf6b618dc71a8bf"
   }
 }
