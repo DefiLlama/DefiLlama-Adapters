@@ -32,6 +32,9 @@ const config ={
   ],
   manta: [
     { factory: '0x52B29C6154Ad0f5C02416B8cB1cEB76E082fC9C7', fromBlock: 899433 } // izumi
+  ],
+  zeta: [
+    { factory: '0x52B29C6154Ad0f5C02416B8cB1cEB76E082fC9C7', fromBlock: 1562427 } // izumi
   ]
 }
 
@@ -62,9 +65,10 @@ Object.keys(config).forEach(chain => {
       }
       const izumiFactory = '0xCCA961F89a03997F834eB5a0104efd9ba1f5800E'; // Differentiate between izumi & pancakeswap factory
       const mantaFactory = '0x52B29C6154Ad0f5C02416B8cB1cEB76E082fC9C7';
+      const zetaFactory = '0x52B29C6154Ad0f5C02416B8cB1cEB76E082fC9C7';
       const ghoFactory = '0xDE07a0D5C9CA371E41a869451141AcE84BCAd119';
       let vaults = allLogs.filter(({ factory, chain }) => {
-         if ((factory === izumiFactory && chain === 'mantle') || (factory === mantaFactory && chain === 'manta')) {
+         if ((factory === izumiFactory && chain === 'mantle') || (factory === mantaFactory && chain === 'manta') || (factory === zetaFactory && chain === 'zeta')) {
           return false;
          } else if (factory === ghoFactory && chain === 'ethereum') {
           return false;
@@ -76,7 +80,7 @@ Object.keys(config).forEach(chain => {
       vaults = vaults.filter(vault => !ignoreList[chain] || !ignoreList[chain].includes(vault)); // Remove excluded vaults
 
       // Collect Izumi Vaults Separately
-      let izumiVaults = allLogs.filter(({ factory, chain }) => (factory === izumiFactory && chain === 'mantle') || (factory === mantaFactory && chain === 'manta')).map(({ log }) => log.vault); 
+      let izumiVaults = allLogs.filter(({ factory, chain }) => (factory === izumiFactory && chain === 'mantle') || (factory === mantaFactory && chain === 'manta') || (factory === zetaFactory && chain === 'zeta')).map(({ log }) => log.vault); 
       izumiVaults = izumiVaults.filter(vault => !ignoreList[chain] || !ignoreList[chain].includes(vault));
 
       // Collect GHO Vaults Separately
