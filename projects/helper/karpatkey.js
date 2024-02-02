@@ -15,7 +15,11 @@ const symbolToId = {
     "rETH": "rocket-pool-eth",
     "ankrETH":"ankreth",
     "cbETH":"coinbase-wrapped-staked-eth",
-    "ETHx": "stader-ethx"
+    "ETHx": "stader-ethx",
+    "GNO": "gnosis",
+    wstETH: "wrapped-steth",
+    WXDAI: "dai",
+    XDAI: "dai"
 }
 
 async function karpatKeyTvl(timestamp, daoName, tokenToExclude) {
