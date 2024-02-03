@@ -46,6 +46,7 @@ module.exports = {
         gmWeth: "0x70d95587d40A2caf56bd97485aB3Eec10Bee6336", // weth/usdc.e
         gmArb: "0xC25cEf6061Cf5dE5eb761b50E4743c1F5D7E5407", // arb/usdc.e
         gmBtc: "0x47c031236e19d024b42f8AE6780E44A573170703", // btc/usdc.e
+        gmUsdc: "0x9C2433dFD71096C435Be9465220BB2B189375eA7", // usdc/usdc.e
         VLP: "0xc5b2d9fda8a82e8dcecd5e9e6e99b78a9188eb05",
         gDAI: "0xd85e038593d7a098614721eae955ec2022b9b91b",
         rum: "0x739fe1BE8CbBeaeA96fEA55c4052Cd87796c0a89",
@@ -62,6 +63,7 @@ module.exports = {
         gin: "0x482368a8E701a913Aa53CB2ECe40F370C074fC7b",
         alpStaking: "0x85146C0c5968d9640121eebd13030c99298f87b3",
         alpAddresses: "0xBc76B3FD0D18C7496C0B04aeA0Fe7C3Ed0e4d9C9",
+        vodkaV2DN_LINK_Water: "0xFF614Dd6fC857e4daDa196d75DaC51D522a2ccf7",
       };
 
       await api.sumTokens({
@@ -81,15 +83,18 @@ module.exports = {
           [addresses.gmArb, addresses.vodkaV2DN],
           [addresses.gmWeth, addresses.vodkaV2DN],
           [addresses.gmBtc, addresses.vodkaV2DN],
+          [addresses.gmUsdc, addresses.vodkaV2DN],
           [addresses.hlp, addresses.rum],
           [ADDRESSES.arbitrum.fsGLP, addresses.agedVodka],
           //new water vault
           [ADDRESSES.arbitrum.WETH, addresses.vodkaV2DN_ETH_Water],
           [ADDRESSES.arbitrum.ARB, addresses.vodkaV2DN_ARB_Water],
+          [ADDRESSES.arbitrum.WBTC, addresses.vodkaV2DN_BTC_Water],
           [ADDRESSES.arbitrum.fsGLP, addresses.vodkaV1A],
           //GmVault
           [addresses.gmWeth, addresses.agedVodkaV2_ETH],
           [addresses.gmBtc, addresses.agedVodkaV2_BTC],
+          [ADDRESSES.arbitrum.LINK, addresses.vodkaV2DN_LINK_Water],
         ],
       });
 
@@ -99,7 +104,7 @@ module.exports = {
         stakedHlpBalance:
           "function userTokenAmount(address user) public view returns (uint256)",
         stakedAlpBalance:
-          "function userInfo(address account) external view returns (, uint256)",
+          "function userInfo(address account) external view returns (uint256, uint256)",
         alpPrice: "function getAlpPrice() external view returns (uint256)", //
       };
 
@@ -128,7 +133,7 @@ module.exports = {
         target: addresses.gin,
       });
 
-      const alpValue = ((stakedAlpBal * alpPrice) / 1e18 / 1e8) * 1e6;
+      const alpValue = ((stakedAlpBal[0] * alpPrice) / 1e18 / 1e8) * 1e6;
 
       api.add(addresses.VLP, StakedVLPBal);
       api.add(addresses.VLP, StakedVLPBalV2);
