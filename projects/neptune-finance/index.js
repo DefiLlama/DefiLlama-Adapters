@@ -18,7 +18,7 @@ async function borrowed(_, _1, _2, { api }) {
 }
 
 module.exports = {
-  methodology: 'Counts the total collateral and borrowed assets managed by Neptune on Injective',
+  methodology: 'Counts the total collateral and non-borrowed lent assets managed by Neptune on Injective',
   injective: {
     tvl, borrowed
   }
