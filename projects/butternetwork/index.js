@@ -9,7 +9,7 @@ const config = {
       USDC: ADDRESSES.bsc.USDC,
       DAI: "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3",
       ETH: ADDRESSES.bsc.ETH,
-      // MAP: "0x8105ECe4ce08B6B6449539A5db23e23b973DfA8f"
+      MAP: "0x8105ECe4ce08B6B6449539A5db23e23b973DfA8f"
     }
   },
   polygon: {
@@ -19,7 +19,7 @@ const config = {
       USDC: ADDRESSES.polygon.USDC,
       DAI: ADDRESSES.polygon.DAI,
       ETH: ADDRESSES.polygon.WETH_1,
-      // MAP: "0xBAbceE78586d3e9E80E0d69601A17f983663Ba6a"
+      MAP: "0xBAbceE78586d3e9E80E0d69601A17f983663Ba6a"
     }
   },
   ethereum: {
@@ -29,7 +29,7 @@ const config = {
       USDC: ADDRESSES.ethereum.USDC,
       DAI: ADDRESSES.ethereum.DAI,
       ETH: ADDRESSES.ethereum.WETH,
-      // MAP: "0x9e976f211daea0d652912ab99b0dc21a7fd728e4"
+      MAP: "0x9e976f211daea0d652912ab99b0dc21a7fd728e4"
     }
   },
   near: {
@@ -39,16 +39,16 @@ const config = {
       USDC: "a0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.factory.bridge.near",
       DAI: "6b175474e89094c44da98b954eedeac495271d0f.factory.bridge.near",
       ETH: "aurora",
-      // MAP: "mapo.mfac.butternetwork.near"
+      MAP: "mapo.mfac.butternetwork.near"
     }
   },
   map: {
     mosContract: "0xfeB2b97e4Efce787c08086dC16Ab69E063911380",
     tokens: {
-      // USDT: "0x33daba9618a75a7aff103e53afe530fbacf4a3dd",
-      // USDC: ADDRESSES.map.USDC,
-      // DAI: "0xEdDfAac857cb94aE8A0347e2b1b06f21AA1AAeFA",
-      // ETH: ADDRESSES.map.ETH,
+      USDT: "0x33daba9618a75a7aff103e53afe530fbacf4a3dd",
+      USDC: ADDRESSES.map.USDC,
+      DAI: "0xEdDfAac857cb94aE8A0347e2b1b06f21AA1AAeFA",
+      ETH: ADDRESSES.map.ETH,
       MAP: ADDRESSES.map.WMAPO
     }
   }
