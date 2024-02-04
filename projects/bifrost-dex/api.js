@@ -176,11 +176,11 @@ async function tvl() {
   await Promise.all(kusamaStablePools.map(async (item) => {
     const pool = item[1].toHuman()
 
-    await Promise.all([pool.assets[0],pool.assets[1]].map(async (token,i)=>{
+    await Promise.all([pool.assets[0], pool.assets[1]].map(async (token, i) => {
       let ratio = 1;
       let currentToken = formatToken(JSON.stringify(token), 'kusama')
       const isVstoken = currentToken.startsWith("vs");
-      const isVtoken = currentToken.startsWith("v")&&!isVstoken;
+      const isVtoken = currentToken.startsWith("v") && !isVstoken;
 
       currentToken = isVtoken ? currentToken.slice(1) : currentToken;
       currentToken = isVstoken ? currentToken.slice(2) : currentToken;
@@ -190,7 +190,7 @@ async function tvl() {
         ratio = new BigNumber(tokenPool).div(totalIssuance).toNumber();
       }
       if (isVstoken) {
-        ratio = 1/2;
+        ratio = 1 / 2;
       }
       if (totalLiquidity[currentToken]) {
         totalLiquidity[currentToken] = new BigNumber(totalLiquidity[currentToken]).plus(pool.balances[i].replaceAll(',', '')).multipliedBy(ratio).toFixed().split(".")[0];
@@ -205,12 +205,16 @@ async function tvl() {
   await Promise.all(polkadotStablePools.map(async (item) => {
     const pool = item[1].toHuman()
 
-    await Promise.all([pool.assets[0],pool.assets[1]].map(async (token,i)=>{
+    await Promise.all([pool.assets[0], pool.assets[1]].map(async (token, i) => {
       let ratio = 1;
       let currentToken = formatToken(JSON.stringify(token), 'polkadot')
+      if (!currentToken) {
+        console.log(JSON.stringify(token) )
+        return;
+      }
 
-      const isVstoken = currentToken.startsWith("vs");
-      const isVtoken = currentToken.startsWith("v")&&!isVstoken;
+      const isVstoken = currentToken?.startsWith("vs");
+      const isVtoken = currentToken?.startsWith("v") && !isVstoken;
 
       currentToken = isVtoken ? currentToken.slice(1) : currentToken;
       currentToken = isVstoken ? currentToken.slice(2) : currentToken;
@@ -221,7 +225,7 @@ async function tvl() {
         ratio = new BigNumber(tokenPool).div(totalIssuance).toNumber();
       }
       if (isVstoken) {
-        ratio = 1/2;
+        ratio = 1 / 2;
       }
       if (totalLiquidity[currentToken]) {
         totalLiquidity[currentToken] = new BigNumber(totalLiquidity[currentToken]).plus(pool.balances[i].replaceAll(',', '')).multipliedBy(ratio).toFixed().split(".")[0];

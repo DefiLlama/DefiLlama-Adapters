@@ -46,6 +46,6 @@ module.exports = {
   },
   arbitrum: {
     tvl: tvlArbitrum,
-    pool2: sumTokensExport({ owners: [LIQUIDITY_MINING_ARBITRUM, BATTLE_ARENA_ARBITRUM, VE_ZOO_CONTRACT_ARBITRUM], tokens: [CAMELOT_LP_TOKEN_ARBITRUM] }),
+    pool2: sumTokensExport({ owners: [LIQUIDITY_MINING_ARBITRUM, BATTLE_ARENA_ARBITRUM, VE_ZOO_CONTRACT_ARBITRUM], tokens: [ CAMELOT_LP_TOKEN_ARBITRUM] }),
   }
 };
