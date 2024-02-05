@@ -28,6 +28,7 @@ const poolHelpers = {
   'scroll': ['0x1502d025BfA624469892289D45C0352997251728'],
   'base': ['0x110dE362cc436D7f54210f96b8C7652C2617887D'],
   'zkfair': ['0x110dE362cc436D7f54210f96b8C7652C2617887D'],
+  'zeta': ['0x2db0AFD0045F3518c77eC6591a542e326Befd3D7'],
 } // iziswap liquidityManager contracts
 
 const blacklistedTokens = [
