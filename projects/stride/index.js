@@ -26,7 +26,7 @@ const chains = {
     coinGeckoId: "osmosis",
   },
 
-  terra: {
+  terra2: {
     chainId: "phoenix-1",
     denom: "uluna",
     coinGeckoId: "terra-luna-2",
