@@ -44,7 +44,7 @@ async function getSumFCNProductQueuedDeposits(fcnProducts, api) {
 function getLOVCalls(lovProducts) {
   const calls = []
   for (const product of lovProducts)
-    for (let i = 1; i < maxLeverage; i++)
+    for (let i = 1; i <= maxLeverage; i++)
       calls.push([product, i])
   return calls.map(i => ({ params: i }))
 }
@@ -66,7 +66,8 @@ async function getEthereumTvl(_, _1, _2, { api }) {
   const lovProducts = await getProducts(api);
   const calls = [
     getSumLOVProductDeposits(lovProducts, api),
-    getSumLOVProductQueuedDeposits(lovProducts, api)
+    getSumLOVProductQueuedDeposits(lovProducts, api),
+    getSumFCNProductQueuedDeposits(FCN_BOND_AND_OPTIONS_ADDRESSES, api)
   ]
   if (api.chain === 'ethereum') {
     calls.push(getSumFCNProductDeposits(FCN_PURE_OPTIONS_ADDRESSES, api), getSumFCNProductQueuedDeposits(FCN_PURE_OPTIONS_ADDRESSES, api))
@@ -80,8 +81,7 @@ async function getEthereumTvl(_, _1, _2, { api }) {
 async function getBorrowedTvl(_, _1, _2, { api }) {
   const { usdcAddress } = config[api.chain]
   const results = await Promise.all([
-    getSumFCNProductDeposits(FCN_BOND_AND_OPTIONS_ADDRESSES, api),
-    getSumFCNProductQueuedDeposits(FCN_BOND_AND_OPTIONS_ADDRESSES, api),
+    getSumFCNProductDeposits(FCN_BOND_AND_OPTIONS_ADDRESSES, api)
   ]);
   const sum = results.flat().flat().reduce((total, currentValue) => total + +currentValue, 0);
   api.add(usdcAddress, sum)
