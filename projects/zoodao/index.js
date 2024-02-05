@@ -39,10 +39,10 @@ async function tvlArbitrum(_, _1, _2, { api }) {
 }
 
 module.exports = {
-  methodology: "Counts the supplied value of FRAX and ZOO through ZooDAO's contracts",
+  methodology: "TVL: Counts the supplied value of mGLP and staked ZOO-ETH LP.",
   moonbeam: {
     tvl,
-    staking: sumTokensExport({ owners: stakingContracts, tokens: [ ZOODAO_TOKEN] }),
+    staking: sumTokensExport({ owners: stakingContracts, tokens: [ZOODAO_TOKEN] }),
   },
   arbitrum: {
     tvl: tvlArbitrum,
