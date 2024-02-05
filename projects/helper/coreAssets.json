@@ -435,7 +435,12 @@
     "aDAI": "0x2ff5371dad5c6ef76d55213b7c5a519f6654ba17",
     "aDAI_Wormhole_": "0xe9a88c33abf71c902f7581321d05e6516cbca761",
     "USDK": "0xd2137fdf10bd9e4e850c17539eb24cfe28777753",
-    "NPT": "0xe06597d02a2c3aa7a9708de2cfa587b128bd3815"
+    "NPT": "0xe06597d02a2c3aa7a9708de2cfa587b128bd3815",
+    "sBWPM": "0xf4546e1d3ad590a3c6d178d671b3bc0e8a81e27d",
+    "KRILL": "0x83bc9fe9eebfeb1ad4178ac5e7445dc6a7e95718",
+    "PEARL": "0xb3b1b54e3b9a27cee606f1018760abec4274bd35",
+    "CLAM": "0xba9725eaccf07044625f1d232ef682216f5371c2",
+    "sADOL": "0x4f3ac44bb2345d3960e34dd5dfe275249e43ae4a"
   },
   "nova": {
     "NUSD": "0x1f5396f254ee25377a5c1b9c6bff5f44e9294fff"
