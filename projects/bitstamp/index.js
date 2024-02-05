@@ -102,9 +102,62 @@ const config = {
         "3F4ceyGSFiN2pep4pjqXEHnZNHcvzh3W9y",
         "bc1qrxtqv6ym455etlvx86c98qk7ujherxgcycpwxjqyxacalztalslqhtd8hw",
         "bc1qlyvp6l3t47qqszngk8kyele2up4rf8t9g4jsmy8g9y48xhhuxvrs0eflt6",
-        "bc1qgrzeldvkp9n6yrq9ess9rxv7kcczdh9ta93llnh7tgxr5542seus2q36jy"
+        "bc1qgrzeldvkp9n6yrq9ess9rxv7kcczdh9ta93llnh7tgxr5542seus2q36jy",
+        "bc1q3lyjsr6e0krj6dp3cf9agehge5nak77d70r4seuyea2hjzwkkm4svht4gs",
+        "bc1quhatrr4tjpzr0wtsem6fwwwrxztmdlv60ldja6arz6hlr97fpuzs3lawcs",
+        "bc1qujz8nfqnencmfdm3nkj0ctu20tvh8lgwr8lxpayy0zh4gf4lzkjsd60kdv",
+        "bc1qmzv8qjzyyvvhcunpt7kwg79la3h3pkukn9xynvpk89ju7rjl2vvs5jsz0a",
+        "3E9wB5NTXtuYWxk8gXmoa9Jvb6XF8CGnkf",
+        "3LkVkaoLQGnnhNofgcNd6c7ufZ8FHheGx6"
     ]
   },
+    ripple: {
+      owners: [
+      'rnuDDzvYWTPqXTDVvwE9oLGLgxzV7Rpnpe',
+      'rafKN5p8iQsRP13LZXXoV8SCw2b9ugvjy1',
+      'rGNCoeUNqBzQnEiK2X7EYDzSpJ7PtKQSBb',
+      'rEXmdJZRfjXN3XGVdz99dGSZpQyJqUeirE',
+      'r3rVXDv8HDUBcrckfda9YsnBkX2E62WLyK',
+      'rDsbeomae4FXwgQTJp9Rs64Qg9vDiTCdBv',
+      'rp8Ygdyi2u7DZuMbchpFKBpsgSeg4LXDFQ',
+      'r3KfqsuMjp85ddhNN2xNAAbmrNKUgFbcpk',
+      'rG2bzZ2Q9JcpPeCyqXTQts6jHSYsX21G6a',
+      'rnTdkgZXF9AsEV8crG8KtngiD4nDC8Dkc2',
+      'rvYAfWj5gh67oV6fW32ZzP3Aw4Eubs59B',
+      'rHHrmqpzuDSkpcRK2PFm7P5Mo5zf927ina'
+    ]
+  },
+  solana: {
+    owners: [
+      'E1EfU3iKUS16mB2vdgj6mi3ssV32dm2Pxh7W74XxKuYu',
+      'i57ExrKB2i4mSgjSuq2xz617mQXmu33WG2WEYypmdvX',
+      'HBxZShcE86UMmF93KUM8eWJKqeEXi5cqWCLYLMMhqMYm',
+      'ETZY5TjMKdV2KdHVmUNTN56pWhMc8TyjrXtQ7YexDCmG'
+  ]
+},
+avax: {
+  owners: [
+    '0xa3fb85c3a2c50d8c0e1dd7fa7746f97c9e1d9591',
+    '0xc0ac2f4a3cf22fd504d8835b07f5acccfa9b27f9',
+    '0x3f3e23249f38d35a4cdaf44edfd99eeb4325b401',
+  ]
+},
+cardano: {
+  owners: [
+    'addr1q9w7x0secwr3uz397nl3zw4wc7w9su22rlc7v54p5q425xjauvlpnsu8rc9zta8lzya2a3uutpc558l3uef2rgp24gdqhcgfgs',
+    'addr1q9frvl4a0wgmk4e28gu4asyqrd6ezd3wn3e2wdq4h3hn73zjxelt67u3hdtj5w3etmqgqxm4jymza8rj5u6pt0r08azq3pf2u9',
+    'addr1qysvm626pgxcwgy2w7fk2ulmw0mc6v3twzes3arns64hk5eqeh545zsdsusg5aunv4elkulh35ezku9npr688p4t0dfsw7ur3u'
+  ]
+},
+near: {
+  owners: [
+    '992e069ce45717059abba021058759968fb0f61f048c09ac95b7a68a70b65ab1',
+    '7206287337fd1c74c3df9a04cecd8471a0ba8de3eb63bba3a1e49778f8538899',
+    '0df4207b35f21783f743f10b82dac228c9f11339aa1bc359f568b52efb6c46df',
+    '5362a3510eaf41f139d760ec375a425b95d4f86fe596f8d5e29351481a0a4941',
+    '452b94b0072819f60c0d757f6927155f12d6376409b0e6eac42d04946cd4c6eb',
+  ]
+}
 }
 
 module.exports = cexExports(config)
