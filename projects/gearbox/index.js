@@ -1,9 +1,7 @@
 const sdk = require("@defillama/sdk");
-const { sumTokens2 } = require("../helper/unwrapLPs.js");
 const abi = require("./abi.json");
 
 const { getV2CAs, getV1CAs } = require("./events");
-const { BigNumber } = require("ethers");
 
 const addressProviderV3 = "0x9ea7b04da02a5373317d745c1571c84aad03321d";
 //// Gearbox TVL
@@ -38,8 +36,7 @@ const getPoolAddrs = async (block) => {
     t.input.target,
   ]);
 
-  let poolBalances = {};
-  return { tokensAndOwners, poolBalances };
+  return { tokensAndOwners };
 };
 
 const getCreditManagersV1 = async (block) => {
@@ -78,7 +75,7 @@ const getCreditManagersV1 = async (block) => {
   return v1Managers;
 };
 
-const getV1TVL = async (block) => {
+const getV1TVL = async (block, api) => {
   const creditManagers = await getCreditManagersV1(block);
 
   // Silently throw if no V2 CAs available
@@ -86,7 +83,7 @@ const getV1TVL = async (block) => {
 
   // Get all CA Balances
   const caValues = await Promise.all(
-    creditManagers.map((cm) => getV1CAs(cm.addr, block))
+    creditManagers.map((cm) => getV1CAs(cm.addr, block, api))
   );
 
   return creditManagers.map((cm, i) => ({
@@ -119,7 +116,7 @@ const getCreditManagersV210 = async (block) => {
   return creditManagers;
 };
 
-const getV2TVL = async (block) => {
+const getV2TVL = async (block, api) => {
   // Get Current CMs
   const creditManagers = await getCreditManagersV210(block);
   // Silently throw if no V2 CAs available
@@ -127,7 +124,7 @@ const getV2TVL = async (block) => {
 
   // Get all CA Balances
   const caValues = await Promise.all(
-    creditManagers.map((cm) => getV2CAs(cm.addr, block))
+    creditManagers.map((cm) => getV2CAs(cm.addr, block, api))
   );
 
   return creditManagers.map((cm, i) => ({
@@ -166,35 +163,34 @@ const getCreditManagersV3 = async (block) => {
   }
 };
 
-const getV3CAs = async (creditManager, block) => {
-  const { output: caAddrs } = await sdk.api.abi.call({
+const getV3CAs = async (creditManager, block, api) => {
+  const caAddrs = await api.call({
     abi: abi["creditAccounts"],
     target: creditManager,
-    block,
   });
 
-  const { output: totalValue } = await sdk.api.abi.multiCall({
+  if (!caAddrs) return "0"
+
+  const totalValue = await api.multiCall({
     // ICreditManagerV3__factory.createInterface().getFunction("calcDebtAndCollateral").format(ethers.utils.FormatTypes.full)
     abi: abi["calcDebtAndCollateral"],
+    target: creditManager,
     calls: caAddrs.map((addr) => ({
       target: creditManager,
-      params: [addr, 2], // DEBT_COLLATERAL_WITHOUT_WITHDRAWALS
+      params: [addr, 3], // DEBT_COLLATERAL
     })),
-    block,
+    permitFailure: true,
   });
 
-  return totalValue[0]
-    ? totalValue
-        .map((t) => t.output)
-        .reduce(
-          (a, c) => a.add(BigNumber.from(c.totalValue)),
-          BigNumber.from("0")
-        )
-        .toString()
-    : "0";
+  return totalValue
+    .reduce(
+      (a, c) => a + BigInt(c?.totalValue ?? '0'),
+      BigInt(0)
+    )
+    .toString();
 };
 
-const getV3TVL = async (block) => {
+const getV3TVL = async (block, api) => {
   // Get Current CMs
   const creditManagers = await getCreditManagersV3(block);
   // Silently throw if no CAs available
@@ -202,7 +198,7 @@ const getV3TVL = async (block) => {
 
   // Get all CA Balances
   const caValues = await Promise.all(
-    creditManagers.map((cm) => getV3CAs(cm.addr, block))
+    creditManagers.map((cm) => getV3CAs(cm.addr, block, api))
   );
 
   return creditManagers.map((cm, i) => ({
@@ -212,26 +208,22 @@ const getV3TVL = async (block) => {
   }));
 };
 
-const tvl = async (timestamp, block) => {
+const tvl = async (timestamp, block, _, { api }) => {
   // Pool TVL (Current token balances)
-  const { poolBalances, tokensAndOwners } = await getPoolAddrs(block);
+  const { tokensAndOwners } = await getPoolAddrs(block);
 
   // CreditAccounts TVL
-  const v1Balances = await getV1TVL(block);
-  const v2Balances = await getV2TVL(block);
-  const v3Balances = await getV3TVL(block);
+  const v1Balances = await getV1TVL(block, api);
+  const v2Balances = await getV2TVL(block, api);
+  const v3Balances = await getV3TVL(block, api);
 
   // Merge all balances for each token
-  [...v1Balances, ...v2Balances, ...v3Balances].forEach((i) => {
-    sdk.util.sumSingleBalance(poolBalances, i.token, i.bal);
+  [v1Balances, v2Balances, v3Balances].flat().forEach((i) => {
+    api.add(i.token, i.bal);
     tokensAndOwners.push([i.token, i.addr]);
   });
 
-  return sumTokens2({
-    balances: poolBalances,
-    tokensAndOwners,
-    block,
-  });
+  return api.sumTokens({ tokensAndOwners });
 };
 
 module.exports = {
