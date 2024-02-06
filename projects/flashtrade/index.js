@@ -1,6 +1,6 @@
-const { sumTokens2 } = require("./helper/solana");
+const { sumTokens2 } = require("../helper/solana");
 
-async function tvl(_, _b, _cb, { api }) {
+async function tvl() {
   const vaults = [
     "Hhed3wTHoVoPpnuBntGf236UfowMMAXfxqTLkMyJJENe", // SOL
     "BC5xAUpEbfeSWi5fJdvhFQhM3eMbTok2c7SY62daB3da", // USDC
@@ -16,7 +16,7 @@ module.exports = {
   timetravel: false,
   methodology:
     "tvl is the usd equivalent value of all the assets in our pools.",
-  solana: { 
-    tvl 
-},
+  solana: {
+    tvl
+  },
 };
