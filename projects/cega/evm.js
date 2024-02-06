@@ -66,11 +66,12 @@ async function getEthereumTvl(_, _1, _2, { api }) {
   const lovProducts = await getProducts(api);
   const calls = [
     getSumLOVProductDeposits(lovProducts, api),
-    getSumLOVProductQueuedDeposits(lovProducts, api),
-    getSumFCNProductQueuedDeposits(FCN_BOND_AND_OPTIONS_ADDRESSES, api)
+    getSumLOVProductQueuedDeposits(lovProducts, api)
   ]
   if (api.chain === 'ethereum') {
-    calls.push(getSumFCNProductDeposits(FCN_PURE_OPTIONS_ADDRESSES, api), getSumFCNProductQueuedDeposits(FCN_PURE_OPTIONS_ADDRESSES, api))
+    calls.push(getSumFCNProductDeposits(FCN_PURE_OPTIONS_ADDRESSES, api),
+    getSumFCNProductQueuedDeposits(FCN_PURE_OPTIONS_ADDRESSES, api),
+    getSumFCNProductQueuedDeposits(FCN_BOND_AND_OPTIONS_ADDRESSES, api))
   }
   const results = await Promise.all(calls);
   const sum = results.flat().flat().reduce((total, currentValue) => total + +currentValue, 0);
