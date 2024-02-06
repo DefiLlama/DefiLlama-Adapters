@@ -15,7 +15,5 @@ async function tvl(_, _b, _cb, { api }) {
 module.exports = {
     timetravel: false,
     methodology: "tvl is the usd equivalent value of all the assets in our pools.",
-    solana: {
-      tvl,
-    },
+    tvl,
 };
