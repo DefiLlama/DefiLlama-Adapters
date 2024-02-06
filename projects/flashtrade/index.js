@@ -1,13 +1,5 @@
 const { sumTokens2 } = require("./helper/solana");
 
-module.exports = {
-  timetravel: false,
-  methodology: "tvl is the usd equivalent value of all the assets in our pools.",
-  solana: {
-    tvl: tvl,
-  },
-};
-
 async function tvl(_, _b, _cb, { api }) {
   const vaults = [
     "Hhed3wTHoVoPpnuBntGf236UfowMMAXfxqTLkMyJJENe", // SOL
@@ -19,3 +11,11 @@ async function tvl(_, _b, _cb, { api }) {
 
   return sumTokens2({ tokenAccounts: vaults });
 };  
+
+module.exports = {
+    timetravel: false,
+    methodology: "tvl is the usd equivalent value of all the assets in our pools.",
+    solana: {
+      tvl,
+    },
+};
