@@ -6,7 +6,7 @@ module.exports = {
   bsc: {
     ...compoundExports2({
         comptroller: "0x57E09c96DAEE58B77dc771B017de015C38060173",
-        cether: "0xC6BcBe182b0F85dBfF6b49DC81CecEe02A16fE57",
+        cether: "0x5fcea94b96858048433359bb5278a402363328c3",
     }),
     staking: staking(
       [
