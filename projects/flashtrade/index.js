@@ -18,4 +18,4 @@ async function tvl(_, _b, _cb, { api }) {
   ];
 
   return sumTokens2({ tokenAccounts: vaults });
-};
+};  
