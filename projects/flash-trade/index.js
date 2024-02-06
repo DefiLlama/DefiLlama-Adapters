@@ -2,7 +2,7 @@ const { sumTokens2 } = require("./helper/solana");
 
 module.exports = {
   timetravel: false,
-  methodology: "Calculate sum across all program token accounts",
+  methodology: "tvl is the usd equivalent value of all the assets in our pools.",
   solana: {
     tvl,
   },
