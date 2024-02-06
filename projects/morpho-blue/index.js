@@ -1,6 +1,5 @@
 const { getLogs } = require('../helper/cache/getLogs')
 const abi = require("../helper/abis/morpho.json");
-const { morphoBlue, whitelistedIds } = require("./addresses");
 
 module.exports = {
   methodology: `Collateral (supply minus borrows) in the balance of the Morpho contracts`,
@@ -8,7 +7,7 @@ module.exports = {
 };
 
 const config = {
-  ethereum: { morphoBlue, fromBlock: 18883124 }
+  ethereum: { morphoBlue: '0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb', fromBlock: 18883124 }
 }
 
 Object.keys(config).forEach(chain => {
@@ -35,7 +34,8 @@ Object.keys(config).forEach(chain => {
       api, target: morphoBlue,
       eventAbi: 'event CreateMarket(bytes32 indexed id, (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv) marketParams)',
       onlyArgs: true, fromBlock,
+      topics: ['0xac4b2400f169220b0c0afdde7a0b32e775ba727ea1cb30b35f935cdaab8683ac'],
     })
-    return logs.map(i => i.id).concat(whitelistedIds)
+    return logs.map(i => i.id)
   }
 })
