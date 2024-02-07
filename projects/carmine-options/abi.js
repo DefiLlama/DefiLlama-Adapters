@@ -30,7 +30,9 @@ const abi = [
         "type": "felt"
       }
     ],
-    "stateMutability": "view"
+    "stateMutability": "view",
+    "customInput": 'address',
+    "customType": 'address',
   },
 ];
 

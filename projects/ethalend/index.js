@@ -71,7 +71,6 @@ async function tvl(chain, block, chainId) {
   for (let i = 0; i < vaults.length; i++) {
     const underlying = underlyings.output[i].output
     const total = totals.output[i].output
-    // console.log(underlying, total, underlyings.output[i].input)
     if (underlying === curvePool) {
       sdk.util.sumSingleBalance(balances, "polygon:0x2e1ad108ff1d8c782fcbbb89aad783ac49586756", total)
     } else {

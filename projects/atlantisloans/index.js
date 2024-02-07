@@ -28,11 +28,14 @@ module.exports = {
     // ),
     tvl: async () => ({}),
   },
-  polygon: compoundExports(polygonComptroller,
-    "polygon",
-    "0xa65722af4957cef481edb4cb255f804dd36e8adc",
-    ADDRESSES.polygon.WMATIC_2
-  ),
+  // polygon: compoundExports(polygonComptroller,
+  //   "polygon",
+  //   "0xa65722af4957cef481edb4cb255f804dd36e8adc",
+  //   ADDRESSES.polygon.WMATIC_2
+  // ),
+  polygon: {
+    tvl: async () => ({}),
+  },
   avax: compoundExports(avaxComptroller,
     "avax",
     "0x6bd2154fbc086cb43411966e0e72584196ccd065",

@@ -4,7 +4,6 @@ const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const wGLMR = ADDRESSES.moonbeam.WGLMR;
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { transformBscAddress } = require("../helper/portedTokens");
 
 async function dmodBscStakingPool(timestamp, block, chainBlocks) {
   const stakingBalance = new BigNumber(
@@ -61,7 +60,7 @@ async function dmodEthereumStakingPool(timestamp, block, chainBlocks) {
   return { 'demodyfi': stakingBalance.div(new BigNumber(10).pow(decimals)).toFixed(0) };
 }
 async function dmodBscLPPool(timestamp, block, chainBlocks) {
-  const transform = await transformBscAddress();
+  const transform = i => `bsc:${i}`;
   const balances = {};
 
   const lpTokenbalance = new BigNumber(

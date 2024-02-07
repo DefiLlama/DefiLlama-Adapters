@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
-const { transformOptimismAddress } = require('../helper/portedTokens');
 const perpV2VaultABI = require('./abis/perpV2Vault.json');
 const perpLemmaWrapperABI = require('./abis/perpLemmaWrapper.json');
 const USDC = ADDRESSES.optimism.USDC;
@@ -25,7 +24,7 @@ const perpLemmaWrappers = [
 //tracks only tvl on optimism (v2) as v1 (on arbitrum) is getting deprecated
 async function tvl(timestamp, block, chainBlocks) {
     const balances = {};
-    const transform = await transformOptimismAddress();
+    const transform = i => `optimism:${i}`;
 
     for (let i = 0; i < tokens.length; i++) {
         const token = tokens[i];

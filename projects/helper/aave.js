@@ -1,3 +1,4 @@
+const { getLogs } = require('./cache/getLogs')
 const ADDRESSES = require('./coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { default: BigNumber } = require('bignumber.js');
@@ -187,7 +188,7 @@ const oracleAbis = {
   getAssetsPrices: "function getAssetsPrices(address[] assets) view returns (uint256[])",
 }
 
-function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyUnit, } = {}) {
+function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyUnit, abis = {}, fromBlock, } = {}) {
 
   async function tvl(_, _b, _c, { api }) {
     const data = await getReservesData(api)
@@ -225,8 +226,9 @@ function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyU
   }
 
   async function getReservesData(api) {
+    if (fromBlock) return getReservesDataFromBlock(api)
     const tokens = await api.call({ abi: abiv2.getReservesList, target: registry })
-    const data = await api.multiCall({ abi: abiv2.getReserveData, calls: tokens, target: registry, })
+    const data = await api.multiCall({ abi: abis.getReserveData ?? abiv2.getReserveData, calls: tokens, target: registry, })
     data.forEach((v, i) => v.underlying = tokens[i])
     if (useOracle) {
       let currency = baseCurrency
@@ -248,6 +250,18 @@ function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyU
       })
     }
     return data
+  }
+
+  async function getReservesDataFromBlock(api) {
+    const logs = await getLogs({
+      api,
+      target: registry,
+      topics: ['0x3a0ca721fc364424566385a1aa271ed508cc2c0949c2272575fb3013a163a45f'],
+      fromBlock,
+      eventAbi: 'event ReserveInitialized (address indexed underlying, address indexed aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress, address interestRateStrategyAddress)',
+      onlyArgs: true,
+    })
+    return logs
   }
 
   const abiv2 = {

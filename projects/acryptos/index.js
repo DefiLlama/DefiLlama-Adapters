@@ -64,6 +64,9 @@ module.exports = {
   avax:{
     tvl: fetchallchain(43114),
   },
+  base:{
+    tvl: fetchallchain(8453),
+  },
   harmony: {
     tvl: fetchallchain(1666600000),
   }

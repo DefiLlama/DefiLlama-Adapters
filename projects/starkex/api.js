@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const { call, multiCall, parseAddress } = require('../helper/chain/starknet')
 const abi = require('./abi')
@@ -9,13 +10,11 @@ async function tvl() {
   let pairLength = await call({ target: factory, abi: abi.factory.allPairsLength})
   let pairs = await multiCall({ abi: abi.factory.allPairs, target: factory, calls: getParamCalls(+pairLength)})
   
-  const calls = pairs.map(i => parseAddress(i))
+  const calls = pairs.map(i => parseAddress(i)).filter(i => i !== '0x0000000000000000000000000000000000000000000000000000000000000000')
   
-  const [ token0s, token1s, reserves ] = await Promise.all([
-    multiCall({ abi: abi.pair.token0, calls }),
-    multiCall({ abi: abi.pair.token1, calls }),
-    multiCall({ abi: abi.pair.getReserves, calls }),
-  ])
+  const token0s = await multiCall({ abi: abi.pair.token0, calls })
+  const token1s = await multiCall({ abi: abi.pair.token1, calls })
+  const reserves = await multiCall({ abi: abi.pair.getReserves, calls })
 
   const data = []
   reserves.forEach((reserve, i) => {

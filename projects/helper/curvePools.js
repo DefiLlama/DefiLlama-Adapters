@@ -156,7 +156,7 @@ module.exports = {
   '0xd632f22692fac7611d2aa1c0d552930d43caed3b': {
     swapContract: '0xd632f22692fac7611d2aa1c0d552930d43caed3b',
     underlyingTokens: [
-      '0x853d955acef822db058eb8505911ed77f175b99e',
+      ADDRESSES.ethereum.FRAX,
       '0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490'
     ]
   },

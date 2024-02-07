@@ -1,9 +1,9 @@
 const axios = require("axios");
-const { default: BigNumber } = require("bignumber.js");
 const sdk = require("@defillama/sdk");
 const { transformBalances } = require("../portedTokens");
 const { PromisePool } = require("@supercharge/promise-pool");
 const { log } = require("../utils");
+const ADDRESSES = require('../coreAssets.json')
 
 // where to find chain info
 // https://proxy.atomscan.com/chains.json
@@ -11,34 +11,54 @@ const { log } = require("../utils");
 // https://cosmos-chain.directory/chains
 const endPoints = {
   crescent: "https://mainnet.crescent.network:1317",
-  osmosis: "https://lcd.osmosis.zone",
+  osmosis: "https://rest.cosmos.directory/osmosis",
   cosmos: "https://cosmoshub-lcd.stakely.io",
-  kujira: "https://rest.cosmos.directory/kujira",
+  kujira: "https://kuji-api.kleomedes.network",
   comdex: "https://rest.comdex.one",
-  terra: "https://rest.cosmos.directory/terra",
-  terra2: "https://rest.cosmos.directory/terra2",
+  terra: "https://terra-classic-lcd.publicnode.com",
+  terra2: "https://terra-lcd.publicnode.com",
   umee: "https://umee-api.polkachu.com",
   orai: "https://lcd.orai.io",
-  juno: "https://lcd-juno.cosmostation.io",
-  cronos: "https://lcd-crypto-org.cosmostation.io",
+  juno: "https://juno.api.m.stavr.tech",
+  cronos: "https://rest.mainnet.crypto.org",
   chihuahua: "https://rest.cosmos.directory/chihuahua",
-  injective: "https://lcd-injective.whispernode.com:443",
+  stargaze: "https://rest.stargaze-apis.com",
+  quicksilver: "https://rest.cosmos.directory/quicksilver",
+  persistence: "https://rest.cosmos.directory/persistence",
+  secret: "https://lcd.secret.express",
+  // chihuahua: "https://api.chihuahua.wtf",
+  injective: "https://sentry.lcd.injective.network:443",
   migaloo: "https://migaloo-api.polkachu.com",
   fxcore: "https://fx-rest.functionx.io",
   xpla: "https://dimension-lcd.xpla.dev",
   kava: "https://api2.kava.io",
   neutron: "https://rest-kralum.neutron-1.neutron.org",
   quasar: "https://quasar-api.polkachu.com",
+  gravitybridge: "https://gravitychain.io:1317",
+  sei: "https://sei-api.polkachu.com",
+  aura: "https://lcd.aura.network",
+  archway: "https://api.mainnet.archway.io",
+  sifchain: "https://sifchain-api.polkachu.com",
+  nolus: "https://pirin-cl.nolus.network:1317",
+  bostrom: "https://lcd.bostrom.cybernode.ai"
 };
 
 const chainSubpaths = {
   crescent: "crescent",
+  osmosis: "osmosis",
   comdex: "comdex",
   umee: "umee",
   kava: "kava",
 };
 
-function getEndpoint(chain) {
+// some contract calls need endpoint with higher gas limit
+const highGasLimitEndpoints = {
+  'sei1xr3rq8yvd7qplsw5yx90ftsr2zdhg4e9z60h5duusgxpv72hud3shh3qfl': "https://rest.sei-apis.com",
+}
+
+function getEndpoint(chain, { contract } = {}) {
+  const highGasEndpoint = highGasLimitEndpoints[contract]
+  if (contract && highGasEndpoint) return highGasEndpoint
   if (!endPoints[chain]) throw new Error("Chain not found: " + chain);
   return endPoints[chain];
 }
@@ -49,7 +69,6 @@ async function query(url, block, chain) {
   if (block !== undefined) {
     endpoint += `&height=${block - (block % 100)}`;
   }
-  console.log(endpoint);
   return (await axios.get(endpoint)).data.result;
 }
 
@@ -96,19 +115,29 @@ async function getBalance({ token, owner, block, chain } = {}) {
   return Number(data.balance);
 }
 
+async function sumCW20Tokens({ balances = {}, tokens, owner, block, chain } = {}) {
+  await Promise.all(
+    tokens.map(async (token) => {
+      const balance = await getBalance({ token, owner, block, chain, });
+      sdk.util.sumSingleBalance(balances, token, balance, chain);
+    })
+  );
+  return balances;
+}
+
 async function getDenomBalance({ denom, owner, block, chain } = {}) {
   let endpoint = `${getEndpoint(chain)}/bank/balances/${owner}`;
   if (block !== undefined) {
     endpoint += `?height=${block - (block % 100)}`;
   }
-  const data = (await axios.get(endpoint)).data.result;
-
+  let { data } = await axios.get(endpoint)
+  data = chain === 'terra' ? data.balances : data.result
   const balance = data.find((balance) => balance.denom === denom);
   return balance ? Number(balance.amount) : 0;
 }
 
-async function getBalance2({ balances = {}, owner, block, chain } = {}) {
-  const subpath = chainSubpaths[chain] || "cosmos";
+async function getBalance2({ balances = {}, owner, block, chain, tokens, blacklistedTokens, } = {}) {
+  const subpath = "cosmos";
   let endpoint = `${getEndpoint(
     chain
   )}/${subpath}/bank/v1beta1/balances/${owner}?pagination.limit=1000`;
@@ -118,8 +147,11 @@ async function getBalance2({ balances = {}, owner, block, chain } = {}) {
   const {
     data: { balances: data },
   } = await axios.get(endpoint);
-  for (const { denom, amount } of data)
-    sdk.util.sumSingleBalance(balances, denom, amount);
+  for (const { denom, amount } of data) {
+    if (blacklistedTokens?.includes(denom)) continue;
+    if (tokens && !tokens.includes(denom)) continue;
+    sdk.util.sumSingleBalance(balances, denom.replaceAll('/', ':'), amount);
+  }
   return balances;
 }
 
@@ -147,17 +179,70 @@ async function queryContract({ contract, chain, data }) {
   data = Buffer.from(data).toString("base64");
   return (
     await axios.get(
-      `${getEndpoint(chain)}/cosmwasm/wasm/v1/contract/${contract}/smart/${data}`
+      `${getEndpoint(chain, { contract })}/cosmwasm/wasm/v1/contract/${contract}/smart/${data}`
     )
   ).data.data;
 }
 
-async function queryContracts({ chain, codeId }) {
-  return (
-    await axios.get(
-      `${getEndpoint(chain)}/cosmwasm/wasm/v1/code/${codeId}/contracts`
-    )
-  ).data.contracts;
+const multipleEndpoints={
+  sei: [
+    "https://sei-api.polkachu.com",
+    "https://sei-rest.brocha.in",
+    "https://rest.sei-apis.com",
+    "https://sei-m.api.n0ok.net",
+    "https://sei-api.lavenderfive.com",
+    "https://api-sei.stingray.plus"
+  ]
+}
+
+async function queryContractWithRetries({ contract, chain, data }) {
+  const rpcs = multipleEndpoints[chain]
+  if(rpcs === undefined){
+    return queryContract({contract, chain, data})
+  }
+  if (typeof data !== "string") data = JSON.stringify(data);
+  data = Buffer.from(data).toString("base64");
+  for(let i=0; i<rpcs.length; i++){
+    try{
+      return (
+        await axios.get(
+          `${rpcs[i]}/cosmwasm/wasm/v1/contract/${contract}/smart/${data}`
+        )
+      ).data.data;
+    } catch(e){
+      if(i >= rpcs.length - 1){
+        throw e
+      }
+    }
+  }
+}
+
+async function queryManyContracts({ contracts = [], chain, data }) {
+  const parallelLimit = 25
+  const { results, errors } = await PromisePool
+    .withConcurrency(parallelLimit)
+    .for(contracts)
+    .process(async (contract) =>  queryContract({ contract, chain, data }))
+
+  if (errors && errors.length) throw errors[0]
+
+  return results
+}
+
+
+async function queryContracts({ chain, codeId, }) {
+  const res = []
+  const limit = 100
+  let paginationKey
+
+  do {
+    let endpoint = `${getEndpoint(chain)}/cosmwasm/wasm/v1/code/${codeId}/contracts?pagination.limit=${limit}${paginationKey ? `&pagination.key=${encodeURIComponent(paginationKey)}` : ''}`
+    const { data: { contracts, pagination } } = await axios.get(endpoint)
+    paginationKey =  pagination.next_key
+      res.push(...contracts)
+  } while (paginationKey)
+
+  return res
 }
 
 function getAssetInfo(asset) {
@@ -192,14 +277,15 @@ async function queryContractStore({
   return query(url, block, chain);
 }
 
-async function sumTokens({ balances = {}, owners = [], chain, owner }) {
+async function sumTokens({ balances = {}, owners = [], chain, owner, tokens, blacklistedTokens, }) {
+  if (!tokens?.length || (tokens?.length === 1 && tokens[0] === ADDRESSES.null)) tokens = undefined;
   if (owner) owners = [owner]
   log(chain, "fetching balances for ", owners.length);
   let parallelLimit = 25;
 
   const { errors } = await PromisePool.withConcurrency(parallelLimit)
     .for(owners)
-    .process(async (owner) => getBalance2({ balances, owner, chain }));
+    .process(async (owner) => getBalance2({ balances, owner, chain, tokens, blacklistedTokens, }));
 
   if (errors && errors.length) throw errors[0];
   return transformBalances(chain, balances);
@@ -216,8 +302,11 @@ module.exports = {
   queryV1Beta1,
   queryContractStore,
   queryContract,
+  queryManyContracts,
   queryContracts,
   sumTokens,
   getTokenBalance,
   getToken,
+  sumCW20Tokens,
+  queryContractWithRetries
 };

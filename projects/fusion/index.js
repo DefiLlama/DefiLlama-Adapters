@@ -49,7 +49,6 @@ const dexTVL = {
   nova: {
     tvl: getUniTVL({
       factory: dexFactory,
-      chain: "nova",
       useDefaultCoreAssets: true,
     }),
   },
@@ -58,7 +57,6 @@ const dexTVL = {
   fantom: {
     tvl: getUniTVL({
       factory: dexFactory,
-      chain: "fantom",
       useDefaultCoreAssets: true,
     }),
   },
@@ -67,7 +65,6 @@ const dexTVL = {
   ethereumclassic: {
     tvl: getUniTVL({
       factory: dexFactoryClassic,
-      chain: "ethereumclassic",
       useDefaultCoreAssets: true,
     }),
   },
