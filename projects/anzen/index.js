@@ -1,4 +1,4 @@
-const sdk = require('@defillama/sdk')
+const ADDRESSES = require('../helper/coreAssets.json')
 
 // Anzen Secured Private Credit Token
 // minted by depositing USDC
@@ -26,12 +26,13 @@ async function borrowed(_, _1, _2, { api }) {
     params: [executedShares]
   });
 
-  api.add(SPCT, pooledUSDByShares);
+  api.add(ADDRESSES.ethereum.USDC, pooledUSDByShares/1e12);
   return api.getBalances()
 }
 
 module.exports = {
   methodology: "Sums the total USDC value deposited to mint SPCT.",
+  misrepresentedTokens: true,
   ethereum: {
     tvl,
     borrowed,
