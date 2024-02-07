@@ -1,25 +1,31 @@
-const sdk = require("@defillama/sdk");
-const { getEthereumTvlEx, getEthereumStaking, getEthereumPoolTvl, getEthereumBorrows, } = require('./config/onx/ethereum');
-const { getFantomTvl } = require('./config/onx/fantom');
-const { getPolygonTvl } = require('./config/onx/polygon');
-const { getAvalancheTvl } = require('./config/onx/avalanche');
+const { ethTvl, getEthereumStaking, getEthereumPoolTvl, getEthereumBorrows, } = require('./config/onx/ethereum');
+const { vaults: fVaults } = require('./config/onx/fantom/vaults');
+const { vaults: pVaults } = require('./config/onx/polygon/vaults');
+const { vaults: aVaults } = require('./config/onx/avalanche/vaults');
 
 module.exports = {
-  timetravel: false,
   doublecounted: true,
   ethereum: {
-    tvl: getEthereumTvlEx(),
+    tvl: ethTvl,
     staking: getEthereumStaking,
-    pool2: getEthereumPoolTvl(),
+    pool2: getEthereumPoolTvl,
     borrowed: getEthereumBorrows,
   },
-  fantom: {
-    tvl: getFantomTvl,
-  },
-  polygon: {
-    tvl: getPolygonTvl,
-  },
-  avax:{
-    tvl: getAvalancheTvl,
-  },
+  polygon: { tvl, },
+  avax: { tvl, },
+  fantom: { tvl, },
 };
+
+const config = {
+  polygon: { vaults: pVaults },
+  avax: { vaults: aVaults },
+  fantom: { vaults: fVaults },
+}
+
+async function tvl(_, _1_, _2_, { api }) {
+  const { vaults } = config[api.chain]
+  const pools = vaults.map(i => i[1])
+  const tokens = vaults.map(i => i[0])
+  const bals = await api.multiCall({ abi: 'uint256:underlyingBalanceWithInvestment', calls: pools })
+  api.addTokens(tokens, bals)
+}

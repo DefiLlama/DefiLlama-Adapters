@@ -1,8 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
   const sdk = require('@defillama/sdk');
 
-  const BigNumber = require("bignumber.js");
-
   const contracts = [
     '0x5199071825CC1d6cd019B0D7D42B08106f6CF16D',
     '0x1e0447b19bb6ecfdae1e4ae1694b0c3659614e4e',

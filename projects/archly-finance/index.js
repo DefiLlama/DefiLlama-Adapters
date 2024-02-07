@@ -7,7 +7,7 @@ const ARCHLY_ARC_TOKEN_OTHER = "0x684802262D614D0Cd0C9571672F03Dd9e85D7824"
 
 module.exports = {
     telos: {
-        tvl: getUniTVL({ factory: '0x39fdd4Fec9b41e9AcD339a7cf75250108D32906c', chain: 'telos', useDefaultCoreAssets: true, hasStablePools: true, }),
+        tvl: getUniTVL({ factory: '0x39fdd4Fec9b41e9AcD339a7cf75250108D32906c',  useDefaultCoreAssets: true, hasStablePools: true, }),
         staking: sumTokensExport({
             owner: '0x5680b3059b860d07A33B7A43d03D2E4dEdb226BB',
             tokens: ['0xa84df7aFbcbCC1106834a5feD9453bd1219B1fb5'],
@@ -17,7 +17,7 @@ module.exports = {
         })
     },
     arbitrum: {
-        tvl: getUniTVL({ factory: '0xeafBFeb64F8e3793D7d1767774efd33b203200C9', chain: 'arbitrum', useDefaultCoreAssets: true, hasStablePools: true, }),
+        tvl: getUniTVL({ factory: '0xeafBFeb64F8e3793D7d1767774efd33b203200C9',useDefaultCoreAssets: true, hasStablePools: true, }),
         staking: sumTokensExport({
             owner: '0x4c01dF6B9be381BA2a687D0ED5c40039dEEaf0a9',
             tokens: ['0x9435Ffb33Ce0180F55E08490C606eC3BD07da929'],
@@ -27,7 +27,7 @@ module.exports = {
         })
     },
     arbitrum_nova: {
-        tvl: getUniTVL({ factory: ARCHLY_FACTORY_OTHER, chain: 'arbitrum_nova', useDefaultCoreAssets: true, hasStablePools: true, }),
+        tvl: getUniTVL({ factory: ARCHLY_FACTORY_OTHER, useDefaultCoreAssets: true, hasStablePools: true, }),
         staking: sumTokensExport({
             owner: ARCHLY_VE_TOKEN_OTHER,
             tokens: [ARCHLY_ARC_TOKEN_OTHER],
@@ -36,8 +36,18 @@ module.exports = {
             restrictTokenRatio: 100,
         })
     },
+    base: {
+        tvl: getUniTVL({ factory: ARCHLY_FACTORY_OTHER, seDefaultCoreAssets: true, hasStablePools: true, }),
+        staking: sumTokensExport({
+            owner: "0x4c01dF6B9be381BA2a687D0ED5c40039dEEaf0a9",
+            tokens: [ARCHLY_ARC_TOKEN_OTHER],
+            lps: ['0x80dd4A2837AF3233176704142Fb44a216e170Ab3'],
+            coreAssets: [ADDRESSES.base.WETH],
+            restrictTokenRatio: 100,
+        })
+    },
     bsc: {
-        tvl: getUniTVL({ factory: ARCHLY_FACTORY_OTHER, chain: 'bsc', useDefaultCoreAssets: true, hasStablePools: true, }),
+        tvl: getUniTVL({ factory: ARCHLY_FACTORY_OTHER, seDefaultCoreAssets: true, hasStablePools: true, }),
         staking: sumTokensExport({
             owner: ARCHLY_VE_TOKEN_OTHER,
             tokens: [ARCHLY_ARC_TOKEN_OTHER],
@@ -47,7 +57,7 @@ module.exports = {
         })
     },
     fantom: {
-        tvl: getUniTVL({ factory: ARCHLY_FACTORY_OTHER, chain: 'fantom', useDefaultCoreAssets: true, hasStablePools: true, }),
+        tvl: getUniTVL({ factory: ARCHLY_FACTORY_OTHER, useDefaultCoreAssets: true, hasStablePools: true, }),
         staking: sumTokensExport({
             owner: ARCHLY_VE_TOKEN_OTHER,
             tokens: [ARCHLY_ARC_TOKEN_OTHER],
@@ -57,7 +67,7 @@ module.exports = {
         })
     },
     kava: {
-        tvl: getUniTVL({ factory: ARCHLY_FACTORY_OTHER, chain: 'kava', useDefaultCoreAssets: true, hasStablePools: true, }),
+        tvl: getUniTVL({ factory: ARCHLY_FACTORY_OTHER, useDefaultCoreAssets: true, hasStablePools: true, }),
         staking: sumTokensExport({
             owner: ARCHLY_VE_TOKEN_OTHER,
             tokens: [ARCHLY_ARC_TOKEN_OTHER],
@@ -67,17 +77,17 @@ module.exports = {
         })
     },
     optimism: {
-        tvl: getUniTVL({ factory: ARCHLY_FACTORY_OTHER, chain: 'optimism', useDefaultCoreAssets: true, hasStablePools: true, }),
+        tvl: getUniTVL({ factory: ARCHLY_FACTORY_OTHER, useDefaultCoreAssets: true, hasStablePools: true, }),
         staking: sumTokensExport({
             owner: ARCHLY_VE_TOKEN_OTHER,
             tokens: [ARCHLY_ARC_TOKEN_OTHER],
             lps: ['0xc492BCa6777818256C2e2e5FC8e180BC8697DfF5'],
-            coreAssets: [ADDRESSES.tombchain.FTM],
+            coreAssets: [ADDRESSES.optimism.WETH_1],
             restrictTokenRatio: 100,
         })
     },
     polygon: {
-        tvl: getUniTVL({ factory: ARCHLY_FACTORY_OTHER, chain: 'polygon', useDefaultCoreAssets: true, hasStablePools: true, }),
+        tvl: getUniTVL({ factory: ARCHLY_FACTORY_OTHER,  useDefaultCoreAssets: true, hasStablePools: true, }),
         staking: sumTokensExport({
             owner: ARCHLY_VE_TOKEN_OTHER,
             tokens: [ARCHLY_ARC_TOKEN_OTHER],

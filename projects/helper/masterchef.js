@@ -7,7 +7,7 @@ const token1Abi = 'address:token1'
 const getReservesAbi = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
 const userInfoAbi = 'function userInfo(uint256, address) view returns (uint256 amount, uint256 rewardDebt)'
 const { default: BigNumber } = require('bignumber.js');
-const { getChainTransform, getFixBalances } = require('../helper/portedTokens');
+const { getChainTransform, } = require('../helper/portedTokens');
 
 async function getPoolInfo(masterChef, block, chain, poolInfoAbi = abi.poolInfo) {
     const poolLength = (
@@ -269,10 +269,6 @@ function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingeck
             })
         }
 
-        if (['smartbch', 'cronos', 'avax'].includes(chain)) {
-            const fixBalances = await getFixBalances(chain)
-            Object.values(balances).map(fixBalances)
-        }
         return balances
     }
 

@@ -15,6 +15,18 @@ const contracts = {
     eqbRewardsAddress: "0x70f61901658aAFB7aE57dA0C30695cE4417e72b9",
     pendleAddress: "0x0c880f6761F1af8d9Aa9C466984b80DAb9a8c9e8",
   },
+  bsc: {
+    boosterAddress: "0x4D32C8Ff2fACC771eC7Efc70d6A8468bC30C26bF",
+    staker: "0x64627901dAdb46eD7f275fD4FC87d086cfF1e6E3",
+    eqbRewardsAddress: "0x0140dE476f49B6B42f7b73612b6dc317aB91D3BC",
+    pendleAddress: "0xb3Ed0A426155B79B898849803E3B36552f7ED507",
+  },
+  optimism: {
+    boosterAddress: "0x18C61629E6CBAdB85c29ba7993f251b3EbE2B356",
+    staker: "0x4D32C8Ff2fACC771eC7Efc70d6A8468bC30C26bF",
+    eqbRewardsAddress: "0x22Fc5A29bd3d6CCe19a06f844019fd506fCe4455",
+    pendleAddress: "0xBC7B1Ff1c6989f006a1185318eD4E7b5796e66E1",
+  }
 };
 
 async function tvl(chain, block) {
@@ -78,7 +90,7 @@ async function tvl(chain, block) {
   return balances;
 }
 
-const chains = ["ethereum", "arbitrum"];
+const chains = ["ethereum", "arbitrum", 'bsc', 'optimism'];
 
 module.exports = {
   doublecounted: true,

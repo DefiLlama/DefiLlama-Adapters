@@ -13,3 +13,5 @@ module.exports = {
     })
   }
 }
+
+module.exports.deadFrom = '2023-04-22'

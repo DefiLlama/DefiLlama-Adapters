@@ -26,7 +26,7 @@ module.exports = treasuryExports({
       ADDRESSES.ethereum.CRV,
       ADDRESSES.ethereum.CVX,
       "0x4C2e59D098DF7b6cBaE0848d66DE2f8A4889b9C3", // FODL
-      "0x5aFE3855358E112B5647B952709E6165e1c1eEEe", // SAFE
+      ADDRESSES.ethereum.SAFE,
       "0x22915f309EC0182c85cD8331C23bD187fd761360", // DOLA USDC Stable Pool Aura Deposit Vault
       "0x7f50786A0b15723D741727882ee99a0BF34e3466", // Stake DAO sdCRV Gauge
       "0x445494F823f3483ee62d854eBc9f58d5B9972A25", // 50DOLA-50DBR
@@ -35,7 +35,6 @@ module.exports = treasuryExports({
       "0xAD038Eb671c44b853887A7E32528FaB35dC5D710", // DBR
       "0x0a6B1d9F920019BAbc4De3F10c94ECB822106104",
       "0x73E02EAAb68a41Ea63bdae9Dbd4b7678827B2352",
-      "0xC36442b4a4522E871399CD717aBDD847Ab11FE88"
     ],
     owners: [anchorTreasury, multisig, treasury1, treasury2],
     ownTokens: [
@@ -46,6 +45,9 @@ module.exports = treasuryExports({
     ],
     resolveUniV3: true,
     resolveLP: true,
+    blacklistedTokens: [
+      '0x21e83dbfd8f11d885eba9f9ba126da11ae0671b7'
+    ]
   },
   optimism: {
     tokens: [

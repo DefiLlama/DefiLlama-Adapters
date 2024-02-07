@@ -1,10 +1,9 @@
-const axios = require("axios");
+const { get } = require('../helper/http')
 
 async function fetch() {
   //Get all the vaults in the protocol
   const assetsUrl = "https://free-api.vestige.fi/assets/locked";
-  const assetsResponse = await axios.get(assetsUrl);
-  const assets = assetsResponse.data;
+  const assets = await get(assetsUrl);
 
   let tvl = 0;
 
@@ -13,8 +12,8 @@ async function fetch() {
       const assetId = asset.asset_id;
       const supplyInTvlLocked = asset.supply_in_tvl_locked;
       const priceUrl = `https://free-api.vestige.fi/asset/${assetId}/price`;
-      const priceResponse = await axios.get(priceUrl);
-      const price = priceResponse.data.USD;
+      const priceResponse = await get(priceUrl);
+      const price = priceResponse.USD;
       tvl += supplyInTvlLocked * price * 2;
     })
   );

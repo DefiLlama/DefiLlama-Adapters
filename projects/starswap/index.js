@@ -1,5 +1,4 @@
 const { getUniTVL, getTokenPrices, } = require('../helper/unknownTokens')
-const { getFixBalances } = require('../helper/portedTokens')
 const sdk = require('@defillama/sdk')
 
 const FACTORIES = "0x0b657e81a0C3E903cbe1228579fBd49AC5D81Ac1"
@@ -20,7 +19,6 @@ module.exports = {
   astar: {
     tvl: getUniTVL({
       factory: FACTORIES,
-      chain,
       useDefaultCoreAssets: true,
     }),
     staking:  async (_, _b, { [chain]: block }) => {
@@ -32,11 +30,9 @@ module.exports = {
       })
 
       const balances = { [chain + ':' + TOKENS.STAR] : totalStakedTokens }
-      const transform = await getFixBalances(chain)
       const { updateBalances } = await getTokenPrices({ chain, block, 
         useDefaultCoreAssets: true, lps: [ ASTAR_LP ], allLps: true })
       await updateBalances(balances)
-      transform(balances)
       return balances
     }
   }

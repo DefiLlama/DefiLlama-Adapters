@@ -1,8 +1,9 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const factories = {
-  fantom:   '0x8597dB3ba8dE6BAAdEDa8cBa4dAC653E24a0e57B',
-  arbitrum: '0x8597dB3ba8dE6BAAdEDa8cBa4dAC653E24a0e57B'
+  fantom:	'0x8597dB3ba8dE6BAAdEDa8cBa4dAC653E24a0e57B',
+  arbitrum: '0x8597dB3ba8dE6BAAdEDa8cBa4dAC653E24a0e57B',
+  base:		'0x8597dB3ba8dE6BAAdEDa8cBa4dAC653E24a0e57B'
   ///zkevm: tbd
 }
 async function tvl(_, _b, _cb, { api, }) {

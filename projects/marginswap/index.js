@@ -1,55 +1,16 @@
-const sdk = require("@defillama/sdk");
-const { GraphQLClient, gql } = require("graphql-request");
-
-function getChainTvl(chain) {
-  return async (timestamp, ethBlock, chainBlocks) => {
-    const balances = {};
-
-    var api = `https://api.thegraph.com/subgraphs/name/marginswap/marginswap-v2-${
-      chain === "avax" ? "avalanche" : chain
-    }`;
-
-    var graphQLClient = new GraphQLClient(api);
-
-    var query = gql`
-      {
-        aggregatedBalances {
-          balance
-          token
-        }
-      }
-    `;
-
-    const data = (
-      await graphQLClient.request(query)
-    ).aggregatedBalances;
-
-    data.forEach((data) => {
-      sdk.util.sumSingleBalance(
-        balances,
-        `${chain}:${data.token}`,
-        data.balance
-      );
-    });
-    
-    return balances;
-  };
-}
-
 module.exports = {
-  misrepresentedTokens: true,
   ethereum: {
-    tvl: getChainTvl("ethereum"),
+    tvl: () => ({}),
   },
   bsc: {
-    tvl: getChainTvl("bsc"),
+    tvl: () => ({}),
   },
   avax: {
-    tvl: getChainTvl("avax"),
+    tvl: () => ({}),
   },
   polygon: {
-    tvl: getChainTvl("polygon"),
+    tvl: () => ({}),
   },
-  methodology:
-    "Counts liquidity of deposits, pulling data from Analytics Subgraphs",
 };
+
+module.exports.deadFrom = '2023-08-09'

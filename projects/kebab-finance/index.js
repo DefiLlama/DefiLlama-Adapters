@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const { transformBscAddress } = require("../helper/portedTokens");
 const { addFundsInMasterChef } = require("../helper/masterchef");
 
 const masterchef = "0x76FCeffFcf5325c6156cA89639b17464ea833ECd";
@@ -8,7 +7,7 @@ const poolInfoAbi = 'function poolInfo(uint256) view returns (address lpToken, u
 
 async function tvl(timestamp, block, chainBlocks) {
   let balances = {};
-  const transform = await transformBscAddress();
+  const transform = i => `bsc:${i}`;
   await addFundsInMasterChef(
     balances,
     masterchef,

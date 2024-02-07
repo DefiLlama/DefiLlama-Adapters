@@ -1,5 +1,6 @@
 const {sumTokens2, } = require("./helper/unwrapLPs.js")
 const { getConfig } = require("./helper/cache.js")
+const { stakings } = require("./helper/staking.js")
 
 // PSP staking for sPSP in each PMM pool (used for signalling amon other things)
 const PSP = '0xcafe001067cdef266afb7eb5a286dcfd277f3de5'
@@ -19,10 +20,15 @@ async function safetyModuleStaking(timestamp, ethBlock, chainBlocks, { api }) {
 }
 
 module.exports = {
-  methodology: "PSP can be staked in staking pools, one pool per Private Market Maker, to signal and share the PMM benefits",
+  methodology: "PSP can be staked either on its single asset sePSP pool or 2x boosted sePSP2, an 80/20 balancer pool. Staking allows users to receive Revenue based on their boosted actions.",
   ethereum: {
     staking,
     pool2: safetyModuleStaking,
+    tvl: () => ({}), 
+  },
+  optimism: {
+    staking: stakings(["0x8C934b7dBc782568d14ceaBbEAeDF37cB6348615"], "0xd3594E879B358F430E20F82bea61e83562d49D48", "optimism"),
+    pool2: stakings(["0x26Ee65874f5DbEfa629EB103E7BbB2DEAF4fB2c8"], "0x11f0b5cca01b0f0a9fe6265ad6e8ee3419c68440", "optimism"),
     tvl: () => ({}), 
   },
 }

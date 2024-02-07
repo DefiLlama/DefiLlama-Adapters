@@ -5,6 +5,7 @@ const factories = {
   avax: '0x8e42f2F4101563bF679975178e880FD87d3eFd4e',
   arbitrum: '0x8e42f2F4101563bF679975178e880FD87d3eFd4e',
   bsc: '0x8e42f2F4101563bF679975178e880FD87d3eFd4e',
+  ethereum: '0xDC8d77b69155c7E68A95a4fb0f06a71FF90B943a'
 }
 async function tvl(_, _b, _cb, { api, }) {
   const pools = await api.fetchList({

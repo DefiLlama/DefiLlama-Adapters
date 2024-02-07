@@ -33,13 +33,7 @@ async function adaTvl() {
     let totalAda = 0
 
     // fetch the prices of each traded token first
-    const tokenlistV2 = (await fetchURL("https://api.muesliswap.com/list?base-policy-id=&base-tokenname=")).data
-    const adaPrices = new Map(tokenlistV2.map(d => {
-        const ident = d.info.address.policyId + '.' + d.info.address.name
-        const bidPrice = parseFloat(d.price.bidPrice)
-        const price = parseFloat(d.price.price)
-        return [ident, { bidPrice, price }]
-    }))
+    const adaPrices = new Map(Object.entries((await fetchURL("https://api.muesliswap.com/defillama/prices")).data))
 
     // then first accumulate over the legacy orderbook
     const orderbookV1 = (await fetchURL("https://orders.muesliswap.com/all-orderbooks")).data

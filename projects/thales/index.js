@@ -35,6 +35,19 @@ const arbSportsVault = ["0xfF7AEA98740fA1e2a9eB81680583e62aaFf1e3Ad", "0xE26374c
 const arbAmmVault = ["0x640c34D9595AD5351Da8c5C833Bbd1AfD20519ea", "0x0A29CddbdAAf56342507574820864dAc967D2683", "0x008A4e30A8b41781F5cb017b197aA9Aa4Cd53b46"]
 const arbThalesToken = "0xE85B662Fe97e8562f4099d8A1d5A92D4B453bF30"
 
+
+const baseMarketManager = "0xc62E56E756a3D14ffF838e820F38d845a16D49dE"
+const baseSportsMarketManager = "0xB0EE5C967F209f24f7eF30c2C6Da38346a87E089"
+const baseParlayAMM = "0x5625c3233b52206a5f23c5fC1Ce16F6A7e3874dd"
+const baseSportsAMM = "0xAFD339acf24813e8038bfdF19A8d87Eb94B4605d"
+const baseRangedAMM = "0xB8109ac56EE572990e6d2C6b4648042bB1C33317"
+const baseThalesAMM = "0xe41cD3A25CBdeDA0BC46D48C380393D953bD2034"
+
+
+const bscMarketManager = "0xc62E56E756a3D14ffF838e820F38d845a16D49dE"
+const bscRangedAMM = "0xda5Bd4aBAFbE249bdC5684eAD594B0ac379687fd"
+const bscThalesAMM = "0x465B66A3e33088F0666dB1836652fBcF037c7319"
+
 async function guniPool2(_timestamp, _ethBlock, chainBlocks, { api }) {
   const [lp, token0, token1] = await api.batchCall([
     { target: opThalesLpToken, abi: abi.getUnderlyingBalance, },
@@ -53,6 +66,14 @@ async function addSportsLPTvl(api, contract, token) {
   api.add(token, await api.call({ target: contract, abi: abi.totalDeposited, }))
 }
 
+const speedMarkets = {
+  arbitrum: ['0x02D0123a89Ae6ef27419d5EBb158d1ED4Cf24FA3'],
+  polygon: ['0x4B1aED25f1877E1E9fBECBd77EeE95BB1679c361'],
+  optimism: ['0xE16B8a01490835EC1e76bAbbB3Cadd8921b32001'],
+  base: ['0x85b827d133FEDC36B844b20f4a198dA583B25BAA'],
+  bsc: ['0x72ca0765d4bE0529377d656c9645600606214610'],
+}
+
 module.exports = {
   methodology: "sUSD/USDC locked on markets",
   ethereum: {
@@ -65,6 +86,7 @@ module.exports = {
     tvl: async (_, _1, _2, { api }) => {
       const markets = await getMarkets(api, polygonMarketsManager)
       markets.push(polygonThalesAmm, polygonRangedAMM)
+      if (speedMarkets[api.chain]) markets.push(...speedMarkets[api.chain])
       return sumTokens2({ api, owners: markets, tokens: [polygon_USDC] })
     },
   },
@@ -73,6 +95,7 @@ module.exports = {
       await addSportsLPTvl(api, opSportsLp, OP_SUSD)
       const markets = (await Promise.all([opMarketsManager, opSportsMarketsManager,].map(i => getMarkets(api, i)))).flat()
       markets.push(opThalesAmm, opParlayAmm, opRangedAmm, ...opSportsVault, ...opAmmVault)
+      if (speedMarkets[api.chain]) markets.push(...speedMarkets[api.chain])
       return sumTokens2({ api, tokens: [OP_SUSD], owners: markets })
     },
     staking: staking(opThalesStaking, opThalesToken),
@@ -83,8 +106,26 @@ module.exports = {
       await addSportsLPTvl(api, arbSportsLp, arbitrum_USDC)
       const markets = (await Promise.all([arbitrumMarketsManager, arbSportsMarketsManager,].map(i => getMarkets(api, i)))).flat()
       markets.push(arbitrumThalesAMM, arbParlayAmm, ...arbSportsVault, ...arbAmmVault)
+      if (speedMarkets[api.chain]) markets.push(...speedMarkets[api.chain])
       return sumTokens2({ api, tokens: [arbitrum_USDC], owners: markets })
     },
     staking: staking(arbThalesStaking, arbThalesToken),
+  },
+  base: {
+    tvl: async (_, _1, _2, { api }) => {
+      const markets = (await Promise.all([baseMarketManager, baseSportsMarketManager,].map(i => getMarkets(api, i)))).flat()
+      markets.push(baseParlayAMM, baseRangedAMM, baseSportsAMM, baseThalesAMM)
+      if (speedMarkets[api.chain]) markets.push(...speedMarkets[api.chain])
+      return sumTokens2({ api, tokens: [ADDRESSES.base.USDbC], owners: markets })
+    },
+    staking: staking('0x84aB38e42D8Da33b480762cCa543eEcA6135E040', '0xf34e0cff046e154cafcae502c7541b9e5fd8c249'),
+  },
+  bsc: {
+    tvl: async (_, _1, _2, { api }) => {
+      const markets = (await Promise.all([bscMarketManager,].map(i => getMarkets(api, i)))).flat()
+      markets.push( bscRangedAMM,  bscThalesAMM)
+      if (speedMarkets[api.chain]) markets.push(...speedMarkets[api.chain])
+      return sumTokens2({ api, tokens: [ADDRESSES.bsc.BUSD], owners: markets })
+    },
   },
 }

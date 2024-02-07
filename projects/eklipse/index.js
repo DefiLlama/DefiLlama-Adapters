@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
 const BigNumber = require('bignumber.js')
-const { getChainTransform, getFixBalances, } = require('../helper/portedTokens')
+const { getChainTransform, } = require('../helper/portedTokens')
 const { toUSDTBalances } = require('../helper/balances')
 const { sumTokens } = require('../helper/unwrapLPs')
 const vaults = require('./vaults')
@@ -88,7 +88,6 @@ async function staking(timestamp, ethBlock, chainBlocks) {
 async function pool2(timestamp, ethBlock, chainBlocks) {
   const block = chainBlocks[chain]
   const transformAddress = await getChainTransform(chain)
-  const fixBalances = await getFixBalances(chain)
   const balances = {}
 
   // Unwrap USDT-EKL LP position
@@ -103,7 +102,6 @@ async function pool2(timestamp, ethBlock, chainBlocks) {
   const KLAY_LP_totalSupply = (await sdk.api.erc20.totalSupply({ target: KLAY_PAIR, block, chain, })).output
   balances[transformAddress(W_KLAY_ADDRESS)] = BigNumber(KLAY_Tokens).multipliedBy(2).multipliedBy(KLAY_LP_Tokens).dividedBy(KLAY_LP_totalSupply).toFixed(0)
 
-  fixBalances(balances)
   return balances
 }
 

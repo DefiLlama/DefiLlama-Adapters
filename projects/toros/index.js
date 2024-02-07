@@ -37,5 +37,16 @@ module.exports = {
   optimism: {
     tvl,
   },
-  hallmarks: [[1674003600, "Optimism Incentives Start"]],
+  arbitrum: {
+    tvl,
+  },
+  base: {
+    tvl,
+  },
+  hallmarks: [
+    [1674003600, "Optimism Incentives Start"],
+    [1699050203, "Leverage Tokens on Optimism Release"],
+    [1701468842, "First Arbitrum Vault Release"],
+    [1706569200, "First Base Vault Release"],
+  ],
 };

@@ -87,7 +87,6 @@ async function yieldTVL(timestamp, chainBlocks) {
 const cExports = compoundExports(COMPTROLLER, chain, cBNB, wBNB,)
 
 const dexTVL = getUniTVL({
-  chain,
   factory: BDEX_FACTORY,
   useDefaultCoreAssets: true,
 })

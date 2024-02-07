@@ -167,7 +167,6 @@ async function pool2BNB(ts, EthBlock, { bsc: block }) {
 }
 
 module.exports = {
-  doublecounted: false,
   ethereum: {
     tvl,
     staking,

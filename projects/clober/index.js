@@ -6,7 +6,7 @@ const contractV1DeployedChainIds = [1, 137, 42161]
 const contractV1_1DeployedChainIds = [137, 1101, 42161]
 
 function calculateSalt(chainId, nonce) {
-    return ethers.utils.solidityKeccak256(['uint256', 'uint256'], [chainId, nonce])
+    return ethers.solidityPackedKeccak256(['uint256', 'uint256'], [chainId, nonce])
 }
 
 async function fetchTokenAddressesV1_0(api, chainId){

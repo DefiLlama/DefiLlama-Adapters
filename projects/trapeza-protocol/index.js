@@ -10,6 +10,9 @@ const treasuryTokens = [
 ];
 
 module.exports = {
+    hallmarks: [
+        [1648684800, "Rug Pull"]
+    ],
     misrepresentedTokens: true,
     ...ohmTvl(treasury, treasuryTokens, "bsc", fidlStaking, fidl, undefined, undefined, false)
 }

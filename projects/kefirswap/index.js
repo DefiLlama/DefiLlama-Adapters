@@ -13,7 +13,6 @@ module.exports = {
   misrepresentedTokens: true,
   kava: {
     tvl: getUniTVL({
-      chain: 'kava',
       factory: FACTORY,
       useDefaultCoreAssets: true,
     }),

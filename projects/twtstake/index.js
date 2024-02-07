@@ -11,6 +11,8 @@ module.exports = {
   methodology: 'Counts the number of TWT tokens in the TWT Stake contract.',
   start: 1000235,
   bsc: {
-    tvl: staking(TWT_STAKE_CONTRACT,TWT_TOKEN_CONTRACT,"bsc")
-  }
+    tvl: () => 0,
+    staking: staking(TWT_STAKE_CONTRACT,TWT_TOKEN_CONTRACT)
+  },
+  deadFrom: '2023-05-15'
 };

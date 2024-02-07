@@ -40,6 +40,9 @@ module.exports = {
   kava: {
     staking: staking(stakingContract, PINKAV),
   },
+  hallmarks: [
+    [1688670115, "Multichain Exploit"],
+],
 };
 
 
