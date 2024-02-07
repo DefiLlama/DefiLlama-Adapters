@@ -26,7 +26,7 @@ const chains = {
     coinGeckoId: "osmosis",
   },
 
-  terra: {
+  terra2: {
     chainId: "phoenix-1",
     denom: "uluna",
     coinGeckoId: "terra-luna-2",
@@ -67,6 +67,12 @@ const chains = {
     denom: "adydx",
     coinGeckoId: "dydx-chain",
   },
+  
+  celestia: {
+    chainId: "celestia",
+    denom: "utia",
+    coinGeckoId: "celestia",
+  }
 };
 
 // inj uses 1e18 - https://docs.injective.network/learn/basic-concepts/inj_coin#base-denomination
@@ -76,13 +82,20 @@ function getCoinDenimals(denom) {
 
 function makeTvlFn(chain) {
   return async () => {
+    
+    // Define the URL for host_zone based on chainId
+    let hostZoneUrl = `https://stride-fleet.main.stridenet.co/api/Stride-Labs/stride/stakeibc/host_zone/${chain.chainId}`;
+    if (chain.chainId === 'celestia') {
+      hostZoneUrl = `https://stride-fleet.main.stridenet.co/api/Stride-Labs/stride/staketia/host_zone`;
+    }
+
     const [{ amount: assetBalances }, { host_zone: hostZone }] =
       await Promise.all([
         await get(
           `https://stride-fleet.main.stridenet.co/api/cosmos/bank/v1beta1/supply/by_denom?denom=st${chain.denom}`
         ),
         await get(
-          `https://stride-fleet.main.stridenet.co/api/Stride-Labs/stride/stakeibc/host_zone/${chain.chainId}`
+          hostZoneUrl
         ),
       ]);
 
