@@ -47,7 +47,8 @@ async function tvl(timestamp, block, _, { api }) {
 
 async function borrowed(_, _b, _cb, { api, }) {
   api.add(ADDRESSES.polygon.USDC, await api.call({ abi: 'uint256:cygnusTotalBorrows', target: FACTORY_CONTRACT }))
-  api.add(ADDRESSES.arbitrum.USDC, await api.call({ abi: 'uint256:cygnusTotalBorrows', target: FACTORY_CONTRACT }))
+  api.add(ADDRESSES.arbitrum.USDC_CIRCLE, await api.call({ abi: 'uint256:cygnusTotalBorrows', target: FACTORY_CONTRACT }))
+  api.add(ADDRESSES.polygon_zkevm.USDC_CIRCLE, await api.call({ abi: 'uint256:cygnusTotalBorrows', target: FACTORY_CONTRACT }))
   return api.getBalances()
 }
 
