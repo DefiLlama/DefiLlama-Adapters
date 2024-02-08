@@ -247,7 +247,7 @@ module.exports = treasuryExports({
     tokens: [
       ADDRESSES.tombchain.FTM, // WETH
       '0xe50fA9b3c56FfB159cB0FCA61F5c9D750e8128c8', // aOptWETH
-      '0x68f180fcce6836688e9084f035309e29bf0a2095', // WBTC
+      ADDRESSES.optimism.WBTC, // WBTC
       '0x078f358208685046a11C85e8ad32895DED33A249', // aOptWBTC
       ADDRESSES.optimism.OP, // OP
       '0x513c7E3a9c69cA3e22550eF58AC1C0088e918FFf', // aOptOP
