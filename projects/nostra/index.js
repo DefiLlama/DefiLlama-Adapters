@@ -82,6 +82,6 @@ module.exports = {
     borrowed,
   },
   hallmarks: [
-    [1697634000, "Nostra Mainnet launch"],
+    [1697634000, "Nostra Money Market launch"]
   ]
 };

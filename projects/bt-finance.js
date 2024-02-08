@@ -14,5 +14,5 @@ module.exports = {
     tvl: () => ({}),
     // staking: sumTokensExport({ owner: '0x5ae55a3249817B77cc88159dA912015c6a2c49Ed', tokens: ['0x76c5449F4950f6338A393F53CdA8b53B0cd3Ca3a']})
   },
-  // deadFrom: '2022-01-01'
+  deadFrom: '2022-01-01'
 }

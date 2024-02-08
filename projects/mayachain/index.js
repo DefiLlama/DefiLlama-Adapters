@@ -1,7 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getCache, get } = require("../helper/http");
 const sdk = require("@defillama/sdk");
 const { nullAddress } = require("../helper/tokenMapping");
-const { ethers } = require("ethers");
 
 const chainMapping = {
   ETH: "ethereum",
@@ -61,7 +61,8 @@ async function tvl(_, _1, _2, { api }) {
         10 ** (+tokenToDecimalMapping[chainStr + "." + baseToken] - 8);
 
       // e.g. ETH.USDC-0XA0B86991C6218B36C1D19D4A2E9EB0CE3606EB48
-      if (address && ethers.utils.isAddress(address.toLowerCase())) {
+      address = address && address.includes('-') ? address.split("-")[1] : address
+      if (address && address.startsWith("0X")) {
         address = address.toLowerCase();
         sdk.util.sumSingleBalance(balances, address, assetDepth, chain);
 
@@ -94,21 +95,12 @@ async function tvl(_, _1, _2, { api }) {
   }
 }
 
-async function staking() {
-  var res = await get("https://midgard.mayachain.info/v2/network");
-  const { totalActiveBond, totalStandbyBond } = res.bondMetrics;
-  return {
-    cacao: (Number(totalActiveBond) + Number(totalStandbyBond)) / 1e10,
-  };
-}
-
 module.exports = {
   timetravel: false,
   methodology:
-    "Counts bonded CACAO on Mayachain + assets locked in Asgard vaults on other chains + CACAO in LPs on Mayachain",
+    "Counts assets locked in Asgard vaults on other chains + CACAO in LPs on Mayachain",
   mayachain: {
     tvl,
-    staking,
   },
 };
 

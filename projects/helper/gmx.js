@@ -1,7 +1,7 @@
 const { sumTokens2 } = require('./unwrapLPs')
 const { getLogs } = require('../helper/cache/getLogs')
 
-function gmxExports({ vault, blacklistedTokens = [], abis = {} }) {
+function gmxExports({ vault, blacklistedTokens = [], abis = {}, permitFailure = false, }) {
   abis = { ...defaultAbis, ...abis}
   return async (ts, _block, _, { api }) => {
     const tokenAddresses = await api.fetchList({
@@ -10,7 +10,7 @@ function gmxExports({ vault, blacklistedTokens = [], abis = {} }) {
       itemAbi: abis.allWhitelistedTokens,
     })
 
-    return sumTokens2({ api, owner: vault, tokens: tokenAddresses, blacklistedTokens, })
+    return sumTokens2({ api, owner: vault, tokens: tokenAddresses, blacklistedTokens, permitFailure, })
   }
 }
 
