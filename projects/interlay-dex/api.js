@@ -5,7 +5,7 @@ async function tvl() {
   const api = await getAPI(chain);
   const balances = {};
   const pools = (await api.query.dexGeneral.pairStatuses.keys()).slice(0, 20);
-  const promises = []
+
   for (const pool of pools) {
     const tokenPair = pool.__internal__args[0]
     // const tokenPair = pool.toHuman()
@@ -22,10 +22,9 @@ async function tvl() {
       api.query.tokens.accounts(pairAccount, token1)
     ]);
 
-    promises.push(addTokenBalance({ balances, chain, atomicAmount: amount0, ccyArg: token0, }))
-    promises.push(addTokenBalance({ balances, chain, atomicAmount: amount1, ccyArg: token1, }))
+    addTokenBalance({ balances, chain, atomicAmount: amount0.toJSON().free, ccyArg: token0, });
+    addTokenBalance({ balances, chain, atomicAmount: amount1.toJSON().free, ccyArg: token1, });
   }
-  await Promise.all(promises)
 
   return balances;
 }

@@ -13,6 +13,12 @@ const config = {
         staking: "sei17na3tj5mjnz0f4s3gqa3eqykzp4qk5qz4uvmz7hzak2zwyh5ym7s7ljcay"
       },
       {
+        name: "STSEI-USEI-LP",
+        lp: "sei1y03a4m9etthj9w5mz7sltqcgh05ss09cjrezstfgqt28sgsvqxwsapqwfx",
+        pair: "sei1jqkqp7ql0n9edp9e7y86znt0m2h7rstlc2rwfvyxzrj84et9czaq89uqdx",
+        staking: "sei1x4jr7j63tq37lm8m0pmkdsjjtswsvpvmfhug9az207zp4m9a5j6s04gz0n"
+      },
+      {
         name: "STSEI-SEIYAN-LP",
         lp: "sei1hxh76ty0fk9esq3qsvrhzz6fsvmh55j59xnduswn6dfnsyjs06vqcye8yf",
         pair: "sei1qgyrkxvnydcvtzj8w6e4n2p07pykxw4y25ntncz5a4puz6fd6e9slq6jgk",

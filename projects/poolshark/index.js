@@ -2,7 +2,8 @@ const { getLogs } = require('../helper/cache/getLogs')
 
 // https://github.com/poolshark-protocol/limit/blob/master/scripts/autogen/contract-deployments.json
 const config = {
-  arbitrum: { limitPoolFactory: '0x40E21Ce13f5089Bc421c063506bbB0dF02BcA07E', limitPoolFromBlock: 158864748 },
+  arbitrum: { limitPoolFactory: '0x8bb5db1625adb4ae4beb94a188d33062303f8fb7', limitPoolFromBlock: 158864748 },
+  scroll: { limitPoolFactory: '0x3FA761492f411EBC64A81FCf3292fdC0b677c00f', limitPoolFromBlock: 2632885  },
 }
 
 Object.keys(config).forEach(chain => {

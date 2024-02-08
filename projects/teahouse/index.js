@@ -42,6 +42,10 @@ chains.forEach((chain) => {
         })
       ).map((i) => i.fundValueAfterRequests);
       api.addTokens(tokens, bals);
+      if (chain === 'bsc') {
+        const tvl = await api.getUSDValue()
+        if (+tvl === 0) throw new Error('tvl is 0')
+      }
       return api.getBalances();
     },
   };

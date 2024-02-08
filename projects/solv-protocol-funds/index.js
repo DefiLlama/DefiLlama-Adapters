@@ -17,8 +17,6 @@ const slotListUrl = 'https://raw.githubusercontent.com/solv-finance-dev/solv-pro
 
 const addressUrl = 'https://raw.githubusercontent.com/solv-finance-dev/slov-protocol-defillama/main/solv-funds.json';
 
-const stakedAmountsAbi = 'function stakedAmounts(address) external view returns (uint256)';
-
 async function borrowed(ts) {
   const { api } = arguments[3];
   const network = api.chain;
@@ -71,10 +69,14 @@ async function borrowed(ts) {
   return api.getBalances()
 }
 
-async function tvl() {
-  const { api } = arguments[3];
-
+async function tvl(ts, _, _1, { api }) {
   let address = (await getConfig('solv-protocol/funds', addressUrl));
+
+  await gm(api, address);
+  await mux(api, address);
+}
+
+async function gm(api, address) {
   let gm = address[api.chain]["gm"];
 
   let tokens = []
@@ -84,16 +86,33 @@ async function tvl() {
     }
   }
 
-  await sumTokens2({ api, tokensAndOwners: tokens.map(i => [i.address, i.pool]), permitFailure: true })
+  await sumTokens2({ api, tokensAndOwners: tokens.map(i => [i.address, i.pool]), permitFailure: true });
+}
+
+async function mux(api, address) {
+  let mux = address[api.chain]["mux"];
+
+  const amount = await api.call({ abi: abi.stakedMlpAmount, target: mux.pool, params: mux.account });
+
+  api.add(mux.lp, amount)
 }
 
 
 async function mantleTvl(ts, _, _1, { api }) {
   let address = (await getConfig('solv-protocol/funds', addressUrl));
+
+  await klp(api, address);
+  await iziswap(api, address);
+  await lendle(api, address);
+
+  return api.getBalances();
+}
+
+async function klp(api, address) {
   let klp = address[api.chain]["klp"];
 
   const stakedAmounts = await api.multiCall({
-    abi: stakedAmountsAbi,
+    abi: abi.stakedAmountsAbi,
     calls: klp["klpPool"].map((pool) => ({
       target: klp["address"],
       params: [pool]
@@ -103,14 +122,9 @@ async function mantleTvl(ts, _, _1, { api }) {
   stakedAmounts.forEach(amount => {
     api.add(klp["address"], amount)
   })
-
-  await iziswap(api);
-
-  return api.getBalances()
 }
 
-async function iziswap(api) {
-  let address = (await getConfig('solv-protocol/funds', addressUrl));
+async function iziswap(api, address) {
   let iziswapData = address[api.chain]["iziswap"];
 
   const iziswap = iziswapData.liquidityManager;
@@ -200,6 +214,14 @@ async function concrete(slots, api) {
   }
 
   return concretes;
+}
+
+async function lendle(api, address) {
+  let lendleData = address[api.chain]["lendle"];
+
+  const balance = await api.call({ abi: abi.balanceOf, target: lendleData.aToken, params: lendleData.account.user });
+
+  api.add(lendleData.account.ethAddress, balance)
 }
 
 
