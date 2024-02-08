@@ -55,7 +55,7 @@ const pairAbi = [
     inputs: [],
     outputs: [
       {
-        type: "(core::integer::u256, core::integer::u256, core::integer::u64)",
+        type: "(core::integer::u256, core::integer::u256)",
       },
     ],
     state_mutability: "view",
