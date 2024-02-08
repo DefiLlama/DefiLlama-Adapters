@@ -5,4 +5,8 @@ module.exports = uniV3Export({
     factory,
     fromBlock: 36560289,
   },
+  telos: {
+    factory,
+    fromBlock: 312329030,
+  },
 });
