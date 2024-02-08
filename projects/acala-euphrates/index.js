@@ -1,5 +1,6 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const euphrates = '0x7Fe92EC600F15cD25253b421bc151c51b0276b7D';
-const ldotAddr = '0x0000000000000000000100000000000000000003';
+const ldotAddr = ADDRESSES.acala.LDOT;
 const wtdotAddr = '0xe1bD4306A178f86a9214c39ABCD53D021bEDb0f9';
 
 async function tvl(timestamp) {

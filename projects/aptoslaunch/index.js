@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getResources, getTableData } = require("../helper/chain/aptos");
 
 const extractCoinAddress = (str) =>
   str.slice(str.indexOf("<") + 1, str.lastIndexOf(">"));
 
-const APT = "0x1::aptos_coin::AptosCoin";
+const APT = ADDRESSES.aptos.APT;
 
 const ALT =
   "0xd0b4efb4be7c3508d9a26a9b5405cf9f860d0b9e5fe2f498b90e68b8d2cedd3e::aptos_launch_token::AptosLaunchToken";
@@ -12,9 +13,9 @@ const MOVE =
   "0xd0b4efb4be7c3508d9a26a9b5405cf9f860d0b9e5fe2f498b90e68b8d2cedd3e::move_ecosystem_fund::MoveEcosystemFund";
 
 const lzUSDT =
-  "0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDT";
+  ADDRESSES.aptos.USDT_2;
 const lzUSDC =
-  "0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDC";
+  ADDRESSES.aptos.USDC_2;
 
 const MOVE_APT_LP =
   "0xc7efb4076dbe143cbcd98cfaaa929ecfc8f299203dfff63b95ccb6bfe19850fa::swap::LPToken<0x1::aptos_coin::AptosCoin, 0xd0b4efb4be7c3508d9a26a9b5405cf9f860d0b9e5fe2f498b90e68b8d2cedd3e::move_ecosystem_fund::MoveEcosystemFund>";
