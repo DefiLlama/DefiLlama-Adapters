@@ -9,6 +9,7 @@ async function tvl(timestamp, block, _, { api }) {
   switch (api.chain) {
     case 'polygon': fromBlock = 49831226; break
     case 'arbitrum': fromBlock = 150521724; break;
+    case 'polygon_zkevm': fromBlock = 9120630; break;
   }
 
   const logs = await getLogs({
@@ -59,5 +60,8 @@ module.exports = {
   polygon: {
     tvl, borrowed,
   },
+  polygon_zkevm: { 
+    tvl, borrowed,
+  }
 };
 
