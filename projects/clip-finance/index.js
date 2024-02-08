@@ -43,6 +43,7 @@ async function fetchTVLs(unixTimestamp, _b, chainBlocks) {
 module.exports = {
   methodology:
     "Fetch TVL as a sum of strategies' values calculated using their underlying tokens and their price from the Chainlink price feeds",
+  doublecounted: true,
   start: 1697627757, // (Oct-18-2023 11:15:57 AM +UTC)
   fetch: fetchTVLs,
 };
