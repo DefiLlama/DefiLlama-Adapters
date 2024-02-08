@@ -1,4 +1,4 @@
-const { uniTvlExport, getUniTVL } = require('../helper/unknownTokens')
+const { getUniTVL } = require('../helper/unknownTokens')
 const ADDRESSES = require("../helper/coreAssets.json");
 const sdk = require("@defillama/sdk");
 
