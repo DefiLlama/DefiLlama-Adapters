@@ -45,7 +45,7 @@ const chainMapping = {
   'binance-smart-chain': 'bsc',
   eosio: 'eos',
   ethereum: 'ethereum',
-  libre: 'lbry',
+  //libre: 'lbry',
   polygon: 'polygon',
   telos: 'telos',
   ultra: 'ultra',
