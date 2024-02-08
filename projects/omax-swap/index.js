@@ -1,6 +1,6 @@
 const { uniTvlExport } = require('../helper/unknownTokens')
 const ADDRESSES = require("../helper/coreAssets.json");
-const { sumTokens2 } = require("../helper/unwrapLPs");
+const sdk = require("@defillama/sdk");
 
 const WOMAX = ADDRESSES.omax.WOMAX;
 const stakingContractAddress = 0x3A2DcDc705031eDBD94254ef7CEFB93D8066cC8D
