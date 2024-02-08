@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const {
   queryContract: queryContractCosmos,
 } = require("../helper/chain/cosmos");
