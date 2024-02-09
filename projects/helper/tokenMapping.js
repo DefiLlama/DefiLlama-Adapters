@@ -41,6 +41,11 @@ const fixBalancesTokens = {
   bitcoin: {
     BSSB: { coingeckoId: 'bitstable-finance', decimals: 0 },
     MUBI: { coingeckoId: 'multibit', decimals: 0 },
+    rats: { coingeckoId: 'rats', decimals: 0 },
+    BTCs: { coingeckoId: 'btcs', decimals: 0 },
+    BTCs: { coingeckoId: 'btcs', decimals: 0 },
+    MMSS: { coingeckoId: 'mmss', decimals: 0 },
+    AINN: { coingeckoId: 'artificial-neural-network-ordinals', decimals: 0 },
   },
   btn: {
     '0x8148b71232162ea7a0b1c8bfe2b8f023934bfb58': { coingeckoId: 'bitnet', decimals: 18 },
