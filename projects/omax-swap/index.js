@@ -2,6 +2,7 @@ const { getUniTVL } = require('../helper/unknownTokens')
 const ADDRESSES = require("../helper/coreAssets.json");
 const sdk = require("@defillama/sdk");
 
+const WOMAX = ADDRESSES.omax.WOMAX;
 const stakingContractAddress = '0x3A2DcDc705031eDBD94254ef7CEFB93D8066cC8D'
 
 async function staking(time, _ethBlock, chainBlocks) {
@@ -11,7 +12,7 @@ async function staking(time, _ethBlock, chainBlocks) {
     chain: "omax",
   });
   return {
-    [ADDRESSES.null]: resp.output,
+    [WOMAX]: resp.output,
   };
 }
 
