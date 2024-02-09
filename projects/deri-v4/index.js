@@ -14,7 +14,7 @@ async function tvl(_, _b, _cb, { api, }) {
   const vaults = logs.map(log => log.vault)
   const bals = await api.multiCall({ abi: 'function stTotalAmount() external view returns (uint256 balance)', calls: vaults })
   let tokens = await api.multiCall({ abi: 'function asset() external view returns (address)', calls: vaults })
-  tokens = tokens.map(token => token === '0x0000000000000000000000000000000000000001' ? ADDRESSES.null : token)
+  tokens = tokens.map(token => token === ADDRESSES.linea.WETH_1 ? ADDRESSES.null : token)
 
   const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: tokens, permitFailure: true })
   api.addTokens(tokens, bals.map((v, i) => v / 10 ** (18 - (decimals[i] ?? 18))))
