@@ -9,11 +9,12 @@ const ETH = ADDRESSES.null;
 module.exports = treasuryExports({
   ethereum: {
     tokens: [ 
+        nullAddress,
         ADDRESSES.ethereum.USDC, //USDC
         "0xd26114cd6EE289AccF82350c8d8487fedB8A0C07", //OMG
         ADDRESSES.ethereum.BNB, //BNB
+        WETH
      ],
     owners: [treasury],
-    ownTokens: [WETH, ETH],
   },
 })
