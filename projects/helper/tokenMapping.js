@@ -43,7 +43,6 @@ const fixBalancesTokens = {
     MUBI: { coingeckoId: 'multibit', decimals: 0 },
     rats: { coingeckoId: 'rats', decimals: 0 },
     BTCs: { coingeckoId: 'btcs', decimals: 0 },
-    BTCs: { coingeckoId: 'btcs', decimals: 0 },
     MMSS: { coingeckoId: 'mmss', decimals: 0 },
     AINN: { coingeckoId: 'artificial-neural-network-ordinals', decimals: 0 },
   },
