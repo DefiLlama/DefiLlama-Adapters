@@ -1,36 +1,22 @@
-const { queryContract } = require("../helper/chain/cosmos");
 const ADDRESSES = require('../helper/coreAssets.json')
+const sdk = require('@defillama/sdk')
+const { get } = require('../helper/http');
 
-const consts = {
-  MILKYWAY_CONTRACT: 'osmo1f5vfcph2dvfeqcqkhetwv75fda69z7e5c2dldm3kvgj23crkv6wqcn47a0',
-}
-
-/**
- *  {
- *       id: 1,
- *       batch_total_liquid_stake: '100000',
- *       expected_native_unstaked: '100000',
- *       received_native_unstaked: '100000',
- *       unstake_request_count: 1,
- *       next_batch_action_time: '0',
- *       status: 'received'
- *     }
- */
+const milkTiaCoinGeckoId = "milkyway-staked-tia";
+const milkTiaDenom = "factory/osmo1f5vfcph2dvfeqcqkhetwv75fda69z7e5c2dldm3kvgj23crkv6wqcn47a0/umilkTIA";
 
 async function tvl() {
-  const { api } = arguments[3]
-  const data = await queryContract({ contract: consts.MILKYWAY_CONTRACT, chain: api.chain, data: { state: {} } });
-  const  {batches} = await queryContract({ contract: consts.MILKYWAY_CONTRACT, chain: api.chain, data: { batches: {} } });
-  const token = 'ibc/'+ADDRESSES.ibc.TIA
-  //  when calculating TVL, current unbonding batches with TIA should be added since they are 'locked' inside the contract at that current point in time
-  batches.filter(b => b.status !== 'received').forEach((b) => api.add(token, b.expected_native_unstaked))
-  api.add(token, data.total_native_token)
-  return api.getBalances()
+  const balances = {}
+  
+  const assetAmount = await get("https://osmosis-api.polkachu.com/cosmos/bank/v1beta1/supply/by_denom?denom=" + milkTiaDenom);
+  const amount = parseInt(assetAmount.amount.amount) / 1e6;
+  sdk.util.sumSingleBalance(balances, milkTiaCoinGeckoId, amount)
+  return balances
 }
-
 module.exports = {
-  methodology: 'TVL counts the tokens that are locked in the Milky Way contract',
+  timetravel: false,
+  methodology: 'TVL counts the TVL of the Milky Way liquid staking protocol',
   osmosis: {
     tvl,
-  }
-} //  node test.js projects/milky-way/index.js
+  },
+}; // node test.js projects/milky-way/index.js
