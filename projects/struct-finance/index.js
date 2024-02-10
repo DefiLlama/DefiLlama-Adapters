@@ -52,6 +52,7 @@ async function tvl(ts, _, __, { api }) {
       ADDRESSES.avax.WETH_e,
       ADDRESSES.avax.EURC,
       ADDRESSES.avax.WAVAX,
+      ADDRESSES.avax.SAVAX,
       addresses.token.gmx.fsGlp,
     ],
   });
