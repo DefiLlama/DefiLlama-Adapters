@@ -10,12 +10,12 @@ async function tvl() {
   
   // get the total amount staked on chain by milkyway
   const delegationAmounts = await get("https://celestia-api.polkachu.com/cosmos/staking/v1beta1/delegations/" + milkywayDelegationAddress);
-  let totalDelegataed = 0;
+  let totalDelegated = 0;
   delegationAmounts.delegation_responses.forEach(response => {
-    totalDelegataed += parseInt(response.balance.amount) / 1e6;
+    totalDelegated += parseInt(response.balance.amount) / 1e6;
   });
 
-  sdk.util.sumSingleBalance(balances, celestiaCoinGeckoId, totalDelegataed)
+  sdk.util.sumSingleBalance(balances, celestiaCoinGeckoId, totalDelegated)
   return balances
 }
 module.exports = {
