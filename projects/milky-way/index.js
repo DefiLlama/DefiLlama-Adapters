@@ -2,15 +2,20 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
 const { get } = require('../helper/http');
 
-const milkTiaCoinGeckoId = "milkyway-staked-tia";
-const milkTiaDenom = "factory/osmo1f5vfcph2dvfeqcqkhetwv75fda69z7e5c2dldm3kvgj23crkv6wqcn47a0/umilkTIA";
+const milkywayDelegationAddress = "celestia1vxzram63f7mvseufc83fs0gnt5383lvrle3qpt"
+const celestiaCoinGeckoId = "celestia";
 
 async function tvl() {
   const balances = {}
   
-  const assetAmount = await get("https://osmosis-api.polkachu.com/cosmos/bank/v1beta1/supply/by_denom?denom=" + milkTiaDenom);
-  const amount = parseInt(assetAmount.amount.amount) / 1e6;
-  sdk.util.sumSingleBalance(balances, milkTiaCoinGeckoId, amount)
+  // get the total amount staked on chain by milkyway
+  const delegationAmounts = await get("https://celestia-api.polkachu.com/cosmos/staking/v1beta1/delegations/" + milkywayDelegationAddress);
+  let totalDelegataed = 0;
+  delegationAmounts.delegation_responses.forEach(response => {
+    totalDelegataed += parseInt(response.balance.amount) / 1e6;
+  });
+
+  sdk.util.sumSingleBalance(balances, celestiaCoinGeckoId, totalDelegataed)
   return balances
 }
 module.exports = {
