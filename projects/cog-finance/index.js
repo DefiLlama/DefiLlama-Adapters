@@ -2,7 +2,7 @@ const { getLogs } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const config = {
-  scroll: { factory: '0xbabd55549c266c6755b99173fe7604238d04117d', fromBlock: 85518 }
+  scroll: { factory: '0xCd44fecb08bb28405992358131Fd5081A0F550D0', fromBlock: 3147376 }
 }
 
 async function _getLogs(api, factory, fromBlock,) {
