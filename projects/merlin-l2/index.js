@@ -28,24 +28,17 @@ module.exports = {
     ]),
   },
   ethereum: {
-    tvl: sdk.util.sumChainTvls([
-      sumTokensExport({
-        owners: ["0x147A198d803D4a02b8bEc7CC78be1AbE0C3d93E5"],
-        tokens: ["0x7122985656e38BDC0302Db86685bb972b145bD3C"], //sttone
-        doublecounted: true,
-      }),
-      sumTokensExport({
-        owners: ["0x8bb6cae3f1cada07dd14ba951e02886ea6bba183"],
-        tokens: ["0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"] //usdc
-      }),
-    ]),
+    tvl: sumTokensExport({
+      ownerTokens: [
+        [["0x7122985656e38BDC0302Db86685bb972b145bD3C"], "0x147A198d803D4a02b8bEc7CC78be1AbE0C3d93E5",], //sttone
+        [["0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"], "0x8bb6cae3f1cada07dd14ba951e02886ea6bba183", //usdc
+        ]]
+    }),
   },
   arbitrum: {
-    tvl: sdk.util.sumChainTvls([
-      sumTokensExport({
-        owners: ["0x8bb6cae3f1cada07dd14ba951e02886ea6bba183"],
-        tokens: ["0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9", "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"] //usdc and usdt
-      }),
-    ]),
+    tvl: sumTokensExport({
+      owners: ["0x8bb6cae3f1cada07dd14ba951e02886ea6bba183"],
+      tokens: ["0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9", "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"] //usdc and usdt
+    }),
   },
 };
