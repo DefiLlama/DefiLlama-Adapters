@@ -1,127 +1,50 @@
 const contracts = require("./contracts.json");
-const { sumTokens2 } = require("../helper/unwrapLPs");
-const sdk = require("@defillama/sdk");
+const { sumTokens2, nullAddress } = require("../helper/unwrapLPs");
 
-function tvl(chain) {
-  return async (timestamp, block, chainBlocks, { api }) => {
-    const savvyPositionManagers = (await sdk.api.abi.call({
-      abi: 'function getSavvyPositionManagers() returns (address[] memory)',
-      target: contracts.infoAggregator,
-      chain: chain
-    })).output;
+async function tvl(timestamp, block, chainBlocks, { api }) {
+  const savvyPositionManagers = await api.call({ abi: 'address[]:getSavvyPositionManagers', target: contracts.infoAggregator, })
+  console.log(savvyPositionManagers)
+  const yieldStrategyManagers = await api.multiCall({ abi: 'address:yieldStrategyManager', calls: savvyPositionManagers, })
+  console.log(yieldStrategyManagers)
+  const savvySages = await api.multiCall({ abi: 'address:savvySage', calls: savvyPositionManagers, })
 
-    const yieldStrategyManagers = (await sdk.api.abi.multiCall({
-      abi: 'address:yieldStrategyManager',
-      calls: savvyPositionManagers.map((savvyPositionManager) => ({
-        target: savvyPositionManager
-      })),
-      chain: chain
-    })).output.map(y => y.output);
+  const registeredBaseTokensCalls = (await api.multiCall({ abi: 'address[]:getRegisteredBaseTokens', calls: savvySages, })).flatMap((r, i) => {
+    const target = savvySages[i];
+    return r.map(params => ({ target, params }));
+  });
 
-    const savvySages = (await sdk.api.abi.multiCall({
-      abi: 'address:savvySage',
-      calls: savvyPositionManagers.map((savvyPositionManager) => ({
-        target: savvyPositionManager
-      })),
-      chain: chain
-    })).output.map(y => y.output);
+  const savvySwaps = (await api.multiCall({ abi: 'function savvySwap(address baseToken) returns (address)', calls: registeredBaseTokensCalls }))
+  const amos = (await api.multiCall({ abi: 'function amos(address baseToken) returns (address)', calls: registeredBaseTokensCalls, }))
+  const passThroughAMOs = (await api.multiCall({ abi: 'address:recipient', calls: amos, permitFailure: true })).filter(y => y)
+  console.log(passThroughAMOs)
+  const baseTokens = (await api.multiCall({ abi: 'address[]:getSupportedBaseTokens', calls: yieldStrategyManagers, })).map(y => y)
+  const yieldTokens = (await api.multiCall({ abi: 'address[]:getSupportedYieldTokens', calls: yieldStrategyManagers, })).map(y => y)
 
-    const registeredBaseTokens = (await sdk.api.abi.multiCall({
-      abi: 'function getRegisteredBaseTokens() returns (address[] memory)',
-      calls: savvySages.map((savvySage) => ({
-        target: savvySage
-      })),
-      chain: chain
-    })).output.flatMap(r => {
-        const target = r.input.target;
-        const outputs = r.output;
-        return outputs.map(output => [target, output]);
-      });
+  const aTokens = (await api.multiCall({ abi: 'address:aToken', calls: yieldTokens, permitFailure: true })).filter(y => y)
+  const rTokens = (await api.multiCall({ abi: 'address:rToken', calls: yieldTokens, permitFailure: true })).filter(y => y)
+  const underlyingTokens = (await api.multiCall({ abi: 'address:token', calls: yieldTokens, permitFailure: true })).filter(y => y)
 
-    const savvySwaps = (await sdk.api.abi.multiCall({
-      abi: 'function savvySwap(address baseToken) returns (address)',
-      calls: registeredBaseTokens.map((r) => ({
-        target: r[0],
-        params: r[1]
-      })),
-      chain: chain
-    })).output.map(y => y.output);
+  console.log(aTokens)
+  const tokens = [baseTokens, underlyingTokens, yieldTokens].flat(3)
+  const tokenHolders = [savvyPositionManagers, savvySages, passThroughAMOs ].flat(3).filter(i => i !== nullAddress)
+  const tokensAndOwners = tokenHolders.map((owner) => tokens.map((token) => [ token, owner ])).flat()
 
-    const amos = (await sdk.api.abi.multiCall({
-      abi: 'function amos(address baseToken) returns (address)',
-      calls: registeredBaseTokens.map((r) => ({
-        target: r[0],
-        params: r[1]
-      })),
-      chain: chain
-    })).output.map(y => y.output);
 
-    const passThroughAMOs = (await sdk.api.abi.multiCall({
-      abi: 'address:recipient',
-      calls: amos.map((amo) => ({
-        target: amo
-      })),
-      chain: chain,
-      permitFailure: true
-    })).output.filter(y => y.success).map(y => y.output);
-    
-    const baseTokens = (await sdk.api.abi.multiCall({
-      abi: 'function getSupportedBaseTokens() returns (address[] memory)',
-      calls: yieldStrategyManagers.map((yieldStrategyManager) => ({
-        target: yieldStrategyManager
-      })),
-      chain: chain
-    })).output.map(y => y.output).flat();
-
-    const yieldTokens = (await sdk.api.abi.multiCall({
-      abi: 'function getSupportedYieldTokens() returns (address[] memory)',
-      calls: yieldStrategyManagers.map((yieldStrategyManager) => ({
-        target: yieldStrategyManager
-      })),
-      chain: chain
-    })).output.map(y => y.output).flat();
-
-    const aTokens = (await sdk.api.abi.multiCall({
-      abi: 'address:aToken',
-      calls: yieldTokens.map((yieldToken) => ({
-        target: yieldToken
-      })),
-      chain: chain,
-      permitFailure: true
-    })).output.filter(y => y.success).map(y => y.output);
-
-    const rTokens = (await sdk.api.abi.multiCall({
-      abi: 'address:rToken',
-      calls: yieldTokens.map((yieldToken) => ({
-        target: yieldToken
-      })),
-      chain: chain,
-      permitFailure: true
-    })).output.filter(y => y.success).map(y => y.output);
-
-    //used for wrapped jUDSC & stargate yield tokens
-    const underlyingTokens = (await sdk.api.abi.multiCall({
-      abi: 'address:token',
-      calls: yieldTokens.map((yieldToken) => ({
-        target: yieldToken
-      })),
-      chain: chain,
-      permitFailure: true
-    })).output.filter(y => y.success).map(y => y.output);
-
-    const tokenHolders = [...new Set(savvyPositionManagers.concat(yieldStrategyManagers).concat(savvySages)
-      .concat(savvySwaps).concat(amos).concat(passThroughAMOs).concat(yieldTokens).filter(h => parseInt(h, 16) !== 0))];
-    const tokens = [...new Set(baseTokens.concat(yieldTokens).concat(aTokens).concat(rTokens).concat(underlyingTokens)
-      .filter(h => parseInt(h, 16) !== 0))];
-
-    await sumTokens2({ tokens, api, owners: tokenHolders });
-  };
-}
+  const name1 = (await api.multiCall({ abi: 'string:name', calls: tokens, permitFailure: true }))
+  const ownYieldTokens = tokens.filter((_, i) => name1[i] && name1[i].toLowerCase().includes('savvy yield'))
+  const oyTokens = (await api.multiCall({  abi: 'address:aToken', calls: ownYieldTokens, permitFailure: true}))
+  const oybTokens = (await api.multiCall({  abi: 'address:baseToken', calls: ownYieldTokens, permitFailure: true}))
+  ownYieldTokens.forEach((_, i) => {
+    if(oyTokens[i]) tokensAndOwners.push([oyTokens[i], ownYieldTokens[i]])
+    if(oybTokens[i]) tokensAndOwners.push([oybTokens[i], ownYieldTokens[i]])
+  })
+  await sumTokens2({ tokens, api, tokensAndOwners, blacklistedTokens: ownYieldTokens });
+};
 
 module.exports = {
   methodology: 'The calculated TVL is the current sum of all base tokens and yield tokens in our contracts.',
   arbitrum: {
-    tvl: tvl("arbitrum")
+    tvl
   },
   hallmarks: [
     [1691473498, "LBP Launch"]
