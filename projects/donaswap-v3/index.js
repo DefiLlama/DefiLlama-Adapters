@@ -15,7 +15,7 @@ module.exports = uniV3Export({
   fuse: { factory, fromBlock: 25858644, },
   kcc: { factory, fromBlock: 25009540, },
   klaytn: { factory, fromBlock: 135016953, },
-  linea: { factory, fromBlock: 555725, },
+  // linea: { factory, fromBlock: 555725, },
   moonbeam: { factory, fromBlock: 4603904, },
   moonriver: { factory, fromBlock: 5278912, },  
   op_bnb: { factory, fromBlock: 33770963, },
