@@ -24,7 +24,7 @@ async function tvl_sol(timestamp, block, chainBlocks, { api }) {
 }
 
 module.exports = {
-  methodology: "Value of stablecoins + interest earned in pools. Solana's TVL is missing interest earned",
+  methodology: "Value of stablecoins + interest accrued in pools. TVL on Solana is equal to the total supply of fUSDC.",
   ethereum: {
     tvl: tvl_eth,
   },
