@@ -13,7 +13,6 @@ module.exports = uniV3Export({
   fantom: { factory, fromBlock: 68867215, },
   flare: { factory, fromBlock: 13870179, },
   fuse: { factory, fromBlock: 25858644, },
-  fusion: { factory, fromBlock: 10278068, },
   kcc: { factory, fromBlock: 25009540, },
   klaytn: { factory, fromBlock: 135016953, },
   linea: { factory, fromBlock: 555725, },
