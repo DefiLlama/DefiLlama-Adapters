@@ -2,7 +2,9 @@ const sdk = require('@defillama/sdk');
 const { sumTokensExport: sumBRC20TokensExport } = require("../helper/chain/brc20");
 const { sumTokensExport } = require('../helper/sumTokens');
 
-// Owners' addresses for BRC20 tokens
+// https://medium.com/@merlinchaincrypto/merlins-seal-the-biggest-fair-launch-of-layer2-5614001b2582
+// https://bridge.merlinchain.io/api/v1/token_mapping?after=0&size=100
+
 const owners = [
   "bc1qtu66zfqxj6pam6e0zunwnggh87f5pjr7vdr5cd",
   "15zVuow5e9Zwj4nTrxSH3Rvupk32wiKEsr",
