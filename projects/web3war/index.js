@@ -18,7 +18,7 @@ async function tvl(_, _a, _c, { api, chain }) {
     const circulatingSupply = supply - lockedAmount;
     console.log(circulatingSupply);
 
-    api.add(ZQ_FPS_ZIL_TOKEN_ADDRESS, circulatingSupply);
+    api.add(ZQ_FPS_TOKEN_CONTRACT, circulatingSupply);
   } else {
     const supply = await api.call({
       abi: "erc20:totalSupply",
