@@ -1,4 +1,5 @@
 const { uniV3Export } = require("../helper/uniswapV3");
+const { cachedGraphQuery } = require('../helper/cache')
 
 module.exports = uniV3Export({
   mantle: {
@@ -12,3 +13,27 @@ module.exports = uniV3Export({
     isAlgebra: true,
   },
 });
+
+const config = {
+  mantle: { endpoint: 'https://subgraph-api.mantle.xyz/subgraphs/name/cryptoalgebra/analytics' },
+  telos: { endpoint: 'https://telos.subgraph.swapsicle.io/subgraphs/name/cryptoalgebra/analytics' },
+}
+
+const query = `{
+  pools {
+    id
+    token0 { id }
+    token1 { id }
+  }
+}`
+
+Object.keys(config).forEach(chain => {
+  const { endpoint } = config[chain]
+  module.exports[chain] = {
+    tvl: async (_, _b, _cb, { api, }) => {
+      const { pools } = await cachedGraphQuery('swapsicle-v2/' + chain, endpoint, query, { api, })
+      const ownerTokens = pools.map(i => [[i.token0.id, i.token1.id], i.id])
+      return api.sumTokens({ ownerTokens })
+    }
+  }
+})
