@@ -16,7 +16,7 @@ module.exports = uniV3Export({
 
 const config = {
   mantle: { endpoint: 'https://subgraph-api.mantle.xyz/subgraphs/name/cryptoalgebra/analytics' },
-  telos: { endpoint: 'https://telos.subgraph.swapsicle.io/subgraphs/name/cryptoalgebra/analytics' },
+  telos: { endpoint: 'https://api.goldsky.com/api/public/project_clr6mlufzbtuy01vd012wgt5k/subgraphs/swapsicle/analytics/gn' },
 }
 
 const query = `{
