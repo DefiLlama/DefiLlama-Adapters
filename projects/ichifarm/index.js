@@ -63,6 +63,11 @@ const config = {
       { factory: '0x8a76c26E0089111989C14EF56b9733aa38B94148', fromBlock: 20999423, isAlgebra: false, }, // zkSync Era
     ]
   },
+  fantom: {
+    vaultConfigs: [
+      { factory: '0x932E1908461De58b0891E5022431dc995Cb95C5E', fromBlock: 74304207, isAlgebra: false, }, // Equalizer
+    ]
+  },
   linea: {
     vaultConfigs: [
       { factory: '0x0248b992ac2a75294b05286E9DD3A2bD3C9CFE4B', fromBlock: 1599561, isAlgebra: true, }, // Lynex
