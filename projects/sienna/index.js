@@ -42,8 +42,8 @@ async function getExchanges(factory, data) {
 
 function transformToken(addr, poolData) {
   if (!addr?.custom_token) {
-    console.log(JSON.stringify(addr, null, 2))
-    console.log(JSON.stringify(poolData, null, 2))
+    // console.log(JSON.stringify(addr, null, 2))
+    // console.log(JSON.stringify(poolData, null, 2))
     throw new Error("No custom token")
   }
   return addr.custom_token.contract_addr

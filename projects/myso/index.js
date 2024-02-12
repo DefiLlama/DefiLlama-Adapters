@@ -1,7 +1,7 @@
 const { sumTokens2 } = require("../helper/unwrapLPs");
-const axios = require("axios");
 const zlib = require("zlib");
 const { getCache, setCache, } = require("../helper/cache");
+const { get } = require("../helper/http");
 
 const mapChainToChainId = {
   ethereum: 1,
@@ -31,7 +31,7 @@ const brotliDecode = (stream) => {
 };
 
 const getPools = async (chainId) => {
-  const response = await axios.get(
+  const response = await get(
     `https://api.myso.finance/chainIds/${chainId}/pools`,
     {
       decompress: false,
@@ -42,7 +42,7 @@ const getPools = async (chainId) => {
     }
   );
 
-  const data = await brotliDecode(response.data);
+  const data = await brotliDecode(response);
 
   return data.pools.map((pool) => pool.poolAddress);
 };
