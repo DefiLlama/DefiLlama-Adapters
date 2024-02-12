@@ -3,7 +3,7 @@ const { cachedGraphQuery } = require('../helper/cache')
 
 const { toUSDTBalances } = require("../helper/balances")
 
-const url = "https://squid.subsquid.io/mayfair-indexer/graphql"
+const url = "https://squid.subsquid.io/mayfairfund-api/v/v1/graphql"
 
 async function getStakingData() {
   return await request(url, `query StakingAnalytics {

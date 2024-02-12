@@ -16,8 +16,8 @@ async function tvl() {
     data.push({
       token0: parseAddress(reserve.token_a_address),
       token1: parseAddress(reserve.token_b_address),
-      token0Bal: +reserve.token_a_reserves.low,
-      token1Bal: +reserve.token_b_reserves.low,
+      token0Bal: reserve.token_a_reserves.low.toString(),
+      token1Bal: reserve.token_b_reserves.low.toString(),
     })
   })
 

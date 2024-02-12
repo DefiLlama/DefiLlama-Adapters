@@ -124,6 +124,9 @@ async function resolveTinymanLp({ balances, lpId, unknownAsset, blacklistedToken
 }
 
 async function getAccountInfo(accountId) {
+  if (typeof accountId === 'number') { // it is an application id
+    accountId = getApplicationAddress(accountId)
+  }
   if (!accountCache[accountId]) accountCache[accountId] = _getAccountInfo()
   return accountCache[accountId]
 
@@ -147,7 +150,10 @@ const tokens = {
   wEth: 887406851,
   wBtcGoBtcLp: 1058934626,
   wEthGoEthLp: 1058935051,
+  xUsdGoUsdLp: 1081974597,
   usdtGoUsdLp: 1081978679,
+  wusdcGoUsdLp: 1242543501,
+  wusdtGoUsdLp: 1242550568,
   goUsd: 672913181,
   usdcGoUsdLp: 885102318,
   gard: 684649988,
