@@ -64,7 +64,7 @@ module.exports = {
     tvl: maticTvl
   }, */
   fantom: {
-    tvl: ftmTvl,
+    tvl: () => ({}),
   },
   terra2: {
     tvl: terra2Tvl,
