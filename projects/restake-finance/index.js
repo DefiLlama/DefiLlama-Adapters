@@ -21,8 +21,8 @@ const StakePools = [
     },
 ];
 
-function tvl(_1, _2, _3, { api }) {
-    return Promise.all(
+async function tvl(_1, _2, _3, { api }) {
+    await Promise.all(
         StakePools.map(pool =>
             api.call({
                 target: pool.controller,
@@ -30,7 +30,7 @@ function tvl(_1, _2, _3, { api }) {
             })
             .then((value) => api.add(pool.token, value)),
         ),
-    ).then(() => Promise.resolve());
+    );
 }
   
 module.exports = {
