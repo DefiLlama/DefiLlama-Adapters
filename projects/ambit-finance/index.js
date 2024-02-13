@@ -1,3 +1,6 @@
+const ADDRESSES = require('../helper/coreAssets.json');
+const { sumTokens2 } = require('../helper/unwrapLPs');
+
 const REGISTRY = "0x5b1eFC3057E941439C487E67761F348D19Dd4100";
 
 const REGISTRY_KEYS = {
@@ -30,10 +33,11 @@ const ABI = {
   },
 };
 
-const USDT = "0x55d398326f99059fF775485246999027B3197955";
+const AUSD = "0xf328ed974e586b6eea7997a87ea2ab1de149b186";
 
 async function tvl(_, _1, _2, { api }) {
-  const addresses = await api.call({
+  const tokensAndOwners = []
+  const [storage, depositorVault] = await api.call({
     abi: ABI["IAddressRegistry"]["getAddresses"],
     target: REGISTRY,
     params: [
@@ -43,37 +47,15 @@ async function tvl(_, _1, _2, { api }) {
       ],
     ],
   });
-
+  tokensAndOwners.push([ADDRESSES.bsc.USDT, depositorVault]);
   // supply side
-  const assets = await api.call({
-    abi: ABI["IAssetStorage"]["getAssets"],
-    target: addresses[0],
-    params: [],
-  });
-
-  const balances = await api.multiCall({
-    abi: ABI["ICustodian"]["getTotalAssets"],
-    calls: assets.map(([, custodian]) => ({
-      target: custodian,
-      params: [],
-    })),
-  });
-
-  assets.forEach(([token], i) => {
-    api.add(token, balances[i]);
-  });
-
-  // deposits to the USDT vault
-  const totalAssets = await api.call({
-    abi: ABI["IDepositorVault"]["getTotalAssets"],
-    target: addresses[1],
-    params: [],
-  });
-  api.add(USDT, totalAssets);
+  const assets = await api.call({ abi: ABI["IAssetStorage"]["getAssets"], target: storage, });
+  assets.forEach(i => tokensAndOwners.push([i[0], i[1]]))
+  return sumTokens2({ api, tokensAndOwners, blacklistedTokens: [AUSD] });
 }
 
 async function borrowed(_, _1, _2, { api }) {
-  const addresses = await api.call({
+  const [depositorVault, market] = await api.call({
     abi: ABI["IAddressRegistry"]["getAddresses"],
     target: REGISTRY,
     params: [
@@ -81,13 +63,9 @@ async function borrowed(_, _1, _2, { api }) {
     ],
   });
 
-  const liabilities = await api.call({
-    abi: ABI["IDepositorVault"]["getLiabilities"],
-    target: addresses[0],
-    params: [addresses[1]],
-  });
-
-  api.add(USDT, liabilities);
+  const liabilities = await api.call({ abi: ABI["IDepositorVault"]["getLiabilities"], target: depositorVault, params: market });
+  api.add(ADDRESSES.bsc.USDT, liabilities);
+  return api.getBalances()
 }
 
 module.exports = {
