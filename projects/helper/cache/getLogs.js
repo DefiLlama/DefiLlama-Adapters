@@ -7,7 +7,7 @@ const cacheFolder = 'logs'
 
 async function getLogs({ target,
   topic, keys = [], fromBlock, toBlock, topics,
-  api, eventAbi, onlyArgs = false, extraKey, skipCache = false, onlyUseExistingCache = false, }) {
+  api, eventAbi, onlyArgs = false, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction,  skipCacheRead = false}) {
   if (!api) throw new Error('Missing sdk api object!')
   if (!target) throw new Error('Missing target!')
   if (!fromBlock) throw new Error('Missing fromBlock!')
@@ -23,9 +23,7 @@ async function getLogs({ target,
   let iface
 
   if (eventAbi) {
-    iface = new ethers.utils.Interface([eventAbi])
-    if (typeof eventAbi === 'object')
-      sdk.log(iface.format(ethers.utils.FormatTypes.full))
+    iface = new ethers.Interface([eventAbi])
     if (!topics?.length) {
       const fragment = iface.fragments[0]
       topics = undefined
@@ -38,14 +36,16 @@ async function getLogs({ target,
 
   let cache = await _getCache(key)
   let response
+  const fetchNewData = (cache.fromBlock && (cache.toBlock + 200) > toBlock) || onlyUseExistingCache
 
-  // if no new data nees to be fetched
-  if ((cache.fromBlock && cache.toBlock > toBlock) || onlyUseExistingCache)
+  // if no new data nees to be fetched if the last fetched block is within 200 blocks of the current block
+  if (!customCacheFunction && fetchNewData)
     response = cache.logs.filter(i => i.blockNumber < toBlock && i.blockNumber >= fromBlock)
   else
     response = await fetchLogs()
 
   if (!eventAbi) return response
+  if (customCacheFunction) return cache.logs
 
   return response.map((log) => {
     const res = iface.parseLog(log)
@@ -58,26 +58,33 @@ async function getLogs({ target,
     cache.fromBlock = fromBlock
     fromBlock = cache.toBlock ?? fromBlock
 
-    const logs = (await sdk.api.util.getLogs({
+    let logs = (await sdk.api.util.getLogs({
       chain, target, topic, keys, topics, fromBlock, toBlock,
     })).output
 
-    cache.logs.push(...logs)
+    if (!customCacheFunction)
+      cache.logs.push(...logs)
+    else {
+      logs = logs.map(i => iface.parseLog(i))
+      if (onlyArgs) logs = logs.map(i => i.args)
+      customCacheFunction({ cache, logs })
+    }
     cache.toBlock = toBlock
 
     const logIndices = new Set()
 
     // remove possible duplicates
-    cache.logs = cache.logs.filter(i => {
-      let key = i.transactionHash + i.logIndex
-      if (!i.hasOwnProperty('logIndex') || !i.hasOwnProperty('transactionHash')) {
-        sdk.log(i)
-        throw new Error('Missing crucial field')
-      }
-      if (logIndices.has(key)) return false
-      logIndices.add(key)
-      return true
-    })
+    if (!customCacheFunction)
+      cache.logs = cache.logs.filter(i => {
+        let key = i.transactionHash + (i.logIndex ?? i.index)
+        if (!(i.hasOwnProperty('logIndex') || i.hasOwnProperty('index')) || !i.hasOwnProperty('transactionHash')) {
+          sdk.log(i, i.logIndex, i.index, i.transactionHash)
+          throw new Error('Missing crucial field')
+        }
+        if (logIndices.has(key)) return false
+        logIndices.add(key)
+        return true
+      })
 
     if (!skipCache)
       await setCache(cacheFolder, key, cache)
@@ -90,7 +97,7 @@ async function getLogs({ target,
       logs: []
     }
 
-    if (skipCache) return defaultRes
+    if (skipCache || skipCacheRead) return defaultRes
 
     let cache = await getCache(cacheFolder, key)
     // set initial structure if it is missing / reset if from block is moved to something older

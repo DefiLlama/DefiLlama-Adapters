@@ -1,10 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { staking } = require("../helper/staking");
-const { ethers } = require("ethers");
 const { getUniTVL } = require('../helper/unknownTokens')
 const { stakingPricedLP } = require("../helper/staking")
 const sdk = require("@defillama/sdk")
-const BigNumber = require("bignumber.js");
 const iceBoxABI = require("./iceBoxABI.json");
 const iceVaultABI = require("./icevaultABI.json");
 
@@ -119,7 +116,7 @@ module.exports = {
   misrepresentedTokens: true,
   methodology: "",
   avax: {
-    tvl: getUniTVL({ chain: 'avax', useDefaultCoreAssets: true, factory: contracts.avax.factory }),
+    tvl: getUniTVL({ useDefaultCoreAssets: true, factory: contracts.avax.factory }),
     staking: sdk.util.sumChainTvls([
       // Ice Cream Van
       stakingPricedLP(contracts.telos.stakingContract_sPOPS, contracts.avax.pops,'avax','0x7E454625e4bD0CFdC27e752B46bF35C6343D9A78',"wrapped-avax",true), 
@@ -132,25 +129,25 @@ module.exports = {
     ])
   },
   polygon: {
-    tvl: getUniTVL({ chain: 'polygon', useDefaultCoreAssets: true, factory: contracts.polygon.factory }),
+    tvl: getUniTVL({ useDefaultCoreAssets: true, factory: contracts.polygon.factory }),
   },
   bsc: {
-    tvl: getUniTVL({ chain: 'bsc', useDefaultCoreAssets: true, factory: contracts.bsc.factory }),
+    tvl: getUniTVL({ useDefaultCoreAssets: true, factory: contracts.bsc.factory }),
   },
   fantom: {
-    tvl: getUniTVL({ chain: 'fantom', useDefaultCoreAssets: true, factory: contracts.fantom.factory }),
+    tvl: getUniTVL({ useDefaultCoreAssets: true, factory: contracts.fantom.factory }),
   },
   arbitrum: {
-    tvl: getUniTVL({ chain: 'arbitrum', useDefaultCoreAssets: true, factory: contracts.arbitrum.factory }),
+    tvl: getUniTVL({ useDefaultCoreAssets: true, factory: contracts.arbitrum.factory }),
   },
   ethereum: {
-    tvl: getUniTVL({ chain: 'ethereum', useDefaultCoreAssets: true, factory: contracts.ethereum.factory }),
+    tvl: getUniTVL({ useDefaultCoreAssets: true, factory: contracts.ethereum.factory }),
   },
   optimism: {
-    tvl: getUniTVL({ chain: 'optimism', useDefaultCoreAssets: true, factory: contracts.optimism.factory }),
+    tvl: getUniTVL({ useDefaultCoreAssets: true, factory: contracts.optimism.factory }),
   },
   telos: {
-    tvl: getUniTVL({ chain: 'telos', useDefaultCoreAssets: true, factory: contracts.telos.factory }),
+    tvl: getUniTVL({ useDefaultCoreAssets: true, factory: contracts.telos.factory }),
     staking: sdk.util.sumChainTvls([
       // Ice Cream Van
       stakingPricedLP(contracts.telos.stakingContract_sPOPS, contracts.telos.pops,'telos','0x6dee26f527adb0c24fef704228d8e458b46f9f5f',"wrapped-telos",true), 

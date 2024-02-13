@@ -16,7 +16,7 @@ const chainListTotal = ['avax', 'bsc', 'moonbeam', 'polygon', 'fantom', 'arbitru
 
 chainListSupply.concat(chainListTotal).forEach(chain => {
   module.exports[chain] = { tvl };
-  async function tvl(_, _b, _cb, { api, logArray }) {
+  async function tvl(_, _b, _cb, { api }) {
     const config = await getConfig('alexar', 'https://api.axelarscan.io/cross-chain/tvl')
     const tokensAndOwners = []
     const owners = []
@@ -34,8 +34,8 @@ chainListSupply.concat(chainListTotal).forEach(chain => {
       }
     })
     if (tokensAndOwners.length > 0)
-      return api.sumTokens({ tokensAndOwners, logArray })
-    return sumTokens({ chain, owners, logArray })
+      return api.sumTokens({ tokensAndOwners })
+    return sumTokens({ chain, owners })
   }
 });
 
