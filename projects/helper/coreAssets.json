@@ -724,7 +724,8 @@
   "rsk": {
     "WRBTC": "0x967f8799af07df1534d48a95a5c9febe92c53ae0",
     "WRBTC1": "0x542fDA317318eBF1d3DEAf76E0b632741A7e677d",
-    "ETHs": "0x1d931bf8656d795e50ef6d639562c5bd8ac2b78f"
+    "ETHs": "0x1d931bf8656d795e50ef6d639562c5bd8ac2b78f",
+    "rUSDT": "0xef213441a85df4d7acbdae0cf78004e1e486bb96"
   },
   "polis": {
     "WPOLIS": "0x6fc851b8d66116627fb1137b9d5fe4e2e1bea978"
