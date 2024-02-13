@@ -26,7 +26,7 @@ Object.keys(config).forEach(chain => {
     tvl: async (_, _b, _cb, { api }) => {
       const uniV3WhitelistedTokens = await getCoreAssets(api.chain);
       await sumTokens2({ api, owners: reserves, resolveUniV3: true, uniV3WhitelistedTokens, });
-      return api.getBalancesV2().clone(2).getBalances()
+      return api.getBalancesV2().clone(2).getBalances() // we multiple core assets value by 2 as positions are spread between 0 -  ∞ 
     },
   };
 });
