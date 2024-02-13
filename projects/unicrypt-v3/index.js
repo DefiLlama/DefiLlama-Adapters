@@ -32,4 +32,4 @@ Object.keys(config).forEach(chain => {
       return api.getBalancesV2().clone(2).getBalances() // we multiple core assets value by 2 as positions are spread between 0 -  ∞ 
     },
   };
-});
+  });
