@@ -64,6 +64,7 @@ async function sumTokens({ owner, owners = [], tokens = [], balances = {}, black
     await Promise.all(tokensAndOwners.map(([token, owner]) => sumTokens({ owners: [owner], tokens: [token], balances, blacklistedTokens, whitelistedTokens, })))
     return balances
   }
+  
   const { errors } = await PromisePool
     .withConcurrency(5)
     .for(owners)
@@ -87,7 +88,6 @@ async function sumTokens({ owner, owners = [], tokens = [], balances = {}, black
 
     if (errors.length) throw errors[0]
   }
-  
   return transformBalances(chain, balances)
 }
 
