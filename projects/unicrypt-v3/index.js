@@ -14,6 +14,9 @@ const config = {
   polygon: {
     reserves: ['0xc22218406983bf88bb634bb4bf15fa4e0a1a8c84', '0xd8207e9449647a9668ad3f8ecb97a1f929f81fd1', '0x40f6301edb774e8B22ADC874f6cb17242BaEB8c4'],
   },
+  base: {
+    reserves: ['0xd6cd8fb001cbdae91f0af7a58a1602c945967d67']
+  }
 };
 
 module.exports = {
