@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { get } = require("../helper/http");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
@@ -12,7 +13,7 @@ async function tvl(_, _b, _c, { api }) {
     t.l1_bridge_address,
   ]);
   tokensAndOwners.push([
-    "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+    ADDRESSES.ethereum.DAI,
     "0x0437465dfb5B79726e35F08559B0cBea55bb585C",
   ]);
   return sumTokens2({
