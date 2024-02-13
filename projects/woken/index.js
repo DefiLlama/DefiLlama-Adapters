@@ -4,4 +4,5 @@ const { getUniTVL } = require('../helper/unknownTokens')
 module.exports = {
   misrepresentedTokens: true,
   arbitrum: { tvl: getUniTVL({ factory: '0x0Dee376e1DCB4DAE68837de8eE5aBE27e629Acd0', useDefaultCoreAssets: true, }), },
+  bsc: { tvl: getUniTVL({ factory: '0x0Dee376e1DCB4DAE68837de8eE5aBE27e629Acd0', useDefaultCoreAssets: true, }), }
 }

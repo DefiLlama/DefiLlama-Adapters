@@ -27,7 +27,7 @@ async function tvl(_, _1, _2, { api }) {
 }
 
 module.exports = {
-  methodology: 'TVL: sum of all pools liquidity plus staked VRSW tokens',
+  methodology: 'Sum of all pools liquidity plus staked VRSW tokens',
   polygon: {
     tvl,
     staking: staking(STAKER, VRSW_TOKEN_POLYGON),

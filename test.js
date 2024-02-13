@@ -19,11 +19,12 @@ const { PromisePool } = require('@supercharge/promise-pool')
 const currentCacheVersion = sdk.cache.currentVersion // load env for cache
 // console.log(`Using cache version ${currentCacheVersion}`)
 
-Object.keys(process.env).forEach((key) => {
-  if (key.endsWith('_RPC')) return;
-  if (['TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_MODE', ...ENV_KEYS].includes(key) || key.includes('SDK')) return;
-  delete process.env[key]
-})
+if (process.env.LLAMA_SANITIZE)
+  Object.keys(process.env).forEach((key) => {
+    if (key.endsWith('_RPC')) return;
+    if (['TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_MODE', ...ENV_KEYS].includes(key) || key.includes('SDK')) return;
+    delete process.env[key]
+  })
 
 const locks = [];
 function getCoingeckoLock() {
@@ -372,7 +373,7 @@ async function computeTVL(balances, timestamp) {
   const { errors } = await PromisePool.withConcurrency(5)
     .for(sliceIntoChunks(readKeys, 100))
     .process(async (keys) => {
-      tokenData.push((await axios.get(`https://coins.llama.fi/prices/current/${keys.join(',')}`)).data.coins)
+      tokenData.push((await axios.get(`https://coins2.llama.fi/prices/current/${keys.join(',')}`)).data.coins)
     })
 
   if (errors && errors.length)

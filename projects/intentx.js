@@ -2,7 +2,7 @@ const ADDRESSES = require('./helper/coreAssets.json')
 const { request, gql } = require("graphql-request");
 
 const graphUrl =
-  "https://api.thegraph.com/subgraphs/name/intent-x/perpetuals-analytics_base";
+  "https://api.studio.thegraph.com/query/62472/intentx-analytics_082/version/latest";
 
 const BETA_START = 1700006400; // 2023-11-15T00:00:00+00:00
 
@@ -12,7 +12,7 @@ const query = gql`
       where: {
         timestamp_gte: $from
         timestamp_lte: $to
-        accountSource: "0x724796d2e9143920B1b58651B04e1Ed201b8cC98"
+        accountSource: "0x8Ab178C07184ffD44F0ADfF4eA2ce6cFc33F3b86"
       }
     ) {
       timestamp
@@ -24,6 +24,7 @@ const query = gql`
     }
   }
 `;
+
 
 async function getTVL(toTimestamp) {
   const { dailyHistories } = await request(graphUrl, query, {
@@ -49,5 +50,6 @@ module.exports = {
       return getTVL(timestamp);
     },
   },
-  hallmarks: [[1700006400, "Open Beta Start"]],
+  hallmarks: [[1700006400, "Open Beta Start"], [1704200400, "0.8.2 Migration"]],
+
 };
