@@ -5,7 +5,6 @@ const {
   getERC4626VaultFundsByChain,
   getL1VaultOnlyFundsByChain,
 } = require("./helper");
-const { transformPolygonAddress } = require("../helper/portedTokens");
 const MAX_BPS = 1e3;
 const sdk = require("@defillama/sdk");
 
@@ -37,7 +36,7 @@ const ethTvl = async (_, block) => {
 
 const polygonTvl = async (_, _b, { polygon: block }) => {
   const balances = {};
-  const transform = await transformPolygonAddress();
+  const transform = i => `polygon:${i}`;
 
   const vaultFunds = await getERC4626VaultFundsByChain("polygon", block);
   const l1OnlyVaultFunds = await getL1VaultOnlyFundsByChain("polygon", block);

@@ -17,7 +17,7 @@ async function getVaultContractsAddress(chain) {
   return plAddress;
 }
 
-const chains = ["ethereum", "optimism", "arbitrum"];
+const chains = ["ethereum", "optimism", "arbitrum", 'polygon', 'boba', 'mantle'];
 
 chains.forEach((chain) => {
   module.exports[chain] = {
@@ -32,6 +32,10 @@ chains.forEach((chain) => {
         calls: vaults,
       });
       api.addTokens(tokens, bals);
+      if (['boba', 'mantle'].includes(chain)) {
+        const tvl = await api.getUSDValue()
+        if (+tvl === 0) throw new Error('tvl is 0')
+      }
       return api.getBalances();
     },
   };

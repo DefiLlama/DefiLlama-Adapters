@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
-const { transformOptimismAddress } = require('../helper/portedTokens');
 const perpV2VaultABI = require('./abis/perpV2Vault.json');
 const perpLemmaWrapperABI = require('./abis/perpLemmaWrapper.json');
 const USDC = ADDRESSES.optimism.USDC;
@@ -8,7 +7,7 @@ const PERP_V2_VAULT = "0xAD7b4C162707E0B2b5f6fdDbD3f8538A5fbA0d60";
 
 const tokens = [
     ADDRESSES.tombchain.FTM,
-    "0x68f180fcce6836688e9084f035309e29bf0a2095",
+    ADDRESSES.optimism.WBTC,
     "0x350a791bfc2c21f9ed5d10980dad2e2638ffa7f6",
     "0x76FB31fb4af56892A25e32cFC43De717950c9278",
     "0x0994206dfe8de6ec6920ff4d779b0d950605fb53",
@@ -25,7 +24,7 @@ const perpLemmaWrappers = [
 //tracks only tvl on optimism (v2) as v1 (on arbitrum) is getting deprecated
 async function tvl(timestamp, block, chainBlocks) {
     const balances = {};
-    const transform = await transformOptimismAddress();
+    const transform = i => `optimism:${i}`;
 
     for (let i = 0; i < tokens.length; i++) {
         const token = tokens[i];

@@ -73,7 +73,8 @@ const allAbi = [
         "type": "felt"
       }
     ],
-    "stateMutability": "view"
+    "stateMutability": "view",
+    "customType": "Uint256"
   },
   {
     "name": "get_pool",

@@ -1,9 +1,4 @@
 const { getConfig } = require('../helper/cache')
-const { fetchURL } = require("../helper/utils");
-const {
-  transformPolygonAddress,
-  transformBscAddress,
-} = require("../helper/portedTokens");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 
 const UnilendContract = "0x13A145D215182924c89F2aBc7D358DCc72F8F788";
@@ -38,7 +33,7 @@ const ethTvl = async () => {
 const polygonTvl = async (chainBlocks) => {
   const balances = {};
 
-  const transformAddress = await transformPolygonAddress();
+  const transformAddress = i => `polygon:${i}`;
   await calcTvl(
     balances,
     137,
@@ -53,7 +48,7 @@ const polygonTvl = async (chainBlocks) => {
 const bscTvl = async (chainBlocks) => {
   const balances = {};
 
-  const transformAddress = await transformBscAddress();
+  const transformAddress = i => `bsc:${i}`;
   await calcTvl(balances, 56, chainBlocks["bsc"], "bsc", transformAddress);
 
   return balances;

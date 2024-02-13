@@ -31,7 +31,6 @@ const poolsTvl = async (timestamp, ethBlock, chainBlocks) => {
     chain: "polygon",
     block,
   });
-  console.log(`Number of entropy pools: ${allPoolsLength}`);
 
   // Get aTokens used as collateral in each pool, and retrieve the amount of aTokens held by each pool
   const allPools = allPoolsOutput.map((o) => o.output);
@@ -45,7 +44,6 @@ const poolsTvl = async (timestamp, ethBlock, chainBlocks) => {
     poolsaTokens[idx].output,
     pool,
   ]);
-  // console.log(tokensAndOwners)
   await sumTokens(
     balances,
     tokensAndOwners,

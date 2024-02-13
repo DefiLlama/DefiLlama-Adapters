@@ -1,7 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { getUniTVL } = require('../helper/unknownTokens')
 const { stakings } = require("../helper/staking");
-const { getFixBalances } = require('../helper/portedTokens');
 
 const FACTORIES = {
     astar: "0x1E66b3e7141bDF8c414F91269a3A99d098D2d356",
@@ -103,7 +102,6 @@ module.exports = {
             )(timestamp, _ethBlock, chainBlocks);
 
             const result = { ...pkexStaking, ...dotStaking };
-            (await getFixBalances("astar"))(result);
             return result;
         },
     },

@@ -27,6 +27,10 @@ module.exports = {
       rbnb: "0x0592083B285aa75B9c8BaD2485C6cCCF93cCC348",
       SnBNB: "0xF1e604e9A31c3b575f91CF008445B7ce06BF3fef",
       USDS: "0x0c735f84BD7EDA8F8176236091AF8068Bb6C41dE",
+      crossChainPool: "0x1ee15673e07105Bcf360139fa8CafeBDd7754BeF",
+      zBNB: "0x9a39f4AB3f52026432835dEe6D3DB721D95f3D28",
+      zUSD: "0xC26b7Cbe7e695a0d11a8cB96140D1Cd502945A2C",
+      USDV: "0xC897a2Ae2E45f0D7ba8cbE397208C3e9f8914A9f",
     },
   },
   arbitrum: {
@@ -47,6 +51,9 @@ module.exports = {
       wstETH: "0xe14302040c0A1eb6fB5A4A79EfA46D60029358d9",
       pendle: "0xe7159f15e7b1d6045506B228A1ed2136dcc56F48",
       fUSD: "0x956454C7BE9318863297309183C79b793D370401",
+      crossChainPool: "0xe78876C360716f2225F55A6726B32324FE1B1145",
+      USDV: "0xa6eF6C45EbFDBc13f6D032fbDFeC9b389C1603E5",
+      sFRAX: "0xaBF19eAdb08693278FdbAD35Cb4E3c1D6484c8Bb",
     },
   },
   ethereum: {
@@ -58,6 +65,45 @@ module.exports = {
       frxETH: "0x3161f40EA6c0C4cC8b2433d6D530EF255816E854",
       wstETH: "0xF8E32cA46AC28799c8FB7DCe1Ac11A4541160734",
       ETHx: "0x647CC8816C2d60A5fF4d1ffeF27a5b3637d5ac81",
+      crossChainPool: "0xA45C0ABeef67C363364E0e73832df9986aBa3800",
+      USDV: "0x05A33c0eaf81367Ce953d2dCd4ea1BE8758f4D32",
+    },
+  },
+  // does not have wom yet
+  scroll: {
+    wom: "",
+    veWom: "",
+    pools: {
+      crossChainPool: "0x80f088ae72DB6d1AC337340cd6Aa0EB1F67337CE",
+    },
+  },
+  avax: {
+    wom: "0xa15E4544D141aa98C4581a1EA10Eb9048c3b3382",
+    veWom: "0x34E2F923bBa206358EcE221af73E8d121837F873",
+    pools: {
+      crossChainPool: "0xC9bFC3eFeFe4CF96877009F75a61F5c1937e5d1a",
+      sAVAX: "0xE3Abc29B035874a9f6dCDB06f8F20d9975069D87",
+      USDV: "0x108c990c93Fa8E3cD88DDb13594D39f09D9B3C02",
+      ggAVAX: "0xBbA43749efC1bC29eA434d88ebaf8A97DC7aEB77",
+    },
+  },
+  base: {
+    wom: "0xD9541B08B375D58ae104EC247d7443D2D7235D64",
+    veWom: "0x34E2F923bBa206358EcE221af73E8d121837F873",
+    pools: {
+      crossChainPool: "0xC9bFC3eFeFe4CF96877009F75a61F5c1937e5d1a",
+      USDS: "0x20d7B9Ed2c4E2DCC55F9B463975b21bBf2A6eCd1",
+    },
+  },
+  optimism: {
+    wom: "0xd2612b256f6f76fea8c6fbca0bf3166d0d13a668",
+    veWom: "0xE91cfd7f8e5A5a1EA4803FcF781e1C8d6FfCa279",
+    pools: {
+      crossChainPool: "0x50a39b94B1Dc8472faa08c36a3Ef5b0A01c5BD10",
+      USDV: "0x1a023186eF2994249120CC7fAEdBEA07F40C6fbd",
+      frax: "0x6BB82A9b0b9b9716B885baeEfDBE47b685a0F919",
+      dola: "0x489818F2eeAef737105887710F7C5b9323Ad3d01",
+      frxETH: "0xB86BA65b75D34402bf377cF83b184554a18Fcafa",
     },
   },
   hallmarks: [

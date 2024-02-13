@@ -1,7 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require('../helper/staking')
 const { sumTokensAndLPsSharedOwners } = require('../helper/unwrapLPs')
-const { transformPolygonAddress } = require('../helper/portedTokens')
 
 
 const treasury = "0x7Dd4f0B986F032A44F913BF92c9e8b7c17D77aD7"
@@ -9,7 +8,7 @@ const daoWallet = "0x65A5076C0BA74e5f3e069995dc3DAB9D197d995c"
 
 async function tvl(time, ethBlock, chainBlocks) {
   const balances = {}
-  const transform = await transformPolygonAddress()
+  const transform = i => `polygon:${i}`
   await sumTokensAndLPsSharedOwners(balances, [
     ["0x2f800db0fdb5223b3c3f354886d907a671414a7f", false],  // BCT
     ["0xD838290e877E0188a4A44700463419ED96c16107", false], // NCT
