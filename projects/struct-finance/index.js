@@ -48,6 +48,7 @@ async function tvl(ts, _, __, { api }) {
     owners: [vaultsTjap, vaultsGmx].flat(),
     tokens: [
       ADDRESSES.avax.BTC_b,
+      ADDRESSES.avax.WBTC_e,
       ADDRESSES.avax.USDC,
       ADDRESSES.avax.WETH_e,
       ADDRESSES.avax.EURC,
