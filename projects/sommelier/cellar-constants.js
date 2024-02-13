@@ -51,6 +51,10 @@ const TURBO_STETH = "0xfd6db5011b171b05e1ea3b92f9eacaeeb055e971";
 const TURBO_SOMM = "0x5195222f69c5821f8095ec565e71e18ab6a2298f";
 const TURBO_EETH = "0x9a7b4980C6F0FCaa50CD5f288Ad7038f434c692e";
 const TURBO_STETH_STETH_DEPOSIT = "0xc7372Ab5dd315606dB799246E8aA112405abAeFf";
+const MORPHO_MAXIMIZER = "0xcf4b531b4cde95bd35d71926e09b2b54c564f5b6";
+const TURBO_DIVETH = "0x6c1edce139291Af5b84fB1e496c9747F83E876c9";
+const TURBO_ETHX = "0x19B8D8FC682fC56FbB42653F68c7d48Dd3fe597E";
+const TURBO_EETH_V2 = "0xdAdC82e26b3739750E036dFd9dEfd3eD459b877A";
 
 const cellarsV2p5 = [
   { id: TURBO_SWETH, startBlock: 17910374 },
@@ -60,6 +64,10 @@ const cellarsV2p5 = [
   { id: TURBO_SOMM, startBlock: 18516369 },
   { id: TURBO_EETH, startBlock: 18622910 },
   { id: TURBO_STETH_STETH_DEPOSIT, startBlock: 18717675 },
+  { id: MORPHO_MAXIMIZER, startBlock: 19103256 },
+  { id: TURBO_DIVETH, startBlock: 19117472 },
+  { id: TURBO_ETHX, startBlock: 19117547 },
+  { id: TURBO_EETH_V2, startBlock: 19163705 },
 ];
 
 module.exports = {
