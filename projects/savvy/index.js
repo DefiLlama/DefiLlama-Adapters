@@ -39,7 +39,7 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
     if(oybTokens[i]) tokensAndOwners.push([oybTokens[i], ownYieldTokens[i]])
   })
   await sumTokens2({ tokens, api, tokensAndOwners, blacklistedTokens: ownYieldTokens });
-};
+}
 
 module.exports = {
   methodology: 'The calculated TVL is the current sum of all base tokens and yield tokens in our contracts.',
