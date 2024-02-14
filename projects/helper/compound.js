@@ -4,7 +4,7 @@ const sdk = require('@defillama/sdk');
 const abi = require('./abis/compound.json');
 const { unwrapUniswapLPs } = require('./unwrapLPs');
 const { requery } = require("./requery");
-const { getChainTransform, getFixBalances, } = require('./portedTokens');
+const { getChainTransform, transformBalances } = require('./portedTokens');
 const { usdtAddress } = require('./balances');
 const agoraAbi = require("./../agora/abi.json");
 const { sumTokens2, nullAddress, unwrapLPsAuto, } = require('./unwrapLPs')
@@ -46,7 +46,7 @@ async function getMarkets(comptroller, block, chain, cether, cetheEquivalent, bl
         return;
       }
       if (['0xd2ec53e8dd00d204d3d9313af5474eb9f5188ef6', '0x0aeadb9d4c6a80462a47e87e76e487fa8b9a37d7'].includes(cToken) && chain === 'rsk') {
-        markets.push({ underlying: '0x542fda317318ebf1d3deaf76e0b632741a7e677d', cToken })
+        markets.push({ underlying: ADDRESSES.rsk.WRBTC1, cToken })
         return;
       }
 
@@ -161,10 +161,6 @@ function getCompoundV2Tvl(comptroller, chain, transformAdress,
         sdk.util.sumSingleBalance(balances, transformAdress(underlying), getCash.output)
       }
     });
-    if (["harmony", 'oasis', 'bsc', 'findora', 'dogechain', 'godwoken_v1', 'ethpow', 'cronos', 'kcc'].includes(chain)) {
-      const fixBalances = await getFixBalances(chain)
-      fixBalances(balances);
-    }
 
     if (comptroller == "0x92DcecEaF4c0fDA373899FEea00032E8E8Da58Da") {
       await unwrapPuffTokens(balances, lpPositions, block)
@@ -172,9 +168,9 @@ function getCompoundV2Tvl(comptroller, chain, transformAdress,
       await unwrapUniswapLPs(balances, lpPositions, block, chain, transformAdress)
     }
 
-    if (resolveLPs) return unwrapLPsAuto({ balances, block, chain, abis})
+    if (resolveLPs) await unwrapLPsAuto({ balances, block, chain, abis})
 
-    return balances;
+    return transformBalances(chain, balances);
   }
 }
 

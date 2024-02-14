@@ -34,6 +34,7 @@ async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
 const config = {
   era: { fromBlock: 9775, stableFactory: '0x5b9f21d407F35b10CbfDDca17D5D84b129356ea3', classicFactory: '0xf2DAd89f2788a8CD54625C60b55cD3d2D0ACa7Cb', },
   linea: { fromBlock: 716, stableFactory: '0xE4CF807E351b56720B17A59094179e7Ed9dD3727', classicFactory: '0x37BAc764494c8db4e54BDE72f6965beA9fa0AC2d', },
+  scroll: { fromBlock: 80875, stableFactory: '0xE4CF807E351b56720B17A59094179e7Ed9dD3727', classicFactory: '0x37BAc764494c8db4e54BDE72f6965beA9fa0AC2d', },
 }
 
 module.exports = {

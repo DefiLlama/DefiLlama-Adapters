@@ -8,7 +8,7 @@ const wavesCoinBridgeContract = '3PFPuctNkdbwGKKUNymWw816jGPexHzGXW5';
 async function wavesTVL() {
   const balances = {};
   const contractTVLInWAVES = await data(wavesCoinBridgeContract, "BALANCE");
-  sdk.util.sumSingleBalance(balances, 'waves', contractTVLInWAVES.value/1e8)
+  sdk.util.sumSingleBalance(balances, 'waves', contractTVLInWAVES.value / 1e8)
   return balances;
 }
 
@@ -21,6 +21,10 @@ const config = {
         ADDRESSES.ethereum.USDC,
         ADDRESSES.ethereum.WBTC,
         ADDRESSES.ethereum.CRV,
+        ADDRESSES.ethereum.UNI,
+        ADDRESSES.ethereum.MKR,
+        ADDRESSES.ethereum.LINK,
+        ADDRESSES.ethereum.CRVUSD,
       ],
       '0x0de7b091A21BD439bdB2DfbB63146D9cEa21Ea83'
     ]
@@ -60,7 +64,7 @@ const config = {
 module.exports = {};
 
 Object.keys(config).forEach(chain => {
-  module.exports[chain] = { tvl: sumTokensExport({ ownerTokens: config[chain] }) }
+  module.exports[chain] = { tvl: sumTokensExport({ ownerTokens: config[chain], logCalls: true }) }
 })
 module.exports.waves = { tvl: wavesTVL }
 

@@ -1,6 +1,4 @@
-const { get } = require("../helper/http");
-const { sumTokens, endPoints } = require('../helper/chain/cosmos')
-
+const { sumTokens, } = require('../helper/chain/cosmos')
 
 async function tvl() {
   const owners = [
@@ -12,5 +10,10 @@ async function tvl() {
 module.exports = {
   kujira: {
     tvl,
+  },
+  osmosis: {
+    tvl: async () => {
+      return sumTokens({ owners: ['osmo1zacxlu90sl6j2zf90uctpddhfmux84ryrw794ywnlcwx2zeh5a4q67qtc9'], chain: 'osmosis' })
+    }
   },
 }

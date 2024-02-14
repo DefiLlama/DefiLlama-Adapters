@@ -1,31 +1,7 @@
-const { GraphQLClient, gql } = require("graphql-request");
-const { toUSDTBalances } = require("../helper/balances");
 const { getUniTVL, sumTokensExport } = require('../helper/unknownTokens')
-const sdk = require('@defillama/sdk')
-const axios = require("axios");
-
-async function fetch() {
-  const endpoint =
-    "https://v0.yokaiswap.com/subgraphs/name/yokaiswap/exchange";
-  const graphQLClient = new GraphQLClient(endpoint);
-
-  const query = gql`
-    query yokaiFactories {
-      yokaiFactories {
-        totalLiquidityUSD
-      }
-    }
-  `;
-
-  const data = await graphQLClient.request(query);
-
-  return toUSDTBalances(data.yokaiFactories[0].totalLiquidityUSD);
-}
-
-const getReservesABI = 'function getReserves() view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)'
 
 // had to be disabled till we get multicall working
-const tvl_v0 = getUniTVL({ chain: 'godwoken', factory: '0x5ef0d2d41a5f3d5a083bc776f94282667c27b794', useDefaultCoreAssets: false,  abis: { getReserves: getReservesABI }})
+const tvl_v0 = getUniTVL({ chain: 'godwoken', factory: '0x5ef0d2d41a5f3d5a083bc776f94282667c27b794', useDefaultCoreAssets: true})
 const tvl_v1 = getUniTVL({ chain: 'godwoken_v1', factory: '0x7ec2d60880d83614dd4013D39CF273107f30624c', useDefaultCoreAssets: true, })
 
 module.exports = {
@@ -33,7 +9,7 @@ module.exports = {
   misrepresentedTokens: true,
   methodology: `Finds TotalLiquidityUSD using the YokaiSwap subgraph "https://www.yokaiswap.com/subgraphs/name/yokaiswap/exchange". Staking accounts for the YOK locked in MasterChef (0x62493bFa183bB6CcD4b4e856230CF72f68299469).`,
   godwoken: {
-    tvl: fetch,
+    tvl: tvl_v0,
     //staking,
   },
   godwoken_v1: {

@@ -38,7 +38,7 @@ let _response
 
 function fetchChain(chainId) {
   return async () => {
-    if (!_response) _response = utils.fetchURL('https://api.dyson.money/tvl')
+    if (!_response) _response = utils.fetchURL('https://api.dyson.money/tvl');
     const response = await _response;
 
     let tvl = 0;
@@ -46,13 +46,12 @@ function fetchChain(chainId) {
     for (const vault in chain) {
       tvl += Number(chain[vault]);
     }
-    
     if (tvl === 0) {
-      throw new Error(`chain ${chainId} tvl is 0`)
+      return {};
     }
 
     return toUSDTBalances(tvl);
-  }
+  };
 }
 
 module.exports = {

@@ -18,4 +18,5 @@ module.exports = {
   okexchain:{
     tvl: () => 0
   },
+  deadFrom: '2022-05-05'
 };

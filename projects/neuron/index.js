@@ -10,11 +10,20 @@ const chainIds = {
   base: 8453,
 };
 
+const outpostAddresses = {
+  42161 : "0x2395e53b250f091f38858ca9e75398181d45682b",
+  10 : "0x2395e53b250f091f38858ca9e75398181d45682b",
+  59144 : "0x2395e53b250f091f38858ca9e75398181d45682b",
+  8453 : "0xe204912f188514ab33ba75c96bc81fe973db1046",
+};
+
 function chainTvl(chain) {
   return async (timestamp, ethBlock, {[chain]: block}, { api }) => {
-    const url = `${http_api_url}?chainId=${api.getChainId()}`;
-    const neuron_response = await getConfig('neuron/'+chain, url);
-    return api.sumTokens({ owner: operator, tokens: neuron_response.map(i => i[0]) })
+    const urlTvl = `${http_api_url}?chainId=${api.getChainId()}`;
+    const neuron_response_tvl = await getConfig('neuron/'+chain, urlTvl);
+    var [address, tokensAndAmounts] = neuron_response_tvl;
+    const outpostAddress = outpostAddresses[api.getChainId()];
+    return api.sumTokens({ owner: outpostAddress, tokens: tokensAndAmounts.map(i => i[0]) })
   };
 }
 

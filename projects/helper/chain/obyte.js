@@ -63,12 +63,12 @@ function summingBaseAABalancesToTvl(assetMetadata, exchangeRates) {
     const baseCurrency = (asset === "base") ? "GBYTE" : asset
     const usdRate = exchangeRates[`${baseCurrency}_USD`] ?? 0
     const usdValue = assetDetails.balance / Math.pow(10, decimals) * usdRate
-    // console.log(`  ${assetMetadata[asset]?.symbol ?? asset} = ${usdValue.toFixed(2)}`)
+    // sdk.log(`  ${assetMetadata[asset]?.symbol ?? asset} = ${usdValue.toFixed(2)}`)
     return total + usdValue
   }
 
   const summingAddressTvl = (total, [address, addressDetails]) => {
-    // console.log(`${address}:`)
+    // sdk.log(`${address}:`)
     return total + Object.entries(addressDetails.assets)
         .filter(([asset, assetDetails]) => !assetDetails.selfIssued)
         .reduce(summingAssetTvl, 0)

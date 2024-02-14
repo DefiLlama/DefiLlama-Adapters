@@ -4,6 +4,7 @@ const { getConfig } = require("../helper/cache");
 // teahouse public api for vault
 const teahouseVaultAPI = "https://vault-content-api.teahouse.finance/vaults";
 
+
 // get vault contract addresses from teahouse api
 async function getVaultContractsAddress(chain) {
   let htAddress = [];
@@ -18,7 +19,7 @@ async function getVaultContractsAddress(chain) {
 }
 
 
-const chains = ["ethereum", "optimism", "arbitrum"];
+const chains = ["ethereum", "optimism", "arbitrum", 'polygon','bsc'];
 
 chains.forEach((chain) => {
   module.exports[chain] = {
@@ -41,6 +42,10 @@ chains.forEach((chain) => {
         })
       ).map((i) => i.fundValueAfterRequests);
       api.addTokens(tokens, bals);
+      if (chain === 'bsc') {
+        const tvl = await api.getUSDValue()
+        if (+tvl === 0) throw new Error('tvl is 0')
+      }
       return api.getBalances();
     },
   };

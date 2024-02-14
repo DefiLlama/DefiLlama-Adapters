@@ -1,6 +1,5 @@
 const ADDRESSES = require('./helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
-const { transformBscAddress } = require('./helper/portedTokens');
 
 const bnbPool = "0x55D10490C500FBF334C0fD91A0b205a5D64b9367"; //BNB_POOL
 const WBNBAddresss = ADDRESSES.bsc.WBNB;
@@ -30,7 +29,7 @@ const tokens = [
 ];
 // node test.js projects/a.js
 async function tvl(_timestamp, ethBlock, chainBlocks) {
-    const transform = await transformBscAddress();
+    const transform = i => `bsc:${i}`;
     let balances = {};
 
     const vaultBalances = (await sdk.api.abi.multiCall({

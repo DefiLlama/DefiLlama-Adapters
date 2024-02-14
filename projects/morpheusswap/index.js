@@ -8,7 +8,7 @@ const morph = "0x0789ff5ba37f72abc4d561d00648acadc897b32d"
 
 async function tvl(timestamp, block, chainBlocks, api) {
   const balances = {}
-  const transformAddress = addr=>`fantom:${addr}` //await transformFantomAddress();
+  const transformAddress = addr=>`fantom:${addr}` //i => `fantom:${i}`;
   if(chainBlocks.fantom<21182441){ // Factory deployment block
     await addFundsInMasterChef(balances, chef, chainBlocks.fantom, "fantom", transformAddress, abi.poolInfo, [morph])
   } else {

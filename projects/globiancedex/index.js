@@ -1,13 +1,11 @@
-const { post } = require('../helper/http')
-
-async function fetch() {
-  const response = await post("https://dexapi.globiance.com/get-stats")
-  const tvl = response.data.tvl;
-  return tvl;
-}
+const { getUniTVL } = require('../helper/unknownTokens')
 
 module.exports = {
   misrepresentedTokens: true,
-  methodology: `GlobianceDEX TVL is a sum of all the crypto assets locked in various liquidity pools & staking pools available on the DEX.`,
-  fetch,
-};
+  xdc: {
+    tvl: getUniTVL({
+      factory: '0xA8334Aae58e5bDee692B26679c1817F9c42f8f51',
+      useDefaultCoreAssets: true,
+    })
+  },
+}
