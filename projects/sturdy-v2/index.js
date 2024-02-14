@@ -4,12 +4,10 @@ const REGISTRY_ADDR = "0x69764E3e0671747A7768A1C1AfB7C0C39868CC9e"
 
 async function tvl(timestamp, block, chainBlocks, { api }) {
   const aggregators = await api.call({target: REGISTRY_ADDR, abi: abi['getVaults'], })
-  const totalAssets = aggregators.forEach((aggregator) => api.add(aggregator.asset, aggregator.totalAssets))
+  aggregators.forEach((aggregator) => api.add(aggregator.asset, aggregator.totalAssets))
 
   const strategies = await api.call({ target: REGISTRY_ADDR, abi: abi['getStrategies'], })
-  const totalCollaterals = strategies.forEach((strategy) => api.add(strategy.pairData.collateral, strategy.pairData.totalCollateral))
-
-  return totalAssets + totalCollaterals;
+  strategies.forEach((strategy) => api.add(strategy.pairData.collateral, strategy.pairData.totalCollateral))
 }
 async function borrowed(timestamp, block, chainBlocks, { api }) {
   const strategies = await api.call({ target: REGISTRY_ADDR, abi: abi['getStrategies'], })
