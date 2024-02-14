@@ -37,7 +37,7 @@ Object.keys(config).forEach(chain => {
       onlyArgs: true, fromBlock,
       topics: ['0xac4b2400f169220b0c0afdde7a0b32e775ba727ea1cb30b35f935cdaab8683ac'],
     })
-    if(logs.length < 5){
+    if(logs.length < 29){
       throw new Error("Missing markets!")
     }
     return logs.map(i => i.id)
