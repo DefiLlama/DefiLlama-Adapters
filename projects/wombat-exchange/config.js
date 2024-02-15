@@ -53,6 +53,7 @@ module.exports = {
       fUSD: "0x956454C7BE9318863297309183C79b793D370401",
       crossChainPool: "0xe78876C360716f2225F55A6726B32324FE1B1145",
       USDV: "0xa6eF6C45EbFDBc13f6D032fbDFeC9b389C1603E5",
+      sFRAX: "0xaBF19eAdb08693278FdbAD35Cb4E3c1D6484c8Bb",
     },
   },
   ethereum: {
@@ -83,6 +84,7 @@ module.exports = {
       crossChainPool: "0xC9bFC3eFeFe4CF96877009F75a61F5c1937e5d1a",
       sAVAX: "0xE3Abc29B035874a9f6dCDB06f8F20d9975069D87",
       USDV: "0x108c990c93Fa8E3cD88DDb13594D39f09D9B3C02",
+      ggAVAX: "0xBbA43749efC1bC29eA434d88ebaf8A97DC7aEB77",
     },
   },
   base: {

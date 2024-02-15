@@ -7,6 +7,7 @@ const ADMIN_ADDRESSES = {
   linea: "0xC8a25eA0Cbd92A6F787AeED8387E04559053a9f8",
   optimism: "0x326398De2dB419Ee39F97600a5eeE97093cf3B27",
   polygon_zkevm: "0x6b42581aC12F442503Dfb3dff2bC75ed83850637",
+  mantle: "0x4F39F12064D83F6Dd7A2BDb0D53aF8be560356A6",
 };
 
 async function tvl(_, _1, _2, { api }) {

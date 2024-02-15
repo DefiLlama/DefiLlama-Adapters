@@ -258,5 +258,14 @@ module.exports = {
          '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
        ]
      },
+     {
+       name: 'rsk',
+       tokens: [
+         ADDRESSES.rsk.rUSDT,
+       ],
+       holders: [
+         '0x5aa5f7f84ed0e5db0a4a85c3947ea16b53352fd4', // portal v2
+       ]
+     },
   ]
 }

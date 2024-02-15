@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { dexExport, getResources } = require('../helper/chain/aptos')
 const sui = require('../helper/chain/sui')
 const { transformDexBalances } = require('../helper/portedTokens')

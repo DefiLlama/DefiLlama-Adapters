@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 
 const getVaultsAbi = 'address[]:getRegisteredAddresses';
@@ -16,7 +17,7 @@ async function addFraxVaultToTVL(balances, api) {
     const totalAssets = [];
     for (let i = 0; i < vaultAddresses.length; i++) {
         // if the vault has no strategy: 1 share = 1 asset
-        if (strategies[i] === "0x0000000000000000000000000000000000000000") {
+        if (strategies[i] === ADDRESSES.null) {
             totalAssets.push(totalSupply[i]);
         } else {
             const assets = await api.call({ target: strategies[i], abi: convertToAssetsAbi, params: [totalSupply[i]] })

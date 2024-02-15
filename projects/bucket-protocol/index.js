@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sui = require("../helper/chain/sui");
 
 const MAINNET_PROTOCOL_ID =
@@ -5,9 +6,9 @@ const MAINNET_PROTOCOL_ID =
 const BUCK =
   "0xce7ff77a83ea0cb6fd39bd8748e2ec89a3f41e8efdc3f4eb123e0ca37b184db2::buck::BUCK";
 const USDC =
-  "0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN";
+  ADDRESSES.sui.USDC;
 const USDT =
-  "0xc060006111016b8a020ad5b33834984a437aaa7d3c74c18e09a95d48aceab08c::coin::COIN";
+  ADDRESSES.sui.USDT;
 
 const AF_LP_IDs = [
   "0xe2569ee20149c2909f0f6527c210bc9d97047fe948d34737de5420fab2db7062",
