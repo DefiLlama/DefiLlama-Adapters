@@ -88,47 +88,12 @@ async function suiTVL() {
     })
   ).map((i) => i.fields.value.fields);
 
-  let poolCashInfo = await getPool(
-    listPoolFlowX,
-    "0xf59d382506b74d4502d3e26cff5d581af75d0869ceb57bccdbf762dc1b092153"
-  );
-
   let poolShareInfo = await getPool(
     listPoolFlowX,
     "0x3cfad71fc1f65addbadc0d4056fbd1106aa6b9a219e3ea1f5356a2f500d13182"
   );
 
-  let boardRoom = await sui.getObject(
-    "0x35b4a18dcf3daedf4a49c38b053131bfd2321532668c5bca2924c27337f17111"
-  );
-
   let totalResult = {};
-
-  //TVL on boardroom
-  totalResult[
-    "0x3c1227010835ecf9cb8f2bf9993aa9378bb951f0b3a098de6f0ee20385e01c4a::psh::PSH"
-  ] = new BigNumber(boardRoom.fields.total_staked);
-
-  //TVL on PDO Earn
-  for (let i = 0; i < poolCashInfo.length; i++) {
-    if (!totalResult.hasOwnProperty(poolCashInfo[i].coinX)) {
-      totalResult[poolCashInfo[i].coinX] = poolCashInfo[i].coinXStaked;
-    } else {
-      totalResult[poolCashInfo[i].coinX] = totalResult[
-        poolCashInfo[i].coinX
-      ].plus(poolCashInfo[i].coinXStaked);
-    }
-
-    if (poolCashInfo[i].coinY) {
-      if (!totalResult.hasOwnProperty(poolCashInfo[i].coinY)) {
-        totalResult[poolCashInfo[i].coinY] = poolCashInfo[i].coinYStaked;
-      } else {
-        totalResult[poolCashInfo[i].coinY] = totalResult[
-          poolCashInfo[i].coinY
-        ].plus(poolCashInfo[i].coinYStaked);
-      }
-    }
-  }
 
   //TVL on PSH Earn
   for (let i = 0; i < poolShareInfo.length; i++) {
