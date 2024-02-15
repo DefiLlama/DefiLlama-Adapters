@@ -1,9 +1,36 @@
-const { getWhitelistedTokens } = require('../helper/streamingHelper')
+const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokens2, sumTokensExport } = require('../helper/unwrapLPs')
+const { covalentGetTokens } = require('../helper/token')
+const { isWhitelistedToken } = require('../helper/streamingHelper')
+const { getUniqueAddresses } = require('../helper/utils')
 
 const config = {
-  polygon: { contract: '0xe01f47646d1A30e829aeB4eDDa406A245E75C34B'},
-  linea: { contract: '0xD2AA294B9A5097F4A09fd941eD0bE665bd85Eab2'},
-  arbitrum: { contract: '0x8749DD80580EAEd2fE38e3729030a6b1519591f7'}
+  linea: { owners: ['0xD2AA294B9A5097F4A09fd941eD0bE665bd85Eab2'], },
+}
+
+const blacklistedTokens = [
+  ADDRESSES.ethereum.sUSD_OLD,
+  ADDRESSES.ethereum.SAI.toLowerCase(),
+  ADDRESSES.ethereum.MKR,
+]
+
+async function getTokens(api, owners, isVesting) {
+  let tokens = (await Promise.all(owners.map(i => covalentGetTokens(i, api, { onlyWhitelisted: false, })))).flat().filter(i => !blacklistedTokens.includes(i))
+  tokens = getUniqueAddresses(tokens)
+  const symbols = await api.multiCall({ abi: 'erc20:symbol', calls: tokens })
+  return tokens.filter((v, i) => isWhitelistedToken(symbols[i], v, isVesting))
+}
+
+async function tvl(_, block, _1, { api }) {
+  const { owners } = config[api.chain]
+  const tokens = await getTokens(api, owners, false)
+  return sumTokens2({ api, owners, tokens, blacklistedTokens, })
+}
+
+async function vesting(_, block, _1, { api }) {
+  const { owners } = config[api.chain]
+  const tokens = await getTokens(api, owners, true)
+  return sumTokens2({ api, owners, tokens, blacklistedTokens, })
 }
 
 module.exports = {
@@ -11,16 +38,5 @@ module.exports = {
 }
 
 Object.keys(config).forEach(chain => {
-  const { contract } = config[chain]
-  module.exports[chain] = {
-    tvl: tvl(false),
-    vesting: tvl(true),
-  }
-
-  function tvl(isVesting) {
-    return async (_, _1, _2, { api }) => {
-      const tokens = await api.fetchList({  lengthAbi: 'uint256:totalActiveAssets', itemAbi: 'function activeAssets(uint256) view returns (address)', target: contract})
-      return api.sumTokens({ owner: contract, tokens: await getWhitelistedTokens({ api, tokens, isVesting})})
-    }
-  }
+  module.exports[chain] = { tvl, vesting }
 })
