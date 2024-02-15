@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getCache, get } = require("../helper/http");
 const sdk = require("@defillama/sdk");
 const { nullAddress } = require("../helper/tokenMapping");
