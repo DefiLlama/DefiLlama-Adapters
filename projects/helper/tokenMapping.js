@@ -66,6 +66,11 @@ const fixBalancesTokens = {
   moonbeam: {
     '0xffffffff99dabe1a8de0ea22baa6fd48fde96f6c': { coingeckoId: 'voucher-glmr', decimals: 18  },
     '0xffffffffcd0ad0ea6576b7b285295c85e94cf4c1': { coingeckoId: 'filecoin', decimals: 18  },
+  },
+  stacks: {
+    'SP4SZE494VC2YC5JYG7AYFQ44F5Q4PYV7DVMDPBG.ststx-token::ststx': { coingeckoId: 'blockstack', decimals: 6  },
+    'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.token-susdt::bridged-usdt': { coingeckoId: 'tether', decimals: 8  },
+    'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.token-abtc::bridged-btc': { coingeckoId: 'bitcoin', decimals: 8  },
   }
 }
 
