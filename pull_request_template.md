@@ -51,8 +51,9 @@
 ##### Category (full list at https://defillama.com/categories) *Please choose only one:
 
 
-##### Oracle used (Chainlink/Band/API3/TWAP or any other that you are using):
-
+##### Oracle Provider(s): Specify the oracle(s) used (e.g., Chainlink, Band, API3, TWAP, etc.):
+##### Implementation Details: Briefly describe how the oracle is integrated into your project:
+##### Documentation/Proof: Provide links to documentation or any other resources that verify the oracle's usage:
 
 ##### forkedFrom (Does your project originate from another project):
 

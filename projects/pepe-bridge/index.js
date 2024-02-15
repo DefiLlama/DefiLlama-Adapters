@@ -24,6 +24,7 @@ const config = {
         ADDRESSES.ethereum.UNI,
         ADDRESSES.ethereum.MKR,
         ADDRESSES.ethereum.LINK,
+        ADDRESSES.ethereum.CRVUSD,
       ],
       '0x0de7b091A21BD439bdB2DfbB63146D9cEa21Ea83'
     ]

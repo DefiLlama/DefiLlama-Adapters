@@ -4,5 +4,12 @@
   "slotBaseInfo": "function slotBaseInfo(uint256 slot_) view returns (tuple(address issuer, address currency, uint64 valueDate, uint64 maturity, uint64 createTime, bool transferable, bool isValid))",
   "decimals": "uint8:decimals",
   "balanceOf": "function balanceOf(address _owner) view returns (uint256 balance)",
-  "getSubscribeNav": "function getSubscribeNav(bytes32 poolId_, uint256 time_) view returns (uint256 nav_, uint256 navTime_)"
+  "getSubscribeNav": "function getSubscribeNav(bytes32 poolId_, uint256 time_) view returns (uint256 nav_, uint256 navTime_)",
+  "tokenOfOwnerByIndex": "function tokenOfOwnerByIndex(address owner, uint256 index) view returns (uint256)",
+  "liquidities": "function liquidities(uint256) view returns (int24, int24, uint128, uint256, uint256, uint256, uint256, uint128)",
+  "poolMetas": "function poolMetas(uint128) view returns (address, address, uint24)",
+  "pool": "function pool(address tokenX, address tokenY, uint24 fee) view returns (address)",
+  "state": "function state() view returns (uint160 sqrtPriceX96, int24 currentPoint, uint16 observationCurrentIndex, uint16 observationQueueLen, uint16 observationNextQueueLen, bool locked, uint256 liquidity, uint256 liquidityX)",
+  "stakedAmountsAbi": "function stakedAmounts(address) external view returns (uint256)",
+  "stakedMlpAmount": "function stakedMlpAmount(address account) view returns (uint256)"
 }

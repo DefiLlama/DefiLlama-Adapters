@@ -54,7 +54,7 @@ const arb_pools = [...new Set([...v1_3_arb_ShortCollateral, ...v1_3_arb_Liquidit
 
 const op_tokens = [ADDRESSES.optimism.sUSD, ADDRESSES.optimism.sETH,
     '0xc5db22719a06418028a40a9b5e9a7c02959d0d08', '0x298b9b95708152ff6968aafd889c6586e9169f1d', 
-    ADDRESSES.optimism.OP, '0x68f180fcce6836688e9084f035309e29bf0a2095', 
+    ADDRESSES.optimism.OP, ADDRESSES.optimism.WBTC, 
     ADDRESSES.optimism.WETH, ADDRESSES.optimism.USDC]
 
 const arb_tokens = [ADDRESSES.arbitrum.USDC, ADDRESSES.arbitrum.WETH,

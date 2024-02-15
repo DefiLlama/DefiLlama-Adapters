@@ -109,4 +109,5 @@ async function borrowed(_, _b, _cb, { api, }) {
     if (i.outstandingAmount === '0') return
     api.add(loanRequests[idx].underlying.ethAddress, i.outstandingAmount)
   })
+  return api.getBalances()
 }
