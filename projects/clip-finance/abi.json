@@ -1,3 +1,0 @@
-{
-  "getStrategiesValue": "function getStrategiesValue() public view returns (uint256 totalBalance, uint256 totalStrategyBalance, uint256 totalIdleStrategyBalance, uint256[] memory balances, uint256[] memory idleBalances)"
-}
