@@ -76,7 +76,7 @@ function tarotHelper(exportsObj, config, { tarotSymbol = 'vTAROT' } = {}) {
 
     underlyings.forEach((v, i) => {
       // Lot of MAI pools have bad debt, ignoring it
-      if (v.toLowerCase() !== '0xfb98b335551a418cd0737375a2ea0ded62ea213b' || !blacklistedBorrowables.has(borrowables[i].toLowerCase())) {
+      if (v.toLowerCase() !== '0xfb98b335551a418cd0737375a2ea0ded62ea213b' && !blacklistedBorrowables.has(borrowables[i].toLowerCase())) {
         sdk.util.sumSingleBalance(balances, v, borrowed[i], api.chain)
       }
     })
