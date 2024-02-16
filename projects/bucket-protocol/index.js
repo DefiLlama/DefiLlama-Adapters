@@ -1,5 +1,6 @@
 const ADDRESSES = require("../helper/coreAssets.json");
 const sui = require("../helper/chain/sui");
+const BigNumber = require("bignumber.js");
 
 const MAINNET_PROTOCOL_ID =
   "0x9e3dab13212b27f5434416939db5dec6a319d15b89a84fd074d03ece6350d3df";
@@ -39,6 +40,33 @@ const USDT_PSM =
 
 const BUCKETUS_PSM =
   "0xba86a0f37377844f38060a9f62b5c5cd3f8ba13901fa6c4ee5777c1cc535306b";
+
+async function borrowed() {
+  const { api } = arguments[3];
+  const protocolFields = await sui.getDynamicFieldObjects({
+    parent: MAINNET_PROTOCOL_ID,
+  });
+
+  const bucketList = protocolFields.filter((item) =>
+    item.type.includes("Bucket")
+  );
+
+  const reservoirList = protocolFields.filter((item) =>
+    item.type.includes("Reservoir")
+  );
+
+  const bucket_total_buck = BigNumber.sum.apply(
+    null,
+    bucketList.map((item) => item.fields.minted_buck_amount)
+  );
+
+  const reservoir_total_buck = BigNumber.sum.apply(
+    null,
+    reservoirList.map((item) => item.fields.buck_minted_amount)
+  );
+
+  api.add(BUCK, bucket_total_buck.plus(reservoir_total_buck).toString());
+}
 
 async function tvl(_, _1, _2, { api }) {
   const protocolFields = await sui.getDynamicFieldObjects({
@@ -144,5 +172,6 @@ module.exports = {
   timetravel: false,
   sui: {
     tvl,
+    borrowed,
   },
 };
