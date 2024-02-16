@@ -38,6 +38,12 @@ const tvl = async (time, ethBlock, chainBlocks, { api }) => {
   return sumTokens(balances, [], chainBlocks[api.chain], api.chain, true)
 }
 
+module.exports = {
+  hallmarks: [
+    [Math.floor(new Date('2023-03-13') / 1e3), 'Euler was hacked'],
+  ],
+};
+
 Object.keys(chains).forEach(chain => {
   module.exports[chain] = { tvl }
 })
