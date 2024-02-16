@@ -1,20 +1,16 @@
 const sdk = require("@defillama/sdk");
-const { cellarsV2, cellarsV2p5 } = require("./cellar-constants");
 
-async function sumTvl({ balances, cellars, api }) {
+async function sumTvl({ balances, cellars, api, ownersToDedupe }) {
   const assets = await api.multiCall({  abi: "address:asset", calls: cellars}) 
   const bals = await api.multiCall({  abi: "uint256:totalAssets", calls: cellars})
 
   // Dedupe any potential TVL of cellars taking positions in other cellars by looking at balanceOf for each cellar
 
-  // Concatenate cellar owners to dedupe (only need v2+, older veriosns dont take positions in other cellars)
-  const owners = cellarsV2.concat(cellarsV2p5)
-
   const sharesToIgnore = await Promise.all(
     cellars.map(async (target) => {
       // Iterate over all owners and sum up their shares for each cellar (target)
       const shares = await sdk.api.abi.multiCall({
-        calls: owners.map((owner) => ({
+        calls: ownersToDedupe.map((owner) => ({
           target: target, // Base Cellar
           params: owner.id, // Potential cellar holding shares in base cellar
         })),
