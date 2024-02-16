@@ -36,7 +36,7 @@ async function tvl(_0, _1, _2, { api }) {
 
 module.exports = {
   misrepresentedTokens: true, // false, // until all tokens are indexed by defillama
-  timetravel: false, // true, // until all tokens are indexed by defillama
+  timetravel: true,
   kava: { tvl, },
   methodology: 'The total supply of their circulating stocks is extracted from their stock token contracts.'
 }
