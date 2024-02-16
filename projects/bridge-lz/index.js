@@ -14,6 +14,6 @@ module.exports = {
 
 Object.keys(ADMIN_ADDRESSES).forEach(chain => {
   module.exports[chain] = {
-    tvl: sumTokensExport({ owner: ADMIN_ADDRESSES[chain], tokens: [nullAddress]})
+    tvl: sumTokensExport({ owner: ADMIN_ADDRESSES[chain], tokens: [nullAddress], logCalls: true })
   }
 })

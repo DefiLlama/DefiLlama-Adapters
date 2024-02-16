@@ -78,7 +78,7 @@ function tvl(chain) {
     TOKEN_ADDRESSES.forEach(t => {
       if (t[chain]) toa.push([t[chain], owner])
     })
-    return sumTokens({}, toa, block, chain)
+    return sumTokens({}, toa, block, chain, undefined)
   }
 }
 
