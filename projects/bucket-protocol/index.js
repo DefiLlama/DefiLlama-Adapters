@@ -1,5 +1,6 @@
 const ADDRESSES = require("../helper/coreAssets.json");
 const sui = require("../helper/chain/sui");
+const BigNumber = require("bignumber.js");
 
 const MAINNET_PROTOCOL_ID =
   "0x9e3dab13212b27f5434416939db5dec6a319d15b89a84fd074d03ece6350d3df";
