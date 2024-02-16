@@ -1,6 +1,4 @@
-const { unwrapBalancerToken } = require("../helper/unwrapLPs")
 const sdk = require("@defillama/sdk");
-const { aaveChainTvl } = require('../helper/aave');
 const abi = require('./abis/aurelius.json');
 const { default: BigNumber } = require("bignumber.js");
 
@@ -17,23 +15,23 @@ const strategiesVersioned = {
   },
 }
 
-const MONEY_MARKET_DATA_PROVIDER = '0xedB4f24e4b74a6B1e20e2EAf70806EAC19E1FA54'; //protocol data provider contract
+const MONEY_MARKET_DATA_PROVIDER = '0xedB4f24e4b74a6B1e20e2EAf70806EAC19E1FA54';
 
 
-async function getMoneyMarketLiquidity(){
+async function getMoneyMarketLiquidity(chain, dataProvider){
   const reserveTokens = await sdk.api.abi.call({
     abi: abi["getAllReservesTokens"],
-    target: MONEY_MARKET_DATA_PROVIDER,
-    chain: "mantle"
+    target: dataProvider,
+    chain
   })
 
   const reserveData = await sdk.api.abi.multiCall({
     calls: reserveTokens.output.map(({tokenAddress}) => ({
-      target: MONEY_MARKET_DATA_PROVIDER,
+      target: dataProvider,
       params: [tokenAddress],
     })),
     abi: abi.getReserveData,
-    chain: "mantle"
+    chain
   });
 
   const moneyMarketTokens = [];
@@ -42,9 +40,9 @@ async function getMoneyMarketLiquidity(){
   reserveData.output.forEach((reserve) => {
     const availableLiquidity = BigNumber(reserve.output.availableLiquidity);
     const borrowed = BigNumber(reserve.output.totalVariableDebt);
-    const totalLiquidity = availableLiquidity.plus(borrowed)
-    moneyMarketTokens.push(reserve.input.params[0])
-    moneyMarketBalances.push(totalLiquidity.toString())
+    const totalLiquidity = availableLiquidity.plus(borrowed);
+    moneyMarketTokens.push(reserve.input.params[0]);
+    moneyMarketBalances.push(totalLiquidity.toString());
   })
 
   return({
@@ -65,7 +63,7 @@ async function tvl(_, _b, _cb, { api, }) {
   const bals = await api.multiCall({ abi: 'uint256:totalSupply', calls: strategies })
   api.addTokens(tokens, bals)
 
-  const {moneyMarketTokens, moneyMarketBalances} = await getMoneyMarketLiquidity();
+  const {moneyMarketTokens, moneyMarketBalances} = await getMoneyMarketLiquidity("mantle", MONEY_MARKET_DATA_PROVIDER);
   api.addTokens(moneyMarketTokens, moneyMarketBalances);
   
   return api.sumTokens({ ownerTokens: pools.map((p, i) => [collaterals[i], p]) })
@@ -73,7 +71,9 @@ async function tvl(_, _b, _cb, { api, }) {
 
 module.exports = {
   doublecounted: true,
-  methodology: `TVL is fetched from the Ethos Reserve subgraph and the Byte Masons token price api.`,
+  methodology: `TVL is fetched from Aurelius contracts. 
+    Minting TVL is calculated by summing collateral supply in the active pool and underlying vaults. 
+    Money market TVL is the sum of each reserve's available and borrowed liquidity.`,
   mantle: {
     tvl
   },
