@@ -1,5 +1,4 @@
 const sdk = require('@defillama/sdk')
-const axios = require('axios')
 
 const tokens = [
   {
