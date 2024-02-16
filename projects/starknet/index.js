@@ -6,7 +6,7 @@ async function tvl(_, _b, _c, { api }) {
   const mapping = await get(
     `https://raw.githubusercontent.com/starknet-io/starknet-addresses/master/bridged_tokens/mainnet.json`
   );
-  const tokensAndOwners = mapping.map((t) => [
+  const tokensAndOwners = mapping.filter(i => i.l1_token_address).map((t) => [
     t.l1_token_address == "0x0000000000000000000000000000000000455448"
       ? "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
       : t.l1_token_address,
