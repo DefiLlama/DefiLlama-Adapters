@@ -70,7 +70,10 @@ Object.keys(config).forEach(chain => {
       restrictTokenRatio: 100,
     }),
 
-    hallmarks: [[1707955200, "epoch 1"]]
+    hallmarks: [
+      [1707400800, "TGE"],
+      [1707955200, "Epoch 1"]
+    ]
 
   }
 })
