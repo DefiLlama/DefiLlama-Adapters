@@ -106,7 +106,6 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
         if (hasStablePools && cache.symbols[i].startsWith(stablePoolSymbol)) {
           sdk.log('found stable pool: ', stablePoolSymbol)
           sdk.util.sumSingleBalance(balances, cache.token0s[i], _reserve0)
-          sdk.util.sumSingleBalance(balances, cache.token0s[i], _reserve0)
           sdk.util.sumSingleBalance(balances, cache.token1s[i], _reserve1)
         } else {
           data.push({
