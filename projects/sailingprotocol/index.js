@@ -58,7 +58,7 @@ async function tvl(_0, blockNumber, _2, { api }) {
           tokenTotalSupply * tokenPriceUSDT * (1e6 / 1e18)
         );
       }
-    } catch {};
+    } catch { continue; /* ESLint requirement */ }
   }
 }
 
