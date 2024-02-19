@@ -10,7 +10,6 @@ async function tvl() {
   const ownerTokens = pools.map(pool => [[t(pool.token0.tokenAddress), t(pool.token1.tokenAddress)], t(pool.poolAddress)])
   return sumTokens({ ownerTokens, api })
   // await getLogs({ fromBlock: 535428, topic: '0x27dd458d081c22bd6e76f4dddbc87f11e477b7c5823b13f147d45f91ec098ee', target: factory }).catch(console.error)
-  return {}
 }
 
 module.exports = {
