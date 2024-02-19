@@ -50,6 +50,9 @@ const fixBalancesTokens = {
   },
   kujira: {
     'factory:kujira1sc6a0347cc5q3k890jj0pf3ylx2s38rh4sza4t:ufuzn': { coingeckoId: 'fuzion', decimals: 6 },
+  },
+  kroma: {
+    '0x3720b1dc2c8dde3bd6cfcf0b593d0a2bbcac856e': { coingeckoId: 'wemix-token', decimals: 18 },
   }
 }
 
