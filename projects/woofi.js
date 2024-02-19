@@ -46,7 +46,7 @@ const wooPPConfig = {
 	],
 	optimism: [
 		ADDRESSES.optimism.WETH_1, // WETH
-		'0x68f180fcCe6836688e9084f035309E29Bf0A2095', // WBTC
+		ADDRESSES.optimism.WBTC, // WBTC
 		ADDRESSES.optimism.OP, // OP
 		ADDRESSES.optimism.USDC, // USDC
 		ADDRESSES.optimism.USDT,

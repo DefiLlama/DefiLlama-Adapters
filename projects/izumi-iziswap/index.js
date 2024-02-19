@@ -34,7 +34,7 @@ const poolHelpers = {
 const blacklistedTokens = [
   ADDRESSES.bsc.iUSD,
   '0x1382628e018010035999A1FF330447a0751aa84f',
-  '0x0A3BB08b3a15A19b4De82F8AcFc862606FB69A2D', // mantle iUSD
+  ADDRESSES.bsc.iUSD, // mantle iUSD
   '0x078f712f038A95BeEA94F036cADB49188a90604b', // manta iUSD
 ]
 

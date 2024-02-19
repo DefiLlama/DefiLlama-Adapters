@@ -1,4 +1,4 @@
-const SUBGRAPH_URL = 'https://protocol-sg.arcade.xyz/subgraphs/name/arcade/protocol';
+const SUBGRAPH_URL = 'https://subgraph.satsuma-prod.com/c59d37e827d0/non-fungible-technologies/protocol/api';
 const CHAIN = 'ethereum';
 
 // V2 Protocol
