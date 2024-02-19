@@ -17,7 +17,7 @@ const tokens = [
 async function tvl(_0, blockNumber, _2, { api }) {
   for (const token of tokens) {
     const tokenTotalSupply = await api.call({ target: token.address, abi: 'erc20:totalSupply' });
-    api.add(token.address, tokenTotalSupply);
+    // api.add(token.address, tokenTotalSupply);
     if (!token.sufficientLiquidityForDefiLlamaIndexer) {
       const tickerPricing = await axios.post(
         'https://sailingprotocol.org/api/sailingprotocol/market_data/historical_intraday',
