@@ -38,6 +38,9 @@ const config ={
   ],
   scroll: [
     { factory: '0x52B29C6154Ad0f5C02416B8cB1cEB76E082fC9C7', fromBlock: 1803841, factoryType: 'izumi' } // izumi
+  ],
+  zkfair: [
+    { factory: '0x873fD467A2A7e4E0A71aD3c45966A84797e55B5B', fromBlock: 6740958, factoryType: 'izumi' } // izumi
   ]
 }
 
