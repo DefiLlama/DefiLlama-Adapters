@@ -1,4 +1,7 @@
 const sdk = require('@defillama/sdk');
+const { util: {
+    blocks: { getCurrentBlocks },
+  } } = require("@defillama/sdk");
 
 async function getAssets(lendingPoolCore, block, chain) {
     const reserves = (
@@ -66,6 +69,10 @@ const ScrollContractAddress = "0x4b71CAF14Cf8529101498976C44B8445797A5886";
 function getMarket(borrowed, contractAddress, chain) {
   return async (timestamp, block)=> {
     const balances = {}
+    if(chain == "scroll"){
+        const { chainBlocks } = await getCurrentBlocks([]); // fetch only ethereum block for local test
+        block = chainBlocks.scroll
+    }
 
     await singleAssetV1Market(balances, contractAddress, block, borrowed,chain)
     return balances
