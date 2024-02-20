@@ -106,7 +106,6 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
         if (hasStablePools && cache.symbols[i].startsWith(stablePoolSymbol)) {
           sdk.log('found stable pool: ', stablePoolSymbol)
           sdk.util.sumSingleBalance(balances, cache.token0s[i], _reserve0)
-          sdk.util.sumSingleBalance(balances, cache.token0s[i], _reserve0)
           sdk.util.sumSingleBalance(balances, cache.token1s[i], _reserve1)
         } else {
           data.push({
@@ -134,7 +133,7 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
     if (cache.pairs) {
       for (let i = 0; i < cache.pairs.length; i++) {
         if (!cache.pairs[i]) {
-          cache.pairs[i] = await api.call({ abi: abi.allPairsLength, target: factory, params: i })
+          cache.pairs[i] = await api.call({ abi: abi.allPairs, target: factory, params: i })
           updateCache = true
         }
         let pair = cache.pairs[i]
