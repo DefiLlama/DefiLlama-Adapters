@@ -51,4 +51,7 @@ module.exports = {
   starknet: {
     tvl,
   },
+  hallmarks: [
+    [1706106000, "Nostra Pools launch"],
+  ]
 };

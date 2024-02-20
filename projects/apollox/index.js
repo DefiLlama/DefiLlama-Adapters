@@ -119,7 +119,7 @@ module.exports = {
     tvl: sumTokensExport({
       owner: '0x5A5454A6030FB50ceb3eb78977D140198A27be5e', tokens: [
         nullAddress,
-        ADDRESSES.op_bnb.USDC,
+        ADDRESSES.op_bnb.USDT,
         ADDRESSES.op_bnb.WBNB,
       ]
     })

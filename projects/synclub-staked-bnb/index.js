@@ -8,6 +8,7 @@ async function bscTvl(timestamp, block, chainBlocks, { api }) {
 }
 
 module.exports = {
+  doublecounted: true,
   methodology: 'We aggregated the assets staked across synclub staking protocols',
   bsc: {
     tvl: bscTvl
