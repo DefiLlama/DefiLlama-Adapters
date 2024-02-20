@@ -57,9 +57,6 @@ function multiMarketTvl(balances, lendingPoolCore, block, borrowed, chain, eth =
 }
 
 async function singleAssetV1Market(balances, lendingPoolCore, block, borrowed, chain, eth) {
-    if(chain == "scroll"){
-        block = 3485648
-    }
     return multiMarketTvl(balances, lendingPoolCore, block, borrowed, chain, eth);
 }
 
