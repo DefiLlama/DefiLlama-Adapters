@@ -12,28 +12,29 @@
 7. No need to go to our discord and announce that you've created a PR, we monitor all PRs and will review it asap
 
 ---
-##### Name (to be shown on DefiLlama):
+##### Name (to be shown on DefiLlama): Polter Finance
 
 
-##### Twitter Link:
+##### Twitter Link: https://twitter.com/polterfinance
 
 
-##### List of audit links if any:
+##### List of audit links if any: based on Geist audits 
+https://sourcehat.com/audits/GeistProtocol/ 
+https://github.com/peckshield/publications/blob/master/audit_reports/PeckShield-Audit-Report-Geist-v1.0.pdf
+
+##### Website Link: https://polter.finance
 
 
-##### Website Link:
+##### Logo (High resolution, will be shown with rounded borders): https://polter.finance/polter-hires-cropped.png
 
 
-##### Logo (High resolution, will be shown with rounded borders):
-
-
-##### Current TVL:
+##### Current TVL: $1.11m
 
 
 ##### Treasury Addresses (if the protocol has treasury)
 
 
-##### Chain:
+##### Chain: Fantom
 
 
 ##### Coingecko ID (so your TVL can appear on Coingecko, leave empty if not listed): (https://api.coingecko.com/api/v3/coins/list)
@@ -42,23 +43,23 @@
 ##### Coinmarketcap ID (so your TVL can appear on Coinmarketcap, leave empty if not listed): (https://api.coinmarketcap.com/data-api/v3/map/all?listing_status=active,inactive,untracked&start=1&limit=10000)
 
 
-##### Short Description (to be shown on DefiLlama):
+##### Short Description (to be shown on DefiLlama): Polter is a decentralized non-custodial lending and borrowing platform
 
 
-##### Token address and ticker if any:
+##### Token address and ticker if any: 0x5c725631FD299703D0A74C23F89a55c6B9A0C52F POLTER
 
 
-##### Category (full list at https://defillama.com/categories) *Please choose only one:
+##### Category (full list at https://defillama.com/categories) *Please choose only one: Lending
 
 
-##### Oracle Provider(s): Specify the oracle(s) used (e.g., Chainlink, Band, API3, TWAP, etc.):
-##### Implementation Details: Briefly describe how the oracle is integrated into your project:
-##### Documentation/Proof: Provide links to documentation or any other resources that verify the oracle's usage:
+##### Oracle Provider(s): Specify the oracle(s) used (e.g., Chainlink, Band, API3, TWAP, etc.): Chainlink, Band
+##### Implementation Details: Briefly describe how the oracle is integrated into your project: PriceFeed smart contract will read prices from Chainlink and using Band as a failover
+##### Documentation/Proof: Provide links to documentation or any other resources that verify the oracle's usage: https://ftmscan.com/address/0x6808B5cE79d44E89883c5393b487c4296aBb69fe#readContract
 
-##### forkedFrom (Does your project originate from another project):
-
-
-##### methodology (what is being counted as tvl, how is tvl being calculated):
+##### forkedFrom (Does your project originate from another project): Geist
 
 
-##### Github org/user (Optional, if your code is open source, we can track activity):
+##### methodology (what is being counted as tvl, how is tvl being calculated): deposits (remaining liquidity + borrowed) makes up the non polter tvl. Staked and locked polter makes up the polter tvl. Both non polter and polter tvl is the total tvl.
+
+
+##### Github org/user (Optional, if your code is open source, we can track activity): whichghost
