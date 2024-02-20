@@ -14,7 +14,7 @@ const avax = "0x17b11FF13e2d7bAb2648182dFD1f1cfa0E4C7cf3";
 
 // BAL addresses per chain
 const bal_eth = "0xba100000625a3754423978a60c9317c58a424e3D";
-const bal_arb = "0x272F97b7a56a387aE942350bBC7Df5700f8a4576";
+const bal_arb = "0x040d1EdC9569d4Bab2D15287Dc5A4F10F56a56B8";
 const bal_pol = "0x9a71012b13ca4d3d0cdc72a177df3ef03b0e76a3";
 const bal_zkevm = "0x120eF59b80774F02211563834d8E3b72cb1649d6";
 const bal_op = "0xFE8B128bA8C78aabC59d4c64cEE7fF28e9379921";
