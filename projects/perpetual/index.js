@@ -37,7 +37,7 @@ module.exports = {
     doublecounted: false,
     misrepresentedTokens: true,
     methodology:
-        "The TVL is the USD value of the assets locked into the autonomous agents that extend the Pythagorean protocol.",
+        "The TVL is the USD value of the assets locked into the autonomous agents that implement the Pythagorean protocol.",
     obyte: {
         fetch: tvl
     },
