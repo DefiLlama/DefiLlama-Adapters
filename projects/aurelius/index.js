@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const abi = require('./abis/aurelius.json');
+const { aaveExports } = require('../helper/aave');
 
 const admins = {
   v1: '0x295c6074F090f85819cbC911266522e43A8e0f4A'
@@ -16,7 +16,8 @@ const strategiesVersioned = {
 
 const MONEY_MARKET_DATA_PROVIDER = '0xedB4f24e4b74a6B1e20e2EAf70806EAC19E1FA54';
 
-async function getCdpTvl (api) {
+async function getCdpTvl() {
+  const { api } = arguments[3]
   const strategies = Object.values(strategiesVersioned).map(i => Object.values(i)).flat()
   const vaults = Object.values(admins)
   const configs = await api.multiCall({ abi: 'address:collateralConfig', calls: vaults })
@@ -24,63 +25,10 @@ async function getCdpTvl (api) {
   const pools = await api.multiCall({ abi: 'address:activePool', calls: vaults })
 
   const tokens = await api.multiCall({ abi: 'address:token', calls: strategies })
-  const bals = await api.multiCall({ abi: 'uint256:totalSupply', calls: strategies })
-  api.addTokens(tokens, bals)
-  api.sumTokens({ ownerTokens: pools.map((p, i) => [collaterals[i], p]) })
-}
-
-async function getReserveData (dataProvider, chain) {
-  const reserveTokens = await sdk.api.abi.call({
-    abi: abi["getAllReservesTokens"],
-    target: dataProvider,
-    chain
-  })
-
-  const reserveData = await sdk.api.abi.multiCall({
-    calls: reserveTokens.output.map(({tokenAddress}) => ({
-      target: dataProvider,
-      params: [tokenAddress],
-    })),
-    abi: abi.getReserveData,
-    chain
-  });
-  return reserveData.output;
-}
-
-async function getMoneyMarketTvl(api){
-  const reserveData = await getReserveData(MONEY_MARKET_DATA_PROVIDER, "mantle");
-
-  const moneyMarketTokens = [];
-  const moneyMarketBalances = [];
-
-  reserveData.forEach((reserve) => {
-    const availableLiquidity = reserve.output.availableLiquidity;
-    moneyMarketTokens.push(reserve.input.params[0]);
-    moneyMarketBalances.push(availableLiquidity);
-  })
-
-  api.addTokens(moneyMarketTokens, moneyMarketBalances);
-}
-
-async function getMoneyMarketBorrowedAmount(_, _b, _cb, { api, }){
-  const reserveData = await getReserveData(MONEY_MARKET_DATA_PROVIDER, "mantle");
-
-  const moneyMarketTokens = [];
-  const moneyMarketBalances = [];
-
-  reserveData.forEach((reserve) => {
-    const borrowed = reserve.output.totalVariableDebt;
-    moneyMarketTokens.push(reserve.input.params[0]);
-    moneyMarketBalances.push(borrowed);
-  })
-
-  api.addTokens(moneyMarketTokens, moneyMarketBalances);
-}
-
-async function tvl(_, _b, _cb, { api, }) {
-  await getCdpTvl(api);
-  await getMoneyMarketTvl(api);
-  return ;
+  await api.sumTokens({ tokensAndOwners2: [tokens, strategies] })
+  // const bals = await api.multiCall({ abi: 'uint256:totalSupply', calls: strategies })
+  // api.addTokens(tokens, bals)
+  return api.sumTokens({ tokens: collaterals.flat(), owners: pools })
 }
 
 module.exports = {
@@ -88,8 +36,7 @@ module.exports = {
   methodology: `TVL is fetched from Aurelius contracts. 
     CDP TVL is calculated by summing collateral supply in the active pool and underlying vaults. 
     Money market TVL is broken into available liquidity and borrowed amount.`,
-  mantle: {
-    tvl,
-    borrowed: getMoneyMarketBorrowedAmount
-  },
+  mantle: aaveExports('mantle', undefined, undefined, [MONEY_MARKET_DATA_PROVIDER]),
 }
+
+module.exports.mantle.tvl = sdk.util.sumChainTvls([getCdpTvl, module.exports.mantle.tvl]);
