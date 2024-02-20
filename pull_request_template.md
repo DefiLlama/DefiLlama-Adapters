@@ -15,25 +15,26 @@
 ##### Name (to be shown on DefiLlama):
 
 
-##### Twitter Link:
+##### Twitter Link: https://twitter.com/polterfinance
 
 
-##### List of audit links if any:
+##### List of audit links if any: 
+https://sourcehat.com/audits/GeistProtocol/
+https://github.com/peckshield/publications/blob/master/audit_reports/PeckShield-Audit-Report-Geist-v1.0.pdf
+
+##### Website Link: https://polter.finance/
 
 
-##### Website Link:
+##### Logo (High resolution, will be shown with rounded borders): https://polter.finance/polter-hires-cropped.png
 
 
-##### Logo (High resolution, will be shown with rounded borders):
-
-
-##### Current TVL:
+##### Current TVL: $1.06m
 
 
 ##### Treasury Addresses (if the protocol has treasury)
 
 
-##### Chain:
+##### Chain: fantom
 
 
 ##### Coingecko ID (so your TVL can appear on Coingecko, leave empty if not listed): (https://api.coingecko.com/api/v3/coins/list)
@@ -42,23 +43,23 @@
 ##### Coinmarketcap ID (so your TVL can appear on Coinmarketcap, leave empty if not listed): (https://api.coinmarketcap.com/data-api/v3/map/all?listing_status=active,inactive,untracked&start=1&limit=10000)
 
 
-##### Short Description (to be shown on DefiLlama):
+##### Short Description (to be shown on DefiLlama): Polter is a decentralized non-custodial lending and borrowing platform
 
 
-##### Token address and ticker if any:
+##### Token address and ticker if any: 0x5c725631FD299703D0A74C23F89a55c6B9A0C52F POLTER
 
 
-##### Category (full list at https://defillama.com/categories) *Please choose only one:
+##### Category (full list at https://defillama.com/categories) *Please choose only one: Lending
 
 
-##### Oracle Provider(s): Specify the oracle(s) used (e.g., Chainlink, Band, API3, TWAP, etc.):
-##### Implementation Details: Briefly describe how the oracle is integrated into your project:
-##### Documentation/Proof: Provide links to documentation or any other resources that verify the oracle's usage:
+##### Oracle Provider(s): Specify the oracle(s) used (e.g., Chainlink, Band, API3, TWAP, etc.): Chainlink, Band
+##### Implementation Details: Briefly describe how the oracle is integrated into your project: PriceFeed smart contract reads from Chainklink with Band for failover
+##### Documentation/Proof: Provide links to documentation or any other resources that verify the oracle's usage: https://ftmscan.com/address/0xE455A72e7CcE22d26a2439B9FE35E78977D0a6d7#code
 
-##### forkedFrom (Does your project originate from another project):
-
-
-##### methodology (what is being counted as tvl, how is tvl being calculated):
+##### forkedFrom (Does your project originate from another project): Geist
 
 
-##### Github org/user (Optional, if your code is open source, we can track activity):
+##### methodology (what is being counted as tvl, how is tvl being calculated): Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending
+
+
+##### Github org/user (Optional, if your code is open source, we can track activity): whichghost
