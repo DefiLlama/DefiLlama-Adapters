@@ -84,6 +84,8 @@ function calculateTokenAmounts(poolData, gammAmount) {
 const neutronVaults = {
     pcl_wstETH_axlWETH: "neutron1yvhe4f0q3swtf37pkf9kku59l52nevr3trxs62vah004a08pkl8qlaccc7",
     xyk_ASTRO_axlUSDC: "neutron135nkp0fth0vtertv7ngvkkgc4cwamp2tpnmjdlppat0047f9wjmqxeu9p8",
+    pxl_capped_stTIA_TIA: "neutron1qzf6t478xuutq0ahkm07pl2y2tctreccrlafkrl38k4cafk3rgdq3lfky5",
+    pcl_wstETH_NTRN: "neutron17vedy2clhctw0654k93m375ud7h5jsy8nj9gnlkjnyd4mcfnfrdql226al",
 };
 
 async function neutronTvl(_, _1, _2, { api }) {
