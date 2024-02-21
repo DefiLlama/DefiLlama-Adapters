@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const http =  require('../helper/http')
 
 const Tokens = {
   ROUP: "0x5a1c3f3aaE616146C7b9bf9763E0ABA9bAFc5eaE",
