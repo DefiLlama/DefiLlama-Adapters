@@ -33,5 +33,8 @@ async function getTvl() {
 }
 
 module.exports = {
+  aptos: {
+    fetch: getTvl
+  },
   fetch: getTvl
 }
