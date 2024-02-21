@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { masterchefExports } = require('../helper/unknownTokens')
 
 const BEAR_DAI_LP = "0x9e5719236e2ce62dc286ac89ae5a0fa142ae3aa8"
-const DAI = '0x6b175474e89094c44da98b954eedeac495271d0f';
+const DAI = ADDRESSES.ethereum.DAI;
 
 
 module.exports = masterchefExports({

@@ -1,16 +1,13 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi");
-const {
-  transformPolygonAddress,
-  transformFantomAddress,
-} = require("../helper/portedTokens");
 
 const fusePoolLensAddress = {
   polygon: "0x0e76288Ac7fD4643290Bc857E26A4E7BfBd5aADF",
   fantom: "0x5aB6215AB8344C28B899efdE93BEe47B124200Fb",
 };
 
-const WETH = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
+const WETH = ADDRESSES.ethereum.WETH;
 
 async function getFusePools(
   timestamp,
@@ -48,27 +45,27 @@ async function getFusePools(
 
 async function polygonTvl(timestamp, block, chainBlocks) {
   const balances = {};
-  const transform = await transformPolygonAddress();
+  const transform = i => `polygon:${i}`;
   block = chainBlocks.polygon;
   await getFusePools(timestamp, block, balances, false, "polygon", transform);
   return balances;
 }
 async function polygonBorrowed(timestamp, block, chainBlocks) {
   const balances = {};
-  const transform = await transformPolygonAddress();
+  const transform = i => `polygon:${i}`;
   block = chainBlocks.polygon;
   await getFusePools(timestamp, block, balances, true, "polygon", transform);
   return balances;
 }
 async function fantomTvl(timestamp, _, {fantom: block}) {
   const balances = {};
-  const transform = await transformFantomAddress();
+  const transform = i => `fantom:${i}`;
   await getFusePools(timestamp, block, balances, false, "fantom", transform);
   return balances;
 }
 async function fantomBorrowed(timestamp, _, {fantom: block}) {
   const balances = {};
-  const transform = await transformFantomAddress();
+  const transform = i => `fantom:${i}`;
   await getFusePools(timestamp, block, balances, true, "fantom", transform);
   return balances;
 }
@@ -80,7 +77,7 @@ module.exports = {
     borrowed: polygonBorrowed,
   },
   fantom: {
-    tvl: fantomTvl,
-    borrowed: fantomBorrowed,
+    tvl: () => ({}),
+    borrowed: () => ({}),
   },
 };

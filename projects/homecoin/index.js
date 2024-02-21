@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { sumTokens } = require("../helper/unwrapLPs");
 const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
 
 const HOME = "0xb8919522331C59f5C16bDfAA6A121a6E03A91F62";
-const USDC = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
+const USDC = ADDRESSES.ethereum.USDC;
 const HOME_START = 13313474
 
 /**

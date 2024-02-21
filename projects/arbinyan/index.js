@@ -1,16 +1,17 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
 const BigNumber = require("bignumber.js");
 
 const stakingETHContract = "0x9F7968de728aC7A6769141F63dCA03FD8b03A76F";
-const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+const WETH = ADDRESSES.ethereum.WETH;
 
 const stakingNYANContract = "0x32e5594F14de658b0d577D6560fA0d9C6F1aa724";
 const NYAN = "0xed3fb761414da74b74f33e5c5a1f78104b188dfc";
 
 const stakingPool2Contract = "0x62FF5Be795262999fc1EbaC29277575031d2dA2C";
 const NYAN_WETH_SLP = "0x70Df9Dd83be2a9F9Fcc58Dd7C00d032d007b7859";
-const WETH_arb = "0x82af49447d8a07e3bd95bd0d56f35241523fbab1";
+const WETH_arb = ADDRESSES.arbitrum.WETH;
 
 async function pool2(time, ethBlock, chainBlocks) {
   const balances = {};

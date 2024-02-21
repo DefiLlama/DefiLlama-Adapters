@@ -1,5 +1,4 @@
 const { staking, stakings } = require("../helper/staking");
-const { transformPolygonAddress } = require("../helper/portedTokens");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 
 /*** Ethereum Addresses ***/
@@ -55,7 +54,7 @@ const farmingStakingContracts_polygon = [
 const polygonTvl = async (chainBlocks) => {
   const balances = {};
 
-  let transformAddress = await transformPolygonAddress();
+  let transformAddress = i => `polygon:${i}`;
   await sumTokensAndLPsSharedOwners(
     balances,
     [

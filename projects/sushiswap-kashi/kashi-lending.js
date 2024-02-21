@@ -1,8 +1,5 @@
-const sdk = require("@defillama/sdk");
-const { request, gql } = require("graphql-request");
-const { getBlock } = require("../helper/http");
-const { getChainTransform } = require("../helper/portedTokens");
-const { BigNumber } = require("ethers");
+const ADDRESSES = require('../helper/coreAssets.json')
+const { blockQuery } = require("../helper/http");
 
 const graphUrls = {
   ethereum: "https://api.thegraph.com/subgraphs/name/sushi-labs/kashi-ethereum",
@@ -20,9 +17,9 @@ const bentoboxes = {
   avax: "0x0711b6026068f736bae6b213031fce978d48e026",
 };
 
-const toAmountAbi ='function toAmount(address token, uint256 share, bool roundUp) view returns (uint256 amount)'
+const toAmountAbi = 'function toAmount(address token, uint256 share, bool roundUp) view returns (uint256 amount)'
 
-const kashiQuery = gql`
+const kashiQuery = `
   query get_pairs($block: Int) {
     kashiPairs(block: { number: $block }, first: 1000) {
       id
@@ -44,28 +41,24 @@ const kashiQuery = gql`
 `;
 
 function kashiLending(chain, borrowed) {
-  return async (timestamp, ethBlock, chainBlocks) => {
-    const balances = {};
+  return async (timestamp, ethBlock, chainBlocks, { api }) => {
     const graphUrl = graphUrls[chain];
-    let block = await getBlock(timestamp, chain, chainBlocks)
-    block = block - 100; //subgraphs can be late by few seconds/minutes
-    const transform = await getChainTransform(chain);
 
     // Query graphql endpoint
-    const { kashiPairs } = await request(graphUrl, kashiQuery, {
-      block: block,
+    const { kashiPairs } = await blockQuery(graphUrl, kashiQuery, {
+      api
     });
     const calls = []
 
     kashiPairs.map(async (pair) => {
       if (
-        pair.asset.id === "0x0000000000000000000000000000000000000000" ||
-        pair.collateral.id === "0x0000000000000000000000000000000000000000"
+        pair.asset.id === ADDRESSES.null ||
+        pair.collateral.id === ADDRESSES.null
       ) {
         return;
       }
       if (borrowed) {
-        if (BigNumber.from(pair.totalBorrow.elastic).lte(0)) {
+        if (+pair.totalBorrow.elastic <= 0) {
           return;
         }
         //count tokens borrowed
@@ -73,10 +66,7 @@ function kashiLending(chain, borrowed) {
         //convert shares to amount
         calls.push({ params: [pair.asset.id, shares, false] })
       } else {
-        if (
-          BigNumber.from(pair.totalAsset.elastic).lte(0) &&
-          BigNumber.from(pair.totalAsset.elastic).lte(0)
-        ) {
+        if (+pair.totalAsset.elastic <= 0) {
           return;
         }
         //count tokens not borrowed + collateral
@@ -87,15 +77,13 @@ function kashiLending(chain, borrowed) {
       }
     })
 
-    const { output } = await sdk.api.abi.multiCall({
-      calls, chain, block, abi: toAmountAbi, target: bentoboxes[chain],
+    const output = await api.multiCall({
+      calls, abi: toAmountAbi, target: bentoboxes[chain],
     })
 
-    output.forEach(({ input: { params: [token]}, output: balance, success, }) => {
-      if(success) sdk.util.sumSingleBalance(balances, transform(token), balance)
+    output.forEach((balance, idx) => {
+      api.add(calls[idx].params[0], balance)
     })
-
-    return balances;
   };
 }
 

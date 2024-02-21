@@ -61,7 +61,7 @@ async function quickswapTVL({ balances, chain, block, app }) {
     })
   ).output.map((a) => a.output);
   farms.map((v, i) => {
-    const res = sdk.util.sumSingleBalance(
+    sdk.util.sumSingleBalance(
       balances,
       transform(v.stakeToken),
       balanceOfFarm[i]

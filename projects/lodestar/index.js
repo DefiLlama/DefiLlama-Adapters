@@ -2,8 +2,8 @@ const sdk = require('@defillama/sdk')
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 const { transformBalances } = require('../helper/portedTokens')
 const chain = 'arbitrum'
-const controller = '0x8f2354F9464514eFDAe441314b8325E97Bf96cdc'
-const cETHER = '0xb4d58c1f5870efa4b05519a72851227f05743273'.toLowerCase()
+const controller = '0x92a62f8c4750D7FbDf9ee1dB268D18169235117B'
+const cETHER = '0x7A472988bD094a09f045120e78Bb0cEa44558b52'.toLowerCase()
 
 async function getMarkets(block) {
   let markets = await sdk.api2.abi.call({ target: controller, abi: abis.getAllMarkets, chain, block })
@@ -44,7 +44,7 @@ module.exports = {
   ],
   arbitrum: {
     tvl,
-    // borrowed,
+    borrowed,
   }
 };
 

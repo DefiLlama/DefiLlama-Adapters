@@ -1,21 +1,42 @@
+const { getConfig } = require('../helper/cache')
+const { sumTokens } = require('../helper/sumTokens')
 
-const { get, } = require('../helper/http')
+const blacklistedAssets = ['uaxl'];
 
-const blacklistedAssets = ['uaxl']
-async function fetch() {
-    var { data } = await get('https://api.axelarscan.io/cross-chain/tvl')
+const chainMapping = {
+  avax: 'avalanche',
+  cosmos: 'cosmoshub',
+  terra2: 'terra-2',
+  bsc: 'binance'
+};
 
-    var tvl = 0;
-    for (const asset of data) {
-        if (blacklistedAssets.includes(asset.asset))    continue;
-        tvl += asset.value
-    }
-    return tvl
-}
+const chainListSupply = ['juno', 'cosmos', 'comdex', 'carbon', 'crescent', 'injective', 'kujira', 'osmosis', 'persistence', 'stargaze', 'secret', 'stargaze', 'umee', 'evmos', 'terra2'];
+const chainListTotal = ['avax', 'bsc', 'moonbeam', 'polygon', 'fantom', 'arbitrum', 'aurora', 'celo', 'kava', 'mantle', 'ethereum',];
 
-module.exports = {
-    ethereum: {
-        fetch
-    },
-    fetch
-}
+
+chainListSupply.concat(chainListTotal).forEach(chain => {
+  module.exports[chain] = { tvl };
+  async function tvl(_, _b, _cb, { api }) {
+    const config = await getConfig('alexar', 'https://api.axelarscan.io/cross-chain/tvl')
+    const tokensAndOwners = []
+    const owners = []
+    const mappedChain = chainMapping[chain] || chain;
+    config.data.forEach(({ tvl: { [mappedChain]: assetTvl } = {} }) => {
+      if (!assetTvl) return;
+
+      const isEVM = assetTvl.gateway_address?.startsWith('0x')
+      if (isEVM) {
+        if (assetTvl.contract_data.symbol.startsWith('axl')) return;
+        tokensAndOwners.push([assetTvl.contract_data.address, assetTvl.gateway_address])
+      } else {
+        if (assetTvl.denom_data.symbol.startsWith('axl')) return;
+        owners.push(...assetTvl.source_escrow_addresses)
+      }
+    })
+    if (tokensAndOwners.length > 0)
+      return api.sumTokens({ tokensAndOwners })
+    return sumTokens({ chain, owners })
+  }
+});
+
+module.exports.timetravel = false;

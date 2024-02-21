@@ -9,7 +9,7 @@ async function getBscTvl(time, ethBlock, chainBlocks, { api }) {
     target: poolAddress,
     abi: abi.getCurrentTokens,
   })
-  return sumTokens2({ ...api, tokens, owner: poolAddress })
+  return sumTokens2({ api, tokens, owner: poolAddress })
 }
 
 async function eth(timestamp, block, _1, { api }) {
@@ -40,7 +40,7 @@ async function eth(timestamp, block, _1, { api }) {
     const owner = pools[i]
     tokensAndOwners.push(...t.map(j => ([j, owner])))
   })
-  return sumTokens2({ ...api, tokensAndOwners, })
+  return sumTokens2({ api, tokensAndOwners, })
 
 }
 

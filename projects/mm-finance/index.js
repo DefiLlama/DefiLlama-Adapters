@@ -13,7 +13,6 @@ module.exports = {
   cronos: {
     staking: staking(masterChef, mmfToken, 'cronos'),
     tvl: getUniTVL({
-      chain: 'cronos',
       factory,
       useDefaultCoreAssets: true,
       blacklist:[

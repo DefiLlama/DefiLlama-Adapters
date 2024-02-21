@@ -1,17 +1,7 @@
-/*==================================================
-  Modules
-  ==================================================*/
-const axios = require("axios");
-const sdk = require("@defillama/sdk");
-const BigNumber = require("bignumber.js");
+const ADDRESSES = require('../helper/coreAssets.json')
 
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
-// const {
-//   transformEvmosAddress
-// } = require("../helper/portedTokens");
-const { getChainTransform } = require("../helper/portedTokens");
+const { sumTokensExport } = require("../helper/unwrapLPs");
 
-/*** Arbitrum Addresses ***/
 const poolAddresses_evmos = [
   //NomadBasePoolAddress
   "0x49b97224655AaD13832296b8f6185231AFB8aaCc",
@@ -34,60 +24,31 @@ const poolAddresses_evmos = [
 ];
 
 // Bridged Nomad Stablecoins
-const madUSDC = "0x51e44FfaD5C2B122C8b635671FCC8139dc636E82";
-const madUSDT = "0x7FF4a56B32ee13D7D4D405887E0eA37d61Ed919e";
-const FRAX = "0xE03494D0033687543a80c9B1ca7D6237F2EA8BD8";
+const madUSDC = ADDRESSES.evmos.USDC;
+const madUSDT = ADDRESSES.evmos.USDT;
+const FRAX = ADDRESSES.evmos.FRAX;
 
 // Bridged Celer Stablecoins
 const ceDAI = "0x940dAAbA3F713abFabD79CdD991466fe698CBe54";
-const ceUSDC = "0xe46910336479F254723710D57e7b683F3315b22B";
-const ceUSDT = "0xb72A7567847abA28A2819B855D7fE679D4f59846";
+const ceUSDC = ADDRESSES.evmos.ceUSDC;
+const ceUSDT = ADDRESSES.evmos.ceUSDT;
 
 // Bridged Axelar Stablecoins
 const axlDAI = "0x4A2a90D444DbB7163B5861b772f882BbA394Ca67";
-const axlUSDC = "0x15C3Eb3B621d1Bff62CbA1c9536B7c1AE9149b57";
+const axlUSDC = ADDRESSES.evmos.AXL_USDC;
 const axlUSDT = "0xe01C6D4987Fc8dCE22988DADa92d56dA701d0Fe0";
 
 // Bridged Gravity Stablecoins
-const gravDAI = "0xd567B3d7B8FE3C79a1AD8dA978812cfC4Fa05e75";
-const gravUSDC = "0x5FD55A1B9FC24967C4dB09C513C3BA0DFa7FF687";
-const gravUSDT = "0xecEEEfCEE421D8062EF8d6b4D814efe4dc898265";
-
-async function tvl(timestamp, chainBlocks) {
-  const balances = {};
-  const transformAddress = await getChainTransform("evmos");
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [
-      [madUSDC, false],
-      [madUSDT, false],
-      [axlDAI, false],
-      [axlUSDC, false],
-      [axlUSDT, false],
-      [ceDAI, false],
-      [ceUSDC, false],
-      [ceUSDT, false],
-      [gravDAI, false],
-      [gravUSDC, false],
-      [gravUSDT, false],
-      [FRAX, false],
-    ],
-    poolAddresses_evmos,
-    chainBlocks["evmos"],
-    "evmos",
-    transformAddress
-  );
-  return balances;
-}
-
-/*==================================================
-  Exports
-  ==================================================*/
+const gravDAI = ADDRESSES.functionx.PUNDIX;
+const gravUSDC = ADDRESSES.functionx.PURSE;
+const gravUSDT = ADDRESSES.functionx.USDT;
 
 module.exports = {
-  misrepresentedTokens: true,
   evmos: {
-    tvl,
+    tvl: sumTokensExport({
+      owners: poolAddresses_evmos, 
+      tokens: [madUSDC, madUSDT, axlDAI, axlUSDC, axlUSDT, ceDAI, ceUSDC, ceUSDT, gravDAI, gravUSDC, gravUSDT, FRAX],
+    }),
   },
   methodology:
     "Counts as TVL all the Assets deposited on EVMOS through different Pool Contracts",

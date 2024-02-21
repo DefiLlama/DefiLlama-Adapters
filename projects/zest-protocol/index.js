@@ -1,15 +1,16 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const Abis = require("./abi.json");
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 
 const Contracts = {
   fantom: {
-    wftm: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
+    wftm: ADDRESSES.fantom.WFTM,
     wethBank: "0xB717b014BC34fc904396585CbF4FC1B0BBe603B4",
     weth: "0x74b23882a30290451A17c44f4F05243b6b58C76d",
     zsp: "0x2C26617034C840C9412CD67aE0Fc68A6755D00BF",
     ftmz: "0x9e219b51891e2c62ea8a2ea438d331eae7c68484",
-    usdc: "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75",
+    usdc: ADDRESSES.fantom.USDC,
     bank: "0x9fc3E5259Ba18BD13366D0728a256E703869F21D",
     multiFeeDistribution: "0x1b6deD5c603d66800B0DDf566Ec316a344C7BcaD",
     chef: "0xFdAa392FCF8946e8e658B9f36ffbE6659cB40edf",

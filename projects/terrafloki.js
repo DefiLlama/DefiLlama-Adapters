@@ -18,11 +18,12 @@ async function tvl() {
 
 module.exports = {
     terra:{        
-        pool2,
-        staking,
-        tvl
+        tvl: () => 0
     },
     hallmarks:[
     [1651881600, "UST depeg"],
   ]
 }; 
+
+
+module.exports.deadFrom = '2022-05-26'

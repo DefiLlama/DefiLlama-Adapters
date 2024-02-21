@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const BigNumber = require("bignumber.js");
 const { graphQuery } = require('../helper/http')
 const data = {}
 
-const subgraphUrl = 'https://graph.cntrfg.com/subgraphs/name/allow-null-maturity-date';
+const subgraphUrl = 'https://api.goldsky.com/api/public/project_clhi43ef5g4rw49zwftsvd2ks/subgraphs/main/prod/gn';
 const graphTotalTokenTVLQuery = `
 query GET_TOTAL_TOKEN_TVL {
   pools(
@@ -14,7 +15,7 @@ query GET_TOTAL_TOKEN_TVL {
   }
 }
 `;
-const dai = "0x6b175474e89094c44da98b954eedeac495271d0f"
+const dai = ADDRESSES.ethereum.DAI
 
 async function getData(api) {
   return graphQuery(subgraphUrl, graphTotalTokenTVLQuery, { api, })

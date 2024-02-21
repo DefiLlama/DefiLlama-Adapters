@@ -1,23 +1,18 @@
-const axios = require("axios");
+const { getConnection, decodeAccount, sumTokens2 } = require('../helper/solana')
+const { PublicKey } = require("@solana/web3.js")
+const ADDRESSES = require('../helper/coreAssets.json')
 
-async function tvl() {
-    const publicAPIKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTYyOTIwMTUyOSwiZXhwIjoxOTQ0Nzc3NTI5fQ.nJcAWD5NXaHQJdPc0_J1lNMv-YDx9bpVlPkke91Jx0c'
-    const response = await axios.get(
-        'https://rvliqpfbqcjhdlrgjkvw.supabase.co/rest/v1/APITable?select=tvl_sol&api_id=eq.1',
-        {
-            headers: {
-                'apikey': publicAPIKey,
-            }
-        }
-    )
-
-    return {
-        'solana': response.data[0].tvl_sol / 1_000_000_000
-    }
+async function tvl(_, _1, _2, { api }) {
+  const connection = getConnection()
+//   const programPublicKey = new PublicKey('5ocnV1qiCgaQR8Jb8xWnVbApfaygJ8tNoZfgPwsgx9kx')
+  const stakeAccount = new PublicKey('5oc4nmbNTda9fx8Tw57ShLD132aqDK65vuHH4RU1K4LZ')
+  const data = await connection.getAccountInfo(stakeAccount)
+  const i = decodeAccount('scnStakePool', data)
+  api.add(ADDRESSES.solana.SOL, i.totalStakeLamports.toString())
+  return api.getBalances()
 }
 
 module.exports = {
-    timetravel: false,
-    solana: { tvl },
-    methodology: 'We call our API endpoint to get total SOL TVL. An alternative is to check our total supply for a lower bound on TVL, as each SOCN token is guaranteed to be backed by (at least) 1 SOL.',
+  timetravel: false,
+  solana: { tvl, },
 }

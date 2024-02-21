@@ -11,9 +11,8 @@ const veAddress = "0xcBd8fEa77c2452255f59743f55A3Ea9d83b3c72b";
 const oxSolidAddress = "0xDA0053F0bEfCbcaC208A3f867BB243716734D809";
 const sanitize = require("./sanitizeWeb3Response.js");
 
-const { masterChefExports, standardPoolInfoAbi, addFundsInMasterChef } = require('../helper/masterchef')
+const { standardPoolInfoAbi, addFundsInMasterChef } = require('../helper/masterchef')
 const sdk = require('@defillama/sdk')
-const { default: BigNumber } = require('bignumber.js')
 
 const shareValue = "uint256:getShareValue"
 const xSCREAM = "0xe3D17C7e840ec140a7A51ACA351a482231760824"
@@ -41,7 +40,7 @@ async function tvl(time, ethBlock, chainBlocks) {
         abi: shareValue
     })
     sdk.util.sumSingleBalance(balances, transform("0xe0654C8e6fd4D733349ac7E09f6f23DA256bF475"),
-        BigNumber(screamShare.output).times(balances[transform(xSCREAM)]).div(1e18).toFixed(0))
+        screamShare.output *balances[transform(xSCREAM)] /1e18)
     delete balances[transform(xSCREAM)]
 
     const creditShare = await sdk.api.abi.call({
@@ -50,14 +49,14 @@ async function tvl(time, ethBlock, chainBlocks) {
         abi: shareValue
     })
     sdk.util.sumSingleBalance(balances, transform("0x77128dfdd0ac859b33f44050c6fa272f34872b5e"),
-        BigNumber(creditShare.output).times(balances[transform(xCREDIT)]).div(1e18).toFixed(0))
+        creditShare.output * balances[transform(xCREDIT)] / 1e18)
     delete balances[transform(xCREDIT)]
 
     const tarotShare = await sdk.api.abi.call({
         ...calldata,
         target: xTAROT,
         abi: shareTarot,
-        params: balances[transform(xTAROT)]
+        params: sdk.util.convertToBigInt(balances[transform(xTAROT)])
     })
     sdk.util.sumSingleBalance(balances, transform("0xc5e2b037d30a390e62180970b3aa4e91868764cd"),
         tarotShare.output)
@@ -85,7 +84,7 @@ async function tvl(time, ethBlock, chainBlocks) {
 
     // Add pools
     const addPools = (pools, reservesData) => {
-        pools.forEach((pool, index) => {
+        pools.forEach((pool) => {
             const solidlyPoolAddress = pool.poolData.id;
             const reserveData = reservesData.find(
                 (data) => data.id === solidlyPoolAddress
@@ -95,10 +94,10 @@ async function tvl(time, ethBlock, chainBlocks) {
                 ...pool.poolData,
                 ...reserveData,
             };
-            const shareOfTotalSupply = new BigNumber(newPool.totalSupply).div(newPool.poolData.totalSupply).toFixed()
+            const shareOfTotalSupply = newPool.totalSupply / newPool.poolData.totalSupply
             newPool.shareOfTotalSupply = shareOfTotalSupply;
-            let token0Reserve = new BigNumber(newPool.poolData.token0Reserve).times(shareOfTotalSupply).toFixed(0);
-            let token1Reserve = new BigNumber(newPool.poolData.token1Reserve).times(shareOfTotalSupply).toFixed(0);
+            let token0Reserve = newPool.poolData.token0Reserve * shareOfTotalSupply
+            let token1Reserve = newPool.poolData.token1Reserve * shareOfTotalSupply
             if (isNaN(token0Reserve)) {
                 token0Reserve = "0"
             }
@@ -145,12 +144,7 @@ async function tvl(time, ethBlock, chainBlocks) {
     // Add TVL from pools to balances
     const addBalance = (tokenAddress, amount) => {
         const fantomTokenAddress = `fantom:${tokenAddress}`
-        const existingBalance = balances[fantomTokenAddress];
-        if (existingBalance) {
-            balances[fantomTokenAddress] = new BigNumber(existingBalance).plus(amount).toFixed(0)
-        } else {
-            balances[fantomTokenAddress] = amount;
-        }
+        sdk.util.sumSingleBalance(balances, fantomTokenAddress, amount)
     }
     pools.forEach(pool => {
         const token0 = pool.poolData.token0Address;

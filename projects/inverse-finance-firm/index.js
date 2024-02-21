@@ -2,6 +2,7 @@
 const abi = require("./abi.json");
 const { getLogs } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const sdk = require("@defillama/sdk")
 
 // Firm
 const firmStart = 16159015;
@@ -30,8 +31,13 @@ async function tvl(timestamp, block, _, { api }) {
     })
   );
   escrows = escrows.flat()
-  const tokens = await api.multiCall({  abi: 'address:token', calls: escrows}) 
-  return sumTokens2({ api, tokensAndOwners: tokens.map((t, i) => ([t, escrows[i]]))})
+  const tokens = await api.multiCall({  abi: 'address:token', calls: escrows})
+  const tokenBalances = await api.multiCall({  abi: 'uint256:balance', calls: escrows})
+  const balances = {}
+  tokens.forEach((t,i)=>{
+    sdk.util.sumSingleBalance(balances, t, tokenBalances[i])
+  })
+  return balances
 }
 
 module.exports = {

@@ -1,37 +1,21 @@
-const { queryContract, } = require('./helper/chain/terra')
-
-function getCoinGeckoId(apiId) {
-    return {
-        'terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76': 'anchor-protocol',
-        'terra15gwkyepfc6xgca5t5zefzwy42uts8l2m4g40k6': 'mirror-protocol',
-        'terra17y9qkl8dfkeg4py7n0g5407emqnemc3yqk5rup': 'stader-lunax',
-        'terra1hzh9vpxhsk8253se0vv5jj6etdvxu3nv8z07zu': 'anchorust',
-        'terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp': 'bonded-luna',
-        'uluna': 'terra-luna',
-        'uusd': 'terrausd'
-    }[apiId]
-}
+const { queryContract, } = require('./helper/chain/cosmos')
 
 async function getMarkets() {
-    const res = await queryContract({ contract: 'terra1pcxwtrxppj9xj7pq3k95wm2zztfr9kwfkcgq0w', data:{ market_lists: {} } })
+    const res = await queryContract({ contract: 'terra1pcxwtrxppj9xj7pq3k95wm2zztfr9kwfkcgq0w', data: { market_lists: {} }, chain: 'terra' })
     return res
 }
-async function tvl() {
-    const balances = {};
+async function tvl(_, _1, _2, { api }) {
     const markets = await getMarkets()
     markets.forEach(m => {
-        balances[getCoinGeckoId(m.underlying)] = (m.total_credit - m.total_insurance) / 10 ** 6;
+        api.add(m.underlying, Math.floor(m.total_credit - m.total_insurance))
     });
-    return balances;
 }
 
-async function borrowed() {
-    const balances = {};
+async function borrowed(_, _1, _2, { api }) {
     const markets = await getMarkets()
     markets.forEach(m => {
-        balances[getCoinGeckoId(m.underlying)] = m.total_loan / 10 ** 6;
+        api.add(m.underlying, Math.floor(m.total_loan))
     });
-    return balances;
 }
 
 module.exports = {
@@ -41,7 +25,7 @@ module.exports = {
         tvl,
         borrowed
     },
-    hallmarks:[
-    [1651881600, "UST depeg"],
-  ]
+    hallmarks: [
+        [1651881600, "UST depeg"],
+    ]
 };

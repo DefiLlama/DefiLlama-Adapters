@@ -1,3 +1,4 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const sdk = require("@defillama/sdk")
 const axios = require("axios")
 const { staking } = require("./helper/staking");
@@ -20,14 +21,14 @@ const contracts = {
       '0x5c69bee701ef814a2b6a3edd4b1652cb9cc5aa6f', // univ2_factory_ethereum, 
       '0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac' // sushiv1_factory_ethereum
     ],
-    weth: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+    weth: ADDRESSES.ethereum.WETH,
     univ3_factory: '0x1f98431c8ad98523631ae4a59f267346ea31f984',
     transform: addr => addr,
   }, 
   polygon: {
     nft20_rest_api: nft20_rest_api_base + '&network=1',
     uni_v2_factories: ['0xc35DADB65012eC5796536bD9864eD8773aBc74C4'], // sushiv1_factory_polygon
-    weth: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+    weth: ADDRESSES.polygon.WETH_1,
     univ3_factory: [],
     transform: addr => `polygon:${addr}`,
   }
@@ -76,7 +77,7 @@ function chainTvl(chain) {
     })
   ).output
 
-  const LPs = [...uni_v2_LPs, ...uni_v3_LPs].filter(lp => lp.output !== '0x0000000000000000000000000000000000000000')
+  const LPs = [...uni_v2_LPs, ...uni_v3_LPs].filter(lp => lp.output !== ADDRESSES.null)
   const weth_LPs = (
     await sdk.api.abi.multiCall({
       calls: LPs.map(pool => ({
@@ -106,3 +107,30 @@ module.exports = {
     tvl: chainTvl('polygon')
   }
 }
+
+/* on chain code
+
+const { staking } = require("./helper/staking");
+const { sumTokens2 } = require("./helper/unwrapLPs");
+
+const MUSE = "0xb6ca7399b4f9ca56fc27cbff44f4d2e4eef1fc81";
+const stkMUSE = "0x9cfc1d1a45f79246e8e074cfdfc3f4aacdde8d9a";
+const MUSE_ETH_univ2 = '0x20d2c17d1928ef4290bf17f922a10eaa2770bf43'
+const MUSE_ETH_univ2_staking = '0x193b775af4bf9e11656ca48724a710359446bf52'
+async function tvl(_, _b, _cb, { api, }) {
+  const data = await api.fetchList({ lengthAbi: 'uint256:counter', itemAbi: 'function getPairByNftAddress(uint256) view returns (address _nft20pair, address _originalNft, uint256 _type, string _name, string _symbol, uint256 _supply)', target: '0x0f4676178b5c53Ae0a655f1B19A96387E4b8B5f2' })
+  const tokensAndOwners = data.map(i => [i._originalNft, i._nft20pair]).slice(0, 10)
+  return sumTokens2({ api, tokensAndOwners, permitFailure: true })
+}
+module.exports = {
+  methodology: `TVL for NFT20 consists of the weth locked in LPs (uni_v2, uni_v3, sushi) of every NFT20 pool on mainnet and polygon.`,
+  ethereum: {
+    tvl,
+    staking: staking(stkMUSE, MUSE),
+    pool2: staking(MUSE_ETH_univ2_staking, MUSE_ETH_univ2),
+  },
+  polygon: {
+    tvl: () => ({}), // we dont support pricing polygon NFTs yet
+  }
+} 
+ */

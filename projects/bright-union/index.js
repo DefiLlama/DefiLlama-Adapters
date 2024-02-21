@@ -1,6 +1,6 @@
-const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
-const {staking} = require('../helper/staking')
+const ADDRESSES = require('../helper/coreAssets.json')
+const {staking} = require('../helper/staking');
+const { sumTokensExport } = require('../helper/unwrapLPs');
 
 // BRI
 const BrightRiskIndex = "0xa4b032895BcB6B11ec7d21380f557919D448FD04";
@@ -11,21 +11,10 @@ const BrightLPStaking = ["0x160c43821004Cb76C7e9727159dD64ab8468f61C"];
 
 //UNIV2
 const ETH_BRIGHT_UNIV2 = "0xf4835af5387fab6bbc59f496cbcfa92998469b7b";
-const DAI = "0x6b175474e89094c44da98b954eedeac495271d0f"
-
-async function tvl (timestamp, block) {
-    return {
-        [DAI]: (await sdk.api.abi.call({
-            target: BrightRiskIndex,
-            block,
-            abi: abi["totalTVL"]
-        })).output
-    }
-}
 
 module.exports = {
     ethereum: {
-        tvl: tvl,
+        tvl: sumTokensExport({ owner: BrightRiskIndex, tokens: [ADDRESSES.ethereum.DAI] }),
         pool2: staking(BrightLPStaking, [ETH_BRIGHT_UNIV2]),
         staking: staking(BrightStaking, BRIGHT),
     },

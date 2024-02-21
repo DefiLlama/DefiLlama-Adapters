@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
 const { request, gql } = require("graphql-request");
-const { unwrapCreamTokens, unwrapUniswapLPs, unwrapUniswapV3NFTs } = require('../helper/unwrapLPs')
+const { unwrapCreamTokens, unwrapUniswapLPs, sumTokens2 } = require('../helper/unwrapLPs')
 const { getConfig } = require('../helper/cache')
 
 
@@ -121,7 +122,7 @@ async function tvlV2Onchain(block, chain) {
     const balances = {}
     const transform = addr => {
         if (addr.toLowerCase() === '0x260bbf5698121eb85e7a74f2e45e16ce762ebe11') 
-          return 'avax:0xc7198437980c041c805a1edcba50c1ce5db95118' // Axelar wrapped UST -> USDT
+          return 'avax:' + ADDRESSES.avax.USDT_e // Axelar wrapped UST -> USDT
         if (addr.toLowerCase() === '0x2147efff675e4a4ee1c2f918d181cdbd7a8e208f') 
         return '0xa1faa113cbe53436df28ff0aee54275c13b40975' // Wrapped Alpha Finance -> ALPHA (erc20)
       return  `${chain}:${addr}`
@@ -166,7 +167,7 @@ async function tvlV2Onchain(block, chain) {
     const blacklisted = ['0xf3a602d30dcb723a74a0198313a7551feaca7dac', '0x2a8a315e82f85d1f0658c5d66a452bbdd9356783',].map(i => i.toLowerCase())
     lpPools = lpPools.filter(p => !blacklisted.includes(p.token.toLowerCase()))
     await unwrapUniswapLPs(balances, lpPools, block, chain, transform)
-    if (owners.length) await unwrapUniswapV3NFTs({ balances, owners, chain, block, })
+    if (owners.length) await sumTokens2({ balances, chain, block, owners, resolveUniV3: true, })
 
     return balances
 }
@@ -271,12 +272,13 @@ async function getTokenPrices(tokens, block, chain, coreOracleAddress) {
         chain,
         abi: abi["getETHPx"],
         block,
+        permitFailure: true,
     });
 
     const tokenPrices = {};
     for (let i = 0; i < _ethPrices.length; i++) {
-        const price = BigNumber(_ethPrices[i].output).div(BigNumber(2).pow(112));
-        if (price.gte(0)) {
+        const price = _ethPrices[i].output / 2 ** 112;
+        if (price > 0) {
             tokenPrices[tokens[i]] = price;
         }
     }

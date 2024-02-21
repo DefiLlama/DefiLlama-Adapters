@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
@@ -34,12 +35,12 @@ async function getUnderlying(block, cToken) {
 function transformAddress(token) {
   if (token === '0x6f259637dcd74c767781e37bc6133cd6a68aa161') {
     return token
-  } else if (token === '0x3D760a45D0887DFD89A2F5385a236B29Cb46ED2a') {
-    return '0x6b175474e89094c44da98b954eedeac495271d0f';//DAI => DAI
-  } else if (token === '0x9362Bbef4B8313A8Aa9f0c9808B80577Aa26B73B') {
-    return '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';//USDC => USDC
-  } else if (token === "0x5eE41aB6edd38cDfB9f6B4e6Cf7F75c87E170d98") {
-    return "0x0000000000085d4780b73119b644ae5ecd22b376" //TUSD
+  } else if (token === ADDRESSES.heco.DAI_HECO) {
+    return ADDRESSES.ethereum.DAI;//DAI => DAI
+  } else if (token === ADDRESSES.heco.USDC_HECO) {
+    return ADDRESSES.ethereum.USDC;//USDC => USDC
+  } else if (token === ADDRESSES.heco.TUSD) {
+    return ADDRESSES.ethereum.TUSD //TUSD
   } else {
     return 'heco:' + token
   }
@@ -139,4 +140,7 @@ module.exports = {
   elastos: compoundExportsWithDifferentBase("0xE52792E024697A6be770e5d6F1C455550265B2CD", "elastos", "elastos"),
   kava: compoundExportsWithDifferentBase("0xD2CBE89a36df2546eebc71766264e0F306d38196", "kava", "kava"),
   bittorrent: compoundExportsWithDifferentBase("0xE52792E024697A6be770e5d6F1C455550265B2CD", "bittorrent", "bittorrent"),
+  hallmarks: [
+    [Math.floor(new Date('2023-04-24')/1e3), 'Protocol was hacked'],
+  ],
 };

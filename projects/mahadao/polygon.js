@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens } = require("../helper/unwrapLPs.js");
 
 const chain = "polygon";
 
 const polygon = {
-  usdc: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+  usdc: ADDRESSES.polygon.USDC,
   arthRedeemer: "0x394f4f7db617a1e4612072345f9601235f64b326",
 };
 

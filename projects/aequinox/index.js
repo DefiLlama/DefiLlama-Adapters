@@ -15,7 +15,7 @@ async function tvl(_, _b, _cb, { api, }) {
   let tokens = []
   data.forEach(i => tokens.push(...i.args.tokens))
   tokens = getUniqueAddresses(tokens)
-  return sumTokens2({ ...api, tokens, owner: vault, })
+  return sumTokens2({ api, tokens, owner: vault, })
 }
 
 module.exports = {

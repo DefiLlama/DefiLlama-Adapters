@@ -1,44 +1,152 @@
-const { GraphQLClient, } = require('graphql-request')
-const { sumTokensExport, nullAddress } = require("../helper/sumTokens");
-
-async function _tvl() {
-    var endpoint = 'https://api.liqwiddev.net/graphql'
-    var graphQLClient = new GraphQLClient(endpoint)
-
-    var query = ` {
-      markets {
-        totalSupply
-        marketId
-    }
-   } `;
-    var results = await graphQLClient.request(query)
-    return {cardano:results.markets.find(i => i.marketId === 'Ada').totalSupply / 1e6}
-}
+const { sumTokensExport } = require('../helper/chain/cardano');
+const { graphQuery } = require('../helper/http');
 
 module.exports = {
   cardano: {
-    tvl: sumTokensExport({
-      tokens: [nullAddress],
-      owners: [
-        "addr1xy865neqh8vpqgzl3x6z39hxj0lu38p7un3s0a8s5jynuy63z228hznt0rz2enxfzhtk2270gels0ht9uvf9wmyxs99quh3xsg",
-        "addr1xy865neqh8vpqgzl3x6z39hxj0lu38p7un3s0a8s5jynuya3q9zvxe5ehfytyye9m3dq3knvuz2fdnax7lhhjm4vvjgqt3y2hj",
-        "addr1xy865neqh8vpqgzl3x6z39hxj0lu38p7un3s0a8s5jynuyl0sfgalgyvgedlnhfl7u2059dkyhp453hm86797rm5qhassy6xk0",
-        "addr1xy865neqh8vpqgzl3x6z39hxj0lu38p7un3s0a8s5jynuycfpkhcpsthxpprf49lvfy2jhga5mygpfcj4qaypfzkmhns6uy3lu",
-        "addr1xy865neqh8vpqgzl3x6z39hxj0lu38p7un3s0a8s5jynuylccartl0f44hvc4vq8n3042epqvqq8cd4g9znpl5kdeyps2sy73m",
-        "addr1xy865neqh8vpqgzl3x6z39hxj0lu38p7un3s0a8s5jynuy6s80extwffmz4yagvdxvr6cpd8nm3qne020739j706h3jqy5gusg",
-        "addr1xy865neqh8vpqgzl3x6z39hxj0lu38p7un3s0a8s5jynuylwdw2g8sat0hr2pdt2ct27n33z0w6dzsfy684ut24gjfsqxlmc6x",
-        "addr1xy865neqh8vpqgzl3x6z39hxj0lu38p7un3s0a8s5jynuy78jkqyfeeuz5m6sfv27g9vav8w83lsaqewjqxnpnpjd9ws02090l",
-        "addr1xy865neqh8vpqgzl3x6z39hxj0lu38p7un3s0a8s5jynuy6a0x7l0scsd0wvfm3ljugdpsu4kctwfjyud65xfeht5uyqhkd0yk",
-        "addr1xy865neqh8vpqgzl3x6z39hxj0lu38p7un3s0a8s5jynuylnschmu7dwefmhkd078735ucq2yh90ylkzxrenz9cy8uds939akt",
-        "addr1xy865neqh8vpqgzl3x6z39hxj0lu38p7un3s0a8s5jynuy70l2wkhq0pr72jsdrv2kn8v3pqnrt0qykpq9fwr2wn0czs6qy47a",
-        "addr1xy865neqh8vpqgzl3x6z39hxj0lu38p7un3s0a8s5jynuymupshega3f5ym0freunp0p46rchpthvsyty398fh0msyws2h3kay",
-        "addr1xy865neqh8vpqgzl3x6z39hxj0lu38p7un3s0a8s5jynuyelzwuv27k9keyjpag32pmx9mf63tn77feppvm7d0s5ndnsvjn4yj",
-        "addr1xy865neqh8vpqgzl3x6z39hxj0lu38p7un3s0a8s5jynuyesaw6lwmnlk6z0aehzea9nwfvdvang9v42yylt83ym8zqqhts4k5",
-        "addr1xy865neqh8vpqgzl3x6z39hxj0lu38p7un3s0a8s5jynuy6ypq27sagqxt4jwt57mdsef3zu65ng4zmzxaa246s97nxs6t7anc",
-        "addr1xy865neqh8vpqgzl3x6z39hxj0lu38p7un3s0a8s5jynuymys5sq3xea3866499dczkshygljanhepcqjfwyhe3fpadsfdfar8",
-        "addr1w9afj34vc68qdm7heuz7esmr8sj76wpa45t7dh3ag8xpplgml3zuk",
-      ]
-    }),
+    // tvl: sumTokensExport({ scripts: scriptAddresses, }),
+    tvl,
+    borrowed,
+    staking: sumTokensExport({ scripts: ["addr1w8arvq7j9qlrmt0wpdvpp7h4jr4fmfk8l653p9t907v2nsss7w7r4"], }),
     methodology: 'Adds up the Ada in the 16 action tokens and batch final token.'
   }
 };
+
+
+const endpoint = 'https://api.liqwid.finance/graphql'
+
+const queryAdaLoans = `query ($page: Int) {
+  Page (page: $page) {
+    pageInfo {
+      currentPage
+      hasNextPage
+    }
+    loan(marketId: "Ada") {
+      collaterals {
+        id
+        amount
+      }
+    }
+  }
+}
+`
+
+const query = `query ($page: Int) {
+  Page (page: $page) {
+    pageInfo {
+      currentPage
+      hasNextPage
+    }
+    market {
+      asset {
+        marketId
+        name
+        qTokenId
+        qTokenPolicyId
+      }
+      state {
+        totalSupply
+        utilization
+      }
+      marketId
+      decimals
+      info {
+        params {
+          underlyingClass {
+            value0 {
+              symbol
+              name
+            }
+          }
+        }
+        scripts {
+          actionToken {
+            script {
+              value0 {
+                value0
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+`
+const tokenMapping = {
+  ADA: 'lovelace',
+  DJED: '8db269c3ec630e06ae29f74bc39edd1f87c819f1056206e879a1cd61446a65644d6963726f555344',
+  DAI: 'dai',
+
+}
+
+const getToken = market => tokenMapping[market.marketId.toUpperCase()] ?? market.info.params.underlyingClass.value0.symbol + toHex(market.info.params.underlyingClass.value0.name)
+
+const getOptimBondTVL = async () => {
+  const getLoans = async (pageIndex) => {
+    const { Page: { pageInfo, loan: loans } } = await graphQuery(endpoint, queryAdaLoans, { page: pageIndex })
+
+    if (!pageInfo.hasNextPage) {
+      return loans
+    }
+    return [...loans, ...(await getLoans(pageIndex + 1))]
+  }
+  const loans = await getLoans(0)
+  const relevantLoans =
+    loans.filter(l => (l.collaterals.filter(c => c.id === "OptimBond1")).length != 0)
+  const bonds =
+    relevantLoans.map(l => l.collaterals[0].amount).reduce((acc, amount) =>
+      acc + Number(amount), 0)
+
+  return bonds
+}
+
+async function tvl(_, _b, _cb, { api, }) {
+  const { Page: { market: markets } } = await graphQuery(endpoint, query, { page: 0 })
+
+  markets.forEach(market => add(api, market, market.state.totalSupply))
+  add(api, "OptimBond1", await getOptimBondTVL())
+}
+
+function add(api, market, bal) {
+  const token = market === "OptimBond1" ? "OptimBond1" : getToken(market)
+  if (["usd-coin", "tether",].includes(token)) bal /= 1e8
+  if (["dai",].includes(token)) bal /= 1e6
+  api.add(token, bal, {
+    skipChain: ['usd-coin', 'tether', 'dai'].includes(token)
+  })
+}
+
+async function borrowed(_, _b, _cb, { api, }) {
+  const { Page: { market: markets } } = await graphQuery(endpoint, query)
+
+  markets.forEach(market => {
+    const utilization = market.state.utilization
+    const availability = 1 - utilization
+    const totalBorrowed = market.state.totalSupply * utilization / availability
+    add(api, market, totalBorrowed)
+  })
+}
+
+function base64ToHex(base64) {
+  return base64
+  /* // Step 1: Decode the Base64 string to a byte array
+  const binaryData = atob(base64);
+
+  // Step 2: Convert each byte to its hexadecimal representation
+  const hexArray = [];
+  for (let i = 0; i < binaryData.length; i++) {
+    const byte = binaryData.charCodeAt(i).toString(16).padStart(2, '0');
+    hexArray.push(byte);
+  }
+
+  // Step 3: Concatenate the hexadecimal values to form the final hexadecimal string
+  return hexArray.join(''); */
+}
+
+function toHex(str) {
+  let hex = ''
+  for (let i = 0; i < str.length; i++) {
+    hex += str.charCodeAt(i).toString(16);
+  }
+  return hex
+}

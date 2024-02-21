@@ -1,5 +1,0 @@
-{
-  "tokenPrice": "uint256:tokenPrice",
-  "token": "address:token",
-  "getContractValue": "uint256:getContractValue"
-}

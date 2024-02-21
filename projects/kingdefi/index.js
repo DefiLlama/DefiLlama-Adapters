@@ -1,10 +1,5 @@
-const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
 const { addFundsInMasterChef } = require("../helper/masterchef");
-const {
-  transformBscAddress,
-  transformPolygonAddress,
-} = require("../helper/portedTokens");
 
 const masterChefContract_bsc = "0x49A44ea2B4126CC1C53C47Ed7f9a5905Cbecae8d";
 //const masterChefContract_bscexp = "0x50302F18132d98ea4B0f7Fd2d98e0B1b5d3a3A60";
@@ -17,8 +12,8 @@ function calctvl(chain) {
   return async (chainBlocks) => {
     const balances = {};
 
-    const transformAddress_bsc = await transformBscAddress();
-    const transformAddress_polygon = await transformPolygonAddress();
+    const transformAddress_bsc = i => `bsc:${i}`;
+    const transformAddress_polygon = i => `polygon:${i}`;
 
     await addFundsInMasterChef(
       balances,

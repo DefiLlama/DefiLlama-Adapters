@@ -25,7 +25,7 @@ const calc = async (balances, block, factory, api) => {
   })
   const tokensAndOwners = []
   tokens.forEach((t, i) => t.forEach(j => tokensAndOwners.push([j, pools[i]])))
-  return sumTokens2({ ...api, tokensAndOwners, balances })
+  return sumTokens2({ api, tokensAndOwners, balances })
 };
 
 const ethTvl = async (_, ethBlock, _1, { api }) => {
