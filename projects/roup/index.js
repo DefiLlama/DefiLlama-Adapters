@@ -21,13 +21,6 @@ const Tokens = {
 }
 
 const Manager = "0x57E9094f501573e6Eb7e19aCe9D8E263D11fc8ba";
-
-const getPrices = (tokens) => {
-  return http.get(`https://api.coingecko.com/api/v3/simple/price?ids=${
-    tokens.join(',')}
-  }&vs_currencies=usd`);
-}
-
 async function tvl(ts, block, _2, { api }) {
   const names = Object.keys(Tokens);
   const { output: totalSupplies } = await sdk.api.abi.multiCall({
