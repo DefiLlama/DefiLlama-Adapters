@@ -61,14 +61,14 @@ const request_tvl = async () => {
   // }
   // // return { tether: new BigNumber(result.result).multipliedBy(new BigNumber(result.price)) };
   // return { tether: total };
-  return await request_staking();
+  // return await request_staking();
 };
 
 module.exports = {
   methodology: "Get the amount of tokens in lessgas platform",
   map: {
-    tvl: request_tvl,
-    // tvl: () => ({}),
+    // tvl: request_tvl,
+    tvl: () => ({}),
     staking: request_staking
   }
 };
