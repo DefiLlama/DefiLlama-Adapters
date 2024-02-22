@@ -26,7 +26,7 @@ const config = {
       '161fEUkrGhhAog8QG1ik3sfch9UzPdvAJtUwRH6WZnsgqkuw'
     ],
   },
-    cardano: {
+  cardano: {
     owners: [
       'addr1q976xcl3r2vt6he4q3rq6lyq8832v5mgpdds0e84z7vn0hma5d3lzx5ch40n2pzxp47gqw0z5efksz6mqlj029uexl0snqdsul'
     ],
