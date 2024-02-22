@@ -31,7 +31,7 @@ const config = {
       'addr1q976xcl3r2vt6he4q3rq6lyq8832v5mgpdds0e84z7vn0hma5d3lzx5ch40n2pzxp47gqw0z5efksz6mqlj029uexl0snqdsul'
     ],
   },
-  bep2: {
+  bep: {
     owners: [
       'bnb1k3ulpgw4wzl0e8qx80u87aq9w7ekfygruzs4dg'
     ],
