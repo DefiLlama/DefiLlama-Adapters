@@ -75,6 +75,14 @@ async function tvl() {
   //   }
   // ]
 
+  // system.account('pairAccount'): native token balance
+  // assets.account('assetIndex', 'pairAccount'): non-native token balance
+
+  // all token decimals
+  // const tokenListOnChain = (
+  //   await api.query.assetManager.assetIdMetadata.entries()
+  // ).map(([key, value]) => [key.toHuman(), value.toHuman()])
+
   return {};
 }
 
