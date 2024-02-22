@@ -30,7 +30,7 @@ const config = {
     owners: [
       'bnb1k3ulpgw4wzl0e8qx80u87aq9w7ekfygruzs4dg'
     ],
-  },
+  }
 }
 
 module.exports = cexExports(config)
