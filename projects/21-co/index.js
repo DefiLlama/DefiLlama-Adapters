@@ -27,7 +27,6 @@ const config = {
     ],
   },
     bep2: {
-    geckoId: 'binancecoin',
     owners: [
       'bnb1k3ulpgw4wzl0e8qx80u87aq9w7ekfygruzs4dg'
     ],
