@@ -25,7 +25,13 @@ const config = {
     owners: [
       '161fEUkrGhhAog8QG1ik3sfch9UzPdvAJtUwRH6WZnsgqkuw'
     ],
-  }
+  },
+    bep2: {
+    geckoId: 'binancecoin',
+    owners: [
+      'bnb1k3ulpgw4wzl0e8qx80u87aq9w7ekfygruzs4dg'
+    ],
+  },
 }
 
 module.exports = cexExports(config)
