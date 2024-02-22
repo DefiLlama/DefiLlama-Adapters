@@ -9,7 +9,7 @@ async function taiSupply(timestamp, ethBlock, {tomochain: block}) {
         chain: 'tomochain',
         decimals: 18
     })).output;
-
+    console.log(supply,'##supply')
     return { 'usd-coin': supply };
 }
 
