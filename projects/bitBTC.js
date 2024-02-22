@@ -1,7 +1,7 @@
 const ADDRESSES = require('./helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 
-const WBTC = "0x68f180fcce6836688e9084f035309e29bf0a2095";
+const WBTC = ADDRESSES.optimism.WBTC;
 const bitANT = ADDRESSES.optimism.BitANT;
 const bitBTC = "0xc98b98d17435aa00830c87ea02474c5007e1f272";
 
