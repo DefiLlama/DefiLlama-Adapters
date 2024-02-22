@@ -1,4 +1,5 @@
-const { sumTokensExport } = require("../helper/chain/brc20");
+const { sumTokensExport } = require("../helper/sumTokens");
+
 module.exports = {
   timetravel: false,
   methodology: `Tokens bridged via ROUP are counted as TVL`,
@@ -10,6 +11,8 @@ module.exports = {
         'bc1phnxqw4gfq349wm2xcqgqk77544ssqwa6ycuhjh7hdxks4mtjg33qrfenw5',
         'bc1pfsu3ts4equ7rdy63dgt7shkqlu2n5kw8p0z7p7c8lsrh2yqg40fsvz4ev3'
       ],
+      includeBRC20: true,
+      blacklistedTokens: ['roup'],
     }),
   }
 }
