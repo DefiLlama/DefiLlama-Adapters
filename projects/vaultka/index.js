@@ -18,6 +18,7 @@ module.exports = {
     [1699750000, "GLP Compound Vault"],
     [1701187200, "GMXV2 Leverage (Neutral) Vault"],
     [1702915200, "ALP Leverage Vault"],
+    [1707385004, "GLM(basket of GMs)"],
   ],
 
   arbitrum: {
