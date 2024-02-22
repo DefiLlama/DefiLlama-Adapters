@@ -32,6 +32,7 @@ async function tvl(_, _b, _cb, { api }) {
     abi: "erc20:balanceOf",
     calls: tokenAddesses.map((i) => ({ target: i, params: VAULT_CONTRACT })),
   });
+  
   const singleBalance = {};
   for (let i = 0; i < TOKENS.length; i++) {
     sdk.util.sumSingleBalance(
@@ -40,7 +41,6 @@ async function tvl(_, _b, _cb, { api }) {
       new BigNumber(tokenBalances[i]).div(1e18).toNumber()
     );
   }
-  console.log("balances :>> ", singleBalance);
 
   return singleBalance;
 }
