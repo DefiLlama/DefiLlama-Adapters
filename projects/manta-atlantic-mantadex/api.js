@@ -1,89 +1,106 @@
 const { ApiPromise, WsProvider } = require("@polkadot/api");
 const BigNumber = require("bignumber.js");
-const sdk = require("@defillama/sdk");
-const { get } = require('../helper/http')
+const { get } = require("../helper/http");
 
-// node test.js projects/manta-atlantic-mantadex/api.js
+const nativeTokenId = "1";
+
+function formatNumber(text) {
+  return String(text ?? "").replace(/,/g, "");
+}
+
+function formatAssetIndex(assetId) {
+  const formattedAssetId = formatNumber(assetId);
+  return formattedAssetId === "0" ? nativeTokenId : formattedAssetId;
+}
 
 async function getCoinGeckoTokenData() {
-  const { data } = await get('https://raw.githubusercontent.com/Manta-Network/manta-chaindata/main/tokens.json');
-  return data.reduce((total, item) => {
-    const { id, logoKey, coinGeckoKey } = item;
-    const chain = id.split('-')[0];
-    if (!total[chain]) {
-      return;
-    }
-    total[chain][logoKey] = coinGeckoKey;
-  }, { manta: {}, calamari: {}});
+  const data = await get(
+    "https://raw.githubusercontent.com/Manta-Network/manta-chaindata/main/tokens.json"
+  );
+  const result = data.reduce(
+    (total, item) => {
+      const chain = item.id.split("-")[0];
+      if (total[chain]) {
+        total[chain][item.logoKey] = item.coinGeckoKey;
+      }
+      return total;
+    },
+    { manta: {}, calamari: {} }
+  );
+  return result;
+}
+
+async function getTokenInfos(apiPromise) {
+  const tokenListOnChain = (
+    await apiPromise.query.assetManager.assetIdMetadata.entries()
+  ).map(([key, value]) => [key.toHuman(), value.toHuman()]);
+
+  return tokenListOnChain.reduce(
+    (total, item) => {
+      const assetId = parseInt(formatNumber(item[0][0]), 10);
+      const symbol = item[1].metadata.symbol;
+      const decimals = parseInt(formatNumber(item[1].metadata.decimals), 10);
+      total.decimals[symbol] = decimals;
+      total.assetIds[assetId] = symbol;
+      return total;
+    },
+    { decimals: {}, assetIds: {} }
+  );
+}
+
+async function getTokenBalance(apiPromise, account, assetIndex) {
+  if (assetIndex === nativeTokenId) {
+    const response = await apiPromise.query.system.account(account);
+    return formatNumber(response.toHuman().data.free);
+  } else {
+    const response = await apiPromise.query.assets.account(assetIndex, account);
+    return formatNumber(response.toHuman().balance);
+  }
 }
 
 async function tvl() {
   const coinGeckoTokenData = (await getCoinGeckoTokenData()).manta;
 
-  // fetch allowlist token list
-  const polkadotProvider = new WsProvider(
-    "wss://ws.archive.manta.systems"
-  );
+  const polkadotProvider = new WsProvider("wss://ws.archive.manta.systems");
   const polkadotApi = await ApiPromise.create({ provider: polkadotProvider });
 
+  const { decimals, assetIds } = await getTokenInfos(polkadotApi);
 
-  // pairStatuses: 
-  // [
-  //   [
-  //     [
-  //       {
-  //         chainId: 2,104
-  //         assetType: 0
-  //         assetIndex: 0
-  //       }
-  //       {
-  //         chainId: 2,104
-  //         assetType: 2
-  //         assetIndex: 9
-  //       }
-  //     ]
-  //   ]
-  //   {
-  //     Trading: {
-  //       pairAccount: dfZ2W8UP6LgvVLKEzTtoZgPzrS2kSVm7FkbrUKXTpKsC1VBzk
-  //       totalSupply: 6,076,901,957,527,190
-  //     }
-  //   }
-  // ]
+  const polkadotPools =
+    await polkadotApi.query.zenlinkProtocol.pairStatuses.entries();
 
+  const result = {};
+  await Promise.all(
+    polkadotPools.map(async (pool) => {
+      const tokens = pool[0].toHuman()[0];
+      const pairAccount = pool[1].toHuman().Trading.pairAccount;
+      const token0Index = formatAssetIndex(tokens[0].assetIndex);
+      const token1Index = formatAssetIndex(tokens[1].assetIndex);
+      const token0Balance = await getTokenBalance(
+        polkadotApi,
+        pairAccount,
+        token0Index
+      );
+      const token1Balance = await getTokenBalance(
+        polkadotApi,
+        pairAccount,
+        token1Index
+      );
+      result[assetIds[token0Index]] = (
+        result[assetIds[token0Index]] ?? new BigNumber(0)
+      ).plus(token0Balance);
+      result[assetIds[token1Index]] = (
+        result[assetIds[token1Index]] ?? new BigNumber(0)
+      ).plus(token1Balance);
+    })
+  );
 
-  // liquidityPairs
-  // [
-  //   [
-  //     [
-  //       {
-  //         chainId: 2,104
-  //         assetType: 0
-  //         assetIndex: 0
-  //       }
-  //       {
-  //         chainId: 2,104
-  //         assetType: 2
-  //         assetIndex: 10
-  //       }
-  //     ]
-  //   ]
-  //   {
-  //     chainId: 2,104
-  //     assetType: 2
-  //     assetIndex: 37
-  //   }
-  // ]
-
-  // system.account('pairAccount'): native token balance
-  // assets.account('assetIndex', 'pairAccount'): non-native token balance
-
-  // all token decimals
-  // const tokenListOnChain = (
-  //   await api.query.assetManager.assetIdMetadata.entries()
-  // ).map(([key, value]) => [key.toHuman(), value.toHuman()])
-
-  return {};
+  return Object.keys(result).reduce((total, symbol) => {
+    total[coinGeckoTokenData[symbol]] = result[symbol]
+      .div(10 ** decimals[symbol])
+      .toFixed(4);
+    return total;
+  }, {});
 }
 
 module.exports = {
