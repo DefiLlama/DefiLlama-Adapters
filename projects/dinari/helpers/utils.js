@@ -1,4 +1,4 @@
-chainlink_oracles = {
+const chainlink_oracles = {
     "AAPL.d": "0x8d0CC5f38f9E802475f2CFf4F9fc7000C2E1557c",
     "AMZN.d": "0xd6a77691f071E98Df7217BED98f38ae6d2313EBA",
     "GOOGL.d": "0x1D1a83331e9D255EB1Aaf75026B60dFD00A252ba",
