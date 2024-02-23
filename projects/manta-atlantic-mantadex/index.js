@@ -1,6 +1,6 @@
-const { getExports } = require('../helper/heroku-api')
+const { getExports } = require("../helper/heroku-api");
 
 module.exports = {
-	timetravel: false,
-	...getExports("manta-atlantic-mantadex", ['manta-atlantic'])
-}
+  timetravel: false,
+  ...getExports("manta-atlantic-mantadex", ["manta-atlantic"]),
+};
