@@ -23,7 +23,7 @@ function getDinariExport(factoriesConfig) {
           skipCache: true
         });
         const tokenAddresses = getUniqueAddresses(logs.map(i => i.dShare))
-        supplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: tokenAddresses });
+        const supplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: tokenAddresses });
 
         const symbols = await api.multiCall({ abi: 'erc20:symbol', calls: tokenAddresses });
 
