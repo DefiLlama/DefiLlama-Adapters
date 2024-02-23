@@ -17,6 +17,7 @@ const config = {
       '14o5ywJJmLPJe8egNo7a5fSdtEgarkus33', // add on 08/08/2023 (we defillama)
       '1BuiWj9wPbQwNY97xU53LRPhzqNQccSquM', // add on 08/08/2023 (we defillama)
       '1AQLXAB6aXSVbRMjbhSBudLf1kcsbWSEjg', // add on 23/02/2024 (we defillama)
+      '1ENWYLQZJRAZGtwBmoWrhmTtDUtJ5LseVj'
     ],
   },
   ethereum: {
@@ -112,7 +113,7 @@ const config = {
   avax: {
     owners: [
       '0xe195b82df6a797551eb1acd506e892531824af27',
-      '0xa77ff0e1c52f58363a53282624c7baa5fa91687d',
+      '0xa77ff0e1c52f58363a53282624c7baa5fa91687d', //start add on 23/02/2024 
       '0x18709e89bd403f470088abdacebe86cc60dda12e',
       '0x8b6a3587676719a4fecbb24b503a3634c44a44d5',
            ]
