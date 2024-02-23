@@ -80,7 +80,7 @@ const tokens = [
 ];
 
 async function tvl(_0, blockNumber, _2, { api }) {
-  for (const token of tokens) {
+  const addTokenTVL = async (token) => {
     const tokenTotalSupply = await api.call({ target: token.address, abi: 'erc20:totalSupply' });
     if (token.sufficientLiquidityForDefiLlamaIndexer) {
       api.add(token.address, tokenTotalSupply);
@@ -97,7 +97,12 @@ async function tvl(_0, blockNumber, _2, { api }) {
         tokenTotalSupply * tickerPrice * (1e6 / 1e18)
       );
     }
+  };
+  const promises = [];
+  for (const token of tokens) {
+    promises.push(addTokenTVL(token));
   }
+  await Promise.all(promises);
 }
 
 module.exports = {
