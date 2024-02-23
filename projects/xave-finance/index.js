@@ -2,6 +2,7 @@ const { ethers } = require("ethers");
 const { getLogs } = require("../helper/cache/getLogs");
 
 async function tvl(_, _b, _cb, { api }) {
+  console.log(api.addTokens);
   const factories = config[api.chain];
 
   const promises = factories.map(async ({ factory, fromBlock, name }) => {
@@ -131,7 +132,7 @@ async function tvl(_, _b, _cb, { api }) {
 
 module.exports = {
   methodology: "sum of all the tokens locked in FX Pools",
-  doublecounted: true, // tokens are stored in balancer vaults
+  // doublecounted: true, // tokens are stored in balancer vaults
 };
 
 const config = {
@@ -163,11 +164,11 @@ const config = {
     //   factory: "0xfb23Bc0D2629268442CD6521CF4170698967105f",
     //   fromBlock: 18469425,
     // },
-    // {
-    //   name: "CurveFactory",
-    //   factory: "0xFA505d02269bF4Ea59355a4e37fBd882122717e5",
-    //   fromBlock: 13221583,
-    // },
+    {
+      name: "CurveFactory",
+      factory: "0xFA505d02269bF4Ea59355a4e37fBd882122717e5",
+      fromBlock: 13221583,
+    },
   ],
   avax: [
     // {
