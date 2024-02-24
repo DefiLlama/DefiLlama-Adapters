@@ -35,6 +35,7 @@ const config = {
     vaultConfigs: [
       { factory: '0x5a40DFaF8C1115196A1CDF529F97122030F26112', fromBlock: 13671610, isAlgebra: false, },
       { factory: '0x8Dd50926e12BD71904bCCc6D86DFA55D42715094', fromBlock: 18754139, isAlgebra: false, }, //PancakeSwap
+      { factory: '0xEAeC81F0eD4F622D4b389672d9859166C0832b3E', fromBlock: 18870610, isAlgebra: false, }, //Blueprint
     ],
     oneFactory: '0xD0092632B9Ac5A7856664eeC1abb6E3403a6A36a',
   },
@@ -49,6 +50,7 @@ const config = {
     vaultConfigs: [
       { factory: '0x131c03ca881B7cC66d7a5120A9273ebf675C241D', fromBlock: 29702590, isAlgebra: false, },
       { factory: '0xAc93148e93d1C49D89b1166BFd74942E80F5D501', fromBlock: 32489803, isAlgebra: true, }, // Thena
+      { factory: '0x065356d9f628cDd1bb9F2384E2972CdAC50f51b7', fromBlock: 34595133, isAlgebra: false, }, // Uni v3
     ],
   },
   eon: {
@@ -61,6 +63,26 @@ const config = {
       { factory: '0x8a76c26E0089111989C14EF56b9733aa38B94148', fromBlock: 20999423, isAlgebra: false, }, // zkSync Era
     ]
   },
+  fantom: {
+    vaultConfigs: [
+      { factory: '0x932E1908461De58b0891E5022431dc995Cb95C5E', fromBlock: 74304207, isAlgebra: false, }, // Equalizer
+    ]
+  },
+  linea: {
+    vaultConfigs: [
+      { factory: '0x0248b992ac2a75294b05286E9DD3A2bD3C9CFE4B', fromBlock: 1599561, isAlgebra: true, }, // Lynex
+    ]
+  },
+  mantle: {
+    vaultConfigs: [
+      { factory: '0xbBB97d634460DACCA0d41E249510Bb741ef46ad3', fromBlock: 39366721, isAlgebra: false, }, // Cleo
+    ]
+  },
+  op_bnb: {
+    vaultConfigs: [
+      { factory: '0xADDA3A15EA71c223a82Af86d4578EF2B076035F1', fromBlock: 13911597, isAlgebra: true, }, // Thena
+    ]
+  },
   polygon: {
     vaultConfigs: [
       { factory: '0x2d2c72c4dc71aa32d64e5142e336741131a73fc0', fromBlock: 25697834, isAlgebra: false, },
@@ -68,6 +90,11 @@ const config = {
       { factory: '0x11700544C577Cb543a498B27B4F0f7018BDb6E8a', fromBlock: 49227783, isAlgebra: true, }, // QuickSwap
     ],
     oneFactory: '0x101eB16BdbA37979a771c86e1CAAfbaDbABfc879',
+  },
+  polygon_zkevm: {
+    vaultConfigs: [
+      { factory: '0x9FAb4bdD4E05f5C023CCC85D2071b49791D7418F', fromBlock: 4830529, isAlgebra: false, }, // Zero
+    ]
   },
 }
 

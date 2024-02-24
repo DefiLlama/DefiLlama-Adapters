@@ -23,9 +23,7 @@ async function getLogs({ target,
   let iface
 
   if (eventAbi) {
-    iface = new ethers.utils.Interface([eventAbi])
-    if (typeof eventAbi === 'object')
-      sdk.log(iface.format(ethers.utils.FormatTypes.full))
+    iface = new ethers.Interface([eventAbi])
     if (!topics?.length) {
       const fragment = iface.fragments[0]
       topics = undefined
@@ -38,9 +36,9 @@ async function getLogs({ target,
 
   let cache = await _getCache(key)
   let response
-  const fetchNewData = (cache.fromBlock && cache.toBlock > toBlock) || onlyUseExistingCache
+  const fetchNewData = (cache.fromBlock && (cache.toBlock + 200) > toBlock) || onlyUseExistingCache
 
-  // if no new data nees to be fetched
+  // if no new data nees to be fetched if the last fetched block is within 200 blocks of the current block
   if (!customCacheFunction && fetchNewData)
     response = cache.logs.filter(i => i.blockNumber < toBlock && i.blockNumber >= fromBlock)
   else
@@ -78,9 +76,9 @@ async function getLogs({ target,
     // remove possible duplicates
     if (!customCacheFunction)
       cache.logs = cache.logs.filter(i => {
-        let key = i.transactionHash + i.logIndex
-        if (!i.hasOwnProperty('logIndex') || !i.hasOwnProperty('transactionHash')) {
-          sdk.log(i)
+        let key = i.transactionHash + (i.logIndex ?? i.index)
+        if (!(i.hasOwnProperty('logIndex') || i.hasOwnProperty('index')) || !i.hasOwnProperty('transactionHash')) {
+          sdk.log(i, i.logIndex, i.index, i.transactionHash)
           throw new Error('Missing crucial field')
         }
         if (logIndices.has(key)) return false

@@ -3,6 +3,7 @@ const { default: BigNumber } = require("bignumber.js");
 const { getConfig } = require("../helper/cache");
 const { cachedGraphQuery } = require("../helper/cache");
 const { sumTokens2, } = require("../helper/unwrapLPs");
+const { getAmounts } = require("./iziswap")
 
 // The Graph
 const graphUrlList = {
@@ -15,8 +16,6 @@ const graphUrlList = {
 const slotListUrl = 'https://raw.githubusercontent.com/solv-finance-dev/solv-protocol-rwa-slot/main/slot.json';
 
 const addressUrl = 'https://raw.githubusercontent.com/solv-finance-dev/slov-protocol-defillama/main/solv-funds.json';
-
-const stakedAmountsAbi = 'function stakedAmounts(address) external view returns (uint256)';
 
 async function borrowed(ts) {
   const { api } = arguments[3];
@@ -70,10 +69,14 @@ async function borrowed(ts) {
   return api.getBalances()
 }
 
-async function tvl() {
-  const { api } = arguments[3];
-
+async function tvl(ts, _, _1, { api }) {
   let address = (await getConfig('solv-protocol/funds', addressUrl));
+
+  await gm(api, address);
+  await mux(api, address);
+}
+
+async function gm(api, address) {
   let gm = address[api.chain]["gm"];
 
   let tokens = []
@@ -83,16 +86,33 @@ async function tvl() {
     }
   }
 
-  await sumTokens2({ api, tokensAndOwners: tokens.map(i => [i.address, i.pool]), permitFailure: true })
+  await sumTokens2({ api, tokensAndOwners: tokens.map(i => [i.address, i.pool]), permitFailure: true });
+}
+
+async function mux(api, address) {
+  let mux = address[api.chain]["mux"];
+
+  const amount = await api.call({ abi: abi.stakedMlpAmount, target: mux.pool, params: mux.account });
+
+  api.add(mux.lp, amount)
 }
 
 
 async function mantleTvl(ts, _, _1, { api }) {
   let address = (await getConfig('solv-protocol/funds', addressUrl));
+
+  await klp(api, address);
+  await iziswap(api, address);
+  await lendle(api, address);
+
+  return api.getBalances();
+}
+
+async function klp(api, address) {
   let klp = address[api.chain]["klp"];
 
   const stakedAmounts = await api.multiCall({
-    abi: stakedAmountsAbi,
+    abi: abi.stakedAmountsAbi,
     calls: klp["klpPool"].map((pool) => ({
       target: klp["address"],
       params: [pool]
@@ -102,8 +122,75 @@ async function mantleTvl(ts, _, _1, { api }) {
   stakedAmounts.forEach(amount => {
     api.add(klp["address"], amount)
   })
+}
 
-  return api.getBalances()
+async function iziswap(api, address) {
+  let iziswapData = address[api.chain]["iziswap"];
+
+  const iziswap = iziswapData.liquidityManager;
+  const owner = iziswapData.owner;
+
+  let liquidities = [];
+  for (let i = 0; i < owner.length; i++) {
+    liquidities.push(liquidity(api, iziswap, owner[i]))
+  }
+
+  await Promise.all(liquidities);
+}
+
+async function liquidity(api, iziswap, owner) {
+  const balanceOf = await api.call({ abi: abi.balanceOf, target: iziswap, params: [owner] })
+
+  let indexs = [];
+  for (let i = 0; i < balanceOf; i++) {
+    indexs.push(i);
+  }
+
+  const tokenIds = await api.multiCall({
+    abi: abi.tokenOfOwnerByIndex,
+    calls: indexs.map((index) => ({
+      target: iziswap,
+      params: [owner, index]
+    })),
+  })
+
+  const liquidities = await api.multiCall({
+    abi: abi.liquidities,
+    calls: tokenIds.map((tokenId) => ({
+      target: iziswap,
+      params: [tokenId]
+    }))
+  })
+
+  const poolMetas = await api.multiCall({
+    abi: abi.poolMetas,
+    calls: liquidities.map((liquidity) => ({
+      target: iziswap,
+      params: [liquidity[7]]
+    }))
+  })
+
+  let tokenList = [...poolMetas]
+
+  let poolList = await api.multiCall({
+    abi: abi.pool,
+    target: iziswap,
+    calls: poolMetas.map((pool) => ({
+      params: [pool[0], pool[1], pool[2]]
+    }))
+  })
+  let state = await api.multiCall({
+    abi: abi.state,
+    calls: poolList.map((pool) => ({
+      target: pool
+    }))
+  })
+
+  tokenList.forEach((token, index) => {
+    const amounts = getAmounts(state[index], liquidities[index])
+    api.add(token[0], amounts.amountX)
+    api.add(token[1], amounts.amountY)
+  })
 }
 
 async function concrete(slots, api) {
@@ -127,6 +214,14 @@ async function concrete(slots, api) {
   }
 
   return concretes;
+}
+
+async function lendle(api, address) {
+  let lendleData = address[api.chain]["lendle"];
+
+  const balance = await api.call({ abi: abi.balanceOf, target: lendleData.aToken, params: lendleData.account.user });
+
+  api.add(lendleData.account.ethAddress, balance)
 }
 
 
