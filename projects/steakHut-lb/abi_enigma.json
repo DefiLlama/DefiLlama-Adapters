@@ -1,0 +1,5 @@
+{
+  "getTotalAmounts": "function getTotalAmounts() external returns (uint256, uint256)",
+  "token0": "function token0() external returns (address)",
+  "token1": "function token1() external returns (address)"
+}
