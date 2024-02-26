@@ -37,9 +37,11 @@ Object.keys(config).forEach(chain => {
           target: vault,
           abi: lockAbi,
           calls, chain, block,
+          permitFailure: true,
         })
 
-        tokens.map(i => cCache.tokens.push(i.output[1]))
+        tokens.filter(i => i.output).map(i => cCache.tokens.push(i.output[1]))
+        
         cCache.tokens = getUniqueAddresses(cCache.tokens)
 
         const balance = await vestingHelper({

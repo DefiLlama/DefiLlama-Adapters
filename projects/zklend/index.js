@@ -11,6 +11,7 @@ const assets = [
     ADDRESSES.starknet.DAI,
     ADDRESSES.starknet.USDT,
     ADDRESSES.starknet.WSTETH,
+    ADDRESSES.starknet.STRK
 ]
 
 async function tvl(_, _1, _2, { api }) {

@@ -7,13 +7,14 @@ async function getTonBalance(addr) {
   return res.balance
 }
 
-async function sumTokensAccount({ api, addr, tokens = [] }) {
+async function sumTokensAccount({ api, addr, tokens = [], onlyWhitelistedTokens = false }) {
   if (tokens.includes(ADDRESSES.null)) {
     const balance = await getTonBalance(addr)
     api.add(ADDRESSES.null, balance)
   }
   const { balances } = await get(`https://tonapi.io/v2/accounts/${addr}/jettons?currencies=usd`)
   balances.forEach(({ balance, price, jetton }) => {
+    if (onlyWhitelistedTokens && !tokens.includes(jetton.address)) return;
     const decimals = jetton.decimals
     price = price?.prices?.USD
     if (!decimals || !price) return;
@@ -22,12 +23,12 @@ async function sumTokensAccount({ api, addr, tokens = [] }) {
   })
 }
 
-async function sumTokens({ api, tokens, owners = [], owner }) {
+async function sumTokens({ api, tokens, owners = [], owner, onlyWhitelistedTokens = false }) {
   if (!api) throw new Error('api is required')
 
   if (owner) owners.push(owner)
   owners = getUniqueAddresses(owners, api.chain)
-  await Promise.all(owners.map(i => sumTokensAccount({ api, addr: i, tokens })))
+  await Promise.all(owners.map(i => sumTokensAccount({ api, addr: i, tokens, onlyWhitelistedTokens })))
   return api.getBalances()
 }
 
