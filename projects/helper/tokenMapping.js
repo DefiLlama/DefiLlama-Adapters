@@ -38,6 +38,9 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
+  chz: {
+    '0x721ef6871f1c4efe730dce047d40d1743b886946': { coingeckoId: 'chiliz', decimals: 18 },
+  },
   bitcoin: {
     BSSB: { coingeckoId: 'bitstable-finance', decimals: 0 },
     MUBI: { coingeckoId: 'multibit', decimals: 0 },
@@ -46,11 +49,31 @@ const fixBalancesTokens = {
     MMSS: { coingeckoId: 'mmss', decimals: 0 },
     AINN: { coingeckoId: 'artificial-neural-network-ordinals', decimals: 0 },
   },
+  map: {
+    // https://docs.rolluper.xyz/how-does-roup-work/deployed-contracts
+    // https://app.rolluper.xyz/
+    '0x3e76deF74d4187B5a01aBE4E011Bd94d9f057d94': { coingeckoId: 'roup', decimals: 18 },
+    '0x5a1c3f3aaE616146C7b9bf9763E0ABA9bAFc5eaE': { coingeckoId: 'roup', decimals: 18 },
+    // '0x3b7fC78434B00586a2ad7c3DAd821e1b02fcA66f': { coingeckoId: '', decimals: 18 }, // mapo
+    // '0xb84e5EF60f73ed0da684bC3C5d7962f3839ae619': { coingeckoId: '', decimals: 18 }, // STST
+    '0xB719e46B6eB5b23E2759526CdE24589d87097733': { coingeckoId: 'ordinals', decimals: 18 },
+    '0x9CA528368964cFb92cfFdd51dCcED25E27ACCef9': { coingeckoId: 'ordinals', decimals: 18 },
+    '0xcAF17cDdb80F72484e5A279921b98a0a9A2391ee': { coingeckoId: 'rats', decimals: 18 },
+    '0x6369414F2b0e973c7E85A362141aA1430bc30056': { coingeckoId: 'rats', decimals: 18 },
+    '0x640a4C0AaA4870BaDE2F646B7Da87b3D53819C4f': { coingeckoId: 'comsats', decimals: 18 },
+    '0x141b30Dd30FAFb87ec10312d52e5dbD86122FE14': { coingeckoId: 'comsats', decimals: 18 },
+    '0x0e2cA3e003f3c73C8cC18ec244d46DB9d4c4DCEB': { coingeckoId: 'btcs', decimals: 18 },
+    '0xBE81B9390D894fEBf5e5D4Ea1486a003C1e8dc63': { coingeckoId: 'btcs', decimals: 18 },
+    '0x0fBb3B3Fb1e928f75B3Ed8b506bAb4503373fdca': { coingeckoId: 'mmss', decimals: 18 },
+  },
   btn: {
     '0x8148b71232162ea7a0b1c8bfe2b8f023934bfb58': { coingeckoId: 'bitnet', decimals: 18 },
   },
   omax: { 
     '0x373e4b4E4D328927bc398A9B50e0082C6f91B7bb': { coingeckoId: 'omax-token', decimals: 18 },
+  },
+  area: { 
+    '0x298b6a733cd34e41ca87b264d968c8ca7b0b9931': { coingeckoId: 'areon-network', decimals: 18 },
   },
   kujira: {
     'factory:kujira1sc6a0347cc5q3k890jj0pf3ylx2s38rh4sza4t:ufuzn': { coingeckoId: 'fuzion', decimals: 6 },
