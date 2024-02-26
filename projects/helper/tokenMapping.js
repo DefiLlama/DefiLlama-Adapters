@@ -38,6 +38,9 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
+  chz: {
+    '0x721ef6871f1c4efe730dce047d40d1743b886946': { coingeckoId: 'chiliz', decimals: 18 },
+  },
   bitcoin: {
     BSSB: { coingeckoId: 'bitstable-finance', decimals: 0 },
     MUBI: { coingeckoId: 'multibit', decimals: 0 },
