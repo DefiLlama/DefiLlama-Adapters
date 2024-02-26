@@ -37,6 +37,7 @@ async function getTotalSupplyLP() {
 }
 
 async function getTotalSupplyBorrower() {
+  return new BigNumber(0)
   return call(BORROWER_LEGACY_STRATEGY_CONTRACT, 'getLoanInfo')
     .then(value => {
       return value ? toHex(value.collateral) : new BigNumber(0);
@@ -84,12 +85,12 @@ async function fetch() {
       getOmmAutoStakingStatus(),
   ]);
 
-  const values = await Promise.all([
+  const values = [
     totalSupply.times(ICXPrice),
     loanInfo.times(ICXPrice),
     fTokenPool.times(fTokenRate).times(ommRatesIcx).times(ICXPrice),
     ommPool.times(ommRate).times(ommPrice),
-  ]);
+  ]
 
   const tvl = values.reduce((pre, cur) => {
     return pre.plus(cur || new BigNumber(0));
