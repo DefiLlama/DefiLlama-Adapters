@@ -158,23 +158,21 @@ async function tvl(_, _1, _2, { api }) {
   api.add(USDC, Math.floor(halfBucketusAmount / 1000));
 
   //AFSUI-SUI LP
-  const afsuiSuiLpSupply = Math.floor(
-    afsuiSuiLpObj.fields.lp_supply.fields.value / 10 ** 9
-  );
+  const afsuiSuiLpSupply = afsuiSuiLpObj.fields.lp_supply.fields.value;
   const afsuiSuiLpBalances = afsuiSuiLpObj.fields.normalized_balances;
   const suiTotalAmount = Math.floor(afsuiSuiLpBalances[0] / 10 ** 18);
   const afsuiTotalAmount = Math.floor(afsuiSuiLpBalances[1] / 10 ** 18);
 
-  const suiAmount = Math.floor(suiTotalAmount / afsuiSuiLpSupply);
-  const afsuiAmount = Math.floor(afsuiTotalAmount / afsuiSuiLpSupply);
+  const suiPercentage = Math.floor(suiTotalAmount / afsuiSuiLpSupply);
+  const afsuiPercentage = Math.floor(afsuiTotalAmount / afsuiSuiLpSupply);
 
   api.add(
     `0x${afsuiSuiTokenNames[0]}`,
-    Math.floor((suiAmount * afsuiSuiLpBucketStaked) / 10 ** 9)
+    Math.floor(suiPercentage * afsuiSuiLpBucketStaked)
   );
   api.add(
     `0x${afsuiSuiTokenNames[1]}`,
-    Math.floor((afsuiAmount * afsuiSuiLpBucketStaked) / 10 ** 9)
+    Math.floor(afsuiPercentage * afsuiSuiLpBucketStaked)
   );
 }
 
