@@ -1,6 +1,6 @@
 const { ApiPromise, WsProvider } = require("@polkadot/api");
 const BigNumber = require("bignumber.js");
-const { get } = require("../helper/http");
+const { getConfig } = require("../helper/cache");
 
 const nativeTokenId = "1";
 
@@ -14,7 +14,7 @@ function formatAssetIndex(assetId) {
 }
 
 async function getCoinGeckoTokenData() {
-  const data = await get(
+  const data = await getConfig('mantadex', 
     "https://raw.githubusercontent.com/Manta-Network/manta-chaindata/main/tokens.json"
   );
   const result = data.reduce(
@@ -106,5 +106,5 @@ async function tvl() {
 module.exports = {
   timetravel: false,
   methodology: "Liquidity Pools from MantaDEX",
-  "manta-atlantic": { tvl },
+  manta_atlantic: { tvl },
 };
