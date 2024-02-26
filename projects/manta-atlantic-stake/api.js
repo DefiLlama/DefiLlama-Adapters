@@ -23,5 +23,5 @@ async function tvl() {
 module.exports = {
   timetravel: false,
   methodology: "Manta Atlantic staking platform",
-  "manta-atlantic": { tvl },
+  manta_atlantic: { tvl },
 };
