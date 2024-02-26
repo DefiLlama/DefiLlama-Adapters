@@ -35,62 +35,60 @@ async function tvl(_, _b, _cb, { api }) {
         api.addTokens(i.tokens, i.balances);
       });
     } else if (name.includes("CurveFactory")) {
-      try {
-        const pools = logs.map((i) => i.curve);
+      const pools = logs
+        .map((i) => i.curve)
+        .filter((p) => !ignoredPools[api.chain].includes(p));
 
-        const data = await api.multiCall({
-          abi: "function liquidity() view returns (uint256 total_, uint256[] memory individual_)",
-          calls: pools.map((v) => ({ target: v })),
-        });
+      const data = await api.multiCall({
+        abi: "function liquidity() view returns (uint256 total_, uint256[] memory individual_)",
+        calls: pools.map((v) => ({ target: v })),
+      });
 
-        // Curve.derivatives(0)
-        const derivatives0 = await api.multiCall({
-          abi: "function derivatives(uint256 index) view returns (address token_address)",
-          calls: pools.map((v) => ({ target: v, params: "0" })),
-        });
+      // Curve.derivatives(0)
+      const derivatives0 = await api.multiCall({
+        abi: "function derivatives(uint256 index) view returns (address token_address)",
+        calls: pools.map((v) => ({ target: v, params: "0" })),
+      });
 
-        const derivatives0Decimals = await api.multiCall({
-          abi: "function decimals() view returns (uint8 decimals)",
-          calls: derivatives0.map((v) => ({ target: v })),
-        });
+      const derivatives0Decimals = await api.multiCall({
+        abi: "function decimals() view returns (uint8 decimals)",
+        calls: derivatives0.map((v) => ({ target: v })),
+      });
 
-        // Curve.derivatives(1)
-        const derivatives1 = await api.multiCall({
-          abi: "function derivatives(uint256 index) view returns (address token_address)",
-          calls: pools.map((v, i) => ({ target: v, params: "1" })),
-        });
+      // Curve.derivatives(1)
+      const derivatives1 = await api.multiCall({
+        abi: "function derivatives(uint256 index) view returns (address token_address)",
+        calls: pools.map((v, i) => ({ target: v, params: "1" })),
+      });
 
-        const derivatives1Decimals = await api.multiCall({
-          abi: "function decimals() view returns (uint8 decimals)",
-          calls: derivatives1.map((v) => ({ target: v })),
-        });
+      const derivatives1Decimals = await api.multiCall({
+        abi: "function decimals() view returns (uint8 decimals)",
+        calls: derivatives1.map((v) => ({ target: v })),
+      });
 
-        data.forEach((d, i) => {
-          const divisor0 = ethers.parseUnits(
-            "1",
-            parseInt(derivatives0Decimals[i])
-          );
+      data.forEach((d, i) => {
+        const divisor0 = ethers.parseUnits(
+          "1",
+          parseInt(derivatives0Decimals[i])
+        );
 
-          const baseTokenBalance =
-            (BigInt(d.individual_[0]) / ethers.parseUnits("1", parseInt(18))) *
-            divisor0;
+        const baseTokenBalance =
+          (BigInt(d.individual_[0]) / ethers.parseUnits("1", parseInt(18))) *
+          divisor0;
 
-          const divisor1 = ethers.parseUnits(
-            "1",
-            parseInt(derivatives1Decimals[i])
-          );
-          const quoteTokenBalance =
-            (BigInt(d.individual_[1]) / ethers.parseUnits("1", parseInt(18))) *
-            divisor1;
+        const divisor1 = ethers.parseUnits(
+          "1",
+          parseInt(derivatives1Decimals[i])
+        );
+        const quoteTokenBalance =
+          (BigInt(d.individual_[1]) / ethers.parseUnits("1", parseInt(18))) *
+          divisor1;
 
-          api.addTokens(
-            [derivatives0[i], derivatives1[i]],
-            [baseTokenBalance.toString(), quoteTokenBalance.toString()]
-          );
-        });
-      } catch (error) {
-        console.log(error);
-      }
+        api.addTokens(
+          [derivatives0[i], derivatives1[i]],
+          [baseTokenBalance.toString(), quoteTokenBalance.toString()]
+        );
+      });
     }
   });
   await Promise.all(promises);
@@ -149,6 +147,15 @@ const config = {
       fromBlock: 37150792,
     },
   ],
+};
+
+const ignoredPools = {
+  ethereum: [
+    "0x20E1d8Daf58358CF11BE5616946e1dF55F1eF8B0",
+    "0xc3CfdA7061b729265F58BdC07564f1cbD6C41FBc",
+  ],
+  polygon: [],
+  avax: [],
 };
 
 Object.keys(config).forEach((chain) => {
