@@ -98,13 +98,20 @@ const fixBalancesTokens = {
     'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.token-susdt::bridged-usdt': { coingeckoId: 'tether', decimals: 8  },
     'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.token-abtc::bridged-btc': { coingeckoId: 'bitcoin', decimals: 8  },
   },
+  defiverse: {
+    '0x5a89E11Cb554E00c2f51C4bb7F05bc7Ab0Fa6351': { coingeckoId: 'oasys', decimals: 18 },
+    '0x7c6b91D9Be155A6Db01f749217d76fF02A7227F2': { coingeckoId: 'usd-coin', decimals: 18 },
+    '0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb': { coingeckoId: 'wrapped-bitcoin', decimals: 18 },
+    '0xE7798f023fC62146e8Aa1b36Da45fb70855a77Ea': { coingeckoId: 'ethereum', decimals: 18 },
+  },
+  {
   tomochain: {
     '0xc054751bdbd24ae713ba3dc9bd9434abe2abc1ce': { coingeckoId: 'tomochain', decimals: 18  },
     '0xbbbfab9dcc27771d21d027f37f36b67cc4a25db0': { coingeckoId: 'tether', decimals: 18  },
     '0x20cc4574f263c54eb7ad630c9ac6d4d9068cf127': { coingeckoId: 'usd-coin', decimals: 6  },
     '0x9ede19ede2baf93d25fba4c8f58577e008b8f963': { coingeckoId: 'ethereum', decimals: 18  },
     '0xb786d9c8120d311b948cf1e5aa48d8fbacf477e2': { coingeckoId: 'saros-finance', decimals: 18  },
-  }
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
