@@ -25,4 +25,9 @@ module.exports = mergeExports([
             comptroller: "0x3413Dc597aE3bE40C6f10fC3D706b884eaCF470A",
         }),
     },
+    {
+        manta: compoundExports2({
+            comptroller: "0x4e4b415F5aa78a44CE1fc259D2cEc47BF50A9216",
+        }),
+    },
 ]);
