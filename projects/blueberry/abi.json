@@ -1,4 +1,0 @@
-{
-    "getNextPositionId": "function getNextPositionId() view returns (uint256)",
-    "getPositionValue": "function getPositionValue(uint256 positionId) view returns (uint256)"
-}
