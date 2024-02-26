@@ -5,6 +5,8 @@ const MAINNET_PROTOCOL_ID =
   "0x9e3dab13212b27f5434416939db5dec6a319d15b89a84fd074d03ece6350d3df";
 const BUCK =
   "0xce7ff77a83ea0cb6fd39bd8748e2ec89a3f41e8efdc3f4eb123e0ca37b184db2::buck::BUCK";
+("0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI");
+("f325ce1300e8dac124071d3152c5c5ee6174914f8bc2161e88329cf579246efc::afsui::AFSUI");
 const USDC = ADDRESSES.sui.USDC;
 const USDT = ADDRESSES.sui.USDT;
 
@@ -17,6 +19,11 @@ const AF_POOL_IDs = [
   "0xdeacf7ab460385d4bcb567f183f916367f7d43666a2c72323013822eb3c57026",
   "0xeec6b5fb1ddbbe2eb1bdcd185a75a8e67f52a5295704dd73f3e447394775402b",
 ];
+
+const AFSUI_SUI_LP_ID =
+  "0x97aae7a80abb29c9feabbe7075028550230401ffe7fb745757d3c28a30437408";
+const AFSUI_SUI_LP_BUCKET_ID =
+  "0x1e88892e746708ec69784a56c6aba301a97e87e5b77aaef0eec16c3e472e8653";
 
 const KRIYA_LP_IDS = [
   "0xcc39bcc2c438a79beb2656ff043714a60baf89ba37592bef2e14ee8bca0cf007",
@@ -52,6 +59,12 @@ async function tvl(_, _1, _2, { api }) {
   const aflStakedList = aflpObjs.map((aflp) => aflp.fields.staked);
   const buckAfPoolData = await sui.getObjects(AF_POOL_IDs);
 
+  const afsuiSuiLpObj = await sui.getObject(AFSUI_SUI_LP_ID);
+  const afsuiSuiTokenNames = afsuiSuiLpObj.fields.type_names;
+
+  const afsuiSuiLpBucket = await sui.getObject(AFSUI_SUI_LP_BUCKET_ID);
+  const afsuiSuiLpBucketStaked = afsuiSuiLpBucket.fields.collateral_vault;
+
   const kriyalpObjs = await sui.getObjects(KRIYA_LP_IDS);
   const kriyaStakedList = kriyalpObjs.map(
     (kriyalp) => kriyalp.fields.staked.fields.lsp.fields.balance
@@ -77,16 +90,14 @@ async function tvl(_, _1, _2, { api }) {
     item.type.includes("Bucket")
   );
 
-  const tankList = protocolFields.filter((item) => item.type.includes("Tank"));
+  // const tankList = protocolFields.filter((item) => item.type.includes("Tank"));
 
   for (const bucket of bucketList) {
+    //AF_LP doesn't have price, need to split the tokens
+    if (bucket.type.includes("AF_LP")) continue;
     const coin = bucket.type.split("<").pop()?.replace(">", "") ?? "";
     api.add(coin, bucket.fields.collateral_vault);
   }
-
-  /* for (const tank of tankList) {
-    api.add(BUCK, tank.fields.reserve);
-  } */
 
   for (const [
     index,
@@ -147,6 +158,26 @@ async function tvl(_, _1, _2, { api }) {
 
   const halfBucketusAmount = Math.floor(bucketusPSMAmount / 2);
   api.add(USDC, Math.floor(halfBucketusAmount / 1000));
+
+  //AFSUI-SUI LP
+  const afsuiSuiLpSupply = Math.floor(
+    afsuiSuiLpObj.fields.lp_supply.fields.value / 10 ** 9
+  );
+  const afsuiSuiLpBalances = afsuiSuiLpObj.fields.normalized_balances;
+  const suiTotalAmount = Math.floor(afsuiSuiLpBalances[0] / 10 ** 18);
+  const afsuiTotalAmount = Math.floor(afsuiSuiLpBalances[1] / 10 ** 18);
+
+  const suiAmount = Math.floor(suiTotalAmount / afsuiSuiLpSupply);
+  const afsuiAmount = Math.floor(afsuiTotalAmount / afsuiSuiLpSupply);
+
+  api.add(
+    `0x${afsuiSuiTokenNames[0]}`,
+    Math.floor((suiAmount * afsuiSuiLpBucketStaked) / 10 ** 9)
+  );
+  api.add(
+    `0x${afsuiSuiTokenNames[1]}`,
+    Math.floor((afsuiAmount * afsuiSuiLpBucketStaked) / 10 ** 9)
+  );
 }
 
 module.exports = {
