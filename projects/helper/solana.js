@@ -181,6 +181,7 @@ async function getTokenAccountBalances(tokenAccounts, { individual = false, chun
           return;
         }
         if (allowError) return;
+        else throw new Error(`Invalid account: ${tokenAccounts[i]}`)
       }
       const { data: { parsed: { info: { mint, tokenAmount: { amount } } } } } = value
       sdk.util.sumSingleBalance(balances, mint, amount)
