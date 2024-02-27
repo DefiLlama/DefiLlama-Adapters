@@ -1,5 +1,4 @@
 const { sumTokensExport } = require("../helper/unwrapLPs");
-const ADDRESSES= require("../helper/coreAssets.json");
 
 const GAME_CONTRACT = '0x61C3A357bc3ca51b80eCD36CB1Ae37e5465C6701'
 
