@@ -18,6 +18,7 @@ module.exports = {
     [1699750000, "GLP Compound Vault"],
     [1701187200, "GMXV2 Leverage (Neutral) Vault"],
     [1702915200, "ALP Leverage Vault"],
+    [1707385004, "GLM(basket of GMs)"],
   ],
 
   arbitrum: {
@@ -47,6 +48,7 @@ module.exports = {
         gmArb: "0xC25cEf6061Cf5dE5eb761b50E4743c1F5D7E5407", // arb/usdc.e
         gmBtc: "0x47c031236e19d024b42f8AE6780E44A573170703", // btc/usdc.e
         gmUsdc: "0x9C2433dFD71096C435Be9465220BB2B189375eA7", // usdc/usdc.e
+        gmLink: "0x7f1fa204bb700853D36994DA19F830b6Ad18455C",
         VLP: "0xc5b2d9fda8a82e8dcecd5e9e6e99b78a9188eb05",
         gDAI: "0xd85e038593d7a098614721eae955ec2022b9b91b",
         rum: "0x739fe1BE8CbBeaeA96fEA55c4052Cd87796c0a89",
@@ -64,6 +66,9 @@ module.exports = {
         alpStaking: "0x85146C0c5968d9640121eebd13030c99298f87b3",
         alpAddresses: "0xBc76B3FD0D18C7496C0B04aeA0Fe7C3Ed0e4d9C9",
         vodkaV2DN_LINK_Water: "0xFF614Dd6fC857e4daDa196d75DaC51D522a2ccf7",
+        glmVault: "0xB455f2ab7905785e90ED09fF542290a722b3FBb5",
+        klpVault: "0x9ef87C85592a6722E2A3b314AEc722365f3FbF4D",
+        fsKlp: "0xfd624233741f86A7fAB57A5aDd8929422395b221",
       };
 
       await api.sumTokens({
@@ -95,6 +100,10 @@ module.exports = {
           [addresses.gmWeth, addresses.agedVodkaV2_ETH],
           [addresses.gmBtc, addresses.agedVodkaV2_BTC],
           [ADDRESSES.arbitrum.LINK, addresses.vodkaV2DN_LINK_Water],
+          [addresses.gmArb, addresses.glmVault],
+          [addresses.gmWeth, addresses.glmVault],
+          [addresses.gmBtc, addresses.glmVault],
+          [addresses.gmLink, addresses.glmVault],
         ],
       });
 
@@ -106,6 +115,9 @@ module.exports = {
         stakedAlpBalance:
           "function userInfo(address account) external view returns (uint256, uint256)",
         alpPrice: "function getAlpPrice() external view returns (uint256)", //
+        klpPrice: "function getKlpPrice(bool) external view returns (uint256)",
+        balanceOf:
+          "function balanceOf(address) external view returns (uint256)",
       };
 
       const StakedVLPBal = await api.call({
@@ -133,12 +145,27 @@ module.exports = {
         target: addresses.gin,
       });
 
+      const klpPrice = await api.call({
+        abi: contractAbis.klpPrice,
+        target: addresses.klpVault,
+        params: true,
+      });
+
+      const klpBalance = await api.call({
+        abi: contractAbis.balanceOf,
+        target: addresses.fsKlp,
+        params: addresses.klpVault,
+      });
+
       const alpValue = ((stakedAlpBal[0] * alpPrice) / 1e18 / 1e8) * 1e6;
+
+      const klpValue = (klpPrice * klpBalance * 1e6) / 1e36;
 
       api.add(addresses.VLP, StakedVLPBal);
       api.add(addresses.VLP, StakedVLPBalV2);
       api.add(addresses.hlp, StakedHLPBal);
       api.add(ADDRESSES.arbitrum.USDC, alpValue);
+      api.add(ADDRESSES.arbitrum.USDC, klpValue);
     },
   },
 };
