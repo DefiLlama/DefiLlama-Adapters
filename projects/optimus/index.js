@@ -38,10 +38,10 @@ async function getTotalSupplyLP() {
 
 async function getTotalSupplyBorrower() {
   return new BigNumber(0)
-  return call(BORROWER_LEGACY_STRATEGY_CONTRACT, 'getLoanInfo')
+  /* return call(BORROWER_LEGACY_STRATEGY_CONTRACT, 'getLoanInfo')
     .then(value => {
       return value ? toHex(value.collateral) : new BigNumber(0);
-    });
+    }); */
 }
 
 async function getOMMLendingStatus() {
