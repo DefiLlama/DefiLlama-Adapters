@@ -14,7 +14,7 @@ async function tvl(_, _1, _2, { api }) {
   return sumTokens({
     api,
     owners: [MarketManager, ReplicatingStrategy],
-    tokens: tokens.map((t) => t.addressWith0s),
+    tokens: tokens.map((t) => t.coingeckoAddress),
   });
 }
 
