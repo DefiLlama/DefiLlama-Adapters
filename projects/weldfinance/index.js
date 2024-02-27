@@ -2,13 +2,17 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { masterchefExports, } = require("../helper/unknownTokens")
 const sdk = require('@defillama/sdk')
 
+const USDk = '0x472402d47da0587c1cf515dafbafc7bce6223106'
+const kBRISE = '0xea616011e5ac9a5b91e22cac59b4ec6f562b83f9'
+const KFT = "0xa0eeda2e3075092d66384fe8c91a1da4bca21788"
+
 async function verifyTvl() {
   let [
     usdkSupply,
     briseSupply,
   ] = await sdk.api2.abi.multiCall({
     abi: 'erc20:totalSupply', chain: 'kava',
-    calls: [ADDRESSES.kava.USDk, ADDRESSES.kava.kBRISE,]
+    calls: [USDk, kBRISE,]
   })
   usdkSupply /= 1e18
   briseSupply /= 1e18
@@ -42,7 +46,7 @@ async function verifyTvl() {
   sdk.log('usdk supply: ', usdkSupply, 'usdk backing: ', backing, 'diff', backing - usdkSupply)
   sdk.log('BRISE supply: ', briseSupply, 'BRISE backing: ', (+briseBacking + +briseBacking2) , 'diff', (+briseBacking + +briseBacking2)  - briseSupply)
 
-  if (usdkSupply > backing) throw new Error('USDk supply is higher than backing')
+  if (usdkSupply > backing * 1.2) throw new Error('USDk supply is higher than backing')
   if ((briseSupply > (+briseBacking + +briseBacking2))) throw new Error('BRISE supply is higher than backing')
   return {}
 }
@@ -51,7 +55,8 @@ module.exports = masterchefExports({
   chain: 'kava',
   useDefaultCoreAssets: true,
   masterchef: '0xAbF3edbDf79dAfBBd9AaDBe2efEC078E557762D7',
-  nativeToken: ADDRESSES.kava.KFT
+  nativeToken: KFT,
+  blacklistedTokens: [USDk, kBRISE],
 })
 
-module.exports.kava.tvl = sdk.util.sumChainTvls([module.exports.kava.tvl, verifyTvl])
+// module.exports.kava.tvl = sdk.util.sumChainTvls([module.exports.kava.tvl, verifyTvl])

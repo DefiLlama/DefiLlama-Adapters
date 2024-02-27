@@ -92,6 +92,10 @@ const defaultTokens = {
     '0xcccd1ba9f7acd6117834e0d28f25645decb1736a', //ecox
     '0x25ec98773d7b4ced4cafab96a2a1c0945f145e10', // stUSDT
     '0x3c3a81e81dc49A522A592e7622A7E711c06bf354', // MNT
+    '0x61e90a50137e1f645c9ef4a0d3a4f01477738406', // LOKA
+    '0x64d0f55Cd8C7133a9D7102b13987235F486F2224', // BORG
+    '0x925206b8a707096Ed26ae47C84747fE0bb734F59', //WBT
+    ADDRESSES.ethereum.FDUSD, // FDUSD
   ],
   tron: [
     nullAddress,
@@ -112,6 +116,7 @@ const defaultTokens = {
     ADDRESSES.polygon.DAI, //DAI
     '0x2AB0e9e4eE70FFf1fB9D67031E44F6410170d00e', //xen
     '0x0169ec1f8f639b32eec6d923e24c2a2ff45b9dd6', //ALGB
+    '0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f', //voxel
   ],
   algorand: [],
   solana: [
@@ -141,7 +146,11 @@ const defaultTokens = {
     '0x352Cb5E19b12FC216548a2677bD0fce83BaE434B', // BTT
     '0xAD29AbB318791D579433D831ed122aFeAf29dcfe', // FTM
     '0x02ff5065692783374947393723dba9599e59f591',// yoshi
-    ADDRESSES.bsc.TUSD, //TUSD
+     ADDRESSES.bsc.TUSD, //TUSD
+     '0x965f527d9159dce6288a2219db51fc6eef120dd1', //BSW
+     '0xa2120b9e674d3fc3875f415a7df52e382f141225', //ata
+     '0x44ec807ce2f4a6f2737a92e985f318d035883e47', //HFT
+     ADDRESSES.ethereum.FDUSD, //FDUSD
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],
@@ -152,8 +161,11 @@ const defaultTokens = {
     ADDRESSES.arbitrum.USDC, // USDC
     ADDRESSES.arbitrum.USDT, // USDT
     ADDRESSES.arbitrum.DAI, // DAI
-    '0x09e18590e8f76b6cf471b3cd75fe1a1a9d2b2c2b' //aidoge
-    
+    '0x09e18590e8f76b6cf471b3cd75fe1a1a9d2b2c2b', //aidoge
+    '0x3082cc23568ea640225c2467653db90e9250aaa0', //rdnt
+    '0x088cd8f5ef3652623c22d48b1605dcfe860cd704', //vela
+    ADDRESSES.arbitrum.LPT, //lpt
+    '0x51fc0f6660482ea73330e414efd7808811a57fa2', //premia
   ],
   avax: [
     nullAddress,
@@ -171,13 +183,14 @@ const defaultTokens = {
     ADDRESSES.optimism.OP, //OP
     ADDRESSES.optimism.USDT,  //USDT
     ADDRESSES.optimism.USDC,  //USDC
-    ADDRESSES.optimism.DAI // DAI
+    ADDRESSES.optimism.DAI, // DAI
+    '0x217d47011b23bb961eb6d93ca9945b7501a5bb11' //thales
   ],
   linea: [
     nullAddress,
-   "0xa219439258ca9da29e9cc4ce5596924745e12b93", //bridge usdt
-   "0x176211869ca2b568f2a7d4ee941e073a821ee1ff", //usdc bridge
-   "0x4af15ec2a0bd43db75dd04e62faa3b8ef36b00d5" //dai bridge
+   ADDRESSES.linea.USDT, //bridge usdt
+   ADDRESSES.linea.USDC, //usdc bridge
+   ADDRESSES.linea.DAI //dai bridge
   ],
   flare: [
     nullAddress,
@@ -185,7 +198,23 @@ const defaultTokens = {
   ],
   celo: [
     nullAddress,
-    "0x471ece3750da237f93b8e339c536989b8978a438" //celo
+    ADDRESSES.celo.CELO, //celo
+    ADDRESSES.celo.cUSD, //cUSD
+  ],
+  moonbeam: [
+    nullAddress,
+    ADDRESSES.telos.USDT, //usdt
+    "0x8f552a71efe5eefc207bf75485b356a0b3f01ec9", //usdc
+  ],
+  moonriver: [
+    nullAddress,
+    ADDRESSES.moonriver.USDT, //usdt
+  ],
+  kava: [
+    nullAddress,
+    ADDRESSES.kava.USDT,
+    ADDRESSES.kava.USDt,
+    ADDRESSES.kava.USDC
   ],
 }
 

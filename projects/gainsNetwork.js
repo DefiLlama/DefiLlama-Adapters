@@ -47,6 +47,6 @@ module.exports = {
   },
   arbitrum: {
     tvl: arbiTvl,
-    staking: staking('0x6b8d3c08072a020ac065c467ce922e3a36d3f9d6', '0x18c11fd286c5ec11c3b683caa813b77f5163a122'),
+    staking: staking(['0x6b8d3c08072a020ac065c467ce922e3a36d3f9d6', '0x7edDE7e5900633F698EaB0Dbc97DE640fC5dC015'], '0x18c11fd286c5ec11c3b683caa813b77f5163a122'),
   },
 };

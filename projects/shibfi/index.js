@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs");
 const {getUniTVL} = require("../helper/unknownTokens");
 
@@ -7,7 +8,7 @@ const shibfi_staking_contract = "0x1ae96F6E24Ca24Db5cA97797E528d63bfc9dD0Ef";
 
 const assets = [
   "0x7915fE3be85D591cC0395D30AB76Ee7aA12a085D", //WBONE
-  "0x0000000000000000000000000000000000000000", // This is address of native token
+  ADDRESSES.null, // This is address of native token
   "0xa98900F53fa3e5bFe6F2283F4C4E57ca3DF5387c", // SHIBFI TOKEN
 ];
 

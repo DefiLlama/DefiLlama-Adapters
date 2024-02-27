@@ -23,7 +23,7 @@ const tokenToCoingecko = {
 
 
 async function tvl() {
-  const kusamaProvider = new WsProvider("wss://bifrost-rpc.liebi.com/ws");
+  const kusamaProvider = new WsProvider("wss://hk.bifrost-rpc.liebi.com/ws");
   const kusamaApi = await ApiPromise.create(({ provider:kusamaProvider }));
 
   const polkadotProvider = new WsProvider("wss://hk.p.bifrost-rpc.liebi.com/ws");

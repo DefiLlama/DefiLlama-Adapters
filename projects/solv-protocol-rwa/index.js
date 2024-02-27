@@ -1,4 +1,5 @@
 const { default: BigNumber } = require("bignumber.js");
+const { getConfig } = require("../helper/cache");
 const abi = require("./abi.json");
 const { cachedGraphQuery } = require("../helper/cache");
 
@@ -7,9 +8,8 @@ const graphUrlList = {
   mantle: 'http://api.0xgraph.xyz/subgraphs/name/solv-payable-factory-mentle-0xgraph',
 }
 
-const rwaSlot = [
-  "77406646563329984090609229456139833989531434162860778120489803664660566620495"
-]
+const slotListUrl = 'https://cdn.jsdelivr.net/gh/solv-finance-dev/solv-protocol-rwa-slot/slot.json';
+
 
 async function tvl(ts, _, _1, { api }) {
   const network = api.chain;
@@ -77,6 +77,8 @@ async function concrete(slots, api) {
 }
 
 async function getGraphData(timestamp, chain, api) {
+  let rwaSlot = (await getConfig('solv-protocol/slots', slotListUrl));
+
   const slotDataQuery = `query BondSlotInfos {
             poolOrderInfos(first: 1000,  where:{fundraisingEndTime_gt:${timestamp}, openFundShareSlot_in:${JSON.stringify(rwaSlot)}}) {
               marketContractAddress

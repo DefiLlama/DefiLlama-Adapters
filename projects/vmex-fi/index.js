@@ -1,5 +1,6 @@
 const config = {
   optimism: { pool: '0x60F015F66F3647168831d31C7048ca95bb4FeaF9', },
+  base: { pool: '0x60F015F66F3647168831d31C7048ca95bb4FeaF9', },
 }
 
 Object.keys(config).forEach(chain => {
