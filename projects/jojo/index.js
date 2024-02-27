@@ -8,7 +8,7 @@ module.exports = {
         tvl: sumTokensExport(
             {
                 tokens: [ADDRESSES.arbitrum.USDC_CIRCLE, ADDRESSES.arbitrum.WETH, ADDRESSES.arbitrum.WBTC,
-                ADDRESSES.arbitrum.ARB, ADDRESSES.arbitrum.GMX, ADDRESSES.arbitrum.WSTETH, ADDRESSES.arbitrum.Magic],
+                ADDRESSES.arbitrum.ARB, ADDRESSES.arbitrum.GMX, ADDRESSES.arbitrum.WSTETH],
                 owners: ['0xcd85998b31C85040C8BA59288eaA8f9beE115B01', '0xa88603625ad55e25674F46f3c831010D53d35E79', '0x0174f6d813Df42C986ADF75ec473a0162faAfcda']
             }
         )
