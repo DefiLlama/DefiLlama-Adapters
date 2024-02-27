@@ -1,5 +1,5 @@
 module.exports = {
-    methodology: "USDT in orderbook",
+    methodology: "Balances of placed tokens to be matched in orderbook",
   }
   
   const config = {
