@@ -26,9 +26,9 @@ module.exports = {
         // This serves the data in a more efficient format and prevents overloading the Defillama frontend
         get('http://repl.fi/api/stats'),
       ]);
-      tvl = ethers.parseEther(resp.tvl_fil.toString());
+      const tvlFIL = ethers.parseEther(resp.tvl_fil.toString());
 
-      api.add(nullAddress, tvl);
+      api.add(nullAddress, tvlFIL);
     },
   },
 };
