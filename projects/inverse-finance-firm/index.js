@@ -17,7 +17,9 @@ async function tvl(timestamp, block, _, { api }) {
     eventAbi: abi.AddMarket,
   })
   
-  const markets = logs.map(i => i.args.market);
+  // unique markets
+  const markets = [...new Set(logs.map(i => i.args.market))]
+
   let escrows = await Promise.all(
     markets.map(async m => {
       const logs = await getLogs({
@@ -42,7 +44,10 @@ async function tvl(timestamp, block, _, { api }) {
 
 module.exports = {
   methodology: "Get collateral balances from users personal escrows",
-  hallmarks: [],
+  hallmarks: [    
+    [1696204800, "Borrow against INV on FiRM"],
+    [1707177600, "Launch of sDOLA"],    
+  ],
   start: 1670701200, // Dec 10 2022
   ethereum: { tvl }
 };
