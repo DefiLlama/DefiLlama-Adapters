@@ -6,8 +6,14 @@ const anchorTreasury = "0x926df14a23be491164dcf93f4c468a50ef659d5b";
 const multisig = "0x9D5Df30F475CEA915b1ed4C0CCa59255C897b61B";
 const opmultisig = "0xa283139017a2f5bade8d8e25412c600055d318f8";
 const bnbmultisig = "0xf7da4bc9b7a6bb3653221ae333a9d2a2c2d5bda7";
-const treasury1 = "0x4b6c63e6a94ef26e2df60b89372db2d8e211f1b7"
-const treasury2 = "0x943dbdc995add25a1728a482322f9b3c575b16fb"
+const basemultisig = "0x586CF50c2874f3e3997660c0FD0996B090FB9764";
+const arbmultisig = "0x233Ca46D4882609C53fcbD2FCFaAe92D2eA89538";
+const arbmultisig2 = "0x23dEDab98D7828AFBD2B7Ab8C71089f2C517774a";
+const polmultisig = "0x5D18b089e838DFFbb417A87874435175F3A9B000";
+const avaxmultisig = "0x1A927B237a57421C414EB511a33C4B82C2718677";
+const pcmultisig = "0x4b6c63e6a94ef26e2df60b89372db2d8e211f1b7"
+const treasurymultisig = "0x943dbdc995add25a1728a482322f9b3c575b16fb"
+const fedchair = "0x8f97cca30dbe80e7a8b462f1dd1a51c32accdfc8"
 
 module.exports = treasuryExports({
   ethereum: {
@@ -36,7 +42,7 @@ module.exports = treasuryExports({
       "0x0a6B1d9F920019BAbc4De3F10c94ECB822106104",
       "0x73E02EAAb68a41Ea63bdae9Dbd4b7678827B2352",
     ],
-    owners: [anchorTreasury, multisig, treasury1, treasury2],
+    owners: [anchorTreasury, multisig, pcmultisig, treasurymultisig, fedchair],
     ownTokens: [
       inv,
       "0x73E02EAAb68a41Ea63bdae9Dbd4b7678827B2352", // Uniswap INV/ETH LP
@@ -53,9 +59,23 @@ module.exports = treasuryExports({
     tokens: [
       nullAddress,
       ADDRESSES.optimism.USDC,
+      ADDRESSES.optimism.USDC_CIRCLE,
       "0x8aE125E8653821E851F12A49F7765db9a9ce7384", // DOLA
-    ],
+      "0xFAf8FD17D9840595845582fCB047DF13f006787d", // veVELO
+    ],    
     owners: [opmultisig],
+    ownTokens: [],
+  },
+  base: {
+    tokens: [
+      nullAddress,
+      ADDRESSES.base.USDC,
+      ADDRESSES.base.USDbC,
+      "0x4621b7A9c75199271F773Ebd9A499dbd165c3191", // DOLA
+      "0xeBf418Fe2512e7E6bd9b87a8F0f294aCDC67e6B4", // veAERO
+      "0x940181a94A35A4569E4529A3CDfB74e38FD98631", // AERO
+    ],    
+    owners: [basemultisig],
     ownTokens: [],
   },
   bsc: {
@@ -63,26 +83,41 @@ module.exports = treasuryExports({
       nullAddress,
       ADDRESSES.bsc.WBNB,
       "0x2F29Bc0FFAF9bff337b31CBe6CB5Fb3bf12e5840", // DOLA
-      // "0xfBBF371C9B0B994EebFcC977CEf603F7f31c070D", // veTHE
-    ],
+      "0xfBBF371C9B0B994EebFcC977CEf603F7f31c070D", // veTHE
+      "0xF4C8E32EaDEC4BFe97E0F595AdD0f4450a863a11", // THENA
+    ],    
     owners: [bnbmultisig],
+    ownTokens: [],
+  },
+  avax: {
+    tokens: [
+      nullAddress,
+      ADDRESSES.avax.USDC,
+      '0x221743dc9E954bE4f86844649Bf19B43D6F8366d', // DOLA
+      '0xeeee99b35Eb6aF5E7d76dd846DbE4bcc0c60cA1d', // SNEK
+      '0xeeee3Bf0E550505C0C17a8432065F2f6b9D06350', // veSNEK
+    ],    
+    owners: [avaxmultisig],
     ownTokens: [],
   },
   arbitrum: {
     tokens: [
       nullAddress,
       ADDRESSES.arbitrum.DAI,
-      "0xAAA6C1E32C55A7Bfa8066A6FAE9b42650F262418"
-    ],
-    owners: ["0x23dedab98d7828afbd2b7ab8c71089f2c517774a"],
-    ownTokens: ["0x6A7661795C374c0bFC635934efAddFf3A7Ee23b6"],
+      ADDRESSES.arbitrum.ARB,
+      ADDRESSES.arbitrum.WETH,
+      "0xAAA6C1E32C55A7Bfa8066A6FAE9b42650F262418", // RAM
+      "0xAAA343032aA79eE9a6897Dab03bef967c3289a06", // veRAM
+    ],    
+    owners: [arbmultisig2, arbmultisig],
+    ownTokens: [],
   },
   polygon: {
     tokens: [
       nullAddress,
       ADDRESSES.polygon.USDC,
-      
+      '0xbC2b48BC930Ddc4E5cFb2e87a45c379Aab3aac5C', // DOLA
     ],
-    owners: ["0x5d18b089e838dffbb417a87874435175f3a9b000"],
+    owners: [polmultisig],
   },
 });
