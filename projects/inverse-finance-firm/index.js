@@ -17,7 +17,9 @@ async function tvl(timestamp, block, _, { api }) {
     eventAbi: abi.AddMarket,
   })
   
-  const markets = logs.map(i => i.args.market);
+  // unique markets
+  const markets = [...new Set(logs.map(i => i.args.market))]
+
   let escrows = await Promise.all(
     markets.map(async m => {
       const logs = await getLogs({
