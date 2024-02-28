@@ -1,11 +1,9 @@
-const { BigNumber } = require('@ethersproject/bignumber');
 const { nullAddress } = require('../helper/tokenMapping');
 const { get } = require('../helper/http');
 const abi = require('./abi.json');
 const { json } = require('starknet');
 const { ethers } = require('ethers');
 const http = require('../helper/http');
-const { parseEther } = require('ethers/lib/utils');
 
 const WFIL_WPFIL_POOL_ADDRESS = '0x443A6243A36Ef0ae1C46523d563c15abD787F4E9';
 const PFIL_CONTRACT = '0xAaa93ac72bECfbBc9149f293466bbdAa4b5Ef68C';
@@ -28,7 +26,7 @@ module.exports = {
         // This serves the data in a more efficient format and prevents overloading the Defillama frontend
         get('http://repl.fi/api/stats'),
       ]);
-      tvl = parseEther(resp.tvl_fil.toString());
+      tvl = ethers.parseEther(resp.tvl_fil.toString());
 
       api.add(nullAddress, tvl);
     },
