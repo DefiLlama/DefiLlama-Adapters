@@ -23,6 +23,7 @@ const DEFAULTS = {
   MERLIN_RPC: "https://rpc.merlinchain.io",
   BLAST_RPC: "https://blast.blockpi.network/v1/rpc/public,https://rpc.ankr.com/blast",
   MERLIN_RPC_MULTICALL: '0x830E7E548F4D80947a40A7Cf3a2a53166a0C3980',
+  BLAST_RPC_MULTICALL: '0x6e1A85E0Ee2893C005eDB99c8Ca4c03d9a309Ed4',
 }
 
 const ENV_KEYS = [
