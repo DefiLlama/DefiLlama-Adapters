@@ -1,8 +1,6 @@
 const sdk = require("@defillama/sdk");
-const { default: BigNumber } = require("bignumber.js");
-const { getResources, getTableData, } = require("../helper/chain/aptos");
+const { getResources, } = require("../helper/chain/aptos");
 const { transformBalances } = require("../helper/portedTokens");
-const toHex = (str) => Buffer.from(str, 'utf-8').toString('hex');
 
 let resourcesCache
 
@@ -15,6 +13,7 @@ const reserveContrainerFilter = (i) => i.type.includes("0x1::coin::CoinStore")
 
 module.exports = {
   timetravel: false,
+  misrepresentedTokens: true,
   methodology:
     "Counts the lamports in each coin container in the Aries contract account.",
   aptos: {
