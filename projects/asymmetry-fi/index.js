@@ -1,15 +1,15 @@
-const ADDRESSES = require('../helper/coreAssets.json');
+const ADDRESSES = require('../helper/coreAssets.json')
 
 // safETH
-const SFRXETH = ADDRESSES.ethereum.sfrxETH;
-const ANKRETH = '0xe95a203b1a91a908f9b9ce46459d101078c2c3cb';
-const SWETH = '0xf951e335afb289353dc249e82926178eac7ded78';
-const STAFI = '0x9559aaa82d9649c7a7b220e7c461d2e74c9a3593';
+const SFRXETH = ADDRESSES.ethereum.sfrxETH
+const ANKRETH = '0xe95a203b1a91a908f9b9ce46459d101078c2c3cb'
+const SWETH = '0xf951e335afb289353dc249e82926178eac7ded78'
+const STAFI = '0x9559aaa82d9649c7a7b220e7c461d2e74c9a3593'
 
 // afETH
-const AFETH = '0x0000000016E6Cb3038203c1129c8B4aEE7af7a11';
-const CVX = '0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b';
-const VOTIUM = '0x00000069aBbB0B1Ad6975bcF753eEe15D318A0BF';
+const AFETH = '0x0000000016E6Cb3038203c1129c8B4aEE7af7a11'
+const CVX = '0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b'
+const VOTIUM = '0x00000069aBbB0B1Ad6975bcF753eEe15D318A0BF'
 
 async function tvl(_, _b, _cb, { api, }) {
 
@@ -27,13 +27,13 @@ async function tvl(_, _b, _cb, { api, }) {
   ]
 
   const votiumAvailableCVX = await api.call({ abi: 'uint256:availableCvx', target: VOTIUM, })
-  api.add(CVX, votiumAvailableCVX);
-  return api.sumTokens({ tokensAndOwners });
-};
+  api.add(CVX, votiumAvailableCVX)
+  return api.sumTokens({ tokensAndOwners })
+}
 
 module.exports = {
   methodology: 'counts tvl on both afETH and safETH',
   ethereum: {
     tvl,
   },
-};
+}
