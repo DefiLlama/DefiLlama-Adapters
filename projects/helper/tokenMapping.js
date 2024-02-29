@@ -119,6 +119,9 @@ const fixBalancesTokens = {
     '0xF6D226f9Dc15d9bB51182815b320D3fBE324e1bA': { coingeckoId: 'merlin-chain-bridged-wrapped-btc-merlin', decimals: 18 },
     '0x480e158395cc5b41e5584347c495584ca2caf78d': { coingeckoId: 'merlin-chain-bridged-voya-merlin', decimals: 18 },
   },
+  blast: {
+    '0x4300000000000000000000000000000000000003': { coingeckoId: 'dai', decimals: 18 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
