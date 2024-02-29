@@ -121,6 +121,7 @@ const fixBalancesTokens = {
   },
   blast: {
     '0x4300000000000000000000000000000000000003': { coingeckoId: 'dai', decimals: 18 },
+    '0x4300000000000000000000000000000000000004': { coingeckoId: 'ethereum', decimals: 18 },
   }
 }
 
