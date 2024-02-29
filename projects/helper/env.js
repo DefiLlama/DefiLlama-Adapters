@@ -10,7 +10,6 @@ const DEFAULTS = {
   SUI_RPC: 'https://fullnode.mainnet.sui.io/',
   MULTIVERSX_RPC: 'https://api.multiversx.com',
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
-  ACALA_RPC: "https://eth-rpc-acala.aca-api.network",
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
   CORE_RPC: "https://rpc.coredao.org,https://rpc.ankr.com/core,https://1rpc.io/core,https://rpc-core.icecreamswap.com",
   BITGERT_RPC: "https://flux-rpc2.brisescan.com,https://mainnet-rpc.brisescan.com,https://chainrpc.com,https://serverrpc.com,https://flux-rpc.brisescan.com",
@@ -19,6 +18,12 @@ const DEFAULTS = {
   ALV_RPC: "https://elves-core3.alvey.io/",
   OZONE_RPC: "https://node1.ozonechain.io",
   XDC_RPC: "https://erpc.xinfin.network",
+  ZETA_RPC: "https://zetachain-evm.blockpi.network/v1/rpc/public,https://zetachain-mainnet-archive.allthatnode.com:8545",
+  DEFIVERSE_RPC: "https://rpc.defi-verse.org/",
+  MERLIN_RPC: "https://rpc.merlinchain.io",
+  BLAST_RPC: "https://blast.blockpi.network/v1/rpc/public,https://rpc.ankr.com/blast",
+  MERLIN_RPC_MULTICALL: '0x830E7E548F4D80947a40A7Cf3a2a53166a0C3980',
+  BLAST_RPC_MULTICALL: '0x6e1A85E0Ee2893C005eDB99c8Ca4c03d9a309Ed4',
 }
 
 const ENV_KEYS = [

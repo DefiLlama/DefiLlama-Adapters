@@ -106,6 +106,12 @@ const config = {
       "0x654a31ba7d714cfcab19b17d0066171c1a292349"
     ]
   },
+  linea: {
+    vaults: [
+      "0x8ab01c5ee3422099156ab151eecb83c095626599",
+      "0x7f9dd991e8fd0cbb52cb8eb35dd35c474a9a7a70"
+    ]
+  },
   ethereum: {
     vaults: [
       "0x60d133c666919B54a3254E0d3F14332cB783B733",
@@ -162,7 +168,9 @@ const config = {
       "0x9A05b116b56304F5f4B3F1D5DA4641bFfFfae6Ab",
       "0xF1104493eC315aF2cb52f0c19605443334928D38",
       "0xb1f28350539b06d5a35d016908eef0424bd13c4b",
-      "0x3bcbAC61456c9C9582132D1493A00E318EA9C122"
+      "0x3bcbAC61456c9C9582132D1493A00E318EA9C122",
+      "0x169d47043cc0c94c39fa327941c56cb0344dc508",
+      "0xb5b31e6a13ae856bc30b3c76b16edad9f432b54f"
     ],
     toa: [
       [nullAddress, '0xa3fa99a148fa48d14ed51d610c367c61876997f1'],
