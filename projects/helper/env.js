@@ -21,6 +21,7 @@ const DEFAULTS = {
   ZETA_RPC: "https://zetachain-evm.blockpi.network/v1/rpc/public,https://zetachain-mainnet-archive.allthatnode.com:8545",
   DEFIVERSE_RPC: "https://rpc.defi-verse.org/",
   MERLIN_RPC: "https://rpc.merlinchain.io",
+  BLAST_RPC: "https://blast.blockpi.network/v1/rpc/public",
   MERLIN_RPC_MULTICALL: '0x830E7E548F4D80947a40A7Cf3a2a53166a0C3980',
 }
 
