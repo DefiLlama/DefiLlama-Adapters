@@ -3,8 +3,6 @@ const { cachedGraphQuery } = require("../helper/cache");
 const sdk = require("@defillama/sdk");
 const iceCreamVanABI = require("./iceCreamVanABI.json");
 const zombieVanABI = require("./zombieVanABI.json");
-const iceCreamZombiesABI = require("./iceCreamZombiesABI.json");
-const { stakingPricedLP } = require("../helper/staking");
 const ADDRESSES = require("../helper/coreAssets.json");
 
 module.exports = uniV3Export({
@@ -164,22 +162,10 @@ async function ICZStake({ chain, telos: block }) {
 
 Object.keys(config).forEach((chain) => {
   const { endpoint } = config[chain];
-  module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api }) => {
-      const { pools } = await cachedGraphQuery(
-        "swapsicle-v2/" + chain,
-        endpoint,
-        query,
-        { api }
-      );
-      const ownerTokens = pools.map((i) => [[i.token0.id, i.token1.id], i.id]);
-      return api.sumTokens({ ownerTokens });
-    },
-    staking: sdk.util.sumChainTvls([
+  module.exports[chain].staking = sdk.util.sumChainTvls([
       () => iceCreamVanStake({ chain }),
       () => ZombieVanStake({ chain }),
       // NFT's
       () => ICZStake({ chain }),
-    ]),
-  };
+    ])
 });
