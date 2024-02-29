@@ -50,8 +50,8 @@ chains.forEach(chain => {
           if (i[1]?.name !== 'validators') return true
           Object.values(i[1].balances).map(info => {
             if (info.address === 'native' && info.assetType === 'validator')
-            api.add(nullAddress, info.balance)
-          else api.log('unknown balance', info)
+              api.add(nullAddress, info.balance)
+            else api.log('unknown balance', info)
           })
         })
         .map(([owner, { balances }]) => {
