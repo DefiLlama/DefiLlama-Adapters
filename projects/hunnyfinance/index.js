@@ -47,7 +47,7 @@ const farmContracts = [
 
 async function tvl(timestamp, block, chainBlocks, { api }) {
   const tokens = await api.multiCall({ abi: abi.stakingToken, calls: farmContracts })
-  const bals = await api.multiCall({ abi: abi.balance, calls: farmContracts })
+  const bals = (await api.multiCall({ abi: abi.balance, calls: farmContracts, permitFailure: true})).map(i =>i ?? 0)
   api.addTokens(tokens, bals)
   return sumUnknownTokens({ api, resolveLP: true, lps: tokens, useDefaultCoreAssets: true, })
 

@@ -49,6 +49,12 @@ const blacklisted_LPS = [
   '0x253f67aacaf0213a750e3b1704e94ff9accee10b',
 ].map(i => i.toLowerCase())
 
+function isICHIVaultToken(symbol, token, chain) {
+  if (symbol === 'ICHI_Vault_LP') return true
+  if (chain === 'bsc' &&  symbol.startsWith('IV-') && symbol.endsWith('-THE')) return true
+  return false
+}
+
 function isLP(symbol, token, chain) {
   // sdk.log(symbol, chain, token)
   if (!symbol) return false
@@ -244,7 +250,7 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
       labelMapping[label] = token
       return
     }
-    if (!token.startsWith('0x')) return;
+    if (!token.startsWith('0x') || chain === 'starknet') return;
     if (!label.startsWith(chain))
       ethTokens.push(token)
     else
@@ -327,4 +333,5 @@ module.exports = {
   getDecimals,
   getParamCalls,
   once,
+  isICHIVaultToken,
 }

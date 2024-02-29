@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { call, view_account, addTokenBalances, sumSingleBalance } = require('../helper/chain/near');
 const { sumTokensExport } = require('../helper/unwrapLPs');
 
@@ -8,8 +9,8 @@ const FT_NEAR = 'wrap.near';
 const owner = '0x816f722424b49cf1275cc86da9840fbd5a6167e9'
 
 const tokenAddress = {
-  arbitrum: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
-  optimism: '0x0b2c639c533813f4aa9d7837caf62653d097ff85',
+  arbitrum: ADDRESSES.arbitrum.USDC_CIRCLE,
+  optimism: ADDRESSES.optimism.USDC_CIRCLE,
 }
 
 async function tvl() {
