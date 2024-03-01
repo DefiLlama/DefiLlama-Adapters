@@ -51,8 +51,6 @@ async function blastTvl(_, _1, _2, { api }) {
       api.add(u.tokenAddress, b.output)
     }
   }
-
-  // Map the balances to the underlying token addresses
 }
 
 module.exports = {
