@@ -122,6 +122,10 @@ const fixBalancesTokens = {
   blast: {
     '0x4300000000000000000000000000000000000003': { coingeckoId: 'dai', decimals: 18 },
     '0x4300000000000000000000000000000000000004': { coingeckoId: 'ethereum', decimals: 18 },
+  },
+  bitrock: {
+    '0x413f0e3a440aba7a15137f4278121450416882d5': { coingeckoId: 'wrapped-bitrock', decimals: 18 },
+    '0xde67d97b8770dc98c746a3fc0093c538666eb493': { coingeckoId: 'bitrock', decimals: 9 },
   }
 }
 
