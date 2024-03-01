@@ -1,13 +1,12 @@
 const ADDRESSES = require("../helper/coreAssets.json");
 const sui = require("../helper/chain/sui");
 const BN = require("bn.js");
-const Decimal = require("decimal.js");
+const BigNumber = require("bignumber.js");
 
-Decimal.config({
-  precision: 64,
-  rounding: Decimal.ROUND_DOWN,
-  toExpNeg: -64,
-  toExpPos: 64,
+BigNumber.config({
+  DECIMAL_PLACES: 64,
+  ROUNDING_MODE: BigNumber.ROUND_DOWN,
+  EXPONENTIAL_AT: [-64, 64],
 });
 
 const BUCK =
@@ -302,50 +301,48 @@ function tickIndexToSqrtPriceX64(tickIndex) {
 }
 
 function toX64_Decimal(num) {
-  return num.mul(Decimal.pow(2, 64));
+  return num.multipliedBy(BigNumber(2).pow(64));
 }
 
 function fromX64_Decimal(num) {
-  return num.mul(Decimal.pow(2, -64));
+  return num.multipliedBy(BigNumber(2).pow(-64));
 }
 
 function getCoinAmountFromLiquidity(
   liquidity,
   curSqrtPrice,
   lowerSqrtPrice,
-  upperSqrtPrice,
-  roundUp
+  upperSqrtPrice
 ) {
-  const liq = new Decimal(liquidity.toString());
-  const curSqrtPriceStr = new Decimal(curSqrtPrice.toString());
-  const lowerPriceStr = new Decimal(lowerSqrtPrice.toString());
-  const upperPriceStr = new Decimal(upperSqrtPrice.toString());
+  const liq = new BigNumber(liquidity.toString());
+  const curSqrtPriceStr = new BigNumber(curSqrtPrice.toString());
+  const lowerPriceStr = new BigNumber(lowerSqrtPrice.toString());
+  const upperPriceStr = new BigNumber(upperSqrtPrice.toString());
   let coinA;
   let coinB;
   if (curSqrtPrice.lt(lowerSqrtPrice)) {
     coinA = toX64_Decimal(liq)
-      .mul(upperPriceStr.sub(lowerPriceStr))
-      .div(lowerPriceStr.mul(upperPriceStr));
-    coinB = new Decimal(0);
+      .multipliedBy(upperPriceStr.minus(lowerPriceStr))
+      .div(lowerPriceStr.multipliedBy(upperPriceStr));
+    coinB = new BigNumber(0);
   } else if (curSqrtPrice.lt(upperSqrtPrice)) {
     coinA = toX64_Decimal(liq)
-      .mul(upperPriceStr.sub(curSqrtPriceStr))
-      .div(curSqrtPriceStr.mul(upperPriceStr));
+      .multipliedBy(upperPriceStr.minus(curSqrtPriceStr))
+      .div(curSqrtPriceStr.multipliedBy(upperPriceStr));
 
-    coinB = fromX64_Decimal(liq.mul(curSqrtPriceStr.sub(lowerPriceStr)));
+    coinB = fromX64_Decimal(
+      liq.multipliedBy(curSqrtPriceStr.minus(lowerPriceStr))
+    );
   } else {
-    coinA = new Decimal(0);
-    coinB = fromX64_Decimal(liq.mul(upperPriceStr.sub(lowerPriceStr)));
+    coinA = new BigNumber(0);
+    coinB = fromX64_Decimal(
+      liq.multipliedBy(upperPriceStr.minus(lowerPriceStr))
+    );
   }
-  if (roundUp) {
-    return {
-      coinA: new BN(coinA.ceil().toString()),
-      coinB: new BN(coinB.ceil().toString()),
-    };
-  }
+
   return {
-    coinA: new BN(coinA.floor().toString()),
-    coinB: new BN(coinB.floor().toString()),
+    coinA: new BN(coinA.toFixed(0, 2)),
+    coinB: new BN(coinB.toFixed(0, 2)),
   };
 }
 
@@ -368,8 +365,7 @@ async function tvl(_, _1, _2, { api }) {
     new BN(Number(bucketusPosition.liquidity)),
     curSqrtPrice,
     lowerSqrtPrice,
-    upperSqrtPrice,
-    true
+    upperSqrtPrice
   );
 
   api.add(BUCK, bucketusCointAmounts.coinA);
