@@ -34,6 +34,16 @@ const underlyingTokens = {
   optimism: {},
 };
 
+const liquidityLaunchEvents = {
+  blast: {
+    contractAddress: "0xa64B73699Cc7334810E382A4C09CAEc53636Ab96",
+    supportedTokens: [
+      "0x4300000000000000000000000000000000000003", // USDb
+      "0x76DA31D7C9CbEAE102aff34D3398bC450c8374c1", // MIM
+    ]
+  },
+};
+
 async function tvl(_, _1, _2, { api }) {
   const { chain } = api
   const marketsArray = [];
@@ -51,6 +61,23 @@ async function tvl(_, _1, _2, { api }) {
   ).flat()
   const bals = await api.multiCall({ calls, abi: abi.balanceOf, })
   api.addTokens(tokens, bals)
+
+  const liquidityLaunchEvent = liquidityLaunchEvents[chain];
+  if (liquidityLaunchEvent !== undefined) {
+    const { contractAddress, supportedTokens } = liquidityLaunchEvent;
+    const totalBalances = await api.multiCall({
+      calls: supportedTokens.map((token) => ({
+        target: contractAddress,
+        params: token,
+      })),
+      abi: "function totals(address token) external returns (uint256 unlocked, uint256 locked, uint256 total)",
+    });
+    api.addTokens(
+      supportedTokens,
+      totalBalances.map((totalBalance) => totalBalance.total),
+    );
+  }
+
   return api.getBalances()
 }
 
