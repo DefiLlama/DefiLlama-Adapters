@@ -1,5 +1,6 @@
 import fetchURL from "../../utils/fetchURL"
 import { FetchResultVolume, SimpleAdapter } from "../../adapters/types";
+import { CHAIN } from "../../helpers/chains";
 
 const historicalVolumeEndpoint = "https://api.bfx.trade/markets"
 const candles = (market: string, timestampFrom: number, timestampTo: number) => {
