@@ -28,7 +28,7 @@ const config = {
 
 async function getUSDYTotalSupplySUI() {
   const USDY_TREASURY_CAP_OBJECT_ID = '0x9dca9f57a78fa7f132f95a0cf5c4d1b796836145ead7337da6b94012db62267a';
-  treasuryCapInfo = await sui.getObject(USDY_TREASURY_CAP_OBJECT_ID);
+  let treasuryCapInfo = await sui.getObject(USDY_TREASURY_CAP_OBJECT_ID);
   return treasuryCapInfo.fields.total_supply.fields.value;
 }
 
@@ -48,7 +48,7 @@ Object.keys(config).forEach((chain) => {
         const scaledSupplies = supplies.map(supply => supply * 1_000_000);
         api.addTokens(fundAddresses, scaledSupplies);
       } else if (chain === "sui") {
-        usdySupply = await getUSDYTotalSupplySUI();
+        let usdySupply = await getUSDYTotalSupplySUI();
         api.addTokens(fundAddresses, [usdySupply]);
       } else {
         supplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: fundAddresses });
