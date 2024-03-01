@@ -127,7 +127,7 @@ function aaveChainTvl(chain, addressesProviderRegistry, transformAddressRaw, dat
 function aaveExports(chain, addressesProviderRegistry, transform = undefined, dataHelpers = undefined, { oracle, abis, v3 = false, blacklistedTokens = [], hasV2LPs = false, } = {}) {
   return {
     tvl: aaveChainTvl(chain, addressesProviderRegistry, transform, dataHelpers, false, v3, { oracle, abis, blacklistedTokens, hasV2LPs, }),
-    borrowed: aaveChainTvl(chain, addressesProviderRegistry, transform, dataHelpers, true, v3, { oracle, abis, hasV2LPs, })
+    borrowed: aaveChainTvl(chain, addressesProviderRegistry, transform, dataHelpers, true, v3, { oracle, abis, hasV2LPs, blacklistedTokens, })
   }
 }
 
