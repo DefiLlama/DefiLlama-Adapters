@@ -7,6 +7,7 @@ const { sumTokens, sumTokens2, nullAddress, } = require('./unwrapLPs')
 const { vestingHelper } = require('./cache/vestingHelper')
 const { getTokenPrices, sumUnknownTokens, getLPData, } = require('./cache/sumUnknownTokens')
 const { getUniTVL } = require('./cache/uniswap')
+const { getRingTVL } = require('./cache/ring')
 const { getUniqueAddresses, } = require('./utils')
 
 function unknownTombs({ token = [], shares = [], rewardPool = [], masonry = [], lps, chain = "ethereum", coreAssets = [],
@@ -245,6 +246,7 @@ module.exports = {
   nullAddress,
   getTokenPrices,
   getUniTVL,
+  getRingTVL,
   unknownTombs,
   pool2,
   getLPData,

@@ -1,0 +1,5 @@
+{
+  "allWrappedTokens": "function allWrappedTokens(uint256) view returns (address)",
+  "token": "address:token",
+  "allWrappedTokensLength": "uint256:allWrappedTokensLength"
+}
