@@ -2,19 +2,7 @@ const CGUSD_CONTRACT = "0xCa72827a3D211CfD8F6b00Ac98824872b72CAb49";
 const START_TIME = 1708351200;
 
 async function tvl(timestamp, block, _, { api }) {
-  const totalSupply = await api.call({
-    abi: "erc20:totalSupply",
-    target: CGUSD_CONTRACT,
-  });
-
-  const decimals = await api.call({
-    abi: "erc20:decimals",
-    target: CGUSD_CONTRACT,
-  });
-
-  return {
-    "usd-coin": totalSupply / 10 ** decimals,
-  };
+  await api.erc4626Sum({ calls: [CGUSD_CONTRACT], balanceAbi: 'getTotalPooledAssets', tokenAbi: "asset" });
 }
 
 module.exports = {
