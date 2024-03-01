@@ -29,7 +29,6 @@ async function tvl(_, _a, _b, {api}){
         owners: [blastPreLaunchDeposit, blastEthYieldManagerProxy, blastDaiYieldManagerProxy],
         tokens: [ADDRESSES.ethereum.STETH, ADDRESSES.ethereum.DAI, nullAddress]
     })
-    console.log(balances)
     return balances
 }
 
