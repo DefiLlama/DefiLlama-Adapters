@@ -41,7 +41,7 @@ const fetchVolume = async (timestamp: number): Promise<FetchResultVolume> => {
 
 const adapter: SimpleAdapter = {
   adapter: {
-    "blast": {
+    ["blast"]: {
       fetch: fetchVolume,
       start: 1700179200, // Replace with actual start timestamp
     },
