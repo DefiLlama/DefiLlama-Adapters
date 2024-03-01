@@ -267,5 +267,14 @@ module.exports = {
          '0x5aa5f7f84ed0e5db0a4a85c3947ea16b53352fd4', // portal v2
        ]
      },
+     {
+       name: 'blast',
+       tokens: [
+         ADDRESSES.blast.WETH,
+       ],
+       holders: [
+         '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4', // portal v2
+       ]
+     },
   ]
 }
