@@ -203,6 +203,7 @@ async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], block, c
         case 'evmos': nftAddress = '0x5fe5daaa011673289847da4f76d63246ddb2965d'; break;
         case 'celo': nftAddress = '0x3d79EdAaBC0EaB6F08ED885C05Fc0B014290D95A'; break;
         case 'base': nftAddress = '0x03a520b32C04BF3bEEf7BEb72E919cf822Ed34f1'; break;
+        case 'blast': nftAddress = '0x434575eaea081b735c985fa9bf63cd7b87e227f9'; break;
         default: throw new Error('missing default uniswap nft address chain: ' + chain)
       }
 
@@ -231,7 +232,9 @@ async function unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain = 
   const nftPositions = (await sdk.api.erc20.balanceOf({ target: nftIdFetcher, owner, block, chain })).output
   const factoryKey = getFactoryKey(chain, nftAddress)
   if (!factories[factoryKey]) factories[factoryKey] = sdk.api.abi.call({ target: nftAddress, abi: wildCreditABI.factory, block, chain })
-  const factory = (await factories[factoryKey]).output
+  let factory = (await factories[factoryKey]).output
+  if (factory.toLowerCase() === '0xa08ae3d3f4da51c22d3c041e468bdf4c61405aab') // thruster finance has a bug where they set the pool deployer instead of the factory
+    factory = '0x71b08f13B3c3aF35aAdEb3949AFEb1ded1016127'
 
   const positionIds = (await sdk.api.abi.multiCall({
     block, chain, abi: wildCreditABI.tokenOfOwnerByIndex, target: nftIdFetcher,
