@@ -1,95 +1,18 @@
-const { GraphQLClient, gql } = require("graphql-request");
-const sdk = require("@defillama/sdk");
-const { default: BigNumber } = require("bignumber.js");
+const { getLogs } = require('../helper/cache/getLogs')
 
-const graphUri = "https://api.studio.thegraph.com/query/42478/blast_mainnet/version/latest";
+// const graphUri = "https://api.studio.thegraph.com/query/42478/blast_mainnet/version/latest";
 
-async function allPools(graphUri) {
-  var graphQLClient = new GraphQLClient(graphUri);
-  const query = gql`
-      {
-          pools{
-              id
-              tradePool
-              token0{
-                  id
-                  decimals
-              }
-              token1{
-                  id
-                  decimals
-              }
-          }
-      }
-  `;
-  let res = await graphQLClient.request(query);
-  return res;
+const config = {
+  blast: { factory: '0x5B0b4b97edb7377888E2c37268c46E28f5BD81d0', fromBlock: 202321, },
 }
 
-async function tvl(timestamp, block, chainBlocks) {
-  const balances = {};
-
-  const graphRs = await allPools(graphUri);
-
-  for (let i = 0; i < graphRs.pools.length; i++) {
-    const pool = graphRs.pools[i];
-    const spotPoolAddress = pool.id;
-    const tradePoolAddress = pool.tradePool;
-    const token0Address = pool.token0.id;
-    const token1Address = pool.token1.id;
-
-
-    const addBalance = (tokenAddress, amount) => {
-      const fantomTokenAddress = `blast:${tokenAddress}`;
-      const existingBalance = balances[fantomTokenAddress];
-      if (existingBalance) {
-        balances[fantomTokenAddress] = new BigNumber(existingBalance).plus(amount).toFixed(0);
-      } else {
-        balances[fantomTokenAddress] = amount;
-      }
-    };
-
-    const { output: spotToken0Bal } = await sdk.api.abi.call({
-      chain: "blast",
-      target: token0Address,
-      params: spotPoolAddress,
-      abi: "erc20:balanceOf"
-    });
-    addBalance(token0Address, spotToken0Bal);
-
-    const { output: spotToken1Bal } = await sdk.api.abi.call({
-      chain: "blast",
-      target: token1Address,
-      params: spotPoolAddress,
-      abi: "erc20:balanceOf"
-    });
-    addBalance(token1Address, spotToken1Bal);
-
-    const { output: prepToken0Bal } = await sdk.api.abi.call({
-      chain: "blast",
-      target: token0Address,
-      params: tradePoolAddress,
-      abi: "erc20:balanceOf"
-    });
-    addBalance(token0Address, prepToken0Bal);
-
-    const { output: prepToken1Bal } = await sdk.api.abi.call({
-      chain: "blast",
-      target: token0Address,
-      params: tradePoolAddress,
-      abi: "erc20:balanceOf"
-    });
-    addBalance(token0Address, prepToken1Bal);
+Object.keys(config).forEach(chain => {
+  const { factory, fromBlock, } = config[chain]
+  module.exports[chain] = {
+    tvl: async (_, _b, _cb, { api, }) => {
+      const logs = await getLogs({ api, target: factory, eventAbi: 'event PoolCreated (address indexed token0, address indexed token1, uint24 indexed fee, int24 tickSpacing, address pool, address tradePool)', onlyArgs: true, fromBlock, })
+      const ownerTokens = logs.map(i => [[[i.token0, i.token1], i.pool], [[i.token0, i.token1], i.tradePool]]).flat()
+      return api.sumTokens({ ownerTokens })
+    }
   }
-
-  return balances;
-}
-
-// allPools(graphUri);
-module.exports = {
-  blast: {
-    tvl
-  }
-};
-
-
+})
