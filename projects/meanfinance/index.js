@@ -61,6 +61,7 @@ module.exports = {
   arbitrum: getV2TvlObject('arbitrum'),
   bsc: getV2TvlObject('bsc'),
   xdai: getV2TvlObject('xdai'),
+  moonbeam: getV2TvlObject('moonbeam'),
    hallmarks: [
     [1650082958, "Protocol is paused due to non-critical vulnerability"],
     [1654057358, "Deployment on Optimism"],

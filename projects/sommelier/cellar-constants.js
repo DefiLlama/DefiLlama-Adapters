@@ -70,9 +70,20 @@ const cellarsV2p5 = [
   { id: TURBO_EETH_V2, startBlock: 19163705 },
 ];
 
+// v2.5 Cellars on Arbitrum
+const REAL_YIELD_ETH_ARB = "0xC47bB288178Ea40bF520a91826a3DEE9e0DbFA4C";
+const REAL_YIELD_USD_ARB = "0x392B1E6905bb8449d26af701Cdea6Ff47bF6e5A8";
+
+const arbitrumCellarsV2p5 = [
+  { id: REAL_YIELD_ETH_ARB, startBlock: 178830458 },
+  { id: REAL_YIELD_USD_ARB, startBlock: 178141655 }];
+
+
+
 module.exports = {
-    cellarsV0815,
-    cellarsV0816,
-    cellarsV2,
-    cellarsV2p5
-}
+  cellarsV0815,
+  cellarsV0816,
+  cellarsV2,
+  cellarsV2p5,
+  arbitrumCellarsV2p5,
+};

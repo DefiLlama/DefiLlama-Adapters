@@ -63,6 +63,7 @@ const HYPE_REGISTRY = {
   ],
   mantle: [
     ["0x683292172E2175bd08e3927a5e72FC301b161300", 1000], // FusionX
+    ["0xa5E9006C17740Cb9e4898657721c4dFE103d8456", 58580400], // Celo
   ],
   rollux: [
     ["0x683292172E2175bd08e3927a5e72FC301b161300", 1435083], // PegaSys
