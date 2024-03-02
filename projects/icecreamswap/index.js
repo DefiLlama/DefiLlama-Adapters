@@ -4,7 +4,7 @@ const config = {
   shimmer_evm: '0x24cb308a4e2F3a4352F513681Bd0c31a0bd3BA31',
 }
 
-const chains = [...Object.keys(config), 'base', 'telos', 'core', 'dogechain', 'fuse', 'xdc', 'bitgert', 'scroll', 'neon_evm' ]
+const chains = [...Object.keys(config), 'base', 'telos', 'core', 'dogechain', 'fuse', 'xdc', 'bitgert', 'scroll', 'neon_evm', 'blast' ]
 
 chains.forEach(chain => {
   const factory = config[chain]
