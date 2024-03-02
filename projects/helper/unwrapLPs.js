@@ -8,10 +8,11 @@ const { requery } = require('./requery')
 const { getChainTransform, getFixBalances } = require('./portedTokens')
 const { getUniqueAddresses, normalizeAddress } = require('./tokenMapping')
 const creamAbi = require('./abis/cream.json')
-const { isLP, log, sliceIntoChunks, isICHIVaultToken, } = require('./utils')
+const { isLP, log, sliceIntoChunks, isICHIVaultToken, createIncrementArray } = require('./utils')
 const { sumArtBlocks, whitelistedNFTs, } = require('./nft')
 const wildCreditABI = require('../wildcredit/abi.json');
 const { covalentGetTokens, } = require("./token");
+const SOLIDLY_VE_NFT_ABI = require('./abis/solidlyVeNft.json');
 
 const lpReservesAbi = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
 const lpSuppliesAbi = "uint256:totalSupply"
@@ -697,6 +698,7 @@ async function sumTokens2({
   sumChunkSize = undefined,
   uniV3ExtraConfig = {},
   resolveICHIVault = false,
+  solidlyVeNfts = [],
 }) {
   if (api) {
     chain = api.chain ?? chain
@@ -733,6 +735,14 @@ async function sumTokens2({
     nftTokens.forEach((tokens, i) => ownerTokens.push([[tokens, coreNftTokens].flat(), owners[i]]))
   }
 
+  if(solidlyVeNfts.length) {
+    await Promise.all(
+      owners.map(
+        owner => solidlyVeNfts.map(veNftDetails => unwrapSolidlyVeNft({ api, owner, ...veNftDetails  }))
+      )
+      .flat()
+    )
+  }
 
   if (ownerTokens.length) {
     ownerTokens.map(([tokens, owner]) => {
@@ -901,6 +911,20 @@ async function unwrapConvexRewardPools({ api, tokensAndOwners }) {
   return api.getBalances()
 }
 
+async function unwrapSolidlyVeNft({ api, baseToken, veNft, owner, hasTokensOfOwnerAbi = false, isAltAbi = false, lockedAbi, nftIdGetterAbi }) {
+  let tokenIds
+  const _lockedAbi = lockedAbi || (hasTokensOfOwnerAbi || isAltAbi ? SOLIDLY_VE_NFT_ABI.lockedSimple : SOLIDLY_VE_NFT_ABI.locked)
+  const _nftIdGetterAbi = nftIdGetterAbi || (isAltAbi ? SOLIDLY_VE_NFT_ABI.tokenOfOwnerByIndex : SOLIDLY_VE_NFT_ABI.ownerToNFTokenIdList)
+  if(hasTokensOfOwnerAbi) {
+    tokenIds = await api.call({ abi: SOLIDLY_VE_NFT_ABI.tokensOfOwner, params: owner, target: veNft })
+  } else {
+    const count = await api.call({ abi: 'erc20:balanceOf', target: veNft, params: owner })
+    tokenIds = await api.multiCall({ abi: _nftIdGetterAbi, calls: createIncrementArray(count).map(i => ({ params: [owner, i] })), target: veNft })
+  }  
+  const bals = await api.multiCall({ abi: _lockedAbi, calls: tokenIds, target: veNft })
+  bals.forEach(i => api.add(baseToken, i.amount))  
+}
+
 module.exports = {
   PANCAKE_NFT_ADDRESS,
   unwrapUniswapLPs,
@@ -925,4 +949,5 @@ module.exports = {
   unwrapMakerPositions,
   unwrap4626Tokens,
   unwrapConvexRewardPools,
+  unwrapSolidlyVeNft,
 }
