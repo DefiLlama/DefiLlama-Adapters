@@ -106,6 +106,12 @@ const config = {
       "0x654a31ba7d714cfcab19b17d0066171c1a292349"
     ]
   },
+  linea: {
+    vaults: [
+      "0x8ab01c5ee3422099156ab151eecb83c095626599",
+      "0x7f9dd991e8fd0cbb52cb8eb35dd35c474a9a7a70"
+    ]
+  },
   ethereum: {
     vaults: [
       "0x60d133c666919B54a3254E0d3F14332cB783B733",
