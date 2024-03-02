@@ -39,7 +39,7 @@ const liquidityLaunchEvents = {
     contractAddress: "0xa64B73699Cc7334810E382A4C09CAEc53636Ab96",
     supportedTokens: [
       "0x4300000000000000000000000000000000000003", // USDb
-      "0x76DA31D7C9CbEAE102aff34D3398bC450c8374c1", // MIM
+      // "0x76DA31D7C9CbEAE102aff34D3398bC450c8374c1", // MIM
     ]
   },
 };
@@ -63,28 +63,18 @@ async function tvl(_, _1, _2, { api }) {
   api.addTokens(tokens, bals)
 
   const liquidityLaunchEvent = liquidityLaunchEvents[chain];
-  if (liquidityLaunchEvent !== undefined) {
-    const { contractAddress, supportedTokens } = liquidityLaunchEvent;
-    const totalBalances = await api.multiCall({
-      calls: supportedTokens.map((token) => ({
-        target: contractAddress,
-        params: token,
-      })),
-      abi: "function totals(address token) external returns (uint256 unlocked, uint256 locked, uint256 total)",
-    });
-    api.addTokens(
-      supportedTokens,
-      totalBalances.map((totalBalance) => totalBalance.total),
-    );
-  }
+  if (liquidityLaunchEvent)
+    await api.sumTokens({ owner: liquidityLaunchEvent.contractAddress, tokens: liquidityLaunchEvent.supportedTokens })
+
+
 
   return api.getBalances()
 }
 
 const chains = ['arbitrum', 'avax', 'blast', 'bsc', 'ethereum', 'fantom', 'kava', 'optimism'];
 chains.forEach(chain => module.exports[chain] = { tvl }),
-module.exports.hallmarks = [
-  [1651881600, "UST depeg"],
-  [1643245200, "0xSifu revealed as QuadrigaCX founder"],
-  [1667826000, "FTX collapse, Alameda repays FTT loans"],
-]
+  module.exports.hallmarks = [
+    [1651881600, "UST depeg"],
+    [1643245200, "0xSifu revealed as QuadrigaCX founder"],
+    [1667826000, "FTX collapse, Alameda repays FTT loans"],
+  ]
