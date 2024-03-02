@@ -12,7 +12,7 @@ const opts = { useDefaultCoreAssets: true, lps: [BLNYAN_WETH_SLP] }
 module.exports = {
   misrepresentedTokens: true,
   blast: {
-    tvl: sumTokensExport({ owners: [BLNYAN_WETH_SLP, feeDistro, button], tokens: [WETH], ...opts, }),
+    tvl: sumTokensExport({ owners: [stakeLpEarnWeth, feeDistro, button], tokens: [WETH], ...opts, }),
     pool2: sumTokensExport({ ...opts, owners: [stakeLpEarnWeth], tokens: [BLNYAN_WETH_SLP], }),
     staking: sumTokensExport({ owners: [stakingBLNYANContract], tokens: [BLNYAN], ...opts, }),
   },
