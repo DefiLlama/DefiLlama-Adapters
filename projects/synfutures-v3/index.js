@@ -26,7 +26,7 @@ Object.keys(config).forEach(chain => {
       })
       const tokensAndOwners = logs.map(i => ([i.args.quote, i.args.instrument]))
       tokens.forEach(token => tokensAndOwners.push([token, gate]))
-      return sumTokens2({ api, tokensAndOwners: logs.map(i => ([i.args.quote, i.args.instrument])) })
+      return sumTokens2({ api, tokensAndOwners: tokensAndOwners })
     }
   }
 })
