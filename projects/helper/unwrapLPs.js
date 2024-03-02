@@ -898,6 +898,31 @@ async function unwrapConvexRewardPools({ api, tokensAndOwners }) {
   return api.getBalances()
 }
 
+function addUniV3LikePosition({ api, token0, token1, liquidity, tickLower, tickUpper, tick}) {
+  const tickToPrice = (tick) => 1.0001 ** tick
+  const sa = tickToPrice(tickLower / 2)
+  const sb = tickToPrice(tickUpper / 2)
+
+  let amount0 = 0
+  let amount1 = 0
+
+  if (tick < tickLower) {
+    amount0 = liquidity * (sb - sa) / (sa * sb)
+  } else if (tick < tickUpper) {
+    const price = tickToPrice(tick)
+    const sp = price ** 0.5
+
+    amount0 = liquidity * (sb - sp) / (sp * sb)
+    amount1 = liquidity * (sp - sa)
+  } else {
+    amount1 = liquidity * (sb - sa)
+  }
+
+  api.add(token0, amount0)
+  api.add(token1, amount1)
+}
+
+
 module.exports = {
   PANCAKE_NFT_ADDRESS,
   unwrapUniswapLPs,
@@ -922,4 +947,5 @@ module.exports = {
   unwrapMakerPositions,
   unwrap4626Tokens,
   unwrapConvexRewardPools,
+  addUniV3LikePosition,
 }
