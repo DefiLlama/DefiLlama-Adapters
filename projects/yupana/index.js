@@ -4,7 +4,7 @@ const {
   getBigMapById,
   sumTokens2,
 } = require("../helper/chain/tezos");
-const YUPANA_CORE = "KT1Rk86CX85DjBKmuyBhrCyNsHyudHVtASec";
+const YUPANA_CORE = "KT1CojtgtVHVarS135fnV3y4z8TiKXrsRHJr";
 
 async function tvl() {
   return sumTokens2({ owners: [YUPANA_CORE], includeTezos: true, })
