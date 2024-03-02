@@ -12,10 +12,10 @@ const opts = { useDefaultCoreAssets: true, lps: [BLNYAN_WETH_SLP] }
 module.exports = {
   misrepresentedTokens: true,
   blast: {
-    tvl: sumTokensExport({ owners: [feeDistro, button], tokens: [WETH], ...opts, }),
+    tvl: sumTokensExport({ owners: [BLNYAN_WETH_SLP, feeDistro, button], tokens: [WETH], ...opts, }),
     pool2: sumTokensExport({ ...opts, owners: [stakeLpEarnWeth], tokens: [BLNYAN_WETH_SLP], }),
     staking: sumTokensExport({ owners: [stakingBLNYANContract], tokens: [BLNYAN], ...opts, }),
   },
   methodology:
-    'Counts as TVL the ETH, blNYAN and LP assets deposited through-out the protocol',
+    'Counts as TVL the ETH only. blNYAN and LP assets deposited are counted as Pool2 and staking Respectively',
 }
