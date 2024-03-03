@@ -15,11 +15,36 @@ async function tvl(_, _1, _2, { api }) {
     target: BASELINE_CONTRACT,
   });
 
-  return await api.sumTokens({
-    tokensAndOwners: [
-      [bAsset, BASELINE_CONTRACT],
-      [ADDRESSES.blast.WETH, pool],
-    ],
+  //floor, anchor, discovery
+  const positions = [0, 1, 2];
+
+  //return position info from baseline contract
+  const position = await api.multiCall({
+    calls: positions.map((p) => ({
+      target: BASELINE_CONTRACT,
+      params: [p],
+    })),
+    abi: abi.getPosition,
+  });
+
+  //return managed positions from baseline contract
+  const balances = await api.multiCall({
+    calls: position.map((p) => ({
+      target: BASELINE_CONTRACT,
+      params: [p],
+    })),
+    abi: abi.getBalancesForPosition,
+  });
+
+  const reserves = balances.map((b) => ({ reserves: b[0] }));
+
+  const data = await api.sumTokens({
+    tokensAndOwners: [[bAsset, BASELINE_CONTRACT]],
+  });
+
+  //sum the reserve balances
+  const reserveBalances = reserves.map((r) => {
+    sdk.util.sumSingleBalance(data, ADDRESSES.blast.WETH, r.reserves, "blast");
   });
 }
 
@@ -32,4 +57,8 @@ module.exports = {
 const abi = {
   pool: "function pool() view returns (address)",
   bAsset: "function bAsset() view returns (address)",
+  getPosition:
+    "function getPosition(uint8) view returns (tuple(uint8, int24, int24))",
+  getBalancesForPosition:
+    "function getBalancesForPosition(tuple(uint8,int24,int24)) view returns (uint256 reserves, uint256 bAsset)",
 };
