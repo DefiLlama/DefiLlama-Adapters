@@ -107,6 +107,7 @@ Object.keys(config).forEach(chain => {
       ghoBals.forEach((amount, i) => {
         api.add(ghoToken1s[i], amount);
       })
+      return api.getBalances()
     }
   }
 })
