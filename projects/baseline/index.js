@@ -1,19 +1,9 @@
 const ADDRESSES = require("../helper/coreAssets.json");
-
 const sdk = require("@defillama/sdk");
 
 async function tvl(_, _1, _2, { api }) {
+  const balances = {};
   const BASELINE_CONTRACT = "0x14eB8d9b6e19842B5930030B18c50B0391561f27";
-
-  const bAsset = await api.call({
-    abi: abi.bAsset,
-    target: BASELINE_CONTRACT,
-  });
-
-  const pool = await api.call({
-    abi: abi.pool,
-    target: BASELINE_CONTRACT,
-  });
 
   //floor, anchor, discovery
   const positions = [0, 1, 2];
@@ -28,7 +18,7 @@ async function tvl(_, _1, _2, { api }) {
   });
 
   //return managed positions from baseline contract
-  const balances = await api.multiCall({
+  const baselinePositionBalances = await api.multiCall({
     calls: position.map((p) => ({
       target: BASELINE_CONTRACT,
       params: [p],
@@ -36,27 +26,29 @@ async function tvl(_, _1, _2, { api }) {
     abi: abi.getBalancesForPosition,
   });
 
-  const reserves = balances.map((b) => ({ reserves: b[0] }));
-
-  const data = await api.sumTokens({
-    tokensAndOwners: [[bAsset, BASELINE_CONTRACT]],
-  });
+  const reserves = baselinePositionBalances.map((b) => ({ reserves: b[0] }));
 
   //sum the reserve balances
-  const reserveBalances = reserves.map((r) => {
-    sdk.util.sumSingleBalance(data, ADDRESSES.blast.WETH, r.reserves, "blast");
+  reserves.map((r) => {
+    sdk.util.sumSingleBalance(
+      balances,
+      ADDRESSES.blast.WETH,
+      r.reserves,
+      "blast"
+    );
   });
+
+  return balances;
 }
 
 module.exports = {
+  doublecounted: true,
   blast: {
-    tvl: tvl,
+    tvl,
   },
 };
 
 const abi = {
-  pool: "function pool() view returns (address)",
-  bAsset: "function bAsset() view returns (address)",
   getPosition:
     "function getPosition(uint8) view returns (tuple(uint8, int24, int24))",
   getBalancesForPosition:
