@@ -1,5 +1,7 @@
 const sdk = require("@defillama/sdk");
 
+
+
 const investDebtContracts = {
     polygon: ["0xE92F580C930dd24aACB38Ab0EA18F6c1dEf31369"]
 };
@@ -40,40 +42,47 @@ async function calculateTvl(chain, fundsMap, type) {
     return tvl_.reduce((pv, cv) => pv + cv, 0);
 }
 
-async function generateExports() {
-    const exports = {
-        methodology: "Sums the amount of funded real-world assets on ALTA Finance."
-    };
+const generateTvl = async (chain_) => {
 
     // Collect all promises for debt contracts
+    let tvl_ = {}
     await Promise.all(Object.keys(investDebtContracts).map(async (chain) => {
-        const tvl = await calculateTvl(chain, investDebtContracts[chain], 'debt');
-        exports[chain] = { tvl };
+        if(chain === chain_) {
+            tvl_[chain] = []
+            const tvl = await calculateTvl(chain, investDebtContracts[chain], 'debt');
+            tvl_[chain].push(tvl);
+        }
+        
     }));
 
     // Collect all promises for equity contracts
     await Promise.all(Object.keys(investEquityContracts).map(async (chain) => {
-        const tvl = await calculateTvl(chain, investEquityContracts[chain], 'equity');
-        if (exports[chain]) {
-            exports[chain].tvl += tvl;
-        } else {
-            exports[chain] = { tvl };
+        if(chain === chain_) {
+            const tvl = await calculateTvl(chain, investEquityContracts[chain], 'equity');
+            if (tvl_[chain]) {
+                tvl_[chain].push(tvl);
+            } else {
+                tvl_[chain] = []
+                tvl_[chain].push(tvl);
+            }
         }
     }));
 
-    // Calculate total TVL and assign to main object
-    let total_ = []
     await Promise.all(
-        Object.keys(exports).map(async (chain) => {
-            if(exports[chain]?.tvl > 0) {
-                total_.push(exports[chain].tvl)
+        Object.keys(module.exports).map(async (chain) => {
+            if(chain !== 'methodology'){
+                return tvl_[chain].reduce((pv, cv) => pv + cv, 0)
             }
-            return
         })
     );
-    exports.tvl = total_.reduce((pv, cv) => pv + cv, 0);
-
-    module.exports = exports;
 }
 
-generateExports();
+module.exports = {
+    methodology: "Sums the amount of funded real-world assets on ALTA Finance.",
+    polygon: {
+        tvl: async () => {
+            return generateTvl('polygon')
+        },
+        start: 53482361
+    }
+}
