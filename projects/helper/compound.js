@@ -46,7 +46,7 @@ async function getMarkets(comptroller, block, chain, cether, cetheEquivalent, bl
         return;
       }
       if (['0xd2ec53e8dd00d204d3d9313af5474eb9f5188ef6', '0x0aeadb9d4c6a80462a47e87e76e487fa8b9a37d7'].includes(cToken) && chain === 'rsk') {
-        markets.push({ underlying: '0x542fda317318ebf1d3deaf76e0b632741a7e677d', cToken })
+        markets.push({ underlying: ADDRESSES.rsk.WRBTC1, cToken })
         return;
       }
 
