@@ -138,12 +138,12 @@ Object.keys(config).forEach(chain => {
       api.log(ownerTokens.length * 2, api.chain)
       if (chain === 'base')
         ownerTokens.push(...[
-          [['0x4200000000000000000000000000000000000006', '0xd9aaec86b65d86f6a7b5b1b0c42ffa531710b6ca'], '0x1172035a744ea18161497e94f0bbce244d51de9f'],
-          [['0x4200000000000000000000000000000000000006', '0x2ae3f1ec7f1f5012cfeab0185bfc7aa3cf0dec22'], '0xce670438dadb080d7aae65fdaff51355aa30535e'],
-          [['0x4200000000000000000000000000000000000006', '0x78a087d713be963bf307b18f2ff8122ef9a63ae9'], '0x3c388c812dada10e597f802a766e7ce898bc7751'],
-          [['0xd9aaec86b65d86f6a7b5b1b0c42ffa531710b6ca', '0x4200000000000000000000000000000000000006'], '0xd804cf0ac2a4b6dd6d375504a27874f5db073625'],
-          [['0x4200000000000000000000000000000000000006', '0xd9aaec86b65d86f6a7b5b1b0c42ffa531710b6ca'], '0x72e663c4e8fd50184c8b8135315c20326cc4ad75'],
-          [['0x833589fcd6edb6e08f4c7c32d4f71b54bda02913', '0xd9aaec86b65d86f6a7b5b1b0c42ffa531710b6ca'], '0xe8ef69e4dd7f6ed2d84f256e97469bca22b78a8b'],
+          [[ADDRESSES.optimism.WETH_1, ADDRESSES.base.USDbC], '0x1172035a744ea18161497e94f0bbce244d51de9f'],
+          [[ADDRESSES.optimism.WETH_1, '0x2ae3f1ec7f1f5012cfeab0185bfc7aa3cf0dec22'], '0xce670438dadb080d7aae65fdaff51355aa30535e'],
+          [[ADDRESSES.optimism.WETH_1, '0x78a087d713be963bf307b18f2ff8122ef9a63ae9'], '0x3c388c812dada10e597f802a766e7ce898bc7751'],
+          [[ADDRESSES.base.USDbC, ADDRESSES.optimism.WETH_1], '0xd804cf0ac2a4b6dd6d375504a27874f5db073625'],
+          [[ADDRESSES.optimism.WETH_1, ADDRESSES.base.USDbC], '0x72e663c4e8fd50184c8b8135315c20326cc4ad75'],
+          [[ADDRESSES.base.USDC, ADDRESSES.base.USDbC], '0xe8ef69e4dd7f6ed2d84f256e97469bca22b78a8b'],
         ])
 
       return api.sumTokens({ ownerTokens, blacklistedTokens, permitFailure: true, })

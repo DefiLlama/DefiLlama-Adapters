@@ -18,6 +18,7 @@ const chains = {
   'op_bnb': 204,
   'base': 8453,
   'dogechain': 2000,
+  'blast': 81457,
 }
 
 async function fetch(chainId) {
