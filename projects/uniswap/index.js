@@ -1,5 +1,5 @@
 const { uniV3Export } = require('../helper/uniswapV3')
-const { cachedGraphQuery } = require('../helper/cache')
+const { cachedGraphQuery, configPost } = require('../helper/cache')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const graphs = {
