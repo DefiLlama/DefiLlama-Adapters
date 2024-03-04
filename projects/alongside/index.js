@@ -10,7 +10,7 @@ async function tvl(_, block, _cb) {
 }
 
 module.exports = {
-  doublecounted: true,
+  doublecounted: false,
   misrepresentedTokens: true,
   methodology:
     "Data is retrieved from calculation of market price and total supply",
