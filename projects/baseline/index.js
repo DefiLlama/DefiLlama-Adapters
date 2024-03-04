@@ -4,11 +4,7 @@ const sdk = require("@defillama/sdk");
 const BASELINE_CONTRACT = "0x14eB8d9b6e19842B5930030B18c50B0391561f27";
 
 async function tvl(_, _1, _2, { api }) {
-  const bAsset = await api.call({
-    abi: abi.bAsset,
-    target: BASELINE_CONTRACT,
-  });
-
+  const balances = {};
   //floor, anchor, discovery
   const positions = [0, 1, 2];
 
@@ -31,8 +27,6 @@ async function tvl(_, _1, _2, { api }) {
   });
 
   const reserves = baselinePositionBalances.map((b) => ({ reserves: b[0] }));
-
-  const balances = {};
 
   //sum the reserve balances
   reserves.map((r) => {
@@ -71,7 +65,6 @@ module.exports = {
 };
 
 const abi = {
-  bAsset: "function bAsset() view returns (address)",
   totalLentReserves: "function totalLentReserves() view returns (uint256)",
   getPosition:
     "function getPosition(uint8) view returns (tuple(uint8, int24, int24))",
