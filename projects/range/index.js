@@ -41,6 +41,9 @@ const config ={
   ],
   zkfair: [
     { factory: '0x873fD467A2A7e4E0A71aD3c45966A84797e55B5B', fromBlock: 6740958, factoryType: 'izumi' } // izumi
+  ],
+  blast: [
+    { factory: '0x72Add08DE88121007b48F964aFCf77A5AE1Da0a2', fromBlock: 228630 } // Thruster
   ]
 }
 
