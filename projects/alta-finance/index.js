@@ -50,7 +50,9 @@ const generateTvl = async (chain_) => {
         if(chain === chain_) {
             tvl_[chain] = []
             const tvl = await calculateTvl(chain, investDebtContracts[chain], 'debt');
-            tvl_[chain].push(tvl);
+            if(tvl !== undefined) {
+                tvl_[chain].push(tvl);
+            }
         }
         
     }));
@@ -59,30 +61,23 @@ const generateTvl = async (chain_) => {
     await Promise.all(Object.keys(investEquityContracts).map(async (chain) => {
         if(chain === chain_) {
             const tvl = await calculateTvl(chain, investEquityContracts[chain], 'equity');
-            if (tvl_[chain]) {
-                tvl_[chain].push(tvl);
-            } else {
-                tvl_[chain] = []
-                tvl_[chain].push(tvl);
+            if(tvl !== undefined) {
+                if (tvl_[chain]) {
+                    tvl_[chain].push(tvl);
+                } else {
+                    tvl_[chain] = []
+                    tvl_[chain].push(tvl);
+                }
             }
         }
     }));
 
-    await Promise.all(
-        Object.keys(module.exports).map(async (chain) => {
-            if(chain !== 'methodology'){
-                return tvl_[chain].reduce((pv, cv) => pv + cv, 0)
-            }
-        })
-    );
+    return tvl_[chain_].reduce((pv, cv) => pv + cv, 0)
 }
 
 module.exports = {
     methodology: "Sums the amount of funded real-world assets on ALTA Finance.",
     polygon: {
-        tvl: async () => {
-            return generateTvl('polygon')
-        },
-        start: 53482361
+        tvl: async () => generateTvl('polygon')
     }
 }
