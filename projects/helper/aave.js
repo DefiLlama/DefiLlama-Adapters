@@ -189,13 +189,13 @@ const oracleAbis = {
   getAssetsPrices: "function getAssetsPrices(address[] assets) view returns (uint256[])",
 }
 
-function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyUnit, abis = {}, fromBlock, } = {}) {
+function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyUnit, abis = {}, fromBlock, blacklistedTokens = [] } = {}) {
 
   async function tvl(_, _b, _c, { api }) {
     const data = await getReservesData(api)
     const tokensAndOwners = data.map(i => ([i.underlying, i.aTokenAddress]))
     if (!useOracle)
-      return sumTokens2({ tokensAndOwners, api })
+      return sumTokens2({ tokensAndOwners, api, blacklistedTokens })
     const balances = {}
     const res = await api.multiCall({ abi: 'erc20:balanceOf', calls: tokensAndOwners.map(i => ({ target: i[0], params: i[1] })) })
     res.forEach((v, i) => {
