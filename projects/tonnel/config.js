@@ -1,4 +1,8 @@
 const ADDRESSES = require('../helper/coreAssets.json')
+const tokens = {
+  "GRAM": "EQC47093oX5Xhb0xuk2lCr2RhS8rj-vul61u4W2UH5ORmG_O",
+  "DFC": "EQD26zcd6Cqpz7WyLKVH8x_cD6D7tBrom6hKcycv8L8hV0GP"
+}
 
 module.exports = {
   ton: [
@@ -12,26 +16,16 @@ module.exports = {
       ],
     },
     {
-      tokens: [ADDRESSES.ton.TONNEL],   // TONNEL
-      holders: [
-        "EQDTs-yjPLn7XzaRRq8pjp7H8Nw4y_OJ51Bk2dcrPlIYgwtV", // 10000 TONNEL
-        "EQAgoyECSzCIFTFkMIvDLgdUE3D9RxGfYQQGfxy3lBBc_Ke_", // 1000 TONNEL
-        "EQDzAhS3Ev8cxEBJ96MIqPjxyD_k0L3enzDWnQ3Z-4tUK1h5", // 200 TONNEL
-        "EQASyc8d2DjZHrFevnF432NRLc4qwh6HGUPAbMvbofMkeRZl", // 50 TONNEL
-        "EQCNoApBzMacKKdTwcvi1iOx78e98bTSaN1Gx_nnmd3Ek5Yn", // 66 TONNEL
-      ],
-    },
-    {
-      tokens: [ADDRESSES.ton.GRAM],   // GRAM
+      tokens: [tokens.GRAM],   // GRAM
       holders: [
         "EQD7U_FPYRFTGgiqrpiKh8_giyrIQHZtokUKvz2EmWvlmViC", // 500k GRAM
         "EQCZXyOWRih3jtyhdCA7DV7KXluNbzqeIpJPnRkF4KEE1STp", // 30k GRAM
       ],
     },
     {
-      tokens: [ADDRESSES.ton.DFC],   // DFC
+      tokens: [tokens.DFC],   // DFC
       holders: [
-          "EQC14SC0-P0iOXzn1971HVIDsCzQ0LllY0y5O7EE2pMLe9pT" // 100 DFC
+        "EQC14SC0-P0iOXzn1971HVIDsCzQ0LllY0y5O7EE2pMLe9pT" // 100 DFC
       ],
     },
   ],

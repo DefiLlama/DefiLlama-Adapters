@@ -1,6 +1,6 @@
 const { get, post, } = require('../http')
 const ADDRESSES = require('../coreAssets.json')
-const { getUniqueAddresses } = require('../utils')
+const { getUniqueAddresses, sleep } = require('../utils')
 
 async function getTonBalance(addr) {
   const res = await get(`https://tonapi.io/v2/accounts/${addr}`)
@@ -28,7 +28,10 @@ async function sumTokens({ api, tokens, owners = [], owner, onlyWhitelistedToken
 
   if (owner) owners.push(owner)
   owners = getUniqueAddresses(owners, api.chain)
-  await Promise.all(owners.map(i => sumTokensAccount({ api, addr: i, tokens, onlyWhitelistedTokens })))
+  for (const addr of owners) {
+    await sumTokensAccount({ api, addr, tokens, onlyWhitelistedTokens })
+    if (owners.length > 3) await sleep(10000)
+  }
   return api.getBalances()
 }
 
