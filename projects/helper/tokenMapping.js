@@ -122,6 +122,14 @@ const fixBalancesTokens = {
   bitrock: {
     '0x413f0e3a440aba7a15137f4278121450416882d5': { coingeckoId: 'wrapped-bitrock', decimals: 18 },
     '0xde67d97b8770dc98c746a3fc0093c538666eb493': { coingeckoId: 'bitrock', decimals: 9 },
+  },
+  ethereum: {
+    '0x0d3bd40758df4f79aad316707fcb809cd4815ffe': { coingeckoId: 'ripple', decimals: 6 },
+    '0x9c05d54645306d4c4ead6f75846000e1554c0360': { coingeckoId: 'cardano', decimals: 6 },
+    '0xd2aee1ce2b4459de326971de036e82f1318270af': { coingeckoId: 'dogecoin', decimals: 8 },
+    '0xf4accd20bfed4dffe06d4c85a7f9924b1d5da819': { coingeckoId: 'polkadot', decimals: 10 },
+    '0xff4927e04c6a01868284f5c3fb9cba7f7ca4aec0': { coingeckoId: 'bitcoin-cash', decimals: 8 },
+    '0x9f2825333aa7bc2c98c061924871b6c016e385f3': { coingeckoId: 'litecoin', decimals: 8 },
   }
 }
 
