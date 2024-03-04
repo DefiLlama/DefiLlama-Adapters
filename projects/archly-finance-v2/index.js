@@ -16,6 +16,11 @@ const config = {
   kava: { lp: '0x90e267b0bF52F9993d32DfAB9A415e2B00A870d0' },
   optimism: { lp: '0x577B2E4C7Ddd23d2fA9D56b4456505e420851046' },
   polygon: { lp: '0xc01d8ee3A405f758a3bD9f8cA253F00B9EDec2be' },
+  avax: { lp: '0x8a39ACACB5da8Fc4aEfDcaEeCA9ADf09758931da' },
+  cronos: { lp: '0xCf4cEEA40DDeeB49cd407e32f804b22890A6DFD6' },
+  mantle: { lp: '0x31bFb9003229BCC89EeF55895A374Fd0ed36772c' },
+  metis: { lp: '0xA152A0Ee0Bc15A937D5365DEB8507D063467A68d' },
+  neon_evm: { lp: '0x9a08ab9b8b9A90bF9fe836D28E85808Db29Dc1aD' },
 }
 
 module.exports = {
