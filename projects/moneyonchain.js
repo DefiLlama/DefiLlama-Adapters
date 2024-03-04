@@ -25,6 +25,7 @@ async function tvl(_, _b, { rsk: block }) {
 }
 
 module.exports = {
+  methodology: `TVL accounts for Total rBTC in the system`,
   timetravel: false,
   rsk: {
     tvl,

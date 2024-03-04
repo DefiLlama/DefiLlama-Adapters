@@ -24,18 +24,14 @@ async function tvl(_, _b, _cb, { api, }) {
   })
   const ownerTokens = []
   const poolTokenMapping = {}
-  console.log(logs.length, logs2.length)
   logs.forEach(({ args: i}) => {
     const key = i.token+'-'+i.owner
-    console.log(key, i.offeredCurrency)
     if (!poolTokenMapping[key]) poolTokenMapping[key] = []
     poolTokenMapping[key].push(i.offeredCurrency)
   })
-  console.log(poolTokenMapping)
   logs2.forEach(({ args: i}) => {
     const key = i.token+'-'+i.registedBy
     if (!poolTokenMapping[key]) {
-      console.log('missing mapping for ', key)
       return;
     }
     ownerTokens.push([poolTokenMapping[key], i.pool])

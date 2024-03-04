@@ -1,6 +1,7 @@
 const { cachedGraphQuery } = require('../helper/cache')
 const { stakings } = require("../helper/staking");
 
+
 const supportedChains = [
   {
     name: 'Polygon',
@@ -34,13 +35,13 @@ const supportedChains = [
   },
   {
     name: 'Avalanche',
-    subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/rakeshbhatt10/avalance-test-subgraph',
+    subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/steerprotocol/steer-protocol-avalanche',
     chainId: 43114,
     identifier: 'avax'
   },
   {
     name: 'Thundercore',
-    subgraphEndpoint: 'http://52.77.49.1:8000/subgraphs/name/steerprotocol/steer-thundercore',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-thundercore/1.0.0/gn',
     chainId: 108,
     identifier: 'thundercore'
   },
