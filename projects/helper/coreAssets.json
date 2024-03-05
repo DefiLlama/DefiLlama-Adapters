@@ -1328,6 +1328,7 @@
     "USDC_SOL": "0xb231fcda8bbddb31f2ef02e6161444aec64a514e2c89279584ac9806ce9cf037::coin::COIN",
     "USDC_ARB": "0xe32d3ebafa42e6011b87ef1087bbc6053b499bf6f095807b9013aff5a6ecd7bb::coin::COIN",
     "USDC_BNB": "0x909cba62ce96d54de25bec9502de5ca7b4f28901747bbf96b76c2e63ec5f1cba::coin::COIN",
+    "BUCK": "0xce7ff77a83ea0cb6fd39bd8748e2ec89a3f41e8efdc3f4eb123e0ca37b184db2::buck::BUCK",
     "SUI": "0x2::sui::SUI"
   },
   "grove": {
@@ -1574,5 +1575,11 @@
   },
   "zeta": {
     "WZETA": "0x5f0b1a82749cb4e2278ec87f8bf6b618dc71a8bf"
+  },
+  "blast": {
+    "USDB": "0x4300000000000000000000000000000000000003",
+    "fwWETH": "0x66714db8f3397c767d0a602458b5b4e3c0fe7dd1",
+    "fwUSDB": "0x866f2c06b83df2ed7ca9c2d044940e7cd55a06d6",
+    "WETH": "0x4300000000000000000000000000000000000004"
   }
 }

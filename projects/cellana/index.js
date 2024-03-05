@@ -1,19 +1,18 @@
 const sdk = require("@defillama/sdk");
 const http = require('../helper/http')
-const BigNumber = require("bignumber.js");
 const { getResources, } = require("../helper/chain/aptos");
 const { transformBalances } = require("../helper/portedTokens");
-const { aQuery } = require('../helper/chain/aptos')
 const coinGecKoApi = 'https://api.coingecko.com/api/v3/simple/price?ids=aptos%2Captos&vs_currencies=usd';
 async function query(api) {
   return http.get(`${api}`)
 }
 const util = require("util")
-let resourcesCache
 const CELL_fungible_asset_address = '0x2ebb2ccac5e027a87fa0e2e5f656a3a4238d6a48d93ec9b610d570fc0aa0df12'
 const APT_fungible_asset_address = '0xedc2704f2cef417a06d1756a04a16a9fa6faaed13af469be9cdfcac5a21a8e2e'
-async function _getResources(address) {
-  if (!resourcesCache) resourcesCache = getResources(address)
+
+async function _getResources() {
+  let resourcesCache;
+  if (!resourcesCache) resourcesCache = getResources("0x3b38735644d0be8ac37ebd84a1e42fa5c2487495ef8782f6c694b1a147f82426")
   return resourcesCache
 }
 const extractCoinAddress = (str) => str.slice(str.indexOf("<") + 1, str.lastIndexOf(">"));
@@ -39,7 +38,6 @@ async function _getCELLbalances() {
     if (token_1_address == CELL_fungible_asset_address) {
       const cell_balance = fungibleAssetTokenStore_1?.balance;
       sdk.util.sumSingleBalance(balances, token_1_address, cell_balance || 0);
-
       // //caculator CELL price
       // if (token_2_address == APT_fungible_asset_address) {
       //   const apt_balance = fungibleAssetTokenStore_2?.balance;
@@ -66,7 +64,7 @@ module.exports = {
   aptos: {
     tvl: async () => {
       const balances = {};
-      const data = await _getResources('0x3b38735644d0be8ac37ebd84a1e42fa5c2487495ef8782f6c694b1a147f82426')
+      const data = await _getResources()
       const coinContainers = data.filter(reserveContrainerFilter)
         .map((i) => ({
           lamports: i.data.coin.value,
@@ -78,9 +76,7 @@ module.exports = {
       });
       let cellBlanaces = await _getCELLbalances();
       sdk.util.mergeBalances(balances, cellBlanaces)
-      const response = await transformBalances("aptos", balances);
-      return response;
-    },
-
-  },
-};
+      return transformBalances("aptos", balances);
+    }
+  }
+}
