@@ -1,0 +1,3 @@
+{
+    "getSmartVaultAssetBalances": "function getSmartVaultAssetBalances(address, bool) external returns (uint256[] memory)"
+}
