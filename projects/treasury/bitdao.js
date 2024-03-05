@@ -1,5 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const {  nullAddress,treasuryExports } = require("../helper/treasury");
+const sdk = require("@defillama/sdk");
 
 //eth wallets
 const mTreasuryL1 = "0x78605Df79524164911C144801f41e9811B7DB73D";
@@ -22,7 +23,7 @@ const MNT = "0x3c3a81e81dc49a522a592e7622a7e711c06bf354"
 const MNTMantle = "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000"
 const wrappedmantleonmantle = "0x78c1b0C915c4FAA5FffA6CAbf0219DA63d7f4cb8"
 
-module.exports = treasuryExports({
+const tokenTreasuries = treasuryExports({
   ethereum: {
     tokens: [ 
         nullAddress,
@@ -33,6 +34,7 @@ module.exports = treasuryExports({
         '0x50D1c9771902476076eCFc8B2A83Ad6b9355a4c9',//FTT
         '0x8798249c2E607446EfB7Ad49eC89dD1865Ff4272',//xSUSHI
         "0x52A8845DF664D76C69d2EEa607CD793565aF42B8",
+        "0x9d39a5de30e57443bff2a8307a4256c8797a3497", //sUSDe
      ],
     owners: [mTreasuryL1, mTreasuryL1SC,mTreasuryL1O1,mTreasuryL1E1, mTreasuryL1RB1, mTreasuryL1LPE1 ],
     ownTokens: [BIT, MNT],
@@ -54,3 +56,18 @@ module.exports = treasuryExports({
     resolveLP: true,
   },
 })
+
+async function otherTvl(_timestamp, _block, _chainBlocks, {api}){
+  const shares = await api.call({  abi: 'function shares(address user) public view returns (uint256)', target: "0x298afb19a105d59e74658c4c334ff360bade6dd2", params:["0xca264a4adf80d3c390233de135468a914f99b6a5"]})
+  const balances = {
+    "ethereum:0xd5f7838f5c461feff7fe49ea5ebaf7728bb0adfa": shares
+  }
+  return balances
+}
+
+module.exports={
+  ethereum:{
+    tvl: sdk.util.sumChainTvls([tokenTreasuries.ethereum.tvl, otherTvl]),
+  },
+  mantle: tokenTreasuries.mantle
+}
