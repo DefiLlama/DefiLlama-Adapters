@@ -249,5 +249,32 @@ module.exports = {
          '0xd8db4fb1fEf63045A443202d506Bcf30ef404160', // portal v2
        ]
      },
+     {
+       name: 'mode',
+       tokens: [
+         ADDRESSES.mode.WETH,
+       ],
+       holders: [
+         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
+       ]
+     },
+     {
+       name: 'rsk',
+       tokens: [
+         ADDRESSES.rsk.rUSDT,
+       ],
+       holders: [
+         '0x5aa5f7f84ed0e5db0a4a85c3947ea16b53352fd4', // portal v2
+       ]
+     },
+     {
+       name: 'blast',
+       tokens: [
+         ADDRESSES.blast.WETH,
+       ],
+       holders: [
+         '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4', // portal v2
+       ]
+     },
   ]
 }
