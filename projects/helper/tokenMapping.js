@@ -38,17 +38,6 @@ const fixBalancesTokens = {
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
-  chz: {
-    '0x721ef6871f1c4efe730dce047d40d1743b886946': { coingeckoId: 'chiliz', decimals: 18 },
-  },
-  bitcoin: {
-    BSSB: { coingeckoId: 'bitstable-finance', decimals: 0 },
-    MUBI: { coingeckoId: 'multibit', decimals: 0 },
-    rats: { coingeckoId: 'rats', decimals: 0 },
-    BTCs: { coingeckoId: 'btcs', decimals: 0 },
-    MMSS: { coingeckoId: 'mmss', decimals: 0 },
-    AINN: { coingeckoId: 'artificial-neural-network-ordinals', decimals: 0 },
-  },
   map: {
     // https://docs.rolluper.xyz/how-does-roup-work/deployed-contracts
     // https://app.rolluper.xyz/
@@ -118,18 +107,6 @@ const fixBalancesTokens = {
   merlin: {
     '0xF6D226f9Dc15d9bB51182815b320D3fBE324e1bA': { coingeckoId: 'merlin-chain-bridged-wrapped-btc-merlin', decimals: 18 },
     '0x480e158395cc5b41e5584347c495584ca2caf78d': { coingeckoId: 'merlin-chain-bridged-voya-merlin', decimals: 18 },
-  },
-  bitrock: {
-    '0x413f0e3a440aba7a15137f4278121450416882d5': { coingeckoId: 'wrapped-bitrock', decimals: 18 },
-    '0xde67d97b8770dc98c746a3fc0093c538666eb493': { coingeckoId: 'bitrock', decimals: 9 },
-  },
-  ethereum: {
-    '0x0d3bd40758df4f79aad316707fcb809cd4815ffe': { coingeckoId: 'ripple', decimals: 6 },
-    '0x9c05d54645306d4c4ead6f75846000e1554c0360': { coingeckoId: 'cardano', decimals: 6 },
-    '0xd2aee1ce2b4459de326971de036e82f1318270af': { coingeckoId: 'dogecoin', decimals: 8 },
-    '0xf4accd20bfed4dffe06d4c85a7f9924b1d5da819': { coingeckoId: 'polkadot', decimals: 10 },
-    '0xff4927e04c6a01868284f5c3fb9cba7f7ca4aec0': { coingeckoId: 'bitcoin-cash', decimals: 8 },
-    '0x9f2825333aa7bc2c98c061924871b6c016e385f3': { coingeckoId: 'litecoin', decimals: 8 },
   }
 }
 
