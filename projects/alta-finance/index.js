@@ -17,7 +17,7 @@ Object.keys(config).forEach(chain => {
       const amount = (await api.multiCall({ abi: 'uint256:amountPerNft', calls: investments, permitFailure: true })).map(i => i ?? 0)
       api.add(token, nftCount.map((v, i) => v * amount[i]))
 
-      const bals = (await api.multiCall({ abi: 'uint256:debt', calls: debts, permitFailure: true })).map(i => i ?? 0)
+      const bals = (await api.multiCall({ abi: 'uint256:amount', calls: debts, permitFailure: true })).map(i => i ?? 0)
       api.add(token, bals)
       return api.getBalances()
     },
