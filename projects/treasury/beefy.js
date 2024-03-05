@@ -47,8 +47,12 @@ chains.forEach(chain => {
       const uniV3Owners = []
       const ownerTokens = Object.entries(data)
         .filter(i => {
-          if (!i[0] || !i[0].includes('validator')) return true
-          if (i[1].balances[i[0]]) api.add(nullAddress, i[1].balances[i[0]].balance)
+          if (i[1]?.name !== 'validators') return true
+          Object.values(i[1].balances).map(info => {
+            if (info.address === 'native' && info.assetType === 'validator')
+              api.add(nullAddress, info.balance)
+            else api.log('unknown balance', info)
+          })
         })
         .map(([owner, { balances }]) => {
           const tokens = Object.entries(balances).filter(([_, info]) => info.name !== 'BIFI' && info.assetType !== 'concLiquidity').map(i => i[0] === 'native' ? nullAddress : i[0])

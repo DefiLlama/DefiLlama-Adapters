@@ -7,4 +7,7 @@ module.exports = {
   manta: aaveExports("manta", undefined, undefined, [
     "0x67f93d36792c49a4493652B91ad4bD59f428AD15",
   ]),
+  blast: aaveExports("blast", undefined, undefined, [
+    "0xc6DF4ddDBFaCb866e78Dcc01b813A41C15A08C10",
+  ]),
 };
