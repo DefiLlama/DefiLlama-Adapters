@@ -72,86 +72,19 @@ const CommunityVaultsLLSD = {
   ],
 }
 
-const abiMU = {
-  underlyingVault: "address:VAULT",
-  totalAssets: "uint256:totalAssets",
-}
+async function tvl(_, _1, _2, { api }) {
+  /** Hyperstaking Community Vaults */
+  const LLSDs = CommunityVaultsLLSD[api.chain]
+  /** LP Community Vaults */
+  const LPVaults = CommunityVaultsLP[api.chain]
 
-const abiVault = {
-  stakingToken: "address:STAKING_TOKEN",
-  lpToken: "address:LP_TOKEN"
-}
-
-function chainTvl(chain) {
-    return async (_, _1, blockNumber, { api }) => {
-      /** Hyperstaking Community Vaults */
-      const totalAssets = await api.multiCall({
-        abi: abiMU.totalAssets,
-        calls: CommunityVaultsLLSD[chain].map(i => ({target: i})),
-        chain,
-        blockNumber
-      })
-
-      const underlyingVaults = await api.multiCall({
-        abi: abiMU.underlyingVault,
-        calls: CommunityVaultsLLSD[chain].map(i => ({target: i})),
-        chain,
-        blockNumber
-      })
-
-      const totalAssetDenominationAsset = await api.multiCall({
-        abi: abiVault.stakingToken,
-        calls: underlyingVaults.map(i => ({target: i})),
-        chain,
-        blockNumber
-      })
-
-      totalAssetDenominationAsset.forEach((assetAddress, i) => api.add(assetAddress, totalAssets[i]))
-
-      /** LP Community Vaults */
-      const totalAssetsLP = await api.multiCall({
-        abi: abiMU.totalAssets,
-        calls: CommunityVaultsLP[chain].map(i => ({target: i})),
-        chain,
-        blockNumber
-      })
-
-      const underlyingVaultsLP = await api.multiCall({
-        abi: abiMU.underlyingVault,
-        calls: CommunityVaultsLP[chain].map(i => ({target: i})),
-        chain,
-        blockNumber
-      })
-
-      const totalAssetLPDenominationAsset = await api.multiCall({
-        abi: abiVault.lpToken,
-        calls: underlyingVaultsLP.map(i => ({target: i})),
-        chain,
-        blockNumber
-      })
-
-      totalAssetLPDenominationAsset.forEach((assetAddress, i) => api.add(assetAddress, totalAssetsLP[i]))
-    }
+  return api.erc4626Sum({ calls: LLSDs.concat(LPVaults), isOG4626: true, })
 }
 
 module.exports = {
-  arbitrum: {
-    tvl: chainTvl("arbitrum"),
-  },
-  avax: {
-    tvl: chainTvl("avax"),
-  },
-  base: {
-    tvl: chainTvl("base"),
-  },
-  ethereum: {
-    tvl: chainTvl("ethereum"),
-  },
-  optimism: {
-    tvl: chainTvl("optimism"),
-  },
-  polygon: {
-    tvl: chainTvl("polygon"),
-  },
   methodology: "For Hyperstaking, an onchain method calculates collateral + balance - debt. For LP, we can just calculate the value of LP tokens held in the vault"
 }
+
+Object.keys(CommunityVaultsLP).forEach(chain => {
+  module.exports[chain] = { tvl }
+})
