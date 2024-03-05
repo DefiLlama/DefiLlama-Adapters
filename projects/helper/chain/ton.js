@@ -1,5 +1,9 @@
 const { get, post, } = require('../http')
 const ADDRESSES = require('../coreAssets.json')
+const plimit = require('p-limit')
+const _rateLimited = plimit(1)
+const rateLimited = fn => (...args) => _rateLimited(() => fn(...args))
+
 const { getUniqueAddresses, sleep } = require('../utils')
 
 async function getTonBalance(addr) {
@@ -7,12 +11,13 @@ async function getTonBalance(addr) {
   return res.balance
 }
 
-async function sumTokensAccount({ api, addr, tokens = [], onlyWhitelistedTokens = false }) {
+async function _sumTokensAccount({ api, addr, tokens = [], onlyWhitelistedTokens = false }) {
   if (tokens.includes(ADDRESSES.null)) {
     const balance = await getTonBalance(addr)
     api.add(ADDRESSES.null, balance)
   }
   const { balances } = await get(`https://tonapi.io/v2/accounts/${addr}/jettons?currencies=usd`)
+  await sleep(1000 * (10 * Math.random() + 3))
   balances.forEach(({ balance, price, jetton }) => {
     if (onlyWhitelistedTokens && !tokens.includes(jetton.address)) return;
     const decimals = jetton.decimals
@@ -23,6 +28,8 @@ async function sumTokensAccount({ api, addr, tokens = [], onlyWhitelistedTokens 
   })
 }
 
+const sumTokensAccount = rateLimited(_sumTokensAccount)
+
 async function sumTokens({ api, tokens, owners = [], owner, onlyWhitelistedTokens = false }) {
   if (!api) throw new Error('api is required')
 
@@ -30,7 +37,6 @@ async function sumTokens({ api, tokens, owners = [], owner, onlyWhitelistedToken
   owners = getUniqueAddresses(owners, api.chain)
   for (const addr of owners) {
     await sumTokensAccount({ api, addr, tokens, onlyWhitelistedTokens })
-    if (owners.length > 3) await sleep(10000)
   }
   return api.getBalances()
 }

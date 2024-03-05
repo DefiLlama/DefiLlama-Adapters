@@ -1,7 +1,6 @@
 const { sumTokensExport } = require('../helper/chain/ton')
 
 const config = require('./config.js')
-const {sleep} = require("../helper/utils");
 const tonnel = "0:cd0efe78bff4c4539b76eab17293296c74f42cbf99ec499687fefec94893ed32" //EQDNDv54v_TEU5t26rFykylsdPQsv5nsSZaH_v7JSJPtMitv
 const tonnelHolders = [
   "EQDTs-yjPLn7XzaRRq8pjp7H8Nw4y_OJ51Bk2dcrPlIYgwtV", // 10000 TONNEL
@@ -11,7 +10,7 @@ const tonnelHolders = [
   "EQCNoApBzMacKKdTwcvi1iOx78e98bTSaN1Gx_nnmd3Ek5Yn", // 66 TONNEL
 ]
 
-Object.keys(config).forEach(async (chain) => {
+Object.keys(config).forEach((chain) => {
   const tokenSet = new Set()
   const owners = config[chain].map(({ tokens, holders }) => {
     tokens.forEach(i => tokenSet.add(i))
@@ -21,7 +20,6 @@ Object.keys(config).forEach(async (chain) => {
   module.exports[chain] = {
     tvl: sumTokensExport({ owners, tokens: [...tokenSet], onlyWhitelistedTokens: true, })
   }
-  await sleep(30000)
   if (chain === 'ton')
     module.exports.ton.staking = sumTokensExport({ owners: tonnelHolders, tokens: [tonnel], onlyWhitelistedTokens: true,})
 })
