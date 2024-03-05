@@ -29,15 +29,14 @@ async function _getCELLbalances(api) {
     } else if (token_2_address == CELL_fungible_asset_address) {
       addBalance(token_1_address, fungibleAssetTokenStore_1?.balance || 0);
     }
-
-    async function addBalance(token, balance) {
-      if (token === APT_fungible_asset_address)
-        api.add(ADDRESSES.aptos.APT, balance)
-    }
   }
 
-
+  async function addBalance(token, balance) {
+    if (token === APT_fungible_asset_address)
+      api.add(ADDRESSES.aptos.APT, balance)
+  }
 }
+
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
