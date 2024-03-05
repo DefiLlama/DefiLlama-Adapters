@@ -21,7 +21,7 @@ const config = {
   arbitrum: {
     lvTokens: {
       xARB: "0xF8F045583580C4Ba954CD911a8b161FafD89A9EF",
-      xUSD: "0x2a889E9ef10c7Bd607473Aadc8c806c4511EB26f",
+      xUSD: "0x6318938F825F57d439B3a9E25C38F04EF97987D8",
     },
   }
 }
