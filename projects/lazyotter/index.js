@@ -1,27 +1,16 @@
-const SCROLL_AAVE_USDC_VAULT = "0x7100409baaeda121ab92f663e3ddb898f11ff745";
-const SCROLL_AAVE_WETH_VAULT = "0x844Ccc93888CAeBbAd91332FCa1045e6926a084d";
-
-const SCROLL_USDC = "0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4";
-const SCROLL_WETH = "0x5300000000000000000000000000000000000004";
+const aaveVaults = [
+  '0x7100409baaeda121ab92f663e3ddb898f11ff745',
+  '0x844Ccc93888CAeBbAd91332FCa1045e6926a084d',
+]
 
 async function tvl(_, _1, _2, { api }) {
-  const USDCBalance = await api.call({
-    abi: "function totalAssets() view returns (uint256)",
-    target: SCROLL_AAVE_USDC_VAULT,
-  });
-
-  const WETHBalance = await api.call({
-    abi: "function totalAssets() view returns (uint256)",
-    target: SCROLL_AAVE_WETH_VAULT,
-  });
-
-  api.add(SCROLL_USDC, USDCBalance);
-  api.add(SCROLL_WETH, WETHBalance);
+  const tokens = await api.multiCall({  abi: 'address:asset', calls: aaveVaults})
+  const aTokens = await api.multiCall({  abi: 'address:aToken', calls: aaveVaults})
+  const tokensAndOwners2 = [tokens.concat(aTokens), aaveVaults.concat(aaveVaults)]
+  return api.sumTokens({ tokensAndOwners2 })
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
   methodology: "TVL: Returns the total assets owned by the LazyOtter Vault on Scroll.",
   scroll: {
     tvl,
