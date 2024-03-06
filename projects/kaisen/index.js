@@ -1,5 +1,3 @@
-const { default: BigNumber } = require("bignumber.js");
-
 const { sumTokensExport } = require("../helper/unwrapLPs");
 
 module.exports = {
