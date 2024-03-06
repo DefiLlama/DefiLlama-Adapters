@@ -41,6 +41,7 @@ const providers = {
     "wss://parallel-heiko.api.onfinality.io/public-ws",
   ],
   parallel: [
+    "wss://parallel-rpc.dwellir.com",
     "wss://rpc.parallel.fi",
     "wss://parallel.api.onfinality.io/public-ws",
   ],

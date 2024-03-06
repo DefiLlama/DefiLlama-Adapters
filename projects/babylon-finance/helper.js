@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk")
 const BigNumber = require("bignumber.js")
-const { unwrapUniswapV3NFTs } = require("../helper/unwrapLPs");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
 /*
 univ3_Positions:{
@@ -27,7 +27,7 @@ async function unwrapUniswapV3LPs(balances, univ3_Positions, block, chain = 'eth
       })
       const sharesRatio = heldLPshares / totalSupply
 
-      const positionBalances = await unwrapUniswapV3NFTs({ chain, block, owner: univ3_Position.vault })
+      const positionBalances = await sumTokens2({ resolveUniV3: true, chain, block, owner: univ3_Position.vault })
 
 
       // Add balances while multiplying amount by ratio of shares

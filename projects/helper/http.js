@@ -23,9 +23,9 @@ async function getBlock(timestamp, chain, chainBlocks, undefinedOk = false) {
   }
 }
 
-async function get(endpoint, axiosParams) {
+async function get(endpoint, options) {
   try {
-    const data = (await axios.get(endpoint, axiosParams)).data
+    const data = (await axios.get(endpoint, options)).data
     return data
   } catch (e) {
     sdk.log(e.message)
@@ -37,9 +37,9 @@ async function getWithMetadata(endpoint) {
   return axios.get(endpoint)
 }
 
-async function post(endpoint, body) {
+async function post(endpoint, body, options) {
   try {
-    const data = (await axios.post(endpoint, body)).data
+    const data = (await axios.post(endpoint, body, options)).data
     return data
   } catch (e) {
     sdk.log(e.message)

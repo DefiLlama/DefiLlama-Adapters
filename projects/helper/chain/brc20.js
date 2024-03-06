@@ -1,6 +1,7 @@
 const { getEnv } = require("../env")
 const { get } = require("../http")
 const { getUniqueAddresses, sleep } = require("../utils")
+const { transformBalances } = require("../portedTokens")
 
 async function sumTokens({ owner, owners = [], blacklistedTokens = [], api }) {
   if (owner)
@@ -17,7 +18,7 @@ async function sumTokens({ owner, owners = [], blacklistedTokens = [], api }) {
     }
     await sleep(1000)
   }
-  return api.getBalances()
+  return transformBalances(api.chain, api.getBalances())
 }
 
 function sumTokensExport(args) {

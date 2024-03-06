@@ -32,5 +32,5 @@ module.exports = {
   hallmarks: [
     [1677200400, "Vaults deprecated"]
   ],
-  // deadFrom: '2023-02-23',
+  deadFrom: '2023-02-23',
 };

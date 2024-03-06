@@ -1,8 +1,8 @@
-const axios = require("axios");
 const zlib = require("zlib");
 const { getLogs } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { getCache, setCache } = require("../helper/cache");
+const { get } = require("../helper/http");
 
 const brotliDecode = (stream) => {
   return new Promise((resolve, reject) => {
@@ -27,7 +27,7 @@ const brotliDecode = (stream) => {
 };
 
 const getContracts = async (chainId) => {
-  const response = await axios.get(
+  const response = await get(
     `https://api.myso.finance/chainIds/${chainId}/contracts`,
     {
       decompress: false,
@@ -38,7 +38,7 @@ const getContracts = async (chainId) => {
     }
   );
 
-  const data = await brotliDecode(response.data);
+  const data = await brotliDecode(response);
 
   return data.contracts;
 };
@@ -94,6 +94,18 @@ const config = {
   },
   base: {
     fromBlock: 6239916,
+  },
+  evmos: {
+    fromBlock: 18112793,
+  },
+  neon_evm: {
+    fromBlock: 237206849,
+  },
+  telos: {
+    fromBlock: 324711636,
+  },
+  linea: {
+    fromBlock: 2118418,
   },
 };
 
