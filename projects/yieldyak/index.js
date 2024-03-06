@@ -6,7 +6,6 @@ const graphQuery = `{ farms(first: 1000) { id }}`;
 
 async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
   const { farms } = await cachedGraphQuery('yieldyak/avax', graphUrl, graphQuery)
-  console.log(farms.length)
   const tokens = await api.multiCall({ abi: 'address:depositToken', calls: farms.map(i => i.id), permitFailure: true, })
   const vals = await api.multiCall({ abi: 'uint256:totalDeposits', calls: farms.map(i => i.id), permitFailure: true, })
   tokens.forEach((token, i) => {

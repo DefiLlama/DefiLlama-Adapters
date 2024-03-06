@@ -13,6 +13,8 @@ const goBtcBasketAddress =
   "MGGJI6CKRMIEN7CGXY2SK3KTPRCXW4SNPDPN4G7RWON4DB4262G4IRFHXE";
 const goEthBasketAddress =
   "IUTNDPUTZ5MKFFIZ5L7MG35I5WXS64LLJKVXRTJNJISBRPOTOAM3DA65CY";
+const goWusdcBasketAddress = "HGKK45FRG5XLUE232664RC7HXQEF52YIUXHRYXJYZW5GT2SWUNTI4M3FOQ";
+const goWusdtBasketAddress = "MEZOSEZWLVZYSOBCZYUYSKL7LS5JTIV5G2TBX6M3FFINUKP3BJVVA2S5T4";
 
 //The following pool ID's are the PACT LP pool contracts
 const usdcPoolId = 885102197;
@@ -20,6 +22,8 @@ const usdtPoolId = 1081978547;
 const xusdPoolId = 1081974468;
 const wBtcPoolId = 1058934586;
 const wEthPoolId = 1058935016;
+const wUsdcPoolId = 1242543233;
+const wUsdtPoolId = 1242550428;
 
 async function tvl() {
   //Returns the position of the LP token.
@@ -33,6 +37,18 @@ async function tvl() {
     tokens.usdtGoUsdLp,
     usdtPoolId,
     goUsdtBasketAddress
+  );
+
+  const wusdcPostion = await lpTokenPostion(
+    tokens.wusdcGoUsdLp,
+    wUsdcPoolId,
+    goWusdcBasketAddress
+  );
+
+  const wusdtPosition = await lpTokenPostion(
+    tokens.wusdtGoUsdLp,
+    wUsdtPoolId,
+    goWusdtBasketAddress
   );
 
   const xusdPosition = await lpTokenPostion(
@@ -59,6 +75,10 @@ async function tvl() {
   const usdtTvlValue = usdtPosition.positionA / 10 ** 6;
   //positionB is XUSD in the LP
   const xusdtTvlValue = xusdPosition.positionB / 10 ** 6;
+  //positionB is wUSDC in the LP
+  const wusdcTvlValue = wusdcPostion.positionB / 10 ** 6;
+  //positionB is wUSDT in the LP
+  const wusdtTvlValue = wusdtPosition.positionB / 10 ** 6;
   //positionB is wBTC in the LP
   const wBtcTvlValue = wBtcPosition.positionB / 10 ** 8;
   //positionB is wEth in the LP
@@ -66,8 +86,8 @@ async function tvl() {
   return {
     bitcoin: wBtcTvlValue,
     ethereum: wEthTvlValue,
-    tether: usdtTvlValue,
-    usd: usdcTvlvalue + xusdtTvlValue,
+    tether: usdtTvlValue + wusdtTvlValue,
+    usd: usdcTvlvalue + xusdtTvlValue + wusdcTvlValue,
   };
 }
 
