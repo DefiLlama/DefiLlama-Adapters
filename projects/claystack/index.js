@@ -12,6 +12,7 @@ async function getTvlOnEthereum(_, block, _1, { api }) {
 }
 
 module.exports = {
+  doublecounted: true,
   hallmarks: [
     [1707315338,"Split Adapter"]
   ],

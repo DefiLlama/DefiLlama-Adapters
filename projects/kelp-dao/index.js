@@ -9,6 +9,7 @@ async function tvl(_, _1, _2, { api }) {
 }
 
 module.exports = {
+  doublecounted: true,
   methodology:
     "deposited LSTs in deposit pool, node delegator contracts and from them into eigenlayer strategy contracts",
   ethereum: {
