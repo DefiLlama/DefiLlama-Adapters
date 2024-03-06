@@ -41,7 +41,8 @@ module.exports = {
         staking: algorandStaking
     },
     arbitrum: {
-        tvl: arbitrumTVL
+        tvl: () => ({}),
+        borrowed: arbitrumTVL,
     }
 };
 
