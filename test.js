@@ -113,6 +113,7 @@ sdk.api.abi.call = async (...args) => {
 
 (async () => {
   let module = {};
+  console.log('11111')
   try {
     module = require(passedFile)
   } catch (e) {
