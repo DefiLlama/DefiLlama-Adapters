@@ -3,11 +3,12 @@ const { getConnection, sumTokens } = require('../helper/solana');
 const { Program } = require('@project-serum/anchor');
 const kaminoIdl = require('./kamino-lending-idl.json');
 const { MintLayout } = require("../helper/utils/solana/layouts/mixed-layout");
+const { getConfig } = require('../helper/cache')
 
 async function tvl() {
   const connection = getConnection();
   const programId = new PublicKey('KLend2g3cP87fffoy8q1mQqGKjrxjC8boSyAYavgmjD');
-  const markets = ['7u3HeHxYDLhnCoErrtycNokbQYbWGzLs6JSDqGAv5PfF'];
+  const markets = (await getConfig('kamino-lending', 'https://api.kamino.finance/v2/kamino-market')).map(x => x.lendingMarket);
   const lendingMarketAuthSeed = 'lma';
   const tokensAndOwners = [];
   const ktokens = {};

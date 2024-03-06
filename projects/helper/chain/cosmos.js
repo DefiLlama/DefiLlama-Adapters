@@ -25,7 +25,7 @@ const endPoints = {
   stargaze: "https://rest.stargaze-apis.com",
   quicksilver: "https://rest.cosmos.directory/quicksilver",
   persistence: "https://rest.cosmos.directory/persistence",
-  secret: "https://lcd.secret.express",
+  secret: "https://rpc.ankr.com/http/scrt_cosmos",
   // chihuahua: "https://api.chihuahua.wtf",
   injective: "https://sentry.lcd.injective.network:443",
   migaloo: "https://migaloo-api.polkachu.com",

@@ -12,6 +12,10 @@ const chambers = [
   '0x89c53B02558E4D1c24b9Bf3beD1279871187EF0B'
 ]
 
+const polygonChambers = [
+  '0xde2925d582fc8711a0e93271c12615bdd043ed1c',
+]
+
 const setAbi = 'address[]:getComponents'
 
 const chamberAbi = 'address[]:getConstituentsAddresses'
@@ -26,9 +30,20 @@ async function tvl(timestamp, block, _, { api }) {
   return balances
 }
 
+async function polygonTvl(timestamp, block, _, { api }) {
+  const chambersTokens = await api.multiCall({ abi: chamberAbi, calls: polygonChambers })
+  const toa = []
+  chambersTokens.forEach((o, i) => toa.push([o, polygonChambers[i]]))
+  const balances = await sumTokens2({ api, ownerTokens: toa, blacklistedTokens: polygonChambers })
+  return balances
+}
+
 
 module.exports = {
   ethereum: {
     tvl,
   },
+  polygon: {
+    tvl: polygonTvl,
+  }
 };
