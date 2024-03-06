@@ -9,6 +9,7 @@ async function tvl(_, _1, _2, { api }) {
 }
 
 module.exports = {
+  doublecounted: true,
   methodology:
     "Returns the total assets owned by primeETH",
   start: 19128047,

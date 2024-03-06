@@ -76,6 +76,7 @@ const assetList = [
   ['BTC', 'BTC', '3NjHh71XgjikBoTNYdWgXiNeZcLaKNThgb'],
   ['BTC', 'BTC', '3Qxak1CZhLyZ7GVckKphLURdLBCjMfz9bA'],
   ['BTC', 'BTC', 'bc1qm34lsc65zpw79lxes69zkqmk6ee3ewf0j77s3h'],
+  ['BTC', 'BTC', '3E97AjYaCq9QYnfFMtBCYiCEsN956Rvpj2'], // added on 06/03/2024
   ['BTC', 'ETH', '0x21a31ee1afc51d94c2efccaa2092ad1028285549'],
   ['BTC', 'ETH', '0x28c6c06298d514db089934071355e5743bf21d60'],
   ['BTC', 'ETH', '0xdfd5293d8e347dfe59e90efd55b2956a1343963d'],

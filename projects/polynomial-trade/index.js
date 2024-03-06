@@ -2,7 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { get } = require('../helper/http');
 
 // api
-const BASE_URL = "https://perps-api-experimental.polynomial.fi/snx-perps/tvl";
+const BASE_URL = "https://perps-v2-mainnet.polynomial.fi/snx-perps/tvl";
 
 async function tvl (timestamp, ethBlock) {
   const perpApi = await get(BASE_URL);
