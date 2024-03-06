@@ -1,5 +1,6 @@
 const { cachedGraphQuery } = require('../helper/cache')
-const { staking, stakings } = require("../helper/staking");
+const { stakings } = require("../helper/staking");
+
 
 const supportedChains = [
   {
@@ -74,17 +75,35 @@ const supportedChains = [
     chainId: 169,
     identifier: 'manta'
   },
-  // {
-  //   name: 'PolygonZKEVM',
-  //   subgraphEndpoint: 'https://subgraph.steer.finance/zkevm/subgraphs/name/steerprotocol/steer-zkevm',
-  //   chainId: 1101,
-  //   identifier: 'polyzkevm'
-  // },
+  {
+    name: 'PolygonZKEVM',
+    subgraphEndpoint: 'https://subgraph.steer.finance/zkevm/subgraphs/name/steerprotocol/steer-zkevm',
+    chainId: 1101,
+    identifier: 'polygon_zkevm'
+  },
   {
     name: 'Scroll',
     subgraphEndpoint: 'https://subgraph.steer.finance/scroll/subgraphs/name/steerprotocol/steer-scroll',
     chainId: 534352,
     identifier: 'scroll'
+  },
+  {
+    name: 'Mantle',
+    subgraphEndpoint: 'https://subgraph-api.mantle.xyz/subgraphs/name/steerprotocol/steer-protocol-mantle',
+    chainId: 5000,
+    identifier: 'mantle'
+  },
+  {
+    name: 'Astar',
+    subgraphEndpoint: 'https://subgraph.steer.finance/astar/subgraphs/name/steerprotocol/steer-astar',
+    chainId: 4369,
+    identifier: 'astar'
+  },
+  {
+    name: 'Fantom',
+    subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/rakeshbhatt10/steer-protocol-fantom-test',
+    chainId: 250,
+    identifier: 'fantom'
   },
   // {
   //   name: 'Celo',
@@ -118,4 +137,13 @@ supportedChains.forEach(chain => {
   }
 })
 
-module.exports.arbitrum.staking = stakings(["0xB10aB1a1C0E3E9697928F05dA842a292310b37f1", "0x0b619438d1E8b8c205656502de59Af2Af71C43e0", "0x25Ef108B328Cf752F0E0b0169D499Db164173763"], "0x1C43D05be7E5b54D506e3DdB6f0305e8A66CD04e", "arbitrum")
+module.exports.arbitrum.staking = stakings(
+  [
+    "0xB10aB1a1C0E3E9697928F05dA842a292310b37f1",
+    "0x25Ef108B328Cf752F0E0b0169D499Db164173763",
+    "0x0b619438d1E8b8c205656502de59Af2Af71C43e0",
+    "0xaCdC6fC8F84fbA26f065489a7bf5837D7CDf546F",
+  ], 
+  "0x1C43D05be7E5b54D506e3DdB6f0305e8A66CD04e",
+  "arbitrum"
+)

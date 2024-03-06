@@ -7,7 +7,7 @@ const { MintLayout } = require("../helper/utils/solana/layouts/mixed-layout");
 async function tvl() {
   const connection = getConnection();
   const programId = new PublicKey('KLend2g3cP87fffoy8q1mQqGKjrxjC8boSyAYavgmjD');
-  const markets = ['7u3HeHxYDLhnCoErrtycNokbQYbWGzLs6JSDqGAv5PfF'];
+  const markets = ['7u3HeHxYDLhnCoErrtycNokbQYbWGzLs6JSDqGAv5PfF', 'DxXdAyU3kCjnyggvHmY5nAwg5cRbbmdyX3npfDMjjMek'];
   const lendingMarketAuthSeed = 'lma';
   const tokensAndOwners = [];
   const ktokens = {};
