@@ -37,6 +37,10 @@ const fixBalancesTokens = {
   // Sample Code
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
+  },
+  beam: {
+    '0xD51BFa777609213A653a2CD067c9A0132a2D316A': { coingeckoId: 'beam-2', decimals: 18 },
+    '0x999f90f25a2922ae1b21A06066F7EDEbedad42a9': { coingeckoId: 'tether', decimals: 6 },
   }
 }
 
