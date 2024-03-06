@@ -22,7 +22,7 @@ async function tvl(_, _1, _2, { api }) {
 module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
-  methodology: "",
+  methodology: "TVL: Returns the total assets owned by the LazyOtter Vault on Scroll.",
   scroll: {
     tvl,
   },
