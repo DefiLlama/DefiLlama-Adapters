@@ -1,5 +1,0 @@
-{
-    "vaultAddresses": "function vaultAddresses() view returns (address[] memory vaultAddress)",
-    "strategy": "address:strategy",
-    "assetsAmounts": "function assetsAmounts() view returns (address[] memory assets_, uint[] memory amounts_)"
-}
