@@ -1,51 +1,51 @@
-const config = require("./config")
-const { sumTokens2 } = require("../helper/unwrapLPs")
-const abi = require("./abi.json")
-const marketFactory = "0x0b216AB26E20d6caA770B18596A3D53B683638B4"
-const lpRegistry = "0xc337325525eF17B7852Fd36DA400d3F9eEd51A4a"
+const ADDRESSES = require("../helper/coreAssets.json")
 
-async function arbitrum_tvl(_, _1, _2, { api }) {
-  const settlementTokens = await api.call({
-    target: marketFactory,
-    abi: abi.registeredSettlementTokens,
-  })
-  const lpAddressesBySettlementToken = (
-    await Promise.all(
-      settlementTokens.map(async (settlementToken) => {
-        const lpAddresses = await api.call({
-          target: lpRegistry,
-          abi: abi.lpListBySettlementToken,
-          params: [settlementToken],
-        })
-        return {
-          [settlementToken]: lpAddresses,
+const config = {
+  arbitrum: {
+    marketFactory: '0x0b216AB26E20d6caA770B18596A3D53B683638B4',
+    lpRegistry: '0xc337325525eF17B7852Fd36DA400d3F9eEd51A4a',
+    tokens: {
+      USDT: ADDRESSES.arbitrum.USDT,
+    },
+    vault: "0x19631A51aeDcd831E29cbCbCfe77010dAfd3343a",
+    pools: {
+      USDT: [
+        {
+          name: "crescendo long & short ( deprecated )",
+          address: "0xAD6FE0A0d746aEEEDEeAb19AdBaDBE58249cD0c7",
+        },
+        {
+          name: "plateau long & short ( deprecated )",
+          address: "0xFa334bE13bA4cdc5C3D9A25344FFBb312d2423A2",
+        },
+        {
+          name: "decrescendo long & short ( deprecated )",
+          address: "0x9706DE4B4Bb1027ce059344Cd42Bb57E079f64c7",
         }
-      })
-    )
-  ).reduce((acc, curr) => ({ ...acc, ...curr }), {})
-
-  const tokensAndOwners = Object.entries(lpAddressesBySettlementToken)
-    .map(([settlementToken, lpAddresses]) => {
-      if (!lpAddresses || lpAddresses.length === 0) return
-      return lpAddresses.map((lpAddress) => [settlementToken, lpAddress])
-    })
-    .flat()
-    .filter((d) => !!d)
-  const deprecatedPools = config.arbitrum.pools.USDT.BTC.map((pool) => {
-    return [config.arbitrum.tokens.USDT, pool.address]
-  })
-
-  tokensAndOwners.push(...deprecatedPools)
-  tokensAndOwners.push([config.arbitrum.tokens.USDT, config.arbitrum.vault])
-
-  return sumTokens2({
-    api,
-    tokensAndOwners,
-  })
+      ],
+    },
+  },
 }
 
-module.exports = {
-  arbitrum: {
-    tvl: arbitrum_tvl,
-  },
+
+Object.keys(config).forEach(chain => {
+  const { tokens, vault, pools, marketFactory, lpRegistry } = config[chain]
+  module.exports[chain] = {
+    tvl: async (_, _b, _cb, { api, }) => {
+      const settlementTokens = await api.call({ abi: abi.registeredSettlementTokens, target: marketFactory })
+      const lpAddressesBySettlementToken = await api.multiCall({ abi: abi.lpListBySettlementToken, calls: settlementTokens, target: lpRegistry })
+      const ownerTokens = settlementTokens.map((settlementToken, i) => lpAddressesBySettlementToken[i].map(j => [[settlementToken], j])).flat()
+      ownerTokens.push([Object.values(tokens), vault])
+      if (pools) {
+        const _tokens = Object.values(tokens)
+        Object.values(pools).forEach(i => i.forEach(p => ownerTokens.push([_tokens, p.address])))
+      }
+      return api.sumTokens({ ownerTokens })
+    }
+  }
+})
+
+const abi = {
+  "registeredSettlementTokens": "address[]:registeredSettlementTokens",
+  "lpListBySettlementToken": "function lpListBySettlementToken(address token) view returns (address[])"
 }
