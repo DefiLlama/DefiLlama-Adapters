@@ -1,18 +1,11 @@
-const { sumTokens2 } = require("../helper/unwrapLPs");
+const { sumTokensExport } = require("../helper/unwrapLPs")
+const ADDRESSES = require('../helper/coreAssets.json')
 
-const owner = "0x50454acC07bf8fC78100619a1b68e9E8d28cE022";
-const tokens = [
-  "0x4300000000000000000000000000000000000003", // USDB
-  "0x4300000000000000000000000000000000000004", // WETH
-];
+const owner = "0x50454acC07bf8fC78100619a1b68e9E8d28cE022"
 
 module.exports = {
-  timetravel: true,
-  doublecounted: false,
   blast: {
-    tvl: async (_, _1, _2, { api }) => {
-      return sumTokens2({ owner, tokens, api });
-    },
+    tvl: sumTokensExport({ owner, tokens: [ADDRESSES.blast.USDB, ADDRESSES.blast.WETH]}),
   },
-  start: 427476,
+  start: 1709630412,
 };
