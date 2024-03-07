@@ -106,6 +106,7 @@ async function otherTvl(_timestamp, _block, _chainBlocks, {api}){
 module.exports={
   ethereum:{
     tvl: sdk.util.sumChainTvls([tokenTreasuries.ethereum.tvl, otherTvl]),
+    ownTokens: tokenTreasuries.ethereum.ownTokens
   },
   mantle: tokenTreasuries.mantle
 }
