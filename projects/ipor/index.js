@@ -3,12 +3,16 @@ const { abi } = require("./abi");
 
 const V2DeploymentBlockNumber = 18333744
 
-async function tvl(_, block, _1, { api }) {
+async function tvlEthereum(_, block, _1, { api }) {
   if (block >= V2DeploymentBlockNumber) {
     return await calculateTvlForV2(api);
   } else {
     return await calculateTvlForV1(api);
   }
+}
+async function tvlArbitrum(_, block, _1, {api}) {
+    const ammTreasuryWstEthArbitrum = '0xBd013Ea2E01C2Ab3462dd67e9C83aa3834882A5D'
+    return api.sumTokens({owner: ammTreasuryWstEthArbitrum, tokens: [ADDRESSES.arbitrum.WSTETH]})
 }
 
 async function calculateTvlForV2(api) {
@@ -55,6 +59,9 @@ async function calculateTvlForV1(api) {
 module.exports = {
   methodology: `Counts the tokens locked in the AMM contracts to be used as collateral to Interest Rate Swaps derivatives, counts tokens provided as a liquidity to Liquidity Pool, counts interest gathered via Asset Manager in external protocols.`,
   ethereum: {
-    tvl
+    tvl: tvlEthereum
+  },
+  arbitrum: {
+    tvl: tvlArbitrum
   }
 };
