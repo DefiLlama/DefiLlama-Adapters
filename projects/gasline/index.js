@@ -14,7 +14,7 @@ function tvl(chainId) {
 
     api.addGasToken(deposited);
   }
-};
+}
 
 function borrowed(chainId) {
   return async function(_, _1, _2, { api }) {
@@ -22,7 +22,7 @@ function borrowed(chainId) {
 
     api.addGasToken(borrowed);
   }
-};
+}
 
 module.exports = {
   doublecounted: true,
