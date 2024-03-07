@@ -24,15 +24,17 @@ async function arbitrum_tvl(_, _1, _2, { api }) {
     )
   ).reduce((acc, curr) => ({ ...acc, ...curr }), {})
 
-  const tokensAndOwners = Object.entries(lpAddressesBySettlementToken).map(
-    ([settlementToken, lpAddresses]) => {
+  const tokensAndOwners = Object.entries(lpAddressesBySettlementToken)
+    .map(([settlementToken, lpAddresses]) => {
+      if (!lpAddresses || lpAddresses.length === 0) return
       return lpAddresses.map((lpAddress) => [settlementToken, lpAddress])
-    }
-  ).flat()
+    })
+    .flat()
+    .filter((d) => !!d)
   const deprecatedPools = config.arbitrum.pools.USDT.BTC.map((pool) => {
     return [config.arbitrum.tokens.USDT, pool.address]
   })
-  
+
   tokensAndOwners.push(...deprecatedPools)
   tokensAndOwners.push([config.arbitrum.tokens.USDT, config.arbitrum.vault])
 
