@@ -25,7 +25,6 @@ async function tvl(_, _1, _2, { api }) {
 async function staking(_, _1, _2, { api }) {
   let pools = await api.call({ abi: abiInfo.poolTvls, target: MUTO_FARM });
   let target = pools.find((i) => i.assets.toLowerCase() === NATIVE_TOKEN);
-  console.log(target);
 
   let { sqrtPriceX96 } = await api.call({
     abi: abiInfo.slot0,
