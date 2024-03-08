@@ -490,6 +490,16 @@ const assetList = [
     ['XRP', 'XRP', 'rPJ5GFpyDLv7gqeB1uZVUBwDwi41kaXN5A'],
     ['XRP', 'XRP', 'rPz2qA93PeRCyHyFCqyNggnyycJR1N4iNf'],
     ['XRP', 'XRP', 'rs8ZPbYqgecRcDzQpJYAMhSxSi5htsjnza'],
+    // THE WALLETS UNDER WHERE PROVIDED BY BINANCE TEAM ON THE 08/03/2024
+    ['FDUSD', 'ETH', '0xa7C0D36c4698981FAb42a7d8c783674c6Fe2592d'],
+    ['USDT', 'ETH', '0xa7C0D36c4698981FAb42a7d8c783674c6Fe2592d'],
+    ['ETH', 'ETH', '0xa7C0D36c4698981FAb42a7d8c783674c6Fe2592d'],
+    ['BNB', 'BEP20', '0xa7C0D36c4698981FAb42a7d8c783674c6Fe2592d'],
+    ['BTC', 'BTC', 'bc1q7t9fxfaakmtk8pj7tdxjvwsng6y9x76czuaf5h'],
+    ['SOL', 'SOL', 'HXsKP7wrBWaQ8T2Vtjry3Nj3oUgwYcqq9vrHDM12G664'],
+    ['USDT', 'TRX', 'TRGCqsUXeynKTgynp2j9g3sg7Nux2KtB3u'],
+    ['XRP', 'XRP', 'rP3mUZyCDzZkTSd1VHoBbFt8HGm8fyq8qV'],
+    
 ]
 
 function getAddresses(chain) {
