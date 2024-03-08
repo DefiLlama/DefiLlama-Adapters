@@ -30,7 +30,6 @@ const v2Swaps = [
 ]
 
 const ETHV2Funds = [
-  '0x69c53679EC1C06f3275b64C428e8Cd069a2d3966', // ETH V2 Fund (ETH mainnet)
   '0x811c9dD8B7B670A78d02fac592EbbE465e5dD0FA', // wstETH Fund (ETH mainnet)
 ]
 
