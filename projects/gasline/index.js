@@ -3,14 +3,19 @@ const GASLINE_CONTRACT = {
   56: '0x35138Ddfa39e00C642a483d5761C340E7b954F94',
 };
 
+const WETH = {
+  81457: '0x4300000000000000000000000000000000000004',
+  56: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
+};
+
 const abi = {
-  totalEthDeposited: "function totalEthDeposited() view returns (uint256)",
+  balanceOf: "erc20:balanceOf",
   totalSupply: "function totalSupply() view returns (uint256)",
 };
 
 function tvl(chainId) {
   return async function(_, _1, _2, { api }) {
-    const deposited = await api.call({ abi: abi.totalEthDeposited, target: GASLINE_CONTRACT[chainId] });
+    const deposited = await api.call({ abi: abi.balanceOf, target: WETH[chainId], params: GASLINE_CONTRACT[chainId] });
 
     api.addGasToken(deposited);
   }
