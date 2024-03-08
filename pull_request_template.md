@@ -15,53 +15,53 @@
 6. No need to go to our discord and announce that you've created a PR, we monitor all PRs and will review it asap
 
 ---
-##### Name (to be shown on DefiLlama):
+##### Name (to be shown on DefiLlama): Gomble Games
 
 
-##### Twitter Link:
+##### Twitter Link: [https://twitter.com/gomblegames](https://twitter.com/gomblegames)
 
 
-##### List of audit links if any:
+##### List of audit links if any: [https://beosin.com/audits/GOMBLE_202402231621.pdf](https://beosin.com/audits/GOMBLE_202402231621.pdf)
 
 
-##### Website Link:
+##### Website Link: [https://gomble.io/](https://gomble.io/)
 
 
 ##### Logo (High resolution, will be shown with rounded borders):
 
 
-##### Current TVL:
+##### Current TVL: $8,328,039.19 (Mar-08-2024 01:30:44 AM +UTC)
 
 
-##### Treasury Addresses (if the protocol has treasury)
+##### Treasury Addresses (if the protocol has treasury): 0x850fA53C201c7816DE22852EE03E0A0335453F41
 
 
-##### Chain:
+##### Chain: BNB Chain
 
 
-##### Coingecko ID (so your TVL can appear on Coingecko, leave empty if not listed): (https://api.coingecko.com/api/v3/coins/list)
+##### Coingecko ID (so your TVL can appear on Coingecko, leave empty if not listed): 
 
 
-##### Coinmarketcap ID (so your TVL can appear on Coinmarketcap, leave empty if not listed): (https://api.coinmarketcap.com/data-api/v3/map/all?listing_status=active,inactive,untracked&start=1&limit=10000)
+##### Coinmarketcap ID (so your TVL can appear on Coinmarketcap, leave empty if not listed): 
 
 
 ##### Short Description (to be shown on DefiLlama):
 
 
-##### Token address and ticker if any:
+##### Token address and ticker if any: No token
 
 
-##### Category (full list at https://defillama.com/categories) *Please choose only one:
+##### Category (full list at https://defillama.com/categories) *Please choose only one: Farm
 
 
-##### Oracle Provider(s): Specify the oracle(s) used (e.g., Chainlink, Band, API3, TWAP, etc.):
-##### Implementation Details: Briefly describe how the oracle is integrated into your project:
-##### Documentation/Proof: Provide links to documentation or any other resources that verify the oracle's usage:
+##### Oracle Provider(s): Specify the oracle(s) used (e.g., Chainlink, Band, API3, TWAP, etc.): No Oracle
+##### Implementation Details: Briefly describe how the oracle is integrated into your project: No Oracle
+##### Documentation/Proof: Provide links to documentation or any other resources that verify the oracle's usage: No Oracle
 
-##### forkedFrom (Does your project originate from another project):
+##### forkedFrom (Does your project originate from another project): Not a forked project
 
 
-##### methodology (what is being counted as tvl, how is tvl being calculated):
+##### methodology (what is being counted as tvl, how is tvl being calculated): We calculated the TVL based on the underlying amount of BNB, USDC, and USDT in the Venus Protocol corresponding to the balance of vBNB, vUSDC, and vUSDT that the contract holds.
 
 
 ##### Github org/user (Optional, if your code is open source, we can track activity):
