@@ -24,10 +24,10 @@
 ##### List of audit links if any: [https://beosin.com/audits/GOMBLE_202402231621.pdf](https://beosin.com/audits/GOMBLE_202402231621.pdf)
 
 
-##### Website Link: [https://gomble.io/](https://gomble.io/)
+##### Website Link: [https://gomblegames.com](https://gomblegames.com)
 
 
-##### Logo (High resolution, will be shown with rounded borders):
+##### Logo (High resolution, will be shown with rounded borders): https://drive.google.com/file/d/1wnbDbyQmNNl6a-DwaipxaVvKsjWl82ba/view
 
 
 ##### Current TVL: $8,328,039.19 (Mar-08-2024 01:30:44 AM +UTC)
@@ -45,7 +45,10 @@
 ##### Coinmarketcap ID (so your TVL can appear on Coinmarketcap, leave empty if not listed): 
 
 
-##### Short Description (to be shown on DefiLlama):
+##### Short Description (to be shown on DefiLlama): 
+GOMBLE’s mission is to introduce 2 billion global casual gamers to the web3 market. 
+
+GOMBLE starts with 1) various casual games created by Gomble and 2) later include diverse games from the 111% group(over 150 titles). In the med/long term, we aim to expand into 3) publishing business with 3rd party games and 4) evolve into a platform where users can easily create games or contribute to game ideation through User Generated Games.
 
 
 ##### Token address and ticker if any: No token
@@ -64,4 +67,4 @@
 ##### methodology (what is being counted as tvl, how is tvl being calculated): We calculated the TVL based on the underlying amount of BNB, USDC, and USDT in the Venus Protocol corresponding to the balance of vBNB, vUSDC, and vUSDT that the contract holds.
 
 
-##### Github org/user (Optional, if your code is open source, we can track activity):
+##### Github org/user (Optional, if your code is open source, we can track activity): Not Open Source
