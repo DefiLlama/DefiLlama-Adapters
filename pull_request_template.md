@@ -15,56 +15,53 @@
 6. No need to go to our discord and announce that you've created a PR, we monitor all PRs and will review it asap
 
 ---
-##### Name (to be shown on DefiLlama): Gomble Games
+##### Name (to be shown on DefiLlama):
 
 
-##### Twitter Link: [https://twitter.com/gomblegames](https://twitter.com/gomblegames)
+##### Twitter Link:
 
 
-##### List of audit links if any: [https://beosin.com/audits/GOMBLE_202402231621.pdf](https://beosin.com/audits/GOMBLE_202402231621.pdf)
+##### List of audit links if any:
 
 
-##### Website Link: [https://gomblegames.com](https://gomblegames.com)
+##### Website Link:
 
 
-##### Logo (High resolution, will be shown with rounded borders): https://drive.google.com/file/d/1wnbDbyQmNNl6a-DwaipxaVvKsjWl82ba/view
+##### Logo (High resolution, will be shown with rounded borders):
 
 
-##### Current TVL: $8,328,039.19 (Mar-08-2024 01:30:44 AM +UTC)
+##### Current TVL:
 
 
-##### Treasury Addresses (if the protocol has treasury): 0x850fA53C201c7816DE22852EE03E0A0335453F41
+##### Treasury Addresses (if the protocol has treasury)
 
 
-##### Chain: BNB Chain
+##### Chain:
 
 
-##### Coingecko ID (so your TVL can appear on Coingecko, leave empty if not listed): 
+##### Coingecko ID (so your TVL can appear on Coingecko, leave empty if not listed): (https://api.coingecko.com/api/v3/coins/list)
 
 
-##### Coinmarketcap ID (so your TVL can appear on Coinmarketcap, leave empty if not listed): 
+##### Coinmarketcap ID (so your TVL can appear on Coinmarketcap, leave empty if not listed): (https://api.coinmarketcap.com/data-api/v3/map/all?listing_status=active,inactive,untracked&start=1&limit=10000)
 
 
-##### Short Description (to be shown on DefiLlama): 
-GOMBLE’s mission is to introduce 2 billion global casual gamers to the web3 market. 
-
-GOMBLE starts with 1) various casual games created by Gomble and 2) later include diverse games from the 111% group(over 150 titles). In the med/long term, we aim to expand into 3) publishing business with 3rd party games and 4) evolve into a platform where users can easily create games or contribute to game ideation through User Generated Games.
+##### Short Description (to be shown on DefiLlama):
 
 
-##### Token address and ticker if any: No token
+##### Token address and ticker if any:
 
 
-##### Category (full list at https://defillama.com/categories) *Please choose only one: Farm
+##### Category (full list at https://defillama.com/categories) *Please choose only one:
 
 
-##### Oracle Provider(s): Specify the oracle(s) used (e.g., Chainlink, Band, API3, TWAP, etc.): No Oracle
-##### Implementation Details: Briefly describe how the oracle is integrated into your project: No Oracle
-##### Documentation/Proof: Provide links to documentation or any other resources that verify the oracle's usage: No Oracle
+##### Oracle Provider(s): Specify the oracle(s) used (e.g., Chainlink, Band, API3, TWAP, etc.):
+##### Implementation Details: Briefly describe how the oracle is integrated into your project:
+##### Documentation/Proof: Provide links to documentation or any other resources that verify the oracle's usage:
 
-##### forkedFrom (Does your project originate from another project): Not a forked project
-
-
-##### methodology (what is being counted as tvl, how is tvl being calculated): We calculated the TVL based on the underlying amount of BNB, USDC, and USDT in the Venus Protocol corresponding to the balance of vBNB, vUSDC, and vUSDT that the contract holds.
+##### forkedFrom (Does your project originate from another project):
 
 
-##### Github org/user (Optional, if your code is open source, we can track activity): Not Open Source
+##### methodology (what is being counted as tvl, how is tvl being calculated):
+
+
+##### Github org/user (Optional, if your code is open source, we can track activity):
