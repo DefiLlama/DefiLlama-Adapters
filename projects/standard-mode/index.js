@@ -1,7 +1,7 @@
 const { getLogs } = require('../helper/cache/getLogs')
 const config = {
-  mode: { factory: '0x4D1b18A7BDB8D0a02f692398337aBde8DeB8FB09', fromBlock: 4381503, },
-  blast: { factory: '0x2CC505C4bc86B28503B5b8C450407D32e5E20A9f', fromBlock: 434946, }, 
+  mode: { factory: '0x2B6151F6a1bd30c11E94a91715E4CC98bFC8151c', fromBlock: 4918515, },
+  blast: { factory: '0x4D16DAFa4f30f29458F62e17cf41bef069aa18F9', fromBlock: 598408, }, 
 }
 
 Object.keys(config).forEach(chain => {
