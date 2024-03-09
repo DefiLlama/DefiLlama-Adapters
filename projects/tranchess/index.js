@@ -202,7 +202,7 @@ async function ethereum(timestamp, blockETH, chainBlocks){
       block: blockETH
     })).output
 
-    sdk.util.sumSingleBalance(balances, getBSCAddress(quoteAddress), balancesInSwap[1])
+    sdk.util.sumSingleBalance(balances, quoteAddress, balancesInSwap[1])
   }
   
   return balances
