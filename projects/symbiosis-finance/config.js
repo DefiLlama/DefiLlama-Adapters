@@ -9,6 +9,7 @@ module.exports = {
         ADDRESSES.ethereum.USDC,
         ADDRESSES.ethereum.USDT,
         ADDRESSES.ethereum.WETH,
+        ADDRESSES.ethereum.WBTC,
         XDAO,
       ],
       holders: [
@@ -23,6 +24,7 @@ module.exports = {
         ADDRESSES.bsc.BUSD,
         ADDRESSES.bsc.USDC,
         ADDRESSES.bsc.ETH,
+        ADDRESSES.bsc.BTCB,
         XDAO,
       ],
       holders: [
@@ -128,6 +130,7 @@ module.exports = {
       tokens: [
         ADDRESSES.era.USDC,
         ADDRESSES.era.WETH,
+        ADDRESSES.era.WBTC,
       ],
       holders: [
         '0x39dE19C9fF25693A2311AAD1dc5C790194084A39', // portal v2
