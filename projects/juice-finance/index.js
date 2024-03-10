@@ -11,7 +11,7 @@ const vaults = [
 ]
 
 async function tvl(timestamp, _, _1, { api }) {
-  return sumTokens2({ api, resolveLP: true, tokensAndOwners: [[ADDRESSES.blast.USDB, LENDING_POOL_USDB], [ADDRESSES.blast.WETH, LENDING_POOL_WETH] [ADDRESSES.blast.WETH, COLLATERAL_VAULT], [ADDRESSES.blast.WETH, COLLATERAL_VAULT_V2], ...vaults] })
+  return sumTokens2({ api, resolveLP: true, tokensAndOwners: [[ADDRESSES.blast.USDB, LENDING_POOL_USDB], [ADDRESSES.blast.WETH, LENDING_POOL_WETH], [ADDRESSES.blast.WETH, COLLATERAL_VAULT], [ADDRESSES.blast.WETH, COLLATERAL_VAULT_V2], ...vaults] })
 }
 
 module.exports = {
