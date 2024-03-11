@@ -289,5 +289,14 @@ module.exports = {
          '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
        ]
      },
+     {
+       name: 'ftn',
+       tokens: [
+         ADDRESSES.ftn.USDC,
+       ],
+       holders: [
+         '0x318C2B9a03C37702742C3d40C72e4056e430135A', // portal v2
+       ]
+     },
   ]
 }
