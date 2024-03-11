@@ -9,6 +9,7 @@ module.exports = {
         ADDRESSES.ethereum.USDC,
         ADDRESSES.ethereum.USDT,
         ADDRESSES.ethereum.WETH,
+        ADDRESSES.ethereum.WBTC,
         XDAO,
       ],
       holders: [
@@ -23,6 +24,7 @@ module.exports = {
         ADDRESSES.bsc.BUSD,
         ADDRESSES.bsc.USDC,
         ADDRESSES.bsc.ETH,
+        ADDRESSES.bsc.BTCB,
         XDAO,
       ],
       holders: [
@@ -128,6 +130,7 @@ module.exports = {
       tokens: [
         ADDRESSES.era.USDC,
         ADDRESSES.era.WETH,
+        ADDRESSES.era.WBTC,
       ],
       holders: [
         '0x39dE19C9fF25693A2311AAD1dc5C790194084A39', // portal v2
@@ -253,6 +256,34 @@ module.exports = {
        name: 'mode',
        tokens: [
          ADDRESSES.mode.WETH,
+       ],
+       holders: [
+         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
+       ]
+     },
+     {
+       name: 'rsk',
+       tokens: [
+         ADDRESSES.rsk.rUSDT,
+         ADDRESSES.rsk.WRBTC1,
+       ],
+       holders: [
+         '0x5aa5f7f84ed0e5db0a4a85c3947ea16b53352fd4', // portal v2
+       ]
+     },
+     {
+       name: 'blast',
+       tokens: [
+         ADDRESSES.blast.WETH,
+       ],
+       holders: [
+         '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4', // portal v2
+       ]
+     },
+     {
+       name: 'merlin',
+       tokens: [
+         ADDRESSES.merlin.WBTC,
        ],
        holders: [
          '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2

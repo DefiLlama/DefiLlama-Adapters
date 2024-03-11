@@ -119,7 +119,7 @@ const wIotex = ADDRESSES.iotex.WIOTX;
 
 const usdtOptimism = ADDRESSES.optimism.USDT;
 const daiOptimism = ADDRESSES.optimism.DAI;
-const wbtcOptimism = "0x68f180fcCe6836688e9084f035309E29Bf0A2095";
+const wbtcOptimism = ADDRESSES.optimism.WBTC;
 
 const wbtcArbitrum = ADDRESSES.arbitrum.WBTC;
 const usdtArbitrum = ADDRESSES.arbitrum.USDT;

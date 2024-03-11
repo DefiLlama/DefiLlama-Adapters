@@ -46,11 +46,14 @@ const yieldFarmsClassic = "0x9599ceBf169A1F3503996CBf90deA38C515ddd54"; // 61
 const dexTVL = {
 
   // Nova Network
+  // nova: {
+  //   tvl: getUniTVL({
+  //     factory: dexFactory,
+  //     useDefaultCoreAssets: true,
+  //   }),
+  // },
   nova: {
-    tvl: getUniTVL({
-      factory: dexFactory,
-      useDefaultCoreAssets: true,
-    }),
+    tvl: () => ({}),
   },
   
   // Fantom Opera
@@ -76,15 +79,19 @@ const dexTVL = {
 const stakingExports = {
   
   // Nova Network
+  // nova: {
+  //   staking: async (_, _b, { nova: block }) =>
+  //     sumTokens2({
+  //       owners: [callStaking, callStakingV2, bondStaking, liquidStaking, incomeStaking],
+  //       tokens: [nullAddress, sntNovaNetwork, nusdNovaNetwork],
+  //       lps: [yieldFarms],
+  //       chain: "nova",
+  //       block,
+  //     }),
+  // },
+
   nova: {
-    staking: async (_, _b, { nova: block }) =>
-      sumTokens2({
-        owners: [callStaking, callStakingV2, bondStaking, liquidStaking, incomeStaking],
-        tokens: [nullAddress, sntNovaNetwork, nusdNovaNetwork],
-        lps: [yieldFarms],
-        chain: "nova",
-        block,
-      }),
+    staking: () => ({}),
   },
   
   // Fantom Opera
