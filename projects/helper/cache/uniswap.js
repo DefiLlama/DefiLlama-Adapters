@@ -116,7 +116,7 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
           })
         }
       })
-      return transformDexBalances({ balances, chain, data, coreTokens: coreAssets, blacklistedTokens: blacklist })
+      return transformDexBalances({ balances, chain, data, coreAssets, blacklistedTokens: blacklist })
     }
 
     const blacklistedSet = new Set(blacklist)
