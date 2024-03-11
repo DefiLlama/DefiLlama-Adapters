@@ -45,14 +45,11 @@ async function tvlEth(_, _b, _cb, { api, }) {
   return sumERC4626VaultsExport({ vaults: resultVaults, tokenAbi: 'asset', balanceAbi: 'totalAssets'});
 }
 
-const tvlBlastResult = await tvlBlast();
-const tvlEthResult = await tvlEth();
-
 module.exports = {
   ethereum: {
-    tvl: tvlEthResult
+    tvl: tvlEth
   },
   blast: {
-    tvl: tvlBlastResult
+    tvl: tvlBlast
   }
 };
