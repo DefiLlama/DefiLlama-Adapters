@@ -1,8 +1,6 @@
 var ethers = require("ethers");
 const BigNumber = require("bignumber.js");
 
-
-const {sumTokensExport} = require("../helper/unknownTokens");
 const CONFIG = {
     kcc: {
         rpc: "https://rpc-mainnet.kcc.network",
@@ -49,14 +47,31 @@ const getIndex = (name) => {
 }
 
 const formatMarket = (market) => {
-    return market[[getIndex('underlyingAssetAddress')]]
+    const getBignumber = (name) => {
+        return market[0][getIndex(name)]
+    }
+
+    const decimals = Number(getBignumber('underlyingDecimals'));
+    const cTokenDecimals = Number(getBignumber('cTokenDecimals'));
+    const tokenPrice = Number(getNumber(market[1][1], decimals));
+
+    const exchangeRateCurrent = Number(getNumber(
+        getBignumber('exchangeRateCurrent'),
+        18 - cTokenDecimals + decimals,
+    ))
+    const totalSupply = getNumber(getBignumber('totalSupply'), cTokenDecimals);
+    const totalBorrows = getNumber(getBignumber('totalBorrows'), decimals);
+    return {
+        supply: Number(totalSupply.multipliedBy(tokenPrice).multipliedBy(exchangeRateCurrent)),
+        borrow: Number(totalBorrows.multipliedBy(tokenPrice)),
+    };
 };
 
 const mappingAllMarkets = (markets) => {
     const result = [];
     // 获取markets数量
     markets[0].forEach((_, index) => {
-        result.push(formatMarket(markets[0][index]));
+        result.push(formatMarket([markets[0][index], markets[2][index]]));
     })
     return result;
 };
@@ -163,7 +178,7 @@ const returnsStr = returnList.map((item) => item.type + ' ' + item.name).join(',
 
 const abi = ["function getAllMarketsData(address) view returns ((" + returnsStr + ")[], ()[], (address cToken, uint256 underlyingPrice)[])"]
 
-const getAllTokens = async (network) => {
+const getResult = async (network) => {
     const provider = new ethers.JsonRpcProvider(CONFIG[network].rpc);
     const comptroller = CONFIG[network].comptroller;
     const compoundLens = CONFIG[network].compoundLens;
@@ -172,19 +187,25 @@ const getAllTokens = async (network) => {
         abi,
         provider
     ).getAllMarketsData(comptroller);
-    return mappingAllMarkets(allMarketsData)
+    const allMarkets = mappingAllMarkets(allMarketsData)
+    let tvl = 0,
+        borrowed = 0;
+    allMarkets.forEach((market) => {
+        tvl += market.supply;
+        borrowed += market.borrow;
+    })
+    return {
+        tvl: 0,
+        borrowed: 0,
+    }
 }
 module.exports = {}
 
 Object.keys(CONFIG).forEach(chain => {
-    const config = CONFIG[chain]
     module.exports[chain] = {
         tvl: async () => {
-            const tokens = await getAllTokens(chain)
-            return sumTokensExport(
-                config.comptroller,
-                tokens,
-            )
+            const result = await getResult(chain)
+            return result['tvl']
         }
     }
 })
