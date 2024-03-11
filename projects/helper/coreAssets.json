@@ -531,6 +531,7 @@
     "BUSDbs": "5RpUwQ8wtdPCZHhu6MERp2RGrpobsbZ6MH5dDHkUjs2"
   },
   "astar": {
+    "WASTR_1": "0xaeaaf0e2c81af264101b9129c00f4440ccf0f720",
     "WASTR": "0xecc867de9f5090f55908aaa1352950b9eed390cd",
     "WETH": "0x81ecac0d6be0550a00ff064a4f9dd2400585fe9c",
     "WBTC": "0xad543f18cff85c77e140e3e5e3c3392f6ba9d5ca",
@@ -540,7 +541,6 @@
     "USDC": "0x6a2d262d56735dba19dd70682b39f6be9a931d98",
     "USDT": "0x3795c36e7d12a8c252a20c5a7b455f7c57b60283",
     "nativeUSDT": "0xffffffff000000000000000000000001000007c0",
-    "ARSW": "0xde2578edec4669ba7f41c5d5d2386300bcea4678",
     "DOT": "0xffffffffffffffffffffffffffffffffffffffff",
     "DAI": "0x6de33698e9e9b787e09d3bd7771ef63557e148bb",
     "MUUU": "0xc5bcac31cf55806646017395ad119af2441aee37",
@@ -564,6 +564,16 @@
     "aUSD": "0xffffffff00000000000000010000000000000001",
     "vDOT": "0xFfFfFfff00000000000000010000000000000008",
     "ASTR": "0xffffffff00000000000000010000000000000010"
+  },
+  "astarzk": {
+    "WETH": "0xe9cc37904875b459fa5d0fe37680d36f1ed55e38",
+    "USDC": "0xa8ce8aee21bc2a48a5ef670afcc9274c7bbbc035",
+    "USDT": "0x1e4a5963abfd975d8c9021ce480b42188849d41d",
+    "WBTC": "0xea034fb02eb1808c2cc3adbc15f447b93cbe08e1",
+    "DAI": "0xc5015b9d9161dca7e18e32f6f25c4ad850731fd4",
+    "MATIC": "0xa2036f0538221a77a3937f1379699f44945018d0",
+    "wstETH": "0x5d8cff95d7a57c0bf50b30b43c7cc0d52825d4a9",
+    "weETH": "0xcd68dff4415358c35a28f96fd5bf7083b22de1d6"
   },
   "cardano": {
     "ADA": "ADA"
