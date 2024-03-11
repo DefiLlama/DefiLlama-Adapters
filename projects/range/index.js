@@ -38,6 +38,12 @@ const config ={
   ],
   scroll: [
     { factory: '0x52B29C6154Ad0f5C02416B8cB1cEB76E082fC9C7', fromBlock: 1803841, factoryType: 'izumi' } // izumi
+  ],
+  zkfair: [
+    { factory: '0x873fD467A2A7e4E0A71aD3c45966A84797e55B5B', fromBlock: 6740958, factoryType: 'izumi' } // izumi
+  ],
+  blast: [
+    { factory: '0x72Add08DE88121007b48F964aFCf77A5AE1Da0a2', fromBlock: 228630 } // Thruster
   ]
 }
 
@@ -101,6 +107,7 @@ Object.keys(config).forEach(chain => {
       ghoBals.forEach((amount, i) => {
         api.add(ghoToken1s[i], amount);
       })
+      return api.getBalances()
     }
   }
 })

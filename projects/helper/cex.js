@@ -239,6 +239,7 @@ function cexExports(config) {
     exportObj[chain] = { tvl: sumTokensExport(options) }
   })
   if (config.bep2) {
+    exportObj.bsc = exportObj.bsc ?? { tvl: () => ({}) }
     const bscTvl = exportObj.bsc.tvl
     exportObj.bsc.tvl = sdk.util.sumChainTvls([
       bscTvl, sumTokensExport({ chain: 'bep2', ...config.bep2 })

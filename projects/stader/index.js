@@ -21,13 +21,6 @@ async function maticTvl() {
   };
 }
 
-async function ftmTvl() {
-  const res = await getData();
-  return {
-    fantom: res.fantom.native,
-  };
-}
-
 async function terra2Tvl() {
   const res = await getData();
   return {
@@ -71,7 +64,7 @@ module.exports = {
     tvl: maticTvl
   }, */
   fantom: {
-    tvl: ftmTvl,
+    tvl: () => ({}),
   },
   terra2: {
     tvl: terra2Tvl,
