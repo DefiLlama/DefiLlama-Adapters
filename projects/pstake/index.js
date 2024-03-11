@@ -15,46 +15,48 @@ const baseEndpoint = 'https://api.persistence.one/pstake'
 
 const chainInfos = {
   cosmos: {
-    id: "cosmoshub-4",
     name: "cosmos",
-    denom: "uatom",
     decimals: 1e6,
     endpoint: "/stkatom/atom_tvu"
   },
   osmosis: {
-    id: "osmosis-1",
     name: "osmosis",
-    denom: "uosmo",
     decimals: 1e6,
     endpoint: "/stkosmo/osmo_tvu"
   },
   dydx: {
-    id: "dydx-mainnet-1",
     name: "dydx-chain",
-    denom: "adydx",
     decimals: 1e18,
     endpoint: "/stkdydx/dydx_tvu"
+  },
+  stargaze: {
+    name: "stargaze",
+    decimals: 1e6,
+    endpoint: "/stkstars/stars_tvu"
   }
 }
 
-function cosmostvl(chainInfo) {
+function cosmostvl() {
   return async () => {
-    const api = baseEndpoint + chainInfo.endpoint
 
-    const amount = await get(api)
+    let tvl = {}
+    for (const chain of Object.values(chainInfos)) {
+      const api = baseEndpoint + chain.endpoint
 
-    const result = {};
-    sdk.util.sumSingleBalance(result, chainInfo.name, amount.amount.amount / chainInfo.decimals);
+      const amount = await get(api)
 
-    return result
+      const balance = {};
+      sdk.util.sumSingleBalance(balance, chain.name, amount.amount.amount / chain.decimals);
+
+      tvl[chain.name] = balance[chain.name]
+    }
+
+    return tvl
   }
 }
 
 module.exports = {
-  methodology: `Total amount of liquid staked tokens on pStake.`,
+  methodology: `Total amount of liquid staked tokens on Persistence.`,
   bsc: { tvl: bsctvl },
-  persistence: { tvl: async () => ({}) },
-  cosmos: {tvl: cosmostvl(chainInfos["cosmos"])},
-  osmosis: {tvl: cosmostvl(chainInfos["osmosis"])},
-  dydx: {tvl: cosmostvl(chainInfos["dydx"])},
+  persistence: { tvl: cosmostvl() },
 };

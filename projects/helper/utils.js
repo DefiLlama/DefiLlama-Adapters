@@ -81,6 +81,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'fantom' && ['HLP', 'WLP'].includes(symbol)) return true
   if (chain === 'functionx' && ['FX-V2'].includes(symbol)) return true
   if (chain === 'mantle' && ['MoeLP'].includes(symbol)) return true
+  if (chain === 'blast' && ['RING-V2'].includes(symbol)) return true
   if (chain === 'era' && /(ZFLP)$/.test(symbol)) return true // for syncswap
   if (chain === 'flare' && symbol.endsWith('_LP')) return true // for enosys dex
   if (chain === 'songbird' && ['FLRX', 'OLP'].includes(symbol)) return true
@@ -94,6 +95,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'scroll' && /(cSLP|sSLP)$/.test(symbol)) return true //syncswap LP
   if (chain === 'btn' && /(XLT)$/.test(symbol)) return true //xenwave LP
   if (['fantom', 'nova',].includes(chain) && ['NLT'].includes(symbol)) return true
+  if (chain === 'ethereumclassic' && symbol === 'ETCMC-V2') return true
   let label
 
   if (symbol.startsWith('ZLK-LP') || symbol.includes('DMM-LP') || (chain === 'avax' && 'DLP' === symbol) || symbol === 'fChe-LP')

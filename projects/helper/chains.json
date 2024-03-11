@@ -10,6 +10,7 @@
   "archway",
   "area",
   "astar",
+  "astrzk",
   "aura",
   "aurora",
   "avax",
@@ -23,7 +24,9 @@
   "bitcoincash",
   "bitgert",
   "bitindi",
+  "bitrock",
   "bittorrent",
+  "blast",
   "boba",
   "boba_avax",
   "boba_bnb",
@@ -166,6 +169,7 @@
   "muuchain",
   "mvc",
   "nahmii",
+  "naka",
   "near",
   "neo",
   "neo3",
@@ -279,5 +283,6 @@
   "zkfair",
   "zksync",
   "zyx",
-  "zeta"
+  "zeta",
+  "fraxtal"
 ]
