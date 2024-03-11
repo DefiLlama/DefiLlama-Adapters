@@ -23,7 +23,6 @@ const DEFAULTS = {
   MERLIN_RPC: "https://rpc.merlinchain.io",
   MERLIN_RPC_MULTICALL: '0x830E7E548F4D80947a40A7Cf3a2a53166a0C3980',
   BITROCK_RPC_MULTICALL: '0x40DD0342A46Ab0893251211F6626E82c09A75345',
-  ASTRZK_RPC_MULTICALL: '0x36eabf148272BA81A5225C6a3637972F0EE17771',
   NAKA_RPC: 'https://node.nakachain.xyz',
   RONIN_RPC: 'https://api.roninchain.com/rpc',
   ETHF_RPC: 'https://rpc.dischain.xyz/',
