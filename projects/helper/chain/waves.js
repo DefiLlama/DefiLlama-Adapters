@@ -73,11 +73,13 @@ const tokenMapping = {
   'HGgabTqUS8WtVFUJzfmrTDMgEccJuZLBPhFgQFxvnsoW': { cgId: 'usd-coin', decimals: 6 },
 }
 
-async function sumTokens({ owners, api, includeWaves = true, }) {
+async function sumTokens({ owners, api, includeWaves = true, blacklistedTokens = [] }) {
+  blacklistedTokens = new Set(blacklistedTokens)
   await Promise.all(
     owners.map(async (owner) => {
       const { balances } = await get(API_HOST + `assets/balance/${owner}`);
       balances.forEach(({ assetId, balance }) => {
+        if (blacklistedTokens.has(assetId)) return;
         if (tokenMapping[assetId]) {
           const { cgId, decimals } = tokenMapping[assetId]
           api.addCGToken(cgId, balance / (10 ** decimals))
