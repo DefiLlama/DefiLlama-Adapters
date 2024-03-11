@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 
+const handleError = require('./utils/handleError')
+process.on('unhandledRejection', handleError)
+process.on('uncaughtException', handleError)
+
 const { ENV_KEYS } = require("./projects/helper/env");
 const path = require("path");
 require("dotenv").config();
@@ -11,7 +15,6 @@ const { util } = require("@defillama/sdk");
 const sdk = require("@defillama/sdk");
 const whitelistedExportKeys = require('./projects/helper/whitelistedExportKeys.json')
 const chainList = require('./projects/helper/chains.json')
-const handleError = require('./utils/handleError')
 const { log, diplayUnknownTable, sliceIntoChunks } = require('./projects/helper/utils')
 const { normalizeAddress } = require('./projects/helper/tokenMapping')
 const { PromisePool } = require('@supercharge/promise-pool')
@@ -373,7 +376,7 @@ async function computeTVL(balances, timestamp) {
   const { errors } = await PromisePool.withConcurrency(5)
     .for(sliceIntoChunks(readKeys, 100))
     .process(async (keys) => {
-      tokenData.push((await axios.get(`https://coins2.llama.fi/prices/current/${keys.join(',')}`)).data.coins)
+      tokenData.push((await axios.get(`https://coins.llama.fi/prices/current/${keys.join(',')}`)).data.coins)
     })
 
   if (errors && errors.length)
