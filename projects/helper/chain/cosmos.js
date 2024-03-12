@@ -219,12 +219,10 @@ async function queryContractWithRetries({ contract, chain, data }) {
 
 async function queryManyContracts({ contracts = [], chain, data }) {
   const parallelLimit = 25
-  const { results, errors } = await PromisePool
+  const { results } = await PromisePool
     .withConcurrency(parallelLimit)
     .for(contracts)
     .process(async (contract) => queryContract({ contract, chain, data }))
-
-  if (errors && errors.length) throw errors[0]
 
   return results
 }
