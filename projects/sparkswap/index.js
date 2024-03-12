@@ -1,13 +1,10 @@
-const { stakingPricedLP } = require("../helper/staking");
 const { getUniTVL } = require("../helper/unknownTokens");
 const {
-  masterchefExports,
   sumTokensExport,
   nullAddress,
   sumUnknownTokens,
 } = require("../helper/unknownTokens");
 const { mergeExports } = require("../helper/utils");
-const abi = require("../helper/abis/masterchef.json");
 const pendleAbi = require("../pendle/abi.json");
 
 const FACTORY = "0x955219A87eB0C6754fd247266af970F7d16906CD";
@@ -31,11 +28,6 @@ module.exports = mergeExports([
       "TVL accounts for the liquidity on all AMM pools. Staking accounts for the SPARK locked in SPARKLER",
     pulse: {
       tvl: getUniTVL({ factory: FACTORY, useDefaultCoreAssets: true }),
-      pool2: sumTokensExport({
-        owner: SPARKLER,
-        tokens: [SPARK_LP],
-        useDefaultCoreAssets: true,
-      }),
       staking: sumTokensExport({
         owners: [SPARKLER, MASTERCHEF],
         tokens: [SPARK_TOKEN, SDAI_TOKEN],
@@ -43,7 +35,6 @@ module.exports = mergeExports([
         lps: [SPARK_LP, SDAI_DAI_LP, SDAI_SPARK_LP],
       }),
     },
-    // staking: stakingPricedLP(masterChef, sparkToken, "pulse", sparkLP, "wpls", true)
   }
 ]);
 
