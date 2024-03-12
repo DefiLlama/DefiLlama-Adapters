@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { abi } = require("./abi");
-const utils = require('../helper/utils');
+const { getConfig } = require('../helper/cache')
 
 const IPOR_GITHUB_ADDRESSES_URL = "https://raw.githubusercontent.com/IPOR-Labs/ipor-abi/main/mainnet/addresses.json";
 
@@ -13,8 +13,8 @@ async function tvlEthereum(_, block, _1, { api }) {
   }
 }
 async function tvlArbitrum(_, block, _1, {api}) {
-    const addresses = await utils.fetchURL(IPOR_GITHUB_ADDRESSES_URL);
-    for (const pool of addresses.data.arbitrum.pools) {
+    const addresses = await getConfig('ipor/assets', IPOR_GITHUB_ADDRESSES_URL);
+    for (const pool of addresses.arbitrum.pools) {
         await api.sumTokens({owner: pool.AmmTreasury, tokens: [pool.asset]});
     }
     return api.getBalances();
