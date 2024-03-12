@@ -3,6 +3,7 @@ const { queryContract, queryManyContracts, queryContracts } = require('../helper
 const chain = 'nolus'
 const _6Zeros = 1000000
 const _8Zeros = 100000000
+const _12Zeros = 1000000000000
 const _18Zeros = 1000000000000000000
 
 // Osmosis
@@ -61,10 +62,14 @@ async function getPrices(oracleAddr) {
       case "CRO":
         price = (p.amount_quote.amount / (p.amount.amount / _8Zeros)) / _6Zeros
         break
+      case "PICA":
+        price = (p.amount_quote.amount / (p.amount.amount / _12Zeros)) / _6Zeros
+        break
       case "WETH":
       case "EVMOS":
       case "INJ":
       case "DYDX":
+      case "DYM":
         price = (p.amount_quote.amount / (p.amount.amount / _18Zeros)) / _6Zeros
         break
       default:
@@ -119,10 +124,14 @@ function getAssetsTvl(assets, prices) {
         case "CRO":
           amount = Number(assets[ticker]) / _8Zeros
           break
+        case "PICA":
+          amount = Number(assets[ticker]) / _12Zeros
+          break
         case "WETH":
         case "EVMOS":
         case "INJ":
         case "DYDX":
+        case "DYM":
           amount = Number(assets[ticker]) / _18Zeros
           break
         default:
