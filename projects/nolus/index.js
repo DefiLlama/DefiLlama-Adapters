@@ -39,6 +39,7 @@ async function getLeaseContracts(leaseCodeId) {
 
 async function getLeases(leaseAddresses) {
   return await queryManyContracts({
+    permitFailure: true,
     contracts: leaseAddresses,
     chain: chain,
     data: {}
@@ -80,7 +81,7 @@ async function getLppTvl(lppAddresses) {
   const lpps = await queryManyContracts({
     contracts: lppAddresses,
     chain: chain,
-    data: { "lpp_balance": [] }
+    data: { "lpp_balance": [] },
   })
 
   let totalLpp = 0
