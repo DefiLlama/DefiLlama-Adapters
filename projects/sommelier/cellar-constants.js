@@ -56,6 +56,7 @@ const TURBO_DIVETH = "0x6c1edce139291Af5b84fB1e496c9747F83E876c9";
 const TURBO_ETHX = "0x19B8D8FC682fC56FbB42653F68c7d48Dd3fe597E";
 const TURBO_EETH_V2 = "0xdAdC82e26b3739750E036dFd9dEfd3eD459b877A";
 const TURBO_RSETH = "0x1dffb366b5c5A37A12af2C127F31e8e0ED86BDbe";
+const TURBO_EZETH = "0x27500De405a3212D57177A789E30bb88b0AdbeC5";
 
 const cellarsV2p5 = [
   { id: TURBO_SWETH, startBlock: 17910374 },
@@ -70,6 +71,7 @@ const cellarsV2p5 = [
   { id: TURBO_ETHX, startBlock: 19117547 },
   { id: TURBO_EETH_V2, startBlock: 19163705 },
   { id: TURBO_RSETH, startBlock: 19338456 },
+  { id: TURBO_EZETH, startBlock: 19260727 },
 ];
 
 // v2.5 Cellars on Arbitrum
@@ -89,3 +91,4 @@ module.exports = {
   cellarsV2p5,
   arbitrumCellarsV2p5,
 };
+
