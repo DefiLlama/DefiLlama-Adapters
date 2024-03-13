@@ -1,8 +1,10 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { abi } = require("./abi");
+const { getConfig } = require('../helper/cache')
+
+const IPOR_GITHUB_ADDRESSES_URL = "https://raw.githubusercontent.com/IPOR-Labs/ipor-abi/main/mainnet/addresses.json";
 
 const V2DeploymentBlockNumber = 18333744
-
 async function tvlEthereum(_, block, _1, { api }) {
   if (block >= V2DeploymentBlockNumber) {
     return await calculateTvlForV2(api);
@@ -11,8 +13,11 @@ async function tvlEthereum(_, block, _1, { api }) {
   }
 }
 async function tvlArbitrum(_, block, _1, {api}) {
-    const ammTreasuryWstEthArbitrum = '0xBd013Ea2E01C2Ab3462dd67e9C83aa3834882A5D'
-    return api.sumTokens({owner: ammTreasuryWstEthArbitrum, tokens: [ADDRESSES.arbitrum.WSTETH]})
+    const addresses = await getConfig('ipor/assets', IPOR_GITHUB_ADDRESSES_URL);
+    for (const pool of addresses.arbitrum.pools) {
+        await api.sumTokens({owner: pool.AmmTreasury, tokens: [pool.asset]});
+    }
+    return api.getBalances();
 }
 
 async function calculateTvlForV2(api) {

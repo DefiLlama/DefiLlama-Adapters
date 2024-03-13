@@ -1,6 +1,6 @@
-const axios = require("axios");
 const sdk = require("@defillama/sdk");
 const { transformBalances } = require("../portedTokens");
+const { get, post } = require("../http");
 const { PromisePool } = require("@supercharge/promise-pool");
 const { log } = require("../utils");
 const ADDRESSES = require('../coreAssets.json')
@@ -25,9 +25,9 @@ const endPoints = {
   stargaze: "https://rest.stargaze-apis.com",
   quicksilver: "https://rest.cosmos.directory/quicksilver",
   persistence: "https://rest.cosmos.directory/persistence",
-  secret: "https://lcd.secret.express",
+  secret: "https://rpc.ankr.com/http/scrt_cosmos",
   // chihuahua: "https://api.chihuahua.wtf",
-  injective: "https://sentry.lcd.injective.network:443",
+  injective: "https://injective-rest.publicnode.com",
   migaloo: "https://migaloo-api.polkachu.com",
   fxcore: "https://fx-rest.functionx.io",
   xpla: "https://dimension-lcd.xpla.dev",
@@ -35,7 +35,7 @@ const endPoints = {
   neutron: "https://rest-kralum.neutron-1.neutron.org",
   quasar: "https://quasar-api.polkachu.com",
   gravitybridge: "https://gravitychain.io:1317",
-  sei: "https://sei-api.polkachu.com",
+  sei: "https://sei-rest.publicnode.com",
   aura: "https://lcd.aura.network",
   archway: "https://api.mainnet.archway.io",
   sifchain: "https://sifchain-api.polkachu.com",
@@ -53,7 +53,7 @@ const chainSubpaths = {
 
 // some contract calls need endpoint with higher gas limit
 const highGasLimitEndpoints = {
-  'sei1xr3rq8yvd7qplsw5yx90ftsr2zdhg4e9z60h5duusgxpv72hud3shh3qfl': "https://rest.sei-apis.com",
+  // 'sei1xr3rq8yvd7qplsw5yx90ftsr2zdhg4e9z60h5duusgxpv72hud3shh3qfl': "https://rest.sei-apis.com",
 }
 
 function getEndpoint(chain, { contract } = {}) {
@@ -69,7 +69,7 @@ async function query(url, block, chain) {
   if (block !== undefined) {
     endpoint += `&height=${block - (block % 100)}`;
   }
-  return (await axios.get(endpoint)).data.result;
+  return (await get(endpoint)).result;
 }
 
 async function queryV1Beta1({ chain, paginationKey, block, url } = {}) {
@@ -87,7 +87,7 @@ async function queryV1Beta1({ chain, paginationKey, block, url } = {}) {
     }
     endpoint += paginationQueryParam;
   }
-  return (await axios.get(endpoint)).data;
+  return get(endpoint)
 }
 
 async function getTokenBalance({ token, owner, block, chain }) {
@@ -130,7 +130,7 @@ async function getDenomBalance({ denom, owner, block, chain } = {}) {
   if (block !== undefined) {
     endpoint += `?height=${block - (block % 100)}`;
   }
-  let { data } = await axios.get(endpoint)
+  let data = await get(endpoint)
   data = chain === 'terra' ? data.balances : data.result
   const balance = data.find((balance) => balance.denom === denom);
   return balance ? Number(balance.amount) : 0;
@@ -145,8 +145,8 @@ async function getBalance2({ balances = {}, owner, block, chain, tokens, blackli
     endpoint += `?height=${block - (block % 100)}`;
   }
   const {
-    data: { balances: data },
-  } = await axios.get(endpoint);
+    balances: data,
+  } = await get(endpoint);
   for (const { denom, amount } of data) {
     if (blacklistedTokens?.includes(denom)) continue;
     if (tokens && !tokens.includes(denom)) continue;
@@ -178,13 +178,13 @@ async function queryContract({ contract, chain, data }) {
   if (typeof data !== "string") data = JSON.stringify(data);
   data = Buffer.from(data).toString("base64");
   return (
-    await axios.get(
+    await get(
       `${getEndpoint(chain, { contract })}/cosmwasm/wasm/v1/contract/${contract}/smart/${data}`
     )
-  ).data.data;
+  ).data;
 }
 
-const multipleEndpoints={
+const multipleEndpoints = {
   sei: [
     "https://sei-api.polkachu.com",
     "https://sei-rest.brocha.in",
@@ -197,34 +197,34 @@ const multipleEndpoints={
 
 async function queryContractWithRetries({ contract, chain, data }) {
   const rpcs = multipleEndpoints[chain]
-  if(rpcs === undefined){
-    return queryContract({contract, chain, data})
+  if (rpcs === undefined) {
+    return queryContract({ contract, chain, data })
   }
   if (typeof data !== "string") data = JSON.stringify(data);
   data = Buffer.from(data).toString("base64");
-  for(let i=0; i<rpcs.length; i++){
-    try{
+  for (let i = 0; i < rpcs.length; i++) {
+    try {
       return (
-        await axios.get(
+        await get(
           `${rpcs[i]}/cosmwasm/wasm/v1/contract/${contract}/smart/${data}`
         )
-      ).data.data;
-    } catch(e){
-      if(i >= rpcs.length - 1){
+      ).data;
+    } catch (e) {
+      if (i >= rpcs.length - 1) {
         throw e
       }
     }
   }
 }
 
-async function queryManyContracts({ contracts = [], chain, data }) {
+async function queryManyContracts({ contracts = [], chain, data, permitFailure = false}) {
   const parallelLimit = 25
   const { results, errors } = await PromisePool
     .withConcurrency(parallelLimit)
     .for(contracts)
-    .process(async (contract) =>  queryContract({ contract, chain, data }))
+    .process(async (contract) => queryContract({ contract, chain, data }))
 
-  if (errors && errors.length) throw errors[0]
+  if (!permitFailure && errors && errors.length) throw errors[0]
 
   return results
 }
@@ -237,9 +237,9 @@ async function queryContracts({ chain, codeId, }) {
 
   do {
     let endpoint = `${getEndpoint(chain)}/cosmwasm/wasm/v1/code/${codeId}/contracts?pagination.limit=${limit}${paginationKey ? `&pagination.key=${encodeURIComponent(paginationKey)}` : ''}`
-    const { data: { contracts, pagination } } = await axios.get(endpoint)
-    paginationKey =  pagination.next_key
-      res.push(...contracts)
+    const { contracts, pagination } = await get(endpoint)
+    paginationKey = pagination.next_key
+    res.push(...contracts)
   } while (paginationKey)
 
   return res

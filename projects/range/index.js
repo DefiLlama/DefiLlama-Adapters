@@ -41,6 +41,9 @@ const config ={
   ],
   zkfair: [
     { factory: '0x873fD467A2A7e4E0A71aD3c45966A84797e55B5B', fromBlock: 6740958, factoryType: 'izumi' } // izumi
+  ],
+  blast: [
+    { factory: '0x6b12399172036db8a8E2b7e2206175080C981A4D', fromBlock: 228630 } // Thruster
   ]
 }
 
@@ -104,6 +107,7 @@ Object.keys(config).forEach(chain => {
       ghoBals.forEach((amount, i) => {
         api.add(ghoToken1s[i], amount);
       })
+      return api.getBalances()
     }
   }
 })

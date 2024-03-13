@@ -32,6 +32,11 @@ const indexETH_BiWeekly_B = "0x71F5d6fa67c2C9D2b76246569093390d02F80678"
 const indexBTC_BiWeekly_A = "0xB2d3102944dEc6c4D7B0d87cA9De6eB13B70c11e"
 const indexBTC_BiWeekly_B = "0xB1105529305f166531b7d857B1d6f28000278aff"
 
+// Ethereum - Boosted Positions (Aave V2 Fork)
+const PTeETH_27JUN24 = '0xc69Ad9baB1dEE23F4605a82b3354F8E40d1E5966'
+const aPTeETH_27JUN24 = '0xE6A9465B9DA25Ddacc55AF5F2a111Db4E80Ba20D'
+const aWETH = '0xE41645Db7C6813993eEA1cBA83912cE07d8a6d29'
+
 // Avalanche Vaults
 const avaxCallVault = '0xd06Bd68d58eD40CC2031238A3993b99172ea37cA'
 const avaxPutVault = '0xa84aA41B6287aFE467ccE688f3796A2205198F07'
@@ -78,7 +83,7 @@ const bobaPutVault = '0xff5fe7909fc4d0d6643f1e8be8cba72610d0b485'
 const arbCallVault = '0x0833EC3262Dcc417D88f85Ed5E1EBAf768080f41'
 const arbPutVault = '0xf94ea5B18401821BE07FBfF535B8211B061A7F70'
 const ethCallVaultArb = '0x1D1CD4abe0F2AF9d79b5e3149BF4A503f97C1EAd'
-const ethPutVaulArb = '0xA8459eC6DF0D9a61058C43a308dD8A2CEc9d550E'
+const ethPutVaultArb = '0xA8459eC6DF0D9a61058C43a308dD8A2CEc9d550E'
 // Assets locked in Aave V2 fork
 const aArb = '0x116a7f52556a57F807CEACe228242C3c91D2C7E5' 
 const aUsdc = '0xBEe683e6e5CE1e7Ea07c6f11DF240AcD92c33632'
@@ -184,6 +189,9 @@ const config = {
       [ausdc, indexUSDC_MATIC_2wk_a,],
       [ausdc, indexUSDC_BNB_2wk_b,],
       [ausdc, ethPutVault,],
+
+      [PTeETH_27JUN24, aPTeETH_27JUN24,],
+      [weth, aWETH,],
     ]
   },
   avax: {
@@ -197,7 +205,7 @@ const config = {
       [arb, arbCallVault,],
       [usdc_arb, arbPutVault,],
       [arb, ethCallVaultArb,],
-      [usdc_arb, ethPutVaulArb,],
+      [usdc_arb, ethPutVaultArb,],
       [arb, aArb,],
       [usdc_arb, aUsdc,],
     ],
@@ -262,6 +270,12 @@ const config = {
       [stMatic, stMaticCallVault,],
     ]
   },
+  inevm: {
+    tokensAndOwners: [
+      ['0x69011706b3f6C6eaeD7D2Bc13801558B4fd94CBF', '0x6950D30996e8EC8D93dd1602b059b3a38389Bb88'],
+      ['0x8358D8291e3bEDb04804975eEa0fe9fe0fAfB147', '0xEc9284b92B8039c4180Ac99863ed73Ee5Ff33E63'],
+    ]
+  }
 }
 
 Object.keys(config).forEach(chain => {

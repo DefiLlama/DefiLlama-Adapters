@@ -1,3 +1,4 @@
+const sdk = require('@defillama/sdk')
 const { sumERC4626VaultsExport } = require('../helper/erc4626')
 const { staking } = require('../helper/staking')
 
@@ -21,15 +22,20 @@ const config = {
   arbitrum: {
     lvTokens: {
       xARB: "0xF8F045583580C4Ba954CD911a8b161FafD89A9EF",
-      xUSD: "0x2a889E9ef10c7Bd607473Aadc8c806c4511EB26f",
+    },
+    lvTokens2: {
+      xUSD: "0x6318938F825F57d439B3a9E25C38F04EF97987D8",
     },
   }
 }
 
 Object.keys(config).forEach(chain => {
-  const { lvTokens } = config[chain]
+  const { lvTokens, lvTokens2 } = config[chain]
+  let tvl = sumERC4626VaultsExport({ vaults: Object.values(lvTokens), tokenAbi: 'token', balanceAbi: 'totalAssets' })
+  if (lvTokens2) 
+    tvl = sdk.util.sumChainTvls([tvl, sumERC4626VaultsExport({ vaults: Object.values(lvTokens2), tokenAbi: 'wantToken', balanceAbi: 'totalAssets' })])
   module.exports[chain] = {
-    tvl: sumERC4626VaultsExport({ vaults: Object.values(lvTokens), tokenAbi: 'token', balanceAbi: 'totalAssets' })
+    tvl
   }
 })
 

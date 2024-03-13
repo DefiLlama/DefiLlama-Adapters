@@ -33,7 +33,7 @@ async function getMarkets(comptroller, block, chain, cether, cetheEquivalent, bl
     allCTokens.forEach(cToken => {
       cToken = cToken.toLowerCase()
       if (blacklist.includes(cToken)) return;
-      if (cether && cToken === cether.toLowerCase()) {
+      if (cether && (cToken === cether.toLowerCase?.() || cether.includes(cToken))) {
         markets.push({ underlying: cetheEquivalent, cToken })
         return;
       }
