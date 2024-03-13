@@ -7,24 +7,23 @@ const chainIdMap = {
   ethereum: 1,
   polygon: 137,
   celo: 42220,
+  base: 8453,
 };
 
 const contractVersions = {
-  v200: ["2.0.0", "2.0.1", "2.0.2", "2.0.3", "2.0.4", "2.0.5"],
+  v200: ["2.0"],
   v001: "0.0.1",
   v002: "0.0.2",
   v003: "0.0.3",
 };
 
 const isV2Game = (contractVersion) => {
-  if (contractVersions.v200.includes(contractVersion)) {
-    return true;
-  }
-  const [derivedContractVersion] = contractVersion.split("-");
-  if (contractVersions.v200.includes(derivedContractVersion)) {
-    return true;
-  }
-  return false;
+   const baseContractVersion = contractVersion.slice(0, 3);
+
+   if (contractVersions.v200.indexOf(baseContractVersion) !== -1) {
+     return true;
+   }
+   return false;
 }
 
 async function tvl(_, _b, _cb, { api, }) {
@@ -46,4 +45,5 @@ module.exports = {
   methodology: "counts the amount of interest bearing tokens owned by the smart game contract",
   polygon: { tvl },
   celo: { tvl },
+  base: {tvl}
 };

@@ -1,6 +1,7 @@
 const { getUniTVL } = require('./cache/uniswap')
 
-function uniTvlExport(factory, chain, transformAddressOriginal = undefined, abis, options = {}) {
+function uniTvlExport(factory, chain, useDefaultCoreAssets = false, abis, options = {}) {
+  if (useDefaultCoreAssets) options.useDefaultCoreAssets = true
   return getUniTVL({ chain, factory, abis, ...options })
 }
 

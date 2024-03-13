@@ -22,3 +22,4 @@ module.exports = {
     udo
   ),
 };
+module.exports.deadFrom = '2022-04-01'

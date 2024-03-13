@@ -81,7 +81,7 @@ const polyTokens = [
 
 const arbTokens = [
   nullAddress,
-  "0x912CE59144191C1204E64559FE8253a0e49E6548", //arb
+  ADDRESSES.arbitrum.ARB, //arb
   "0x11cDb42B0EB46D95f990BeDD4695A6e3fA034978", //crv
 ]
 

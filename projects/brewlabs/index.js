@@ -39,7 +39,6 @@ async function getStakingPools(chain, poolType) {
   async function _getPools() {
     const poolTypeStr = poolType === 'pool2' ? 'farms' : 'pools'
     const pools = await post(`${api_endpoint}/${poolTypeStr}`, { chainId: chains[chain]})
-    console.log(pools, `brewlabs ${chain} ${poolType} pools: ${pools.length}`)
     setCache(`brewlabs/pools`, chain, pools)
     return pools
   }

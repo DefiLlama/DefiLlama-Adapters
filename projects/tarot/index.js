@@ -66,6 +66,4 @@ const config = {
   },
 }
 
-module.exports = {}
-
 tarotHelper(module.exports, config)

@@ -100,7 +100,7 @@ function fetchChain(chain) {
       }
     })
 
-    return sumTokens({ api, tokensAndOwners, blacklistedTokens, })
+    return sumTokens({ api, tokensAndOwners, blacklistedTokens })
   }
 }
 
@@ -123,3 +123,5 @@ module.exports = {
     [1689202800,"Access to Wallets Lost"]
   ],
 }
+
+module.exports.clv.tvl = () => ({})

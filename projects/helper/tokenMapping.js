@@ -16,26 +16,16 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 // carbon: https://api-insights.carbon.network/info/denom_gecko_map
 // orbit brige: https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList
 
-const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'stargaze', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua',]
-const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo',]
-
-const distressedAssts = new Set(Object.values({
-  CRK: '0x065de42e28e42d90c2052a1b49e7f83806af0e1f',
-  aBNBc: ADDRESSES.bsc.ankrBNB,
-  aBNBb: ADDRESSES.bsc.aBNBb,
-  XRPC: '0xd4ca5c2aff1eefb0bea9e9eab16f88db2990c183',
-}).map(i => i.toLowerCase()))
+const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom']
+const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec',]
 
 const transformTokens = {
-  ethereum: {
-    '0xe0b469cb3eda0ece9e425cfeda4df986a55ea9f8': ADDRESSES.ethereum.WETH,
-    [ADDRESSES.ethereum.vlCVX]: ADDRESSES.ethereum.CVX,
-  },
   // Sample Code
   // cronos: {
   //   "0x065de42e28e42d90c2052a1b49e7f83806af0e1f": "0x123", // CRK token is mispriced
   //   [ADDRESSES.cronos.TUSD]: ADDRESSES.ethereum.TUSD,
   // },
+
 }
 const ibcMappings = {
   // Sample Code
@@ -44,12 +34,31 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+
+  "naka": {
+    "0xDe4c4768ee70D97C044062fEC971eAE91B6aFAB7": { coingeckoId: "wrapped-bitcoin", decimals: 18 },
+    "0x4F90055b8670B21d64146577152aE52975075900": { coingeckoId: "ethereum", decimals: 18 },
+    "0xBD0adB3Ee21e0A75D3021384177238883D69e883": { coingeckoId: "ordinals", decimals: 18 },
+  },
+  astrzk: {
+    '0xe9cc37904875b459fa5d0fe37680d36f1ed55e38': { coingeckoId: "ethereum", decimals: 18 },
+  },
+  inevm: {
+    "0x97423a68bae94b5de52d767a17abcc54c157c0e5": { coingeckoId: "tether", decimals: 6 },
+    "0x8358D8291e3bEDb04804975eEa0fe9fe0fAfB147": { coingeckoId: "usd-coin", decimals: 6 },
+    "0x69011706b3f6c6eaed7d2bc13801558b4fd94cbf": { coingeckoId: "injective-protocol", decimals: 18 },
+    "0x4c3a213bd5e8c4bd70a8396d6f3c8302571598cd": { coingeckoId: "injective-protocol", decimals: 18 },
+  },
+  sapphire: {
+    "0x8bc2b030b299964eefb5e1e0b36991352e56d2d3": { coingeckoId: "oasis-network", decimals: 18 },
+    "0x1ffd8a218fdc5b38210d64cbb45f40dc55a4e019": { coingeckoId: "oasis-network", decimals: 18 },
+    "0x9ca066f00e55b90623efe323feb2a649686538b6": { coingeckoId: "tether", decimals: 6 },
+    "0x013e54bee29813bd786b24f9cb08f47c4b75955c": { coingeckoId: "usd-coin", decimals: 6 },
+    "0x3e4079ad76c83760e22b5c0105670ebab88b8d0e": { coingeckoId: "tether", decimals: 18 },
+  },
   // Sample Code
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
-  },
-  telos: {
-    '0xdc2393dc10734bf153153038943a5deb42b209cd': { coingeckoId: "telos", decimals: 18 },
   }
 }
 
@@ -85,7 +94,7 @@ function getCoreAssets(chain = 'ethereum') {
     Object.keys(fixBalancesTokens[chain] || {}),
   ].flat()
   let addresses = getUniqueAddresses(tokens, chain)
-  if (ibcChains.includes(chain)) addresses.push(...coreAssets.ibc)
+  if (ibcChains.includes(chain)) addresses.push(...coreAssets.ibc.map(i => 'ibc/' + i))
   if (anyswapTokenBlacklist[chain]) addresses = addresses.filter(i => !anyswapTokenBlacklist[chain].includes(i))
   return addresses
 }
@@ -100,7 +109,7 @@ function stripTokenHeader(token, chain) {
   if (chain === 'aptos') return token.replace(/^aptos:/, '')
   token = normalizeAddress(token, chain);
   if (chain && !token.startsWith(chain)) return token;
-  return token.indexOf(":") > -1 ? token.split(":")[1] : token;
+  return token.indexOf(":") > -1 ? token.split(":").slice(1).join(':') : token;
 }
 
 const eulerTokens = [
@@ -118,90 +127,90 @@ const eulerTokens = [
 ]
 
 const anyswapTokenBlacklist = {
-  ethereum: ['0x4e15361fd6b4bb609fa63c81a2be19d873717870'],
+  ethereum: [ADDRESSES.ethereum.FTM],
   fantom: [
-    '0x95bf7e307bc1ab0ba38ae10fc27084bc36fcd605',
-    '0x049d68029688eabf473097a2fc38ef61633a3c7a',
-    '0x04068da6c83afcfa0e13ba15a6696662335d5b75',
-    '0x049d68029688eabf473097a2fc38ef61633a3c7a',
-    '0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e',
-    '0x82f0b8b456c1a451378467398982d4834b6829c1',
-    '0x7f620d7d0b3479b1655cefb1b0bc67fb0ef4e443'
+    ADDRESSES.fantom.anyUSDC,
+    ADDRESSES.fantom.fUSDT,
+    ADDRESSES.fantom.USDC,
+    ADDRESSES.fantom.fUSDT,
+    ADDRESSES.fantom.DAI,
+    ADDRESSES.fantom.MIM,
+    ADDRESSES.fantom.nICE
   ],
-  harmony: ['0xb12c13e66ade1f72f71834f2fc5082db8c091358'],
+  harmony: [ADDRESSES.harmony.AVAX],
   kcc: [
-    '0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d',
-    '0x639a647fbe20b6c8ac19e48e2de44ea792c62c5c',
-    '0xc9baa8cfdde8e328787e29b4b078abf2dadc2055',
-    '0x218c3c3d49d0e7b37aff0d8bb079de36ae61a4c0'
+    ADDRESSES.moonriver.USDC,
+    ADDRESSES.moonriver.ETH,
+    ADDRESSES.kcc.DAI,
+    ADDRESSES.kcc.WBTC
   ],
   moonriver: [
-    '0xb44a9b6905af7c801311e8f4e76932ee959c663c',
-    '0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d',
-    '0x639a647fbe20b6c8ac19e48e2de44ea792c62c5c'
+    ADDRESSES.moonriver.USDT,
+    ADDRESSES.moonriver.USDC,
+    ADDRESSES.moonriver.ETH
   ],
-  arbitrum: ['0xfea7a6a0b346362bf88a9e4a88416b77a57d6c2a'],
+  arbitrum: [ADDRESSES.arbitrum.MIM],
   shiden: [
-    '0xfa9343c3897324496a05fc75abed6bac29f8a40f',
-    '0x818ec0a7fe18ff94269904fced6ae3dae6d6dc0b',
-    '0x735abe48e8782948a37c7765ecb76b98cde97b0f',
-    '0x765277eebeca2e31912c9946eae1021199b39c61',
-    '0x332730a4f6e03d9c55829435f10360e13cfa41ff',
-    '0x65e66a61d0a8f1e686c2d6083ad611a10d84d97a'
+    ADDRESSES.telos.ETH,
+    ADDRESSES.telos.USDC,
+    ADDRESSES.shiden.JPYC,
+    ADDRESSES.shiden.ETH,
+    ADDRESSES.dogechain.BUSD,
+    ADDRESSES.shiden.BUSD
   ],
   telos: [
-    '0xfa9343c3897324496a05fc75abed6bac29f8a40f',
-    '0xf390830df829cf22c53c8840554b98eafc5dcbc2',
-    '0x818ec0a7fe18ff94269904fced6ae3dae6d6dc0b',
-    '0xefaeee334f0fd1712f9a8cc375f427d9cdd40d73'
+    ADDRESSES.telos.ETH,
+    ADDRESSES.telos.WBTC,
+    ADDRESSES.telos.USDC,
+    ADDRESSES.telos.USDT
   ],
   syscoin: [
-    '0x2bf9b864cdc97b08b6d79ad4663e71b8ab65c45c',
-    '0x7c598c96d02398d89fbcb9d41eab3df0c16f227d',
-    '0x922d641a426dcffaef11680e5358f34d97d112e1'
+    ADDRESSES.syscoin.USDC,
+    ADDRESSES.syscoin.ETH,
+    ADDRESSES.syscoin.USDT
   ],
-  boba: ['0x461d52769884ca6235b685ef2040f47d30c94eb5'],
+  boba: [ADDRESSES.boba.BUSD],
   velas: [
-    '0x639a647fbe20b6c8ac19e48e2de44ea792c62c5c',
-    '0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d'
+    ADDRESSES.moonriver.ETH,
+    ADDRESSES.moonriver.USDC
   ],
   dogechain: [
-    '0xb44a9b6905af7c801311e8f4e76932ee959c663c',
-    '0x332730a4f6e03d9c55829435f10360e13cfa41ff',
-    '0xdc42728b0ea910349ed3c6e1c9dc06b5fb591f98'
+    ADDRESSES.moonriver.USDT,
+    ADDRESSES.dogechain.BUSD,
+    ADDRESSES.dogechain.MATIC
   ],
   kava: [
-    '0xfa9343c3897324496a05fc75abed6bac29f8a40f',
-    '0xb44a9b6905af7c801311e8f4e76932ee959c663c',
-    '0x818ec0a7fe18ff94269904fced6ae3dae6d6dc0b',
-    '0x765277eebeca2e31912c9946eae1021199b39c61',
-    '0x7c598c96d02398d89fbcb9d41eab3df0c16f227d',
-    '0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d',
-    '0x332730a4f6e03d9c55829435f10360e13cfa41ff'
+    ADDRESSES.telos.ETH,
+    ADDRESSES.moonriver.USDT,
+    ADDRESSES.telos.USDC,
+    ADDRESSES.shiden.ETH,
+    ADDRESSES.syscoin.ETH,
+    ADDRESSES.moonriver.USDC,
+    ADDRESSES.dogechain.BUSD
   ],
   step: [
-    '0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d',
-    '0xfa9343c3897324496a05fc75abed6bac29f8a40f',
-    '0x818ec0a7fe18ff94269904fced6ae3dae6d6dc0b',
-    '0xefaeee334f0fd1712f9a8cc375f427d9cdd40d73'
+    ADDRESSES.moonriver.USDC,
+    ADDRESSES.telos.ETH,
+    ADDRESSES.telos.USDC,
+    ADDRESSES.telos.USDT
   ],
   godwoken_v1: [
-    '0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d',
-    '0x765277eebeca2e31912c9946eae1021199b39c61',
-    '0xfa9343c3897324496a05fc75abed6bac29f8a40f',
-    '0xb44a9b6905af7c801311e8f4e76932ee959c663c'
+    ADDRESSES.moonriver.USDC,
+    ADDRESSES.shiden.ETH,
+    ADDRESSES.telos.ETH,
+    ADDRESSES.moonriver.USDT
   ],
-  milkomeda_a1: ['0xfa9343c3897324496a05fc75abed6bac29f8a40f'],
+  milkomeda_a1: [ADDRESSES.telos.ETH],
   wemix: [
-    '0x461d52769884ca6235b685ef2040f47d30c94eb5',
-    '0x765277eebeca2e31912c9946eae1021199b39c61',
-    '0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d'
+    ADDRESSES.boba.BUSD,
+    ADDRESSES.shiden.ETH,
+    ADDRESSES.moonriver.USDC
   ],
   eos_evm: [
-    '0x922d641a426dcffaef11680e5358f34d97d112e1',
-    '0x765277eebeca2e31912c9946eae1021199b39c61',
-    '0xfa9343c3897324496a05fc75abed6bac29f8a40f',
-    '0xefaeee334f0fd1712f9a8cc375f427d9cdd40d73'
+    ADDRESSES.syscoin.USDT,
+    ADDRESSES.shiden.ETH,
+    ADDRESSES.telos.ETH,
+    ADDRESSES.telos.USDT
   ]
 }
 
@@ -215,6 +224,5 @@ module.exports = {
   ibcChains,
   stripTokenHeader,
   getUniqueAddresses,
-  distressedAssts,
   eulerTokens,
 }

@@ -90,13 +90,20 @@ const defaultTokens = {
     '0xd417144312dbf50465b1c641d016962017ef6240',// cqt
     '0xcb84d72e61e383767c4dfeb2d8ff7f4fb89abc6e', //VEGA
     '0xcccd1ba9f7acd6117834e0d28f25645decb1736a', //ecox
+    '0x25ec98773d7b4ced4cafab96a2a1c0945f145e10', // stUSDT
+    '0x3c3a81e81dc49A522A592e7622A7E711c06bf354', // MNT
+    '0x61e90a50137e1f645c9ef4a0d3a4f01477738406', // LOKA
+    '0x64d0f55Cd8C7133a9D7102b13987235F486F2224', // BORG
+    '0x925206b8a707096Ed26ae47C84747fE0bb734F59', //WBT
+    ADDRESSES.ethereum.FDUSD, // FDUSD
   ],
   tron: [
     nullAddress,
     ADDRESSES.tron.USDT, // USDT
     ADDRESSES.tron.USDC,  // USDC
-    'TFptbWaARrWTX5Yvy3gNG5Lm8BmhPx82Bt', //wbt
-    ADDRESSES.tron.TUSD
+    // 'TFptbWaARrWTX5Yvy3gNG5Lm8BmhPx82Bt', //wbt
+    ADDRESSES.tron.TUSD,
+    'TThzxNRLrW2Brp9DcTQU8i4Wd9udCWEdZ3', // stUSDT
   ],
   polygon: [
     nullAddress,
@@ -109,6 +116,7 @@ const defaultTokens = {
     ADDRESSES.polygon.DAI, //DAI
     '0x2AB0e9e4eE70FFf1fB9D67031E44F6410170d00e', //xen
     '0x0169ec1f8f639b32eec6d923e24c2a2ff45b9dd6', //ALGB
+    '0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f', //voxel
   ],
   algorand: [],
   solana: [
@@ -138,7 +146,11 @@ const defaultTokens = {
     '0x352Cb5E19b12FC216548a2677bD0fce83BaE434B', // BTT
     '0xAD29AbB318791D579433D831ed122aFeAf29dcfe', // FTM
     '0x02ff5065692783374947393723dba9599e59f591',// yoshi
-    '0x40af3827f39d0eacbf4a168f8d4ee67c121d11c9', //TUSD
+     ADDRESSES.bsc.TUSD, //TUSD
+     '0x965f527d9159dce6288a2219db51fc6eef120dd1', //BSW
+     '0xa2120b9e674d3fc3875f415a7df52e382f141225', //ata
+     '0x44ec807ce2f4a6f2737a92e985f318d035883e47', //HFT
+     ADDRESSES.ethereum.FDUSD, //FDUSD
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],
@@ -148,9 +160,12 @@ const defaultTokens = {
     nullAddress,
     ADDRESSES.arbitrum.USDC, // USDC
     ADDRESSES.arbitrum.USDT, // USDT
-    ADDRESSES.optimism.DAI, // DAI
-    '0x09e18590e8f76b6cf471b3cd75fe1a1a9d2b2c2b' //aidoge
-    
+    ADDRESSES.arbitrum.DAI, // DAI
+    '0x09e18590e8f76b6cf471b3cd75fe1a1a9d2b2c2b', //aidoge
+    '0x3082cc23568ea640225c2467653db90e9250aaa0', //rdnt
+    '0x088cd8f5ef3652623c22d48b1605dcfe860cd704', //vela
+    ADDRESSES.arbitrum.LPT, //lpt
+    '0x51fc0f6660482ea73330e414efd7808811a57fa2', //premia
   ],
   avax: [
     nullAddress,
@@ -168,7 +183,38 @@ const defaultTokens = {
     ADDRESSES.optimism.OP, //OP
     ADDRESSES.optimism.USDT,  //USDT
     ADDRESSES.optimism.USDC,  //USDC
-    ADDRESSES.optimism.DAI // DAI
+    ADDRESSES.optimism.DAI, // DAI
+    '0x217d47011b23bb961eb6d93ca9945b7501a5bb11' //thales
+  ],
+  linea: [
+    nullAddress,
+   ADDRESSES.linea.USDT, //bridge usdt
+   ADDRESSES.linea.USDC, //usdc bridge
+   ADDRESSES.linea.DAI //dai bridge
+  ],
+  flare: [
+    nullAddress,
+    ADDRESSES.flare.WFLR,
+  ],
+  celo: [
+    nullAddress,
+    ADDRESSES.celo.CELO, //celo
+    ADDRESSES.celo.cUSD, //cUSD
+  ],
+  moonbeam: [
+    nullAddress,
+    ADDRESSES.telos.USDT, //usdt
+    "0x8f552a71efe5eefc207bf75485b356a0b3f01ec9", //usdc
+  ],
+  moonriver: [
+    nullAddress,
+    ADDRESSES.moonriver.USDT, //usdt
+  ],
+  kava: [
+    nullAddress,
+    ADDRESSES.kava.USDT,
+    ADDRESSES.kava.USDt,
+    ADDRESSES.kava.USDC
   ],
 }
 
@@ -193,6 +239,7 @@ function cexExports(config) {
     exportObj[chain] = { tvl: sumTokensExport(options) }
   })
   if (config.bep2) {
+    exportObj.bsc = exportObj.bsc ?? { tvl: () => ({}) }
     const bscTvl = exportObj.bsc.tvl
     exportObj.bsc.tvl = sdk.util.sumChainTvls([
       bscTvl, sumTokensExport({ chain: 'bep2', ...config.bep2 })
@@ -203,4 +250,5 @@ function cexExports(config) {
 
 module.exports = {
   cexExports,
+  defaultTokens,
 }

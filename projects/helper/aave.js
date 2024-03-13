@@ -1,3 +1,4 @@
+const { getLogs } = require('./cache/getLogs')
 const ADDRESSES = require('./coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { default: BigNumber } = require('bignumber.js');
@@ -102,7 +103,7 @@ async function getBorrowed(balances, block, chain, v2ReserveTokens, dataHelper, 
   })
 }
 
-function aaveChainTvl(chain, addressesProviderRegistry, transformAddressRaw, dataHelperAddresses, borrowed, v3 = false, { abis = {}, oracle, blacklistedTokens = [], } = {}) {
+function aaveChainTvl(chain, addressesProviderRegistry, transformAddressRaw, dataHelperAddresses, borrowed, v3 = false, { abis = {}, oracle, blacklistedTokens = [], hasV2LPs = false, } = {}) {
   return async (timestamp, ethBlock, { [chain]: block }) => {
     const balances = {}
     const { transformAddress, fixBalances, v2Atokens, v2ReserveTokens, dataHelper, updateBalances } = await getData({ oracle, chain, block, addressesProviderRegistry, dataHelperAddresses, transformAddressRaw, abis, })
@@ -119,13 +120,14 @@ function aaveChainTvl(chain, addressesProviderRegistry, transformAddressRaw, dat
         delete balances[key]
       }
     })
+    if (hasV2LPs) await sumTokens2({ block, resolveLP: true, balances, chain, })
     return balances
   }
 }
-function aaveExports(chain, addressesProviderRegistry, transform = undefined, dataHelpers = undefined, { oracle, abis, v3 = false, blacklistedTokens = [] } = {}) {
+function aaveExports(chain, addressesProviderRegistry, transform = undefined, dataHelpers = undefined, { oracle, abis, v3 = false, blacklistedTokens = [], hasV2LPs = false, } = {}) {
   return {
-    tvl: aaveChainTvl(chain, addressesProviderRegistry, transform, dataHelpers, false, v3, { oracle, abis, blacklistedTokens, }),
-    borrowed: aaveChainTvl(chain, addressesProviderRegistry, transform, dataHelpers, true, v3, { oracle, abis, })
+    tvl: aaveChainTvl(chain, addressesProviderRegistry, transform, dataHelpers, false, v3, { oracle, abis, blacklistedTokens, hasV2LPs, }),
+    borrowed: aaveChainTvl(chain, addressesProviderRegistry, transform, dataHelpers, true, v3, { oracle, abis, hasV2LPs, blacklistedTokens, })
   }
 }
 
@@ -187,13 +189,13 @@ const oracleAbis = {
   getAssetsPrices: "function getAssetsPrices(address[] assets) view returns (uint256[])",
 }
 
-function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyUnit, abis = {}} = {}) {
+function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyUnit, abis = {}, fromBlock, blacklistedTokens = [] } = {}) {
 
   async function tvl(_, _b, _c, { api }) {
     const data = await getReservesData(api)
     const tokensAndOwners = data.map(i => ([i.underlying, i.aTokenAddress]))
     if (!useOracle)
-      return sumTokens2({ tokensAndOwners, api })
+      return sumTokens2({ tokensAndOwners, api, blacklistedTokens })
     const balances = {}
     const res = await api.multiCall({ abi: 'erc20:balanceOf', calls: tokensAndOwners.map(i => ({ target: i[0], params: i[1] })) })
     res.forEach((v, i) => {
@@ -225,6 +227,7 @@ function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyU
   }
 
   async function getReservesData(api) {
+    if (fromBlock) return getReservesDataFromBlock(api)
     const tokens = await api.call({ abi: abiv2.getReservesList, target: registry })
     const data = await api.multiCall({ abi: abis.getReserveData ?? abiv2.getReserveData, calls: tokens, target: registry, })
     data.forEach((v, i) => v.underlying = tokens[i])
@@ -248,6 +251,18 @@ function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyU
       })
     }
     return data
+  }
+
+  async function getReservesDataFromBlock(api) {
+    const logs = await getLogs({
+      api,
+      target: registry,
+      topics: ['0x3a0ca721fc364424566385a1aa271ed508cc2c0949c2272575fb3013a163a45f'],
+      fromBlock,
+      eventAbi: 'event ReserveInitialized (address indexed underlying, address indexed aTokenAddress, address stableDebtTokenAddress, address variableDebtTokenAddress, address interestRateStrategyAddress)',
+      onlyArgs: true,
+    })
+    return logs
   }
 
   const abiv2 = {

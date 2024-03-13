@@ -1,5 +1,16 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, sumTokensExport, } = require('../helper/unwrapLPs');
+const { data } = require("../helper/chain/waves");
+const sdk = require('@defillama/sdk')
+
+const wavesCoinBridgeContract = '3PFPuctNkdbwGKKUNymWw816jGPexHzGXW5';
+
+async function wavesTVL() {
+  const balances = {};
+  const contractTVLInWAVES = await data(wavesCoinBridgeContract, "BALANCE");
+  sdk.util.sumSingleBalance(balances, 'waves', contractTVLInWAVES.value / 1e8)
+  return balances;
+}
 
 const config = {
   ethereum: [
@@ -10,6 +21,10 @@ const config = {
         ADDRESSES.ethereum.USDC,
         ADDRESSES.ethereum.WBTC,
         ADDRESSES.ethereum.CRV,
+        ADDRESSES.ethereum.UNI,
+        ADDRESSES.ethereum.MKR,
+        ADDRESSES.ethereum.LINK,
+        ADDRESSES.ethereum.CRVUSD,
       ],
       '0x0de7b091A21BD439bdB2DfbB63146D9cEa21Ea83'
     ]
@@ -36,11 +51,22 @@ const config = {
     ]
   ],
   tron: [
-    [[nullAddress], 'TMsm33cUm8HuxyRqwG7xhV46cmx5NVPPGB']
+    [[nullAddress], 'TMsm33cUm8HuxyRqwG7xhV46cmx5NVPPGB'],
+    [
+      [
+        ADDRESSES.tron.USDT,
+        ADDRESSES.tron.USDC
+      ],
+      'TNN42f7dXYksBsh8hjVo8XD8aYSKcSEhJF'
+    ]
   ]
 }
 module.exports = {};
 
 Object.keys(config).forEach(chain => {
-  module.exports[chain] = { tvl: sumTokensExport({ ownerTokens: config[chain] }) }
+  module.exports[chain] = { tvl: sumTokensExport({ ownerTokens: config[chain], logCalls: true }) }
 })
+module.exports.waves = { tvl: wavesTVL }
+
+module.exports.timetravel = false; // Waves blockchain
+module.exports.methodology = 'All tokens locked in PepeTeam Bridge.';

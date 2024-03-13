@@ -48,7 +48,6 @@ Object.keys(contracts).forEach(chain => {
       if (chain === 'optimism') return opTvl(api, position)
       const orderIds = []
       const monitors = await api.fetchList({  lengthAbi: 'uint256:monitorsLength', target: position, itemAbi: abi.monitors })
-      console.log(monitors, chain)
       for (const monitor of monitors) {
         const _orderIds = await api.fetchList({ target: monitor, lengthAbi: 'uint256:getTokenIdsLength', itemAbi: abi.tokenIds, })
         orderIds.push(..._orderIds)

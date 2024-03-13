@@ -1,16 +1,15 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
-const { stakings } = require("../helper/staking");
-const { sumTokensExport,  } = require('../helper/unwrapLPs')
+const { sumTokensExport } = require("../helper/unwrapLPs");
+
+const abi = {
+  loansValue: "uint256:loansValue",
+  v1Asset: "address:getUnderlyingAsset",
+  v2Asset: "address:asset",
+}
 
 const addresses = {
   elfi: "0x4da34f8264cb33a5c9f17081b9ef5ff6091116f4",
   el: "0x2781246fe707bb15cee3e5ea354e2154a2877b16",
   elStaking: "0x3F0c3E32bB166901AcD0Abc9452a3f0c5b8B2C9D",
-  dai: ADDRESSES.ethereum.DAI,
-  usdt: ADDRESSES.ethereum.USDT,
-  busd: ADDRESSES.ethereum.BUSD,
-  usdc: ADDRESSES.ethereum.USDC,
   elfiStaking: [
     "0xb41bcd480fbd986331eeed516c52e447b50dacb4",
     "0xCD668B44C7Cf3B63722D5cE5F655De68dD8f2750",
@@ -23,48 +22,63 @@ const addresses = {
   ],
 };
 
-const moneyPools = {
-  ethereum: [
-    [addresses.dai, '0x527c901e05228f54a9a63151a924a97622f9f173'],
-    [addresses.usdt, '0xe0bda8e3a27e889837ae37970fe97194453ee79c'],
-    [addresses.usdc, '0x3fea4cc5a03e372ac9cded96bd07795ac9034d71'],
-  ],
-  bsc: [[ADDRESSES.bsc.BUSD, '0x5bb4d02a0ba38fb8b916758f11d9b256967a1f7f']]
-}
 
-function borrowed(chain) {
-  return async (_, _b, {[chain]: block}) => {
-    const pools = moneyPools[chain]
-    const { output: bals } = await sdk.api.abi.multiCall({
-      abi: 'erc20:balanceOf',
-      calls: pools.map(i => ({ target: i[0], params: i[1]})),
-      chain, block,
-    })
-    const { output: totalSupplies } = await sdk.api.abi.multiCall({
-      abi: 'erc20:totalSupply',
-      calls: pools.map(i => ({ target: i[1]})),
-      chain, block,
-    })
-    const balances = {}
-    bals.forEach(({ input: { target }, output }, i) => {
-      sdk.util.sumSingleBalance(balances,target,totalSupplies[i].output - output, chain)
-    })
-    return balances
+const config = {
+  ethereum: {
+    v1Pools: ['0x527c901e05228f54a9a63151a924a97622f9f173', '0x3fea4cc5a03e372ac9cded96bd07795ac9034d71', '0xe0bda8e3a27e889837ae37970fe97194453ee79c'],
+    stakingConfig: {
+      tokens: [addresses.el, addresses.elfi],
+      owners: [addresses.elStaking, ...addresses.elfiStaking],
+    },
+  },
+  bsc: {
+    v1Pools: ['0x5bb4d02a0ba38fb8b916758f11d9b256967a1f7f'],
+    v2Pools: ['0x924B375Ea2E8f1F2E686E53823748C7C29ad6466', '0xB21a2a097FFC25A4B1C9baA50da482eA84687dcE', '0x836B9a6EF1B6a813136fe91803285383Ba94956C', '0x5a0154B76E8afe0ef3AA28fD6b4eA863458dB9EB'],
+    stakingConfig: {
+      tokens: [addresses.bscElfi],
+      owners: addresses.bscElfiStaking,
+    },
+  },
+  klaytn: {
+    v2Pools: ['0x60961ca3A40BE41ddDEf708bf51ef2F8e9760A3b', '0x7F97f905A8d6fe4C493D339F094232E3577b4DBd']
   }
 }
 
-module.exports = {
-  ethereum: {
-    borrowed: borrowed('ethereum'),
-    tvl: sumTokensExport({ tokensAndOwners: moneyPools.ethereum}),
-    staking: sumTokensExport({
-      tokens: [addresses.el, addresses.elfi],
-      owners: [addresses.elStaking, ...addresses.elfiStaking],
-    }),
-  },
-  bsc: {
-    borrowed: borrowed('bsc'),
-    tvl: sumTokensExport({ tokensAndOwners: moneyPools.bsc, chain: 'bsc'}),
-    staking: stakings(addresses.bscElfiStaking, addresses.bscElfi, "bsc"),
-  },
-}; // node test.js projects/elysia/index.js
+Object.keys(config).forEach(chain => {
+  const { v1Pools, v2Pools, stakingConfig } = config[chain]
+  module.exports[chain] = {
+    tvl: async (_, _b, _cb, { api, }) => {
+      if (v1Pools) {
+        const v1Assets = await api.multiCall({ abi: abi.v1Asset, calls: v1Pools })
+        await api.sumTokens({ tokensAndOwners2: [v1Assets, v1Pools] })
+      }
+
+      if (v2Pools) {
+        const v2Assets = await api.multiCall({ abi: abi.v2Asset, calls: v2Pools })
+        await api.sumTokens({ tokensAndOwners2: [v2Assets, v2Pools] })
+      }
+      return api.getBalances()
+    },
+    borrowed: async (_, _b, _cb, { api, }) => {
+      if (v1Pools) {
+        const v1Assets = await api.multiCall({ abi: abi.v1Asset, calls: v1Pools })
+        const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: v1Assets.map((v, i) => ({ target: v, params: v1Pools[i] })) })
+        const supplies = await api.multiCall({ abi: 'uint256:totalSupply', calls: v1Pools })
+        api.addTokens(v1Assets, supplies)
+        api.addTokens(v1Assets, bals.map(i => i * -1))
+      }
+
+      if (v2Pools) {
+        const v2Assets = await api.multiCall({ abi: abi.v2Asset, calls: v2Pools })
+        const loansValues = await api.multiCall({ abi: abi.loansValue, calls: v2Pools })
+        api.addTokens(v2Assets, loansValues)
+      }
+      return api.getBalances()
+    },
+  }
+
+  if (stakingConfig) {
+    module.exports[chain].staking = sumTokensExport(stakingConfig)
+  }
+
+})

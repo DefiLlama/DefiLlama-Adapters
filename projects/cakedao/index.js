@@ -24,3 +24,5 @@ module.exports = {
     cake
   ),
 };
+
+module.exports.deadFrom = '2022-02-01'
