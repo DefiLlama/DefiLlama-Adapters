@@ -2,7 +2,7 @@ const { aaveChainTvl } = require('../helper/aave');
 
 
 function v3(chain) {
-    const section = borrowed => aaveChainTvl(chain, '0xE58Ebf93885c8Ea0368fCe84aF79EC983b80c8D5', undefined, ['0x01B24202080395f9F6A9AE47f8431D9f0040f927'], borrowed, true);
+    const section = borrowed => aaveChainTvl(chain, '0xE58Ebf93885c8Ea0368fCe84aF79EC983b80c8D5', undefined, ['0xeB3C203418f0cb55b351C3E45A5C4f47bE5DA77A'], borrowed, true);
     return {
         tvl: section(false),
         borrowed: section(true)
