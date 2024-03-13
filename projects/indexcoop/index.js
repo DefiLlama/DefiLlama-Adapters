@@ -36,6 +36,8 @@ async function tvl(timestamp, block, _, { api }) {
   const toa = []
   sets.forEach((o, i) => toa.push([tokens[i], o]))
   toa.push([[aaveDebtToken], icethAddress])
+  toa.push([['0x72e95b8931767c79ba4eee721354d6e99a61d004'], eth2x])
+  toa.push([['0x72E95b8931767C79bA4EeE721354d6E99a61D004'], btc2x])
   const balances = await sumTokens2({ api, ownerTokens: toa, blacklistedTokens: sets })
   const usdcDebt = await api. multiCall({abi:"function borrowBalanceStored(address account) view returns (uint256)", target: "0x39aa39c021dfbae8fac545936693ac917d5e7563", calls:[ethFliAddress, btcFliAddress]})
   usdcDebt.forEach(i => sdk.util.sumSingleBalance(balances,USDC,i * -1, api.chain))
