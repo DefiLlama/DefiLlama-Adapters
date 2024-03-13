@@ -11,15 +11,13 @@ async function ethtvl(time, ethBlock, _b, {api}) {
 async function bsctvl(time, ethBlock, _b, {api}) {
     return sumTokens2({ tokens: [flokiToken], owner: contract, api })
   }
-
+// The TVL is the TVL. You count things like Liquid staking and lending pools in the normal TVL as well, which means that this number should NOT be under staking, but under normal TVL.
 module.exports = {
   methodology: `We count the FLOKI on ${contract}`,
   ethereum: {
-    tvl:  ()=>({}) ,
-    staking: ethtvl
+    tvl:  ethtvl
   },
   bsc: {
-    tvl: ()=>({}) ,
-    staking: bsctvl
+    tvl: bsctvl
   }
 }
