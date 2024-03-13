@@ -27,15 +27,17 @@ async function borrowed(ts) {
   const graphData = await getGraphData(ts, network, api);
   if (graphData.pools.length > 0) {
     const poolLists = graphData.pools;
+
     var pools = poolLists.filter((value) => {
       return depositAddress.length == 0 || depositAddress.indexOf(value.vault) == -1;
     });
+
     const poolConcretes = await concrete(pools, api);
     const nav = await api.multiCall({
       abi: abi.getSubscribeNav,
       calls: pools.map((index) => ({
         target: index.navOracle,
-        params: [index.poolId, ts]
+        params: [index.poolId, ts * 1000]
       })),
     })
 
