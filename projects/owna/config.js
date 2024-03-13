@@ -11,7 +11,7 @@ module.exports = {
       lendingContract: '0x27Ca3D6c64398FF9BcF2E66896EC4B3BEc5e1959',
     },
     {
-      name: 'polygon_mainnet',
+      name: 'polygon',
       tokens: [
         ADDRESSES.polygon.USDC,
       ],
