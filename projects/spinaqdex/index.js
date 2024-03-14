@@ -8,6 +8,6 @@ module.exports = {
     misrepresentedTokens: true,
     methodology: `Uses Uniswap-style factory address to find and price liquidity pairs.`,
     arbitrum: {
-        tvl: getUniTVL({ factory: FACTORY, useDefaultCoreAssets: true, fetchBalances: true, chain: 'arbitrum' }),
+        tvl: getUniTVL({ factory: FACTORY, useDefaultCoreAssets: true,}),
     },
 };

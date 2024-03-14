@@ -1,4 +1,4 @@
-const { queryContract, queryContracts, sumTokens } = require('../helper/chain/cosmos')
+const { queryContract, queryContracts, sumTokens, queryContractWithRetries } = require('../helper/chain/cosmos')
 const { PromisePool } = require('@supercharge/promise-pool')
 const { transformDexBalances } = require('../helper/portedTokens')
 
@@ -26,7 +26,7 @@ async function getAllPairs(factory, chain) {
   } while (currentPairs.length > 0)
   const dtos = []
   const getPairPool = (async (pair) => {
-    const pairRes = await queryContract({ contract: pair.contract_addr, chain, data: { pool: {} } })
+    const pairRes = await queryContractWithRetries({ contract: pair.contract_addr, chain, data: { pool: {} } })
     const pairDto = {}
     pairDto.assets = []
     pairDto.addr = pair.contract_addr
@@ -36,10 +36,13 @@ async function getAllPairs(factory, chain) {
     })
     dtos.push(pairDto)
   })
-  await PromisePool
-    .withConcurrency(25)
+  const {errors} = await PromisePool
+    .withConcurrency(10)
     .for(allPairs)
     .process(getPairPool)
+  if((errors?.length ?? 0) > 50){
+    throw new Error(`Too many errors: ${errors.length}/${allPairs.length} on ${chain}`)
+  }
   return dtos
 }
 
