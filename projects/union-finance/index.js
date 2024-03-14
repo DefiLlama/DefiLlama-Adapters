@@ -1,5 +1,6 @@
 
-const ADDRESSES = require('../helper/coreAssets.json')
+const ADDRESSES = require('../helper/coreAssets.json');
+const methodologies = require('../helper/methodologies');
 
 const config = {
   ethereum: {
@@ -45,8 +46,7 @@ async function borrowed() {
 }
 
 module.exports = {
-  methodology:
-    "Counts the tokens locked in the contracts to be used to underwrite or to borrow. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted.",
+  methodology: methodologies.lendingMarket,
 };
 
 Object.keys(config).forEach(chain => {

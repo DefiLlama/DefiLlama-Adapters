@@ -86,7 +86,7 @@ async function tvl(_, block, _c) {
     })
     toa.push([maticToken, plasmaDepositManager])
     toa.push([maticToken, stakeManager])
-    return sumTokens2({ block, tokensAndOwners: toa })
+    return sumTokens2({ block, tokensAndOwners: toa, blacklistedTokens: ['0x99fe3b1391503a1bc1788051347a1324bff41452'] })
 }
 
 module.exports = {
