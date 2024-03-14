@@ -1,4 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
+const { staking } = require('../helper/staking')
 const { sumTokensExport } = require('../helper/unwrapLPs')
 
 const COLLATERALS = {
@@ -36,6 +37,26 @@ const COLLATERALS = {
   },
 }
 
+// https://www.coingecko.com/en/coins/goku-money-gai
+const GAI_TOKEN_ADDRESS = "0xcd91716ef98798A85E79048B78287B13ae6b99b2"
+
+const GAI_STABILITY_POOL = [
+  // USDC
+  "0xC5392Be704A4654444CcEE4A8407cbF4A0ed5F2A",
+  // USDT
+  "0x000aF1623BeCcd809c51cD2440cc8E1B55D191b4",
+  // TIA
+  "0x333E6492B5c2eAfAFCB709c5914D53b01C640b33",
+  // WETH
+  "0x5E9924f545Ed8116b1Ae4315653e1b0E52a2bfc4",
+  // MANTA
+  "0xEd055B283360151c73BceCE90602f0d624c0409E",
+  // wUSDM
+  "0x9e2eF806bB7e66f74582d309f84f1EB522022b31",
+  // STONE
+  "0x019d97fE468eDEBA5E3302985F934Ddba46A9959",
+]
+
 function getCollateralOwnersAndToken() {
   const tokensAndOwners = []
   for (const [collateral, collateralInfo] of Object.entries(COLLATERALS)) {
@@ -46,7 +67,6 @@ function getCollateralOwnersAndToken() {
   return tokensAndOwners;
 }
 
-
 module.exports = {
   start: 1698768000, // 01 Nov 2023
   methodology: "Total locked collateral assets (in ERC-20 form) in ActivePool and DefaultPool, plus total staked GAI in StabilityPool",
@@ -54,7 +74,8 @@ module.exports = {
     tvl: sumTokensExport({
       tokensAndOwners: [
         ...getCollateralOwnersAndToken(),
-      ]
+      ],
     }),
+    staking: staking(GAI_STABILITY_POOL, GAI_TOKEN_ADDRESS, "manta")
   },
 };
