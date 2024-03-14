@@ -17,7 +17,7 @@ const config = {
     factories: [
       { factory: '0x1cb9cf5439dced63d8f5b7f1a5bf9834d8076a9a', fromBlock: 34735173, },
     ],
-    tokens: [ADDRESSES.null, ADDRESSES.polygon.WMATIC, ADDRESSES.polygon.MATICX, '0xfa68fb4628dff1028cfec22b4162fccd0d45efb6', '0x4a1c3ad6ed28a636ee1751c69071f6be75deb8b8', '0x80ca0d8c38d2e2bcbab66aa1648bd1c7160500fe']
+    tokens: [ADDRESSES.null, ADDRESSES.polygon.WMATIC, ADDRESSES.polygon.MATICX, ADDRESSES.polygon.MATICX, '0x4a1c3ad6ed28a636ee1751c69071f6be75deb8b8', '0x80ca0d8c38d2e2bcbab66aa1648bd1c7160500fe']
   },
   avax: {
     factories: [

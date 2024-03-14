@@ -41,7 +41,7 @@ const fixBalancesTokens = {
     "0xBD0adB3Ee21e0A75D3021384177238883D69e883": { coingeckoId: "ordinals", decimals: 18 },
   },
   astrzk: {
-    '0xe9cc37904875b459fa5d0fe37680d36f1ed55e38': { coingeckoId: "ethereum", decimals: 18 },
+    [ADDRESSES.astarzk.WETH]: { coingeckoId: "ethereum", decimals: 18 },
   },
   inevm: {
     "0x97423a68bae94b5de52d767a17abcc54c157c0e5": { coingeckoId: "tether", decimals: 6 },
