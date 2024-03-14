@@ -1,4 +1,4 @@
-const {getUniTVL} = require("../helper/unknownTokens");
+const { uniTvlExport } = require('../helper/unknownTokens')
 
 /*
 let TVL_SHIBARIUM_V1 = getUniTVL({factory: "0xBe0223f65813C7c82E195B48F8AAaAcb304FbAe7", useDefaultCoreAssets: true,})
@@ -14,6 +14,12 @@ module.exports = {
     },
     shibarium: {
         tvl: getUniTVL({factory: "0xBe0223f65813C7c82E195B48F8AAaAcb304FbAe7", useDefaultCoreAssets: true,})
+    },
+    base: {
+        tvl: getUniTVL({factory: "0xeE42fe6d6Be1eF43701DDAbc417AD22d82C5ecC3", useDefaultCoreAssets: true,})
+    },
+    cronos: {
+        tvl: getUniTVL({factory: "0xD716B78F0002C23190B024fc93C33CF73E30b8A6", useDefaultCoreAssets: true,})
     }
 }
 
