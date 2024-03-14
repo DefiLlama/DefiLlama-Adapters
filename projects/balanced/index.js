@@ -21,4 +21,7 @@ module.exports = {
   icon: {
     tvl
   },
+  archway: {
+    tvl
+  },
 };
