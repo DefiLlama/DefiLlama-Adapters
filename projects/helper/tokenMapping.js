@@ -57,8 +57,8 @@ const fixBalancesTokens = {
     "0x3e4079ad76c83760e22b5c0105670ebab88b8d0e": { coingeckoId: "tether", decimals: 18 },
   },
   q: {
-    [ADDRESSES.q.USDC]: { coingeckoId: "usd-coin", decimals: 6 },
-    [ADDRESSES.q.DAI]: { coingeckoId: "dai", decimals: 18 },
+    [ADDRESSES.q.WUSDC]: { coingeckoId: "usd-coin", decimals: 6 },
+    [ADDRESSES.q.WDAI]: { coingeckoId: "dai", decimals: 18 },
     [ADDRESSES.q.WBTC]: { coingeckoId: "wrapped-bitcoin", decimals: 8 },
   },
   // Sample Code
