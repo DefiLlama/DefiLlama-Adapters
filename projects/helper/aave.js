@@ -4,7 +4,8 @@ const sdk = require('@defillama/sdk');
 const { default: BigNumber } = require('bignumber.js');
 const abi = require('./abis/aave.json');
 const { getChainTransform, getFixBalancesSync, } = require('../helper/portedTokens')
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const { sumTokens2 } = require('../helper/unwrapLPs');
+const methodologies = require('./methodologies');
 
 async function getV2Reserves(block, addressesProviderRegistry, chain, dataHelperAddress, abis = {}) {
   let validProtocolDataHelpers
@@ -132,6 +133,7 @@ function aaveExports(chain, addressesProviderRegistry, transform = undefined, da
 }
 
 module.exports = {
+  methodology: methodologies.lendingMarket,
   aaveChainTvl,
   getV2Reserves,
   getTvl,
