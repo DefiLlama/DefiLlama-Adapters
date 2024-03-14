@@ -56,6 +56,11 @@ const fixBalancesTokens = {
     "0x013e54bee29813bd786b24f9cb08f47c4b75955c": { coingeckoId: "usd-coin", decimals: 6 },
     "0x3e4079ad76c83760e22b5c0105670ebab88b8d0e": { coingeckoId: "tether", decimals: 18 },
   },
+  q: {
+    [ADDRESSES.q.WUSDC]: { coingeckoId: "usd-coin", decimals: 6 },
+    [ADDRESSES.q.WDAI]: { coingeckoId: "dai", decimals: 18 },
+    [ADDRESSES.q.WBTC]: { coingeckoId: "wrapped-bitcoin", decimals: 8 },
+  },
   // Sample Code
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
