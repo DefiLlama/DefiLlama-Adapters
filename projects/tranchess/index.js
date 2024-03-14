@@ -24,14 +24,18 @@ const v2Swaps = [
   '0x87585A84E0A04b96e653de3DDA77a3Cb1fdf5B6a',  // ETH V2 BISHOP Swap
   '0x56118E49582A8FfA8e7309c58E9Cd8A7e2dDAa37',  // BNB V2 BISHOP Swap
   '0xfcF44D5EB5C4A03D03CF5B567C7CDe9B66Ba5773',  // BNB V2 QUEEN Swap
+  '0x6Da3A029d0F0911C7ee36c1cEa2Ea69Fc31dd970',  // BTC USDC BISHOP Swap
+  '0x09427783666Ec4173e951222ab9B3C12871400AA',  // ETH USDC BISHOP Swap
+  '0xD3392699d679DFa57bC8ee71a0Ad44902C1Ab9f7',  // BNB USDC BISHOP Swap
 ]
 
 const ETHV2Funds = [
-  '0x69c53679EC1C06f3275b64C428e8Cd069a2d3966', // ETH V2 Fund (ETH mainnet)
+  '0x811c9dD8B7B670A78d02fac592EbbE465e5dD0FA', // wstETH Fund (ETH mainnet)
 ]
 
 const ETHV2Swaps = [
   '0xBA919470C7a2983fbcdA6ADC89Be9C43b8298079', // ETH V2 BISHOP Swap (ETH mainnet)
+  '0xAD06a2DBd34Da8f8Cf5f85d284A5B93A2057bDb5', // wstETH SWAP (ETH mainnet)
 ]
 
 function getBSCAddress(address) {
@@ -198,7 +202,7 @@ async function ethereum(timestamp, blockETH, chainBlocks){
       block: blockETH
     })).output
 
-    sdk.util.sumSingleBalance(balances, getBSCAddress(quoteAddress), balancesInSwap[1])
+    sdk.util.sumSingleBalance(balances, quoteAddress, balancesInSwap[1])
   }
   
   return balances

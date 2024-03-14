@@ -66,6 +66,7 @@ const config = {
   optimism: { factory: '0xa523f47A933D5020b23629dDf689695AA94612Dc', fromBlock: 83239534, voterProxy: '0xc181edc719480bd089b94647c2dc504e2700a2b0' },
   polygon: { factory: '0x22625eedd92c81a219a83e1dc48f88d54786b017', fromBlock: 40687417, voterProxy: '0xC181Edc719480bd089b94647c2Dc504e2700a2B0' },
   xdai: { factory: '0x83E443EF4f9963C77bd860f94500075556668cb8', fromBlock: 27088527, voterProxy: '0xC181Edc719480bd089b94647c2Dc504e2700a2B0' },
+  polygon_zkevm: { factory: '0x2498A2B0d6462d2260EAC50aE1C3e03F4829BA95', fromBlock: 203652, voterProxy: '0xC181Edc719480bd089b94647c2Dc504e2700a2B0' },
 }
 
 module.exports = {
