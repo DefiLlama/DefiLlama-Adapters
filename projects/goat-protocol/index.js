@@ -1,8 +1,11 @@
 const { yieldHelper } = require("../helper/unknownTokens");
 const { getConfig } = require('../helper/cache');
+const { staking } = require('../helper/staking')
 
 const chain = "arbitrum";
 const tokenAPI = "address:want";
+const GOA_TOKEN_CONTRACT = '0x8c6Bd546fB8B53fE371654a0E54D7a5bD484b319';
+const REWARD_POOL_CONTRACT = '0xAD9CE8580a1Cd887038405275cB02443E8fb88aC';
 
 module.exports = {
   timetravel: false,
@@ -16,6 +19,7 @@ module.exports = {
         if(pools[i].platformId != 'goatfi')
           vaults.push(pools[i].earnedTokenAddress);
       return yieldHelper({ vaults, chain, block, tokenAPI, useDefaultCoreAssets: true, })
-    }
+    },
+    staking: staking(REWARD_POOL_CONTRACT, GOA_TOKEN_CONTRACT, "arbitrum")
   }
 }
