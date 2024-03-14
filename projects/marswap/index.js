@@ -1,4 +1,4 @@
-const { uniTvlExport } = require('../helper/unknownTokens')
+const {getUniTVL} = require("../helper/unknownTokens");
 
 /*
 let TVL_SHIBARIUM_V1 = getUniTVL({factory: "0xBe0223f65813C7c82E195B48F8AAaAcb304FbAe7", useDefaultCoreAssets: true,})
