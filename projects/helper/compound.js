@@ -8,6 +8,8 @@ const { getChainTransform, transformBalances } = require('./portedTokens');
 const { usdtAddress } = require('./balances');
 const agoraAbi = require("./../agora/abi.json");
 const { sumTokens2, nullAddress, unwrapLPsAuto, } = require('./unwrapLPs')
+const methodologies = require('./methodologies');
+
 // ask comptroller for all markets array
 async function getAllCTokens(comptroller, block, chain, allMarketsAbi = abi['getAllMarkets']) {
   return (await sdk.api.abi.call({
@@ -33,7 +35,7 @@ async function getMarkets(comptroller, block, chain, cether, cetheEquivalent, bl
     allCTokens.forEach(cToken => {
       cToken = cToken.toLowerCase()
       if (blacklist.includes(cToken)) return;
-      if (cether && cToken === cether.toLowerCase()) {
+      if (cether && (cToken === cether.toLowerCase?.() || cether.includes(cToken))) {
         markets.push({ underlying: cetheEquivalent, cToken })
         return;
       }
@@ -330,6 +332,7 @@ function compoundExports2({ comptroller, chain, cether, cetheEquivalent = nullAd
 }
 
 module.exports = {
+  methodology: methodologies.lendingMarket,
   getCompoundV2Tvl,
   compoundExports,
   compoundExports2,

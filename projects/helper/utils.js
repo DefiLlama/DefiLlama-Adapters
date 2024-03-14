@@ -95,6 +95,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'scroll' && /(cSLP|sSLP)$/.test(symbol)) return true //syncswap LP
   if (chain === 'btn' && /(XLT)$/.test(symbol)) return true //xenwave LP
   if (['fantom', 'nova',].includes(chain) && ['NLT'].includes(symbol)) return true
+  if (chain === 'ethereumclassic' && symbol === 'ETCMC-V2') return true
   let label
 
   if (symbol.startsWith('ZLK-LP') || symbol.includes('DMM-LP') || (chain === 'avax' && 'DLP' === symbol) || symbol === 'fChe-LP')
