@@ -18,7 +18,6 @@ async function tvl(_ts, _b, _cb, { api, }) {
 module.exports = {
   methodology: `We count the ICP locked inside the Neurons of the Neurons Fund`,
   icp: {
-    tvl: () => ({}),
-    staking: tvl,
+    tvl
   },
 }

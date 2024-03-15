@@ -55,7 +55,6 @@ async function tvl(_ts, _b, _cb, { api, }) {
 module.exports = {
   methodology: `We count the ICP on all SNS treasuries accounts as the collateral`,
   icp: {
-    tvl: () => ({}),
-    staking: tvl,
+    tvl
   },
 }
