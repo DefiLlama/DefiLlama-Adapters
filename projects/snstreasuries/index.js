@@ -19,7 +19,7 @@ async function tvl() {
       },
     );
     let snses = data.data;
-    if (snses.length == undefined ||snses.length == 0) {
+    if (snses.length == undefined || snses.length == 0) {
       break;
     }
 
@@ -50,10 +50,13 @@ async function tvl() {
     offset += limit;
   }
 
-  api.add('coingecko:icp', icp_balance / 1e8)
+  api.add('coingecko:icp', icp_balance / 1e8, {})
 }
 
 module.exports = {
   methodology: `We count the ICP on all SNS treasuries accounts as the collateral`,
-  icp: { tvl: tvl },
+  icp: {
+    tvl: () => ({}),
+    staking: tvl,
+  },
 }
