@@ -21,7 +21,7 @@ async function tvl(_ts, _b, _cb, { api, }) {
         SNS_URL + `${root_canister_id}`);
 
       let icp_ledger_treasury_accountidentifier = data.icp_treasury_account;
-      var data = await get(
+      let data = await get(
         ICP_URL + `${icp_ledger_treasury_accountidentifier}`);
       icp_balance += parseInt(data.balance);
     }
