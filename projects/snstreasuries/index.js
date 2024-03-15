@@ -50,6 +50,7 @@ async function tvl(_ts, _b, _cb, { api, }) {
   }
 
   api.add('coingecko:icp', icp_balance / 1e8, { skipChain: true })
+  return api.getBalances()
 }
 
 module.exports = {

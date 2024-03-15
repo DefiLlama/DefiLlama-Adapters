@@ -13,6 +13,7 @@ async function tvl(_ts, _b, _cb, { api, }) {
   );
   let neuron_fund_balance = parseInt(data.community_fund_total_staked[0][1]);
   api.add('coingecko:icp', neuron_fund_balance / 1e8, { skipChain: true })
+  return api.getBalances()
 }
 
 module.exports = {
