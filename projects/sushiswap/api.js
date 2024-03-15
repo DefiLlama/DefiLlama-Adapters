@@ -93,6 +93,9 @@ module.exports = {
   filecoin: {
     tvl: getUniTVL({ factory: '0x9B3336186a38E1b6c21955d112dbb0343Ee061eE', useDefaultCoreAssets: true, }),
   },
+  zeta: {
+    tvl: getUniTVL({ factory: '0x33d91116e0370970444B0281AB117e161fEbFcdD', useDefaultCoreAssets: true, }),
+  },
 }
 
 module.exports.polygon.tvl = getChainTVL('polygon')

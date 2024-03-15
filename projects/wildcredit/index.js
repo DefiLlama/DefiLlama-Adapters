@@ -1,13 +1,12 @@
 const sdk = require("@defillama/sdk");
 const { default: BigNumber } = require("bignumber.js");
 const abi = require("./abi.json");
-const { unwrapUniswapV3NFTs } = require('../helper/unwrapLPs')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getLogs } = require('../helper/cache/getLogs')
 
 BigNumber.config({ EXPONENTIAL_AT: 100 })
 
 const PAIR_FACTORY = "0x0fC7e80090bbc1740595b1fcCd33E0e82547212F";
-const UNI_V3_POSITION_MANAGER = "0xC36442b4a4522E871399CD717aBDD847Ab11FE88"
 const START_BLOCK = 13847198
 
 const calculateTokenTotal = async (balances, block, pairs, abi) => {
@@ -53,7 +52,7 @@ const ethTvl = async (timestamp, ethBlock, chainBlocks, { api }) => {
   await calculateTokenTotal(balances, ethBlock, getTokenPairs(pairs, 'tokenA'), abi.totalSupplyAmount)
   await calculateTokenTotal(balances, ethBlock, getTokenPairs(pairs, 'tokenB'), abi.totalSupplyAmount)
 
-  await unwrapUniswapV3NFTs({ balances, nftsAndOwners: pairs.map(pair => [UNI_V3_POSITION_MANAGER, pair.pair,]), block: ethBlock, })
+  await sumTokens2({ balances, resolveUniV3: true, owners: pairs.map(pair => pair.pair), block: ethBlock, })
 
   return balances;
 };
