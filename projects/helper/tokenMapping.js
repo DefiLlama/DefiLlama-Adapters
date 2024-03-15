@@ -216,7 +216,11 @@ const anyswapTokenBlacklist = {
     ADDRESSES.shiden.ETH,
     ADDRESSES.telos.ETH,
     ADDRESSES.telos.USDT
-  ]
+  ],
+  bfc: {
+    "0x7b8FAC5F29E101BaaB33c5f9c39d4F85ba2cc7C1": ADDRESSES.ethereum.WBTC,
+    "0xd267F821F1b8344B5A63626c8c824697194A173E": ADDRESSES.ethereum.WBTC,
+  }
 }
 
 module.exports = {
