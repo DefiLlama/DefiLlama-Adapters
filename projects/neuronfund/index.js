@@ -18,5 +18,5 @@ async function tvl() {
 
 module.exports = {
   methodology: `We count the ICP locked inside the Neurons of the Neurons Fund`,
-  icp: { tvl: {coingecko: tvl }},
+  icp: { tvl: tvl },
 }
