@@ -17,13 +17,13 @@ async function tvl(_ts, _b, _cb, { api, }) {
     for (let i = 0; i < snses.length; i++) {
       let sns = snses[i];
       let root_canister_id = sns.root_canister_id;
-      var { data, status } = await get(
+      let root_canister = await get(
         SNS_URL + `${root_canister_id}`);
 
-      let icp_ledger_treasury_accountidentifier = data.icp_treasury_account;
-      let data = await get(
+      let icp_ledger_treasury_accountidentifier = root_canister.icp_treasury_account;
+      let icp_ledger = await get(
         ICP_URL + `${icp_ledger_treasury_accountidentifier}`);
-      icp_balance += parseInt(data.balance);
+      icp_balance += parseInt(icp_ledger.balance);
     }
     offset += limit;
   }
