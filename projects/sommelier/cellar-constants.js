@@ -55,6 +55,8 @@ const MORPHO_MAXIMIZER = "0xcf4b531b4cde95bd35d71926e09b2b54c564f5b6";
 const TURBO_DIVETH = "0x6c1edce139291Af5b84fB1e496c9747F83E876c9";
 const TURBO_ETHX = "0x19B8D8FC682fC56FbB42653F68c7d48Dd3fe597E";
 const TURBO_EETH_V2 = "0xdAdC82e26b3739750E036dFd9dEfd3eD459b877A";
+const TURBO_RSETH = "0x1dffb366b5c5A37A12af2C127F31e8e0ED86BDbe";
+const TURBO_EZETH = "0x27500De405a3212D57177A789E30bb88b0AdbeC5";
 
 const cellarsV2p5 = [
   { id: TURBO_SWETH, startBlock: 17910374 },
@@ -68,11 +70,25 @@ const cellarsV2p5 = [
   { id: TURBO_DIVETH, startBlock: 19117472 },
   { id: TURBO_ETHX, startBlock: 19117547 },
   { id: TURBO_EETH_V2, startBlock: 19163705 },
+  { id: TURBO_RSETH, startBlock: 19338456 },
+  { id: TURBO_EZETH, startBlock: 19260727 },
 ];
 
+// v2.5 Cellars on Arbitrum
+const REAL_YIELD_ETH_ARB = "0xC47bB288178Ea40bF520a91826a3DEE9e0DbFA4C";
+const REAL_YIELD_USD_ARB = "0x392B1E6905bb8449d26af701Cdea6Ff47bF6e5A8";
+
+const arbitrumCellarsV2p5 = [
+  { id: REAL_YIELD_ETH_ARB, startBlock: 178830458 },
+  { id: REAL_YIELD_USD_ARB, startBlock: 178141655 }];
+
+
+
 module.exports = {
-    cellarsV0815,
-    cellarsV0816,
-    cellarsV2,
-    cellarsV2p5
-}
+  cellarsV0815,
+  cellarsV0816,
+  cellarsV2,
+  cellarsV2p5,
+  arbitrumCellarsV2p5,
+};
+
