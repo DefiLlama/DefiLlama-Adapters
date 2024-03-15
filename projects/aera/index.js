@@ -61,6 +61,7 @@ Object.keys(config).forEach(chain => {
         const assetRegistries = await api.multiCall({  abi: 'address:assetRegistry', calls: vaults})
 
         const assets = await api.multiCall({ abi: assetRegistryABI, calls: assetRegistries.map(x => ({ target: x}))})
+        console.log(assets)
 
         // const erc4626s = []
         // const ogErc4626s = []
@@ -71,43 +72,43 @@ Object.keys(config).forEach(chain => {
           for (let j = 0; j < assets[i].length; ++j) {
             const assetInfo = assets[i][j]
             tokensAndOwners.push([assetInfo.asset, vault.target])
-            // if (assetInfo.isERC4626) {
-            //   console.log('asset erc4626', assetInfo)
-            //   if (OG_ERC4626_TOKENS.some(x => x === assetInfo.asset.toLowerCase())) {
-            //     ogErc4626s.push([assetInfo.asset, vault.target])
-            //   } else {
-            //     erc4626s.push([assetInfo.asset, vault.target])
-            //   }
-            // } else {
-            //   tokensAndOwners.push([assetInfo.asset, vault.target])
-            // }
+            if (assetInfo.isERC4626) {
+              console.log('asset erc4626', assetInfo)
+              if (OG_ERC4626_TOKENS.some(x => x === assetInfo.asset.toLowerCase())) {
+                ogErc4626s.push([assetInfo.asset, vault.target])
+              } else {
+                erc4626s.push([assetInfo.asset, vault.target])
+              }
+            } else {
+              tokensAndOwners.push([assetInfo.asset, vault.target])
+            }
           }
         }
 
-        // console.log('arrays')
-        // console.log(erc4626s, tokensAndOwners, ogErc4626s)
+        console.log('arrays')
+        console.log(erc4626s, tokensAndOwners, ogErc4626s)
 
-        // const [underlyingTokens, underylingTokensOg] = await Promise.all([
-        //   api.multiCall({ abi: 'address:token', calls: erc4626s.map(x => x[0])}),
-        //   api.multiCall({ abi: 'address:asset', calls: ogErc4626s.map(x => x[0])})
-        // ])
+        const [underlyingTokens, underylingTokensOg] = await Promise.all([
+          api.multiCall({ abi: 'address:token', calls: erc4626s.map(x => x[0])}),
+          api.multiCall({ abi: 'address:asset', calls: ogErc4626s.map(x => x[0])})
+        ])
 
-        // console.log('underylingTokens -------------------------------------------')
-        // console.log(underlyingTokens, underylingTokensOg)
+        console.log('underylingTokens -------------------------------------------')
+        console.log(underlyingTokens, underylingTokensOg)
 
-        // const [vaultBalances, vaultBalancesOg, underlyingBalances, underlyingBalancesOg] = await Promise.all([
-        //   api.multiCall({abi: 'erc20:balanceOf', calls: erc4626s.map(x => ({target: x[0], params: x[1]}))}),
-        //   api.multiCall({abi: 'erc20:balanceOf', calls: ogErc4626s.map(x => ({target: x[0], params: x[1]}))}),
-        //   api.multiCall({abi: 'uint256:balance', calls: erc4626s.map((v, i) => ({target: underlyingTokens[i]}))}),
-        //   api.multiCall({abi: 'uint256:totalAssets', calls: ogErc4626s.map((v, i) => ({target: underylingTokensOg[i]}))})
-        // ])
+        const [vaultBalances, vaultBalancesOg, underlyingBalances, underlyingBalancesOg] = await Promise.all([
+          api.multiCall({abi: 'erc20:balanceOf', calls: erc4626s.map(x => ({target: x[0], params: x[1]}))}),
+          api.multiCall({abi: 'erc20:balanceOf', calls: ogErc4626s.map(x => ({target: x[0], params: x[1]}))}),
+          api.multiCall({abi: 'uint256:balance', calls: erc4626s.map((v, i) => ({target: underlyingTokens[i]}))}),
+          api.multiCall({abi: 'uint256:totalAssets', calls: ogErc4626s.map((v, i) => ({target: underylingTokensOg[i]}))})
+        ])
 
-        // console.log('vaultBalances -------------------------------------------')
-        // console.log(vaultBalances, vaultBalancesOg)
+        console.log('vaultBalances -------------------------------------------')
+        console.log(vaultBalances, vaultBalancesOg)
 
 
-        // console.log('underlyingBalances -------------------------------------------')
-        // console.log(underlyingBalances, underlyingBalancesOg)
+        console.log('underlyingBalances -------------------------------------------')
+        console.log(underlyingBalances, underlyingBalancesOg)
 
         return sumTokens2({ api, tokensAndOwners })
       }
