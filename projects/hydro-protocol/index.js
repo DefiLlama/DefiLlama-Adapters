@@ -1,7 +1,7 @@
 const { queryContract, totalSupply } = require("../helper/chain/cosmos");
 const ADDRESSES = require("../helper/coreAssets.json");
 const { getClient } = require("../helper/chain/injective");
-const { IndexerGrpcMitoApi, spotPriceFromChainPrice, spotQuantityFromChainQuantity, IndexerGrpcSpotApi } = require('@injectivelabs/sdk-ts')
+const { spotPriceFromChainPrice, spotQuantityFromChainQuantity, IndexerGrpcSpotApi } = require('@injectivelabs/sdk-ts')
 const BigNumber = require("bignumber.js");
 const { get } = require("../helper/http");
 
@@ -17,16 +17,18 @@ const injectiveClient = getClient()
 async function tvl(_, _1, _2, { api }) {
   const { total_supply } = await queryContract({ chain: api.chain, contract: hinj, data: { token_info: {} } })
   const { total_bonded } = await queryContract({ chain: api.chain, contract: autoCompound, data: { state: {} } })
-  const hdroCirculatingSupply = new BigNumber(await get("https://index.hydroprotocol.finance/circulating-supply"))
-  const marketInjQuantity = await loadMarketInjQuantity()
   const hdroInjPrice = await loadHdroInjPrice()
+  const hdroLiquidity = await loadMarketHdroQuantity()
+
+  const { total_supply: xHdroTotalSuuply } = await queryContract({ chain: api.chain, contract: xhdro, data: { token_info: {} } })
+  const hdroQuantity = hdroLiquidity
+    .plus(new BigNumber(xHdroTotalSuuply))
 
   api.add(
     ADDRESSES.injective.INJ,
     new BigNumber(total_supply)
       .plus(new BigNumber(total_bonded))
-      .plus(new BigNumber(marketInjQuantity))
-      .plus(hdroCirculatingSupply.multipliedBy(hdroInjPrice))
+      .plus(hdroQuantity.multipliedBy(hdroInjPrice))
       .toFixed(0)
   )
 }
@@ -66,5 +68,6 @@ module.exports = {
   methodology: "Liquidity on hydro-protocol",
   injective: {
     tvl,
+    pool2,
   },
 };
