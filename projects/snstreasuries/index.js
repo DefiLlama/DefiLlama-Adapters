@@ -3,11 +3,10 @@ axios = require("axios");
 const SNS_URL = "https://sns-api.internetcomputer.org/api/v1/snses/"
 const ICP_URL = "https://ledger-api.internetcomputer.org/accounts/"
 
-async function tvl() {
+async function tvl(_ts, _b, _cb, { api, }) {
   let offset = 0;
   const limit = 100;
   var icp_balance = 0;
-  const { api } = arguments[2]
   while (true) {
     var { data, status } = await axios.get(
       SNS_URL + `?offset=${offset}&limit=${limit}&sort_by=name`
@@ -50,7 +49,7 @@ async function tvl() {
     offset += limit;
   }
 
-  api.add('coingecko:icp', icp_balance / 1e8, {})
+  api.add('coingecko:icp', icp_balance / 1e8, { skipChain: true })
 }
 
 module.exports = {
