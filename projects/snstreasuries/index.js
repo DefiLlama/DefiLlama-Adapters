@@ -7,6 +7,7 @@ async function tvl() {
   let offset = 0;
   const limit = 100;
   var icp_balance = 0;
+  const { api } = arguments[2]
   while (true) {
     var { data, status } = await axios.get(
       SNS_URL + `?offset=${offset}&limit=${limit}&sort_by=name`
@@ -49,7 +50,7 @@ async function tvl() {
     offset += limit;
   }
 
-  return icp_balance;
+  api.add('coingecko:icp', icp_balance / 1e8)
 }
 
 module.exports = {
