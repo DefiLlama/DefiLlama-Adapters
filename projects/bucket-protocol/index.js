@@ -48,7 +48,7 @@ const CETABLE_PSM =
   "0x6e94fe6910747a30e52addf446f2d7e844f69bf39eced6bed03441e01fa66acd";
 
 const STAPEARL_PSM =
-  "0x368b7301b499eded2949f9d0806254144ac368eb7173ec42c36b7db87e9af9a8";
+  "0xccdaf635eb1c419dc5ab813cc64c728a9f5a851202769e254f348bff51f9a6dc";
 
 async function tvl(_, _1, _2, { api }) {
   const protocolFields = await sui.getDynamicFieldObjects({
