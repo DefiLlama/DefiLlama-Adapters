@@ -1,57 +1,35 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokensExport } = require("../helper/unwrapLPs");
+const { createIncrementArray } = require("../helper/utils");
 const { getLogs } = require('../helper/cache/getLogs')
 
 // Controllers[chain]
 const CONTROLLERS = {
-  manta: "0xCc396B83Baba70c85FBB8f44B64e7e43aE810232",
+  manta: "0xb2E609ef662889a32452598F0131863035974878",
 }
 
 
 async function tvl(_, _1, _2, { api }) {
-  const logs = await getLogs({ 
-    api, 
-    target: CONTROLLERS[api.chain], 
+  const logs = await getLogs({
+    api,
+    target: CONTROLLERS[api.chain],
     eventAbi: "event CreatedSynth(address newSynth, string name, address oracle)",
     onlyArgs: true,
     fromBlock: 1548740
   });
   const synthAddresses = logs.map(log => log.newSynth);
-  
-  const vaultLength = await api.call({
-    abi: "uint:getVaultsLength",
-    target: CONTROLLERS[api.chain]
-  })
 
-  let tokens = await Promise.all(synthAddresses.map( async (synth) => {
-    let mintVaults = await Promise.all([...new Array(vaultLength)].map(async(_, vaultIndex) => {return await 
-      api.call({
-        abi: "function mintVaults(uint vaultId) view returns (address)",
-        target: synth,
-        params: vaultIndex
-      })
-    }))
-    let collateralAmounts = await Promise.all(
-      mintVaults.map(async vaultAddress => {
-        let collateralAddress = await api.call({
-          abi: "function collateralAsset() view returns (address)",
-          target: vaultAddress
-        })
-        let amount = await api.call({
-          abi: "function balanceOf(address user) view returns (uint)",
-          target: collateralAddress,
-          params: vaultAddress
-        })
-        return [collateralAddress, amount]
-      })
-    )
-    return collateralAmounts
+  const vaultLength = await api.call({ abi: "uint:getVaultsLength", target: CONTROLLERS[api.chain] })
+  const vaultCalls = createIncrementArray(vaultLength)
+
+  const owners = []
+  const tokens = []
+  await Promise.all(synthAddresses.map(async (synth) => {
+    const vaults = await api.multiCall({  abi: "function mintVaults(uint vaultId) view returns (address)", calls: vaultCalls, target: synth})
+    const _tokens = await api.multiCall({  abi: 'address:collateralAsset', calls: vaults})
+    tokens.push(..._tokens)
+    owners.push(...vaults)
   }))
-  for (let synthCollateralAmounts of tokens){
-    for(let collateralAmounts of synthCollateralAmounts){
-      api.add(collateralAmounts[0], collateralAmounts[1])
-    }
-  }
+
+  return api.sumTokens({ tokensAndOwners2: [tokens, owners]})
 }
 
 
@@ -59,7 +37,7 @@ async function tvl(_, _1, _2, { api }) {
 module.exports = {
   methodology:
     "Adds up the total value locked as collateral in Monroe vaults",
-  start: 1709510400, // Monday, March 4, 2024 00:00 GMT
+  start: 1710288000, // Monday, March 4, 2024 00:00 GMT
 };
 
 Object.keys(CONTROLLERS).forEach((chain) => {
