@@ -12,8 +12,12 @@ async function tvl() {
 }
 
 async function staking() {
-  const owner = "erd1qqqqqqqqqqqqqpgq05whpg29ggrrm9ww3ufsf9ud23f66msv6avs5s5xxy";
-  return sumTokens({ owner });
+  const farms = await getConfig('jexchange', 'https://api.jexchange.io/farms')
+  const owners = [
+    ...farms.map(farm => farm.sc_address),
+    "erd1qqqqqqqqqqqqqpgq05whpg29ggrrm9ww3ufsf9ud23f66msv6avs5s5xxy",
+  ];
+  return sumTokens({ owners });
 }
 
 module.exports = {
