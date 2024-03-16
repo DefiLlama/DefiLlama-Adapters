@@ -6,8 +6,6 @@ const config = {
     ethereum: 'https://api.thegraph.com/subgraphs/name/fico23/aera-subgraph'
 }
 
-const OG_ERC4626_TOKENS = ['0x2f79d4ceb79ebd26161e51ca0c9300f970ded54d']
-
 const graphQuery = `query MyQuery($block: Int) {vaultCreateds(block: {number: $block}){ id vault }}`
 
 const assetRegistryABI = {
@@ -46,6 +44,26 @@ const assetRegistryABI = {
   "type": "function"
 }
 
+const erc4626ABI = {
+  "type": "function",
+  "name": "convertToAssets",
+  "inputs": [
+      {
+          "name": "shares",
+          "type": "uint256",
+          "internalType": "uint256"
+      }
+  ],
+  "outputs": [
+      {
+          "name": "assets",
+          "type": "uint256",
+          "internalType": "uint256"
+      }
+  ],
+  "stateMutability": "view"
+}
+
 Object.keys(config).forEach(chain => {
     module.exports[chain] = {
       tvl: async (_, _b, _cb, { api, }) => {
@@ -61,55 +79,47 @@ Object.keys(config).forEach(chain => {
         const assetRegistries = await api.multiCall({  abi: 'address:assetRegistry', calls: vaults})
 
         const assets = await api.multiCall({ abi: assetRegistryABI, calls: assetRegistries.map(x => ({ target: x}))})
-        console.log(assets)
 
-        // const erc4626s = []
-        // const ogErc4626s = []
+        const erc4626sAndOwners = []
         const tokensAndOwners = []
 
         for (let i = 0; i < vaults.length; ++i) {
           const vault = vaults[i]
           for (let j = 0; j < assets[i].length; ++j) {
             const assetInfo = assets[i][j]
-            tokensAndOwners.push([assetInfo.asset, vault.target])
             if (assetInfo.isERC4626) {
-              console.log('asset erc4626', assetInfo)
-              if (OG_ERC4626_TOKENS.some(x => x === assetInfo.asset.toLowerCase())) {
-                ogErc4626s.push([assetInfo.asset, vault.target])
-              } else {
-                erc4626s.push([assetInfo.asset, vault.target])
-              }
+              erc4626sAndOwners.push([assetInfo.asset, vault.target])
             } else {
               tokensAndOwners.push([assetInfo.asset, vault.target])
             }
           }
         }
 
-        console.log('arrays')
-        console.log(erc4626s, tokensAndOwners, ogErc4626s)
+        const underlyingTokens = await api.multiCall({ abi: 'address:asset', calls: erc4626sAndOwners.map(x => x[0])})
 
-        const [underlyingTokens, underylingTokensOg] = await Promise.all([
-          api.multiCall({ abi: 'address:token', calls: erc4626s.map(x => x[0])}),
-          api.multiCall({ abi: 'address:asset', calls: ogErc4626s.map(x => x[0])})
-        ])
+        const vaultErc4626Balances = await api.multiCall({abi: 'erc20:balanceOf', calls: erc4626sAndOwners.map(x => ({target: x[0], params: x[1]}))})
 
-        console.log('underylingTokens -------------------------------------------')
-        console.log(underlyingTokens, underylingTokensOg)
+        const vaultConvertToAssets = await api.multiCall({ abi: erc4626ABI, calls: erc4626sAndOwners.map((x, i) => ({target: x[0], params: vaultErc4626Balances[i]}))})
 
-        const [vaultBalances, vaultBalancesOg, underlyingBalances, underlyingBalancesOg] = await Promise.all([
-          api.multiCall({abi: 'erc20:balanceOf', calls: erc4626s.map(x => ({target: x[0], params: x[1]}))}),
-          api.multiCall({abi: 'erc20:balanceOf', calls: ogErc4626s.map(x => ({target: x[0], params: x[1]}))}),
-          api.multiCall({abi: 'uint256:balance', calls: erc4626s.map((v, i) => ({target: underlyingTokens[i]}))}),
-          api.multiCall({abi: 'uint256:totalAssets', calls: ogErc4626s.map((v, i) => ({target: underylingTokensOg[i]}))})
-        ])
+        const tokenBalancesMap = {}
+        
+        underlyingTokens.forEach((token, i) => {
+          if (tokenBalancesMap[token]) {
+            tokenBalancesMap[token] += BigInt(vaultConvertToAssets[i])
+          } else {
+            tokenBalancesMap[token] = BigInt(vaultConvertToAssets[i])
+          }
+        })
 
-        console.log('vaultBalances -------------------------------------------')
-        console.log(vaultBalances, vaultBalancesOg)
+        const tokens = []
+        const balances = []
+        Object.keys(tokenBalancesMap).forEach(token => {
+          tokens.push(token)
+          balances.push(tokenBalancesMap[token].toString())
+        })
 
-
-        console.log('underlyingBalances -------------------------------------------')
-        console.log(underlyingBalances, underlyingBalancesOg)
-
+        api.addTokens(tokens, balances)
+        
         return sumTokens2({ api, tokensAndOwners })
       }
     }
