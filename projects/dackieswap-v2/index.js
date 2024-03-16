@@ -31,5 +31,12 @@ module.exports = {
       useDefaultCoreAssets: true,
       fetchBalances: true
     })
+  },
+  blast: {
+    tvl: getUniTVL({
+      factory: "0xF5190E64dB4cbf7ee5E72B55cC5b2297e20264c2",
+      useDefaultCoreAssets: true,
+      fetchBalances: true
+    })
   }
 };
