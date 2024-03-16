@@ -7,6 +7,7 @@ const config = {
   optimism: ['0x907883da917ca9750ad202ff6395C4C6aB14e60E'],
   bsc: ['0xEa5f10A0E612316A47123D818E2b597437D19a17'],
   arbitrum: ['0xE946Dd7d03F6F5C440F68c84808Ca88d26475FC5'],
+  base: ['0x9B2316cfe980515de7430F1c4E831B89a5921137'],
 }
 
 module.exports = {
