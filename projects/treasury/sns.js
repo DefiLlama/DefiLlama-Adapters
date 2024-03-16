@@ -7,7 +7,8 @@ async function tvl(_ts, _b, _cb, { api, }) {
   let offset = 0;
   const limit = 100;
   var icp_balance = 0;
-  while (true) {
+  const a = true
+  while (a) {
     let data = await get(SNS_URL + `?offset=${offset}&limit=${limit}&sort_by=name`);
     let snses = data.data;
     if (snses.length == undefined || snses.length == 0) {
