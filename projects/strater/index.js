@@ -17,6 +17,11 @@ const CETABLE_VAULT_ID =
 const USDC_USDT_POOL_ID =
   "0xc8d7a1503dc2f9f5b05449a87d8733593e2f0f3e7bffd90541252782e4d2ca20";
 
+const STAPREAL_VAULT_ID =
+  "0x614c78eabb6949b3e1e295f19f6b8476e2e62091ca66432fbb5507e7b54af0d9";
+const STAPEARL_PAIR_METADTA_ID =
+  "0x243096d976a44de24fde33f087665f8265543a533b5cdbae60fc72a939669867";
+
 function asIntN(int, bits = 32) {
   return Number(BigInt.asIntN(bits, BigInt(int)));
 }
@@ -74,6 +79,26 @@ async function tvl(_, _1, _2, { api }) {
     token0: ADDRESSES.sui.USDT,
     token1: ADDRESSES.sui.USDC,
   });
+
+  const stapearlVaultObjs = await sui.getObject(STAPREAL_VAULT_ID);
+  const stapearlPairMetadataObjs = await sui.getObject(
+    STAPEARL_PAIR_METADTA_ID
+  );
+
+  const stapearlLpAmount = stapearlVaultObjs.fields.position.fields.amount;
+  const stapearlPairMetadataFields =
+    stapearlPairMetadataObjs.fields.value.fields;
+  const stapearlLpSupply = stapearlPairMetadataFields.lp_supply.fields.value;
+  const stapearlReserveX = stapearlPairMetadataFields.reserve_x.fields.balance;
+  const stapearlReserveY = stapearlPairMetadataFields.reserve_y.fields.balance;
+
+  const stapearlUSDCAmount =
+    (stapearlLpAmount * stapearlReserveX) / stapearlLpSupply;
+  const stapearlUSDTAmount =
+    (stapearlLpAmount * stapearlReserveY) / stapearlLpSupply;
+
+  api.add(ADDRESSES.sui.USDC, stapearlUSDCAmount);
+  api.add(ADDRESSES.sui.USDT, stapearlUSDTAmount);
 }
 
 module.exports = {
