@@ -28,8 +28,7 @@ async function tvl(_ts, _b, _cb, { api, }) {
     offset += limit;
   }
 
-  api.add('coingecko:icp', icp_balance / 1e8)
-  return api.getBalances()
+  api.addCGToken('internet-computer', icp_balance / 1e8)
 }
 
 module.exports = {

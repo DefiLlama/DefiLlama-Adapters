@@ -5,8 +5,8 @@ const NEURON_FUND_URL = "https://ic-api.internetcomputer.org/api/v3/metrics/comm
 async function tvl(_ts, _b, _cb, { api, }) {
   var data = await get(NEURON_FUND_URL);
   let neuron_fund_balance = parseInt(data.community_fund_total_staked[0][1]);
-  api.add('coingecko:icp', neuron_fund_balance / 1e8)
-  return api.getBalances()
+  console.log(neuron_fund_balance)
+  api.addCGToken('internet-computer', neuron_fund_balance / 1e8)
 }
 
 module.exports = {
