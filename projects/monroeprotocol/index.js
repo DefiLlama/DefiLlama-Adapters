@@ -33,11 +33,10 @@ async function tvl(_, _1, _2, { api }) {
 }
 
 
-
 module.exports = {
   methodology:
     "Adds up the total value locked as collateral in Monroe vaults",
-  start: 1710288000, // Monday, March 4, 2024 00:00 GMT
+  start: 1710288000, // March 13, 2024 00:00 GMT
 };
 
 Object.keys(CONTROLLERS).forEach((chain) => {
