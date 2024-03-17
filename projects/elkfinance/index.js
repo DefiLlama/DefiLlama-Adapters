@@ -32,7 +32,6 @@ const factories = {
   linea: "0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4",
   velas: "0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4",
   q: "0xfbb4E52FEcc90924c79F980eb24a9794ae4aFFA4"
-
 }
 
 function chainTvl(chain) {
