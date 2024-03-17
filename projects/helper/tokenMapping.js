@@ -41,7 +41,7 @@ const fixBalancesTokens = {
     "0xBD0adB3Ee21e0A75D3021384177238883D69e883": { coingeckoId: "ordinals", decimals: 18 },
   },
   astrzk: {
-    '0xe9cc37904875b459fa5d0fe37680d36f1ed55e38': { coingeckoId: "ethereum", decimals: 18 },
+    [ADDRESSES.astarzk.WETH]: { coingeckoId: "ethereum", decimals: 18 },
   },
   inevm: {
     "0x97423a68bae94b5de52d767a17abcc54c157c0e5": { coingeckoId: "tether", decimals: 6 },
@@ -55,6 +55,15 @@ const fixBalancesTokens = {
     "0x9ca066f00e55b90623efe323feb2a649686538b6": { coingeckoId: "tether", decimals: 6 },
     "0x013e54bee29813bd786b24f9cb08f47c4b75955c": { coingeckoId: "usd-coin", decimals: 6 },
     "0x3e4079ad76c83760e22b5c0105670ebab88b8d0e": { coingeckoId: "tether", decimals: 18 },
+  },
+  bfc: {
+    "0x7b8FAC5F29E101BaaB33c5f9c39d4F85ba2cc7C1": { coingeckoId: "wrapped-bitcoin", decimals: 8 },
+    "0xd267F821F1b8344B5A63626c8c824697194A173E": { coingeckoId: "bitcoin-avalanche-bridged-btc-b", decimals: 18 },
+  },
+  q: {
+    [ADDRESSES.q.WUSDC]: { coingeckoId: "usd-coin", decimals: 6 },
+    [ADDRESSES.q.WDAI]: { coingeckoId: "dai", decimals: 18 },
+    [ADDRESSES.q.WBTC]: { coingeckoId: "wrapped-bitcoin", decimals: 8 },
   },
   // Sample Code
   ozone: {
@@ -211,7 +220,7 @@ const anyswapTokenBlacklist = {
     ADDRESSES.shiden.ETH,
     ADDRESSES.telos.ETH,
     ADDRESSES.telos.USDT
-  ]
+  ],
 }
 
 module.exports = {
