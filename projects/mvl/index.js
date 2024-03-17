@@ -8,24 +8,6 @@ const ETH_SINGLE = "0xA849EaaE994fb86Afa73382e9Bd88c2B6b18Dc71"; // MVL Token
 const BSC_LP = "0xE01eDA650632986B2E5B8167F629D7C7c759D4FD"; // BNB-bMVL LP Token
 const BSC_SINGLE = "0x5f588EfAf8eB57e3837486e834fC5a4E07768D98"; // bMVL Token
 
-async function ethereum(_, block) {
-  const toa = [
-    [ETH_SINGLE, ETH_LP],
-    [ADDRESSES.ethereum.WETH, ETH_LP],
-  ]
-
-  return sumTokens2({ tokensAndOwners: toa, block, })
-}
-async function bsc(_, _b, { bsc: block }) {
-  const chain = 'bsc'
-  const toa = [
-    [BSC_SINGLE, BSC_LP],
-    [ADDRESSES.bsc.WBNB, BSC_LP],
-  ]
-
-  return sumTokens2({ tokensAndOwners: toa, block, chain })
-}
-
 const config = {
   ethereum: {
     token: ETH_SINGLE,
@@ -38,7 +20,7 @@ const config = {
       "0x34fDA56b5c9Aa52DF9fa51b01666683b7b1434d6",
       "0xC0496C7B9D7150A81bD6fF1d015e95668BD4abeD",
     ],
-    tvl: ethereum
+
   },
   bsc: {
     token: BSC_SINGLE,
@@ -52,15 +34,17 @@ const config = {
       "0xC948622856a40Efd50d74BA6e3624FE7100A95Ef",
       "0xc81632E77Ea7262137EA815DC8BA7a47A5a01ab1",
     ],
-    tvl: bsc
+
   },
 };
 
 Object.keys(config).forEach((chain) => {
   const { lp, token, staking, pool2, tvl } = config[chain];
   module.exports[chain] = {
-    tvl: tvl,
+    tvl: () => ({}),
     staking: stakings(staking, token, chain),
     pool2: pool2s(pool2, [lp], chain),
+    methodology:
+      "MVL Single Staking TVL is calculated by multiplying the locked MVL quantity by the MVL price that changes in real time. MVL LP Staking TVL is calculated by multiplying the locked LP quantity by the LP price that changes in real time.At this time, the LP price changes depending on the prices of ETH and MVL, and the prices of BNB and bMVL."
   };
 });
