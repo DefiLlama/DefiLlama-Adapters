@@ -36,6 +36,22 @@ async function assetDetails(assetId) {
 }
 
 /**
+ * Get detailed information about a WAVES. [See fields descriptions](https://docs.waves.tech/en/blockchain/account/account-balance)
+ * @param {string} address - Address base58 encoded
+ * @returns {{
+*   address: string,
+*   regular: number,  
+*   generating: number,
+*   available: number,
+*   effective: number
+* }} Waves balance details
+*/
+async function wavesBalanceDetails(address) {
+  const response = await axiosObj.get(`/addresses/balance/details/${address}`);
+  return response.data;
+}
+
+/**
  * Evaluates the provided expression, taking into account the deployed dApp contract
  * @param {string} contract - Address of the deployed dApp contract
  * @returns {{
@@ -106,6 +122,7 @@ async function call({ target, key}) {
 module.exports = {
   call,
   assetDetails,
+  wavesBalanceDetails,
   scriptEvaluate,
   data,
   sumTokens,
