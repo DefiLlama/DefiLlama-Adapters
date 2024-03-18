@@ -63,6 +63,14 @@ async function tvl() {
   };
 }
 
+async function staking() {
+  const data = await get("https://api.fluidtokens.com/get-ft-stats");
+  let staking = parseInt(data.staking_tvl);
+  
+  return {
+    cardano: (staking) / 1e6,
+  };
+}
 
 async function borrowed(
   ts //timestamp in seconds
@@ -90,6 +98,7 @@ module.exports = {
   cardano: {
     tvl,
     borrowed,
+    staking
   },
   hallmarks: [
     [Math.floor(new Date("2023-01-01") / 1e3), "Count only active loans"],
