@@ -2,7 +2,7 @@ const { lookupApplications } = require("../helper/chain/algorand");
 
 async function algorandStaking() {
     
-    const poolIds = [843061415, 1127413236, 1020347200];
+    const poolIds = [843061415, 1127413236, 1020347200,929851093];
     let totalPoolAmount = 0;
 
     for (const poolId of poolIds) {

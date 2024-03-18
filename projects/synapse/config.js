@@ -449,14 +449,14 @@ module.exports = {
         {
           pool: '0xa4bd1AAD7cF04567c10f38FC4355E91bba32aC9c', // Stableswap
           tokens: [
-            '0x4300000000000000000000000000000000000003', // USDB
+            ADDRESSES.blast.USDB, // USDB
             // '0x3194B0A295D87fDAA54DF852c248F7a6BAF6c6e0', // nUSD
           ]
         },
         {
           pool: '0x999fcd13C54B26E02a6Ccd185f71550b3a4641c0', // ETH pool
           tokens: [
-            '0x4300000000000000000000000000000000000004', // WETH
+            ADDRESSES.blast.WETH, // WETH
             // '0xce971282fAAc9faBcF121944956da7142cccC855', // nETH
           ]
         },
