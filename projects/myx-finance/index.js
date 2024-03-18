@@ -25,14 +25,7 @@ async function getTvl() {
     const query = `
       query MyQuery {
         token(id: "${token.id}") {
-          decimals
-          id
-          name
-          symbol
-          totalValueLocked
           totalValueLockedUSD
-          volume
-          volumeUSD
         }
       }
     `
