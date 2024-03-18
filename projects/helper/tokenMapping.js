@@ -34,37 +34,6 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
-
-  "naka": {
-    "0xDe4c4768ee70D97C044062fEC971eAE91B6aFAB7": { coingeckoId: "wrapped-bitcoin", decimals: 18 },
-    "0x4F90055b8670B21d64146577152aE52975075900": { coingeckoId: "ethereum", decimals: 18 },
-    "0xBD0adB3Ee21e0A75D3021384177238883D69e883": { coingeckoId: "ordinals", decimals: 18 },
-  },
-  astrzk: {
-    [ADDRESSES.astarzk.WETH]: { coingeckoId: "ethereum", decimals: 18 },
-  },
-  inevm: {
-    "0x97423a68bae94b5de52d767a17abcc54c157c0e5": { coingeckoId: "tether", decimals: 6 },
-    "0x8358D8291e3bEDb04804975eEa0fe9fe0fAfB147": { coingeckoId: "usd-coin", decimals: 6 },
-    "0x69011706b3f6c6eaed7d2bc13801558b4fd94cbf": { coingeckoId: "injective-protocol", decimals: 18 },
-    "0x4c3a213bd5e8c4bd70a8396d6f3c8302571598cd": { coingeckoId: "injective-protocol", decimals: 18 },
-  },
-  sapphire: {
-    "0x8bc2b030b299964eefb5e1e0b36991352e56d2d3": { coingeckoId: "oasis-network", decimals: 18 },
-    "0x1ffd8a218fdc5b38210d64cbb45f40dc55a4e019": { coingeckoId: "oasis-network", decimals: 18 },
-    "0x9ca066f00e55b90623efe323feb2a649686538b6": { coingeckoId: "tether", decimals: 6 },
-    "0x013e54bee29813bd786b24f9cb08f47c4b75955c": { coingeckoId: "usd-coin", decimals: 6 },
-    "0x3e4079ad76c83760e22b5c0105670ebab88b8d0e": { coingeckoId: "tether", decimals: 18 },
-  },
-  bfc: {
-    "0x7b8FAC5F29E101BaaB33c5f9c39d4F85ba2cc7C1": { coingeckoId: "wrapped-bitcoin", decimals: 8 },
-    "0xd267F821F1b8344B5A63626c8c824697194A173E": { coingeckoId: "bitcoin-avalanche-bridged-btc-b", decimals: 18 },
-  },
-  q: {
-    [ADDRESSES.q.WUSDC]: { coingeckoId: "usd-coin", decimals: 6 },
-    [ADDRESSES.q.WDAI]: { coingeckoId: "dai", decimals: 18 },
-    [ADDRESSES.q.WBTC]: { coingeckoId: "wrapped-bitcoin", decimals: 8 },
-  },
   zklink: {
     [ADDRESSES.zklink.WETH]: { coingeckoId: "ethereum", decimals: 18 },
   },
