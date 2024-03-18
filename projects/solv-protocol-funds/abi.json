@@ -9,5 +9,7 @@
   "liquidities": "function liquidities(uint256) view returns (int24, int24, uint128, uint256, uint256, uint256, uint256, uint128)",
   "poolMetas": "function poolMetas(uint128) view returns (address, address, uint24)",
   "pool": "function pool(address tokenX, address tokenY, uint24 fee) view returns (address)",
-  "state": "function state() view returns (uint160 sqrtPriceX96, int24 currentPoint, uint16 observationCurrentIndex, uint16 observationQueueLen, uint16 observationNextQueueLen, bool locked, uint256 liquidity, uint256 liquidityX)"
+  "state": "function state() view returns (uint160 sqrtPriceX96, int24 currentPoint, uint16 observationCurrentIndex, uint16 observationQueueLen, uint16 observationNextQueueLen, bool locked, uint256 liquidity, uint256 liquidityX)",
+  "stakedAmountsAbi": "function stakedAmounts(address) external view returns (uint256)",
+  "stakedMlpAmount": "function stakedMlpAmount(address account) view returns (uint256)"
 }

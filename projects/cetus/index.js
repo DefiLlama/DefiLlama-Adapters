@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { dexExport, getResources } = require('../helper/chain/aptos')
 const sui = require('../helper/chain/sui')
 const { transformDexBalances } = require('../helper/portedTokens')
@@ -41,6 +42,21 @@ async function suiTVL() {
   })
 }
 
+async function staking() {
+  const { api } = arguments[3]
+  const xCetusManager = '0x838b3dbade12b1e602efcaf8c8b818fae643e43176462bf14fd196afa59d1d9d'
+  const xCetusManagerInfo  = await sui.getObject(xCetusManager)
+  const xCetusPool = {
+    type: '0x9e69acc50ca03bc943c4f7c5304c2a6002d507b51c11913b247159c60422c606::xcetus::XcetusManager<0x06864a6f921804860930db6ddbe2e16acdf8504495ea7481637a1c8b9a8fe54b::cetus::CETUS, 0x2::sui::SUI>',
+    fields: {
+      coin_a: xCetusManagerInfo.fields.treasury.fields.total_supply.fields.value,
+      coin_b: '0',
+    }
+  }
+  api.add('0x06864a6f921804860930db6ddbe2e16acdf8504495ea7481637a1c8b9a8fe54b::cetus::CETUS', xCetusPool.fields.coin_a)
+  return api.getBalances()
+}
+
 module.exports = dexExport({
   account: '0xec42a352cc65eca17a9fa85d0fc602295897ed6b8b8af6a6c79ef490eb8f9eba',
   poolStr: 'amm_swap::Pool<',
@@ -54,5 +70,6 @@ module.exports = {
   },
   sui: {
     tvl: suiTVL,
+    staking,
   }
 }

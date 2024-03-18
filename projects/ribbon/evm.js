@@ -56,7 +56,7 @@ const uni = ADDRESSES.ethereum.UNI;
 
 // Avalanche Assets
 const wavax = ADDRESSES.avax.WAVAX;
-const savax = "0x2b2C81e08f1Af8835a78Bb2A90AE924ACE0eA4bE";
+const savax = ADDRESSES.avax.SAVAX;
 const usdce = ADDRESSES.avax.USDC_e;
 
 async function addVaults({ balances, chain, vaults, block, transformAddress = a => a }) {

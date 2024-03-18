@@ -12,7 +12,7 @@ const getChainKey = chain => chainMapping[chain] ?? chain
 function chainTvl(chain) {
     return async (_, _b, {[chain]: block}) => {
         const toa = []
-        const { bridges, bonders } = await getConfig('hop-protocol', 'https://raw.githubusercontent.com/hop-protocol/hop/develop/packages/core/build/addresses/mainnet.json')
+        const { bridges, bonders } = await getConfig('hop-protocol', 'https://s3.us-west-1.amazonaws.com/assets.hop.exchange/mainnet/v1-core-config.json')
         for (const tokenConstants of Object.values(bridges)) {
             const chainConstants = tokenConstants[getChainKey(chain)]
             if (chainConstants === undefined)

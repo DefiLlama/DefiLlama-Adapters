@@ -3,6 +3,8 @@ const sdk = require('@defillama/sdk')
 
 const omnipoolAccountId = "7L53bUTBbfuj14UpdCNPwmgzzHSsrsTWBHX5pys32mVWM3C1"
 const stablepoolAccountId = "7JP6TvcH5x31TsbC6qVJHEhsW7UNmpREMZuLBpK2bG1goJRS"
+const stablepoolAccountId2 = "7MaKPwwnqN4cqg35PbxsGXUo1dfvjXQ3XfBjWF9UVvKMjJj8"
+const stablepoolAccountId3 = "7LVGEVLFXpsCCtnsvhzkSMQARU7gRVCtwMckG7u7d3V6FVvG"
 
 async function tvl() {
   const { api: _api } = arguments[3]
@@ -35,9 +37,8 @@ async function tvl() {
   for (const { decimals, assetId, symbol } of assetMetadata) {
     const cgId = cgMapping[symbol]
     if (cgId) {
-      const [bal, bal2] = await Promise.all([omnipoolAccountId, stablepoolAccountId].map(accountId => api.query.tokens.accounts(accountId, assetId)))
-      add(cgId, bal.free / (10 ** decimals))
-      add(cgId, bal2.free / (10 ** decimals))
+      const bals = await Promise.all([omnipoolAccountId, stablepoolAccountId, stablepoolAccountId2, stablepoolAccountId3,].map(accountId => api.query.tokens.accounts(accountId, assetId)))
+      bals.forEach(bal => add(cgId, bal.free / (10 ** decimals)))
     } else {
       sdk.log(`No mapping for ${symbol}, skipping it`)
     }

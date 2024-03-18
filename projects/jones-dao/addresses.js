@@ -1,11 +1,11 @@
-const ADDRESSES = require('../helper/coreAssets.json')
+const ADDRESSES = require("../helper/coreAssets.json");
 module.exports = {
   aura: {
     locker: "0x3Fa73f1E5d8A792C80F426fc8F84FBF7Ce9bBCAC",
     strategy: "0x7629fc134e5a7feBEf6340438D96881C8D121f2c",
   },
   glp: {
-    leverageStrategy: "0x15df56a82c194FeFEC9337C37A41964B69b584d5",
+    leverageStrategy: "0x64ECc55a4F5D61ead9B966bcB59D777593afBd6f",
     router: "0x2F43c6475f1ecBD051cE486A9f3Ccc4b03F3d713",
     stableRewardTracker: "0xEB23C7e19DB72F9a728fD64E1CAA459E457cfaca",
   },
@@ -27,6 +27,7 @@ module.exports = {
   stakingContracts: [
     "0xf1a26cf6309a59794da29b5b2e6fabd3070d470f", // v1 staking rewards
     "0xb94d1959084081c5a11C460012Ab522F5a0FD756", // milliner (masterchef)
+    "0x8127FFC32A596F9beDE144912F7bfAD6e1C72690", // milliner v3 (masterchef)
     "0x0aEfaD19aA454bCc1B1Dd86e18A7d58D0a6FAC38", // minichef (stip rewards)
   ],
   metaVaultsAddresses: [

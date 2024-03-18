@@ -9,7 +9,7 @@ module.exports = {
   start: 1690971144,
   bsc: { tvl: sumTokensExport({ owners, tokens: [ADDRESSES.bsc.USDT], }) },
   op_bnb: {
-    tvl: sumTokensExport({ owners: opbnb_owners, tokens: [ADDRESSES.op_bnb.USDC] })
+    tvl: sumTokensExport({ owners: opbnb_owners, tokens: [ADDRESSES.op_bnb.USDT] })
   },
   manta: {
     tvl: sumTokensExport({ owners: manta_owners, tokens: [ADDRESSES.manta.USDT] })

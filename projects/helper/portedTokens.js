@@ -7,11 +7,11 @@ const {
   transformTokens,
   fixBalancesTokens,
   ibcChains,
-  distressedAssts,
 } = require('./tokenMapping')
 
 async function transformInjectiveAddress() {
   return addr => {
+    if (addr.startsWith('ibc:')) return addr
     if (addr.includes('ibc/')) return addr.replace(/.*ibc\//, 'ibc/').replace(/\//g, ':')
     addr = addr.replace(/\//g, ':')
     if (addr.startsWith('peggy0x'))
@@ -73,7 +73,6 @@ function transformChainAddress(
 ) {
 
   return addr => {
-    if (distressedAssts.has(addr.toLowerCase())) return 'ethereum:0xbad'
     if (['solana'].includes(chain)) {
       return mapping[addr] ? mapping[addr] : `${chain}:${addr}`
     }
@@ -99,7 +98,6 @@ async function getChainTransform(chain) {
     if (addr.includes('ibc/')) return addr.replace(/.*ibc\//, 'ibc/').replace(/\//g, ':')
     if (addr.startsWith('coingecko:')) return addr
     if (addr.startsWith(chain + ':') || addr.startsWith('ibc:')) return addr
-    if (distressedAssts.has(addr.toLowerCase())) return 'ethereum:0xbad'
 
     addr = normalizeAddress(addr, chain).replace(/\//g, ':')
     const chainStr = `${chain}:${addr}`
@@ -128,8 +126,12 @@ async function transformBalances(chain, balances) {
   return balances
 }
 
-async function transformDexBalances({ chain, data, balances = {}, restrictTokenRatio = 5, withMetadata = false, blacklistedTokens = [], coreTokens }) {
+async function transformDexBalances({ api, chain, data, balances, restrictTokenRatio = 5, withMetadata = false, blacklistedTokens = [], coreTokens }) {
 
+  if (api) {
+    balances = api.getBalances()
+    chain = api.chain
+  } else if (!balances) balances = {}
   if (!coreTokens)
     coreTokens = new Set(getCoreAssets(chain))
 

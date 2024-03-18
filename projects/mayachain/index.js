@@ -2,7 +2,6 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { getCache, get } = require("../helper/http");
 const sdk = require("@defillama/sdk");
 const { nullAddress } = require("../helper/tokenMapping");
-const { ethers } = require("ethers");
 
 const chainMapping = {
   ETH: "ethereum",
@@ -62,7 +61,8 @@ async function tvl(_, _1, _2, { api }) {
         10 ** (+tokenToDecimalMapping[chainStr + "." + baseToken] - 8);
 
       // e.g. ETH.USDC-0XA0B86991C6218B36C1D19D4A2E9EB0CE3606EB48
-      if (address && ethers.utils.isAddress(address.toLowerCase())) {
+      address = address && address.includes('-') ? address.split("-")[1] : address
+      if (address && address.startsWith("0X")) {
         address = address.toLowerCase();
         sdk.util.sumSingleBalance(balances, address, assetDepth, chain);
 

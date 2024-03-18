@@ -1,6 +1,5 @@
 const { nullAddress, sumTokens2 } = require("../helper/unwrapLPs");
 const { get } = require("../helper/http");
-const { ethers } = require("ethers");
 let _res;
 
 async function getData() {
@@ -19,13 +18,6 @@ async function maticTvl() {
   const res = await getData();
   return {
     "matic-network": res.polygon.native,
-  };
-}
-
-async function ftmTvl() {
-  const res = await getData();
-  return {
-    fantom: res.fantom.native,
   };
 }
 
@@ -72,7 +64,7 @@ module.exports = {
     tvl: maticTvl
   }, */
   fantom: {
-    tvl: ftmTvl,
+    tvl: () => ({}),
   },
   terra2: {
     tvl: terra2Tvl,

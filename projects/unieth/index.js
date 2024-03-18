@@ -18,6 +18,7 @@ async function tvl(_, _1, _2, { api }) {
 }
 
 module.exports = {
+	doublecounted: true,
 	methodology: 'Counts the total ethers staked with RockX Staking Contract.',
 	ethereum: {
 		tvl,

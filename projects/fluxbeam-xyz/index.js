@@ -15,7 +15,7 @@ async function tvl(_, _1, _2, { api }) {
     const i = decodeAccount('fluxbeam', account.account)
     return [i.tokenAccountA, i.tokenAccountB]
   }).flat().map(i => i.toString())
-  return sumTokens2({ tokenAccounts })
+  return sumTokens2({ tokenAccounts, allowError: true })
 }
 
 module.exports = {

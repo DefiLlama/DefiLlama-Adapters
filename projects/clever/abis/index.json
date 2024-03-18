@@ -1,9 +1,9 @@
 {
     "curve": {
-        "coinsUint": "function coins(uint256 arg0) view returns (address) @2280",
-        "coinsInt": "function coins(int128 arg0) view returns (address out) @2190",
-        "balances": "function balances(uint256 arg0) view returns (uint256) @3123",
-        "balancesOther": "function balances(int128 arg0) view returns (uint256) @2340"
+        "coinsUint": "function coins(uint256 arg0) view returns (address)",
+        "coinsInt": "function coins(int128 arg0) view returns (address out)",
+        "balances": "function balances(uint256 arg0) view returns (uint256)",
+        "balancesOther": "function balances(int128 arg0) view returns (uint256)"
     },
     "balancer": {
         "getPoolTokens": "function getPoolTokens(bytes32 poolId) view returns (address[] tokens, uint256[] balances, uint256 lastChangeBlock)"

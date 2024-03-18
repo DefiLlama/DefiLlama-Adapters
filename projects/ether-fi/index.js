@@ -2,6 +2,7 @@ const { nullAddress } = require("../helper/unwrapLPs");
 const sdk = require('@defillama/sdk')
 
 module.exports = {
+  doublecounted: true,
   ethereum: {
     tvl: async (timestamp) => {
       const api = new sdk.ChainApi({ timestamp, chain: 'optimism' })
