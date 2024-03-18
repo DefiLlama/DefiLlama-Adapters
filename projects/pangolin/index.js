@@ -46,13 +46,14 @@ module.exports = {
   },
   hedera: {
     tvl: async () => {
-      const block = await getCurrentBlock()
+      return {}
+      /* const block = await getCurrentBlock()
       const data = await graphQuery('https://graph-hedera-main.pangolin.network/subgraphs/name/pangolin', `{
           pangolinFactory(id: "1" block: { number: ${block - 1000} }) {
           totalLiquidityUSD
           }
       }`)
-      return toUSDTBalances(data.pangolinFactory.totalLiquidityUSD)
+      return toUSDTBalances(data.pangolinFactory.totalLiquidityUSD) */
     }
   },
   start: 1612715300, // 7th-Feb-2021

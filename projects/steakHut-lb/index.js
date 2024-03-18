@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const abi = require('./abi.json')
 
 const _vaults = {
@@ -55,7 +56,7 @@ async function tvl(_, block, _1, { api }) {
 
     // hJOE tvl
     const HJOE_ADDRESS = '0xe7250b05bd8dee615ecc681eda1196add5156f2b'
-    const JOE_ADDRESS = '0x6e84a6216eA6dACC71eE8E6b0a5B7322EEbC0fDd'
+    const JOE_ADDRESS = ADDRESSES.avax.JOE
 
     api.add(JOE_ADDRESS, await api.call({ target: HJOE_ADDRESS, abi: 'erc20:totalSupply' }))
 

@@ -47,13 +47,13 @@ module.exports = treasuryExports({
     ownTokens: [
       inv,
       "0x73E02EAAb68a41Ea63bdae9Dbd4b7678827B2352", // Uniswap INV/ETH LP
-      "0xA5D7A7690B72a89B7b720E43fC9cBda5419d0C71", // 50INV-50DOLA Aura Deposit Vault
-      // "0x9c7305eb78a432ced5C4D14Cac27E8Ed569A2e26", // veNFT
+      "0xA5D7A7690B72a89B7b720E43fC9cBda5419d0C71", // 50INV-50DOLA Aura Deposit Vault      
     ],
     resolveUniV3: true,
     resolveLP: true,
     blacklistedTokens: [
-      '0x21e83dbfd8f11d885eba9f9ba126da11ae0671b7'
+      '0x21e83dbfd8f11d885eba9f9ba126da11ae0671b7',
+      '0x265befe2b1a0f4f646dea96ba09c1656b74bda91',
     ]
   },
   optimism: {

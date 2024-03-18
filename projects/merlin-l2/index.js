@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { sumTokensExport: sumBRC20TokensExport } = require("../helper/chain/brc20");
 const { sumTokensExport } = require('../helper/sumTokens');
@@ -35,14 +36,14 @@ module.exports = {
     tvl: sumTokensExport({
       ownerTokens: [
         [["0x7122985656e38BDC0302Db86685bb972b145bD3C"], "0x147A198d803D4a02b8bEc7CC78be1AbE0C3d93E5",], //sttone
-        [["0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"], "0x8bb6cae3f1cada07dd14ba951e02886ea6bba183", //usdc
+        [[ADDRESSES.ethereum.USDC], "0x8bb6cae3f1cada07dd14ba951e02886ea6bba183", //usdc
         ]]
     }),
   },
   arbitrum: {
     tvl: sumTokensExport({
       owners: ["0x8bb6cae3f1cada07dd14ba951e02886ea6bba183"],
-      tokens: ["0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9", "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"] //usdc and usdt
+      tokens: [ADDRESSES.arbitrum.USDT, ADDRESSES.arbitrum.USDC_CIRCLE] //usdc and usdt
     }),
   },
   zkfair: {

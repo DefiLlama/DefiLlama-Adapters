@@ -72,12 +72,18 @@ const chains = {
     chainId: "celestia",
     denom: "utia",
     coinGeckoId: "celestia",
+  },
+
+  dymension: {
+    chainId: "dymension_1100-1",
+    denom: "adym",
+    coinGeckoId: "dymension",
   }
 };
 
 // inj uses 1e18 - https://docs.injective.network/learn/basic-concepts/inj_coin#base-denomination
 function getCoinDenimals(denom) {
-  return ["aevmos", "inj", "adydx"].includes(denom) ? 1e18 : 1e6;
+  return ["aevmos", "inj", "adydx", "adym"].includes(denom) ? 1e18 : 1e6;
 }
 
 function makeTvlFn(chain) {
@@ -87,6 +93,8 @@ function makeTvlFn(chain) {
     let hostZoneUrl = `https://stride-fleet.main.stridenet.co/api/Stride-Labs/stride/stakeibc/host_zone/${chain.chainId}`;
     if (chain.chainId === 'celestia') {
       hostZoneUrl = `https://stride-fleet.main.stridenet.co/api/Stride-Labs/stride/staketia/host_zone`;
+    } else if (chain.chainId === 'dymension_1100-1') {
+      hostZoneUrl = `https://stride-fleet.main.stridenet.co/api/Stride-Labs/stride/stakedym/host_zone`;
     }
 
     const [{ amount: assetBalances }, { host_zone: hostZone }] =
