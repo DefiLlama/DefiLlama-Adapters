@@ -15,6 +15,7 @@ module.exports = {
   timetravel: false, // Waves blockchain
   methodology: "TVL of WX means the quantity of staked WX tokens on WX Staking contract",
   waves: {
-    tvl: WXTVL,
+    staking: WXTVL,
+    tvl: async () => ({}),
   },
 };
