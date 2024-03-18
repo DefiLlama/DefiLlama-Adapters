@@ -58,7 +58,10 @@ Object.keys(config).forEach(chain => {
         const avaxDebtSum = avaxDebt.reduce((acc, borrow) => acc + +borrow, 0)
         api.addGasToken(avaxDebtSum * -1)
       }
-      return sumTokens2({ owners, tokens, api, sumChunkSize: 5000, })
+      for (const token of tokens) {
+        await api.sumTokens({ owners, tokens: [token], })
+      }
+      return api.getBalances()
     }
   }
 })
