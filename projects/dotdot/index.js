@@ -195,7 +195,7 @@ const abis = {
   factory: "address:factory",
   factory2: "address:factory",
   minter: "address:minter",
-  getNCoins: "function get_n_coins(address _pool) view returns (uint256) @2894",
+  getNCoins: "function get_n_coins(address _pool) view returns (uint256)",
   userInfo: "function userInfo(address, address) view returns (uint256 depositAmount, uint256 adjustedAmount, uint256 rewardDebt, uint256 claimable)",
-  getLpToken: "function get_lp_token(address arg0) view returns (address) @4058",
+  getLpToken: "function get_lp_token(address arg0) view returns (address)",
 }
