@@ -1,14 +1,23 @@
 const { cachedGraphQuery } = require("../helper/cache");
 const { sumTokens2, } = require('../helper/unwrapLPs')
 const {assetsABI, getReserveDataABI, getUserReserveDataABI, getReservesListABI, getAssetInfoABI, borrowBalanceOfABI, getRewardOwedABI, collateralBalanceOfABI, convertToAssetsABI} = require('./abi')
-const { ethers } = require("ethers");
 
-const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 const COMPOUND_ORACLE_NAME = 'CompoundV3PositionOracle'
 const AAVE_ORACLE_NAME = 'AaveV3PositionOracle'
 
 const config = {
-    // polygon: 'https://api.thegraph.com/subgraphs/name/fico23/aera-subgraph-polygon',
+    polygon: {
+      graphUrl: 'https://api.thegraph.com/subgraphs/name/fico23/aera-subgraph-polygon',
+      aavePool: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
+      aavePoolDataProvider: '0x69FA688f1Dc47d4B5d8029D5a35FB7a548310654',
+      comets: [
+        {
+          address: '0xF25212E676D1F7F89Cd72fFEe66158f541246445',
+          baseToken: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174'
+        }
+      ],
+      cometReward: '0x45939657d1CA34A8FA39A924B71D28Fe8431e581'
+    },
     ethereum: {
       graphUrl: 'https://api.thegraph.com/subgraphs/name/fico23/aera-subgraph',
       aavePool: '0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2',
@@ -50,11 +59,12 @@ Object.keys(config).forEach(chain => {
           vaults.push(x.vault)
           assetRegistries.push(x.assetRegistry)
         })
+        console.log('vaults', vaults.length)
 
         const assets = await api.multiCall({ abi: assetsABI, calls: assetRegistries.map(x => ({ target: x}))})
         const uniqueAssets = [...new Set(assets.flat().map(x => x.asset))]
-        console.log('assets', assets)
-        console.log('uniqueAssets', uniqueAssets)
+        console.log('assets', assets.length)
+        console.log('uniqueAssets', uniqueAssets.length)
 
         const erc4626sAndOwners = []
         const tokensAndOwners = []
@@ -81,9 +91,7 @@ Object.keys(config).forEach(chain => {
             }
           }
         }
-        console.log('before query underylingTokens', Object.keys(erc4626UnderylingMap))
-        console.log('before query erc20:balanceOf', erc4626sAndOwners.map(x => ({target: x[0], params: x[1]})))
-        console.log('before query erc20:name', positions.map(x => x[0]))
+
         const [underlyingTokens, vaultErc4626Balances, tokenNames] = await Promise.all([
           api.multiCall({ abi: 'address:asset', calls: Object.keys(erc4626UnderylingMap)}),
           api.multiCall({abi: 'erc20:balanceOf', calls: erc4626sAndOwners.map(x => ({target: x[0], params: x[1]}))}),
@@ -102,8 +110,7 @@ Object.keys(config).forEach(chain => {
             aaveVaults.push(positions[i][1])
           }
         }
-        console.log('compound positions', compoundVaults)
-        console.log('aave positions', aaveVaults)
+
 
         if (aaveVaults.length) {
           const aaveReservesList = await api.call({abi: getReservesListABI, target: AAVE_POOL})
@@ -155,11 +162,6 @@ Object.keys(config).forEach(chain => {
             api.multiCall({abi: getRewardOwedABI, calls: rewardOwedCalls})
           ])
 
-          console.log('collateralInfos', collateralInfos)
-          console.log('balanceOfs', balanceOfs)
-          console.log('borrowBalanceOfs', borrowBalanceOfs)
-          console.log('rewardOwed', rewardOwed)
-
           balanceOfs.forEach((balance, i) => {
             const sum = (BigInt(balance) - BigInt(borrowBalanceOfs[i])).toString()
             if (sum !== '0') api.addToken(balanceOfCalls[i].baseToken, sum) 
@@ -172,7 +174,6 @@ Object.keys(config).forEach(chain => {
           const collateralBalanceOfCalls = []
           vaults.forEach(vault => collateralInfos.forEach((collateral, i) => collateralBalanceOfCalls.push({target: collateralCalls[i].target, params: [vault, collateral.asset]})))
           const collateralBalanceOfs = await api.multiCall({abi: collateralBalanceOfABI, calls: collateralBalanceOfCalls})
-          console.log('collateralBalanceOfs', collateralBalanceOfs)
 
           collateralBalanceOfs.forEach((balance, i) => {
             if (balance !== '0') api.addToken(collateralBalanceOfCalls[i].params[1], balance)
