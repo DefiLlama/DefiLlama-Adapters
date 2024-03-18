@@ -1,7 +1,4 @@
 const { getLogs } = require('../helper/cache/getLogs')
-const { covalentGetTokens } = require('../helper/token')
-const { sleep } = require("../helper/utils");
-const { getUniqueAddresses } = require('../helper/utils');
 
 const config = {
   arbitrum: {
@@ -12,27 +9,11 @@ const config = {
   },
 };
 
-const blacklistedTokens = [
-]
 
 module.exports = {
   doublecounted: true,
   misrepresentedTokens: true,
-  timetravel: false,
 };
-
-async function getTokens(api, owners) {
-  let tokens = []
-  for (let i = 0; i < owners.length; i++) {
-    const owner = owners[i];
-    let new_tokens = await covalentGetTokens(owner, api, { onlyWhitelisted: true, });
-    tokens.push(...new_tokens);
-    await sleep(300)
-  }
-  console.log(tokens)
-  tokens = getUniqueAddresses(tokens)
-  return tokens
-}
 
 Object.keys(config).forEach((chain) => {
   const { factory, helper, fromBlock } = config[chain];
@@ -41,9 +22,6 @@ Object.keys(config).forEach((chain) => {
       const logs = await getLogs({
         api,
         target: factory,
-        topics: [
-          "0x14db5e0167c5e77f0a48cedd835dd30b2dcd630caff2e8e5d2411b892a094324",
-        ],
         eventAbi:
           "event VaultCreated(string name, address proxyAddress)",
         onlyArgs: true,
