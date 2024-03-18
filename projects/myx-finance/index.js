@@ -1,44 +1,11 @@
-const { request, gql } = require("graphql-request");
-const { toUSDTBalances } = require("../helper/balances");
-const { default: BigNumber } = require("bignumber.js");
+const { getLogs } = require('../helper/cache/getLogs')
+const ADDRESSES = require('../helper/coreAssets.json')
 
 
 const config = {
-  arbitrum: { subgraphUrl: "https://subgraph-arb.myx.finance/subgraphs/name/myx-subgraph" },
-  linea: { subgraphUrl: "https://subgraph-linea.myx.finance/subgraphs/name/myx-subgraph" },
+  arbitrum: { vault: '0x8932aA60A7b5EfEFA8Ec3ee899Fd238D029d10c6', fromBlock: 175954437 },
+  linea: { vault: '0x03f61a185efEEEFdd3Ba032AFa8A0259337CEd64', fromBlock: 2390784 },
 };
-
-async function getTvl() {
-  const { api } = arguments[3];
-  const { subgraphUrl } = config[api.chain];
-
-  const tokensIdResult = await request(subgraphUrl, gql`
-    query MyQuery {
-      tokens {
-        id
-      }
-    }
-  `)
-
-
-  const tokensDataResult = await Promise.all(tokensIdResult.tokens.map(async (token) => {
-    const query = `
-      query MyQuery {
-        token(id: "${token.id}") {
-          totalValueLockedUSD
-        }
-      }
-    `
-
-    return await request(subgraphUrl, gql`${query}`)
-  }))
-
-  const tvl = tokensDataResult.reduce((acc, item) => {
-    return acc.plus(item.token.totalValueLockedUSD)
-  }, new BigNumber(0))
-
-  return toUSDTBalances(tvl.toFixed())
-}
 
 module.exports = {
   misrepresentedTokens: false,
@@ -46,5 +13,21 @@ module.exports = {
 };
 
 Object.keys(config).forEach((chain) => {
-  module.exports[chain] = { tvl: getTvl };
+  module.exports[chain] = { tvl };
 });
+
+async function tvl(_, _b, _cb, { api, }) {
+  const { vault, fromBlock } = config[api.chain];
+  const logs = await getLogs({
+    api,
+    target: vault,
+    eventAbi: 'event PairAdded ( address  indexed indexToken,  address  indexed stableToken, address lpToken, uint256 index)',
+    onlyArgs: true,
+    fromBlock,
+  })
+
+  const tokens = logs.map(log => log.indexToken).concat(logs.map(log => log.stableToken))
+  tokens.push(ADDRESSES.null)
+  return api.sumTokens({ owner: vault, tokens })
+
+}
