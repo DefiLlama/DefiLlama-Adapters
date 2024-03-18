@@ -19,7 +19,6 @@ async function tvl(_, __, ___, { api }) {
     resolveUniV3: true,
     resolveLP: true,
     unwrapAll: true,
-    resolveLP: true,
     owners: [v2Deposits, v3Deposits],
   });
 }
