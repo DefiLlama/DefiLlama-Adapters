@@ -1,15 +1,11 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, sumTokensExport, } = require('../helper/unwrapLPs');
-const { data } = require("../helper/chain/waves");
-const sdk = require('@defillama/sdk')
+const { sumTokens } = require("../helper/chain/waves");
 
 const wavesCoinBridgeContract = '3PFPuctNkdbwGKKUNymWw816jGPexHzGXW5';
 
-async function wavesTVL() {
-  const balances = {};
-  const contractTVLInWAVES = await data(wavesCoinBridgeContract, "BALANCE");
-  sdk.util.sumSingleBalance(balances, 'waves', contractTVLInWAVES.value / 1e8)
-  return balances;
+async function wavesTVL(_, _b, _cb, { api, }) {
+  return sumTokens({ owners: [wavesCoinBridgeContract,], api, })
 }
 
 const config = {
@@ -61,7 +57,6 @@ const config = {
     ]
   ]
 }
-module.exports = {};
 
 Object.keys(config).forEach(chain => {
   module.exports[chain] = { tvl: sumTokensExport({ ownerTokens: config[chain], logCalls: true }) }
