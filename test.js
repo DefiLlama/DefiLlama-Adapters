@@ -1,8 +1,12 @@
 #!/usr/bin/env node
 
-const { ENV_KEYS } = require("./projects/helper/env");
+const handleError = require('./utils/handleError')
+process.on('unhandledRejection', handleError)
+process.on('uncaughtException', handleError)
+
 const path = require("path");
 require("dotenv").config();
+const { ENV_KEYS } = require("./projects/helper/env");
 const { util: {
   blocks: { getCurrentBlocks },
   humanizeNumber: { humanizeNumber },
@@ -11,7 +15,6 @@ const { util } = require("@defillama/sdk");
 const sdk = require("@defillama/sdk");
 const whitelistedExportKeys = require('./projects/helper/whitelistedExportKeys.json')
 const chainList = require('./projects/helper/chains.json')
-const handleError = require('./utils/handleError')
 const { log, diplayUnknownTable, sliceIntoChunks } = require('./projects/helper/utils')
 const { normalizeAddress } = require('./projects/helper/tokenMapping')
 const { PromisePool } = require('@supercharge/promise-pool')
@@ -19,30 +22,13 @@ const { PromisePool } = require('@supercharge/promise-pool')
 const currentCacheVersion = sdk.cache.currentVersion // load env for cache
 // console.log(`Using cache version ${currentCacheVersion}`)
 
-Object.keys(process.env).forEach((key) => {
-  if (key.endsWith('_RPC')) return;
-  if (['TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_MODE', ...ENV_KEYS].includes(key) || key.includes('SDK')) return;
-  delete process.env[key]
-})
+if (process.env.LLAMA_SANITIZE)
+  Object.keys(process.env).forEach((key) => {
+    if (key.endsWith('_RPC')) return;
+    if (['TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_MODE', ...ENV_KEYS].includes(key) || key.includes('SDK')) return;
+    delete process.env[key]
+  })
 
-const locks = [];
-function getCoingeckoLock() {
-  return new Promise((resolve) => {
-    locks.push(resolve);
-  });
-}
-function releaseCoingeckoLock() {
-  const firstLock = locks.shift();
-  if (firstLock !== undefined) {
-    firstLock(null);
-  }
-}
-// Rate limit is 50 calls/min for coingecko's API
-// So we'll release one every 1.2 seconds to match it
-setInterval(() => {
-  releaseCoingeckoLock();
-}, 2000);
-const maxCoingeckoRetries = 5;
 
 async function getTvl(
   unixTimestamp,
@@ -54,7 +40,6 @@ async function getTvl(
   tvlFunction,
   isFetchFunction,
   storedKey,
-  knownTokenPrices
 ) {
   if (!isFetchFunction) {
     const chain = storedKey.split('-')[0]
@@ -62,14 +47,7 @@ async function getTvl(
     const api = new sdk.ChainApi({ chain, block: chainBlocks[chain], timestamp: unixTimestamp, })
     let tvlBalances = await tvlFunction(unixTimestamp, ethBlock, chainBlocks, { api, chain, block, storedKey });
     if (!tvlBalances && Object.keys(api.getBalances()).length) tvlBalances = api.getBalances()
-    const tvlResults = await computeTVL(
-      tvlBalances,
-      "now",
-      false,
-      knownTokenPrices,
-      getCoingeckoLock,
-      maxCoingeckoRetries
-    );
+    const tvlResults = await computeTVL(tvlBalances, "now");
     await diplayUnknownTable({ tvlResults, storedKey, tvlBalances, })
     usdTvls[storedKey] = tvlResults.usdTvl;
     tokensBalances[storedKey] = tvlResults.tokenBalances;
@@ -166,7 +144,6 @@ sdk.api.abi.call = async (...args) => {
           tvlFunction,
           tvlFunctionIsFetch,
           storedKey,
-          knownTokenPrices
         );
         let keyToAddChainBalances = tvlType;
         if (tvlType === "tvl" || tvlType === "fetch") {
@@ -197,7 +174,6 @@ sdk.api.abi.call = async (...args) => {
       mainTvlIsFetch ? module.fetch : module.tvl,
       mainTvlIsFetch,
       "tvl",
-      knownTokenPrices
     );
     tvlPromises.push(mainTvlPromise);
   }
