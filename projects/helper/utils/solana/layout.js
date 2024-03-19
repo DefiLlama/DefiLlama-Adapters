@@ -5,6 +5,8 @@ const { RAYDIUM_LIQUIDITY_STATE_LAYOUT_CLMM, RAYDIUM_STABLE_STATE_LAYOUT_V1, } =
 const { INVESTIN_FUND_DATA, } = require('./layouts/investin-layout')
 const { MARKET_STATE_LAYOUT_V3, OPEN_ORDERS_LAYOUT_V2 } = require('./layouts/openbook-layout')
 const { ReserveLayout, ReserveLayoutLarix, MintLayout, AccountLayout, TokenSwapLayout, ESOLStakePoolLayout, } = require('./layouts/mixed-layout');
+const { SCN_STAKE_POOL } = require("./layouts/scnSOL");
+const { SANCTUM_INFINITY } = require("./layouts/sanctum-infinity-layout");
 
 const parseReserve = (info) => {
   const pubkey = PublicKey.default
