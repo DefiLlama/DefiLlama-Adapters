@@ -23,22 +23,13 @@ async function tvl() {
     armadaStakingV0.account.stakePool.all(),
     armadaStakingV1.account.stakePool.all(),
   ]);
-  const stakePoolV0VaultPubkeys = stakePoolsV0.map((sp) => sp.account.vault);
-  const stakePoolV1VaultPubkeys = stakePoolsV1.map((sp) => sp.account.vault);
-  const tokenAccounts = [
-    ...stakePoolV0VaultPubkeys,
-    ...stakePoolV1VaultPubkeys,
-  ];
-  return sumTokens2({
-    tokenAccounts,
-  });
+  return sumTokens2({ tokenAccounts: [stakePoolsV0, stakePoolsV1].flat().map((sp) => sp.account.vault), });
 }
 
 module.exports = {
-  doublecounted: false,
-  misrepresentedTokens: true,
   timetravel: false,
   solana: {
-    tvl,
+    tvl: () => ({}),
+    staking: tvl,
   },
 };
