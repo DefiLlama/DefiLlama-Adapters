@@ -13,9 +13,6 @@ const config = {
   },
 }
 
-module.exports = {
-};
-
 Object.keys(config).forEach(chain => {
   const { ladle, fromBlock } = config[chain]
   module.exports[chain] = {

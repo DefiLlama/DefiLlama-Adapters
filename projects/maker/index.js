@@ -89,10 +89,11 @@ async function tvl(timestamp, block, _, { api }) {
   toa = toa.filter(i => i[0].toLowerCase() !== ADDRESSES.ethereum.SAI.toLowerCase())
   const symbols = await api.multiCall({ abi: 'erc20:symbol', calls: toa.map(t => t[0]) })
   const gUNIToa = toa.filter((_, i) => symbols[i] === 'G-UNI')
-  toa = toa.filter((_, i) => symbols[i] !== 'G-UNI')
+  toa = toa.filter((_, i) => symbols[i] !== 'G-UNI' && !symbols[i].startsWith('RWA'))
 
-  const balances = await sumTokens2({ api, tokensAndOwners: toa, })
-  return unwrapGunis({ api, toa: gUNIToa, balances, })
+  const balances = await sumTokens2({ api, tokensAndOwners: toa, resolveLP: true, })
+  await unwrapGunis({ api, toa: gUNIToa, balances, })
+  return balances
 }
 
 async function unwrapGunis({ api, toa, balances = {} }) {

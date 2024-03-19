@@ -1,4 +1,10 @@
 const { erc4626Abi, stargateLpStakingAbi, stargatePoolAbi } = require('./abi');
+const ADDRESSES = require('../helper/coreAssets.json')
+const sgETHMapping = {
+  ethereum: '0x72E2F4830b9E45d52F80aC08CB2bEC0FeF72eD9c',
+  arbitrum: '0x82CbeCF39bEe528B5476FE6d1550af59a9dB6Fc0',
+  optimism: '0xb69c8CBCD90A39D8D3d3ccf0a3E968511C3856A0',
+}
 
 // convert stargate lp amount to underlying asset amount
 const getStrategyVaultValues = async (api, vaultAddresses) => {
@@ -25,7 +31,12 @@ const getStrategyVaultValues = async (api, vaultAddresses) => {
     abi: stargatePoolAbi.amountLPtoLD,
   });
   // find the underlying asset of each lp pool
-  const assets = await api.multiCall({ calls: lpPools, abi: stargatePoolAbi.token, });
+  let assets = await api.multiCall({ calls: lpPools, abi: stargatePoolAbi.token, });
+  // map stETH to ETH
+  const stETH = sgETHMapping[api.chain]?.toLowerCase();
+  assets = assets.map((asset) => {
+    return asset.toLowerCase() === stETH ? ADDRESSES.null : asset;
+  });
 
   return [assets, convertedAmounts];
 }
