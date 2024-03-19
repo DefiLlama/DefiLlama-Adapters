@@ -52,27 +52,10 @@ const fixBalancesTokens = {
     '5Ga8eJdR5PoBWLC2xaq6F6PAGCM5hWVNhuyycgsNn4jR': { coingeckoId: 'crvusd', decimals: 6 }, 
     'Fwvk46RZ4iBg4L9GzwjQ7jwVsEScn4aPD32V6wftTLHQ': { coingeckoId: 'tron', decimals: 6 }, 
   
-    'G5WWWzzVsWRyzGf32xojbnfp7gXbWrgqJT8RcVWEfLmC': { coingeckoId: 'tether', decimals: 6, name: 'USDT-PPT' },
-    '9wc3LXNA4TEBsXyKtoLE9mrbDD7WMHXvXrCjZvabLAsi': { coingeckoId: 'tether', decimals: 6, name: 'USDT-ERC20' },
-    'A81p1LTRyoq2rDR2TNxB2dWYxsiNwCSSi8sXef2SEkwb': { coingeckoId: 'tether', decimals: 6, name: 'USDT-BEP20' },
-    'DaErMEp76HtuvbbSYxDwLovRimaAwtEyQGFeHLQ3UWwh': { coingeckoId: 'tether', decimals: 6, name: 'USDT-TRC20' },
-    'Cu6FRaNphvp1iwmnyVRAvcnyVgLEwBGwSvGQrVsThAAD': { coingeckoId: 'tether', decimals: 6, name: 'USDT-POLY' },
-  
-    '3ayH3PhWMkhFsySsUVcC8BvFf1QyxGB5BZuTPyVtmP4v': { coingeckoId: 'usd-coin', decimals: 6, name: 'USDC-PPT' }, 
-    'HGgabTqUS8WtVFUJzfmrTDMgEccJuZLBPhFgQFxvnsoW': { coingeckoId: 'usd-coin', decimals: 6, name: 'USDC-ERC20' }, 
-    '4BKKSp6NoNcrFHyorZogDyctq1fq6w7114Ym1pw6HUtC': { coingeckoId: 'usd-coin', decimals: 6, name: 'USDC-BEP20' }, 
-    'EMGARezYjWYMvaU795eQK4jzrDZhCfdREAYXGb8UeDk1': { coingeckoId: 'usd-coin', decimals: 6, name: 'USDC-TRC20' }, 
-    '791Q1EcmnUAwRBqck7SyPbowktToCTKARsmBju4XQKd2': { coingeckoId: 'usd-coin', decimals: 6, name: 'USDT-POLY' }, 
-  
     'C1iWsKGqLwjHUndiQ7iXpdmPum9PeCDFfyXBdJJosDRS': { coingeckoId: 'waves-ducks', decimals: 8 },
-    'DG2xFkPdDwKUoBkzGAhQtLpSGzfXLiCYPEzeKH2Ad24p': { coingeckoId: 'neutrino', decimals: 6 },
     'GAzAEjApmjMYZKPzri2g2VUXNvTiQGF7KDYZFFsP3AEq': { coingeckoId: 'pete', decimals: 8 },
-    'Atqv59EYzjFGuitKVnMRk6H8FukjoV3ktPorbEys25on': { coingeckoId: 'waves-exchange', decimals: 8 },
     '2thsACuHmzDMuNezPM32wg9a3BwUzBWDeSKakgz3cw21': { coingeckoId: 'power-token', decimals: 8 },
-    '4LHHvYGNKJUg5hj65aGD5vgScvCBmLpdRFtjokvCjSL8': { coingeckoId: 'waves-enterprise', decimals: 8 },
-    '6nSpVyNH7yM69eg446wrQR94ipbbcmZMU1ENPwanC97g': { coingeckoId: 'neutrino-system-base-token', decimals: 8 },
     'HEB8Qaw9xrWpWs8tHsiATYGBWDBtP2S7kcPALrMu43AS': { coingeckoId: 'puzzle-swap', decimals: 8 },
-    'Ehie5xYpeN8op1Cctc6aGUrqx8jq3jtf1DSjXDbfm7aT': { coingeckoId: 'swop', decimals: 8 },
   },
   // Sample Code
   ozone: {
