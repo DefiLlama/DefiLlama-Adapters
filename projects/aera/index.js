@@ -38,6 +38,9 @@ const config = {
 
 const graphQuery = `query MyQuery($block: Int) {vaultCreateds(block: {number: $block}){ id vault assetRegistry }}`
 
+module.exports.methodology = 'Counts tokens held directly in vaults, as well as aave and compound positions.'
+module.exports.start = 1682619377
+
 Object.keys(config).forEach(chain => {
     module.exports[chain] = {
       tvl: async (_, _b, _cb, { api, }) => {
