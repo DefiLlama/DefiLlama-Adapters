@@ -232,29 +232,26 @@ async function lendle(api, address) {
 
 async function vaultBalance(api, address) {
   const network = api.chain;
-  const depositAddress = filterDepositAddress(network, address);
   const graphData = await getGraphData(api.timestamp, network, api);
 
   if (graphData.pools.length > 0) {
     const poolLists = graphData.pools;
 
-    var pools = poolLists.filter((value) => {
-      return depositAddress.length > 0 && depositAddress.indexOf(value.vault) > -1;
-    });
-
-    const poolConcretes = await concrete(pools, api);
+    const poolConcretes = await concrete(poolLists, api);
 
     const poolBaseInfos = await api.multiCall({
       abi: abi.slotBaseInfo,
-      calls: pools.map((index) => ({
+      calls: poolLists.map((index) => ({
         target: poolConcretes[index.contractAddress],
         params: [index.openFundShareSlot]
       })),
     })
 
     let vaults = {};
-    for (const key in pools) {
-      vaults[`${poolBaseInfos[key][1].toLowerCase()}-${pools[key]["vault"].toLowerCase()}`] = [poolBaseInfos[key][1], pools[key]["vault"]]
+    for (const key in poolLists) {
+      if (poolBaseInfos[key][1] && poolLists[key]["vault"]) {
+        vaults[`${poolBaseInfos[key][1].toLowerCase()}-${poolLists[key]["vault"].toLowerCase()}`] = [poolBaseInfos[key][1], poolLists[key]["vault"]]
+      }
     }
 
     const balances = await api.multiCall({
