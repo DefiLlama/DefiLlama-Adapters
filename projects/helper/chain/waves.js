@@ -145,7 +145,7 @@ const tokenMapping = {
   'Atqv59EYzjFGuitKVnMRk6H8FukjoV3ktPorbEys25on': { cgId: 'waves-exchange', decimals: 8 },
   '2thsACuHmzDMuNezPM32wg9a3BwUzBWDeSKakgz3cw21': { cgId: 'power-token', decimals: 8 },
   '4LHHvYGNKJUg5hj65aGD5vgScvCBmLpdRFtjokvCjSL8': { cgId: 'waves-enterprise', decimals: 8 },
-  '6nSpVyNH7yM69eg446wrQR94ipbbcmZMU1ENPwanC97g': { cgId: 'neutrino-system-base-token', decimals: 8 },
+  '6nSpVyNH7yM69eg446wrQR94ipbbcmZMU1ENPwanC97g': { cgId: 'neutrino-system-base-token', decimals: 6 },
   'HEB8Qaw9xrWpWs8tHsiATYGBWDBtP2S7kcPALrMu43AS': { cgId: 'puzzle-swap', decimals: 8 },
   'Ehie5xYpeN8op1Cctc6aGUrqx8jq3jtf1DSjXDbfm7aT': { cgId: 'swop', decimals: 8 },
 }
