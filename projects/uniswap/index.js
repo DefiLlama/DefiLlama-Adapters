@@ -10,7 +10,7 @@ const graphs = {
   celo: "https://api.thegraph.com/subgraphs/name/jesse-sawa/uniswap-celo",
   bsc: "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v3-bsc",
   avax: "https://api.thegraph.com/subgraphs/name/lynnshaoyu/uniswap-v3-avax",
-  base: "https://api.studio.thegraph.com/query/48211/uniswap-v3-base/v0.0.1",
+  base: "https://api.studio.thegraph.com/query/48211/uniswap-v3-base/version/latest",
 }
 
 const blacklists = {
@@ -55,16 +55,17 @@ module.exports = {
     [1620156420, "UNI V3 Launch"]
   ],
   ...uniV3Export({
-    base: { factory: '0x33128a8fc17869897dce68ed026d694621f6fdfd', fromBlock: 1371680, blacklistedTokens: blacklists.base },
+    // base: { factory: '0x33128a8fc17869897dce68ed026d694621f6fdfd', fromBlock: 1371680, blacklistedTokens: blacklists.base },
     celo: { factory: '0xAfE208a311B21f13EF87E33A90049fC17A7acDEc', fromBlock: 13916355, },
     moonbeam: { factory: '0x28f1158795a3585caaa3cd6469cd65382b89bb70', fromBlock: 4313505 },
     era: { factory: '0x8FdA5a7a8dCA67BBcDd10F02Fa0649A937215422', fromBlock: 12637080 },
-    boba: { factory: "0xFFCd7Aed9C627E82A765c3247d562239507f6f1B", fromBlock: 2523289, },
-    rsk: { factory: "0xAf37Ec98A00fD63689cF3060Bf3b6784e00CaD82", fromBlock: 5829207, },
+    boba: { factory: "0xFFCd7Aed9C627E82A765c3247d562239507f6f1B", fromBlock: 969351, },
+    rsk: { factory: "0xAf37Ec98A00fD63689cF3060Bf3b6784e00CaD82", fromBlock: 5829207, }, 
+    scroll: { factory: "0x70C62C8b8e801124A4Aa81ce07b637A3e83cb919", fromBlock: 1367, },
   })
 }
 
-const chains = ['ethereum', 'arbitrum', 'optimism', 'polygon', 'bsc', 'avax']
+const chains = ['ethereum', 'arbitrum', 'optimism', 'polygon', 'bsc', 'avax', 'base']
 
 chains.forEach(chain => {
   module.exports[chain] = {

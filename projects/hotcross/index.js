@@ -13,13 +13,13 @@ const chainKeys = {
 };
 
 function tvl(chain, get) {
-  return async (_t, _e, { [chain]: block }, { logArray }) => {
+  return async (_t, _e, { [chain]: block }) => {
     const assets = (await get).data;
     const tokensAndOwners = assets.map((data) => [
       data[chainKeys[chain].asset],
       data[`${chainKeys[chain].chain}BridgeAddress`],
     ]);
-    return sumTokens2({ tokensAndOwners, block, chain, logArray });
+    return sumTokens2({ tokensAndOwners, block, chain });
   };
 }
 

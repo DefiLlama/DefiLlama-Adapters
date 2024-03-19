@@ -227,7 +227,7 @@ const liquidityBridgeTokens = [
     arbitrum: "0xaE6aab43C4f3E0cea4Ab83752C278f8dEbabA689",
     bsc: "0x4a9a2b2b04549c3927dd2c9668a5ef3fca473623",
     ethereum: "0x431ad2ff6a9c365805ebad47ee021148d6f7dbe0",
-    optimism: ADDRESSES.op_bnb.USDC,
+    optimism: ADDRESSES.op_bnb.USDT,
     polygon: "0x08C15FA26E519A78a666D19CE5C646D55047e0a3",
   },
   {
@@ -509,7 +509,7 @@ const liquidityBridgeTokens = [
 ];
 
 function chainTvl(chain) {
-  return async (time, _, {[chain]: block}, { logArray }) => {
+  return async (time, _, {[chain]: block}) => {
     const toa = []
     liquidityBridgeTokens.forEach(token => {
       if (!token[chain])
@@ -519,7 +519,7 @@ function chainTvl(chain) {
         liquidityBridgeContractsV2[chain].filter(owner => owner.toLowerCase() !== bridgeContractV1.toLowerCase())
           .forEach(owner => toa.push([token[chain], owner]))
     })
-    const balances = await sumTokens({}, toa, block, chain, undefined, { logArray })
+    const balances = await sumTokens({}, toa, block, chain, undefined)
     return balances
   };
 }
