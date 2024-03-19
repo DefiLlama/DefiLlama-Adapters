@@ -11,14 +11,12 @@ async function tvl() {
   const provider = new WsProvider("wss://hydradx-rpc.dwellir.com");
   const api = await ApiPromise.create({ provider, });
   await api.isReady
-  const assetCount = +await api.query.assetRegistry.nextAssetId() // doesnt work
-  console.log(assetCount, 'saibbb')
-  console.log(api.query.assetRegistry)
+  // const assetCount = +await api.query.assetRegistry.nextAssetId() // doesnt work
   const assetMetadata = []
   let i = 0;
   let hasMore = true;
   do {
-    const meta = await api.query.assetRegistry.assetMetadataMap(i)
+    const meta = await api.query.assetRegistry.assets(i)
     if (meta.isNone) {
       hasMore = false
       break
