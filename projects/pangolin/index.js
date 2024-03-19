@@ -46,7 +46,6 @@ module.exports = {
   },
   hedera: {
     tvl: async () => {
-      return {}
        const block = await getCurrentBlock()
       const data = await graphQuery('https://graph-hedera-pangolin.canary.exchange/subgraphs/name/pangolin', `{
           pangolinFactory(id: "1" block: { number: ${block - 1000} }) {
