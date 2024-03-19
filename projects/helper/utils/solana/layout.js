@@ -1,28 +1,13 @@
 const { PublicKey } = require("@solana/web3.js");
-const { parseLido, parseLidoValidatorList } = require("./layouts/lido");
-const { parsePhoenix } = require("./layouts/phoenix-dex");
-const {
-  RAYDIUM_LIQUIDITY_STATE_LAYOUT_CLMM,
-  RAYDIUM_STABLE_STATE_LAYOUT_V1,
-} = require("./layouts/raydium-layout");
-const { INVESTIN_FUND_DATA } = require("./layouts/investin-layout");
-const {
-  MARKET_STATE_LAYOUT_V3,
-  OPEN_ORDERS_LAYOUT_V2,
-} = require("./layouts/openbook-layout");
-const {
-  ReserveLayout,
-  ReserveLayoutLarix,
-  MintLayout,
-  AccountLayout,
-  TokenSwapLayout,
-  ESOLStakePoolLayout,
-} = require("./layouts/mixed-layout");
-const { SCN_STAKE_POOL } = require("./layouts/scnSOL");
-const { SANCTUM_INFINITY } = require("./layouts/sanctum-infinity-layout");
+const { parseLido, parseLidoValidatorList } = require('./layouts/lido')
+const { parsePhoenix } = require('./layouts/phoenix-dex')
+const { RAYDIUM_LIQUIDITY_STATE_LAYOUT_CLMM, RAYDIUM_STABLE_STATE_LAYOUT_V1, } = require('./layouts/raydium-layout')
+const { INVESTIN_FUND_DATA, } = require('./layouts/investin-layout')
+const { MARKET_STATE_LAYOUT_V3, OPEN_ORDERS_LAYOUT_V2 } = require('./layouts/openbook-layout')
+const { ReserveLayout, ReserveLayoutLarix, MintLayout, AccountLayout, TokenSwapLayout, ESOLStakePoolLayout, } = require('./layouts/mixed-layout');
 
 const parseReserve = (info) => {
-  const pubkey = PublicKey.default;
+  const pubkey = PublicKey.default
   const { data } = info;
   const buffer = Buffer.from(data);
   const reserve = ReserveLayout.decode(buffer);
@@ -40,13 +25,13 @@ const parseReserve = (info) => {
   };
 
   return details;
-};
+}
 
-const defaultParseLayout = (Layout) => (info) => {
+const defaultParseLayout = Layout => info => {
   const { data } = info;
   const buffer = Buffer.from(data);
   return Layout.decode(buffer);
-};
+}
 
 const customDecoders = {
   reserve: parseReserve,
@@ -67,14 +52,14 @@ const customDecoders = {
   fluxbeam: defaultParseLayout(TokenSwapLayout),
   phoenix: parsePhoenix,
   sanctumInfinity: defaultParseLayout(SANCTUM_INFINITY),
-};
+}
 
 function decodeAccount(layout, accountInfo) {
-  if (!accountInfo.data) throw new Error("Missing account data");
-  if (customDecoders[layout]) return customDecoders[layout](accountInfo);
-  throw new Error("Layout not found: " + layout);
+  if (!accountInfo.data) throw new Error('Missing account data')
+  if (customDecoders[layout]) return customDecoders[layout](accountInfo)
+  throw new Error('Layout not found: ' + layout)
 }
 
 module.exports = {
   decodeAccount,
-};
+}
