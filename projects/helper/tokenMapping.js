@@ -37,6 +37,9 @@ const fixBalancesTokens = {
   zklink: {
     [ADDRESSES.zklink.WETH]: { coingeckoId: "ethereum", decimals: 18 },
   },
+  stacks: {
+    'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.wstx-token::wstx': { coingeckoId: "blockstack", decimals: 6 },
+  },
   waves: {
     'WAVES':  { coingeckoId: 'waves', decimals: 8 },
     'YiNbofFzC17jEHHCMwrRcpy9MrrjabMMLZxg8g5xmf7':  { coingeckoId: 'waves', decimals: 8 },
