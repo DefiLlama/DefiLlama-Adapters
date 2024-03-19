@@ -249,7 +249,9 @@ async function vaultBalance(api, address) {
 
     let vaults = {};
     for (const key in poolLists) {
-      vaults[`${poolBaseInfos[key][1].toLowerCase()}-${poolLists[key]["vault"].toLowerCase()}`] = [poolBaseInfos[key][1], poolLists[key]["vault"]]
+      if (poolBaseInfos[key][1] && poolLists[key]["vault"]) {
+        vaults[`${poolBaseInfos[key][1].toLowerCase()}-${poolLists[key]["vault"].toLowerCase()}`] = [poolBaseInfos[key][1], poolLists[key]["vault"]]
+      }
     }
 
     const balances = await api.multiCall({
