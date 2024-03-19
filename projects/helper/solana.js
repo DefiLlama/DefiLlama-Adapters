@@ -142,7 +142,7 @@ async function getTokenBalance(token, account) {
   const tokenBalance = await axios.post(endpoint(), formTokenBalanceQuery(token, account));
   return tokenBalance.data.result.value.reduce(
     (total, account) =>
-      total + account.account.data.parsed.info.tokenAmount.uiAmount,
+      total + account.account.data.parsed?.info.tokenAmount.uiAmount ?? 0,
     0
   );
 }
@@ -181,6 +181,7 @@ async function getTokenAccountBalances(tokenAccounts, { individual = false, chun
           return;
         }
         if (allowError) return;
+        else throw new Error(`Invalid account: ${tokenAccounts[i]}`)
       }
       const { data: { parsed: { info: { mint, tokenAmount: { amount } } } } } = value
       sdk.util.sumSingleBalance(balances, mint, amount)

@@ -99,7 +99,7 @@ module.exports = {
         ADDRESSES.optimism.USDC,
         ADDRESSES.optimism.USDT,
         ADDRESSES.optimism.USDC, // Bridge USDC
-        "0x68f180fcCe6836688e9084f035309E29Bf0A2095", // WBTC
+        ADDRESSES.optimism.WBTC, // WBTC
       ],
     }),
   },
