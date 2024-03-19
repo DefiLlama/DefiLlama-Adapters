@@ -20,10 +20,6 @@ const {
 } = require("./layouts/mixed-layout");
 const { SCN_STAKE_POOL } = require("./layouts/scnSOL");
 const { SANCTUM_INFINITY } = require("./layouts/sanctum-infinity-layout");
-const {
-  SANCTUM_LST_STATE_LIST_SCHEMA,
-  SANCTUM_LST_STATE_SCHEMA,
-} = require("./layouts/sanctum-validator-lsts-layout");
 
 const parseReserve = (info) => {
   const pubkey = PublicKey.default;
@@ -71,8 +67,6 @@ const customDecoders = {
   fluxbeam: defaultParseLayout(TokenSwapLayout),
   phoenix: parsePhoenix,
   sanctumInfinity: defaultParseLayout(SANCTUM_INFINITY),
-  sanctumLstStateList: defaultParseLayout(SANCTUM_LST_STATE_LIST_SCHEMA),
-  sanctumLstState: defaultParseLayout(SANCTUM_LST_STATE_SCHEMA),
 };
 
 function decodeAccount(layout, accountInfo) {
