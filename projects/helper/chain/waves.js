@@ -1,4 +1,5 @@
 const axios = require('axios')
+const { get } = require('../http')
 const API_HOST = "https://nodes.wavesnodes.com/"; // https://docs.waves.tech/en/waves-node/node-api/#api-of-pool-of-public-nodes
 
 const axiosObj = axios.create({
@@ -35,6 +36,22 @@ async function assetDetails(assetId) {
 }
 
 /**
+ * Get detailed information about a WAVES. [See fields descriptions](https://docs.waves.tech/en/blockchain/account/account-balance)
+ * @param {string} address - Address base58 encoded
+ * @returns {{
+*   address: string,
+*   regular: number,  
+*   generating: number,
+*   available: number,
+*   effective: number
+* }} Waves balance details
+*/
+async function wavesBalanceDetails(address) {
+  const response = await axiosObj.get(`/addresses/balance/details/${address}`);
+  return response.data;
+}
+
+/**
  * Evaluates the provided expression, taking into account the deployed dApp contract
  * @param {string} contract - Address of the deployed dApp contract
  * @returns {{
@@ -65,8 +82,48 @@ async function data(address, key) {
   return response.data;
 }
 
+const tokenMapping = {
+  '3VuV5WTmDz47Dmdn3QpcYjzbSdipjQE4JMdNe1xZpX13': { cgId: 'ethereum', decimals: 8 },
+  '2Fge5HEBRD3XTeg7Xg3FW5yiB9HVJFQtMXiWMQo72Up6': { cgId: 'wrapped-bitcoin', decimals: 8 },
+  '9wc3LXNA4TEBsXyKtoLE9mrbDD7WMHXvXrCjZvabLAsi': { cgId: 'tether', decimals: 6 },
+  'HGgabTqUS8WtVFUJzfmrTDMgEccJuZLBPhFgQFxvnsoW': { cgId: 'usd-coin', decimals: 6 },
+}
+
+async function sumTokens({ owners, api, includeWaves = true, blacklistedTokens = [] }) {
+  blacklistedTokens = new Set(blacklistedTokens)
+  await Promise.all(
+    owners.map(async (owner) => {
+      const { balances } = await get(API_HOST + `assets/balance/${owner}`);
+      balances.forEach(({ assetId, balance }) => {
+        if (blacklistedTokens.has(assetId)) return;
+        if (tokenMapping[assetId]) {
+          const { cgId, decimals } = tokenMapping[assetId]
+          api.addCGToken(cgId, balance / (10 ** decimals))
+        } else {
+          api.add(assetId, balance)
+        }
+      })
+    })
+  )
+  if (includeWaves)
+  await Promise.all(
+    owners.map(async (owner) => {
+      const { balance } = await get(API_HOST + `addresses/balance/${owner}`);
+      api.addCGToken('waves', balance / 1e8)
+    })
+  )
+}
+
+async function call({ target, key}) {
+  const { value } = await await get(API_HOST + `addresses/data/${target}/${key}`)
+  return value;
+}
+
 module.exports = {
+  call,
   assetDetails,
+  wavesBalanceDetails,
   scriptEvaluate,
   data,
+  sumTokens,
 };

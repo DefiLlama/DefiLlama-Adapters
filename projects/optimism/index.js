@@ -1,5 +1,6 @@
+const { getConfig } = require('../helper/cache');
+const ADDRESSES = require('../helper/coreAssets.json');
 const { sumTokens2 } = require("../helper/unwrapLPs");
-const axios = require("axios");
 
 const chains = {
   ethereum: 1,
@@ -8,18 +9,17 @@ const chains = {
   pgn: 424,
 };
 let output = {};
-let res = axios.get("https://static.optimism.io/optimism.tokenlist.json");
 
 Object.keys(chains).map((chain) => {
   output[chain] = {
     tvl: async (_, _b, _cb, { api }) => {
-      if (!res.data || !res.data.tokens) res = await res;
-      const tokenData = res.data.tokens.filter(
+      let res = await getConfig('optmism-bridge', "https://static.optimism.io/optimism.tokenlist.json");
+      const tokenData = res.tokens.filter(
         (t) => t.chainId == chains[chain]
       );
 
       const tokens = [
-        "0x0000000000000000000000000000000000000000",
+        ADDRESSES.null,
         ...tokenData.map((t) => t.address),
       ];
       const owners = [
