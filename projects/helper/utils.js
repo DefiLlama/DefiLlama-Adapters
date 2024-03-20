@@ -49,6 +49,12 @@ const blacklisted_LPS = [
   '0x253f67aacaf0213a750e3b1704e94ff9accee10b',
 ].map(i => i.toLowerCase())
 
+function isICHIVaultToken(symbol, token, chain) {
+  if (symbol === 'ICHI_Vault_LP') return true
+  if (chain === 'bsc' &&  symbol.startsWith('IV-') && symbol.endsWith('-THE')) return true
+  return false
+}
+
 function isLP(symbol, token, chain) {
   // sdk.log(symbol, chain, token)
   if (!symbol) return false
@@ -74,17 +80,22 @@ function isLP(symbol, token, chain) {
   if (chain === 'kardia' && ['KLP', 'KDXLP'].includes(symbol)) return true
   if (chain === 'fantom' && ['HLP', 'WLP'].includes(symbol)) return true
   if (chain === 'functionx' && ['FX-V2'].includes(symbol)) return true
-  if (chain === 'era' && /(cSLP|sSLP|ZFLP)$/.test(symbol)) return true // for syncswap
+  if (chain === 'mantle' && ['MoeLP'].includes(symbol)) return true
+  if (chain === 'blast' && ['RING-V2'].includes(symbol)) return true
+  if (chain === 'era' && /(ZFLP)$/.test(symbol)) return true // for syncswap
   if (chain === 'flare' && symbol.endsWith('_LP')) return true // for enosys dex
   if (chain === 'songbird' && ['FLRX', 'OLP'].includes(symbol)) return true
   if (chain === 'arbitrum' && ['DXS', 'ZLP',].includes(symbol)) return true
   if (chain === 'metis' && ['NLP', 'ALP'].includes(symbol)) return true // Netswap/Agora LP Token
   if (chain === 'optimism' && /(-ZS)/.test(symbol)) return true
   if (chain === 'arbitrum' && /^(crAMM|vrAMM)-/.test(symbol)) return true // ramses LP
+  if (chain === 'arbitrum' && /^(DLP|LP-)/.test(symbol)) return false // DODO or Wombat
   if (chain === 'base' && /^(v|s)-/.test(symbol)) return true // Equalizer LP
   if (chain === 'bsc' && /(-APE-LP-S)/.test(symbol)) return false
   if (chain === 'scroll' && /(cSLP|sSLP)$/.test(symbol)) return true //syncswap LP
+  if (chain === 'btn' && /(XLT)$/.test(symbol)) return true //xenwave LP
   if (['fantom', 'nova',].includes(chain) && ['NLT'].includes(symbol)) return true
+  if (chain === 'ethereumclassic' && symbol === 'ETCMC-V2') return true
   let label
 
   if (symbol.startsWith('ZLK-LP') || symbol.includes('DMM-LP') || (chain === 'avax' && 'DLP' === symbol) || symbol === 'fChe-LP')
@@ -241,7 +252,7 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
       labelMapping[label] = token
       return
     }
-    if (!token.startsWith('0x')) return;
+    if (!token.startsWith('0x') || chain === 'starknet') return;
     if (!label.startsWith(chain))
       ethTokens.push(token)
     else
@@ -324,4 +335,5 @@ module.exports = {
   getDecimals,
   getParamCalls,
   once,
+  isICHIVaultToken,
 }

@@ -1,6 +1,5 @@
 const ADDRESSES = require('./helper/coreAssets.json')
 const sdk = require("@defillama/sdk")
-const BigNumber = require("bignumber.js")
 const { getConfig } = require('./helper/cache')
 
 // Loop through all RealT tokens listed by realt.community API and accumulate tokenprice * supply, where supply is biggest of xdai or mainnet
@@ -16,7 +15,7 @@ async function xdaiTvl(timestamp, block, chainBlocks) {
   const calls_xdai = realt_tokens.map((token) => ({
     target: token['xDaiContract'],
   })).filter(t => t.target)
-  
+
   const tokenSupplies_xdai = (
     await sdk.api.abi.multiCall({
       calls: calls_xdai,
@@ -33,23 +32,19 @@ async function xdaiTvl(timestamp, block, chainBlocks) {
       'contract': tokenContract,
       'supply': supply.output,
       'tokenPrice': token['tokenPrice'],
-      'propertyPrice': BigNumber(supply.output).div(1e18).times(BigNumber(token['tokenPrice']))
+      'propertyPrice': (supply.output / 1e18) * token['tokenPrice']
     }
   })
 
   // Accumulate to TVL in USD and log
-  let tvl = tokenProperties.reduce(
-    (acc, token) => acc.plus(BigNumber(token['propertyPrice'])), 
-    BigNumber(0)
-  ) 
-  tvl = tvl.times(1e6).toFixed(0)
-  return {[xdai_usdc]: tvl}
+  let tvl = tokenProperties.reduce((acc, token) => acc + token.propertyPrice, 0)
+  return { [xdai_usdc]: tvl * 1e6 }
 }
 
 module.exports = {
-  methodology: `TVL for RealT consists of the accumulation of all properties prices, each being tokenSupply * tokenPrice where tokenPrice is given by community API`, 
+  methodology: `TVL for RealT consists of the accumulation of all properties prices, each being tokenSupply * tokenPrice where tokenPrice is given by community API`,
   xdai: {
-      tvl: xdaiTvl
+    tvl: xdaiTvl
   },
 }
 

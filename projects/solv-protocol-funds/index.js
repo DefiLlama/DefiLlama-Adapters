@@ -3,6 +3,7 @@ const { default: BigNumber } = require("bignumber.js");
 const { getConfig } = require("../helper/cache");
 const { cachedGraphQuery } = require("../helper/cache");
 const { sumTokens2, } = require("../helper/unwrapLPs");
+const { getAmounts } = require("./iziswap")
 
 // The Graph
 const graphUrlList = {
@@ -16,27 +17,27 @@ const slotListUrl = 'https://raw.githubusercontent.com/solv-finance-dev/solv-pro
 
 const addressUrl = 'https://raw.githubusercontent.com/solv-finance-dev/slov-protocol-defillama/main/solv-funds.json';
 
-const stakedAmountsAbi = 'function stakedAmounts(address) external view returns (uint256)';
-
 async function borrowed(ts) {
   const { api } = arguments[3];
   const network = api.chain;
 
   let address = (await getConfig('solv-protocol/funds', addressUrl));
-  let gm = address[api.chain]["gm"];
+  const depositAddress = filterDepositAddress(network, address);
 
   const graphData = await getGraphData(ts, network, api);
   if (graphData.pools.length > 0) {
     const poolLists = graphData.pools;
+
     var pools = poolLists.filter((value) => {
-      return gm == undefined || gm["depositAddress"].indexOf(value.vault) == -1;
+      return depositAddress.length == 0 || depositAddress.indexOf(value.vault) == -1;
     });
+
     const poolConcretes = await concrete(pools, api);
     const nav = await api.multiCall({
       abi: abi.getSubscribeNav,
       calls: pools.map((index) => ({
         target: index.navOracle,
-        params: [index.poolId, ts]
+        params: [index.poolId, ts * 1000]
       })),
     })
 
@@ -70,10 +71,17 @@ async function borrowed(ts) {
   return api.getBalances()
 }
 
-async function tvl() {
-  const { api } = arguments[3];
-
+async function tvl(ts, _, _1, { api }) {
   let address = (await getConfig('solv-protocol/funds', addressUrl));
+
+  await gm(api, address);
+  await mux(api, address);
+  await vaultBalance(api, address);
+
+  return api.getBalances();
+}
+
+async function gm(api, address) {
   let gm = address[api.chain]["gm"];
 
   let tokens = []
@@ -83,16 +91,34 @@ async function tvl() {
     }
   }
 
-  await sumTokens2({ api, tokensAndOwners: tokens.map(i => [i.address, i.pool]), permitFailure: true })
+  await sumTokens2({ api, tokensAndOwners: tokens.map(i => [i.address, i.pool]), permitFailure: true });
+}
+
+async function mux(api, address) {
+  let mux = address[api.chain]["mux"];
+
+  const amount = await api.call({ abi: abi.stakedMlpAmount, target: mux.pool, params: mux.account });
+
+  api.add(mux.lp, amount)
 }
 
 
 async function mantleTvl(ts, _, _1, { api }) {
   let address = (await getConfig('solv-protocol/funds', addressUrl));
+
+  await klp(api, address);
+  await iziswap(api, address);
+  await lendle(api, address);
+  await vaultBalance(api, address);
+
+  return api.getBalances();
+}
+
+async function klp(api, address) {
   let klp = address[api.chain]["klp"];
 
   const stakedAmounts = await api.multiCall({
-    abi: stakedAmountsAbi,
+    abi: abi.stakedAmountsAbi,
     calls: klp["klpPool"].map((pool) => ({
       target: klp["address"],
       params: [pool]
@@ -102,8 +128,75 @@ async function mantleTvl(ts, _, _1, { api }) {
   stakedAmounts.forEach(amount => {
     api.add(klp["address"], amount)
   })
+}
 
-  return api.getBalances()
+async function iziswap(api, address) {
+  let iziswapData = address[api.chain]["iziswap"];
+
+  const iziswap = iziswapData.liquidityManager;
+  const owner = iziswapData.owner;
+
+  let liquidities = [];
+  for (let i = 0; i < owner.length; i++) {
+    liquidities.push(liquidity(api, iziswap, owner[i]))
+  }
+
+  await Promise.all(liquidities);
+}
+
+async function liquidity(api, iziswap, owner) {
+  const balanceOf = await api.call({ abi: abi.balanceOf, target: iziswap, params: [owner] })
+
+  let indexs = [];
+  for (let i = 0; i < balanceOf; i++) {
+    indexs.push(i);
+  }
+
+  const tokenIds = await api.multiCall({
+    abi: abi.tokenOfOwnerByIndex,
+    calls: indexs.map((index) => ({
+      target: iziswap,
+      params: [owner, index]
+    })),
+  })
+
+  const liquidities = await api.multiCall({
+    abi: abi.liquidities,
+    calls: tokenIds.map((tokenId) => ({
+      target: iziswap,
+      params: [tokenId]
+    }))
+  })
+
+  const poolMetas = await api.multiCall({
+    abi: abi.poolMetas,
+    calls: liquidities.map((liquidity) => ({
+      target: iziswap,
+      params: [liquidity[7]]
+    }))
+  })
+
+  let tokenList = [...poolMetas]
+
+  let poolList = await api.multiCall({
+    abi: abi.pool,
+    target: iziswap,
+    calls: poolMetas.map((pool) => ({
+      params: [pool[0], pool[1], pool[2]]
+    }))
+  })
+  let state = await api.multiCall({
+    abi: abi.state,
+    calls: poolList.map((pool) => ({
+      target: pool
+    }))
+  })
+
+  tokenList.forEach((token, index) => {
+    const amounts = getAmounts(state[index], liquidities[index])
+    api.add(token[0], amounts.amountX)
+    api.add(token[1], amounts.amountY)
+  })
 }
 
 async function concrete(slots, api) {
@@ -127,6 +220,52 @@ async function concrete(slots, api) {
   }
 
   return concretes;
+}
+
+async function lendle(api, address) {
+  let lendleData = address[api.chain]["lendle"];
+
+  const balance = await api.call({ abi: abi.balanceOf, target: lendleData.aToken, params: lendleData.account.user });
+
+  api.add(lendleData.account.ethAddress, balance)
+}
+
+async function vaultBalance(api, address) {
+  const network = api.chain;
+  const graphData = await getGraphData(api.timestamp, network, api);
+
+  if (graphData.pools.length > 0) {
+    const poolLists = graphData.pools;
+
+    const poolConcretes = await concrete(poolLists, api);
+
+    const poolBaseInfos = await api.multiCall({
+      abi: abi.slotBaseInfo,
+      calls: poolLists.map((index) => ({
+        target: poolConcretes[index.contractAddress],
+        params: [index.openFundShareSlot]
+      })),
+    })
+
+    let vaults = {};
+    for (const key in poolLists) {
+      if (poolBaseInfos[key][1] && poolLists[key]["vault"]) {
+        vaults[`${poolBaseInfos[key][1].toLowerCase()}-${poolLists[key]["vault"].toLowerCase()}`] = [poolBaseInfos[key][1], poolLists[key]["vault"]]
+      }
+    }
+
+    const balances = await api.multiCall({
+      abi: abi.balanceOf,
+      calls: Object.values(vaults).map((index) => ({
+        target: index[0],
+        params: [index[1]]
+      })),
+    })
+
+    for (const key in balances) {
+      api.add(Object.values(vaults)[key][0], balances[key])
+    }
+  }
 }
 
 
@@ -154,6 +293,36 @@ async function getGraphData(timestamp, chain, api) {
     pools: poolList
   };
 }
+
+function filterDepositAddress(network, address) {
+  let depositAddresses = [];
+  if (address[network]) {
+    if (address[network]["gm"]) {
+      for (let depositAddress of address[network]["gm"]["depositAddress"]) {
+        depositAddresses.push(depositAddress.toLowerCase())
+      }
+    }
+    if (address[network]["mux"]) {
+      depositAddresses.push(address[network]["mux"]["account"].toLowerCase())
+    }
+    if (address[network]["klp"]) {
+      for (let poolAddress of address[network]["klp"]["klpPool"]) {
+        depositAddresses.push(poolAddress.toLowerCase())
+      }
+    }
+    if (address[network]["iziswap"]) {
+      for (let owner of address[network]["iziswap"]["owner"]) {
+        depositAddresses.push(owner.toLowerCase())
+      }
+    }
+    if (address[network]["lendle"]) {
+      depositAddresses.push(address[network]["lendle"]["account"]["user"].toLowerCase())
+    }
+  }
+
+  return depositAddresses;
+}
+
 // node test.js projects/solv-protocol-funds
 module.exports = {
   arbitrum: {
