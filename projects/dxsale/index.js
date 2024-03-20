@@ -17,7 +17,7 @@ const {
     baseArchives,
     omaxArchives,
     pulseArchives,
-    zksyncArchives,
+    zksyncArchives, moonriverArchives, milkomedaArchives, smartbchArchives,
 } = require("./config");
 const {
     getStorageLPLockDataV33,
@@ -188,7 +188,16 @@ module.exports = {
     pulse: {
         tvl: getTVLTotal(pulseArchives),
     },
-    // zksync: {
-    //     tvl: getTVLTotal(zksyncArchives),
-    // },
+    moonriver: {
+        tvl: getTVLTotal(moonriverArchives),
+    },
+    milkomeda: {
+        tvl: getTVLTotal(milkomedaArchives),
+    },
+    smartbch: {
+        tvl: getTVLTotal(smartbchArchives),
+    },
+    zksync: {
+        tvl: getTVLTotal(zksyncArchives),
+    },
 };
