@@ -27,7 +27,7 @@ const ContractsArb = {
     ARB: ADDRESSES.arbitrum.ARB
   }
 }
-async function arbtvl(_,b, _cb, { api, }) {
+async function arbtvl(api) {
   return sumTokens2({ api, owner: ContractsArb.Pool, tokens: Object.values(ContractsArb.Tokens)})
 }
 async function tvl(api) {

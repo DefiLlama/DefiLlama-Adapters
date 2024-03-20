@@ -226,7 +226,7 @@ async function staking(timestamp, block) {
   })
 }
 
-async function polygon(timestamp, ethBlock, chainBlocks, { api, }) {
+async function polygon(api) {
   const crv_3crv_vault_polygon = {
     contract: '0x7d60F21072b585351dFd5E8b17109458D97ec120',
   }

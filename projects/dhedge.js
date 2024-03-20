@@ -18,7 +18,8 @@ const DHEDGE_V1_VAULTS_ABI =
   "function deployedFunds(uint256) view returns (address)";
 const DHEDGE_V1_TVL_ABI = "function totalFundValue() view returns (uint256)";
 
-const getV1TotalValueLocked = async (_, __, ___, { api, chain }) => {
+const getV1TotalValueLocked = async (api) => {
+  const { chain } = api
   const target = DHEDGE_FACTORY_PROXIES[chain];
   const vaults = await api.fetchList({ lengthAbi: DHEDGE_V1_VAULTS_QUANTITY_ABI, itemAbi: DHEDGE_V1_VAULTS_ABI, target, });
   const vaultsValues = await api.multiCall({ abi: DHEDGE_V1_TVL_ABI, calls: vaults, permitFailure: true, });
@@ -35,7 +36,8 @@ const DHEDGE_V2_VAULTS_ABI =
 const DHEDGE_V2_VAULT_SUMMARY_ABI =
   "function getFundSummary() view returns (tuple(string name, uint256 totalSupply, uint256 totalFundValue))";
 
-const tvl = async (_, __, ___, { api, chain }) => {
+const tvl = async (api) => {
+  const { chain } = api
   const target = DHEDGE_FACTORY_PROXIES[chain];
   const vaults = await api.call({ abi: DHEDGE_V2_VAULTS_ABI, target, })
   let chunkSize = chain === 'optimism' ? 42 : 51 // Optimism has a lower gas limit

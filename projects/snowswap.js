@@ -87,7 +87,7 @@ const pools = [
   }
 ]
 
-async function polygon(ts, _block, { polygon: block }, { api }) {
+async function polygon(api) {
   const poolsPolygon = pools.filter(p => p.chain === "polygon")
   const toa = []
   poolsPolygon.forEach(pool => {

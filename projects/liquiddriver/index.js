@@ -151,7 +151,7 @@ async function getMinichefTvl(api, minichef, balances = {}) {
     resolveLP: true, })
 }
 
-async function shadowChefTvl(_, _1, _2, { api, }) {
+async function shadowChefTvl(api) {
   const balances = {}
   const  [lpTokens, strategies] = await Promise.all([
     api.multiCall({  abi: abi.shadowLpToken, calls: shadowChefAddresses}),

@@ -62,8 +62,7 @@ async function tvl(api) {
   return sumTokens2({ api, tokens, owners })
 }
 
-async function tronTvl() {
-  const { api } = arguments[3]
+async function tronTvl(api) {
   let conf = await getTokensConf();
   const tokens = conf['tron'];
   const tokenKeys = Object.keys(conf['tron'])

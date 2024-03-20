@@ -31,18 +31,9 @@ const getTranchedPoolAddresses = async (api) => {
  * This metric represents DeFiLlama's "base" definition of Total Value Locked. It includes
  * only USDC balances in the protocol (that is, in the `SeniorPool` and in all `TranchedPool`s).
  */
-const tvl = async (timestamp, ethBlock, _, { api, }) => {
-  const balances = {};
-
+const tvl = async (api) => {
   const tranchedPoolAddresses = await getTranchedPoolAddresses(api);
-
-  await sumTokens(
-    balances,
-    [seniorPoolAddress, ...tranchedPoolAddresses].map((pool) => [USDC, pool]),
-    ethBlock
-  );
-
-  return balances;
+  return api.sumTokens({ tokens: [USDC], owners: [seniorPoolAddress, ...tranchedPoolAddresses]})
 };
 
 /**

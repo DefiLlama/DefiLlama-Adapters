@@ -9,8 +9,7 @@ const getEthereumBorrows = async (api) => {
   api.add(ADDRESSES.null, await api.call({ target: tokenAddresses.pool, abi: 'uint256:totalBorrow' }))
 }
 
-async function getEthereumPoolTvl() {
-  const { api } = arguments[3]
+async function getEthereumPoolTvl(api) {
   const pools = ['0xAdb6d1cB866a52C5E8C1e79Ff8e0559c12F4D7a3']
   const tokens = ['0x0652687e87a4b8b5370b05bc298ff00d205d9b5f']
   const bals = await api.multiCall({ abi: 'uint256:underlyingBalanceWithInvestment', calls: pools })
