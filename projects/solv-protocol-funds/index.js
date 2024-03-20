@@ -76,6 +76,9 @@ async function tvl(ts, _, _1, { api }) {
 
   await gm(api, address);
   await mux(api, address);
+  await vaultBalance(api, address);
+
+  return api.getBalances();
 }
 
 async function gm(api, address) {
@@ -106,6 +109,7 @@ async function mantleTvl(ts, _, _1, { api }) {
   await klp(api, address);
   await iziswap(api, address);
   await lendle(api, address);
+  await vaultBalance(api, address);
 
   return api.getBalances();
 }
@@ -224,6 +228,44 @@ async function lendle(api, address) {
   const balance = await api.call({ abi: abi.balanceOf, target: lendleData.aToken, params: lendleData.account.user });
 
   api.add(lendleData.account.ethAddress, balance)
+}
+
+async function vaultBalance(api, address) {
+  const network = api.chain;
+  const graphData = await getGraphData(api.timestamp, network, api);
+
+  if (graphData.pools.length > 0) {
+    const poolLists = graphData.pools;
+
+    const poolConcretes = await concrete(poolLists, api);
+
+    const poolBaseInfos = await api.multiCall({
+      abi: abi.slotBaseInfo,
+      calls: poolLists.map((index) => ({
+        target: poolConcretes[index.contractAddress],
+        params: [index.openFundShareSlot]
+      })),
+    })
+
+    let vaults = {};
+    for (const key in poolLists) {
+      if (poolBaseInfos[key][1] && poolLists[key]["vault"]) {
+        vaults[`${poolBaseInfos[key][1].toLowerCase()}-${poolLists[key]["vault"].toLowerCase()}`] = [poolBaseInfos[key][1], poolLists[key]["vault"]]
+      }
+    }
+
+    const balances = await api.multiCall({
+      abi: abi.balanceOf,
+      calls: Object.values(vaults).map((index) => ({
+        target: index[0],
+        params: [index[1]]
+      })),
+    })
+
+    for (const key in balances) {
+      api.add(Object.values(vaults)[key][0], balances[key])
+    }
+  }
 }
 
 

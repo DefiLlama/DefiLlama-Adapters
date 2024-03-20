@@ -20,6 +20,7 @@ const DEFAULTS = {
   OZONE_RPC: "https://node1.ozonechain.io",
   ZETA_RPC: "https://zetachain-evm.blockpi.network/v1/rpc/public,https://zetachain-mainnet-archive.allthatnode.com:8545",
   DEFIVERSE_RPC: "https://rpc.defi-verse.org/",
+  ZKLINK_RPC: "https://rpc.zklink.io",
 }
 
 const ENV_KEYS = [
