@@ -69,87 +69,49 @@ const LockerV33 = {
     tokenStorage: ["0x983b00a2C3d8925cEDfC9f3eb5Df1aE121Ff6B9F"],
     lpStorage: ["0xFEE2A3f4329e9A1828F46927bD424DB2C1624985"],
   },
-
   ethereum: {
     tokenStorage: ["0x983b00a2C3d8925cEDfC9f3eb5Df1aE121Ff6B9F"],
     lpStorage: ["0xFEE2A3f4329e9A1828F46927bD424DB2C1624985"],
   },
-
   arbitrum: {
     tokenStorage: ["0x983b00a2C3d8925cEDfC9f3eb5Df1aE121Ff6B9F"],
     lpStorage: ["0xFEE2A3f4329e9A1828F46927bD424DB2C1624985"],
   },
-
   celo: {
     tokenStorage: ["0x983b00a2C3d8925cEDfC9f3eb5Df1aE121Ff6B9F"],
     lpStorage: ["0xFEE2A3f4329e9A1828F46927bD424DB2C1624985"],
   },
-
   kucoin: {
     tokenStorage: ["0x983b00a2C3d8925cEDfC9f3eb5Df1aE121Ff6B9F"],
     lpStorage: ["0xFEE2A3f4329e9A1828F46927bD424DB2C1624985"],
   },
-
   harmony: {
     tokenStorage: ["0x983b00a2C3d8925cEDfC9f3eb5Df1aE121Ff6B9F"],
     lpStorage: ["0xFEE2A3f4329e9A1828F46927bD424DB2C1624985"],
   },
-
   avax: {
     tokenStorage: ["0x983b00a2C3d8925cEDfC9f3eb5Df1aE121Ff6B9F"],
     lpStorage: ["0xFEE2A3f4329e9A1828F46927bD424DB2C1624985"],
   },
-
   xdai: {
     tokenStorage: ["0x983b00a2C3d8925cEDfC9f3eb5Df1aE121Ff6B9F"],
     lpStorage: ["0xFEE2A3f4329e9A1828F46927bD424DB2C1624985"],
   },
-
   fantom: {
     tokenStorage: ["0x983b00a2C3d8925cEDfC9f3eb5Df1aE121Ff6B9F"],
     lpStorage: ["0xFEE2A3f4329e9A1828F46927bD424DB2C1624985"],
   },
-
   polygon: {
     tokenStorage: ["0x983b00a2C3d8925cEDfC9f3eb5Df1aE121Ff6B9F"],
     lpStorage: ["0xFEE2A3f4329e9A1828F46927bD424DB2C1624985"],
   },
-
-  okexchain: {
-    tokenStorage: ["0x983b00a2C3d8925cEDfC9f3eb5Df1aE121Ff6B9F"],
-    lpStorage: ["0xFEE2A3f4329e9A1828F46927bD424DB2C1624985"],
-  },
-
   cronos: {
     tokenStorage: ["0x983b00a2C3d8925cEDfC9f3eb5Df1aE121Ff6B9F"],
     lpStorage: ["0xFEE2A3f4329e9A1828F46927bD424DB2C1624985"],
   },
-
-  moonriver: {
-    tokenStorage: ["0x983b00a2C3d8925cEDfC9f3eb5Df1aE121Ff6B9F"],
-    lpStorage: [
-      // "0xFEE2A3f4329e9A1828F46927bD424DB2C1624985",
-    ],
-  },
-  heco: {
-    tokenStorage: ["0x983b00a2C3d8925cEDfC9f3eb5Df1aE121Ff6B9F"],
-    lpStorage: ["0xFEE2A3f4329e9A1828F46927bD424DB2C1624985"],
-  },
-  smartbch: {
-    tokenStorage: ["0x983b00a2C3d8925cEDfC9f3eb5Df1aE121Ff6B9F"],
-    lpStorage: ["0xFEE2A3f4329e9A1828F46927bD424DB2C1624985"],
-  },
-  milkomeda: {
-    tokenStorage: ["0x983b00a2C3d8925cEDfC9f3eb5Df1aE121Ff6B9F"],
-    lpStorage: ["0x6E573D464416a81A9F82207F1dFD6a42e4b21066"],
-  },
   bitgert: {
     tokenStorage: ["0x5AB541B972Acab91f0E5E7d30fCB4fe8e81b9Fa7"],
     lpStorage: ["0x16AAF57c5b3170a143A6A2DDfe897e8a2bDd8FD1"],
-  },
-  dexit: {
-    tokenStorage: ["0x17e8c87d4de42fc143507B7c45Da2e6F2af7F24F"],
-    lpStorage: ["0x0dDdD88aff5b7082BEf86923cf19BAd1ffb4EC8C"],
   },
   coreDao: {
     tokenStorage: ["0x17e8c87d4de42fc143507B7c45Da2e6F2af7F24F"],
@@ -158,6 +120,22 @@ const LockerV33 = {
   doge: {
     tokenStorage: ["0x17e8c87d4de42fc143507B7c45Da2e6F2af7F24F"],
     lpStorage: ["0x0dDdD88aff5b7082BEf86923cf19BAd1ffb4EC8C"],
+  },
+  base: {
+    tokenStorage: ["0x0dDdD88aff5b7082BEf86923cf19BAd1ffb4EC8C"],
+    lpStorage: ["0x17e8c87d4de42fc143507B7c45Da2e6F2af7F24F"],
+  },
+  omax: {
+    tokenStorage: ["0x17e8c87d4de42fc143507B7c45Da2e6F2af7F24F"],
+    lpStorage: ["0x0dDdD88aff5b7082BEf86923cf19BAd1ffb4EC8C"],
+  },
+  pulse: {
+    tokenStorage: ["0x130628897d594630D421962A00fF1cBacE82952A"],
+    lpStorage: ["0x006d38268d5d503F3fc2621b44e7fEDe8AFd004f"],
+  },
+  zksync: {
+    tokenStorage: ["0x1Ba5427BB3256b4511064eB0086E9418eC032618"],
+    lpStorage: ["0x12E0ebe89e86F5bfFa41b5BC22EDC079c0ff683a"],
   },
 };
 
@@ -197,11 +175,33 @@ const polygonArchives = {
   storageLiquidityLocks: LockerV33.polygon.lpStorage,
 };
 
-const arbitrumArchives = {
-  chain: "arbitrum",
-  locks: LockersV3.arbitrum,
-  storageTokenLocks: LockerV33.arbitrum.tokenStorage,
-  storageLiquidityLocks: LockerV33.arbitrum.lpStorage,
+const fantomArchives = {
+  chain: "fantom",
+  locks: LockersV3.fantom,
+  storageTokenLocks: LockerV33.fantom.tokenStorage,
+  storageLiquidityLocks: LockerV33.fantom.lpStorage,
+};
+
+
+const xdaiArchives = {
+  chain: "xdai",
+  locks: LockersV3.xdai,
+  storageTokenLocks: LockerV33.xdai.tokenStorage,
+  storageLiquidityLocks: LockerV33.xdai.lpStorage,
+};
+
+const avaxArchives = {
+  chain: "avax",
+  locks: LockersV3.avax,
+  storageTokenLocks: LockerV33.avax.tokenStorage,
+  storageLiquidityLocks: LockerV33.avax.lpStorage,
+};
+
+const harmonyArchives = {
+  chain: "harmony",
+  locks: LockersV3.harmony,
+  storageTokenLocks: LockerV33.harmony.tokenStorage,
+  storageLiquidityLocks: LockerV33.harmony.lpStorage,
 };
 
 const celoArchives = {
@@ -218,46 +218,11 @@ const kucoinArchives = {
   storageLiquidityLocks: LockerV33.kucoin.lpStorage,
 };
 
-const harmonyArchives = {
-  chain: "harmony",
-  locks: LockersV3.harmony,
-  storageTokenLocks: LockerV33.harmony.tokenStorage,
-  storageLiquidityLocks: LockerV33.harmony.lpStorage,
-};
-
-const avaxArchives = {
-  chain: "avax",
-  locks: LockersV3.avax,
-  storageTokenLocks: LockerV33.avax.tokenStorage,
-  storageLiquidityLocks: LockerV33.avax.lpStorage,
-};
-
-const xdaiArchives = {
-  chain: "xdai",
-  locks: LockersV3.xdai,
-  storageTokenLocks: LockerV33.xdai.tokenStorage,
-  storageLiquidityLocks: LockerV33.xdai.lpStorage,
-};
-
-const fantomArchives = {
-  chain: "fantom",
-  locks: LockersV3.fantom,
-  storageTokenLocks: LockerV33.fantom.tokenStorage,
-  storageLiquidityLocks: LockerV33.fantom.lpStorage,
-};
-
-const hecoArchives = {
-  chain: "heco",
-  locks: [],
-  storageTokenLocks: LockerV33.heco.tokenStorage,
-  storageLiquidityLocks: LockerV33.heco.lpStorage,
-};
-
-const okexchainArchives = {
-  chain: "okexchain",
-  locks: [],
-  storageTokenLocks: LockerV33.okexchain.tokenStorage,
-  storageLiquidityLocks: LockerV33.okexchain.lpStorage,
+const arbitrumArchives = {
+  chain: "arbitrum",
+  locks: LockersV3.arbitrum,
+  storageTokenLocks: LockerV33.arbitrum.tokenStorage,
+  storageLiquidityLocks: LockerV33.arbitrum.lpStorage,
 };
 
 const cronosArchives = {
@@ -267,39 +232,11 @@ const cronosArchives = {
   storageLiquidityLocks: LockerV33.cronos.lpStorage,
 };
 
-const moonriverArchives = {
-  chain: "moonriver",
-  locks: [],
-  storageTokenLocks: LockerV33.moonriver.tokenStorage,
-  storageLiquidityLocks: LockerV33.moonriver.lpStorage,
-};
-
-const smartbchArchives = {
-  chain: "smartbch",
-  locks: [],
-  storageTokenLocks: LockerV33.smartbch.tokenStorage,
-  storageLiquidityLocks: LockerV33.smartbch.lpStorage,
-};
-
-const milkomedaArchives = {
-  chain: "milkomeda",
-  locks: [],
-  storageTokenLocks: LockerV33.milkomeda.tokenStorage,
-  storageLiquidityLocks: LockerV33.milkomeda.lpStorage,
-};
-
 const bitgertArchives = {
   chain: "bitgert",
   locks: [],
   storageTokenLocks: LockerV33.bitgert.tokenStorage,
   storageLiquidityLocks: LockerV33.bitgert.lpStorage,
-};
-
-const dexitArchives = {
-  chain: "dexit",
-  locks: [],
-  storageTokenLocks: LockerV33.dexit.tokenStorage,
-  storageLiquidityLocks: LockerV33.dexit.lpStorage,
 };
 
 const coreDaoArchives = {
@@ -316,25 +253,50 @@ const dogeArchives = {
   storageLiquidityLocks: LockerV33.doge.lpStorage,
 };
 
+const baseArchives = {
+  chain: "base",
+  locks: [],
+  storageTokenLocks: LockerV33.base.tokenStorage,
+  storageLiquidityLocks: LockerV33.base.lpStorage,
+};
+const omaxArchives = {
+  chain: "omax",
+  locks: [],
+  storageTokenLocks: LockerV33.omax.tokenStorage,
+  storageLiquidityLocks: LockerV33.omax.lpStorage,
+};
+
+const pulseArchives = {
+  chain: "pulse",
+  locks: [],
+  storageTokenLocks: LockerV33.pulse.tokenStorage,
+  storageLiquidityLocks: LockerV33.pulse.lpStorage,
+};
+
+const zksyncArchives = {
+  chain: "zksync",
+  locks: [],
+  storageTokenLocks: LockerV33.zksync.tokenStorage,
+  storageLiquidityLocks: LockerV33.zksync.lpStorage,
+};
+
 module.exports = {
-  milkomedaArchives,
-  smartbchArchives,
-  moonriverArchives,
-  cronosArchives,
-  okexchainArchives,
-  hecoArchives,
-  polygonArchives,
-  bscArchives,
-  ethereumArchives,
-  arbitrumArchives,
-  celoArchives,
-  kucoinArchives,
-  harmonyArchives,
-  avaxArchives,
-  xdaiArchives,
-  fantomArchives,
-  bitgertArchives,
-  dexitArchives,
-  coreDaoArchives,
-  dogeArchives,
+    bscArchives,
+    ethereumArchives,
+    polygonArchives,
+    fantomArchives,
+    xdaiArchives,
+    avaxArchives,
+    harmonyArchives,
+    celoArchives,
+    kucoinArchives,
+    arbitrumArchives,
+    cronosArchives,
+    bitgertArchives,
+    coreDaoArchives,
+    dogeArchives,
+    baseArchives,
+    omaxArchives,
+    pulseArchives,
+    zksyncArchives,
 };
