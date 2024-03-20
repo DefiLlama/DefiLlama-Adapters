@@ -106,6 +106,30 @@ const supportedChains = [
     identifier: 'fantom'
   },
   // {
+  //   name: 'Flare',
+  //   subgraphEndpoint: '',
+  //   chainId: 14,
+  //   identifier: 'flare'
+  // },
+  {
+    name: 'Blast',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-blast/1.1.1/gn',
+    chainId: 81457,
+    identifier: 'blast'
+  },
+  {
+    name: 'Mode',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-mode/1.1.1/gn',
+    chainId: 34443,
+    identifier: 'mode'
+  },
+  {
+    name: 'AstarzkEVM',
+    subgraphEndpoint: 'https://subgraph.steer.finance/astarzkevm/subgraphs/name/steerprotocol/steer-astarzkevm',
+    chainId: 3776,
+    identifier: 'astrzk'
+  },
+  // {
   //   name: 'Celo',
   //   subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/rakeshbhatt10/steer-test-celo',
   //   chainId: 42220,
