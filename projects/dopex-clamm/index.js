@@ -21,7 +21,7 @@ const query = (skip = 0, limit = 1000) => `query ($block: Int) {
   }
 }`
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const allData = []
   let hasMore = true
   let skip = 0

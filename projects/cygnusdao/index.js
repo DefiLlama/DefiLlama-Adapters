@@ -42,7 +42,7 @@ async function tvl(api) {
   })
 }
 
-async function borrowed(_, _b, _cb, { api, }) {
+async function borrowed(api) {
   api.addCGToken('tether', (await api.call({ abi: 'uint256:cygnusTotalBorrows', target: FACTORY_CONTRACT }))/1e6)
   return api.getBalances()
 }

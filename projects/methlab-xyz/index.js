@@ -10,7 +10,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { factories } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const vaults = []
       for (const { target, fromBlock, } of factories) {
         const logs = await getLogs({ api, target, fromBlock, onlyArgs: true, eventAbi: 'event VaultAdded (address indexed vault)' })

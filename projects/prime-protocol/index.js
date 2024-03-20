@@ -117,7 +117,7 @@ async function borrowed(api) {
   })
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const markets = await getMarketsForCurrentNetwork(api);
 
   return sumTokens2({ api, tokensAndOwners: markets.map(market => [market.pTokenUnderlyingAddress, market.pTokenMarketAddress]) })

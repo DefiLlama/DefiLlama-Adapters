@@ -24,7 +24,7 @@ async function tvl(api) {
   return api.getBalances()
 }
 
-async function staking(_, _b, _cb, { api, }) {
+async function staking(api) {
   const vlMatchStaked = await api.call({ abi: 'uint256:totalStaked', target: VLMATCH_STAKING_CONTRACT })
   api.add(MATCH_TOKEN, vlMatchStaked)
 }

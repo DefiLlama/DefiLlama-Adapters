@@ -3,7 +3,7 @@ const { sumUnknownTokens } = require('../helper/unknownTokens');
 const GENESIS_REWARD_POOL = "0x4F4014EC1685699290A311E0A159E1E39914853F";
 const poolInfoAbi = "function poolInfo(uint256) view returns (address token, uint256 allocPoint, uint256 lastRewardTime, uint256 accBasedPerShare, bool isStarted)";
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const tokens = []
   let gotError = false
   let i = 0

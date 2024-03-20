@@ -116,7 +116,7 @@ const config = {
 
 Object.keys(config).forEach(chain => {
   const { factory, fromBlock, CAKE, pools = [] } = config[chain]
-  module.exports[chain].staking = async (_, _b, _cb, { api, }) => {
+  module.exports[chain].staking = async (api) => {
     const logs = await getLogs({ api, target: factory, eventAbi: 'event NewSmartChefContract (address indexed martChef)', onlyArgs: true, fromBlock, })
     pools.push(...logs.map(log => log.martChef))
     return api.sumTokens({ owners: pools, tokens: [CAKE] })

@@ -103,7 +103,8 @@ function staking({ tokensAndOwners = [],
   log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [], useDefaultCoreAssets = false,
 }) {
 
-  return async (_, _b, _cb, { api, chain = 'ethereum', block, }) => {
+  return async (api) => {
+    const { chain, block } = api
     if (!coreAssets.length && useDefaultCoreAssets)
       coreAssets = getCoreAssets(chain)
 

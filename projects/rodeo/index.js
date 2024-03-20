@@ -12,7 +12,7 @@ async function borrowed(api) {
   data[3].forEach((v, i) => api.add(assets[i], v))
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const assets = await api.multiCall({  abi: 'address:asset', calls: pools}) 
   return sumTokens2({ api, tokensAndOwners2: [assets, pools]})
 }

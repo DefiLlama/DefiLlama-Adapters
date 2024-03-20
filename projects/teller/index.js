@@ -81,12 +81,12 @@ async function getData(api) {
   }
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const data = await getData(api)
   return sumTokens2({ api, ownerTokens: Object.values(data).map(i => [i.tokens, i.owner]), blacklistedTokens, permitFailure: true, })
 }
 
-async function borrowed(_, _b, _cb, { api, }) {
+async function borrowed(api) {
   const data = await getData(api)
   const activeLoans = Object.keys(data)
   const { tellerV2 } = config[api.chain]

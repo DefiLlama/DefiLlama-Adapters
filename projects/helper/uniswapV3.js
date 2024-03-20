@@ -22,7 +22,7 @@ function uniV3Export(config) {
     if (!eventAbi) eventAbi = isAlgebra ? algebraConfig.eventAbi : uniswapConfig.eventAbi
 
     exports[chain] = {
-      tvl: async (_, _b, _cb, { api, }) => {
+      tvl: async (api) => {
         const logs = await getLogs({
           api,
           target,

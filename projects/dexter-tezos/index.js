@@ -1,7 +1,7 @@
 const { get } = require('../helper/http')
 
 async function tvl(api) {
-  const tsString = new Date(ts * 1000).toISOString()
+  const tsString = new Date(api.timestamp * 1000).toISOString()
   const addBal = bal => api.add('coingecko:tezos', bal * 2/ 1e6, { skipChain: true })
   const getBal = async (address) =>  get(`https://api.tzkt.io/v1/accounts/${address}/balance_history/${tsString}`)
 

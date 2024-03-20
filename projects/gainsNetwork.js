@@ -24,7 +24,7 @@ async function polyTvl(api) {
   ];
   return sumTokens2({ api, tokensAndOwners });
 }
-async function arbiTvl(_, _b, cb, { api}) {
+async function arbiTvl(api) {
   const tokensAndOwners = [
     [tokens.arbitrum.DAI, "0xd85E038593d7A098614721EaE955EC2022B9B91B"],
     [tokens.arbitrum.DAI, "0xcFa6ebD475d89dB04cAd5A756fff1cb2BC5bE33c"],

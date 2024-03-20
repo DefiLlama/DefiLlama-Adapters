@@ -18,7 +18,7 @@ async function getEthereumPoolTvl() {
   return api.sumTokens({ owners: [tokenAddresses.onxFarm, tokenAddresses.onxTripleFarm], tokens: ['0x0652687e87a4b8b5370b05bc298ff00d205d9b5f', tokenAddresses.onxWethSushiPair] })
 }
 
-async function ethTvl(_, _b, _cb, { api, }) {
+async function ethTvl(api) {
   await Promise.all([addFarmTvl, addOnePoolTvl, addVaultTvl, addOneVaultTvl, ethStakeTvl ].map(i => i()))
 
   async function ethStakeTvl() {

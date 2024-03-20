@@ -57,7 +57,7 @@ async function polygonTvl(api) {
   const tokens = await api.multiCall({ abi: 'address:token', calls: platformLiquidityContracts_polygon })
   return api.sumTokens({ tokensAndOwners2: [tokens, platformLiquidityContracts_polygon] })
 }
-async function arbiTvl(_, _b, _cb, { api, }) {
+async function arbiTvl(api) {
   const vaults = [
     // '0xfdeb59a2b4891ea17610ee38665249acc9fcc506',
     '0xAf7a27b1291Bff85aCaf0A90078d81468A705E58',

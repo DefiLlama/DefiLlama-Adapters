@@ -11,7 +11,7 @@ const MAX_LP_TOKENS = 3
 Object.keys(config).forEach(chain => {
   const { vaults } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const calls = vaults.map(vault => {
         let res = []
         for (let i = 0; i < MAX_LP_TOKENS; i++)

@@ -53,7 +53,7 @@ module.exports = {
   }
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   await fixedIncomeTvl(api)
   await loanTvl(api)
   return api.getBalances()
@@ -91,7 +91,7 @@ async function loanTvl(api) {
   return api.sumTokens({ ownerTokens, blacklistedTokens: [SMART_CREDIT] })
 }
 
-async function borrowed(_, _b, _cb, { api, }) {
+async function borrowed(api) {
   let { loanRequests } = await cachedGraphQuery('smart-credit', endPoint, `{
     loanRequests {
       id,

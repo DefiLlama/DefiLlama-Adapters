@@ -2,7 +2,7 @@ const { sumTokens2 } = require("../helper/solana");
 
 const data = require("./contracts.json");
 
-const solanaTvl = async (_, _b, _cb, { api, }) => {
+const solanaTvl = async (api) => {
   const tokens = data['solana'].tokens;
   return sumTokens2({ tokensAndOwners: tokens.map(i => [i.tokenAddress, i.poolAddress])})
 }

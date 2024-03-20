@@ -83,7 +83,7 @@ async function bscTvl(api) {
 
 const { vaults, pgVaults, tjVaults, } = config.avax
 module.exports.avax = {
-  tvl: async (_, _b, _cb, { api, }) => {
+  tvl: async (api) => {
     const vInfo = await api.multiCall({ abi: 'function vaultInfo() view returns (address token, uint256 bal)', calls: vaults })
     vInfo.forEach(i => api.add(i.token, i.bal))
     const pgInfos = await api.multiCall({ abi: 'function vaultInfo() view returns (address token, address, uint256 bal, uint256, bool, bool)', calls: [pgVaults, tjVaults].flat() })
