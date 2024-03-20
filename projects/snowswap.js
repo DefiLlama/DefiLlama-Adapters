@@ -96,7 +96,7 @@ async function polygon(ts, _block, { polygon: block }, { api }) {
   return sumTokens2({ api, tokensAndOwners: toa, })
 }
 
-async function ethereum(ts, block, _, { api }) {
+async function ethereum(api) {
   const toa = []
   swaps.map(({ addr, coins }) => {
     coins.forEach(i => toa.push([i.addr, addr]))

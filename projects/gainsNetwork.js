@@ -13,7 +13,7 @@ const tokens = {
   },
 };
 
-async function polyTvl(_, _b, _cb, { api }) {
+async function polyTvl(api) {
   const tokensAndOwners = [
     [tokens.polygon.dQUICK, "0x151757c2E830C467B28Fe6C09c3174b6c76aA0c5"],
     [tokens.polygon.dQUICK, "0x203F5c9567d533038d2da70Cbc20e6E8B3f309F9"],

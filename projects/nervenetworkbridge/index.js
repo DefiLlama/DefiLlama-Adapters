@@ -53,7 +53,7 @@ function getChain(chain) {
   return chainMapping[chain] ?? chain
 }
 
-async function tvl(_, _b, _cb, { api }) {
+async function tvl(api) {
   let conf = await getTokensConf();
 
   const bridgeContract = getBridgeContract[api.chain];

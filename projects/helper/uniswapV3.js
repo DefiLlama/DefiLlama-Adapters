@@ -46,7 +46,7 @@ function uniV3Export(config) {
 }
 
 function uniV3GraphExport({ blacklistedTokens = [], graphURL, name, minTVLUSD = 10,}) {
-  return async (_, _b, _cb, { api }) => {
+  return async (api) => {
     const size = 1000
     // let lastId = ''
     // let pools

@@ -28,7 +28,7 @@ const fixedIncomeAbi = {
 
 const transformNull = i => i.toLowerCase() === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee' ? ADDRESSES.null : i
 
-async function staking(_, _b, _cb, { api }) {
+async function staking(api) {
   let { loanRequests } = await cachedGraphQuery('smart-credit', endPoint, `{
     loanRequests {
       id,

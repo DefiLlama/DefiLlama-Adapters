@@ -71,7 +71,7 @@ const masterchefTvl = async (timestamp, ethBlock, chainBlocks) => {
   return balances;
 };
 
-const hundredchefTvl = async (timestamp, ethBlock, chainBlocks, { api }) => {
+const hundredchefTvl = async (api) => {
   const balances = {};
   const transformAddress = i => `fantom:${i}`;
 
@@ -236,12 +236,12 @@ module.exports = {
     staking: staking(xLQDR, LQDR, "fantom", "fantom:" + LQDR),
     tvl: sdk.util.sumChainTvls([
       masterchefTvl,
-      (_, _1, _2, { api }) => getMinichefTvl(api, MINICHEF),
+      (api) => getMinichefTvl(api, MINICHEF),
       hundredchefTvl,
       shadowChefTvl,
     ]),
   },
   bsc: {
-    tvl: (_, _1, _2, { api }) => getMinichefTvl(api, BSCMINICHEF),
+    tvl: (api) => getMinichefTvl(api, BSCMINICHEF),
   }
 }; // node test.js projects/liquiddriver/index.js

@@ -26,7 +26,7 @@ function asIntN(int, bits = 32) {
   return Number(BigInt.asIntN(bits, BigInt(int)));
 }
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const bucketusVaultObjs = await sui.getObject(BUCKETUS_VAULT_ID);
   const bucketusPoolObjs = await sui.getObject(BUCK_USDC_POOL_ID);
 

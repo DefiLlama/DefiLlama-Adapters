@@ -42,7 +42,8 @@ async function getJoins(block, api) {
   return joins;
 }
 
-async function tvl(timestamp, block, _, { api }) {
+async function tvl(api) {
+  const block = api.block
   let toa = [
     [MakerSCDConstants.WETH_ADDRESS, MakerSCDConstants.TUB_ADDRESS,],
   ]

@@ -71,7 +71,7 @@ async function borrowed(ts) {
   return api.getBalances()
 }
 
-async function tvl(ts, _, _1, { api }) {
+async function tvl(api) {
   let address = (await getConfig('solv-protocol/funds', addressUrl));
 
   await gm(api, address);
@@ -103,7 +103,7 @@ async function mux(api, address) {
 }
 
 
-async function mantleTvl(ts, _, _1, { api }) {
+async function mantleTvl(api) {
   let address = (await getConfig('solv-protocol/funds', addressUrl));
 
   await klp(api, address);

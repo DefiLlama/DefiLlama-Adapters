@@ -58,7 +58,8 @@ const tvl = async (timestamp, ethBlock, _, { api, }) => {
  * Only the `SeniorPool` has a writedown mechanic -- which is reflected in this metric (via 
  * `SeniorPool.assets()`).
  */
-const borrowed = async (_, ethBlock, _1, { api }) => {
+const borrowed = async (api) => {
+  const ethBlock = api.block
   const _seniorPoolUsdcBalances = {};
   await sumTokens(
     _seniorPoolUsdcBalances,

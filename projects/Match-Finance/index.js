@@ -9,7 +9,7 @@ const VLMATCH_STAKING_CONTRACT = '0x7D027083e55724A1082b8cDC51eE90781f41Ff14';
 
 const totalSuppliedAbi = 'function depositedAsset(address) external view returns (uint256)'
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const [
     totalSTETHSupplied,
     lpStaked,

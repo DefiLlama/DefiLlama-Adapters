@@ -17,7 +17,7 @@ Object.keys(config).forEach(chain => {
   }
 
   function tvl(isVesting) {
-    return async (_, _1, _2, { api }) => {
+    return async (api) => {
       const tokens = await api.fetchList({  lengthAbi: 'uint256:totalActiveAssets', itemAbi: 'function activeAssets(uint256) view returns (address)', target: contract})
       return api.sumTokens({ owner: contract, tokens: await getWhitelistedTokens({ api, tokens, isVesting})})
     }

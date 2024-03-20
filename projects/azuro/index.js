@@ -10,7 +10,7 @@ const config = {
   },
 }
 
-async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
+async function tvl(api) {
   return sumTokens2({ api, ...config[api.chain] })
 }
 

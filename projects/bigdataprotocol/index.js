@@ -7,13 +7,12 @@ const BDP = "0xf3dcbc6d72a4e1892f7917b7c43b74131df8480e";
 
 const chain = 'ethereum'
 
-const ethTvl = async (_, block, _1, { api }) => {
+const ethTvl = async (api) => {
   const balances = {};
-  /*** BDP Seed Pools (Data Vault seccion) TVL portion ***/
   await addFundsInMasterChef(
     balances,
     BDPMasterContract,
-    block,
+    api.block,
     chain,
     addr => addr,
     abi.poolInfo,

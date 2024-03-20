@@ -5,7 +5,7 @@ const sdk = require('@defillama/sdk')
 
 module.exports = {
   radixdlt: {
-    tvl: async (_, _1, _2, { api }) => {
+    tvl: async (api) => {
       const pools = await getConfig('ociswap', null, {
         fetcher: async () => {
           let items = []

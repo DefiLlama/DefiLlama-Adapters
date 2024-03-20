@@ -19,7 +19,7 @@ async function tvl(_, _b, _cb, { api, }) {
   return api.sumTokens({ owner: GENESIS_REWARD_POOL, tokens })
 }
 
-async function pool2(timestamp, ethBlock, chainBlocks, { api }) {
+async function pool2(api) {
   const pools = [
     { // BasedRewardPool
       'pool2Address': '0x5F45e48F9C053286cE9Ca08Db897f8b7eb3f7992',

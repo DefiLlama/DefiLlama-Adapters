@@ -5,7 +5,7 @@ const ADDRESSES = require('../../../helper/coreAssets.json')
 
 const getEthereumStaking = staking(tokenAddresses.sOnx, tokenAddresses.onx)
 
-const getEthereumBorrows = async (_, _1, _2, { api }) => {
+const getEthereumBorrows = async (api) => {
   api.add(ADDRESSES.null, await api.call({ target: tokenAddresses.pool, abi: 'uint256:totalBorrow' }))
 }
 

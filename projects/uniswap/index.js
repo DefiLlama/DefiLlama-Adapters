@@ -21,7 +21,7 @@ const blacklists = {
 }
 
 function v3TvlPaged(chain) {
-  return async (_, _b, _2, { api }) => {
+  return async (api) => {
     const block = await api.getBlock()
 
     let graphQueryPaged = `

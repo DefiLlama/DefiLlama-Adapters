@@ -96,7 +96,7 @@ async function getMarketsForCurrentNetwork(api) {
   return markets;
 }
 
-async function borrowed(_, _1, _2, { api }) {
+async function borrowed(api) {
   const moonbeamApi = new sdk.ChainApi({ chain: PRIME_MASTER_NETWORK });
 
   const markets = await getMarketsForCurrentNetwork(api);

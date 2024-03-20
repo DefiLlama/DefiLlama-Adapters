@@ -55,7 +55,7 @@ const tvl = async (_, __, ___, { api, chain }) => {
 const DHT_STAKING_V1_PROXY = "0xEe1B6b93733eE8BA77f558F8a87480349bD81F7f";
 const DHT_ON_MAINNET = "0xca1207647Ff814039530D7d35df0e1Dd2e91Fa84";
 
-const getV1StakingTotalAmount = async (_, __, ___, { api }) => ({
+const getV1StakingTotalAmount = async (api) => ({
   [DHT_ON_MAINNET]: await api.call({
     abi: "erc20:balanceOf",
     target: DHT_ON_MAINNET,
@@ -69,7 +69,7 @@ const DHT_STAKED_ABI = "function dhtStaked() view returns (uint256)";
 const DHT_STAKING_V2_PROXY = "0xf165ca3d75120d817b7428eef8c39ea5cb33b612";
 const DHT_ON_OPTIMISM = "optimism:0xaf9fe3b5ccdae78188b1f8b9a49da7ae9510f151";
 
-const getV2StakingTotalAmount = async (_, __, ___, { api }) => ({
+const getV2StakingTotalAmount = async (api) => ({
   [DHT_ON_OPTIMISM]: await api.call({
     abi: DHT_STAKED_ABI,
     target: DHT_STAKING_V2_PROXY,

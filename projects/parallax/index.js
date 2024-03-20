@@ -149,7 +149,7 @@ async function arbitrumTvl(time, _ethBlock, { arbitrum: block }, { api }) {
   return balances;
 }
 
-async function eraTvl(_, _b, _cb, { api }) {
+async function eraTvl(api) {
   if (contracts.era.length > 0) {
     for (let i = 0; i < contracts.era.length; i++) {
       const strItem = contracts.era[i];
