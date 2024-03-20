@@ -4,6 +4,7 @@ const { sumTokensExport } = require('../helper/sumTokens');
 const ADDRESSES = require('../helper/coreAssets.json')
 
 const BTCOwners = [
+  "bc1q4fsk5pgnmnu7ngp79xclsw2t0yk46sjqw22ffz",
   "bc1qva5m5e7da2zm590z03tdnj42u9q2uye3hgrehwrzgg8j4kxq9seq9rvw0m",
 ];
 const BRC20Owners = [

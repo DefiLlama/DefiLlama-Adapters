@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const SCFX_TokenAddress = "0x1858a8d367e69cd9E23d0Da4169885a47F05f1bE";
 
-const WCFX = "0x14b2d3bc65e74dae1030eafd8ac30c533c976a9b";
+const WCFX = ADDRESSES.conflux.WCFX;
 
 module.exports = {
   conflux: {

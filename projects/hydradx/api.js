@@ -16,7 +16,7 @@ async function tvl() {
   let i = 0;
   let hasMore = true;
   do {
-    const meta = await api.query.assetRegistry.assetMetadataMap(i)
+    const meta = await api.query.assetRegistry.assets(i)
     if (meta.isNone) {
       hasMore = false
       break

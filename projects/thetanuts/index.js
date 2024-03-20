@@ -270,6 +270,12 @@ const config = {
       [stMatic, stMaticCallVault,],
     ]
   },
+  inevm: {
+    tokensAndOwners: [
+      ['0x69011706b3f6C6eaeD7D2Bc13801558B4fd94CBF', '0x6950D30996e8EC8D93dd1602b059b3a38389Bb88'],
+      ['0x8358D8291e3bEDb04804975eEa0fe9fe0fAfB147', '0xEc9284b92B8039c4180Ac99863ed73Ee5Ff33E63'],
+    ]
+  }
 }
 
 Object.keys(config).forEach(chain => {

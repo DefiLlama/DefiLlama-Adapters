@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs");
 
 module.exports = {
@@ -10,8 +11,8 @@ module.exports = {
         '0x05c061126A82DC1AfF891b9184c1bC42D380a2ff'  // $USDB vault's token pot
       ],
       tokens: [
-        '0x0000000000000000000000000000000000000000',  // $ETH
-        '0x4300000000000000000000000000000000000003'  // $USDB
+        ADDRESSES.null,  // $ETH
+        ADDRESSES.blast.USDB  // $USDB
       ],
     }),
   }

@@ -83,4 +83,7 @@ module.exports = {
   kava: {
     tvl: fetchNetworkTVL('kava'),
   },
+  base: {
+    tvl: fetchNetworkTVL('base'),
+  },
 };

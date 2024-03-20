@@ -1,3 +1,5 @@
+const methodologies = require("../helper/methodologies");
+
 const DATA_PROVIDER_ADDRESS = {
   arbitrum: "0x8CfA3a5105e87e6e5568b80F64d05eD5fc53F0a9",
   base: "0x22d6Ab83EEe06B7EE815420a7F2e737D64E534ef",
@@ -85,8 +87,7 @@ function getMetrics() {
 }
 
 module.exports = {
-  methodology:
-    "Counts the tokens locked in the contracts to be used as collateral to borrow or to earn lending interest. Tokens also include various wrapped liquidity positions, the tokens comprising these positions are counted as well. Borrowed tokens are not counted towards the TVL, so only the tokens actually locked in the contracts are counted. The main reason for this is to avoid inflating the TVL through cycled lending.",
+  methodology: methodologies.lendingMarket,
   arbitrum: getMetrics(),
   base: getMetrics(),
 };

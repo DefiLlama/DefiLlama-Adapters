@@ -39,7 +39,6 @@ async function _getCELLbalances(api) {
 
 module.exports = {
   timetravel: false,
-  misrepresentedTokens: true,
   methodology:
     "Counts the lamports in each coin container in the Cellena contract account.",
   aptos: {

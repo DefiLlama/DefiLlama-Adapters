@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { request, } = require("graphql-request")
 const { getLogs } = require('../helper/cache/getLogs')
 
@@ -16,7 +17,7 @@ const tvlQuery = `
 // 	const response = await request(graphUrl, tvlQuery)
 // 	const tvlAmount = response.totalValueLocked.amount
 // 	return {
-// 		"blast:0x0000000000000000000000000000000000000000":
+// 		["blast:" + ADDRESSES.null]:
 // 			tvlAmount.toString(),
 // 	}
 // }

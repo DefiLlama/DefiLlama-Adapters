@@ -62,6 +62,9 @@ const config = {
   scroll: {
     chainId: '534352',
   },
+  blast: {
+    chainId: '81457',
+  },
 }
 
 const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
@@ -374,6 +377,12 @@ const yPoolDepositContract = {
       "tokenAddress": ADDRESSES.scroll.USDC
     }
   },
+  "81457": {
+    "ETH": {
+      "contractAddress": "0xFa77c2DecCB21ACb9Bf196408Bf6aD5973D07762",
+      "tokenAddress": ethAddress
+    },
+  }
 }
 
 module.exports={}

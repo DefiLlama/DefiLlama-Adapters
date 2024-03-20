@@ -16,7 +16,7 @@ const farm_avax = '0xB1e330401c920077Ddf157AbA5594238d36b54B1'
 const soul_avax = '0x11d6DD25c1695764e64F439E32cc7746f3945543'
 const wavax_avax = ADDRESSES.avax.WAVAX
 const usdc_avax = ADDRESSES.avax.USDC
-const wbtc_avax = '0x50b7545627a5162F82A992c33b87aDc75187B218'
+const wbtc_avax = ADDRESSES.avax.WBTC_e
 const weth_avax = ADDRESSES.avax.WETH_e
 
 const wl_fantom = [ usdc_fantom, soul_fantom, rndm_fantom, wbtc_fantom ]
