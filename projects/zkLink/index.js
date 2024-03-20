@@ -43,11 +43,9 @@ module.exports = {
           "0x62cE247f34dc316f93D3830e4Bf10959FCe630f8",
         ],
         fetchCoValentTokens: true,
-        tokenConfig: {
-          useCovalent: true,
-        },
       }),
   },
+
   era: {
     tvl: async (_, _b, _c, { api }) => {
       const balances = {};
@@ -59,15 +57,12 @@ module.exports = {
       return sumTokens2({
         api,
         owners: ["0xaB3DDB86072a35d74beD49AA0f9210098ebf2D08"],
-        fetchCoValentTokens: true,
-        tokenConfig: {
-          useCovalent: true,
-        },
         balances: balances,
         blacklistedTokens: [ERA_ETH_ADDRESS],
       });
     },
   },
+
   mantle: {
     tvl: (_, _b, _c, { api }) =>
       sumTokens2({
@@ -76,10 +71,11 @@ module.exports = {
           "0xD784d7128B46B60Ca7d8BdC17dCEC94917455657",
           "0x62351b47e060c61868Ab7E05920Cb42bD9A5f2B2",
         ],
-        fetchCoValentTokens: true,
-        tokenConfig: {
-          useCovalent: true,
-        },
+        tokens: ["0x78c1b0C915c4FAA5FffA6CAbf0219DA63d7f4cb8", //mnt
+                 "0x201EBa5CC46D216Ce6DC03F6a759e8E766e956aE", //usdt
+                 "0xdEAddEaDdeadDEadDEADDEAddEADDEAddead1111" ,//weth
+                 "0x09Bc4E0D864854c6aFB6eB9A9cdF58aC190D0dF9" , //usdc
+               ],
       }),
   },
   manta: {
@@ -108,10 +104,6 @@ module.exports = {
           "0x29BA92Fe724beD5c5EBfd0099F2F64a6DC5078FD",
           "0x8Df0c2bA3916bF4789c50dEc5A79b2fc719F500b",
         ],
-        fetchCoValentTokens: true,
-        tokenConfig: {
-          useCovalent: true,
-        },
         tokens: [ETH_DEFAULT_ADDRESS],
       }),
   },
