@@ -30,6 +30,9 @@ const config = {
     "0xA0dD02ef78570a4d93b7eE334EA9c593F7A0ebc4",
     "0x4778CAAa0E52F0B58eAF5e947Ae81A0a10cDe707",
   ],
+  arbitrum: [
+    "0x8E99B66dE170b53b39D9B54f189a12D7c6AC0cd9"
+  ],
 }
 
 module.exports = {
@@ -39,6 +42,6 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const vaults = config[chain]
   module.exports[chain] = {
-    tvl: sumERC4626VaultsExport({ vaults, tokenAbi: 'asset', balanceAbi: 'totalAssets'})
+    tvl: sumERC4626VaultsExport({ vaults, tokenAbi: 'asset', balanceAbi: 'totalAssets' })
   }
 })

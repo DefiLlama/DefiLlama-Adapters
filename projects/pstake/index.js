@@ -28,6 +28,11 @@ const chainInfos = {
     name: "dydx-chain",
     decimals: 1e18,
     endpoint: "/stkdydx/dydx_tvu"
+  },
+  stargaze: {
+    name: "stargaze",
+    decimals: 1e6,
+    endpoint: "/stkstars/stars_tvu"
   }
 }
 

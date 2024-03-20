@@ -10,6 +10,7 @@
   "archway",
   "area",
   "astar",
+  "astrzk",
   "aura",
   "aurora",
   "avax",
@@ -70,6 +71,7 @@
   "dogechain",
   "dsc",
   "dydx",
+  "dymension",
   "echelon",
   "edg",
   "elastos",
@@ -123,6 +125,7 @@
   "injective",
   "interlay",
   "iotex",
+  "inevm",
   "jbc",
   "juno",
   "kadena",
@@ -168,6 +171,7 @@
   "muuchain",
   "mvc",
   "nahmii",
+  "naka",
   "near",
   "neo",
   "neo3",
@@ -211,6 +215,7 @@
   "quicksilver",
   "quasar",
   "radixdlt",
+  "sapphire",
   "reef",
   "regen",
   "rei",
@@ -281,5 +286,7 @@
   "zkfair",
   "zksync",
   "zyx",
-  "zeta"
+  "zeta",
+  "fraxtal",
+  "zklink"
 ]
