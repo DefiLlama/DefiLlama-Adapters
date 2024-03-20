@@ -6,7 +6,7 @@ const { transformDexBalances } = require("../helper/portedTokens");
 
 const factory =
   "0x02a93ef8c7679a5f9b1fcf7286a6e1cadf2e9192be4bcb5cb2d1b39062697527";
-const cacheKey = `nostra-pools-${factory}`;
+const cacheKey = `nostra-pools/${factory}`;
 
 async function tvl() {
   let all_pairs = await call({
