@@ -6,7 +6,8 @@ const lps = ['0xdaE375F817B465f3a226284Af0Ad5Fa2387274EA']
 
 module.exports = {
   blast: {
-    tvl: sumTokensExport({ owner: main, tokens: lps, useDefaultCoreAssets: true }),
+    tvl: () => ({}),
+    pool2: sumTokensExport({ owner: main, tokens: lps, useDefaultCoreAssets: true }),
     staking: sumTokensExport({ owner: main, tokens: [token], lps, useDefaultCoreAssets: true, })
   },
 };
