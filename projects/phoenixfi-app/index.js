@@ -8,7 +8,7 @@ async function alephiumTvl() {
 
   // more tokens will be here in the future
   return {
-    alephium: hodlALPH3Tvl  / 1e18
+    alephium: hodlALPH3Tvl.balance  / 1e18
   }
 }
 
