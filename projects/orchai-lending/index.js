@@ -1,26 +1,15 @@
-const { queryContract } = require("../helper/chain/cosmos");
+const { queryContract, } = require("../helper/chain/cosmos");
 
-const addresses = {
-  orai: {
-    tvlContract:
-      "orai1ez359uvv5p7l2ssgadzjk2pfuune9rrhu72ehwdsu4h2qhqf9jlsxw7e0f",
-  },
-};
-
-// Orai
-async function oraiTVL() {
+async function oraiTVL(_, _1, _2, { api }) {
   let tokensDelegated = await queryContract({
-    contract: addresses.orai.tvlContract,
+    contract: 'orai1ez359uvv5p7l2ssgadzjk2pfuune9rrhu72ehwdsu4h2qhqf9jlsxw7e0f',
     chain: "orai",
     data: { money_market_tvl: {} },
   });
 
-  let balances = {};
   for (let item of tokensDelegated) {
-    balances[`${item.token}`] = item.amount;
+    api.add(item.token.replace('orai:', ''), item.amount)
   }
-
-  return balances;
 }
 
 module.exports = {
@@ -29,4 +18,4 @@ module.exports = {
   orai: {
     tvl: oraiTVL,
   },
-};
+}
