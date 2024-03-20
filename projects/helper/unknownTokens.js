@@ -117,7 +117,7 @@ function staking({ tokensAndOwners = [],
   }
 }
 
-function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = [], lps = [], nativeToken, poolInfoABI = masterchefAbi.poolInfo, poolLengthAbi = masterchefAbi.poolLength, getToken = output => output.lpToken, blacklistedTokens = [], useDefaultCoreAssets = false, }) {
+function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = [], lps = [], nativeToken, poolInfoABI = masterchefAbi.poolInfo, poolLengthAbi = masterchefAbi.poolLength, getToken = output => output.lpToken, blacklistedTokens = [], useDefaultCoreAssets = true, }) {
   if (!coreAssets.length && useDefaultCoreAssets)
     coreAssets = getCoreAssets(chain)
   let allTvl = {}

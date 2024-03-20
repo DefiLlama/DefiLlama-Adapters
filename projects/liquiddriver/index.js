@@ -54,7 +54,7 @@ const shadowChefAddresses = [
   "0xD354908d297ce9a348b417d2e0F561EE7D11de5E", // wsHEC/FTM
 ];
 
-const masterchefTvl = async (timestamp, ethBlock, chainBlocks) => {
+const masterchefTvl = async (_ts, ethBlock, chainBlocks) => {
   const balances = {};
 
   const transformAddress = i => `fantom:${i}`;
