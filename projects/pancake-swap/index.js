@@ -41,7 +41,7 @@ query get_tvl($block: Int) {
   }
 }
 `;
-async function tvl(timestamp, ethBlock, chainBlocks) {
+async function tvl({timestamp}, ethBlock, chainBlocks) {
   if (Math.abs(timestamp - Date.now() / 1000) < 3600) {
     const tvl = await request(graphEndpoint, currentQuery, {}, {
       "referer": "https://pancakeswap.finance/",

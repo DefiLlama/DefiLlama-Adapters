@@ -17,8 +17,8 @@ const slotListUrl = 'https://raw.githubusercontent.com/solv-finance-dev/solv-pro
 
 const addressUrl = 'https://raw.githubusercontent.com/solv-finance-dev/slov-protocol-defillama/main/solv-funds.json';
 
-async function borrowed(ts) {
-  const { api } = arguments[3];
+async function borrowed(api) {
+  const ts = api.timestamp
   const network = api.chain;
 
   let address = (await getConfig('solv-protocol/funds', addressUrl));
