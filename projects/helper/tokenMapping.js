@@ -39,6 +39,8 @@ const fixBalancesTokens = {
   },
   stacks: {
     'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.wstx-token::wstx': { coingeckoId: "blockstack", decimals: 6 },
+    'SP1Y5YSTAHZ88XYK1VPDH24GY0HPX5J4JECTMY4A1.wstx': { coingeckoId: "blockstack", decimals: 6 },
+    'SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.token-abtc': { coingeckoId: "bitcoin", decimals: 8 },
   },
   waves: {
     'WAVES': { coingeckoId: 'waves', decimals: 8 },
