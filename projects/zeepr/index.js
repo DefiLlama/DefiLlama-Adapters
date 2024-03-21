@@ -15,8 +15,8 @@ module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
   methodology: 'counts the number of margin in the contract address.',
-  start: 1000235,
-  bsc: {
+  start: 1679391877,
+  arbitrum: {
     tvl,
   }
 }; 
