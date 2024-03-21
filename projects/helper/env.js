@@ -21,6 +21,7 @@ const DEFAULTS = {
   ZETA_RPC: "https://zetachain-evm.blockpi.network/v1/rpc/public,https://zetachain-mainnet-archive.allthatnode.com:8545",
   DEFIVERSE_RPC: "https://rpc.defi-verse.org/",
   ZKLINK_RPC: "https://rpc.zklink.io",
+  KINTO_RPC: "https://rpc.kinto-rpc.com"
 }
 
 const ENV_KEYS = [
