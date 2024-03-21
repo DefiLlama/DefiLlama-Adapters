@@ -3,7 +3,7 @@ const ADDRESSES = require('../helper/coreAssets.json');
 
 module.exports = {
   ethereum: {
-    tvl: async (_, _b, _c, { api }) =>{
+    tvl: async (api) =>{
       const balances = {
         [ADDRESSES.ethereum.DAI]: await api.call({target: "0xa230285d5683c74935ad14c446e137c8c8828438", abi:"uint:totalValue"})
       };

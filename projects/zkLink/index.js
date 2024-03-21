@@ -13,7 +13,7 @@ async function getEraEthBalance(api, addr) {
 }
 module.exports = {
   ethereum: {
-    tvl: (_, _b, _c, { api }) =>
+    tvl: (api) =>
       sumTokens2({
         api,
         owners: [
@@ -24,7 +24,7 @@ module.exports = {
       }),
   },
   arbitrum: {
-    tvl: (_, _b, _c, { api }) =>
+    tvl: (api) =>
       sumTokens2({
         api,
         owners: [
@@ -35,7 +35,7 @@ module.exports = {
       }),
   },
   linea: {
-    tvl: (_, _b, _c, { api }) =>
+    tvl: (api) =>
       sumTokens2({
         api,
         owners: [
@@ -47,7 +47,7 @@ module.exports = {
   },
 
   era: {
-    tvl: async (_, _b, _c, { api }) => {
+    tvl: async (api) => {
       const balances = {};
       balances[`era:${ERA_ETH_ADDRESS}`] = await getEraEthBalance(
         api,
@@ -69,7 +69,7 @@ module.exports = {
   },
 
   mantle: {
-    tvl: (_, _b, _c, { api }) =>
+    tvl: (api) =>
       sumTokens2({
         api,
         owners: [
@@ -84,7 +84,7 @@ module.exports = {
       }),
   },
   manta: {
-    tvl: (_, _b, _c, { api }) =>
+    tvl: (api) =>
       sumTokens2({
         api,
         owners: [
@@ -102,7 +102,7 @@ module.exports = {
       }),
   },
   blast: {
-    tvl: (_, _b, _c, { api }) =>
+    tvl: (api) =>
       sumTokens2({
         api,
         owners: [
