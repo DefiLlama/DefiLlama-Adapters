@@ -14,8 +14,7 @@ const waterLpToken = "TWH6NQ9tr28YoRdKuvcuQquVoEGrscPix4";
 const waterFarm = "TY9mGUA8q1V9R9kmfUERpcG62SZ42gYuHW";
 const lumiLpToken = "TUhZUbJaVicbQeNXHGBKxVsVuNL94usuoU";
 
-async function Pool2() {
-  const { api } = arguments[3]
+async function Pool2(api) {
 
   const [
     waterLpTokenAmount,

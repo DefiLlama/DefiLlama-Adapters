@@ -24,14 +24,14 @@ async function getPools(api) {
 }
 
 async function tvl(...args) {
-  const [_, _b, _cb, { api, }] = args
+  const [api] = args
   const pools = await getPools(api)
   const tvls = pools.map(i => compoundExports2({ comptroller: i, fetchBalances: true, }))
   return sdk.util.sumChainTvls(tvls.map(i => i.tvl))(...args)
 }
 
 async function borrowed(...args) {
-  const [_, _b, _cb, { api, }] = args
+  const [api] = args
   const pools = await getPools(api)
   const tvls = pools.map(i => compoundExports2({ comptroller: i, fetchBalances: true, }))
   return sdk.util.sumChainTvls(tvls.map(i => i.borrowed))(...args)

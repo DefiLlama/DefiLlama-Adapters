@@ -1,6 +1,6 @@
 const PUF_ETH = '0xD9A442856C234a39a81a089C06451EBAa4306a72';
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   return api.erc4626Sum({ calls: [PUF_ETH], isOG4626: true })
 }
 

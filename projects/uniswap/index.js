@@ -21,7 +21,7 @@ const blacklists = {
 }
 
 function v3TvlPaged(chain) {
-  return async (_, _b, _2, { api }) => {
+  return async (api) => {
     const block = await api.getBlock()
 
     let graphQueryPaged = `
@@ -42,7 +42,7 @@ function v3TvlPaged(chain) {
   }
 }
 
-async function filecoinTvl(_, _b, _cb, { api, }) {
+async function filecoinTvl(api) {
   const { result: { pools } } = await configPost('oku-trade/filecoin', 'https://cush.apiary.software/filecoin', {
     "jsonrpc": "2.0",
     "method": "cush_topPools",

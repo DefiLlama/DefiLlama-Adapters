@@ -21,7 +21,7 @@ const chains = ["ethereum", "optimism", "arbitrum", 'polygon', 'boba', 'mantle']
 
 chains.forEach((chain) => {
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api }) => {
+    tvl: async (api) => {
       const vaults = await getVaultContractsAddress(chain);
       const tokens = await api.multiCall({
         abi: abi.assetToken1,

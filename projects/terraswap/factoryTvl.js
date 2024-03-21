@@ -62,7 +62,7 @@ function getFactoryTvl(factory) {
 
 
 function getSeiDexTvl(codeId) {
-  return async (_, _1, _2, { api }) => {
+  return async (api) => {
     const chain = api.chain
     const contracts = await queryContracts({ chain, codeId, })
     return sumTokens({ chain, owners: contracts })

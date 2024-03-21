@@ -35,7 +35,7 @@ const addressBook = {
   }
 };
 
-async function tvl(_timestamp, _block, _blocksOthers, { api }) {
+async function tvl(api) {
   const addresses = addressBook[api.chain];
   const ownerTokens = addresses.reserves.map(i => [[addresses.usdc, addresses.aave_v3_usdc], i.address])
 

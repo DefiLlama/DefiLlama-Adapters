@@ -5,7 +5,7 @@ const hinj = "inj18luqttqyckgpddndh8hvaq25d5nfwjc78m56lc"
 const autoCompound = "inj1mjcg8a73904rj4w7t5qkgn0apua98n059nufma"
 const xhdro = "inj1qc2tw477wwuvkad0h3g78xqgwx4k8knat6vz0h"
 
-async function staking(_, _1, _2, { api }) {
+async function staking(api) {
   const { total_supply } = await queryContract({ chain: api.chain, contract: xhdro, data: { token_info: {} } })
 
   return {
@@ -13,7 +13,7 @@ async function staking(_, _1, _2, { api }) {
   }
 }
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const { total_supply } = await queryContract({ chain: api.chain, contract: hinj, data: { token_info: {} } })
   const { total_bonded } = await queryContract({ chain: api.chain, contract: autoCompound, data: { state: {} } })
 

@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require('../helper/staking')
-const { sumTokens } = require('../helper/unwrapLPs')
 
 const v1_0_Pools = ['0x7Af4e1cE484f40D927b9C90fB6905Df4376fc3F6', '0xd7d974E81382D05E8D9fc6d0d17d0d852e9806dd']
 const v1_1_LiquidityPool = [
@@ -67,19 +66,12 @@ const L2toL1Synths = {
     '0xc5db22719a06418028a40a9b5e9a7c02959d0d08': '0xbbc455cb4f1b9e4bfc4b73970d360c8f032efee6'
 }
 
-async function tvlOptimism(ttimestamp, _b, {optimism: block}){
-    const balances = {}
-    const transform = (addr)=>{
-        return L2toL1Synths[addr] || addr;
-    }
-    await sumTokens(balances, op_tokens.map(t=>op_pools.map(p=>[t,p])).flat(), block, 'optimism')
-    return balances
+async function tvlOptimism(api){
+    return api.sumTokens({ owners: op_pools, tokens: op_tokens  })
 }
 
-async function tvlArbitrum(ttimestamp, _b, {arbitrum: block}){
-    const balances = {}
-    await sumTokens(balances, arb_tokens.map(t=>arb_pools.map(p=>[t,p])).flat(), block, 'arbitrum')
-    return balances
+async function tvlArbitrum(api){
+    return api.sumTokens({ owners: arb_pools, tokens: arb_tokens  })
 }
 
 module.exports = {

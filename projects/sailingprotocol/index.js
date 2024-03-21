@@ -80,7 +80,7 @@ const tokens = [
   },
 ];
 
-async function tvl(_0, blockNumber, _2, { api }) {
+async function tvl(api) {
   for (const token of tokens) {
     const tokenTotalSupply = await api.call({ target: token.address, abi: 'erc20:totalSupply' });
     if (token.sufficientLiquidityForDefiLlamaIndexer) {

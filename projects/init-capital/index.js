@@ -2,7 +2,7 @@ const { getConfig } = require("../helper/cache");
 
 const POOL_DATA_URI = "https://app.init.capital/static/json/pools.json";
 
-const tvl = async (timestamp, block, _, { api }) => {
+const tvl = async (api) => {
   const allPoolData = await getConfig("init-capital", POOL_DATA_URI);
   const chainId = api.getChainId();
 
@@ -23,7 +23,7 @@ const tvl = async (timestamp, block, _, { api }) => {
   return api.sumTokens({ tokensAndOwners2: [tokens, pools] });
 };
 
-const borrowed = async (timestamp, block, _, { api }) => {
+const borrowed = async (api) => {
   const allPoolData = await getConfig("init-capital", POOL_DATA_URI);
   const chainId = api.getChainId();
   const pools = Object.keys(allPoolData[chainId]);

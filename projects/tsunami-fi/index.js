@@ -1,7 +1,7 @@
 const { gmxExports } = require("../helper/gmx");
 const { function_view, hexToString } = require("../helper/chain/aptos");
 
-async function tvl(_, _b, _cb, { api }) {
+async function tvl(api) {
     const [data] = await function_view({
         functionStr:
             "0x1786191d0ce793debfdef9890868abdcdc7053f982ccdd102a72732b3082f31d::basket::get_all_basket_coins_by_basket",

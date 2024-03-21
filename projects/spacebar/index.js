@@ -22,7 +22,7 @@ const tvlQuery = `
 // 	}
 // }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
 	const registry = '0xE1784da2b8F42C31Fb729E870A4A8064703555c2'
 	const fromBlock = 203239
 	const unStakeLogs = await getLogs({ api, target: registry, eventAbi: 'event Unstake(address indexed service, address indexed user, address indexed to, uint256 amount)', onlyArgs: true, fromBlock, extraKey: 'unstake',})

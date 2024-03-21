@@ -16,7 +16,7 @@ const subgraphs = {
   ethereum: `https://api.thegraph.com/subgraphs/name/crocswap/croc-mainnet`
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   let pools
   if (subgraphs[api.chain].includes("gcgo")) {
     const data = await getConfig(`ambient-finance/${api.chain}`, subgraphs[api.chain])

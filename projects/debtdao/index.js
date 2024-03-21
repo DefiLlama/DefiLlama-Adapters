@@ -22,7 +22,7 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const { moduleFactory, moduleFactoryStart, lineFactory, lineFactoryStart, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const ownerTokens = []
       const escrowLogs = await getLogs({
         api,
@@ -64,7 +64,7 @@ Object.keys(config).forEach(chain => {
       }))
       return sumTokens2({ api, ownerTokens })
     },
-    borrowed: async (_, _b, _cb, { api, }) => {
+    borrowed: async (api) => {
       const lineLogs = await getLogs({
         api,
         target: lineFactory,

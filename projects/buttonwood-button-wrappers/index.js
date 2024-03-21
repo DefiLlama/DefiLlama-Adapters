@@ -35,7 +35,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { buttonTokenFactories, unbuttonTokenFactories } = config[chain];
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
 
       // Collecting all the wrapper tokens
       const calls = [];

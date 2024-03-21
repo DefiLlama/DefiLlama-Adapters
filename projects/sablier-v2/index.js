@@ -21,12 +21,12 @@ async function getTokensConfig(api, isVesting) {
   return { ownerTokens }
 }
 
-async function tvl(_, block, _1, { api }) {
+async function tvl(api) {
   const { owners } = config[api.chain]
   return api.sumTokens(await getTokensConfig(api, false))
 }
 
-async function vesting(_, block, _1, { api }) {
+async function vesting(api) {
   const { owners } = config[api.chain]
   return api.sumTokens(await getTokensConfig(api, true))
 }

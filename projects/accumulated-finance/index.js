@@ -86,7 +86,7 @@ const transformedConfig = transformConfig(config);
 
 Object.entries(transformedConfig).forEach(([chain, configs]) => {
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api }) => {
+    tvl: async (api) => {
       let totalSupply = 0;
       for (const { LST, baseToken, token } of configs) {
         const supply = await api.call({ abi: 'uint256:totalSupply', target: LST });

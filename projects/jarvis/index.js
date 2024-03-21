@@ -31,12 +31,12 @@ const contracts = {
   }
 }
 
-async function tvl(timestamp, ethBlock, chainBlocks, { api, }) {
+async function tvl(api) {
   const chain = api.chain
   const { synthpoolRegistry, version } = contracts[chain]
   const { fixedRateRegistry, fixedRateVersion } = contracts[chain]
   const { selfMintingRegistry, creditLineVersion } = contracts[chain]
-  const block = chainBlocks[chain]
+  const block = api.block
   const balances = {}
 
   // Get liquidityPools by calling getElements(synth, collateral, version)

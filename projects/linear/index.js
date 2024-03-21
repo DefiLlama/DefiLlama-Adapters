@@ -17,7 +17,7 @@ const vaultpools = {
 }
 
 
-async function tvl(timestamp, blockETH, chainBlocks, { api }) {
+async function tvl(api) {
   return api.sumTokens({
     tokensAndOwners: [
       [[tokens.LINA], LnCollateralSystemAddress],

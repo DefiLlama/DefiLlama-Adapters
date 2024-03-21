@@ -50,7 +50,7 @@ async function getLendMarkets() {
 
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const data = await getLendMarkets()
   data.forEach(i => {
     api.add(i.address, i.total_supply - i.total_borrows)
@@ -59,7 +59,7 @@ async function tvl(_, _b, _cb, { api, }) {
   return api.getBalances()
 }
 
-async function borrowed(_, _b, _cb, { api, }) {
+async function borrowed(api) {
   const data = await getLendMarkets()
   data.forEach(i => {
     api.add(i.address, i.total_borrows)
@@ -69,7 +69,7 @@ async function borrowed(_, _b, _cb, { api, }) {
   return api.getBalances()
 }
 
-async function staking(_, _b, _cb, { api, }) {
+async function staking(api) {
   const SIENNA_SINGLE_SIDED_POOLS = [
     { address: "secret1ja57vrpqusx99rgvxacvej3vhzhh4rhlkdkd7w", version: 1 },
     { address: "secret109g22wm3q3nfys0v6uh7lqg68cn6244n2he4t6", version: 2 },

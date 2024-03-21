@@ -2,7 +2,7 @@ const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 
 module.exports = {
   ethereum: {
-    tvl: async (_, _1, _2, { api }) => {
+    tvl: async (api) => {
       // nodeDAO liquidStaking neth tvl
       const nodeDaoLiquidStaking = '0x8103151E2377e78C04a3d2564e20542680ed3096'
       const nethTVL = await api.call({ abi: 'uint256:getTotalEthValue', target: nodeDaoLiquidStaking })

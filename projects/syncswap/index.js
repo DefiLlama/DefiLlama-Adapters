@@ -2,7 +2,7 @@ const { getLogs } = require('../helper/cache/getLogs')
 const { transformDexBalances } = require('../helper/portedTokens')
 const sdk = require('@defillama/sdk')
 
-async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
+async function tvl(api) {
   const { fromBlock, classicFactorys, stableFactorys, aquaFactorys = [] } = config[api.chain]
 
   const logs = await Promise.all([...classicFactorys, ...stableFactorys, ...aquaFactorys].map(factory => (getFactoryLogs(api, factory))));

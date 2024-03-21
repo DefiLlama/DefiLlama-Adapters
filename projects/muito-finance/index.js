@@ -16,12 +16,12 @@ async function getTvl(api, farmAddress) {
   return await sumTokens2({ api, resolveLP: true });
 }
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   await getTvl(api, MUTO_FARM);
   return await getTvl(api, MUTO_MULTI_FARM);
 }
 
-async function staking(_, _1, _2, { api }) {
+async function staking(api) {
   let pools = await api.call({ abi: abiInfo.poolTvls, target: MUTO_FARM });
   let target = pools.find((i) => i.assets.toLowerCase() === NATIVE_TOKEN);
   api.add(NATIVE_TOKEN, target.tvl)

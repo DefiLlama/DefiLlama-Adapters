@@ -7,7 +7,7 @@ module.exports = {
   },
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const provider = getProvider()
   const programId = 'dp2waEWSBy5yKmq65ergoU3G6qRLmqa6K7We4rZSKph'
   const idl = await Program.fetchIdl(programId, provider)

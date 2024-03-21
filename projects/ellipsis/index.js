@@ -7,7 +7,7 @@ const abis = {
   coins: 'function coins(uint256 arg0) view returns (address)'
 }
 
-async function tvl(_, _b, _1, { api }) {
+async function tvl(api) {
   const ownerTokens = []
   const poolInfo = await getConfig('ellipsis', 'https://api.ellipsis.finance/api/getPoolsCrypto')
   const wrappedCoinPools = [
@@ -41,7 +41,7 @@ async function tvl(_, _b, _1, { api }) {
 
 const stakingContract = "0x4076cc26efee47825917d0fec3a79d0bb9a6bb5c"
 const eps = "0xa7f552078dcc247c2684336020c03648500c6d9f"
-async function staking(time, ethBlock, chainBlocks, { api }) {
+async function staking(api) {
   const locked = await api.call({ target: stakingContract, abi: 'uint256:lockedSupply' })
   return {
     ["bsc:" + eps]: locked

@@ -3,7 +3,7 @@ const sdk = require('@defillama/sdk');
 const StEthVaultContract = '0xfc85db895e070017ab9c84cb65b911d56b729ee9';
 
 // function to return TVL of magnum
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const balances = {};
 
   // get balance of eth 

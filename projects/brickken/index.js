@@ -1,6 +1,6 @@
 const ESCROW_LATEST_PRICE_ABI = "function issuances(uint256) view returns(uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256)";
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const { factory } = config[api.chain]
   const tokens = await api.fetchList({  lengthAbi: 'idSTOs', itemAbi: 'stoTokens', target: factory, startFromOne: true })
   const escrows = await api.fetchList({  lengthAbi: 'idSTOs', itemAbi: 'stoEscrows', target: factory, startFromOne: true })

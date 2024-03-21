@@ -41,7 +41,7 @@ async function _getConfig() {
 
 chains.forEach(chain => {
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const balances = {}
       let data = (await _getConfig())[getKey(chain)] || {}
       const uniV3Owners = []
@@ -62,7 +62,7 @@ chains.forEach(chain => {
       if (uniV3Owners.length) await sumTokens2({ api, owners: uniV3Owners, resolveUniV3: true, })
       return sumTokens2({ balances, api, ownerTokens, blacklistedTokens: ['0x8e295789c9465487074a65b1ae9ce0351172393f'], })
     },
-    ownTokens: async (_, _b, _cb, { api, }) => {
+    ownTokens: async (api) => {
       let BIFI
       let data = (await _getConfig())[getKey(chain)] || {}
       const owners = []

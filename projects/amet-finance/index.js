@@ -16,7 +16,7 @@ const config = {
   }
 };
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const { issuer, fromBlock } = config[api.chain];
 
   const logs = await getLogs({ api, target: issuer, fromBlock, eventAbi: issuerEventABI, onlyArgs: true });

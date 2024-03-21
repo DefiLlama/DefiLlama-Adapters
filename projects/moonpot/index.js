@@ -13,7 +13,7 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const endpoint = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const data = await getConfig('moonpot/' + api.chain, endpoint)
       const pools = data.map(i => i.prizePoolAddress).filter(i => i)
       const tokens = await api.multiCall({ abi: 'address:token', calls: pools })

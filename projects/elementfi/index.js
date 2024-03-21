@@ -19,8 +19,9 @@ const wps = [
   '0x9e030b67a8384cbba09D5927533Aa98010C87d91'
 ]
 
-async function tvl(timestamp, block, _, { api }) {
+async function tvl(api) {
   let balances = {};
+  const block = api.block
 
   const tranches = (await getLogs({
     target: trancheFactoryAddress,

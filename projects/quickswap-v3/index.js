@@ -8,7 +8,7 @@ module.exports = uniV3Export({
   astrzk: { factory: '0x56c2162254b0E4417288786eE402c2B41d4e181e', fromBlock: 93668, },
 })
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const { pools }  = await cachedGraphQuery('quickswap-v3/'+api.chain, 'https://graph-node.dogechain.dog/subgraphs/name/quickswap/dogechain-info', `{
     pools(first:1000) {
       token0 {

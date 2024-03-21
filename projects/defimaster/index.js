@@ -6,7 +6,7 @@ const abi = {
   "poolInfo": "function poolInfo(uint256) view returns (address lpToken, uint256 allocPoint, uint256 lastRewardTimestamp, uint256 accSushiPerShare, bool isVault)"
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const balances = {}
   const pools = (await api.fetchList({ lengthAbi: abi.poolLength, itemAbi: abi.poolInfo, target: chefArbitrum })).map(i => i.lpToken)
   const symbols = await api.multiCall({ abi: 'erc20:symbol', calls: pools })

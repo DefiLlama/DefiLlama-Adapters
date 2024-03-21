@@ -7,7 +7,7 @@ const factories = {
   bsc: '0x8e42f2F4101563bF679975178e880FD87d3eFd4e',
   ethereum: '0xDC8d77b69155c7E68A95a4fb0f06a71FF90B943a'
 }
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const pools = await api.fetchList({
     target: factories[api.chain],
     itemAbi: 'function getLBPairAtIndex(uint256) view returns (address)',

@@ -17,7 +17,7 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const factory = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, {api,}) => {
+    tvl: async (api) => {
       const pairs = await api.fetchList({lengthAbi: 'allPairsLength', itemAbi: 'allPairs', target: factory})
       const isPool3 = await api.multiCall({
         abi: 'function is3pool(address) view returns (bool)',

@@ -21,7 +21,7 @@ const setAbi = 'address[]:getComponents'
 
 const chamberAbi = 'address[]:getConstituentsAddresses'
 
-async function tvl(timestamp, block, _, { api }) {
+async function tvl(api) {
   const setsTokens = await api.multiCall({ abi: setAbi, calls: sets })
   const chambersTokens = await api.multiCall({ abi: chamberAbi, calls: chambers })
   const toa = []
@@ -31,7 +31,7 @@ async function tvl(timestamp, block, _, { api }) {
   return balances
 }
 
-async function polygonTvl(timestamp, block, _, { api }) {
+async function polygonTvl(api) {
   const chambersTokens = await api.multiCall({ abi: chamberAbi, calls: polygonChambers })
   const toa = []
   chambersTokens.forEach((o, i) => toa.push([o, polygonChambers[i]]))

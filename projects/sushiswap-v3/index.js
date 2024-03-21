@@ -89,7 +89,7 @@ const query = `{
 Object.keys(config).forEach(chain => {
   const { endpoint } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const { pools } = await cachedGraphQuery('sushiswap-v3/' + chain, endpoint, query, { api, })
       const ownerTokens = pools.map(i => [[i.token0.id, i.token1.id], i.id])
       return api.sumTokens({ ownerTokens })

@@ -75,7 +75,7 @@ const Staking = async (chainBlocks) => {
   return balances;
 };
 
-const bscTvl = async (chainBlocks) => {
+const bscTvl = async (api) => {
   const balances = {};
 
   let transformAddress = i => `bsc:${i}`;
@@ -83,7 +83,7 @@ const bscTvl = async (chainBlocks) => {
     await addFundsInMasterChef(
       balances,
       farm,
-      chainBlocks["bsc"],
+      api.bsc,
       "bsc",
       transformAddress,
       abi.poolInfo,

@@ -23,7 +23,7 @@ Object.keys(config).forEach(chain => {
   let { coinJoins } = config[chain]
   coinJoins = Object.values(coinJoins)
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const tokens = await api.multiCall({ abi: 'address:collateral', calls: coinJoins })
       return sumTokens2({ api, tokensAndOwners2: [tokens, coinJoins]})
     }

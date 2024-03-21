@@ -26,13 +26,13 @@ Object.keys(config).forEach(chain => {
   }
 
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const logs = await _getLogs(api)
       const tokensAndOwners = logs.map(log => [log.asset, log.yToken])
       await api.sumTokens({ tokensAndOwners })
       return sumTokens2({ api, owner: v3Wrapper, resolveUniV3: true, })
     },
-    borrowed: async (_, _b, _cb, { api, }) => {
+    borrowed: async (api) => {
       const logs = await _getLogs(api)
       const tokens = logs.map(log => log.asset)
       const bals = await api.multiCall({ abi: 'erc20:totalSupply', calls: logs.map(log => log.variableDebtToken) })

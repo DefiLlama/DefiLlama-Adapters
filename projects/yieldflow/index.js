@@ -20,7 +20,7 @@ const managers = [
   '0x0F6EEFd958287FDF80F5B1D4Ea79B928F9Ae933d'
 ]
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const positionManagers = await api.multiCall({  abi: 'address:positionManager', calls: managers})
   const tokenIds = await api.multiCall({  abi: abi.getCurrentTokenId, calls: managers})
   const liquidities = await api.multiCall({  abi: abi.getPositions, calls: positionManagers.map((v, i) => ({ target: v, params: tokenIds[i]})) })

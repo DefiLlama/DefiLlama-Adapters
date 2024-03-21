@@ -38,7 +38,7 @@ async function getVaultManagersFromAPI(api) {
   return calls;
 }
 
-async function tvl(timestamp, _1, _2, { api }) {
+async function tvl(api) {
   const chain = api.chain;
 
   const balances = {};
@@ -117,7 +117,7 @@ async function tvl(timestamp, _1, _2, { api }) {
     sdk.util.sumSingleBalance(balances, EUROC, eurocBalance);
 
     // Transmuter
-    if (timestamp > 1691656362) {
+    if (api.timestamp > 1691656362) {
       let collaterals = await api.call({
         abi: transmuter_abi["getCollateralList"],
         target: agEUR.transmuter,

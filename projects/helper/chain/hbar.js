@@ -23,6 +23,7 @@ async function addHBarBalance({ balances = {}, address, timestamp }) {
 }
 
 async function sumTokens({ balances = {}, owners = [], timestamp }) {
+  if (typeof timestamp === "object" && timestamp.timestamp) timestamp = timestamp.timestamp
   const promises = owners.map(address => addHBarBalance({ timestamp, balances, address}))
   await Promise.all(promises)
   return balances

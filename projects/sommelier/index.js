@@ -10,8 +10,13 @@ const {
 } = require("./cellar-constants");
 
 
-async function ethereum_tvl(timestamp, block, chainBlocks, { api }) {
+async function ethereum_tvl(api) {
   const balances = {};
+  const { block } = api
+  const chainBlocks = {
+    [api.chain]: block
+  }
+
   const baseOptions = { balances, chainBlocks };
 
   // Sum TVL for all v0.8.15 Cellars
@@ -44,8 +49,12 @@ async function ethereum_tvl(timestamp, block, chainBlocks, { api }) {
   return balances;
 }
 
-async function arbitrum_tvl(timestamp, block, chainBlocks, { api }) {
+async function arbitrum_tvl(api) {
   const balances = {};
+  const { block } = api
+  const chainBlocks = {
+    [api.chain]: block
+  }
   const baseOptions = { balances, chainBlocks };
 
   await v2.sumTvl({

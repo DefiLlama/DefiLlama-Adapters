@@ -9,7 +9,7 @@ module.exports = {
   methodology:
     "The GLIF Pools protocol is a liquid staking protocol for Filecoin that requires borrowers to collateralize FIL in order to borrow for their storage providing operation. This TVL calculation adds the total amount of FIL staked into the protocol, and the total amount of locked FIL collateral by borrowers, to arrive at TVL.",
   filecoin: {
-    tvl: async (_, _1, _2, { api }) => {
+    tvl: async (api) => {
       const [totalAssets, totalLockedByMiners] = await Promise.all([
         api.call({ abi: totalAssetsABI, target: INFINITY_POOL_CONTRACT }),
         // this call is too costly to perform on chain in this environment,

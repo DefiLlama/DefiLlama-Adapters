@@ -15,7 +15,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { gate, tokens, fromBlock } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       // calculate the balance of all instruments
       const logs = await getLogs({
         api,

@@ -24,7 +24,7 @@ const poolSummaryResponse = (rpc, method, contract, state) => {
 }
 
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   // this result has to be multiplied by 1000, 
   // as you can stake minimum 1000 tokens
   const core_poolSummaryResponse = await poolSummaryResponse(

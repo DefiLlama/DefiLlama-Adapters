@@ -25,7 +25,7 @@ const abi = "uint256:totalNetAssets"
 Object.keys(m2m).forEach(chain => {
   const asset = assets[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, cb, { api }) => {
+    tvl: async (api) => {
       const balances = await api.multiCall({  abi, calls: m2m[chain]})
       api.add(asset, balances)
     }

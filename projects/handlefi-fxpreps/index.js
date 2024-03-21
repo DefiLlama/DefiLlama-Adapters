@@ -35,7 +35,7 @@ const fxTokens = {
 module.exports = {
   misrepresentedTokens: true,
   arbitrum: {
-    tvl: async (_, _b, cb, { api }) => {
+    tvl: async (api) => {
       const fxConfig = []
       const tokens = []
 
@@ -45,8 +45,8 @@ module.exports = {
         const label = `${chain}:${token.toLowerCase()}`
         fxConfig.push({ token, label, oracle: oracles[key] })
       })
-      const balances = await(gmxExports({ vault: perpsVault, })(_, _b, cb, { api }))
-      const block = cb[chain]
+      const balances = await(gmxExports({ vault: perpsVault, })(api))
+      const block = api.chain
       const calls = fxConfig.map(i => ({ target: i.oracle }))
       const { output: price } = await sdk.api.abi.multiCall({
         abi: abis.latestAnswer, calls, chain, block,

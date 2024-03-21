@@ -2,7 +2,7 @@ const abi = require("./abi-poolInfo.json");
 
 const D8X_PERPETUALS_CONTRACT = "0xaB7794EcD2c8e9Decc6B577864b40eBf9204720f";
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const exchangeInfo = await api.call({
     abi: abi.getPoolStaticInfo,
     target: D8X_PERPETUALS_CONTRACT,

@@ -14,7 +14,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const tokens = Object.values(config[chain]).map(v => v.token)
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const bals = await api.multiCall({  abi: 'erc20:totalSupply', calls: tokens})
       api.add(tokens, bals)
     }

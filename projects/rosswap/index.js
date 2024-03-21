@@ -1,7 +1,7 @@
 const { getLogs } = require('../helper/cache/getLogs')
 const { transformDexBalances } = require('../helper/portedTokens')
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const logs = await getLogs({
     api,
     target: '0x232bF8d9cED464a75632657Cb2554880Acdcac1B',

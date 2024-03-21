@@ -42,7 +42,7 @@ module.exports.start = 1682619377
 
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const GRAPH_URL = config[chain].graphUrl
       const AAVE_POOL = config[chain].aavePool
       const AAVE_POOL_DATA_PROVIDER = config[chain].aavePoolDataProvider

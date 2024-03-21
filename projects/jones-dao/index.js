@@ -14,7 +14,7 @@ const jAssetToAsset = {
   "0x1f6fa7a58701b3773b08a1a16d06b656b0eccb23": addresses.tokens.rdpx, // jrdpx
 };
 
-async function tvl(_timestamp, _block, _chainBlocks, { api }) {
+async function tvl(api) {
   const [
     metavaultTokens,
     metavaultBalances,
@@ -51,7 +51,7 @@ async function tvl(_timestamp, _block, _chainBlocks, { api }) {
   return sumTokens2({ api, tokensAndOwners });
 }
 
-async function tvl_ethereum(_timestamp, _block, _chainBlocks, { api }) {
+async function tvl_ethereum(api) {
   const balances = {};
 
   const leftoverStrategy = await sdk.api.erc20

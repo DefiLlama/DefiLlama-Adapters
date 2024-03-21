@@ -4,12 +4,12 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const REGISTRY_ADDR = "0xD6E9D27C75Afd88ad24Cd5EdccdC76fd2fc3A751"
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   const pairs = await api.call({ target: REGISTRY_ADDR, abi: abi['getAllPairAddresses'], })
   const tokens = await api.multiCall({ abi: abi.collateralContract, calls: pairs })
   return sumTokens2({ api, tokensAndOwners: tokens.map((v, i) => [v, pairs[i]]) })
 }
-async function borrowed(timestamp, block, chainBlocks, { api }) {
+async function borrowed(api) {
   const pairs = await api.call({ target: REGISTRY_ADDR, abi: abi['getAllPairAddresses'], })
   const bals = await api.multiCall({ abi: 'function totalBorrow() view returns (uint128 amount, uint128 shares)', calls: pairs })
   bals.forEach(bal => api.add(ADDRESSES.ethereum.FRAX, bal.amount))

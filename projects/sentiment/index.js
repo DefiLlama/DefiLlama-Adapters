@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { cachedGraphQuery } = require('../helper/cache')
 
-async function tvl(timestamp, ethBlock, { arbitrum: block }, { api }) {
+async function tvl(api) {
   const tokens = await api.call({ target: "0x17b07cfbab33c0024040e7c299f8048f4a49679b", abi: "address[]:getAllLTokens", })
   const assets = await api.multiCall({ calls: tokens, abi: "address:asset", })
   const totalAssets = await api.multiCall({ calls: tokens, abi: "uint256:totalAssets", })

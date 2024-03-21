@@ -19,7 +19,7 @@ module.exports = {
   misrepresentedTokens: true,
 
   ethereum: {
-    tvl: async (_, _b, _cb, { api }) => {
+    tvl: async (api) => {
       const lendingMain = {
         eth: "0xdeF3AA48bad043e53207d359dcDFdE46F50b6C02", //ETH
       };
@@ -85,7 +85,7 @@ module.exports = {
   },
 
   arbitrum: {
-    tvl: async (_, _b, _cb, { api }) => {
+    tvl: async (api) => {
       //lending
       const lendingArb = {
         usdc_e: "0xa2e4cab1F6f9f1163bCe937517f1935BEc4a0A7c",

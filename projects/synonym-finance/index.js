@@ -1,13 +1,13 @@
 
 const hub = '0x1e3f1f1cA8C62aABCB3B78D87223E988Dfa3780E'
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const { tokens, tokenMappings } = await getTokenInfos(api)
   const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: tokens.map(token => ({ target: token, params: hub })) })
   api.add(tokenMappings, bals, { skipChain: true })
   return api.getBalances()
 }
 
-async function borrowed(_, _b, _cb, { api, }) {
+async function borrowed(api) {
   const { tokens, tokenMappings } = await getTokenInfos(api)
   const bals = (await api.multiCall({ abi: "function getGlobalAmounts(address assetAddress) view returns ((uint256 deposited, uint256 borrowed))", calls: tokens, target: hub })).map(i => i.borrowed)
   api.add(tokenMappings, bals, { skipChain: true })

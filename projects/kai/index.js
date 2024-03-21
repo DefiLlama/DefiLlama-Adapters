@@ -14,7 +14,7 @@ const SuiVault = {
   tType: ADDRESSES.sui.SUI
 }
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const vaults = [UsdcVault, UsdtVault, SuiVault]
   const vaultObjs = await sui.getObjects(vaults.map(v => v.id))
 

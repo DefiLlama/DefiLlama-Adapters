@@ -2,7 +2,7 @@ const { sumTokens2, sumTokensExport, } = require('../helper/unwrapLPs')
 const Helper = require("./Helper.js");
 const { farms: { MasterChefAddress, LockStakingAddress }, abi, token: { XWIN }  } = require('./Helper.js');
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const vaults = [
     ...Object.values(Helper.Strategies),
     ...Object.values(Helper.PublicVault),
@@ -13,7 +13,7 @@ async function tvl(_, _1, _2, { api }) {
   api.addTokens(tokens, bals)
 }
 
-async function pool2(_, _1, _2, { api }) {
+async function pool2(api) {
   const data = await api.fetchList({  lengthAbi: abi.poolLength, itemAbi: abi.poolInfoMaster, target: MasterChefAddress, })
   return sumTokens2({ api, owner: MasterChefAddress, tokens: data.map(i => i[0]), resolveLP: true, blacklistedTokens: [XWIN, LockStakingAddress] })
 }

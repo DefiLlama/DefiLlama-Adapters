@@ -3,7 +3,7 @@ const { getLogs } = require('../helper/cache/getLogs')
 
 const bondFactory = '0x1533eb8c6cc510863b496d182596ab0e9e77a00c'
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   
   const logs = await getLogs({
     api,
@@ -13,7 +13,7 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
     target: bondFactory,
   })
   const toa = logs.map(i => ([i.topics[3], i.args.newBond]))
-  return sumTokens2({ block, tokensAndOwners: toa, })
+  return sumTokens2({ api, tokensAndOwners: toa, })
 }
 
 module.exports = {

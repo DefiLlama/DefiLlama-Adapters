@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   const mapLockedAmount = await api.call({
     target: "0x000000000000000000000000000000000000d011",
     abi: "function getAccountTotalLockedGold(address) view returns (uint256)",

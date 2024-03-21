@@ -37,7 +37,7 @@ Object.keys(config).forEach((chain) => {
   const fundAddresses = Object.values(fundsMap);
 
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api }) => {
+    tvl: async (api) => {
       let supplies;
       if (chain === 'solana') {
         supplies = await Promise.all(fundAddresses.map(getTokenSupply))

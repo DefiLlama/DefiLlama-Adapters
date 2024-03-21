@@ -158,8 +158,8 @@ async function bsc(timestamp, ethBlock, chainBlock) {
     }
 }
 
-async function polygon(timestamp, ethBlock, chainBlock, { api }) {
-    const block = chainBlock.polygon
+async function polygon(api) {
+    const block = api.block
     const total = (await sdk.api.abi.multiCall({
         calls: poolsPolygon.map( address => ({
             target: dashboardPolygon,

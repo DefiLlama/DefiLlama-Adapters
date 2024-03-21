@@ -5,7 +5,7 @@ async function sumERC4626Vaults({ api, ...options }) {
 }
 
 function sumERC4626VaultsExport({ vaults, ...options}) {
-  return async (timestamp, ethBlock, chainBlocks, { api }) => {
+  return async (api) => {
     return sumERC4626Vaults({ ...options, api, calls: vaults })
   }
 }

@@ -14,7 +14,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { factories, deltaswapFactory } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const ownerTokens = []
       for (const { factory, fromBlock } of factories) {
         const logs = await getLogs({

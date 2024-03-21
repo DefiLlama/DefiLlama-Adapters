@@ -42,11 +42,11 @@ async function vaultsTvlFn(api) {
   }
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   return (await getVaultsTvl(api)).tvl
 }
 
-async function borrowed(_, _b, _cb, { api, }) {
+async function borrowed(api) {
   return (await getVaultsTvl(api)).borrowed
 }
 

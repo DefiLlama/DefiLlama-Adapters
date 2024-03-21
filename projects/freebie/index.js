@@ -4,7 +4,7 @@ const { staking } = require('../helper/staking')
 
 const token = '0x9bedce29f79076b21dd04958a9fd4b22f63fd86d'
 
-async function frbVault(_, _b, _cb, { api, }) {
+async function frbVault(api) {
   const balances = {
     ['avax:'+token]: await api.call({ abi: 'uint256:balanceVault', target: token, })
   }

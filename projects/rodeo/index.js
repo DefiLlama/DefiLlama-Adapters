@@ -6,13 +6,13 @@ const pools = [
   "0x0032F5E1520a66C6E572e96A11fBF54aea26f9bE", // usdc-v1
 ];
 
-async function borrowed(_, _1, _2, { api }) {
+async function borrowed(api) {
   const assets = await api.multiCall({  abi: 'address:asset', calls: pools})
   const data = await api.call({  abi: abi.peekPools, target: investorHelper, params: [pools]})
   data[3].forEach((v, i) => api.add(assets[i], v))
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const assets = await api.multiCall({  abi: 'address:asset', calls: pools}) 
   return sumTokens2({ api, tokensAndOwners2: [assets, pools]})
 }

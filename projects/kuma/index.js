@@ -20,7 +20,7 @@ Object.keys(allAddresses).forEach((chain) => {
   const addresses = Object.values(allAddresses[chain]);
 
   module.exports[chain] = {
-    tvl: async (_, _1, _2, { api }) => {
+    tvl: async (api) => {
       api.addTokens(addresses, await api.multiCall({ abi: 'erc20:totalSupply', calls: addresses }))
     },
   };

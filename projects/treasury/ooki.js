@@ -8,10 +8,10 @@ let TreasureTokens = [
     '0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490', //pool3
 ]
 
-async function ethTreasury(timestamp, _block, _, { api }) {
+async function ethTreasury(api) {
     return sumTokens2({ api, owner: treasuryContract, tokens: TreasureTokens })
 }
-async function ownTokens(timestamp, _block, _, { api }) {
+async function ownTokens(api) {
     return sumTokens2({ api, owner: treasuryContract, tokens: ['0x0De05F6447ab4D22c8827449EE4bA2D5C288379B'] })
 }
 

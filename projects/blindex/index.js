@@ -8,7 +8,7 @@ const chains = {
   },
 };
 
-async function tvl(chainName, block,_, { api }) {
+async function tvl(api) {
   const bdstables = await api.fetchList({ lengthAbi: abi.getBdStablesLength, itemAbi: abi.getBDStable, target: chains.rsk.bdxTokenAddress })
   console.log(bdstables)
   await Promise.all(bdstables.map(async bdstable => {
