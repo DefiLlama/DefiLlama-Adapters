@@ -7,7 +7,7 @@ const config = {
       [
         [
           ADDRESSES.null,
-          ADDRESSES.arbitrum.WETH,
+          "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
           "0xe50fa9b3c56ffb159cb0fca61f5c9d750e8128c8",
         ],
         "0xA2Ce28868A852f4B01903B5de07d4835feFe9086",
@@ -18,6 +18,14 @@ const config = {
           "0x93b346b6bc2548da6a1e7d98e9a421b42541425b",
         ],
         "0x8AD15574A87e30061f24977faaA2d99bC45A3169",
+      ],
+      [
+        [
+          ADDRESSES.null,
+          "0x5979D7b546E38E414F7E9822514be443A4800529",
+          "0x513c7E3a9c69cA3e22550eF58AC1C0088e918FFf",
+        ],
+        "0x58F046c5374E9cF942b8Eeb056126Ce86dD63EEB",
       ],
     ],
   },
@@ -38,6 +46,14 @@ const config = {
           "0xEA1132120ddcDDA2F119e99Fa7A27a0d036F7Ac9",
         ],
         "0x8105Fc3487F117982Eb5A5456D8639b0353242d8",
+      ],
+      [
+        [
+          ADDRESSES.null,
+          "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",
+          "0x82E64f49Ed5EC1bC6e43DAD4FC8Af9bb3A2312EE",
+        ],
+        "0xdc4552609a3f673f0b72958f678d4a48d0e94ebd",
       ],
       [
         [
