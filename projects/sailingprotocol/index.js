@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const axios = require('axios');
 
@@ -93,7 +94,7 @@ async function tvl(_0, blockNumber, _2, { api }) {
       );
       const tickerPrice = tickerPricing.data.at(-1)[1];
       api.add(
-        '0x919C1c267BC06a7039e03fcc2eF738525769109c', // usdtKavaAddress
+        ADDRESSES.kava.USDt, // usdtKavaAddress
         tokenTotalSupply * tickerPrice * (1e6 / 1e18)
       );
     }

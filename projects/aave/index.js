@@ -4,6 +4,7 @@ const { getV2Reserves, getTvl, getBorrowed, aaveChainTvl } = require('../helper/
 const { staking } = require('../helper/staking');
 const { ammMarket } = require('./amm');
 const { unwrapBalancerToken } = require('../helper/unwrapLPs');
+const methodologies = require('../helper/methodologies');
 
 
 const addressesProviderRegistryETH = "0x52D306e36E3B6B02c153d0266ff0f85d18BCD413";
@@ -49,7 +50,7 @@ function v2(chain, v2Registry){
 
 module.exports = {
   timetravel: true,
-  methodology: `Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending`,
+  methodology: methodologies.lendingMarket,
   ethereum: {
     staking: staking(aaveStakingContract, aaveTokenAddress),
     pool2: stakingBalancerTvl,

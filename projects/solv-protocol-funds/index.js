@@ -22,20 +22,22 @@ async function borrowed(ts) {
   const network = api.chain;
 
   let address = (await getConfig('solv-protocol/funds', addressUrl));
-  let gm = address[api.chain]["gm"];
+  const depositAddress = filterDepositAddress(network, address);
 
   const graphData = await getGraphData(ts, network, api);
   if (graphData.pools.length > 0) {
     const poolLists = graphData.pools;
+
     var pools = poolLists.filter((value) => {
-      return gm == undefined || gm["depositAddress"].indexOf(value.vault) == -1;
+      return depositAddress.length == 0 || depositAddress.indexOf(value.vault) == -1;
     });
+
     const poolConcretes = await concrete(pools, api);
     const nav = await api.multiCall({
       abi: abi.getSubscribeNav,
       calls: pools.map((index) => ({
         target: index.navOracle,
-        params: [index.poolId, ts]
+        params: [index.poolId, ts * 1000]
       })),
     })
 
@@ -74,6 +76,9 @@ async function tvl(ts, _, _1, { api }) {
 
   await gm(api, address);
   await mux(api, address);
+  await vaultBalance(api, address);
+
+  return api.getBalances();
 }
 
 async function gm(api, address) {
@@ -104,6 +109,7 @@ async function mantleTvl(ts, _, _1, { api }) {
   await klp(api, address);
   await iziswap(api, address);
   await lendle(api, address);
+  await vaultBalance(api, address);
 
   return api.getBalances();
 }
@@ -224,6 +230,44 @@ async function lendle(api, address) {
   api.add(lendleData.account.ethAddress, balance)
 }
 
+async function vaultBalance(api, address) {
+  const network = api.chain;
+  const graphData = await getGraphData(api.timestamp, network, api);
+
+  if (graphData.pools.length > 0) {
+    const poolLists = graphData.pools;
+
+    const poolConcretes = await concrete(poolLists, api);
+
+    const poolBaseInfos = await api.multiCall({
+      abi: abi.slotBaseInfo,
+      calls: poolLists.map((index) => ({
+        target: poolConcretes[index.contractAddress],
+        params: [index.openFundShareSlot]
+      })),
+    })
+
+    let vaults = {};
+    for (const key in poolLists) {
+      if (poolBaseInfos[key][1] && poolLists[key]["vault"]) {
+        vaults[`${poolBaseInfos[key][1].toLowerCase()}-${poolLists[key]["vault"].toLowerCase()}`] = [poolBaseInfos[key][1], poolLists[key]["vault"]]
+      }
+    }
+
+    const balances = await api.multiCall({
+      abi: abi.balanceOf,
+      calls: Object.values(vaults).map((index) => ({
+        target: index[0],
+        params: [index[1]]
+      })),
+    })
+
+    for (const key in balances) {
+      api.add(Object.values(vaults)[key][0], balances[key])
+    }
+  }
+}
+
 
 async function getGraphData(timestamp, chain, api) {
   let rwaSlot = (await getConfig('solv-protocol/slots', slotListUrl));
@@ -249,6 +293,36 @@ async function getGraphData(timestamp, chain, api) {
     pools: poolList
   };
 }
+
+function filterDepositAddress(network, address) {
+  let depositAddresses = [];
+  if (address[network]) {
+    if (address[network]["gm"]) {
+      for (let depositAddress of address[network]["gm"]["depositAddress"]) {
+        depositAddresses.push(depositAddress.toLowerCase())
+      }
+    }
+    if (address[network]["mux"]) {
+      depositAddresses.push(address[network]["mux"]["account"].toLowerCase())
+    }
+    if (address[network]["klp"]) {
+      for (let poolAddress of address[network]["klp"]["klpPool"]) {
+        depositAddresses.push(poolAddress.toLowerCase())
+      }
+    }
+    if (address[network]["iziswap"]) {
+      for (let owner of address[network]["iziswap"]["owner"]) {
+        depositAddresses.push(owner.toLowerCase())
+      }
+    }
+    if (address[network]["lendle"]) {
+      depositAddresses.push(address[network]["lendle"]["account"]["user"].toLowerCase())
+    }
+  }
+
+  return depositAddresses;
+}
+
 // node test.js projects/solv-protocol-funds
 module.exports = {
   arbitrum: {
