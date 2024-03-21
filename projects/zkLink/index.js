@@ -58,6 +58,11 @@ module.exports = {
         api,
         owners: ["0xaB3DDB86072a35d74beD49AA0f9210098ebf2D08"],
         balances: balances,
+        tokens: [
+                  "0xBBeB516fb02a01611cBBE0453Fe3c580D7281011", //btc
+                  "0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4" , //usdc
+                  "0x493257fD37EDB34451f62EDf8D2a0C418852bA4C", //usdt
+        ],
         blacklistedTokens: [ERA_ETH_ADDRESS],
       });
     },
