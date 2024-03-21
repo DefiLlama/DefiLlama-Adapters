@@ -1,9 +1,9 @@
-const MINT_TOKEN_CONTRACT = '0x1f3Af095CDa17d63cad238358837321e95FC5915';
-const MINT_CLUB_BOND_CONTRACT = '0x8BBac0C7583Cc146244a18863E708bFFbbF19975';
+const MINT_TOKEN_CONTRACT = '0x1c2D10633C78A47786759715d4618296D85D7cD1';
+const MINT_CLUB_BOND_CONTRACT = '0xd6eE9E6be560D8AEd6Caf1bAcF58603fA4b7e475';
 
 async function tvl(_, _1, _2, { api }) {
   const collateralBalance = await api.call({
-    abi: 'erc20:balanceOf',
+    abi: 'address:totalMargins',
     target: MINT_TOKEN_CONTRACT,
     params: [MINT_CLUB_BOND_CONTRACT],
   });
@@ -14,7 +14,7 @@ async function tvl(_, _1, _2, { api }) {
 module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
-  methodology: 'counts the number of MINT tokens in the Club Bonding contract.',
+  methodology: 'counts the number of margin in the contract address.',
   start: 1000235,
   bsc: {
     tvl,
