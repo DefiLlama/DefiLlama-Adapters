@@ -47,13 +47,13 @@ Object.keys(config).forEach(chain => {
   const { coinGeckoId, hub, seilorLps } = config[chain];
 
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api }) => {
+    tvl: async (api) => {
       // Logic for calculating TVL excluding staked LP tokens
       const { total_bond_stsei_amount } = await queryContractWithRetries({ contract: hub, chain, data: { state: {} } });
       api.add(coinGeckoId, total_bond_stsei_amount / 10 ** 6, { skipChain: true });
       return api.getBalances();
     },
-    pool2: async (_, _b, _cb, { api }) => {
+    pool2: async (api) => {
       // Logic for calculating the value of staked LP tokens
       for (let { lp, pair, staking, pairInfo } of seilorLps) {
         const lpTokenInfo = await queryContractWithRetries({ contract: lp, chain, data: { token_info: {} } });
