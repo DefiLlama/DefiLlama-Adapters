@@ -53,7 +53,8 @@ async function getFarmLpTvl(balances, block) {
   sdk.util.sumSingleBalance(balances, farmData.addresses.lpToken, ctrLpTotalSupply, chain)
 }
 
-async function tvl(timestamp, block, _, { api }) {
+async function tvl(api) {
+  const block = api.block
   let balances = {}
   await Promise.all([
     getBalancerLpTvl(balances, block),

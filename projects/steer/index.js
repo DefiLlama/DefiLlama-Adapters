@@ -142,7 +142,7 @@ const query = `{vaults(first: 1000, where: {totalLPTokensIssued_not: "0", lastSn
 
 supportedChains.forEach(chain => {
   module.exports[chain.identifier] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const data = await cachedGraphQuery('steer/' + chain.identifier, chain.subgraphEndpoint, query,)
 
       const vaults = data.vaults.map((vault) => vault.id)

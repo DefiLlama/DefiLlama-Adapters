@@ -4,7 +4,7 @@ const abi = require("./abi.json");
 const zunUSD = "0x8C0D76C9B18779665475F3E212D9Ca1Ed6A1A0e6";
 const zunUSDAps = "0x28e487bbF6b64867C29e61DccbCD17aB64082889";
 
-async function ethTvl(timestamp, block, _, { api }) {
+async function ethTvl(api) {
   api.add(ADDRESSES.ethereum.DAI, await api.call({ abi: abi.totalHoldings, target: zunUSD, }))
   api.add(ADDRESSES.ethereum.DAI, await api.call({ abi: abi.totalHoldings, target: zunUSDAps, }))
 }

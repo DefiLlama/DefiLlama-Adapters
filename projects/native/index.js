@@ -52,7 +52,7 @@ const config = {
 Object.keys(config).forEach((chain) => {
   const { factory, fromBlock, vault, vaultFromBlock } = config[chain];
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api }) => {
+    tvl: async (api) => {
       // tvl from aqua
       // read from AquaVault to get allMarkets and the token list
       // sum the balance of those tokens in the vault

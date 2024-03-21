@@ -72,7 +72,7 @@ async function totalObyteTvl(timestamp) {
     }
 }
 
-const totalTVLByEVMNetwork = async (_, _1, _2, { api }) => {
+const totalTVLByEVMNetwork = async (api) => {
     const bridges = await getConfig('counterstake/bridges', 'https://counterstake.org/api/bridges').then((data) => data.data);
     const pooledAssistants = await getConfig('counterstake/poolStakes', 'https://counterstake.org/api/pooled_assistants').then((data) => data.data);
 

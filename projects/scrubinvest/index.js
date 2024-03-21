@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumUnknownTokens } = require("../helper/unknownTokens");
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
 
   const calls = [
     { target: '0x075CA53543D304c02Ee692C0b691770AEB273dA4', params: '0x4402Cf5433D57266563979654d20887AcE672393' },
