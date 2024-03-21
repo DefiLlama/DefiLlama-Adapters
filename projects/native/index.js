@@ -14,13 +14,15 @@ const config = {
   mantle: { factory: '0x4c34BA0103b8417e1Fc4D0F6645828B2d6d207F9', fromBlock: 10250349, },
   manta: { factory: '0x4c34BA0103b8417e1Fc4D0F6645828B2d6d207F9', fromBlock: 1063398, },
   zeta: { factory: '0x4c34BA0103b8417e1Fc4D0F6645828B2d6d207F9', fromBlock: 1520070, },
+  zklink: { factory: '0x123...', fromBlock: 0, vault: '0x123..', },
 }
 
 Object.keys(config).forEach(chain => {
   const { factory, fromBlock, } = config[chain]
   module.exports[chain] = {
     tvl: async (_, _b, _cb, { api, }) => {
-      const logs = await getLogs({
+      // tvl from factory
+      const poolCreationLogs = await getLogs({
         api,
         target: factory,
         topic: 'PoolCreated(address,address,address,address,address)',
@@ -28,11 +30,15 @@ Object.keys(config).forEach(chain => {
         onlyArgs: true,
         fromBlock,
       })
-      const treasuries = logs.map(i => i.treasury)
-      const pools = logs.map(i => i.pool)
+      const treasuries = poolCreationLogs.map(i => i.treasury)
+      const pools = poolCreationLogs.map(i => i.pool)
       const tokenAs = await api.multiCall({ abi: 'address[]:getTokenAs', calls: pools })
       const tokenBs = await api.multiCall({ abi: 'address[]:getTokenBs', calls: pools })
-      return sumTokens2({ api, ownerTokens: treasuries.map((v, i) => [[nullAddress, ...tokenAs[i], ...tokenBs[i]], v]) })
+      const tvlFromFactory = sumTokens2({ api, ownerTokens: treasuries.map((v, i) => [[nullAddress, ...tokenAs[i], ...tokenBs[i]], v]) })
+
+      // tvl from aqua
+      // read from AquaVault to get allMarkets and the token list
+      // sum the balance of those tokens in the vault
     }
   }
 })
