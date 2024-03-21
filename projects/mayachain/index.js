@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getCache, get } = require("../helper/http");
 const sdk = require("@defillama/sdk");
 const { nullAddress } = require("../helper/tokenMapping");
@@ -33,7 +34,7 @@ const tokenToDecimalMapping = {
   "DASH.DASH": 8,
 };
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const pools = await getCache("https://midgard.mayachain.info/v2/pools");
   const aChain = api.chain;
 

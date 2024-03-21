@@ -8,7 +8,7 @@ module.exports = {
 
 Object.values(config).forEach(({ chain, locker, startBlock }) => {
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const data = await api.fetchList({  lengthAbi: abi.depositId, itemAbi: abi.lockedToken, target: locker, startFromOne: true, })
       const tokensAndOwners = data
         // .filter(i => !i.withdrawn)

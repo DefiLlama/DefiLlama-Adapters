@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const {
   queryContract: queryContractCosmos,
 } = require("../helper/chain/cosmos");
@@ -27,7 +28,7 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const { farms } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       await Promise.all(farms.map(farm => farm2Tvl(chain, farm, api)))
       return api.getBalances()
     }

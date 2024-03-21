@@ -33,7 +33,8 @@ const chainConfigs = {
   },
 };
 
-async function tvl(_time, block, _, { api, chain }) {
+async function tvl(api) {
+  const chain = api.chain;
   const config = chainConfigs[chain];
   let { erc4626Wrapped = [] } = config;
   erc4626Wrapped = erc4626Wrapped.map((i) => i.toLowerCase());
@@ -185,7 +186,8 @@ async function tvl(_time, block, _, { api, chain }) {
   await sumTokens2({ api, ownerTokens, blacklistedTokens });
 }
 
-async function staking(_time, block, _, { api, chain }) {
+async function staking(api) {
+  const chain = api.chain;
   const config = chainConfigs[chain]; // Load the config for the specified chain
   const creationLogs = await _getLogs(api, config);
   const stRsrs = creationLogs.map((i) => i.stRSR);

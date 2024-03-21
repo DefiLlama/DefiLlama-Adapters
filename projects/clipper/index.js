@@ -1,7 +1,7 @@
 const { getConfig } = require('../helper/cache')
 const { nullAddress } = require('../helper/tokenMapping')
 
-async function tvl(time, _block, chainBlocks, { api }) {
+async function tvl(api) {
 	const { pool: { address: poolAddress }, assets } = await getConfig('clipper/' + api.chain, `https://api.clipper.exchange/rfq/pool?chain_id=${api.chainId}`)
 	const tokens = assets.map(({ address }) => address)
 	const owners = [poolAddress]
