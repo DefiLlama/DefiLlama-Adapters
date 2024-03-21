@@ -1,9 +1,9 @@
 const POLYGON_USDT_CONTRACT_ADDRESS = "0xc2132D05D31c914a87C6611C10748AEb04B58e8F";
 
-async function tvl(timestamp, _1, _2, { api }) {
+async function tvl(_, _1, _2, { api }) {
   const query = `
     {
-      loans(where: {id_not: "1", status: ACCEPTED, startTime_lte: "${timestamp}" }) {
+      loans(where: {id_not: "1", status: ACCEPTED, startTime_lte: "${_.timestamp}" }) {
         amount
       }
     }
