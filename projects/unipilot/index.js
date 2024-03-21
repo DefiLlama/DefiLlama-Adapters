@@ -1,4 +1,4 @@
-const sdk = require("@defillama/sdk");
+const { cachedGraphQuery } = require('../helper/cache')
 const { getLogs } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { staking } = require("../helper/staking");
@@ -97,10 +97,31 @@ async function getVaultLogs(vaults, factoryType, api) {
   return vaults;
 }
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   let vaults = {};
-  for (const label of Object.keys(START_BLOCKS[api.chain]))
-    await getVaultLogs(vaults, label, api)
+  if (api.chain === "dogechain") {
+    const res = await cachedGraphQuery('unipilot/'+api.chain, 'https://apis.unipilot.io:5000/subgraphs/name/hamzabhatti125/stats-dogechain', `{
+      vaults {
+        token0 {
+          id
+        }
+        token1 {
+          id
+        }
+        id
+      }
+    }`)
+    res.vaults.forEach(({ token0, token1, id }) => {
+      vaults[id] = {
+        token0Address: token0.id,
+        token1Address: token1.id,
+      }
+    })
+  } else {
+    for (const label of Object.keys(START_BLOCKS[api.chain]))
+      await getVaultLogs(vaults, label, api)
+
+  }
 
   const ownerTokens = Object.entries(vaults).map(([v, i]) => [[i.token0Address, i.token1Address], v])
   const vaultKeys = Object.keys(vaults)

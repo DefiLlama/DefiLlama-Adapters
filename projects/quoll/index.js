@@ -1,6 +1,4 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require('@defillama/sdk');
-const { ethers: { BigNumber } } = require("ethers")
 const { staking } = require("../helper/staking");
 const abi = require('./abi.json');
 const voterProxy = '0xe96c48C5FddC0DC1Df5Cf21d68A3D8b3aba68046';
@@ -40,7 +38,7 @@ async function voterProxyBalances(api) {
     })
 }
 
-async function tvl(timestamp, ethereumBlock, chainBlocks, { api }) {
+async function tvl(api) {
   api.add(wom, await api.call({ abi: 'erc20:balanceOf', target: veWom, params: [voterProxy], }))
   await voterProxyBalances(api)
 }

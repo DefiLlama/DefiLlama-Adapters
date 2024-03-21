@@ -42,7 +42,8 @@ async function getJoins(block, api) {
   return joins;
 }
 
-async function tvl(timestamp, block, _, { api }) {
+async function tvl(api) {
+  const block = api.block
   let toa = [
     [MakerSCDConstants.WETH_ADDRESS, MakerSCDConstants.TUB_ADDRESS,],
   ]
@@ -81,7 +82,7 @@ async function tvl(timestamp, block, _, { api }) {
 
     const failedCalls = dogRes.filter(i => !i.success)
     if (failedCalls.length) {
-      failedCalls.forEach(i => console.log('Failed both gem and dog calls', i.input.target))
+      failedCalls.forEach(i => sdk.log('Failed both gem and dog calls', i.input.target))
       throw new Error('Failed both gem and dog calls')
     }
   }
@@ -89,10 +90,11 @@ async function tvl(timestamp, block, _, { api }) {
   toa = toa.filter(i => i[0].toLowerCase() !== ADDRESSES.ethereum.SAI.toLowerCase())
   const symbols = await api.multiCall({ abi: 'erc20:symbol', calls: toa.map(t => t[0]) })
   const gUNIToa = toa.filter((_, i) => symbols[i] === 'G-UNI')
-  toa = toa.filter((_, i) => symbols[i] !== 'G-UNI')
+  toa = toa.filter((_, i) => symbols[i] !== 'G-UNI' && !symbols[i].startsWith('RWA'))
 
-  const balances = await sumTokens2({ api, tokensAndOwners: toa, })
-  return unwrapGunis({ api, toa: gUNIToa, balances, })
+  const balances = await sumTokens2({ api, tokensAndOwners: toa, resolveLP: true, })
+  await unwrapGunis({ api, toa: gUNIToa, balances, })
+  return balances
 }
 
 async function unwrapGunis({ api, toa, balances = {} }) {

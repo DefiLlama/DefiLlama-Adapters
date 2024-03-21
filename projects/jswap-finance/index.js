@@ -7,7 +7,6 @@ module.exports = {
   okexchain: {
     tvl: getUniTVL({
       factory,
-      chain: 'okexchain',
       useDefaultCoreAssets: true,
     })
   },

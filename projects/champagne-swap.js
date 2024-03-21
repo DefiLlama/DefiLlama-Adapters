@@ -11,6 +11,6 @@ module.exports = {
   methodology: 'TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://champagne.finance/ as the source. Staking accounts for the CHAM locked in MasterChef (0x15C17442eb2Cd3a56139e877ec7784b2dbD97270)',
   bsc: {
     staking: staking(masterChef, champagneToken, 'bsc'),
-    tvl: getUniTVL({ chain: 'bsc', useDefaultCoreAssets: true, factory, })
+    tvl: getUniTVL({ useDefaultCoreAssets: true, factory, })
   },
 }

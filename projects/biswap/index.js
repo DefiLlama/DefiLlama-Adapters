@@ -35,8 +35,8 @@ const stakingPools = [
 
 module.exports = {
   bsc: {
-    staking: stakings(stakingPools, BSW, 'bsc'),
-    tvl: getUniTVL({ chain: 'bsc', factory, })
+    staking: stakings(stakingPools, BSW),
+    tvl: getUniTVL({ factory, useDefaultCoreAssets: true,})
   },
   hallmarks:[
     [1651881600, "UST depeg"],

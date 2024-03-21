@@ -2,14 +2,13 @@ const { getLogs } = require('../helper/cache/getLogs');
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
 const config = {
-  ethereum: { factory: '0x197Bb6Cd6cC9E9ABBFdaBff23DE7435c51d1B7BE', fromBlock: 16935232  , ACT: '0x455ad0f677628ed40e7397fb41818f474e0e5afe' },
+  ethereum: { factory: '0x42CDc5D4B05E8dACc2FCD181cbe0Cc86Ee14c439', fromBlock: 16935232  , ACT: '0x6112d87127847202151b9fe48ea0e2704fa428a1' },
 }
 
-/*
 Object.keys(config).forEach(chain => {
   const { factory, fromBlock, ACT } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const logs = await getLogs({
         api,
         target: factory,
@@ -28,16 +27,13 @@ Object.keys(config).forEach(chain => {
       })
       const vaults = logs.map(l => l.vault)
       const nfts = actLogs.map(l => l.tokenContract)
-      const collIds = actLogs.map(l => l.collateralId)
-      const clearingHouses = await api.multiCall({  abi: "function getClearingHouse(uint256 collateralId) view returns (address)", calls: collIds.map(i => i.toString()), target:ACT})
-      const tokensAndOwners = nfts.map((v, i) => [v, clearingHouses[i]])
+      const tokensAndOwners = nfts.map((v, i) => [v, ACT])
 
       const tokens = await api.multiCall({  abi: 'address:asset', calls: vaults})
-      const bals = await api.multiCall({  abi: 'uint256:totalAssets', calls: vaults})
       tokens.forEach((t, i) => tokensAndOwners.push([t, vaults[i]]))
       return sumTokens2({ api, tokensAndOwners })
     }, 
-    borrowed: async (_, _b, _cb, { api, }) => {
+    borrowed: async (api) => {
       const logs = await getLogs({
         api,
         target: factory,
@@ -54,14 +50,7 @@ Object.keys(config).forEach(chain => {
     }, 
   }
 })
-*/
 
-module.exports={
-  ethereum:{
-    tvl: ()=>({}),
-    borrowed: ()=>({}),
-  },
-  hallmarks:[
-    [1687301106, "White hack"]
-  ]
-}
+module.exports.hallmarks = [
+  [1687301106, "White hack"]
+]

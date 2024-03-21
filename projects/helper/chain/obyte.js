@@ -10,6 +10,7 @@ const TOKEN_REGISTRY_AA_ADDRESS = "O6H6ZIFI57X3PLTYHOCVYPP5A553CYFQ";
  * @return {Promise<object>} the balances of all assets of all AAs that are based on the base AA identified by address
  */
 async function fetchBaseAABalances(timestamp, address) {
+  if (typeof timestamp === "object" && timestamp.timestamp) timestamp = timestamp.timestamp
   /*
    * {
    *   "subject": "GS23D3GQNNMNJ5TL4Z5PINZ5626WASMA",
@@ -63,12 +64,12 @@ function summingBaseAABalancesToTvl(assetMetadata, exchangeRates) {
     const baseCurrency = (asset === "base") ? "GBYTE" : asset
     const usdRate = exchangeRates[`${baseCurrency}_USD`] ?? 0
     const usdValue = assetDetails.balance / Math.pow(10, decimals) * usdRate
-    // console.log(`  ${assetMetadata[asset]?.symbol ?? asset} = ${usdValue.toFixed(2)}`)
+    // sdk.log(`  ${assetMetadata[asset]?.symbol ?? asset} = ${usdValue.toFixed(2)}`)
     return total + usdValue
   }
 
   const summingAddressTvl = (total, [address, addressDetails]) => {
-    // console.log(`${address}:`)
+    // sdk.log(`${address}:`)
     return total + Object.entries(addressDetails.assets)
         .filter(([asset, assetDetails]) => !assetDetails.selfIssued)
         .reduce(summingAssetTvl, 0)

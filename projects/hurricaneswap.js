@@ -13,7 +13,6 @@ const stakingConttract_shctBar = "0xE4aE2E8648B8E84c4A487a559b04e884B822a350";
 const HCT = "0x45C13620B55C35A5f539d26E88247011Eb10fDbd";
 
 const chainTvl = getUniTVL({
-  chain: 'avax',
   factory: '0x7009b3619d5ee60d0665BA27Cf85eDF95fd8Ad01',
   useDefaultCoreAssets: true,
 })

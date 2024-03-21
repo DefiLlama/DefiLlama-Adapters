@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const { sumUnknownTokens } = require('../helper/unknownTokens')
 module.exports = {
@@ -20,7 +21,7 @@ const lockerFactories = {
 Object.keys(lockerFactories).forEach(chain => {
   const factory = lockerFactories[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       let fetchLength = 100
       let page = 0
       const tokensAndOwners = []
@@ -29,7 +30,7 @@ Object.keys(lockerFactories).forEach(chain => {
         result = await api.call({
           abi: abi.getTokens,
           target: factory,
-          params: [true, page, fetchLength, "0x0000000000000000000000000000000000000000",],
+          params: [true, page, fetchLength, ADDRESSES.null,],
         })
         tokensAndOwners.push(...result.pageTokens.map(i => i.lockerAddresses.map(j => [i.tokenAddress, j])))
         ++page

@@ -8,7 +8,7 @@ function maverickTVL(config) {
   Object.keys(config).forEach((chain) => {
     const { factories } = config[chain];
     exports[chain] = {
-      tvl: async (_, _b, _cb, { api }) => {
+      tvl: async (api) => {
         let logs = [];
         for (let k = 0; k < factories.length; k++) {
           logs.push(
@@ -67,6 +67,14 @@ module.exports = maverickTVL({
       {
         address: "0x76311728FF86054Ad4Ac52D2E9Ca005BC702f589",
         startBlock: 29241050,
+      },
+    ],
+  },
+  base: {
+    factories: [
+      {
+        address: "0xB2855783a346735e4AAe0c1eb894DEf861Fa9b45",
+        startBlock: 1489614,
       },
     ],
   },

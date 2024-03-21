@@ -69,7 +69,7 @@ const indexTvl = (chain) => async (timestamp, block, chainBlocks) => {
   );
 };
 
-const savingsVaultTvl = (chain) => async (_, _1, _2, { api }) => {
+const savingsVaultTvl = (chain) => async (api) => {
   const calls = networks[chain]["savingsVaults"]
   const assets = await api.multiCall({
     abi: savingsVaultAbi.asset, calls,

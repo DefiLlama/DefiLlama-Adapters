@@ -47,9 +47,9 @@ module.exports = treasuryExports({
   },
   polygon: {
     tokens: [ 
-     "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619",
+     ADDRESSES.polygon.WETH_1,
      "0x8dF3aad3a84da6b69A4DA8aeC3eA40d9091B2Ac4",
-     "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+     ADDRESSES.polygon.WMATIC_2,
      "0x0b3F868E0BE5597D5DB7fEB59E1CADBb0fdDa50a"
      ],
     owners: [Treasury2, Treasury4],

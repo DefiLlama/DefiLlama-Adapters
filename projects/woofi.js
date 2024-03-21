@@ -17,6 +17,7 @@ const wooPPConfig = {
 		'0x4691937a7508860F876c9c0a2a617E7d9E945D4B', // WOO
 		ADDRESSES.bsc.USDT, // USDT
 		ADDRESSES.bsc.BUSD, // BUSD
+		'0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82', // CAKE
 	],
 	avax: [
 		ADDRESSES.avax.WAVAX, // WAVAX
@@ -38,14 +39,14 @@ const wooPPConfig = {
 		ADDRESSES.arbitrum.WETH, // WETH
 		ADDRESSES.arbitrum.WBTC, // WBTC
 		'0xcAFcD85D8ca7Ad1e1C6F82F651fA15E33AEfD07b', // WOO
-		'0x912CE59144191C1204E64559FE8253a0e49E6548', // ARB
+		ADDRESSES.arbitrum.ARB, // ARB
 		ADDRESSES.arbitrum.USDC, // USDC
-		'0xaf88d065e77c8cC2239327C5EDb3A432268e5831', // native USDC
+		ADDRESSES.arbitrum.USDC_CIRCLE, // native USDC
 		ADDRESSES.arbitrum.USDT,
 	],
 	optimism: [
-		ADDRESSES.tombchain.FTM, // WETH
-		'0x68f180fcCe6836688e9084f035309E29Bf0A2095', // WBTC
+		ADDRESSES.optimism.WETH_1, // WETH
+		ADDRESSES.optimism.WBTC, // WBTC
 		ADDRESSES.optimism.OP, // OP
 		ADDRESSES.optimism.USDC, // USDC
 		ADDRESSES.optimism.USDT,
@@ -59,6 +60,20 @@ const wooPPConfig = {
 	polygon_zkevm: [
 		ADDRESSES.polygon_zkevm.WETH,
 		ADDRESSES.polygon_zkevm.USDC,
+	],
+	linea: [
+		ADDRESSES.linea.WETH,
+		ADDRESSES.linea.USDC,
+	],
+	base: [
+		ADDRESSES.base.WETH,
+		ADDRESSES.base.USDbC,
+	],
+	mantle: [
+		ADDRESSES.mantle.WMNT,
+		ADDRESSES.mantle.WETH,
+		ADDRESSES.mantle.USDT,
+		ADDRESSES.mantle.USDC,
 	],
 }
 
@@ -117,6 +132,24 @@ const chainConfig = {
 		stakingContract: null,
 		stakingContractV2: null,
 	},
+	linea: {
+		wooPPContract: '0xF5d215d9C84778F85746D15762DaF39B9E83a2d6',
+		woo: null,
+		stakingContract: null,
+		stakingContractV2: null,
+	},
+	base: {
+		wooPPContract: '0xb130a49065178465931d4f887056328CeA5D723f',
+		woo: null,
+		stakingContract: null,
+		stakingContractV2: null,
+	},
+	mantle: {
+		wooPPContract: '0x9D1A92e601db0901e69bd810029F2C14bCCA3128',
+		woo: null,
+		stakingContract: null,
+		stakingContractV2: null,
+	}
 }
 
 Object.keys(chainConfig).forEach(chain => {

@@ -22,15 +22,15 @@ const ContractsArb = {
   Tokens: {
     ETH: ADDRESSES.arbitrum.WETH,
     USDT: ADDRESSES.arbitrum.USDT,
-    USDC: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+    USDC: ADDRESSES.arbitrum.USDC_CIRCLE,
     BTC: ADDRESSES.arbitrum.WBTC,
-    ARB: "0x912CE59144191C1204E64559FE8253a0e49E6548"
+    ARB: ADDRESSES.arbitrum.ARB
   }
 }
-async function arbtvl(_,b, _cb, { api, }) {
+async function arbtvl(api) {
   return sumTokens2({ api, owner: ContractsArb.Pool, tokens: Object.values(ContractsArb.Tokens)})
 }
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   return sumTokens2({ api, owner: Contracts.Pool, tokens: Object.values(Contracts.Tokens) })
 }
 

@@ -2,7 +2,6 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require('../helper/staking');
 const { pool2s } = require('../helper/pool2');
 const {sumTokensAndLPsSharedOwners} = require('../helper/unwrapLPs');
-const {transformPolygonAddress} = require('../helper/portedTokens');
 
 // multisigs
 const treasury = "0x0Cb11b92Fa5C30eAfe4aE84B7BB4dF3034C38b9d";
@@ -31,7 +30,7 @@ const WMATIC_LUCHA_Balancer_polygon = "0x924EC7ed38080E40396c46F6206A6d77D0B9f72
 
 async function tvl(time, ethBlock, chainBlocks){
     const balances = {};
-    const transform = await transformPolygonAddress();
+    const transform = i => `polygon:${i}`;
     await sumTokensAndLPsSharedOwners(balances, [
         // [LUCHA_polygon, false],
         [MATIC_polygon, false],

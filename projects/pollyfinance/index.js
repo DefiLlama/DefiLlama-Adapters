@@ -59,7 +59,7 @@ const nStblUnderLying = [
   "0x1a13F4Ca1d028320A707D99520AbFefca3998b7F"
 ]
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   let balances = {};
   await Promise.all([
     sumTokens2({ api, owner: nDefi, tokens: nDefiUnderLying, balances, }),
@@ -69,7 +69,7 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
   return balances
 }
 
-async function pool2(timestamp, block, chainBlocks, { api }) {
+async function pool2(api) {
   return sumTokens2({ api, owner: masterchef, tokens: pool2LPs})
 }
 

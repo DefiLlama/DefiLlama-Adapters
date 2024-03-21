@@ -415,4 +415,52 @@ module.exports = {
       ]
     }
   },
+  base: {
+    tvl: {
+      bridge: {
+        address: '0xf07d1C752fAb503E47FEF309bf14fbDD3E867089',
+        tokens: [
+          // '0xb554A55358fF0382Fb21F0a478C3546d1106Be8c', // nETH
+          ADDRESSES.null,
+        ]
+      },
+      pools: [
+        {
+          pool: '0x6223bD82010E2fB69F329933De20897e7a4C225f',
+          tokens: [
+            // "0xb554A55358fF0382Fb21F0a478C3546d1106Be8c", // nETH
+            ADDRESSES.optimism.WETH_1, //base WETH
+          ]
+        },
+      ]
+    }
+  },
+  blast: {
+    tvl: {
+      bridge: {
+        address: '0x55769baf6ec39b3bf4aae948eb890ea33307ef3c',
+        tokens: [
+          // '0xce971282faac9fabcf121944956da7142cccc855', //nETH
+          // '0x3194B0A295D87fDAA54DF852c248F7a6BAF6c6e0', // nUSD
+          // '0x9592f08387134e218327E6E8423400eb845EdE0E' // SYN
+        ]
+      },
+      pools: [
+        {
+          pool: '0xa4bd1AAD7cF04567c10f38FC4355E91bba32aC9c', // Stableswap
+          tokens: [
+            ADDRESSES.blast.USDB, // USDB
+            // '0x3194B0A295D87fDAA54DF852c248F7a6BAF6c6e0', // nUSD
+          ]
+        },
+        {
+          pool: '0x999fcd13C54B26E02a6Ccd185f71550b3a4641c0', // ETH pool
+          tokens: [
+            ADDRESSES.blast.WETH, // WETH
+            // '0xce971282fAAc9faBcF121944956da7142cccC855', // nETH
+          ]
+        },
+      ]
+    }
+  },
 }

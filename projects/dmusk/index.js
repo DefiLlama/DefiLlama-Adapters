@@ -9,7 +9,6 @@ module.exports = {
   misrepresentedTokens: true,
   dogechain: {
     tvl: getUniTVL({
-      chain,
       factory: '0x4e5E0739231A3BdE1c51188aCfEabC19983541E6',
       useDefaultCoreAssets: true,
     })

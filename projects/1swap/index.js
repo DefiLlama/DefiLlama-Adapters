@@ -16,7 +16,7 @@ const Contracts = {
 };
 
 
-const tvl = async (timestamp, ethBlock, chainBlocks, { api }) => {
+const tvl = async (api) => {
   const ownerTokens = []
   const poolTvl = async (pool) => {
     ownerTokens.push([await api.call({ target: pool, abi: abiMoonriver.getTokens, }), pool])
