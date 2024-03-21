@@ -11,7 +11,7 @@ const vaults = [
   ['0x4bed2a922654cacc2be974689619768fabf24855', "0x0CA56aa647E83A8F0a5f7a81a2fdcA393bC68D78"],
 ]
 
-async function tvl(timestamp, _, _1, { api }) {
+async function tvl(api) {
   const thrusterv2LPs = [ // [LP, contract]
     ['0x12c69bfa3fb3cba75a1defa6e976b87e233fc7df', '0x8034b01555487C26D4e21F4E33b7A30fbc90d181'],
     ['0x12c69bfa3fb3cba75a1defa6e976b87e233fc7df', "0x72E4ce9b7cC5d9C017F64ad58e512C253a11d30a"],

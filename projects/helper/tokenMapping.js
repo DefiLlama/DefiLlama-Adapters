@@ -34,27 +34,31 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
-
-  "naka": {
-    "0xDe4c4768ee70D97C044062fEC971eAE91B6aFAB7": { coingeckoId: "wrapped-bitcoin", decimals: 18 },
-    "0x4F90055b8670B21d64146577152aE52975075900": { coingeckoId: "ethereum", decimals: 18 },
-    "0xBD0adB3Ee21e0A75D3021384177238883D69e883": { coingeckoId: "ordinals", decimals: 18 },
+  zklink: {
+    [ADDRESSES.zklink.WETH]: { coingeckoId: "ethereum", decimals: 18 },
   },
-  astrzk: {
-    '0xe9cc37904875b459fa5d0fe37680d36f1ed55e38': { coingeckoId: "ethereum", decimals: 18 },
+  stacks: {
+    'SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.wstx-token::wstx': { coingeckoId: "blockstack", decimals: 6 },
   },
-  inevm: {
-    "0x97423a68bae94b5de52d767a17abcc54c157c0e5": { coingeckoId: "tether", decimals: 6 },
-    "0x8358D8291e3bEDb04804975eEa0fe9fe0fAfB147": { coingeckoId: "usd-coin", decimals: 6 },
-    "0x69011706b3f6c6eaed7d2bc13801558b4fd94cbf": { coingeckoId: "injective-protocol", decimals: 18 },
-    "0x4c3a213bd5e8c4bd70a8396d6f3c8302571598cd": { coingeckoId: "injective-protocol", decimals: 18 },
-  },
-  sapphire: {
-    "0x8bc2b030b299964eefb5e1e0b36991352e56d2d3": { coingeckoId: "oasis-network", decimals: 18 },
-    "0x1ffd8a218fdc5b38210d64cbb45f40dc55a4e019": { coingeckoId: "oasis-network", decimals: 18 },
-    "0x9ca066f00e55b90623efe323feb2a649686538b6": { coingeckoId: "tether", decimals: 6 },
-    "0x013e54bee29813bd786b24f9cb08f47c4b75955c": { coingeckoId: "usd-coin", decimals: 6 },
-    "0x3e4079ad76c83760e22b5c0105670ebab88b8d0e": { coingeckoId: "tether", decimals: 18 },
+  waves: {
+    'WAVES':  { coingeckoId: 'waves', decimals: 8 },
+    'YiNbofFzC17jEHHCMwrRcpy9MrrjabMMLZxg8g5xmf7':  { coingeckoId: 'waves', decimals: 8 },
+    '3VuV5WTmDz47Dmdn3QpcYjzbSdipjQE4JMdNe1xZpX13': { coingeckoId: 'ethereum', decimals: 8 },
+    '2Fge5HEBRD3XTeg7Xg3FW5yiB9HVJFQtMXiWMQo72Up6': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
+    '66a1br3BrkoaJgP7yEar9hJcSTvJPoH6PYBLqscXcMGo': { coingeckoId: 'binancecoin', decimals: 8 }, 
+    'QGDb5VHmjUMfHPAvRJ4g36nmU5qYByYyYzReJN71nad': { coingeckoId: 'chainlink', decimals: 8 }, 
+    '2x8CpnEDNw2nsuyvEptEmEbVrkxh9regRDNrqTWThJTZ': { coingeckoId: 'maker', decimals: 8 }, 
+    '78ePJGDo2H6cZUDYsAMzqxe2iSRNgz4QBnYYg58ZxdgH': { coingeckoId: 'uniswap', decimals: 8 }, 
+    'AhGJvjtYmRG2pKwXvTh8N6sX1M2wNTpkjxaWKQfzJe7q': { coingeckoId: 'matic-network', decimals: 8 }, 
+    'EW1uGLVo21Wd9i2Rhq8o4VKDTCQTGCGXE8DqayHGrLg8': { coingeckoId: 'binance-bitcoin', decimals: 8 }, 
+    'FmsB2B21fVVetWvZm7Q48cC2Bvs2hEZtft49TBn3guV1': { coingeckoId: 'curve-dao-token', decimals: 8 }, 
+    '5Ga8eJdR5PoBWLC2xaq6F6PAGCM5hWVNhuyycgsNn4jR': { coingeckoId: 'crvusd', decimals: 6 }, 
+    'Fwvk46RZ4iBg4L9GzwjQ7jwVsEScn4aPD32V6wftTLHQ': { coingeckoId: 'tron', decimals: 6 }, 
+  
+    'C1iWsKGqLwjHUndiQ7iXpdmPum9PeCDFfyXBdJJosDRS': { coingeckoId: 'waves-ducks', decimals: 8 },
+    'GAzAEjApmjMYZKPzri2g2VUXNvTiQGF7KDYZFFsP3AEq': { coingeckoId: 'pete', decimals: 8 },
+    '2thsACuHmzDMuNezPM32wg9a3BwUzBWDeSKakgz3cw21': { coingeckoId: 'power-token', decimals: 8 },
+    'HEB8Qaw9xrWpWs8tHsiATYGBWDBtP2S7kcPALrMu43AS': { coingeckoId: 'puzzle-swap', decimals: 8 },
   },
   // Sample Code
   ozone: {
@@ -211,7 +215,7 @@ const anyswapTokenBlacklist = {
     ADDRESSES.shiden.ETH,
     ADDRESSES.telos.ETH,
     ADDRESSES.telos.USDT
-  ]
+  ],
 }
 
 module.exports = {

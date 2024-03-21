@@ -47,7 +47,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { v1Pools, v2Pools, stakingConfig } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       if (v1Pools) {
         const v1Assets = await api.multiCall({ abi: abi.v1Asset, calls: v1Pools })
         await api.sumTokens({ tokensAndOwners2: [v1Assets, v1Pools] })
@@ -59,7 +59,7 @@ Object.keys(config).forEach(chain => {
       }
       return api.getBalances()
     },
-    borrowed: async (_, _b, _cb, { api, }) => {
+    borrowed: async (api) => {
       if (v1Pools) {
         const v1Assets = await api.multiCall({ abi: abi.v1Asset, calls: v1Pools })
         const bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: v1Assets.map((v, i) => ({ target: v, params: v1Pools[i] })) })

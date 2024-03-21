@@ -11,7 +11,7 @@ const BASE_AA = "A336I77COVXUCN3L2YOYVIZF7PKMFCAV";
 const STAKING_BASE_AA = "HPJQ6ZCB2T3JTIVAMDM5QESZWNJNJERO";
 
 // TODO support time travel for the exchange rate, currently it always returns the latest rates
-async function tvl(timestamp) {
+async function tvl({ timestamp }) {
     const [exchangeRates, assetMetadata] = await Promise.all([
         fetchOswapExchangeRates(),
         fetchOswapAssets()

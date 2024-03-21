@@ -41,11 +41,12 @@ async function getTvl(
   isFetchFunction,
   storedKey,
 ) {
+  const chain = storedKey.split('-')[0]
+  const api = new sdk.ChainApi({ chain, block: chainBlocks[chain], timestamp: unixTimestamp, storedKey, })
+  api.api = api
+  api.storedKey = storedKey
   if (!isFetchFunction) {
-    const chain = storedKey.split('-')[0]
-    const block = chainBlocks[chain]
-    const api = new sdk.ChainApi({ chain, block: chainBlocks[chain], timestamp: unixTimestamp, })
-    let tvlBalances = await tvlFunction(unixTimestamp, ethBlock, chainBlocks, { api, chain, block, storedKey });
+    let tvlBalances = await tvlFunction(api, ethBlock, chainBlocks, api);
     if (!tvlBalances && Object.keys(api.getBalances()).length) tvlBalances = api.getBalances()
     const tvlResults = await computeTVL(tvlBalances, "now");
     await diplayUnknownTable({ tvlResults, storedKey, tvlBalances, })
@@ -54,7 +55,7 @@ async function getTvl(
     usdTokenBalances[storedKey] = tvlResults.usdTokenBalances;
   } else {
     usdTvls[storedKey] = Number(
-      await tvlFunction(unixTimestamp, ethBlock, chainBlocks)
+      await tvlFunction(api, ethBlock, chainBlocks, api)
     );
   }
   if (

@@ -25,7 +25,7 @@ const DCA_PORTFOLIO_CONTRACTS = {
   ]
 }
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const indexTokens = INDEX_TOKEN_CONTRACT[api.chain]
   const dcas = DCA_PORTFOLIO_CONTRACTS[api.chain]
   const ownerTokens = []

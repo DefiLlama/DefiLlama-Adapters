@@ -193,7 +193,7 @@ const oracleAbis = {
 
 function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyUnit, abis = {}, fromBlock, blacklistedTokens = [] } = {}) {
 
-  async function tvl(_, _b, _c, { api }) {
+  async function tvl(api) {
     const data = await getReservesData(api)
     const tokensAndOwners = data.map(i => ([i.underlying, i.aTokenAddress]))
     if (!useOracle)
@@ -206,7 +206,7 @@ function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyU
     return balances
   }
 
-  async function borrowed(_, _b, _c, { api }) {
+  async function borrowed(api) {
     const balances = {}
     const data = await getReservesData(api)
     const supplyVariable = await api.multiCall({

@@ -21,7 +21,7 @@ async function algorandStaking() {
         'opulous': totalPoolAmount
     };
 }
-const arbitrumTVL = async (_, _b, _cb, { api }) => {
+const arbitrumTVL = async (api) => {
     // getting the total supply of OVault tokens
     const LPSupply = await api.call({ abi: 'uint256:LPSupply', target: '0xF27181a734BF6bd2bbbdFA8bdfcdef066759EdBa'  })
     // convert OVault tokens to USDC using the LPToUsdc function

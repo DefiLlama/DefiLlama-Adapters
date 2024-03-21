@@ -3,7 +3,7 @@ const { transformDexBalances } = require('../helper/portedTokens')
 const { PromisePool } = require('@supercharge/promise-pool')
 const sdk = require('@defillama/sdk')
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const factiories = ["secret18sq0ux28kt2z7dlze2mu57d3ua0u5ayzwp6v2r", "secret1zvk7pvhtme6j8yw3ryv0jdtgg937w0g0ggu8yy"]
   const data = []
   await Promise.all(factiories.map(i => getExchanges(i, data)))

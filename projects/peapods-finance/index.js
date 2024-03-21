@@ -1,7 +1,8 @@
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const config = {
-  ethereum: { indexManager: "0x0Bb39ba2eE60f825348676f9a87B7CD1e3B4AE6B", peasToken: "0x02f92800F57BCD74066F5709F1Daa1A4302Df875" }
+  ethereum: { indexManager: "0x0Bb39ba2eE60f825348676f9a87B7CD1e3B4AE6B", peasToken: "0x02f92800F57BCD74066F5709F1Daa1A4302Df875" },
+  arbitrum: { indexManager: "0x0Bb39ba2eE60f825348676f9a87B7CD1e3B4AE6B", peasToken: "0x02f92800F57BCD74066F5709F1Daa1A4302Df875" },
 }
 
 const indexManagerABI =
@@ -40,11 +41,12 @@ const getTvl = async (api, isStaking) => {
 
 module.exports = {
   methodology: "Aggregates TVL in all Peapods Finance indexes created",
+  hallmarks: [[1710444951, "Arbitrum launch"]],
 }
 
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => getTvl(api, false),
-    staking: async (_, _b, _cb, { api, }) => getTvl(api, true),
+    tvl: async (api) => getTvl(api, false),
+    staking: async (api) => getTvl(api, true),
   }
 })
