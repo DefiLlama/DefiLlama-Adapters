@@ -15,7 +15,7 @@ function pool2(stakingContract, lpToken, chain, transformAddress) {
 }
 
 function pool2s(stakingContracts, lpTokens, chain = "ethereum", transformAddress = undefined) {
-    return async (_timestamp, _ethBlock, _, { api }) => {
+    return async (api) => {
         chain = api.chain ?? chain
         const block = api.block
         const balances = {}

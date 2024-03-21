@@ -65,7 +65,7 @@ async function getPoolsData(factoryContract, restContract, api) {
   return transformDexBalances({ api, data, });
 }
 
-async function WXPoolsTVL(_, _b, _cb, { api, }) {
+async function WXPoolsTVL(api) {
   return getPoolsData(factoryContract, WXPoolsRestContract, api);
 }
 

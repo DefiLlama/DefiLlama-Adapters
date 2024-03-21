@@ -6,8 +6,7 @@ const stablepoolAccountId = "7JP6TvcH5x31TsbC6qVJHEhsW7UNmpREMZuLBpK2bG1goJRS"
 const stablepoolAccountId2 = "7MaKPwwnqN4cqg35PbxsGXUo1dfvjXQ3XfBjWF9UVvKMjJj8"
 const stablepoolAccountId3 = "7LVGEVLFXpsCCtnsvhzkSMQARU7gRVCtwMckG7u7d3V6FVvG"
 
-async function tvl() {
-  const { api: _api } = arguments[3]
+async function tvl(_api) {
   const provider = new WsProvider("wss://hydradx-rpc.dwellir.com");
   const api = await ApiPromise.create({ provider, });
   await api.isReady

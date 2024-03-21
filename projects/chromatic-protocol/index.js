@@ -31,7 +31,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { tokens, vault, pools, marketFactory, lpRegistry } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const settlementTokens = await api.call({ abi: abi.registeredSettlementTokens, target: marketFactory })
       const lpAddressesBySettlementToken = await api.multiCall({ abi: abi.lpListBySettlementToken, calls: settlementTokens, target: lpRegistry })
       const ownerTokens = settlementTokens.map((settlementToken, i) => lpAddressesBySettlementToken[i].map(j => [[settlementToken], j])).flat()

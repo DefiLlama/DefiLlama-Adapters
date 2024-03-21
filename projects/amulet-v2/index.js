@@ -89,7 +89,7 @@ const getERC4626IdleVaultFundsByChain = async (api) => {
   });
 }
 
-async function tvl(_, block, _cb, { api, }) {
+async function tvl(api) {
   await getERC4626VaultFundsByChain(api);
   if (idleCdos[api.chain])
     await getERC4626IdleVaultFundsByChain(api);

@@ -1,6 +1,6 @@
 const { getLogs, } = require("../helper/cache/getLogs");
 
-async function tvl(_, _b, _cb, { api }) {
+async function tvl(api) {
   const { factory, fromBlock } = config[api.chain];
 
   const logs = await getLogs({

@@ -23,7 +23,7 @@ const getMetrics = async (api, borrowed) => {
 }
 
 const fetchTvl = (borrowed) => {
-  return async (_, _1, _2, { api }) => {
+  return async (api) => {
     return getMetrics(api, borrowed)
   }
 }
