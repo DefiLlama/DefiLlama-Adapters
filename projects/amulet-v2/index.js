@@ -141,6 +141,7 @@ async function SolanaTvl() {
     ['mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So', 'AkkGFKVJY8o5MRqBf2St4Q8NQnfTTi2bSssMMk9zXAMr'],
     ['J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn', '86vJYeZiXc9Uq1wmtLzERDfQzAnpoJgs2oF5Y4BirKkn'],
     ['bSo13r4TkiE4KumL71LsHTPpL2euBYLFx6h9HP3piy1', '8HpEPmkKb6T7xNDzhheWhK2P6BEdp2nGv7JbcEoDmDST'],
+    ['SoLW9muuNQmEAoBws7CWfYQnXRXMVEG12cQhy6LE2Zf', '6iK6zK2nDQswaCrpELNYnnbuo4vwzpFsEpZYyqwpRWbD']
   ]
 
   return sumTokens2({ tokensAndOwners })
