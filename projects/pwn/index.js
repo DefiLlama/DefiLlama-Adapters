@@ -69,4 +69,5 @@ module.exports = {
       owners: [PWN_BUNDLER_BSC, PWN_V1_1_SIMPLE_LOAN_A], fetchCoValentTokens: true,
     }),
   },
+  mantle: { tvl: () => ({}) },
 };
