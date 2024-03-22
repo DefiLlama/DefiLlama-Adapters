@@ -7,7 +7,7 @@ const fxUSD_sfrxETHTreasury = "0xcfEEfF214b256063110d3236ea12Db49d2dF2359";
 const rUSD_weETHTreasury = "0x781BA968d5cc0b40EB592D5c8a9a3A4000063885";
 const wstETH = ADDRESSES.ethereum.WSTETH;
 const sfrxETH = ADDRESSES.ethereum.sfrxETH;
-const weETH = ADDRESSES.ethereum.weETH;
+const EETH = ADDRESSES.ethereum.EETH;
 
 async function tvl(api) {
   const totalSupply = await api.call({
@@ -30,7 +30,7 @@ async function tvl(api) {
   api.add(stETH, totalSupply);
   api.add(wstETH, fxUSDWstETHtotalSupply);
   api.add(sfrxETH, fxUSDSfrxETHtotalSupply);
-  api.add(weETH, rUSDWeETHtotalSupply);
+  api.add(EETH, rUSDWeETHtotalSupply);
 }
 
 module.exports = {
