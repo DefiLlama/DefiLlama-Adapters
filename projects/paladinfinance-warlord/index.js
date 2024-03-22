@@ -22,7 +22,7 @@ async function getLockers(api) {
   return lockers;
 }
 
-async function ethTvl(timestamp, block, _, { api },) {
+async function ethTvl(api,) {
   const balances = {};
 
   const lockers = await getLockers(api);

@@ -18,7 +18,7 @@ const getMinerAssets = (agents) => {
 
 module.exports = {
   filecoin: {
-    tvl: async (_, _1, _2, { api }) => {
+    tvl: async (api) => {
       const [tvlComponents, activeAgents] = await Promise.all([
         api.call({ abi: abi.getTVLComponents, target: REPL_HELPER_CONTRACT }),
         api.call({ abi: abi.getAllActiveAgents, target: REPL_HELPER_CONTRACT }),

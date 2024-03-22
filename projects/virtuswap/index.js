@@ -15,7 +15,7 @@ Object.keys(config).forEach(chain => {
 })
 
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const pools = await api.fetchList({ lengthAbi: 'allPairsLength', itemAbi: 'allPairs', target: config[api.chain].factory })
   const tokenLength = await api.multiCall({ abi: 'uint256:allowListLength', calls: pools })
   const nativeTokens = await api.multiCall({ abi: 'function getTokens() view returns (address, address)', calls: pools })

@@ -4,7 +4,8 @@ const sdk = require('@defillama/sdk');
 const { default: BigNumber } = require('bignumber.js');
 const abi = require('./abis/aave.json');
 const { getChainTransform, getFixBalancesSync, } = require('../helper/portedTokens')
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const { sumTokens2 } = require('../helper/unwrapLPs');
+const methodologies = require('./methodologies');
 
 async function getV2Reserves(block, addressesProviderRegistry, chain, dataHelperAddress, abis = {}) {
   let validProtocolDataHelpers
@@ -132,6 +133,7 @@ function aaveExports(chain, addressesProviderRegistry, transform = undefined, da
 }
 
 module.exports = {
+  methodology: methodologies.lendingMarket,
   aaveChainTvl,
   getV2Reserves,
   getTvl,
@@ -191,7 +193,7 @@ const oracleAbis = {
 
 function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyUnit, abis = {}, fromBlock, blacklistedTokens = [] } = {}) {
 
-  async function tvl(_, _b, _c, { api }) {
+  async function tvl(api) {
     const data = await getReservesData(api)
     const tokensAndOwners = data.map(i => ([i.underlying, i.aTokenAddress]))
     if (!useOracle)
@@ -204,7 +206,7 @@ function aaveV2Export(registry, { useOracle = false, baseCurrency, baseCurrencyU
     return balances
   }
 
-  async function borrowed(_, _b, _c, { api }) {
+  async function borrowed(api) {
     const balances = {}
     const data = await getReservesData(api)
     const supplyVariable = await api.multiCall({

@@ -3,7 +3,7 @@ const { getLogs } = require('../helper/cache/getLogs')
 
 const chain = 'arbitrum'
 
-async function tvl(timestamp, _b, chainBlocks, { api }) {
+async function tvl(api) {
   const logs = await getLogs({
     api,
     fromBlock: 33934273,

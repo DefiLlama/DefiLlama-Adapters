@@ -21,7 +21,7 @@ const banks = {
 };
 
 function treasury(chain) {
-  return async (_timestamp, _block, {[chain]: block}, { api }) => {
+  return async (api) => {
     const abiV1 = 'function getTokens() view returns (tuple(uint8 decimals, address tokenAddress, string name, string symbol, tuple(bool allowed, tuple(uint16 dividend, uint16 referral, uint16 treasury, uint16 team, uint256 dividendAmount, uint256 treasuryAmount, uint256 teamAmount) houseEdgeSplit, uint256 balanceReference, tuple(uint16 thresholdRate, uint16 toTreasury, uint16 toTeam) balanceOverflow) token)[])'
     const abiV2 = 'function getTokens() view returns (tuple(uint8 decimals, address tokenAddress, string name, string symbol, tuple(bool allowed, uint16 balanceRisk, address partner, tuple(uint16 dividend, uint16 referral, uint16 partner, uint16 treasury, uint16 team, uint256 dividendAmount, uint256 partnerAmount, uint256 treasuryAmount, uint256 teamAmount, uint256 referralAmount, uint256 minPartnerTransferAmount) houseEdgeSplit, uint256 balanceReference, tuple(uint16 thresholdRate, uint16 toTreasury, uint16 toTeam) balanceOverflow) token)[])'
     const currentAbi = 'function getTokens() view returns (tuple(uint8 decimals, address tokenAddress, string name, string symbol, tuple(bool allowed, bool paused, uint16 balanceRisk, uint64 VRFSubId, address partner, uint256 minBetAmount, uint256 minPartnerTransferAmount, tuple(uint16 bank, uint16 dividend, uint16 partner, uint16 treasury, uint16 team, uint256 dividendAmount, uint256 partnerAmount, uint256 treasuryAmount, uint256 teamAmount) houseEdgeSplit) token)[])'
@@ -47,7 +47,7 @@ function treasury(chain) {
 
     // Get the Bank for the input block
     const [, bankVersion, bankAddressOfBlock] = banks[chain].find(
-      ([bankLastBlock]) => (block || 999999999999) < bankLastBlock
+      ([bankLastBlock]) => (api.block || 999999999999) < bankLastBlock
     );
 
     // Retrieves all tokens from the Bank contract

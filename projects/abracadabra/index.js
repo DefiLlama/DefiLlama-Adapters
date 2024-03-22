@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const marketsJSON = require('./market.json');
 const abi = require('./abi.json');
 
@@ -38,13 +39,13 @@ const liquidityLaunchEvents = {
   blast: {
     contractAddress: "0xa64B73699Cc7334810E382A4C09CAEc53636Ab96",
     supportedTokens: [
-      "0x4300000000000000000000000000000000000003", // USDb
+      ADDRESSES.blast.USDB, // USDb
       // "0x76DA31D7C9CbEAE102aff34D3398bC450c8374c1", // MIM
     ]
   },
 };
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const { chain } = api
   const marketsArray = [];
 

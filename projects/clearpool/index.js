@@ -23,7 +23,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { fromBlock, factory } = config[chain]
 
-  const tvl = async (timestamp, block, chainBlocks, { api }) => {
+  const tvl = async (api) => {
     const { pools, tokens } = await _getLogs(api)
     return api.sumTokens({ tokensAndOwners2: [tokens, pools] })
   }
@@ -41,7 +41,7 @@ Object.keys(config).forEach(chain => {
     return { pools, tokens }
   }
 
-  const borrowed = async (timestamp, block, _, { api }) => {
+  const borrowed = async (api) => {
     const { pools, tokens } = await _getLogs(api)
     const bals = await api.multiCall({ abi: abi.borrows, calls: pools })
     api.addTokens(tokens, bals)

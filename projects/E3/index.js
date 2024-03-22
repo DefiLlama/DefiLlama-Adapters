@@ -6,7 +6,7 @@ const factories = {
   base:		'0x8597dB3ba8dE6BAAdEDa8cBa4dAC653E24a0e57B'
   ///zkevm: tbd
 }
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const pools = await api.fetchList({
     target: factories[api.chain],
     itemAbi: 'function getLBPairAtIndex(uint256) view returns (address)',
