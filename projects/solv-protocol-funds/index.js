@@ -99,7 +99,7 @@ async function borrowed(ts, _, _1, { api }) {
       const decimals = poolDecimalList[i];
       let balance = BigNumber(poolTotalValues[i]).div(BigNumber(10).pow(18 - decimals)).times(BigNumber(nav[i].nav_).div(BigNumber(10).pow(decimals))).toNumber();
 
-      if (vaultbalances[`${pools[i]['vault'].toLowerCase()}-${poolBaseInfos[i][1].toLowerCase()}`]) {
+      if (pools[i]['vault'] && poolBaseInfos[i][1] && vaultbalances[`${pools[i]['vault'].toLowerCase()}-${poolBaseInfos[i][1].toLowerCase()}`]) {
         balance = BigNumber(balance).minus(vaultbalances[`${pools[i]['vault'].toLowerCase()}-${poolBaseInfos[i][1].toLowerCase()}`]).toNumber();
         vaultbalances[`${pools[i]['vault'].toLowerCase()}-${poolBaseInfos[i][1].toLowerCase()}`] = undefined
       }
