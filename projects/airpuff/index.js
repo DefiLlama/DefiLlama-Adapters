@@ -13,6 +13,7 @@ const contractAbis = {
     type: "function",
   }, //
   balanceOf: "function balanceOf(address) external view returns (uint256)",
+  getPrice: "function answer() external view returns (uint256)",
 };
 
 module.exports = {
@@ -26,6 +27,27 @@ module.exports = {
       await api.sumTokens({
         tokensAndOwners: [[ADDRESSES.ethereum.WETH, lendingMain.eth]],
       });
+
+      const eETH = {
+        vault: "0xE543eBa28a3793d5ae747A2164A306DB1767cDAe",
+        reStakingToken: "0xeA1A6307D9b18F8d1cbf1c3Dd6aad8416C06a221",
+        oracle: "0xb09cbB6Aa95A004F9aeE4349DF431aF5ad03ECe4",
+      };
+
+      const eETHPrice = await api.call({
+        target: eETH.oracle,
+        abi: contractAbis.getPrice,
+      });
+
+      const eETHBal = await api.call({
+        abi: contractAbis.balanceOf,
+        target: eETH.reStakingToken,
+        params: [eETH.vault],
+      });
+
+      const eETHBalInETH = (eETHBal * eETHPrice) / 1e18;
+
+      api.add(ADDRESSES.ethereum.WETH, eETHBalInETH);
       // leverage users
       const ezETH = {
         vault: "0x32a0ce2bDfc37eE606aB905b4f9fC286049A774f",
