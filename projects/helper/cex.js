@@ -95,7 +95,8 @@ const defaultTokens = {
     '0x61e90a50137e1f645c9ef4a0d3a4f01477738406', // LOKA
     '0x64d0f55Cd8C7133a9D7102b13987235F486F2224', // BORG
     '0x925206b8a707096Ed26ae47C84747fE0bb734F59', //WBT
-    ADDRESSES.ethereum.FDUSD, // FDUSD
+     ADDRESSES.ethereum.FDUSD, // FDUSD,
+     '0x83F20F44975D03b1b09e64809B757c47f942BEeA' //sdai
   ],
   tron: [
     nullAddress,
