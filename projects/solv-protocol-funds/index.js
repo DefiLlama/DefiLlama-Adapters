@@ -18,7 +18,7 @@ const slotListUrl = 'https://raw.githubusercontent.com/solv-finance-dev/solv-pro
 
 const addressUrl = 'https://raw.githubusercontent.com/solv-finance-dev/slov-protocol-defillama/main/solv-funds.json';
 
-async function tvl(ts, _, _1, { api }) {
+async function tvl(api) {
   let address = (await getConfig('solv-protocol/funds', addressUrl));
 
   await gm(api, address);
@@ -31,7 +31,7 @@ async function tvl(ts, _, _1, { api }) {
   return api.getBalances();
 }
 
-async function borrowed(ts, _, _1, { api }) {
+async function borrowed(api) {
   const network = api.chain;
 
   let address = (await getConfig('solv-protocol/funds', addressUrl));
