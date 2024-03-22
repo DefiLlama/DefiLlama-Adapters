@@ -1,5 +1,6 @@
 const erc4626Abi = require("./erc4626.json");
 const { sumTokens2 } = require("../helper/solana");
+const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 
 const erc4626Vaults = {
   "ethereum": [
@@ -35,6 +36,15 @@ const erc4626VaultsIdle = {
     "0xfCB69E5E535e04A809dC8Af7eba59c2FED4b2868",
     "0xf06e004caB43F326AA3668C8723A8bDBCF5bD165",
   ]
+}
+
+const dexV2Vaults = {
+    "optimism": [
+        "0x2CD4B4EB84028F70e1090B053859B813ef9ad160",
+        "0xAD1999728F840082aC3Bf9eA09b30D19a7923bbC",
+        "0xCE05f5d12e7DaF74C2239A2264c99d38176ac3B4",
+        "0xa850550A115062a860A951a3f77bFD4c22A441fA",
+    ]
 }
 
 const idleCdos = {
@@ -89,10 +99,39 @@ const getERC4626IdleVaultFundsByChain = async (api) => {
   });
 }
 
+const getDexV2VaultFundsByChain = async (api) => {
+    const chain = api.chain
+    const vaults = dexV2Vaults[chain]
+    const [_vaultAssets, _totalVaultFunds] = await Promise.all([
+      api.multiCall({ abi: erc4626Abi.asset, calls: vaults }),
+      api.multiCall({ abi: erc4626Abi.totalAssets, calls: vaults }),
+    ])
+
+    let lpBalances = []
+    _vaultAssets.forEach((vault, i) => {
+       lpBalances.push({
+            token: vault,
+            balance: _totalVaultFunds[i]
+        })
+    }) 
+    let balances = {};
+    await unwrapUniswapLPs(balances, lpBalances, api.block, api.chain)
+    Object.entries(balances).map(([key, value]) => {
+        const token = key.split(':')[1]
+        api.add(token, value)
+    })
+    return balances;
+
+}
+
 async function tvl(api) {
   await getERC4626VaultFundsByChain(api);
   if (idleCdos[api.chain])
     await getERC4626IdleVaultFundsByChain(api);
+
+  if (dexV2Vaults[api.chain]) {
+    await getDexV2VaultFundsByChain(api)
+  }
 
   return api.getBalances()
 }
