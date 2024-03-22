@@ -1,39 +1,24 @@
-const POLYGON_USDT_CONTRACT_ADDRESS = "0xc2132D05D31c914a87C6611C10748AEb04B58e8F";
+// const LendingContract = "0xdc93413cbe690a1643d285c9f075b271372c9b36"
+const { graphQuery } = require('../helper/http')
+const ADDRESSES = require('../helper/coreAssets.json')
 
-async function tvl(_, _1, _2, { api }) {
-  const query = `
-    {
-      loans(where: {id_not: "1", status: ACCEPTED, startTime_lte: "${_.timestamp}" }) {
-        amount
-      }
-    }
-    `;
+async function borrowed(api) {
+  const query = `{
+  loans(where: {id_not: "1", status: ACCEPTED, startTime_lte: "${api.timestamp}" }) {
+    amount
+  }
+}`
 
-  const res = await fetch(
-    "https://api.thegraph.com/subgraphs/name/lucidao-developer/altr-lend",
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query }),
-    }
-  );
-
-  const { data } = await res.json();
-
-  const tvl =
-    data.loans
-      ?.reduce((acc, curr) => acc + BigInt(curr.amount || 0), 0n)
-      ?.toString() || "0";
-
-  api.add(POLYGON_USDT_CONTRACT_ADDRESS, tvl);
+  const { loans } = await graphQuery("https://api.thegraph.com/subgraphs/name/lucidao-developer/altr-lend", query);
+  api.add(ADDRESSES.polygon.USDT, loans.map(i => i.amount));
+  return api.getBalances()
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
   methodology: "Determined by querying from our public TheGraph the total USD value of all active loans",
   start: 1707874007,
   polygon: {
-    tvl,
+    tvl: () => ({}),
+    borrowed,
   },
-};
+}
