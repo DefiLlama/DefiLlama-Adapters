@@ -50,7 +50,7 @@ async function borrowed(ts, _, _1, { api }) {
       abi: abi.getSubscribeNav,
       calls: pools.map((index) => ({
         target: index.navOracle,
-        params: [index.poolId, ts * 1000]
+        params: [index.poolId, api.timestamp * 1000]
       })),
     })
 
@@ -361,9 +361,9 @@ function filterDepositAddress(network, address) {
 
 
 // node test.js projects/solv-protocol-funds
-['ethereum', 'bsc', 'polygon', 'arbitrum', 'merlin'].forEach(chain => {
+['ethereum', 'bsc', 'polygon', 'arbitrum', 'mantle', 'merlin'].forEach(chain => {
   module.exports[chain] = {
     tvl,
-    borrowed: borrowed
+    borrowed
   }
 })
