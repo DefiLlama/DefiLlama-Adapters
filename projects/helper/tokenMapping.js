@@ -68,6 +68,9 @@ const fixBalancesTokens = {
     '0x52a6c53869ce09a731cd772f245b97a4401d3348': { coingeckoId: 'ethereum', decimals: 18 },
     '0x6de8acc0d406837030ce4dd28e7c08c5a96a30d2': { coingeckoId: 'usd-coin', decimals: 6 },
   },
+  sapphire: {
+    [nullAddress]: { coingeckoId: 'oasis-network', decimals: 18 },
+  },
   // Sample Code
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
