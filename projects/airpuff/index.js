@@ -85,7 +85,19 @@ module.exports = {
         oracle: "0x1250BbACBC9302D2C0B5F4E48cc9907a6C1Aa67D",
       };
 
-      const strategies = [ezETH, weETH, rsETH, ezETH1x, weETH1x, rsETH1x];
+      const bedRockETH = {
+        vault: "0x291B812D84707EEB256D618C4c333Ff5F451321F",
+        reStakingToken: "0xF1376bceF0f78459C0Ed0ba5ddce976F1ddF51F4",
+        oracle: "0x1bEB65b15689cCAeb5dA191c9fd5F94513923Cab",
+      };
+
+      const bedRockETH1x = {
+        vault: "0x8E2afd8E9C64097b9908c453fCd939fe81b102AF",
+        reStakingToken: "0xF1376bceF0f78459C0Ed0ba5ddce976F1ddF51F4",
+        oracle: "0x1bEB65b15689cCAeb5dA191c9fd5F94513923Cab",
+      };
+
+      const strategies = [ezETH, weETH, rsETH, ezETH1x, weETH1x, rsETH1x, bedRockETH, bedRockETH1x];
 
       for (const strategy of strategies) {
         const bal = await api.call({
