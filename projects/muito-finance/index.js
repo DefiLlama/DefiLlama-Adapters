@@ -29,7 +29,7 @@ async function getV3Tvl(api, farmAddress) {
       target: farmAddress,
       params: [index],
     });
-    let { positionManager, poolVault, decimals0, decimals1, token0, token1 } =
+    let { positionManager, poolVault, token0, token1 } =
       V3_INFO_MAP[farmAddress][index];
 
     let { sqrtPriceX96 } = await api.call({
@@ -47,9 +47,7 @@ async function getV3Tvl(api, farmAddress) {
         info.liquidity.toString(),
         sqrtPriceX96.toString(),
         info.tickLower,
-        info.tickUpper,
-        decimals0,
-        decimals1
+        info.tickUpper
       );
       api.add(token0, amount0);
       api.add(token1, amount1);
@@ -96,17 +94,13 @@ const V3_INFO_MAP = {
       positionManager: "0x5752F085206AB87d8a5EF6166779658ADD455774",
       poolVault: "0x8A6A1ED01989Ff1c5ac6361c34cad9d7D0015AB4",
       token0: "0xcDA86A272531e8640cD7F1a92c01839911B90bb0",
-      decimals0: 18,
       token1: "0xdEAddEaDdeadDEadDEADDEAddEADDEAddead1111",
-      decimals1: 18,
     },
     1: {
       positionManager: "0x5752F085206AB87d8a5EF6166779658ADD455774",
       poolVault: "0x16867D00D45347A2DeD25B8cdB7022b3171D4ae0",
       token0: "0x09Bc4E0D864854c6aFB6eB9A9cdF58aC190D0dF9",
-      decimals0: 6,
       token1: "0x201EBa5CC46D216Ce6DC03F6a759e8E766e956aE",
-      decimals1: 6,
     },
   },
 };

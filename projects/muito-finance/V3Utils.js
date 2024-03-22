@@ -2,14 +2,7 @@ const BigNumber = require("bignumber.js");
 
 const Q96 = new BigNumber(2).pow(96);
 class V3Utils {
-  static getTokenAmounts(
-    liquidity,
-    sqrtPriceX96,
-    tickLow,
-    tickHigh,
-    Decimal0,
-    Decimal1
-  ) {
+  static getTokenAmounts(liquidity, sqrtPriceX96, tickLow, tickHigh) {
     let sqrtRatioA = Math.sqrt(1.0001 ** tickLow);
 
     let sqrtRatioB = Math.sqrt(1.0001 ** tickHigh);
@@ -40,9 +33,6 @@ class V3Utils {
         new BigNumber(liquidity).times(sqrtPrice - sqrtRatioA).toNumber()
       );
     }
-
-    let amount0Human = (amount0 / 10 ** Decimal0).toFixed(Decimal0);
-    let amount1Human = (amount1 / 10 ** Decimal1).toFixed(Decimal1);
 
     return [amount0, amount1];
   }
