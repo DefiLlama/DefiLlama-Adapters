@@ -1,4 +1,4 @@
-const ADDRESSES = require('../../helper/coreAssets.json')
+const ADDRESSES = require("../../helper/coreAssets.json");
 const BigNumber = require("bignumber.js");
 const { blockQuery } = require("../../helper/http");
 const { endpoints } = require("../constants/endpoints");
@@ -21,35 +21,30 @@ query {
 
 const ajnaQuery = (block) => `
 query {
-  accounts(first: 10000, where: {
-    and: [
-      { isDPM: true },
-      { protocol: "Ajna" },
-    ]
-  }, block: { number: ${block} }) {
-    collateralToken
-    borrowPositions {
-      collateral
-    }
+  borrowPositions(first: 10000, where: { account_not: null }, block: { number: ${block} }) {
+    collateral
     pool {
-      address
+      collateralAddress
+      quoteTokenAddress
     }
   }
-  pools(block: { number: ${block} }) {
-    address
-    depositSize
-    debt
-    quoteTokenAddress
+  earnPositions(first: 10000, where: { account_not: null }, block: { number: ${block} }) {
+    earnCumulativeQuoteTokenDeposit
+    earnCumulativeQuoteTokenWithdraw
+    pool {
+      collateralAddress
+      quoteTokenAddress
+    }
   }
 }`;
 
-const dpmPositions = async ({ api, }) => {
-  const aave = await blockQuery(endpoints.aave(), aaveQuery(api.block - 500), { api,  });
-  // const ajna = await blockQuery(endpoints.ajna(), ajnaQuery(api.block - 500), { api, });
-
-  const supportedAjnaPools = [
-    // ...new Set(ajna.accounts.map(({ pool: { address } }) => address)),
-  ];
+const dpmPositions = async ({ api }) => {
+  const aave = await blockQuery(endpoints.aave(), aaveQuery(api.block - 500), {
+    api,
+  });
+  const ajna = await blockQuery(endpoints.ajna(), ajnaQuery(api.block - 500), {
+    api,
+  });
 
   const aaveBorrowishPositions = aave.positions.map(
     ({ collateral, collateralAddress }) => ({
@@ -57,25 +52,29 @@ const dpmPositions = async ({ api, }) => {
       collateralAddress,
     })
   );
-  /* const ajnaBorrowishPositions = ajna.accounts
-    .filter(({ borrowPositions }) => borrowPositions.length)
-    .map(({ borrowPositions: [{ collateral }], collateralToken }) => ({
+  const ajnaBorrowishPositions = ajna.borrowPositions.map(
+    ({ collateral, pool: { collateralAddress, quoteTokenAddress } }) => ({
       collateral: new BigNumber(collateral).shiftedBy(NEGATIVE_WAD_PRECISION),
-      collateralAddress: collateralToken,
-    }));
-  const ajnaEarnPositions = ajna.pools
-    .filter(({ address }) => supportedAjnaPools.includes(address))
-    .map(({ debt, depositSize, quoteTokenAddress }) => ({
-      collateral: new BigNumber(depositSize)
-        .minus(new BigNumber(debt))
-        .shiftedBy(NEGATIVE_WAD_PRECISION),
+      collateralAddress: collateralAddress,
+    })
+  );
+  const ajnaEarnPositions = ajna.earnPositions.map(
+    ({
+      earnCumulativeQuoteTokenDeposit,
+      earnCumulativeQuoteTokenWithdraw,
+      pool: { quoteTokenAddress },
+    }) => ({
+      collateral: new BigNumber(earnCumulativeQuoteTokenDeposit).minus(
+        new BigNumber(earnCumulativeQuoteTokenWithdraw)
+      ),
       collateralAddress: quoteTokenAddress,
-    }));
- */
+    })
+  );
+
   const tokensWithAmounts = [
     ...aaveBorrowishPositions,
-    // ...ajnaBorrowishPositions,
-    // ...ajnaEarnPositions,
+    ...ajnaBorrowishPositions,
+    ...ajnaEarnPositions,
   ].reduce(
     (total, { collateral, collateralAddress }) => ({
       ...total,
