@@ -804,7 +804,8 @@ async function tvl() {
 }
 
 module.exports = {
-    methodology: `We count the total value locked in all our products und multiply of the current price of the dusd. `,
+    methodology: `We count the total value locked in all our products (dusd staking, 
+    1 year bond and 2 year bond) und multiply of the current price of the dusd so we get the correct price in $. `,
     defimetachain: {
         tvl
     }
