@@ -27,11 +27,6 @@ module.exports = {
       "0x88A72cb97E89b9B4bBfAaE90F123f176C59F1Bbc",
     ])
   },
-  core: {
-    tvl: vaultTvl([
-      "0x93614e83C2d2874616B60B550215637eE84c5eAB",
-    ])
-  },
   polygon: {
     tvl: vaultTvl([
       "0x50b9D4a006254D330AaA0f264D2739A3f3a7D8E1",
