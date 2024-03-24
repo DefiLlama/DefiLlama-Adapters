@@ -17,7 +17,8 @@ function vaultTvl(vaults) {
 }
 
 module.exports = {
-  bsc: {
-    tvl: vaultTvl(["0x88A72cb97E89b9B4bBfAaE90F123f176C59F1Bbc"]),
-  },
+  arbitrum: vaultTvl(['0x1c2D10633C78A47786759715d4618296D85D7cD1']),
+  bsc: vaultTvl(["0x88A72cb97E89b9B4bBfAaE90F123f176C59F1Bbc"]),
+  core: vaultTvl(['0x93614e83C2d2874616B60B550215637eE84c5eAB']),
+  polygon: vaultTvl(['0x50b9D4a006254D330AaA0f264D2739A3f3a7D8E1']),
 };
