@@ -2,7 +2,6 @@ const {JsonRpcProvider, Contract, formatEther} = require("ethers");
 const {get, all} = require("axios");
 const {transformBalances} = require("../helper/portedTokens");
 const vaultUrl = "https://mainnet.ocean.jellyfishsdk.com/v0/mainnet/address/df1q7zkdpw6hd5wzcxudx28k72vjvpefa4pyqls2grnahhyw4u8kf0zqu2cnz6/vaults";
-const prices = "https://aws-api.javlis.com/api/javsphere/prices";
 const LOCKING_CONTRACT_ABI = [
     {
         inputs: [
@@ -787,8 +786,7 @@ async function tvl() {
     const allResponses = await all([
         contract1Year.currentTvl(),
         contract2Year.currentTvl(),
-        get(vaultUrl),
-        get(prices)
+        get(vaultUrl)
     ]);
 
     const tvl1Year = allResponses[0];
@@ -805,8 +803,8 @@ async function tvl() {
 }
 
 module.exports = {
-    methodology: `We count the total value locked in all our products (dusd staking, 
-    1 year bond and 2 year bond) und multiply of the current price of the dusd so we get the correct price in $. `,
+    methodology: `We count the total value locked in DUSD from all current products (dusd staking is a vault in defichain L1, 
+    1 year bond and 2 year bond are smart contracts on defimetachain L2). `,
     defichain: {
         tvl
     }
