@@ -1,5 +1,6 @@
 const {JsonRpcProvider, Contract, formatEther} = require("ethers");
 const {get, all} = require("axios");
+const {transformBalances} = require("../helper/portedTokens");
 const vaultUrl = "https://mainnet.ocean.jellyfishsdk.com/v0/mainnet/address/df1q7zkdpw6hd5wzcxudx28k72vjvpefa4pyqls2grnahhyw4u8kf0zqu2cnz6/vaults";
 const prices = "https://aws-api.javlis.com/api/javsphere/prices";
 const LOCKING_CONTRACT_ABI = [
@@ -793,20 +794,20 @@ async function tvl() {
     const tvl1Year = allResponses[0];
     const tvl2Year = allResponses[1];
     const vault = allResponses[2].data;
-    const pricesResponse = allResponses[3].data;
 
     const tvl1YearInEth = +formatEther(tvl1Year);
     const tvl2YearInEth = +formatEther(tvl2Year);
     const vaultTvl = +vault.data[0].collateralValue - +vault.data[0].loanValue
-    const tvl = (tvl1YearInEth + tvl2YearInEth + vaultTvl) * pricesResponse.data.dusd;
+    const tvlDusd = tvl1YearInEth + tvl2YearInEth + vaultTvl;
 
-    return tvl.toFixed(2);
+    return await transformBalances('defichain', {"defichain:dusd": tvlDusd});
+
 }
 
 module.exports = {
     methodology: `We count the total value locked in all our products (dusd staking, 
     1 year bond and 2 year bond) und multiply of the current price of the dusd so we get the correct price in $. `,
-    defimetachain: {
+    defichain: {
         tvl
     }
 }
