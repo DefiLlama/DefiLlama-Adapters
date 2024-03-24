@@ -17,11 +17,6 @@ function vaultTvl(vaults) {
 }
 
 module.exports = {
-  arbitrum: {
-    tvl: vaultTvl([
-      "0x1c2D10633C78A47786759715d4618296D85D7cD1",
-    ])
-  },
   bsc: {
     tvl: vaultTvl([
       "0x88A72cb97E89b9B4bBfAaE90F123f176C59F1Bbc",
