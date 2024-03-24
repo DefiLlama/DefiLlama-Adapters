@@ -28,9 +28,9 @@ Object.keys(config).forEach((chain) => {
   const fundAddresses = Object.values(fundsMap);
 
   module.exports[chain] = {
-    tvl: async (ts, _b, _cb, { api }) => {
+    tvl: async (api) => {
       let supplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: fundAddresses });
-      const price = await USTBPrice(ts);
+      const price = await USTBPrice(api.timestamp);
       api.addCGToken('tether', supplies[0] * price / 1e6)
     }
   };

@@ -16,12 +16,14 @@ async function getTvl(api, farmAddress) {
   return await sumTokens2({ api, resolveLP: true });
 }
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
+  const MUTO_V3_FARM = "0xD7372abc6693702fF09536ec3824780eB264b2eF";
+  await sumTokens2({ api, uniV3nftsAndOwners: [['0x5752F085206AB87d8a5EF6166779658ADD455774', MUTO_V3_FARM]] })
   await getTvl(api, MUTO_FARM);
   return await getTvl(api, MUTO_MULTI_FARM);
 }
 
-async function staking(_, _1, _2, { api }) {
+async function staking(api) {
   let pools = await api.call({ abi: abiInfo.poolTvls, target: MUTO_FARM });
   let target = pools.find((i) => i.assets.toLowerCase() === NATIVE_TOKEN);
   api.add(NATIVE_TOKEN, target.tvl)

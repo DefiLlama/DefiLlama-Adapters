@@ -298,5 +298,14 @@ module.exports = {
          '0x318C2B9a03C37702742C3d40C72e4056e430135A', // portal v2
        ]
      },
+     {
+       name: 'zklink',
+       tokens: [
+         ADDRESSES.zklink.WETH,
+       ],
+       holders: [
+         '0x8Dc71561414CDcA6DcA7C1dED1ABd04AF474D189', // portal v2
+       ]
+     },
   ]
 }

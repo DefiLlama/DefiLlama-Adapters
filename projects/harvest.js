@@ -14,7 +14,7 @@ const chains = {
 module.exports = {}
 Object.keys(chains).forEach(chain => {
   module.exports[chain] = {
-    tvl: async (_, _1, _2, { api }) => {
+    tvl: async (api) => {
       const response = await getConfig('harvest', endpoint)
       const vaults = Object.values(response[chains[chain]]).map(i => i.vaultAddress)
       const strategy = await api.multiCall({ abi: 'address:strategy', calls: vaults })

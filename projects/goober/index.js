@@ -7,7 +7,7 @@ module.exports = {
 }
 
 module.exports["ethereum"] = {
-  tvl: async (_, block, _1, { api }) => {
+  tvl: async (api) => {
     const gooberReserves = await api.call({
       target: "0x2275d4937b6bFd3c75823744d3EfBf6c3a8dE473",
       abi: abis.goober.reserves,
