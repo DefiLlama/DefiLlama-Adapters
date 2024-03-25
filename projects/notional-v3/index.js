@@ -17,7 +17,7 @@ async function addVaultTvl(api) {
   data.forEach(i => i && api.add(i.pool, i.totalLPTokens))
 }
 
-async function tvl(timestamp, block, _, { api }) {
+async function tvl(api) {
   let oracles = await api.fetchList({ lengthAbi: abi.getMaxCurrencyId, itemAbi: abi.getPrimeCashHoldingsOracle, target: contract, startFromOne: true, })
   let underlying = await api.multiCall({ abi: 'address:underlying', calls: oracles.map((o) => ({ target: o })) })
   let holdings = await api.multiCall({ abi: 'address[]:holdings', calls: oracles.map((o) => ({ target: o })) })

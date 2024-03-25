@@ -22,7 +22,8 @@ const v1Vaults = [YEARN_VAULT, LIQUITY_VAULT, JADE, AMETHYST];
 const v2Vaults = [EMERALD, OPAL, AMBER];
 const liquityVaults = [LIQUITY_VAULT, JADE, AMETHYST, AMBER];
 
-async function tvl(_, _b, _cb, { api, chain, block, }) {
+async function tvl(api) {
+  const { chain, block} = api
   const balances = {}
   // v1 vaults assets
   const v1VaultBalances = await api.multiCall({

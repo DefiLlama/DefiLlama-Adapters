@@ -4,7 +4,7 @@ const config = require("./config")
 const { sumTokens2, PANCAKE_NFT_ADDRESS } = require('../helper/unwrapLPs')
 const { staking } = require('../helper/staking')
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   const { PancakeStaking, CakepieReader, MasterCakepieAddress, CakeAddress, } = config[api.chain];
   const masterChefV3 = await api.call({ abi: CakepieReaderAbi.masterChefv3, target: CakepieReader })
   const mCake = await api.call({ abi: CakepieReaderAbi.mCake, target: CakepieReader })

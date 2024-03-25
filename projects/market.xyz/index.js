@@ -15,7 +15,6 @@ async function getFusePools(
   balances,
   borrowed,
   chain,
-  transform = (a) => a
 ) {
   const data = (
     await sdk.api.abi.call({
