@@ -1,4 +1,4 @@
-const { sumTokensExport, nullAddress } = require("../helper/unwrapLPs");
+const { sumTokensExport } = require("../helper/unwrapLPs");
 
 const owners = [
   0x9eb71114b8cccd2b2c6097cf8c64e85c5d79d2a3,
@@ -28,16 +28,12 @@ const config = {
       0x9a3b7959e998bf2b50ef1969067d623877050d92,
       0x532f27101965dd16442e59d40670faf5ebb142e4,
       0x76be4f63efd2a0ba1c949b8b430413e64c59806a,
-      nullAddress,
     ],
   },
 };
 
-module.exports = {};
-
-Object.keys(config).forEach((chain) => {
-  const { tokens } = config[chain];
-  module.exports[chain] = {
-    tvl: sumTokensExport({ owners, tokens }),
-  };
-});
+module.exports = {
+  base: {
+    tvl: sumTokensExport(owners, config.base),
+  },
+};
