@@ -102,6 +102,9 @@ const HYPE_REGISTRY = {
   astrzk: [
     ["0x683292172E2175bd08e3927a5e72FC301b161300", 306151], // Quickswap
   ],
+  imx: [
+    ["0x683292172E2175bd08e3927a5e72FC301b161300", 3951377], // Quickswap
+  ],
   blast: [
     ["0xC27DDd78FC49875Fe6F844B72bbf31DFBB099881", 1005700], // Blaster
   ],
