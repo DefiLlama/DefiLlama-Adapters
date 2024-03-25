@@ -7,6 +7,7 @@ const { INVESTIN_FUND_DATA, } = require('./layouts/investin-layout')
 const { MARKET_STATE_LAYOUT_V3, OPEN_ORDERS_LAYOUT_V2 } = require('./layouts/openbook-layout')
 const { ReserveLayout, ReserveLayoutLarix, MintLayout, AccountLayout, TokenSwapLayout, ESOLStakePoolLayout, } = require('./layouts/mixed-layout');
 const { SCN_STAKE_POOL } = require("./layouts/scnSOL");
+const { SANCTUM_INFINITY } = require("./layouts/sanctum-infinity-layout");
 
 const parseReserve = (info) => {
   const pubkey = PublicKey.default
@@ -53,6 +54,7 @@ const customDecoders = {
   scnStakePool: defaultParseLayout(SCN_STAKE_POOL),
   fluxbeam: defaultParseLayout(TokenSwapLayout),
   phoenix: parsePhoenix,
+  sanctumInfinity: defaultParseLayout(SANCTUM_INFINITY),
 }
 
 function decodeAccount(layout, accountInfo) {
