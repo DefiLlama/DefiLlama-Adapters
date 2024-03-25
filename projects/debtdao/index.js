@@ -87,6 +87,7 @@ Object.keys(config).forEach(chain => {
           // api.add(i.token, i.interestRepaid * -1)
         })
       }))
+      return api.getBalances()
     }
   }
 })

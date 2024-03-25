@@ -148,7 +148,7 @@ const defaultAbis = {
 }
 
 function dexExport({ factory, abis = {}, fetchBalances = false }) {
-  return () => getUniTVL({ factory, abis: { ...defaultAbis, ...abis }, fetchBalances })(undefined, undefined, undefined, { api, chain: 'starknet' })
+  return () => getUniTVL({ factory, abis: { ...defaultAbis, ...abis }, fetchBalances })(api, undefined, undefined, { api, chain: 'starknet' })
 }
 
 module.exports = {
