@@ -40,17 +40,27 @@ async function getTvl(api) {
 
 async function getBorrows(api) {
   const vaults = await getVaults(api);
-  const tokens = await api.multiCall({ calls: vaults, abi: 'address:asset' });
-  const stats = await api.multiCall({ calls: vaults, abi: 'function stats() view returns (uint72, uint256, uint256, uint256)' });
-  api.addTokens(tokens, stats.map(x => x[2]));
+  const tokens = await api.multiCall({ calls: vaults, abi: "address:asset" });
+  const stats = await api.multiCall({
+    calls: vaults,
+    abi: "function stats() view returns (uint72, uint256, uint256, uint256)",
+  });
+  api.addTokens(
+    tokens,
+    stats.map((x) => x[2])
+  );
 }
 
 module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
   doublecounted: false,
-  methodology: "Sums up deposits and borrows across Aloe's ERC4626 lending vaults to get TVL and Borrowed amounts, respectively. Does not include collateral value.",
+  methodology:
+    "Sums up deposits and borrows across Aloe's ERC4626 lending vaults to get TVL and Borrowed amounts, respectively. Does not include collateral value.",
   ...Object.fromEntries(
-    Object.keys(factories).map((chain) => [chain, { tvl: getTvl, borrowed: getBorrows }])
+    Object.keys(factories).map((chain) => [
+      chain,
+      { tvl: getTvl, borrowed: getBorrows },
+    ])
   ),
 };
