@@ -14,4 +14,8 @@ module.exports = {
   bsc: {
     tvl: sumTokensExport({ owner: POOL, tokens: Object.values(tokens), })
   },
+  hallmarks: [
+    [Math.floor(new Date('2024-02-26') / 1e3), 'Max leverage increase to 100x'],
+    [Math.floor(new Date('2024-03-05') / 1e3), 'Solana integration'],
+  ],
 }
