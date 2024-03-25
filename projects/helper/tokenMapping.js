@@ -71,6 +71,12 @@ const fixBalancesTokens = {
     '0x52a6c53869ce09a731cd772f245b97a4401d3348': { coingeckoId: 'ethereum', decimals: 18 },
     '0x6de8acc0d406837030ce4dd28e7c08c5a96a30d2': { coingeckoId: 'usd-coin', decimals: 6 },
   },
+  merlin: {
+    '0xB880fd278198bd590252621d4CD071b1842E9Bcd': { coingeckoId: 'bitcoin', decimals: 18 },
+  },
+  rss3_vsl: {
+    '0xe27d019909738d98ab7f850c05ee07806c30c71d': { coingeckoId: 'rss3', decimals: 18 },
+  },
   sapphire: {
     [nullAddress]: { coingeckoId: 'oasis-network', decimals: 18 },
     '0x1ffd8a218fdc5b38210d64cbb45f40dc55a4e019': { coingeckoId: 'oasis-network', decimals: 18 },
