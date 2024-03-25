@@ -73,7 +73,9 @@ const fixBalancesTokens = {
   },
   sapphire: {
     [nullAddress]: { coingeckoId: 'oasis-network', decimals: 18 },
+    '0x1ffd8a218fdc5b38210d64cbb45f40dc55a4e019': { coingeckoId: 'oasis-network', decimals: 18 },
     '0x6665a6Cae3F52959f0f653E3D04270D54e6f13d8': { coingeckoId: 'rosy', decimals: 18 },
+    '0x9ca066f00e55b90623efe323feb2a649686538b6': { coingeckoId: 'tether', decimals: 6 },
   },
   // Sample Code
   ozone: {
