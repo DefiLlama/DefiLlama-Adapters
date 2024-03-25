@@ -1,6 +1,5 @@
-const { getChainTvl } = require('../helper/getUniSubgraphTvl');
-const { stakings } = require("../helper/staking");
-
+const { getUniTVL } = require("../helper/unknownTokens");
+const { staking } = require('../helper/staking')
 
 const IXS_POLYGON = "0x1BA17C639BdaeCd8DC4AAc37df062d17ee43a1b8"
 const STAKING_CONTRACTS = [
@@ -8,12 +7,8 @@ const STAKING_CONTRACTS = [
 ]
 
 module.exports = {
-  misrepresentedTokens: true,
-  timetravel: true,
   polygon:{
-    tvl: getChainTvl({
-      polygon: 'https://api.thegraph.com/subgraphs/name/ix-swap/ixs'
-    })('polygon'),
-    staking: stakings(STAKING_CONTRACTS, IXS_POLYGON),
+    tvl: getUniTVL({ factory: '0xc2D0e0bc81494adB71Ce9Aa350cC875DaE12D81D', fetchBalances: true, blacklistedTokens: [IXS_POLYGON] }),
+    staking: staking(STAKING_CONTRACTS, IXS_POLYGON),
   },
 }
