@@ -9,7 +9,7 @@ const startBlocks = {
 }
 
 function chainTvl(chain) {
-  return async (timestamp, ethBlock, chainBlocks, { api }) => {
+  return async (api) => {
     const  START_BLOCK = startBlocks[chain]
     const logs = await getLogs({
         api,

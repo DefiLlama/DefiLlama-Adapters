@@ -6,7 +6,7 @@ const { staking } = require("../helper/staking");
 const FACTORY_CONTRACT = "0x498B8f1E767E2A32ab68C1301F1e98b59a34dA94";
 const WETH_ADDRESS = ADDRESSES.ethereum.WETH;
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   const logs = await getLogs({
     api,
     target: FACTORY_CONTRACT,

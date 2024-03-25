@@ -2,7 +2,7 @@ const ADDRESSES = require("../helper/coreAssets.json");
 const contracts = require("./contracts");
 const { staking } = require("../helper/staking");
 const { getLogs } = require("../helper/cache/getLogs");
-const steth = ADDRESSES.ethereum.STETH;
+const bridgedAssets = [ADDRESSES.ethereum.STETH, ADDRESSES.ethereum.EETH];
 const config = {
   ethereum: {
     factory: "0x27b1dacd74688af24a64bd3c9c1b143118740784",
@@ -40,7 +40,7 @@ module.exports = {};
 Object.keys(config).forEach((chain) => {
   const { factory, factoryV3, fromBlock, pts, fromBlockV3 } = config[chain];
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api }) => {
+    tvl: async (api) => {
       const logs = await getLogs({
         api,
         target: factory,
@@ -102,10 +102,13 @@ Object.keys(config).forEach((chain) => {
         api.add(v.uAsset.toLowerCase(), value);
       });
       let balances = api.getBalances();
-      const bridged = `${chain}:${steth}`;
-      if (bridged in balances) {
-        balances[steth] = balances[bridged];
-        delete balances[bridged];
+
+      for(let bridgingToken of bridgedAssets){
+        const bridged = `${chain}:${bridgingToken}`;
+        if (bridged in balances) {
+          balances[bridgingToken] = balances[bridged];
+          delete balances[bridged];
+        }
       }
       return balances;
     },

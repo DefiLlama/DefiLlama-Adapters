@@ -34,7 +34,7 @@ async function getEigenPods(timestamp) {
   throw new Error("Empty eigenpods")
 }
 
-async function tvl(timestamp, _b, _cb, { api, }) {
+async function tvl({timestamp}, _b, _cb, { api, }) {
   /*
   const podLogs = await getLogs({
     api,

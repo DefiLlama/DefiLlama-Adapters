@@ -1,7 +1,8 @@
-const WETH_ARBITRUM = '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1';
+const ADDRESSES = require('../helper/coreAssets.json')
+const WETH_ARBITRUM = ADDRESSES.arbitrum.WETH;
 const BRACKETX_PROXY_ARBITRUM = '0x12625Af4248E8137c6C58aed6eE804f8854669a6';
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const collateralBalance = await api.call({
     abi: 'erc20:balanceOf',
     target: WETH_ARBITRUM,
