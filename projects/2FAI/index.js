@@ -1,4 +1,4 @@
-const { stakings } = require("./helper/staking");
+const { stakings } = require("../helper/staking");
 
 const revShareContract = [
     "0x394a95251135274165837be000d771D5DCb08e15",
