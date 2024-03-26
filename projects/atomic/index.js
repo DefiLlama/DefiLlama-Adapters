@@ -26,8 +26,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  misrepresentedTokens: false,
-  arbitrum: {
+    arbitrum: {
     tvl
   }
 };

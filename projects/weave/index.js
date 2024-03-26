@@ -14,9 +14,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
-  methodology: 'gets the balance of the strategy contract',
+      methodology: 'gets the balance of the strategy contract',
   start: 5793963,
   kava: {
     tvl,
