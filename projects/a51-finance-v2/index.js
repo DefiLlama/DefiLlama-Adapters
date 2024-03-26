@@ -1,7 +1,7 @@
-const { cachedGraphQuery } = require('../helper/cache')
+const { cachedGraphQuery } = require("../helper/cache");
 const { getLogs } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
-const { staking } = require("../helper/staking");
+
 const getPositionDetails =
   "function getPositionDetails() returns (uint256 amount0, uint256 amount1, uint256 fees0, uint256 fees1, uint128 baseLiquidity, uint128 rangeLiquidity)";
 
@@ -34,13 +34,12 @@ const FACTORY_ADDRESSES = {
   },
 };
 
-const DEFAULT_VAULT_CREATION_TOPIC = "VaultCreated(address,address,uint16,uint24,address)";
+const DEFAULT_VAULT_CREATION_TOPIC =
+  "VaultCreated(address,address,uint16,uint24,address)";
 const VAULT_CREATION_TOPIC = {
   ethereum: "VaultCreated(address,address,uint24,address)",
 };
 
-const PILOT_STAKING_CONTRACT = "0xc9256e6e85ad7ac18cd9bd665327fc2062703628";
-const PILOT = "0x37c997b35c619c21323f3518b9357914e8b99525";
 
 const START_BLOCKS = {
   ethereum: {
@@ -72,13 +71,12 @@ const START_BLOCKS = {
 };
 
 async function getVaultLogs(vaults, factoryType, api) {
-  const chain = api.chain
-  let topic = DEFAULT_VAULT_CREATION_TOPIC
-  if (VAULT_CREATION_TOPIC[chain])
-    topic = VAULT_CREATION_TOPIC[chain]
+  const chain = api.chain;
+  let topic = DEFAULT_VAULT_CREATION_TOPIC;
+  if (VAULT_CREATION_TOPIC[chain]) topic = VAULT_CREATION_TOPIC[chain];
 
   if (factoryType === "activeFactoryQ" || factoryType === "passiveFactoryQ")
-    topic = 'VaultCreated(address,address,uint16,address)'
+    topic = "VaultCreated(address,address,uint16,address)";
 
   const vaultLogs = await getLogs({
     target: FACTORY_ADDRESSES[chain][factoryType],
@@ -100,7 +98,10 @@ async function getVaultLogs(vaults, factoryType, api) {
 async function tvl(api) {
   let vaults = {};
   if (api.chain === "dogechain") {
-    const res = await cachedGraphQuery('unipilot/'+api.chain, 'https://apis.unipilot.io:5000/subgraphs/name/hamzabhatti125/stats-dogechain', `{
+    const res = await cachedGraphQuery(
+      "unipilot/" + api.chain,
+      "https://apis.unipilot.io:5000/subgraphs/name/hamzabhatti125/stats-dogechain",
+      `{
       vaults {
         token0 {
           id
@@ -110,41 +111,46 @@ async function tvl(api) {
         }
         id
       }
-    }`)
+    }`
+    );
     res.vaults.forEach(({ token0, token1, id }) => {
       vaults[id] = {
         token0Address: token0.id,
         token1Address: token1.id,
-      }
-    })
+      };
+    });
   } else {
     for (const label of Object.keys(START_BLOCKS[api.chain]))
-      await getVaultLogs(vaults, label, api)
-
+      await getVaultLogs(vaults, label, api);
   }
 
-  const ownerTokens = Object.entries(vaults).map(([v, i]) => [[i.token0Address, i.token1Address], v])
-  const vaultKeys = Object.keys(vaults)
+  const ownerTokens = Object.entries(vaults).map(([v, i]) => [
+    [i.token0Address, i.token1Address],
+    v,
+  ]);
+  const vaultKeys = Object.keys(vaults);
 
   //get vault reserves(amount, fees) from contract
-  const vaultReserves = await api.multiCall({ abi: getPositionDetails, calls: vaultKeys, })
+  const vaultReserves = await api.multiCall({
+    abi: getPositionDetails,
+    calls: vaultKeys,
+  });
 
   vaultKeys.forEach((v, i) => {
-    i = vaultReserves[i]
-    api.add(vaults[v].token0Address, i.amount0)
-    api.add(vaults[v].token0Address, i.fees0)
-    api.add(vaults[v].token1Address, i.amount1)
-    api.add(vaults[v].token1Address, i.fees1)
-  })
-  return sumTokens2({ api, ownerTokens })
+    i = vaultReserves[i];
+    api.add(vaults[v].token0Address, i.amount0);
+    api.add(vaults[v].token0Address, i.fees0);
+    api.add(vaults[v].token1Address, i.amount1);
+    api.add(vaults[v].token1Address, i.fees1);
+  });
+  return sumTokens2({ api, ownerTokens });
 }
 
 module.exports = {
   doublecounted: true,
 };
 
-Object.keys(FACTORY_ADDRESSES).forEach(chain => {
-  module.exports[chain] = { tvl }
-})
+Object.keys(FACTORY_ADDRESSES).forEach((chain) => {
+  module.exports[chain] = { tvl };
+});
 
-module.exports.ethereum.staking = staking(PILOT_STAKING_CONTRACT, PILOT)
