@@ -43,7 +43,7 @@ module.exports = {
   },
   arbitrum: {
     tvl: sumTokensExport({
-      owners: ["0x8bb6cae3f1cada07dd14ba951e02886ea6bba183","0xaf88d065e77c8cC2239327C5EDb3A432268e5831",],
+      owners: ["0x8bb6cae3f1cada07dd14ba951e02886ea6bba183",],
       tokens: [ADDRESSES.arbitrum.USDT, ADDRESSES.arbitrum.USDC_CIRCLE] //usdc and usdt
     }),
   },
