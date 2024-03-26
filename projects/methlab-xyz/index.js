@@ -34,7 +34,7 @@ Object.keys(config).forEach(chain => {
         // tokensAndOwners.push([result.collToken, callOwners[i]])
         // tokensAndOwners.push([result.borrowToken, callOwners[i]])
       })
-      return api.sumTokens({ owners: vaults, tokens: Array.from(tokenSet) })
+      return api.sumTokens({ owners: vaults, tokens: Array.from(tokenSet), blacklistedTokens: ['0x401307732d732dd3b05ac1138b8661c0f55830ea'] })
     }
   }
 })
