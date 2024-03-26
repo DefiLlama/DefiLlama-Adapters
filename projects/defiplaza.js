@@ -9,14 +9,14 @@ const graphUrl = 'https://api.thegraph.com/subgraphs/name/omegasyndicate/defipla
 
 module.exports = {
    ethereum: {
-      tvl: async (timestamp, block, _, { api }) => {
+      tvl: async (api) => {
          const { pools } = await cachedGraphQuery('defiplaza-ethereum', graphUrl, '{  pools {    id    tokens {      id    }  }}');
          const ownerTokens = pools.map((pool) => [pool.tokens.map((token) => token.id), pool.id]);
          return api.sumTokens({ ownerTokens });
       },
    },
    radixdlt: {
-      tvl: async (_, _1, _2, { api }) => {
+      tvl: async (api) => {
          const pools = await getConfig('defiplaza-radixdlt', null, {
             fetcher: async () => {
                let items = [];
@@ -26,7 +26,7 @@ module.exports = {
                   items.push(...data);
                   sdk.log(`Fetched ${items.length} pools`, data.length, next_cursor);
                   cursor = next_cursor;
-               } while (items.length % 100 === 0);
+               } while (items.length % 100 === 0 && cursor !== 0);
 
                return items;
             }

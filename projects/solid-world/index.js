@@ -5,7 +5,7 @@ const { fetchCategoriesAndBatches } = require("./categories-and-batches");
 const { valuateBatches } = require("./batch-valuation");
 
 // the value of the current on-chain forward credits, based on their exchange rate to CRISP tokens
-async function tvl(timestamp, ethBlock, _, { api }) {
+async function tvl(api) {
   const batchSupplies = await fetchForwardContractBatchSupplies(api);
   const [categories, batches] = await fetchCategoriesAndBatches(api, Object.keys(batchSupplies));
   const batchesValuation = await valuateBatches(batches, categories, batchSupplies);
@@ -15,7 +15,7 @@ async function tvl(timestamp, ethBlock, _, { api }) {
   });
 }
 
-async function pool2(timestamp, ethBlock, _, { api }) {
+async function pool2(api) {
   const chainConfig = config[api.chain];
   const [token0s, token1s, totalAmounts, totalSupplies, stakedAmounts] = await Promise.all([
     api.multiCall({ calls: chainConfig.pools.map(pool => pool.hypervisor), abi: abi.token0 }),

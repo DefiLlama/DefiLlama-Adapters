@@ -15,7 +15,7 @@ const V4_POOLS = {
   ]
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   return sumTokens2({ api, tokensAndOwners: V4_POOLS[api.chain] })
 }
 

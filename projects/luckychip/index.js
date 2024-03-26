@@ -68,8 +68,7 @@ const masterChef = '0x15D2a6FC45aF66A2952dC27c40450C1F06A1eC2b';
 
 // node test.js projects/luckychip/index.js
 module.exports={
-    misrepresentedTokens: false,
-    methodology: 'TVL comes from the tables of LuckyChip for now.',
+        methodology: 'TVL comes from the tables of LuckyChip for now.',
     bsc: {
         staking: staking(masterChef, lcToken, 'bsc'),
         tvl,

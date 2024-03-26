@@ -50,8 +50,28 @@ module.exports = {
     tvl,
     pool2,
   },
+  manta: {
+    pool2: async (api) => {
+      const STONE = '0xEc901DA9c68E90798BbBb74c11406A32A70652C3'
+      const WUSDM = '0xbdAd407F77f44F7Da6684B416b1951ECa461FB07'
+      const IZI = '0x91647632245cabf3d66121f86c387ae0ad295f9a'
+      const miningContract = '0x2C9bFcA337bAc7cBdA3B80D1b2d10ed6482D7C0f'
+      const MiningABI = iziABI.mantaMiningABI;
+      const {totalTokenX_, totalTokenY_, totalNIZI_} = await api.call({
+        abi: MiningABI, 
+        target: miningContract,
+        chain: 'manta',
+      });
+
+      return {
+        [`manta:${STONE}`]: totalTokenY_,
+        [`manta:${WUSDM}`]: totalTokenX_,
+        [`manta:${IZI}`]: totalNIZI_,
+      }
+    }
+  },
   mantle: {
-    pool2: async (_, _1, _2, { api }) => {
+    pool2: async (api) => {
       const swapPool = '0xC865dd3421a6DD706688955fe727C802A98c1df9';
       const miningPool = '0xBF2b951Ae6af066A03Dbfa52b1329704D923980c';
 
@@ -93,7 +113,7 @@ module.exports = {
     },
   },
   era: {
-    pool2: async (_, _1, _2, { api }) => {
+    pool2: async (api) => {
       const pool2s = [
         '0x9FB6Ca27D20E569E5c8FeC359C9d33D468d2803C',
         '0x3bd7a1D8c760d8be1bC57A3205cbFfBaDFB74D94'

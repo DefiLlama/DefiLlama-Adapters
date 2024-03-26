@@ -95,7 +95,8 @@ const defaultTokens = {
     '0x61e90a50137e1f645c9ef4a0d3a4f01477738406', // LOKA
     '0x64d0f55Cd8C7133a9D7102b13987235F486F2224', // BORG
     '0x925206b8a707096Ed26ae47C84747fE0bb734F59', //WBT
-    ADDRESSES.ethereum.FDUSD, // FDUSD
+     ADDRESSES.ethereum.FDUSD, // FDUSD,
+     '0x83F20F44975D03b1b09e64809B757c47f942BEeA' //sdai
   ],
   tron: [
     nullAddress,
@@ -104,6 +105,7 @@ const defaultTokens = {
     // 'TFptbWaARrWTX5Yvy3gNG5Lm8BmhPx82Bt', //wbt
     ADDRESSES.tron.TUSD,
     'TThzxNRLrW2Brp9DcTQU8i4Wd9udCWEdZ3', // stUSDT
+    'TUPM7K8REVzD2UdV4R5fe5M8XbnR2DdoJ6', // HTX
   ],
   polygon: [
     nullAddress,
@@ -210,6 +212,12 @@ const defaultTokens = {
     nullAddress,
     ADDRESSES.moonriver.USDT, //usdt
   ],
+  kava: [
+    nullAddress,
+    ADDRESSES.kava.USDT,
+    ADDRESSES.kava.USDt,
+    ADDRESSES.kava.USDC
+  ],
 }
 
 function cexExports(config) {
@@ -233,6 +241,7 @@ function cexExports(config) {
     exportObj[chain] = { tvl: sumTokensExport(options) }
   })
   if (config.bep2) {
+    exportObj.bsc = exportObj.bsc ?? { tvl: () => ({}) }
     const bscTvl = exportObj.bsc.tvl
     exportObj.bsc.tvl = sdk.util.sumChainTvls([
       bscTvl, sumTokensExport({ chain: 'bep2', ...config.bep2 })

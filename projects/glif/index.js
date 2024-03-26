@@ -1,4 +1,3 @@
-const { BigNumber } = require("@ethersproject/bignumber");
 const { nullAddress } = require("../helper/tokenMapping");
 const { get } = require("../helper/http");
 
@@ -10,7 +9,7 @@ module.exports = {
   methodology:
     "The GLIF Pools protocol is a liquid staking protocol for Filecoin that requires borrowers to collateralize FIL in order to borrow for their storage providing operation. This TVL calculation adds the total amount of FIL staked into the protocol, and the total amount of locked FIL collateral by borrowers, to arrive at TVL.",
   filecoin: {
-    tvl: async (_, _1, _2, { api }) => {
+    tvl: async (api) => {
       const [totalAssets, totalLockedByMiners] = await Promise.all([
         api.call({ abi: totalAssetsABI, target: INFINITY_POOL_CONTRACT }),
         // this call is too costly to perform on chain in this environment,
@@ -20,15 +19,11 @@ module.exports = {
         get("https://events.glif.link/metrics"),
       ]);
 
-      const totalAssetsBN = BigNumber.from(totalAssets);
-      const totalLockedByMinersBN = BigNumber.from(
-        totalLockedByMiners.totalMinerCollaterals
-      );
+      const totalAssetsBN = +totalAssets
+      const totalLockedByMinersBN = +totalLockedByMiners.totalMinerCollaterals
       // then we add the totalLockedByMiners to the totalAssets, to account for the FIL locked by miners as borrow collateral
       // this gets our tvl in attoFIL (wei denominated) without double counting
-      const tvl = totalAssetsBN.add(totalLockedByMinersBN).toString();
-
-      api.add(nullAddress, tvl);
+      api.add(nullAddress, totalAssetsBN+totalLockedByMinersBN);
     },
   },
 };

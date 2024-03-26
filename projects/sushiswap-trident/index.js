@@ -19,8 +19,7 @@ trident_chains.forEach((chain) => {
 });
 
 module.exports = {
-  misrepresentedTokens: false,
-  ...modulesToExport,
+    ...modulesToExport,
 };
 
 module.exports.kava = { tvl: () => 0}
