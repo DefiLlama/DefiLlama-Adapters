@@ -98,8 +98,7 @@ const bscTvl = async (api) => {
 };
 
 module.exports = {
-  timetravel: true,
-  bsc: {
+    bsc: {
     staking: Staking,
     pool2: pool2s(pool2FarmContracts, lpPool2, "bsc"),
     tvl: bscTvl,

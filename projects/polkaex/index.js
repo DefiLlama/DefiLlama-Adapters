@@ -82,8 +82,7 @@ const tvls = {
 }
 
 module.exports = {
-    timetravel: true,
-    misrepresentedTokens: true,
+        misrepresentedTokens: true,
     methodology: "PolkaEx Tvl Calculation",
     astar: {
         tvl: tvls.astar,

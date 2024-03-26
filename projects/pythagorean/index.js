@@ -34,8 +34,7 @@ async function tvl({ timestamp }) {
 
 module.exports = {
     timetravel: false,
-    doublecounted: false,
-    misrepresentedTokens: true,
+        misrepresentedTokens: true,
     methodology:
         "The TVL is the USD value of the assets locked into the autonomous agents that implement the Pythagorean protocol.",
     obyte: {

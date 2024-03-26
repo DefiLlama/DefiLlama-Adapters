@@ -5,8 +5,7 @@ const config = require("./config");
 module.exports = {
   methodology:
     "Counts the number of base and quote tokens in every marginly pool",
-  timetravel: true,
-};
+  };
 
 Object.keys(config).forEach((chain) => {
   const { factories } = config[chain];

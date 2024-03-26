@@ -21,8 +21,7 @@ const config = {
 
 module.exports = {
   timetravel: false,
-  misrepresentedTokens: false,
-  methodology: "Liquid Staking Protocol",
+    methodology: "Liquid Staking Protocol",
 };
 
 Object.keys(config).forEach(chain => {

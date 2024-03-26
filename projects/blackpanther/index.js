@@ -22,8 +22,7 @@ async function farm2Tvl(chain, contract, api) {
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
-  doublecounted: false,
-};
+  };
 
 Object.keys(config).forEach(chain => {
   const { farms } = config[chain]

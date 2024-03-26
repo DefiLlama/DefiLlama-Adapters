@@ -125,8 +125,7 @@ const borrowed = async (api) => {
 };
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: true,
+    misrepresentedTokens: true,
   ethereum: {
     tvl,
     borrowed,

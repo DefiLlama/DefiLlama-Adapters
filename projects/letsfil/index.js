@@ -20,8 +20,7 @@ async function tvl(api) {
 
 module.exports = {
   timetravel: false,
-  misrepresentedTokens: false,
-  methodology: 'counts the number of pledge filecoins in the letsfil contract',
+    methodology: 'counts the number of pledge filecoins in the letsfil contract',
   filecoin: {
     tvl
   }

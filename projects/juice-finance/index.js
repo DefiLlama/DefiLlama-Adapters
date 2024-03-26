@@ -33,8 +33,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  misrepresentedTokens: false,
-  blast: {
+    blast: {
     tvl
   }
 }

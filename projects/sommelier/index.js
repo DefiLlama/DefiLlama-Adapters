@@ -75,9 +75,7 @@ function filterActiveCellars(cellars, blockHeight) {
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
-  methodology:
+      methodology:
     "TVL is calculated as the sum of deposits invested into the strategy, deposits waiting to be invested, and yield waiting to be reinvested or redistributed across all Cellars.",
   start: 1656652494,
   ["ethereum"]: { tvl: ethereum_tvl },

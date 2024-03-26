@@ -109,8 +109,7 @@ const polygonTvl = async (_, _block, chainBlocks) => {
 };
 
 module.exports = {
-  timetravel: true,
-  ethereum: {
+    ethereum: {
     tvl: ethTvl,
   },
   polygon: {

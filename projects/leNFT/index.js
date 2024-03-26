@@ -46,6 +46,5 @@ async function tvl(api) {
 }
 
 module.exports = {
-  misrepresentedTokens: false,
-  ethereum: { tvl },
+    ethereum: { tvl },
 };

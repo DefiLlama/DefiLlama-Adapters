@@ -13,9 +13,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
-  methodology: 'Count the number of WETH tokens locked in the protocol contract.',
+      methodology: 'Count the number of WETH tokens locked in the protocol contract.',
   start: 1704412800,
   arbitrum: {
     tvl,

@@ -293,9 +293,7 @@ function compoundExportsWithAsyncTransform(comptroller, chain, cether, cetheEqui
 
 function fullCoumpoundExports(comptroller, chain, cether, cetheEquivalent, transformAdress) {
   return {
-    timetravel: true,
-    doublecounted: false,
-    [chain]: compoundExports(comptroller, chain, cether, cetheEquivalent, transformAdress)
+            [chain]: compoundExports(comptroller, chain, cether, cetheEquivalent, transformAdress)
   }
 }
 
