@@ -105,6 +105,7 @@ const defaultTokens = {
     // 'TFptbWaARrWTX5Yvy3gNG5Lm8BmhPx82Bt', //wbt
     ADDRESSES.tron.TUSD,
     'TThzxNRLrW2Brp9DcTQU8i4Wd9udCWEdZ3', // stUSDT
+    'TUPM7K8REVzD2UdV4R5fe5M8XbnR2DdoJ6', // HTX
   ],
   polygon: [
     nullAddress,
