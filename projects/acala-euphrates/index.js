@@ -3,8 +3,7 @@ const euphrates = '0x7Fe92EC600F15cD25253b421bc151c51b0276b7D';
 const ldotAddr = ADDRESSES.acala.LDOT;
 const wtdotAddr = '0xe1bD4306A178f86a9214c39ABCD53D021bEDb0f9';
 
-async function tvl(timestamp) {
-  const { api } = arguments[3]
+async function tvl(api) {
   const [rate, wdotBal, ldotBal] = await Promise.all([
     api.call({ abi: 'uint256:withdrawRate', target: wtdotAddr }),
     api.call({ abi: 'erc20:balanceOf', target: wtdotAddr, params: euphrates }),

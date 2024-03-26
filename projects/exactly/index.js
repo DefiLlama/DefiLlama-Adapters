@@ -21,7 +21,7 @@ Object.entries(config).forEach(([chain, { auditor, start }]) => {
   module.exports[chain] = {
     start,
     /** @type {(timestamp: number, block: number, chainBlocks: Record<string, number>, { api: ChainApi }) => Promise<Balances>} */
-    tvl: async (_, __, ___, { api }) => {
+    tvl: async (api) => {
       /** @type {Balances} */
       const balances = {};
       const data = await markets(api, auditor);
@@ -36,7 +36,7 @@ Object.entries(config).forEach(([chain, { auditor, start }]) => {
       return balances;
     },
     /** @type {(timestamp: number, block: number, chainBlocks: Record<string, number>, { api: ChainApi }) => Promise<Balances>} */
-    borrowed: async (_, __, ___, { api }) => {
+    borrowed: async (api) => {
       /** @type {Balances} */
       const balances = {};
       const data = await markets(api, auditor);

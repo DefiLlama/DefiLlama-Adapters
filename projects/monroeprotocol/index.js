@@ -7,7 +7,7 @@ const CONTROLLERS = {
 }
 
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const logs = await getLogs({
     api,
     target: CONTROLLERS[api.chain],

@@ -78,10 +78,10 @@ async function _computeTvl(vault, eligibleBlock) {
   return sum;
 }
 
-async function tvl(timestamp, block, _,  { api }) {
+async function tvl(api) {
   const vaultTypes = Object.keys(VAULTS);
   for (const vaultType of vaultTypes) {
-    const amount = await tvlPerVault(timestamp, block, VAULTS[vaultType]);
+    const amount = await tvlPerVault(api.timestamp, api.block, VAULTS[vaultType]);
     api.add(SUSD, amount.toNumber());
   }
 }

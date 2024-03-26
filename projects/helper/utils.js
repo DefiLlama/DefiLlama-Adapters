@@ -40,14 +40,15 @@ function getParamCalls(length) {
 }
 
 const LP_SYMBOLS = ['SLP', 'spLP', 'JLP', 'OLP', 'SCLP', 'DLP', 'MLP', 'MSLP', 'ULP', 'TLP', 'HMDX', 'YLP', 'SCNRLP', 'PGL', 'GREEN-V2', 'PNDA-V2', 'vTAROT', 'vEvolve', 'TETHYSLP', 'BAO-V2', 'DINO-V2', 'DFYNLP', 'LavaSwap', 'RLP', 'ZDEXLP', 'lawSWAPLP', 'ELP', 'ICELP', 'LFG_LP', 'KoffeeMug']
-const blacklisted_LPS = [
+const blacklisted_LPS = new Set([
   '0xb3dc4accfe37bd8b3c2744e9e687d252c9661bc7',
   '0xf146190e4d3a2b9abe8e16636118805c628b94fe',
   '0xCC8Fa225D80b9c7D42F96e9570156c65D6cAAa25',
   '0xaee4164c1ee46ed0bbc34790f1a3d1fc87796668',
   '0x93669cfce302c9971169f8106c850181a217b72b',
   '0x253f67aacaf0213a750e3b1704e94ff9accee10b',
-].map(i => i.toLowerCase())
+  '0x524cab2ec69124574082676e6f654a18df49a048',
+].map(i => i.toLowerCase()))
 
 function isICHIVaultToken(symbol, token, chain) {
   if (symbol === 'ICHI_Vault_LP') return true
@@ -58,7 +59,7 @@ function isICHIVaultToken(symbol, token, chain) {
 function isLP(symbol, token, chain) {
   // sdk.log(symbol, chain, token)
   if (!symbol) return false
-  if (token && blacklisted_LPS.includes(token.toLowerCase()) || symbol.includes('HOP-LP-')) return false
+  if (token && blacklisted_LPS.has(token.toLowerCase()) || symbol.includes('HOP-LP-')) return false
   if (chain === 'bsc' && ['OLP', 'DLP', 'MLP', 'LP', 'Stable-LP', 'fCake-LP', 'fMDEX LP'].includes(symbol)) return false
   if (chain === 'bsc' && ['WLP', 'FstLP', 'BLP', 'DsgLP'].includes(symbol)) return true
   if (chain === 'pulse' && ['PLP', 'PLT'].includes(symbol)) return true

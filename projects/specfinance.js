@@ -17,8 +17,7 @@ const astroFarms = [
   'terra1rasvh4nv8znpjg6jtkzxjskfynze98h9zv4qn8ese7tkwf0zjaaq0z60t8',
 ]
 
-async function terra2() {
-  const { api } = arguments[3]
+async function terra2(api) {
   const { chain } = api
   for (const farm of astroFarms) {
     const { total_bond_share } = await queryContract({ contract: farm, data: { state: {} }, chain })
