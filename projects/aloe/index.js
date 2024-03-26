@@ -23,7 +23,7 @@ async function getVaults(api) {
 
 async function tvl(api) {
   const vaults = await getVaults(api);
-  return api.erc4626Sum({ calls: vaults, isOG4626: true });
+  return api.erc4626Sum({ calls: vaults, tokenAbi: 'address:asset', balanceAbi: 'uint256:lastBalance' });
 }
 
 async function borrowed(api) {
