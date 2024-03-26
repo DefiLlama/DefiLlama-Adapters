@@ -62,14 +62,26 @@ const fixBalancesTokens = {
     '2thsACuHmzDMuNezPM32wg9a3BwUzBWDeSKakgz3cw21': { coingeckoId: 'power-token', decimals: 8 },
     'HEB8Qaw9xrWpWs8tHsiATYGBWDBtP2S7kcPALrMu43AS': { coingeckoId: 'puzzle-swap', decimals: 8 },
   },
+  zora: {
+    '0x4200000000000000000000000000000000000006': { coingeckoId: 'ethereum', decimals: 18 },
+  },
   imx: {
     [nullAddress]: { coingeckoId: 'immutable-x', decimals: 18 },
     '0x3A0C2Ba54D6CBd3121F01b96dFd20e99D1696C9D': { coingeckoId: 'immutable-x', decimals: 18 },
     '0x52a6c53869ce09a731cd772f245b97a4401d3348': { coingeckoId: 'ethereum', decimals: 18 },
     '0x6de8acc0d406837030ce4dd28e7c08c5a96a30d2': { coingeckoId: 'usd-coin', decimals: 6 },
   },
+  merlin: {
+    '0xB880fd278198bd590252621d4CD071b1842E9Bcd': { coingeckoId: 'bitcoin', decimals: 18 },
+  },
+  rss3_vsl: {
+    '0xe27d019909738d98ab7f850c05ee07806c30c71d': { coingeckoId: 'rss3', decimals: 18 },
+  },
   sapphire: {
     [nullAddress]: { coingeckoId: 'oasis-network', decimals: 18 },
+    '0x1ffd8a218fdc5b38210d64cbb45f40dc55a4e019': { coingeckoId: 'oasis-network', decimals: 18 },
+    '0x6665a6Cae3F52959f0f653E3D04270D54e6f13d8': { coingeckoId: 'rosy', decimals: 18 },
+    '0x9ca066f00e55b90623efe323feb2a649686538b6': { coingeckoId: 'tether', decimals: 6 },
   },
   // Sample Code
   ozone: {
