@@ -1,30 +1,19 @@
-const { sumUnknownTokens } = require("../helper/unknownTokens");
+const { sumTokensExport } = require("../helper/unwrapLPs");
+const ADDRESSES = require("../helper/coreAssets.json");
 
-function vaultTvl(vaults) {
-  return async (_, _b, _cb, { api }) => {
-    const [tokens, bals] = await Promise.all([
-      api.multiCall({ abi: "address:totalMargins", calls: vaults }),
-    ]);
-    api.addTokens(tokens, bals);
-    return sumUnknownTokens({
-      api,
-      tokensAndOwners: ["0xA346963be84a215bce16FEd8Aac0e24eca74b25E"],
-      useDefaultCoreAssets: true,
-      lps: [],
-      resolveLP: true,
-    });
-  };
-}
-
-module.exports = {
-  bsc: {
-    tvl: vaultTvl([
-      "0x88A72cb97E89b9B4bBfAaE90F123f176C59F1Bbc",
-    ])
-  },
-  polygon: {
-    tvl: vaultTvl([
-      "0x50b9D4a006254D330AaA0f264D2739A3f3a7D8E1",
-    ])
+const config = {
+  arbitrum: {
+    ownerTokens: [
+      [
+        ["0xe46C5eA6Da584507eAF8dB2F3F57d7F578192e13"],
+        "0xf75fb73fd1bccd23ce2389169674ce375b43b7a6",
+      ],
+    ],
   },
 };
+
+Object.keys(config).forEach((chain) => {
+  module.exports[chain] = {
+    tvl: sumTokensExport(config[chain]),
+  };
+});
