@@ -26,12 +26,22 @@ async function tvl(api) {
   return api.erc4626Sum({ calls: vaults, isOG4626: true });
 }
 
+async function borrowed(api) {
+  const vaults = await getVaults(api);
+  const tokens = await api.multiCall({ calls: vaults, abi: "address:asset" });
+  const stats = await api.multiCall({
+    calls: vaults,
+    abi: "function stats() view returns (uint72 borrowIndex, uint256 totalAssets, uint256 totalBorrows, uint256 totalSupply)",
+  });
+  api.addTokens(tokens, stats.map(x => x.totalBorrows));
+}
+
 module.exports = {
-  doublecounted: true,
+  doublecounted: false,
   methodology:
-    "Sums up deposits and borrows across Aloe's ERC4626 lending vaults to get TVL. Does not include collateral value.",
+    "Sums up deposits and borrows across Aloe's ERC4626 lending vaults to get TVL and Borrowed amounts, respectively. Does not include collateral value.",
 };
 
 Object.keys(config).forEach(chain => {
-  module.exports[chain] = { tvl }
+  module.exports[chain] = { tvl, borrowed }
 })
