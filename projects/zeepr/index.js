@@ -6,7 +6,7 @@ const config = {
     ownerTokens: [
       [
         ["0xe46C5eA6Da584507eAF8dB2F3F57d7F578192e13"],
-        "0xf75fb73fd1bccd23ce2389169674ce375b43b7a6",
+        "0xbB0390Cf2586e9b0A4FAADF720aE188D140E9fd5",
       ],
     ],
   },
