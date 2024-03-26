@@ -10,11 +10,16 @@ const tokenVestingUNCX = [
 
 const twoFAI = "0x1C1eC1bb5f12F24c97231165B13F3Eab9d4Ec00e"
 
+const treasury = [
+    "0x5012f99fe002EA044492a59826026C88A96d535f" 
+]
+
 module.exports = {
   misrepresentedTokens: true,
   base: {
-    revSharePool: stakings(revShareContract, twoFAI, 'base'),
-    locked: stakings(tokenVestingUNCX, twoFAI, 'base'),
+    treasury: stakings(treasury, twoFAI, 'base'),
+    incentivized: stakings(revShareContract, twoFAI, 'base'),
+    vesting: stakings(tokenVestingUNCX, twoFAI, 'base'),
     tvl: async () => ({}),
   },
   methodology: "Counts 2FAI on the rev share pool and locked by team",
