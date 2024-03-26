@@ -8,6 +8,8 @@ const tokenVestingUNCX = [
     "0xA82685520C463A752d5319E6616E4e5fd0215e33"
 ]
 
+const twoFAI = "0x1C1eC1bb5f12F24c97231165B13F3Eab9d4Ec00e"
+
 module.exports = {
   misrepresentedTokens: true,
   base: {
