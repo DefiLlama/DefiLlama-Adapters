@@ -77,6 +77,9 @@ const fixBalancesTokens = {
   rss3_vsl: {
     '0xe27d019909738d98ab7f850c05ee07806c30c71d': { coingeckoId: 'rss3', decimals: 18 },
   },
+  core: {
+    '0x191e94fa59739e188dce837f7f6978d84727ad01': { coingeckoId: 'coredaoorg', decimals: 18 },
+  },
   sapphire: {
     [nullAddress]: { coingeckoId: 'oasis-network', decimals: 18 },
     '0x1ffd8a218fdc5b38210d64cbb45f40dc55a4e019': { coingeckoId: 'oasis-network', decimals: 18 },
