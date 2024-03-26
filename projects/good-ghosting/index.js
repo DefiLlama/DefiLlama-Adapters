@@ -26,7 +26,7 @@ const isV2Game = (contractVersion) => {
    return false;
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const gameData = await getConfig("good-ghosting", apiUrl)
   const ownerTokens = []
   Object.values(gameData)

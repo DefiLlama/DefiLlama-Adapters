@@ -3,7 +3,7 @@ const { staking } = require('../helper/staking')
 const VETH_CONTRACT = '0x38D64ce1Bdf1A9f24E0Ec469C9cAde61236fB4a0';
 const VEC_CONTRACT = '0x1BB9b64927e0C5e207C9DB4093b3738Eef5D8447';
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const tokens = await api.fetchList({ lengthAbi: 'approvedTokens', itemAbi: 'approvedRestakedLSTs', target: VETH_CONTRACT })
   return api.sumTokens({ owner: VETH_CONTRACT, tokens, })
 }

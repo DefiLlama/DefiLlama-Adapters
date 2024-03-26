@@ -13,19 +13,41 @@ const contractAbis = {
     type: "function",
   }, //
   balanceOf: "function balanceOf(address) external view returns (uint256)",
+  getPrice: "function answer() external view returns (uint256)",
 };
 
 module.exports = {
   misrepresentedTokens: true,
 
   ethereum: {
-    tvl: async (_, _b, _cb, { api }) => {
+    tvl: async (api) => {
       const lendingMain = {
         eth: "0xdeF3AA48bad043e53207d359dcDFdE46F50b6C02", //ETH
       };
       await api.sumTokens({
         tokensAndOwners: [[ADDRESSES.ethereum.WETH, lendingMain.eth]],
       });
+
+      const eETH = {
+        vault: "0xE543eBa28a3793d5ae747A2164A306DB1767cDAe",
+        reStakingToken: "0xeA1A6307D9b18F8d1cbf1c3Dd6aad8416C06a221",
+        oracle: "0xb09cbB6Aa95A004F9aeE4349DF431aF5ad03ECe4",
+      };
+
+      const eETHPrice = await api.call({
+        target: eETH.oracle,
+        abi: contractAbis.getPrice,
+      });
+
+      const eETHBal = await api.call({
+        abi: contractAbis.balanceOf,
+        target: eETH.reStakingToken,
+        params: [eETH.vault],
+      });
+
+      const eETHBalInETH = (eETHBal * eETHPrice) / 1e18;
+
+      api.add(ADDRESSES.ethereum.WETH, eETHBalInETH);
       // leverage users
       const ezETH = {
         vault: "0x32a0ce2bDfc37eE606aB905b4f9fC286049A774f",
@@ -39,11 +61,11 @@ module.exports = {
         oracle: "0x6869f88582D049B9968A0Ef7bFCA2609D5F0123B",
       };
 
-      // const rsETH = {
-      //   vault: "0x65E7C3C88806FF010BB197B2577cCddA9704fA2F",
-      //   reStakingToken: "0xA1290d69c65A6Fe4DF752f95823fae25cB99e5A7",
-      //   oracle: "0x1250BbACBC9302D2C0B5F4E48cc9907a6C1Aa67D",
-      // };
+      const rsETH = {
+        vault: "0xEc69AaC84D3081aA6F4636C5DBD3D7C2c2F42a9C",
+        reStakingToken: "0xA1290d69c65A6Fe4DF752f95823fae25cB99e5A7",
+        oracle: "0x1250BbACBC9302D2C0B5F4E48cc9907a6C1Aa67D",
+      };
 
       const ezETH1x = {
         vault: "0xa9A57D0824a613d181e0323b0cA85fBD4E27160B",
@@ -63,7 +85,19 @@ module.exports = {
         oracle: "0x1250BbACBC9302D2C0B5F4E48cc9907a6C1Aa67D",
       };
 
-      const strategies = [ezETH, weETH, ezETH1x, weETH1x, rsETH1x];
+      const bedRockETH = {
+        vault: "0x291B812D84707EEB256D618C4c333Ff5F451321F",
+        reStakingToken: "0xF1376bceF0f78459C0Ed0ba5ddce976F1ddF51F4",
+        oracle: "0x1bEB65b15689cCAeb5dA191c9fd5F94513923Cab",
+      };
+
+      const bedRockETH1x = {
+        vault: "0x8E2afd8E9C64097b9908c453fCd939fe81b102AF",
+        reStakingToken: "0xF1376bceF0f78459C0Ed0ba5ddce976F1ddF51F4",
+        oracle: "0x1bEB65b15689cCAeb5dA191c9fd5F94513923Cab",
+      };
+
+      const strategies = [ezETH, weETH, rsETH, ezETH1x, weETH1x, rsETH1x, bedRockETH, bedRockETH1x];
 
       for (const strategy of strategies) {
         const bal = await api.call({
@@ -85,7 +119,7 @@ module.exports = {
   },
 
   arbitrum: {
-    tvl: async (_, _b, _cb, { api }) => {
+    tvl: async (api) => {
       //lending
       const lendingArb = {
         usdc_e: "0xa2e4cab1F6f9f1163bCe937517f1935BEc4a0A7c",
@@ -126,7 +160,24 @@ module.exports = {
         oracle: "0x1250BbACBC9302D2C0B5F4E48cc9907a6C1Aa67D",
       };
 
-      const strategies = [ezETH, weETH, rsETH];
+      const ezETH1x = {
+        vault: "0x0bAc1a3D569c16D8AD9D3aB37f61dAF18DCfF781" /*vault*/,
+        reStakingToken: "0x2416092f143378750bb29b79eD961ab195CcEea5" /*reStakingToken*/,
+        oracle: "0x28c1576eb118f2Ccd02eF2e6Dbd732F5C8D2e86B" /*oracle*/,
+      };
+      const weETH1x = {
+        vault: "0xF528B8EA22a17000e49a914658d7E0F7d982803e" /*vault*/,
+        reStakingToken: "0x35751007a407ca6FEFfE80b3cB397736D2cf4dbe" /*reStakingToken*/,
+        oracle: "0x6869f88582D049B9968A0Ef7bFCA2609D5F0123B" /*oracle*/,
+      };
+
+      const rsETH1x = {
+        vault: "0xe929BF8368171a76D4A828ee2cD4A50CcE31d203" /*vault*/,
+        reStakingToken: "0x4186BFC76E2E237523CBC30FD220FE055156b41F" /*reStakingToken*/,
+        oracle: "0x1250BbACBC9302D2C0B5F4E48cc9907a6C1Aa67D",
+      };
+
+      const strategies = [ezETH, weETH, rsETH, ezETH1x, weETH1x, rsETH1x];
 
       for (const strategy of strategies) {
         const bal = await api.call({

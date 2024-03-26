@@ -8,6 +8,7 @@ const PAIRS = [
   `${BITFLOW_ADDRESS}.stableswap-usda-susdt-v-1-2`,
   `${BITFLOW_ADDRESS}.stableswap-abtc-xbtc-v-1-2`,
   `${BITFLOW_ADDRESS}.stableswap-aeusdc-susdt-v-1-2`,
+  `${BITFLOW_ADDRESS}.stableswap-usda-aeusdc-v-1-2`,
 ];
 
 module.exports = {

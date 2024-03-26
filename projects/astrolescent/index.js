@@ -6,12 +6,12 @@ const STAKING_COMPONENT_ADDRESS = 'component_rdx1cz6ed6wksa2u4a3da5qfeg4tg453tcz
 module.exports = {
    methodology: `TVL consists of combining the liquidity pools and the staking portion is made up of ASTRL deposited to receive a yield`,
    radixdlt: {
-      tvl: async (_, _1, _2, { api }) => {
+      tvl: async (api) => {
          const data = await queryAddresses({ addresses: [POOL_COMPONENT_ADDRESS] });
          const owners = data.map((i) => i.details.state.fields.find((i) => i.type_name === 'GlobalOneResourcePool' || i.type_name == 'GlobalMultiResourcePool').value);
          return sumTokens({ owners, api });
       },
-      staking: async (_, _1, _2, { api }) => {
+      staking: async (api) => {
          const data = await queryAddresses({ addresses: [STAKING_COMPONENT_ADDRESS] });
          const owners = data.map((i) => i.details.state.fields.find((i) => i.type_name === 'GlobalOneResourcePool' || i.type_name == 'GlobalMultiResourcePool').value);
          return sumTokens({ owners, api });

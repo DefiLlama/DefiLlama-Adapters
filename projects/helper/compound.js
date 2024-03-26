@@ -116,7 +116,7 @@ function getCompoundV2Tvl(comptroller, chain, transformAdress,
   } = {}) {
   abis = { ...abi, ...abis }
   blacklistedTokens = blacklistedTokens.map(i => i.toLowerCase())
-  return async (timestamp, ethBlock, _, { api = undefined } = {}) => {
+  return async (api) => {
     if (!api) {
       api = new sdk.ChainApi({ chain, })
     }

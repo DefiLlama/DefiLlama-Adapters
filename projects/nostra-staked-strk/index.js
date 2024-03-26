@@ -7,7 +7,7 @@ const STAKED_STRK =
 const STRK =
   ADDRESSES.starknet.STRK;
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const totalAssets = await call({
     target: STAKED_STRK,
     abi: stakedStrkAbi.total_assets,

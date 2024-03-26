@@ -5,13 +5,9 @@ const KY = "0xa8a33e365D5a03c94C3258A10Dd5d6dfE686941B";
 
 const { getUniTVL } = require('../helper/unknownTokens')
 module.exports = {
-    methodology: `Uses factory(0xbFB0A989e12D49A0a3874770B1C1CdDF0d9162aA)`,
     misrepresentedTokens: true,
-    doublecounted: false,
-    timetravel: true,
-    incentivized: true,
     bsc: {
-        tvl: getUniTVL({ factory: '0xbFB0A989e12D49A0a3874770B1C1CdDF0d9162aA', chain: 'bsc', useDefaultCoreAssets: true }),
-        staking: staking(MasterChefContract, KY, "bsc"),
+        tvl: getUniTVL({ factory: '0xbFB0A989e12D49A0a3874770B1C1CdDF0d9162aA', useDefaultCoreAssets: true }),
+        staking: staking(MasterChefContract, KY),
     }
 };
