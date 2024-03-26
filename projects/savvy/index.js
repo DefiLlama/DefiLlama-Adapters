@@ -1,7 +1,7 @@
 const contracts = require("./contracts.json");
 const { sumTokens2, nullAddress } = require("../helper/unwrapLPs");
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   const savvyPositionManagers = await api.call({ abi: 'address[]:getSavvyPositionManagers', target: contracts.infoAggregator, })
   console.log(savvyPositionManagers)
   const yieldStrategyManagers = await api.multiCall({ abi: 'address:yieldStrategyManager', calls: savvyPositionManagers, })

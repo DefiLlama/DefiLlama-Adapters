@@ -2,13 +2,13 @@ const { getProcolAddresses } = require("../alpaca-finance/lyf");
 const abi = require("./abi.json");
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   /// @dev Getting all addresses from Github
   const addresses = await getProcolAddresses(api.chain)
   return sumTokens2({ api, tokensAndOwners: addresses["Vaults"].map(v => [v.baseToken, v.address]) })
 }
 
-async function borrowed(_, _b, _cb, { api, }) {
+async function borrowed(api) {
   /// @dev Getting all addresses from Github
   const addresses = await getProcolAddresses(api.chain);
 

@@ -49,8 +49,7 @@ const getRegenCredits = () => {
 
 module.exports = {
   start: 1634842800,
-  timetravel: true,
-  celo: {
+    celo: {
     tvl: getCalculationMethod("celo")
   },
   polygon: {
