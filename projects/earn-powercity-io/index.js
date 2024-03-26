@@ -1,6 +1,5 @@
-const { staking } = require("../helper/staking.js");
 const { getLiquityTvl } = require("../helper/liquity.js");
-const { pool2s } = require("../helper/pool2.js");
+const { sumTokensExport } = require("../helper/unknownTokens.js");
 
 // TroveManager holds total system collateral (deposited PLSX)
 const TROVE_MANAGER_ADDRESS = "0x118b7CF595F6476a18538EAF4Fbecbf594338B39";
@@ -15,14 +14,14 @@ const LP_PXDC_PLSX_ADDRESS = "0xabb36512813194b12A82A319783dBB455652440A";
 
 const EARN_FARMING_ADDRESS = "0x7655C30579564ec7d85aeda9eB36EE2B26FE6Cea";
 const LP_EARN_PLSX_ADDRESS = "0xed77CbbB80e5a5C3A1FE664419d6F690766b5913";
+const lps = [LP_PXDC_PLSX_ADDRESS, LP_EARN_PLSX_ADDRESS]
 
 module.exports = {
     start: 1708418955,
-    timetravel: true,
     methodology: "Total Value Locked includes all Troves, Stability Pool, Staking Pool and LP Farming Pools",
     pulse: {
-        tvl: getLiquityTvl(TROVE_MANAGER_ADDRESS, {collateralToken: PLSX_ADDRESS}),
-        staking: staking(STAKING_ADDRESS, EARN_ADDRESS),
-        pool2: pool2s([PXDC_FARMING_ADDRESS, EARN_FARMING_ADDRESS], [LP_PXDC_PLSX_ADDRESS, LP_EARN_PLSX_ADDRESS])
+        tvl: getLiquityTvl(TROVE_MANAGER_ADDRESS, { collateralToken: PLSX_ADDRESS }),
+        staking: sumTokensExport({ owner: STAKING_ADDRESS, tokens: [EARN_ADDRESS], lps, useDefaultCoreAssets: true, }),
+        pool2: sumTokensExport({ owners: [PXDC_FARMING_ADDRESS, EARN_FARMING_ADDRESS], tokens: lps, useDefaultCoreAssets: true, }),
     }
 }
