@@ -6,12 +6,12 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { factory, fromBlock, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const data = await getPools(api)
       const ownerTokens = data.map(i => [[i.token0, i.token1], i.pool])
       return api.sumTokens({ ownerTokens })
     },
-    borrowed: async (_, _b, _cb, { api, }) => {
+    borrowed: async (api) => {
       const data = await getPools(api)
       const pools = data.map(i => i.pool)
       const token0s = data.map(i => i.token0)

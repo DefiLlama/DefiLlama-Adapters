@@ -45,7 +45,7 @@ const liquidityLaunchEvents = {
   },
 };
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const { chain } = api
   const marketsArray = [];
 

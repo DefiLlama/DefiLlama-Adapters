@@ -5,7 +5,7 @@ const VAULTS = [
   "0x1c99416c7243563ebEDCBEd91ec8532fF74B9a39", //UniswapV3 ETH-USDC.e Dynamic Hedge Vault
 ];
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const totalAssets = await api.multiCall({ abi: "uint256:totalAssets", calls: VAULTS })
 
   totalAssets.forEach((i) => api.add(ADDRESSES.arbitrum.USDC, i))

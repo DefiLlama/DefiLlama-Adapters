@@ -6,7 +6,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const target = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const tokens= await api.call({  abi: 'address[]:getAssetList', target})
       return api.sumTokens({ owner: target, tokens })
     }

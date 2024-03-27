@@ -11,7 +11,7 @@ const v2Vaults = [
 const ALPHA1_ABI = "uint256:totalBalance";
 const ALPHA2_ABI = "uint256:getLastUpdatedModulesBalance";
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   const [tokenv1, tokenv2, balv1, balv2] = await Promise.all([
     api.multiCall({ abi: 'address:token', calls: vaults }),
     api.multiCall({ abi: 'address:baseToken', calls: v2Vaults, }),

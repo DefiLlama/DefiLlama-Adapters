@@ -9,7 +9,7 @@ const registryABI = {
   poolAddresses: "address[]:poolAddresses",
 }
 
-async function stablePoolTVL(_, block, _cb, { api }) {
+async function stablePoolTVL(api) {
   const pools= await api.call({  abi: registryABI.poolAddresses, target: '0x9595037e6d4a37e0659e66937ee6f7f88f4b0446'})
   const tokens = await api.multiCall({  abi: stableABI.getTokens, calls: pools,})
   return api.sumTokens({ ownerTokens: pools.map((v, i) => [tokens[i], v])})

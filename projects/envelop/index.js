@@ -107,8 +107,6 @@ module.exports = {
 		[1637596800, "Avalanche Mainnet deployment"],
 		[1633795200, "Binance Mainnet deployment"],
 	],
-	timetravel: true,
-	misrepresentedTokens: false,
 	methodology: 'TVL is the collateral coins, tokens, NFTs wrapped in Envelop vaults.',
 	start: 0,
 	ethereum: {

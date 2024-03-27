@@ -27,8 +27,7 @@ const abi = {
   totalBorrows: "uint256:totalBorrows",
 };
 
-async function tvl() {
-  const { api } = arguments[3]
+async function tvl(api) {
   const { userManager, DAI, uDAI } = config[api.chain]
   const bals = await api.batchCall([
     { target: userManager, abi: abi.totalStaked },
@@ -38,8 +37,7 @@ async function tvl() {
   bals.forEach(i => api.add(DAI, i))
 }
 
-async function borrowed() {
-  const { api } = arguments[3]
+async function borrowed(api) {
   const { DAI, uDAI } = config[api.chain]
   const borrows = await api.call({ target: uDAI, abi: abi.totalBorrows, })
   api.add(DAI, borrows)
