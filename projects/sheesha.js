@@ -10,8 +10,7 @@ async function pool2(timestamp, block, chainBlocks) {
 
 module.exports = {
   misrepresentedTokens: true,
-  timetravel: true,
-  bsc: {
+    bsc: {
     tvl: () => ({}),
     pool2,
     staking: stakingUnknownPricedLP("0xC77CfF4cE3E4c3CB57420C1488874988463Fe4a4", "0x232fb065d9d24c34708eedbf03724f2e95abe768","bsc", "0xb31ecb43645eb273210838e710f2692cc6b30a11"),

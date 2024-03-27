@@ -22,6 +22,8 @@ const DEFAULTS = {
   DEFIVERSE_RPC: "https://rpc.defi-verse.org/",
   ZKLINK_RPC: "https://rpc.zklink.io",
   KINTO_RPC: "https://rpc.kinto-rpc.com",
+  DEFICHAIN_EVM_RPC: "https://dmc.mydefichain.com/mainnet,https://dmc01.mydefichain.com/mainnet",
+  RSS3_VSL_RPC: "https://rpc.rss3.io",
 }
 
 const ENV_KEYS = [

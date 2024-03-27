@@ -27,8 +27,7 @@ async function tvl({ timestamp }) {
 
 module.exports = {
     timetravel: false,
-    doublecounted: false,
-    misrepresentedTokens: true,
+        misrepresentedTokens: true,
     methodology:
         "The TVL is the USD value of the all non-self issued assets locked into the autonomous agents extending the Oswap protocol.",
     obyte: {

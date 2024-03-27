@@ -64,6 +64,7 @@
   "darwinia",
   "dash",
   "defichain",
+  "defichain_evm",
   "defiverse",
   "dexit",
   "dfk",
@@ -228,6 +229,7 @@
   "ronin",
   "rpg",
   "rsk",
+  "rss3_vsl",
   "rvn",
   "sapphire",
   "scroll",
@@ -290,5 +292,6 @@
   "zkfair",
   "zklink",
   "zksync",
+  "zora",
   "zyx"
 ]
