@@ -1,4 +1,0 @@
-{
-    "dealTVL": "function dealTVL() view returns (uint256)",
-    "dealCurrency": "function dealCurrency() view returns (address)"
-}
