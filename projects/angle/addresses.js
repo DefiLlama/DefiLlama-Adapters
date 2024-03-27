@@ -125,13 +125,13 @@ const stablecoin = {
   EUR: {
     transmuter: "0x00253582b2a3FE112feEC532221d9708c64cEFAb",
     treasury: "0x5f9F41497f9e11fd7D4c4B067413199682eE2CFF",
-    treasuryTokens: treasuryTokens(["USDC", "USDT", "CRV", "CVX", "DAI", "EURA", "WETH", "bC3M", "EURC", "VELO", "BERNX", "STEAK_USDC", "BIB01"]),
+    treasuryTokens: treasuryTokens(["USDC", "USDT", "CRV", "CVX", "DAI", "EURA", "WETH", "bC3M", "EURC", "VELO", "bERNX", "steakUSDC", "bIB01"]),
     genesis: 1691656362,
   },
   USD: {
     transmuter: "0x222222fD79264BBE280b4986F6FEfBC3524d0137",
     treasury: "0x57eedCB68445355e9C11A90F39012e8d4AAA89Fc",
-    treasuryTokens: treasuryTokens(["USDC", "USDT", "CRV", "CVX", "DAI", "USDA", "WETH", "VELO", "BERNX", "STEAK_USDC", "BIB01"]),
+    treasuryTokens: treasuryTokens(["USDC", "USDT", "CRV", "CVX", "DAI", "USDA", "WETH", "VELO", "bERNX", "steakUSDC", "bIB01"]),
     genesis: 1704912977,
   }
 };
