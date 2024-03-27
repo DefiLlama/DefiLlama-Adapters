@@ -48,6 +48,7 @@ const chains = [
   "xdai",
   "optimism",
   "arbitrum",
+  "mode",
 
   // deprecated?
   "moonriver",
