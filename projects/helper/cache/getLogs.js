@@ -51,6 +51,7 @@ async function getLogs({ target,
     const res = iface.parseLog(log)
     if (onlyArgs) return res.args
     res.topics = log.topics.map(i => `0x${i.slice(26)}`)
+    res.blockNumber = log.blockNumber
     return res
   })
 
