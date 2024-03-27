@@ -23,12 +23,14 @@ async function tvl(api) {
     target: factory,
     eventAbi: 'event PresalePoolCreated (address registedBy, address indexed token, address indexed pool, uint256 poolId)',
     fromBlock: fromBlock,
+
   })
   const pools = []
-  logs2.forEach(({ args: i }) => {
-    pools.push(i.pool)
+  const poolFromBlocks = {}
+  logs2.forEach((i) => {
+    pools.push(i.args.pool)
+    poolFromBlocks[i.args.pool] = i.blockNumber
   })
-  console.log(api.chain, pools.length, 'pools')
 
   const ownerTokens = []
   const poolTokenMapping = {}
@@ -36,11 +38,13 @@ async function tvl(api) {
     .withConcurrency(7)
     .for(pools)
     .process(async pool => {
+      const fromBlock = poolFromBlocks[pool]
+      if (!fromBlock) return;
       const logs = await getLogs({
         api,
         target: pool,
         eventAbi: 'event PresalePoolCreated (address token, uint256 openTime, uint256 closeTime, address offeredCurrency, uint256 offeredCurrencyDecimals, uint256 offeredCurrencyRate, address wallet, address owner)',
-        fromBlock: fromBlock,
+        fromBlock,
       })
       logs.forEach(({ args: i }) => {
         const key = i.token + '-' + i.owner
