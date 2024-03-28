@@ -17,7 +17,7 @@ const query = `query getPools($lastId: String!) {
   }
 }`
 
-async function tvl(ts, block, _, { api }) {
+async function tvl(api) {
   const { endpoint } = config[api.chain]
   const pools = await cachedGraphQuery('tangleswap/' + api.chain, endpoint, query, { fetchById: true, })
   return sumTokens2({

@@ -5,4 +5,5 @@ module.exports = uniV3Export({
   optimism: { factory: "0xc2BC7A73613B9bD5F373FE10B55C59a69F4D617B", fromBlock: 115172042 },
   arbitrum: { factory: "0xaEdc38bD52b0380b2Af4980948925734fD54FbF4", fromBlock: 180722131 },
   blast: { factory: "0xd1575B2e0C82fba9Eddc3de9c9AAF923AFA670cC", fromBlock: 286237 },
+  inevm: { factory: "0xf79A36F6f440392C63AD61252a64d5d3C43F860D", fromBlock: 291933 },
 });

@@ -42,7 +42,8 @@ async function getJoins(block, api) {
   return joins;
 }
 
-async function tvl(timestamp, block, _, { api }) {
+async function tvl(api) {
+  const block = api.block
   let toa = []
 
   const blacklistedJoins = [
@@ -101,8 +102,7 @@ async function tvl(timestamp, block, _, { api }) {
 }
 
 module.exports = {
-  timetravel: true,
-  methodology: `Counts all the tokens being used as collateral of CDPs.
+    methodology: `Counts all the tokens being used as collateral of CDPs.
 
   On the technical level, we get all the collateral tokens by fetching events, get the amounts locked by calling balanceOf() directly, unwrap any uniswap LP tokens and then get the price of each token from coingecko`,
   start: 1513566671, // 12/18/2017 @ 12:00am (UTC)

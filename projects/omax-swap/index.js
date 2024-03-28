@@ -6,6 +6,6 @@ module.exports.omax.staking = staking
 const ADDRESSES = require("../helper/coreAssets.json");
 const stakingContractAddress = '0x3A2DcDc705031eDBD94254ef7CEFB93D8066cC8D'
 
-async function staking(_, _1, _2, { api }) {
+async function staking(api) {
   return api.sumTokens({ owner: stakingContractAddress, tokens: [ADDRESSES.null]});
 }

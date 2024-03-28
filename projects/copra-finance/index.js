@@ -1,8 +1,7 @@
 const { getLogs, } = require("../helper/cache/getLogs");
-const ADDRESSES = require('../helper/coreAssets.json');
 
-async function tvl(_, _b, _cb, { api }) {
-  const { factory, fromBlock, tokens, } = config[api.chain];
+async function tvl(api) {
+  const { factory, fromBlock } = config[api.chain];
 
   const logs = await getLogs({
     api,
@@ -11,16 +10,20 @@ async function tvl(_, _b, _cb, { api }) {
     eventAbi: 'event CreditAccountDeployed (address indexed creditAccount)',
     fromBlock,
   })
-  const owners = logs.map((i) => i.creditAccount)
-
-  return api.sumTokens({ owners, tokens });
+  const creditAccounts = logs.map((i) => i.creditAccount)
+  const status = await api.multiCall({ abi: 'function getStatus() view returns (uint8)', calls: creditAccounts })
+  const activeCreditAccounts = creditAccounts.filter((_, i) => status[i] == 0 || status[i] == 1)
+  const tokens = (await api.multiCall({ abi: 'function getTerms() view returns (uint256 tenor, uint256 principalAmount, uint256 interestAmount, uint256 securityDepositAmount, address token)', calls: activeCreditAccounts })).map(i => i.token)
+  const lenderAmounts = await api.multiCall({ abi: 'uint256:getTotalFundedPrincipalAmount', calls: activeCreditAccounts })
+  const borrowerAmounts = await api.multiCall({ abi: 'uint256:getBorrowerFundedAmount', calls: activeCreditAccounts })
+  api.add(tokens, lenderAmounts)
+  api.add(tokens, borrowerAmounts)
 }
 
 const config = {
   arbitrum: {
     factory: "0x2eaA3A5223FCb7A9EeC3bFCD399A4c479c6008f6",
-    fromBlock: 166573084,
-    tokens: [ADDRESSES.arbitrum.WBTC, ADDRESSES.arbitrum.USDC_CIRCLE, ADDRESSES.arbitrum.WETH, ADDRESSES.null]
+    fromBlock: 183991616,
   },
 }
 

@@ -11,7 +11,7 @@ const AFETH = '0x0000000016E6Cb3038203c1129c8B4aEE7af7a11'
 const CVX = ADDRESSES.ethereum.CVX
 const VOTIUM = '0x00000069aBbB0B1Ad6975bcF753eEe15D318A0BF'
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
 
   const tokensAndOwners = [
     // safETH Balances

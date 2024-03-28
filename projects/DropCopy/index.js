@@ -13,7 +13,7 @@ const predictionTokens = [
     DROP,
     PYTH
 ]
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
 
     // get the total tokens deposited in the games
     const tokensInAccount = await getOwnerAllAccount(PARIMUTUEL_WALLET);

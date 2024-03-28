@@ -28,11 +28,11 @@ async function getFromTxStat() {
 }
 
 async function getChannelCapacity(timestamp) {
-  const day = new Date(timestamp * 1000).toISOString().slice(0,10)
+  const day = new Date(timestamp * 1000).toISOString().slice(0, 10)
   return dayHistory[day]
 }
 
-async function tvl(timestamp) {
+async function tvl({ timestamp }) {
   const getCurrentTVL = (Date.now() / 1000 - timestamp) < 24 * 3600 // if the time difference is under 24 hours i.e we are not refilling old data
   let channelCapacity
 
