@@ -38,7 +38,7 @@ async function voterProxyBalances(api) {
     })
 }
 
-async function tvl(timestamp, ethereumBlock, chainBlocks, { api }) {
+async function tvl(api) {
   api.add(wom, await api.call({ abi: 'erc20:balanceOf', target: veWom, params: [voterProxy], }))
   await voterProxyBalances(api)
 }

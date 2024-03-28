@@ -22,8 +22,7 @@ const config = {
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: true,
+    misrepresentedTokens: true,
 };
 
 const data = {}

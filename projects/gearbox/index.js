@@ -406,7 +406,8 @@ async function getV3CAs(dc300, creditManager, block, api) {
 }
 
 // src/adapter/index.ts
-async function tvl(timestamp, block, _, { api }) {
+async function tvl(api) {
+  const block = api.block
   const tokensAndOwners = await getPools(block, api);
   const v1Balances = await getV1TVL(block, api);
   const v2Balances = await getV2TVL(block, api);

@@ -7,7 +7,7 @@ const config = {
   },
 }
 
-const tvl = async (_, _b, _cb, { api }) => {
+const tvl = async (api) => {
   const { vaultRegistry } = config[api.chain];
   const vaultDatas = await api.call({ abi: abis.getVaults, target: vaultRegistry })
   const vaults = vaultDatas.map(i => i.vault)
