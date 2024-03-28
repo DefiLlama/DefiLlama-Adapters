@@ -10,6 +10,7 @@ async function treasuryBalances(time, ethBlock, chainBlocks) {
   const balances = {}
   const transform = i => `polygon:${i}`
   await sumTokensAndLPsSharedOwners(balances, [
+    ["0x4e78011Ce80ee02d2c3e649Fb657E45898257815", false], // KLIMA
     // Stablecoins
     [ADDRESSES.polygon.USDC, false], // USDC.e
     [ADDRESSES.polygon.USDC_CIRCLE, false], // USDC
@@ -29,8 +30,10 @@ async function treasuryBalances(time, ethBlock, chainBlocks) {
     // LPs
     ["0x1E67124681b402064CD0ABE8ed1B5c79D2e02f64", true], // USDC.e-BCT Sushi LP
     ["0x9803c7ae526049210a1725f7487af26fe2c24614", true], // KLIMA-BCT Sushi LP
+    ["0xb2D0D5C86d933b0aceFE9B95bEC160d514d152E1", true], // KLIMA-NCT Sushi LP
+    ["0x4D2263FF85e334C1f1d04C6262F6c2580335a93C", true], // KLIMA-CCO2 Sushi LP
     ["0x5786b267d35F9D011c4750e0B0bA584E1fDbeAD1", true], // KLIMA-USDC.e Sushi LP
-    ["0x64a3b8cA5A7e406A78e660AE10c7563D9153a739", true], // KLIMA-MCO2 Sushi LP
+    ["0x64a3b8cA5A7e406A78e660AE10c7563D9153a739", true], // KLIMA-MCO2 Quick LP
     ["0xbA3B82585355CcD047A96b86aaBe256d181c23D2", true], // KLIMA-USDC UniV3 LP
   ], [treasuryAddress, daoWallet], chainBlocks.polygon, "polygon", transform)
   return balances
