@@ -107,7 +107,8 @@ const config = {
 	},
 	blast: {
 		protocolContracts: [
-			'0xd3807CE2F215DC42ca4bfA616B16C20b0B195128'
+			'0xd3807CE2F215DC42ca4bfA616B16C20b0B195128',
+			'0x2333615f43f898cD4368513fa59b0fDcF945f492'
 		],
 		tokens: [
 			ADDRESSES.null,
