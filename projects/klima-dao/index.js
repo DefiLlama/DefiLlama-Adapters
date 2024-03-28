@@ -44,6 +44,18 @@ async function treasuryBalances(time, ethBlock, chainBlocks) {
 
 const getTVL = (chain) => {
   return async (timestamp, block, chainBlocks) => {
+    // Fetch the current block for Polygon
+    const chainApi = new sdk.ChainApi({ chain: 'polygon' });
+    const currentPolygonBlock = await chainApi.getBlock();
+    console.log("Current Polygon block: ", currentPolygonBlock);
+
+    // If the current block is earlier than the date BCT was transferred to KlimaDAO, return 0
+    if (currentPolygonBlock < 54379303) {
+        return {
+            'toucan-protocol-base-carbon-tonne': '0',
+        };
+    }
+
     const supplyCall = { target: bctAddress };
 
     const supply = (
@@ -71,6 +83,6 @@ module.exports = {
     treasury: treasuryBalances
   },
   hallmarks: [
-    [1709269200, "BCT administrative control transferred to KlimaDAO"],
+    [1709828986, "BCT administrative control transferred to KlimaDAO"],
   ]
 };

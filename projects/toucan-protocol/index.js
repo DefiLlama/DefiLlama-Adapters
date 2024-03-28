@@ -20,7 +20,17 @@ const getCalculationMethod = (chain) => {
       })
     ).output;
 
-    const bct = BigNumber(supplies[0].output);
+    // Fetch the current block
+    const chainApi = new sdk.ChainApi({ chain: 'polygon' });
+    const currentPolygonBlock = await chainApi.getBlock();
+
+    // If the current block is later than the date BCT was transferred to KlimaDAO, return 0
+    let bct;
+    if (currentPolygonBlock > 54379303) {
+      bct = BigNumber(0);
+    } else {
+      bct = BigNumber(supplies[0].output);
+    }
     const nct = BigNumber(supplies[1].output);
 
     return {
@@ -59,6 +69,6 @@ module.exports = {
     tvl: getRegenCredits()
   },
   hallmarks: [
-    [1653429600, "Verra prohibits tokenization"],
+    [1653429600, "Verra prohibits tokenization"], [1709828986, "BCT administrative control transferred to KlimaDAO"],
   ]
 };
