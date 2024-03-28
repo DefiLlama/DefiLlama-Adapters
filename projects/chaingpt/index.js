@@ -50,6 +50,7 @@ async function tvl(api) {
         const key = i.token + '-' + i.owner
         if (!poolTokenMapping[key]) poolTokenMapping[key] = []
         poolTokenMapping[key].push(i.offeredCurrency)
+        poolTokenMapping[key].push(i.token)
       })
     })
 
