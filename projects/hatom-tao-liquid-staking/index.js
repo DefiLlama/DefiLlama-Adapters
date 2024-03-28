@@ -5,12 +5,12 @@ const taoLiquidStakingAddress =
 const swtao = "SWTAO-356a25";
 
 const tvl = async (api) => {
-    const cashReserve = await call({
+    const cash = await call({
         target: taoLiquidStakingAddress,
         abi: "getCash",
         responseTypes: ["number"],
     });
-    api.addTokens([swtao], [cashReserve.toString()]);
+    api.addTokens([swtao], [cash.toString()]);
 };
 
 module.exports = {
