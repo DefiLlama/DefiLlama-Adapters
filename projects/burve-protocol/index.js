@@ -1,49 +1,21 @@
-const { gql, request } = require("graphql-request");
+const { getLogs2 } = require('../helper/cache/getLogs')
+const config = {
+  bsc: { fromBlock: 35953570 },
+  arbitrum: { fromBlock: 184614246 },
+}
 
-const ADDRESSES = require("../helper/coreAssets.json");
-
-const graphs = {
-  bsc: "https://api.studio.thegraph.com/query/63274/burve-bnb/version/latest",
-  arbitrum: "https://api.studio.thegraph.com/query/63274/burve-arb/version/latest",
-};
-
-const factories = {
-  bsc: "0xedc1bf1993b635478c66ddfd1a5a01c81a38551b",
-  arbitrum: "0xedc1bf1993b635478c66ddfd1a5a01c81a38551b",
-};
-
-const tvl = async (api) => {
-  const endpoint = graphs[api.chain];
-  const query = gql`
-    query tvl {
-      counterEntities(where: { type_ends_with: "|Tvl" }) {
-        type
-        count
-      }
-    }
-  `;
-  const res = await request(endpoint, query);
-  const tvls = {};
-  for (let i in res.counterEntities) {
-    const token = res.counterEntities[i];
-    const split = token.type.split("|");
-    tvls[split[0]] = Number(token.count) * 1e6;
-  }
-  for (let key in ADDRESSES[api.chain]) {
-    const ethereumAddr = ADDRESSES.ethereum[key];
-    const value = tvls[ADDRESSES[api.chain][key]];
-    if (ethereumAddr && value) {
-      tvls[ethereumAddr] = value;
-    }
-  }
-  return tvls;
-};
 module.exports = {
   start: 1707300000,
   methodology: "BurveProtocol TVL including total values of assets locked in the tokens which is deployed by BurveProtocol",
-};
-Object.keys(factories).forEach((chain) => {
+}
+
+Object.keys(config).forEach(chain => {
+  const { factory = '0xedc1bf1993b635478c66ddfd1a5a01c81a38551b', fromBlock, } = config[chain]
   module.exports[chain] = {
-    tvl: tvl,
-  };
-});
+    tvl: async (api) => {
+      const tokens = await getLogs2({ api, factory, eventAbi: 'event LogTokenDeployed (string tokenType, string bondingCurveType, uint256 tokenId, address deployedAddr)', fromBlock, transform: i => i.deployedAddr })
+      const uTokens = await api.multiCall({ abi: 'address:getRaisingToken', calls: tokens })
+      return api.sumTokens({ tokensAndOwners2: [uTokens, tokens] })
+    }
+  }
+})
