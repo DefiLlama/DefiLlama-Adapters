@@ -63,7 +63,7 @@ const fixBalancesTokens = {
     'HEB8Qaw9xrWpWs8tHsiATYGBWDBtP2S7kcPALrMu43AS': { coingeckoId: 'puzzle-swap', decimals: 8 },
   },
   zora: {
-    '0x4200000000000000000000000000000000000006': { coingeckoId: 'ethereum', decimals: 18 },
+    [ADDRESSES.optimism.WETH_1]: { coingeckoId: 'ethereum', decimals: 18 },
   },
   imx: {
     [nullAddress]: { coingeckoId: 'immutable-x', decimals: 18 },

@@ -10,7 +10,7 @@ module.exports = {
         coreAssets.ethereum.DAI,
         coreAssets.ethereum.SAI,
         coreAssets.ethereum.LINK,
-        "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE",
+        ADDRESSES.ethereum.INU,
         "0x4F9254C83EB525f9FCf346490bbb3ed28a81C667",
         "0x4CC19356f2D37338b9802aa8E8fc58B0373296E7",
         "0x595832F8FC6BF59c85C527fEC3740A1b7a361269",
