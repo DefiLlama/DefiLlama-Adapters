@@ -35,7 +35,6 @@ Object.keys(config).forEach((chain) => {
               "event PoolCreated(address indexed quoteToken, address indexed baseToken, address indexed priceOracle, uint32 defaultSwapCallData, address pool)",
             onlyArgs: true,
             fromBlock,
-            skipCache: true,
           });
         }
 
