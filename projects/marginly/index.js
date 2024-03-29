@@ -14,7 +14,7 @@ Object.keys(config).forEach((chain) => {
       const ownerTokens = [];
       for (const { factory, fromBlock } of factories) {
         let logs;
-        if (chain == "arbitrum") {
+        if (chain === "arbitrum") {
           // v1.0 contract
           logs = await getLogs({
             api,
