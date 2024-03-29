@@ -7,4 +7,12 @@ module.exports = {
       },
     ],
   },
+  blast: {
+    factories: [
+      {
+        factory: "0x1768Faee0A63927FeB81100046f5D63BfE0f08dB",
+        fromBlock: 501400,
+      },
+    ],
+  },
 };
