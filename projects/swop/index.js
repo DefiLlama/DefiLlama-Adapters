@@ -8,10 +8,17 @@ const getSwopFiTVL = async () => {
   return toUSDTBalances(poolsStats.overall.liquidity);
 }
 
+const getSwopFiStaking = async () => {
+  const stakingStats = await get(`${swopfiBackendEndpoint}/staking`);
+  return toUSDTBalances(stakingStats.swop.totalSwopUsdt);
+}
+
+
 module.exports = {
   timetravel: false, // Waves blockchain,
   methodology: "Counts the tokens locked on AMM pools",
   waves: {
     tvl: getSwopFiTVL,
+    staking: getSwopFiStaking
   }
 };
