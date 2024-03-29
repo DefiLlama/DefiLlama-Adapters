@@ -1,65 +1,40 @@
-const sdk = require("@defillama/sdk");
-const { default: BigNumber } = require("bignumber.js");
+const sdk = require('@defillama/sdk')
 const { CONFIG_DATA } = require("./config");
 
-const decimals = 1e18;
-
 const getCalculationMethod = (chain) => {
-  return async (timestamp, block, chainBlocks) => {
-    const supplyCalls = [
-      { target: CONFIG_DATA[chain].bct },
-      { target: CONFIG_DATA[chain].nct }
-    ];
+  return async (api,) => {
+    const supplyCalls = [CONFIG_DATA[chain].bct, CONFIG_DATA[chain].nct];
 
-    const supplies = (
-      await sdk.api.abi.multiCall({
-        abi: 'erc20:totalSupply',
-        calls: supplyCalls,
-        chain,
-        block: chainBlocks[chain],
-      })
-    ).output;
-
-    // Fetch the current block
-    const chainApi = new sdk.ChainApi({ chain: 'polygon' });
-    const currentPolygonBlock = await chainApi.getBlock();
+    let [bct, nct] = await api.multiCall({ abi: 'erc20:totalSupply', calls: supplyCalls, })
 
     // If the current block is later than the date BCT was transferred to KlimaDAO, return 0
-    let bct;
-    if (currentPolygonBlock > 54379303) {
-      bct = BigNumber(0);
-    } else {
-      bct = BigNumber(supplies[0].output);
-    }
-    const nct = BigNumber(supplies[1].output);
+    if (api.timestamp > 1709828986)
+      bct = 0
 
     return {
-      'toucan-protocol-base-carbon-tonne': bct.div(decimals).toFixed(0),
-      'toucan-protocol-nature-carbon-tonne': nct.div(decimals).toFixed(0),
+      'toucan-protocol-base-carbon-tonne': bct / 1e18,
+      'toucan-protocol-nature-carbon-tonne': nct / 1e18,
     };
   };
 };
 
 const getRegenCredits = () => {
-  return async (timestamp, block, chainBlocks) => {
+  return async () => {
     const transferred = (await sdk.api.abi.call({
       abi: 'uint256:totalTransferred',
       target: CONFIG_DATA['regen'].nct_bridge,
       chain: 'polygon',
-      block: chainBlocks['polygon'],
     })).output;
 
-    const nct = BigNumber(transferred);
-
     return {
-      'toucan-protocol-nature-carbon-tonne': nct.div(decimals).toFixed(0),
+      'toucan-protocol-nature-carbon-tonne': transferred / 1e18,
     };
   };
 };
 
 module.exports = {
   start: 1634842800,
-    celo: {
+  celo: {
     tvl: getCalculationMethod("celo")
   },
   polygon: {
