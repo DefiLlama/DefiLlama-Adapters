@@ -16,7 +16,7 @@ async function tvl(api) {
       tokens.push(..._tokens);
       i++;
     } catch (e) {
-      if (i === 0) throw e;
+      // if (i === 0) throw e;
       gotError = true;
     }
   } while (!gotError);
