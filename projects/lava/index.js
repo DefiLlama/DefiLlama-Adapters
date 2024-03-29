@@ -91,4 +91,10 @@ module.exports = {
   methodology: methodologies.lendingMarket,
   arbitrum: getMetrics(),
   base: getMetrics(),
+  hallmarks: [
+    [Math.floor(new Date('2024-03-28')/1e3), 'Protocol was exploited'],
+  ],
 };
+
+module.exports.arbitrum.borrowed = () => ({})
+

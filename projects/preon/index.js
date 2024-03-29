@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const config = {
@@ -5,7 +6,7 @@ const config = {
     ownerTokens: [
       [["0xe50fa9b3c56ffb159cb0fca61f5c9d750e8128c8"], "0xA2Ce28868A852f4B01903B5de07d4835feFe9086"], // aArbWETH
       [["0x8ffdf2de812095b1d19cb146e4c004587c0a0692"], "0x8AD15574A87e30061f24977faaA2d99bC45A3169"], // aArbLUSD - PSM
-      [["0x5979D7b546E38E414F7E9822514be443A4800529"], "0x58F046c5374E9cF942b8Eeb056126Ce86dD63EEB"], // wstETH
+      [[ADDRESSES.arbitrum.WSTETH], "0x58F046c5374E9cF942b8Eeb056126Ce86dD63EEB"], // wstETH
     ],
   },
   polygon: {

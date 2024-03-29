@@ -63,7 +63,7 @@ const fixBalancesTokens = {
     'HEB8Qaw9xrWpWs8tHsiATYGBWDBtP2S7kcPALrMu43AS': { coingeckoId: 'puzzle-swap', decimals: 8 },
   },
   zora: {
-    '0x4200000000000000000000000000000000000006': { coingeckoId: 'ethereum', decimals: 18 },
+    [ADDRESSES.optimism.WETH_1]: { coingeckoId: 'ethereum', decimals: 18 },
   },
   imx: {
     [nullAddress]: { coingeckoId: 'immutable-x', decimals: 18 },
@@ -85,6 +85,9 @@ const fixBalancesTokens = {
     '0x1ffd8a218fdc5b38210d64cbb45f40dc55a4e019': { coingeckoId: 'oasis-network', decimals: 18 },
     '0x6665a6Cae3F52959f0f653E3D04270D54e6f13d8': { coingeckoId: 'rosy', decimals: 18 },
     '0x9ca066f00e55b90623efe323feb2a649686538b6': { coingeckoId: 'tether', decimals: 6 },
+  },
+  bevm: {
+    '0xb5136feba197f5ff4b765e5b50c74db717796dcd': { coingeckoId: 'bitcoin', decimals: 18 },
   },
   // Sample Code
   ozone: {
