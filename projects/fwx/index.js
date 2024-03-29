@@ -32,7 +32,7 @@ const tokens = {
   },
   JOE: {
     pool: "0xCB4bd69524A1a398e2112Dc22593F18eD5B3eCD6",
-    contractAddr: "0x6e84a6216eA6dACC71eE8E6b0a5B7322EEbC0fDd",
+    contractAddr: ADDRESSES.avax.JOE,
   },
   GMX: {
     pool: "0xDBbA61EE0770c99Adc9150c1C98cbd4DEA2F925A",
