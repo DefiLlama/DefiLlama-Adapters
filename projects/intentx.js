@@ -46,7 +46,7 @@ module.exports = {
   timetravel: false,
   start: BETA_START,
   base: {
-    tvl: async (timestamp) => {
+    tvl: async ({ timestamp }) => {
       return getTVL(timestamp);
     },
   },

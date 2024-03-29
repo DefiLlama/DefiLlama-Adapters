@@ -7,7 +7,7 @@ const erc4626 = [
   '0x39ff5098081FBE1ab241c31Fe0a9974FE9891d04', // voltGNS
 ]
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const collaterals = await api.multiCall({ abi: 'address:collateral', calls: vaults})
   const assets = await api.multiCall({ abi: 'address:asset', calls: erc4626})
   const bals = await api.multiCall({ abi: 'uint256:totalAssets', calls: erc4626})

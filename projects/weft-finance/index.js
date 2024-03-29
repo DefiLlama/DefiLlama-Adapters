@@ -24,7 +24,7 @@ async function fetchData(addresses) {
   return await queryAddresses({ addresses });
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const [poolData, priceData] = await Promise.all([
     fetchData(pools.map((item) => item.pool)),
     fetchData(pools.map((item) => item.priceFeed)),
@@ -45,7 +45,7 @@ async function tvl(_, _b, _cb, { api, }) {
   return { 'radix': totalValueLocked };
 }
 
-async function borrowed(_, _b, _cb, { api, }) {
+async function borrowed(api) {
   const [poolData, priceData] = await Promise.all([
     fetchData(pools.map((item) => item.pool)),
     fetchData(pools.map((item) => item.priceFeed)),

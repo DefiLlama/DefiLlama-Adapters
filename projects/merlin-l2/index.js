@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const { sumTokensExport: sumBRC20TokensExport } = require("../helper/chain/brc20");
 const { sumTokensExport } = require('../helper/sumTokens');
@@ -20,7 +21,8 @@ const owners = [
   "bc1qgxdqf7837dxe8xkhvctgc499kwh5xw7ap3uwhs", // add on 25/02/2024
   "bc1pruhkl5exjt0z824cafauf750f5g08azuvgcjctv0enz5csayaj7ss3j5wc", // add on 25/02/2024
   "bc1q97vmervc8x9hzr4z4yvzn3x4rk74se6e8x8sgy", // add on 25/02/2024
-  "bc1q2lzqzjcq472x8v0kgdcn4m5y8cq95ysnxm6vemu0qsuqgzyge06sqmqdal" // add on 25/02/2024
+  "bc1q2lzqzjcq472x8v0kgdcn4m5y8cq95ysnxm6vemu0qsuqgzyge06sqmqdal", // add on 25/02/2024
+  "bc1qcmj5lkumeycyn35lxc3yr32k3fzue87yrjrna6", //nft_vault_address
 ];
 
 module.exports = {
@@ -35,20 +37,20 @@ module.exports = {
     tvl: sumTokensExport({
       ownerTokens: [
         [["0x7122985656e38BDC0302Db86685bb972b145bD3C"], "0x147A198d803D4a02b8bEc7CC78be1AbE0C3d93E5",], //sttone
-        [["0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"], "0x8bb6cae3f1cada07dd14ba951e02886ea6bba183", //usdc
-        ]]
+        [[ADDRESSES.ethereum.USDC], "0x8bb6cae3f1cada07dd14ba951e02886ea6bba183",],//usdc
+        [[ADDRESSES.null],"0xC40329D3aE56Af6b0757C3fE53941DDCC3d92671",]] //eth
     }),
   },
   arbitrum: {
     tvl: sumTokensExport({
-      owners: ["0x8bb6cae3f1cada07dd14ba951e02886ea6bba183"],
-      tokens: ["0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9", "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"] //usdc and usdt
+      owners: ["0x8bb6cae3f1cada07dd14ba951e02886ea6bba183",],
+      tokens: [ADDRESSES.arbitrum.USDT, ADDRESSES.arbitrum.USDC_CIRCLE] //usdc and usdt
     }),
   },
   zkfair: {
     tvl: sumTokensExport({
       owners: ["0x8E3e71f5c016A3c764D0D0210fF71F15BEa46e3b",],
-      tokens: ["0x4b21b980d0Dc7D3C0C6175b0A412694F3A1c7c6b", "0x3f97bf3Cd76B5cA9D4A4E9cD8a73C24E32d6C193", "0x813bCb548F99Bc081e5EFeeAa65e3018befb92Ae"] // eth usdt and wbtc
+      tokens: ["0x4b21b980d0Dc7D3C0C6175b0A412694F3A1c7c6b", "0x3f97bf3Cd76B5cA9D4A4E9cD8a73C24E32d6C193", "0x813bCb548F99Bc081e5EFeeAa65e3018befb92Ae",ADDRESSES.null,"0x1cD3E2A23C45A690a18Ed93FD1412543f464158F",] // eth usdt and wbtc and usdc and zkf
     }),
   },
 };
