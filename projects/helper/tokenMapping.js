@@ -86,6 +86,9 @@ const fixBalancesTokens = {
     '0x6665a6Cae3F52959f0f653E3D04270D54e6f13d8': { coingeckoId: 'rosy', decimals: 18 },
     '0x9ca066f00e55b90623efe323feb2a649686538b6': { coingeckoId: 'tether', decimals: 6 },
   },
+  bevm: {
+    '0xb5136feba197f5ff4b765e5b50c74db717796dcd': { coingeckoId: 'bitcoin', decimals: 18 },
+  },
   // Sample Code
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
