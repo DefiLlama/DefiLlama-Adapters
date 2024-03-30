@@ -3,6 +3,7 @@ const { sumTokens2 } = require("../helper/unwrapLPs");
 const MUTO_FARM = "0x30b0e706fB7a6BfaFcdcd0C8290d8542b5E9C5a0";
 const MUTO_MULTI_FARM = "0xBD08D27ED845a0b75e87A756226E6a2Bc1cDc4dA";
 const MUTO_MULTI_FARM2 = "0x8f04DE4bE0521F768e8aeB4b5b9c63466B16f1ae";
+const MUTO_MULTI_FARM3 = "0x79281F1796e8fcb899C412Aef5AFA37557b6936A";
 const NATIVE_TOKEN = "0x029d924928888697d3F3d169018d9d98d9f0d6B4".toLowerCase();
 
 async function getTvl(api, farmAddress) {
@@ -27,6 +28,7 @@ async function tvl(api) {
   });
   await getTvl(api, MUTO_FARM);
   await getTvl(api, MUTO_MULTI_FARM2);
+  await getTvl(api, MUTO_MULTI_FARM3);
   return await getTvl(api, MUTO_MULTI_FARM);
 }
 
