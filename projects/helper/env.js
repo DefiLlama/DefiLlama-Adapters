@@ -24,6 +24,8 @@ const DEFAULTS = {
   KINTO_RPC: "https://rpc.kinto-rpc.com",
   DEFICHAIN_EVM_RPC: "https://dmc.mydefichain.com/mainnet,https://dmc01.mydefichain.com/mainnet",
   RSS3_VSL_RPC: "https://rpc.rss3.io",
+  DEGEN_RPC: "https://rpc.degen.tips",
+  DEGEN_RPC_MULTICALL: "0xFBF562a98aB8584178efDcFd09755FF9A1e7E3a2",
 }
 
 const ENV_KEYS = [
