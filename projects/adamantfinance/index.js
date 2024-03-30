@@ -3,7 +3,7 @@ const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { stakings } = require("../helper/staking");
 const { getConfig } = require('../helper/cache')
-const { unwrapUniswapLPs, unwrapLPsAuto, } = require("../helper/unwrapLPs");
+const { unwrapLPsAuto, sumTokens2, } = require("../helper/unwrapLPs");
 const {
   getChainTransform,
 } = require("../helper/portedTokens");
@@ -57,56 +57,12 @@ const lpAddresses_cronos = [
   "0x2a008ef8ec3ef6b03eff10811054e989aad1cf71", //CADDY-WCRO Cronos
 ];
 
-async function calcPool2_staking_rewards(
-  balances,
-  uniVaults,
-  lpAddress,
-  chain,
-  transformAddress = (addr) => addr
-) {
-  let chainBlocks = {};
 
-  const vault_balances = (
-    await sdk.api.abi.multiCall({
-      chain: chain,
-      block: chainBlocks[chain],
-      calls: uniVaults.map((vault) => ({
-        target: vault,
-      })),
-      abi: abi.totalSupply, //IStakingRewards.totalSupply()
-    })
-  ).output.map((val) => val.output);
-
-  const lpPositions = [];
-
-  lpAddress.forEach((lp, idx) => {
-    lpPositions.push({
-      balance: vault_balances[idx],
-      token: lp,
-    });
-  });
-
-  await unwrapUniswapLPs(
-    balances,
-    lpPositions,
-    chainBlocks[chain],
-    chain,
-    transformAddress
-  );
-}
-
-async function pool2Polygon(timestamp, block, chainBlocks) {
-  const balances = {};
-
-  const transformAddress = i => `polygon:${i}`;
-  await calcPool2_staking_rewards(
-    balances,
-    vaultAddresses_polygon,
-    [lpAddresses_polygon[0]],
-    "polygon",
-    transformAddress
-  );
-  return balances;
+async function pool2Polygon(api) {
+  const bals = await api.multiCall({  abi: 'erc20:totalSupply', calls: vaultAddresses_polygon})
+  const tokens = await api.multiCall({  abi: 'address:stakingToken', calls: vaultAddresses_polygon})
+  api.addTokens(tokens, bals)
+  return sumTokens2({ api, resolveLP: true })
 }
 
 async function polygonTvl(timestamp, block, chainBlocks) {

@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { PublicKey } = require("@solana/web3.js");
 const anchor = require("@project-serum/anchor");
 const { sumTokens2 } = require("../helper/solana");
 const ZETA_PROGRAM_ID = new PublicKey(
   "ZETAxsqBRek56DhiGXrn75yj2NHU3aYUnxvHXpkf3aD"
 );
-const USDC_MINT = new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v");
+const USDC_MINT = new PublicKey(ADDRESSES.solana.USDC);
 
 module.exports = {
   timetravel: false,
@@ -14,7 +15,7 @@ module.exports = {
   },
 };
 
-async function tvl(_, _b, _cb, { api }) {
+async function tvl(api) {
   const legacyZetaGroupAddrs = [
     new PublicKey("CoGhjFdyqzMFr5xVgznuBjULvoFbFtNN4bCdQzRArNK2"),
     new PublicKey("5XC7JWvLGGds4tjaawgY8FwMdotUb5rrEUmxcmyp5ZiW"),

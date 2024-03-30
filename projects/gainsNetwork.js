@@ -13,7 +13,7 @@ const tokens = {
   },
 };
 
-async function polyTvl(_, _b, _cb, { api }) {
+async function polyTvl(api) {
   const tokensAndOwners = [
     [tokens.polygon.dQUICK, "0x151757c2E830C467B28Fe6C09c3174b6c76aA0c5"],
     [tokens.polygon.dQUICK, "0x203F5c9567d533038d2da70Cbc20e6E8B3f309F9"],
@@ -24,7 +24,7 @@ async function polyTvl(_, _b, _cb, { api }) {
   ];
   return sumTokens2({ api, tokensAndOwners });
 }
-async function arbiTvl(_, _b, cb, { api}) {
+async function arbiTvl(api) {
   const tokensAndOwners = [
     [tokens.arbitrum.DAI, "0xd85E038593d7A098614721EaE955EC2022B9B91B"],
     [tokens.arbitrum.DAI, "0xcFa6ebD475d89dB04cAd5A756fff1cb2BC5bE33c"],
@@ -47,6 +47,6 @@ module.exports = {
   },
   arbitrum: {
     tvl: arbiTvl,
-    staking: staking('0x6b8d3c08072a020ac065c467ce922e3a36d3f9d6', '0x18c11fd286c5ec11c3b683caa813b77f5163a122'),
+    staking: staking(['0x6b8d3c08072a020ac065c467ce922e3a36d3f9d6', '0x7edDE7e5900633F698EaB0Dbc97DE640fC5dC015'], '0x18c11fd286c5ec11c3b683caa813b77f5163a122'),
   },
 };

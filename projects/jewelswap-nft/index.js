@@ -42,8 +42,7 @@ module.exports = {
   }
 };
 
-async function borrowed() {
-  const { api } = arguments[3]
+async function borrowed(api) {
   const commonSettings = await queryNFTDataFromSc();
   api.add(nullAddress, commonSettings.total_loan_amount)
 

@@ -27,7 +27,8 @@ module.exports = {
     tvl: getUniTVL({ factory: '0x06530550A48F990360DFD642d2132354A144F31d', useDefaultCoreAssets: true, }),
   },
   empire: {
-    tvl: getUniTVL({ factory: '0x06530550A48F990360DFD642d2132354A144F31d', useDefaultCoreAssets: true, }),
+    // tvl: getUniTVL({ factory: '0x06530550A48F990360DFD642d2132354A144F31d', useDefaultCoreAssets: true, }),
+    tvl: () => ({}),
   },
 
   methodology: "Factory address(0x06530550A48F990360DFD642d2132354A144F31d) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",

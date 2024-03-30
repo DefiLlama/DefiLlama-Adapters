@@ -30,7 +30,7 @@ async function getAssetIds(chainId) {
 
 
 function chainTvl(chain) {
-  return async (time, ethBlock,_, { api }) => {
+  return async (api) => {
 
     const chainId = api.chainId
     const owners = await getDeployedContractAddress(chainId)
@@ -48,6 +48,7 @@ const chains = [
   "xdai",
   "optimism",
   "arbitrum",
+  "mode",
 
   // deprecated?
   "moonriver",
