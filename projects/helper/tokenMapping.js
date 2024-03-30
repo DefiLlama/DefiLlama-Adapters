@@ -89,6 +89,10 @@ const fixBalancesTokens = {
   bevm: {
     '0xb5136feba197f5ff4b765e5b50c74db717796dcd': { coingeckoId: 'bitcoin', decimals: 18 },
   },
+  avax: {
+    '0xEbB5d4959B2FbA6318FbDa7d03cd44aE771fc999': { coingeckoId: 'kong', decimals: 18 },
+    '0x5ac04b69bde6f67c0bd5d6ba6fd5d816548b066a': { coingeckoId: 'tech', decimals: 18 }
+  },
   // Sample Code
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
