@@ -8,7 +8,7 @@ const sdk = require("@defillama/sdk")
 const firmStart = 16159015;
 const DBR = '0xAD038Eb671c44b853887A7E32528FaB35dC5D710';
 
-async function tvl(timestamp, block, _, { api }) {
+async function tvl(api) {
   const logs = await getLogs({
     api,
     target: DBR,

@@ -16,7 +16,7 @@ const FutureSwapContracts = {
 
 const abiPools = `function getPools() view returns (tuple(address lpToken, uint256 allocPoint, uint256 lastRewardTime, uint256 accRewardPerShare)[])`;
 
-async function farmStakings(timestamp, block, _, { api }) {
+async function farmStakings(api) {
   const pools = await api.call({ target: FutureSwapContracts.Farm, abi: abiPools, })
 
   return sumUnknownTokens({ api, tokens: pools.map(i => i.lpToken), owner: FutureSwapContracts.Farm, blacklistedTokens: [FutureSwapContracts.USDF], resolveLP: true, useDefaultCoreAssets: true, })

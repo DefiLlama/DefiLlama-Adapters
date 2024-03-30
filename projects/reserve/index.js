@@ -33,7 +33,8 @@ const chainConfigs = {
   },
 };
 
-async function tvl(_time, block, _, { api, chain }) {
+async function tvl(api) {
+  const chain = api.chain;
   const config = chainConfigs[chain];
   let { erc4626Wrapped = [] } = config;
   erc4626Wrapped = erc4626Wrapped.map((i) => i.toLowerCase());
@@ -90,7 +91,7 @@ async function tvl(_time, block, _, { api, chain }) {
   });
 
   const aTokenWrappers = allTokens.filter((_, i) =>
-    allNames[i].startsWith("Static Aave")
+    allNames[i].startsWith("Static Aave") && (_.toLowerCase() !== '0x093cB4f405924a0C468b43209d5E466F1dd0aC7d'.toLowerCase() || chain !== 'ethereum')
   );
 
   const cUsdcV3Wrappers = allTokens.filter((_, i) =>
@@ -151,6 +152,10 @@ async function tvl(_time, block, _, { api, chain }) {
     ...cUsdcV3Wrappers,
     ...morphoWrappers
   );
+  if (chain === "ethereum") {
+    blacklistedTokens.push('0x093cB4f405924a0C468b43209d5E466F1dd0aC7d');  
+    ownerTokens.push([['0x98c23e9d8f34fefb1b7bd6a91b7ff122f4e16f5c'], '0x093cB4f405924a0C468b43209d5E466F1dd0aC7d']);
+  }
   cTokens.forEach((v, i) => ownerTokens.push([[v], cTokenWrappers[i]]));
   aTokens.forEach((v, i) => ownerTokens.push([[v], aTokenWrappers[i]]));
   morphoUnderlyingTokens.forEach((v, i) =>
@@ -185,7 +190,8 @@ async function tvl(_time, block, _, { api, chain }) {
   await sumTokens2({ api, ownerTokens, blacklistedTokens });
 }
 
-async function staking(_time, block, _, { api, chain }) {
+async function staking(api) {
+  const chain = api.chain;
   const config = chainConfigs[chain]; // Load the config for the specified chain
   const creationLogs = await _getLogs(api, config);
   const stRsrs = creationLogs.map((i) => i.stRSR);

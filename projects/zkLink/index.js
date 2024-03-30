@@ -13,7 +13,7 @@ async function getEraEthBalance(api, addr) {
 }
 module.exports = {
   ethereum: {
-    tvl: (_, _b, _c, { api }) =>
+    tvl: (api) =>
       sumTokens2({
         api,
         owners: [
@@ -24,7 +24,7 @@ module.exports = {
       }),
   },
   arbitrum: {
-    tvl: (_, _b, _c, { api }) =>
+    tvl: (api) =>
       sumTokens2({
         api,
         owners: [
@@ -35,7 +35,7 @@ module.exports = {
       }),
   },
   linea: {
-    tvl: (_, _b, _c, { api }) =>
+    tvl: (api) =>
       sumTokens2({
         api,
         owners: [
@@ -47,7 +47,7 @@ module.exports = {
   },
 
   era: {
-    tvl: async (_, _b, _c, { api }) => {
+    tvl: async (api) => {
       const balances = {};
       balances[`era:${ERA_ETH_ADDRESS}`] = await getEraEthBalance(
         api,
@@ -59,9 +59,9 @@ module.exports = {
         owners: ["0xaB3DDB86072a35d74beD49AA0f9210098ebf2D08"],
         balances: balances,
         tokens: [
-                  "0xBBeB516fb02a01611cBBE0453Fe3c580D7281011", //btc
-                  "0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4" , //usdc
-                  "0x493257fD37EDB34451f62EDf8D2a0C418852bA4C", //usdt
+                  ADDRESSES.era.WBTC, //btc
+                  ADDRESSES.era.USDC , //usdc
+                  ADDRESSES.era.USDT, //usdt
         ],
         blacklistedTokens: [ERA_ETH_ADDRESS],
       });
@@ -69,22 +69,22 @@ module.exports = {
   },
 
   mantle: {
-    tvl: (_, _b, _c, { api }) =>
+    tvl: (api) =>
       sumTokens2({
         api,
         owners: [
           "0xD784d7128B46B60Ca7d8BdC17dCEC94917455657",
           "0x62351b47e060c61868Ab7E05920Cb42bD9A5f2B2",
         ],
-        tokens: ["0x78c1b0C915c4FAA5FffA6CAbf0219DA63d7f4cb8", //mnt
-                 "0x201EBa5CC46D216Ce6DC03F6a759e8E766e956aE", //usdt
-                 "0xdEAddEaDdeadDEadDEADDEAddEADDEAddead1111" ,//weth
-                 "0x09Bc4E0D864854c6aFB6eB9A9cdF58aC190D0dF9" , //usdc
+        tokens: [ADDRESSES.mantle.WMNT, //mnt
+                 ADDRESSES.mantle.USDT, //usdt
+                 ADDRESSES.mantle.WETH ,//weth
+                 ADDRESSES.mantle.USDC , //usdc
                ],
       }),
   },
   manta: {
-    tvl: (_, _b, _c, { api }) =>
+    tvl: (api) =>
       sumTokens2({
         api,
         owners: [
@@ -102,7 +102,7 @@ module.exports = {
       }),
   },
   blast: {
-    tvl: (_, _b, _c, { api }) =>
+    tvl: (api) =>
       sumTokens2({
         api,
         owners: [

@@ -30,4 +30,10 @@ module.exports = mergeExports([
             comptroller: "0x4e4b415F5aa78a44CE1fc259D2cEc47BF50A9216",
         }),
     },
+    {
+        mode: compoundExports2({
+            comptroller: "0x9f53Cd350c3aC49cE6CE673abff647E5fe79A3CC",
+            cether: "0xD13bE8b716b18265e294831FCb1330d170840BB3",
+        }),
+    },
 ]);

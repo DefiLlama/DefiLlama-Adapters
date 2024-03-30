@@ -57,7 +57,8 @@ async function getData(api, chain, key, tokens) {
 }
 
 function lavaTvl(borrowed) {
-  return async function (_, _1, _2, { api, chain }) {
+  return async function (api) {
+    const { chain } = api
     const reservesList = await api.call({
       abi: getAllReservesTokensABI,
       target: DATA_PROVIDER_ADDRESS[chain],
@@ -90,4 +91,10 @@ module.exports = {
   methodology: methodologies.lendingMarket,
   arbitrum: getMetrics(),
   base: getMetrics(),
+  hallmarks: [
+    [Math.floor(new Date('2024-03-28')/1e3), 'Protocol was exploited'],
+  ],
 };
+
+module.exports.arbitrum.borrowed = () => ({})
+

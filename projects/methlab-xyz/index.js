@@ -10,7 +10,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { factories } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const vaults = []
       for (const { target, fromBlock, } of factories) {
         const logs = await getLogs({ api, target, fromBlock, onlyArgs: true, eventAbi: 'event VaultAdded (address indexed vault)' })
@@ -34,7 +34,7 @@ Object.keys(config).forEach(chain => {
         // tokensAndOwners.push([result.collToken, callOwners[i]])
         // tokensAndOwners.push([result.borrowToken, callOwners[i]])
       })
-      return api.sumTokens({ owners: vaults, tokens: Array.from(tokenSet) })
+      return api.sumTokens({ owners: vaults, tokens: Array.from(tokenSet), blacklistedTokens: ['0x401307732d732dd3b05ac1138b8661c0f55830ea'] })
     }
   }
 })

@@ -60,5 +60,7 @@ async function queryAllium(sqlQuery) {
 }
 
 module.exports = {
-    queryAllium
+    queryAllium,
+    startAlliumQuery,
+    retrieveAlliumResults
 }

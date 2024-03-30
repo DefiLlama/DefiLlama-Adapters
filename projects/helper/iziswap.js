@@ -2,7 +2,7 @@ const { sumTokens2 } = require("./unwrapLPs")
 const ADDRESSES = require('../helper/coreAssets.json')
 
 function iziswapExport({ poolHelpers, blacklistedTokens = []}) {
-  return async (_, _1, _2, { api }) => {
+  return async (api) => {
     const toa = [] 
     const chunkSize = 10
     const allPools = []

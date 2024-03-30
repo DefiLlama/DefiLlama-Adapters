@@ -42,7 +42,6 @@ Object.keys(config).forEach((chain) => {
     tvl: () => ({}),
     staking: stakings(staking, token, chain),
     pool2: pool2s(pool2, [lp], chain),
-    methodology:
-      "MVL Single Staking TVL is calculated by multiplying the locked MVL quantity by the MVL price that changes in real time. MVL LP Staking TVL is calculated by multiplying the locked LP quantity by the LP price that changes in real time.At this time, the LP price changes depending on the prices of ETH and MVL, and the prices of BNB and bMVL."
   };
-});
+})
+module.exports.methodology = "MVL Single Staking TVL is calculated by multiplying the locked MVL quantity by the MVL price that changes in real time. MVL LP Staking TVL is calculated by multiplying the locked LP quantity by the LP price that changes in real time.At this time, the LP price changes depending on the prices of ETH and MVL, and the prices of BNB and bMVL."

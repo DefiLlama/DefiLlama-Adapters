@@ -9,7 +9,7 @@ const TOKENS = [
   ADDRESSES.defiverse.OAS,
 ];
 
-async function tvl(_, _b, _cb, { api }) {
+async function tvl(api) {
   const tokenAddesses = TOKENS.map((x) => x.address);
   return sumTokens2({ api, owner: VAULT_CONTRACT, tokens: TOKENS });
 }
