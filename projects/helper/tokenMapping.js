@@ -80,6 +80,9 @@ const fixBalancesTokens = {
   core: {
     '0x191e94fa59739e188dce837f7f6978d84727ad01': { coingeckoId: 'coredaoorg', decimals: 18 },
   },
+  degen: {
+    '0xeb54dacb4c2ccb64f8074eceea33b5ebb38e5387': { coingeckoId: 'degen-base', decimals: 18 },
+  },
   sapphire: {
     [nullAddress]: { coingeckoId: 'oasis-network', decimals: 18 },
     '0x1ffd8a218fdc5b38210d64cbb45f40dc55a4e019': { coingeckoId: 'oasis-network', decimals: 18 },

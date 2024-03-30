@@ -1,6 +1,3 @@
-const { getUniTVL } = require('../helper/unknownTokens')
+const { uniTvlExport } = require('../helper/unknownTokens')
 
-module.exports = {
-  misrepresentedTokens: true,
-  degen: { tvl: getUniTVL({ factory: '0xA994635243b55468B9C421559516BdE229E0930B', useDefaultCoreAssets: true, fetchBalances: true, }), },
-}
+module.exports = uniTvlExport('degen', '0xA994635243b55468B9C421559516BdE229E0930B')
