@@ -1666,7 +1666,10 @@
   "zklink": {
     "WETH": "0x8280a4e7D5B3B658ec4580d3Bc30f5e50454F169"
   },
-  "kinto":{
+  "kinto": {
     "WETH": "0x7526B5318Cbe690FBd3eC8DD7ad122f4F1b1d76F"
+  },
+  "bevm": {
+    "WBTC": "0xB5136FEba197f5fF4B765E5b50c74db717796dcD"
   }
 }
