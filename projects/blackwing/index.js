@@ -13,79 +13,19 @@ const ETHEREUM_MAINNET_RSETH = "0xa1290d69c65a6fe4df752f95823fae25cb99e5a7";
 const ETHEREUM_MAINNET_WEETH = "0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee";
 const ETHEREUM_MAINNET_EZETH = "0xbf5495Efe5DB9ce00f80364C8B423567e58d2110";
 
-
-
 module.exports = {
   arbitrum: {
-    tvl: sumTokensExport({ tokensAndOwners: [
-      [
-            ADDRESSES.arbitrum.USDC_CIRCLE,
-            BLACKWING_VAULT_ARBITRUM
-      ],
-      [
-            ADDRESSES.arbitrum.USDC,
-            BLACKWING_VAULT_ARBITRUM
-      ],
-      [
-            ADDRESSES.arbitrum.WETH,
-            BLACKWING_VAULT_ARBITRUM
-      ],
-      [
-            ARBITRUM_EZETH,
-            BLACKWING_VAULT_ARBITRUM
-      ],
-      [
-            ARBITRUM_WEETH,
-            BLACKWING_VAULT_ARBITRUM
-      ],
-    ]}),
+    tvl: sumTokensExport({ tokens: [ADDRESSES.arbitrum.USDC_CIRCLE, ADDRESSES.arbitrum.USDC, ADDRESSES.arbitrum.WETH, ARBITRUM_EZETH, ARBITRUM_WEETH,], owner: BLACKWING_VAULT_ARBITRUM, fetchCoValentTokens: true, }),
   },
   ethereum: {
-    tvl: sumTokensExport({ tokensAndOwners: [
-        [
-            ADDRESSES.ethereum.USDC,
-            BLACKWING_VAULT_ETH,
-        ],
-        [
-            ADDRESSES.ethereum.WETH,
-            BLACKWING_VAULT_ETH,
-        ],
-        [
-            ETHEREUM_MAINNET_RSWETH,
-            BLACKWING_VAULT_ETH
-        ],
-        [
-            ETHEREUM_MAINNET_RSETH, 
-            BLACKWING_VAULT_ETH
-        ],
-        [
-            ETHEREUM_MAINNET_EZETH,
-            BLACKWING_VAULT_ETH
-        ],
-        [
-            ADDRESSES.ethereum.EETH,
-            BLACKWING_VAULT_ETH,
-        ],
-        [
-            ETHEREUM_MAINNET_WEETH,
-            BLACKWING_VAULT_ETH,
-        ],
-        [
-            ADDRESSES.ethereum.sUSDe,
-            BLACKWING_VAULT_ETH,
-        ]
-    ]})
+    tvl: sumTokensExport({
+      tokens: [ADDRESSES.ethereum.USDC, ADDRESSES.ethereum.WETH, ETHEREUM_MAINNET_RSWETH, ETHEREUM_MAINNET_RSETH, ETHEREUM_MAINNET_EZETH, ADDRESSES.ethereum.EETH, ETHEREUM_MAINNET_WEETH, ADDRESSES.ethereum.sUSDe,
+      ], owner: BLACKWING_VAULT_ETH, fetchCoValentTokens: true,
+    })
   },
   bsc: {
-    tvl: sumTokensExport({tokensAndOwners: [
-        [
-            ADDRESSES.bsc.USDT,
-            BLACKWING_VAULT_BSC,
-        ],
-        [
-            ADDRESSES.bsc.WBNB,
-            BLACKWING_VAULT_BSC
-        ]
-    ]})
+    tvl: sumTokensExport({
+      tokens: [ADDRESSES.bsc.USDT, ADDRESSES.bsc.WBNB,], owner: BLACKWING_VAULT_BSC, fetchCoValentTokens: true,
+    })
   }
 }
