@@ -9,7 +9,7 @@ module.exports = {
   filecoin: {
     tvl: async (_, height, _1, { api }) => {
       let url = INDEXER_API;
-      if (!!height && height > 0) {
+      if (!!height && height >= 0) {
         url += `?height=${height}`;
       }
       // this call is too costly to perform on chain in this environment,
