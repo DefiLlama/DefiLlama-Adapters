@@ -3,6 +3,7 @@ const { get } = require("../helper/http");
 const { endPoints } = require("../helper/chain/cosmos");
 
 const coinGeckoIds = {
+  adydx: "dydx-chain",
   uatom: "cosmos",
   uosmo: "osmosis",
   usomm: "sommelier",
@@ -25,7 +26,9 @@ async function tvl() {
     const balance = supply.find((coin) => {
       return coin.denom === zone.local_denom;
     });
-    const amount = balance.amount / 1e6;
+    let amount = balance.amount / 1e6;
+    if (zone.base_denom === "adydx")
+      amount = balance.amount / 1e18
 
     const id = coinGeckoIds[zone.base_denom]
     if (!id) {

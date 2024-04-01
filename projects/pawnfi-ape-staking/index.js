@@ -4,7 +4,7 @@ const { ApeStakingPoolAddress } = require("../pawnfi/helper/config.js")
 
 module.exports = {
   ethereum: {
-    tvl: async (_, _b, _cb, { api }) => {
+    tvl: async (api) => {
       const balances = {};
 
       const stakedTotal = await api.multiCall({

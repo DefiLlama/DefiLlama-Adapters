@@ -16,5 +16,21 @@ module.exports = {
       ADDRESSES.ethereum.sfrxETH,
       ADDRESSES.ethereum.MATIC
     ] }),
-  }
+  },
+  arbitrum: {
+    tvl: sumTokensExport({ chain: 'arbitrum', owners: ['0x9eDC0ea75e6023b93bbB41c16818e314cfE59D2b', '0x30aCD3e86f42Fcc87c6FB9873058d8d7133785d4' ], tokens: [
+      "0xEC70Dcb4A1EFa46b8F2D97C310C9c4790ba5ffA8", //RETH
+      ADDRESSES.arbitrum.WSTETH
+    ] }),
+  },
+  bsc: {
+    tvl: sumTokensExport({ chain: 'bsc', owner: '0x4e90156997BB469c6F5975e13FF1451C9500B711', tokens: [
+      "0x52F24a5e03aee338Da5fd9Df68D2b6FAe1178827"
+    ] }),
+  },
+  optimism: {
+    tvl: sumTokensExport({ chain: 'optimism', owner: '0x9c44E6A927302dA33dd76abe4558f26e31C48019', tokens: [
+      "0x9Bcef72be871e61ED4fBbc7630889beE758eb81D" //RETH
+    ] }),
+  },
 }

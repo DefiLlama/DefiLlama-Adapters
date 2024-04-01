@@ -20,11 +20,11 @@ module.exports = {
     [1691373600, "Steadefi exploited"],
   ],
 };
-
+/* 
 Object.keys(config).forEach(chain => {
   const { fsglp } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const chainId = api.getChainId()
       let [lendingPools, vaults] = await getProjectInfo()
       lendingPools = lendingPools.filter(i => i.chainId === chainId).map(i => i.address)
@@ -53,6 +53,25 @@ Object.keys(config).forEach(chain => {
         const lpBalances = stakedPositionInfo.map(v => v.amount)
         api.addTokens(lpTokens, lpBalances)
       }
+      return sumTokens2({ api, tokensAndOwners2: [lpAssets, lendingPools] })
+    }
+  }
+}) */
+
+Object.keys(config).forEach(chain => {
+  module.exports[chain] = {
+    tvl: async (api) => {
+      const chainId = api.getChainId()
+      let [lendingPools, vaults] = await getProjectInfo()
+      lendingPools = lendingPools.filter(i => i.chainId === chainId).map(i => i.address)
+      vaults = vaults.filter(i => i.chainId === chainId)
+      const vaultAddresses = vaults.map(i => i.address)
+      const lpAssets = await api.multiCall({ abi: 'address:asset', calls: lendingPools })
+      const bals = await api.multiCall({ abi: 'function assetAmt() view returns (uint256,uint256)', calls: vaultAddresses })
+      bals.forEach(([bal0, bal1], i) => {
+        api.addToken(vaults[i].tokens[0].address, bal0)
+        api.addToken(vaults[i].tokens[1].address, bal1)
+      })
       return sumTokens2({ api, tokensAndOwners2: [lpAssets, lendingPools] })
     }
   }

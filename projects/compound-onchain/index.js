@@ -2,7 +2,6 @@ const ADDRESSES = require('../helper/coreAssets.json')
 
 const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
-const v1abi = require('./v1Abi.json');
 const BigNumber = require('bignumber.js');
 const { lendingMarket } = require('../helper/methodologies')
 
@@ -97,41 +96,6 @@ async function getMarkets(block) {
   }
 }
 
-const v1Contract = '0x3FDA67f7583380E67ef93072294a7fAc882FD7E7'
-async function v1Tvl(balances, block, borrowed) {
-  const marketsLength = await sdk.api.abi.call({
-    target: v1Contract,
-    block,
-    abi: v1abi.getCollateralMarketsLength
-  });
-  const underlyings = await sdk.api.abi.multiCall({
-    calls: Array(Number(marketsLength.output)).fill().map((n, i) => ({
-      target: v1Contract,
-      params: [i]
-    })),
-    block,
-    abi: v1abi.collateralMarkets
-  });
-  const markets = await sdk.api.abi.multiCall({
-    calls: underlyings.output.map(m => ({
-      target: v1Contract,
-      params: [m.output]
-    })),
-    block,
-    abi: v1abi.markets
-  });
-  markets.output.forEach(m => {
-    const token = m.input.params[0]
-    let amount
-    if (borrowed) {
-      amount = m.output.totalBorrows
-    } else {
-      amount = BigNumber(m.output.totalSupply).minus(m.output.totalBorrows).toFixed(0)
-    }
-    sdk.util.sumSingleBalance(balances, token, amount)
-  })
-}
-
 async function v2Tvl(balances, block, borrowed) {
   let markets = await getMarkets(block);
 
@@ -155,7 +119,6 @@ async function v2Tvl(balances, block, borrowed) {
 
 async function borrowed(timestamp, block) {
   const balances = {};
-  await v1Tvl(balances, block, true)
   await v2Tvl(balances, block, true)
   return balances
 }
@@ -163,7 +126,6 @@ async function borrowed(timestamp, block) {
 async function tvl(timestamp, block) {
   let balances = {};
 
-  await v1Tvl(balances, block, false)
   await v2Tvl(balances, block, false)
   return balances;
 }
@@ -173,8 +135,7 @@ module.exports = {
     [1632873600, "Comptroller vulnerability exploit"],
     [1592226000, "COMP distribution begins"]
   ],
-  timetravel: true,
-  ethereum: {
+    ethereum: {
     tvl,
     borrowed
   },

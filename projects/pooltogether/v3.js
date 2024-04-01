@@ -16,7 +16,7 @@ const GRAPH_QUERY = `
     prizePools { id }
   }
 `
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const graphUrls = GRAPH_URLS[api.chain] ?? []
   const pools = []
   if (api.chain === 'polygon') pools.push('0x887E17D791Dcb44BfdDa3023D26F7a04Ca9C7EF4', '0xee06abe9e2af61cabcb13170e01266af2defa946')
