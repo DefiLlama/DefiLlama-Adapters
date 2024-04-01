@@ -2,7 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, } = require('../helper/unwrapLPs')
 const sdk = require('@defillama/sdk')
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const balances = {}
   const reactorTvl = await api.multiCall({
     abi: 'uint256:getPoolDenominatedValue', calls: [

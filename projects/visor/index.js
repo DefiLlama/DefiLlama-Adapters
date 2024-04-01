@@ -14,7 +14,7 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   let { blacklistedHypes = [], registries, LIQUIDITY_MINING_POOLS } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
 
       if (LIQUIDITY_MINING_POOLS) {
         const bals = await api.multiCall({ abi: hypervisorAbi.getHyperVisorData, calls: LIQUIDITY_MINING_POOLS, });

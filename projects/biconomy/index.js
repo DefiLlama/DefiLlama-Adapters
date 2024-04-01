@@ -76,8 +76,7 @@ const config = {
 }
 
 module.exports = {
-  misrepresentedTokens: false,
-  hallmarks:[
+    hallmarks:[
     [1651881600, "UST depeg"],
   ],
   methodology:
@@ -87,6 +86,6 @@ module.exports = {
 Object.keys(config).forEach(chain => module.exports[chain] = {
   tvl: async (time, _, { [chain]: block }) => {
     const { bridges, tokens, } = config[chain]
-    return sumTokens2({ chain, block, owners: bridges, tokens, });
+    return sumTokens2({ chain, block, owners: bridges, tokens });
   }
 })

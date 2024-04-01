@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const { BigNumber } = require("ethers");
 
 const WAR_CONTROLLER = "0xFDeac9F9e4a5A7340Ac57B47C67d383fb4f13DBb";
 
@@ -12,7 +11,7 @@ async function getLockers(api) {
       const output = await api.call({
         target: WAR_CONTROLLER,
         abi: abi["lockers"],
-        params: [BigNumber.from(i)]
+        params: i
       })
       lockers.push(output);
     } catch(e) {
@@ -23,7 +22,7 @@ async function getLockers(api) {
   return lockers;
 }
 
-async function ethTvl(timestamp, block, _, { api },) {
+async function ethTvl(api,) {
   const balances = {};
 
   const lockers = await getLockers(api);

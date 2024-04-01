@@ -9,8 +9,6 @@ const { tvl, borrowed } = compoundExports(
     unitroller, "boba", bETH, WETH, );
 
 module.exports = {
-    timetravel: true,
-    doublecounted: false,
-    methodology: "Same as Compound Finance, we just count all the tokens supplied (not borrowed money) on the lending markets",
+            methodology: "Same as Compound Finance, we just count all the tokens supplied (not borrowed money) on the lending markets",
     boba: { tvl, borrowed }
 }

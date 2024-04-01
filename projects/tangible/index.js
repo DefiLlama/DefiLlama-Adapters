@@ -9,7 +9,7 @@ const { getInsuranceFundValueArb } = require("./insurance-fund-arbitrum");
 // doc: https://docs.tangible.store/real-usd/real-usd-v3-contracts-and-addresses
 const TNGBL = '0x49e6A20f1BBdfEeC2a8222E052000BbB14EE6007'.toLowerCase()
 const USDR = '0x40379a439d4f6795b6fc9aa5687db461677a2dba'.toLowerCase()
-const CVX_ETH = '0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b'.toLowerCase()
+const CVX_ETH = ADDRESSES.ethereum.CVX.toLowerCase()
 
 const { apGetAddress, getPriceManager, getCategories,
   getTotalSupply, getTokenByIndex, getTnftCustody,
@@ -41,7 +41,7 @@ const insuranceConfig = {
   }
 }
 
-async function tvl(_, _b, _cb, { api }) {
+async function tvl(api) {
   await Promise.all([
     treasuryTvl,
     rwaTVL,
@@ -50,19 +50,19 @@ async function tvl(_, _b, _cb, { api }) {
   ].map(fn => fn(api)))
 }
 
-async function tvlOp(_, _b, _cb, { api }) {
+async function tvlOp(api) {
   await Promise.all([
     insuranceTvlOp,
   ].map(fn => fn(api)))
 }
 
-async function tvlBase(_, _b, _cb, { api }) {
+async function tvlBase(api) {
   await Promise.all([
     insuranceTvlBase,
   ].map(fn => fn(api)))
 }
 
-async function tvlArb(_, _b, _cb, { api }) {
+async function tvlArb(api) {
   await Promise.all([
     insuranceTvlArb,
   ].map(fn => fn(api)))
@@ -187,6 +187,9 @@ async function tangiblePOL(api) {
 }
 
 module.exports = {
+  hallmarks: [
+    [1697032800,"USDR Depeg"]
+  ],
   misrepresentedTokens: true,
   polygon: { tvl, },
   ethereum: { tvl: sumTokensExport(insuranceConfig.ethereum) },
