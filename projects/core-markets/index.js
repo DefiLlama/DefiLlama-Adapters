@@ -36,7 +36,7 @@ async function getTVL(toTimestamp) {
   );
 
   return {
-    "base:0x4300000000000000000000000000000000000003": total,
+    "base:0x4300000000000000000000000000000000000003": new BigNumber(total),
   };
 }
 
@@ -49,3 +49,4 @@ module.exports = {
     },
   },
 };
+
