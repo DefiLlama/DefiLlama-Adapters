@@ -9,7 +9,7 @@ const wethAddress = ADDRESSES.ethereum.WETH
 
 async function ethereum(api) {
   const totalSupply = await api.call({ target: '0x9559Aaa82d9649C7A7b220E7c461d2E74c9a3593', abi: 'uint256:totalSupply'});
-  const rate = await api.call({ target: '0x9559Aaa82d9649C7A7b220E7c461d2E74c9a3593', abi: 'uint256:getRate'});
+  const rate = await api.call({ target: '0x9559Aaa82d9649C7A7b220E7c461d2E74c9a3593', abi: 'uint256:getExchangeRate'});
   return {
     [wethAddress]: (totalSupply * rate)/1e18
   }
