@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumUnknownTokens } = require("../helper/unknownTokens");
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
 
   const calls = [
     { target: '0x075CA53543D304c02Ee692C0b691770AEB273dA4', params: '0x4402Cf5433D57266563979654d20887AcE672393' },
@@ -38,6 +38,9 @@ async function tvl(_, _b, _cb, { api, }) {
       ['0x2f9e61D4E9A9A3694CcDc287c790EA5cc3302E88', '0x1504B9EDdD57Ed8252b3b3b407DdE27B72A80790'],
       ['0x350c4A0aC240755Bb6432FeB907eCAFbbBc75770', '0xC05021F3b3601BF33aB59dc75577B85985ACaab7'],
       ['0x8E00102d96b34BEF29F3E1e0e5DBd0a611Cac312', '0x6d81FcA3abD89Bd89D400281aE5f1Ee0D62Cd16f'],
+      // YieldOptimizers Hover
+      ['0xcE86EBc669BBf07A64A0a55BB105Cc2B5B5d1961','0xfA8f4Fd6D961ECf25e3406a1e6a22A3671678a65'],
+      ['0xb51eFaF2f7aFb8a2F5Be0b730281E414FB487636','0xC00804268b8Ce19D2276A81292a6E28277bf3591'],
       // also count base assets if available
       [ADDRESSES.telos.ETH, '0xcd017B495DF1dE2DC8069b274e2ddfBB78561176'],
       [ADDRESSES.moonriver.USDT, '0x88555c4d8e53ffB223aB5baDe0B5e6B2Cd3966c4'],

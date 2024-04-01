@@ -1,7 +1,7 @@
 const { StakeProgram } = require("@solana/web3.js")
 const { getConnection } = require('../helper/solana')
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const stakeAccounts = await getConnection().getProgramAccounts(StakeProgram.programId, {
     filters: [{
       memcmp: {

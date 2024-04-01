@@ -19,7 +19,7 @@ const tridentQueryWithBlock = `
   query get_tokens($block: Int) {
     tokens(
       block: { number: $block }
-      first: 1000
+      first: 100
       orderBy: liquidityUSD
       orderDirection: desc
       where: { liquidityUSD_gt: 0 }
@@ -34,7 +34,7 @@ const tridentQueryWithBlock = `
 const tridentQuery = `
   query get_tokens {
     tokens(
-      first: 1000
+      first: 100
       orderBy: liquidityUSD
       orderDirection: desc
       where: { liquidityUSD_gt: 0 }
@@ -47,7 +47,7 @@ const tridentQuery = `
 `;
 
 function trident(chain) {
-  return async (timestamp, ethBlock, chainBlocks, { api }) => {
+  return async (api) => {
     const graphUrl = graphUrls[chain];
     // Query graphql endpoint
     let result;
@@ -63,7 +63,7 @@ function trident(chain) {
     result.tokens.forEach((token) => {
       api.add(token.id, token.liquidity);
     });
-
+    return api.getBalances()
   };
 }
 

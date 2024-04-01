@@ -55,8 +55,7 @@ function chainTvl(chain){
 }
 
 module.exports = {
-  timetravel: true,
-  ethereum: {
+    ethereum: {
     tvl: sdk.util.sumChainTvls([chainTvl('polygon'), ethereum]),
     staking:  getTvlFunction("RFIS", "stafi")
   },

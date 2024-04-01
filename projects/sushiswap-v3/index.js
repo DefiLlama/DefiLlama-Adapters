@@ -71,6 +71,7 @@ module.exports = uniV3Export({
   kava: { factory: '0x1e9B24073183d5c6B7aE5FB4b8f0b1dd83FDC77a', fromBlock: 7251753, },
   metis: { factory: '0x145d82bCa93cCa2AE057D1c6f26245d1b9522E6F', fromBlock: 9077930, },
   bittorrent: { factory: '0xBBDe1d67297329148Fe1ED5e6B00114842728e65', fromBlock: 29265724, },
+  zeta: { factory: '0xB45e53277a7e0F1D35f2a77160e91e25507f1763', fromBlock: 1551069, },
 });
 
 const config = {
@@ -88,7 +89,7 @@ const query = `{
 Object.keys(config).forEach(chain => {
   const { endpoint } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const { pools } = await cachedGraphQuery('sushiswap-v3/' + chain, endpoint, query, { api, })
       const ownerTokens = pools.map(i => [[i.token0.id, i.token1.id], i.id])
       return api.sumTokens({ ownerTokens })

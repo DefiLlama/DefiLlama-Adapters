@@ -84,9 +84,7 @@ async function pool2(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
-  methodology:
+      methodology:
     "counts the number of MST tokens in the ve contract and the pairs in the staking pool",
   start: 22569995,
   fantom: {
