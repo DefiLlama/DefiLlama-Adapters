@@ -24,6 +24,7 @@ const config = {
   mantle: { lp: '0x31bFb9003229BCC89EeF55895A374Fd0ed36772c' },
   metis: { lp: '0xA152A0Ee0Bc15A937D5365DEB8507D063467A68d' },
   neon_evm: { lp: '0x9a08ab9b8b9A90bF9fe836D28E85808Db29Dc1aD' },
+  mode: { lp: '0xC6FA6454E76cF425a020fdb1EF61FeB0e551912C' },
 }
 
 module.exports = {
