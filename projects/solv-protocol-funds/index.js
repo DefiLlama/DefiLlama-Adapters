@@ -36,14 +36,17 @@ async function borrowed(api) {
 
   let address = (await getConfig('solv-protocol/funds', addressUrl));
   const depositAddress = filterDepositAddress(network, address);
-
+  
   const graphData = await getGraphData(api.timestamp, network, api);
   if (graphData.pools.length > 0) {
     const poolLists = graphData.pools;
 
-    var pools = poolLists.filter((value) => {
-      return depositAddress.length == 0 || depositAddress.indexOf(value.vault) == -1;
-    });
+    let pools = [];
+    for (const pool of poolLists) {
+      if (depositAddress.length == 0 && depositAddress.indexOf(pool.vault) == -1) {
+        pools.push(pool);
+      }
+    }
 
     const poolConcretes = await concrete(pools, api);
     const nav = await api.multiCall({
@@ -94,7 +97,6 @@ async function borrowed(api) {
     for (let i = 0; i < Object.keys(vaults).length; i++) {
       vaultbalances[Object.keys(vaults)[i]] = balances[i];
     }
-
     for (let i = 0; i < poolTotalValues.length; i++) {
       const decimals = poolDecimalList[i];
       let balance = BigNumber(poolTotalValues[i]).div(BigNumber(10).pow(18 - decimals)).times(BigNumber(nav[i].nav_).div(BigNumber(10).pow(decimals))).toNumber();
