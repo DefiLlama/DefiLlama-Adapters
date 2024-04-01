@@ -51,6 +51,7 @@ async function getLogs({ target,
     const res = iface.parseLog(log)
     if (onlyArgs) return res.args
     res.topics = log.topics.map(i => `0x${i.slice(26)}`)
+    res.blockNumber = log.blockNumber
     return res
   })
 
@@ -109,7 +110,13 @@ async function getLogs({ target,
   }
 }
 
+async function getLogs2({ factory, target, topic, keys = [], fromBlock, toBlock, topics, api, eventAbi, onlyArgs = true, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false, transform = i => i}) {
+  const res = await getLogs({ target: target ?? factory, topic, keys, fromBlock, toBlock, topics, api, eventAbi, onlyArgs, extraKey, skipCache, onlyUseExistingCache, customCacheFunction, skipCacheRead })
+  return res.map(transform)
+}
+
 module.exports = {
   getLogs,
+  getLogs2,
   getAddress: s => "0x" + s.slice(26, 66),
 }

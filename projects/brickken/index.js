@@ -27,7 +27,8 @@ module.exports = {
 const config = {
   ethereum: { factory: '0x91af681C85Ca98Efc5D69C1B62E6F435030969Db', },
   bsc: { factory: '0xCe4529Fe88df480BD777d3e32dfD7032e6C685ff', },
-  base: { factory: '0x278D7bdc2451B0Fa4087A68ce084a86cB91D4d83', }
+  base: { factory: '0x278D7bdc2451B0Fa4087A68ce084a86cB91D4d83', },
+  avax: { factory: '0xc6c230FA8F40022dE997727436Fae01caAbcDe61', }
 }
 
 Object.keys(config).forEach(chain => {
