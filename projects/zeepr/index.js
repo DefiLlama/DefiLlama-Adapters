@@ -24,6 +24,7 @@ module.exports = {
   //   staking: staking('0xfb06a737f549eb2512eb6082a808fc7f16c0819d'),
   // },
   arbitrum: {
+    tvl: 0,
     staking: staking('0xe46C5eA6Da584507eAF8dB2F3F57d7F578192e13'),
   },
 };
