@@ -9,7 +9,7 @@ async function tvl() {
   return balances
 }
 
-async function staking(timestamp, _, _1, { api }) {
+async function staking(api) {
   const xargoBalance = await api.call({ target: '0x1dE93ce995d1bC763c2422ba30b1E73dE4A45a01', abi: 'erc20:totalSupply' })
   let balance = {
     "cronos:0x47A9D630dc5b28F75d3AF3be3AAa982512Cd89Aa": xargoBalance

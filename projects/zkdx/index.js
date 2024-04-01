@@ -11,5 +11,12 @@ module.exports = {
             [ADDRESSES.era.WETH, ADDRESSES.era.USDC]
         )
 
+    },
+    linea: {
+        tvl: staking(
+          ["0x3e636c4dC9Bd55831055c3400160e1e8A25DaD8a", "0xE0D1977a23cb90252B9997aB07b03136E214E0C6",
+              "0x3a85b87e81cD99D4A6670f95A4F0dEdAaC207Da0"],
+          [ADDRESSES.linea.WETH, ADDRESSES.linea.USDC]
+        )
     }
 };

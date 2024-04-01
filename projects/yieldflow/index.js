@@ -15,10 +15,12 @@ const managers = [
   '0x9000F4E184Aa2e0bDD1657d78c325c67508555D3',
   '0x1A0E998eF8611142906230050ed3E75882313DAe',
   '0x6EeFc6ceF687783F9eD767637Ae3cf06693c0A82',
-  '0x6205A335C76F3dE01f5D75a27E9C90b49A5C69dc'
+  '0x6205A335C76F3dE01f5D75a27E9C90b49A5C69dc',
+  '0x54250F1cb24304136A5B05fAbfb0C3Fb1E980169',
+  '0x0F6EEFd958287FDF80F5B1D4Ea79B928F9Ae933d'
 ]
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const positionManagers = await api.multiCall({  abi: 'address:positionManager', calls: managers})
   const tokenIds = await api.multiCall({  abi: abi.getCurrentTokenId, calls: managers})
   const liquidities = await api.multiCall({  abi: abi.getPositions, calls: positionManagers.map((v, i) => ({ target: v, params: tokenIds[i]})) })
