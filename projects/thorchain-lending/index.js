@@ -1,11 +1,18 @@
 const { getCache, } = require('../helper/http')
+const sdk = require("@defillama/sdk");
 
-async function tvl(api) {
+async function tvl(_, _1, _2) {
   const pools = await getCache('https://midgard.ninerealms.com/v2/pools')
-  pools.map(({ totalCollateral = 0 }) => {
-    api.addCGToken('thorchain', totalCollateral / 1e6)
+
+  const balances = {}
+
+  pools.map(({ totalCollateral, assetPrice }) => {
+    if (totalCollateral > 0) {
+      sdk.util.sumSingleBalance(balances, 'thorchain', (Number(totalCollateral) / 1e8)* Number(assetPrice))
+    }
   })
-  return api.getBalances()
+
+  return balances
 }
 
 module.exports = {
