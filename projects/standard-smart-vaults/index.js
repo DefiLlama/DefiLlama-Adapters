@@ -9,6 +9,7 @@ const tokens = [
   ADDRESSES.arbitrum.WBTC,
   ADDRESSES.arbitrum.ARB,
   ADDRESSES.arbitrum.LINK,
+  ADDRESSES.arbitrum.GMX,
   '0xfEb4DfC8C4Cf7Ed305bb08065D08eC6ee6728429'
 ]
 
