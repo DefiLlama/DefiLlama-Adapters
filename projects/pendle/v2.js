@@ -3,7 +3,7 @@ const contracts = require("./contracts");
 const { staking } = require("../helper/staking");
 const { getLogs } = require("../helper/cache/getLogs");
 const bridgedAssets = [ADDRESSES.ethereum.STETH, ADDRESSES.ethereum.EETH];
-const axios = require("axios");
+const { getConfig } = require('../helper/cache')
 
 const config = {
   ethereum: {
@@ -49,30 +49,30 @@ Object.keys(config).forEach((chain) => {
     tvl: async (api) => {
       const logs = factory
         ? await getLogs({
-            api,
-            target: factory,
-            topics: [
-              "0x166ae5f55615b65bbd9a2496e98d4e4d78ca15bd6127c0fe2dc27b76f6c03143",
-            ],
-            eventAbi:
-              "event CreateNewMarket (address indexed market, address indexed PT, int256 scalarRoot, int256 initialAnchor)",
-            onlyArgs: true,
-            fromBlock,
-          })
+          api,
+          target: factory,
+          topics: [
+            "0x166ae5f55615b65bbd9a2496e98d4e4d78ca15bd6127c0fe2dc27b76f6c03143",
+          ],
+          eventAbi:
+            "event CreateNewMarket (address indexed market, address indexed PT, int256 scalarRoot, int256 initialAnchor)",
+          onlyArgs: true,
+          fromBlock,
+        })
         : [];
 
       const logsV3 = factoryV3
         ? await getLogs({
-            api,
-            target: factoryV3,
-            topic: [
-              "0xae811fae25e2770b6bd1dcb1475657e8c3a976f91d1ebf081271db08eef920af",
-            ],
-            eventAbi:
-              "event CreateNewMarket (address indexed market, address indexed PT, int256 scalarRoot, int256 initialAnchor, uint256 lnFeeRateRoot)",
-            onlyArgs: true,
-            fromBlock: fromBlockV3,
-          })
+          api,
+          target: factoryV3,
+          topic: [
+            "0xae811fae25e2770b6bd1dcb1475657e8c3a976f91d1ebf081271db08eef920af",
+          ],
+          eventAbi:
+            "event CreateNewMarket (address indexed market, address indexed PT, int256 scalarRoot, int256 initialAnchor, uint256 lnFeeRateRoot)",
+          onlyArgs: true,
+          fromBlock: fromBlockV3,
+        })
         : [];
 
       const pt = logs.map((i) => i.PT).concat(logsV3.map((i) => i.PT));
@@ -88,7 +88,7 @@ Object.keys(config).forEach((chain) => {
         ),
       ];
 
-      sy = await filterWhitelistedSY(chain, sy);
+      sy = await filterWhitelistedSY(api, sy);
       const [data, supply, decimals] = await Promise.all([
         api.multiCall({
           abi: "function assetInfo() view returns (uint8 assetType , address uAsset , uint8 decimals )",
@@ -127,21 +127,10 @@ Object.keys(config).forEach((chain) => {
 });
 
 // Prevent SY with malicious accounting from being included in TVL
-async function filterWhitelistedSY(chain, sys) {
-  let chainId = {
-    ethereum: "1",
-    bsc: "56",
-    arbitrum: "42161",
-    optimism: "10",
-    mantle: "5000",
-  }[chain];
-
-  const resp = await axios.get(
-    `https://api-v2.pendle.finance/core/v1/${chainId}/sys/whitelisted`
-  );
-  const res = resp.data.results;
-  const whitelistedSys = res.map((d) => d.address.toLowerCase());
-  return sys.filter((s) => whitelistedSys.includes(s));
+async function filterWhitelistedSY(api, sys) {
+  const { results } = await getConfig('pendle/v2-'+api.chain, `https://api-v2.pendle.finance/core/v1/${api.chainId}/sys/whitelisted`);
+  const whitelistedSys = new Set(results.map((d) => d.address.toLowerCase()));
+  return sys.filter((s) => whitelistedSys.has(s));
 }
 
 module.exports.ethereum.staking = staking(
