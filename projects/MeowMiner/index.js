@@ -7,7 +7,6 @@ module.exports = {
   methodology: 'counts the number of MEOW tokens in the Meow Miner contract.',
   start: 1000235,
   avax: {
-    tvl: () => ({}),
-    staking: sumTokensExport({ owner: MEOW_MINER_CONTRACT, tokens: [MEOW_TOKEN_CONTRACT], lps: [LP_MEOW_WAVAX], useDefaultCoreAssets: true, })
+    tvl: sumTokensExport({ owner: MEOW_MINER_CONTRACT, tokens: [MEOW_TOKEN_CONTRACT], lps: [LP_MEOW_WAVAX], useDefaultCoreAssets: true, })
   }
 }
