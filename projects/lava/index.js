@@ -43,13 +43,13 @@ async function getData(api, chain, key, tokens) {
   }
 
   bals.forEach(([v0, v1], i) => {
-    const v0BN = v0;
-    const v1BN = v1;
-    const keyDataBN = lpReserveKeyDataArr[i];
-    const totalSupplyBN = totalSupplies[i];
+    const v0BN = v0
+    const v1BN = v1
+    const keyDataBN = lpReserveKeyDataArr[i]
+    const totalSupplyBN = totalSupplies[i]
 
-    const properV0 = (v0BN * keyDataBN) / totalSupplyBN;
-    const properV1 = (v1BN * keyDataBN) / totalSupplyBN;
+    const properV0 = v0BN * keyDataBN / totalSupplyBN
+    const properV1 = v1BN * keyDataBN / totalSupplyBN
 
     api.add(token0s[i], properV0);
     api.add(token1s[i], properV1);
@@ -58,7 +58,7 @@ async function getData(api, chain, key, tokens) {
 
 function lavaTvl(borrowed) {
   return async function (api) {
-    const { chain } = api;
+    const { chain } = api
     const reservesList = await api.call({
       abi: getAllReservesTokensABI,
       target: DATA_PROVIDER_ADDRESS[chain],
@@ -92,7 +92,6 @@ module.exports = {
   arbitrum: getMetrics(),
   base: getMetrics(),
   hallmarks: [
-    [Math.floor(new Date("2024-03-28") / 1e3), "Protocol was exploited"],
-    [Math.floor(new Date("2024-04-01") / 1e3), "Protocol was relaunched"],
+    [Math.floor(new Date('2024-03-28')/1e3), 'Protocol was exploited'],
   ],
 };
