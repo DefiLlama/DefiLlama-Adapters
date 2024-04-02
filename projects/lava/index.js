@@ -96,5 +96,3 @@ module.exports = {
     [Math.floor(new Date("2024-04-01") / 1e3), "Protocol was relaunched"],
   ],
 };
-
-module.exports.arbitrum.borrowed = () => ({});
