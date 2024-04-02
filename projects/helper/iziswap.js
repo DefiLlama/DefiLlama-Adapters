@@ -1,18 +1,38 @@
 const { sumTokens2 } = require("./unwrapLPs")
 const ADDRESSES = require('../helper/coreAssets.json')
 
-function iziswapExport({ poolHelpers, blacklistedTokens = []}) {
+function iziswapExport({ poolHelpers, blacklistedTokens = [], whitelistPoolsWithManager = {}}) {
   return async (api) => {
     const toa = [] 
     const chunkSize = 10
     const allPools = []
     const allPoolMetas = []
+
+    if (Object.keys(whitelistPoolsWithManager).length > 0) {
+      const manager = whitelistPoolsWithManager.liquidityManager
+      const pools = whitelistPoolsWithManager.pools
+      const poolIds = await api.multiCall({
+        target: manager,
+        abi: abi.poolIds,
+        calls: pools,
+      })
+
+      const poolMetas = await api.multiCall({
+        target: manager,
+        abi: abi.poolMetas,
+        calls: poolIds,
+      })
+
+      pools.forEach((output, i) => toa.push([poolMetas[i].tokenX, output], [poolMetas[i].tokenY, output],))
+      return sumTokens2({ tokensAndOwners: toa, api, blacklistedTokens, permitFailure: true})
+    }
   
     for(const manager of poolHelpers) {
       let i = 1
       let foundLastPool = false
-      const poolMetaData = []
+      
       do {
+        const poolMetaData = []
         const calls = []
         for (let j = i; j < i + chunkSize; j++)
           calls.push(j)
@@ -29,17 +49,19 @@ function iziswapExport({ poolHelpers, blacklistedTokens = []}) {
           }
           poolMetaData.push(output)
         }
-      } while (!foundLastPool)
+
+        const poolCalls = poolMetaData.map(i => ({ params: [i.tokenX, i.tokenY, i.fee] }))
+        const pools = await api.multiCall({
+          target: manager,
+          abi: abi.pool,
+          calls: poolCalls,
+        })
     
-      const poolCalls = poolMetaData.map(i => ({ params: [i.tokenX, i.tokenY, i.fee] }))
-      const pools = await api.multiCall({
-        target: manager,
-        abi: abi.pool,
-        calls: poolCalls,
-      })
-  
-      allPools.push(...pools)
-      allPoolMetas.push(...poolMetaData)
+        allPools.push(...pools)
+        allPoolMetas.push(...poolMetaData)
+
+      } while (!foundLastPool)
+
     }
   
     allPools.forEach((output, i) => toa.push([allPoolMetas[i].tokenX, output], [allPoolMetas[i].tokenY, output],))
@@ -53,6 +75,7 @@ const abi = {
   liquidityNum: "uint256:liquidityNum",
   pool: "function pool(address tokenX, address tokenY, uint24 fee) view returns (address)",
   poolMetas: "function poolMetas(uint128) view returns (address tokenX, address tokenY, uint24 fee)",
+  poolIds: "function poolIds(address) view returns (uint128)"
 }
 
 module.exports = {

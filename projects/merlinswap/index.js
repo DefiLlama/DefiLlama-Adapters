@@ -4,7 +4,32 @@ const poolHelpers = {
   'merlin': ['0x261507940678Bf22d8ee96c31dF4a642294c0467'],
 } // iziswap liquidityManager contracts
 
+const whitelistPoolsWithManager = {
+  'liquidityManager': '0x261507940678Bf22d8ee96c31dF4a642294c0467',
+  'pools': [
+    '0xbb913acCDaBF1F952AAE3dFe78E18a0893B395fF',
+    '0x115c8D0f3701686F42a60e1EC8f0b6649855117c',
+    '0xeB11ac85ECd9b54135d7C7Fd575bC1249e456636',
+    '0x453EFb70b21f9E4a37f7B181a99d63817D0313d1',
+    '0x10FC0D8841b08269fE612E7824311Aa2Bf7a3AD7',
+    '0xF578868cCb90b9bBA72bE7E655ac9470d4F79F01',
+    '0xE5d6B48703C37025be3E7Ff93212Fe82876Ab9C9',
+    '0xDF40a8c421f7DC7D26e35Fee1DBF878DaFa17f75',
+    '0x1B7375A7C1B88bB776EE0c6C4248c8ff08b619af',
+    '0x11fcA4A877E18E03FEa218Ff7291CeE236c86650',
+    '0x1F74d16C8FF7aBaFf043eE4A37422646C63dB8a7',
+    '0xF926b6ef780C81e6Af7E1E08790b18EE2c342a75',
+    '0xc6835BFfCa54E2901453Cf5576E50aB384Bf275B',
+    '0x4d0F0356676ba1829657ccDF65a4bd0600425eD3',
+    '0x253a71C6768cd48DC512f0404E8c11A6c1C8eD85',
+    '0x9AcC73958CA4901F72fA6610FB608F1C5675Ed72',
+    '0x6Ad427c4dF1055772aC0C3d58523776855478B31',
+    '0xAeE59aF967dF784E2858b18Be0f6Bc4cEc28dB62',
+    '0xbf50ee4cd52b67E24608Fb2a36f345e06972757e',
+    '0xaBa739bAfAEC54F3D9Be0e6EC4986bB9e778a8f9'
+  ]
+}
 
 Object.keys(poolHelpers).forEach(chain => {
-  module.exports[chain] = { tvl: iziswapExport({ poolHelpers: poolHelpers[chain], }), }
+  module.exports[chain] = { tvl: iziswapExport({ poolHelpers: poolHelpers[chain], whitelistPoolsWithManager: whitelistPoolsWithManager}), }
 })
