@@ -18,6 +18,11 @@ const config = {
       '0xBA47316035E6C95b31cb55BfB93458Ad41E4Da04', // Tarot Velouté
     ]
   },
+  base: {
+    factories: [
+      '0xEb5809eb0f79aaB6e53E6374258b29A244Dfc12d', // Tarot Aerials
+    ]
+  },
   arbitrum: {
     factories: [
       '0x2217AEC3440E8FD6d49A118B1502e539f88Dba55', // Tarot Galahad

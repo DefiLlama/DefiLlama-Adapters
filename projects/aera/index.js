@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { cachedGraphQuery } = require("../helper/cache");
 const { sumTokens2, } = require('../helper/unwrapLPs')
 
@@ -12,7 +13,7 @@ const config = {
     comets: [
       {
         address: '0xF25212E676D1F7F89Cd72fFEe66158f541246445',
-        baseToken: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174'
+        baseToken: ADDRESSES.polygon.USDC
       }
     ],
     cometReward: '0x45939657d1CA34A8FA39A924B71D28Fe8431e581'
@@ -24,11 +25,11 @@ const config = {
     comets: [
       {
         address: '0xA17581A9E3356d9A858b789D68B4d866e593aE94',
-        baseToken: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
+        baseToken: ADDRESSES.ethereum.WETH
       },
       {
         address: '0xc3d688B66703497DAA19211EEdff47f25384cdc3',
-        baseToken: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
+        baseToken: ADDRESSES.ethereum.USDC
       }
     ],
     cometReward: '0x1B0e765F6224C21223AeA2af16c1C46E38885a40'
