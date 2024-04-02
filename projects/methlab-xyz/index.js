@@ -47,6 +47,6 @@ const abi = {
 module.exports = mergeExports([
   module.exports,
   uniV3Export({
-    mantle: { factory: "0x8f140Fc3e9211b8DC2fC1D7eE3292F6817C5dD5D", fromBlock: 59915640, blacklistedTokens: ['0x26a6b0dcdcfb981362afa56d581e4a7dba3be140'] },
+    mantle: { factory: "0x8f140Fc3e9211b8DC2fC1D7eE3292F6817C5dD5D", fromBlock: 59915640 },
   })
 ])
