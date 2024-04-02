@@ -100,6 +100,9 @@ async function getPools(block, chain) {
   if (contracts[chain].CurveStableswapFactoryNG) {
     registriesMapping.CurveStableswapFactoryNG = contracts[chain].CurveStableswapFactoryNG
   }
+  if (contracts[chain].CurveL2TricryptoFactory) {
+    registriesMapping.CurveL2TricryptoFactory = contracts[chain].CurveL2TricryptoFactory
+  }
   const poolList = {}
   await Promise.all(Object.entries(registriesMapping).map(async ([registry, addr]) => {
     poolList[registry] = await getPool({ chain, block, registry: addr })
@@ -156,7 +159,7 @@ async function unwrapPools({ poolList, registry, chain, block }) {
   const callParams = { target: registryAddress, calls: poolList.map(i => ({ params: i.output })), chain, block, }
   const { output: coins } = await sdk.api.abi.multiCall({ ...callParams, abi: abi.get_coins[registry] })
   let nCoins = {}
-  if (!['cryptoFactory', 'triCryptoFactory'].includes(registry))
+  if (!['cryptoFactory', 'triCryptoFactory', 'CurveL2TricryptoFactory'].includes(registry))
     nCoins = (await sdk.api.abi.multiCall({ ...callParams, abi: abi.get_n_coins[registry] })).output
 
   let { wrapped = '', metapoolBases = {}, blacklist = [] } = contracts[chain]
