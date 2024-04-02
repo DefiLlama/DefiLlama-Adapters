@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { request, gql } = require("graphql-request");
 
 const graphUrl = "https://api.studio.thegraph.com/query/62472/core-analytics-082/version/latest";
@@ -28,7 +29,7 @@ async function getTVL(toTimestamp) {
   const total = dailyHistories.reduce((acc, cur) => acc + (Number(cur.deposit) - Number(cur.withdraw)), 0);
 
   return {
-    "blast:0x4300000000000000000000000000000000000003": total,
+    ["blast:" + ADDRESSES.blast.USDB]: total,
   };
 }
 
