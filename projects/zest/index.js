@@ -1,4 +1,4 @@
-const { sumTokens } = require('./helper/chain/stacks')
+const { sumTokens } = require('../helper/chain/stacks')
 
 async function tvl() {
     return sumTokens({
