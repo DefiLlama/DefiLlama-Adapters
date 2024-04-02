@@ -96,6 +96,7 @@ module.exports = {
   zeta: {
     tvl: getUniTVL({ factory: '0x33d91116e0370970444B0281AB117e161fEbFcdD', useDefaultCoreAssets: true, }),
   },
+  blast: { tvl: getUniTVL({ factory: '0x42Fa929fc636e657AC568C0b5Cf38E203b67aC2b' })},
 }
 
 module.exports.polygon.tvl = getChainTVL('polygon')
