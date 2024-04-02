@@ -93,6 +93,7 @@ module.exports = {
   base: getMetrics(),
   hallmarks: [
     [Math.floor(new Date("2024-03-28") / 1e3), "Protocol was exploited"],
+    [Math.floor(new Date("2024-04-01") / 1e3), "Protocol was relaunched"],
   ],
 };
 
