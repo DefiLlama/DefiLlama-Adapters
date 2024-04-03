@@ -48,12 +48,13 @@ async function getLPList({ lps, chain, block, lpFilter = isLP, cache = {}, }) {
   if (!cache.symbol) cache.symbol = {}
   lps = lps.filter(i => i)
   const callArgs = lps.filter(i => !cache.symbol[i]).map(t => ({ target: t }));
-  (await sdk.api.abi.multiCall({ calls: callArgs, abi: symbol, block, chain })).output
+  (await sdk.api.abi.multiCall({ calls: callArgs, abi: symbol, block, chain, permitFailure: true, })).output
     .forEach(i => cache.symbol[i.input.target] = i.output)
   return lps.filter(i => lpFilter(cache.symbol[i], i, chain))
 }
 
 async function getTokenPrices({
+  api,
   block,
   chain = 'ethereum',
   abis = {},  // if some protocol uses custom abi instead of standard one
@@ -74,7 +75,12 @@ async function getTokenPrices({
   reservesCallFn,
   cache = {},
 }) {
-  const api = new sdk.ChainApi({ block, chain, })
+  if (!api)
+    api = new sdk.ChainApi({ block, chain, })
+  else {
+    chain = api.chain
+    block = api.block
+  }
   if (!cache.pairData) cache.pairData = {}
   let counter = 0
   if (!transformAddress)
@@ -87,8 +93,8 @@ async function getTokenPrices({
   blacklist = blacklist.map(i => i.toLowerCase())
   whitelist = whitelist.map(i => i.toLowerCase())
   lps = getUniqueAddresses(lps)
-  const pairAddresses = allLps ? lps : await getLPList({ lps, chain, block, lpFilter, cache })
-  const toCall  = (pairAddress) => ({ target: pairAddress, })
+  const pairAddresses = (allLps && !lpFilter) ? lps : await getLPList({ lps, chain, block, lpFilter, cache })
+  const toCall = (pairAddress) => ({ target: pairAddress, })
   const pairCalls = pairAddresses.map(toCall)
   const pairs = cache.pairData;
   const token0Calls = pairAddresses.filter(i => !pairs[i] || !pairs[i].token0Address).map(toCall)
@@ -356,10 +362,17 @@ async function getTokenPrices({
   }
 }
 
-async function sumUnknownTokens({ tokensAndOwners = [], balances = {},
+async function sumUnknownTokens({ api, tokensAndOwners = [], balances,
   coreAssets = [], owner, tokens, chain = 'ethereum', block, restrictTokenRatio, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
-  log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [], useDefaultCoreAssets = false, cache = {},
+  log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [], useDefaultCoreAssets = false, cache = {}, resolveLP = false, abis,
 }) {
+  if (api) {
+    chain = api.chain ?? chain
+    block = api.block ?? block
+    if (!balances) balances = api.getBalances()
+  } else if (!balances) {
+    balances = {}
+  }
   if (!coreAssets.length && useDefaultCoreAssets)
     coreAssets = getCoreAssets(chain)
   blacklist = getUniqueAddresses(blacklist)
@@ -369,15 +382,29 @@ async function sumUnknownTokens({ tokensAndOwners = [], balances = {},
     else if (owner)
       tokensAndOwners = tokens.map(t => [t, owner])
   tokensAndOwners = tokensAndOwners.filter(t => !blacklist.includes(t[0]))
-  await sumTokens2({ balances, chain, block, tokensAndOwners, skipFixBalances: true, })
-  const { updateBalances, } = await getTokenPrices({ cache, coreAssets, lps: [...tokensAndOwners.map(t => t[0]), ...lps,], chain, block, restrictTokenRatio, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio })
+  await sumTokens2({ api, balances, chain, block, tokensAndOwners, skipFixBalances: true, resolveLP, abis })
+  const { updateBalances, } = await getTokenPrices({ cache, coreAssets, lps: [...tokensAndOwners.map(t => t[0]), ...lps,], chain, block, restrictTokenRatio, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio, abis, })
   await updateBalances(balances, { skipConversion, onlyLPs })
   const fixBalances = await getFixBalances(chain)
   fixBalances(balances)
   return balances
 }
 
+// sushi constant product LP
+const SCPLP = {
+  lpFilter: (symbol, addr, chain) => symbol === 'SCPLP',
+  abis: {
+    getReservesABI: "function getAssets() external view returns (uint _reserve0, uint _reserve1)",
+  },
+}
+const syncswap = {
+  lpFilter: (symbol, addr, chain) => ['scroll', 'era'].includes(chain) && /(cSLP|sSLP)$/.test(symbol),
+  abis: {
+    getReservesABI: "function getReserves() external view returns (uint _reserve0, uint _reserve1)",
+  },
+}
 const customLPHandlers = {
+  kava: { SCPLP, },
   klaytn: {
     kslp: {
       lpFilter: (symbol, addr, chain) => chain === 'klaytn' && symbol === 'KSLP',
@@ -387,7 +414,9 @@ const customLPHandlers = {
         token1ABI: kslpABI.tokenB,
       },
     }
-  }
+  },
+  scroll: { syncswap, },
+  era: { syncswap, },
 }
 
 module.exports = {

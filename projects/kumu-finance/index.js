@@ -41,6 +41,9 @@ async function staking(_, _b, { [chain]: block }) {
 }
 
 module.exports = {
+  hallmarks: [
+    [1662336000, "Rug Pull"]
+  ],
   klaytn: {
     tvl, staking
   }

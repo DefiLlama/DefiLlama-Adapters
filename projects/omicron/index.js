@@ -1,11 +1,12 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { ohmTvl } = require('../helper/ohm')
 
 const treasury = "0x9EF8600b0f107c083F9df557e0Ddf12E071E75fe"
 module.exports = ohmTvl(treasury, [
     //USDC
-    ["0xff970a61a04b1ca14834a43f5de4533ebddb5cc8", false],
+    [ADDRESSES.arbitrum.USDC, false],
     //MIM
-    ["0xfea7a6a0b346362bf88a9e4a88416b77a57d6c2a", false],
+    [ADDRESSES.arbitrum.MIM, false],
     //sushi LP
     ["0xe4ad045abb586dbdae6b11a4d2c6ff5434b93ed1", true],
     //

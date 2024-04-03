@@ -54,7 +54,6 @@ function chainTvl_onchain(chain) {
       .map(t => t.substring(t.indexOf(':') + 1))
 
     const reserveTokens = [...new Set(recordsTokens.flat())]
-    // console.log(`${chain}: All tokens from every nested records`, reserveTokens)
     
     const tokenBalances = await sdk.api.abi.multiCall({
       calls: reserveTokens.map(t => ({

@@ -1,42 +1,60 @@
-const sdk = require("@defillama/sdk")
+const ADDRESSES = require('../helper/coreAssets.json')
+const { staking } = require("../helper/staking")
+const { graphQuery } = require('../helper/http')
 
 const VELA = '0x088cd8f5eF3652623c22D48b1605DCfE860Cd704'
-const VAULT_CONTRACT = '0x5957582F020301a2f732ad17a69aB2D8B2741241'
-const USDC = '0xff970a61a04b1ca14834a43f5de4533ebddb5cc8'
-const STAKING_CONTRACT = '0xfC527781Ae973f8131dC26dDDb2Adb080c1C1F59'
 
-async function vaultTvl(timestamp, ethBlock, chainBlocks) {  
-  const vaultDeposits = (await sdk.api.abi.call({
-      target: USDC, 
-      params: VAULT_CONTRACT,
-      abi: 'erc20:balanceOf',
-      block: chainBlocks.arbitrum,
-      chain: 'arbitrum'
-    })).output
-  const balances = {
-    ['0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48']: vaultDeposits
-  }
-  return balances
+const arbitrumEndpoint = "https://api.thegraph.com/subgraphs/name/velaexchange/vela-exchange-official"
+const baseEndpoint = "https://api.thegraph.com/subgraphs/name/velaexchange/vela-exchange-official-base"
+async function staking_arbitrum_(api) {
+
+  const query = `
+      query {
+        poolInfos(where: {
+          id: "all"
+        }) {
+          pid1
+          pid2
+          pid3
+        }
+      }
+      `;
+  const graphRes = (await graphQuery(arbitrumEndpoint, query)).poolInfos.find(x => true);
+  api.add(VELA, graphRes?.pid2)
+  api.add(VELA, graphRes?.pid3)
 }
 
-async function velaStaking(timestamp, ethBlock, chainBlocks) {  
-  const velaDeposits = (await sdk.api.abi.call({
-      target: VELA, 
-      params: STAKING_CONTRACT,
-      abi: 'erc20:balanceOf',
-      block: chainBlocks.arbitrum,
-      chain: 'arbitrum'
-    })).output
-  const balances = {
-    ['arbitrum:0x088cd8f5eF3652623c22D48b1605DCfE860Cd704']: velaDeposits
-  }
-  return balances
+async function staking_base_(api) {
+
+  const query = `
+      query {
+        poolInfos(where: {
+          id: "all"
+        }) {
+          pid1
+          pid2
+          pid3
+        }
+      }
+      `;
+  const graphRes = (await graphQuery(baseEndpoint, query)).poolInfos.find(x => true);
+  api.add(VELA, graphRes?.pid2)
+  api.add(VELA, graphRes?.pid3)
 }
 
 module.exports = {
-  methodology: "Counts USDC deposited to trade and to mint VLP. Staking counts VELA deposited to earn eVELA",
+  methodology: "Counts USDC deposited to trade and to mint VLP. Staking counts VELA and esVELA deposited to earn esVELA",
   arbitrum: {
-    staking: velaStaking,
-    tvl: vaultTvl
+    tvl: staking('0xC4ABADE3a15064F9E3596943c699032748b13352', ADDRESSES.arbitrum.USDC),
+    staking: staking_arbitrum_
   },
+  base: {
+    start: 3566528,
+    tvl: staking("0xC4ABADE3a15064F9E3596943c699032748b13352", ADDRESSES.base.USDbC),
+    staking: staking_base_
+  },
+  hallmarks: [
+    [Math.floor(new Date('2023-04-13') / 1e3), 'Refunded tokens to VLP holders & traders'],
+    [1693926000, 'Launched on Base Chain']
+  ],
 }

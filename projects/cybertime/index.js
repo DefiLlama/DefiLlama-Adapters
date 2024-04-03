@@ -1,7 +1,6 @@
 const abi = require("./abi.json");
 const { pool2s } = require("../helper/pool2");
 const { addFundsInMasterChef } = require("../helper/masterchef");
-const { transformBscAddress } = require("../helper/portedTokens");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 
 const pool2FarmContracts = [
@@ -57,7 +56,7 @@ const farms = [
 const Staking = async (chainBlocks) => {
   const balances = {};
 
-  let transformAddress = await transformBscAddress();
+  let transformAddress = i => `bsc:${i}`;
   await sumTokensAndLPsSharedOwners(
     balances,
     [
@@ -76,15 +75,15 @@ const Staking = async (chainBlocks) => {
   return balances;
 };
 
-const bscTvl = async (chainBlocks) => {
+const bscTvl = async (api) => {
   const balances = {};
 
-  let transformAddress = await transformBscAddress();
+  let transformAddress = i => `bsc:${i}`;
   for (const farm of farms) {
     await addFundsInMasterChef(
       balances,
       farm,
-      chainBlocks["bsc"],
+      api.bsc,
       "bsc",
       transformAddress,
       abi.poolInfo,
@@ -99,8 +98,7 @@ const bscTvl = async (chainBlocks) => {
 };
 
 module.exports = {
-  timetravel: true,
-  bsc: {
+    bsc: {
     staking: Staking,
     pool2: pool2s(pool2FarmContracts, lpPool2, "bsc"),
     tvl: bscTvl,

@@ -1,8 +1,8 @@
 const sdk = require("@defillama/sdk");
+const methodologies = require("../helper/methodologies");
 
 module.exports = {
-  methodology:
-    "Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There are multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending.",
+  methodology: methodologies.lendingMarket,
 };
 
 /** @type {Record<string, { auditor: string, start: number }>} */
@@ -11,13 +11,17 @@ const config = {
     auditor: "0x310A2694521f75C7B2b64b5937C16CE65C3EFE01",
     start: 15_868_410,
   },
+  optimism: {
+    auditor: "0xaEb62e6F27BC103702E7BC879AE98bceA56f027E",
+    start: 78_310_663,
+  }
 };
 
 Object.entries(config).forEach(([chain, { auditor, start }]) => {
   module.exports[chain] = {
     start,
     /** @type {(timestamp: number, block: number, chainBlocks: Record<string, number>, { api: ChainApi }) => Promise<Balances>} */
-    tvl: async (_, __, ___, { api }) => {
+    tvl: async (api) => {
       /** @type {Balances} */
       const balances = {};
       const data = await markets(api, auditor);
@@ -32,7 +36,7 @@ Object.entries(config).forEach(([chain, { auditor, start }]) => {
       return balances;
     },
     /** @type {(timestamp: number, block: number, chainBlocks: Record<string, number>, { api: ChainApi }) => Promise<Balances>} */
-    borrowed: async (_, __, ___, { api }) => {
+    borrowed: async (api) => {
       /** @type {Balances} */
       const balances = {};
       const data = await markets(api, auditor);

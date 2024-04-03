@@ -1,19 +1,18 @@
-const utils = require('./helper/utils');
 
-/* * * * * * * *
-* ==> Correct adapter needs to be created.
-*
-*****************/
+const { getConfig } = require('./helper/cache')
+const { sumUnknownTokens } = require('./helper/unknownTokens')
 
-async function fetch() {
-  let response = await utils.fetchURL('https://api.goosedefi.com/getTVL')
-  return parseFloat(response.data);
-
+async function tvl(api) {
+  let data = await getConfig('goosedefi', 'https://api.goosedefi.com/vaults/getGusdVaultsData')
+  const pools = data.map(i => i.stratAddress)
+  const tokens = data.map(i => i.stakeTokenAddress)
+  // const tokens = await api.multiCall({  abi: 'address:pairAddress', calls: pools})
+  const bals = await api.multiCall({  abi: 'uint256:wantLockedTotal', calls: pools})
+  api.addTokens(tokens, bals)
+  return sumUnknownTokens({ api, useDefaultCoreAssets: true, resolveLP: true, })
 }
 
 module.exports = {
-  bsc: {
-    fetch
-  },
-  fetch
-}
+  misrepresentedTokens: true,
+  bsc: {    tvl  },
+};

@@ -1,98 +1,62 @@
+const { nullAddress } = require('../helper/tokenMapping');
+const { get } = require('../helper/http')
 const sdk = require("@defillama/sdk");
-const { transformBscAddress } = require('../helper/portedTokens');
 
-// chains with staking component:
 
-let stkTokensObject = {
-  stkATOM: "0x44017598f2AF1bD733F9D87b5017b4E7c1B28DDE",
-  stkXPRT: "0x45e007750Cc74B1D2b4DD7072230278d9602C499",
-};
+async function bsctvl(api) {
+  const bal = await api.call({ abi: 'function exchangeRate() external view returns (uint256 totalWei, uint256  poolTokenSupply)', target: '0xc228cefdf841defdbd5b3a18dfd414cc0dbfa0d8' })
 
-let pTokensObject = {
-  pATOM: "0x446E028F972306B5a2C36E81D3d088Af260132B3",
-  pXPRT: "0x8793cD84c22B94B1fDD3800f02C4B1dcCa40D50b",
-};
-const STKBNB_TOKEN_CONTRACT = '0xc2E9d07F66A89c44062459A47a0D2Dc038E4fb16';
-
-async function eth(timestamp, block) {
-  let balances = {};
-
-  // get the total supply of each stkToken
-  const stkTokenTotalSupplyValues = await sdk.api.abi.multiCall({
-    abi: "erc20:totalSupply",
-    calls: Object.keys(stkTokensObject).map((t) => ({
-      target: stkTokensObject[t],
-    })),
-    block,
-  });
-
-  // get the total supply of each pToken
-  const pTokenTotalSupplyValues = await sdk.api.abi.multiCall({
-    abi: "erc20:totalSupply",
-    calls: Object.keys(pTokensObject).map((t) => ({
-      target: pTokensObject[t],
-    })),
-    block,
-  });
-
-  // add the total supply values individually to the balances object
-  // stkTokenTotalSupplyValues.output.forEach((call, index) => {
-  for (
-    let index = 0;
-    index < stkTokenTotalSupplyValues.output.length;
-    index++
-  ) {
-    // ADD THE VALUES OF STKTOKENS
-    const underlyingStkToken =
-      stkTokenTotalSupplyValues.output[index].input.target;
-    const underlyingStkTokenBalance =
-      stkTokenTotalSupplyValues.output[index].output;
-    // sumSingleBalance is used to allocate only number of tokens and token address and it is
-    // supposed to pull the price directly from the usd price in the various pools in defilama
-    sdk.util.sumSingleBalance(
-      balances,
-      underlyingStkToken,
-      underlyingStkTokenBalance
-    );
-
-    // ADD THE VALUES OF PTOKENS AS WELL
-    // const underlyingPToken = pTokenTotalSupplyValues[index].input.target;
-    const underlyingPTokenBalance =
-      pTokenTotalSupplyValues.output[index].output;
-    // sumSingleBalance is used to allocate only number of tokens and token address and it is
-    // supposed to pull the price directly from the usd price in the various pools in defilama
-    sdk.util.sumSingleBalance(
-      balances,
-      underlyingStkToken,
-      underlyingPTokenBalance
-    );
-  }
-
-  return balances;
+  return {
+    ['bsc:' + nullAddress]: bal.totalWei
+  };
 }
 
-async function bsctvl(timestamp, block, chainBlocks) {
-  const balances = {};
-  const transform = await transformBscAddress();
+const baseEndpoint = 'https://api.persistence.one/pstake'
 
-  const collateralBalance = (await sdk.api.abi.call({
-    abi: "uint256:totalSupply",
-    chain: 'bsc',
-    target: STKBNB_TOKEN_CONTRACT,
-    block: chainBlocks['bsc'],
-  })).output;
+const chainInfos = {
+  cosmos: {
+    name: "cosmos",
+    decimals: 1e6,
+    endpoint: "/stkatom/atom_tvu"
+  },
+  osmosis: {
+    name: "osmosis",
+    decimals: 1e6,
+    endpoint: "/stkosmo/osmo_tvu"
+  },
+  dydx: {
+    name: "dydx-chain",
+    decimals: 1e18,
+    endpoint: "/stkdydx/dydx_tvu"
+  },
+  stargaze: {
+    name: "stargaze",
+    decimals: 1e6,
+    endpoint: "/stkstars/stars_tvu"
+  }
+}
 
-  sdk.util.sumSingleBalance(balances, transform(STKBNB_TOKEN_CONTRACT), collateralBalance)
+function cosmostvl() {
+  return async () => {
 
-  return balances;
+    let tvl = {}
+    for (const chain of Object.values(chainInfos)) {
+      const api = baseEndpoint + chain.endpoint
+
+      const amount = await get(api)
+
+      const balance = {};
+      sdk.util.sumSingleBalance(balance, chain.name, amount.amount.amount / chain.decimals);
+
+      tvl[chain.name] = balance[chain.name]
+    }
+
+    return tvl
+  }
 }
 
 module.exports = {
-  methodology: `We get the totalSupply of the constituent token contracts (like stkATOM, pATOM, stkXPRT, pXPRT, stkBNB etc.) and then we multiply it with the USD market value of the constituent token`,
-  ethereum: {
-    tvl: eth,
-  },
-  bsc: {
-    tvl: bsctvl
-  }
+  methodology: `Total amount of liquid staked tokens on Persistence.`,
+  bsc: { tvl: bsctvl },
+  persistence: { tvl: cosmostvl() },
 };

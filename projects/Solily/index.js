@@ -1,6 +1,9 @@
 
 
 module.exports = {
+  hallmarks: [
+    [1655251200, "Rug Pull"]
+  ],
   timetravel: false, 
   solana: {
     tvl: () => 0,

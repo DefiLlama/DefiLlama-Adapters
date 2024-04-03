@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const { default: BigNumber } = require("bignumber.js");
 const { request, } = require("graphql-request"); // GraphQLClient
 const { isStableToken } = require('./helper/streamingHelper')
 const { getBlock } = require('./helper/http')
@@ -43,6 +42,8 @@ function isWhitelistedToken(token, address, isVesting) {
   return isVesting ? !isStable : isStable
 }
 
+const blacklist = new Set(['0x441bb79f2da0daf457bad3d401edb68535fb3faa'].map(i => i.toLowerCase()))
+
 // Main function for all chains to get balances of superfluid tokens
 async function getChainBalances(allTokens, chain, block, isVesting) {
   // Init empty balances
@@ -70,12 +71,12 @@ async function getChainBalances(allTokens, chain, block, isVesting) {
       symbol,
       isNativeAssetSuperToken,
     } = allTokens[i]
-    let underlyingTokenBalance = BigNumber(totalSupply * (10 ** (underlyingToken || { decimals: 18 }).decimals) / (10 ** decimals)).toFixed(0)
+    let underlyingTokenBalance = totalSupply * (10 ** (underlyingToken || { decimals: 18 }).decimals) / (10 ** decimals)
     // Accumulate to balances, the balance for tokens on mainnet or sidechain
     let prefixedUnderlyingAddress = underlyingAddress
-    // if (!underlyingToken && underlyingTokenBalance/1e24 > 1) console.log(name, symbol, chain, Math.floor(underlyingTokenBalance/1e24))
+    // if (!underlyingToken && underlyingTokenBalance/1e24 > 1) sdk.log(name, symbol, chain, Math.floor(underlyingTokenBalance/1e24))
     // if (isNativeAssetSuperToken) prefixedUnderlyingAddress = chain + ':' + underlyingAddress
-    if (!underlyingToken) return;
+    if (!underlyingToken || blacklist.has(underlyingAddress.toLowerCase())) return;
     sdk.util.sumSingleBalance(balances, prefixedUnderlyingAddress, underlyingTokenBalance)
   })
 

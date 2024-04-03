@@ -9,7 +9,7 @@ const vaults = [
   '0x77ce0b0e9e629474c69a5d8d5fd9c3e6113dd058',
 ]
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const balances = {}
   let pools = await get('https://comb-breakdown.herokuapp.com/pools');
   const prices = {}
@@ -41,14 +41,13 @@ async function tvl(_, _1, _2, { api }) {
     sdk.util.sumSingleBalance(balances, v.toLowerCase(), supply2[i], api.chain)
   })
   
-  await unwrapLPsAuto({ ...api, balances })
+  await unwrapLPsAuto({ api, balances })
   Object.entries(balances).forEach(([token, bal]) => {
     if (prices[token]) {
       sdk.util.sumSingleBalance(balances,'tether',prices[token] * bal)
       delete balances[token]
     }
   })
-  console.log(prices, balances)
   return balances
 }
 

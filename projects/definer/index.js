@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 
 const abi = require("./abi.json");
@@ -149,7 +150,7 @@ const utility = {
       })
     ).output;
 
-    let zeroCTokenAddress = "0x0000000000000000000000000000000000000000";
+    let zeroCTokenAddress = ADDRESSES.null;
     cToken.forEach((item) => {
         allTokenObj[item.input.params[0]] =
           item.output === zeroCTokenAddress ? "" : item.output;

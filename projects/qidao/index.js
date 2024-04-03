@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, nullAddress, } = require("../helper/unwrapLPs");
 const sdk = require("@defillama/sdk");
 
@@ -18,12 +19,17 @@ const config = {
       "0x86f78d3cbca0636817ad9e27a44996c738ec4932",
       "0xa478E708A27853848C6Bc979668fe6225FEe46Fa",
       "0x7198ff382b5798dab7dc72a23c1fec9dc091893b",
+      "0xc88c8ada95d92c149377aa660837460775dcc6d9"
     ]
   },
   arbitrum: {
     vaults: [
       "0xC76a3cBefE490Ae4450B2fCC2c38666aA99f7aa0",
       "0xB237f4264938f0903F5EC120BB1Aa4beE3562FfF",
+      "0xd371281896f2F5f7A2C65F49d23A2B6ecfd594f3",
+      "0xe47ca047Cb7E6A9AdE9405Ca68077d63424F34eC",
+      "0xa864956ff961ce62c266a8563b46577d3573372e",
+      "0x950eceee9e7d7366a24fc9d2ed4c0c37d17a0fa9"
     ]
   },
   fantom: {
@@ -64,7 +70,7 @@ const config = {
       // "0xF8AC186555cbd5104c0e8C5BacF8bB779a3869f5",
       // "0xEa88eB237baE0AE26f4500146c251d25F409FA32",
       // "0x8Edc3fB6Fcdd5773216331f74AfDb6a2a2E16dc9",
-      "0x13a7fe3ab741ea6301db8b164290be711f546a73",
+      //"0x13a7fe3ab741ea6301db8b164290be711f546a73",
       "0x73a755378788a4542a780002a75a7bae7f558730",
       "0xa9122dacf3fccf1aae6b8ddd1f75b6267e5cbbb8",
       "0x1f8f7a1d38e41eaf0ed916def29bdd13f2a3f11a",
@@ -78,7 +84,13 @@ const config = {
   moonriver: {
     vaults: [
       // "0x97D811A7eb99Ef4Cb027ad59800cE27E68Ee1109",
-      "0x4a0474E3262d4DB3306Cea4F207B5d66eC8E0AA9",
+      //"0x4a0474E3262d4DB3306Cea4F207B5d66eC8E0AA9",
+    ]
+  },
+  harmony: {
+    vaults: [
+      //"0x12FcB286D664F37981a42cbAce92eAf28d1dA94f",
+      //"0x46469f995A5CB60708200C25EaD3cF1667Ed36d6",
     ]
   },
   xdai: {
@@ -87,10 +99,17 @@ const config = {
       "0x014a177e9642d1b4e970418f894985dc1b85657f",
     ]
   },
-  harmony: {
+  base: {
     vaults: [
-      "0x12FcB286D664F37981a42cbAce92eAf28d1dA94f",
-      "0x46469f995A5CB60708200C25EaD3cF1667Ed36d6",
+      "0x7333fd58d8d73a8e5fc1a16c8037ada4f580fa2b",
+      "0x8d6cebd76f18e1558d4db88138e2defb3909fad6",
+      "0x654a31ba7d714cfcab19b17d0066171c1a292349"
+    ]
+  },
+  linea: {
+    vaults: [
+      "0x8ab01c5ee3422099156ab151eecb83c095626599",
+      "0x7f9dd991e8fd0cbb52cb8eb35dd35c474a9a7a70"
     ]
   },
   ethereum: {
@@ -101,6 +120,10 @@ const config = {
       "0x8C45969aD19D297c9B85763e90D0344C6E2ac9d1",
       "0xcc61Ee649A95F2E2f0830838681f839BDb7CB823",
       "0x82E90EB7034C1DF646bD06aFb9E67281AAb5ed28",
+      "0xCA3EB45FB186Ed4e75B9B22A514fF1d4abAdD123",
+      "0x4ce4C542D96Ce1872fEA4fa3fbB2E7aE31862Bad",
+      "0x5773e8953cf60f495eb3c2db45dd753b5c4b7473",
+      "0x954ac12c339c60eafbb32213b15af3f7c7a0dec2"
     ]
   },
   bsc: {
@@ -116,6 +139,7 @@ const config = {
       "0xc09c73f7b32573d178138e76c0e286ba21085c20",
       "0xb89c1b3d9f335b9d8bb16016f3d60160ae71041f",
       "0x5A03716bd1f338D7849f5c9581AD5015ce0020B0",
+      "0x19Cb63CCbfAC2f28B1fd79923f6aDfC096e6EBB4"
     ]
   },
   polygon: {
@@ -142,7 +166,11 @@ const config = {
       "0x57cbf36788113237d64e46f25a88855c3dff1691",
       "0x1f0aa72b980d65518e88841ba1da075bd43fa933",
       "0x9A05b116b56304F5f4B3F1D5DA4641bFfFfae6Ab",
-      "0xF1104493eC315aF2cb52f0c19605443334928D38"
+      "0xF1104493eC315aF2cb52f0c19605443334928D38",
+      "0xb1f28350539b06d5a35d016908eef0424bd13c4b",
+      "0x3bcbAC61456c9C9582132D1493A00E318EA9C122",
+      "0x169d47043cc0c94c39fa327941c56cb0344dc508",
+      "0xb5b31e6a13ae856bc30b3c76b16edad9f432b54f"
     ],
     toa: [
       [nullAddress, '0xa3fa99a148fa48d14ed51d610c367c61876997f1'],
@@ -177,15 +205,15 @@ const config = {
       ], // amWBTC
       // anchor
       [
-        "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+        ADDRESSES.polygon.USDC,
         "0x947D711C25220d8301C087b25BA111FE8Cbf6672",
       ], //USDC
       [
-        "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
+        ADDRESSES.polygon.USDT,
         "0xa4742A65f24291AA421497221AaF64c70b098d98",
       ], //USDT
       [
-        "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
+        ADDRESSES.polygon.DAI,
         "0x6062E92599a77E62e0cC9749261eb2eaC3aBD44F",
       ], //DAI
     ]

@@ -1,10 +1,2 @@
-const { wavesAdapter } = require('../helper/chain/wavesAdapter')
-
-const endpoint = "http://51.158.191.108:8002/api/v1/history/pluto"
-
-module.exports = {
-  timetravel: false,
-  waves: {
-    tvl: wavesAdapter(endpoint, item => item.totalLocked)
-  }
-}
+const { wavesExport } = require('../helper/chain/wavesAdapter')
+module.exports = wavesExport("/pluto", item => item.totalLocked)

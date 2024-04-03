@@ -13,7 +13,8 @@ const DIVIDER_INIT_TS = 1647831440;
 // Converts a bytes32 into an address or, if there is more data, slices an address out of the first 32 byte word
 const toAddress = (data) => `0x${data.slice(64 - 40 + 2, 64 + 2)}`;
 
-async function tvl(_time, block, _1, { api }) {
+async function tvl(api) {
+  const block = api.block
   const transform = await getChainTransform("ethereum");
   const seriesLogs = await getLogs({
     target: DIVIDER,
@@ -33,7 +34,7 @@ async function tvl(_time, block, _1, { api }) {
       return { ...acc, [adapter]: [maturity] };
     }
   }, {});
-  const adapters = Object.keys(series);
+  const adapters = Object.keys(series).filter(i => i.toLowerCase() !== '0x0ed600eecf445b71ae3f8170cd368439e2739289');
 
   const { output: targets } = await sdk.api.abi.multiCall({
     abi: abi.target,
@@ -110,7 +111,7 @@ async function tvl(_time, block, _1, { api }) {
     );
   });
 
-  const poolCalls = Object.entries(series)
+  const poolCalls = Object.entries(series).filter(([i]) => i.toLowerCase() !== '0x0ed600eecf445b71ae3f8170cd368439e2739289')
     .map(([addr, maturities]) => maturities.map((m) => ({ params: [addr, m] })))
     .flat();
 
@@ -172,8 +173,7 @@ async function tvl(_time, block, _1, { api }) {
 }
 
 module.exports = {
-  timetravel: true,
-  doublecounted: true,
+    doublecounted: true,
   misrepresentedTokens: true,
   methodology:
     "TVL is comprised of the sum of yield-bearing assets in Sense, which includes those assets being used both 1) to issue fixed term Sense tokens (PTs/YTs) and 2) as reserves in our Space AMM Pools. Data is collected via the DeFi Llama SDK.",

@@ -1,7 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const { unwrapUniswapLPs, sumTokens2 } = require("../helper/unwrapLPs");
-const { transformFantomAddress, transformBscAddress } = require("../helper/portedTokens");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 const { addFundsInMasterChef } = require("../helper/masterchef");
 const { staking } = require("../helper/staking");
 const BigNumber = require("bignumber.js");
@@ -10,8 +10,8 @@ const BigNumber = require("bignumber.js");
 const MASTERCHEF = "0x742474dae70fa2ab063ab786b1fbe5704e861a0c";
 const MINICHEF = "0x6e2ad6527901c9664f016466b8DA1357a004db0f";
 const BSCMINICHEF = "0xD46db083De31c64AF3F680f139A31fF37bac004f";
-const usdcTokenAddress = "0x04068da6c83afcfa0e13ba15a6696662335d5b75";
-const wftmTokenAddress = "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83";
+const usdcTokenAddress = ADDRESSES.fantom.USDC;
+const wftmTokenAddress = ADDRESSES.fantom.WFTM;
 const beethovenVaultAddress = "0x20dd72Ed959b6147912C2e529F0a0C651c33c9ce";
 
 const LQDR = "0x10b620b2dbac4faa7d7ffd71da486f5d44cd86f9";
@@ -54,10 +54,10 @@ const shadowChefAddresses = [
   "0xD354908d297ce9a348b417d2e0F561EE7D11de5E", // wsHEC/FTM
 ];
 
-const masterchefTvl = async (timestamp, ethBlock, chainBlocks) => {
+const masterchefTvl = async (_ts, ethBlock, chainBlocks) => {
   const balances = {};
 
-  const transformAddress = await transformFantomAddress();
+  const transformAddress = i => `fantom:${i}`;
 
   await addFundsInMasterChef(
     balances,
@@ -71,9 +71,9 @@ const masterchefTvl = async (timestamp, ethBlock, chainBlocks) => {
   return balances;
 };
 
-const hundredchefTvl = async (timestamp, ethBlock, chainBlocks, { api }) => {
+const hundredchefTvl = async (api) => {
   const balances = {};
-  const transformAddress = await transformFantomAddress();
+  const transformAddress = i => `fantom:${i}`;
 
   const hdaiChefAddress = "0x79364E45648Db09eE9314E47b2fD31c199Eb03B9";
   const husdcChefAddress = "0x9A07fB107b9d8eA8B82ECF453Efb7cFb85A66Ce9";
@@ -130,7 +130,7 @@ async function getMinichefTvl(api, minichef, balances = {}) {
   const calls = []
   const callTokens = []
   strategies.forEach((val, i) => {
-    if (val === '0x0000000000000000000000000000000000000000') return;
+    if (val === ADDRESSES.null) return;
     calls.push(val)
     callTokens.push(lpTokens[i].toLowerCase())
   } )
@@ -151,7 +151,7 @@ async function getMinichefTvl(api, minichef, balances = {}) {
     resolveLP: true, })
 }
 
-async function shadowChefTvl(_, _1, _2, { api, }) {
+async function shadowChefTvl(api) {
   const balances = {}
   const  [lpTokens, strategies] = await Promise.all([
     api.multiCall({  abi: abi.shadowLpToken, calls: shadowChefAddresses}),
@@ -161,7 +161,7 @@ async function shadowChefTvl(_, _1, _2, { api, }) {
   const calls = []
   const callTokens = []
   strategies.forEach((val, i) => {
-    if (val === '0x0000000000000000000000000000000000000000') return;
+    if (val === ADDRESSES.null) return;
     calls.push(val)
     callTokens.push(lpTokens[i].toLowerCase())
   } )
@@ -236,12 +236,12 @@ module.exports = {
     staking: staking(xLQDR, LQDR, "fantom", "fantom:" + LQDR),
     tvl: sdk.util.sumChainTvls([
       masterchefTvl,
-      (_, _1, _2, { api }) => getMinichefTvl(api, MINICHEF),
+      (api) => getMinichefTvl(api, MINICHEF),
       hundredchefTvl,
       shadowChefTvl,
     ]),
   },
   bsc: {
-    tvl: (_, _1, _2, { api }) => getMinichefTvl(api, BSCMINICHEF),
+    tvl: (api) => getMinichefTvl(api, BSCMINICHEF),
   }
 }; // node test.js projects/liquiddriver/index.js

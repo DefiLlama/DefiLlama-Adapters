@@ -47,25 +47,30 @@ const config = {
   },
   tron: {
     owners: [
-        'TArBsHHp4zz1TWgHhZWvNcxD4A7DMbcoMm',
+        // 'TArBsHHp4zz1TWgHhZWvNcxD4A7DMbcoMm',
         'TAv486fty6xRuWHQfhBiMh4jBofSuXJcpV',
-        'TBqiQviC27UdWU58qbviJKJwp9b3DygLpY',
+        // 'TBqiQviC27UdWU58qbviJKJwp9b3DygLpY',
         'TDQ7nxDTJBMZkkWcFZKs9KdWzb2vT2drDu',
         'TKCbzA6HPnwEDL9M2tAWnqsbD6TXLUD7yy',
-        'TLHuz1191oCESWJH6sAq9MS5w66HtHVbyc',
+        // 'TLHuz1191oCESWJH6sAq9MS5w66HtHVbyc',
         'TLqPRfPHieHsMMFaQSMXoXqWD18C97cFqB',
-        'TNoQvaDoPHcdoux2Ymt3yUnsSGJgLSXygo',
+        // 'TNoQvaDoPHcdoux2Ymt3yUnsSGJgLSXygo',
         'TSFvf8LZuwy4BKNPdULFD5vaCFMrkiGRme',
-        'TTNeMfGyAL1Bb8vw32U8hxJ5Vmju5tsQ8y',
-        'TUTh7mS9o2EPgxLbx2bNSwwyoPCsLUmkNq',
-        'TUXjobUdiUPvSZmbBVWTcSEqoXzFNr4ZDa',
-        'TUrk8EeZgKCQkfd1KhAfRMBmH1Y4NYnaaL',
+        // 'TTNeMfGyAL1Bb8vw32U8hxJ5Vmju5tsQ8y',
+        // 'TUTh7mS9o2EPgxLbx2bNSwwyoPCsLUmkNq',
+        // 'TUXjobUdiUPvSZmbBVWTcSEqoXzFNr4ZDa',
+        // 'TUrk8EeZgKCQkfd1KhAfRMBmH1Y4NYnaaL',
         'TW6DLBY5dyCUVzc3sgKV72HXNT8EkmEUT8',
-        'TX39NXuXviJ1be8y1XkbnQ4DfFmp9gRhez',
+        // 'TX39NXuXviJ1be8y1XkbnQ4DfFmp9gRhez',
         'TXiZ9ddXTBUke9PDs5HLXVvvHY68kmC3me',
-        'TYp46EYRTHb2grSfjkDFFtakcgedXBHEhh',
-        'TYshj25EXjnPB7P5xRGLmFTNPV6HMoZyrq',
-        'TUiATx1SGs3TwwKY1atafMvYjrQD8KLiSk',
+        // 'TYp46EYRTHb2grSfjkDFFtakcgedXBHEhh',
+        // 'TYshj25EXjnPB7P5xRGLmFTNPV6HMoZyrq',
+        // 'TUiATx1SGs3TwwKY1atafMvYjrQD8KLiSk',
+    ]
+  },
+  bitcoin: {
+    owners: [
+        '39DUz1NCkLu25GczWiAjjgZBu4mUjKbdNA', // this wallet was collected from https://blog.maskex.com/news/announcements/embracing-transparency-maskex-reveals-wallet-addresses
     ]
   }
 }

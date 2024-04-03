@@ -26,7 +26,49 @@ async function tvl() {
 
   const soTokenAccounts = stakingOptionsAccounts
     .map(i => parseSoState(i.account.data))
-    .map(i => i.vault)
+    .map(i => [i.vault, i.reverseVault])
+    .flat()
+
+  const gsoProgramID = new PublicKey("DuALd6fooWzVDkaTsQzDAxPGYCnLrnWamdNNTNxicdX8");
+  let gsoAccounts = await connection.getProgramAccounts(gsoProgramID, {
+    filters: [{
+      dataSize: 1000
+    }]
+  });
+  const gsoTokenAccounts = gsoAccounts
+    .map(i => gsoVault(i.pubkey))
+
+  const tokenAccounts = dipTokenAccounts.concat(soTokenAccounts).concat(gsoTokenAccounts);
+
+  const DUAL = 'DUALa4FC2yREwZ59PHeu1un4wis36vHRv5hWVBmzykCJ'
+  return sumTokens2({ tokenAccounts, allowError: true,  blacklistedTokens: [DUAL]})
+}
+
+async function staking() {
+  const connection = getConnection();
+  const dualProgramID = new PublicKey("DiPbvUUJkDhV9jFtQsDFnMEMRJyjW5iS6NMwoySiW8ki");
+  let programAccounts = await connection.getProgramAccounts(dualProgramID, {
+    filters: [{
+      dataSize: 260
+    }]
+  });
+
+  const dipTokenAccounts = programAccounts
+    .map(i => parseDipState(i.account.data))
+    .map(i => [i.vaultSpl, i.vaultUsdc])
+    .flat()
+
+  const stakingOptionsProgramID = new PublicKey("4yx1NJ4Vqf2zT1oVLk4SySBhhDJXmXFt88ncm4gPxtL7");
+  let stakingOptionsAccounts = await connection.getProgramAccounts(stakingOptionsProgramID, {
+    filters: [{
+      dataSize: 1150
+    }]
+  });
+
+  const soTokenAccounts = stakingOptionsAccounts
+    .map(i => parseSoState(i.account.data))
+    .map(i => [i.vault, i.reverseVault])
+    .flat()
 
   const gsoProgramID = new PublicKey("DuALd6fooWzVDkaTsQzDAxPGYCnLrnWamdNNTNxicdX8");
   let gsoAccounts = await connection.getProgramAccounts(gsoProgramID, {
@@ -87,10 +129,21 @@ function parseSoState(buf) {
     new PublicKey("4yx1NJ4Vqf2zT1oVLk4SySBhhDJXmXFt88ncm4gPxtL7")
   )[0].toBase58();
 
+  // TODO: If the reverse vault does not exist, do not include.
+  const reverseVault = PublicKey.findProgramAddressSync(
+    [
+      Buffer.from(anchor.utils.bytes.utf8.encode("so-reverse-vault")),
+      Buffer.from(anchor.utils.bytes.utf8.encode(soName)),
+      baseMint.toBuffer(),
+    ],
+    new PublicKey("4yx1NJ4Vqf2zT1oVLk4SySBhhDJXmXFt88ncm4gPxtL7")
+  )[0].toBase58();
+
   return {
     soName,
     baseMint,
     vault,
+    reverseVault,
   };
 }
 
@@ -106,9 +159,9 @@ function gsoVault(pubkey) {
 }
 
 module.exports = {
-  misrepresentedTokens: true,
   timetravel: false,
   solana: {
     tvl,
+    staking,
   },
 };

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 
@@ -78,17 +79,15 @@ async function avax(timestamp, ethBlock, chainBlocks) {
   }, 0);
 
   return {
-    "avax:0x0000000000000000000000000000000000000000": TotalBalance
+    ["avax:" + ADDRESSES.null]: TotalBalance
   };
 }
 
 module.exports = {
   start: 16328353,
-  misrepresentedTokens: false,
-  methodology:
+    methodology:
     "All Staking Derivatives are included to the TVL with relative underlying price. Also counted the Avax within the Dynamic Withdrawal Pools.",
-  timetravel: true,
-  doublecounted: true,
+    doublecounted: true,
   hallmarks: [[1658869201, "Launch of yyAVAX"]],
   avax: {
     tvl: avax,

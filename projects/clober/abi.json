@@ -1,6 +1,5 @@
 {
     "nonce":"uint256:nonce",
-    "computeTokenAddress": "function computeTokenAddress(uint256) view returns (address)",
     "market":"address:market",
     "baseToken":"address:baseToken",
     "quoteToken":"address:quoteToken"

@@ -1,9 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { ohmTvl } = require("../helper/ohm");
 
 const treasuryAddress = "0x71EF2894E23D7ea7Fd73a3558B3a0bA25689bC86";
 module.exports = ohmTvl(treasuryAddress, [
 //DAI
-  ["0x8f3cf7ad23cd3cadbd9735aff958023239c6a063", false],
+  [ADDRESSES.polygon.DAI, false],
 //FRAX
   ["0x104592a158490a9228070e0a8e5343b499e125d0", false],
 //SSX

@@ -71,12 +71,13 @@ function unknownTombs({ token = [], shares = [], rewardPool = [], masonry = [], 
   }
 }
 
-function pool2({ stakingContract, lpToken, chain = "ethereum", transformAddress, coreAssets = [], useDefaultCoreAssets = false, }) {
+function pool2({ stakingContract, lpToken, chain, transformAddress, coreAssets = [], useDefaultCoreAssets = false, }) {
   if (!coreAssets.length && useDefaultCoreAssets)
     coreAssets = getCoreAssets(chain)
 
-  return async (_timestamp, _ethBlock, chainBlocks) => {
-    const block = chainBlocks[chain]
+  return async (api) => {
+    const chain = api.chain
+    const block = api.block
     if (!transformAddress)
       transformAddress = await getChainTransform(chain)
 
@@ -92,9 +93,9 @@ function pool2({ stakingContract, lpToken, chain = "ethereum", transformAddress,
 
 function sumTokensExport({ tokensAndOwners = [],
   coreAssets = [], owner, tokens, restrictTokenRatio, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
-  log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [], useDefaultCoreAssets = false,
+  log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [], useDefaultCoreAssets = false, abis,
 }) {
-  return (_, _b, _cb, { api }) => sumUnknownTokens({ ...api, tokensAndOwners, onlyLPs, minLPRatio, coreAssets, owner, tokens, restrictTokenRatio, blacklist, skipConversion, log_coreAssetPrices, log_minTokenValue, owners, lps, useDefaultCoreAssets, })
+  return (api) => sumUnknownTokens({ api, tokensAndOwners, onlyLPs, minLPRatio, coreAssets, owner, tokens, restrictTokenRatio, blacklist, skipConversion, log_coreAssetPrices, log_minTokenValue, owners, lps, useDefaultCoreAssets, abis, })
 }
 
 function staking({ tokensAndOwners = [],
@@ -102,18 +103,12 @@ function staking({ tokensAndOwners = [],
   log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [], useDefaultCoreAssets = false,
 }) {
 
-  return async (_, _b, _cb, { api, chain = 'ethereum', block, }) => {
+  return async (api) => {
+    const { chain, block } = api
     if (!coreAssets.length && useDefaultCoreAssets)
       coreAssets = getCoreAssets(chain)
-    blacklist = getUniqueAddresses(blacklist)
-    if (!tokensAndOwners.length)
-      if (owners.length)
-        tokensAndOwners = owners.map(o => tokens.map(t => [t, o])).flat()
-      else if (owner)
-        tokensAndOwners = tokens.map(t => [t, owner])
-    tokensAndOwners = tokensAndOwners.filter(t => !blacklist.includes(t[0]))
 
-    const balances = await sumTokens2({ chain, block, tokensAndOwners })
+    const balances = await sumTokens2({ api, owner, tokensAndOwners, owners, tokens, blacklistedTokens: blacklist, })
     const { updateBalances, pairBalances, prices, } = await getTokenPrices({ coreAssets, lps: [...tokensAndOwners.map(t => t[0]), ...lps,], chain, block, restrictTokenRatio, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio })
     // sdk.log(prices, pairBalances, balances)
     await updateBalances(balances, { skipConversion, onlyLPs })
@@ -123,16 +118,16 @@ function staking({ tokensAndOwners = [],
   }
 }
 
-function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = [], lps = [], nativeToken, poolInfoABI = masterchefAbi.poolInfo, poolLengthAbi = masterchefAbi.poolLength, getToken = output => output.lpToken, blacklistedTokens = [], useDefaultCoreAssets = false, }) {
+function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = [], lps = [], nativeToken, poolInfoABI = masterchefAbi.poolInfo, poolLengthAbi = masterchefAbi.poolLength, getToken = output => output.lpToken, blacklistedTokens = [], useDefaultCoreAssets = true, }) {
   if (!coreAssets.length && useDefaultCoreAssets)
     coreAssets = getCoreAssets(chain)
-  let allTvl
+  let allTvl = {}
   if (nativeToken) nativeTokens.push(nativeToken)
   nativeTokens = getUniqueAddresses(nativeTokens)
 
   async function getAllTVL(block) {
-    if (!allTvl) allTvl = getTVL()
-    return allTvl
+    if (!allTvl[block]) allTvl[block] = getTVL()
+    return allTvl[block]
 
     async function getTVL() {
       const transform = await getChainTransform(chain)
@@ -240,10 +235,10 @@ async function yieldHelper({ chain = 'ethereum', block, coreAssets = [], blackli
   return transformBalances(chain, balances)
 }
 
-function uniTvlExport(chain, factory) {
+function uniTvlExport(chain, factory, options = {}) {
   return {
     misrepresentedTokens: true,
-    [chain]: { tvl: getUniTVL({ chain, factory, useDefaultCoreAssets: true }) }
+    [chain]: { tvl: getUniTVL({ chain, factory, useDefaultCoreAssets: true, ...options }) }
   }
 }
 

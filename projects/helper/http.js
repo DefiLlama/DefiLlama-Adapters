@@ -1,14 +1,7 @@
 const axios = require("axios")
 const { request, GraphQLClient, } = require("graphql-request")
-const COVALENT_KEY = 'ckey_72cd3b74b4a048c9bc671f7c5a6'
 const sdk = require('@defillama/sdk')
-const env = require('./env')
-
-const chainIds = {
-  'ethereum': 1,
-  'bsc': 56,
-  'polygon': 137
-}
+const { getEnv } = require('./env')
 
 const getCacheData = {}
 
@@ -18,47 +11,55 @@ async function getCache(endpoint) {
 }
 
 async function getBlock(timestamp, chain, chainBlocks, undefinedOk = false) {
-  if (chainBlocks[chain] || (!env.HISTORICAL && undefinedOk)) {
-      return chainBlocks[chain]
+  if (typeof timestamp === "object" && timestamp.timestamp) timestamp = timestamp.timestamp
+  if (chainBlocks[chain] || (!getEnv('HISTORICAL') && undefinedOk)) {
+    return chainBlocks[chain]
   } else {
-      if(chain === "celo"){
-          return Number((await get("https://explorer.celo.org/api?module=block&action=getblocknobytime&timestamp=" + timestamp + "&closest=before")).result.blockNumber);
-      } else if(chain === "moonriver") {
-          return Number((await get(`https://blockscout.moonriver.moonbeam.network/api?module=block&action=getblocknobytime&timestamp=${timestamp}&closest=before`)).result.blockNumber);
-      }
-      return sdk.api.util.lookupBlock(timestamp, { chain }).then(blockData => blockData.block)
+    if (chain === "celo") {
+      return Number((await get("https://explorer.celo.org/api?module=block&action=getblocknobytime&timestamp=" + timestamp + "&closest=before")).result.blockNumber);
+    } else if (chain === "moonriver") {
+      return Number((await get(`https://blockscout.moonriver.moonbeam.network/api?module=block&action=getblocknobytime&timestamp=${timestamp}&closest=before`)).result.blockNumber);
+    }
+    return sdk.api.util.lookupBlock(timestamp, { chain }).then(blockData => blockData.block)
   }
 }
 
-async function get(endpoint) {
-  return (await axios.get(endpoint)).data
+async function get(endpoint, options) {
+  try {
+    const data = (await axios.get(endpoint, options)).data
+    return data
+  } catch (e) {
+    sdk.log(e.message)
+    throw new Error(`Failed to get ${endpoint}`)
+  }
 }
 
 async function getWithMetadata(endpoint) {
   return axios.get(endpoint)
 }
 
-async function post(endpoint, body) {
-  return (await axios.post(endpoint, body)).data
+async function post(endpoint, body, options) {
+  try {
+    const data = (await axios.post(endpoint, body, options)).data
+    return data
+  } catch (e) {
+    sdk.log(e.message)
+    throw new Error(`Failed to post ${endpoint}`)
+  }
 }
 
-async function graphQuery(endpoint, graphQuery, params = {}, {timestamp, chain, chainBlocks, useBlock = false} = {}) {
+async function graphQuery(endpoint, graphQuery, params = {}, { api, timestamp, chain, chainBlocks, useBlock = false } = {}) {
+  if (typeof timestamp === "object" && timestamp.timestamp) timestamp = timestamp.timestamp
+  if (api) {
+    if (!timestamp) timestamp = api.timestamp
+    if (!chain) chain = api.chain
+    if (useBlock && !params.block)
+      params.block = (await api.getBlock()) - 200
+
+  }
   if (useBlock && !params.block)
     params.block = await getBlock(timestamp, chain, chainBlocks)
   return request(endpoint, graphQuery, params)
-}
-
-async function covalentGetTokens(address, chain = 'ethereum') {
-  let chainId = chainIds[chain]
-  if(!chainId)
-    throw new Error('Missing chain to chain id mapping!!!')
-
-  const {
-    data: { items }
-  } = await get(`https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/?&key=${COVALENT_KEY}`)
-  return items
-    .filter(i => +i.balance > 0)
-    .map(i => i.contract_address.toLowerCase())
 }
 
 async function blockQuery(endpoint, query, { api, blockCatchupLimit = 500, }) {
@@ -81,22 +82,6 @@ async function blockQuery(endpoint, query, { api, blockCatchupLimit = 500, }) {
   }
 }
 
-async function graphFetchById({endpoint, query, params = {}, options: { timestamp, chain, chainBlocks, useBlock = false} = {}}) {
-  if (useBlock && !params.block)
-    params.block = await getBlock(timestamp, chain, chainBlocks) - 100
-
-  let data = []
-  let lastId = ""
-  let response;
-  do {
-    const res = await request( endpoint, query, {...params, lastId })
-    Object.keys(res).forEach(key => response = res[key])
-    data.push(...response)
-    lastId = response[response.length - 1]?.id
-    sdk.log(data.length, response.length)
-  } while (lastId)
-  return data
-}
 
 module.exports = {
   get,
@@ -104,8 +89,6 @@ module.exports = {
   post,
   blockQuery,
   graphQuery,
-  covalentGetTokens,
-  graphFetchById,
   getBlock,
   getWithMetadata,
 }
