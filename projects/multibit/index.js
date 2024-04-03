@@ -12,7 +12,7 @@ const config = {
   polygon: {},
   base: {},
   savm: {}, // see: https://svmscan.io/address/0x861E3c82Bc2753ea64aE5f962d993DF6853a6700
-  coreDAO: {}, // see: https://scan.coredao.org/address/0x861e3c82bc2753ea64ae5f962d993df6853a6700
+  core: {}, // see: https://scan.coredao.org/address/0x861e3c82bc2753ea64ae5f962d993df6853a6700
 };
 module.exports = {
   methodology: `Tokens bridged via MultiBit are counted as TVL`,
