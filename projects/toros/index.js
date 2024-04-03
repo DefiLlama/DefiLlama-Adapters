@@ -27,8 +27,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: true,
+    misrepresentedTokens: true,
   start: 1627776000, // Sunday, August 1, 2021 12:00:00 AM
   methodology:
     "Aggregates total value of each Toros vault both on Polygon and Optimism",

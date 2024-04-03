@@ -78,9 +78,7 @@ module.exports = {
   hallmarks: [
     [1643241600, "tokenAddress hack"]
 ],
-  timetravel: true,
-  doublecounted: false,
-  methodology: methodologies.lendingMarket,
+      methodology: methodologies.lendingMarket,
   bsc: {
     tvl: tvl(false),
     //borrowed: tvl(true), // hacked

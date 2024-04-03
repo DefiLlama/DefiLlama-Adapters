@@ -47,7 +47,7 @@ async function getTvl(
   api.storedKey = storedKey
   if (!isFetchFunction) {
     let tvlBalances = await tvlFunction(api, ethBlock, chainBlocks, api);
-    if (!tvlBalances && Object.keys(api.getBalances()).length) tvlBalances = api.getBalances()
+    if (tvlBalances === undefined) tvlBalances = api.getBalances()
     const tvlResults = await computeTVL(tvlBalances, "now");
     await diplayUnknownTable({ tvlResults, storedKey, tvlBalances, })
     usdTvls[storedKey] = tvlResults.usdTvl;
@@ -110,7 +110,8 @@ sdk.api.abi.call = async (...args) => {
   const chains = Object.keys(module).filter(item => typeof module[item] === 'object' && !Array.isArray(module[item]));
   checkExportKeys(module, passedFile, chains)
   const unixTimestamp = Math.round(Date.now() / 1000) - 60;
-  const { chainBlocks } = await getCurrentBlocks([]); // fetch only ethereum block for local test
+  // const { chainBlocks } = await getCurrentBlocks([]); // fetch only ethereum block for local test
+  const chainBlocks = {}
   const ethBlock = chainBlocks.ethereum;
   const usdTvls = {};
   const tokensBalances = {};
