@@ -47,7 +47,7 @@ async function getTvl(
   api.storedKey = storedKey
   if (!isFetchFunction) {
     let tvlBalances = await tvlFunction(api, ethBlock, chainBlocks, api);
-    if (!tvlBalances && Object.keys(api.getBalances()).length) tvlBalances = api.getBalances()
+    if (tvlBalances === undefined) tvlBalances = api.getBalances()
     const tvlResults = await computeTVL(tvlBalances, "now");
     await diplayUnknownTable({ tvlResults, storedKey, tvlBalances, })
     usdTvls[storedKey] = tvlResults.usdTvl;

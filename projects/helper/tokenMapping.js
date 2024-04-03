@@ -34,6 +34,9 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  ethereum: {
+    '0x4d831e22f062b5327dfdb15f0b6a5df20e2e3dd0': { coingeckoId: 'stakestone-ether', decimals: 18 },
+  },
   // Sample Code
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
