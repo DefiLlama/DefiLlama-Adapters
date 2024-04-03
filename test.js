@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const handleError = require('./utils/handleError')
+const INTERNAL_CACHE_FILE = 'tvl-adapter-repo/sdkInternalCache.json'
 process.on('unhandledRejection', handleError)
 process.on('uncaughtException', handleError)
 
@@ -107,6 +108,7 @@ sdk.api.abi.call = async (...args) => {
   } catch (e) {
     console.log(e)
   }
+  await initCache()
   const chains = Object.keys(module).filter(item => typeof module[item] === 'object' && !Array.isArray(module[item]));
   checkExportKeys(module, passedFile, chains)
   const unixTimestamp = Math.round(Date.now() / 1000) - 60;
@@ -213,6 +215,7 @@ sdk.api.abi.call = async (...args) => {
   });
   console.log("\ntotal".padEnd(25, " "), humanizeNumber(usdTvls.tvl), "\n");
 
+  await preExit()
   process.exit(0);
 })();
 
@@ -415,3 +418,32 @@ setTimeout(() => {
   if (!process.env.NO_EXIT_ON_LONG_RUN_RPC)
     process.exit(1);
 }, 10 * 60 * 1000) // 10 minutes
+
+
+
+async function initCache() {
+  let currentCache = await sdk.cache.readCache(INTERNAL_CACHE_FILE)
+  if (process.env.NO_EXIT_ON_LONG_RUN_RPC)
+    sdk.log('cache size:', JSON.stringify(currentCache).length, 'chains:', Object.keys(currentCache).length)
+  const ONE_WEEK = 60 * 60 * 24 * 7
+  if (!currentCache || !currentCache.startTime || (Date.now() / 1000 - currentCache.startTime > ONE_WEEK)) {
+    currentCache = {
+      startTime: Math.round(Date.now() / 1000),
+    }
+    await sdk.cache.writeCache(INTERNAL_CACHE_FILE, currentCache)
+  }
+  sdk.sdkCache.startCache(currentCache)
+}
+
+async function saveSdkInternalCache() {
+  await sdk.cache.writeCache(INTERNAL_CACHE_FILE, sdk.sdkCache.retriveCache(), { skipR2CacheWrite: true })
+}
+
+async function preExit() {
+  try {
+    await saveSdkInternalCache() // save sdk cache to r2
+  } catch (e) {
+    if (process.env.NO_EXIT_ON_LONG_RUN_RPC)
+      sdk.error(e)
+  }
+}
