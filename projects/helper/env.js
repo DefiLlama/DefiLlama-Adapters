@@ -12,7 +12,8 @@ const DEFAULTS = {
   MULTIVERSX_RPC: 'https://api.multiversx.com',
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
-  NAKA_RPC: 'https://node.nakachain.xyz',
+
+  /* NAKA_RPC: 'https://node.nakachain.xyz',
   ETHF_RPC: 'https://rpc.dischain.xyz/',
   CORE_RPC: "https://rpc.coredao.org,https://rpc.ankr.com/core,https://1rpc.io/core,https://rpc-core.icecreamswap.com",
   BITGERT_RPC: "https://flux-rpc2.brisescan.com,https://mainnet-rpc.brisescan.com,https://chainrpc.com,https://serverrpc.com,https://flux-rpc.brisescan.com",
@@ -24,7 +25,7 @@ const DEFAULTS = {
   KINTO_RPC: "https://rpc.kinto-rpc.com",
   DEFICHAIN_EVM_RPC: "https://dmc.mydefichain.com/mainnet,https://dmc01.mydefichain.com/mainnet",
   RSS3_VSL_RPC: "https://rpc.rss3.io",
-  DEGEN_RPC: "https://rpc.degen.tips",
+  DEGEN_RPC: "https://rpc.degen.tips", */
   DEGEN_RPC_MULTICALL: "0xFBF562a98aB8584178efDcFd09755FF9A1e7E3a2",
 }
 
