@@ -9,24 +9,15 @@
 // Various API endpoints: https://api.moneyonchain.com/api/report/
 
 // stats from https://moneyonchain.com/stats/
-const sdk = require('@defillama/sdk')
+const ADDRESSES = require('./helper/coreAssets.json')
 
-async function tvl(_, _b, { rsk: block }) {
+async function tvl(api) {
   const docCollateral = '0xf773b590af754d597770937fa8ea7abdf2668370'
-  const { output } = await sdk.api.eth.getBalances({
-    targets: [docCollateral],
-    chain: 'rsk', block,
-  });
-  let total = 0
-  output.forEach(i => total += i.balance/1e18)
-  return {
-    'rootstock': total
-  }
+  return api.sumTokens({ owner: docCollateral, tokens: [ADDRESSES.null]})
 }
 
 module.exports = {
   methodology: `TVL accounts for Total rBTC in the system`,
-  timetravel: false,
   rsk: {
     tvl,
   }
