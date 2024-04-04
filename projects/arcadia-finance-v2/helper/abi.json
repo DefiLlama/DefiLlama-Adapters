@@ -1,0 +1,8 @@
+{
+  "underlyingAsset": "address:asset",
+  "accountsLength": "uint256:allAccountsLength",
+  "accountAddress": "function allAccounts(uint256) view returns (address)",
+  "assetData": "function generateAssetData() view returns (address[], uint256[], uint256[])",
+  "position": "function positions(uint256) view returns (uint96, address, address, address, uint24, int24, int24, uint128, uint256, uint256, uint128, uint128)",
+  "slot0": "function slot0() view returns (uint160, int24, uint16, uint16, uint16, uint8, bool)"
+}
