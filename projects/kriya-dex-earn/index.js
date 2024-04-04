@@ -6,7 +6,7 @@ const vaultUrl =
 
 async function vaultTVL() {
   let tvl = 0;
-  const vaults = await fetchURL(vaultUrl);
+  const vaults = (await fetchURL(vaultUrl))?.data;
   for (const vault of vaults) {
     tvl += Number(vault?.tvl);
   }
