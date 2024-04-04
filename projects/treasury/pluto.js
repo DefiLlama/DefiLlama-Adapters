@@ -4,6 +4,6 @@ const { sumTokens, } = require('../helper/chain/waves')
 module.exports = {
   timetravel: false,
   waves: {
-    tvl: () => ({}),
+    tvl: api => sumTokens({ api, owners: ['3PKFFFsiKR7rgaeoLQZj6jLsxteZigccN8h'], }),
   }
 }
