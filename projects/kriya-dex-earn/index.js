@@ -1,4 +1,3 @@
-const sui = require("../helper/chain/sui");
 const { fetchURL } = require("../helper/utils");
 const sui = require("../helper/chain/sui");
 
@@ -8,8 +7,8 @@ const vaultUrl =
 async function vaultTVL(api) {
   const vaults = (await fetchURL(vaultUrl))?.data;
   for (const vault of vaults) {
-    const tokenX = Number(vault?.coinA) / 10 ** vault?.pool?.tokenXDecimals;
-    const tokenY = Number(vault?.coinB) / 10 ** vault?.pool?.tokenYDecimals;
+    const tokenX = Number(vault?.coinA);
+    const tokenY = Number(vault?.coinB);
 
     api.add(vault?.pool?.tokenXType, tokenX);
     api.add(vault?.pool?.tokenYType, tokenY);
