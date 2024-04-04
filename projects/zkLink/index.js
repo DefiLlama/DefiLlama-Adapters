@@ -76,7 +76,8 @@ module.exports = {
           "0xD784d7128B46B60Ca7d8BdC17dCEC94917455657",
           "0x62351b47e060c61868Ab7E05920Cb42bD9A5f2B2",
         ],
-        tokens: [ADDRESSES.mantle.WMNT, //mnt
+        tokens: [
+                 ADDRESSES.mantle.WMNT, //mnt
                  ADDRESSES.mantle.USDT, //usdt
                  ADDRESSES.mantle.WETH ,//weth
                  ADDRESSES.mantle.USDC , //usdc
@@ -110,6 +111,28 @@ module.exports = {
           "0x8Df0c2bA3916bF4789c50dEc5A79b2fc719F500b",
         ],
         tokens: [ETH_DEFAULT_ADDRESS],
+      }),
+  },
+  base: {
+    tvl: (api) =>
+      sumTokens2({
+        api,
+        owners: [
+          "0xE473ce141b1416Fe526eb63Cf7433b7B8d7264Dd",
+          "0x80d12A78EfE7604F00ed07aB2f16F643301674D5"
+        ],
+        fetchCoValentTokens: true,
+      })
+  },
+  optimism: {
+    tvl: (api) =>
+      sumTokens2({
+        api,
+        owners: [
+          "0x46C8D02E93d5a03899dFa7Cf8A40A07589A3fA1b",
+          "0x5Bd51296423A9079b931414C1De65e7057326EaA",
+        ],
+        fetchCoValentTokens: true,
       }),
   },
 };
