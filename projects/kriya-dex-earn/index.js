@@ -1,16 +1,19 @@
 const sui = require("../helper/chain/sui");
 const { fetchURL } = require("../helper/utils");
+const sui = require("../helper/chain/sui");
 
 const vaultUrl =
   "https://88ob93rfva.execute-api.ap-southeast-1.amazonaws.com/release/vaults";
 
 async function vaultTVL() {
-  let tvl = 0;
   const vaults = (await fetchURL(vaultUrl))?.data;
   for (const vault of vaults) {
-    tvl += Number(vault?.tvl);
-  }
+    const tokenX = Number(vault?.coinA) / 10 ** vault?.pool?.tokenXDecimals;
+    const tokenY = Number(vault?.coinB) / 10 ** vault?.pool?.tokenYDecimals;
 
+    api.add(vault?.pool?.tokenXType, tokenX);
+    api.add(vault?.pool?.tokenYType, tokenY);
+  }
   return {
     tvl,
   };
