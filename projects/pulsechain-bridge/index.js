@@ -1,4 +1,4 @@
-const { sumTokens2 } = require("../helper/unwrapLPs");
+const { sumTokensExport } = require("../helper/unwrapLPs");
 
 module.exports = {
   ethereum: {
