@@ -25,7 +25,7 @@ query get_tvl($block: Int) {
 }
 `;
 
-async function eth(timestamp, ethBlock, chainBlocks, { api }) {
+async function eth(api) {
   const { uniswapFactory } = await blockQuery(graphUrl, graphQuery, { api, });
   const usdTvl = Number(uniswapFactory.totalLiquidityUSD)
 
@@ -33,7 +33,7 @@ async function eth(timestamp, ethBlock, chainBlocks, { api }) {
 }
 
 function getChainTVL() {
-  return async (timestamp, _b, chainBlocks, { api }) => {
+  return async (api) => {
     const { factory } = await blockQuery('https://api.thegraph.com/subgraphs/name/sushiswap/exchange-' + api.chain, graphQueryPolygon, { api, });
     const usdTvl = Number(factory.liquidityUSD)
 
@@ -93,6 +93,11 @@ module.exports = {
   filecoin: {
     tvl: getUniTVL({ factory: '0x9B3336186a38E1b6c21955d112dbb0343Ee061eE', useDefaultCoreAssets: true, }),
   },
+  zeta: {
+    tvl: getUniTVL({ factory: '0x33d91116e0370970444B0281AB117e161fEbFcdD', useDefaultCoreAssets: true, }),
+  },
+  blast: { tvl: getUniTVL({ factory: '0x42Fa929fc636e657AC568C0b5Cf38E203b67aC2b' })},
+  core: { tvl: getUniTVL({ factory: '0xB45e53277a7e0F1D35f2a77160e91e25507f1763', useDefaultCoreAssets: true })},
 }
 
 module.exports.polygon.tvl = getChainTVL('polygon')

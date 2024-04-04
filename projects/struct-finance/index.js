@@ -9,7 +9,7 @@ const {
   aptFarmABI
 } = require("./constants");
 
-async function tvl(ts, _, __, { api }) {
+async function tvl(api) {
   const vaultsGmx = await api.fetchList({ lengthAbi: "totalProducts", itemAbi: "allProducts", target: addresses.struct.gmx.factory, });
   const vaultsTjap = await api.fetchList({ lengthAbi: "totalProducts", itemAbi: "allProducts", target: addresses.struct.tjap.factory, });
 
@@ -48,6 +48,7 @@ async function tvl(ts, _, __, { api }) {
     owners: [vaultsTjap, vaultsGmx].flat(),
     tokens: [
       ADDRESSES.avax.BTC_b,
+      ADDRESSES.avax.WBTC_e,
       ADDRESSES.avax.USDC,
       ADDRESSES.avax.WETH_e,
       ADDRESSES.avax.EURC,

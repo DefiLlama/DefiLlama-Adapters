@@ -2,7 +2,7 @@ const { fetchURL } = require("../helper/utils");
 
 module.exports = {
   polygon_zkevm: {
-    staking: async (_, _1, _2, { api }) => {
+    staking: async (api) => {
       const stakingBalance = await api.call({
         abi: 'erc20:balanceOf',
         target: '0x1fa03edb1b8839a5319a7d2c1ae6aae492342bad',

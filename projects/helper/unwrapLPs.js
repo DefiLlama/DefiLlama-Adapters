@@ -8,10 +8,11 @@ const { requery } = require('./requery')
 const { getChainTransform, getFixBalances } = require('./portedTokens')
 const { getUniqueAddresses, normalizeAddress } = require('./tokenMapping')
 const creamAbi = require('./abis/cream.json')
-const { isLP, log, sliceIntoChunks, } = require('./utils')
+const { isLP, log, sliceIntoChunks, isICHIVaultToken, createIncrementArray } = require('./utils')
 const { sumArtBlocks, whitelistedNFTs, } = require('./nft')
 const wildCreditABI = require('../wildcredit/abi.json');
 const { covalentGetTokens, } = require("./token");
+const SOLIDLY_VE_NFT_ABI = require('./abis/solidlyVeNft.json');
 
 const lpReservesAbi = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
 const lpSuppliesAbi = "uint256:totalSupply"
@@ -203,6 +204,7 @@ async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], block, c
         case 'evmos': nftAddress = '0x5fe5daaa011673289847da4f76d63246ddb2965d'; break;
         case 'celo': nftAddress = '0x3d79EdAaBC0EaB6F08ED885C05Fc0B014290D95A'; break;
         case 'base': nftAddress = '0x03a520b32C04BF3bEEf7BEb72E919cf822Ed34f1'; break;
+        case 'blast': nftAddress = '0x434575eaea081b735c985fa9bf63cd7b87e227f9'; break;
         default: throw new Error('missing default uniswap nft address chain: ' + chain)
       }
 
@@ -231,7 +233,9 @@ async function unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain = 
   const nftPositions = (await sdk.api.erc20.balanceOf({ target: nftIdFetcher, owner, block, chain })).output
   const factoryKey = getFactoryKey(chain, nftAddress)
   if (!factories[factoryKey]) factories[factoryKey] = sdk.api.abi.call({ target: nftAddress, abi: wildCreditABI.factory, block, chain })
-  const factory = (await factories[factoryKey]).output
+  let factory = (await factories[factoryKey]).output
+  if (factory.toLowerCase() === '0xa08ae3d3f4da51c22d3c041e468bdf4c61405aab') // thruster finance has a bug where they set the pool deployer instead of the factory
+    factory = '0x71b08f13B3c3aF35aAdEb3949AFEb1ded1016127'
 
   const positionIds = (await sdk.api.abi.multiCall({
     block, chain, abi: wildCreditABI.tokenOfOwnerByIndex, target: nftIdFetcher,
@@ -338,6 +342,7 @@ async function sumTokensAndLPs(balances, tokens, block, chain = "ethereum", tran
 
 const balancerVault = "0xBA12222222228d8Ba445958a75a0704d566BF2C8"
 async function sumBalancerLps(balances, tokensAndOwners, block, chain, transformAddress) {
+  if (!transformAddress) transformAddress = await getChainTransform(chain)
   const poolIds = sdk.api.abi.multiCall({
     calls: tokensAndOwners.map(t => ({
       target: t[0]
@@ -693,6 +698,8 @@ async function sumTokens2({
   tokenConfig = {},
   sumChunkSize = undefined,
   uniV3ExtraConfig = {},
+  resolveICHIVault = false,
+  solidlyVeNfts = [],
 }) {
   if (api) {
     chain = api.chain ?? chain
@@ -706,7 +713,13 @@ async function sumTokens2({
   if (owner) owners.push(owner)
   tokens = getUniqueAddresses(tokens, chain)
   owners = getUniqueAddresses(owners, chain)
-  if (owners.length) tokensAndOwners.push(...tokens.map(t => owners.map(o => [t, o])).flat())
+  if (owners.length) {
+    for (const token of tokens) {
+      for (const owner of owners) {
+        tokensAndOwners.push([token, owner])
+      }
+    }
+  }
 
   if (resolveArtBlocks || resolveNFTs) {
     if (!api) throw new Error('Missing arg: api')
@@ -729,6 +742,14 @@ async function sumTokens2({
     nftTokens.forEach((tokens, i) => ownerTokens.push([[tokens, coreNftTokens].flat(), owners[i]]))
   }
 
+  if (solidlyVeNfts.length) {
+    await Promise.all(
+      owners.map(
+        owner => solidlyVeNfts.map(veNftDetails => unwrapSolidlyVeNft({ api, owner, ...veNftDetails }))
+      )
+        .flat()
+    )
+  }
 
   if (ownerTokens.length) {
     ownerTokens.map(([tokens, owner]) => {
@@ -751,8 +772,23 @@ async function sumTokens2({
   tokensAndOwners = getUniqueToA(tokensAndOwners)
   log(chain, 'summing tokens', tokensAndOwners.length)
 
+
+  let ichiVaultToAs = []
+  if (resolveICHIVault) {
+    const symbols = (await api.multiCall({ abi: 'erc20:symbol', calls: tokensAndOwners.map(t => t[0]) }))
+    tokensAndOwners.filter(([token, owner], i) => {
+      if (isICHIVaultToken(symbols[i], token, api.chain)) {
+        ichiVaultToAs.push([token, owner])
+        return false
+      }
+      return true
+    })
+  }
+
   await sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveLP, unwrapAll, blacklistedLPs, skipFixBalances: true, abis, permitFailure, sumChunkSize, })
 
+  if (ichiVaultToAs.length)
+    await unwrapICHIVaults()
 
   if (!skipFixBalances) {
     const fixBalances = await getFixBalances(chain)
@@ -765,10 +801,34 @@ async function sumTokens2({
     toa = toa.map(i => i.join('-'))
     return getUniqueAddresses(toa, chain).map(i => i.split('-'))
   }
+
+
+  async function unwrapICHIVaults() {
+    const lps = ichiVaultToAs.map(i => i[0])
+    const balanceOfCalls = ichiVaultToAs.map(t => ({ params: t[1], target: t[0] }))
+    const [
+      token0s, token1s, supplies, uBalances, tokenBalances
+    ] = await Promise.all([
+      api.multiCall({ abi: 'address:token0', calls: lps }),
+      api.multiCall({ abi: 'address:token1', calls: lps }),
+      api.multiCall({ abi: 'uint256:totalSupply', calls: lps }),
+      api.multiCall({ abi: 'function getTotalAmounts() view returns (uint256 token0Bal, uint256 token1Bal)', calls: lps }),
+      api.multiCall({ abi: 'erc20:balanceOf', calls: balanceOfCalls }),
+    ])
+
+    tokenBalances.forEach((bal, i) => {
+      const ratio = bal / supplies[i]
+      const token0Bal = uBalances[i][0] * ratio
+      const token1Bal = uBalances[i][1] * ratio
+      sdk.util.sumSingleBalance(balances, token0s[i], token0Bal)
+      sdk.util.sumSingleBalance(balances, token1s[i], token1Bal)
+    })
+    return balances
+  }
 }
 
 function sumTokensExport({ balances, tokensAndOwners, tokensAndOwners2, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, resolveUniV3, resolveArtBlocks, resolveNFTs, fetchCoValentTokens, logCalls, ...args }) {
-  return async (_, _b, _cb, { api }) => sumTokens2({ api, balances, tokensAndOwners, tokensAndOwners2, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, resolveUniV3, resolveArtBlocks, resolveNFTs, fetchCoValentTokens, ...args, })
+  return async (api) => sumTokens2({ api, balances, tokensAndOwners, tokensAndOwners2, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, resolveUniV3, resolveArtBlocks, resolveNFTs, fetchCoValentTokens, ...args, })
 }
 
 async function unwrapBalancerToken({ api, chain, block, balancerToken, owner, balances, isBPool = false, isV2 = true }) {
@@ -858,6 +918,44 @@ async function unwrapConvexRewardPools({ api, tokensAndOwners }) {
   return api.getBalances()
 }
 
+function addUniV3LikePosition({ api, token0, token1, liquidity, tickLower, tickUpper, tick }) {
+  const tickToPrice = (tick) => 1.0001 ** tick
+  const sa = tickToPrice(tickLower / 2)
+  const sb = tickToPrice(tickUpper / 2)
+
+  let amount0 = 0
+  let amount1 = 0
+
+  if (tick < tickLower) {
+    amount0 = liquidity * (sb - sa) / (sa * sb)
+  } else if (tick < tickUpper) {
+    const price = tickToPrice(tick)
+    const sp = price ** 0.5
+
+    amount0 = liquidity * (sb - sp) / (sp * sb)
+    amount1 = liquidity * (sp - sa)
+  } else {
+    amount1 = liquidity * (sb - sa)
+  }
+
+  api.add(token0, amount0)
+  api.add(token1, amount1)
+}
+
+async function unwrapSolidlyVeNft({ api, baseToken, veNft, owner, hasTokensOfOwnerAbi = false, isAltAbi = false, lockedAbi, nftIdGetterAbi }) {
+  let tokenIds
+  const _lockedAbi = lockedAbi || (hasTokensOfOwnerAbi || isAltAbi ? SOLIDLY_VE_NFT_ABI.lockedSimple : SOLIDLY_VE_NFT_ABI.locked)
+  const _nftIdGetterAbi = nftIdGetterAbi || (isAltAbi ? SOLIDLY_VE_NFT_ABI.tokenOfOwnerByIndex : SOLIDLY_VE_NFT_ABI.ownerToNFTokenIdList)
+  if (hasTokensOfOwnerAbi) {
+    tokenIds = await api.call({ abi: SOLIDLY_VE_NFT_ABI.tokensOfOwner, params: owner, target: veNft })
+  } else {
+    const count = await api.call({ abi: 'erc20:balanceOf', target: veNft, params: owner })
+    tokenIds = await api.multiCall({ abi: _nftIdGetterAbi, calls: createIncrementArray(count).map(i => ({ params: [owner, i] })), target: veNft })
+  }
+  const bals = await api.multiCall({ abi: _lockedAbi, calls: tokenIds, target: veNft })
+  bals.forEach(i => api.add(baseToken, i.amount))
+}
+
 module.exports = {
   PANCAKE_NFT_ADDRESS,
   unwrapUniswapLPs,
@@ -882,4 +980,6 @@ module.exports = {
   unwrapMakerPositions,
   unwrap4626Tokens,
   unwrapConvexRewardPools,
+  addUniV3LikePosition,
+  unwrapSolidlyVeNft,
 }

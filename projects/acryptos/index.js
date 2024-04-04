@@ -20,8 +20,7 @@ function fetchallchain(chainId) {
 
 module.exports = {
   timetravel: false,
-  misrepresentedTokens: false,
-  methodology: "Acryptos TVL is the USD value of token within the vault and farm contracts",
+    methodology: "Acryptos TVL is the USD value of token within the vault and farm contracts",
   ethereum: {
     tvl: fetchallchain(1),
   },

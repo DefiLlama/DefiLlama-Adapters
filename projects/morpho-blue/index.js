@@ -13,12 +13,12 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { morphoBlue, fromBlock } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const marketIds = await getMarkets(api)
       const tokens = (await api.multiCall({ target: morphoBlue, calls: marketIds, abi: abi.morphoBlueFunctions.idToMarketParams })).map(i => [i.collateralToken, i.loanToken]).flat()
       return api.sumTokens({ owner: morphoBlue, tokens })
     },
-    borrowed: async (_, _b, _cb, { api, }) => {
+    borrowed: async (api) => {
       const marketIds = await getMarkets(api)
       const marketInfo = await api.multiCall({ target: morphoBlue, calls: marketIds, abi: abi.morphoBlueFunctions.idToMarketParams })
       const marketData = await api.multiCall({ target: morphoBlue, calls: marketIds, abi: abi.morphoBlueFunctions.market })
@@ -32,10 +32,14 @@ Object.keys(config).forEach(chain => {
   async function getMarkets(api) {
     const logs = await getLogs({
       api, target: morphoBlue,
+      skipCache: true,
       eventAbi: 'event CreateMarket(bytes32 indexed id, (address loanToken, address collateralToken, address oracle, address irm, uint256 lltv) marketParams)',
       onlyArgs: true, fromBlock,
       topics: ['0xac4b2400f169220b0c0afdde7a0b32e775ba727ea1cb30b35f935cdaab8683ac'],
     })
+    if(logs.length < 29){
+      throw new Error("Missing markets!")
+    }
     return logs.map(i => i.id)
   }
 })

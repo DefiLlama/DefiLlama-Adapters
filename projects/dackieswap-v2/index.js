@@ -24,5 +24,26 @@ module.exports = {
       useDefaultCoreAssets: true,
       fetchBalances: true
     })
+  },
+  arbitrum: {
+    tvl: getUniTVL({
+      factory: "0x507940c2469e6E3B33032F1d4FF8d123BDDe2f5C",
+      useDefaultCoreAssets: true,
+      fetchBalances: true
+    })
+  },
+  blast: {
+    tvl: getUniTVL({
+      factory: "0xF5190E64dB4cbf7ee5E72B55cC5b2297e20264c2",
+      useDefaultCoreAssets: true,
+      fetchBalances: true
+    })
+  },
+  inevm: {
+    tvl: getUniTVL({
+      factory: "0x507940c2469e6E3B33032F1d4FF8d123BDDe2f5C",
+      useDefaultCoreAssets: true,
+      fetchBalances: true
+    })
   }
 };

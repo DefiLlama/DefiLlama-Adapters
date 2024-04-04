@@ -3,6 +3,12 @@ const { staking } = require("../helper/staking");
 
 module.exports = {
   methodology: "Same as Compound Finance, we just count all the tokens supplied (not borrowed money) on the lending markets",
+  op_bnb: {
+    ...compoundExports2({
+        comptroller: "0x71ac0e9A7113130280040d0189d0556f45a8CBB5",
+        cether: "0x7e844423510A5081DE839e600F7960C7cE84eb82",
+    }),
+  },
   bsc: {
     ...compoundExports2({
         comptroller: "0x57E09c96DAEE58B77dc771B017de015C38060173",
