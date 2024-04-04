@@ -1,28 +1,29 @@
-const { sumTokensExport } = require("../helper/unwrapLPs");
-const ADDRESSES = require("../helper/coreAssets.json");
+const { staking } = require("../helper/staking");
 
-const config = {
+module.exports = {
   arbitrum: {
-    ownerTokens: [
-      [
-        ["0xe46C5eA6Da584507eAF8dB2F3F57d7F578192e13"],
-        "0xf75fb73fd1bccd23ce2389169674ce375b43b7a6",
-      ],
-    ],
+    tvl: () => ({}),
+    staking: staking("0xf75fb73fd1bccd23ce2389169674ce375b43b7a6", "0xe46C5eA6Da584507eAF8dB2F3F57d7F578192e13"),
   },
-};
+}
+// const { sumTokensExport } = require("../helper/unwrapLPs");
+// const ADDRESSES = require("../helper/coreAssets.json");
 
-Object.keys(config).forEach((chain) => {
-  module.exports[chain] = {
-    tvl: sumTokensExport(config[chain]),
-  };
-});
-
-// const { staking } = require("../helper/staking");
-
-// module.exports = {
+// const config = {
 //   arbitrum: {
-//     tvl: () => ({}),
-//     staking: staking("0xf75fb73fd1bccd23ce2389169674ce375b43b7a6", "0xe46C5eA6Da584507eAF8dB2F3F57d7F578192e13"),
+//     ownerTokens: [
+//       [
+//         ["0xe46C5eA6Da584507eAF8dB2F3F57d7F578192e13"],
+//         "0xf75fb73fd1bccd23ce2389169674ce375b43b7a6",
+//       ],
+//     ],
 //   },
-// }
+// };
+
+// Object.keys(config).forEach((chain) => {
+//   module.exports[chain] = {
+//     tvl: sumTokensExport(config[chain]),
+//   };
+// });
+
+
