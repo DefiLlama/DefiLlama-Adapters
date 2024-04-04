@@ -5,7 +5,7 @@ const LP_MEOW_WAVAX = "0xbbf8e4b9AD041edE1F5270CAf5b7B41F0e55f719"
 
 module.exports = {
   methodology: 'counts the number of MEOW tokens in the Meow Miner contract.',
-  start: 1000235,
+  start: 42830364,
   avax: {
     tvl: sumTokensExport({ owner: MEOW_MINER_CONTRACT, tokens: [MEOW_TOKEN_CONTRACT], lps: [LP_MEOW_WAVAX], useDefaultCoreAssets: true, })
   }
