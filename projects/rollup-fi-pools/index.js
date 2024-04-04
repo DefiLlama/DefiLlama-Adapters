@@ -13,7 +13,7 @@ module.exports = {
   },
 };
 
-async function cryptoPoolTvl(_, _b, _cb, { api, }) {
+async function cryptoPoolTvl(api) {
   const logs = await getLogs({
     api,
     target: '0x7C5667677e7E6d5a7a3b7cb9EF25a2B4ad2C745A',

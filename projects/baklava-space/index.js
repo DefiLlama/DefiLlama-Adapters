@@ -36,8 +36,13 @@ const config = {
   base: [
         '0x37f716f6693EB2681879642e38BbD9e922A53CDf',
         '0x49AF8CAf88CFc8394FcF08Cf997f69Cee2105f2b',
-        '0x83B2D994A1d16E6A3A44281D12542E2bc0d5EBFD'
-      ]
+        '0x83B2D994A1d16E6A3A44281D12542E2bc0d5EBFD',
+        '0xea505C49B43CD0F9Ed3b40D77CAF1e32b0097328'
+  ],
+  bsc: [
+    '0x6659B42C106222a50EE555F76BaD09b68EC056f9',
+    '0x81Ea18C7c54217C523F2C072C72D732869c4d661'
+  ]
 }
 
 const bavaStakingRewards = "0x2F445C4cC8E114893279fa515C291A3d02160b02"
@@ -48,10 +53,11 @@ module.exports = {
   methodology: `Counts liquidty on the bava staking and lptoken staking on Avalanche and fx token staking on FunctionX`,
   // we have added the other functionx erc4626 vaults, but the token is an LP token and this function is unable to get the price
   functionx: { tvl: fxTvl },
-  base: { tvl: baseTvl }
+  base: { tvl: baseTvl },
+  bsc: { tvl: bscTvl }
 };
 
-async function fxTvl(_, _1, _2, { api }) {
+async function fxTvl(api) {
   const vaults = ['0x5c24B402b4b4550CF94227813f3547B94774c1CB', ...config.functionx]
   const tokens = await api.multiCall({ abi: 'address:asset', calls: vaults })
   const bals = await api.multiCall({ abi: 'uint256:totalAssets', calls: vaults })
@@ -59,8 +65,16 @@ async function fxTvl(_, _1, _2, { api }) {
   return sumTokens2({ api, resolveLP: true, })
 }
 
-async function baseTvl(_, _1, _2, { api }) {
+async function baseTvl(api) {
   const vaults = [...config.base]
+  const tokens = await api.multiCall({ abi: 'address:asset', calls: vaults })
+  const bals = await api.multiCall({ abi: 'uint256:totalAssets', calls: vaults })
+  api.addTokens(tokens, bals)
+  return sumTokens2({ api, resolveLP: true, })
+}
+
+async function bscTvl(api) {
+  const vaults = [...config.bsc]
   const tokens = await api.multiCall({ abi: 'address:asset', calls: vaults })
   const bals = await api.multiCall({ abi: 'uint256:totalAssets', calls: vaults })
   api.addTokens(tokens, bals)
@@ -69,7 +83,7 @@ async function baseTvl(_, _1, _2, { api }) {
 
 const { vaults, pgVaults, tjVaults, } = config.avax
 module.exports.avax = {
-  tvl: async (_, _b, _cb, { api, }) => {
+  tvl: async (api) => {
     const vInfo = await api.multiCall({ abi: 'function vaultInfo() view returns (address token, uint256 bal)', calls: vaults })
     vInfo.forEach(i => api.add(i.token, i.bal))
     const pgInfos = await api.multiCall({ abi: 'function vaultInfo() view returns (address token, address, uint256 bal, uint256, bool, bool)', calls: [pgVaults, tjVaults].flat() })

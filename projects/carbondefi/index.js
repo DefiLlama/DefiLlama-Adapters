@@ -3,7 +3,7 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const controller = '0xC537e898CD774e2dCBa3B14Ea6f34C93d5eA45e1'
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
 	const logs = await getLogs({
 		api,
 		target: controller,

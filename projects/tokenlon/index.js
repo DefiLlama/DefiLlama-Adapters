@@ -31,7 +31,7 @@ const MULTISIG_ONE = "0x3557BD3d422300198719710Cc3f00194E1c20A46";
 
 const WETH = ADDRESSES.ethereum.WETH;
 
-const ethTvl = async (timestamp, block, _, { api }) => {
+const ethTvl = async (api) => {
   const amm_wrapper_addr = await api.call({ abi: abi.ammWrapperAddr, target: PERMANENT_STORAGE_PROXY, })
   const pmm_addr = await api.call({ abi: abi.pmmAddr, target: PERMANENT_STORAGE_PROXY, })
 

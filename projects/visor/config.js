@@ -29,7 +29,8 @@ const HYPE_REGISTRY = {
     ["0x7b9c2f68f16c3618bb45616fb98d83f94fd7062e", 44933860], // Ascent
   ],
   polygon_zkevm: [
-    ["0xD08B593eb3460B7aa5Ce76fFB0A3c5c938fd89b8", 152596], // Quickswap
+    ["0xD08B593eb3460B7aa5Ce76fFB0A3c5c938fd89b8", 152596], // Quickswap Algebra
+    ["0xf9aDaa55014242c1005dB307C4e41c541f26bAAA", 10725633], // Quickswap UniV3
   ],
   optimism: [
     ["0xF5BFA20F4A77933fEE0C7bB7F39E7642A070d599", 6538026], // Uniswap
@@ -56,6 +57,7 @@ const HYPE_REGISTRY = {
     ["0x0F548d7AD1A0CB30D1872b8C18894484d76e1569", 14032548], // Uniswap
   ],
   avax: [
+    ["0xbF145c5239B1327909f3e37CA0cF890d014105E2", 43083367], // Uniswap
     ["0x71ea9545ED7f8662a8B461d7cb0899745E3fb3E6", 39225125], // Pharaoh
   ],
   fantom: [
@@ -63,6 +65,7 @@ const HYPE_REGISTRY = {
   ],
   mantle: [
     ["0x683292172E2175bd08e3927a5e72FC301b161300", 1000], // FusionX
+    ["0xa5E9006C17740Cb9e4898657721c4dFE103d8456", 58580400], // Cleopatra
   ],
   rollux: [
     ["0x683292172E2175bd08e3927a5e72FC301b161300", 1435083], // PegaSys
@@ -77,6 +80,7 @@ const HYPE_REGISTRY = {
     ["0xB24DC81f8Be7284C76C7cF865b803807B3C2EF55", 4249062], // BaseX
     ["0x39ce2eB762e7bFe19b6AD4D5bA384c67CE4051f0", 7310157], // Swapbased
     ["0x8118C33513feC13f8cf488CCb4509190650F0e92", 7310111], // Baseswap
+    ["0xf1DF4F17e34Ba710DfFC487F73f1e19476E815a6", 8743213], // Thick
   ],
   kava: [
     ["0x683292172E2175bd08e3927a5e72FC301b161300", 6384272], // Kinetix
@@ -91,6 +95,18 @@ const HYPE_REGISTRY = {
   ],
   metis: [
     ["0xFc13Ebe7FEB9595D70195E9168aA7F3acE153621", 9080358], // Hercules
+  ],
+  xdai: [
+    ["0x683292172E2175bd08e3927a5e72FC301b161300", 31760496], // Swapr
+  ],
+  astrzk: [
+    ["0x683292172E2175bd08e3927a5e72FC301b161300", 306151], // Quickswap
+  ],
+  imx: [
+    ["0x683292172E2175bd08e3927a5e72FC301b161300", 3951377], // Quickswap
+  ],
+  blast: [
+    ["0xC27DDd78FC49875Fe6F844B72bbf31DFBB099881", 1005700], // Blaster
   ],
 };
 

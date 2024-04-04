@@ -16,9 +16,7 @@ const ALT_BUSD_CakeLP_BNB = "0xaa40dc3ec6ad76db3254b54443c4531e3dfe6bdb";
 
 module.exports = {
   misrepresentedTokens: true,
-  timetravel: true,
-  doublecounted: false,
-  bsc: {
+      bsc: {
     pool2: pool2(lpVaultStakingContract_BNB, ALT_BUSD_CakeLP_BNB, "bsc"),
     staking: staking(vaultStakingContract_BNB, ATL, "bsc"),
     // ...compoundExports(comptroller,
