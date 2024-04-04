@@ -27,16 +27,22 @@ async function getTVL(toTimestamp) {
     to: toTimestamp.toString(),
   });
 
+  const total = dailyHistories.reduce((acc, cur) => acc + (Number(cur.deposit) - Number(cur.withdraw)), 0);
+
+  return {
+    ["base:" + ADDRESSES.base.USDbC]: total,
+  };
+}
+
+async function getBlastTVL(toTimestamp) {
   const { dailyHistories: blastDailyHistories } = await request(blastGraphUrl, query, {
     from: BETA_START.toString(),
     to: toTimestamp.toString(),
   });
 
-  const total = dailyHistories.reduce((acc, cur) => acc + (Number(cur.deposit) - Number(cur.withdraw)), 0);
   const blastTotal = blastDailyHistories.reduce((acc, cur) => acc + (Number(cur.deposit) - Number(cur.withdraw)), 0);
 
   return {
-    ["base:" + ADDRESSES.base.USDbC]: total,
     ["blast:" + ADDRESSES.blast.USDB]: blastTotal,
   };
 }
@@ -49,6 +55,11 @@ module.exports = {
       return getTVL(timestamp);
     },
   },
+  blast: {
+    tvl: async ({ timestamp }) => {
+      return getBlastTVL(timestamp);
+    },
+  }
   hallmarks: [
     [1700006400, "Open Beta Start"],
     [1704200400, "0.8.2 Migration"],
