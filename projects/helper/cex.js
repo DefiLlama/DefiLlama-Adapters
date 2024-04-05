@@ -161,7 +161,7 @@ const defaultTokens = {
      '0x965f527d9159dce6288a2219db51fc6eef120dd1', //BSW
      '0xa2120b9e674d3fc3875f415a7df52e382f141225', //ata
      '0x44ec807ce2f4a6f2737a92e985f318d035883e47', //HFT
-    // ADDRESSES.ethereum.FDUSD, //FDUSD
+     ADDRESSES.ethereum.FDUSD, //FDUSD
      '0xeac9873291ddaca754ea5642114151f3035c67a2', //dcb
      '0xaaa9214f675316182eaa21c85f0ca99160cc3aaa', //qanx
      '0x2d060ef4d6bf7f9e5edde373ab735513c0e4f944', //aitech
