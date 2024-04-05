@@ -14,6 +14,7 @@
     "treasury": "cd utils;npm i; cd ..; node utils/testInteractive treasury",
     "entities": "cd utils;npm i; cd ..; node utils/testInteractive entities",
     "useTokenLabels": "node utils/scripts/useTokenLabels.js",
+    "biggest-files": "find ./projects -name '*.js' -not -path './projects/helper/*' -not -path './projects/curve/*' -not -path './projects/sigmao/*' -exec du -sh {} \\; | sort -rh | head -n 100",
     "postinstall": "echo 'run \"npm update @defillama/sdk\" if you want lastest sdk changes' "
   },
   "author": "",
