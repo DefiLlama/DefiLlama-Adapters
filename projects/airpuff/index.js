@@ -14,6 +14,11 @@ const contractAbis = {
   }, //
   balanceOf: "function balanceOf(address) external view returns (uint256)",
   getPrice: "function answer() external view returns (uint256)",
+  getTotalSupply: "function totalSupply() external view returns (uint256)",
+  getTotalAssets: "function totalAssets() external view returns (uint256)",
+  getVectorSharePrice: "function getVectorSharePrice() external view returns (uint256)",
+  getMswEthPrice: "function exchangeRateToNative() external view returns (uint256)",
+  getMswBalance: "function getAllEigeinPieCycleDepositAmounts() external view returns (uint256)",
 };
 
 module.exports = {
@@ -23,9 +28,13 @@ module.exports = {
     tvl: async (api) => {
       const lendingMain = {
         eth: "0xdeF3AA48bad043e53207d359dcDFdE46F50b6C02", //ETH
+        sUSD: "0x7c2a7009ffE52a69a8C877b47B07D5dB59C0e3b3", // Not lending pool, staking pool
       };
       await api.sumTokens({
-        tokensAndOwners: [[ADDRESSES.ethereum.WETH, lendingMain.eth]],
+        tokensAndOwners: [
+          [ADDRESSES.ethereum.WETH, lendingMain.eth],
+          [ADDRESSES.ethereum.sUSDe, lendingMain.sUSD],
+        ],
       });
 
       const eETH = {
@@ -97,6 +106,23 @@ module.exports = {
         oracle: "0x1bEB65b15689cCAeb5dA191c9fd5F94513923Cab",
       };
 
+      const svETH = {
+        vault: "0xaF33b6372354149c33893B6fA6959Be0607D53dE",
+        reStakingToken: "0x6733F0283711F225A447e759D859a70b0c0Fd2bC",
+        oracle: "svETH",
+      };
+
+      const svETH1x = {
+        vault: "0x060Feab7904378e2A487974e7Ba98251aD65247F",
+        reStakingToken: "0x6733F0283711F225A447e759D859a70b0c0Fd2bC",
+        oracle: "svETH",
+      };
+
+      const svETHPrice = await api.call({
+        abi: contractAbis.getVectorSharePrice,
+        target: svETH.vault,
+      });
+
       const strategies = [ezETH, weETH, rsETH, ezETH1x, weETH1x, rsETH1x, bedRockETH, bedRockETH1x];
 
       for (const strategy of strategies) {
@@ -106,15 +132,72 @@ module.exports = {
           params: [strategy.vault],
         });
 
-        const lrETHPriceInETH = await api.call({
-          target: strategy.oracle,
-          abi: contractAbis.readOraclePrice,
-        });
+        let lrETHPriceInETH;
 
-        const balInETH = (bal * lrETHPriceInETH.value) / 1e18;
+        if (strategy.oracle == "svETH") {
+          lrETHPriceInETH = svETHPrice;
+        } else {
+          lrETHPriceInETH = await api.call({
+            target: strategy.oracle,
+            abi: contractAbis.readOraclePrice,
+          });
+          lrETHPriceInETH = lrETHPriceInETH.value;
+        }
+
+        const balInETH = (bal * lrETHPriceInETH) / 1e18;
 
         api.add(ADDRESSES.ethereum.WETH, balInETH);
       }
+      //strategy with no oracle, but can calculate price using erc4626 totalSupply and totalAssets
+      const LiquidETH = {
+        vault: "0xE543eBa28a3793d5ae747A2164A306DB1767cDAe",
+        reStakingToken: "0xeA1A6307D9b18F8d1cbf1c3Dd6aad8416C06a221",
+      };
+
+      const erc4626Strategies = [LiquidETH];
+
+      for (const erc4626strategy of erc4626Strategies) {
+        const bal = await api.call({
+          abi: contractAbis.balanceOf,
+          target: erc4626strategy.reStakingToken,
+          params: [erc4626strategy.vault],
+        });
+
+        const totalAssets = await api.call({
+          abi: contractAbis.getTotalAssets,
+          target: erc4626strategy.reStakingToken,
+        });
+
+        const totalSupply = await api.call({
+          abi: contractAbis.getTotalSupply,
+          target: erc4626strategy.reStakingToken,
+        });
+
+        const price = totalAssets / totalSupply;
+
+        const balInETH = bal * price;
+
+        api.add(ADDRESSES.ethereum.WETH, balInETH);
+      }
+
+      const mswETH = {
+        valut: "0x7c505E03460aEF7FE88e218CC5fcEeCCcA4C4394",
+        reStakingToken: "0x32bd822d615A3658A68b6fDD30c2fcb2C996D678",
+      };
+
+      const mswETHPrice = await api.call({
+        abi: contractAbis.getMswEthPrice,
+        target: mswETH.reStakingToken,
+      });
+
+      const mswETHBal = await api.call({
+        abi: contractAbis.getMswBalance,
+        target: mswETH.valut,
+      });
+
+      const mswETHBalInETH = (mswETHBal * mswETHPrice) / 1e18;
+
+      api.add(ADDRESSES.ethereum.WETH, mswETHBalInETH);
     },
   },
 
