@@ -47,7 +47,7 @@ module.exports = {
 module.exports = {
   timetravel: false,
   start: BETA_START,
-  blast: { tvl: getTVL },
+  // blast: { tvl: getTVL },
   base: { tvl: getTVL },
   hallmarks: [[1700006400, "Open Beta Start"], [1704200400, "0.8.2 Migration"]],
 };
