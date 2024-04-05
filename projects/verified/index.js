@@ -3,8 +3,8 @@ const { getLogs } = require("../helper/cache/getLogs");
 const chainConfig = {
   polygon: {
     primary: {
-      address: "0x1f8e0fef42231529Ec80750C4E3E1fEe829e2F3E",
-      fromBlock: 54695665,
+      address: "0x3Af6bae7e4779808B5B6cE03c5095Af00Fd87731",
+      fromBlock: 42888477,
     },
     secondary: {
       address: "0x9e4fcc52d9F34DC0dc3744E5b8c3eEC32e8b8214",
@@ -97,7 +97,11 @@ const getChainTvls = (chain) => {
     }
     //extract currencies tvl and showcase table for primary pool
     if (primaryLogs && primaryLogs.length > 0) {
-      const primaryTvls = primaryLogs.map((i) => Number(i.cashSwapped)).flat();
+      const primaryTvls = primaryLogs
+        .map((i) =>
+          i.subscription ? Number(i.cashSwapped) : Number(-i.cashSwapped)
+        )
+        .flat(); //mark sell orders amounts as negative(to reduce tvl) and buy orders as positive(increase tvl)
       const primaryCurrencies = primaryLogs.map((i) => i.currency).flat();
       primaryTvls.forEach((tvl) => {
         allTvls.push(tvl);
@@ -119,7 +123,20 @@ const getChainTvls = (chain) => {
     }
     //extract currencies tvl and showcase table for secondary pool
     if (secondaryLogs && secondaryLogs.length > 0) {
-      const secondaryTvls = secondaryLogs.map((i) => Number(i.amount)).flat();
+      const secondaryTvls = secondaryLogs
+        .map((i, idx) => {
+          if (idx === 0) {
+            return Number(i.amount);
+          } else {
+            if (Number(i.price) > Number(secondaryTvls[idx - 1].price)) {
+              return Number(i.amount);
+            } else {
+              //Todo: reduce with % reduction??
+              return Number(-i.amount);
+            }
+          }
+        })
+        .flat();
       const secondaryCurrencies = secondaryLogs
         .map((i) => i.currencySettled)
         .flat();
@@ -147,7 +164,25 @@ const getChainTvls = (chain) => {
     }
     //extract currencies tvl and showcase table for margin pool
     if (marginLogs && marginLogs.length > 0) {
-      const marginTvls = marginLogs.map((i) => Number(i.cashAmount)).flat();
+      const marginTvls = marginLogs
+        .map((i, idx) => {
+          if (idx === 0) {
+            return Number(i.cashAmount);
+          } else {
+            const currentPrice =
+              Number(i.cashAmount) / Number(i.securityAmount);
+            const previousPrice =
+              Number(marginTvls[idx - 1].cashAmount) /
+              Number(marginTvls[idx - 1].securityAmount);
+            if (currentPrice > previousPrice) {
+              return Number(i.cashAmount);
+            } else {
+              //Todo: reduce with % reduction??
+              return Number(-i.cashAmount);
+            }
+          }
+        })
+        .flat();
       const marginCurrencies = marginLogs.map((i) => i.currencySettled).flat();
       marginTvls.forEach((tvl) => {
         allTvls.push(tvl);
@@ -167,7 +202,6 @@ const getChainTvls = (chain) => {
       console.log("---------", chain, "TVL Details For Margin Pool ---------");
       console.logTable(tabl);
     }
-
     if (allCurrencies.length > 0) {
       return api.addTokens(allCurrencies, allTvls);
     } else {
@@ -178,7 +212,7 @@ const getChainTvls = (chain) => {
 
 module.exports = {
   methodology:
-    "Tvl consists of currencies amount locked to acquire securities on verified networks",
+    "TVL is digital assests paid in to purchase security tokens on the Verified Network",
   timetravel: true,
   misrepresentedTokens: false,
 };
