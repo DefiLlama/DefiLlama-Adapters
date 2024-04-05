@@ -62,8 +62,7 @@ function fetchNetworkTVL(network) {
 
 module.exports = {
   doublecounted: true,
-  misrepresentedTokens: false,
-  methodology: "Counts the tokens locked in the contracts.",
+    methodology: "Counts the tokens locked in the contracts.",
   polygon: {
     tvl: polygonTvl,
     staking: staking(ylSPHEREvault, sphere_token, "polygon")
@@ -82,5 +81,8 @@ module.exports = {
   },
   kava: {
     tvl: fetchNetworkTVL('kava'),
+  },
+  base: {
+    tvl: fetchNetworkTVL('base'),
   },
 };

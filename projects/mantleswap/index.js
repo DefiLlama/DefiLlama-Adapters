@@ -9,7 +9,7 @@ module.exports = {
     }
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const logs = await getLogs({
     api,
     target: '0x5c84e5d27fc7575D002fe98c5A1791Ac3ce6fD2f',
