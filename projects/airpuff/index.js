@@ -10,7 +10,7 @@ const contractAbis = {
   getVectorSharePrice: "function getVectorSharePrice() external view returns (uint256)",
   getMswEthPrice: "function exchangeRateToNative() external view returns (uint256)",
   getMswBalance: "function getAllEigeinPieCycleDepositAmounts() external view returns (uint256)",
-  getUnderlyingPrice:"function getUnderlyingPrice(address cToken) view returns (uint256)",
+  getUnderlyingPrice: "function getUnderlyingPrice(address cToken) view returns (uint256)",
 };
 
 module.exports = {
@@ -220,8 +220,20 @@ module.exports = {
         abi: contractAbis.getMswEthPrice,
         target: mswETH.reStakingToken,
       });
+      //  mswETH1x
 
       for (const msw of [mswETH, mswETH1x]) {
+        if (msw.vault == "0x1100195fbdA2f22AA6f394E6C65f168779Fe572c") {
+          const bal = await api.call({
+            abi: contractAbis.balanceOf,
+            target: msw.reStakingToken,
+            params: [msw.vault],
+          });
+          const balInETH = (bal * mswETHPrice) / 1e18;
+          api.add(ADDRESSES.ethereum.WETH, balInETH);
+          continue;
+        }
+
         const mswETHBal = await api.call({
           abi: contractAbis.getMswBalance,
           target: msw.vault,
