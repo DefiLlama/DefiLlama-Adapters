@@ -1,7 +1,6 @@
 const abi =require("./abi/liquidity_manager")
 const tokens =require("./abi/token")
 const BigNumber = require("bignumber.js");
-const sdk = require('@defillama/sdk');
 
 let transType = ["BTC", "ETH"];
 
