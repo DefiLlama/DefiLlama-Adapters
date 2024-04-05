@@ -96,7 +96,16 @@ const defaultTokens = {
     '0x64d0f55Cd8C7133a9D7102b13987235F486F2224', // BORG
     '0x925206b8a707096Ed26ae47C84747fE0bb734F59', //WBT
      ADDRESSES.ethereum.FDUSD, // FDUSD,
-     ADDRESSES.ethereum.SDAI //sdai
+     ADDRESSES.ethereum.SDAI, //sdai
+     '0x12970e6868f88f6557b76120662c1b3e50a646bf', //LADYS 
+     '0x1e2f15302b90edde696593607b6bd444b64e8f02', //SHIRYO-INU
+     '0x14fee680690900ba0cccfc76ad70fd1b95d10e16', //$PALL
+     '0x9ce84f6a69986a83d92c324df10bc8e64771030f', //chex
+     '0x68a47fe1cf42eba4a030a10cd4d6a1031ca3ca0a', //tet
+     '0x329c6e459ffa7475718838145e5e85802db2a303', //emaid
+     '0x3a856d4effa670c54585a5d523e96513e148e95d', //trias
+     '0x1495bc9e44af1f8bcb62278d2bec4540cf0c05ea', //deia
+     '0x4cff49d0a19ed6ff845a9122fa912abcfb1f68a6', //wtk
   ],
   tron: [
     nullAddress,
@@ -152,7 +161,13 @@ const defaultTokens = {
      '0x965f527d9159dce6288a2219db51fc6eef120dd1', //BSW
      '0xa2120b9e674d3fc3875f415a7df52e382f141225', //ata
      '0x44ec807ce2f4a6f2737a92e985f318d035883e47', //HFT
-     ADDRESSES.ethereum.FDUSD, //FDUSD
+    // ADDRESSES.ethereum.FDUSD, //FDUSD
+     '0xeac9873291ddaca754ea5642114151f3035c67a2', //dcb
+     '0xaaa9214f675316182eaa21c85f0ca99160cc3aaa', //qanx
+     '0x2d060ef4d6bf7f9e5edde373ab735513c0e4f944', //aitech
+     '0x47c454ca6be2f6def6f32b638c80f91c9c3c5949', //gfall
+     '0xfe1d7f7a8f0bda6e415593a2e4f82c64b446d404', //blp
+     '0xe9d78bf51ae04c7e1263a76ed89a65537b9ca903', // GMEX
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],
