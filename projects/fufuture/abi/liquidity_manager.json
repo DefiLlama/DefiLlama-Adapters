@@ -1,0 +1,7 @@
+{
+  "queryPrivatePoolAddress":"function privatePools(address _token,string  _name) external returns (address pool)",
+  "queryPublicPollAddress": "function publicPools( address _token ) external returns (address pool)",
+  "queryPrivatePoolLockedLiquidity": "function totalLockedLiquidity() external view returns (uint256 locked)",
+  "queryPublicPoolLockedLiquidity": "function publicPoolInfo() external view returns (uint256 depositAmount,uint256 lockedAmount,uint256 availableAmount)",
+  "swap":"function getAmountsOut(uint256 amountIn,address[] path) external view returns (uint256[] amounts)"
+}
