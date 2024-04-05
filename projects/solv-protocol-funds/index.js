@@ -8,10 +8,10 @@ const { getAmounts } = require("./iziswap")
 // The Graph
 const graphUrlList = {
   ethereum: 'https://api.studio.thegraph.com/query/40045/solv-payable-factory-prod/version/latest',
-  bsc: 'https://api.thegraph.com/subgraphs/name/slov-payable/solv-v3-earn-factory',
+  bsc: 'https://api.studio.thegraph.com/query/40045/solv-payable-factory-bsc/version/latest',
   arbitrum: 'https://api.studio.thegraph.com/query/40045/solv-payable-factory-arbitrum/version/latest',
   mantle: 'http://api.0xgraph.xyz/subgraphs/name/solv-payable-factory-mentle-0xgraph',
-  merlin: 'http://solv-subgraph-server-alb-694489734.us-west-1.elb.amazonaws.com:8000/subgraphs/name/solv-payable-factory-merlin/graphql',
+  merlin: 'http://solv-subgraph-server-alb-694489734.us-west-1.elb.amazonaws.com:8000/subgraphs/name/solv-payable-factory-merlin',
 }
 
 const slotListUrl = 'https://raw.githubusercontent.com/solv-finance-dev/solv-protocol-rwa-slot/main/slot.json';
@@ -36,14 +36,17 @@ async function borrowed(api) {
 
   let address = (await getConfig('solv-protocol/funds', addressUrl));
   const depositAddress = filterDepositAddress(network, address);
-
+  
   const graphData = await getGraphData(api.timestamp, network, api);
   if (graphData.pools.length > 0) {
     const poolLists = graphData.pools;
 
-    var pools = poolLists.filter((value) => {
-      return depositAddress.length == 0 || depositAddress.indexOf(value.vault) == -1;
-    });
+    let pools = [];
+    for (const pool of poolLists) {
+      if (depositAddress.length == 0 && depositAddress.indexOf(pool.vault) == -1) {
+        pools.push(pool);
+      }
+    }
 
     const poolConcretes = await concrete(pools, api);
     const nav = await api.multiCall({
@@ -94,7 +97,6 @@ async function borrowed(api) {
     for (let i = 0; i < Object.keys(vaults).length; i++) {
       vaultbalances[Object.keys(vaults)[i]] = balances[i];
     }
-
     for (let i = 0; i < poolTotalValues.length; i++) {
       const decimals = poolDecimalList[i];
       let balance = BigNumber(poolTotalValues[i]).div(BigNumber(10).pow(18 - decimals)).times(BigNumber(nav[i].nav_).div(BigNumber(10).pow(decimals))).toNumber();

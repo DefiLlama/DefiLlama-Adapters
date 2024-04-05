@@ -62,7 +62,8 @@ const config = {
 			"0x4640024F4e00De23211ca505f3021d460c01a2a8", // Protocol
 			// "0xD5E1cDfCf6A9fdc68997a90E8B5ee962e536a0D8", // Farming
 			"0xFcE14427Eb7e5df0c5313249b19B56b81633Df8A", // Protocol
-			"0x018Ab23bae3eD9Ec598B1239f37B998fEDB75af3", // Protocol
+			"0x018Ab23bae3eD9Ec598B1239f37B998fEDB75af3", // Protocol,
+			"0xc2571eBbc8F2af4f832bB8a2D3A4b0932Ce24773",
 		],
 		farming: ['0xD5E1cDfCf6A9fdc68997a90E8B5ee962e536a0D8'],
 		NIFTSY: '0x432cdbC749FD96AA35e1dC27765b23fDCc8F5cf1',
@@ -79,6 +80,7 @@ const config = {
 		protocolContracts: [
 			// '0x5bECBAD9784e1b370AE34a154084F3e7a52f6cEe',
 			// '0x85DC0Ed956c15cB40580712693033e36385204A3',
+			'0x6664c8118284b3F5ECB47c2105cAa544Ab0Cf75B',
 		],
 		tokens: [
 			ADDRESSES.null,

@@ -25,6 +25,7 @@ const config = {
   metis: { lp: '0xA152A0Ee0Bc15A937D5365DEB8507D063467A68d' },
   neon_evm: { lp: '0x9a08ab9b8b9A90bF9fe836D28E85808Db29Dc1aD' },
   mode: { lp: '0xC6FA6454E76cF425a020fdb1EF61FeB0e551912C' },
+  zora: { lp: '0x577B2E4C7Ddd23d2fA9D56b4456505e420851046' },
 }
 
 module.exports = {
