@@ -1,18 +1,8 @@
 //import utils
 const ADDRESSES = require("../helper/coreAssets.json");
-const { stakings } = require("../helper/staking");
 
 const contractAbis = {
-  readOraclePrice: {
-    inputs: [],
-    name: "read",
-    outputs: [
-      { internalType: "int224", name: "value", type: "int224" },
-      { internalType: "uint32", name: "timestamp", type: "uint32" },
-    ],
-    stateMutability: "view",
-    type: "function",
-  }, //
+  readOraclePrice: "function read() view returns (int224 value, uint32 timestamp)",
   balanceOf: "function balanceOf(address) external view returns (uint256)",
   getPrice: "function answer() external view returns (uint256)",
   getTotalSupply: "function totalSupply() external view returns (uint256)",
@@ -20,25 +10,7 @@ const contractAbis = {
   getVectorSharePrice: "function getVectorSharePrice() external view returns (uint256)",
   getMswEthPrice: "function exchangeRateToNative() external view returns (uint256)",
   getMswBalance: "function getAllEigeinPieCycleDepositAmounts() external view returns (uint256)",
-  getUnderlyingPrice: {
-    inputs: [
-      {
-        internalType: "contract ICErc20",
-        name: "cToken",
-        type: "address",
-      },
-    ],
-    name: "getUnderlyingPrice",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
+  getUnderlyingPrice:"function getUnderlyingPrice(address cToken) view returns (uint256)",
 };
 
 module.exports = {
