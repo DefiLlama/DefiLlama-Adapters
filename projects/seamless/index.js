@@ -42,7 +42,7 @@ async function geyserTvl(api) {
   return api.getBalances()
 }
 
-const baseAAVE = aaveExports("base", AAVE_ADDRESSES_PROVIDER_REGISTRY, undefined, [AAVE_POOL_DATA_PROVIDER], { v3: true });
+const baseAAVE = aaveExports("base", AAVE_ADDRESSES_PROVIDER_REGISTRY, undefined, [AAVE_POOL_DATA_PROVIDER], { v3: true, hasWrappedTokens: true });
 
 module.exports = mergeExports([{
   methodology: methodologies.lendingMarket,

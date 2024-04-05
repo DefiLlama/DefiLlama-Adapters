@@ -74,7 +74,25 @@ async function getV2Reserves(block, addressesProviderRegistry, chain, dataHelper
   return [aTokenAddresses, reserveAddresses, validProtocolDataHelpers[0]]
 }
 
-async function getTvl(balances, block, chain, v2Atokens, v2ReserveTokens, transformAddress) {
+async function getTvl(balances, block, chain, v2Atokens, v2ReserveTokens, transformAddress, hasWrappedTokens = false) {
+  if (hasWrappedTokens) {
+    // If the underlying token is wrapped token. We need to go one layer deeper to get the balanceOf
+    // This should only be used for calculating TVL on supplied. No unwrapping is required for borrows
+    const wrappedUnderlyingAddresses = (await sdk.api.abi.multiCall({
+      calls: v2ReserveTokens.map(a => ({ target: a })),
+      abi: "address:underlying",
+      block,
+      chain,
+      permitFailure: true,
+    })).output.filter(o => !!o.output);
+
+    wrappedUnderlyingAddresses.forEach(a => {
+      const i = v2ReserveTokens.indexOf(a.input.target);
+      v2Atokens[i] = v2ReserveTokens[i];
+      v2ReserveTokens[i] = a.output;
+    });
+  }
+
   const balanceOfUnderlying = await sdk.api.abi.multiCall({
     calls: v2Atokens.map((aToken, index) => ({
       target: v2ReserveTokens[index],
@@ -87,7 +105,7 @@ async function getTvl(balances, block, chain, v2Atokens, v2ReserveTokens, transf
   sdk.util.sumMultiBalanceOf(balances, balanceOfUnderlying, true, transformAddress)
 }
 
-async function getBorrowed(balances, block, chain, v2ReserveTokens, dataHelper, transformAddress, v3 = false) {
+async function getBorrowed(balances, block, chain, v2ReserveTokens, dataHelper, transformAddress, v3 = false, hasWrappedTokens = false) {
   const reserveData = await sdk.api.abi.multiCall({
     calls: v2ReserveTokens.map((token) => ({
       target: dataHelper,
@@ -98,22 +116,41 @@ async function getBorrowed(balances, block, chain, v2ReserveTokens, dataHelper, 
     chain
   });
 
+  let wrappedTokenMappings = {};
+  if (hasWrappedTokens) {
+    const wrappedUnderlyingAddresses = (await sdk.api.abi.multiCall({
+      calls: v2ReserveTokens.map(a => ({ target: a })),
+      abi: "address:underlying",
+      block,
+      chain,
+      permitFailure: true,
+    })).output.filter(o => !!o.output);
+
+    wrappedUnderlyingAddresses.forEach(a => {
+      wrappedTokenMappings[a.input.target] = a.output;
+    });
+  }
+
   reserveData.output.forEach((data, idx) => {
     const quantity = v3 ? data.output : BigNumber(data.output.totalVariableDebt).plus(data.output.totalStableDebt).toFixed(0)
-    sdk.util.sumSingleBalance(balances, transformAddress(data.input.params[0]), quantity)
+    let tokenAddress = data.input.params[0];
+    if (hasWrappedTokens && wrappedTokenMappings[tokenAddress]) {
+        tokenAddress = wrappedTokenMappings[tokenAddress];
+    }
+    sdk.util.sumSingleBalance(balances, transformAddress(tokenAddress), quantity)
   })
 }
 
-function aaveChainTvl(_chain, addressesProviderRegistry, transformAddressRaw, dataHelperAddresses, borrowed, v3 = false, { abis = {}, oracle, blacklistedTokens = [], hasV2LPs = false, } = {}) {
+function aaveChainTvl(_chain, addressesProviderRegistry, transformAddressRaw, dataHelperAddresses, borrowed, v3 = false, { abis = {}, oracle, blacklistedTokens = [], hasV2LPs = false, hasWrappedTokens = false, } = {}) {
   return async (api) => {
     const chain = api.chain
     const block = api.block
     const balances = {}
     const { transformAddress, fixBalances, v2Atokens, v2ReserveTokens, dataHelper, updateBalances } = await getData({ oracle, chain, block, addressesProviderRegistry, dataHelperAddresses, transformAddressRaw, abis, })
     if (borrowed) {
-      await getBorrowed(balances, block, chain, v2ReserveTokens, dataHelper, transformAddress, v3);
+      await getBorrowed(balances, block, chain, v2ReserveTokens, dataHelper, transformAddress, v3, hasWrappedTokens);
     } else {
-      await getTvl(balances, block, chain, v2Atokens, v2ReserveTokens, transformAddress);
+      await getTvl(balances, block, chain, v2Atokens, v2ReserveTokens, transformAddress, hasWrappedTokens);
     }
     if (updateBalances) updateBalances(balances)
     fixBalances(balances)
@@ -127,10 +164,10 @@ function aaveChainTvl(_chain, addressesProviderRegistry, transformAddressRaw, da
     return balances
   }
 }
-function aaveExports(_chain, addressesProviderRegistry, transform = undefined, dataHelpers = undefined, { oracle, abis, v3 = false, blacklistedTokens = [], hasV2LPs = false, } = {}) {
+function aaveExports(_chain, addressesProviderRegistry, transform = undefined, dataHelpers = undefined, { oracle, abis, v3 = false, blacklistedTokens = [], hasV2LPs = false, hasWrappedTokens = false, } = {}) {
   return {
-    tvl: aaveChainTvl(_chain, addressesProviderRegistry, transform, dataHelpers, false, v3, { oracle, abis, blacklistedTokens, hasV2LPs, }),
-    borrowed: aaveChainTvl(_chain, addressesProviderRegistry, transform, dataHelpers, true, v3, { oracle, abis, hasV2LPs, blacklistedTokens, })
+    tvl: aaveChainTvl(_chain, addressesProviderRegistry, transform, dataHelpers, false, v3, { oracle, abis, blacklistedTokens, hasV2LPs, hasWrappedTokens, }),
+    borrowed: aaveChainTvl(_chain, addressesProviderRegistry, transform, dataHelpers, true, v3, { oracle, abis, hasV2LPs, blacklistedTokens, hasWrappedTokens, })
   }
 }
 
@@ -146,7 +183,7 @@ module.exports = {
 
 const cachedData = {}
 
-async function getData({ oracle, chain, block, addressesProviderRegistry, dataHelperAddresses, transformAddressRaw, abis, }) {
+async function getData({ oracle, chain, block, addressesProviderRegistry, dataHelperAddresses, transformAddressRaw, abis, hasWrappedTokens = false }) {
   let dataHelperAddressesStr
   if (dataHelperAddresses && dataHelperAddresses.length) dataHelperAddressesStr = dataHelperAddresses.join(',')
   const key = `${chain}-${block}-${addressesProviderRegistry}-${dataHelperAddresses}-${oracle}`
@@ -158,7 +195,7 @@ async function getData({ oracle, chain, block, addressesProviderRegistry, dataHe
 
     const transformAddress = transformAddressRaw || await getChainTransform(chain)
     const fixBalances = await getFixBalancesSync(chain)
-    const [v2Atokens, v2ReserveTokens, dataHelper] = await getV2Reserves(block, addressesProviderRegistry, chain, dataHelperAddresses, abis)
+    const [v2Atokens, v2ReserveTokens, dataHelper] = await getV2Reserves(block, addressesProviderRegistry, chain, dataHelperAddresses, abis, hasWrappedTokens)
     let updateBalances
 
     if (oracle) {
