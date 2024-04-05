@@ -14,7 +14,7 @@ async function ethTvl(api) {
   api.add(L1_EZ_ETH_ADDRESS, totalTvl - lockBoxBalance)
 }
 
-const chains = ["mode", "blast", "bsc", "linea", "arbitrum"]
+const chains = ["mode", "blast", "bsc", "linea", "arbitrum", "base"]
 
 module.exports = {
   doublecounted: true,
