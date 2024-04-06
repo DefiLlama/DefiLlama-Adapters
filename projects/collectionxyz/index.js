@@ -19,7 +19,7 @@ async function getPoolLogs(api, factory, startBlock) {
   });
 }
 
-async function getTotalValueLocked(_, _b, _cb, { api }) {
+async function getTotalValueLocked(api) {
   const logsFactory1 = await getPoolLogs(api, FACTORY_ADDRESS_1, START_BLOCK_1);
   const logsFactory2 = await getPoolLogs(api, FACTORY_ADDRESS_2, START_BLOCK_2);
   const allLogs = [...logsFactory1, ...logsFactory2];

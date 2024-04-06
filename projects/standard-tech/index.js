@@ -1,8 +1,7 @@
 const { getUniTVL } = require('../helper/unknownTokens')
 
 module.exports={
-    timetravel: true,
-    misrepresentedTokens: true,
+        misrepresentedTokens: true,
     methodology: "Factory address (0x073386AE3292299a5814B00bC1ceB8f2bfC92c51) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
     shiden: {
         tvl: getUniTVL({ factory: '0x073386AE3292299a5814B00bC1ceB8f2bfC92c51', chain: 'shiden', useDefaultCoreAssets: true }),

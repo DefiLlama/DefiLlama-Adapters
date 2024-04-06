@@ -3,7 +3,7 @@ const { get } = require('../helper/http')
 const sdk = require("@defillama/sdk");
 
 
-async function bsctvl(timestamp, block, chainBlocks, { api }) {
+async function bsctvl(api) {
   const bal = await api.call({ abi: 'function exchangeRate() external view returns (uint256 totalWei, uint256  poolTokenSupply)', target: '0xc228cefdf841defdbd5b3a18dfd414cc0dbfa0d8' })
 
   return {

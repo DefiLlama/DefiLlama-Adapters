@@ -14,9 +14,9 @@ const {
 // Uses chainlink oracle floor price for all whitelisted NFTS owned by every vault and the Loan Core contract.
 // Tokens owned by vaults have been wrapped into an Arcade.xyz vault. Tokens owned by the Loan Core contract
 // are currently in escrow.
-async function tvl(_, block, _cb, { api }) {
+async function tvl(api) {
   // Get list of all vaults
-  const vaults = await fetchVaults(block+'')
+  const vaults = await fetchVaults(api.block)
   const balances = {}
   const artBlockOwners = []
 
@@ -45,8 +45,8 @@ async function tvl(_, block, _cb, { api }) {
 }
 
 // Fetches all active loans, their payable curency and amount borrowed then sums it up.
-async function borrowed(_, block, _cb, { api }) {
-  const loans = await fetchLoans(block);
+async function borrowed(api) {
+  const loans = await fetchLoans(api.block);
 
   // Iterate over each loan to sum up principal by currency
   for (const loan of loans) {

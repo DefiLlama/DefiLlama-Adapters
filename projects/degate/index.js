@@ -5,7 +5,7 @@ const DEGATE_EXCHANGE_CONTRACT = '0x9C07A72177c5A05410cA338823e790876E79D73B';
 
 const START_BLOCK = 18552105;
 
-async function tvl(timestamp, block, _1, { api }) {
+async function tvl(api) {
   const logs = await getLogs({
     api,
     target: DEGATE_EXCHANGE_CONTRACT,

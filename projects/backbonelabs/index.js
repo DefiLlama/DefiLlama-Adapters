@@ -21,14 +21,13 @@ const config = {
 
 module.exports = {
   timetravel: false,
-  misrepresentedTokens: false,
-  methodology: "Liquid Staking Protocol",
+    methodology: "Liquid Staking Protocol",
 };
 
 Object.keys(config).forEach(chain => {
   const { hub, token } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       if (!hub) return {}
       const { total_native } = await queryContractCosmos({ contract: hub, chain, data: { state: {} } });
       api.add(token, total_native)

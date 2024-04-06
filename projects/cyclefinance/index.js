@@ -87,7 +87,7 @@ const vaults = [
 ];
 
 /*** Staking of native token CYCLE and CYCLE/AVAX LP TVL Portion ***/
-const staking = async (timestamp, ethBlock, chainBlocks, { api }) => {
+const staking = async (api) => {
   const staking_lpToken = 
     await api.call({
       abi: abi.stakingToken,

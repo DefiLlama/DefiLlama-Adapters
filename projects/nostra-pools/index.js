@@ -4,7 +4,9 @@ const { getCache, setCache } = require("../helper/cache");
 const abi = require("./abi");
 const { transformDexBalances } = require("../helper/portedTokens");
 
-const factory = "0x352e14b9bdc0138e48b55d45914b059f0388284c77a23a97776e6197852f050";
+const factory =
+  "0x02a93ef8c7679a5f9b1fcf7286a6e1cadf2e9192be4bcb5cb2d1b39062697527";
+const cacheKey = `nostra-pools/${factory}`;
 
 async function tvl() {
   let all_pairs = await call({
@@ -13,7 +15,7 @@ async function tvl() {
   });
 
   const calls = all_pairs.map((i) => parseAddress(i));
-  const cache = (await getCache("nostra-pools", "starknet")) ?? {};
+  const cache = (await getCache(cacheKey, "starknet")) ?? {};
 
   if (!cache.token0s) {
     cache.token0s = [];
@@ -31,7 +33,7 @@ async function tvl() {
   cache.token1s.push(..._token1s.map((i) => addAddressPadding(i)));
 
   if (cache.token0s.length > oldCacheLength) {
-    await setCache("nostra-pools", "starknet", cache);
+    await setCache(cacheKey, "starknet", cache);
   }
 
   const data = [];

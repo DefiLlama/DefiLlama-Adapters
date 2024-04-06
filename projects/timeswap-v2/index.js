@@ -1,7 +1,7 @@
 const { getLogs, getAddress } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
-async function tvl(_, _b, _cb, { api }) {
+async function tvl(api) {
   const { factory, oldFactory, fromBlock, newFactory, oldEthFactory,factory__2_5, factory__2_5_block } = config[api.chain];
   let logs;
   let ownerTokens = []

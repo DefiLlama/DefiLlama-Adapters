@@ -19,8 +19,7 @@ const StakingV2Pool4 = '0x38dcC010518E266372DD574fA74a03ccb38Fd30d'
 const StakingV2Pool5 = '0x6C7EbB352F92003Aa767675a7a4062ca74206e19'
 
 module.exports = {
-    timetravel: true,
-    methodology: "Total Value Lock in Metastrike protocol is calculated by sum of: Staking and Vesting locked value",
+        methodology: "Total Value Lock in Metastrike protocol is calculated by sum of: Staking and Vesting locked value",
     bsc: {
         staking: stakings([StakingV1, StakingV2Pool1, StakingV2Pool2, StakingV2Pool3, StakingV2Pool4, StakingV2Pool5], MTS_TOKEN, 'bsc'),
         vesting: stakings([VestingCEXV1, VestingCEXV2, VestingAdvisors, VestingTeam, VestingMarketing], MTS_TOKEN, 'bsc'),

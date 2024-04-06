@@ -14,7 +14,7 @@ const getVaultAbi = "function getVault(uint256 vaultId) view returns (tuple(addr
 Object.keys(config).forEach(chain => {
   const { factory, fromBlock, vaultFactory, positionViewer, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const logs = await getLogs({
         api,
         target: factory,

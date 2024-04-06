@@ -42,7 +42,7 @@ async function sumTokens({ api, tokens, owners = [], owner, onlyWhitelistedToken
 }
 
 function sumTokensExport({ ...args }) {
-  return (_, _1, _2, { api }) => sumTokens({ api, ...args })
+  return (api) => sumTokens({ api, ...args })
 }
 
 async function call({ target, abi, params = [] }) {

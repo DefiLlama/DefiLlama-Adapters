@@ -4,7 +4,7 @@ const sdk = require('@defillama/sdk')
 const { nullAddress } = require('../helper/tokenMapping')
 
 function tarotHelper(exportsObj, config, { tarotSymbol = 'vTAROT' } = {}) {
-  async function tvl(_, _b, _cb, { api, }) {
+  async function tvl(api) {
     const { factories } = config[api.chain]
     const pools = []
     await Promise.all(factories.map(async (factory) => {
@@ -41,7 +41,7 @@ function tarotHelper(exportsObj, config, { tarotSymbol = 'vTAROT' } = {}) {
     })
   }
 
-  async function borrowed(_, _b, _cb, { api, }) {
+  async function borrowed(api) {
     const { factories } = config[api.chain]
     const balances = {}
     const borrowables = []

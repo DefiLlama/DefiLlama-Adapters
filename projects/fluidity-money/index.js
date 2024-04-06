@@ -8,16 +8,16 @@ const COMPOUND_ETHEREUM = [
   ['0xf650C3d88D12dB855b8bf7D11Be6C55A4e07dCC9', '0x372025203D25589eC3aDAd82652De78eC76fFabC'],
   ['0x39AA39c021dfbaE8faC545936693aC917d5E7563', '0xE87Adc9D382Eee54C1eDE017D6E5C1324D59F457'],
 ];
-async function tvl_eth(timestamp, block, chainBlocks, { api }) {
+async function tvl_eth(api) {
   await sumTokens2({ api, tokensAndOwners: COMPOUND_ETHEREUM })
   await sumTokens2({ api, tokensAndOwners2: [ATOKENS_ETHEREUM, APOOL_ETHEREUM] })
 }
 
-async function tvl_arb(timestamp, block, chainBlocks, { api }) {
+async function tvl_arb(api) {
   await sumTokens2({ api, tokensAndOwners2: [ATOKENS_ARBITRUM, APOOL_ARBITRUM] })
 }
 
-async function tvl_sol(timestamp, block, chainBlocks, { api }) {
+async function tvl_sol(api) {
   const fUSDC = 'Ez2zVjw85tZan1ycnJ5PywNNxR6Gm4jbXQtZKyQNu3Lv'
   const supply = await getTokenSupply(fUSDC)
   api.add(fUSDC, supply * 1e6)

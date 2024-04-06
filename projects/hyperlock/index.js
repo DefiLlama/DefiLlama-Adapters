@@ -18,7 +18,7 @@ const query = `{
 }`
 
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const { pools } = await cachedGraphQuery('hyperlock/v2', 'https://graph.hyperlock.finance/subgraphs/name/hyperlock/points-blast-mainnet', query)
   console.log(pools)
   await sumTokens2({ api, owner: v2Deposits, tokens: pools.map(i => i.id), resolveLP: true, })

@@ -12,7 +12,7 @@ const config = {
 
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {
-    tvl: async function (_, _1, _2, { api }) {
+    tvl: async function (api) {
       // Stability Platform Vaults
       // Get all vaults
       const vaults = await api.call({        abi: abi.vaultAddresses,        target: config[chain].vaultManager      });

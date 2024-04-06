@@ -1,7 +1,7 @@
 const ADDRESSES = require("../helper/coreAssets.json");
 const liquidStakingContract = "0xB458BfC855ab504a8a327720FcEF98886065529b";
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const supply = await api.call({
     abi: "uint256:totalFTMWorth",
     target: liquidStakingContract,

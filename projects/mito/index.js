@@ -7,7 +7,7 @@ async function getVaultBalances(vaultAddress, api) {
   return subaccounts.map(i => api.add(i.denom, +i.deposit.availableBalance))
 }
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const MASTER_VAULT_ADDRESS = 'inj1vcqkkvqs7prqu70dpddfj7kqeqfdz5gg662qs3';
   await getVaultBalances(MASTER_VAULT_ADDRESS, api);
 }

@@ -4,7 +4,7 @@ const { sumTokens2 } = require("../../helper/unwrapLPs");
 const abi = require("./abis");
 const address = require("./address");
 
-async function tvl(chain, timestamp, chainBlocks, { api }) {
+async function tvl(api) {
   const addressMap = address[api.chain];
 
   const [simpleReservesData, bnftAssetList] = await Promise.all([
@@ -56,7 +56,7 @@ async function tvl(chain, timestamp, chainBlocks, { api }) {
   return balances;
 }
 
-async function borrowed(chain, timestamp, chainBlocks, { api }) {
+async function borrowed(api) {
   const balances = {};
   const addressMap = address[api.chain];
 

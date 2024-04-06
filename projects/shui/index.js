@@ -5,7 +5,7 @@ const WCFX = ADDRESSES.conflux.WCFX;
 
 module.exports = {
   conflux: {
-    tvl: async (_, _1, _2, { api }) => {
+    tvl: async (api) => {
       const ratioDepositedBySupply = await api.call({
         target: SCFX_TokenAddress,
         abi: "function ratioDepositedBySupply() public view returns (uint256)"

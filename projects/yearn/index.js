@@ -41,7 +41,7 @@ const blacklist = [
     ...v1Vaults,
 ]
 
-async function tvl(timestamp, _, _1, { api }) {
+async function tvl(api) {
   if(api.chain==="polygon"){
     const data = await getConfig('yearn/' + api.chain, `https://ydaemon.yearn.finance/vaults/all?chainids=137&limit=100000`)
     await api.erc4626Sum({ calls: data.filter(v=>v.kind==="Multi Strategy").map(v=>v.address),  balanceAbi: 'totalAssets', tokenAbi: "asset" })

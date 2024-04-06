@@ -19,7 +19,7 @@ async function strategiesCurveBalancer(timestamp, block) {
   return lgv4
 }
 
-async function tvl(timestamp, block, _, { api }) {
+async function tvl(api) {
   let balances = {}
   /////////////////////////////////////////////////////////////////////
   // --- STRATEGIES V2 
@@ -226,7 +226,7 @@ async function staking(timestamp, block) {
   })
 }
 
-async function polygon(timestamp, ethBlock, chainBlocks, { api, }) {
+async function polygon(api) {
   const crv_3crv_vault_polygon = {
     contract: '0x7d60F21072b585351dFd5E8b17109458D97ec120',
   }
@@ -243,7 +243,7 @@ async function getBalances(api, vaults, { balances = {} } = {}) {
   return balances
 }
 
-async function avax(timestamp, ethBlock, chainBlocks, { api }) {
+async function avax(api) {
   const crv_3crv_vault_avalanche = {
     contract: '0x0665eF3556520B21368754Fb644eD3ebF1993AD4',
   }
@@ -254,7 +254,7 @@ async function avax(timestamp, ethBlock, chainBlocks, { api }) {
   return getBalances(api, vaultsAvalanche)
 }
 
-async function bsc(timestamp, ethBlock, chainBlocks, { api }) {
+async function bsc(api) {
   const btcEPS_vault_bsc = {
     contract: '0xf479e1252481360f67c2b308F998395cA056a77f',
   }

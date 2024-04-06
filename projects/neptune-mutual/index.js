@@ -17,7 +17,8 @@ const fromBlocks = {
   bsc: 29123165,
 };
 
-async function tvl(_, block, _1, { api, chain }) {
+async function tvl(api) {
+  const { chain } = api
   const logs = await getLogs({
     api,
     target: vaultFactories[chain], // vault factory

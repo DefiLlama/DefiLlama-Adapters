@@ -19,12 +19,12 @@ const debtTokens = [
   "0x1bdbaaa456c7d6bbba9ff740af3cfcd40bec0e85cd5cefc3fbb05a552fd14df"
 ]
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const underlyings = await multiCall({ calls: supplyTokens, abi: assetTokenAbi.rToken_underlying_asset, });
   return sumTokens({ api, tokensAndOwners: underlyings.map((u, i) => [u, supplyTokens[i]]) })
 }
 
-async function borrowed(_, _1, _2, { api }) {
+async function borrowed(api) {
   const borrowed = await multiCall({ calls: debtTokens, abi: assetTokenAbi.totalSupply, });
   const underlyings = await multiCall({ calls: debtTokens, abi: assetTokenAbi.get_underlying_asset, });
   api.addTokens(underlyings, borrowed);

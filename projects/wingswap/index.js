@@ -3,8 +3,7 @@ const { stakingPricedLP } = require('../helper/staking')
 
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: true,
+    misrepresentedTokens: true,
   methodology:
     "Factory address (0xc0719a9A35a2D9eBBFdf1C6d383a5E8E7b2ef7a8) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
   fantom: {

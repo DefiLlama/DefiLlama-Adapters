@@ -41,7 +41,7 @@ async function getGMXData(api) {
   api.add(GMX, balance);
 }
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   let tokens = await api.multiCall({ abi: "address:token", calls: Vaults });
   // Controllers
   let bals = await api.multiCall({

@@ -16,8 +16,7 @@ const strategiesVersioned = {
 
 const MONEY_MARKET_DATA_PROVIDER = '0xedB4f24e4b74a6B1e20e2EAf70806EAC19E1FA54';
 
-async function getCdpTvl() {
-  const { api } = arguments[3]
+async function getCdpTvl(api) {
   const strategies = Object.values(strategiesVersioned).map(i => Object.values(i)).flat()
   const vaults = Object.values(admins)
   const configs = await api.multiCall({ abi: 'address:collateralConfig', calls: vaults })

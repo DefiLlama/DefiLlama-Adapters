@@ -184,14 +184,14 @@ async function tvl(timestamp, block) {
   return balances
 }
 
-async function fuseTvl(__, _b, _cb, { api, }) {
+async function fuseTvl(api) {
 
   const [_, pools] = (await api.call({ target: fusePoolDirectoryAddress, abi: abi['getPublicPools'] }))
   const markets = (await api.multiCall({ abi: 'address[]:getAllMarkets', calls: pools.map(i => i.comptroller) })).flat()
   const tokens = await api.multiCall({ abi: 'address:underlying', calls: markets })
   return sumTokens2({api , tokensAndOwners2: [tokens, markets]})
 }
-async function fuseBorrowed(__, _b, _cb, { api, }) {
+async function fuseBorrowed(api) {
 
   const [_, pools] = (await api.call({ target: fusePoolDirectoryAddress, abi: abi['getPublicPools'] }))
   const markets = (await api.multiCall({ abi: 'address[]:getAllMarkets', calls: pools.map(i => i.comptroller) })).flat()

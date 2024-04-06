@@ -20,7 +20,7 @@ Object.keys(config).forEach(chain => {
   let { pools, fromBlock, tokens = [], } = config[chain]
   pools = Object.values(pools)
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const logs = (await Promise.all(pools.map(target => getLogs({
         api,
         target,

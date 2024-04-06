@@ -6,7 +6,7 @@ const { sumTokens2 } = require("../helper/unwrapLPs");
 const { staking } = require("../helper/staking.js");
 
 // liquidity pools
-async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
+async function tvl(api) {
   const poolInfo1 = await api.fetchList({ lengthAbi: abi.poolLength, itemAbi: abi.poolInfo, target: '0x0ac58Fd25f334975b1B61732CF79564b6200A933' })
   const poolInfo2 = await api.fetchList({ lengthAbi: abi.poolLength, itemAbi: abi.poolInfo, target: '0xB87F7016585510505478D1d160BDf76c1f41b53d' })
   const poolInfo3 = await api.fetchList({ lengthAbi: abiNew.poolLength, itemAbi: abiNew.poolInfo, target: '0x9EBce8B8d535247b2a0dfC0494Bc8aeEd7640cF9' })

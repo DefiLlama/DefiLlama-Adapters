@@ -24,11 +24,11 @@ async function getTVL(subgraphName, api) {
     return results.factories[0].totalValueLockedUSD;
 }
 
-async function arbitrum(_, _b, _cb, { api, }) {
+async function arbitrum(api) {
     return toUSDTBalances(await getTVL("mcdex3-arb-perpetual", api))
 }
 
-async function bsc(_, _b, _cb, { api, }) {
+async function bsc(api) {
     return toUSDTBalances(await getTVL("mcdex3-bsc-perpetual", api))
 }
 

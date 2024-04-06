@@ -1,6 +1,6 @@
 const config = require("./config");
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   const { eigenConfig, eigenStaking } = config[api.chain];
 
   const tokens = await api.call({ abi: 'address[]:getSupportedAssetList', target: eigenConfig, });

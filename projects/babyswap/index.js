@@ -7,8 +7,7 @@ const BABY = "0x53E562b9B7E5E94b81f10e96Ee70Ad06df3D2657";
 
 /*
 module.exports = {
-  timetravel: true,
-  bsc: {
+    bsc: {
     staking: staking(MasterChefContract, BABY, "bsc"),
     tvl: bscTvl,
   },

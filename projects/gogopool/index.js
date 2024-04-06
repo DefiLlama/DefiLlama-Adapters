@@ -10,7 +10,7 @@ const GGPStakedAbi = "function getTotalGGPStake() view returns (uint256)";
 const wavax = ADDRESSES.avax.WAVAX;
 const ggp = "0x69260B9483F9871ca57f81A90D91E2F96c2Cd11d";
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   const avax_lst_side = await api.call({  abi: ggAVAXTotalAssetsAbi, target: GGAVAX_CONTRACT });
   // Minipool operators are matched with LST AVAX 1:1
   const avax_minipool_side = await api.call({ abi: AvaxInMinipoolsABI, target: MINIPOOL_MANAGER_CONTRACT });

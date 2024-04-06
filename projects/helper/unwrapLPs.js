@@ -342,6 +342,7 @@ async function sumTokensAndLPs(balances, tokens, block, chain = "ethereum", tran
 
 const balancerVault = "0xBA12222222228d8Ba445958a75a0704d566BF2C8"
 async function sumBalancerLps(balances, tokensAndOwners, block, chain, transformAddress) {
+  if (!transformAddress) transformAddress = await getChainTransform(chain)
   const poolIds = sdk.api.abi.multiCall({
     calls: tokensAndOwners.map(t => ({
       target: t[0]
@@ -827,7 +828,7 @@ async function sumTokens2({
 }
 
 function sumTokensExport({ balances, tokensAndOwners, tokensAndOwners2, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, resolveUniV3, resolveArtBlocks, resolveNFTs, fetchCoValentTokens, logCalls, ...args }) {
-  return async (_, _b, _cb, { api }) => sumTokens2({ api, balances, tokensAndOwners, tokensAndOwners2, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, resolveUniV3, resolveArtBlocks, resolveNFTs, fetchCoValentTokens, ...args, })
+  return async (api) => sumTokens2({ api, balances, tokensAndOwners, tokensAndOwners2, tokens, owner, owners, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances, ownerTokens, resolveUniV3, resolveArtBlocks, resolveNFTs, fetchCoValentTokens, ...args, })
 }
 
 async function unwrapBalancerToken({ api, chain, block, balancerToken, owner, balances, isBPool = false, isV2 = true }) {

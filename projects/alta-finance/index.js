@@ -10,10 +10,10 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { investments, debts, token } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       return api.sumTokens({ owners: investments.concat(debts), tokens: [token] })
     },
-    borrowed: async (_, _b, _cb, { api, }) => {
+    borrowed: async (api) => {
       const nftCount = (await api.multiCall({ abi: 'uint256:_tokenIdCounter', calls: investments, permitFailure: true })).map(i => i ?? 0)
       const amount = (await api.multiCall({ abi: 'uint256:amountPerNft', calls: investments, permitFailure: true })).map(i => i ?? 0)
       api.add(token, nftCount.map((v, i) => v * amount[i]))

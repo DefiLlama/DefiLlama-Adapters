@@ -3,7 +3,7 @@ const { get } = require('../helper/http')
 const SNS_URL = "https://sns-api.internetcomputer.org/api/v1/snses/"
 const ICP_URL = "https://ledger-api.internetcomputer.org/accounts/"
 
-async function tvl(_ts, _b, _cb, { api, }) {
+async function tvl(api) {
   let offset = 0;
   const limit = 100;
   var icp_balance = 0;

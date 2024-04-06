@@ -1,6 +1,0 @@
-{
-  "rari_dir.pools": "function pools(uint256) view returns (string name, address creator, address comptroller, uint256 blockPosted, uint256 timestampPosted)",
-  "comptroller.getAllMarkets": "address[]:getAllMarkets",
-  "comptroller.underlying": "address:underlying",
-  "comptroller.getCash": "uint256:getCash"
-}

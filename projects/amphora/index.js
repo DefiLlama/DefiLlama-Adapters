@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
     const ownerAddress = "0xA905f9f0b525420d4E5214E73d70dfFe8438D8C8";
     const tokensAndOwners = [
         ["0xb2f30a7c980f052f02563fb518dcc39e6bf38175", "0xD842D9651F69cEBc0b2Cffc291fC3D3Fe7b5D226"],

@@ -17,7 +17,7 @@ async function getTVLAnyHedge(timestamp) {
   return await GetDailyHistory(day);
 }
 
-async function tvl(timestamp) {
+async function tvl({timestamp}) {
   let tvlAnyHedge, testDataSource
 
   // tvl data lags by contract duration since contracts are secret until settled

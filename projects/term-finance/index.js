@@ -53,11 +53,11 @@ module.exports = {
 Object.keys(graphs).forEach(chain => {
   const host = graphs[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const data = await cachedGraphQuery(`term-finance-${chain}`, host, query, { fetchById: true })
       return api.sumTokens( { tokensAndOwners: data.map(i => [i.collateralToken, i.term.termRepoLocker])})
     },
-    borrowed: async (_, _b, _cb, { api, }) => {
+    borrowed: async (api) => {
       const data = await cachedGraphQuery(`term-finance-borrowed-${chain}`, host, borrowedQuery, { fetchById: true })
 
       for (const eventEmitter of emitters[chain] ?? []) {

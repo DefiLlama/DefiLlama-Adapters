@@ -13,7 +13,7 @@ query get_tvl($block: Int) {
 }
 `;
   return (chain) => {
-    return async (_, _b, _cb, { api }) => {
+    return async (api) => {
       await api.getBlock()
       const block = api.block
       let uniswapFactories

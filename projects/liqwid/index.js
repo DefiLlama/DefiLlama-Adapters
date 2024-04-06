@@ -100,7 +100,7 @@ const getOptimBondTVL = async () => {
   return bonds
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const { Page: { market: markets } } = await graphQuery(endpoint, query, { page: 0 })
 
   markets.forEach(market => add(api, market, market.state.totalSupply))
@@ -116,7 +116,7 @@ function add(api, market, bal) {
   })
 }
 
-async function borrowed(_, _b, _cb, { api, }) {
+async function borrowed(api) {
   const { Page: { market: markets } } = await graphQuery(endpoint, query)
 
   markets.forEach(market => {

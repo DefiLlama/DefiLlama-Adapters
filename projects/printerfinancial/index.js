@@ -76,8 +76,7 @@ const chains = [
 ];
 
 module.exports = {
-    timetravel: true,
-    misrepresentedTokens: true,
+        misrepresentedTokens: true,
     ...chains
       .map(c =>
         printerTvl(c.token, c.share, c.rewardPool, c.masonry, c.pool2, c.chain, undefined, false, c.pool2[1])

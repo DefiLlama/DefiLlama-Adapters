@@ -39,7 +39,7 @@ const farms = {
 
 let tokenData
 
-async function tvl(timestamp, ethBlock, _1, { api }) {
+async function tvl(api) {
   const chain = api.chain
 
   if (chain === 'meta') return {} // rpc issues with meta

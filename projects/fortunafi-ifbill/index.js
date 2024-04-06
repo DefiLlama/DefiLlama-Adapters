@@ -6,7 +6,7 @@ const contracts = {
     }
 }
 
-const tvl = async (_, _1, _2, { api }) => {
+const tvl = async (api) => {
     const nav = await api.call({ target: contracts[api.chain].token, abi: 'function nav() external view returns (uint256)' });
 
     api.add(ADDRESSES.canto.USDC, nav / 1e12)

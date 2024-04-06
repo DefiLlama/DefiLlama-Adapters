@@ -121,7 +121,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { vaultConfigs = [], oneFactory } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const blacklistedTokens = []
       if (oneFactory) {
         const oneTokens = await api.fetchList({ lengthAbi: abi.oneTokenCount, itemAbi: abi.oneTokenAtIndex, target: oneFactory })

@@ -117,7 +117,7 @@ const MUSE = "0xb6ca7399b4f9ca56fc27cbff44f4d2e4eef1fc81";
 const stkMUSE = "0x9cfc1d1a45f79246e8e074cfdfc3f4aacdde8d9a";
 const MUSE_ETH_univ2 = '0x20d2c17d1928ef4290bf17f922a10eaa2770bf43'
 const MUSE_ETH_univ2_staking = '0x193b775af4bf9e11656ca48724a710359446bf52'
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const data = await api.fetchList({ lengthAbi: 'uint256:counter', itemAbi: 'function getPairByNftAddress(uint256) view returns (address _nft20pair, address _originalNft, uint256 _type, string _name, string _symbol, uint256 _supply)', target: '0x0f4676178b5c53Ae0a655f1B19A96387E4b8B5f2' })
   const tokensAndOwners = data.map(i => [i._originalNft, i._nft20pair]).slice(0, 10)
   return sumTokens2({ api, tokensAndOwners, permitFailure: true })

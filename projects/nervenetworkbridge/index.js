@@ -53,7 +53,7 @@ function getChain(chain) {
   return chainMapping[chain] ?? chain
 }
 
-async function tvl(_, _b, _cb, { api }) {
+async function tvl(api) {
   let conf = await getTokensConf();
 
   const bridgeContract = getBridgeContract[api.chain];
@@ -62,8 +62,7 @@ async function tvl(_, _b, _cb, { api }) {
   return sumTokens2({ api, tokens, owners })
 }
 
-async function tronTvl() {
-  const { api } = arguments[3]
+async function tronTvl(api) {
   let conf = await getTokensConf();
   const tokens = conf['tron'];
   const tokenKeys = Object.keys(conf['tron'])

@@ -9,6 +9,7 @@ const tokens = [
   ADDRESSES.arbitrum.WBTC,
   ADDRESSES.arbitrum.ARB,
   ADDRESSES.arbitrum.LINK,
+  ADDRESSES.arbitrum.GMX,
   '0xfEb4DfC8C4Cf7Ed305bb08065D08eC6ee6728429'
 ]
 
@@ -28,7 +29,7 @@ module.exports = {
   methodology: 'counts the aggregated assets locked in The Standard Smart Vaults.',
   start: START_TS,
   arbitrum: {
-    tvl: async (_, _1, _2, { api }) => {
+    tvl: async (api) => {
       return sumTokens2({ owners: await getOwners(api), tokens, api})
     }
   }

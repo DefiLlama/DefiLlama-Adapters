@@ -15,7 +15,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   let vault = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       if (!Array.isArray(vault)) vault = [vault]
       const ownerTokens = []
       for (const v of vault) {

@@ -1,4 +1,4 @@
-async function tvl(_0, _1, _2, { api }) {
+async function tvl(api) {
   const block = await api.getBlock();
   const chainId = api.chainId;
 

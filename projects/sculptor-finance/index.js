@@ -22,8 +22,7 @@ function lending(borrowed) {
 }
 
 module.exports = {
-  timetravel: true,
-  methodology,
+    methodology,
   bsc: {
     tvl: lending(false),
     borrowed: lending(true),

@@ -6,7 +6,7 @@ const MarketManager =
 const ReplicatingStrategy =
   "0x2ffce9d48390d497f7dfafa9dfd22025d9c285135bcc26c955aea8741f081d2";
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const tokens = await getConfig(
     "haiko",
     "https://app.haiko.xyz/api/v1/tokens?network=mainnet"

@@ -14,7 +14,7 @@ Object.keys(config).forEach(chain => {
         currencyController = '0x7dca6b6BF30cd28ADe83e86e21e82e3F852bF2DC',
     } = config[chain];
     module.exports[chain] = {
-        tvl: async (_, _b, _cb, { api }) => {
+        tvl: async (api) => {
             const bytes = await api.call({
                 abi: 'function getCurrencies() view returns (bytes32[])',
                 target: currencyController,

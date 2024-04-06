@@ -16,7 +16,7 @@ Object.keys(config).forEach(chain => {
   const provider = config[chain]
   module.exports[chain] = {
     borrowed: () => ({}), // project abandoned?
-    tvl: async (_, _1, _2, { api }) => {
+    tvl: async (api) => {
       if (chain === 'xdai') return {}
       const tokens = await api.call({  abi: abi.getReservesList, target: config[chain] })
       const data = await api.multiCall({  abi: abi.getReserveData, calls: tokens, target: config[chain]})

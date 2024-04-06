@@ -9,7 +9,7 @@ const vaults = [
   '0x77ce0b0e9e629474c69a5d8d5fd9c3e6113dd058',
 ]
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const balances = {}
   let pools = await get('https://comb-breakdown.herokuapp.com/pools');
   const prices = {}
