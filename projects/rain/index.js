@@ -10,7 +10,7 @@ async function tvl(api) {
   const program = new Program(idl, 'RainEraPU5yDoJmTrHdYynK9739GkEfDsE4ffqce2BR', provider)
 
   const pools = await program.account.pool.all()
-  const nftCollections = await this.program.account.collection.all([
+  const nftCollections = await program.account.collection.all([
     {
       memcmp: {
         offset: 8 + 132,
