@@ -507,6 +507,42 @@ module.exports = {
           }
         ]
       }
+    },
+    {
+      "name": "Sale",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "isForSale",
+            "type": "bool"
+          },
+          {
+            "name": "salePrice",
+            "type": "u64"
+          },
+          {
+            "name": "currency",
+            "type": "publicKey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Listing",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "isListed",
+            "type": "bool"
+          },
+          {
+            "name": "price",
+            "type": "u64"
+          }
+        ]
+      }
     }
   ],
   "errors": []
