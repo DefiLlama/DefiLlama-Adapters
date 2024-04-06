@@ -470,6 +470,44 @@ module.exports = {
         ]
       }
     },
+    {
+      "name": "Marketplace",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "None"
+          },
+          {
+            "name": "Auctionhouse"
+          },
+          {
+            "name": "Solanart"
+          },
+          {
+            "name": "Hyperspace"
+          },
+          {
+            "name": "Yaww"
+          },
+          {
+            "name": "Hadeswap"
+          },
+          {
+            "name": "Rain"
+          },
+          {
+            "name": "TensorswapOrder"
+          },
+          {
+            "name": "TensorswapListing"
+          },
+          {
+            "name": "MagicEden"
+          }
+        ]
+      }
+    }
   ],
   "errors": []
 }
