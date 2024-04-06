@@ -12,7 +12,7 @@ async function useStrategyMetadata(block) {
       curAddresses.YieldYakStrategy2,
     [ADDRESSES.avax.BTC_b]:
       curAddresses.YieldYakStrategy2,
-    ["0x2b2C81e08f1Af8835a78Bb2A90AE924ACE0eA4bE"]:
+    [ADDRESSES.avax.SAVAX]:
       curAddresses.YieldYakStrategy2,
     [ADDRESSES.avax.WAVAX]:
       curAddresses.YieldYakAVAXStrategy2,
@@ -28,12 +28,12 @@ async function useStrategyMetadata(block) {
   strats.push(curAddresses.AltYieldYakAVAXStrategy2);
   tokens.push(ADDRESSES.avax.WAVAX);
   strats.push(curAddresses.OldYieldYakAVAXStrategy2);
-  tokens.push(ADDRESSES.avax.BTC_b);
-  strats.push(curAddresses.AltYieldYakStrategy2);
-  tokens.push("0x2b2C81e08f1Af8835a78Bb2A90AE924ACE0eA4bE");
-  strats.push(curAddresses.AltYieldYakStrategy2);
-  tokens.push("0xF7D9281e8e363584973F946201b82ba72C965D27");
-  strats.push(curAddresses.YieldYakStrategy2);
+  // tokens.push(ADDRESSES.avax.BTC_b);
+  // strats.push(curAddresses.AltYieldYakStrategy2);
+  // tokens.push(ADDRESSES.avax.SAVAX);
+  // strats.push(curAddresses.AltYieldYakStrategy2);
+  // tokens.push("0xF7D9281e8e363584973F946201b82ba72C965D27");
+  // strats.push(curAddresses.YieldYakStrategy2);
 
   const stratViewer = await sdk.api.abi.call({
     target: curAddresses.StrategyViewer,
@@ -65,12 +65,12 @@ async function useLegacyIsolatedStrategyMetadata(block) {
       curAddresses.YieldYakStrategy,
     ["0xeD8CBD9F0cE3C6986b22002F03c6475CEb7a6256"]:
       curAddresses.YieldYakStrategy,
-    ["0x454E67025631C065d3cFAD6d71E6892f74487a15"]:
-      curAddresses.TraderJoeMasterChefStrategy,
     ["0x2148D1B21Faa7eb251789a51B404fc063cA6AAd6"]:
       curAddresses.SimpleHoldingStrategy,
+    /*["0x454E67025631C065d3cFAD6d71E6892f74487a15"]:
+      curAddresses.TraderJoeMasterChefStrategy,
     ["0xCDFD91eEa657cc2701117fe9711C9a4F61FEED23"]:
-      curAddresses.MultiTraderJoeMasterChef3Strategy,
+      curAddresses.MultiTraderJoeMasterChef3Strategy, */
   };
   // const masterChef2Tokens = [
   //   ADDRESSES.avax.xJOE,

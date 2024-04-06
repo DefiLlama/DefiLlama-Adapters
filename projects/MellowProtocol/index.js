@@ -13,6 +13,10 @@ const config = {
   polygon_zkevm: {
     registry: '0xc02a7B4658861108f9837007b2DF2007d6977116',
     fromBlock: 2665891,
+  },
+  base: {
+    registry: '0xc02a7B4658861108f9837007b2DF2007d6977116',
+    fromBlock: 2785683,
   }
 }
 
@@ -23,7 +27,7 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const { registry, fromBlock, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const balances = {}
       const logs = await getLogs({
         api,

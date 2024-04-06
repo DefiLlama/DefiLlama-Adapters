@@ -1,6 +1,13 @@
 #!/usr/bin/env node
+
+const handleError = require('./utils/handleError')
+const INTERNAL_CACHE_FILE = 'tvl-adapter-repo/sdkInternalCache.json'
+process.on('unhandledRejection', handleError)
+process.on('uncaughtException', handleError)
+
 const path = require("path");
 require("dotenv").config();
+const { ENV_KEYS } = require("./projects/helper/env");
 const { util: {
   blocks: { getCurrentBlocks },
   humanizeNumber: { humanizeNumber },
@@ -9,29 +16,20 @@ const { util } = require("@defillama/sdk");
 const sdk = require("@defillama/sdk");
 const whitelistedExportKeys = require('./projects/helper/whitelistedExportKeys.json')
 const chainList = require('./projects/helper/chains.json')
-const handleError = require('./utils/handleError')
 const { log, diplayUnknownTable, sliceIntoChunks } = require('./projects/helper/utils')
 const { normalizeAddress } = require('./projects/helper/tokenMapping')
 const { PromisePool } = require('@supercharge/promise-pool')
 
-const locks = [];
-function getCoingeckoLock() {
-  return new Promise((resolve) => {
-    locks.push(resolve);
-  });
-}
-function releaseCoingeckoLock() {
-  const firstLock = locks.shift();
-  if (firstLock !== undefined) {
-    firstLock(null);
-  }
-}
-// Rate limit is 50 calls/min for coingecko's API
-// So we'll release one every 1.2 seconds to match it
-setInterval(() => {
-  releaseCoingeckoLock();
-}, 2000);
-const maxCoingeckoRetries = 5;
+const currentCacheVersion = sdk.cache.currentVersion // load env for cache
+// console.log(`Using cache version ${currentCacheVersion}`)
+
+if (process.env.LLAMA_SANITIZE)
+  Object.keys(process.env).forEach((key) => {
+    if (key.endsWith('_RPC')) return;
+    if (['TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_MODE', ...ENV_KEYS].includes(key) || key.includes('SDK')) return;
+    delete process.env[key]
+  })
+
 
 async function getTvl(
   unixTimestamp,
@@ -43,29 +41,22 @@ async function getTvl(
   tvlFunction,
   isFetchFunction,
   storedKey,
-  knownTokenPrices
 ) {
+  const chain = storedKey.split('-')[0]
+  const api = new sdk.ChainApi({ chain, block: chainBlocks[chain], timestamp: unixTimestamp, storedKey, })
+  api.api = api
+  api.storedKey = storedKey
   if (!isFetchFunction) {
-    const chain = storedKey.split('-')[0]
-    const block = chainBlocks[chain]
-    const api = new sdk.ChainApi({ chain, block: chainBlocks[chain], timestamp: unixTimestamp, })
-    let tvlBalances = await tvlFunction(unixTimestamp, ethBlock, chainBlocks, { api, chain, block, storedKey });
-    if (!tvlBalances && Object.keys(api.getBalances()).length) tvlBalances = api.getBalances()
-    const tvlResults = await computeTVL(
-      tvlBalances,
-      "now",
-      false,
-      knownTokenPrices,
-      getCoingeckoLock,
-      maxCoingeckoRetries
-    );
+    let tvlBalances = await tvlFunction(api, ethBlock, chainBlocks, api);
+    if (tvlBalances === undefined) tvlBalances = api.getBalances()
+    const tvlResults = await computeTVL(tvlBalances, "now");
     await diplayUnknownTable({ tvlResults, storedKey, tvlBalances, })
     usdTvls[storedKey] = tvlResults.usdTvl;
     tokensBalances[storedKey] = tvlResults.tokenBalances;
     usdTokenBalances[storedKey] = tvlResults.usdTokenBalances;
   } else {
     usdTvls[storedKey] = Number(
-      await tvlFunction(unixTimestamp, ethBlock, chainBlocks)
+      await tvlFunction(api, ethBlock, chainBlocks, api)
     );
   }
   if (
@@ -117,10 +108,12 @@ sdk.api.abi.call = async (...args) => {
   } catch (e) {
     console.log(e)
   }
+  await initCache()
   const chains = Object.keys(module).filter(item => typeof module[item] === 'object' && !Array.isArray(module[item]));
   checkExportKeys(module, passedFile, chains)
   const unixTimestamp = Math.round(Date.now() / 1000) - 60;
-  const { chainBlocks } = await getCurrentBlocks([]); // fetch only ethereum block for local test
+  // const { chainBlocks } = await getCurrentBlocks([]); // fetch only ethereum block for local test
+  const chainBlocks = {}
   const ethBlock = chainBlocks.ethereum;
   const usdTvls = {};
   const tokensBalances = {};
@@ -155,7 +148,6 @@ sdk.api.abi.call = async (...args) => {
           tvlFunction,
           tvlFunctionIsFetch,
           storedKey,
-          knownTokenPrices
         );
         let keyToAddChainBalances = tvlType;
         if (tvlType === "tvl" || tvlType === "fetch") {
@@ -186,7 +178,6 @@ sdk.api.abi.call = async (...args) => {
       mainTvlIsFetch ? module.fetch : module.tvl,
       mainTvlIsFetch,
       "tvl",
-      knownTokenPrices
     );
     tvlPromises.push(mainTvlPromise);
   }
@@ -224,6 +215,7 @@ sdk.api.abi.call = async (...args) => {
   });
   console.log("\ntotal".padEnd(25, " "), humanizeNumber(usdTvls.tvl), "\n");
 
+  await preExit()
   process.exit(0);
 })();
 
@@ -308,8 +300,8 @@ const axios = require("axios");
 
 const ethereumAddress = "0x0000000000000000000000000000000000000000";
 const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-
 function fixBalances(balances) {
+
   Object.entries(balances).forEach(([token, value]) => {
     let newKey
     if (token.startsWith("0x")) newKey = `ethereum:${token}`
@@ -378,7 +370,7 @@ async function computeTVL(balances, timestamp) {
       const balance = balances[address];
 
       if (data == undefined) tokenBalances[`UNKNOWN (${address})`] = balance
-      if ('confidence' in data && data.confidence < confidenceThreshold) return
+      if ('confidence' in data && data.confidence < confidenceThreshold || !data.price) return
       if (Math.abs(data.timestamp - Date.now() / 1e3) > (24 * 3600)) {
         console.log(`Price for ${address} is stale, ignoring...`)
         return
@@ -402,6 +394,9 @@ Warning: `)
       tokenBalances[data.symbol] = (tokenBalances[data.symbol] ?? 0) + amount;
       usdTokenBalances[data.symbol] = (usdTokenBalances[data.symbol] ?? 0) + usdAmount;
       usdTvl += usdAmount;
+      if (isNaN(usdTvl)) {
+        throw new Error(`NaN usdTvl for ${address} with balance ${balance} and price ${data.price}`)
+      }
     })
   });
 
@@ -416,4 +411,39 @@ Warning: `)
     tokenBalances,
     usdTokenBalances,
   };
+}
+
+setTimeout(() => {
+  console.log("Timeout reached, exiting...");
+  if (!process.env.NO_EXIT_ON_LONG_RUN_RPC)
+    process.exit(1);
+}, 10 * 60 * 1000) // 10 minutes
+
+
+
+async function initCache() {
+  let currentCache = await sdk.cache.readCache(INTERNAL_CACHE_FILE)
+  if (process.env.NO_EXIT_ON_LONG_RUN_RPC)
+    sdk.log('cache size:', JSON.stringify(currentCache).length, 'chains:', Object.keys(currentCache).length)
+  const ONE_WEEK = 60 * 60 * 24 * 31
+  if (!currentCache || !currentCache.startTime || (Date.now() / 1000 - currentCache.startTime > ONE_WEEK)) {
+    currentCache = {
+      startTime: Math.round(Date.now() / 1000),
+    }
+    await sdk.cache.writeCache(INTERNAL_CACHE_FILE, currentCache)
+  }
+  sdk.sdkCache.startCache(currentCache)
+}
+
+async function saveSdkInternalCache() {
+  await sdk.cache.writeCache(INTERNAL_CACHE_FILE, sdk.sdkCache.retriveCache(), { skipR2CacheWrite: true })
+}
+
+async function preExit() {
+  try {
+    await saveSdkInternalCache() // save sdk cache to r2
+  } catch (e) {
+    if (process.env.NO_EXIT_ON_LONG_RUN_RPC)
+      sdk.error(e)
+  }
 }

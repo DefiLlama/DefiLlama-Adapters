@@ -1,7 +1,8 @@
 const MasterMagpieAbi = require("../magpiexyz/abis/masterMagpie.json");
 const config = require("./config");
+const { staking } = require('../helper/staking')
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   const { masterPenpie, pendleStaking, vePENDLE, PENDLE, mPENDLE, } = config[api.chain];
 
   const poolTokens = await api.fetchList({
@@ -20,8 +21,12 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
 }
 
 Object.keys(config).forEach((chain) => {
+  const { PNP, vlPNP, } = config[chain];
+
   module.exports[chain] = {
-    doublecounted: true,
-    tvl: tvl,
+    tvl,
   };
+  if (PNP && vlPNP) module.exports[chain].staking = staking(vlPNP, PNP)
 });
+
+module.exports.doublecounted = true

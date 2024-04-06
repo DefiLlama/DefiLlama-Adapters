@@ -26,18 +26,10 @@ const adapterPrompt = {
   suggestOnly: false,
   depthLimit: 0,
 }
-const enableDebugPrompt = {
-  type: 'confirm',
-  name: 'debugMode',
-  message: 'Enable Debug Mode:',
-  default: false
-}
-
 
 async function run() {
   let adapterPath
   const { debugMode, ...response } = await inquirer.prompt([
-    // enableDebugPrompt, 
     adapterPrompt,
   ])
   adapterPath = response.adapterPath
