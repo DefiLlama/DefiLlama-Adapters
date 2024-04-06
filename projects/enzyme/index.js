@@ -12,7 +12,7 @@ const query = `query get_accounts($lastId: String!) {
   ) { id trackedAssets { id } }
 }`
 
-async function tvl(ts, block, _, { api }) {
+async function tvl(api) {
   const { endpoint } = config[api.chain]
   const vaults = await cachedGraphQuery('enzyme/' + api.chain, endpoint, query, { fetchById: true, })
   return sumTokens2({

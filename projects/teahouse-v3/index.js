@@ -11,6 +11,10 @@ async function getVaultContractsAddress(chain) {
   vaults.forEach((element) => {
     // v3 vaults
     if (element.isDeFi == true && element.isActive == true) {
+      if (
+        element.share.address.toLowerCase() === '0xf9b099f8EebCC675B63E4f0a4657c10F246af77A'.toLowerCase() &&
+        element.chain === "arbitrum"
+      ) return;
       if (element.chain === chain) plAddress.push(element.share.address);
     }
   });
@@ -21,7 +25,7 @@ const chains = ["ethereum", "optimism", "arbitrum", 'polygon', 'boba', 'mantle']
 
 chains.forEach((chain) => {
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api }) => {
+    tvl: async (api) => {
       const vaults = await getVaultContractsAddress(chain);
       const tokens = await api.multiCall({
         abi: abi.assetToken1,

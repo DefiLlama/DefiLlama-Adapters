@@ -34,7 +34,7 @@ const tokens = {
   '0xD42E078ceA2bE8D03cd9dFEcC1f0d28915Edea78': ['0x6A41732eaDBE15e9c9FcA2cfF1299c6321AA104B'],
 };
 
-async function tvl(timestamp, ethBlock, _, { api }) {
+async function tvl(api) {
   const tokensAndOwners = Object.entries(tokens).map(([token, owners]) => owners.map(owner => [token, owner])).flat()
   return sumTokens2({ api, tokensAndOwners })
 }

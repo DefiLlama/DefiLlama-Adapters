@@ -13,12 +13,12 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { morphoBlue, fromBlock } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const marketIds = await getMarkets(api)
       const tokens = (await api.multiCall({ target: morphoBlue, calls: marketIds, abi: abi.morphoBlueFunctions.idToMarketParams })).map(i => [i.collateralToken, i.loanToken]).flat()
       return api.sumTokens({ owner: morphoBlue, tokens })
     },
-    borrowed: async (_, _b, _cb, { api, }) => {
+    borrowed: async (api) => {
       const marketIds = await getMarkets(api)
       const marketInfo = await api.multiCall({ target: morphoBlue, calls: marketIds, abi: abi.morphoBlueFunctions.idToMarketParams })
       const marketData = await api.multiCall({ target: morphoBlue, calls: marketIds, abi: abi.morphoBlueFunctions.market })

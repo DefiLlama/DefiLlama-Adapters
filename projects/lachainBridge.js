@@ -1,7 +1,4 @@
 const ADDRESSES = require('./helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
-const { sumTokens } = require('./helper/unwrapLPs')
-const { getChainTransform } = require('./helper/portedTokens')
 
 const config = {
   polygon: {
@@ -30,20 +27,13 @@ const config = {
   },
 }
 
-module.exports = {};
-
-const nullAddress = ADDRESSES.null
-
 Object.keys(config).forEach(chain => {
   const { nativeBridge, tokenBridge, tokens} = config[chain]
+  tokens.push(ADDRESSES.null)
+  const owners = nativeBridge.concat(tokenBridge)
   module.exports[chain] = {
-    tvl: async (_, _block, { [chain]: block}) => {
-      const balances = {}
-      const transform = await getChainTransform(chain)
-      const {output: balance} = await sdk.api.eth.getBalance({ target: nativeBridge[0], block, chain })
-      sdk.util.sumSingleBalance(balances, transform(nullAddress), balance)
-      const toa = tokenBridge.map(o => tokens.map(t => [t,o])).flat()
-      return sumTokens(balances, toa, block, chain, transform)
+    tvl: async (api) => {
+      return api.sumTokens({ owners, tokens })
     }
   }
 })
