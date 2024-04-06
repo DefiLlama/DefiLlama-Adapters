@@ -1,5 +1,5 @@
 const { Program } = require("@project-serum/anchor");
-const base58 = require('bs58');
+const bs58 = require('bs58');
 const { getProvider } = require("../helper/solana");
 const idl = require('./idl')
 
