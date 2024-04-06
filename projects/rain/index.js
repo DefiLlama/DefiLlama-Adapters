@@ -4,10 +4,10 @@ const idl = require('./idl')
 
 async function tvl(api) {
   const provider = getProvider()
-  const rainProgram = new Program(idl, 'RainEraPU5yDoJmTrHdYynK9739GkEfDsE4ffqce2BR', provider)
+  const program = new Program(idl, 'RainEraPU5yDoJmTrHdYynK9739GkEfDsE4ffqce2BR', provider)
 
-  const pools = await rainProgram.account.pool.all()
-  const loans = await this.program.account.loan.all([
+  const pools = await program.account.pool.all()
+  const loans = await program.account.loan.all([
     {
       memcmp: {
         offset: 294 + 8,
