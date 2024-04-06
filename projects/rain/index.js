@@ -19,7 +19,14 @@ async function tvl(api) {
     },
   ])
 
+  const pools = await program.account.pool.all()
   const loans = await program.account.loan.all([
+    {
+      memcmp: {
+        offset: 294 + 8,
+        bytes: bs58.encode(Buffer.from([1])), // tokens loans only
+      },
+    },
     {
       memcmp: {
         offset: 8 + 1,
