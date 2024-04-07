@@ -549,7 +549,7 @@ const assetList = [
   ['USDT', 'MATIC', '0xd3a22590f8243f8e83ac230d1842c9af0404c4a1 '],
   ['USDT', 'MATIC', '0xe7804c37c13166ff0b37f5ae0bb07a3aebb6e245'],
   ['USDT', 'MATIC', '0xf977814e90da44bfa03b6295a0616a897441acec'],
-  //['USDT', 'OPBNB', '0xf977814e90da44bfa03b6295a0616a897441acec'],
+  ['USDT', 'OPBNB', '0xf977814e90da44bfa03b6295a0616a897441acec'],
   ['USDT', 'OP', '0xacd03d601e5bb1b275bb94076ff46ed9d753435a'],
   ['USDT', 'OP', '0xf977814e90da44bfa03b6295a0616a897441acec'],
   ['USDT', 'SOL', '2ojv9BAiHUrvsm9gxDe7fJSzbNZSJcxZvf8dqmWGHG8S'],
@@ -609,7 +609,7 @@ function getAddresses(chain) {
   return assetList.filter(i => i[1] === chain).map(i => i[2])
 }
 function getOwners(chain) {
-  const isCaseSensitive = ['BTC', 'TRX', 'SOL', 'XRP', 'LTC', 'DOT', 'ALGO', 'starknet'].includes(chain)
+  const isCaseSensitive = ['BTC', 'TRX', 'SOL', 'XRP', 'LTC', 'DOT', 'ALGO'].includes(chain)
   return getUniqueAddresses(assetList.filter(i => i[1] === chain).map(i => i[2]), isCaseSensitive)
 }
 
