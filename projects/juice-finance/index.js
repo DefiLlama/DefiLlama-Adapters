@@ -57,27 +57,10 @@ const wethHolders = [
 ].map((a) => [ADDRESSES.blast.WETH, a]);
 
 async function tvl(api) {
+  const wasabiAbi = "function balanceOf(address) view returns (uint256)";
   // Wasbi weth Vault
   const wasabiWeth = await api.multiCall({
-    abi: {
-      inputs: [
-        {
-          internalType: "address",
-          name: "account",
-          type: "address",
-        },
-      ],
-      name: "balanceOf",
-      outputs: [
-        {
-          internalType: "uint256",
-          name: "",
-          type: "uint256",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
+    abi: wasabiAbi,
     calls: [{ params: [WASABI_WETH] }],
     target: WASABI_WETH_VAULT,
   });
@@ -85,25 +68,7 @@ async function tvl(api) {
 
   // Wasabi usdb Vault
   const wasabiUsdb = await api.multiCall({
-    abi: {
-      inputs: [
-        {
-          internalType: "address",
-          name: "account",
-          type: "address",
-        },
-      ],
-      name: "balanceOf",
-      outputs: [
-        {
-          internalType: "uint256",
-          name: "",
-          type: "uint256",
-        },
-      ],
-      stateMutability: "view",
-      type: "function",
-    },
+    abi: wasabiAbi,
     calls: [{ params: [WASABI_USDB] }],
     target: WASABI_USDB_VAULT,
   });
