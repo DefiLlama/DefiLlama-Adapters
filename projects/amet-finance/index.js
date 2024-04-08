@@ -5,6 +5,15 @@ const config = {
   base: {
     issuer: "0xE67BE43603260b0AD38bBfe89FcC6fDe6741e82A",
     fromBlock: 12724500
+  },
+  manta: {
+    issuer: null,
+  },
+  polygon: {
+    issuer: null,
+  },
+  polygon_zkevm: {
+    issuer: null,
   }
 };
 
@@ -15,6 +24,8 @@ const FixedFlexIssuerABI = {
 
 async function tvl(api) {
   const { issuer, fromBlock } = config[api.chain];
+
+  if (!issuer) return {};
 
   const issuerLogs = await getLogs({api, target: issuer, fromBlock, eventAbi: issuerEventABI, onlyArgs: true});
   const bondAddresses = issuerLogs.map(item => item.bondAddress);
