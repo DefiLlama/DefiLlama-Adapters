@@ -61,6 +61,46 @@ const avaxContractData = [
     },
 ]
 
+const arbitrumContractData = [
+    {
+        chain: "arbitrum",
+        contract: "0xE0B0D2021293Bee9715e1Db3be31b55C00F72A75",
+        contractABI: abi_v2,
+    }
+]
+
+const baseContractData = [
+    {
+        chain: "base",
+        contract: "0x4f0fd563be89ec8c3e7d595bf3639128c0a7c33a",
+        contractABI: abi_v2
+    },
+]
+
+const velasContractData = [
+    {
+        chain: "velas",
+        contract: "0x586c21A779C24eFd2a8aF33C9F7Df2a2EA9aF55c",
+        contractABI: abi_v2
+    },
+]
+
+const fantomContractData = [
+    {
+        chain: "fantom",
+        contract: "0x9F726019452d65a120E1F7Ae6b937eE9EbD72440",
+        contractABI: abi_v2
+    },
+]
+
+const cronosContractData = [
+    {
+        chain: "cronos",
+        contract: "0x05b711Df32d73ECaa877d45a637a2eB415e7995f",
+        contractABI: abi_v2
+    },
+]
+
 
 const bscContractData = [
     {
@@ -87,5 +127,10 @@ module.exports = {
     polygonContractData,
     avaxContractData,
     bscContractData,
-    kavaContractData
+    kavaContractData,
+    baseContractData,
+    velasContractData,
+    fantomContractData,
+    cronosContractData,
+    arbitrumContractData
 }

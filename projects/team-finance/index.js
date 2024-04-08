@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const { ethereumContractData, polygonContractData, avaxContractData, bscContractData, kavaContractData } = require("./config");
+const { ethereumContractData, polygonContractData, avaxContractData, bscContractData, kavaContractData, fantomContractData, arbitrumContractData, baseContractData, cronosContractData, velasContractData } = require("./config");
 const { vestingHelper } = require("../helper/unknownTokens");
 
 function getTvl(args) {
@@ -76,6 +76,21 @@ module.exports = {
   },
   kava: {
     tvl: getTvl(kavaContractData)
-  }
+  },
+  arbitrum: {
+    tvl: getTvl(arbitrumContractData)
+  },
+  fantom: {
+    tvl: getTvl(fantomContractData)
+  },
+  cronos: {
+    tvl: getTvl(cronosContractData)
+  },
+  velas: {
+    tvl: getTvl(velasContractData)
+  },
+  base: {
+    tvl: getTvl(baseContractData)
+  },
 };
 
