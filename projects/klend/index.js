@@ -71,9 +71,7 @@ async function okexPool2(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
-    timetravel: true,
-    doublecounted: false,
-    bsc: {
+            bsc: {
         ...compoundExports(unitroller, "bsc", kBnb, wbnb),
         pool2: bscPool2
     },

@@ -20,8 +20,8 @@ const mTreasuryL2FF1 = "0xcD9Dab9Fa5B55EE4569EdC402d3206123B1285F4"
 const BIT = "0x1A4b46696b2bB4794Eb3D4c26f1c55F9170fa4C5";
 const MNT = "0x3c3a81e81dc49a522a592e7622a7e711c06bf354"
 
-const MNTMantle = "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000"
-const wrappedmantleonmantle = "0x78c1b0C915c4FAA5FffA6CAbf0219DA63d7f4cb8"
+const MNTMantle = ADDRESSES.metis.Metis
+const wrappedmantleonmantle = ADDRESSES.mantle.WMNT
 
 const ecspWallets = [
 '0x87c185bEFFfb36a42b741d10601A007e997a63bA',
@@ -72,7 +72,7 @@ const tokenTreasuries = treasuryExports({
         '0x50D1c9771902476076eCFc8B2A83Ad6b9355a4c9',//FTT
         '0x8798249c2E607446EfB7Ad49eC89dD1865Ff4272',//xSUSHI
         "0x52A8845DF664D76C69d2EEa607CD793565aF42B8",
-        "0x9d39a5de30e57443bff2a8307a4256c8797a3497", //sUSDe
+        ADDRESSES.ethereum.sUSDe, //sUSDe
      ],
     owners: [mTreasuryL1, mTreasuryL1SC,mTreasuryL1O1,mTreasuryL1E1, mTreasuryL1RB1, mTreasuryL1LPE1, ...ecspWallets ],
     ownTokens: [BIT, MNT],
@@ -84,9 +84,9 @@ const tokenTreasuries = treasuryExports({
         nullAddress,
         "0x5bE26527e817998A7206475496fDE1E68957c5A6", //ondo usd
         "0xcda86a272531e8640cd7f1a92c01839911b90bb0", //mantle staked eth
-        "0xdeaddeaddeaddeaddeaddeaddeaddeaddead1111", //eth
-        "0x09bc4e0d864854c6afb6eb9a9cdf58ac190d0df9", //usdc
-        "0x201EBa5CC46D216Ce6DC03F6a759e8E766e956aE", //tether
+        ADDRESSES.mantle.WETH, //eth
+        ADDRESSES.mantle.USDC, //usdc
+        ADDRESSES.mantle.USDT, //tether
         "0xf52b354ffdb323e0667e87a0136040e3e4d9df33", //lp meth
      ],
     owners: [mTreasuryL2, mTreasuryL2RB2, mTreasuryL2LPM1, mTreasuryL2FF1, ...ecspWallets],

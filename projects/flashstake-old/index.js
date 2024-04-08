@@ -1,6 +1,6 @@
 const { getLogs } = require('../helper/cache/getLogs')
 
-async function tvl(timestamp, block, _, { api }) {
+async function tvl(api) {
   const logs = await getLogs({
     api,
     target: '0xb0aeae6e204bd95911ead25263d7078954fb7fb0',

@@ -9,11 +9,13 @@ const plimit = require('p-limit')
 const { sliceIntoChunks, sleep } = require('../utils')
 const { getUniTVL } = require('../cache/uniswap')
 const { getCache } = require('../cache')
+const { getEnv } = require('../env')
+const ADDRESSES = require('../coreAssets.json')
 
 const _rateLimited = plimit(1)
 const rateLimited = fn => (...args) => _rateLimited(() => fn(...args))
 
-const STARKNET_RPC = 'https://starknet-mainnet.public.blastapi.io'
+const STARKNET_RPC = getEnv('STARKNET_RPC')
 
 function formCallBody({ abi, target, params = [], allAbi = [] }, id = 0) {
   if ((params || params === 0) && !Array.isArray(params))
@@ -102,8 +104,15 @@ const balanceOfABI = {
   "customInput": 'address',
 }
 
+function replaceNull(i) {
+  return i === ADDRESSES.null ? ADDRESSES.starknet.ETH : i
+}
 
 async function sumTokens({ owner, owners = [], tokens = [], tokensAndOwners = [], blacklistedTokens = [], token, ownerTokens = [], api, }) {
+
+  tokens = tokens.map(replaceNull)
+  tokensAndOwners = tokensAndOwners.map(i => [replaceNull(i[0]), i[1]])
+  console.log({ owner, owners, tokens, tokensAndOwners, blacklistedTokens, token, ownerTokens })
   if (token) tokens = [token]
   if (owner) owners = [owner]
 
@@ -147,7 +156,7 @@ const defaultAbis = {
 }
 
 function dexExport({ factory, abis = {}, fetchBalances = false }) {
-  return () => getUniTVL({ factory, abis: { ...defaultAbis, ...abis }, fetchBalances })(undefined, undefined, undefined, { api, chain: 'starknet' })
+  return () => getUniTVL({ factory, abis: { ...defaultAbis, ...abis }, fetchBalances })(api, undefined, undefined, { api, chain: 'starknet' })
 }
 
 module.exports = {

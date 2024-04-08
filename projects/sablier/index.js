@@ -18,13 +18,13 @@ async function getTokens(api, owners, isVesting) {
   return tokens.filter((v, i) => isWhitelistedToken(symbols[i], v, isVesting))
 }
 
-async function tvl(_, block, _1, { api }) {
+async function tvl(api) {
   const { owners } = config[api.chain]
   const tokens = await getTokens(api, owners, false)
   return sumTokens2({ api, owners, tokens, blacklistedTokens, })
 }
 
-async function vesting(_, block, _1, { api }) {
+async function vesting(api) {
   const { owners } = config[api.chain]
   const tokens = await getTokens(api, owners, true)
   return sumTokens2({ api, owners, tokens, blacklistedTokens, })

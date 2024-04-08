@@ -8,7 +8,7 @@ const yieldPools = [
 ]
 const getAssetsABI = "function getAssets() view returns (tuple(address assetAddress, bool isCoverAsset, bool isAbandoned)[])"
 
-async function tvl(timestamp, block, _, { api }) {
+async function tvl(api) {
   const assets = await api.multiCall({ abi: getAssetsABI, calls: pools})
   const ownerTokens = assets.map((v, i) => [v.map(i => i.assetAddress), pools[i]])
   const assets2 = await api.multiCall({  abi: 'address[]:getTrackedAssets', calls: yieldPools }) 
