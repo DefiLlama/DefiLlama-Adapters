@@ -26,6 +26,8 @@ const MaxUint256 = JSBI.subtract(
   JSBI.BigInt(1)
 );
 
+let tokenAmounts = {};
+
 function computeAddress(factory, token0, token1, fee) {
   const poolkey = Web3.utils.keccak256(
     Web3.eth.abi.encodeParameters(
@@ -33,12 +35,8 @@ function computeAddress(factory, token0, token1, fee) {
       [token0, token1, fee]
     )
   );
-  const poolAddressFromSdk = getCreate2Address(
-    factory,
-    poolkey,
-    POOL_INIT_CODE_HASH
-  );
-  return Web3.utils.toChecksumAddress(poolAddressFromSdk);
+  const poolAddress = getCreate2Address(factory, poolkey, POOL_INIT_CODE_HASH);
+  return Web3.utils.toChecksumAddress(poolAddress);
 }
 
 function mulDiv(a, b, denominator) {
@@ -54,8 +52,8 @@ function getAmountsFromLiquidity(
 ) {
   const sqrtRatioAX96 = getSqrtRatioAtTick(tickLower);
   const sqrtRatioBX96 = getSqrtRatioAtTick(tickUpper);
-  let amount0,
-    amount1 = 0;
+  let amount0 = JSBI.BigInt(0);
+  let amount1 = JSBI.BigInt(0);
 
   if (JSBI.lessThanOrEqual(sqrtRatioX96, sqrtRatioAX96)) {
     amount0 = getAmount0ForLiquidity(sqrtRatioAX96, sqrtRatioBX96, liquidity);
@@ -156,8 +154,6 @@ function getSqrtRatioAtTick(tick) {
     ? JSBI.add(JSBI.divide(ratio, Q32), ONE)
     : JSBI.divide(ratio, Q32);
 }
-
-let tokenAmounts = {};
 
 function updateOrAddKeyValue(tokenAddress, valueToAdd) {
   if (tokenAmounts.hasOwnProperty(tokenAddress)) {
