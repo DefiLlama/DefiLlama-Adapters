@@ -7,6 +7,7 @@ const {
   cellarsV2,
   cellarsV2p5,
   arbitrumCellarsV2p5,
+  optimismCellarsV2p5,
 } = require("./cellar-constants");
 
 
@@ -63,7 +64,22 @@ async function arbitrum_tvl(api) {
     cellars: arbitrumCellarsV2p5.map((cellar) => cellar.id),
     ownersToDedupe: arbitrumCellarsV2p5,
   });
+}
 
+async function optimism_tvl(api) {
+  const balances = {};
+  const { block } = api
+  const chainBlocks = {
+    [api.chain]: block
+  }
+  const baseOptions = { balances, chainBlocks };
+
+  await v2.sumTvl({
+    ...baseOptions,
+    api,
+    cellars: optimismCellarsV2p5.map((cellar) => cellar.id),
+    ownersToDedupe: optimismCellarsV2p5,
+  });
   return balances;
 }
 
@@ -80,6 +96,7 @@ module.exports = {
   start: 1656652494,
   ["ethereum"]: { tvl: ethereum_tvl },
   ["arbitrum"]: { tvl: arbitrum_tvl },
+  ["optimism"]: { tvl: optimism_tvl },
   hallmarks: [
     [1658419200, "aave2 Cellar Launch"],
     [1674671068, "Real Yield USD Cellar Launch"],
