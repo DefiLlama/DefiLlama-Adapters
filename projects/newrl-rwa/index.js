@@ -8,7 +8,6 @@ const PROTOCOL_ADDRESSES = ["0xbFeb0b78f9AB8223657B65c5aCAD846c12F8AA89"];
 const USDC_TOKEN_ADDRESS = ADDRESSES.polygon.USDC_CIRCLE;
 const TRACKED_TOKENS = [
   "0x01d6d93feaa0a7157b22cf034d09807e63d1e3d8", // SUGR
-  "0x86a9b606295c8b76a0c921463cd6312fc58483e1", // INRC
 ];
 const THEGRAPTH_ENDPOINT =
   "https://api.thegraph.com/subgraphs/name/messari/uniswap-v3-polygon";
@@ -34,6 +33,12 @@ async function getConversion(fromToken, toToken, block) {
   });
   // Get the Last Traded Price of the Token against USDC for conversion
   const swap = data["swaps"][0];
+  if (swap === undefined) {
+    console.error(
+      `No swaps found for ${fromToken} to ${toToken} at block ${block}`
+    );
+    return 0;
+  }
   return swap["amountOut"] / swap["amountIn"];
 }
 
