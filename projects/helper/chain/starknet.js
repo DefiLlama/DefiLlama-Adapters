@@ -112,7 +112,6 @@ async function sumTokens({ owner, owners = [], tokens = [], tokensAndOwners = []
 
   tokens = tokens.map(replaceNull)
   tokensAndOwners = tokensAndOwners.map(i => [replaceNull(i[0]), i[1]])
-  console.log({ owner, owners, tokens, tokensAndOwners, blacklistedTokens, token, ownerTokens })
   if (token) tokens = [token]
   if (owner) owners = [owner]
 
