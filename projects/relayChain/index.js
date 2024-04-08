@@ -25,7 +25,7 @@ const relayBsc = "0xE338D4250A4d959F88Ff8789EaaE8c32700BD175";
 
 const daiAvax = ADDRESSES.avax.DAI;
 const wavax = ADDRESSES.avax.WAVAX;
-const wbtcAvax = "0x50b7545627a5162F82A992c33b87aDc75187B218";
+const wbtcAvax = ADDRESSES.avax.WBTC_e;
 const usdcAvax = ADDRESSES.avax.USDC_e;
 const usdtAvax = ADDRESSES.avax.USDT_e;
 

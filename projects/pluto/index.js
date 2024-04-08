@@ -1,2 +1,9 @@
-const { wavesExport } = require('../helper/chain/wavesAdapter')
-module.exports = wavesExport("/pluto", item => item.totalLocked)
+const { sumTokens, } = require('../helper/chain/waves')
+
+// https://wavesexplorer.com/addresses/3P3a1jssxc2CGdyC7SGbTJc9ZvTjZ5jBMLZ
+module.exports = {
+  timetravel: false,
+  waves: {
+    tvl: () => ({}),
+  }
+}

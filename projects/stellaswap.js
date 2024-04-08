@@ -11,7 +11,7 @@ const dexTVL = getUniTVL({
   useDefaultCoreAssets: true,
 })
 
-async function stablePoolTVL(_, _b, _c, { api }) {
+async function stablePoolTVL(api) {
   const pools = [
     // Legacy
     '0x422b5b7a15fb12c518aa29f9def640b4773427f8', // SFL - 4pool V1 (nomad)

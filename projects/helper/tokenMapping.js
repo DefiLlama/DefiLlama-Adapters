@@ -34,27 +34,19 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
-
-  "naka": {
-    "0xDe4c4768ee70D97C044062fEC971eAE91B6aFAB7": { coingeckoId: "wrapped-bitcoin", decimals: 18 },
-    "0x4F90055b8670B21d64146577152aE52975075900": { coingeckoId: "ethereum", decimals: 18 },
-    "0xBD0adB3Ee21e0A75D3021384177238883D69e883": { coingeckoId: "ordinals", decimals: 18 },
+  ethereum: {
+    '0x4d831e22f062b5327dfdb15f0b6a5df20e2e3dd0': { coingeckoId: 'stakestone-ether', decimals: 18 },
   },
-  astrzk: {
-    '0xe9cc37904875b459fa5d0fe37680d36f1ed55e38': { coingeckoId: "ethereum", decimals: 18 },
+  islm: {
+    '0xeC8CC083787c6e5218D86f9FF5f28d4cC377Ac54': { coingeckoId: 'islamic-coin', decimals: 18 },
+    '0xc5e00d3b04563950941f7137b5afa3a534f0d6d6': { coingeckoId: 'dai', decimals: 18 },
+    '0xeceeefcee421d8062ef8d6b4d814efe4dc898265': { coingeckoId: 'ethereum', decimals: 18 },
+    '0x5fd55a1b9fc24967c4db09c513c3ba0dfa7ff687': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
+    '0xd567b3d7b8fe3c79a1ad8da978812cfc4fa05e75': { coingeckoId: 'tether', decimals: 6 },
+    '0x80b5a32e4f032b2a058b4f29ec95eefeeb87adcd': { coingeckoId: 'axlusdc', decimals: 6 },
   },
-  inevm: {
-    "0x97423a68bae94b5de52d767a17abcc54c157c0e5": { coingeckoId: "tether", decimals: 6 },
-    "0x8358D8291e3bEDb04804975eEa0fe9fe0fAfB147": { coingeckoId: "usd-coin", decimals: 6 },
-    "0x69011706b3f6c6eaed7d2bc13801558b4fd94cbf": { coingeckoId: "injective-protocol", decimals: 18 },
-    "0x4c3a213bd5e8c4bd70a8396d6f3c8302571598cd": { coingeckoId: "injective-protocol", decimals: 18 },
-  },
-  sapphire: {
-    "0x8bc2b030b299964eefb5e1e0b36991352e56d2d3": { coingeckoId: "oasis-network", decimals: 18 },
-    "0x1ffd8a218fdc5b38210d64cbb45f40dc55a4e019": { coingeckoId: "oasis-network", decimals: 18 },
-    "0x9ca066f00e55b90623efe323feb2a649686538b6": { coingeckoId: "tether", decimals: 6 },
-    "0x013e54bee29813bd786b24f9cb08f47c4b75955c": { coingeckoId: "usd-coin", decimals: 6 },
-    "0x3e4079ad76c83760e22b5c0105670ebab88b8d0e": { coingeckoId: "tether", decimals: 18 },
+  svm: {
+    '0x5db252ead05C54B08A83414adCAbF46Eaa9E0337': { coingeckoId: 'bitcoin', decimals: 18 },
   },
   // Sample Code
   ozone: {
@@ -211,7 +203,7 @@ const anyswapTokenBlacklist = {
     ADDRESSES.shiden.ETH,
     ADDRESSES.telos.ETH,
     ADDRESSES.telos.USDT
-  ]
+  ],
 }
 
 module.exports = {

@@ -3,11 +3,11 @@ const { getLogs } = require('../helper/cache/getLogs')
 
 // Controllers[chain]
 const CONTROLLERS = {
-  manta: "0xCc396B83Baba70c85FBB8f44B64e7e43aE810232",
+  manta: "0xb2E609ef662889a32452598F0131863035974878",
 }
 
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const logs = await getLogs({
     api,
     target: CONTROLLERS[api.chain],
@@ -28,16 +28,15 @@ async function tvl(_, _1, _2, { api }) {
     tokens.push(..._tokens)
     owners.push(...vaults)
   }))
-  
+
   return api.sumTokens({ tokensAndOwners2: [tokens, owners]})
 }
-
 
 
 module.exports = {
   methodology:
     "Adds up the total value locked as collateral in Monroe vaults",
-  start: 1709510400, // Monday, March 4, 2024 00:00 GMT
+  start: 1710288000, // March 13, 2024 00:00 GMT
 };
 
 Object.keys(CONTROLLERS).forEach((chain) => {

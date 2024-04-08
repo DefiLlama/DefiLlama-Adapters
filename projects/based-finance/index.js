@@ -22,8 +22,8 @@ const treasuryTokens = [
   wftmAddress,
 ];
 
-async function treasury(_, _b, { fantom: block }) {
-  return sumTokens2({ owner: treasuryAddress, tokens: treasuryTokens, block, chain, })
+async function treasury(api) {
+  return sumTokens2({ owner: treasuryAddress, tokens: treasuryTokens, api })
 }
 
 module.exports = {
