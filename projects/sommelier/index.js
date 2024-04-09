@@ -12,28 +12,20 @@ const {
 
 
 async function ethereum_tvl(api) {
-  const balances = {};
-  const { block } = api
-  const chainBlocks = {
-    [api.chain]: block
-  }
-
-  const baseOptions = { balances, chainBlocks };
-
+  const block = await api.getBlock();
   // Sum TVL for all v0.8.15 Cellars
   await v0815.sumTvl({
-    ...baseOptions,
+    api,
     cellars: filterActiveCellars(cellarsV0815, block),
   });
 
   // Sum TVL for all v0.8.16 Cellars
   await v0816.sumTvl({
-    ...baseOptions,
+    api,
     cellars: filterActiveCellars(cellarsV0816, block),
   });
 
   await v2.sumTvl({
-    ...baseOptions,
     api,
     cellars: filterActiveCellars(cellarsV2, block),
     ownersToDedupe: cellarsV2.concat(cellarsV2p5),
@@ -41,25 +33,14 @@ async function ethereum_tvl(api) {
 
   // no change in sumTvl implementation from v2 to v2.5
   await v2.sumTvl({
-    ...baseOptions,
     api,
     cellars: filterActiveCellars(cellarsV2p5, block),
     ownersToDedupe: cellarsV2.concat(cellarsV2p5),
   });
-
-  return balances;
 }
 
 async function arbitrum_tvl(api) {
-  const balances = {};
-  const { block } = api
-  const chainBlocks = {
-    [api.chain]: block
-  }
-  const baseOptions = { balances, chainBlocks };
-
   await v2.sumTvl({
-    ...baseOptions,
     api,
     cellars: arbitrumCellarsV2p5.map((cellar) => cellar.id),
     ownersToDedupe: arbitrumCellarsV2p5,
@@ -67,26 +48,17 @@ async function arbitrum_tvl(api) {
 }
 
 async function optimism_tvl(api) {
-  const balances = {};
-  const { block } = api
-  const chainBlocks = {
-    [api.chain]: block
-  }
-  const baseOptions = { balances, chainBlocks };
-
   await v2.sumTvl({
-    ...baseOptions,
     api,
     cellars: optimismCellarsV2p5.map((cellar) => cellar.id),
     ownersToDedupe: optimismCellarsV2p5,
   });
-  return balances;
 }
 
 // Returns list of cellar addresses that are deployed based on their start block
-function filterActiveCellars(cellars, blockHeight) {
+function filterActiveCellars(cellars, block) {
   return cellars
-    .filter((cellar) => cellar.startBlock <= blockHeight)
+    .filter((cellar) => cellar.startBlock <= block)
     .map((cellar) => cellar.id);
 }
 
