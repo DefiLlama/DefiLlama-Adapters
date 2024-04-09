@@ -31,11 +31,15 @@ async function fetch() {
     let randomNode = nodes[Math.floor(Math.random() * nodes.length)];
 
     // fetching the HSUITE price from coingecko...
-    let price_feed = await retry(async bail => await axios.get(
+    let hsuite_price = await retry(async bail => await axios.get(
         'https://api.coingecko.com/api/v3/simple/price?ids=hsuite&vs_currencies=usd'
     ));
 
-    // grabbing the list of the pools from the smart-nodes..
+    let hbar_price = await retry(async bail => await axios.get(
+        'https://api.coingecko.com/api/v3/simple/price?ids=hedera-hashgraph&vs_currencies=usd'
+    ));
+
+    // grabbing the list of the pools from the HbarSuite DEX..
     let pools = await retry(async bail => await axios.get(randomNode + '/pools/list'));
     
     // looping through the pools, and grabbing the total liquidity of each pool.
@@ -46,10 +50,20 @@ async function fetch() {
             new BigNumber(pool.asset.pair.baseToken.amount).times(2)
         ),
         new BigNumber(0)
-    );
+    ).times(hsuite_price.data['hsuite'].usd);
+
+    // grabbing the list of the pools from the HbarSuite NFT-DEX..
+    let nft_pools = await retry(async bail => await axios.get(randomNode + '/nft-pools/collections'));
+
+    let nft_tvl = nft_pools.data.reduce(
+        (accumulator, pool) => accumulator.plus(
+            new BigNumber(pool.latest_statistics.stats.tvl.amount)
+        ),
+        new BigNumber(0)
+    ).times(hbar_price.data['hedera-hashgraph'].usd);
 
     // returning the total liquidity of the pools, multiplied by the HBAR price..
-    return (tvl.times(price_feed.data['hsuite'].usd).toNumber());
+    return (tvl.plus(nft_tvl).toNumber());
 }
 
 module.exports = {
