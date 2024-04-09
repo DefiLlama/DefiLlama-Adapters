@@ -63,9 +63,11 @@ async function fetch() {
     ).times(hbar_price.data['hedera-hashgraph'].usd);
 
     // returning the total liquidity of the pools, multiplied by the HBAR price..
-    return (tvl.plus(nft_tvl).toNumber());
+    return (tvl.plus(nft_tvl).toString());
 }
 
 module.exports = {
-  fetch
+    timetravel: false,
+    methodology: 'The calculated TVL is the current USD sum of all pools and nft-pools under HbarSuite Protocol.',
+    fetch
 }
