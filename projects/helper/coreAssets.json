@@ -46,7 +46,8 @@
     "cbETH": "0xBe9895146f7AF43049ca1c1AE358B0541Ea49704",
     "FDUSD": "0xc5f0f7b66764f6ec8c8dff7ba683102295e16409",
     "EETH": "0x35fa164735182de50811e8e2e824cfb9b6118ac2",
-    "AEVO": "0xB528edBef013aff855ac3c50b381f253aF13b997"
+    "AEVO": "0xB528edBef013aff855ac3c50b381f253aF13b997",
+    "STONE": "0x4d831e22f062b5327dfdb15f0b6a5df20e2e3dd0"
   },
   "fantom": {
     "WFTM": "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
@@ -1693,5 +1694,16 @@
   },
   "rss3_vsl": {
     "WRSS": "0xe27d019909738d98ab7f850c05ee07806c30c71d"
+  },
+  "svm": {
+    "BTC": "0x5db252ead05C54B08A83414adCAbF46Eaa9E0337"
+  },
+  "islm": {
+    "ISLM ": "0xeC8CC083787c6e5218D86f9FF5f28d4cC377Ac54",
+    "DAI": "0xc5e00d3b04563950941f7137b5afa3a534f0d6d6",
+    "ETH": "0xeceeefcee421d8062ef8d6b4d814efe4dc898265",
+    "WBTC": "0x5fd55a1b9fc24967c4db09c513c3ba0dfa7ff687",
+    "USDT": "0xd567b3d7b8fe3c79a1ad8da978812cfc4fa05e75",
+    "AXLUSDC": "0x80b5a32e4f032b2a058b4f29ec95eefeeb87adcd"
   }
 }
