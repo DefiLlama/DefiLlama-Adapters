@@ -30,24 +30,26 @@ async function fetch() {
     // generating a random number, so to grab a random smart-node from the network..
     let randomNode = nodes[Math.floor(Math.random() * nodes.length)];
 
-    // fetching the HBAR price from coingecko..
+    // fetching the HSUITE price from coingecko...
     let price_feed = await retry(async bail => await axios.get(
-        'https://api.coingecko.com/api/v3/simple/price?ids=hedera-hashgraph&vs_currencies=usd'
+        'https://api.coingecko.com/api/v3/simple/price?ids=hsuite&vs_currencies=usd'
     ));
 
-    // grabbing the list of the pools from the smart-node..
+    // grabbing the list of the pools from the smart-nodes..
     let pools = await retry(async bail => await axios.get(randomNode + '/pools/list'));
     
-    // looping through the pools, and grabbing the total liquidity of each pool..
+    // looping through the pools, and grabbing the total liquidity of each pool.
+    // every pool on HbarSuite DEX has $HSUITE as the base token, and the other token as the quote token.
+    // so we grab the $HSUITE amount of each pool, and we multiply it by 2, as the total liquidity of the pool is the sum of the two tokens.
     let tvl = pools.data.reduce(
         (accumulator, pool) => accumulator.plus(
-            new BigNumber(pool.asset.value)
+            new BigNumber(pool.asset.pair.baseToken.amount).times(2)
         ),
         new BigNumber(0)
     );
 
     // returning the total liquidity of the pools, multiplied by the HBAR price..
-    return (tvl.times(price_feed.data['hedera-hashgraph'].usd).toNumber());
+    return (tvl.times(price_feed.data['hsuite'].usd).toNumber());
 }
 
 module.exports = {
