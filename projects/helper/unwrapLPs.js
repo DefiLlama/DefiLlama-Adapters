@@ -341,7 +341,13 @@ async function sumTokensAndLPs(balances, tokens, block, chain = "ethereum", tran
 }
 
 const balancerVault = "0xBA12222222228d8Ba445958a75a0704d566BF2C8"
-async function sumBalancerLps(balances, tokensAndOwners, block, chain, transformAddress) {
+async function sumBalancerLps(balances, tokensAndOwners, block, chain, transformAddress, api) {
+  if (api) {
+    balances = api.getBalances()
+    chain = api.chain
+    block = api.block
+  }
+  let vault = chain === 'fantom' ? '0x20dd72Ed959b6147912C2e529F0a0C651c33c9ce' : balancerVault
   if (!transformAddress) transformAddress = await getChainTransform(chain)
   const poolIds = sdk.api.abi.multiCall({
     calls: tokensAndOwners.map(t => ({
@@ -370,7 +376,7 @@ async function sumBalancerLps(balances, tokensAndOwners, block, chain, transform
   });
   const balancerPoolsPromise = sdk.api.abi.multiCall({
     calls: (await poolIds).output.map(o => ({
-      target: balancerVault,
+      target: vault,
       params: o.output
     })),
     abi: getPoolTokens,

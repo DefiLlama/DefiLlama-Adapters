@@ -13,7 +13,6 @@ const config = {
   },
 }
 
-
 /* List of hypervisor registries by chain
    One chain can have multiple registries for different underlying DEXes */
 const HYPE_REGISTRY = {
@@ -111,6 +110,7 @@ const HYPE_REGISTRY = {
   ],
   blast: [
     ["0xFc13Ebe7FEB9595D70195E9168aA7F3acE153621", 1727054], // Uniswap
+    ["0xF44cECB1CF40ee12303E85Eb8651263c01812EaD", 1815717], // Thruster
     ["0xC27DDd78FC49875Fe6F844B72bbf31DFBB099881", 1005700], // Blaster
   ],
 };

@@ -208,9 +208,11 @@ sdk.api.abi.call = async (...args) => {
     console.log("Total:", humanizeNumber(usdTvls[chain]), "\n");
   });
   console.log(`------ TVL ------`);
-  Object.entries(usdTvls).forEach(([chain, usdTvl]) => {
+  const usdVals = Object.entries(usdTvls)
+  usdVals.sort((a, b) => b[1] - a[1])
+  usdVals.forEach(([chain, usdTvl]) => {
     if (chain !== "tvl") {
-      console.log(chain.padEnd(25, " "), humanizeNumber(usdTvl));
+      console.log(chain.padEnd(25, " "), humanizeNumber(Math.round(usdTvl)));
     }
   });
   console.log("\ntotal".padEnd(25, " "), humanizeNumber(usdTvls.tvl), "\n");
