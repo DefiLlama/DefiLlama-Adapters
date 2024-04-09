@@ -70,7 +70,7 @@ module.exports = {
     timetravel: false,
     methodology: 'The calculated TVL is the current USD sum of all pools and nft-pools under HbarSuite Protocol.',
     hedera: {
-        fetch
+        tvl: fetch()
     },
     fetch
 }
