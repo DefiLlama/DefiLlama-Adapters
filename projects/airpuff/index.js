@@ -32,10 +32,23 @@ module.exports = {
         oracleToken: "0x59e710215d45f584f44c0fee83da6d43d762d857",
       };
 
+      const ezETH1x = {
+        vault: "0x9c96d0Cc5341654167ee35DB4F288ae523fe8779",
+        reStakingToken: "0x2416092f143378750bb29b79eD961ab195CcEea5",
+        oracle: "0x2BAF3A2B667A5027a83101d218A9e8B73577F117", //Renzo
+        oracleToken: "0x59e710215d45f584f44c0fee83da6d43d762d857",
+      };
+
       const balOfezETH = await api.call({
         abi: contractAbis.balanceOf,
         target: ezETH.reStakingToken,
         params: [ezETH.vault],
+      });
+
+      const balOfezETH1x = await api.call({
+        abi: contractAbis.balanceOf,
+        target: ezETH.reStakingToken,
+        params: [ezETH1x.vault],
       });
 
       const priceOfezETH = await api.call({
@@ -46,7 +59,10 @@ module.exports = {
 
       const ezETHBalInETH = (balOfezETH * priceOfezETH) / 1e18;
 
+      const ezETH1xBalInETH = (balOfezETH1x * priceOfezETH) / 1e18;
+
       api.add(ADDRESSES.mode.WETH, ezETHBalInETH);
+      api.add(ADDRESSES.mode.WETH, ezETH1xBalInETH);
     },
   },
 
