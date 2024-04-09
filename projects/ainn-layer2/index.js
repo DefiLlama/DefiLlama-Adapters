@@ -1,5 +1,6 @@
 const sdk = require('@defillama/sdk');
 const { sumTokensExport } = require('../helper/sumTokens');
+const { sumTokensExport: sumBRC20TokensExport } = require("../helper/chain/brc20");
 
 const BTCOwners = [
   "bc1q6dtp7ayaj5k2zv0z5ayhkdsvmtvdqgyaa9zs53",
@@ -16,15 +17,20 @@ const BTCOwners = [
   "39Fvw2Ho1fEkyDsos5sNTN5iMJZKzTL526",
   "3Kptt4TZZRcjuGH8ikoQ8mV1TVxq45dnuS",
   "3G4sMXWAAVTvTXTksr8u9zuu7W8RKsicEz",
-  "335DRGzLLG2tu4H4PnFBHYAwcj5pvV8zei"
+  "335DRGzLLG2tu4H4PnFBHYAwcj5pvV8zei",
+  "bc1qqg3cdyadq25zn99sdprr4lgpsxg2za998eygy8"
 ];
 
+const BRC20Owners = [
+  "bc1p7rdhezv6m0d9lezypnwmgupyhcafcr2jvq3gcuh0c8w66hg4czwq9pdee5",
+];
 
 module.exports = {
   methodology: "Staking tokens via AINN Layer2 Dataset counts as TVL.",
   bitcoin: {
     tvl: sdk.util.sumChainTvls([
       sumTokensExport({ owners: BTCOwners }),
+      sumBRC20TokensExport({ owners: BRC20Owners }),
     ]),
   },
   zklink: {
