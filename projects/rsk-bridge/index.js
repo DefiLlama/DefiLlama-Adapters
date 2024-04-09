@@ -1,5 +1,7 @@
 const ADDRESSES = require("../helper/coreAssets.json");
 const { sumTokensExport } = require("../helper/unwrapLPs");
+const { getBalance } = require("@defillama/sdk/build/eth");
+const { getBlock } = require("@defillama/sdk/build/util/blocks");
 
 module.exports = {
   bitcoin: {
