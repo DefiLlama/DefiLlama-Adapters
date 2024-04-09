@@ -71,6 +71,5 @@ module.exports = {
     methodology: 'The calculated TVL is the current USD sum of all pools and nft-pools under HbarSuite Protocol.',
     hedera: {
         tvl: fetch()
-    },
-    fetch
+    }
 }
