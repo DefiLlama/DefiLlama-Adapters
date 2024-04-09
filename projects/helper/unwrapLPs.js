@@ -680,6 +680,7 @@ async function sumTokens2({
   tokensAndOwners = [],
   tokensAndOwners2 = [],
   ownerTokens = [],
+  token,
   tokens = [],
   owners = [],
   owner,
@@ -717,6 +718,7 @@ async function sumTokens2({
   }
 
   if (owner) owners.push(owner)
+  if (token) tokens.push(token)
   tokens = getUniqueAddresses(tokens, chain)
   owners = getUniqueAddresses(owners, chain)
   if (owners.length) {
