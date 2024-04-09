@@ -15,8 +15,7 @@ const stable_lending  = usdCompoundExports(unitroller_usd_oasis, "oasis", ftoken
 const lpt_lending     = usdCompoundExports(unitroller_lpt_oasis, "oasis", ftoken_lpt_oasis)
 
 module.exports={
-  timetravel: true,
-  oasis:{
+    oasis:{
 	tvl: sdk.util.sumChainTvls([classic_lending.tvl, stable_lending.tvl, lpt_lending.tvl]),
 	borrowed: sdk.util.sumChainTvls([classic_lending.borrowed, stable_lending.borrowed, lpt_lending.borrowed])
   },

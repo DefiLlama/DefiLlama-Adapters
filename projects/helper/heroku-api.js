@@ -3,6 +3,7 @@ const endpoint = "https://sushi-analytics.onrender.com"
 
 function getTvl(protocol, chain) {
     return async (timestamp) => {
+        if (typeof timestamp === "object" && timestamp.timestamp) timestamp = timestamp.timestamp
         if(Math.abs(Date.now()/1000-timestamp) > 3600){
             throw new Error("Can't refill adapters moved to heroku")
         }

@@ -30,7 +30,7 @@ const chainPools = {
     usdt: { pool: '0xE893233515b7D02dD4e3D888162d4C87Dc837943', token: ADDRESSES.avax.USDT_e },
     usdc: { pool: '0x8385Ea36dD4BDC84B3F2ac718C332E18C1E42d36', token: ADDRESSES.avax.USDC_e },
     dai: { pool: '0x34DA42143b0c6E321CEb76931c637c12Bd865f7e', token: ADDRESSES.avax.DAI },
-    wbtc: { pool: '0xc4D1e935F02A44D44985E6b1C0eE1ee616fC146a', token: '0x50b7545627a5162F82A992c33b87aDc75187B218' },
+    wbtc: { pool: '0xc4D1e935F02A44D44985E6b1C0eE1ee616fC146a', token: ADDRESSES.avax.WBTC_e },
   },
   klaytn: {
     null: { pool: '0x829fCFb6A6EeA9d14eb4C14FaC5B29874BdBaD13', token: ADDRESSES.null, },
@@ -61,7 +61,7 @@ module.exports = {
 Object.keys(chainPools).forEach(chain => {
   const pools = chainPools[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       return sumTokens2({ api, tokensAndOwners: Object.values(pools).map(({ pool, token }) => ([token, pool,])) })
     }
   }

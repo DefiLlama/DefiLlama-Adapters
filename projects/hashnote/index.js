@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 
 
 const contracts = {
@@ -11,12 +12,12 @@ const contracts = {
   }
 }
 
-const tvl = async (_, _1, _2, { api }) => {
+const tvl = async (api) => {
   const totalSupply = await api.call({ target: contracts[api.chain].token, abi: 'uint256:totalSupply'});
   const rate = await api.call({ target: contracts[api.chain].oracle, abi: 'function latestRoundData() external view returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound)'});
 
   return {
-    "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": (totalSupply * rate.answer)/1e8
+    [ADDRESSES.ethereum.USDC]: (totalSupply * rate.answer)/1e8
   };
 }
 

@@ -34,6 +34,10 @@ const config = {
       "terra1zsm7cgu3vg2kwwzzehl38ft7z2ffksql9d6twh3pugvf0yl0u5vs74xx55",
       "terra1yfmpzj79n8g356kp6xz0rkjehegwqw7zhus8jzreqvec5ay9a7kqs7a6hc",
       "terra10wsuv79k03gplmcx22j4lxauca4t2a0p4q83fyuv54w88e7ccm0qxkme4l",
+      "terra176e78qnvvclrlrmuyjaqxsy72zp2m3szshljdxakdsmr33zulumqa3hr9d",
+      "terra1pvn5up4n4ttmdatvpxa8t2klpcy2u5t5nmyclv30yz8xmphjxlrqgqwxv6",
+      "terra1a3k77cgja875f6ffdsflxtaft570em82te4suw9nfhx77u6dqh8qykuq6f",
+      "terra1m64fmenadmpy7afp0675jrkz9vs0cq97mgzzpzg0klgc4ahgylms7gvnt5",
     ],
     coinGeckoMap: {
       "ibc/B3504E092456BA618CC28AC671A71FB08C6CA0FD0BE7C8A5B5A3E2DD933CC9E4":
@@ -66,6 +70,18 @@ const config = {
         origChain: "migaloo",
       },
     ],
+    daos: [
+      {
+        contract:
+          "terra1vklefn7n6cchn0u962w3gaszr4vf52wjvd4y95t2sydwpmpdtszsqvk9wy",
+        coinGeckoId: "lion-dao",
+      },
+      {
+        contract:
+          "terra186rpfczl7l2kugdsqqedegl4es4hp624phfc7ddy8my02a4e8lgq5rlx7y",
+        coinGeckoId: "capapult",
+      },
+    ],
   },
   terra: {
     coinGeckoId: "terra-luna",
@@ -78,6 +94,17 @@ const config = {
       "kujira1mxzfcxpn6cjx4u9zln6ttxuc6fuw6g0cettd6nes74vrt2f22h4q3j5cdz",
     ampToken:
       "factory/kujira1n3fr5f56r2ce0s37wdvwrk98yhhq3unnxgcqus8nzsfxvllk0yxquurqty/ampKUJI",
+    coinGeckoMap: {
+      "factory/kujira175yatpvkpgw07w0chhzuks3zrrae9z9g2y6r7u5pzqesyau4x9eqqyv0rr/ampMNTA":
+        "mantadao",
+    },
+    daos: [
+      {
+        contract:
+          "kujira175yatpvkpgw07w0chhzuks3zrrae9z9g2y6r7u5pzqesyau4x9eqqyv0rr",
+        coinGeckoId: "mantadao",
+      },
+    ],
   },
   juno: {
     coinGeckoId: "juno-network",
@@ -90,7 +117,6 @@ const config = {
       "migaloo1hntfu45etpkdf8prq6p6la9tsnk3u3muf5378kds73c7xd4qdzysuv567q",
     ampToken:
       "factory/migaloo1436kxs0w2es6xlqpp9rd35e3d0cjnw4sv8j3a7483sgks29jqwgshqdky4/ampWHALE",
-    // currently not running due to node simulation gas issues
     arbVault:
       "migaloo1ey4sn2mkmhew4pdrzk90l9acluvas25qlhuvsfgssw42ugz8yjlqx92j9l",
   },
@@ -196,6 +222,21 @@ async function tasset2Tvl(chain, tasset) {
 
   return {
     [otherCoinGeckoId]: tvl,
+  };
+}
+
+async function dao2Tvl(chain, dao) {
+  let contract = dao.contract;
+  let coinGeckoId = dao.coinGeckoId;
+
+  let state = await getState(chain, contract);
+
+  let chainConfig = config[chain];
+
+  let tvl = +(state.tvl_utoken ?? 0) / getDecimalFactor(chainConfig);
+
+  return {
+    [coinGeckoId]: tvl,
   };
 }
 
@@ -344,6 +385,7 @@ async function productsTvl(chain) {
       tvlAmpGovernance(chain, state),
       tvlArbVault(chain).catch((a) => ({})),
       ...(chainConfig.tassets ?? []).map((tasset) => tasset2Tvl(chain, tasset)),
+      ...(chainConfig.daos ?? []).map((dao) => dao2Tvl(chain, dao)),
       ...(chainConfig.farms ?? []).map((farm) => farm2Tvl(chain, farm)),
     ]);
   } catch (error) {
@@ -357,8 +399,7 @@ async function productsTvl(chain) {
 
 module.exports = {
   timetravel: false,
-  misrepresentedTokens: false,
-  methodology: "Liquid Staking and Arbitrage Protocol",
+    methodology: "Liquid Staking and Arbitrage Protocol",
   terra2: { tvl: () => productsTvl("terra2") },
   terra: { tvl: () => productsTvl("terra") },
   kujira: { tvl: () => productsTvl("kujira") },

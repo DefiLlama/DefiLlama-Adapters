@@ -29,7 +29,7 @@ const aladdinBalancerLPGauge = '0x33e411ebE366D72d058F3eF22F1D0Cf8077fDaB0';
 const clevCVXAddress = "0xf05e58fCeA29ab4dA01A495140B349F8410Ba904"
 const clevCVXCVXAddress = "0xF9078Fb962A7D13F55d40d49C8AA6472aBD1A5a6"
 const sdCRVAddress = '0xD1b5651E55D4CeeD36251c61c50C889B36F6abB5'
-const cvxAddress = "0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B";
+const cvxAddress = ADDRESSES.ethereum.CVX;
 
 const chain = 'ethereum';
 async function getBalancerLpTvl(balances, block) {
@@ -53,7 +53,8 @@ async function getFarmLpTvl(balances, block) {
   sdk.util.sumSingleBalance(balances, farmData.addresses.lpToken, ctrLpTotalSupply, chain)
 }
 
-async function tvl(timestamp, block, _, { api }) {
+async function tvl(api) {
+  const block = api.block
   let balances = {}
   await Promise.all([
     getBalancerLpTvl(balances, block),
