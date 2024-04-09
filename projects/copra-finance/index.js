@@ -21,9 +21,8 @@ async function tvl(api) {
   api.add(v1Tokens, borrowerAmounts)
 
   // V2
-  // We are currently reading this from an array of addresses that we will update when we add new liquidity warehouses.  
-  // This is going to be improved soon by reading this list of addresses from a contract that we are currently developing
-  const v2LiquidityWarehouses = ["0x7C5eB180C59B28E96C390CE8Dd999021007C0245"]
+  const copraRegistryAddr = "0x10D3362BBf04427126c807d28665fA4Da5fBDF14"
+  const [v2LiquidityWarehouses] = await api.multiCall({ abi: 'address[]:getLiquidityWarehouses', calls: [copraRegistryAddr]})
   const v2Tokens = (await api.multiCall({ abi: 'function getTerms() view returns (address asset, address feeRecipient, uint64 liquidationThreshold, uint64 capacityThreshold, uint64 interestRate, uint64 interestFee, uint64 withdrawalFee)', calls: v2LiquidityWarehouses })).map(i => i.asset)
   const v2NetAssetValues = await api.multiCall({ abi: "uint256:getNetAssetValue", calls: v2LiquidityWarehouses})
   api.add(v2Tokens, v2NetAssetValues)
