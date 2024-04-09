@@ -37,7 +37,13 @@ const fixBalancesTokens = {
   // Sample Code
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
-  }
+  },
+
+  karak: {
+    '0xa415021bc5c4c3b5b989116dc35ae95d9c962c8d': { coingeckoId: 'usd-coin', decimals: 6, },
+    '0xf948aacec00289fc33d8226391f7e04bb457ad49': { coingeckoId: 'restaked-swell-eth', decimals: 18, },
+    '0x4200000000000000000000000000000000000006': { coingeckoId: 'ethereum', decimals: 18, },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
