@@ -13,7 +13,6 @@ const config = {
   },
 }
 
-
 /* List of hypervisor registries by chain
    One chain can have multiple registries for different underlying DEXes */
 const HYPE_REGISTRY = {
@@ -74,6 +73,7 @@ const HYPE_REGISTRY = {
     ["0xc27ddd78fc49875fe6f844b72bbf31dfbb099881", 163300], // Lynex
   ],
   base: [
+    ["0x829432679F69DBd8b2575f006EC0129894a39D86", 12465470], // Uniswap
     ["0x339685503dD534D27ce4a064314c2E5c7144aa92", 7783229], // Pancakeswap
     ["0x6d5c54F535b073B9C2206Baf721Af2856E5cD683", 3785552], // Sushiswap
     ["0x1E86A593E55215957C4755f1BE19a229AF3286f6", 2798768], // SynthSwap
@@ -105,7 +105,12 @@ const HYPE_REGISTRY = {
   imx: [
     ["0x683292172E2175bd08e3927a5e72FC301b161300", 3951377], // Quickswap
   ],
+  scroll: [
+    ["0x683292172E2175bd08e3927a5e72FC301b161300", 4651930], // Uniswap
+  ],
   blast: [
+    ["0xFc13Ebe7FEB9595D70195E9168aA7F3acE153621", 1727054], // Uniswap
+    ["0xF44cECB1CF40ee12303E85Eb8651263c01812EaD", 1815717], // Thruster
     ["0xC27DDd78FC49875Fe6F844B72bbf31DFBB099881", 1005700], // Blaster
   ],
 };
