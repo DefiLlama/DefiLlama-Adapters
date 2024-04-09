@@ -11,7 +11,7 @@ module.exports = {
         (
           await getBalance({
             target: "0x0000000000000000000000000000000001000006",
-            chain: api.chain,
+            chain: "rsk",
             block,
           })
         ).output / 1e18;
