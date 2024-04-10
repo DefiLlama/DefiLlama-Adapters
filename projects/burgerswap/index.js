@@ -55,7 +55,7 @@ async function bscShackTvl(timestamp, ethBlock, chainBlocks) {
   return balances;
 }
 
-const bscDexTvl = getUniTVL({ factory: Factory, chain: 'bsc', useDefaultCoreAssets: true, })
+const bscDexTvl = getUniTVL({ factory: Factory, useDefaultCoreAssets: true, })
 
 module.exports = {
   misrepresentedTokens: true,
