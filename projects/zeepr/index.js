@@ -1,29 +1,8 @@
-const { sumTokensExport } = require("../helper/unwrapLPs");
-const ADDRESSES = require("../helper/coreAssets.json");
+const { staking } = require("../helper/staking");
 
-const config = {
+module.exports = {
   arbitrum: {
-    ownerTokens: [
-      [
-        ["0xe46C5eA6Da584507eAF8dB2F3F57d7F578192e13"],
-        "0xbB0390Cf2586e9b0A4FAADF720aE188D140E9fd5",
-      ],
-    ],
+    tvl: () => ({}),
+    staking: staking("0xbb0390cf2586e9b0a4faadf720ae188d140e9fd5", "0xe46C5eA6Da584507eAF8dB2F3F57d7F578192e13"),
   },
-};
-
-Object.keys(config).forEach((chain) => {
-  module.exports[chain] = {
-    tvl: sumTokensExport(config[chain]),
-  };
-});
-
-
-// const { staking } = require("../helper/staking");
-
-// module.exports = {
-//   arbitrum: {
-//     tvl: () => ({}),
-//     staking: staking("0xf75fb73fd1bccd23ce2389169674ce375b43b7a6", "0xe46C5eA6Da584507eAF8dB2F3F57d7F578192e13"),
-//   },
-// }
+}
