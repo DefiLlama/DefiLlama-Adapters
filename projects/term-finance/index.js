@@ -36,7 +36,10 @@ query auctionsQuery($lastId: ID) {
   }
 }`
 
-const startBlock = 16380765;
+const startBlocks = {
+  "ethereum": 16380765,
+  "avalanche": 43162228,
+};
 const emitters = {
   "ethereum": [
     "0x9D6a563cf79d47f32cE46CD7b1fb926eCd0f6160",  // 0.2.4
@@ -69,7 +72,7 @@ Object.keys(graphs).forEach(chain => {
           target: eventEmitter,
           eventAbi: 'event BidAssigned(bytes32 termAuctionId, bytes32 id, uint256 amount)',
           onlyArgs: true,
-          fromBlock: startBlock,
+          fromBlock: startBlocks[chain],
         })
         for (const { termAuctionId, amount } of logs) {
           const { term: { purchaseToken } } = data.find(i => i.id === termAuctionId)
