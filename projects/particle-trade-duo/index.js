@@ -5,10 +5,6 @@ const config = {
   },
 }
 
-module.exports = {
-  doublecounted: true,
-};
-
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
