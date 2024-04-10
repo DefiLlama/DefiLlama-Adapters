@@ -1,52 +1,26 @@
-const { troveAbi } = require('./abi');
-const { call } = require('../helper/chain/starknet');
-const { Decimal } = require('decimal.js');
+const { L1TroveAbi } = require('./abi');
+const { multiCall } = require('@defillama/sdk/build/abi');
 
-const STARKNET_ETH_ADDRESS = '0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7';
-
-async function fetchBorrowStrategies() {
-    const url = 'https://backend.nimbora.io/liquity/strategies';
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-    });
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    }
-    let data = await response.json();
-    for (let index = 0; index < data.length; index++) {
-      const element = data[index];
-      const elementBack = element.troveMetadata;
-      const newElem = {
-        ethPrice: elementBack.ethPrice,
-        borrowFees: (parseFloat(elementBack.borrowFees) * 100).toFixed(2),
-        tcr: parseFloat(elementBack.tcr).toFixed(0),
-        borrowRate: (parseFloat(elementBack.borrowRate) / 10 ** 18).toString(),
-      };
-      data[index].troveMetadata = newElem;
-    }
-    return data;
-  }
+const TROVE_HIGH_RISK = "0xEF3cf0ede2cA738A8Bd0c38fd5D43DC639B41532";
+const TROVE_MEDIUM_RISK = "0x4cdB2fdE85Da92Dbe9b568dda2Cc22d426b0b642";
+const TROVE_MANAGER = "0xA39739EF8b0231DbFA0DcdA07d7e29faAbCf4bb2";
+const ETH_L2_ADDRESS = "0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7";
 
 async function tvl(_, _1, _2, { api }) {
-    const strategies = await fetchBorrowStrategies();
-    for (let i = 0; i < strategies.length; i++) {
-        const strategy = strategies[i];
-        const troveDebt = await call({
-            target: strategy.l2address,
-            abi: troveAbi.get_l1_total_supply,
-        });
-        const collateralValue = Decimal(troveDebt.toString()).dividedBy(parseFloat(strategy.troveMetadata.borrowRate));
-        console.log(strategy);
-        console.log(strategy.troveMetadata.borrowRate);
-        api.add(
-            STARKNET_ETH_ADDRESS, 
-            Math.floor(collateralValue)
-        );
-    }
+  const calls = [{params: [TROVE_HIGH_RISK]}, {params: [TROVE_MEDIUM_RISK]}];
+    
+    var tvl = 0;
+    const multicallResponse = await multiCall({
+      abi: L1TroveAbi.getEntireDebtAndColl,
+      calls: calls,
+      target: TROVE_MANAGER,
+      chain: 'ethereum'
+    });
+
+    multicallResponse.output.forEach(response => {
+      tvl += Number(response.output.coll);
+    });
+    api.addToken(ETH_L2_ADDRESS, tvl);
 }
 
 module.exports = {
