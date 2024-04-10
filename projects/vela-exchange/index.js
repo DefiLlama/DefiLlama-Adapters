@@ -6,8 +6,7 @@ const VELA = '0x088cd8f5eF3652623c22D48b1605DCfE860Cd704'
 
 const arbitrumEndpoint = "https://api.thegraph.com/subgraphs/name/velaexchange/vela-exchange-official"
 const baseEndpoint = "https://api.thegraph.com/subgraphs/name/velaexchange/vela-exchange-official-base"
-async function staking_arbitrum_() {
-  const { api } = arguments[3]
+async function staking_arbitrum_(api) {
 
   const query = `
       query {
@@ -25,8 +24,7 @@ async function staking_arbitrum_() {
   api.add(VELA, graphRes?.pid3)
 }
 
-async function staking_base_() {
-  const { api } = arguments[3]
+async function staking_base_(api) {
 
   const query = `
       query {

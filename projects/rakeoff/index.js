@@ -1,9 +1,9 @@
-const axios = require("axios")
+const { get } = require("../helper/http");
 
 const url = "https://jgvzt-eiaaa-aaaak-ae5kq-cai.icp0.io/v1/rakeoff-stats";
 
 async function tvl() {
-  const { data: { icp_stats } } = await axios.get(url)
+  const  { icp_stats } = await get(url)
 
   return {
     "coingecko:internet-computer": icp_stats.total_staked / 1e8

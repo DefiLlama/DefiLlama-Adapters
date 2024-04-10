@@ -10,7 +10,7 @@ chains.forEach(chain => {
     staking,
   }
 
-  async function pool2(_, _b, _cb, { api, }) {
+  async function pool2(api) {
     const chainId = api.chainId
     let { farms } = await getConfig('tokensfarm', 'https://api.tokensfarm.com/farm/list')
     farms = farms.filter(i => i.type === 'LP' && i.network.networkId === chainId)
@@ -26,7 +26,7 @@ chains.forEach(chain => {
     return sumUnknownTokens({ api, tokensAndOwners, resolveLP: true, useDefaultCoreAssets: true })
   }
 
-  async function staking(_, _b, _cb, { api, }) {
+  async function staking(api) {
     const chainId = api.chainId
     let { farms } = await getConfig('tokensfarm', 'https://api.tokensfarm.com/farm/list')
     farms = farms.filter(i => i.type !== 'LP' && i.network.networkId === chainId && i.type !== 'UNIV3')

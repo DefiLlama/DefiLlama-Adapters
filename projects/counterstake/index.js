@@ -11,11 +11,8 @@ const {
     fetchOswapExchangeRates,
     summingBaseAABalancesToTvl,
 } = require('../helper/chain/obyte');
-const utils = require('../helper/utils');
-const sdk = require('@defillama/sdk')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getConfig } = require('../helper/cache')
-const { formatUnits } = require('ethers/lib/utils')
 
 async function bridgeTvl(timestamp, assetMetadata, exchangeRates) {
     const baseAABalances = await Promise.all([
@@ -75,7 +72,7 @@ async function totalObyteTvl(timestamp) {
     }
 }
 
-const totalTVLByEVMNetwork = async (_, _1, _2, { api }) => {
+const totalTVLByEVMNetwork = async (api) => {
     const bridges = await getConfig('counterstake/bridges', 'https://counterstake.org/api/bridges').then((data) => data.data);
     const pooledAssistants = await getConfig('counterstake/poolStakes', 'https://counterstake.org/api/pooled_assistants').then((data) => data.data);
 
@@ -143,14 +140,14 @@ const tryToGetUSDPriceOfUnknownTokens = async (sum, api) => {
             target: LINE_CONTRACT,
         });
 
-        const totalLocked = BigInt(transformedSumObject[LINE_TOKEN_KEY]);
+        const totalLocked = transformedSumObject[LINE_TOKEN_KEY]
 
         const linePriceInCollateral = await api.call({
             abi: "uint256:getPrice",
             target: ORACLE_CONTRACT_ADDRESS,
         });
 
-        const priceInCollateral = formatUnits(totalLocked * BigInt(linePriceInCollateral), 36);
+        const priceInCollateral = totalLocked * linePriceInCollateral / 1e36
         const exchangeRates = await fetchOswapExchangeRates();
 
         transformedSumObject['usd'] = exchangeRates['GBYTE_USD'] * priceInCollateral;
@@ -163,8 +160,7 @@ const tryToGetUSDPriceOfUnknownTokens = async (sum, api) => {
 
 module.exports = {
     timetravel: false,
-    doublecounted: false,
-    misrepresentedTokens: true,
+        misrepresentedTokens: true,
     methodology:
         "The TVL is the USD value of the assets locked into the autonomous agents that extend the Counterstake protocol. " +
         "This includes the value of exported assets held in the custody of cross-chain bridges, the stakes of cross-chain transfers, " +

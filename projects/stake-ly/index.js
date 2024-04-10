@@ -17,9 +17,7 @@ async function tvl(timestamp, _ethBlock, {klaytn: block}) {
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
-  methodology:
+      methodology:
     "TVL is KLAY staked by the users and rewards accrued from node staking",
   start: 1663585837,
   klaytn: {

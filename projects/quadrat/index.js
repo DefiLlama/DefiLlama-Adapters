@@ -33,7 +33,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { factory, fromBlock, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const balances = {}
 
       const logs = await getLogs({
@@ -50,7 +50,7 @@ Object.keys(config).forEach(chain => {
       const [token0, token1, bals] = await Promise.all([
         api.multiCall({ abi: 'address:token0', calls }),
         api.multiCall({ abi: 'address:token1', calls }),
-        api.multiCall({ abi: 'function getUnderlyingBalances() view returns (uint256 amount0, uint256 amount1)', calls }),
+        api.multiCall({ abi: 'function getUnderlyingBalances() view returns (uint256 amount0, uint256 amount1)', calls, permitFailure: true }),
       ])
 
       bals.forEach((val, i) => {
