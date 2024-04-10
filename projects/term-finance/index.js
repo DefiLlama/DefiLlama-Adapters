@@ -43,6 +43,9 @@ const emitters = {
     "0xf268E547BC77719734e83d0649ffbC25a8Ff4DB3",  // 0.4.1
     "0xc60e0f5cD9EE7ACd22dB42F7f56A67611ab6429F",  // 0.6.0
   ],
+  "avalanche": [
+    "0xb81afB6724ba9d19a3572Fb29ed7ef633fD50093",  // 0.6.0
+  ],
 };
 
 module.exports = {
