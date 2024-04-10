@@ -39,7 +39,7 @@ const farms = {
 
 let tokenData
 
-async function tvl(timestamp, ethBlock, _1, { api }) {
+async function tvl(api) {
   const chain = api.chain
 
   if (chain === 'meta') return {} // rpc issues with meta
@@ -84,7 +84,7 @@ module.exports = {
   meta: { tvl },
   wemix: { tvl },
   ripple: {
-    tvl: sumTokensExport({ chain: 'ripple', owner: 'rLcxBUrZESqHnruY4fX7GQthRjDCDSAWia' })
+    tvl: sumTokensExport({ owner: 'rLcxBUrZESqHnruY4fX7GQthRjDCDSAWia' })
   },
   ton: {
     tvl: tonExport({ owner: "EQAtkbV8ysI75e7faO8Ihu0mFtmsg-osj7gmrTg_mljVRccy", tokens: [ADDRESSES.null], onlyWhitelistedTokens: true }),

@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const MOUNTAIN_PROTOCOL_CONTRACT = "0x59d9356e565ab3a36dd77763fc0d87feaf85508c";
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const totalSupply = await api.call({
     abi: "erc20:totalSupply",
     target: MOUNTAIN_PROTOCOL_CONTRACT,

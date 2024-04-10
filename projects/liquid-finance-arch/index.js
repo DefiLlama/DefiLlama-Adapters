@@ -6,7 +6,7 @@ const STAKING_CONTRACT =
 const SWAP_CONTRACT =
   "archway1ywv0gxrw3kv25kn9f05dtqf6577fer5pc2vewvgcagpm5p8l4kuqc4qfp6";
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const { chain } = api;
 
   const statusStakingInfo = await queryContract({

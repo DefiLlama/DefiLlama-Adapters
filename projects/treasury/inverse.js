@@ -38,14 +38,14 @@ module.exports = treasuryExports({
       "0xf24d8651578a55b0c119b9910759a351a3458895", // sdBAL
       "0x445494F823f3483ee62d854eBc9f58d5B9972A25", // 50DOLA-50DBR
       "0xb204BF10bc3a5435017D3db247f56dA601dFe08A", // 50DOLA-50WETH
-      "0x7e05540A61b531793742fde0514e6c136b5fbAfE", // xFODL
-      "0xAD038Eb671c44b853887A7E32528FaB35dC5D710", // DBR
+      "0x7e05540A61b531793742fde0514e6c136b5fbAfE", // xFODL      
       "0x0a6B1d9F920019BAbc4De3F10c94ECB822106104",
       "0x73E02EAAb68a41Ea63bdae9Dbd4b7678827B2352",
     ],
     owners: [anchorTreasury, treasurymultisig, pcmultisig, bugbountymultisig, fedchair],
     ownTokens: [
       inv,
+      "0xAD038Eb671c44b853887A7E32528FaB35dC5D710", // DBR
       "0x73E02EAAb68a41Ea63bdae9Dbd4b7678827B2352", // Uniswap INV/ETH LP
       "0xA5D7A7690B72a89B7b720E43fC9cBda5419d0C71", // 50INV-50DOLA Aura Deposit Vault      
     ],

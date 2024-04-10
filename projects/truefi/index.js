@@ -40,11 +40,11 @@ async function getAllTvl(api, isBorrowed) {
   }
 }
 
-async function borrowed(ts, block, _, { api }) {
+async function borrowed(api) {
   return getAllTvl(api, true)
 }
 
-async function tvl(ts, block, _, { api }) {
+async function tvl(api) {
   return getAllTvl(api, false)
 }
 
