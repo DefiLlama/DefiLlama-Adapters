@@ -1,16 +1,3 @@
-const L2TroveInterface = [{
-    name: "get_l1_total_supply",
-    type: "function",
-    inputs: [],
-    outputs: [
-      {
-        type: "core::integer::u256"
-      }
-    ],
-    state_mutability: "view"
-  },
-];
-
 const L1TroveInterface = [{
   name:"getEntireDebtAndColl",
   type:"function",
@@ -31,13 +18,10 @@ const L1TroveInterface = [{
   }]
 }];
 
-const L2TroveAbi = {};
 const L1TroveAbi = {};
 
-L2TroveInterface.forEach((i) => (L2TroveAbi[i.name] = i));
 L1TroveInterface.forEach((i) => (L1TroveAbi[i.name] = i));
 
 module.exports = {
-    L2TroveAbi,
     L1TroveAbi
 };
