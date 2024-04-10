@@ -20,10 +20,11 @@ Object.keys(config).forEach((chain) => {
             vaults: Object.values(lvTokens),
             tokenAbi: 'asset',
             balanceAbi: 'totalAssets',
-        }),
-        hallmarks: [
-            [1710115200, "Beta test closing"],
-            [1712361600, "LRT vault release"],
-        ],
+        })
     };
 });
+
+module.exports.hallmarks = [
+            [1710115200, "Beta test closing"],
+            [1712361600, "LRT vault release"],
+]
