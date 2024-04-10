@@ -1,6 +1,5 @@
 //import utils
 const ADDRESSES = require("../helper/coreAssets.json");
-
 const contractAbis = {
   readOraclePrice: "function read() view returns (int224 value, uint32 timestamp)",
   balanceOf: "function balanceOf(address) external view returns (uint256)",
@@ -165,7 +164,7 @@ module.exports = {
         target: svETH.vault,
       });
 
-      const strategies = [ezETH, weETH, rsETH, ezETH1x, weETH1x, rsETH1x, bedRockETH, bedRockETH1x];
+      const strategies = [ezETH, weETH, rsETH, ezETH1x, weETH1x, rsETH1x, bedRockETH, bedRockETH1x, svETH1x, svETH];
 
       for (const strategy of strategies) {
         const bal = await api.call({
@@ -187,37 +186,6 @@ module.exports = {
         }
 
         const balInETH = (bal * lrETHPriceInETH) / 1e18;
-
-        api.add(ADDRESSES.ethereum.WETH, balInETH);
-      }
-      //strategy with no oracle, but can calculate price using erc4626 totalSupply and totalAssets
-      const LiquidETH = {
-        vault: "0xE543eBa28a3793d5ae747A2164A306DB1767cDAe",
-        reStakingToken: "0xeA1A6307D9b18F8d1cbf1c3Dd6aad8416C06a221",
-      };
-
-      const erc4626Strategies = [LiquidETH];
-
-      for (const erc4626strategy of erc4626Strategies) {
-        const bal = await api.call({
-          abi: contractAbis.balanceOf,
-          target: erc4626strategy.reStakingToken,
-          params: [erc4626strategy.vault],
-        });
-
-        const totalAssets = await api.call({
-          abi: contractAbis.getTotalAssets,
-          target: erc4626strategy.reStakingToken,
-        });
-
-        const totalSupply = await api.call({
-          abi: contractAbis.getTotalSupply,
-          target: erc4626strategy.reStakingToken,
-        });
-
-        const price = totalAssets / totalSupply;
-
-        const balInETH = bal * price;
 
         api.add(ADDRESSES.ethereum.WETH, balInETH);
       }
@@ -261,6 +229,7 @@ module.exports = {
       }
     },
   },
+  //-----------------------------------------------------------------------//
 
   arbitrum: {
     tvl: async (api) => {
