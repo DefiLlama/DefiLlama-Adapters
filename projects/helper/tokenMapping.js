@@ -44,6 +44,9 @@ const fixBalancesTokens = {
     '0xf948aacec00289fc33d8226391f7e04bb457ad49': { coingeckoId: 'restaked-swell-eth', decimals: 18, },
     '0x4200000000000000000000000000000000000006': { coingeckoId: 'ethereum', decimals: 18, },
   },
+  linea: {
+    '0x894134a25a5fac1c2c26f1d8fbf05111a3cb9487': { coingeckoId: 'grai', decimals: 18, },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
