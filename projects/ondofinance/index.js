@@ -1,6 +1,8 @@
-const { getTokenSupply } = require('../helper/solana')
+const { getTokenSupply } = require('../helper/solana');
+const sui = require("../helper/chain/sui");
+
 module.exports = {
-  methodology: "Sums Ondo's fund supplies.",
+  methodology: "Sums the total supplies of Ondo's issued tokens.",
 };
 
 const config = {
@@ -18,7 +20,16 @@ const config = {
   },
   mantle: {
     USDY: "0x5bE26527e817998A7206475496fDE1E68957c5A6",
+  },
+  sui: {
+    USDY: "0x960b531667636f39e85867775f52f6b1f220a058c4de786905bdf761e06a56bb::usdy::USDY"
   }
+}
+
+async function getUSDYTotalSupplySUI() {
+  const USDY_TREASURY_CAP_OBJECT_ID = '0x9dca9f57a78fa7f132f95a0cf5c4d1b796836145ead7337da6b94012db62267a';
+  let treasuryCapInfo = await sui.getObject(USDY_TREASURY_CAP_OBJECT_ID);
+  return treasuryCapInfo.fields.total_supply.fields.value;
 }
 
 Object.keys(config).forEach((chain) => {
@@ -26,14 +37,25 @@ Object.keys(config).forEach((chain) => {
   const fundAddresses = Object.values(fundsMap);
 
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api }) => {
-      let supplies
-      if (chain === 'solana')
+    tvl: async (api) => {
+      let supplies;
+      if (chain === 'solana') {
         supplies = await Promise.all(fundAddresses.map(getTokenSupply))
-      else
+          .catch(error => {
+            throw error;
+          });
+
+        const scaledSupplies = supplies.map(supply => supply * 1_000_000);
+        api.addTokens(fundAddresses, scaledSupplies);
+      } else if (chain === "sui") {
+        let usdySupply = await getUSDYTotalSupplySUI();
+        api.addTokens(fundAddresses, [usdySupply]);
+      } else {
         supplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: fundAddresses });
-      api.addTokens(fundAddresses, supplies)
-      return api.getBalances()
+        api.addTokens(fundAddresses, supplies);
+      }
+      return api.getBalances();
     },
   };
 });
+

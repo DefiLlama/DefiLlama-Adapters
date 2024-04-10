@@ -15,6 +15,8 @@ async function covalentGetTokens(address, api, {
   if (!chainId) throw new Error('Missing chain to chain id mapping:' + api.chain)
   if (!address) throw new Error('Missing adddress')
 
+  if (['mantle', 'blast'].includes(chain)) useCovalent = true
+
   if (!useCovalent) {
     if (!ankrChainMapping[chain]) throw new Error('Chain Not supported: ' + chain)
     const tokens = await ankrGetTokens(address, { onlyWhitelisted })

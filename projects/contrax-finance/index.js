@@ -27,37 +27,35 @@ async function getHopMagicData(api) {
     params: [],
   });
   const balance = await api.call({
-    abi: "erc20:balanceOf",
-    target: tokenAddress,
-    params: [HOP_MAGIC_VAULT],
+    abi: "uint256:balance",
+    target: HOP_MAGIC_VAULT,
   });
   api.add(tokenAddress, balance);
 }
 
 async function getGMXData(api) {
   const balance = await api.call({
-    abi: "erc20:balanceOf",
-    target: GMX,
-    params: [GMX_VAULT],
+    abi: "uint256:balance",
+    target: GMX_VAULT,
   });
   api.add(GMX, balance);
 }
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   let tokens = await api.multiCall({ abi: "address:token", calls: Vaults });
   // Controllers
-  let targets = await api.multiCall({
-    abi: "address:controller",
+  let bals = await api.multiCall({
+    abi: "uint256:balance",
     calls: Vaults,
   });
 
-  const bals = await api.multiCall({
-    abi: "erc20:balanceOf",
-    calls: tokens.map((t, i) => ({ target: targets[i], params: [t] })),
-  });
+  // const bals = await api.multiCall({
+  //   abi: "erc20:balanceOf",
+  //   calls: tokens.map((t, i) => ({ target: targets[i], params: [t] })),
+  // });
   await getHopMagicData(api);
   await getGMXData(api);
-  
+
   api.addTokens(tokens, bals);
   return sumTokens2({ api, resolveLP: true });
 }

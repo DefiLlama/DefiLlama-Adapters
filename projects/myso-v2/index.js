@@ -43,7 +43,7 @@ const getContracts = async (chainId) => {
   return data.contracts;
 };
 
-async function tvl(_, _b, _cb, { api }) {
+async function tvl(api) {
   const { fromBlock } = config[api.chain];
   let contracts;
 
@@ -94,6 +94,18 @@ const config = {
   },
   base: {
     fromBlock: 6239916,
+  },
+  evmos: {
+    fromBlock: 18112793,
+  },
+  neon_evm: {
+    fromBlock: 237206849,
+  },
+  telos: {
+    fromBlock: 324711636,
+  },
+  linea: {
+    fromBlock: 2118418,
   },
 };
 

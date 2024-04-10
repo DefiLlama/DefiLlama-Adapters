@@ -12,7 +12,7 @@ const contracts = {
   }
 }
 
-const tvl = async (_, _1, _2, { api }) => {
+const tvl = async (api) => {
   const totalSupply = await api.call({ target: contracts[api.chain].token, abi: 'uint256:totalSupply'});
   const rate = await api.call({ target: contracts[api.chain].oracle, abi: 'function latestRoundData() external view returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound)'});
 

@@ -29,4 +29,3 @@ module.exports = mergeExports([
   { base: { staking: stakings } },
   zebra_vault,
 ])
-
