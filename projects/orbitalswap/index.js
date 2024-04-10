@@ -10,7 +10,7 @@ module.exports = {
     misrepresentedTokens: true,
             incentivized: true,
     bsc: {
-        tvl: getUniTVL({ factory: '0x1A04Afe9778f95829017741bF46C9524B91433fB', chain: 'bsc', useDefaultCoreAssets: true }),
+        tvl: getUniTVL({ factory: '0x1A04Afe9778f95829017741bF46C9524B91433fB', useDefaultCoreAssets: true }),
         staking: staking(MasterChefContract, ORB, "bsc"),
     }
 };

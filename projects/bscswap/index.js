@@ -8,7 +8,7 @@ module.exports = {
   misrepresentedTokens: true,
   bsc: {
     staking: staking(BSWAPStakingContract, BSWAP, "bsc"),
-    tvl: getUniTVL({ factory: '0xCe8fd65646F2a2a897755A1188C04aCe94D2B8D0', chain: 'bsc', useDefaultCoreAssets: true }),
+    tvl: getUniTVL({ factory: '0xCe8fd65646F2a2a897755A1188C04aCe94D2B8D0', useDefaultCoreAssets: true }),
   },
   methodology:
     "Factory address on BSC (0xCe8fd65646F2a2a897755A1188C04aCe94D2B8D0) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
