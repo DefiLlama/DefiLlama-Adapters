@@ -20,7 +20,6 @@ const config = {
   optimism: { factory: '0x99C10A7aBd93b2db6d1a2271e69F268a2c356b80', fromBlock: 107128813 }, // Permissionless Pools
   mantle: { factory: '0xB217D93a8f6A4b7861bB2C865a8C22105FbCdE41', fromBlock: 49691965 }, // Permissionless Pools
   avalanche: { factory: '0x8E557363AC9E5cbf09A2616A302CA3c8f6ab2b7A', fromBlock: 43675420 }, // Clearpool Credit Vaults
-  optimism: { factory: '0xe3E26D4187f3A8e100223576a37d30f2A89eb755', fromBlock: 112307797 } // Clearpool Prime
 }
 
 Object.keys(config).forEach(chain => {
