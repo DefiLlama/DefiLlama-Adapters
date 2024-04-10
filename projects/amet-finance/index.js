@@ -1,40 +1,43 @@
 const { getLogs } = require("../helper/cache/getLogs");
-const issuerEventABI = "event Create(address indexed issuer, address indexed contractAddress)";
+const issuerEventABI = "event BondIssued(address bondAddress)";
 
 const config = {
+  base: {
+    issuer: "0xE67BE43603260b0AD38bBfe89FcC6fDe6741e82A",
+    fromBlock: 12724500
+  },
   manta: {
-    issuer: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
-    fromBlock: 574206
+    issuer: null,
   },
   polygon: {
-    issuer: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
-    fromBlock: 50204821
+    issuer: null,
   },
   polygon_zkevm: {
-    issuer: "0x875B73364432d14EEb99eb0eAC6bAaCbEe6829E2",
-    fromBlock: 7860004
+    issuer: null,
   }
 };
 
-async function tvl(_, _1, _2, { api }) {
+const FixedFlexIssuerABI = {
+  payoutToken: "function payoutToken() view returns (address)"
+};
+
+
+async function tvl(api) {
   const { issuer, fromBlock } = config[api.chain];
 
-  const logs = await getLogs({ api, target: issuer, fromBlock, eventAbi: issuerEventABI, onlyArgs: true });
-  const calls = logs.map(item => item.contractAddress);
-  const res = await api.multiCall({ abi: ZCB_Issuer_V1.getInfo, calls });
-  const ownerTokens = res.map((v, i) => [[v.interestToken], calls[i]]);
-  return api.sumTokens({ ownerTokens });
+  if (!issuer) return {};
+
+  const issuerLogs = await getLogs({api, target: issuer, fromBlock, eventAbi: issuerEventABI, onlyArgs: true});
+  const bondAddresses = issuerLogs.map(item => item.bondAddress);
+  const payoutTokens = await api.multiCall({abi: FixedFlexIssuerABI.payoutToken, calls: bondAddresses});
+  const ownerTokens = payoutTokens.map((payoutToken, index) => [[payoutToken], bondAddresses[index]]);
+  return await api.sumTokens({ownerTokens});
 }
 
 module.exports = {
-  start: 1700036718369,
-  methodology: "Get the issuer contract logs to understand what bonds were issued and add what is locked in the contract."
+  methodology: "On DeFiLlama, the TVL (Total Value Locked) calculation for Amet Finance is derived from analyzing issuer logs to identify all issued bonds. We then assess the payout balance held within these bonds. The aggregate of these balances across all bonds represents the TVL for Amet Finance."
 };
 
 Object.keys(config).forEach(chain => {
   module.exports[chain] = { tvl };
 });
-
-const ZCB_Issuer_V1 = {
-  getInfo: "function getInfo() view returns (address, uint256, uint256 purchased, uint256, uint256, address investmentToken, uint256 investmentTokenAmount, address interestToken, uint256, uint16, uint256)"
-};

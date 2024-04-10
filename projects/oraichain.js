@@ -29,7 +29,7 @@ const stakingAddresses = {
         '0xdC398B05E6646764C0bF02ead1dE2ec192d64F7d' //USDT
     ],
 };
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
     const tokens = [lpToken[api.chain], oraichainToken[api.chain]]
     if (api.chain === 'ethereum') tokens.push(ADDRESSES.ethereum.USDT)
     return sumTokens2({ api, owners: stakingAddresses[api.chain], tokens, resolveLP: true,  })

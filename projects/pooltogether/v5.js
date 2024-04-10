@@ -4,7 +4,7 @@ const V5_VAULT_FACTORIES = {
   optimism: '0xF65FA202907D6046D1eF33C521889B54BdE08081'
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const factory = V5_VAULT_FACTORIES[api.chain]
   if (!factory) return {}
   const vaults = await api.fetchList({ lengthAbi: abi.totalVaults, itemAbi: abi.allVaults, target: factory })

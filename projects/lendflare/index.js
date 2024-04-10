@@ -3,8 +3,7 @@ const supplyBooster = require('./supplyBooster.js');
 const sdk = require('@defillama/sdk')
 
 module.exports = {
-    timetravel: true,
-    ethereum: {
+        ethereum: {
         tvl: sdk.util.sumChainTvls([convexBooster.tvl, supplyBooster.tvl]),
     }
 };

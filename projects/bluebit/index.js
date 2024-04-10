@@ -29,9 +29,7 @@ const tvl = async (timestamp, block, chainBlocks) => {
 
 module.exports = {
   methodology: "The vaults on https://bluebit.fi are included in TVL.",
-  timetravel: true,
-  misrepresentedTokens: false,
-  start: 62936418,
+      start: 62936418,
   aurora: {
     tvl: tvl,
     staking: staking(veToken, token, "aurora"),
