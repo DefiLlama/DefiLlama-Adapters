@@ -82,6 +82,12 @@ const arbitrumCellarsV2p5 = [
   { id: REAL_YIELD_ETH_ARB, startBlock: 178830458 },
   { id: REAL_YIELD_USD_ARB, startBlock: 178141655 }];
 
+  // v2.5 Cellars on Optimism
+  const REAL_YIELD_ETH_OPT = "0xC47bB288178Ea40bF520a91826a3DEE9e0DbFA4C";
+
+  const optimismCellarsV2p5 = [
+    { id: REAL_YIELD_ETH_OPT, startBlock: 
+      116609168 }];
 
 
 module.exports = {
@@ -90,5 +96,6 @@ module.exports = {
   cellarsV2,
   cellarsV2p5,
   arbitrumCellarsV2p5,
+  optimismCellarsV2p5,
 };
 

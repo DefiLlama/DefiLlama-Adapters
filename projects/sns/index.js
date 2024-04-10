@@ -33,7 +33,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: `We count the ICP on all SNS treasuries accounts as the collateral`,
+  methodology: `We count the ICP on all SNS DAO treasuries accounts`,
   icp: {
     tvl
   },
