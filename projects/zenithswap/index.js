@@ -10,6 +10,6 @@ module.exports = {
     "Factory address (0x8F086a081621bbc13B6d02A9e1123212CF07fdf8) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
     arbitrum: {
     tvl: getUniTVL({ factory: '0x8F086a081621bbc13B6d02A9e1123212CF07fdf8', useDefaultCoreAssets: true }),
-    staking: staking( MASTER_CHEF, ZSP_TOKEN, 'arbitrum')
+    staking: staking( MASTER_CHEF, ZSP_TOKEN)
   },
 };

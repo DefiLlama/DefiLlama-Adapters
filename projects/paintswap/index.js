@@ -9,6 +9,6 @@ module.exports = {
   misrepresentedTokens: true,
       fantom:{
     tvl: getUniTVL({ factory, useDefaultCoreAssets: true }),
-    staking: staking(masterchef, brush, "fantom"),
+    staking: staking(masterchef, brush),
   }
 }

@@ -14,6 +14,6 @@ module.exports = {
   methodology: `Counts fsGLP and USDC deposited to lionDEXVault. Staking counts Lion deposited to stakingPool.`,
   arbitrum: {
     tvl:  sumTokensExport({ owners: [lionDEXVault], tokens: [ fsGLP, USDC]}),
-    staking: staking(lionStaking, LION, 'arbitrum')
+    staking: staking(lionStaking, LION)
   }
 }

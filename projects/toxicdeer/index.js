@@ -45,7 +45,7 @@ async function calcPool2(masterchef, lps, block, chain) {
 }
 
 async function pool2(timestamp, block, chainBlocks) {
-  return await calcPool2(rewardPool, lps, chainBlocks.cronos, "cronos");
+  return await calcPool2(rewardPool, lps, chainBlocks.cronos);
 }
 async function tvl(timestamp, block, chainBlocks) {
   let balances = {};

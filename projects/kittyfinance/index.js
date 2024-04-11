@@ -50,11 +50,11 @@ async function calcPool2(masterchef, lps, block, chain) {
 }
 
 async function polyPool2(timestamp, block, chainBlocks) {
-  return await calcPool2(polyChef, polyLPs, chainBlocks.polygon, "polygon");
+  return await calcPool2(polyChef, polyLPs, chainBlocks.polygon);
 }
 
 async function avaxPool2(timestamp, block, chainBlocks) {
-  return await calcPool2(avaxChef, avaxLPs, chainBlocks.avax, "avax");
+  return await calcPool2(avaxChef, avaxLPs, chainBlocks.avax);
 }
 
 module.exports = {
@@ -72,6 +72,6 @@ module.exports = {
   avax: {
     tvl: async () => ({}),
     pool2: avaxPool2,
-    staking: staking(avaxNursery, avaxCat, "avax"),
+    staking: staking(avaxNursery, avaxCat),
   },
 };

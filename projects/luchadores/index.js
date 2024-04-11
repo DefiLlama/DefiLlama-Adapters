@@ -51,7 +51,7 @@ async function tvl(time, ethBlock, chainBlocks){
 module.exports={
         polygon:{
         tvl,
-        staking: staking(luchaStk, LUCHA_polygon, "polygon"),
+        staking: staking(luchaStk, LUCHA_polygon),
         pool2: pool2s([luchaMaticStk, luchaMustStk], [LUCHA_MATIC_comethLp, LUCHA_MUST_comethLp, LUCHA_MATIC_satinLp, LUCHA_CASH_satinLp], "polygon")
     },
     methodology: `- Staking : Players can stake their $LUCHA to earn $MASK and access in-game services or equipment.\r

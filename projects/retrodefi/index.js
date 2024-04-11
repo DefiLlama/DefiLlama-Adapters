@@ -156,7 +156,7 @@ const bscStaking = async (chainBlocks) => {
 
 const polygonStaking = async (...params) => {
   for (const stakingContract of retroStakingsPolygon) {
-    return staking(stakingContract, pQBERT, "polygon")(...params);
+    return staking(stakingContract, pQBERT)(...params);
   }
 };
 

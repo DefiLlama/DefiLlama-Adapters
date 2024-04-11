@@ -28,7 +28,7 @@ module.exports = {
     "The Pangolin factory contract address are used to obtain the balance held in every LP pair and the stake contract is used to get the locked PNG balance.",
   avax: {
     tvl: getUniTVL({ useDefaultCoreAssets: true, factory: contracts.avax.factory, }),
-    staking: staking(contracts.avax.stakingContract, contracts.avax.png, "avax"),
+    staking: staking(contracts.avax.stakingContract, contracts.avax.png),
   },
   songbird: {
     tvl: getUniTVL({ useDefaultCoreAssets: true, factory: contracts.songbird.factory, }),

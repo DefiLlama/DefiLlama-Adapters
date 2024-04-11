@@ -100,15 +100,15 @@ async function bscTvl(timestamp, block, chainBlocks) {
 }
 
 async function ethStaking(timestamp, block) {
-  return await staking(ethSake, ethSakebar, block, "ethereum");
+  return await staking(ethSake, ethSakebar, block);
 }
 
 async function bscStaking(timestamp, block, chainBlocks) {
-  return await staking(bscSake, bscSakebar, chainBlocks.bsc, "bsc");
+  return await staking(bscSake, bscSakebar, chainBlocks.bsc);
 }
 
 async function perpVaultTvl(timestamp, block, chainBlocks) {
-  return await staking(bUsd, perpVault, chainBlocks.bsc, "bsc");
+  return await staking(bUsd, perpVault, chainBlocks.bsc);
 }
 
 module.exports = {

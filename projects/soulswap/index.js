@@ -24,12 +24,12 @@ const wl_avax = [ usdc_avax, soul_avax, wbtc_avax, weth_avax ]
 
 module.exports = {
   fantom:{
-    staking: staking(farm_fantom, soul_fantom, 'fantom'),
+    staking: staking(farm_fantom, soul_fantom),
     tvl: calculateUsdSoulTvl(factory_fantom, 'fantom', wftm_fantom, wl_fantom, 'fantom'),
     borrowed: underworldLending('fantom', true)
   },
   avax:{
-    staking: staking(farm_avax, soul_avax, 'avax'),
+    staking: staking(farm_avax, soul_avax),
     tvl: calculateUsdSoulTvl(factory_avax, 'avax', wavax_avax, wl_avax, 'avax'),
     borrowed: underworldLending('avax', true)
   },
