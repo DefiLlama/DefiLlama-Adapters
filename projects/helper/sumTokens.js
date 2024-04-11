@@ -54,6 +54,7 @@ async function sumTokens(options) {
   if (api && !specialChains.includes(chain)) {
     chain = api.chain
   }
+  if (chain === 'bsc' && (owners[0] ?? '').startsWith('bnb')) chain = 'bep2'
 
   if (token) tokens = [token]
   if (owner) owners = [owner]
