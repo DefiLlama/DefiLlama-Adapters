@@ -8,7 +8,7 @@ module.exports = {
 	misrepresentedTokens: true,
 	cronos: {
 		staking: stakings([masterchef], croissant),
-		pool2: pool2s([masterchef], [croi_mmf_lp], 'cronos'),
+		pool2: pool2s([masterchef], [croi_mmf_lp]),
 		tvl: () => ({})
 	},
 	methodology: "LPs and tokens in masterchef",

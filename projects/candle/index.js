@@ -20,7 +20,7 @@ module.exports = {
   },
   // candle: {
   //   staking: stakings(stakingContracts, CNDL),
-  //   pool2: pool2s(stakingContracts, [USDC_CNDL_UNIV2], 'candle'),
+  //   pool2: pool2s(stakingContracts, [USDC_CNDL_UNIV2]),
   //   tvl: () => ({}),
   // },
   methodology: "Counts liquidty on the staking and pool2s only",

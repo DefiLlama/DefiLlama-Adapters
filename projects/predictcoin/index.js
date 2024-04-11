@@ -17,7 +17,7 @@ module.exports = {
   bsc: {
     tvl: (async) => ({}),
     staking: staking(farmContract, PRED),
-    pool2: pool2s([farmContract], lpContracts, "bsc"),
+    pool2: pool2s([farmContract], lpContracts),
   },
   methodology: "Counts liquidty on the staking and Farming",
 };

@@ -69,7 +69,7 @@ module.exports = {
   bsc: {
     tvl: bscTVL,
     staking: stakings([stakingContract_APX, daoContract], TOKEN_APX),
-    pool2: pool2s([stakingContract, stakingContractV2], [poolContract, poolContractV2], "bsc"),
+    pool2: pool2s([stakingContract, stakingContractV2], [poolContract, poolContractV2]),
   },
   ethereum: {
     tvl: sumTokensExport({
