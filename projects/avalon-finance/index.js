@@ -12,7 +12,7 @@ const merlin_innovation_market_data = aaveExports('merlin', '0x91b212e9FaF20117E
 module.exports = {
 	methodology: methodologies.lendingMarket,
 	merlin: {
-		tvl: merlin_main_market_data.tvl + merlin_innovation_market_data.tvl,
-		borrowed: merlin_main_market_data.borrowed + merlin_innovation_market_data.borrowed,
+		tvl: { ...merlin_innovation_market_data.tvl, ...merlin_main_market_data.tvl },
+		borrowed: { ...merlin_innovation_market_data.borrowed, ...merlin_main_market_data.borrowed },
 	},
 }
