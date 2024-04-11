@@ -36,7 +36,7 @@ module.exports = {
     pool2: staking(masterchef, pool2LP),
   },
   ethpow: {
-    pool2: pool2(ethpowPools[1], targetCoinsETHW[1], "ethpow"),
+    pool2: pool2(ethpowPools[1], targetCoinsETHW[1]),
     tvl: staking(ethpowPools[0], targetCoinsETHW[0]),
     staking: staking(ethpowPools[2], targetCoinsETHW[2]),
   }

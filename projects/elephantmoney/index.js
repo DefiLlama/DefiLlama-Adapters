@@ -27,7 +27,7 @@ async function tvl(timestamp, block, chainBlocks) {
 
 module.exports = {
   bsc: {
-    pool2: pool2([contracts.TRUNK, contracts.ELEPHANT], LPs, "bsc"),
+    pool2: pool2([contracts.TRUNK, contracts.ELEPHANT], LPs),
     tvl: tvl,
     staking: stakings([contracts.staking], contracts.ELEPHANT, 'bsc')
   }

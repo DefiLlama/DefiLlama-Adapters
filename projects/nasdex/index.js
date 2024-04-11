@@ -9,7 +9,7 @@ module.exports = {
   misrepresentedTokens: true,
   polygon:{
     staking: staking(stakingContract, NSDX),
-    pool2: pool2(stakingContract, NSDX_USDC_UNIV2, "polygon"),
+    pool2: pool2(stakingContract, NSDX_USDC_UNIV2),
     tvl: async () => ({}),
   },
   methodology:

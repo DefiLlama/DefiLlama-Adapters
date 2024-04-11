@@ -48,7 +48,7 @@ async function calcPool2(masterchef, lps, block, chain) {
 }
 
 async function ftmPool2(timestamp, block, chainBlocks) {
-  return await calcPool2(tshareRewardPoolAddress, ftmLPs, chainBlocks.polygon, "polygon");
+  return await calcPool2(tshareRewardPoolAddress, ftmLPs, chainBlocks.polygon);
 }
 
 module.exports = {

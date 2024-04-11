@@ -28,7 +28,7 @@ module.exports = {
     tvl: lending(false),
     borrowed: lending(true),
     staking: staking(stakingContract, GEIST),
-    pool2: pool2(stakingContractPool2, GEIST_WFTM_spLP, "fantom"),
+    pool2: pool2(stakingContractPool2, GEIST_WFTM_spLP),
   },
   hallmarks:[
     [1665090175, "BSC Bridge hacker deposits coins"]

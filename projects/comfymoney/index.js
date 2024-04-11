@@ -21,7 +21,7 @@ async function calcPool2(block, chain) {
 }
 
 async function onePool2(timestamp, block, chainBlocks) {
-  return calcPool2(chainBlocks.harmony, "harmony");
+  return calcPool2(chainBlocks.harmony);
 }
 
 module.exports = {

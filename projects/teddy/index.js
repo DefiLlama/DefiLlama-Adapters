@@ -17,7 +17,7 @@ module.exports = {
       staking(stakingContract, TEDDY),
       //staking(STABILITY_POOL_ADDRESS, TSD),
     ]),
-    pool2: pool2(stakingPool2Contract, WAVAX_TSD_PGL, "avax"),
+    pool2: pool2(stakingPool2Contract, WAVAX_TSD_PGL),
     tvl: getLiquityTvl(TROVE_MANAGER_ADDRESS),
   },
   methodology:

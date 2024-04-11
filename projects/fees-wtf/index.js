@@ -11,6 +11,6 @@ module.exports = {
   ethereum:{
     tvl: () => ({}),
     staking: staking(stakingContract, WTF), 
-    pool2: pool2(WTF_ETH_univ2_staking, WTF_ETH_univ2, "ethereum"), 
+    pool2: pool2(WTF_ETH_univ2_staking, WTF_ETH_univ2), 
   }
 }

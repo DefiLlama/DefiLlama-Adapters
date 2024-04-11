@@ -180,6 +180,6 @@ module.exports = {
   },
   heco: {
     staking: staking(stakingContractHeco, COOK_heco),
-    pool2: pool2(stakingPool2ContractHeco, ETH_COOK_HMDXLP, "heco"),
+    pool2: pool2(stakingPool2ContractHeco, ETH_COOK_HMDXLP),
   },
 };

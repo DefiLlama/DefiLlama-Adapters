@@ -9,7 +9,7 @@ module.exports = {
   misrepresentedTokens: true,
   bsc: {
     staking: staking(stakingContract, ULTRA),
-    pool2: pool2(stakingContract, ULTRA_WBNB_CakeLP, "bsc"),
+    pool2: pool2(stakingContract, ULTRA_WBNB_CakeLP),
     tvl: (async) => ({}),
   },
   methodology: "Counts liquidty on the staking and pool2 only",

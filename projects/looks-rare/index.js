@@ -15,6 +15,6 @@ module.exports = {
   ethereum:{
     tvl: () => ({}),
     staking: staking(tokenDistributor, LOOKS), 
-    pool2: pool2(LOOKS_ETH_univ2_staking, LOOKS_ETH_univ2, "ethereum"), 
+    pool2: pool2(LOOKS_ETH_univ2_staking, LOOKS_ETH_univ2), 
   }
 }

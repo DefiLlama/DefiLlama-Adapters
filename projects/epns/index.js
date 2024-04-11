@@ -10,6 +10,6 @@ module.exports = {
   ethereum:{
     tvl: () => ({}),
     staking: staking(staking_contract, PUSH), 
-    pool2: pool2(staking_contract, PUSH_WETH_LP, 'ethereum'), 
+    pool2: pool2(staking_contract, PUSH_WETH_LP), 
   }
 }
