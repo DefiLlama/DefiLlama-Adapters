@@ -47,7 +47,7 @@ async function tvl(chain, ts, _block, chainBlocks) {
 module.exports = {
   bsc: {
     tvl: tvl.bind(this, 'bsc'),
-    staking: staking('0x3782c47e62b13d579fe748946aef7142b45b2cf7', '0x766AFcf83Fd5eaf884B3d529b432CA27A6d84617', 'bsc'),
+    staking: staking('0x3782c47e62b13d579fe748946aef7142b45b2cf7', '0x766AFcf83Fd5eaf884B3d529b432CA27A6d84617'),
     pool2: pool2('0x3782c47e62b13d579fe748946aef7142b45b2cf7', '0x12c35ed2405bc70721584594723351bf5db6235c', 'bsc'),
   },
   polygon: {

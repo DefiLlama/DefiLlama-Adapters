@@ -51,7 +51,7 @@ module.exports = {
   avax: {
     tvl: async () => ({}),
     pool2: AvaxPool2,
-    staking: staking(pshareStaking, pshare, "avax"),
+    staking: staking(pshareStaking, pshare),
   },
 };
 

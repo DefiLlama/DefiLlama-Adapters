@@ -17,7 +17,7 @@ module.exports = {
     tvl: (async) => ({}), 
   },
   bsc: {
-    staking: staking(farmContract_bsc, BLXM_bsc, "bsc"),
+    staking: staking(farmContract_bsc, BLXM_bsc),
     pool2: pool2(farmContract_bsc, WBNB_BLXM_CakeLP, "bsc"),
   },
   methodology: "Counts liquidty on the staking and pool2 only",

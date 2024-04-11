@@ -27,7 +27,7 @@ module.exports = {
   fantom: {
     tvl: lending(false),
     borrowed: lending(true),
-    staking: staking(stakingContract, GEIST, "fantom"),
+    staking: staking(stakingContract, GEIST),
     pool2: pool2(stakingContractPool2, GEIST_WFTM_spLP, "fantom"),
   },
   hallmarks:[

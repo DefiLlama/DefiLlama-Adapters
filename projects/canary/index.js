@@ -16,7 +16,7 @@ module.exports = {
   misrepresentedTokens: true,
   avax:{
     tvl: getUniTVL({ useDefaultCoreAssets: true, factory: contracts.avax.factory, }),
-    staking: staking(contracts.avax.stakingContract, contracts.avax.cnr, "avax"),
+    staking: staking(contracts.avax.stakingContract, contracts.avax.cnr),
   },
   scroll:{
     tvl: getUniTVL({ useDefaultCoreAssets: true, factory: contracts.scroll.factory, }),

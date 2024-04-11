@@ -56,6 +56,6 @@ module.exports = {
   polygon: {
     tvl: async () => ({}),
     pool2: ftmPool2,
-    staking: staking(masonryAddress, tshareTokenAddress, "polygon"),
+    staking: staking(masonryAddress, tshareTokenAddress),
   },
 };

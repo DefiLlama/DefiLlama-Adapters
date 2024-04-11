@@ -30,6 +30,6 @@ module.exports = {
   harmony: {
     tvl: async () => ({}),
     pool2: onePool2,
-    staking: staking(zenDenAddress, cshareTokenAddress, "harmony"),
+    staking: staking(zenDenAddress, cshareTokenAddress),
   },
 };

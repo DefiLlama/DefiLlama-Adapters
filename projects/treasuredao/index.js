@@ -11,7 +11,7 @@ module.exports = {
   misrepresentedTokens: true,
   arbitrum: {
     tvl: (async) => ({}),
-    staking: staking(stakingContract, MAGIC, "arbitrum"),
+    staking: staking(stakingContract, MAGIC),
     pool2: pool2(stakingPool2Contract, MAGIC_WETH_SLP, "arbitrum"),
   },
   methodology: "Counts liquidty on the staking and pool2 only",
