@@ -25,6 +25,7 @@ const tokenGeckoMapping = {
   "BTC.BTC": "bitcoin",
   "ARB.ETH": "ethereum",
   "ARB.ARB": "arbitrum",
+  "ARB.UNI": "uniswap",
   "ARB.DAI": "dai",
   "ARB.GMX": "gmx",
   "ARB.GNS": "gains-network",
@@ -54,6 +55,7 @@ const tokenToDecimalMapping = {
   "ARB.GLD": 18,
   "ARB.GMX": 18,
   "ARB.GNS": 18,
+  "ARB.UNI": 18,
   "ARB.LEO": 3,
   "ARB.LINK": 18,
   "ARB.PEPE": 18,
@@ -101,6 +103,7 @@ async function tvl(api) {
       } else if (chainStr === baseToken) {
         sdk.util.sumSingleBalance(balances, nullAddress, assetDepth, chain);
       } else if (tokenGeckoMapping[pool]) {
+        if (tokenGeckoMapping[pool] === "ethereum") assetDepth = assetDepth / 1e10;
         sdk.util.sumSingleBalance(
           balances,
           tokenGeckoMapping[pool],
