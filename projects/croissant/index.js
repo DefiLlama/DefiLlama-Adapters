@@ -7,7 +7,7 @@ const croi_mmf_lp = "0xde991150329dbe53389db41db459cae3ff220bac";
 module.exports = {
 	misrepresentedTokens: true,
 	cronos: {
-		staking: stakings([masterchef], croissant, 'cronos'),
+		staking: stakings([masterchef], croissant),
 		pool2: pool2s([masterchef], [croi_mmf_lp], 'cronos'),
 		tvl: () => ({})
 	},

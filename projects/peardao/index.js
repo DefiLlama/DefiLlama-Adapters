@@ -25,7 +25,7 @@ module.exports = {
   start: 15966251, // Mar-11-2022 01:00:01 PM +UTC
   bsc: {
     tvl: sumTokensExport({ tokens, owner: DOTC_CONTRACT, }),
-    staking: stakings([TREASURY_ADDRESS, PEX_STAKING_POOL_CONTRACT], PEX_TOKEN_CONTRACT, "bsc"),
+    staking: stakings([TREASURY_ADDRESS, PEX_STAKING_POOL_CONTRACT], PEX_TOKEN_CONTRACT),
     pool2: pool2(PEX_BNB_LP_MASTER_CHEF, PEX_BNB_LP_CONTRACT)
   }
 };

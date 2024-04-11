@@ -32,7 +32,7 @@ module.exports = {
     "Pool 2 TVL includes the BHC-WBNB Pancake LP and staking TVL are the BHC tokens staked into the emotion pools",
   bsc: {
     tvl: async () => ({}),
-    staking: stakings(stakingPools, bhcToken, 'bsc'),
+    staking: stakings(stakingPools, bhcToken),
     pool2: staking(masterchef, pool2LP),
   },
   ethpow: {

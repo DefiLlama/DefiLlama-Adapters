@@ -68,7 +68,7 @@ module.exports = {
   start: 1640100600, // 12/21/2021 @ 15:30pm (UTC)
   bsc: {
     tvl: bscTVL,
-    staking: stakings([stakingContract_APX, daoContract], TOKEN_APX, "bsc"),
+    staking: stakings([stakingContract_APX, daoContract], TOKEN_APX),
     pool2: pool2s([stakingContract, stakingContractV2], [poolContract, poolContractV2], "bsc"),
   },
   ethereum: {

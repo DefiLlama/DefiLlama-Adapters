@@ -59,6 +59,6 @@ module.exports = {
   avax: {
     tvl: tvl,
     pool2: pool2,
-    staking: stakings(boardroomAddress, chamTokenAddress, "avax",)
+    staking: stakings(boardroomAddress, chamTokenAddress)
   }
 }; 

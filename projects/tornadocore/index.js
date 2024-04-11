@@ -29,7 +29,7 @@ module.exports = {
     pool2: pool2(vaultV1Contract, WETH_TCORE_UNIV2),
   },
   bsc: {
-    staking: stakings(vaultContracts_bsc, TCORE_bsc, "bsc"),
+    staking: stakings(vaultContracts_bsc, TCORE_bsc),
     pool2: pool2s(
       vaultContracts_bsc,
       [WBNB_TCORE_BLP, WBNB_TCORE_CakeLP],

@@ -28,6 +28,6 @@ module.exports = {
     bsc: {
         tvl: () => ({}),
         pool2: pool2(pool2Holder, pool2Token),
-        staking: stakings(stakingContracts.map(i => i.address), SFUND, 'bsc')
+        staking: stakings(stakingContracts.map(i => i.address), SFUND)
     }
 };
