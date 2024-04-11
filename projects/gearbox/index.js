@@ -3,7 +3,7 @@
  **
  **
  ** This file has been generated from source code in https://github.com/Gearbox-protocol/defillama repo
- ** Binary release: https://github.com/Gearbox-protocol/defillama/releases/tag/v1.3.0
+ ** Binary release: https://github.com/Gearbox-protocol/defillama/releases/tag/v1.3.1
  **
  **
  **
@@ -409,7 +409,8 @@ async function getV3CAs(dc300, creditManager, block, api) {
 }
 
 // src/adapter/index.ts
-async function tvl(timestamp, block, _, { api }) {
+async function tvl(_timestamp, _block, _, { api }) {
+  const block = await api.getBlock();
   const tokensAndOwners = await getPools(block, api);
   const allBalances = [];
   if (api.chain === "ethereum") {
