@@ -19,7 +19,6 @@ async function getRPGPrice() {
     return price;
 }
 
-getRPGPrice()
 async function tvl(){
     const tvl = (await getMiner()) * (await getRPGPrice());
     return {
