@@ -11,7 +11,7 @@ module.exports = {
     "We count liquidity and staking on the dexes, pulling data from subgraphs",
   kcc: {
     tvl: getUniTVL({ useDefaultCoreAssets: true, factory: '0x79855a03426e15ad120df77efa623af87bd54ef3', }),
-    staking: stakings([masterchefAddress, masterchefV2Address], mjtAddress, 'kcc'),
+    staking: stakings([masterchefAddress, masterchefV2Address], mjtAddress),
   },
   start: 3000000,
 };

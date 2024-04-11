@@ -14,6 +14,6 @@ module.exports = {
       factory: FACTORY,
       useDefaultCoreAssets: true,
     }),
-    staking: stakings([LOCKER], KSWAP, "bsc"),
+    staking: stakings([LOCKER], KSWAP),
   },
 };

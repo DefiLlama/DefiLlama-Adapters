@@ -19,7 +19,7 @@ module.exports = {
     tvl: () => ({}),
   },
   // candle: {
-  //   staking: stakings(stakingContracts, CNDL, 'candle'),
+  //   staking: stakings(stakingContracts, CNDL),
   //   pool2: pool2s(stakingContracts, [USDC_CNDL_UNIV2], 'candle'),
   //   tvl: () => ({}),
   // },
