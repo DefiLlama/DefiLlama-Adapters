@@ -9,7 +9,6 @@ module.exports = {
   misrepresentedTokens: true,
   op_bnb: {
     tvl: sumTokensExport({ owner: stakingContractAddress, tokens: [nullAddress]}),
-    staking: sumTokensExport({ owner: stakingContractAddress, tokens: [whiteTokenAddress],lps: [LP]}),
     pool2: sumTokensExport({ owner: '0xdB9320dDE030cEF08C615E7547cee98848Bd297e', tokens: [LP]}),
   },
 };
