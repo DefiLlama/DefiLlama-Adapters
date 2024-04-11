@@ -31,7 +31,7 @@ const tokenGeckoMapping = {
   "ARB.LINK": "chainlink",
   "ARB.PEPE": "pepe",
   "ARB.SUSHI": "sushi",
-  "ARB.TGT": "thorwallet-dex"
+  "ARB.TGT": "thorwallet-dex",
   "ARB.USDC": "usd-coin",
   "ARB.USDT": "tether",
   "ARB.WBTC": "wrapped-bitcoin",
