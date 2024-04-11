@@ -75,8 +75,8 @@ module.exports = {
   methodology: `TVL for NFT20 consists of the weth locked in LPs (uni_v2, uni_v3, sushi) of every NFT20 pool on mainnet and polygon.`,
   ethereum: {
     tvl: chainTvl('ethereum'),
-    staking: staking(stkMUSE, MUSE, "ethereum"),
-    pool2: staking(MUSE_ETH_univ2_staking, MUSE_ETH_univ2, "ethereum"),
+    staking: staking(stkMUSE, MUSE),
+    pool2: staking(MUSE_ETH_univ2_staking, MUSE_ETH_univ2),
   },
   polygon: {
     tvl: chainTvl('polygon')

@@ -37,7 +37,7 @@ module.exports = {
     ),
   },
   polygon: {
-    staking: staking(vaultV1Contract_polygon, TCORE_polygon, "polygon"),
+    staking: staking(vaultV1Contract_polygon, TCORE_polygon),
     pool2: pool2(
       vaultV1Contract_polygon,
       WMATIC_TCORE_UNIV2_polygon,

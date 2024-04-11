@@ -12,7 +12,7 @@ async function staking(api) {
 }
 
 // Safety Module staking of 20WETH_80PSP balancer LP
-// pool2(safetyModuleBalStaking, balancerLP_20WETH_80PSP, "ethereum") // not working as it is a balancer and not a uniswap LP
+// pool2(safetyModuleBalStaking, balancerLP_20WETH_80PSP) // not working as it is a balancer and not a uniswap LP
 const balancerLP_20WETH_80PSP = '0xcb0e14e96f2cefa8550ad8e4aea344f211e5061d'
 const safetyModuleBalStaking = '0xc8dc2ec5f5e02be8b37a8444a1931f02374a17ab'
 async function safetyModuleStaking(api) {
