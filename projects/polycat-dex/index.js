@@ -10,6 +10,6 @@ module.exports = {
   methodology: "TVL are from the pools created by the factory and TVL in vaults",
   polygon: {
     tvl: getUniTVL({ factory, useDefaultCoreAssets: true }),
-    staking: staking(tankchef, paw, 'polygon'),
+    staking: staking(tankchef, paw),
   }
 }
