@@ -3,7 +3,7 @@ const { default: axios } = require("axios")
 const url = 'https://minerconsole.rangersprotocol.com/api/getminer'
 const deUrl = "https://coins.llama.fi/prices/current/"
 
-async function getMiner(){
+async function getStake(){
     const miners = (await axios.post(url)).data;
     let stake = 0;
     for (const item of miners) {
@@ -20,7 +20,7 @@ async function getRPGPrice() {
 }
 
 async function tvl(){
-    const tvl = (await getMiner()) * (await getRPGPrice());
+    const tvl = (await getStake()) * (await getRPGPrice());
     return {
         tether: tvl
     }
