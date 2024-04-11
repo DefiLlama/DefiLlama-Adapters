@@ -1,44 +1,16 @@
 const ADDRESSES = require('./helper/coreAssets.json')
-const sdk = require("@defillama/sdk")
-const { getConfig } = require('./helper/cache')
+const { get } = require('./helper/http')
 
 // Loop through all RealT tokens listed by realt.community API and accumulate tokenprice * supply, where supply is biggest of xdai or mainnet
 // See https://api.realt.community/ for reference
-const xdai_usdc = 'xdai:' + ADDRESSES.xdai.USDC
-async function xdaiTvl(timestamp, block, chainBlocks) {
-  let realt_tokens = await getConfig('realt', 'https://api.realt.community/v1/token')
+async function xdaiTvl(api) {
+  let realt_tokens = await get('https://api.realt.community/v1/token')
 
   // Filter out deprecated contracts
-  realt_tokens = realt_tokens.filter(t => !t['fullName'].startsWith('OLD-'))
-  // realt_tokens = realt_tokens.slice(0,5)
+  realt_tokens = realt_tokens.filter(t => !t['fullName'].startsWith('OLD-')).filter(t => t.xDaiContract && +t.tokenPrice)
 
-  const calls_xdai = realt_tokens.map((token) => ({
-    target: token['xDaiContract'],
-  })).filter(t => t.target)
-
-  const tokenSupplies_xdai = (
-    await sdk.api.abi.multiCall({
-      calls: calls_xdai,
-      abi: 'erc20:totalSupply',
-      block: chainBlocks['xdai'],
-      chain: 'xdai'
-    })
-  ).output
-
-  const tokenProperties = tokenSupplies_xdai.map((supply) => {
-    const tokenContract = supply.input.target
-    const token = realt_tokens.find(t => t['xDaiContract'] === tokenContract)
-    return {
-      'contract': tokenContract,
-      'supply': supply.output,
-      'tokenPrice': token['tokenPrice'],
-      'propertyPrice': (supply.output / 1e18) * token['tokenPrice']
-    }
-  })
-
-  // Accumulate to TVL in USD and log
-  let tvl = tokenProperties.reduce((acc, token) => acc + token.propertyPrice, 0)
-  return { [xdai_usdc]: tvl * 1e6 }
+  const tokenSupplies_xdai = await api.multiCall({ calls: realt_tokens.map(t => t.xDaiContract), abi: 'erc20:totalSupply', })
+  tokenSupplies_xdai.map((supply, i) => api.add(ADDRESSES.xdai.USDC, supply/1e18 * realt_tokens[i]['tokenPrice'] * 1e6 ))
 }
 
 module.exports = {
