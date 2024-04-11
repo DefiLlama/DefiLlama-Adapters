@@ -1,0 +1,39 @@
+const { PublicKey } = require('@solana/web3.js');
+
+const SOL_LP_ADDRESS = 'So11111111111111111111111111111111111111112';
+const MOON_LP_ADDRESS = 'BQtQ9MJPyaea2gJuGipKrQPT8btRf1zDz77sPfpicxpN';
+const TOKEN_MINT_ADDRESS = '9bwzKCnBwfRRgqCM9t32aFhRXZXbEp1cUFYyWHgBe6nv';
+
+async function tvl(_, _1, _2, { web3 }) {
+  const solLpPublicKey = new PublicKey(SOL_LP_ADDRESS);
+  const moonLpPublicKey = new PublicKey(MOON_LP_ADDRESS);
+  const tokenMintPublicKey = new PublicKey(TOKEN_MINT_ADDRESS);
+
+  const solLpAccountInfo = await web3.connection.getAccountInfo(solLpPublicKey);
+  const moonLpAccountInfo = await web3.connection.getAccountInfo(moonLpPublicKey);
+  const tokenMintAccountInfo = await web3.connection.getAccountInfo(tokenMintPublicKey);
+
+  if (!solLpAccountInfo || !moonLpAccountInfo || !tokenMintAccountInfo) {
+    throw new Error('LP or token account not found');
+  }
+
+  const solLpBalance = solLpAccountInfo.lamports / (10 ** web3.connection.BPF_LOADER_PROGRAM_ID.equals(web3.SYSVAR_RENT_PUBKEY) ? 9 : 0); // Adjust for SOL decimals
+  const moonLpBalance = moonLpAccountInfo.lamports / (10 ** web3.connection.BPF_LOADER_PROGRAM_ID.equals(web3.SYSVAR_RENT_PUBKEY) ? 9 : 0); // Adjust for SOL decimals
+  const tokenMintBalance = tokenMintAccountInfo.data.parsed.info.tokenAmount.uiAmount;
+
+  const tvl = (solLpBalance + moonLpBalance) * tokenMintBalance;
+  
+  return {
+    [TOKEN_MINT_ADDRESS]: tvl
+  };
+}
+
+module.exports = {
+  timetravel: true,
+  misrepresentedTokens: false,
+  methodology: 'Counts the value of MoonBuck$ tokens locked in the liquidity pool on Solana.',
+  start: 1000235, // Start block
+  solana: {
+    tvl,
+  }
+};
