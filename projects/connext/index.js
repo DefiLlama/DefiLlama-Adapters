@@ -19,7 +19,6 @@ async function getDeployedContractAddress(chainId) {
 
   // Manually adding Connext-specific xERC20 lockboxes on L1. Don't yet have a programmatic way to retrieve these, so hardcoding the largest lockboxes only for now.
   if (chainId === 1) {
-    result.push("0x22f424Bca11FE154c403c277b5F8dAb54a4bA29b"); // NEXT
     result.push("0xC8140dA31E6bCa19b287cC35531c2212763C2059"); // ezETH
   }
   return result;
@@ -34,9 +33,8 @@ async function getAssetIds(chainId) {
   const data = await getAssetsPromise
   const chainData = data.find(item => item.chainId === chainId) || {}
   const result = Object.entries(chainData.assetId || {}).filter(i => i[0].length && !i[1].symbol.startsWith('next')).map(i => i[0])
-  // crossChain.json returns the xERC20 representations of NEXT & ezETH instead of canonical addresses on L1. Manually add these below until a better JSON is available.
+  // crossChain.json returns the xERC20 representation of ezETH instead of canonical addresses on L1. Manually add these below until a better JSON is available.
   if (chainId === 1) {
-    result.push("0xFE67A4450907459c3e1FFf623aA927dD4e28c67a"); // NEXT
     result.push("0xbf5495Efe5DB9ce00f80364C8B423567e58d2110"); // ezETH
   }
   return result;
@@ -65,5 +63,21 @@ const chains = [
   "metis",
   "base",
   "linea",
+
+  // deprecated?
+  "moonriver",
+  "fantom",
+  "avax",
+  "moonbeam",
+  "fuse",
+  "cronos",
+  "milkomeda",
+  "boba",
+  "evmos",
+  "harmony",
+  // "okexchain",
+  // "metis",
+  // "heco",
+  // "aurora",
 ];
 module.exports = chainExports(chainTvl, Array.from(chains));
