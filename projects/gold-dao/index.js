@@ -1,4 +1,5 @@
 const axios = require('axios');
+const { toUSDTBalances } = require("../helper/balances");
 
 async function tvl() {
   const url = 'https://teiwz-pqaaa-aaaap-ag7hq-cai.raw.icp0.io/gold_nft_metrics';
@@ -8,12 +9,12 @@ async function tvl() {
     const data = await response.json();
 
     if (data && data.tvl) {
-      return data.tvl;
+      return toUSDTBalances(data.tvl);
     } else {
-      return 0;
+      return toUSDTBalances(0);
     }
   } catch (error) {
-    return 0;
+    return toUSDTBalances(0);
   }
 
 }
