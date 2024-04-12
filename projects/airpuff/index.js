@@ -1,4 +1,5 @@
-//import utils
+const { default: axios } = require("axios");
+
 const ADDRESSES = require("../helper/coreAssets.json");
 const contractAbis = {
   readOraclePrice: "function read() view returns (int224 value, uint32 timestamp)",
@@ -11,6 +12,19 @@ const contractAbis = {
   getMswBalance: "function getAllEigeinPieCycleDepositAmounts() external view returns (uint256)",
   getUnderlyingPrice: "function getUnderlyingPrice(address cToken) view returns (uint256)",
 };
+async function fetchPendlePrice(assetAddress) {
+  // API endpoint template with variable part for the asset address
+  const url = `https://api-v2.pendle.finance/core/v1/1/assets/${assetAddress}`;
+
+  try {
+    const response = await axios.get(url);
+    const accValue = response.data.price.acc;
+    return accValue; // Return the "acc" value for further use
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    return null; // Return null or handle the error as needed
+  }
+}
 
 module.exports = {
   misrepresentedTokens: true,
@@ -226,6 +240,36 @@ module.exports = {
         const mswETHBalInETH = (mswETHBal * mswETHPrice) / 1e18;
 
         api.add(ADDRESSES.ethereum.WETH, mswETHBalInETH);
+      }
+
+      //new strats on pendle v2
+      const pTweETH = {
+        vault: "0xE9E2087CD1179378C847C1f3B73CCA929e3deb95",
+        pendleAddress: "0xc69Ad9baB1dEE23F4605a82b3354F8E40d1E5966",
+      };
+
+      const pTezETH = {
+        vault: "0x679EB9b7C57d9B98684034CDAfC2F4a72ABfEBD6",
+        pendleAddress: "0xeee8aed1957ca1545a0508afb51b53cca7e3c0d1",
+      };
+
+      const pTsETH = {
+        vault: "0x72Da018b1C7FAACEAa141DEc753F1fFe88c493AD",
+        pendleAddress: "0xb05cabcd99cf9a73b19805edefc5f67ca5d1895e",
+      };
+
+      for (const pendleStrategy of [pTweETH, pTezETH, pTsETH]) {
+        const price = await fetchPendlePrice(pendleStrategy.pendleAddress);
+
+        const bal = await api.call({
+          abi: contractAbis.balanceOf,
+          target: pendleStrategy.pendleAddress,
+          params: [pendleStrategy.vault],
+        });
+
+        const pendleBalInETH = (bal * price) / 1e18;
+
+        api.add(ADDRESSES.ethereum.WETH, pendleBalInETH);
       }
     },
   },
