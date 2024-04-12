@@ -38,7 +38,8 @@ async function staking({ api }) {
 module.exports = {
   timetravel: true,
   methodology:
-    "Staking is calculated based on CLY tokens locked on Colony staking contracts",
+    "Staking is calculated based on CLY tokens locked on Colony staking contracts. " +
+    "Vesting is calculated as already unlocked and available to claim CLY tokens in the vesting contract",
   avax:{
     tvl: async () => ({}),
     staking,

@@ -1,5 +1,4 @@
 const { getLogs } = require('../helper/cache/getLogs');
-const { getBlock } = require('../helper/http');
 const ethers = require("ethers");
 
 /**
@@ -49,7 +48,6 @@ class GroupDataSet {
       return unlockedAmount;
     }
 
-
     // return max available amount if the vesting ended
     const endTimestamp = startTimestamp + this.distributionOffset + this.distributionLength;
     if (currentTimestamp >= endTimestamp) {
@@ -88,6 +86,7 @@ function clyVesting(colonyGovernanceToken, vestingContract) {
   return async ({ api }) => {
 
     const START_BLOCK = 7669442; // 7669442 -> deployment block of the vesting contract
+    const END_BLOCK = 7675925; // The last block where the GroupDataSet event was emitted
 
     const vestingStartTimestamp = Number(
       await api.call({
@@ -95,10 +94,6 @@ function clyVesting(colonyGovernanceToken, vestingContract) {
         target: vestingContract,
       })
     );
-
-    // first block number after vestingStartTimestamp
-    const block = await getBlock(vestingStartTimestamp, api.chain, {});
-    const END_BLOCK = block.number + 1;
 
     const currentVestingBalance = BigInt(
       await api.call({
