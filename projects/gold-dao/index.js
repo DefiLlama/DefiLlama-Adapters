@@ -1,22 +1,10 @@
-const axios = require('axios');
 const { toUSDTBalances } = require("../helper/balances");
+const { get } = require('../helper/http')
 
 async function tvl() {
   const url = 'https://teiwz-pqaaa-aaaap-ag7hq-cai.raw.icp0.io/gold_nft_metrics';
-
-  try {
-    const response = await fetch(url);
-    const data = await response.json();
-
-    if (data && data.tvl) {
-      return toUSDTBalances(data.tvl);
-    } else {
-      return toUSDTBalances(0);
-    }
-  } catch (error) {
-    return toUSDTBalances(0);
-  }
-
+  const data = await get(url);
+  return toUSDTBalances(data.tvl);
 }
 
 module.exports = {
@@ -25,4 +13,4 @@ module.exports = {
   icp: {
     tvl,
   },
-};
+}
