@@ -65,6 +65,9 @@ const fixBalancesTokens = {
     '0x0726523eba12edad467c55a962842ef358865559': { coingeckoId: "ordinals", decimals: 18, },
     '0x967aec3276b63c5e2262da9641db9dbebb07dc0d': { coingeckoId: "tether", decimals: 6, },
     '0x6b4ecada640f1b30dbdb68f77821a03a5f282ebe': { coingeckoId: "usd-coin", decimals: 6, },
+  },
+  zeta: {
+    '0x5f0b1a82749cb4e2278ec87f8bf6b618dc71a8bf': { coingeckoId: "zetachain", decimals: 18, },
   }
 }
 
