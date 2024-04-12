@@ -49,21 +49,8 @@ const chains = [
   "optimism",
   "arbitrum",
   "mode",
-
-  // deprecated?
-  "moonriver",
-  "fantom",
-  "avax",
-  "moonbeam",
-  "fuse",
-  "cronos",
-  "milkomeda",
-  "boba",
-  "evmos",
-  "harmony",
-  // "okexchain",
-  // "metis",
-  // "heco",
-  // "aurora",
+  "metis",
+  "base",
+  "linea",
 ];
 module.exports = chainExports(chainTvl, Array.from(chains));
