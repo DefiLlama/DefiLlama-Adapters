@@ -42,7 +42,7 @@ const fixBalancesTokens = {
   karak: {
     '0xa415021bc5c4c3b5b989116dc35ae95d9c962c8d': { coingeckoId: 'usd-coin', decimals: 6, },
     '0xf948aacec00289fc33d8226391f7e04bb457ad49': { coingeckoId: 'restaked-swell-eth', decimals: 18, },
-    '0x4200000000000000000000000000000000000006': { coingeckoId: 'ethereum', decimals: 18, },
+    [ADDRESSES.optimism.WETH_1]: { coingeckoId: 'ethereum', decimals: 18, },
   },
   linea: {
     '0x894134a25a5fac1c2c26f1d8fbf05111a3cb9487': { coingeckoId: 'grai', decimals: 18, },
@@ -79,7 +79,7 @@ const fixBalancesTokens = {
     '0x6b4ecada640f1b30dbdb68f77821a03a5f282ebe': { coingeckoId: "usd-coin", decimals: 6, },
   },
   zeta: {
-    '0x5f0b1a82749cb4e2278ec87f8bf6b618dc71a8bf': { coingeckoId: "zetachain", decimals: 18, },
+    [ADDRESSES.zeta.WZETA]: { coingeckoId: "zetachain", decimals: 18, },
   }
 }
 
