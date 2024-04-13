@@ -2,7 +2,7 @@ const ADDRESSES = require("../helper/coreAssets.json");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 // Tokens
-const EZETH = "0x2416092f143378750bb29b79eD961ab195CcEea5";
+const EZETH = ADDRESSES.blast.ezETH;
 
 // Lending pools
 const LENDING_POOL_USDB = "0x4A1d9220e11a47d8Ab22Ccd82DA616740CF0920a";
