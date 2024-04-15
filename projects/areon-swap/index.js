@@ -1,3 +1,9 @@
-const { uniTvlExport } = require('../helper/unknownTokens')
+const { getUniTVL } = require('../helper/unknownTokens')
 
-module.exports = uniTvlExport('area', '0x4df039804873717bff7d03694fb941cf0469b79e')
+module.exports = {
+    misrepresentedTokens: true,
+    methodology: "HyperSwap Tvl Calculation",
+    astar: {
+        tvl: getUniTVL({ factory: '0x4df039804873717bff7d03694fb941cf0469b79e', useDefaultCoreAssets: true }),
+    }
+}
