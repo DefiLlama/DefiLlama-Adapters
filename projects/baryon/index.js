@@ -8,54 +8,22 @@ async function fetchData(chain) {
   return data[chain]
 }
 
-async function stakingTomo(...args) {
-  const lpTokenTomo = await fetchData('tomo')
-
-  return stakings(lpTokenTomo.stakeContract, lpTokenTomo.lpToken)(...args)
+const config = {
+  bitkub: { factory: '0xf7eEe3A8363731C611A24CdDfCBcaDE9C153Cfe8', key: 'bitkub' },
+  ancient8: { factory: '0xAE12C5930881c53715B369ceC7606B70d8EB229f', key: 'ancient8Mainnet' },
+  tomochain: { factory: '0xFe48A2E66EE2f90334d3565E56E0c9d0081447e8', key: 'tomo' },
+  bsc: { factory: '0x03879e2a3944fd601e7638dfcbc9253fb793b599', key: 'binanceSmart' },
 }
 
-async function stakingBsc(...args) {
-  const lpTokenTomo = await fetchData('binanceSmart')
-
-  return stakings(lpTokenTomo.stakeContract, lpTokenTomo.lpToken)(...args)
-}
-
-async function stakingAncient8(...args) {
-  const lpTokenqAncient8 = await fetchData('ancient8Mainnet')
-
-  return stakings(lpTokenqAncient8.stakeContract, lpTokenqAncient8.lpToken)(...args)
-}
-
-async function stakingBitkub(...args) {
-  const lpTokenBitkub = await fetchData('bitkub')
-
-  return stakings(lpTokenBitkub.stakeContract, lpTokenBitkub.lpToken)(...args)
-}
-
-
-module.exports = {
-  bsc: {
-    staking: stakingBsc,
-    tvl: getUniTVL({
-      factory: '0x03879e2a3944fd601e7638dfcbc9253fb793b599',
-    })
-  },
-  tomochain: {
-    staking: stakingTomo,
-    tvl: getUniTVL({
-      factory: '0xFe48A2E66EE2f90334d3565E56E0c9d0081447e8',
-    })
-  },
-  ancient8: {
-    staking: stakingAncient8,
-    tvl: getUniTVL({
-      factory: '0xAE12C5930881c53715B369ceC7606B70d8EB229f',
-    })
-  },
-  bitkub: {
-    staking: stakingBitkub,
-    tvl: getUniTVL({
-      factory: '0xf7eEe3A8363731C611A24CdDfCBcaDE9C153Cfe8',
-    })
+Object.keys(config).forEach(chain => {
+  const { factory, key } = config[chain]
+  module.exports[chain] = {
+    tvl: getUniTVL({ factory, useDefaultCoreAssets: true }),
+    staking: async (...args) => {
+      const { stakeContract, lpToken } = await fetchData(key)
+      return stakings(stakeContract, lpToken)(...args)
+    }
   }
-}
+})
+
+module.exports.misrepresentedTokens = true
