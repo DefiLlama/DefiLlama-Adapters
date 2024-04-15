@@ -33,11 +33,11 @@ module.exports = {
   },
   ethereum: {
     tvl: tvl("ethereum", ADDRESSES.ethereum.WETH),
-    pool2: pool2(contracts.ethereum.pool2.address, contracts.ethereum.pool2.token, "ethereum"),
+    pool2: pool2(contracts.ethereum.pool2.address, contracts.ethereum.pool2.token),
   },
   bsc: {
     tvl: tvl("bsc", "bsc:" + ADDRESSES.bsc.WBNB),
-    pool2: pool2(contracts.bsc.pool2.address, contracts.bsc.pool2.token, "bsc"),
+    pool2: pool2(contracts.bsc.pool2.address, contracts.bsc.pool2.token),
     staking: staking(contracts.bsc.staking.address, contracts.bsc.staking.token, "bsc", "cyclone-protocol", 18),
   },
   polygon: {
