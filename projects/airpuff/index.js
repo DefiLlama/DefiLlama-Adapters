@@ -14,16 +14,11 @@ const contractAbis = {
 };
 async function fetchPendlePrice(assetAddress) {
   // API endpoint template with variable part for the asset address
-  const url = `https://api-v2.pendle.finance/core/v1/1/assets/${assetAddress}`;
-
-  try {
-    const response = await axios.get(url);
-    const accValue = response.data.price.acc;
-    return accValue; // Return the "acc" value for further use
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    return null; // Return null or handle the error as needed
-  }
+  const url = `https://coins.llama.fi/prices/current/ethereum:${assetAddress}`;
+  const response = await axios.get(url);
+  const key = `ethereum:${assetAddress}`;
+  const price = response.data.coins[key].price;
+  return price; // Return the "acc" value for further use
 }
 
 module.exports = {
@@ -267,9 +262,9 @@ module.exports = {
           params: [pendleStrategy.vault],
         });
 
-        const pendleBalInETH = (bal * price) / 1e18;
+        const pendleBalInETH = (bal * price) / 1e12;
 
-        api.add(ADDRESSES.ethereum.WETH, pendleBalInETH);
+        api.add(ADDRESSES.ethereum.USDC, pendleBalInETH);
       }
     },
   },
