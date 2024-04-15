@@ -14,7 +14,7 @@ const config = {
 module.exports = {
       bsc: {
     tvl: () => ({}),
-    staking:  staking(config.bsc.windmillContract, config.bsc.tokenContract, "bsc"),
+    staking:  staking(config.bsc.windmillContract, config.bsc.tokenContract),
   },
   methodology:
     "Counts tokens on the windmill for tvl",
