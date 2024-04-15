@@ -37,7 +37,7 @@ Object.keys(config).forEach(chain => {
   const yfactories = factories.filter( factory => factory.hasOwnProperty('yieldFactory'))
 
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       let blogs = [];
       for (let i = 0; i < bfactories.length; i++) {
         const { borrowFactory, startBlock } = bfactories[i];
@@ -91,15 +91,16 @@ Object.keys(config).forEach(chain => {
 
       debtAssets.forEach((bal, i) => {
         if (!debtBals[i]) {
-          if (+bal === 0) return;
-          throw new Error(`No debt balance for ${bvaults[i]}`)
+          return;
+          // if (+bal === 0) return;
+          // throw new Error(`No debt balance for ${bvaults[i]}`)
         }
         api.add(debtAssets[i], debtBals[i] * -1)
       })
 
       return api.getBalances()
     },
-    borrowed: async (_, _b, _cb, { api, }) => {
+    borrowed: async (api) => {
       let logs = [];
       for (let i = 0; i < bfactories.length; i++) {
         const { borrowFactory, startBlock } = bfactories[i];
@@ -122,8 +123,9 @@ Object.keys(config).forEach(chain => {
       const debtBals = (await api.multiCall({ abi: 'uint256:totalDebt', calls: vaults, permitFailure: true, }))
       bals.forEach((bal, i) => {
         if (!debtBals[i]) {
-          if (+bal === 0) return;
-          throw new Error(`No debt balance for ${vaults[i]}`)
+          return;
+          // if (+bal === 0) return;
+          // throw new Error(`No debt balance for ${vaults[i]}`)
         }
         api.add(debtAssets[i], debtBals[i])
       })

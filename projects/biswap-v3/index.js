@@ -2,13 +2,13 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getLogs } = require('../helper/cache/getLogs')
 
 const config = {
-  bsc: { factory: '0x7c3d53606f9c03e7f54abddffc3868e1c5466863', fromBlock: 29462097 },
+  bsc: { factory: '0x4d175f2cfe3e2215c1b55865b07787b751cedd36', fromBlock: 31041441 },
 }
 
 Object.keys(config).forEach(chain => {
   const { factory, fromBlock } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const logs = await getLogs({
         api,
         target: factory,

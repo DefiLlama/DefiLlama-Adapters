@@ -1,23 +1,25 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { getConfig } = require('../helper/cache')
+const BTC_ETH_VAULT = '0x1F9b1057cd93fb2d07d18810903B791b56acc2E1'.toLowerCase()
 
-async function tvl(_, _b, _cb, { api, }) {
-  const vaults = ['0x829363736a5A9080e05549Db6d1271f070a7e224']
-  const tokens = await api.multiCall({ abi: 'address:asset', calls: vaults })
-  const bals = await api.multiCall({ abi: 'uint256:totalAssets', calls: vaults })
-  api.addTokens(tokens, bals)
+async function tvl(api) {
+  await getBasketTvl(api)
   const ownerTokens = [
-    [[ADDRESSES.polygon.WETH_1, ADDRESSES.polygon.WBTC], '0x1F9b1057cd93fb2d07d18810903B791b56acc2E1']
+    [[ADDRESSES.polygon.WETH_1, ADDRESSES.polygon.WBTC], BTC_ETH_VAULT]
   ]
   return sumTokens2({ api, ownerTokens })
 }
 
-async function ethTvl(_, _b, _cb, { api, }) {
-  const ethBaskets = [
-    '0x61A18EE9d6d51F838c7e50dFD750629Fd141E944', '0x78Bb94Feab383ccEd39766a7d6CF31dED177Ad0c', '0x72D51B2233c5feA8a702FDd0E51B0adE95638f2c'
-  ]
-  const tokens = await api.multiCall({ abi: 'address:asset', calls: ethBaskets })
-  const bals = await api.multiCall({ abi: 'uint256:totalAssets', calls: ethBaskets })
+async function ethTvl(api) {
+  return getBasketTvl(api)
+}
+
+async function getBasketTvl(api) {
+  const data = await getConfig('affine-defi', 'https://api.affinedefi.com/v2/getBasketMetadata')
+  const baskets = Object.values(data).filter(i => i.chainId === api.chainId && i.basketAddress.toLowerCase() !== BTC_ETH_VAULT).map(i => i.basketAddress)
+  const tokens = await api.multiCall({ abi: 'address:asset', calls: baskets })
+  const bals = await api.multiCall({ abi: 'uint256:totalAssets', calls: baskets })
   api.addTokens(tokens, bals)
 }
 

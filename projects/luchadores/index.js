@@ -2,7 +2,6 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require('../helper/staking');
 const { pool2s } = require('../helper/pool2');
 const {sumTokensAndLPsSharedOwners} = require('../helper/unwrapLPs');
-const {transformPolygonAddress} = require('../helper/portedTokens');
 
 // multisigs
 const treasury = "0x0Cb11b92Fa5C30eAfe4aE84B7BB4dF3034C38b9d";
@@ -31,7 +30,7 @@ const WMATIC_LUCHA_Balancer_polygon = "0x924EC7ed38080E40396c46F6206A6d77D0B9f72
 
 async function tvl(time, ethBlock, chainBlocks){
     const balances = {};
-    const transform = await transformPolygonAddress();
+    const transform = i => `polygon:${i}`;
     await sumTokensAndLPsSharedOwners(balances, [
         // [LUCHA_polygon, false],
         [MATIC_polygon, false],
@@ -50,11 +49,10 @@ async function tvl(time, ethBlock, chainBlocks){
 }
 
 module.exports={
-    timetravel: true,
-    polygon:{
+        polygon:{
         tvl,
-        staking: staking(luchaStk, LUCHA_polygon, "polygon"),
-        pool2: pool2s([luchaMaticStk, luchaMustStk], [LUCHA_MATIC_comethLp, LUCHA_MUST_comethLp, LUCHA_MATIC_satinLp, LUCHA_CASH_satinLp], "polygon")
+        staking: staking(luchaStk, LUCHA_polygon),
+        pool2: pool2s([luchaMaticStk, luchaMustStk], [LUCHA_MATIC_comethLp, LUCHA_MUST_comethLp, LUCHA_MATIC_satinLp, LUCHA_CASH_satinLp])
     },
     methodology: `- Staking : Players can stake their $LUCHA to earn $MASK and access in-game services or equipment.\r
     - Treasury : 100% of the funds collected during the first raffle (purchase of wearable) have been kept in treasury to build a long term economic strategy. Luchadores.io own 60% of LP token to improve liquidity and facilitate user swaps.\r

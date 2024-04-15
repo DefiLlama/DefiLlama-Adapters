@@ -21,7 +21,7 @@ async function calcPool2(block, chain) {
 }
 
 async function onePool2(timestamp, block, chainBlocks) {
-  return calcPool2(chainBlocks.harmony, "harmony");
+  return calcPool2(chainBlocks.harmony);
 }
 
 module.exports = {
@@ -30,6 +30,6 @@ module.exports = {
   harmony: {
     tvl: async () => ({}),
     pool2: onePool2,
-    staking: staking(zenDenAddress, cshareTokenAddress, "harmony"),
+    staking: staking(zenDenAddress, cshareTokenAddress),
   },
 };

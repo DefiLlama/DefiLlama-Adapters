@@ -34,5 +34,6 @@ async function tvl(timestamp, ethBlock, {arbitrum: block}) {
 }
 
 module.exports = {
-    arbitrum: { tvl, }
+    arbitrum: { tvl, },
+    deadFrom: '2022-10-23'
 }

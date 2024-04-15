@@ -12,10 +12,9 @@ const query = `query get_accounts($lastId: String!) {
   ) { id trackedAssets { id } }
 }`
 
-async function tvl(ts, block, _, { api }) {
+async function tvl(api) {
   const { endpoint } = config[api.chain]
   const vaults = await cachedGraphQuery('enzyme/' + api.chain, endpoint, query, { fetchById: true, })
-  console.log(api.chain, vaults.length)
   return sumTokens2({
     api, ownerTokens: vaults.map(i => {
       return [i.trackedAssets.map(i => i.id), i.id]

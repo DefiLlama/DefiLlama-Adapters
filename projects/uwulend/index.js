@@ -1,4 +1,4 @@
-const { aaveChainTvl } = require("../helper/aave");
+const { aaveChainTvl, methodology } = require("../helper/aave");
 const { stakings } = require("../helper/staking");
 
 const PoolV1 = "0x7c0bF1108935e7105E218BBB4f670E5942c5e237";
@@ -19,12 +19,10 @@ function lending(borrowed) {
 }
 
 module.exports = {
-  timetravel: true,
-  methodology:
-    "Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending. The staking TVL is the protocol's revenue sharing pool locking UwU-ETH LP (SLP) tokens.",
+    methodology,
   ethereum: {
     tvl: lending(false),
     borrowed: lending(true),
-    pool2: stakings([PoolV1, PoolV2], [SLP], "ethereum"),
+    pool2: stakings([PoolV1, PoolV2], [SLP]),
   },
 };

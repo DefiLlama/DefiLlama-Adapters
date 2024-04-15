@@ -1,12 +1,5 @@
 const sdk = require('@defillama/sdk')
-const {transformOptimismAddress,} = require('../../helper/portedTokens')
 const oldOptPools = require('./oldUniPools.json')
-
-const graphUrls = {
-  ethereum: "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3",
-  optimism: "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-optimism-dev",
-  arbitrum: 'https://api.thegraph.com/subgraphs/name/ianlapham/arbitrum-dev',
-}
 const { getLogs } = require('../../helper/cache/getLogs')
 
 const FACTORY =  '0x1F98431c8aD98523631AE4a59f267346ea31F984'; // same on all chains
@@ -17,7 +10,7 @@ const startBlocks = {
 }
 
 function chainTvl(chain) {
-  return async (timestamp, ethBlock, chainBlocks, { api }) => {
+  return async (api) => {
     const  START_BLOCK = startBlocks[chain]
     const logs = (
       await getLogs({
@@ -90,7 +83,7 @@ function chainTvl(chain) {
     )
     let transform = id=>id
     if(chain === "optimism"){
-      transform = await transformOptimismAddress()
+      transform = i => `optimism:${i}`
     } else if(chain === "arbitrum"){
       transform = i => `arbitrum:${i}`
     }

@@ -43,7 +43,7 @@ async function calcPool2(masterchef, lps, block, chain) {
 }
 
 async function AvaxPool2(timestamp, block, chainBlocks) {
-  return await calcPool2(rewardPool, AvaxLPs, chainBlocks.avax, "avax");
+  return await calcPool2(rewardPool, AvaxLPs, chainBlocks.avax);
 }
 
 module.exports = {
@@ -51,7 +51,9 @@ module.exports = {
   avax: {
     tvl: async () => ({}),
     pool2: AvaxPool2,
-    staking: staking(pshareStaking, pshare, "avax"),
+    staking: staking(pshareStaking, pshare),
   },
 };
 
+
+module.exports.deadFrom = '2023-04-09'

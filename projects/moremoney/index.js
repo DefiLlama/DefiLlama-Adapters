@@ -1,4 +1,5 @@
-const { default: BigNumber } = require("bignumber.js");
+const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const useStrategyMetadata = require("./StrategyMetadata").useStrategyMetadata;
 const useLegacyIsolatedStrategyMetadata =
@@ -6,12 +7,12 @@ const useLegacyIsolatedStrategyMetadata =
 const useParsedStakingMetadata =
   require("./StakingMetadata").useParsedStakingMetadata;
 
-async function tvl(_, _b, { avax: block }) {
+async function tvl(api) {
   const [allStratMeta, legacyStratMeta] = await Promise.all([
-    useStrategyMetadata(block), useLegacyIsolatedStrategyMetadata(block)
+    useStrategyMetadata(api.block), useLegacyIsolatedStrategyMetadata(api.block)
   ])
   const stratMeta = [...allStratMeta, ...legacyStratMeta]
-  const stakeMeta = await useParsedStakingMetadata(block);
+  const stakeMeta = await useParsedStakingMetadata(api.block);
 
   const tvlsFarm = stakeMeta
     .reduce((tvl, row) => {
@@ -25,9 +26,8 @@ async function tvl(_, _b, { avax: block }) {
 
   const tvl = tvlNoFarm + tvlsFarm
 
-  return {
-    "usd-coin": BigNumber(tvl / 1e18).toFixed(0),
-  };
+  api.add(ADDRESSES.avax.USDC, tvl / 1e12);
+  return sumTokens2({ owner: '0x3d3cd4856ceca1639150549A4F2cE3F37f92Bd91', fetchCoValentTokens: true, api,})
 }
 
 module.exports = {

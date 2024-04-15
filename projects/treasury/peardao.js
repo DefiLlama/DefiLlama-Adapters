@@ -15,6 +15,6 @@ const tokens =  [
 
 module.exports = {
   bsc: {
-    tvl: sumTokensExport({ chain: 'bsc', tokens, owner: TREASURY_ADDRESS, }),
+    tvl: sumTokensExport({ tokens, owner: TREASURY_ADDRESS, }),
   }
 };

@@ -1,6 +1,5 @@
 const abi = require("./abi.json");
 const sdk = require("@defillama/sdk");
-const { requery } = require('../helper/requery.js');
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const { getUniTVL } = require("../helper/unknownTokens");
 
@@ -33,7 +32,7 @@ async function klaytn_tvl(timestamp, _, { klaytn: block }) {
   for (const data of info.output) {
     const { output: poolInfo, input: { params } } = data
     if (!poolInfo) {
-      console.log('pool info missing for ', params)
+      sdk.log('pool info missing for ', params)
       continue;
     }
     for (let token of poolInfo.tokens) {
@@ -65,7 +64,7 @@ async function klaytn_tvl(timestamp, _, { klaytn: block }) {
   return balances;
 }
 
-async function polygon_zkevm_tvl(_, _b, _cb, { api }) {
+async function polygon_zkevm_tvl(api) {
   const ownerTokens = [];
   const poolList = (await sdk.api.abi.call({
     target: "0x677bBBAd41D784a4731d902c613f8af43AAb4feb",
@@ -80,7 +79,7 @@ async function polygon_zkevm_tvl(_, _b, _cb, { api }) {
 
 const uniV2TVL = getUniTVL({ factory: '0x4Cf1284dcf30345232D5BfD8a8AAd6734b6941c4', useDefaultCoreAssets: true});
 
-async function base_tvl(_, _b, _cb, { api }) {
+async function base_tvl(api) {
   const ownerTokens = [];
   const poolList = (await sdk.api.abi.call({
     target: "0x03173F638B3046e463Ab6966107534f56E82E1F3",

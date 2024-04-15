@@ -5,7 +5,7 @@ const treasury = "0xfc78f8e1Af80A3bF5A1783BB59eD2d1b10f78cA9";
 
 module.exports = treasuryExports({
   ethereum: {
-    owner: [treasury],
+    owner: treasury,
     ownTokens: [
       "0xC0c293ce456fF0ED870ADd98a0828Dd4d2903DBF", // AURA
       "0xc29562b045D80fD77c69Bec09541F5c16fe20d9d", // B-80AURA-20WETH
