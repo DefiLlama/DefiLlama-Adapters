@@ -1,5 +1,3 @@
-const { default: axios } = require("axios");
-
 const ADDRESSES = require("../helper/coreAssets.json");
 const contractAbis = {
   readOraclePrice: "function read() view returns (int224 value, uint32 timestamp)",
@@ -12,14 +10,6 @@ const contractAbis = {
   getMswBalance: "function getAllEigeinPieCycleDepositAmounts() external view returns (uint256)",
   getUnderlyingPrice: "function getUnderlyingPrice(address cToken) view returns (uint256)",
 };
-async function fetchPendlePrice(assetAddress) {
-  // API endpoint template with variable part for the asset address
-  const url = `https://coins.llama.fi/prices/current/ethereum:${assetAddress}`;
-  const response = await axios.get(url);
-  const key = `ethereum:${assetAddress}`;
-  const price = response.data.coins[key].price;
-  return price; // Return the "acc" value for further use
-}
 
 module.exports = {
   misrepresentedTokens: true,
@@ -253,19 +243,8 @@ module.exports = {
         pendleAddress: "0xb05cabcd99cf9a73b19805edefc5f67ca5d1895e",
       };
 
-      for (const pendleStrategy of [pTweETH, pTezETH, pTsETH]) {
-        const price = await fetchPendlePrice(pendleStrategy.pendleAddress);
-
-        const bal = await api.call({
-          abi: contractAbis.balanceOf,
-          target: pendleStrategy.pendleAddress,
-          params: [pendleStrategy.vault],
-        });
-
-        const pendleBalInETH = (bal * price) / 1e12;
-
-        api.add(ADDRESSES.ethereum.USDC, pendleBalInETH);
-      }
+      const tokensAndOwners = [pTweETH, pTezETH, pTsETH].map(i  => [i.pendleAddress, i.vault]);
+      await api.sumTokens({ tokensAndOwners })
     },
   },
   //-----------------------------------------------------------------------//
