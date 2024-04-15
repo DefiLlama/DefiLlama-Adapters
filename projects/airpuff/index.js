@@ -1,6 +1,5 @@
 //import utils
 const ADDRESSES = require("../helper/coreAssets.json");
-
 const contractAbis = {
   readOraclePrice: "function read() view returns (int224 value, uint32 timestamp)",
   balanceOf: "function balanceOf(address) external view returns (uint256)",
@@ -27,7 +26,14 @@ module.exports = {
 
       const ezETH = {
         vault: "0x497eB27Ca1ed7566653edf811b03d6418a03FC9d",
-        reStakingToken: "0x2416092f143378750bb29b79eD961ab195CcEea5",
+        reStakingToken: ADDRESSES.blast.ezETH,
+        oracle: "0x2BAF3A2B667A5027a83101d218A9e8B73577F117", //Renzo
+        oracleToken: "0x59e710215d45f584f44c0fee83da6d43d762d857",
+      };
+
+      const ezETH1x = {
+        vault: "0x9c96d0Cc5341654167ee35DB4F288ae523fe8779",
+        reStakingToken: ADDRESSES.blast.ezETH,
         oracle: "0x2BAF3A2B667A5027a83101d218A9e8B73577F117", //Renzo
         oracleToken: "0x59e710215d45f584f44c0fee83da6d43d762d857",
       };
@@ -38,6 +44,12 @@ module.exports = {
         params: [ezETH.vault],
       });
 
+      const balOfezETH1x = await api.call({
+        abi: contractAbis.balanceOf,
+        target: ezETH.reStakingToken,
+        params: [ezETH1x.vault],
+      });
+
       const priceOfezETH = await api.call({
         target: ezETH.oracle,
         abi: contractAbis.getUnderlyingPrice,
@@ -46,7 +58,10 @@ module.exports = {
 
       const ezETHBalInETH = (balOfezETH * priceOfezETH) / 1e18;
 
+      const ezETH1xBalInETH = (balOfezETH1x * priceOfezETH) / 1e18;
+
       api.add(ADDRESSES.mode.WETH, ezETHBalInETH);
+      api.add(ADDRESSES.mode.WETH, ezETH1xBalInETH);
     },
   },
 
@@ -149,7 +164,7 @@ module.exports = {
         target: svETH.vault,
       });
 
-      const strategies = [ezETH, weETH, rsETH, ezETH1x, weETH1x, rsETH1x, bedRockETH, bedRockETH1x];
+      const strategies = [ezETH, weETH, rsETH, ezETH1x, weETH1x, rsETH1x, bedRockETH, bedRockETH1x, svETH1x, svETH];
 
       for (const strategy of strategies) {
         const bal = await api.call({
@@ -171,37 +186,6 @@ module.exports = {
         }
 
         const balInETH = (bal * lrETHPriceInETH) / 1e18;
-
-        api.add(ADDRESSES.ethereum.WETH, balInETH);
-      }
-      //strategy with no oracle, but can calculate price using erc4626 totalSupply and totalAssets
-      const LiquidETH = {
-        vault: "0xE543eBa28a3793d5ae747A2164A306DB1767cDAe",
-        reStakingToken: "0xeA1A6307D9b18F8d1cbf1c3Dd6aad8416C06a221",
-      };
-
-      const erc4626Strategies = [LiquidETH];
-
-      for (const erc4626strategy of erc4626Strategies) {
-        const bal = await api.call({
-          abi: contractAbis.balanceOf,
-          target: erc4626strategy.reStakingToken,
-          params: [erc4626strategy.vault],
-        });
-
-        const totalAssets = await api.call({
-          abi: contractAbis.getTotalAssets,
-          target: erc4626strategy.reStakingToken,
-        });
-
-        const totalSupply = await api.call({
-          abi: contractAbis.getTotalSupply,
-          target: erc4626strategy.reStakingToken,
-        });
-
-        const price = totalAssets / totalSupply;
-
-        const balInETH = bal * price;
 
         api.add(ADDRESSES.ethereum.WETH, balInETH);
       }
@@ -245,6 +229,7 @@ module.exports = {
       }
     },
   },
+  //-----------------------------------------------------------------------//
 
   arbitrum: {
     tvl: async (api) => {
@@ -272,7 +257,7 @@ module.exports = {
       // leverage users
       const ezETH = {
         vault: "0x6295248F578bFA9c057a3e1182BED27121530E7A",
-        reStakingToken: "0x2416092f143378750bb29b79eD961ab195CcEea5",
+        reStakingToken: ADDRESSES.blast.ezETH,
         oracle: "0x28c1576eb118f2Ccd02eF2e6Dbd732F5C8D2e86B", //Renzo
       };
 
@@ -290,7 +275,7 @@ module.exports = {
 
       const ezETH1x = {
         vault: "0x0bAc1a3D569c16D8AD9D3aB37f61dAF18DCfF781" /*vault*/,
-        reStakingToken: "0x2416092f143378750bb29b79eD961ab195CcEea5" /*reStakingToken*/,
+        reStakingToken: ADDRESSES.blast.ezETH /*reStakingToken*/,
         oracle: "0x28c1576eb118f2Ccd02eF2e6Dbd732F5C8D2e86B" /*oracle*/,
       };
       const weETH1x = {
