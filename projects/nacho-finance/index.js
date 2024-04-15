@@ -48,7 +48,7 @@ async function calcPool2(masterchef, lps, block, chain) {
 }
 
 async function ftmPool2(timestamp, block, chainBlocks) {
-  return await calcPool2(tshareRewardPoolAddress, ftmLPs, chainBlocks.polygon, "polygon");
+  return await calcPool2(tshareRewardPoolAddress, ftmLPs, chainBlocks.polygon);
 }
 
 module.exports = {
@@ -56,6 +56,6 @@ module.exports = {
   polygon: {
     tvl: async () => ({}),
     pool2: ftmPool2,
-    staking: staking(masonryAddress, tshareTokenAddress, "polygon"),
+    staking: staking(masonryAddress, tshareTokenAddress),
   },
 };

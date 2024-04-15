@@ -1,9 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { default: BigNumber } = require("bignumber.js");
-const flowxFinance = require("../flowx-finance");
 const sui = require("../helper/chain/sui");
 
-async function suiTVL() {
-  const { api } = arguments[3];
+async function suiTVL(api) {
 
   //get list pool flowx
   const listPoolFlowX = (
@@ -56,11 +55,7 @@ async function suiTVL() {
         suiPearlLpType.staked
       );
       for (const property in result) {
-        if (totalResult[property]) {
-          totalResult[property] = totalResult[property].plus(result[property]);
-        } else {
-          totalResult[property] = result[property];
-        }
+        setPropertyPriceMap(totalResult, property, result[property]);
       }
     } else if (
       suiPearlLpType.type.includes(
@@ -74,14 +69,49 @@ async function suiTVL() {
       );
 
       for (const property in result) {
-        if (totalResult[property]) {
-          totalResult[property] = totalResult[property].plus(result[property]);
-        } else {
-          totalResult[property] = result[property];
-        }
+        setPropertyPriceMap(totalResult, property, result[property]);
       }
     }
   }
+
+  //get faas flowx lock
+  const strategyDynamicFields = await sui.getDynamicFieldObjects({
+    parent:
+      "0x25e1b7b9fc1b72d4911516574e720bea5920bed2973df5eabdb4af0af8d09c8e",
+  });
+
+  const lpMapSupply = {};
+  for (const strategy of strategyDynamicFields) {
+    const lpDataType = strategy.fields.value.type
+      .split("<")[1]
+      .split(",")
+      .slice(0, 2);
+    lpMapSupply[lpDataType.join(",")] =
+      strategy.fields.value.fields.vault.fields.position.fields.amount;
+  }
+
+  for (const flowxFaaSType in lpMapSupply) {
+    let result = flowxFaaSTVL(
+      listPoolFlowX,
+      flowxFaaSType,
+      lpMapSupply[flowxFaaSType]
+    );
+    for (const property in result) {
+      setPropertyPriceMap(totalResult, property, result[property]);
+    }
+  }
+
+  //get scallop lock
+
+  let scallopPool = await sui.getObject(
+    "0xfe07bedaf312f86ed1fd38ca9eef213c6bb1236282bd2c7c72720231b0a676ca"
+  );
+
+  setPropertyPriceMap(
+    totalResult,
+    ADDRESSES.sui.SUI,
+    new BigNumber(scallopPool.fields.total_tvl)
+  );
 
   for (const property in totalResult) {
     api.add(property, totalResult[property].toFixed(0));
@@ -148,6 +178,41 @@ const flowxTVL = (listPoolFlowX, suiPearlLpType, staked) => {
   coinMap[coinX] = amountX;
   coinMap[coinY] = amountY;
   return coinMap;
+};
+
+const flowxFaaSTVL = (listPoolFlowX, flowFaaSType, staked) => {
+  const flowxPoolInfo = listPoolFlowX.find((item) =>
+    item.lp_supply.type.includes(flowFaaSType)
+  );
+
+  const lpRate = new BigNumber(staked).div(
+    flowxPoolInfo.lp_supply.fields.value
+  );
+  const amountX = lpRate.multipliedBy(flowxPoolInfo.reserve_x.fields.balance);
+
+  const amountY = lpRate.multipliedBy(flowxPoolInfo.reserve_y.fields.balance);
+
+  const coinX = flowxPoolInfo.reserve_x.type
+    .replace("0x2::coin::Coin<", "")
+    .replace(">", "");
+
+  const coinY = flowxPoolInfo.reserve_y.type
+    .replace("0x2::coin::Coin<", "")
+    .replace(">", "");
+
+  const coinMap = {};
+  coinMap[coinX] = amountX;
+  coinMap[coinY] = amountY;
+
+  return coinMap;
+};
+
+const setPropertyPriceMap = (totalResult, property, value) => {
+  if (totalResult[property]) {
+    totalResult[property] = totalResult[property].plus(value);
+  } else {
+    totalResult[property] = value;
+  }
 };
 
 module.exports = {

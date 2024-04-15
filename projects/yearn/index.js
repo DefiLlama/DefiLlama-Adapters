@@ -1,6 +1,5 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getConfig } = require('../helper/cache')
-const { sumERC4626Vaults } = require('../helper/erc4626')
 
 const v1Vaults = [
   '0x597aD1e0c13Bfe8025993D9e79C69E1c0233522e',
@@ -42,10 +41,15 @@ const blacklist = [
     ...v1Vaults,
 ]
 
-async function tvl(timestamp, _, _1, { api }) {
-  const data = await getConfig('yearn/' + api.chain, `https://api.yearn.finance/v1/chains/${api.chainId}/vaults/all`)
-  const vaults = data.map(i => i.address).filter(i => !blacklist.includes(i))
-  await sumERC4626Vaults({ api, vaults, abi: { asset: 'address:token', } })
+async function tvl(api) {
+  if(api.chain==="polygon"){
+    const data = await getConfig('yearn/' + api.chain, `https://ydaemon.yearn.finance/vaults/all?chainids=137&limit=100000`)
+    await api.erc4626Sum({ calls: data.filter(v=>v.kind==="Multi Strategy").map(v=>v.address),  balanceAbi: 'totalAssets', tokenAbi: "asset" })
+  } else {
+    const data = await getConfig('yearn/' + api.chain, `https://api.yearn.finance/v1/chains/${api.chainId}/vaults/all`)
+    const vaults = data.map(i => i.address).filter(i => !blacklist.includes(i))
+    await api.erc4626Sum({ calls: vaults,  balanceAbi: 'totalAssets', })
+  }
   if (api.chain === 'ethereum') {
     const tokens = await api.multiCall({ abi: 'address:token', calls: v1Vaults })
     let bals = await api.multiCall({ abi: 'erc20:totalSupply', calls: v1Vaults })
@@ -65,6 +69,7 @@ module.exports = {
   arbitrum: { tvl },
   optimism: { tvl },
   base: { tvl },
+  polygon: { tvl },
   hallmarks: [
     [1594944000, "YFI token Launch"],
   ]

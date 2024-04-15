@@ -20,7 +20,7 @@ module.exports = {
       return {
         kusama: (await balanceOf(api, account, 'KSM')) / 1e12,
         'liquid-ksm': (await balanceOf(api, account, 'LKSM')) / 1e12,
-        'acala-dollar': (await balanceOf(api, account_3USD, 'KUSD')) / 1e12,
+        // 'acala-dollar': (await balanceOf(api, account_3USD, 'KUSD')) / 1e12,
         // 'usd-coin': (await balanceOf(api, account_3USD, 'erc20://0x1f3a10587a20114ea25ba1b388ee2dd4a337ce27')) / 1e6,
         'usd-coin': usdcBalance,
         tether: (await balanceOf(api, account_3USD, 'fa://7')) / 1e6,

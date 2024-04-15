@@ -1,95 +1,38 @@
-const { toUSDT, usdtAddress } = require("../helper/balances");
-const axios = require("axios");
+const { getConfig } = require('../helper/cache')
+const { staking } = require('../helper/staking')
+const { pool2 } = require('../helper/pool2')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const pfcore = "https://f8wgg18t1h.execute-api.us-west-1.amazonaws.com/prod/protocol/pfcore/";
 const pickleAddress = "0x429881672B9AE42b8EbA0E26cD9C73711b891Ca5";
-// node test.js projects/pickle/index.js
-function fetch(chain, type) {
-  return async (_timestamp, _ethBlock, chainBlocks) => {
-    const response = (await axios.get(pfcore))?.data;
-
-    chain = chain === "ethereum" ? "eth" : chain;
-
-    let tvl = 0;
-    let pool2 = 0;
-
-    Object.keys(response.assets).forEach((assetsType) => {
-      response.assets[assetsType].forEach((asset) => {
-        if (
-          asset.chain === chain &&
-          asset.details &&
-          asset.details.harvestStats
-        ) {
-          if (asset.tags && asset.tags.includes("pool2")) {
-            pool2 += asset.details.harvestStats.balanceUSD;
-          } else {
-            tvl += asset.details.harvestStats?.balanceUSD ?? 0;
-          }
-        }
-      });
-    });
-
-    let result = {};
-
-    switch (type) {
-      case "tvl":
-        result = { [usdtAddress]: toUSDT(tvl) };
-        break;
-      case "pool2":
-        result = { [usdtAddress]: toUSDT(pool2) };
-        break;
-      case "staking":
-        const picklesLocked = response.dill?.pickleLocked || 0;
-        result = { [pickleAddress]: picklesLocked * 1e18 };
-        break;
-    }
-
-    return result;
-  };
-}
 
 module.exports = {
   doublecounted: true,
   misrepresentedTokens: true,
   timetravel: false,
-  ethereum: {
-    tvl: fetch("ethereum", "tvl"),
-    pool2: fetch("ethereum", "pool2"),
-    staking: fetch("ethereum", "staking"),
-  },
-  polygon: {
-    tvl: fetch("polygon", "tvl"),
-    pool2: fetch("polygon", "pool2"),
-  },
-  arbitrum: {
-    tvl: fetch("arbitrum", "tvl"),
-    pool2: fetch("arbitrum", "pool2"),
-  },
-  moonriver: {
-    tvl: fetch("moonriver", "tvl"),
-  },
-  harmony: {
-    tvl: fetch("harmony", "tvl"),
-  },
-  okexchain: {
-    tvl: fetch("okex", "tvl"),
-  },
-  cronos: {
-    tvl: fetch("cronos", "tvl"),
-  },
-  aurora: {
-    tvl: fetch("aurora", "tvl"),
-  },
-  metis: {
-    tvl: fetch("metis", "tvl"),
-  },
-  moonbeam: {
-    tvl: fetch("moonbeam", "tvl"),
-  },
-  optimism: {
-    tvl: fetch("optimism", "tvl"),
-  },
-  kava: {
-    tvl: fetch("kava", "tvl"),
-  },
 };
+
+const chains = ['ethereum', 'polygon', 'arbitrum', 'moonriver', 'harmony', 'okexchain', 'cronos', 'aurora', 'metis', 'moonbeam', 'optimism', 'kava']
+chains.forEach(chain => {
+  module.exports[chain] = {
+    tvl: async (api) => {
+      let { assets: { jars } } = await getConfig('pickle', pfcore)
+      let key = chain
+      switch (chain) {
+        case 'ethereum': key = 'eth'; break;
+        case 'okexchain': key = 'okex'; break;
+      }
+      const vaults = jars.filter(jar => jar.chain === key).map(i => i.contract)
+      const tokens = await api.multiCall({ abi: 'address:token', calls: vaults, permitFailure: true })
+      const bals = await api.multiCall({ abi: 'uint256:balance', calls: vaults, permitFailure: true })
+      tokens.forEach((token, idx) => {
+        if (token && bals[idx]) api.add(token, bals[idx])
+      })
+      api.removeTokenBalance('0xEd4064f376cB8d68F770FB1Ff088a3d0F3FF5c4d')
+      return sumTokens2({ api, resolveLP: true, })
+    }
+  }
+})
+
+module.exports.ethereum.staking = staking('0xbBCf169eE191A1Ba7371F30A1C344bFC498b29Cf',pickleAddress)
+module.exports.ethereum.pool2 = pool2('0xfAA267C3Bb25a82CFDB604136a29895D30fd3fd8','0xdc98556Ce24f007A5eF6dC1CE96322d65832A819')

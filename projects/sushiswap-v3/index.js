@@ -1,4 +1,7 @@
 const { uniV3Export } = require("../helper/uniswapV3");
+const { cachedGraphQuery, getConfig, } = require('../helper/cache');
+const { sumTokens2 } = require("../helper/unwrapLPs");
+const factory = "0xc35dadb65012ec5796536bd9864ed8773abc74c4"
 
 module.exports = uniV3Export({
   ethereum: {
@@ -54,20 +57,60 @@ module.exports = uniV3Export({
     factory: "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506",
     fromBlock: 80860,
   },
-  thundercore: {
-    factory: "0xc35dadb65012ec5796536bd9864ed8773abc74c4",
-    fromBlock: 132536332,
-  },
+  thundercore: { factory, fromBlock: 132536332, },
   base: {
-    factory: "0xc35DADB65012eC5796536bD9864eD8773aBc74C4",
+    factory,
     fromBlock: 1759510,
     blacklistedTokens: [
       '0xcfca86136af5611e4bd8f82d83c7800ca65d875b',
       '0x0b0fd8317735dd9fe611fbc7e1d138149f8ebcea',
     ]
   },
-  core: {
-    factory: "0xc35DADB65012eC5796536bD9864eD8773aBc74C4",
-    fromBlock: 5211850,
-  },
+  core: { factory, fromBlock: 5211850, },
+  linea: { factory, fromBlock: 53256, },
+  scroll: { factory: '0x46B3fDF7b5CDe91Ac049936bF0bDb12c5d22202e', fromBlock: 82522, },
+  kava: { factory: '0x1e9B24073183d5c6B7aE5FB4b8f0b1dd83FDC77a', fromBlock: 7251753, },
+  metis: { factory: '0x145d82bCa93cCa2AE057D1c6f26245d1b9522E6F', fromBlock: 9077930, },
+  bittorrent: { factory: '0xBBDe1d67297329148Fe1ED5e6B00114842728e65', fromBlock: 29265724, },
+  zeta: { factory: '0xB45e53277a7e0F1D35f2a77160e91e25507f1763', fromBlock: 1551069, },
+  islm: { factory, fromBlock: 6541826, },
+  blast: { factory: '0x7680d4b43f3d1d54d6cfeeb2169463bfa7a6cf0d', fromBlock: 284122, },
 });
+
+const config = {
+  filecoin: { endpoint: 'https://sushi.laconic.com/subgraphs/name/sushiswap/v3-filecoin' },
+}
+
+const query = `{
+  pools {
+    id
+    token0 { id }
+    token1 { id }
+  }
+}`
+
+Object.keys(config).forEach(chain => {
+  const { endpoint } = config[chain]
+  module.exports[chain] = {
+    tvl: async (api) => {
+      const { pools } = await cachedGraphQuery('sushiswap-v3/' + chain, endpoint, query, { api, })
+      const ownerTokens = pools.map(i => [[i.token0.id, i.token1.id], i.id])
+      return api.sumTokens({ ownerTokens })
+    }
+  }
+})
+
+const config1 = {
+  islm: { endpoint: 'https://evm-qwhwlq6ji.sushi.com/pool/api/pools?chainIds=11235&isWhitelisted=true&orderBy=liquidityUSD&orderDir=desc&protocols=SUSHISWAP_V3' },
+}
+
+Object.keys(config1).forEach(chain => {
+  const { endpoint } = config1[chain]
+  module.exports[chain] = {
+    tvl: async (api) => {
+      const pools = await getConfig('sushiswap-v3/' + chain, endpoint)
+      const ownerTokens = pools.map(i => [[i.token0.id.split(':')[1], i.token1.id.split(':')[1]], i.id.split(':')[1]])
+      return sumTokens2({ api, ownerTokens })
+    }
+  }
+})

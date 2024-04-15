@@ -44,7 +44,7 @@ async function calcPool2(masterchef, lps, block, chain) {
 }
 
 async function ftmPool2(timestamp, block, chainBlocks) {
-  return await calcPool2(pshareRewardPoolAddress, ftmLPs, chainBlocks.fantom, "fantom");
+  return await calcPool2(pshareRewardPoolAddress, ftmLPs, chainBlocks.fantom);
 }
 
 async function treasury(timestamp, block, chainBlocks) {

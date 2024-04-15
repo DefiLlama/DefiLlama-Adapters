@@ -57,14 +57,12 @@ function calculateAndAdd(objectsList, type, indexName, api) {
   });
 }
 
-async function suiTvl() {
-  const { api } = arguments[3];
+async function suiTvl(api) {
   const objectsList = await fetchDataBasedOnPoolId();
   calculateAndAdd(objectsList, "tvl", "current_liquidity_index", api);
 }
 
-async function suiBorrow() {
-  const { api } = arguments[3];
+async function suiBorrow(api) {
   const objectsList = await fetchDataBasedOnPoolId();
   calculateAndAdd(objectsList, "borrow", "current_borrow_index", api);
 }
@@ -80,6 +78,7 @@ module.exports = {
         ADDRESSES.arbitrum.USDC,
         ADDRESSES.arbitrum.USDT,
         ADDRESSES.arbitrum.WBTC,
+        ADDRESSES.arbitrum.USDC, //Bridge USDC
       ],
     }),
   },
@@ -97,7 +96,8 @@ module.exports = {
         ADDRESSES.optimism.OP,
         ADDRESSES.optimism.USDC,
         ADDRESSES.optimism.USDT,
-        //ADDRESSES.optimism.WBTC,
+        ADDRESSES.optimism.USDC, // Bridge USDC
+        ADDRESSES.optimism.WBTC, // WBTC
       ],
     }),
   },
