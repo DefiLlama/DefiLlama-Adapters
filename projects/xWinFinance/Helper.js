@@ -2,21 +2,6 @@ const token = {
   XWIN: '0xd88ca08d8eec1e9e09562213ae83a7853ebb5d28'
 };
 
-const StrategyURL = {
-  bsc: "https://s3.ap-northeast-1.amazonaws.com/download.xwin.finance/v2-config/bsc/xwinstrategies.json",
-  arb: "https://s3.ap-northeast-1.amazonaws.com/download.xwin.finance/v2-config/arb/xwinstrategies.json",
-  polygon: "https://s3.ap-northeast-1.amazonaws.com/download.xwin.finance/v2-config/polygon/xwinstrategies.json"
-}
-
-const PortfolioURL = {
-  bsc: "https://s3.ap-northeast-1.amazonaws.com/download.xwin.finance/v2-config/bsc/xwinfundv2.json",
-  arb: "https://s3.ap-northeast-1.amazonaws.com/download.xwin.finance/v2-config/arb/xwinfundv2.json"
-}
-
-const PrivateVault = {
-  Url: "https://us-central1-xwinfinance-main.cloudfunctions.net/getPrivateVaults"
-}
-
 const farms = {
   MasterChefAddress: "0xD09774e3d5Dc02fa969896c53D3Cbb5bC8900A60",
   BuddyChefAddress: "0x4B87a60fC5a94e5ac886867977e29c9711C2E903",
@@ -36,10 +21,7 @@ const abi = {
 };
 
 module.exports = {
-  StrategyURL,
-  PortfolioURL,
-  PrivateVault,
   farms,
   abi,
   token,
-};
+}
