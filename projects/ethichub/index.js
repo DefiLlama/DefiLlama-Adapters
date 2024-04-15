@@ -14,9 +14,7 @@ const ETHIX_TOKEN_CELO = ADDRESSES.celo.ETHIX;
 const STAKED_ETHIX_CELO = '0xCb16E29d0B667BaD7266E5d0Cd59b711b6273C6B';
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
-  methodology: 'Count of the tokens in pools, reserves...',
+      methodology: 'Count of the tokens in pools, reserves...',
   start: 1608640693,
   ethereum: {
     tvl: () => ({}),
@@ -25,7 +23,7 @@ module.exports = {
   },
   celo: {
     tvl: () => ({}),
-    staking: stakings([STAKED_ETHIX_CELO], ETHIX_TOKEN_CELO, 'celo')
+    staking: stakings([STAKED_ETHIX_CELO], ETHIX_TOKEN_CELO)
   },
   hallmarks:[
     [1608640694, "Ethix launch"],

@@ -1,19 +1,23 @@
-const { toUSDTBalances } = require("../helper/balances");
+const { sumUnknownTokens } = require("../helper/unknownTokens");
+const { getConfig } = require('../helper/cache')
 
-const addressBook = "0x380814144fA550B83A2Be6367c71e60660494cAa";
-async function klaytn(ts, _block, chainBlocks, { api }) {
-  const data = await api.fetchList({  
-    lengthAbi: 'uint256:addressLength', 
-    itemAbi: 'function getTvl(uint256 _index) view returns (uint256 tvl)', 
-    target: addressBook,
-    permitFailure: true,
-  }) 
-  let klaytnTVL = data.reduce((a, i) => a + i/1e18, 0)
-  return toUSDTBalances(klaytnTVL);
-}
+const chain = "klaytn";
+const tokenAPI = "address:want"
+
 module.exports = {
-  klaytn: {
-    tvl: klaytn,
-  },
-};
-
+  [chain]: {
+    tvl: async (api) => {
+      let { result: { pools } } = await getConfig('elektrik-finance', 'https://api.electrik.finance/api/status/pools');
+      pools = Object.values(pools)
+      const vaults = [];
+      const tokens = [];
+      for (var i = 0; i < pools.length; i++) {
+        vaults.push(pools[i].earnedTokenAddress);
+        tokens.push(pools[i].tokenAddress);
+      }
+      const bals = await api.multiCall({ abi: 'uint256:balance', calls: vaults })
+      api.addTokens(tokens, bals)
+      return sumUnknownTokens({ api, useDefaultCoreAssets: true, resolveLP: true, lps: tokens })
+    }
+  }
+}

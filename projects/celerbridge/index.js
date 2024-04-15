@@ -1,25 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { chainExports } = require("../helper/exports");
 const { sumTokens } = require("../helper/unwrapLPs");
-const ethers = require("ethers")
-const { config } = require('@defillama/sdk/build/api');
 
 const bridgeContractV1 = "0x841ce48F9446C8E281D3F1444cB859b4A6D0738C";
-config.setProvider("clv", new ethers.providers.StaticJsonRpcProvider(
-  "https://api-para.clover.finance",
-  {
-    name: "clv",
-    chainId: 1024,
-  }
-))
 
-config.setProvider("syscoin", new ethers.providers.StaticJsonRpcProvider(
-  "https://rpc.ankr.com/syscoin",
-  {
-    name: "syscoin",
-    chainId: 57,
-  }
-))
 
 // Bridge and token contract addresses are taken from https://cbridge-docs.celer.network/reference/contract-addresses
 const liquidityBridgeContractsV2 = {
@@ -81,6 +65,10 @@ const liquidityBridgeContractsV2 = {
   shiden: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C", "0xBB7684Cc5408F4DD0921E5c2Cadd547b8f1AD573",],
   syscoin: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C", "0x1E6b1ceAF75936f153ABB7B65FBa57AbaE14e6CE"],
   xdai: [ADDRESSES.astar.USDT],
+  era: ["0x54069e96C4247b37C2fbd9559CA99f08CD1CD66c"],
+  polygon_zkevm: ["0xD46F8E428A06789B5884df54E029e738277388D1"],
+  linea: ["0x9B36f165baB9ebe611d491180418d8De4b8f3a1f"],
+  scroll: ["0x9B36f165baB9ebe611d491180418d8De4b8f3a1f"],
 };
 
 // Tokens added to the liquidity bridges, excluding Celer-Pegged tokens.
@@ -108,12 +96,13 @@ const liquidityBridgeTokens = [
     bsc: ADDRESSES.bsc.USDC,
     ethereum: ADDRESSES.ethereum.USDC,
     fantom: ADDRESSES.fantom.USDC,
-    harmony: "0x985458e523db3d53125813ed68c274899e9dfab4",
+    // harmony: "0x985458e523db3d53125813ed68c274899e9dfab4",
     heco: ADDRESSES.heco.USDC_HECO,
     okexchain: ADDRESSES.okexchain.USDC,
     optimism: ADDRESSES.optimism.USDC,
     polygon: ADDRESSES.polygon.USDC,
     xdai: ADDRESSES.xdai.USDC,
+    era: ADDRESSES.era.USDC,
   },
   {
     ethereum: ADDRESSES.ethereum.BUSD,
@@ -136,11 +125,15 @@ const liquidityBridgeTokens = [
     fantom: "0x74b23882a30290451A17c44f4F05243b6b58C76d",
     optimism: ADDRESSES.tombchain.FTM,
     polygon: ADDRESSES.polygon.WETH_1,
+    era: ADDRESSES.era.WETH,
+    polygon_zkevm: ADDRESSES.polygon_zkevm.WETH,
+    linea: ADDRESSES.linea.WETH,
+    scroll: ADDRESSES.scroll.WETH,
   },
   {
     // WBTC
     arbitrum: ADDRESSES.arbitrum.WBTC,
-    avax: "0x50b7545627a5162F82A992c33b87aDc75187B218",
+    avax: ADDRESSES.avax.WBTC_e,
     ethereum: ADDRESSES.ethereum.WBTC,
     fantom: "0x321162Cd933E2Be498Cd2267a90534A804051b11",
     polygon: ADDRESSES.polygon.WBTC,
@@ -177,7 +170,7 @@ const liquidityBridgeTokens = [
     arbitrum: "0x9c67ee39e3c4954396b9142010653f17257dd39c",
     avax: "0xeA6887e4a9CdA1B77E70129E5Fba830CdB5cdDef",
     ethereum: "0x7b35ce522cb72e4077baeb96cb923a5529764a00",
-    harmony: "0xbd8064cdb96c00a73540922504f989c64b7b8b96",
+    // harmony: "0xbd8064cdb96c00a73540922504f989c64b7b8b96",
     moonriver: "0x900f1Ec5819FA087d368877cD03B265Bf1802667",
     polygon: "0x60bb3d364b765c497c8ce50ae0ae3f0882c5bd05",
   },
@@ -234,7 +227,7 @@ const liquidityBridgeTokens = [
     arbitrum: "0xaE6aab43C4f3E0cea4Ab83752C278f8dEbabA689",
     bsc: "0x4a9a2b2b04549c3927dd2c9668a5ef3fca473623",
     ethereum: "0x431ad2ff6a9c365805ebad47ee021148d6f7dbe0",
-    optimism: ADDRESSES.op_bnb.USDC,
+    optimism: ADDRESSES.op_bnb.USDT,
     polygon: "0x08C15FA26E519A78a666D19CE5C646D55047e0a3",
   },
   {
@@ -516,7 +509,7 @@ const liquidityBridgeTokens = [
 ];
 
 function chainTvl(chain) {
-  return async (time, _, {[chain]: block}, { logArray }) => {
+  return async (time, _, {[chain]: block}) => {
     const toa = []
     liquidityBridgeTokens.forEach(token => {
       if (!token[chain])
@@ -526,7 +519,7 @@ function chainTvl(chain) {
         liquidityBridgeContractsV2[chain].filter(owner => owner.toLowerCase() !== bridgeContractV1.toLowerCase())
           .forEach(owner => toa.push([token[chain], owner]))
     })
-    const balances = await sumTokens({}, toa, block, chain, undefined, { logArray })
+    const balances = await sumTokens({}, toa, block, chain, undefined)
     return balances
   };
 }

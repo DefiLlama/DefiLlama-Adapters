@@ -53,6 +53,7 @@ module.exports = {
       fUSD: "0x956454C7BE9318863297309183C79b793D370401",
       crossChainPool: "0xe78876C360716f2225F55A6726B32324FE1B1145",
       USDV: "0xa6eF6C45EbFDBc13f6D032fbDFeC9b389C1603E5",
+      sFRAX: "0xaBF19eAdb08693278FdbAD35Cb4E3c1D6484c8Bb",
     },
   },
   ethereum: {
@@ -83,6 +84,7 @@ module.exports = {
       crossChainPool: "0xC9bFC3eFeFe4CF96877009F75a61F5c1937e5d1a",
       sAVAX: "0xE3Abc29B035874a9f6dCDB06f8F20d9975069D87",
       USDV: "0x108c990c93Fa8E3cD88DDb13594D39f09D9B3C02",
+      ggAVAX: "0xBbA43749efC1bC29eA434d88ebaf8A97DC7aEB77",
     },
   },
   base: {
@@ -91,6 +93,17 @@ module.exports = {
     pools: {
       crossChainPool: "0xC9bFC3eFeFe4CF96877009F75a61F5c1937e5d1a",
       USDS: "0x20d7B9Ed2c4E2DCC55F9B463975b21bBf2A6eCd1",
+    },
+  },
+  optimism: {
+    wom: "0xd2612b256f6f76fea8c6fbca0bf3166d0d13a668",
+    veWom: "0xE91cfd7f8e5A5a1EA4803FcF781e1C8d6FfCa279",
+    pools: {
+      crossChainPool: "0x50a39b94B1Dc8472faa08c36a3Ef5b0A01c5BD10",
+      USDV: "0x1a023186eF2994249120CC7fAEdBEA07F40C6fbd",
+      frax: "0x6BB82A9b0b9b9716B885baeEfDBE47b685a0F919",
+      dola: "0x489818F2eeAef737105887710F7C5b9323Ad3d01",
+      frxETH: "0xB86BA65b75D34402bf377cF83b184554a18Fcafa",
     },
   },
   hallmarks: [

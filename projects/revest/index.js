@@ -1,22 +1,18 @@
-const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, } = require("../helper/unwrapLPs")
-const sdk = require("@defillama/sdk");
 
 const CutoffABI = "function FNFT_CUTOFF() external view returns (uint256)"
 const numFNFTSABI = "function fnftsCreated() external view returns (uint256)"
 const getFNFTSupplyABI = "function getSupply(uint256 fnftId) external view returns (uint256)"
-const getFNFTConfigABI = "function getFNFT(uint256 fnftId) external view returns (tuple(address asset,,,,,,,) memory)"
-const balanceOfABI = "function balanceOf(address account) view returns (uint256)"
+const getFNFTConfigABI = "function getFNFT(uint256 fnftId) view returns ((address asset, address pipeToContract, uint256 depositAmount, uint256 depositMul, uint256 split, uint256 depositStopTime, bool maturityExtension, bool isMulti, bool nontransferrable))"
 const getWalletABI = "function getFNFTAddress(uint256 fnftId) external view returns (address)"
-
-const ZERO_ADDRESS = ADDRESSES.null
 
 const config = {
   ethereum: {
     holder: '0xA81bd16Aa6F6B25e66965A2f842e9C806c0AA11F',
     revest: '0x120a3879da835a5af037bb2d1456bebd6b54d4ba',
     tokenVaultV2: '0xD672f1E3411c23Edbb49e8EB6C6b1564b2BF8E17',
-    fnftHandler: '0xa07E6a51420EcfCB081917f40423D29529705e8a'
+    fnftHandler: '0xa07E6a51420EcfCB081917f40423D29529705e8a',
+    revest_lp: '0x6490828Bd87Be38279A36F029f3b9Af8b4E14B49'
   },
   polygon: {
     holder: '0x3cCc20d960e185E863885913596b54ea666b2fe7',
@@ -52,16 +48,12 @@ module.exports = {
 };
 
 Object.keys(config).forEach(chain => {
-  const { holder, revest, tokenVaultV2, fnftHandler } = config[chain]
+  const { holder, revest, tokenVaultV2, fnftHandler, revest_lp } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _1, { api }) => {
-      let balances = {}
+    tvl: async (api) => {
 
-      const blacklist = []
-      if (revest) blacklist.push(revest.toLowerCase())
-      blacklist.push(ZERO_ADDRESS.toLowerCase())
-
-      let owners = []
+      const blacklistedTokens = []
+      if (revest) blacklistedTokens.push(revest.toLowerCase())
 
       if (tokenVaultV2 != null) {
 
@@ -70,126 +62,73 @@ Object.keys(config).forEach(chain => {
           { target: fnftHandler, abi: numFNFTSABI, }
         ])
 
-        let cutoff = Number(info[0])
-        let numFNFTS = Number(info[1])
+        let cutoff = info[0]
+        let numFNFTS = info[1]
 
         //Build the Multicall to get the supply of each FNFT to check for ones that still exist
         let fnftSupplyCalls = []
-        for (let x = cutoff; x < numFNFTS; x++) {
-          fnftSupplyCalls.push({
-            target: fnftHandler,
-            params: x,
-          })
-        }
+        for (let i = cutoff; i < numFNFTS; i++)
+          fnftSupplyCalls.push({ target: fnftHandler, params: i, })
+
 
         //Get the supply of each to determine if an FNFT is still alive by supply > 0
-        let fnftSupplys = await sdk.api.abi.multiCall({
-          calls: fnftSupplyCalls,
-          abi: getFNFTSupplyABI,
-          requery: true,
-          permitFailure: false,
-          chain: chain
-        })
+        let fnftSupplys = await api.multiCall({ calls: fnftSupplyCalls, abi: getFNFTSupplyABI, })
 
         //If the FNFT still exists, track it's ID
         let aliveFNFTCalls = []
         let aliveFNFTS = {}
-        fnftSupplys.output.forEach(supply => {
-          if (supply.output != 0) {
+        fnftSupplys.forEach((supply, i) => {
+          if (supply != 0) {
 
             //Track the supply of the FNFT
-            aliveFNFTS[supply.input.params[0]] = supply.output
+            const x = fnftSupplyCalls[i].params
+            aliveFNFTS[x] = supply
 
-            aliveFNFTCalls.push({
-              target: tokenVaultV2,
-              params: supply.input.params[0],
-            })
+            aliveFNFTCalls.push({ target: tokenVaultV2, params: x, })
           }
         })
 
         //Get the asset of the FNFT
-        let fnftConfigs = await sdk.api.abi.multiCall({
-          calls: aliveFNFTCalls,
-          abi: getFNFTConfigABI,
-          requery: true,
-          permitFailure: false,
-          chain: chain
-        })
+        let fnftConfigs = await api.multiCall({ calls: aliveFNFTCalls, abi: getFNFTConfigABI, })
 
 
         //Link each FNFTId to its underlying token
         let tokenAddressesPerFNFT = {}
         let walletCalls = []
-        fnftConfigs.output.forEach(config => {
-          if (!blacklist.includes(config.output[0].toLowerCase())) {
-            tokenAddressesPerFNFT[config.input.params[0]] = config.output[0]
-
-            walletCalls.push({
-              target: tokenVaultV2,
-              params: [config.input.params[0]],
-            })
+        fnftConfigs.forEach((config, i) => {
+          if (!blacklistedTokens.includes(config[0].toLowerCase())) {
+            const x = aliveFNFTCalls[i].params
+            tokenAddressesPerFNFT[x] = config[0]
+            walletCalls.push({ target: tokenVaultV2, params: x, })
           }
-
         })
 
         //Get the wallet for each FNFT
-        let wallets = await sdk.api.abi.multiCall({
-          abi: getWalletABI,
-          calls: walletCalls,
-          chain: chain,
-          requery: true,
-          permitFailure: false,
-        })
+        let wallets = await api.multiCall({ abi: getWalletABI, calls: walletCalls, })
+        const tokensAndOwners = []
 
         //Prepare Calldata to check the balance of each token in each wallet
-        let balanceOfMultiCalls = []
-        wallets.output.forEach(wallet => {
-          balanceOfMultiCalls.push({
-            target: tokenAddressesPerFNFT[wallet.input.params[0]],
-            params: wallet.output,
-          })
+        wallets.forEach((wallet, i) => {
+          tokensAndOwners.push([tokenAddressesPerFNFT[walletCalls[i].params], wallet])
         })
 
-        let multiCallBalances = await sdk.api.abi.multiCall({
-          abi: balanceOfABI,
-          calls: balanceOfMultiCalls,
-          chain: chain,
-          requery: true,
-          permitFailure: false,
-        })
-
-        //Record balances, increasing stored amount if necessary
-        multiCallBalances.output.forEach(balance => {
-          if (balances[balance.input.target] == undefined) {
-            balances[balance.input.target] = 0
-          }
-
-          balances[balance.input.target] = (Number(balances[balance.input.target]) + Number(balance.output))
-
-        })
-
+        await api.sumTokens({ tokensAndOwners })
       }
 
-      //Get values in tokenVaultV1
-      owners.push(holder);
-      return sumTokens2({ balances, api, owners, fetchCoValentTokens: true, blacklistedTokens: blacklist, tokenConfig: { onlyWhitelisted: false, } })
+      const tokens = []
+
+      if (revest_lp)
+        tokens.push(revest_lp)
+      return sumTokens2({ api, owner: holder, fetchCoValentTokens: true, blacklistedTokens, tokens, resolveLP: true, })
     },
   }
 
   if (revest)
-    module.exports[chain].staking = async (_, _b, _1, { api }) => {
+    module.exports[chain].staking = async (api) => {
       //Get the number of FNFTS for the TokenVaultV2
       let info = await api.batchCall([
-        {
-          target: config[chain].tokenVaultV2,
-          abi: CutoffABI,
-          chain: chain
-        },
-        {
-          target: config[chain].fnftHandler,
-          abi: numFNFTSABI,
-          chain: chain
-        }
+        { target: config[chain].tokenVaultV2, abi: CutoffABI, },
+        { target: config[chain].fnftHandler, abi: numFNFTSABI, }
       ])
 
       let cutoff = Number(info[0])
@@ -197,25 +136,12 @@ Object.keys(config).forEach(chain => {
 
       //Build Multicall Data
       let calls = []
-      for (let x = cutoff; x < numFNFTS; x++) {
-        calls.push({
-          target: config[chain].tokenVaultV2,
-          params: [x]
-        })
-      }
+      for (let x = cutoff; x < numFNFTS; x++)
+        calls.push({ target: config[chain].tokenVaultV2, params: x })
+
 
       //Get the wallet address for each FNFT via multicall
-      let walletMultiCallList = await sdk.api.abi.multiCall({
-        abi: getWalletABI,
-        calls: calls,
-        chain: chain,
-        requery: true,
-        permitFailure: false
-      })
-      let wallets = []
-      walletMultiCallList.output.forEach(wallet => {
-        wallets.push(wallet.output)
-      })
+      let wallets = await api.multiCall({ abi: getWalletABI, calls: calls, })
 
       wallets.push(holder);
 
