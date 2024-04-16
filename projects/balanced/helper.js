@@ -1,4 +1,4 @@
-const { parseInt, call } = require("../helper/chain/icx")
+const { toInt, call } = require("../helper/chain/icx")
 
 const balancedDexContract = "cxa0af3165c08318e988cb30993b3048335b94af6c"
 const balancedAssetManagerContract =
