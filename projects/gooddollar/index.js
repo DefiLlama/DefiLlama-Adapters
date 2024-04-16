@@ -1,4 +1,3 @@
-const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require('./abi.json');
 const BigNumber = require("bignumber.js");
@@ -6,7 +5,7 @@ const { sumTokens } = require("../helper/unwrapLPs");
 
 const tokens = {
     aUSDC: "0xbcca60bb61934080951369a648fb03df4f96263c",
-    DAI: ADDRESSES.ethereum.DAI,
+    DAI: "0x6b175474e89094c44da98b954eedeac495271d0f",
     cDAI: "0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643",
     Gfuse: "0x495d133B938596C9984d462F007B676bDc57eCEC", // GoodDollar on Fuse
     FUSE: "0x970b9bb2c0444f5e81e9d0efb84c8ccdcdcaf84d", // Fuse on Mainnet
@@ -32,7 +31,7 @@ async function eth(timestamp, ethBlock) {
     ], ethBlock)
 
     return balances;
-}
+};
 
 async function fuseStaking(timestamp, ethBlock, chainBlocks) {    
     const gdStaked = (await sdk.api.erc20.balanceOf({
@@ -53,7 +52,31 @@ async function fuseStaking(timestamp, ethBlock, chainBlocks) {
     const gdInDAI = await convertGoodDollarsToDai(sumGdStaked, ethBlock);
 
     const balances = {};
-    sdk.util.sumSingleBalance(balances, tokens.DAI, Number(gdInDAI));
+    await sdk.util.sumSingleBalance(balances, tokens.DAI, Number(gdInDAI));
+
+    return balances;
+}
+
+async function fuseTreasury(timestamp, ethBlock, chainBlocks) {
+    const gdInCommunitySafe = (await sdk.api.erc20.balanceOf({
+        target: tokens.Gfuse,
+        chain: 'fuse',
+        owner: COMMUNITY_SAFE,
+        block: chainBlocks['fuse']
+    })).output;
+
+    const gdInFuseStaking = (await sdk.api.erc20.balanceOf({
+        target: tokens.Gfuse,
+        chain: 'fuse',
+        owner: FUSE_STAKING,
+        block: chainBlocks['fuse']
+    })).output;
+
+    const gdTotal = BigNumber(gdInCommunitySafe).plus(gdInFuseStaking);
+    let gdInDAI = await convertGoodDollarsToDai(gdTotal, ethBlock);
+
+    const balances = {};
+    await sdk.util.sumSingleBalance(balances, tokens.DAI, Number(gdInDAI));
 
     return balances;
 }
@@ -78,7 +101,7 @@ async function fuse(timestamp, ethBlock, chainBlocks) {
     })).output;
 
     const balances = {};
-    sdk.util.sumSingleBalance(balances, tokens.FUSE, Number(fuseAmount));
+    await sdk.util.sumSingleBalance(balances, tokens.FUSE, Number(fuseAmount));
 
     return balances;
 }
@@ -86,11 +109,13 @@ async function fuse(timestamp, ethBlock, chainBlocks) {
 module.exports = {
     methodology: `Aggregation of funds staked in our contracts on Ethereum and Fuse, funds locked in reserve backing G$ token and community treasury. G$ value was converted to USD based on current price at the reserve.`,
     misrepresentedTokens: true,
-        ethereum: {
+    timetravel: true,
+    ethereum: {
         tvl: eth
     },
     fuse: {
         staking: fuseStaking,
-        tvl: () => ({}),
+        tvl: fuse,
+        treasury: fuseTreasury
     },
 }
