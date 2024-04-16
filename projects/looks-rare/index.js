@@ -14,7 +14,7 @@ module.exports = {
   methodology: `TVL for LOOKS.RARE consists of the staking of LOOKS and pool2 of uni-v2 LOOKS-WETH.`, 
   ethereum:{
     tvl: () => ({}),
-    staking: staking(tokenDistributor, LOOKS, "ethereum"), 
-    pool2: pool2(LOOKS_ETH_univ2_staking, LOOKS_ETH_univ2, "ethereum"), 
+    staking: staking(tokenDistributor, LOOKS), 
+    pool2: pool2(LOOKS_ETH_univ2_staking, LOOKS_ETH_univ2), 
   }
 }

@@ -123,7 +123,7 @@ function hexToString(hexString) {
 }
 
 function sumTokensExport(options) {
-  return async (_, _b, _cb, { api }) => sumTokens({ ...api, api, ...options })
+  return async (api) => sumTokens({ ...api, api, ...options })
 }
 
 module.exports = {
