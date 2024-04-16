@@ -19,12 +19,12 @@ module.exports = {
     tvl,
   },
   archway: {
-    tvl: () => computeTVL("archway"),
+    tvl: async () => await computeTVL("archway"),
   },
   binance: {
-    tvl: () => computeTVL("bnbchain"),
+    tvl: async () => await computeTVL("bnbchain"),
   },
   avax: {
-    tvl: () => computeTVL("avalanche"),
+    tvl: async () => await computeTVL("avalanche"),
   },
 }
