@@ -3,7 +3,7 @@ const { getConfig } = require('../helper/cache')
 const { getUniqueAddresses } = require('../helper/utils')
 const { transformDexBalances } = require('../helper/portedTokens')
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   // https://github.com/BetsyBraddock/Sovryn-Contracts-Package/blob/main/contracts-mainnet.json
 
   // const impl = await api.call({  abi: 'address:swapsImpl', target: '0x5a0d867e0d70fcc6ade25c3f1b89d618b5b4eaa7' })

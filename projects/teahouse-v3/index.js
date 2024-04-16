@@ -6,33 +6,54 @@ const teahouseVaultAPI = "https://vault-content-api.teahouse.finance/vaults";
 
 // get vault contract addresses from teahouse api
 async function getVaultContractsAddress(chain) {
-  let plAddress = [];
-  const { vaults } = await getConfig("teahouse", teahouseVaultAPI);
+  let pairVault = [];
+  let portVault = []
+  const { vaults } = await getConfig("teahouse/v3", teahouseVaultAPI);
   vaults.forEach((element) => {
-    // v3 vaults
+    // permissionless vaults
     if (element.isDeFi == true && element.isActive == true) {
-      if (element.chain === chain) plAddress.push(element.share.address);
+      if (element.chain === chain) {
+        const type = element.type.toLowerCase();
+        if (type === 'v3pair') {
+          pairVault.push(element.share.address);
+        } else if (type === 'v3port') {
+          portVault.push(element.share.address);
+        }
+      }
     }
   });
-  return plAddress;
+  return {
+    pair: pairVault,
+    port: portVault
+  };
 }
 
 const chains = ["ethereum", "optimism", "arbitrum", 'polygon', 'boba', 'mantle'];
 
 chains.forEach((chain) => {
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api }) => {
+    tvl: async (api) => {
       const vaults = await getVaultContractsAddress(chain);
-      const tokens = await api.multiCall({
+
+      let tokens = await api.multiCall({
         abi: abi.assetToken1,
-        calls: vaults,
+        calls: vaults.pair,
       });
-      const bals = await api.multiCall({
+      let bals = await api.multiCall({
         abi: abi.estimatedValueIntoken1,
-        calls: vaults,
+        calls: vaults.pair,
       });
       api.addTokens(tokens, bals);
-      return api.getBalances();
+
+      tokens = await api.multiCall({ abi: "address[]:getAssets", calls: vaults.port })
+      const allTokens = [...new Set(tokens.flat())]
+      const symbols = await api.multiCall({ abi: 'string:symbol', calls: allTokens })
+      const sMap = Object.fromEntries(allTokens.map((address, i) => [address, symbols[i]]))
+      const ownerTokens = vaults.port.map((v, i) => {
+        const tokenList = tokens[i].filter(t => !sMap[t].startsWith('TEA-'))
+        return [tokenList, v]
+      })
+      return api.sumTokens({ ownerTokens})
     },
   };
 });

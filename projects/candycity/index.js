@@ -31,7 +31,7 @@ const VESTING_CONTRACTS = [
 async function fetchTvl(timestamp, ethBlock, chainBlocks) {
   let cmc_response = await get(CMC_API_URL)
   const candyPrice = cmc_response.data.marketPairs[0].price
-  const balances = await stakings(STAKING_CONTRACTS, CANDY_TOKEN, "cronos")(timestamp, ethBlock, chainBlocks)
+  const balances = await stakings(STAKING_CONTRACTS, CANDY_TOKEN)(timestamp, ethBlock, chainBlocks)
   const candyBalances = Object.values(balances)[0]
 
   return toUSDTBalances(BigNumber(candyBalances).times(BigNumber(candyPrice)).div(1e18));
@@ -40,7 +40,7 @@ async function fetchTvl(timestamp, ethBlock, chainBlocks) {
 async function fetchVesting(timestamp, ethBlock, chainBlocks) {
   let cmc_response = await get(CMC_API_URL)
   const candyPrice = cmc_response.data.marketPairs[0].price
-  const balances = await stakings(VESTING_CONTRACTS, CANDY_TOKEN, "cronos")(timestamp, ethBlock, chainBlocks)
+  const balances = await stakings(VESTING_CONTRACTS, CANDY_TOKEN)(timestamp, ethBlock, chainBlocks)
   const candyBalances = Object.values(balances)[0]
 
   return toUSDTBalances(BigNumber(candyBalances).times(BigNumber(candyPrice)).div(1e18));

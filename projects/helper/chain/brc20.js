@@ -22,7 +22,7 @@ async function sumTokens({ owner, owners = [], blacklistedTokens = [], api }) {
 }
 
 function sumTokensExport(args) {
-  return (_, _1, _2, { api }) => sumTokens({ ...args, api })
+  return (api) => sumTokens({ ...args, api })
 }
 
 module.exports = {

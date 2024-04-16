@@ -34,9 +34,17 @@ const config = {
       '0x51c0378f913Fe3b79580E54AE5FB8682b856b5B6',
     ],
   },
-  base:{
+  base: {
     exchanges: [
       '0x3F7F51983fb95084a5cb73EB2F28757Bd8bb65E3',
+    ],
+  },
+  mode: {
+    exchanges: [
+      '0xA3320CfD2027119fAe3DB4142546B86C6669646D',
+      '0x7165DE038b6b76F05F30696A40bEF228731D6DdC',
+      '0x4a0f2074F11FDB7084722fdF078e15E8E3a7A25D',
+      '0x72E0f90cdaEE4A919FA15F465e15210a5E5b9306',
     ],
   }
 }
@@ -49,10 +57,10 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const { exchanges } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
-      const baseTokens = await api.multiCall({  abi: 'address:baseToken', calls: exchanges})
-      const quoteTokens = await api.multiCall({  abi: 'address:quoteToken', calls: exchanges})
-      return sumTokens2({ api, tokensAndOwners: exchanges.map((v, i) => [[baseTokens[i], v], [quoteTokens[i], v ]]).flat()})
+    tvl: async (api) => {
+      const baseTokens = await api.multiCall({ abi: 'address:baseToken', calls: exchanges })
+      const quoteTokens = await api.multiCall({ abi: 'address:quoteToken', calls: exchanges })
+      return sumTokens2({ api, tokensAndOwners: exchanges.map((v, i) => [[baseTokens[i], v], [quoteTokens[i], v]]).flat() })
     }
   }
 })
