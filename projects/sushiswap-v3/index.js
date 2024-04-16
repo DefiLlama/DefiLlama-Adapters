@@ -73,7 +73,8 @@ module.exports = uniV3Export({
   metis: { factory: '0x145d82bCa93cCa2AE057D1c6f26245d1b9522E6F', fromBlock: 9077930, },
   bittorrent: { factory: '0xBBDe1d67297329148Fe1ED5e6B00114842728e65', fromBlock: 29265724, },
   zeta: { factory: '0xB45e53277a7e0F1D35f2a77160e91e25507f1763', fromBlock: 1551069, },
-  islm: { factory: '0xc35DADB65012eC5796536bD9864eD8773aBc74C4', fromBlock: 6541826, },
+  islm: { factory, fromBlock: 6541826, },
+  blast: { factory: '0x7680d4b43f3d1d54d6cfeeb2169463bfa7a6cf0d', fromBlock: 284122, },
 });
 
 const config = {

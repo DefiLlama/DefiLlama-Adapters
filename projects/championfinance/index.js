@@ -49,7 +49,7 @@ async function calcPool2(masterchef, lps, block, chain) {
 }
 
 async function pool2(timestamp, block, chainBlocks) {
-  return await calcPool2(chamRewardPoolAddress, lps, chainBlocks.avax, "avax");
+  return await calcPool2(chamRewardPoolAddress, lps, chainBlocks.avax);
 }
 async function tvl(timestamp, block, chainBlocks) {
   let balances = {};
@@ -59,6 +59,6 @@ module.exports = {
   avax: {
     tvl: tvl,
     pool2: pool2,
-    staking: stakings(boardroomAddress, chamTokenAddress, "avax",)
+    staking: stakings(boardroomAddress, chamTokenAddress)
   }
 }; 

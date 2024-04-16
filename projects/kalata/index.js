@@ -27,6 +27,6 @@ async function tvl(api) {
 module.exports = {
   bsc: {
     tvl: sdk.util.sumChainTvls([getUniTVL({ factory: '0xa265535863305ce0a2a8ec330c2cec972aca3004', useDefaultCoreAssets: true, }), tvl]),
-    staking: staking(masterchef, kala, 'bsc'),
+    staking: staking(masterchef, kala),
   }
 }

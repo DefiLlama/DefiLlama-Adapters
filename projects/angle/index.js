@@ -190,7 +190,7 @@ module.exports = {
     [Math.floor(new Date("2024-03-14") / 1e3), "Rebrading of agEUR to EURA"],
   ],
   ethereum: {
-    staking: staking(veANGLE, ANGLE, "ethereum"),
+    staking: staking(veANGLE, ANGLE),
   },
   methodology: `TVL is retrieved on-chain by getting the total assets managed by the Transmuter, the balances of the vaultManagers of the Borrowing module and of the governance addresses of the protocol.`,
 };

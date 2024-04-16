@@ -104,6 +104,6 @@ module.exports = {
         staking
     },
     milkomeda: {
-        tvl: getUniTVL({ factory: '0x57A8C24B2B0707478f91D3233A264eD77149D408', chain: 'milkomeda', useDefaultCoreAssets: true }),
+        tvl: getUniTVL({ factory: '0x57A8C24B2B0707478f91D3233A264eD77149D408', useDefaultCoreAssets: true }),
     }
 }

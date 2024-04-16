@@ -7,6 +7,6 @@ const zkZKE = "0x7b3e1236c39ddD2e61cF6Da6ac6D11193238ccB0";
 module.exports = {
   era: {
     tvl: gmxExports({ vault: '0xBC918775C20959332c503d51a9251C2405d9cF88' }),
-    staking: staking(zkStaking, zkZKE, "era"), 
+    staking: staking(zkStaking, zkZKE), 
   },
 };

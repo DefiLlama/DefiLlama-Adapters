@@ -127,12 +127,12 @@ module.exports = {
    doublecounted: true,
   ethereum: {
     tvl: eth,
-    staking: staking("0xa72ad1293b253522fde41f1104aa432d7669b299", "ethereum"),
+    staking: staking("0xa72ad1293b253522fde41f1104aa432d7669b299"),
     pool2: pool2Exports(ethuniv2vault, [ethuniv2lp])
   },
   bsc: {
     tvl: bsc,
-    staking: staking("0xBd2861c0f43F6E8d571fcfA5a7C77D13d5695Ebf", "bsc"),
+    staking: staking("0xBd2861c0f43F6E8d571fcfA5a7C77D13d5695Ebf"),
     pool2: pool2s([bsccakevault, stbnbcakevault], [stbnbcakelp, bsccakelp], "bsc", addr=>{
       addr = addr.toLowerCase();
       if (addr === "0xd523a3c371c0c301794120c7ca9639f22c02839a") {
@@ -146,7 +146,7 @@ module.exports = {
   },
   polygon: {
     tvl: polygon,
-    staking: staking("0xA035eCd4824c4C13506D39d7041e8E0Ad156686D", "polygon"),
+    staking: staking("0xA035eCd4824c4C13506D39d7041e8E0Ad156686D"),
     pool2: pool2Exports(polyuniv2vault, [polyuniv2lp], "polygon", addr=>{
       if (addr.toLowerCase() === "0xfb8a07e99450d1dc566da18a8f0e630addefdd3e") {
         return "0xe63d6b308bce0f6193aec6b7e6eba005f41e36ab"

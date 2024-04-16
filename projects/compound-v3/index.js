@@ -22,5 +22,8 @@ module.exports = compoundV3Exports({
       '0x46e6b214b524310239732D51387075E0e70970bf', // ETH Market
       '0xb125E6687d4313864e53df431d5425969c15Eb2F', // USDC Market
     ],
+  },
+  scroll: {
+    markets: ['0xB2f97c1Bd3bf02f5e74d13f02E3e26F93D77CE44'], // USDC Market
   }
 })

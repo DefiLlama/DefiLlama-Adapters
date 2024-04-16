@@ -32,6 +32,6 @@ module.exports = {
       start: 62936418,
   aurora: {
     tvl: tvl,
-    staking: staking(veToken, token, "aurora"),
+    staking: staking(veToken, token),
   },
 };

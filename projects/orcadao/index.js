@@ -100,6 +100,6 @@ module.exports = {
     borrowed,
     pool2: pool2Exports(podLeader, pool2LPs, "avax", addr=>`avax:${addr}`),
     treasury,
-    staking: staking(podLeader, orca, "avax")
+    staking: staking(podLeader, orca)
   }
 }

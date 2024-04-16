@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2, nullAddress, } = require("../helper/unwrapLPs");
-const sdk = require("@defillama/sdk");
 
 module.exports = {
   methodology:
@@ -103,14 +102,17 @@ const config = {
     vaults: [
       "0x7333fd58d8d73a8e5fc1a16c8037ada4f580fa2b",
       "0x8d6cebd76f18e1558d4db88138e2defb3909fad6",
-      "0x654a31ba7d714cfcab19b17d0066171c1a292349"
-    ]
+      "0x654a31ba7d714cfcab19b17d0066171c1a292349",
+      "0x20658fDaBD4C79F1B3666E5bcCAeF78b5059B109"
+    ],
+    psm: ["0x83D41737d086033A9c3acE2F1Ad9350d7d91cf02",],
   },
   linea: {
     vaults: [
       "0x8ab01c5ee3422099156ab151eecb83c095626599",
       "0x7f9dd991e8fd0cbb52cb8eb35dd35c474a9a7a70"
-    ]
+    ],
+    psm: ["0x2f5cedaff534cc816ed6f551eb2b73d6f1daa440"],
   },
   ethereum: {
     vaults: [
@@ -221,18 +223,19 @@ const config = {
 }
 
 Object.keys(config).forEach(chain => {
-  const { vaults, toa = [] } = config[chain]
+  const { vaults, toa = [], psm } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, { [chain]: block }) => {
-      const tokens = await sdk.api2.abi.multiCall({
-        abi: 'address:collateral',
-        calls: vaults,
-        chain, block,
-      })
+    tvl: async (api) => {
+      const tokens = await api.multiCall({ abi: 'address:collateral', calls: vaults, })
       const tokensAndOwners = tokens.map((t, i) => ([t, vaults[i]]))
       tokensAndOwners.push(...toa)
+      if (psm && psm.length) {
+        const underlyings = await api.multiCall({ abi: 'address:underlying', calls: psm })
+        const bals = await api.multiCall({ abi: 'uint256:totalStableLiquidity', calls: psm })
+        api.add(underlyings, bals)
+      }
 
-      return sumTokens2({ tokensAndOwners, chain, block, })
+      return sumTokens2({ tokensAndOwners, api })
     }
   }
 })

@@ -28,7 +28,7 @@ module.exports = {
   doublecounted: true,
   start: 1657027865, // UMAMI deployment block ts
   arbitrum: {
-    staking: stakings([mUMAMI, OHM_STAKING_sUMAMI], UMAMI, "arbitrum"),
+    staking: stakings([mUMAMI, OHM_STAKING_sUMAMI], UMAMI),
     tvl: async (api) => {
 
       const totalAssets = await api.call({ abi: abi.totalAssets, target: glpUSDC, });

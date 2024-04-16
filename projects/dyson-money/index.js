@@ -65,7 +65,7 @@ module.exports = {
     methodology: "Counts the tokens locked in the contracts.",
   polygon: {
     tvl: polygonTvl,
-    staking: staking(ylSPHEREvault, sphere_token, "polygon")
+    staking: staking(ylSPHEREvault, sphere_token)
   },
   optimism: {
     tvl: fetchNetworkTVL('optimism'),
