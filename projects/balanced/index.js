@@ -21,10 +21,10 @@ module.exports = {
   archway: {
     tvl: () => computeTVL("archway"),
   },
-  bnbchain: {
+  binance: {
     tvl: () => computeTVL("bnbchain"),
   },
-  avalanche: {
+  avax: {
     tvl: () => computeTVL("avalanche"),
   },
 }
