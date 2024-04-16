@@ -40,6 +40,7 @@ const endPoints = {
   archway: "https://api.mainnet.archway.io",
   sifchain: "https://sifchain-api.polkachu.com",
   nolus: "https://pirin-cl.nolus.network:1317",
+  nibiru: "https://lcd.nibiru.fi",
   bostrom: "https://lcd.bostrom.cybernode.ai"
 };
 
