@@ -134,7 +134,7 @@ async function computeTVL(chainName) {
     }
 }
 
-modele.exports = {
+module.exports = {
     getExternalChainDeposits,
     computeTVL
 }
