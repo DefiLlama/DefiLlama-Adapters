@@ -9,6 +9,8 @@ const contractAbis = {
   getMswEthPrice: "function exchangeRateToNative() external view returns (uint256)",
   getMswBalance: "function getAllEigeinPieCycleDepositAmounts() external view returns (uint256)",
   getUnderlyingPrice: "function getUnderlyingPrice(address cToken) view returns (uint256)",
+  getUniswapPrice:
+    "function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 observationCardinalityNext, uint8 observationCardinalityNext)",
 };
 
 module.exports = {
@@ -243,8 +245,32 @@ module.exports = {
         pendleAddress: "0xb05cabcd99cf9a73b19805edefc5f67ca5d1895e",
       };
 
-      const tokensAndOwners = [pTweETH, pTezETH, pTsETH].map(i  => [i.pendleAddress, i.vault]);
-      await api.sumTokens({ tokensAndOwners })
+      const tokensAndOwners = [pTweETH, pTezETH, pTsETH].map((i) => [i.pendleAddress, i.vault]);
+      await api.sumTokens({ tokensAndOwners });
+
+      const apuff1x = {
+        vault: "0x296281cC6EB049F33aB278D946F18d9cacCFcfB5",
+        reStakingToken: "0x2BE056e595110B30ddd5eaF674BdAC54615307d9",
+      };
+
+      const apuffBal = await api.call({
+        abi: contractAbis.balanceOf,
+        target: apuff1x.reStakingToken,
+        params: [apuff1x.vault],
+      });
+
+      const apuffPriceX96 = await api.call({
+        target: "0x217616eA25a8b91389E806A4a0Fa99b805f1B2e7",
+        abi: contractAbis.getUniswapPrice,
+      });
+
+      const squared = Number(apuffPriceX96[0] * apuffPriceX96[0]);
+      const base2 = 2 ** 192;
+      const apuffPriceInEth = squared / base2;
+
+      const apuffBalInETH = (apuffBal * apuffPriceInEth) / 1e18;
+
+      api.add(ADDRESSES.ethereum.WETH, apuffBalInETH);
     },
   },
   //-----------------------------------------------------------------------//
