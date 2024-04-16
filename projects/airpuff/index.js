@@ -1,3 +1,4 @@
+const { Block } = require("ethers");
 const ADDRESSES = require("../helper/coreAssets.json");
 const contractAbis = {
   readOraclePrice: "function read() view returns (int224 value, uint32 timestamp)",
@@ -15,6 +16,19 @@ const contractAbis = {
 
 module.exports = {
   misrepresentedTokens: true,
+
+  zklink: {
+    tvl: async (api) => {
+      const pufEth1x = {
+        vault: "0xD06E74D03a98A085C6060C4148902d2048C2D458",
+        reStakingToken: "0x1B49eCf1A8323Db4abf48b2F5EFaA33F7DdAB3FC",
+      };
+
+      await api.sumTokens({
+        tokensAndOwners: [[pufEth1x.reStakingToken, pufEth1x.vault]],
+      });
+    },
+  },
 
   mode: {
     tvl: async (api) => {
