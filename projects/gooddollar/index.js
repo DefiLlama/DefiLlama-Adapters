@@ -31,7 +31,7 @@ async function eth(timestamp, ethBlock) {
     ], ethBlock)
 
     return balances;
-};
+}
 
 async function fuseStaking(timestamp, ethBlock, chainBlocks) {    
     const gdStaked = (await sdk.api.erc20.balanceOf({
