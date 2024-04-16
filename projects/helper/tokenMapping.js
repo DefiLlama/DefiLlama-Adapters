@@ -34,6 +34,9 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  area: {
+    '0x1d1bc800e71576a59f9ef88bb679fa13c2e10abf': { coingeckoId: 'areon-network', decimals: 18, },
+  },
   // Sample Code
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
@@ -75,6 +78,7 @@ const fixBalancesTokens = {
     '0x4dcb91cc19aadfe5a6672781eb09abad00c19e4c': { coingeckoId: "sats-ordinals", decimals: 18, },
     '0x69181a1f082ea83a152621e4fa527c936abfa501': { coingeckoId: "rats", decimals: 18, },
     '0x0726523eba12edad467c55a962842ef358865559': { coingeckoId: "ordinals", decimals: 18, },
+    '0x0000000000000000000000000000000000000000': { coingeckoId: "bitcoin", decimals: 18, },
     '0x967aec3276b63c5e2262da9641db9dbebb07dc0d': { coingeckoId: "tether", decimals: 6, },
     '0x6b4ecada640f1b30dbdb68f77821a03a5f282ebe': { coingeckoId: "usd-coin", decimals: 6, },
   },
@@ -88,7 +92,10 @@ const fixBalancesTokens = {
     "0xd97b1de3619ed2c6beb3860147e30ca8a7dc9891": { decimals: 18, coingeckoId: "ethereum" },
     "0x48f80608b672dc30dc7e3dbbd0343c5f02c738eb": { decimals: 18, coingeckoId: "binancecoin" },
     "0x13A0c5930C028511Dc02665E7285134B6d11A5f4": { decimals: 18, coingeckoId: "bitcoin" }
-  }
+  },
+  ancient8: {
+    '0x4200000000000000000000000000000000000006': { coingeckoId: "ethereum", decimals: 18, },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
