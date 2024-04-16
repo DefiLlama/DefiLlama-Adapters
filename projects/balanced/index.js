@@ -9,8 +9,9 @@ async function tvl(api) {
   const pools = await getConfig('balancedDex', 'https://balanced.icon.community/api/v1/pools')
   const tokens = pools.map(pool => [pool.base_address, pool.quote_address]).flat().filter(i => i).map(i => i === 'ICX' ? ADDRESSES.null : i)
   const deposits = await getExternalChainDeposits();
-  const filteredTokens = tokens.filter(token => !deposits.some(deposit => deposit.iconchaincontract === token));
-  return sumTokens({ api, filteredTokens, owner: balancedDexContract })
+  const bridgedTokenSet = new Set(deposits.map(deposit => deposit.iconchaincontract));
+  const filteredTokens = tokens.filter(token => !bridgedTokenSet.has(token));
+  return sumTokens({ api, tokens: filteredTokens, owner: balancedDexContract })
 }
 
 module.exports = {
