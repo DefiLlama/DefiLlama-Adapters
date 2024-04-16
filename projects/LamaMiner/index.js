@@ -7,6 +7,7 @@ module.exports = {
   methodology: 'counts the number of LAMA tokens in the Lama Miner contract.',
   start: 1711962980,
   avax: {
-    tvl: sumTokensExport({ owner: LAMA_MINER_CONTRACT, tokens: [LAMA_TOKEN_CONTRACT], lps: [LP_LAMA_WAVAX], useDefaultCoreAssets: true, }),
+    tvl: () => ({}), 
+    staking: sumTokensExport({ owner: LAMA_MINER_CONTRACT, tokens: [LAMA_TOKEN_CONTRACT], lps: [LP_LAMA_WAVAX], useDefaultCoreAssets: true, }),
   }
 }
