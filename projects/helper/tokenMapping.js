@@ -99,6 +99,18 @@ const fixBalancesTokens = {
   ancient8: {
     '0x4200000000000000000000000000000000000006': { coingeckoId: "ethereum", decimals: 18, },
   },
+  mode: {
+    '0x80137510979822322193fc997d400d5a6c747bf7': { coingeckoId: "stakestone-ether", decimals: 18 },
+  },
+  zklink: {
+    '0x0000000000000000000000000000000000000000': { coingeckoId: "ethereum", decimals: 18, },
+    '0xda4aaed3a53962c83b35697cd138cc6df43af71f': { coingeckoId: "wrapped-bitcoin", decimals: 8, },
+    '0x2f8a25ac62179b31d62d7f80884ae57464699059': { coingeckoId: "tether", decimals: 6, },
+    '0x1a1a3b2ff016332e866787b311fcb63928464509': { coingeckoId: "usd-coin", decimals: 6, },
+  },
+  bsquared: {
+    '0x0000000000000000000000000000000000000000': { coingeckoId: "bitcoin", decimals: 18, },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
