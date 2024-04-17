@@ -99,6 +99,9 @@ const fixBalancesTokens = {
   ancient8: {
     '0x4200000000000000000000000000000000000006': { coingeckoId: "ethereum", decimals: 18, },
   },
+  linea: {
+    '0x023617babed6cef5da825bea8363a5a9862e120f': { coingeckoId: "savings-dai", decimals: 18, },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
