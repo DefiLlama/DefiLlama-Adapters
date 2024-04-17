@@ -1,4 +1,4 @@
-const { staking } = require('../helper/staking')
+const { staking } = require("../helper/staking");
 const ADDRESSES = require("../helper/coreAssets.json");
 const contractAbis = {
   readOraclePrice: "function read() view returns (int224 value, uint32 timestamp)",
@@ -168,8 +168,29 @@ module.exports = {
         vault: "0x1100195fbdA2f22AA6f394E6C65f168779Fe572c",
         reStakingToken: "0x32bd822d615A3658A68b6fDD30c2fcb2C996D678",
       };
-      const strategies = [ezETH, weETH, rsETH, ezETH1x, weETH1x, rsETH1x, bedRockETH, bedRockETH1x, svETH1x, svETH, mswETH, mswETH1x, ];
-      strategies.forEach(({ vault, reStakingToken}) => tokensAndOwners.push([reStakingToken, vault]));
+      const strategies = [
+        ezETH,
+        weETH,
+        rsETH,
+        ezETH1x,
+        weETH1x,
+        rsETH1x,
+        bedRockETH,
+        bedRockETH1x,
+        svETH1x,
+        svETH,
+        // mswETH, @note require another function to return the balance of
+        mswETH1x,
+      ];
+      strategies.forEach(({ vault, reStakingToken }) => tokensAndOwners.push([reStakingToken, vault]));
+
+      //  mswETH
+      const mswETHBal = await api.call({
+        abi: contractAbis.getMswBalance,
+        target: mswETH.vault,
+      });
+
+      api.add(mswETH.reStakingToken, mswETHBal);
 
       //new strats on pendle v2
       const pTweETH = {
@@ -191,7 +212,7 @@ module.exports = {
       tokensAndOwners.push(...tokensAndOwners2);
       await api.sumTokens({ tokensAndOwners });
     },
-    staking: staking('0x296281cC6EB049F33aB278D946F18d9cacCFcfB5', '0x2BE056e595110B30ddd5eaF674BdAC54615307d9')
+    staking: staking("0x296281cC6EB049F33aB278D946F18d9cacCFcfB5", "0x2BE056e595110B30ddd5eaF674BdAC54615307d9"),
   },
   //-----------------------------------------------------------------------//
 
