@@ -69,7 +69,7 @@ module.exports = {
   avax: {
     tvl,
   },
-  op_bnb: {
+  bsc: {
     tvl,
   },
 };
