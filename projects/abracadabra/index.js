@@ -1,4 +1,3 @@
-const ADDRESSES = require('../helper/coreAssets.json')
 const marketsJSON = require('./market.json');
 const abi = require('./abi.json');
 
@@ -34,47 +33,30 @@ const underlyingTokens = {
   optimism: {},
 };
 
-const liquidityLaunchEvents = {
-  blast: {
-    contractAddress: "0xa64B73699Cc7334810E382A4C09CAEc53636Ab96",
-    supportedTokens: [
-      ADDRESSES.blast.USDB, // USDb
-      // "0x76DA31D7C9CbEAE102aff34D3398bC450c8374c1", // MIM
-    ]
-  },
-};
-
 async function tvl(api) {
-  const { chain } = api
+  const { chain } = api;
   const marketsArray = [];
 
   for (const [marketContract, lockedToken] of Object.entries(marketsJSON[chain]))
     marketsArray.push([lockedToken, marketContract]);
 
-
   const calls = bentoBoxAddresses[chain].map(bentoBoxAddress => marketsArray.map((market) => ({
     target: bentoBoxAddress,
     params: market
-  }))).flat()
+  }))).flat();
   const tokens = bentoBoxAddresses[chain].map(_ =>
     marketsArray.map(([lockedToken]) => underlyingTokens[chain][lockedToken] ?? lockedToken)
-  ).flat()
-  const bals = await api.multiCall({ calls, abi: abi.balanceOf, })
-  api.addTokens(tokens, bals)
+  ).flat();
+  const bals = await api.multiCall({ calls, abi: abi.balanceOf, });
+  api.addTokens(tokens, bals);
 
-  const liquidityLaunchEvent = liquidityLaunchEvents[chain];
-  if (liquidityLaunchEvent)
-    await api.sumTokens({ owner: liquidityLaunchEvent.contractAddress, tokens: liquidityLaunchEvent.supportedTokens })
-
-
-
-  return api.getBalances()
+  return api.getBalances();
 }
 
 const chains = ['arbitrum', 'avax', 'blast', 'bsc', 'ethereum', 'fantom', 'kava', 'optimism'];
-chains.forEach(chain => module.exports[chain] = { tvl }),
-  module.exports.hallmarks = [
-    [1651881600, "UST depeg"],
-    [1643245200, "0xSifu revealed as QuadrigaCX founder"],
-    [1667826000, "FTX collapse, Alameda repays FTT loans"],
-  ]
+chains.forEach(chain => module.exports[chain] = { tvl });
+module.exports.hallmarks = [
+  [1651881600, "UST depeg"],
+  [1643245200, "0xSifu revealed as QuadrigaCX founder"],
+  [1667826000, "FTX collapse, Alameda repays FTT loans"],
+];
