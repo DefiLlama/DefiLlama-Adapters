@@ -1,4 +1,4 @@
-const GAUGE_TOKENS = [
+const ETHEREUM_GAUGE_TOKENS = [
   {
     erc20TokenAddress: "0x93ce650b8d3a7a7e44121db82a0429a3884db599",
     underlyingErc20TokenAddress: "0xbFcF63294aD7105dEa65aA58F8AE5BE2D9d0952A",
@@ -109,4 +109,119 @@ const GAUGE_TOKENS = [
   },
 ];
 
-module.exports = GAUGE_TOKENS;
+const ARBITRUM_GAUGE_TOKENS = [
+  {
+    erc20TokenAddress: "0xC3691c157D1B3A431B841230a7B11d5a373097e1",
+    underlyingErc20TokenAddress: "0xce5f24b7a95e9cba7df4b54e911b4a3dc8cdaf6f",
+  },
+  {
+    erc20TokenAddress: "0x7Bdc233E5369Ac023b9894645902C9032A72D9Ee",
+    underlyingErc20TokenAddress: "0x971E732B5c91A59AEa8aa5B0c763E6d648362CF8",
+  },
+  {
+    erc20TokenAddress: "0xCC26A5246C6A04a85E997d6581C1b4f14363841a",
+    underlyingErc20TokenAddress: "0xf2ddf89c04d702369ab9ef8399edb99a76e951ce",
+  },
+  {
+    erc20TokenAddress: "0xeEeeb52E36c78b153caaB2761c369a50b066cDD5",
+    underlyingErc20TokenAddress: "0x098ef55011b6b8c99845128114a9d9159777d697",
+  },
+  {
+    erc20TokenAddress: "0x59eC3043D7314B9650294Fd800149b53007f804E",
+    underlyingErc20TokenAddress: "0x95285ea6ff14f80a2fd3989a6bab993bd6b5fa13",
+  },
+  {
+    erc20TokenAddress: "0x972c6F2b29638b9AD6955c4F0b0c1239b034f053",
+    underlyingErc20TokenAddress: "0x93729702Bf9E1687Ae2124e191B8fFbcC0C8A0B0",
+  },
+  {
+    erc20TokenAddress: "0xbA65D50Cf4e6E739B2735338a964C3354fAF9B19",
+    underlyingErc20TokenAddress: "0xd6dacdcb438f048cf90e53415872cdb3fcc95421",
+  },
+  {
+    erc20TokenAddress: "0x886867993080DC3bBFC39CDfc343A0e083bB34E0",
+    underlyingErc20TokenAddress: "0x6B7B84F6EC1c019aF08C7A2F34D3C10cCB8A8eA6",
+  },
+  {
+    erc20TokenAddress: "0xB72ea6F99EfA5BD6Fb400BaA4eFddC3cfB075215",
+    underlyingErc20TokenAddress: "0xc2b1df84112619d190193e48148000e3990bf627",
+  },
+  {
+    erc20TokenAddress: "0x660108601EED17aF2832A1c0F1D7dE74F560C5ed",
+    underlyingErc20TokenAddress: "0x7c0ac20c3ca8c6257ea099131081d8199bf6b8f6",
+  },
+];
+
+const OPTIMISM_GAUGE_TOKENS = [
+  "0x29c431806E536Fb22ce2Edc8dd6e3C3A0d5689a8",
+  "0xDaA24E888432b5aa607105e256919Ddfc8b327E9",
+  "0xC3691c157D1B3A431B841230a7B11d5a373097e1",
+  "0xCC26A5246C6A04a85E997d6581C1b4f14363841a",
+  "0xeEeeb52E36c78b153caaB2761c369a50b066cDD5",
+  "0x59eC3043D7314B9650294Fd800149b53007f804E",
+  "0xbA65D50Cf4e6E739B2735338a964C3354fAF9B19",
+];
+
+const POLYGON_GAUGE_TOKENS = [
+  {
+    erc20TokenAddress: "0x9dc8Ee4264923D44F2a33Ea139FC4143C288b172",
+    underlyingErc20TokenAddress: "0x0e2f214b8f5d0cca011a8298bb907fb62f535160",
+  },
+  {
+    erc20TokenAddress: "0x1057a796C66ca87EC1e6494f5486006396756083",
+    underlyingErc20TokenAddress: "0x835cA119fA28515B1F184A5Ce5Ccda2B5b0d9F6D",
+  },
+  {
+    erc20TokenAddress: "0x350c331F4e5fD9d5D703424F3F14CcC0280B6629",
+    underlyingErc20TokenAddress: "0x40371aad2a24ed841316ef30938881440fd4426c",
+  },
+  {
+    erc20TokenAddress: "0xf742B69Bd460F14EB5d8335e06954eba694B552E",
+    underlyingErc20TokenAddress: "0xA9249f8667cb120F065D9dA1dCb37AD28E1E8FF0",
+  },
+  {
+    erc20TokenAddress: "0xc44F1103A271BEFF26bB245D760bFbe182CCf121",
+    underlyingErc20TokenAddress: "0x8b397084699cc64e429f610f81fac13bf061ef55",
+  },
+  {
+    erc20TokenAddress: "0x195888B86db69C52b54362DB2D71c2d3e411A0bA",
+    underlyingErc20TokenAddress: "0xc501491b0e4A73B2eFBaC564a412a927D2fc83dD",
+  },
+  {
+    erc20TokenAddress: "0x22301937028310Cef6530eF3C3Bfe14581eb679F",
+    underlyingErc20TokenAddress: "0xfc052e70eb6d94afe464a8ce8f43d203109494f2",
+  },
+  {
+    erc20TokenAddress: "0x90F06727Ba5016eDcf9D8B5def63a5849EcD132f",
+    underlyingErc20TokenAddress: "0x9633e0749faa6ec6d992265368b88698d6a93ac0",
+  },
+];
+
+const AVALANCHE_GAUGE_TOKENS = [];
+
+const BNB_GAUGE_TOKENS = [];
+
+const BASE_GAUGE_TOKENS = [
+  {
+    erc20TokenAddress: "0x3b9860321f03AFe02D3FF9e4Fdd4017DC6F4d7Ca",
+    underlyingErc20TokenAddress: "0x79edc58C471Acf2244B8f93d6f425fD06A439407",
+  },
+  {
+    erc20TokenAddress: "0x1f0dbEcDA414F401dB46464864273CaD19368706",
+    underlyingErc20TokenAddress: "0x93933FA992927284e9d508339153B31eb871e1f4",
+  },
+  {
+    erc20TokenAddress: "0x3E07F263C1Ce5EC2a3f1cA87af56B80B27674D96",
+    underlyingErc20TokenAddress: "0x89289DC2192914a9F0674f1E9A17C56456549b8A",
+  },
+];
+
+module.exports = {
+  ETHEREUM_GAUGE_TOKENS,
+  ARBITRUM_GAUGE_TOKENS,
+  OPTIMISM_GAUGE_TOKENS,
+  POLYGON_GAUGE_TOKENS,
+  AVALANCHE_GAUGE_TOKENS,
+  BNB_GAUGE_TOKENS,
+  BASE_GAUGE_TOKENS,
+};
