@@ -14,6 +14,7 @@ const DEFAULTS = {
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
   KARAK_RPC: "https://rpc.karak.network",
   FSC_RPC: "https://fsc-dataseed1.fonscan.io,https://fsc-dataseed2.fonscan.io,https://fonscan.io/api/eth-rpc",
+  BSQUARED_RPC: "https://rpc.bsquared.network,https://b2-mainnet.alt.technology",
   FSC_RPC_MULTICALL: "0x18fA376d92511Dd04090566AB6144847c03557d8",
 }
 
