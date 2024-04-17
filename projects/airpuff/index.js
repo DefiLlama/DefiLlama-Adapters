@@ -190,7 +190,7 @@ module.exports = {
         target: mswETH.vault,
       });
 
-      api.add(mswETH.reStakingToken, balInETH);
+      api.add(mswETH.reStakingToken, mswETHBal);
 
       //new strats on pendle v2
       const pTweETH = {
