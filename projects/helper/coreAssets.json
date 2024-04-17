@@ -47,7 +47,8 @@
     "FDUSD": "0xc5f0f7b66764f6ec8c8dff7ba683102295e16409",
     "EETH": "0x35fa164735182de50811e8e2e824cfb9b6118ac2",
     "AEVO": "0xB528edBef013aff855ac3c50b381f253aF13b997",
-    "STONE": "0x4d831e22f062b5327dfdb15f0b6a5df20e2e3dd0"
+    "STONE": "0x4d831e22f062b5327dfdb15f0b6a5df20e2e3dd0",
+    "USDM": "0x59D9356E565Ab3A36dD77763Fc0d87fEaf85508C"
   },
   "fantom": {
     "WFTM": "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
