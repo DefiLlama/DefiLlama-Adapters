@@ -14,6 +14,8 @@ async function tvl(api) {
   return sumTokens({ api, tokens: filteredTokens, owner: balancedDexContract })
 }
 
+// https://github.com/balancednetwork/balanced-java-contracts/wiki/Contract-Addresses
+// https://github.com/DefiLlama/DefiLlama-Adapters/pull/9857#issuecomment-2060842344
 module.exports = {
   methodology: 'TVL consists of liquidity on the DEX, deposits made to the lending program and the stability fund. Data is pulled from the ICX API "https://ctz.solidwallet.io/api/v3" and Balanced stats API "https://balanced.sudoblock.io/api/v1/docs',
   icon: {
@@ -22,7 +24,7 @@ module.exports = {
   archway: {
     tvl: async () => await computeTVL("archway"),
   },
-  binance: {
+  bsc: {
     tvl: async () => await computeTVL("bnbchain"),
   },
   avax: {
