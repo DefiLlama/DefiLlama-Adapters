@@ -15,7 +15,7 @@ module.exports = {
   bsc: {
     tvl: chefExport.tvl,
     pool2: chefExport.pool2,
-    staking: sdk.util.sumChainTvls([chefExport.staking, stakings([nftMiningProxy,newNftMintingProxy], token, 'bsc')])
+    staking: sdk.util.sumChainTvls([chefExport.staking, stakings([nftMiningProxy,newNftMintingProxy], token)])
   }
 };
 

@@ -21,8 +21,7 @@ async function tvl(_, block) {
 }
 
 module.exports = {
-  timetravel: true,
-  start: 1690387200,
+    start: 1690387200,
   ethereum: {
     tvl,
   }

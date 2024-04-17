@@ -3,8 +3,7 @@ const sui = require("../helper/chain/sui");
 
 const MAINNET_PROTOCOL_ID =
   "0x9e3dab13212b27f5434416939db5dec6a319d15b89a84fd074d03ece6350d3df";
-const BUCK =
-  "0xce7ff77a83ea0cb6fd39bd8748e2ec89a3f41e8efdc3f4eb123e0ca37b184db2::buck::BUCK";
+const BUCK = ADDRESSES.sui.BUCK;
 const USDC = ADDRESSES.sui.USDC;
 const USDT = ADDRESSES.sui.USDT;
 
@@ -17,6 +16,11 @@ const AF_POOL_IDs = [
   "0xdeacf7ab460385d4bcb567f183f916367f7d43666a2c72323013822eb3c57026",
   "0xeec6b5fb1ddbbe2eb1bdcd185a75a8e67f52a5295704dd73f3e447394775402b",
 ];
+
+const AFSUI_SUI_LP_ID =
+  "0x97aae7a80abb29c9feabbe7075028550230401ffe7fb745757d3c28a30437408";
+const AFSUI_SUI_LP_BUCKET_ID =
+  "0x1e88892e746708ec69784a56c6aba301a97e87e5b77aaef0eec16c3e472e8653";
 
 const KRIYA_LP_IDS = [
   "0xcc39bcc2c438a79beb2656ff043714a60baf89ba37592bef2e14ee8bca0cf007",
@@ -43,7 +47,10 @@ const BUCKETUS_PSM =
 const CETABLE_PSM =
   "0x6e94fe6910747a30e52addf446f2d7e844f69bf39eced6bed03441e01fa66acd";
 
-async function tvl(_, _1, _2, { api }) {
+const STAPEARL_PSM =
+  "0xccdaf635eb1c419dc5ab813cc64c728a9f5a851202769e254f348bff51f9a6dc";
+
+async function tvl(api) {
   const protocolFields = await sui.getDynamicFieldObjects({
     parent: MAINNET_PROTOCOL_ID,
   });
@@ -51,6 +58,12 @@ async function tvl(_, _1, _2, { api }) {
   const aflpObjs = await sui.getObjects(AF_LP_IDs);
   const aflStakedList = aflpObjs.map((aflp) => aflp.fields.staked);
   const buckAfPoolData = await sui.getObjects(AF_POOL_IDs);
+
+  const afsuiSuiLpObj = await sui.getObject(AFSUI_SUI_LP_ID);
+  const afsuiSuiTokenNames = afsuiSuiLpObj.fields.type_names;
+
+  const afsuiSuiLpBucket = await sui.getObject(AFSUI_SUI_LP_BUCKET_ID);
+  const afsuiSuiLpBucketStaked = afsuiSuiLpBucket.fields.collateral_vault;
 
   const kriyalpObjs = await sui.getObjects(KRIYA_LP_IDS);
   const kriyaStakedList = kriyalpObjs.map(
@@ -73,20 +86,21 @@ async function tvl(_, _1, _2, { api }) {
   const cetablePSMObj = await sui.getObject(CETABLE_PSM);
   const cetablePSMAmount = cetablePSMObj.fields.pool;
 
+  const stapearlPSMObj = await sui.getObject(STAPEARL_PSM);
+  const stapearlPSMAmount = stapearlPSMObj.fields.pool;
+
   const bucketList = protocolFields.filter((item) =>
     item.type.includes("Bucket")
   );
 
-  const tankList = protocolFields.filter((item) => item.type.includes("Tank"));
+  // const tankList = protocolFields.filter((item) => item.type.includes("Tank"));
 
   for (const bucket of bucketList) {
+    //AF_LP doesn't have price, need to split the tokens
+    if (bucket.type.includes("AF_LP")) continue;
     const coin = bucket.type.split("<").pop()?.replace(">", "") ?? "";
     api.add(coin, bucket.fields.collateral_vault);
   }
-
-  /* for (const tank of tankList) {
-    api.add(BUCK, tank.fields.reserve);
-  } */
 
   for (const [
     index,
@@ -145,8 +159,31 @@ async function tvl(_, _1, _2, { api }) {
   api.add(USDC, Math.floor(halfCetableAmount));
   api.add(USDT, Math.floor(halfCetableAmount));
 
+  // 1 STAPEARL = 0.5 USDC + 0.5 USDT
+  const halfStapearlAmount = Math.floor(stapearlPSMAmount / 2);
+  api.add(USDC, Math.floor(halfStapearlAmount));
+  api.add(USDT, Math.floor(halfStapearlAmount));
+
   const halfBucketusAmount = Math.floor(bucketusPSMAmount / 2);
   api.add(USDC, Math.floor(halfBucketusAmount / 1000));
+
+  //AFSUI-SUI LP
+  const afsuiSuiLpSupply = afsuiSuiLpObj.fields.lp_supply.fields.value;
+  const afsuiSuiLpBalances = afsuiSuiLpObj.fields.normalized_balances;
+  const suiTotalAmount = Math.floor(afsuiSuiLpBalances[0] / 10 ** 18);
+  const afsuiTotalAmount = Math.floor(afsuiSuiLpBalances[1] / 10 ** 18);
+
+  const suiPercentage = Math.floor(suiTotalAmount / afsuiSuiLpSupply);
+  const afsuiPercentage = Math.floor(afsuiTotalAmount / afsuiSuiLpSupply);
+
+  api.add(
+    `0x${afsuiSuiTokenNames[0]}`,
+    Math.floor(suiPercentage * afsuiSuiLpBucketStaked)
+  );
+  api.add(
+    `0x${afsuiSuiTokenNames[1]}`,
+    Math.floor(afsuiPercentage * afsuiSuiLpBucketStaked)
+  );
 }
 
 module.exports = {

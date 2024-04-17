@@ -16,6 +16,10 @@ const addressBook = {
       {name: "eToken Junior Spot", address: "0x6229D78658305a301E177f9dAEa3a0799fd1528C"},
       {name: "eToken Junior Revo", address: "0x6A0e61C757e384eB1E4A2b94F7E02E68e4b4515e"},
       {name: "eToken Junior StormStrong", address: "0xE36D6585F0c200195b196C66644C519e7674b476"},
+      {name: "eToken Junior Barker", address: "0x9F967c614c9573cc4eabE68ae0354E5d11F7eC9D"},
+      {name: "eToken Junior DLT", address: "0x9078dDdeA2F82c27791EF78A9ec9ab0f66bfb6F9"},
+      {name: "eToken Junior Otonomi", address: "0x32a9CBeb2cA148E55F327c6B4673351dD03eD858"},
+      {name: "eToken Junior Bliss", address: "0x71d390C243706b713B5D2b077E942223f7A55d00"},
       // PremiumsAccounts
       {name: "PremiumsAccount Koala", address: "0xCCf5C404d32eB6E777088AB13837a1b8dCBA9328"},
       {name: "PremiumsAccount Innov Zone", address: "0x4f43B8F252887F814ED689346fdb5Bd266394520"},
@@ -23,22 +27,18 @@ const addressBook = {
       {name: "PremiumsAccount StormStrong", address: "0x06347eA3dA6a5B44eEAe3B8F4a65992Ae073e6F4"},
       {name: "PremiumsAccount Revo", address: "0x47f35B4876138b5d96FfDed1e46aE6b58E6e7B31"},
       {name: "PremiumsAccount Spot", address: "0x42118Df6EBb18346ca425f1c67AC739E95aD9358"},
+      {name: "PremiumsAccount Barker", address: "0xa5A8c6b6cb08dB75F5d487F0838D0743871d80a7"},
+      {name: "PremiumsAccount DLT", address: "0x8908d99a4E2fF6b7Bf4563593B02AcBc7bBfaBC1"},
+      {name: "PremiumsAccount Otonomi", address: "0xE43587386E6e8FA127dd008770cdC07dE2Df91E9"},
+      {name: "PremiumsAccount Bliss", address: "0x11b490292799a0edFE37797592F77151C4483442"},
     ],
-    v1: {
-      pool: "0xF7ED72430bEA07D8dB6eC264603811381F5af8e0",
-      asset_manager: "0x09d9Dd252659a497F3525F257e204E7192beF132",
-    }
   }
 };
 
-async function tvl(_timestamp, _block, _blocksOthers, { api }) {
+async function tvl(api) {
   const addresses = addressBook[api.chain];
   const ownerTokens = addresses.reserves.map(i => [[addresses.usdc, addresses.aave_v3_usdc], i.address])
 
-  if (addresses.v1) {
-    ownerTokens.push([[addresses.usdc], addresses.v1.pool])
-    ownerTokens.push([[addresses.aave_v2_usdc], addresses.v1.asset_manager])
-  }
   return sumTokens2({ api, ownerTokens, });
 }
 

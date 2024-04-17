@@ -1,10 +1,10 @@
 const { getLogs, getAddress } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
-async function tvl(_, _b, _cb, { api }) {
+async function tvl(api) {
   const { factory, oldFactory, fromBlock, newFactory, oldEthFactory,factory__2_5, factory__2_5_block } = config[api.chain];
   let logs;
-  let ownerTokens;
+  let ownerTokens = []
   if (factory){
   logs = await getLogs({
     api,
@@ -15,12 +15,12 @@ async function tvl(_, _b, _cb, { api }) {
     fromBlock,
   });
 
-  ownerTokens = logs.map((i) => {
+  ownerTokens.push(...logs.map((i) => {
     return [
       [getAddress(i.topics[2]), getAddress(i.topics[3])],
       getAddress(i.data),
     ];
-  });
+  }))
   }
   if (factory__2_5) {
     const Logs = await getLogs({
@@ -149,9 +149,11 @@ const config = {
     factory__2_5_block: 114721107,
     fromBlock: 112818437,
   },
+  inevm: {
+    factory__2_5: "0x17385e95cb74A20150E4fA092Aa72D57330896C4",
+    factory__2_5_block: 118420,
+  },
 };
-
-module.exports = {};
 
 Object.keys(config).forEach((chain) => {
   module.exports[chain] = { tvl };
