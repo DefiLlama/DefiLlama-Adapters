@@ -1,5 +1,7 @@
 const marketsJSON = require('./market.json');
 const abi = require('./abi.json');
+const { gql } = require('graphql-request');
+const { cachedGraphQuery } = require('../helper/cache');
 
 // --------------------------
 // cvx3pool & yvcrvIB tokens
@@ -33,6 +35,32 @@ const underlyingTokens = {
   optimism: {},
 };
 
+const mimswapGraphConfigurations = {
+  blast: {
+    endpoint: "https://api.studio.thegraph.com/query/59137/mimswap-blast/version/latest",
+    options: {
+      safeBlockLimit: 100,
+      useBlock: false,
+    },
+  },
+};
+
+const mimswapPairReservesQuery = gql`
+  query manyPairReserves($lastId: Bytes!) {
+    pairReserves: pairs(first: 1000, where: { id_gt: $lastId, removed: false }) {
+      id
+      baseToken {
+        address: id
+      }
+      quoteToken {
+        address: id
+      }
+      baseReserve
+      quoteReserve
+    }
+  }
+`;
+
 async function tvl(api) {
   const { chain } = api;
   const marketsArray = Object.entries(marketsJSON[chain]);
@@ -48,6 +76,22 @@ async function tvl(api) {
   ).flat();
   const bals = await api.multiCall({ calls, abi: abi.balanceOf, });
   api.addTokens(tokens, bals);
+
+  const mimswapGraphConfiguration = mimswapGraphConfigurations[chain];
+  if (mimswapGraphConfiguration !== undefined) {
+    const pairReserves = await cachedGraphQuery(
+      `abracadabra/mimswap/${chain}`,
+      mimswapGraphConfiguration.endpoint,
+      mimswapPairReservesQuery,
+      { api, fetchById: true, ...mimswapGraphConfiguration.options }
+    );
+    const mimswapTokens = pairReserves.flatMap((pairReserve) =>
+      [pairReserve.baseToken.address, pairReserve.quoteToken.address]
+    );
+    const mimswapBals = pairReserves.flatMap(({ baseReserve, quoteReserve }) => [baseReserve, quoteReserve]);
+
+    api.addTokens(mimswapTokens, mimswapBals);
+  }
 
   return api.getBalances();
 }
