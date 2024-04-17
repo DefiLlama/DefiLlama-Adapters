@@ -1,22 +1,39 @@
 const utils = require("../helper/utils");
 const sdk = require("@defillama/sdk");
 const RELAYER_URLS = require("./relayerUrls.js");
+const { ethers } = require("ethers");
+
+const nullAddress = "0x0000000000000000000000000000000000000000";
 
 const getTokenBalance = async (tokenAddress, chainName, contractAddress) => {
   try {
-    const balance = (
-      await sdk.api.erc20.balanceOf({
-        target: tokenAddress,
-        owner: contractAddress,
-        chain: chainName,
-      })
-    ).output;
+    let balance;
+    if (tokenAddress === nullAddress) {
+      balance = (
+        await sdk.api.eth.getBalance({
+          target: contractAddress,
+          chain: chainName,
+        })
+      ).output;
+    } else {
+      balance = (
+        await sdk.api.erc20.balanceOf({
+          target: tokenAddress,
+          owner: contractAddress,
+          chain: chainName,
+        })
+      ).output;
+    }
 
-    const decimals = (await sdk.api.erc20.decimals(tokenAddress, chainName))
-      .output;
+    let decimals;
+    if (tokenAddress === nullAddress) {
+      decimals = 18;
+    } else {
+      decimals = (await sdk.api.erc20.decimals(tokenAddress, chainName)).output;
+    }
 
     return {
-      balance: BigInt(balance) / 10n ** BigInt(decimals),
+      balance: ethers.formatUnits(balance, decimals),
       address: tokenAddress,
     };
   } catch (error) {

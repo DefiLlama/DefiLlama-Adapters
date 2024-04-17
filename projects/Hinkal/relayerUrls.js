@@ -4,7 +4,7 @@ const RELAYER_URLS = {
   optimism: "https://optimism.relayer.hinkal.pro",
   polygon: "https://polygon.relayer.hinkal.pro",
   avax: "https://avalanche.relayer.hinkal.pro",
-  op_bnb: "https://bnbMainnet.relayer.hinkal.pro",
+  bsc: "https://bnbMainnet.relayer.hinkal.pro",
   base: "https://base.relayer.hinkal.pro",
 };
 

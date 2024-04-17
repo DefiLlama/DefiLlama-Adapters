@@ -224,7 +224,7 @@ const beefyTokensByChain = {
   optimism: OPTIMISM_BEEFY_TOKENS,
   polygon: POLYGON_BEEFY_TOKENS,
   avax: AVALANCHE_BEEFY_TOKENS,
-  op_bnb: BNB_BEEFY_TOKENS,
+  bsc: BNB_BEEFY_TOKENS,
   base: BASE_BEEFY_TOKENS,
 };
 

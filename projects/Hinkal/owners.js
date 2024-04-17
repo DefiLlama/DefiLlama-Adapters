@@ -12,7 +12,7 @@ const ownerByChain = {
   optimism: OPTIMISM_OWNER,
   polygon: POLYGON_OWNER,
   avax: AVALANCHE_OWNER,
-  op_bnb: BNB_OWNER,
+  bsc: BNB_OWNER,
   base: BASE_OWNER,
 };
 

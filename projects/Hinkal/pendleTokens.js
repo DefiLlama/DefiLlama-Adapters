@@ -117,7 +117,7 @@ const pendleTokensByChain = {
     pt: AVALANCE_PT_TOKENS,
     sy: AVALANCE_SY_TOKENS,
   },
-  op_bnb: {
+  bsc: {
     yt: BNB_YT_TOKENS,
     pt: BNB_PT_TOKENS,
     sy: BNB_SY_TOKENS,

@@ -243,7 +243,7 @@ const gaugeTokensByChain = {
   optimism: OPTIMISM_GAUGE_TOKENS,
   polygon: POLYGON_GAUGE_TOKENS,
   avax: AVALANCHE_GAUGE_TOKENS,
-  op_bnb: BNB_GAUGE_TOKENS,
+  bsc: BNB_GAUGE_TOKENS,
   base: BASE_GAUGE_TOKENS,
 };
 
