@@ -35,17 +35,16 @@ const underlyingTokens = {
 
 async function tvl(api) {
   const { chain } = api;
-  const marketsArray = [];
+  const marketsArray = Object.entries(marketsJSON[chain]);
 
-  for (const [marketContract, lockedToken] of Object.entries(marketsJSON[chain]))
-    marketsArray.push([lockedToken, marketContract]);
-
-  const calls = bentoBoxAddresses[chain].map(bentoBoxAddress => marketsArray.map((market) => ({
-    target: bentoBoxAddress,
-    params: market
-  }))).flat();
+  const calls = bentoBoxAddresses[chain].map(bentoBoxAddress => marketsArray.map(
+    ([marketContract, lockedToken]) => ({
+      target: bentoBoxAddress,
+      params: [lockedToken, marketContract],
+    })
+  )).flat();
   const tokens = bentoBoxAddresses[chain].map(_ =>
-    marketsArray.map(([lockedToken]) => underlyingTokens[chain][lockedToken] ?? lockedToken)
+    marketsArray.map(([, lockedToken]) => underlyingTokens[chain][lockedToken] ?? lockedToken)
   ).flat();
   const bals = await api.multiCall({ calls, abi: abi.balanceOf, });
   api.addTokens(tokens, bals);
