@@ -9,7 +9,8 @@ const coinGeckoIds = {
   usomm: "sommelier",
   uregen: "regen",
   ujuno: "juno-network",
-  ustars: "stargaze"
+  ustars: "stargaze",
+  usaga: "saga-2",
 };
 
 async function tvl() {

@@ -16,12 +16,12 @@ const allLpPools = [
   { poolAddress: cshareRewardPoolAddress, tokenAddress: comfyWoneLp },
 ];
 
-async function calcPool2(block, chain) {
-  return sumTokens2({ chain, block, tokensAndOwners: allLpPools.map(i => ([i.tokenAddress, i.poolAddress, ])), resolveLP: true, })
+async function calcPool2(api) {
+  return sumTokens2({ api, tokensAndOwners: allLpPools.map(i => ([i.tokenAddress, i.poolAddress, ])), resolveLP: true, })
 }
 
-async function onePool2(timestamp, block, chainBlocks) {
-  return calcPool2(chainBlocks.harmony);
+async function onePool2(api) {
+  return calcPool2(api);
 }
 
 module.exports = {
