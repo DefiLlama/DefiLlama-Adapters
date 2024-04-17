@@ -153,13 +153,34 @@ const ARBITRUM_GAUGE_TOKENS = [
 ];
 
 const OPTIMISM_GAUGE_TOKENS = [
-  "0x29c431806E536Fb22ce2Edc8dd6e3C3A0d5689a8",
-  "0xDaA24E888432b5aa607105e256919Ddfc8b327E9",
-  "0xC3691c157D1B3A431B841230a7B11d5a373097e1",
-  "0xCC26A5246C6A04a85E997d6581C1b4f14363841a",
-  "0xeEeeb52E36c78b153caaB2761c369a50b066cDD5",
-  "0x59eC3043D7314B9650294Fd800149b53007f804E",
-  "0xbA65D50Cf4e6E739B2735338a964C3354fAF9B19",
+  {
+    erc20TokenAddress: "0x29c431806E536Fb22ce2Edc8dd6e3C3A0d5689a8",
+    underlyingErc20TokenAddress: "0xc5ae4b5f86332e70f3205a8151ee9ed9f71e0797",
+  },
+  {
+    erc20TokenAddress: "0xDaA24E888432b5aa607105e256919Ddfc8b327E9",
+    underlyingErc20TokenAddress: "0xd53ccbfed6577d8dc82987e766e75e3cb73a8563",
+  },
+  {
+    erc20TokenAddress: "0xC3691c157D1B3A431B841230a7B11d5a373097e1",
+    underlyingErc20TokenAddress: "0x15f52286c0ff1d7a7ddbc9e300dd66628d46d4e6",
+  },
+  {
+    erc20TokenAddress: "0xCC26A5246C6A04a85E997d6581C1b4f14363841a",
+    underlyingErc20TokenAddress: "0x172a5af37f69c69cc59e748d090a70615830a5dd",
+  },
+  {
+    erc20TokenAddress: "0xeEeeb52E36c78b153caaB2761c369a50b066cDD5",
+    underlyingErc20TokenAddress: "0xcb8883d1d8c560003489df43b30612aabb8013bb",
+  },
+  {
+    erc20TokenAddress: "0x59eC3043D7314B9650294Fd800149b53007f804E",
+    underlyingErc20TokenAddress: "0x2eb49a3eff789d7b2286bf17667acbf12d882c17",
+  },
+  {
+    erc20TokenAddress: "0xbA65D50Cf4e6E739B2735338a964C3354fAF9B19",
+    underlyingErc20TokenAddress: "0xcea806562b757aeffa9fe9d0a03c909b4a204254",
+  },
 ];
 
 const POLYGON_GAUGE_TOKENS = [
@@ -216,12 +237,14 @@ const BASE_GAUGE_TOKENS = [
   },
 ];
 
-module.exports = {
-  ETHEREUM_GAUGE_TOKENS,
-  ARBITRUM_GAUGE_TOKENS,
-  OPTIMISM_GAUGE_TOKENS,
-  POLYGON_GAUGE_TOKENS,
-  AVALANCHE_GAUGE_TOKENS,
-  BNB_GAUGE_TOKENS,
-  BASE_GAUGE_TOKENS,
+const gaugeTokensByChain = {
+  ethereum: ETHEREUM_GAUGE_TOKENS,
+  arbitrum: ARBITRUM_GAUGE_TOKENS,
+  optimism: OPTIMISM_GAUGE_TOKENS,
+  polygon: POLYGON_GAUGE_TOKENS,
+  avax: AVALANCHE_GAUGE_TOKENS,
+  op_bnb: BNB_GAUGE_TOKENS,
+  base: BASE_GAUGE_TOKENS,
 };
+
+module.exports = gaugeTokensByChain;

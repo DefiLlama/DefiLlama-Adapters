@@ -67,4 +67,66 @@ const ETHEREUM_SY_TOKENS = [
   "0x34349c5569e7b846c3558961552d2202760a9789",
 ];
 
-module.exports = { ETHEREUM_YT_TOKENS, ETHEREUM_PT_TOKENS, ETHEREUM_SY_TOKENS };
+const ARBITRUM_YT_TOKENS = [];
+const ARBITRUM_PT_TOKENS = [];
+const ARBITRUM_SY_TOKENS = [];
+
+const OPTIMISM_YT_TOKENS = [];
+const OPTIMISM_PT_TOKENS = [];
+const OPTIMISM_SY_TOKENS = [];
+
+const POLYGON_YT_TOKENS = [];
+const POLYGON_PT_TOKENS = [];
+const POLYGON_SY_TOKENS = [];
+
+const AVALANCE_YT_TOKENS = [];
+const AVALANCE_PT_TOKENS = [];
+const AVALANCE_SY_TOKENS = [];
+
+const BNB_YT_TOKENS = [];
+const BNB_PT_TOKENS = [];
+const BNB_SY_TOKENS = [];
+
+const BASE_YT_TOKENS = [];
+const BASE_PT_TOKENS = [];
+const BASE_SY_TOKENS = [];
+
+const pendleTokensByChain = {
+  ethereum: {
+    yt: ETHEREUM_YT_TOKENS,
+    pt: ETHEREUM_PT_TOKENS,
+    sy: ETHEREUM_SY_TOKENS,
+  },
+  arbitrum: {
+    yt: ARBITRUM_YT_TOKENS,
+    pt: ARBITRUM_PT_TOKENS,
+    sy: ARBITRUM_SY_TOKENS,
+  },
+  optimism: {
+    yt: OPTIMISM_YT_TOKENS,
+    pt: OPTIMISM_PT_TOKENS,
+    sy: OPTIMISM_SY_TOKENS,
+  },
+  polygon: {
+    yt: POLYGON_YT_TOKENS,
+    pt: POLYGON_PT_TOKENS,
+    sy: POLYGON_SY_TOKENS,
+  },
+  avax: {
+    yt: AVALANCE_YT_TOKENS,
+    pt: AVALANCE_PT_TOKENS,
+    sy: AVALANCE_SY_TOKENS,
+  },
+  op_bnb: {
+    yt: BNB_YT_TOKENS,
+    pt: BNB_PT_TOKENS,
+    sy: BNB_SY_TOKENS,
+  },
+  base: {
+    yt: BASE_YT_TOKENS,
+    pt: BASE_PT_TOKENS,
+    sy: BASE_SY_TOKENS,
+  },
+};
+
+module.exports = pendleTokensByChain;
