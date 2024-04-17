@@ -7,7 +7,7 @@ const WETH_ADDRESS = "0x4300000000000000000000000000000000000004"
 async function tvl(_, _1, _2, { api }) {
   const createPoolLogs = await getLogs({
     api,
-    fromBlock: BUILDER_CREATE_BLOCK,
+    fromBlock: 489054,
     target: BUILDER_ADDRESS,
     topics: ["0x85e6dd046ca5129caaa517b25babd719637bb32968281fef3ede269234eb7250",],
   });
