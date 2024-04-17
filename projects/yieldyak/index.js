@@ -4,7 +4,7 @@ const { cachedGraphQuery, getConfig } = require('../helper/cache')
 const graphUrl = 'https://api.thegraph.com/subgraphs/name/yieldyak/reinvest-tracker'
 const graphQuery = `{ farms(first: 1000) { id }}`;
 
-async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
+async function tvl(api) {
   const { farms } = await cachedGraphQuery('yieldyak/avax', graphUrl, graphQuery)
   const tokens = await api.multiCall({ abi: 'address:depositToken', calls: farms.map(i => i.id), permitFailure: true, })
   const vals = await api.multiCall({ abi: 'uint256:totalDeposits', calls: farms.map(i => i.id), permitFailure: true, })
@@ -13,7 +13,7 @@ async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
     api.add(token, vals[i])
   })
 }
-async function arbiTvl(timestamp, ethBlock, chainBlocks, { api }) {
+async function arbiTvl(api) {
   const farms = await getConfig('yieldyak/arbi', 'https://staging-api.yieldyak.com/42161/farms')
   const tokens = await api.multiCall({ abi: 'address:depositToken', calls: farms.map(i => i.address), permitFailure: true, })
   const vals = await api.multiCall({ abi: 'uint256:totalDeposits', calls: farms.map(i => i.address), permitFailure: true, })

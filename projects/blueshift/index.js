@@ -3,7 +3,7 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 const abi = require('./abi.json');
 const { registry, manualPool, blueschain, } = require("./config.json");
 
-async function staking(_, _1, _2, { api }) {
+async function staking(api) {
   const chain = api.chain
   if (!manualPool[chain]) return {}
   const value = await api.call({ abi: abi.BlueshiftEarning.getAccDeposit, target: manualPool[chain], })
@@ -12,7 +12,7 @@ async function staking(_, _1, _2, { api }) {
   return api.getBalances()
 }
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const chain = api.chain
   const { reserve, tokens } = blueschain[chain] ?? {}
 

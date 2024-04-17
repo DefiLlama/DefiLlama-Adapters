@@ -1,7 +1,7 @@
 const { sumTokensExport } = require('./helper/unwrapLPs')
 
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   return api.sumTokens({
     tokensAndOwners: [
       ['0xd662908ada2ea1916b3318327a97eb18ad588b5d', '0xa7971b65d86020366e4b9a28e4089bc5b12481af'],

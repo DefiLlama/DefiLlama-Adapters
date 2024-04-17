@@ -18,7 +18,7 @@ const vaultsQuery = `
   }
 `;
 
-async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
+async function tvl(api) {
   const { vaults } = await graphQuery(subgraphUrl, vaultsQuery)
   vaults.forEach(({ baseToken:  { id, decimals }, totalDebt, totalDeposit}) => {
     api.add(id, (totalDeposit - totalDebt) * ( 10 ** decimals))

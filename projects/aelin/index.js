@@ -1,15 +1,14 @@
-const sdk = require('@defillama/sdk');
 const { staking } = require('../helper/staking')
 const { pool2 } = require('../helper/pool2')
-const { unwrapUniswapLPs, sumTokens2, } = require('../helper/unwrapLPs')
+const { sumTokens2, } = require('../helper/unwrapLPs')
 const { getLogs } = require('../helper/cache/getLogs')
 const { default: BigNumber } = require('bignumber.js')
 
 const aelin_data = {
   'ethereum': {
     logConfig: [
-      { target: '0x2c0979b0de5f99c2bde1e698aeca13b55695951e', fromBlock: 13996006  },
-      { target: '0x5541da82549d732878c4104c9887c408790397af', fromBlock: 13846412  },
+      { target: '0x2c0979b0de5f99c2bde1e698aeca13b55695951e', fromBlock: 13996006 },
+      { target: '0x5541da82549d732878c4104c9887c408790397af', fromBlock: 13846412 },
     ],
     'graphUrl': 'https://api.thegraph.com/subgraphs/name/aelin-xyz/aelin',
     'AELIN_ETH_LP': '0x974d51fafc9013e42cbbb9465ea03fe097824bcc',
@@ -32,7 +31,7 @@ const aelin_data = {
 }
 
 function tvl(chain) {
-  return async (timestamp, ethBlock, chainBlocks, { api }) => {
+  return async (api) => {
     const { logConfig } = aelin_data[chain]
     const logs = (await Promise.all(logConfig.map(({ target, fromBlock }) => getLogs({
       api,
@@ -63,37 +62,28 @@ function stakingTVL(chain) {
 }
 
 function pool2TVL(chain) {
-  return async (timestamp, ethBlock, chainBlocks, { api }) => {
+  return async (api) => {
     const stakingContract = aelin_data[chain]['AELIN_ETH_staking']
     const lpToken = aelin_data[chain]['AELIN_ETH_LP']
-    const block = api.block
 
     if (chain === 'ethereum') {
-      const staked = await pool2(stakingContract, lpToken, chain)(timestamp, ethBlock, chainBlocks, { api })
+      const staked = await pool2(stakingContract, lpToken, chain)(api)
       const aelin_addr = `ethereum:${aelin_data[chain]['AELIN']}`
       staked['AELIN'] = BigNumber(staked[aelin_addr]).div(1e18).toFixed(0)
       staked[aelin_addr] = 0
       return staked
     }
     else if (chain === 'optimism') {
-      const balances = {}
-      const transformAddress = (addr) => `${chain}:${addr}`;
-      const { output: heldLPshares } = await sdk.api.abi.call({
-        abi: 'erc20:balanceOf',
-        target: lpToken,
-        params: stakingContract,
-        chain,
-        block,
-      })
-      const lpBalances = [
-        {
-          balance: heldLPshares,
-          token: lpToken
-        }
-      ]
-      // Unwrao Gelato pools
-      await unwrapUniswapLPs(balances, lpBalances, block, chain, transformAddress, [], 'gelato')
-      return balances
+      const bal = await api.call({ abi: 'erc20:balanceOf', target: lpToken, params: stakingContract, })
+      const supply = await api.call({ abi: 'erc20:totalSupply', target: lpToken, })
+      const token0 = await api.call({ abi: 'address:token0', target: lpToken, })
+      const token1 = await api.call({ abi: 'address:token1', target: lpToken, })
+      const { bal0, bal1 } = await api.call({ abi: 'function getUnderlyingBalances() view returns (uint256 bal0, uint256 bal1)', target: lpToken, })
+      const ratio = bal/supply
+      api.add(token0, ratio*bal0)
+      api.add(token1, ratio*bal1)
+
+      return api.getBalances()
     }
   }
 }
@@ -101,12 +91,12 @@ function pool2TVL(chain) {
 module.exports = {
   ethereum: {
     tvl: tvl('ethereum'),
-    pool2: pool2TVL('ethereum'), 
+    pool2: pool2TVL('ethereum'),
   },
   optimism: {
     tvl: tvl('optimism'),
-    staking: stakingTVL('optimism'), 
-    pool2: pool2TVL('optimism'), 
+    staking: stakingTVL('optimism'),
+    pool2: pool2TVL('optimism'),
   },
   methodology: 'Aelin TVL consists of purchaseTokens held by pools, as well as AELIN token (staking) and LP (pool2) staked to receive a share of the revenue',
 }

@@ -9,7 +9,7 @@ const { getPriceMIM, getPriceAura, getPriceSushi } = require("./getPrice");
 const prllxERC20 = require("./abis/prllxERC20.json");
 const contracts = require("./contracts.json");
 
-async function ethTvl(time, _ethBlock, { ethereum: block }, { api }) {
+async function ethTvl(api) {
   const strategyId = await api.call({
     target: contracts.eth.parallaxAddress,
     params: contracts.eth.strategyAddress,
@@ -44,7 +44,7 @@ async function ethTvl(time, _ethBlock, { ethereum: block }, { api }) {
   return balances;
 }
 
-async function arbitrumTvl(time, _ethBlock, { arbitrum: block }, { api }) {
+async function arbitrumTvl(api) {
   const balances = {};
 
   const strategyId = await api.call({
@@ -149,7 +149,7 @@ async function arbitrumTvl(time, _ethBlock, { arbitrum: block }, { api }) {
   return balances;
 }
 
-async function eraTvl(_, _b, _cb, { api }) {
+async function eraTvl(api) {
   if (contracts.era.length > 0) {
     for (let i = 0; i < contracts.era.length; i++) {
       const strItem = contracts.era[i];
@@ -167,14 +167,24 @@ async function eraTvl(_, _b, _cb, { api }) {
       const pair = strItem.lpAddress;
       api.add(pair, strategy.totalStaked);
     }
-    return sumUnknownTokens({ api, resolveLP: true, lps: contracts.era.map((strItem) => strItem.lpAddress), });
+    return sumUnknownTokens({
+      api,
+      resolveLP: true,
+      lps: contracts.era.map((strItem) => strItem.lpAddress),
+    });
   }
 }
 
 module.exports = {
   methodology: "TVL comes from the Staking Vaults",
   arbitrum: {
-    tvl: arbitrumTvl,
+    tvl: sdk.util.sumChainTvls([
+      arbitrumTvl,
+      sumTokensExport({
+        owner: "0x9bab3c2ccf202edf451d76c8690c2d1716f4ae69",
+        resolveUniV3: true,
+      }),
+    ]),
     staking: staking(
       [
         "0x82FD636D7A28a20635572EB8ec0603ee264B8651",

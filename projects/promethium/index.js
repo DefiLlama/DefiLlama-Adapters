@@ -13,7 +13,7 @@ const abi = {
   "totalAssets": "uint256:totalAssets"
 }
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   const tokens = await api.multiCall({ abi: abi.asset, calls: pools, permitFailure: true, })
   const bals = await api.multiCall({ abi: abi.totalAssets, calls: pools, permitFailure: true, })
   tokens.forEach((v, i) => {
