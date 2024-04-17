@@ -29,7 +29,7 @@ const config = {
       '0xec30d02f10353f8efc9601371f56e808751f396f',
       '0xf16e9b0d03470827a95cdfd0cb8a8a3b46969b91',
       '0xf8da05c625a6e601281110cba52b156e714e1dc2',
-      '0xf97deb1c0bb4536ff16617d29e5f4b340fe231df',
+      '0xf97deb1c0bb4536ff16617d29e5f4b340fe231df'
     ],
   },
   tron: {
@@ -38,7 +38,7 @@ const config = {
       'TQeNNo5zVarhdKm5EiJSekfNXg6H1tRN4n',
       'TRYL7PKCG4b4xRCM554Q5J6o8f1UjUmfnY',
       'TSGEXDSRMtzt9swPSgzr8MKefcgEawEdmb',
-      'TUpHuDkiCCmwaTZBHZvQdwWzGNm5t8J2b9',
+      'TUpHuDkiCCmwaTZBHZvQdwWzGNm5t8J2b9'
     ]
   },
   bitcoin: {
@@ -159,22 +159,20 @@ const config = {
   },
   arbitrum: {
     owners: [
-      '0xd6216fc19db775df9774a6e33526131da7d19a2c',
-      '0x03e6fa590cadcf15a38e86158e9b3d06ff3399ba',
-      '0xf3f094484ec6901ffc9681bcb808b96bafd0b8a8',
       '0x00f3e09abe73aec2d6ad7b8820049b60ebc73f94',
-      '0xb8e6d31e7b212b2b7250ee9c26c56cebbfbe6b23'
+      '0x03e6fa590cadcf15a38e86158e9b3d06ff3399ba',
+      '0xb8e6d31e7b212b2b7250ee9c26c56cebbfbe6b23',
+      '0xd6216fc19db775df9774a6e33526131da7d19a2c',
+      '0xf3f094484ec6901ffc9681bcb808b96bafd0b8a8',
     ],
   },
   algorand: {
     owners: [ // added on 23/03/24
-               'T6MXHXMGXURKJ7AD5NCB4IYPLWXYXKKFLLO5KAPJ56GKS7BFXHNHOODZCM',
                '2X2GV36S66B64URLMRZ4O4IGLWSM5MEKIE6J5VREIZC62GVKCSH25IG4PM',
                'IMGMVBZEPMM36AIMWI7FZHG2G44KEESC5ALZHWX7B7SBNBDY6Z7COYMO6U',
                'NDVDIGWEP77WQDDU5M6F7AAS77AOFXLML7DNNPUEVLQMKTIFHYTTMAG6OU',
                'WBI5LT2BQ7FFYBXW2PEDVB6KBX2F3C77WXBJ2FPVERBXXBUV6SC7XXPGWM',
                'YXDKDH5XHXL6OYMH2HYCJCXOZWPOBEUNK5ICFVJRFW3JVQXZ6HQ6QPVQVA',
-               '3CIPOIS4KLKSA3XOCIRKX2TVUJ2V3F5A4P525VGMFCPGN7QFKDDYUABYOY',
            ],
   },
   kcc: {
@@ -200,9 +198,24 @@ const config = {
       'BmFdpraQhkiDQE6SnfG5omcA1VwzqfXrwtNYBwWTymy6',
       'EkUy8BB574iEVAQE9dywEiMhp9f2mFBuFu6TBKAkQxFY',
       'HVh6wHNBAsG3pq1Bj5oCzRjoWKVogEDHwUHkRz3ekFgt',
-      'BmFdpraQhkiDQE6SnfG5omcA1VwzqfXrwtNYBwWTymy6',
-      'EkUy8BB574iEVAQE9dywEiMhp9f2mFBuFu6TBKAkQxFY',
-      'HVh6wHNBAsG3pq1Bj5oCzRjoWKVogEDHwUHkRz3ekFgt'
+    ],
+  },
+  bsc: {
+    owners: [
+      '0x1692e170361cefd1eb7240ec13d048fd9af6d667',
+      '0x17a30350771d02409046a683b18fe1c13ccfc4a8',
+      '0x3ad7d43702bc2177cc9ec655b6ee724136891ef4',
+      '0x53f78a071d04224b8e254e243fffc6d9f2f3fa23',
+      '0xb8e6d31e7b212b2b7250ee9c26c56cebbfbe6b23',
+      '0xd6216fc19db775df9774a6e33526131da7d19a2c',
+      '0xf8ba3ec49212ca45325a2335a8ab1279770df6c0',
+    ],
+  },
+  kava: {
+    owners: [
+      '0x1dd9319a115d36bd0f71c276844f67171678e17b',
+      '0xd6216fc19db775df9774a6e33526131da7d19a2c',
+      '0xfb6a733bf7ec9ce047c1c5199f18401052eb062d',
     ],
   }
 }

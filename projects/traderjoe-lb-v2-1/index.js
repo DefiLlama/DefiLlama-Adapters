@@ -37,4 +37,4 @@ Object.keys(factories).forEach(chain => {
   module.exports[chain] = { tvl }
 })
 
-module.exports.arbitrum.staking = staking("0x43646A8e839B2f2766392C1BF8f60F6e587B6960", "0x371c7ec6D8039ff7933a2AA28EB827Ffe1F52f07", "arbitrum")
+module.exports.arbitrum.staking = staking("0x43646A8e839B2f2766392C1BF8f60F6e587B6960", "0x371c7ec6D8039ff7933a2AA28EB827Ffe1F52f07")
