@@ -184,19 +184,13 @@ module.exports = {
       ];
       strategies.forEach(({ vault, reStakingToken }) => tokensAndOwners.push([reStakingToken, vault]));
 
-      const mswETHPrice = await api.call({
-        abi: contractAbis.getMswEthPrice,
-        target: mswETH.reStakingToken,
-      });
       //  mswETH
       const mswETHBal = await api.call({
         abi: contractAbis.getMswBalance,
         target: mswETH.vault,
       });
 
-      const balInETH = (mswETHBal * mswETHPrice) / 1e18;
-
-      api.add(ADDRESSES.ethereum.WETH, balInETH);
+      api.add(mswETH.reStakingToken, balInETH);
 
       //new strats on pendle v2
       const pTweETH = {
