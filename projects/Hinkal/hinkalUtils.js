@@ -2,49 +2,66 @@ const utils = require("../helper/utils");
 const sdk = require("@defillama/sdk");
 const RELAYER_URLS = require("./relayerUrls.js");
 const { ethers } = require("ethers");
+const ownerByChain = require("./owners.js");
 
 const nullAddress = "0x0000000000000000000000000000000000000000";
 
-const getTokenBalance = async (tokenAddress, chainName, contractAddress) => {
-  try {
-    let balance;
-    if (tokenAddress === nullAddress) {
-      balance = (
-        await sdk.api.eth.getBalance({
-          target: contractAddress,
-          chain: chainName,
-        })
-      ).output;
-    } else {
-      balance = (
-        await sdk.api.erc20.balanceOf({
-          target: tokenAddress,
-          owner: contractAddress,
-          chain: chainName,
-        })
-      ).output;
-    }
+const getAllTokenBalances = async (tokenList, chain) => {
+  const balanceCalls = tokenList.map((token) => ({
+    target: token,
+    params: ownerByChain[chain],
+  }));
+  const balances = (
+    await sdk.api.abi.multiCall({
+      calls: balanceCalls,
+      abi: "erc20:balanceOf",
+      chain,
+    })
+  ).output;
 
-    let decimals;
-    if (tokenAddress === nullAddress) {
-      decimals = 18;
-    } else {
-      decimals = (await sdk.api.erc20.decimals(tokenAddress, chainName)).output;
-    }
+  const decimalCalls = tokenList.map((token) => ({
+    target: token,
+  }));
+
+  const decimals = (
+    await sdk.api.abi.multiCall({
+      calls: decimalCalls,
+      abi: "erc20:decimals",
+      chain,
+    })
+  ).output;
+
+  const tokenBalances = balances.map((bal) => {
+    const token = bal.input.target;
+
+    const tokenBalance = bal.output;
+
+    const tokenDecimal = decimals?.find(
+      (decimalOutput) => decimalOutput.input.target === token
+    ).output;
 
     return {
-      balance: ethers.formatUnits(balance, decimals),
-      address: tokenAddress,
+      balance: ethers.formatUnits(tokenBalance, Number(tokenDecimal ?? 18)),
+      address: token,
     };
-  } catch (error) {
-    console.error(error);
-    return {
-      balance: 0,
-      address: tokenAddress,
-    };
-  }
+  });
+
+  //Add Native token balance.
+
+  const nativeTokenBalance = (
+    await sdk.api.eth.getBalance({
+      target: ownerByChain[chain],
+      chain,
+    })
+  ).output;
+
+  tokenBalances.push({
+    address: nullAddress,
+    balance: ethers.formatUnits(nativeTokenBalance, 18),
+  });
+
+  return tokenBalances.filter((tokenBal) => Number(tokenBal.balance) > 0);
 };
-
 const fetchTotalValue = async (tokenBalances, chainName) => {
   const tokenAddresses = tokenBalances.map((token) => token.address);
   const prices = (
@@ -57,6 +74,12 @@ const fetchTotalValue = async (tokenBalances, chainName) => {
     const price = prices[index];
     const tokenBalance = Number(token.balance);
     if (!price || !tokenBalance || isNaN(price) || isNaN(tokenBalance)) {
+      console.log("Some error occured for token", {
+        token: token.address,
+        bakance: tokenBalance,
+        price,
+        chainName,
+      });
       return {
         tokenAddress: token.address,
         tokenBalance: 0,
@@ -70,4 +93,4 @@ const fetchTotalValue = async (tokenBalances, chainName) => {
   return total.filter((token) => token && token.tokenBalance > 0);
 };
 
-module.exports = { getTokenBalance, fetchTotalValue };
+module.exports = { getAllTokenBalances, fetchTotalValue };
