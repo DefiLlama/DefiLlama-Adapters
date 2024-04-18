@@ -10,7 +10,7 @@ module.exports = {
       const supply = await api.call({ abi: 'erc20:totalSupply', target: bctAddress, })
       api.add(bctAddress, supply)
     },
-    staking: staking("0x25d28a24Ceb6F81015bB0b2007D795ACAc411b4d", "0x4e78011ce80ee02d2c3e649fb657e45898257815", "polygon"),
+    staking: staking("0x25d28a24Ceb6F81015bB0b2007D795ACAc411b4d", "0x4e78011ce80ee02d2c3e649fb657e45898257815"),
   },
   hallmarks: [
     [1709828986, "BCT administrative control transferred to KlimaDAO"],

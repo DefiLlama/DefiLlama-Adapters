@@ -1,40 +1,73 @@
 const utils = require("../helper/utils");
 const sdk = require("@defillama/sdk");
+const RELAYER_URLS = require("./relayerUrls.js");
+const { ethers } = require("ethers");
+
+const nullAddress = "0x0000000000000000000000000000000000000000";
 
 const getTokenBalance = async (tokenAddress, chainName, contractAddress) => {
-  const balance = (
-    await sdk.api.erc20.balanceOf({
-      target: tokenAddress,
-      owner: contractAddress,
-      chain: chainName,
-    })
-  ).output;
+  try {
+    let balance;
+    if (tokenAddress === nullAddress) {
+      balance = (
+        await sdk.api.eth.getBalance({
+          target: contractAddress,
+          chain: chainName,
+        })
+      ).output;
+    } else {
+      balance = (
+        await sdk.api.erc20.balanceOf({
+          target: tokenAddress,
+          owner: contractAddress,
+          chain: chainName,
+        })
+      ).output;
+    }
 
-  const decimals = (await sdk.api.erc20.decimals(tokenAddress, chainName))
-    .output;
+    let decimals;
+    if (tokenAddress === nullAddress) {
+      decimals = 18;
+    } else {
+      decimals = (await sdk.api.erc20.decimals(tokenAddress, chainName)).output;
+    }
 
-  return {
-    balance: BigInt(balance) / 10n ** BigInt(decimals),
-    address: tokenAddress,
-  };
+    return {
+      balance: ethers.formatUnits(balance, decimals),
+      address: tokenAddress,
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      balance: 0,
+      address: tokenAddress,
+    };
+  }
 };
 
-const fetchTotalValue = async (tokenBalances) => {
+const fetchTotalValue = async (tokenBalances, chainName) => {
   const tokenAddresses = tokenBalances.map((token) => token.address);
   const prices = (
-    await utils.postURL(
-      "https://ethMainnet.relayer.hinkal.pro/get-token-prices",
-      { erc20Addresses: tokenAddresses }
-    )
+    await utils.postURL(`${RELAYER_URLS[chainName]}/get-token-prices`, {
+      erc20Addresses: tokenAddresses,
+    })
   ).data.prices;
 
-  console.log({ prices });
-
-  return tokenBalances.reduce(
-    (currentTotal, tokenBal, currIdx) =>
-      currentTotal + Number(tokenBal.balance) * prices[currIdx],
-    0
-  );
+  const total = tokenBalances.map((token, index) => {
+    const price = prices[index];
+    const tokenBalance = Number(token.balance);
+    if (!price || !tokenBalance || isNaN(price) || isNaN(tokenBalance)) {
+      return {
+        tokenAddress: token.address,
+        tokenBalance: 0,
+      };
+    }
+    return {
+      tokenAddress: token.address,
+      tokenBalance: tokenBalance * price,
+    };
+  });
+  return total.filter((token) => token && token.tokenBalance > 0);
 };
 
 module.exports = { getTokenBalance, fetchTotalValue };
