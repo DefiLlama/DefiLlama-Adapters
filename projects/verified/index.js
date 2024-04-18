@@ -7,7 +7,7 @@ const chainConfig = {
       fromBlock: 42888477,
     },
     secondary: {
-      address: "0x9e4fcc52d9F34DC0dc3744E5b8c3eEC32e8b8214",
+      address: "0x775979123aD2e6DA3074bB38116430FEAE26974f",
       fromBlock: 54695675,
     },
     margin: {
@@ -123,22 +123,29 @@ const getChainTvls = (chain) => {
     }
     //extract currencies tvl and showcase table for secondary pool
     if (secondaryLogs && secondaryLogs.length > 0) {
+      const secondaryCurrencies = secondaryLogs
+        .map((i) => i.currencySettled)
+        .flat();
+      const currenciesDecimals = await api.multiCall({
+        abi: "uint:decimals",
+        calls: secondaryCurrencies,
+      });
       const secondaryTvls = secondaryLogs
         .map((i, idx) => {
           if (idx === 0) {
-            return Number(i.amount);
+            const rawAmount = Number(i.amount) / 10 ** 18; //since amount is expressed in 18 decimals
+            return rawAmount * 10 ** currenciesDecimals[idx];
           } else {
             if (Number(i.price) > Number(secondaryTvls[idx - 1].price)) {
-              return Number(i.amount);
+              const rawAmount = Number(i.amount) / 10 ** 18; //since amount is expressed in 18 decimals
+              return rawAmount * 10 ** currenciesDecimals[idx];
             } else {
               //Todo: reduce with % reduction??
-              return Number(-i.amount);
+              const rawAmount = Number(i.amount) / 10 ** 18; //since amount is expressed in 18 decimals
+              return -rawAmount * 10 ** currenciesDecimals[idx];
             }
           }
         })
-        .flat();
-      const secondaryCurrencies = secondaryLogs
-        .map((i) => i.currencySettled)
         .flat();
       secondaryTvls.forEach((tvl) => {
         allTvls.push(tvl);
