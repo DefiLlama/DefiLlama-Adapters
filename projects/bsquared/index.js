@@ -14,6 +14,9 @@ const BRC20Owners = [
 const ADDRESSES_ETHEREUM_STONE = '0x7122985656e38BDC0302Db86685bb972b145bD3C';
 
 module.exports = {
+  hallmarks: [
+    [1710259680, "Cease pre-deposit"],
+  ],
   methodology: "Staking tokens via BSquared Network Buzz counts as TVL",
   bitcoin: {
     tvl: sdk.util.sumChainTvls([
