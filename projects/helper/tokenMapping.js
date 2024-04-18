@@ -49,6 +49,7 @@ const fixBalancesTokens = {
   },
   linea: {
     '0x894134a25a5fac1c2c26f1d8fbf05111a3cb9487': { coingeckoId: 'grai', decimals: 18, },
+    '0x023617babed6cef5da825bea8363a5a9862e120f': { coingeckoId: "savings-dai", decimals: 18, },
   },
   arbitrum: {
     '0xe46C5eA6Da584507eAF8dB2F3F57d7F578192e13': { coingeckoId: 'zeepr', decimals: 18, },
@@ -111,9 +112,6 @@ const fixBalancesTokens = {
   bsquared: {
     '0x0000000000000000000000000000000000000000': { coingeckoId: "bitcoin", decimals: 18, },
   },
-  linea: {
-    '0x023617babed6cef5da825bea8363a5a9862e120f': { coingeckoId: "savings-dai", decimals: 18, },
-  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
