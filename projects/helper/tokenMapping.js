@@ -113,7 +113,7 @@ const fixBalancesTokens = {
     '0x0000000000000000000000000000000000000000': { coingeckoId: "bitcoin", decimals: 18, },
   },
   bfc: {
-    '0x2f8a25ac62179b31d62d7f80884ae57464699059': { coingeckoId: "usd-coin", decimals: 18, },
+    '0x6906Ccda405926FC3f04240187dd4fAd5DF6d555': { coingeckoId: "usd-coin", decimals: 18, },
   }
 }
 
