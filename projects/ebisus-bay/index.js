@@ -8,7 +8,7 @@ const bankContract = '0x1E16Aa4Bb965478Df310E8444CD18Fa56603A25F'
 
 module.exports = {
     misrepresentedTokens: true,
-    methodology: "Factory address (0x5f1d751f447236f486f4268b883782897a902379) is used to find the LP pairs. Users can also stake FRTN, the platform token, in another contract for rewards.",
+    methodology: "The TVL accounts for all LP on the dex, using the factory address 0x5f1d751f447236f486f4268b883782897a902379). Staking accounts for the FRTN staked in the bank on our platform.",
   cronos: {
     staking: staking(bankContract, frtnToken),
     tvl: getUniTVL({
