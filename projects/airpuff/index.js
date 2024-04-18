@@ -1,53 +1,103 @@
-//import utils
+const { staking } = require("../helper/staking");
 const ADDRESSES = require("../helper/coreAssets.json");
-
 const contractAbis = {
-  readOraclePrice: {
-    inputs: [],
-    name: "read",
-    outputs: [
-      { internalType: "int224", name: "value", type: "int224" },
-      { internalType: "uint32", name: "timestamp", type: "uint32" },
-    ],
-    stateMutability: "view",
-    type: "function",
-  }, //
+  readOraclePrice: "function read() view returns (int224 value, uint32 timestamp)",
   balanceOf: "function balanceOf(address) external view returns (uint256)",
   getPrice: "function answer() external view returns (uint256)",
+  getTotalSupply: "function totalSupply() external view returns (uint256)",
+  getTotalAssets: "function totalAssets() external view returns (uint256)",
+  getVectorSharePrice: "function getVectorSharePrice() external view returns (uint256)",
+  getMswEthPrice: "function exchangeRateToNative() external view returns (uint256)",
+  getMswBalance: "function getAllEigeinPieCycleDepositAmounts() external view returns (uint256)",
+  getUnderlyingPrice: "function getUnderlyingPrice(address cToken) view returns (uint256)",
+  getUniswapPrice:
+    "function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, uint8 observationCardinalityNext, uint8 observationCardinalityNext)",
 };
 
 module.exports = {
   misrepresentedTokens: true,
 
+  zklink: {
+    tvl: async (api) => {
+      const pufEth1x = {
+        vault: "0xD06E74D03a98A085C6060C4148902d2048C2D458",
+        reStakingToken: "0x1B49eCf1A8323Db4abf48b2F5EFaA33F7DdAB3FC",
+      };
+
+      await api.sumTokens({
+        tokensAndOwners: [[pufEth1x.reStakingToken, pufEth1x.vault]],
+      });
+    },
+  },
+
+  mode: {
+    tvl: async (api) => {
+      const lendingMode = {
+        eth: "0x89C133c5e8eD4Cd7CD87A1A00c1e70c13A29b90B",
+      };
+      await api.sumTokens({
+        tokensAndOwners: [[ADDRESSES.mode.WETH, lendingMode.eth]],
+      });
+
+      const ezETH = {
+        vault: "0x497eB27Ca1ed7566653edf811b03d6418a03FC9d",
+        reStakingToken: ADDRESSES.blast.ezETH,
+        oracle: "0x2BAF3A2B667A5027a83101d218A9e8B73577F117", //Renzo
+        oracleToken: "0x59e710215d45f584f44c0fee83da6d43d762d857",
+      };
+
+      const ezETH1x = {
+        vault: "0x9c96d0Cc5341654167ee35DB4F288ae523fe8779",
+        reStakingToken: ADDRESSES.blast.ezETH,
+        oracle: "0x2BAF3A2B667A5027a83101d218A9e8B73577F117", //Renzo
+        oracleToken: "0x59e710215d45f584f44c0fee83da6d43d762d857",
+      };
+
+      const balOfezETH = await api.call({
+        abi: contractAbis.balanceOf,
+        target: ezETH.reStakingToken,
+        params: [ezETH.vault],
+      });
+
+      const balOfezETH1x = await api.call({
+        abi: contractAbis.balanceOf,
+        target: ezETH.reStakingToken,
+        params: [ezETH1x.vault],
+      });
+
+      const priceOfezETH = await api.call({
+        target: ezETH.oracle,
+        abi: contractAbis.getUnderlyingPrice,
+        params: [ezETH.oracleToken],
+      });
+
+      const ezETHBalInETH = (balOfezETH * priceOfezETH) / 1e18;
+
+      const ezETH1xBalInETH = (balOfezETH1x * priceOfezETH) / 1e18;
+
+      api.add(ADDRESSES.mode.WETH, ezETHBalInETH);
+      api.add(ADDRESSES.mode.WETH, ezETH1xBalInETH);
+    },
+  },
+
   ethereum: {
     tvl: async (api) => {
       const lendingMain = {
         eth: "0xdeF3AA48bad043e53207d359dcDFdE46F50b6C02", //ETH
+        sUSD: "0x7c2a7009ffE52a69a8C877b47B07D5dB59C0e3b3", // Not lending pool, staking pool
       };
-      await api.sumTokens({
-        tokensAndOwners: [[ADDRESSES.ethereum.WETH, lendingMain.eth]],
-      });
+      const tokensAndOwners = [
+        [ADDRESSES.ethereum.WETH, lendingMain.eth],
+        [ADDRESSES.ethereum.sUSDe, lendingMain.sUSD],
+      ];
 
       const eETH = {
         vault: "0xE543eBa28a3793d5ae747A2164A306DB1767cDAe",
         reStakingToken: "0xeA1A6307D9b18F8d1cbf1c3Dd6aad8416C06a221",
         oracle: "0xb09cbB6Aa95A004F9aeE4349DF431aF5ad03ECe4",
       };
+      tokensAndOwners.push([eETH.reStakingToken, eETH.vault]);
 
-      const eETHPrice = await api.call({
-        target: eETH.oracle,
-        abi: contractAbis.getPrice,
-      });
-
-      const eETHBal = await api.call({
-        abi: contractAbis.balanceOf,
-        target: eETH.reStakingToken,
-        params: [eETH.vault],
-      });
-
-      const eETHBalInETH = (eETHBal * eETHPrice) / 1e18;
-
-      api.add(ADDRESSES.ethereum.WETH, eETHBalInETH);
       // leverage users
       const ezETH = {
         vault: "0x32a0ce2bDfc37eE606aB905b4f9fC286049A774f",
@@ -97,26 +147,74 @@ module.exports = {
         oracle: "0x1bEB65b15689cCAeb5dA191c9fd5F94513923Cab",
       };
 
-      const strategies = [ezETH, weETH, rsETH, ezETH1x, weETH1x, rsETH1x, bedRockETH, bedRockETH1x];
+      const svETH = {
+        vault: "0xaF33b6372354149c33893B6fA6959Be0607D53dE",
+        reStakingToken: "0x6733F0283711F225A447e759D859a70b0c0Fd2bC",
+        oracle: "svETH",
+      };
 
-      for (const strategy of strategies) {
-        const bal = await api.call({
-          abi: contractAbis.balanceOf,
-          target: strategy.reStakingToken,
-          params: [strategy.vault],
-        });
+      const svETH1x = {
+        vault: "0x060Feab7904378e2A487974e7Ba98251aD65247F",
+        reStakingToken: "0x6733F0283711F225A447e759D859a70b0c0Fd2bC",
+        oracle: "svETH",
+      };
 
-        const lrETHPriceInETH = await api.call({
-          target: strategy.oracle,
-          abi: contractAbis.readOraclePrice,
-        });
+      const mswETH = {
+        vault: "0x7c505E03460aEF7FE88e218CC5fcEeCCcA4C4394",
+        reStakingToken: "0x32bd822d615A3658A68b6fDD30c2fcb2C996D678",
+      };
 
-        const balInETH = (bal * lrETHPriceInETH.value) / 1e18;
+      const mswETH1x = {
+        vault: "0x1100195fbdA2f22AA6f394E6C65f168779Fe572c",
+        reStakingToken: "0x32bd822d615A3658A68b6fDD30c2fcb2C996D678",
+      };
+      const strategies = [
+        ezETH,
+        weETH,
+        rsETH,
+        ezETH1x,
+        weETH1x,
+        rsETH1x,
+        bedRockETH,
+        bedRockETH1x,
+        svETH1x,
+        svETH,
+        // mswETH, @note require another function to return the balance of
+        mswETH1x,
+      ];
+      strategies.forEach(({ vault, reStakingToken }) => tokensAndOwners.push([reStakingToken, vault]));
 
-        api.add(ADDRESSES.ethereum.WETH, balInETH);
-      }
+      //  mswETH
+      const mswETHBal = await api.call({
+        abi: contractAbis.getMswBalance,
+        target: mswETH.vault,
+      });
+
+      api.add(mswETH.reStakingToken, mswETHBal);
+
+      //new strats on pendle v2
+      const pTweETH = {
+        vault: "0xE9E2087CD1179378C847C1f3B73CCA929e3deb95",
+        pendleAddress: "0xc69Ad9baB1dEE23F4605a82b3354F8E40d1E5966",
+      };
+
+      const pTezETH = {
+        vault: "0x679EB9b7C57d9B98684034CDAfC2F4a72ABfEBD6",
+        pendleAddress: "0xeee8aed1957ca1545a0508afb51b53cca7e3c0d1",
+      };
+
+      const pTsETH = {
+        vault: "0x72Da018b1C7FAACEAa141DEc753F1fFe88c493AD",
+        pendleAddress: "0xb05cabcd99cf9a73b19805edefc5f67ca5d1895e",
+      };
+
+      const tokensAndOwners2 = [pTweETH, pTezETH, pTsETH].map((i) => [i.pendleAddress, i.vault]);
+      tokensAndOwners.push(...tokensAndOwners2);
+      await api.sumTokens({ tokensAndOwners });
     },
+    staking: staking("0x296281cC6EB049F33aB278D946F18d9cacCFcfB5", "0x2BE056e595110B30ddd5eaF674BdAC54615307d9"),
   },
+  //-----------------------------------------------------------------------//
 
   arbitrum: {
     tvl: async (api) => {
@@ -144,7 +242,7 @@ module.exports = {
       // leverage users
       const ezETH = {
         vault: "0x6295248F578bFA9c057a3e1182BED27121530E7A",
-        reStakingToken: "0x2416092f143378750bb29b79eD961ab195CcEea5",
+        reStakingToken: ADDRESSES.blast.ezETH,
         oracle: "0x28c1576eb118f2Ccd02eF2e6Dbd732F5C8D2e86B", //Renzo
       };
 
@@ -162,7 +260,7 @@ module.exports = {
 
       const ezETH1x = {
         vault: "0x0bAc1a3D569c16D8AD9D3aB37f61dAF18DCfF781" /*vault*/,
-        reStakingToken: "0x2416092f143378750bb29b79eD961ab195CcEea5" /*reStakingToken*/,
+        reStakingToken: ADDRESSES.blast.ezETH /*reStakingToken*/,
         oracle: "0x28c1576eb118f2Ccd02eF2e6Dbd732F5C8D2e86B" /*oracle*/,
       };
       const weETH1x = {

@@ -23,7 +23,7 @@ module.exports = {
   },
   celo: {
     tvl: () => ({}),
-    staking: stakings([STAKED_ETHIX_CELO], ETHIX_TOKEN_CELO, 'celo')
+    staking: stakings([STAKED_ETHIX_CELO], ETHIX_TOKEN_CELO)
   },
   hallmarks:[
     [1608640694, "Ethix launch"],
