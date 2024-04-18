@@ -52,7 +52,7 @@ const blacklisted_LPS = new Set([
 
 function isICHIVaultToken(symbol, token, chain) {
   if (symbol === 'ICHI_Vault_LP') return true
-  if (chain === 'bsc' &&  symbol.startsWith('IV-') && symbol.endsWith('-THE')) return true
+  if (chain === 'bsc' && symbol.startsWith('IV-') && symbol.endsWith('-THE')) return true
   return false
 }
 
@@ -73,7 +73,7 @@ function isLP(symbol, token, chain) {
   if (chain === 'base' && ['RCKT-V2'].includes(symbol)) return true
   if (chain === 'wan' && ['WSLP'].includes(symbol)) return true
   if (chain === 'telos' && ['zLP'].includes(symbol)) return true
-  if (chain === 'polygon' && ['MbtLP', 'GLP', ].includes(symbol)) return true
+  if (chain === 'polygon' && ['MbtLP', 'GLP',].includes(symbol)) return true
   if (chain === 'ethereum' && (['SUDO-LP'].includes(symbol) || symbol.endsWith('LP-f'))) return false
   if (chain === 'dogechain' && ['DST-V2'].includes(symbol)) return true
   if (chain === 'harmony' && ['HLP'].includes(symbol)) return true
@@ -302,7 +302,14 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
   })
 
   sdk.log('Balance table for [%s] %s', chain, tableLabel)
-  console.table(logObj.filter(i => !/\.(com|net|org|xyz|site)\s/.test(i.symbol)))
+  const filtered = logObj.filter(i => {
+    const symbol = i.symbol?.toLowerCase() ?? ''
+    if (/\.(com|net|org|xyz|site|io)/.test(symbol)) return false
+    if (/claim|access|airdrop/.test(symbol)) return false
+    return true
+  })
+  if (filtered.length)
+    console.table(filtered)
 }
 
 function once(func) {
