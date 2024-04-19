@@ -1,4 +1,5 @@
-const { sumTokensExport } = require("../helper/unwrapLPs");
+const { sumTokens2 } = require("../helper/unwrapLPs");
+const sdk = require("@defillama/sdk");
 const ADDRESSES = require("../helper/coreAssets.json");
 
 const config = {
@@ -117,17 +118,34 @@ const config = {
   },
 }
 
-Object.keys(config).forEach(chain => {
-  const fetchCoValentTokens = !['manta'].includes(chain)
-  let balance;
-  if (chain === 'ethereum') {
-    let totalEth = 0;
-    //let novaNethBalance;// api.call get 0xC6572019548dfeBA782bA5a2093C836626C7789A balanceOf(0xAd16eDCF7DEB7e90096A259c81269d811544B6B6)
-    //totalEth = //api.call("uint256:convertToShares") get real eth amount 
-    // totalEth = totalEth + 0x5fD9F73286b7E8683Bab45019C94553b93e015Cf.ethBalance
-    balance = { 'eth:0x0000000000000000000000000000000000000000': totalEth }
+function tvl(chain) {
+  return async (api, block) => {
+    let balances;
+    if (chain === 'ethereum') {
+      //let novaNethBalance;// api.call get 0xC6572019548dfeBA782bA5a2093C836626C7789A balanceOf(0xAd16eDCF7DEB7e90096A259c81269d811544B6B6)
+      //totalEth = //api.call("uint256:convertToShares") get real eth amount 
+      // totalEth = totalEth + 0x5fD9F73286b7E8683Bab45019C94553b93e015Cf.ethBalance
+      const nethContract = '0xC6572019548dfeBA782bA5a2093C836626C7789A'
+      const ownerBridge = config[chain].owners[1];
+      const totalEthOfBridge = await api.call({ abi: 'erc20:balanceOf', target: nethContract, params: ownerBridge })
+      const nethPoolContract = '0xf3C79408164abFB6fD5dDfE33B084E4ad2C07c18'
+      const totalRealEthOfBridge = await api.call({ abi: 'function convertToShares(uint256 _stakeAmount) external view returns (uint256)', target: nethPoolContract, params: totalEthOfBridge })
+      
+      const ownerZklink = config[chain].owners[0];
+      const totalEthOfZklink = await sdk.api.eth.getBalance({
+        target: ownerZklink,
+        block
+      })
+      const totalEth = BigInt(totalRealEthOfBridge) + BigInt(totalEthOfZklink.output)
+      balances = {'ethereum:0x0000000000000000000000000000000000000000': totalEth}
+    }
+    const fetchCoValentTokens = !['manta'].includes(chain)
+    return sumTokens2({api, ...config[chain], fetchCoValentTokens, balances})
   }
+}
+
+Object.keys(config).forEach(async chain => {
   module.exports[chain] = {
-    tvl: sumTokensExport({ ...config[chain], fetchCoValentTokens, balance })
+    tvl: tvl(chain)
   }
 })
