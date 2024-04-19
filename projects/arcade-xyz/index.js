@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 
 const { fetchVaults, fetchLoans } = require('./queries');
+const { stakingTvl } = require('./staking_queries');
 const { sumTokens2 } = require('../helper/unwrapLPs');
 const { sumArtBlocks, isArtBlocks, } = require('../helper/nft');
 
@@ -35,6 +36,12 @@ async function tvl(api) {
   }
 
   await sumArtBlocks({ balances, api, owners: artBlockOwners, })
+
+  const stakingBalances = await stakingTvl(timestamp, block, chainBlocks, { api });
+  Object.keys(stakingBalances).forEach(token => {
+    sdk.util.sumSingleBalance(balances, token, stakingBalances[token]);
+  });
+
   // Initialize balances with tokens held by the escrow contract, Loan Core
   return sumTokens2({
     balances,
