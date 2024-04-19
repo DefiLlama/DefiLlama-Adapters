@@ -129,7 +129,7 @@ function tvl(chain) {
       const ownerBridge = config[chain].owners[1];
       const totalEthOfBridge = await api.call({ abi: 'erc20:balanceOf', target: nethContract, params: ownerBridge })
       const nethPoolContract = '0xf3C79408164abFB6fD5dDfE33B084E4ad2C07c18'
-      const totalRealEthOfBridge = await api.call({ abi: 'function convertToShares(uint256 _stakeAmount) external view returns (uint256)', target: nethPoolContract, params: totalEthOfBridge })
+      const totalRealEthOfBridge = await api.call({ abi: 'function convertToAssets(uint256 _stakeAmount) external view returns (uint256)', target: nethPoolContract, params: totalEthOfBridge })
       
       const ownerZklink = config[chain].owners[0];
       const totalEthOfZklink = await sdk.api.eth.getBalance({
