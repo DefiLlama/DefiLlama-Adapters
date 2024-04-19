@@ -208,7 +208,56 @@ module.exports = {
         pendleAddress: "0xb05cabcd99cf9a73b19805edefc5f67ca5d1895e",
       };
 
-      const tokensAndOwners2 = [pTweETH, pTezETH, pTsETH].map((i) => [i.pendleAddress, i.vault]);
+      //new 1x strats on pendle v2
+
+      //PT Tensorplex Staked TAO 27JUN2024 (PT-stTAO-...)
+      const bptstTao1x = {
+        vault: "0xc9710Ea04A0adabb80e4215DFf38DA13005212B5",
+        pendleAddress: "0x5282Ec643C3790E0F781508162a4Aa13fd09C528",
+      };
+
+      //PT Zircuit Ether.fi weETH 27JUN2024 (PT-zs-weE...)
+
+      const bptzweETH1x = {
+        vault: "0xDb50643e39BAF4bb88D4d1de68465dAA72083a65",
+        pendleAddress: "0x4AE5411F3863CdB640309e84CEDf4B08B8b33FfF",
+      };
+
+      const bptzezETH1x = {
+        vault: "0xA6550cB1C5a06D41C3Ed2CA6D52a12A5E1C558F5",
+        pendleAddress: "0xDDFD5e912C1949B4bDb12579002c44B7A83F9E88",
+      };
+
+      const bptpufETH1x = {
+        vault: "0x43D10bfB9f1625827Ee8EE7A461eDE28340bdBb5",
+        pendleAddress: "0xC58aa33Ce619c7f7Ac4929DF357D0Ef762edbD23",
+      };
+
+      const bptzrsETH1x = {
+        vault: "0x8B82c3DAdEba7FAc081adE5a01A3117839faf0EF",
+        pendleAddress: "0x094bE6bD31D7B860f7d2C1f280fD09F0463d7e67",
+      };
+      const bptzUSDe1x = {
+        vault: "0x1F53c5474250DCe45b64B32B4917b5473fa7c0C2",
+        pendleAddress: "0x3d4F535539A33FEAd4D76D7b3B7A9cB5B21C73f1",
+      };
+
+      const bptrswETH1x = {
+        vault: "0x9977eEA94D74CC31eb0e2870C356D599cd64E2f5",
+        pendleAddress: "0x5cb12D56F5346a016DBBA8CA90635d82e6D1bcEa",
+      };
+
+      const tokensAndOwners2 = [
+        pTweETH,
+        pTezETH,
+        pTsETH,
+        bptzweETH1x,
+        bptzezETH1x,
+        bptpufETH1x,
+        bptzrsETH1x,
+        bptzUSDe1x,
+        bptrswETH1x,
+      ].map((i) => [i.pendleAddress, i.vault]);
       tokensAndOwners.push(...tokensAndOwners2);
       await api.sumTokens({ tokensAndOwners });
     },
@@ -228,6 +277,11 @@ module.exports = {
         usdc: "0xd3E1BDe4b4163c86B9b7668dE8Ae7618720dCa93",
       };
 
+      const bptUSDe1x = {
+        vault: "0x83886Af55Dac462Dc7840cdb0157bB3e7d8A6ac4",
+        pendleAddress: "0xad853EB4fB3Fe4a66CdFCD7b75922a0494955292",
+      };
+
       await api.sumTokens({
         tokensAndOwners: [
           [ADDRESSES.arbitrum.USDC, lendingArb.usdc_e],
@@ -236,6 +290,7 @@ module.exports = {
           [ADDRESSES.arbitrum.WETH, lendingArb.eth],
           [ADDRESSES.arbitrum.ARB, lendingArb.arb],
           [ADDRESSES.arbitrum.USDC_CIRCLE, lendingArb.usdc],
+          [bptUSDe1x.pendleAddress, bptUSDe1x.vault],
         ],
       });
 
