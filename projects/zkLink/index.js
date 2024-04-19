@@ -1,6 +1,5 @@
 const { sumTokensExport } = require("../helper/unwrapLPs");
 const ADDRESSES = require("../helper/coreAssets.json");
-const ERA_ETH_ADDRESS = "0x000000000000000000000000000000000000800A";
 
 const config = {
   ethereum: {
@@ -13,7 +12,7 @@ const config = {
       "0xE46a5E19B19711332e33F33c2DB3eA143e86Bc10", // mwBETH  
       "0x32bd822d615A3658A68b6fDD30c2fcb2C996D678", // mswETH 
       "0x49446A0874197839D15395B908328a74ccc96Bc0", // mstETH
-      "0xC6572019548dfeBA782bA5a2093C836626C7789A", // nETH   
+      //"0xC6572019548dfeBA782bA5a2093C836626C7789A", // nETH   
       "0x57F5E098CaD7A3D1Eed53991D4d66C45C9AF7812", // wUSDM
     ]
   },
@@ -120,7 +119,15 @@ const config = {
 
 Object.keys(config).forEach(chain => {
   const fetchCoValentTokens = !['manta'].includes(chain)
+  let balance;
+  if (chain === 'ethereum') {
+    let totalEth = 0;
+    //let novaNethBalance;// api.call get 0xC6572019548dfeBA782bA5a2093C836626C7789A balanceOf(0xAd16eDCF7DEB7e90096A259c81269d811544B6B6)
+    //totalEth = //api.call("uint256:convertToShares") get real eth amount 
+    // totalEth = totalEth + 0x5fD9F73286b7E8683Bab45019C94553b93e015Cf.ethBalance
+    balance = { 'eth:0x0000000000000000000000000000000000000000': totalEth }
+  }
   module.exports[chain] = {
-    tvl: sumTokensExport({ ...config[chain], fetchCoValentTokens, })
+    tvl: sumTokensExport({ ...config[chain], fetchCoValentTokens, balance })
   }
 })
