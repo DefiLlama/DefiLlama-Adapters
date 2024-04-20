@@ -35,7 +35,7 @@ const config = {
     ],
     tokens: [
       "0x3aAB2285ddcDdaD8edf438C1bAB47e1a9D05a9b4",  // WBTC
-      "0x2416092f143378750bb29b79eD961ab195CcEea5", // ezETH  
+      ADDRESSES.blast.ezETH, // ezETH  
       "0xB5beDd42000b71FddE22D3eE8a79Bd49A568fC8F", // wstETH
       "0x531e4901EB141a71e111Cc23Fc4fBD4B7dB788d5", // ZKT  
       ADDRESSES.linea.USDT, // USDT 
@@ -90,7 +90,7 @@ const config = {
     ],
     tokens: [
       ADDRESSES.null,
-      "0x2416092f143378750bb29b79eD961ab195CcEea5", // ezeth
+      ADDRESSES.blast.ezETH, // ezeth
       "0x8cDe337D4D39f692f867c9FFA696f555EdaB4BeD", // zkt
       "0x038f1C6ED5FccF690A920a27b39366eeeF27eFCe", // rich
       "0x5FE8534a6F96cb01261Bd96e98c17C2c1Cab3204", // BAJA
