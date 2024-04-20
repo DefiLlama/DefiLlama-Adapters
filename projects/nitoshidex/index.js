@@ -66,5 +66,5 @@ module.exports = {
   timetravel: false,
   start: 1713592724,
   misrepresentedTokens: false,
-  methodology:"Gets the total Nibiru tokens traded on the Nitosi DEX AMM"
+  methodology:"Gets the total volume of Nibiru tokens traded on the Nitosi DEX AMM"
 }
