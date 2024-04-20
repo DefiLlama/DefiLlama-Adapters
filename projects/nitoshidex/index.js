@@ -4,7 +4,7 @@ const cosmWasmClient = client.CosmWasmClient;
 const FACTORY = "nibi1p94l042clmh2hdlmz4ugqgqk64er7n3af45c8tyh0nvj40ueaewq9uqwtn";
 const RPC_ENDPOINT = "https://rpc.nibiru.fi:443";
 
-const tvl = async ()=> {
+const tvl = async (_, _1, _2, { api })=> {
 
   let client = await cosmWasmClient.connect(RPC_ENDPOINT);
 
@@ -55,10 +55,16 @@ const tvl = async ()=> {
 
   }
 
-  return volume;
+  api.add("nibiru", volume);
   
 }
 
 module.exports = {
-  tvl
+  nibiru: {
+    volume:tvl
+  },
+  timetravel: false,
+  start: 1713592724,
+  misrepresentedTokens: false,
+  methodology:"Gets the total Nibiru tokens traded on the Nitosi DEX AMM"
 }
