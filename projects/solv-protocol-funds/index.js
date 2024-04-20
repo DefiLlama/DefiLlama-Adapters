@@ -27,6 +27,7 @@ async function tvl(api) {
   await iziswap(api, address);
   await lendle(api, address);
   await vaultBalance(api);
+  await otherDeposit(api, address);
 
   return api.getBalances();
 }
@@ -115,6 +116,22 @@ async function borrowed(api) {
     }
   }
   return api.getBalances()
+}
+
+async function otherDeposit(api, address) {
+  if (!address[api.chain] || !address[api.chain]["otherDeposit"]) {
+    return;
+  }
+  let otherDeposit = address[api.chain]["otherDeposit"];
+
+  let tokens = []
+  for (const deposit of otherDeposit["depositAddress"]) {
+    for (const tokenAddress of otherDeposit["tokens"]) {
+      tokens.push({ tokenAddress, deposit })
+    }
+  }
+
+  await sumTokens2({ api, tokensAndOwners: tokens.map(i => [i.tokenAddress, i.deposit]), permitFailure: true });
 }
 
 async function gm(api, address) {
