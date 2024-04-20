@@ -61,7 +61,7 @@ const tvl = async (_, _1, _2, { api })=> {
 
 module.exports = {
   nibiru: {
-    volume:tvl
+    tvl
   },
   timetravel: false,
   start: 1713592724,
