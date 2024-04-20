@@ -20,6 +20,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@cosmjs/cosmwasm-stargate": "^0.32.3",
     "@defillama/sdk": "latest",
     "@project-serum/anchor": "^0.26.0",
     "@solana/web3.js": "^1.87.6",
