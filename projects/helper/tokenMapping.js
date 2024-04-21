@@ -34,6 +34,9 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  area: {
+    '0x1d1bc800e71576a59f9ef88bb679fa13c2e10abf': { coingeckoId: 'areon-network', decimals: 18, },
+  },
   // Sample Code
   ozone: {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
@@ -46,6 +49,7 @@ const fixBalancesTokens = {
   },
   linea: {
     '0x894134a25a5fac1c2c26f1d8fbf05111a3cb9487': { coingeckoId: 'grai', decimals: 18, },
+    '0x023617babed6cef5da825bea8363a5a9862e120f': { coingeckoId: "savings-dai", decimals: 18, },
   },
   arbitrum: {
     '0xe46C5eA6Da584507eAF8dB2F3F57d7F578192e13': { coingeckoId: 'zeepr', decimals: 18, },
@@ -64,6 +68,9 @@ const fixBalancesTokens = {
   },
   zkfair: {
     '0x5d26DeA980716e4aBa19F5B73Eb3DCcE1889F042': { coingeckoId: "zeepr", decimals: 18, },
+  },
+  scroll: {
+    "0x80137510979822322193fc997d400d5a6c747bf7": { coingeckoId: "ethereum:0x7122985656e38bdc0302db86685bb972b145bd3c", decimals: 0 },
   },
   velas: {
     '0xaadbaa6758fc00dec9b43a0364a372605d8f1883': { coingeckoId: "staked-vlx", decimals: 18, },
@@ -89,6 +96,24 @@ const fixBalancesTokens = {
     "0xd97b1de3619ed2c6beb3860147e30ca8a7dc9891": { decimals: 18, coingeckoId: "ethereum" },
     "0x48f80608b672dc30dc7e3dbbd0343c5f02c738eb": { decimals: 18, coingeckoId: "binancecoin" },
     "0x13A0c5930C028511Dc02665E7285134B6d11A5f4": { decimals: 18, coingeckoId: "bitcoin" }
+  },
+  ancient8: {
+    '0x4200000000000000000000000000000000000006': { coingeckoId: "ethereum", decimals: 18, },
+  },
+  mode: {
+    '0x80137510979822322193fc997d400d5a6c747bf7': { coingeckoId: "stakestone-ether", decimals: 18 },
+  },
+  zklink: {
+    '0x0000000000000000000000000000000000000000': { coingeckoId: "ethereum", decimals: 18, },
+    '0xda4aaed3a53962c83b35697cd138cc6df43af71f': { coingeckoId: "wrapped-bitcoin", decimals: 8, },
+    '0x2f8a25ac62179b31d62d7f80884ae57464699059': { coingeckoId: "tether", decimals: 6, },
+    '0x1a1a3b2ff016332e866787b311fcb63928464509': { coingeckoId: "usd-coin", decimals: 6, },
+  },
+  bsquared: {
+    '0x0000000000000000000000000000000000000000': { coingeckoId: "bitcoin", decimals: 18, },
+  },
+  planq: {
+    '0x5ebcdf1de1781e8b5d41c016b0574ad53e2f6e1a': { coingeckoId: "planq", decimals: 18, },
   }
 }
 
