@@ -12,6 +12,9 @@ const LUCHA_MATIC_comethLp = "0x5e1cd1b923674e99df95ce0f910dcf5a58a3ca2d";
 const LUCHA_MUST_comethLp = "0x98503d87aa4e9c84ff5d2e558295a0967fbbbeff";
 const LUCHA_MATIC_satinLp = "0x989e0df932e742ac52f82f5da1b0b70bdce3ed5f";
 const LUCHA_CASH_satinLp = "0x55f70935f4e8dd194bc2d56fb1c4d25db599cbc5";
+const LUCHA_MATIC_retroLp = "0xde4C8898CD50EBE9C167313b312D147D10d1C898";
+const LUCHA_CASH_retropLp = "0x5c09352b1aa703d18dbcf48c98655bfa19d07fbb";
+const LUCHA_WETH_aeroLp = "";
 
 // staking
 const luchaStk = "0xC5E9E8574c27747B4D537ef94e2448a3A0525dF4";
@@ -43,8 +46,11 @@ async function tvl(time, ethBlock, chainBlocks){
         [LUCHA_MATIC_comethLp, true],
         [LUCHA_MUST_comethLp, true],
         [LUCHA_MATIC_satinLp, true],
-        [LUCHA_CASH_satinLp, true]
-    ], [treasury, luchaStk, rewardPool, luchaMaticStk, luchaMustStk, LUCHA_MATIC_satinLp, LUCHA_CASH_satinLp], chainBlocks.polygon, "polygon", transform);
+        [LUCHA_CASH_satinLp, true],
+        [LUCHA_MATIC_retroLp, true],
+        [LUCHA_CASH_retropLp, true],
+        [LUCHA_WETH_aeroLp, true]
+    ], [treasury, luchaStk, rewardPool, luchaMaticStk, luchaMustStk, LUCHA_MATIC_satinLp, LUCHA_CASH_satinLp, LUCHA_MATIC_retroLp, LUCHA_CASH_retropLp, LUCHA_WETH_aeroLp], chainBlocks.polygon, "polygon", transform);
     return balances;
 }
 
@@ -52,7 +58,7 @@ module.exports={
         polygon:{
         tvl,
         staking: staking(luchaStk, LUCHA_polygon),
-        pool2: pool2s([luchaMaticStk, luchaMustStk], [LUCHA_MATIC_comethLp, LUCHA_MUST_comethLp, LUCHA_MATIC_satinLp, LUCHA_CASH_satinLp])
+        pool2: pool2s([luchaMaticStk, luchaMustStk], [LUCHA_MATIC_comethLp, LUCHA_MUST_comethLp, LUCHA_MATIC_satinLp, LUCHA_CASH_satinLp, LUCHA_MATIC_retroLp, LUCHA_CASH_retropLp, LUCHA_WETH_aeroLp])
     },
     methodology: `- Staking : Players can stake their $LUCHA to earn $MASK and access in-game services or equipment.\r
     - Treasury : 100% of the funds collected during the first raffle (purchase of wearable) have been kept in treasury to build a long term economic strategy. Luchadores.io own 60% of LP token to improve liquidity and facilitate user swaps.\r
