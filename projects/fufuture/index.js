@@ -1,113 +1,33 @@
-const abi =require("./abi/liquidity_manager")
-const tokens =require("./abi/token")
-const BigNumber = require("bignumber.js");
-
-let transType = ["BTC", "ETH"];
+const { getLogs2, getAddress, } = require('../helper/cache/getLogs');
+const { sumTokens2 } = require('../helper/unwrapLPs');
 
 
-const liquidityManagers={
-    "bsc":"0x0CB5274a8Ff86b7b750933B09aba8B5eb3660977",
-    "arbitrum":"0x0CB5274a8Ff86b7b750933B09aba8B5eb3660977",
-    "polygon":"0xb711ba37fa74b99e70c27e82def0b15a50ac7a9e"
-}
-
-async function bsc(api) {
-    return getTvl(api,"bsc")
-}
-async function arbitrum(api){
-    return getTvl(api,"arbitrum")
-}
-async function polygon(api){
-    return getTvl(api,"polygon")
-}
-
-async function getTvl(api,chain){
-    let lockedMap={};
-    let addressMap={};
-    for (let i in transType) {
-        let type = transType[i];
-
-        let privateRes=await api.multiCall({
-            abi: abi.queryPrivatePoolAddress, withMetadata: true, calls: tokens[chain].map(token => ({
-                target: liquidityManagers[chain],
-                params: [token.address,type]
-            }))
-        });
-
-
-        let privateAddresses=[];
-
-        privateRes.map(item=>{
-            if(item.output==="0x0000000000000000000000000000000000000000"){
-                return;
-            }
-            privateAddresses.push(item.output)
-            addressMap[item.output]=item.input.params[0];
-        });
-
-
-        let targets=privateAddresses.map(item=>({
-            target:item
-        }));
-
-        let privateLockedInfos=await api.multiCall({
-            abi:abi.queryPrivatePoolLockedLiquidity,withMetadata:true,calls:targets
-        })
-
-
-        privateLockedInfos.map(item=>{
-            let address=addressMap[item.input.target];
-            if(!lockedMap[address]){
-                lockedMap[address]=BigNumber("0");
-            }
-
-            lockedMap[address]=lockedMap[address].plus(BigNumber(item.output));
-        })
-
-    }
-
-    let publicRes=await api.multiCall({
-        abi: abi.queryPublicPollAddress, withMetadata: true, calls: tokens[chain].map(token => ({
-            target: liquidityManagers[chain],
-            params: [token.address]
-        }))
-    });
-
-    let publicAddress=[];
-    publicRes.map(item=>{
-        if(item.output==="0x0000000000000000000000000000000000000000"){
-            return;
-        }
-        publicAddress.push(item.output)
-        addressMap[item.output]=item.input.params[0];
-    });
-
-    let publicLockedInfos=await api.multiCall({
-        abi:abi.queryPublicPoolLockedLiquidity,withMetadata:true,calls:publicAddress.map(item=>({
-            target:item
-        }))
-    })
-
-    publicLockedInfos.map(item=>{
-        let address=addressMap[item.input.target];
-        if(!lockedMap[address]){
-            lockedMap[address]=BigNumber("0");
-        }
-        lockedMap[address]=lockedMap[address].plus(BigNumber(item.output.depositAmount));
-    });
-
-    let balance={};
-    for(let i in lockedMap){
-        lockedMap[i]=lockedMap[i].toString(10);
-        balance[chain+":"+i]=lockedMap[i];
-    }
-
-    return balance;
+async function tvl(api) {
+  const { factory, fromBlock, optionsTrade } = config[api.chain]
+  const privateLogs = await getLogs2({ api, factory, fromBlock, extraKey: 'private-pool', topics: ['0x321e5276dc2982b3e95825088a15cf891d1f691c70b6236b506afa3810ec0297'] })
+  const publicLogs = await getLogs2({ api, factory, fromBlock, extraKey: 'public-pool', topics: ['0x53aad570e9fba02f275a68e410f634e241c8301d036a94761d71bcba65941a36'] })
+  const logs = privateLogs.concat(publicLogs)
+  const ownerTokens = []
+  const allTokens = []
+  logs.forEach(({ topics }) => {
+    const token = getAddress(topics[2])
+    const pool = getAddress(topics[3])
+    ownerTokens.push([[token], pool])
+    allTokens.push(token)
+  })
+  ownerTokens.push([allTokens, optionsTrade])
+  return sumTokens2({ api, ownerTokens, permitFailure: true })
 }
 
 module.exports = {
-    methodology: "The world's first decentralized currency standard Perpetual options Transaction agreement",
-    bsc: {tvl: bsc},
-    polygon:{tvl:polygon},
-    arbitrum:{tvl:arbitrum}
+  methodology: "The world's first decentralized currency standard Perpetual options Transaction agreement",
 };
+
+const config = {
+  bsc: { factory: '0x0CB5274a8Ff86b7b750933B09aba8B5eb3660977', fromBlock: 33366630, optionsTrade: '0x1e933E0957e6236E519e64CD13f967146Fcb4755' },
+  arbitrum: { factory: '0x0CB5274a8Ff86b7b750933B09aba8B5eb3660977', fromBlock: 162984841, optionsTrade: '0x1e933E0957e6236E519e64CD13f967146Fcb4755' },
+}
+
+Object.keys(config).forEach(chain => {
+  module.exports[chain] = { tvl }
+})
