@@ -4,10 +4,21 @@ const BigNumber = require("bignumber.js");
 
 let transType = ["BTC", "ETH"];
 
-const liquidityManagerAddr="0x0CB5274a8Ff86b7b750933B09aba8B5eb3660977";
+
+const liquidityManagers={
+    "bsc":"0x0CB5274a8Ff86b7b750933B09aba8B5eb3660977",
+    "arbitrum":"0x0CB5274a8Ff86b7b750933B09aba8B5eb3660977",
+    "polygon":"0xb711ba37fa74b99e70c27e82def0b15a50ac7a9e"
+}
 
 async function bsc(api) {
     return getTvl(api,"bsc")
+}
+async function arbitrum(api){
+    return getTvl(api,"arbitrum")
+}
+async function polygon(api){
+    return getTvl(api,"polygon")
 }
 
 async function getTvl(api,chain){
@@ -18,7 +29,7 @@ async function getTvl(api,chain){
 
         let privateRes=await api.multiCall({
             abi: abi.queryPrivatePoolAddress, withMetadata: true, calls: tokens[chain].map(token => ({
-                target: liquidityManagerAddr,
+                target: liquidityManagers[chain],
                 params: [token.address,type]
             }))
         });
@@ -57,7 +68,7 @@ async function getTvl(api,chain){
 
     let publicRes=await api.multiCall({
         abi: abi.queryPublicPollAddress, withMetadata: true, calls: tokens[chain].map(token => ({
-            target: liquidityManagerAddr,
+            target: liquidityManagers[chain],
             params: [token.address]
         }))
     });
@@ -82,7 +93,7 @@ async function getTvl(api,chain){
         if(!lockedMap[address]){
             lockedMap[address]=BigNumber("0");
         }
-        lockedMap[address]=lockedMap[address].plus(BigNumber(item.output.lockedAmount));
+        lockedMap[address]=lockedMap[address].plus(BigNumber(item.output.depositAmount));
     });
 
     let balance={};
@@ -97,4 +108,6 @@ async function getTvl(api,chain){
 module.exports = {
     methodology: "The world's first decentralized currency standard Perpetual options Transaction agreement",
     bsc: {tvl: bsc},
+    polygon:{tvl:polygon},
+    arbitrum:{tvl:arbitrum}
 };
