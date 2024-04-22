@@ -1703,5 +1703,9 @@
     "WBTC": "0x5fd55a1b9fc24967c4db09c513c3ba0dfa7ff687",
     "USDT": "0xd567b3d7b8fe3c79a1ad8da978812cfc4fa05e75",
     "AXLUSDC": "0x80b5a32e4f032b2a058b4f29ec95eefeeb87adcd"
+  },
+  "x_layer": {
+    "WETH": "0x5A77f1443D16ee5761d310e38b62f77f726bC71c",
+    "USDT": "0x1E4a5963aBFD975d8c9021ce480b42188849D41d"
   }
 }
