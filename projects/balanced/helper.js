@@ -33,12 +33,13 @@ async function getExternalChainDepositsCached() {
   return getExternalChainDepositsPromise
 }
 
-
+// Network identifiers are found by calling the getAssets method on the balancedAssetManagerContract
 const networkIdentifiers = {
   "0x100.icon": "havah",
   "0x38.bsc": "bnbchain",
   "0xa86a.avax": "avalanche",
   "archway-1": "archway",
+  "injective-1/inj": "injective",
 }
 
 // Get decimals of cross-chain Balanced assets in balancedAssetManagerContract
