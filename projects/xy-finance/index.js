@@ -402,11 +402,15 @@ module.exports={}
 
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {
-    tvl: async (_, _b, {[chain]: block}) => {
+    tvl: async (api) => {
       const { chainId } = config[chain]
       const toa = []
       Object.values(yPoolDepositContract[chainId]).forEach(i => toa.push([i.tokenAddress, i.contractAddress]))
-      return sumTokens2({ chain, block, tokensAndOwners: toa, })
+      return sumTokens2({ api, tokensAndOwners: toa, })
     }
   }
 })
+
+module.exports = {
+  xlayer: module.exports.xlayer,
+}
