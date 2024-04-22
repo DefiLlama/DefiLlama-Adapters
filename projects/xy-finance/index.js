@@ -65,7 +65,7 @@ const config = {
   blast: {
     chainId: '81457',
   },
-  xLayer: {
+  xlayer: {
     chainId: '196'
   }
 }
@@ -389,11 +389,11 @@ const yPoolDepositContract = {
   "196": {
     "ETH": {
       "contractAddress": "0xFa77c2DecCB21ACb9Bf196408Bf6aD5973D07762",
-      "tokenAddress": ADDRESSES.x_layer.WETH
+      "tokenAddress": ADDRESSES.xlayer.WETH
     },
     "USDT": {
       "contractAddress": "0x1e4992E1Be86c9d8ed7dcBFcF3665FE568dE98Ab",
-      "tokenAddress": ADDRESSES.x_layer.USDT
+      "tokenAddress": ADDRESSES.xlayer.USDT
     }
   }
 }
