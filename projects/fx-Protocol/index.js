@@ -1,5 +1,3 @@
-const { sumERC4626VaultsExport } = require("../helper/erc4626");
-
 const treasuries = [
   "0x0e5CAA5c889Bdf053c9A76395f62267E653AFbb0",
   "0xED803540037B0ae069c93420F89Cd653B6e3Df1f",
@@ -12,10 +10,13 @@ const treasuries = [
 module.exports = {
   doublecounted: true,
   ethereum: {
-    tvl: sumERC4626VaultsExport({
-      vaults: treasuries,
-      tokenAbi: "baseToken",
-      balanceAbi: "totalBaseToken",
-    }),
+    tvl,
   },
 };
+
+async function tvl(api) {
+  const tokens = await api.multiCall({ abi: 'address:baseToken', calls: treasuries })
+  const bals = await api.multiCall({ abi: 'uint256:totalBaseToken', calls: treasuries })
+  const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: tokens })
+  bals.forEach((bal, i) => api.add(tokens[i], bal / 10 ** (18 - decimals[i])))
+}
