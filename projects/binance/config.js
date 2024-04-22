@@ -603,6 +603,16 @@ const assetList = [
   ['XRP', 'XRP', 'rPz2qA93PeRCyHyFCqyNggnyycJR1N4iNf'],
   ['XRP', 'XRP', 'rpmxpWis42eYV4oMhyxJNSzrLRdacJVooa'],
   ['XRP', 'XRP', 'rs8ZPbYqgecRcDzQpJYAMhSxSi5htsjnza'],
+  // added on the 22/04/2024
+  ['USDT', 'TRX', 'TJ5usJLLwjwn7Pw3TPbdzreG7dvgKzfQ5y'],
+  ['TRX', 'TRX', 'TJ5usJLLwjwn7Pw3TPbdzreG7dvgKzfQ5y'],
+  ['USDT', 'TRX', 'TK4ykR48cQQoyFcZ5N4xZCbsBaHcg6n3gJ'],
+  ['TRX', 'TRX', 'TK4ykR48cQQoyFcZ5N4xZCbsBaHcg6n3gJ'],
+  ['TRX', 'TRX', 'TCLgK89AnXbC9rewvhNb9UgXCc2qJJpBXh'],
+  ['USDT', 'TRX', 'TCLgK89AnXbC9rewvhNb9UgXCc2qJJpBXh'],
+  ['USDT', 'TRX', 'TJqwA7SoZnERE4zW5uDEiPkbz4B66h9TFj'],
+  ['TRX', 'TRX', 'TJqwA7SoZnERE4zW5uDEiPkbz4B66h9TFj'],
+
 ]
 
 function getAddresses(chain) {
