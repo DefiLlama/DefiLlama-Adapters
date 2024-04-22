@@ -410,7 +410,3 @@ Object.keys(config).forEach(chain => {
     }
   }
 })
-
-module.exports = {
-  xlayer: module.exports.xlayer,
-}
