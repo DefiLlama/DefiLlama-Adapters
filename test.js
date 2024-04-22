@@ -208,9 +208,11 @@ sdk.api.abi.call = async (...args) => {
     console.log("Total:", humanizeNumber(usdTvls[chain]), "\n");
   });
   console.log(`------ TVL ------`);
-  Object.entries(usdTvls).forEach(([chain, usdTvl]) => {
+  const usdVals = Object.entries(usdTvls)
+  usdVals.sort((a, b) => b[1] - a[1])
+  usdVals.forEach(([chain, usdTvl]) => {
     if (chain !== "tvl") {
-      console.log(chain.padEnd(25, " "), humanizeNumber(usdTvl));
+      console.log(chain.padEnd(25, " "), humanizeNumber(Math.round(usdTvl)));
     }
   });
   console.log("\ntotal".padEnd(25, " "), humanizeNumber(usdTvls.tvl), "\n");
@@ -423,8 +425,8 @@ setTimeout(() => {
 
 async function initCache() {
   let currentCache = await sdk.cache.readCache(INTERNAL_CACHE_FILE)
-  if (process.env.NO_EXIT_ON_LONG_RUN_RPC)
-    sdk.log('cache size:', JSON.stringify(currentCache).length, 'chains:', Object.keys(currentCache).length)
+  // if (process.env.NO_EXIT_ON_LONG_RUN_RPC)
+  //   sdk.log('cache size:', JSON.stringify(currentCache).length, 'chains:', Object.keys(currentCache).length)
   const ONE_WEEK = 60 * 60 * 24 * 31
   if (!currentCache || !currentCache.startTime || (Date.now() / 1000 - currentCache.startTime > ONE_WEEK)) {
     currentCache = {
