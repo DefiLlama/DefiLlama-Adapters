@@ -14,7 +14,7 @@ async function tvl(api) {
   return sumTokens({ api, tokens: filteredTokens, owner: balancedDexContract })
 }
 
-computeTVL("avalanche")
+
 
 // https://github.com/balancednetwork/balanced-java-contracts/wiki/Contract-Addresses
 // https://github.com/DefiLlama/DefiLlama-Adapters/pull/9857#issuecomment-2060842344
