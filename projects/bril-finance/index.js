@@ -26,9 +26,10 @@ Object.keys(config).forEach(chain => {
       const enabledStrategies = strategies.filter((s, index) => areStrategiesEnabled[index]);
 
       const balances = await api.multiCall({ abi: abi.vaultAmounts, calls: enabledStrategies, });
-      const summaries = await api.multiCall({ abi: abi.vaultSummary, calls: enabledStrategies, });
+      const summaries = await api.multiCall({ abi: abi.vaultSummary, calls: enabledStrategies, permitFailure: true, });
 
       for (let i = 0; i < balances.length; i++) {
+        if (!summaries[i]) continue;
         api.add(summaries[i].baseToken_, balances[i].baseTotal_);
         api.add(summaries[i].scarceToken_, balances[i].scarceTotal_);
       }
