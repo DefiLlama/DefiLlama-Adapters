@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 
 const { fetchVaults, fetchLoans } = require('./queries');
-const { stakingTvl } = require('./staking_queries');
+const { stakingTvl } = require('./staking-queries');
 const { sumTokens2 } = require('../helper/unwrapLPs');
 const { sumArtBlocks, isArtBlocks, } = require('../helper/nft');
 
