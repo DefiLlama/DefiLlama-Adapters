@@ -118,6 +118,9 @@ const fixBalancesTokens = {
   xlayer: {
     [ADDRESSES.xlayer.WETH]: { coingeckoId: "ethereum", decimals: 18, },
     [ADDRESSES.xlayer.USDT]: { coingeckoId: "tether", decimals: 6, },
+  },
+  rpg: {
+    '0x71d9cfd1b7adb1e8eb4c193ce6ffbe19b4aee0db': { coingeckoId: "rangers-protocol-gas", decimals: 18, }
   }
 }
 
