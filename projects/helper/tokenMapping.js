@@ -115,13 +115,13 @@ const fixBalancesTokens = {
   planq: {
     '0x5ebcdf1de1781e8b5d41c016b0574ad53e2f6e1a': { coingeckoId: "planq", decimals: 18, },
   },
+  rpg: {
+    '0x71d9cfd1b7adb1e8eb4c193ce6ffbe19b4aee0db': { coingeckoId: "rangers-protocol-gas", decimals: 18, },
+  },
   xlayer: {
     [ADDRESSES.xlayer.WETH]: { coingeckoId: "ethereum", decimals: 18, },
     [ADDRESSES.xlayer.USDT]: { coingeckoId: "tether", decimals: 6, },
-  },
-  rpg: {
-    '0x71d9cfd1b7adb1e8eb4c193ce6ffbe19b4aee0db': { coingeckoId: "rangers-protocol-gas", decimals: 18, }
-  },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
