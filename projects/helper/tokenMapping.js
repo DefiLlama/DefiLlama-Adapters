@@ -111,6 +111,9 @@ const fixBalancesTokens = {
   },
   bsquared: {
     '0x0000000000000000000000000000000000000000': { coingeckoId: "bitcoin", decimals: 18, },
+    '0x4200000000000000000000000000000000000006': { coingeckoId: "bitcoin", decimals: 18, },
+    '0x681202351a488040fa4fdcc24188afb582c9dd62': { coingeckoId: "tether", decimals: 6, },
+    '0xe544e8a38add9b1abf21922090445ba93f74b9e5': { coingeckoId: "usd-coin", decimals: 6, },
   },
   planq: {
     '0x5ebcdf1de1781e8b5d41c016b0574ad53e2f6e1a': { coingeckoId: "planq", decimals: 18, },
