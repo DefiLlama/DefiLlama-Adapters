@@ -51,6 +51,15 @@ const config = {
       // ETH: ADDRESSES.map.ETH,
       MAP: ADDRESSES.map.WMAPO
     }
+  },
+  merlin: {
+    mosContract: "0xfeB2b97e4Efce787c08086dC16Ab69E063911380",
+    tokens: {
+      WBTC: ADDRESSES.merlin.WBTC,
+      WBTC_1: ADDRESSES.merlin.WBTC_1,
+      SolvBTC: "0x41D9036454BE47d3745A823C4aaCD0e29cFB0f71",
+      iUSD: ADDRESSES.bsc.iUSD
+    }
   }
 }
 
