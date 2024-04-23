@@ -2,6 +2,7 @@ const { get } = require('../helper/http');
 
 async function tvl() {
   var response = await get('https://api.scopuly.com/api/liquidity_pools_tvl');
+  throw new Error('This project is not returning the correct data');
   // Sort the response array by the 'time' field in descending order to get the most recent entry first
   response.sort((a, b) => b.time - a.time);
   var mostRecentTvl = response[0];
