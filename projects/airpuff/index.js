@@ -33,7 +33,7 @@ module.exports = {
   mode: {
     tvl: async (api) => {
       const lendingMode = {
-        vault: "0x89C133c5e8eD4Cd7CD87A1A00c1e70c13A29b90B",
+        eth: "0x89C133c5e8eD4Cd7CD87A1A00c1e70c13A29b90B",
       };
       await api.sumTokens({
         tokensAndOwners: [[ADDRESSES.mode.WETH, lendingMode.eth]],
