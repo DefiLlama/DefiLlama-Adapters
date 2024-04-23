@@ -49,11 +49,10 @@ async function tvl(time, ethBlock, chainBlocks){
 }
 
 module.exports={
-    timetravel: true,
-    polygon:{
+        polygon:{
         tvl,
-        staking: staking(luchaStk, LUCHA_polygon, "polygon"),
-        pool2: pool2s([luchaMaticStk, luchaMustStk], [LUCHA_MATIC_comethLp, LUCHA_MUST_comethLp, LUCHA_MATIC_satinLp, LUCHA_CASH_satinLp], "polygon")
+        staking: staking(luchaStk, LUCHA_polygon),
+        pool2: pool2s([luchaMaticStk, luchaMustStk], [LUCHA_MATIC_comethLp, LUCHA_MUST_comethLp, LUCHA_MATIC_satinLp, LUCHA_CASH_satinLp])
     },
     methodology: `- Staking : Players can stake their $LUCHA to earn $MASK and access in-game services or equipment.\r
     - Treasury : 100% of the funds collected during the first raffle (purchase of wearable) have been kept in treasury to build a long term economic strategy. Luchadores.io own 60% of LP token to improve liquidity and facilitate user swaps.\r

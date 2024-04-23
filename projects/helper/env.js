@@ -12,16 +12,13 @@ const DEFAULTS = {
   MULTIVERSX_RPC: 'https://api.multiversx.com',
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
-  NAKA_RPC: 'https://node.nakachain.xyz',
-  ETHF_RPC: 'https://rpc.dischain.xyz/',
-  CORE_RPC: "https://rpc.coredao.org,https://rpc.ankr.com/core,https://1rpc.io/core,https://rpc-core.icecreamswap.com",
-  BITGERT_RPC: "https://flux-rpc2.brisescan.com,https://mainnet-rpc.brisescan.com,https://chainrpc.com,https://serverrpc.com,https://flux-rpc.brisescan.com",
-  BITCHAIN_RPC: "https://rpc.bitchain.biz/",
-  OZONE_RPC: "https://node1.ozonechain.io",
-  ZETA_RPC: "https://zetachain-evm.blockpi.network/v1/rpc/public,https://zetachain-mainnet-archive.allthatnode.com:8545",
-  DEFIVERSE_RPC: "https://rpc.defi-verse.org/",
-  ZKLINK_RPC: "https://rpc.zklink.io",
-  KINTO_RPC: "https://rpc.kinto-rpc.com",
+  KARAK_RPC: "https://rpc.karak.network",
+  FSC_RPC: "https://fsc-dataseed1.fonscan.io,https://fsc-dataseed2.fonscan.io,https://fonscan.io/api/eth-rpc",
+  BSQUARED_RPC: "https://rpc.bsquared.network,https://b2-mainnet.alt.technology",
+  FSC_RPC_MULTICALL: "0x18fA376d92511Dd04090566AB6144847c03557d8",
+  XLAYER_RPC: "https://wallet.okex.org/fullnode/xlayer/discover/rpc/ro",
+  LAC_RPC: "https://rpc1.mainnet.lachain.network,https://rpc2.mainnet.lachain.network/", // Chain id : 274
+  XLAYER_RPC_MULTICALL: "0x398F92e15519B4F6F2D5cc42C17FC9ED15De53d8",
 }
 
 const ENV_KEYS = [

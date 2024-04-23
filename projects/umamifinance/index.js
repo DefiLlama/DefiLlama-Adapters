@@ -20,13 +20,15 @@ const v2Vaults = [
   "0x37c0705A65948EA5e0Ae1aDd13552BCaD7711A23",
   "0x959f3807f0Aa7921E18c78B00B2819ba91E52FeF", // gmUSDC
   "0x4bCA8D73561aaEee2D3a584b9F4665310de1dD69", // gmWETH
+  "0x5f851F67D24419982EcD7b7765deFD64fBb50a97", // BTC gmUSDC
+  "0xcd8011AaB161A75058eAb24e0965BAb0b918aF29", // gmWBTC
 ];
 
 module.exports = {
   doublecounted: true,
   start: 1657027865, // UMAMI deployment block ts
   arbitrum: {
-    staking: stakings([mUMAMI, OHM_STAKING_sUMAMI], UMAMI, "arbitrum"),
+    staking: stakings([mUMAMI, OHM_STAKING_sUMAMI], UMAMI),
     tvl: async (api) => {
 
       const totalAssets = await api.call({ abi: abi.totalAssets, target: glpUSDC, });

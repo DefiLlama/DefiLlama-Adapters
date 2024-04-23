@@ -23,5 +23,4 @@ module.exports = uniV3Export({
   ]},
   base: { factory, fromBlock: 2912007, },
   op_bnb: { factory, fromBlock: 1721753, },
-  imx: { factory: '0x464Ea59a3AA5Ea35e961Ff8aA4CCC7183eAA197e', fromBlock: 2863799, },
 })
