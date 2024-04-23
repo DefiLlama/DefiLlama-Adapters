@@ -112,8 +112,11 @@ const fixBalancesTokens = {
   bsquared: {
     '0x0000000000000000000000000000000000000000': { coingeckoId: "bitcoin", decimals: 18, },
   },
-  rpg: {
-    '0x71d9cfd1b7adb1e8eb4c193ce6ffbe19b4aee0db': { coingeckoId: "rangers-protocol-gas", decimals: 18, },
+  amg: {
+    '0xdaa6a6919c9543d8787490f5e9ad532c4d7ce9e8': { coingeckoId: "deherogame-amazing-token", decimals: 18, },
+  },
+  mix: {
+    '0x36426b7bf5709e5c2160411c6e8b1832e3404fe1': { coingeckoId: "mixmarvel", decimals: 18, },
   },
   planq: {
     '0x5ebcdf1de1781e8b5d41c016b0574ad53e2f6e1a': { coingeckoId: "planq", decimals: 18, },
