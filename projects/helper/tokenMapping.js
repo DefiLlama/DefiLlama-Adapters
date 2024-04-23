@@ -116,6 +116,9 @@ const fixBalancesTokens = {
   },
   op_bnb: {
     '0x9e5aac1ba1a2e6aed6b32689dfcf62a509ca96f3': { coingeckoId: 'tether', decimals: 18 }
+  },
+  rpg: {
+    '0x71d9cfd1b7adb1e8eb4c193ce6ffbe19b4aee0db': { coingeckoId: 'rangers-protocol-gas', decimals: 18 }
   }
 }
 
