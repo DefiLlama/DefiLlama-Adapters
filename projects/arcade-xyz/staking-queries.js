@@ -3,7 +3,7 @@ const { sumTokensAndLPsSharedOwners } = require('../helper/unwrapLPs');
 const { getChainTransform } = require('../helper/portedTokens');
 
 const { CHAIN, STAKING_REWARDS, SINGLE_SIDED_STAKING, ARCD, ARCD_WETH_LP } = require('./constants');
-const { SINGLE_SIDED_STAKING_ABI, ARCD_ABI } = require("./abi.js");
+const { SINGLE_SIDED_STAKING_ABI, ARCD_ABI, LP_PAIR_ABI } = require("./abi.js");
 
 async function getTotalSupply(contractAddress, contractAbi, block) {
   const totalSupply = (
@@ -27,6 +27,16 @@ async function getBalanceOf(tokenAddress, holderAddress, abi, block) {
   })).output;
 
   return balanceOf;
+}
+
+async function getReserves(contractAddress, contractAbi, block) {
+  const getReserve = (await sdk.api.abi.call({
+    target: contractAddress,
+    abi: contractAbi.find((fn) => fn.name === "getReserves"),
+    block: block,
+  })).output;
+
+  return getReserve[1];
 }
 
 async function addToTVL(block, chainBlocks) {
@@ -54,6 +64,11 @@ async function addToTVL(block, chainBlocks) {
   const totalSupplySingleSided = await getTotalSupply(SINGLE_SIDED_STAKING, SINGLE_SIDED_STAKING_ABI, block);
   // add it to the balances
   sdk.util.sumSingleBalance(balances, 'coingecko:arcade-protocol', totalSupplySingleSided);
+
+  // get the ARCD reserves from the UniswapV2 ARCD/wETH pair pool
+  const pairPoolARCDbalance = await getReserves(ARCD_WETH_LP, LP_PAIR_ABI, block);
+  // add it to the balances
+  sdk.util.sumSingleBalance(balances, 'coingecko:arcade-protocol', pairPoolARCDbalance);
 
   return balances;
 }
