@@ -23,8 +23,8 @@ async function addToTVL(block, chainBlocks) {
 
   const transformAddress = await getChainTransform(CHAIN);
 
-  // handle LP token unwrapping and add the total supply for STAKING_REWARDS
-  // to balances
+  // handle LP token unwrapping and add the total supply
+  // for STAKING_REWARDS to balances
   await sumTokensAndLPsSharedOwners(
     balances,
     [[ARCD_WETH_LP, true]],

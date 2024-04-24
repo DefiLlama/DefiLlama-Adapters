@@ -18,28 +18,10 @@ const {
 // Tokens owned by vaults have been wrapped into an Arcade.xyz vault. Tokens owned by the Loan Core contract
 // are currently in escrow.
 
-async function getAvailableBlock(api, decrement , attempts) {
-  let currentBlock = await api.getBlock();
-  let attempt = 0;
-
-  while (attempt < attempts) {
-    try {
-      // attempt to fetch data from the subgraph using the current block
-      await fetchVaults(currentBlock);
-      return currentBlock;
-    } catch (error) {
-      console.log(`Block ${currentBlock} not indexed yet. Trying an earlier block...`);
-      currentBlock -= decrement;  // decrement the block number
-      attempt++;
-    }
-  }
-  throw new Error(`Failed to retrieve an indexed block after ${attempts} attempts.`);
-}
-
 async function tvl(api) {
   const { timestamp, chain } = api;
 
-  const block = await getAvailableBlock(api, 10, 10);
+  const block = 19721166;
   const chainBlocks = { [chain]: block };
 
   // Get list of all vaults
@@ -79,7 +61,7 @@ async function tvl(api) {
 
 // Fetches all active loans, their payable curency and amount borrowed then sums it up.
 async function borrowed(api) {
-  const loans = await fetchLoans(await getAvailableBlock(api, 10, 10));
+  const loans = await fetchLoans(19721166);
 
   // Iterate over each loan to sum up principal by currency
   for (const loan of loans) {
