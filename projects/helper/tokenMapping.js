@@ -120,6 +120,7 @@ const fixBalancesTokens = {
   },
   xlayer: {
     [ADDRESSES.xlayer.WOKB]: { coingeckoId: "okb", decimals: 18, },
+    [ADDRESSES.xlayer.WBTC]: { coingeckoId: "wrapped-bitcoin", decimals: 8, },
     [ADDRESSES.xlayer.WETH]: { coingeckoId: "ethereum", decimals: 18, },
     [ADDRESSES.xlayer.USDT]: { coingeckoId: "tether", decimals: 6, },
   },

@@ -31,6 +31,7 @@ const poolHelpers = {
   'blast': ['0x5e7902aDf0Ea0ff827683Cc1d431F740CAD0731b'],
   'zklink': ['0x936c9A1B8f88BFDbd5066ad08e5d773BC82EB15F'],
   'mode': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
+  'xlayer': ['0xF42C48f971bDaA130573039B6c940212EeAb8496'],
 } // iziswap liquidityManager contracts
 
 const blacklistedTokens = [
