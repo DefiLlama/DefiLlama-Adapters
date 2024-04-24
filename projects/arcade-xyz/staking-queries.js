@@ -19,14 +19,14 @@ async function getTotalSupply(contractAddress, contractAbi, block) {
 }
 
 async function getBalanceOf(tokenAddress, holderAddress, abi, block) {
-  const balance = await sdk.api.abi.call({
+  const balanceOf = (await sdk.api.abi.call({
     target: tokenAddress,
     abi: abi.find((fn) => fn.name === "balanceOf"),
     params: [holderAddress],
     block: block,
-  });
+  })).output;
 
-  return balance.output;
+  return balanceOf;
 }
 
 async function addToTVL(block, chainBlocks) {
@@ -45,7 +45,7 @@ async function addToTVL(block, chainBlocks) {
     transformAddress
   );
 
-  // get the StakingRewards ARCD balance
+  // get the STAKING_REWARDS ARCD balance
   const stakingRewardsARCDbalance = await getBalanceOf(ARCD, STAKING_REWARDS, ARCD_ABI, block);
   // and add it to the balances
   sdk.util.sumSingleBalance(balances, 'coingecko:arcade-protocol', stakingRewardsARCDbalance);
