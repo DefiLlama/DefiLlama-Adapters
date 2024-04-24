@@ -123,6 +123,7 @@ const fixBalancesTokens = {
     [ADDRESSES.xlayer.WBTC]: { coingeckoId: "wrapped-bitcoin", decimals: 8, },
     [ADDRESSES.xlayer.WETH]: { coingeckoId: "ethereum", decimals: 18, },
     [ADDRESSES.xlayer.USDT]: { coingeckoId: "tether", decimals: 6, },
+    [ADDRESSES.xlayer.USDC]: { coingeckoId: "usd-coin", decimals: 6, },
   },
   lac: {
     '0x2911a1ab18546cb501628be8625c7503a2a7db54': { coingeckoId: "la-coin", decimals: 18, },
