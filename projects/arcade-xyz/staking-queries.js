@@ -2,8 +2,8 @@ const sdk = require("@defillama/sdk");
 const { sumTokensAndLPsSharedOwners } = require('../helper/unwrapLPs');
 const { getChainTransform } = require('../helper/portedTokens');
 
-const { CHAIN, STAKING_REWARDS, SINGLE_SIDED_STAKING, ARCD, ARCD_WETH_LP, WETH } = require('./constants');
-const { SINGLE_SIDED_STAKING_ABI } = require("./abi.js");
+const { CHAIN, STAKING_REWARDS, SINGLE_SIDED_STAKING, ARCD, ARCD_WETH_LP } = require('./constants');
+const { SINGLE_SIDED_STAKING_ABI, ARCD_ABI } = require("./abi.js");
 
 async function getTotalSupply(contractAddress, contractAbi, block) {
   const totalSupply = (
@@ -16,6 +16,17 @@ async function getTotalSupply(contractAddress, contractAbi, block) {
   ).output;
 
   return totalSupply;
+}
+
+async function getBalanceOf(tokenAddress, holderAddress, abi, block) {
+  const balance = await sdk.api.abi.call({
+    target: tokenAddress,
+    abi: abi.find((fn) => fn.name === "balanceOf"),
+    params: [holderAddress],
+    block: block,
+  });
+
+  return balance.output;
 }
 
 async function addToTVL(block, chainBlocks) {
@@ -33,6 +44,11 @@ async function addToTVL(block, chainBlocks) {
     CHAIN,
     transformAddress
   );
+
+  // get the StakingRewards ARCD balance
+  const stakingRewardsARCDbalance = await getBalanceOf(ARCD, STAKING_REWARDS, ARCD_ABI, block);
+  // and add it to the balances
+  sdk.util.sumSingleBalance(balances, 'coingecko:arcade-protocol', stakingRewardsARCDbalance);
 
   // get the SINGLE_SIDED_STAKING total supply
   const totalSupplySingleSided = await getTotalSupply(SINGLE_SIDED_STAKING, SINGLE_SIDED_STAKING_ABI, block);

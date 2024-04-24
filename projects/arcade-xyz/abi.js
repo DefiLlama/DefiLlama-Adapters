@@ -16,8 +16,30 @@ const SINGLE_SIDED_STAKING_ABI = [
   }
 ]
 
+const ARCD_ABI = [
+  {
+    "inputs":[
+      {
+        "internalType":"address",
+        "name":"account",
+        "type":"address"
+      }
+    ],
+    "name":"balanceOf",
+    "outputs":[
+      {
+        "internalType":"uint256",
+        "name":"",
+        "type":"uint256"
+      }
+    ],
+    "stateMutability":"view",
+    "type":"function"
+  },
+]
 
 module.exports = {
   VAULT_FACTORY_ABI,
-  SINGLE_SIDED_STAKING_ABI
+  SINGLE_SIDED_STAKING_ABI,
+  ARCD_ABI
 };
