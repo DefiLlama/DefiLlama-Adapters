@@ -119,6 +119,7 @@ const fixBalancesTokens = {
     '0x5ebcdf1de1781e8b5d41c016b0574ad53e2f6e1a': { coingeckoId: "planq", decimals: 18, },
   },
   xlayer: {
+    [ADDRESSES.xlayer.WOKB]: { coingeckoId: "okb", decimals: 18, },
     [ADDRESSES.xlayer.WETH]: { coingeckoId: "ethereum", decimals: 18, },
     [ADDRESSES.xlayer.USDT]: { coingeckoId: "tether", decimals: 6, },
   },
