@@ -157,4 +157,8 @@ const config = {
 
 Object.keys(config).forEach((chain) => {
   module.exports[chain] = { tvl };
+  module.exports.hallmarks=[
+    [1676851200, "Timeswap V2 launch"],
+    [1697760000, "Premine of $TIME"]
+  ]
 });
