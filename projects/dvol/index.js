@@ -7,7 +7,8 @@ const vaults = {
     '0xC6553F147D418dFe3745EBa56514de13feF67eA2'
   ],
   arbitrum: [
-    '0xce2C993406E86e0efd7D74A83a9fEfdB35bBE05c'
+    '0xce2C993406E86e0efd7D74A83a9fEfdB35bBE05c',
+    '0x37874743E42684dfE7beF6a345C8426402538688'
   ]
 }
 
