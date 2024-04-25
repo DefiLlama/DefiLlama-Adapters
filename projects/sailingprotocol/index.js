@@ -1,7 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const axios = require('axios');
-const { collapseTextChangeRangesAcrossMultipleVersions } = require('typescript');
 
 const tokens = [
   {
