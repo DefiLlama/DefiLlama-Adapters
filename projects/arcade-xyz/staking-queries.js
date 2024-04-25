@@ -50,11 +50,6 @@ async function addToTVL(block) {
   // add it to the balances
   sdk.util.sumSingleBalance(balances, ARCD_COINID, totalSupplySingleSided);
 
-  // get the ARCD reserves from the UniswapV2 ARCD/wETH pair pool
-  const pairPoolARCDbalance = await getReserves(ARCD_WETH_LP, LP_PAIR_ABI, block) / 1e18;
-  // add it to the balances
-  sdk.util.sumSingleBalance(balances, ARCD_COINID, pairPoolARCDbalance);
-
   return balances;
 }
 
