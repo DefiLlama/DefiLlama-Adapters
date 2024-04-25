@@ -1706,6 +1706,9 @@
     "USDT": "0xd567b3d7b8fe3c79a1ad8da978812cfc4fa05e75",
     "AXLUSDC": "0x80b5a32e4f032b2a058b4f29ec95eefeeb87adcd"
   },
+  "genesys": {
+    "WGSYS": "0xAa7aE83eb30DDdd14A017D4222121776317EA8Ba"
+  },
   "xlayer": {
     "WOKB": "0xe538905cf8410324e03a5a23c1c177a474d59b2b",
     "WBTC": "0xea034fb02eb1808c2cc3adbc15f447b93cbe08e1",
