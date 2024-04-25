@@ -1,5 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
+const methodologies = require("../helper/methodologies")
+const fluidLiquidityResolverAbi = require("./abi.json")
+
 module.exports={
+    methodology: methodologies.lendingMarket,
     ethereum:{
         tvl: async (api) => {
             const tokens = await api.call({ target: "0x741c2Cd25f053a55fd94afF1afAEf146523E1249", abi: "function listedTokens() public view returns (address[] memory listedTokens_)" })
@@ -13,5 +17,28 @@ module.exports={
                 ...tokens.filter(t=>t.toLowerCase()!=="0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
             ] })
           },
+        borrowed: async (api) => {
+            const fluidLiquidityResolver = "0x645C84DeA082328e456892D2E68d434b61AD7dBF";
+            const tokens = await api.call({
+                target: "0x741c2Cd25f053a55fd94afF1afAEf146523E1249",
+                abi: "function listedTokens() public view returns (address[] memory listedTokens_)",
+            });
+
+            const borrowTokenAmounts = (
+                await api.call({
+                target: fluidLiquidityResolver,
+                abi: fluidLiquidityResolverAbi,
+                params: [tokens],
+                })
+            ).map((x, i) => ({ token: tokens[i], borrow: x.totalBorrow}));
+
+            for await (const borrowTokenAmount of borrowTokenAmounts){
+                await api.add(
+                    borrowTokenAmount.token,
+                    borrowTokenAmount.borrow
+                );
+            }
+          },
     }
 }
+// node test.js projects/fluid/index.js
