@@ -25,8 +25,7 @@ async function staking() {
 
 
 module.exports = {
-  doublecounted: false,
-  kujira: {
+    kujira: {
     tvl, staking,
   },
 }

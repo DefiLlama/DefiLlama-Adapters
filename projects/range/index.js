@@ -38,6 +38,12 @@ const config ={
   ],
   scroll: [
     { factory: '0x52B29C6154Ad0f5C02416B8cB1cEB76E082fC9C7', fromBlock: 1803841, factoryType: 'izumi' } // izumi
+  ],
+  zkfair: [
+    { factory: '0x873fD467A2A7e4E0A71aD3c45966A84797e55B5B', fromBlock: 6740958, factoryType: 'izumi' } // izumi
+  ],
+  blast: [
+    { factory: '0x6b12399172036db8a8E2b7e2206175080C981A4D', fromBlock: 228630 } // Thruster
   ]
 }
 
@@ -52,7 +58,7 @@ module.exports = {
 const ignoreList  = {mantle : ["0x3f7a9ea2403F27Ce54624CE505D01B2204eDa030"]}
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const factories = config[chain];
       const allLogs = [];
       for (const { factory, fromBlock, factoryType } of factories) {
@@ -101,6 +107,7 @@ Object.keys(config).forEach(chain => {
       ghoBals.forEach((amount, i) => {
         api.add(ghoToken1s[i], amount);
       })
+      return api.getBalances()
     }
   }
 })

@@ -16,8 +16,8 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { ladle, fromBlock } = config[chain]
   module.exports[chain] = {
-    tvl: async (timestamp, _b, chainBlocks, { api }) => {
-      const block = chainBlocks[chain]
+    tvl: async (api) => {
+      const block = api.block
       const cauldron = await sdk.api2.abi.call({
         target: ladle,
         abi: 'address:cauldron',

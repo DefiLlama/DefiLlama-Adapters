@@ -18,7 +18,7 @@ async function sumCW20Tokens({ balances = {}, tokens, owner, chain } = {}) {
   return balances;
 }
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   // Sum the balances of all tokens excluding CW20
   const tokens = await sumTokens({ chain: api.chain, owner: MARKET_ADDR });
   console.log("sumTokens", tokens);
@@ -31,7 +31,7 @@ async function tvl(_, _1, _2, { api }) {
   return total
 }
 
-async function borrowed(_, _1, _2, { api }) {
+async function borrowed(api) {
   // query market-state
   const { markets, } = await queryContract({ chain: api.chain, contract: MARKET_ADDR, data: { get_state: {} } })
 

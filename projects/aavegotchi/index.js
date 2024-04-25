@@ -109,14 +109,13 @@ const polygonTvl = async (_, _block, chainBlocks) => {
 };
 
 module.exports = {
-  timetravel: true,
-  ethereum: {
+    ethereum: {
     tvl: ethTvl,
   },
   polygon: {
-    staking: staking(stkGHST_QUICKContract, GHST_Polygon, "polygon"),
+    staking: staking(stkGHST_QUICKContract, GHST_Polygon),
     tvl: polygonTvl,
-    pool2: staking([stkGHST_QUICKContract], GHST_pools2, "polygon")
+    pool2: staking([stkGHST_QUICKContract], GHST_pools2)
   },
   methodology:
     `We count liquidity on Vaults from ETHEREUM and Polygon chains through Vault Contracts;
