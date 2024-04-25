@@ -57,6 +57,7 @@ const fixBalancesTokens = {
   },
   core: {
     '0x1281E326C6e4413A98DafBd0D174a4Ae07ff4223': { coingeckoId: "zeepr", decimals: 18, },
+    '0x8034ab88c3512246bf7894f57c834dddbd1de01f': { coingeckoId: "bitcoin", decimals: 8 },
   },
   bsc: {
     '0x55CBAC75C1af769eB7FD37d27A5cb6437EB29abB': { coingeckoId: "zeepr", decimals: 18, },
@@ -137,9 +138,6 @@ const fixBalancesTokens = {
   genesys: {
     [ADDRESSES.genesys.WGSYS]: { coingeckoId: "genesys", decimals: 18 },
   },
-  core: {
-    '0x8034ab88c3512246bf7894f57c834dddbd1de01f': { coingeckoId: "bitcoin", decimals: 8 },
-  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
