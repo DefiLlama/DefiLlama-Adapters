@@ -87,7 +87,6 @@ const tvl = async (api) => {
     }
   })
 
-
   //Mendi Vaults
   const mendiVaults = vaults.filter(i => i.vaultType == VaultType.MendiLending).map(i => i.vault)
   const depositTokens = await api.multiCall({abi: 'address:depositToken', calls: mendiVaults})
