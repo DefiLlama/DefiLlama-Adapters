@@ -9,7 +9,7 @@ const config = {
       "0xAd16eDCF7DEB7e90096A259c81269d811544B6B6",
     ],
     tokens: [
-      // "0x8a053350ca5F9352a16deD26ab333e2D251DAd7c",  // mmETH
+      //"0x8a053350ca5F9352a16deD26ab333e2D251DAd7c",  // mmETH
       "0xE46a5E19B19711332e33F33c2DB3eA143e86Bc10", // mwBETH  
       "0x32bd822d615A3658A68b6fDD30c2fcb2C996D678", // mswETH 
       "0x49446A0874197839D15395B908328a74ccc96Bc0", // mstETH
@@ -122,10 +122,8 @@ function tvl(chain) {
   return async (api, block) => {
     let balances;
     if (chain === 'ethereum') {
-      //let novaNethBalance;// api.call get 0xC6572019548dfeBA782bA5a2093C836626C7789A balanceOf(0xAd16eDCF7DEB7e90096A259c81269d811544B6B6)
-      //totalEth = //api.call("uint256:convertToAssets") get real eth amount 
-      // totalEth = totalEth + 0x5fD9F73286b7E8683Bab45019C94553b93e015Cf.ethBalance
       const ownerBridge = config[chain].owners[1];
+      // Convert LRT ETH to ETH
       // neth
       const nethContract = '0xC6572019548dfeBA782bA5a2093C836626C7789A'
       const totalNethOfBridge = await api.call({ abi: 'erc20:balanceOf', target: nethContract, params: ownerBridge })
