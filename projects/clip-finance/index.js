@@ -47,7 +47,7 @@ const tvl = async (api) => {
   })
   
   //Aerodrom Vaults
-  let aerodromVaults = vaults.filter(i => i.vaultType == VaultType.Aero).map(i => i.vault)
+  const aerodromVaults = vaults.filter(i => i.vaultType == VaultType.Aero).map(i => i.vault)
   const tokenAs = await api.multiCall({ abi: 'address:tokenA', calls: aerodromVaults })
   
   const tokenBs = await api.multiCall({ abi: 'address:tokenB', calls: aerodromVaults })
@@ -85,6 +85,15 @@ const tvl = async (api) => {
       api.add(tokenAs[i], Math.floor(liquidities[i] * lpBalanceAs[i] / lpTotalSupplies[i] + tokenABalances[i]))
       api.add(tokenBs[i], Math.floor(liquidities[i] * lpBalanceBs[i] / lpTotalSupplies[i] + tokenBBalances[i]))
     }
+  })
+
+
+  //Mendi Vaults
+  const mendiVaults = vaults.filter(i => i.vaultType == VaultType.MendiLending).map(i => i.vault)
+  const depositTokens = await api.multiCall({abi: 'address:depositToken', calls: mendiVaults})
+  const TVLs = await api.multiCall({abi: 'uint256:TVL', calls: mendiVaults})
+  mendiVaults.forEach((_, i) => {
+    api.add(depositTokens[i], TVLs[i])
   })
 
   //Stargate Vaults
