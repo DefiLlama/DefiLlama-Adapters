@@ -22,7 +22,8 @@ const chains = [
   "moonbeam",
   "celo",
   "kava",
-  "base"
+  "base",
+  "fraxtal"
 ]; // Object.keys(contracts);
 const registryIds = {
   stableswap: 0,
@@ -85,17 +86,19 @@ function getRegistryType(registryId) {
 }
 
 async function getPools(block, chain) {
-  let { registriesMapping } = contracts[chain]
+  let { registriesMapping, addressProvider } = contracts[chain]
   if (!registriesMapping) {
     registriesMapping = {};
-    (await sdk.api.abi.multiCall({
-      block, chain,
-      calls: Object.values(registryIds).map(r => ({ params: r })),
-      target: contracts[chain].addressProvider,
-      abi: abi.get_id_info
-    })).output
-      .filter(r => r.output.addr !== nullAddress)
-      .forEach(({ input: { params: [registryId] }, output: { addr } }) => registriesMapping[getRegistryType(registryId)] = addr)
+    if(addressProvider){
+      (await sdk.api.abi.multiCall({
+        block, chain,
+        calls: Object.values(registryIds).map(r => ({ params: r })),
+        target: addressProvider,
+        abi: abi.get_id_info
+      })).output
+        .filter(r => r.output.addr !== nullAddress)
+        .forEach(({ input: { params: [registryId] }, output: { addr } }) => registriesMapping[getRegistryType(registryId)] = addr)
+    }
   }
   if (contracts[chain].CurveStableswapFactoryNG) {
     registriesMapping.CurveStableswapFactoryNG = contracts[chain].CurveStableswapFactoryNG
