@@ -24,8 +24,7 @@ const config = {
     ],
     tokens: [
       "0x4186BFC76E2E237523CBC30FD220FE055156b41F",  // rsETH
-      "0x3082CC23568eA640225c2467653dB90e9250AaA0", // RDNT  
-      "0x3abb0E23618a042ef55a624b903E9873F8756881", // ZKT 
+      "0x3082CC23568eA640225c2467653dB90e9250AaA0", // RDNT
     ],
   },
   linea: {
@@ -36,8 +35,7 @@ const config = {
     tokens: [
       "0x3aAB2285ddcDdaD8edf438C1bAB47e1a9D05a9b4",  // WBTC
       ADDRESSES.blast.ezETH, // ezETH  
-      "0xB5beDd42000b71FddE22D3eE8a79Bd49A568fC8F", // wstETH
-      "0x531e4901EB141a71e111Cc23Fc4fBD4B7dB788d5", // ZKT  
+      "0xB5beDd42000b71FddE22D3eE8a79Bd49A568fC8F", // wstETH 
       ADDRESSES.linea.USDT, // USDT 
       ADDRESSES.linea.DAI, // DAI
       ADDRESSES.linea.USDC, // USDC
@@ -65,7 +63,6 @@ const config = {
       "0xCAbAE6f6Ea1ecaB08Ad02fE02ce9A44F09aebfA2", // WBTC
       "0xcDA86A272531e8640cD7F1a92c01839911B90bb0", // meth
       "0x779f4E5fB773E17Bc8E809F4ef1aBb140861159a", // KTC
-      "0x531e4901EB141a71e111Cc23Fc4fBD4B7dB788d5", // zkt
     ],
   },
   manta: {
@@ -80,7 +77,6 @@ const config = {
       "0xEc901DA9c68E90798BbBb74c11406A32A70652C3", //STONE
       "0xbdAd407F77f44F7Da6684B416b1951ECa461FB07", //WUSDM
       "0x34c7Ad65E4163306f8745996688b476914201cE0", //uniETH
-      "0x9Af5CC797695717A20eCF3E258D6303316277A55", //ZKT
     ],
   },
   blast: {
@@ -91,7 +87,6 @@ const config = {
     tokens: [
       ADDRESSES.null,
       ADDRESSES.blast.ezETH, // ezeth
-      "0x8cDe337D4D39f692f867c9FFA696f555EdaB4BeD", // zkt
       "0x038f1C6ED5FccF690A920a27b39366eeeF27eFCe", // rich
       "0x5FE8534a6F96cb01261Bd96e98c17C2c1Cab3204", // BAJA
       "0xf782E172A14Ee1c85cD980C15375bA0E87957028", // CACA
@@ -104,16 +99,12 @@ const config = {
     ],
     tokens: [
       "0xc1CBa3fCea344f92D9239c08C0568f6F2F0ee452",  // wstETH
-      "0x60F6659f92Db201670c39CC51D3630eD32cEdBb5", // ZKT  
     ],
   },
   optimism: {
     owners: [
       "0x46C8D02E93d5a03899dFa7Cf8A40A07589A3fA1b",
       "0x5Bd51296423A9079b931414C1De65e7057326EaA",
-    ],
-    tokens: [
-      "0x7d685a13eaFd76c12Dc6a9E9340778381Eef6bd7", // ZKT  
     ],
   },
 }
