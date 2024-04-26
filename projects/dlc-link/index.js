@@ -1,18 +1,19 @@
 const sdk = require("@defillama/sdk");
 
-// TODO: for now I just copied the djed-alliance adapter
-async function tvl(ts, block) {
+async function tvl(ts, block, _) {
   return {
-    dlcBTC:
-      (
-        await sdk.api.erc20.totalSupply({
-          target: "0xe1406825186D63980fd6e2eC61888f7B91C4bAe4",
-          block,
-        })
-      ).output / 1e18,
+    ["0x050C24dBf1eEc17babE5fc585F06116A259CC77A"]: (
+      await sdk.api.erc20.totalSupply({
+        target: "0x050C24dBf1eEc17babE5fc585F06116A259CC77A",
+        block,
+        decimals: 8,
+        chain: "arbitrum",
+      })
+    ).output,
   };
 }
 
 module.exports = {
-  ethereum: { tvl },
+  arbitrum: { tvl },
+  methodology: `TVL for dlcBTC consists of the total supply of dlcBTC tokens minted.`,
 };
