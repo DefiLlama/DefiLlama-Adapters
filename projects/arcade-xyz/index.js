@@ -9,6 +9,7 @@ const {
   LOAN_CORE_V3,
   START_BLOCKS,
   VAULT_FACTORY_A,
+  TREASURY_CONFIG
 } = require('./constants');
 
 // Uses chainlink oracle floor price for all whitelisted NFTS owned by every vault and the Loan Core contract.
@@ -16,7 +17,7 @@ const {
 // are currently in escrow.
 async function tvl(api) {
   // Get list of all vaults
-  const vaults = await fetchVaults(api.block)
+  const vaults = await fetchVaults(await api.getBlock())
   const balances = {}
   const artBlockOwners = []
 
@@ -46,7 +47,7 @@ async function tvl(api) {
 
 // Fetches all active loans, their payable curency and amount borrowed then sums it up.
 async function borrowed(api) {
-  const loans = await fetchLoans(api.block);
+  const loans = await fetchLoans(await api.getBlock());
 
   // Iterate over each loan to sum up principal by currency
   for (const loan of loans) {
@@ -60,9 +61,14 @@ async function borrowed(api) {
 }
 
 module.exports = {
-  methodology: `Sums up the floor value of all vaulted and escrowed NFTs with Chainlink price feeds. Borrowed coins are not counted towards the TVL`,
+  ...TREASURY_CONFIG,
+  methodology: `Sums up the floor value of all vaulted and escrowed NFTs with Chainlink price feeds. Borrowed coins are not counted towards the TVL. Treasury balance is counted towards the TVL.`,
   start: START_BLOCKS[VAULT_FACTORY_A],
-  ethereum: { tvl, borrowed },
+  ethereum: {
+    ...TREASURY_CONFIG.ethereum,
+    tvl,
+    borrowed
+  },
   hallmarks: [
     [1660762840, 'V2 Protocol Launch'],
     [1694026811, 'V3 Protocol Launch'],
