@@ -5,7 +5,8 @@ const config ={
   ethereum: [
     { factory: '0xf1e70677fb1f49471604c012e8B42BA11226336b', fromBlock: 17266660 }, // uniswap
     { factory: '0x3edeA0E6E94F75F86c62E1170a66f4e3bD7d77fE', fromBlock: 18460401 }, // pancakeswap
-    { factory: '0xDE07a0D5C9CA371E41a869451141AcE84BCAd119', fromBlock: 18375548 }, // GHO
+    { factory: '0xDE07a0D5C9CA371E41a869451141AcE84BCAd119', fromBlock: 18375548, factoryType: 'GHO' }, // GHO
+    { factory: '0x06D38cFA75FE0E9C41B0C58F102bCb2Df2577732', fromBlock: 10000835 } // uniswap
   ],
   arbitrum: [
     { factory: '0xB9084c75D361D1d4cfC7663ef31591DeAB1086d6', fromBlock: 88503603 }, // uniswap
@@ -25,9 +26,24 @@ const config ={
   ],
   mantle: [
     { factory: '0x3E89E72026DA6093DD6E4FED767f1f5db2fc0Fb4', fromBlock: 5345161 }, // agni
-    { factory: '0xCCA961F89a03997F834eB5a0104efd9ba1f5800E', fromBlock: 14374189 }, // izumi
+    { factory: '0xCCA961F89a03997F834eB5a0104efd9ba1f5800E', fromBlock: 14374189, factoryType: 'izumi' }, // izumi
     { factory: '0xD22D1271d108Cd09C38b8E5Be8536E0E366DCd23', fromBlock: 14063599 }, // fusionX
     { factory: '0xbf3CC27B036C01A4482d07De191F18F1d8e7B00c', fromBlock: 18309127 } // swapsicle
+  ],
+  manta: [
+    { factory: '0x52B29C6154Ad0f5C02416B8cB1cEB76E082fC9C7', fromBlock: 899433, factoryType: 'izumi' } // izumi
+  ],
+  zeta: [
+    { factory: '0x52B29C6154Ad0f5C02416B8cB1cEB76E082fC9C7', fromBlock: 1562427, factoryType: 'izumi' } // izumi
+  ],
+  scroll: [
+    { factory: '0x52B29C6154Ad0f5C02416B8cB1cEB76E082fC9C7', fromBlock: 1803841, factoryType: 'izumi' } // izumi
+  ],
+  zkfair: [
+    { factory: '0x873fD467A2A7e4E0A71aD3c45966A84797e55B5B', fromBlock: 6740958, factoryType: 'izumi' } // izumi
+  ],
+  blast: [
+    { factory: '0x6b12399172036db8a8E2b7e2206175080C981A4D', fromBlock: 228630 } // Thruster
   ]
 }
 
@@ -42,10 +58,10 @@ module.exports = {
 const ignoreList  = {mantle : ["0x3f7a9ea2403F27Ce54624CE505D01B2204eDa030"]}
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const factories = config[chain];
       const allLogs = [];
-      for (const { factory, fromBlock } of factories) {
+      for (const { factory, fromBlock, factoryType } of factories) {
         const logs = await getLogs({
           api,
           target: factory,
@@ -54,29 +70,21 @@ Object.keys(config).forEach(chain => {
           onlyArgs: true,
           fromBlock,
         })
-        logs.forEach((log) => allLogs.push({ factory, log, chain }));
+        logs.forEach((log) => allLogs.push({ factory, log, chain, factoryType }));
       }
-      const izumiFactory = '0xCCA961F89a03997F834eB5a0104efd9ba1f5800E'; // Differentiate between izumi & pancakeswap factory
-      const ghoFactory = '0xDE07a0D5C9CA371E41a869451141AcE84BCAd119';
-      let vaults = allLogs.filter(({ factory, chain }) => {
-         if (factory === izumiFactory && chain === 'mantle') {
-          return false;
-         } else if (factory === ghoFactory && chain === 'ethereum') {
-          return false;
-         } else {
-          return true;
-         }
-      }).map(({ log }) => log.vault);
+      const getVault = i => i.log.vault
+      const ignoreVault = vault => !ignoreList[chain] || !ignoreList[chain].includes(vault)
+      let vaults = allLogs.filter(({ factoryType }) => !factoryType      ).map(getVault);
       
-      vaults = vaults.filter(vault => !ignoreList[chain] || !ignoreList[chain].includes(vault)); // Remove excluded vaults
+      vaults = vaults.filter(ignoreVault); // Remove excluded vaults
 
       // Collect Izumi Vaults Separately
-      let izumiVaults = allLogs.filter(({ factory, chain }) => factory === izumiFactory && chain === 'mantle').map(({ log }) => log.vault); 
-      izumiVaults = izumiVaults.filter(vault => !ignoreList[chain] || !ignoreList[chain].includes(vault));
+      let izumiVaults = allLogs.filter(({ factoryType}) => factoryType === 'izumi').map(getVault); 
+      izumiVaults = izumiVaults.filter(ignoreVault);
 
       // Collect GHO Vaults Separately
-      let ghoVaults = allLogs.filter(({ factory, chain }) => factory === ghoFactory && chain === 'ethereum').map(({ log }) => log.vault);
-      ghoVaults = ghoVaults.filter(vault => !ignoreList[chain] || !ignoreList[chain].includes(vault));
+      let ghoVaults = allLogs.filter(({ factoryType}) => factoryType === 'GHO').map(getVault);
+      ghoVaults = ghoVaults.filter(ignoreVault);
 
       // ===== Non Izumi & Non GHO vaults only =====
       let token0s = await api.multiCall({ abi: "address:token0", calls: vaults })
@@ -85,8 +93,7 @@ Object.keys(config).forEach(chain => {
       token0s.push(...(await api.multiCall({ abi: "address:tokenX", calls: izumiVaults })))
       token1s.push(...(await api.multiCall({ abi: "address:tokenY", calls: izumiVaults })))
 
-      const bals = await api.multiCall({ abi: ABI.underlyingBalance, calls: vaults })
-      bals.push(...(await api.multiCall({ abi: ABI.underlyingBalance, calls: izumiVaults })))
+      const bals = await api.multiCall({ abi: ABI.underlyingBalance, calls: [...vaults, ...izumiVaults] })
       
       // All non-GHO vaults
       bals.forEach(({ amount0Current, amount1Current }, i) => {
@@ -95,12 +102,12 @@ Object.keys(config).forEach(chain => {
       })
 
       // ===== GHO Vaults Only =====
-      let ghoToken0s = await api.multiCall({ abi: "address:token0", calls: ghoVaults })
-      let ghoToken1s = await api.multiCall({ abi: "address:token1", calls: ghoVaults })
+      let ghoToken1s = await api.multiCall({ abi: "address:collateralToken", calls: ghoVaults })
       const ghoBals = await api.multiCall({ abi: ABI.getBalanceInCollateralToken, calls: ghoVaults })
       ghoBals.forEach((amount, i) => {
         api.add(ghoToken1s[i], amount);
       })
+      return api.getBalances()
     }
   }
 })

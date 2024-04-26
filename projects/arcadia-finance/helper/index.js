@@ -19,7 +19,7 @@ const config = {
 }
 
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const { chain } = api
   let { factory, pools } = config[chain]
   pools = Object.values(pools)

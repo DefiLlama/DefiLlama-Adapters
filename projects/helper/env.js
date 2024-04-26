@@ -4,16 +4,21 @@ const BOOL_KEYS = [
 ]
 
 const DEFAULTS = {
+  STARKNET_RPC: 'https://starknet-mainnet.public.blastapi.io',
   COVALENT_KEY: 'ckey_72cd3b74b4a048c9bc671f7c5a6',
   SOLANA_RPC: 'https://mainnet.helius-rpc.com/?api-key=0109717a-77b4-498a-bc3c-a0b31aa1b3bf',
   APTOS_RPC: 'https://aptos-mainnet.pontem.network',
   SUI_RPC: 'https://fullnode.mainnet.sui.io/',
   MULTIVERSX_RPC: 'https://api.multiversx.com',
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
-  ACALA_RPC: "https://eth-rpc-acala.aca-api.network",
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
-  CORE_RPC: "https://rpc.ankr.com/core,https://1rpc.io/core,https://rpc-core.icecreamswap.com",
-  BITGERT_RPC: "https://flux-rpc2.brisescan.com,https://mainnet-rpc.brisescan.com,https://chainrpc.com,https://serverrpc.com,https://flux-rpc.brisescan.com",
+  KARAK_RPC: "https://rpc.karak.network",
+  FSC_RPC: "https://fsc-dataseed1.fonscan.io,https://fsc-dataseed2.fonscan.io,https://fonscan.io/api/eth-rpc",
+  BSQUARED_RPC: "https://rpc.bsquared.network,https://b2-mainnet.alt.technology",
+  FSC_RPC_MULTICALL: "0x18fA376d92511Dd04090566AB6144847c03557d8",
+  XLAYER_RPC: "https://wallet.okex.org/fullnode/xlayer/discover/rpc/ro",
+  LAC_RPC: "https://rpc1.mainnet.lachain.network,https://rpc2.mainnet.lachain.network/", // Chain id : 274
+  XLAYER_RPC_MULTICALL: "0x398F92e15519B4F6F2D5cc42C17FC9ED15De53d8",
 }
 
 const ENV_KEYS = [
@@ -25,6 +30,7 @@ const ENV_KEYS = [
   'SUMMER_HISTORY_ENDPOINT',
   'SUMMER_AJNA_ENDPOINT',
   'SUMMER_CONFIRMED_VAULTS_ENDPOINT',
+  'UNISAT_AUTH'
 ]
 
 Object.keys(DEFAULTS).forEach(i => {
@@ -39,5 +45,6 @@ function getEnv(key) {
 }
 
 module.exports = {
+  ENV_KEYS,
   getEnv,
 }

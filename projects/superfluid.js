@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const { default: BigNumber } = require("bignumber.js");
 const { request, } = require("graphql-request"); // GraphQLClient
 const { isStableToken } = require('./helper/streamingHelper')
 const { getBlock } = require('./helper/http')
@@ -72,7 +71,7 @@ async function getChainBalances(allTokens, chain, block, isVesting) {
       symbol,
       isNativeAssetSuperToken,
     } = allTokens[i]
-    let underlyingTokenBalance = BigNumber(totalSupply * (10 ** (underlyingToken || { decimals: 18 }).decimals) / (10 ** decimals)).toFixed(0)
+    let underlyingTokenBalance = totalSupply * (10 ** (underlyingToken || { decimals: 18 }).decimals) / (10 ** decimals)
     // Accumulate to balances, the balance for tokens on mainnet or sidechain
     let prefixedUnderlyingAddress = underlyingAddress
     // if (!underlyingToken && underlyingTokenBalance/1e24 > 1) sdk.log(name, symbol, chain, Math.floor(underlyingTokenBalance/1e24))

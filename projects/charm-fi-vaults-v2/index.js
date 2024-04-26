@@ -14,7 +14,7 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const { factory = '0x5B7B8b487D05F77977b7ABEec5F922925B9b2aFa' } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const vaults = await api.fetchList({ lengthAbi: 'uint256:numVaults', itemAbi: 'function vaults(uint) view returns (address)', target: factory })
       const token0s = await api.multiCall({ abi: 'address:token0', calls: vaults })
       const token1s = await api.multiCall({ abi: 'address:token1', calls: vaults })

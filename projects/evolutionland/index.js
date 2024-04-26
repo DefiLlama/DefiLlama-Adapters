@@ -51,7 +51,7 @@ const lpETH = {
   "crab": "0xF157c9393255Db1728bC6483c3545Ca8a1655a0F",
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const owners = [lpETH].map(i => i[api.chain])
   const balances = await sumTokens2({ api, owners, tokens: [weth[api.chain]] })
   const owners1 = [lpGOLD, lpWOOD, lpHOO, lpFIRE, lpSIOO, lpETH].map(i => i[api.chain])
