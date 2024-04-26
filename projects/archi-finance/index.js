@@ -23,7 +23,7 @@ const addresses = {
   ]
 }
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   const tokens = await api.multiCall({  abi: 'address:underlyingToken', calls: addresses.vaults })
   const tokensAndOwners = tokens.map((v, i) => [v, addresses.vaults[i]])
   addresses.fsGlpHolders.forEach(i => tokensAndOwners.push([addresses.fsGlpAddress, i]))
@@ -31,7 +31,7 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
   return sumTokens2({ api, tokensAndOwners})
 }
 
-async function borrowed(timestamp, block, chainBlocks, { api }) {
+async function borrowed(api) {
   const borrowedBalance = await api.call({ target: addresses.vaultInfo, abi: ABI.borrowedBalance, params: [addresses.vaults] });
   api.addTokens(borrowedBalance[0], borrowedBalance[1]);
 }

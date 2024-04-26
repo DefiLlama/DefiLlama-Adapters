@@ -15,7 +15,7 @@ module.exports = {
 const chains = ['ethereum', 'polygon', 'arbitrum', 'moonriver', 'harmony', 'okexchain', 'cronos', 'aurora', 'metis', 'moonbeam', 'optimism', 'kava']
 chains.forEach(chain => {
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       let { assets: { jars } } = await getConfig('pickle', pfcore)
       let key = chain
       switch (chain) {

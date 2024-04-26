@@ -47,7 +47,7 @@ const tridentQuery = `
 `;
 
 function trident(chain) {
-  return async (timestamp, ethBlock, chainBlocks, { api }) => {
+  return async (api) => {
     const graphUrl = graphUrls[chain];
     // Query graphql endpoint
     let result;

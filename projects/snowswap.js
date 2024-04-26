@@ -87,7 +87,7 @@ const pools = [
   }
 ]
 
-async function polygon(ts, _block, { polygon: block }, { api }) {
+async function polygon(api) {
   const poolsPolygon = pools.filter(p => p.chain === "polygon")
   const toa = []
   poolsPolygon.forEach(pool => {
@@ -96,7 +96,7 @@ async function polygon(ts, _block, { polygon: block }, { api }) {
   return sumTokens2({ api, tokensAndOwners: toa, })
 }
 
-async function ethereum(ts, block, _, { api }) {
+async function ethereum(api) {
   const toa = []
   swaps.map(({ addr, coins }) => {
     coins.forEach(i => toa.push([i.addr, addr]))

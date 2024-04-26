@@ -61,7 +61,8 @@
     "metapoolBases": {
       "2CRV": "0xbf7e49483881c76487b0989cd7d9a8239b20ca41"
     },
-    "CurveStableswapFactoryNG": "0x9AF14D26075f142eb3F292D5065EB3faa646167b"
+    "CurveStableswapFactoryNG": "0x9AF14D26075f142eb3F292D5065EB3faa646167b",
+    "CurveL2TricryptoFactory": "0xbc0797015fcfc47d9c1856639cae50d0e69fbee8"
   },
   "aurora": {
     "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
@@ -149,6 +150,11 @@
     "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     "wrapped": "0x4244eb811d6e0ef302326675207a95113db4e1f8",
     "metapoolBases": {}
+  },
+  "fraxtal": {
+    "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "metapoolBases": {},
+    "CurveStableswapFactoryNG": "0xd2002373543ce3527023c75e7518c274a51ce712"
   },
   "kava": {
     "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",

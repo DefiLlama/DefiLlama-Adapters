@@ -9,7 +9,7 @@ module.exports = treasuryExports({
   blast: {
     tokens: [
         nullAddress,
-        "0x4300000000000000000000000000000000000003" //usdb
+        ADDRESSES.blast.USDB //usdb
      ],
     owners: [Treasury],
      ownTokens: [HYPE],

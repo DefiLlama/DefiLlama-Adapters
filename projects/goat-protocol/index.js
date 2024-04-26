@@ -9,8 +9,7 @@ const REWARD_POOL_CONTRACT = '0xAD9CE8580a1Cd887038405275cB02443E8fb88aC';
 
 module.exports = {
   timetravel: false,
-  misrepresentedTokens: false,
-  doublecounted: true,
+    doublecounted: true,
   [chain]: {
     tvl: async (_, _b, { [chain]: block }) => {
       const pools = await getConfig('goat-protocol', 'https://raw.githubusercontent.com/goatfi/goat-address-book/main/vault-registry/arbitrum.json');
@@ -20,6 +19,6 @@ module.exports = {
           vaults.push(pools[i].earnedTokenAddress);
       return yieldHelper({ vaults, chain, block, tokenAPI, useDefaultCoreAssets: true, })
     },
-    staking: staking(REWARD_POOL_CONTRACT, GOA_TOKEN_CONTRACT, "arbitrum")
+    staking: staking(REWARD_POOL_CONTRACT, GOA_TOKEN_CONTRACT)
   }
 }

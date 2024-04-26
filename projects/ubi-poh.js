@@ -12,7 +12,7 @@ const stakingContracts = [
 
 module.exports = {
   ethereum: {
-    pool2: staking(stakingContracts, lpTokens, 'ethereum'),
+    pool2: staking(stakingContracts, lpTokens),
     tvl: () => ({}), 
   },
   methodology: `UBI/ETH and UBI/DAI LP can be staked in a uni-v2 pool2 contract`

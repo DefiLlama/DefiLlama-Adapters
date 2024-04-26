@@ -15,7 +15,7 @@ const owners = [
 const xDaiBridge = "0x4aa42145Aa6Ebf72e164C9bBC74fbD3788045016";
 const owlToken = "0x1a5f9352af8af974bfc03399e3767df6370d82e4";
 const owlBridge = "0xed7e6720ac8525ac1aeee710f08789d02cd87ecb";
-async function eth(timestamp, block, _, { api }) {
+async function eth(api) {
   const ownerTokens = [
     [tokenAddresses, xDaiBridge],
     [[owlToken], owlBridge],

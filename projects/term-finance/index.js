@@ -36,12 +36,18 @@ query auctionsQuery($lastId: ID) {
   }
 }`
 
-const startBlock = 16380765;
+const startBlocks = {
+  "ethereum": 16380765,
+  "avalanche": 43162228,
+};
 const emitters = {
   "ethereum": [
     "0x9D6a563cf79d47f32cE46CD7b1fb926eCd0f6160",  // 0.2.4
     "0xf268E547BC77719734e83d0649ffbC25a8Ff4DB3",  // 0.4.1
     "0xc60e0f5cD9EE7ACd22dB42F7f56A67611ab6429F",  // 0.6.0
+  ],
+  "avalanche": [
+    "0xb81afB6724ba9d19a3572Fb29ed7ef633fD50093",  // 0.6.0
   ],
 };
 
@@ -53,11 +59,11 @@ module.exports = {
 Object.keys(graphs).forEach(chain => {
   const host = graphs[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const data = await cachedGraphQuery(`term-finance-${chain}`, host, query, { fetchById: true })
       return api.sumTokens( { tokensAndOwners: data.map(i => [i.collateralToken, i.term.termRepoLocker])})
     },
-    borrowed: async (_, _b, _cb, { api, }) => {
+    borrowed: async (api) => {
       const data = await cachedGraphQuery(`term-finance-borrowed-${chain}`, host, borrowedQuery, { fetchById: true })
 
       for (const eventEmitter of emitters[chain] ?? []) {
@@ -66,7 +72,7 @@ Object.keys(graphs).forEach(chain => {
           target: eventEmitter,
           eventAbi: 'event BidAssigned(bytes32 termAuctionId, bytes32 id, uint256 amount)',
           onlyArgs: true,
-          fromBlock: startBlock,
+          fromBlock: startBlocks[chain],
         })
         for (const { termAuctionId, amount } of logs) {
           const { term: { purchaseToken } } = data.find(i => i.id === termAuctionId)

@@ -3,7 +3,7 @@ const sui = require("../helper/chain/sui");
 const SINGLE_DEPOSIT_VAULT_REGISTRY = "0xd67cf93a0df61b4b3bbf6170511e0b28b21578d9b87a8f4adafec96322dd284d";
 const fud_token = "0x76cb819b01abed502bee8a702b4c2d547532c12f25001c9dea795a5e631c26f1::fud::FUD";
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   const depositVaultFields = await sui.getDynamicFieldObjects({
     parent: SINGLE_DEPOSIT_VAULT_REGISTRY,
   });
