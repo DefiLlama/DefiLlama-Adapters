@@ -12,13 +12,14 @@ async function tvlBase(api) {
 }
 
 async function merlinTvl(api) {
-  return api.sumTokens({ owners:[merlinPoolContract,merlinPositionContract], tokens: [ADDRESSES.merlin.WBTC, ADDRESSES.merlin.WBTC_1]})
+  const SolvBTC = "0x41D9036454BE47d3745A823C4aaCD0e29cFB0f71"
+  return api.sumTokens({ owners:[merlinPoolContract,merlinPositionContract], tokens: [ADDRESSES.merlin.WBTC, ADDRESSES.merlin.WBTC_1, SolvBTC]})
 }
 
 module.exports = {
   base: { tvl:tvlBase},
   merlin: {tvl:merlinTvl},
-  methodology: "Count the total balance across all fee pools for all trading pairs.",
+  methodology: "Count the total balance across all pools for all trading pairs.",
 }
 
 const abi = {
