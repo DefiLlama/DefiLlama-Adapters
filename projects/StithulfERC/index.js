@@ -1,16 +1,10 @@
-const { getUniTVL } = require('../helper/unknownTokens')
+const { masterchefExports, } = require('../helper/unknownTokens');
+const { mergeExports } = require("../helper/utils");
 
-const config = {
-  bsc: '0x9df9de5ed89adbbd9fa2c14691903a0de9048a87',
-}
-
-async function bscTVL() {
-  // Implement logic to fetch TVL data from the bsc protocol
-  const tvl = await fetchTvlFromBscApi();
-  return tvl;
-}
-
-module.exports = {
-  tvl: bscTVL,
-  misrepresentedTokens: false,
-}
+module.exports = mergeExports([
+  masterchefExports({
+    chain: 'bsc',
+    masterchef: '0xea2822047194f0cb21d8c79b2d93aaa42f3b9b5a',
+    nativeToken: '0x9df9de5ed89adbbd9fa2c14691903a0de9048a87,
+  })
+])
