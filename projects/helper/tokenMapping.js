@@ -138,6 +138,10 @@ const fixBalancesTokens = {
   genesys: {
     [ADDRESSES.genesys.WGSYS]: { coingeckoId: "genesys", decimals: 18 },
   },
+  zora: {
+    [ADDRESSES.null]: { coingeckoId: "ethereum", decimals: 18, },
+    [ADDRESSES.zora.USDzC]: { coingeckoId: "usd-coin", decimals: 6, },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
