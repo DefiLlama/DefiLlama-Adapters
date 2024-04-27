@@ -11,7 +11,7 @@ const madWETH = ADDRESSES.evmos.WETH
 const madWBTC = ADDRESSES.evmos.WBTC
 
 //////////////////////////// UNI AMM ////////////////////////////////////
-const evmoswapTvl = getUniTVL({ factory: '0xF24E36e53628C3086493B9EfA785ab9DD85232EB', chain: 'evmos', useDefaultCoreAssets: true })
+const evmoswapTvl = getUniTVL({ factory: '0xF24E36e53628C3086493B9EfA785ab9DD85232EB', useDefaultCoreAssets: true })
 
 //////////////////////////// STABLE AMM ////////////////////////////////////
 const poolAddressesEvmos = [

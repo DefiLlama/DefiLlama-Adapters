@@ -35,7 +35,7 @@ async function adaTvl() {
     // fetch the prices of each traded token first
     const adaPrices = new Map(Object.entries((await fetchURL("https://api.muesliswap.com/defillama/prices")).data))
 
-    // then first accumulate over the legacy orderbook
+   /*  // then first accumulate over the legacy orderbook
     const orderbookV1 = (await fetchURL("https://orders.muesliswap.com/all-orderbooks")).data
     const vOrderbookV1 = orderbookV1.map(ob => {
         if (ob.fromToken === ".") {
@@ -59,7 +59,7 @@ async function adaTvl() {
             return (totalBuy * fromPrice + totalSell * toPrice)
         }
     })
-    totalAda += vOrderbookV1.reduce((p, c) => p + c, 0)
+    totalAda += vOrderbookV1.reduce((p, c) => p + c, 0) */
 
     // then accumulate over the orderbooks
     const orderbookV2 = (await fetchURL("https://onchain.muesliswap.com/all-orderbooks")).data
@@ -101,9 +101,9 @@ module.exports = {
     methodology: "The factory addresses are used to find the LP pairs on Smart BCH and Milkomeda. For Cardano we calculate the tokens on resting orders on the order book contracts. TVL is equal to the liquidity on the AMM plus the open orders in the order book",
     cardano: {
         tvl: adaTvl,
-        staking
+        // staking
     },
     milkomeda: {
-        tvl: getUniTVL({ factory: '0x57A8C24B2B0707478f91D3233A264eD77149D408', chain: 'milkomeda', useDefaultCoreAssets: true }),
+        tvl: getUniTVL({ factory: '0x57A8C24B2B0707478f91D3233A264eD77149D408', useDefaultCoreAssets: true }),
     }
 }
