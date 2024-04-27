@@ -3,7 +3,7 @@ const sui = require("../helper/chain/sui");
 const { addUniV3LikePosition } = require("../helper/unwrapLPs");
 
 const BUCKETUS_VAULT_ID =
-  "0x1a0b93fd2965ce3ceb4039c90b232ddee7b0e79015cab0ca10528bb5f4285188";
+  "0x706a998f7f223b30c32ac3400a63721dae00f1b3e15169defeaafe2756af99c8";
 const BUCK_USDC_POOL_ID =
   "0x6ecf6d01120f5f055f9a605b56fd661412a81ec7c8b035255e333c664a0c12e7";
 
