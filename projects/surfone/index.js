@@ -14,7 +14,7 @@ async function tvlBase(api) {
 
 async function merlinTvl(api) {
   const tokens = await api.call({ abi: abi.getLiquidityTokens, target: merlinConfigContract })
-  const lpTokens = tokens.map(i => [i.indexToken])
+  const lpTokens = tokens.map(i => i.indexToken)
   return api.sumTokens({owners:[merlinPoolContract,merlinPositionContract], tokens: lpTokens})
 }
 
