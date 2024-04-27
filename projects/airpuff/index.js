@@ -39,6 +39,69 @@ module.exports = {
         tokensAndOwners: [[ADDRESSES.mode.WETH, lendingMode.eth]],
       });
 
+      const airPuff1XwETHMode = {
+        vault: "0xeAaD8f5F1901D2f92B747650c0f941Bfa3413dAF",
+        pendleAddress: "0x4200000000000000000000000000000000000006",
+      };
+
+      const airPuff1XUSDTMode = {
+        vault: "0xCEb6264CdCcDDd8c9631212Dc7112304F9393818",
+        pendleAddress: "0xf0F161fDA2712DB8b566946122a5af183995e2eD",
+      };
+
+      const airPuff1XUSDCMode = {
+        vault: "0x08ccF72358B44D9d45438Fc703962A0a2FD5c978",
+        pendleAddress: "0xd988097fb8612cc24eeC14542bC03424c656005f",
+      };
+
+      const airPuff1XwBTCMode = {
+        vault: "0xf9B484901BCA34A8615c90E8C4933f1Bd553B639",
+        pendleAddress: "0xcdd475325d6f564d27247d1dddbb0dac6fa0a5cf",
+      };
+
+      const airPuff1XwrsETHMode = {
+        vault: "0xEd487e254b1ED41Db4d1Ed457774827d01dfF56F",
+        pendleAddress: "0xe7903B1F75C534Dd8159b313d92cDCfbC62cB3Cd",
+      };
+
+      const airPuff1XankrETHMode = {
+        vault: "0x83886Af55Dac462Dc7840cdb0157bB3e7d8A6ac4",
+        pendleAddress: "0x12D8CE035c5DE3Ce39B1fDD4C1d5a745EAbA3b8C",
+      };
+
+      const airPuff1XpxETHMode = {
+        vault: "0xFf5C03ADf31865A4a8E6C0e59eDb4178C9BCC32E",
+        pendleAddress: "0x9E0d7D79735e1c63333128149c7b616a0dC0bBDb",
+      };
+
+      const airPuff1XstoneMode = {
+        vault: "0xaC9dAdf209F14f46Fe103C6E5C787130a6129205",
+        pendleAddress: "0x80137510979822322193FC997d400D5A6C747bf7",
+      };
+
+      const airPuff1XMerlinBTCMode = {
+        vault: "0x83A162dA8Df54FF845773169f019fd1505A9e29f",
+        pendleAddress: "0x59889b7021243dB5B1e065385F918316cD90D46c",
+      };
+
+      const strategies = [
+        airPuff1XwETHMode,
+        airPuff1XUSDTMode,
+        airPuff1XUSDCMode,
+        airPuff1XwBTCMode,
+        airPuff1XwrsETHMode,
+        airPuff1XankrETHMode,
+        airPuff1XpxETHMode,
+        airPuff1XstoneMode,
+        airPuff1XMerlinBTCMode,
+      ];
+
+      const tokensAndOwners = [];
+
+      strategies.forEach(({ vault, pendleAddress }) => tokensAndOwners.push([pendleAddress, vault]));
+
+      await api.sumTokens({ tokensAndOwners });
+
       const ezETH = {
         vault: "0x497eB27Ca1ed7566653edf811b03d6418a03FC9d",
         reStakingToken: ADDRESSES.blast.ezETH,
