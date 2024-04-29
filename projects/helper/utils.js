@@ -40,25 +40,26 @@ function getParamCalls(length) {
 }
 
 const LP_SYMBOLS = ['SLP', 'spLP', 'JLP', 'OLP', 'SCLP', 'DLP', 'MLP', 'MSLP', 'ULP', 'TLP', 'HMDX', 'YLP', 'SCNRLP', 'PGL', 'GREEN-V2', 'PNDA-V2', 'vTAROT', 'vEvolve', 'TETHYSLP', 'BAO-V2', 'DINO-V2', 'DFYNLP', 'LavaSwap', 'RLP', 'ZDEXLP', 'lawSWAPLP', 'ELP', 'ICELP', 'LFG_LP', 'KoffeeMug']
-const blacklisted_LPS = [
+const blacklisted_LPS = new Set([
   '0xb3dc4accfe37bd8b3c2744e9e687d252c9661bc7',
   '0xf146190e4d3a2b9abe8e16636118805c628b94fe',
   '0xCC8Fa225D80b9c7D42F96e9570156c65D6cAAa25',
   '0xaee4164c1ee46ed0bbc34790f1a3d1fc87796668',
   '0x93669cfce302c9971169f8106c850181a217b72b',
   '0x253f67aacaf0213a750e3b1704e94ff9accee10b',
-].map(i => i.toLowerCase())
+  '0x524cab2ec69124574082676e6f654a18df49a048',
+].map(i => i.toLowerCase()))
 
 function isICHIVaultToken(symbol, token, chain) {
   if (symbol === 'ICHI_Vault_LP') return true
-  if (chain === 'bsc' &&  symbol.startsWith('IV-') && symbol.endsWith('-THE')) return true
+  if (chain === 'bsc' && symbol.startsWith('IV-') && symbol.endsWith('-THE')) return true
   return false
 }
 
 function isLP(symbol, token, chain) {
   // sdk.log(symbol, chain, token)
   if (!symbol) return false
-  if (token && blacklisted_LPS.includes(token.toLowerCase()) || symbol.includes('HOP-LP-')) return false
+  if (token && blacklisted_LPS.has(token.toLowerCase()) || symbol.includes('HOP-LP-')) return false
   if (chain === 'bsc' && ['OLP', 'DLP', 'MLP', 'LP', 'Stable-LP', 'fCake-LP', 'fMDEX LP'].includes(symbol)) return false
   if (chain === 'bsc' && ['WLP', 'FstLP', 'BLP', 'DsgLP'].includes(symbol)) return true
   if (chain === 'pulse' && ['PLP', 'PLT'].includes(symbol)) return true
@@ -72,11 +73,12 @@ function isLP(symbol, token, chain) {
   if (chain === 'base' && ['RCKT-V2'].includes(symbol)) return true
   if (chain === 'wan' && ['WSLP'].includes(symbol)) return true
   if (chain === 'telos' && ['zLP'].includes(symbol)) return true
-  if (chain === 'polygon' && ['MbtLP', 'GLP', ].includes(symbol)) return true
+  if (chain === 'polygon' && ['MbtLP', 'GLP',].includes(symbol)) return true
   if (chain === 'ethereum' && (['SUDO-LP'].includes(symbol) || symbol.endsWith('LP-f'))) return false
   if (chain === 'dogechain' && ['DST-V2'].includes(symbol)) return true
   if (chain === 'harmony' && ['HLP'].includes(symbol)) return true
   if (chain === 'klaytn' && ['NLP'].includes(symbol)) return true
+  if (chain === 'core' && ['GLP'].includes(symbol)) return true
   if (chain === 'kardia' && ['KLP', 'KDXLP'].includes(symbol)) return true
   if (chain === 'fantom' && ['HLP', 'WLP'].includes(symbol)) return true
   if (chain === 'functionx' && ['FX-V2'].includes(symbol)) return true
@@ -108,8 +110,8 @@ function isLP(symbol, token, chain) {
 
   const isLPRes = LP_SYMBOLS.includes(symbol) || /(UNI-V2|vAMM|sAMM)/.test(symbol) || symbol.split(/\W+/).includes('LP')
 
-  if (isLPRes && !['UNI-V2', 'Cake-LP'].includes(symbol))
-    sdk.log(chain, symbol, token)
+  // if (isLPRes && !['UNI-V2', 'Cake-LP'].includes(symbol))
+  //   sdk.log(chain, symbol, token)
 
   return isLPRes
 }
@@ -300,7 +302,14 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
   })
 
   sdk.log('Balance table for [%s] %s', chain, tableLabel)
-  console.table(logObj.filter(i => !/\.(com|net|org|xyz|site)\s/.test(i.symbol)))
+  const filtered = logObj.filter(i => {
+    const symbol = i.symbol?.toLowerCase() ?? ''
+    if (/\.(com|net|org|xyz|site|io)/.test(symbol)) return false
+    if (/claim|access|airdrop/.test(symbol)) return false
+    return true
+  })
+  if (filtered.length)
+    console.table(filtered)
 }
 
 function once(func) {

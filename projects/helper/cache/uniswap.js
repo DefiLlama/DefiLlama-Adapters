@@ -24,13 +24,12 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
 
   const abi = { ...uniswapAbi, ...abis }
 
-  return async (_, _b, cb, { api, chain } = {}) => {
-    // console.log(await api.call({ abi: 'address:factory', target: factory }))
-    // console.log(await api.call({ abi: 'address:factory', target: '0x5f0776386926e554cb088df5848ffd7c5f02ebfa' }))
-
-    chain = chain ?? api?.chain
+  return async (api) => {
+    let chain = api?.chain
     if (!chain)
       chain = _chain
+    // const supply = await api.call({ abi: 'erc20:totalSupply', target: '0x1d1bc800e71576a59f9ef88bb679fa13c2e10abf' })
+    // console.log(await sdk.api.eth.getBalance({ target: '0x1d1bc800e71576a59f9ef88bb679fa13c2e10abf', chain: api.chain }), supply)
     factory = normalizeAddress(factory, chain)
     blacklist = (blacklistedTokens || blacklist).map(i => normalizeAddress(i, chain))
     const key = `${factory}-${chain}`

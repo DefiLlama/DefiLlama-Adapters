@@ -27,6 +27,11 @@ const poolHelpers = {
   'base': ['0x110dE362cc436D7f54210f96b8C7652C2617887D'],
   'zkfair': ['0x110dE362cc436D7f54210f96b8C7652C2617887D'],
   'zeta': ['0x2db0AFD0045F3518c77eC6591a542e326Befd3D7'],
+  // 'merlin': ['0x261507940678Bf22d8ee96c31dF4a642294c0467'], // tracked as part of merlinswap
+  'blast': ['0x5e7902aDf0Ea0ff827683Cc1d431F740CAD0731b'],
+  'zklink': ['0x936c9A1B8f88BFDbd5066ad08e5d773BC82EB15F'],
+  'mode': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
+  'xlayer': ['0xF42C48f971bDaA130573039B6c940212EeAb8496'],
 } // iziswap liquidityManager contracts
 
 const blacklistedTokens = [
@@ -34,6 +39,7 @@ const blacklistedTokens = [
   '0x1382628e018010035999A1FF330447a0751aa84f',
   ADDRESSES.bsc.iUSD, // mantle iUSD
   '0x078f712f038A95BeEA94F036cADB49188a90604b', // manta iUSD
+  ADDRESSES.bsc.iUSD, // merlin iUSD
 ]
 
 Object.keys(poolHelpers).forEach(chain => {

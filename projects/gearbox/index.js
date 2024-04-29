@@ -3,7 +3,7 @@
  **
  **
  ** This file has been generated from source code in https://github.com/Gearbox-protocol/defillama repo
- ** Binary release: https://github.com/Gearbox-protocol/defillama/releases/tag/v1.1.0
+ ** Binary release: https://github.com/Gearbox-protocol/defillama/releases/tag/v1.3.1
  **
  **
  **
@@ -13,7 +13,10 @@ var ethers = require("ethers");
 var getLogs = require("../helper/cache/getLogs");
 
 // src/adapter/constants.ts
-var ADDRESS_PROVIDER_V3 = "0x9ea7b04da02a5373317d745c1571c84aad03321d";
+var ADDRESS_PROVIDER_V3 = {
+  ethereum: "0x9ea7b04da02a5373317d745c1571c84aad03321d",
+  arbitrum: "0x7d04eCdb892Ae074f03B5D0aBA03796F90F3F2af",
+};
 
 // src/adapter/pools/abi.ts
 var poolAbis = {
@@ -28,7 +31,7 @@ async function getPools(block, api) {
   const contractsRegisterAddr = await api.call({
     block,
     abi: poolAbis["getAddressOrRevert"],
-    target: ADDRESS_PROVIDER_V3,
+    target: ADDRESS_PROVIDER_V3[api.chain],
     params: [
       // cast format-bytes32-string "CONTRACTS_REGISTER"
       "0x434f4e5452414354535f52454749535445520000000000000000000000000000",
@@ -87,7 +90,7 @@ async function getCreditManagersV1(block, api) {
   const contractsRegisterAddr = await api.call({
     block,
     abi: v1Abis["getAddressOrRevert"],
-    target: ADDRESS_PROVIDER_V3,
+    target: ADDRESS_PROVIDER_V3[api.chain],
     params: [
       // cast format-bytes32-string "CONTRACTS_REGISTER"
       "0x434f4e5452414354535f52454749535445520000000000000000000000000000",
@@ -230,7 +233,7 @@ async function getV2TVL(block, api) {
 async function getCreditManagersV210(block, api) {
   const dataCompressor210 = await api.call({
     abi: v2Abis["getAddressOrRevert"],
-    target: ADDRESS_PROVIDER_V3,
+    target: ADDRESS_PROVIDER_V3[api.chain],
     params: [
       // cast format-bytes32-string "DATA_COMPRESSOR"
       "0x444154415f434f4d50524553534f520000000000000000000000000000000000",
@@ -359,7 +362,7 @@ var v3Abis = {
 async function getV3TVL(block, api) {
   const dc300 = await api.call({
     abi: v3Abis["getAddressOrRevert"],
-    target: ADDRESS_PROVIDER_V3,
+    target: ADDRESS_PROVIDER_V3[api.chain],
     params: [
       // cast format-bytes32-string "DATA_COMPRESSOR"
       "0x444154415f434f4d50524553534f520000000000000000000000000000000000",
@@ -406,12 +409,18 @@ async function getV3CAs(dc300, creditManager, block, api) {
 }
 
 // src/adapter/index.ts
-async function tvl(timestamp, block, _, { api }) {
+async function tvl(_timestamp, _block, _, { api }) {
+  const block = await api.getBlock();
   const tokensAndOwners = await getPools(block, api);
-  const v1Balances = await getV1TVL(block, api);
-  const v2Balances = await getV2TVL(block, api);
+  const allBalances = [];
+  if (api.chain === "ethereum") {
+    const v1Balances = await getV1TVL(block, api);
+    const v2Balances = await getV2TVL(block, api);
+    allBalances.push(...v1Balances, ...v2Balances);
+  }
   const v3Balances = await getV3TVL(block, api);
-  [...v1Balances, ...v2Balances, ...v3Balances].forEach((i) => {
+  allBalances.push(...v3Balances);
+  allBalances.forEach((i) => {
     api.add(i.token, i.bal);
   });
   await api.sumTokens({ tokensAndOwners });
@@ -419,6 +428,9 @@ async function tvl(timestamp, block, _, { api }) {
 var adapter_default = {
   hallmarks: [[1666569600, "LM begins"]],
   ethereum: {
+    tvl,
+  },
+  arbitrum: {
     tvl,
   },
   methodology: `Retrieves the tokens in each Gearbox pool (WETH/DAI/WBTC/USDC/wstETH) & value of all Credit Accounts (V1/V2/V3) denominated in the underlying token.`,

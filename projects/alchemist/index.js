@@ -3,7 +3,7 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const getAludelDataABI = "function getAludelData() view returns ((address stakingToken, address rewardToken, address rewardPool, (uint256 floor, uint256 ceiling, uint256 time) rewardScaling, uint256 rewardSharesOutstanding, uint256 totalStake, uint256 totalStakeUnits, uint256 lastUpdate, (uint256 duration, uint256 start, uint256 shares)[] rewardSchedules) aludel)"
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const logs = await getLogs({
     api,
     target: '0xF016fa84D5f3a252409a63b5cb89B555A0d27Ccf',

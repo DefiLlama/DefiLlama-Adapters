@@ -24,12 +24,18 @@ const config = {
     ],
     fromBlock: 3839432
   },
+  arbitrum: {
+    buttonTokenFactories: [
+      "0x06fe30a0a8e2ec5c8a9c9643f32aca8db909227f",
+    ],
+    fromBlock: 185321020
+  }
 }
 
 Object.keys(config).forEach(chain => {
   const { buttonTokenFactories, unbuttonTokenFactories } = config[chain];
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
 
       // Collecting all the wrapper tokens
       const calls = [];
