@@ -26,6 +26,7 @@ async function get2CRVRatio(api) {
     api.call({ abi: 'erc20:totalSupply', target: ArbLUAUSD2CRV, }),
     api.call({ abi: 'erc20:balanceOf', target: Arb2CRVOldGauge, params: ArbLUAUSD2CRV, }),
   ])
+
   return balance_2crv / luausd2crvSupply
 }
 
@@ -75,7 +76,6 @@ async function addyLUAUSD2CRV(api, balances) {
     valutGuageStakeBalance,
     ratio2CRV,
   ] = await Promise.all([
-    api.call({ abi: 'erc20:totalSupply', target: Arb2CRVLUAUSDLP }),
     api.call({ abi: 'erc20:balanceOf', target: Arb2CRVLUAUSDLP, params: valuts.curveLUAUSDMetaPool }),
     api.call({ abi: 'erc20:balanceOf', target: ArbLUAUSDMetaPoolGauge, params: valuts.curveLUAUSDMetaPool }),
     get2CRVRatio(api),
