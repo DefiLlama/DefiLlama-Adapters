@@ -186,11 +186,6 @@ async function getTokenPrices({ api, chain = '' }) {
   }
 }
 
-const getTokenName = tokenJson => {
-  tokenJson = tokenJson.toJSON()
-  if (tokenJson.token && coreAssets.includes(tokenJson.token.toLowerCase())) return tokenJson.token
-  return chain + ':' + JSON.stringify(tokenJson).replace(/(\{|\}|\s|")/g, '')
-}
 
 async function addTokenBalance({ balances, amount, chain, tokenArg, api, wallet, }) {
   const coreAssets = getCoreAssets(chain)
@@ -204,7 +199,6 @@ async function addTokenBalance({ balances, amount, chain, tokenArg, api, wallet,
 
 module.exports = {
   getAPI,
-  getTokenName,
   getTokenPrices,
   addTokenBalance,
 }
