@@ -1,9 +1,7 @@
-const sdk = require("@defillama/sdk");
+const ADDRESSES = require('../helper/coreAssets.json')
 const abi = require("./abi.json");
-const { sumTokens2 } = require('../helper/unwrapLPs')
 
-const USDC = "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8";
-const chain = 'arbitrum'
+const USDC = ADDRESSES.arbitrum.USDC;
 
 // Both v1 and v2 factories
 const factoryPoolContractsConfig = [
@@ -17,36 +15,16 @@ const factoryPoolContractsConfig = [
   },
 ]
 
-async function tvl(_, _b, { arbitrum: block }) {
-  let factories = []
-  if (!block) factories = factoryPoolContractsConfig.map(i => i.contract)
-  else {
-    factoryPoolContractsConfig.filter(i => block > i.fromBlock).forEach(i => factories.push(i.contract))
+async function tvl(api) {
+  const owners = []
+  for (const { contract } of factoryPoolContractsConfig) {
+    const pools = await api.fetchList({  lengthAbi: abi.numPools, itemAbi: abi.pools, target: contract})
+    owners.push(...pools)
   }
-  const { output: numPools } = await sdk.api.abi.multiCall({
-    calls: factories.map(i => ({ target: i })),
-    abi: abi.numPools,
-    chain, block,
-  })
-
-  const calls = []
-  numPools.forEach(i => {
-    for (let j = 0; j < +i.output; j++)
-      calls.push({ target: i.input.target, params: j })
-  })
-
-  const { output: pools } = await sdk.api.abi.multiCall({
-    abi: abi.pools,
-    calls,
-    chain, block,
-  })
-
-  const owners = pools.map(i => i.output)
-  return sumTokens2({ owners, chain, block, tokens: [USDC] })
+  return api.sumTokens({ owners, tokens: [USDC] })
 }
 
 module.exports = {
-  misrepresentedTokens: true,
   arbitrum: {
     tvl,
   },

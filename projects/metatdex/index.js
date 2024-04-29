@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
@@ -28,8 +29,9 @@ Object.keys(config).forEach(chain => {
         params: [0, 301],
         chain, block,
       })
-      if (chain === 'heco')
-        tokens.push('0xa71edc38d189767582c38a3145b5873052c3e47a')
+      if (chain === 'bsc') tokens.push(ADDRESSES.bsc.USDT)
+      if (chain === 'heco') tokens.push(ADDRESSES.heco.USDT)
+      if (chain === 'polygon') tokens.push(ADDRESSES.polygon.USDT)
       return sumTokens2({ tokens, owner, chain, block, })
     }
   }

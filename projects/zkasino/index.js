@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport, nullAddress, } = require('../helper/unwrapLPs')
 
 // https://docs.zkasino.io/developer/contracts
@@ -14,16 +15,16 @@ const owners = [
 
 const config = {
   bsc: {
-    tokens: ['0xe9e7cea3dedca5984780bafc599bd69add087d56', nullAddress,]
+    tokens: [ADDRESSES.bsc.BUSD, nullAddress,]
   },
   polygon: {
-    tokens: ['0x2791bca1f2de4661ed88a30c99a7a9449aa84174', nullAddress,]
+    tokens: [ADDRESSES.polygon.USDC, nullAddress,]
   },
   fantom: {
-    tokens: ['0x04068DA6C83AFCFA0e13ba15A6696662335D5B75', nullAddress,]
+    tokens: [ADDRESSES.fantom.USDC, nullAddress,]
   },
   arbitrum: {
-    tokens: ['0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9', '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8', '0xADA42bb73b42e0472A994218fb3799dFCDA21237', '0x912CE59144191C1204E64559FE8253a0e49E6548', nullAddress,]
+    tokens: [ADDRESSES.arbitrum.USDT, ADDRESSES.arbitrum.USDC, '0xADA42bb73b42e0472A994218fb3799dFCDA21237', ADDRESSES.arbitrum.ARB, nullAddress,]
   }
 }
 

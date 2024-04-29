@@ -1,12 +1,13 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumUnknownTokens, sumTokensExport, staking } = require('../helper/unknownTokens')
 
-const LIQD_TOKEN = '0x93C15cd7DE26f07265f0272E0b831C5D7fAb174f'
+const LIQD_TOKEN = ADDRESSES.arbitrum.LIQD
 const LIQD_ETH_TOKEN = '0x73700aeCfC4621E112304B6eDC5BA9e36D7743D3'
 const masterchef = '0x2582fFEa547509472B3F12d94a558bB83A48c007'
 const WETH_POOL = '0x705ea996D53Ff5bdEB3463dFf1890F83f57CDe97'
 const LIQD_STAKING = '0xA1A988A22a03CbE0cF089e3E7d2e6Fcf9BD585A9'
 const TREASURY = '0x61fb28d32447ef7F4e85Cf247CB9135b4E9886C2'
-const WETH = '0x82af49447d8a07e3bd95bd0d56f35241523fbab1'
+const WETH = ADDRESSES.arbitrum.WETH
 const chain = 'arbitrum'
 const LPs = [
   '0x5dcf474814515b58ca0ca5e80bbb00d18c5b5cf8',

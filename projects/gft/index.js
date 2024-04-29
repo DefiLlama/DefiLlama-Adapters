@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const contracts = require("./contracts.json");
 const { sumLPWithOnlyOneToken } = require("./../helper/unwrapLPs");
 const BigNumber = require("bignumber.js");
 
 const iotx = "0x6fb3e0a217407efff7ca062d46c26e5d60a14d69";
-const wiotx = "0xA00744882684C3e4747faEFD68D283eA44099D03";
+const wiotx = ADDRESSES.iotex.WIOTX;
 
 const gfsBonusStackPool = "0x4346a618c2e3fd4cfa821e91216eaf927bd46ddd";
 const gfs = "0x5d0f4ca481fd725c9bc6b415c0ce5b3c3bd726cf";
@@ -63,6 +64,6 @@ function pool2(chain, gasToken) {
 module.exports = {
   iotex: {
     tvl: () => ({}),
-    pool2: pool2("iotex", "iotex"),
+    pool2: pool2("iotex"),
   },
 };

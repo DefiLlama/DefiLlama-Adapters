@@ -13,7 +13,7 @@ module.exports = {
     staking: staking(stakingContract, POLS),  
   },
   bsc: {
-    staking: staking(stakingContract_bsc, POLS_bsc, "bsc"),
+    staking: staking(stakingContract_bsc, POLS_bsc),
   },
   methodology: "Counts liquidty on the staking only",
 };

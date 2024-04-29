@@ -24,7 +24,8 @@ module.exports = {
     [1666641600, "Optimism Launch"],
     [1674604800, "Flash Capacitor Launch"],
     [1676484000, "Flido Launch"],
-    [1680022800, "Arbitrum Launch"]
+    [1680022800, "Arbitrum Launch"],
+    [1684443600, "Rocket Pool Launch"]
   ]
 };
 
@@ -32,7 +33,7 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   // const { fromBlock, protocol, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const balances = {}
       // const logs = await getLogs({
       //   api,

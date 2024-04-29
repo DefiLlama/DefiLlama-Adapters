@@ -1,6 +1,8 @@
-const sdk = require("@defillama/sdk");
-const { sumTokensSharedOwners} = require("../helper/unwrapLPs");
-const { staking } = require("../helper/staking");
+const { getLogs } = require('../helper/cache/getLogs')
+const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokens2, sumTokensExport, } = require("../helper/unwrapLPs");
+const { staking } = require('../helper/staking')
+const { pool2 } = require('../helper/pool2')
 
 const ctxToken = "0x321c2fe4446c7c963dc41dd58879af648838f98d";
 const factory = "0x70236b36f86AB4bd557Fe9934E1246537B472918";
@@ -15,20 +17,20 @@ const ethPool2s = [
   "0x2A93167Ed63A31F35CA4788e2EB9fBd9fA6089D0", // CTX-WETH
 ]
 const ethVaults = [
-   "0x717170b66654292dfbd89c39f5ae6753d2ac1381", // WETH VAULT
-   "0x443366a7a5821619D8d57405511E4fadD9964771", // DAI VAULT
-   // Hardmode Vaults
-   "0xc2Ba6B8E0EE3cf48B045D966F1dCda767df74833", // WETH VAULT
-   "0xA5b3Bb6e1f206624B3B8CE0c6A0f7614fd35Fa03", // DAI VAULT
-   "0xa8CcA36A624215a39D5af6854ac24868559424d3", // USDC VAULT
-   "0x2364536F4891Ed560A6728f4B36871de8176eE5c", // WBTC VAULT
+  "0x717170b66654292dfbd89c39f5ae6753d2ac1381", // WETH VAULT
+  "0x443366a7a5821619D8d57405511E4fadD9964771", // DAI VAULT
+  // Hardmode Vaults
+  "0xc2Ba6B8E0EE3cf48B045D966F1dCda767df74833", // WETH VAULT
+  "0xA5b3Bb6e1f206624B3B8CE0c6A0f7614fd35Fa03", // DAI VAULT
+  "0xa8CcA36A624215a39D5af6854ac24868559424d3", // USDC VAULT
+  "0x2364536F4891Ed560A6728f4B36871de8176eE5c", // WBTC VAULT
 ]
 
 const ethCollaterals = [
-  "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH
-  "0x6B175474E89094C44Da98b954EedeAC495271d0F", // DAI
-  "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // USDC
-  "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", // WBTC
+  ADDRESSES.ethereum.WETH, // WETH
+  ADDRESSES.ethereum.DAI, // DAI
+  ADDRESSES.ethereum.USDC, // USDC
+  ADDRESSES.ethereum.WBTC, // WBTC
 ]
 
 const optVaults = [
@@ -40,52 +42,35 @@ const optVaults = [
 ]
 
 const optCollaterals = [
-  "0x4200000000000000000000000000000000000006", // WETH
-  "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1", // DAI
+  ADDRESSES.tombchain.FTM, // WETH
+  ADDRESSES.optimism.DAI, // DAI
   "0x350a791Bfc2C21F9Ed5d10980Dad2e2638ffa7f6", // LINK
   "0x8700dAec35aF8Ff88c16BdF0418774CB3D7599B4", // SNX
   "0x6fd9d7AD17242c41f7131d257212c54A0e816691" // UNI
 ]
 
-async function ethTvl(timestamp, block) {
-  let balances = {};
-  await sumTokensSharedOwners(balances, ethCollaterals, ethVaults, block);
-  return balances;
-}
-
-async function optTvl(timestamp, block, chainBlocks) {
-  let balances = {};
-  await sumTokensSharedOwners(balances, optCollaterals, optVaults, chainBlocks.optimism, "optimism");
-  return balances;
-}
-
-const treasuryAddress = "0xa54074b2cc0e96a43048d4a68472F7F046aC0DA8";
-const treasuryContents = [
-  "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
-]
-const optTreasury = "0x271901c3268D0959bbc9543DE4f073D3708C88F7";
-
-async function treasury(timestamp, block) {
-  let balances = {};
-  const ethBal = (await sdk.api.eth.getBalance({
-    target: treasuryAddress,
-    block,
-  })).output;
-  sdk.util.sumSingleBalance(balances, "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", ethBal);
-  await sumTokensSharedOwners(balances, treasuryContents, [treasuryAddress], block);
-  return balances;
-}
-
-
 module.exports = {
   methodology: "TVL includes collateral in vaults",
   ethereum: {
-    tvl: ethTvl,
-    pool2: staking(ethStakingContracts, ethPool2s),
-    staking: staking(factory, ctxToken),
-    treasury
+    tvl: sumTokensExport({ tokens: ethCollaterals, owners: ethVaults,}),
+    pool2: pool2(ethStakingContracts, ethPool2s),
+    staking: staking_,
   },
   optimism: {
-    tvl: optTvl
+    tvl: sumTokensExport({ tokens: optCollaterals, owners: optVaults,})
   }
 };
+
+async function staking_(api) {
+  const logs = await getLogs({
+    api,
+    target: factory,
+    topics: ['0x0976a62688d14faa8e35e63a7ada50f147ba1a0357f99182a596f9afea2502f4'],
+    eventAbi: 'event DelegatorCreated (address indexed delegator, address indexed delegatee)',
+    onlyArgs: true,
+    fromBlock: 13360296,
+  })
+  const owners = [factory,]
+  logs.forEach(log => owners.push(log.delegator))
+  return sumTokens2({ api, owners, tokens: [ctxToken] })
+}

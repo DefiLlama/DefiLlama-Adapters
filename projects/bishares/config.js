@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 // data taken from 
 // https://api.thegraph.com/subgraphs/name/toffick/bisharesfunds 
 // https://api.thegraph.com/subgraphs/name/bisharesindexfund/bisharesfunds-ybf-fantom
@@ -19,7 +20,7 @@ module.exports = {
         "0x259c0cf00f8710b473457314420114ae4c87cee5"
       ],
       [
-        "0x82f0b8b456c1a451378467398982d4834b6829c1",
+        ADDRESSES.fantom.MIM,
         "0x259c0cf00f8710b473457314420114ae4c87cee5"
       ],
       [
@@ -67,7 +68,7 @@ module.exports = {
         "0xa55568847c5c5be3b6c59c6e57e74677591d900d"
       ],
       [
-        "0x82f0b8b456c1a451378467398982d4834b6829c1",
+        ADDRESSES.fantom.MIM,
         "0xa55568847c5c5be3b6c59c6e57e74677591d900d"
       ],
       [
@@ -103,7 +104,7 @@ module.exports = {
         "0xab8ac08c597fb090b36eb514ba3f3a8b4a78aed1"
       ],
       [
-        "0x82f0b8b456c1a451378467398982d4834b6829c1",
+        ADDRESSES.fantom.MIM,
         "0xab8ac08c597fb090b36eb514ba3f3a8b4a78aed1"
       ],
       [
@@ -135,7 +136,7 @@ module.exports = {
         "0xead77cdfeb1fe4672704ba322d63a3d2bdca2025"
       ],
       [
-        "0x82f0b8b456c1a451378467398982d4834b6829c1",
+        ADDRESSES.fantom.MIM,
         "0xead77cdfeb1fe4672704ba322d63a3d2bdca2025"
       ],
       [
@@ -169,7 +170,7 @@ module.exports = {
         "0x10a520829c1e9631ef9e60e37eea3916092caa99"
       ],
       [
-        "0x2170ed0880ac9a755fd29b2688956bd959f933f8",
+        ADDRESSES.bsc.ETH,
         "0x10a520829c1e9631ef9e60e37eea3916092caa99"
       ],
       [
@@ -177,7 +178,7 @@ module.exports = {
         "0x10a520829c1e9631ef9e60e37eea3916092caa99"
       ],
       [
-        "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c",
+        ADDRESSES.bsc.BTCB,
         "0x10a520829c1e9631ef9e60e37eea3916092caa99"
       ],
       [
@@ -189,7 +190,7 @@ module.exports = {
         "0x10a520829c1e9631ef9e60e37eea3916092caa99"
       ],
       [
-        "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+        ADDRESSES.bsc.BUSD,
         "0x10a520829c1e9631ef9e60e37eea3916092caa99"
       ],
       [
@@ -197,7 +198,7 @@ module.exports = {
         "0x28939911a862bd4e6b10e281f233a5e060114e0b"
       ],
       [
-        "0x2170ed0880ac9a755fd29b2688956bd959f933f8",
+        ADDRESSES.bsc.ETH,
         "0x28939911a862bd4e6b10e281f233a5e060114e0b"
       ],
       [
@@ -253,7 +254,7 @@ module.exports = {
         "0x2a5f983706b6535ab5d69f003eb271ec44b5e839"
       ],
       [
-        "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+        ADDRESSES.bsc.WBNB,
         "0x2a5f983706b6535ab5d69f003eb271ec44b5e839"
       ],
       [
@@ -389,7 +390,7 @@ module.exports = {
         "0xfc02d63e44e71d4b8c81a436f19ce580eb7bfada"
       ],
       [
-        "0x2170ed0880ac9a755fd29b2688956bd959f933f8",
+        ADDRESSES.bsc.ETH,
         "0xfc02d63e44e71d4b8c81a436f19ce580eb7bfada"
       ],
       [
@@ -405,7 +406,7 @@ module.exports = {
         "0xfc02d63e44e71d4b8c81a436f19ce580eb7bfada"
       ],
       [
-        "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c",
+        ADDRESSES.bsc.BTCB,
         "0xfc02d63e44e71d4b8c81a436f19ce580eb7bfada"
       ],
       [

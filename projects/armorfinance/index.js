@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { sumTokens2, nullAddress, } = require("../helper/unwrapLPs");
 
@@ -6,9 +7,9 @@ const { staking } = require("../helper/staking");
 
 const POOL_BUYCOVER_ACTION = "0xcafea35cE5a2fc4CED4464DA4349f81A122fd12b";
 const NXM_VAULT = "0x1337DEF1FC06783D4b03CB8C1Bf3EBf7D0593FC4";
-const DAI = "0x6b175474e89094c44da98b954eedeac495271d0f";
+const DAI = ADDRESSES.ethereum.DAI;
 const NXM = "0xd7c49cee7e9188cca6ad8ff264c1da2e69d4cf3b";
-const stETH = "0xae7ab96520de3a18e5e111b5eaab095312d7fe84";
+const stETH = ADDRESSES.ethereum.STETH;
 
 const ethTvl = async (timestamp, block) => {
   let balances = {};

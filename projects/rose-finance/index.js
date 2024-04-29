@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport, unknownTombs } = require("../helper/unknownTokens");
 
 const token = "0x07D49375A3213eF25aAA47C97A2d23A754bB8f8a";
@@ -23,5 +24,5 @@ module.exports = unknownTombs({
 
 module.exports.arbitrum.tvl = sumTokensExport({
   owner: GenMasterchef,
-  tokens: ['0x82aF49447D8a07e3bd95BD0d56f35241523fBab1', '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8']
+  tokens: [ADDRESSES.arbitrum.WETH, ADDRESSES.arbitrum.USDC]
 })

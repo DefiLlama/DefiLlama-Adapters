@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
 const { getChainTvl } = require('../helper/getUniSubgraphTvl')
 const {staking} = require('../helper/staking')
@@ -8,7 +9,7 @@ const subgraphs = {
     'polygon': 'sushiswap/matic-exchange',
     'fantom': 'sushiswap/fantom-exchange',
     'bsc': 'sushiswap/bsc-exchange',
-    'harmony': 'https://sushi.graph.t.hmny.io/subgraphs/name/sushiswap/harmony-exchange',
+    //'harmony': 'https://sushi.graph.t.hmny.io/subgraphs/name/sushiswap/harmony-exchange',
     //'okexchain': 'https://q.hg.network/subgraphs/name/sushiswap/okex-exchange',
     'avax': 'sushiswap/avalanche-exchange',
     'celo': 'sushiswap/celo-exchange',
@@ -31,8 +32,8 @@ const subgraphChainTvls = Object.keys(subgraphs).reduce((obj, chain) => ({
 }), {})
 
 const xSUSHI = "0x8798249c2E607446EfB7Ad49eC89dD1865Ff4272"
-const SUSHI = "0x6b3595068778dd592e39a122f4f5a5cf09c90fe2"
+const SUSHI = ADDRESSES.ethereum.SUSHI
 
-subgraphChainTvls.ethereum.staking = staking(xSUSHI, SUSHI, 'ethereum');
+subgraphChainTvls.ethereum.staking = staking(xSUSHI, SUSHI);
 
 module.exports=subgraphChainTvls;

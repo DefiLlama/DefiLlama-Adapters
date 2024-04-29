@@ -1,14 +1,21 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { chainExports } = require('../helper/exports')
-const { default: axios } = require('axios')
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { getConfig } = require('../helper/cache')
+
+const chainMapping = {
+    xdai: 'gnosis',
+    arbitrum_nova: 'nova'
+}
+const getChainKey = chain => chainMapping[chain] ?? chain
 
 // node test.js projects/hop/index.js
 function chainTvl(chain) {
-    return async (_, _b, {[chain]: block}) => {
-        const toa = []
-        const tokens = await axios('https://raw.githubusercontent.com/hop-protocol/hop/develop/packages/core/build/addresses/mainnet.json')
-        for (const tokenConstants of Object.values(tokens.data.bridges)) {
-            const chainConstants = (chain == 'xdai' ? tokenConstants['gnosis'] : tokenConstants[chain])
+    return async (api) => {
+        let toa = []
+        const { bridges, bonders } = await getConfig('hop-protocol', 'https://s3.us-west-1.amazonaws.com/assets.hop.exchange/mainnet/v1-core-config.json')
+        for (const tokenConstants of Object.values(bridges)) {
+            const chainConstants = tokenConstants[getChainKey(chain)]
             if (chainConstants === undefined)
                 continue
 
@@ -17,7 +24,7 @@ function chainTvl(chain) {
             toa.push([token, bridge])
         }
         if (chain === "ethereum") {
-            for (const bonder of Object.entries(tokens.data.bonders)) {
+            for (const bonder of Object.entries(bonders)) {
                 const tokenName = bonder[0]
                 let contractList = []
                 for (let i of Object.values(bonder[1])) {
@@ -30,13 +37,14 @@ function chainTvl(chain) {
                     }
                 }
                 for (const contract of contractList) {
-                    const token = tokens.data.bridges[tokenName].ethereum.l1CanonicalToken
+                    const token = bridges[tokenName].ethereum.l1CanonicalToken
                     toa.push([token, contract])
                 }
             }
         }
-        return sumTokens2({ chain, tokensAndOwners: toa, block, })
+        toa = toa.filter(([i, j]) => i && j && j !== ADDRESSES.null)
+        return sumTokens2({ api, tokensAndOwners: toa, })
     }
 }
 
-module.exports = chainExports(chainTvl, ['ethereum', 'xdai', 'polygon', 'optimism', 'arbitrum'])
+module.exports = chainExports(chainTvl, ['base', 'ethereum', 'polygon', 'optimism', 'arbitrum', ...Object.keys(chainMapping)])

@@ -1,7 +1,7 @@
 const sdk = require('@defillama/sdk');
 const { config, protocolPairs, tokens, stakingContracts,
   ethereumContractData, bscContractData, polygonContractData,
-  avalancheContractData, gnosisContractData } = require('./config')
+  avalancheContractData, gnosisContractData, arbitrumContractData, } = require('./config')
 
 const { stakings } = require("../helper/staking");
 const { pool2s } = require("../helper/pool2");
@@ -62,8 +62,7 @@ function tvl(args) {
 }
 
 module.exports = {
-  timetravel: true,
-  methodology:
+    methodology:
     `Counts each LP pair's native token and 
    stable balance, adjusted to reflect locked pair's value. 
    Balances and merged across multiple 
@@ -94,6 +93,7 @@ module.exports = {
   avax: {
     tvl: tvl(avalancheContractData)
   },
+  arbitrum: {    tvl: tvl(arbitrumContractData)  },
   xdai: {
     tvl: tvl(gnosisContractData),
     pool2: pool2s([config.honeyswap.locker],

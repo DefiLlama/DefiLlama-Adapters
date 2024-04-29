@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { getConfig } = require('../helper/cache')
@@ -8,7 +9,7 @@ module.exports = {
     tvlV1Bsc
 }
 
-async function tvlV1Eth(timestamp, block) {
+async function tvlV1Eth({timestamp}, block) {
     const startTimestamp = 1602054167;
     const startBlock = 11007158;
   
@@ -18,7 +19,7 @@ async function tvlV1Eth(timestamp, block) {
     return tvlV1("ethereum", block, "https://homora.alphafinance.io/static/contracts.json", "WETHAddress", "totalETH")
 }
 
-const wBNB = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'
+const wBNB = ADDRESSES.bsc.WBNB
 async function tvlV1Bsc(timestamp, block, chainBlocks) {
     const tvlBNB = await tvlV1("bsc", chainBlocks.bsc, "https://homora-bsc.alphafinance.io/static/contracts.json", "WBNBAddress", "totalBNB")
     return {

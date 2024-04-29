@@ -1,16 +1,15 @@
-const sdk = require("@defillama/sdk");
-const { getChainTransform,
-  getFixBalances } = require("./helper/portedTokens");
+const ADDRESSES = require('./helper/coreAssets.json')
+const { sumTokensExport } = require('./helper/unwrapLPs');
 
 const minedTokens = {
   'cake': '0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82',
-  'busd': '0xe9e7cea3dedca5984780bafc599bd69add087d56',
-  'matic': '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-  'ftm': '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83',
-  'avax': '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7',
-  'usdc': '0x2791bca1f2de4661ed88a30c99a7a9449aa84174', // polygon
+  'busd': ADDRESSES.bsc.BUSD,
+  'matic': ADDRESSES.null,
+  'ftm': ADDRESSES.null,
+  'avax': ADDRESSES.null,
+  'usdc': ADDRESSES.polygon.USDC, // polygon
   'doge': '0xba2ae424d960c26247dd6c32edc70b295c744c43', // bsc
-  'eth': '0x2170ed0880ac9a755fd29b2688956bd959f933f8'   // bsc
+  'eth': ADDRESSES.bsc.ETH   // bsc
 };
 const minerContracts = {
   'cake': '0xD5d38f1815b4555527DE075a584268E08c5909EA',
@@ -22,7 +21,6 @@ const minerContracts = {
   'doge': '0x026d814935a053D10abA9987e4D047Aa9369c97E', // bsc
   'eth': '0x212A3A41a0e58CCdc86F013b003d4afF805a958c'   // bsc
 };
-const abi = "uint256:getBalance";
 
 const config = {
   bsc: {
@@ -43,18 +41,7 @@ module.exports = {};
 
 Object.keys(config).forEach(chain => {
   const { keys } = config[chain]
-  module.exports[chain] = {
-    tvl: async (_, _b, { [chain]: block }) => {
-      const balances = {}
-      const transform = await getChainTransform(chain)
-      const fixBalances = await getFixBalances(chain)
-      const calls = keys.map(i => ({ target: minerContracts[i] }))
-      const { output: bals } = await sdk.api.abi.multiCall({
-        abi, calls, chain, block,
-      })
-      bals.forEach((data, i) => sdk.util.sumSingleBalance(balances, transform(minedTokens[keys[i]]), data.output))
-      fixBalances(balances)
-      return balances
-    }
-  }
+  const owners = keys.map(i => minerContracts[i])
+  const tokens = keys.map(i => minedTokens[i])
+  module.exports[chain] =  { tvl: sumTokensExport({ tokensAndOwners2: [tokens, owners], })}
 })

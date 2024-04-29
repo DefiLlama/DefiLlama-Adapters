@@ -1,15 +1,16 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport, } = require('../helper/unwrapLPs')
 const fundedContracts = [
     '0xefe0fed2b728b9711030e7643e98477957df9809', //TransparentUpgradeableProxy
     '0xd9184981bbab68e05eafd631dd2f8cbaf47e3e13'  //TransparentUpgradeableProxy
 ];
 const stable = [
-    '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', //'USDC' : 
-    '0xdac17f958d2ee523a2206206994597c13d831ec7', //'USDT' : 
-    '0x6b175474e89094c44da98b954eedeac495271d0f', //'DAI' : 
+    ADDRESSES.ethereum.USDC,
+    ADDRESSES.ethereum.USDT,
+    ADDRESSES.ethereum.DAI,
     '0xa47c8bf37f92abed4a126bda807a7b7498661acd', //'wUST' : 
-    '0x4fabb145d64652a948d72533023f6e7a623c7c53', //'BUSD' : 
-    '0x853d955acef822db058eb8505911ed77f175b99e' //'FRAX' : 
+    ADDRESSES.ethereum.BUSD,
+    ADDRESSES.ethereum.FRAX,
 ];
 const anchor = [
     '0x94eAd8f528A3aF425de14cfdDA727B218915687C', //'aUSDC': 

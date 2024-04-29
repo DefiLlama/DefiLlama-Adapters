@@ -1,8 +1,8 @@
 const { sumTokens2 } = require('./unwrapLPs');
 const { getLogs } = require('./cache/getLogs')
 
-function onChainTvl(vault, fromBlock, { blacklistedTokens = [], preLogTokens = [] } = {}) {
-  return async (_, _1, _2, { api }) => {
+function onChainTvl(vault, fromBlock, { blacklistedTokens = [], preLogTokens = [], onlyUseExistingCache } = {}) {
+  return async (api) => {
     const logs = await getLogs({
       api,
       target: vault,
@@ -11,6 +11,7 @@ function onChainTvl(vault, fromBlock, { blacklistedTokens = [], preLogTokens = [
       eventAbi: 'event PoolRegistered(bytes32 indexed poolId, address indexed poolAddress, uint8 specialization)',
       onlyArgs: true,
       extraKey: 'PoolRegistered',
+      onlyUseExistingCache,
     })
     const logs2 = await getLogs({
       api,
@@ -20,6 +21,7 @@ function onChainTvl(vault, fromBlock, { blacklistedTokens = [], preLogTokens = [
       eventAbi: 'event TokensRegistered(bytes32 indexed poolId, address[] tokens, address[] assetManagers)',
       onlyArgs: true,
       extraKey: 'TokensRegistered',
+      onlyUseExistingCache,
     })
 
     const tokens = logs2.map(i => i.tokens).flat()
@@ -32,7 +34,7 @@ function onChainTvl(vault, fromBlock, { blacklistedTokens = [], preLogTokens = [
 }
 
 function v1Tvl(bPoolFactory, fromBlock, { blacklistedTokens = [] } = {}) {
-  return async (_, _1, _2, { api }) => {
+  return async (api) => {
     let poolLogs = await getLogs({
       target: bPoolFactory,
       topic: 'LOG_NEW_POOL(address,address)',

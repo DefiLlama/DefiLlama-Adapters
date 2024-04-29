@@ -1,19 +1,20 @@
+const ADDRESSES = require('./helper/coreAssets.json')
 const { staking } = require('./helper/staking');
 const { sumTokens2, } = require('./helper/unwrapLPs');
 
-const wBTC = '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599'
+const wBTC = ADDRESSES.ethereum.WBTC
 const y2DAI = { addr: "0xacd43e627e64355f1861cec6d3a6688b31a6f952", dec: 18, getPrice: false, type: 'yv', pfsDec: 18 } ///y2DAI                      yv
 const y2USDC = { addr: "0x597ad1e0c13bfe8025993d9e79c69e1c0233522e", dec: 6, getPrice: false, type: 'yv', pfsDec: 18 } ///y2USDC                      yv
 const y2USDT = { addr: "0x2f08119c6f07c006695e079aafc638b8789faf18", dec: 6, getPrice: false, type: 'yv', pfsDec: 18 } ///y2USDT                      yv
 const Y2TUSD = { addr: "0x37d19d1c4e1fa9dc47bd1ea12f742a0887eda74a", dec: 18, getPrice: false, type: 'yv', pfsDec: 18 } ///Y2TUSD                      yv
 const yyDAIT = { addr: "0x5dbcf33d8c2e976c6b560249878e6f1491bca25c", dec: 18, getPrice: false, type: 'yv', pfsDec: 18 } ///yyDAI+yUSDC+yUSDT+yTUSD    hbtc
 const yyDAIB = { addr: "0x2994529c0652d127b7842094103715ec5299bbed", dec: 18, getPrice: false, type: 'yv', pfsDec: 18 } ///yyDAI+yUSDC+yUSDT+yBUSD    hbtc
-const WETH = { addr: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", dec: 18, get getPrice() { return this.addr }, type: '' } ///WETH                       crvETH
+const WETH = { addr: ADDRESSES.ethereum.WETH, dec: 18, get getPrice() { return this.addr }, type: '' } ///WETH                       crvETH
 const eCRV = { addr: "0xa3d87fffce63b53e0d54faa1cc983b7eb0b74a9c", dec: 18, getPrice: WETH.getPrice, type: '' } ///eCRV                       crvETH
 const steCRV = { addr: "0x06325440d014e39736583c165c2963ba99faf14e", dec: 18, getPrice: WETH.getPrice, type: '' } ///steCRV                      crvETH
 const ankrCRV = { addr: "0xaa17a236f2badc98ddc0cf999abb47d47fc0a6cf", dec: 18, getPrice: WETH.getPrice, type: '' } ///ankrCRV                    crvETH
 
-const usdc = { addr: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", dec: 6, getPrice: false, type: '' } ///fUSD
+const usdc = { addr: ADDRESSES.ethereum.USDC, dec: 6, getPrice: false, type: '' } ///fUSD
 const fUSDC = { addr: "0xf0358e8c3cd5fa238a29301d0bea3d63a17bedbe", dec: 6, getPrice: false, type: 'yv', pfsDec: 6 } ///fUSD
 const fUSDT = { addr: "0x053c80ea73dc6941f518a68e2fc52ac45bde7c9c", dec: 6, getPrice: false, type: 'yv', pfsDec: 6 } ///fUSD
 const fDAI = { addr: "0xab7fa2b2985bccfc13c6d86b1d5a17486ab1e04c", dec: 18, getPrice: false, type: 'yv', pfsDec: 18 } ///fUSD
@@ -32,9 +33,9 @@ const ycrvRenWSBTC = { addr: '0x7ff566e1d69deff32a7b244ae7276b9f90e9d0f6', dec: 
 // TODO: the next should be yv
 const fcrvRenWBTC = { addr: '0x5f18c75abdae578b483e5f43f12a39cf75b973a9', dec: 18, getPrice: wBTC, type: '', pfsDec: 18 } ///btcSnow
 
-const polyDai = { addr: "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063", dec: 18, getPrice: false } ///penguin
-const polyUsdc = { addr: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174", dec: 6, getPrice: false } ///penguin
-const polyUSDT = { addr: "0xc2132d05d31c914a87c6611c10748aeb04b58e8f", dec: 6, getPrice: false } ///penguin
+const polyDai = { addr: ADDRESSES.polygon.DAI, dec: 18, getPrice: false } ///penguin
+const polyUsdc = { addr: ADDRESSES.polygon.USDC, dec: 6, getPrice: false } ///penguin
+const polyUSDT = { addr: ADDRESSES.polygon.USDT, dec: 6, getPrice: false } ///penguin
 
 const snow = { addr: '0xfe9a29ab92522d14fc65880d817214261d8479ae', dec: 18, get getPrice() { return this.addr } } ///Frosty
 
@@ -86,7 +87,7 @@ const pools = [
   }
 ]
 
-async function polygon(ts, _block, { polygon: block }, { api }) {
+async function polygon(api) {
   const poolsPolygon = pools.filter(p => p.chain === "polygon")
   const toa = []
   poolsPolygon.forEach(pool => {
@@ -95,7 +96,7 @@ async function polygon(ts, _block, { polygon: block }, { api }) {
   return sumTokens2({ api, tokensAndOwners: toa, })
 }
 
-async function ethereum(ts, block, _, { api }) {
+async function ethereum(api) {
   const toa = []
   swaps.map(({ addr, coins }) => {
     coins.forEach(i => toa.push([i.addr, addr]))

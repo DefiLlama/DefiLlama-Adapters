@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 /* Genius staking operates on two models:
 *  - Direct staking with GENI token.
 *    - Policy: Basic (basicLockedMinersSupply())
@@ -30,28 +31,32 @@ const STABILITY_POOL = "0xDCA692d433Fe291ef72c84652Af2fe04DA4B4444";
 /* Native currencies and ERC-20 tokens approved for collateral*/
 const STABILITY_POOL_COLLATERAL_ADDRESSES = {
   "bsc": {
-    "BUSD": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+    "BUSD": ADDRESSES.bsc.BUSD,
     "BNB": nullAddress,
   },
   "ethereum": {
-    "DAI": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+    "DAI": ADDRESSES.ethereum.DAI,
     "ETH": nullAddress,
   },
   "avax": {
-    "USDC": "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+    "USDC": ADDRESSES.avax.USDC,
     "AVAX": nullAddress,
   },
   "polygon": {
-    "DAI": "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",
+    "DAI": ADDRESSES.polygon.DAI,
     "MATIC": nullAddress,
+  },
+  "pulse": {
+    "DAI": ADDRESSES.pulse.DAI,
+    "PLS": nullAddress
   }
 };
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   return sumTokens2({ api, owner: STABILITY_POOL, tokens: Object.values(STABILITY_POOL_COLLATERAL_ADDRESSES[api.chain])})
 }
 
-async function staking(_, _1, _2, { api }) {
+async function staking(api) {
   // return sumTokens2({ api, owner: STABILITY_POOL, tokens: [GENIUS_CONTRACT]})
   const balances = {};
   /* Collect Basic miner locked */
@@ -95,5 +100,9 @@ TVL: counts total number of value locked of all collateral tokens and native in 
   avax: {
     staking,
     tvl
-  }
+  },
+  pulse: {
+    staking,
+    tvl
+  },
 };

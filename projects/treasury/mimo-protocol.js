@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 const treasury = "0x25Fc7ffa8f9da3582a36633d04804F0004706F9b";
@@ -18,11 +19,11 @@ module.exports = treasuryExports({
   ethereum: {
     tokens: [ 
         nullAddress,
-        '0xdAC17F958D2ee523a2206206994597C13D831ec7',//USDT
-        '0xD533a949740bb3306d119CC777fa900bA034cd52',//CRV
-        '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',//USDC
+        ADDRESSES.ethereum.USDT,
+        ADDRESSES.ethereum.CRV,
+        ADDRESSES.ethereum.USDC,
         '0xba100000625a3754423978a60c9317c58a424e3D',//BAL
-        '0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7',//cvxCRV
+        ADDRESSES.ethereum.cvxCRV,
         '0x6DEA81C8171D0bA574754EF6F8b412F2Ed88c54D',//LQTY
         '0x41D5D79431A913C4aE7d69a668ecdfE5fF9DFB68',//INV
         '0xcAfE001067cDEF266AfB7Eb5A286dCFD277f3dE5',//PSP
@@ -33,18 +34,22 @@ module.exports = treasuryExports({
 
      ],
     owners: [treasury, treasury1, treasurypolygon, treasurypolygon1, treasuryfantom, treasuryfantom1],
-    ownTokens: [MIMO, MIMOfantom, MIMOpolygon],
+    ownTokens: [MIMO,],
   },
   polygon: {
     tokens: [
         nullAddress,
-        '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174'//USDC
-    ]
+        ADDRESSES.polygon.USDC
+    ],
+    owners: [treasury, treasury1, treasurypolygon, treasurypolygon1, treasuryfantom, treasuryfantom1],
+    ownTokens: [MIMOpolygon,],
   },
   fantom: {
     tokens: [
         nullAddress,
-        '0x04068DA6C83AFCFA0e13ba15A6696662335D5B75'//USDC
-    ]
+        ADDRESSES.fantom.USDC
+    ],
+    owners: [treasury, treasury1, treasurypolygon, treasurypolygon1, treasuryfantom, treasuryfantom1],
+    ownTokens: [MIMOfantom,],
   }
 })

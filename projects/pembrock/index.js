@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { BigNumber } = require('bignumber.js');
 const { call, addTokenBalances, sumSingleBalance } = require('../helper/chain/near');
 
@@ -41,7 +42,7 @@ async function tvl() {
 
 async function staking() {
   const balances = {};
-  sumSingleBalance(balances, "token.pembrock.near", await call('staking.v1.pembrock.near', "get_total_staked", {}))
+  sumSingleBalance(balances, ADDRESSES.near.PEMBROCK, await call('staking.v1.pembrock.near', "get_total_staked", {}))
   return balances;
 }
 

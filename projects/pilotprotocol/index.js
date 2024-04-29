@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
@@ -29,7 +30,7 @@ const farmingPools = [
 
 const tokens = [
   // USDT:
-  "0xa71EdC38d189767582C38A3145b5873052c3e47a",
+  ADDRESSES.heco.USDT,
   // HBTC:
   "0x66a79D23E58475D2738179Ca52cd0b41d73f0BEa",
   // ETH:
@@ -91,6 +92,7 @@ const hecoTvl = async (timestamp, ethBlock, chainBlocks) => {
       })),
       chain: "heco",
       block: chainBlocks["heco"],
+      permitFailure: true,
     })
   ).output.map((st) => st.output);
 

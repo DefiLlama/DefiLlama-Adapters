@@ -21,7 +21,7 @@ async function getEBCakeTvl(api) {
   api.add('0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82', ret.allEbStacked)
 }
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const ret = await getConfig("duet-fi", TOKEN_LIST_URL);
   const vaultList = [];
   for (const token of ret) {
@@ -41,12 +41,12 @@ async function tvl(_, _1, _2, { api }) {
     acc[v] = underlyings[i]
     return acc
   }, {})
-  const pairs = await api.multiCall({ abi: 'address:pair', calls: uniqueVaults })
+  const pairs = await api.multiCall({ abi: 'address:pair', calls: uniqueVaults, permitFailure: true, })
   const maybeIsSingle = uniqueVaults.filter((v, i) => {
     if (!pairs[i]) return true
     tokensAndOwners.push([pairs[i], underlyingMap[v]])
   })
-  const tokens = await api.multiCall({ abi: 'address:underlyingToken', calls: maybeIsSingle })
+  const tokens = await api.multiCall({ abi: 'address:underlyingToken', calls: maybeIsSingle, permitFailure: true,  })
   maybeIsSingle.forEach((v, i) => {
     if (!tokens[i]) return;
     tokensAndOwners.push([tokens[i], underlyingMap[v]])

@@ -1,8 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport } = require("../helper/unwrapLPs");
 
-const token_USDC = "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f";
-const token_USDT = "0xB44a9B6905aF7c801311e8F4E76932ee959c663C";
-const token_Knit_KFT = "0xa0EEDa2e3075092d66384fe8c91A1Da4bcA21788";
+const token_USDC = ADDRESSES.telos.ETH;
+const token_USDT = ADDRESSES.moonriver.USDT;
 const masterchef = "0x68DB81eAB568174D54F3fd0d9e035eDe9AAEd3e2";
 
 module.exports = {
@@ -13,7 +13,7 @@ module.exports = {
     }),
 	staking: sumTokensExport({
       owner: masterchef,
-      tokens: [token_Knit_KFT]
+      tokens: ['0xa0eeda2e3075092d66384fe8c91a1da4bca21788']
     })
   }
 }

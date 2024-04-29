@@ -1,15 +1,22 @@
-const sdk = require("@defillama/sdk");
+
+const ADDRESSES = require('../helper/coreAssets.json');
+const methodologies = require('../helper/methodologies');
 
 const config = {
   ethereum: {
     userManager: "0x49c910Ba694789B58F53BFF80633f90B8631c195",
-    DAI: "0x6b175474e89094c44da98b954eedeac495271d0f",
+    DAI: ADDRESSES.ethereum.DAI,
     uDAI: "0x954F20DF58347b71bbC10c94827bE9EbC8706887",
   },
   arbitrum: {
     userManager: "0xb71F3D4342AaE0b8D531E14D2CF2F45d6e458A5F",
-    DAI: "0x6b175474e89094c44da98b954eedeac495271d0f",
+    DAI: ADDRESSES.optimism.DAI,
     uDAI: "0x954F20DF58347b71bbC10c94827bE9EbC8706887",
+  },
+  optimism: {
+    userManager: "0x8E195D65b9932185Fcc76dB5144534e0f3597628",
+    DAI: ADDRESSES.optimism.DAI,
+    uDAI: "0xE478b5e7A423d7CDb224692d0a816CA146A744b2",
   },
 };
 
@@ -20,85 +27,28 @@ const abi = {
   totalBorrows: "uint256:totalBorrows",
 };
 
-function tvl(chain) {
-  return async function (_, __, chainBlocks) {
-    const chainBlock = chainBlocks[chain];
-
-    const { userManager, uDAI } = config[chain];
-
-    const totalStaked = (
-      await sdk.api.abi.call({
-        abi: abi.totalStaked,
-        target: userManager,
-        params: [],
-        chain,
-        block: chainBlock,
-      })
-    ).output;
-
-    const totalRedeemable = (
-      await sdk.api.abi.call({
-        abi: abi.totalRedeemable,
-        target: uDAI,
-        params: [],
-        chain,
-        block: chainBlock,
-      })
-    ).output;
-
-    const totalReserves = (
-      await sdk.api.abi.call({
-        abi: abi.totalReserves,
-        target: uDAI,
-        params: [],
-        chain,
-        block: chainBlock,
-      })
-    ).output;
-
-    const total = [totalStaked, totalRedeemable, totalReserves].reduce(
-      (acc, n) => Number(n) + Number(acc),
-      0
-    );
-
-    return {
-      [config[chain].DAI]: total,
-    };
-  };
+async function tvl(api) {
+  const { userManager, DAI, uDAI } = config[api.chain]
+  const bals = await api.batchCall([
+    { target: userManager, abi: abi.totalStaked },
+    { target: uDAI, abi: abi.totalRedeemable },
+    { target: uDAI, abi: abi.totalReserves },
+  ])
+  bals.forEach(i => api.add(DAI, i))
 }
 
-function borrowing(chain) {
-  return async function (_, __, chainBlocks) {
-    const chainBlock = chainBlocks[chain];
-
-    const { uDAI } = config[chain];
-
-    const totalBorrows = (
-      await sdk.api.abi.call({
-        abi: abi.totalBorrows,
-        target: uDAI,
-        params: [],
-        chain,
-        block: chainBlock,
-      })
-    ).output;
-
-    return {
-      [config[chain].DAI]: totalBorrows,
-    };
-  };
+async function borrowed(api) {
+  const { DAI, uDAI } = config[api.chain]
+  const borrows = await api.call({ target: uDAI, abi: abi.totalBorrows, })
+  api.add(DAI, borrows)
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
-  methodology: "Counts the tokens locked in the contracts to be used to underwrite or to borrow. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted.",
-  ethereum: {
-    tvl: tvl("ethereum"),
-    borrowed: borrowing("ethereum"),
-  },
-  arbitrum: {
-    tvl: tvl("arbitrum"),
-    borrowed: borrowing("arbitrum"),
-  },
+  methodology: methodologies.lendingMarket,
 };
+
+Object.keys(config).forEach(chain => {
+  module.exports[chain] = {
+    tvl, borrowed,
+  }
+})

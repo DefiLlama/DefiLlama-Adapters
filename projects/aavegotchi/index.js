@@ -1,6 +1,6 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
-const { transformPolygonAddress } = require("../helper/portedTokens");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const { request, gql } = require("graphql-request");
 const { getBlock } = require('../helper/http')
@@ -8,7 +8,7 @@ const { getBlock } = require('../helper/http')
 const vaultContractETH = "0xFFE6280ae4E864D9aF836B562359FD828EcE8020";
 const tokensETH = [
   "0x3F382DbD960E3a9bbCeaE22651E88158d2791550", // GHST
-  "0x6b175474e89094c44da98b954eedeac495271d0f", // DAI
+  ADDRESSES.ethereum.DAI, // DAI
 ];
 
 const vaultContractsPolygon = [
@@ -91,7 +91,7 @@ const polygonTvl = async (_, _block, chainBlocks) => {
   const balances = {};
   const block = await getBlock(_, 'polygon', chainBlocks) - 500
 
-  let transformAddress = await transformPolygonAddress();
+  let transformAddress = i => `polygon:${i}`;
 
   await sumTokensAndLPsSharedOwners(
     balances,
@@ -109,14 +109,13 @@ const polygonTvl = async (_, _block, chainBlocks) => {
 };
 
 module.exports = {
-  timetravel: true,
-  ethereum: {
+    ethereum: {
     tvl: ethTvl,
   },
   polygon: {
-    staking: staking(stkGHST_QUICKContract, GHST_Polygon, "polygon"),
+    staking: staking(stkGHST_QUICKContract, GHST_Polygon),
     tvl: polygonTvl,
-    pool2: staking([stkGHST_QUICKContract], GHST_pools2, "polygon")
+    pool2: staking([stkGHST_QUICKContract], GHST_pools2)
   },
   methodology:
     `We count liquidity on Vaults from ETHEREUM and Polygon chains through Vault Contracts;

@@ -3,10 +3,10 @@ const { staking } = require("../helper/staking");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 Object.keys(config).forEach((chain) => {
-  const arg = config[chain];
+  let { pools, wom, veWom } = config[chain];
   module.exports[chain] = {
-    tvl: async (_, _b, { [chain]: block }, { api }) => {
-      const pools = Object.values(arg["pools"]);
+    tvl: async (api) => {
+      pools = Object.values(pools);
 
       let allUnderlying = await api.multiCall({
         abi: "address[]:getTokens",
@@ -25,12 +25,9 @@ Object.keys(config).forEach((chain) => {
         abi: "function addressOfAsset(address) view returns (address)",
         calls,
       });
-      return sumTokens2({
-        api,
-        tokensAndOwners: tokens.map((v, i) => [v, wTokens[i]]),
-      });
+      return sumTokens2({ api, tokensAndOwners2: [tokens, wTokens] });
     },
-    staking: staking(arg["veWom"], arg["wom"], chain),
+    staking: wom && veWom ? staking(veWom, wom) : undefined,
   };
 });
 

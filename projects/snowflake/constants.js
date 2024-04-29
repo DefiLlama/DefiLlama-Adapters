@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 /**
  * lp token addresses
  */
@@ -7,9 +8,9 @@ const MAIN_USDT_LP = "0x3dc2a544A3A9C4D86d58D52bCaD1ECA8c1EC2361";
 const MAIN_DAI_LP = "0x59a49E5bd704fC70E2cD9fe3d4D5D03991278015";
 const MAIN_MAI_LP = "0xD0dCF24aA7784e34F022AdF43447578e54e2a695";
 
-const USDC = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174";
-const USDT = "0xc2132D05D31c914a87C6611C10748AEb04B58e8F";
-const DAI = "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063";
+const USDC = ADDRESSES.polygon.USDC;
+const USDT = ADDRESSES.polygon.USDT;
+const DAI = ADDRESSES.polygon.DAI;
 const MAI = "0xa3Fa99A148fA48D14Ed51d610c367C61876997F1";
  
 module.exports = {

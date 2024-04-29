@@ -1,18 +1,18 @@
 
 const { toUSDTBalances } = require('../helper/balances');
-const { LOFTY_API } = require('../helper/env');
-const axios = require("axios");
+const { getEnv } = require('../helper/env');
+const { get } = require('../helper/http');
 
 const LoftyTVLApi = "https://partners.lofty.ai/properties/v2/valuations";
 
 async function loftyTVL() {
   const response = (
-        await axios.get(LoftyTVLApi, {
+        await get(LoftyTVLApi, {
           headers: {
-            'X-API-Key': LOFTY_API
+            'X-API-Key': getEnv('LOFTY_API')
           }
         })
-  ).data.data;
+  ).data;
 
   const total = response.reduce((acc, item) => {
     acc = acc + item.propertyPrice.currentInvestment;

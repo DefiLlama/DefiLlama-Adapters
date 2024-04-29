@@ -1,3 +1,4 @@
+const ADDRESSES = require('../../helper/coreAssets.json')
 const {
     dexType,
     flashloan,
@@ -32,7 +33,7 @@ const eth = [
             contractType: lendBorrow.lender,
             address: '0xb3e1912fa5d9d219da8c65cda407cc998849428b',
             miscInfo: {
-                tokenIn: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
+                tokenIn: ADDRESSES.ethereum.WETH
             }
         }, {
             contractType: lendBorrow.borrower,
@@ -55,11 +56,11 @@ const eth = [
             address: '0x2e5a08c26cb22109e585784c4f99363bb3e199ab',
             miscInfo: {
                 tokensIn: [
-                    '0x57Ab1ec28D129707052df4dF418D58a2D46d5f51',
+                    ADDRESSES.ethereum.sUSD,
                     '0x056Fd409E1d7A124BD7017459dFEa2F387b6d5Cd',
-                    '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
-                    '0x6B175474E89094C44Da98b954EedeAC495271d0F',
-                    '0x0000000000085d4780B73119b644AE5ecd22b376'
+                    ADDRESSES.ethereum.USDC,
+                    ADDRESSES.ethereum.DAI,
+                    ADDRESSES.ethereum.TUSD
                 ]
             }
         }]
@@ -76,13 +77,13 @@ const eth = [
             contractType: em.rp,
             address: '0xce596bf99d21e46fa91143c03d7a356682b67859',
             miscInfo: {
-                token: '0x57Ab1ec28D129707052df4dF418D58a2D46d5f51'
+                token: ADDRESSES.ethereum.sUSD
             }
         }, {
             contractType: em.vps,
             address: '0xb7ead8c418f3d03bc22dd538c22600abe7209e72',
             miscInfo: {
-                token: '0x57ab1ec28d129707052df4df418d58a2d46d5f51'
+                token: ADDRESSES.ethereum.sUSD
             }
         }, 
         
@@ -96,13 +97,13 @@ const eth = [
             contractType: em.rp,
             address: '0x87B46E49681E08E3adDF8A90F6a1fb5183079033',
             miscInfo: {
-                token: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
+                token: ADDRESSES.ethereum.USDC
             }
         }, {
             contractType: em.vps,
             address: '0xcB72e764Ab46535aAD13cbF55b1F06cB15347A95',
             miscInfo: {
-                token: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
+                token: ADDRESSES.ethereum.USDC
             }
         }]
     }
@@ -118,7 +119,7 @@ const polygon = [
             contractType: lendBorrow.lender,
             address: '0x2F35d311fd2F0b0dA65FA268B86831279FB4fd98',
             miscInfo: {
-                tokenIn: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270'
+                tokenIn: ADDRESSES.polygon.WMATIC_2
             }
         }, {
             contractType: lendBorrow.borrower,
@@ -141,9 +142,9 @@ const polygon = [
             address: '0xCAFDa65B1031535F1766C6b1E3b5efF5520c7C0f',
             miscInfo: {
                 tokensIn: [
-                    '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
-                    '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063',
-                    '0xc2132D05D31c914a87C6611C10748AEb04B58e8F'
+                    ADDRESSES.polygon.USDC,
+                    ADDRESSES.polygon.DAI,
+                    ADDRESSES.polygon.USDT
                 ]
             }
         }]

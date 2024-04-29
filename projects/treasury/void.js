@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 const treasury = "0xf0a793024Ac47e421EB8c4673212dfCcE42f4a97";
@@ -11,7 +12,7 @@ module.exports = treasuryExports({
     ],
     tokens: [
       nullAddress,
-      "0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E", // DAI
+      ADDRESSES.fantom.DAI, // DAI
       "0xfC66Ac63D414d3CF3dcdDa9e60742F6E789205e3", // SpookySwap VOID-DAI LP
     ],
   },

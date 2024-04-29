@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getUniTVL } = require('../helper/unknownTokens')
 
@@ -13,7 +14,7 @@ const chainConfig = {
   },
   polygon: {
     factory: '0xB581D0A3b7Ea5cDc029260e989f768Ae167Ef39B',
-    radio: '0x613a489785C95afEB3b404CC41565cCff107B6E0',
+    radio: ADDRESSES.polygon.RADIO,
     shack: '0x6E65Ae5572DF196FAe40Be2545Ebc2A9A24eAcE9',
     stakingContracts: ['0x1D72b58d2b73942451b1D0DFE2B6ef2c5a52a301', '0x01d97Df7dc98E97da0c14ffB27Adf00fda0245DD', '0x9E8C85c40001a7264a1a1B11999F8f7b0503D60a'],
   },

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { staking } = require('../helper/staking');
@@ -5,7 +6,7 @@ const { staking } = require('../helper/staking');
 const peakAddress = '0x630d98424eFe0Ea27fB1b3Ab7741907DFFEaAd78'
 
 const tokens = [
-  '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+  ADDRESSES.ethereum.USDC,
 ]
 
 const funds = {
@@ -18,7 +19,7 @@ const stakingContracts = {
   bsc: '0xe9428B8acaA6b9d7C3314D093975c291Ec59A009',
 }
 
-async function tvl(timestamp, block, _, { api }) {
+async function tvl(api) {
   return sumTokens2({ api, owners: Object.values(funds), tokens })
 }
 module.exports = {

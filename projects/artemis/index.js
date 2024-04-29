@@ -1,6 +1,7 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { masterchefExports, } = require("../helper/unknownTokens")
 
-const token = "0xd74433b187cf0ba998ad9be3486b929c76815215";
+const token = ADDRESSES.harmony.MIS;
 const masterchef = "0x59c777cd749b307be910f15c54a3116ff88f9706";
 
 module.exports = masterchefExports({

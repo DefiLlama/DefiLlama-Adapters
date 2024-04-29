@@ -1,4 +1,0 @@
-{
-  "stakeToken": "address:STAKED_TOKEN",
-  "totalStakedAmount": "uint256:totalStakedAmount"
-}

@@ -1,12 +1,12 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { pool2 } = require('../helper/pool2')
 const { staking } = require('../helper/staking')
 
 const vault_tokens = [
-    '0xe9e7cea3dedca5984780bafc599bd69add087d56', // BUSD
-    '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c', // WBNB
-    '0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c', // BTCB
-    '0x2170ed0880ac9a755fd29b2688956bd959f933f8', // WETH
+    ADDRESSES.bsc.BUSD, // BUSD
+    ADDRESSES.bsc.WBNB, // WBNB
+    ADDRESSES.bsc.BTCB, // BTCB
+    ADDRESSES.bsc.ETH, // WETH
 ]
 const vaults = [
     '0x4558684869b1f814b4d8b177dcb0a2e10f4e007d',
@@ -32,17 +32,15 @@ const config = {
     }
 }
 
-async function tvl(_, _b, { bsc: block }) {
-    return sumTokens2({ owners: vaults, tokens: vault_tokens, chain: 'bsc', block })
+async function tvl(api) {
+    return sumTokens2({ owners: vaults, tokens: vault_tokens, api })
 }
 
 module.exports = {
-    timetravel: false,
-    misrepresentedTokens: true,
     bsc: {
         tvl,
-        staking: staking(config.bsc.stakingPool, config.bsc.ubxt, 'bsc'),
-        pool2: staking(config.bsc.stakingPool, config.bsc.ubxtLP, 'bsc'),
+        staking: staking(config.bsc.stakingPool, config.bsc.ubxt),
+        pool2: staking(config.bsc.stakingPool, config.bsc.ubxtLP),
     },
     ethereum: {
         staking: staking(config.ethereum.stakingPool, config.ethereum.ubxt,),

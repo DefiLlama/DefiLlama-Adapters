@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
 const {pool2Exports} = require("../helper/pool2")
 const {stakingUnknownPricedLP} = require("../helper/staking")
 
-const weth = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+const weth = ADDRESSES.ethereum.WETH
 async function tvl(time, _ethBlock, {optimism: block}){
     const eth = await sdk.api.eth.getBalance({
         target: '0xc911523c466b4E1dADE1bac9A2D4ceA3F9E1A2ae',
