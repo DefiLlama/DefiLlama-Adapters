@@ -1,9 +1,12 @@
-
-
 const { ApiPromise, WsProvider } = require("@polkadot/api")
-const { options } = require("@acala-network/api")
+const aTypes = require("@acala-network/types")
 const sdk = require('@defillama/sdk')
 const { getCoreAssets } = require("../tokenMapping")
+
+const options = ({ provider }) => ({
+  provider,
+  typesBundle: aTypes.acalaTypesBundle
+})
 
 const api = {}
 
@@ -194,14 +197,14 @@ const getTokenName = tokenJson => {
   return chain + ':' + JSON.stringify(tokenJson).replace(/(\{|\}|\s|")/g, '')
 }
 
-function addTokenBalance({ balances, amount, chain, tokenArg, api, wallet, }) {
+async function addTokenBalance({ balances, amount, chain, tokenArg, api, wallet, }) {
   const coreAssets = getCoreAssets(chain)
   const getTokenName = tokenJson => {
     tokenJson = tokenJson.toJSON()
     if (tokenJson.token && coreAssets.includes(tokenJson.token.toLowerCase())) return tokenJson.token
     return chain + ':' + JSON.stringify(tokenJson).replace(/(\{|\}|\s|")/g, '')
   }
-  sdk.util.sumSingleBalance(balances, getTokenName(tokenArg), amount.toString(), chain)
+  sdk.util.sumSingleBalance(balances, getTokenName(tokenArg), amount)
 }
 
 module.exports = {
