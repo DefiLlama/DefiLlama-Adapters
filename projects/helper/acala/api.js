@@ -1,12 +1,7 @@
 const { ApiPromise, WsProvider } = require("@polkadot/api")
-const aTypes = require("@acala-network/types")
 const sdk = require('@defillama/sdk')
 const { getCoreAssets } = require("../tokenMapping")
 
-const options = ({ provider }) => ({
-  provider,
-  typesBundle: aTypes.acalaTypesBundle
-})
 
 const api = {}
 
@@ -58,7 +53,7 @@ const providers = {
 async function getAPI(chain) {
   if (!api[chain]) {
     const provider = new WsProvider(providers[chain]);
-    api[chain] = ApiPromise.create(options({ provider }))
+    api[chain] = ApiPromise.create({ provider })
   }
 
   await api[chain].isReady
