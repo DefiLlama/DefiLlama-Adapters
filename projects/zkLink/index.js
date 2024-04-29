@@ -9,7 +9,7 @@ const config = {
       "0xAd16eDCF7DEB7e90096A259c81269d811544B6B6",
     ],
     tokens: [
-      //"0x8a053350ca5F9352a16deD26ab333e2D251DAd7c",  // mmETH
+      "0x8a053350ca5F9352a16deD26ab333e2D251DAd7c",  // mmETH
       "0xE46a5E19B19711332e33F33c2DB3eA143e86Bc10", // mwBETH  
       "0x32bd822d615A3658A68b6fDD30c2fcb2C996D678", // mswETH 
       "0x49446A0874197839D15395B908328a74ccc96Bc0", // mstETH
@@ -125,16 +125,13 @@ function tvl(chain) {
       const totalRnethOfBridge = await api.call({ abi: 'erc20:balanceOf', target: rnethContract, params: ownerBridge })
       const rnethPoolContract = '0x0d6F764452CA43eB8bd22788C9Db43E4b5A725Bc'
       const totalRealRnethOfBridge = await api.call({ abi: 'function convertToAssets(uint256 _stakeAmount) external view returns (uint256)', target: rnethPoolContract, params: totalRnethOfBridge })
-      // mmeth
-      const mmethContract = '0x8a053350ca5F9352a16deD26ab333e2D251DAd7c'
-      const totalMmethOfBridge = await api.call({ abi: 'erc20:balanceOf', target: mmethContract, params: ownerBridge })
       
       const ownerZklink = config[chain].owners[0];
       const totalEthOfZklink = await sdk.api.eth.getBalance({
         target: ownerZklink,
         block
       })
-      const totalEth = BigInt(totalRealNethOfBridge) + BigInt(totalRealRnethOfBridge) + BigInt(totalMmethOfBridge) + BigInt(totalEthOfZklink.output)
+      const totalEth = BigInt(totalRealNethOfBridge) + BigInt(totalRealRnethOfBridge) + BigInt(totalEthOfZklink.output)
       balances = {'ethereum:0x0000000000000000000000000000000000000000': totalEth}
     }
     const fetchCoValentTokens = !['manta'].includes(chain)
