@@ -35,6 +35,9 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  ancient8: {
+    [ADDRESSES.nul]: { coingeckoId: "ethereum", decimals: 18, },
+  },
   area: {
     '0x1d1bc800e71576a59f9ef88bb679fa13c2e10abf': { coingeckoId: 'areon-network', decimals: 18, },
   },
