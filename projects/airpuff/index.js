@@ -310,6 +310,11 @@ module.exports = {
         pendleAddress: "0x5cb12D56F5346a016DBBA8CA90635d82e6D1bcEa",
       };
 
+      const pTEzETHDEC30 = {
+        vault: "0xebdaDFC590393938b601a9738C3107460838e880",
+        pendleAddress: "0xf7906F274c174A52d444175729E3fa98f9bde285",
+      };
+
       const tokensAndOwners2 = [
         pTweETH,
         pTezETH,
@@ -320,6 +325,7 @@ module.exports = {
         bptzrsETH1x,
         bptzUSDe1x,
         bptrswETH1x,
+        pTEzETHDEC30,
       ].map((i) => [i.pendleAddress, i.vault]);
       tokensAndOwners.push(...tokensAndOwners2);
       await api.sumTokens({ tokensAndOwners });
@@ -345,6 +351,11 @@ module.exports = {
         pendleAddress: "0xad853EB4fB3Fe4a66CdFCD7b75922a0494955292",
       };
 
+      const bsolvBTC1X = {
+        vault: "0x43D10bfB9f1625827Ee8EE7A461eDE28340bdBb5",
+        tokenAddress: "0x3647c54c4c2C65bC7a2D63c0Da2809B399DBBDC0",
+      };
+
       await api.sumTokens({
         tokensAndOwners: [
           [ADDRESSES.arbitrum.USDC, lendingArb.usdc_e],
@@ -354,6 +365,7 @@ module.exports = {
           [ADDRESSES.arbitrum.ARB, lendingArb.arb],
           [ADDRESSES.arbitrum.USDC_CIRCLE, lendingArb.usdc],
           [bptUSDe1x.pendleAddress, bptUSDe1x.vault],
+          [bsolvBTC1X.tokenAddress, bsolvBTC1X.vault],
         ],
       });
 
