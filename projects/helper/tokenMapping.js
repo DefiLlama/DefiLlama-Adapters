@@ -1,3 +1,4 @@
+const { decimals } = require('@defillama/sdk/build/erc20')
 let coreAssets = require('./coreAssets.json')
 const ADDRESSES = coreAssets
 const nullAddress = ADDRESSES.null
@@ -34,6 +35,9 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  ancient8: {
+    [ADDRESSES.nul]: { coingeckoId: "ethereum", decimals: 18, },
+  },
   area: {
     '0x1d1bc800e71576a59f9ef88bb679fa13c2e10abf': { coingeckoId: 'areon-network', decimals: 18, },
   },
@@ -56,6 +60,7 @@ const fixBalancesTokens = {
   },
   core: {
     '0x1281E326C6e4413A98DafBd0D174a4Ae07ff4223': { coingeckoId: "zeepr", decimals: 18, },
+    '0x8034ab88c3512246bf7894f57c834dddbd1de01f': { coingeckoId: "bitcoin", decimals: 8 },
   },
   bsc: {
     '0x55CBAC75C1af769eB7FD37d27A5cb6437EB29abB': { coingeckoId: "zeepr", decimals: 18, },
@@ -71,6 +76,7 @@ const fixBalancesTokens = {
   },
   scroll: {
     "0x80137510979822322193fc997d400d5a6c747bf7": { coingeckoId: "ethereum:0x7122985656e38bdc0302db86685bb972b145bd3c", decimals: 0 },
+    "0xa25b25548B4C98B0c7d3d27dcA5D5ca743d68b7F": { coingeckoId: "kelp-dao-restaked-eth", decimals: 18 }
   },
   velas: {
     '0xaadbaa6758fc00dec9b43a0364a372605d8f1883': { coingeckoId: "staked-vlx", decimals: 18, },
@@ -119,8 +125,11 @@ const fixBalancesTokens = {
     '0x5ebcdf1de1781e8b5d41c016b0574ad53e2f6e1a': { coingeckoId: "planq", decimals: 18, },
   },
   xlayer: {
+    [ADDRESSES.xlayer.WOKB]: { coingeckoId: "okb", decimals: 18, },
+    [ADDRESSES.xlayer.WBTC]: { coingeckoId: "wrapped-bitcoin", decimals: 8, },
     [ADDRESSES.xlayer.WETH]: { coingeckoId: "ethereum", decimals: 18, },
     [ADDRESSES.xlayer.USDT]: { coingeckoId: "tether", decimals: 6, },
+    [ADDRESSES.xlayer.USDC]: { coingeckoId: "usd-coin", decimals: 6, },
   },
   lac: {
     '0x2911a1ab18546cb501628be8625c7503a2a7db54': { coingeckoId: "la-coin", decimals: 18, },
@@ -129,6 +138,27 @@ const fixBalancesTokens = {
     '0xdaa6a6919c9543d8787490f5e9ad532c4d7ce9e8': { coingeckoId: "deherogame-amazing-token", decimals: 18, },
     '0x36426b7bf5709e5c2160411c6e8b1832e3404fe1': { coingeckoId: "mixmarvel", decimals: 18, },
   },
+  genesys: {
+    [ADDRESSES.genesys.WGSYS]: { coingeckoId: "genesys", decimals: 18 },
+  },
+  zora: {
+    [ADDRESSES.null]: { coingeckoId: "ethereum", decimals: 18, },
+    [ADDRESSES.zora.USDzC]: { coingeckoId: "usd-coin", decimals: 6, },
+  },
+  acala: {
+    ACA: { coingeckoId: "acala", decimals: 12 },
+    LDOT: { coingeckoId: "liquid-staking-dot", decimals: 10 },
+    DOT: { coingeckoId: "polkadot", decimals: 10 },
+  },
+  karura: {
+    KSM: { coingeckoId: "kusama", decimals: 12 },
+    LKSM: { coingeckoId: "liquid-ksm", decimals: 12 },
+    KAR: { coingeckoId: "karura", decimals: 12 },
+    BNC: { coingeckoId: "bifrost-native-coin", decimals: 12 },
+    PHA: { coingeckoId: "pha", decimals: 12 },
+    KINT: { coingeckoId: "kintsugi", decimals: 12 },
+    KBTC: { coingeckoId: "kintsugi-btc", decimals: 8 },
+  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
