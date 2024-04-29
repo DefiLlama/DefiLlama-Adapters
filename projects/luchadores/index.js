@@ -1,10 +1,9 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { staking } = require('../helper/staking');
-const { pool2s } = require('../helper/pool2');
-const {sumTokensAndLPsSharedOwners, sumBalancerLps, sumTokens2} = require('../helper/unwrapLPs');
+const {sumBalancerLps, sumTokens2} = require('../helper/unwrapLPs');
 const { getBlock } = require('../helper/http')
-const { uniV3Export } = require("../helper/uniswapV3");
 const sdk = require('@defillama/sdk');
+
 const chain = {
     polygon: 'polygon',
     base: 'base'
@@ -36,12 +35,11 @@ const WETH_base = ADDRESSES.base.WETH;
 
 const polygonTvl = async (_, _block, chainBlocks) => {
     const balances = {};
-    const balBalance = {};
     const block = await getBlock(_, chain.polygon, chainBlocks);
     const transform = i => `polygon:${i}`;
     
     // Balancer LP / Gauge
-    await sumBalancerLps(balBalance, [[WMATIC_LUCHA_Balancer_polygon, luchaMaticBalancerStk]], block, chain.polygon, transform);
+    await sumBalancerLps(balances, [[WMATIC_LUCHA_Balancer_polygon, luchaMaticBalancerStk]], block, chain.polygon, transform);
     
     // Retro + Treso + Rewards
     const owners = [
@@ -49,38 +47,32 @@ const polygonTvl = async (_, _block, chainBlocks) => {
         LUCHA_CASH_retroLp,
         treasury_polygon,
         rewardPool_polygon
-      ]
+    ];
       const tokens = [
         LUCHA_polygon,
         WMATIC_polygon,
         CASH_polygon
-    ]
+    ];
     const retroTresoRewardBalance = await sumTokens2({chain: chain.polygon, block, owners, tokens});
     
-    sdk.util.mergeBalances(balances, balBalance);
     sdk.util.mergeBalances(balances, retroTresoRewardBalance);
 
     return balances;
 }
 
 const baseTvl = async (_, _block, chainBlocks) => {
-    const balances = {};
     const block = await getBlock(_, chain.base, chainBlocks);
 
     // Aero + Treso
     const owners = [
         LUCHA_WETH_aeroLp,
         treasury_base
-      ]
+    ];
       const tokens = [
         LUCHA_base,
         WETH_base
-    ]
-    const aeroTresoBalance = await sumTokens2({chain: chain.base, block, owners, tokens});
-    
-    sdk.util.mergeBalances(balances, aeroTresoBalance);
-
-    return balances;
+    ];
+    return await sumTokens2({chain: chain.base, block, owners, tokens});
 }
 
 module.exports= {
