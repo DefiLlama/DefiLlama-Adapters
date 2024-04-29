@@ -37,7 +37,7 @@ const platformLiquidityContracts_polygon = [
 const stakingContract_arbitrum = "0xDb3e7deAb380B43189A7Bc291fa2AFeAA938dCc3";
 const GOVI_arbitrum = "0x07e49d5de43dda6162fa28d24d5935c151875283";
 
-async function ethTvl(timestamp, block, _, { api }) {
+async function ethTvl(api) {
   const ethPlatforms = [
     "0x5005e8Dc0033E78AF80cfc8d10f5163f2FcF0E79",
     "0xe0437BeB5bb7Cf980e90983f6029033d710bd1da", //USDTPlatform
@@ -53,11 +53,11 @@ async function ethTvl(timestamp, block, _, { api }) {
   return api.sumTokens({ tokensAndOwners2: [tokens, owners] })
 }
 
-async function polygonTvl(timestamp, block, chainBlocks, { api }) {
+async function polygonTvl(api) {
   const tokens = await api.multiCall({ abi: 'address:token', calls: platformLiquidityContracts_polygon })
   return api.sumTokens({ tokensAndOwners2: [tokens, platformLiquidityContracts_polygon] })
 }
-async function arbiTvl(_, _b, _cb, { api, }) {
+async function arbiTvl(api) {
   const vaults = [
     // '0xfdeb59a2b4891ea17610ee38665249acc9fcc506',
     '0xAf7a27b1291Bff85aCaf0A90078d81468A705E58',

@@ -1,5 +1,6 @@
 const { uniV3Export } = require("../helper/uniswapV3");
-const { cachedGraphQuery } = require('../helper/cache')
+const { cachedGraphQuery, getConfig, } = require('../helper/cache');
+const { sumTokens2 } = require("../helper/unwrapLPs");
 const factory = "0xc35dadb65012ec5796536bd9864ed8773abc74c4"
 
 module.exports = uniV3Export({
@@ -72,6 +73,8 @@ module.exports = uniV3Export({
   metis: { factory: '0x145d82bCa93cCa2AE057D1c6f26245d1b9522E6F', fromBlock: 9077930, },
   bittorrent: { factory: '0xBBDe1d67297329148Fe1ED5e6B00114842728e65', fromBlock: 29265724, },
   zeta: { factory: '0xB45e53277a7e0F1D35f2a77160e91e25507f1763', fromBlock: 1551069, },
+  islm: { factory, fromBlock: 6541826, },
+  blast: { factory: '0x7680d4b43f3d1d54d6cfeeb2169463bfa7a6cf0d', fromBlock: 284122, },
 });
 
 const config = {
@@ -89,10 +92,25 @@ const query = `{
 Object.keys(config).forEach(chain => {
   const { endpoint } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const { pools } = await cachedGraphQuery('sushiswap-v3/' + chain, endpoint, query, { api, })
       const ownerTokens = pools.map(i => [[i.token0.id, i.token1.id], i.id])
       return api.sumTokens({ ownerTokens })
+    }
+  }
+})
+
+const config1 = {
+  islm: { endpoint: 'https://evm-qwhwlq6ji.sushi.com/pool/api/pools?chainIds=11235&isWhitelisted=true&orderBy=liquidityUSD&orderDir=desc&protocols=SUSHISWAP_V3' },
+}
+
+Object.keys(config1).forEach(chain => {
+  const { endpoint } = config1[chain]
+  module.exports[chain] = {
+    tvl: async (api) => {
+      const pools = await getConfig('sushiswap-v3/' + chain, endpoint)
+      const ownerTokens = pools.map(i => [[i.token0.id.split(':')[1], i.token1.id.split(':')[1]], i.id.split(':')[1]])
+      return sumTokens2({ api, ownerTokens })
     }
   }
 })

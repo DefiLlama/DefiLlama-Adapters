@@ -1,6 +1,6 @@
 const addressProvider = "0xFf6c50B43382f2531FEF7d6382cCe1263B0585f1"
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const lendVaultAddress = await api.call({ abi: 'address:lendVault', target: addressProvider, });
   const tokens = await api.call({ abi: "address[]:getSupportedTokens", target: lendVaultAddress, });
   const bals = await api.multiCall({ abi: "function totalAssets(address) view returns (uint256)", target: lendVaultAddress, calls: tokens, })

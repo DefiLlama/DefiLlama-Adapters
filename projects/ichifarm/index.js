@@ -53,6 +53,16 @@ const config = {
       { factory: '0x065356d9f628cDd1bb9F2384E2972CdAC50f51b7', fromBlock: 34595133, isAlgebra: false, }, // Uni v3
     ],
   },
+  base: {
+    vaultConfigs: [
+      { factory: '0xfBf38920cCbCFF7268Ad714ae5F9Fad6dF607065', fromBlock: 10607512, isAlgebra: false, }, // Equalizer
+    ]
+  },
+  celo: {
+    vaultConfigs: [
+      { factory: '0x9FAb4bdD4E05f5C023CCC85D2071b49791D7418F', fromBlock: 24256269, isAlgebra: false, }, // Uniswap v3
+    ]
+  },
   eon: {
     vaultConfigs: [
       { factory: '0x242cd12579467983dc521D8aC46EB13936ab65De', fromBlock: 638510, isAlgebra: false, }, // Ascent
@@ -63,11 +73,21 @@ const config = {
       { factory: '0x8a76c26E0089111989C14EF56b9733aa38B94148', fromBlock: 20999423, isAlgebra: false, }, // zkSync Era
     ]
   },
+  evmos: {
+    vaultConfigs: [
+      { factory: '0x7c6389714719c68caac8ae06bae6e878b3605f6d', fromBlock: 19029984, isAlgebra: false, }, // Forge
+    ]
+  },
   fantom: {
     vaultConfigs: [
       { factory: '0x932E1908461De58b0891E5022431dc995Cb95C5E', fromBlock: 74304207, isAlgebra: false, }, // Equalizer
     ]
   },
+  // hedera: {
+  //   vaultConfigs: [
+  //     { factory: '0xb62399d23d1c81f08ea445a42d7f15cc12090a71', fromBlock: 59010832, isAlgebra: false, }, // Saucerswap
+  //   ]
+  // },
   linea: {
     vaultConfigs: [
       { factory: '0x0248b992ac2a75294b05286E9DD3A2bD3C9CFE4B', fromBlock: 1599561, isAlgebra: true, }, // Lynex
@@ -101,7 +121,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { vaultConfigs = [], oneFactory } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const blacklistedTokens = []
       if (oneFactory) {
         const oneTokens = await api.fetchList({ lengthAbi: abi.oneTokenCount, itemAbi: abi.oneTokenAtIndex, target: oneFactory })
