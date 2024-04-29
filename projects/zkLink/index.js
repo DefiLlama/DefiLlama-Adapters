@@ -1,5 +1,4 @@
 const { sumTokens2 } = require("../helper/unwrapLPs");
-const sdk = require("@defillama/sdk");
 const ADDRESSES = require("../helper/coreAssets.json");
 
 const config = {
@@ -9,11 +8,13 @@ const config = {
       "0xAd16eDCF7DEB7e90096A259c81269d811544B6B6",
     ],
     tokens: [
+      ADDRESSES.null,
       "0x8a053350ca5F9352a16deD26ab333e2D251DAd7c",  // mmETH
       "0xE46a5E19B19711332e33F33c2DB3eA143e86Bc10", // mwBETH  
       "0x32bd822d615A3658A68b6fDD30c2fcb2C996D678", // mswETH 
       "0x49446A0874197839D15395B908328a74ccc96Bc0", // mstETH
-      //"0xC6572019548dfeBA782bA5a2093C836626C7789A", // nETH   
+      "0xC6572019548dfeBA782bA5a2093C836626C7789A", // nETH   
+      "0x9Dc7e196092DaC94f0c76CFB020b60FA75B97C5b", // rnETH   
       "0x57F5E098CaD7A3D1Eed53991D4d66C45C9AF7812", // wUSDM
     ]
   },
@@ -109,38 +110,11 @@ const config = {
   },
 }
 
-function tvl(chain) {
-  return async (api, block) => {
-    let balances;
-    if (chain === 'ethereum') {
-      const ownerBridge = config[chain].owners[1];
-      // Convert LRT ETH to ETH
-      // neth
-      const nethContract = '0xC6572019548dfeBA782bA5a2093C836626C7789A'
-      const totalNethOfBridge = await api.call({ abi: 'erc20:balanceOf', target: nethContract, params: ownerBridge })
-      const nethPoolContract = '0xf3C79408164abFB6fD5dDfE33B084E4ad2C07c18'
-      const totalRealNethOfBridge = await api.call({ abi: 'function convertToAssets(uint256 _stakeAmount) external view returns (uint256)', target: nethPoolContract, params: totalNethOfBridge })
-      // rneth
-      const rnethContract = '0x9Dc7e196092DaC94f0c76CFB020b60FA75B97C5b'
-      const totalRnethOfBridge = await api.call({ abi: 'erc20:balanceOf', target: rnethContract, params: ownerBridge })
-      const rnethPoolContract = '0x0d6F764452CA43eB8bd22788C9Db43E4b5A725Bc'
-      const totalRealRnethOfBridge = await api.call({ abi: 'function convertToAssets(uint256 _stakeAmount) external view returns (uint256)', target: rnethPoolContract, params: totalRnethOfBridge })
-      
-      const ownerZklink = config[chain].owners[0];
-      const totalEthOfZklink = await sdk.api.eth.getBalance({
-        target: ownerZklink,
-        block
-      })
-      const totalEth = BigInt(totalRealNethOfBridge) + BigInt(totalRealRnethOfBridge) + BigInt(totalEthOfZklink.output)
-      balances = {'ethereum:0x0000000000000000000000000000000000000000': totalEth}
-    }
-    const fetchCoValentTokens = !['manta'].includes(chain)
-    return sumTokens2({api, ...config[chain], fetchCoValentTokens, balances})
-  }
+async function tvl(api) {
+  const fetchCoValentTokens = !['manta', 'mantle', 'blast'].includes(api.chain)
+  return sumTokens2({ api, ...config[api.chain], fetchCoValentTokens, })
 }
 
 Object.keys(config).forEach(async chain => {
-  module.exports[chain] = {
-    tvl: tvl(chain)
-  }
+  module.exports[chain] = { tvl }
 })
