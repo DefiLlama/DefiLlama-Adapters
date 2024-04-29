@@ -110,8 +110,8 @@ function isLP(symbol, token, chain) {
 
   const isLPRes = LP_SYMBOLS.includes(symbol) || /(UNI-V2|vAMM|sAMM)/.test(symbol) || symbol.split(/\W+/).includes('LP')
 
-  if (isLPRes && !['UNI-V2', 'Cake-LP'].includes(symbol))
-    sdk.log(chain, symbol, token)
+  // if (isLPRes && !['UNI-V2', 'Cake-LP'].includes(symbol))
+  //   sdk.log(chain, symbol, token)
 
   return isLPRes
 }
