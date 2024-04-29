@@ -1,6 +1,5 @@
 const SUBGRAPH_URL = 'https://subgraph.satsuma-prod.com/c59d37e827d0/non-fungible-technologies/protocol/api';
 const CHAIN = 'ethereum';
-const ARCD_COINID = 'coingecko:arcade-protocol';
 
 // V2 Protocol
 const LOAN_CORE = '0x81b2f8fc75bab64a6b144aa6d2faa127b4fa7fd9';
@@ -47,5 +46,4 @@ module.exports = {
   ARCD,
   ARCD_WETH_LP,
   WETH,
-  ARCD_COINID
 }

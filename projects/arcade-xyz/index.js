@@ -1,19 +1,11 @@
 const sdk = require("@defillama/sdk");
 
 const { fetchVaults, fetchLoans } = require('./queries');
-const { stakingTvl } = require('./staking-queries');
 const { sumTokens2 } = require('../helper/unwrapLPs');
 const { staking } = require("../helper/staking");
 const { sumArtBlocks, isArtBlocks, } = require('../helper/nft');
 
-const {
-  LOAN_CORE,
-  LOAN_CORE_V3,
-  START_BLOCKS,
-  VAULT_FACTORY_A,
-  ARCD_WETH_LP,
-  STAKING_REWARDS,
-} = require('./constants');
+const { LOAN_CORE, LOAN_CORE_V3, START_BLOCKS, VAULT_FACTORY_A, ARCD_WETH_LP, STAKING_REWARDS, SINGLE_SIDED_STAKING, ARCD, } = require('./constants');
 
 // to run: node test.js projects/arcade-xyz/index.js
 
@@ -39,7 +31,7 @@ async function tvl(api) {
         artBlockOwners.push(vault.address)
         continue;
       }
-      sdk.util.sumSingleBalance(balances,collectionAddress,amount, api.chain)
+      sdk.util.sumSingleBalance(balances, collectionAddress, amount, api.chain)
     }
   }
 
@@ -65,23 +57,6 @@ async function borrowed(api) {
     const interest = principal * interestRate / 1e21
     api.add(payableCurrency, interest)
   }
-
-  return api.getBalances();
-}
-
-// fetch staking balances outside of pool2
-async function staked(api) {
-  const { timestamp } = api;
-  const block = await api.getBlock();
-
-  const balances = {};
-
-  const stakingBalances = await stakingTvl(timestamp, block, { api });
-  Object.keys(stakingBalances).forEach(token => {
-    sdk.util.sumSingleBalance(balances, token, stakingBalances[token]);
-  });
-
-  return stakingBalances;
 }
 
 module.exports = {
@@ -89,9 +64,10 @@ module.exports = {
   start: START_BLOCKS[VAULT_FACTORY_A],
   ethereum: {
     tvl,
-    staking: staked,
+    staking: staking([SINGLE_SIDED_STAKING, STAKING_REWARDS,], [ARCD]),
     pool2: staking(STAKING_REWARDS, [ARCD_WETH_LP]),
-    borrowed },
+    borrowed
+  },
   hallmarks: [
     [1660762840, 'V2 Protocol Launch'],
     [1694026811, 'V3 Protocol Launch'],
