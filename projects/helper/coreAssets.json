@@ -510,7 +510,8 @@
     "USDC": "0x818ec0a7fe18ff94269904fced6ae3dae6d6dc0b",
     "USDT": "0xefaeee334f0fd1712f9a8cc375f427d9cdd40d73",
     "STLOS": "0xb4b01216a5bc8f1c8a33cd990a1239030e60c905",
-    "sBUSD": "0x017043607270ecbb440e20b0f0bc5e760818b3d8"
+    "sBUSD": "0x017043607270ecbb440e20b0f0bc5e760818b3d8",
+    "syUSDC": "0xe6E5f3d264117E030C21920356641DbD5B3d660c"
   },
   "reichain": {
     "BNB": "0xf8ab4aaf70cef3f3659d3f466e35dc7ea10d4a5d",
@@ -1296,7 +1297,8 @@
     "WCORE": "0x40375c92d9faf44d2f9db9bd9ba41a3317a2404f",
     "WCORE_1": "0x191e94fa59739e188dce837f7f6978d84727ad01",
     "USDT": "0x900101d06a7426441ae63e9ab3b9b0f63be145f1",
-    "USDC": "0xa4151b2b3e269645181dccf2d426ce75fcbdeca9"
+    "USDC": "0xa4151b2b3e269645181dccf2d426ce75fcbdeca9",
+    "coreBTC": "0x8034aB88C3512246Bf7894f57C834DdDBd1De01F"
   },
   "crab": {
     "WCRAB": "0x2d2b97ea380b0185e9fdf8271d1afb5d2bf18329"
