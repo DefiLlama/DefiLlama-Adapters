@@ -1,6 +1,9 @@
 const { sumTokens2 } = require("./helper/solana");
 
 module.exports = {
+  hallmarks: [
+    [1706490000,"launch jup exchange"]
+  ],
   timetravel: false,
   methodology: "Calculate sum across all program token accounts",
   solana: {
@@ -8,7 +11,7 @@ module.exports = {
   },
 };
 
-async function tvl(_, _b, _cb, { api }) {
+async function tvl(api) {
   const vaults = [
     "BUvduFTd2sWFagCunBPLupG8fBTJqweLw9DuhruNFSCm", // SOL
     "WzWUoCmtVv7eqAbU3BfKPU3fhLP6CXR8NCJH78UK9VS", // USDC

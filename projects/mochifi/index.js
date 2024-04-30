@@ -2,7 +2,7 @@
 const { getConfig } = require('../helper/cache')
 const { sumTokens2 } = require('../helper/unwrapLPs');
 
-async function ethereum(timestamp, block, chainBlocks, { api }) {
+async function ethereum(api) {
   const { vaults } = await getConfig('mochifi','https://backend.mochi.fi/vaults?chainId=1');
 
   const tokensAndOwners = vaults.map(i => ([i.tokenAddress, i.vaultAddress]))
