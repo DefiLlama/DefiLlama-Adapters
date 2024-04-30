@@ -13,14 +13,21 @@ async function tvl(_, _1, _2, { api }) {
         params: [DIRAC_VAULT_1_CONTRACT],
     });
 
-    // const collateralBalance2 = await api.call({
-    //     abi: 'erc20:balanceOf',
-    //     target: USDCE_CONTRACT,
-    //     params: [DIRAC_VAULT_2_CONTRACT],
-    // });
+    const collateralBalance2 = await api.call({
+        abi: 'erc20:totalSupply',
+        target: DIRAC_VAULT_2_CONTRACT,
+        params: [],
+    });
+
+    const collateralBalance3 = await api.call({
+        abi: 'erc20:totalSupply',
+        target: DIRAC_VAULT_3_CONTRACT,
+        params: [],
+    });
 
     api.add(USDCE_CONTRACT, collateralBalance1)
-    // api.add(USDCE_CONTRACT, collateralBalance2)
+    api.add(USDCE_CONTRACT, collateralBalance2)
+    api.add(USDCE_CONTRACT, collateralBalance3)
 }
 
 module.exports = {
