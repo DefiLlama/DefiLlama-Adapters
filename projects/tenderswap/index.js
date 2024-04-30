@@ -1,48 +1,17 @@
-const sdk = require('@defillama/sdk');
-const { GraphQLClient, gql } = require('graphql-request');
-const BigNumber = require('bignumber.js');
+const { getLogs2 } = require('../helper/cache/getLogs')
 
-const ethereumEndpoint =
-    'https://api.studio.thegraph.com/query/45970/tenderize-v2-mainnet/version/latest';
-const arbitrumEndpoint =
-    'https://api.studio.thegraph.com/query/45970/tenderize-v2-arbitrum/version/latest';
+const config = {
+  ethereum: { factory: '0xcB78EbD81D08df037973Afd70D7FeF7b6b0C6B06', fromBlock: 19660555 },
+  arbitrum: { factory: '0xac273c1187DDF51E2e57FA71E85ba0924bFb7bb6', fromBlock: 201228430 },
+}
 
-const tvlQuery = gql`
-  {
-    swapPools {
-      asset
-      liabilities
+Object.keys(config).forEach(chain => {
+  const { factory, fromBlock } = config[chain]
+  module.exports[chain] = {
+    tvl: async (api) => {
+      const logs = await getLogs2({ api, factory, eventAbi: 'event SwapDeployed(address underlying, address swap, address implementation)', fromBlock, })
+      const tokensAndOwners = logs.map(log => [log.underlying, log.swap])
+      return api.sumTokens({ tokensAndOwners })
     }
   }
-`;
-
-async function fetchTVLForChain(subgraph) {
-    const graphQLClient = new GraphQLClient(subgraph);
-    const result = await graphQLClient.request(tvlQuery);
-    const tvlObject = {}
-    result.swapPools.forEach(pool => {
-        tvlObject[pool.asset] = pool.liabilities
-
-    })
-
-    return tvlObject;
-}
-
-async function fetchArbitrum() {
-    return await fetchTVLForChain(arbitrumEndpoint);
-}
-
-async function fetchEthereum() {
-    return await fetchTVLForChain(ethereumEndpoint);
-}
-
-module.exports = {
-    methodology: `Staked tokens are counted as TVL in the chain they are staked on. Non-derivative tokens in the TenderSwap liquidity pools are also counted as TVL.`,
-    doublecounted: true,
-    ethereum: {
-        tvl: fetchEthereum,
-    },
-    arbitrum: {
-        tvl: fetchArbitrum,
-    },
-};
+})
