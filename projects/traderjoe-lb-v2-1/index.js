@@ -32,7 +32,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'We count the token balances in in different liquidity book contracts',
+  methodology: 'We count the token balances in different liquidity book contracts',
 }
 
 Object.keys(factories).forEach(chain => {
