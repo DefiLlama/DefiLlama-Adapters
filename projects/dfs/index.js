@@ -20,9 +20,23 @@ async function eos() {
   return await get_account_tvl("defisswapcnt", tokens);
 }
 
+
+// https://dfs.land/
+const utils = require("../helper/utils");
+const endpoint = 'https://api.dfs.land/dfschain';
+async function dfs() {
+  const info = await utils.fetchURL(`${endpoint}/infos`);
+  return {
+    tether: info.data.tvl,
+  }
+}
+
 module.exports = {
   methodology: `DFS TVL is achieved by querying token balances from DFS's AMM swap liquidity smart contract.`,
   eos: {
     tvl: eos
+  },
+  dfs: {
+    tvl: dfs
   },
 }
