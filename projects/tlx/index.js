@@ -3,7 +3,7 @@ const contracts = {
   locker: "0xc068c3261522c97ff719dc97c98c63a1356fef0f",
 };
 
-async function tvl(_, _1, _2, { api }) {
+async function staking(_, _1, _2, { api }) {
   const lockedTlxBalance = await api.call({
     abi: "uint256:totalStaked",
     target: contracts.locker,
@@ -17,6 +17,7 @@ module.exports = {
   start: 1712731500,
   methodology: "Total TLX locked in the genesis locker contract.",
   optimism: {
-    tvl,
+    tvl: () => ({}),
+    staking: staking,
   },
 };
