@@ -17,19 +17,6 @@ const WBTC = "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f";
 const LUA = "0xc3aBC47863524ced8DAf3ef98d74dd881E131C38";
 const LUAUSD = "0x1DD6b5F9281c6B4f043c02A83a46c2772024636c";
 
-
-async function get2CRVRatio(api) {
-  const [
-    luausd2crvSupply,
-    balance_2crv,
-  ] = await Promise.all([
-    api.call({ abi: 'erc20:totalSupply', target: ArbLUAUSD2CRV, }),
-    api.call({ abi: 'erc20:balanceOf', target: Arb2CRVOldGauge, params: ArbLUAUSD2CRV, }),
-  ])
-
-  return balance_2crv / luausd2crvSupply
-}
-
 const valuts = {
   // curve meta pool
   curveLUAUSDMetaPool: "0x12dc6b335f3d1f033F43F29E4ef4727643461755",
@@ -71,29 +58,8 @@ async function add2CRV(api, balances) {
 }
 
 async function addyLUAUSD2CRV(api, balances) {
-  const [
-    valutBalance,
-    valutGuageStakeBalance,
-    ratio2CRV,
-  ] = await Promise.all([
-    api.call({ abi: 'erc20:balanceOf', target: Arb2CRVLUAUSDLP, params: valuts.curveLUAUSDMetaPool }),
-    api.call({ abi: 'erc20:balanceOf', target: ArbLUAUSDMetaPoolGauge, params: valuts.curveLUAUSDMetaPool }),
-    get2CRVRatio(api),
-  ])
-
-  const [
-    revenueValutBalance,
-    revenueValutGuageStakeBalance,
-  ] = await Promise.all([
-    api.call({ abi: 'erc20:balanceOf', target: Arb2CRVLUAUSDLP, params: valuts.curveLUAUSDMetaPoolRevenue }),
-    api.call({ abi: 'erc20:balanceOf', target: ArbLUAUSDMetaPoolGauge, params: valuts.curveLUAUSDMetaPoolRevenue }),
-  ])
-
-  sdk.util.sumSingleBalance(balances, Arb2CRV, revenueValutBalance * ratio2CRV, api.chain)
-  sdk.util.sumSingleBalance(balances, Arb2CRV, revenueValutGuageStakeBalance * ratio2CRV, api.chain)
-  sdk.util.sumSingleBalance(balances, Arb2CRV, valutBalance * ratio2CRV, api.chain)
-  sdk.util.sumSingleBalance(balances, Arb2CRV, valutGuageStakeBalance * ratio2CRV, api.chain)
-
+  const metaPool2CRVBalance = await api.call({ abi: 'erc20:balanceOf', target: Arb2CRVOldGauge, params: ArbLUAUSD2CRV, })
+  sdk.util.sumSingleBalance(balances, Arb2CRV, metaPool2CRVBalance, api.chain)
   return sumTokens2({ balances, api, owners: Object.values(valuts), tokens: [Arb2CRV, Arb2CRVGauge] })
 }
 
