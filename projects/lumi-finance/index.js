@@ -51,12 +51,6 @@ async function addUniswapPools(api, balances) {
   });
 }
 
-async function add2CRV(api, balances) {
-  return sumTokens2({
-    balances, api, owner: ARB_2CRV, tokens: [],
-  })
-}
-
 async function addyLUAUSD2CRV(api, balances) {
   const metaPool2CRVBalance = await api.call({ abi: 'erc20:balanceOf', target: Arb2CRVOldGauge, params: ArbLUAUSD2CRV, })
   sdk.util.sumSingleBalance(balances, Arb2CRV, metaPool2CRVBalance, api.chain)
