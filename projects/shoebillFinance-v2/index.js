@@ -42,5 +42,27 @@ module.exports = mergeExports([
             cether: "0x386adCa3c7D5C90523287933B05919aFcC2883dE",
         }),
     },
+    {
+        bsquared: compoundExports2({
+            comptroller: "0x80E81348D9386Eb4d10c2A32A7458638cD3308dF",
+            cether: "0x8dbf84c93727c85DB09478C83a8621e765D20eC2",
+        }),
+    },
+    {
+        bsquared: compoundExports2({
+            comptroller: "0x9f53Cd350c3aC49cE6CE673abff647E5fe79A3CC",
+        }),
+    },
+    {
+        bob: compoundExports2({
+            comptroller: "0x9f53Cd350c3aC49cE6CE673abff647E5fe79A3CC",
+            cether: "0xb4255533Ad74A25A83d17154cB48A287E8f6A811",
+        }),
+    },
+    {
+        bob: compoundExports2({
+            comptroller: "0xB7ed6c062caAaCb1A13f317E0A751289280FC306",
+        }),
+    },    
 
 ]);
