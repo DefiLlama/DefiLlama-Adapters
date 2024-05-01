@@ -38,7 +38,7 @@ module.exports = {
     tvl: sumTokensExport({
       tokensAndOwners: [
         [
-          "0x55d398326f99059fF775485246999027B3197955",
+          ADDRESSES.bsc.USDT,
           "0x2c5B04F5744724ccEaAdA451f81b6E6a98D53fde",
         ], // BANKROLL/BUSD
       ],

@@ -41,22 +41,22 @@ module.exports = {
 
       const airPuff1XwETHMode = {
         vault: "0xeAaD8f5F1901D2f92B747650c0f941Bfa3413dAF",
-        pendleAddress: "0x4200000000000000000000000000000000000006",
+        pendleAddress: ADDRESSES.optimism.WETH_1,
       };
 
       const airPuff1XUSDTMode = {
         vault: "0xCEb6264CdCcDDd8c9631212Dc7112304F9393818",
-        pendleAddress: "0xf0F161fDA2712DB8b566946122a5af183995e2eD",
+        pendleAddress: ADDRESSES.mode.USDT,
       };
 
       const airPuff1XUSDCMode = {
         vault: "0x08ccF72358B44D9d45438Fc703962A0a2FD5c978",
-        pendleAddress: "0xd988097fb8612cc24eeC14542bC03424c656005f",
+        pendleAddress: ADDRESSES.mode.USDC,
       };
 
       const airPuff1XwBTCMode = {
         vault: "0xf9B484901BCA34A8615c90E8C4933f1Bd553B639",
-        pendleAddress: "0xcdd475325d6f564d27247d1dddbb0dac6fa0a5cf",
+        pendleAddress: ADDRESSES.mode.WBTC,
       };
 
       const airPuff1XwrsETHMode = {
