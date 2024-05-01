@@ -35,6 +35,9 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  optimism: {
+    '0xD9cC3D70E730503E7f28c1B407389198c4B75FA2': { coingeckoId: "tlx", decimals: 18, },
+  },
   ancient8: {
     [ADDRESSES.nul]: { coingeckoId: "ethereum", decimals: 18, },
     '0x4200000000000000000000000000000000000006': { coingeckoId: "ethereum", decimals: 18, },
