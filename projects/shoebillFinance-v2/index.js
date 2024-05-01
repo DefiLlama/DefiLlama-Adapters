@@ -53,5 +53,16 @@ module.exports = mergeExports([
             comptroller: "0x9f53Cd350c3aC49cE6CE673abff647E5fe79A3CC",
         }),
     },
+    {
+        bob: compoundExports2({
+            comptroller: "0x9f53Cd350c3aC49cE6CE673abff647E5fe79A3CC",
+            cether: "0xb4255533Ad74A25A83d17154cB48A287E8f6A811",
+        }),
+    },
+    {
+        bob: compoundExports2({
+            comptroller: "0xB7ed6c062caAaCb1A13f317E0A751289280FC306",
+        }),
+    },    
 
 ]);

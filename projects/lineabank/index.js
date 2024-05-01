@@ -7,6 +7,7 @@ const config = {
   mode: '0x80980869D90A737aff47aBA6FbaA923012C1FF50',
   zklink: '0x4Ac518DbF0CC730A1c880739CFa98fe0bB284959',
   bsquared: '0x72f7a8eb9F83dE366AE166DC50F16074076C3Ea6',
+  bob: '0x77cabFd057Bd7C81c011059F1bf74eC1fBeDa971',
 }
 
 const abis = {
