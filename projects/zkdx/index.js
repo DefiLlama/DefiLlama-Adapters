@@ -18,5 +18,9 @@ module.exports = {
               "0x3a85b87e81cD99D4A6670f95A4F0dEdAaC207Da0"],
           [ADDRESSES.linea.WETH, ADDRESSES.linea.USDC]
         )
+    },
+    zklink:{
+        tvl: staking(["0xb5e635f2cB9eAC385D679069f8e0d1740436b355", "0xa6DbD1bdB1DC4339Df51d90Ce306CCE6edFbbbb1"],
+            ["0x0000000000000000000000000000000000000000", "0x1a1A3b2ff016332e866787B311fcB63928464509"])
     }
 };

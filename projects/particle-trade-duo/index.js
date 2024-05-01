@@ -2,6 +2,10 @@ const config = {
   blast: {
     weth90d: '0xc932317385fDc794633f612874BD687eA987B151',
     usdb90d: '0x57A6CcB2d5663eF874c29b161dD7907c7673feb0',
+    weth90dv2: '0x08B939da28C97aFa6664eC49aD5bE51805ebbb36',
+    dusd90dv2: '0xa625B1e6686E8ceADd88aFAC8E44365005C3dbc4',
+    wethPointYieldSwap: '0x22597493C61c6d766f78F50A98fBd83f7DE9F6B1',
+    dusdPointYieldSwap: '0x1a540c1A1a67bB7dEe573a1BafD30007862bA02b',
   },
 }
 
