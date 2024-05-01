@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const config = {
   blast: {
     weth90d: '0xc932317385fDc794633f612874BD687eA987B151',
@@ -18,8 +19,8 @@ const wrappedToken = {
 
 const wrappedNativeTokenMap = {
   blast: {
-    '0x1Da40C742F32bBEe81694051c0eE07485fC630f6': '0x66714DB8F3397c767d0A602458B5b4E3C0FE7dd1',
-    '0x1A3D9B2fa5c6522c8c071dC07125cE55dF90b253': '0x866f2C06B83Df2ed7Ca9C2D044940E7CD55a06d6',
+    '0x1Da40C742F32bBEe81694051c0eE07485fC630f6': ADDRESSES.blast.fwWETH,
+    '0x1A3D9B2fa5c6522c8c071dC07125cE55dF90b253': ADDRESSES.blast.fwUSDB,
   }
 }
 

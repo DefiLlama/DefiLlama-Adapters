@@ -12,7 +12,7 @@ module.exports = {
         ADDRESSES.ethereum.WBTC,
         ADDRESSES.ethereum.DAI,
         ADDRESSES.ethereum.USDe,
-        "0x9D39A5DE30e57443BfF2A8307A4256c8797A3497",
+        ADDRESSES.ethereum.sUSDe,
       ],
       owners: ["0xA8AB795731fbBFDd1Fbc57ca11e6f722e7783642"],
     }),
