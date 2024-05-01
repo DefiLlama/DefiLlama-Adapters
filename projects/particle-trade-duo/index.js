@@ -9,6 +9,20 @@ const config = {
   },
 }
 
+const wrappedToken = {
+  blast: {
+    duoEth: '0x1Da40C742F32bBEe81694051c0eE07485fC630f6',
+    duoUsd: '0x1A3D9B2fa5c6522c8c071dC07125cE55dF90b253',
+  }
+}
+
+const wrappedNativeTokenMap = {
+  blast: {
+    '0x1Da40C742F32bBEe81694051c0eE07485fC630f6': '0x4300000000000000000000000000000000000004',
+    '0x1A3D9B2fa5c6522c8c071dC07125cE55dF90b253': '0x4300000000000000000000000000000000000003',
+  }
+}
+
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
@@ -20,6 +34,12 @@ Object.keys(config).forEach(chain => {
       const principal = await api.multiCall({  abi: 'uint256:principal', calls: managers})
       api.add(tokens, yields)
       api.add(tokens, principal)
+
+      let wrappedTokens = wrappedToken[chain]
+      wrappedTokens = Object.values(wrappedTokens)
+      const wrappedBalances = await api.multiCall({  abi: 'uint256:totalSupply', calls: wrappedTokens})
+      const nativeTokens = wrappedTokens.map(wrappedToken => wrappedNativeTokenMap[chain][wrappedToken])
+      api.add(nativeTokens, wrappedBalances);
     }
   }
 })
