@@ -1,5 +1,3 @@
-const { treasuryExports } = require("../helper/treasury");
-
 const SUBGRAPH_URL = 'https://subgraph.satsuma-prod.com/c59d37e827d0/non-fungible-technologies/protocol/api';
 const CHAIN = 'ethereum';
 
@@ -12,18 +10,6 @@ const VAULT_FACTORY_SUPER_RARE = '0x7594916540e60fc8d6e9ba5c3c83632f7001cf53';
 // V3 Protocol
 const LOAN_CORE_V3 = '0x89bc08ba00f135d608bc335f6b33d7a9abcc98af';
 const VAULT_FACTORY_V3 = '0x269363665dbb1582b143099a3cb467e98a476d55';
-
-// Treasury
-const ARCADE_TREASURY = '0xac2b57b372E198F09d4bF5F445CA1228771C12c5';
-const ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
-const ARCD = '0xe020B01B6fbD83066aa2e8ee0CCD1eB8d9Cc70bF';
-
-const TREASURY_CONFIG = treasuryExports({
-  ethereum: {
-    owners: [ARCADE_TREASURY],
-    ownTokens: [ARCD, ETH_ADDRESS]
-  },
-});
 
 const VAULT_FACTORIES = new Set();
 VAULT_FACTORIES.add(VAULT_FACTORY_A);
@@ -47,7 +33,6 @@ module.exports = {
   VAULT_FACTORY_APE_STAKING_A,
   VAULT_FACTORY_SUPER_RARE,
   VAULT_FACTORY_V3,
-  VAULT_FACTORIES,
-  TREASURY_CONFIG
+  VAULT_FACTORIES
 }
 

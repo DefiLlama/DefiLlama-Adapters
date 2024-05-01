@@ -8,8 +8,7 @@ const {
   LOAN_CORE,
   LOAN_CORE_V3,
   START_BLOCKS,
-  VAULT_FACTORY_A,
-  TREASURY_CONFIG
+  VAULT_FACTORY_A
 } = require('./constants');
 
 // Uses chainlink oracle floor price for all whitelisted NFTS owned by every vault and the Loan Core contract.
@@ -61,11 +60,9 @@ async function borrowed(api) {
 }
 
 module.exports = {
-  ...TREASURY_CONFIG,
   methodology: `Sums up the floor value of all vaulted and escrowed NFTs with Chainlink price feeds. Borrowed coins are not counted towards the TVL. Treasury balance is counted towards the TVL.`,
   start: START_BLOCKS[VAULT_FACTORY_A],
   ethereum: {
-    ...TREASURY_CONFIG.ethereum,
     tvl,
     borrowed
   },
