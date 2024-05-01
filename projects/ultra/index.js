@@ -8,8 +8,8 @@ const ULTRA = "0x0b3f42481c228f70756dbfa0309d3ddc2a5e0f6a";
 module.exports = {
   misrepresentedTokens: true,
   bsc: {
-    staking: staking(stakingContract, ULTRA, "bsc"),
-    pool2: pool2(stakingContract, ULTRA_WBNB_CakeLP, "bsc"),
+    staking: staking(stakingContract, ULTRA),
+    pool2: pool2(stakingContract, ULTRA_WBNB_CakeLP),
     tvl: (async) => ({}),
   },
   methodology: "Counts liquidty on the staking and pool2 only",

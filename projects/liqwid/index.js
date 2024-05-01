@@ -12,69 +12,124 @@ module.exports = {
 };
 
 
-const endpoint = 'https://api.liqwiddev.net/graphql'
+const endpoint = 'https://api.liqwid.finance/graphql'
 
-const query = `{
-  markets {
-    asset {
-      marketId
-      name
+const queryAdaLoans = `query ($page: Int) {
+  Page (page: $page) {
+    pageInfo {
+      currentPage
+      hasNextPage
     }
-    totalSupply
-    marketId
-    decimals
-    qTokenId
-    qTokenPolicyId
-    utilization
+    loan(marketId: "Ada") {
+      collaterals {
+        id
+        amount
+      }
+    }
+  }
+}
+`
+
+const query = `query ($page: Int) {
+  Page (page: $page) {
+    pageInfo {
+      currentPage
+      hasNextPage
+    }
     market {
-      params {
-        underlyingClass {
-          value0 {
-            symbol
-            name
+      asset {
+        marketId
+        name
+        qTokenId
+        qTokenPolicyId
+      }
+      state {
+        totalSupply
+        utilization
+      }
+      marketId
+      decimals
+      info {
+        params {
+          underlyingClass {
+            value0 {
+              symbol
+              name
+            }
           }
         }
-      }
-      scripts {
-        actionToken {
-          script {
-            value0 {
-              value0
+        scripts {
+          actionToken {
+            script {
+              value0 {
+                value0
+              }
             }
           }
         }
       }
     }
   }
-}`
+}
+`
 const tokenMapping = {
   ADA: 'lovelace',
   DJED: '8db269c3ec630e06ae29f74bc39edd1f87c819f1056206e879a1cd61446a65644d6963726f555344',
-  USDC: '25c5de5f5b286073c593edfd77b48abc7a48e5a4f3d4cd9d428ff93555534443',
+  DAI: 'dai',
+
 }
 
-const getToken = market => tokenMapping[market.marketId.toUpperCase()] ?? base64ToHex(market.market.params.underlyingClass.value0.symbol)
+const getToken = market => tokenMapping[market.marketId.toUpperCase()] ?? market.info.params.underlyingClass.value0.symbol + toHex(market.info.params.underlyingClass.value0.name)
 
+const getOptimBondTVL = async () => {
+  const getLoans = async (pageIndex) => {
+    const { Page: { pageInfo, loan: loans } } = await graphQuery(endpoint, queryAdaLoans, { page: pageIndex })
 
-async function tvl(_, _b, _cb, { api, }) {
-  const { markets } = await graphQuery(endpoint, query)
+    if (!pageInfo.hasNextPage) {
+      return loans
+    }
+    return [...loans, ...(await getLoans(pageIndex + 1))]
+  }
+  const loans = await getLoans(0)
+  const relevantLoans =
+    loans.filter(l => (l.collaterals.filter(c => c.id === "OptimBond1")).length != 0)
+  const bonds =
+    relevantLoans.map(l => l.collaterals[0].amount).reduce((acc, amount) =>
+      acc + Number(amount), 0)
 
-  markets.forEach(market => api.add(getToken(market), market.totalSupply))
+  return bonds
 }
 
-async function borrowed(_, _b, _cb, { api, }) {
-  const { markets } = await graphQuery(endpoint, query)
+async function tvl(api) {
+  const { Page: { market: markets } } = await graphQuery(endpoint, query, { page: 0 })
+
+  markets.forEach(market => add(api, market, market.state.totalSupply))
+  add(api, "OptimBond1", await getOptimBondTVL())
+}
+
+function add(api, market, bal) {
+  const token = market === "OptimBond1" ? "OptimBond1" : getToken(market)
+  if (["usd-coin", "tether",].includes(token)) bal /= 1e8
+  if (["dai",].includes(token)) bal /= 1e6
+  api.add(token, bal, {
+    skipChain: ['usd-coin', 'tether', 'dai'].includes(token)
+  })
+}
+
+async function borrowed(api) {
+  const { Page: { market: markets } } = await graphQuery(endpoint, query)
 
   markets.forEach(market => {
-    const utilization = market.utilization
+    const utilization = market.state.utilization
     const availability = 1 - utilization
-    const totalBorrowed = market.totalSupply * utilization / availability
-    api.add(getToken(market), totalBorrowed)
+    const totalBorrowed = market.state.totalSupply * utilization / availability
+    add(api, market, totalBorrowed)
   })
 }
 
 function base64ToHex(base64) {
-  // Step 1: Decode the Base64 string to a byte array
+  return base64
+  /* // Step 1: Decode the Base64 string to a byte array
   const binaryData = atob(base64);
 
   // Step 2: Convert each byte to its hexadecimal representation
@@ -85,5 +140,13 @@ function base64ToHex(base64) {
   }
 
   // Step 3: Concatenate the hexadecimal values to form the final hexadecimal string
-  return hexArray.join('');
+  return hexArray.join(''); */
+}
+
+function toHex(str) {
+  let hex = ''
+  for (let i = 0; i < str.length; i++) {
+    hex += str.charCodeAt(i).toString(16);
+  }
+  return hex
 }

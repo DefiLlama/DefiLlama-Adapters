@@ -1,11 +1,9 @@
 {
   "tokenHolders": {
     "ethereum": {
-      "blacklistedTokens": [
-      ],
+      "blacklistedTokens": [],
       "owners": [
-        "0x4bfb33d65f4167ebe190145939479227e7bf2cb0",
-        "0x8a43e670619973944cb573bb23688c24cc0b5131"
+        "0x4bfb33d65f4167ebe190145939479227e7bf2cb0"
       ]
     },
     "fantom": {
@@ -13,13 +11,7 @@
         "0x5C4FDfc5233f935f20D2aDbA572F770c2E377Ab0",
         "0x74e23df9110aa9ea0b6ff2faee01e740ca1c642e"
       ],
-      "owners": [
-        "0xcb54ea94191b280c296e6ff0e37c7e76ad42dc6a",
-        "0x677d6ec74fa352d4ef9b1886f6155384acd70d90",
-        "0x8a43e670619973944cb573bb23688c24cc0b5131",
-        "0xbe4b73f5caff476ed0cdb4c043236fce81f4dc6c",
-        "0x35796ce4ed757075d346c1bc374d67628fadcbb1"
-      ]
+      "owners": []
     },
     "bsc": {
       "blacklistedTokens": [
@@ -28,10 +20,7 @@
         "0x1d6cbdc6b29c6afbae65444a1f65ba9252b8ca83",
         "0x638eebe886b0e9e7c6929e69490064a6c94d204d"
       ],
-      "owners": [
-        "0x3cdf52cc28d21c5b7b91d7065fd6dfe6d426fcc5",
-        "0x8a43e670619973944cb573bb23688c24cc0b5131"
-      ]
+      "owners": []
     }
   }
 }

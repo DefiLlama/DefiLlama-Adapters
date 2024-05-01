@@ -27,7 +27,7 @@ const vaults = [
   "0x8bF553291D2810C772ea43bBA77eDFf92191b450"
 ]
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const tokens = await api.multiCall({  abi: 'address:want', calls: vaults})
   const bals = await api.multiCall({  abi: 'uint256:balance', calls: vaults})
   api.addTokens(tokens, bals)

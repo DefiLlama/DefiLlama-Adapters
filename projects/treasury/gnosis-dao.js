@@ -10,9 +10,9 @@ const treasury3 = "0xBc79855178842FDBA0c353494895DEEf509E26bB";
 const GNO = ADDRESSES.ethereum.GNO;
 
 const treasurygnosis = "0x458cd345b4c05e8df39d0a07220feb4ec19f5e6f"
-const gnognosis = "0x9C58BAcC331c9aa871AFD802DB6379a98e80CEdb"
+const gnognosis = ADDRESSES.xdai.GNO
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const treasury = '0x849d52316331967b6ff1198e5e32a0eb168d039d'
   await addAuraTvl()
   await unwrapMakerPositions({ api, owner: treasury, blacklistedTokens: [ADDRESSES.ethereum.GNO]})  
@@ -35,7 +35,7 @@ async function tvl(_, _b, _cb, { api, }) {
   }
 }
 
-async function ownTokens(_, _b, _cb, { api, }) {
+async function ownTokens(api) {
   return unwrapMakerPositions({ api, owner: '0x849d52316331967b6ff1198e5e32a0eb168d039d', skipDebt: true, whitelistedTokens: [ADDRESSES.ethereum.GNO]})  
 }
 
@@ -81,7 +81,7 @@ module.exports = treasuryExports({
   xdai: {
     tokens: [
       nullAddress,
-      "0x6A023CCd1ff6F2045C3309768eAd9E68F978f6e1", //eth
+      ADDRESSES.xdai.WETH, //eth
       "0x6C76971f98945AE98dD7d4DFcA8711ebea946eA6", //wstETH 
       "0xEb30C85CC528537f5350CF5684Ce6a4538e13394",
       "0xd4e420bBf00b0F409188b338c5D87Df761d6C894",
@@ -89,7 +89,7 @@ module.exports = treasuryExports({
       "0x44932e3b1E662AdDE2F7bac6D5081C5adab908c6",
       "0x291B5957c9CBe9Ca6f0b98281594b4eB495F4ec1",
       "0x3a97704a1b25F08aa230ae53B352e2e72ef52843",
-      "0x8e5bBbb09Ed1ebdE8674Cda39A0c169401db4252",
+      ADDRESSES.xdai.WBTC,
       "0xA26783eAd6C1f4744685c14079950622674ae8A8",
       "0xa99FD9950B5D5dCeEaf4939E221dcA8cA9B938aB",
       "0x21d4c792Ea7E38e0D0819c2011A2b1Cb7252Bd99",

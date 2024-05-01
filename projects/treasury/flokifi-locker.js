@@ -18,13 +18,13 @@ module.exports = treasuryExports({
         "0x1BD708E01E96d426652b0D50b8c896eaeefee36d"
      ],
     owners: [treasuryETH, treasuryETH2],
-    ownTokens: [flokiETH],
+    ownTokens: [flokiETH, '0x4507cef57c46789ef8d1a19ea45f4216bae2b528'],
   },
   bsc: {
     tokens: [ 
         nullAddress,
      ],
     owners: [treasuryBSC],
-    ownTokens: [flokiBSC],
+    ownTokens: [flokiBSC, '0x4507cef57c46789ef8d1a19ea45f4216bae2b528'],
   },
 })
