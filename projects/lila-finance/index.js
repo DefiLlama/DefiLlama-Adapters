@@ -1,5 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const pools_provider = "0xE4534d76Cc512a14F288453F06F8961740Ae2a1E"
+const pools_provider = "0x993e06adeb3050a1Df385E05a2deb4b15a0DBCBF"
 
 async function tvl(api) {
   let data = await api.fetchList({  lengthAbi: 'poolLength', itemAbi: 'function poolList(uint256) view returns (uint256 maxAmount, address strategy, address asset, uint64 payoutFrequency, uint32 totalPayments, uint32 rateIndex)', target: pools_provider})
