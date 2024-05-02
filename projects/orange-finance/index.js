@@ -6,7 +6,7 @@ const VAULTS = [
   { address: "0x16F6617680333e90f18aA89a85817d347078b7b8", asset: ADDRESSES.arbitrum.USDC }, // UniswapV3 ETH-USDC.e DN Vault
   { address: "0x810fd69F58fF7Ff8553D43a5D3DCE3853960cAa6", asset: ADDRESSES.arbitrum.USDC }, // UniswapV3 ETH-USDC.e DN Vault
   { address: "0xb9c5425084671221d7d5a547dbf1bdcec26c8b7d", asset: ADDRESSES.arbitrum.USDC }, // Camelot ETH-USDC.e DN Vault
-  { address: "0xdB8a12EeC655748A74576BD8E0acAbdF8e622508", asset: ADDRESSES.arbitrum.USDC_CIRCLE }, // Camelot USDC-USDC.e Stable Vault
+  // broken { address: "0xdB8a12EeC655748A74576BD8E0acAbdF8e622508", asset: ADDRESSES.arbitrum.USDC_CIRCLE }, // Camelot USDC-USDC.e Stable Vault
   { address: "0x690633417eA231073c53f00D30f194489196dfaD", asset: ADDRESSES.arbitrum.USDC_CIRCLE }, // Camelot USDC-WETH DN Vault
   { address: "0x7B9d8c413ACE4008E22dcF08C3A79A9178682e13", asset: ADDRESSES.arbitrum.WETH }, // Camelot WETH-ARB DN Vault
   { address: "0x32790eAf83B52E53d54bFD4779832d6aDEAC880E", asset: ADDRESSES.arbitrum.WETH }, // UniswapV3 WETH-WBTC DN Vault
@@ -30,7 +30,6 @@ async function tvl(api) {
   const totalAssets = await api.multiCall({ abi: "uint256:totalAssets", calls: VAULTS.map(v => v.address) })
 
   VAULTS.forEach((v, i) => api.add(v.asset, totalAssets[i]))
-  // totalAssets.forEach((i) => api.add(ADDRESSES.arbitrum.WETH, i))
 }
 
 module.exports = {
