@@ -5,7 +5,9 @@ const config = {
   arbitrum: { factory: '0x6f889e3fce9b13fe8cefa068a48f4074292e663c', fromBlock: 70478558 },
 }
 
-module.exports = {}
+const config2 = {
+  blast: { factory: '0xB40DBBb7931Cfef8Be73AEEC6c67d3809bD4600B', fromBlock: 309120 },
+}
 
 Object.keys(config).forEach(chain => {
   const { fromBlock, factory, } = config[chain]
@@ -14,7 +16,6 @@ Object.keys(config).forEach(chain => {
       const logs = await getLogs({
         api,
         target: factory,
-        topics: ['0xe56f19ada061bf6161817694d647d94134afe9d3e877db1d8118b3012b744635'],
         eventAbi: 'event MarketCreation(address, address, address, uint256, uint256, uint256, uint256, uint256 expiryTime)',
         onlyArgs: true,
         fromBlock: fromBlock,
@@ -28,6 +29,25 @@ Object.keys(config).forEach(chain => {
       const tokensAndOwners = baseTokens.map((v, i) => [v, wrappedTokens[i]])
       markets.forEach((v, i) => tokensAndOwners.push([tokens[i], v]))
       return sumTokens2({ api, tokensAndOwners, blacklistedTokens: wrappedTokens })
+    }
+  }
+})
+
+
+
+Object.keys(config2).forEach(chain => {
+  const { fromBlock, factory, } = config2[chain]
+  module.exports[chain] = {
+    tvl: async (api) => {
+      const logs = await getLogs({
+        api,
+        target: factory,
+        eventAbi: 'event MarketCreated(bytes32 indexed, address, address, uint256)',
+        onlyArgs: true,
+        fromBlock: fromBlock,
+      })
+      const tokens = logs.map(i => i[2])
+      return api.sumTokens({ owner: factory, tokens })
     }
   }
 })
