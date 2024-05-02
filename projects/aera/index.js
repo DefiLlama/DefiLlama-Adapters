@@ -7,7 +7,6 @@ const AAVE_ORACLE_NAME = 'AaveV3PositionOracle'
 
 const config = {
   polygon: {
-    graphUrl: 'https://api.thegraph.com/subgraphs/name/fico23/aera-subgraph-polygon',
     aavePool: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
     aavePoolDataProvider: '0x69FA688f1Dc47d4B5d8029D5a35FB7a548310654',
     comets: [
@@ -37,7 +36,6 @@ const config = {
     ]
   },
   ethereum: {
-    graphUrl: 'https://api.thegraph.com/subgraphs/name/fico23/aera-subgraph',
     aavePool: '0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2',
     aavePoolDataProvider: '0x7B4EB56E7CD4b454BA8ff71E4518426369a138a3',
     comets: [
@@ -75,7 +73,6 @@ const config = {
   ]
   },
   arbitrum: {
-    graphUrl: 'https://api.studio.thegraph.com/query/51839/aera-subgraph-arbitrum/version/latest',
     aavePool: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
     aavePoolDataProvider: '0x6b4E260b765B3cA1514e618C0215A6B7839fF93e',
     comets: [
@@ -97,7 +94,6 @@ const config = {
     ]
   },
   base: {
-    graphUrl: 'https://api.studio.thegraph.com/query/51839/aera-subgraph-base/version/latest',
     aavePool: '0xA238Dd80C259a72e81d7e4664a9801593F98d1c5',
     aavePoolDataProvider: '0x2d8A3C5677189723C4cB8873CfC9C8976FDF38Ac',
     comets: [
