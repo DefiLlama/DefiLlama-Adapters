@@ -91,7 +91,6 @@ async function tvl(api) {
   const owners = []
   toa.map((_, i) => {
     if (!symbols[i].startsWith('RWA')) return;
-    // console.log(symbols[i], toa[i])
     owners.push(toa[i][1])
   })
   const ilks = await api.multiCall({ abi: 'function ilk() view returns (bytes32)', calls: owners })

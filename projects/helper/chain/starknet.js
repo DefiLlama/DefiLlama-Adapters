@@ -183,7 +183,6 @@ async function getLogs({ fromBlock, topic, target }) {
 
   const body = { jsonrpc: "2.0", id: 1, method: "starknet_getEvents", params }
   const { data } = await axios.post(STARKNET_RPC, body)
-  console.log(data)
 }
 
 api.call = module.exports.call

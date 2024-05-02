@@ -144,7 +144,6 @@ Object.keys(config).forEach(chain => {
         })
         vaultCreateds.push(...logs.map(x => ({vault: x.vault, assetRegistry: x.assetRegistry})))
       }
-      console.log(vaultCreateds, chain)
 
       const vaults = []
       const assetRegistries = []
