@@ -12,7 +12,7 @@ const config2 = {
 }
 
 const config3 = {
-  base: { factory: '0x7AeD738B791917E0f6578F62A529d8e22427877B' },
+  base: { factory: '0x7AeD738B791917E0f6578F62A529d8e22427877B', tokens: [ADDRESSES.base.WETH] },
 }
 
 Object.keys(config).forEach(chain => {
@@ -59,10 +59,10 @@ Object.keys(config2).forEach(chain => {
 })
 
 Object.keys(config3).forEach(chain => {
-  const { factory } = config3[chain]
+  const { factory, tokens } = config3[chain]
   module.exports[chain] = {
     tvl: async (api) => {
-      return api.sumTokens({ owner: factory, tokens: [ADDRESSES.base.WETH] })
+      return api.sumTokens({ owner: factory, tokens })
     }
   }
 })
