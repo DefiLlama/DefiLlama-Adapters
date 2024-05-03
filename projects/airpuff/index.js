@@ -76,7 +76,7 @@ module.exports = {
 
       const airPuff1XstoneMode = {
         vault: "0xaC9dAdf209F14f46Fe103C6E5C787130a6129205",
-        pendleAddress: "0x80137510979822322193FC997d400D5A6C747bf7",
+        pendleAddress: ADDRESSES.mode.STONE,
       };
 
       const airPuff1XMerlinBTCMode = {

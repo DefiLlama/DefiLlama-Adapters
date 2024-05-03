@@ -21,6 +21,6 @@ module.exports = {
     },
     zklink:{
         tvl: staking(["0xb5e635f2cB9eAC385D679069f8e0d1740436b355", "0xa6DbD1bdB1DC4339Df51d90Ce306CCE6edFbbbb1"],
-            [ADDRESSES.null, "0x1a1A3b2ff016332e866787B311fcB63928464509"])
+            [ADDRESSES.null, ADDRESSES.zklink.USDC])
     }
 };
