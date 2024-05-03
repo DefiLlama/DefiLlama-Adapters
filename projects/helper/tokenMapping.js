@@ -40,7 +40,7 @@ const fixBalancesTokens = {
     // '0x83048f0bf34feed8ced419455a4320a735a92e9d': { coingeckoId: "ozonechain", decimals: 18 }, // was mapped to wrong chain
   },
   scroll: {
-    "0x80137510979822322193fc997d400d5a6c747bf7": { coingeckoId: "ethereum:0x7122985656e38bdc0302db86685bb972b145bd3c", decimals: 0 },
+    [ADDRESSES.mode.STONE]: { coingeckoId: "ethereum:0x7122985656e38bdc0302db86685bb972b145bd3c", decimals: 0 },
   },
   tezos: {
     "KT1PnUZCp3u2KzWr93pn4DD7HAJnm3rWVrgn": { coingeckoId: "tezos", decimals: 6 },
