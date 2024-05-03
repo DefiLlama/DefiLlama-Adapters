@@ -1,12 +1,18 @@
 const { getLogs } = require('../helper/cache/getLogs');
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getUniqueAddresses } = require('../helper/utils')
+const ADDRESSES = require("../helper/coreAssets.json")
+
 const config = {
   arbitrum: { factory: '0x6f889e3fce9b13fe8cefa068a48f4074292e663c', fromBlock: 70478558 },
 }
 
 const config2 = {
   blast: { factory: '0xB40DBBb7931Cfef8Be73AEEC6c67d3809bD4600B', fromBlock: 309120 },
+}
+
+const config3 = {
+  base: { factory: '0x7AeD738B791917E0f6578F62A529d8e22427877B', tokens: [ADDRESSES.base.WETH] },
 }
 
 Object.keys(config).forEach(chain => {
@@ -47,6 +53,15 @@ Object.keys(config2).forEach(chain => {
         fromBlock: fromBlock,
       })
       const tokens = logs.map(i => i[2])
+      return api.sumTokens({ owner: factory, tokens })
+    }
+  }
+})
+
+Object.keys(config3).forEach(chain => {
+  const { factory, tokens } = config3[chain]
+  module.exports[chain] = {
+    tvl: async (api) => {
       return api.sumTokens({ owner: factory, tokens })
     }
   }
