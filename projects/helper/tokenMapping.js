@@ -167,6 +167,9 @@ const fixBalancesTokens = {
     '0x05d032ac25d322df992303dca074ee7392c117b9': { coingeckoId: "tether", decimals: 6, },
     '0xe75d0fb2c24a55ca1e3f96781a2bcc7bdba058f0': { coingeckoId: "usd-coin", decimals: 6, },
     '0xbba2ef945d523c4e2608c9e1214c2cc64d4fc2e2': { coingeckoId: "tbtc", decimals: 18, },
+    '0x85008aE6198BC91aC0735CB5497CF125ddAAc528': { coingeckoId: 'wrapped-steth', decimals: 18, },
+    '0x96147a9ae9a42d7da551fd2322ca15b71032f342': { coingeckoId: "stakestone-ether", decimals: 18 },
+    '0xb5686c4f60904ec2bda6277d6fe1f7caa8d1b41a': { coingeckoId: "rocket-pool-eth", decimals: 18 },
   }
 }
 
