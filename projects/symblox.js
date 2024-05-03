@@ -1,4 +1,4 @@
-const ADDRESSES = require('helper/coreAssets.json')
+const ADDRESSES = require('./helper/coreAssets.json')
 const { sumTokens2 } = require("./helper/unwrapLPs");
 
 const symblox = "0xD0CB9244844F3E11061fb3Ea136Aab3a6ACAC017";
