@@ -12,9 +12,7 @@ const DEFAULTS = {
   MULTIVERSX_RPC: 'https://api.multiversx.com',
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
-  BSQUARED_RPC: "https://rpc.bsquared.network,https://b2-mainnet.alt.technology",
-  BOB_RPC: "https://rpc.gobob.xyz/",
-  BOB_RPC_MULTICALL: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  BSQUARED_RPC: "https://rpc.bsquared.network,https://b2-mainnet.alt.technology", // add manually, short name is b2-mainnet
 }
 
 const ENV_KEYS = [
