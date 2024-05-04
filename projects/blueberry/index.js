@@ -15,7 +15,7 @@ async function tvl(timestamp, block, chainBlocks, {api}) {
 
 module.exports = {
   methodology: 'Gets the total value locked in the Blueberry Lending Market and Blueberry Earn',
-  ethereum: compoundExports2({ comptroller: '0x327e45B3444ccA9Ce1559780CFd44181A175e83c'}),
+  ethereum: compoundExports2({ comptroller: '0xcb0D9Ff5BDD34521c6f8CDbeAf15e1A76Fa4dd5D'}),
 }
 
 module.exports.ethereum.tvl = sdk.util.sumChainTvls([module.exports.ethereum.tvl, tvl])
