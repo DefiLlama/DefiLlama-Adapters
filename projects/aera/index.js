@@ -78,11 +78,11 @@ const config = {
     comets: [
       {
         address: '0xA5EDBDD9646f8dFF606d7448e414884C7d905dCA',
-        baseToken: '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
+        baseToken: ADDRESSES.arbitrum.USDC,
       },
       {
         address: '0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf',
-        baseToken: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
+        baseToken: ADDRESSES.arbitrum.USDC_CIRCLE,
       },
     ],
     cometReward: '0x88730d254A2f7e6AC8388c3198aFd694bA9f7fae',
@@ -99,15 +99,15 @@ const config = {
     comets: [
       {
         address: '0x46e6b214b524310239732D51387075E0e70970bf',
-        baseToken: '0x4200000000000000000000000000000000000006',
+        baseToken: ADDRESSES.optimism.WETH_1,
       },
       {
         address: '0xb125E6687d4313864e53df431d5425969c15Eb2F',
-        baseToken: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+        baseToken: ADDRESSES.base.USDC,
       },
       {
         address: '0x9c4ec768c28520B50860ea7a15bd7213a9fF58bf',
-        baseToken: '0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA',
+        baseToken: ADDRESSES.base.USDbC,
       },
     ],
     cometReward: '0x123964802e6ABabBE1Bc9547D72Ef1B69B00A6b1',
