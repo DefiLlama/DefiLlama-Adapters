@@ -109,19 +109,20 @@ const config = {
     ],
   },
   tron: {
-    tokens: [ADDRESSES.tron.BTC],
     owners: [
       "TXZFj3Eo7xLArr32SYea2GtWmG1BekdpDq", // nova bridge address
     ],
+    tokens: [ADDRESSES.tron.BTC],
   },
   merlin: {
+    owners: [
+      "0xf5b90fE755Aa2e3CcC69d9548cbeB7b38c661D73", // nova bridge address
+    ],
     tokens: [
       "0xB880fd278198bd590252621d4CD071b1842E9Bcd", //MBTC
       "0x41D9036454BE47d3745A823C4aaCD0e29cFB0f71", //Solv BTC
     ],
-    owners: [
-      "0xf5b90fE755Aa2e3CcC69d9548cbeB7b38c661D73", // nova bridge address
-    ],
+
   },
 }
 
