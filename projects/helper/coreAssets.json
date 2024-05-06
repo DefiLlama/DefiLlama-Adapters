@@ -49,8 +49,7 @@
     "AEVO": "0xB528edBef013aff855ac3c50b381f253aF13b997",
     "STONE": "0x4d831e22f062b5327dfdb15f0b6a5df20e2e3dd0",
     "USDM": "0x59D9356E565Ab3A36dD77763Fc0d87fEaf85508C",
-    "USDe": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3",
-    "RSR": "0x320623b8e4ff03373931769a31fc52a4e78b5d70"
+    "USDe": "0x4c9edd5852cd905f086c759e8383e09bff1e68b3"
   },
   "fantom": {
     "WFTM": "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
