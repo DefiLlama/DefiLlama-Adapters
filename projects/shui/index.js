@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const SCFX_TokenAddress = "0x1858a8d367e69cd9E23d0Da4169885a47F05f1bE";
 const { sumTokensExport, } = require("../helper/unknownTokens");
-const SHUI2CFX = "0xf1f6e3aa98bac6c13230051e452065df299a78a7";
+const SHUI2CFX = "0x4f57462a355902d6263aC4E8F6CE7Bf215B577F2";
 
 const WCFX = ADDRESSES.conflux.WCFX;
 const CFX_SHUI_LP_TokenAddress = "0x561c1412D926b3D75BaB15ABA1d7c10E31Ffb721";
