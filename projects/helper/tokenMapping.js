@@ -62,6 +62,9 @@ const fixBalancesTokens = {
     KINT: { coingeckoId: "kintsugi", decimals: 12 },
     KBTC: { coingeckoId: "kintsugi-btc", decimals: 8 },
   },
+  blast: {
+    '0xf7bc58b8d8f97adc129cfc4c9f45ce3c0e1d2692': { coingeckoId: "wrapped-bitcoin", decimals: 8 },
+  },
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
