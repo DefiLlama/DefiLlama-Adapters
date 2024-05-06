@@ -65,7 +65,7 @@ async function getLeaseCodeId(leaserAddress) {
     data: { config: {} }
   })
 
-  const leaseCodeId = leaserContract?.config?.lease_code_id
+  const leaseCodeId = leaserContract?.config?.lease_code
   if (!leaseCodeId) {
     return 0
   }

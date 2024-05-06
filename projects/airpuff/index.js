@@ -39,6 +39,69 @@ module.exports = {
         tokensAndOwners: [[ADDRESSES.mode.WETH, lendingMode.eth]],
       });
 
+      const airPuff1XwETHMode = {
+        vault: "0xeAaD8f5F1901D2f92B747650c0f941Bfa3413dAF",
+        pendleAddress: ADDRESSES.optimism.WETH_1,
+      };
+
+      const airPuff1XUSDTMode = {
+        vault: "0xCEb6264CdCcDDd8c9631212Dc7112304F9393818",
+        pendleAddress: ADDRESSES.mode.USDT,
+      };
+
+      const airPuff1XUSDCMode = {
+        vault: "0x08ccF72358B44D9d45438Fc703962A0a2FD5c978",
+        pendleAddress: ADDRESSES.mode.USDC,
+      };
+
+      const airPuff1XwBTCMode = {
+        vault: "0xf9B484901BCA34A8615c90E8C4933f1Bd553B639",
+        pendleAddress: ADDRESSES.mode.WBTC,
+      };
+
+      const airPuff1XwrsETHMode = {
+        vault: "0xEd487e254b1ED41Db4d1Ed457774827d01dfF56F",
+        pendleAddress: "0xe7903B1F75C534Dd8159b313d92cDCfbC62cB3Cd",
+      };
+
+      const airPuff1XankrETHMode = {
+        vault: "0x83886Af55Dac462Dc7840cdb0157bB3e7d8A6ac4",
+        pendleAddress: "0x12D8CE035c5DE3Ce39B1fDD4C1d5a745EAbA3b8C",
+      };
+
+      const airPuff1XpxETHMode = {
+        vault: "0xFf5C03ADf31865A4a8E6C0e59eDb4178C9BCC32E",
+        pendleAddress: "0x9E0d7D79735e1c63333128149c7b616a0dC0bBDb",
+      };
+
+      const airPuff1XstoneMode = {
+        vault: "0xaC9dAdf209F14f46Fe103C6E5C787130a6129205",
+        pendleAddress: ADDRESSES.mode.STONE,
+      };
+
+      const airPuff1XMerlinBTCMode = {
+        vault: "0x83A162dA8Df54FF845773169f019fd1505A9e29f",
+        pendleAddress: "0x59889b7021243dB5B1e065385F918316cD90D46c",
+      };
+
+      const strategies = [
+        airPuff1XwETHMode,
+        airPuff1XUSDTMode,
+        airPuff1XUSDCMode,
+        airPuff1XwBTCMode,
+        airPuff1XwrsETHMode,
+        airPuff1XankrETHMode,
+        airPuff1XpxETHMode,
+        airPuff1XstoneMode,
+        airPuff1XMerlinBTCMode,
+      ];
+
+      const tokensAndOwners = [];
+
+      strategies.forEach(({ vault, pendleAddress }) => tokensAndOwners.push([pendleAddress, vault]));
+
+      await api.sumTokens({ tokensAndOwners });
+
       const ezETH = {
         vault: "0x497eB27Ca1ed7566653edf811b03d6418a03FC9d",
         reStakingToken: ADDRESSES.blast.ezETH,
@@ -247,6 +310,11 @@ module.exports = {
         pendleAddress: "0x5cb12D56F5346a016DBBA8CA90635d82e6D1bcEa",
       };
 
+      const pTEzETHDEC30 = {
+        vault: "0xebdaDFC590393938b601a9738C3107460838e880",
+        pendleAddress: "0xf7906F274c174A52d444175729E3fa98f9bde285",
+      };
+
       const tokensAndOwners2 = [
         pTweETH,
         pTezETH,
@@ -257,6 +325,7 @@ module.exports = {
         bptzrsETH1x,
         bptzUSDe1x,
         bptrswETH1x,
+        pTEzETHDEC30,
       ].map((i) => [i.pendleAddress, i.vault]);
       tokensAndOwners.push(...tokensAndOwners2);
       await api.sumTokens({ tokensAndOwners });
@@ -282,6 +351,11 @@ module.exports = {
         pendleAddress: "0xad853EB4fB3Fe4a66CdFCD7b75922a0494955292",
       };
 
+      const bsolvBTC1X = {
+        vault: "0x43D10bfB9f1625827Ee8EE7A461eDE28340bdBb5",
+        tokenAddress: "0x3647c54c4c2C65bC7a2D63c0Da2809B399DBBDC0",
+      };
+
       await api.sumTokens({
         tokensAndOwners: [
           [ADDRESSES.arbitrum.USDC, lendingArb.usdc_e],
@@ -291,6 +365,7 @@ module.exports = {
           [ADDRESSES.arbitrum.ARB, lendingArb.arb],
           [ADDRESSES.arbitrum.USDC_CIRCLE, lendingArb.usdc],
           [bptUSDe1x.pendleAddress, bptUSDe1x.vault],
+          [bsolvBTC1X.tokenAddress, bsolvBTC1X.vault],
         ],
       });
 
