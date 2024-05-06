@@ -1,6 +1,6 @@
 const {getUniTVL} = require('../helper/unknownTokens.js')
 const config = {
-  base: { factory: '0x9592CD9B267748cbfBDe90Ac9F7DF3c437A6d51B'},
+  base: { factory: '0x5e7BB104d84c7CB9B682AaC2F3d509f5F406809A'},
 }
 
 Object.keys(config).forEach(chain => {
