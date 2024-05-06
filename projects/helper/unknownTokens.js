@@ -75,9 +75,9 @@ function pool2({ stakingContract, lpToken, chain, transformAddress, coreAssets =
   if (!coreAssets.length && useDefaultCoreAssets)
     coreAssets = getCoreAssets(chain)
 
-  return async (_timestamp, _ethBlock, chainBlocks, { api }) => {
-    if (!chain) chain = api.chain
-    const block = chainBlocks[chain]
+  return async (api) => {
+    const chain = api.chain
+    const block = api.block
     if (!transformAddress)
       transformAddress = await getChainTransform(chain)
 
@@ -95,7 +95,7 @@ function sumTokensExport({ tokensAndOwners = [],
   coreAssets = [], owner, tokens, restrictTokenRatio, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
   log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [], useDefaultCoreAssets = false, abis,
 }) {
-  return (_, _b, _cb, { api }) => sumUnknownTokens({ api, tokensAndOwners, onlyLPs, minLPRatio, coreAssets, owner, tokens, restrictTokenRatio, blacklist, skipConversion, log_coreAssetPrices, log_minTokenValue, owners, lps, useDefaultCoreAssets, abis, })
+  return (api) => sumUnknownTokens({ api, tokensAndOwners, onlyLPs, minLPRatio, coreAssets, owner, tokens, restrictTokenRatio, blacklist, skipConversion, log_coreAssetPrices, log_minTokenValue, owners, lps, useDefaultCoreAssets, abis, })
 }
 
 function staking({ tokensAndOwners = [],
@@ -103,7 +103,8 @@ function staking({ tokensAndOwners = [],
   log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [], useDefaultCoreAssets = false,
 }) {
 
-  return async (_, _b, _cb, { api, chain = 'ethereum', block, }) => {
+  return async (api) => {
+    const { chain, block } = api
     if (!coreAssets.length && useDefaultCoreAssets)
       coreAssets = getCoreAssets(chain)
 
@@ -117,7 +118,7 @@ function staking({ tokensAndOwners = [],
   }
 }
 
-function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = [], lps = [], nativeToken, poolInfoABI = masterchefAbi.poolInfo, poolLengthAbi = masterchefAbi.poolLength, getToken = output => output.lpToken, blacklistedTokens = [], useDefaultCoreAssets = false, }) {
+function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = [], lps = [], nativeToken, poolInfoABI = masterchefAbi.poolInfo, poolLengthAbi = masterchefAbi.poolLength, getToken = output => output.lpToken, blacklistedTokens = [], useDefaultCoreAssets = true, }) {
   if (!coreAssets.length && useDefaultCoreAssets)
     coreAssets = getCoreAssets(chain)
   let allTvl = {}

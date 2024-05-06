@@ -10,6 +10,7 @@ const { sliceIntoChunks, sleep } = require('../utils')
 const { getUniTVL } = require('../cache/uniswap')
 const { getCache } = require('../cache')
 const { getEnv } = require('../env')
+const ADDRESSES = require('../coreAssets.json')
 
 const _rateLimited = plimit(1)
 const rateLimited = fn => (...args) => _rateLimited(() => fn(...args))
@@ -103,8 +104,14 @@ const balanceOfABI = {
   "customInput": 'address',
 }
 
+function replaceNull(i) {
+  return i === ADDRESSES.null ? ADDRESSES.starknet.ETH : i
+}
 
 async function sumTokens({ owner, owners = [], tokens = [], tokensAndOwners = [], blacklistedTokens = [], token, ownerTokens = [], api, }) {
+
+  tokens = tokens.map(replaceNull)
+  tokensAndOwners = tokensAndOwners.map(i => [replaceNull(i[0]), i[1]])
   if (token) tokens = [token]
   if (owner) owners = [owner]
 
@@ -148,7 +155,7 @@ const defaultAbis = {
 }
 
 function dexExport({ factory, abis = {}, fetchBalances = false }) {
-  return () => getUniTVL({ factory, abis: { ...defaultAbis, ...abis }, fetchBalances })(undefined, undefined, undefined, { api, chain: 'starknet' })
+  return () => getUniTVL({ factory, abis: { ...defaultAbis, ...abis }, fetchBalances })(api, undefined, undefined, { api, })
 }
 
 module.exports = {
@@ -176,7 +183,6 @@ async function getLogs({ fromBlock, topic, target }) {
 
   const body = { jsonrpc: "2.0", id: 1, method: "starknet_getEvents", params }
   const { data } = await axios.post(STARKNET_RPC, body)
-  console.log(data)
 }
 
 api.call = module.exports.call

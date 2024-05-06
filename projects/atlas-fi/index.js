@@ -4,7 +4,7 @@ const { sumTokensExport } = require("../helper/unknownTokens")
 const VAULT = '0x3A93FCCcD2769579eFE03d6DeF2C4468F5F0bd38'
 const FARM_PROXY = '0xca6aca5eabd9fac29404974e1a69a0b69c7f1ea2'
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
 	return sumTokens2({
 		api,
 		ownerTokens: [

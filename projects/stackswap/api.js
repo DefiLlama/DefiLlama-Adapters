@@ -10,7 +10,7 @@ module.exports = {
   stacks: { tvl }
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const data = []
   const { value: pairCount } = await call({ target: factory, abi: 'get-pair-count' })
   const cache = await getCache('stackswap', 'stacks-config')

@@ -29,8 +29,8 @@ async function getBorrowed(poolFactory, api) {
 
 module.exports = Object.keys(poolFactories).reduce((acc, chain) => {
     acc[chain] = {
-        tvl: (_, _b, _cb, { api }) => getTvl(poolFactories[chain], api),
-        borrowed: (_, _b, _cb, { api }) => getBorrowed(poolFactories[chain], api)
+        tvl: (api) => getTvl(poolFactories[chain], api),
+        borrowed: (api) => getBorrowed(poolFactories[chain], api)
     };
     return acc;
 }, { misrepresentedTokens: true });

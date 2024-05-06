@@ -13,12 +13,6 @@ const protocolDataHelper = '0x24dCbd376Db23e4771375092344f5CbEA3541FC0'
 const addressesProviderRegistryXDAI_old = "0xa5E80AEAa020Ae41b1cBEe75dE7826297F7D803E"
 const protocolDataHelper_old = '0xa874f66342a04c24b213BF0715dFf18818D24014'
 
-async function oldBorrowedTvl(timestamp, _, chainBlocks) {
-  if (timestamp > 1647302400) // Consider all borrowed tvl after re-entrancy attack to be lost
-    return {}
-  return (aaveChainTvl("xdai", addressesProviderRegistryXDAI_old, addr => `xdai:${addr}`, [protocolDataHelper_old], true))(timestamp, _, chainBlocks)
-}
-
 module.exports = {
   hallmarks: [
     [1647302400, "Reentrancy attack"]
@@ -31,8 +25,7 @@ module.exports = {
     ]),
     borrowed: sdk.util.sumChainTvls([
       aaveChainTvl("xdai", addressesProviderRegistryXDAI, addr => `xdai:${addr}`, [protocolDataHelper], true),
-      oldBorrowedTvl,
     ]),
-    staking: staking(agaveStakingContract, agaveTokenAddress, "xdai")
+    staking: staking(agaveStakingContract, agaveTokenAddress)
   }
 }

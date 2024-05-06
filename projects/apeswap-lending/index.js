@@ -12,9 +12,7 @@ const lendingMarket = usdCompoundExports(unitroller_bsc, "bsc", "0x34878F6a48400
 
 
 module.exports = {
-  timetravel: true,
-  doublecounted: false,
-  misrepresentedTokens: true,
+      misrepresentedTokens: true,
   bsc:{
     tvl: lendingMarket.tvl,
     borrowed: lendingMarket.borrowed
