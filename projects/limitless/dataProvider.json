@@ -1,0 +1,3 @@
+{
+  "getPoolKeys": "function getPoolkeys(address pool) view returns (address token0, address token1, uint24 fee)"
+}
