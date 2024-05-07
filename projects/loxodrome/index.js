@@ -3,7 +3,7 @@ const sdk = require("@defillama/sdk");
 
 const balances = {};
 
-const PAIR_FACTORY = "0x92bfa051bf12a0aef9a5e1ac8b2aa7dc1b05a406";
+const PAIR_FACTORY = "0x9442E8d017bb3dC2Ba35d75204211e60f86fF0F8";
 // const VOTER = "0x5792c972D8D4b43c0c154Fba8215c28133e5b7f0";
 
 async function getPairs(api, factory) {
