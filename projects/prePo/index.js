@@ -44,6 +44,8 @@ Object.keys(config).forEach(chain => {
 Object.keys(config2).forEach(chain => {
   const { fromBlock, factory, } = config2[chain]
   module.exports[chain] = {
+    timetravel: true,
+    start: 1709428055,
     tvl: async (api) => {
       const logs = await getLogs({
         api,
@@ -61,6 +63,8 @@ Object.keys(config2).forEach(chain => {
 Object.keys(config3).forEach(chain => {
   const { factory, tokens } = config3[chain]
   module.exports[chain] = {
+    timetravel: true,
+    start: 1697676421,
     tvl: async (api) => {
       return api.sumTokens({ owner: factory, tokens })
     }
