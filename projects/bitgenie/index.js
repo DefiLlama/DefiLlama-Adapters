@@ -1,3 +1,8 @@
+const { getUniTVL } = require('../helper/unknownTokens')
+const sdk = require("@defillama/sdk");
+
+const factory = "0xEa51E2E458aE7Cb921d47fC463Ac4fED7ae65a41"
+
 const stakingContracts = [
   "0xd47477da78F6252b1029f3041aC4FC749439CD3F",
   "0xe3F7194AB9cDa2E91bBf0AC7F450Ac7a60B40901",
@@ -7,18 +12,18 @@ const stakingContracts = [
   "0x63C8860e93697dB85716C9ee7F15D09EAC62136C",
   "0x19a0D0b1734bdB167D393e7BB7a57418e3a8cCA8",
   "0x1DBa95577DFe76d8e86af00aEB614479cb7917D2",
-  "0xC795A8D5f83F5A172f606AC2516276Ee7DF63407"
+  "0xC795A8D5f83F5A172f606AC2516276Ee7DF63407",
 ];
 
-
-module.exports = {
-  merlin: {
-    tvl,
-  },
-}
-
-async function tvl(api) {
+async function chainStaking(api) {
   const tokens = await api.multiCall({  abi: 'address:stakeToken', calls: stakingContracts})
   return api.sumTokens({ tokensAndOwners2: [tokens, stakingContracts]})
-  
 }
+
+module.exports = {
+  misrepresentedTokens: true,
+  methodology: `Uses Uniswap-style factory address to find and price liquidity pairs.`,  
+  merlin: {
+    tvl: sdk.util.sumChainTvls([getUniTVL({ factory, useDefaultCoreAssets: true, }), chainStaking]),
+  },
+};
