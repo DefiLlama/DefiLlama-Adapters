@@ -24,7 +24,7 @@ async function tvl_mode(api) {
 
 module.exports = {
   doublecounted: true,
-  ethereum: { tvl_eth, } ,
-  linea: { tvl_linea, } ,
-  mode: { tvl_mode, } ,
+  ethereum: { tvl: tvl_eth, } ,
+  linea: { tvl: tvl_linea, } ,
+  mode: { tvl: tvl_mode, } ,
 }
