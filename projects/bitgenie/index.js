@@ -7,7 +7,7 @@ const stakingContracts = [
   "0x63C8860e93697dB85716C9ee7F15D09EAC62136C",
   "0x19a0D0b1734bdB167D393e7BB7a57418e3a8cCA8",
   "0x1DBa95577DFe76d8e86af00aEB614479cb7917D2",
-  "0xC795A8D5f83F5A172f606AC2516276Ee7DF63407"
+  "0xC795A8D5f83F5A172f606AC2516276Ee7DF63407",
 ];
 
 
@@ -18,7 +18,6 @@ module.exports = {
 }
 
 async function tvl(api) {
-  const tokens = await api.multiCall({  abi: 'address:stakeToken', calls: stakingContracts})
-  return api.sumTokens({ tokensAndOwners2: [tokens, stakingContracts]})
-  
+  const tokens = await api.multiCall({ abi: 'address:stakeToken', calls: stakingContracts })
+  return api.sumTokens({ tokensAndOwners2: [tokens, stakingContracts] })
 }
