@@ -28,11 +28,12 @@ const config = {
       '0x5D738fBf1D8940BBE72Af847d88c517064DE76e7'
     ]
   },
+  /*
   bitcoin: {
     owners: [
       'bc1qy8xx8fcsmdlc447ls4wzw2tn3y6c6cy64wckhz',
     ]
-  },
+  }, // remove it for now
     /*
   bitcoincash: {
     owners: [
