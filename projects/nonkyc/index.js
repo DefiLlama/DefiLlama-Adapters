@@ -1,11 +1,13 @@
 const { cexExports } = require('../helper/cex')
 
 const config = {
+  /*
   alephium: {
     owners: [
       '1DiovRDAHyYJTudaTEhccZaGMTSCFtJ3NxvNGFWkXnCSJ'
     ]
   },
+*/ //we dont support alephium on CEX dashboard
   algorand: {
     owners: [
       '26NEOQ2ZVVM6C53LVFC7MUNA32HF4S2DCZT5JZ5SDSKTN4OOMA7VMIRZVA'
@@ -31,11 +33,13 @@ const config = {
       'bc1qy8xx8fcsmdlc447ls4wzw2tn3y6c6cy64wckhz',
     ]
   },
+    /*
   bitcoincash: {
     owners: [
       'qzfew0ck3kxjdytrr2vnycdjnnsyju3pwsrgsupqj2',
     ]
   },
+  */ // we dont support bitcoincash on CEX dashboard
   bsc: {
     owners: [
       '0x15d7619c8457e2F89ea28c720b1d7941C245d27e'
@@ -46,16 +50,18 @@ const config = {
       'addr1qxd9jjmxd4gl2kf4jh99nnhqjsk5gn597ryq25045ttaschx70mgasdwgef63zgwl0fac38mdwaszwsg7uu0d2j5ckqsgsva7r'
     ]
   },
+  /*
   dash: {
     owners: [
       'XauVSyTHwQiwt5HLiMKEYhCZr9z4dwzyn4'
     ]
-  },
+  }, //// we dont support dash neither doge on CEX dashboard
   doge: {
     owners: [
       'DFbKm2cjt1Y36sKPQc6RQc3MsLmwcccTJx'
     ]
   },
+   */
   energi: {
     owners: [
       '0x7b4D11b7fABC161bc09E3Ee86C3d34Dff40F5a47'
@@ -66,11 +72,13 @@ const config = {
       '0x5D738fBf1D8940BBE72Af847d88c517064DE76e7'
     ],
   },
+   /*
   ethereumclassic: {
     owners: [
       '0x5D738fBf1D8940BBE72Af847d88c517064DE76e7'
     ],
-  },
+  }, //we dont support ethclassic on CEX dashboard
+  */
   fantom: {
     owners: [
       '0x5D738fBf1D8940BBE72Af847d88c517064DE76e7'
@@ -81,11 +89,13 @@ const config = {
       '0x5D738fBf1D8940BBE72Af847d88c517064DE76e7'
     ],
   },
+  /*
   fusion: {
     owners: [
       '0x7b4D11b7fABC161bc09E3Ee86C3d34Dff40F5a47'
     ],
-  },
+  }, // no support on CEX
+  */
   litecoin: {
     owners: [
       'ltc1qemulmneuu7lv3z9a00v243u23dt0vygcq6cwp7'
