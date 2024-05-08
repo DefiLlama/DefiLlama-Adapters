@@ -154,6 +154,7 @@ async function base_tvl(api) {
   }
 
   const mulDivRoundingUp = (a, b, denominator) => {
+    const ZERO = 0n
     const ONE = 1n
     const product = a * b
     let result = product / denominator
@@ -164,7 +165,7 @@ async function base_tvl(api) {
   const getAmount0Delta = (sqrtRatioAX96, sqrtRatioBX96, liquidity, roundUp) => {
     const ONE = 1n
     if (sqrtRatioAX96 > sqrtRatioBX96) {
-      ;[sqrtRatioAX96, sqrtRatioBX96] = [sqrtRatioBX96, sqrtRatioAX96]
+      [sqrtRatioAX96, sqrtRatioBX96] = [sqrtRatioBX96, sqrtRatioAX96]
     }
 
     const numerator1 = liquidity << 96n
@@ -178,7 +179,7 @@ async function base_tvl(api) {
   const getAmount1Delta = (sqrtRatioAX96, sqrtRatioBX96, liquidity, roundUp) => {
     const Q96 = 2n ** 96n
     if (sqrtRatioAX96 > sqrtRatioBX96) {
-      ;[sqrtRatioAX96, sqrtRatioBX96] = [sqrtRatioBX96, sqrtRatioAX96]
+      [sqrtRatioAX96, sqrtRatioBX96] = [sqrtRatioBX96, sqrtRatioAX96]
     }
 
     return roundUp
