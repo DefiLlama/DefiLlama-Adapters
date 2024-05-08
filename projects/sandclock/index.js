@@ -19,6 +19,10 @@ const AMBER = '0xdb369eEB33fcfDCd1557E354dDeE7d6cF3146A11'; // in production
 
 const LIQUITY_STABILITY_POOL = '0x66017D22b0f8556afDd19FC67041899Eb65a21bb';
 
+const QUARTZ = '0xbA8A621b4a54e61C442F5Ec623687e2a942225ef';
+const QUARTZ_STAKING = '0x0a36f9565c6fb862509ad8d148941968344a55d8';
+const STAKING_REWARDS = [EMERALD, WETH];
+
 const v1Vaults = [YEARN_VAULT, LIQUITY_VAULT, JADE, AMETHYST];
 const v2Vaults = [EMERALD, OPAL, AMBER];
 const liquityVaults = [LIQUITY_VAULT, JADE, AMETHYST, AMBER];
@@ -56,15 +60,27 @@ async function tvl(api) {
   });
   lqtyGains.forEach(g => sdk.util.sumSingleBalance(balances, LQTY, g, chain))
 
+  const stakingRewardsBalances = await api.multiCall({
+    abi: 'erc20:balanceOf',
+    calls: STAKING_REWARDS.map(v => ({ target: v, params: QUARTZ_STAKING })),
+  })
+  const scWETHtoWETH = await api.call({ 
+    abi: 'function convertToAssets(uint256) external view returns (uint256)', 
+    target: EMERALD, 
+    params: stakingRewardsBalances[0] 
+  })
+  sdk.util.sumSingleBalance(balances, WETH, scWETHtoWETH, chain)
+  sdk.util.sumSingleBalance(balances, WETH, stakingRewardsBalances[1], chain)
+
   return sumTokens2({ balances, chain, block, })
 }
 
 module.exports = {
-    methodology: 'add underlying asset balances in all the vaults together.',
+  methodology: 'add underlying asset balances in all the vaults together.',
   doublecounted: true,
   start: 15308000, // The first vault YEARN_VAULT was deployed
   ethereum: {
     tvl,
-    staking: staking("0x0a36f9565c6fb862509ad8d148941968344a55d8", "0xba8a621b4a54e61c442f5ec623687e2a942225ef")
+    staking: staking(QUARTZ_STAKING, QUARTZ)
   }
 };
