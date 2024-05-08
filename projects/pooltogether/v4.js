@@ -19,6 +19,4 @@ async function tvl(api) {
   return sumTokens2({ api, tokensAndOwners: V4_POOLS[api.chain] })
 }
 
-module.exports = {
-  tvl
-}
+module.exports = { tvl }

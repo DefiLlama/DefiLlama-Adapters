@@ -31,6 +31,4 @@ async function tvl(api) {
   return api.getBalances()
 }
 
-module.exports = {
-  tvl,
-}
+module.exports = { tvl }
