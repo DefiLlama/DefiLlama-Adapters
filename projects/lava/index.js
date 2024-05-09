@@ -1,7 +1,7 @@
 const methodologies = require("../helper/methodologies");
 
 const DATA_PROVIDER_ADDRESS = {
-  arbitrum: "0x8CfA3a5105e87e6e5568b80F64d05eD5fc53F0a9",
+  arbitrum: "0x8Cb093763cD2EB1e418eaEFfFC4f20c1665304a2",
   base: "0x22d6Ab83EEe06B7EE815420a7F2e737D64E534ef",
 };
 const getAllReservesTokensABI =
@@ -91,4 +91,8 @@ module.exports = {
   methodology: methodologies.lendingMarket,
   arbitrum: getMetrics(),
   base: getMetrics(),
+  hallmarks: [
+    [Math.floor(new Date('2024-03-28')/1e3), 'Protocol was exploited'],
+    [Math.floor(new Date("2024-04-01") / 1e3), "Protocol was relaunched"],
+  ],
 };
