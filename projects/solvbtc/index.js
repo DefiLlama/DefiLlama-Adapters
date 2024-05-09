@@ -123,7 +123,7 @@ async function vaultBalance(api, solvbtc) {
 
 async function getGraphData(timestamp, chain, api, slot) {
 
-  const slotDataQuery = `query PoolSlotInfos {
+  const slotDataQuery = `query PoolOrderInfos {
             poolOrderInfos(first: 1000  where:{fundraisingEndTime_gt:${timestamp}, openFundShareSlot_in: ${JSON.stringify(slot)}}) {
               marketContractAddress
               contractAddress

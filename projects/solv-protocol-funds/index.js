@@ -337,7 +337,7 @@ async function vaultBalance(api) {
 async function getGraphData(timestamp, chain, api) {
   let rwaSlot = (await getConfig('solv-protocol/slots', slotListUrl));
 
-  const slotDataQuery = `query BondSlotInfos {
+  const slotDataQuery = `query PoolOrderInfos {
             poolOrderInfos(first: 1000  where:{fundraisingEndTime_gt:${timestamp}, openFundShareSlot_not_in: ${JSON.stringify(rwaSlot)}}) {
               marketContractAddress
               contractAddress
