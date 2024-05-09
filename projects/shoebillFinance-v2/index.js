@@ -64,5 +64,10 @@ module.exports = mergeExports([
             comptroller: "0xB7ed6c062caAaCb1A13f317E0A751289280FC306",
         }),
     },    
+    {
+        bob: compoundExports2({
+            comptroller: "0x1e514767F5cFe1ddE599dd39a79666E3BeEAaf7d",
+        }),
+    },    
 
 ]);
