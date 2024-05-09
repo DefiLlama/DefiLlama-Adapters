@@ -1,29 +1,5 @@
-const utils = require('../helper/utils');
+const { uniV3Export } = require('../helper/uniswapV3')
 
-async function fetchTvl() {
-  const url = 'https://endurance-subgraph.fusionist.io/subgraphs/name/tesseract/exchange-v3'
-  const data = {
-    query: `
-      query GetLatestPancakeDayData {
-        pancakeDayDatas(first: 1, orderBy: date, orderDirection: desc) {
-          tvlUSD
-        }
-      }
-    `,
-    operationName: "pancakeDayDatas"
-  };
-  const res = await utils.postURL(url, data)
-  if (res.data.data.pancakeDayDatas.length > 0) {
-    return parseFloat(res.data.data.pancakeDayDatas[0].tvlUSD)
-  }
-  return 0
-}
-
-module.exports = {
-  timetravel: false,
-  misrepresentedTokens: true,
-  endurance:{
-    fetch: fetchTvl
-  },
-  fetch: fetchTvl
-}
+module.exports = uniV3Export({
+  ace: { factory: '0x699cf93f5dec3a3e314f0a31c1f885fb11b983c3', fromBlock: 197972, },
+})
