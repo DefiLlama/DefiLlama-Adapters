@@ -38,6 +38,10 @@ const ADDRESSES = {
     CLTBASE: "0xA8Dc31c8C9F93dB2e42A5472F580689794639576",
     HELPER: "0x965356eb2C208Ce4130E267342cA720042Cce7b2",
   },
+  manta: {
+    CLTBASE: "0x69317029384c3305fC04670c68a2b434e2D8C44C",
+    HELPER: "0xa1d8180f4482359ceb7eb7437fcf4a2616830f81",
+  },
 }
 
 const DEFAULT_STRATEGY_CREATION_TOPIC = "StrategyCreated(bytes32)"
@@ -63,6 +67,9 @@ const START_BLOCKS = {
   },
   scroll: {
     CLTBASE: 4846051,
+  },
+  manta: {
+    CLTBASE: 1834975,
   },
 }
 
