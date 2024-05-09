@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokensExport, sumTokens2 } = require('../helper/unwrapLPs')
 const sdk = require("@defillama/sdk");
 
@@ -11,9 +12,9 @@ const Arb2CRVGauge = "0xCE5F24B7A95e9cBa7df4B54E911B4A3Dc8CDAf6f";
 const Arb2CRVLUAUSDLP = "0xD2239B95890018a8f52fFD17d7F94C3A82f05389";
 const ArbLUAUSDMetaPoolGauge = "0x721cac0f4715a29acd76752408636e8a49222c11";
 
-const USDCBridged = "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8";
-const USDT = "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9";
-const WBTC = "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f";
+const USDCBridged = ADDRESSES.arbitrum.USDC;
+const USDT = ADDRESSES.arbitrum.USDT;
+const WBTC = ADDRESSES.arbitrum.WBTC;
 const LUA = "0xc3aBC47863524ced8DAf3ef98d74dd881E131C38";
 const LUAUSD = "0x1DD6b5F9281c6B4f043c02A83a46c2772024636c";
 
@@ -49,12 +50,6 @@ async function addUniswapPools(api, balances) {
     resolveUniV3: true,
     blacklistedTokens: [LUA, LUAUSD],
   });
-}
-
-async function add2CRV(api, balances) {
-  return sumTokens2({
-    balances, api, owner: ARB_2CRV, tokens: [],
-  })
 }
 
 async function addyLUAUSD2CRV(api, balances) {
