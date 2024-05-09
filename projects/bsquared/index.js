@@ -5,7 +5,8 @@ const ADDRESSES = require('../helper/coreAssets.json')
 
 const BTCOwners = [
   "bc1q4fsk5pgnmnu7ngp79xclsw2t0yk46sjqw22ffz",
-  "bc1qva5m5e7da2zm590z03tdnj42u9q2uye3hgrehwrzgg8j4kxq9seq9rvw0m",
+  "bc1qva5m5e7da2zm590z03tdnj42u9q2uye3hgrehwrzgg8j4kxq9seq9rvw0m", 
+  "bc1qjv2lfrv672rqagycs5zdsggmury0cz2vufek46jj86ddqynyp2qsxm3qfs",
 ];
 const BRC20Owners = [
   "bc1q97ctqygjgj0ljxgge4q735ujxvlad8smass7f0axc6x3ggffr8xqwn69hc",
