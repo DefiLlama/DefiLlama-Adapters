@@ -1,5 +1,5 @@
-const ADDRESSES = require('../helper/coreAssets.json')
 const { nullAddress, treasuryExports } = require("../helper/treasury");
+const { mergeExports } = require('../helper/utils');
 
 // Treasury
 const treasury = "0x7da82c7ab4771ff031b66538d2fb9b0b047f6cf9";
@@ -12,7 +12,19 @@ module.exports = treasuryExports({
       // Ethereum Assets
       nullAddress,
     ],
-    owners: [treasury, '0x70a0a7be87deb51e1fab16d4f2bf00be1510e476'],
+    owners: [treasury, '0x70a0a7be87deb51e1fab16d4f2bf00be1510e476', '0x3d4530082c3eb60f58af03f79b1ed3f40e591cd1'],
     ownTokens: [GLM]
   },
 })
+
+async function tvl(api) {
+  if(api.timestamp > 1687828149){
+    // Staked 100k ETH in validators
+    api.add("0x0000000000000000000000000000000000000000", 100e3*1e18)
+  }
+  return api.getBalances()
+}
+
+module.exports = mergeExports([module.exports, {
+  ethereum: { tvl }
+}])
