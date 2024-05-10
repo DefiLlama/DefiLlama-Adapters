@@ -8,7 +8,8 @@ async function tvl(api) {
     const voter = '0x16613524e02ad97edfef371bc883f2f5d6c480a5';
     const fromBlock = 3200567;
     const fromBlockSickle = 12116234;
-    console.log("fetching logs")
+
+    // Fetch logs from the two factories
     const [deployLogs, deployAeroLogs] = await Promise.all([
         getLogs({
             api,
@@ -35,8 +36,9 @@ async function tvl(api) {
         }),
     ]);
 
+    // Get the addresses of deployed sickles
     const sickles = deployLogs.map(log => log.args[1]);
-    console.log("fetching sickles")
+
     // Separate gauges by type
     const deployedAeroGauges = deployAeroLogs.reduce(
         (acc, log) => {
@@ -52,83 +54,40 @@ async function tvl(api) {
         { lp: [], nft: [] }
     );
 
-    const truncatedGauges = {
-        lp: deployedAeroGauges.lp.slice(0, 100),
-        nft: deployedAeroGauges.nft.slice(0, 20),
-    };
-    console.log("fetching balances logs")
-    // Create promises for fetching deposit logs for lp and nft gauges
-    const depositLogPromises = [
-        ...truncatedGauges.lp.map(gauge =>
-            getLogs({
-                api,
-                target: gauge,
-                topic: 'Deposit(address,address,uint256)',
-                fromBlock: fromBlockSickle,
-                eventAbi: 'event Deposit(address indexed from, address indexed to, uint256 amount)',
-            }).then(logs => logs.map(log => ({ ...log, gauge, type: 'lp' })))  // Append gauge address and type (lp)
-        ),
-        ...truncatedGauges.nft.map(gauge =>
-            getLogs({
-                api,
-                target: gauge,
-                topic: 'Deposit(address,address,uint256)',
-                fromBlock: fromBlockSickle,
-                eventAbi: 'event Deposit(address indexed from, address indexed to, uint256 amount)',
-            }).then(logs => logs.map(log => ({ ...log, gauge, type: 'nft' })))  // Append gauge address and type (nft)
-        ),
-    ];
+    // Prepare balance queries for each gauge-sickle pair
+    const balanceCalls = [];
+    const stakingTokenCalls = [];
 
-    const allDepositLogs = await Promise.all(depositLogPromises);
-    const depositLogs = allDepositLogs.flat();  // Flatten to get a single array of logs
+    //  for (const gauge of [...truncatedGauges.lp, ...truncatedGauges.nft]) {
+    for (const gauge of [...deployedAeroGauges.lp]) {
+        for (const sickle of sickles) {
+            balanceCalls.push({ target: gauge, params: [sickle] });
+            stakingTokenCalls.push({ target: gauge });
+        }
+    }
 
-    // Filter the deposit logs to include only those where `args[1]` (to address) is in the sickles list
-    const filteredDepositLogs = depositLogs.filter(log => sickles.includes(log.args[1]));
-
-    // Now map to include the gauge address, sickle address, and pool type
-    const result = filteredDepositLogs.map(log => ({
-        sickle: log.args[1],  // The address making the deposit
-        gauge: log.gauge,    // The gauge address
-        type: log.type       // Pool type (lp or nft)
-    }));
-
-    console.log("fetching balances")
+    // Execute the balanceOf and stakingToken queries
     const [resultsWithBalance, stakingTokens] = await Promise.all([
         sdk.api.abi.multiCall({
             abi: 'erc20:balanceOf',
-            calls: filteredDepositLogs.map(log => ({
-                target: log.gauge,
-                params: [log.args[1]] // The sickle address
-            })),
+            calls: balanceCalls,
             chain: 'base'
         }),
         sdk.api.abi.multiCall({
             abi: 'function stakingToken() view returns (address)',
-            calls: filteredDepositLogs.map(log => ({
-                target: log.gauge
-            })),
+            calls: stakingTokenCalls,
             chain: 'base'
         })
     ]);
 
-    const resultsWithBalancesAndTokens = filteredDepositLogs.map((log, index) => {
-        const balance = resultsWithBalance.output[index].output;
+    // Combine results and sum the balances
+    const balances = {};
+
+    resultsWithBalance.output.forEach((balanceResult, index) => {
+        const balance = balanceResult.output;
         const stakingTokenAddress = stakingTokens.output[index].output;
-        return {
-            ...log,
-            balance,
-            stakingToken: stakingTokenAddress
-        };
-    }).filter(log => log.balance !== '0'); // Filter out any logs with a zero balance
-
-    console.log("fetching balances sum")
-
-    const balances = resultsWithBalancesAndTokens.reduce((acc, log) => {
-        const { balance, stakingToken, type } = log;
-        sdk.util.sumSingleBalance(acc, stakingToken, balance, 'base');
-        return acc;
-    }, {});
-
+        sdk.util.sumSingleBalance(balances, stakingTokenAddress, balance, 'base');
+    });
 
     return balances;
 }
@@ -138,5 +97,3 @@ module.exports = {
         tvl,
     },
 };
-
-// todo handle nft gauges
