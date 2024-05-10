@@ -35,9 +35,6 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
-  endurance: {
-    [nullAddress]: { coingeckoId: "endurance", decimals: 18 },
-  },
   ace: {
     [nullAddress]: { coingeckoId: "endurance", decimals: 18 },
     '0x85119527cf38f6ccf7b1b8f8fad05145358aaa81': { coingeckoId: "endurance", decimals: 18 },
