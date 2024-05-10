@@ -5,8 +5,7 @@ const TROVE_MANAGER_LIST = [
 
 async function tvl(api) {
   const tokens = await api.multiCall({  abi: 'address:collateralToken', calls: TROVE_MANAGER_LIST})
-  const result = await api.sumTokens({ tokensAndOwners2: [tokens, TROVE_MANAGER_LIST]})
-  return result;
+  return api.sumTokens({ tokensAndOwners2: [tokens, TROVE_MANAGER_LIST]})
 }
 
 module.exports = {
