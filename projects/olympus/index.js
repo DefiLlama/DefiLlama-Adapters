@@ -1,7 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
 const { blockQuery } = require("../helper/http");
-const env = require("../helper/env");
+const { getEnv } = require("../helper/env");
 const { staking } = require('../helper/staking');
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
@@ -64,15 +63,6 @@ query {
   }
 }`;
 
-const subgraphUrls = {
-  ethereum: `https://gateway.thegraph.com/api/${env.OLYMPUS_GRAPH_API_KEY}/subgraphs/id/DTcDcUSBRJjz9NeoK5VbXCVzYbRTyuBwdPUqMi8x32pY`,
-  arbitrum:
-    "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-arbitrum",
-  fantom:
-    "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-fantom",
-  polygon:
-    "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-polygon",
-};
 
 //Subgraph returns balances in tokenAddress / allocator pairs. Need to return based on balance.
 function sumBalancesByTokenAddress(arr) {
@@ -98,7 +88,20 @@ function sumBalancesByTokenAddress(arr) {
  * #2. Call tokenRecords with block num from prev query
  * #3. Sum values returned
  ***/
-async function tvl(timestamp, block, _, { api }, isOwnTokensMode = false) {
+async function tvl(api, isOwnTokensMode = false) {
+const subgraphUrls = {
+  ethereum: `https://gateway-arbitrum.network.thegraph.com/api/${getEnv("OLYMPUS_GRAPH_API_KEY")}/subgraphs/id/7jeChfyUTWRyp2JxPGuuzxvGt3fDKMkC9rLjm7sfLcNp`,
+  arbitrum:
+    "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-arbitrum",
+  fantom:
+    "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-fantom",
+  polygon:
+    "https://api.thegraph.com/subgraphs/name/olympusdao/protocol-metrics-polygon",
+};
+  
+  //filter out problematic pools that dont have a decimals function.
+  const poolsWithoutDecimals = ["0x88051b0eea095007d3bef21ab287be961f3d8598"];
+  
   const indexedBlockForEndpoint = await blockQuery(
     subgraphUrls[api.chain],
     getLatestBlockIndexed,
@@ -109,6 +112,10 @@ async function tvl(timestamp, block, _, { api }, isOwnTokensMode = false) {
     subgraphUrls[api.chain],
     protocolQuery(blockNum),
     { api }
+  );
+
+  const filteredTokenRecords = tokenRecords.filter(
+    (t) => !poolsWithoutDecimals.includes(t.tokenAddress)
   );
 
   const aDay = 24 * 3600;
@@ -125,7 +132,7 @@ async function tvl(timestamp, block, _, { api }, isOwnTokensMode = false) {
    * that need to be normalized for pricing .
    * See addressMap above
    **/
-  const normalizedFilteredTokenRecords = tokenRecords.map((token) => {
+  const normalizedFilteredTokenRecords = filteredTokenRecords.map((token) => {
     const normalizedAddress = addressMap[token.tokenAddress]
       ? addressMap[token.tokenAddress]
       : token.tokenAddress;
@@ -155,8 +162,8 @@ async function tvl(timestamp, block, _, { api }, isOwnTokensMode = false) {
   return sumTokens2({ api, resolveLP: true, })
 }
 
-async function ownTokens(timestamp, block, _, { api }) {
-  return tvl(timestamp, block, _, { api }, true);
+async function ownTokens(api) {
+  return tvl(api, true);
 }
 
 module.exports = {

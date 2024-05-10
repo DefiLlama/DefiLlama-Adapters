@@ -33,9 +33,12 @@ async function auroraTvl(timestamp, chainBlocks) {
 module.exports = {
   misrepresentedTokens: true,
   aurora: {
-    staking: staking(empyreanStaking, EMPYR, "aurora"),
+    staking: staking(empyreanStaking, EMPYR),
     tvl: auroraTvl,
   },
   methodology:
     "Counts USDC and TLP (EMPYR-USDC) on the treasury",
 };
+
+
+module.exports.deadFrom = '2022-05-09'

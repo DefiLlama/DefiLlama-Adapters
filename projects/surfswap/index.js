@@ -6,6 +6,9 @@ const dexTVL = getUniTVL({
 })
 
 module.exports = {
+  hallmarks: [
+    [1660521600, "incentives not given"]
+  ],
   misrepresentedTokens: true,
   kava: {
     tvl:dexTVL,

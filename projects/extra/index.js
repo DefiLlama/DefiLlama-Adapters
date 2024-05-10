@@ -3,6 +3,7 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const config = {
   optimism: { factory: '0xbb505c54d71e9e599cb8435b4f0ceec05fc71cbd', fromBlock: 96265067, vaultFactory: '0x155620a2e6a9392c754b73296d9655061525729b', positionViewer: '0xf9cfb8a62f50e10adde5aa888b44cf01c5957055' },
+  base: {factory: '0xbb505c54d71e9e599cb8435b4f0ceec05fc71cbd', fromBlock: 1960257, vaultFactory: '0x155620a2e6a9392c754b73296d9655061525729b', positionViewer: '0xf9cfb8a62f50e10adde5aa888b44cf01c5957055' },
 }
 
 module.exports = {};
@@ -13,7 +14,7 @@ const getVaultAbi = "function getVault(uint256 vaultId) view returns (tuple(addr
 Object.keys(config).forEach(chain => {
   const { factory, fromBlock, vaultFactory, positionViewer, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const logs = await getLogs({
         api,
         target: factory,
@@ -33,7 +34,7 @@ Object.keys(config).forEach(chain => {
       const calls = []
       for (let i = 1; i <= vaultLogs.length; i++)  calls.push(i)
 
-      const data = await api.multiCall({ target: positionViewer, abi: getVaultAbi, calls })
+      const data = (await api.multiCall({ target: positionViewer, abi: getVaultAbi, calls, permitFailure: true })).filter(i => i)
       data.forEach(({ pair, totalLp }) => api.add(pair, totalLp))
 
       const tokensAndOwners = logs.map(i => [i.reserve, i.eTokenAddress])

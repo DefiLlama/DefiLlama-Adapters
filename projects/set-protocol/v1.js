@@ -10,12 +10,12 @@ Settings
 const cTokenDecimalScale = BigNumber("10").pow(18);
 
 const tokens = [
-  ADDRESSES.ethereum.WETH, // WETH
-  ADDRESSES.ethereum.WBTC, // WBTC
-  ADDRESSES.ethereum.LINK, // LINK
-  '0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359', // SAI
-  ADDRESSES.ethereum.DAI, // DAI
-  ADDRESSES.ethereum.USDC, // USDC
+  ADDRESSES.ethereum.WETH,
+  ADDRESSES.ethereum.WBTC,
+  ADDRESSES.ethereum.LINK,
+  ADDRESSES.ethereum.SAI,
+  ADDRESSES.ethereum.DAI,
+  ADDRESSES.ethereum.USDC,
   '0x39AA39c021dfbaE8faC545936693aC917d5E7563', // cUSDC
   '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643', // cDAI
 ]

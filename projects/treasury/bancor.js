@@ -41,9 +41,9 @@ module.exports = treasuryExports({
         '0xb9EF770B6A5e12E45983C5D80545258aA38F3B78', //zcn
         '0xd26114cd6EE289AccF82350c8d8487fedB8A0C07', //omg
         '0xaA7a9CA87d3694B5755f213B5D04094b8d0F0A6F', //trac
-        '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0', //wsteth
+        ADDRESSES.ethereum.WSTETH,
         '0x4C2e59D098DF7b6cBaE0848d66DE2f8A4889b9C3', //fodl
-        '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2', //mkr
+        ADDRESSES.ethereum.MKR,
      ],
     owners: [treasury],
     ownTokens: [BNT, vBNT],

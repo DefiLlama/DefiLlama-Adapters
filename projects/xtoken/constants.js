@@ -19,7 +19,7 @@ const xu3lpfAddr = "0x4296d40183356A770Fd8cA3Ba0592f0163BE9CA3";
 const xu3lpgAddr = "0x28ce95124FB0d5Febe6Ab258072848f5fe1010eC";
 const xu3lphAddr = "0x9ed880b7F75a220C0450E4884521ba8d500eb4bb";
 const ethrsi6040Addr = "0x93E01899c10532d76C0E864537a1D26433dBbDdB";
-const sUsdAddr = "0x57ab1e02fee23774580c119740129eac7081e9d3";
+const sUsdAddr = ADDRESSES.ethereum.sUSD_OLD;
 const xbntaAddr = "0x6949f1118FB09aD2567fF675f96DbB3B6985ACd0";
 const alphaAddr = "0xa1faa113cbe53436df28ff0aee54275c13b40975";
 const bntAddr = "0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C";
@@ -48,20 +48,6 @@ const QUOTER_ADDRESS = '0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6'
 const usdcAddress = ADDRESSES.arbitrum.USDC
 const wethAddress = ADDRESSES.arbitrum.WETH
 const usdtAddress = ADDRESSES.ethereum.USDT;
-const COINGECKO_API_URL = 'https://api.coingecko.com/api/v3/coins';
-const urls = {
-    "mainnet": "https://api.thegraph.com/subgraphs/name/xtokenmarket/terminal-mainnet",
-    "arbitrum": "https://api.thegraph.com/subgraphs/name/xtokenmarket/terminal-arbitrum",
-    "optimism": "https://api.thegraph.com/subgraphs/name/xtokenmarket/terminal-optimism",
-    "polygon": "https://api.thegraph.com/subgraphs/name/xtokenmarket/terminal-polygon",
-};
-const networks = {
-    "mainnet": "ethereum",
-    "homestead": "ethereum",
-    "optimism": "optimistic-ethereum",
-    "arbitrum": "arbitrum-one",
-    "polygon": "polygon-pos",
-};
 
 module.exports = {
   DEC_18,
@@ -110,8 +96,5 @@ module.exports = {
   usdcAddress,
   wethAddress,
   usdtAddress,
-  COINGECKO_API_URL,
-  urls,
-  networks,
   xtkAddress
 };

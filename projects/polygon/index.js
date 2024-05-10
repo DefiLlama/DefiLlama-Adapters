@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
-async function tvl(_, block) {
+async function tvl(_, block, _c) {
     const etherAddress = ADDRESSES.null
 
     const posEtherPredicate = '0x8484Ef722627bf18ca5Ae6BcF031c23E6e922B30'
@@ -55,7 +55,7 @@ async function tvl(_, block) {
         '0xe912b8bA2513D7e29b7b2E5B14398dbf77503Fb4',
         '0xba8a621b4a54e61c442f5ec623687e2a942225ef',
         '0x249e38ea4102d0cf8264d3701f1a0e39c4f2dc3b',
-        '0x853d955acef822db058eb8505911ed77f175b99e',
+        ADDRESSES.ethereum.FRAX,
         '0xd0cd466b34a24fcb2f87676278af2005ca8a78c4',
         '0x3a4f40631a4f906c2BaD353Ed06De7A5D3fCb430',
         '0xba100000625a3754423978a60c9317c58a424e3d',
@@ -86,7 +86,7 @@ async function tvl(_, block) {
     })
     toa.push([maticToken, plasmaDepositManager])
     toa.push([maticToken, stakeManager])
-    return sumTokens2({ block, tokensAndOwners: toa, })
+    return sumTokens2({ block, tokensAndOwners: toa, blacklistedTokens: ['0x99fe3b1391503a1bc1788051347a1324bff41452'] })
 }
 
 module.exports = {

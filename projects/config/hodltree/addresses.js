@@ -56,7 +56,7 @@ const eth = [
             address: '0x2e5a08c26cb22109e585784c4f99363bb3e199ab',
             miscInfo: {
                 tokensIn: [
-                    '0x57Ab1ec28D129707052df4dF418D58a2D46d5f51',
+                    ADDRESSES.ethereum.sUSD,
                     '0x056Fd409E1d7A124BD7017459dFEa2F387b6d5Cd',
                     ADDRESSES.ethereum.USDC,
                     ADDRESSES.ethereum.DAI,
@@ -77,13 +77,13 @@ const eth = [
             contractType: em.rp,
             address: '0xce596bf99d21e46fa91143c03d7a356682b67859',
             miscInfo: {
-                token: '0x57Ab1ec28D129707052df4dF418D58a2D46d5f51'
+                token: ADDRESSES.ethereum.sUSD
             }
         }, {
             contractType: em.vps,
             address: '0xb7ead8c418f3d03bc22dd538c22600abe7209e72',
             miscInfo: {
-                token: '0x57ab1ec28d129707052df4df418d58a2d46d5f51'
+                token: ADDRESSES.ethereum.sUSD
             }
         }, 
         
@@ -119,7 +119,7 @@ const polygon = [
             contractType: lendBorrow.lender,
             address: '0x2F35d311fd2F0b0dA65FA268B86831279FB4fd98',
             miscInfo: {
-                tokenIn: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270'
+                tokenIn: ADDRESSES.polygon.WMATIC_2
             }
         }, {
             contractType: lendBorrow.borrower,

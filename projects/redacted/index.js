@@ -1,13 +1,12 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokensAndLPsSharedOwners, unwrapUniswapV3NFTs, genericUnwrapCvx } = require('../helper/unwrapLPs')
+const { sumTokensAndLPsSharedOwners, sumTokens2, genericUnwrapCvx } = require('../helper/unwrapLPs')
 const sdk = require('@defillama/sdk')
-const { BigNumber } = require('ethers')
 
 const treasuries = ["0xa52fd396891e7a74b641a2cb1a6999fcf56b077e", "0x086c98855df3c78c6b481b6e1d47bef42e9ac36b"]
 
 const cvxCRVStaking = '0x3Fe65692bfCD0e6CF84cB1E7d24108E434A7587e'
 const CVX = ADDRESSES.ethereum.CVX
-const cvxCRV = '0x62b9c7356a2dc64a1969e19c23e4f579f9810aa7'
+const cvxCRV = ADDRESSES.ethereum.cvxCRV
 const FXS = '0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0'
 const veFXS = '0xc8418aF6358FFddA74e09Ca9CC3Fe03Ca6aDC5b0'
 const CRV = ADDRESSES.ethereum.CRV
@@ -36,14 +35,12 @@ async function tvl(timestamp, block, chainBlocks){
         [AURA, false],
         // BTRFLY/ETH Curve LP
         ['0x7483Dd57f6488b0e194A151C57Df6Ec85C00aCE9', false],
-        // USDC
         [ADDRESSES.ethereum.USDC, false],
-        // FRAX
-        ['0x853d955aCEf822Db058eb8505911ED77F175b99e', false],
+        [ADDRESSES.ethereum.FRAX, false],
     ], treasuries, block)
     
     //Add UniswapV3 LPs
-    await unwrapUniswapV3NFTs({ balances, owners: treasuries, block})
+    await sumTokens2({ balances, owners: treasuries, block, resolveUniV3: true, })
 
     //Add convex deposited curve LPs
     await genericUnwrapCvx(balances, treasuries[0], cvxCRVPool, block, 'ethereum')
@@ -85,7 +82,7 @@ async function tvl(timestamp, block, chainBlocks){
         chain: 'ethereum',
         block: chainBlocks['ethereum']
     }).then(result => result.output)
-    sdk.util.sumSingleBalance(balances, FXS, BigNumber.from(veFXSBalance).div(4).toString())
+    sdk.util.sumSingleBalance(balances, FXS, veFXSBalance/4)
 
     //Add veCRV as 1 CRV since locked for 4 years
     const veCRVBalance = await sdk.api.erc20.balanceOf({
@@ -124,8 +121,7 @@ async function staking(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
-    timetravel: true,
-    methodology: "tvl = Treasury assets (bonding). staking = rlBTRFLY (locked tokens)",
+        methodology: "tvl = Treasury assets (bonding). staking = rlBTRFLY (locked tokens)",
     ethereum:{
         tvl,
         staking

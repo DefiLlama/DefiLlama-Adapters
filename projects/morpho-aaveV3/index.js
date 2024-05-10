@@ -44,13 +44,14 @@ const getMetrics = async (api, borrowed) => {
 };
 
 const ethereum = (borrowed) => {
-  return async (timestamp, block, _, { api }) => {
+  return async (api) => {
     return getMetrics(api, borrowed);
   };
 };
 
 module.exports = {
   methodology: `Collateral (supply minus borrows) in the balance of the Morpho contracts`,
+  doublecounted: true,
   ethereum: {
     tvl: ethereum(false),
     borrowed: ethereum(true)

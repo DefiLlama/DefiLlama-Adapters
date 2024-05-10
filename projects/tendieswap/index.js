@@ -8,10 +8,10 @@ const tendie = "0x9853A30C69474BeD37595F9B149ad634b5c323d9"
 module.exports = {
   bsc: {
     tvl: getUniTVL({
-      chain: 'bsc', useDefaultCoreAssets: true,
+       useDefaultCoreAssets: true,
       factory: factoryBSC,
     }),
-    staking: staking(masterchef, tendie, "bsc")
+    staking: staking(masterchef, tendie)
   },
   methodology: 'TVL counts the liquidity in each of the Tendieswap pairs. Pairs are found using the factory address. Staking TVL accounts for TENDIE on its masterchef contract.'
 };

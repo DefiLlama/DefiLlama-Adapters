@@ -27,11 +27,9 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     })
     const activeMinipoolCount_arr = [...Array(statusesCount).keys()].map(i => activeMinipoolCount[i.toString()])
     minipool_count_per_status = minipool_count_per_status.map((sum, idx) => sum + parseInt(activeMinipoolCount[idx]))
-    // console.log('offset', offset, 'activeMinipoolCount', activeMinipoolCount, 'activeMinipoolCount_arr', activeMinipoolCount_arr)
     if (activeMinipoolCount_arr.reduce((a, b)=> a + parseInt(b), 0) < limit) { break; }
     offset += limit
   }
-  // console.log(`minipool_count_per_status / [unmatched*16, pending*32, staking*32, withdrawable*32] ${minipool_count_per_status}\n`)
   
   // Get ETH and RPL balance of multiple rocketpool contracts as well as RPL staked
   const [
@@ -100,7 +98,6 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
   // rpl_tvl += solidity.to_float(rp.call("rocketVault.balanceOfToken", "rocketAuctionManager", rpl)) // slashed RPL that hasn't been auctioned off yet
   const RPL_tvl = parseFloat(totalRPLStake) + parseFloat(rocketDAONodeTrustedActions_rplBalance) + parseFloat(rocketAuctionManager_rplBalance)
 
-//   console.log(`staking_minipools: ${staking_minipools}
 // pending_minipools: ${pending_minipools}
 // unmatched_minipools: ${unmatched_minipools}
 // withdrawable_minipools: ${withdrawable_minipools}

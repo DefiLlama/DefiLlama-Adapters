@@ -15,3 +15,12 @@ module.exports = yieldHelper({
   },
   useDefaultCoreAssets: true,
 })
+
+module.exports = {
+  era: {
+    tvl: () => ({}),
+  },
+  hallmarks: [
+    [Math.floor(new Date('2023-06-15')/1e3), 'Rug Pull ?'],
+  ],
+}

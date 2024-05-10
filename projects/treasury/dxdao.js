@@ -12,7 +12,7 @@ module.exports = treasuryExports({
           ADDRESSES.ethereum.DAI,//dai
           '0xFe2e637202056d30016725477c5da089Ab0A043A',//seth2
           ADDRESSES.ethereum.USDC,//usdc
-          '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0',//lusd
+          ADDRESSES.ethereum.LUSD,//lusd
           ADDRESSES.ethereum.STETH,//steth
           '0xC18360217D8F7Ab5e7c516566761Ea12Ce7F9D72',//ens
           ADDRESSES.ethereum.RETH,//reth

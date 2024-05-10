@@ -42,7 +42,8 @@ async function getJoins(block, api) {
   return joins;
 }
 
-async function tvl(timestamp, block, _, { api }) {
+async function tvl(api) {
+  const block = api.block
   let toa = [
     [MakerSCDConstants.WETH_ADDRESS, MakerSCDConstants.TUB_ADDRESS,],
   ]
@@ -81,18 +82,19 @@ async function tvl(timestamp, block, _, { api }) {
 
     const failedCalls = dogRes.filter(i => !i.success)
     if (failedCalls.length) {
-      failedCalls.forEach(i => console.log('Failed both gem and dog calls', i.input.target))
+      failedCalls.forEach(i => sdk.log('Failed both gem and dog calls', i.input.target))
       throw new Error('Failed both gem and dog calls')
     }
   }
 
-  toa = toa.filter(i => i[0].toLowerCase() !== '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359')
+  toa = toa.filter(i => i[0].toLowerCase() !== ADDRESSES.ethereum.SAI.toLowerCase())
   const symbols = await api.multiCall({ abi: 'erc20:symbol', calls: toa.map(t => t[0]) })
   const gUNIToa = toa.filter((_, i) => symbols[i] === 'G-UNI')
-  toa = toa.filter((_, i) => symbols[i] !== 'G-UNI')
+  toa = toa.filter((_, i) => symbols[i] !== 'G-UNI' && !symbols[i].startsWith('RWA'))
 
-  const balances = await sumTokens2({ api, tokensAndOwners: toa, })
-  return unwrapGunis({ api, toa: gUNIToa, balances, })
+  const balances = await sumTokens2({ api, tokensAndOwners: toa, resolveLP: true, })
+  await unwrapGunis({ api, toa: gUNIToa, balances, })
+  return balances
 }
 
 async function unwrapGunis({ api, toa, balances = {} }) {
@@ -120,8 +122,7 @@ async function unwrapGunis({ api, toa, balances = {} }) {
 }
 
 module.exports = {
-  timetravel: true,
-  methodology: `Counts all the tokens being used as collateral of CDPs.
+    methodology: `Counts all the tokens being used as collateral of CDPs.
   
   On the technical level, we get all the collateral tokens by fetching events, get the amounts locked by calling balanceOf() directly, unwrap any uniswap LP tokens and then get the price of each token from coingecko`,
   start: 1513566671, // 12/18/2017 @ 12:00am (UTC)

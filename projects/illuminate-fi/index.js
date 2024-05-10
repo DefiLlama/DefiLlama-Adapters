@@ -1,7 +1,7 @@
 const { getLogs } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const market = '0xcd1d02fda51cd24123e857ce94e4356d5c073b3f'
   const createMarketLogs = await getLogs({
     api,
@@ -11,7 +11,7 @@ async function tvl(_, _b, _cb, { api, }) {
     onlyArgs: true,
     fromBlock: 16973041,
   })
-  const calls = createMarketLogs.map(i => ({ params: [i.underlying, +i.maturity] }))
+  const calls = createMarketLogs.map(i => ({ params: [i.underlying, Number(i.maturity)] }))
   const pools = await api.multiCall({ abi: 'function pools(address, uint256) view returns (address)', calls, target: market })
 
   // Get the TVL of the base (using the shares token balance) - this counts the amount of base tokens locked in the AMM
@@ -24,7 +24,14 @@ async function tvl(_, _b, _cb, { api, }) {
   const principalTokens = await api.multiCall({ abi: 'address:fyToken', calls: pools })
   const principalTokenDecimals = await api.multiCall({ abi: 'uint256:decimals', calls: pools })
   const oneCalls = principalTokenDecimals.map((v, i) => ({ params: 10 ** v, target: pools[i] }))
-  const principalTokenPrices = await api.multiCall({ abi: 'function sellFYTokenPreview(uint128) view returns (uint128)', calls: oneCalls })
+  let principalTokenPrices = await api.multiCall({ abi: 'function sellFYTokenPreview(uint128) view returns (uint128)', calls: oneCalls, permitFailure: true })
+  let i = 0
+  for (const pt of principalTokenPrices) {
+    if (!pt) {
+      principalTokenPrices[i] = await api.call({ abi: 'function unwrapPreview(uint256) view returns (uint256)', ...oneCalls[i] })
+    }
+    i++
+  }
   const principalTokenSupplies = await api.multiCall({ abi: 'erc20:totalSupply', calls: principalTokens })
 
   principalTokenSupplies.forEach((supply, i) => api.add(baseTokens[i], supply * +principalTokenPrices[i] / 10 ** principalTokenDecimals[i]))

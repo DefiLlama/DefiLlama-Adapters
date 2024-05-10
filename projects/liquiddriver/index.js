@@ -1,8 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const { unwrapUniswapLPs, sumTokens2 } = require("../helper/unwrapLPs");
-const { transformFantomAddress, transformBscAddress } = require("../helper/portedTokens");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 const { addFundsInMasterChef } = require("../helper/masterchef");
 const { staking } = require("../helper/staking");
 const BigNumber = require("bignumber.js");
@@ -55,10 +54,10 @@ const shadowChefAddresses = [
   "0xD354908d297ce9a348b417d2e0F561EE7D11de5E", // wsHEC/FTM
 ];
 
-const masterchefTvl = async (timestamp, ethBlock, chainBlocks) => {
+const masterchefTvl = async (_ts, ethBlock, chainBlocks) => {
   const balances = {};
 
-  const transformAddress = await transformFantomAddress();
+  const transformAddress = i => `fantom:${i}`;
 
   await addFundsInMasterChef(
     balances,
@@ -72,9 +71,9 @@ const masterchefTvl = async (timestamp, ethBlock, chainBlocks) => {
   return balances;
 };
 
-const hundredchefTvl = async (timestamp, ethBlock, chainBlocks, { api }) => {
+const hundredchefTvl = async (api) => {
   const balances = {};
-  const transformAddress = await transformFantomAddress();
+  const transformAddress = i => `fantom:${i}`;
 
   const hdaiChefAddress = "0x79364E45648Db09eE9314E47b2fD31c199Eb03B9";
   const husdcChefAddress = "0x9A07fB107b9d8eA8B82ECF453Efb7cFb85A66Ce9";
@@ -152,7 +151,7 @@ async function getMinichefTvl(api, minichef, balances = {}) {
     resolveLP: true, })
 }
 
-async function shadowChefTvl(_, _1, _2, { api, }) {
+async function shadowChefTvl(api) {
   const balances = {}
   const  [lpTokens, strategies] = await Promise.all([
     api.multiCall({  abi: abi.shadowLpToken, calls: shadowChefAddresses}),
@@ -237,12 +236,12 @@ module.exports = {
     staking: staking(xLQDR, LQDR, "fantom", "fantom:" + LQDR),
     tvl: sdk.util.sumChainTvls([
       masterchefTvl,
-      (_, _1, _2, { api }) => getMinichefTvl(api, MINICHEF),
+      (api) => getMinichefTvl(api, MINICHEF),
       hundredchefTvl,
       shadowChefTvl,
     ]),
   },
   bsc: {
-    tvl: (_, _1, _2, { api }) => getMinichefTvl(api, BSCMINICHEF),
+    tvl: (api) => getMinichefTvl(api, BSCMINICHEF),
   }
 }; // node test.js projects/liquiddriver/index.js

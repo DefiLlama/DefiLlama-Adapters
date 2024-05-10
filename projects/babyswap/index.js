@@ -7,9 +7,8 @@ const BABY = "0x53E562b9B7E5E94b81f10e96Ee70Ad06df3D2657";
 
 /*
 module.exports = {
-  timetravel: true,
-  bsc: {
-    staking: staking(MasterChefContract, BABY, "bsc"),
+    bsc: {
+    staking: staking(MasterChefContract, BABY),
     tvl: bscTvl,
   },
   methodology:
@@ -21,8 +20,8 @@ module.exports = {
     misrepresentedTokens: true,
     incentivized: true,
     bsc: {
-        tvl: getUniTVL({ factory: '0x86407bEa2078ea5f5EB5A52B2caA963bC1F889Da', chain: 'bsc', useDefaultCoreAssets: true }),
-        staking: staking(MasterChefContract, BABY, "bsc"),
+        tvl: getUniTVL({ factory: '0x86407bEa2078ea5f5EB5A52B2caA963bC1F889Da', useDefaultCoreAssets: true }),
+        staking: staking(MasterChefContract, BABY),
     }
 };
 

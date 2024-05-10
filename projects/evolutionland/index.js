@@ -10,7 +10,7 @@ const ring = {
 const weth = {
   "ethereum": ADDRESSES.ethereum.WETH,
   "heco": ADDRESSES.heco.WHT,
-  "polygon": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+  "polygon": ADDRESSES.polygon.WMATIC_2,
   "crab": ADDRESSES.crab.WCRAB,
 }
 
@@ -51,7 +51,7 @@ const lpETH = {
   "crab": "0xF157c9393255Db1728bC6483c3545Ca8a1655a0F",
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const owners = [lpETH].map(i => i[api.chain])
   const balances = await sumTokens2({ api, owners, tokens: [weth[api.chain]] })
   const owners1 = [lpGOLD, lpWOOD, lpHOO, lpFIRE, lpSIOO, lpETH].map(i => i[api.chain])

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getUniTVL } = require('../helper/unknownTokens');
 
 const GET_AMOUNT_OUT = "function getAmountOut(uint amountIn, address tokenIn, address tokenOut) external view returns (uint amount, bool stable)";
@@ -5,7 +6,7 @@ const GET_AMOUNT_OUT = "function getAmountOut(uint amountIn, address tokenIn, ad
 const VOTING_ESCROW = "0x1925AB9F9bcdB9E2D2861cc7C4c157645126D9d9";
 const VS = "0x5756A28E2aAe01F600FC2C01358395F5C1f8ad3A";
 const ROUTER = "0x6C31035D62541ceba2Ac587ea09891d1645D6D07";
-const USDC = "0x3355df6D4c9C3035724Fd0e3914dE96A5a83aaf4";
+const USDC = ADDRESSES.era.USDC;
 
 module.exports = {
   misrepresentedTokens: true,
@@ -14,9 +15,8 @@ module.exports = {
       factory: '0x529Bd7Fc43285B96f1e8d5158626d1F15bb8A834',
       useDefaultCoreAssets: true,
       hasStablePools: true,
-      fetchBalances: true,
     }),
-    staking: async (_, _b, cb, { api } = {}) => {
+    staking: async (api = {}) => {
       const vsBalance = await api.call({ target: VS, abi: 'erc20:balanceOf', params: VOTING_ESCROW, })
 
       // Use 1 VS as input to get the conversion rate from VS to USDC

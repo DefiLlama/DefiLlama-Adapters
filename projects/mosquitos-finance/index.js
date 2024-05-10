@@ -137,6 +137,9 @@ async function staking() {
 }
 
 module.exports = {
+  hallmarks: [
+    [1678320000, "Rug Pull"]
+  ],
   timetravel: false,
   aptos: {
     tvl,

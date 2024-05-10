@@ -3,12 +3,10 @@ const contracts = require("./contracts.json");
 const { sumTokens2, unwrapLPsAuto } = require("../helper/unwrapLPs");
 const abi = require("./abi.json");
 const { genericUnwrapCvx } = require("../helper/unwrapLPs");
-const { covalentGetTokens } = require('../helper/http')
 
 async function walletBalances(api) {
   const { owners = [], blacklistedTokens } = contracts.tokenHolders[api.chain]
-  const tokens = await Promise.all(owners.map(i => covalentGetTokens(i, api.chain)))
-  return sumTokens2({ api, ownerTokens: owners.map((v, i) => [tokens[i], v]), blacklistedTokens, resolveLP: false, })
+  return sumTokens2({ api, owners, fetchCoValentTokens: true, blacklistedTokens, tokenConfig: { onlyWhitelisted: false, } })
 }
 async function deployedBalances(api) {
   switch (api.chain) {
@@ -40,7 +38,7 @@ module.exports = {
   bsc: { tvl, }
 };
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const calls = [
     walletBalances(api),
     deployedBalances(api),

@@ -1,32 +1,17 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { covalentGetTokens } = require('../helper/http')
-const { PromisePool } = require('@supercharge/promise-pool')
 
 const factory = '0xee13c86ee4eb1ec3a05e2cc3ab70576f31666b3b'
 const blacklistedTokens = [
   '0x0b91b07beb67333225a5ba0259d55aee10e3a578', // MNEP
 ]
 
-async function tvl(_, _1,_2, { api }) {
+async function tvl(api) {
   const wallets = await api.multiCall({
     itemAbi: abis.walletOf,
     lengthAbi: abis.tokenCounter,
     target: factory,
   })
-  const tokensAndOwners = []
-  const { errors } = await PromisePool
-    .withConcurrency(31)
-    .for(wallets)
-    .process(addWallet)
-
-  if (errors && errors.length)
-    throw errors[0]
-
-  return sumTokens2({ tokensAndOwners, api, blacklistedTokens, });
-
-  async function addWallet(wallet) {
-    (await covalentGetTokens(wallet, 'polygon')).forEach(i => tokensAndOwners.push([i, wallet]))
-  }
+  return sumTokens2({ owners: wallets, fetchCoValentTokens: true, api, blacklistedTokens, });
 }
 
 module.exports = {

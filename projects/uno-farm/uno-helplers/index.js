@@ -142,6 +142,7 @@ async function getFullInfoQuickswapUnoFarm({
         calls: stakeTokenCalls,
         abi: UnoFarmQuickswapABI.lpPair,
         chain,
+        permitFailure: true,
       })
     ).output.map((a) => a.output);
 
@@ -149,7 +150,7 @@ async function getFullInfoQuickswapUnoFarm({
     return dataFarms.map((v, i) => ({
       ...v,
       stakeToken: stakeTokens[i],
-    }));
+    })).filter(v=>v.stakeToken !== null);
   }
   
 module.exports = {

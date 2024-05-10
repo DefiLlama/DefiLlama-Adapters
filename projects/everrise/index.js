@@ -51,7 +51,7 @@ const chainConfig = {
   },
   polygon: {
     chainId: '137',
-    WCoin: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
+    WCoin: ADDRESSES.polygon.WMATIC_2,
     lpFactory: '0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32',
     LPs: [
       {
@@ -104,7 +104,7 @@ let daoLockerClients = null
 Object.keys(chainConfig).forEach(chain => {
   const chainData = chainConfig[chain]
 
-  async function tvl(ts, _block, chainBlocks, { api }) {
+  async function tvl(api) {
     const tokensAndOwners = [
       [nullAddress, TOKEN],
       ...RESERVES.map(i => [nullAddress, i])

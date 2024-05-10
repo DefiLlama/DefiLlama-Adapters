@@ -1,20 +1,11 @@
-const { getAdaInAddress } = require("../helper/chain/cardano");
-const { getConfig } = require('../helper/cache')
+const { getAdaInAddress, sumTokensExport } = require("../helper/chain/cardano");
+
+const POOL_SCRIPT_HASH = "script1uychk9f04tqngfhx4qlqdlug5ntzen3uzc62kzj7cyesjk0d9me"
+const ORDER_SCRIPT_HASH = "script15ew2tzjwn364l2pszu7j5h9w63v2crrnl97m074w9elrkxhah0e"
 
 async function tvl() {
-  const res = await getConfig("minswap", "https://api-mainnet-prod.minswap.org/defillama/dex-addresses")
-  const poolAddresses = res.pools
-  const orderAddresses = res.orders
-  let liquidityPoolLocked = 0
-  for (const addr of poolAddresses) {
-    const adaLocked = await getAdaInAddress(addr)
-    liquidityPoolLocked += adaLocked
-  }
-  let batchOrderLocked = 0
-  for (const addr of orderAddresses) {
-    const adaLocked = await getAdaInAddress(addr)
-    batchOrderLocked += adaLocked
-  }
+  const liquidityPoolLocked = await getAdaInAddress(POOL_SCRIPT_HASH)
+  const batchOrderLocked = await getAdaInAddress(ORDER_SCRIPT_HASH)
   return {
     cardano: (liquidityPoolLocked * 2) + batchOrderLocked,
   };
@@ -24,6 +15,10 @@ module.exports = {
   timetravel: false,
   cardano: {
     tvl,
+    staking: sumTokensExport({ 
+      owner: 'addr1wy3fscaws62d59k6qqhg3xsarx7vstzczgjmdhx2jh7knksj7w3y7', 
+      tokens: ['29d222ce763455e3d7a09a665ce554f00ac89d2e99a1a83d267170c64d494e']
+    })
   },
   hallmarks:[
     [1647949370, "Vulnerability Found"],

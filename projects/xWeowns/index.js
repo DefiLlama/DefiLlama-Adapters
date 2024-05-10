@@ -21,8 +21,8 @@ async function tvl(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
-    doublecounted: false,
     lachain: {
-        tvl
+        tvl: () => 0,
     }
 };
+module.exports.deadFrom = '2023-06-09'
