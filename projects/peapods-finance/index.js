@@ -3,6 +3,7 @@ const { sumTokens2 } = require("../helper/unwrapLPs");
 const config = {
   ethereum: { indexManager: "0x0Bb39ba2eE60f825348676f9a87B7CD1e3B4AE6B", peasToken: "0x02f92800F57BCD74066F5709F1Daa1A4302Df875" },
   arbitrum: { indexManager: "0x0Bb39ba2eE60f825348676f9a87B7CD1e3B4AE6B", peasToken: "0x02f92800F57BCD74066F5709F1Daa1A4302Df875" },
+  mode: { indexManager: "0x0Bb39ba2eE60f825348676f9a87B7CD1e3B4AE6B", peasToken: "0x02f92800F57BCD74066F5709F1Daa1A4302Df875" },
 }
 
 const indexManagerABI =
