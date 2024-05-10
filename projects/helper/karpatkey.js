@@ -22,12 +22,17 @@ const symbolToId = {
     XDAI: "dai"
 }
 
-async function karpatKeyTvl(timestamp, daoName, tokenToExclude) {
+const MONTH = 30*24*3600e3
+
+async function karpatKeyTvl({timestamp}, daoName, tokenToExclude) {
   const {data} = await fetchURL("https://aumapi.karpatkey.dev/our_daos_token_details")
   let date = new Date(timestamp*1e3)
   let monthlyData = data.tokens.filter(t=>t.year_month === `${date.getFullYear()}_${date.getMonth()+1}` && t.dao === daoName)
-  if(monthlyData.length === 0){
-    date = new Date(date - 30*24*3600e3)
+  while(monthlyData.length === 0){
+    if(timestamp*1e3 - date.getTime() > 3*MONTH){
+      throw new Error(`Treasury snapshot too outdated`)
+    }
+    date = new Date(date.getTime() - MONTH)
     monthlyData = data.tokens.filter(t=>t.year_month === `${date.getFullYear()}_${date.getMonth()+1}` && t.dao === daoName)
   }
   const balances = {}

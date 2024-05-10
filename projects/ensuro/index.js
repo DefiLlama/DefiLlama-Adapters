@@ -6,6 +6,7 @@ const addressBook = {
     usdc: ADDRESSES.polygon.USDC,
     aave_v3_usdc: "0x625E7708f30cA75bfd92586e17077590C60eb4cD",  // aPolUSDC
     aave_v2_usdc: "0x1a13F4Ca1d028320A707D99520AbFefca3998b7F",  // amUSDC
+    compound_v3_usdc: "0xF25212E676D1F7F89Cd72fFEe66158f541246445",  // Compound USDC
     reserves: [
       // eTokens
       {name: "eToken Junior Koala", address: "0x8d2Ee82c4172B2138B06b8037d769cBfAf9C0274"},
@@ -31,13 +32,15 @@ const addressBook = {
       {name: "PremiumsAccount DLT", address: "0x8908d99a4E2fF6b7Bf4563593B02AcBc7bBfaBC1"},
       {name: "PremiumsAccount Otonomi", address: "0xE43587386E6e8FA127dd008770cdC07dE2Df91E9"},
       {name: "PremiumsAccount Bliss", address: "0x11b490292799a0edFE37797592F77151C4483442"},
+      // MultiStrategy Vault - Vault that aggregates assets of several reserves
+      {name: "MultiStrategy Vault", address: "0x1EE585dcea25cbDa16BE8cfeFa381A1F32acA418"},
     ],
   }
 };
 
 async function tvl(api) {
   const addresses = addressBook[api.chain];
-  const ownerTokens = addresses.reserves.map(i => [[addresses.usdc, addresses.aave_v3_usdc], i.address])
+  const ownerTokens = addresses.reserves.map(i => [[addresses.usdc, addresses.aave_v3_usdc, addresses.compound_v3_usdc], i.address])
 
   return sumTokens2({ api, ownerTokens, });
 }

@@ -14,6 +14,34 @@ const ADDRESSES = {
     CLTBASE: "0x3e0aa2e17fe3e5e319f388c794fdbc3c64ef9da6",
     HELPER: "0x9d80597d9403bdb35b3d7d9f400377e790b01053",
   },
+  blast: {
+    CLTBASE: "0x5a8e82c4b3Dbd7579fD198A3276cF75CEA2Df63D",
+    HELPER: "0xbA13be69628d12963b28de8E7Ba04C3C4c1eaceA",
+  },
+  base: {
+    CLTBASE: "0x3e0AA2e17FE3E5e319f388C794FdBC3c64Ef9da6",
+    HELPER: "0xA1d8180F4482359CEb7Eb7437FCf4a2616830F81",
+  },
+  optimism: {
+    CLTBASE: "0x525c80e91efe9222de3eae86af69a480fbced416",
+    HELPER: "0x965356eb2c208ce4130e267342ca720042cce7b2",
+  },
+  polygon: {
+    CLTBASE: "0xD4798F142FDb87738eF4eBE82Bd56Eccde19A88C",
+    HELPER: "0x9c225a02426e3229C073A6132E083561e95000b5",
+  },
+  bsc: {
+    CLTBASE: "0x6F2b186e9392042B1edE2D1D1706a3DC4a4725d8",
+    HELPER: "0x9c225a02426e3229C073A6132E083561e95000b5",
+  },
+  scroll: {
+    CLTBASE: "0xA8Dc31c8C9F93dB2e42A5472F580689794639576",
+    HELPER: "0x965356eb2C208Ce4130E267342cA720042Cce7b2",
+  },
+  manta: {
+    CLTBASE: "0x69317029384c3305fC04670c68a2b434e2D8C44C",
+    HELPER: "0xa1d8180f4482359ceb7eb7437fcf4a2616830f81",
+  },
 }
 
 const DEFAULT_STRATEGY_CREATION_TOPIC = "StrategyCreated(bytes32)"
@@ -21,6 +49,27 @@ const DEFAULT_STRATEGY_CREATION_TOPIC = "StrategyCreated(bytes32)"
 const START_BLOCKS = {
   arbitrum: {
     CLTBASE: 190945156,
+  },
+  blast: {
+    CLTBASE: 1709947,
+  },
+  base: {
+    CLTBASE: 12765695,
+  },
+  optimism: {
+    CLTBASE: 118360616,
+  },
+  polygon: {
+    CLTBASE: 55506149,
+  },
+  bsc: {
+    CLTBASE: 37623104,
+  },
+  scroll: {
+    CLTBASE: 4846051,
+  },
+  manta: {
+    CLTBASE: 1834975,
   },
 }
 

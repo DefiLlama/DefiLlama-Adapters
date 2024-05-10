@@ -5,13 +5,12 @@ const abi = require("./abi.json");
 
 const { stakings } = require("../helper/staking");
 const { getLogs } = require("../helper/cache/getLogs");
-const { factory } = require("typescript");
 
 const singleStakingContracts = ["0x629E39da1Db5654fe59cAE31d48CAEBB8dC2A9c6"];
 const CPOOL = "0x66761fa41377003622aee3c7675fc7b5c1c2fac5";
 
 module.exports = {
-  methodology: "We count liquidity by USDC deposited on the pools contracts",
+  methodology: "We count liquidity by Stables deposited on the pools contracts",
 };
 
 const config = {

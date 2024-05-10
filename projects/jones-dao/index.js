@@ -15,32 +15,34 @@ const jAssetToAsset = {
 };
 
 async function tvl(api) {
-  const [
-    metavaultTokens,
-    metavaultBalances,
-    optionVaultTokens,
-    optionVaultBalances,
-  ] = await Promise.all([
-    api.multiCall({
-      abi: "address:depositToken",
-      calls: addresses.metaVaultsAddresses,
-    }),
-    api.multiCall({
-      abi: "uint256:workingBalance",
-      calls: addresses.metaVaultsAddresses,
-    }),
-    api.multiCall({
-      abi: "address:asset",
-      calls: addresses.optionVaultAddresses,
-    }),
-    api.multiCall({
-      abi: "uint256:totalAssets",
-      calls: addresses.optionVaultAddresses,
-    }),
-  ]);
+  const [metavaultTokens, metavaultBalances, optionVaultTokens, optionVaultBalances, jusdcTvl] =
+    await Promise.all([
+      api.multiCall({
+        abi: "address:depositToken",
+        calls: addresses.metaVaultsAddresses,
+      }),
+      api.multiCall({
+        abi: "uint256:workingBalance",
+        calls: addresses.metaVaultsAddresses,
+      }),
+      api.multiCall({
+        abi: "address:asset",
+        calls: addresses.optionVaultAddresses,
+      }),
+      api.multiCall({
+        abi: "uint256:totalAssets",
+        calls: addresses.optionVaultAddresses,
+      }),
+      sdk.api.abi.call({
+        abi: "uint256:totalAssets",
+        target: addresses.jusdc.underlyingVault,
+        chain: "arbitrum",
+      }),
+    ]);
 
   api.addTokens(metavaultTokens, metavaultBalances);
   api.addTokens(optionVaultTokens, optionVaultBalances);
+  api.addTokens(addresses.tokens.usdc, jusdcTvl.output);
 
   const tokensAndOwners = [
     [addresses.tokens.uvrt, addresses.glp.stableRewardTracker],
@@ -81,11 +83,7 @@ module.exports = {
       addr = addr.toLowerCase();
       return `arbitrum:${jAssetToAsset[addr] ?? addr}`;
     }),
-    staking: stakings(
-      addresses.stakingContracts,
-      addresses.tokens.jones,
-      "arbitrum"
-    ),
+    staking: stakings(addresses.stakingContracts, addresses.tokens.jones, "arbitrum"),
   },
 
   ethereum: {

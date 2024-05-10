@@ -2,7 +2,7 @@ const ADDRESSES = require("../helper/coreAssets.json");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 // Tokens
-const EZETH = "0x2416092f143378750bb29b79eD961ab195CcEea5";
+const EZETH = ADDRESSES.blast.ezETH;
 
 // Lending pools
 const LENDING_POOL_USDB = "0x4A1d9220e11a47d8Ab22Ccd82DA616740CF0920a";
@@ -15,6 +15,10 @@ const WETH_COLLATERAL_MANAGER = "0x23eBa06981B5c2a6f1a985BdCE41BD64D18e6dFA";
 const EZETH_COLLATERAL_MANAGER = "0xc81A630806d1aF3fd7509187E1AfC501Fd46e818";
 const MUNCHABLE_WETH_COLLATERAL_MANAGER =
   "0x32b6C6322939263029A5CF37F14A59ab0A9E277c";
+const WEETH_COLLATERAL_MANAGER = 
+  "0x7E4aFeBe294345d72dE6bB8405C871D7BB6c53d1";
+const USDB_COLLATERAL_MANAGER =
+  "0xC877B52c628Dba77fC55F1DDb140747155C9b39D";
 
 const wethCollateralManagers = [
   COLLATERAL_MANAGER,
@@ -49,6 +53,8 @@ async function tvl(api) {
     resolveLP: true,
     tokensAndOwners: [
       [EZETH, EZETH_COLLATERAL_MANAGER],
+      [ADDRESSES.blast.weETH, WEETH_COLLATERAL_MANAGER],
+      [ADDRESSES.blast.USDB, USDB_COLLATERAL_MANAGER],
       ...wethCollateralManagers,
     ],
   });
