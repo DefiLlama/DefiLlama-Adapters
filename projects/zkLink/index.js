@@ -117,6 +117,7 @@ const config = {
   merlin: {
     owners: [
       "0xf5b90fE755Aa2e3CcC69d9548cbeB7b38c661D73", // nova bridge address
+      "0xE12382e046DB998DE89aF19Ca799CbB757106781", // free.tech bridge: https://solvbtc.free.tech/
     ],
     tokens: [
       "0xB880fd278198bd590252621d4CD071b1842E9Bcd", //MBTC
