@@ -1143,9 +1143,7 @@
     "XSP": "0x36726235dadbdb4658d33e62a249dca7c4b2bc68"
   },
   "kardia": {
-    "WKAI": "0xaf984e23eaa3e7967f3c5e007fbe397d8566d23d",
-    "USDT": "0x551a5dcac57c66aa010940c2dcff5da9c53aa53b",
-    "KUSD_T": "0x92364ec610efa050d296f1eeb131f2139fb8810e"
+    "WKAI": "0xaf984e23eaa3e7967f3c5e007fbe397d8566d23d"
   },
   "empire": {
     "USDC": "0xc61a71c75ed4742dcae74b8cac27a37d46fc6751"
