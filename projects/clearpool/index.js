@@ -1,13 +1,23 @@
 //  npm i -f
 //  node test.js projects/clearpool/index.js
-//prepare
+const axios = require('axios')
 const abi = require("./abi.json");
+
 
 const { stakings } = require("../helper/staking");
 const { getLogs } = require("../helper/cache/getLogs");
 
 const singleStakingContracts = ["0x629E39da1Db5654fe59cAE31d48CAEBB8dC2A9c6"];
 const CPOOL = "0x66761fa41377003622aee3c7675fc7b5c1c2fac5";
+const api = 'https://squid.subsquid.io/cpool-squid/v/v1/graphql'
+
+
+const infoQuery = `
+  defillamaInfo {
+    poolFactory
+    protocol
+  }
+`;
 
 module.exports = {
   methodology: "We count liquidity by USDC deposited on the pools contracts",
