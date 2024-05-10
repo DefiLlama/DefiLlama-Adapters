@@ -1,5 +1,5 @@
 const { getUniTVL } = require('../helper/cache/uniswap.js')
-const { staking } = require('../helper/staking.js')
+const { staking } = require('../helper/staking.js');
 
 module.exports = {
   misrepresentedTokens: true,
