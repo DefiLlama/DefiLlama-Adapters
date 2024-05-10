@@ -8,7 +8,7 @@ async function tvl(api) {
     const voter = '0x16613524e02ad97edfef371bc883f2f5d6c480a5';
     const fromBlock = 3200567;
     const fromBlockSickle = 12116234;
-
+    console.log("fetching logs")
     const [deployLogs, deployAeroLogs] = await Promise.all([
         getLogs({
             api,
@@ -36,7 +36,7 @@ async function tvl(api) {
     ]);
 
     const sickles = deployLogs.map(log => log.args[1]);
-
+    console.log("fetching sickles")
     // Separate gauges by type
     const deployedAeroGauges = deployAeroLogs.reduce(
         (acc, log) => {
@@ -53,10 +53,10 @@ async function tvl(api) {
     );
 
     const truncatedGauges = {
-        lp: deployedAeroGauges.lp.slice(0, 20),
+        lp: deployedAeroGauges.lp.slice(0, 100),
         nft: deployedAeroGauges.nft.slice(0, 20),
     };
-
+    console.log("fetching balances logs")
     // Create promises for fetching deposit logs for lp and nft gauges
     const depositLogPromises = [
         ...truncatedGauges.lp.map(gauge =>
@@ -92,7 +92,7 @@ async function tvl(api) {
         type: log.type       // Pool type (lp or nft)
     }));
 
-
+    console.log("fetching balances")
     const [resultsWithBalance, stakingTokens] = await Promise.all([
         sdk.api.abi.multiCall({
             abi: 'erc20:balanceOf',
@@ -121,9 +121,16 @@ async function tvl(api) {
         };
     }).filter(log => log.balance !== '0'); // Filter out any logs with a zero balance
 
-    console.log('Results with Balances and Staking Tokens:', resultsWithBalancesAndTokens);
+    console.log("fetching balances sum")
 
-    return 0;
+    const balances = resultsWithBalancesAndTokens.reduce((acc, log) => {
+        const { balance, stakingToken, type } = log;
+        sdk.util.sumSingleBalance(acc, stakingToken, balance, 'base');
+        return acc;
+    }, {});
+
+
+    return balances;
 }
 
 module.exports = {
