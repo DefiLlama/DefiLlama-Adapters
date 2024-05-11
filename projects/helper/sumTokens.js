@@ -23,6 +23,7 @@ const helpers = {
   "stacks": require("./chain/stacks"),
   "starknet": require("./chain/starknet"),
   "brc20": require("./chain/brc20"),
+  "doge": require("./chain/doge"),
 }
 
 const geckoMapping = {

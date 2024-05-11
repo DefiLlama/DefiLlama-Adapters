@@ -21,13 +21,13 @@ module.exports = {
     "Vesting is calculated as already unlocked and available to claim CLY tokens in the vesting contract",
   avax: {
     start: 1638367059, // CLY Token deployment
-    hallmarks: [
-      [1651241728, "Staking V2 Launch"],
-      [1711370069, "Staking V3 Launch"]
-    ],
     tvl: async () => ({}),
     staking: _staking,
     // vesting: clyVesting(colonyGovernanceToken, vestingContract),
     vesting: staking(vestingContract, colonyGovernanceToken),
   },
+  hallmarks: [
+      [1651241728, "Staking V2 Launch"],
+      [1711370069, "Staking V3 Launch"]
+  ],
 };
