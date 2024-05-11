@@ -94,7 +94,7 @@ async function tvl(api) {
         }
     }
 
-    // Call the blockchain API to fetch the staked values
+    // Call to fetch the staked values
     const nftResults = await sdk.api.abi.multiCall({
         abi: 'function stakedValues(address depositor) view returns (uint256[])',
         calls: balanceCallsNFT,
@@ -126,10 +126,6 @@ async function tvl(api) {
         }
     }
 
-    // Output the structured results as JSON
-    // console.log(JSON.stringify(structuredResults, null, 2));
-
-
     // Iterate through each gauge and its NFT IDs
     for (const [gauge, gaugeData] of Object.entries(structuredResults)) {
 
@@ -150,7 +146,6 @@ async function tvl(api) {
         structuredResults[gauge].positions = {}; // Add a "positions" property
         positionsResults.output.forEach(result => {
             const nftId = result.input.params[0];
-            //structuredResults[gauge].positions[nftId] = result.success ? result.output : { error: 'Failed to fetch details' };
             structuredResults[gauge].positions[nftId] = result.output;
         });
     }
@@ -163,17 +158,13 @@ async function tvl(api) {
         }
     }
 
-
-    //console.log(JSON.stringify(filteredResults, null, 2));
-
-
-    // Step 1: Prepare Calls for `pool` Method
+    // Prepare Calls for `pool` Method
     const poolCalls = Object.keys(filteredResults).map(gauge => ({
         target: gauge,
         call: { target: gauge, params: [] }
     }));
 
-    // Step 2: Execute MultiCall to Fetch `pool` Addresses
+    // Execute MultiCall to Fetch `pool` Addresses
     const poolResults = await sdk.api.abi.multiCall({
         abi: 'function pool() view returns (address)',
         calls: poolCalls,
@@ -183,58 +174,50 @@ async function tvl(api) {
         return { output: [] }; // Return empty output in case of failure
     });
 
-    // Step 3: Integrate `pool` Addresses into Your Results
+    // Integrate `pool` Addresses into Your Results
     poolResults.output.forEach((result, index) => {
         const gaugeAddress = poolCalls[index].target;
         // Add the pool address to the corresponding gauge entry in filteredResults
         filteredResults[gaugeAddress].pool = result.output;
     });
 
-    // Output the final structured results with pool addresses
-    //console.log(JSON.stringify(filteredResults, null, 2));
-
-
-// Prepare calls for `slot0` method for each pool
-let slot0Calls = [];
-Object.entries(filteredResults).forEach(([gaugeAddress, data]) => {
-    if (data.pool) {
-        slot0Calls.push({
-            target: data.pool,
-            call: { target: data.pool, params: [] } // slot0 doesn't take parameters
-        });
-    }
-});
-
-// Execute multiCall to fetch poolTicks
-const slot0Results = await sdk.api.abi.multiCall({
-    abi: 'function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, bool unlocked)',
-    calls: slot0Calls,
-    chain: 'base'
-}).catch(error => {
-    console.error("API call failed:", error);
-    return { output: [] }; // Return empty output in case of failure
-});
-
-// Integrate poolTicks into filteredResults
-slot0Results.output.forEach((result, index) => {
-    const poolAddress = slot0Calls[index].target;
-    // Find which gauge this pool belongs to
-    for (const gaugeAddress in filteredResults) {
-        if (filteredResults[gaugeAddress].pool === poolAddress) {
-            if (result.success) {
-                filteredResults[gaugeAddress].poolTick = result.output.tick;
-            } else {
-                filteredResults[gaugeAddress].poolTick = "Error fetching pool tick";
-            }
-            break;
+    // Prepare calls for `slot0` method for each pool
+    let slot0Calls = [];
+    Object.entries(filteredResults).forEach(([gaugeAddress, data]) => {
+        if (data.pool) {
+            slot0Calls.push({
+                target: data.pool,
+                call: { target: data.pool, params: [] } // slot0 doesn't take parameters
+            });
         }
-    }
-});
+    });
 
-// Output the final structured results with pool ticks
-//console.log(JSON.stringify(filteredResults, null, 2));
+    // Execute multiCall to fetch poolTicks
+    const slot0Results = await sdk.api.abi.multiCall({
+        abi: 'function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, bool unlocked)',
+        calls: slot0Calls,
+        chain: 'base'
+    }).catch(error => {
+        console.error("API call failed:", error);
+        return { output: [] }; // Return empty output in case of failure
+    });
 
-console.log(resultsWithBalanceLP)
+    // Integrate poolTicks into filteredResults
+    slot0Results.output.forEach((result, index) => {
+        const poolAddress = slot0Calls[index].target;
+        // Find which gauge this pool belongs to
+        for (const gaugeAddress in filteredResults) {
+            if (filteredResults[gaugeAddress].pool === poolAddress) {
+                if (result.success) {
+                    filteredResults[gaugeAddress].poolTick = result.output.tick;
+                } else {
+                    filteredResults[gaugeAddress].poolTick = "Error fetching pool tick";
+                }
+                break;
+            }
+        }
+    });
+
 
     // Combine results and sum the balances
     const balances = {};
@@ -243,6 +226,36 @@ console.log(resultsWithBalanceLP)
         const balance = balanceResult.output;
         const stakingTokenAddress = stakingTokens.output[index].output;
         sdk.util.sumSingleBalance(balances, stakingTokenAddress, balance, 'base');
+    });
+
+    Object.entries(structuredResults).forEach(([gaugeAddress, gaugeData]) => {
+        // Get pool tick and calculate square root price
+        const currentTick = parseInt(gaugeData.poolTick);
+        const sqrtPriceCurrent = calculateSqrtPriceFromTick(currentTick);
+
+        // Process each position within the gauge
+        Object.entries(gaugeData.positions).forEach(([tokenId, position]) => {
+            const liquidity = parseInt(position[7]); // position.liquidity
+            const sqrtPriceLower = calculateSqrtPriceFromTick(parseInt(position[5])); // tickLower
+            const sqrtPriceUpper = calculateSqrtPriceFromTick(parseInt(position[6])); // tickUpper
+
+            // Calculate balances for token0 and token1
+            const liquidityAmount0 = (liquidity * (sqrtPriceUpper - sqrtPriceCurrent)) / (sqrtPriceUpper * sqrtPriceCurrent);
+            const liquidityAmount1 = liquidity * (sqrtPriceCurrent - sqrtPriceLower);
+
+            // Token addresses
+            const token0Address = position[2];
+            const token1Address = position[3];
+
+            // Sum balances
+            if (!balances[token0Address]) balances[token0Address] = 0;
+            if (!balances[token1Address]) balances[token1Address] = 0;
+
+            balances[token0Address] += liquidityAmount0;
+            balances[token1Address] += liquidityAmount1;
+            sdk.util.sumSingleBalance(balances, token0Address, liquidityAmount0, 'base');
+            sdk.util.sumSingleBalance(balances, token1Address, liquidityAmount1, 'base');
+        });
     });
 
     return balances;
