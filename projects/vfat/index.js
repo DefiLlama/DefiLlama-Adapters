@@ -1,6 +1,10 @@
 const { getLogs } = require('../helper/cache/getLogs');
 const sdk = require('@defillama/sdk');
 
+function calculateSqrtPriceFromTick(tick) {
+    return Math.sqrt(Math.pow(1.0001, tick));
+}
+
 async function tvl(api) {
     const factory = '0x71D234A3e1dfC161cc1d081E6496e76627baAc31';
     const gaugeFactory = '0x35f35cA5B132CaDf2916BaB57639128eAC5bbcb5';
@@ -83,50 +87,154 @@ async function tvl(api) {
         })
     ]);
 
+
     for (const gauge of [...deployedAeroGauges.nft]) {
         for (const sickle of sickles) {
             balanceCallsNFT.push({ target: gauge, params: [sickle] });
         }
     }
 
+    // Call the blockchain API to fetch the staked values
     const nftResults = await sdk.api.abi.multiCall({
         abi: 'function stakedValues(address depositor) view returns (uint256[])',
         calls: balanceCallsNFT,
         chain: 'base'
+    }).catch(error => {
+        console.error("API call failed:", error);
+        return { output: [] }; // Return empty output in case of failure
     });
 
-    // flatten output
-    const nftIds = nftResults.output.map(result => result.output).flat();
+    // Initialize the structured results object
+    const structuredResults = {};
+
+    // Loop through the results to build a structured response
+    for (let i = 0; i < nftResults.output.length; i++) {
+        const gauge = balanceCallsNFT[i].target;
+        const nftOutput = nftResults.output[i].output;
+
+        // Ensure that each gauge address has an entry, initialize if not present
+        if (!structuredResults[gauge]) {
+            structuredResults[gauge] = { nftIds: [] };
+        }
+
+        // Check if the nftOutput is an array and not empty
+        if (Array.isArray(nftOutput) && nftOutput.length > 0) {
+            // Extend the existing array of NFT IDs under the gauge address
+            nftOutput.forEach(id => {
+                structuredResults[gauge].nftIds.push({ id });
+            });
+        }
+    }
+
+    // Output the structured results as JSON
+    // console.log(JSON.stringify(structuredResults, null, 2));
 
 
-    // Prepare calls for each NFT ID to get positions
-    const positionCalls = nftIds.map(nftId => ({
-        target: NonfungiblePositionManager,
-        params: [nftId]
+    // Iterate through each gauge and its NFT IDs
+    for (const [gauge, gaugeData] of Object.entries(structuredResults)) {
+
+        // Prepare calls for each NFT ID within the gauge
+        const positionCalls = gaugeData.nftIds.map(nftIdObj => ({
+            target: NonfungiblePositionManager,
+            params: [nftIdObj.id] // Extract the numeric ID from the object
+        }));
+
+        // Execute multicall for this gauge's NFT IDs
+        const positionsResults = await sdk.api.abi.multiCall({
+            abi: 'function positions(uint256 tokenId) view returns (uint96 nonce, address operator, address token0, address token1, int24 tickSpacing, int24 tickLower, int24 tickUpper, uint128 liquidity, uint256 feeGrowthInside0LastX128, uint256 feeGrowthInside1LastX128, uint128 tokensOwed0, uint128 tokensOwed1)',
+            calls: positionCalls,
+            chain: 'base'
+        });
+
+        // Update the structuredResults with position data for this gauge
+        structuredResults[gauge].positions = {}; // Add a "positions" property
+        positionsResults.output.forEach(result => {
+            const nftId = result.input.params[0];
+            //structuredResults[gauge].positions[nftId] = result.success ? result.output : { error: 'Failed to fetch details' };
+            structuredResults[gauge].positions[nftId] = result.output;
+        });
+    }
+
+    const filteredResults = {};
+
+    for (const [gauge, gaugeData] of Object.entries(structuredResults)) {
+        if (gaugeData.nftIds.length > 0) {
+            filteredResults[gauge] = gaugeData;
+        }
+    }
+
+
+    //console.log(JSON.stringify(filteredResults, null, 2));
+
+
+    // Step 1: Prepare Calls for `pool` Method
+    const poolCalls = Object.keys(filteredResults).map(gauge => ({
+        target: gauge,
+        call: { target: gauge, params: [] }
     }));
 
-    // Execute multicall to get positions for each NFT
-    const positionsResults = await sdk.api.abi.multiCall({
-        abi: 'function positions(uint256 tokenId) view returns (uint96 nonce, address operator, address token0, address token1, int24 tickSpacing, int24 tickLower, int24 tickUpper, uint128 liquidity, uint256 feeGrowthInside0LastX128, uint256 feeGrowthInside1LastX128, uint128 tokensOwed0, uint128 tokensOwed1)',
-        calls: positionCalls,
+    // Step 2: Execute MultiCall to Fetch `pool` Addresses
+    const poolResults = await sdk.api.abi.multiCall({
+        abi: 'function pool() view returns (address)',
+        calls: poolCalls,
         chain: 'base'
+    }).catch(error => {
+        console.error("API call failed:", error);
+        return { output: [] }; // Return empty output in case of failure
     });
 
-    // Initialize an object to store results
-    const formattedResults = {};
+    // Step 3: Integrate `pool` Addresses into Your Results
+    poolResults.output.forEach((result, index) => {
+        const gaugeAddress = poolCalls[index].target;
+        // Add the pool address to the corresponding gauge entry in filteredResults
+        filteredResults[gaugeAddress].pool = result.output;
+    });
 
-    // Populate the object with NFT IDs as keys and their corresponding multicall results as values
-    positionsResults.output.forEach(result => {
-        const nftId = result.input.params[0];
-        if (result.success) {
-            formattedResults[nftId] = result.output;
-        } else {
-            formattedResults[nftId] = { error: 'Failed to fetch details' };
+    // Output the final structured results with pool addresses
+    //console.log(JSON.stringify(filteredResults, null, 2));
+
+
+// Prepare calls for `slot0` method for each pool
+let slot0Calls = [];
+Object.entries(filteredResults).forEach(([gaugeAddress, data]) => {
+    if (data.pool) {
+        slot0Calls.push({
+            target: data.pool,
+            call: { target: data.pool, params: [] } // slot0 doesn't take parameters
+        });
+    }
+});
+
+// Execute multiCall to fetch poolTicks
+const slot0Results = await sdk.api.abi.multiCall({
+    abi: 'function slot0() view returns (uint160 sqrtPriceX96, int24 tick, uint16 observationIndex, uint16 observationCardinality, uint16 observationCardinalityNext, bool unlocked)',
+    calls: slot0Calls,
+    chain: 'base'
+}).catch(error => {
+    console.error("API call failed:", error);
+    return { output: [] }; // Return empty output in case of failure
+});
+
+// Integrate poolTicks into filteredResults
+slot0Results.output.forEach((result, index) => {
+    const poolAddress = slot0Calls[index].target;
+    // Find which gauge this pool belongs to
+    for (const gaugeAddress in filteredResults) {
+        if (filteredResults[gaugeAddress].pool === poolAddress) {
+            if (result.success) {
+                filteredResults[gaugeAddress].poolTick = result.output.tick;
+            } else {
+                filteredResults[gaugeAddress].poolTick = "Error fetching pool tick";
+            }
+            break;
         }
-    });
+    }
+});
 
-    console.log(formattedResults);
+// Output the final structured results with pool ticks
+//console.log(JSON.stringify(filteredResults, null, 2));
 
+console.log(resultsWithBalanceLP)
 
     // Combine results and sum the balances
     const balances = {};
