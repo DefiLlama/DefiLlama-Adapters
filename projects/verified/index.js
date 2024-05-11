@@ -140,7 +140,6 @@ const getChainTvls = (chain) => {
               const rawAmount = Number(i.amount) / 10 ** 18; //since amount is expressed in 18 decimals
               return rawAmount * 10 ** currenciesDecimals[idx];
             } else {
-              //Todo: reduce with % reduction??
               const rawAmount = Number(i.amount) / 10 ** 18; //since amount is expressed in 18 decimals
               return -rawAmount * 10 ** currenciesDecimals[idx];
             }
@@ -184,7 +183,6 @@ const getChainTvls = (chain) => {
             if (currentPrice > previousPrice) {
               return Number(i.cashAmount);
             } else {
-              //Todo: reduce with % reduction??
               return Number(-i.cashAmount);
             }
           }
