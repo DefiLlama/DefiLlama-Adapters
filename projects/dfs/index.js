@@ -34,7 +34,6 @@ async function dfs() {
       limit: -1,
     }),
   });
-  console.log(info.data);
   const markets = info.data.rows || [];
   const dfsMkt = markets.find((m) => m.mid == 1);
   let dfsPrice = 1;
