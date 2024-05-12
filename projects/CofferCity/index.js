@@ -18,6 +18,7 @@ Object.keys(config).forEach(chain => {
       const vaults = Object.values(config[chain])
       const tokens = await api.multiCall({ abi: abi.getSupportedTokens, calls: vaults })
       const ownerTokens = vaults.map((v, i) => [tokens[i], v])
+      console.log(ownerTokens);
       return api.sumTokens({ ownerTokens })
     }
   }
