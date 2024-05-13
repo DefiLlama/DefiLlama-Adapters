@@ -24,6 +24,7 @@ async function tvl(api) {
 module.exports = {
   timetravel: false,
   sui: {
-    tvl: tvl,
+    tvl: () => ({}),
+    staking: tvl,
   },
 };
