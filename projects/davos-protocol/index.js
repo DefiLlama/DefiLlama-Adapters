@@ -16,7 +16,7 @@ module.exports = {
     ] }),
   },
   bsc: {
-    tvl: sumTokensExport({ owner: ['0x4e90156997BB469c6F5975e13FF1451C9500B711', '0x87ad5Ab05d7C1E1F904e029783810A2a95702563', '0xb44A251d1C31dd32700E5F2584B4282716C43EB3'], tokens: [
+    tvl: sumTokensExport({ owners: ['0x4e90156997BB469c6F5975e13FF1451C9500B711', '0x87ad5Ab05d7C1E1F904e029783810A2a95702563', '0xb44A251d1C31dd32700E5F2584B4282716C43EB3'], tokens: [
       "0x52F24a5e03aee338Da5fd9Df68D2b6FAe1178827", //ankrBNB
       "0xecA88125a5ADbe82614ffC12D0DB554E2e2867C8", //vUSDC
       "0xfD5840Cd36d94D7229439859C0112a4185BC0255", //vUSDT
@@ -41,13 +41,13 @@ module.exports = {
     ] }),
   },
   optimism: {
-    tvl: sumTokensExport({ owner: ['0x9c44E6A927302dA33dd76abe4558f26e31C48019', '0xb44A251d1C31dd32700E5F2584B4282716C43EB3'], tokens: [
+    tvl: sumTokensExport({ owners: ['0x9c44E6A927302dA33dd76abe4558f26e31C48019', '0xb44A251d1C31dd32700E5F2584B4282716C43EB3'], tokens: [
       "0x9Bcef72be871e61ED4fBbc7630889beE758eb81D", //RETH
       "0x1F32b1c2345538c0c6f582fCB022739c4A194Ebb" //wstETH
     ] }),
   },
   polygon: {
-    tvl: sumTokensExport({ owner: ['0x77F4C841cb87fDFa43aB909cf56f7710Af648a8e', '0x9a1275304960dbc6a8d4a5795832823a7d53f30a'], tokens: [
+    tvl: sumTokensExport({ owners: ['0x77F4C841cb87fDFa43aB909cf56f7710Af648a8e', '0x9a1275304960dbc6a8d4a5795832823a7d53f30a'], tokens: [
       '0x77F4C841cb87fDFa43aB909cf56f7710Af648a8e', //ceMATIC
       '0x3A58a54C066FdC0f2D55FC9C89F0415C92eBf3C4', // stMATIC
     ] }),
