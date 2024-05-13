@@ -9,7 +9,9 @@ module.exports = {
         ADDRESSES.ethereum.USDC,
         ADDRESSES.ethereum.USDT,
         ADDRESSES.ethereum.WETH,
+        ADDRESSES.ethereum.WBTC,
         XDAO,
+        '0x12970E6868f88f6557B76120662c1B3E50A646bf', // LADYS
       ],
       holders: [
         '0xb80fDAA74dDA763a8A158ba85798d373A5E84d84', // portal v1
@@ -23,6 +25,7 @@ module.exports = {
         ADDRESSES.bsc.BUSD,
         ADDRESSES.bsc.USDC,
         ADDRESSES.bsc.ETH,
+        ADDRESSES.bsc.BTCB,
         XDAO,
       ],
       holders: [
@@ -64,7 +67,7 @@ module.exports = {
     {
       name: 'telos',
       tokens: [
-        ADDRESSES.telos.USDC,
+        ADDRESSES.telos.syUSDC,
       ],
       holders: [
         '0x17A0E3234f00b9D7028e2c78dB2caa777F11490F', // portal v1
@@ -128,6 +131,7 @@ module.exports = {
       tokens: [
         ADDRESSES.era.USDC,
         ADDRESSES.era.WETH,
+        ADDRESSES.era.WBTC,
       ],
       holders: [
         '0x39dE19C9fF25693A2311AAD1dc5C790194084A39', // portal v2
@@ -142,6 +146,7 @@ module.exports = {
         ADDRESSES.arbitrum.USDC_CIRCLE,
         ADDRESSES.arbitrum.WETH,
         XDAO,
+        '0x3b60FF35D3f7F62d636b067dD0dC0dFdAd670E4E', // LADYS
       ],
       holders: [
         '0x01A3c8E513B758EBB011F7AFaf6C37616c9C24d9', // portal v2
@@ -172,6 +177,7 @@ module.exports = {
       name: 'polygon_zkevm',
       tokens: [
         ADDRESSES.polygon_zkevm.USDC,
+        ADDRESSES.polygon_zkevm.USDC_CIRCLE,
         ADDRESSES.polygon_zkevm.WETH,
       ],
       holders: [
@@ -216,7 +222,7 @@ module.exports = {
          ADDRESSES.tron.USDT,
        ],
        holders: [
-         'TSzujXog95iHUoYBHCJtXK1XFKYjJwN7Vr', // portal v2
+         'TVgY3ayqTGUoe7th84ZNL5peVfRNdLFDjf', // portal v2
        ]
      },
      {
@@ -262,9 +268,55 @@ module.exports = {
        name: 'rsk',
        tokens: [
          ADDRESSES.rsk.rUSDT,
+         ADDRESSES.rsk.WRBTC1,
        ],
        holders: [
          '0x5aa5f7f84ed0e5db0a4a85c3947ea16b53352fd4', // portal v2
+       ]
+     },
+     {
+       name: 'blast',
+       tokens: [
+         ADDRESSES.blast.WETH,
+       ],
+       holders: [
+         '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4', // portal v2
+       ]
+     },
+     {
+       name: 'merlin',
+       tokens: [
+         ADDRESSES.merlin.WBTC,
+       ],
+       holders: [
+         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
+       ]
+     },
+     {
+       name: 'ftn',
+       tokens: [
+         ADDRESSES.ftn.USDC,
+       ],
+       holders: [
+         '0x318C2B9a03C37702742C3d40C72e4056e430135A', // portal v2
+       ]
+     },
+     {
+       name: 'zklink',
+       tokens: [
+         ADDRESSES.zklink.WETH,
+       ],
+       holders: [
+         '0x8Dc71561414CDcA6DcA7C1dED1ABd04AF474D189', // portal v2
+       ]
+     },
+     {
+       name: 'core',
+       tokens: [
+         ADDRESSES.core.coreBTC,
+       ],
+       holders: [
+         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
        ]
      },
   ]

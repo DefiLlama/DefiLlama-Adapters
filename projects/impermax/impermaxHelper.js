@@ -4,7 +4,7 @@ const sdk = require('@defillama/sdk')
 const { nullAddress } = require('../helper/tokenMapping')
 
 function impermaxHelper(exportsObj, config, blacklistedPools) {
-  async function tvl(_, _b, _cb, { api, }) {
+  async function tvl(api) {
     const { factories } = config[api.chain]
     const blacklist = blacklistedPools[api.chain]
     const pools = []
@@ -47,7 +47,7 @@ function impermaxHelper(exportsObj, config, blacklistedPools) {
     })
   }
 
-  async function borrowed(_, _b, _cb, { api, }) {
+  async function borrowed(api) {
     const { factories } = config[api.chain]
     const blacklist = blacklistedPools[api.chain]
     const balances = {}

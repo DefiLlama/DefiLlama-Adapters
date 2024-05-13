@@ -17,7 +17,7 @@ module.exports = {
     tvl: (async) => ({}),
   },
   arbitrum: {
-    pool2: pool2(stakingPool2Contract, DOE_WETH_SLP, "arbitrum"),
+    pool2: pool2(stakingPool2Contract, DOE_WETH_SLP),
   },
   methodology: "Counts liquidty on the staking and pool2 only",
 };
