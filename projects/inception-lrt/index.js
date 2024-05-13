@@ -14,19 +14,7 @@ async function tvl_eth(api) {
   api.add(tokens, total_deposited)
 }
 
-async function tvl_linea(api) {
-  const staked = await api.call({  abi: 'uint256:totalAssets', target: '0x5A7a183B6B44Dc4EC2E3d2eF43F98C5152b1d76d'})
-  api.add(ADDRESSES.null, staked)
-}
-
-async function tvl_mode(api) {
-  const staked = await api.call({  abi: 'uint256:totalAssets', target: '0x5a7a183b6b44dc4ec2e3d2ef43f98c5152b1d76d'})
-  api.add(ADDRESSES.null, staked)
-}
-
 module.exports = {
   doublecounted: true,
   ethereum: { tvl: tvl_eth, } ,
-  linea: { tvl: tvl_linea, } ,
-  mode: { tvl: tvl_mode, } ,
 }
