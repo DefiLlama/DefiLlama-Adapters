@@ -14,6 +14,7 @@ const DEFAULTS = {
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
   BSQUARED_RPC: "https://rpc.bsquared.network,https://b2-mainnet.alt.technology", // add manually, short name is b2-mainnet
   BTR_RPC_MULTICALL: '0xc8818aaeaBF0dF9f3f3ffF54Ab185705177A6234',
+  BOUNCEBIT_RPC: "https://fullnode-mainnet.bouncebitapi.com"
 }
 
 const ENV_KEYS = [
