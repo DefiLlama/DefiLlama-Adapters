@@ -10,6 +10,7 @@ const COMPOUNDING_KEEPER_ADDRESS = "0x5648C24Ea7cFE703836924bF2080ceFa44A12cA8";
 const { sumTokensExport } = require('../helper/unwrapLPs')
 
 module.exports = {
+  deadFrom: '10-04-2024', 
   methodology: "Total balances of the Uniswap V3 Pool plus protocol/user controlled balances (in WETH+ETH and CTLS)",
   ethereum: {
     tvl: sumTokensExport({ owners: [YIELD_VAULT_ADDRESS,], tokens: [ADDRESSES.ethereum.WETH, ADDRESSES.null, ], }),
