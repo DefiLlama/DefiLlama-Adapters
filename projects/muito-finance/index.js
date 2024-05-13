@@ -21,6 +21,8 @@ async function getTvl(api, farmAddress) {
 async function tvl(api) {
   const MUTO_V3_FARM = "0xD7372abc6693702fF09536ec3824780eB264b2eF";
   const MUTO_V3_FARM2 = "0xCd356c40A86c59955e20FcCF7Bb3b9Be15AF238D";
+  const MUTO_V3_FARM3 = "0x1d75a3228576E3Cfe6Fc3d0aAE51eAbEE4E8D12e";
+  const MUTO_V3_FARM4 = "0xE2711FAcAbA363e3E574a3860813D92F8f502311";
   await sumTokens2({
     api,
     uniV3nftsAndOwners: [
@@ -31,6 +33,18 @@ async function tvl(api) {
     api,
     uniV3nftsAndOwners: [
       ["0x218bf598D1453383e2F4AA7b14fFB9BfB102D637", MUTO_V3_FARM2],
+    ],
+  });
+  await sumTokens2({
+    api,
+    uniV3nftsAndOwners: [
+      ["0x218bf598D1453383e2F4AA7b14fFB9BfB102D637", MUTO_V3_FARM3],
+    ],
+  });
+  await sumTokens2({
+    api,
+    uniV3nftsAndOwners: [
+      ["0x218bf598D1453383e2F4AA7b14fFB9BfB102D637", MUTO_V3_FARM4],
     ],
   });
   await getTvl(api, MUTO_FARM);
