@@ -52,7 +52,7 @@ module.exports = {
       '0x3A58a54C066FdC0f2D55FC9C89F0415C92eBf3C4', // stMATIC
     ] }),
   },
-  zkEVM: {
+  polygon_zkevm: {
     tvl: sumTokensExport({ owner: ['0x9a1275304960dbc6a8d4a5795832823a7d53f30a'], tokens: [
       '0x12D8CE035c5DE3Ce39B1fDD4C1d5a745EAbA3b8C', // ankrETH
       '0xb23C20EFcE6e24Acca0Cef9B7B7aA196b84EC942', //rETH
