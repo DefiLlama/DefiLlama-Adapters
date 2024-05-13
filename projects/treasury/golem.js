@@ -30,4 +30,4 @@ module.exports = mergeExports([module.exports, {
   
 }])
 
-module.exports.methodology = ["The Golem Foundation has staked 100,000 ETH on top of what they hold on the treasury address. https://golem.foundation/2023/12/05/diva-announcement.html . Wallet that accrues the staking rewards https://etherscan.io/address/0xba1951dF0C0A52af23857c5ab48B4C43A57E7ed1"]
+//module.exports.methodology = ["The Golem Foundation has staked 100,000 ETH on top of what they hold on the treasury address. https://golem.foundation/2023/12/05/diva-announcement.html . Wallet that accrues the staking rewards https://etherscan.io/address/0xba1951dF0C0A52af23857c5ab48B4C43A57E7ed1"]
