@@ -76,7 +76,7 @@ async function ethTvl(timestamp, ethBlock, chainBlocks) {
 module.exports = {
   avax: {
     tvl: avaxTvl,
-    staking: stakings([TimeStaking, RevenueSharingFarm], [TIME, wMEMO], "avax"),
+    staking: stakings([TimeStaking, RevenueSharingFarm], [TIME, wMEMO]),
   },
   ethereum: {
     tvl: ethTvl,

@@ -2,9 +2,12 @@ const {
   getNumMarkets,
   getMarketTokenAddress,
   getMarketTotalPar,
+  getMarketCurrentIndex,
 } = require("./dolomite-margin.json");
+const BigNumber = require("bignumber.js");
 
 const dolomiteMargin = "0x6bd780e7fdf01d77e4d475c821f1e7ae05409072";
+const basePar = '1000000000000000000'
 
 async function getTokensAndBalances(api, supplyOrBorrow) {
   const tokens = await api.fetchList({ lengthAbi: getNumMarkets, itemAbi: getMarketTokenAddress, target: dolomiteMargin })
@@ -12,21 +15,21 @@ async function getTokensAndBalances(api, supplyOrBorrow) {
   let bals
   if (supplyOrBorrow === 'supply') {
     bals = await api.multiCall({ abi: 'erc20:balanceOf', calls: tokens.map(i => ({ target: i, params: dolomiteMargin })), })
-
   } else {
     const res = await api.fetchList({ lengthAbi: getNumMarkets, itemAbi: getMarketTotalPar, target: dolomiteMargin })
-    bals = res.map(i => i.borrow)
+    const indices = await api.fetchList({ lengthAbi: getNumMarkets, itemAbi: getMarketCurrentIndex, target: dolomiteMargin })
+    bals = res.map((v, i) => BigNumber(v.borrow.toString()).times(indices[i].borrow).div(basePar).toFixed(0))
   }
   tokens.forEach((v, i) => {
     api.add(underlyingTokens[i] ?? v, bals[i])
   })
 }
 
-async function tvl(timestamp, ethereumBlock, blocksToKeys, { api }) {
+async function tvl(api) {
   return getTokensAndBalances(api, "supply");
 }
 
-async function borrowed(timestamp, ethereumBlock, blocksToKeys, { api }) {
+async function borrowed(api) {
   return getTokensAndBalances(api, "borrow");
 }
 
