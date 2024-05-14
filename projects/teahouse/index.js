@@ -8,7 +8,7 @@ const teahouseVaultAPI = "https://vault-content-api.teahouse.finance/vaults";
 // get vault contract addresses from teahouse api
 async function getVaultContractsAddress(chain) {
   let htAddress = [];
-  const { vaults } = await getConfig("teahouse/v1", teahouseVaultAPI);
+  const { vaults } = await getConfig("teahouse/v1_reset_cache", teahouseVaultAPI);
   vaults.forEach((element) => {
     // v2 vaults
     if (element.isDeFi == false && element.isActive == true) {
