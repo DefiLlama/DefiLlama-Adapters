@@ -35,6 +35,13 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  defichain_evm: {
+    '0x49febbf9626b2d39aba11c01d83ef59b3d56d2a4': { coingeckoId: "defichain", decimals: 18 },
+    '0xff0000000000000000000000000000000000000d': { coingeckoId: "usd-coin", decimals: 18 },
+    '0xff00000000000000000000000000000000000003': { coingeckoId: "tether", decimals: 18 },
+    '0xff00000000000000000000000000000000000001': { coingeckoId: "ethereum", decimals: 18 },
+    '0xff0000000000000000000000000000000000000f': { coingeckoId: "decentralized-usd", decimals: 18 },
+  },
   ace: {
     [nullAddress]: { coingeckoId: "endurance", decimals: 18 },
     '0x85119527cf38f6ccf7b1b8f8fad05145358aaa81': { coingeckoId: "endurance", decimals: 18 },
