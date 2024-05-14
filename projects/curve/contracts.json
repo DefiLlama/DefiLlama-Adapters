@@ -111,9 +111,11 @@
     }
   },
   "celo": {
+    "addressProvider": "0x5ffe7FB82894076ECB99A30D6A32e969e6e35E98",
     "registriesMapping": {
       "stableFactory": "0x5277a0226d10392295e8d383e9724d6e416d6e6c"
-    }
+    },
+    "CurveStableswapFactoryNG": "0x1764ee18e8B3ccA4787249Ceb249356192594585"
   },
   "base": {
     "wrapped": "0x4200000000000000000000000000000000000006",
