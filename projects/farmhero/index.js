@@ -202,18 +202,18 @@ module.exports = {
   misrepresentedTokens: true,
   bsc: {
     tvl: bscTvl,
-    staking: stakings(stakingContractBsc, HERO, "bsc"),
-    pool2: pool2s(pool2StratsBsc, excludePool2Bsc, "bsc"),
+    staking: stakings(stakingContractBsc, HERO),
+    pool2: pool2s(pool2StratsBsc, excludePool2Bsc),
   },
   polygon: {
     tvl: polygonTvl,
-    staking: stakings(stakingContractPolygon, HONOR, "polygon"),
-    pool2: pool2s(pool2StratsPolygon, excludePool2Polygon, "polygon"),
+    staking: stakings(stakingContractPolygon, HONOR),
+    pool2: pool2s(pool2StratsPolygon, excludePool2Polygon),
   },
   okexchain: {
     tvl: okexTvl,
-    staking: stakings(stakingContractOkex, GLORY, "okexchain"),
-    pool2: pool2s(pool2StratsOkex, excludePool2Okex, "okexchain"),
+    staking: stakings(stakingContractOkex, GLORY),
+    pool2: pool2s(pool2StratsOkex, excludePool2Okex),
   },
   methodology:
     "We count liquidity on the Farms through MasterChef contracts",

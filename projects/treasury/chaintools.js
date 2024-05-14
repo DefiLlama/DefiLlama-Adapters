@@ -4,6 +4,7 @@ const CTLS_ADDRESS = "0xE155F64B9aD8c81318c313196a60c72e72fD2cD1";
 const { sumTokensExport } = require('../helper/unwrapLPs')
 
 module.exports = {
+  deadFrom: '10-04-2024', 
   ethereum: {
     tvl: sumTokensExport({ owners: [MULTISIG_ADDRESS,], tokens: [ADDRESSES.ethereum.WETH, ADDRESSES.null,  ADDRESSES.ethereum.USDC,], }),
     ownTokens: sumTokensExport({ owners: [MULTISIG_ADDRESS,], tokens: [CTLS_ADDRESS, ], }),
