@@ -2,7 +2,7 @@ const { getChainTvl } = require('../helper/getUniSubgraphTvl');
 const { getUniTVL } = require('../helper/unknownTokens');
 
 const v2graph = getChainTvl({
-  bahamut: "https://bahamut-rpc.publicnode.com"
+  ftn: "https://bahamut-rpc.publicnode.com"
 })
 
 //I could not find bahamut chain in this repo even tho it is listed on website 
@@ -11,13 +11,13 @@ const v2graph = getChainTvl({
 module.exports = {
   misrepresentedTokens: true,
   methodology: `its a dex which operates on bahamut chain `,
-  bahamut: {
+  ftn: {
     tvl: v2graph('bahamut'),
   },
 }
 
 const config = {
-"bahamut" : "0xF660558a4757Fb5953d269FF32E228Ae3d5f6c68" //address of smart contract on bahamut chain
+ftn : "0xF660558a4757Fb5953d269FF32E228Ae3d5f6c68" //address of smart contract on bahamut chain
 }
 
 Object.keys(config).forEach(chain => {
