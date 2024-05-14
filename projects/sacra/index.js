@@ -3,7 +3,6 @@ const USDC_WFTM_POOL = '0x3336CbE855625480cf351135F4e27e50aB4af74E';
 
 const config = {
   fantom: {
-    controller: '0xe5365c31c08d6ee44fdd33394ba279b85557c449',
     treasury: '0x146dd6e8f9076dfee7be0b115bb165d62874d110',
     token: '0xe4436821E403e78a6Dd62f7a9F5611f97a18f44C',
     fromBlock: 80036087
@@ -15,14 +14,6 @@ Object.keys(config).forEach(chain => {
 
   module.exports[chain] = {
     tvl: async (api) => {
-      // Fetch controller balance
-      const controllerBalance = (await api.call({
-        abi: 'erc20:balanceOf',
-        target: token,
-        params: [controller],
-        fromBlock,
-      })) / 10 ** 18;
-
       // Fetch treasury balance
       const treasuryBalance = (await api.call({
         abi: 'erc20:balanceOf',
@@ -54,7 +45,7 @@ Object.keys(config).forEach(chain => {
 
       // Return total value locked
       return {
-        'usd-coin': (controllerBalance + treasuryBalance) * price
+        'usd-coin': treasuryBalance * price
       }
 
     }
