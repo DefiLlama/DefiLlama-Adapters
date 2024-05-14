@@ -28,6 +28,13 @@ const wethCollateralManagers = [
 ].map((a) => [ADDRESSES.blast.WETH, a]);
 
 async function tvl(api) {
+
+  const thrusterV2LPs = [['0x4E4B4A3111d128628c427E78a2abAd1635fE6542', '0x4Ca392f74A4C86F5E521f1d8E915b36ed425B331']];
+  const stakedLPCalls = thrusterV2LPs.map(lp => ({ params: [lp[1], lp[0]] }));
+  const v2Bals = await api.multiCall({ abi: 'function staked(address, address) view returns (uint256)', calls: stakedLPCalls, target: '0xc3ecadb7a5fab07c72af6bcfbd588b7818c4a40e' });
+  const v2Tokens = thrusterV2LPs.map(lp => lp[0]);
+  api.add(v2Tokens, v2Bals);
+
   const tokens = await api.multiCall({
     abi: {
       inputs: [],
