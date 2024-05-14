@@ -1,28 +1,3 @@
-const { getChainTvl } = require('../helper/getUniSubgraphTvl');
-const { getUniTVL } = require('../helper/unknownTokens');
+const { uniTvlExport } = require('../helper/unknownTokens');
 
-const v2graph = getChainTvl({
-  ftn: "https://bahamut-rpc.publicnode.com"
-})
-
-//I could not find bahamut chain in this repo even tho it is listed on website 
-// https://defillama.com/chain/Bahamut
-//and swap address on bahamut https://www.ftnscan.com/address/0xF660558a4757Fb5953d269FF32E228Ae3d5f6c68/
-module.exports = {
-  misrepresentedTokens: true,
-  methodology: `its a dex which operates on bahamut chain `,
-  ftn: {
-    tvl: v2graph('bahamut'),
-  },
-}
-
-const config = {
-ftn : "0xF660558a4757Fb5953d269FF32E228Ae3d5f6c68" //address of smart contract on bahamut chain
-}
-
-Object.keys(config).forEach(chain => {
-  const factory = config[chain]
-  module.exports[chain] = {
-    tvl: getUniTVL({ factory, useDefaultCoreAssets: true, })
-  }
-})
+module.exports = uniTvlExport('ftn', '0xd0c5d23290d63e06a0c4b87f14bd2f7aa551a895')
