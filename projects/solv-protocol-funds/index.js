@@ -27,6 +27,7 @@ async function tvl(api) {
   await iziswap(api, address);
   await lendle(api, address);
   await vaultBalance(api);
+  await otherDeposit(api, address);
 
   return api.getBalances();
 }
@@ -34,16 +35,21 @@ async function tvl(api) {
 async function borrowed(api) {
   const network = api.chain;
 
-  let address = (await getConfig('solv-protocol/funds', addressUrl));
-  const depositAddress = filterDepositAddress(network, address);
-  
   const graphData = await getGraphData(api.timestamp, network, api);
   if (graphData.pools.length > 0) {
     const poolLists = graphData.pools;
 
+    let address = (await getConfig('solv-protocol/funds', addressUrl));
+    const depositAddress = filterDepositAddress(network, address);
+
+    let fofFundPoolId = [];
+    if (address[network] && address[network]["fofFund"]) {
+      fofFundPoolId = address[network]["fofFund"];
+    }
+
     let pools = [];
     for (const pool of poolLists) {
-      if (depositAddress.length == 0 && depositAddress.indexOf(pool.vault) == -1) {
+      if (depositAddress.length == 0 && depositAddress.indexOf(pool.vault) == -1 && fofFundPoolId.indexOf(pool.poolId) == -1) {
         pools.push(pool);
       }
     }
@@ -100,16 +106,32 @@ async function borrowed(api) {
     for (let i = 0; i < poolTotalValues.length; i++) {
       const decimals = poolDecimalList[i];
       let balance = BigNumber(poolTotalValues[i]).div(BigNumber(10).pow(18 - decimals)).times(BigNumber(nav[i].nav_).div(BigNumber(10).pow(decimals))).toNumber();
-
       if (pools[i]['vault'] && poolBaseInfos[i][1] && vaultbalances[`${pools[i]['vault'].toLowerCase()}-${poolBaseInfos[i][1].toLowerCase()}`]) {
         balance = BigNumber(balance).minus(vaultbalances[`${pools[i]['vault'].toLowerCase()}-${poolBaseInfos[i][1].toLowerCase()}`]).toNumber();
         vaultbalances[`${pools[i]['vault'].toLowerCase()}-${poolBaseInfos[i][1].toLowerCase()}`] = undefined
       }
-      
-      api.add(poolBaseInfos[i][1], balance)
+      if (balance > 0) {
+        api.add(poolBaseInfos[i][1], balance)
+      }
     }
   }
   return api.getBalances()
+}
+
+async function otherDeposit(api, address) {
+  if (!address[api.chain] || !address[api.chain]["otherDeposit"]) {
+    return;
+  }
+  let otherDeposit = address[api.chain]["otherDeposit"];
+
+  let tokens = []
+  for (const deposit of otherDeposit["depositAddress"]) {
+    for (const tokenAddress of otherDeposit["tokens"]) {
+      tokens.push({ tokenAddress, deposit })
+    }
+  }
+
+  await sumTokens2({ api, tokensAndOwners: tokens.map(i => [i.tokenAddress, i.deposit]), permitFailure: true });
 }
 
 async function gm(api, address) {

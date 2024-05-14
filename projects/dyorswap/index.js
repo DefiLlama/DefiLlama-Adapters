@@ -6,6 +6,8 @@ const config = {
   merlin: '0xA1da7a7eB5A858da410dE8FBC5092c2079B58413',
   zeta: '0xA1da7a7eB5A858da410dE8FBC5092c2079B58413',
   degen: '0x2CcaDb1e437AA9cDc741574bDa154686B1F04C09',
+  xlayer: '0x2ccadb1e437aa9cdc741574bda154686b1f04c09',
+  bob: '0x2CcaDb1e437AA9cDc741574bDa154686B1F04C09',
 }
 
 module.exports = {
@@ -14,6 +16,6 @@ module.exports = {
 
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {
-    tvl: getUniTVL({ factory: config[chain], useDefaultCoreAssets: true}),
+    tvl: getUniTVL({ factory: config[chain], useDefaultCoreAssets: true }),
   }
 })

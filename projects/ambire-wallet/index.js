@@ -11,8 +11,8 @@ module.exports = {
   ethereum:{
     tvl: () => ({}),
     staking: sdk.util.sumChainTvls([
-      staking(WALLET_staking, WALLET, 'ethereum'), 
-      staking(ADX_staking, ADX, 'ethereum')
+      staking(WALLET_staking, WALLET), 
+      staking(ADX_staking, ADX)
     ]), 
   }
 }

@@ -1,5 +1,4 @@
 const { request, gql } = require('graphql-request');
-const { getBlock } = require('../helper/http');
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const graphs = {
@@ -8,9 +7,8 @@ const graphs = {
 }
 
 function tvlPaged(chain) {
-  return async (_, _b, { [chain]: block }) => {
-    block = await getBlock(_, chain, { [chain]: block })
-    const balances = {}
+  return async (api) => {
+    const block = await api.getBlock()
     const size = 1000
     let lastId = ''
     let brokerbots
@@ -23,17 +21,14 @@ function tvlPaged(chain) {
       }
     }
   `
-  
 
     do {
       const res = await request(graphs[chain], graphQueryPaged, { lastId, block: block - 5000 });
       brokerbots = res.brokerbots
       const tokensAndOwners = brokerbots.map(i => ([[i.token.id, i.id], [i.base.id, i.id]])).flat()
-      await sumTokens2({ balances, tokensAndOwners, chain, block })
+      await sumTokens2({ tokensAndOwners, api })
       lastId = brokerbots[brokerbots.length - 1]?.id
     } while (brokerbots.length === size)
-
-    return balances
   }
 }
 

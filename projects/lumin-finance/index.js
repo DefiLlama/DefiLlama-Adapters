@@ -1,7 +1,6 @@
 const { nullAddress } = require("../helper/tokenMapping");
-const { staking } = require('../helper/staking')
 
-const LUMIN_V1_CONTRACT_ASSET_MANAGER = "0x61c6b185fafd2727ddeac6247e6770f5eadd823a"
+const LUMIN_V1_CONTRACT_ASSET_MANAGER = "0x7f9a5443c1938fCc7b5A0FffA94385CC867A9495"
 const LUMIN_V2_CONTRACT = "0x1F00009c0310A4804925695F44355dE5110EC074"
 
 const abi = {
@@ -29,12 +28,22 @@ async function borrowed(api) {
   const deposit = await api.multiCall({ abi: abi.v1.depositOf, target: LUMIN_V1_CONTRACT_ASSET_MANAGER, calls: assetIds.map(i => ({ params: [i, nullAddress] })) });
   tokens.forEach((token, i) => api.add(token, deposit[i][1]))
 }
+async function staking(api) {
+  const stakingBalance = await api.call({
+    abi: abi.v2.stakeStats,
+    target: LUMIN_V2_CONTRACT,
+    params: [],
+  });
+
+  api.add('0x1FC01117E196800f416A577350CB1938d10501C2', stakingBalance[0][0])
+  api.add('0x1FC01117E196800f416A577350CB1938d10501C2', stakingBalance[1][0])
+}
 
 module.exports = {
   methodology: 'Gets v1 total deposits, and v2 staking statistics on-chain.',
   start: 194344665,
   arbitrum: {
-    staking: staking('0x1F5FAB72ED3Be2F1cf8F4E20BC9096C94a04D5c5', '0x1FC01117E196800f416A577350CB1938d10501C2'),
+    staking,
     tvl, borrowed,
   }
 }
