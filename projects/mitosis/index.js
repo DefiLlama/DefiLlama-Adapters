@@ -1,5 +1,3 @@
-const abi = require("./abi.json");
-
 const chains = ["ethereum", "arbitrum", "optimism", "mode", "manta"];
 
 const WEETH_ADDRESS = {
@@ -12,23 +10,14 @@ const WEETH_ADDRESS = {
 
 const CAP_ADDRESS = {
   ethereum: "0x451d791b6e9a9b8c9237bb55e58a7757342b16f9",
-  arbitrum: "0xb883ee478d3b7fea8a5357a3c3e27e2d2292b1d2",
-  optimism: "0xb883ee478d3b7fea8a5357a3c3e27e2d2292b1d2",
-  mode: "0xb883ee478d3b7fea8a5357a3c3e27e2d2292b1d2",
-  manta: "0xb883ee478d3b7fea8a5357a3c3e27e2d2292b1d2",
 };
 
 chains.forEach((chain) => {
   module.exports[chain] = {
     tvl: async (api) => {
-      const cap = CAP_ADDRESS[chain];
-
-      var tvl = await api.call({
-        abi: abi.load,
-        target: cap,
-      });
-
-      api.add(WEETH_ADDRESS[chain], tvl);
+      const cap = CAP_ADDRESS[chain] ?? '0xb883ee478d3b7fea8a5357a3c3e27e2d2292b1d2'
+      const tvl = await api.call({ abi: 'uint256:load', target: cap, })
+      api.add(WEETH_ADDRESS[chain], tvl)
     },
   };
 });

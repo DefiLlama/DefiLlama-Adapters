@@ -1,3 +1,0 @@
-{
-  "load": "function load() external view returns (uint256)"
-}
