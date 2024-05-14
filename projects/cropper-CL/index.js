@@ -1,6 +1,5 @@
-const { getProvider, sumTokens2, exportDexTVL, } = require('../helper/solana')
+const { getProvider, sumTokens2, } = require('../helper/solana')
 const { Program, } = require("@project-serum/anchor");
-const sdk = require('@defillama/sdk')
 
 async function tvl() {
   const provider = getProvider()
@@ -15,7 +14,7 @@ async function tvl() {
 module.exports = {
   timetravel: false,
   solana: {
-    tvl: sdk.util.sumChainTvls([tvl])
+    tvl
   }
 };
 
@@ -25,30 +24,6 @@ const whirpoolIDL = {
   name: 'whirlpool',
   instructions: [],
   accounts: [
-    {
-      name: 'whirlpoolsConfig',
-      type: {
-        kind: 'struct',
-        fields: [
-          {
-            name: 'feeAuthority',
-            type: 'publicKey'
-          },
-          {
-            name: 'collectProtocolFeesAuthority',
-            type: 'publicKey'
-          },
-          {
-            name: 'rewardEmissionsSuperAuthority',
-            type: 'publicKey'
-          },
-          {
-            name: 'defaultProtocolFeeRate',
-            type: 'u16'
-          }
-        ]
-      }
-    },
     {
       name: 'whirlpool',
       type: {
