@@ -12,7 +12,8 @@ module.exports = {
   methodology:
     `TVL data is pulled from the Thala's API "https://app.thala.fi/api/vethl-tvl".`,
   aptos: {
-    tvl: async ({ timestamp }) => {
+    tvl: () => ({}),
+    staking: async ({ timestamp }) => {
       const response = await utils.fetchURL(`${THALA_API}/vethl-tvl?timestamp=${ timestamp }`);
       const thlAmount = response.data.data * 10**thlDecimals;
 
