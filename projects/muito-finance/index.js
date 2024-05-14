@@ -28,29 +28,9 @@ async function tvl(api) {
     api,
     uniV3nftsAndOwners: [
       ["0x5752F085206AB87d8a5EF6166779658ADD455774", MUTO_V3_FARM],
-    ],
-  });
-  await sumTokens2({
-    api,
-    uniV3nftsAndOwners: [
       ["0x218bf598D1453383e2F4AA7b14fFB9BfB102D637", MUTO_V3_FARM2],
-    ],
-  });
-  await sumTokens2({
-    api,
-    uniV3nftsAndOwners: [
       ["0x218bf598D1453383e2F4AA7b14fFB9BfB102D637", MUTO_V3_FARM3],
-    ],
-  });
-  await sumTokens2({
-    api,
-    uniV3nftsAndOwners: [
       ["0x218bf598D1453383e2F4AA7b14fFB9BfB102D637", MUTO_V3_FARM4],
-    ],
-  });
-  await sumTokens2({
-    api,
-    uniV3nftsAndOwners: [
       ["0x5752F085206AB87d8a5EF6166779658ADD455774", MUTO_V3_FARM5],
     ],
   });
