@@ -3,7 +3,9 @@ const { getLogs } = require('../helper/cache/getLogs')
 
 const graphs = {
   ethereum:
-    "https://graph-node.mainnet.termfinance.io/subgraphs/name/term-finance-mainnet",
+    "https://public-graph-proxy.mainnet.termfinance.io",
+  avalanche:
+    "https://public-graph-proxy.avalanche.mainnet.termfinance.io",
 };
 
 const query = `
