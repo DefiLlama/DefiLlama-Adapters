@@ -1,6 +1,6 @@
 //  npm i -f
 //  node test.js projects/clearpool/index.js
-
+// fix tvl
 const abi = require("./abi.json");
 
 const { stakings } = require("../helper/staking");
@@ -127,7 +127,6 @@ Object.keys(config).forEach((protocol) => {
       const bals = await api.multiCall({ abi: borrowFn, calls: pools });
       api.addTokens(tokens, bals);
     };
-
     module.exports[chain] = { tvl, borrowed };
   });
 });
