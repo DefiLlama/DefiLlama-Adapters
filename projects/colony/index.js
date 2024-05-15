@@ -2,6 +2,7 @@ const sdk = require("@defillama/sdk")
 
 // const { clyVesting } = require("./clyVesting")
 const { stakingRewards } = require("./stakingRewards")
+const { earlyStageInvestments } = require("./earlyStageInvestments")
 const { staking } = require('../helper/staking')
 const { getUniTVL } = require('../helper/unknownTokens')
 
@@ -13,6 +14,8 @@ const stakingV3Contract = "0x62685d3EAacE96D6145D35f3B7540d35f482DE5b";
 
 const vestingContract = "0xEFAc81f709d314604a7DaEe9ca234dA978c2Be20";
 
+const earlyStageManager = "0x62B38293896e040e36fE5345F9D30DbFd75C04B9";
+const projectNestFactory = "0x9E1Ac58559307A7ce70104810B7d6E43E74bFA1e";
 const colonyDexFactory = "0x814EBF333BDaF1D2d364c22a1e2400a812f1F850";
 
 async function _staking(api) {
@@ -23,6 +26,7 @@ async function _staking(api) {
 
 function _tvl() {
   const stakingRewardsTVL = stakingRewards(colonyGovernanceToken, stakingV3Contract)
+  const earlyStageInvestmentsTVL = earlyStageInvestments(earlyStageManager, projectNestFactory)
 
   const colonyDexTVL = getUniTVL({
     factory: colonyDexFactory,
@@ -30,7 +34,11 @@ function _tvl() {
     useDefaultCoreAssets: true
   })
 
-  return sdk.util.sumChainTvls([colonyDexTVL])
+  return sdk.util.sumChainTvls([
+    stakingRewardsTVL,
+    earlyStageInvestmentsTVL,
+    colonyDexTVL
+  ])
 }
 
 module.exports = {
@@ -48,6 +56,5 @@ module.exports = {
   hallmarks: [
       [1651241728, "Staking V2 Launch"],
       [1711370069, "Staking V3 Launch"],
-      [9999999999, "EarlyStage Launch"] // TODO
   ],
 };
