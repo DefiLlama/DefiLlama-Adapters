@@ -1,28 +1,9 @@
-const sdk = require("@defillama/sdk");
 
-const { compoundExportsWithAsyncTransform } = require("../helper/compound");
+const { compoundExports2 } = require("../helper/compound");
+const { mergeExports } = require("../helper/utils");
 
-const pools = {
-  mode: {
-    pools: [
-      "0xfb3323e24743caf4add0fdccfb268565c0685556",
-      "0x8fb3d4a94d0aa5d6edaac3ed82b59a27f56d923a",
-    ],
-  },
-};
-
-function getTvl(chain) {
-  const config = pools[chain] ?? { pools: [] };
-  const tvls = config.pools.map((pool) =>
-    compoundExportsWithAsyncTransform(pool, chain, undefined, undefined, {
-      resolveLPs: true,
-    })
-  );
-  let _tvl = sdk.util.sumChainTvls(tvls.map((t) => t.tvl));
-  let _borrowed = sdk.util.sumChainTvls(tvls.map((t) => t.borrowed));
-  let tvl = _tvl;
-  let borrowed = _borrowed;
-  return { tvl, borrowed };
-}
-
-Object.keys(pools).forEach((chain) => (module.exports[chain] = getTvl(chain)));
+module.exports = mergeExports([{
+  mode: compoundExports2({ comptroller: '0xfb3323e24743caf4add0fdccfb268565c0685556' })
+}, {
+  mode: compoundExports2({ comptroller: '0x8fb3d4a94d0aa5d6edaac3ed82b59a27f56d923a' })
+}])
