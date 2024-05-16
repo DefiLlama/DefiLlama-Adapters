@@ -8,7 +8,7 @@ const staking_pools = [
   'component_rdx1crrxdzcq0cfpxvqk70e0usq8qusqz6g0ht6rylr4wgnxpflzjeaayy'
 ]
 
-const pools = [
+const lending_pools = [
   {
     pool: 'component_rdx1cq8mm5z49x6lyet44a0jd7zq52flrmykwwxszq65uzfn6pk3mvm0k4',
     resource: 'resource_rdx1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxradxrd',
@@ -26,18 +26,15 @@ const pools = [
   }
 ]
 
-async function fetchData(addresses) {
-  return await queryAddresses({ addresses });
-}
 
 async function tvl(_, _b, _cb, { api, }) {
-  return sumTokens({ owners: pools.map((pool_data) => pool_data.pool), api });
+  return sumTokens({ owners: lending_pools.map((pool_data) => pool_data.pool), api });
 }
 
 async function borrowed(_, _b, _cb, { api, }) {
-  const poolData = await fetchData(pools.map((item) => item.pool));
+  const poolData = await queryAddresses({ addresses: lending_pools.map((item) => item.pool) });
 
-  pools.forEach((pool) => {
+  lending_pools.forEach((pool) => {
     const { details } = poolData.find((item) => item.address === pool.pool);
     api.add(pool.resource, +details.state.fields[1].value)
   });
