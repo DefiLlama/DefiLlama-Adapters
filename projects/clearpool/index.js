@@ -1,5 +1,3 @@
-//  npm i -f
-//  node test.js projects/clearpool/index.js
 const abi = require("./abi.json");
 
 const { stakings } = require("../helper/staking");
