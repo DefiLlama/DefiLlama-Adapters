@@ -31,7 +31,7 @@ async function tvl(api) {
 
 async function staking(api) {
     const tokensAndOwners = [
-        [USC, USC_STAKING],
+        // [USC, USC_STAKING],
         [CHI, CHI_STAKING],
         [CHI, CHI_LOCKING]
     ];
