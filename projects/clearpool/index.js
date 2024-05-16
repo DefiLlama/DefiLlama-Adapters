@@ -1,6 +1,5 @@
 //  npm i -f
 //  node test.js projects/clearpool/index.js
-
 const abi = require("./abi.json");
 
 const { stakings } = require("../helper/staking");
@@ -22,48 +21,60 @@ const CHAIN = {
   POLYGON_ZKEVM: "polygon_zkevm",
   FLARE: "flare",
   BASE: "base",
-  MANTLE: 'mantle'
+  MANTLE: "mantle",
 };
 
 const config = {
-  dynamic: {
-    [CHAIN.ETHEREUM]: {
+  [CHAIN.ETHEREUM]: {
+    dynamic: {
       factory: "0xde204e5a060ba5d3b63c7a4099712959114c2d48",
       fromBlock: 14443222,
     },
-    [CHAIN.POLYGON_ZKEVM]: {
+  },
+  [CHAIN.POLYGON_ZKEVM]: {
+    dynamic: {
       factory: "0xCE3Fec90A05992dF1357651FEF6D143FeeC7Ca16",
       fromBlock: 302970,
     },
-    [CHAIN.POLYGON]: {
+  },
+  [CHAIN.POLYGON]: {
+    dynamic: {
       factory: "0x215CCa938dF02c9814BE2D39A285B941FbdA79bA",
       fromBlock: 31128013,
     },
-    [CHAIN.OPTIMISM]: {
+  },
+  [CHAIN.OPTIMISM]: {
+    dynamic: {
       factory: "0x99C10A7aBd93b2db6d1a2271e69F268a2c356b80",
       fromBlock: 107128813,
     },
-    [CHAIN.ARBITRUM]: {
+  },
+  [CHAIN.ARBITRUM]: {
+    dynamic: {
       factory: "0x99C10A7aBd93b2db6d1a2271e69F268a2c356b80",
       fromBlock: 113112037,
     },
-    [CHAIN.MANTLE]: {
-       factory: '0xB217D93a8f6A4b7861bB2C865a8C22105FbCdE41', 
-       fromBlock: 49691965 ,
-    }
   },
-  vaults: {
-    [CHAIN.BASE]: {
+  [CHAIN.MANTLE]: {
+    dynamic: {
+      factory: "0xB217D93a8f6A4b7861bB2C865a8C22105FbCdE41",
+      fromBlock: 49691965,
+    },
+  },
+  [CHAIN.BASE]: {
+    vaults: {
       factory: "0x199A016FFbe14781365bCaED9Cc52598B205DfAd",
       fromBlock: 12634153,
     },
-    [CHAIN.AVAX]: {
+  },
+  [CHAIN.AVAX]: {
+    vaults: {
       factory: "0x8E557363AC9E5cbf09A2616A302CA3c8f6ab2b7A",
       fromBlock: 42597808,
     },
   },
-  treasury: {
-    [CHAIN.FLARE]: {
+  [CHAIN.FLARE]: {
+    treasury: {
       factory: "0x8E557363AC9E5cbf09A2616A302CA3c8f6ab2b7A",
       fromBlock: 23711495,
     },
@@ -93,43 +104,89 @@ const getEventAndABI = (protocol) => {
   return { borrowFn, abi };
 };
 
-Object.keys(config).forEach((protocol) => {
-  const networks = Object.keys(config[protocol]);
-  networks.forEach((chain) => {
-    const { fromBlock, factory } = config[protocol][chain];
+const prepareProtocolsPerChain = (chain) => {
+  let contracts = [];
+  const protocols = Object.keys(config[chain]);
+  protocols.forEach((protocol) => {
+    const { fromBlock, factory } = config[chain][protocol];
     const { abi, borrowFn } = getEventAndABI(protocol);
-
-    const tvl = async (api) => {
-      const { pools, tokens } = await _getLogs(api);
-      return api.sumTokens({ tokensAndOwners2: [tokens, pools] });
-    };
-
-    async function _getLogs(api) {
-      const logs = await getLogs({
-        api,
-        target: factory,
-        fromBlock,
-        eventAbi: abi,
-        onlyArgs: true,
-      });
-
-      const pools = logs.map((log) =>
-        protocol == "treasury" ? log.treasuryYieldAddress : log.pool
-      );
-      const tokens = logs.map((log) =>
-        protocol == "dynamic" ? log.token : log.asset
-      );
-      return { pools, tokens };
-    }
-
-    const borrowed = async (api) => {
-      const { pools, tokens } = await _getLogs(api);
-      const bals = await api.multiCall({ abi: borrowFn, calls: pools });
-      api.addTokens(tokens, bals);
-    };
-
-    module.exports[chain] = { tvl, borrowed };
+    contracts.push({
+      fromBlock,
+      factory,
+      abi,
+      borrowFn,
+      protocol,
+    });
   });
+  return contracts;
+};
+
+Object.keys(config).forEach((chain) => {
+  const dataPerChain = prepareProtocolsPerChain(chain);
+  const _getLogs = async (api, factory, fromBlock, abi, protocol) => {
+    const logs = await getLogs({
+      api,
+      target: factory,
+      fromBlock,
+      eventAbi: abi,
+      onlyArgs: true,
+    });
+
+    const pools = logs.map((log) =>
+      protocol == "treasury" ? log.treasuryYieldAddress : log.pool
+    );
+    const tokens = logs.map((log) =>
+      protocol == "dynamic" ? log.token : log.asset
+    );
+    return { pools, tokens };
+  };
+
+  const tvl = async (api) => {
+    let allTokens = [];
+    let allPools = [];
+
+    const promiseArray = dataPerChain.map(
+      async ({ factory, fromBlock, abi, borrowFn, protocol }) => {
+        const { pools, tokens } = await _getLogs(
+          api,
+          factory,
+          fromBlock,
+          abi,
+          protocol
+        );
+        allTokens.push(...tokens);
+        allPools.push(...pools);
+      }
+    );
+
+    await Promise.all(promiseArray);
+
+    return api.sumTokens({ tokensAndOwners2: [allTokens, allPools] });
+  };
+
+  const borrowed = async (api) => {
+    const balances = [];
+    const allTokens = [];
+
+    const promiseArray = dataPerChain.map(
+      async ({ factory, fromBlock, abi, borrowFn, protocol }) => {
+        const { pools, tokens } = await _getLogs(
+          api,
+          factory,
+          fromBlock,
+          abi,
+          protocol
+        );
+        const bals = await api.multiCall({ abi: borrowFn, calls: pools });
+        balances.push(...bals);
+        allTokens.push(...tokens);
+      }
+    );
+    await Promise.all(promiseArray);
+
+    return api.addTokens(allTokens, balances);
+  };
+  module.exports[chain] = { tvl, borrowed };
 });
 
 module.exports.ethereum.staking = stakings(singleStakingContracts, CPOOL);
