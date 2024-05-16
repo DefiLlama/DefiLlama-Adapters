@@ -1,5 +1,12 @@
 
-const { queryAddresses } = require('../helper/chain/radixdlt');
+const { queryAddresses, sumTokens } = require('../helper/chain/radixdlt');
+const { getFixBalancesSync } = require('../helper/portedTokens')
+
+const staking_pools = [
+  'component_rdx1cqzle2pft0y09kwzaxy07maczpwmka9xknl88glwc4ka6a7xavsltd',
+  'component_rdx1cpdpfn8q0650yh6stmxdwme4tp7m6lphngpqjazakehttq8aqenvhm',
+  'component_rdx1crrxdzcq0cfpxvqk70e0usq8qusqz6g0ht6rylr4wgnxpflzjeaayy'
+]
 
 const pools = [
   {
@@ -24,49 +31,26 @@ async function fetchData(addresses) {
 }
 
 async function tvl(_, _b, _cb, { api, }) {
-  const [poolData, priceData] = await Promise.all([
-    fetchData(pools.map((item) => item.pool)),
-    fetchData(pools.map((item) => item.priceFeed)),
-  ]);
-
-  const prices = priceData.map((item) => item.details.state.fields[0].entries).flat();
-
-  let totalValueLocked = 0;
-
-  pools.forEach((pool) => {
-    const { fungible_resources } = poolData.find((item) => item.address === pool.pool);
-    const priceData = prices.find((price_item) => price_item.key.value === pool.resource);
-
-    const price = priceData ? +priceData.value.fields[1].value : 1;
-    totalValueLocked += ++fungible_resources.items[0].amount * price;
-  });
-
-  return { 'radix': totalValueLocked };
+  return sumTokens({ owners: pools.map((pool_data) => pool_data.pool), api });
 }
 
 async function borrowed(_, _b, _cb, { api, }) {
-  const [poolData, priceData] = await Promise.all([
-    fetchData(pools.map((item) => item.pool)),
-    fetchData(pools.map((item) => item.priceFeed)),
-  ]);
-
-  const prices = priceData.map((item) => item.details.state.fields[0].entries).flat();
-
-  let borrowedValue = 0;
+  const poolData = await fetchData(pools.map((item) => item.pool));
 
   pools.forEach((pool) => {
     const { details } = poolData.find((item) => item.address === pool.pool);
-    const priceData = prices.find((price_item) => price_item.key.value === pool.resource);
-
-    const priceInXRD = priceData ? +priceData.value.fields[1].value : 1;
-    borrowedValue += +details.state.fields[1].value * priceInXRD;
+    api.add(pool.resource, +details.state.fields[1].value)
   });
 
-  return { 'radix': borrowedValue };
+  return getFixBalancesSync('radix')(api.getBalances())
+}
+
+async function staking(_, _b, _cb, { api, }) {
+  return sumTokens({ owners: staking_pools, api });
 }
 
 module.exports = {
-  radixdlt: { tvl, borrowed },
+  radixdlt: { tvl, borrowed, staking },
   timetravel: false,
   misrepresentedTokens: true,
 };
