@@ -112,9 +112,6 @@ const fixBalancesTokens = {
   bsquared: {
     '0x0000000000000000000000000000000000000000': { coingeckoId: "bitcoin", decimals: 18, },
   },
-  bfc: {
-    '0x6906Ccda405926FC3f04240187dd4fAd5DF6d555': { coingeckoId: "usd-coin", decimals: 18, },
-  }
 }
 
 ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
