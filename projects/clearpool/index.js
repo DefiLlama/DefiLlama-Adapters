@@ -28,7 +28,11 @@ const config = {
   [CHAIN.ETHEREUM]: {
     dynamic: {
       factory: "0xde204e5a060ba5d3b63c7a4099712959114c2d48",
-      fromBlock: 14443222,
+      fromBlock: 14784948,
+    },
+    prime: {
+      factory: "0x83D5c08eCfe3F711e1Ff34618c0Dcc5FeFBe1791",
+      fromBlock: 17577233,
     },
   },
   [CHAIN.POLYGON_ZKEVM]: {
@@ -48,6 +52,10 @@ const config = {
       factory: "0x99C10A7aBd93b2db6d1a2271e69F268a2c356b80",
       fromBlock: 107128813,
     },
+    prime: {
+      factory: "0xe3E26D4187f3A8e100223576a37d30f2A89eb755",
+      fromBlock: 112307797,
+    },
   },
   [CHAIN.ARBITRUM]: {
     dynamic: {
@@ -58,19 +66,31 @@ const config = {
   [CHAIN.MANTLE]: {
     dynamic: {
       factory: "0xB217D93a8f6A4b7861bB2C865a8C22105FbCdE41",
-      fromBlock: 49691965,
+      fromBlock: 49691271,
     },
+    vaults: {
+      factory: "0xF041A2838794266d19f79709F416A2977F896A9B",
+      fromBlock: 59594636
+    }
   },
   [CHAIN.BASE]: {
     vaults: {
       factory: "0x199A016FFbe14781365bCaED9Cc52598B205DfAd",
       fromBlock: 12634153,
     },
+    prime: {
+      factory: "0xBdf5575Ec1cC0a14Bd3e94648a2453fdC7B56943",
+      fromBlock: 12453163,
+    },
   },
   [CHAIN.AVAX]: {
     vaults: {
       factory: "0x8E557363AC9E5cbf09A2616A302CA3c8f6ab2b7A",
       fromBlock: 42597808,
+    },
+    prime: {
+      factory: "0x7A05280940A23749106D8Fb2cA4b10B9D1C89067",
+      fromBlock: 45264014,
     },
   },
   [CHAIN.FLARE]: {
@@ -99,6 +119,11 @@ const getEventAndABI = (protocol) => {
       (abi =
         "event PoolCreated(address asset, address treasuryYieldAddress, address manager, bool kycRequired)"),
         (borrowFn = "uint256:cash");
+        break;
+    case "prime":
+      abi =
+        "event PoolCreated(address pool, address indexed borrower, bool isBulletLoan, address indexed asset, uint256 size, uint256 rateMantissa, uint256 tenor, uint256 depositWindow, uint256 spreadRate, uint256 originationRate, uint256 incrementPerRoll, uint256 penaltyRatePerYear)";
+      borrowFn = "uint256:currentSize";
       break;
   }
   return { borrowFn, abi };
