@@ -1,7 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 
 const { queryAddresses, sumTokens } = require('../helper/chain/radixdlt');
-const { getFixBalancesSync } = require('../helper/portedTokens')
 
 const staking_pools = [
   'component_rdx1cqzle2pft0y09kwzaxy07maczpwmka9xknl88glwc4ka6a7xavsltd',
@@ -27,28 +26,24 @@ const lending_pools = [
   }
 ]
 
-
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   return sumTokens({ owners: lending_pools.map((pool_data) => pool_data.pool), api });
 }
 
-async function borrowed(_, _b, _cb, { api, }) {
+async function borrowed(api) {
   const poolData = await queryAddresses({ addresses: lending_pools.map((item) => item.pool) });
 
   lending_pools.forEach((pool) => {
     const { details } = poolData.find((item) => item.address === pool.pool);
     api.add(pool.resource, +details.state.fields[1].value)
   });
-
-  return getFixBalancesSync('radix')(api.getBalances())
 }
 
-async function staking(_, _b, _cb, { api, }) {
+async function staking(api) {
   return sumTokens({ owners: staking_pools, api });
 }
 
 module.exports = {
   radixdlt: { tvl, borrowed, staking },
   timetravel: false,
-  misrepresentedTokens: true,
 };
