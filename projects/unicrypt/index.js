@@ -62,8 +62,7 @@ function tvl(args) {
 }
 
 module.exports = {
-  timetravel: true,
-  methodology:
+    methodology:
     `Counts each LP pair's native token and 
    stable balance, adjusted to reflect locked pair's value. 
    Balances and merged across multiple 

@@ -22,7 +22,7 @@ const xTAROT = "0x74D1D2A851e339B8cB953716445Be7E8aBdf92F4"
 
 const fBEET = "0xfcef8a994209d6916EB2C86cDD2AFD60Aa6F54b1"
 
-async function tvl(time, ethBlock, chainBlocks) {
+async function tvl(_, __, chainBlocks) {
     // 0xDAO Master Chef
     const balances = {}
     const chain = 'fantom'
@@ -56,7 +56,7 @@ async function tvl(time, ethBlock, chainBlocks) {
         ...calldata,
         target: xTAROT,
         abi: shareTarot,
-        params: balances[transform(xTAROT)]
+        params: sdk.util.convertToBigInt(balances[transform(xTAROT)])
     })
     sdk.util.sumSingleBalance(balances, transform("0xc5e2b037d30a390e62180970b3aa4e91868764cd"),
         tarotShare.output)

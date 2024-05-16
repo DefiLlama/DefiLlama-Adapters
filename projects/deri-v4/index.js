@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs } = require('../helper/cache/getLogs')
 const { transformBalances } = require('../helper/portedTokens')
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const { factory, fromBlock, } = config[api.chain]
   const logs = await getLogs({
     api,
@@ -12,7 +13,8 @@ async function tvl(_, _b, _cb, { api, }) {
   })
   const vaults = logs.map(log => log.vault)
   const bals = await api.multiCall({ abi: 'function stTotalAmount() external view returns (uint256 balance)', calls: vaults })
-  const tokens = await api.multiCall({ abi: 'function asset() external view returns (address)', calls: vaults })
+  let tokens = await api.multiCall({ abi: 'function asset() external view returns (address)', calls: vaults })
+  tokens = tokens.map(token => token === ADDRESSES.linea.WETH_1 ? ADDRESSES.null : token)
 
   const decimals = await api.multiCall({ abi: 'erc20:decimals', calls: tokens, permitFailure: true })
   api.addTokens(tokens, bals.map((v, i) => v / 10 ** (18 - (decimals[i] ?? 18))))
@@ -24,6 +26,8 @@ const config = {
   era: { fromBlock: 19529699, factory: '0x34FD72D2053339EA4EB1a8836CF50Ebce91962D0', },
   linea: { fromBlock: 926110, factory: '0xe840Bb03fE58540841e6eBee94264d5317B88866', },
   scroll: { fromBlock: 1384607, factory: '0x7B56Af65Da221A40B48bEDcCb67410D6C0bE771D', },
+  manta: { fromBlock: 1132047, factory: '0xc8fa78f6b68ab22239222b4249b1ff968d154ae9', },
+  polygon_zkevm: { fromBlock: 8978690, factory: '0xc7e484c20d5dc5d33299afb430bfb5d17085ee98', },
 }
 
 Object.keys(config).forEach(chain => {

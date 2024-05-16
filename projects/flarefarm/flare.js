@@ -17,6 +17,8 @@ const LPs ={
   eETH_APS_LP:	'0x05B623fd361109D0e47169eBa9e0514c80c40409',
   WFLR_eQNT_LP:	'0x80A08BbAbB0A5C51A9ae53211Df09EF23Debd4f3',
   HLN_eQNT_LP:	'0xEd920325b7dB1e909DbE2d562fCD07f714395e10',
+  eQNT_APS_LP:	'0x33E2354928002766C27F7424EcA6f9B133E922a5',
+  WFLR_BNZ_LP:  '0x2C934BbBD152A40419d3330e4d79f362Bc6691D6'
 }
 
 const chain = 'flare'
@@ -38,6 +40,8 @@ async function farmTvl(timestamp, ethblock, { [chain]: block }) {
     [LPs.eETH_APS_LP, "0x05B623fd361109D0e47169eBa9e0514c80c40409"], 
     [LPs.WFLR_eQNT_LP, "0xc786B4a2F9c314743Ed713184e5c94c244fF6c8D"], 
     [LPs.HLN_eQNT_LP, "0x02321f8030208de54dBd3e2DbdEfbd07cc88Ad6D"], 
+    [LPs.eQNT_APS_LP, "0x5E69aD043AE8941969617aeF4487f15445D774C6"], 
+    [LPs.WFLR_BNZ_LP, "0x8246A727510F471f8a61CBc218B60e5cf85739F6"]
   ];
 
   return sumUnknownTokens({ tokensAndOwners: tokens, chain, block, useDefaultCoreAssets: true, })

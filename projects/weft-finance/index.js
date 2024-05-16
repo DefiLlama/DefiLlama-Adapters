@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 
 const { queryAddresses, sumTokens } = require('../helper/chain/radixdlt');
 const { getFixBalancesSync } = require('../helper/portedTokens')
@@ -11,7 +12,7 @@ const staking_pools = [
 const lending_pools = [
   {
     pool: 'component_rdx1cq8mm5z49x6lyet44a0jd7zq52flrmykwwxszq65uzfn6pk3mvm0k4',
-    resource: 'resource_rdx1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxradxrd',
+    resource: ADDRESSES.radixdlt.XRD,
     priceFeed: 'component_rdx1cz9u0svc4d2jtnkdqypxpcea8cj3da9vdqakrt748ackl82khfxv25'
   },
   {

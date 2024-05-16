@@ -64,13 +64,13 @@ module.exports = {
   methodology: 'TVL counts deposits made to Lossless single asset pools on Ethereum, Heco and Binance Smart Chain and to the various LP farms available on Heco and BSC.',
   ethereum: { tvl: ethTvl },
   bsc: {
-    staking: staking(BSC_POOL_DAO, "0x422e3af98bc1de5a1838be31a56f75db4ad43730", "bsc"),
-    pool2: pool2(BSC_POOL_DAO, "0xf16d5142086dbf7723b0a57b8d96979810e47448", "bsc"),
+    staking: staking(BSC_POOL_DAO, "0x422e3af98bc1de5a1838be31a56f75db4ad43730"),
+    pool2: pool2(BSC_POOL_DAO, "0xf16d5142086dbf7723b0a57b8d96979810e47448"),
     tvl: bscTvl
   },
   heco: {
-    staking: staking(HECO_POOL_DAO, "0x80861a817106665bca173db6ac2ab628a738c737", "heco"),
-    pool2: pool2(HECO_POOL_DAO, "0x3f57530bdba9bcd703c8ba75c57cf7de52014036", "heco"),
+    staking: staking(HECO_POOL_DAO, "0x80861a817106665bca173db6ac2ab628a738c737"),
+    pool2: pool2(HECO_POOL_DAO, "0x3f57530bdba9bcd703c8ba75c57cf7de52014036"),
     tvl: hecoTvl
   },
 };
