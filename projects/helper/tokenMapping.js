@@ -98,6 +98,9 @@ const fixBalancesTokens = {
 	},
   cyeth: {
     '0x4200000000000000000000000000000000000006': { coingeckoId: 'ethereum', decimals: 18 },
+  },
+  bouncebit: {
+    '0xf4c20e5004c6fdcdda920bdd491ba8c98a9c5863': { coingeckoId: 'bouncebit', decimals: 18 },
   }
 }
 
