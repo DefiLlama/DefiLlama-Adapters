@@ -35,7 +35,8 @@
         "address": "0x95dfdc8161832e4ff7816ac4b6367ce201538253",
         "currency": "KRW"
       }
-    }
+    },
+    "CurveStableswapFactoryNG": "0x6A8cbed756804B16E05E741eDaBd5cB544AE21bf"
   },
   "polygon": {
     "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
@@ -50,7 +51,8 @@
       "0xd6d9bc8e2b894b5c73833947abdb5031cc7a4894",
       "0xa7fd7d83e2d63f093b71c5f3b84c27cff66a7802",
       "0xacfbe6979d58b55a681875fc9adad0da4a37a51b"
-    ]
+    ],
+    "CurveStableswapFactoryNG": "0x1764ee18e8B3ccA4787249Ceb249356192594585"
   },
   "arbitrum": {
     "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
@@ -58,7 +60,9 @@
     "wrapped": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
     "metapoolBases": {
       "2CRV": "0xbf7e49483881c76487b0989cd7d9a8239b20ca41"
-    }
+    },
+    "CurveStableswapFactoryNG": "0x9AF14D26075f142eb3F292D5065EB3faa646167b",
+    "CurveL2TricryptoFactory": "0xbc0797015fcfc47d9c1856639cae50d0e69fbee8"
   },
   "aurora": {
     "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
@@ -66,7 +70,8 @@
     "wrapped": "0xc9bdeed33cd01541e1eed10f90519d2c06fe3feb",
     "metapoolBases": {
       "3CRV": "0xbf7e49483881c76487b0989cd7d9a8239b20ca41"
-    }
+    },
+    "CurveStableswapFactoryNG": "0x5eeE3091f747E60a045a2E715a4c71e600e31F6E"
   },
   "avax": {
     "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
@@ -74,7 +79,8 @@
     "wrapped": "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
     "metapoolBases": {
       "av3CRV": "0xb0d2eb3c2ca3c6916fab8dcbf9d9c165649231ae"
-    }
+    },
+    "CurveStableswapFactoryNG": "0x1764ee18e8B3ccA4787249Ceb249356192594585"
   },
   "fantom": {
     "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
@@ -93,7 +99,8 @@
       "scFUSDT": "0x02224765bc8d54c21bb51b0951c80315e1c263f9",
       "scMIM": "0x90b7c21be43855afd2515675fc307c084427404f"
     },
-    "yearnTokens": {}
+    "yearnTokens": {},
+    "CurveStableswapFactoryNG": "0xe61Fb97Ef6eBFBa12B36Ffd7be785c1F5A2DE66b"
   },
   "harmony": {
     "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
@@ -104,9 +111,11 @@
     }
   },
   "celo": {
+    "addressProvider": "0x5ffe7FB82894076ECB99A30D6A32e969e6e35E98",
     "registriesMapping": {
       "stableFactory": "0x5277a0226d10392295e8d383e9724d6e416d6e6c"
-    }
+    },
+    "CurveStableswapFactoryNG": "0x1764ee18e8B3ccA4787249Ceb249356192594585"
   },
   "base": {
     "wrapped": "0x4200000000000000000000000000000000000006",
@@ -117,7 +126,8 @@
     },
     "blacklist": [
       "0x417Ac0e078398C154EdFadD9Ef675d30Be60Af93"
-    ]
+    ],
+    "CurveStableswapFactoryNG": "0xd2002373543Ce3527023C75e7518C274A51ce712"
   },
   "optimism": {
     "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
@@ -125,7 +135,8 @@
     "wrapped": "0x4200000000000000000000000000000000000006",
     "metapoolBases": {
       "3CRV": "0x1337bedc9d22ecbe766df105c9623922a27963ec"
-    }
+    },
+    "CurveStableswapFactoryNG": "0x5eeE3091f747E60a045a2E715a4c71e600e31F6E"
   },
   "xdai": {
     "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
@@ -133,7 +144,8 @@
     "wrapped": "0xe91d153e0b41518a2ce8dd3d7944fa863463a97d",
     "metapoolBases": {
       "3CRV": "0x1337bedc9d22ecbe766df105c9623922a27963ec"
-    }
+    },
+    "CurveStableswapFactoryNG": "0xbC0797015fcFc47d9C1856639CaE50D0e69FbEE8"
   },
   "moonbeam": {
     "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
@@ -141,10 +153,16 @@
     "wrapped": "0x4244eb811d6e0ef302326675207a95113db4e1f8",
     "metapoolBases": {}
   },
+  "fraxtal": {
+    "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "metapoolBases": {},
+    "CurveStableswapFactoryNG": "0xd2002373543ce3527023c75e7518c274a51ce712"
+  },
   "kava": {
     "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
     "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
     "wrapped": "0xc86c7c0efbd6a49b35e8714c5f59d99de09a225b",
-    "metapoolBases": {}
+    "metapoolBases": {},
+    "CurveStableswapFactoryNG": "0x1764ee18e8B3ccA4787249Ceb249356192594585"
   }
 }

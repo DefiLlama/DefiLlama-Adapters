@@ -5,7 +5,7 @@ const ADDRESSES = require('../helper/coreAssets.json');
 const { BASE_API_URL } = require("./constants");
 const nullAddress = ADDRESSES.null;
 
-async function borrowed(chain, timestamp, chainBlocks, { api }) {
+async function borrowed(api) {
   const balances = {};
   const result = await get(`${BASE_API_URL}/api/v1/analytics/borrowed`);
   sdk.util.sumSingleBalance(balances, nullAddress, result.value, api.chain);
