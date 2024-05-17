@@ -1,5 +1,5 @@
 const { get } = require('./http')
-const endpoint = "https://sushi-analytics.onrender.com"
+const endpoint = "https://sushi-analytics.llama.fi"
 
 function getTvl(protocol, chain) {
     return async (timestamp) => {

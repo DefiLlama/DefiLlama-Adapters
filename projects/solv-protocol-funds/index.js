@@ -27,6 +27,7 @@ async function tvl(api) {
   await iziswap(api, address);
   await lendle(api, address);
   await vaultBalance(api);
+  // await otherDeposit(api, address);
 
   return api.getBalances();
 }
@@ -34,16 +35,21 @@ async function tvl(api) {
 async function borrowed(api) {
   const network = api.chain;
 
-  let address = (await getConfig('solv-protocol/funds', addressUrl));
-  const depositAddress = filterDepositAddress(network, address);
-  
   const graphData = await getGraphData(api.timestamp, network, api);
   if (graphData.pools.length > 0) {
     const poolLists = graphData.pools;
 
+    let address = (await getConfig('solv-protocol/funds', addressUrl));
+    const depositAddress = filterDepositAddress(network, address);
+
+    let fofFundPoolId = [];
+    if (address[network] && address[network]["fofFund"]) {
+      fofFundPoolId = address[network]["fofFund"];
+    }
+
     let pools = [];
     for (const pool of poolLists) {
-      if (depositAddress.length == 0 && depositAddress.indexOf(pool.vault) == -1) {
+      if (depositAddress.length == 0 && depositAddress.indexOf(pool.vault) == -1 && fofFundPoolId.indexOf(pool.poolId) == -1) {
         pools.push(pool);
       }
     }
@@ -100,16 +106,32 @@ async function borrowed(api) {
     for (let i = 0; i < poolTotalValues.length; i++) {
       const decimals = poolDecimalList[i];
       let balance = BigNumber(poolTotalValues[i]).div(BigNumber(10).pow(18 - decimals)).times(BigNumber(nav[i].nav_).div(BigNumber(10).pow(decimals))).toNumber();
-
       if (pools[i]['vault'] && poolBaseInfos[i][1] && vaultbalances[`${pools[i]['vault'].toLowerCase()}-${poolBaseInfos[i][1].toLowerCase()}`]) {
         balance = BigNumber(balance).minus(vaultbalances[`${pools[i]['vault'].toLowerCase()}-${poolBaseInfos[i][1].toLowerCase()}`]).toNumber();
         vaultbalances[`${pools[i]['vault'].toLowerCase()}-${poolBaseInfos[i][1].toLowerCase()}`] = undefined
       }
-      
-      api.add(poolBaseInfos[i][1], balance)
+      if (balance > 0) {
+        api.add(poolBaseInfos[i][1], balance)
+      }
     }
   }
   return api.getBalances()
+}
+
+async function otherDeposit(api, address) {
+  if (!address[api.chain] || !address[api.chain]["otherDeposit"]) {
+    return;
+  }
+  let otherDeposit = address[api.chain]["otherDeposit"];
+
+  let tokens = []
+  for (const deposit of otherDeposit["depositAddress"]) {
+    for (const tokenAddress of otherDeposit["tokens"]) {
+      tokens.push({ tokenAddress, deposit })
+    }
+  }
+
+  await sumTokens2({ api, tokensAndOwners: tokens.map(i => [i.tokenAddress, i.deposit]), permitFailure: true });
 }
 
 async function gm(api, address) {
@@ -268,6 +290,8 @@ async function vaultBalance(api) {
   const network = api.chain;
   const graphData = await getGraphData(api.timestamp, network, api);
 
+  const solvbtcListUrl = 'https://raw.githubusercontent.com/solv-finance-dev/slov-protocol-defillama/main/solvbtc.json';
+  let solvbtc = (await getConfig('solv-protocol/solvbtc', solvbtcListUrl));
   if (graphData.pools.length > 0) {
     const poolLists = graphData.pools;
 
@@ -281,9 +305,16 @@ async function vaultBalance(api) {
       })),
     })
 
+    let vaultAddress = [];
+    for (const key in poolLists) {
+      if (solvbtc[network] != undefined && solvbtc[network]['slot'] != undefined && solvbtc[network]['slot'].indexOf(poolLists[key]["openFundShareSlot"]) != -1) {
+        vaultAddress.push(`${poolBaseInfos[key][1].toLowerCase()}-${poolLists[key]["vault"].toLowerCase()}`);
+      }
+    }
+
     let vaults = {};
     for (const key in poolLists) {
-      if (poolBaseInfos[key][1] && poolLists[key]["vault"]) {
+      if (poolBaseInfos[key][1] && poolLists[key]["vault"] && vaultAddress.indexOf(`${poolBaseInfos[key][1].toLowerCase()}-${poolLists[key]["vault"].toLowerCase()}`) == -1) {
         vaults[`${poolBaseInfos[key][1].toLowerCase()}-${poolLists[key]["vault"].toLowerCase()}`] = [poolBaseInfos[key][1], poolLists[key]["vault"]]
       }
     }
@@ -306,7 +337,7 @@ async function vaultBalance(api) {
 async function getGraphData(timestamp, chain, api) {
   let rwaSlot = (await getConfig('solv-protocol/slots', slotListUrl));
 
-  const slotDataQuery = `query BondSlotInfos {
+  const slotDataQuery = `query PoolOrderInfos {
             poolOrderInfos(first: 1000  where:{fundraisingEndTime_gt:${timestamp}, openFundShareSlot_not_in: ${JSON.stringify(rwaSlot)}}) {
               marketContractAddress
               contractAddress

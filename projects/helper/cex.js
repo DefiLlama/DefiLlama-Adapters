@@ -233,6 +233,13 @@ const defaultTokens = {
     ADDRESSES.kava.USDt,
     ADDRESSES.kava.USDC
   ],
+  cronos: [
+    nullAddress,
+    ADDRESSES.cronos.USDC,
+    ADDRESSES.cronos.USDT,
+    ADDRESSES.cronos.WBTC,
+    "0xe44fd7fcb2b1581822d0c862b68222998a0c299a" //weth
+  ],
 }
 
 function cexExports(config) {
@@ -259,7 +266,7 @@ function cexExports(config) {
     exportObj.bsc = exportObj.bsc ?? { tvl: () => ({}) }
     const bscTvl = exportObj.bsc.tvl
     exportObj.bsc.tvl = sdk.util.sumChainTvls([
-      bscTvl, sumTokensExport({ chain: 'bep2', ...config.bep2 })
+      bscTvl, sumTokensExport({ ...config.bep2 })
     ])
   }
   return exportObj
