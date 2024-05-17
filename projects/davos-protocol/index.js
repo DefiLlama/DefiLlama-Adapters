@@ -1,32 +1,72 @@
 const { get } = require("../helper/http")
 
 const ADDRESSES = require('../helper/coreAssets.json')
-const { sumTokensExport, } = require('../helper/unknownTokens')
+let aux
+
+async function getARBTvl() {
+  aux = await get('https://api.prod.davos.xyz/cmc/total-tvl?blockchain=42161')
+  return (aux.amount)
+}
+
+async function getBSCTvl() {
+  aux = await get('https://api.prod.davos.xyz/cmc/total-tvl?blockchain=56')
+  return (aux.amount)
+}
+
+async function getETHTvl() {
+  aux = await get('https://api.prod.davos.xyz/cmc/total-tvl?blockchain=1')
+  return (aux.amount)
+}
+
+async function getOpimismTvl() {
+  aux = await get('https://api.prod.davos.xyz/cmc/total-tvl?blockchain=10')
+  return (aux.amount)
+}
+
+async function getPolygonPOSTvl() {
+  aux = await get('https://api.prod.davos.xyz/cmc/total-tvl?blockchain=137')
+  return (aux.amount)
+}
+
+async function getPolygonZkEVMTvl() {
+  aux = await get('https://api.prod.davos.xyz/cmc/total-tvl?blockchain=1101')
+  return (aux.amount)
+}
+
+async function getModeTvl() {
+  aux = await get('https://api.prod.davos.xyz/cmc/total-tvl?blockchain=34443')
+  return (aux.amount)
+}
+
+async function getLineaTvl() {
+  aux = await get('https://api.prod.davos.xyz/cmc/total-tvl?blockchain=59144')
+  return (aux.amount)
+}
 
 module.exports = {
   methodology: 'collateral TVL * collateral price', 
   arbitrum: {
-    tvl: await get('https://api.prod.davos.xyz/cmc/total-tvl?blockchain=42161'),
+    tvl: getARBTvl,
   },
   bsc: {
-    tvl: await get('https://api.prod.davos.xyz/cmc/total-tvl?blockchain=56'),
+    tvl: getBSCTvl,
   },
   ethereum: {
-    tvl: await get('https://api.prod.davos.xyz/cmc/total-tvl?blockchain=1'),
+    tvl: getETHTvl,
   },
   optimism: {
-    tvl: await get('https://api.prod.davos.xyz/cmc/total-tvl?blockchain=10'),
+    tvl: getOpimismTvl,
   },
   polygon: {
-    tvl: await get('https://api.prod.davos.xyz/cmc/total-tvl?blockchain=137'),
+    tvl: getPolygonPOSTvl,
   },
   polygon_zkevm: {
-    tvl: await get('https://api.prod.davos.xyz/cmc/total-tvl?blockchain=1101'),
+    tvl: getPolygonZkEVMTvl,
   },
   mode: {
-    tvl: await get('https://api.prod.davos.xyz/cmc/total-tvl?blockchain=34443'),
+    tvl: getModeTvl,
   },
   linea: {
-    tvl: await get('https://api.prod.davos.xyz/cmc/total-tvl?blockchain=59144'),
+    tvl: getLineaTvl,
   },
 }
