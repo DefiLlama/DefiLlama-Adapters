@@ -16,4 +16,11 @@ module.exports = {
       ]
     ),
   },
+  base: {
+    tvl: stakings(
+      ["0x335D87736b4693E5ED3e5C4f6C737A5a87aFA029"],
+      ["0x18A8BD1fe17A1BB9FFB39eCD83E9489cfD17a022"],
+      "base"
+    ),
+  },
 };
