@@ -51,7 +51,7 @@ async function bscTvl(chainBlocks) {
 module.exports = {
   misrepresentedTokens: true,
   bsc: {
-    staking: stakings(vaultContracts, BTCST, "bsc"),
+    staking: stakings(vaultContracts, BTCST),
     tvl: bscTvl,
   },
   methodology: "Counts liquidty on all the Vaults through their Contracts",
