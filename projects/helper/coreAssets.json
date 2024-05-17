@@ -1143,9 +1143,7 @@
     "XSP": "0x36726235dadbdb4658d33e62a249dca7c4b2bc68"
   },
   "kardia": {
-    "WKAI": "0xaf984e23eaa3e7967f3c5e007fbe397d8566d23d",
-    "USDT": "0x551a5dcac57c66aa010940c2dcff5da9c53aa53b",
-    "KUSD_T": "0x92364ec610efa050d296f1eeb131f2139fb8810e"
+    "WKAI": "0xaf984e23eaa3e7967f3c5e007fbe397d8566d23d"
   },
   "empire": {
     "USDC": "0xc61a71c75ed4742dcae74b8cac27a37d46fc6751"
@@ -1279,7 +1277,8 @@
     "ORC": "EQDCIEo0HUUYsAV-lTMviOd-GkSXfVPsNZMGjRaNOA_6--FD",
     "MEGA": "EQBf6-YoR9xylol_NwjHrLkrTFAZJCX-bsd-Xx_902OaPaBf",
     "WEMIX": "EQCf7Nb341dxOE3N0jimngRxGEV8T3zo-eU2EZVs_nchNhhZ",
-    "jUSDT": "EQBynBO23ywHy_CgarY9NK9FTz0yDsG82PtcbSTQgGoXwiuA"
+    "jUSDT": "EQBynBO23ywHy_CgarY9NK9FTz0yDsG82PtcbSTQgGoXwiuA",
+    "USDT": "EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs"
   },
   "defichain": {
     "DFI": "DFI",
@@ -1648,7 +1647,8 @@
     "fwWETH": "0x66714db8f3397c767d0a602458b5b4e3c0fe7dd1",
     "fwUSDB": "0x866f2c06b83df2ed7ca9c2d044940e7cd55a06d6",
     "WETH": "0x4300000000000000000000000000000000000004",
-    "ezETH": "0x2416092f143378750bb29b79eD961ab195CcEea5"
+    "ezETH": "0x2416092f143378750bb29b79eD961ab195CcEea5",
+    "weETH": "0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A"
   },
   "chz": {
     "WCHZ": "0x721ef6871f1c4efe730dce047d40d1743b886946"
