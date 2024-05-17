@@ -1,7 +1,7 @@
 const { get } = require("../helper/http")
 
 const ADDRESSES = require('../helper/coreAssets.json')
-const aux
+let aux
 
 async function getARBTvl() {
   aux = await get('https://api.prod.davos.xyz/cmc/total-tvl?blockchain=42161')
