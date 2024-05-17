@@ -16,14 +16,14 @@ const tokens = [
   contracts.TOMB,
 ]
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const _tokens = [...tokens]
   const owners = [...vaults, ...vaults]
   vaults.forEach(v => _tokens.push(contracts.Collateral))
   return api.sumTokens({ tokensAndOwners2: [_tokens, owners] })
 }
 
-async function borrowed(_, _b, _cb, { api, }) {
+async function borrowed(api) {
   const vaults0 = vaults.slice(0, 2);
   const vaults1 = vaults.slice(2);
   const tokens0 = tokens.slice(0, 2);

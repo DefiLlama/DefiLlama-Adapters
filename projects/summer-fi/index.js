@@ -9,7 +9,7 @@ module.exports = {
   ethereum: { tvl },
 };
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   await api.getBlock();
   const executionStart = Date.now() / 1000;
   const [confirmedSummerFiMakerVaults, cdpIdList, cache] = await Promise.all([

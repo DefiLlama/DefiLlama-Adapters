@@ -24,7 +24,7 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const { fsglp } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const chainId = api.getChainId()
       let [lendingPools, vaults] = await getProjectInfo()
       lendingPools = lendingPools.filter(i => i.chainId === chainId).map(i => i.address)
@@ -60,7 +60,7 @@ Object.keys(config).forEach(chain => {
 
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const chainId = api.getChainId()
       let [lendingPools, vaults] = await getProjectInfo()
       lendingPools = lendingPools.filter(i => i.chainId === chainId).map(i => i.address)

@@ -3,6 +3,7 @@ const { graphQuery, } = require("../helper/http");
 const HOURS_12 = 12 * 3600
 
 async function getBlock(endpoint, timestamp) {
+  if (typeof timestamp === "object" && timestamp.timestamp) timestamp = timestamp.timestamp
   const params = {
     timestamp_from: timestamp - HOURS_12 * 2,
     timestamp_to: timestamp + HOURS_12 * 2,
