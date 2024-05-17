@@ -106,6 +106,30 @@ const supportedChains = [
     identifier: 'fantom'
   },
   // {
+  //   name: 'Flare',
+  //   subgraphEndpoint: '',
+  //   chainId: 14,
+  //   identifier: 'flare'
+  // },
+  {
+    name: 'Blast',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-blast/1.1.1/gn',
+    chainId: 81457,
+    identifier: 'blast'
+  },
+  {
+    name: 'Mode',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-mode/1.1.1/gn',
+    chainId: 34443,
+    identifier: 'mode'
+  },
+  {
+    name: 'AstarzkEVM',
+    subgraphEndpoint: 'https://subgraph.steer.finance/astarzkevm/subgraphs/name/steerprotocol/steer-astarzkevm',
+    chainId: 3776,
+    identifier: 'astrzk'
+  },
+  // {
   //   name: 'Celo',
   //   subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/rakeshbhatt10/steer-test-celo',
   //   chainId: 42220,
@@ -118,7 +142,7 @@ const query = `{vaults(first: 1000, where: {totalLPTokensIssued_not: "0", lastSn
 
 supportedChains.forEach(chain => {
   module.exports[chain.identifier] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const data = await cachedGraphQuery('steer/' + chain.identifier, chain.subgraphEndpoint, query,)
 
       const vaults = data.vaults.map((vault) => vault.id)
@@ -143,6 +167,7 @@ module.exports.arbitrum.staking = stakings(
     "0x25Ef108B328Cf752F0E0b0169D499Db164173763",
     "0x0b619438d1E8b8c205656502de59Af2Af71C43e0",
     "0xaCdC6fC8F84fbA26f065489a7bf5837D7CDf546F",
+    "0xff46e1B60dD9De89Aa04902D5c3c5ca01f8576A4"
   ], 
   "0x1C43D05be7E5b54D506e3DdB6f0305e8A66CD04e",
   "arbitrum"

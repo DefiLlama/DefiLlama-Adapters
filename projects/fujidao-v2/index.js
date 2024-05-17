@@ -37,7 +37,7 @@ Object.keys(config).forEach(chain => {
   const yfactories = factories.filter( factory => factory.hasOwnProperty('yieldFactory'))
 
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       let blogs = [];
       for (let i = 0; i < bfactories.length; i++) {
         const { borrowFactory, startBlock } = bfactories[i];
@@ -100,7 +100,7 @@ Object.keys(config).forEach(chain => {
 
       return api.getBalances()
     },
-    borrowed: async (_, _b, _cb, { api, }) => {
+    borrowed: async (api) => {
       let logs = [];
       for (let i = 0; i < bfactories.length; i++) {
         const { borrowFactory, startBlock } = bfactories[i];

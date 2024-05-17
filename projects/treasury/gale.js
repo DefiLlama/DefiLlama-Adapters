@@ -13,6 +13,6 @@ const config = {
 
 module.exports = {
   bsc: {
-    tvl:  staking(config.bsc.vaultContract, config.bsc.busd, "bsc"),
+    tvl:  staking(config.bsc.vaultContract, config.bsc.busd),
   },
 };

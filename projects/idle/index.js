@@ -41,7 +41,8 @@ const contracts = {
       // "0xd0DbcD556cA22d3f3c142e9a3220053FD7a247BC",
       // "0x1f5A97fB665e295303D2F7215bA2160cc5313c8E", // 
       "0x8E0A8A5c1e5B3ac0670Ea5a613bB15724D51Fc37", // Instadapp stETH
-      "0x9e0c5ee5e4B187Cf18B23745FCF2b6aE66a9B52f" // Amphor wstETH
+      "0x9e0c5ee5e4B187Cf18B23745FCF2b6aE66a9B52f", // Amphor wstETH
+      "0x1EB1b47D0d8BCD9D761f52D26FCD90bBa225344C" // Ethena USDe
     ]
   },
   polygon: {
@@ -77,7 +78,7 @@ const trancheConfig = {
 }
 const getCurrentAllocationsABI = 'function getCurrentAllocations() returns (address[] tokenAddresses,  uint256[] amounts,  uint256 total)'
 
-async function tvl(time, ethBlock, chainBlocks, { api }) {
+async function tvl(api) {
   const { v1 = [], v3 = [], safe = [], cdos = [] } = contracts[api.chain]
   const balances = {}
   const ownerTokens = []
