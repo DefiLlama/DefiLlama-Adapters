@@ -93,7 +93,6 @@ const fixBalancesTokens = {
 		'0x0000000000000000000000000000000000000000': { coingeckoId: 'bitcoin', decimals: 18 },
 		'0xff204e2681a6fa0e2c3fade68a1b28fb90e4fc5f': { coingeckoId: 'wrapped-bitcoin', decimals: 18 },
 		'0xfe9f969faf8ad72a83b761138bf25de87eff9dd2': { coingeckoId: 'tether', decimals: 6 },
-		'0xef63d4e178b3180beec9b0e143e0f37f4c93f4c2': { coingeckoId: 'ethereum', decimals: 18 },
 		'0x9827431e8b77e87c9894bd50b055d6be56be0030': { coingeckoId: 'usd-coin', decimals: 6 },
 	},
   cyeth: {
