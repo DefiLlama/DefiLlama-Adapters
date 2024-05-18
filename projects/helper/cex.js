@@ -168,6 +168,7 @@ const defaultTokens = {
      '0x47c454ca6be2f6def6f32b638c80f91c9c3c5949', //gfall
      '0xfe1d7f7a8f0bda6e415593a2e4f82c64b446d404', //blp
      '0xe9d78bf51ae04c7e1263a76ed89a65537b9ca903', // GMEX
+     '0x59769630b236398c2471eb26e6a529448030d94f', //NKYC nonkyc exchange token
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],
