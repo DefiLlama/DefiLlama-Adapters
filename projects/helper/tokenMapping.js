@@ -93,7 +93,6 @@ const fixBalancesTokens = {
 		'0x0000000000000000000000000000000000000000': { coingeckoId: 'bitcoin', decimals: 18 },
 		'0xff204e2681a6fa0e2c3fade68a1b28fb90e4fc5f': { coingeckoId: 'wrapped-bitcoin', decimals: 18 },
 		'0xfe9f969faf8ad72a83b761138bf25de87eff9dd2': { coingeckoId: 'tether', decimals: 6 },
-		'0xef63d4e178b3180beec9b0e143e0f37f4c93f4c2': { coingeckoId: 'ethereum', decimals: 18 },
 		'0x9827431e8b77e87c9894bd50b055d6be56be0030': { coingeckoId: 'usd-coin', decimals: 6 },
 	},
   cyeth: {
@@ -101,6 +100,13 @@ const fixBalancesTokens = {
   },
   bouncebit: {
     '0xf4c20e5004c6fdcdda920bdd491ba8c98a9c5863': { coingeckoId: 'bouncebit', decimals: 18 },
+    '0x77776b40c3d75cb07ce54dea4b2fd1d07f865222': { coingeckoId: 'tether', decimals: 18 },
+  },
+  linea: {
+    '0x63ba74893621d3d12f13cec1e86517ec3d329837': { coingeckoId: 'liquity-usd', decimals: 18 },
+  },
+  bevm: {
+    '0x2967e7bb9daa5711ac332caf874bd47ef99b3820': { coingeckoId: 'wrapped-stbtc', decimals: 18 },
   }
 }
 

@@ -1770,5 +1770,8 @@
     "STONE": "0x96147a9ae9a42d7da551fd2322ca15b71032f342",
     "RETH": "0xb5686c4f60904ec2bda6277d6fe1f7caa8d1b41a",
     "TBTC": "0xbba2ef945d523c4e2608c9e1214c2cc64d4fc2e2"
+  },
+  "btr": {
+    "ETH": "0xef63d4e178b3180beec9b0e143e0f37f4c93f4c2"
   }
 }
