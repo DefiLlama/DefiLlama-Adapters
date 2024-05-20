@@ -9,7 +9,7 @@ async function tvl(api) {
   });
   await optimismApi.getBlock()
   const wethBal = await optimismApi.call({
-    target: '0x72Dbdd6B57934339C36F850a4bDAeD8E488E7062',
+    target: '0xAB7590CeE3Ef1A863E9A5877fBB82D9bE11504da',
     abi: 'function categoryTVL(string _category) view returns (uint256)',
     params: ['liquid-weth']
   });
