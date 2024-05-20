@@ -16,7 +16,7 @@ const farm_avax = '0xB1e330401c920077Ddf157AbA5594238d36b54B1'
 const soul_avax = '0x11d6DD25c1695764e64F439E32cc7746f3945543'
 const wavax_avax = ADDRESSES.avax.WAVAX
 const usdc_avax = ADDRESSES.avax.USDC
-const wbtc_avax = '0x50b7545627a5162F82A992c33b87aDc75187B218'
+const wbtc_avax = ADDRESSES.avax.WBTC_e
 const weth_avax = ADDRESSES.avax.WETH_e
 
 const wl_fantom = [ usdc_fantom, soul_fantom, rndm_fantom, wbtc_fantom ]
@@ -24,12 +24,12 @@ const wl_avax = [ usdc_avax, soul_avax, wbtc_avax, weth_avax ]
 
 module.exports = {
   fantom:{
-    staking: staking(farm_fantom, soul_fantom, 'fantom'),
+    staking: staking(farm_fantom, soul_fantom),
     tvl: calculateUsdSoulTvl(factory_fantom, 'fantom', wftm_fantom, wl_fantom, 'fantom'),
     borrowed: underworldLending('fantom', true)
   },
   avax:{
-    staking: staking(farm_avax, soul_avax, 'avax'),
+    staking: staking(farm_avax, soul_avax),
     tvl: calculateUsdSoulTvl(factory_avax, 'avax', wavax_avax, wl_avax, 'avax'),
     borrowed: underworldLending('avax', true)
   },

@@ -1,7 +1,7 @@
 const { sumUnknownTokens } = require("../helper/unknownTokens")
 
 function vaultTvl(vaults) {
-  return async (_, _b, _cb, { api, }) => {
+  return async (api) => {
     const [tokens, bals] = await Promise.all([
       api.multiCall({ abi: 'address:want', calls: vaults }),
       api.multiCall({ abi: 'uint256:balance', calls: vaults }),

@@ -1,15 +1,22 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { getLogs } = require('../helper/cache/getLogs')
-const factories = [
-  // { target: '0x36bbb126e75351c0dfb651e39b38fe0bc436ffd2', fromBlock: 21456599, },
-  { target: '0x25a55f9f2279a54951133d503490342b50e5cd15', fromBlock: 25535459, token3: true, },
-]
 
 module.exports = {
   methodology:
     "TVL accounts for the liquidity on all StableSwap pools, using the TVL chart on https://pancakeswap.finance/info?type=stableSwap as the source.",
-  bsc: {
-    tvl: async (_, _b, _cb, { api }) => {
+}
+
+
+const config = {
+  bsc: [{ target: '0x25a55f9f2279a54951133d503490342b50e5cd15', fromBlock: 25535459, token3: true, },],
+  arbitrum: [{ target: '0x5D5fBB19572c4A89846198c3DBEdB2B6eF58a77a', fromBlock: 169319653, token3: true, },],
+}
+
+
+Object.keys(config).forEach(chain => {
+  const factories = config[chain]
+  module.exports[chain] = {
+    tvl: async (api) => {
       const configs = await Promise.all(factories.map(getTvlConfig))
       return sumTokens2({ api, ownerTokens: configs.flat() })
 
@@ -35,5 +42,5 @@ module.exports = {
         return getOwnTokens(logs)
       }
     }
-  },
-};
+  }
+})

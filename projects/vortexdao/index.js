@@ -9,51 +9,18 @@ const mim = "0x130966628846bfd36ff31a822705796e8cb8c18d";
 const avai = "0x346a59146b9b4a77100d369a3d18e8007a9f46a6";
 const spaceMimJLP = "0x5087706DD31962938c57a0fB3A3107ed3794c996";
 
-async function tvl(timestamp, block, chainBlocks) {
-  let balances = {};
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [
-      [mim, false],
-      [avai, false],
-      [spaceMimJLP, true],
-    ],
-    [treasury],
-    chainBlocks.avax,
-    "avax",
-    (addr) => `avax:${addr}`
-  );
-  return balances;
+async function tvl(api) {
+  return api.sumTokens({ owners: [treasury], tokens: [spaceMimJLP, avai, mim, ] })
 }
 
-async function staking(timestamp, block, chainBlocks) {
-  let balances = {};
-  const stakingBalances = (
-    await sdk.api.abi.multiCall({
-      calls: [
-        {
-          target: space,
-          params: stakingV1,
-        },
-        {
-          target: space,
-          params: stakingV2,
-        },
-      ],
-      abi: "erc20:balanceOf",
-      block: chainBlocks.avax,
-      chain: "avax",
-    })
-  ).output;
-  stakingBalances.forEach((p) => {
-    sdk.util.sumSingleBalance(balances, `avax:${space}`, p.output);
-  });
-  return balances;
+async function staking(api) {
+  return api.sumTokens({ tokens: [space], owners: [stakingV1, stakingV2, ] })
 }
 
 module.exports = {
+  deadFrom: "04-06-2023",
   avax:{
-    tvl,
+    tvl: () => ({}),
     staking,
   },
 };

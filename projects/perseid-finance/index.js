@@ -6,7 +6,7 @@ const NATIVE_LP_ADDRESS = "0x47ED4E0a52716e91a4F37914b04B2252B5B5fcDF"; // izisw
 const FARM_ADDRES = "0xC692CA3066C84012C616989Bc7fD9659f16DDCFd";
 
 
-const getTvl = isStaking => async (_, _1, _2, { api }) => {
+const getTvl = isStaking => async (api) => {
   let pools = await api.call({ abi: abi.getPoolTotalTvl, target: FARM_ADDRES, });
   if (isStaking)
     pools = pools.find(i => i[1].toLowerCase() === NATIVE_ADDRES)

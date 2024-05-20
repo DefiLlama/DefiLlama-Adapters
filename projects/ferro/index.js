@@ -4,7 +4,6 @@ const { sumTokens2 } = require('../helper/unwrapLPs')
 const SWAP_3FER_ADDR = '0xe8d13664a42B338F009812Fa5A75199A865dA5cD';
 const SWAP_2FER_ADDR = '0xa34C0fE36541fB085677c36B4ff0CCF5fa2B32d6';
 const SWAP_LCRO_WCRO_ADDRESSES = '0x1578C5CF4f8f6064deb167d1eeAD15dF43185afa';
-const chain = 'cronos'
 
 const tokens = {
   // DAI
@@ -29,16 +28,18 @@ const tokens = {
   "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23": [
     SWAP_LCRO_WCRO_ADDRESSES,
   ],
+  // LATOM-ATOM
+  [ADDRESSES.cronos.ATOM]: ['0x5FA9412C2563c0B13CD9F96F0bd1A971F8eBdF96'],
+  '0xac974ee7fc5d083112c809ccb3fce4a4f385750d': ['0x5FA9412C2563c0B13CD9F96F0bd1A971F8eBdF96'],
+  '0xD42E078ceA2bE8D03cd9dFEcC1f0d28915Edea78': ['0x6A41732eaDBE15e9c9FcA2cfF1299c6321AA104B'],
 };
 
-async function tvl(timestamp, ethBlock, {cronos: block}) {
+async function tvl(api) {
   const tokensAndOwners = Object.entries(tokens).map(([token, owners]) => owners.map(owner => [token, owner])).flat()
-  return sumTokens2({ chain, block, tokensAndOwners })
+  return sumTokens2({ api, tokensAndOwners })
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
   methodology: 'sum of ferro stablecoin pool contracts balance',
   start: 1651218360,
   cronos: {
