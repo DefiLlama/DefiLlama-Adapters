@@ -1,5 +1,5 @@
+const { getConfig } = require("../helper/cache");
 const { lendingMarket } = require("../helper/methodologies");
-const utils = require("../helper/utils");
 
 const abi = {
   debt: "function debt(address pool) external view returns (uint256)",
@@ -10,10 +10,7 @@ const abi = {
 };
 
 async function getMarkets() {
-  const response = await utils.fetchURL(
-    "https://ion-backend.vercel.app/v1/bigbrother/markets"
-  );
-  return response.data;
+  return getConfig('ion-markets', "https://ion-backend.vercel.app/v1/bigbrother/markets");
 }
 
 async function calculateTvl(api, markets) {
@@ -28,8 +25,7 @@ async function calculateTvl(api, markets) {
     calls: gems,
   });
   return api.sumTokens({
-    tokens: tokens.concat(gemUnderlyings),
-    owners: pools.concat(gems),
+    tokensAndOwners2: [tokens.concat(gemUnderlyings), pools.concat(gems)],
   });
 }
 
