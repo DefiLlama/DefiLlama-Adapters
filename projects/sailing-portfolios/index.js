@@ -31,11 +31,14 @@ async function tvl(api) {
   // }
   // await Promise.all(promises);
   const usdtAddress = '0x919C1c267BC06a7039e03fcc2eF738525769109c'; // usdt
+  const usdcSailingAddress = '0x6dAE38e39F80c1F6D1D40224f79150AECc73f987'; // usdcsailing
+  const sailsSailingAddress = '0x47a663c082926d0d913cacb89240c3f4bc409a88'; // sailssailing
+  
   const dev1Address = '0x797E2CD952DF539Ccfea5554911AFEb2a77Fb760';
   // code below assimilate end code more closely
   const portfolioAddresses = [dev1Address];
   const assetsInPortfolios = portfolioAddresses.map((address) => {
-    return [usdtAddress]
+    return [usdtAddress, sailsSailingAddress]
   });
   const tokensAndOwners = portfolioAddresses.map((address, i) => {
     return [assetsInPortfolios[i], address];
