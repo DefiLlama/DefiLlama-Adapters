@@ -12,11 +12,13 @@ module.exports = {
         '0x7063ea2dBa364aCd9135752Da5395ac7CD12313D', // $ETH V2 vault's token pot
         '0x3ee083573FceA8c015dcbfC7a51777B5770cbe64', // $ETH V2 vault's pty pool buy low
         '0x39db7083C97d2C298C1A88fD27b0bd1C9c9f6fa8', // $ETH V2 vault's pty pool sell high
-        '0x565e325B7197d6105b0Ee74563ea211Cc838e2c3'  // $USDB V2 vault's token pot
+        '0x565e325B7197d6105b0Ee74563ea211Cc838e2c3',  // $USDB V2 vault's token pot
+        '0x4A084b06eFdB44e9fB26Eac29334E4808BA65A32', // $weETH plain vault
       ],
       tokens: [
         ADDRESSES.null,  // $ETH
-        ADDRESSES.blast.USDB  // $USDB
+        ADDRESSES.blast.USDB,  // $USDB
+        ADDRESSES.blast.weETH  // weETH
       ],
     }),
   }
