@@ -13,6 +13,11 @@ async function tvl(api) {
     abi: 'function categoryTVL(string _category) view returns (uint256)',
     params: ['liquid-weth']
   });
+  const updatedTimestamp = await optimismApi.call({
+    target: '0xAB7590CeE3Ef1A863E9A5877fBB82D9bE11504da',
+    abi: 'function categoryLastUpdated(string _category) view returns (uint256)',
+    params: ['liquid-weth']
+  });
   api.add(ADDRESSES.ethereum.EETH, balETH-wethBal);
   api.add(ADDRESSES.ethereum.WETH, wethBal)
   const balUSD = await api.call({
