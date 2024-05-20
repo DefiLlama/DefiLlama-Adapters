@@ -56,5 +56,6 @@ module.exports = {
   hallmarks: [
       [1651241728, "Staking V2 Launch"],
       [1711370069, "Staking V3 Launch"],
+      [1715688000, "EarlyStage Launch"]
   ],
 };
