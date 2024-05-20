@@ -1,3 +1,4 @@
+/// Rewards which are distributed to stakers in the staking contract.
 function stakingRewards(colonyGovernanceToken, stakingV3Contract) {
   return async (api) => {
     const rewardTokensListLength = Number(

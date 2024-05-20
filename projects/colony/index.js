@@ -3,8 +3,8 @@ const sdk = require("@defillama/sdk")
 // const { clyVesting } = require("./clyVesting")
 const { stakingRewards } = require("./stakingRewards")
 const { earlyStageInvestments } = require("./earlyStageInvestments")
-const { staking } = require('../helper/staking')
-const { getUniTVL } = require('../helper/unknownTokens')
+const { staking } = require("../helper/staking")
+const { getUniTVL } = require("../helper/unknownTokens")
 
 const colonyGovernanceToken = "0xec3492a2508DDf4FDc0cD76F31f340b30d1793e6";
 
@@ -14,7 +14,6 @@ const stakingV3Contract = "0x62685d3EAacE96D6145D35f3B7540d35f482DE5b";
 
 const vestingContract = "0xEFAc81f709d314604a7DaEe9ca234dA978c2Be20";
 
-const earlyStageManager = "0x62B38293896e040e36fE5345F9D30DbFd75C04B9";
 const projectNestFactory = "0x9E1Ac58559307A7ce70104810B7d6E43E74bFA1e";
 const colonyDexFactory = "0x814EBF333BDaF1D2d364c22a1e2400a812f1F850";
 
@@ -26,7 +25,7 @@ async function _staking(api) {
 
 function _tvl() {
   const stakingRewardsTVL = stakingRewards(colonyGovernanceToken, stakingV3Contract)
-  const earlyStageInvestmentsTVL = earlyStageInvestments(earlyStageManager, projectNestFactory)
+  const earlyStageInvestmentsTVL = earlyStageInvestments(projectNestFactory)
 
   const colonyDexTVL = getUniTVL({
     factory: colonyDexFactory,
@@ -44,8 +43,9 @@ function _tvl() {
 module.exports = {
   methodology:
     "Staking is calculated based on CLY tokens locked on Colony staking contracts. " +
-    "Vesting is calculated as CLY tokens in the vesting contract." +
-    "TVL includes also rewards in various tokens distributed continuously for stakers.",
+    "Vesting is calculated as CLY tokens in the vesting contract. " +
+    "TVL also includes rewards in various tokens distributed in the staking contract, " +
+    "actual fundraised stablecoins in projects (Nests), and liquidity from Colony Dex.",
   avax: {
     start: 1638367059, // CLY Token deployment
     tvl: _tvl(),

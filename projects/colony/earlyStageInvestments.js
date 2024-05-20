@@ -1,16 +1,10 @@
-const { getLogs } = require('../helper/cache/getLogs');
-
 /// Accumulated early stage USD investments in the project nests
-function earlyStageInvestments(earlyStageManager, projectNestFactory) {
-  console.log("got args", earlyStageManager, projectNestFactory)
+function earlyStageInvestments(projectNestFactory) {
   return async (api) => {
-
     const totalNests = Number(await api.call({
       abi: "uint256:projectNestsLength",
       target: projectNestFactory,
     }))
-
-    console.log("totalNests", totalNests, typeof(totalNests))
 
     const nests = []
     const limit = 100
@@ -22,12 +16,8 @@ function earlyStageInvestments(earlyStageManager, projectNestFactory) {
         target: projectNestFactory,
         params: [limit, offset]
       })
-      console.log()
-
       nests.push(...n)
     }
-
-    console.log("nests: ", nests)
 
     for (const nest of nests) {
       const stablecoin = await api.call({
@@ -36,20 +26,16 @@ function earlyStageInvestments(earlyStageManager, projectNestFactory) {
       })
 
       const balance = await api.call({
-        abi: 'erc20:balanceOf',
+        abi: "erc20:balanceOf",
         target: stablecoin,
         params: nest
       })
 
-      console.log(`balance of stable coin ${stablecoin} in nest ${nest} is ${balance}`)
+      // dbg
+      // console.log(`balance of stablecoin ${stablecoin} in nest ${nest} is ${balance}`)
 
-      api.add(stablecoin, await api.call({
-        abi: 'erc20:balanceOf',
-        target: stablecoin,
-        params: nest
-      }))
+      api.add(stablecoin, balance)
     }
-    console.log("api balances:", await api.getBalances())
 
     return api.getBalances()
   }
