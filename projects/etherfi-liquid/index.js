@@ -2,7 +2,7 @@ const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk')
 
 async function tvl(api) {
-  const optimismApi = new sdk.ChainApi({ chain: 'optimism' })
+  const optimismApi = new sdk.ChainApi({ chain: 'optimism', timestamp: api.timestamp })
   const balETH = await api.call({
     abi: "uint256:totalAssets",
     target: '0xea1a6307d9b18f8d1cbf1c3dd6aad8416c06a221',
