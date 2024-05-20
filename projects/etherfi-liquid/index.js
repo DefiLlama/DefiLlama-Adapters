@@ -10,7 +10,7 @@ async function tvl(api) {
   await optimismApi.getBlock()
   const wethBal = await optimismApi.call({
     target: '0x72Dbdd6B57934339C36F850a4bDAeD8E488E7062',
-    abi: 'function getCategoryTVL(string memory _category) view returns (uint256)',
+    abi: 'function getCategoryTVL(string _category) view returns (uint256)',
     params: ['liquid-weth']
   });
   api.add(ADDRESSES.ethereum.EETH, balETH-wethBal);
