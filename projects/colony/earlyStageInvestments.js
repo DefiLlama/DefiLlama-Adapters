@@ -18,25 +18,8 @@ function earlyStageInvestments(projectNestFactory) {
       })
       nests.push(...n)
     }
-
-    for (const nest of nests) {
-      const stablecoin = await api.call({
-        abi: "address:supportedStablecoin",
-        target: nest
-      })
-
-      const balance = await api.call({
-        abi: "erc20:balanceOf",
-        target: stablecoin,
-        params: nest
-      })
-
-      // dbg
-      // console.log(`balance of stablecoin ${stablecoin} in nest ${nest} is ${balance}`)
-
-      api.add(stablecoin, balance)
-    }
-
+    const stablecoins = await api.multiCall({  abi: 'address:supportedStablecoin', calls: nests})
+    await api.sumTokens({ tokensAndOwners2: [stablecoins, nests]})
     return api.getBalances()
   }
 }

@@ -31,42 +31,19 @@ function stakingRewards(colonyGovernanceToken, stakingV3Contract) {
       }))
     })).map(r => ({ address: r[0], category: r[1]}))
 
-    // the same tokens can appear in different categories
-    const uniqueRewardTokensSet = new Set();
-    [...rewardTokens, ...customRewardTokens].forEach(token => {
-      uniqueRewardTokensSet.add(token.address)
-    })
+    const totalStake = BigInt(await api.call({
+      abi: 'uint256:totalStake',
+      target: stakingV3Contract,
+    }))
 
-    const handleCLYReward = async () => {
-      const totalStake = BigInt(await api.call({
-        abi: 'uint256:totalStake',
-        target: stakingV3Contract,
-      }))
+    const balanceOf = BigInt(await api.call({
+      abi: 'erc20:balanceOf',
+      target: colonyGovernanceToken,
+      params: stakingV3Contract
+    }))
 
-      const balanceOf = BigInt(await api.call({
-        abi: 'erc20:balanceOf',
-        target: colonyGovernanceToken,
-        params: stakingV3Contract
-      }))
-
-      api.add(colonyGovernanceToken, balanceOf - totalStake)
-    }
-
-    for(const token of uniqueRewardTokensSet) {
-      // CLY has to be handled separately because some of the balance is locked in staking.
-      if (token === colonyGovernanceToken) {
-        await handleCLYReward()
-        continue
-      }
-
-      api.add(token, await api.call({
-        abi: 'erc20:balanceOf',
-        target: token,
-        params: stakingV3Contract
-      }))
-    }
-
-    return api.getBalances()
+    api.add(colonyGovernanceToken, balanceOf - totalStake)
+    return api.sumTokens({ owner: stakingV3Contract, tokens: [...rewardTokens, ...customRewardTokens].map(i => i.address), blacklistedTokens: [colonyGovernanceToken]})
   }
 }
 
