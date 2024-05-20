@@ -46,3 +46,7 @@ const blacklistedTokens = [
 Object.keys(poolHelpers).forEach(chain => {
   module.exports[chain] = { tvl: iziswapExport({ poolHelpers: poolHelpers[chain], blacklistedTokens }), }
 })
+
+module.exports.hallmarks = [
+  [1715648400,"End Mode TVL Campaign S1"]
+]
