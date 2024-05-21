@@ -3,7 +3,7 @@ const { default: BigNumber } = require("bignumber.js");
 const { getConfig } = require("../helper/cache");
 const { cachedGraphQuery } = require("../helper/cache");
 const { sumTokens2, } = require("../helper/unwrapLPs");
-const { getAmounts } = require("./iziswap")
+const { getAmounts } = require("./iziswap");
 
 // The Graph
 const graphUrlList = {
@@ -19,15 +19,17 @@ const slotListUrl = 'https://raw.githubusercontent.com/solv-finance-dev/solv-pro
 const addressUrl = 'https://raw.githubusercontent.com/solv-finance-dev/slov-protocol-defillama/main/solv-funds.json';
 
 async function tvl(api) {
-  let address = (await getConfig('solv-protocol/funds', addressUrl));
+  const address = (await getConfig('solv-protocol/funds', addressUrl));
+  const graphData = await getGraphData(api.timestamp, api.chain, api);
 
   await gm(api, address);
   await mux(api, address);
   await klp(api, address);
   await iziswap(api, address);
   await lendle(api, address);
-  await vaultBalance(api);
-  // await otherDeposit(api, address);
+  await vaultBalance(api, graphData);
+  await otherDeposit(api, address);
+  await ceffuBalance(api, address, graphData);
 
   return api.getBalances();
 }
@@ -286,9 +288,8 @@ async function lendle(api, address) {
   api.add(lendleData.account.ethAddress, balance)
 }
 
-async function vaultBalance(api) {
+async function vaultBalance(api, graphData) {
   const network = api.chain;
-  const graphData = await getGraphData(api.timestamp, network, api);
 
   const solvbtcListUrl = 'https://raw.githubusercontent.com/solv-finance-dev/slov-protocol-defillama/main/solvbtc.json';
   let solvbtc = (await getConfig('solv-protocol/solvbtc', solvbtcListUrl));
@@ -333,6 +334,133 @@ async function vaultBalance(api) {
   }
 }
 
+async function ceffuBalance(api, address, graphData) {
+  if (!address[api.chain] || !address[api.chain]["ceffu"]) {
+    return;
+  }
+  let ceffuData = address[api.chain]["ceffu"];
+  
+  let pools = [];
+  for (const graph of graphData.pools) {
+    if (graph['openFundShareSlot'] == ceffuData['slot']) {
+      pools.push(graph)
+    }
+  }
+  if (pools.length > 0) {
+    const poolConcretes = await concrete(pools, api);
+    const nav = await api.multiCall({
+      abi: abi.getSubscribeNav,
+      calls: pools.map((index) => ({
+        target: index.navOracle,
+        params: [index.poolId, api.timestamp * 1000]
+      })),
+    })
+
+    const poolTotalValues = await api.multiCall({
+      abi: abi.slotTotalValue,
+      calls: pools.map((index) => ({
+        target: poolConcretes[index.contractAddress],
+        params: [index.openFundShareSlot]
+      })),
+    })
+
+    const poolBaseInfos = await api.multiCall({
+      abi: abi.slotBaseInfo,
+      calls: pools.map((index) => ({
+        target: poolConcretes[index.contractAddress],
+        params: [index.openFundShareSlot]
+      })),
+    })
+
+    const poolDecimalList = await api.multiCall({
+      abi: abi.decimals,
+      calls: poolBaseInfos.map(i => i[1]),
+    })
+
+    let vaults = {};
+    for (const key in pools) {
+      if (poolBaseInfos[key][1] && pools[key]["vault"]) {
+        vaults[`${pools[key]["vault"].toLowerCase()}-${poolBaseInfos[key][1].toLowerCase()}`] = [poolBaseInfos[key][1], pools[key]["vault"]]
+      }
+    }
+
+    const balances = await api.multiCall({
+      abi: abi.balanceOf,
+      calls: Object.values(vaults).map((index) => ({
+        target: index[0],
+        params: [index[1]]
+      })),
+    })
+
+    let vaultbalances = {};
+    for (let i = 0; i < Object.keys(vaults).length; i++) {
+      vaultbalances[Object.keys(vaults)[i]] = balances[i];
+    }
+
+    for (let i = 0; i < poolTotalValues.length; i++) {
+      const decimals = poolDecimalList[i];
+      let balance = BigNumber(poolTotalValues[i]).div(BigNumber(10).pow(18 - decimals)).times(BigNumber(nav[i].nav_).div(BigNumber(10).pow(decimals))).toNumber();
+      if (pools[i]['vault'] && poolBaseInfos[i][1] && vaultbalances[`${pools[i]['vault'].toLowerCase()}-${poolBaseInfos[i][1].toLowerCase()}`]) {
+        balance = BigNumber(balance).minus(vaultbalances[`${pools[i]['vault'].toLowerCase()}-${poolBaseInfos[i][1].toLowerCase()}`]).toNumber();
+        vaultbalances[`${pools[i]['vault'].toLowerCase()}-${poolBaseInfos[i][1].toLowerCase()}`] = undefined
+      }
+
+      if (ceffuData["ceffus"]) {
+        let ceffus = [];
+        for (const deposit of ceffuData["ceffus"]["depositAddress"]) {
+          for (const tokenAddress of ceffuData["ceffus"]["tokens"]) {
+            ceffus.push({ tokenAddress, deposit })
+          }
+        }
+
+        const balances = await api.multiCall({
+          abi: abi.balanceOf,
+          calls: Object.values(ceffus).map((index) => ({
+            target: index["tokenAddress"],
+            params: [index["deposit"]]
+          })),
+        })
+        for (const balanceOf of balances) {
+          balance = BigNumber(balance).minus(balanceOf).toNumber();
+        }
+      }
+
+      if (balance > 0) {
+        api.add(poolBaseInfos[i][1], balance)
+      }
+    }
+  }
+}
+
+
+async function getGraphSoltData(timestamp, chain, api, slot) {
+  console.log("slot", slot)
+  const poolSlotDataQuery = `query PoolOrderInfos {
+            poolOrderInfos(first: 1000  where:{fundraisingEndTime_gt:${timestamp}, openFundShareSlot:"${slot["slot"]}") {
+              marketContractAddress
+              contractAddress
+              navOracle
+              poolId
+              vault
+              openFundShareSlot
+          }
+        }`;
+
+  console.log("slotDataQuery", poolSlotDataQuery);
+  let data;
+  if (graphUrlList[chain]) {
+    data = (await cachedGraphQuery(`solv-protocol/funds-graph-data/${chain}`, graphUrlList[chain], poolSlotDataQuery, { api, fetchById: true }));
+  }
+
+  let poolList = [];
+  if (data != undefined && data.poolOrderInfos != undefined) {
+    poolList = data.poolOrderInfos;
+  }
+
+  return {
+    pools: poolList
+  };
+}
 
 async function getGraphData(timestamp, chain, api) {
   let rwaSlot = (await getConfig('solv-protocol/slots', slotListUrl));
