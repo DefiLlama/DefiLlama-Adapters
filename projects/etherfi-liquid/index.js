@@ -18,7 +18,11 @@ async function tvl(api) {
     abi: 'function categoryLastUpdated(string _category) view returns (uint256)',
     params: ['liquid-weth']
   });
-  api.add(ADDRESSES.ethereum.EETH, balETH-wethBal);
+  if (api.timestamp - updatedTimestamp > 12 * 60 * 60 || updatedTimestamp > api.timestamp) {
+    throw new Error('Data is outdated')
+  }
+  console.log(updatedTimestamp, api.timestamp)
+  api.add(ADDRESSES.ethereum.EETH, balETH - wethBal);
   api.add(ADDRESSES.ethereum.WETH, wethBal)
   const balUSD = await api.call({
     abi: "uint256:totalSupply",
