@@ -4,8 +4,15 @@ const { sumTokensExport } = require("../helper/unwrapLPs");
 
 module.exports = {
     hallmarks: [
-        [1714867303,"justin sun depo"]
-      ],
+    [1682371200, "LST launch (swETH)"],
+    [1701820800, "1st EigenLayer LST cap window"],
+    [1704844800, "2nd EigenLayer LST cap window"],
+    [1706073600, "EigenLayer LST cap removal"],
+    [1706486400, "LRT launch (rswETH)"],
+    [1710374400, "LST upgrade (swETH)"],
+    [1712707200, "Swell L2 pre-launch deposits open"],
+    [1714867303, "Justin Sun Deposit"]
+],
     ethereum: {
         tvl: sumTokensExport({
             owners: ["0x38D43a6Cb8DA0E855A42fB6b0733A0498531d774"],
