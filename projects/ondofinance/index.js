@@ -72,6 +72,15 @@ Object.keys(config).forEach((chain) => {
           abi: "erc20:totalSupply",
           calls: fundAddresses,
         });
+        if (chain === "ethereum") {
+          const usdycIndex = fundAddresses.indexOf(config.ethereum.USDYc);
+          const usdyIndex = fundAddresses.indexOf(config.ethereum.USDY);
+          // add USDYc supply to USDY supply
+          supplies[usdyIndex] =
+            parseInt(supplies[usdyIndex]) + parseInt(supplies[usdycIndex]);
+          fundAddresses.splice(usdycIndex, 1);
+          supplies.splice(usdycIndex, 1);
+        }
         api.addTokens(fundAddresses, supplies);
       }
       return api.getBalances();
