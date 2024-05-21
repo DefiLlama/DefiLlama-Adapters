@@ -18,6 +18,7 @@ const celo_pools = {
     v2: {
       pools: [
         '0x23be37d5AAb59101B9BB31A96D1bF5D7112250f7',  // arf
+        '0xC3dE7198c93dcb0b2Bb17311cCb0fD3C05C49218',  // raincards
       ],
     },
     v1: {
