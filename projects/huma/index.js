@@ -2,6 +2,33 @@ const sdk = require('@defillama/sdk');
 const CORE_ASSETS = require('../helper/coreAssets.json');
 const abiPool = require('./abi/huma-pool.json');
 
+
+const celo_pool_factory = '0x85c8dC49B8DaA709e65dd2182e500E8AC3CaA6C7'
+
+async function getMaxPoolId(factory, chainName) {
+  const poolFactoryContract = await sdk.api.abi.call({
+    target: factory,
+    abi: abiPool["poolId"],
+    chain: chainName
+  });
+  return poolFactoryContract.output;
+};
+
+async function getPools(factory, chainName) {
+  let pools = [];
+  const maxPoolId = await getMaxPoolId(factory, chainName);
+  for (let poolId = 1; poolId <= maxPoolId; poolId++) {
+    const pool = await sdk.api.abi.call({
+      target: factory,
+      abi: abiPool["checkPool"],
+      params: poolId,
+      chain: chainName
+    });
+    pools.push(pool.output.poolAddress);
+  };
+  return pools;
+};
+
 const polygon_pools = {
   v1: {
     poolsUSDCCircle: [
@@ -14,25 +41,19 @@ const polygon_pools = {
   }
 };
 
+
 const celo_pools = {
-    v2: {
-      pools: [
-        '0x23be37d5AAb59101B9BB31A96D1bF5D7112250f7',  // arf
-        '0xC3dE7198c93dcb0b2Bb17311cCb0fD3C05C49218',  // raincards
-      ],
-    },
-    v1: {
-      pools: [
-        '0xa190a0ab76f58b491cc36205b268e8cf5650c576',  // Jia
-      ],
-    },
-  };
+  v1: {
+    pools: [
+      '0xa190a0ab76f58b491cc36205b268e8cf5650c576',  // Jia
+    ],
+  },
+};
 
 async function celo() {
   const balances = {};
-
   const v2TotalUnderlyingResults = await sdk.api.abi.multiCall({
-    calls: celo_pools.v2.pools.map((address) => ({
+    calls: (await getPools(celo_pool_factory, 'celo')).map((address) => ({
       target: address
     })),
     abi: abiPool["totalAssets"],

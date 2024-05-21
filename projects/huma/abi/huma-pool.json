@@ -1,4 +1,56 @@
 {
     "totalAssets": "uint256:totalAssets",
-    "totalPoolValue": "uint256:totalPoolValue"
+    "totalPoolValue": "uint256:totalPoolValue",
+    "checkPool": {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "poolId_",
+            "type": "uint256"
+          }
+        ],
+        "name": "checkPool",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "poolId",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "poolAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "string",
+                "name": "poolName",
+                "type": "string"
+              },
+              {
+                "internalType": "enum PoolFactory.PoolStatus",
+                "name": "poolStatus",
+                "type": "uint8"
+              },
+              {
+                "internalType": "address",
+                "name": "poolConfigAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "poolTimelock",
+                "type": "address"
+              }
+            ],
+            "internalType": "struct PoolFactory.PoolRecord",
+            "name": "",
+            "type": "tuple"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+    "poolId": "uint256:poolId"
 }
