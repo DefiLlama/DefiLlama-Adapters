@@ -1,0 +1,3 @@
+{
+  "leveragedTokenData": "function leveragedTokenData() view returns (tuple(address addr, string symbol, uint256 totalSupply, string targetAsset, uint256 targetLeverage, bool isLong, bool isActive, uint256 rebalanceThreshold, uint256 exchangeRate, bool canRebalance, bool hasPendingLeverageUpdate, uint256 remainingMargin, uint256 leverage, uint256 assetPrice, uint256 userBalance)[])"
+}
