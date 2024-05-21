@@ -28,7 +28,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-    methodology: 'Computed by adding the assets in L1 strategies and the pending buffer on StarkNet, then subtracting any pending withdrawals.',
+    methodology: 'Computed by summing the total assets held by each strategy.',
     starknet: {
         tvl
     },
