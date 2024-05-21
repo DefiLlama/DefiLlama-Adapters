@@ -1,3 +1,5 @@
+const { nullAddress } = require("../helper/tokenMapping")
+
 module.exports = {
   methodology: "USDC.e in the vault",
 }
@@ -21,7 +23,12 @@ Object.keys(config).forEach(chain => {
       const ownerTokens = []
       for (const v of vault) {
         const tokens = await api.fetchList({ lengthAbi: 'allWhitelistedTokensLength', itemAbi: 'allWhitelistedTokens', target: v })
-        ownerTokens.push([tokens, v])
+        ownerTokens.push([tokens.map(i => {
+          switch (i.toLowerCase()) {
+            case '0x000000000000000000000000000000000000800a': return nullAddress
+            default: return i
+          }
+        }), v])
       }
       return api.sumTokens({ ownerTokens })
     }
