@@ -12,7 +12,7 @@ async function getMaxPoolId(factory, chainName) {
     chain: chainName
   });
   return poolFactoryContract.output;
-};
+}
 
 async function getPools(factory, chainName) {
   let pools = [];
@@ -25,9 +25,9 @@ async function getPools(factory, chainName) {
       chain: chainName
     });
     pools.push(pool.output.poolAddress);
-  };
+  }
   return pools;
-};
+}
 
 const polygon_pools = {
   v1: {
