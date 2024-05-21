@@ -1271,13 +1271,14 @@
     "TON_3": "EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c",
     "TON_4": "EQCajaUU1XXSAjTD-xOV7pE49fGtg4q8kF3ELCOJtGvQFQ2C",
     "USDC": "EQC61IQRl0_la95t27xhIpjxZt32vl1QQVF2UgTNuvD18W-4",
-    "USDT": "EQC_1YoM8RBixN95lz7odcF3Vrkc_N8Ne7gQi7Abtlet_Efi",
+    "oUSDT": "EQC_1YoM8RBixN95lz7odcF3Vrkc_N8Ne7gQi7Abtlet_Efi",
     "ETH": "EQAW42HutyDem98Be1f27PoXobghh81umTQ-cGgaKVmRLS7-",
     "MATIC": "EQBq4d4GPyBoh-Pjnf3wxUyQSS28WY2Yt-7cPAG8FHpWpNRX",
     "ORC": "EQDCIEo0HUUYsAV-lTMviOd-GkSXfVPsNZMGjRaNOA_6--FD",
     "MEGA": "EQBf6-YoR9xylol_NwjHrLkrTFAZJCX-bsd-Xx_902OaPaBf",
     "WEMIX": "EQCf7Nb341dxOE3N0jimngRxGEV8T3zo-eU2EZVs_nchNhhZ",
-    "jUSDT": "EQBynBO23ywHy_CgarY9NK9FTz0yDsG82PtcbSTQgGoXwiuA"
+    "jUSDT": "EQBynBO23ywHy_CgarY9NK9FTz0yDsG82PtcbSTQgGoXwiuA",
+    "USDT": "EQCxE6mUtQJKFnGfaROTKOt1lZbDiiX1kCixRv7Nw2Id_sDs"
   },
   "defichain": {
     "DFI": "DFI",
@@ -1769,5 +1770,8 @@
     "STONE": "0x96147a9ae9a42d7da551fd2322ca15b71032f342",
     "RETH": "0xb5686c4f60904ec2bda6277d6fe1f7caa8d1b41a",
     "TBTC": "0xbba2ef945d523c4e2608c9e1214c2cc64d4fc2e2"
+  },
+  "btr": {
+    "ETH": "0xef63d4e178b3180beec9b0e143e0f37f4c93f4c2"
   }
 }

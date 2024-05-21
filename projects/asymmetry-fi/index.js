@@ -11,6 +11,9 @@ const AFETH = '0x0000000016E6Cb3038203c1129c8B4aEE7af7a11'
 const CVX = ADDRESSES.ethereum.CVX
 const VOTIUM = '0x00000069aBbB0B1Ad6975bcF753eEe15D318A0BF'
 
+// afCVX
+const AFCVX = '0x8668a15b7b023Dc77B372a740FCb8939E15257Cf'
+
 async function tvl(api) {
 
   const tokensAndOwners = [
@@ -26,13 +29,19 @@ async function tvl(api) {
     [SFRXETH, AFETH],
   ]
 
+  // CVX in afETH (Votium Strategy)
   const votiumAvailableCVX = await api.call({ abi: 'uint256:availableCvx', target: VOTIUM, })
   api.add(CVX, votiumAvailableCVX)
+
+  // CVX in afCVX (Clever Strategy)
+  const afCVXAvailableCVX = await api.call({ abi: 'uint256:totalAssets', target: AFCVX, })
+  api.add(CVX, afCVXAvailableCVX)
+
   return api.sumTokens({ tokensAndOwners })
 }
 
 module.exports = {
-  methodology: 'counts tvl on both afETH and safETH',
+  methodology: 'counts tvl on afETH, safETH, and afCVX',
   ethereum: {
     tvl,
   },
