@@ -66,7 +66,7 @@ Object.keys(config).forEach((chain) => {
         const aptosSupply =
           supply.vec[0].integer.vec[0].value / Math.pow(10, decimals);
 
-        api.addTokens(fundAddresses, [aptosSupply]);
+        api.addTokens(config.ethereum.USDY, aptosSupply * 1e18, { skipChain: true, });
       } else {
         supplies = await api.multiCall({
           abi: "erc20:totalSupply",
