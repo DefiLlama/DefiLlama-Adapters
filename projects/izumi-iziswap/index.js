@@ -1,7 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
-
-let abi = require('./abi')
-const { sumTokens2, } = require('../helper/unwrapLPs')
+const { iziswapExport } = require('../helper/iziswap')
 
 const nullAddress = ADDRESSES.null
 const poolHelpers = {
@@ -29,6 +27,10 @@ const poolHelpers = {
   'base': ['0x110dE362cc436D7f54210f96b8C7652C2617887D'],
   'zkfair': ['0x110dE362cc436D7f54210f96b8C7652C2617887D'],
   'zeta': ['0x2db0AFD0045F3518c77eC6591a542e326Befd3D7'],
+  // 'merlin': ['0x261507940678Bf22d8ee96c31dF4a642294c0467'], // tracked as part of merlinswap
+  'blast': ['0x5e7902aDf0Ea0ff827683Cc1d431F740CAD0731b'],
+  'zklink': ['0x936c9A1B8f88BFDbd5066ad08e5d773BC82EB15F'],
+  'mode': ['0x19b683A2F45012318d9B2aE1280d68d3eC54D663'],
 } // iziswap liquidityManager contracts
 
 const blacklistedTokens = [
@@ -36,55 +38,9 @@ const blacklistedTokens = [
   '0x1382628e018010035999A1FF330447a0751aa84f',
   ADDRESSES.bsc.iUSD, // mantle iUSD
   '0x078f712f038A95BeEA94F036cADB49188a90604b', // manta iUSD
+  ADDRESSES.bsc.iUSD, // merlin iUSD
 ]
 
-const tvl = async (_, _1, _2, { api }) => {
-  const chain = api.chain
-  const toa = [] 
-  const chunkSize = 10
-  const bTokens = [...blacklistedTokens]
-  const allPools = []
-  const allPoolMetas = []
-
-  for(const manager of poolHelpers[chain]) {
-    let i = 1
-    let foundLastPool = false
-    const poolMetaData = []
-    do {
-      const calls = []
-      for (let j = i; j < i + chunkSize; j++)
-        calls.push(j)
-      i += chunkSize
-      const poolMetas = await api.multiCall({
-        target: manager,
-        abi: abi.poolMetas,
-        calls,
-      })
-      for (const output of poolMetas) {
-        if (output.tokenX === nullAddress && output.fee === '0') {
-          foundLastPool = true
-          break;
-        }
-        poolMetaData.push(output)
-      }
-    } while (!foundLastPool)
-  
-    const poolCalls = poolMetaData.map(i => ({ params: [i.tokenX, i.tokenY, i.fee] }))
-    const pools = await api.multiCall({
-      target: manager,
-      abi: abi.pool,
-      calls: poolCalls,
-    })
-
-    allPools.push(...pools)
-    allPoolMetas.push(...poolMetaData)
-  }
-
-  allPools.forEach((output, i) => toa.push([allPoolMetas[i].tokenX, output], [allPoolMetas[i].tokenY, output],))
-  // if (chain === 'era') bTokens.push(ADDRESSES.arbitrum.WETH)
-  return sumTokens2({ tokensAndOwners: toa, api, blacklistedTokens: bTokens, permitFailure: true})
-}
-
 Object.keys(poolHelpers).forEach(chain => {
-  module.exports[chain] = { tvl }
+  module.exports[chain] = { tvl: iziswapExport({ poolHelpers: poolHelpers[chain], blacklistedTokens }), }
 })

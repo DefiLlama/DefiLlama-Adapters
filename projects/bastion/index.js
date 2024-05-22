@@ -31,8 +31,7 @@ const bastion = [
 ];
 
 module.exports = {
-  timetravel: true,
-  aurora: {
+    aurora: {
     tvl: async (...args) => {
       let balances = {};
       const tvls = await Promise.all(bastion.map(realm => realm.tvl(...args)))
