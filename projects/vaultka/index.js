@@ -1,6 +1,6 @@
 //import utils
 const ADDRESSES = require("../helper/coreAssets.json");
-
+const { staking } = require("../helper/staking");
 // 19/12/2023 ALP Leverage Vault
 // 29/11/2023 GMXV2 Leverage(Neutral) Vault
 // 12/11/2023 GLP Compound Vault
@@ -108,16 +108,12 @@ module.exports = {
       });
 
       const contractAbis = {
-        stakedVlpBalance:
-          "function getStakedVlpBalance() public view returns (uint256)",
-        stakedHlpBalance:
-          "function userTokenAmount(address user) public view returns (uint256)",
-        stakedAlpBalance:
-          "function userInfo(address account) external view returns (uint256, uint256)",
+        stakedVlpBalance: "function getStakedVlpBalance() public view returns (uint256)",
+        stakedHlpBalance: "function userTokenAmount(address user) public view returns (uint256)",
+        stakedAlpBalance: "function userInfo(address account) external view returns (uint256, uint256)",
         alpPrice: "function getAlpPrice() external view returns (uint256)", //
         klpPrice: "function getKlpPrice(bool) external view returns (uint256)",
-        balanceOf:
-          "function balanceOf(address) external view returns (uint256)",
+        balanceOf: "function balanceOf(address) external view returns (uint256)",
       };
 
       const StakedVLPBal = await api.call({
@@ -167,5 +163,6 @@ module.exports = {
       api.add(ADDRESSES.arbitrum.USDC, alpValue);
       api.add(ADDRESSES.arbitrum.USDC, klpValue);
     },
+    staking: staking("0xA6f217d92A1F23C0454792cb7Bf81c74C8416550", "0xAFccb724e3aec1657fC9514E3e53A0E71e80622D"),
   },
 };
