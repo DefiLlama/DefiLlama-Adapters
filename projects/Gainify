@@ -1,0 +1,19 @@
+const { toUSDTBalances } = require('../helper/balances');
+const { get } = require('../helper/http')
+
+async function tvl() {
+    const response = (
+        await get(
+                'https://free-api.vestige.fi/asset/1748330503/tvl/simple/1D?currency=USD' #Display GAiNiFY TVL using Vestige API - Represented in USD
+            )
+    )
+
+    return toUSDTBalances(response.total);
+}
+
+module.exports = {
+    timetravel: false,
+    algorand: {
+        tvl
+    }
+}
