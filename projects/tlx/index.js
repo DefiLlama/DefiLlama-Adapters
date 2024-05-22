@@ -1,5 +1,7 @@
-const { sumTokens2 } = require("../helper/unwrapLPs");
-const helperAbi = require("./leveraged-token-helper-abi.json");
+const helperAbi = {
+  "leveragedTokenData": "function leveragedTokenData() view returns (tuple(address addr, string symbol, uint256 totalSupply, string targetAsset, uint256 targetLeverage, bool isLong, bool isActive, uint256 rebalanceThreshold, uint256 exchangeRate, bool canRebalance, bool hasPendingLeverageUpdate, uint256 remainingMargin, uint256 leverage, uint256 assetPrice, uint256 userBalance)[])"
+}
+
 
 const contracts = {
   tlx: "0xD9cC3D70E730503E7f28c1B407389198c4B75FA2",
@@ -22,10 +24,11 @@ async function staking(api) {
 
   api.addToken(contracts.tlx, lockedTlxBalance);
   api.addToken(contracts.tlx, stakedTlxBalance);
-  return sumTokens2({ api });
 }
 
 async function tvl(api) {
+  // documentation: https://docs.tlx.fi/more/deployed-contracts
+  // factory - 0x5dd85f51e9fd6ade8ecc216c07919ecd443eb14d
   const res = await api.call({
     abi: helperAbi.leveragedTokenData,
     target: contracts.leveragedTokenHelper,
@@ -34,7 +37,6 @@ async function tvl(api) {
     return acc + (token.totalSupply * token.exchangeRate) / 1e18;
   }, 0);
   api.addToken(contracts.sUSD, totalSusd);
-  return sumTokens2({ api });
 }
 
 module.exports = {
