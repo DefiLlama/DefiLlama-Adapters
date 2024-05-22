@@ -1,4 +1,0 @@
-{
-    "getUNFTAssetList": "function getUNFTAssetList() external view returns (address[] memory)",
-    "uNftProxys": "function uNftProxys(address) view returns (address)"
-  }
