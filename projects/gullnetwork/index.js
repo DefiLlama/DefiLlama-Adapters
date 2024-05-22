@@ -7,15 +7,6 @@ const getStakingVaultTvl = async (api, stakingVaultFactory) => {
   await api.sumTokens({ tokensAndOwners2: [stakedTokens, vaults] })
 }
 
-const getAmmTvl = async (api, ammFactory) => {
-  if (!ammFactory) return
-  const pairAddresses = await api.fetchList({ lengthAbi: 'allPairsLength', itemAbi: 'allPairs', target: ammFactory })
-  const token0List = await api.multiCall({ calls: pairAddresses, abi: 'address:token0' })
-  const token1List = await api.multiCall({ calls: pairAddresses, abi: 'address:token1' })
-  const tokensAndOwners = pairAddresses.map((owner, id) => [[token0List[id], owner], [token1List[id], owner]]).flat()
-  await api.sumTokens({ tokensAndOwners })
-}
-
 const getRewardTvl = async (api, rewardFactory) => {
   if (!rewardFactory) return
   const stakeRewarders = await api.fetchList({ lengthAbi: 'uint:stakeRewarderLength', itemAbi: 'stakeRewarders', target: rewardFactory })
@@ -28,9 +19,8 @@ const getRewardTvl = async (api, rewardFactory) => {
 }
 
 const tvl = async (api) => {
-  const { stakingVaultFactory, ammFactory, rewardFactory } = config[api.chain]
+  const { stakingVaultFactory = FACTORY_SINGLETON_ADDR, rewardFactory } = config[api.chain]
   await getStakingVaultTvl(api, stakingVaultFactory)
-  await getAmmTvl(api, ammFactory)
   await getRewardTvl(api, rewardFactory)
 }
 
@@ -40,20 +30,12 @@ module.exports = {
 }
 
 const config = {
-  ethereum: {
-    stakingVaultFactory: FACTORY_SINGLETON_ADDR,
-  },
-  bsc: {
-    stakingVaultFactory: FACTORY_SINGLETON_ADDR,
-  },
+  ethereum: {},
+  bsc: {},
   manta: {
-    stakingVaultFactory: FACTORY_SINGLETON_ADDR,
-    ammFactory: '0x31a78894a2B5dE2C4244cD41595CD0050a906Db3',
     rewardFactory: '0x2a18164B5e84d9C1B03ddbb5A1982A35cF75E506'
   },
-  base: {
-    stakingVaultFactory: FACTORY_SINGLETON_ADDR,
-  },
+  base: {},
 }
 
 Object.keys(config).forEach(chain => {
