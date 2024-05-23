@@ -110,6 +110,12 @@ const fixBalancesTokens = {
   },
   bevm: {
     '0x2967e7bb9daa5711ac332caf874bd47ef99b3820': { coingeckoId: 'wrapped-stbtc', decimals: 18 },
+  },
+  real: {
+		'0x0000000000000000000000000000000000000000': { coingeckoId: 'bitcoin', decimals: 18 },
+    '0x90c6e93849e06ec7478ba24522329d14a5954df4': { coingeckoId: 'ethereum', decimals: 18 },
+    '0x75d0cbf342060b14c2fc756fd6e717dfeb5b1b70': { coingeckoId: 'dai', decimals: 18 },
+    '0x83fedbc0b85c6e29b589aa6bdefb1cc581935ecd': { coingeckoId: 'mountain-protocol-usdm', decimals: 18 },
   }
 }
 

@@ -24,14 +24,13 @@ async function tvl(api) {
     abi: "erc20:totalSupply",
     calls: tokens.map((item) => item.address),
   });
-  return tokens.reduce((total, item, index) => {
-    total[item.coinGeckoId] = balances[index] / 10 ** tokens[index].decimals;
-    return total;
-  }, {});
+  tokens.forEach((token, index) => {
+    api.addCGToken(token.coinGeckoId, balances[index] / 10 ** tokens[index].decimals);
+  })
 }
 
 module.exports = {
   manta: {
     tvl,
   },
-};
+}
