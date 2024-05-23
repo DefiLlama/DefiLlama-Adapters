@@ -7,6 +7,9 @@ const storedTokens = [
 ];
 
 async function tvl(api) {
+  // await api.call({ target: token.address, abi: 'function getTrackedPortfolios() external view returns (address[] memory)' });
+  // await api.call({ target: token.address, abi: 'function getPortfolioAssets() view public returns (address[] memory)' });
+
   // const addTokenTVL = async (token) => {
   //   const tokenTotalSupply = await api.call({ target: token.address, abi: 'erc20:totalSupply' });
   //   if (token.sufficientLiquidityForDefiLlamaIndexer) {
@@ -35,8 +38,9 @@ async function tvl(api) {
   const sailsSailingAddress = '0x47a663c082926d0d913cacb89240c3f4bc409a88'; // sailssailing
   
   const dev1Address = '0x797E2CD952DF539Ccfea5554911AFEb2a77Fb760';
+  const mainAddress = '0xf068B5EbABf25f5FF69d21c8536b5a5a19C53A10';
   // code below assimilate end code more closely
-  const portfolioAddresses = [dev1Address];
+  const portfolioAddresses = [dev1Address, mainAddress];
   const assetsInPortfolios = portfolioAddresses.map((address) => {
     return [usdtAddress, sailsSailingAddress]
   });
