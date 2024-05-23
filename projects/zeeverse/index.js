@@ -1,4 +1,5 @@
 const { stakings } = require("../helper/staking");
+const {pool2} = require("../helper/pool2");
 
 const STAKING_ARB = "0x73cc0baf79ccb12ad661725377474ed6a1366fb6";
 const MAGIC_TOKEN = "0x539bde0d7dbd336b79148aa742883198bbf60342";
@@ -35,7 +36,8 @@ module.exports = {
             ],
             VEE_TOKEN_ARB,
         ),
-        tvl: tvlArb,
+        pool2: pool2(LP_POOL, MAGIC_TOKEN),
+        tvl: () => ({}),
     },
     ethereum: {
         staking: stakings([
@@ -43,7 +45,8 @@ module.exports = {
             ],
             VEE_TOKEN_ETH,
         ),
-        tvl: tvlEth,
+        tvl: () => ({}),
+        pool2: pool2(CURVE_POOL, USDC_TOKEN_ETH),
     },
     start: 1716366318,
 }
