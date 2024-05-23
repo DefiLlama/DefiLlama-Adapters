@@ -40,8 +40,8 @@ const fixBalancesTokens = {
     '0xff0000000000000000000000000000000000000d': { coingeckoId: "usd-coin", decimals: 18 },
     '0xff00000000000000000000000000000000000003': { coingeckoId: "tether", decimals: 18 },
     '0xff00000000000000000000000000000000000001': { coingeckoId: "ethereum", decimals: 18 },
+    '0xff0000000000000000000000000000000000000f': { coingeckoId: "decentralized-usd", decimals: 18 },
     '0x66F3Cf265D2D146A0348F6fC67E3Da0835e0968E': { coingeckoId: "javsphere", decimals: 18 },
-
   },
   ace: {
     [nullAddress]: { coingeckoId: "endurance", decimals: 18 },
