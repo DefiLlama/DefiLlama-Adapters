@@ -1774,5 +1774,9 @@
   },
   "btr": {
     "ETH": "0xef63d4e178b3180beec9b0e143e0f37f4c93f4c2"
+  },
+  "real": {
+    "arcUSD": "0xaec9e50e3397f9ddc635c6c429c8c7eca418a143",
+    "RWA": "0x4644066f535ead0cde82d209df78d94572fcbf14"
   }
 }
