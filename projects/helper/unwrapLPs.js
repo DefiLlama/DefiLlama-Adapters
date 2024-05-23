@@ -304,7 +304,8 @@ async function unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain = 
 }
 
 async function unwrapSlipstreamNFTs({ balances = {}, nftsAndOwners = [], block, chain = 'base', owner, nftAddress, owners, blacklistedTokens = [], whitelistedTokens = [], uniV3ExtraConfig = {} }) {
-  // https://docs.uniswap.org/contracts/v3/reference/deployments
+  // https://velodrome.finance/security#contracts
+  // https://aerodrome.finance/security#contracts
   if (!nftsAndOwners.length) {
     if (!nftAddress)
       switch (chain) {
