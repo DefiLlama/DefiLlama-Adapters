@@ -12,5 +12,5 @@ async function tvl(ts) {
 
 module.exports = {
   methodology: `We count the USDC as the collateral for the ckUSDC`,
-  bitcoin: { tvl: tvl },
+  usdc: { tvl: tvl },
 }
