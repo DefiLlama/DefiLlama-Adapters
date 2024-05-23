@@ -12,13 +12,13 @@ const DEFAULTS = {
   MULTIVERSX_RPC: 'https://api.multiversx.com',
   ANKR_API_KEY: '79258ce7f7ee046decc3b5292a24eb4bf7c910d7e39b691384c7ce0cfb839a01',
   RENEC_RPC: "https://api-mainnet-beta.renec.foundation:8899/",
-  KARAK_RPC: "https://rpc.karak.network",
-  FSC_RPC: "https://fsc-dataseed1.fonscan.io,https://fsc-dataseed2.fonscan.io,https://fonscan.io/api/eth-rpc",
-  BSQUARED_RPC: "https://rpc.bsquared.network,https://b2-mainnet.alt.technology",
-  FSC_RPC_MULTICALL: "0x18fA376d92511Dd04090566AB6144847c03557d8",
-  XLAYER_RPC: "https://wallet.okex.org/fullnode/xlayer/discover/rpc/ro",
-  LAC_RPC: "https://rpc1.mainnet.lachain.network,https://rpc2.mainnet.lachain.network/", // Chain id : 274
-  XLAYER_RPC_MULTICALL: "0x398F92e15519B4F6F2D5cc42C17FC9ED15De53d8",
+  BSQUARED_RPC: "https://rpc.bsquared.network,https://b2-mainnet.alt.technology", // add manually, short name is b2-mainnet
+  BTR_RPC_MULTICALL: '0xc8818aaeaBF0dF9f3f3ffF54Ab185705177A6234',
+  DEFICHAIN_EVM_RPC_MULTICALL: '0x7fEf77CDe3B41221Cff54B84Ea89D2EBc6b53352',
+  BOUNCEBIT_RPC_MULTICALL: '0x493d616f5F9a64e5B3D527120E406439bdF29272',
+  ZKLINK_RPC_MULTICALL: '0xa8738F57538E3Bb73872d1133F2358c7Fe56FD35',
+  REAL_RPC: 'https://real.drpc.org',
+  REAL_RPC_MULTICALL: '0xcA11bde05977b3631167028862bE2a173976CA11',
 }
 
 const ENV_KEYS = [
