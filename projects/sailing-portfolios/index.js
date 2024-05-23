@@ -1,6 +1,3 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require('@defillama/sdk');
-
 const portfoliosTrackers = {
   'kava': '0x12c90425dD549DEdD455E223a897E438E2Dc0bbc',
 };
