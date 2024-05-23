@@ -5,7 +5,7 @@ module.exports = {
     tvl: async api => {
       return sumTokens2({
         owners: [
-          '0xcc92b570ef8117af0ed2ec294f635b70644f13ea', // gast-wbtc lp
+          '0x7ba47bbffa24983749145f3a683656d391e3f3bc', // gast-wbtc lp
         ], tokens: ['0xff204e2681a6fa0e2c3fade68a1b28fb90e4fc5f'], api,
       }) //wbtc
     },
