@@ -10,7 +10,7 @@ const MULAY_ADDRESS = "0xDDF2ad1d9bFA208228166311FC22e76Ea7a4C44D";
 const MUU_TOKEN = "0xc5BcAC31cf55806646017395AD119aF2441Aee37";
 const MUUU_REWARDS_ADDRESS = "0xB2ae0CF4819f2BE89574D3dc46D481cf80C7a255";
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   const [veKGL, veLAY] = await api.multiCall({ abi: 'erc20:totalSupply', calls: [MUKGL_ADDRESS, MULAY_ADDRESS] })
   api.add(ADDRESSES.astar.KGL, veKGL)
   api.add(ADDRESSES.astar.LAY, veLAY)
@@ -47,7 +47,6 @@ async function addTokensInPool(api, lpToken, tokenBal) {
     const { pool , tokenCount } = mappingPool
     bals = await api.multiCall({ abi: "function balances(uint256) view returns (uint256)", target: pool, calls: Array(tokenCount).fill(0).map((_, i) => i)})
     tokens = await api.multiCall({ abi: ABI.coins, target: pool, calls: Array(tokenCount).fill(0).map((_, i) => i)})
-    console.log(bals, tokens)
   } else {
     tokens = await api.call({  abi: ABI.get_coins, target: REGISTRY_ADDRESS, params: pool })
     bals = await api.call({  abi: ABI.get_balances, target: REGISTRY_ADDRESS, params: pool })

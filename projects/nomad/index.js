@@ -78,7 +78,7 @@ function tvl(chain) {
     TOKEN_ADDRESSES.forEach(t => {
       if (t[chain]) toa.push([t[chain], owner])
     })
-    return sumTokens({}, toa, block, chain)
+    return sumTokens({}, toa, block, chain, undefined)
   }
 }
 
@@ -86,9 +86,7 @@ module.exports = {
   hallmarks: [
     [1659312000,"trusted root exploit"]
   ],
-  timetravel: true,
-  misrepresentedTokens: false,
-  methodology: 'counts the total amount of assets locked in the Nomad token bridge.',
+      methodology: 'counts the total amount of assets locked in the Nomad token bridge.',
   start: 13983843,
   ...chainExports(tvl, Object.keys(HOME_CHAINS))
 }; 

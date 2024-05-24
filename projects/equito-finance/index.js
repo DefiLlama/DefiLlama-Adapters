@@ -22,17 +22,19 @@ module.exports = {
   ],
   methodology:
     "TVL counts native tokens locked in EquitoFinance bridge vaults.",
-  algorand: { tvl: sumTokensExport({ owners: [ALGO_VAULT1, ALGO_VAULT2] }) },
+  algorand: { tvl: sumTokensExport({ owners: [ALGO_VAULT1, ALGO_VAULT2], logCalls: true }) },
   ethereum: {
     tvl: sumTokensExport({
       owners: [ETH_VAULT1, ETH_VAULT2],
       tokens: [ADDRESSES.null, ADDRESSES.ethereum.INU, ETH_PSYOP],
+      logCalls: true
     }),
   },
   bsc: {
     tvl: sumTokensExport({
       owners: [BSC_VAULT1, BSC_VAULT2],
       tokens: [ADDRESSES.null],
+      logCalls: true 
     }),
   },
 };

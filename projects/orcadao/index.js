@@ -30,18 +30,18 @@ const banksAndCollateral = [
   ["0x0f7f48d4b66bf5a53d4f21fa6ffca45f70cef770","0x18419976Ba05dd9cE44544B8d91590704aFA4a29"], // YAK AAVE WBTC
   ["0xbf5bffbf7d94d3b29abe6eb20089b8a9e3d229f7","0xC09caDDA753c54292BeB1D10429bD175556b8b5E"], // YAK QI
   [ADDRESSES.avax.WETH_e,"0x4805D6563B36a02C5012c11d6e15552f50066d58"], // WETH
-  ["0x50b7545627a5162f82a992c33b87adc75187b218","0x1eA60d781376C06693dFB21d7e5951cAEc13F7E4"], // WBTC
+  [ADDRESSES.avax.WBTC_e,"0x1eA60d781376C06693dFB21d7e5951cAEc13F7E4"], // WBTC
 ]
 
 const translateToken = {
   "0x957ca4a4aa7cdc866cf430bb140753f04e273bc0": "avax:" + ADDRESSES.avax.WAVAX,
-  "0x0f7f48d4b66bf5a53d4f21fa6ffca45f70cef770": "avax:0x50b7545627a5162f82a992c33b87adc75187b218",
+  "0x0f7f48d4b66bf5a53d4f21fa6ffca45f70cef770": "avax:" + ADDRESSES.avax.WBTC_e,
   "0xb634a71a54d3382ff6896eb22244b4a4e54c0a82": "avax:" + ADDRESSES.avax.WETH_e,
   "0x3a91a592a06390ca7884c4d9dd4cba2b4b7f36d1": "avax:" + ADDRESSES.avax.JOE,
   "0x8b414448de8b609e96bd63dcf2a8adbd5ddf7fdd": "avax:0x8729438eb15e2c8b576fcc6aecda6a148776c0f5",
   "0x4084f32a91f4d8636ca08386efe70c6e302f1d84": "avax:0x5947bb275c521040051d82396192181b413227a3",
   "0x9669fe1ea0d8883661289461b90a10b71ae400ee": "avax:" + ADDRESSES.avax.DAI,
-  "0x330cc45c8f60fef7f9d271a7512542b3d201a48d": "avax:0x50b7545627a5162f82a992c33b87adc75187b218",
+  "0x330cc45c8f60fef7f9d271a7512542b3d201a48d": "avax:" + ADDRESSES.avax.WBTC_e,
   "0x07b0e11d80ccf75cb390c9be6c27f329c119095a": "avax:" + ADDRESSES.avax.USDt,
   "0x0eac97a78a93b75549d49145df41dbe9cd520874": "avax:" + ADDRESSES.avax.USDC_e,
   "0x7d2d076000611e44740d636843384412399e31b9": "avax:" + ADDRESSES.avax.WETH_e,
@@ -100,6 +100,6 @@ module.exports = {
     borrowed,
     pool2: pool2Exports(podLeader, pool2LPs, "avax", addr=>`avax:${addr}`),
     treasury,
-    staking: staking(podLeader, orca, "avax")
+    staking: staking(podLeader, orca)
   }
 }

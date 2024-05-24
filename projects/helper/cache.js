@@ -1,4 +1,3 @@
-const aws = require('aws-sdk')
 const sdk = require('@defillama/sdk')
 const Bucket = "tvl-adapter-cache";
 const axios = require('axios')
@@ -8,41 +7,43 @@ function getKey(project, chain) {
   return `cache/${project}/${chain}.json`
 }
 
+function getFileKey(project, chain) {
+  return `${Bucket}/${getKey(project, chain)}`
+}
+
 function getLink(project, chain) {
   return `https://${Bucket}.s3.eu-central-1.amazonaws.com/${getKey(project, chain)}`
 }
 
 async function getCache(project, chain, { _ } = {}) {
   const Key = getKey(project, chain)
+  const fileKey = getFileKey(project, chain)
 
   try {
-    const { data: json } = await axios.get(getLink(project, chain))
+    const json = await sdk.cache.readCache(fileKey)
+    if (!json || Object.keys(json).length === 0) throw new Error('Invalid data')
     return json
   } catch (e) {
-    sdk.log('failed to fetch data from s3 bucket:', Key)
-    // sdk.log(e)
-    return {}
+    try {
+      const { data: json } = await axios.get(getLink(project, chain))
+      await sdk.cache.writeCache(fileKey, json)
+      return json
+    } catch (e) {
+      sdk.log('failed to fetch data from s3 bucket:', Key)
+      // sdk.log(e)
+      return {}
+    }
   }
 }
 
-async function setCache(project, chain, cache, {
-  ContentType = 'application/json',
-  ACL = 'public-read'
-} = {}) {
-
+async function setCache(project, chain, cache) {
   const Key = getKey(project, chain)
 
   try {
-    await new aws.S3()
-      .upload({
-        Bucket, Key,
-        Body: JSON.stringify(cache),
-        ACL, ContentType,
-      }).promise();
-
+    await sdk.cache.writeCache(getFileKey(project, chain), cache)
   } catch (e) {
     sdk.log('failed to write data to s3 bucket: ', Key)
-    // sdk.log(e)
+    sdk.log(e)
   }
 }
 
@@ -56,8 +57,8 @@ async function _setCache(project, chain, json) {
     await setCache(project, chain, json)
 }
 
-async function getConfig(project, endpoint) {
-  if (!project || !endpoint) throw new Error('Missing parameters')
+async function getConfig(project, endpoint, { fetcher } = {}) {
+  if (!project || (!endpoint && !fetcher)) throw new Error('Missing parameters')
   const key = 'config-cache'
   const cacheKey = getKey(key, project)
   if (!configCache[cacheKey]) configCache[cacheKey] = _getConfig()
@@ -65,7 +66,12 @@ async function getConfig(project, endpoint) {
 
   async function _getConfig() {
     try {
-      const { data: json } = await axios.get(endpoint)
+      let json
+      if (endpoint) {
+        json = (await axios.get(endpoint)).data
+      } else {
+        json = await fetcher()
+      }
       if (!json) throw new Error('Invalid data')
       await _setCache(key, project, json)
       return json
@@ -98,7 +104,7 @@ async function configPost(project, endpoint, data) {
 }
 
 
-async function cachedGraphQuery(project, endpoint, query, { variables = {}, fetchById, } = {}) {
+async function cachedGraphQuery(project, endpoint, query, { api, useBlock = false, variables = {}, fetchById, safeBlockLimit, } = {}) {
   if (!project || !endpoint) throw new Error('Missing parameters')
   const key = 'config-cache'
   const cacheKey = getKey(key, project)
@@ -108,10 +114,14 @@ async function cachedGraphQuery(project, endpoint, query, { variables = {}, fetc
   async function _cachedGraphQuery() {
     try {
       let json
+      if (useBlock && !variables.block  && !fetchById) {
+        if (!api) throw new Error('Missing parameters')
+        variables.block = await api.getBlock()
+      }
       if (!fetchById)
         json = await graphql.request(endpoint, query, { variables })
       else 
-        json = await graphFetchById({ endpoint, query, params: variables })
+        json = await graphFetchById({ endpoint, query, params: variables, api, options: { useBlock, safeBlockLimit } })
       if (!json) throw new Error('Empty JSON')
       await _setCache(key, project, json)
       return json
@@ -124,7 +134,7 @@ async function cachedGraphQuery(project, endpoint, query, { variables = {}, fetc
 }
 
 
-async function graphFetchById({  endpoint, query, params = {}, api, options: { useBlock = false, safeBlockLimit = 100 } = {} }) {
+async function graphFetchById({  endpoint, query, params = {}, api, options: { useBlock = false, safeBlockLimit = 500 } = {} }) {
   if (useBlock && !params.block)
     params.block = await api.getBlock() - safeBlockLimit
 

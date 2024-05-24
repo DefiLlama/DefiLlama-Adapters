@@ -41,21 +41,27 @@ const cappedTokens = {
     symbol: 'rETH',
   },
   "0x99bd1f28a5A7feCbE39a53463a916794Be798FC3": {
-    address: '0xBe9895146f7AF43049ca1c1AE358B0541Ea49704',
+    address: ADDRESSES.ethereum.cbETH,
     symbol: 'cbETH',
   },
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const balances = {}
   const count = await api.call({  abi: " function vaultsMinted() view returns (uint96)", target: VaultController })
-  const vaults = await api.call({  abi: vaultSummaryAbi, target: VaultController, params: [1, count]})
+  const calls = []
+  for (let i = 1; i <= count; i++) 
+    calls.push({ params: [i, i]})
+
+  const vaults = (await api.multiCall({  abi: vaultSummaryAbi, target: VaultController, calls, permitFailure: true })).filter(i => i).flat()
+
   vaults.map(vault => {
     vault.tokenAddresses.map((token, i) => {
       token = cappedTokens[token]?.address || token
       sdk.util.sumSingleBalance(balances,token,vault.tokenBalances[i])
     })
   })
+
   return sumTokens2({ api, balances, owner: '0x2A54bA2964C8Cd459Dc568853F79813a60761B58', tokens: [ADDRESSES.ethereum.USDC]})
 }
 

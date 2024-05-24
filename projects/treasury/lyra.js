@@ -7,7 +7,7 @@ const treasury_op = "0xD4C00FE7657791C2A43025dE483F05E49A5f76A6";
 
 const lyra_eth = "0x01BA67AAC7f75f647D94220Cc98FB30FCc5105Bf";
 const lyra_arb = "0x079504b86d38119F859c4194765029F692b7B7aa";
-const lyra_op = "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb";
+const lyra_op = ADDRESSES.base.DAI;
 
 module.exports = treasuryExports({
   arbitrum: {

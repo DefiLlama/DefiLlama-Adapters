@@ -17,7 +17,7 @@ const config = {
 }
 function getTvl(chain) {
   const { weth, graphUrl } = config[chain]
-  return async (timestamp, _, cb, { api }) => {
+  return async (api) => {
     const { vaults } = await blockQuery(graphUrl, graphQuery, { api })
     const block = api.block
     const LPs = new Set(vaults.map(v => v.lpStakingPool.stakingToken.id))
@@ -64,8 +64,6 @@ function getTvl(chain) {
       print.push({ id: vault.token.id, balance, name: vault.token.name, val: total })
     })
     print.sort((a, b) => b.val - a.val)
-    // console.table(print)
-    // console.log(print.reduce((a, i) => a + i.val, 0))
 
     updateBalances(balances)
     const transformedBalances = {}

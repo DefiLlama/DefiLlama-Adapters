@@ -11,5 +11,5 @@ jobs:
     - uses: actions/checkout@v2
     - name: Update unlisted
       run: curl https://born-to-llama.herokuapp.com/refresh
-    - name: Deploy to server
-      run: curl https://born-to-llama.herokuapp.com/rebuild-server
+    # - name: Deploy to server
+    #   run: curl https://born-to-llama.herokuapp.com/rebuild-server
