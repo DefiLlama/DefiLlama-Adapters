@@ -9,13 +9,13 @@ const chainMap = {
 	},
 	'avax': {
 		'algorand:893309613': { name: 'avalanche-2', decimals: 8 },
+		'algorand:1007352535': { name: 'usd-coin', decimals: 6 },
 	},
 	'bitcoin': {
 		'algorand:1058926737': { name: 'bitcoin', decimals: 8 },
 	},
 	'ethereum': {
 		'algorand:887406851': { name: 'ethereum', decimals: 8 },
-		'algorand:1007352535': { name: 'usd-coin', decimals: 6 },
 	},
 	'arbitrum': {
 		'algorand:1221549217': { name: 'arbitrum', decimals: 8 },
