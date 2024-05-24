@@ -21,12 +21,6 @@ Object.keys(config).forEach( chain => {
     tvl: async (api) => {
       const tokens = await getTokens(api, chain)
       const bals = await api.multiCall({  abi: 'erc20:totalSupply', calls: tokens})
-      const prices = (await api.multiCall({  abi: config[chain].latestPriceAbi, calls: tokens.map(token => ({
-        target: config[chain].processor,
-        params: [token, config[chain].usdplus]
-      }))})).map(p => p.price)
-      const usds = bals.map((bal, i) => bal * prices[i] / 1e18)
-      // FIXME: How to submit USD values?
       api.add(tokens, bals)
     }
   }
