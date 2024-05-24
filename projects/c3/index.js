@@ -20,8 +20,8 @@ const chainMap = {
 	'arbitrum': {
 		'algorand:1221549217': { name: 'arbitrum', decimals: 8 },
 	},
-	'binance': {
-		'algorand:891648844': { name: 'bnb', decimals: 8 },
+	'bsc': {
+		'algorand:891648844': { name: 'binancecoin', decimals: 8 },
 	},
 	'solana': {
 		'algorand:887648583': { name: 'solana', decimals: 8 },
