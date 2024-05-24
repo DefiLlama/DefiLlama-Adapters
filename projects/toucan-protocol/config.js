@@ -16,7 +16,20 @@ const CONFIG_DATA = {
         nct_bridge: "0xdC1Dfa22824Af4e423a558bbb6C53a31c3c11DCC"
     },
 };
+const TOKEN_DATA = {
+    bct: {
+        coingecko: "toucan-protocol-base-carbon-tonne",
+        validUntil: 1709828986,
+    },
+    nct: {
+        coingecko: "toucan-protocol-nature-carbon-tonne",
+    },
+    char: {
+        coingecko: "biochar",
+    },
+};
 
 module.exports = {
     CONFIG_DATA,
+    TOKEN_DATA,
 };
