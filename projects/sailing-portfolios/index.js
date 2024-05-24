@@ -3,20 +3,14 @@ const portfoliosTrackers = {
 };
 
 async function tvl(api) {
-  const portfoliosTracker = portfoliosTrackers['kava'];
+  const portfoliosTracker = portfoliosTrackers[api.chain]
   const portfolios = await api.call({
     target: portfoliosTracker,
     abi: 'function getTrackedPortfolios() external view returns (address[] memory)',
-  });
-  const tokensAndOwnersPromises = portfolios.map((portfolio) => (async () => {
-    const portfolioTokens = await api.call({
-      target: portfolio,
-      abi: 'function getPortfolioAssets() view public returns (address[] memory)',
-    });
-    return [portfolioTokens, portfolio];
-  })());
-  const tokensAndOwners = await Promise.all(tokensAndOwnersPromises);
-  return api.sumTokens({ ownerTokens: tokensAndOwners });
+  })
+  const tokens = await api.multiCall({  abi: 'address[]:getPortfolioAssets', calls: portfolios})
+  const ownerTokens = portfolios.map((portfolio, i) => [tokens[i], portfolio])
+  return api.sumTokens({ ownerTokens })
 }
 
 module.exports = {
