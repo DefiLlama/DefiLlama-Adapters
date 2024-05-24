@@ -41,6 +41,7 @@ const fixBalancesTokens = {
     '0xff00000000000000000000000000000000000003': { coingeckoId: "tether", decimals: 18 },
     '0xff00000000000000000000000000000000000001': { coingeckoId: "ethereum", decimals: 18 },
     '0xff0000000000000000000000000000000000000f': { coingeckoId: "decentralized-usd", decimals: 18 },
+    '0x66F3Cf265D2D146A0348F6fC67E3Da0835e0968E': { coingeckoId: "javsphere", decimals: 18 },
   },
   ace: {
     [nullAddress]: { coingeckoId: "endurance", decimals: 18 },
@@ -99,14 +100,22 @@ const fixBalancesTokens = {
     '0x4200000000000000000000000000000000000006': { coingeckoId: 'ethereum', decimals: 18 },
   },
   bouncebit: {
+    '0x0000000000000000000000000000000000000000': { coingeckoId: 'bouncebit', decimals: 18 },
     '0xf4c20e5004c6fdcdda920bdd491ba8c98a9c5863': { coingeckoId: 'bouncebit', decimals: 18 },
     '0x77776b40c3d75cb07ce54dea4b2fd1d07f865222': { coingeckoId: 'tether', decimals: 18 },
+    '0xF5e11df1ebCf78b6b6D26E04FF19cD786a1e81dC': { coingeckoId: 'bitcoin', decimals: 18 },
   },
   linea: {
     '0x63ba74893621d3d12f13cec1e86517ec3d329837': { coingeckoId: 'liquity-usd', decimals: 18 },
   },
   bevm: {
     '0x2967e7bb9daa5711ac332caf874bd47ef99b3820': { coingeckoId: 'wrapped-stbtc', decimals: 18 },
+  },
+  real: {
+		'0x0000000000000000000000000000000000000000': { coingeckoId: 'bitcoin', decimals: 18 },
+    '0x90c6e93849e06ec7478ba24522329d14a5954df4': { coingeckoId: 'ethereum', decimals: 18 },
+    '0x75d0cbf342060b14c2fc756fd6e717dfeb5b1b70': { coingeckoId: 'dai', decimals: 18 },
+    '0x83fedbc0b85c6e29b589aa6bdefb1cc581935ecd': { coingeckoId: 'mountain-protocol-usdm', decimals: 18 },
   }
 }
 
