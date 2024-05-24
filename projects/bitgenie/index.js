@@ -6,7 +6,16 @@ const stakingContracts = [
   "0x237826695a575D9Fd2FA7C184E5f37593aBc1529",
   "0x63C8860e93697dB85716C9ee7F15D09EAC62136C",
   "0x19a0D0b1734bdB167D393e7BB7a57418e3a8cCA8",
-  "0x1DBa95577DFe76d8e86af00aEB614479cb7917D2"
+  "0x1DBa95577DFe76d8e86af00aEB614479cb7917D2",
+  "0xC795A8D5f83F5A172f606AC2516276Ee7DF63407",
+  "0x1d5EB4Cba6D15d91AEd92988d9F1E12e33CCF4D1",
+  "0x0b0659bC906cB62179FDD2B6008BA729baa79126",
+  "0xF57A28168401f9c386c7723C2BA4e579A2F3818a",
+  "0x82cf7644BD07002217EFB2563D361a0b0c245978",
+  "0x8Ab52b92C31bd16e9e091c42FaCA01358717b8A4",
+  "0x0Bf2C32E2045b50AD772E8F758484aF3BbA75738",
+  "0xeC986eE93884ca3e20AA8a11C72f5c57085893F3",
+  "0xFf090ED319D3B89DD3ee2CB94F590272A6866cD9",
 ];
 
 
@@ -17,7 +26,6 @@ module.exports = {
 }
 
 async function tvl(api) {
-  const tokens = await api.multiCall({  abi: 'address:stakeToken', calls: stakingContracts})
-  return api.sumTokens({ tokensAndOwners2: [tokens, stakingContracts]})
-  
+  const tokens = await api.multiCall({ abi: 'address:stakeToken', calls: stakingContracts })
+  return api.sumTokens({ tokensAndOwners2: [tokens, stakingContracts] })
 }

@@ -5,7 +5,7 @@ module.exports = treasuryExports({
   polygon: {
     tokens: [ 
         nullAddress,
-        '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
+        ADDRESSES.polygon.WMATIC_2,
         '0x5D066D022EDE10eFa2717eD3D79f22F949F8C175',
      ],
     owners: ['0x0Cb11b92Fa5C30eAfe4aE84B7BB4dF3034C38b9d'],
