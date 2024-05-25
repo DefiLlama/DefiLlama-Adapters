@@ -5,6 +5,7 @@ async function tvl(api) {
     owners: [
       '0xf2d01bc0dfaca01a3dfcaf94fa571c5a164ea80e',
       '0xba3eb615d4c4447d06db21f8fc1727451a8d8fc2',
+      '0x89fa84283d2c4c659c6f994cc7730fc94b19af23',
     ],
     tokens: [
       '0xff204e2681a6fa0e2c3fade68a1b28fb90e4fc5f',
