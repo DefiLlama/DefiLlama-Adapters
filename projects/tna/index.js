@@ -1,7 +1,7 @@
-const { getLogs } = require('../helper/cache/getLogs')
-const ADDRESSES = require('../helper/coreAssets.json')
+const { getLogs } = require('../helper/cache/getLogs');
+const ADDRESSES = require('../helper/coreAssets.json');
 
-const tapname = "0x048d86f26952aB5e1F601f897BC9512A1E7fA675"
+const tapname = "0x048d86f26952aB5e1F601f897BC9512A1E7fA675";
 
 async function tvl(api) {
     const logs = await getLogs({
