@@ -7,7 +7,7 @@ const cacheFolder = 'logs'
 
 async function getLogs({ target,
   topic, keys = [], fromBlock, toBlock, topics,
-  api, eventAbi, onlyArgs = false, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction,  skipCacheRead = false}) {
+  api, eventAbi, onlyArgs = false, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false }) {
   if (!api) throw new Error('Missing sdk api object!')
   if (!target) throw new Error('Missing target!')
   if (!fromBlock) throw new Error('Missing fromBlock!')
@@ -18,7 +18,7 @@ async function getLogs({ target,
   const block = api.block
   const chain = api.chain ?? 'ethereum'
   if (!toBlock) toBlock = block
-  if (!toBlock) throw new Error('Missing fromBlock!')
+  if (!toBlock) throw new Error('Missing toBlock!')
 
   let iface
 
@@ -100,7 +100,7 @@ async function getLogs({ target,
 
     if (skipCache || skipCacheRead) return defaultRes
 
-    let cache = await getCache(cacheFolder, key)
+    let cache = await getCache(cacheFolder, key, { checkIfRecent: true })
     // set initial structure if it is missing / reset if from block is moved to something older
     if (!cache.logs || fromBlock < cache.fromBlock) {
       return defaultRes
@@ -110,7 +110,7 @@ async function getLogs({ target,
   }
 }
 
-async function getLogs2({ factory, target, topic, keys = [], fromBlock, toBlock, topics, api, eventAbi, onlyArgs = true, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false, transform = i => i}) {
+async function getLogs2({ factory, target, topic, keys = [], fromBlock, toBlock, topics, api, eventAbi, onlyArgs = true, extraKey, skipCache = false, onlyUseExistingCache = false, customCacheFunction, skipCacheRead = false, transform = i => i }) {
   const res = await getLogs({ target: target ?? factory, topic, keys, fromBlock, toBlock, topics, api, eventAbi, onlyArgs, extraKey, skipCache, onlyUseExistingCache, customCacheFunction, skipCacheRead })
   return res.map(transform)
 }

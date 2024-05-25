@@ -34,7 +34,7 @@ module.exports = {
   start: 30711580,
   polygon: {
     tvl,
-    staking: staking(PearlBank, CLAM, "polygon"),
+    staking: staking(PearlBank, CLAM),
   },
   hallmarks: [
     [1641686400, "Pearl Chest launch"],
