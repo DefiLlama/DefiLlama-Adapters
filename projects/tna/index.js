@@ -13,10 +13,10 @@ async function tvl(api) {
     });
 
     // decimals 18
-    let totalBTC = logs.map(log => log.args.fee).reduce((acc, cur) => acc + cur);
+    const totalBTC = logs.map(log => log.args.fee).reduce((acc, cur) => acc + cur);
 
     // convert to decimals 8
-    let balances = {};
+    const balances = {};
     balances[ADDRESSES.ethereum.WBTC] = totalBTC / 10000000000n;
     return balances;
 }
