@@ -98,7 +98,8 @@ const config = {
   optimism: { id: 'opt'},
   polygon_zkevm: { id: 'zkevm'},
   era: { id: 'zksync'},
-  btr: { id: 'bitlayer'}
+  btr: { id: 'bitlayer'},
+  bouncebit: { id: 'bb'}
 }
 
 async function addCoinfg(id, ownerTokens) {

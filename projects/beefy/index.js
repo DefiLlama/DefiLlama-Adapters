@@ -50,6 +50,7 @@ const chains = {
   mantle: 5000,
   canto: 7700,
   base: 8453,
+  mode: 34443,
   arbitrum: 42161,
   celo: 42220,
   oasis: 42262,
