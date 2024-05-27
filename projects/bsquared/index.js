@@ -46,4 +46,38 @@ module.exports = {
       ]
     }),
   },
+  bsquared: {
+        tvl: sumTokensExport({
+            ownerTokens: [
+                [
+                    [
+                        ADDRESSES.null,
+                        ADDRESSES.bsquared.USDT,
+                        ADDRESSES.bsquared.USDC,
+                        ADDRESSES.bsquared.WBTC,
+                        "0x7537C1F80c9E157ED7AFD93a494be3e1f04f1462", // BSTONE
+                        "0xC2Fe4f673455Ef92299770a09CDB5E8756A525D5", // FDUSD
+                        "0xc3ee2Df14B1Bc526c24ED802f1873d49664a0d5c", // MATIC
+                        "0xa0f4470B714677AEEcE0d20074c540b3Cf6a477E", // ordi
+                        "0x7eBFcE05E418C380a2b6EB0F65995cA04ef4bc00", // sats
+                    ],
+                    "0x463d0908ba1F21B791883a6c27Aa82d293Dd0f69",
+                ],
+                [
+                    [
+                        ADDRESSES.null,
+                        ADDRESSES.bsquared.USDT,
+                        ADDRESSES.bsquared.USDC,
+                        ADDRESSES.bsquared.WBTC,
+                        "0x7537C1F80c9E157ED7AFD93a494be3e1f04f1462", // BSTONE
+                        "0xC2Fe4f673455Ef92299770a09CDB5E8756A525D5", // FDUSD
+                        "0xc3ee2Df14B1Bc526c24ED802f1873d49664a0d5c", // MATIC
+                        "0xa0f4470B714677AEEcE0d20074c540b3Cf6a477E", // ordi
+                        "0x7eBFcE05E418C380a2b6EB0F65995cA04ef4bc00", // sats
+                    ],
+                    "0x9683826a04db8ae2e256e6a14b87d440c7105824",
+                ],
+            ]
+        }),
+    },
 };
