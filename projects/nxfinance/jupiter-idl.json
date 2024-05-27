@@ -1,0 +1,1654 @@
+{
+  "version": "0.1.1",
+  "name": "perpetuals",
+  "accounts": [
+    {
+      "name": "Custody",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "pool",
+            "type": "publicKey"
+          },
+          {
+            "name": "mint",
+            "type": "publicKey"
+          },
+          {
+            "name": "tokenAccount",
+            "type": "publicKey"
+          },
+          {
+            "name": "decimals",
+            "type": "u8"
+          },
+          {
+            "name": "isStable",
+            "type": "bool"
+          },
+          {
+            "name": "oracle",
+            "type": {
+              "defined": "OracleParams"
+            }
+          },
+          {
+            "name": "pricing",
+            "type": {
+              "defined": "PricingParams"
+            }
+          },
+          {
+            "name": "permissions",
+            "type": {
+              "defined": "Permissions"
+            }
+          },
+          {
+            "name": "targetRatioBps",
+            "type": "u64"
+          },
+          {
+            "name": "assets",
+            "type": {
+              "defined": "Assets"
+            }
+          },
+          {
+            "name": "fundingRateState",
+            "type": {
+              "defined": "FundingRateState"
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "tokenAccountBump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TestOracle",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "expo",
+            "type": "i32"
+          },
+          {
+            "name": "conf",
+            "type": "u64"
+          },
+          {
+            "name": "publishTime",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Perpetuals",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "permissions",
+            "type": {
+              "defined": "Permissions"
+            }
+          },
+          {
+            "name": "pools",
+            "type": {
+              "vec": "publicKey"
+            }
+          },
+          {
+            "name": "admin",
+            "type": "publicKey"
+          },
+          {
+            "name": "transferAuthorityBump",
+            "type": "u8"
+          },
+          {
+            "name": "perpetualsBump",
+            "type": "u8"
+          },
+          {
+            "name": "inceptionTime",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Pool",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "custodies",
+            "type": {
+              "vec": "publicKey"
+            }
+          },
+          {
+            "name": "aumUsd",
+            "type": "u128"
+          },
+          {
+            "name": "limit",
+            "type": {
+              "defined": "Limit"
+            }
+          },
+          {
+            "name": "fees",
+            "type": {
+              "defined": "Fees"
+            }
+          },
+          {
+            "name": "poolApr",
+            "type": {
+              "defined": "PoolApr"
+            }
+          },
+          {
+            "name": "maxRequestExecutionSec",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "lpTokenBump",
+            "type": "u8"
+          },
+          {
+            "name": "inceptionTime",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PositionRequest",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "publicKey"
+          },
+          {
+            "name": "pool",
+            "type": "publicKey"
+          },
+          {
+            "name": "custody",
+            "type": "publicKey"
+          },
+          {
+            "name": "position",
+            "type": "publicKey"
+          },
+          {
+            "name": "mint",
+            "type": "publicKey"
+          },
+          {
+            "name": "openTime",
+            "type": "i64"
+          },
+          {
+            "name": "updateTime",
+            "type": "i64"
+          },
+          {
+            "name": "sizeUsdDelta",
+            "type": "u64"
+          },
+          {
+            "name": "collateralDelta",
+            "type": "u64"
+          },
+          {
+            "name": "requestChange",
+            "type": {
+              "defined": "RequestChange"
+            }
+          },
+          {
+            "name": "requestType",
+            "type": {
+              "defined": "RequestType"
+            }
+          },
+          {
+            "name": "side",
+            "type": {
+              "defined": "Side"
+            }
+          },
+          {
+            "name": "priceSlippage",
+            "type": {
+              "option": "u64"
+            }
+          },
+          {
+            "name": "jupiterMinimumOut",
+            "type": {
+              "option": "u64"
+            }
+          },
+          {
+            "name": "preSwapAmount",
+            "type": {
+              "option": "u64"
+            }
+          },
+          {
+            "name": "triggerPrice",
+            "type": {
+              "option": "u64"
+            }
+          },
+          {
+            "name": "triggerAboveThreshold",
+            "type": {
+              "option": "bool"
+            }
+          },
+          {
+            "name": "entirePosition",
+            "type": {
+              "option": "bool"
+            }
+          },
+          {
+            "name": "executed",
+            "type": "bool"
+          },
+          {
+            "name": "counter",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "referral",
+            "type": {
+              "option": "publicKey"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Position",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "publicKey"
+          },
+          {
+            "name": "pool",
+            "type": "publicKey"
+          },
+          {
+            "name": "custody",
+            "type": "publicKey"
+          },
+          {
+            "name": "collateralCustody",
+            "type": "publicKey"
+          },
+          {
+            "name": "openTime",
+            "type": "i64"
+          },
+          {
+            "name": "updateTime",
+            "type": "i64"
+          },
+          {
+            "name": "side",
+            "type": {
+              "defined": "Side"
+            }
+          },
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "sizeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "collateralUsd",
+            "type": "u64"
+          },
+          {
+            "name": "realisedPnlUsd",
+            "type": "i64"
+          },
+          {
+            "name": "cumulativeInterestSnapshot",
+            "type": "u128"
+          },
+          {
+            "name": "lockedAmount",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "AddCustodyParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "isStable",
+            "type": "bool"
+          },
+          {
+            "name": "oracle",
+            "type": {
+              "defined": "OracleParams"
+            }
+          },
+          {
+            "name": "pricing",
+            "type": {
+              "defined": "PricingParams"
+            }
+          },
+          {
+            "name": "permissions",
+            "type": {
+              "defined": "Permissions"
+            }
+          },
+          {
+            "name": "hourlyFundingBps",
+            "type": "u64"
+          },
+          {
+            "name": "targetRatioBps",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AddLiquidityParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "tokenAmountIn",
+            "type": "u64"
+          },
+          {
+            "name": "minLpAmountOut",
+            "type": "u64"
+          },
+          {
+            "name": "tokenAmountPreSwap",
+            "type": {
+              "option": "u64"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "AddPoolParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "type": {
+              "defined": "Limit"
+            }
+          },
+          {
+            "name": "fees",
+            "type": {
+              "defined": "Fees"
+            }
+          },
+          {
+            "name": "maxRequestExecutionSec",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ClosePositionRequestParams",
+      "type": {
+        "kind": "struct",
+        "fields": []
+      }
+    },
+    {
+      "name": "CreateDecreasePositionMarketRequestParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "collateralUsdDelta",
+            "type": "u64"
+          },
+          {
+            "name": "sizeUsdDelta",
+            "type": "u64"
+          },
+          {
+            "name": "priceSlippage",
+            "type": "u64"
+          },
+          {
+            "name": "jupiterMinimumOut",
+            "type": {
+              "option": "u64"
+            }
+          },
+          {
+            "name": "entirePosition",
+            "type": {
+              "option": "bool"
+            }
+          },
+          {
+            "name": "counter",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CreateDecreasePositionRequestParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "collateralUsdDelta",
+            "type": "u64"
+          },
+          {
+            "name": "sizeUsdDelta",
+            "type": "u64"
+          },
+          {
+            "name": "requestType",
+            "type": {
+              "defined": "RequestType"
+            }
+          },
+          {
+            "name": "priceSlippage",
+            "type": {
+              "option": "u64"
+            }
+          },
+          {
+            "name": "jupiterMinimumOut",
+            "type": {
+              "option": "u64"
+            }
+          },
+          {
+            "name": "triggerPrice",
+            "type": {
+              "option": "u64"
+            }
+          },
+          {
+            "name": "triggerAboveThreshold",
+            "type": {
+              "option": "bool"
+            }
+          },
+          {
+            "name": "entirePosition",
+            "type": {
+              "option": "bool"
+            }
+          },
+          {
+            "name": "counter",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CreateIncreasePositionMarketRequestParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "sizeUsdDelta",
+            "type": "u64"
+          },
+          {
+            "name": "collateralTokenDelta",
+            "type": "u64"
+          },
+          {
+            "name": "side",
+            "type": {
+              "defined": "Side"
+            }
+          },
+          {
+            "name": "priceSlippage",
+            "type": "u64"
+          },
+          {
+            "name": "jupiterMinimumOut",
+            "type": {
+              "option": "u64"
+            }
+          },
+          {
+            "name": "counter",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CreateIncreasePositionRequestParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "sizeUsdDelta",
+            "type": "u64"
+          },
+          {
+            "name": "collateralTokenDelta",
+            "type": "u64"
+          },
+          {
+            "name": "side",
+            "type": {
+              "defined": "Side"
+            }
+          },
+          {
+            "name": "requestType",
+            "type": {
+              "defined": "RequestType"
+            }
+          },
+          {
+            "name": "priceSlippage",
+            "type": {
+              "option": "u64"
+            }
+          },
+          {
+            "name": "jupiterMinimumOut",
+            "type": {
+              "option": "u64"
+            }
+          },
+          {
+            "name": "triggerPrice",
+            "type": {
+              "option": "u64"
+            }
+          },
+          {
+            "name": "triggerAboveThreshold",
+            "type": {
+              "option": "bool"
+            }
+          },
+          {
+            "name": "counter",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CreateTokenMetadataParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "symbol",
+            "type": "string"
+          },
+          {
+            "name": "uri",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DecreasePosition2Params",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "usePriceUpdate",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DecreasePositionPostSwapParams",
+      "type": {
+        "kind": "struct",
+        "fields": []
+      }
+    },
+    {
+      "name": "GetAddLiquidityAmountAndFeeParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "tokenAmountIn",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GetAssetsUnderManagementParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mode",
+            "type": {
+              "option": {
+                "defined": "PriceCalcMode"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "GetDecreasePositionParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "collateralUsdDelta",
+            "type": "u64"
+          },
+          {
+            "name": "sizeUsdDelta",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GetExactOutSwapAmountAndFeesParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amountOut",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GetIncreasePositionParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "collateralTokenDelta",
+            "type": "u64"
+          },
+          {
+            "name": "sizeUsdDelta",
+            "type": "u64"
+          },
+          {
+            "name": "side",
+            "type": {
+              "defined": "Side"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "GetLiquidationStateParams",
+      "type": {
+        "kind": "struct",
+        "fields": []
+      }
+    },
+    {
+      "name": "GetPnlAndFeeParams",
+      "type": {
+        "kind": "struct",
+        "fields": []
+      }
+    },
+    {
+      "name": "GetRemoveLiquidityAmountAndFeeParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "lpAmountIn",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GetSwapAmountAndFeesParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amountIn",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "IncreasePosition2Params",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "usePriceUpdate",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "IncreasePositionPreSwapParams",
+      "type": {
+        "kind": "struct",
+        "fields": []
+      }
+    },
+    {
+      "name": "InitParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "allowSwap",
+            "type": "bool"
+          },
+          {
+            "name": "allowAddLiquidity",
+            "type": "bool"
+          },
+          {
+            "name": "allowRemoveLiquidity",
+            "type": "bool"
+          },
+          {
+            "name": "allowIncreasePosition",
+            "type": "bool"
+          },
+          {
+            "name": "allowDecreasePosition",
+            "type": "bool"
+          },
+          {
+            "name": "allowCollateralWithdrawal",
+            "type": "bool"
+          },
+          {
+            "name": "allowLiquidatePosition",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LiquidateFullPosition2Params",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "usePriceUpdate",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RefreshAssetsUnderManagementParams",
+      "type": {
+        "kind": "struct",
+        "fields": []
+      }
+    },
+    {
+      "name": "RemoveLiquidityParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "lpAmountIn",
+            "type": "u64"
+          },
+          {
+            "name": "minAmountOut",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SetCustodyConfigParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "oracle",
+            "type": {
+              "defined": "OracleParams"
+            }
+          },
+          {
+            "name": "pricing",
+            "type": {
+              "defined": "PricingParams"
+            }
+          },
+          {
+            "name": "permissions",
+            "type": {
+              "defined": "Permissions"
+            }
+          },
+          {
+            "name": "hourlyFundingBps",
+            "type": "u64"
+          },
+          {
+            "name": "targetRatioBps",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SetCustodyGlobalLimitParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "maxGlobalLongSizes",
+            "type": "u64"
+          },
+          {
+            "name": "maxGlobalShortSizes",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SetPerpetualsConfigParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "permissions",
+            "type": {
+              "defined": "Permissions"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "SetPoolConfigParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "fees",
+            "type": {
+              "defined": "Fees"
+            }
+          },
+          {
+            "name": "limit",
+            "type": {
+              "defined": "Limit"
+            }
+          },
+          {
+            "name": "maxRequestExecutionSec",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SetTestOraclePriceParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "expo",
+            "type": "i32"
+          },
+          {
+            "name": "conf",
+            "type": "u64"
+          },
+          {
+            "name": "publishTime",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SetTestTimeParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "time",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SwapExactOutParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amountOut",
+            "type": "u64"
+          },
+          {
+            "name": "maxAmountIn",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SwapParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amountIn",
+            "type": "u64"
+          },
+          {
+            "name": "minAmountOut",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TestInitParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "allowSwap",
+            "type": "bool"
+          },
+          {
+            "name": "allowAddLiquidity",
+            "type": "bool"
+          },
+          {
+            "name": "allowRemoveLiquidity",
+            "type": "bool"
+          },
+          {
+            "name": "allowIncreasePosition",
+            "type": "bool"
+          },
+          {
+            "name": "allowDecreasePosition",
+            "type": "bool"
+          },
+          {
+            "name": "allowCollateralWithdrawal",
+            "type": "bool"
+          },
+          {
+            "name": "allowLiquidatePosition",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TransferAdminParams",
+      "type": {
+        "kind": "struct",
+        "fields": []
+      }
+    },
+    {
+      "name": "UpdateDecreasePositionRequestParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "sizeUsdDelta",
+            "type": "u64"
+          },
+          {
+            "name": "triggerPrice",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UpdateIncreasePositionRequestParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "sizeUsdDelta",
+            "type": "u64"
+          },
+          {
+            "name": "triggerPrice",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "WithdrawFeesParams",
+      "type": {
+        "kind": "struct",
+        "fields": []
+      }
+    },
+    {
+      "name": "Assets",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "feesReserves",
+            "type": "u64"
+          },
+          {
+            "name": "owned",
+            "type": "u64"
+          },
+          {
+            "name": "locked",
+            "type": "u64"
+          },
+          {
+            "name": "guaranteedUsd",
+            "type": "u64"
+          },
+          {
+            "name": "globalShortSizes",
+            "type": "u64"
+          },
+          {
+            "name": "globalShortAveragePrices",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PricingParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "tradeSpreadLong",
+            "type": "u64"
+          },
+          {
+            "name": "tradeSpreadShort",
+            "type": "u64"
+          },
+          {
+            "name": "swapSpread",
+            "type": "u64"
+          },
+          {
+            "name": "maxLeverage",
+            "type": "u64"
+          },
+          {
+            "name": "maxGlobalLongSizes",
+            "type": "u64"
+          },
+          {
+            "name": "maxGlobalShortSizes",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FundingRateState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "cumulativeInterestRate",
+            "type": "u128"
+          },
+          {
+            "name": "lastUpdate",
+            "type": "i64"
+          },
+          {
+            "name": "hourlyFundingBps",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OraclePrice",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "exponent",
+            "type": "i32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OracleParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "oracleAccount",
+            "type": "publicKey"
+          },
+          {
+            "name": "oracleType",
+            "type": {
+              "defined": "OracleType"
+            }
+          },
+          {
+            "name": "maxPriceError",
+            "type": "u64"
+          },
+          {
+            "name": "maxPriceAgeSec",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AmountAndFee",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "fee",
+            "type": "u64"
+          },
+          {
+            "name": "feeBps",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "IncreasePositionInfo",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "liquidationPrice",
+            "type": "u64"
+          },
+          {
+            "name": "feeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "collateralUsd",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DecreasePositionInfo",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "price",
+            "type": "u64"
+          },
+          {
+            "name": "liquidationPrice",
+            "type": "u64"
+          },
+          {
+            "name": "feeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "collateralUsd",
+            "type": "u64"
+          },
+          {
+            "name": "hasProfit",
+            "type": "bool"
+          },
+          {
+            "name": "pnlDelta",
+            "type": "u64"
+          },
+          {
+            "name": "transferAmountUsd",
+            "type": "u64"
+          },
+          {
+            "name": "transferToken",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SwapAmountAndFees",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amountIn",
+            "type": "u64"
+          },
+          {
+            "name": "amountOut",
+            "type": "u64"
+          },
+          {
+            "name": "feeBps",
+            "type": "u64"
+          },
+          {
+            "name": "feeToken",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PnlAndFee",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "hasProfit",
+            "type": "bool"
+          },
+          {
+            "name": "pnlDelta",
+            "type": "u64"
+          },
+          {
+            "name": "openPositionFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "closePositionFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "fundingFeeUsd",
+            "type": "u64"
+          },
+          {
+            "name": "liquidationPrice",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OraclePriceInfo",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "increaseLong",
+            "type": "u64"
+          },
+          {
+            "name": "increaseShort",
+            "type": "u64"
+          },
+          {
+            "name": "decreaseLong",
+            "type": "u64"
+          },
+          {
+            "name": "decreaseShort",
+            "type": "u64"
+          },
+          {
+            "name": "buyLp",
+            "type": "u64"
+          },
+          {
+            "name": "sellLp",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Permissions",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "allowSwap",
+            "type": "bool"
+          },
+          {
+            "name": "allowAddLiquidity",
+            "type": "bool"
+          },
+          {
+            "name": "allowRemoveLiquidity",
+            "type": "bool"
+          },
+          {
+            "name": "allowIncreasePosition",
+            "type": "bool"
+          },
+          {
+            "name": "allowDecreasePosition",
+            "type": "bool"
+          },
+          {
+            "name": "allowCollateralWithdrawal",
+            "type": "bool"
+          },
+          {
+            "name": "allowLiquidatePosition",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Fees",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "increasePositionBps",
+            "type": "u64"
+          },
+          {
+            "name": "decreasePositionBps",
+            "type": "u64"
+          },
+          {
+            "name": "addRemoveLiquidityBps",
+            "type": "u64"
+          },
+          {
+            "name": "swapBps",
+            "type": "u64"
+          },
+          {
+            "name": "taxBps",
+            "type": "u64"
+          },
+          {
+            "name": "stableSwapBps",
+            "type": "u64"
+          },
+          {
+            "name": "stableSwapTaxBps",
+            "type": "u64"
+          },
+          {
+            "name": "liquidationRewardBps",
+            "type": "u64"
+          },
+          {
+            "name": "protocolShareBps",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PoolApr",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "lastUpdated",
+            "type": "i64"
+          },
+          {
+            "name": "feeAprBps",
+            "type": "u64"
+          },
+          {
+            "name": "realizedFeeUsd",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Limit",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "maxAumUsd",
+            "type": "u128"
+          },
+          {
+            "name": "tokenWeightageBufferBps",
+            "type": "u128"
+          },
+          {
+            "name": "maxPositionUsd",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "OracleType",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "None"
+          },
+          {
+            "name": "Test"
+          },
+          {
+            "name": "Pyth"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PriceCalcMode",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Min"
+          },
+          {
+            "name": "Max"
+          },
+          {
+            "name": "Ignore"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PriceStaleTolerance",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Strict"
+          },
+          {
+            "name": "Loose"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RequestType",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Market"
+          },
+          {
+            "name": "Trigger"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RequestChange",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "None"
+          },
+          {
+            "name": "Increase"
+          },
+          {
+            "name": "Decrease"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Side",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "None"
+          },
+          {
+            "name": "Long"
+          },
+          {
+            "name": "Short"
+          }
+        ]
+      }
+    }
+  ],
+  "instructions": [],
+  "errors": []
+}
