@@ -25,7 +25,7 @@ query get_tvl($block: Int) {
 }
 `;
 
-async function eth(timestamp, ethBlock, chainBlocks, { api }) {
+async function eth(api) {
   const { uniswapFactory } = await blockQuery(graphUrl, graphQuery, { api, });
   const usdTvl = Number(uniswapFactory.totalLiquidityUSD)
 
@@ -33,7 +33,7 @@ async function eth(timestamp, ethBlock, chainBlocks, { api }) {
 }
 
 function getChainTVL() {
-  return async (timestamp, _b, chainBlocks, { api }) => {
+  return async (api) => {
     const { factory } = await blockQuery('https://api.thegraph.com/subgraphs/name/sushiswap/exchange-' + api.chain, graphQueryPolygon, { api, });
     const usdTvl = Number(factory.liquidityUSD)
 
@@ -50,6 +50,7 @@ const tvl = getUniTVL({
     '0xc0e39cbac6a5c5cdcdf2c1a1c29cbf5917754943', // GSHIB
   ],
 })
+const tvl2 = getUniTVL({ factory: '0xB45e53277a7e0F1D35f2a77160e91e25507f1763', useDefaultCoreAssets: true, })
 
 module.exports = {
   ethereum: { tvl: eth, },
@@ -61,7 +62,7 @@ module.exports = {
   okexchain: { tvl, },
   arbitrum: { tvl, },
   xdai: { tvl, },
-  harmony: { tvl: getUniTVL({ factory, useDefaultCoreAssets: true, queryBatched: 200}), },
+  harmony: { tvl: getUniTVL({ factory, useDefaultCoreAssets: true, queryBatched: 200 }), },
   fantom: { tvl, },
   bsc: { tvl, },
   heco: { tvl, },
@@ -78,24 +79,22 @@ module.exports = {
   base: {
     tvl: getUniTVL({ factory: '0x71524B4f93c58fcbF659783284E38825f0622859', useDefaultCoreAssets: true, }),
   },
-  scroll: {
-    tvl: getUniTVL({ factory: '0xB45e53277a7e0F1D35f2a77160e91e25507f1763', useDefaultCoreAssets: true, }),
-  },
+  scroll: { tvl: tvl2, },
   kava: {
     tvl: getUniTVL({ factory: '0xD408a20f1213286fB3158a2bfBf5bFfAca8bF269', useDefaultCoreAssets: true, }),
   },
   metis: {
     tvl: getUniTVL({ factory: '0x580ED43F3BBa06555785C81c2957efCCa71f7483', useDefaultCoreAssets: true, }),
   },
-  bittorrent: {
-    tvl: getUniTVL({ factory: '0xB45e53277a7e0F1D35f2a77160e91e25507f1763', useDefaultCoreAssets: true, }),
-  },
+  bittorrent: { tvl: tvl2, },
   filecoin: {
     tvl: getUniTVL({ factory: '0x9B3336186a38E1b6c21955d112dbb0343Ee061eE', useDefaultCoreAssets: true, }),
   },
   zeta: {
     tvl: getUniTVL({ factory: '0x33d91116e0370970444B0281AB117e161fEbFcdD', useDefaultCoreAssets: true, }),
   },
+  blast: { tvl: getUniTVL({ factory: '0x42Fa929fc636e657AC568C0b5Cf38E203b67aC2b', useDefaultCoreAssets: true, }) },
+  core: { tvl: tvl2 },
 }
 
 module.exports.polygon.tvl = getChainTVL('polygon')

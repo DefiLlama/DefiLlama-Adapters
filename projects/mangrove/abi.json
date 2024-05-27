@@ -1,0 +1,4 @@
+{
+  "openMarkets": "function openMarkets() view returns ((address,address,uint256)[])",
+  "offerList": "function offerList((address,address,uint256),uint256,uint256) view returns (uint256,uint256[],(uint256,uint256,int256,uint256)[])"
+}

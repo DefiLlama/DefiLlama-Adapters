@@ -14,11 +14,21 @@ const assets = [
     ADDRESSES.starknet.STRK
 ]
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
     return sumTokens({ api, owner: market, tokens: assets })
 }
 
-async function borrowed(_, _1, _2, { api }) {
+async function staking(api) {
+    return sumTokens({
+        api,
+        owner: market,
+        tokens: [
+            ADDRESSES.starknet.ZEND
+        ]
+    })
+}
+
+async function borrowed(api) {
     let data = await multiCall({ calls: assets, target: market, abi: marketAbi.get_total_debt_for_token });
     data = data.map(i => +i)
     api.addTokens(assets, data)
@@ -28,6 +38,7 @@ module.exports = {
     methodology: 'Value of user supplied asset on zkLend is considered as TVL',
     starknet: {
         tvl,
-        borrowed
+        borrowed,
+        staking,
     },
 }

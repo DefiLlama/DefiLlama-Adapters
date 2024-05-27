@@ -4,7 +4,7 @@ const { staking } = require("../helper/staking");
 const CLAM = "0xC250e9987A032ACAC293d838726C511E6E1C029d";
 const PearlBank = "0x845EB7730a8D37e8D190Fb8bb9c582038331B48a";
 
-async function tvl(timestamp, block, chainBlocks) {
+async function tvl({timestamp}, block, chainBlocks) {
   let endpoint = "https://api.thegraph.com/subgraphs/name/otterclam/otterclam";
   let graphQLClient = new GraphQLClient(endpoint);
   let query = gql`
@@ -30,12 +30,11 @@ async function tvl(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
-  timetravel: true,
-  methodology: "This adapter uses otterclam's subgraph to fetch tvl data.",
+    methodology: "This adapter uses otterclam's subgraph to fetch tvl data.",
   start: 30711580,
   polygon: {
     tvl,
-    staking: staking(PearlBank, CLAM, "polygon"),
+    staking: staking(PearlBank, CLAM),
   },
   hallmarks: [
     [1641686400, "Pearl Chest launch"],

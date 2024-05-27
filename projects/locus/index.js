@@ -26,6 +26,7 @@ const config = {
     lvTokens2: {
       xUSD: "0x6318938F825F57d439B3a9E25C38F04EF97987D8",
       pendleETH: "0x515f3533a17E2EEFB13313D9248f328C94dBe641"
+
     },
   }
 }
