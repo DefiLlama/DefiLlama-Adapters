@@ -1,6 +1,7 @@
 const { staking } = require("../helper/staking");
 const ADDRESSES = require("../helper/coreAssets.json");
 const contractAbis = {
+  getDeposits: "function getDeposits(address) view returns (address[], address[], uint256[], uint256[])",
   readOraclePrice: "function read() view returns (int224 value, uint32 timestamp)",
   balanceOf: "function balanceOf(address) external view returns (uint256)",
   getPrice: "function answer() external view returns (uint256)",
@@ -16,6 +17,45 @@ const contractAbis = {
 
 module.exports = {
   misrepresentedTokens: true,
+
+  karak: {
+    tvl: async (api) => {
+      //       const KUSDC = {
+      //         vault: "0x4c18E80b801AA24066D8B1C6E65ee245497Cb741",
+      //         token: "0x7AFAa2428c379862984A3fdF517BbeaA1487A32c",
+      //       };
+      //
+      //       const KWETH = {
+      //         vault: "0x5c7a8e3d4c0e382f8c3b6f6a3b7c9d3d1f9e6b9c",
+      //         token: "0x9a9631F7BEcE5C6E0aBA1f73f0e5796c534dc4db",
+      //       };
+
+      const wethLending = {
+        vault: "0xd6034F9147CF7528e857403Dea93bc45743295eb",
+        token: "0x4200000000000000000000000000000000000006",
+      };
+
+      const usdcLending = {
+        vault: "0x475820E4bCE0E3d233Ad7f6A8c9DD1f66974c5d6",
+        token: "0xa415021bC5c4C3b5B989116DC35Ae95D9C962c8D",
+      };
+
+      //       const bal1 = await api.call({ target: KUSDC.token, abi: contractAbis.getDeposits, params: [KUSDC.vault] });
+      //
+      //       console.log(bal1);
+      //
+      //       const bal2 = await api.call({ target: KWETH.token, abi: contractAbis.getDeposits, params: [KWETH.vault] });
+      //       console.log(bal2);
+
+      const strategies = [wethLending, usdcLending];
+
+      const tokensAndOwners = [];
+
+      strategies.forEach(({ vault, token }) => tokensAndOwners.push([token, vault]));
+
+      await api.sumTokens({ tokensAndOwners });
+    },
+  },
 
   zklink: {
     tvl: async (api) => {
