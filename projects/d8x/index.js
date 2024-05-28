@@ -16,7 +16,6 @@ async function tvl(api) {
   });
 
   const marginTokens = exchangeInfo[2];
-  console.log(marginTokens);
   return sumTokens2({ api, owner: factory, tokens: marginTokens });
 }
 
