@@ -76,8 +76,7 @@ const config = {
 }
 
 module.exports = {
-  misrepresentedTokens: false,
-  hallmarks:[
+    hallmarks:[
     [1651881600, "UST depeg"],
   ],
   methodology:

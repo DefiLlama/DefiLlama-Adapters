@@ -18,7 +18,7 @@ const outpostAddresses = {
 };
 
 function chainTvl(chain) {
-  return async (timestamp, ethBlock, {[chain]: block}, { api }) => {
+  return async (api) => {
     const urlTvl = `${http_api_url}?chainId=${api.getChainId()}`;
     const neuron_response_tvl = await getConfig('neuron/'+chain, urlTvl);
     var [address, tokensAndAmounts] = neuron_response_tvl;
