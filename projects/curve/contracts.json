@@ -164,5 +164,10 @@
     "wrapped": "0xc86c7c0efbd6a49b35e8714c5f59d99de09a225b",
     "metapoolBases": {},
     "CurveStableswapFactoryNG": "0x1764ee18e8B3ccA4787249Ceb249356192594585"
+  },
+  "xlayer": {
+    "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "metapoolBases": {},
+    "CurveStableswapFactoryNG": "0x5eee3091f747e60a045a2e715a4c71e600e31f6e"
   }
 }

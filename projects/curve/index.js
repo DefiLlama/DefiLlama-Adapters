@@ -23,7 +23,8 @@ const chains = [
   "celo",
   "kava",
   "base",
-  "fraxtal"
+  "fraxtal",
+  "xlayer"
 ]; // Object.keys(contracts);
 const registryIds = {
   stableswap: 0,
