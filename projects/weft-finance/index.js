@@ -1,8 +1,14 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 
-const { queryAddresses } = require('../helper/chain/radixdlt');
+const { queryAddresses, sumTokens } = require('../helper/chain/radixdlt');
 
-const pools = [
+const staking_pools = [
+  'component_rdx1cqzle2pft0y09kwzaxy07maczpwmka9xknl88glwc4ka6a7xavsltd',
+  'component_rdx1cpdpfn8q0650yh6stmxdwme4tp7m6lphngpqjazakehttq8aqenvhm',
+  'component_rdx1crrxdzcq0cfpxvqk70e0usq8qusqz6g0ht6rylr4wgnxpflzjeaayy'
+]
+
+const lending_pools = [
   {
     pool: 'component_rdx1cq8mm5z49x6lyet44a0jd7zq52flrmykwwxszq65uzfn6pk3mvm0k4',
     resource: ADDRESSES.radixdlt.XRD,
@@ -20,54 +26,24 @@ const pools = [
   }
 ]
 
-async function fetchData(addresses) {
-  return await queryAddresses({ addresses });
-}
-
 async function tvl(api) {
-  const [poolData, priceData] = await Promise.all([
-    fetchData(pools.map((item) => item.pool)),
-    fetchData(pools.map((item) => item.priceFeed)),
-  ]);
-
-  const prices = priceData.map((item) => item.details.state.fields[0].entries).flat();
-
-  let totalValueLocked = 0;
-
-  pools.forEach((pool) => {
-    const { fungible_resources } = poolData.find((item) => item.address === pool.pool);
-    const priceData = prices.find((price_item) => price_item.key.value === pool.resource);
-
-    const price = priceData ? +priceData.value.fields[1].value : 1;
-    totalValueLocked += ++fungible_resources.items[0].amount * price;
-  });
-
-  return { 'radix': totalValueLocked };
+  return sumTokens({ owners: lending_pools.map((pool_data) => pool_data.pool), api });
 }
 
 async function borrowed(api) {
-  const [poolData, priceData] = await Promise.all([
-    fetchData(pools.map((item) => item.pool)),
-    fetchData(pools.map((item) => item.priceFeed)),
-  ]);
+  const poolData = await queryAddresses({ addresses: lending_pools.map((item) => item.pool) });
 
-  const prices = priceData.map((item) => item.details.state.fields[0].entries).flat();
-
-  let borrowedValue = 0;
-
-  pools.forEach((pool) => {
+  lending_pools.forEach((pool) => {
     const { details } = poolData.find((item) => item.address === pool.pool);
-    const priceData = prices.find((price_item) => price_item.key.value === pool.resource);
-
-    const priceInXRD = priceData ? +priceData.value.fields[1].value : 1;
-    borrowedValue += +details.state.fields[1].value * priceInXRD;
+    api.add(pool.resource, +details.state.fields[1].value)
   });
+}
 
-  return { 'radix': borrowedValue };
+async function staking(api) {
+  return sumTokens({ owners: staking_pools, api });
 }
 
 module.exports = {
-  radixdlt: { tvl, borrowed },
+  radixdlt: { tvl, borrowed, staking },
   timetravel: false,
-  misrepresentedTokens: true,
 };

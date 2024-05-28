@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk');
 const { config, protocolPairs, tokens, stakingContracts,
-  ethereumContractData, bscContractData, polygonContractData,
+  ethereumContractData, baseContractData, bscContractData, polygonContractData,
   avalancheContractData, gnosisContractData,arbitrumContractData, } = require('./config')
   const { getCache, setCache, } = require("../helper/cache")
   const { vestingHelper,  } = require("../helper/unknownTokens")

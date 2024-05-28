@@ -8,7 +8,8 @@ const config = {
     ],
     tokens: [ 
       ADDRESSES.null, // $ETH
-      ADDRESSES.blast.USDB  // $USDB
+      ADDRESSES.blast.USDB,  // $USDB
+      ADDRESSES.blast.weETH  // weETH
    ],
   },
 }
