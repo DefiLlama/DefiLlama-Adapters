@@ -1,7 +1,7 @@
 const {
   struct, s32, u8, u16, seq, blob, Layout, bits, u32, publicKey, uint64, u64, uint128, u128,
 } = require('./layout-base')
-
+/* 
 const RAYDIUM_LIQUIDITY_STATE_LAYOUT_V4 = struct([
   u64("status"),
   u64("nonce"),
@@ -59,6 +59,9 @@ const RAYDIUM_LIQUIDITY_STATE_LAYOUT_V4 = struct([
   seq(u64(), 3, "padding"),
 ])
 
+
+const RAYDIUM_LIQUIDITY_STATE_LAYOUT_V4_2 = struct([u64("status"), u64("nonce"), u64("orderNum"), u64("depth"), u64("coinDecimals"), u64("pcDecimals"), u64("state"), u64("resetFlag"), u64("minSize"), u64("volMaxCutRatio"), u64("amountWave"), u64("coinLotSize"), u64("pcLotSize"), u64("minPriceMultiplier"), u64("maxPriceMultiplier"), u64("sysDecimalValue"), struct([u64("minSeparateNumerator"), u64("minSeparateDenominator"), u64("tradeFeeNumerator"), u64("tradeFeeDenominator"), u64("pnlNumerator"), u64("pnlDenominator"), u64("swapFeeNumerator"), u64("swapFeeDenominator"),], "fees"), struct([u64("needTakePnlCoin"), u64("needTakePnlPc"), u64("totalPnlPc"), u64("totalPnlCoin"), u64("poolOpenTime"), u64("punishPcAmount"), u64("punishCoinAmount"), u64("orderbookToInitTime"), u128("swapCoinInAmount"), u128("swapPcOutAmount"), u64("swapTakePcFee"), u128("swapPcInAmount"), u128("swapCoinOutAmount"), u64("swapTakeCoinFee"),], "outPut"), publicKey("tokenCoin"), publicKey("tokenPc"), publicKey("coinMint"), publicKey("pcMint"), publicKey("lpMint"), publicKey("openOrders"), publicKey("market"), publicKey("serumDex"), publicKey("targetOrders"), publicKey("withdrawQueue"), publicKey("tokenTempLp"), publicKey("ammOwner"), u64("lpAmount"), u64("clientOrderId"), seq(u64(), 2, "padding"),]) */
+
 const RAYDIUM_REWARD_INFO = struct([
   u8("rewardState"),
   u64("openTime"),
@@ -73,7 +76,7 @@ const RAYDIUM_REWARD_INFO = struct([
   u128("rewardGrowthGlobalX64"),
 ])
 
-const RAYDIUM_LIQUIDITY_STATE_LAYOUT_CLMM =  struct([
+const RAYDIUM_LIQUIDITY_STATE_LAYOUT_CLMM = struct([
   blob(8),
   u8("bump"),
   publicKey("ammConfig"),
@@ -182,6 +185,18 @@ const RAYDIUM_STABLE_STATE_LAYOUT_V1 = struct([
   seq(u64("padding"), 64, "padding"),
 ])
 
+const KeyLayoutv4 = struct([
+  publicKey('vaultA'),
+  publicKey('vaultB'),
+  publicKey('mintA'),
+  publicKey('mintB'),
+])
+
+const TokenAmountLayout = struct([
+  u64('amount'),
+])
+
+
 module.exports = {
-  RAYDIUM_LIQUIDITY_STATE_LAYOUT_CLMM, RAYDIUM_STABLE_STATE_LAYOUT_V1,
+  RAYDIUM_LIQUIDITY_STATE_LAYOUT_CLMM, RAYDIUM_STABLE_STATE_LAYOUT_V1, KeyLayoutv4, TokenAmountLayout,
 }

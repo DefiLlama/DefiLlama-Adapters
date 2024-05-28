@@ -11,6 +11,7 @@ module.exports = {
         ADDRESSES.ethereum.WETH,
         ADDRESSES.ethereum.WBTC,
         XDAO,
+        '0x12970E6868f88f6557B76120662c1B3E50A646bf', // LADYS
       ],
       holders: [
         '0xb80fDAA74dDA763a8A158ba85798d373A5E84d84', // portal v1
@@ -66,7 +67,7 @@ module.exports = {
     {
       name: 'telos',
       tokens: [
-        ADDRESSES.telos.USDC,
+        ADDRESSES.telos.syUSDC,
       ],
       holders: [
         '0x17A0E3234f00b9D7028e2c78dB2caa777F11490F', // portal v1
@@ -145,6 +146,7 @@ module.exports = {
         ADDRESSES.arbitrum.USDC_CIRCLE,
         ADDRESSES.arbitrum.WETH,
         XDAO,
+        '0x3b60FF35D3f7F62d636b067dD0dC0dFdAd670E4E', // LADYS
       ],
       holders: [
         '0x01A3c8E513B758EBB011F7AFaf6C37616c9C24d9', // portal v2
@@ -175,6 +177,7 @@ module.exports = {
       name: 'polygon_zkevm',
       tokens: [
         ADDRESSES.polygon_zkevm.USDC,
+        ADDRESSES.polygon_zkevm.USDC_CIRCLE,
         ADDRESSES.polygon_zkevm.WETH,
       ],
       holders: [
@@ -219,7 +222,7 @@ module.exports = {
          ADDRESSES.tron.USDT,
        ],
        holders: [
-         'TSzujXog95iHUoYBHCJtXK1XFKYjJwN7Vr', // portal v2
+         'TVgY3ayqTGUoe7th84ZNL5peVfRNdLFDjf', // portal v2
        ]
      },
      {
@@ -305,6 +308,15 @@ module.exports = {
        ],
        holders: [
          '0x8Dc71561414CDcA6DcA7C1dED1ABd04AF474D189', // portal v2
+       ]
+     },
+     {
+       name: 'core',
+       tokens: [
+         ADDRESSES.core.coreBTC,
+       ],
+       holders: [
+         '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
        ]
      },
   ]

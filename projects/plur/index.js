@@ -1,8 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getLogs, getAddress } = require("../helper/cache/getLogs");
 const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const BUILDER_ADDRESS = '0x5dfee62C78A0E607CCE6A5d4458c328A03275ba2';
-const WETH_ADDRESS = "0x4300000000000000000000000000000000000004"
+const WETH_ADDRESS = ADDRESSES.blast.WETH
 
 async function tvl(_, _1, _2, { api }) {
   const createPoolLogs = await getLogs({
