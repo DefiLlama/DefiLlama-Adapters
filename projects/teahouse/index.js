@@ -8,7 +8,7 @@ const teahouseVaultAPI = "https://vault-content-api.teahouse.finance/vaults";
 // get vault contract addresses from teahouse api
 async function getVaultContractsAddress(chain) {
   let htAddress = [];
-  const { vaults } = await getConfig("teahouse", teahouseVaultAPI);
+  const { vaults } = await getConfig("teahouse/v1_reset_cache", teahouseVaultAPI);
   vaults.forEach((element) => {
     // v2 vaults
     if (element.isDeFi == false && element.isActive == true) {
@@ -23,7 +23,7 @@ const chains = ["ethereum", "optimism", "arbitrum", 'polygon','bsc'];
 
 chains.forEach((chain) => {
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api }) => {
+    tvl: async (api) => {
       const vaults = await getVaultContractsAddress(chain);
       const tokens = await api.multiCall({
         abi: "address:asset",
@@ -42,6 +42,10 @@ chains.forEach((chain) => {
         })
       ).map((i) => i.fundValueAfterRequests);
       api.addTokens(tokens, bals);
+      if (chain === 'bsc') {
+        const tvl = await api.getUSDValue()
+        if (+tvl === 0) throw new Error('tvl is 0 Balances:' + JSON.stringify(api.getBalances()))
+      }
       return api.getBalances();
     },
   };

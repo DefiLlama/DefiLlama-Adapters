@@ -91,7 +91,8 @@ async function getPoolInfo(block, api) {
   }
 }
 
-async function ethTvl2(_, block, _1, { api }) {
+async function ethTvl2(api) {
+  const block = api.block
   const { managers, assets, } = await getPoolInfo(block, api)
   const pools = await api.multiCall({
     abi: abis.pool,
@@ -101,9 +102,9 @@ async function ethTvl2(_, block, _1, { api }) {
   return sumTokens2({ block, tokensAndOwners: pools.map((o, i) => ([assets[i], o])) })
 }
 
-async function borrowed2(_, block, _1, { api }) {
+async function borrowed2(api) {
   const balances = {}
-  const { proxies, assets, } = await getPoolInfo(block, api)
+  const { proxies, assets, } = await getPoolInfo(api.block, api)
   const principalOut = await api.multiCall({
     abi: abis.principalOut,
     calls: proxies,

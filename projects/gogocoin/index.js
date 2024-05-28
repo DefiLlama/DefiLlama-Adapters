@@ -49,8 +49,7 @@ async function pool2X(...args) {
 }
 
 module.exports = {
-    timetravel: true,
-    start: 1638388550,
+        start: 1638388550,
     polygon: {
         staking: stakingX,
         pool2: pool2X,
