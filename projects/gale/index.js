@@ -12,11 +12,9 @@ const config = {
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
-  bsc: {
+      bsc: {
     tvl: () => ({}),
-    staking:  staking(config.bsc.windmillContract, config.bsc.tokenContract, "bsc"),
+    staking:  staking(config.bsc.windmillContract, config.bsc.tokenContract),
   },
   methodology:
     "Counts tokens on the windmill for tvl",

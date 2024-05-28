@@ -1,21 +1,23 @@
 const { _BASE_TOKEN_, _QUOTE_TOKEN_ } = require('./abis/dodo.json')
 const sdk = require('@defillama/sdk')
 const { default: BigNumber } = require('bignumber.js')
-const { unwrapUniswapLPs, sumTokensAndLPsSharedOwners, sumTokensAndLPs, unwrapUniswapV3NFTs, sumTokensExport, } = require('./unwrapLPs');
+const { unwrapUniswapLPs, sumTokensAndLPsSharedOwners, sumTokensExport, } = require('./unwrapLPs');
 const { getFixBalancesSync } = require('../helper/portedTokens')
 const masterchefAbi = require("./abis/masterchef.json")
 const token0Abi = 'address:token0'
 const token1Abi = 'address:token1'
 const { isLP, getPoolInfo } = require('./masterchef')
+const { sumTokensExport: uSumExport } = require('./unknownTokens')
 
 function pool2(stakingContract, lpToken, chain, transformAddress) {
-    if (!Array.isArray(stakingContract))  stakingContract = [stakingContract]
-    if (!Array.isArray(lpToken))  lpToken = [lpToken]
-    return pool2s(stakingContract, lpToken, chain,transformAddress )
+    if (!Array.isArray(stakingContract)) stakingContract = [stakingContract]
+    if (!Array.isArray(lpToken)) lpToken = [lpToken]
+    if (arguments.length === 2) return uSumExport({ tokens: lpToken, owners: stakingContract, useDefaultCoreAssets: true })
+    return pool2s(stakingContract, lpToken, chain, transformAddress)
 }
 
 function pool2s(stakingContracts, lpTokens, chain = "ethereum", transformAddress = undefined) {
-    return async (_timestamp, _ethBlock, _, { api }) => {
+    return async (api) => {
         chain = api.chain ?? chain
         const block = api.block
         const balances = {}
@@ -147,9 +149,7 @@ function pool2BalanceFromMasterChefExports(masterchef, token, chain = "ethereum"
 }
 
 function pool2UniV3({ stakingAddress, chain = 'ethereum' }) {
-    return async (_, _b, { [chain]: block }) => {
-        return unwrapUniswapV3NFTs({ owner: stakingAddress, block, chain, })
-    }
+    return sumTokensExport({ owner: stakingAddress, resolveUniV3: true })
 }
 
 module.exports = {

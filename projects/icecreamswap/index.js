@@ -2,9 +2,10 @@ const { getUniTVL, } = require('../helper/unknownTokens')
 
 const config = {
   shimmer_evm: '0x24cb308a4e2F3a4352F513681Bd0c31a0bd3BA31',
+  bob: '0x7b2a5C88AB9367147F6ac384F857CbaDF5aA70a7',
 }
 
-const chains = [...Object.keys(config), 'base', 'telos', 'core', 'dogechain', 'fuse', 'xdc', 'bitgert', 'scroll' ]
+const chains = [...Object.keys(config), 'base', 'telos', 'core', 'dogechain', 'fuse', 'xdc', 'bitgert', 'scroll', 'neon_evm', 'blast' ]
 
 chains.forEach(chain => {
   const factory = config[chain]

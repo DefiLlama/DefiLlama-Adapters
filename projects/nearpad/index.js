@@ -20,7 +20,7 @@ const tokens = [
 module.exports = {
   misrepresentedTokens: true,
   aurora: {
-    tvl: getUniTVL({ factory: '0x34484b4E416f5d4B45D4Add0B6eF6Ca08FcED8f1', chain: 'aurora', useDefaultCoreAssets: true }),
+    tvl: getUniTVL({ factory: '0x34484b4E416f5d4B45D4Add0B6eF6Ca08FcED8f1', useDefaultCoreAssets: true }),
   },
 };
 // node test.js projects/nearpad/index.js

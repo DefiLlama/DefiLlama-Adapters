@@ -15,7 +15,7 @@ const Staking = {
 
 const CNG_ADDRESS = {
   ethereum: "0x5C1d9aA868a30795F92fAe903eDc9eFF269044bf",
-  arbitrum: "0x4e7e5023656863E26f50E2E6E59489A852C212c1",
+  arbitrum: '0x4e7e5023656863E26f50E2E6E59489A852C212c1',
 }
 
 module.exports = {

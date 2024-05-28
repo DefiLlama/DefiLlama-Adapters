@@ -12,7 +12,7 @@ const chain = 'radixdlt'
 
 const ENTITY_DETAILS_URL = `https://mainnet.radixdlt.com/state/entity/details`
 
-async function sumTokens({ owner, owners = [], api, }) {
+async function sumTokens({ owner, owners = [], api, transformLSU = false, }) {
   const fixBalances = getFixBalancesSync(chain)
 
   if (owner) owners.push(owner)
@@ -26,6 +26,7 @@ async function sumTokens({ owner, owners = [], api, }) {
       api.add(resource_address, +amount)
     });
   });
+  if (transformLSU) await transformLSUs(api)
   return fixBalances(api.getBalances())
 }
 
@@ -121,8 +122,8 @@ async function queryLiquidStakeUnitDetails(addresses = []) {
   return lsuRedemptionValues
 }
 
-function sumTokensExport(...args) {
-  return async (_, _1, _2, { api }) => sumTokens({ ...args, api, })
+function sumTokensExport({...args}) {
+  return async (api) => sumTokens({ ...args, api, })
 }
 
 async function transformLSUs(api) {

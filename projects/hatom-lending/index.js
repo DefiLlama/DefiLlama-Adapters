@@ -28,18 +28,11 @@ const tvl = async () => {
   return sumTokens({ owners: moneyMarkets.map(i => i.address), })
 };
 
-const borrowed = async (_, _1, _2, { api }) => {
+const borrowed = async (api) => {
   const moneyMarkets = await getMoneyMarkets()
   const tokens = moneyMarkets.map(i => i.underlying.id)
   const bals = await Promise.all(moneyMarkets.map(i => call({ target: i.address, abi: 'getTotalBorrows', responseTypes: ['number'] })))
   api.addTokens(tokens, bals)
-};
-
-const staking = async (_, _1, _2, { api }) => {
-  const hatomBooster = 'erd1qqqqqqqqqqqqqpgqw4dsh8j9xafw45uwr2f6a48ajvcqey8s78sstvn7xd'
-  const bals = await call({ target: hatomBooster, abi: 'getTotalStake', responseTypes: ['number'] })
-  api.add(hatom, bals.toString())
-  return api.getBalances()
 };
 
 module.exports = {
@@ -47,6 +40,5 @@ module.exports = {
   elrond: {
     tvl,
     borrowed,
-    staking,
   },
 };

@@ -1,6 +1,4 @@
-const sdk = require('@defillama/sdk')
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs")
-const { transformBalances, } = require('../helper/portedTokens')
+const { sumTokens2 } = require("../helper/unwrapLPs")
 
 const vaultAddresses = {
   CantoNoteLP: '0x89Dc2cc570E40E9cCE0364ecf0e14347215156fF',
@@ -22,26 +20,12 @@ const vaultAddresses = {
   vFlowUSDT: '0xE1b05d4f2A61c32B3deAD4fc6BA0f07d595a4f8B',
 }
 
-const lps = Object.keys(vaultAddresses)
-const chain = 'canto'
-
-async function tvl(_, _b, { canto: block }) {
-  const calls = lps.map(k => ({ target: vaultAddresses[k], }))
-  const lpPositions = []
-
-  const balances = {}
-  const [
-    { output: token, },
-    { output: balance, },
-  ] = await Promise.all([
-    sdk.api.abi.multiCall({ abi: abis.want, calls, chain, block, }),
-    sdk.api.abi.multiCall({ abi: abis.balance, calls, chain, block, }),
-  ])
-
-  balance.forEach(({ output, }, i) => lpPositions.push({ token: token[i].output, balance: output, }))
-
-  await unwrapUniswapLPs(balances, lpPositions, block, chain)
-  return transformBalances(chain, balances)
+async function tvl(api) {
+  const vaults = Object.values(vaultAddresses)
+  const tokens = await api.multiCall({  abi: abis.want, calls: vaults})
+  const bals = await api.multiCall({  abi: abis.balance, calls:vaults })
+  api.addTokens(tokens, bals)
+  return sumTokens2({ api, resolveLP: true, })
 }
 
 module.exports = {
