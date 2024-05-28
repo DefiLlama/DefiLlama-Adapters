@@ -1378,7 +1378,9 @@
     "USDC_ARB": "0xe32d3ebafa42e6011b87ef1087bbc6053b499bf6f095807b9013aff5a6ecd7bb::coin::COIN",
     "USDC_BNB": "0x909cba62ce96d54de25bec9502de5ca7b4f28901747bbf96b76c2e63ec5f1cba::coin::COIN",
     "BUCK": "0xce7ff77a83ea0cb6fd39bd8748e2ec89a3f41e8efdc3f4eb123e0ca37b184db2::buck::BUCK",
-    "SUI": "0x2::sui::SUI"
+    "SUI": "0x2::sui::SUI",
+    "NAVX": "0xa99b8952d4f7d947ea77fe0ecdcc9e5fc0bcab2841d6e2a5aa00c3044e5544b5::navx::NAVX",
+    "VSUI": "0x549e8b69270defbfafd4f94e17ec44cdbdd99820b33bda2278dea3b9a32d3f55::cert::CERT"
   },
   "grove": {
     "WGRV": "0xE85f139488c689038028a3EB8fC38dcC29D4C340"
