@@ -1,4 +1,4 @@
-const { sumTokens2, } = require('../helper/unwrapLPs')
+const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 
 async function tvl(api) {
   
@@ -7,6 +7,7 @@ async function tvl(api) {
       '0xb002b938d63fe8762f2a0eff9e49a8e20a0078e8',
     ], 
     tokens: [
+      nullAddress,
       '0xef63d4e178b3180beec9b0e143e0f37f4c93f4c2', 
       '0xfe9f969faf8ad72a83b761138bf25de87eff9dd2', 
       '0x9827431e8b77e87c9894bd50b055d6be56be0030', 
