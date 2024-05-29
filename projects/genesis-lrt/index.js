@@ -34,11 +34,11 @@ module.exports = {
     [1714953600,"Genesis Merges with InceptionLRT"]
   ],
   doublecounted: true,
-  ethereum: { tvl, },
-  mode: { tvl_mode, },
-  linea: { tvl_linea, },
-  blast: { tvl_blast, },
-  bsc: { tvl_bsc, },
-  arbitrum: { tvl_arbitrum, },
-  optimism: { tvl_optimism, },
+  ethereum: { tvl: tvl, },
+  mode: { tvl: tvl_mode, },
+  linea: { tvl: tvl_linea, },
+  blast: { tvl: tvl_blast, },
+  bsc: { tvl: tvl_bsc, },
+  arbitrum: { tvl: tvl_arbitrum, },
+  optimism: { tvl: tvl_optimism, },
 }
