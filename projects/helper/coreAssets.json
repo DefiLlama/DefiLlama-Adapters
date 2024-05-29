@@ -125,7 +125,8 @@
     "IVN": "0x6a46d878401f46b4c7f665f065e0667580e031ec",
     "ankrBNB": "0xe85afccdafbe7f2b096f268e31cce3da8da2990a",
     "aBNBb": "0xbb1aa6e59e5163d8722a122cd66eba614b59df0d",
-    "TUSD": "0x40af3827f39d0eacbf4a168f8d4ee67c121d11c9"
+    "TUSD": "0x40af3827f39d0eacbf4a168f8d4ee67c121d11c9",
+    "BITU": "0x654A32542A84bEA7D2c2C1A1Ed1AAAf26888E6bD"
   },
   "polygon": {
     "WMATIC": "0xfd28c7cea3c50a060cb4c0059e453c6d4dd9829d",
