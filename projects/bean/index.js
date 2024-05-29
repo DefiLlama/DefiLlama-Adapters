@@ -55,7 +55,8 @@ const ALL_POOLS = {
   },
   [BEAN3CRV_V2]: {
     startTime: 1659645914,
-    endTime: 1716407627, // Dewhitelisted upon BIP-45 deployment
+    endTime: 999999999999,
+    // endTime: 1716407627, // Dewhitelisted upon BIP-45 deployment, but some tokens are still deposited and receive yield
     underlying: [BEAN_ERC20, CRV3]
   },
   [BEANETH_V2]: {
@@ -96,6 +97,7 @@ async function getTotalSupply(api, token) {
 
 async function getPoolReserves(api, pool) {
 
+  pool = pool.toLowerCase();
   const poolBalances = await api.multiCall({
     calls: ALL_POOLS[pool].underlying.map(token => ({
       target: token,
@@ -110,9 +112,10 @@ async function getPoolReserves(api, pool) {
 // Returns the total silo'd amount of the requested token
 async function getSiloDeposited(api, token) {
   
+  let result;
   if (api.timestamp <= BIP12_TIME) {
     // Prior to BIP12, there was no generalized deposit getter
-    return await api.call({
+    result = await api.call({
       abi: 
         token === BEAN_ERC20_V1
           ? "function totalDepositedBeans() public view returns (uint256)"
@@ -120,12 +123,69 @@ async function getSiloDeposited(api, token) {
       target: BEANSTALK
     });
   } else {
-    return await api.call({
-      abi: "function getTotalDeposited(address token) external view returns (uint256)",
+    result = await api.call({
+      abi: "function getTotalDeposited(address) external view returns (uint256)",
       target: BEANSTALK,
       params: token
     });
   }
+  return parseInt(result);
+}
+
+/**
+ * Returns the balances of the underlying tokens in the given pools of the given ratios
+ * @param {*} api 
+ * @param {string[]} pools - the pools to calculate the balances for
+ * @param {number[]} ratios - proportions of the pool underlying to credit towards the resulting balance
+ */
+async function getPooledBalances(api, pools, ratios) {
+
+  const pooledTokenBalances = {};
+
+  const poolReserves = await Promise.all(pools.map(pool => getPoolReserves(api, pool)));
+
+  for (let i = 0; i < pools.length; ++i) {
+    const reserves = poolReserves[i];
+    for (const reserve of reserves) {
+      const ratioAmount = reserve.balance * ratios[i];
+      pooledTokenBalances[reserve.token] = (pooledTokenBalances[reserve.token] ?? 0) + ratioAmount;
+    }
+  }
+  return pooledTokenBalances;
+}
+
+// Gets the balances associated with the ripe portion of deposited unripe tokens
+async function getRipePooledBalances(api, unripeToken) {
+
+  const ripePooledTokenBalances = {};
+
+  // Gets unripe's underlying token and amounts
+  const [underlyingToken, underlyingPerUnripe, depositedUnripe] = await Promise.all([
+    api.call({
+      abi: "function getUnderlyingToken(address) external view returns (address)",
+      target: BEANSTALK,
+      params: unripeToken
+    }),
+    api.call({
+      abi: "function getUnderlyingPerUnripeToken(address) external view returns (uint256)",
+      target: BEANSTALK,
+      params: unripeToken
+    }),
+    getSiloDeposited(api, unripeToken),
+  ]);
+
+  const underlyingAmount = underlyingPerUnripe * depositedUnripe / Math.pow(10, 6);
+  if (underlyingToken == BEAN_ERC20) {
+    ripePooledTokenBalances[BEAN_ERC20] = (ripePooledTokenBalances[BEAN_ERC20] ?? 0) + underlyingAmount;
+  } else {
+    const underlyingSupply = await getTotalSupply(api, underlyingToken);
+    const ratio = underlyingAmount / underlyingSupply;
+    const balances = await getPooledBalances(api, [underlyingToken], [ratio]);
+    for (const token in balances) {
+      ripePooledTokenBalances[token] = (ripePooledTokenBalances[token] ?? 0) + balances[token];
+    }
+  }
+  return ripePooledTokenBalances;
 }
 
 // Beans deposited in the silo
@@ -135,10 +195,14 @@ async function staking(api) {
   }
 
   const bean = getBean(api.timestamp);
-  const siloBeans = await getSiloDeposited(api, bean);
+  const [siloBeans, unripeSiloBeans] = await Promise.all([
+    getSiloDeposited(api, bean),
+    getRipePooledBalances(api, UNRIPE_BEAN_ERC20)
+  ]);
+  const totalStaked = siloBeans + unripeSiloBeans[BEAN_ERC20];
 
   return {
-    [`ethereum:${bean.toLowerCase()}`]: siloBeans
+    [`ethereum:${bean.toLowerCase()}`]: totalStaked
   }
 }
 
@@ -147,37 +211,34 @@ async function pool2(api) {
     return {};
   }
 
-  const pool2Balances = {};
-
-  // For each pool:
   // Get the amount of lp tokens deposited in the silo
-  // Get the amount underlying those lp tokens (which can be priced)
   const pools = getPools(api.timestamp);
-  for (const pool of pools) {
-    const [siloLpTokens, totalLpTokens, poolReserves]  = await Promise.all([
-      getSiloDeposited(api, pool),
-      getTotalSupply(api, pool),
-      getPoolReserves(api, pool)
-    ]);
-    const percentInSilo = siloLpTokens / totalLpTokens;
-
-    // Add underlying tokens to the result
-    for (const poolReserve of poolReserves) {
-      const siloAmount = poolReserve.balance * percentInSilo;
-      if (!pool2Balances[poolReserve.token]) {
-        pool2Balances[poolReserve.token] = siloAmount;
-      } else {
-        pool2Balances[poolReserve.token] += siloAmount;
-      }
-    }
+  const poolPromises = pools.map(pool => [
+    getSiloDeposited(api, pool),
+    getTotalSupply(api, pool)
+  ]);
+  // And determine how much of the pooled tokens correspond to those deposits
+  const flatResolved = await Promise.all(poolPromises.flat());
+  const ratios = [];
+  for (let i = 0; i < flatResolved.length; i += 2) {
+    ratios.push(flatResolved[i] / flatResolved[i + 1]);
   }
 
-  // TODO: include all value underlying unripe
+  // Gets the underlying token balances for both regular and unripe deposits
+  const balancesResults = await Promise.all([
+    getPooledBalances(api, pools, ratios),
+    getRipePooledBalances(api, UNRIPE_LP_ERC20)
+  ]);
+
+  const pool2Balances = balancesResults[0];
+  for (const token in balancesResults[1]) {
+    pool2Balances[token] = (pool2Balances[token] ?? 0) + balancesResults[1][token];
+  }
   
   // Add chain info
   const retval = {};
   for (const token in pool2Balances) {
-    retval[`ethereum:${token.toLowerCase()}`] = pool2Balances[token].toFixed(0);
+    retval[`ethereum:${token.toLowerCase()}`] = pool2Balances[token];
   }
   return retval;
 }
@@ -189,12 +250,12 @@ async function tvl(api) {
 
   const stakingTvl = await staking(api);
   Object.entries(stakingTvl).forEach(([token, balance]) => {
-    balances[token] = (balances[token] || 0) + parseInt(balance);
+    balances[token] = (balances[token] || 0) + balance;
   });
 
   const pool2Tvl = await pool2(api);
   Object.entries(pool2Tvl).forEach(([token, balance]) => {
-    balances[token] = (balances[token] || 0) + parseInt(balance);
+    balances[token] = (balances[token] || 0) + balance;
   });
 
   return balances;
