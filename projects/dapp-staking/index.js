@@ -17,6 +17,6 @@ async function tvl() {
 
 module.exports = {
   methodology:
-    "Total value locked is the total amount of ASTR tokens deposited to the Dapps-Staking program",
+    "Total value locked is the total amount of ASTR tokens deposited to the dApp Staking program",
   astar: { tvl },
 };
