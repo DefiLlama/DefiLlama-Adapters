@@ -37,11 +37,14 @@ async function tvl_bsc(api) {
 
 
 module.exports = {
+  hallmarks: [
+    [1714953600,"Genesis Merges with InceptionLRT"]
+  ],
   doublecounted: true,
   ethereum: { tvl: tvl_eth, } ,
   linea: { tvl: tvl_linea, }, 
   mode: { tvl: tvl_mode, }, 
   arbitrum: { tvl: tvl_arbitrum, },
-  optimism:{ tvl: tvl_optimism, },
-  bsc:{ tvl: tvl_bsc, },
+  optimism: { tvl: tvl_optimism, },
+  bsc: { tvl: tvl_bsc, },
 }
