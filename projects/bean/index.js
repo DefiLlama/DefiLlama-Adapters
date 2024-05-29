@@ -1,22 +1,20 @@
-const { sumTokens2 } = require("../helper/unwrapLPs");
-
 const BEANSTALK = "0xc1e088fc1323b20bcbee9bd1b9fc9546db5624c5";
 
 const BEAN_ERC20_V1 = "0xdc59ac4fefa32293a95889dc396682858d52e5db";
-const BEANETH_V1 = "0x87898263B6C5BABe34b4ec53F22d98430b91e371";
-const BEAN3CRV_V1 = "0x3a70DfA7d2262988064A2D051dd47521E43c9BdD";
+const BEANETH_V1 = "0x87898263b6c5babe34b4ec53f22d98430b91e371";
+const BEAN3CRV_V1 = "0x3a70dfa7d2262988064a2d051dd47521e43c9bdd";
 const BEANLUSD_V1 = "0xd652c40fbb3f06d6b58cb9aa9cff063ee63d465d";
 
-const BEAN_ERC20 = "0xBEA0000029AD1c77D3d5D23Ba2D8893dB9d1Efab";
+const BEAN_ERC20 = "0xbea0000029ad1c77d3d5d23ba2d8893db9d1efab";
 const UNRIPE_BEAN_ERC20 = "0x1bea0050e63e05fbb5d8ba2f10cf5800b6224449";
 const UNRIPE_LP_ERC20 = "0x1bea3ccd22f4ebd3d37d731ba31eeca95713716d";
 const BEAN3CRV_V2 = "0xc9c32cd16bf7efb85ff14e0c8603cc90f6f2ee49";
 const BEANETH_V2 = "0xbea0e11282e2bb5893bece110cf199501e872bad";
 
 // Underlying non-bean tokens
-const WETH = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
-const CRV3 = "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490";
-const LUSD = "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0";
+const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+const CRV3 = "0x6c3f90f043a72fa612cbac8115ee7e52bde6e490";
+const LUSD = "0x5f98805a4e8be255a32880fdec7f6728c6568ba0";
 
 /// REFERENCE                 BLOCKS    TIMESTAMPS
 // Whitelist    BEANETH_V1    12974075  1628288832
@@ -36,7 +34,7 @@ const EXPLOIT_TIME = 1650198256;
 const REPLANT_TIME = 1659657966;
 const BIP12_TIME = 1645038020;
 
-// List of pools and time time periods they were on the silo whitelist
+// List of pools and time time periods they were valid within beanstalk
 const ALL_POOLS = {
   [BEANETH_V1]: {
     startTime: 1628288832,
@@ -88,6 +86,7 @@ function getPools(timestamp) {
   return pools;
 }
 
+// Gets the total supply of the given erc20 token
 async function getTotalSupply(api, token) {
   return await api.call({
     abi: 'erc20:totalSupply',
@@ -95,6 +94,7 @@ async function getTotalSupply(api, token) {
   });
 }
 
+// Gets the reserves (for simplicity, contract balances) of the requested pool
 async function getPoolReserves(api, pool) {
 
   pool = pool.toLowerCase();
@@ -174,8 +174,9 @@ async function getRipePooledBalances(api, unripeToken) {
     getSiloDeposited(api, unripeToken),
   ]);
 
+  // Add the underlying pooled token balances
   const underlyingAmount = underlyingPerUnripe * depositedUnripe / Math.pow(10, 6);
-  if (underlyingToken == BEAN_ERC20) {
+  if (underlyingToken.toLowerCase() == BEAN_ERC20) {
     ripePooledTokenBalances[BEAN_ERC20] = (ripePooledTokenBalances[BEAN_ERC20] ?? 0) + underlyingAmount;
   } else {
     const underlyingSupply = await getTotalSupply(api, underlyingToken);
@@ -194,6 +195,7 @@ async function staking(api) {
     return {};
   }
 
+  // Bean deposits + ripe beans from unripe beans
   const bean = getBean(api.timestamp);
   const [siloBeans, unripeSiloBeans] = await Promise.all([
     getSiloDeposited(api, bean),
@@ -206,6 +208,7 @@ async function staking(api) {
   }
 }
 
+// Tokens in liquidity pools corresponding to lp tokens that are deposited in the silo
 async function pool2(api) {
   if (api.timestamp >= EXPLOIT_TIME && api.timestamp <= REPLANT_TIME) {
     return {};
