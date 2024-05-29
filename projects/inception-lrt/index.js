@@ -11,43 +11,28 @@ async function tvl_eth(api) {
 }
 
 async function tvl_linea(api) {
-  if (api.timestamp > 1715181240) {
     const staked = await api.call({ abi: 'uint256:totalSupply', target: '0xd08C3F25862077056cb1b710937576Af899a4959' })
     api.add(ADDRESSES.null, staked)
-  }
-  api.add(tokens, total_deposited)
 }
 
 async function tvl_mode(api) {
-  if (api.timestamp > 1715181240) {
     const staked = await api.call({ abi: 'uint256:totalSupply', target: '0x5A32d48411387577c26a15775cf939494dA8064A' })
     api.add(ADDRESSES.null, staked)
-  }
-  api.add(tokens, total_deposited)
 }
 
 async function tvl_arbitrum(api) {
-  if (api.timestamp > 1715181240) {
     const staked = await api.call({ abi: 'uint256:totalSupply', target: '0xd08C3F25862077056cb1b710937576Af899a4959' })
     api.add(ADDRESSES.null, staked)
-  }
-  api.add(tokens, total_deposited)
 }
 
 async function tvl_optimsim(api) {
-  if (api.timestamp > 1715181240) {
     const staked = await api.call({ abi: 'uint256:totalSupply', target: '0xd08C3F25862077056cb1b710937576Af899a4959' })
     api.add(ADDRESSES.null, staked)
-  }
-  api.add(tokens, total_deposited)
 }
 
 async function tvl_bsc(api) {
-  if (api.timestamp > 1715181240) {
     const staked = await api.call({ abi: 'uint256:totalSupply', target: '0x3059a337b134Cc89851c8DE18A00D880fa1D5519' })
     api.add(ADDRESSES.null, staked)
-  }
-  api.add(tokens, total_deposited)
 }
 
 
