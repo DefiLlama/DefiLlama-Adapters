@@ -29,9 +29,10 @@ const BEANETH_V2 = "0xbea0e11282e2bb5893bece110cf199501e872bad";
 
 const EXPLOIT_TIME = 1650198256;
 const REPLANT_TIME = 1659657966;
+const BIP12_TIME = 1645038020;
 
 // List of pools and time time periods they were on the silo whitelist
-const POOLS = {
+const ALL_POOLS = {
   [BEANETH_V1]: {
     startTime: 1628288832,
     endTime: EXPLOIT_TIME,
@@ -54,20 +55,63 @@ const POOLS = {
   }
 };
 
+// Returns the relevant tokens for the given timestamp
+function getBean(timestamp) {
+  if (timestamp <= EXPLOIT_TIME) {
+    return BEAN_ERC20_V1;
+  } else if (timestamp >= REPLANT_TIME) {
+    return BEAN_ERC20;
+  }
+  throw new Error("There was no Bean token during the requested timestamp");
+}
+
+// Returns the relevant pools for the given timestamp
+function getPools(timestamp) {
+  const pools = [];
+  for (const contract in ALL_POOLS) {
+    const pool = ALL_POOLS[contract];
+    if (timestamp >= pool.startTime && timestamp <= pool.endTime) {
+      pools.push(contract);
+    }
+  }
+  return pools;
+}
+
+// Returns the total silo'd amount of the requested token
+async function getSiloDeposited(api, token) {
+  
+  if (api.timestamp <= BIP12_TIME) {
+    // Prior to BIP12, there was no generalized deposit getter
+    return await api.call({
+      abi: 
+        token === BEAN_ERC20_V1
+          ? "function totalDepositedBeans() public view returns (uint256)"
+          : "function totalDepositedLP() public view returns (uint256)",
+      target: BEANSTALK
+    });
+  } else {
+    return await api.call({
+      abi: "function getTotalDeposited(address token) external view returns (uint256)",
+      target: BEANSTALK,
+      params: token
+    });
+  }
+}
+
 // Beans deposited in the silo
 async function staking(api) {
   if (api.timestamp >= EXPLOIT_TIME && api.timestamp <= REPLANT_TIME) {
     return {};
   }
 
-  const tokensAndOwners = [[BEAN_ERC20, BEANSTALK]];
-  // TODO: modify this to use getTotalDeposited once it became available on block 14218934 (BIP-12)
-  // Before BIP-12: totalDepositedBeans and totalDepositedLP
-  const balances = await sumTokens2({balances: {}, tokensAndOwners, api });
-  return balances;
+  const bean = getBean(api.timestamp);
+  const siloBeans = await getSiloDeposited(api, bean);
+
+  return {
+    [`ethereum:${bean.toLowerCase()}`]: siloBeans
+  }
 }
 
-// Bean LP deposited in the silo
 async function pool2(api) {
   if (api.timestamp >= EXPLOIT_TIME && api.timestamp <= REPLANT_TIME) {
     return {};
@@ -75,11 +119,12 @@ async function pool2(api) {
 
   const tokensAndOwners = [];
 
-  for (const contract in POOLS) {
-    const pool = POOLS[contract];
-    if (api.timestamp >= pool.startTime && api.timestamp <= pool.endTime) {
-      tokensAndOwners.push([contract, BEANSTALK]);
-    }
+  // Get the amount of lp tokens deposited in the silo
+  // Get the amount underlying those lp tokens (which can be priced)
+
+  const pools = getPools(api.timestamp);
+  for (const pool of pools) {
+    tokensAndOwners.push([pool, BEANSTALK]);
   }
 
   const balances = await sumTokens2({balances: {}, tokensAndOwners, api });
@@ -91,6 +136,9 @@ async function vesting(api) {
   if (api.timestamp <= REPLANT_TIME) {
     return {};
   }
+
+  // Get the amount deposited in the silo
+  // Get the amount underlying that amount (as beans) which can be priced
 
   const tokensAndOwners = [[UNRIPE_BEAN_ERC20, BEANSTALK], [UNRIPE_LP_ERC20, BEANSTALK]];
   const balances = await sumTokens2({balances: {}, tokensAndOwners, api });
