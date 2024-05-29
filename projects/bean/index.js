@@ -138,7 +138,7 @@ async function staking(api) {
   const siloBeans = await getSiloDeposited(api, bean);
 
   return {
-    [`ethereum:${bean.toLowerCase()}`]: siloBeans.toFixed(0)
+    [`ethereum:${bean.toLowerCase()}`]: siloBeans
   }
 }
 
@@ -171,6 +171,8 @@ async function pool2(api) {
       }
     }
   }
+
+  // TODO: include all value underlying unripe
   
   // Add chain info
   const retval = {};
@@ -180,31 +182,32 @@ async function pool2(api) {
   return retval;
 }
 
-// Unripe tokens
-async function vesting(api) {
-  if (api.timestamp <= REPLANT_TIME) {
-    return {};
-  }
+// Overall tvl as the sum of each
+async function tvl(api) {
 
-  // Get the amount deposited in the silo
-  // Get the amount underlying that amount (as beans) which can be priced
+  const balances = {};
 
-  const tokensAndOwners = [[UNRIPE_BEAN_ERC20, BEANSTALK], [UNRIPE_LP_ERC20, BEANSTALK]];
-  const balances = await sumTokens2({balances: {}, tokensAndOwners, api });
+  const stakingTvl = await staking(api);
+  Object.entries(stakingTvl).forEach(([token, balance]) => {
+    balances[token] = (balances[token] || 0) + parseInt(balance);
+  });
+
+  const pool2Tvl = await pool2(api);
+  Object.entries(pool2Tvl).forEach(([token, balance]) => {
+    balances[token] = (balances[token] || 0) + parseInt(balance);
+  });
+
   return balances;
 }
 
 module.exports = {
-  doublecounted: true,
   methodology: "Counts the value of deposited Beans and LP tokens in the silo.",
   start: 12974077,
   timetravel: true,
   ethereum: {
-    // tvl,
-    tvl: async () => ({}),
+    tvl,
     pool2,
-    staking,
-    vesting
+    staking
   },
   hallmarks: [
     [1650153600, "Governance Exploit"],
