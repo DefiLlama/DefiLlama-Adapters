@@ -13,9 +13,14 @@ const UNRIPE_LP_ERC20 = "0x1bea3ccd22f4ebd3d37d731ba31eeca95713716d";
 const BEAN3CRV_V2 = "0xc9c32cd16bf7efb85ff14e0c8603cc90f6f2ee49";
 const BEANETH_V2 = "0xbea0e11282e2bb5893bece110cf199501e872bad";
 
+// Underlying non-bean tokens
+const WETH = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
+const CRV3 = "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490";
+const LUSD = "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0";
+
 /// REFERENCE                 BLOCKS    TIMESTAMPS
 // Whitelist    BEANETH_V1    12974075  1628288832
-// Dewhitelist  BEANETH_V1    14602790  1650198256
+// Dewhitelist  BEANETH_V1    14602790  165019825s6
 // Whitelist    BEAN3CRV_V1   14218934  1645038020
 // dewhitelist  BEAN3CRV_V1   14602790  1650198256
 // whitelist    BEANLUSD_V1   14547427  1649451979
@@ -36,22 +41,27 @@ const ALL_POOLS = {
   [BEANETH_V1]: {
     startTime: 1628288832,
     endTime: EXPLOIT_TIME,
+    underlying: [BEAN_ERC20_V1, WETH]
   },
   [BEAN3CRV_V1]: {
     startTime: 1645038020,
     endTime: EXPLOIT_TIME,
+    underlying: [BEAN_ERC20_V1, CRV3]
   },
   [BEANLUSD_V1]: {
     startTime: 1649451979,
     endTime: EXPLOIT_TIME,
+    underlying: [BEAN_ERC20_V1, LUSD]
   },
   [BEAN3CRV_V2]: {
     startTime: 1659645914,
     endTime: 1716407627, // Dewhitelisted upon BIP-45 deployment
+    underlying: [BEAN_ERC20, CRV3]
   },
   [BEANETH_V2]: {
     startTime: 1693412759,
     endTime: 999999999999,
+    underlying: [BEAN_ERC20, WETH]
   }
 };
 
@@ -75,6 +85,26 @@ function getPools(timestamp) {
     }
   }
   return pools;
+}
+
+async function getTotalSupply(api, token) {
+  return await api.call({
+    abi: 'erc20:totalSupply',
+    target: token
+  });
+}
+
+async function getPoolReserves(api, pool) {
+
+  const poolBalances = await api.multiCall({
+    calls: ALL_POOLS[pool].underlying.map(token => ({
+      target: token,
+      params: pool
+    })),
+    abi: 'erc20:balanceOf'
+  });
+
+  return poolBalances.map((balance, i) => ({ token: ALL_POOLS[pool].underlying[i], balance }));
 }
 
 // Returns the total silo'd amount of the requested token
@@ -108,7 +138,7 @@ async function staking(api) {
   const siloBeans = await getSiloDeposited(api, bean);
 
   return {
-    [`ethereum:${bean.toLowerCase()}`]: siloBeans
+    [`ethereum:${bean.toLowerCase()}`]: siloBeans.toFixed(0)
   }
 }
 
@@ -117,18 +147,37 @@ async function pool2(api) {
     return {};
   }
 
-  const tokensAndOwners = [];
+  const pool2Balances = {};
 
+  // For each pool:
   // Get the amount of lp tokens deposited in the silo
   // Get the amount underlying those lp tokens (which can be priced)
-
   const pools = getPools(api.timestamp);
   for (const pool of pools) {
-    tokensAndOwners.push([pool, BEANSTALK]);
-  }
+    const [siloLpTokens, totalLpTokens, poolReserves]  = await Promise.all([
+      getSiloDeposited(api, pool),
+      getTotalSupply(api, pool),
+      getPoolReserves(api, pool)
+    ]);
+    const percentInSilo = siloLpTokens / totalLpTokens;
 
-  const balances = await sumTokens2({balances: {}, tokensAndOwners, api });
-  return balances;
+    // Add underlying tokens to the result
+    for (const poolReserve of poolReserves) {
+      const siloAmount = poolReserve.balance * percentInSilo;
+      if (!pool2Balances[poolReserve.token]) {
+        pool2Balances[poolReserve.token] = siloAmount;
+      } else {
+        pool2Balances[poolReserve.token] += siloAmount;
+      }
+    }
+  }
+  
+  // Add chain info
+  const retval = {};
+  for (const token in pool2Balances) {
+    retval[`ethereum:${token.toLowerCase()}`] = pool2Balances[token].toFixed(0);
+  }
+  return retval;
 }
 
 // Unripe tokens
