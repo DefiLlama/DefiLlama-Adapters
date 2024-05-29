@@ -1,4 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 const config = {
   blast: {
     weth90d: '0xc932317385fDc794633f612874BD687eA987B151',
@@ -28,7 +29,6 @@ const usdeVaults = {
   blast: {
     vault: '0xeEa70D690C6c9c5534FcB90b6b0aE71199C7d4d3',
     fwUSDe: '0x04efc000dC9c27445b092622f42e09E173beE61f',
-    nativeUSD: ADDRESSES.blast.USDB
   }
 }
 
@@ -52,11 +52,12 @@ Object.keys(config).forEach(chain => {
 
       let usdeVault = usdeVaults[chain]
       const wrappedUSDeBalance = await api.call({
-        abi: 'uint256:balanceOf',
+        abi: 'erc20:balanceOf',
         target: usdeVault.fwUSDe,
         params: usdeVault.vault
       });
-      api.add(usdeVault.nativeUSD, wrappedUSDeBalance)
+      api.add('0x5d3a1ff2b6bab83b63cd9ad0787074081a52ef34', wrappedUSDeBalance)
+      return sumTokens2({ api })
     }
   }
 })
