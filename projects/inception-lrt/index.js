@@ -7,14 +7,56 @@ async function tvl_eth(api) {
   const strategies = await api.multiCall({  abi: 'address:strategy', calls: vaults})
   const tokens = await api.multiCall({  abi: 'address:underlyingToken', calls: strategies})
   // const result = total_deposited.map((deposited, index) => deposited - total_withdraw[index]);
+  api.add(tokens, total_deposited)
+}
+
+async function tvl_linea(api) {
   if (api.timestamp > 1715181240) {
-    const staked = await api.call({ abi: 'uint256:totalAssets', target: '0xf073bAC22DAb7FaF4a3Dd6c6189a70D54110525C' })
+    const staked = await api.call({ abi: 'uint256:totalSupply', target: '0xd08C3F25862077056cb1b710937576Af899a4959' })
     api.add(ADDRESSES.null, staked)
   }
   api.add(tokens, total_deposited)
 }
 
+async function tvl_mode(api) {
+  if (api.timestamp > 1715181240) {
+    const staked = await api.call({ abi: 'uint256:totalSupply', target: '0x5A32d48411387577c26a15775cf939494dA8064A' })
+    api.add(ADDRESSES.null, staked)
+  }
+  api.add(tokens, total_deposited)
+}
+
+async function tvl_arbitrum(api) {
+  if (api.timestamp > 1715181240) {
+    const staked = await api.call({ abi: 'uint256:totalSupply', target: '0xd08C3F25862077056cb1b710937576Af899a4959' })
+    api.add(ADDRESSES.null, staked)
+  }
+  api.add(tokens, total_deposited)
+}
+
+async function tvl_optimsim(api) {
+  if (api.timestamp > 1715181240) {
+    const staked = await api.call({ abi: 'uint256:totalSupply', target: '0xd08C3F25862077056cb1b710937576Af899a4959' })
+    api.add(ADDRESSES.null, staked)
+  }
+  api.add(tokens, total_deposited)
+}
+
+async function tvl_bsc(api) {
+  if (api.timestamp > 1715181240) {
+    const staked = await api.call({ abi: 'uint256:totalSupply', target: '0x3059a337b134Cc89851c8DE18A00D880fa1D5519' })
+    api.add(ADDRESSES.null, staked)
+  }
+  api.add(tokens, total_deposited)
+}
+
+
 module.exports = {
   doublecounted: true,
   ethereum: { tvl: tvl_eth, } ,
+  linea: { tvl: tvl_linea, }, 
+  mode: { tvl: tvl_mode, }, 
+  arbitrum: { tvl: tvl_arbitrum, },
+  optimism:{ tvl: tvl_optimism, },
+  bsc:{ tvl: tvl_bsc, },
 }
