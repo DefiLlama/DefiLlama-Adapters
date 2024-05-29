@@ -3,8 +3,9 @@ const sdk = require("@defillama/sdk")
 const { sumTokensExport } = require("../helper/unwrapLPs")
 const ADDRESSES = require("../helper/coreAssets.json")
 
-const vaultTvl = sumERC4626VaultsExport({
+const blastVaultTvl = sumERC4626VaultsExport({
   vaults: [
+    // on blast
     "0x56e0f6DF03883611C9762e78d4091E39aD9c420E",
     "0x3D4621fa5ff784dfB2fcDFd5B293224167F239db",
     "0xe97D34E531E1b299047A94Fc6854289830362d8f",
@@ -16,7 +17,15 @@ const vaultTvl = sumERC4626VaultsExport({
   isOG4626: true,
 })
 
-const otherTvl = sumTokensExport({
+const taikoVaultTvl = sumERC4626VaultsExport({
+  vaults: [
+    // on taiko
+    "0xdA6a745740Bbdbe5F588b79FEe57f2e10ad4Da11",
+  ],
+  isOG4626: true,
+})
+
+const blastOtherTvl = sumTokensExport({
   tokens: [ADDRESSES.blast.USDB, ADDRESSES.blast.WETH, ADDRESSES.blast.ezETH],
   owners: [
     "0x9AdF2b330697C6816176491E1fd5503BB746d1d8",
@@ -24,8 +33,19 @@ const otherTvl = sumTokensExport({
   ],
 })
 
+const taikoOtherTvl = sumTokensExport({
+  tokens: [ADDRESSES.taiko.WETH],
+  owners: [
+    "0xc0ab776604059D10880dbD219758FF7B82997cc0",
+    "0xB00231B308B01Dbb90f16F966F62d86fBc78c450",
+  ],
+})
+
 module.exports = {
   blast: {
-    tvl: sdk.util.sumChainTvls([vaultTvl, otherTvl]),
+    tvl: sdk.util.sumChainTvls([blastVaultTvl, blastOtherTvl]),
+  },
+  taiko: {
+    tvl: sdk.util.sumChainTvls([taikoVaultTvl, taikoOtherTvl]),
   },
 }

@@ -865,6 +865,9 @@
     "BNB": "0x332730a4f6e03d9c55829435f10360e13cfa41ff",
     "BUSD": "0x65e66a61d0a8f1e686c2d6083ad611a10d84d97a"
   },
+  "taiko": {
+    "WETH": "0xA51894664A773981C6C112C43ce576f315d5b1B6"
+  },
   "tezos": {
     "USDtz": "KT1LN4LPSqTMS7Sd2CJw4bbDGRkMv2t68Fy9",
     "CTez": "KT1SjXiUX63QvdNMcM2m492f7kuf8JxXRLp4",
