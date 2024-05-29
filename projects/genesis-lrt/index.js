@@ -3,7 +3,6 @@ const ADDRESSES = require('../helper/coreAssets.json')
 async function tvl(api) {
   const staked = await api.call({ abi: 'uint256:totalAssets', target: '0xf073bAC22DAb7FaF4a3Dd6c6189a70D54110525C' })
   api.add(ADDRESSES.null, staked)
-  api = api - tvl_mode() - tvl_linea() - tvl_blast() - tvl_bsc() - tvl_arbitrum() - tvl_optimism()
 }
 async function tvl_mode(api) {
   const staked = await api.call({ abi: 'uint256:totalSupply', target: '0x5A7a183B6B44Dc4EC2E3d2eF43F98C5152b1d76d' })
