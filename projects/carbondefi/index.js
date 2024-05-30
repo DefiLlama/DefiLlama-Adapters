@@ -6,7 +6,7 @@ const config = {
     fromBlock: 17087375,
     controller: "0xC537e898CD774e2dCBa3B14Ea6f34C93d5eA45e1",
   },
-  sei_evm: {
+  sei: {
     fromBlock: 79146720,
     controller: "0xe4816658ad10bF215053C533cceAe3f59e1f1087",
   },
