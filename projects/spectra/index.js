@@ -1,33 +1,7 @@
 const { getLogs } = require("../helper/cache/getLogs");
+const abi = require("./abi.json");
+const config = require("./config.json");
 const sdk = require("@defillama/sdk");
-
-const abi = {
-  markets: {
-    balances:
-      "function balances(uint256 index) external view returns (uint256)",
-  },
-  pt: {
-    getIBT: "function getIBT() external view override returns (address)",
-    balanceOf:
-      "function balanceOf(address account) external view returns (uint256)",
-  },
-  vault: {
-    convertToAsset:
-      "function convertToAssets(uint256 shares) external view returns (uint256 assets)",
-    asset: "function asset() external view returns (address assetTokenAddress)",
-  },
-};
-
-const config = {
-  ethereum: {
-    factory: "0xae4d5d5199265512B2a77Ad675107735B891aBc8",
-    fromBlock: 19727256,
-  },
-  arbitrum: {
-    factory: "0x51100574E1CF11ee9fcC96D70ED146250b0Fdb60",
-    fromBlock: 204418891,
-  },
-};
 
 module.exports = {
   methodology: `All deposited underlying in Spectra Principal Tokens and all underlying supplied as liquidity in Spectra Markets`,
@@ -38,101 +12,76 @@ Object.keys(config).forEach((chain) => {
   module.exports[chain] = {
     tvl: async (api) => {
       const marketData = await getMarkets(api);
-      const ibtsInMarket = await api.batchCall(
-        marketData.map((market) => {
-          return {
-            target: market[0],
-            params: 0,
-            abi: abi.markets.balances,
-          };
-        })
-      );
-      const marketsIbtsWithBalance = marketData.map((market, i) => [
-        market[1],
-        ibtsInMarket[i],
-      ]);
-
-      const poolIBTBalances = marketsIbtsWithBalance.reduce(
-        (acc, [ibt, balance]) => {
-          if (acc[ibt] === undefined) {
-            acc[ibt] = BigInt(0);
-          }
-          acc[ibt] += sdk.util.convertToBigInt(balance);
-          return acc;
-        },
-        {}
-      );
+      const marketBatchCalls = marketData.map((market) => ({
+        target: market[0],
+        params: 0,
+        abi: abi.markets.balances,
+      }));
 
       const pts = await getPTs(api);
-      const ptIbts = await api.batchCall(
-        pts.map((pt) => {
-          return {
-            target: pt,
-            abi: abi.pt.getIBT,
-          };
-        })
-      );
-      const ibtBalances = await api.batchCall(
-        pts.map((pt, i) => {
-          return {
-            target: ptIbts[i],
-            params: pt,
-            abi: abi.pt.balanceOf,
-          };
-        })
-      );
-      const ptsIbtsWithBalances = ibtBalances.map((balance, i) => [
-        ptIbts[i],
-        balance,
+      const ptIBTCalls = pts.map((pt) => ({
+        target: pt,
+        abi: abi.pt.getIBT,
+      }));
+
+      const [ibtsInMarket, ptIbts] = await Promise.all([
+        api.batchCall(marketBatchCalls),
+        api.batchCall(ptIBTCalls),
       ]);
-      const ptIBTBalances = ptsIbtsWithBalances.reduce(
-        (acc, [ibt, balance]) => {
-          if (acc[ibt] === undefined) {
-            acc[ibt] = BigInt(0);
-          }
-          acc[ibt] += sdk.util.convertToBigInt(balance);
-          return acc;
-        },
-        {}
-      );
 
-      const allIBTBalances = Object.entries({
-        ...poolIBTBalances,
-        ...ptIBTBalances,
-      }).reduce(
-        (acc, [key, value]) => ({
-          ...acc,
-          [key]: (poolIBTBalances[key] || 0n) + (ptIBTBalances[key] || 0n),
-        }),
-        {}
-      );
+      const ptIBTBalanceCalls = ptIbts.map((ibt, i) => ({
+        target: ibt,
+        params: pts[i],
+        abi: abi.pt.balanceOf,
+      }));
+      const ibtBalances = await api.batchCall(ptIBTBalanceCalls);
 
-      const Assets = await api.batchCall(
-        Object.entries(allIBTBalances).map(([ibt, balance]) => {
-          return {
-            target: ibt,
-            abi: abi.vault.asset,
-          };
+      const poolIBTBalances = marketData.reduce((acc, market, i) => {
+        const ibt = market[1];
+        const balance = sdk.util.convertToBigInt(ibtsInMarket[i]);
+        acc[ibt] = (acc[ibt] || 0n) + balance;
+        return acc;
+      }, {});
+
+      const ptIBTBalances = ptIbts.reduce((acc, ibt, i) => {
+        const balance = sdk.util.convertToBigInt(ibtBalances[i]);
+        acc[ibt] = (acc[ibt] || 0n) + balance;
+        return acc;
+      }, {});
+
+      const allIBTBalances = { ...poolIBTBalances };
+      for (const [ibt, balance] of Object.entries(ptIBTBalances)) {
+        allIBTBalances[ibt] = (allIBTBalances[ibt] || 0n) + balance;
+      }
+
+      const assetCalls = Object.keys(allIBTBalances).map((ibt) => ({
+        target: ibt,
+        abi: abi.vault.asset,
+      }));
+
+      const assetBalanceCalls = Object.entries(allIBTBalances).map(
+        ([ibt, balance]) => ({
+          target: ibt,
+          params: balance,
+          abi: abi.vault.convertToAsset,
         })
       );
-      const AssetsBalances = await api.batchCall(
-        Object.entries(allIBTBalances).map(([ibt, balance], i) => {
-          return {
-            target: ibt,
-            params: balance,
-            abi: abi.vault.convertToAsset,
-          };
-        })
-      );
-      const assetsWithBalances = Assets.map((asset, i) => [
+
+      const [assets, assetBalances] = await Promise.all([
+        api.batchCall(assetCalls),
+        api.batchCall(assetBalanceCalls),
+      ]);
+
+      const assetsWithBalances = assets.map((asset, i) => [
         asset,
-        sdk.util.convertToBigInt(AssetsBalances[i]),
+        sdk.util.convertToBigInt(assetBalances[i]),
       ]);
+
       assetsWithBalances.forEach(([asset, balance]) => {
         api.add(asset, balance);
       });
-      let balances = api.getBalances();
-      return balances;
+
+      return api.getBalances();
     },
   };
 

@@ -1,0 +1,14 @@
+{
+    "markets": {
+      "balances": "function balances(uint256 index) external view returns (uint256)"
+    },
+    "pt": {
+      "getIBT": "function getIBT() external view override returns (address)",
+      "balanceOf": "function balanceOf(address account) external view returns (uint256)"
+    },
+    "vault": {
+      "convertToAsset": "function convertToAssets(uint256 shares) external view returns (uint256 assets)",
+      "asset": "function asset() external view returns (address assetTokenAddress)"
+    }
+  }
+  
