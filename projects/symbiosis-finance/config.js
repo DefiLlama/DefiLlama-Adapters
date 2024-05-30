@@ -329,7 +329,7 @@ module.exports = {
        ]
      },
      {
-       name: 'sei',
+       name: 'sei_evm',
        tokens: [
          ADDRESSES.sei_evm.USDC,
        ],
