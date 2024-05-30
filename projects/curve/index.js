@@ -22,7 +22,10 @@ const chains = [
   "moonbeam",
   "celo",
   "kava",
-  "base"
+  "base",
+  "fraxtal",
+  "xlayer",
+  "bsc"
 ]; // Object.keys(contracts);
 const registryIds = {
   stableswap: 0,
@@ -85,20 +88,25 @@ function getRegistryType(registryId) {
 }
 
 async function getPools(block, chain) {
-  let { registriesMapping } = contracts[chain]
+  let { registriesMapping, addressProvider } = contracts[chain]
   if (!registriesMapping) {
     registriesMapping = {};
-    (await sdk.api.abi.multiCall({
-      block, chain,
-      calls: Object.values(registryIds).map(r => ({ params: r })),
-      target: contracts[chain].addressProvider,
-      abi: abi.get_id_info
-    })).output
-      .filter(r => r.output.addr !== nullAddress)
-      .forEach(({ input: { params: [registryId] }, output: { addr } }) => registriesMapping[getRegistryType(registryId)] = addr)
+    if(addressProvider){
+      (await sdk.api.abi.multiCall({
+        block, chain,
+        calls: Object.values(registryIds).map(r => ({ params: r })),
+        target: addressProvider,
+        abi: abi.get_id_info
+      })).output
+        .filter(r => r.output.addr !== nullAddress)
+        .forEach(({ input: { params: [registryId] }, output: { addr } }) => registriesMapping[getRegistryType(registryId)] = addr)
+    }
   }
-  if(contracts[chain].CurveStableswapFactoryNG){
+  if (contracts[chain].CurveStableswapFactoryNG) {
     registriesMapping.CurveStableswapFactoryNG = contracts[chain].CurveStableswapFactoryNG
+  }
+  if (contracts[chain].CurveL2TricryptoFactory) {
+    registriesMapping.CurveL2TricryptoFactory = contracts[chain].CurveL2TricryptoFactory
   }
   const poolList = {}
   await Promise.all(Object.entries(registriesMapping).map(async ([registry, addr]) => {
@@ -156,7 +164,7 @@ async function unwrapPools({ poolList, registry, chain, block }) {
   const callParams = { target: registryAddress, calls: poolList.map(i => ({ params: i.output })), chain, block, }
   const { output: coins } = await sdk.api.abi.multiCall({ ...callParams, abi: abi.get_coins[registry] })
   let nCoins = {}
-  if (!['cryptoFactory', 'triCryptoFactory'].includes(registry) )
+  if (!['cryptoFactory', 'triCryptoFactory', 'CurveL2TricryptoFactory'].includes(registry))
     nCoins = (await sdk.api.abi.multiCall({ ...callParams, abi: abi.get_n_coins[registry] })).output
 
   let { wrapped = '', metapoolBases = {}, blacklist = [] } = contracts[chain]
@@ -175,7 +183,7 @@ async function unwrapPools({ poolList, registry, chain, block }) {
 }
 
 const blacklists = {
-  ethereum: ['0x6b8734ad31d42f5c05a86594314837c416ada984', '0x95ECDC6caAf7E4805FCeF2679A92338351D24297', '0x5aa00dce91409b58b6a1338639b9daa63eb22be7', '0xEf1385D2b5dc6D14d5fecB86D53CdBefeCA20fcC', ADDRESSES.ethereum.CRVUSD, '0x29b41fe7d754b8b43d4060bb43734e436b0b9a33'],
+  ethereum: ['0x6b8734ad31d42f5c05a86594314837c416ada984', '0x29b41fe7d754b8b43d4060bb43734e436b0b9a33'],
   arbitrum: ['0x3aef260cb6a5b469f970fae7a1e233dbd5939378'],
 }
 
@@ -210,7 +218,8 @@ async function addPlainFactoryConfig({ api, tokensAndOwners, plainFactoryConfig 
 
 function tvl(chain) {
   const { plainFactoryConfig = [] } = config[chain] ?? {}
-  return async (_t, _e, { [chain]: block }, { api }) => {
+  return async (api) => {
+    const { block } = api
     let balances = {};
     const transform = await getChainTransform(chain);
     const poolLists = await getPools(block, chain);

@@ -2,8 +2,7 @@ const ADDRESSES = require('./helper/coreAssets.json')
 const { compoundExports } = require("./helper/compound");
 
 module.exports = {
-    timetravel: true,
-    oasis: {
+        oasis: {
         ...compoundExports(
             '0xA7684aE7e07Dac91113900342b3ef25B9Fd1D841',
             'oasis',

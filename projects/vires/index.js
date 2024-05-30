@@ -1,8 +1,9 @@
 const { sumTokens, call } = require('../helper/chain/waves')
+const methodologies = require('../helper/methodologies')
 
 module.exports = {
   timetravel: false,
-  methodology: `Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending`,
+  methodology: methodologies.lendingMarket,
   waves: {
     tvl, borrowed,
   },
@@ -33,13 +34,13 @@ const aTokens = [
 
 ]
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   return sumTokens({
     owners: aTokens, api, includeWaves: true,
   })
 }
 
-async function borrowed(_, _b, _cb, { api, }) {
+async function borrowed(api) {
   await Promise.all(aTokens.map(async (token) => {
     const assetId = (await call({ target: token, key: 'assetId'})).split('_')[0]
     const res = (await call({ target: token, key: 'reserveGlobalData'})).split('|')[2]
