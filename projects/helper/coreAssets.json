@@ -1271,7 +1271,7 @@
     "TON_3": "EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c",
     "TON_4": "EQCajaUU1XXSAjTD-xOV7pE49fGtg4q8kF3ELCOJtGvQFQ2C",
     "USDC": "EQC61IQRl0_la95t27xhIpjxZt32vl1QQVF2UgTNuvD18W-4",
-    "USDT": "EQC_1YoM8RBixN95lz7odcF3Vrkc_N8Ne7gQi7Abtlet_Efi",
+    "oUSDT": "EQC_1YoM8RBixN95lz7odcF3Vrkc_N8Ne7gQi7Abtlet_Efi",
     "ETH": "EQAW42HutyDem98Be1f27PoXobghh81umTQ-cGgaKVmRLS7-",
     "MATIC": "EQBq4d4GPyBoh-Pjnf3wxUyQSS28WY2Yt-7cPAG8FHpWpNRX",
     "ORC": "EQDCIEo0HUUYsAV-lTMviOd-GkSXfVPsNZMGjRaNOA_6--FD",
@@ -1464,7 +1464,8 @@
     "USDCar": "factory/sei189adguawugk3e55zn63z8r9ll29xrjwca636ra7v7gxuzn98sxyqwzt47l/7edDfnf4mku8So3t4Do215GNHwASEwCWrdhM5GqD51xZ",
     "USDTet": "factory/sei189adguawugk3e55zn63z8r9ll29xrjwca636ra7v7gxuzn98sxyqwzt47l/HktfLoADCk9mnjv7XJiN4YXK9ayE6xinLzt8wzcsR2rY",
     "USDTbs": "factory/sei189adguawugk3e55zn63z8r9ll29xrjwca636ra7v7gxuzn98sxyqwzt47l/871jbn9unTavWsAe83f2Ma9GJWSv6BKsyWYLiQ6z3Pva",
-    "WBTC": "factory/sei189adguawugk3e55zn63z8r9ll29xrjwca636ra7v7gxuzn98sxyqwzt47l/7omXa4gryZ5NiBmLep7JsTtTtANCVKXwT9vbN91aS1br"
+    "WBTC": "factory/sei189adguawugk3e55zn63z8r9ll29xrjwca636ra7v7gxuzn98sxyqwzt47l/7omXa4gryZ5NiBmLep7JsTtTtANCVKXwT9vbN91aS1br",
+    "USDC": "0x3894085Ef7Ff0f0aeDf52E2A2704928d1Ec074F1"
   },
   "op_bnb": {
     "WBNB": "0x4200000000000000000000000000000000000006",
@@ -1560,7 +1561,8 @@
   "scroll": {
     "WETH": "0x5300000000000000000000000000000000000004",
     "USDT": "0xf55bec9cafdbe8730f096aa55dad6d22d44099df",
-    "USDC": "0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4"
+    "USDC": "0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4",
+    "STONE": "0x80137510979822322193FC997d400D5A6C747bf7"
   },
   "darwinia": {
     "RING": "0xe7578598aac020abfb918f33a20fad5b71d670b4"
@@ -1770,5 +1772,11 @@
     "STONE": "0x96147a9ae9a42d7da551fd2322ca15b71032f342",
     "RETH": "0xb5686c4f60904ec2bda6277d6fe1f7caa8d1b41a",
     "TBTC": "0xbba2ef945d523c4e2608c9e1214c2cc64d4fc2e2"
+  },
+  "btr": {
+    "ETH": "0xef63d4e178b3180beec9b0e143e0f37f4c93f4c2"
+  },
+  "taiko": {
+    "WETH": "0xA51894664A773981C6C112C43ce576f315d5b1B6"
   }
 }
