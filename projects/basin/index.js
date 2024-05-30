@@ -17,18 +17,38 @@ function chainTvl(chain) {
       api,
       target: FACTORY,
       fromBlock: START_BLOCK,
-      toBlock: 17979134,//TODO: remove this eventually, for now it helps with faster testing.
       topics: [BORE_WELL_TOPIC],
-      eventAbi: BORE_WELL_ABI,
-      skipCache: true
+      eventAbi: BORE_WELL_ABI
     });
     
     // Extract well address + the ERC20 tokens in the pair
     const wells = logs.map(log => ({
-      well: log.args.well,
+      address: log.args.well,
       tokens: log.args.tokens
     }));
-    console.log(wells);
+    
+    // Get token reserves
+    const wellReserves = await Promise.all(
+      wells.map(well =>
+        api.call(
+          {
+            abi: "function getReserves() external view returns (uint256[] reserves)",
+            target: well.address
+          }
+        )
+      )
+    );
+
+    const totalBasinReserves = {};
+
+    // Sum of all reserves across all wells
+    for (let i = 0; i < wells.length; ++i) {
+      for (let j = 0; j < wells[i].tokens.length; ++j) {
+        const key = `${chain}:${wells[i].tokens[j].toLowerCase()}`
+        totalBasinReserves[key] = (totalBasinReserves[key] ?? 0) + wellReserves[i][j];
+      }
+    }
+    return totalBasinReserves;
   }
 }
 
