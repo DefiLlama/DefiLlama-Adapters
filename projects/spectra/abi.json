@@ -3,7 +3,7 @@
     "balances": "function balances(uint256 index) view returns (uint256)"
   },
   "pt": {
-    "getIBT": "function getIBT() view override returns (address)",
+    "getIBT": "function getIBT() view returns (address)",
     "balanceOf": "function balanceOf(address account) view returns (uint256)"
   },
   "vault": {
