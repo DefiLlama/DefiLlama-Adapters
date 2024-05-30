@@ -329,9 +329,9 @@ module.exports = {
        ]
      },
      {
-       name: 'sei_evm',
+       name: 'sei',
        tokens: [
-         ADDRESSES.sei_evm.USDC,
+         ADDRESSES.sei.USDC,
        ],
        holders: [
          '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2

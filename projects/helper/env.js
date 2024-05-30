@@ -21,7 +21,7 @@ const DEFAULTS = {
   TAIKO_RPC: 'https://rpc.taiko.xyz', // added manually short name is tko-mainnet
   REAL_RPC_MULTICALL: '0xcA11bde05977b3631167028862bE2a173976CA11',
   TAIKO_RPC_MULTICALL: '0xcb2436774C3e191c85056d248EF4260ce5f27A9D',
-  SEI_EVM_RPC: 'https://evm-rpc.sei-apis.com/',
+  SEI_RPC: 'https://evm-rpc.sei-apis.com/',
 }
 
 const ENV_KEYS = [
