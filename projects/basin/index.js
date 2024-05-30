@@ -18,7 +18,8 @@ function chainTvl(chain) {
       target: FACTORY,
       fromBlock: START_BLOCK,
       topics: [BORE_WELL_TOPIC],
-      eventAbi: BORE_WELL_ABI
+      eventAbi: BORE_WELL_ABI,
+      skipCache: true // No results can be found without skipCache=true
     });
     
     // Extract well address + the ERC20 tokens in the pair
