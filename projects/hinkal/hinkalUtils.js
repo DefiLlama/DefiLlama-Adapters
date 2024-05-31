@@ -6,11 +6,25 @@ const ownerByChain = require("./owners.js");
 
 const nullAddress = "0x0000000000000000000000000000000000000000";
 
+const nativeVolatileChains = ["blast"];
+
 const getAllTokenBalances = async (tokenList, chain) => {
-  const balanceCalls = tokenList.map((token) => ({
+  let balanceCalls = tokenList.map((token) => ({
     target: token,
-    params: ownerByChain[chain],
+    params: nativeVolatileChains.includes(chain)
+      ? ownerByChain[chain].owner ?? ""
+      : ownerByChain[chain],
   }));
+
+  if (nativeVolatileChains.includes(chain)) {
+    const volatileBalanceCalls = tokenList.map((token) => ({
+      target: token,
+      params: ownerByChain[chain].volatileOwner ?? "",
+    }));
+
+    balanceCalls = [...balanceCalls, ...volatileBalanceCalls];
+  }
+
   const balances = (
     await sdk.api.abi.multiCall({
       calls: balanceCalls,
@@ -46,11 +60,11 @@ const getAllTokenBalances = async (tokenList, chain) => {
     };
   });
 
-  //Add Native token balance.
-
   const nativeTokenBalance = (
     await sdk.api.eth.getBalance({
-      target: ownerByChain[chain],
+      target: nativeVolatileChains.includes(chain)
+        ? ownerByChain[chain].volatileOwner ?? ""
+        : ownerByChain[chain],
       chain,
     })
   ).output;
@@ -62,6 +76,7 @@ const getAllTokenBalances = async (tokenList, chain) => {
 
   return tokenBalances.filter((tokenBal) => Number(tokenBal.balance) > 0);
 };
+
 const fetchTotalValue = async (tokenBalances, chainName) => {
   const tokenAddresses = tokenBalances.map((token) => token.address);
   const prices = (
@@ -76,7 +91,7 @@ const fetchTotalValue = async (tokenBalances, chainName) => {
     if (!price || !tokenBalance || isNaN(price) || isNaN(tokenBalance)) {
       console.log("Some error occured for token", {
         token: token.address,
-        bakance: tokenBalance,
+        balance: tokenBalance,
         price,
         chainName,
       });
@@ -93,4 +108,7 @@ const fetchTotalValue = async (tokenBalances, chainName) => {
   return total.filter((token) => token && token.tokenBalance > 0);
 };
 
-module.exports = { getAllTokenBalances, fetchTotalValue };
+module.exports = {
+  getAllTokenBalances,
+  fetchTotalValue,
+};
