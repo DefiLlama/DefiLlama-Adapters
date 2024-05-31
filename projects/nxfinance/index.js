@@ -2,7 +2,7 @@ const { Program } = require("@project-serum/anchor");
 const { getProvider, } = require("../helper/solana");
 const nxIdl = require("./nx-idl.json");
 
-const NX_PROGRAM_ADDR = "JMpxnop5u1HJAqjzpZHo7MmvfBQf5YkFw4nGK9F83x3";
+const NX_PROGRAM_ADDR = "EHBN9YKtMmrZhj8JZqyBQRGqyyeHw5xUB1Q5eAHszuMt";
 
 async function tvl(api) {
 	const provider = getProvider();
