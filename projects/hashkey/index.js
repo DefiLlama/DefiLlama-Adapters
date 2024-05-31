@@ -13,16 +13,6 @@ const config = {
         "1DywJMqHHMWuP7xyfkRqJZCEe7GdEKFRcp"
     ],
   },
-  bsc: {
-    owners: [
-        "0x83455d6c365dcbac10855c623da884b552aaefdd",
-    ],
-  },
-  tron: {
-    owners: [
-        "TJDENsfBJs4RFETt1X1W8wMDc8M5XnJhCe",
-    ],
-  },
   litecoin: {
     owners: [
         "ltc1qzjsgswkenmy9v6vm2jvkddeczwfuy9q7rshtxh",
