@@ -41,10 +41,10 @@ const tvl = async (api) => {
   const vaults = vaultDatas.map((i) => ({ ...i, vaultType: decoder.decode(typesDataInterfaces.any, i.data) }));
 
   //ammVaults
-  const appTypes = [VaultType.PancakeV3, VaultType.LynexAlgebra, VaultType.NileCl];
-  const ammVaults = vaults.filter((i) => appTypes.includes(Number(i.vaultType.toString()))).map((i) => i.vault);
+  const ammTypes = [VaultType.PancakeV3, VaultType.LynexAlgebra, VaultType.NileCl];
+  const ammVaults = vaults.filter((i) => ammTypes.includes(Number(i.vaultType.toString()))).map((i) => i.vault);
   const ammPools = vaults
-    .filter((i) => appTypes.includes(Number(i.vaultType.toString())))
+    .filter((i) => ammTypes.includes(Number(i.vaultType.toString())))
     .map((i) => decoder.decode(typesDataInterfaces.amm, i.data)[1]);
 
   const ammBalances = await api.multiCall({ abi: abis.getTotalAmounts, calls: ammVaults });
