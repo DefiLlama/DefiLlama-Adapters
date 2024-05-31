@@ -1,26 +1,40 @@
-const sdk = require('@defillama/sdk')
+const ADDRESSES = require('../helper/coreAssets.json')
 
-// Anzen USDz - digital dollar backed by Real World Assets
+// Anzen Secured Private Credit Token
+// minted by depositing USDC
+const SPCT = '0xEf5AAcB3c38a5Be7785a361008e27fb0328a62B5';
 
-const USDz = '0xa469b7ee9ee773642b3e93e842e5d9b5baa10067';
-const Base_USDz = '0x04d5ddf5f3a8939889f11e97f8c4bb48317f1938';
+async function tvl(api) {
+  const uTokens = await api.multiCall({ abi: 'address:usdc', calls: [SPCT] })
+  const bals = (await api.multiCall({ abi: 'uint256:totalPooledUSD', calls: [SPCT] })).map(i => i / 1e12)
 
-const mainnet_tvl = async (api) => {
-  const supply = await api.call({ abi: 'erc20:totalSupply', target: USDz })
-  api.add(USDz, supply)
+  api.add(uTokens, bals)
+  return api.getBalances()
 }
 
-const base_tvl = async (api) => {
-  const supply = await api.call({ abi: 'erc20:totalSupply', target: Base_USDz })
-  api.add(Base_USDz, supply)
+async function borrowed(api) {
+  // Borrowed amount in shares of pool
+  const executedShares = await api.call({
+    target: SPCT,
+    abi: 'uint256:executedShares'
+  });
+
+  // Borrowed amount in USD
+  const pooledUSDByShares = await api.call({
+    target: SPCT,
+    abi: 'function getPooledUSDByShares(uint256 _sharesAmount) public view returns (uint256)',
+    params: [executedShares]
+  });
+
+  api.add(ADDRESSES.ethereum.USDC, pooledUSDByShares/1e12);
+  return api.getBalances()
 }
 
 module.exports = {
-  methodology: "Sums total USDz in circulation across all chains",
+  methodology: "Sums the total USDC value deposited to mint SPCT.",
+  misrepresentedTokens: true,
   ethereum: {
-    tvl: mainnet_tvl,
-  },
-  base: {
-    tvl: base_tvl,
+    tvl,
+    borrowed,
   },
 };
