@@ -37,7 +37,7 @@ module.exports = {
   bsc: {
     tvl,
   },
-  // blast: {
-  //   tvl,
-  // },
+  blast: {
+    tvl,
+  },
 };
