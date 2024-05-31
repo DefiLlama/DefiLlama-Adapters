@@ -246,30 +246,11 @@ async function pool2(api) {
   return retval;
 }
 
-// Overall tvl as the sum of each
-async function tvl(api) {
-
-  const balances = {};
-
-  const stakingTvl = await staking(api);
-  Object.entries(stakingTvl).forEach(([token, balance]) => {
-    balances[token] = (balances[token] || 0) + balance;
-  });
-
-  const pool2Tvl = await pool2(api);
-  Object.entries(pool2Tvl).forEach(([token, balance]) => {
-    balances[token] = (balances[token] || 0) + balance;
-  });
-
-  return balances;
-}
-
 module.exports = {
   methodology: "Counts the value of deposited Beans and LP tokens in the silo.",
   start: 12974077,
-  timetravel: true,
   ethereum: {
-    tvl,
+    tvl: () => ({}),
     pool2,
     staking
   },
