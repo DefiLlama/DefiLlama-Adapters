@@ -18,15 +18,18 @@ const VaultType = {
   MendiLending: 3,
   Aero: 4,
   LynexAlgebra: 5,
+  NileCl: 6,
 };
 
 const typesDataInterfaces = {
   any: ["uint256"], // has only vaultType
+  amm: ["uint256", "address"], // vaultType, amm pool address
   [VaultType.PancakeV3]: ["uint256", "address"], // vaultType, v3 pool address
   [VaultType.Stargate]: ["uint256"], // vaultType
   [VaultType.MendiLending]: ["uint256", "address"], //vaultType, mendiLeverage address
   [VaultType.Aero]: ["uint256"], //vaultType
   [VaultType.LynexAlgebra]: ["uint256", "address"], // vaultType, algebra pool address
+  [VaultType.NileCl]: ["uint256", "address", "address"], // vaultType, nileCl pool address, stacking contract address
 };
 
 const tvl = async (api) => {
@@ -38,14 +41,16 @@ const tvl = async (api) => {
   const vaults = vaultDatas.map((i) => ({ ...i, vaultType: decoder.decode(typesDataInterfaces.any, i.data) }));
 
   //ammVaults
-  const appTypes = [VaultType.PancakeV3, VaultType.LynexAlgebra];
-  const ammVaults = vaults.filter((i) => appTypes.includes(Number(i.vaultType.toString()))).map((i) => i.vault);
+  const ammTypes = [VaultType.PancakeV3, VaultType.LynexAlgebra, VaultType.NileCl];
+  const ammVaults = vaults.filter((i) => ammTypes.includes(Number(i.vaultType.toString()))).map((i) => i.vault);
   const ammPools = vaults
-    .filter((i) => appTypes.includes(Number(i.vaultType.toString())))
-    .map((i) => "0x" + i.data.slice(-40));
+    .filter((i) => ammTypes.includes(Number(i.vaultType.toString())))
+    .map((i) => decoder.decode(typesDataInterfaces.amm, i.data)[1]);
+
   const ammBalances = await api.multiCall({ abi: abis.getTotalAmounts, calls: ammVaults });
   const ammToken0s = await api.multiCall({ abi: "address:token0", calls: ammPools });
   const ammToken1s = await api.multiCall({ abi: "address:token1", calls: ammPools });
+
   ammBalances.forEach((pool, i) => {
     api.add(ammToken0s[i], pool.total0);
     api.add(ammToken1s[i], pool.total1);
