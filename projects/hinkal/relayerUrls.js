@@ -6,6 +6,7 @@ const RELAYER_URLS = {
   avax: "https://avalanche.relayer.hinkal.pro",
   bsc: "https://bnbMainnet.relayer.hinkal.pro",
   base: "https://base.relayer.hinkal.pro",
+  blast: "https://blast.relayer.hinkal.pro",
 };
 
 module.exports = RELAYER_URLS;

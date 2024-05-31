@@ -1,39 +1,14 @@
 const registryTokensByChain = require("./registryTokens.js");
-const gaugeTokensByChain = require("./gaugeTokens.js");
-const beefyTokensByChain = require("./beefyTokens.js");
-const pendleTokensByChain = require("./pendleTokens.js");
 const { getAllTokenBalances, fetchTotalValue } = require("./hinkalUtils.js");
 const { toUSDTBalances } = require("../helper/balances.js");
 
-const getRegularTokens = (chain) => {
-  return [
-    registryTokensByChain[chain],
-    pendleTokensByChain[chain]?.pt,
-    pendleTokensByChain[chain]?.sy,
-    beefyTokensByChain[chain],
-  ].flat();
-};
-
-const getTokensWithUnderlyingAddresses = (chain) => {
-  return [gaugeTokensByChain[chain], pendleTokensByChain[chain]?.yt].flat();
-};
-
 const tvl = async (_, _1, _2, { chain }) => {
-  const regularTokens = getRegularTokens(chain);
-  const tokensWithUnderlyingAddresses = getTokensWithUnderlyingAddresses(chain);
-
-  const regularTokenBalances = await getAllTokenBalances(regularTokens, chain);
-
-  const tokensWithUnderlyingAddressesBalances = await getAllTokenBalances(
-    tokensWithUnderlyingAddresses.map((token) => token.erc20TokenAddress),
+  const tokenBalances = await getAllTokenBalances(
+    registryTokensByChain[chain],
     chain
   );
 
-  const allTokenBalances = [
-    ...regularTokenBalances,
-    ...tokensWithUnderlyingAddressesBalances,
-  ];
-  const totalValue = await fetchTotalValue(allTokenBalances, chain);
+  const totalValue = await fetchTotalValue(tokenBalances, chain);
 
   return toUSDTBalances(
     totalValue.reduce((acc, token) => acc + token.tokenBalance, 0)
@@ -60,6 +35,9 @@ module.exports = {
     tvl,
   },
   bsc: {
+    tvl,
+  },
+  blast: {
     tvl,
   },
 };
