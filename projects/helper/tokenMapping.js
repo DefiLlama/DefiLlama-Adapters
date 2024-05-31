@@ -114,7 +114,6 @@ const fixBalancesTokens = {
     '0xF5e11df1ebCf78b6b6D26E04FF19cD786a1e81dC': { coingeckoId: 'bitcoin', decimals: 18 },
     '0x7F150c293c97172C75983BD8ac084c187107eA19': { coingeckoId: 'wrapped-bitcoin', decimals: 18 },
     '0x8f083EaFcbba2e126AD9757639c3A1E25a061A08': { coingeckoId: 'wrapped-bitcoin', decimals: 18 },
-
   },
   linea: {
     '0x63ba74893621d3d12f13cec1e86517ec3d329837': { coingeckoId: 'liquity-usd', decimals: 18 },
