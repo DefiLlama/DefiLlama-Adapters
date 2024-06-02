@@ -112,10 +112,6 @@ const fixBalancesTokens = {
     '0xA984b70f7B41EE736B487D5F3D9C1e1026476Ea3': { coingeckoId: 'wrapped-bitcoin', decimals: 18 },
     // Avalon Finance - aSolvBTC
     '0xC39E757dCb2b17B79A411eA1C2810735dc9032F8': { coingeckoId: 'wrapped-bitcoin', decimals: 18 },
-    // Avalon Finance - aWBTC
-    '0xA984b70f7B41EE736B487D5F3D9C1e1026476Ea3': { coingeckoId: 'wrapped-bitcoin', decimals: 18 }, //eslint-disable-line
-    // Avalon Finance - aMBTC
-    '0x9A6Ae5622990BA5eC1691648c3A2872469d161f9': { coingeckoId: 'wrapped-bitcoin', decimals: 18 },
   },
   cyeth: {
     '0x4200000000000000000000000000000000000006': { coingeckoId: 'ethereum', decimals: 18 },
