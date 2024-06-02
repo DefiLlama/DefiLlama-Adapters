@@ -91,6 +91,14 @@ const fixBalancesTokens = {
     '0xFb8dBdc644eb54dAe0D7A9757f1e6444a07F8067': { coingeckoId: "bitcoin-trc20", decimals: 18 },
     '0x85D431A3a56FDf2d2970635fF627f386b4ae49CC': { coingeckoId: "merlin-s-seal-btc", decimals: 18 },
   },
+  merlin: {
+    // Avalon Finance - aSolvBTC
+    '0xC39E757dCb2b17B79A411eA1C2810735dc9032F8': { coingeckoId: 'wrapped-bitcoin', decimals: 18 },
+    // Avalon Finance - aWBTC
+    '0xA984b70f7B41EE736B487D5F3D9C1e1026476Ea3': { coingeckoId: 'wrapped-bitcoin', decimals: 18 },
+    // Avalon Finance - aMBTC
+    '0xF5b689D772e4Bd839AD9247A326A21a0A74a07f0': { coingeckoId: 'wrapped-bitcoin', decimals: 18 },
+  },
   btr: {
     '0x0000000000000000000000000000000000000000': { coingeckoId: 'bitcoin', decimals: 18 },
     '0xff204e2681a6fa0e2c3fade68a1b28fb90e4fc5f': { coingeckoId: 'wrapped-bitcoin', decimals: 18 },
@@ -102,6 +110,12 @@ const fixBalancesTokens = {
     '0xf6718b2701d4a6498ef77d7c152b2137ab28b8a3': { coingeckoId: 'wrapped-bitcoin', decimals: 18 },
     '0x9a6ae5622990ba5ec1691648c3a2872469d161f9': { coingeckoId: 'wrapped-bitcoin', decimals: 18 },
     '0xA984b70f7B41EE736B487D5F3D9C1e1026476Ea3': { coingeckoId: 'wrapped-bitcoin', decimals: 18 },
+    // Avalon Finance - aSolvBTC
+    '0xC39E757dCb2b17B79A411eA1C2810735dc9032F8': { coingeckoId: 'wrapped-bitcoin', decimals: 18 },
+    // Avalon Finance - aWBTC
+    '0xA984b70f7B41EE736B487D5F3D9C1e1026476Ea3': { coingeckoId: 'wrapped-bitcoin', decimals: 18 }, //eslint-disable-line
+    // Avalon Finance - aMBTC
+    '0x9A6Ae5622990BA5eC1691648c3A2872469d161f9': { coingeckoId: 'wrapped-bitcoin', decimals: 18 },
   },
   cyeth: {
     '0x4200000000000000000000000000000000000006': { coingeckoId: 'ethereum', decimals: 18 },
