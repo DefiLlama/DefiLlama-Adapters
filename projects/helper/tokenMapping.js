@@ -111,6 +111,8 @@ const fixBalancesTokens = {
     '0xf4c20e5004c6fdcdda920bdd491ba8c98a9c5863': { coingeckoId: 'bouncebit', decimals: 18 },
     '0x77776b40c3d75cb07ce54dea4b2fd1d07f865222': { coingeckoId: 'tether', decimals: 18 },
     '0xF5e11df1ebCf78b6b6D26E04FF19cD786a1e81dC': { coingeckoId: 'bitcoin', decimals: 18 },
+    '0x7F150c293c97172C75983BD8ac084c187107eA19': { coingeckoId: 'wrapped-bitcoin', decimals: 18 },
+    '0x8f083EaFcbba2e126AD9757639c3A1E25a061A08': { coingeckoId: 'wrapped-bitcoin', decimals: 18 },
   },
   linea: {
     '0x63ba74893621d3d12f13cec1e86517ec3d329837': { coingeckoId: 'liquity-usd', decimals: 18 },
@@ -134,6 +136,10 @@ const fixBalancesTokens = {
   core: {
     '0x5832f53d147b3d6cd4578b9cbd62425c7ea9d0bd': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
     '0x5B1Fb849f1F76217246B8AAAC053b5C7b15b7dc3': { coingeckoId: 'solv-btc', decimals: 18 },
+  },
+  merlin: {
+    '0xF5b689D772e4Bd839AD9247A326A21a0A74a07f0': { coingeckoId: 'bitcoin', decimals: 18 },
+    '0xA984b70f7B41EE736B487D5F3D9C1e1026476Ea3': { coingeckoId: 'bitcoin', decimals: 18 },
   }
 }
 
