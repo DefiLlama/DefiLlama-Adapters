@@ -9,6 +9,11 @@ module.exports = {
 }
 
 async function tvl() {
-  let tvl = await get('https://mertics.icpex.org/llama/tvl')
-  return toUSDTBalances(tvl)
+  let result = await get('https://metrics.icpex.org/llama/tvl')
+  if (result.retCode === 1 && result.retMsg === "success") {
+    const tvl = result.data;
+    return toUSDTBalances(tvl)
+  } else {
+    throw `API error! message: ${result.retMsg}`;
+  }
 }
