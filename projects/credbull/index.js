@@ -25,5 +25,6 @@ async function tvl(_, block, chain) {
 
 module.exports = {
     timetravel: false,
+    methodology: 'TVL consist of the sum of every deposit of all vaults for a given asset.',
     btr: {tvl: (a, b) => tvl(a, b, "btr")},
 };
