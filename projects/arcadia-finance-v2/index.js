@@ -8,11 +8,12 @@ const config = {
       usdcPool: "0x3ec4a293Fb906DD2Cd440c20dECB250DeF141dF1",
     },
     uniNFT: '0x03a520b32c04bf3beef7beb72e919cf822ed34f1',
+    slipNFT: '0x827922686190790b37229fd06084350e74485b72'
   },
 }
 
 async function tvl(api) {
-  let { factory, pools, uniNFT, } = config[api.chain];
+  let { factory, pools, uniNFT, slipNFT, } = config[api.chain];
   pools = Object.values(pools);
   const uTokens = await api.multiCall({ abi: "address:asset", calls: pools })
   await api.sumTokens({ tokensAndOwners2: [uTokens, pools] })
@@ -20,8 +21,8 @@ async function tvl(api) {
 
   const assetData = await api.multiCall({ abi: abi.assetData, calls: accounts, });
   const ownerTokens = accounts.map((account, i) => [assetData[i].assets, account])
-  await api.sumTokens({ ownerTokens, blacklistedTokens: [uniNFT] })
-  return sumTokens2({ api, owners: accounts, resolveUniV3: true })
+  await api.sumTokens({ ownerTokens, blacklistedTokens: [uniNFT, slipNFT] })
+  return sumTokens2({ api, owners: accounts, resolveUniV3: true, resolveSlipstream: true })
 }
 
 module.exports = {
