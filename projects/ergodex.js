@@ -1,17 +1,11 @@
 const { sumTokensExport } = require('./helper/chain/ergo')
 const { sumTokensExport: steCardano } = require('./helper/chain/cardano')
-const utils = require('./helper/utils');
+const { get } = require('./helper/http');
 
 async function cardanoTVL() {
-  let response = await utils.fetchURL('https://analytics-balanced.spectrum.fi/cardano/pools/overview?after=0')
-  let data = response.data;
-  
-  let totalTvl = 0;
-  for(let i=0; i<data.length; i++) {
-    totalTvl += data[i].tvl;
-  }
+  let { tvlAda } = await get('https://api.splash.trade/platform-api/v1/platform/stats')
 
-  return {cardano:totalTvl};
+  return { cardano: tvlAda };
 }
 
 module.exports = {

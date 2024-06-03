@@ -174,7 +174,6 @@ const assetList = [
   ['DOGE', 'BEP20', '0xd3a22590f8243f8e83ac230d1842c9af0404c4a1'],
   ['DOGE', 'BEP20', '0xe2fc31f816a9b94326492132018c3aecc4a93ae1'],
   ['DOGE', 'BEP20', '0xf977814e90da44bfa03b6295a0616a897441acec'],
-  /*
   ['DOGE', 'DOGE', 'D73RQLGWW9TBT2AKspEP24wLiXFrXvnTqX'],
   ['DOGE', 'DOGE', 'D7BrtudMAdwz2U7vSGumVDuxZsZNibJuzw'],
   ['DOGE', 'DOGE', 'D7D2f2WuEkwhTWqBkisZ5sM3JagaBcNWBs'],
@@ -211,7 +210,6 @@ const assetList = [
   ['DOGE', 'DOGE', 'DTGrjpvJXQU2zSpUDsnk9b4PAQW5Pwtg4K'],
   ['DOGE', 'DOGE', 'DTSop4ycWkpmDqpncVZ3jwKp3z7B4kW4T3'],
   ['DOGE', 'DOGE', 'DU8gPC5mh4KxWJARQRxoESFark2jAguBr5'],
-  */
   ['DOT', 'BEP2', 'bnb17jky4rwhu9rzgrx7exrfc3pcd5z290ga8qfm0j'],
   ['DOT', 'BEP2', 'bnb1fnd0k5l4p3ck2j9x9dp36chk059w977pszdgdz'],
   ['DOT', 'BEP2', 'bnb1lsmt5a8vqqus5fwslx8pyyemgjtg4y6ugj308t'],
@@ -619,7 +617,7 @@ function getAddresses(chain) {
   return assetList.filter(i => i[1] === chain).map(i => i[2])
 }
 function getOwners(chain) {
-  const isCaseSensitive = ['BTC', 'TRX', 'SOL', 'XRP', 'LTC', 'DOT', 'ALGO'].includes(chain)
+  const isCaseSensitive = ['BTC', 'TRX', 'SOL', 'XRP', 'LTC', 'DOT', 'ALGO', 'DOGE'].includes(chain)
   return getUniqueAddresses(assetList.filter(i => i[1] === chain).map(i => i[2]), isCaseSensitive)
 }
 
@@ -698,5 +696,8 @@ module.exports = {
   },
   near: {
     owners: getOwners('NEAR')
+  },
+  doge: {
+    owners: getOwners('DOGE')
   },
 }

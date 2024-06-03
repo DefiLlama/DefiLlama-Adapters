@@ -71,7 +71,6 @@ const config = {
 
     ]
   },
-  /*
   doge: {
     owners: [
         'D9uH999MANKyNkzfb8XwRmQhHEBNLBh9sA',
@@ -81,7 +80,6 @@ const config = {
         'DAd1JWwtwx1paUuWG71ePNLU3WJUFaMJoh'
     ]
   }
-  */
 }
 
 module.exports = cexExports(config)
