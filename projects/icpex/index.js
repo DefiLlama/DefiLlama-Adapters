@@ -1,7 +1,6 @@
 
 const { get } = require('../helper/http')
 const { toUSDTBalances } = require('../helper/balances')
-const { PromisePool } = require('@supercharge/promise-pool')
 
 module.exports = {
   misrepresentedTokens: true,
