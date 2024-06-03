@@ -4,7 +4,7 @@ const { parseLido, parseLidoValidatorList } = require('./layouts/lido')
 const { parsePhoenix } = require('./layouts/phoenix-dex')
 const { RAYDIUM_LIQUIDITY_STATE_LAYOUT_CLMM, RAYDIUM_STABLE_STATE_LAYOUT_V1, } = require('./layouts/raydium-layout')
 const { INVESTIN_FUND_DATA, } = require('./layouts/investin-layout')
-const { MARKET_STATE_LAYOUT_V3, OPEN_ORDERS_LAYOUT_V2 } = require('./layouts/openbook-layout')
+const { MARKET_STATE_LAYOUT_V3, OPEN_ORDERS_LAYOUT_V2, MARKET_STATE_LAYOUT_V3_MINIMAL } = require('./layouts/openbook-layout')
 const { ReserveLayout, ReserveLayoutLarix, MintLayout, AccountLayout, TokenSwapLayout, ESOLStakePoolLayout, } = require('./layouts/mixed-layout');
 const { SCN_STAKE_POOL } = require("./layouts/scnSOL");
 const { SANCTUM_INFINITY } = require("./layouts/sanctum-infinity-layout");
@@ -49,6 +49,7 @@ const customDecoders = {
   ESOLStakePool: defaultParseLayout(ESOLStakePoolLayout),
   investinFund: defaultParseLayout(INVESTIN_FUND_DATA),
   openbook: defaultParseLayout(MARKET_STATE_LAYOUT_V3),
+  'openbook-minimal': defaultParseLayout(MARKET_STATE_LAYOUT_V3_MINIMAL),
   openbookOpenOrders: defaultParseLayout(OPEN_ORDERS_LAYOUT_V2),
   // raydiumLPv4: defaultParseLayout(RAYDIUM_LIQUIDITY_STATE_LAYOUT_V4),
   raydiumCLMM: defaultParseLayout(RAYDIUM_LIQUIDITY_STATE_LAYOUT_CLMM),

@@ -10,7 +10,7 @@ async function getVaultContractsAddress(chain) {
   let pairVault = [];
   let portVault = [];
   let starknetPairVault = [];
-  const { vaults } = await getConfig("teahouse/v3", teahouseVaultAPI);
+  const { vaults } = await getConfig("teahouse/v3_reset_cache", teahouseVaultAPI);
   vaults.forEach((element) => {
     // permissionless vaults
     if (element.isDeFi == true && element.isActive == true) {
