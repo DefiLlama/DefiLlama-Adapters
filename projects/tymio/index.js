@@ -23,21 +23,14 @@ const CONTRACT = {
 };
 
 async function tvl(api, chain_id) {
-  const promises = [];
   for (const token_address of TOKEN[chain_id]) {
-    promises.push(
-      new Promise(async (resolve) => {
-        const collateralBalance = await api.call({
-          abi: 'erc20:balanceOf',
-          target: token_address,
-          params: [CONTRACT[chain_id]],
-        });
-        api.add(token_address, collateralBalance);
-        resolve();
-      })
-    );
+    const collateralBalance = await api.call({
+      abi: 'erc20:balanceOf',
+      target: token_address,
+      params: [CONTRACT[chain_id]],
+    });
+    api.add(token_address, collateralBalance);
   }
-  await Promise.all(promises);
 }
 
 module.exports = {
