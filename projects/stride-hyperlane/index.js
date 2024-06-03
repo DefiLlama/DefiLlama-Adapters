@@ -31,7 +31,7 @@ async function tvl() {
 
 module.exports = {
   timetravel: false,
-  methodology: "TVL of bridged tokens on Stride Hyperlane",
+  methodology: "Hyperlane uses a lock-and-mint mechanism. To calculate TVL, we are taking the number of locked TIA on the Stride side of the bridge, and multiplying by TIA price.",
   "celestia": {
     tvl
   }
