@@ -9,6 +9,6 @@ module.exports = {
 }
 
 async function tvl() {
-  let tvl = await get('https://mertics.icpex.org/api/tvl')
+  let tvl = await get('https://mertics.icpex.org/llama/tvl')
   return toUSDTBalances(tvl)
 }
