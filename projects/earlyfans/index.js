@@ -9,7 +9,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: `We count the EARLY on ${early}`,
+  methodology: `TVL counts the EARLY on ${early} and ETH on ${contract}`,
   blast: {
     tvl,
   },
