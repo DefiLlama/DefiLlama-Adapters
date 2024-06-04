@@ -9,7 +9,7 @@ const REPL_HELPER_CONTRACT = '0x65846aECBF23385F76B73ef1EDD1ebdFf7Ac258D';
 
 const getAllValidAgents = async (api) => {
   const total = await api.call({ abi: abi.getAllAgentsCount, target: REPL_HELPER_CONTRACT })
-  const COUNT = 40
+  const COUNT = 30
   const loop = Math.ceil(total / COUNT)
   const query = new Array(loop)
     .fill(0)
