@@ -40,5 +40,8 @@ module.exports = {
   rsk: {
     tvl,
     staking: staking('0x5684a06cab22db16d901fee2a5c081b4c91ea40e', '0xefc78fc7d48b64958315949279ba181c2114abbd')
+  },
+  bob: {
+    staking: staking('0xc17c6462ceafe9a8819258c6ba168bef5544fc21', '0xba20a5e63eeEFfFA6fD365E7e540628F8fC61474')
   }
 }
