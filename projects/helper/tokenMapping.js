@@ -130,6 +130,8 @@ const fixBalancesTokens = {
   },
   sei: {
     '0x3894085ef7ff0f0aedf52e2a2704928d1ec074f1': { coingeckoId: 'usd-coin', decimals: 6 },
+    '0x0000000000000000000000000000000000000000': { coingeckoId: 'sei-network', decimals: 18 },
+    '0xe30fedd158a2e3b13e9badaeabafc5516e95e8c7': { coingeckoId: 'sei-network', decimals: 18 },
   },
   core: {
     '0x5832f53d147b3d6cd4578b9cbd62425c7ea9d0bd': { coingeckoId: 'wrapped-bitcoin', decimals: 8 },
