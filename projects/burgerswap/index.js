@@ -55,13 +55,13 @@ async function bscShackTvl(timestamp, ethBlock, chainBlocks) {
   return balances;
 }
 
-const bscDexTvl = getUniTVL({ factory: Factory, chain: 'bsc', useDefaultCoreAssets: true, })
+const bscDexTvl = getUniTVL({ factory: Factory, useDefaultCoreAssets: true, })
 
 module.exports = {
   misrepresentedTokens: true,
   bsc: {
     tvl: sdk.util.sumChainTvls([bscDexTvl, bscShackTvl]),
-    staking: staking(stakingContract, BURGER, "bsc"),
+    staking: staking(stakingContract, BURGER),
   },
   methodology:
     "TVL is equal to AMMs liquidity plus the Assets deposited on Burger Shack",

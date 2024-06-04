@@ -8,6 +8,6 @@ module.exports = {
   methodology,
   kava: {
     ...aaveExports("kava", "0xcCe311383b0f4A41c82D8d03a1f4214A3c8E70Bd"),
-    staking: staking(stakingContract, TOREUS, "kava"),
+    staking: staking(stakingContract, TOREUS),
   },
 };

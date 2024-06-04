@@ -4,6 +4,14 @@ const ARCHLY_V2_FACTORY = "0x12508dd9108Abab2c5fD8fC6E4984E46a3CF7824"
 const ARCHLY_V2_VE_TOKEN = "0x6ACa098fa93DAD7A872F6dcb989F8b4A3aFC3342"
 const ARCHLY_V2_ARC_TOKEN = "0xe8876189A80B2079D8C0a7867e46c50361D972c1"
 
+const ARCHLY_V2_FACTORY_ZKSYNC = "0x30A0DD3D0D9E99BD0E67b323FB706788766dCff2"
+const ARCHLY_V2_VE_TOKEN_ZKSYNC = "0x483BdBdbf60d9650845c8097E002c2241D92ab45"
+const ARCHLY_V2_ARC_TOKEN_ZKSYNC = "0xfB4c64c144c2bD0E7F2A06da7d6aAc32d8cb2514"
+
+const ARCHLY_V2_FACTORY_ETHEREUM = "0xE8E2b714C57937E0b29c6ABEAF00B52388cAb598"
+const ARCHLY_V2_VE_TOKEN_ETHEREUM = "0x0361a173dC338c32E57079b2c51cEf36f8A982f1"
+const ARCHLY_V2_ARC_TOKEN_ETHEREUM = "0x9482c407d32204462D8CBbC0755e96C39B79878E"
+
 const tvl = getUniTVL({ factory: ARCHLY_V2_FACTORY, useDefaultCoreAssets: true, hasStablePools: true, })
 
 const config = {
@@ -39,3 +47,15 @@ Object.keys(config).forEach(chain => {
     staking: sumTokensExport({ owner: ARCHLY_V2_VE_TOKEN, tokens: [ARCHLY_V2_ARC_TOKEN], lps: [lp], useDefaultCoreAssets: true,  })
   }
 })
+
+const zksyncTvl = getUniTVL({ factory: ARCHLY_V2_FACTORY_ZKSYNC, useDefaultCoreAssets: true, hasStablePools: true, })
+module.exports['era'] = {
+  tvl: zksyncTvl,
+  staking: sumTokensExport({ owner: ARCHLY_V2_VE_TOKEN_ZKSYNC, tokens: [ARCHLY_V2_ARC_TOKEN_ZKSYNC], lps: ['0xc7a34F4cADE2b1C6d6f3f332Cd76Ee4951b2a621'], useDefaultCoreAssets: true,  })
+}
+
+const ethereumTvl = getUniTVL({ factory: ARCHLY_V2_FACTORY_ETHEREUM, useDefaultCoreAssets: true, hasStablePools: true, })
+module.exports['ethereum'] = {
+  tvl: ethereumTvl,
+  staking: sumTokensExport({ owner: ARCHLY_V2_VE_TOKEN_ETHEREUM, tokens: [ARCHLY_V2_ARC_TOKEN_ETHEREUM], lps: ['0xBBa0BF97D0b0Fe0F2c50c421367E0Ce9bbb15E42'], useDefaultCoreAssets: true,  })
+}

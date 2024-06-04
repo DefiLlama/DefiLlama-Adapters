@@ -46,12 +46,12 @@ Object.keys(config).forEach((chain) => {
         fromBlock,
       });
       const vaults = logs.map(i => i.proxyAddress)
-      for (let i = 0; i < vaults.length; i++) {
-        const balances = await api.call({ abi: 'function totalUnderlying(address vault_) external view returns ((address,uint256)[] memory)', target: helper, params: vaults[i] });
-        for (let j = 0; j < balances.length; j++) {
-          const token0 = balances[j][0];
-          const balance = balances[j][1];
-          api.add(token0, balance)
+      console.log(vaults.length)
+      const _balances = await api.multiCall({ abi: 'function totalUnderlying(address vault_) external view returns ((address,uint256)[] memory)', target: helper, calls: vaults, permitFailure: true, })
+      for (const balances of _balances) {
+        if (!balances) continue;
+        for (const balance of balances) {
+          api.add(balance[0], balance[1])
         }
       }
     }

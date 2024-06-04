@@ -19,6 +19,6 @@ module.exports = {
           vaults.push(pools[i].earnedTokenAddress);
       return yieldHelper({ vaults, chain, block, tokenAPI, useDefaultCoreAssets: true, })
     },
-    staking: staking(REWARD_POOL_CONTRACT, GOA_TOKEN_CONTRACT, "arbitrum")
+    staking: staking(REWARD_POOL_CONTRACT, GOA_TOKEN_CONTRACT)
   }
 }
