@@ -336,15 +336,6 @@ module.exports = {
        holders: [
          '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
        ]
-     },
-     {
-      name: 'lukso',
-      tokens: [
-        ADDRESSES.lukso.WLYX,
-      ],
-      holders: [
-        '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
-      ]
-    },
+     }
   ]
 }
