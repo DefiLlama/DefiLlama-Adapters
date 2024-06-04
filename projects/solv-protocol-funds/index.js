@@ -450,34 +450,6 @@ async function ceffuBalance(api, address, graphData) {
   }
 }
 
-
-async function getGraphSoltData(timestamp, chain, api, slot) {
-  const poolSlotDataQuery = `query PoolOrderInfos {
-            poolOrderInfos(first: 1000  where:{fundraisingEndTime_gt:${timestamp}, openFundShareSlot:"${slot["slot"]}") {
-              marketContractAddress
-              contractAddress
-              navOracle
-              poolId
-              vault
-              openFundShareSlot
-          }
-        }`;
-
-  let data;
-  if (graphUrlList[chain]) {
-    data = (await cachedGraphQuery(`solv-protocol/funds-graph-data/${chain}`, graphUrlList[chain], poolSlotDataQuery, { api, fetchById: true }));
-  }
-
-  let poolList = [];
-  if (data != undefined && data.poolOrderInfos != undefined) {
-    poolList = data.poolOrderInfos;
-  }
-
-  return {
-    pools: poolList
-  };
-}
-
 async function getGraphData(timestamp, chain, api) {
   let rwaSlot = (await getConfig('solv-protocol/slots', slotListUrl));
 
