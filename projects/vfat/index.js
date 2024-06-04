@@ -22,6 +22,21 @@ const config = {
     fromBlockSickle: 117753454,
     chainName: 'optimism',
   },
+  arbitrum: {
+    factory: '0x53d9780DbD3831E3A797Fd215be4131636cD5FDf',
+    gaugeFactory: '0xaaa2564deb34763e3d05162ed3f5c2658691f499',
+    fromBlock: 69820005,
+    fromBlockSickle: 197499243,
+    chainName: 'arbitrum',
+  },
+  linea: {
+    factory: '0x0F6aBc6B808B377d6AeD8dA1FAD5E135C99C81a3',
+    fromBlockSickle: 4949355,
+    fromBlock: 381770,
+    gaugeFactory: '0xAAA932839641c037452f826BB9d7B2057129833b',
+    gaugeFactory2: '0xAAA2D4987EEd427Ba5E2c933EeFCD75C84b446B7',
+    chainName: 'linea',
+  }
 };
 
 
