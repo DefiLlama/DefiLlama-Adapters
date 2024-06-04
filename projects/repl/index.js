@@ -8,10 +8,7 @@ const http = require('../helper/http');
 const REPL_HELPER_CONTRACT = '0x65846aECBF23385F76B73ef1EDD1ebdFf7Ac258D';
 
 const getAllValidAgents = async (api) => {
-  const [total, upgradedList] = await Promise.all([
-    api.call({ abi: abi.getAllAgentsCount, target: REPL_HELPER_CONTRACT }),
-    api.call({ abi: abi.getUpgradedAgentList, target: REPL_HELPER_CONTRACT }),
-  ])
+  const total = await api.call({ abi: abi.getAllAgentsCount, target: REPL_HELPER_CONTRACT })
   const COUNT = 40
   const loop = Math.ceil(total / COUNT)
   const query = new Array(loop)
@@ -21,7 +18,7 @@ const getAllValidAgents = async (api) => {
     (pre, cur) => [...pre, ...cur],
     []
   )
-  return lists.filter(agent => Number(agent.curBeneficiary) === Number(agent.agentID) || upgradedList.includes(agent.agent))
+  return lists.filter(agent => !!agent.isValid)
 }
 
 // Total Assets of Miners pledged to the protocol
