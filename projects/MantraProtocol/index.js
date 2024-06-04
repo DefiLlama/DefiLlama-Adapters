@@ -43,7 +43,7 @@ async function tvl(api) {
     });
   }
 
-  balances = await api.batchCall(balanceCalls)
+  const balances = await api.batchCall(balanceCalls)
 
   api.addTokens(nonNativeTokens, balances)
 }
