@@ -138,7 +138,7 @@ const fixBalancesTokens = {
     '0x5B1Fb849f1F76217246B8AAAC053b5C7b15b7dc3': { coingeckoId: 'solv-btc', decimals: 18 },
   },
   lukso: {
-    '0x2db41674f2b882889e5e1bd09a3f3613952bc472': { coingeckoId: 'wrapped-lyx-universalswaps-2', decimals: 18 },
+    '0x2db41674f2b882889e5e1bd09a3f3613952bc472': { coingeckoId: 'lukso-token-2', decimals: 18 },
   },
   planq: {
     "0xecEEEfCEE421D8062EF8d6b4D814efe4dc898265": { coingeckoId: 'usd-coin', decimals: 6 },

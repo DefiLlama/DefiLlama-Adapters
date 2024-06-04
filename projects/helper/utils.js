@@ -262,7 +262,7 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
     labelMapping[label] = token
   })
 
-  if (tokens.length > 100) {
+  if (tokens.length > 400) {
     sdk.log('too many unknowns')
     return;
   }
