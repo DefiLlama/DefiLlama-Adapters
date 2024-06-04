@@ -48,17 +48,16 @@ module.exports = {
           pools {    base    quote  }
         }
         `
+      // eslint-disable-next-line no-undef
       pools = await request(`https://bob-ambient-subgraph.sovryn.app/subgraphs/name/DistributedCollective/bob-ambient-subgraph`, query)
+      // eslint-disable-next-line no-undef
       const tokens = pools.pools.map(i => [i.base, i.quote]).flat()
       return sumTokens2({ chain: "bob", owner: '0xe5bc234A484A912A61Aa74501960cFc202e773dA', tokens,  });
     },
-    //staking: staking('0xc17C6462cEAFE9A8819258c6bA168BEF5544Fc21') // does not work
+    staking: staking('0xc17c6462ceafe9a8819258c6ba168bef5544fc21', '0xba20a5e63eeEFfFA6fD365E7e540628F8fC61474')
   },
   rsk: {
     tvl,
     staking: staking('0x5684a06cab22db16d901fee2a5c081b4c91ea40e', '0xefc78fc7d48b64958315949279ba181c2114abbd')
   },
-  bob: {
-    staking: staking('0xc17c6462ceafe9a8819258c6ba168bef5544fc21', '0xba20a5e63eeEFfFA6fD365E7e540628F8fC61474')
-  }
 }
