@@ -22,6 +22,7 @@ const DEFAULTS = {
   REAL_RPC_MULTICALL: '0xcA11bde05977b3631167028862bE2a173976CA11',
   TAIKO_RPC_MULTICALL: '0xcb2436774C3e191c85056d248EF4260ce5f27A9D',
   SEI_RPC: 'https://evm-rpc.sei-apis.com/',
+  LUKSO_RPC: 'https://rpc.lukso.sigmacore.io',
 }
 
 const ENV_KEYS = [
