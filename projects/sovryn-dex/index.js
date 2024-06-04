@@ -52,7 +52,7 @@ module.exports = {
       const tokens = pools.pools.map(i => [i.base, i.quote]).flat()
       return sumTokens2({ chain: "bob", owner: '0xe5bc234A484A912A61Aa74501960cFc202e773dA', tokens,  });
     },
-    //staking: staking('0xc17C6462cEAFE9A8819258c6bA168BEF5544Fc21') // does not work
+    staking: staking({stakingContract: '0xc17c6462ceafe9a8819258c6ba168bef5544fc21', stakingToken: '0xba20a5e63eeEFfFA6fD365E7e540628F8fC61474', _chain: 'bob'}) 
   },
   rsk: {
     tvl,
