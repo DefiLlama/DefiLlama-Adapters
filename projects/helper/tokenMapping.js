@@ -137,11 +137,6 @@ const fixBalancesTokens = {
   },
   lukso: {
     '0x2db41674f2b882889e5e1bd09a3f3613952bc472': { coingeckoId: 'wrapped-lyx-universalswaps-2', decimals: 18 },
-  },
-  joltify: {
-    'ujolt': { coingeckoId: 'joltify', decimals: 6 },
-    'ibc/65D0BEC6DAD96C7F5043D1E54E54B6BB5D5B3AEC3FF6CEBB75B9E059F3580EA3': { coingeckoId: 'usd-coin', decimals: 6},
-    'ibc/9117A26BA81E29FA4F78F57DC2BD90CD3D26848101BA880445F119B22A1E254E': { coingeckoId: 'cosmos', decimals: 6},
   }
 }
 
