@@ -258,8 +258,8 @@ async function liquidity(api, iziswap, owner) {
 
   tokenList.forEach((token, index) => {
     const amounts = getAmounts(state[index], liquidities[index])
-    api.add(token[0], amounts.amountX)
-    api.add(token[1], amounts.amountY)
+    api.add(token[0], amounts.amountX);
+    api.add(token[1], amounts.amountY);
   })
 }
 
