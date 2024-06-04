@@ -1,6 +1,5 @@
 const { sumERC4626VaultsExport } = require("../helper/erc4626")
 const { sumTokensExport } = require("../helper/unwrapLPs")
-const { getUniTVL } = require("../helper/unknownTokens")
 
 const sdk = require("@defillama/sdk")
 const ADDRESSES = require("../helper/coreAssets.json")
@@ -37,7 +36,6 @@ const config = {
         "0xB00231B308B01Dbb90f16F966F62d86fBc78c450",
       ],
     },
-    factory: "0x2EA9051d5a48eA2350b26306f2b959D262cf67e1",
   },
 }
 
@@ -47,14 +45,7 @@ Object.keys(config).forEach((chain) => {
   const otherTvl = sumTokensExport(tokenConfig)
 
   let tvlCalculators = [vaultTvl, otherTvl]
-
-  if (factory) {
-    const uniTvl = getUniTVL({
-      chain,
-      factory,
-    })
-    tvlCalculators.push(uniTvl)
-  }
+  
   module.exports[chain] = {
     tvl: sdk.util.sumChainTvls(tvlCalculators),
   }
