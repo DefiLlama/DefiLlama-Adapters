@@ -1,5 +1,7 @@
+const { factory } = require('typescript');
 const { getLogs } = require('../helper/cache/getLogs');
 const { sumTokens2, addUniV3LikePosition } = require('../helper/unwrapLPs');
+const { ethereum } = require('../helper/whitelistedNfts');
 
 const config = {
   base: {
@@ -40,7 +42,27 @@ const config = {
     voter: '0xAAAf3D9CDD3602d117c67D80eEC37a160C8d9869',
     NonfungiblePositionManager: '0xAAA78E8C4241990B4ce159E105dA08129345946A',
     chainName: 'linea',
-  }
+  },
+  ethereum: {
+    factory: '0x9D70B9E5ac2862C405D64A0193b4A4757Aab7F95',
+    chainName: 'ethereum',
+  },
+  mode: {
+    factory: '0x53d9780DbD3831E3A797Fd215be4131636cD5FDf',
+    chainName: 'mode',
+  },
+  fantom: {
+    factory: '0x53d9780DbD3831E3A797Fd215be4131636cD5FDf',
+    chainName: 'fantom',
+  },
+  mantle: {
+    factory: '0xB4C31b0f0B76b351395D4aCC94A54dD4e6fbA1E8',
+    chainName: 'mantle',
+  },
+  bsc: {
+    factory: '0x53d9780DbD3831E3A797Fd215be4131636cD5FDf',
+    chainName: 'bsc',
+  },
 };
 
 // Helper function to fetch sickles
