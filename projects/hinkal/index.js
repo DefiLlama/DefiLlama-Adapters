@@ -9,11 +9,16 @@ const tvl = async (_, _1, _2, { chain, api }) => {
     chain
   );
 
+  const chainTokensWithUnderlyingAddresses =
+    registryTokensWithUnderlyingAddressesByChain[chain];
+
   const mappedTokens = tokenBalances.map((token) => {
-    const underlyingAddress =
-      registryTokensWithUnderlyingAddressesByChain[token.address];
+    const tokenUnderlyingAddress = chainTokensWithUnderlyingAddresses
+      ? chainTokensWithUnderlyingAddresses[token.address]
+      : undefined;
+
     return {
-      address: underlyingAddress ? underlyingAddress : token.address,
+      address: tokenUnderlyingAddress ? tokenUnderlyingAddress : token.address,
       balance: token.balance,
     };
   });
