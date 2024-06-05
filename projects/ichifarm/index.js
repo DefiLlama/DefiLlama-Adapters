@@ -35,6 +35,7 @@ const config = {
     vaultConfigs: [
       { factory: '0x5a40DFaF8C1115196A1CDF529F97122030F26112', fromBlock: 13671610, isAlgebra: false, },
       { factory: '0x8Dd50926e12BD71904bCCc6D86DFA55D42715094', fromBlock: 18754139, isAlgebra: false, }, //PancakeSwap
+      { factory: '0xEAeC81F0eD4F622D4b389672d9859166C0832b3E', fromBlock: 18870610, isAlgebra: false, }, //Blueprint
     ],
     oneFactory: '0xD0092632B9Ac5A7856664eeC1abb6E3403a6A36a',
   },
@@ -45,11 +46,28 @@ const config = {
       { factory: '0x1Cc05B01f2e52ae3bb29F7A0059Fe112C60aA3f4', fromBlock: 147199960, isAlgebra: false, }, // Horiza
     ],
   },
+  base: {
+    vaultConfigs: [
+      { factory: '0xfBf38920cCbCFF7268Ad714ae5F9Fad6dF607065', fromBlock: 10607512, isAlgebra: false, }, // Equalizer
+    ]
+  },
+  blast: {
+    vaultConfigs: [
+      { factory: '0xb42D5956cDe4386B65C087CfCD16910aB6114F15', fromBlock: 2247439, isAlgebra: true, }, // Fenix
+      { factory: '0x9FAb4bdD4E05f5C023CCC85D2071b49791D7418F', fromBlock: 1630201, isAlgebra: false, }, // Uni v3
+    ],
+  },
   bsc: {
     vaultConfigs: [
       { factory: '0x131c03ca881B7cC66d7a5120A9273ebf675C241D', fromBlock: 29702590, isAlgebra: false, },
       { factory: '0xAc93148e93d1C49D89b1166BFd74942E80F5D501', fromBlock: 32489803, isAlgebra: true, }, // Thena
+      { factory: '0x065356d9f628cDd1bb9F2384E2972CdAC50f51b7', fromBlock: 34595133, isAlgebra: false, }, // Uni v3
     ],
+  },
+  celo: {
+    vaultConfigs: [
+      { factory: '0x9FAb4bdD4E05f5C023CCC85D2071b49791D7418F', fromBlock: 24256269, isAlgebra: false, }, // Uniswap v3
+    ]
   },
   eon: {
     vaultConfigs: [
@@ -61,6 +79,44 @@ const config = {
       { factory: '0x8a76c26E0089111989C14EF56b9733aa38B94148', fromBlock: 20999423, isAlgebra: false, }, // zkSync Era
     ]
   },
+  evmos: {
+    vaultConfigs: [
+      { factory: '0x7c6389714719c68caac8ae06bae6e878b3605f6d', fromBlock: 19029984, isAlgebra: false, }, // Forge
+    ]
+  },
+  fantom: {
+    vaultConfigs: [
+      { factory: '0x932E1908461De58b0891E5022431dc995Cb95C5E', fromBlock: 74304207, isAlgebra: false, }, // Equalizer
+      { factory: '0x89FFdaa18b296d9F0CF02fBD88e5c633FEFA5f34', fromBlock: 79156621, isAlgebra: true, }, // Spiritswap 
+    ]
+  },
+  // hedera: {
+  //   vaultConfigs: [
+  //     { factory: '0xb62399d23d1c81f08ea445a42d7f15cc12090a71', fromBlock: 59010832, isAlgebra: false, }, // Saucerswap
+  //   ]
+  // },
+  // kava: {
+  //   vaultConfigs: [
+  //     { factory: '0x2d2c72C4dC71AA32D64e5142e336741131A73fc0', fromBlock: 8864638, isAlgebra: false, }, // Kinetix 
+  //   ]
+  // },
+  linea: {
+    vaultConfigs: [
+      { factory: '0x0248b992ac2a75294b05286E9DD3A2bD3C9CFE4B', fromBlock: 1599561, isAlgebra: true, }, // Lynex
+      { factory: '0x2592686212C164C1851dF2f62c5d5EC50600195E', fromBlock: 4148753, isAlgebra: false, }, // Metavault 
+      { factory: '0x6E3eB904966B0158833852cAFD1200c171772b53', fromBlock: 3976012, isAlgebra: false, }, // Uniswap 
+    ]
+  },
+  mantle: {
+    vaultConfigs: [
+      { factory: '0xbBB97d634460DACCA0d41E249510Bb741ef46ad3', fromBlock: 39366721, isAlgebra: false, }, // Cleo
+    ]
+  },
+  op_bnb: {
+    vaultConfigs: [
+      { factory: '0xADDA3A15EA71c223a82Af86d4578EF2B076035F1', fromBlock: 13911597, isAlgebra: true, }, // Thena
+    ]
+  },
   polygon: {
     vaultConfigs: [
       { factory: '0x2d2c72c4dc71aa32d64e5142e336741131a73fc0', fromBlock: 25697834, isAlgebra: false, },
@@ -69,12 +125,17 @@ const config = {
     ],
     oneFactory: '0x101eB16BdbA37979a771c86e1CAAfbaDbABfc879',
   },
+  polygon_zkevm: {
+    vaultConfigs: [
+      { factory: '0x9FAb4bdD4E05f5C023CCC85D2071b49791D7418F', fromBlock: 4830529, isAlgebra: false, }, // Zero
+    ]
+  },
 }
 
 Object.keys(config).forEach(chain => {
   const { vaultConfigs = [], oneFactory } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const blacklistedTokens = []
       if (oneFactory) {
         const oneTokens = await api.fetchList({ lengthAbi: abi.oneTokenCount, itemAbi: abi.oneTokenAtIndex, target: oneFactory })

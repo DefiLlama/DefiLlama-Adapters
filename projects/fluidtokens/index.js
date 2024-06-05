@@ -53,15 +53,26 @@ async function tvl() {
   const repay_tvl = parseInt(await get("https://api.fluidtokens.com/get-total-available-repayments"));
 
   const pools_tvl= parseInt(await get("https://api.fluidtokens.com/get-total-available-pools"));
+
+  const boosted_tvl= await get("https://api.fluidtokens.com/get-ft-stats");
+
+  const boosted=parseInt(boosted_tvl.bs_available_volume)+parseInt(boosted_tvl.bs_active_volume);
+  
   return {
-    cardano: (SC_offers_tvl+repay_tvl+pools_tvl) / 1e6,
+    cardano: (SC_offers_tvl+repay_tvl+pools_tvl+boosted) / 1e6,
   };
 }
 
+async function staking() {
+  const data = await get("https://api.fluidtokens.com/get-ft-stats");
+  let staking = parseInt(data.staking_tvl);
+  
+  return {
+    cardano: (staking) / 1e6,
+  };
+}
 
-async function borrowed(
-  ts //timestamp in seconds
-) {
+async function borrowed() {
   const data = await get("https://api.fluidtokens.com/get-ft-stats");
   let SC_tvl = parseInt(data.active_loans_volume);
 
@@ -85,6 +96,7 @@ module.exports = {
   cardano: {
     tvl,
     borrowed,
+    staking
   },
   hallmarks: [
     [Math.floor(new Date("2023-01-01") / 1e3), "Count only active loans"],

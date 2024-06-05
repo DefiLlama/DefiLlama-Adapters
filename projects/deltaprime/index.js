@@ -30,7 +30,7 @@ const DAI_POOL_TUP_ARBI_CONTRACT = '0xd5E8f691756c3d7b86FD8A89A06497D38D362540';
 
 const SMART_LOANS_FACTORY_TUP_ARBITRUM = '0xFf5e3dDaefF411a1dC6CcE00014e4Bca39265c20';
 
-async function tvlAvalanche(timestamp, block, chainBlocks, { api }) {
+async function tvlAvalanche(api) {
   const tokensAndOwners = [
     [assetToAddressMappingAvalanche.USDC, USDC_POOL_TUP_CONTRACT],
     [assetToAddressMappingAvalanche.USDT, USDT_POOL_TUP_CONTRACT],
@@ -59,7 +59,7 @@ async function tvlAvalanche(timestamp, block, chainBlocks, { api }) {
   const ownedAssets = await api.multiCall({ abi: getAllOwnedAssetsAbi, calls: accounts })
   accounts.forEach((o, i) => {
     ownedAssets[i].forEach(tokenStr => {
-      tokenStr = ethers.utils.parseBytes32String(tokenStr)
+      tokenStr = ethers.decodeBytes32String(tokenStr)
       const token = assetToAddressMappingAvalanche[tokenStr]
       if (!token) {
         sdk.log('Missing asset mapping for: ' + tokenStr)
@@ -82,7 +82,7 @@ async function tvlAvalanche(timestamp, block, chainBlocks, { api }) {
   return balances;
 }
 
-async function tvlArbitrum(timestamp, block, chainBlocks, { api }) {
+async function tvlArbitrum(api) {
   const tokensAndOwners = [
     [assetToAddressMappingArbitrum.USDC, USDC_POOL_TUP_ARBI_CONTRACT],
     [assetToAddressMappingArbitrum.ETH, ETH_POOL_TUP_ARBI_CONTRACT],
@@ -111,7 +111,7 @@ async function tvlArbitrum(timestamp, block, chainBlocks, { api }) {
 
   accounts.forEach((o, i) => {
     ownedAssets[i].forEach(tokenStr => {
-      tokenStr = ethers.utils.parseBytes32String(tokenStr)
+      tokenStr = ethers.decodeBytes32String(tokenStr)
       const token = assetToAddressMappingArbitrum[tokenStr]
       if (!token) return;
       if (!token) {

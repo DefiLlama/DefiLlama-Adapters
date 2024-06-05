@@ -33,9 +33,7 @@ async function fantom(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
-  methodology: "Measures the total value deposited in Scion vault contracts",
+      methodology: "Measures the total value deposited in Scion vault contracts",
   moonriver: {
     tvl: moonriver,
   },

@@ -13,7 +13,7 @@ module.exports = {
     tvl: () => ({}),
     borrowed: () => ({}),
   },
-  // deadFrom: "2023-12-14",
+  deadFrom: "2023-12-14",
 };
 
 module.exports.polygon.borrowed = () => ({})

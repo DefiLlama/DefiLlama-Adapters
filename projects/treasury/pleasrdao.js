@@ -3,7 +3,6 @@ const { nullAddress, treasuryExports } = require("../helper/treasury");
 
 const pleasrDaoTreasury = "0xF5c27c6fE782cbB5c85989ea3e75754748153459";
 const treasury = "0xf894fea045eccb2927e2e0cb15c12debee9f2be8"
-const lp = "0xC36442b4a4522E871399CD717aBDD847Ab11FE88"
 
 module.exports = treasuryExports({
   ethereum: {
@@ -20,7 +19,7 @@ module.exports = treasuryExports({
         "0x1A4b46696b2bB4794Eb3D4c26f1c55F9170fa4C5",
         ADDRESSES.ethereum.DAI
      ],
-    owners: [pleasrDaoTreasury, treasury, lp],
+    owners: [pleasrDaoTreasury, treasury,],
     resolveLP: true,
     resolveUniV3: true,
   },

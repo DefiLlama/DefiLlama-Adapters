@@ -4,9 +4,7 @@ const { compoundExports } = require("../helper/compound");
 const comptroller = "0xdc21c1dAF3277f07fFA6EB09fCD3E07EDc36DC0A";
 
 module.exports = {
-  timetravel: true,
-  doublecounted: false,
-  bsc: {
+      bsc: {
     ...compoundExports( comptroller,
       "bsc",
       "0x38e22c429e62530cbB59B90bF14a71346C727752",

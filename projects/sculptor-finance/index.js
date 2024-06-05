@@ -1,6 +1,6 @@
 const { staking } = require("../helper/staking");
 const { pool2 } = require("../helper/pool2");
-const { aaveChainTvl } = require("../helper/aave");
+const { aaveChainTvl, methodology } = require("../helper/aave");
 
 const stakingContract = "0xd4F7F739488f5C9930A60e85afbE26a8B71BA795";
 const SCULPT = "0xAd3E02e83b886543D1171FF446C130D52068C106";
@@ -22,13 +22,11 @@ function lending(borrowed) {
 }
 
 module.exports = {
-  timetravel: true,
-  methodology:
-    "Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending",
+    methodology,
   bsc: {
     tvl: lending(false),
     borrowed: lending(true),
-    staking: staking(stakingContract, SCULPT, "bsc"),
-    pool2: pool2(stakingContractPool2, SCULPT_BNB, "bsc"),
+    staking: staking(stakingContract, SCULPT),
+    pool2: pool2(stakingContractPool2, SCULPT_BNB),
   },
 };

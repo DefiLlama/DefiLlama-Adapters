@@ -1,6 +1,6 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const abi = require("./abi.json");
-const http = require("../helper/http");
+const { cachedGraphQuery } = require('../helper/cache')
 const sdk = require("@defillama/sdk");
 
 const { sumTokens2 } = require("../helper/unwrapLPs");
@@ -24,13 +24,8 @@ const LP_TOKEN_SDAO_USDT = "0x3a925503970d40d36d2329e3846e09fcfc9b6acb";
 
 const getDynasetQuery = "{ dynaset { address } }";
 const graphEndpoint =
-  "https://dev-onchain-server.singularitydao.ai/dynaset-server/api/graphql";
+  "https://singularitydao.ai/api/dynaset-server/api/graphql";
 
-/////////////////////////////////////////////////
-///// ETHEREUM /////////////////////////////////
-///////////////////////////////////////////////
-
-// TVL
 
 async function tvl(_, block) {
   const blacklistedTokens = [
@@ -40,9 +35,8 @@ async function tvl(_, block) {
     AGIX_TOKEN,
     NUNET_TOKEN,
   ];
-  // DYNASETS
 
-  const response = await http.graphQuery(graphEndpoint, getDynasetQuery);
+  const response = await cachedGraphQuery('singularity-dao', graphEndpoint, getDynasetQuery);
   const dynasets = response.dynaset.map((d) => d.address).flat();
   const { output: tokens } = await sdk.api.abi.multiCall({
     calls: dynasets.map((addr) => ({ target: addr })),

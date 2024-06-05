@@ -9,8 +9,7 @@ const Arbitrum_Config = {
   "endpoint": "0x52b5471d04487fb85B39e3Ae47307f115fe8733F",
 }
 
-async function suiTvl() {
-  const { api } = arguments[3];
+async function suiTvl(api) {
   const object = await sui.getObject(SUI_BANK_ID);
 
   // div by 1e6 as usdc coin has 6 precision
@@ -29,4 +28,7 @@ module.exports = {
   sui: {
     tvl: suiTvl
   },
+  hallmarks: [
+    [Math.floor(new Date('2023-12-22')/1e3), 'Decomission Arbitrum support'],
+  ],
 }

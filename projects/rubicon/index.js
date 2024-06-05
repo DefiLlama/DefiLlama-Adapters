@@ -38,7 +38,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { endpoint, owners } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const response = await cachedGraphQuery('rubicon/' + chain, endpoint, `{ tokens { address } }`)
       const tokens = response.tokens.map(i => i.address)
       return sumTokens2({ api, tokens, owners})

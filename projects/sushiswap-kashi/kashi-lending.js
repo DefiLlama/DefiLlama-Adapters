@@ -1,6 +1,5 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const { blockQuery } = require("../helper/http");
-const { BigNumber } = require("ethers");
 
 const graphUrls = {
   ethereum: "https://api.thegraph.com/subgraphs/name/sushi-labs/kashi-ethereum",
@@ -18,7 +17,7 @@ const bentoboxes = {
   avax: "0x0711b6026068f736bae6b213031fce978d48e026",
 };
 
-const toAmountAbi ='function toAmount(address token, uint256 share, bool roundUp) view returns (uint256 amount)'
+const toAmountAbi = 'function toAmount(address token, uint256 share, bool roundUp) view returns (uint256 amount)'
 
 const kashiQuery = `
   query get_pairs($block: Int) {
@@ -42,7 +41,7 @@ const kashiQuery = `
 `;
 
 function kashiLending(chain, borrowed) {
-  return async (timestamp, ethBlock, chainBlocks, {api}) => {
+  return async (api) => {
     const graphUrl = graphUrls[chain];
 
     // Query graphql endpoint
@@ -59,7 +58,7 @@ function kashiLending(chain, borrowed) {
         return;
       }
       if (borrowed) {
-        if (BigNumber.from(pair.totalBorrow.elastic).lte(0)) {
+        if (+pair.totalBorrow.elastic <= 0) {
           return;
         }
         //count tokens borrowed
@@ -67,10 +66,7 @@ function kashiLending(chain, borrowed) {
         //convert shares to amount
         calls.push({ params: [pair.asset.id, shares, false] })
       } else {
-        if (
-          BigNumber.from(pair.totalAsset.elastic).lte(0) &&
-          BigNumber.from(pair.totalAsset.elastic).lte(0)
-        ) {
+        if (+pair.totalAsset.elastic <= 0) {
           return;
         }
         //count tokens not borrowed + collateral
@@ -82,7 +78,7 @@ function kashiLending(chain, borrowed) {
     })
 
     const output = await api.multiCall({
-      calls,abi: toAmountAbi, target: bentoboxes[chain],
+      calls, abi: toAmountAbi, target: bentoboxes[chain],
     })
 
     output.forEach((balance, idx) => {

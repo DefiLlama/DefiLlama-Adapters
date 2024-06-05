@@ -1,8 +1,5 @@
 const { get } = require("../helper/http")
-const sdk = require('@defillama/sdk');
 const abi = require("./abi.json");
-const { ethers } = require("ethers");
-const { toUSDTBalances } = require("../helper/balances")
 
 let _response
 
@@ -50,7 +47,7 @@ async function getFantomTvl() {
   }
 }
 
-async function getGnosisTvl(timestamp, block, chainBlocks) {
+async function getGnosisTvl(api) {
   
   //Current Ankr Provider Address, there is a hard cap on how much mGNO each address can stake, other addresses might appear*/
   const ankrProviderAddress = "0x4069D8A3dE3A72EcA86CA5e0a4B94619085E7362"
@@ -63,16 +60,14 @@ async function getGnosisTvl(timestamp, block, chainBlocks) {
   //Provider Registry Logic Contract = "0x6c6f910a79639dcc94b4feef59ff507c2e843929"
 
 
-    var providerBalance = (await sdk.api.abi.call({
+    var providerBalance = (await api.call({
       abi: abi.getProviderBalance,
-      chain: 'xdai',
       target: proxyStakingPool,
       params: [ankrProviderAddress],
-      block: chainBlocks['xdai'],
-    })).output
+    }))
 
     //providerBalance = [balance, totalCap]
-    var staked = ethers.utils.formatEther(providerBalance[0])
+    var staked = providerBalance[0] / 1e18
 
     //Staked amount is in mGNO, 32 mGNO = 1 GNO
     var trueStaked = staked / 32

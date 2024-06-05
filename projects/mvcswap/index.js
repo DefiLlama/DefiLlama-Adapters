@@ -1,18 +1,18 @@
-const axios = require("axios")
 const { transformDexBalances } = require('../helper/portedTokens')
 const  ADDRESSES = require('../helper/coreAssets.json')
+const { get } = require("../helper/http")
 
 module.exports = {
   misrepresentedTokens: true,
   timetravel: false,
   mvc: {
 	tvl: async () => {
-      const result = await axios.get('https://api.mvcswap.com/swap/allpairs', {
+      const result = await get('https://api.mvcswap.com/swap/allpairs', {
 		headers: {
 		'Accept-Encoding': 'gzip'
 		}
 	})
-		const data = result.data.data;
+		const data = result.data;
 		return transformDexBalances({
 			chain: 'mvc',
 			data: Object.keys(data).map(i => ({
