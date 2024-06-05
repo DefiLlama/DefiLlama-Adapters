@@ -64,7 +64,9 @@ const fixBalancesTokens = {
     "KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-17": { coingeckoId: "usd-coin", decimals: 6 },
     "KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-18": { coingeckoId: "tether", decimals: 6 },
   },
-
+  iotaevm: {
+    "0x6e47f8d48a01b44DF3fFF35d258A10A3AEdC114c": { coingeckoId: 'iota', decimals: 18 },
+  },
   acala: {
     ACA: { coingeckoId: "acala", decimals: 12 },
     LDOT: { coingeckoId: "liquid-staking-dot", decimals: 10 },
