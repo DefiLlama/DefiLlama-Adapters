@@ -19,7 +19,7 @@ Object.keys(config).forEach((chain) => {
         target:controller,
         abi: 'function pairs() view returns (address[2][])',
       })
-      const tokens = pairs.flat().map(i => i.toLowerCase())
+      const tokens = pairs.flat()
 
       return sumTokens2({ api, owner: controller, tokens });
     },
