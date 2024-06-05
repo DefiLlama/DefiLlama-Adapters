@@ -1,17 +1,26 @@
 const registryTokensByChain = require("./registryTokens.js");
-const { getAllTokenBalances, fetchTotalValue } = require("./hinkalUtils.js");
+const registryTokensWithUnderlyingAddressesByChain = require("./registryTokensWithUnderlyingAddresses.js");
+const { getAllTokenBalances } = require("./hinkalUtils.js");
 const { toUSDTBalances } = require("../helper/balances.js");
 
-const tvl = async (_, _1, _2, { chain }) => {
+const tvl = async (_, _1, _2, { chain, api }) => {
   const tokenBalances = await getAllTokenBalances(
     registryTokensByChain[chain],
     chain
   );
 
-  const totalValue = await fetchTotalValue(tokenBalances, chain);
+  const mappedTokens = tokenBalances.map((token) => {
+    const underlyingAddress =
+      registryTokensWithUnderlyingAddressesByChain[token.address];
+    return {
+      address: underlyingAddress ? underlyingAddress : token.address,
+      balance: token.balance,
+    };
+  });
 
-  return toUSDTBalances(
-    totalValue.reduce((acc, token) => acc + token.tokenBalance, 0)
+  return api.addTokens(
+    mappedTokens.map((token) => token.address),
+    mappedTokens.map((token) => token.balance)
   );
 };
 
