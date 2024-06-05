@@ -1,0 +1,4 @@
+{
+    "totalPooledFlr": "uint256:totalPooledFlr",
+    "getSharesByPooledFlr": "function getSharesByPooledFlr(uint256 flrAmount) view returns (uint256)"
+}
