@@ -24,7 +24,9 @@ const config = {
   },
   arbitrum: {
     factory: '0x53d9780DbD3831E3A797Fd215be4131636cD5FDf',
-    gaugeFactory: '0xaaa2564deb34763e3d05162ed3f5c2658691f499',
+    gaugeFactory: '0xAAA2564DEb34763E3d05162ed3f5C2658691f499',
+    gaugeFactory2: '0xaa2fbd0c9393964af7c66c1513e44a8caaae4fda',
+    NonfungiblePositionManager: '0xAA277CB7914b7e5514946Da92cb9De332Ce610EF',
     fromBlock: 69820005,
     fromBlockSickle: 197499243,
     chainName: 'arbitrum',
@@ -35,6 +37,8 @@ const config = {
     fromBlock: 381770,
     gaugeFactory: '0xAAA932839641c037452f826BB9d7B2057129833b',
     gaugeFactory2: '0xAAA2D4987EEd427Ba5E2c933EeFCD75C84b446B7',
+    voter: '0xAAAf3D9CDD3602d117c67D80eEC37a160C8d9869',
+    NonfungiblePositionManager: '0xAAA78E8C4241990B4ce159E105dA08129345946A',
     chainName: 'linea',
   }
 };
@@ -83,6 +87,40 @@ async function fetchGauges(api, voter, fromBlock, gaugeFactory, gaugeFactory2) {
   );
 }
 
+async function fetchGauges2(api, fromBlock, gaugeFactory, gaugeFactory2, voter, chainName) {
+  const eventAbi = `event GaugeCreated(
+    address indexed gauge,
+    address creator,
+    address feeDistributor,
+    address indexed pool
+  )`;
+
+  const eventAbi2 = `event GaugeCreated(address indexed pool, address gauge)`;
+
+  const deployRamsesLogs = await getLogs({
+    api,
+    target: chainName === 'linea' ? voter : gaugeFactory,
+    fromBlock,
+    eventAbi,
+  });
+
+  const deployRamsesLogs2 = await getLogs({
+    api,
+    target: gaugeFactory2,
+    fromBlock,
+    eventAbi: eventAbi2,
+  });
+
+  const lp = deployRamsesLogs.map(log => log.args.gauge);
+  const nft = deployRamsesLogs2.map(log => log.args.gauge);
+
+  const nftSet = new Set(nft);
+
+  const filteredLp = lp.filter(address => !nftSet.has(address));
+
+  return { lp: filteredLp, nft };
+}
+
 // TVL calculation for Base and Optimism
 async function tvlBaseOptimism(api) {
   const { factory, gaugeFactory, gaugeFactory2, voter, NonfungiblePositionManager, fromBlock, fromBlockSickle, chainName } = config[api.chain];
@@ -123,12 +161,63 @@ async function tvlBaseOptimism(api) {
 
 // TVL calculation for Arbitrum and Linea
 async function tvlArbitrumLinea(api) {
-  const { factory, gaugeFactory, fromBlock, fromBlockSickle, chainName } = config[api.chain];
+  const { factory, gaugeFactory, gaugeFactory2, voter, fromBlock, fromBlockSickle, chainName } = config[api.chain];
 
   const sickles = await fetchSickles(api, factory, fromBlockSickle);
-  console.log(sickles);
+  const gauges = await fetchGauges2(api, fromBlock, gaugeFactory, gaugeFactory2, voter, chainName);
+  const stakingTokens = await api.multiCall({ abi: 'address:stake', calls: gauges.lp });
+  const gaugeTokenMapping = {};
+  stakingTokens.forEach((stakingToken, index) => {
+    gaugeTokenMapping[gauges.lp[index]] = stakingToken;
+  });
 
-  return 0;
+  const balanceCallsLP = [];
+  const tokens = [];
+  for (const gauge of gauges.lp) {
+    for (const sickle of sickles) {
+      balanceCallsLP.push({ target: gauge, params: [sickle] });
+      tokens.push(gaugeTokenMapping[gauge]);
+    }
+  }
+
+  const lpBals = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCallsLP });
+  api.add(tokens, lpBals);
+
+
+  const sickleBalances = {};
+  for (const sickle of sickles) {
+    const balanceCallsSickle = [{ target: config[api.chain].NonfungiblePositionManager, params: [sickle] }];
+    const sickleBals = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCallsSickle });
+    const balance = sickleBals[0];
+
+    if (balance === '0') continue;
+
+    const nftCalls = [];
+    for (let i = 0; i < balance; i++) {
+      nftCalls.push({ target: config[api.chain].NonfungiblePositionManager, params: [sickle, i] });
+    }
+
+    const nftIds = await api.multiCall({ abi: 'function tokenOfOwnerByIndex(address owner, uint256 index) view returns (uint256)', calls: nftCalls });
+    sickleBalances[sickle] = nftIds;
+  }
+
+  const positionCalls = [];
+  for (const sickle in sickleBalances) {
+    const nftIds = sickleBalances[sickle];
+    nftIds.forEach(nftId => {
+      positionCalls.push({ target: config[api.chain].NonfungiblePositionManager, params: [nftId] });
+    });
+  }
+
+  const positions = await api.multiCall({
+    abi: 'function positions(uint256 tokenId) view returns (uint96 nonce, address operator, address token0, address token1, int24 tickSpacing, int24 tickLower, int24 tickUpper, uint128 liquidity, uint256 feeGrowthInside0LastX128, uint256 feeGrowthInside1LastX128, uint128 tokensOwed0, uint128 tokensOwed1)',
+    calls: positionCalls,
+  });
+
+  positions.forEach(position => addUniV3LikePosition({ ...position, api }));
+
+  return sumTokens2({ api, resolveLP: true });
+
 }
 
 Object.keys(config).forEach(chain => {
