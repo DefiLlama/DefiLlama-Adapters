@@ -25,11 +25,11 @@ async function getTokensAndBalances(api, supplyOrBorrow) {
   })
 }
 
-async function tvl(timestamp, ethereumBlock, blocksToKeys, { api }) {
+async function tvl(api) {
   return getTokensAndBalances(api, "supply");
 }
 
-async function borrowed(timestamp, ethereumBlock, blocksToKeys, { api }) {
+async function borrowed(api) {
   return getTokensAndBalances(api, "borrow");
 }
 

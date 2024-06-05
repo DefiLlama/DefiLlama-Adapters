@@ -9,8 +9,7 @@ const decimalShift = {
 
 const storageId = "0xbb4e2f4b6205c2e2a2db47aeb4f830796ec7c005f88537ee775986639bc442fe"
 
-async function borrow() {
-  const { api } = arguments[3]
+async function borrow(api) {
   const storageObject = await sui.getObject(storageId);
   const reservesId = storageObject.fields.reserves.fields.id.id
 
@@ -24,8 +23,7 @@ async function borrow() {
 }
 
 
-async function tvl() {
-  const { api } = arguments[3]
+async function tvl(api) {
   const storageObject = await sui.getObject(storageId);
   const reservesId = storageObject.fields.reserves.fields.id.id
 

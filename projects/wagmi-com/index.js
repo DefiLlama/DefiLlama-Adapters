@@ -1,4 +1,4 @@
-const { uniV3Export } = require("../helper/uniswapV3");
+const { uniV3Export, uniV3GraphExport } = require("../helper/uniswapV3");
 
 module.exports = uniV3Export({
   era: { factory: '0x31be61CE896e8770B21e7A1CAFA28402Dd701995', fromBlock: 1351075, },
@@ -7,3 +7,5 @@ module.exports = uniV3Export({
   ethereum: { factory: '0xB9a14EE1cd3417f3AcC988F61650895151abde24', fromBlock: 18240112, },
   metis: { factory: '0x8112E18a34b63964388a3B2984037d6a2EFE5B8A', fromBlock: 9740222, },
 })
+
+module.exports.kava = { tvl: uniV3GraphExport({ name: 'wagmi-kava', graphURL: 'https://kava.graph.wagmi.com/subgraphs/name/v3', minTVLUSD: 0 }) }

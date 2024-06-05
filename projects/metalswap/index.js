@@ -44,7 +44,7 @@ const config = {
     toa: [
       [nullAddress, '0x5B7C5daa5f4Bb37c457dA468Da1CDaA6219892A1'],  // ETH pool 
       [ADDRESSES.optimism.USDC, '0x24682cFDc060316355C26C420d0748F289502e83'], //usdt pool new 
-      ['0x68f180fcCe6836688e9084f035309E29Bf0A2095', '0x469CC7AF1696B5e4E6151796Dc3B3fEf39b34f39'], //wbtc pool new
+      [ADDRESSES.optimism.WBTC, '0x469CC7AF1696B5e4E6151796Dc3B3fEf39b34f39'], //wbtc pool new
       [ADDRESSES.optimism.OP, '0xc9394748D5f633152AD3F8f557a9B7743148db1B'], //Op pool new
     ],
     token: '0x3E5D9D8a63CC8a88748f229999CF59487e90721e',

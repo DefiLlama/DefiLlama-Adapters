@@ -22,7 +22,7 @@ const config = {
   fantom: { vaults: fVaults },
 }
 
-async function tvl(_, _1_, _2_, { api }) {
+async function tvl(api) {
   const { vaults } = config[api.chain]
   const pools = vaults.map(i => i[1])
   const tokens = vaults.map(i => i[0])

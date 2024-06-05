@@ -9,6 +9,9 @@ const config = {
   base: {
     tokens: [ADDRESSES.base.WETH, nullAddress], owners: ['0x3b6014e4b38791444a352D687022D6d6d79Eb99c'],
   },
+  mantle: {
+    tokens: [ADDRESSES.mantle.WMNT, nullAddress], owners: ['0x559036D9466C93d8Ca3c2232626548e62ceBC07c'],
+  },
 };
 
 Object.keys(config).forEach((chain) => {

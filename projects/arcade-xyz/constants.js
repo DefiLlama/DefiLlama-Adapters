@@ -1,4 +1,5 @@
-const SUBGRAPH_URL = 'https://protocol-sg.arcade.xyz/subgraphs/name/arcade/protocol';
+const ADDRESSES = require('../helper/coreAssets.json')
+const SUBGRAPH_URL = 'https://subgraph.satsuma-prod.com/c59d37e827d0/non-fungible-technologies/protocol/api';
 const CHAIN = 'ethereum';
 
 // V2 Protocol
@@ -10,6 +11,13 @@ const VAULT_FACTORY_SUPER_RARE = '0x7594916540e60fc8d6e9ba5c3c83632f7001cf53';
 // V3 Protocol
 const LOAN_CORE_V3 = '0x89bc08ba00f135d608bc335f6b33d7a9abcc98af';
 const VAULT_FACTORY_V3 = '0x269363665dbb1582b143099a3cb467e98a476d55';
+
+// Staking
+const STAKING_REWARDS = "0x80bDdd56b947c547Ab8964D80E98E42Ff77a5793";
+const SINGLE_SIDED_STAKING = "0x72854FBb44d3dd87109D46a9298AEB0d018740f0";
+const ARCD = "0xe020B01B6fbD83066aa2e8ee0CCD1eB8d9Cc70bF";
+const ARCD_WETH_LP = "0x06af8C358c0787640588734E4733A779961a2bca";
+const WETH = ADDRESSES.ethereum.WETH;
 
 const VAULT_FACTORIES = new Set();
 VAULT_FACTORIES.add(VAULT_FACTORY_A);
@@ -34,5 +42,9 @@ module.exports = {
   VAULT_FACTORY_SUPER_RARE,
   VAULT_FACTORY_V3,
   VAULT_FACTORIES,
+  STAKING_REWARDS,
+  SINGLE_SIDED_STAKING,
+  ARCD,
+  ARCD_WETH_LP,
+  WETH,
 }
-

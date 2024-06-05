@@ -19,12 +19,12 @@ async function getLendingTVL(data, api) {
   return sumTokens2({ api, tokensAndOwners })
 }
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const data = await getWorkers()
   return getLendingTVL(data, api)
 }
 
-async function borrowed(_, _1, _2, { api }) {
+async function borrowed(api) {
   const data = await getWorkers()
   const vaults = data.lendingPools.map(({ vaultAddress }) => vaultAddress)
   const tokens = await api.multiCall({  abi: 'address:getBaseTokenAddress', calls: vaults}) 

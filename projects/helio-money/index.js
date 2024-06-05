@@ -43,7 +43,7 @@ module.exports = {
 
         // eth
         [
-          "0x2170Ed0880ac9A755fd29B2688956BD959F933F8",
+          ADDRESSES.bsc.ETH,
           "0xA230805C28121cc97B348f8209c79BEBEa3839C0",
         ],
 

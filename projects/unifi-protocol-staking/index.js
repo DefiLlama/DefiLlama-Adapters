@@ -20,11 +20,12 @@ module.exports = {
 function stakingChain(chain) {
   module.exports[chain] = {
     tvl: async () => {
-      if (!_stakedResponse) _stakedResponse = get('https://data.unifi.report/api/stake-data/grouped')
-      const { results } = await _stakedResponse
-      const blockchainName = mapping[chain]
-      const { delegated_stake_usd } = results.find(i => i.blockchain === blockchainName)
-      return toUSDTBalances(delegated_stake_usd)
+      return 0
+      // if (!_stakedResponse) _stakedResponse = get('https://data.unifi.report/api/stake-data/grouped')
+      // const { results } = await _stakedResponse
+      // const blockchainName = mapping[chain]
+      // const { delegated_stake_usd } = results.find(i => i.blockchain === blockchainName)
+      // return toUSDTBalances(delegated_stake_usd)
     }
   }
 }

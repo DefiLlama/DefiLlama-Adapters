@@ -1,4 +1,6 @@
 // https://www.starknetjs.com/docs/API/contract
+// https://playground.open-rpc.org/?uiSchema%5BappBar%5D%5Bui:splitView%5D=false&schemaUrl=https://raw.githubusercontent.com/starkware-libs/starknet-specs/master/api/starknet_api_openrpc.json&uiSchema%5BappBar%5D%5Bui:input%5D=false&uiSchema%5BappBar%5D%5Bui:darkMode%5D=true&uiSchema%5BappBar%5D%5Bui:examplesDropdown%5D=false
+// https://docs.alchemy.com/reference/starknet-getevents
 const { getUniqueAddresses } = require('../tokenMapping')
 const { Contract, validateAndParseAddress, number, hash, CallData } = require('starknet')
 const abi = require('../../10kswap/abi')
@@ -6,11 +8,14 @@ const axios = require('axios')
 const plimit = require('p-limit')
 const { sliceIntoChunks, sleep } = require('../utils')
 const { getUniTVL } = require('../cache/uniswap')
+const { getCache } = require('../cache')
+const { getEnv } = require('../env')
+const ADDRESSES = require('../coreAssets.json')
 
 const _rateLimited = plimit(1)
 const rateLimited = fn => (...args) => _rateLimited(() => fn(...args))
 
-const STARKNET_RPC = 'https://starknet-mainnet.public.blastapi.io'
+const STARKNET_RPC = getEnv('STARKNET_RPC')
 
 function formCallBody({ abi, target, params = [], allAbi = [] }, id = 0) {
   if ((params || params === 0) && !Array.isArray(params))
@@ -99,8 +104,14 @@ const balanceOfABI = {
   "customInput": 'address',
 }
 
+function replaceNull(i) {
+  return i === ADDRESSES.null ? ADDRESSES.starknet.ETH : i
+}
 
-async function sumTokens({ owner, owners = [], tokens = [], tokensAndOwners = [], blacklistedTokens = [], token, api, }) {
+async function sumTokens({ owner, owners = [], tokens = [], tokensAndOwners = [], blacklistedTokens = [], token, ownerTokens = [], api, }) {
+
+  tokens = tokens.map(replaceNull)
+  tokensAndOwners = tokensAndOwners.map(i => [replaceNull(i[0]), i[1]])
   if (token) tokens = [token]
   if (owner) owners = [owner]
 
@@ -113,11 +124,15 @@ async function sumTokens({ owner, owners = [], tokens = [], tokensAndOwners = []
 
     tokensAndOwners = tokens.map(t => owners.map(o => ([t, o]))).flat()
   }
+  if (ownerTokens.length) {
+    ownerTokens.forEach(([tokens, o]) => tokens.forEach(t => tokensAndOwners.push([t, o])))
+  }
 
   tokensAndOwners = getUniqueToA(tokensAndOwners, 'starknet')
   tokensAndOwners = tokensAndOwners.filter(i => !blacklistedTokens.includes(i[0]))
   const res = await multiCall({ abi: balanceOfABI, calls: tokensAndOwners.map(i => ({ target: i[0], params: i[1] })) })
   res.forEach((v, i) => api.add(tokensAndOwners[i][0], +v))
+  return api.getBalances()
 
 
   function getUniqueToA(toa, chain) {
@@ -140,7 +155,7 @@ const defaultAbis = {
 }
 
 function dexExport({ factory, abis = {}, fetchBalances = false }) {
-  return () => getUniTVL({ factory, abis: { ...defaultAbis, ...abis }, fetchBalances })(undefined, undefined, undefined, { api, chain: 'starknet' })
+  return () => getUniTVL({ factory, abis: { ...defaultAbis, ...abis }, fetchBalances })(api, undefined, undefined, { api, })
 }
 
 module.exports = {
@@ -150,6 +165,24 @@ module.exports = {
   sumTokens: rateLimited(sumTokens),
   number,
   dexExport,
+}
+
+// WIP
+async function getLogs({ fromBlock, topic, target }) {
+  const cache = await getCache('starknet-logs', topic)
+  fromBlock = cache.toBlock || fromBlock
+  const { data: { result: to_block } } = await axios.post(STARKNET_RPC, { "id": 1, "jsonrpc": "2.0", "method": "starknet_blockNumber" })
+  const params = {
+    filter: {
+      from_block: fromBlock,
+      to_block,
+      keys: [topic],
+      "address": target,
+    }
+  }
+
+  const body = { jsonrpc: "2.0", id: 1, method: "starknet_getEvents", params }
+  const { data } = await axios.post(STARKNET_RPC, body)
 }
 
 api.call = module.exports.call

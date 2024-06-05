@@ -94,7 +94,7 @@ Object.keys(config).forEach(chain => {
   const { bucketsFactory, positionManager, traderBalanceVault, defaultTokens, aaveTokens } = config[chain]
 
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const buckets = await api.call({ target: bucketsFactory, abi: abi.allBuckets })
       const borrowedTokensAddresses = await api.multiCall({ abi: abi.borrowedAsset, calls: buckets })
 
