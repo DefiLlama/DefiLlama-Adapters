@@ -18,8 +18,12 @@ async function weightedSwapTvl() {
     },
   ]);
   const owner = findVaultAuthorityAddress(new PublicKey(VAULT_ID));
-  const tokens = new Set(
-    pools.map(({ account }) => account.tokens.map((token) => token.mint).flat())
+  const tokens = Array.from(
+    new Set(
+      pools.map(({ account }) =>
+        account.tokens.map((token) => token.mint).flat()
+      )
+    )
   );
 
   return sumTokens2({
@@ -43,8 +47,12 @@ async function stableSwapTvl() {
     },
   ]);
   const owner = findVaultAuthorityAddress(new PublicKey(VAULT_ID));
-  const tokens = new Set(
-    pools.map(({ account }) => account.tokens.map((token) => token.mint).flat())
+  const tokens = Array.from(
+    new Set(
+      pools.map(({ account }) =>
+        account.tokens.map((token) => token.mint).flat()
+      )
+    )
   );
 
   return sumTokens2({
