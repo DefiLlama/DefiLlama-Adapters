@@ -3,28 +3,26 @@ const {get} = require("../helper/http");
 
 const abi = {asset: "address:asset", totalAssets: "uint256:totalAssets"};
 
-async function tvl(_, block, chain) {
+async function tvl(api, block) {
     const vaults = await get("https://incredbull.io/api/vaults");
+
+    const chain = api.chain;
     const calls = vaults[chain].map(i => ({target: i}));
+    const params = {calls, chain, block};
 
-    const {output: tokens} = await sdk.api.abi.multiCall({
-        abi: abi.asset, calls, chain, block,
-    });
+    const {output: tokens} = await sdk.api.abi.multiCall({abi: abi.asset, ...params});
+    const {output: totalAssets} = await sdk.api.abi.multiCall({abi: abi.totalAssets, ...params});
 
-    const {output: totalAssets} = await sdk.api.abi.multiCall({
-        abi: abi.totalAssets, calls, chain, block,
-    });
-
-    const balances = {}
+    const balances = {};
     for (let i = 0; i < tokens.length; i++) {
         sdk.util.sumSingleBalance(balances, tokens[i].output, totalAssets[i].output);
     }
 
-    return balances
+    return balances;
 }
 
 module.exports = {
     timetravel: false,
     methodology: 'TVL consist of the sum of every deposit of all vaults for a given asset.',
-    btr: {tvl: (a, b) => tvl(a, b, "btr")},
+    btr: {tvl},
 };
