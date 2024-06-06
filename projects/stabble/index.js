@@ -12,7 +12,7 @@ async function weightedSwapTvl() {
   const pools = await program.account.pool.all([
     {
       memcmp: {
-        offset: 8,
+        offset: 8 + 32,
         bytes: VAULT_ID,
       },
     },
@@ -37,7 +37,7 @@ async function stableSwapTvl() {
   const pools = await program.account.pool.all([
     {
       memcmp: {
-        offset: 8,
+        offset: 8 + 32,
         bytes: VAULT_ID,
       },
     },
@@ -88,11 +88,11 @@ const WEIGHTED_SWAP_IDL = {
             type: "publicKey",
           },
           {
-            name: "authority_bump",
+            name: "authorityBump",
             type: "u8",
           },
           {
-            name: "is_active",
+            name: "isActive",
             type: "bool",
           },
           {
@@ -100,7 +100,7 @@ const WEIGHTED_SWAP_IDL = {
             type: "u64",
           },
           {
-            name: "swap_fee",
+            name: "swapFee",
             type: "u64",
           },
           {
@@ -114,7 +114,7 @@ const WEIGHTED_SWAP_IDL = {
             },
           },
           {
-            name: "pending_owner",
+            name: "pendingOwner",
             type: {
               option: "publicKey",
             },
@@ -138,11 +138,11 @@ const WEIGHTED_SWAP_IDL = {
             type: "u8",
           },
           {
-            name: "scaling_up",
+            name: "scalingUp",
             type: "bool",
           },
           {
-            name: "scaling_factor",
+            name: "scalingFactor",
             type: "u64",
           },
           {
@@ -183,31 +183,31 @@ const STABLE_SWAP_IDL = {
             type: "publicKey",
           },
           {
-            name: "authority_bump",
+            name: "authorityBump",
             type: "u8",
           },
           {
-            name: "is_active",
+            name: "isActive",
             type: "bool",
           },
           {
-            name: "amp_initial_factor",
+            name: "ampInitialFactor",
             type: "u16",
           },
           {
-            name: "amp_target_factor",
+            name: "ampTargetFactor",
             type: "u16",
           },
           {
-            name: "ramp_start_ts",
+            name: "rampStartTs",
             type: "i64",
           },
           {
-            name: "ramp_stop_ts",
+            name: "rampStopTs",
             type: "i64",
           },
           {
-            name: "swap_fee",
+            name: "swapFee",
             type: "u64",
           },
           {
@@ -221,7 +221,7 @@ const STABLE_SWAP_IDL = {
             },
           },
           {
-            name: "pending_owner",
+            name: "pendingOwner",
             type: {
               option: "publicKey",
             },
@@ -245,11 +245,11 @@ const STABLE_SWAP_IDL = {
             type: "u8",
           },
           {
-            name: "scaling_up",
+            name: "scalingUp",
             type: "bool",
           },
           {
-            name: "scaling_factor",
+            name: "scalingFactor",
             type: "u64",
           },
           {
