@@ -7,7 +7,6 @@ const {
   ProviderType,
   strToBytes,
   Args,
-  CHAIN_ID,
 } = require("@massalabs/massa-web3");
 
 const RPC_ENDPOINT = "https://mainnet.massa.net/api/v2";
@@ -83,8 +82,12 @@ class ILBPair {
 //   toFixed() {
 //     return this.numerator / this.denominator;
 //   }
-
 // }
+//pourquoi on a besoin de le mettre en fraction ? 
+// const toFraction = async (priceToken) => {
+//   return new Fraction(priceToken, BigInt(1e18));
+// }
+
 function coinGeckoURL(ids) {
   return `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_last_updated_at=true`;
 }
@@ -142,12 +145,6 @@ const getPairAddressTokens = async (poolAddress) => {
       return [""];
     });
 };
-
-//TODO : fetch coingecko:massa-bridged-dai-massa"
-//TODO : fetch coigecko:massa-bridged-usdc-massa
-//TODO : fetch coingecko:massa
-//TODO : fetch coingecko:wrapped-ether-massa
-//TODO : fetch coingecko:wrapped-massa
 
 const fetchTokensInfo = async (tokenX, tokenY) => {
   return baseClient
@@ -241,10 +238,6 @@ const symbolAndPrices = async (pools) => {
   }
   return symbolAndPricesArray;
 };
-//pourquoi on a besoin de le mettre en fraction ? 
-// const toFraction = async (priceToken) => {
-//   return new Fraction(priceToken, BigInt(1e18));
-// }
 
 const fetchTVL = async (factoryAddress) => {
     const pools = await poolsInformation(factoryAddress);
