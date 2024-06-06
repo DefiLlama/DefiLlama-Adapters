@@ -27,16 +27,15 @@ async function tvl() {
     },
   ]);
   const tokensAndOwners = houses
-    .filter((house) => house.publicKey.toBase58() !== NATIVE_MINT)
+    .filter((house) => house.account.currency.toBase58() !== NATIVE_MINT)
     .map((house) => {
       const owner = findHouseAuthorityAddress(house.publicKey);
       return [house.account.currency, owner];
     });
   const solOwners = houses
-    .filter((house) => house.publicKey.toBase58() === NATIVE_MINT)
+    .filter((house) => house.account.currency.toBase58() === NATIVE_MINT)
     .map((house) => {
-      const owner = findHouseAuthorityAddress(house.publicKey);
-      return [house.account.currency, owner];
+      return findHouseAuthorityAddress(house.publicKey);
     });
   return sumTokens2({ tokensAndOwners, solOwners });
 }
