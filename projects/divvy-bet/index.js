@@ -29,13 +29,15 @@ async function tvl() {
       )[0];
       return [house.account.currency, owner];
     });
-  const solOwners = PublicKey.findProgramAddressSync(
-    [
-      Buffer.from("House Authority"),
-      Buffer.from("haus4QCRft9QKj2iQL9MUiQ2P6uYnWVyhFEZ3QsSa5U"),
-    ],
-    programId
-  )[0];
+  const solOwners = [
+    PublicKey.findProgramAddressSync(
+      [
+        Buffer.from("House Authority"),
+        new PublicKey("haus4QCRft9QKj2iQL9MUiQ2P6uYnWVyhFEZ3QsSa5U").toBuffer(),
+      ],
+      programId
+    )[0],
+  ];
   return sumTokens2({ tokensAndOwners, solOwners });
 }
 
