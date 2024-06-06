@@ -3,7 +3,7 @@ const { uniV3Export } = require("../helper/uniswapV3");
 const { mergeExports } = require('../helper/utils')
 
 module.exports = mergeExports([
-	uniV3Export({ blast: { factory: "0xb7a92633Bc7074c8216Dc53566fD58A77b5D32D9", fromBlock: 4308657, }, }),
+	uniV3Export({ blast: { factory: "0x1A8027625C830aAC43aD82a3f7cD6D5fdCE89d78", fromBlock: 4308657, }, }),
 ])
 
 module.exports.blast.tvl = sdk.util.sumChainTvls([module.exports.blast.tvl])
