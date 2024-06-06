@@ -6,7 +6,6 @@ async function tvl() {
   const whitelistedHouseKeys = [
     "hausUZLF38ZRqZdQvNLVoAFe7FAFoAzyS5oLpQCgPWz", // USDC
     "hausNgPX6qShZUnGCj97UmKfzrtKLi4UNoBG6Aju3Ye", // USDT
-    "haus4QCRft9QKj2iQL9MUiQ2P6uYnWVyhFEZ3QsSa5U", // SOL
     "hausCYdqR6mUN58ZdonzMZKXVcaC26yh7EuaN6nZDtU", // Bonk
     "hausZ4fWKatkg2p59yQipaXJBTMAGcVQ6kF85SaQNj6", // PYTH
     "hausPNwKGhEQz6QCmbXkoxpvws2mNeGs1xLg5NKNZwe", // Jupiter
@@ -30,7 +29,14 @@ async function tvl() {
       )[0];
       return [house.account.currency, owner];
     });
-  return sumTokens2({ tokensAndOwners });
+  const solOwners = PublicKey.findProgramAddressSync(
+    [
+      Buffer.from("House Authority"),
+      "haus4QCRft9QKj2iQL9MUiQ2P6uYnWVyhFEZ3QsSa5U",
+    ],
+    programId
+  )[0];
+  return sumTokens2({ tokensAndOwners, solOwners });
 }
 
 module.exports = {
