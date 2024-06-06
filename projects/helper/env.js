@@ -25,6 +25,7 @@ const DEFAULTS = {
   SEI_RPC: 'https://evm-rpc.sei-apis.com/',
   LUKSO_RPC: 'https://rpc.lukso.sigmacore.io',
   HAM_RPC: 'https://rpc.ham.fun',
+  HAM_RPC_MULTICALL: '0xB7c3Ea932649fBD594C881aDCb3F19415e2EA2d5',
 }
 
 const ENV_KEYS = [
