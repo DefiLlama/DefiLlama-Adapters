@@ -32,7 +32,7 @@ async function tvl() {
   const solOwners = PublicKey.findProgramAddressSync(
     [
       Buffer.from("House Authority"),
-      "haus4QCRft9QKj2iQL9MUiQ2P6uYnWVyhFEZ3QsSa5U",
+      Buffer.from("haus4QCRft9QKj2iQL9MUiQ2P6uYnWVyhFEZ3QsSa5U"),
     ],
     programId
   )[0];
