@@ -67,25 +67,25 @@ function findVaultAuthorityAddress(vaultKey) {
 
 const WEIGHTED_SWAP_IDL = {
   version: "1.0.0",
-  name: "stable_swap",
+  name: "weighted_swap",
   instructions: [],
   accounts: [
     {
-      name: "Pool",
+      name: "pool",
       type: {
         kind: "struct",
         fields: [
           {
             name: "owner",
-            type: "pubkey",
+            type: "publicKey",
           },
           {
             name: "vault",
-            type: "pubkey",
+            type: "publicKey",
           },
           {
             name: "mint",
-            type: "pubkey",
+            type: "publicKey",
           },
           {
             name: "authority_bump",
@@ -116,7 +116,7 @@ const WEIGHTED_SWAP_IDL = {
           {
             name: "pending_owner",
             type: {
-              option: "pubkey",
+              option: "publicKey",
             },
           },
         ],
@@ -131,7 +131,7 @@ const WEIGHTED_SWAP_IDL = {
         fields: [
           {
             name: "mint",
-            type: "pubkey",
+            type: "publicKey",
           },
           {
             name: "decimals",
@@ -166,21 +166,21 @@ const STABLE_SWAP_IDL = {
   instructions: [],
   accounts: [
     {
-      name: "Pool",
+      name: "pool",
       type: {
         kind: "struct",
         fields: [
           {
             name: "owner",
-            type: "pubkey",
+            type: "publicKey",
           },
           {
             name: "vault",
-            type: "pubkey",
+            type: "publicKey",
           },
           {
             name: "mint",
-            type: "pubkey",
+            type: "publicKey",
           },
           {
             name: "authority_bump",
@@ -223,7 +223,7 @@ const STABLE_SWAP_IDL = {
           {
             name: "pending_owner",
             type: {
-              option: "pubkey",
+              option: "publicKey",
             },
           },
         ],
@@ -238,7 +238,7 @@ const STABLE_SWAP_IDL = {
         fields: [
           {
             name: "mint",
-            type: "pubkey",
+            type: "publicKey",
           },
           {
             name: "decimals",
