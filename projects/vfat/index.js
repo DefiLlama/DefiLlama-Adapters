@@ -285,7 +285,6 @@ async function tvlArbitrumLinea(api) {
 
   const positions = await fetchSickleNftPositions(api, sickles, config[api.chain].NonfungiblePositionManager);
   const masterchefPositions = await fetchSickleNftPositions(api, sickles, config[api.chain].masterchefV3, true);
-  console.log(masterchefPositions);
 
   positions.forEach(position => addUniV3LikePosition({ ...position, api }));
 
@@ -303,7 +302,6 @@ async function tvlWithMasterchef(api) {
   if (masterchefV3) {
     const masterchefPositions = await fetchSickleNftPositions(api, sickles, masterchefV3, true);
     masterchefPositions.forEach(position => addUniV3LikePosition({ ...position, api }));
-    console.log(masterchefPositions);
   }
 
   return sumTokens2({ api, resolveLP: true });
