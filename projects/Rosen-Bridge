@@ -26,6 +26,16 @@ address: LXwmG9jPiXvYd6Z1DWRazpc2wTdpW2awCB9NV5qjJx4UFoncqYxve6G1gzTVBNCsDwSu5ZP
 
 address: 
 
+ //pulling assets bridged from Ergo to Cardano
+
+address: nB3L2PD3J4rMmyGk7nnNdESpPXxhPRQ4t1chF8LTXtceMQjKCEgL2pFjPY6cehGjyEFZyHEomBTFXZyqfonvxDozrTtK5JzatD8SdmcPeJNWPvdRb5UxEMXE4WQtpAFzt2veT8Z6bmoWN
+
+//pulling assets bridged from Cardano to Ergo
+
+cardano address: addr1v8kqhz5lkdxqm8qtkn4lgd9f4890v0j6advjfmk5k9amu4c535lsu
+
+
+
 //"https://ergo-explorer.anetabtc.io/api/v1/addresses//balance/confirmed" eth placeholder
 
 address: 
