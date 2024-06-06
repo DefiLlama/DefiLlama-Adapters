@@ -12,23 +12,17 @@ async function weightedSwapTvl() {
   const pools = await program.account.pool.all([
     {
       memcmp: {
-        offset: 8 + 32,
+        offset: 40,
         bytes: VAULT_ID,
       },
     },
   ]);
+  const tokens = Array.from(new Set(pools.map(({ account }) => account.tokens.map(({ mint }) => mint)).flat()));
   const owner = findVaultAuthorityAddress(new PublicKey(VAULT_ID));
-  const tokens = Array.from(
-    new Set(
-      pools.map(({ account }) =>
-        account.tokens.map((token) => token.mint).flat()
-      )
-    )
-  );
 
   return sumTokens2({
-    owner,
     tokens,
+    owner,
   });
 }
 
@@ -41,23 +35,17 @@ async function stableSwapTvl() {
   const pools = await program.account.pool.all([
     {
       memcmp: {
-        offset: 8 + 32,
+        offset: 40,
         bytes: VAULT_ID,
       },
     },
   ]);
+  const tokens = Array.from(new Set(pools.map(({ account }) => account.tokens.map(({ mint }) => mint)).flat()));
   const owner = findVaultAuthorityAddress(new PublicKey(VAULT_ID));
-  const tokens = Array.from(
-    new Set(
-      pools.map(({ account }) =>
-        account.tokens.map((token) => token.mint).flat()
-      )
-    )
-  );
 
   return sumTokens2({
-    owner,
     tokens,
+    owner,
   });
 }
 
