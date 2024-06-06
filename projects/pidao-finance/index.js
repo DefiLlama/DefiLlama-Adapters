@@ -1,13 +1,14 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { ohmTvl } = require('../helper/ohm')
 
 const treasury = "0x458B737d87C40252EC11b160C76bb1C53F248b28"
 module.exports = ohmTvl(treasury, [
     //busd 
-    ["0xe9e7cea3dedca5984780bafc599bd69add087d56", false],
+    [ADDRESSES.bsc.BUSD, false],
     //busd-usd
-    ["0x55d398326f99059ff775485246999027b3197955", false],
+    [ADDRESSES.bsc.USDT, false],
     //TrueUSD
-    ["0x14016e85a25aeb13065688cafb43044c2ef86784", false],
+    [ADDRESSES.bsc.BTUSD, false],
     //MDEX LP
     ["0x149a712378aba63882c1d372739eb47a6fd0e12e", true],
     //Pancake LPs

@@ -12,9 +12,9 @@ const pool2LPs = [
 ]
 
 module.exports = {
-    avalanche: {
+    avax:{
         tvl: async () => ({}),
-        staking: staking(olympus, hermesShares, "avax"),
+        staking: staking(olympus, hermesShares),
         pool2: pool2Exports(hShareRewardPool, pool2LPs, "avax")
     }
 }

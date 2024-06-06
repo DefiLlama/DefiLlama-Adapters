@@ -36,16 +36,10 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 
   const betslip = await sdk.api.abi.call({
     target: wBETSLIP,
-    abi: {
-      inputs: [{ internalType: "uint256", name: "_amount", type: "uint256" }],
-      name: "wBTSToBTS",
-      outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-      stateMutability: "view",
-      type: "function",
-    },
+    abi: 'function wBTSToBTS(uint256 _amount) view returns (uint256)',
     chain: "cronos",
     block: chainBlocks.cronos,
-    params: [balances[wbetslipAddress]],
+    params: [sdk.util.convertToBigInt(balances[wbetslipAddress])],
   });
   balances[transform(betify)] = betslip.output;
   delete balances[wbetslipAddress];
@@ -55,7 +49,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 module.exports = {
   cronos: {
     tvl,
-    staking: staking(betifystaking, betify, "cronos"),
+    staking: staking(betifystaking, betify),
   },
   methodology:
     "Counts tokens on the treasury for tvl and staked BETIFY for staking",

@@ -1,6 +1,4 @@
-const sdk = require("@defillama/sdk");
 const { pool2 } = require("./helper/pool2");
-const transformPolygonAddress = (id) => `polygon:${id}`;
 
 // Staking on Mainnet: uni-v2
 const SAND_ETH_univ2 = "0x3dd49f67E9d5Bc4C5E6634b3F70BfD9dc1b6BD74";
@@ -12,16 +10,11 @@ const SAND_MATIC_quick_staking = "0x4ab071c42c28c4858c4bac171f06b13586b20f30";
 module.exports = {
   polygon: {
     tvl: () => ({}),
-    pool2: pool2(
-      SAND_MATIC_quick_staking,
-      SAND_MATIC_quick,
-      "polygon",
-      transformPolygonAddress
-    ),
+    pool2: pool2(SAND_MATIC_quick_staking, SAND_MATIC_quick,),
   },
   ethereum: {
     tvl: () => ({}),
-    pool2: pool2(SAND_ETH_univ2_staking, SAND_ETH_univ2, "ethereum"),
+    pool2: pool2(SAND_ETH_univ2_staking, SAND_ETH_univ2),
   },
   methodology:
     "SAND LP on quickswap and uniswap-v2 can be staked as pool2 - only component of the Sandbox TVL at the moment",

@@ -1,18 +1,4 @@
 {
-  "get_pool_from_lp_token": {
-    "stateMutability": "view",
-    "type": "function",
-    "name": "get_pool_from_lp_token",
-    "inputs": [{ "name": "arg0", "type": "address" }],
-    "outputs": [{ "name": "", "type": "address" }],
-    "gas": 2443
-  },
-  "get_coins": {
-    "stateMutability": "view",
-    "type": "function",
-    "name": "get_coins",
-    "inputs": [{ "name": "_pool", "type": "address" }],
-    "outputs": [{ "name": "", "type": "address[8]" }],
-    "gas": 12102
-  }
+  "get_pool_from_lp_token": "function get_pool_from_lp_token(address arg0) view returns (address)",
+  "get_coins": "function get_coins(address _pool) view returns (address[8])"
 }

@@ -42,5 +42,9 @@ module.exports = {
   aurora: {
     fetch: fetchChain("aurora"),
   },
+  clv: {
+    fetch: () => 0,
+    // fetch: fetchChain("clv"),
+  },
   fetch,
 };

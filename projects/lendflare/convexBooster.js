@@ -1,6 +1,5 @@
 const sdk = require('@defillama/sdk');
 const BN = require("bignumber.js");
-const utils = require('./utils.js');
 
 const CONVEX_BOOSTER_PROXY = `0x4C3c78cEbc9Cc87436dEEd2782998bC002F2B69f`;
 
@@ -61,7 +60,7 @@ const convexPools = {
     27: { lpToken: "0xDE5331AC4B3630f94853Ff322B66407e0D6331E8", virtualBalance: "0x0D66b49A68AffdDcDaDDdfE06CD6369307B2BA46", coinId: 2, coinName: "wrapped-bitcoin", decimals: 8 }
 }
 
-async function getTotalSupply(pools, timestamp, block, chainBlocks) {
+async function getTotalSupply(pools, chainBlocks) {
     const output = (await sdk.api.abi.multiCall({
         block: chainBlocks.ethereum,
         chain: "ethereum",
@@ -83,12 +82,12 @@ async function getTotalSupply(pools, timestamp, block, chainBlocks) {
     return pools;
 }
 
-async function calculateTokenAmount(pools, timestamp, block, chainBlocks) {
+async function calculateTokenAmount(pools, chainBlocks) {
     for (let pid of Object.keys(pools)) {
         await sdk.api.abi.call({
             block: chainBlocks.ethereum,
             chain: "ethereum",
-            abi: { "inputs": [{ "internalType": "uint256", "name": "_pid", "type": "uint256" }, { "internalType": "uint256", "name": "_tokens", "type": "uint256" }, { "internalType": "int128", "name": "_curveCoinId", "type": "int128" }], "name": "calculateTokenAmount", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+            abi: 'function calculateTokenAmount(uint256 _pid, uint256 _tokens, int128 _curveCoinId) view returns (uint256)',
             target: CONVEX_BOOSTER_PROXY,
             params: [pid, pools[pid].totalSupplyString, pools[pid].coinId]
         }).then(result => {
@@ -102,26 +101,17 @@ async function calculateTokenAmount(pools, timestamp, block, chainBlocks) {
 }
 
 async function tvl(timestamp, block, chainBlocks) {
-    let tvl = new BN(0);
-
-    const pools = await getTotalSupply(convexPools, timestamp, block, chainBlocks).then(pools => {
-        return calculateTokenAmount(pools, timestamp, block, chainBlocks);
+    const balances = {}
+    const pools = await getTotalSupply(convexPools, chainBlocks).then(pools => {
+        return calculateTokenAmount(pools, chainBlocks);
     });
-    const prices = await utils.getPricesfromString().then(result => {
-        return result.data;
-    });
-
     Object.keys(pools).map((pid, _) => {
         if (convexPools[pid].calculateTokenAmount.isGreaterThan(new BN(0))) {
             convexPools[pid].calculateTokenAmount = convexPools[pid].calculateTokenAmount.dividedBy(10 ** convexPools[pid].decimals);
         }
-
-        convexPools[pid].tvl = convexPools[pid].calculateTokenAmount.multipliedBy(new BN(prices[convexPools[pid].coinName].usd));
-
-        tvl = tvl.plus(convexPools[pid].tvl);
+        sdk.util.sumSingleBalance(balances, convexPools[pid].coinName, +convexPools[pid].calculateTokenAmount)
     });
-
-    return tvl;
+    return balances;
 }
 
 module.exports = {

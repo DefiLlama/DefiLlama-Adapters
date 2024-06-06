@@ -1,15 +1,13 @@
 const sdk = require('@defillama/sdk');
-const { transformPolygonAddress } = require('../helper/portedTokens');
 const abi = require("./abi.json");
 const { request, gql } = require("graphql-request");
-
-
+const { getBlock } = require('../helper/http')
 
 const VGHST_CONTRACT = "0x51195e21BDaE8722B29919db56d95Ef51FaecA6C";
 const GHST_CONTRACT = "0x385Eeac5cB85A38A9a07A70c73e0a3271CfB54A7";
 const VAULT_CONTRACT = "0xDd564df884Fd4e217c9ee6F65B4BA6e5641eAC63";
 
-const graphUrl = 'https://api.thegraph.com/subgraphs/name/aavegotchi/aavegotchi-core-matic'
+const graphUrl = 'https://subgraph.satsuma-prod.com/tWYl5n5y04oz/aavegotchi/aavegotchi-core-matic/api'
 const graphQuery = gql`
 query GET_SUMMONED_GOTCHIS ($minGotchiId: Int, $block: Int) {
   aavegotchis(
@@ -58,21 +56,22 @@ async function getGotchisCollateral(timestamp, block) {
   return gotchisBalances;
 }
 
-async function tvl(timestamp, block, chainBlocks) {
+async function tvl(timestamp, _, chainBlocks) {
   const balances = {};
-  const transform = await transformPolygonAddress();
+  const block = await getBlock(timestamp, 'polygon', chainBlocks)
+  const transform = i => `polygon:${i}`;
 
   const collateralBalance = (await sdk.api.abi.call({
     abi: abi.totalGHST,
     chain: 'polygon',
     target: VGHST_CONTRACT,
     params: [VGHST_CONTRACT],
-    block: chainBlocks['polygon'],
+    block,
   })).output;
 
   sdk.util.sumSingleBalance(balances, transform(GHST_CONTRACT), collateralBalance)
 
-  const gotchisBalances = await getGotchisCollateral(timestamp, chainBlocks["polygon"]-100);
+  const gotchisBalances = await getGotchisCollateral(timestamp, block-100);
   sdk.util.sumMultiBalanceOf(balances, gotchisBalances, true, x => 'polygon:' + x);
 
 

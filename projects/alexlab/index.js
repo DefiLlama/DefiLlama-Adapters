@@ -1,5 +1,4 @@
-const axios = require("axios");
-const retry = require("../helper/retry");
+const { get } = require('../helper/http')
 
 // https://explorer.stacks.co/txid/SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.alex-vault?chain=mainnet
 // https://stacks-node-api.blockstack.org/extended/v1/address/SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9.alex-vault/balances
@@ -7,8 +6,7 @@ const ALEX_API = "https://api.alexlab.co/v1";
 
 async function fetch() {
   const url = `${ALEX_API}/pool_token_stats`;
-  const alexStatsResponse = (await retry(async () => await axios.get(url)))
-    .data;
+  const alexStatsResponse = await get(url)
 
   const valueLockedMap = {};
   let totalValueLocked = 0;
@@ -25,22 +23,22 @@ async function fetch() {
     valueLockedMap[poolToken] = poolValue;
   }
 
-  return totalValueLocked;
+  return { tether: totalValueLocked };
 }
 
 async function staking() {
   const url = `${ALEX_API}/stats/tvl`;
-  const alexResponse = (await retry(async () => await axios.get(url))).data;
-  return alexResponse.reserve_pool_value;
+  const alexResponse = await get(url)
+  return { tether: alexResponse.reserve_pool_value };
 }
 
 // node test.js projects/alexlab/index.js
 module.exports = {
+  misrepresentedTokens: true,
   timetravel: false,
   stacks: {
-    fetch,
+    tvl: fetch,
+    staking,
   },
-  staking: { fetch: staking },
-  fetch,
   methodology: "Alex Lab TVL is sum of tokens locked in ALEX platform.",
 };

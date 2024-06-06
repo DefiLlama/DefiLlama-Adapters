@@ -1,6 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const BigNumber = require("bignumber.js");
 const abi = require('../helper/abis/aave.json');
+const { nullAddress } = require('../helper/unwrapLPs');
 
 async function getV1Assets(lendingPoolCore, block, chain) {
     const reserves = (
@@ -56,7 +58,7 @@ async function depositMultiMarketV1Tvl(balances, lendingPoolCore, block, chain, 
     return balances;
 }
 
-function multiMarketV1Tvl(balances, lendingPoolCore, block, borrowed, chain="ethereum", eth = "0x0000000000000000000000000000000000000000") {
+function multiMarketV1Tvl(balances, lendingPoolCore, block, borrowed, chain="ethereum", eth = ADDRESSES.null) {
     return (borrowed?multiMarketV1TvlBorrowed:depositMultiMarketV1Tvl)(balances, lendingPoolCore, block, chain, eth)
 }
 
@@ -64,7 +66,7 @@ async function singleAssetV1Market(balances, lendingPoolCore, block, borrowed, c
     return multiMarketV1Tvl(balances, lendingPoolCore, block, borrowed, chain, eth);
 }
 
-async function uniswapV1Market(balances, uniswapLendingPoolCore, block, borrowed, eth = "0x0000000000000000000000000000000000000000"){
+async function uniswapV1Market(balances, uniswapLendingPoolCore, block, borrowed, eth = ADDRESSES.null){
     const uniswapMarketTvlBalances = {}
     await multiMarketV1Tvl(
         uniswapMarketTvlBalances,
@@ -76,8 +78,9 @@ async function uniswapV1Market(balances, uniswapLendingPoolCore, block, borrowed
     const uniswapv1Calls = Object.keys(uniswapMarketTvlBalances).map(t => ({ target: t }));
     const [uniswapV1Tokens, uniswapV1EthBalance, uniswapV1Supplies] = await Promise.all([
         sdk.api.abi.multiCall({
-            abi: { "name": "tokenAddress", "outputs": [{ "type": "address", "name": "out" }], "inputs": [], "constant": true, "payable": false, "type": "function", "gas": 1413 },
+            abi: "address:tokenAddress",
             calls: uniswapv1Calls,
+            permitFailure: true,
             block
         }),
         sdk.api.eth.getBalances({
@@ -87,6 +90,7 @@ async function uniswapV1Market(balances, uniswapLendingPoolCore, block, borrowed
         sdk.api.abi.multiCall({
             abi: 'erc20:totalSupply',
             calls: uniswapv1Calls,
+            permitFailure: true,
             block
         }),
     ])
@@ -97,6 +101,7 @@ async function uniswapV1Market(balances, uniswapLendingPoolCore, block, borrowed
             target: t.output,
             params: t.input.target
         })),
+        permitFailure: true,
         block
     })
 

@@ -1,6 +1,6 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens } = require('../helper/unwrapLPs')
 const sdk = require('@defillama/sdk')
-const { transformBscAddress } = require('../helper/portedTokens');
 const { staking } = require("../helper/staking");
 
 const tokenHolderMap = [
@@ -12,14 +12,14 @@ const tokenHolderMap = [
       checkETHBalance: true,
     },
     {
-      tokens: '0x55d398326f99059fF775485246999027B3197955',   // USDT
+      tokens: ADDRESSES.bsc.USDT,   // USDT
       holders: [
         "0x682ce0e340A0248B4554E14e834969F2E421dB2D" // USDT table
       ],
     }
 ]
 
-const WBNB = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+const WBNB = ADDRESSES.bsc.WBNB
 
 function normalizeArray(arrayOrString){
     if(Array.isArray(arrayOrString)){
@@ -30,7 +30,7 @@ function normalizeArray(arrayOrString){
 }
 
 async function tvl(timestamp, ethBlock, chainBlocks) {
-    const transform = await transformBscAddress();
+    const transform = i => `bsc:${i}`;
     const block = chainBlocks.bsc;
 
     const tokensAndHolders = []
@@ -68,10 +68,9 @@ const masterChef = '0x15D2a6FC45aF66A2952dC27c40450C1F06A1eC2b';
 
 // node test.js projects/luckychip/index.js
 module.exports={
-    misrepresentedTokens: false,
-    methodology: 'TVL comes from the tables of LuckyChip for now.',
+        methodology: 'TVL comes from the tables of LuckyChip for now.',
     bsc: {
-        staking: staking(masterChef, lcToken, 'bsc'),
+        staking: staking(masterChef, lcToken),
         tvl,
     }
 }

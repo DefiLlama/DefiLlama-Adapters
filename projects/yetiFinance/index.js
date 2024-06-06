@@ -1,16 +1,12 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 
-const getAllCollateralAbi = require("./getAllCollateral.abi.json");
-const fetchPrice_vAbi = require("./fetchPrice_v.abi.json")
-const farmPoolTotalSupplyAbi = require("./farmPoolTotalSupply.abi.json")
-const curve_get_virtual_priceAbi = require("./curve_get_virtual_price.abi.json")
-const getPriceAbi = require("./getPrice.abi.json");
-const getReservesAbi = require("./getReserves.json")
-
-const YUSD_TOKEN_ADDRESS = "0x111111111111ed1D73f860F57b2798b683f2d325";
-const YUSD_PRICEFEED_ADDRESS = "0x38C67a46304b9ad4A0A210A65a640213505bd1Dc";
-// StabilityPool holds deposited YUSD
-const STABILITY_POOL_ADDRESS = "0xFFffFfffFff5d3627294FeC5081CE5C5D7fA6451";
+const getAllCollateralAbi = 'function getAllCollateral() view returns (address[], uint256[])'
+const fetchPrice_vAbi = "uint256:fetchPrice_v"
+const farmPoolTotalSupplyAbi = "uint256:totalSupply"
+const curve_get_virtual_priceAbi = "uint256:get_virtual_price"
+const getPriceAbi = 'function getPrice(address _collateral) view returns (uint256)'
+const getReservesAbi = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
 
 // YetiController knows the price of the collateral
 const YETI_CONTROLLER_ADDRESS = "0xcCCCcCccCCCc053fD8D1fF275Da4183c2954dBe3";
@@ -39,26 +35,6 @@ const chain = 'avax'
  */
 async function tvl(_, _block, chainBlocks) {
   const block = chainBlocks[chain]
-  // const YUSDInStabilityPool = (
-  //   await sdk.api.erc20.balanceOf({
-  //     target: YUSD_TOKEN_ADDRESS,
-  //     owner: STABILITY_POOL_ADDRESS,
-  //     block,
-  //     chain:"avax"
-  //   })
-  // ).output;
-
-  // const YUSDPrice = (
-  //   await sdk.api.abi.call({
-  //     target: YUSD_PRICEFEED_ADDRESS,
-  //     abi: fetchPrice_vAbi,
-  //     block,
-  //     chain: "avax"
-  //   })
-  // ).output
-  
-  // const stabilityPoolYUSDTvl = +YUSDInStabilityPool * +YUSDPrice / (10 ** 18)
-
   const activePoolCollaterals = (
     await sdk.api.abi.call({
       target: ACTIVE_POOL_ADDRESS,
@@ -139,7 +115,7 @@ async function tvl(_, _block, chainBlocks) {
 
   return {
     // In USDC, USDC has decimal of 6
-    ["avax:0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E"]: total / (10 ** 12)
+    ["avax:" + ADDRESSES.avax.USDC]: total / (10 ** 12)
   }
 }
 
@@ -177,7 +153,7 @@ async function pool2(_, _block, chainBlocks) {
   const pool2ValueUSD = (YETIReserve * YETIPrice + AVAXReserve * AVAXPrice) / 10 ** 18
   return {
     // In USDC, USDC has decimal of 6
-    ["avax:0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E"]: pool2ValueUSD / (10 ** 12)
+    ["avax:" + ADDRESSES.avax.USDC]: pool2ValueUSD / (10 ** 12)
   }
 }
 
@@ -204,7 +180,7 @@ async function staking(_, _block, chainBlocks) {
   const stakingUSD = veYETIBalance * YETIPrice / (10 ** 18)
   return {
     // In USDC, USDC has decimal of 6
-    ["avax:0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E"]: stakingUSD / (10 ** 12)
+    ["avax:" + ADDRESSES.avax.USDC]: stakingUSD / (10 ** 12)
   }
 }
 
@@ -213,7 +189,7 @@ module.exports = {
   methodology: true,
   // first trove opened
   start: 1650027587,
-  avalanche:{
+  avax:{
     tvl,
     pool2,
     staking

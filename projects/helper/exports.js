@@ -1,7 +1,7 @@
 function chainExports(chainTvl, chains){
   const chainTvls = chains.reduce((obj, chain) => ({
     ...obj,
-    [chain === 'avax' ? 'avalanche' : chain]: {
+    [chain]: {
       tvl:chainTvl(chain)
     }
   }), {})
@@ -12,7 +12,7 @@ function chainExports(chainTvl, chains){
 function generalizedChainExports(chainTvl, chains){
   const chainTvls = chains.reduce((obj, chain) => ({
     ...obj,
-    [chain === 'avax' ? 'avalanche' : chain]: chainTvl(chain)
+    [chain]: chainTvl(chain)
   }), {})
 
   return chainTvls
@@ -21,7 +21,7 @@ function generalizedChainExports(chainTvl, chains){
 function fetchChainExports(chainTvl, chains){
   const chainTvls = chains.reduce((obj, chain) => ({
     ...obj,
-    [chain === 'avax' ? 'avalanche' : chain]: {
+    [chain]: {
       fetch:chainTvl(chain)
     }
   }), {})

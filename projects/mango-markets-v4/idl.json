@@ -1,0 +1,361 @@
+{
+  "version": "0.16.0",
+  "name": "mango_v4",
+  "instructions": [],
+  "accounts": [
+    {
+      "name": "Bank",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "group",
+            "type": "publicKey"
+          },
+          {
+            "name": "name",
+            "type": {
+              "array": [
+                "u8",
+                16
+              ]
+            }
+          },
+          {
+            "name": "mint",
+            "type": "publicKey"
+          },
+          {
+            "name": "vault",
+            "type": "publicKey"
+          },
+          {
+            "name": "oracle",
+            "type": "publicKey"
+          },
+          {
+            "name": "oracleConfig",
+            "type": {
+              "defined": "OracleConfig"
+            }
+          },
+          {
+            "name": "stablePriceModel",
+            "type": {
+              "defined": "StablePriceModel"
+            }
+          },
+          {
+            "name": "depositIndex",
+            "type": {
+              "defined": "I80F48"
+            }
+          },
+          {
+            "name": "borrowIndex",
+            "type": {
+              "defined": "I80F48"
+            }
+          },
+          {
+            "name": "indexedDeposits",
+            "type": {
+              "defined": "I80F48"
+            }
+          },
+          {
+            "name": "indexedBorrows",
+            "type": {
+              "defined": "I80F48"
+            }
+          },
+          {
+            "name": "indexLastUpdated",
+            "type": "u64"
+          },
+          {
+            "name": "bankRateLastUpdated",
+            "type": "u64"
+          },
+          {
+            "name": "avgUtilization",
+            "type": {
+              "defined": "I80F48"
+            }
+          },
+          {
+            "name": "adjustmentFactor",
+            "type": {
+              "defined": "I80F48"
+            }
+          },
+          {
+            "name": "util0",
+            "type": {
+              "defined": "I80F48"
+            }
+          },
+          {
+            "name": "rate0",
+            "type": {
+              "defined": "I80F48"
+            }
+          },
+          {
+            "name": "util1",
+            "type": {
+              "defined": "I80F48"
+            }
+          },
+          {
+            "name": "rate1",
+            "type": {
+              "defined": "I80F48"
+            }
+          },
+          {
+            "name": "maxRate",
+            "type": {
+              "defined": "I80F48"
+            }
+          },
+          {
+            "name": "collectedFeesNative",
+            "type": {
+              "defined": "I80F48"
+            }
+          },
+          {
+            "name": "loanOriginationFeeRate",
+            "type": {
+              "defined": "I80F48"
+            }
+          },
+          {
+            "name": "loanFeeRate",
+            "type": {
+              "defined": "I80F48"
+            }
+          },
+          {
+            "name": "maintAssetWeight",
+            "type": {
+              "defined": "I80F48"
+            }
+          },
+          {
+            "name": "initAssetWeight",
+            "type": {
+              "defined": "I80F48"
+            }
+          },
+          {
+            "name": "maintLiabWeight",
+            "type": {
+              "defined": "I80F48"
+            }
+          },
+          {
+            "name": "initLiabWeight",
+            "type": {
+              "defined": "I80F48"
+            }
+          },
+          {
+            "name": "liquidationFee",
+            "type": {
+              "defined": "I80F48"
+            }
+          },
+          {
+            "name": "dust",
+            "type": {
+              "defined": "I80F48"
+            }
+          },
+          {
+            "name": "flashLoanTokenAccountInitial",
+            "type": "u64"
+          },
+          {
+            "name": "flashLoanApprovedAmount",
+            "type": "u64"
+          },
+          {
+            "name": "tokenIndex",
+            "type": "u16"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "mintDecimals",
+            "type": "u8"
+          },
+          {
+            "name": "bankNum",
+            "type": "u32"
+          },
+          {
+            "name": "minVaultToDepositsRatio",
+            "type": "f64"
+          },
+          {
+            "name": "netBorrowLimitWindowSizeTs",
+            "type": "u64"
+          },
+          {
+            "name": "lastNetBorrowsWindowStartTs",
+            "type": "u64"
+          },
+          {
+            "name": "netBorrowLimitPerWindowQuote",
+            "type": "i64"
+          },
+          {
+            "name": "netBorrowsInWindow",
+            "type": "i64"
+          },
+          {
+            "name": "borrowWeightScaleStartQuote",
+            "type": "f64"
+          },
+          {
+            "name": "depositWeightScaleStartQuote",
+            "type": "f64"
+          },
+          {
+            "name": "reduceOnly",
+            "type": "u8"
+          },
+          {
+            "name": "forceClose",
+            "type": "u8"
+          },
+          {
+            "name": "reserved",
+            "type": {
+              "array": [
+                "u8",
+                2118
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "types": [
+
+    {
+      "name": "OracleConfig",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "confFilter",
+            "type": {
+              "defined": "I80F48"
+            }
+          },
+          {
+            "name": "maxStalenessSlots",
+            "type": "i64"
+          },
+          {
+            "name": "reserved",
+            "type": {
+              "array": [
+                "u8",
+                72
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "I80F48",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "val",
+            "type": "i128"
+          }
+        ]
+      }
+    },
+
+    {
+      "name": "StablePriceModel",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "stablePrice",
+            "type": "f64"
+          },
+          {
+            "name": "lastUpdateTimestamp",
+            "type": "u64"
+          },
+          {
+            "name": "delayPrices",
+            "type": {
+              "array": [
+                "f64",
+                24
+              ]
+            }
+          },
+          {
+            "name": "delayAccumulatorPrice",
+            "type": "f64"
+          },
+          {
+            "name": "delayAccumulatorTime",
+            "type": "u32"
+          },
+          {
+            "name": "delayIntervalSeconds",
+            "type": "u32"
+          },
+          {
+            "name": "delayGrowthLimit",
+            "type": "f32"
+          },
+          {
+            "name": "stableGrowthLimit",
+            "type": "f32"
+          },
+          {
+            "name": "lastDelayIntervalIndex",
+            "type": "u8"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                7
+              ]
+            }
+          },
+          {
+            "name": "reserved",
+            "type": {
+              "array": [
+                "u8",
+                48
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "events": [],
+  "errors": []
+}

@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { unwrapUniswapLPs, sumTokens } = require("../helper/unwrapLPs");
-const { transformHecoAddress } = require("../helper/portedTokens");
+const { getChainTransform } = require("../helper/portedTokens");
 
 const vaults = [
   //HT Pool Vault
@@ -78,8 +78,7 @@ const hecoTvl = async (timestamp, ethBlock, chainBlocks) => {
     }
   }
 
-  const transformAddress = await transformHecoAddress();
-  await unwrapUniswapLPs(balances, lpPositions, chainBlocks["heco"], "heco", transformAddress);
+  await unwrapUniswapLPs(balances, lpPositions, chainBlocks["heco"], "heco");
 
   return balances;
 };

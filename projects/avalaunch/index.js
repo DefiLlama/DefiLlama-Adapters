@@ -1,6 +1,5 @@
 const sdk = require('@defillama/sdk')
 const { unwrapUniswapLPs } = require('../helper/unwrapLPs')
-const {fixAvaxBalances} = require('../helper/portedTokens')
 
 const xavaAddress = "0xd1c3f94DE7e5B45fa4eDBBA472491a9f4B166FC4";
 const stakingContracts = [
@@ -12,7 +11,7 @@ const farm = "0x6E125b68F0f1963b09add1b755049e66f53CC1EA";
 
 async function tvl(){
     return {};
-};
+}
 async function pool2(timestamp, ethBlock, chainBlocks){
     const block = chainBlocks.avax;
     const lpLocked = await sdk.api.erc20.balanceOf({
@@ -26,9 +25,8 @@ async function pool2(timestamp, ethBlock, chainBlocks){
         token: lp,
         balance: lpLocked.output
     }], block, 'avax', addr=>`avax:${addr}`);
-    fixAvaxBalances(balances);
     return balances;
-};
+}
 async function staking(timestamp, ethBlock, chainBlocks){
     const block = chainBlocks.avax;
     const balances  = await sdk.api.abi.multiCall({
@@ -44,11 +42,11 @@ async function staking(timestamp, ethBlock, chainBlocks){
     staking[`avax:${xavaAddress}`] = balances.output.map(b => 
         b.output).reduce((a, b) => Number(a) + Number(b), 0)
     return staking;
-};
+}
 
 module.exports={
     methodology: "Within pool2, it counts the XAVA-AVAX staked in the farm",
-    avalanche:{
+    avax:{
         tvl,
         pool2,
         staking

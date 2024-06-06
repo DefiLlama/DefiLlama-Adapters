@@ -1,7 +1,8 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { transformHecoAddress } = require("../helper/portedTokens");
+const { getChainTransform } = require("../helper/portedTokens");
 
 const HECOPOOL_CONTRACT = "0xFB03e11D93632D97a8981158A632Dd5986F5E909";
 const BANK_CONTRACT = "0xD42Ef222d33E3cB771DdA783f48885e15c9D5CeD";
@@ -29,7 +30,7 @@ const farmingPools = [
 
 const tokens = [
   // USDT:
-  "0xa71EdC38d189767582C38A3145b5873052c3e47a",
+  ADDRESSES.heco.USDT,
   // HBTC:
   "0x66a79D23E58475D2738179Ca52cd0b41d73f0BEa",
   // ETH:
@@ -91,6 +92,7 @@ const hecoTvl = async (timestamp, ethBlock, chainBlocks) => {
       })),
       chain: "heco",
       block: chainBlocks["heco"],
+      permitFailure: true,
     })
   ).output.map((st) => st.output);
 
@@ -142,7 +144,7 @@ const hecoTvl = async (timestamp, ethBlock, chainBlocks) => {
     }
   }
 
-  const transformAddress = await transformHecoAddress();
+  const transformAddress = await getChainTransform('heco');
 
   await unwrapUniswapLPs(
     balances,

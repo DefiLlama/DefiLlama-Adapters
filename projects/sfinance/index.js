@@ -64,49 +64,13 @@
     let balancesResultsA = await sdk.api.abi.multiCall({
       block,
       calls: balancesCalls.slice(0, swapsA_coinSum),
-      abi: {
-        "name": "balances",
-        "outputs": [
-         {
-          "type": "uint256",
-          "name": "out"
-         }
-        ],
-        "inputs": [
-         {
-          "type": "int128",
-          "name": "arg0"
-         }
-        ],
-        "constant": true,
-        "payable": false,
-        "type": "function",
-        "gas": 2250
-      },
+      abi: 'function balances(int128 arg0) view returns (uint256 out)',
     })
 
     let balancesResultsB = await sdk.api.abi.multiCall({
       block,
       calls: balancesCalls.slice(-swapsB_coinSum),
-      abi: {
-        "name": "balances",
-        "outputs": [
-         {
-          "type": "uint256",
-          "name": "out"
-         }
-        ],
-        "inputs": [
-         {
-          "type": "uint256",
-          "name": "arg0"
-         }
-        ],
-        "constant": true,
-        "payable": false,
-        "type": "function",
-        "gas": 2250
-      },
+      abi: 'function balances(uint256 arg0) view returns (uint256 out)',
     })
 
     let balancesResults = [...balancesResultsA.output, ...balancesResultsB.output]
@@ -118,40 +82,13 @@
     let coinsResultsA = await sdk.api.abi.multiCall({
       block,
       calls: coinsCalls.slice(0, swapsA_coinSum),
-      abi: {
-        "name": "underlying_coins",
-        "outputs": [{
-          "type": "address",
-          "name": "out"
-        }],
-        "inputs": [{
-          "type": "int128",
-          "name": "arg0"
-        }],
-        "constant": true,
-        "payable": false,
-        "type": "function",
-        "gas": 2190
-      }
+      abi: 'function underlying_coins(int128 arg0) view returns (address out)'
     })
 
     let coinsResultsB = await sdk.api.abi.multiCall({
       block,
       calls: coinsCalls.slice(-swapsB_coinSum),
-      abi: {
-        "name": "coins",
-        "outputs": [{
-          "type": "address",
-          "name": ""
-        }],
-        "inputs": [{
-          "type": "uint256",
-          "name": "arg0"
-        }],
-        "stateMutability": "view",
-        "type": "function",
-        "gas": 2250
-      }
+      abi: 'function coins(uint256 arg0) view returns (address out)'
     })
 
     let coinsResults = [...coinsResultsA.output, ...coinsResultsB.output]

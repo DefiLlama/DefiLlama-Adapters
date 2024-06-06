@@ -1,22 +1,11 @@
-const { GraphQLClient, gql } = require('graphql-request')
-
-async function fetch() {
-    const endpoint = 'https://thegraph.wagyuswap.app/subgraphs/name/wagyu'
-    const graphQLClient = new GraphQLClient(endpoint)
-
-    const query = gql`
-      query pancakeFactories {
-        pancakeFactories { 
-          totalLiquidityUSD
-        }
-      }`;
-
-    const data = await graphQLClient.request(query);
-
-    return data.pancakeFactories[0].totalLiquidityUSD;;
-}
+const { getUniTVL } = require('../helper/unknownTokens')
 
 module.exports = {
-    methodology: `Finds TotalLiquidityUSD using the WagyuSwap subgraph "https://thegraph.wagyuswap.app/subgraphs/name/wagyu".`,
-    fetch
+  misrepresentedTokens: true,
+  velas: {
+    tvl: getUniTVL({
+      factory: '0x69f3212344a38b35844cce4864c2af9c717f35e3',  useDefaultCoreAssets: true,
+      blacklist: ['0xcd7509b76281223f5b7d3ad5d47f8d7aa5c2b9bf'],
+    })
+  },
 }

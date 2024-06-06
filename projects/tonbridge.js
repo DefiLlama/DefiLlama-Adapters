@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const axios = require('axios');
-const BigNumber = require("bignumber.js");
 const burl = 'https://token-indexer.broxus.com/v1/root_contract/root_address/0:';
 const tokenMap = {
     'eb2ccad2020d9af9cec137d3146dde067039965c13a27d97293c931dae22b2b9': 'dai',
@@ -29,10 +28,10 @@ async function tvl() {
     const tokenAddresses = Object.keys(tokenMap);
     for (let i = 0; i < tokenAddresses.length; i++) {
         const supply = (await axios.get(burl + tokenAddresses[i])).data.totalSupply;
-        balances[tokenMap[tokenAddresses[i]]] = new BigNumber(supply);
-    };
+        balances[tokenMap[tokenAddresses[i]]] = supply
+    }
     return balances;
-};
+}
 
 function evm(chain, target) {
     return async (timestamp, block, chainBlocks) => {
@@ -40,10 +39,10 @@ function evm(chain, target) {
             target,
             abi: 'erc20:totalSupply',
             block: chainBlocks[chain],
-            chain
+            chain,
         })).output / 10 ** 9 };
     };
-};
+}
 
 module.exports = {
     timetravel: false,
@@ -56,7 +55,7 @@ module.exports = {
     ethereum: {
         tvl: evm('ethereum', '0x29d578CEc46B50Fa5C88a99C6A4B70184C062953')
     },
-    avalanche: {
+    avax:{
         tvl: evm('avax', '0x1ffefd8036409cb6d652bd610de465933b226917')
     },
     milkomeda: {
@@ -68,4 +67,7 @@ module.exports = {
     fantom: {
         tvl: evm('fantom', '0x1ffEFD8036409Cb6d652bd610DE465933b226917')
     },
+    hallmarks:[
+        [1651881600, "UST depeg"],
+      ],
 };

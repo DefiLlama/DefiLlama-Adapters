@@ -1,8 +1,5 @@
-const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { transformAvaxAddress } = require("../helper/portedTokens");
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const coreRewards = "0xE006716Ae6cAA486d77084C1cca1428fb99c877B";
 const avaxRewards = "0x6140D3ED2426cbB24f07D884106D9018d49d9101";
@@ -11,9 +8,6 @@ const CYCLE = "0x81440C939f2C1E34fc7048E518a637205A632a74";
 const vaults = [
   //Pangolin Rewards AVAX/PNG
   "0xccB42c29285754f441Dc6A4461De011efCD09F75",
-
-  //Pangolin Rewards AVAX/ETH (closed)
-  //"0xfB6e16A64ccC23848eB2951B1068a27B1d06791d",
 
   //Gondola Rewards AVAX/GDL
   "0x47de256F890d3707aad74A89C6b532eEAaAe54BA",
@@ -27,38 +21,17 @@ const vaults = [
   //Olive Rewards AVAX/OLIVE
   "0xCD1eee22a0Ec06f5D169753cc1B1CC0C57513B24",
 
-  //Baguette Rewards WAVAX/BAG (closed)
-  //"0x8D6D3131B7d01F4acE7c74E7EA999d301524B9F8",
-
-  //Pangolin Rewards AVAX/VSO (closed)
-  //"0x1e8864b21C980AaB05F3566B74aB1Aa9ec7dE948",
-
-  //Pangolin Rewards PNG/VSO (closed)
-  //"0xbD87717eAAE4F13dD5b55734a46fA49C519f9404",
-
   //Avaware Rewards AVAX/AVE
   "0x950bF2fb93c4Cb8CaBc7A08eb8A70Ea3c4A2bcC2",
-
-  //Olive Rewards AVAX/HUSKY (closed)
-  //"0x661FD8d23433E38f009FBc1e79910Fc0cAb2bC6D",
 
   //Trader Joe Rewards AVAX/JOE
   "0xB19bFa46148636C97B0C00A68B24647f60C1995D",
 
-  //Trader Joe Rewards AVAX/ETH (closed)
-  //"0xe10F1567f0354F3d7394CaA42B4e30d0f19AF907",
-
   //Trader Joe Rewards AVAX/SNOB
   "0x16aB820ABB64BcE04d15de945c18c0CC31822514",
 
-  //Trader Joe Rewards DAI/USDT (closed)
-  //"0x36EBd37960F37Ffb8EDDc6165b304dbB362Cd112",
-
   //Olive Rewards AVAX/CYCLE
   "0x01181D0E43c1A77f111C7968BE5B7e40F1D6e106",
-
-  //Trader Joe Rewards AVAX/SHERPA (closed)
-  //"0xE80504EF78403AD1753b7DE62653c09c0f9de584",
 
   //Avaware Rewards AVE/CYCLE
   "0x4762baf391Ca1A18f71320a6A09bCD2067EA32cA",
@@ -77,9 +50,6 @@ const vaults = [
 
   //Trader Joe Rewards AVAX/WETH.e
   "0xc2C215d9263592665993eEfc77976e70590f0DF1",
-
-  //Trader Joe Rewards DAI.e/USDT.e (Closed)
-  //"0x313b8d1ca1aAfae10273cdfCFA083b9a0E272d0E",
 
   //Pangolin Rewards AVAX/DAI.e
   "0x4Fbb4C6dBD68A609780C79A18C04e5Ac52dD622C",
@@ -116,89 +86,22 @@ const vaults = [
 ];
 
 /*** Staking of native token CYCLE and CYCLE/AVAX LP TVL Portion ***/
-const staking = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
-
-  const staking_lpToken = (
-    await sdk.api.abi.call({
-      abi: abi.stakingToken,
-      target: coreRewards,
-      chain: "avax",
-      block: chainBlocks["avax"],
-    })
-  ).output;
-
-  const cycleLpOrTokens = [
-    [staking_lpToken, true],
-    [CYCLE, false],
-  ];
-
-  const transformAddress = await transformAvaxAddress();
-
-  for (const lpOrToken of cycleLpOrTokens) {
-    await sumTokensAndLPsSharedOwners(
-      balances,
-      [lpOrToken],
-      (lpOrToken[1] == true) ? [coreRewards] : [avaxRewards],
-      chainBlocks["avax"],
-      "avax",
-      transformAddress
-    );
-  }
-  return balances;
+const staking = async (api) => {
+  const staking_lpToken = await api.call({ abi: abi.stakingToken, target: coreRewards, })
+  return sumTokens2({ api, tokens: [CYCLE, staking_lpToken], owners: [coreRewards, avaxRewards] })
 };
 
-/*** vaults TVL portion ***/
-const avaxTvl = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
-
-  const lpTokens = (
-    await sdk.api.abi.multiCall({
-      abi: abi.LPtoken,
-      calls: vaults.map((vault) => ({
-        target: vault,
-      })),
-      chain: "avax",
-      block: chainBlocks["avax"],
-    })
-  ).output.map((lp) => lp.output);
-
-  const lpTokens_bal = (
-    await sdk.api.abi.multiCall({
-      abi: abi.balanceLPinSystem,
-      calls: vaults.map((vault) => ({
-        target: vault,
-      })),
-      chain: "avax",
-      block: chainBlocks["avax"],
-    })
-  ).output.map((lpb) => lpb.output);
-
-  const lpPositions = [];
-  for (let index = 0; index < vaults.length; index++) {
-    lpPositions.push({
-      token: lpTokens[index],
-      balance: lpTokens_bal[index],
-    });
-  }
-
-  const transformAddress = await transformAvaxAddress();
-
-  await unwrapUniswapLPs(
-    balances,
-    lpPositions,
-    chainBlocks["avax"],
-    "avax",
-    transformAddress
-  );
-
-  return balances;
+const avaxTvl = async (api) => {
+  const lpTokens = await api.multiCall({ abi: abi.LPtoken, calls: vaults, })
+  const lpTokens_bal = await api.multiCall({ abi: abi.balanceLPinSystem, calls: vaults, })
+  api.add(lpTokens, lpTokens_bal)
+  return sumTokens2({ api, resolveLP: true,})
 };
 
 module.exports = {
   doublecounted: true,
   misrepresentedTokens: true,
-  avalanche: {
+  avax: {
     tvl: avaxTvl,
     staking
   },

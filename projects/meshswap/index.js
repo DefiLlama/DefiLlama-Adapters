@@ -1,50 +1,33 @@
-const retry = require('async-retry')
-const axios = require("axios");
-const BigNumber = require("bignumber.js");
-const { toUSDTBalances } = require('../helper/balances');
+const { staking } = require('../helper/staking')
+const { getUniTVL } = require('../helper/unknownTokens');
+const kslp = require('../helper/abis/kslp');
+const sdk = require('@defillama/sdk')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
-async function tvl() {
-  const meshswapInfo = await retry(async bail => await axios.get('https://s.meshswap.fi/stat/meshswapInfo.json'))
-  const recentPoolInfo = meshswapInfo.data.recentPoolInfo;
-  const tokenInfoObj = meshswapInfo.data.tokenInfo;
-  const SinglePoolInfo = meshswapInfo.data.leveragePoolInfo.single;
+const singlePoolFactory = '0x504722a6eabb3d1573bada9abd585ae177d52e7a'
 
-  var totalLiquidity = new BigNumber('0');
-
-  for(const pool of recentPoolInfo){
-    totalLiquidity = totalLiquidity.plus(pool.poolVolume);
-  }
-  var tokenInfo = {};
-  for(const token of tokenInfoObj){
-    tokenInfo[token.address] = token
-  }
-
-  for(const spool of SinglePoolInfo){
-    const totalDeposit = new BigNumber(spool.totalDeposit);
-    const totalBorrow = new BigNumber(spool.totalBorrow);
-    const singlePoolAmount =  totalDeposit.minus(totalBorrow);
-    
-    const tokenPrice = tokenInfo[spool.token].price;
-    const tokenDecimal = tokenInfo[spool.token].decimal;
-    const singlePoolVol = singlePoolAmount.div(10**tokenDecimal).times(tokenPrice);
-
-    totalLiquidity = totalLiquidity.plus(singlePoolVol);
-  }
-  return toUSDTBalances(totalLiquidity);
+async function singlePoolTvl(api) {
+  const pools = await api.fetchList({ lengthAbi: 'uint8:getPoolCount', itemAbi: 'function getPoolAddressByIndex(uint idx) public view returns (address)', target: singlePoolFactory })
+  const tokens = await api.multiCall({ abi: 'address:token', calls: pools })
+  const toa = tokens.map((val, i) => ([val, pools[i]]))
+  return sumTokens2({ api, tokensAndOwners: toa})
 }
 
-async function staking() {
-  const meshswapInfo = await retry(async bail => await axios.get('https://s.meshswap.fi/stat/meshswapInfo.json'))
-  var totalStaking = new BigNumber(meshswapInfo.data.common.stakingVol);
-  return toUSDTBalances(totalStaking);
-}
+const dexTVL = getUniTVL({
+  useDefaultCoreAssets: true,
+  factory: '0x9f3044f7f9fc8bc9ed615d54845b4577b833282d',
+  abis: {
+    allPairsLength: kslp.getPoolCount,
+    allPairs: kslp.pools,
+    getReserves: kslp.getCurrentPool,
+  },
+  exports
+})
 
 module.exports = {
-  methodology: "meshswap is an AMM-based Instant Swap Protocol",
-  timetravel: false,
-  misrepresentedTokens: true,
   polygon: {
-    staking,
-    tvl
-  }
+    tvl: sdk.util.sumChainTvls([dexTVL, singlePoolTvl]),
+    staking: staking('0x176b29289f66236c65c7ac5db2400abb5955df13', '0x82362ec182db3cf7829014bc61e9be8a2e82868a')
+  },
+  misrepresentedTokens: true,
 }

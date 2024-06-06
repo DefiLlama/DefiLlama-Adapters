@@ -53,8 +53,8 @@ async function getTokensInMasterChef(time, ethBlock, chainBlocks) {
 }
 
 module.exports = {
-  avalanche: {
-    staking: sdk.util.sumChainTvls([nest, nestv2].map(chef => staking(chef, pefiToken, "avax"))),
+  avax:{
+    staking: sdk.util.sumChainTvls([nest, nestv2].map(chef => staking(chef, pefiToken))),
     tvl: getTokensInMasterChef,
   }
 }

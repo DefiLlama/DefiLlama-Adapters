@@ -1,14 +1,6 @@
-const { calculateUsdUniTvl } = require('./helper/getUsdUniTvl');
+const { getUniTVL } = require('./helper/unknownTokens')
 module.exports = {
     oasis: {
-        tvl: calculateUsdUniTvl(
-            '0x84b11e8fb9a5dE10347eEA24c73d02B835505FDd',
-            'oasis',
-            '0x21C718C22D52d0F3a789b752D4c2fD5908a8A733',
-            [
-                '0xdC19A122e268128B5eE20366299fc7b5b199C8e3',
-            ],
-            'oasis-network'
-        )
+        tvl: getUniTVL({ factory: '0x84b11e8fb9a5dE10347eEA24c73d02B835505FDd', useDefaultCoreAssets: true }),
     }
 };

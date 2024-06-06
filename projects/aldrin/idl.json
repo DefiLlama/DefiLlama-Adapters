@@ -1,0 +1,108 @@
+{
+  "version": "1.1.0",
+  "name": "mm_farming_pool_v1",
+  "instructions": [],
+  "accounts": [
+    {
+      "name": "Pool",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "lpTokenFreezeVault",
+            "type": "publicKey"
+          },
+          {
+            "name": "poolMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "baseTokenVault",
+            "type": "publicKey"
+          },
+          {
+            "name": "baseTokenMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "quoteTokenVault",
+            "type": "publicKey"
+          },
+          {
+            "name": "quoteTokenMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "poolSigner",
+            "type": "publicKey"
+          },
+          {
+            "name": "poolSignerNonce",
+            "type": "u8"
+          },
+          {
+            "name": "authority",
+            "type": "publicKey"
+          },
+          {
+            "name": "initializerAccount",
+            "type": "publicKey"
+          },
+          {
+            "name": "feeBaseAccount",
+            "type": "publicKey"
+          },
+          {
+            "name": "feeQuoteAccount",
+            "type": "publicKey"
+          },
+          {
+            "name": "feePoolTokenAccount",
+            "type": "publicKey"
+          },
+          {
+            "name": "fees",
+            "type": {
+              "defined": "Fees"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "Fees",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "tradeFeeNumerator",
+            "type": "u64"
+          },
+          {
+            "name": "tradeFeeDenominator",
+            "type": "u64"
+          },
+          {
+            "name": "ownerTradeFeeNumerator",
+            "type": "u64"
+          },
+          {
+            "name": "ownerTradeFeeDenominator",
+            "type": "u64"
+          },
+          {
+            "name": "ownerWithdrawFeeNumerator",
+            "type": "u64"
+          },
+          {
+            "name": "ownerWithdrawFeeDenominator",
+            "type": "u64"
+          }
+        ]
+      }
+    }
+  ],
+  "errors": []
+}

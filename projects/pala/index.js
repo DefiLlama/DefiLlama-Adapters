@@ -48,7 +48,6 @@ const fetchLiquidity = async (ts, _block, chainBlocks) => {
 		})
 
 	const tvl = poolInfos.reduce((acc, pool) => {
-		console.log(calcPoolLiquidityVolume(pool, tokenMapping))
 		return acc + calcPoolLiquidityVolume(pool, tokenMapping)
 	}, 0)
 	return toUSDTBalances(tvl);

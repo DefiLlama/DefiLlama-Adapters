@@ -44,7 +44,7 @@ function tvl(args){
       let balances = await vestingHelper({
         chain, block,
         owner: contract,
-        coreAssets: args[i].trackedTokens,
+        useDefaultCoreAssets: true,
         blacklist,
         tokens,
       })
@@ -56,8 +56,7 @@ function tvl(args){
   }
 }
 module.exports = {
-  timetravel: true,
-  methodology: 
+    methodology: 
   `Counts each LP pair's native token and 
    stable balance, adjusted to reflect locked pair's value. 
    Balances and merged across multiple 

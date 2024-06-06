@@ -13,12 +13,12 @@ module.exports = {
   misrepresentedTokens: true,
   ethereum: {
     staking: staking(farmContract, BLXM),
-    pool2: pool2(farmContract, WETH_BLXM_UNIV2),   
+    pool2: pool2(farmContract, WETH_BLXM_UNIV2),  
+    tvl: (async) => ({}), 
   },
   bsc: {
-    staking: staking(farmContract_bsc, BLXM_bsc, "bsc"),
-    pool2: pool2(farmContract_bsc, WBNB_BLXM_CakeLP, "bsc"),
+    staking: staking(farmContract_bsc, BLXM_bsc),
+    pool2: pool2(farmContract_bsc, WBNB_BLXM_CakeLP),
   },
-  tvl: (async) => ({}),
   methodology: "Counts liquidty on the staking and pool2 only",
 };

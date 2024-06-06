@@ -1,7 +1,6 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { sumTokens } = require("../helper/unwrapLPs");
 const sdk = require('@defillama/sdk');
-const { transformFantomAddress } = require("../helper/portedTokens");
-const { request, gql } = require("graphql-request");
 
 const ExodStaking = "0x8b8d40f98a2f14e2dd972b3f2e2a2cc227d1e3be"
 const exod = "0x3b57f3feaaf1e8254ec680275ee6e7727c7413c7"
@@ -9,8 +8,8 @@ const wsexod = "0xe992C5Abddb05d86095B18a158251834D616f0D1"
 const gohm = "0x91fa20244fb509e8289ca630e5db3e9166233fdc"
 const mai = "0xfb98b335551a418cd0737375a2ea0ded62ea213b"
 const treasury = "0x6a654d988eebcd9ffb48ecd5af9bd79e090d8347"
-const dai = "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e"
-const wftm = "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83"
+const dai = ADDRESSES.fantom.DAI
+const wftm = ADDRESSES.fantom.WFTM
 const beetsvault = "0x20dd72Ed959b6147912C2e529F0a0C651c33c9ce"
 const poolid = "0xa216aa5d67ef95dde66246829c5103c7843d1aab000100000000000000000112"
 
@@ -21,7 +20,7 @@ function compareAddresses(a, b) {
 const getPoolTokens = async (block) => {
   const poolTokens = (await sdk.api.abi.call({
     target: beetsvault,
-    abi: {"inputs":[{"internalType":"bytes32","name":"poolId","type":"bytes32"}],"name":"getPoolTokens","outputs":[{"internalType":"contract IERC20[]","name":"tokens","type":"address[]"},{"internalType":"uint256[]","name":"balances","type":"uint256[]"},{"internalType":"uint256","name":"lastChangeBlock","type":"uint256"}],"stateMutability":"view","type":"function"},
+    abi:  'function getPoolTokens(bytes32 poolId) view returns (address[] tokens, uint256[] balances, uint256 lastChangeBlock)',
     params: poolid,
     block,
     chain: 'fantom',
@@ -64,7 +63,7 @@ const getPoolTokens = async (block) => {
 
 const staking = async (timestamp, ethBlock, chainBlocks) => {
   const balances = {};
-  const transformAddress = await transformFantomAddress();
+  const transformAddress = i => `fantom:${i}`;
 
   await sumTokens(balances, [[exod, ExodStaking]], chainBlocks.fantom, 'fantom', transformAddress)
 
@@ -73,7 +72,7 @@ const staking = async (timestamp, ethBlock, chainBlocks) => {
 
 async function tvl(timestamp, block, chainBlocks) {
   const balances = {};
-  const transformAddress = await transformFantomAddress();
+  const transformAddress = i => `fantom:${i}`;
 
   const treasuryBalances = await getPoolTokens(chainBlocks.fantom)
   const tokens = [mai, dai, wftm, gohm, exod, wsexod]

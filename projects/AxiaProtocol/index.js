@@ -1,11 +1,5 @@
-const sdk = require("@defillama/sdk");
-const { unwrapUniswapLPs, sumBalancerLps } = require("../helper/unwrapLPs");
-const {transformPolygonAddress} = require('../helper/portedTokens.js');
+const { unwrapBalancerToken } = require("../helper/unwrapLPs");
 const { staking } = require("../helper/staking");
-const { getCurrentTokens } = require("../balancer/abi.json")
-const BigNumber = require('bignumber.js')
-
-const wETHonEth = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
 
 const axiaPoly = '0x49690541e3f6e933a9aa3cffee6010a7bb5b72d7'
 const lonePoolPoly = '0x6c43cd84f2199eef1e7fcf169357b6c7948efe03'
@@ -21,175 +15,27 @@ const defiFundLPEth = '0x4833e8b56fc8e8a777fcc5e37cb6035c504c9478'
 const oracleFundEth = '0x152959A2f50D716707fEa4897e72C554272dC584'
 const oracleFundLPEth = '0xbf11db4e63c72c5dffde0f5831d667817c9e9ad5'
 
+async function tvl(api) {
+  const balances = {}
 
-async function calculatePolygonTvl(masterchef, lps, block, chain) {
-  let balances = {};
-  const lpBalances = (
-    await sdk.api.abi.multiCall({
-      calls: lps.split(',').map((p) => ({
-        target: p,
-        params: masterchef,
-      })),
-      abi: "erc20:balanceOf",
-      block,
-      chain,
-    })
-  ).output;
-  let lpPositions = [];
-  lpBalances.forEach((p) => {
-    lpPositions.push({
-      balance: p.output,
-      token: p.input.target,
-    });
-  });
-  await unwrapUniswapLPs(
-    balances,
-    lpPositions,
-    block,
-    chain,
-    (addr) => `${chain}:${addr}`
-  );
-  return balances;
-}
+  await Promise.all([
+    unwrapBalancerToken({ api, owner: defiFundEth, balancerToken: defiFundLPEth, balances, isBPool: true, isV2: false, }),
+    unwrapBalancerToken({ api, owner: oracleFundEth, balancerToken: oracleFundLPEth, balances, isBPool: true, isV2: false, }),
+  ])
 
-const polygonTvl = async (timestamp, block, chainBlocks) => {
-  return await calculatePolygonTvl(swapPoolPoly, swapPoolLPoly, chainBlocks.polygon, "polygon");
-}
-
-async function calculateEthereumTvl(masterchef, lps, block, chain) {
-  let balances = {};
-
-  //Swap Fund
-  const lpBalances = (
-    await sdk.api.abi.multiCall({
-      calls: lps.split(',').map((p) => ({
-        target: p,
-        params: masterchef,
-      })),
-      abi: "erc20:balanceOf",
-      block,
-      chain,
-    })
-  ).output;
-  let lpPositions = [];
-  lpBalances.forEach((p) => {
-    lpPositions.push({
-      balance: p.output,
-      token: p.input.target,
-    });
-  });
-  await unwrapUniswapLPs(
-    balances,
-    lpPositions,
-    block,
-    chain,
-    (addr) => `${chain}:${addr}`
-  );
-
-  //Defi Fund
-  const defiFundTokensEth = (await sdk.api.abi.call({
-      abi: getCurrentTokens,
-      target: defiFundLPEth,
-      chain,
-      block,
-    })).output;
-  
-  const defiFundBalanceEth = (await sdk.api.abi.call({
-        abi: 'erc20:balanceOf',
-        chain,
-        target: defiFundLPEth,
-        params: defiFundEth,
-        block,
-      })).output;
-
-  const defiFundSupplyEth = (await sdk.api.abi.call({
-      abi: 'erc20:totalSupply',
-      target: defiFundLPEth,
-      chain,
-      block,
-    })).output;
-
-  const defiFundStakedSharesEth = defiFundBalanceEth / defiFundSupplyEth
-
-  const defiFundLPUnderlyingBalanceEth = await sdk.api.abi.multiCall({
-  calls: defiFundTokensEth.map(token => ({
-    target: token,
-    params: [defiFundLPEth]
-  })),
-  abi: 'erc20:balanceOf',
-  block,
-  });
-
-  async function getDefiFundUnderlyingBalanceEth () {
-    await defiFundLPUnderlyingBalanceEth;
-    console.log(defiFundLPUnderlyingBalanceEth)
-    console.log(defiFundLPUnderlyingBalanceEth.output.map(outs => outs.output))
-    defiFundLPUnderlyingBalanceEth.output.map(outs => outs.output = BigNumber(outs.output * defiFundStakedSharesEth).toFixed());
-  console.log(defiFundLPUnderlyingBalanceEth)}
-  await getDefiFundUnderlyingBalanceEth();
-
-  sdk.util.sumMultiBalanceOf(balances, defiFundLPUnderlyingBalanceEth);
-
-  //Oracle Fund
-  const oracleFundTokensEth = (await sdk.api.abi.call({
-      abi: getCurrentTokens,
-      target: oracleFundLPEth,
-      chain,
-      block,
-    })).output;
-  
-  const oracleFundBalanceEth = (await sdk.api.abi.call({
-        abi: 'erc20:balanceOf',
-        chain,
-        target: oracleFundLPEth,
-        params: oracleFundEth,
-        block,
-      })).output;
-
-  const oracleFundSupplyEth = (await sdk.api.abi.call({
-      abi: 'erc20:totalSupply',
-      target: oracleFundLPEth,
-      chain,
-      block,
-    })).output;
-
-  const oracleFundStakedSharesEth = oracleFundBalanceEth / oracleFundSupplyEth
-
-  const oracleFundLPUnderlyingBalanceEth = await sdk.api.abi.multiCall({
-  calls: oracleFundTokensEth.map(token => ({
-    target: token,
-    params: [oracleFundLPEth]
-  })),
-  abi: 'erc20:balanceOf',
-  block,
-  });
-
-  async function getOracleFundUnderlyingBalanceEth () {
-    await oracleFundLPUnderlyingBalanceEth;
-    console.log(oracleFundLPUnderlyingBalanceEth)
-    console.log(oracleFundLPUnderlyingBalanceEth.output.map(outs => outs.output))
-    oracleFundLPUnderlyingBalanceEth.output.map(outs => outs.output = BigNumber(outs.output * oracleFundStakedSharesEth).toFixed());
-  console.log(oracleFundLPUnderlyingBalanceEth)}
-  await getOracleFundUnderlyingBalanceEth();
-
-  sdk.util.sumMultiBalanceOf(balances, oracleFundLPUnderlyingBalanceEth);
-  
-  return balances;
-}
-
-
-const ethereumTvl = async (timestamp, ethBlock) => {
-  return await calculateEthereumTvl(swapPoolEth, swapPoolLPEth, ethBlock, "ethereum");
+  return balances
 }
 
 module.exports = {
-  polygon:{
-    tvl: polygonTvl,
-    staking: staking(lonePoolPoly, axiaPoly, "polygon")
+  doublecounted: true,
+  polygon: {
+    pool2: staking(swapPoolPoly, swapPoolLPoly),
+    staking: staking(lonePoolPoly, axiaPoly)
   },
 
   ethereum: {
-    tvl: ethereumTvl,
-    staking: staking(lonelyPoolEth, axiaEth, "ethereum"),
+    tvl,
+    pool2: staking(swapPoolEth, swapPoolLPEth),
+    staking: staking(lonelyPoolEth, axiaEth),
   }
 }

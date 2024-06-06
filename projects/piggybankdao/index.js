@@ -1,5 +1,5 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const {sumTokensAndLPsSharedOwners, sumLPWithOnlyOneToken} = require('../helper/unwrapLPs')
-const {transformAvaxAddress} = require('../helper/portedTokens')
 const { stakingPricedLP } = require('../helper/staking')
 
 
@@ -14,11 +14,11 @@ const MIM = "0x130966628846bfd36ff31a822705796e8cb8c18d"
 
 async function avaxTvl(time, ethBlock, chainBlocks){
     const balances = {}
-    const transform = await transformAvaxAddress()
+    const transform = addr => 'avax:'+addr
     await sumLPWithOnlyOneToken(balances, "0xd3a6eebbe6f6d9197a7fc2aaaf94d8b0ec51f8a8", treasury, MIM, chainBlocks.avax, "avax", transform)
     await sumTokensAndLPsSharedOwners(balances, [
         [MIM, false],
-        ["0x50b7545627a5162f82a992c33b87adc75187b218", false]
+        [ADDRESSES.avax.WBTC_e, false]
     ], [treasury], chainBlocks.avax, "avax", transform)
     return balances
 }
@@ -26,7 +26,7 @@ async function avaxTvl(time, ethBlock, chainBlocks){
 module.exports={
     deadFrom: 1648765747,
     misrepresentedTokens: true,
-    avalanche:{
+    avax:{
         tvl: avaxTvl,
         staking: stakingPricedLP(STAKING_ADDRESS, PB_TOKEN, CHAIN, LP_TOKEN, COREASSETNAME, true),
     }

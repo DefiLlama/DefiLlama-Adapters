@@ -58,7 +58,7 @@ module.exports = {
   kava:{
     fetch: kava
   },
-  avalanche:{
+  avax:{
     fetch: avalanche
   },
   fantom:{
@@ -71,4 +71,7 @@ module.exports = {
     fetch: solana
   },
   fetch
-}
+},
+module.exports.hallmarks = [
+        [1651881600, "UST depeg"],
+      ]

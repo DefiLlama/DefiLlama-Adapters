@@ -20,14 +20,13 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     params: [],
   });
 
-  await sdk.util.sumSingleBalance(balances, APIID, new BigNumber(data.output).dividedBy(ETHER).toNumber());
+  sdk.util.sumSingleBalance(balances, APIID, new BigNumber(data.output).dividedBy(ETHER).toNumber());
 
   return balances
 }
 
 module.exports = {
-  timetravel: true,
-  methodology: "TVL is equal to the amount of KLAY staked in the Staking pool",
+    methodology: "TVL is equal to the amount of KLAY staked in the Staking pool",
   klaytn: {
     tvl: tvl,
   },

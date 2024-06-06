@@ -22,7 +22,7 @@ const protocols = [
 ];
 
 function chainTvl(chain) {
-  return async function tvl(timestamp, ethBlock, chainBlocks) {
+  return async function tvl({timestamp}, ethBlock, chainBlocks) {
     const balances = {};
     const chainProtocols = protocols.filter(protocol => protocol.chain === chain);
     const block = chainBlocks[chain];
@@ -66,7 +66,7 @@ function chainStaking(chain) {
         "polkamarkets",
         Number(polkBalance) / 1e18
       );
-    };
+    }
 
     return balances;
   }

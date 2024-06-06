@@ -1,14 +1,14 @@
-const retry = require("./helper/retry");
-const axios = require("axios");
+const { get } = require('./helper/http')
+const { getConfig } = require('./helper/cache')
+
+
 
 async function fetch() {
-    return (
-        await retry(
-            async (bail) =>
-                await axios.get("https://api.pact.fi/api/pools/all?ordering=-tvl_usd")
-        )
-    ).data.map(p => p.tvl_usd).reduce((a, b) => a + parseFloat(b), 0);
-};
+    await getConfig('pact-fi', 'https://api.pact.fi/api/internal/pools_details/all')
+    const global_data = await get("https://api.pact.fi/api/global_stats")
+    return parseFloat(global_data.tvl_usd)
+}
+
 
 module.exports = {
     algorand: {

@@ -1,16 +1,4 @@
 {
-    "underlyer": {
-        "inputs": [],
-        "name": "underlyer",
-        "outputs": [
-            {
-                "internalType": "contract IERC20",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    "getPoolTotalValue":{"inputs":[],"name":"getPoolTotalValue","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+  "underlyer": "address:underlyer",
+  "getPoolTotalValue": "uint256:getPoolTotalValue"
 }

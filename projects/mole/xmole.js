@@ -1,15 +1,14 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const BigNumber = require("bignumber.js");
-const axios = require("axios");
+const { getConfig } = require('../helper/cache')
 
 async function getProcolXMoleAddresses(chain) {
   if (chain == "avax") {
     return (
-      await axios.get(
+      await getConfig('xmole',
         "https://raw.githubusercontent.com/Mole-Fi/mole-protocol-xmole/main/.avalanche_mainnet.json"
       )
-    ).data;
+    );
   }
 }
   

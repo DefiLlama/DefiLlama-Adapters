@@ -1,4 +1,4 @@
-const { pool2s} = require("./helper/pool2");
+const { staking} = require("./helper/staking");
 
 const UBI = '0xDd1Ad9A21Ce722C151A836373baBe42c868cE9a4'
 const lpTokens = [
@@ -12,7 +12,7 @@ const stakingContracts = [
 
 module.exports = {
   ethereum: {
-    pool2: pool2s(stakingContracts, lpTokens, 'ethereum'),
+    pool2: staking(stakingContracts, lpTokens),
     tvl: () => ({}), 
   },
   methodology: `UBI/ETH and UBI/DAI LP can be staked in a uni-v2 pool2 contract`

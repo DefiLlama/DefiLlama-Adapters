@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { stakingUnknownPricedLP } = require("../helper/staking");
 const { pool2Exports } = require("../helper/pool2");
@@ -5,7 +6,7 @@ const { pool2Exports } = require("../helper/pool2");
 const cheems = "0x75a2f30929C539E7d4eE033c9331b89F879c0cf7";
 const stakingContract = "0xaaCcB989FE1084c6935f09aE4BBD49AfF58Bdb94";
 
-const mim = "0xfea7a6a0b346362bf88a9e4a88416b77a57d6c2a";
+const mim = ADDRESSES.arbitrum.MIM;
 const mimPool = "0x79F12596B78F9E982bDaB6e2d83D4bc155672372";
 const ethPool = "0xd495Beb0011e3DFEC0C93376f5216C1C3dD01C23";
 
@@ -24,7 +25,7 @@ async function tvl(timestamp, block, chainBlocks) {
   ).output;
   sdk.util.sumSingleBalance(
     balances,
-    "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+    ADDRESSES.ethereum.WETH,
     ethBal
   );
 

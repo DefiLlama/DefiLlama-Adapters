@@ -1,9 +1,9 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
-const axios = require('axios');
 const factoryAbi = require("../helper/abis/factory.json");
-const token0 = require("../helper/abis/token0.json");
-const token1 = require("../helper/abis/token1.json");
-const getReserves = require("../helper/abis/getReserves.json");
+const token0 = 'address:token0'
+const token1 = 'address:token1'
+const getReserves = 'function getReserves() view returns (uint112 _reserve0, uint112 _reserve1, uint32 _blockTimestampLast)'
 
 async function tvl(timestamp, ethBlock, chainBlocks) {
     let balances = {};
@@ -83,27 +83,27 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
         } else {
             balances[tokenId[0]] =
                 reserves[n].output[side] * 2 / 10**tokenId[1];
-        };
-    };
+        }
+    }
     return balances;
-};
+}
 
 function getTokenId(address) {
     switch(address) {
         case '0x98878b06940ae243284ca214f92bb71a2b032b8a':
             return ['moonriver', 18]
-        case '0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d':
+        case [ADDRESSES.moonriver.USDC]:
             return ['usd-coin', 6]
-        case '0xb44a9b6905af7c801311e8f4e76932ee959c663c':
+        case [ADDRESSES.moonriver.USDT]:
             return ['tether', 6]
-        case '0x639a647fbe20b6c8ac19e48e2de44ea792c62c5c':
+        case [ADDRESSES.moonriver.ETH]:
             return ['ethereum', 18]
         case '0x5d9ab5522c64e1f6ef5e3627eccc093f56167818':
             return ['binance-usd', 18]
         default:
             return false;
-    };
-};
+    }
+}
 // node test.js projects/moonswap/index.js
 module.exports = {
     misrepresentedTokens: true,

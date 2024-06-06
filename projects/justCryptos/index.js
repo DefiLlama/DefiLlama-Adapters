@@ -1,4 +1,4 @@
-const axios = require('axios')
+const { get } = require('../helper/http');
 
 let nowDate = new Date();
 nowDate.setFullYear(nowDate.getFullYear() - 1);
@@ -15,11 +15,14 @@ function getItemByName (projectName, listArr) {
 }
 
 async function fetch(){
-    const pools = await axios.get(url);
-    let item = getItemByName('Just Cryptos', pools.data.projects);
+    const pools = await get(url);
+    let item = getItemByName('Just Cryptos', pools.projects);
     return parseInt(item.locked);
 }
 
 module.exports = {
+  tron: {
+    fetch
+  },
     fetch
 }

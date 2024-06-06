@@ -1,4 +1,4 @@
-const { call, sumSingleBalance } = require('../helper/near')
+const { call, sumSingleBalance } = require('../helper/chain/near')
 const { default: BigNumber } = require("bignumber.js")
 const BURROW_CONTRACT = 'contract.main.burrow.near'
 
@@ -13,13 +13,12 @@ function tvl(borrowed = false) {
         BigNumber(asset.borrowed.balance) :
         BigNumber(asset.supplied.balance).plus(BigNumber(asset.reserved)).minus(BigNumber(asset.borrowed.balance));
       const adjustedAmount = amount.shiftedBy(-1 * extraDecimals);
-      console.log(token, adjustedAmount.toFixed(1), JSON.stringify(balances));
       sumSingleBalance(balances, token, adjustedAmount);
     });
 
     return balances;
   }
-};
+}
 
 module.exports = {
   near: {

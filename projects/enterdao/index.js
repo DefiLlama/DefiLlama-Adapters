@@ -1,10 +1,11 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 
 const StakingContract = "0x3F148612315AaE2514AC630D6FAf0D94B8Cd8E33";
 const USDC_ENTR_SUSHI_LP = "0x83b546e10917432a722444672504f0d459472171";
 const yieldFarms = [
-  "0x6b3595068778dd592e39a122f4f5a5cf09c90fe2", //SUSHI
+  ADDRESSES.ethereum.SUSHI, //SUSHI
   "0xbb0e17ef65f82ab018d8edd776e8dd940327b28b", //AXS
   "0x0391D2021f89DC339F60Fff84546EA23E337750f", //BOND
   "0x0f5d2fb29fb7d3cfee444a200298f468908cc942", //MANA

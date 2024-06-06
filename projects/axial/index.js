@@ -1,100 +1,24 @@
 
-const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-// node test.js projects/axial/index.js
+const { sumTokensExport, sumTokens2 } = require("../helper/unwrapLPs");
 const AXIAL_JLP_TOKEN = "0x5305A6c4DA88391F4A9045bF2ED57F4BF0cF4f62";
 const AXIAL_MASTERCHEF_V3 = "0x958C0d0baA8F220846d3966742D4Fb5edc5493D3";
 
-async function getAxialVaultBalances(balances, vaults, block) {
-  await Promise.all(vaults.map(async (vault) => {
-    await sdk.api.abi.multiCall({
-      calls: [0, 1, 2, 3].map(num => ({
-        target: vault,
-        params: [num]
-      })),
-      abi: abi.getToken,
-      block,
-      chain: 'avax'
-    }).then(async tokens => {
-      await sdk.api.abi.multiCall({
-        calls: tokens.output.filter(t => t.output != null).map(token => ({
-          target: token.output,
-          params: [vault]
-        })),
-        abi: 'erc20:balanceOf',
-        block,
-        chain: 'avax'
-      }).then(tokenBalances => {
-        const balancesToAdd = {};
-        sdk.util.sumMultiBalanceOf(balancesToAdd, tokenBalances);
-        Object.entries(balancesToAdd).forEach(balance => {
-          sdk.util.sumSingleBalance(balances, `avax:${balance[0]}`, balance[1]);
-        });
-      });
-    });
-  }));
+async function tvl(api) {
+  const pools = (await api.fetchList({  lengthAbi: abi.poolLength, itemAbi: abi.poolInfo, target: AXIAL_MASTERCHEF_V3})).map(i => i.lpToken)
+  const vaults = (await api.multiCall({  abi: abi.owner, calls: pools, permitFailure: true,})).filter(i => i)
+  const params = [0, 1, 2, 3,]
+  const calls = vaults.map(v => params.map(i => ({ target: v, params:[i]}))).flat()
+  const owners = calls.map(i => i.target)
+  const tokens  = await api.multiCall({  abi: abi.getToken, calls, permitFailure: true, })
+  const tokensAndOwners = tokens.map((t, i) => [t, owners[i]]).filter(i => i[0])
+  return sumTokens2({ api, tokensAndOwners,})
 }
-
-async function getAxialJLPBalance(_timestamp, _ethereumBlock, chainBlocks) {
-  const balances = {}
-  const block = chainBlocks['avax'];
-  const axialBalance = (await sdk.api.abi.call({
-    target: AXIAL_JLP_TOKEN,
-    params: [AXIAL_MASTERCHEF_V3],
-    block,
-    chain: 'avax',
-    abi: 'erc20:balanceOf'
-  })).output;
-  await unwrapUniswapLPs(balances, [{token: AXIAL_JLP_TOKEN, balance: axialBalance}], block, 'avax', (addr) => `avax:${addr}`);
-  return balances;
-}
-
-async function getAxialPools(block) {
-  let vaults = [];
-  const poolLength = (await sdk.api.abi.call({
-    target: AXIAL_MASTERCHEF_V3,
-    abi: abi.poolLength,
-    chain: 'avax',
-    block
-  })).output;
-  await sdk.api.abi.multiCall({
-    calls: [...Array(Number(poolLength)).keys()].map(num => ({
-      target: AXIAL_MASTERCHEF_V3,
-      params: num
-    })),
-    chain: 'avax',
-    abi: abi.poolInfo,
-    block
-  }).then(async pools => {
-    await sdk.api.abi.multiCall({
-      calls: pools.output.map(pool => ({
-        target: pool.output.lpToken
-      })),
-      chain: 'avax',
-      abi: abi.owner,
-      block
-    }).then(owners => {
-      vaults = owners.output.filter(e => e.output).map(e => e.output);
-    });
-  });
-  return vaults;
-}
-
-async function tvl(_timestamp, _ethereumBlock, chainBlocks) {
-  const balances = {};
-  const block = chainBlocks['avax'];
-  const vaults = await getAxialPools(chainBlocks.avax);
-
-  await getAxialVaultBalances(balances, vaults, block);
-  return balances;
-}
-
 
 module.exports = {
   methodology: "Our TVL is the value of the tokens within the Axial pools, and the Axial LP tokens within our rewards pools MasterChef",
-  avalanche: {
+  avax:{
     tvl,
-    pool2: getAxialJLPBalance
+    pool2: sumTokensExport({ owner: AXIAL_MASTERCHEF_V3, tokens: [AXIAL_JLP_TOKEN]})
   }
 }

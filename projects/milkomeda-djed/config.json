@@ -1,0 +1,10 @@
+{
+    "djedAddress": {
+      "milkomeda": "0x67A30B399F5Ed499C1a6Bc0358FA6e42Ea4BCe76",
+      "milkomeda_a1": "0x..."
+    },
+    "reserveTokenAddress": {
+      "milkomeda": "0xAE83571000aF4499798d1e3b0fA0070EB3A3E3F9",
+      "milkomeda_a1": "0x..."
+    }
+  }

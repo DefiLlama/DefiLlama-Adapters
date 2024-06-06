@@ -1,10 +1,8 @@
-const retry = require("./helper/retry");
-const axios = require("axios");
-
+const { get } = require('./helper/http')
 async function fetch() {
   const response = (
-    await retry(async (bail) => await axios.get("https://francium.io/api/pools/liquidity"))
-  ).data.data;
+    await get("https://francium-data.s3-us-west-2.amazonaws.com/tvl/liquidity.json")
+  ).data;
 
   const poolLiqArray = response.farm.map(pool => pool.liquidityLocked);
   const lendArray = response.lend.map(pool => pool.available);
@@ -14,6 +12,9 @@ async function fetch() {
 }
 
 module.exports = {
+  hallmarks:[
+    [1667865600, "FTX collapse"]
+  ],
   timetravel: false,
   methodology: 'Value of total LP tokens locked + deposits that are not borrowed.',
   fetch,

@@ -1,5 +1,4 @@
 const { stakings } = require("../helper/staking");
-const { pool2s } = require("../helper/pool2");
 
 const stakingContracts = [
   // stakingContract1 =
@@ -18,9 +17,6 @@ const stakingContracts = [
   "0xcCACBafF877003853374BDEBca2B0AdAc463DA12",
 ];
 
-const WETH_BPF_UNIV2 = "0x0111842555A378cbaA937eb02818101d0040733B";
-const USDT_BPF_UNIV2 = "0x70e688b7ff542Bac51ee0e65B77F2f1096e2A361";
-const DAI_BPF_UNIV2 = "0xa061Fa048F894bcfed5eC0B2c5B56d80d488833d";
 const USDC_BPF_UNIV2 = "0xb2aa61b5bF5Da7b39404A89D20FD9CF10076B77D";
 const BPF = "0x5197FBE1a86679FF1360E27862BF88B0c5119BD8";
 
@@ -28,38 +24,9 @@ module.exports = {
   misrepresentedTokens: true,
   ethereum: {
     staking: stakings(stakingContracts, BPF),
-    pool2: pool2s(stakingContracts, [WETH_BPF_UNIV2]),
+    pool2: stakings(stakingContracts, [USDC_BPF_UNIV2]),
     tvl: (async) => ({}),
   },
-  methodology: "Counts liquidty on the staking and pool2s only",
-}
-
-module.exports = {
-  misrepresentedTokens: true,
-  ethereum: {
-    staking: stakings(stakingContracts, BPF),
-    pool2: pool2s(stakingContracts, [USDT_BPF_UNIV2]),
-    tvl: (async) => ({}),
-  },
-  methodology: "Counts liquidty on the staking and pool2s only",
-}
-
-module.exports = {
-  misrepresentedTokens: true,
-  ethereum: {
-    staking: stakings(stakingContracts, BPF),
-    pool2: pool2s(stakingContracts, [DAI_BPF_UNIV2]),
-    tvl: (async) => ({}),
-  },
-  methodology: "Counts liquidty on the staking and pool2s only",
-}
-
-module.exports = {
-  misrepresentedTokens: true,
-  ethereum: {
-    staking: stakings(stakingContracts, BPF),
-    pool2: pool2s(stakingContracts, [USDC_BPF_UNIV2]),
-    tvl: (async) => ({}),
-  },
+  deadFrom: "2022-05-01",
   methodology: "Counts liquidty on the staking and pool2s only",
 };

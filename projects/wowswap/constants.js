@@ -1,4 +1,5 @@
-const ADDRESS_ZERO = "0x0000000000000000000000000000000000000000"
+const ADDRESSES = require('../helper/coreAssets.json')
+const ADDRESS_ZERO = ADDRESSES.null
 
 const chains = {
   "ethereum": {
@@ -25,7 +26,7 @@ const chains = {
   "heco": {
     reserveFactory: "0x518C21A2Edc710b0c627DBbCb0Af34531Dd1724a",
     pairFactory: "0x86fEA7A7c7f2503cdDb4Ad0E4e7977E8bDcb1872",
-    WOW: "0xeFAeeE334F0Fd1712f9a8cc375f427D9Cdd40d73",
+    WOW: ADDRESSES.telos.USDT,
     xWOW: "0x72c0A253C84ADa1b1379b2A66ce51862d9bf159B",
     WOWLP: "0x5E5f16A910B7b44f4F8090798BaADEfBC1388253"
   },
@@ -49,6 +50,13 @@ const chains = {
     WOW: "0x5CE34d9abe4bF239cbc08B89287c87f4CD6d80B7",
     xWOW: "0x3B642654c6a2C1ECe1d33cBF0EDBfDD970AEC35f",
     WOWLP: "0x1f9A2b3b05e1c43Ec6aaeF2fb727e43C4b956e30"
+  },
+  "kava": {
+    reserveFactory: "0xa98fd60318a1253fa2BCa68CE46fE3D48c8EA602",
+    pairFactory: "0xA53230B6B6e7f4FDD0f65Af954F891A77351baBF",
+    WOW: "0x527805F51C448155DfBDee04bD950036A52a21f0",
+    xWOW: "0x3B642654c6a2C1ECe1d33cBF0EDBfDD970AEC35f",
+    WOWLP: ADDRESSES.null
   }
 };
 

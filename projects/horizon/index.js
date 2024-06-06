@@ -1,9 +1,5 @@
-const sdk = require("@defillama/sdk");
 const { staking, } = require("../helper/staking");
-const { sumTokens } = require('../helper/unwrapLPs');
 const { collateral } = require('./collateral.js');
-
-const hzn_bnb_LP = '0xdc9a574b9b341d4a98ce29005b614e1e27430e74'
 
 const tokenStaking = [
     {
@@ -30,24 +26,11 @@ const lpStaking = [
     }
 ]
 
-async function calculateLPStaking(timestamp, _block, chainBlocks) {
-    const block = chainBlocks.bsc
-    const tokensAndOwners = lpStaking.map(lp => [lp.stakingLPToken, lp.stakingContract])
-    const balances = {}
-    await sumTokens(balances, tokensAndOwners, block, 'bsc', undefined, { resolveLP: true })
-    return balances;
-}
-
 module.exports = {
-    timetravel: true,
-    misrepresentedTokens: false,
-    methodology: 'Counts liquidty on the token staking and lp staking contracts',
+            methodology: 'Counts liquidty on the token staking and lp staking contracts',
     bsc: {
         tvl: collateral,
-        staking: sdk.util.sumChainTvls([
-            staking(tokenStaking[0].stakingContract, tokenStaking[0].stakingToken, "bsc"), 
-            staking(tokenStaking[1].stakingContract, tokenStaking[1].stakingToken, "bsc"), 
-        ]),
-        pool2: calculateLPStaking
+        staking: staking(tokenStaking.map(i => i.stakingContract), tokenStaking.map(i => i.stakingToken)),
+        pool2: staking(lpStaking.map(i => i.stakingContract), lpStaking.map(i => i.stakingLPToken))
     },
 };

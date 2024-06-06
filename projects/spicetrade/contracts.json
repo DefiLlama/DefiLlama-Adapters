@@ -27,9 +27,11 @@
         },
         "curveGaugeMapping": {
             "0x5b5cfe992adac0c9d48e05854b2d91c73a003858": "0x1337bedc9d22ecbe766df105c9623922a27963ec" 
-        }
+        },
+        "factory": "0xE61A092225A6639844693626491200BE1333D5cb"
     },
     "polygon": {
+        "factory": "0x9eF87bA6EEc990E44F1BB56676C65Fd8f5bb5770",
         "tokenHolders": {
             "USDSGalaxy": {
                 "collateralReserve": "0x55a5334d1a402383c5a8c622301ea00cc8cd1681",
@@ -60,6 +62,7 @@
         }
     },
     "bsc": {
+        "factory": "0x19813b4AA783a4aEef5f9155875Af2492A2A207d",
         "tokenHolders": {
             "USDSGalaxy": {
                 "collateralReserve": "0x66e8617d1Df7ab523a316a6c01D16Aa5beD93681",
@@ -85,6 +88,7 @@
         }
     },
     "ethereum": {
+        "factory": "0x71BcC0BF974AAE8CC55D033c17d50486fC77e3Ae",
         "tokenHolders": {
             "USDSGalaxy": {
                 "collateralReserve": "0xe78e4322bd3256589133b6e85ec523e63fc212cb",

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { default: BigNumber } = require("bignumber.js");
 
@@ -13,16 +14,16 @@ const rusdPool = "0x79B0a67a4045A7a8DC04b17456F4fe15339cBA34";
 
 // token addresses
 const DAI = "0xe3520349F477A5F6EB06107066048508498A291b";
-const USDC = "0xB12BFcA5A55806AaF64E99521918A4bf0fC40802";
-const USDT = "0x4988a896b1227218e4A686fdE5EabdcAbd91571f";
-const FRAX = "0xda2585430fef327ad8ee44af8f1f989a2a91a3d2";
+const USDC = ADDRESSES.aurora.USDC_e;
+const USDT = ADDRESSES.aurora.USDT_e;
+const FRAX = ADDRESSES.aurora.FRAX;
 const UST = "0x5ce9F0B6AFb36135b5ddBF11705cEB65E634A9dC";
-const MAI = "0xdFA46478F9e5EA86d57387849598dbFB2e964b02";
+const MAI = ADDRESSES.moonbeam.MAI;
 // const BUSD = "0x5C92A4A7f59A9484AFD79DbE251AD2380E589783";
 const RUSD = "0x19cc40283B057D6608C22F1D20F17e16C245642E";
 const ROSE = "0xdcD6D4e2B3e1D1E1E6Fa8C21C8A323DcbecfF970";
 const STROSE = "0xe23d2289FBca7De725DC21a13fC096787A85e16F";
-const NEAR = "0xC42C30aC6Cc15faC9bD938618BcaA1a1FaE8501d";
+const NEAR = ADDRESSES.aurora.NEAR;
 const WETH = "0xC9BdeEd33CD01541e1eeD10f90519d2C06Fe3feB";
 const WBTC = "0xf4eb217ba2454613b15dbdea6e5f22276410e89e";
 

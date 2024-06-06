@@ -1,12 +1,8 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const { staking } = require("../helper/staking");
 const { pool2 } = require("../helper/pool2");
 const { unwrapUniswapLPs, } = require("../helper/unwrapLPs");
 const { getChainTransform } = require('../helper/portedTokens')
-
-const treasury = "0xb20234c33337537111f4ab6f5EcaD400134aC143";
-const WCRO = "0x5c7f8a570d578ed84e63fdfa7b1ee72deae1ae23";
 
 const croblancAlpha = "0x52a87ef19e4a0E8cc70aE69D22bc8254bc6fa0F9";
 
@@ -49,8 +45,7 @@ const cronosTvl = async (_, _b, chainBlocks) => {
 module.exports = {
   misrepresentedTokens: true,
   cronos: {
-    treasury: staking(treasury, WCRO, "cronos"),
-    pool2: pool2(pool2Farm, WCRO_CROBLANC_CronaLP[0], "cronos"),
+    pool2: pool2(pool2Farm, WCRO_CROBLANC_CronaLP[0]),
     tvl: cronosTvl,
   },
   methodology:

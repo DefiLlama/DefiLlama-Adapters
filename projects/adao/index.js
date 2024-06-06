@@ -1,4 +1,3 @@
-const abi = require("./abi.json");
 const sdk = require("@defillama/sdk")
 
 const ADAOTreasuryAddress = "0x9E5A8BB92C3E5A8bf5bad9c40a807dE4151311d1";
@@ -13,7 +12,7 @@ async function treasury(timestamp, block, chainBlocks) {
 
 async function tvl(timestamp, block, chainBlocks) {
   const balances = {};
-  const { output } = await sdk.api.abi.call({ target: ADAOStakingContract, chain: 'astar', block: chainBlocks.astar, abi: abi.find(i => i.name === 'totalSupply') })
+  const { output } = await sdk.api.abi.call({ target: ADAOStakingContract, chain: 'astar', block: chainBlocks.astar, abi: "uint256:totalSupply" })
   balances[`astar`] = output/1e18;
   return balances;
 }

@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 
@@ -22,7 +23,7 @@ const constant = {
 };
 
 async function purchase(block) {
-  let weth = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
+  let weth = ADDRESSES.ethereum.WETH;
   let _purchasePool;
   const [surplus, treasury] = await Promise.all([
     sdk.api.abi.call({
@@ -62,7 +63,7 @@ async function underwriting(block) {
 
 async function startEth(block) {
   let capitalAddr = '0xa6b658Ce4b1CDb4E7d8f97dFFB549B8688CAFb84'
-  let ethAddr = '0x0000000000000000000000000000000000000000'
+  let ethAddr = ADDRESSES.null
   let trueBalance = 0;
   let _ethBalance = await sdk.api.eth.getBalance({ target: capitalAddr, block: block });
 

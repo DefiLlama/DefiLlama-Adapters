@@ -1,5 +1,5 @@
-const sdk = require("@defillama/sdk");
-const {unwrapUniswapLPs} = require("../helper/unwrapLPs");
+const ADDRESSES = require('../helper/coreAssets.json')
+const {sumTokens2} = require("../helper/unwrapLPs");
 
 const polly = "0x4C392822D4bE8494B798cEA17B43d48B2308109C";
 const masterchef = "0x850161bF73944a8359Bd995976a34Bb9fe30d398";
@@ -45,7 +45,7 @@ const nDefiUnderLying = [
   "0xda537104d6a5edd53c6fbba9a898708e465260b6",
   "0x95c300e7740D2A88a44124B424bFC1cB2F9c3b89",
   "0xc81278a52AD0e1485B7C3cDF79079220Ddd68b7D",
-  "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+  ADDRESSES.polygon.WMATIC_2,
   "0x3066818837c5e6ed6601bd5a91b0762877a6b731",
   "0xb33eaad8d922b1083446dc23f610c2567fb5180f",
   "0x3AE490db48d74B1bC626400135d4616377D0109f"
@@ -59,78 +59,18 @@ const nStblUnderLying = [
   "0x1a13F4Ca1d028320A707D99520AbFefca3998b7F"
 ]
 
-async function lpTvl(balances, chainBlocks, pools) {
-  let LPBalance = (await sdk.api.abi.multiCall({
-    calls: pools.map(p => ({
-      target: p,
-      params: masterchef
-    })),
-    abi: "erc20:balanceOf",
-    block: chainBlocks,
-    chain: "polygon"
-  })).output;
-  let lpPositions = [];
-  LPBalance.forEach(i => {
-    lpPositions.push({
-      balance: i.output,
-      token: i.input.target
-    });
-  });
-  await unwrapUniswapLPs(balances, lpPositions, chainBlocks, "polygon", addr=>{
-    if (addr === "0x4257ea7637c355f81616050cbb6a9b709fd72683") {
-      return "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b";
-    }
-    else if(addr === "0x3ae490db48d74b1bc626400135d4616377d0109f") {
-      return "0xa1faa113cbe53436df28ff0aee54275c13b40975";
-    }
-    else if(addr === "0x3066818837c5e6ed6601bd5a91b0762877a6b731") {
-      return "0x04fa0d235c4abf4bcf4787af4cf447de572ef828";
-    }
-    return `polygon:${addr}`;
-  });
+async function tvl(api) {
+  let balances = {};
+  await Promise.all([
+    sumTokens2({ api, owner: nDefi, tokens: nDefiUnderLying, balances, }),
+    sumTokens2({ api, owner: nStbl, tokens: nStblUnderLying, balances,}),
+    sumTokens2({ api, owner: masterchef, tokens: sushiLPs, balances,}),
+  ])
+  return balances
 }
 
-async function underlyingTvl(balances, chainBlocks, token, underlying) {
-  let underBals = (await sdk.api.abi.multiCall({
-    calls: underlying.map(p => ({
-      target: p,
-      params: token
-    })),
-    abi: "erc20:balanceOf",
-    block: chainBlocks,
-    chain: "polygon"
-  })).output;
-  underBals.forEach(i => {
-    let addr = i.input.target.toLowerCase();
-    let balance = i.output;
-    if (addr === "0x4257ea7637c355f81616050cbb6a9b709fd72683") {
-      addr = "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b";
-    }
-    else if(addr === "0x3ae490db48d74b1bc626400135d4616377d0109f") {
-      addr = "0xa1faa113cbe53436df28ff0aee54275c13b40975";
-    }
-    else if(addr === "0x3066818837c5e6ed6601bd5a91b0762877a6b731") {
-      addr = "0x04fa0d235c4abf4bcf4787af4cf447de572ef828";
-    }
-    else {
-      addr = `polygon:${addr}`;
-    }
-    sdk.util.sumSingleBalance(balances, addr, balance);
-  })
-}
-  
-async function tvl(timestamp, block, chainBlocks) {
-  let balances = {};
-  await lpTvl(balances, chainBlocks.polygon, sushiLPs);
-  await underlyingTvl(balances, chainBlocks.polygon, nDefi, nDefiUnderLying);
-  await underlyingTvl(balances, chainBlocks.polygon, nStbl, nStblUnderLying);
-  return balances;
-}
-
-async function pool2(timestamp, block, chainBlocks) {
-  let balances = {};
-  await lpTvl(balances, chainBlocks.polygon, pool2LPs);
-  return balances;
+async function pool2(api) {
+  return sumTokens2({ api, owner: masterchef, tokens: pool2LPs})
 }
 
 module.exports = {

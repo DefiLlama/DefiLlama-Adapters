@@ -9,11 +9,11 @@ const POLS_bsc = "0x7e624fa0e1c4abfd309cc15719b7e2580887f570";
 module.exports = {
   misrepresentedTokens: true,
   ethereum: {
+    tvl: (async) => ({}),
     staking: staking(stakingContract, POLS),  
   },
   bsc: {
-    staking: staking(stakingContract_bsc, POLS_bsc, "bsc"),
+    staking: staking(stakingContract_bsc, POLS_bsc),
   },
-  tvl: (async) => ({}),
   methodology: "Counts liquidty on the staking only",
 };

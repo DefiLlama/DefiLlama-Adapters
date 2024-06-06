@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { compoundExports } = require('../helper/compound');
 
 const comptroller = {
@@ -12,8 +13,8 @@ const ceth = {
 }
 
 const native = {
-    bsc: "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
-    heco: "0x5545153ccfca01fbd7dd11c0b23ba694d9509a6f",
+    bsc: ADDRESSES.bsc.WBNB,
+    heco: ADDRESSES.heco.WHT,
 }
 
 module.exports = {

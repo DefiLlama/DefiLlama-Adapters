@@ -1,4 +1,4 @@
-const { get_account_tvl } = require("../helper/eos");
+const { get_account_tvl } = require("../helper/chain/eos");
 
 // OGX
 // https://ogx.network
@@ -12,3 +12,4 @@ module.exports = {
     tvl: eos
   },
 }
+module.exports.deadFrom = '2023-05-31'

@@ -1,10 +1,10 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
 const BigNumber = require("bignumber.js");
-const { getBlock } = require("../helper/getBlock");
 
 const stakingETHContract = "0x27F0408729dCC6A4672e1062f5003D2a07E4E10D";
-const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+const WETH = ADDRESSES.ethereum.WETH;
 
 const stakingCARBONContract = "0x2C5058325373d02Dfd6c08E48d91FcAf8fD49f45";
 const CARBON = "0xfa42da1bd08341537a44a4ca9d236d1c00a98b40";
@@ -22,7 +22,7 @@ const lpAddresses = [
   "0x89450F6C7d7f2c5971E9Ee28e94d8b199d17f673",
 ];
 
-const WETH_arb = "0x82af49447d8a07e3bd95bd0d56f35241523fbab1";
+const WETH_arb = ADDRESSES.arbitrum.WETH;
 const NYAN = "0xed3fb761414da74b74f33e5c5a1f78104b188dfc";
 
 async function pool2(time, ethBlock, chainBlocks) {
@@ -75,8 +75,7 @@ async function pool2(time, ethBlock, chainBlocks) {
   return balances;
 }
 
-async function arbTvl(time, _ethBlock, chainBlocks) {
-  const block = await getBlock(time, "arbitrum", chainBlocks);
+async function arbTvl(time, _ethBlock, {arbitrum: block}) {
   const eth = await sdk.api.eth.getBalance({
     target: stakingETHContract,
     block,
@@ -90,7 +89,7 @@ async function arbTvl(time, _ethBlock, chainBlocks) {
 module.exports = {
   misrepresentedTokens: true,
   arbitrum: {
-    staking: staking(stakingCARBONContract, CARBON, "arbitrum"),
+    staking: staking(stakingCARBONContract, CARBON),
     pool2: pool2,
     tvl: arbTvl,
   },

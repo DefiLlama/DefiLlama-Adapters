@@ -1,11 +1,8 @@
-const {getChainTvl} = require('../helper/getUniSubgraphTvl')
+const { getUniTVL } = require('../helper/unknownTokens')
 
-const chainTvl = getChainTvl({
-    moonriver: "https://api.thegraph.com/subgraphs/name/solarbeamio/amm-v2"
-})
-
-module.exports={
-    moonriver:{
-        tvl: chainTvl('moonriver')
-    }
-}
+module.exports = {
+  misrepresentedTokens: true,
+  moonriver: {
+    tvl: getUniTVL({ factory: '0x049581aEB6Fe262727f290165C29BDAB065a1B68', useDefaultCoreAssets: true, }), 
+  },
+};

@@ -1,16 +1,16 @@
 const { staking } = require("../helper/staking");
 const { pool2 } = require("../helper/pool2");
 
-const farmContract = "0x0eC4EE75bF85b553F471ad82839229316B358FB0";
-const XNL_BUSD_CakeLP = "0x879fC01b663396aEA410259E7be200dC7049F518";
-const XNL = "0x5f26fa0c2ee5d3c0323d861d0c503f31ac212662";
+const farmContract = "0x3838956710bcc9D122Dd23863a0549ca8D5675D6";
+const XNL_AURORA_TriLP = "0xb419ff9221039Bdca7bb92A131DD9CF7DEb9b8e5";
+const XNL = "0x7cA1C28663b76CFDe424A9494555B94846205585";
 
 module.exports = {
   misrepresentedTokens: true,
-  bsc: {
-    staking: staking(farmContract, XNL, "bsc"),
-    pool2: pool2(farmContract, XNL_BUSD_CakeLP, "bsc"),
+  aurora: {
+    tvl: (async) => ({}),
+    staking: staking(farmContract, XNL),
+    pool2: pool2(farmContract, XNL_AURORA_TriLP),
   },
-  tvl: (async) => ({}),
   methodology: "Counts liquidty on the staking and pool2 only",
 };
