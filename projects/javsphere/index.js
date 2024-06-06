@@ -23,9 +23,8 @@ module.exports = {
     1 year bond and 2 year bond are smart contracts on defimetachain L2. We also track staking and freezer of javsphers native token JAV). `,
   defichain_evm: {
     tvl,
-    staking: stakings({
-      stakingContracts: ['0x4e15D4225623D07Adb43e9D546E57E1E6097e869', '0xF923f0828c56b27C8f57bc698c99543f63091E9A'],
-      stakingToken: '0x66F3Cf265D2D146A0348F6fC67E3Da0835e0968E'}),
+    staking: stakings( ['0x4e15D4225623D07Adb43e9D546E57E1E6097e869', '0xF923f0828c56b27C8f57bc698c99543f63091E9A'],
+      '0x66F3Cf265D2D146A0348F6fC67E3Da0835e0968E'),
 
   }, defichain: {
     tvl: defichainTvl
