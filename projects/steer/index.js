@@ -129,6 +129,18 @@ const supportedChains = [
     chainId: 3776,
     identifier: 'astrzk'
   },
+  {
+    name: 'Telos',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-telos/1.0.1/gn',
+    chainId: 40,
+    identifier: 'telos'
+  },
+  {
+    name: 'X Layer',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-x-layer/1.0.1/gn',
+    chainId: 196,
+    identifier: 'xlayer'
+  },
   // {
   //   name: 'Celo',
   //   subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/rakeshbhatt10/steer-test-celo',
