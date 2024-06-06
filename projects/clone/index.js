@@ -1,16 +1,17 @@
-const anchor = require("@coral-xyz/anchor");
+const { Program } = require("@project-serum/anchor");
 const { sumTokens2, getProvider, } = require("../helper/solana");
+const { PublicKey } = require("@solana/web3.js")
 
-const programId = new anchor.web3.PublicKey('C1onEW2kPetmHmwe74YC1ESx3LnFEpVau6g2pg4fHycr')
+const programId = new PublicKey('C1onEW2kPetmHmwe74YC1ESx3LnFEpVau6g2pg4fHycr')
 
 async function tvl() {
   const provider = getProvider()
-  const idl = await anchor.Program.fetchIdl(programId, provider)
-  const program = new anchor.Program(idl, programId, provider)
+  const idl = await Program.fetchIdl(programId, provider)
+  const program = new Program(idl, programId, provider)
 
   let tokenAccounts = []
 
-  const cloneAccountAddress = anchor.web3.PublicKey.findProgramAddressSync(
+  const cloneAccountAddress = PublicKey.findProgramAddressSync(
     [Buffer.from("clone")], programId)[0]
 
   const cloneAccount = await program.account.clone.fetch(cloneAccountAddress)
