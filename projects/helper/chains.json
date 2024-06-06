@@ -1,6 +1,7 @@
 [
   "acala",
   "ace",
+  "aelf",
   "airdao",
   "alephium",
   "algorand",
@@ -142,6 +143,7 @@
   "inevm",
   "injective",
   "interlay",
+  "iotaevm",
   "iotex",
   "islm",
   "jbc",
@@ -318,5 +320,6 @@
   "zklink",
   "zksync",
   "zora",
-  "zyx"
+  "zyx",
+  "joltify"
 ]
