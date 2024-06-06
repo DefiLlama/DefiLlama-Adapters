@@ -168,6 +168,7 @@ const defaultTokens = {
      '0x47c454ca6be2f6def6f32b638c80f91c9c3c5949', //gfall
      '0xfe1d7f7a8f0bda6e415593a2e4f82c64b446d404', //blp
      '0xe9d78bf51ae04c7e1263a76ed89a65537b9ca903', // GMEX
+     '0x59769630b236398c2471eb26e6a529448030d94f', //NKYC nonkyc exchange token
   ],
   eos: [
     ["eosio.token", "EOS", "eos"],
@@ -232,6 +233,13 @@ const defaultTokens = {
     ADDRESSES.kava.USDT,
     ADDRESSES.kava.USDt,
     ADDRESSES.kava.USDC
+  ],
+  cronos: [
+    nullAddress,
+    ADDRESSES.cronos.USDC,
+    ADDRESSES.cronos.USDT,
+    ADDRESSES.cronos.WBTC,
+    "0xe44fd7fcb2b1581822d0c862b68222998a0c299a" //weth
   ],
 }
 

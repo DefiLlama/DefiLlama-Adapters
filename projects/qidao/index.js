@@ -174,6 +174,7 @@ const config = {
       "0x169d47043cc0c94c39fa327941c56cb0344dc508",
       "0xb5b31e6a13ae856bc30b3c76b16edad9f432b54f"
     ],
+    psm: ["0xdEffF862C76C6f9c7164B44f860fAe64C2A92aF5"],
     toa: [
       [nullAddress, '0xa3fa99a148fa48d14ed51d610c367c61876997f1'],
       // vaults

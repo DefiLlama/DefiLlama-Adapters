@@ -129,6 +129,18 @@ const supportedChains = [
     chainId: 3776,
     identifier: 'astrzk'
   },
+  {
+    name: 'Telos',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-telos/1.0.1/gn',
+    chainId: 40,
+    identifier: 'telos'
+  },
+  {
+    name: 'X Layer',
+    subgraphEndpoint: 'https://api.goldsky.com/api/public/project_clohj3ta78ok12nzs5m8yag0b/subgraphs/steer-protocol-x-layer/1.0.1/gn',
+    chainId: 196,
+    identifier: 'xlayer'
+  },
   // {
   //   name: 'Celo',
   //   subgraphEndpoint: 'https://api.thegraph.com/subgraphs/name/rakeshbhatt10/steer-test-celo',
@@ -167,7 +179,8 @@ module.exports.arbitrum.staking = stakings(
     "0x25Ef108B328Cf752F0E0b0169D499Db164173763",
     "0x0b619438d1E8b8c205656502de59Af2Af71C43e0",
     "0xaCdC6fC8F84fbA26f065489a7bf5837D7CDf546F",
-    "0xff46e1B60dD9De89Aa04902D5c3c5ca01f8576A4"
+    "0xff46e1B60dD9De89Aa04902D5c3c5ca01f8576A4",
+    "0x1E6a358a1721e0D2B84f39FD328FC03A1b6e863B"
   ], 
   "0x1C43D05be7E5b54D506e3DdB6f0305e8A66CD04e",
   "arbitrum"

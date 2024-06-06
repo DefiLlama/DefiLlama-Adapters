@@ -25,5 +25,8 @@ module.exports = compoundV3Exports({
   },
   scroll: {
     markets: ['0xB2f97c1Bd3bf02f5e74d13f02E3e26F93D77CE44'], // USDC Market
+  },
+  optimism: {
+    markets: ['0x2e44e174f7D53F0212823acC11C01A11d58c5bCB'], // USDC Matket
   }
 })

@@ -49,6 +49,9 @@ const config = {
 const bavaStakingRewards = "0x2F445C4cC8E114893279fa515C291A3d02160b02"
 const bavaToken = "0xe19A1684873faB5Fb694CfD06607100A632fF21c"
 
+const baseBavaStakingRewards = "0xD62634fe21A6c050CF4a05a36d1D9315a9c379b7"
+const baseBavaToken = "0x3fbdE9864362CE4Abb244EbeF2EF0482ABA8eA39"
+
 module.exports = {
   doublecounted: true,
   methodology: `Counts liquidty on the bava staking and lptoken staking on Avalanche and fx token staking on FunctionX`,
@@ -94,3 +97,5 @@ module.exports.avax = {
 
 module.exports.avax.staking = staking(bavaStakingRewards, bavaToken)
 module.exports.avax.pool2 = pool2('0xdcedb18047945de1f05f649569b3d2b0e648d9c8', '0x2c3601fe09c23df8beb8216298d1502c985e376f')
+
+module.exports.base.staking = staking(baseBavaStakingRewards, baseBavaToken)

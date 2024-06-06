@@ -26,7 +26,9 @@ async function tvl(api) {
     toa.push([tokenA[i], pools[i]])
     toa.push([tokenB[i], pools[i]])
   })
-  return sumTokens2({ api, tokensAndOwners: toa, })
+  return sumTokens2({ api, tokensAndOwners: toa, blacklistedTokens: [
+    '0x77ea44CB68Eaadd5D7372e5602b5646475ea1C81',
+  ] })
 }
 
 module.exports = {
