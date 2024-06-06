@@ -1,5 +1,6 @@
 const sdk = require('@defillama/sdk')
 const {get} = require("../helper/http");
+const { getChainTransform } = require('../helper/portedTokens')
 
 const abi = {asset: "address:asset", totalAssets: "uint256:totalAssets"};
 
@@ -13,9 +14,10 @@ async function tvl(api, block) {
     const {output: tokens} = await sdk.api.abi.multiCall({abi: abi.asset, ...params});
     const {output: totalAssets} = await sdk.api.abi.multiCall({abi: abi.totalAssets, ...params});
 
+    const transform = await getChainTransform(chain);
     const balances = {};
     for (let i = 0; i < tokens.length; i++) {
-        sdk.util.sumSingleBalance(balances, tokens[i].output, totalAssets[i].output);
+        sdk.util.sumSingleBalance(balances, transform(tokens[i].output), totalAssets[i].output);
     }
 
     return balances;
