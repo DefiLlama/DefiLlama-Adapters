@@ -225,6 +225,11 @@ async function tvlBaseOptimism(api) {
     positions.forEach(position => addUniV3LikePosition({ ...position, tick, api }));
   }));
 
+  if (chainName === 'base') {
+    const masterchefPositions = await fetchSickleNftPositions(api, sickles, config[api.chain].masterchefV3);
+    masterchefPositions.forEach(position => addUniV3LikePosition({ ...position, api }));
+  }
+
   return sumTokens2({ api, resolveLP: true });
 }
 
