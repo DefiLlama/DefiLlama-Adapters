@@ -11,7 +11,8 @@ module.exports = {
         ADDRESSES.ethereum.WETH,
         ADDRESSES.ethereum.WBTC,
         XDAO,
-        '0x12970E6868f88f6557B76120662c1B3E50A646bf', // LADYS
+        ADDRESSES.ethereum.LADYS,
+        ADDRESSES.ethereum.pufETH,
       ],
       holders: [
         '0xb80fDAA74dDA763a8A158ba85798d373A5E84d84', // portal v1
@@ -146,7 +147,7 @@ module.exports = {
         ADDRESSES.arbitrum.USDC_CIRCLE,
         ADDRESSES.arbitrum.WETH,
         XDAO,
-        '0x3b60FF35D3f7F62d636b067dD0dC0dFdAd670E4E', // LADYS
+        ADDRESSES.arbitrum.LADYS,
       ],
       holders: [
         '0x01A3c8E513B758EBB011F7AFaf6C37616c9C24d9', // portal v2
@@ -230,6 +231,7 @@ module.exports = {
        tokens: [
          ADDRESSES.scroll.WETH,
          ADDRESSES.scroll.USDC,
+         ADDRESSES.scroll.pufETH,
        ],
        holders: [
          '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4', // portal v2
@@ -241,6 +243,7 @@ module.exports = {
        tokens: [
          ADDRESSES.manta.WETH,
          ADDRESSES.manta.USDC,
+         ADDRESSES.manta.pufETH,
        ],
        holders: [
          '0x5Aa5f7f84eD0E5db0a4a85C3947eA16B53352FD4', // portal v2
@@ -305,6 +308,7 @@ module.exports = {
        name: 'zklink',
        tokens: [
          ADDRESSES.zklink.WETH,
+         ADDRESSES.zklink.pufETH,
        ],
        holders: [
          '0x8Dc71561414CDcA6DcA7C1dED1ABd04AF474D189', // portal v2
@@ -336,6 +340,15 @@ module.exports = {
        ],
        holders: [
          '0x292fC50e4eB66C3f6514b9E402dBc25961824D62', // portal v2
+       ]
+     },
+     {
+       name: 'zeta',
+       tokens: [
+         ADDRESSES.zeta.pufETH,
+       ],
+       holders: [
+         '0x8a7F930003BedD63A1ebD99C5917FD6aE7E3dedf', // portal v2
        ]
      },
   ]
