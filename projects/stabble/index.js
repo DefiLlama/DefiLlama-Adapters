@@ -107,9 +107,7 @@ const WEIGHTED_SWAP_IDL = {
             name: "tokens",
             type: {
               vec: {
-                defined: {
-                  name: "PoolToken",
-                },
+                defined: "PoolToken",
               },
             },
           },
@@ -214,9 +212,7 @@ const STABLE_SWAP_IDL = {
             name: "tokens",
             type: {
               vec: {
-                defined: {
-                  name: "PoolToken",
-                },
+                defined: "PoolToken",
               },
             },
           },
