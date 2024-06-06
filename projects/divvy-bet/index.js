@@ -3,10 +3,10 @@ const { PublicKey } = require("@solana/web3.js");
 const { getProvider, sumTokens2 } = require("../helper/solana");
 
 async function tvl() {
-  function findHouseAuthorityAddress(houseKey) {
+  function findHouseAuthorityAddress(houseKey, programId) {
     return PublicKey.findProgramAddressSync(
       [Buffer.from("House Authority"), houseKey.toBuffer()],
-      DIVVY_PROGRAM_ID
+      programId
     )[0];
   }
 
