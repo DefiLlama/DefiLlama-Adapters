@@ -25,7 +25,7 @@ module.exports = {
     tvl,
     staking: stakings( ['0x4e15D4225623D07Adb43e9D546E57E1E6097e869', '0xF923f0828c56b27C8f57bc698c99543f63091E9A'],
       '0x66F3Cf265D2D146A0348F6fC67E3Da0835e0968E'),
-    vesting: staking('0x7246ad1ac72715c5fd6c1FD7460A63afB8289104','0x888cea2bbdd5d47a4032cf63668d7525c74af57a')
+    vesting: staking('0x7246ad1ac72715c5fd6c1FD7460A63afB8289104','0x66F3Cf265D2D146A0348F6fC67E3Da0835e0968E')
   }, defichain: {
     tvl: defichainTvl
   },
