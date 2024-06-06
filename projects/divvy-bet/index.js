@@ -3,41 +3,41 @@ const { PublicKey } = require("@solana/web3.js");
 const { getProvider, sumTokens2 } = require("../helper/solana");
 
 async function tvl() {
-  const whitelistedHouseKeys = [
-    "hausUZLF38ZRqZdQvNLVoAFe7FAFoAzyS5oLpQCgPWz", // USDC
-    "hausNgPX6qShZUnGCj97UmKfzrtKLi4UNoBG6Aju3Ye", // USDT
-    "hausCYdqR6mUN58ZdonzMZKXVcaC26yh7EuaN6nZDtU", // Bonk
-    "hausZ4fWKatkg2p59yQipaXJBTMAGcVQ6kF85SaQNj6", // PYTH
-    "hausPNwKGhEQz6QCmbXkoxpvws2mNeGs1xLg5NKNZwe", // Jupiter
-    "hausURZDvoMvLnUwPRiZYei8MMBwx2VdZQmAd4qyJTw", // Wormhole
-  ];
+  function findHouseAuthorityAddress(houseKey, programId) {
+    return PublicKey.findProgramAddressSync(
+      [Buffer.from("House Authority"), houseKey.toBuffer()],
+      programId
+    )[0];
+  }
+
+  const NATIVE_MINT = "So11111111111111111111111111111111111111112";
+  const DIVVY_ADMIN = "AHf1MX99d31ebLfAydVPe2vVdgzZGuUaW972znWPNzZY";
   const programId = new PublicKey(
     "dvyFwAPniptQNb1ey4eM12L8iLHrzdiDsPPDndd6xAR"
   );
   const provider = getProvider();
   const idl = await Program.fetchIdl(programId, provider);
   const program = new Program(idl, programId, provider);
-  const houses = await program.account.house.all();
+  const houses = await program.account.house.all([
+    {
+      memcmp: {
+        offset: 8,
+        bytes: DIVVY_ADMIN, // houses governed by Divvy's multisig
+      },
+    },
+  ]);
   const tokensAndOwners = houses
-    .filter((house) =>
-      whitelistedHouseKeys.includes(house.publicKey.toBase58())
-    )
+    .filter((house) => house.publicKey.toBase58() !== NATIVE_MINT)
     .map((house) => {
-      const owner = PublicKey.findProgramAddressSync(
-        [Buffer.from("House Authority"), house.publicKey.toBuffer()],
-        programId
-      )[0];
+      const owner = findHouseAuthorityAddress(house.publicKey);
       return [house.account.currency, owner];
     });
-  const solOwners = [
-    PublicKey.findProgramAddressSync(
-      [
-        Buffer.from("House Authority"),
-        new PublicKey("haus4QCRft9QKj2iQL9MUiQ2P6uYnWVyhFEZ3QsSa5U").toBuffer(),
-      ],
-      programId
-    )[0],
-  ];
+  const solOwners = houses
+    .filter((house) => house.publicKey.toBase58() === NATIVE_MINT)
+    .map((house) => {
+      const owner = findHouseAuthorityAddress(house.publicKey);
+      return [house.account.currency, owner];
+    });
   return sumTokens2({ tokensAndOwners, solOwners });
 }
 
