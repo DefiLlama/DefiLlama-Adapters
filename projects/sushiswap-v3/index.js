@@ -75,6 +75,7 @@ module.exports = uniV3Export({
   zeta: { factory: '0xB45e53277a7e0F1D35f2a77160e91e25507f1763', fromBlock: 1551069, },
   islm: { factory, fromBlock: 6541826, },
   blast: { factory: '0x7680d4b43f3d1d54d6cfeeb2169463bfa7a6cf0d', fromBlock: 284122, },
+  rsk: { factory: '0x46B3fDF7B5cde91Ac049936bF0Bdb12C5D22202E', fromBlock: 6365060, }, //this one
 });
 
 const config = {
