@@ -153,11 +153,11 @@ async function fetchGauges2(api, fromBlock, gaugeFactory, gaugeFactory2, voter, 
   return { lp: filteredLp, nft };
 }
 
-async function fetchSickleNftPositions(api, sickles, nonfungiblePositionManager) {
+async function fetchSickleNftPositions(api, sickles, managerAddress, isMasterchef = false) {
   const sickleBalances = {};
 
   for (const sickle of sickles) {
-    const balanceCallsSickle = [{ target: nonfungiblePositionManager, params: [sickle] }];
+    const balanceCallsSickle = [{ target: managerAddress, params: [sickle] }];
     const sickleBals = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCallsSickle });
     const balance = sickleBals[0];
 
@@ -165,7 +165,7 @@ async function fetchSickleNftPositions(api, sickles, nonfungiblePositionManager)
 
     const nftCalls = [];
     for (let i = 0; i < balance; i++) {
-      nftCalls.push({ target: nonfungiblePositionManager, params: [sickle, i] });
+      nftCalls.push({ target: managerAddress, params: [sickle, i] });
     }
 
     const nftIds = await api.multiCall({ abi: 'function tokenOfOwnerByIndex(address owner, uint256 index) view returns (uint256)', calls: nftCalls });
@@ -176,14 +176,39 @@ async function fetchSickleNftPositions(api, sickles, nonfungiblePositionManager)
   for (const sickle in sickleBalances) {
     const nftIds = sickleBalances[sickle];
     nftIds.forEach(nftId => {
-      positionCalls.push({ target: nonfungiblePositionManager, params: [nftId] });
+      positionCalls.push({ target: managerAddress, params: [nftId] });
     });
   }
 
   const positions = await api.multiCall({
-    abi: 'function positions(uint256 tokenId) view returns (uint96 nonce, address operator, address token0, address token1, int24 tickSpacing, int24 tickLower, int24 tickUpper, uint128 liquidity, uint256 feeGrowthInside0LastX128, uint256 feeGrowthInside1LastX128, uint128 tokensOwed0, uint128 tokensOwed1)',
+    abi: isMasterchef
+      ? 'function userPositionInfos(uint256 tokenId) view returns (uint128 liquidity, uint128 boostLiquidity, int24 tickLower, int24 tickUpper, uint256 rewardGrowthInside, uint256 reward, address user, uint256 pid, uint256 boostMultiplier)'
+      : 'function positions(uint256 tokenId) view returns (uint96 nonce, address operator, address token0, address token1, int24 tickSpacing, int24 tickLower, int24 tickUpper, uint128 liquidity, uint256 feeGrowthInside0LastX128, uint256 feeGrowthInside1LastX128, uint128 tokensOwed0, uint128 tokensOwed1)',
     calls: positionCalls,
   });
+
+  if (isMasterchef) {
+    const poolInfoCalls = positions.map(position => ({
+      target: managerAddress,
+      params: [position.pid],
+    }));
+
+    const poolInfos = await api.multiCall({
+      abi: 'function poolInfo(uint256 pid) view returns (uint256 allocPoint, address v3Pool, address token0, address token1, uint24 fee, uint256 totalLiquidity, uint256 totalBoostLiquidity)',
+      calls: poolInfoCalls,
+    });
+
+    positions.forEach((position, index) => {
+      const poolInfo = poolInfos[index];
+      position.allocPoint = poolInfo.allocPoint;
+      position.v3Pool = poolInfo.v3Pool;
+      position.token0 = poolInfo.token0;
+      position.token1 = poolInfo.token1;
+      position.fee = poolInfo.fee;
+      position.totalLiquidity = poolInfo.totalLiquidity;
+      position.totalBoostLiquidity = poolInfo.totalBoostLiquidity;
+    });
+  }
 
   return positions;
 }
@@ -226,7 +251,7 @@ async function tvlBaseOptimism(api) {
   }));
 
   if (chainName === 'base') {
-    const masterchefPositions = await fetchSickleNftPositions(api, sickles, config[api.chain].masterchefV3);
+    const masterchefPositions = await fetchSickleNftPositions(api, sickles, config[api.chain].masterchefV3, true);
     masterchefPositions.forEach(position => addUniV3LikePosition({ ...position, api }));
   }
 
@@ -259,7 +284,7 @@ async function tvlArbitrumLinea(api) {
 
 
   const positions = await fetchSickleNftPositions(api, sickles, config[api.chain].NonfungiblePositionManager);
-  const masterchefPositions = await fetchSickleNftPositions(api, sickles, config[api.chain].masterchefV3);
+  const masterchefPositions = await fetchSickleNftPositions(api, sickles, config[api.chain].masterchefV3, true);
   console.log(masterchefPositions);
 
   positions.forEach(position => addUniV3LikePosition({ ...position, api }));
@@ -268,10 +293,28 @@ async function tvlArbitrumLinea(api) {
 
 }
 
+// TVL calculation for chains with masterchefV3
+async function tvlWithMasterchef(api) {
+  const { factory, fromBlockSickle, masterchefV3 } = config[api.chain];
+
+  const sickles = await fetchSickles(api, factory, fromBlockSickle);
+
+
+  if (masterchefV3) {
+    const masterchefPositions = await fetchSickleNftPositions(api, sickles, masterchefV3, true);
+    masterchefPositions.forEach(position => addUniV3LikePosition({ ...position, api }));
+    console.log(masterchefPositions);
+  }
+
+  return sumTokens2({ api, resolveLP: true });
+}
+
 Object.keys(config).forEach(chain => {
   if (['base', 'optimism'].includes(chain)) {
     module.exports[chain] = { tvl: tvlBaseOptimism };
   } else if (['arbitrum', 'linea'].includes(chain)) {
     module.exports[chain] = { tvl: tvlArbitrumLinea };
+  } else if (!['base', 'optimism', 'arbitrum', 'linea'].includes(chain) && config[chain].masterchefV3) {
+    module.exports[chain] = { tvl: tvlWithMasterchef };
   }
 });
