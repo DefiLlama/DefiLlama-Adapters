@@ -8,11 +8,16 @@ const config = {
     positionManager: '0x02bcaA4633E466d151b34112608f60A82a4F6035',
     traderBalanceVault: '0x0801896C67CF024606BcC92bd788d6Eb077CC74F',
     defaultTokens: {
+      MATIC: ADDRESSES.polygon.WMATIC_1,
+      WMATIC: ADDRESSES.polygon.WMATIC_2,
       WETH: ADDRESSES.polygon.WETH_1,
       WBTC: ADDRESSES.polygon.WBTC,
-      WMATIC: ADDRESSES.polygon.WMATIC_2,
       USDC: ADDRESSES.polygon.USDC,
       USDT: ADDRESSES.polygon.USDT,
+      AAVE: "0xD6DF932A45C0f255f85145f286eA0b292B21C90B",
+      DAI: ADDRESSES.polygon.DAI,
+      LINK: "0x53E0bca35eC356BD5ddDFebbD1Fc0fD03FaBad39",
+      GNS: "0xE5417Af564e4bFDA1c483642db72007871397896",
       EPMX: "0xDc6D1bd104E1efa4A1bf0BBCf6E0BD093614E31A"
     },
     aaveTokens: {
@@ -32,6 +37,7 @@ const config = {
       USDC: ADDRESSES.arbitrum.USDC_CIRCLE,
       USDT: ADDRESSES.arbitrum.USDT,
       WETH: ADDRESSES.arbitrum.WETH,
+      ETH: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
       WBTC: ADDRESSES.arbitrum.WBTC,
       ARB: ADDRESSES.arbitrum.ARB,
       DAI: ADDRESSES.arbitrum.DAI,
@@ -60,6 +66,7 @@ const config = {
     traderBalanceVault: '0x156e2fC8e1906507412BEeEB6640Bf999a1Ea76b',
     defaultTokens: {
       WETH: ADDRESSES.ethereum.WETH,
+      ETH: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
       WBTC: ADDRESSES.ethereum.WBTC,
       USDC: ADDRESSES.ethereum.USDC,
       USDT: ADDRESSES.ethereum.USDT,

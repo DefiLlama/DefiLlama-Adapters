@@ -1,3 +1,4 @@
+const { nullAddress } = require('../helper/unwrapLPs')
 
 const config = {
   arbitrum: {
@@ -31,6 +32,11 @@ Object.keys(config).forEach(chain => {
   const { mvts,} = config[chain]
   module.exports[chain] = {
     tvl: async (api) => {
+      if (chain === 'polygon') {
+        const token = '0x77F4C841cb87fDFa43aB909cf56f7710Af648a8e'
+        const deposits = await api.call({  abi: 'function deposits(address) view returns (uint256)', target: '0xdd0BdF5749e300f946cdb1dDFE1ffa828eC0dB72', params: token })
+        api.add(nullAddress, deposits)
+      }
       const assets = await api.multiCall({  abi: 'address:asset', calls: mvts})
       return api.sumTokens({ tokensAndOwners2: [assets, mvts]})
     }

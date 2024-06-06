@@ -1,6 +1,7 @@
 [
   "acala",
   "ace",
+  "aelf",
   "airdao",
   "alephium",
   "algorand",
@@ -142,6 +143,7 @@
   "inevm",
   "injective",
   "interlay",
+  "iotaevm",
   "iotex",
   "islm",
   "jbc",
@@ -227,6 +229,7 @@
   "planq",
   "pokt",
   "polis",
+  "polkadex",
   "polkadot",
   "polygon",
   "polygon_zkevm",
@@ -238,6 +241,7 @@
   "quasar",
   "quicksilver",
   "radixdlt",
+  "real",
   "reef",
   "regen",
   "rei",
@@ -276,6 +280,7 @@
   "svm",
   "sx",
   "syscoin",
+  "taiko",
   "telos",
   "tenet",
   "terra",
@@ -315,5 +320,6 @@
   "zklink",
   "zksync",
   "zora",
-  "zyx"
+  "zyx",
+  "joltify"
 ]
