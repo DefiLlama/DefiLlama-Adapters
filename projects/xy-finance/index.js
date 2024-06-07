@@ -67,6 +67,9 @@ const config = {
   },
   xlayer: {
     chainId: '196'
+  },
+  taiko: {
+    chainId: '167000'
   }
 }
 
@@ -394,6 +397,16 @@ const yPoolDepositContract = {
     "USDT": {
       "contractAddress": "0x1e4992E1Be86c9d8ed7dcBFcF3665FE568dE98Ab",
       "tokenAddress": ADDRESSES.xlayer.USDT
+    }
+  },
+  "167000": {
+    "ETH": {
+      "contractAddress": "0xFa77c2DecCB21ACb9Bf196408Bf6aD5973D07762",
+      "tokenAddress": ethAddress
+    },
+    "USDC": {
+      "contractAddress": "0x1e4992E1Be86c9d8ed7dcBFcF3665FE568dE98Ab",
+      "tokenAddress": ADDRESSES.taiko.USDC
     }
   }
 }
