@@ -9,4 +9,11 @@ module.exports = {
       fetchBalances: true,
     }),
   },
+  base: {
+    tvl: getUniTVL({
+      factory: "0x8aD3d3e6B1b7B65138bD508E48330B544539b2C3",
+      useDefaultCoreAssets: true,
+      fetchBalances: true,
+    }),
+  },
 };

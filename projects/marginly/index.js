@@ -12,9 +12,9 @@ Object.keys(config).forEach((chain) => {
   module.exports[chain] = {
     tvl: async (api) => {
       const ownerTokens = [];
-      for (const { factory, fromBlock } of factories) {
+      for (const { factory, fromBlock, version } of factories) {
         let logs;
-        if (chain === "arbitrum") {
+        if (version === "v1") {
           // v1.0 contract
           logs = await getLogs({
             api,
