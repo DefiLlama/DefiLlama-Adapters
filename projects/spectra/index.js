@@ -93,7 +93,6 @@ Object.keys(config).forEach((chain) => {
         "event CurvePoolDeployed(address indexed poolAddress, address indexed ibt, address indexed pt)",
       onlyArgs: true,
       fromBlock: fromBlock,
-      skipCache: true,
     });
     return logs.map((i) => [i.poolAddress, i.ibt]);
   }
@@ -106,7 +105,6 @@ Object.keys(config).forEach((chain) => {
         "event PTDeployed(address indexed pt, address indexed poolCreator)",
       onlyArgs: true,
       fromBlock: fromBlock,
-      skipCache: true,
     });
     return logs.map((i) => i.pt);
   }

@@ -144,7 +144,6 @@ async function getV1CAs(creditManager, block, api) {
   const topics = [];
   cm.interface.forEachEvent((e) => topics.push(e.topicHash));
   const rawLogs = await getLogs.getLogs({
-    skipCache: true,
     target: creditManager,
     fromBlock: 13854983,
     toBlock: block,
