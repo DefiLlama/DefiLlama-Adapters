@@ -8,6 +8,7 @@ const config = {
   zklink: '0x4Ac518DbF0CC730A1c880739CFa98fe0bB284959',
   bsquared: '0x72f7a8eb9F83dE366AE166DC50F16074076C3Ea6',
   bob: '0x77cabFd057Bd7C81c011059F1bf74eC1fBeDa971',
+  btr: '0xf1E25704e75dA0496B46Bf4E3856c5480A3c247F'
 }
 
 const abis = {
