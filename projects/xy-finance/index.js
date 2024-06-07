@@ -62,6 +62,12 @@ const config = {
   scroll: {
     chainId: '534352',
   },
+  blast: {
+    chainId: '81457',
+  },
+  xlayer: {
+    chainId: '196'
+  }
 }
 
 const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
@@ -374,17 +380,33 @@ const yPoolDepositContract = {
       "tokenAddress": ADDRESSES.scroll.USDC
     }
   },
+  "81457": {
+    "ETH": {
+      "contractAddress": "0xFa77c2DecCB21ACb9Bf196408Bf6aD5973D07762",
+      "tokenAddress": ethAddress
+    },
+  },
+  "196": {
+    "ETH": {
+      "contractAddress": "0xFa77c2DecCB21ACb9Bf196408Bf6aD5973D07762",
+      "tokenAddress": ADDRESSES.xlayer.WETH
+    },
+    "USDT": {
+      "contractAddress": "0x1e4992E1Be86c9d8ed7dcBFcF3665FE568dE98Ab",
+      "tokenAddress": ADDRESSES.xlayer.USDT
+    }
+  }
 }
 
 module.exports={}
 
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {
-    tvl: async (_, _b, {[chain]: block}) => {
+    tvl: async (api) => {
       const { chainId } = config[chain]
       const toa = []
       Object.values(yPoolDepositContract[chainId]).forEach(i => toa.push([i.tokenAddress, i.contractAddress]))
-      return sumTokens2({ chain, block, tokensAndOwners: toa, })
+      return sumTokens2({ api, tokensAndOwners: toa, })
     }
   }
 })

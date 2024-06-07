@@ -41,6 +41,9 @@ const CONFIG = {
   metis: {
     router: '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590',
   },
+  mantle: {
+    router: '0x2F6F07CDcf3588944Bf4C42aC74ff24bF56e7590',
+  },
   base: {
     router: '0x45f1A95A4D3f3836523F5c83673c797f4d4d263B',
     etherToken: '0x224d8fd7ab6ad4c6eb4611ce56ef35dec2277f03',
@@ -60,7 +63,7 @@ const CONFIG = {
 
 module.exports = {
   goerli: {
-    tvl: async (_, _b, _cb, { api }) => {
+    tvl: async (api) => {
       return {
         [ADDRESSES.ethereum.WETH]: await api.call({ abi: 'erc20:balanceOf', target: '0xdD69DB25F6D620A7baD3023c5d32761D353D3De9', params: ['0x88124ef4a9ec47e691f254f2e8e348fd1e341e9b'], }),
       }
@@ -74,7 +77,7 @@ Object.keys(CONFIG).forEach((chain) => {
 
 
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api }) => {
+    tvl: async (api) => {
       const factory = await api.call({ abi: abi.factory, target: router })
       const pools = await api.fetchList({ lengthAbi: abi.allPoolsLength, itemAbi: abi.allPools, target: factory, })
       const tokens = await api.multiCall({ abi: abi.token, calls: pools })

@@ -1,9 +1,12 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { getChainTvl } = require('../helper/getUniSubgraphTvl');
+const { staking } = require('../helper/staking');
+
 
 module.exports = {
   misrepresentedTokens: true,
-  timetravel: true,
-  polygon:{
+    polygon:{
+    staking: staking("0x958d208Cdf087843e9AD98d23823d32E17d723A1", ADDRESSES.polygon.QUICK),
     tvl: getChainTvl({
       polygon: 'https://api.thegraph.com/subgraphs/name/sameepsi/quickswap06'
     })('polygon')

@@ -11,5 +11,16 @@ module.exports = {
             [ADDRESSES.era.WETH, ADDRESSES.era.USDC]
         )
 
+    },
+    linea: {
+        tvl: staking(
+          ["0x3e636c4dC9Bd55831055c3400160e1e8A25DaD8a", "0xE0D1977a23cb90252B9997aB07b03136E214E0C6",
+              "0x3a85b87e81cD99D4A6670f95A4F0dEdAaC207Da0"],
+          [ADDRESSES.linea.WETH, ADDRESSES.linea.USDC]
+        )
+    },
+    zklink:{
+        tvl: staking(["0xb5e635f2cB9eAC385D679069f8e0d1740436b355", "0xa6DbD1bdB1DC4339Df51d90Ce306CCE6edFbbbb1"],
+            [ADDRESSES.null, ADDRESSES.zklink.USDC])
     }
 };

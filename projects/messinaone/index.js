@@ -11,6 +11,8 @@ const tokenChain = {
   avax: 6,
   arbitrum: 23,
   bsc: 4,
+  optimism: 24,
+  base: 30,
 };
 
 const fetchAssets = async () => {
@@ -42,4 +44,6 @@ module.exports = {
   avax: { tvl },
   arbitrum: { tvl },
   bsc: { tvl },
+  optimism: { tvl },
+  base: { tvl },
 };

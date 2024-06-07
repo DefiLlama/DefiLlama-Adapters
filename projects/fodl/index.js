@@ -1,6 +1,6 @@
 const abi = require('./abi.json')
 const { sumTokensExport } = require('../helper/unwrapLPs');
-const { sliceIntoChunks } = require("@defillama/sdk/build/util");
+const { sliceIntoChunks } = require('../helper/utils');
 
 // taken from https://app.fodl.finance/config.json
 const config = {
@@ -36,11 +36,13 @@ Object.keys(config).forEach(chain => {
   const { position_nft, lens_contract, pool2, staking, } = config[chain]
   module.exports[chain] = {
     tvl: async (_, _b, { [chain]: block }, { api }) => {
-      const positions = await api.fetchList({  lengthAbi: 'erc20:totalSupply', itemAbi: abi.tokenByIndex, target: position_nft,})
-      const data = await api.multiCall({  abi: abi.getPositionsMetadata, calls: sliceIntoChunks(positions, 10).map(i => ({params: [i]})), target: lens_contract,})
-      data.forEach(j => {
-        j.forEach(i => api.add(i.supplyTokenAddress, i.supplyAmount))
-      })
+      const allPositions = await api.fetchList({ lengthAbi: 'erc20:totalSupply', itemAbi: abi.tokenByIndex, target: position_nft, })
+      for (const positions of sliceIntoChunks(allPositions, 50)) {
+        const data = await api.multiCall({ abi: abi.getPositionsMetadata, calls: sliceIntoChunks(positions, 10).map(i => ({ params: [i] })), target: lens_contract, })
+        data.forEach(j => {
+          j.forEach(i => api.add(i.supplyTokenAddress, i.supplyAmount))
+        })
+      }
     }
   }
 

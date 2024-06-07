@@ -134,8 +134,7 @@ const {tvl: fantomLending, borrowed: fantomBorrowed} =
   compoundExports(Contracts.fantom.lend.ironController, "fantom", "0xdfce3E14a8c77D32fe2455a9E56424F149E2F271", Contracts.fantom.wrappedNative)
 
 module.exports = {
-  timetravel: true,
-  polygon: {
+    polygon: {
     tvl: sdk.util.sumChainTvls([polygonTvl, polygonLending]),
     borrowed: polygonBorrowed
   },

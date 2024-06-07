@@ -60,10 +60,13 @@ module.exports = {
   polygon: getV2TvlObject('polygon'),
   arbitrum: getV2TvlObject('arbitrum'),
   bsc: getV2TvlObject('bsc'),
+  xdai: getV2TvlObject('xdai'),
+  moonbeam: getV2TvlObject('moonbeam'),
    hallmarks: [
     [1650082958, "Protocol is paused due to non-critical vulnerability"],
-    [1654057358, "OP launch"],
+    [1654057358, "Deployment on Optimism"],
     [1668006000, "Deployment on Arbitrum"],
     [1672099200, "Deployment on Ethereum"],
+    [1685577600, "Deployment on BNB"],
   ]
 };

@@ -58,11 +58,11 @@ async function getLoanDebt(loans, api) {
   return api.getBalances()
 }
 
-const getEthTvl = async (_, ethBlock, __, { api }) => {
+const getEthTvl = async (api) => {
   return sumTokens2({ owners: [FRACTAL_YIELD_RESERVE_ETH, FRACTAL_VAULT_CONTRACT_ETH], tokens: [USDC_ETH,], api })
 };
 
-const getEthLoans = async (_, ethBlock, __, { api }) => {
+const getEthLoans = async (api) => {
   return getLoanDebt(ETH_LOANS, api)
 }
 

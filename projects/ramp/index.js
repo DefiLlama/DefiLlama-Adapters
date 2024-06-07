@@ -1,42 +1,27 @@
-const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
-const axios = require("axios");
-const { getChainTransform, } = require('../helper/portedTokens')
-
-async function getConfig(network) {
-  return await axios.get('https://config.rampdefi.com/config/appv2/priceInfo').then(response => response.data[network]);
-}
+const { getConfig } = require('../helper/cache')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 function getChainTVL(chain) {
-  return async (timestamp, ethBlock, { [chain]: block }) => {
-    let balances = {};
-    const config = await getConfig(chain === 'ethereum' ? 'eth' : chain);
+  return async (api) => {
+    const key = chain === 'ethereum' ? 'eth' : chain;
+    const { [key]: config } = await getConfig('ramp', 'https://config.rampdefi.com/config/appv2/priceInfo');
     const tokens = config.tokens;
     delete tokens.RUSD
     delete tokens.RAMP
-    const transform = await getChainTransform(chain)
-
     const calls = []
+    const iTokens = []
 
     for (const [tokenName, token] of Object.entries(tokens)) {
       if (token?.strategy?.type === undefined) continue
       const tokenAddress = token.address;
+      iTokens.push(tokenAddress)
       calls.push({ target: token.strategy.address, params: tokenAddress })
     }
 
-    const { output: res } = await sdk.api.abi.multiCall({
-      abi: abi.getPoolAmount,
-      calls,
-      chain, block,
-    })
-
-    res.forEach(i => {
-      const token = transform(i.input.params[0])
-      const balance = i.output
-      sdk.util.sumSingleBalance(balances, token, balance)
-    })
-
-    return balances
+    const res = (await api.multiCall({ abi: abi.getPoolAmount, calls, permitFailure: true})).map(i => i ?? 0)
+    api.addTokens(iTokens, res)
+    return sumTokens2({ api, resolveLP: true, })
   }
 }
 

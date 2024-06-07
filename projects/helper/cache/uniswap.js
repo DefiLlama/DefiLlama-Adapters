@@ -1,3 +1,4 @@
+const ADDRESSES = require('../coreAssets.json')
 
 const uniswapAbi = require('../abis/uniswap')
 const { getCache, setCache, } = require('../cache');
@@ -24,12 +25,11 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
 
   const abi = { ...uniswapAbi, ...abis }
 
-  return async (_, _b, cb, { api, chain } = {}) => {
-    // console.log(await api.call({ abi: 'address:factory', target: factory }))
-
-    chain = chain ?? api?.chain
+  return async (api) => {
+    let chain = api?.chain
     if (!chain)
       chain = _chain
+    // console.log(await api.call({ target: factory, abi: 'address:factory' }))
     factory = normalizeAddress(factory, chain)
     blacklist = (blacklistedTokens || blacklist).map(i => normalizeAddress(i, chain))
     const key = `${factory}-${chain}`
@@ -41,7 +41,7 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
 
     const _oldPairInfoLength = cache.pairs.length
     const length = await api.call({ abi: abi.allPairsLength, target: factory, })
-    
+
     sdk.log(chain, ' No. of pairs: ', length)
     sdk.log('cached info', cache.pairs.length)
     const pairCalls = []
@@ -78,7 +78,7 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
     if (queryBatched) {
       const batchedCalls = sliceIntoChunks(cache.pairs, queryBatched)
       for (const calls of batchedCalls) {
-        reserves.push(...await api.multiCall({ abi: abi.getReserves, calls }))
+        reserves.push(...await api.multiCall({ abi: abi.getReserves, calls, permitFailure, }))
         if (waitBetweenCalls) await sleep(waitBetweenCalls)
       }
     } else if (fetchBalances) {
@@ -93,13 +93,15 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
         i++
       }
     } else
-      reserves = await api.multiCall({ abi: abi.getReserves, calls: cache.pairs })
+      reserves = await api.multiCall({ abi: abi.getReserves, calls: cache.pairs, permitFailure })
 
 
     const balances = {}
     if (coreAssets) {
       const data = []
-      reserves.forEach(({ _reserve0, _reserve1 }, i) => {
+      reserves.forEach((dat, i) => {
+        if (!dat) return;
+        const { _reserve0, _reserve1 } = dat
         if (hasStablePools && cache.symbols[i].startsWith(stablePoolSymbol)) {
           sdk.log('found stable pool: ', stablePoolSymbol)
           sdk.util.sumSingleBalance(balances, cache.token0s[i], _reserve0)
@@ -130,7 +132,7 @@ function getUniTVL({ coreAssets, blacklist = [], factory, blacklistedTokens,
     if (cache.pairs) {
       for (let i = 0; i < cache.pairs.length; i++) {
         if (!cache.pairs[i]) {
-          cache.pairs[i] = await api.call({ abi: abi.allPairsLength, target: factory, params: i })
+          cache.pairs[i] = await api.call({ abi: abi.allPairs, target: factory, params: i })
           updateCache = true
         }
         let pair = cache.pairs[i]

@@ -1,12 +1,13 @@
-const { get } = require('../helper/http')
+const { sumTokens2 } = require('../helper/solana')
 
-async function fetch() {
-  const response = await get("https://stats.invariant.app/short/mainnet");
-  return response.tvl;
+async function tvl() {
+  return sumTokens2({ owner: 'J4uBbeoWpZE8fH58PM1Fp9n9K6f1aThyeVCyRdJbaXqt', getAllTokenAccounts: true })
 }
 
 module.exports = {
   timetravel: false,
-  fetch,
+  solana: {
+    tvl
+  },
   methodology: "TVL is a sum of the locked capital in each liquidity pool",
 };

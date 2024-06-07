@@ -1,14 +1,13 @@
-const { BigNumber } = require('ethers/lib');
 const { dexExport } = require('../helper/chain/aptos')
 
 const getPoolInfo = pool => pool.data.fee_tier.data;
 
 const token0Reserve = (i) => {
   const poolInfos = getPoolInfo(i);
-  let reserve0Total = BigNumber.from(0);
+  let reserve0Total = 0;
   poolInfos.forEach(poolInfo => {
-    const reserve0 = BigNumber.from(poolInfo.value.reserve_x.value);
-    reserve0Total = reserve0Total.add(reserve0);
+    const reserve0 = +poolInfo.value.reserve_x.value
+    reserve0Total = reserve0Total + reserve0
   });
 
   return reserve0Total.toString()
@@ -16,10 +15,10 @@ const token0Reserve = (i) => {
 
 const token1Reserve = (i) => {
   const poolInfos = getPoolInfo(i);
-  let reserve1Total = BigNumber.from(0);
+  let reserve1Total = 0;
   poolInfos.forEach(poolInfo => {
-    const reserve1 = BigNumber.from(poolInfo.value.reserve_y.value);
-    reserve1Total = reserve1Total.add(reserve1);
+    const reserve1 = +poolInfo.value.reserve_y.value
+    reserve1Total = reserve1Total + reserve1
   });
   
   return reserve1Total.toString()

@@ -48,20 +48,6 @@ const QUOTER_ADDRESS = '0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6'
 const usdcAddress = ADDRESSES.arbitrum.USDC
 const wethAddress = ADDRESSES.arbitrum.WETH
 const usdtAddress = ADDRESSES.ethereum.USDT;
-const COINGECKO_API_URL = 'https://api.coingecko.com/api/v3/coins';
-const urls = {
-    "mainnet": "https://api.thegraph.com/subgraphs/name/xtokenmarket/terminal-mainnet",
-    "arbitrum": "https://api.thegraph.com/subgraphs/name/xtokenmarket/terminal-arbitrum",
-    "optimism": "https://api.thegraph.com/subgraphs/name/xtokenmarket/terminal-optimism",
-    "polygon": "https://api.thegraph.com/subgraphs/name/xtokenmarket/terminal-polygon",
-};
-const networks = {
-    "mainnet": "ethereum",
-    "homestead": "ethereum",
-    "optimism": "optimistic-ethereum",
-    "arbitrum": "arbitrum-one",
-    "polygon": "polygon-pos",
-};
 
 module.exports = {
   DEC_18,
@@ -110,8 +96,5 @@ module.exports = {
   usdcAddress,
   wethAddress,
   usdtAddress,
-  COINGECKO_API_URL,
-  urls,
-  networks,
   xtkAddress
 };

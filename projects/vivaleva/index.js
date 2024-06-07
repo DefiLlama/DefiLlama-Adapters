@@ -5,7 +5,7 @@ const getAllPositionsByIdsABI = "function getAllPositionsByIds(address vaultAddr
 module.exports = {
   timetravel: false,
   era: {
-    async tvl(_, _1, _2, { api }) {
+    async tvl(api) {
       const _data = await getConfig('vivaleva', "https://sbb.sooho.io/api/v1/external/vivaleva/defiLlama")
 
       const data = {

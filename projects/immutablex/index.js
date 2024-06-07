@@ -1,9 +1,8 @@
-const ADDRESSES = require('../helper/coreAssets.json');
-const { sumTokensExport } = require('../helper/sumTokens');
+const ADDRESSES = require("../helper/coreAssets.json");
+const { sumTokensExport } = require("../helper/sumTokens");
+const { stakings } = require("../helper/staking");
 
-const owners = [
-  '0x5FDCCA53617f4d2b9134B29090C87D01058e27e9',
-];
+const owners = ["0x5FDCCA53617f4d2b9134B29090C87D01058e27e9"];
 
 const tokens = [
   ADDRESSES.null,
@@ -13,8 +12,9 @@ const tokens = [
 ];
 
 module.exports = {
-  ethereum: { tvl: sumTokensExport({ owners, tokens }) },
-  hallmarks: [
-    [1643241600, "OMI migration"],
-  ],
+  ethereum: {
+    tvl: sumTokensExport({ owners, tokens }),
+    staking: stakings(owners, "0xF57e7e7C23978C3cAEC3C3548E3D615c346e79fF"),
+  },
+  hallmarks: [[1643241600, "OMI migration"]],
 };

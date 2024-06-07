@@ -1,7 +1,7 @@
 const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const BigNumber = require("bignumber.js");
+const methodologies = require('../helper/methodologies');
 
 const qBnb = "0xbE1B5D17777565D67A5D2793f879aBF59Ae5D351"; // qBNB
 const wBnb = ADDRESSES.bsc.WBNB; //wBNB
@@ -18,9 +18,6 @@ const qTokensKlaytn = [
   "0x99dac5dF97eB189Cd244c5bfC8984f916f0eb4B0", // qWEMIX
   "0x3dB032090A06e3dEaC905543C0AcC92B8f827a70", // qKQBT
 ];
-
-const ZERO = new BigNumber(0);
-const ETHER = new BigNumber(10).pow(18);
 
 function tvl(borrowed) {
   return async (timestamp, ethBlock, chainBlocks) => {
@@ -72,7 +69,7 @@ function tvlKlaytn() {
     });
 
     return {
-      tether: new BigNumber(data.output).dividedBy(ETHER).toNumber(),
+      tether: data.output/ 1e18,
     };
   };
 }
@@ -81,10 +78,7 @@ module.exports = {
   hallmarks: [
     [1643241600, "tokenAddress hack"]
 ],
-  timetravel: true,
-  doublecounted: false,
-  methodology:
-    "Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There are multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending",
+      methodology: methodologies.lendingMarket,
   bsc: {
     tvl: tvl(false),
     //borrowed: tvl(true), // hacked

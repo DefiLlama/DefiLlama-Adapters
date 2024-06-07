@@ -1,35 +1,25 @@
-const utils = require('../helper/utils');
-const { toUSDTBalances } = require('../helper/balances');
-let _response
-
-function fetchChain(chainId, staking) {
-    return async () => {
-        if (!_response) _response = utils.fetchURL('https://api.stakerz.io/tvl')
-        const response = await _response;
-
-        let tvl = 0;
-        const chain = response.data[chainId];
-        for (const vault in chain) {
-            const isSTAKERZ = vault.includes("stakerz")
-            if ((isSTAKERZ && staking) || (!isSTAKERZ && !staking)) {
-                tvl += Number(chain[vault]);
-            }
-        }
-
-        return toUSDTBalances(tvl);
-    }
-}
-
-const chains = {
-    kava: 2222
+const { sumUnknownTokens } = require('../helper/unknownTokens')
+async function tvl(api) {
+  const vaults = [
+    '0x938d7EEC5130016AFA6f97DB18c3e5E869AF4D85',
+    '0x4B247bA8EBbf1331ADFaa8096309FF2693C3243C',
+    '0xBD3464c682649590C2403F41eD51161C96f19f6c',
+    '0xb5FDb80b5237AA2Ef6818043999E24f41ecE4D68',
+    '0x61cDa2e59B359eb3297547D66e8b3B1ac65a07d7',
+    '0xc4E35A5EEf1761e790B229A7e5EaC66e364DB187',
+  ]
+  const tokens = await api.multiCall({ abi: 'address:want', calls: vaults })
+  const bals = await api.multiCall({ abi: 'uint256:balance', calls: vaults })
+  api.addTokens(tokens, bals)
+  return sumUnknownTokens({ api, resolveLP: true, useDefaultCoreAssets: false  })
 }
 
 module.exports = {
-    timetravel: false,
-    misrepresentedTokens: true,
-    doublecounted: true,
-    ...Object.fromEntries(Object.entries(chains).map(chain => [chain[0], {
-        tvl: fetchChain(chain[1], false),
-        staking: fetchChain(chain[1], true),
-    }]))
+  misrepresentedTokens: true,
+  doublecounted: true,
+  kava: {
+    tvl: () => ({}),
+    staking: () => ({})
+  },
+  deadFrom: "2023-12-01",
 }

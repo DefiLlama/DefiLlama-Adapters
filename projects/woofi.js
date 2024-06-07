@@ -17,6 +17,7 @@ const wooPPConfig = {
 		'0x4691937a7508860F876c9c0a2a617E7d9E945D4B', // WOO
 		ADDRESSES.bsc.USDT, // USDT
 		ADDRESSES.bsc.BUSD, // BUSD
+		'0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82', // CAKE
 	],
 	avax: [
 		ADDRESSES.avax.WAVAX, // WAVAX
@@ -45,7 +46,7 @@ const wooPPConfig = {
 	],
 	optimism: [
 		ADDRESSES.optimism.WETH_1, // WETH
-		'0x68f180fcCe6836688e9084f035309E29Bf0A2095', // WBTC
+		ADDRESSES.optimism.WBTC, // WBTC
 		ADDRESSES.optimism.OP, // OP
 		ADDRESSES.optimism.USDC, // USDC
 		ADDRESSES.optimism.USDT,
@@ -67,6 +68,12 @@ const wooPPConfig = {
 	base: [
 		ADDRESSES.base.WETH,
 		ADDRESSES.base.USDbC,
+	],
+	mantle: [
+		ADDRESSES.mantle.WMNT,
+		ADDRESSES.mantle.WETH,
+		ADDRESSES.mantle.USDT,
+		ADDRESSES.mantle.USDC,
 	],
 }
 
@@ -137,6 +144,12 @@ const chainConfig = {
 		stakingContract: null,
 		stakingContractV2: null,
 	},
+	mantle: {
+		wooPPContract: '0x9D1A92e601db0901e69bd810029F2C14bCCA3128',
+		woo: null,
+		stakingContract: null,
+		stakingContractV2: null,
+	}
 }
 
 Object.keys(chainConfig).forEach(chain => {

@@ -1,28 +1,8 @@
-const ADDRESSES = require('../helper/coreAssets.json')
-const sdk = require("@defillama/sdk");
-
-const ETH_ADDRESS = ADDRESSES.null;
-const TROVE_MANAGER_ADDRESS = "0x56a901FdF67FC52e7012eb08Cfb47308490A982C";
-
-async function tvl(_, chainBlocks) {
-    const troveEthTvl = (
-        await sdk.api.abi.call({
-            target: TROVE_MANAGER_ADDRESS,
-            abi: "uint256:getEntireSystemColl",
-            block: chainBlocks["base"],
-            chain: "base"
-        })
-    ).output;
-
-    return {
-        [ETH_ADDRESS]: troveEthTvl,
-    };
-}
+const { getLiquityTvl } = require('../helper/liquity')
 
 module.exports = {
-    timetravel: true,
-    start: 1691074571,
-    base: {
-        tvl,
-    }
+  methodology: "Deposited ETH and TLOS on the Base and Telos network",
+  base: { tvl: getLiquityTvl("0x56a901FdF67FC52e7012eb08Cfb47308490A982C") },
+  telos: { tvl: getLiquityTvl("0xb1F92104E1Ad5Ed84592666EfB1eB52b946E6e68") },
+  fuse: { tvl: getLiquityTvl("0xCD413fC3347cE295fc5DB3099839a203d8c2E6D9") },
 };

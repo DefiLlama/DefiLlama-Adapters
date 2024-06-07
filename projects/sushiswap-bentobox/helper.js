@@ -163,7 +163,7 @@ async function getFuroTokens(chain, block) {
 
   const calls = tokens.map((token) => {
     return {
-      params: [token.id, token.liquidityShares, false],
+      params: [token.id, sdk.util.convertToBigInt(token.liquidityShares).toString(), false],
     };
   });
   const { output } = await sdk.api.abi.multiCall({
@@ -224,7 +224,7 @@ async function getKashiTokens(chain, block) {
 
   const calls = Object.entries(shareBalances).map(([id, shares]) => {
     return {
-      params: [id, shares, false],
+      params: [id, sdk.util.convertToBigInt(shares).toString(), false],
     };
   });
   const { output } = await sdk.api.abi.multiCall({

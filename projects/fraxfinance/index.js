@@ -144,7 +144,7 @@ async function addInvestorAMO(api, balances) {
   })
 }
 
-const ethereumTvl = async (timestamp, block, _, { api }) => {
+const ethereumTvl = async (api) => {
   let balances = {};
 
   await Promise.all([

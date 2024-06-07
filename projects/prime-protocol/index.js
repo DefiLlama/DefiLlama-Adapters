@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk');
 const { sumTokens2, } = require('../helper/unwrapLPs');
-const { request, gql } = require('graphql-request');
+const { cachedGraphQuery } = require('../helper/cache');
 
 const PRIME_MASTER_NETWORK = 'moonbeam';
 
@@ -13,16 +13,14 @@ const PRIME_SATELLITE_NETWORKS = {
   polygon: 137,
   base: 8453,
   optimism: 10,
-//   filecoin: 314
+  celo: 42220,
+  //   filecoin: 314
 };
 
 const primeSubgraphUrl = 'https://api.thegraph.com/subgraphs/name/prime-protocol/liquidity-incentives';
 
-const primeMarketsQuery = gql`{
-    markets {
-      address
-      chainId
-    }
+const primeMarketsQuery = `{
+    markets { address chainId }
   }`;
 
 const MASTER_VIEW_CONTRACT = {
@@ -35,73 +33,70 @@ const MASTER_VIEW_CONTRACT = {
 };
 
 const PRIME_CONTRACTS = {
-    MASTER_VIEW_v1_4_6: {
-        address: '0x47ecFB57deD0160d66103A6A201C5f30f7CC7d13',
-        abi: {
-            calculateAssetTVL: 'function calculateRawAssetTVL(uint256 chainId, address pToken) view returns (uint256)'
-        }
-    },
-    MASTER_VIEW_v1_10_2: {
-        address: '0x30095B6616eB637B72f86E9613cdAcF18C11ED8d',
-        abi: {
-            getCollateralFactors: 'function getCollateralFactors(address[] memory underlyings, uint256[] memory chainIds) view returns (uint256[] memory collateralFactors)',
-        }
-    },
-    IRM_ROUTER_v1_10_2: {
-        address: '0xd7af46089C5ED25871b770F18a2Ff1C07929abfa',
-        abi: {
-            borrowInterestRatePerBlock: 'function borrowInterestRatePerBlock(address loanAsset, uint256 loanAssetChainId) view returns (uint256)',
-        }
-    },
-    PTOKEN_v1_10_2: {
-        abi: {
-            underlying: 'function underlying() view returns (address)'
-        }
-    },
-    MASTER_VIEW_v1_10_3: {
-        address: '0x9Ee26206Bc1143668aD56498b8C7A621bFa27c00',
-        abi: {
-            supplierInterestRateWithoutTuple: 'function supplierInterestRateWithoutTuple(uint256 chainId, address loanAsset) view returns (uint256 rate, uint256 factor)'
-        }
-    },
+  MASTER_VIEW_v1_4_6: {
+    address: '0x47ecFB57deD0160d66103A6A201C5f30f7CC7d13',
+    abi: {
+      calculateAssetTVL: 'function calculateRawAssetTVL(uint256 chainId, address pToken) view returns (uint256)'
+    }
+  },
+  MASTER_VIEW_v1_10_2: {
+    address: '0x30095B6616eB637B72f86E9613cdAcF18C11ED8d',
+    abi: {
+      getCollateralFactors: 'function getCollateralFactors(address[] memory underlyings, uint256[] memory chainIds) view returns (uint256[] memory collateralFactors)',
+    }
+  },
+  IRM_ROUTER_v1_10_2: {
+    address: '0xd7af46089C5ED25871b770F18a2Ff1C07929abfa',
+    abi: {
+      borrowInterestRatePerBlock: 'function borrowInterestRatePerBlock(address loanAsset, uint256 loanAssetChainId) view returns (uint256)',
+    }
+  },
+  PTOKEN_v1_10_2: {
+    abi: {
+      underlying: 'function underlying() view returns (address)'
+    }
+  },
+  MASTER_VIEW_v1_10_3: {
+    address: '0x9Ee26206Bc1143668aD56498b8C7A621bFa27c00',
+    abi: {
+      supplierInterestRateWithoutTuple: 'function supplierInterestRateWithoutTuple(uint256 chainId, address loanAsset) view returns (uint256 rate, uint256 factor)'
+    }
+  },
 };
 
 async function getMarketsForCurrentNetwork(api) {
-    const primeMarketsData = (await request(
-        primeSubgraphUrl,
-        primeMarketsQuery
-    )).markets;
+  const { markets: primeMarketsData } = await cachedGraphQuery('prime-protocol', primeSubgraphUrl, primeMarketsQuery)
 
-    const markets = [];
+  const markets = [];
 
-    for (let m = 0; m < primeMarketsData.length; m++) {
-        const market = primeMarketsData[m];
-        const marketAddress = market.address;
-        const marketChainId = market.chainId;
+  for (let m = 0; m < primeMarketsData.length; m++) {
+    const market = primeMarketsData[m];
+    const marketAddress = market.address;
+    const marketChainId = market.chainId;
 
-        if (PRIME_SATELLITE_NETWORKS[api.chain] == marketChainId) {
-            const underlyingAddress = (
-                await api.multiCall({
-                    abi: PRIME_CONTRACTS.PTOKEN_v1_10_2.abi.underlying,
-                    calls: [marketAddress].map((ma) => ({
-                        target: ma,
-                    })),
-                    permitFailure: true,
-                    chain: api.chain,
-                })
-            )[0];
+    if (PRIME_SATELLITE_NETWORKS[api.chain] == marketChainId) {
+      const underlyingAddress = (
+        await api.multiCall({
+          abi: PRIME_CONTRACTS.PTOKEN_v1_10_2.abi.underlying,
+          calls: [marketAddress].map((ma) => ({
+            target: ma,
+          })),
+          permitFailure: true,
+          chain: api.chain,
+        })
+      )[0];
 
-            markets.push({
-                pTokenMarketAddress: marketAddress,
-                pTokenUnderlyingAddress: underlyingAddress
-            });
-        }
+      markets.push({
+        pTokenMarketAddress: marketAddress,
+        pTokenUnderlyingAddress: underlyingAddress
+      });
     }
+  }
 
-    return markets;
+  return markets;
 }
 
-async function borrowed(_, _1, _2, { api }) {
+async function borrowed(api) {
   const moonbeamApi = new sdk.ChainApi({ chain: PRIME_MASTER_NETWORK });
 
   const markets = await getMarketsForCurrentNetwork(api);
@@ -122,7 +117,7 @@ async function borrowed(_, _1, _2, { api }) {
   })
 }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const markets = await getMarketsForCurrentNetwork(api);
 
   return sumTokens2({ api, tokensAndOwners: markets.map(market => [market.pTokenUnderlyingAddress, market.pTokenMarketAddress]) })

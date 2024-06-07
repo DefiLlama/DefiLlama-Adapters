@@ -84,11 +84,13 @@ function dexExport({
   }
 }
 
-async function sumTokens({ balances = {}, owners = [] }) {
+async function sumTokens({ balances = {}, owners = [], blacklistedTokens = [], tokens = [] }) {
   owners = getUniqueAddresses(owners, true)
   const resources = await Promise.all(owners.map(getResources))
   resources.flat().filter(i => i.type.includes('::CoinStore')).forEach(i => {
     const token = i.type.split('<')[1].replace('>', '')
+    if (tokens.length && !tokens.includes(token)) return;
+    if (blacklistedTokens.includes(token)) return;
     sdk.util.sumSingleBalance(balances, token, i.data.coin.value)
   })
   return transformBalances('aptos', balances)
@@ -100,7 +102,7 @@ async function getTableData({ table, data }) {
 }
 
 async function function_view({ functionStr, type_arguments = [], args = [] }) {
-  const response = await http.post(`${endpoint()}/v1/view`, { "function": functionStr, "type_arguments": type_arguments, arguments:args })
+  const response = await http.post(`${endpoint()}/v1/view`, { "function": functionStr, "type_arguments": type_arguments, arguments: args })
   return response
 }
 
@@ -120,6 +122,10 @@ function hexToString(hexString) {
   return stringValue
 }
 
+function sumTokensExport(options) {
+  return async (api) => sumTokens({ ...api, api, ...options })
+}
+
 module.exports = {
   endpoint: endpoint(),
   dexExport,
@@ -129,6 +135,7 @@ module.exports = {
   getResource,
   coreTokens,
   sumTokens,
+  sumTokensExport,
   getTableData,
   function_view,
   hexToString,

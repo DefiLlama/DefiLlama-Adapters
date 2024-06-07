@@ -10,6 +10,8 @@ const stakingUNIv2Contracts = [
   "0xC14eaA8284feFF79EDc118E06caDBf3813a7e555", // v5
   "0xEbB1761Ad43034Fd7FaA64d84e5BbD8cB5c40b68", // v6
   "0x5939783dbf3e9f453a69bc9ddc1e492efac1fbcb", // v7
+  "0x662da6c777a258382f08b979d9489c3fbbbd8ac3", // v8
+  "0x721720784b76265aa3e34c1c7ba02a6027bcd3e5", // v9
 ];
 const stakingFoxy = "0xee77aa3Fd23BbeBaf94386dD44b548e9a785ea4b";
 

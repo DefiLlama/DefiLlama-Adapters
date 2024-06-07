@@ -33,8 +33,17 @@ const getBridgeContract = {
   'ethereumclassic': '0x3758AA66caD9F2606F1F501c9CB31b94b713A6d5',
   'base': '0x3758AA66caD9F2606F1F501c9CB31b94b713A6d5',
   'bitgert': '0x3758AA66caD9F2606F1F501c9CB31b94b713A6d5',
-  'scroll': '0x3758AA66caD9F2606F1F501c9CB31b94b713A6d5'
+  'scroll': '0x3758AA66caD9F2606F1F501c9CB31b94b713A6d5',
+  'manta': '0x3758AA66caD9F2606F1F501c9CB31b94b713A6d5',
+  'zeta': '0x3758AA66caD9F2606F1F501c9CB31b94b713A6d5',
+  'mode': '0x3758AA66caD9F2606F1F501c9CB31b94b713A6d5',
+  'blast': '0x3758AA66caD9F2606F1F501c9CB31b94b713A6d5',
+  'merlin': '0x3758AA66caD9F2606F1F501c9CB31b94b713A6d5',
+  'xlayer': '0x3758AA66caD9F2606F1F501c9CB31b94b713A6d5',
+  'pulse': '0x0035cCA7Ff94156AEFcdd109bFD0C25083c1d89b'
 }
+
+
 const tronBridgeContract = 'TXeFBRKUW2x8ZYKPD13RuZDTd9qHbaPGEN';
 
 let tokensConfTest;
@@ -53,17 +62,16 @@ function getChain(chain) {
   return chainMapping[chain] ?? chain
 }
 
-async function tvl(_, _b, _cb, { api, logArray }) {
+async function tvl(api) {
   let conf = await getTokensConf();
 
   const bridgeContract = getBridgeContract[api.chain];
   const tokens = Object.values(conf[getChain(api.chain)])
   const owners = [bridgeContract]
-  return sumTokens2({ api, tokens, owners, logArray })
+  return sumTokens2({ api, tokens, owners })
 }
 
-async function tronTvl() {
-  const { api } = arguments[3]
+async function tronTvl(api) {
   let conf = await getTokensConf();
   const tokens = conf['tron'];
   const tokenKeys = Object.keys(conf['tron'])

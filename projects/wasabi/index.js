@@ -1,21 +1,34 @@
-const { getLogs } = require('../helper/cache/getLogs')
-const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
+const { getLogs } = require('../helper/cache/getLogs');
 
-async function tvl(_, _b, _cb, { api, }) {
-  const logs = await getLogs({
-    api,
-    target: '0x8e2b50413a53f50e2a059142a9be060294961e40',
-    topics: ['0xd02da1bec30f7f750aa0a131745dfb9ce96767c45a192dc26409f5d690e0b967'],
-    eventAbi: 'event NewPool(address poolAddress, address indexed nftAddress, address indexed owner)',
-    onlyArgs: true,
-    fromBlock: 17082136,
-  })
-  const ownerTokens = logs.map(i => [[i.nftAddress, nullAddress], i.poolAddress])
-  return sumTokens2({ api, ownerTokens, blacklistedTokens: ['0xedb61f74b0d09b2558f1eeb79b247c1f363ae452'] })
-}
-
-module.exports = {
+const config = {
   ethereum: {
-    tvl
-  }
+    pools: {
+      "WASABI_LONG_POOL": "0x8e0edfd6d15f858adbb41677b82ab64797d5afc0",
+      "WASABI_SHORT_POOL": "0x0fdc7b5ce282763d5372a44b01db65e14830d8ff"
+    }, fromBlock: 18810700,
+  },
+  blast: {
+    pools: {
+      "WASABI_LONG_POOL": "0x046299143A880C4d01a318Bc6C9f2C0A5C1Ed355",
+      "WASABI_SHORT_POOL": "0x0301079DaBdC9A2c70b856B2C51ACa02bAc10c3a"
+    }, fromBlock: 185200,
+  },
 }
+
+
+Object.keys(config).forEach(chain => {
+  let { pools, fromBlock, tokens = [], } = config[chain]
+  pools = Object.values(pools)
+  module.exports[chain] = {
+    tvl: async (api) => {
+      const logs = (await Promise.all(pools.map(target => getLogs({
+        api,
+        target,
+        eventAbi: "event NewVault(address indexed pool, address indexed asset, address vault)",
+        onlyArgs: true,
+        fromBlock,
+      })))).flat();
+      return api.erc4626Sum({ calls: logs.map(log => log.vault), isOG4626: true, });
+    }
+  }
+})

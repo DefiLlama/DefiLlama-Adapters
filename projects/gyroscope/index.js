@@ -1,7 +1,10 @@
 const { getLogs } = require("../helper/cache/getLogs");
 module.exports.doublecounted = true;
+const blacklistedTokens = [
+  '0xe07f9d810a48ab5c3c914ba3ca53af14e4491e8a', // GYD ethereum
+]
 
-async function tvl(_, _b, _cb, { api }) {
+async function tvl(api) {
   const pools = config[api.chain];
 
   const promises = pools.map(async ({ factory, fromBlock }) => {
@@ -31,6 +34,7 @@ async function tvl(_, _b, _cb, { api }) {
     data.forEach((i) => api.addTokens(i.tokens, i.balances));
   });
   await Promise.all(promises);
+  blacklistedTokens.map(i => api.removeTokenBalance(i))
   return api.getBalances();
 }
 

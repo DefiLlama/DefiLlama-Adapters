@@ -9,8 +9,8 @@ const query = `{
   }
 }`
 
-async function tvl(_, _b, _cb, { api, }) {
-  const { pools } = await cachedGraphQuery('elektrik', 'https://subgraph.elektrik.network/subgraphs/name/ELEKTRIK-GRAPH', query)
+async function tvl(api) {
+  const { pools } = await cachedGraphQuery('elektrik-1', 'https://subgraph.elektrik.network/subgraphs/name/ELEKTRIK-GRAPH-V2', query)
   const ownerTokens = pools.map(i => [[i.token0.id, i.token1.id], i.id])
   return sumTokens2({ api, ownerTokens, })
 }

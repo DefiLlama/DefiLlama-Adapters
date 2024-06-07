@@ -4,5 +4,5 @@ const sdk = require("@defillama/sdk");
 
 module.exports = {
   timetravel: false,
-  solana: { tvl: sdk.util.sumChainTvls([ordersTvl, depositsTvl ]), borrowed },
+  solana: { tvl: sdk.util.sumChainTvls([ depositsTvl ]), borrowed },
 };
