@@ -1,5 +1,9 @@
-const { default: axios } = require('axios')
+const { default: axios } = require('axios');
+const { uniV3Export } = require('../helper/uniswapV3');
 
+const FACTORYV3_ADDRESS = "0x952aC46B2586737df679e836d9B980E43E12B2d8"
+
+//Function for calculating TVL from Steer Vaults (Not being used in this case)
 async function tvl(api) {
     const data = await axios.get('https://api.steer.finance/getSmartPools?chainId=534352&dexName=equilibre')
     const pools = data.data;
@@ -30,11 +34,6 @@ async function tvl(api) {
       
   }
 
-module.exports = {
-    misrepresentedTokens: true,
-    methodology: 'TVL shows the sum of all the assets deposited in the vaults provided by our ALM partners.',
-    scroll: {
-        tvl,
-    },
-}
-
+module.exports = uniV3Export({
+  scroll: { factory: FACTORYV3_ADDRESS, fromBlock: 4627488 },
+})
