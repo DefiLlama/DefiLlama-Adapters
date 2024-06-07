@@ -33,12 +33,14 @@ const polygonTokens = [
 const optimismTokens = [
   ADDRESSES.null,
   ADDRESSES.optimism.USDC,
+  ADDRESSES.optimism.USDC_CIRCLE,
   ADDRESSES.optimism.USDT,
 ]
 
 const arbitrumTokens = [
   ADDRESSES.null,
   ADDRESSES.arbitrum.USDC,
+  ADDRESSES.arbitrum.USDC_CIRCLE,
   ADDRESSES.arbitrum.USDT,
 ]
 
