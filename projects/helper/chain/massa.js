@@ -8,6 +8,7 @@ const {
   strToBytes,
   Args,
 } = require("@massalabs/massa-web3");
+const { decode } = require("@project-serum/anchor/dist/cjs/utils/bytes/hex");
 
 const RPC_ENDPOINT = "https://mainnet.massa.net/api/v2";
 const factoryAddress = {
@@ -30,63 +31,21 @@ const baseClient = new Client({
   retryStrategyOn: false,
 });
 
-const u8ArrayToString = (array) => String.fromCharCode(...array);
-class ILBPair {
-  address;
-  client;
-  constructor(address, client) {
-    this.address = address;
-    this.client = client;
+function u8ArrayToString(array) {
+  let str = "";
+  for (const byte of array) {
+    str += String.fromCharCode(byte);
   }
-  getReserves() {
-    return baseClient
-      .smartContracts()
-      .readSmartContract({
-        targetAddress: this.address,
-        targetFunction: "getPairInformation",
-        parameter: new Args(),
-      })
-      .then((res) => {
-        const args = new Args(res.returnValue);
-        const reserveX = args.nextU256();
-        const reserveY = args.nextU256();
-        return { reserveX, reserveY };
-      })
-      .catch((e) => {
-        console.error("error", e);
-        return { reserveX: 0, reserveY: 0 };
-      });
-  }
+  return str;
 }
-// function parseBigintIsh(bigintIsh) {
-//   return typeof bigintIsh === 'bigint' ? bigintIsh : BigInt(bigintIsh)
-// }
-// class Fraction {
-//   numerator;
-//   denominator;
-//   constructor(numerator, denominator) {
-//     this.numerator = parseBigintIsh(numerator);
-//     this.denominator = parseBigintIsh(denominator);
-//   }
-//   add(fraction) {
-//     const numerator = this.numerator * fraction.denominator + fraction.numerator * this.denominator;
-//     const denominator = this.denominator * fraction.denominator;
-//     return new Fraction(numerator, denominator);
-//   }
-//   multiply(fraction) {
-//     const numerator = this.numerator * fraction.numerator;
-//     const denominator = this.denominator * fraction.denominator;
-//     return new Fraction(numerator, denominator);
-//   }
-  
-//   toFixed() {
-//     return this.numerator / this.denominator;
-//   }
-// }
-//pourquoi on a besoin de le mettre en fraction ? 
-// const toFraction = async (priceToken) => {
-//   return new Fraction(priceToken, BigInt(1e18));
-// }
+
+const decodePairInformation = async (bs) => {
+  const args = new Args(bs);
+  return {
+    reserveX: args.nextU256(),
+    reserveY: args.nextU256(),
+  };
+};
 
 function coinGeckoURL(ids) {
   return `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_last_updated_at=true`;
@@ -107,6 +66,27 @@ const getPairAddress = async (factoryAddress) => {
     .then((r) => {
       if (r[0].candidate_value && r[0].final_value)
         return [u8ArrayToString(r[0].candidate_value)];
+      return [];
+    })
+    .catch((e) => {
+      console.error("error", e);
+      return [""];
+    });
+};
+const getPairInformation = async (poolAddress) => {
+  if (!poolAddress) {
+    throw new Error("factoryAddress is undefined");
+  }
+  return await baseClient
+    .publicApi()
+    .getDatastoreEntries([
+      {
+        address: poolAddress,
+        key: strToBytes("PAIR_INFORMATION"),
+      },
+    ])
+    .then((r) => {
+      if (r[0].candidate_value && r[0].final_value) return r[0].candidate_value;
       return [];
     })
     .catch((e) => {
@@ -152,15 +132,7 @@ const fetchTokensInfo = async (tokenX, tokenY) => {
     .getDatastoreEntries([
       {
         address: tokenX,
-        key: strToBytes("NAME"),
-      },
-      {
-        address: tokenX,
         key: strToBytes("SYMBOL"),
-      },
-      {
-        address: tokenY,
-        key: strToBytes("NAME"),
       },
       {
         address: tokenY,
@@ -170,16 +142,10 @@ const fetchTokensInfo = async (tokenX, tokenY) => {
     .then((res) => {
       if (!res[0].candidate_value || !res[1].candidate_value)
         throw new Error("No token info found");
-      let nameY = u8ArrayToString(res[0].candidate_value);
-      let symbolY = u8ArrayToString(res[1].candidate_value);
-      let nameX = u8ArrayToString(res[2].candidate_value);
-      let symbolX = u8ArrayToString(res[3].candidate_value);
-      return { nameX, symbolX, nameY, symbolY };
+      let symbolY = u8ArrayToString(res[0].candidate_value);
+      let symbolX = u8ArrayToString(res[1].candidate_value);
+      return { symbolX, symbolY };
     });
-};
-
-const fetchPairInformation = async (poolAddress) => {
-  return await new ILBPair(poolAddress, baseClient).getReserves();
 };
 
 const poolsInformation = async (factoryAddress) => {
@@ -189,7 +155,6 @@ const poolsInformation = async (factoryAddress) => {
   }
 
   const pools = poolAddresses[0].split(":");
-
   const results = await Promise.all(
     pools.map(async (pool) => {
       const tokens = await getPairAddressTokens(pool);
@@ -197,18 +162,7 @@ const poolsInformation = async (factoryAddress) => {
       if (tokens[0] && tokens[1]) {
         tokensInfo = await fetchTokensInfo(tokens[0], tokens[1]);
       }
-
-      const { reserveX, reserveY } = await fetchPairInformation(pool);
-      const { symbolX, symbolY } = tokensInfo || {};
-
-      return {
-        tokenX: tokens[0],
-        reserveX,
-        symbolX,
-        tokenY: tokens[1],
-        reserveY,
-        symbolY,
-      };
+      return tokensInfo;
     })
   );
   return results;
@@ -239,41 +193,76 @@ const symbolAndPrices = async (pools) => {
   return symbolAndPricesArray;
 };
 
-const fetchTVL = async (factoryAddress) => {
-    const pools = await poolsInformation(factoryAddress);
-    const symbolAndPricesArray = await symbolAndPrices(pools);
-  
-    let tvl = BigInt(0);
-  
-    for (const pool of pools) {
-      const priceX = (BigInt(Math.round((symbolAndPricesArray.find(item => item.symbol === pool.symbolX)?.price || 1) * 1e18))) ;
-      const priceY = (BigInt(Math.round((symbolAndPricesArray.find(item => item.symbol === pool.symbolY)?.price || 1) * 1e18)));
+const fetchTVL = async (pools) => {
+  console.log("pools = lists daddresse de la pool ", pools);
+  const symbolAndPricesArray = await symbolAndPrices(pools);
+  let tvl = BigInt(0);
 
-      const reserveX = BigInt(pool.reserveX);
-      const reserveY = BigInt(pool.reserveY);
+  for (const pool of pools) {
+    const priceX = BigInt(
+      Math.round(
+        (symbolAndPricesArray.find((item) => item.symbol === pool.symbolX)
+          ?.price || 1) * 1e18
+      )
+    );
+    const priceY = BigInt(
+      Math.round(
+        (symbolAndPricesArray.find((item) => item.symbol === pool.symbolY)
+          ?.price || 1) * 1e18
+      )
+    );
 
-      tvl +=  reserveX * priceX + reserveY * priceY;
-    }
-    
-    const tvlInOriginalScale = Number(tvl.toString().slice(0,6));
-  
-    console.log(tvlInOriginalScale.toLocaleString());
-    return tvlInOriginalScale;
-  };
+    const valueX = (pool.reserveX * priceX) / BigInt(1e18);
+    const valueY = (pool.reserveY * priceY) / BigInt(1e18);
+
+    tvl += valueX + valueY;
+  }
+
+  const tvlInOriginalScale = Number(tvl.toString().slice(0, 6));
+
+  console.log(tvlInOriginalScale.toLocaleString());
+  return tvlInOriginalScale;
+};
 
 async function main() {
-  const pools = await fetchTVL(factoryAddress.massa);
-    console.log(pools);
+  const tokenSymbolPool = await poolsInformation(factoryAddress.massa);
+  const symbolAndPricesArray = await symbolAndPrices(tokenSymbolPool);
+
+  const poolAddresses = await getPairAddress(factoryAddress.massa);
+  if (poolAddresses[0].startsWith(":")) {
+    poolAddresses[0] = poolAddresses[0].substring(1);
+  }
+  const pools = poolAddresses[0].split(":");
+  let i = 0;
+  let tvl = BigInt(0);
+  // pour chaque pool
+  for (const pool of pools) {
+    const info = await getPairInformation(pool);
+    let poolInfo = await decodePairInformation(info);
+    poolInfo = {
+      ...poolInfo,
+      symbolX: tokenSymbolPool[i].symbolX,
+      symbolY: tokenSymbolPool[i].symbolY,
+    };
+
+    //TO DO : finish the function to fetch the TVL with the right conversion type
+    const priceX =
+      symbolAndPricesArray.find((item) => item.symbol === poolInfo.symbolX)
+        ?.price ;
+    const priceY =
+      symbolAndPricesArray.find((item) => item.symbol === poolInfo.symbolY)
+        ?.price ;
+    console.log('priceX', priceX, 'priceY', priceY, 'poolInfo.reserveX', poolInfo.reserveX, 'poolInfo.reserveY', poolInfo.reserveY);
+
+        i += 1;
+  }
 }
 
 main().catch(console.error);
 
 module.exports = {
-  RPC_ENDPOINT,
   getPairAddress,
   fetchTVL,
   baseClient,
-  fetchPairInformation,
   getPairAddressTokens,
 };
-
