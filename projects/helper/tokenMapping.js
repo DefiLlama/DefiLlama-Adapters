@@ -36,6 +36,10 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  q: {
+      [ADDRESSES.q.ELK]: { coingeckoId: "elk-finance", decimals: 18 },
+      [ADDRESSES.q.WETH]: { coingeckoId: "ethereum", decimals: 18 },
+  },
   stellar: {
     "CAS3J7GYLGXMF6TDJBBYYSE3HQ6BBSMLNUQ34T6TZMYMW2EVH34XOWMA": { coingeckoId: "stellar", decimals: 7},
     "CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75": { coingeckoId: "usd-coin", decimals: 7},
