@@ -11,7 +11,7 @@ async function tvl(api) {
 }
 
 module.exports = {
-  methodology: 'We count the number of USDC locked in the contract. A proportional amount of ZKX USDC was minted in Starknet',
+  methodology: 'We count the number of USDC locked in the Ethereum contract. A proportional amount of ZKX USDC was minted in the Starknet',
   ethereum: {
     tvl
   }
