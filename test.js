@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+
 const handleError = require('./utils/handleError')
 const INTERNAL_CACHE_FILE = 'tvl-adapter-repo/sdkInternalCache.json'
 process.on('unhandledRejection', handleError)
@@ -29,6 +30,7 @@ if (process.env.LLAMA_SANITIZE)
     if (['TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_MODE', ...ENV_KEYS].includes(key) || key.includes('SDK')) return;
     delete process.env[key]
   })
+process.env.SKIP_RPC_CHECK = 'true'
 
 
 async function getTvl(
@@ -108,7 +110,7 @@ sdk.api.abi.call = async (...args) => {
   } catch (e) {
     console.log(e)
   }
-  await initCache()
+  // await initCache()
   const chains = Object.keys(module).filter(item => typeof module[item] === 'object' && !Array.isArray(module[item]));
   checkExportKeys(module, passedFile, chains)
   const unixTimestamp = Math.round(Date.now() / 1000) - 60;
@@ -442,10 +444,10 @@ async function saveSdkInternalCache() {
 }
 
 async function preExit() {
-  try {
-    await saveSdkInternalCache() // save sdk cache to r2
-  } catch (e) {
-    if (process.env.NO_EXIT_ON_LONG_RUN_RPC)
-      sdk.error(e)
-  }
+  // try {
+  //     await saveSdkInternalCache() // save sdk cache to r2
+  // } catch (e) {
+  //   if (process.env.NO_EXIT_ON_LONG_RUN_RPC)
+  //     sdk.error(e)
+  // }
 }

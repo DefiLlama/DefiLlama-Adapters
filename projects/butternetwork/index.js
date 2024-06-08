@@ -97,7 +97,7 @@ const config = {
       WETH: ADDRESSES.base.WETH,
       USDbC: ADDRESSES.base.USDbC,
       DAI: ADDRESSES.base.DAI,
-      BAL: "0x7c6b91d9be155a6db01f749217d76ff02a7227f2",
+      BAL: ADDRESSES.defiverse.USDC,
       ERN: "0xa334884bf6b0a066d553d19e507315e839409e62",
       BALD: "0x27d2decb4bfc9c76f0309b8e88dec3a601fe25a8",
       BASIN: "0x4788de271f50ea6f5d5d2a5072b8d3c61d650326",

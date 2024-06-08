@@ -45,7 +45,7 @@ async function staking_base_(api) {
 module.exports = {
   methodology: "Counts USDC deposited to trade and to mint VLP. Staking counts VELA and esVELA deposited to earn esVELA",
   arbitrum: {
-    tvl: staking('0xC4ABADE3a15064F9E3596943c699032748b13352', ADDRESSES.arbitrum.USDC),
+    tvl: staking('0xC4ABADE3a15064F9E3596943c699032748b13352', [ADDRESSES.arbitrum.USDC_CIRCLE, ADDRESSES.arbitrum.USDC]),
     staking: staking_arbitrum_
   },
   base: {

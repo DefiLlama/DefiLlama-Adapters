@@ -58,8 +58,8 @@ Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
       // Logic for calculating TVL excluding staked LP tokens
-      const { total_bond_stsei_amount } = await queryContractWithRetries({ contract: hub, chain, data: { state: {} } });
-      api.add(coinGeckoId, total_bond_stsei_amount / 10 ** 6, { skipChain: true });
+      const { total_bond_stsei_amount, total_bond_st_amount } = await queryContractWithRetries({ contract: hub, chain, data: { state: {} } });
+      api.add(coinGeckoId, (total_bond_stsei_amount ?? total_bond_st_amount) / 10 ** 6, { skipChain: true });
       return api.getBalances();
     },
     pool2: async (api) => {

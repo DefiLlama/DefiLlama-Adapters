@@ -13,39 +13,20 @@ module.exports = {
         // BNB
         [ADDRESSES.null, "0x986b40C2618fF295a49AC442c5ec40febB26CC54"],
 
-        //ankrBNB
-        [
-          "0x52F24a5e03aee338Da5fd9Df68D2b6FAe1178827",
-          "0x25b21472c073095bebc681001cbf165f849eee5e",
-        ],
-
-        //stkBNB
-        [
-          "0xc2E9d07F66A89c44062459A47a0D2Dc038E4fb16",
-          "0x98CB81d921B8F5020983A46e96595471Ad4E60Be",
-        ],
-        //snBNB
+        //slisBNB
         [
           "0xB0b84D294e0C75A6abe60171b70edEb2EFd14A1B",
           "0x6F28FeC449dbd2056b76ac666350Af8773E03873",
         ],
-        //BNBx
-        [
-          "0x1bdd3Cf7F79cfB8EdbB955f20ad99211551BA275",
-          "0x6ae7073d801a74eE753F19323DF320C8F5Fe2DbC",
-        ],
 
-        // snBNB
+        // slisBNB
         [
           "0xB0b84D294e0C75A6abe60171b70edEb2EFd14A1B",
           "0x91e49983598685DD5ACAc90CEb4061A772f6E5Ae",
         ],
 
         // eth
-        [
-          ADDRESSES.bsc.ETH,
-          "0xA230805C28121cc97B348f8209c79BEBEa3839C0",
-        ],
+        [ADDRESSES.bsc.ETH, "0xA230805C28121cc97B348f8209c79BEBEa3839C0"],
 
         // eth => wBETH
         [
@@ -57,6 +38,27 @@ module.exports = {
         [
           "0xa2E3356610840701BDf5611a53974510Ae27E2e1",
           "0xA230805C28121cc97B348f8209c79BEBEa3839C0",
+        ],
+
+        // BTCB
+        [
+          "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c",
+          "0xad9eAAe95617c39019aCC42301a1dCa4ea5b6f65",
+        ],
+        // ezETH
+        [
+          "0x2416092f143378750bb29b79ed961ab195cceea5",
+          "0xd7E33948e2a43e7C1ec2F19937bf5bf8BbF9BaE8",
+        ],
+        // weETH
+        [
+          "0x04C0599Ae5A44757c0af6F9eC3b93da8976c150A",
+          "0x2367f2Da6fd39De6944218CC9EC706BCdc9a6918",
+        ],
+        // STONE
+        [
+          "0x80137510979822322193fc997d400d5a6c747bf7",
+          "0x876cd9a380Ee7712129b52f8293F6f06056c3104",
         ],
       ],
     }),
