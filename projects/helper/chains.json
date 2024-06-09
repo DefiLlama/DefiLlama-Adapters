@@ -129,6 +129,7 @@
   "gravitybridge",
   "grove",
   "harmony",
+  "ham",
   "heco",
   "hedera",
   "heiko",
@@ -143,6 +144,7 @@
   "inevm",
   "injective",
   "interlay",
+  "iotaevm",
   "iotex",
   "islm",
   "jbc",
@@ -319,5 +321,6 @@
   "zklink",
   "zksync",
   "zora",
-  "zyx"
+  "zyx",
+  "joltify"
 ]
