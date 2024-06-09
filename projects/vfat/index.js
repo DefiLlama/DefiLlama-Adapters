@@ -58,7 +58,8 @@ const config = {
   fantom: {
     factory: '0x53d9780DbD3831E3A797Fd215be4131636cD5FDf',
     chainName: 'fantom',
-    fromBlockSickle: 79166260
+    fromBlockSickle: 79166260,
+    NonfungiblePositionManager: '0x2B52294425a9a229322228de659eDE9D146D7c2f',
   },
   mantle: {
     factory: '0xB4C31b0f0B76b351395D4aCC94A54dD4e6fbA1E8',
@@ -68,7 +69,7 @@ const config = {
   bsc: {
     factory: '0x53d9780DbD3831E3A797Fd215be4131636cD5FDf',
     chainName: 'bsc',
-    masterchefV3:  '0x556B9306565093C855AEA9AE92A594704c2Cd59e',
+    masterchefV3: '0x556B9306565093C855AEA9AE92A594704c2Cd59e',
     fromBlockSickle: 37565801
   },
 };
@@ -294,8 +295,8 @@ async function tvlArbitrumLinea(api) {
 }
 
 // TVL calculation for chains with masterchefV3
-async function tvlWithMasterchef(api) {
-  const { factory, fromBlockSickle, masterchefV3 } = config[api.chain];
+async function genericTvl(api) {
+  const { factory, fromBlockSickle, masterchefV3, NonfungiblePositionManager } = config[api.chain];
 
   const sickles = await fetchSickles(api, factory, fromBlockSickle);
 
@@ -303,6 +304,11 @@ async function tvlWithMasterchef(api) {
   if (masterchefV3) {
     const masterchefPositions = await fetchSickleNftPositions(api, sickles, masterchefV3, true);
     masterchefPositions.forEach(position => addUniV3LikePosition({ ...position, api }));
+  }
+
+  if (NonfungiblePositionManager) {
+  const positions = await fetchSickleNftPositions(api, sickles, NonfungiblePositionManager);
+  positions.forEach(position => addUniV3LikePosition({ ...position, api }));
   }
 
   return sumTokens2({ api, resolveLP: true });
@@ -313,7 +319,7 @@ Object.keys(config).forEach(chain => {
     module.exports[chain] = { tvl: tvlBaseOptimism };
   } else if (['arbitrum', 'linea'].includes(chain)) {
     module.exports[chain] = { tvl: tvlArbitrumLinea };
-  } else if (!['base', 'optimism', 'arbitrum', 'linea'].includes(chain) && config[chain].masterchefV3) {
-    module.exports[chain] = { tvl: tvlWithMasterchef };
+  } else if (!['base', 'optimism', 'arbitrum', 'linea'].includes(chain)) {
+    module.exports[chain] = { tvl: genericTvl };
   }
 });
