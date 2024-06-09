@@ -60,6 +60,9 @@ const config = {
     chainName: 'fantom',
     fromBlockSickle: 79166260,
     NonfungiblePositionManager: '0x2B52294425a9a229322228de659eDE9D146D7c2f',
+    gaugeFactory: '0x5b3220cb732245ffe8e26df228ac93feb685c157',
+    fromBlock: 58469764,
+    voter: '0xe3d1a117df7dcac2eb0ac8219341bad92f18dac1',
   },
   mantle: {
     factory: '0xB4C31b0f0B76b351395D4aCC94A54dD4e6fbA1E8',
@@ -296,10 +299,9 @@ async function tvlArbitrumLinea(api) {
 
 // TVL calculation for chains with masterchefV3
 async function genericTvl(api) {
-  const { factory, fromBlockSickle, masterchefV3, NonfungiblePositionManager } = config[api.chain];
+  const { factory, fromBlockSickle, masterchefV3, NonfungiblePositionManager, chainName } = config[api.chain];
 
   const sickles = await fetchSickles(api, factory, fromBlockSickle);
-
 
   if (masterchefV3) {
     const masterchefPositions = await fetchSickleNftPositions(api, sickles, masterchefV3, true);
@@ -315,9 +317,9 @@ async function genericTvl(api) {
 }
 
 Object.keys(config).forEach(chain => {
-  if (['base', 'optimism'].includes(chain)) {
+  if (['basez', 'optimismz'].includes(chain)) {
     module.exports[chain] = { tvl: tvlBaseOptimism };
-  } else if (['arbitrum', 'linea'].includes(chain)) {
+  } else if (['arbitrumz', 'lineaz'].includes(chain)) {
     module.exports[chain] = { tvl: tvlArbitrumLinea };
   } else if (!['base', 'optimism', 'arbitrum', 'linea'].includes(chain)) {
     module.exports[chain] = { tvl: genericTvl };
