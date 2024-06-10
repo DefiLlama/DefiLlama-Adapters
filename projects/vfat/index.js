@@ -220,7 +220,24 @@ async function fetchSickleNftPositions(api, sickles, managerAddress, isMasterche
   return positions;
 }
 
+async function fetchGauges3(api, voter, fromBlock) {
+  const eventAbi = `event StakingRewardsCreated(
+    address indexed pool,
+    address indexed stakingRewards,
+    address indexed rewardToken,
+    address stakingToken
+  )`;
 
+  const deployLogs = await getLogs({
+    api,
+    target: voter,
+    fromBlock,
+    eventAbi,
+    skipCache: true,
+  });
+
+  return deployLogs.map(log => log.args[2]);
+}
 
 // TVL calculation for Base and Optimism
 async function tvlBaseOptimism(api) {
@@ -300,6 +317,35 @@ async function tvlArbitrumLinea(api) {
 
 }
 
+async function modeTvl(api) {
+  const { factory, voter, fromBlock, fromBlockSickle, chainName } = config[api.chain];
+
+  const sickles = await fetchSickles(api, factory, fromBlockSickle);
+  const gauges = await fetchGauges3(api, voter, fromBlock);
+
+  //console.log(gauges);
+
+  const stakingTokens = await api.multiCall({ abi: 'address:stakingToken', calls: gauges });
+  const gaugeTokenMapping = {};
+  stakingTokens.forEach((stakingToken, index) => {
+    gaugeTokenMapping[gauges[index]] = stakingToken;
+  });
+
+  const balanceCallsLP = [];
+  const tokens = [];
+  for (const gauge of gauges) {
+    for (const sickle of sickles) {
+      balanceCallsLP.push({ target: gauge, params: [sickle] });
+      tokens.push(gaugeTokenMapping[gauge]);
+    }
+  }
+
+  const lpBals = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCallsLP });
+  api.add(tokens, lpBals);
+
+  return sumTokens2({ api, resolveLP: true });
+}
+
 // TVL calculation for chains with masterchefV3
 async function genericTvl(api) {
   const { factory, fromBlockSickle, masterchefV3, NonfungiblePositionManager, chainName } = config[api.chain];
@@ -376,6 +422,8 @@ Object.keys(config).forEach(chain => {
     module.exports[chain] = { tvl: tvlArbitrumLinea };
   } else if (chain === 'fantom') {
     module.exports[chain] = { tvl: tvlFantom };
+  } else if (chain === 'mode') {
+    module.exports[chain] = { tvl: modeTvl };
   } else if (!['base', 'optimism', 'arbitrum', 'linea', 'fantom', 'mode'].includes(chain)) {
     module.exports[chain] = { tvl: genericTvl };
   }
