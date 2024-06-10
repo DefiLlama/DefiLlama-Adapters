@@ -22,7 +22,7 @@ Object.keys(config).forEach(chain => {
   module.exports[chain] = {
     tvl: async (api) => {
       const balances = {}
-      const baseTvl = await api.multiCall({ abi: 'function baseTvl() public view returns (address[], uint256[])', calls: vaults })
+      const baseTvl = await api.multiCall({ abi: 'function underlyingTvl() public view returns (address[], uint256[])', calls: vaults })
       baseTvl.forEach((tvl, i) => {
 
         const tokens = tvl[0]
