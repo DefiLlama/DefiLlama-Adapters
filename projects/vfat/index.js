@@ -376,7 +376,7 @@ async function tvlFantom(api) {
 }
 
 Object.keys(config).forEach(chain => {
-  if (['basez', 'optimismz'].includes(chain)) {
+  if (['base', 'optimism'].includes(chain)) {
     module.exports[chain] = { tvl: tvlBaseOptimism };
   } else if (['arbitrum', 'linea'].includes(chain)) {
     module.exports[chain] = { tvl: tvlArbitrumLinea };
