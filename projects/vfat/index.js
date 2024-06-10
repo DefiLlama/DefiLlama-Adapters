@@ -53,7 +53,10 @@ const config = {
   mode: {
     factory: '0x53d9780DbD3831E3A797Fd215be4131636cD5FDf',
     chainName: 'mode',
-    fromBlockSickle: 7464171
+    fromBlockSickle: 7464171,
+    gaugeFactory:  '0x31832f2a97Fd20664D76Cc421207669b55CE4BC0',
+    voter:  '0xD2F998a46e4d9Dd57aF1a28EBa8C34E7dD3851D7' ,
+    fromBlock: 7453232,
   },
   fantom: {
     factory: '0x53d9780DbD3831E3A797Fd215be4131636cD5FDf',
@@ -364,6 +367,8 @@ async function tvlFantom(api) {
   return sumTokens2({ api, resolveLP: true });
 }
 
+
+
 Object.keys(config).forEach(chain => {
   if (['base', 'optimism'].includes(chain)) {
     module.exports[chain] = { tvl: tvlBaseOptimism };
@@ -371,7 +376,7 @@ Object.keys(config).forEach(chain => {
     module.exports[chain] = { tvl: tvlArbitrumLinea };
   } else if (chain === 'fantom') {
     module.exports[chain] = { tvl: tvlFantom };
-  } else if (!['base', 'optimism', 'arbitrum', 'linea', 'fantom'].includes(chain)) {
+  } else if (!['base', 'optimism', 'arbitrum', 'linea', 'fantom', 'mode'].includes(chain)) {
     module.exports[chain] = { tvl: genericTvl };
   }
 });
