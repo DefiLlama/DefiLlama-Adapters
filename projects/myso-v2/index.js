@@ -107,6 +107,9 @@ const config = {
   linea: {
     fromBlock: 2118418,
   },
+  sei: {
+    fromBlock: 79773668,
+  },
 };
 
 Object.keys(config).forEach((chain) => {
