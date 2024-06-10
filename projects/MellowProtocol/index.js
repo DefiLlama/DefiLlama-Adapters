@@ -4,10 +4,10 @@ const sdk = require('@defillama/sdk')
 const config = {
   ethereum: {
     vaults: [
-      '0xf3bF8720De4741133FC59fb69650A42f4DEdFd58',
-      '0xAeA3824ED5Fe391c05CD96D1042645EE13Cbf745',
-      '0xa77a8D25cEB4B9F38A711850751edAc70d7b91b0',
-      '0xbf0311df31af8b027a12051c00d02aa85a322594'
+      '0xBEEF69Ac7870777598A04B2bd4771c71212E6aBc',
+      '0x84631c0d0081FDe56DeB72F6DE77abBbF6A9f93a',
+      '0x5fD13359Ba15A84B76f7F87568309040176167cd',
+      '0x7a4EffD87C2f3C55CA251080b1343b605f327E3a'
     ],
     fromBlock: 20039678,
   },
