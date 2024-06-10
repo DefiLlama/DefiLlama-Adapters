@@ -16,7 +16,7 @@ const addresses = {
   bal80eth20: "0x5c6Ee304399DBdB9C8Ef030aB642B10820DB8F56",
 };
 
-async function tvl(_, block, _1, { api }) {
+async function tvl(api) {
   let pools = await Promise.all([AURA_BOOSTER, AURA_BOOSTER_2].map(i => api.fetchList({ target: i, itemAbi: abi.poolInfo, lengthAbi: abi.poolLength, })))
   pools = pools.flat()
   const poolInputs = pools.map(pool => pool.lptoken)
@@ -36,8 +36,8 @@ async function tvl(_, block, _1, { api }) {
   const poolTokensInfo = await api.multiCall({ calls: poolIds.map(poolId => ({ target: BALANCER_VAULT, params: poolId })), abi: abi.getPoolTokens, })
   const balancesinStaking = await api.multiCall({ calls: pools.map(pool => ({ target: pool.token, params: pool.crvRewards })), abi: 'erc20:balanceOf', })
   const totalSupplies = await api.multiCall({ calls: pools.map(pool => pool.lptoken), abi: 'erc20:totalSupply', })
-  const { output: veBalTotalSupply } = await sdk.api.erc20.totalSupply({ target: addresses.veBal, block })
-  const { output: veBalance } = await sdk.api.erc20.balanceOf({ target: addresses.veBal, owner: addresses.auraDelegate, block })
+  const { output: veBalTotalSupply } = await sdk.api.erc20.totalSupply({ target: addresses.veBal, block: api.block })
+  const { output: veBalance } = await sdk.api.erc20.balanceOf({ target: addresses.veBal, owner: addresses.auraDelegate, block: api.block })
   const ratio = veBalance / veBalTotalSupply
   const ratios = balancesinStaking.map((v, i) => +totalSupplies[i] > 0 ? v / totalSupplies[i] : 0)
   const bal = await unwrapBalancerToken({ api, balancerToken: addresses.bal80eth20, owner: addresses.veBal, })
@@ -67,6 +67,7 @@ const config = {
   polygon: { factory: '0x22625eedd92c81a219a83e1dc48f88d54786b017', fromBlock: 40687417, voterProxy: '0xC181Edc719480bd089b94647c2Dc504e2700a2B0' },
   xdai: { factory: '0x83E443EF4f9963C77bd860f94500075556668cb8', fromBlock: 27088527, voterProxy: '0xC181Edc719480bd089b94647c2Dc504e2700a2B0' },
   polygon_zkevm: { factory: '0x2498A2B0d6462d2260EAC50aE1C3e03F4829BA95', fromBlock: 203652, voterProxy: '0xC181Edc719480bd089b94647c2Dc504e2700a2B0' },
+  avax: { factory: '0xf23b4DB826DbA14c0e857029dfF076b1c0264843', fromBlock: 32558551, voterProxy: '0xC181Edc719480bd089b94647c2Dc504e2700a2B0' },
 }
 
 module.exports = {
@@ -80,7 +81,7 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const { factory, fromBlock, voterProxy, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const logs = await getLogs({
         api,
         target: factory,

@@ -23,6 +23,7 @@ const helpers = {
   "stacks": require("./chain/stacks"),
   "starknet": require("./chain/starknet"),
   "brc20": require("./chain/brc20"),
+  "doge": require("./chain/doge"),
 }
 
 const geckoMapping = {
@@ -44,7 +45,7 @@ async function getBalance(chain, account) {
 }
 
 function sumTokensExport(options) {
-  return async (_, _b, _cb, { api }) => sumTokens(
+  return async (api) => sumTokens(
     { ...api, api, ...options }
   )
 }
@@ -54,6 +55,7 @@ async function sumTokens(options) {
   if (api && !specialChains.includes(chain)) {
     chain = api.chain
   }
+  if (chain === 'bsc' && (owners[0] ?? '').startsWith('bnb')) chain = 'bep2'
 
   if (token) tokens = [token]
   if (owner) owners = [owner]

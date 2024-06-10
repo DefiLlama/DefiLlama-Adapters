@@ -16,9 +16,8 @@ const REGISTRY = '0x16274044dab9635Df2B5AeAF7CeCb5f381c71680'
 const FACTORY = '0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac'
 const ZERO_ADDRESS = ADDRESSES.null
 
-module.exports = async function tvl(_, block, _1, { api }) {
-
-  // ===== Primitive Contracts =====
+module.exports = async function tvl(api) {
+  const block = api.block
 
   const logs = (
     await getLogs({

@@ -72,7 +72,7 @@ const tvlExports = {};
 Object.keys(config).forEach(chain => {
   const { dpools, vPools = [], } = config[chain]
   tvlExports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const balances = {}
 
       const logs = await graphQuery(dpools, dPoolQuery)

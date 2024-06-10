@@ -1,61 +1,57 @@
+const { getUniTVL } = require("../helper/unknownTokens");
 const {
-  masterchefExports,
   sumTokensExport,
   nullAddress,
   sumUnknownTokens,
 } = require("../helper/unknownTokens");
 const { mergeExports } = require("../helper/utils");
-const abi = require("../helper/abis/masterchef.json");
 const pendleAbi = require("../pendle/abi.json");
 
-const MASTER_CHEF_CONTRACT = "0x2c8BBd2cecC77F2d18A04027Cc03CDB8Ab103214";
-const NATIVE_TOKEN = "0x6386704cD6f7A584EA9D23cccA66aF7EBA5a727e";
-const NATIVE_LP_TOKEN = "0x1B044593a78E374bD0E558Aa6633D2ff13fD5Bb7";
-const SPARKLER_CONTRACT = "0x7b1C460d0Ad91c8A453B7b0DBc0Ae4F300423FFB";
-
-const chefExport = masterchefExports({
-  chain: "pulse",
-  masterchef: MASTER_CHEF_CONTRACT,
-  nativeToken: NATIVE_TOKEN,
-  lps: [NATIVE_LP_TOKEN],
-  useDefaultCoreAssets: true,
-});
-delete chefExport.staking;
+const FACTORY = "0x955219A87eB0C6754fd247266af970F7d16906CD";
+const SPARK_TOKEN = "0x6386704cD6f7A584EA9D23cccA66aF7EBA5a727e";
+const SPARK_LP = "0x33208439e1B28B1d6fCfbB6334e9950027Ee3B52";
+const SDAI_TOKEN = "0x30FCB23A906493371b1721C8feb8815804808D74";
+const SDAI_DAI_LP = "0xf32B9398a7277609772F328Fc2005D7DA5420E77";
+const SDAI_SPARK_LP = "0x9095D464A29Abd1B840C1C5205FB602ae5b011FF";
+const MASTERCHEF = "0x63c2a0083861F8C496A0A29BD8BA223E1180664e";
+const SPARKLER = "0x44Ee223D0a9Eec269b1757685F438bddB311F1AE";
 
 module.exports = mergeExports([
-  chefExport,
   {
     pulse: {
       tvl,
-      pool2: sumTokensExport({
-        owner: SPARKLER_CONTRACT,
-        tokens: [NATIVE_LP_TOKEN],
-        useDefaultCoreAssets: true,
-      }),
-      staking: sumTokensExport({
-        owners: [SPARKLER_CONTRACT, MASTER_CHEF_CONTRACT],
-        tokens: [NATIVE_TOKEN],
-        useDefaultCoreAssets: true,
-        lps: [NATIVE_LP_TOKEN],
-      }),
     },
   },
+  {
+    misrepresentedTokens: true,
+    methodology:
+      "TVL accounts for the liquidity on all AMM pools. Staking accounts for the SPARK locked in SPARKLER",
+    pulse: {
+      tvl: getUniTVL({ factory: FACTORY, useDefaultCoreAssets: true }),
+      staking: sumTokensExport({
+        owners: [SPARKLER, MASTERCHEF],
+        tokens: [SPARK_TOKEN, SDAI_TOKEN],
+        useDefaultCoreAssets: true,
+        lps: [SPARK_LP, SDAI_DAI_LP, SDAI_SPARK_LP],
+      }),
+    },
+  }
 ]);
 
 // add amount in pulsex farm
-async function tvl(_, _b, _cb, { api }) {
+async function tvl(api) {
   let rehypothecations = await api.fetchList({
     lengthAbi: "uint256:poolLength",
     itemAbi:
       "function rehypothecations(uint256) view returns (address farm, uint256 pid)",
-    target: MASTER_CHEF_CONTRACT,
+    target: MASTERCHEF,
   });
   rehypothecations = rehypothecations.filter((i) => i.farm !== nullAddress);
   const bals = await api.multiCall({
     abi: pendleAbi.userInfo,
     calls: rehypothecations.map(({ farm, pid }) => ({
       target: farm,
-      params: [pid, MASTER_CHEF_CONTRACT],
+      params: [pid, MASTERCHEF],
     })),
   });
   const pInfos = await api.multiCall({
