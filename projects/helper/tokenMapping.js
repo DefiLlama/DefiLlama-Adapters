@@ -17,8 +17,9 @@ coreAssets = JSON.parse(JSON.stringify(coreAssets))
 // carbon: https://api-insights.carbon.network/info/denom_gecko_map
 // orbit brige: https://bridge.orbitchain.io/open/v1/api/monitor/rawTokenList
 
+
 const ibcChains = ['ibc', 'terra', 'terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', 'comdex', 'umee', 'orai', 'persistence', 'fxcore', 'neutron', 'quasar', 'chihuahua', 'sei', 'archway', 'migaloo', 'secret', 'aura', 'xpla', 'bostrom', 'joltify']
-const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge']
+const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'ton', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', 'elrond', 'cardano', 'stacks', 'sui', 'ergo', 'mvc', 'renec', 'doge', 'stellar', ]
 
 const transformTokens = {
   // Sample Code
@@ -35,6 +36,14 @@ const ibcMappings = {
 }
 
 const fixBalancesTokens = {
+  q: {
+      [ADDRESSES.q.ELK]: { coingeckoId: "elk-finance", decimals: 18 },
+      [ADDRESSES.q.WETH]: { coingeckoId: "ethereum", decimals: 18 },
+  },
+  stellar: {
+    "CAS3J7GYLGXMF6TDJBBYYSE3HQ6BBSMLNUQ34T6TZMYMW2EVH34XOWMA": { coingeckoId: "stellar", decimals: 7},
+    "CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75": { coingeckoId: "usd-coin", decimals: 7},
+  },
   defichain_evm: {
     '0x49febbf9626b2d39aba11c01d83ef59b3d56d2a4': { coingeckoId: "defichain", decimals: 18 },
     '0xff0000000000000000000000000000000000000d': { coingeckoId: "usd-coin", decimals: 18 },
@@ -59,7 +68,9 @@ const fixBalancesTokens = {
     "KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-17": { coingeckoId: "usd-coin", decimals: 6 },
     "KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-18": { coingeckoId: "tether", decimals: 6 },
   },
-
+  iotaevm: {
+    "0x6e47f8d48a01b44DF3fFF35d258A10A3AEdC114c": { coingeckoId: 'iota', decimals: 18 },
+  },
   acala: {
     ACA: { coingeckoId: "acala", decimals: 12 },
     LDOT: { coingeckoId: "liquid-staking-dot", decimals: 10 },
@@ -73,6 +84,9 @@ const fixBalancesTokens = {
     PHA: { coingeckoId: "pha", decimals: 12 },
     KINT: { coingeckoId: "kintsugi", decimals: 12 },
     KBTC: { coingeckoId: "kintsugi-btc", decimals: 8 },
+  },
+  ham: {
+    '0x4200000000000000000000000000000000000006': { coingeckoId: 'ethereum', decimals: 18 },
   },
   blast: {
     '0xf7bc58b8d8f97adc129cfc4c9f45ce3c0e1d2692': { coingeckoId: "wrapped-bitcoin", decimals: 8 },
@@ -144,6 +158,9 @@ const fixBalancesTokens = {
   planq: {
     "0xecEEEfCEE421D8062EF8d6b4D814efe4dc898265": { coingeckoId: 'usd-coin', decimals: 6 },
     "0x75E20C5d4aade76143b8b74d1C5E2865347f9d3B": { coingeckoId: 'usd-coin', decimals: 18 },
+  },
+  zeta: {
+    "0x1e4bF3CaBD7707089138dD5a545B077413FA83Fc": { coingeckoId: 'pufeth', decimals: 18 },
   }
 }
 
