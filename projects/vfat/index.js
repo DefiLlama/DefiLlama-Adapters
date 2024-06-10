@@ -316,12 +316,62 @@ async function genericTvl(api) {
   return sumTokens2({ api, resolveLP: true });
 }
 
+async function fetchFantomGauges(api, fromBlock, gaugeFactory, voter, chainName) {
+  const eventAbi = `event GaugeCreated(
+    address indexed maker,
+    address indexed pool,
+    address g,
+    address b,
+    address v,
+    bool i,
+    address[] a
+  )`;
+
+  const deployLogs = await getLogs({
+    api,
+    target: gaugeFactory,
+    fromBlock,
+    eventAbi,
+  });
+
+  return deployLogs.map(log => log.args.g);
+}
+
+// TVL calculation for Fantom
+async function tvlFantom(api) {
+  const { factory, gaugeFactory, voter, fromBlock, fromBlockSickle, chainName } = config[api.chain];
+
+  const sickles = await fetchSickles(api, factory, fromBlockSickle);
+  const gauges = await fetchFantomGauges(api, fromBlock, gaugeFactory, voter, chainName);
+  const stakingTokens = await api.multiCall({ abi: 'address:stake', calls: gauges });
+  const gaugeTokenMapping = {};
+  stakingTokens.forEach((stakingToken, index) => {
+    gaugeTokenMapping[gauges[index]] = stakingToken;
+  });
+
+  const balanceCallsLP = [];
+  const tokens = [];
+  for (const gauge of gauges) {
+    for (const sickle of sickles) {
+      balanceCallsLP.push({ target: gauge, params: [sickle] });
+      tokens.push(gaugeTokenMapping[gauge]);
+    }
+  }
+
+  const lpBals = await api.multiCall({ abi: 'erc20:balanceOf', calls: balanceCallsLP });
+  api.add(tokens, lpBals);
+
+  return sumTokens2({ api, resolveLP: true });
+}
+
 Object.keys(config).forEach(chain => {
-  if (['basez', 'optimismz'].includes(chain)) {
+  if (['base', 'optimism'].includes(chain)) {
     module.exports[chain] = { tvl: tvlBaseOptimism };
-  } else if (['arbitrumz', 'lineaz'].includes(chain)) {
+  } else if (['arbitrum', 'linea'].includes(chain)) {
     module.exports[chain] = { tvl: tvlArbitrumLinea };
-  } else if (!['base', 'optimism', 'arbitrum', 'linea'].includes(chain)) {
+  } else if (chain === 'fantom') {
+    module.exports[chain] = { tvl: tvlFantom };
+  } else if (!['base', 'optimism', 'arbitrum', 'linea', 'fantom'].includes(chain)) {
     module.exports[chain] = { tvl: genericTvl };
   }
 });
