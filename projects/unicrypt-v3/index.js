@@ -15,7 +15,7 @@ const config = {
     reserves: ['0xc22218406983bf88bb634bb4bf15fa4e0a1a8c84', '0xd8207e9449647a9668ad3f8ecb97a1f929f81fd1', '0x40f6301edb774e8B22ADC874f6cb17242BaEB8c4'],
   },
   base: {
-    reserves: ['0xd6cd8fb001cbdae91f0af7a58a1602c945967d67']
+    reserves: ['0xd6cd8fb001cbdae91f0af7a58a1602c945967d67', '0x231278edd38b00b07fbd52120cef685b9baebcc1']
   }
 };
 
@@ -26,7 +26,7 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const { reserves, } = config[chain];
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api }) => {
+    tvl: async (api) => {
       const uniV3WhitelistedTokens = await getCoreAssets(api.chain);
       await sumTokens2({ api, owners: reserves, resolveUniV3: true, uniV3WhitelistedTokens, });
       return api.getBalancesV2().clone(2).getBalances() // we multiple core assets value by 2 as positions are spread between 0 -  ∞ 

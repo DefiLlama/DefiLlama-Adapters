@@ -16,7 +16,7 @@ const fraxLockVaultsNotRegistered = [
   "0x1F0a3bF1e4Ea8f27449AFa0a3A27eFc3817431fc",
   "0xDc5Ed7b972710594082479AF498B1dA02d03a273",
 ];
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   let balances = {};
   const data = await getConfig('popcorn/' + api.chain, `https://raw.githubusercontent.com/Popcorn-Limited/defi-db/main/archive/vaults/${api.getChainId()}.json`);
   let vaultAddresses = Object.keys(data);

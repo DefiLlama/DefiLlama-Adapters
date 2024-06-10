@@ -122,7 +122,7 @@ module.exports = {
   },
   polygon: {
     tvl: polygonTvl,
-    //staking: staking(wrnbwPolyPool, wrnbwPolyToken, "polygon"),
+    //staking: staking(wrnbwPolyPool, wrnbwPolyToken),
   },
   arbitrum: {
     tvl: arbitrumTvl,

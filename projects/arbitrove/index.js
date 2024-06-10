@@ -6,7 +6,7 @@ const GMLP_ORACLE = "0x4997916792decbF5DAcbaFc47CF2071AD9Fe6456";
 const GMLP_TOKEN = "0xc16ce97d04de6c5e0391e308dbc17a397183067b";
 const getAmountAcrossStrategies = "function getAmountAcrossStrategies(address coin) view returns (uint256)";
 
-async function tvl(_, _b, _cb, { api }) {
+async function tvl(api) {
   const logs = await getLogs({
     api,
     target: ALP_TOKEN,

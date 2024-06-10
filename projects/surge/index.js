@@ -16,12 +16,12 @@ Object.keys(config).forEach(chain => {
     fromBlock,
   })
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const logs = await _getLogs(api)
       const ownerTokens = logs.map(l => [[l.collateralToken, l.loanToken], l.pool])
       return sumTokens2({ api, ownerTokens, })
     },
-    borrowed: async (_, _b, _cb, { api, }) => {
+    borrowed: async (api) => {
       const logs = await _getLogs(api)
       const borrowed = await api.multiCall({  abi: 'uint256:lastTotalDebt', calls: logs.map(i => i.pool) })
       api.addTokens(logs.map(i => i.loanToken), borrowed)

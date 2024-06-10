@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const sdk = require('@defillama/sdk');
 const axios = require('axios');
 
@@ -77,10 +78,20 @@ const tokens = [
     "ticker": "AAAU",
     "sufficientLiquidityForDefiLlamaIndexer": false,
   },
+  {
+    "address": "0x79E2174f64286Bb92c8BD00d0D8A126eAc664c27",
+    "ticker": "ABNB",
+    "sufficientLiquidityForDefiLlamaIndexer": false,
+  },
+  {
+    "address": "0x1e01aE049Bcb76ec91aa59e11b84a01375cB19b0",
+    "ticker": "DNA",
+    "sufficientLiquidityForDefiLlamaIndexer": false,
+  },
 ];
 
-async function tvl(_0, blockNumber, _2, { api }) {
-  for (const token of tokens) {
+async function tvl(api) {
+  const addTokenTVL = async (token) => {
     const tokenTotalSupply = await api.call({ target: token.address, abi: 'erc20:totalSupply' });
     if (token.sufficientLiquidityForDefiLlamaIndexer) {
       api.add(token.address, tokenTotalSupply);
@@ -91,13 +102,18 @@ async function tvl(_0, blockNumber, _2, { api }) {
           ticker: token.ticker
         }
       );
-      const tickerPrice = tickerPricing.data.at(-1)[1];
+      const tickerPrice = Object.values(tickerPricing.data).pop(); // latest price
       api.add(
-        '0x919C1c267BC06a7039e03fcc2eF738525769109c', // usdtKavaAddress
+        ADDRESSES.kava.USDt, // usdtKavaAddress
         tokenTotalSupply * tickerPrice * (1e6 / 1e18)
       );
     }
+  };
+  const promises = [];
+  for (const token of tokens) {
+    promises.push(addTokenTVL(token));
   }
+  await Promise.all(promises);
 }
 
 module.exports = {

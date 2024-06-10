@@ -5,7 +5,7 @@ const stableSwapAbi = require('./abis/StableSwap.json');
 
 
 function getStableSwapPool(contracts) {
-  return async (_, _1, _2, { api }) => {
+  return async (api) => {
     const tokensArray = await api.multiCall({ abi: stableSwapAbi.getTokens, calls: contracts })
     const balsArray = await api.multiCall({ abi: stableSwapAbi.getTokenBalances, calls: contracts })
     tokensArray.map((v, i) => api.addTokens(v, balsArray[i]))

@@ -28,7 +28,7 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const { stakingPool, tokens = [ADDRESSES.null] } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const data = await getConfig('multibit', BRIDGE_TOKENS)
       const key = chain === 'ethereum' ? 'eth': chain
       const owner = data.find(v => v.chain === key)?.real?.contract
@@ -38,7 +38,7 @@ Object.keys(config).forEach(chain => {
   }
 
   if (stakingPool) {
-    module.exports[chain].staking = async (_, _b, _cb, { api, }) => {
+    module.exports[chain].staking = async (api) => {
       const data = await api.fetchList({ lengthAbi: abi.poolLength, itemAbi: abi.pools, target: stakingPool })
       const tokens = data.map(v => v.stakeToken)
       return api.sumTokens({ owner: stakingPool, tokens, })

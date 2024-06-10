@@ -36,7 +36,7 @@ function addToExports(chain, key, fn) {
     exportObject[chain][key].push(fn)
 }
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   return sumTokens2({ api, owner: genesisPool, tokens: genesisTokens, resolveLP: true })
 }
 

@@ -36,7 +36,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { endpoint } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       let info = (await getConfig('kogefarm/' + chain, endpoint))
       if (typeof info === 'string') info = JSON.parse(vaults.replace(/,(\s*[}\]])/g, '$1'))
       let vaults = chain === 'polygon' ? info : info.map(v => v.vault)
@@ -50,13 +50,13 @@ Object.keys(config).forEach(chain => {
   }
 })
 
-module.exports.polygon.pool2 = async (_, _b, _cb, { api, }) => {
+module.exports.polygon.pool2 = async (api) => {
   const tokens = await api.multiCall({ abi: abi.token, calls: _kogePool2 })
   const bals = await api.multiCall({ abi: abi.balance, calls: _kogePool2 })
   api.addTokens(tokens, bals)
   return sumUnknownTokens({ api, resolveLP: true, tokens: ['0x3885503aef5e929fcb7035fbdca87239651c8154'], owner: kogeMasterChefAddr, })
 }
 
-module.exports.polygon.staking = async (_, _b, _cb, { api, }) => {
+module.exports.polygon.staking = async (api) => {
   return sumUnknownTokens({ api, tokens: ['0x13748d548D95D78a3c83fe3F32604B4796CFfa23'], owner: kogeMasterChefAddr, })
 }

@@ -13,7 +13,7 @@ const queryBlock = `query data($block: Int){
 const SUBGRAPH_URL =
   "https://api.thegraph.com/subgraphs/name/dimasriat/factor-leverage-vault";
 
-async function tvl(timestamp, ethBlock, chainBlocks, { api }) {
+async function tvl(api) {
   const { leverageVaultPairStates } = await blockQuery(SUBGRAPH_URL, queryBlock, { api })
 
   for (let pairState of leverageVaultPairStates) {

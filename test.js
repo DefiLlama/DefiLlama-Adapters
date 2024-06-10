@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 
+
 const handleError = require('./utils/handleError')
+const INTERNAL_CACHE_FILE = 'tvl-adapter-repo/sdkInternalCache.json'
 process.on('unhandledRejection', handleError)
 process.on('uncaughtException', handleError)
 
-const { ENV_KEYS } = require("./projects/helper/env");
 const path = require("path");
 require("dotenv").config();
+const { ENV_KEYS } = require("./projects/helper/env");
 const { util: {
   blocks: { getCurrentBlocks },
   humanizeNumber: { humanizeNumber },
@@ -28,25 +30,8 @@ if (process.env.LLAMA_SANITIZE)
     if (['TVL_LOCAL_CACHE_ROOT_FOLDER', 'LLAMA_DEBUG_MODE', ...ENV_KEYS].includes(key) || key.includes('SDK')) return;
     delete process.env[key]
   })
+process.env.SKIP_RPC_CHECK = 'true'
 
-const locks = [];
-function getCoingeckoLock() {
-  return new Promise((resolve) => {
-    locks.push(resolve);
-  });
-}
-function releaseCoingeckoLock() {
-  const firstLock = locks.shift();
-  if (firstLock !== undefined) {
-    firstLock(null);
-  }
-}
-// Rate limit is 50 calls/min for coingecko's API
-// So we'll release one every 1.2 seconds to match it
-setInterval(() => {
-  releaseCoingeckoLock();
-}, 2000);
-const maxCoingeckoRetries = 5;
 
 async function getTvl(
   unixTimestamp,
@@ -58,29 +43,22 @@ async function getTvl(
   tvlFunction,
   isFetchFunction,
   storedKey,
-  knownTokenPrices
 ) {
+  const chain = storedKey.split('-')[0]
+  const api = new sdk.ChainApi({ chain, block: chainBlocks[chain], timestamp: unixTimestamp, storedKey, })
+  api.api = api
+  api.storedKey = storedKey
   if (!isFetchFunction) {
-    const chain = storedKey.split('-')[0]
-    const block = chainBlocks[chain]
-    const api = new sdk.ChainApi({ chain, block: chainBlocks[chain], timestamp: unixTimestamp, })
-    let tvlBalances = await tvlFunction(unixTimestamp, ethBlock, chainBlocks, { api, chain, block, storedKey });
-    if (!tvlBalances && Object.keys(api.getBalances()).length) tvlBalances = api.getBalances()
-    const tvlResults = await computeTVL(
-      tvlBalances,
-      "now",
-      false,
-      knownTokenPrices,
-      getCoingeckoLock,
-      maxCoingeckoRetries
-    );
+    let tvlBalances = await tvlFunction(api, ethBlock, chainBlocks, api);
+    if (tvlBalances === undefined) tvlBalances = api.getBalances()
+    const tvlResults = await computeTVL(tvlBalances, "now");
     await diplayUnknownTable({ tvlResults, storedKey, tvlBalances, })
     usdTvls[storedKey] = tvlResults.usdTvl;
     tokensBalances[storedKey] = tvlResults.tokenBalances;
     usdTokenBalances[storedKey] = tvlResults.usdTokenBalances;
   } else {
     usdTvls[storedKey] = Number(
-      await tvlFunction(unixTimestamp, ethBlock, chainBlocks)
+      await tvlFunction(api, ethBlock, chainBlocks, api)
     );
   }
   if (
@@ -132,10 +110,12 @@ sdk.api.abi.call = async (...args) => {
   } catch (e) {
     console.log(e)
   }
+  // await initCache()
   const chains = Object.keys(module).filter(item => typeof module[item] === 'object' && !Array.isArray(module[item]));
   checkExportKeys(module, passedFile, chains)
   const unixTimestamp = Math.round(Date.now() / 1000) - 60;
-  const { chainBlocks } = await getCurrentBlocks([]); // fetch only ethereum block for local test
+  // const { chainBlocks } = await getCurrentBlocks([]); // fetch only ethereum block for local test
+  const chainBlocks = {}
   const ethBlock = chainBlocks.ethereum;
   const usdTvls = {};
   const tokensBalances = {};
@@ -170,7 +150,6 @@ sdk.api.abi.call = async (...args) => {
           tvlFunction,
           tvlFunctionIsFetch,
           storedKey,
-          knownTokenPrices
         );
         let keyToAddChainBalances = tvlType;
         if (tvlType === "tvl" || tvlType === "fetch") {
@@ -201,7 +180,6 @@ sdk.api.abi.call = async (...args) => {
       mainTvlIsFetch ? module.fetch : module.tvl,
       mainTvlIsFetch,
       "tvl",
-      knownTokenPrices
     );
     tvlPromises.push(mainTvlPromise);
   }
@@ -232,13 +210,16 @@ sdk.api.abi.call = async (...args) => {
     console.log("Total:", humanizeNumber(usdTvls[chain]), "\n");
   });
   console.log(`------ TVL ------`);
-  Object.entries(usdTvls).forEach(([chain, usdTvl]) => {
+  const usdVals = Object.entries(usdTvls)
+  usdVals.sort((a, b) => b[1] - a[1])
+  usdVals.forEach(([chain, usdTvl]) => {
     if (chain !== "tvl") {
-      console.log(chain.padEnd(25, " "), humanizeNumber(usdTvl));
+      console.log(chain.padEnd(25, " "), humanizeNumber(Math.round(usdTvl)));
     }
   });
   console.log("\ntotal".padEnd(25, " "), humanizeNumber(usdTvls.tvl), "\n");
 
+  await preExit()
   process.exit(0);
 })();
 
@@ -441,3 +422,32 @@ setTimeout(() => {
   if (!process.env.NO_EXIT_ON_LONG_RUN_RPC)
     process.exit(1);
 }, 10 * 60 * 1000) // 10 minutes
+
+
+
+async function initCache() {
+  let currentCache = await sdk.cache.readCache(INTERNAL_CACHE_FILE)
+  // if (process.env.NO_EXIT_ON_LONG_RUN_RPC)
+  //   sdk.log('cache size:', JSON.stringify(currentCache).length, 'chains:', Object.keys(currentCache).length)
+  const ONE_WEEK = 60 * 60 * 24 * 31
+  if (!currentCache || !currentCache.startTime || (Date.now() / 1000 - currentCache.startTime > ONE_WEEK)) {
+    currentCache = {
+      startTime: Math.round(Date.now() / 1000),
+    }
+    await sdk.cache.writeCache(INTERNAL_CACHE_FILE, currentCache)
+  }
+  sdk.sdkCache.startCache(currentCache)
+}
+
+async function saveSdkInternalCache() {
+  await sdk.cache.writeCache(INTERNAL_CACHE_FILE, sdk.sdkCache.retriveCache(), { skipR2CacheWrite: true })
+}
+
+async function preExit() {
+  // try {
+  //     await saveSdkInternalCache() // save sdk cache to r2
+  // } catch (e) {
+  //   if (process.env.NO_EXIT_ON_LONG_RUN_RPC)
+  //     sdk.error(e)
+  // }
+}

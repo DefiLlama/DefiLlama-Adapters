@@ -2,7 +2,7 @@ const { getConfig } = require("../helper/cache");
 const { sumTokens, queryContract, queryV1Beta1, getBalance2 } = require('../helper/chain/cosmos');
 const owners = ["kujira15e682nq9jees29rm9j3h030af86lq2qtlejgphlspzqcvs9whf2q00nua5"]
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
 
   // Get base balances of DAO treasury
   await sumTokens({
@@ -92,7 +92,7 @@ async function calcPOLValue(api) {
 
 }
 
-async function ownTokens(_, _1, _2, { api }) {
+async function ownTokens(api) {
   return sumTokens({
     owners: owners,
     chain: 'kujira',

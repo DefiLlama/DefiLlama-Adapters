@@ -27,6 +27,6 @@ module.exports = {
   fantom: {
     tvl: async () => ({}),
     treasury,
-    staking: stakings([BoardroomV2, shortNodes, mediumNodes, longNodes, ], smelt, "fantom"),
+    staking: stakings([BoardroomV2, shortNodes, mediumNodes, longNodes, ], smelt),
   },
 };

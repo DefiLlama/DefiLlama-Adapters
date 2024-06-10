@@ -6,8 +6,8 @@ const { getConfig } = require('../helper/cache')
 const IDEX_ETHEREUM_CUSTODY_CONTRACT = "0xE5c405C5578d84c5231D3a9a29Ef4374423fA0c2";
 const IDEX_POLYGON_CUSTODY_CONTRACT = "0x3bcc4eca0a40358558ca8d1bcd2d1dbde63eb468";
 
-async function tvl(_timestamp, block, chain, { api }) {
-  chain = api.chain
+async function tvl(api) {
+  const chain = api.chain
   let tokens = [ADDRESSES.null]
   let owner
 

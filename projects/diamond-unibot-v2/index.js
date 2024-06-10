@@ -53,7 +53,7 @@ const config = {
   }
 }
 
-async function tvl(_, _b, _cb, { api }) {
+async function tvl(api) {
   const { balanceVault, lendingPools, fromBlock, proxyDeployer } = config[api.chain]
   const logs = await getLogs({
     api, fromBlock,

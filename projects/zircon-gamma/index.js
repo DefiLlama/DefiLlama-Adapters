@@ -3,10 +3,10 @@ const { getLogs, getAddress } = require('../helper/cache/getLogs')
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const sdk = require('@defillama/sdk')
 
-const movrUniTvl = getUniTVL({ chain: 'moonriver', factory: '0x6B6071Ccc534fcee7B699aAb87929fAF8806d5bd', useDefaultCoreAssets: true, })
-const bscUniTvl = getUniTVL({ chain: 'bsc', factory: '0x18b7f6A60d5BEE3c3a953A3f213eEa25F7eF43E9', useDefaultCoreAssets: true, })
+const movrUniTvl = getUniTVL({ factory: '0x6B6071Ccc534fcee7B699aAb87929fAF8806d5bd', useDefaultCoreAssets: true, })
+const bscUniTvl = getUniTVL({ factory: '0x18b7f6A60d5BEE3c3a953A3f213eEa25F7eF43E9', useDefaultCoreAssets: true, })
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const logs = await getLogs({
     api,
     target: '0x09f8E0aeA93Bcb511276A166e6e57E02e5cc1E0a',
@@ -21,7 +21,7 @@ async function tvl(_, _b, _cb, { api, }) {
 }
 
 
-async function bscTvl(_, _b, _cb, { api, }) {
+async function bscTvl(api) {
   const logs = await getLogs({
     api,
     target: '0x05d5E46F9d17591f7eaCdfE43E3d6a8F789Df698',

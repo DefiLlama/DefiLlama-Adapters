@@ -9,8 +9,6 @@ const transform = addr=>{
 }
 
 module.exports={
-    timetravel: true,
-    doublecounted: false,
-    methodology: "Count tokens the same way we count for compound",
+            methodology: "Count tokens the same way we count for compound",
     ethereum: compoundExports('0x895879b2c1fbb6ccfcd101f2d3f3c76363664f92', "ethereum", undefined, undefined, transform)
 }

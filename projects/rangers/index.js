@@ -33,7 +33,7 @@ const ownersRPG = {
 }
 const owners = [...Object.values(ownersRPG)]
 
-async function tvl(_, _b, _cb, { api, }) {  
+async function tvl(api) {  
   return sumTokens2({ api, owners, tokens: Object.values(tokens) })
 }
 module.exports = {

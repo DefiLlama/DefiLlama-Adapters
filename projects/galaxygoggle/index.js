@@ -9,7 +9,7 @@ const bscStaking = "0x97209Cf7a6FccC388eEfF85b35D858756f31690d";
 module.exports = {
   avax:{
     tvl: () => 0,
-    staking: staking(GgStaking, gg, "avax")
+    staking: staking(GgStaking, gg)
   },
   bsc: {
     tvl: () => 0,

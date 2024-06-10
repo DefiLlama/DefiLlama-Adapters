@@ -15,7 +15,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const owner = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const markets = await api.call({
         abi:  abi.getAllMarkets,
         target: owner,

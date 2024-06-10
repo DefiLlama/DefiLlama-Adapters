@@ -10,8 +10,8 @@ module.exports = {
   ],
   dogechain: {
     tvl: sdk.util.sumChainTvls([
-      getUniTVL({ chain: 'dogechain', factory, useDefaultCoreAssets: true, }),
-      getUniTVL({ chain: 'dogechain', factory: '0x8E49Fa5fA4494c3a4358DC00F1c1e4dfA0A3b7eF', useDefaultCoreAssets: true, }),
+      getUniTVL({ factory, useDefaultCoreAssets: true, }),
+      getUniTVL({ factory: '0x8E49Fa5fA4494c3a4358DC00F1c1e4dfA0A3b7eF', useDefaultCoreAssets: true, }),
     ]),
   }
 }

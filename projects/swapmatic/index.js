@@ -7,7 +7,7 @@ const START_BLOCK = 3285065 - 1;
 const FACTORY = '0x90D882B2789523403ff263D1F93Ead986c38446C';
 const MATIC = ADDRESSES.ethereum.MATIC.toLowerCase();
 
-async function tvl(_, _block, cb, { api }) {
+async function tvl(api) {
   const chain = 'polygon'
   const logs = (await getLogs({
       api,

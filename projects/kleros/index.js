@@ -36,8 +36,7 @@ function getStakedTvl(chain) {
 
 module.exports = {
   methodology: "Counts PNK staked in courts",
-  timetravel: true,
-  ethereum: {
+    ethereum: {
     tvl: () => ({}),
     staking: getStakedTvl('ethereum')
   },

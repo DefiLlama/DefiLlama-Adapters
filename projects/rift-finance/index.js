@@ -11,7 +11,7 @@ const masterChefAbi = {
   userInfo: "function userInfo(uint256 pid, address user) view returns (tuple(uint256 amount, uint256 rewardDebt))",
 }
 
-async function tvl(timestamp, chainBlocks, _, { api }) {
+async function tvl(api) {
   const chain = api.chain
 
   const { graphUrl } = NETWORKS[chain];

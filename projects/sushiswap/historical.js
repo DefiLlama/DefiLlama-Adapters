@@ -34,6 +34,6 @@ const subgraphChainTvls = Object.keys(subgraphs).reduce((obj, chain) => ({
 const xSUSHI = "0x8798249c2E607446EfB7Ad49eC89dD1865Ff4272"
 const SUSHI = ADDRESSES.ethereum.SUSHI
 
-subgraphChainTvls.ethereum.staking = staking(xSUSHI, SUSHI, 'ethereum');
+subgraphChainTvls.ethereum.staking = staking(xSUSHI, SUSHI);
 
 module.exports=subgraphChainTvls;

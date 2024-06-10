@@ -15,4 +15,4 @@ module.exports = yieldHelper({
   blacklistedTokens: [tenFi_PCS, tenfi],
 })
 
-module.exports.bsc.staking = staking(tenVault, tenfi, "bsc")
+module.exports.bsc.staking = staking(tenVault, tenfi)

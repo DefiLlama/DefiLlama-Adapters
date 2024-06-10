@@ -117,17 +117,17 @@ const moveIbo = async (api, tvlType) => {
   api.addTokens(acceptCoinArr, bals)
 };
 
-const tvl = async (_, _1, _2, { api }) => {
+const tvl = async (api) => {
   await moveIbo(api, 'tvl');
   return api.getBalances()
 };
-const pool2 = async (_, _1, _2, { api }) => {
+const pool2 = async (api) => {
   await moveIbo(api, 'pool2');
   await cakeLPsltStaking(api);
   return api.getBalances()
 };
 
-const staking = async (_, _1, _2, { api }) => {
+const staking = async (api) => {
   await moveIbo(api, 'staking');
   await moveStaking(api);
   await altLockBond(api)

@@ -75,7 +75,12 @@ const config = {
            ]
   },
   litecoin: {
-    owners: ['MNky8PL58UjL14mcZm3ESvEkYQkzMY9kfu']
+    owners: [
+      'MNky8PL58UjL14mcZm3ESvEkYQkzMY9kfu',
+      'LYmdXiH1u6UN2bFetfTGnNuFgEG64FWVLU',
+      'MGZv8pEkrsmpa2YAXRVXTtdCPBMnnR28fY',
+      'MCRXTQ5uuBh6Qt8t4LuqZNvruZ5SmWXjrY'
+    ]
   },
   solana: {
     owners: [

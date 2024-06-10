@@ -66,7 +66,7 @@ module.exports = {
   methodology: 'Staking pool balance',
   bsc: {
     tvl: () => ({}),
-    staking: stakings([stakingContractRoundOne, stakingContractRoundTwo, stakingContractRoundThree, ], stakingToken, 'bsc'),
+    staking: stakings([stakingContractRoundOne, stakingContractRoundTwo, stakingContractRoundThree, ], stakingToken),
   },
   hallmarks:[
     [1655991120, "Horizon bridge Hack $100m"],

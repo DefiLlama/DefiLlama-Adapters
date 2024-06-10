@@ -1,3 +1,4 @@
+const ADDRESSES = require('../helper/coreAssets.json')
 const { request, } = require("graphql-request")
 const { getLogs } = require('../helper/cache/getLogs')
 
@@ -16,12 +17,12 @@ const tvlQuery = `
 // 	const response = await request(graphUrl, tvlQuery)
 // 	const tvlAmount = response.totalValueLocked.amount
 // 	return {
-// 		"blast:0x0000000000000000000000000000000000000000":
+// 		["blast:" + ADDRESSES.null]:
 // 			tvlAmount.toString(),
 // 	}
 // }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
 	const registry = '0xE1784da2b8F42C31Fb729E870A4A8064703555c2'
 	const fromBlock = 203239
 	const unStakeLogs = await getLogs({ api, target: registry, eventAbi: 'event Unstake(address indexed service, address indexed user, address indexed to, uint256 amount)', onlyArgs: true, fromBlock, extraKey: 'unstake',})

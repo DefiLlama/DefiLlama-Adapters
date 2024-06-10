@@ -133,7 +133,7 @@ const liquidityBridgeTokens = [
   {
     // WBTC
     arbitrum: ADDRESSES.arbitrum.WBTC,
-    avax: "0x50b7545627a5162F82A992c33b87aDc75187B218",
+    avax: ADDRESSES.avax.WBTC_e,
     ethereum: ADDRESSES.ethereum.WBTC,
     fantom: "0x321162Cd933E2Be498Cd2267a90534A804051b11",
     polygon: ADDRESSES.polygon.WBTC,

@@ -19,7 +19,7 @@ async function offers() {
 module.exports = {
   timetravel: false,
   zksync: {
-    offers,
+    offers: () => ({}),
     tvl: async () => ({})
   },
   arbitrum: {
