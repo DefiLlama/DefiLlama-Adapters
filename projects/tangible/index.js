@@ -41,7 +41,7 @@ const insuranceConfig = {
   }
 }
 
-async function tvl(_, _b, _cb, { api }) {
+async function tvl(api) {
   await Promise.all([
     treasuryTvl,
     rwaTVL,
@@ -50,19 +50,19 @@ async function tvl(_, _b, _cb, { api }) {
   ].map(fn => fn(api)))
 }
 
-async function tvlOp(_, _b, _cb, { api }) {
+async function tvlOp(api) {
   await Promise.all([
     insuranceTvlOp,
   ].map(fn => fn(api)))
 }
 
-async function tvlBase(_, _b, _cb, { api }) {
+async function tvlBase(api) {
   await Promise.all([
     insuranceTvlBase,
   ].map(fn => fn(api)))
 }
 
-async function tvlArb(_, _b, _cb, { api }) {
+async function tvlArb(api) {
   await Promise.all([
     insuranceTvlArb,
   ].map(fn => fn(api)))

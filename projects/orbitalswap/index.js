@@ -8,12 +8,10 @@ const { getUniTVL } = require('../helper/unknownTokens')
 module.exports = {
     methodology: `Uses factory(0x1A04Afe9778f95829017741bF46C9524B91433fB) address and whitelisted tokens address to find and price Liquidity Pool pairs`,
     misrepresentedTokens: true,
-    doublecounted: false,
-    timetravel: true,
-    incentivized: true,
+            incentivized: true,
     bsc: {
-        tvl: getUniTVL({ factory: '0x1A04Afe9778f95829017741bF46C9524B91433fB', chain: 'bsc', useDefaultCoreAssets: true }),
-        staking: staking(MasterChefContract, ORB, "bsc"),
+        tvl: getUniTVL({ factory: '0x1A04Afe9778f95829017741bF46C9524B91433fB', useDefaultCoreAssets: true }),
+        staking: staking(MasterChefContract, ORB),
     }
 };
 

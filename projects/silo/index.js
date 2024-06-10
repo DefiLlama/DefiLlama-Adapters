@@ -35,7 +35,7 @@ const config = {
 const XAI = '0xd7c9f0e536dc865ae858b0c0453fe76d13c3beac'
 const fallbackBlacklist = ["0x6543ee07cf5dd7ad17aeecf22ba75860ef3bbaaa",];
 
-async function tvl(_, block, _1, { api }) {
+async function tvl(api) {
   const siloArray = await getSilos(api)
   const assets = await api.multiCall({
     abi: getAssetsAbi,
@@ -46,7 +46,7 @@ async function tvl(_, block, _1, { api }) {
   return sumTokens2({ api, ownerTokens: toa, blacklistedTokens: [XAI], })
 }
 
-async function borrowed(_, block, _1, { api }) {
+async function borrowed(api) {
   const siloArray = await getSilos(api)
   const assetStates = await api.multiCall({
     abi: getAssetStateAbi,

@@ -11,6 +11,7 @@ async function getCache(endpoint) {
 }
 
 async function getBlock(timestamp, chain, chainBlocks, undefinedOk = false) {
+  if (typeof timestamp === "object" && timestamp.timestamp) timestamp = timestamp.timestamp
   if (chainBlocks[chain] || (!getEnv('HISTORICAL') && undefinedOk)) {
     return chainBlocks[chain]
   } else {
@@ -48,6 +49,7 @@ async function post(endpoint, body, options) {
 }
 
 async function graphQuery(endpoint, graphQuery, params = {}, { api, timestamp, chain, chainBlocks, useBlock = false } = {}) {
+  if (typeof timestamp === "object" && timestamp.timestamp) timestamp = timestamp.timestamp
   if (api) {
     if (!timestamp) timestamp = api.timestamp
     if (!chain) chain = api.chain

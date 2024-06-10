@@ -12,7 +12,7 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const chainKey = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const data = await getConfig('potluck-protocol', 'https://newapi.potluckprotocol.com/vaults')
       const vaults = data.filter(i => i.chain === chainKey).map(i => i.earnedTokenAddress)
       const tokens = await api.multiCall({ calls: vaults, abi: 'address:want'})

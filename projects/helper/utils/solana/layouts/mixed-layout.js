@@ -194,6 +194,20 @@ const TokenSwapLayout = BufferLayout.struct([
   publicKey("curveParameters"),
 ])
 
+
+const Hub3Layout = BufferLayout.struct([
+  publicKey("issuerKey"),
+  u64("price"),
+  u64("totalShares"),
+  u64("totalFees"),
+  u8("bump"),
+  u32("holders"),
+  u8("migration"), // bool
+  u64("a"),
+  u64("b"),
+  u64("d"),
+])
+
 const eSOL_feeFields = [u64('denominator'), u64('numerator')];
 const eSOL_rateOfExchangeFields = [u64('denominator'), u64('numerator')];
 

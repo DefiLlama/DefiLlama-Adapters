@@ -33,8 +33,7 @@ async function staking() {
 
 module.exports = {
     timetravel: false,
-    doublecounted: false,
-    misrepresentedTokens: true,
+        misrepresentedTokens: true,
     methodology:
         "The TVL is the USD value of the all assets locked on the OSWAP token autonomous agent. This includes the reserve asset used to issue the OSWAP tokens and OSWAP tokens locked in governance (as staking).",
     obyte: {

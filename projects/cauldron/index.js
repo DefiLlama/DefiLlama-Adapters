@@ -5,13 +5,13 @@
 
 const axios = require("axios");
 
-async function tvl(timestamp) {
+async function tvl({ timestamp }) {
   const { data } = await axios.get(`http://rostrum.cauldron.quest:8000/cauldron/tvl/${timestamp}`);
 
   // Every token pair is matched with BCH. We collect total value locked on the BCH side of the contract.
-    const total_sats = data.reduce((acc, token_pair) => {
-        return acc + BigInt(token_pair.satoshis)
-    }, BigInt(0));
+  const total_sats = data.reduce((acc, token_pair) => {
+    return acc + BigInt(token_pair.satoshis)
+  }, BigInt(0));
 
   // TODO: Map tokens to CoinGecko identifiers.
   // Currently, no tokens on the Bitcoin Cash are on CoinGecko.

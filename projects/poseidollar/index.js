@@ -79,8 +79,7 @@ const getPool = async (listPoolFlowX, poolRegistry) => {
   return poolInfoResult;
 };
 
-async function suiTVL() {
-  const { api } = arguments[3];
+async function suiTVL(api) {
   const listPoolFlowX = (
     await sui.getDynamicFieldObjects({
       parent:

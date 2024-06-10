@@ -3,6 +3,8 @@ const contracts = require("./contracts");
 const { staking } = require("../helper/staking");
 const { getLogs } = require("../helper/cache/getLogs");
 const bridgedAssets = [ADDRESSES.ethereum.STETH, ADDRESSES.ethereum.EETH];
+const { getConfig } = require('../helper/cache')
+
 const config = {
   ethereum: {
     factory: "0x27b1dacd74688af24a64bd3c9c1b143118740784",
@@ -14,7 +16,7 @@ const config = {
     factory: "0xf5a7de2d276dbda3eef1b62a9e718eff4d29ddc8",
     factoryV3: "0x2FCb47B58350cD377f94d3821e7373Df60bD9Ced",
     fromBlock: 62979673,
-    fromBlockV3: 154873897 
+    fromBlockV3: 154873897
   },
   bsc: {
     factory: "0x2bEa6BfD8fbFF45aA2a893EB3B6d85D10EFcC70E",
@@ -33,6 +35,10 @@ const config = {
     fromBlock: 108061448,
     fromBlockV3: 112783590,
   },
+  mantle: {
+    factoryV3: "0xD228EC1f7D4313fe321fab511A872475D07F5bA6",
+    fromBlockV3: 61484384,
+  },
 };
 
 module.exports = {};
@@ -40,30 +46,34 @@ module.exports = {};
 Object.keys(config).forEach((chain) => {
   const { factory, factoryV3, fromBlock, pts, fromBlockV3 } = config[chain];
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api }) => {
-      const logs = await getLogs({
-        api,
-        target: factory,
-        topics: [
-          "0x166ae5f55615b65bbd9a2496e98d4e4d78ca15bd6127c0fe2dc27b76f6c03143",
-        ],
-        eventAbi:
-          "event CreateNewMarket (address indexed market, address indexed PT, int256 scalarRoot, int256 initialAnchor)",
-        onlyArgs: true,
-        fromBlock,
-      });
+    tvl: async (api) => {
+      const logs = factory
+        ? await getLogs({
+          api,
+          target: factory,
+          topics: [
+            "0x166ae5f55615b65bbd9a2496e98d4e4d78ca15bd6127c0fe2dc27b76f6c03143",
+          ],
+          eventAbi:
+            "event CreateNewMarket (address indexed market, address indexed PT, int256 scalarRoot, int256 initialAnchor)",
+          onlyArgs: true,
+          fromBlock,
+        })
+        : [];
 
-      const logsV3 = await getLogs({
-        api,
-        target: factoryV3,
-        topic: [
-          "0xae811fae25e2770b6bd1dcb1475657e8c3a976f91d1ebf081271db08eef920af",
-        ],
-        eventAbi:
-          "event CreateNewMarket (address indexed market, address indexed PT, int256 scalarRoot, int256 initialAnchor, uint256 lnFeeRateRoot)",
-        onlyArgs: true,
-        fromBlock: fromBlockV3,
-      });
+      const logsV3 = factoryV3
+        ? await getLogs({
+          api,
+          target: factoryV3,
+          topic: [
+            "0xae811fae25e2770b6bd1dcb1475657e8c3a976f91d1ebf081271db08eef920af",
+          ],
+          eventAbi:
+            "event CreateNewMarket (address indexed market, address indexed PT, int256 scalarRoot, int256 initialAnchor, uint256 lnFeeRateRoot)",
+          onlyArgs: true,
+          fromBlock: fromBlockV3,
+        })
+        : [];
 
       const pt = logs.map((i) => i.PT).concat(logsV3.map((i) => i.PT));
       if (pts) pt.push(...pts);
@@ -78,6 +88,7 @@ Object.keys(config).forEach((chain) => {
         ),
       ];
 
+      sy = await filterWhitelistedSY(api, sy);
       const [data, supply, decimals] = await Promise.all([
         api.multiCall({
           abi: "function assetInfo() view returns (uint8 assetType , address uAsset , uint8 decimals )",
@@ -103,7 +114,7 @@ Object.keys(config).forEach((chain) => {
       });
       let balances = api.getBalances();
 
-      for(let bridgingToken of bridgedAssets){
+      for (let bridgingToken of bridgedAssets) {
         const bridged = `${chain}:${bridgingToken}`;
         if (bridged in balances) {
           balances[bridgingToken] = balances[bridged];
@@ -114,6 +125,13 @@ Object.keys(config).forEach((chain) => {
     },
   };
 });
+
+// Prevent SY with malicious accounting from being included in TVL
+async function filterWhitelistedSY(api, sys) {
+  const { results } = await getConfig('pendle/v2-'+api.chain, `https://api-v2.pendle.finance/core/v1/${api.chainId}/sys/whitelisted`);
+  const whitelistedSys = new Set(results.map((d) => d.address.toLowerCase()));
+  return sys.filter((s) => whitelistedSys.has(s));
+}
 
 module.exports.ethereum.staking = staking(
   contracts.v2.vePENDLE,

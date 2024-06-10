@@ -31,7 +31,7 @@ const aelin_data = {
 }
 
 function tvl(chain) {
-  return async (timestamp, ethBlock, chainBlocks, { api }) => {
+  return async (api) => {
     const { logConfig } = aelin_data[chain]
     const logs = (await Promise.all(logConfig.map(({ target, fromBlock }) => getLogs({
       api,
@@ -62,12 +62,12 @@ function stakingTVL(chain) {
 }
 
 function pool2TVL(chain) {
-  return async (timestamp, ethBlock, chainBlocks, { api }) => {
+  return async (api) => {
     const stakingContract = aelin_data[chain]['AELIN_ETH_staking']
     const lpToken = aelin_data[chain]['AELIN_ETH_LP']
 
     if (chain === 'ethereum') {
-      const staked = await pool2(stakingContract, lpToken, chain)(timestamp, ethBlock, chainBlocks, { api })
+      const staked = await pool2(stakingContract, lpToken, chain)(api)
       const aelin_addr = `ethereum:${aelin_data[chain]['AELIN']}`
       staked['AELIN'] = BigNumber(staked[aelin_addr]).div(1e18).toFixed(0)
       staked[aelin_addr] = 0

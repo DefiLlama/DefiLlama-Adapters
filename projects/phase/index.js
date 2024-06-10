@@ -14,7 +14,7 @@ async function getVaults(api) {
   return logs.map(i => i.created)
 }
 
-async function tvl(timestamp, block, chainBlocks, { api }) {
+async function tvl(api) {
   const vaults = await getVaults(api)
   const assets = await api.multiCall({ abi: 'address:asset', calls: vaults })
   const bals = await api.multiCall({ abi: 'uint256:collectiveCollateral', calls: vaults })
@@ -22,7 +22,7 @@ async function tvl(timestamp, block, chainBlocks, { api }) {
   return api.getBalances()
 }
 
-async function borrowed(timestamp, block, chainBlocks, { api }) {
+async function borrowed(api) {
   const vaults = await getVaults(api)
   const assets = vaults.map(_ => config[api.chain].cash)
   const bals = await api.multiCall({ abi: 'uint256:collectiveDebt', calls: vaults })

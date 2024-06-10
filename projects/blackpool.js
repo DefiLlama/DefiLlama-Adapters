@@ -17,7 +17,7 @@ const BPT_MUST_LP_cometh = '0xc8978a3de5ce54e1a2fe88d2036e2cc972238126'
 const BPT_WETH_LP_staking = '0xe3ae080d6a4f1ac5ababf514f871428342135877'
 const BPT_MUST_LP_staking = '0xe29544a8145978a2355e44fbac61f4748f0ecca6'
 
-async function mainnetStaking(timestamp, ethBlock, chainBlocks, { api }) { 
+async function mainnetStaking(api) { 
   return api.sumTokens({ 
     tokensAndOwners: [
       [BPT_mainnet, xBPT_mainnet],
@@ -26,7 +26,7 @@ async function mainnetStaking(timestamp, ethBlock, chainBlocks, { api }) {
   })
 }
 
-async function polygonStaking(timestamp, ethBlock, chainBlocks, { api }) { 
+async function polygonStaking(api) { 
   return sumTokens2({ api, resolveLP: true, 
     tokensAndOwners: [
       [BPT_WETH_LP_cometh, BPT_WETH_LP_staking],

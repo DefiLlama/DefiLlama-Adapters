@@ -76,7 +76,7 @@ module.exports = {
     tvl: nearTvl,
   },
   ethereum: {
-    tvl: async (_, _1, _2, { api }) => {
+    tvl: async (api) => {
       const res = await getData();
       const nodeOperatorRegistry = "0x4f4bfa0861f62309934a5551e0b2541ee82fdcf1";
       const nodeOperatorCount = await api.call({

@@ -74,9 +74,7 @@ async function borrowed(timestamp, _, chainBlocks) {
 
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
-  polygon: {
+      polygon: {
     tvl,
     borrowed,
   }
