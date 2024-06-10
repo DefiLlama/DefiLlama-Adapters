@@ -139,7 +139,9 @@ async function computeTVL(chainName) {
   let TVL = 0
   deposits.forEach((deposit) => {
     if (deposit.chain === chainName) {
-      TVL += deposit.tvlInUsd
+      if(deposit.tvlInUsd < 1e9){
+        TVL += deposit.tvlInUsd
+      }
     }
   })
   return { tether: TVL }

@@ -11,6 +11,7 @@ const coinGeckoIds = {
   ujuno: "juno-network",
   ustars: "stargaze",
   usaga: "saga-2",
+  ubld: "agoric",
 };
 
 async function tvl() {

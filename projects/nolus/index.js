@@ -4,7 +4,8 @@ const { queryContract, queryManyContracts, queryContracts } = require('../helper
 
 // Osmosis
 const osmosisLeaserAddr = 'nolus1wn625s4jcmvk0szpl85rj5azkfc6suyvf75q6vrddscjdphtve8s5gg42f'
-const osmosisLppAddr = 'nolus1qg5ega6dykkxc307y25pecuufrjkxkaggkkxh7nad0vhyhtuhw3sqaa3c5'
+const osmosisAxlLppAddr = 'nolus1qg5ega6dykkxc307y25pecuufrjkxkaggkkxh7nad0vhyhtuhw3sqaa3c5'
+const osmosisNobleLppAddr = 'nolus1ueytzwqyadm6r0z8ajse7g6gzum4w3vv04qazctf8ugqrrej6n4sq027cf'
 
 // Neutron (Astroport)
 const neutronLeaserAddr = 'nolus1et45v5gepxs44jxewfxah0hk4wqmw34m8pm4alf44ucxvj895kas5yrxd8'
@@ -130,7 +131,8 @@ module.exports = {
   nolus: {
     tvl: async () => {
       return {
-        'axlusdc': await getLppTvl([osmosisLppAddr, neutronLppAddr])
+        'axlusdc': await getLppTvl([osmosisAxlLppAddr, neutronLppAddr]),
+        'usd-coin': await getLppTvl([osmosisNobleLppAddr])
       }
     }
   },

@@ -8,6 +8,11 @@ const config = {
     ],
     deltaswapFactory: '0xcb85e1222f715a81b8edaeb73b28182fa37cffa8'
   },
+  base: {
+    factories: [
+      { factory: '0xfd513630f697a9c1731f196185fb9eba6eaac20b', fromBlock: 12475877 },
+    ],
+  },
 }
 
 Object.keys(config).forEach(chain => {
