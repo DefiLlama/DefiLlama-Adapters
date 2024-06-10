@@ -3,7 +3,7 @@ const STAKING_CONTRACT_V1 = "0xadc743298F6339Cd8ebC0Dc58D4E19C2065D6b4f";
 const STAKING_CONTRACT_V2 = "0xA4f55D251b8fa8e0C291CC539F020c5Cbe4a9FA8";
 const STAKING_CONTRACT_V3 = "0x7c7C76e4D47872A7B73FA15306A9Ebb673796dDc";
 
-async function staking(_, _1, _2, { api }) {
+async function staking(api) {
   const staked = await api.multiCall({
     abi: "uint256:totalStaked",
     calls: [STAKING_CONTRACT_V1, STAKING_CONTRACT_V2, STAKING_CONTRACT_V3],

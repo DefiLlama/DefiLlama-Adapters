@@ -19,10 +19,10 @@ const fetch = async () => {
 
 module.exports = {
   bsc: {
-    staking: staking(stakingContract_BSC, DFL, "bsc"),
+    staking: staking(stakingContract_BSC, DFL),
   },
   kardia: {
-    staking: staking(stakingContract_KARDIA, DFL, "kardia"),
+    staking: staking(stakingContract_KARDIA, DFL),
   },
   harmony: {
     staking: staking(stakingContract_Harmony, DFL_Harmony, "harmony", `kardia:${DFL}`),

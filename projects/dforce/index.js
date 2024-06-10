@@ -154,7 +154,7 @@ async function getTVLOfdToken(api) {
 }
 
 function getTVLByChain(chain) {
-  return async (time, ethBlock, chainBlocks, { api }) => {
+  return async (api) => {
     if (chain == "ethereum") {
       const ownerTokens = [[usdxReservedTokens, usdxPool], [[goldxReserve], goldxProtocol]]
       await api.sumTokens({ ownerTokens })

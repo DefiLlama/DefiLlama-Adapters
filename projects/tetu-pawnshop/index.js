@@ -6,7 +6,7 @@ const config = {
 
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const shop = config[chain].shop
       const posIds = await api.fetchList({ itemAbi: abi.openPositions, lengthAbi: abi.openPositionsSize, target: shop })
       const posData = await api.multiCall({ abi: abi.positions, calls: posIds, target: shop })

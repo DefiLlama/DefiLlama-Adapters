@@ -18,7 +18,7 @@ const kfcVaults = [
 
 
 /*** Vaults TVL Portion ***/
-const ethTvl = async (timestamp, block, chainBlocks) => {
+const ethTvl = async (_ts, block, chainBlocks) => {
     const balances = {};
 
     await addFundsInMasterChef(

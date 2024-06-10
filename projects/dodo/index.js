@@ -117,7 +117,7 @@ const config = {
 Object.keys(config).forEach(chain => {
   const { dvmFactory, fromBlock, dspFactory, dppFactory, dodoBirthFactory, blacklistedTokens, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const ownerTokens = []
       const funcs = [];
       const builder = (factorys, event) => {

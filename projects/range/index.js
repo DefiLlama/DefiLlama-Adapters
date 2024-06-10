@@ -58,7 +58,7 @@ module.exports = {
 const ignoreList  = {mantle : ["0x3f7a9ea2403F27Ce54624CE505D01B2204eDa030"]}
 Object.keys(config).forEach(chain => {
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const factories = config[chain];
       const allLogs = [];
       for (const { factory, fromBlock, factoryType } of factories) {

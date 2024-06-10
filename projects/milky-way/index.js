@@ -17,8 +17,7 @@ const consts = {
  *     }
  */
 
-async function tvl() {
-  const { api } = arguments[3]
+async function tvl(api) {
   const data = await queryContract({ contract: consts.MILKYWAY_CONTRACT, chain: api.chain, data: { state: {} } });
   const  {batches} = await queryContract({ contract: consts.MILKYWAY_CONTRACT, chain: api.chain, data: { batches: {} } });
   const token = 'ibc/'+ADDRESSES.ibc.TIA

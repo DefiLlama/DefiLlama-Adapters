@@ -30,12 +30,12 @@ async function getCachedApiRespnse() {
   return apiResponse;
 }
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   return {
     tether: getValueForKey(await getCachedApiRespnse(), api.chain, TVL_KEY),
   }
 }
-async function vesting(_, _1, _2, { api }) {
+async function vesting(api) {
   return {
     tether: getValueForKey(await getCachedApiRespnse(), api.chain, VESTING_KEY),
   }

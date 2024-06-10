@@ -1,7 +1,7 @@
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 const { getLogs } = require('../helper/cache/getLogs')
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const { target, fromBlock } = config[api.chain]
   const multicallAddy = '0xca11bde05977b3631167028862be2a173976ca11'
   const logs1155 = await getLogs({

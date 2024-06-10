@@ -22,14 +22,14 @@ const vaults = [
 ];
 
 /*** Staking of native token IMPLS and IMPLS/PLS LP TVL Portion ***/
-const pool2 = async (timestamp, ethBlock, chainBlocks, { api }) => {
+const pool2 = async (api) => {
   const staking_lpToken = await api.call({ abi: abi.stakingToken, target: coreRewards, })
   return sumTokens2({ api, tokens: [staking_lpToken], owners: [coreRewards, plsRewards] })
 };
 
 
 /*** vaults TVL portion ***/
-const plsTvl = async (timestamp, ethBlock, chainBlocks, { api }) => {
+const plsTvl = async (api) => {
   const tokens = await api.multiCall({  abi: abi.LPtoken, calls: vaults})
   const bals = await api.multiCall({  abi: abi.balanceLPinSystem, calls: vaults})
   api.addTokens(tokens, bals)

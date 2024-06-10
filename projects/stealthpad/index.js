@@ -15,7 +15,7 @@ Object.keys(config).forEach(chain => {
   const { lockerManagerV1, stakingContract, stakingToken, lps } = config[chain]
   module.exports[chain] = { tvl, }
 
-  async function tvl(_, _b, _cb, { api, }) {
+  async function tvl(api) {
     const lpInfos = await api.fetchList({  lengthAbi: abi.lpLockerCount, itemAbi: abi.getLpLockData, target: lockerManagerV1, })
     const tokensAndOwners = [lpInfos].flat().filter(i => i.isLpToken).map(l => [l.token, l.contractAddress])
     return sumUnknownTokens({ api, tokensAndOwners, useDefaultCoreAssets: true, resolveLP: true, onlyLPs: true, })

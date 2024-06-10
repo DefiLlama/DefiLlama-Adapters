@@ -5,7 +5,7 @@ const abi = {
 const ethContract = "0x5d6ac99835b0dd42ed9ffc606170e59f75a88fde";
 const spoolLens = '0x8aa6174333F75421903b2B5c70DdF8DA5D84f74F';
 
-async function eth(timestamp, ethBlock, chainBlocks, { api }) {
+async function eth(api) {
   const tvlETH = await api.call({
     target: spoolLens,
     abi: abi["getSmartVaultAssetBalances"],

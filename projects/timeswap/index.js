@@ -7,7 +7,7 @@ const GRAPH_URLS = {
 };
 
 function chainTvl(chain) {
-  return async (timestamp, _ethBlock, chainBlocks, { api }) => {
+  return async (api) => {
     const query = `
       {
         pairs {

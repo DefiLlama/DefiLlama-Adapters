@@ -5,8 +5,10 @@ const { getConfig } = require('../helper/cache')
 const IPOR_GITHUB_ADDRESSES_URL = "https://raw.githubusercontent.com/IPOR-Labs/ipor-abi/main/mainnet/addresses.json";
 
 const V2DeploymentBlockNumber = 18333744
-async function tvlEthereum(_, block, _1, { api }) {
-  if (block >= V2DeploymentBlockNumber) {
+async function tvlEthereum(api) {
+  const { block } = api
+
+  if (!block || block >= V2DeploymentBlockNumber) {
     return await calculateTvlForV2(api);
   } else {
     return await calculateTvlForV1(api);

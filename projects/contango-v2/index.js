@@ -46,14 +46,14 @@ module.exports = {
 Object.keys(config).forEach((chain) => {
   const { contango, contango_lens, grapUrl } = config[chain];
   module.exports[chain] = {
-    tvl: async (_1, _2, _3, { api }) => {
+    tvl: async (api) => {
       await Promise.all([
         positionsTvl(api, contango_lens, grapUrl, false),
         vaultTvl(api, contango, grapUrl),
       ]);
       return api.getBalances();
     },
-    borrowed: async (_1, _2, _3, { api }) =>
+    borrowed: async (api) =>
       positionsTvl(api, contango_lens, grapUrl, true),
   };
 });

@@ -31,7 +31,7 @@ const sets = [
   gtcETH,
 ];
 
-async function tvl(timestamp, block, _, { api }) {
+async function tvl(api) {
   const tokens = await api.multiCall({ abi: 'address[]:getComponents', calls: sets })
   const toa = []
   sets.forEach((o, i) => toa.push([tokens[i], o]))

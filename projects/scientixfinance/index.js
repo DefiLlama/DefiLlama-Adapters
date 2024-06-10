@@ -23,7 +23,7 @@ module.exports = {
   },
 };
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const totalDeposited = await api.call({  abi: 'uint256:totalDeposited', target: Scientist})
   const token = await api.call({  abi: 'address:token', target: Scientist})
   const scSupply = await api.call({  abi: 'address:totalSupplyScTokens', target: Transmute})
@@ -34,7 +34,7 @@ async function tvl(_, _b, _cb, { api, }) {
   await api.sumTokens({ owner: Transmute, token})
 }
 
-async function pool2(_, _b, _cb, { api, }) {
+async function pool2(api) {
   const ibALPACABalance = await api.call({  abi: 'erc20:balanceOf', target: ibALPACA, params: [Farm]})
   const ibALPACASupply = await api.call({  abi: 'uint256:totalSupply', target: ibALPACA})
   const alpacaBal = await api.call({  abi: 'uint256:totalToken', target: ibALPACA})

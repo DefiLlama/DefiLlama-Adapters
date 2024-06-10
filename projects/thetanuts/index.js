@@ -36,6 +36,9 @@ const indexBTC_BiWeekly_B = "0xB1105529305f166531b7d857B1d6f28000278aff"
 const PTeETH_27JUN24 = '0xc69Ad9baB1dEE23F4605a82b3354F8E40d1E5966'
 const aPTeETH_27JUN24 = '0xE6A9465B9DA25Ddacc55AF5F2a111Db4E80Ba20D'
 const aWETH = '0xE41645Db7C6813993eEA1cBA83912cE07d8a6d29'
+const PTUSDe_25JUL24 = '0xa0021EF8970104c2d008F38D92f115ad56a9B8e1'
+const aPTUSDe_25JUL24 = '0xCe51Ca8D61dAb1f84bD95329218b87E95054aB22'
+const aUSDC = '0xFB3CbdA3145Fac86040bE8501e0750cd1ddDA0Af'
 
 // Avalanche Vaults
 const avaxCallVault = '0xd06Bd68d58eD40CC2031238A3993b99172ea37cA'
@@ -93,6 +96,13 @@ const arbC_LLV = '0x721Bba1556649e9c70E2dF1EAFC04270376025f7'
 const arbP_LLV = '0x57eD79afD32c616E4631231636F4597188d20C5e'
 const ethC_LLV = '0x078F98Be8A1bb1bD64799B8F05Aca08f5850A69D'
 const ethP_LLV = '0xE84CB9daF67644734051c7f6e978968f04F6751e'
+// Boosted assets (Selling options backed by yielding assets) (locked in Aave V2 Fork)
+const  PTezETH_27JUN24 = '0x8EA5040d423410f1fdc363379Af88e1DB5eA1C34'
+const aPTezETH_27JUN24 = '0x2F741a91dCe2a1e1Ed24c88F93A0f3530f1CBf2C'
+const  PTrsETH_27JUN24 = '0xAFD22F824D51Fb7EeD4778d303d4388AC644b026'
+const aPTrsETH_27JUN24 = '0x121b956D11EaeCFD3f0CdF259D6faFFEbEDD0bC9'
+const  PTweETH_27JUN24 = '0x1c27Ad8a19Ba026ADaBD615F6Bc77158130cfBE4'
+const aPTweETH_27JUN24 = '0x1B38B4586003E64c6c87F4acaF4f15415C2034EB'
 
 // Polygon zkEVM vaults
 const stMaticCallVault = '0x7bF3c7C23501EA3E09B237D6F8AdcB7Ea3CeF41C'
@@ -192,6 +202,9 @@ const config = {
 
       [PTeETH_27JUN24, aPTeETH_27JUN24,],
       [weth, aWETH,],
+      [PTUSDe_25JUL24, aPTUSDe_25JUL24,],
+      [usdc, aUSDC,],
+
     ]
   },
   avax: {
@@ -208,6 +221,10 @@ const config = {
       [usdc_arb, ethPutVaultArb,],
       [arb, aArb,],
       [usdc_arb, aUsdc,],
+      
+      [PTezETH_27JUN24, aPTezETH_27JUN24,],
+      [PTrsETH_27JUN24, aPTrsETH_27JUN24,],
+      [PTweETH_27JUN24, aPTweETH_27JUN24,],
     ],
     LLVOwners: [
       [univ3nft_arb, arbC_LLV,],

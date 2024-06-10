@@ -5,7 +5,7 @@ const protocolConfig = {
   }
 }
 
-async function tvl(ts, block, _, { api }) {
+async function tvl(api) {
   // 1. get all vaults deployed on chain
   const factoryAddress = protocolConfig.factories[api.chain].address
   const factoryState = await api.call({
