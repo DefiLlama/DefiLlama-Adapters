@@ -10,7 +10,7 @@ const ADMIN_ADDRESSES = {
   mantle: "0x4F39F12064D83F6Dd7A2BDb0D53aF8be560356A6",
 };
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const adminContract = ADMIN_ADDRESSES[api.chain];
   const collAddresses = await api.call({
     abi: "address[]:getValidCollateral",

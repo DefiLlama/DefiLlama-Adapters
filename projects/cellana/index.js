@@ -31,12 +31,12 @@ async function getfungibleAssetBalances(api) {
 
 module.exports = {
   timetravel: false,
-  misrepresentedTokens: true,
   methodology:
     "Counts the lamports in each coin container in the Cellena contract account.",
   aptos: {
+
     tvl: async (_, _1, _2, { api }) => {
-      //Get coin balance
+
       const data = await _getResources()
       const coinContainers = data.filter(reserveContrainerFilter)
         .map((i) => ({

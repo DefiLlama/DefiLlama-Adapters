@@ -9,11 +9,13 @@ const chainMapping = {
   BTC: "bitcoin",
   THOR: "thorchain",
   DASH: "dash",
+  ARB: "arbitrum",
 };
 
 const tokenGeckoMapping = {
   "ETH.USDT": "tether",
   "ETH.WSTETH": "wrapped-steth",
+  "ETH.PEPE": "pepe",
   "ETH.ETH": "ethereum",
   "ETH.USDC": "usd-coin",
   "KUJI.USK": "usk",
@@ -21,20 +23,51 @@ const tokenGeckoMapping = {
   "THOR.RUNE": "thorchain",
   "DASH.DASH": "dash",
   "BTC.BTC": "bitcoin",
+  "ARB.ETH": "ethereum",
+  "ARB.ARB": "arbitrum",
+  "ARB.UNI": "uniswap",
+  "ARB.DAI": "dai",
+  "ARB.GMX": "gmx",
+  "ARB.GNS": "gains-network",
+  "ARB.LINK": "chainlink",
+  "ARB.PEPE": "pepe",
+  "ARB.SUSHI": "sushi",
+  "ARB.TGT": "thorwallet-dex",
+  "ARB.USDC": "usd-coin",
+  "ARB.USDT": "tether",
+  "ARB.WBTC": "wrapped-bitcoin",
+  "ARB.WSTETH": "wrapped-steth",
 };
 
 const tokenToDecimalMapping = {
   "ETH.USDT": 6,
   "ETH.WSTETH": 18,
+  "ETH.PEPE": 18,
   "ETH.ETH": 18,
   "ETH.USDC": 6,
   "KUJI.USK": 8,
   "KUJI.KUJI": 8,
   "THOR.RUNE": 8,
   "DASH.DASH": 8,
+  "ARB.ETH": 18,
+  "ARB.ARB": 18,
+  "ARB.DAI": 18,
+  "ARB.GLD": 18,
+  "ARB.GMX": 18,
+  "ARB.GNS": 18,
+  "ARB.UNI": 18,
+  "ARB.LEO": 3,
+  "ARB.LINK": 18,
+  "ARB.PEPE": 18,
+  "ARB.SUSHI": 18,
+  "ARB.TGT": 18,
+  "ARB.USDC": 6,
+  "ARB.USDT": 6,
+  "ARB.WBTC": 8,
+  "ARB.WSTETH": 18,
 };
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   const pools = await getCache("https://midgard.mayachain.info/v2/pools");
   const aChain = api.chain;
 
@@ -55,7 +88,7 @@ async function tvl(_, _1, _2, { api }) {
     if (chain !== aChain) return;
 
     let [baseToken, address] = token.split("-");
-    if (chain === "ethereum") {
+    if (chain === "ethereum" || chain === "arbitrum") {
       assetDepth =
         assetDepth *
         10 ** (+tokenToDecimalMapping[chainStr + "." + baseToken] - 8);
@@ -70,6 +103,7 @@ async function tvl(_, _1, _2, { api }) {
       } else if (chainStr === baseToken) {
         sdk.util.sumSingleBalance(balances, nullAddress, assetDepth, chain);
       } else if (tokenGeckoMapping[pool]) {
+        if (tokenGeckoMapping[pool] === "ethereum") assetDepth = assetDepth / 1e10;
         sdk.util.sumSingleBalance(
           balances,
           tokenGeckoMapping[pool],

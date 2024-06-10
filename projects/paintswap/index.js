@@ -7,10 +7,8 @@ const brush = '0x85dec8c4b2680793661bca91a8f129607571863d'
 
 module.exports = {
   misrepresentedTokens: true,
-  timetravel: true,
-  doublecounted: false,
-  fantom:{
-    tvl: getUniTVL({ factory, chain: 'fantom', useDefaultCoreAssets: true }),
-    staking: staking(masterchef, brush, "fantom"),
+      fantom:{
+    tvl: getUniTVL({ factory, useDefaultCoreAssets: true }),
+    staking: staking(masterchef, brush),
   }
 }

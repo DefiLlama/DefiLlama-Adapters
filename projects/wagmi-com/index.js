@@ -1,3 +1,4 @@
+const { staking } = require('../helper/staking')
 const { uniV3Export, uniV3GraphExport } = require("../helper/uniswapV3");
 
 module.exports = uniV3Export({
@@ -9,3 +10,13 @@ module.exports = uniV3Export({
 })
 
 module.exports.kava = { tvl: uniV3GraphExport({ name: 'wagmi-kava', graphURL: 'https://kava.graph.wagmi.com/subgraphs/name/v3', minTVLUSD: 0 }) }
+
+const stakingConfig = {
+  metis: { swagmi: '0x5fb3983adc4dcc82a610a91d2e329f6401352558', wagmi: '0xaf20f5f19698f1d19351028cd7103b63d30de7d7', },
+  kava: { swagmi: '0x3690d1a9fb569c21372f8091527ab44f1dc9630f', wagmi: '0xaf20f5f19698f1d19351028cd7103b63d30de7d7', },
+}
+
+Object.keys(stakingConfig).forEach(chain => {
+  const { swagmi, wagmi, } = stakingConfig[chain]
+  module.exports[chain].staking = staking(swagmi, wagmi)
+})

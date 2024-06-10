@@ -19,7 +19,7 @@ const stakingContracts = {
   bsc: '0xe9428B8acaA6b9d7C3314D093975c291Ec59A009',
 }
 
-async function tvl(timestamp, block, _, { api }) {
+async function tvl(api) {
   return sumTokens2({ api, owners: Object.values(funds), tokens })
 }
 module.exports = {

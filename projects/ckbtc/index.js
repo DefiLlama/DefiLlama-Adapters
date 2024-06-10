@@ -1,7 +1,7 @@
 const { get } = require('../helper/http')
 
 async function tvl(ts) {
-  var end = ts;
+  var end = ts.timestamp
   let start = end - 24 * 60 * 60;
   const { data } = await get(`https://icrc-api.internetcomputer.org/api/v1/ledgers/mxzaz-hqaaa-aaaar-qaada-cai/total-supply?start=${start}&end=${end}&step=1`);
   let [_, bal] = data.pop()

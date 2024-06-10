@@ -11,10 +11,8 @@ const ammTvl2 = getUniTVL({ chain, factory: factory2, useDefaultCoreAssets: fals
 
 
 module.exports = {
-  timetravel: true,
-  doublecounted: false,
-  fantom:{
+      fantom:{
     tvl: sdk.util.sumChainTvls([ammTvl,ammTvl2]),
-    staking: staking("0x2fbff41a9efaeae77538bd63f1ea489494acdc08", "0x5cc61a78f164885776aa610fb0fe1257df78e59b", 'fantom')
+    staking: staking("0x2fbff41a9efaeae77538bd63f1ea489494acdc08", "0x5cc61a78f164885776aa610fb0fe1257df78e59b")
   },
 }

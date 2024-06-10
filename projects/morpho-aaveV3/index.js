@@ -44,7 +44,7 @@ const getMetrics = async (api, borrowed) => {
 };
 
 const ethereum = (borrowed) => {
-  return async (timestamp, block, _, { api }) => {
+  return async (api) => {
     return getMetrics(api, borrowed);
   };
 };

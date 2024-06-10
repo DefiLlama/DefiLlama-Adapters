@@ -13,6 +13,9 @@ const allAddresses = {
   },
   linea: {
     USK: "0x7a6AA80B49017f3E091574ab5C6977d863ff3865",
+  },
+  telos: {
+    USK: "0x09B88f74Fb9E243c4A3F4D2FfE3d1BA4287a476c",
   }
 }
 
@@ -20,7 +23,7 @@ Object.keys(allAddresses).forEach((chain) => {
   const addresses = Object.values(allAddresses[chain]);
 
   module.exports[chain] = {
-    tvl: async (_, _1, _2, { api }) => {
+    tvl: async (api) => {
       api.addTokens(addresses, await api.multiCall({ abi: 'erc20:totalSupply', calls: addresses }))
     },
   };

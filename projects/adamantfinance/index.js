@@ -58,7 +58,7 @@ const lpAddresses_cronos = [
 ];
 
 
-async function pool2Polygon(timestamp, block, chainBlocks, { api }) {
+async function pool2Polygon(api) {
   const bals = await api.multiCall({  abi: 'erc20:totalSupply', calls: vaultAddresses_polygon})
   const tokens = await api.multiCall({  abi: 'address:stakingToken', calls: vaultAddresses_polygon})
   api.addTokens(tokens, bals)
@@ -128,12 +128,12 @@ const tvl = async (timestamp, chain, chainBlocks, lpAddressesIgnored) => {
 
 module.exports = {
   polygon: {
-    staking: stakings(stakingContracts_polygon, ADDY, "polygon"),
+    staking: stakings(stakingContracts_polygon, ADDY),
     pool2: pool2Polygon,
     tvl: polygonTvl,
   },
   arbitrum: {
-    staking: stakings(stakingContracts_Arbitrum, ARBY, "arbitrum"),
+    staking: stakings(stakingContracts_Arbitrum, ARBY),
     tvl: arbitrumTvl,
   },
   cronos: {

@@ -12,7 +12,7 @@ module.exports = {
 Object.keys(config).forEach(chain => {
   const { factory, fromBlock, tellerFactory, tellerBlock, } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const tellerLogs = await getLogs({
         api,
         target: tellerFactory,

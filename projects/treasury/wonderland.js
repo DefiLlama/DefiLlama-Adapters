@@ -98,7 +98,7 @@ module.exports = treasuryExports({
 })
 
 module.exports.ethereum.tvl = sdk.util.sumChainTvls([module.exports.ethereum.tvl, uwuPositions])
-async function uwuPositions(_, _b, _cb, { api, }) {
+async function uwuPositions(api) {
   // 
   //  LUSD in stability pool
   const {initialValue : LUSDBal} = await api.call({ abi: "function deposits(address) view returns (uint256 initialValue, address frontEndTag)", target: '0x66017D22b0f8556afDd19FC67041899Eb65a21bb', params: ethWallet })

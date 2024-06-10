@@ -1,6 +1,4 @@
-const sdk = require("@defillama/sdk");
 const swap = require("./swap");
-const olalending = require("./olalending");
 const { stakings } = require("../helper/staking");
 
 const VOLT_TOKEN = "0x34Ef2Cc892a88415e9f02b91BfA9c91fC0bE6bD4".toLowerCase();
@@ -10,10 +8,7 @@ const VOLT_VOTE_ESCROW = "0xB0a05314Bd77808269e2E1E3D280Bff57Ba85672".toLowerCas
 module.exports = {
   misrepresentedTokens: true,
   fuse: {
-    tvl: sdk.util.sumChainTvls([swap.tvl, olalending.tvl]),
+    tvl: swap.tvl,
     staking: stakings([VOLT_BAR, VOLT_VOTE_ESCROW], VOLT_TOKEN),
-  },
-  hallmarks: [
-    [1648684800, "Ola Finance exploit"]
-  ]
+  }
 };

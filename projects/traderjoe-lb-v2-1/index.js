@@ -7,7 +7,7 @@ const factories = {
   bsc: '0x8e42f2F4101563bF679975178e880FD87d3eFd4e',
   ethereum: '0xDC8d77b69155c7E68A95a4fb0f06a71FF90B943a'
 }
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const pools = await api.fetchList({
     target: factories[api.chain],
     itemAbi: 'function getLBPairAtIndex(uint256) view returns (address)',
@@ -26,7 +26,9 @@ async function tvl(_, _b, _cb, { api, }) {
     toa.push([tokenA[i], pools[i]])
     toa.push([tokenB[i], pools[i]])
   })
-  return sumTokens2({ api, tokensAndOwners: toa, })
+  return sumTokens2({ api, tokensAndOwners: toa, blacklistedTokens: [
+    '0x77ea44CB68Eaadd5D7372e5602b5646475ea1C81',
+  ] })
 }
 
 module.exports = {
@@ -37,4 +39,4 @@ Object.keys(factories).forEach(chain => {
   module.exports[chain] = { tvl }
 })
 
-module.exports.arbitrum.staking = staking("0x43646A8e839B2f2766392C1BF8f60F6e587B6960", "0x371c7ec6D8039ff7933a2AA28EB827Ffe1F52f07", "arbitrum")
+module.exports.arbitrum.staking = staking("0x43646A8e839B2f2766392C1BF8f60F6e587B6960", "0x371c7ec6D8039ff7933a2AA28EB827Ffe1F52f07")

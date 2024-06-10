@@ -1,3 +1,4 @@
+const { transformBalances } = require('../portedTokens');
 const { getAPI, addTokenBalance } = require('./api')
 
 async function lending(chain){
@@ -8,10 +9,10 @@ async function lending(chain){
 
   for (let i = 0; i < data.length; i++) {
     const [_token, amount] = data[i];
-    await addTokenBalance({ balances, chain, tokenArg: _token.args[0], amount: amount.collateral })
+    addTokenBalance({ balances, chain, tokenArg: _token.args[0], amount: amount.collateral })
   }
 
-  return balances
+  return transformBalances(chain, balances)
 }
 
 module.exports = {

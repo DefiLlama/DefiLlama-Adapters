@@ -9,7 +9,7 @@ const WBNBEquivalent = ADDRESSES.bsc.WBNB;
 
 const stakingChef = "0xbfcaB1627c4fB86A055DE4B8a56D46e625F51C0B";
 
-const stakingPools = async (timestamp, ethBlock, chainBlocks) => {
+const stakingPools = async (_ts, _b, chainBlocks) => {
   const balances = {};
   let transformAddress = i => `bsc:${i}`;
 
@@ -26,8 +26,6 @@ const stakingPools = async (timestamp, ethBlock, chainBlocks) => {
 };
 
 module.exports = {
-  timetravel: true,
-  doublecounted: false,
   bsc: {
     staking: stakingPools,
     ...compoundExports(comptroller,

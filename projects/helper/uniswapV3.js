@@ -22,7 +22,7 @@ function uniV3Export(config) {
     if (!eventAbi) eventAbi = isAlgebra ? algebraConfig.eventAbi : uniswapConfig.eventAbi
 
     exports[chain] = {
-      tvl: async (_, _b, _cb, { api, }) => {
+      tvl: async (api) => {
         const logs = await getLogs({
           api,
           target,
@@ -46,7 +46,7 @@ function uniV3Export(config) {
 }
 
 function uniV3GraphExport({ blacklistedTokens = [], graphURL, name, minTVLUSD = 10,}) {
-  return async (_, _b, _cb, { api }) => {
+  return async (api) => {
     const size = 1000
     // let lastId = ''
     // let pools

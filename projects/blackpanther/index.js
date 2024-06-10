@@ -22,13 +22,12 @@ async function farm2Tvl(chain, contract, api) {
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
-  doublecounted: false,
-};
+  };
 
 Object.keys(config).forEach(chain => {
   const { farms } = config[chain]
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       await Promise.all(farms.map(farm => farm2Tvl(chain, farm, api)))
       return api.getBalances()
     }

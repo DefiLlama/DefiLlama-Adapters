@@ -14,13 +14,13 @@ Object.keys(config).forEach(chain => {
   const { lendingPools } = config[chain]
   const pools = Object.values(lendingPools)
   module.exports[chain] = {
-    tvl: async (_, _b, _cb, { api, }) => {
+    tvl: async (api) => {
       const tokens = await api.multiCall({  abi: 'address:TOKEN', calls: pools})
       const gmdTokens = await api.multiCall({  abi: 'address:gmdTOKEN', calls: pools})
       const ownerTokens = pools.map((v, i) => [[tokens[i],gmdTokens[i],], v])
       return sumTokens2({ api, ownerTokens, })
     },
-    /* borrowed: async (_, _b, _cb, { api, }) => {
+    /* borrowed: async (api) => {
       const tokens = await api.multiCall({  abi: 'address:gmdTOKEN', calls: pools})
       const bals = await api.multiCall({  abi: 'uint256:totalBorrows', calls: pools})
       api.addTokens(tokens, bals)

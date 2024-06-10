@@ -15,7 +15,7 @@ const { getConfig } = require('../helper/cache');
 //   return ethereumAddress;
 // }
 
-async function tvl(_, _b, _cb, { api, }) {
+async function tvl(api) {
   const { data: chainInfo} = await getConfig('marginxConfig', 'https://api.marginx.io/settings/cross/chains')
   const owners = chainInfo.map(i => i.ibcAddress)
   return sumTokens({ chain: 'fxcore', owners })

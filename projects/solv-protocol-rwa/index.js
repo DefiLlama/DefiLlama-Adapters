@@ -11,16 +11,16 @@ const graphUrlList = {
 const slotListUrl = 'https://cdn.jsdelivr.net/gh/solv-finance-dev/solv-protocol-rwa-slot/slot.json';
 
 
-async function tvl(ts, _, _1, { api }) {
+async function tvl(api) {
   const network = api.chain;
-  const pools = await getGraphData(ts, network, api);
+  const pools = await getGraphData(api.timestamp, network, api);
   if (pools == undefined || pools.length === 0) return {}
   const poolConcretes = await concrete(pools, api);
   const nav = await api.multiCall({
     abi: abi.getSubscribeNav,
     calls: pools.map((index) => ({
       target: index.navOracle,
-      params: [index.poolId, ts]
+      params: [index.poolId, api.timestamp]
     })),
   })
 

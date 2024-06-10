@@ -1,6 +1,6 @@
 const BASELINE_CONTRACT = "0x14eB8d9b6e19842B5930030B18c50B0391561f27";
 
-async function tvl(_, _1, _2, { api }) {
+async function tvl(api) {
   //floor, anchor, discovery
   const positions = [0, 1, 2];
 
@@ -12,7 +12,7 @@ async function tvl(_, _1, _2, { api }) {
   api.addGasToken(baselinePositionBalances.map(i => i.reserves))
 }
 
-async function borrowed(_, _1, _2, { api }) {
+async function borrowed(api) {
   const lentReserves = await api.call({ abi: abi.totalLentReserves, target: BASELINE_CONTRACT, });
   api.addGasToken(lentReserves)
 }

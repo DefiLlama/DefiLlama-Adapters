@@ -51,8 +51,7 @@ async function tvl(timestamp, block) {
 }
 
 module.exports = {
-    timetravel: true,
-    ethereum: {
+        ethereum: {
       tvl,
       borrowed
     },

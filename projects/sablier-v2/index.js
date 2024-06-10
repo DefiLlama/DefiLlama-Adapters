@@ -21,12 +21,12 @@ async function getTokensConfig(api, isVesting) {
   return { ownerTokens }
 }
 
-async function tvl(_, block, _1, { api }) {
+async function tvl(api) {
   const { owners } = config[api.chain]
   return api.sumTokens(await getTokensConfig(api, false))
 }
 
-async function vesting(_, block, _1, { api }) {
+async function vesting(api) {
   const { owners } = config[api.chain]
   return api.sumTokens(await getTokensConfig(api, true))
 }
@@ -40,6 +40,7 @@ const config = {
   polygon: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2-polygon'], },
   avax: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2-avalanche'], },
   base: { endpoints: ['https://api.thegraph.com/subgraphs/name/sablier-labs/sablier-v2-base'], },
+  blast: { endpoints: ['https://api.studio.thegraph.com/query/57079/sablier-v2-blast/version/latest'], },
 }
 
 Object.keys(config).forEach(chain => {

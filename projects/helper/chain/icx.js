@@ -64,7 +64,7 @@ async function sumTokens({ api, owner, owners = [], tokens = [] }) {
 }
 
 function sumTokensExport(params) {
-  return (_, _b, _c, { api }) => sumTokens({ ...params, api })
+  return (api) => sumTokens({ ...params, api })
 }
 
 module.exports = {
