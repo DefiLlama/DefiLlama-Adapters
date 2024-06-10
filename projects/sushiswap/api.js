@@ -95,6 +95,7 @@ module.exports = {
   },
   blast: { tvl: getUniTVL({ factory: '0x42Fa929fc636e657AC568C0b5Cf38E203b67aC2b', useDefaultCoreAssets: true, }) },
   core: { tvl: tvl2 },
+  rsk: { tvl: tvl2 },
 }
 
 module.exports.polygon.tvl = getChainTVL('polygon')
